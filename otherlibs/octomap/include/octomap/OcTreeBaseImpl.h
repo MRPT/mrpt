@@ -176,7 +176,7 @@ namespace octomap {
     /// \return Memory usage of a full grid of the same size as the OcTree in bytes (for comparison)
     size_t memoryFullGrid() const;
 
-    double volume();
+    double volume() const;
 
     /// Size of OcTree (all known space) in meters for x, y and z dimension
     virtual void getMetricSize(double& x, double& y, double& z);

@@ -1,0 +1,1335 @@
+Index: include/octomap/octomap_types.h
+===================================================================
+--- include/octomap/octomap_types.h	(revision 3082)
++++ include/octomap/octomap_types.h	(working copy)
+@@ -43,6 +43,8 @@
+ #include <vector>
+ #include <list>
+ 
++#include <mrpt/utils/mrpt_stdint.h>    // compiler-independent version of "stdint.h"
++
+ #include <octomap/math/Vector3.h>
+ #include <octomap/math/Pose6D.h>
+ #include <octomap/octomap_deprecated.h>
+Index: include/octomap/OcTreeBaseImpl.h
+===================================================================
+--- include/octomap/OcTreeBaseImpl.h	(revision 3082)
++++ include/octomap/OcTreeBaseImpl.h	(working copy)
+@@ -176,7 +176,7 @@
+     /// \return Memory usage of a full grid of the same size as the OcTree in bytes (for comparison)
+     size_t memoryFullGrid() const;
+ 
+-    double volume();
++    double volume() const;
+ 
+     /// Size of OcTree (all known space) in meters for x, y and z dimension
+     virtual void getMetricSize(double& x, double& y, double& z);
+Index: include/octomap/OcTreeBaseImpl.hxx
+===================================================================
+--- include/octomap/OcTreeBaseImpl.hxx	(revision 3082)
++++ include/octomap/OcTreeBaseImpl.hxx	(working copy)
+@@ -892,7 +892,7 @@
+ 
+ 
+   template <class NODE,class I>
+-  double OcTreeBaseImpl<NODE,I>::volume() {
++  double OcTreeBaseImpl<NODE,I>::volume() const  {
+     double x,  y,  z;
+     getMetricSize(x, y, z);
+     return x*y*z;
+Index: include/octomap/OcTreeKey.h
+===================================================================
+--- include/octomap/OcTreeKey.h	(revision 3082)
++++ include/octomap/OcTreeKey.h	(working copy)
+@@ -1,199 +1,199 @@
+-#ifndef OCTOMAP_OCTREE_KEY_H
+-#define OCTOMAP_OCTREE_KEY_H
+-
+-// $Id: OcTreeKey.h 429 2012-09-21 10:08:14Z ahornung $
+-
+-/**
+-* OctoMap:
+-* A probabilistic, flexible, and compact 3D mapping library for robotic systems.
+-* @author K. M. Wurm, A. Hornung, University of Freiburg, Copyright (C) 2010.
+-* @see http://octomap.sourceforge.net/
+-* License: New BSD License
+-*/
+-
+-/*
+- * Copyright (c) 2010, K. M. Wurm, A. Hornung, University of Freiburg
+- * All rights reserved.
+- *
+- * Redistribution and use in source and binary forms, with or without
+- * modification, are permitted provided that the following conditions are met:
+- *
+- *     * Redistributions of source code must retain the above copyright
+- *       notice, this list of conditions and the following disclaimer.
+- *     * Redistributions in binary form must reproduce the above copyright
+- *       notice, this list of conditions and the following disclaimer in the
+- *       documentation and/or other materials provided with the distribution.
+- *     * Neither the name of the University of Freiburg nor the names of its
+- *       contributors may be used to endorse or promote products derived from
+- *       this software without specific prior written permission.
+- *
+- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+- * POSSIBILITY OF SUCH DAMAGE.
+- */
+-
+-#include <assert.h>
++#ifndef OCTOMAP_OCTREE_KEY_H
++#define OCTOMAP_OCTREE_KEY_H
++
++// $Id: OcTreeKey.h 429 2012-09-21 10:08:14Z ahornung $
++
++/**
++* OctoMap:
++* A probabilistic, flexible, and compact 3D mapping library for robotic systems.
++* @author K. M. Wurm, A. Hornung, University of Freiburg, Copyright (C) 2010.
++* @see http://octomap.sourceforge.net/
++* License: New BSD License
++*/
++
++/*
++ * Copyright (c) 2010, K. M. Wurm, A. Hornung, University of Freiburg
++ * All rights reserved.
++ *
++ * Redistribution and use in source and binary forms, with or without
++ * modification, are permitted provided that the following conditions are met:
++ *
++ *     * Redistributions of source code must retain the above copyright
++ *       notice, this list of conditions and the following disclaimer.
++ *     * Redistributions in binary form must reproduce the above copyright
++ *       notice, this list of conditions and the following disclaimer in the
++ *       documentation and/or other materials provided with the distribution.
++ *     * Neither the name of the University of Freiburg nor the names of its
++ *       contributors may be used to endorse or promote products derived from
++ *       this software without specific prior written permission.
++ *
++ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
++ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
++ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
++ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
++ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
++ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
++ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
++ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
++ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
++ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
++ * POSSIBILITY OF SUCH DAMAGE.
++ */
++
++#include <assert.h>
+ #ifdef __GNUC__
+-  #include <tr1/unordered_set>
++  #include <tr1/unordered_set>
+   #include <tr1/unordered_map>
+ #else
+-  #include <unordered_set>
++  #include <unordered_set>
+   #include <unordered_map>
+ #endif
+-
+-namespace octomap {
+-
+-  /**
+-   * OcTreeKey is a container class for internal key addressing. The keys count the
+-   * number of cells (voxels) from the origin as discrete address of a voxel.
+-   * @see OcTreeBaseImpl::coordToKey() and OcTreeBaseImpl::keyToCoord() for conversions.
+-   */
+-  class OcTreeKey {
+-    
+-  public:  
+-    OcTreeKey () {}
+-    OcTreeKey (unsigned short int a, unsigned short int b, unsigned short int c)
+-      { k[0] = a; k[1] = b; k[2] = c; }
+-    OcTreeKey(const OcTreeKey& other){
+-      k[0] = other.k[0]; k[1] = other.k[1]; k[2] = other.k[2];
+-    }
+-    bool operator== (const OcTreeKey &other) const { 
+-      return ((k[0] == other[0]) && (k[1] == other[1]) && (k[2] == other[2]));
+-    }
+-    bool operator!= (const OcTreeKey &other) const {
+-      return( (k[0] != other[0]) || (k[1] != other[1]) || (k[2] != other[2]) );
+-    }
+-    OcTreeKey& operator=(const OcTreeKey& other){
+-      k[0] = other.k[0]; k[1] = other.k[1]; k[2] = other.k[2];
+-      return *this;
+-    }
+-    const unsigned short int& operator[] (unsigned int i) const { 
+-      return k[i];
+-    }
+-    unsigned short int& operator[] (unsigned int i) { 
+-      return k[i];
+-    }
+-
+-    unsigned short int k[3];
+-
+-    /// Provides a hash function on Keys
+-    struct KeyHash{
+-      size_t operator()(const OcTreeKey& key) const{
+-        // a hashing function 
+-        return key.k[0] + 1337*key.k[1] + 345637*key.k[2];
+-      }
+-    };
+-    
+-  };
+-  
+-  /**
+-   * Data structure to efficiently compute the nodes to update from a scan
+-   * insertion using a hash set.
+-   * @note you need to use boost::unordered_set instead if your compiler does not
+-   * yet support tr1!
+-   */
+-  typedef std::tr1::unordered_set<OcTreeKey, OcTreeKey::KeyHash> KeySet;
+-
+-  /**
+-   * Data structrure to efficiently track changed nodes as a combination of
+-   * OcTreeKeys and a bool flag (to denote newly created nodes)
+-   *
+-   */
+-  typedef std::tr1::unordered_map<OcTreeKey, bool, OcTreeKey::KeyHash> KeyBoolMap;
+-
+-
+-  class KeyRay {
+-  public:
+-    
+-    KeyRay () {
+-      ray.resize(100000);
+-      reset();
+-    }
+-    void reset() {
+-      end_of_ray = begin();
+-    }
+-    void addKey(OcTreeKey& k) {
+-      assert(end_of_ray != ray.end());
+-      *end_of_ray = k;
+-      end_of_ray++;
+-    }
+-
+-    unsigned int size() const { return end_of_ray - ray.begin(); }
+-    unsigned int sizeMax() const { return 100000; }
+-
+-    typedef std::vector<OcTreeKey>::iterator iterator;
+-    typedef std::vector<OcTreeKey>::const_iterator const_iterator;
+-    typedef std::vector<OcTreeKey>::reverse_iterator reverse_iterator;
+-    
+-    iterator begin() { return ray.begin(); }
+-    iterator end() { return end_of_ray; }
+-    const_iterator begin() const { return ray.begin(); }
+-    const_iterator end() const   { return end_of_ray; }
+-
+-    reverse_iterator rbegin() { return (reverse_iterator) end_of_ray; }
+-    reverse_iterator rend() { return ray.rend(); }
+-
+-  public:
+-
+-    std::vector<OcTreeKey> ray;
+-    std::vector<OcTreeKey>::iterator end_of_ray;
+-  };
+-
+-  /**
+-   * Computes the key of a child node while traversing the octree, given
+-   * child index and current key
+-   *
+-   * @param[in] pos index of child node (0..7)
+-   * @param[in] center_offset_key constant offset of octree keys
+-   * @param[in] parent_key current (parent) key
+-   * @param[out] child_key  computed child key
+-   */
+-  inline void computeChildKey (const unsigned int& pos, const unsigned short int& center_offset_key,
+-                                          const OcTreeKey& parent_key, OcTreeKey& child_key) {
+-    
+-    if (pos & 1) child_key[0] = parent_key[0] + center_offset_key;
+-    else         child_key[0] = parent_key[0] - center_offset_key - (center_offset_key ? 0 : 1);
+-    // y-axis
+-    if (pos & 2) child_key[1] = parent_key[1] + center_offset_key;
+-    else         child_key[1] = parent_key[1] - center_offset_key - (center_offset_key ? 0 : 1);
+-    // z-axis
+-    if (pos & 4) child_key[2] = parent_key[2] + center_offset_key;
+-    else         child_key[2] = parent_key[2] - center_offset_key - (center_offset_key ? 0 : 1);
+-  }
+-  
+-  /// generate child index (between 0 and 7) from key at given tree depth
+-  inline unsigned char computeChildIdx(const OcTreeKey& key, int depth){
+-    unsigned char pos = 0;
+-    if (key.k[0] & (1 << depth)) pos += 1;
+-    if (key.k[1] & (1 << depth)) pos += 2;
+-    if (key.k[2] & (1 << depth)) pos += 4;
+-    return pos;
+-  }
+-
+-  /**
+-   * Generates a unique key for all keys on a certain level of the tree
+-   *
+-   * @param level from the bottom (= tree_depth - depth of key)
+-   * @param key input indexing key (at lowest resolution / level)
+-   * @return key corresponding to the input key at the given level
+-   */
+-  inline OcTreeKey computeIndexKey(unsigned short int level, const OcTreeKey& key) {
+-    unsigned short int mask = 65535 << level;
+-    OcTreeKey result = key;
+-    result[0] &= mask;
+-    result[1] &= mask;
+-    result[2] &= mask;
+-    return result;
+-  }
+-
+-} // namespace
+-
+-#endif
++
++namespace octomap {
++
++  /**
++   * OcTreeKey is a container class for internal key addressing. The keys count the
++   * number of cells (voxels) from the origin as discrete address of a voxel.
++   * @see OcTreeBaseImpl::coordToKey() and OcTreeBaseImpl::keyToCoord() for conversions.
++   */
++  class OcTreeKey {
++    
++  public:  
++    OcTreeKey () {}
++    OcTreeKey (unsigned short int a, unsigned short int b, unsigned short int c)
++      { k[0] = a; k[1] = b; k[2] = c; }
++    OcTreeKey(const OcTreeKey& other){
++      k[0] = other.k[0]; k[1] = other.k[1]; k[2] = other.k[2];
++    }
++    bool operator== (const OcTreeKey &other) const { 
++      return ((k[0] == other[0]) && (k[1] == other[1]) && (k[2] == other[2]));
++    }
++    bool operator!= (const OcTreeKey &other) const {
++      return( (k[0] != other[0]) || (k[1] != other[1]) || (k[2] != other[2]) );
++    }
++    OcTreeKey& operator=(const OcTreeKey& other){
++      k[0] = other.k[0]; k[1] = other.k[1]; k[2] = other.k[2];
++      return *this;
++    }
++    const unsigned short int& operator[] (unsigned int i) const { 
++      return k[i];
++    }
++    unsigned short int& operator[] (unsigned int i) { 
++      return k[i];
++    }
++
++    unsigned short int k[3];
++
++    /// Provides a hash function on Keys
++    struct KeyHash{
++      size_t operator()(const OcTreeKey& key) const{
++        // a hashing function 
++        return key.k[0] + 1337*key.k[1] + 345637*key.k[2];
++      }
++    };
++    
++  };
++  
++  /**
++   * Data structure to efficiently compute the nodes to update from a scan
++   * insertion using a hash set.
++   * @note you need to use boost::unordered_set instead if your compiler does not
++   * yet support tr1!
++   */
++  typedef std::tr1::unordered_set<OcTreeKey, OcTreeKey::KeyHash> KeySet;
++
++  /**
++   * Data structrure to efficiently track changed nodes as a combination of
++   * OcTreeKeys and a bool flag (to denote newly created nodes)
++   *
++   */
++  typedef std::tr1::unordered_map<OcTreeKey, bool, OcTreeKey::KeyHash> KeyBoolMap;
++
++
++  class KeyRay {
++  public:
++    
++    KeyRay () {
++      ray.resize(100000);
++      reset();
++    }
++    void reset() {
++      end_of_ray = begin();
++    }
++    void addKey(OcTreeKey& k) {
++      assert(end_of_ray != ray.end());
++      *end_of_ray = k;
++      end_of_ray++;
++    }
++
++    size_t size() const { return end_of_ray - ray.begin(); }
++    size_t sizeMax() const { return 100000; }
++
++    typedef std::vector<OcTreeKey>::iterator iterator;
++    typedef std::vector<OcTreeKey>::const_iterator const_iterator;
++    typedef std::vector<OcTreeKey>::reverse_iterator reverse_iterator;
++    
++    iterator begin() { return ray.begin(); }
++    iterator end() { return end_of_ray; }
++    const_iterator begin() const { return ray.begin(); }
++    const_iterator end() const   { return end_of_ray; }
++
++    reverse_iterator rbegin() { return (reverse_iterator) end_of_ray; }
++    reverse_iterator rend() { return ray.rend(); }
++
++  public:
++
++    std::vector<OcTreeKey> ray;
++    std::vector<OcTreeKey>::iterator end_of_ray;
++  };
++
++  /**
++   * Computes the key of a child node while traversing the octree, given
++   * child index and current key
++   *
++   * @param[in] pos index of child node (0..7)
++   * @param[in] center_offset_key constant offset of octree keys
++   * @param[in] parent_key current (parent) key
++   * @param[out] child_key  computed child key
++   */
++  inline void computeChildKey (const unsigned int& pos, const unsigned short int& center_offset_key,
++                                          const OcTreeKey& parent_key, OcTreeKey& child_key) {
++    
++    if (pos & 1) child_key[0] = parent_key[0] + center_offset_key;
++    else         child_key[0] = parent_key[0] - center_offset_key - (center_offset_key ? 0 : 1);
++    // y-axis
++    if (pos & 2) child_key[1] = parent_key[1] + center_offset_key;
++    else         child_key[1] = parent_key[1] - center_offset_key - (center_offset_key ? 0 : 1);
++    // z-axis
++    if (pos & 4) child_key[2] = parent_key[2] + center_offset_key;
++    else         child_key[2] = parent_key[2] - center_offset_key - (center_offset_key ? 0 : 1);
++  }
++  
++  /// generate child index (between 0 and 7) from key at given tree depth
++  inline unsigned char computeChildIdx(const OcTreeKey& key, int depth){
++    unsigned char pos = 0;
++    if (key.k[0] & (1 << depth)) pos += 1;
++    if (key.k[1] & (1 << depth)) pos += 2;
++    if (key.k[2] & (1 << depth)) pos += 4;
++    return pos;
++  }
++
++  /**
++   * Generates a unique key for all keys on a certain level of the tree
++   *
++   * @param level from the bottom (= tree_depth - depth of key)
++   * @param key input indexing key (at lowest resolution / level)
++   * @return key corresponding to the input key at the given level
++   */
++  inline OcTreeKey computeIndexKey(unsigned short int level, const OcTreeKey& key) {
++    unsigned short int mask = 65535 << level;
++    OcTreeKey result = key;
++    result[0] &= mask;
++    result[1] &= mask;
++    result[2] &= mask;
++    return result;
++  }
++
++} // namespace
++
++#endif
+Index: include/octomap/ScanGraph.h
+===================================================================
+--- include/octomap/ScanGraph.h	(revision 3082)
++++ include/octomap/ScanGraph.h	(working copy)
+@@ -59,7 +59,7 @@
+ 
+    public:
+ 
+-    ScanNode (Pointcloud* _scan, pose6d _pose, unsigned int _id)
++    ScanNode (Pointcloud* _scan, pose6d _pose, uint64_t _id)
+       : scan(_scan), pose(_pose), id(_id) {}
+     ScanNode ()
+       : scan(NULL) {}
+@@ -78,8 +78,8 @@
+ 
+     Pointcloud* scan;
+     pose6d pose; ///< 6D pose from which the scan was performed
+-    unsigned int id;
+-
++    uint64_t id;   //!< JLBC: Changed from "unsigned int" so binarized versions are platform-independent.
++	 
+   };
+ 
+   /**
+@@ -148,18 +148,18 @@
+      */
+     ScanEdge* addEdge(ScanNode* first, ScanNode* second, pose6d constraint);
+ 
+-    ScanEdge* addEdge(unsigned int first_id, unsigned int second_id);
++    ScanEdge* addEdge(uint64_t first_id, uint64_t second_id);
+ 
+     /// will return NULL if node was not found
+-    ScanNode* getNodeByID(unsigned int id);
++    ScanNode* getNodeByID(uint64_t id);
+ 
+     /// \return true when an edge between first_id and second_id exists
+-    bool edgeExists(unsigned int first_id, unsigned int second_id);
++    bool edgeExists(uint64_t first_id, uint64_t second_id);
+ 
+     /// Connect previously added ScanNode to the one before that
+     void connectPrevious();
+ 
+-    std::vector<unsigned int> getNeighborIDs(unsigned int id);
++    std::vector<uint64_t> getNeighborIDs(uint64_t id);
+     std::vector<ScanEdge*> getOutEdges(ScanNode* node);
+     // warning: constraints are reversed
+     std::vector<ScanEdge*> getInEdges(ScanNode* node);
+@@ -183,8 +183,8 @@
+     const_iterator begin() const { return nodes.begin(); }
+     const_iterator end() const { return nodes.end(); }
+ 
+-    unsigned int size() const { return nodes.size(); }
+-    unsigned int getNumPoints(unsigned int max_id = -1) const;
++    size_t size() const { return nodes.size(); }
++    size_t getNumPoints(uint64_t max_id = -1) const;
+ 
+     typedef std::vector<ScanEdge*>::iterator edge_iterator;
+     typedef std::vector<ScanEdge*>::const_iterator const_edge_iterator;
+Index: src/Pointcloud.cpp
+===================================================================
+--- src/Pointcloud.cpp	(revision 3082)
++++ src/Pointcloud.cpp	(working copy)
+@@ -1,325 +1,325 @@
+-// $Id: Pointcloud.cpp 269 2011-08-18 16:00:50Z kai_wurm $
+-
+-/**
+-* OctoMap:
+-* A probabilistic, flexible, and compact 3D mapping library for robotic systems.
+-* @author K. M. Wurm, A. Hornung, University of Freiburg, Copyright (C) 2009.
+-* @see http://octomap.sourceforge.net/
+-* License: New BSD License
+-*/
+-
+-/*
+- * Copyright (c) 2009-2011, K. M. Wurm, A. Hornung, University of Freiburg
+- * All rights reserved.
+- *
+- * Redistribution and use in source and binary forms, with or without
+- * modification, are permitted provided that the following conditions are met:
+- *
+- *     * Redistributions of source code must retain the above copyright
+- *       notice, this list of conditions and the following disclaimer.
+- *     * Redistributions in binary form must reproduce the above copyright
+- *       notice, this list of conditions and the following disclaimer in the
+- *       documentation and/or other materials provided with the distribution.
+- *     * Neither the name of the University of Freiburg nor the names of its
+- *       contributors may be used to endorse or promote products derived from
+- *       this software without specific prior written permission.
+- *
+- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+- * POSSIBILITY OF SUCH DAMAGE.
+- */
+-
++// $Id: Pointcloud.cpp 269 2011-08-18 16:00:50Z kai_wurm $
++
++/**
++* OctoMap:
++* A probabilistic, flexible, and compact 3D mapping library for robotic systems.
++* @author K. M. Wurm, A. Hornung, University of Freiburg, Copyright (C) 2009.
++* @see http://octomap.sourceforge.net/
++* License: New BSD License
++*/
++
++/*
++ * Copyright (c) 2009-2011, K. M. Wurm, A. Hornung, University of Freiburg
++ * All rights reserved.
++ *
++ * Redistribution and use in source and binary forms, with or without
++ * modification, are permitted provided that the following conditions are met:
++ *
++ *     * Redistributions of source code must retain the above copyright
++ *       notice, this list of conditions and the following disclaimer.
++ *     * Redistributions in binary form must reproduce the above copyright
++ *       notice, this list of conditions and the following disclaimer in the
++ *       documentation and/or other materials provided with the distribution.
++ *     * Neither the name of the University of Freiburg nor the names of its
++ *       contributors may be used to endorse or promote products derived from
++ *       this software without specific prior written permission.
++ *
++ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
++ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
++ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
++ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
++ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
++ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
++ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
++ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
++ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
++ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
++ * POSSIBILITY OF SUCH DAMAGE.
++ */
++
+ #ifdef _MSC_VER
+-  #include <algorithm>
++  #include <algorithm>
+ #else
+   #include <ext/algorithm>
+ #endif
+-#include <fstream>
+-#include <math.h>
+-
+-#include <octomap/Pointcloud.h>
+-
+-namespace octomap {
+-
+-
+-  Pointcloud::Pointcloud() {
+-
+-  }
+-
+-  Pointcloud::~Pointcloud() {
+-    this->clear();
+-  }
+-
+-  void Pointcloud::clear() {
+-
+-    // delete the points
+-    if (points.size()) {
+-      points.clear();
+-    }
+-  }
+-
+-
+-  Pointcloud::Pointcloud(const Pointcloud& other) {
+-    for (Pointcloud::const_iterator it = other.begin(); it != other.end(); it++) {
+-      points.push_back(point3d(*it));
+-    }
+-  }
+-
+-  Pointcloud::Pointcloud(Pointcloud* other) {
+-    for (Pointcloud::const_iterator it = other->begin(); it != other->end(); it++) {
+-      points.push_back(point3d(*it));
+-    }
+-  }
+-
+-
+-  void Pointcloud::push_back(const Pointcloud& other)   {
+-    for (Pointcloud::const_iterator it = other.begin(); it != other.end(); it++) {
+-      points.push_back(point3d(*it));
+-    }
+-  }
+-
+-  point3d Pointcloud::getPoint(unsigned int i) {
+-    if (i<points.size()) return points[i];
+-    else {
+-      OCTOMAP_WARNING("Pointcloud::getPoint index out of range!\n");
+-      return points.back();
+-    }
+-  }
+-
+-  void Pointcloud::transform(octomath::Pose6D transform) {
+-
+-    for (unsigned int i=0; i<points.size(); i++) {
+-      points[i] = transform.transform(points[i]);
+-    }
+-
+-   // FIXME: not correct for multiple transforms
+-    current_inv_transform = transform.inv();
+-  }
+-
+-
+-  void Pointcloud::transformAbsolute(pose6d transform) {
+-
+-    // undo previous transform, then apply current transform
+-    pose6d transf = current_inv_transform * transform;
+-
+-    for (unsigned int i=0; i<points.size(); i++) {
+-      points[i] = transf.transform(points[i]);
+-    }
+-
+-    current_inv_transform = transform.inv();
+-  }
+-
+-
+-  void Pointcloud::rotate(double roll, double pitch, double yaw) {
+-
+-    for (unsigned int i=0; i<points.size(); i++) {
+-      points[i].rotate_IP(roll, pitch, yaw);
+-    }
+-  }
+-
+-
+-  void Pointcloud::calcBBX(point3d& lowerBound, point3d& upperBound) const {
+-    float min_x, min_y, min_z;
+-    float max_x, max_y, max_z;
+-    min_x = min_y = min_z = 1e6;
+-    max_x = max_y = max_z = -1e6;
+-
+-    float x,y,z;
+-
+-    for (Pointcloud::const_iterator it=begin(); it!=end(); it++) {
+-
+-      x = (*it)(0);
+-      y = (*it)(1);
+-      z = (*it)(2);
+-
+-      if (x < min_x) min_x = x;
+-      if (y < min_y) min_y = y;
+-      if (z < min_z) min_z = z;
+-
+-      if (x > max_x) max_x = x;
+-      if (y > max_y) max_y = y;
+-      if (z > max_z) max_z = z;
+-    }
+-
+-    lowerBound(0) = min_x; lowerBound(1) = min_y; lowerBound(2) = min_z;
+-    upperBound(0) = max_x; upperBound(1) = max_y; upperBound(2) = max_z;
+-  }
+-
+-
+-  void Pointcloud::crop(point3d lowerBound, point3d upperBound) {
+-
+-    Pointcloud result;
+-
+-    float min_x, min_y, min_z;
+-    float max_x, max_y, max_z;
+-    float x,y,z;
+-
+-    min_x = lowerBound(0); min_y = lowerBound(1); min_z = lowerBound(2);
+-    max_x = upperBound(0); max_y = upperBound(1); max_z = upperBound(2);
+-
+-    for (Pointcloud::const_iterator it=begin(); it!=end(); it++) {
+-      x = (*it)(0);
+-      y = (*it)(1);
+-      z = (*it)(2);
+-
+-      if ( (x >= min_x) &&
+-	   (y >= min_y) &&
+-	   (z >= min_z) &&
+-	   (x <= max_x) &&
+-	   (y <= max_y) &&
+-	   (z <= max_z) ) {
+-	result.push_back (x,y,z);
+-      }
+-    } // end for points
+-
+-    this->clear();
+-    this->push_back(result);
+-
+-  }
+-
+-
+-  void Pointcloud::minDist(double thres) {
+-    Pointcloud result;
+-
+-    float x,y,z;
+-    for (Pointcloud::const_iterator it=begin(); it!=end(); it++) {
+-      x = (*it)(0);
+-      y = (*it)(1);
+-      z = (*it)(2);
+-      double dist = sqrt(x*x+y*y+z*z);
+-      if ( dist > thres ) result.push_back (x,y,z);
+-    } // end for points
+-    this->clear();
+-    this->push_back(result);
+-  }
+-
+-
+-  void Pointcloud::subSampleRandom(unsigned int num_samples, Pointcloud& sample_cloud) {
+-    point3d_collection samples;
+-    // visual studio does not support random_sample_n
++#include <fstream>
++#include <math.h>
++
++#include <octomap/Pointcloud.h>
++
++namespace octomap {
++
++
++  Pointcloud::Pointcloud() {
++
++  }
++
++  Pointcloud::~Pointcloud() {
++    this->clear();
++  }
++
++  void Pointcloud::clear() {
++
++    // delete the points
++    if (points.size()) {
++      points.clear();
++    }
++  }
++
++
++  Pointcloud::Pointcloud(const Pointcloud& other) {
++    for (Pointcloud::const_iterator it = other.begin(); it != other.end(); it++) {
++      points.push_back(point3d(*it));
++    }
++  }
++
++  Pointcloud::Pointcloud(Pointcloud* other) {
++    for (Pointcloud::const_iterator it = other->begin(); it != other->end(); it++) {
++      points.push_back(point3d(*it));
++    }
++  }
++
++
++  void Pointcloud::push_back(const Pointcloud& other)   {
++    for (Pointcloud::const_iterator it = other.begin(); it != other.end(); it++) {
++      points.push_back(point3d(*it));
++    }
++  }
++
++  point3d Pointcloud::getPoint(unsigned int i) {
++    if (i<points.size()) return points[i];
++    else {
++      OCTOMAP_WARNING("Pointcloud::getPoint index out of range!\n");
++      return points.back();
++    }
++  }
++
++  void Pointcloud::transform(octomath::Pose6D transform) {
++
++    for (unsigned int i=0; i<points.size(); i++) {
++      points[i] = transform.transform(points[i]);
++    }
++
++   // FIXME: not correct for multiple transforms
++    current_inv_transform = transform.inv();
++  }
++
++
++  void Pointcloud::transformAbsolute(pose6d transform) {
++
++    // undo previous transform, then apply current transform
++    pose6d transf = current_inv_transform * transform;
++
++    for (unsigned int i=0; i<points.size(); i++) {
++      points[i] = transf.transform(points[i]);
++    }
++
++    current_inv_transform = transform.inv();
++  }
++
++
++  void Pointcloud::rotate(double roll, double pitch, double yaw) {
++
++    for (unsigned int i=0; i<points.size(); i++) {
++      points[i].rotate_IP(roll, pitch, yaw);
++    }
++  }
++
++
++  void Pointcloud::calcBBX(point3d& lowerBound, point3d& upperBound) const {
++    float min_x, min_y, min_z;
++    float max_x, max_y, max_z;
++    min_x = min_y = min_z = 1e6;
++    max_x = max_y = max_z = -1e6;
++
++    float x,y,z;
++
++    for (Pointcloud::const_iterator it=begin(); it!=end(); it++) {
++
++      x = (*it)(0);
++      y = (*it)(1);
++      z = (*it)(2);
++
++      if (x < min_x) min_x = x;
++      if (y < min_y) min_y = y;
++      if (z < min_z) min_z = z;
++
++      if (x > max_x) max_x = x;
++      if (y > max_y) max_y = y;
++      if (z > max_z) max_z = z;
++    }
++
++    lowerBound(0) = min_x; lowerBound(1) = min_y; lowerBound(2) = min_z;
++    upperBound(0) = max_x; upperBound(1) = max_y; upperBound(2) = max_z;
++  }
++
++
++  void Pointcloud::crop(point3d lowerBound, point3d upperBound) {
++
++    Pointcloud result;
++
++    float min_x, min_y, min_z;
++    float max_x, max_y, max_z;
++    float x,y,z;
++
++    min_x = lowerBound(0); min_y = lowerBound(1); min_z = lowerBound(2);
++    max_x = upperBound(0); max_y = upperBound(1); max_z = upperBound(2);
++
++    for (Pointcloud::const_iterator it=begin(); it!=end(); it++) {
++      x = (*it)(0);
++      y = (*it)(1);
++      z = (*it)(2);
++
++      if ( (x >= min_x) &&
++	   (y >= min_y) &&
++	   (z >= min_z) &&
++	   (x <= max_x) &&
++	   (y <= max_y) &&
++	   (z <= max_z) ) {
++	result.push_back (x,y,z);
++      }
++    } // end for points
++
++    this->clear();
++    this->push_back(result);
++
++  }
++
++
++  void Pointcloud::minDist(double thres) {
++    Pointcloud result;
++
++    float x,y,z;
++    for (Pointcloud::const_iterator it=begin(); it!=end(); it++) {
++      x = (*it)(0);
++      y = (*it)(1);
++      z = (*it)(2);
++      double dist = sqrt(x*x+y*y+z*z);
++      if ( dist > thres ) result.push_back (x,y,z);
++    } // end for points
++    this->clear();
++    this->push_back(result);
++  }
++
++
++  void Pointcloud::subSampleRandom(unsigned int num_samples, Pointcloud& sample_cloud) {
++    point3d_collection samples;
++    // visual studio does not support random_sample_n
+   #ifdef _MSC_VER
+     samples.reserve(this->size());
+     samples.insert(samples.end(), this->begin(), this->end());
+     std::random_shuffle(samples.begin(), samples.end());
+     samples.resize(num_samples);
+   #else
+-    random_sample_n(begin(), end(), std::back_insert_iterator<point3d_collection>(samples), num_samples);
+-    for (unsigned int i=0; i<samples.size(); i++) {
+-      sample_cloud.push_back(samples[i]);
+-    }
+-  #endif
+-  }
+-
+-
+-  void Pointcloud::writeVrml(std::string filename){
+-
+-    std::ofstream outfile (filename.c_str());
+-
+-    outfile << "#VRML V2.0 utf8" << std::endl;
+-    outfile << "Transform {" << std::endl;
+-    outfile << "translation 0 0 0" << std::endl;
+-    outfile << "rotation 0 0 0 0" << std::endl;
+-    outfile << "  children [" << std::endl;
+-    outfile << "     Shape{" << std::endl;
+-    outfile << "  geometry PointSet {" << std::endl;
+-    outfile << "      coord Coordinate {" << std::endl;
+-    outfile << "          point [" << std::endl;
+-
+-    OCTOMAP_DEBUG_STR("PointCloud::writeVrml writing "
+-	      << points.size() << " points to " 
+-	      << filename.c_str() <<  ".");
+-
+-    for (unsigned int i = 0; i < (points.size()); i++){
+-      outfile << "\t\t" << (points[i])(0) 
+-	      << " " <<    (points[i])(1) 
+-	      <<  " " <<   (points[i])(2) 
+-	      << "\n";
+-    }
+-
+-    outfile << "                 ]" << std::endl;
+-    outfile << "      }" << std::endl;
+-    outfile << "    color Color{" << std::endl;
+-    outfile << "              color [" << std::endl;
+-
+-    for (unsigned int i = 0; i < points.size(); i++){
+-      outfile << "\t\t 1.0 1.0 1.0 \n";
+-    }
+-
+-    outfile << "                 ]" << std::endl;
+-    outfile << "      }" << std::endl;
+-
+-    outfile << "   }" << std::endl;
+-    outfile << "     }" << std::endl;
+-
+-
+-    outfile << "  ]" << std::endl;
+-    outfile << "}" << std::endl;
+-
+-
+-  }
+-
+-  std::istream& Pointcloud::read(std::istream &s){
+-    while (!s.eof()){
+-      point3d p;
+-      for (unsigned int i=0; i<3; i++){
+-        s >> p(i);
+-      }
+-      if (!s.fail()){
+-        this->push_back(p);
+-      } else {
+-        break;
+-      }
+-    }
+-
+-    return s;
+-  }
+-
+-  std::istream& Pointcloud::readBinary(std::istream &s) {
+-
+-    unsigned int pc_size = 0;
+-    s.read((char*)&pc_size, sizeof(pc_size));
+-    OCTOMAP_DEBUG("Reading %d points from binary file...", pc_size);
+-
+-    if (pc_size > 0) {
+-      this->points.reserve(pc_size);
+-      point3d p;
+-      for (unsigned int i=0; i<pc_size; i++) {
+-        p.readBinary(s);
+-        if (!s.fail()) {
+-          this->push_back(p);
+-        }
+-        else {
+-          OCTOMAP_ERROR("Pointcloud::readBinary: ERROR.\n" );
+-          break;
+-        }
+-      }
+-    }
+-    OCTOMAP_DEBUG("done.\n");
+-
+-    return s;
+-  }
+-
+-
+-  std::ostream& Pointcloud::writeBinary(std::ostream &s) const {
+-
+-    unsigned int pc_size = this->size();
+-    OCTOMAP_DEBUG("Writing %d points to binary file...", pc_size);
+-    s.write((char*)&pc_size, sizeof(pc_size));
+-
+-    for (Pointcloud::const_iterator it = this->begin(); it != this->end(); it++) {
+-      it->writeBinary(s);
+-    }
+-    OCTOMAP_DEBUG("done.\n");
+-
+-    return s;
+-  }
+-
+-} // end namespace
++    random_sample_n(begin(), end(), std::back_insert_iterator<point3d_collection>(samples), num_samples);
++    for (unsigned int i=0; i<samples.size(); i++) {
++      sample_cloud.push_back(samples[i]);
++    }
++  #endif
++  }
++
++
++  void Pointcloud::writeVrml(std::string filename){
++
++    std::ofstream outfile (filename.c_str());
++
++    outfile << "#VRML V2.0 utf8" << std::endl;
++    outfile << "Transform {" << std::endl;
++    outfile << "translation 0 0 0" << std::endl;
++    outfile << "rotation 0 0 0 0" << std::endl;
++    outfile << "  children [" << std::endl;
++    outfile << "     Shape{" << std::endl;
++    outfile << "  geometry PointSet {" << std::endl;
++    outfile << "      coord Coordinate {" << std::endl;
++    outfile << "          point [" << std::endl;
++
++    OCTOMAP_DEBUG_STR("PointCloud::writeVrml writing "
++	      << points.size() << " points to " 
++	      << filename.c_str() <<  ".");
++
++    for (unsigned int i = 0; i < (points.size()); i++){
++      outfile << "\t\t" << (points[i])(0) 
++	      << " " <<    (points[i])(1) 
++	      <<  " " <<   (points[i])(2) 
++	      << "\n";
++    }
++
++    outfile << "                 ]" << std::endl;
++    outfile << "      }" << std::endl;
++    outfile << "    color Color{" << std::endl;
++    outfile << "              color [" << std::endl;
++
++    for (unsigned int i = 0; i < points.size(); i++){
++      outfile << "\t\t 1.0 1.0 1.0 \n";
++    }
++
++    outfile << "                 ]" << std::endl;
++    outfile << "      }" << std::endl;
++
++    outfile << "   }" << std::endl;
++    outfile << "     }" << std::endl;
++
++
++    outfile << "  ]" << std::endl;
++    outfile << "}" << std::endl;
++
++
++  }
++
++  std::istream& Pointcloud::read(std::istream &s){
++    while (!s.eof()){
++      point3d p;
++      for (unsigned int i=0; i<3; i++){
++        s >> p(i);
++      }
++      if (!s.fail()){
++        this->push_back(p);
++      } else {
++        break;
++      }
++    }
++
++    return s;
++  }
++
++  std::istream& Pointcloud::readBinary(std::istream &s) {
++
++    unsigned int pc_size = 0;
++    s.read((char*)&pc_size, sizeof(pc_size));
++    OCTOMAP_DEBUG("Reading %d points from binary file...", pc_size);
++
++    if (pc_size > 0) {
++      this->points.reserve(pc_size);
++      point3d p;
++      for (unsigned int i=0; i<pc_size; i++) {
++        p.readBinary(s);
++        if (!s.fail()) {
++          this->push_back(p);
++        }
++        else {
++          OCTOMAP_ERROR("Pointcloud::readBinary: ERROR.\n" );
++          break;
++        }
++      }
++    }
++    OCTOMAP_DEBUG("done.\n");
++
++    return s;
++  }
++
++
++  std::ostream& Pointcloud::writeBinary(std::ostream &s) const {
++
++    size_t pc_size = this->size();
++    OCTOMAP_DEBUG("Writing %d points to binary file...", pc_size);
++    s.write((char*)&pc_size, sizeof(pc_size));
++
++    for (Pointcloud::const_iterator it = this->begin(); it != this->end(); it++) {
++      it->writeBinary(s);
++    }
++    OCTOMAP_DEBUG("done.\n");
++
++    return s;
++  }
++
++} // end namespace
+Index: src/ScanGraph.cpp
+===================================================================
+--- src/ScanGraph.cpp	(revision 3082)
++++ src/ScanGraph.cpp	(working copy)
+@@ -90,7 +90,7 @@
+   }
+ 
+   std::istream& ScanNode::readPoseASCII(std::istream &s) {
+-    unsigned int read_id;
++    uint64_t read_id;
+     s >> read_id;
+     if (read_id != this->id)
+       OCTOMAP_ERROR("ERROR while reading ScanNode pose from ASCII. id %d does not match real id %d.\n", read_id, this->id);
+@@ -117,7 +117,7 @@
+   }
+ 
+   std::istream& ScanEdge::readBinary(std::istream &s, ScanGraph& graph) {
+-    unsigned int first_id, second_id;
++    uint64_t first_id, second_id;
+     s.read((char*)&first_id, sizeof(first_id));
+     s.read((char*)&second_id, sizeof(second_id));
+ 
+@@ -147,7 +147,7 @@
+ 
+   std::istream& ScanEdge::readASCII(std::istream &s, ScanGraph& graph) {
+ 
+-    unsigned int first_id, second_id;
++    uint64_t first_id, second_id;
+     s >> first_id;
+     s >> second_id;
+ 
+@@ -167,11 +167,11 @@
+   }
+ 
+   void ScanGraph::clear() {
+-    for (unsigned int i=0; i<nodes.size(); i++) {
++    for (size_t i=0; i<nodes.size(); i++) {
+       delete nodes[i];
+     }
+     nodes.clear();
+-    for (unsigned int i=0; i<edges.size(); i++) {
++    for (size_t i=0; i<edges.size(); i++) {
+       delete edges[i];
+     }
+     edges.clear();
+@@ -204,7 +204,7 @@
+   }
+ 
+ 
+-  ScanEdge* ScanGraph::addEdge(unsigned int first_id, unsigned int second_id) {
++  ScanEdge* ScanGraph::addEdge(uint64_t first_id, uint64_t second_id) {
+ 
+     if ( this->edgeExists(first_id, second_id)) {
+       OCTOMAP_ERROR("addEdge:: Edge exists!\n");
+@@ -239,7 +239,7 @@
+     std::ofstream outfile (filename.c_str());
+     outfile << "graph ScanGraph" << std::endl;
+     outfile << "{" << std::endl;
+-    for (unsigned int i=0; i<edges.size(); i++) {
++    for (size_t i=0; i<edges.size(); i++) {
+       outfile << (edges[i]->first)->id
+ 	      << " -- "
+ 	      << (edges[i]->second)->id
+@@ -251,16 +251,16 @@
+     outfile.close();
+   }
+ 
+-  ScanNode* ScanGraph::getNodeByID(unsigned int id) {
+-    for (unsigned int i = 0; i < nodes.size(); i++) {
++  ScanNode* ScanGraph::getNodeByID(uint64_t id) {
++    for (size_t i = 0; i < nodes.size(); i++) {
+       if (nodes[i]->id == id) return nodes[i];
+     }
+     return NULL;
+   }
+ 
+-  bool ScanGraph::edgeExists(unsigned int first_id, unsigned int second_id) {
++  bool ScanGraph::edgeExists(uint64_t first_id, uint64_t second_id) {
+ 
+-    for (unsigned int i=0; i<edges.size(); i++) {
++    for (size_t i=0; i<edges.size(); i++) {
+       if (
+               (((edges[i]->first)->id == first_id) && ((edges[i]->second)->id == second_id))
+               ||
+@@ -271,12 +271,12 @@
+     return false;
+   }
+ 
+-  std::vector<unsigned int> ScanGraph::getNeighborIDs(unsigned int id) {
+-    std::vector<unsigned int> res;
++  std::vector<uint64_t> ScanGraph::getNeighborIDs(uint64_t id) {
++    std::vector<uint64_t> res;
+     ScanNode* node = getNodeByID(id);
+     if (node) {
+       // check all nodes
+-      for (unsigned int i = 0; i < nodes.size(); i++) {
++      for (size_t i = 0; i < nodes.size(); i++) {
+ 	if (node->id == nodes[i]->id) continue;
+ 	if (edgeExists(id, nodes[i]->id)) {
+ 	  res.push_back(nodes[i]->id);
+@@ -332,7 +332,7 @@
+     // file structure:    n | node_1 | ... | node_n | m | edge_1 | ... | edge_m
+ 
+     // write nodes  ---------------------------------
+-    unsigned int graph_size = this->size();
++    const uint64_t graph_size = this->size();
+     if (graph_size) OCTOMAP_DEBUG("writing %d nodes to binary file...\n", graph_size);
+     s.write((char*)&graph_size, sizeof(graph_size));
+ 
+@@ -343,7 +343,7 @@
+     if (graph_size) OCTOMAP_DEBUG("done.\n");
+ 
+     // write edges  ---------------------------------
+-    unsigned int num_edges = this->edges.size();
++    const uint64_t num_edges = this->edges.size();
+     if (num_edges) OCTOMAP_DEBUG("writing %d edges to binary file...\n", num_edges);
+     s.write((char*)&num_edges, sizeof(num_edges));
+ 
+@@ -369,22 +369,22 @@
+ 
+   std::istream& ScanGraph::readBinary(std::ifstream &s) {
+     if (!s.is_open()){
+-      OCTOMAP_ERROR_STR("Could not read from input filestream in ScanGraph::readBinary, exiting!");
+-      exit(0);
++	  throw std::runtime_error("Could not read from input filestream in ScanGraph::readBinary, exiting!");
++      //exit(0);
+     } else if (!s.good()){
+       OCTOMAP_WARNING_STR("Input filestream not \"good\" in ScanGraph::readBinary");
+     }
+     this->clear();
+ 
+     // read nodes  ---------------------------------
+-    unsigned int graph_size = 0;
++    uint64_t graph_size = 0;
+     s.read((char*)&graph_size, sizeof(graph_size));
+     if (graph_size) OCTOMAP_DEBUG("reading %d nodes from binary file...\n", graph_size);
+ 
+     if (graph_size > 0) {
+       this->nodes.reserve(graph_size);
+ 
+-      for (unsigned int i=0; i<graph_size; i++) {
++      for (uint64_t i=0; i<graph_size; i++) {
+ 
+         ScanNode* node = new ScanNode();
+         node->readBinary(s);
+@@ -400,14 +400,14 @@
+     if (graph_size) OCTOMAP_DEBUG("done.\n");
+ 
+     // read edges  ---------------------------------
+-    unsigned int num_edges = 0;
++    uint64_t num_edges = 0;
+     s.read((char*)&num_edges, sizeof(num_edges));
+     if (num_edges) OCTOMAP_DEBUG("reading %d edges from binary file...\n", num_edges);
+ 
+     if (num_edges > 0) {
+       this->edges.reserve(num_edges);
+ 
+-      for (unsigned int i=0; i<num_edges; i++) {
++      for (uint64_t i=0; i<num_edges; i++) {
+ 
+         ScanEdge* edge = new ScanEdge();
+         edge->readBinary(s, *this);
+@@ -510,18 +510,18 @@
+ 
+   std::istream& ScanGraph::readEdgesASCII(std::istream &s) {
+ 
+-    unsigned int num_edges = 0;
++    size_t num_edges = 0;
+     s >> num_edges;
+     OCTOMAP_DEBUG("Reading %d edges from ASCII file...\n", num_edges);
+ 
+     if (num_edges > 0) {
+ 
+-      for (unsigned int i=0; i<this->edges.size(); i++) delete edges[i];
++      for (size_t i=0; i<this->edges.size(); i++) delete edges[i];
+       this->edges.clear();
+ 
+       this->edges.reserve(num_edges);
+ 
+-      for (unsigned int i=0; i<num_edges; i++) {
++      for (size_t i=0; i<num_edges; i++) {
+ 
+         ScanEdge* edge = new ScanEdge();
+         edge->readASCII(s, *this);
+@@ -609,8 +609,8 @@
+     }
+   }
+ 
+-  unsigned int ScanGraph::getNumPoints(unsigned int max_id) const {
+-    unsigned int retval = 0;
++  size_t ScanGraph::getNumPoints(uint64_t max_id) const {
++    size_t retval = 0;
+     
+     for (ScanGraph::const_iterator it = this->begin(); it != this->end(); it++) {
+       retval += (*it)->scan->size();

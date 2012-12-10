@@ -77,7 +77,7 @@ namespace mrpt
 			   This is a base class for many types of sensors
 				 observations. Users can add a new observation type
 				 creating a new class deriving from this one.<br>
-			   <b>IMPORTANT</b>: Observations doesn't include any information about the
+			   <b>IMPORTANT</b>: Observations don't include any information about the
 				robot pose beliefs, just the raw observation and, where
 				aplicable, information about sensor position or
 				orientation respect to robotic coordinates origin.

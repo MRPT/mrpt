@@ -48,6 +48,8 @@ using namespace mrpt::utils::metaprogramming;
 IMPLEMENTS_SERIALIZABLE( CMultiMetricMap, CMetricMap, mrpt::slam )
 
 
+MRPT_TODO("integrate OctoMap!!")
+
 extern CStartUpClassesRegister  mrpt_slam_class_reg;
 const int dumm = mrpt_slam_class_reg.do_nothing(); // Avoid compiler removing this class in static linking
 

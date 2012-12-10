@@ -59,7 +59,7 @@ namespace octomap {
 
    public:
 
-    ScanNode (Pointcloud* _scan, pose6d _pose, unsigned int _id)
+    ScanNode (Pointcloud* _scan, pose6d _pose, uint64_t _id)
       : scan(_scan), pose(_pose), id(_id) {}
     ScanNode ()
       : scan(NULL) {}
@@ -78,8 +78,8 @@ namespace octomap {
 
     Pointcloud* scan;
     pose6d pose; ///< 6D pose from which the scan was performed
-    unsigned int id;
-
+    uint64_t id;   //!< JLBC: Changed from "unsigned int" so binarized versions are platform-independent.
+	 
   };
 
   /**
@@ -148,18 +148,18 @@ namespace octomap {
      */
     ScanEdge* addEdge(ScanNode* first, ScanNode* second, pose6d constraint);
 
-    ScanEdge* addEdge(unsigned int first_id, unsigned int second_id);
+    ScanEdge* addEdge(uint64_t first_id, uint64_t second_id);
 
     /// will return NULL if node was not found
-    ScanNode* getNodeByID(unsigned int id);
+    ScanNode* getNodeByID(uint64_t id);
 
     /// \return true when an edge between first_id and second_id exists
-    bool edgeExists(unsigned int first_id, unsigned int second_id);
+    bool edgeExists(uint64_t first_id, uint64_t second_id);
 
     /// Connect previously added ScanNode to the one before that
     void connectPrevious();
 
-    std::vector<unsigned int> getNeighborIDs(unsigned int id);
+    std::vector<uint64_t> getNeighborIDs(uint64_t id);
     std::vector<ScanEdge*> getOutEdges(ScanNode* node);
     // warning: constraints are reversed
     std::vector<ScanEdge*> getInEdges(ScanNode* node);
@@ -183,8 +183,8 @@ namespace octomap {
     const_iterator begin() const { return nodes.begin(); }
     const_iterator end() const { return nodes.end(); }
 
-    unsigned int size() const { return nodes.size(); }
-    unsigned int getNumPoints(unsigned int max_id = -1) const;
+    size_t size() const { return nodes.size(); }
+    size_t getNumPoints(uint64_t max_id = -1) const;
 
     typedef std::vector<ScanEdge*>::iterator edge_iterator;
     typedef std::vector<ScanEdge*>::const_iterator const_edge_iterator;

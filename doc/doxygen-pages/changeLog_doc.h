@@ -64,7 +64,7 @@
 			- [mrpt-bayes]
 			- [mrpt-graphs]
 			- [mrpt-graphslam]
-		- Integration of the Octomap C++ library (new BSD License) by Kai M. Wurm et al.: <a href="http://code.google.com/p/mrpt/source/detail?r=3081" >r3081</a>
+		- Integration of the Octomap C++ library (new BSD License) by Kai M. Wurm et al.: <a href="http://code.google.com/p/mrpt/source/detail?r=3081" >r3081</a>, <a href="http://code.google.com/p/mrpt/source/detail?r=3083" >r3083</a>
 			- ...
 	- Changes in classes:
 		- [mrpt-base]
@@ -131,6 +131,7 @@
 			- for all probability distribution functions in mrpt::math,
 			- for the parser in mrpt::hwdrivers::CGPSInterface::parse_NMEA()
 		- Added new documentation page: <a href="env-vars.html" >environment variables</a>.
+		- Removed the build flag "MRPT_BACKCOMPATIB_08X".
 	- BUG FIXES:
 		- Build: Fixed detection of OpenCV 2.4.2+ installed in the system via CMake config file instead of pkg-config, which seems to be broken. - <a href="http://code.google.com/p/mrpt/source/detail?r=3019" >r3019</a>
 		- [mrpt-base] The iterator returned by end() in all MRPT vectors and matrices (based on Eigen) pointed to the last element, not to the (now correct) next position after the last element - <a href="http://code.google.com/p/mrpt/source/detail?r=2941" >r2941</a>

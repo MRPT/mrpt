@@ -90,7 +90,7 @@ namespace octomap {
   }
 
   std::istream& ScanNode::readPoseASCII(std::istream &s) {
-    unsigned int read_id;
+    uint64_t read_id;
     s >> read_id;
     if (read_id != this->id)
       OCTOMAP_ERROR("ERROR while reading ScanNode pose from ASCII. id %d does not match real id %d.\n", read_id, this->id);
@@ -117,7 +117,7 @@ namespace octomap {
   }
 
   std::istream& ScanEdge::readBinary(std::istream &s, ScanGraph& graph) {
-    unsigned int first_id, second_id;
+    uint64_t first_id, second_id;
     s.read((char*)&first_id, sizeof(first_id));
     s.read((char*)&second_id, sizeof(second_id));
 
@@ -147,7 +147,7 @@ namespace octomap {
 
   std::istream& ScanEdge::readASCII(std::istream &s, ScanGraph& graph) {
 
-    unsigned int first_id, second_id;
+    uint64_t first_id, second_id;
     s >> first_id;
     s >> second_id;
 
@@ -167,11 +167,11 @@ namespace octomap {
   }
 
   void ScanGraph::clear() {
-    for (unsigned int i=0; i<nodes.size(); i++) {
+    for (size_t i=0; i<nodes.size(); i++) {
       delete nodes[i];
     }
     nodes.clear();
-    for (unsigned int i=0; i<edges.size(); i++) {
+    for (size_t i=0; i<edges.size(); i++) {
       delete edges[i];
     }
     edges.clear();
@@ -204,7 +204,7 @@ namespace octomap {
   }
 
 
-  ScanEdge* ScanGraph::addEdge(unsigned int first_id, unsigned int second_id) {
+  ScanEdge* ScanGraph::addEdge(uint64_t first_id, uint64_t second_id) {
 
     if ( this->edgeExists(first_id, second_id)) {
       OCTOMAP_ERROR("addEdge:: Edge exists!\n");
@@ -239,7 +239,7 @@ namespace octomap {
     std::ofstream outfile (filename.c_str());
     outfile << "graph ScanGraph" << std::endl;
     outfile << "{" << std::endl;
-    for (unsigned int i=0; i<edges.size(); i++) {
+    for (size_t i=0; i<edges.size(); i++) {
       outfile << (edges[i]->first)->id
 	      << " -- "
 	      << (edges[i]->second)->id
@@ -251,16 +251,16 @@ namespace octomap {
     outfile.close();
   }
 
-  ScanNode* ScanGraph::getNodeByID(unsigned int id) {
-    for (unsigned int i = 0; i < nodes.size(); i++) {
+  ScanNode* ScanGraph::getNodeByID(uint64_t id) {
+    for (size_t i = 0; i < nodes.size(); i++) {
       if (nodes[i]->id == id) return nodes[i];
     }
     return NULL;
   }
 
-  bool ScanGraph::edgeExists(unsigned int first_id, unsigned int second_id) {
+  bool ScanGraph::edgeExists(uint64_t first_id, uint64_t second_id) {
 
-    for (unsigned int i=0; i<edges.size(); i++) {
+    for (size_t i=0; i<edges.size(); i++) {
       if (
               (((edges[i]->first)->id == first_id) && ((edges[i]->second)->id == second_id))
               ||
@@ -271,12 +271,12 @@ namespace octomap {
     return false;
   }
 
-  std::vector<unsigned int> ScanGraph::getNeighborIDs(unsigned int id) {
-    std::vector<unsigned int> res;
+  std::vector<uint64_t> ScanGraph::getNeighborIDs(uint64_t id) {
+    std::vector<uint64_t> res;
     ScanNode* node = getNodeByID(id);
     if (node) {
       // check all nodes
-      for (unsigned int i = 0; i < nodes.size(); i++) {
+      for (size_t i = 0; i < nodes.size(); i++) {
 	if (node->id == nodes[i]->id) continue;
 	if (edgeExists(id, nodes[i]->id)) {
 	  res.push_back(nodes[i]->id);
@@ -332,7 +332,7 @@ namespace octomap {
     // file structure:    n | node_1 | ... | node_n | m | edge_1 | ... | edge_m
 
     // write nodes  ---------------------------------
-    unsigned int graph_size = this->size();
+    const uint64_t graph_size = this->size();
     if (graph_size) OCTOMAP_DEBUG("writing %d nodes to binary file...\n", graph_size);
     s.write((char*)&graph_size, sizeof(graph_size));
 
@@ -343,7 +343,7 @@ namespace octomap {
     if (graph_size) OCTOMAP_DEBUG("done.\n");
 
     // write edges  ---------------------------------
-    unsigned int num_edges = this->edges.size();
+    const uint64_t num_edges = this->edges.size();
     if (num_edges) OCTOMAP_DEBUG("writing %d edges to binary file...\n", num_edges);
     s.write((char*)&num_edges, sizeof(num_edges));
 
@@ -369,22 +369,22 @@ namespace octomap {
 
   std::istream& ScanGraph::readBinary(std::ifstream &s) {
     if (!s.is_open()){
-      OCTOMAP_ERROR_STR("Could not read from input filestream in ScanGraph::readBinary, exiting!");
-      exit(0);
+	  throw std::runtime_error("Could not read from input filestream in ScanGraph::readBinary, exiting!");
+      //exit(0);
     } else if (!s.good()){
       OCTOMAP_WARNING_STR("Input filestream not \"good\" in ScanGraph::readBinary");
     }
     this->clear();
 
     // read nodes  ---------------------------------
-    unsigned int graph_size = 0;
+    uint64_t graph_size = 0;
     s.read((char*)&graph_size, sizeof(graph_size));
     if (graph_size) OCTOMAP_DEBUG("reading %d nodes from binary file...\n", graph_size);
 
     if (graph_size > 0) {
       this->nodes.reserve(graph_size);
 
-      for (unsigned int i=0; i<graph_size; i++) {
+      for (uint64_t i=0; i<graph_size; i++) {
 
         ScanNode* node = new ScanNode();
         node->readBinary(s);
@@ -400,14 +400,14 @@ namespace octomap {
     if (graph_size) OCTOMAP_DEBUG("done.\n");
 
     // read edges  ---------------------------------
-    unsigned int num_edges = 0;
+    uint64_t num_edges = 0;
     s.read((char*)&num_edges, sizeof(num_edges));
     if (num_edges) OCTOMAP_DEBUG("reading %d edges from binary file...\n", num_edges);
 
     if (num_edges > 0) {
       this->edges.reserve(num_edges);
 
-      for (unsigned int i=0; i<num_edges; i++) {
+      for (uint64_t i=0; i<num_edges; i++) {
 
         ScanEdge* edge = new ScanEdge();
         edge->readBinary(s, *this);
@@ -510,18 +510,18 @@ namespace octomap {
 
   std::istream& ScanGraph::readEdgesASCII(std::istream &s) {
 
-    unsigned int num_edges = 0;
+    size_t num_edges = 0;
     s >> num_edges;
     OCTOMAP_DEBUG("Reading %d edges from ASCII file...\n", num_edges);
 
     if (num_edges > 0) {
 
-      for (unsigned int i=0; i<this->edges.size(); i++) delete edges[i];
+      for (size_t i=0; i<this->edges.size(); i++) delete edges[i];
       this->edges.clear();
 
       this->edges.reserve(num_edges);
 
-      for (unsigned int i=0; i<num_edges; i++) {
+      for (size_t i=0; i<num_edges; i++) {
 
         ScanEdge* edge = new ScanEdge();
         edge->readASCII(s, *this);
@@ -609,8 +609,8 @@ namespace octomap {
     }
   }
 
-  unsigned int ScanGraph::getNumPoints(unsigned int max_id) const {
-    unsigned int retval = 0;
+  size_t ScanGraph::getNumPoints(uint64_t max_id) const {
+    size_t retval = 0;
     
     for (ScanGraph::const_iterator it = this->begin(); it != this->end(); it++) {
       retval += (*it)->scan->size();

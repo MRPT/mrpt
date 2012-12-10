@@ -892,7 +892,7 @@ namespace octomap {
 
 
   template <class NODE,class I>
-  double OcTreeBaseImpl<NODE,I>::volume() {
+  double OcTreeBaseImpl<NODE,I>::volume() const  {
     double x,  y,  z;
     getMetricSize(x, y, z);
     return x*y*z;

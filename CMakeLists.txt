@@ -268,11 +268,6 @@ include(cmakemodules/script_detect_functions_headers.cmake REQUIRED)
 
 include(cmakemodules/script_declare_defines.cmake REQUIRED)  # Transform the variables MRPT_XXX="ON/OFF" to CMAKE_MRPT_XXX="1/0"
 
-# ------------------------------------
-#  Backward compatibility switches
-# ------------------------------------
-SET(MRPT_BACKCOMPATIB_08X OFF CACHE BOOL "API backward compatible with 0.8.X")
-
 include(cmakemodules/script_create_config_h.cmake REQUIRED)   # Build config.h
 include(cmakemodules/script_create_version_h.cmake REQUIRED)  # Build version.h
 

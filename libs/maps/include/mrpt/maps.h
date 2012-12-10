@@ -54,6 +54,7 @@
 #include <mrpt/slam/CSimplePointsMap.h>
 #include <mrpt/slam/CWeightedPointsMap.h>
 #include <mrpt/slam/CPointsMap.h>
+#include <mrpt/slam/COctoMap.h>
 
 //#include <mrpt/slam/PCL_adapters.h>  // NOTE: This file must be included from the user 
                                        // code only if he has already #include'd PCL headers.

@@ -68,7 +68,7 @@ namespace mrpt
 				of any type of "CObservation" objects into the metric map, thus
 				updating the map (doesn't matter if it is a 2D/3D grid or a points
 				map).
-			   <b>IMPORTANT</b>: Observations doesn't include any information about the
+			   <b>IMPORTANT</b>: Observations don't include any information about the
 				robot pose beliefs, just the raw observation and information about
 				the sensor pose relative to the robot mobile base coordinates origin.
 		 *
@@ -215,12 +215,6 @@ namespace mrpt
 			/** Destructor
 			  */
 			virtual ~CMetricMap();
-
-#ifdef MRPT_BACKCOMPATIB_08X	// For backward compatibility
-			typedef mrpt::utils::TMatchingPair   	TMatchingPair;
-			typedef mrpt::utils::TMatchingPairPtr   TMatchingPairPtr;
-			typedef mrpt::utils::TMatchingPairList 	TMatchingPairList;
-#endif
 
 			/** Computes the matchings between this and another 2D points map.
 			   This includes finding:

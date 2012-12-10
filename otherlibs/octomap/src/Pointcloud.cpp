@@ -310,7 +310,7 @@ namespace octomap {
 
   std::ostream& Pointcloud::writeBinary(std::ostream &s) const {
 
-    unsigned int pc_size = this->size();
+    size_t pc_size = this->size();
     OCTOMAP_DEBUG("Writing %d points to binary file...", pc_size);
     s.write((char*)&pc_size, sizeof(pc_size));
 

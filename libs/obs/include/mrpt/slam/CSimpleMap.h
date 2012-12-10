@@ -187,13 +187,6 @@ namespace slam
 
 	}; // End of class def.
 
-	// For compatibility with code < 0.9.0
-#if MRPT_BACKCOMPATIB_08X
-	typedef CSimpleMap		CSensFrameProbSequence;
-	typedef CSimpleMapPtr	CSensFrameProbSequencePtr;
-#endif
-
-
 	} // End of namespace
 } // End of namespace
 
