@@ -36,6 +36,7 @@
 #define MRPT_COctoMap_H
 
 #include <mrpt/slam/CMetricMap.h>
+#include <mrpt/utils/CLoadableOptions.h>
 
 #include <mrpt/maps/link_pragmas.h>
 
@@ -51,7 +52,7 @@ namespace mrpt
 
 		/** A three-dimensional probabilistic occupancy grid, implemented as an octo-tree with the "octomap" C++ library.
 		 *  This class represents a 3D map where each voxel only contains an "occupancy" property.
-		 * 
+		 *
 		 * As with any other mrpt::slam::CMetricMap, you can obtain a 3D representation of the map calling getAs3DObject()
 		 *
 		 * \sa CMetricMap
@@ -218,11 +219,11 @@ namespace mrpt
 			*/
 		virtual void  getAs3DObject( mrpt::opengl::CSetOfObjectsPtr	&outObj ) const;
 
-		/** @name Direct access to octomap library methods 
+		/** @name Direct access to octomap library methods
 		    @{ */
 
 		double getResolution() const;
-		unsigned int getTreeDepth () const; 
+		unsigned int getTreeDepth () const;
 		/// \return The number of nodes in the tree
 		size_t size() const;
 		/// \return Memory usage of the complete octree in bytes (may vary between architectures)
@@ -271,7 +272,7 @@ namespace mrpt
 
 		}; // End of class def.
 	} // End of namespace
-	
+
 } // End of namespace
 
 #endif

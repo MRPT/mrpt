@@ -96,14 +96,14 @@ namespace octomap {
 
     /// Writes the actual data, implemented in OccupancyOcTreeBase::writeBinaryData()
     virtual std::ostream& writeBinaryData(std::ostream &s) const = 0;
-    
+
     /**
      * Reads an OcTree from an input stream.
      * Existing nodes of the tree are deleted before the tree is read.
      * @return success of operation
      */
     bool readBinary(std::istream &s);
-    
+
     /**
      * Reads OcTree from a binary file.
      * Existing nodes of the tree are deleted before the tree is read.
@@ -230,7 +230,7 @@ namespace octomap {
   protected:
     /// Try to read the old binary format for conversion, will be removed in the future
     bool readBinaryLegacyHeader(std::istream &s, unsigned int& size, double& res);
-    
+
     // occupancy parameters of tree, stored in logodds:
     float clamping_thres_min;
     float clamping_thres_max;
@@ -241,7 +241,7 @@ namespace octomap {
     static const std::string binaryFileHeader;
   };
 
-}; // end namespace
+} // end namespace
 
 
 #endif

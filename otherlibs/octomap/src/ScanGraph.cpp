@@ -40,6 +40,7 @@
 #include <iomanip>
 #include <fstream>
 #include <sstream>
+#include <stdexcept>
 #include <stdlib.h>
 
 #include <octomap/math/Pose6D.h>
@@ -93,7 +94,7 @@ namespace octomap {
     uint64_t read_id;
     s >> read_id;
     if (read_id != this->id)
-      OCTOMAP_ERROR("ERROR while reading ScanNode pose from ASCII. id %d does not match real id %d.\n", read_id, this->id);
+      OCTOMAP_ERROR("ERROR while reading ScanNode pose from ASCII. id %d does not match real id %d.\n", static_cast<int>(read_id), static_cast<int>(this->id));
 
     this->pose.trans().read(s);
 
@@ -152,9 +153,9 @@ namespace octomap {
     s >> second_id;
 
     this->first = graph.getNodeByID(first_id);
-    if (this->first == NULL) OCTOMAP_ERROR("ERROR while reading ScanEdge. first node %d not found.\n", first_id);
+    if (this->first == NULL) OCTOMAP_ERROR("ERROR while reading ScanEdge. first node %d not found.\n", static_cast<int>(first_id));
     this->second = graph.getNodeByID(second_id);
-    if (this->second == NULL) OCTOMAP_ERROR("ERROR while reading ScanEdge. second node %d not found.\n", second_id);
+    if (this->second == NULL) OCTOMAP_ERROR("ERROR while reading ScanEdge. second node %d not found.\n", static_cast<int>(second_id));
 
     this->constraint.read(s);
     s >> weight;
@@ -321,7 +322,7 @@ namespace octomap {
     if (!binary_outfile.is_open()){
       OCTOMAP_ERROR_STR("Filestream to "<< filename << " not open, nothing written.");
       return false;
-    }    
+    }
     writeBinary(binary_outfile);
     binary_outfile.close();
     return true;
@@ -611,7 +612,7 @@ namespace octomap {
 
   size_t ScanGraph::getNumPoints(uint64_t max_id) const {
     size_t retval = 0;
-    
+
     for (ScanGraph::const_iterator it = this->begin(); it != this->end(); it++) {
       retval += (*it)->scan->size();
       if ((max_id > 0) && ((*it)->id == max_id)) break;

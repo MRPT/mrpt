@@ -1,0 +1,92 @@
+Index: MRPT_PATCH_002.patch
+===================================================================
+Index: include/octomap/AbstractOccupancyOcTree.h
+===================================================================
+--- include/octomap/AbstractOccupancyOcTree.h	(revision 3083)
++++ include/octomap/AbstractOccupancyOcTree.h	(working copy)
+@@ -96,14 +96,14 @@
+ 
+     /// Writes the actual data, implemented in OccupancyOcTreeBase::writeBinaryData()
+     virtual std::ostream& writeBinaryData(std::ostream &s) const = 0;
+-    
++
+     /**
+      * Reads an OcTree from an input stream.
+      * Existing nodes of the tree are deleted before the tree is read.
+      * @return success of operation
+      */
+     bool readBinary(std::istream &s);
+-    
++
+     /**
+      * Reads OcTree from a binary file.
+      * Existing nodes of the tree are deleted before the tree is read.
+@@ -230,7 +230,7 @@
+   protected:
+     /// Try to read the old binary format for conversion, will be removed in the future
+     bool readBinaryLegacyHeader(std::istream &s, unsigned int& size, double& res);
+-    
++
+     // occupancy parameters of tree, stored in logodds:
+     float clamping_thres_min;
+     float clamping_thres_max;
+@@ -241,7 +241,7 @@
+     static const std::string binaryFileHeader;
+   };
+ 
+-}; // end namespace
++} // end namespace
+ 
+ 
+ #endif
+Index: src/ScanGraph.cpp
+===================================================================
+--- src/ScanGraph.cpp	(revision 3083)
++++ src/ScanGraph.cpp	(working copy)
+@@ -40,6 +40,7 @@
+ #include <iomanip>
+ #include <fstream>
+ #include <sstream>
++#include <stdexcept>
+ #include <stdlib.h>
+ 
+ #include <octomap/math/Pose6D.h>
+@@ -93,7 +94,7 @@
+     uint64_t read_id;
+     s >> read_id;
+     if (read_id != this->id)
+-      OCTOMAP_ERROR("ERROR while reading ScanNode pose from ASCII. id %d does not match real id %d.\n", read_id, this->id);
++      OCTOMAP_ERROR("ERROR while reading ScanNode pose from ASCII. id %d does not match real id %d.\n", static_cast<int>(read_id), static_cast<int>(this->id));
+ 
+     this->pose.trans().read(s);
+ 
+@@ -152,9 +153,9 @@
+     s >> second_id;
+ 
+     this->first = graph.getNodeByID(first_id);
+-    if (this->first == NULL) OCTOMAP_ERROR("ERROR while reading ScanEdge. first node %d not found.\n", first_id);
++    if (this->first == NULL) OCTOMAP_ERROR("ERROR while reading ScanEdge. first node %d not found.\n", static_cast<int>(first_id));
+     this->second = graph.getNodeByID(second_id);
+-    if (this->second == NULL) OCTOMAP_ERROR("ERROR while reading ScanEdge. second node %d not found.\n", second_id);
++    if (this->second == NULL) OCTOMAP_ERROR("ERROR while reading ScanEdge. second node %d not found.\n", static_cast<int>(second_id));
+ 
+     this->constraint.read(s);
+     s >> weight;
+@@ -321,7 +322,7 @@
+     if (!binary_outfile.is_open()){
+       OCTOMAP_ERROR_STR("Filestream to "<< filename << " not open, nothing written.");
+       return false;
+-    }    
++    }
+     writeBinary(binary_outfile);
+     binary_outfile.close();
+     return true;
+@@ -611,7 +612,7 @@
+ 
+   size_t ScanGraph::getNumPoints(uint64_t max_id) const {
+     size_t retval = 0;
+-    
++
+     for (ScanGraph::const_iterator it = this->begin(); it != this->end(); it++) {
+       retval += (*it)->scan->size();
+       if ((max_id > 0) && ((*it)->id == max_id)) break;

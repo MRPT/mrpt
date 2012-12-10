@@ -36,6 +36,9 @@
 #include <mrpt/maps.h>  // Precompiled header
 
 #include <mrpt/slam/COctoMap.h>
+#include <mrpt/slam/CPointsMap.h>
+#include <mrpt/slam/CObservation2DRangeScan.h>
+#include <mrpt/slam/CObservation3DRangeScan.h>
 
 #include <octomap/octomap.h>
 
@@ -55,7 +58,7 @@ IMPLEMENTS_SERIALIZABLE(COctoMap, CMetricMap,mrpt::slam)
 /*---------------------------------------------------------------
 						Constructor
   ---------------------------------------------------------------*/
-COctoMap::COctoMap(const double resolution) : 
+COctoMap::COctoMap(const double resolution) :
 	m_octomap(NULL)
 {
 	this->allocOctomap(resolution);
@@ -172,7 +175,7 @@ bool COctoMap::internal_insertObservation(const CObservation *obs,const CPose3D 
 			scan.push_back(gx,gy,gz);
 		}
 
-		// Insert:		
+		// Insert:
 		OCTOMAP_PTR->insertScan(scan, sensorPt, insertionOptions.maxrange, insertionOptions.pruning);
 
 		return true;
@@ -394,42 +397,42 @@ double COctoMap::getResolution() const {
 unsigned int COctoMap::getTreeDepth() const {
 	return OCTOMAP_PTR_CONST->getTreeDepth();
 }
-size_t COctoMap::size() const { 
+size_t COctoMap::size() const {
 	return  OCTOMAP_PTR_CONST->size();
 }
-size_t COctoMap::memoryUsage() const { 
+size_t COctoMap::memoryUsage() const {
 	return  OCTOMAP_PTR_CONST->memoryUsage();
 }
-size_t COctoMap::memoryUsageNode() const { 
+size_t COctoMap::memoryUsageNode() const {
 	return  OCTOMAP_PTR_CONST->memoryUsageNode();
 }
-size_t COctoMap::memoryFullGrid() const { 
+size_t COctoMap::memoryFullGrid() const {
 	return  OCTOMAP_PTR_CONST->memoryFullGrid();
 }
-double COctoMap::volume() const { 
+double COctoMap::volume() const {
 	return OCTOMAP_PTR_CONST->volume();
 }
-void COctoMap::getMetricSize(double& x, double& y, double& z) { 
+void COctoMap::getMetricSize(double& x, double& y, double& z) {
 	return  OCTOMAP_PTR_CONST->getMetricSize(x,y,z);
 }
-void COctoMap::getMetricSize(double& x, double& y, double& z) const { 
+void COctoMap::getMetricSize(double& x, double& y, double& z) const {
 	return  OCTOMAP_PTR_CONST->getMetricSize(x,y,z);
 }
-void COctoMap::getMetricMin(double& x, double& y, double& z) { 
+void COctoMap::getMetricMin(double& x, double& y, double& z) {
 	return  OCTOMAP_PTR_CONST->getMetricMin(x,y,z);
 }
-void COctoMap::getMetricMin(double& x, double& y, double& z) const { 
+void COctoMap::getMetricMin(double& x, double& y, double& z) const {
 	return  OCTOMAP_PTR_CONST->getMetricMin(x,y,z);
 }
-void COctoMap::getMetricMax(double& x, double& y, double& z) { 
+void COctoMap::getMetricMax(double& x, double& y, double& z) {
 	return  OCTOMAP_PTR_CONST->getMetricMax(x,y,z);
 }
-void COctoMap::getMetricMax(double& x, double& y, double& z) const { 
+void COctoMap::getMetricMax(double& x, double& y, double& z) const {
 	return  OCTOMAP_PTR_CONST->getMetricMax(x,y,z);
 }
-size_t COctoMap::calcNumNodes() const { 
+size_t COctoMap::calcNumNodes() const {
 	return  OCTOMAP_PTR_CONST->calcNumNodes();
 }
-size_t COctoMap::getNumLeafNodes() const { 
+size_t COctoMap::getNumLeafNodes() const {
 	return  OCTOMAP_PTR_CONST->getNumLeafNodes();
 }
