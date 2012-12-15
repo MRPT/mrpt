@@ -37,6 +37,7 @@
 
 #include <mrpt/slam/CMetricMap.h>
 #include <mrpt/utils/CLoadableOptions.h>
+#include <mrpt/utils/safe_pointers.h>
 
 #include <mrpt/maps/link_pragmas.h>
 
@@ -54,6 +55,11 @@ namespace mrpt
 		 *  This class represents a 3D map where each voxel only contains an "occupancy" property.
 		 *
 		 * As with any other mrpt::slam::CMetricMap, you can obtain a 3D representation of the map calling getAs3DObject()
+		 *
+		 * The octomap library was presented in:
+		 *  - K. M. Wurm, A. Hornung, M. Bennewitz, C. Stachniss, and W. Burgard, 
+		 *     <i>"OctoMap: A Probabilistic, Flexible, and Compact 3D Map Representation for Robotic Systems"</i> 
+		 *     in Proc. of the ICRA 2010 Workshop on Best Practice in 3D Perception and Modeling for Mobile Manipulation, 2010. Software available at http://octomap.sf.net/.
 		 *
 		 * \sa CMetricMap
 	  	 * \ingroup mrpt_maps_grp
@@ -73,7 +79,11 @@ namespace mrpt
 		 struct MAPS_IMPEXP TInsertionOptions : public utils::CLoadableOptions
 		 {
 			/** Initilization of default parameters */
-			TInsertionOptions( );
+			TInsertionOptions( COctoMap &parent );
+
+			TInsertionOptions(); //!< Especial constructor, not attached to a real COctoMap object: used only in limited situations, since get*() methods don't work, etc.
+			TInsertionOptions & operator = (const TInsertionOptions &other);
+
 			/** See utils::CLoadableOptions */
 			void  loadFromConfigFile(const mrpt::utils::CConfigFileBase  &source,const std::string &section);
 			/** See utils::CLoadableOptions */
@@ -81,9 +91,54 @@ namespace mrpt
 
 			double maxrange;  //!< maximum range for how long individual beams are inserted (default -1: complete beam)
 			bool pruning;     //!< whether the tree is (losslessly) pruned after insertion (default: true)
+
+			/// (key name in .ini files: "occupancyThres") sets the threshold for occupancy (sensor model) (Default=0.5)
+			void setOccupancyThres(double prob);
+			/// (key name in .ini files: "probHit")sets the probablility for a "hit" (will be converted to logodds) - sensor model (Default=0.7)
+			void setProbHit(double prob);
+			/// (key name in .ini files: "probMiss")sets the probablility for a "miss" (will be converted to logodds) - sensor model (Default=0.4)
+			void setProbMiss(double prob);
+			/// (key name in .ini files: "clampingThresMin")sets the minimum threshold for occupancy clamping (sensor model) (Default=0.1192, -2 in log odds)
+			void setClampingThresMin(double thresProb);
+			/// (key name in .ini files: "clampingThresMax")sets the maximum threshold for occupancy clamping (sensor model) (Default=0.971, 3.5 in log odds)
+			void setClampingThresMax(double thresProb);
+
+			/// @return threshold (probability) for occupancy - sensor model
+			double getOccupancyThres() const;
+			/// @return threshold (logodds) for occupancy - sensor model
+			float getOccupancyThresLog() const;
+
+			/// @return probablility for a "hit" in the sensor model (probability)
+			double getProbHit() const;
+			/// @return probablility for a "hit" in the sensor model (logodds)
+			float getProbHitLog() const;
+			/// @return probablility for a "miss"  in the sensor model (probability)
+			double getProbMiss() const;
+			/// @return probablility for a "miss"  in the sensor model (logodds)
+			float getProbMissLog() const;
+
+			/// @return minimum threshold for occupancy clamping in the sensor model (probability)
+			double getClampingThresMin() const;
+			/// @return minimum threshold for occupancy clamping in the sensor model (logodds)
+			float getClampingThresMinLog() const;
+			/// @return maximum threshold for occupancy clamping in the sensor model (probability)
+			double getClampingThresMax() const;
+			/// @return maximum threshold for occupancy clamping in the sensor model (logodds)
+			float getClampingThresMaxLog() const;
+
+		private:
+			mrpt::utils::ignored_copy_ptr<COctoMap> m_parent;
+			
+			double occupancyThres; // sets the threshold for occupancy (sensor model) (Default=0.5)
+			double probHit; // sets the probablility for a "hit" (will be converted to logodds) - sensor model (Default=0.7)
+			double probMiss; // sets the probablility for a "miss" (will be converted to logodds) - sensor model (Default=0.4)
+			double clampingThresMin; // sets the minimum threshold for occupancy clamping (sensor model) (Default=0.1192, -2 in log odds)
+			double clampingThresMax; // sets the maximum threshold for occupancy clamping (sensor model) (Default=0.971, 3.5 in log odds)
 		 };
 
 		TInsertionOptions insertionOptions; //!< The options used when inserting observations in the map
+
+		friend struct mrpt::slam::COctoMap::TInsertionOptions;
 
 		 /** Options used when evaluating "computeObservationLikelihood"
 		  * \sa CObservation::computeObservationLikelihood
@@ -218,6 +273,14 @@ namespace mrpt
 		/** Returns a 3D object representing the map.
 			*/
 		virtual void  getAs3DObject( mrpt::opengl::CSetOfObjectsPtr	&outObj ) const;
+
+
+		/** Check whether the given point lies within the volume covered by the octomap (that is, whether it is "mapped") */
+		bool isPointWithinOctoMap(const float x,const float y,const float z) const;
+
+		/** Get the occupancy probability [0,1] of a point 
+		  * \return false if the point is not mapped, in which case the returned "prob" is undefined. */
+		bool getPointOccupancy(const float x,const float y,const float z, double &prob_occupancy) const;
 
 		/** @name Direct access to octomap library methods
 		    @{ */

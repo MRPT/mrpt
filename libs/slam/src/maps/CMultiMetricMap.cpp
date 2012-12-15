@@ -48,8 +48,6 @@ using namespace mrpt::utils::metaprogramming;
 IMPLEMENTS_SERIALIZABLE( CMultiMetricMap, CMetricMap, mrpt::slam )
 
 
-MRPT_TODO("integrate OctoMap!!")
-
 extern CStartUpClassesRegister  mrpt_slam_class_reg;
 const int dumm = mrpt_slam_class_reg.do_nothing(); // Avoid compiler removing this class in static linking
 
@@ -79,6 +77,7 @@ struct MapExecutor {
 
 		for_each( mmm.m_pointsMaps.begin(),mmm.m_pointsMaps.end(), op );
 		for_each( mmm.m_gridMaps.begin(),mmm.m_gridMaps.end(),  op );
+		for_each( mmm.m_octoMaps.begin(),mmm.m_octoMaps.end(),  op );
 		for_each( mmm.m_gasGridMaps.begin(),mmm.m_gasGridMaps.end(),  op );
 		for_each( mmm.m_wifiGridMaps.begin(),mmm.m_wifiGridMaps.end(),  op );
 		for_each( mmm.m_heightMaps.begin(),mmm.m_heightMaps.end(),  op );
@@ -99,6 +98,7 @@ struct MapExecutor {
 
 		op( mmm.m_pointsMaps );
 		op( mmm.m_gridMaps );
+		op( mmm.m_octoMaps );
 		op( mmm.m_gasGridMaps );
 		op( mmm.m_wifiGridMaps );
 		op( mmm.m_heightMaps );
@@ -110,6 +110,7 @@ struct MapExecutor {
 	static void copyAll(const CMultiMetricMap &other, CMultiMetricMap &mmm) {
 		mmm.m_pointsMaps = other.m_pointsMaps;
 		mmm.m_gridMaps = other.m_gridMaps;
+		mmm.m_octoMaps = other.m_octoMaps;
 		mmm.m_gasGridMaps = other.m_gasGridMaps;
 		mmm.m_wifiGridMaps = other.m_wifiGridMaps;
 		mmm.m_heightMaps = other.m_heightMaps;
@@ -143,6 +144,10 @@ struct MapTraits
 	inline bool isUsedLik(COccupancyGridMap2DPtr &ptr) {
 		return (ptr.present() && (mmm.options.likelihoodMapSelection==CMultiMetricMap::TOptions::mapFuseAll ||
 				mmm.options.likelihoodMapSelection==CMultiMetricMap::TOptions::mapGrid ) );
+	}
+	inline bool isUsedLik(COctoMapPtr &ptr) {
+		return (ptr.present() && (mmm.options.likelihoodMapSelection==CMultiMetricMap::TOptions::mapFuseAll ||
+				mmm.options.likelihoodMapSelection==CMultiMetricMap::TOptions::mapOctoMaps ) );
 	}
 	inline bool isUsedLik(CGasConcentrationGridMap2DPtr &ptr) {
 		return (ptr.present() && (mmm.options.likelihoodMapSelection==CMultiMetricMap::TOptions::mapFuseAll ||
@@ -180,6 +185,7 @@ struct MapTraits
 	// --------------------
 	inline bool isUsedInsert(CSimplePointsMapPtr &ptr) { return ptr.present() && mmm.options.enableInsertion_pointsMap; }
 	inline bool isUsedInsert(COccupancyGridMap2DPtr &ptr) { return ptr.present() && mmm.options.enableInsertion_gridMaps; }
+	inline bool isUsedInsert(COctoMapPtr &ptr) { return ptr.present() && mmm.options.enableInsertion_octoMaps; }
 	inline bool isUsedInsert(CGasConcentrationGridMap2DPtr &ptr) { return ptr.present() && mmm.options.enableInsertion_gasGridMaps; }
 	inline bool isUsedInsert(CWirelessPowerGridMap2DPtr &ptr) { return ptr.present() && mmm.options.enableInsertion_wifiGridMaps; }
 	inline bool isUsedInsert(CHeightGridMap2DPtr &ptr) { return ptr.present() && mmm.options.enableInsertion_heightMaps; }
@@ -234,6 +240,7 @@ struct MapCanComputeLikelihood  : public MapTraits
 
 }; // end of MapCanComputeLikelihood
 
+
 struct MapInsertObservation : public MapTraits
 {
 	const CObservation    * obs;
@@ -258,6 +265,31 @@ struct MapInsertObservation : public MapTraits
 	}
 }; // end of MapInsertObservation
 
+struct MapGetAs3DObject
+{
+	mrpt::opengl::CSetOfObjectsPtr & obj_gl;
+
+	MapGetAs3DObject(mrpt::opengl::CSetOfObjectsPtr &_obj_gl) : obj_gl(_obj_gl)
+	{
+	}
+
+	template <typename PTR>
+	inline void operator()(PTR &ptr) {
+		ptr->getAs3DObject(obj_gl);
+	}
+}; // end of MapGetAs3DObject
+
+struct MapAuxPFCleanup
+{
+	MapAuxPFCleanup() { }
+
+	template <typename PTR>
+	inline void operator()(PTR &ptr) {
+		ptr->auxParticleFilterCleanUp();
+	}
+}; // end of MapAuxPFCleanup
+
+
 struct MapIsEmpty
 {
 	bool & is_empty;
@@ -272,7 +304,7 @@ struct MapIsEmpty
 		if (ptr.present())
 			is_empty = is_empty && ptr->isEmpty();
 	}
-}; // end of MapInsertObservation
+}; // end of MapIsEmpty
 
 // ------------------- End of map-operations helper templates -------------------
 
@@ -348,6 +380,22 @@ void  CMultiMetricMap::setListOfMaps(
 				newGridmap->likelihoodOptions= it->occupancyGridMap2D_options.likelihoodOpts;
 
 				m_gridMaps.push_back( newGridmap );
+			}
+			else
+			if ( it->metricMapClassType == CLASS_ID(COctoMap) )
+			{
+				// -------------------------------------------------------
+				//						OCTO MAPS
+				// -------------------------------------------------------
+				COctoMapPtr newOctomap = COctoMapPtr( new COctoMap(
+					it->octoMap_options.resolution ) );
+
+				newOctomap->m_disableSaveAs3DObject = it->m_disableSaveAs3DObject;
+
+				newOctomap->insertionOptions = it->octoMap_options.insertionOpts;
+				newOctomap->likelihoodOptions= it->octoMap_options.likelihoodOpts;
+
+				m_octoMaps.push_back( newOctomap );
 			}
 			else
 			if ( it->metricMapClassType == CLASS_ID(CGasConcentrationGridMap2D) )
@@ -588,7 +636,7 @@ void  CMultiMetricMap::deleteAllMaps( )
 void  CMultiMetricMap::writeToStream(CStream &out, int *version) const
 {
 	if (version)
-		*version = 8;
+		*version = 9;
 	else
 	{
 		// Version 5: The options:
@@ -599,7 +647,8 @@ void  CMultiMetricMap::writeToStream(CStream &out, int *version) const
 			<< options.enableInsertion_wifiGridMaps
 			<< options.enableInsertion_beaconMap
 			<< options.enableInsertion_heightMaps	// Added in v6
-			<< options.enableInsertion_reflectivityMaps; // Added in v8
+			<< options.enableInsertion_reflectivityMaps // Added in v8
+			<< options.enableInsertion_octoMaps; // Added in v9
 
 		// The data
 		uint32_t	i,n = static_cast<uint32_t>(m_gridMaps.size());
@@ -608,6 +657,12 @@ void  CMultiMetricMap::writeToStream(CStream &out, int *version) const
 		// ----------------------
 		out << n;
 		for (i=0;i<n;i++)	out << *m_gridMaps[i];
+
+		// OctoMaps: (Added in v9)
+		// --------------------
+		n = m_octoMaps.size();
+		out << n;
+		for (i=0;i<n;i++)	out << *m_octoMaps[i];
 
 		// Points maps:
 		// ----------------------
@@ -677,6 +732,7 @@ void  CMultiMetricMap::readFromStream(CStream &in, int version)
 	case 6:
 	case 7:
 	case 8:
+	case 9:
 		{
 			uint32_t  n;
 
@@ -698,6 +754,9 @@ void  CMultiMetricMap::readFromStream(CStream &in, int version)
 					in >> options.enableInsertion_reflectivityMaps;
 				else options.enableInsertion_reflectivityMaps = true;
 
+				if (version>=9)
+					in >> options.enableInsertion_octoMaps;
+				else options.enableInsertion_octoMaps = true;			
 			}
 			else
 			{ } // Default!
@@ -721,6 +780,19 @@ void  CMultiMetricMap::readFromStream(CStream &in, int version)
 			// Load from stream:
 			m_gridMaps.resize(n);
 			for_each( m_gridMaps.begin(), m_gridMaps.end(), ObjectReadFromStream(&in) );
+
+			// Octomaps:
+			// ----------------------
+			if (version>=9)
+						in >> n;
+			else		n = 0;			// Compatibility: Previously there were no such maps!
+
+			// Free previous maps:
+			m_octoMaps.clear();
+
+			// Load from stream:
+			m_octoMaps.resize(n);
+			for_each( m_octoMaps.begin(), m_octoMaps.end(), ObjectReadFromStream(&in) );
 
 			// Points maps:
 			// ----------------------
@@ -1059,6 +1131,17 @@ TMetricMapInitializer::TOccGridMap2DOptions::TOccGridMap2DOptions() :
 }
 
 /*---------------------------------------------------------------
+					TOctoMapOptions
+ ---------------------------------------------------------------*/
+TMetricMapInitializer::TOctoMapOptions::TOctoMapOptions() :
+	resolution(0.10),
+	insertionOpts(),
+	likelihoodOpts()
+{
+}
+
+
+/*---------------------------------------------------------------
 					CPointsMapOptions
  ---------------------------------------------------------------*/
 TMetricMapInitializer::CPointsMapOptions::CPointsMapOptions() :
@@ -1180,6 +1263,17 @@ void  CMultiMetricMap::saveMetricMapRepresentationToFile(
 		{
 			std::string		fil( filNamePrefix );
 			fil += format("_gridmap_no%02u",idx);
+			(*it)->saveMetricMapRepresentationToFile( fil );
+		}
+	}
+
+	// octo maps:
+	{
+		std::deque<COctoMapPtr>::const_iterator	it;
+		for (idx=0,it = m_octoMaps.begin();it!=m_octoMaps.end();it++,idx++)
+		{
+			std::string		fil( filNamePrefix );
+			fil += format("_octomap_no%02u",idx);
 			(*it)->saveMetricMapRepresentationToFile( fil );
 		}
 	}
@@ -1309,6 +1403,30 @@ void  TSetOfMetricMapInitializers::loadFromConfigFile(
 
 		// [<sectionName>+"_occupancyGrid_##_likelihoodOpts"]
 		init.occupancyGridMap2D_options.likelihoodOpts.loadFromConfigFile(ini,format("%s_occupancyGrid_%02u_likelihoodOpts",sectionName.c_str(),i));
+
+		// Add the map and its params to the list of "to-create":
+		this->push_back(init);
+	} // end for i
+
+
+	n = ini.read_int(sectionName,"octoMap_count",0);
+	for (unsigned int i=0;i<n;i++)
+	{
+		TMetricMapInitializer	init;
+
+		init.metricMapClassType					= CLASS_ID( COctoMap );
+
+		// [<sectionName>+"_octoMap_##_creationOpts"]
+		subSectName = format("%s_octoMap_%02u_creationOpts",sectionName.c_str(),i);
+
+		init.m_disableSaveAs3DObject = ini.read_bool(subSectName,"disableSaveAs3DObject",false);
+		init.octoMap_options.resolution = ini.read_float(subSectName,"resolution",init.octoMap_options.resolution);
+
+		// [<sectionName>+"_octoMap_##_insertOpts"]
+		init.occupancyGridMap2D_options.insertionOpts.loadFromConfigFile(ini,format("%s_octoMap_%02u_insertOpts",sectionName.c_str(),i));
+
+		// [<sectionName>+"_octoMap_##_likelihoodOpts"]
+		init.occupancyGridMap2D_options.likelihoodOpts.loadFromConfigFile(ini,format("%s_octoMap_%02u_likelihoodOpts",sectionName.c_str(),i));
 
 		// Add the map and its params to the list of "to-create":
 		this->push_back(init);
@@ -1554,6 +1672,7 @@ void  TSetOfMetricMapInitializers::loadFromConfigFile(
 	MRPT_LOAD_HERE_CONFIG_VAR(enableInsertion_pointsMap,bool,	options.enableInsertion_pointsMap,		ini,sectionName);
 	MRPT_LOAD_HERE_CONFIG_VAR(enableInsertion_landmarksMap,bool, options.enableInsertion_landmarksMap,	ini,sectionName);
 	MRPT_LOAD_HERE_CONFIG_VAR(enableInsertion_gridMaps,bool,		options.enableInsertion_gridMaps,		ini,sectionName);
+	MRPT_LOAD_HERE_CONFIG_VAR(enableInsertion_octoMaps,bool,		options.enableInsertion_octoMaps,		ini,sectionName);
 	MRPT_LOAD_HERE_CONFIG_VAR(enableInsertion_gasGridMaps,bool,	options.enableInsertion_gasGridMaps,	ini,sectionName);
 	MRPT_LOAD_HERE_CONFIG_VAR(enableInsertion_wifiGridMaps,bool,	options.enableInsertion_wifiGridMaps,	ini,sectionName);
 	MRPT_LOAD_HERE_CONFIG_VAR(enableInsertion_beaconMap,bool,	options.enableInsertion_beaconMap,		ini,sectionName);
@@ -1583,6 +1702,7 @@ void  TSetOfMetricMapInitializers::dumpToTextStream(CStream	&out) const
 	LOADABLEOPTS_DUMP_VAR(options.enableInsertion_landmarksMap		, bool)
 	LOADABLEOPTS_DUMP_VAR(options.enableInsertion_beaconMap		, bool)
 	LOADABLEOPTS_DUMP_VAR(options.enableInsertion_gridMaps		, bool)
+	LOADABLEOPTS_DUMP_VAR(options.enableInsertion_octoMaps		, bool)
 	LOADABLEOPTS_DUMP_VAR(options.enableInsertion_gasGridMaps		, bool)
 	LOADABLEOPTS_DUMP_VAR(options.enableInsertion_wifiGridMaps		, bool)
 	LOADABLEOPTS_DUMP_VAR(options.enableInsertion_reflectivityMaps		, bool)
@@ -1710,6 +1830,14 @@ void  TSetOfMetricMapInitializers::dumpToTextStream(CStream	&out) const
 			it->weightedPointsMapOptions_options.likelihoodOpts.dumpToTextStream(out);
 		}
 		else
+			if (it->metricMapClassType==CLASS_ID(COctoMap))
+		{
+			out.printf("m_disableSaveAs3DObject                 = %s\n",it->m_disableSaveAs3DObject ? "true":"false");
+
+			it->octoMap_options.insertionOpts.dumpToTextStream(out);
+			it->octoMap_options.likelihoodOpts.dumpToTextStream(out);
+		}
+		else
 		{
 			THROW_EXCEPTION_CUSTOM_MSG1("Unknown class!: '%s'",it->metricMapClassType->className);
 		}
@@ -1725,61 +1853,8 @@ void  TSetOfMetricMapInitializers::dumpToTextStream(CStream	&out) const
 void  CMultiMetricMap::getAs3DObject( mrpt::opengl::CSetOfObjectsPtr	&outObj ) const
 {
 	MRPT_START
-
-	// Points maps:
-	{
-		std::deque<CSimplePointsMapPtr>::const_iterator	it;
-		for (it = m_pointsMaps.begin();it!=m_pointsMaps.end();it++)
-			(*it)->getAs3DObject( outObj );
-	}
-
-	// grid maps:
-	{
-		std::deque<COccupancyGridMap2DPtr>::const_iterator	it;
-		for (it = m_gridMaps.begin();it!=m_gridMaps.end();it++)
-			(*it)->getAs3DObject( outObj );
-	}
-
-	// Gas grids maps:
-	{
-		std::deque<CGasConcentrationGridMap2DPtr>::const_iterator	it;
-		for (it = m_gasGridMaps.begin();it!=m_gasGridMaps.end();it++)
-			(*it)->getAs3DObject( outObj );
-	}
-
-	// Wifi grids maps:
-	{
-		std::deque<CWirelessPowerGridMap2DPtr>::const_iterator	it;
-		for (it = m_wifiGridMaps.begin();it!=m_wifiGridMaps.end();it++)
-			(*it)->getAs3DObject( outObj );
-	}
-
-	// Landmarks maps:
-	if (m_landmarksMap.present())
-		m_landmarksMap->getAs3DObject( outObj );
-
-	// Landmark SOG maps:
-	if (m_beaconMap.present())
-		m_beaconMap->getAs3DObject( outObj );
-
-	// Height grids maps:
-	{
-		std::deque<CHeightGridMap2DPtr>::const_iterator	it;
-		for (it = m_heightMaps.begin();it!=m_heightMaps.end();it++)
-			(*it)->getAs3DObject( outObj );
-	}
-
-	// Reflexivity grids maps:
-	{
-		std::deque<CReflectivityGridMap2DPtr>::const_iterator	it;
-		for (it = m_reflectivityMaps.begin();it!=m_reflectivityMaps.end();it++)
-			(*it)->getAs3DObject( outObj );
-	}
-
-	// Colour Maps:
-	if (m_colourPointsMap.present())
-		m_colourPointsMap->getAs3DObject( outObj );
-
+	MapGetAs3DObject op_get_3D(outObj);
+	MapExecutor::run(*this,op_get_3D);
 	MRPT_END
 }
 
@@ -1848,43 +1923,8 @@ float  CMultiMetricMap::compute3DMatchingRatio(
 void  CMultiMetricMap::auxParticleFilterCleanUp()
 {
 	MRPT_START
-
-	// grid maps:
-	{
-		std::deque<COccupancyGridMap2DPtr>::iterator	it;
-		for (it = m_gridMaps.begin();it!=m_gridMaps.end();it++)
-			(*it)->auxParticleFilterCleanUp( );
-	}
-
-	// Gas grids maps:
-	{
-		std::deque<CGasConcentrationGridMap2DPtr>::iterator	it;
-		for (it = m_gasGridMaps.begin();it!=m_gasGridMaps.end();it++)
-			(*it)->auxParticleFilterCleanUp( );
-	}
-
-	// Wifi grids maps:
-	{
-		std::deque<CWirelessPowerGridMap2DPtr>::iterator	it;
-		for (it = m_wifiGridMaps.begin();it!=m_wifiGridMaps.end();it++)
-			(*it)->auxParticleFilterCleanUp( );
-	}
-
-	// Points maps:
-	{
-		std::deque<CSimplePointsMapPtr>::iterator	it;
-		for (it = m_pointsMaps.begin();it!=m_pointsMaps.end();it++)
-			(*it)->auxParticleFilterCleanUp( );
-	}
-
-	// Landmarks maps:
-	if (m_landmarksMap.present())
-		m_landmarksMap->auxParticleFilterCleanUp( );
-
-	// Landmark SOG maps:
-	if (m_beaconMap.present())
-		m_beaconMap->auxParticleFilterCleanUp( );
-
+	MapAuxPFCleanup op_cleanup;
+	MapExecutor::run(*this,op_cleanup);
 	MRPT_END
 }
 
@@ -1901,6 +1941,7 @@ void  CMultiMetricMap::TOptions::loadFromConfigFile(
 	MRPT_LOAD_CONFIG_VAR(enableInsertion_pointsMap, bool,  source, section );
 	MRPT_LOAD_CONFIG_VAR(enableInsertion_landmarksMap, bool,  source, section );
 	MRPT_LOAD_CONFIG_VAR(enableInsertion_gridMaps, bool,  source, section );
+	MRPT_LOAD_CONFIG_VAR(enableInsertion_octoMaps, bool,  source, section );
 	MRPT_LOAD_CONFIG_VAR(enableInsertion_gasGridMaps, bool,  source, section );
 	MRPT_LOAD_CONFIG_VAR(enableInsertion_wifiGridMaps, bool,  source, section );
 	MRPT_LOAD_CONFIG_VAR(enableInsertion_beaconMap, bool,  source, section );
@@ -1920,6 +1961,7 @@ void  CMultiMetricMap::TOptions::dumpToTextStream(CStream	&out) const
 	out.printf("enableInsertion_pointsMap               = %c\n",	enableInsertion_pointsMap ? 'Y':'N');
 	out.printf("enableInsertion_landmarksMap            = %c\n",	enableInsertion_landmarksMap ? 'Y':'N');
 	out.printf("enableInsertion_gridMaps                = %c\n",	enableInsertion_gridMaps ? 'Y':'N');
+	out.printf("enableInsertion_octoMaps                = %c\n",	enableInsertion_octoMaps ? 'Y':'N');
 	out.printf("enableInsertion_gasGridMaps             = %c\n",	enableInsertion_gasGridMaps ? 'Y':'N');
 	out.printf("enableInsertion_wifiGridMaps             = %c\n",	enableInsertion_gasGridMaps ? 'Y':'N');
 	out.printf("enableInsertion_beaconMap               = %c\n",	enableInsertion_beaconMap ? 'Y':'N');

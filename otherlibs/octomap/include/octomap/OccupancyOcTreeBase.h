@@ -93,6 +93,10 @@ namespace octomap {
     virtual void insertScan(const Pointcloud& scan, const octomap::point3d& sensor_origin,
                     double maxrange=-1., bool pruning=true, bool lazy_eval = false);
 
+	template <class SCAN>
+	void insertScan_templ(const SCAN& scan, const octomap::point3d& sensor_origin,
+                    double maxrange=-1., bool pruning=true, bool lazy_eval = false);
+
      /**
      * Integrate a 3d scan, transform scan before tree update
      *
@@ -349,6 +353,18 @@ namespace octomap {
      * @param maxrange maximum range for raycasting (-1: unlimited)
      */
     void computeUpdate(const Pointcloud& scan, const octomap::point3d& origin,
+                       KeySet& free_cells,
+                       KeySet& occupied_cells,
+                       double maxrange);
+
+	template <class POINTCLOUD>
+	void computeUpdate_templ(const POINTCLOUD& scan, const octomap::point3d& origin,
+                       KeySet& free_cells,
+                       KeySet& occupied_cells,
+                       double maxrange);
+
+
+	inline void computeUpdate_onePoint(const point3d& p, const octomap::point3d& origin,
                        KeySet& free_cells,
                        KeySet& occupied_cells,
                        double maxrange);

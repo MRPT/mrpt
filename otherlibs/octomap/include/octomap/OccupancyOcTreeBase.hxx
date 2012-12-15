@@ -104,6 +104,26 @@ namespace octomap {
     if (pruning) this->prune();
   } 
 
+  template <class NODE>
+  template <class SCAN>
+  void OccupancyOcTreeBase<NODE>::insertScan_templ(const SCAN& scan, const octomap::point3d& sensor_origin, 
+                                             double maxrange, bool pruning, bool lazy_eval) {
+
+    KeySet free_cells, occupied_cells;
+    computeUpdate(scan, sensor_origin, free_cells, occupied_cells, maxrange);    
+
+    // insert data into tree  -----------------------
+    for (KeySet::iterator it = free_cells.begin(); it != free_cells.end(); ++it) {
+      updateNode(*it, false, lazy_eval);
+    }
+    for (KeySet::iterator it = occupied_cells.begin(); it != occupied_cells.end(); ++it) {
+      updateNode(*it, true, lazy_eval);
+    }
+
+    // TODO: does pruning make sense if we used "lazy_eval"?
+    if (pruning) this->prune();
+  } 
+
   // performs transformation to data and sensor origin first
   template <class NODE>
   void OccupancyOcTreeBase<NODE>::insertScan(const Pointcloud& pc, const point3d& sensor_origin, const pose6d& frame_origin, 
@@ -132,68 +152,97 @@ namespace octomap {
   }
 
 
+
+  template <class NODE>
+  inline void OccupancyOcTreeBase<NODE>::computeUpdate_onePoint(const point3d& p, const octomap::point3d& origin,
+                    KeySet& free_cells, KeySet& occupied_cells, double maxrange)
+  {
+    if (!use_bbx_limit) {
+    // -------------- no BBX specified ---------------
+    if ((maxrange < 0.0) || ((p - origin).norm() <= maxrange) ) { // is not maxrange meas.
+        // free cells
+        if (this->computeRayKeys(origin, p, this->keyray)){
+        free_cells.insert(this->keyray.begin(), this->keyray.end());
+        }
+        // occupied endpoint
+        OcTreeKey key;
+        if (this->coordToKeyChecked(p, key))
+        occupied_cells.insert(key);
+    } // end if NOT maxrange
+
+    else { // user set a maxrange and this is reached
+        point3d direction = (p - origin).normalized ();
+        point3d new_end = origin + direction * (float) maxrange;
+        if (this->computeRayKeys(origin, new_end, this->keyray)){
+        free_cells.insert(this->keyray.begin(), this->keyray.end());
+        }
+    } // end if maxrange
+    }
+    // --- update limited by user specified BBX  -----
+    else {
+    // endpoint in bbx and not maxrange?
+    if ( inBBX(p) && ((maxrange < 0.0) || ((p - origin).norm () <= maxrange) ) )  {
+
+        // occupied endpoint
+        OcTreeKey key;
+        if (this->coordToKeyChecked(p, key))
+        occupied_cells.insert(key);
+
+        // update freespace, break as soon as bbx limit is reached
+        if (this->computeRayKeys(origin, p, this->keyray)){
+        for(KeyRay::reverse_iterator rit=this->keyray.rbegin(); rit != this->keyray.rend(); rit++) {
+            if (inBBX(*rit)) {
+            free_cells.insert(*rit);
+            }
+            else break;
+        }
+        } // end if compute ray
+    } // end if in BBX and not maxrange
+    } // end bbx case
+  }
+
+	template <class NODE>
+	template <class POINTCLOUD>
+	void OccupancyOcTreeBase<NODE>::computeUpdate_templ( const POINTCLOUD& scan, const octomap::point3d& origin, KeySet& free_cells, KeySet& occupied_cells, double maxrange)
+	{
+		const size_t N = scan.size();
+
+		const std::vector<float> &xs = scan.getPointsBufferRef_x();
+		const std::vector<float> &ys = scan.getPointsBufferRef_y();
+		const std::vector<float> &zs = scan.getPointsBufferRef_z();
+
+		for (size_t i=0;i<N;i++)
+		{
+			const point3d p(xs[i],ys[i],zs[i]);
+			computeUpdate_onePoint(p,origin,free_cells,occupied_cells,maxrange);
+		}
+		// prefer occupied cells over free ones (and make sets disjunct)
+		for(KeySet::iterator it = free_cells.begin(), end=free_cells.end(); it!= end; )
+		{
+			if (occupied_cells.find(*it) != occupied_cells.end())
+			     it = free_cells.erase(it);
+			else ++it;
+		}
+	}
+
   template <class NODE>
   void OccupancyOcTreeBase<NODE>::computeUpdate(const Pointcloud& scan, const octomap::point3d& origin,
                                                 KeySet& free_cells, KeySet& occupied_cells,
-                                                double maxrange) {
-
+                                                double maxrange) 
+  {
     //#pragma omp parallel private (local_key_ray, point_it) 
     for (Pointcloud::const_iterator point_it = scan.begin(); point_it != scan.end(); point_it++) {
       const point3d& p = *point_it;
-      if (!use_bbx_limit) {
-        // -------------- no BBX specified ---------------
-        if ((maxrange < 0.0) || ((p - origin).norm() <= maxrange) ) { // is not maxrange meas.
-          // free cells
-          if (this->computeRayKeys(origin, p, this->keyray)){
-            free_cells.insert(this->keyray.begin(), this->keyray.end());
-          }
-          // occupied endpoint
-          OcTreeKey key;
-          if (this->coordToKeyChecked(p, key))
-            occupied_cells.insert(key);
-        } // end if NOT maxrange
-
-        else { // user set a maxrange and this is reached
-          point3d direction = (p - origin).normalized ();
-          point3d new_end = origin + direction * (float) maxrange;
-          if (this->computeRayKeys(origin, new_end, this->keyray)){
-            free_cells.insert(this->keyray.begin(), this->keyray.end());
-          }
-        } // end if maxrange
-      }
-
-      // --- update limited by user specified BBX  -----
-      else {
-        // endpoint in bbx and not maxrange?
-        if ( inBBX(p) && ((maxrange < 0.0) || ((p - origin).norm () <= maxrange) ) )  {
-
-          // occupied endpoint
-          OcTreeKey key;
-          if (this->coordToKeyChecked(p, key))
-            occupied_cells.insert(key);
-
-          // update freespace, break as soon as bbx limit is reached
-          if (this->computeRayKeys(origin, p, this->keyray)){
-            for(KeyRay::reverse_iterator rit=this->keyray.rbegin(); rit != this->keyray.rend(); rit++) {
-              if (inBBX(*rit)) {
-                free_cells.insert(*rit);
-              }
-              else break;
-            }
-          } // end if compute ray
-        } // end if in BBX and not maxrange
-      } // end bbx case
-
-    } // end for all points
-
-    // prefer occupied cells over free ones (and make sets disjunct)
-    for(KeySet::iterator it = free_cells.begin(), end=free_cells.end(); it!= end; ){
-      if (occupied_cells.find(*it) != occupied_cells.end()){
-        it = free_cells.erase(it);
-      } else {
-        ++it;
-      }
+	  computeUpdate_onePoint(p,origin,free_cells,occupied_cells,maxrange);
     }
+	// prefer occupied cells over free ones (and make sets disjunct)
+	for(KeySet::iterator it = free_cells.begin(), end=free_cells.end(); it!= end; ){
+		if (occupied_cells.find(*it) != occupied_cells.end()){
+		it = free_cells.erase(it);
+		} else {
+		++it;
+		}
+	}
   }
 
   template <class NODE>

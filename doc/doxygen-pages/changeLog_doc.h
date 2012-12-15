@@ -57,6 +57,7 @@
 	- New classes:
 		- [mrpt-base]
 			- mrpt::math::MatrixBlockSparseCols, a templated column-indexed efficient storage of block-sparse Jacobian or Hessian matrices, together with other arbitrary information - <a href="http://code.google.com/p/mrpt/source/detail?r=2995" >r2995</a>
+			- mrpt::utils::ignored_copy_ptr<>
 		- [mrpt-obs]
 			- mrpt::slam::CObservationWindSensor - <a href="http://code.google.com/p/mrpt/source/detail?r=3050" >r3050</a>
 	- Changes in libraries:
@@ -64,7 +65,7 @@
 			- [mrpt-bayes]
 			- [mrpt-graphs]
 			- [mrpt-graphslam]
-		- Integration of the Octomap C++ library (new BSD License) by Kai M. Wurm et al.: <a href="http://code.google.com/p/mrpt/source/detail?r=3081" >r3081</a>, <a href="http://code.google.com/p/mrpt/source/detail?r=3083" >r3083</a>, <a href="http://code.google.com/p/mrpt/source/detail?r=3084" >r3084</a>
+		- Integration of the Octomap C++ library (new BSD License) by Kai M. Wurm et al.: <a href="http://code.google.com/p/mrpt/source/detail?r=3081" >r3081</a>, <a href="http://code.google.com/p/mrpt/source/detail?r=3083" >r3083</a>, <a href="http://code.google.com/p/mrpt/source/detail?r=3084" >r3084</a>, <a href="http://code.google.com/p/mrpt/source/detail?r=3086" >r3086</a>
 			- ...
 	- Changes in classes:
 		- [mrpt-base]

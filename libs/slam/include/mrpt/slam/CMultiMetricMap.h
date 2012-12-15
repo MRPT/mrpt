@@ -36,6 +36,7 @@
 #define CMultiMetricMap_H
 
 #include <mrpt/slam/COccupancyGridMap2D.h>
+#include <mrpt/slam/COctoMap.h>
 #include <mrpt/slam/CGasConcentrationGridMap2D.h>
 #include <mrpt/slam/CWirelessPowerGridMap2D.h>
 #include <mrpt/slam/CHeightGridMap2D.h>
@@ -61,13 +62,14 @@ namespace slam
 	DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CMultiMetricMap , CMetricMap, SLAM_IMPEXP )
 
 	/** This class stores any customizable set of metric maps.
-	 *    The internal metric maps can be accessed directly by the user.
-	 *    If some kind of map is not desired, it can be just ignored, but if this fact is specified in the
-	 *    "CMultiMetricMap::mapsUsage" member some methods (as the observation insertion) will be more
-	 *    efficient since it will be invoked on desired maps only.<br><br>
-	 *  <b>Currently these metric maps are supported for being kept internally:</b>:
+	 *  The internal metric maps can be accessed directly by the user as smart pointers. 
+	 *   The intended utility of this container is to operate on several maps simultaneously: update them by inserting observations, 
+	 *    evaluate the likelihood of one observation by fusing (multiplying) the likelihoods over the different maps, etc.
+	 *
+	 *  <b>All these kinds of metric maps can be kept in a multi-metric map:</b>:
 	 *		- mrpt::slam::CPointsMap: For laser 2D range scans, and posibly for IR ranges,... (It keeps the full 3D structure of scans)
 	 *		- mrpt::slam::COccupancyGridMap2D: Exclusively for 2D, <b>horizontal</b>  laser range scans, at different altitudes.
+	 *		- mrpt::slam::COctoMap: For 3D occupancy grids of variable resolution, with octrees (based on the library "octomap").
 	 *		- mrpt::slam::CLandmarksMap: For visual landmarks,etc...
 	 *		- mrpt::slam::CGasConcentrationGridMap2D: For gas concentration maps.
 	 *		- mrpt::slam::CWirelessPowerGridMap2D: For wifi power maps.
@@ -77,9 +79,9 @@ namespace slam
 	 *		- mrpt::slam::CColouredPointsMap: For point map with color.
 	 *		- mrpt::slam::CWeightedPointsMap: For point map with weights (capable of "fusing").
 	 *
-	 *  See CMultiMetricMap::setListOfMaps() for the method for initializing this class, and also
-	 *   see TSetOfMetricMapInitializers::loadFromConfigFile for a template of ".ini"-like configuration
-	 *   file that can be used to define what maps to create and all their parameters.
+	 *  See CMultiMetricMap::setListOfMaps() for the method for initializing this class programatically. 
+	 *  See also TSetOfMetricMapInitializers::loadFromConfigFile for a template of ".ini"-like configuration
+	 *   file that can be used to define which maps to create and all their parameters.
 	 *
 	 * \sa CMetricMap  \ingroup mrpt_slam_grp 
 	 */
@@ -156,7 +158,8 @@ namespace slam
 				mapHeight,
 				mapColourPoints,
 				mapReflectivity,
-				mapWeightedPoints
+				mapWeightedPoints,
+				mapOctoMaps
 			} likelihoodMapSelection;
 
 			bool	enableInsertion_pointsMap;			//!< Default = true (set to false to avoid "insertObservation" to update a given map)
@@ -169,6 +172,7 @@ namespace slam
 			bool	enableInsertion_reflectivityMaps;	//!< Default = true (set to false to avoid "insertObservation" to update a given map)
 			bool	enableInsertion_colourPointsMaps;	//!< Default = true (set to false to avoid "insertObservation" to update a given map)
 			bool	enableInsertion_weightedPointsMaps;	//!< Default = true (set to false to avoid "insertObservation" to update a given map)
+			bool	enableInsertion_octoMaps;			//!< Default = true (set to false to avoid "insertObservation" to update a given map)
 
 		} options;
 
@@ -180,6 +184,7 @@ namespace slam
 
 		std::deque<CSimplePointsMapPtr>              m_pointsMaps;
 		std::deque<COccupancyGridMap2DPtr>           m_gridMaps;
+		std::deque<COctoMapPtr>                      m_octoMaps;
 		std::deque<CGasConcentrationGridMap2DPtr>    m_gasGridMaps;
 		std::deque<CWirelessPowerGridMap2DPtr>       m_wifiGridMaps;
 		std::deque<CHeightGridMap2DPtr>              m_heightMaps;
@@ -326,7 +331,7 @@ namespace slam
 		  */
 		bool				m_disableSaveAs3DObject;
 
-		/** Specific options for grid maps (mrpt::slam::COccupancyGridMap2D)
+		/** Specific options for 2D grid maps (mrpt::slam::COccupancyGridMap2D)
 		  */
 		struct SLAM_IMPEXP TOccGridMap2DOptions
 		{
@@ -337,6 +342,17 @@ namespace slam
 			COccupancyGridMap2D::TLikelihoodOptions	likelihoodOpts;	//!< Customizable initial options.
 
 		} occupancyGridMap2D_options;
+
+		/** Specific options for 3D octo maps (mrpt::slam::COctoMap)
+		  */
+		struct SLAM_IMPEXP TOctoMapOptions
+		{
+			TOctoMapOptions();	//!< Default values loader
+
+			double resolution;	//!< The finest resolution of the octomap (default: 0.10 meters)
+			COctoMap::TInsertionOptions	  insertionOpts;	//!< Customizable initial options.
+			COctoMap::TLikelihoodOptions  likelihoodOpts;	//!< Customizable initial options.
+		} octoMap_options;
 
 		/** Specific options for point maps (mrpt::slam::CPointsMap)
 		  */
@@ -478,6 +494,7 @@ namespace slam
 		  * [<sectionName>]
 		  *  // Creation of maps:
 		  *  occupancyGrid_count=<Number of mrpt::slam::COccupancyGridMap2D maps>
+		  *  octoMap_count=<Number of mrpt::slam::COctoMap maps>
 		  *  gasGrid_count=<Number of mrpt::slam::CGasConcentrationGridMap2D maps>
 		  *  wifiGrid_count=<Number of mrpt::slam::CWirelessPowerGridMap2D maps>
 		  *  landmarksMap_count=<0 or 1, for creating a mrpt::slam::CLandmarksMap map>
@@ -520,6 +537,19 @@ namespace slam
 		  * // Likelihood Options for OccupancyGridMap ##:
 		  * [<sectionName>+"_occupancyGrid_##_likelihoodOpts"]
 		  *  <See COccupancyGridMap2D::TLikelihoodOptions>
+		  *
+		  * // ====================================================
+		  * //  Creation Options for OctoMap ##:
+		  * [<sectionName>+"_octoMap_##_creationOpts"]
+		  *  resolution=<value>
+		  *
+		  * // Insertion Options for OctoMap ##:
+		  * [<sectionName>+"_octoMap_##_insertOpts"]
+		  *  <See COctoMap::TInsertionOptions>
+		  *
+		  * // Likelihood Options for OctoMap ##:
+		  * [<sectionName>+"_octoMap_##_likelihoodOpts"]
+		  *  <See COctoMap::TLikelihoodOptions>
 		  *
 		  *
 		  * // ====================================================
@@ -678,10 +708,11 @@ namespace slam
 			{
 				m_map.insert(slam::CMultiMetricMap::TOptions::mapFuseAll,   "mapFuseAll");
 				m_map.insert(slam::CMultiMetricMap::TOptions::mapGrid,      "mapGrid");
+				m_map.insert(slam::CMultiMetricMap::TOptions::mapOctoMaps,  "mapOctoMaps");
 				m_map.insert(slam::CMultiMetricMap::TOptions::mapPoints,    "mrSimpleAverage");
 				m_map.insert(slam::CMultiMetricMap::TOptions::mapLandmarks, "mapLandmarks");
 				m_map.insert(slam::CMultiMetricMap::TOptions::mapGasGrid,   "mapGasGrid");
-				m_map.insert(slam::CMultiMetricMap::TOptions::mapWifiGrid,   "mapWifiGrid");
+				m_map.insert(slam::CMultiMetricMap::TOptions::mapWifiGrid,  "mapWifiGrid");
 				m_map.insert(slam::CMultiMetricMap::TOptions::mapBeacon,    "mapBeacon");
 				m_map.insert(slam::CMultiMetricMap::TOptions::mapHeight,    "mapHeight");
 				m_map.insert(slam::CMultiMetricMap::TOptions::mapColourPoints, "mapColourPoints");

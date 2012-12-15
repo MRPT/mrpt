@@ -55,10 +55,14 @@ IMPLEMENTS_SERIALIZABLE(COctoMap, CMetricMap,mrpt::slam)
 #define OCTOMAP_PTR        static_cast<octomap::OcTree*>(m_octomap)
 #define OCTOMAP_PTR_CONST  static_cast<const octomap::OcTree*>(m_octomap)
 
+#define PARENT_OCTOMAP_PTR        static_cast<octomap::OcTree*>(m_parent->m_octomap)
+#define PARENT_OCTOMAP_PTR_CONST  static_cast<const octomap::OcTree*>(m_parent->m_octomap)
+
 /*---------------------------------------------------------------
 						Constructor
   ---------------------------------------------------------------*/
 COctoMap::COctoMap(const double resolution) :
+	insertionOptions(*this),
 	m_octomap(NULL)
 {
 	this->allocOctomap(resolution);
@@ -99,7 +103,10 @@ void  COctoMap::writeToStream(CStream &out, int *version) const
 		*version = 0;
 	else
 	{
-		MRPT_TODO("write");
+		this->likelihoodOptions.writeToStream(out);
+		//OCTOMAP_PTR->writeBinary();
+		MRPT_TODO("write")
+		THROW_EXCEPTION("TODO");
 	}
 }
 
@@ -114,7 +121,11 @@ void  COctoMap::readFromStream(CStream &in, int version)
 	{
 	case 0:
 		{
+			this->likelihoodOptions.readFromStream(in);
+			//OCTOMAP_PTR->readBinary();
+
 			MRPT_TODO("read")
+			THROW_EXCEPTION("TODO");
 		} break;
 	default:
 		MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
@@ -147,13 +158,8 @@ bool COctoMap::internal_insertObservation(const CObservation *obs,const CPose3D 
 		********************************************************************/
 		const CObservation2DRangeScan	*o = static_cast<const CObservation2DRangeScan*>( obs );
 
-		// Compose the actual 3D pose of the sensor:
-		CPose3D sensorPose3D(UNINITIALIZED_POSE);
-		sensorPose3D.composeFrom(robotPose3D, o->sensorPose);
-
-		octomap::point3d sensorPt(sensorPose3D.x(),sensorPose3D.y(),sensorPose3D.z());
-
-		// Build a 2D points-map representation of the points from the scan:
+		// Build a points-map representation of the points from the scan (coordinates are wrt the robot base)
+		octomap::point3d sensorPt(robotPose3D.x(),robotPose3D.y(),robotPose3D.z());
 		const CPointsMap *scanPts = o->buildAuxPointsMap<mrpt::slam::CPointsMap>();
 		const size_t nPts = scanPts->size();
 
@@ -169,7 +175,7 @@ bool COctoMap::internal_insertObservation(const CObservation *obs,const CPose3D 
 
 			// Translation:
 			double gx,gy,gz;
-			sensorPose3D.composePoint(pt.x,pt.y,pt.z,  gx,gy,gz);
+			robotPose3D.composePoint(pt.x,pt.y,pt.z,  gx,gy,gz);
 
 			// Add to this map:
 			scan.push_back(gx,gy,gz);
@@ -180,8 +186,67 @@ bool COctoMap::internal_insertObservation(const CObservation *obs,const CPose3D 
 
 		return true;
 	}
-	// else ...
+	else if ( CLASS_ID(CObservation3DRangeScan)==obs->GetRuntimeClass())
+	{
+	   /********************************************************************
+				OBSERVATION TYPE: CObservation3DRangeScan
+		********************************************************************/
+		const CObservation3DRangeScan	*o = static_cast<const CObservation3DRangeScan*>( obs );
 
+		// Build a points-map representation of the points from the scan (coordinates are wrt the robot base)
+		octomap::point3d sensorPt(robotPose3D.x(),robotPose3D.y(),robotPose3D.z());
+
+		if (!o->hasPoints3D)
+			return false; 
+
+		o->load(); // Just to make sure the points are loaded from an external source, if that's the case...
+		const size_t sizeRangeScan = o->points3D_x.size();
+
+		// Transform 3D point cloud:
+		octomap::Pointcloud  scan;
+		scan.reserve(sizeRangeScan);
+
+		// For quicker access to values as "float" instead of "doubles":
+		mrpt::math::CMatrixDouble44  H;
+		robotPose3D.getHomogeneousMatrix(H);
+		const float	m00 = H.get_unsafe(0,0);
+		const float	m01 = H.get_unsafe(0,1);
+		const float	m02 = H.get_unsafe(0,2);
+		const float	m03 = H.get_unsafe(0,3);
+		const float	m10 = H.get_unsafe(1,0);
+		const float	m11 = H.get_unsafe(1,1);
+		const float	m12 = H.get_unsafe(1,2);
+		const float	m13 = H.get_unsafe(1,3);
+		const float	m20 = H.get_unsafe(2,0);
+		const float	m21 = H.get_unsafe(2,1);
+		const float	m22 = H.get_unsafe(2,2);
+		const float	m23 = H.get_unsafe(2,3);
+
+		mrpt::math::TPoint3Df pt;
+		for (size_t i=0;i<sizeRangeScan;i++)
+		{
+			pt.x = o->points3D_x[i]; 
+			pt.y = o->points3D_y[i];
+			pt.z = o->points3D_z[i];
+			
+			// Valid point?
+			if ( pt.x!=0 || pt.y!=0 || pt.z!=0 )
+			{
+				// Translation:
+				const float gx = m00*pt.x + m01*pt.y + m02*pt.z + m03;
+				const float gy = m10*pt.x + m11*pt.y + m12*pt.z + m13;
+				const float gz = m20*pt.x + m21*pt.y + m22*pt.z + m23;
+
+				// Add to this map:
+				scan.push_back(gx,gy,gz);
+			}
+		}
+
+		// Insert:
+		OCTOMAP_PTR->insertScan(scan, sensorPt, insertionOptions.maxrange, insertionOptions.pruning);
+
+		return true;
+	}
 
 	return false;
 }
@@ -198,11 +263,68 @@ bool  COctoMap::isEmpty() const
 /*---------------------------------------------------------------
 				TInsertionOptions
  ---------------------------------------------------------------*/
-COctoMap::TInsertionOptions::TInsertionOptions() :
+COctoMap::TInsertionOptions::TInsertionOptions(COctoMap &parent) :
 	maxrange (-1.),
-	pruning  (true)
+	pruning  (true),
+	m_parent (&parent),
+	// Default values from octomap:
+	occupancyThres (0.5),
+	probHit(0.7),
+	probMiss(0.4),
+	clampingThresMin(0.1192),
+	clampingThresMax(0.971)
 {
 }
+
+COctoMap::TInsertionOptions::TInsertionOptions() :
+	maxrange (-1.),
+	pruning  (true),
+	m_parent (NULL),
+	// Default values from octomap:
+	occupancyThres (0.5),
+	probHit(0.7),
+	probMiss(0.4),
+	clampingThresMin(0.1192),
+	clampingThresMax(0.971)
+{
+}
+
+COctoMap::TInsertionOptions & COctoMap::TInsertionOptions::operator = (const COctoMap::TInsertionOptions &o)
+{
+	// Copy all but the m_parent pointer!
+	maxrange = o.maxrange;
+	pruning  = o.pruning;
+
+	const bool o_has_parent = o.m_parent.get()!=NULL;
+
+	setOccupancyThres( o_has_parent ? o.getOccupancyThres() : o.occupancyThres );
+	setProbHit( o_has_parent ? o.getProbHit() : o.probHit );
+	setProbMiss( o_has_parent ? o.getProbMiss() : o.probMiss );
+	setClampingThresMin( o_has_parent ? o.getClampingThresMin() : o.clampingThresMin );
+	setClampingThresMax( o_has_parent ? o.getClampingThresMax() : o.clampingThresMax );
+
+	return *this;
+}
+
+
+void COctoMap::TInsertionOptions::setOccupancyThres(double prob) { if(m_parent.get()) PARENT_OCTOMAP_PTR->setOccupancyThres(prob); }
+void COctoMap::TInsertionOptions::setProbHit(double prob) { if(m_parent.get()) PARENT_OCTOMAP_PTR->setProbHit(prob); }
+void COctoMap::TInsertionOptions::setProbMiss(double prob) { if(m_parent.get()) PARENT_OCTOMAP_PTR->setProbMiss(prob); }
+void COctoMap::TInsertionOptions::setClampingThresMin(double thresProb) { if(m_parent.get()) PARENT_OCTOMAP_PTR->setClampingThresMin(thresProb); }
+void COctoMap::TInsertionOptions::setClampingThresMax(double thresProb) { if(m_parent.get()) PARENT_OCTOMAP_PTR->setClampingThresMax(thresProb); }
+
+double COctoMap::TInsertionOptions::getOccupancyThres() const { if(m_parent.get()) return PARENT_OCTOMAP_PTR_CONST->getOccupancyThres(); else return this->occupancyThres; }
+float COctoMap::TInsertionOptions::getOccupancyThresLog() const  { return PARENT_OCTOMAP_PTR_CONST->getOccupancyThresLog() ; }
+
+double COctoMap::TInsertionOptions::getProbHit() const  { if(m_parent.get()) return PARENT_OCTOMAP_PTR_CONST->getProbHit(); else return this->probHit; }
+float COctoMap::TInsertionOptions::getProbHitLog() const { return PARENT_OCTOMAP_PTR_CONST->getProbHitLog(); }
+double COctoMap::TInsertionOptions::getProbMiss() const { if(m_parent.get()) return PARENT_OCTOMAP_PTR_CONST->getProbMiss(); else return this->probMiss; }
+float COctoMap::TInsertionOptions::getProbMissLog() const { return PARENT_OCTOMAP_PTR_CONST->getProbMissLog(); }
+
+double COctoMap::TInsertionOptions::getClampingThresMin() const { if(m_parent.get()) return PARENT_OCTOMAP_PTR_CONST->getClampingThresMin(); else return this->clampingThresMin; }
+float COctoMap::TInsertionOptions::getClampingThresMinLog() const { return PARENT_OCTOMAP_PTR_CONST->getClampingThresMinLog(); }
+double COctoMap::TInsertionOptions::getClampingThresMax() const { if(m_parent.get()) return PARENT_OCTOMAP_PTR_CONST->getClampingThresMax(); else return this->clampingThresMax; }
+float COctoMap::TInsertionOptions::getClampingThresMaxLog() const { return PARENT_OCTOMAP_PTR_CONST->getClampingThresMaxLog(); }
 
 COctoMap::TLikelihoodOptions::TLikelihoodOptions() :
 	sigma_dist			( 0.05 ),
@@ -245,6 +367,12 @@ void  COctoMap::TInsertionOptions::dumpToTextStream(CStream	&out) const
 	LOADABLEOPTS_DUMP_VAR(maxrange,double);
 	LOADABLEOPTS_DUMP_VAR(pruning,bool);
 
+	LOADABLEOPTS_DUMP_VAR(getOccupancyThres(),double);
+	LOADABLEOPTS_DUMP_VAR(getProbHit(),double);
+	LOADABLEOPTS_DUMP_VAR(getProbMiss(),double);
+	LOADABLEOPTS_DUMP_VAR(getClampingThresMin(),double);
+	LOADABLEOPTS_DUMP_VAR(getClampingThresMax(),double);
+
 	out.printf("\n");
 }
 
@@ -266,6 +394,19 @@ void  COctoMap::TInsertionOptions::loadFromConfigFile(
 {
 	MRPT_LOAD_CONFIG_VAR(maxrange,double, iniFile,section);
 	MRPT_LOAD_CONFIG_VAR(pruning,bool, iniFile,section);
+
+	MRPT_LOAD_CONFIG_VAR(occupancyThres,double, iniFile,section);
+	MRPT_LOAD_CONFIG_VAR(probHit,double, iniFile,section);
+	MRPT_LOAD_CONFIG_VAR(probMiss,double, iniFile,section);
+	MRPT_LOAD_CONFIG_VAR(clampingThresMin,double, iniFile,section);
+	MRPT_LOAD_CONFIG_VAR(clampingThresMax,double, iniFile,section);
+
+	// Set loaded options into the actual octomap object, if any:
+	this->setOccupancyThres(occupancyThres);
+	this->setProbHit(probHit);
+	this->setProbMiss(probMiss);
+	this->setClampingThresMin(clampingThresMin);
+	this->setClampingThresMax(clampingThresMax);
 }
 
 void  COctoMap::TLikelihoodOptions::loadFromConfigFile(
@@ -284,6 +425,7 @@ void  COctoMap::TLikelihoodOptions::loadFromConfigFile(
 double COctoMap::computeObservationLikelihood( const CObservation *obs, const CPose3D &takenFrom )
 {
 	MRPT_TODO("x")
+	THROW_EXCEPTION("TODO");
 	return 0;
 }
 
@@ -320,6 +462,7 @@ void COctoMap::computeMatchingWith2D(
 	const size_t                            offset_other_map_points ) const
 {
 	MRPT_TODO("x")
+THROW_EXCEPTION("TODO");
 }
 
 /** Computes the matchings between this and another 3D points map - method used in 3D-ICP.
@@ -354,6 +497,7 @@ void COctoMap::computeMatchingWith3D(
 	const size_t                            offset_other_map_points ) const
 {
 	MRPT_TODO("x")
+	THROW_EXCEPTION("TODO");
 }
 
 
@@ -374,6 +518,7 @@ float COctoMap::compute3DMatchingRatio(
 	float									minMahaDistForCorr) const
 {
 	MRPT_TODO("x")
+	THROW_EXCEPTION("TODO");
 	return 0;
 }
 
@@ -381,6 +526,7 @@ float COctoMap::compute3DMatchingRatio(
 	*/
 void COctoMap::saveMetricMapRepresentationToFile(const std::string	&filNamePrefix) const
 {
+	THROW_EXCEPTION("TODO");
 	MRPT_TODO("x")
 }
 
@@ -389,6 +535,7 @@ void COctoMap::saveMetricMapRepresentationToFile(const std::string	&filNamePrefi
 void COctoMap::getAs3DObject( mrpt::opengl::CSetOfObjectsPtr &outObj ) const
 {
 	MRPT_TODO("x")
+	THROW_EXCEPTION("TODO");
 }
 
 double COctoMap::getResolution() const {
@@ -435,4 +582,27 @@ size_t COctoMap::calcNumNodes() const {
 }
 size_t COctoMap::getNumLeafNodes() const {
 	return  OCTOMAP_PTR_CONST->getNumLeafNodes();
+}
+
+/** Check whether the given point lies within the volume covered by the octomap (that is, whether it is "mapped") */
+bool COctoMap::isPointWithinOctoMap(const float x,const float y,const float z) const
+{
+    octomap::OcTreeKey key;
+	return OCTOMAP_PTR_CONST->coordToKeyChecked(octomap::point3d(x,y,z), key);
+}
+
+/** Get the occupancy probability [0,1] of a point 
+* \return false if the point is not mapped, in which case the returned "prob" is undefined. */
+bool COctoMap::getPointOccupancy(const float x,const float y,const float z, double &prob_occupancy) const
+{
+    octomap::OcTreeKey key;
+	if (OCTOMAP_PTR_CONST->coordToKeyChecked(octomap::point3d(x,y,z), key))
+	{
+		octomap::OcTreeNode *node = OCTOMAP_PTR_CONST->search(key,0 /*depth*/);
+		if (!node) return false;
+
+		prob_occupancy = node->getOccupancy();
+		return true;
+	}
+	else return false;
 }
