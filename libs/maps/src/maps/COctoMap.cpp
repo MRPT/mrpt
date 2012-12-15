@@ -40,6 +40,11 @@
 #include <mrpt/slam/CObservation2DRangeScan.h>
 #include <mrpt/slam/CObservation3DRangeScan.h>
 
+#include <mrpt/opengl/COctoMapVoxels.h>
+
+#include <mrpt/system/filesystem.h>
+#include <mrpt/utils/CMemoryChunk.h>
+
 #include <octomap/octomap.h>
 
 
@@ -104,9 +109,14 @@ void  COctoMap::writeToStream(CStream &out, int *version) const
 	else
 	{
 		this->likelihoodOptions.writeToStream(out);
-		//OCTOMAP_PTR->writeBinary();
-		MRPT_TODO("write")
-		THROW_EXCEPTION("TODO");
+		
+		CMemoryChunk chunk;
+		const string	tmpFil = mrpt::system::getTempFileName();
+		OCTOMAP_PTR->writeBinary(tmpFil);
+		chunk.loadBufferFromFile(tmpFil);
+		mrpt::system::deleteFile(tmpFil);
+
+		out << chunk;
 	}
 }
 
@@ -122,10 +132,20 @@ void  COctoMap::readFromStream(CStream &in, int version)
 	case 0:
 		{
 			this->likelihoodOptions.readFromStream(in);
-			//OCTOMAP_PTR->readBinary();
 
-			MRPT_TODO("read")
-			THROW_EXCEPTION("TODO");
+			this->clear();
+			
+			CMemoryChunk chunk;
+			in >> chunk;
+
+			if (chunk.getTotalBytesCount())
+			{
+				const string	tmpFil = mrpt::system::getTempFileName();
+				if (!chunk.saveBufferToFile( tmpFil ) ) THROW_EXCEPTION("Error saving temporary file");
+				OCTOMAP_PTR->readBinary(tmpFil);
+				mrpt::system::deleteFile( tmpFil );
+			}
+
 		} break;
 	default:
 		MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
@@ -528,14 +548,6 @@ void COctoMap::saveMetricMapRepresentationToFile(const std::string	&filNamePrefi
 {
 	THROW_EXCEPTION("TODO");
 	MRPT_TODO("x")
-}
-
-/** Returns a 3D object representing the map.
-	*/
-void COctoMap::getAs3DObject( mrpt::opengl::CSetOfObjectsPtr &outObj ) const
-{
-	MRPT_TODO("x")
-	THROW_EXCEPTION("TODO");
 }
 
 double COctoMap::getResolution() const {

@@ -275,7 +275,7 @@ struct MapGetAs3DObject
 
 	template <typename PTR>
 	inline void operator()(PTR &ptr) {
-		ptr->getAs3DObject(obj_gl);
+		if (ptr.present()) ptr->getAs3DObject(obj_gl);
 	}
 }; // end of MapGetAs3DObject
 
@@ -285,7 +285,7 @@ struct MapAuxPFCleanup
 
 	template <typename PTR>
 	inline void operator()(PTR &ptr) {
-		ptr->auxParticleFilterCleanUp();
+		if (ptr.present()) ptr->auxParticleFilterCleanUp();
 	}
 }; // end of MapAuxPFCleanup
 

@@ -43,6 +43,7 @@
 
 namespace mrpt
 {
+	namespace opengl { class COctoMapVoxels; }
 	namespace slam
 	{
 		class CPointsMap;
@@ -54,7 +55,7 @@ namespace mrpt
 		/** A three-dimensional probabilistic occupancy grid, implemented as an octo-tree with the "octomap" C++ library.
 		 *  This class represents a 3D map where each voxel only contains an "occupancy" property.
 		 *
-		 * As with any other mrpt::slam::CMetricMap, you can obtain a 3D representation of the map calling getAs3DObject()
+		 * As with any other mrpt::slam::CMetricMap, you can obtain a 3D representation of the map calling getAs3DObject() or getAsOctoMapVoxels()
 		 *
 		 * The octomap library was presented in:
 		 *  - K. M. Wurm, A. Hornung, M. Bennewitz, C. Stachniss, and W. Burgard, 
@@ -274,6 +275,8 @@ namespace mrpt
 			*/
 		virtual void  getAs3DObject( mrpt::opengl::CSetOfObjectsPtr	&outObj ) const;
 
+		/** Builds a renderizable representation of the octomap as a mrpt::opengl::COctoMapVoxels object. */
+		void getAsOctoMapVoxels(mrpt::opengl::COctoMapVoxels &gl_obj) const;
 
 		/** Check whether the given point lies within the volume covered by the octomap (that is, whether it is "mapped") */
 		bool isPointWithinOctoMap(const float x,const float y,const float z) const;
