@@ -65,13 +65,13 @@ std::string CPTG5::getDescription() const
   ---------------------------------------------------------------*/
 void CPTG5::PTG_Generator( float alpha, float t,float x, float y, float phi, float &v, float &w )
 {
-	float T = 0.5f*fabs(alpha)*R/V_MAX;
+	const float T = 0.847f*std::sqrt(std::abs(alpha))*R/V_MAX;
 
 	if (t< T)
 	{
 		// l+
 		v = V_MAX;
-		w = W_MAX * min( 1.0f , 1.0f - (float)exp( -square(alpha/0.40f) ));
+		w = W_MAX * min( 1.0f , 1.0f - (float)exp( -square(alpha) ));
 	}
 	else
 	{
