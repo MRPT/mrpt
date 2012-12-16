@@ -52,24 +52,24 @@ TEST(COctoMapTests, updateVoxels)
 	COctoMap  map(0.1);
 
 	map.updateVoxel(1,1,1, true); // integrate 'occupied' measurement
-	
+
 	map.updateVoxel(1.5,1,1, true); // integrate 'occupied' measurement
 	map.updateVoxel(1.5,1,1, true); // integrate 'occupied' measurement
 	map.updateVoxel(1.5,1,1, true); // integrate 'occupied' measurement
 
 	map.updateVoxel(-1,-1,1, false); // integrate 'occupied' measurement
-				
+
 	double occup;
 	bool   is_mapped;
 	mrpt::math::TPoint3D  pt;
 
 	pt = mrpt::math::TPoint3D(1,1,1);
 	is_mapped = map.getPointOccupancy(pt.x,pt.y,pt.z, occup);
-	EXPECT_ABOVE(occup,0.5);
+	EXPECT_GT(occup,0.5);
 
 	pt = mrpt::math::TPoint3D(-1,-1,1);
 	is_mapped = map.getPointOccupancy(pt.x,pt.y,pt.z, occup);
-	EXPECT_BELOW(occup,0.5);
+	EXPECT_LT(occup,0.5);
 }
 
 TEST(COctoMapTests, insert2DScan)
@@ -96,6 +96,6 @@ TEST(COctoMapTests, insert2DScan)
 		map.insertObservation( &scan1 );
 
 	}
-	
+
 }
 
