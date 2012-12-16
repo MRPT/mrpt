@@ -50,8 +50,8 @@ IMPLEMENTS_SERIALIZABLE( COctoMapVoxels, CRenderizableDisplayList, mrpt::opengl 
 
 /** Ctor */
 COctoMapVoxels::COctoMapVoxels() :
-	m_show_voxels (true), 
-	m_show_grids  (true),
+	m_enable_lighting(false),
+	m_show_grids  (false),
 	m_grid_width  (1.0f),
 	m_grid_color  (0xE0,0xE0,0xE0, 0x90)
 {
@@ -60,7 +60,7 @@ COctoMapVoxels::COctoMapVoxels() :
 /** Clears everything */
 void COctoMapVoxels::clear()	
 {
-	m_voxels.clear();
+	m_voxel_sets.clear();
 	m_grid_cubes.clear();
 	
 	CRenderizableDisplayList::notifyChange();
@@ -75,13 +75,40 @@ void COctoMapVoxels::setBoundingBox(const mrpt::math::TPoint3D &bb_min, const mr
 
 #if MRPT_HAS_OPENGL_GLUT
 
-const GLubyte grid_indices[36] = {
+// See: http://www.songho.ca/opengl/gl_vertexarray.html
+
+// cube ///////////////////////////////////////////////////////////////////////
+//    v6----- v5
+//   /|      /|
+//  v1------v0|
+//  | |     | |
+//  | |v7---|-|v4
+//  |/      |/
+//  v2------v3
+
+const GLubyte grid_line_indices[] = {
+	0,1, 1,2, 2,3, 3,0,
+	4,5, 5,6, 6,7, 7,4,
+	0,5, 1,6, 2,7, 3,4
+	};
+
+const GLubyte cube_indices[36]  = { 
 	0,1,2, 2,3,0,   
 	0,3,4, 4,5,0,
 	0,5,6, 6,1,0,
 	1,6,7, 7,2,1,
 	7,4,3, 3,2,7,
 	4,7,6, 6,5,4};
+
+MRPT_TODO("Check normal directions")
+// normal array
+const GLfloat normals_cube[3*6*4]  = { 
+	0, 0, 1,   0, 0, 1,   0, 0, 1,   0, 0, 1,   // v0,v1,v2,v3 (front)
+	1, 0, 0,   1, 0, 0,   1, 0, 0,   1, 0, 0,   // v0,v3,v4,v5 (right)
+	0, 1, 0,   0, 1, 0,   0, 1, 0,   0, 1, 0,   // v0,v5,v6,v1 (top)
+	-1, 0, 0,  -1, 0, 0,  -1, 0, 0,  -1, 0, 0,   // v1,v6,v7,v2 (left)
+	0,-1, 0,   0,-1, 0,   0,-1, 0,   0,-1, 0,   // v7,v4,v3,v2 (bottom)
+	0, 0,-1,   0, 0,-1,   0, 0,-1,   0, 0,-1 }; // v4,v7,v6,v5 (back)
 
 #endif
 
@@ -92,11 +119,14 @@ void   COctoMapVoxels::render_dl() const
 {
 #if MRPT_HAS_OPENGL_GLUT
 
+	glEnableClientState(GL_VERTEX_ARRAY);
+
 	// Draw grids ====================================
 	if (m_show_grids)
 	{
 		glLineWidth(m_grid_width);
 		checkOpenGLError();
+		glEnable(GL_LINE_SMOOTH);
 
 		if ( m_grid_color.A != 255 )
 		{
@@ -105,8 +135,6 @@ void   COctoMapVoxels::render_dl() const
 		}
 
 		glColor4ub(m_grid_color.R,m_grid_color.G,m_grid_color.B,m_grid_color.A);
-
-		glEnableClientState(GL_VERTEX_ARRAY);
 
 		const size_t nGrids = m_grid_cubes.size();
 		for (size_t i=0;i<nGrids;i++)
@@ -124,23 +152,82 @@ void   COctoMapVoxels::render_dl() const
 				c.min.x,c.min.y,c.min.z
 			};
 			glVertexPointer(3, GL_FLOAT, 0, vertices);
-			glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_BYTE, grid_indices);
+			glDrawElements(GL_LINES, sizeof(grid_line_indices)/sizeof(grid_line_indices[0]), GL_UNSIGNED_BYTE, grid_line_indices);
 		}
-
-		glDisableClientState(GL_VERTEX_ARRAY);
-		checkOpenGLError();
 
 		if ( m_grid_color.A != 255 )
 			glDisable(GL_BLEND);
+
+		glDisable(GL_LINE_SMOOTH);
 	}
 
 	// Draw cubes ====================================
-	if (m_show_voxels)
-	{
+    glEnableClientState(GL_NORMAL_ARRAY);
 
+	if (m_enable_lighting)
+	{
+		 // track material ambient and diffuse from surface color, call it before glEnable(GL_COLOR_MATERIAL)
+		glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
+		glEnable(GL_COLOR_MATERIAL);
+
+		// set up light colors (ambient, diffuse, specular)
+		GLfloat lightKa[] = {.2f, .2f, .2f, 1.0f};  // ambient light
+		GLfloat lightKd[] = {.7f, .7f, .7f, 1.0f};  // diffuse light
+		GLfloat lightKs[] = {1, 1, 1, 1};           // specular light
+		glLightfv(GL_LIGHT0, GL_AMBIENT, lightKa);
+		glLightfv(GL_LIGHT0, GL_DIFFUSE, lightKd);
+		glLightfv(GL_LIGHT0, GL_SPECULAR, lightKs);
+
+		// position the light
+		float lightPos[4] = {10, 10, 10, 1}; // positional light
+		glLightfv(GL_LIGHT0, GL_POSITION, lightPos);
+
+		glEnable(GL_LIGHT0);                        // MUST enable each light source after configuration
+
+		glEnable(GL_LIGHTING);
 	}
 
+	glNormalPointer(GL_FLOAT, 0, normals_cube);
 
+	for (size_t i=0;i<m_voxel_sets.size();i++)
+	{
+		if (!m_voxel_sets[i].visible) continue;
+
+		const std::vector<TVoxel> & voxels = m_voxel_sets[i].voxels;
+		const size_t N = voxels.size();
+		for (size_t j=0;j<N;j++)
+		{
+			glColor4ub(voxels[j].color.R,voxels[j].color.G,voxels[j].color.B,voxels[j].color.A);
+
+			const mrpt::math::TPoint3D &c = voxels[j].coords;
+			const double                L = voxels[j].side_length * 0.5;
+
+			const GLfloat vertices[8*3] = {
+				c.x+L,c.y+L,c.z+L,
+				c.x+L,c.y-L,c.z+L,
+				c.x+L,c.y-L,c.z-L,
+				c.x+L,c.y+L,c.z-L,
+				c.x-L,c.y+L,c.z-L,
+				c.x-L,c.y+L,c.z+L,
+				c.x-L,c.y-L,c.z+L,
+				c.x-L,c.y-L,c.z-L
+			};
+			glVertexPointer(3, GL_FLOAT, 0, vertices);
+			glDrawElements(GL_TRIANGLES, sizeof(cube_indices)/sizeof(cube_indices[0]), GL_UNSIGNED_BYTE, cube_indices);
+		}
+	}
+
+	if (m_enable_lighting)
+	{
+		glDisable(GL_COLOR_MATERIAL);
+		glDisable(GL_LIGHTING);
+	}
+
+    glDisableClientState(GL_NORMAL_ARRAY);
+
+	glDisableClientState(GL_VERTEX_ARRAY);
+	checkOpenGLError();
+	
 #endif
 }
 

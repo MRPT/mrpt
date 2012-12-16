@@ -171,7 +171,7 @@ bool COctoMap::internal_insertObservation(const CObservation *obs,const CPose3D 
 		robotPose3D = (*robotPose);
 
 
-	if ( CLASS_ID(CObservation2DRangeScan)==obs->GetRuntimeClass())
+	if ( IS_CLASS(obs,CObservation2DRangeScan) )
 	{
 	   /********************************************************************
 				OBSERVATION TYPE: CObservation2DRangeScan
@@ -206,7 +206,7 @@ bool COctoMap::internal_insertObservation(const CObservation *obs,const CPose3D 
 
 		return true;
 	}
-	else if ( CLASS_ID(CObservation3DRangeScan)==obs->GetRuntimeClass())
+	else if ( IS_CLASS(obs,CObservation3DRangeScan) )
 	{
 	   /********************************************************************
 				OBSERVATION TYPE: CObservation3DRangeScan
@@ -617,4 +617,11 @@ bool COctoMap::getPointOccupancy(const float x,const float y,const float z, doub
 		return true;
 	}
 	else return false;
+}
+
+
+/** Manually updates the occupancy of the voxel at (x,y,z) as being occupied (true) or free (false), using the log-odds parameters in \a insertionOptions */
+void COctoMap::updateVoxel(const double x, const double y, const double z, bool occupied)
+{
+	OCTOMAP_PTR->updateNode(x,y,z, occupied);
 }

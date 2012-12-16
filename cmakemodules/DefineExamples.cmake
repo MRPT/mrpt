@@ -144,22 +144,31 @@ IF(BUILD_EXAMPLES)
 		checkerboardDetectors
 		multipleCheckerboards		
 		voronoi_test
-		keypoint_matching		
+		keypoint_matching				
 		)
 	SET(CMAKE_EXAMPLE_DEPS mrpt-slam mrpt-vision mrpt-gui mrpt-topography)
 	SET(CMAKE_EXAMPLE_LINK_LIBS ${MRPT_LINKER_LIBS})
 	GENERATE_CMAKE_FILES_SAMPLES_DIRECTORY()
 
 
-        # === Depending on: obs ===
-        #  list of examples for each directory:
-        SET(LIST_EXAMPLES_IN_THIS_DIR
-		rgbd_dataset2rawlog
-		)
-        SET(CMAKE_EXAMPLE_DEPS mrpt-obs)
-        SET(CMAKE_EXAMPLE_LINK_LIBS ${MRPT_LINKER_LIBS})
-        GENERATE_CMAKE_FILES_SAMPLES_DIRECTORY()
+	# === Depending on: obs ===
+	#  list of examples for each directory:
+	SET(LIST_EXAMPLES_IN_THIS_DIR
+	rgbd_dataset2rawlog
+	)
+	SET(CMAKE_EXAMPLE_DEPS mrpt-obs)
+	SET(CMAKE_EXAMPLE_LINK_LIBS ${MRPT_LINKER_LIBS})
+	GENERATE_CMAKE_FILES_SAMPLES_DIRECTORY()
 
+	# === Depending on: maps, gui ===
+	#  list of examples for each directory:
+	SET(LIST_EXAMPLES_IN_THIS_DIR
+		octomap_simple
+		)
+	SET(CMAKE_EXAMPLE_DEPS mrpt-maps mrpt-gui)
+	SET(CMAKE_EXAMPLE_LINK_LIBS ${MRPT_LINKER_LIBS})
+	GENERATE_CMAKE_FILES_SAMPLES_DIRECTORY()
+	
 
 	# === Depending on: graphs & gui ===
 	#  list of examples for each directory:

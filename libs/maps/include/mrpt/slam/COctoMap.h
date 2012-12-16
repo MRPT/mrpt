@@ -267,15 +267,32 @@ namespace mrpt
 
 		/** This virtual method saves the map to a file "filNamePrefix"+< some_file_extension >, as an image or in any other applicable way (Notice that other methods to save the map may be implemented in classes implementing this virtual interface).
 			*/
-		virtual void  saveMetricMapRepresentationToFile(
-			const std::string	&filNamePrefix
-		) const;
+		virtual void  saveMetricMapRepresentationToFile(const std::string	&filNamePrefix) const;
+
+		/** Options for the conversion of a mrpt::slam::COctoMap into a mrpt::opengl::COctoMapVoxels */
+		struct MAPS_IMPEXP TRenderingOptions
+		{
+			bool  generateGridLines;       //!< Generate grid lines for all octree nodes, useful to draw the "structure" of the octree, but computationally costly (Default: false)
+
+			bool  generateOccupiedVoxels;  //!< Generate voxels for the occupied volumes  (Default=true)
+			bool  visibleOccupiedVoxels;   //!< Set occupied voxels visible (requires generateOccupiedVoxels=true) (Default=true)
+
+			bool  generateFreeVoxels;      //!< Generate voxels for the freespace (Default=true)
+			bool  visibleFreeVoxels;       //!< Set free voxels visible (requires generateFreeVoxels=true) (Default=true)
+
+			TRenderingOptions();
+		};
+
+		TRenderingOptions renderingOptions;
 
 		/** Returns a 3D object representing the map.
-			*/
+		  * \sa renderingOptions
+		  */
 		virtual void  getAs3DObject( mrpt::opengl::CSetOfObjectsPtr	&outObj ) const;
 
-		/** Builds a renderizable representation of the octomap as a mrpt::opengl::COctoMapVoxels object. */
+		/** Builds a renderizable representation of the octomap as a mrpt::opengl::COctoMapVoxels object. 
+		  * \sa renderingOptions
+		  */
 		void getAsOctoMapVoxels(mrpt::opengl::COctoMapVoxels &gl_obj) const;
 
 		/** Check whether the given point lies within the volume covered by the octomap (that is, whether it is "mapped") */
@@ -284,6 +301,9 @@ namespace mrpt
 		/** Get the occupancy probability [0,1] of a point 
 		  * \return false if the point is not mapped, in which case the returned "prob" is undefined. */
 		bool getPointOccupancy(const float x,const float y,const float z, double &prob_occupancy) const;
+
+		/** Manually updates the occupancy of the voxel at (x,y,z) as being occupied (true) or free (false), using the log-odds parameters in \a insertionOptions */
+		void updateVoxel(const double x, const double y, const double z, bool occupied);
 
 		/** @name Direct access to octomap library methods
 		    @{ */

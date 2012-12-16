@@ -37,6 +37,7 @@
 
 #include <mrpt/slam/COctoMap.h>
 #include <mrpt/opengl/COctoMapVoxels.h>
+#include <mrpt/utils/color_maps.h>
 
 #include <octomap/octomap.h>
 
@@ -54,6 +55,18 @@ using namespace mrpt::math;
 #define PARENT_OCTOMAP_PTR        static_cast<octomap::OcTree*>(m_parent->m_octomap)
 #define PARENT_OCTOMAP_PTR_CONST  static_cast<const octomap::OcTree*>(m_parent->m_octomap)
 
+
+MRPT_TODO("TRenderingOptions should be serialized and loaded from .ini files in multimetricmaps")
+
+COctoMap::TRenderingOptions::TRenderingOptions() :
+	generateGridLines      (false),
+	generateOccupiedVoxels (true),
+	visibleOccupiedVoxels  (true),
+	generateFreeVoxels     (true),
+	visibleFreeVoxels      (true)
+{
+}
+
 /** Returns a 3D object representing the map.
 	*/
 void COctoMap::getAs3DObject( mrpt::opengl::CSetOfObjectsPtr &outObj ) const
@@ -66,8 +79,6 @@ void COctoMap::getAs3DObject( mrpt::opengl::CSetOfObjectsPtr &outObj ) const
 /** Builds a renderizable representation of the octomap as a mrpt::opengl::COctoMapVoxels object. */
 void COctoMap::getAsOctoMapVoxels(mrpt::opengl::COctoMapVoxels &gl_obj) const
 {
-	gl_obj.clear();
-
 	// Go thru all voxels:
 	octomap::OcTree *tree = const_cast<octomap::OcTree*>(OCTOMAP_PTR_CONST); // because there's no a "OcTree::const_iterator"
 
@@ -76,11 +87,18 @@ void COctoMap::getAsOctoMapVoxels(mrpt::opengl::COctoMapVoxels &gl_obj) const
 
 	const unsigned char max_depth = 0; // all
 
-	bool first_node = true; // to detect bounding box:
+	gl_obj.clear();
+	gl_obj.reserveGridCubes( this->calcNumNodes() );
 
-	gl_obj.reserveGridCubes( tree->size() );
-	gl_obj.reserveVoxels( tree->size() );
+	gl_obj.resizeVoxelSets(2); // 2 sets of voxels: occupied & free
 
+	gl_obj.showVoxels(VOXEL_SET_OCCUPIED,  renderingOptions.visibleOccupiedVoxels );
+	gl_obj.showVoxels(VOXEL_SET_FREESPACE, renderingOptions.visibleFreeVoxels );
+		
+	const size_t nLeafs = this->getNumLeafNodes();
+	gl_obj.reserveVoxels(VOXEL_SET_OCCUPIED, nLeafs);
+	gl_obj.reserveVoxels(VOXEL_SET_FREESPACE, nLeafs);
+	
 	for(octomap::OcTree::tree_iterator it = tree->begin_tree(max_depth);it!=it_end; ++it) 
 	{
 		const octomap::point3d vx_center = it.getCoordinate();
@@ -90,46 +108,33 @@ void COctoMap::getAsOctoMapVoxels(mrpt::opengl::COctoMapVoxels &gl_obj) const
 		if (it.isLeaf()) 
 		{
 			// voxels for leaf nodes
-			if (tree->isNodeOccupied(*it))
-			{ 
-				if (tree->isNodeAtThreshold(*it)) 
-				{   // Maximum occupancy:
-					// ...
-					//gl_obj.push_back_Voxel( ... );
-				}
-				else 
-				{   // Non-max occupancy:
-					//gl_obj.push_back_Voxel( ... );
-				}
-			}
-			else
-			{  
-				if (tree->isNodeAtThreshold(*it)) 
-				{
-					// Maximum freeness
-					//gl_obj.push_back_Voxel( ... );
-				}
-				else 
-				{
-					// Non-max freeness
-					//gl_obj.push_back_Voxel( ... );
-				}
+			const double occ = it->getOccupancy();
+			if ( (occ>=0.5 && renderingOptions.generateOccupiedVoxels) ||
+				 (occ<0.5  && renderingOptions.generateFreeVoxels) )
+			{
+				const double c = 1-occ; // 0=max. occupancy
+				mrpt::utils::TColor vx_color(c*255,c*255,c*255);
+
+				const size_t vx_set = (tree->isNodeOccupied(*it)) ? VOXEL_SET_OCCUPIED:VOXEL_SET_FREESPACE;
+
+				gl_obj.push_back_Voxel(vx_set,COctoMapVoxels::TVoxel( TPoint3D(vx_center.x(),vx_center.y(),vx_center.z()) ,vx_length, vx_color) );				
 			}
 		}
-		else 
+		else if (renderingOptions.generateGridLines)
 		{
 			// Not leaf-nodes:
 			const mrpt::math::TPoint3D pt_min ( vx_center.x() - L, vx_center.y() - L, vx_center.z() - L);
 			const mrpt::math::TPoint3D pt_max ( vx_center.x() + L, vx_center.y() + L, vx_center.z() + L);
 			gl_obj.push_back_GridCube( COctoMapVoxels::TGridCube( pt_min, pt_max ) );
-
-			if (first_node)
-			{
-				first_node=false;
-				gl_obj.setBoundingBox(pt_min,pt_max);
-			}
 		}
 	} // end for each voxel
 
+	// Set bounding box:
+	{
+		mrpt::math::TPoint3D bbmin, bbmax;
+		this->getMetricMin(bbmin.x,bbmin.y,bbmin.z);
+		this->getMetricMax(bbmax.x,bbmax.y,bbmax.z);
+		gl_obj.setBoundingBox(bbmin, bbmax);
+	}
 	
 }

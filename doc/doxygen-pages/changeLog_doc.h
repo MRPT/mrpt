@@ -69,8 +69,10 @@
 			- [mrpt-bayes]
 			- [mrpt-graphs]
 			- [mrpt-graphslam]
-		- Integration of the Octomap C++ library (new BSD License) by Kai M. Wurm et al.: <a href="http://code.google.com/p/mrpt/source/detail?r=3081" >r3081</a>, <a href="http://code.google.com/p/mrpt/source/detail?r=3083" >r3083</a>, <a href="http://code.google.com/p/mrpt/source/detail?r=3084" >r3084</a>, <a href="http://code.google.com/p/mrpt/source/detail?r=3086" >r3086</a>, <a href="http://code.google.com/p/mrpt/source/detail?r=3087" >r3087</a>
-			- ...
+		- Integration of the Octomap C++ library (new BSD License) by Kai M. Wurm et al.: <a href="http://code.google.com/p/mrpt/source/detail?r=3081" >r3081</a>, <a href="http://code.google.com/p/mrpt/source/detail?r=3083" >r3083</a>, <a href="http://code.google.com/p/mrpt/source/detail?r=3084" >r3084</a>, <a href="http://code.google.com/p/mrpt/source/detail?r=3086" >r3086</a>, <a href="http://code.google.com/p/mrpt/source/detail?r=3087" >r3087</a>, <a href="http://code.google.com/p/mrpt/source/detail?r=3088" >r3088</a>
+			- The main new classes are mrpt::slam::COctoMap & mrpt::opengl::COctoMapVoxels
+			- mrpt::slam::CMultiMetricMap now allows the seamless integration of octomaps in many MRPT map building or localization algorithms.
+			- New example: samples/octomap_simple
 	- Changes in classes:
 		- [mrpt-base]
 			- Eigen::MatrixBase<Derived>::loadFromTextFile(), and all MRPT derived matrix classes, are now much faster loading huge matrices from text files - <a href="http://code.google.com/p/mrpt/source/detail?r=2997" >r2997</a>
@@ -124,6 +126,8 @@
 			- mrpt::utils::abs_diff()
 			- mrpt::system::getMRPTLicense()
 			- mrpt::math::noncentralChi2PDF_CDF() is now exposed (was private)
+	- New examples:
+		- octomap_simple
 	- Build system:
 		- Update to nanoflann 1.1.4 - <a href="http://code.google.com/p/mrpt/source/detail?r=2937" >r2937</a>, <a href="http://code.google.com/p/mrpt/source/detail?r=3017" >r3017</a>
 		- Update to Eigen 3.1.2 - <a href="http://code.google.com/p/mrpt/source/detail?r=3064" >r3064</a>
@@ -136,6 +140,7 @@
 		- More unit tests:
 			- for all probability distribution functions in mrpt::math,
 			- for the parser in mrpt::hwdrivers::CGPSInterface::parse_NMEA()
+			- for the octomap map
 		- Added new documentation page: <a href="env-vars.html" >environment variables</a>.
 		- Removed the build flag "MRPT_BACKCOMPATIB_08X".
 	- BUG FIXES:

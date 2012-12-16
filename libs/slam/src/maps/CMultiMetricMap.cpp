@@ -1990,3 +1990,22 @@ CSimplePointsMap * CMultiMetricMap::getAsSimplePointsMap()
 	MRPT_END
 }
 
+
+
+/** Ctor: TOptions::TOptions
+*/
+CMultiMetricMap::TOptions::TOptions() :	
+	likelihoodMapSelection(mapFuseAll),
+	enableInsertion_pointsMap  (true),
+	enableInsertion_landmarksMap (true),
+	enableInsertion_gridMaps(true),
+	enableInsertion_gasGridMaps(true),
+	enableInsertion_wifiGridMaps(true),
+	enableInsertion_beaconMap(true),
+	enableInsertion_heightMaps(true),
+	enableInsertion_reflectivityMaps(true),
+	enableInsertion_colourPointsMaps(true),
+	enableInsertion_weightedPointsMaps(true),
+	enableInsertion_octoMaps(true)
+{
+}

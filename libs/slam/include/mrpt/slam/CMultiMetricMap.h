@@ -118,19 +118,7 @@ namespace slam
 		  */
 		struct SLAM_IMPEXP TOptions : public utils::CLoadableOptions
 		{
-			TOptions() :	likelihoodMapSelection(mapFuseAll),
-							enableInsertion_pointsMap(true),
-							enableInsertion_landmarksMap(true),
-							enableInsertion_gridMaps(true),
-							enableInsertion_gasGridMaps(true),
-							enableInsertion_wifiGridMaps(true),
-							enableInsertion_beaconMap(true),
-							enableInsertion_heightMaps(true),
-							enableInsertion_reflectivityMaps(true),
-							enableInsertion_colourPointsMaps(true),
-							enableInsertion_weightedPointsMaps(true)
-			{
-			}
+			TOptions();
 
 			/** Load parameters from configuration source
 			  */

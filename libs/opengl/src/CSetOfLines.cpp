@@ -66,6 +66,7 @@ void CSetOfLines::setLineByIndex(size_t index,const mrpt::math::TSegment3D &segm
 void   CSetOfLines::render_dl() const
 {
 #if MRPT_HAS_OPENGL_GLUT
+	glEnable(GL_LINE_SMOOTH);
 	glLineWidth(mLineWidth);
 	checkOpenGLError();
 
@@ -86,6 +87,8 @@ void   CSetOfLines::render_dl() const
 
 	if ( m_color.A != 255 )
 		glDisable(GL_BLEND);
+
+	glDisable(GL_LINE_SMOOTH);
 
 #endif
 }

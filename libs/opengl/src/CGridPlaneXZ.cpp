@@ -74,7 +74,6 @@ void   CGridPlaneXZ::render_dl() const
 	}
 
     glEnd();
-	checkOpenGLError();
 
 	MRPT_END
 #endif
