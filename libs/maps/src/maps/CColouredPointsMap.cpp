@@ -672,7 +672,7 @@ bool CColouredPointsMap::savePCDFile(const std::string &filename, bool save_as_b
 	cloud.is_dense = false;
 	cloud.points.resize (cloud.width * cloud.height);
 
-	const float f = 1.0f/255;
+	const float f = 255.f;
 
 	union myaux_t
 	{
@@ -686,9 +686,9 @@ bool CColouredPointsMap::savePCDFile(const std::string &filename, bool save_as_b
 		cloud.points[i].y =this->y[i];
 		cloud.points[i].z =this->z[i];
 
-		aux_val.rgb[0]=static_cast<uint8_t>( this->m_color_B[0] * f);
-		aux_val.rgb[1]=static_cast<uint8_t>( this->m_color_B[1] * f);
-		aux_val.rgb[2]=static_cast<uint8_t>( this->m_color_B[2] * f);
+		aux_val.rgb[0]=static_cast<uint8_t>( this->m_color_B[i] * f);
+		aux_val.rgb[1]=static_cast<uint8_t>( this->m_color_G[i] * f);
+		aux_val.rgb[2]=static_cast<uint8_t>( this->m_color_R[i] * f);
 
 		cloud.points[i].rgb = aux_val.f;
 	}
