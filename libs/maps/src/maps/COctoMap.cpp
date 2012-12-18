@@ -41,9 +41,11 @@
 #include <mrpt/slam/CObservation3DRangeScan.h>
 
 #include <mrpt/opengl/COctoMapVoxels.h>
+#include <mrpt/opengl/COpenGLScene.h>
 
 #include <mrpt/system/filesystem.h>
 #include <mrpt/utils/CMemoryChunk.h>
+#include <mrpt/utils/CFileOutputStream.h>
 
 #include <octomap/octomap.h>
 
@@ -444,29 +446,11 @@ void  COctoMap::TLikelihoodOptions::loadFromConfigFile(
   ---------------------------------------------------------------*/
 double COctoMap::computeObservationLikelihood( const CObservation *obs, const CPose3D &takenFrom )
 {
-	MRPT_TODO("x")
+	MRPT_TODO("Implement computeObservationLikelihood()")
 	THROW_EXCEPTION("TODO");
 	return 0;
 }
 
-/** Computes the matchings between this and another 2D points map.
-	This includes finding:
-		- The set of points pairs in each map
-		- The mean squared distance between corresponding pairs.
-	This method is the most time critical one into the ICP algorithm.
-
-	* \param  otherMap					  [IN] The other map to compute the matching with.
-	* \param  otherMapPose				  [IN] The pose of the other map as seen from "this".
-	* \param  maxDistForCorrespondence   [IN] Maximum 2D linear distance between two points to be matched.
-	* \param  maxAngularDistForCorrespondence [IN] In radians: The aim is to allow larger distances to more distant correspondences.
-	* \param  angularDistPivotPoint      [IN] The point used to calculate distances from in both maps.
-	* \param  correspondences			  [OUT] The detected matchings pairs.
-	* \param  correspondencesRatio		  [OUT] The ratio [0,1] of points in otherMap with at least one correspondence.
-	* \param  sumSqrDist				  [OUT] The sum of all matched points squared distances.If undesired, set to NULL, as default.
-	* \param  onlyKeepTheClosest         [IN] If set to true, only the closest correspondence will be returned. If false (default) all are returned.
-	*
-	* \sa compute3DMatchingRatio
-	*/
 void COctoMap::computeMatchingWith2D(
 	const CMetricMap						*otherMap,
 	const CPose2D							&otherMapPose,
@@ -481,27 +465,9 @@ void COctoMap::computeMatchingWith2D(
 	const size_t                            decimation_other_map_points,
 	const size_t                            offset_other_map_points ) const
 {
-	MRPT_TODO("x")
-THROW_EXCEPTION("TODO");
+	THROW_EXCEPTION("Method not implemented in this class of map")
 }
 
-/** Computes the matchings between this and another 3D points map - method used in 3D-ICP.
-	This method finds the set of point pairs in each map.
-
-	The method is the most time critical one into the ICP algorithm.
-
-	* \param  otherMap					  [IN] The other map to compute the matching with.
-	* \param  otherMapPose				  [IN] The pose of the other map as seen from "this".
-	* \param  maxDistForCorrespondence   [IN] Maximum 2D linear distance between two points to be matched.
-	* \param  maxAngularDistForCorrespondence [IN] In radians: The aim is to allow larger distances to more distant correspondences.
-	* \param  angularDistPivotPoint      [IN] The point used to calculate distances from in both maps.
-	* \param  correspondences			  [OUT] The detected matchings pairs.
-	* \param  correspondencesRatio		  [OUT] The ratio [0,1] of points in otherMap with at least one correspondence.
-	* \param  sumSqrDist				  [OUT] The sum of all matched points squared distances.If undesired, set to NULL, as default.
-	* \param  onlyKeepTheClosest         [IN] If set to true, only the closest correspondence will be returned. If false (default) all are returned.
-	*
-	* \sa compute3DMatchingRatio
-	*/
 void COctoMap::computeMatchingWith3D(
 	const CMetricMap						*otherMap,
 	const CPose3D							&otherMapPose,
@@ -516,38 +482,45 @@ void COctoMap::computeMatchingWith3D(
 	const size_t                            decimation_other_map_points ,
 	const size_t                            offset_other_map_points ) const
 {
-	MRPT_TODO("x")
-	THROW_EXCEPTION("TODO");
+	THROW_EXCEPTION("Method not implemented in this class of map")
 }
 
-
-/** Computes the ratio in [0,1] of correspondences between "this" and the "otherMap" map, whose 6D pose relative to "this" is "otherMapPose"
-	*   In the case of a multi-metric map, this returns the average between the maps. This method always return 0 for grid maps.
-	* \param  otherMap					  [IN] The other map to compute the matching with.
-	* \param  otherMapPose				  [IN] The 6D pose of the other map as seen from "this".
-	* \param  minDistForCorr			  [IN] The minimum distance between 2 non-probabilistic map elements for counting them as a correspondence.
-	* \param  minMahaDistForCorr		  [IN] The minimum Mahalanobis distance between 2 probabilistic map elements for counting them as a correspondence.
-	*
-	* \return The matching ratio [0,1]
-	* \sa computeMatchingWith2D
-	*/
 float COctoMap::compute3DMatchingRatio(
 	const CMetricMap								*otherMap,
 	const CPose3D							&otherMapPose,
 	float									minDistForCorr ,
 	float									minMahaDistForCorr) const
 {
-	MRPT_TODO("x")
-	THROW_EXCEPTION("TODO");
-	return 0;
+	THROW_EXCEPTION("Method not implemented in this class of map")
 }
 
 /** This virtual method saves the map to a file "filNamePrefix"+< some_file_extension >, as an image or in any other applicable way (Notice that other methods to save the map may be implemented in classes implementing this virtual interface).
 	*/
 void COctoMap::saveMetricMapRepresentationToFile(const std::string	&filNamePrefix) const
 {
-	THROW_EXCEPTION("TODO");
-	MRPT_TODO("x")
+	MRPT_START
+
+	// Save as 3D Scene:
+	{
+		mrpt::opengl::COpenGLScene scene;
+		mrpt::opengl::CSetOfObjectsPtr obj3D = mrpt::opengl::CSetOfObjects::Create();
+
+		this->getAs3DObject(obj3D);
+
+		scene.insert(obj3D);
+
+		const string fil = filNamePrefix + string("_3D.3Dscene");
+		mrpt::utils::CFileOutputStream	f(fil);
+		f << scene;
+	}
+
+	// Save as ".bt" file (a binary format from the octomap lib):
+	{
+		const string fil = filNamePrefix + string("_binary.bt");
+		OCTOMAP_PTR->writeBinary(fil);
+	}
+
+	MRPT_END
 }
 
 double COctoMap::getResolution() const {
@@ -619,9 +592,30 @@ bool COctoMap::getPointOccupancy(const float x,const float y,const float z, doub
 	else return false;
 }
 
-
 /** Manually updates the occupancy of the voxel at (x,y,z) as being occupied (true) or free (false), using the log-odds parameters in \a insertionOptions */
 void COctoMap::updateVoxel(const double x, const double y, const double z, bool occupied)
 {
 	OCTOMAP_PTR->updateNode(x,y,z, occupied);
+}
+
+void COctoMap::insertPointCloud(const CPointsMap &ptMap, const float sensor_x,const float sensor_y,const float sensor_z)
+{
+	MRPT_START
+
+	const octomap::point3d sensorPt(sensor_x,sensor_y,sensor_z);
+	
+	size_t N;
+	const float *xs,*ys,*zs;
+	ptMap.getPointsBuffer(N,xs,ys,zs);
+
+	for (size_t i=0;i<N;i++)
+		OCTOMAP_PTR->insertRay(sensorPt, octomap::point3d(xs[i],ys[i],zs[i]), insertionOptions.maxrange,insertionOptions.pruning);
+
+	MRPT_END
+}
+
+/** Just like insertPointCloud but with a single ray. */
+void COctoMap::insertRay(const float end_x,const float end_y,const float end_z,const float sensor_x,const float sensor_y,const float sensor_z)
+{
+	OCTOMAP_PTR->insertRay( octomap::point3d(sensor_x,sensor_y,sensor_z), octomap::point3d(end_x,end_y,end_z), insertionOptions.maxrange,insertionOptions.pruning);
 }

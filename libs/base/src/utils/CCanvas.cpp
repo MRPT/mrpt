@@ -72,15 +72,6 @@ using namespace mrpt;
 using namespace mrpt::utils;
 using namespace std;
 
-// Static colors:
-TColor TColor::red		= TColor(255,0,0);
-TColor TColor::green	= TColor(0,255,0);
-TColor TColor::blue		= TColor(0,0,255);
-TColor TColor::black    = TColor(0,0,0);
-TColor TColor::white    = TColor(255,255,255);
-TColor TColor::gray     = TColor(127,127,127);
-
-
 //map<string,const uint32_t*>   list_registered_fonts;
 map<string,vector_byte>   list_registered_fonts;   // Each vector is the target place where to uncompress each font.
 bool    list_fonts_init = false;

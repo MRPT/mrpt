@@ -207,7 +207,9 @@ void  CReflectivityGridMap2D::writeToStream(CStream &out, int *version) const
 
 		// Map cells:
 		const uint32_t n = static_cast<uint32_t>(m_map.size());
-		out.WriteBuffer(&m_map[0],n);
+		out << n;
+		if (n)
+			out.WriteBuffer(&m_map[0],n);
 
 		// Save the insertion options:
 		// out << insertionOptions.maxOccupancyUpdateCertainty;
@@ -236,7 +238,8 @@ void  CReflectivityGridMap2D::readFromStream(CStream &in, int version)
 			// Map cells:
 			in >> n;
 			m_map.resize(n);
-			in.ReadBuffer(&m_map[0],n);
+			if (n)
+				in.ReadBuffer(&m_map[0],n);
 
 			// Load the insertion options:
 			// in >> insertionOptions.maxOccupancyUpdateCertainty;

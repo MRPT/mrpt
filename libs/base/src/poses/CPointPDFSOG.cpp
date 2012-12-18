@@ -187,9 +187,9 @@ void  CPointPDFSOG::readFromStream(CStream &in,int version)
 	case 0:
 	case 1:
 		{
-			uint32_t								N;
+			uint32_t							N;
 			CListGaussianModes::iterator		it;
-			float									x;
+			double								x;
 
 			in >> N;
 

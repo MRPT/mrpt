@@ -43,6 +43,7 @@ namespace mrpt
 {
 	namespace utils
 	{
+		class CStream;
 
 		/** A RGB color - 8bit 
 		 * \ingroup mrpt_base_grp */
@@ -64,6 +65,12 @@ namespace mrpt
 			static TColor black;//!< Predefined colors
 			static TColor gray;	//!< Predefined colors
 		};
+		// Text streaming:
+		std::ostream BASE_IMPEXP & operator << (std::ostream& o, const TColor & c);
+		// Binary streaming:
+		CStream BASE_IMPEXP & operator << (CStream& o, const TColor & c);
+		CStream BASE_IMPEXP & operator >> (CStream& i, TColor & c);
+
 
 		/** A RGB color - floats in the range [0,1] 
 		 * \ingroup mrpt_base_grp */
@@ -73,6 +80,11 @@ namespace mrpt
 			explicit TColorf(const TColor &col) : R(col.R*(1.f/255)),G(col.G*(1.f/255)),B(col.B*(1.f/255)),A(col.A*(1.f/255)) { }
 			float R,G,B,A;
 		};
+		// Text streaming:
+		std::ostream BASE_IMPEXP & operator << (std::ostream& o, const TColorf & c);
+		// Binary streaming:
+		CStream BASE_IMPEXP & operator << (CStream& o, const TColorf & c);
+		CStream BASE_IMPEXP & operator >> (CStream& i, TColorf & c);
 
 	} // end namespace
 }

@@ -110,7 +110,6 @@ namespace mrpt
 				TGridCube(const mrpt::math::TPoint3D &min_,const mrpt::math::TPoint3D &max_) : min(min_),max(max_) { }
 			};
 
-		protected:
 			struct OPENGL_IMPEXP TInfoPerVoxelSet
 			{
 				bool                 visible;
@@ -118,6 +117,7 @@ namespace mrpt
 
 				TInfoPerVoxelSet() : visible(true) {}
 			};
+		protected:
 
 			std::deque<TInfoPerVoxelSet>   m_voxel_sets; 
 			std::vector<TGridCube>         m_grid_cubes;
@@ -125,6 +125,8 @@ namespace mrpt
 			mrpt::math::TPoint3D   m_bb_min, m_bb_max; //!< Cached bounding boxes
 
 			bool                   m_enable_lighting;
+			bool                   m_showVoxelsAsPoints;
+			float                  m_showVoxelsAsPointsSize;
 			bool                   m_show_grids;
             float                  m_grid_width;
 			mrpt::utils::TColor    m_grid_color;
@@ -144,6 +146,14 @@ namespace mrpt
 			/** Shows/hides the voxels (voxel_set is a 0-based index for the set of voxels to modify, e.g. VOXEL_SET_OCCUPIED, VOXEL_SET_FREESPACE) */
 			inline void showVoxels(unsigned int voxel_set, bool show) { ASSERT_(voxel_set<m_voxel_sets.size()) m_voxel_sets[voxel_set].visible=show; CRenderizableDisplayList::notifyChange(); }
 			inline bool areVoxelsVisible(unsigned int voxel_set) const { ASSERT_(voxel_set<m_voxel_sets.size()) return m_voxel_sets[voxel_set].visible; }
+
+			/** For quick renders: render voxels as points instead of cubes. \sa setVoxelAsPointsSize */
+			inline void showVoxelsAsPoints(const bool enable) { m_showVoxelsAsPoints=enable; CRenderizableDisplayList::notifyChange(); }
+			inline bool areVoxelsShownAsPoints() const { return m_showVoxelsAsPoints; }
+
+			/** Only used when showVoxelsAsPoints() is enabled.  */
+			inline void setVoxelAsPointsSize(float pointSize) { m_showVoxelsAsPointsSize=pointSize; CRenderizableDisplayList::notifyChange(); }
+			inline float getVoxelAsPointsSize() const { return m_showVoxelsAsPointsSize; }
 
 			/** Sets the width of grid lines */
 			inline void setGridLinesWidth(float w) { m_grid_width=w; CRenderizableDisplayList::notifyChange(); }

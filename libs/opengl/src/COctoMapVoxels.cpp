@@ -51,6 +51,8 @@ IMPLEMENTS_SERIALIZABLE( COctoMapVoxels, CRenderizableDisplayList, mrpt::opengl 
 /** Ctor */
 COctoMapVoxels::COctoMapVoxels() :
 	m_enable_lighting(false),
+	m_showVoxelsAsPoints(false),
+	m_showVoxelsAsPointsSize(3.0f),
 	m_show_grids  (false),
 	m_grid_width  (1.0f),
 	m_grid_color  (0xE0,0xE0,0xE0, 0x90)
@@ -189,6 +191,13 @@ void   COctoMapVoxels::render_dl() const
 
 	glNormalPointer(GL_FLOAT, 0, normals_cube);
 
+	if (m_showVoxelsAsPoints)
+	{
+		glPointSize(m_showVoxelsAsPointsSize);
+	    glBegin( GL_POINTS );
+	}
+
+
 	for (size_t i=0;i<m_voxel_sets.size();i++)
 	{
 		if (!m_voxel_sets[i].visible) continue;
@@ -202,20 +211,36 @@ void   COctoMapVoxels::render_dl() const
 			const mrpt::math::TPoint3D &c = voxels[j].coords;
 			const double                L = voxels[j].side_length * 0.5;
 
-			const GLfloat vertices[8*3] = {
-				c.x+L,c.y+L,c.z+L,
-				c.x+L,c.y-L,c.z+L,
-				c.x+L,c.y-L,c.z-L,
-				c.x+L,c.y+L,c.z-L,
-				c.x-L,c.y+L,c.z-L,
-				c.x-L,c.y+L,c.z+L,
-				c.x-L,c.y-L,c.z+L,
-				c.x-L,c.y-L,c.z-L
-			};
-			glVertexPointer(3, GL_FLOAT, 0, vertices);
-			glDrawElements(GL_TRIANGLES, sizeof(cube_indices)/sizeof(cube_indices[0]), GL_UNSIGNED_BYTE, cube_indices);
+			if (!m_showVoxelsAsPoints)
+			{
+				// Render as cubes:
+				const GLfloat vertices[8*3] = {
+					c.x+L,c.y+L,c.z+L,
+					c.x+L,c.y-L,c.z+L,
+					c.x+L,c.y-L,c.z-L,
+					c.x+L,c.y+L,c.z-L,
+					c.x-L,c.y+L,c.z-L,
+					c.x-L,c.y+L,c.z+L,
+					c.x-L,c.y-L,c.z+L,
+					c.x-L,c.y-L,c.z-L
+				};
+				glVertexPointer(3, GL_FLOAT, 0, vertices);
+				glDrawElements(GL_TRIANGLES, sizeof(cube_indices)/sizeof(cube_indices[0]), GL_UNSIGNED_BYTE, cube_indices);
+			}
+			else
+			{
+				// Render as simple points:
+				glVertex3f(c.x,c.y,c.z);
+			}
 		}
 	}
+
+	
+	if (m_showVoxelsAsPoints)
+	{
+		glEnd(); // of  GL_POINTS
+	}
+
 
 	if (m_enable_lighting)
 	{
@@ -231,6 +256,44 @@ void   COctoMapVoxels::render_dl() const
 #endif
 }
 
+DECLARE_CUSTOM_TTYPENAME(COctoMapVoxels::TInfoPerVoxelSet)
+DECLARE_CUSTOM_TTYPENAME(COctoMapVoxels::TGridCube)
+DECLARE_CUSTOM_TTYPENAME(COctoMapVoxels::TVoxel)
+
+namespace mrpt{ 
+	namespace utils 
+	{
+		CStream & operator<<(CStream&out, const COctoMapVoxels::TInfoPerVoxelSet &a) {
+			out << a.visible << a.voxels;
+			return out;
+		}
+		CStream & operator>>(CStream&in, COctoMapVoxels::TInfoPerVoxelSet &a) {
+			in >> a.visible >> a.voxels;
+			return in;
+		}
+
+		CStream & operator<<(CStream&out, const COctoMapVoxels::TGridCube &a) {
+			out << a.min << a.max;
+			return out;
+		}
+		CStream & operator>>(CStream&in, COctoMapVoxels::TGridCube &a) {
+			in >> a.min >> a.max;
+			return in;
+		}
+
+		CStream & operator<<(CStream&out, const COctoMapVoxels::TVoxel &a) {
+			out << a.coords << a.side_length << a.color;
+			return out;
+		}
+		CStream & operator>>(CStream&in, COctoMapVoxels::TVoxel &a) {
+			in >> a.coords >> a.side_length >> a.color;
+			return in;
+		}
+
+}
+}
+
+
 /*---------------------------------------------------------------
    Implements the writing to a CStream capability of
      CSerializable objects
@@ -241,9 +304,12 @@ void  COctoMapVoxels::writeToStream(CStream &out,int *version) const
 	else	
 	{
 		writeToStreamRender(out);
-		//THROW_EXCEPTION("TODO")
-		MRPT_TODO("Write")
-		//out<<mSegments<<mLineWidth;
+
+		out << m_voxel_sets
+			<< m_grid_cubes	
+			<< m_bb_min << m_bb_max
+			<< m_enable_lighting << m_showVoxelsAsPoints <<	m_showVoxelsAsPointsSize
+			<< m_show_grids << m_grid_width << m_grid_color;
 	}
 }
 
@@ -258,8 +324,12 @@ void  COctoMapVoxels::readFromStream(CStream &in,int version)
 	case 0:
 		{
 			readFromStreamRender(in);
-			//THROW_EXCEPTION("TODO")
-			MRPT_TODO("read")
+
+			in  >> m_voxel_sets
+				>> m_grid_cubes	
+				>> m_bb_min >> m_bb_max
+				>> m_enable_lighting >> m_showVoxelsAsPoints >> m_showVoxelsAsPointsSize
+				>> m_show_grids >> m_grid_width >> m_grid_color;
 		}	
 		break;
 	default:

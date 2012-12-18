@@ -82,7 +82,8 @@ TEST(SerializeTestOpenGL, WriteReadToMem)
 		CLASS_ID( CText3D ),
 		CLASS_ID( CEllipsoidInverseDepth2D ),
 		CLASS_ID( CEllipsoidInverseDepth3D ),
-		CLASS_ID( CEllipsoidRangeBearing2D )
+		CLASS_ID( CEllipsoidRangeBearing2D ),
+		CLASS_ID( COctoMapVoxels )
 		};
 
 	for (size_t i=0;i<sizeof(lstClasses)/sizeof(lstClasses[0]);i++)

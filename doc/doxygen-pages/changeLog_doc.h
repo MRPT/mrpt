@@ -113,7 +113,7 @@
 				- mrpt::opengl::COpenGLViewport::getBoundingBox()
 			- mrpt::opengl::COctreePointRenderer::octree_get_graphics_boundingboxes() has a new flag to draw solid boxes at each leaf node - <a href="http://code.google.com/p/mrpt/source/detail?r=3033" >r3033</a>
 		- [mrpt-reactivenav]
-			- Much code of mrpt::reactivenav classes have undergone a clean-up, slight optimizations and a translation of old Spanish names/comments to English - <a href="http://code.google.com/p/mrpt/source/detail?r=2939" >r2939</a>, <a href="http://code.google.com/p/mrpt/source/detail?r=2942" >r2942</a>, , <a href="http://code.google.com/p/mrpt/source/detail?r=2958" >r2958</a>
+			- Much code of mrpt::reactivenav classes have undergone a clean-up, slight optimizations and a translation of old Spanish names/comments to English - <a href="http://code.google.com/p/mrpt/source/detail?r=2939" >r2939</a>, <a href="http://code.google.com/p/mrpt/source/detail?r=2942" >r2942</a>, <a href="http://code.google.com/p/mrpt/source/detail?r=2958" >r2958</a>, <a href="http://code.google.com/p/mrpt/source/detail?r=3091" >r3091</a>
 			- mrpt::reactivenav::CParameterizedTrajectoryGenerator::CColisionGrid now has a more maintainable binary serialization format - <a href="http://code.google.com/p/mrpt/source/detail?r=2939" >r2939</a>
 			- mrpt::reactivenav::CParameterizedTrajectoryGenerator::debugDumpInFiles() now also saves text files which can be used to visualize PTGs from MATLAB (see scripts/viewPTG.m) - <a href="http://code.google.com/p/mrpt/source/detail?r=3009" >r3009</a>
 			- mrpt::reactivenav::CHolonomicVFF and mrpt::reactivenav::CHolonomicND now have more configurable parameters, loadable from config files. See their documentation.
@@ -141,6 +141,7 @@
 			- for all probability distribution functions in mrpt::math,
 			- for the parser in mrpt::hwdrivers::CGPSInterface::parse_NMEA()
 			- for the octomap map
+			- for serialization/deserealization of many classes.
 		- Added new documentation page: <a href="env-vars.html" >environment variables</a>.
 		- Removed the build flag "MRPT_BACKCOMPATIB_08X".
 	- BUG FIXES:
@@ -149,6 +150,7 @@
 		- [mrpt-base] mrpt::dynamicsize_vector::resize() performed a memory reallocation even if given the current size, due to an inherited behavior from Eigen. It is not the expected behavior, so it has been fixed. - <a href="http://code.google.com/p/mrpt/source/detail?r=3003" >r3003</a>
 		- [mrpt-base] Wrong computation of normPDF() values for the multidimensional cases. Closes <a href="http://code.google.com/p/mrpt/issues/detail?id=46" >#46</a> - <a href="http://code.google.com/p/mrpt/source/detail?r=3068" >r3068</a>
 		- [mrpt-base] mrpt::poses::CPoint::asString() confused the 2D and 3D cases (Thanks Cipri!)
+		- [mrpt-base] Fixed errors in de-serialization of mrpt::utils::CPointPDFSOG and mrpt::slam::CReflectivityGridMap2D
 		- [mrpt-graphs] Fixed bug in RecursiveSpectralPartition (Thanks to Edu!) - <a href="http://code.google.com/p/mrpt/source/detail?r=3026" >r3026</a>
 		- [mrpt-hwdrivers] Fixed potential SEGFAULT in mrpt::hwdrivers::CGPSInterface (Thanks K.Miyawaki for <a href="http://www.mrpt.org/node/2474" >reporting</a>)
 		- [mrpt-maps] mrpt::slam::COccupancyGridMap2D::getAs3DObject() returned cells with an occupancy of exactly "0" as transparent - <a href="http://code.google.com/p/mrpt/source/detail?r=2957" >r2957</a>

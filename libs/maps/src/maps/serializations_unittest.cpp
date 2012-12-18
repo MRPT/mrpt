@@ -33,34 +33,54 @@
    | POSSIBILITY OF SUCH DAMAGE.                                               |
    +---------------------------------------------------------------------------+ */
 
-#ifndef _mrpt_maps_H
-#define _mrpt_maps_H
 
-#include <mrpt/config.h>
+#include <mrpt/maps.h>
+#include <mrpt/base.h>
+#include <gtest/gtest.h>
 
-// Only really include all headers if we come from a user program (anything
-//  not defining mrpt_*_EXPORTS) or MRPT is being built with precompiled headers.
-#if !defined(mrpt_maps_EXPORTS) || MRPT_ENABLE_PRECOMPILED_HDRS || defined(MRPT_ALWAYS_INCLUDE_ALL_HEADERS)
+using namespace mrpt;
+using namespace mrpt::utils;
+using namespace mrpt::slam;
+using namespace std;
 
-#include <mrpt/slam/CBeacon.h>
-#include <mrpt/slam/CBeaconMap.h>
-#include <mrpt/slam/CColouredPointsMap.h>
-#include <mrpt/slam/CGasConcentrationGridMap2D.h>
-#include <mrpt/slam/CWirelessPowerGridMap2D.h>
-#include <mrpt/slam/CHeightGridMap2D.h>
-#include <mrpt/slam/CReflectivityGridMap2D.h>
-#include <mrpt/slam/COccupancyGridMap2D.h>
-#include <mrpt/slam/CPointsMap.h>
-#include <mrpt/slam/CSimplePointsMap.h>
-#include <mrpt/slam/CWeightedPointsMap.h>
-#include <mrpt/slam/COctoMap.h>
 
-//#include <mrpt/slam/PCL_adapters.h>  // NOTE: This file must be included from the user 
-                                       // code only if he has already #include'd PCL headers.
+// Create a set of classes, then serialize and deserialize to test possible bugs:
+TEST(SerializeTestMaps, WriteReadToMem)
+{
+	const mrpt::utils::TRuntimeClassId* lstClasses[] = {
+		CLASS_ID( CBeacon ),
+		CLASS_ID( CBeaconMap ),
+		CLASS_ID( CColouredPointsMap),
+		CLASS_ID( CGasConcentrationGridMap2D),
+		CLASS_ID( CWirelessPowerGridMap2D),
+		CLASS_ID( CHeightGridMap2D),
+		CLASS_ID( CReflectivityGridMap2D),
+		CLASS_ID( COccupancyGridMap2D),
+		CLASS_ID( CSimplePointsMap),
+		CLASS_ID( CWeightedPointsMap),
+		CLASS_ID( COctoMap)
+		};
 
-#include <mrpt/opengl/CAngularObservationMesh.h>
-#include <mrpt/opengl/CPlanarLaserScan.h>
+	for (size_t i=0;i<sizeof(lstClasses)/sizeof(lstClasses[0]);i++)
+	{
+		try
+		{
+			CMemoryStream  buf;
+			{
+				CSerializable* o = static_cast<CSerializable*>(lstClasses[i]->createObject());
+				buf << *o;
+				delete o;
+			}
 
-#endif // end precomp.headers
+			CSerializablePtr recons;
+			buf.Seek(0);
+			buf >> recons;
+		}
+		catch(std::exception &e)
+		{
+			GTEST_FAIL() <<
+				"Exception during serialization test for class '"<< lstClasses[i]->className <<"':\n" << e.what() << endl;
+		}
+	}
+}
 
-#endif

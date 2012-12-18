@@ -33,34 +33,64 @@
    | POSSIBILITY OF SUCH DAMAGE.                                               |
    +---------------------------------------------------------------------------+ */
 
-#ifndef _mrpt_maps_H
-#define _mrpt_maps_H
+#include <mrpt/base.h>  // Precompiled headers
 
-#include <mrpt/config.h>
+#include <mrpt/utils/CStream.h>
+#include <mrpt/utils/TColor.h>
+#include <mrpt/system/os.h>
 
-// Only really include all headers if we come from a user program (anything
-//  not defining mrpt_*_EXPORTS) or MRPT is being built with precompiled headers.
-#if !defined(mrpt_maps_EXPORTS) || MRPT_ENABLE_PRECOMPILED_HDRS || defined(MRPT_ALWAYS_INCLUDE_ALL_HEADERS)
+using namespace mrpt::utils;
 
-#include <mrpt/slam/CBeacon.h>
-#include <mrpt/slam/CBeaconMap.h>
-#include <mrpt/slam/CColouredPointsMap.h>
-#include <mrpt/slam/CGasConcentrationGridMap2D.h>
-#include <mrpt/slam/CWirelessPowerGridMap2D.h>
-#include <mrpt/slam/CHeightGridMap2D.h>
-#include <mrpt/slam/CReflectivityGridMap2D.h>
-#include <mrpt/slam/COccupancyGridMap2D.h>
-#include <mrpt/slam/CPointsMap.h>
-#include <mrpt/slam/CSimplePointsMap.h>
-#include <mrpt/slam/CWeightedPointsMap.h>
-#include <mrpt/slam/COctoMap.h>
+// Static colors:
+TColor TColor::red		= TColor(255,0,0);
+TColor TColor::green	= TColor(0,255,0);
+TColor TColor::blue		= TColor(0,0,255);
+TColor TColor::black    = TColor(0,0,0);
+TColor TColor::white    = TColor(255,255,255);
+TColor TColor::gray     = TColor(127,127,127);
 
-//#include <mrpt/slam/PCL_adapters.h>  // NOTE: This file must be included from the user 
-                                       // code only if he has already #include'd PCL headers.
 
-#include <mrpt/opengl/CAngularObservationMesh.h>
-#include <mrpt/opengl/CPlanarLaserScan.h>
+// Text streaming:
+std::ostream & mrpt::utils::operator << (std::ostream& o, const TColor & c)
+{
+	char buf[200];
+	mrpt::system::os::sprintf(buf,sizeof(buf),"RGBA=[%u,%u,%u,%u]",static_cast<unsigned int>(c.R),static_cast<unsigned int>(c.G),static_cast<unsigned int>(c.B),static_cast<unsigned int>(c.A) );
+	o << buf;
+	return o;
+}
 
-#endif // end precomp.headers
+// Binary streaming:
+CStream & mrpt::utils::operator << (CStream& o, const TColor & c) 
+{
+	o << c.R<<c.G<<c.B<<c.A;
+	return o;
+}
 
-#endif
+CStream & mrpt::utils::operator >> (CStream& i, TColor & c)
+{
+	i >> c.R>>c.G>>c.B>>c.A;
+	return i;
+}
+
+
+// Text streaming:
+std::ostream & mrpt::utils::operator << (std::ostream& o, const TColorf & c)
+{
+	char buf[200];
+	mrpt::system::os::sprintf(buf,sizeof(buf),"RGBAf=[%f,%f,%f,%f]",c.R,c.G,c.B,c.A);
+	o << buf;
+	return o;
+}
+
+// Binary streaming:
+CStream & mrpt::utils::operator << (CStream& o, const TColorf & c) 
+{
+	o << c.R<<c.G<<c.B<<c.A;
+	return o;
+}
+
+CStream & mrpt::utils::operator >> (CStream& i, TColorf & c)
+{
+	i >> c.R>>c.G>>c.B>>c.A;
+	return i;
+}
