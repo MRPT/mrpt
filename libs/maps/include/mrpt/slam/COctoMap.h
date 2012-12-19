@@ -162,8 +162,6 @@ namespace mrpt
 				void writeToStream(CStream &out) const;		//!< Binary dump to stream
 				void readFromStream(CStream &in);			//!< Binary dump to stream
 
-				double 		sigma_dist; //!< Sigma (standard deviation, in meters) of the exponential used to model the likelihood (default= 0.5meters)
-				double 		max_corr_distance; //!< Maximum distance in meters to consider for the numerator divided by "sigma_dist", so that each point has a minimum (but very small) likelihood to avoid underflows (default=1.0 meters)
 				uint32_t	decimation; //!< Speed up the likelihood computation by considering only one out of N rays (default=1)
 				};
 
@@ -175,6 +173,8 @@ namespace mrpt
 
 
 			/** Computes the log-likelihood of a given observation given an arbitrary robot 3D pose.
+				* In this particular class, the log-likelihood is computed by adding (product of likelihoods) 
+				* the logarithm of the occupancy probability of all cells in which an endpoint from the sensor rays.
 				*
 				* \param takenFrom The robot's pose the observation is supposed to be taken from.
 				* \param obs The observation.
@@ -359,6 +359,13 @@ namespace mrpt
 			virtual bool  internal_insertObservation(
 				const CObservation *obs,
 				const CPose3D *robotPose = NULL );
+
+			/**  Builds the list of 3D points in global coordinates for a generic observation. Used for both, insertObservation() and computeLikelihood().
+			  * \param[out] point3d_sensorPt Is a pointer to a "point3D".
+			  * \param[out] ptr_scan Is in fact a pointer to "octomap::Pointcloud". Not declared as such to avoid headers dependencies in user code.
+			  * \return false if the observation kind is not applicable.
+			  */
+			bool internal_build_PointCloud_for_observation(const CObservation *obs,const CPose3D *robotPose, void *point3d_sensorPt, void *ptr_scan) const;
 
 			void freeOctomap();  //!< Internal use only
 			void allocOctomap(double resolution); //!< Internal use only

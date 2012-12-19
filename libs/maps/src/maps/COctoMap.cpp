@@ -158,20 +158,19 @@ void  COctoMap::readFromStream(CStream &in, int version)
 /*---------------------------------------------------------------
 					Clear
   ---------------------------------------------------------------*/
-void  COctoMap::internal_clear()
+void COctoMap::internal_clear()
 {
 	OCTOMAP_PTR->clear();
 }
 
 /*---------------------------------------------------------------
-				insertObservation
+				internal_build_PointCloud_for_observation
  ---------------------------------------------------------------*/
-bool COctoMap::internal_insertObservation(const CObservation *obs,const CPose3D *robotPose)
+bool COctoMap::internal_build_PointCloud_for_observation(const CObservation *obs,const CPose3D *robotPose, void *point3d_sensorPt, void *ptr_scan) const
 {
 	CPose3D		robotPose3D;
 	if (robotPose) // Default values are (0,0,0)
 		robotPose3D = (*robotPose);
-
 
 	if ( IS_CLASS(obs,CObservation2DRangeScan) )
 	{
@@ -181,12 +180,19 @@ bool COctoMap::internal_insertObservation(const CObservation *obs,const CPose3D 
 		const CObservation2DRangeScan	*o = static_cast<const CObservation2DRangeScan*>( obs );
 
 		// Build a points-map representation of the points from the scan (coordinates are wrt the robot base)
-		octomap::point3d sensorPt(robotPose3D.x(),robotPose3D.y(),robotPose3D.z());
+		octomap::point3d & sensorPt = * reinterpret_cast<octomap::point3d*>(point3d_sensorPt);
+
+		// Sensor_pose = robot_pose (+) sensor_pose_on_robot
+		CPose3D sensorPose(UNINITIALIZED_POSE);
+		sensorPose.composeFrom(robotPose3D,o->sensorPose);
+		sensorPt = octomap::point3d(sensorPose.x(),sensorPose.y(),sensorPose.z());
+
 		const CPointsMap *scanPts = o->buildAuxPointsMap<mrpt::slam::CPointsMap>();
 		const size_t nPts = scanPts->size();
 
 		// Transform 3D point cloud:
-		octomap::Pointcloud  scan;
+		octomap::Pointcloud  &scan = * reinterpret_cast<octomap::Pointcloud*>(ptr_scan);
+		scan.clear();
 		scan.reserve(nPts);
 
 		mrpt::math::TPoint3Df pt;
@@ -202,10 +208,6 @@ bool COctoMap::internal_insertObservation(const CObservation *obs,const CPose3D 
 			// Add to this map:
 			scan.push_back(gx,gy,gz);
 		}
-
-		// Insert:
-		OCTOMAP_PTR->insertScan(scan, sensorPt, insertionOptions.maxrange, insertionOptions.pruning);
-
 		return true;
 	}
 	else if ( IS_CLASS(obs,CObservation3DRangeScan) )
@@ -216,16 +218,22 @@ bool COctoMap::internal_insertObservation(const CObservation *obs,const CPose3D 
 		const CObservation3DRangeScan	*o = static_cast<const CObservation3DRangeScan*>( obs );
 
 		// Build a points-map representation of the points from the scan (coordinates are wrt the robot base)
-		octomap::point3d sensorPt(robotPose3D.x(),robotPose3D.y(),robotPose3D.z());
+		octomap::point3d & sensorPt = * reinterpret_cast<octomap::point3d*>(point3d_sensorPt);
 
 		if (!o->hasPoints3D)
 			return false; 
+
+		// Sensor_pose = robot_pose (+) sensor_pose_on_robot
+		CPose3D sensorPose(UNINITIALIZED_POSE);
+		sensorPose.composeFrom(robotPose3D,o->sensorPose);
+		sensorPt = octomap::point3d(sensorPose.x(),sensorPose.y(),sensorPose.z());
 
 		o->load(); // Just to make sure the points are loaded from an external source, if that's the case...
 		const size_t sizeRangeScan = o->points3D_x.size();
 
 		// Transform 3D point cloud:
-		octomap::Pointcloud  scan;
+		octomap::Pointcloud  &scan = * reinterpret_cast<octomap::Pointcloud*>(ptr_scan);
+		scan.clear();
 		scan.reserve(sizeRangeScan);
 
 		// For quicker access to values as "float" instead of "doubles":
@@ -263,14 +271,28 @@ bool COctoMap::internal_insertObservation(const CObservation *obs,const CPose3D 
 				scan.push_back(gx,gy,gz);
 			}
 		}
-
-		// Insert:
-		OCTOMAP_PTR->insertScan(scan, sensorPt, insertionOptions.maxrange, insertionOptions.pruning);
-
 		return true;
 	}
 
 	return false;
+}
+
+
+/*---------------------------------------------------------------
+				insertObservation
+ ---------------------------------------------------------------*/
+bool COctoMap::internal_insertObservation(const CObservation *obs,const CPose3D *robotPose)
+{
+	octomap::point3d     sensorPt;
+	octomap::Pointcloud  scan;
+
+	if (!internal_build_PointCloud_for_observation(obs,robotPose, static_cast<void*>(&sensorPt), static_cast<void*>(&scan)))
+		return false; // Nothing to do.
+
+	// Insert rays:
+	OCTOMAP_PTR->insertScan(scan, sensorPt, insertionOptions.maxrange, insertionOptions.pruning);
+
+	return true;
 }
 
 
@@ -349,9 +371,7 @@ double COctoMap::TInsertionOptions::getClampingThresMax() const { if(m_parent.ge
 float COctoMap::TInsertionOptions::getClampingThresMaxLog() const { return PARENT_OCTOMAP_PTR_CONST->getClampingThresMaxLog(); }
 
 COctoMap::TLikelihoodOptions::TLikelihoodOptions() :
-	sigma_dist			( 0.05 ),
-	max_corr_distance	( 1.0 ),
-	decimation			( 1 )
+	decimation ( 1 )
 {
 
 }
@@ -360,7 +380,7 @@ void COctoMap::TLikelihoodOptions::writeToStream(CStream &out) const
 {
 	const int8_t version = 0;
 	out << version;
-	out << sigma_dist << max_corr_distance << decimation;
+	out << decimation;
 }
 
 void COctoMap::TLikelihoodOptions::readFromStream(CStream &in)
@@ -371,7 +391,7 @@ void COctoMap::TLikelihoodOptions::readFromStream(CStream &in)
 	{
 		case 0:
 		{
-			in >> sigma_dist >> max_corr_distance >> decimation;
+			in >> decimation;
 		}
 		break;
 		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
@@ -402,8 +422,6 @@ void  COctoMap::TLikelihoodOptions::dumpToTextStream(CStream	&out) const
 {
 	out.printf("\n----------- [COctoMap::TLikelihoodOptions] ------------ \n\n");
 
-	LOADABLEOPTS_DUMP_VAR(sigma_dist,double);
-	LOADABLEOPTS_DUMP_VAR(max_corr_distance,double);
 	LOADABLEOPTS_DUMP_VAR(decimation,int);
 }
 
@@ -435,8 +453,6 @@ void  COctoMap::TLikelihoodOptions::loadFromConfigFile(
 	const mrpt::utils::CConfigFileBase  &iniFile,
 	const string &section)
 {
-	MRPT_LOAD_CONFIG_VAR(sigma_dist,double,iniFile,section);
-	MRPT_LOAD_CONFIG_VAR(max_corr_distance,double,iniFile,section);
 	MRPT_LOAD_CONFIG_VAR(decimation,int,iniFile,section);
 }
 
@@ -446,9 +462,27 @@ void  COctoMap::TLikelihoodOptions::loadFromConfigFile(
   ---------------------------------------------------------------*/
 double COctoMap::computeObservationLikelihood( const CObservation *obs, const CPose3D &takenFrom )
 {
-	MRPT_TODO("Implement computeObservationLikelihood()")
-	THROW_EXCEPTION("TODO");
-	return 0;
+	octomap::point3d     sensorPt;
+	octomap::Pointcloud  scan;
+
+	if (!internal_build_PointCloud_for_observation(obs,&takenFrom, static_cast<void*>(&sensorPt), static_cast<void*>(&scan)))
+		return 0; // Nothing to do.
+
+    octomap::OcTreeKey key;
+	const size_t N=scan.size();
+
+	double log_lik = 0;
+	for (size_t i=0;i<N;i+=likelihoodOptions.decimation)
+	{
+		if (OCTOMAP_PTR_CONST->coordToKeyChecked(scan.getPoint(i), key))
+		{
+			octomap::OcTreeNode *node = OCTOMAP_PTR_CONST->search(key,0 /*depth*/);
+			if (node)
+				log_lik += std::log(node->getOccupancy());
+		}
+	}
+
+	return log_lik;
 }
 
 void COctoMap::computeMatchingWith2D(
