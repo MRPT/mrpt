@@ -86,6 +86,7 @@ void registerAllClasses_mrpt_opengl()
 	registerClass( CLASS_ID( CEllipsoidInverseDepth2D ) );
 	registerClass( CLASS_ID( CEllipsoidInverseDepth3D ) );
 	registerClass( CLASS_ID( CEllipsoidRangeBearing2D ) );
+	registerClass( CLASS_ID( COctoMapVoxels ) );
 
 	// These ones are in the lib: mrpt-obsmaps
 	//registerClass( CLASS_ID( CPlanarLaserScan ) );
