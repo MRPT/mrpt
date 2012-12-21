@@ -54,6 +54,7 @@ CServoeNeck::CServoeNeck() :
 	m_PrevAngles(0),
 	m_NumPrevAngles(5)
 {
+	m_offsets.resize(3,0);
 } // end-constructor
 /*-------------------------------------------------------------
 					default destructor
@@ -274,7 +275,7 @@ bool CServoeNeck::setAngle( double angle, const uint8_t servo, bool fast )
 	if( angle < -m_TruncateFactor*M_PI/2 )	angle = -m_TruncateFactor*M_PI/2;
 	if( angle > m_TruncateFactor*M_PI/2 )	angle = m_TruncateFactor*M_PI/2;
 
-	unsigned int reg = angle2RegValue( angle );
+	unsigned int reg = angle2RegValue( m_offsets[servo]+angle );
 
 	std::cout << "Angle: " << RAD2DEG( angle ) << " - Reg: " << reg << std::endl;
 	return setRegisterValue( reg, servo, fast );
@@ -290,7 +291,7 @@ bool CServoeNeck::setAngleAndSpeed( double angle, const uint8_t servo, const uin
 	if( angle < -m_TruncateFactor*M_PI/2 )	angle = -m_TruncateFactor*M_PI/2;
 	if( angle > m_TruncateFactor*M_PI/2 )	angle = m_TruncateFactor*M_PI/2;
 
-	unsigned int reg	= angle2RegValue( angle );
+	unsigned int reg	= angle2RegValue( m_offsets[servo]+angle );
 	uint8_t thisSpeed	= speed < 15 ? 15 : speed > 250 ? 250 : speed;
 	uint16_t delSpeed	= uint16_t(0.25*1000000/(500+1000*(thisSpeed/180.0f-0.5)));
 	//cout << "Speed: " << int(speed) << " -> " << delSpeed << endl;
@@ -389,7 +390,7 @@ bool CServoeNeck::enableServo( const uint8_t servo )
 -------------------------------------------------------------*/
 bool CServoeNeck::center( const uint8_t servo )
 {
-	unsigned int value = angle2RegValue( 0 );
+	unsigned int value = angle2RegValue( m_offsets[servo] );
 	return setRegisterValue( value, servo  );
 } // end-Center
 
@@ -418,3 +419,14 @@ bool CServoeNeck::checkConnectionAndConnect()
 		return false;
 	}
 } // end-checkConnectionAndConnect
+
+/*-------------------------------------------------------------
+					setOffsets
+-------------------------------------------------------------*/
+void CServoeNeck::setOffsets(float offset0, float offset1, float offset2)
+{
+	m_offsets.resize(3);
+	m_offsets[0] = offset0;
+	m_offsets[1] = offset1;
+	m_offsets[2] = offset2;
+}

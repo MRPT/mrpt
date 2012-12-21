@@ -122,12 +122,17 @@ namespace mrpt
 			  */
 			unsigned int getNumberOfPreviousAngles(){ return m_NumPrevAngles; }
 
+			/**Load the Offset values for each servo
+			 */
+			void setOffsets(float offset0, float offset1, float offset2);
+
 		protected:
 			std::string	m_usbSerialNumber;				//!< A copy of the device serial number (to open the USB FTDI chip).
 			double m_MaxValue;							//!< The value set in the ICR register within the ATMEGA16 controller.
 			double m_TruncateFactor;					//!< The range of turn of the servo will be truncated to "+-m_truncate_factor*(pi/2)".
 			std::deque<double> m_PrevAngles;			//!< A vector containing the last N angles which where passed to the servo (for averaging)
 			unsigned int m_NumPrevAngles;				//!< Number of previous angles to store for averaging
+			std::vector<float> m_offsets;					//!< The offset used for each servo
 
 			bool setRegisterValue( const uint16_t value, const uint8_t servo = 0, bool fast = false );
 			bool setRegisterValueAndSpeed( const uint16_t value, const uint8_t servo, const uint16_t speed );
