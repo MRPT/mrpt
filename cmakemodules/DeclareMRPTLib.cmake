@@ -43,9 +43,9 @@ macro(internal_define_mrpt_lib name headers_only)
 		"${name}"
 		"${name}"
 		"${name}"
-		"${name}"
-		"${name}"
-		"${name}"
+		"${name} Internal Headers"
+		"${name} Public Headers"
+		"${name} Public Headers"
 		)
 	# Only add these ones for "normal" libraries:
 	IF (NOT ${headers_only})
@@ -113,7 +113,7 @@ macro(internal_define_mrpt_lib name headers_only)
 	set(all_${name}_srcs 
 		${${name}_srcs}
 		"${CMAKE_SOURCE_DIR}/libs/${name}/include/mrpt/${name}.h")
-	
+		
 	IF (NOT ${headers_only})
 
 		# A libray target:
