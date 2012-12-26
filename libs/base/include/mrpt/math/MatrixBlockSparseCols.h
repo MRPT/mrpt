@@ -37,6 +37,7 @@
 #define _mrpt_math_MatrixBlockSparseCols_H
 
 #include <mrpt/utils/map_as_vector.h>
+#include <mrpt/math/CMatrixTemplateNumeric.h>  // For mrpt::math::CMatrixDouble
 
 // If the user doesn't have Eigen installed in the system, we'll use the
 // MRPT embedded version, so there is no need to check for Eigen in the system.
@@ -46,6 +47,7 @@ namespace mrpt
 {
 	namespace math
 	{
+
 		/** A templated column-indexed efficient storage of block-sparse Jacobian or Hessian matrices, together with other arbitrary information.
 		  *  Columns are stored in a non-associative container, but the contents of each column are kept within an std::map<> indexed by row.
 		  *  All submatrix blocks have the same size, which allows dense storage of them in fixed-size matrices, avoiding costly memory allocations.
