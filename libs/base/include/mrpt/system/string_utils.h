@@ -135,6 +135,23 @@ namespace mrpt
 		/** Return true if "str" starts with "subStr" (case insensitive)  \sa strStarts */
 		bool BASE_IMPEXP strStartsI(const std::string &str, const std::string &subStr);
 
+		/** Generates a string for a container in the format [A,B,C,...], and the fmt string for <b>each</b> vector element. */
+		template <typename T>
+		std::string sprintf_container(const char *fmt, const T &V )
+		{
+			std::string ret = "[";
+			typename T::const_iterator it=V.begin();
+			for (;it!=V.end();)
+			{
+				ret+= format(fmt,*it);
+				++it;
+				if (it!=V.end())
+					ret+= ",";
+			}
+			ret+="]";
+			return ret;
+		}
+
 		/** @} */
 	} // End of namespace
 } // End of namespace

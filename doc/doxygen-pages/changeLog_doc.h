@@ -126,6 +126,7 @@
 			- mrpt::utils::abs_diff()
 			- mrpt::system::getMRPTLicense()
 			- mrpt::math::noncentralChi2PDF_CDF() is now exposed (was private)
+			- mrpt::utils::sprintf_container()
 	- New examples:
 		- octomap_simple
 	- Build system:

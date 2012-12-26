@@ -83,11 +83,11 @@ namespace mrpt
 			/** -> cols[i]: i'th column.
 			  * -> Each column is a map [row] -> TEntry
 			  */
-			deque<col_t>            cols;
+			std::deque<col_t>            cols;
 			/** "remapped index" is the index of some global variable, interpreted by the external user of this class. */
 			//map<size_t,size_t> col_inverse_remapped_indices;
 			mrpt::utils::map_as_vector<size_t,size_t> col_inverse_remapped_indices;
-			vector<size_t>     col_remapped_indices;
+			std::vector<size_t>     col_remapped_indices;
 
 		public:
 			inline MatrixBlockSparseCols() : cols(0) { }
@@ -96,7 +96,7 @@ namespace mrpt
 			inline const col_t & getCol(const size_t idx) const { return cols[idx]; }
 
 			inline const mrpt::utils::map_as_vector<size_t,size_t> & getColInverseRemappedIndices() const { if (!HAS_REMAP) assert(false); return col_inverse_remapped_indices; }
-			inline const vector<size_t>     & getColRemappedIndices() const        { if (!HAS_REMAP) assert(false); return col_remapped_indices; }
+			inline const std::vector<size_t>     & getColRemappedIndices() const        { if (!HAS_REMAP) assert(false); return col_remapped_indices; }
 
 			/** Append one column, returning a ref to the new col_t data */
 			inline col_t & appendCol(const size_t remapIndex) {
