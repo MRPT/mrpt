@@ -93,6 +93,8 @@ namespace poses
 
 		/** Constructor which left all the quaternion members un-initialized, for use when speed is critical; Use UNINITIALIZED_POSE as argument to this constructor. */
 		inline CPose3DQuat(TConstructorFlags_Quaternions constructor_dummy_param) : m_quat(UNINITIALIZED_QUATERNION) { }
+		/** \overload */
+		inline CPose3DQuat(TConstructorFlags_Poses constructor_dummy_param)  : m_quat(UNINITIALIZED_QUATERNION) { }
 
 		/** Constructor with initilization of the pose - the quaternion is normalized to make sure it's unitary */
 		inline CPose3DQuat(const double x,const double y,const double z,const mrpt::math::CQuaternionDouble &q ) : m_quat(q) { m_coords[0]=x; m_coords[1]=y; m_coords[2]=z; m_quat.normalize(); }
