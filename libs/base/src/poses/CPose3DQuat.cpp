@@ -452,3 +452,25 @@ std::ostream& mrpt::poses::operator << (std::ostream& o, const CPose3DQuat& p)
 	return o;
 }
 
+
+/** Unary - operator: return the inverse pose "-p" (Note that is NOT the same than a pose with all its arguments multiplied by "-1") */
+CPose3DQuat mrpt::poses::operator -(const CPose3DQuat &p)
+{
+	CPose3DQuat ret = p;
+	ret.inverse();
+	return ret;
+}
+
+/** Convert this pose into its inverse, saving the result in itself. \sa operator- */
+void CPose3DQuat::inverse()
+{
+	// Invert translation:
+	this->inverseComposePoint(
+		0,0,0,
+		m_coords[0],m_coords[1],m_coords[2]);
+
+	// Invert rotation: [qr qx qy qz] ==> [qr -qx -qy -qz]
+	m_quat[1] = -m_quat[1];
+	m_quat[2] = -m_quat[2];
+	m_quat[3] = -m_quat[3];
+}

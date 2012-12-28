@@ -278,6 +278,33 @@ protected:
 			"p1r: " << p1r << endl;
 	}
 
+	void test_unaryInverse(double x1,double y1,double z1, double yaw1,double pitch1,double roll1)
+	{
+		const CPose3D p1(x1,y1,z1,yaw1,pitch1,roll1);
+		const CPose3D p1_inv = -p1;
+
+		const CPose3DQuat q1(p1);
+		const CPose3DQuat q1_inv = -q1;
+
+		EXPECT_NEAR(0, (p1_inv.getHomogeneousMatrixVal()-q1_inv.getHomogeneousMatrixVal()).Abs().sumAll(), 1e-5) <<
+			"p1_inv.getHomogeneousMatrixVal():\n" << p1_inv.getHomogeneousMatrixVal() << endl <<
+			"q1_inv.getHomogeneousMatrixVal():\n" << q1_inv.getHomogeneousMatrixVal() << endl;
+
+	}
+
+	void test_copy(double x1,double y1,double z1, double yaw1,double pitch1,double roll1)
+	{
+		const CPose3D p1(x1,y1,z1,yaw1,pitch1,roll1);
+
+		const CPose3DQuat q1(p1);
+		const CPose3DQuat q2 = q1;
+
+		EXPECT_NEAR(0, (q1.getHomogeneousMatrixVal()-q2.getHomogeneousMatrixVal()).Abs().sumAll(), 1e-5) <<
+			"q1.getHomogeneousMatrixVal():\n" << q1.getHomogeneousMatrixVal() << endl <<
+			"q2.getHomogeneousMatrixVal():\n" << q2.getHomogeneousMatrixVal() << endl;
+
+	}
+
 	void test_composeAndInvComposePoint(
 		double x1,double y1,double z1, double yaw1,double pitch1,double roll1,
 		double x, double y, double z)
@@ -407,6 +434,27 @@ TEST_F(Pose3DQuatTests,FromYPRAndBack)
 	test_fromYPRAndBack(1.0,2.0,3.0, DEG2RAD(30),DEG2RAD( 89),DEG2RAD(0));
 	test_fromYPRAndBack(1.0,2.0,3.0, DEG2RAD(30),DEG2RAD(-89),DEG2RAD(0));
 }
+
+TEST_F(Pose3DQuatTests,UnaryInverse)
+{
+	test_unaryInverse(1.0,2.0,3.0, DEG2RAD(0),DEG2RAD(0),DEG2RAD(0));
+	test_unaryInverse(1.0,2.0,3.0, DEG2RAD(90),DEG2RAD(0),DEG2RAD(0));
+	test_unaryInverse(1.0,2.0,3.0, DEG2RAD(-30),DEG2RAD(10),DEG2RAD(60));
+	test_unaryInverse(1.0,2.0,3.0, DEG2RAD(179),DEG2RAD(0),DEG2RAD(60));
+	test_unaryInverse(1.0,2.0,3.0, DEG2RAD(-179),DEG2RAD(0),DEG2RAD(60));
+	test_unaryInverse(1.0,2.0,3.0, DEG2RAD(30),DEG2RAD( 89),DEG2RAD(0));
+	test_unaryInverse(1.0,2.0,3.0, DEG2RAD(30),DEG2RAD(-89),DEG2RAD(0));
+}
+
+
+TEST_F(Pose3DQuatTests,CopyOperator)
+{
+	test_copy(1.0,2.0,3.0, DEG2RAD(0),DEG2RAD(0),DEG2RAD(0));
+	test_copy(1.0,2.0,3.0, DEG2RAD(90),DEG2RAD(0),DEG2RAD(0));
+	test_copy(1.0,2.0,3.0, DEG2RAD(-30),DEG2RAD(10),DEG2RAD(60));
+	test_copy(1.0,2.0,3.0, DEG2RAD(30),DEG2RAD(-89),DEG2RAD(0));
+}
+
 
 TEST_F(Pose3DQuatTests,Compose)
 {

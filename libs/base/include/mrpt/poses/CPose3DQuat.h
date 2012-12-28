@@ -200,6 +200,9 @@ namespace poses
 		 	return ret;
 		}
 
+		/** Convert this pose into its inverse, saving the result in itself. \sa operator- */
+		void inverse();
+
 		 /** Returns a human-readable textual representation of the object (eg: "[x y z qr qx qy qz]", angles in degrees.)
 		   * \sa fromString
 		   */
@@ -453,6 +456,10 @@ namespace poses
 	}; // End of class def.
 
 	std::ostream BASE_IMPEXP  & operator << (std::ostream& o, const CPose3DQuat& p);
+
+	/** Unary - operator: return the inverse pose "-p" (Note that is NOT the same than a pose with all its arguments multiplied by "-1") */
+	CPose3DQuat BASE_IMPEXP operator -(const CPose3DQuat &p);
+
 
 
 	} // End of namespace
