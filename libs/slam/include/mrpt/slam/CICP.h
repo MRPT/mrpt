@@ -69,8 +69,8 @@ namespace mrpt
 		 *
 		 *  For a paper explaining some of the basic equations, see for example:
 		 *   J. Martinez, J. Gonzalez, J. Morales, A. Mandow, A. Garcia-Cerezo,
-		 *   "Genetic and ICP Laser Point Matching for 2D Mobile Robot Motion Estimation",
-		 *    Journal of Field Robotics, vol. 23, no. 1, 2006. ( http://babel.isa.uma.es/~jlblanco/papers/martinez2006gil.pdf )
+		 *   "Mobile robot motion estimation by 2D scan matching with genetic and iterative closest point algorithms",
+		 *    Journal of Field Robotics, vol. 23, no. 1, pp. 21-34, 2006. ( http://babel.isa.uma.es/~jlblanco/papers/martinez2006gil.pdf )
 		 *
 		 * \sa CMetricMapsAlignmentAlgorithm
 		 * \ingroup mrpt_slam_grp
