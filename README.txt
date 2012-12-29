@@ -82,7 +82,7 @@ generated automatically from SVN comits, can be found at:
 ------------------------------------------------------------------------------
 License for the Mobile Robot Programming Toolkit (MRPT)
 
- Copyright (c) 2005-2012, MAPIR group, University of Malaga                
+ Copyright (c) 2005-2013, MAPIR group, University of Malaga                
  All rights reserved.                                                      
                                                                            
  Redistribution and use in source and binary forms, with or without        
