@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="robot-arm-kinematics" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Build>
+			<Target title="Release">
+				<Option output="bin/Release/robot-arm-kinematics" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Release/" />
+				<Option type="0" />
+				<Option compiler="gcc" />
+				<Option projectLinkerOptionsRelation="2" />
+				<Compiler>
+					<Add option="-O2" />
+					<Add directory="D:/code/wxWidgets-2.9.4-win32-msvc9/lib/gcc_lib/msw" />
+				</Compiler>
+				<ResourceCompiler>
+					<Add directory="D:/code/wxWidgets-2.9.4-win32-msvc9/lib/gcc_lib/msw" />
+				</ResourceCompiler>
+				<Linker>
+					<Add option="-s" />
+					<Add library="libwxmsw28_core.a" />
+					<Add library="libwxbase28.a" />
+					<Add library="libwxpng.a" />
+					<Add library="libwxzlib.a" />
+					<Add directory="D:/code/wxWidgets-2.9.4-win32-msvc9/lib/gcc_lib" />
+				</Linker>
+			</Target>
+		</Build>
+		<Compiler>
+			<Add option="-pipe" />
+			<Add option="-mthreads" />
+			<Add option="-D__GNUWIN32__" />
+			<Add option="-D__WXMSW__" />
+			<Add option='[[if (PLATFORM == PLATFORM_MSW &amp;&amp; (GetCompilerFactory().GetCompilerVersionString(_T(&quot;gcc&quot;)) &gt;= _T(&quot;4.0.0&quot;))) print(_T(&quot;-Wno-attributes&quot;));]]' />
+			<Add option="-Wall" />
+			<Add directory="D:/code/wxWidgets-2.9.4-win32-msvc9/include" />
+			<Add directory="D:/code/wxWidgets-2.9.4-win32-msvc9/contrib/include" />
+		</Compiler>
+		<ResourceCompiler>
+			<Add directory="D:/code/wxWidgets-2.9.4-win32-msvc9/include" />
+		</ResourceCompiler>
+		<Linker>
+			<Add option="-mthreads" />
+			<Add library="libkernel32.a" />
+			<Add library="libuser32.a" />
+			<Add library="libgdi32.a" />
+			<Add library="libwinspool.a" />
+			<Add library="libcomdlg32.a" />
+			<Add library="libadvapi32.a" />
+			<Add library="libshell32.a" />
+			<Add library="libole32.a" />
+			<Add library="liboleaut32.a" />
+			<Add library="libuuid.a" />
+			<Add library="libcomctl32.a" />
+			<Add library="libwsock32.a" />
+			<Add library="libodbc32.a" />
+		</Linker>
+		<Unit filename="resource.rc">
+			<Option compilerVar="WINDRES" />
+		</Unit>
+		<Unit filename="robotic_arm_kinematicsApp.cpp" />
+		<Unit filename="robotic_arm_kinematicsApp.h" />
+		<Unit filename="robotic_arm_kinematicsMain.cpp" />
+		<Unit filename="robotic_arm_kinematicsMain.h" />
+		<Unit filename="wxsmith/robotic_arm_kinematicsframe.wxs" />
+		<Extensions>
+			<code_completion />
+			<envvars />
+			<debugger />
+			<wxsmith version="1">
+				<gui name="wxWidgets" src="robotic_arm_kinematicsApp.cpp" main="robotic_arm_kinematicsFrame" init_handlers="necessary" language="CPP" />
+				<resources>
+					<wxFrame wxs="wxsmith/robotic_arm_kinematicsframe.wxs" src="robotic_arm_kinematicsMain.cpp" hdr="robotic_arm_kinematicsMain.h" fwddecl="0" i18n="1" name="robotic_arm_kinematicsFrame" language="CPP" />
+				</resources>
+			</wxsmith>
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>

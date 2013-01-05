@@ -43,6 +43,7 @@
   <h2>Version 1.0.0 - (Under development) </h2></a>
 	- New apps:
 		- <a href="http://www.mrpt.org/Application:holonomic-navigator-demo" >holonomic-navigator-demo</a>
+		- robotic-arm-kinematics
 	- Changes in apps:
 		- <a href="http://www.mrpt.org/Application%3Anavlog-viewer" >navlog-viewer</a>:
 			- Fixed some minor visualization errors.
@@ -64,6 +65,9 @@
 			- mrpt::slam::COctoMap
 		- [mrpt-opengl]
 			- mrpt::opengl::COctoMapVoxels
+	- New libraries:
+		- [mrpt-kinematics] See mrpt::kinematics
+		- ...
 	- Changes in libraries:
 		- These libs are now header-only: <a href="http://code.google.com/p/mrpt/source/detail?r=3035" >r3035</a>, <a href="http://code.google.com/p/mrpt/source/detail?r=3045" >r3045</a>
 			- [mrpt-bayes]

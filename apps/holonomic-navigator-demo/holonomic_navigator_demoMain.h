@@ -37,18 +37,18 @@
 #define HOLONOMIC_NAVIGATOR_DEMOMAIN_H
 
 //(*Headers(holonomic_navigator_demoFrame)
-#include <wx/sizer.h>
 #include <wx/notebook.h>
-#include <wx/menu.h>
-#include <wx/panel.h>
-#include <wx/statusbr.h>
-#include <wx/frame.h>
-#include "MyGLCanvas.h"
+#include <wx/sizer.h>
 #include <wx/stattext.h>
-#include <wx/textctrl.h>
 #include <wx/radiobox.h>
-#include <wx/timer.h>
+#include <wx/menu.h>
+#include <wx/textctrl.h>
 #include <wx/things/toggle.h>
+#include "MyGLCanvas.h"
+#include <wx/panel.h>
+#include <wx/frame.h>
+#include <wx/timer.h>
+#include <wx/statusbr.h>
 //*)
 
 #include <mrpt/opengl.h>
@@ -118,30 +118,30 @@ class holonomic_navigator_demoFrame: public wxFrame
         //*)
 
         //(*Declarations(holonomic_navigator_demoFrame)
-        wxMenuItem* mnuViewMaxRange;
-        wxPanel* Panel1;
-        wxStatusBar* StatusBar1;
-        wxTextCtrl* edHoloParams;
-        wxMenu* Menu3;
         wxTimer timRunSimul;
         wxTextCtrl* edInfoLocalView;
-        wxStaticText* StaticText1;
-        wxMenuItem* mnuViewRobotPath;
-        wxPanel* Panel2;
-        CMyGLCanvas* m_plot3D;
-        wxCustomButton* btnLoadMap;
-        wxCustomButton* btnPlaceRobot;
-        wxMenuItem* MenuItem3;
-        wxCustomButton* btnStart;
+        wxCustomButton* btnStop;
+        wxNotebook* Notebook1;
         wxRadioBox* rbHoloMethod;
         wxMenuItem* MenuItem5;
-        wxCustomButton* btnStop;
-        wxCustomButton* btnPlaceTarget;
         wxStaticText* StaticText2;
-        wxNotebook* Notebook1;
-        CMyGLCanvas* m_plotScan;
-        wxCustomButton* btnHelp;
+        wxCustomButton* btnStart;
+        wxMenu* Menu3;
+        wxTextCtrl* edHoloParams;
+        wxCustomButton* btnLoadMap;
         wxCustomButton* btnQuit;
+        wxPanel* Panel1;
+        wxStaticText* StaticText1;
+        wxMenuItem* MenuItem3;
+        wxMenuItem* mnuViewRobotPath;
+        wxStatusBar* StatusBar1;
+        wxCustomButton* btnHelp;
+        wxCustomButton* btnPlaceRobot;
+        wxPanel* Panel2;
+        wxMenuItem* mnuViewMaxRange;
+        wxCustomButton* btnPlaceTarget;
+        CMyGLCanvas* m_plotScan;
+        CMyGLCanvas* m_plot3D;
         //*)
 
         DECLARE_EVENT_TABLE()
