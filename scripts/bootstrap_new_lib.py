@@ -15,78 +15,78 @@ import string
 
 #------   MAIN   -------
 def main():
-    if os.path.exists("../version_prefix.txt"):
-        os.chdir('..')
+	if os.path.exists(os.path.normpath("../version_prefix.txt")):
+		os.chdir('..')
 
-    if not os.path.exists("./version_prefix.txt"):
-        print "ERROR: Invoke this script from the <MRPT> ROOT directory"
-        return 1  # end
+	if not os.path.exists(os.path.normpath("./version_prefix.txt")):
+		print("ERROR: Invoke this script from the <MRPT> ROOT directory")
+		return 1  # end
 
-    # Make sure our CWD is the root of MRPT source tree:
-    assert os.path.exists("libs")
+	# Make sure our CWD is the root of MRPT source tree:
+	assert os.path.exists("libs")
 
-    print "Enter the name of the new library (example, for 'mrpt-foo', enter 'foo'):"
-    NewLibName = raw_input(">")
+	print("Enter the name of the new library (example, for 'mrpt-foo', enter 'foo'):")
+	NewLibName = input(">")
 
-    # Replace string lists:
-    sFrom = ['@NAME@', '@name@']
-    sTo = [string.upper(NewLibName), string.lower(NewLibName)]
+	# Replace string lists:
+	sFrom = ['@NAME@', '@name@']
+	sTo = [NewLibName.upper(), NewLibName.lower()]
 
-    parseDir = "parse-files/new_lib_bootstrap/"
-    baseDir  = "libs/" + NewLibName +"/"
+	parseDir = os.path.normpath("parse-files/new_lib_bootstrap")
+	baseDir  = os.path.normpath("libs/" + NewLibName )
 
-    assert os.path.exists(parseDir)
-    assert not os.path.exists(baseDir)
-    
-    # Create new lib:
-    # --------------------------------
-    print "Creating new lib in directory: " + baseDir
-    
-    os.mkdir(baseDir)   # Create dirs
-    os.mkdir(baseDir+"include")
-    os.mkdir(baseDir+"include/mrpt")
-    os.mkdir(baseDir+"include/mrpt/"+ string.lower(NewLibName) )
-    os.mkdir(baseDir+"src")
-    
-    replaceInFile(
-        parseDir + 'CMakeLists.txt.in',
-        baseDir + 'CMakeLists.txt',
-        sFrom, sTo)
+	assert os.path.exists(parseDir)
+	assert not os.path.exists(baseDir)
 
-    replaceInFile(
-        parseDir + 'include/mrpt/name.h.in',
-        baseDir  + 'include/mrpt/'+ string.lower(NewLibName) + '.h',
-        sFrom, sTo)
+	# Create new lib:
+	# --------------------------------
+	print("Creating new lib in directory: " + baseDir)
 
-    replaceInFile(
-        parseDir + 'include/mrpt/name/link_pragmas.h.in',
-        baseDir  + 'include/mrpt/'+ string.lower(NewLibName) + '/link_pragmas.h',
-        sFrom, sTo)
+	os.mkdir(baseDir)   # Create dirs
+	os.mkdir(os.path.normpath(baseDir+"/include"))
+	os.mkdir(os.path.normpath(baseDir+"/include/mrpt"))
+	os.mkdir(os.path.normpath(baseDir+"/include/mrpt/"+ NewLibName.lower() ))
+	os.mkdir(os.path.normpath(baseDir+"/src"))
 
-    replaceInFile(
-        parseDir + 'src/precomp_hdr.cpp.in',
-        baseDir  + 'src/precomp_hdr.cpp',
-        sFrom, sTo)
+	replaceInFile(
+		os.path.normpath(parseDir + '/CMakeLists.txt.in'),
+		os.path.normpath(baseDir + '/CMakeLists.txt'),
+		sFrom, sTo)
 
-    replaceInFile(
-        parseDir + 'src/registerAllClasses.cpp.in',
-        baseDir  + 'src/registerAllClasses.cpp',
-        sFrom, sTo)
-    
-  
-    return 0  # OK
+	replaceInFile(
+		os.path.normpath(parseDir+'/include/mrpt/name.h.in'),
+		os.path.normpath(baseDir+'/include/mrpt/'+ NewLibName.lower() + '.h'),
+		sFrom, sTo)
+
+	replaceInFile(
+		os.path.normpath(parseDir+'/include/mrpt/name/link_pragmas.h.in'),
+		os.path.normpath(baseDir+'/include/mrpt/'+ NewLibName.lower() + '/link_pragmas.h'),
+		sFrom, sTo)
+
+	replaceInFile(
+		os.path.normpath(parseDir+'/src/precomp_hdr.cpp.in'),
+		os.path.normpath(baseDir+'/src/precomp_hdr.cpp'),
+		sFrom, sTo)
+
+	replaceInFile(
+		os.path.normpath(parseDir+'/src/registerAllClasses.cpp.in'),
+		os.path.normpath(baseDir+'/src/registerAllClasses.cpp'),
+		sFrom, sTo)
+
+
+	return 0  # OK
 #-----------
 
 
 def replaceInFile(fileIn, fileOut, textToSearch, newText) :
-    o = open(fileOut,"w")
-    data = open(fileIn).read()
-    for idx in range(len(textToSearch)):
-        data = re.sub(textToSearch[idx], newText[idx], data)
-    o.write(data)
-    o.close()
+	o = open(fileOut,"w")
+	data = open(fileIn).read()
+	for idx in range(len(textToSearch)):
+		data = re.sub(textToSearch[idx], newText[idx], data)
+	o.write(data)
+	o.close()
 #-----------
     
 
 if __name__ == "__main__":
-    sys.exit(main())
+	sys.exit(main())
