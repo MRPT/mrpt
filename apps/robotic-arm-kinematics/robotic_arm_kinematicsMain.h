@@ -49,13 +49,11 @@
 #include <wx/panel.h>
 #include <wx/button.h>
 #include <wx/frame.h>
-#include <wx/statusbr.h>
 //*)
 
 #include "PanelDOF.h"
 
 #include <mrpt/kinematics/CKinematicChain.h>
-
 
 class robotic_arm_kinematicsFrame: public wxFrame
 {
@@ -63,6 +61,9 @@ class robotic_arm_kinematicsFrame: public wxFrame
 
         robotic_arm_kinematicsFrame(wxWindow* parent,wxWindowID id = -1);
         virtual ~robotic_arm_kinematicsFrame();
+
+        
+		void OnSliderDOFScroll(wxScrollEvent& event);
 
     private:
 
@@ -74,6 +75,9 @@ class robotic_arm_kinematicsFrame: public wxFrame
         void OnButtonSaveFromEdit(wxCommandEvent& event);
         void OnbtnClearClick(wxCommandEvent& event);
         void OnbtnAddLinkClick(wxCommandEvent& event);
+        void OnLoadBinary(wxCommandEvent& event);
+        void OnSaveBinary(wxCommandEvent& event);
+        void OnrbTypeSelect(wxCommandEvent& event);
         //*)
 
         //(*Identifiers(robotic_arm_kinematicsFrame)
@@ -109,9 +113,12 @@ class robotic_arm_kinematicsFrame: public wxFrame
         static const long ID_PANEL1;
         static const long ID_XY_GLCANVAS;
         static const long ID_STATICTEXT10;
+        static const long ID_PANEL2;
+        static const long ID_MENUITEM3;
+        static const long ID_MENUITEM1;
+        static const long ID_MENUITEM2;
         static const long idMenuQuit;
         static const long idMenuAbout;
-        static const long ID_STATUSBAR1;
         //*)
 
         //(*Declarations(robotic_arm_kinematicsFrame)
@@ -120,7 +127,9 @@ class robotic_arm_kinematicsFrame: public wxFrame
         wxSlider* slA;
         wxSimpleHtmlListBox* SimpleHtmlListBox5;
         wxSimpleHtmlListBox* listLinks;
+        wxMenuItem* MenuItem5;
         wxButton* btnAddLink;
+        wxMenuItem* MenuItem4;
         wxButton* btnA;
         wxTextCtrl* edD;
         wxButton* btnD;
@@ -128,26 +137,28 @@ class robotic_arm_kinematicsFrame: public wxFrame
         wxStaticText* StaticText3;
         wxStaticLine* StaticLine4;
         wxStaticLine* StaticLine2;
+        wxMenuItem* MenuItem3;
         wxTextCtrl* edAlpha;
         wxStaticText* StaticText5;
         wxStaticText* StaticText7;
         wxSimpleHtmlListBox* SimpleHtmlListBox4;
         wxButton* btnClear;
-        wxStatusBar* StatusBar1;
+        wxBoxSizer* boxSizerDOFs;
         wxStaticLine* StaticLine3;
         wxStaticLine* StaticLine1;
         wxButton* btnAlpha;
         wxTextCtrl* edA;
-        wxRadioBox* RadioBox1;
         wxSlider* slTheta;
         wxPanel* panelProperties;
         wxSlider* slAlpha;
         wxSimpleHtmlListBox* SimpleHtmlListBox3;
+        wxPanel* pnDOFs;
         wxButton* btnTh;
         wxSimpleHtmlListBox* SimpleHtmlListBox2;
         wxSlider* slD;
         wxTextCtrl* edTheta;
         CMyGLCanvas* m_plot3D;
+        wxRadioBox* rbType;
         //*)
 
         DECLARE_EVENT_TABLE()
@@ -173,8 +184,9 @@ class robotic_arm_kinematicsFrame: public wxFrame
 		
 		void OnListSelectionChange();
 
-
-
 };
+
+extern robotic_arm_kinematicsFrame *the_win;
+
 
 #endif // robotic_arm_KINEMATICSMAIN_H

@@ -44,6 +44,7 @@
 
 #include "CAboutBox.h"
 
+#include <mrpt/utils.h>
 #include <mrpt/gui/WxUtils.h>
 
 
@@ -113,9 +114,12 @@ const long robotic_arm_kinematicsFrame::ID_SLIDER4 = wxNewId();
 const long robotic_arm_kinematicsFrame::ID_PANEL1 = wxNewId();
 const long robotic_arm_kinematicsFrame::ID_XY_GLCANVAS = wxNewId();
 const long robotic_arm_kinematicsFrame::ID_STATICTEXT10 = wxNewId();
+const long robotic_arm_kinematicsFrame::ID_PANEL2 = wxNewId();
+const long robotic_arm_kinematicsFrame::ID_MENUITEM3 = wxNewId();
+const long robotic_arm_kinematicsFrame::ID_MENUITEM1 = wxNewId();
+const long robotic_arm_kinematicsFrame::ID_MENUITEM2 = wxNewId();
 const long robotic_arm_kinematicsFrame::idMenuQuit = wxNewId();
 const long robotic_arm_kinematicsFrame::idMenuAbout = wxNewId();
-const long robotic_arm_kinematicsFrame::ID_STATUSBAR1 = wxNewId();
 //*)
 
 BEGIN_EVENT_TABLE(robotic_arm_kinematicsFrame,wxFrame)
@@ -123,8 +127,14 @@ BEGIN_EVENT_TABLE(robotic_arm_kinematicsFrame,wxFrame)
     //*)
 END_EVENT_TABLE()
 
+
+robotic_arm_kinematicsFrame *the_win=NULL;
+
+
 robotic_arm_kinematicsFrame::robotic_arm_kinematicsFrame(wxWindow* parent,wxWindowID id)
 {
+	the_win = this;
+
     // Load my custom icons:
 #if wxCHECK_VERSION(2, 8, 0)
     wxArtProvider::Push(new MyArtProvider);
@@ -146,7 +156,6 @@ robotic_arm_kinematicsFrame::robotic_arm_kinematicsFrame(wxWindow* parent,wxWind
     wxFlexGridSizer* FlexGridSizer7;
     wxFlexGridSizer* FlexGridSizer15;
     wxFlexGridSizer* FlexGridSizer8;
-    wxBoxSizer* boxSizerDOFs;
     wxFlexGridSizer* FlexGridSizer14;
     wxFlexGridSizer* FlexGridSizer13;
     wxFlexGridSizer* FlexGridSizer12;
@@ -186,8 +195,8 @@ robotic_arm_kinematicsFrame::robotic_arm_kinematicsFrame(wxWindow* parent,wxWind
     	_("Revolute"),
     	_("Prismatic")
     };
-    RadioBox1 = new wxRadioBox(panelProperties, ID_RADIOBOX1, _("Type"), wxDefaultPosition, wxDefaultSize, 2, __wxRadioBoxChoices_1, 2, 0, wxDefaultValidator, _T("ID_RADIOBOX1"));
-    FlexGridSizer3->Add(RadioBox1, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 2);
+    rbType = new wxRadioBox(panelProperties, ID_RADIOBOX1, _("Type"), wxDefaultPosition, wxDefaultSize, 2, __wxRadioBoxChoices_1, 2, 0, wxDefaultValidator, _T("ID_RADIOBOX1"));
+    FlexGridSizer3->Add(rbType, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 2);
     StaticLine4 = new wxStaticLine(panelProperties, ID_STATICLINE4, wxDefaultPosition, wxSize(10,-1), wxLI_HORIZONTAL, _T("ID_STATICLINE4"));
     FlexGridSizer3->Add(StaticLine4, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 1);
     FlexGridSizer5 = new wxFlexGridSizer(3, 1, 0, 0);
@@ -297,13 +306,25 @@ robotic_arm_kinematicsFrame::robotic_arm_kinematicsFrame(wxWindow* parent,wxWind
     FlexGridSizer14->Add(StaticText10, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
     FlexGridSizer7->Add(FlexGridSizer14, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
     FlexGridSizer7->Add(10,100,1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+    pnDOFs = new wxPanel(this, ID_PANEL2, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL, _T("ID_PANEL2"));
     boxSizerDOFs = new wxBoxSizer(wxHORIZONTAL);
-    FlexGridSizer7->Add(boxSizerDOFs, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
+    pnDOFs->SetSizer(boxSizerDOFs);
+    boxSizerDOFs->Fit(pnDOFs);
+    boxSizerDOFs->SetSizeHints(pnDOFs);
+    FlexGridSizer7->Add(pnDOFs, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
     FlexGridSizer4->Add(FlexGridSizer7, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
     FlexGridSizer1->Add(FlexGridSizer4, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
     SetSizer(FlexGridSizer1);
     MenuBar1 = new wxMenuBar();
     Menu1 = new wxMenu();
+    MenuItem5 = new wxMenuItem(Menu1, ID_MENUITEM3, _("New"), wxEmptyString, wxITEM_NORMAL);
+    Menu1->Append(MenuItem5);
+    Menu1->AppendSeparator();
+    MenuItem3 = new wxMenuItem(Menu1, ID_MENUITEM1, _("Load (binary format)..."), wxEmptyString, wxITEM_NORMAL);
+    Menu1->Append(MenuItem3);
+    MenuItem4 = new wxMenuItem(Menu1, ID_MENUITEM2, _("Save (binary format)..."), wxEmptyString, wxITEM_NORMAL);
+    Menu1->Append(MenuItem4);
+    Menu1->AppendSeparator();
     MenuItem1 = new wxMenuItem(Menu1, idMenuQuit, _("Quit\tAlt-F4"), _("Quit the application"), wxITEM_NORMAL);
     Menu1->Append(MenuItem1);
     MenuBar1->Append(Menu1, _("&File"));
@@ -312,12 +333,6 @@ robotic_arm_kinematicsFrame::robotic_arm_kinematicsFrame(wxWindow* parent,wxWind
     Menu2->Append(MenuItem2);
     MenuBar1->Append(Menu2, _("Help"));
     SetMenuBar(MenuBar1);
-    StatusBar1 = new wxStatusBar(this, ID_STATUSBAR1, 0, _T("ID_STATUSBAR1"));
-    int __wxStatusBarWidths_1[1] = { -1 };
-    int __wxStatusBarStyles_1[1] = { wxSB_NORMAL };
-    StatusBar1->SetFieldsCount(1,__wxStatusBarWidths_1);
-    StatusBar1->SetStatusStyles(1,__wxStatusBarStyles_1);
-    SetStatusBar(StatusBar1);
     FlexGridSizer1->Fit(this);
     FlexGridSizer1->SetSizeHints(this);
     Center();
@@ -325,6 +340,7 @@ robotic_arm_kinematicsFrame::robotic_arm_kinematicsFrame(wxWindow* parent,wxWind
     Connect(ID_SIMPLEHTMLLISTBOX1,wxEVT_COMMAND_LISTBOX_SELECTED,(wxObjectEventFunction)&robotic_arm_kinematicsFrame::OnlistLinksSelect);
     Connect(ID_BUTTON5,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&robotic_arm_kinematicsFrame::OnbtnAddLinkClick);
     Connect(ID_BUTTON6,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&robotic_arm_kinematicsFrame::OnbtnClearClick);
+    Connect(ID_RADIOBOX1,wxEVT_COMMAND_RADIOBOX_SELECTED,(wxObjectEventFunction)&robotic_arm_kinematicsFrame::OnrbTypeSelect);
     Connect(ID_BUTTON1,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&robotic_arm_kinematicsFrame::OnButtonSaveFromEdit);
     Connect(ID_SLIDER1,wxEVT_SCROLL_TOP|wxEVT_SCROLL_BOTTOM|wxEVT_SCROLL_LINEUP|wxEVT_SCROLL_LINEDOWN|wxEVT_SCROLL_PAGEUP|wxEVT_SCROLL_PAGEDOWN|wxEVT_SCROLL_THUMBTRACK|wxEVT_SCROLL_THUMBRELEASE|wxEVT_SCROLL_CHANGED,(wxObjectEventFunction)&robotic_arm_kinematicsFrame::OnSliderScroll);
     Connect(ID_SLIDER1,wxEVT_SCROLL_CHANGED,(wxObjectEventFunction)&robotic_arm_kinematicsFrame::OnSliderScroll);
@@ -341,6 +357,9 @@ robotic_arm_kinematicsFrame::robotic_arm_kinematicsFrame(wxWindow* parent,wxWind
     Connect(ID_SLIDER4,wxEVT_SCROLL_TOP|wxEVT_SCROLL_BOTTOM|wxEVT_SCROLL_LINEUP|wxEVT_SCROLL_LINEDOWN|wxEVT_SCROLL_PAGEUP|wxEVT_SCROLL_PAGEDOWN|wxEVT_SCROLL_THUMBTRACK|wxEVT_SCROLL_THUMBRELEASE|wxEVT_SCROLL_CHANGED,(wxObjectEventFunction)&robotic_arm_kinematicsFrame::OnSliderScroll);
     Connect(ID_SLIDER4,wxEVT_SCROLL_CHANGED,(wxObjectEventFunction)&robotic_arm_kinematicsFrame::OnSliderScroll);
     Connect(ID_SLIDER4,wxEVT_COMMAND_SLIDER_UPDATED,(wxObjectEventFunction)&robotic_arm_kinematicsFrame::OnSliderScroll);
+    Connect(ID_MENUITEM3,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&robotic_arm_kinematicsFrame::OnbtnClearClick);
+    Connect(ID_MENUITEM1,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&robotic_arm_kinematicsFrame::OnLoadBinary);
+    Connect(ID_MENUITEM2,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&robotic_arm_kinematicsFrame::OnSaveBinary);
     Connect(idMenuQuit,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&robotic_arm_kinematicsFrame::OnQuit);
     Connect(idMenuAbout,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&robotic_arm_kinematicsFrame::OnAbout);
     //*)
@@ -385,8 +404,8 @@ robotic_arm_kinematicsFrame::robotic_arm_kinematicsFrame(wxWindow* parent,wxWind
 
 
 	// Update controls:
-	this->UpdateListLinks();
 	this->RegenerateDOFPanels();
+	this->UpdateListLinks();
 
 	this->OnListSelectionChange();
 }
@@ -427,7 +446,7 @@ void robotic_arm_kinematicsFrame::UpdateListLinks()
 		const TKinematicLink & l = m_robot.getLink(i);
 
 		std::stringstream ss;
-		ss << "<b>"<< i << "</b>: ";
+		ss << "<b>"<< (i+1) << "</b>: ";
 		ss << "Type: "; if (l.is_prismatic) ss << "<font color='blue'>P</font>"; else ss << "<font color='red'>R</font>";
 		ss << mrpt::format(" &theta;=%.02f&deg; d=%.02fmm a=%.02fmm &alpha;=%.02f&deg;", RAD2DEG(l.theta), l.d*1e3, l.a*1e3,RAD2DEG(l.alpha));
 
@@ -435,15 +454,71 @@ void robotic_arm_kinematicsFrame::UpdateListLinks()
 	}
 
 
-
 	if (oldSelect>=0)
 		listLinks->SetSelection(oldSelect);
+
+	// Update DOF panels:
+	if (m_dof_panels.size()==m_robot.size())
+	{
+		for (size_t i=0;i<m_dof_panels.size();i++)
+		{
+			const TKinematicLink & l = m_robot.getLink(i);
+			m_dof_panels[i]->Label1->Clear();
+
+			{
+				std::stringstream ss;
+				if (l.is_prismatic)
+					 ss << "d<sub>" << (i+1) << "</sub>";
+				else ss << "&theta;<sub>" << (i+1) << "</sub>";
+
+				m_dof_panels[i]->Label1->Append(_U(ss.str().c_str()));
+			}
+
+			if (l.is_prismatic)
+			{
+				m_dof_panels[i]->Slider1->SetMin(-2000);
+				m_dof_panels[i]->Slider1->SetMax(2000);
+
+				m_dof_panels[i]->Slider1->SetValue( l.d*1e3 );
+
+				std::string s = mrpt::format("%.02f",l.d*1e3);
+				m_dof_panels[i]->TextCtrl1->SetValue(_U(s.c_str()));
+			}
+			else
+			{
+				m_dof_panels[i]->Slider1->SetMin(-180);
+				m_dof_panels[i]->Slider1->SetMax(180);
+				m_dof_panels[i]->Slider1->SetValue( RAD2DEG(l.theta) );
+
+				std::string s = mrpt::format("%.02f",RAD2DEG(l.theta));
+				m_dof_panels[i]->TextCtrl1->SetValue(_U(s.c_str()));
+			}
+
+		}
+	}
 }
 
 /** Regenerate the bottom controls from m_robot */
 void robotic_arm_kinematicsFrame::RegenerateDOFPanels()
 {
+	// Clear:
+	for (size_t i=0;i<m_dof_panels.size();i++)
+		delete m_dof_panels[i];
+	m_dof_panels.clear();
 
+	// Create:
+	const size_t N = m_robot.size();
+	m_dof_panels.resize(N);
+	for (unsigned int i=0;i<N;i++)
+	{
+		const TKinematicLink & l = m_robot.getLink(i);
+
+		m_dof_panels[i] = new PanelDOF(pnDOFs);
+		boxSizerDOFs->Add( m_dof_panels[i] );
+	}
+
+	boxSizerDOFs->Fit(pnDOFs);
+    boxSizerDOFs->SetSizeHints(pnDOFs);
 }
 
 /** Just update the DOF panel status from m_robot */
@@ -471,6 +546,9 @@ void robotic_arm_kinematicsFrame::OnListSelectionChange()
 	edA->SetValue( wxString::Format(_("%.04f"), 1e3*l.a ) );
 	edAlpha->SetValue( wxString::Format(_("%.04f"), RAD2DEG(l.alpha)) );
 
+	rbType->SetSelection( l.is_prismatic ? 1:0);
+
+
 	slTheta->SetValue(RAD2DEG(l.theta));
 	slAlpha->SetValue(RAD2DEG(l.alpha));
 	slD->SetValue(1e3*l.d);
@@ -483,6 +561,24 @@ void robotic_arm_kinematicsFrame::OnlistLinksSelect(wxCommandEvent& event)
 	OnListSelectionChange();
 }
 
+// Sliders of the DOFs bottom panels:
+void robotic_arm_kinematicsFrame::OnSliderDOFScroll(wxScrollEvent& event)
+{
+	for (size_t i=0;i<m_dof_panels.size();i++)
+	{
+		TKinematicLink & l = m_robot.getLinkRef(i);
+		if (l.is_prismatic)
+		     l.d = m_dof_panels[i]->Slider1->GetValue()*1e-3;
+		else l.theta = DEG2RAD(m_dof_panels[i]->Slider1->GetValue());
+	}
+
+	UpdateListLinks();
+
+	m_robot.update3DObject();
+	m_plot3D->Refresh();
+}
+
+// Sliders of the left panel:
 void robotic_arm_kinematicsFrame::OnSliderScroll(wxScrollEvent& event)
 {
 	const int sel = listLinks->GetSelection();
@@ -541,6 +637,8 @@ void robotic_arm_kinematicsFrame::OnButtonSaveFromEdit(wxCommandEvent& event)
 	edAlpha->GetValue().ToDouble(&d);
 	l.alpha = DEG2RAD(d);
 
+	l.is_prismatic = (rbType->GetSelection()==1);
+
 	OnListSelectionChange();
 
 	UpdateListLinks();
@@ -554,8 +652,8 @@ void robotic_arm_kinematicsFrame::OnbtnClearClick(wxCommandEvent& event)
 {
 	m_robot.clear();
 
-	this->UpdateListLinks();
 	this->RegenerateDOFPanels();
+	this->UpdateListLinks();
 
 	this->OnListSelectionChange();
 
@@ -567,12 +665,74 @@ void robotic_arm_kinematicsFrame::OnbtnAddLinkClick(wxCommandEvent& event)
 {
 	m_robot.addLink(0,0,0,0,false);
 
-	this->UpdateListLinks();
 	this->RegenerateDOFPanels();
+	this->UpdateListLinks();
 
 	listLinks->SetSelection( m_robot.size()-1 );
 
 	this->OnListSelectionChange();
 	this->Regenerate3DView();
 	m_plot3D->Refresh();
+}
+
+void robotic_arm_kinematicsFrame::OnLoadBinary(wxCommandEvent& event)
+{
+	WX_START_TRY
+
+	wxFileDialog dlg(
+		this,
+		_("Select kinematic chain to load"),
+		_("."),
+		_("*.kinbin"),
+		wxT("Kinematic chains binary files (*.kinbin)|*.kinbin|All files (*.*)|*.*"),
+		wxFD_OPEN | wxFD_FILE_MUST_EXIST );
+
+	if (dlg.ShowModal() != wxID_OK)
+		return;
+
+	const wxString sFil =  dlg.GetPath();
+	const std::string fil = std::string(sFil.mb_str());
+
+	mrpt::utils::CFileGZInputStream f(fil);
+	f >> m_robot;
+
+	this->RegenerateDOFPanels();
+	this->UpdateListLinks();
+
+	this->OnListSelectionChange();
+
+	this->Regenerate3DView();
+	m_plot3D->Refresh();
+
+	WX_END_TRY
+}
+
+void robotic_arm_kinematicsFrame::OnSaveBinary(wxCommandEvent& event)
+{
+	WX_START_TRY
+
+	wxFileDialog dlg(
+		this,
+		_("Save kinematic chain"),
+		_("."),
+		_("*.kinbin"),
+		wxT("Kinematic chains binary files (*.kinbin)|*.kinbin|All files (*.*)|*.*"),
+		wxFD_SAVE | wxFD_OVERWRITE_PROMPT );
+
+	if (dlg.ShowModal() != wxID_OK)
+		return;
+
+	const wxString sFil =  dlg.GetPath();
+	const std::string fil = std::string(sFil.mb_str());
+
+	mrpt::utils::CFileOutputStream f(fil);
+	f << m_robot;
+
+	WX_END_TRY
+}
+
+void robotic_arm_kinematicsFrame::OnrbTypeSelect(wxCommandEvent& event)
+{
+	OnButtonSaveFromEdit(event);
+
 }

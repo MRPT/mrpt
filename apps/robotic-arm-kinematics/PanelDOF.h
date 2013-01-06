@@ -69,6 +69,7 @@ class PanelDOF: public wxPanel
 	private:
 
 		//(*Handlers(PanelDOF)
+		void OnSlider1CmdScroll(wxScrollEvent& event);
 		//*)
 
 		DECLARE_EVENT_TABLE()

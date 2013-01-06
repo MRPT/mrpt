@@ -61,7 +61,20 @@ void CCylinder::render_dl() const	{
     glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
 	checkOpenGLError();
 	GLUquadricObj *obj=gluNewQuadric();
-	gluCylinder(obj,mBaseRadius,mTopRadius,mHeight,mSlices,mStacks);
+
+	// This is required to draw cylinders of negative height.
+	const float absHeight = std::abs(mHeight);
+	if (mHeight<0)
+	{
+		glPushMatrix();
+		glTranslatef(0,0,mHeight);
+	}
+
+	gluCylinder(obj,mBaseRadius,mTopRadius,absHeight,mSlices,mStacks);
+
+	if (mHeight<0)
+		glPopMatrix();
+
 	if (mHasBottomBase) gluDisk(obj,0,mBaseRadius,mSlices,1);
 	if (mHasTopBase&&mTopRadius>0)	{
 		glPushMatrix();

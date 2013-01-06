@@ -41,6 +41,8 @@
 #include <wx/string.h>
 //*)
 
+#include "robotic_arm_kinematicsMain.h"
+
 //(*IdInit(PanelDOF)
 const long PanelDOF::ID_SIMPLEHTMLLISTBOX2 = wxNewId();
 const long PanelDOF::ID_SLIDER1 = wxNewId();
@@ -63,7 +65,7 @@ PanelDOF::PanelDOF(wxWindow* parent,wxWindowID id)
 	Label1->Append(_("&theta;<sub>i</sub>"));
 	Label1->Disable();
 	Label1->SetBackgroundColour(wxSystemSettings::GetColour(wxSYS_COLOUR_BTNFACE));
-	FlexGridSizer1->Add(Label1, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 2);
+	FlexGridSizer1->Add(Label1, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 2);
 	Slider1 = new wxSlider(this, ID_SLIDER1, 0, -180, 180, wxDefaultPosition, wxDefaultSize, wxSL_VERTICAL, wxDefaultValidator, _T("ID_SLIDER1"));
 	FlexGridSizer1->Add(Slider1, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
 	TextCtrl1 = new wxTextCtrl(this, ID_TEXTCTRL1, wxEmptyString, wxDefaultPosition, wxSize(50,-1), 0, wxDefaultValidator, _T("ID_TEXTCTRL1"));
@@ -72,6 +74,10 @@ PanelDOF::PanelDOF(wxWindow* parent,wxWindowID id)
 	FlexGridSizer1->Fit(this);
 	FlexGridSizer1->SetSizeHints(this);
 	//*)
+
+	Connect( ID_SLIDER1,wxEVT_SCROLL_TOP|wxEVT_SCROLL_BOTTOM|wxEVT_SCROLL_LINEUP|wxEVT_SCROLL_LINEDOWN|wxEVT_SCROLL_PAGEUP|wxEVT_SCROLL_PAGEDOWN|wxEVT_SCROLL_THUMBTRACK|wxEVT_SCROLL_THUMBRELEASE|wxEVT_SCROLL_CHANGED,(wxObjectEventFunction)&robotic_arm_kinematicsFrame::OnSliderDOFScroll, NULL,the_win );
+	Connect(ID_SLIDER1,wxEVT_COMMAND_SLIDER_UPDATED,(wxObjectEventFunction)&robotic_arm_kinematicsFrame::OnSliderDOFScroll, NULL,the_win);
+    //Connect(ID_SLIDER1,wxEVT_SCROLL_CHANGED,(wxObjectEventFunction)&robotic_arm_kinematicsFrame::OnSliderScroll);
 }
 
 PanelDOF::~PanelDOF()
@@ -80,3 +86,7 @@ PanelDOF::~PanelDOF()
 	//*)
 }
 
+
+void PanelDOF::OnSlider1CmdScroll(wxScrollEvent& event)
+{
+}
