@@ -177,7 +177,7 @@ void CAboutBox::OnInit(wxInitDialogEvent& event)
 		cout << "wxWidgets version:      " << wxVer.mb_str() << endl;
     }
 
-	lbProgName->SetLabel( wxT("Holonomic Navigator demo"));
+	lbProgName->SetLabel( wxT("Robotic Arm Kinematics GUI"));
 	lbProgName->SetForegroundColour( wxColour(0,0,128) );
 
     FlexGridSizer1->RecalcSizes();

@@ -58,6 +58,8 @@
 			<Add library="libwsock32.a" />
 			<Add library="libodbc32.a" />
 		</Linker>
+		<Unit filename="PanelDOF.cpp" />
+		<Unit filename="PanelDOF.h" />
 		<Unit filename="resource.rc">
 			<Option compilerVar="WINDRES" />
 		</Unit>
@@ -65,6 +67,7 @@
 		<Unit filename="robotic_arm_kinematicsApp.h" />
 		<Unit filename="robotic_arm_kinematicsMain.cpp" />
 		<Unit filename="robotic_arm_kinematicsMain.h" />
+		<Unit filename="wxsmith/PanelDOF.wxs" />
 		<Unit filename="wxsmith/robotic_arm_kinematicsframe.wxs" />
 		<Extensions>
 			<code_completion />
@@ -74,6 +77,7 @@
 				<gui name="wxWidgets" src="robotic_arm_kinematicsApp.cpp" main="robotic_arm_kinematicsFrame" init_handlers="necessary" language="CPP" />
 				<resources>
 					<wxFrame wxs="wxsmith/robotic_arm_kinematicsframe.wxs" src="robotic_arm_kinematicsMain.cpp" hdr="robotic_arm_kinematicsMain.h" fwddecl="0" i18n="1" name="robotic_arm_kinematicsFrame" language="CPP" />
+					<wxPanel wxs="wxsmith/PanelDOF.wxs" src="PanelDOF.cpp" hdr="PanelDOF.h" fwddecl="0" i18n="1" name="PanelDOF" language="CPP" />
 				</resources>
 			</wxsmith>
 		</Extensions>

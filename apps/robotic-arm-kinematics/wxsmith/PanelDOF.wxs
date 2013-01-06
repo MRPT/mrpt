@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<wxsmith>
+	<object class="wxPanel" name="PanelDOF">
+		<object class="wxFlexGridSizer" variable="FlexGridSizer1" member="no">
+			<cols>1</cols>
+			<rows>3</rows>
+			<object class="sizeritem">
+				<object class="wxSimpleHtmlListBox" name="ID_SIMPLEHTMLLISTBOX2" variable="Label1" member="yes">
+					<content>
+						<item>&amp;theta;&lt;sub&gt;i&lt;/sub&gt;</item>
+					</content>
+					<default>-1</default>
+					<size>-1,30</size>
+					<enabled>0</enabled>
+					<bg>wxSYS_COLOUR_BTNFACE</bg>
+					<style>wxNO_BORDER</style>
+				</object>
+				<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+				<border>2</border>
+				<option>1</option>
+			</object>
+			<object class="sizeritem">
+				<object class="wxSlider" name="ID_SLIDER1" variable="Slider1" member="yes">
+					<min>-180</min>
+					<max>180</max>
+					<style>wxSL_VERTICAL</style>
+				</object>
+				<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+				<border>5</border>
+				<option>1</option>
+			</object>
+			<object class="sizeritem">
+				<object class="wxTextCtrl" name="ID_TEXTCTRL1" variable="TextCtrl1" member="yes">
+					<size>50,-1</size>
+				</object>
+				<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+				<border>5</border>
+				<option>1</option>
+			</object>
+		</object>
+	</object>
+</wxsmith>

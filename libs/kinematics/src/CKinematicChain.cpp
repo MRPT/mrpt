@@ -36,6 +36,8 @@
 #include <mrpt/kinematics.h>  // Precompiled headers
 
 #include <mrpt/kinematics/CKinematicChain.h>
+#include <mrpt/utils/CStream.h>
+#include <mrpt/opengl.h>
 
 //#include <mrpt/math/slerp.h>
 
@@ -48,9 +50,27 @@ using namespace std;
 
 IMPLEMENTS_SERIALIZABLE(CKinematicChain, CSerializable, mrpt::kinematics)
 
+
+/** Appends a new link to the robotic arm, with the given Denavit-Hartenberg parameters (see TKinematicLink for further details) */
+void CKinematicChain::addLink(double theta, double d, double a, double alpha, bool is_prismatic)
+{
+	m_links.push_back( TKinematicLink(theta,d,a,alpha,is_prismatic) );
+}
+
+const TKinematicLink& CKinematicChain::getLink(const size_t idx) const
+{
+	ASSERT_BELOW_(idx,m_links.size())
+	return m_links[idx];
+}
+
+TKinematicLink& CKinematicChain::getLinkRef(const size_t idx)
+{
+	ASSERT_BELOW_(idx,m_links.size())
+	return m_links[idx];
+}
+
 /*---------------------------------------------------------------
-   Implements the writing to a CStream capability of
-     CSerializable objects
+   Implements the writing to a CStream capability of CSerializable objects
   ---------------------------------------------------------------*/
 void  CKinematicChain::writeToStream(CStream &out,int *version) const
 {
@@ -58,13 +78,12 @@ void  CKinematicChain::writeToStream(CStream &out,int *version) const
 		*version = 0;
 	else
 	{
-		//out << m_coords[0] << m_coords[1] << m_phi;
+		out << m_links;
 	}
 }
 
 /*---------------------------------------------------------------
-	Implements the reading from a CStream capability of
-		CSerializable objects
+	Implements the reading from a CStream capability of CSerializable objects
   ---------------------------------------------------------------*/
 void  CKinematicChain::readFromStream(CStream &in,int version)
 {
@@ -72,10 +91,116 @@ void  CKinematicChain::readFromStream(CStream &in,int version)
 	{
 	case 0:
 		{
-			//in >> x0 >> y0 >> phi0;
+			in >> m_links;
 		} break;
 	default:
 		MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
-
 	};
+}
+
+/** Go thru all the links of the chain and compute the global pose of each link. The "ground" link pose "pose0" defaults to the origin of coordinates, 
+	* but anything else can be passed as the optional argument. */
+void CKinematicChain::recomputeAllPoses( mrpt::aligned_containers<mrpt::poses::CPose3D>::vector_t & poses, const mrpt::poses::CPose3D & pose0 )const
+{
+	const size_t N=m_links.size();
+
+	poses.resize(N);
+
+	CPose3D p = pose0;  // Cummulative pose
+
+	for (size_t i=0;i<N;i++)
+	{
+		// Build the 3D pose change of the i'th link:
+		const double th = m_links[i].theta;
+		const double alpha = m_links[i].alpha;
+		const double d = m_links[i].d;
+		const double a = m_links[i].a;
+
+		const double t_vals[3] = {
+			a * cos(th),
+			a * sin(th),
+			d };
+		const double r_vals[3*3] = {
+			cos(th), -sin(th)*cos(alpha), sin(th)*sin(alpha),
+			sin(th), cos(th)*cos(alpha), -cos(th)*sin(alpha),
+			0, sin(alpha), cos(alpha) };
+
+		const CMatrixDouble33 R(r_vals);
+		const CArrayDouble<3> t(t_vals);
+
+		CPose3D link(R,t);
+
+		p.composeFrom(p,link);
+
+		poses[i] = p;
+	}
+}
+
+void CKinematicChain::getAs3DObject(mrpt::opengl::CSetOfObjectsPtr &obj) const
+{
+	ASSERT_(obj.present())
+	const size_t N=m_links.size();
+
+	// Recompute current poses:
+	mrpt::aligned_containers<mrpt::poses::CPose3D>::vector_t all_poses;
+	recomputeAllPoses( all_poses );
+
+	m_last_gl_objects.resize(N);
+
+	// Ground:
+	{
+		mrpt::opengl::CSetOfObjectsPtr gl_corner = mrpt::opengl::stock_objects::CornerXYZSimple( 0.1f, 3.0f );
+		gl_corner->setName( "0" );
+		gl_corner->enableShowName();
+		obj->insert(gl_corner);
+	}
+
+	// Links:
+	for (size_t i=0;i<N;i++)
+	{
+		mrpt::opengl::CSetOfObjectsPtr gl_corner = mrpt::opengl::stock_objects::CornerXYZSimple( 0.1f, 3.0f );
+		gl_corner->setPose( all_poses[i] );
+		
+		gl_corner->setName( mrpt::format("%u",static_cast<unsigned int>(i+1)) );
+		gl_corner->enableShowName();
+
+		obj->insert(gl_corner);
+		m_last_gl_objects[i] = gl_corner;
+	}
+}
+
+void CKinematicChain::update3DObject() const
+{
+	ASSERTMSG_(m_links.size()==m_last_gl_objects.size(), "The kinematic chain has changed since the last call to getAs3DObject()")
+
+	const size_t N=m_links.size();
+
+	// Recompute current poses:
+	mrpt::aligned_containers<mrpt::poses::CPose3D>::vector_t all_poses;
+	recomputeAllPoses( all_poses );
+
+	for (size_t i=0;i<N;i++)
+	{
+		m_last_gl_objects[i]->setPose( all_poses[i] );
+	}
+
+}
+
+/** Erases all links and leave the robot arm empty. */
+void CKinematicChain::clear()
+{
+	m_links.clear();
+	m_last_gl_objects.clear();
+}
+
+
+mrpt::utils::CStream & mrpt::kinematics::operator>>(mrpt::utils::CStream &in,TKinematicLink &o)
+{
+	in >> o.theta >> o.d >> o.a >> o.alpha;
+	return in;
+}
+mrpt::utils::CStream & mrpt::kinematics::operator<<(mrpt::utils::CStream &out,const TKinematicLink &o)
+{
+	out << o.theta << o.d << o.a << o.alpha;
+	return out;
 }

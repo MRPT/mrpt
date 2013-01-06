@@ -16,6 +16,7 @@ IF(wxWidgets_FOUND)
 	SET(SRCS
 	robotic_arm_kinematicsApp.cpp robotic_arm_kinematicsApp.h
 	robotic_arm_kinematicsMain.cpp robotic_arm_kinematicsMain.h
+	PanelDOF.cpp PanelDOF.h
 	CAboutBox.cpp  CAboutBox.h
 	MyGLCanvas.cpp MyGLCanvas.h
 	)
