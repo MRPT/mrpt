@@ -37,8 +37,12 @@
 #include <wx/msgdlg.h>
 
 //(*InternalHeaders(robotic_arm_kinematicsFrame)
+#include <wx/artprov.h>
+#include <wx/bitmap.h>
+#include <wx/icon.h>
 #include <wx/settings.h>
 #include <wx/intl.h>
+#include <wx/image.h>
 #include <wx/string.h>
 //*)
 
@@ -167,6 +171,11 @@ robotic_arm_kinematicsFrame::robotic_arm_kinematicsFrame(wxWindow* parent,wxWind
 
     Create(parent, wxID_ANY, _("Robotic Arm Kinematic GUI - Part of MRPT"), wxDefaultPosition, wxDefaultSize, wxDEFAULT_FRAME_STYLE, _T("wxID_ANY"));
     SetBackgroundColour(wxSystemSettings::GetColour(wxSYS_COLOUR_BTNFACE));
+    {
+    	wxIcon FrameIcon;
+    	FrameIcon.CopyFromBitmap(wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("MAIN_ICON")),wxART_FRAME_ICON));
+    	SetIcon(FrameIcon);
+    }
     FlexGridSizer1 = new wxFlexGridSizer(1, 2, 0, 0);
     FlexGridSizer1->AddGrowableCol(1);
     FlexGridSizer1->AddGrowableRow(0);

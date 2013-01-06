@@ -136,20 +136,25 @@ void CKinematicChain::recomputeAllPoses( mrpt::aligned_containers<mrpt::poses::C
 	}
 }
 
-void addBar(mrpt::opengl::CSetOfObjectsPtr &objs, const double d, const double a)
+const float R = 0.01;
+
+void addBar_D(mrpt::opengl::CSetOfObjectsPtr &objs, const double d)
 {
-	const float R = 0.01;
 	
 	mrpt::opengl::CCylinderPtr gl_cyl = mrpt::opengl::CCylinder::Create(R,R, d );
 	gl_cyl->setColor_u8( mrpt::utils::TColor(0x00,0x00,0xff) );
 	gl_cyl->setName("cyl.d");
 
-	mrpt::opengl::CCylinderPtr gl_cyl2 = mrpt::opengl::CCylinder::Create(R,R, a );
+	objs->insert(gl_cyl);
+}
+
+void addBar_A(mrpt::opengl::CSetOfObjectsPtr &objs, const double a)
+{
+	mrpt::opengl::CCylinderPtr gl_cyl2 = mrpt::opengl::CCylinder::Create(R,R, -a );
 	gl_cyl2->setColor_u8( mrpt::utils::TColor(0xff,0x00,0x00) );
-	gl_cyl2->setPose( mrpt::poses::CPose3D(0,0,d, 0, DEG2RAD(90),0) );
+	gl_cyl2->setPose( mrpt::poses::CPose3D(0,0,0, 0, DEG2RAD(90),0) );
 	gl_cyl2->setName("cyl.a");
 
-	objs->insert(gl_cyl);
 	objs->insert(gl_cyl2);
 }
 
@@ -164,30 +169,21 @@ void CKinematicChain::getAs3DObject(mrpt::opengl::CSetOfObjectsPtr &obj) const
 
 	m_last_gl_objects.resize(N+1);
 
-	// Ground:
+	// Ground [0] and Links [1-N]:
+	for (size_t i=0;i<=N;i++)
 	{
 		mrpt::opengl::CSetOfObjectsPtr gl_corner = mrpt::opengl::stock_objects::CornerXYZSimple( 0.1f, 3.0f );
-		gl_corner->setName( "0" );
-		gl_corner->enableShowName();
-		addBar(gl_corner,m_links[0].d,m_links[0].a);
-		obj->insert(gl_corner);
-		m_last_gl_objects[0] = gl_corner;
-	}
-
-	// Links:
-	for (size_t i=0;i<N;i++)
-	{
-		mrpt::opengl::CSetOfObjectsPtr gl_corner = mrpt::opengl::stock_objects::CornerXYZSimple( 0.1f, 3.0f );
-		gl_corner->setPose( all_poses[i] );
+		if (i>0)
+			gl_corner->setPose( all_poses[i-1] );
 		
-		gl_corner->setName( mrpt::format("%u",static_cast<unsigned int>(i+1)) );
+		gl_corner->setName( mrpt::format("%u",static_cast<unsigned int>(i)) );
 		gl_corner->enableShowName();
 
-		if (i<(N-1))
-			addBar(gl_corner,m_links[i+1].d,m_links[i+1].a);
+		if (i<N) addBar_D(gl_corner,m_links[i].d);
+		if (i>0) addBar_A(gl_corner,m_links[i-1].a);
 
 		obj->insert(gl_corner);
-		m_last_gl_objects[i+1] = gl_corner;
+		m_last_gl_objects[i] = gl_corner;
 	}
 }
 
@@ -205,20 +201,21 @@ void CKinematicChain::update3DObject() const
 	{
 		mrpt::opengl::CSetOfObjectsPtr gl_objs = mrpt::opengl::CSetOfObjectsPtr(m_last_gl_objects[i]);
 		if (i>0)
-		{
 			gl_objs->setPose( all_poses[i-1] );
-		}
 		
 		if (i<N)
 		{
 			mrpt::opengl::CCylinderPtr glCyl = mrpt::opengl::CCylinderPtr( gl_objs->getByName("cyl.d") );
 			const double d = m_links[i].d;
 			glCyl->setHeight( d );
+		}
 
+		if (i>0)
+		{
 			mrpt::opengl::CCylinderPtr glCyl2 = mrpt::opengl::CCylinderPtr( gl_objs->getByName("cyl.a") );
-			const double a = m_links[i].a;
-			glCyl2->setPose( mrpt::poses::CPose3D(0,0,d, 0, DEG2RAD(90),0) );
-			glCyl2->setHeight( a );
+			const double a = m_links[i-1].a;
+			//glCyl2->setPose( mrpt::poses::CPose3D(0,0,d, 0, DEG2RAD(90),0) );
+			glCyl2->setHeight( -a );
 		}
 	}
 
@@ -234,11 +231,11 @@ void CKinematicChain::clear()
 
 mrpt::utils::CStream & mrpt::kinematics::operator>>(mrpt::utils::CStream &in,TKinematicLink &o)
 {
-	in >> o.theta >> o.d >> o.a >> o.alpha;
+	in >> o.theta >> o.d >> o.a >> o.alpha >> o.is_prismatic;
 	return in;
 }
 mrpt::utils::CStream & mrpt::kinematics::operator<<(mrpt::utils::CStream &out,const TKinematicLink &o)
 {
-	out << o.theta << o.d << o.a << o.alpha;
+	out << o.theta << o.d << o.a << o.alpha << o.is_prismatic;
 	return out;
 }

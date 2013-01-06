@@ -3,6 +3,7 @@
 	<object class="wxFrame" name="robotic_arm_kinematicsFrame">
 		<title>Robotic Arm Kinematic GUI - Part of MRPT</title>
 		<centered>1</centered>
+		<icon stock_id="MAIN_ICON" stock_client="wxART_FRAME_ICON" />
 		<bg>wxSYS_COLOUR_BTNFACE</bg>
 		<id_arg>0</id_arg>
 		<object class="wxFlexGridSizer" variable="FlexGridSizer1" member="no">
