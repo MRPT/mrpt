@@ -6,7 +6,7 @@ INCLUDE(InstallRequiredSystemLibraries)
 
 SET(CPACK_PACKAGE_DESCRIPTION_SUMMARY "The Mobile Robot Programming Toolkit (MRPT)")
 SET(CPACK_PACKAGE_VENDOR "Jose Luis Blanco Claraco")
-SET(CPACK_PACKAGE_CONTACT "Jose Luis Blanco Claraco <jlblanco@ctima.uma.es>")
+SET(CPACK_PACKAGE_CONTACT "Jose Luis Blanco Claraco <joseluisblancoc@gmail.com>")
 
 SET(CPACK_PACKAGE_DESCRIPTION_FILE "${CMAKE_CURRENT_SOURCE_DIR}/README.txt")
 SET(CPACK_RESOURCE_FILE_WELCOME "${CMAKE_CURRENT_SOURCE_DIR}/README.txt")
@@ -22,13 +22,18 @@ SET(CPACK_RESOURCE_FILE_README "${CMAKE_CURRENT_SOURCE_DIR}/README.txt")
 
 SET(CPACK_SOURCE_GENERATOR "TGZ")
 
-SET(CPACK_PACKAGE_INSTALL_DIRECTORY "mrpt-${CMAKE_MRPT_VERSION_NUMBER_MAJOR}.${CMAKE_MRPT_VERSION_NUMBER_MINOR}.${CMAKE_MRPT_VERSION_NUMBER_PATCH}")
+SET(CPACK_PACKAGE_INSTALL_DIRECTORY "mrpt-${CMAKE_MRPT_VERSION_NUMBER_MAJOR}.${CMAKE_MRPT_VERSION_NUMBER_MINOR}.${CMAKE_MRPT_VERSION_NUMBER_PATCH}" CACHE STRING "Name of the install directory")
+MARK_AS_ADVANCED(CPACK_PACKAGE_INSTALL_DIRECTORY)
 
 IF(WIN32)
 	# --------------------------------
 	# Packages for Windows
 	# --------------------------------
 	SET(CPACK_SOURCE_IGNORE_FILES ".svn/;.*~;build;CMakeCache.txt;_CPack_Pakages/;CMakeFiles/;install/;Makefile;*.cmake")
+	
+	SET(PACKAGE_INCLUDES_SOURCES ON CACHE BOOL "Include all sources while building packages")
+	MARK_AS_ADVANCED(PACKAGE_INCLUDES_SOURCES)
+	
 
 	# There is a bug in NSI that does not handle full unix paths properly. Make
 	# sure there is at least one set of four (4) backlasshes.
@@ -40,22 +45,26 @@ IF(WIN32)
 
 	SET(CPACK_NSIS_HELP_LINK "http:\\\\\\\\mrpt.sourceforge.net")
 	SET(CPACK_NSIS_URL_INFO_ABOUT "http:\\\\\\\\www.isa.uma.es\\\\jlblanco")
-	SET(CPACK_NSIS_CONTACT "jlblanco@ctima.uma.es")
+	SET(CPACK_NSIS_CONTACT "joseluisblancoc@gmail.com")
 
 	# Add mrpt/bin dir to system PATH
 	SET(CPACK_NSIS_MODIFY_PATH ON)
 
 	# Install header and source files:
 	# ---------------------------------------------
-	INSTALL(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/libs/"
-		DESTINATION libs
-		PATTERN ".svn" EXCLUDE
-		PATTERN "*~" EXCLUDE)
+	IF (PACKAGE_INCLUDES_SOURCES)
+		INSTALL(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/libs/"
+			COMPONENT Library_sources
+			DESTINATION libs
+			PATTERN ".svn" EXCLUDE
+			PATTERN "*~" EXCLUDE)
 
-	INSTALL(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/apps/"
-		DESTINATION apps
-		PATTERN ".svn" EXCLUDE
-		PATTERN "*~" EXCLUDE)
+		INSTALL(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/apps/"
+			COMPONENT App_sources
+			DESTINATION apps
+			PATTERN ".svn" EXCLUDE
+			PATTERN "*~" EXCLUDE)
+	ENDIF (PACKAGE_INCLUDES_SOURCES)
 
 	INSTALL(FILES
 		cmake_uninstall.cmake.in

@@ -26,12 +26,6 @@ TARGET_LINK_LIBRARIES(${TMP_TARGET_NAME} ${MRPT_LINKER_LIBS})
 #  and all the needed #include<> dirs added (see the script DeclareAppDependencies.cmake for further details)
 DeclareAppDependencies(${TMP_TARGET_NAME} mrpt-gui mrpt-slam mrpt-hwdrivers mrpt-vision)
 
-# ----------------------------------------------------------------------------
-#   				INSTALL
-# ----------------------------------------------------------------------------
-INSTALL(TARGETS ${TMP_TARGET_NAME}
-	RUNTIME DESTINATION ${mrpt_apps_INSTALL_PREFIX}bin
-	LIBRARY DESTINATION ${mrpt_apps_INSTALL_PREFIX}lib${LIB_SUFFIX}
-	ARCHIVE DESTINATION ${mrpt_apps_INSTALL_PREFIX}lib${LIB_SUFFIX})
+DeclareAppForInstall(${TMP_TARGET_NAME})
 
 AppStartMenuLink(${TMP_TARGET_NAME} "Very simple live 3D-SLAM with Kinect")   # Add link to the Start menu (in Windows Installable packages)

@@ -40,11 +40,4 @@ IF(FabMap_FOUND)
 ENDIF(FabMap_FOUND)
 
 
-# ----------------------------------------------------------------------------
-#   				INSTALL
-# ----------------------------------------------------------------------------
-INSTALL(TARGETS hmt-slam
-		RUNTIME DESTINATION ${mrpt_apps_INSTALL_PREFIX}bin
-		LIBRARY DESTINATION ${mrpt_apps_INSTALL_PREFIX}lib${LIB_SUFFIX}
-		ARCHIVE DESTINATION ${mrpt_apps_INSTALL_PREFIX}lib${LIB_SUFFIX})
-
+DeclareAppForInstall(${TMP_TARGET_NAME})

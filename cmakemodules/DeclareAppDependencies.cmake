@@ -48,3 +48,11 @@ macro(AppStartMenuLink name title)
 	set_property(GLOBAL PROPERTY "MRPT_CPACK_PACKAGE_EXECUTABLES" "${_str}${name};${title};")
 endmacro(AppStartMenuLink)
 
+
+macro(DeclareAppForInstall name)
+INSTALL(TARGETS ${name}
+	RUNTIME DESTINATION ${mrpt_apps_INSTALL_PREFIX}bin COMPONENT Apps
+	LIBRARY DESTINATION ${mrpt_apps_INSTALL_PREFIX}lib${LIB_SUFFIX} COMPONENT Apps
+	ARCHIVE DESTINATION ${mrpt_apps_INSTALL_PREFIX}lib${LIB_SUFFIX} COMPONENT Apps)
+endmacro(DeclareAppForInstall)
+

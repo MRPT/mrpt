@@ -47,13 +47,7 @@ IF(wxWidgets_FOUND)
 	#  and all the needed #include<> dirs added (see the script DeclareAppDependencies.cmake for further details)
 	DeclareAppDependencies(${TMP_TARGET_NAME} mrpt-reactivenav mrpt-gui)
 
-	# ----------------------------------------------------------------------------
-	#   				INSTALL
-	# ----------------------------------------------------------------------------
-	INSTALL(TARGETS prrt-navigator-demo
-	    RUNTIME DESTINATION ${mrpt_apps_INSTALL_PREFIX}bin
-	    LIBRARY DESTINATION ${mrpt_apps_INSTALL_PREFIX}lib${LIB_SUFFIX}
-	    ARCHIVE DESTINATION ${mrpt_apps_INSTALL_PREFIX}lib${LIB_SUFFIX})
+	DeclareAppForInstall(${TMP_TARGET_NAME})
 
 	AppStartMenuLink(${TMP_TARGET_NAME} "PRRT robot navigator demo")   # Add link to the Start menu (in Windows Installable packages)
 		

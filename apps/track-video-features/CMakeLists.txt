@@ -29,12 +29,5 @@ TARGET_LINK_LIBRARIES(${TMP_TARGET_NAME} ${MRPT_LINKER_LIBS} ${OpenCV_LIBRARIES}
 #  and all the needed #include<> dirs added (see the script DeclareAppDependencies.cmake for further details)
 DeclareAppDependencies(${TMP_TARGET_NAME} mrpt-vision mrpt-gui mrpt-hwdrivers)
 
-# ----------------------------------------------------------------------------
-#   				INSTALL
-# ----------------------------------------------------------------------------
-INSTALL(TARGETS ${TMP_TARGET_NAME}
-	RUNTIME DESTINATION ${mrpt_apps_INSTALL_PREFIX}bin
-	LIBRARY DESTINATION ${mrpt_apps_INSTALL_PREFIX}lib${LIB_SUFFIX}
-	ARCHIVE DESTINATION ${mrpt_apps_INSTALL_PREFIX}lib${LIB_SUFFIX})
-
+DeclareAppForInstall(${TMP_TARGET_NAME})
 

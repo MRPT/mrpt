@@ -31,13 +31,6 @@ TARGET_LINK_LIBRARIES(${TMP_TARGET_NAME} ${MRPT_LINKER_LIBS} ${OpenCV_LIBRARIES}
 #  and all the needed #include<> dirs added (see the script DeclareAppDependencies.cmake for further details)
 DeclareAppDependencies(${TMP_TARGET_NAME} mrpt-vision mrpt-gui)
 
-# ----------------------------------------------------------------------------
-#   				INSTALL
-# ----------------------------------------------------------------------------
-INSTALL(TARGETS features-matching
-	RUNTIME DESTINATION ${mrpt_apps_INSTALL_PREFIX}bin
-	LIBRARY DESTINATION ${mrpt_apps_INSTALL_PREFIX}lib${LIB_SUFFIX}
-	ARCHIVE DESTINATION ${mrpt_apps_INSTALL_PREFIX}lib${LIB_SUFFIX})
-
+DeclareAppForInstall(${TMP_TARGET_NAME})
 
 AppStartMenuLink(${TMP_TARGET_NAME} "Visual feature matching demo")   # Add link to the Start menu (in Windows Installable packages)

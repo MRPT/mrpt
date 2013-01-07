@@ -36,12 +36,6 @@ IF(CMAKE_COMPILER_IS_GNUCXX)
 ENDIF(CMAKE_COMPILER_IS_GNUCXX)
 
 
-# ----------------------------------------------------------------------------
-#   				INSTALL
-# ----------------------------------------------------------------------------
-INSTALL(TARGETS vOdometry
-	RUNTIME DESTINATION ${mrpt_apps_INSTALL_PREFIX}bin
-	LIBRARY DESTINATION ${mrpt_apps_INSTALL_PREFIX}lib${LIB_SUFFIX}
-	ARCHIVE DESTINATION ${mrpt_apps_INSTALL_PREFIX}lib${LIB_SUFFIX})
+DeclareAppForInstall(${TMP_TARGET_NAME})
 
 endif(0)

@@ -21,14 +21,18 @@ ENDIF(WIN32)
 # Docs, examples and the rest of files:
 IF(WIN32)
 	INSTALL(DIRECTORY "${MRPT_SOURCE_DIR}/doc" DESTINATION ./ PATTERN ".svn" EXCLUDE)
-	INSTALL(DIRECTORY "${MRPT_SOURCE_DIR}/cmakemodules" DESTINATION ./ PATTERN ".svn" EXCLUDE)
-	INSTALL(DIRECTORY "${MRPT_SOURCE_DIR}/otherlibs" DESTINATION ./ PATTERN ".svn" EXCLUDE)
+
+	IF (PACKAGE_INCLUDES_SOURCES)
+		INSTALL(DIRECTORY "${MRPT_SOURCE_DIR}/cmakemodules" DESTINATION ./ PATTERN ".svn" EXCLUDE)
+		INSTALL(DIRECTORY "${MRPT_SOURCE_DIR}/otherlibs" DESTINATION ./ PATTERN ".svn" EXCLUDE)
+		INSTALL(DIRECTORY "${MRPT_SOURCE_DIR}/samples"  DESTINATION ./ COMPONENT Examples PATTERN ".svn" EXCLUDE)
+		INSTALL(DIRECTORY "${MRPT_SOURCE_DIR}/scripts" DESTINATION ./  PATTERN ".svn" EXCLUDE)
+		INSTALL(DIRECTORY "${MRPT_SOURCE_DIR}/swig" DESTINATION ./ PATTERN ".svn" EXCLUDE)
+		INSTALL(DIRECTORY "${MRPT_SOURCE_DIR}/tests" DESTINATION ./  PATTERN ".svn" EXCLUDE)
+	ENDIF (PACKAGE_INCLUDES_SOURCES)
+		
 	INSTALL(DIRECTORY "${MRPT_SOURCE_DIR}/parse-files" DESTINATION ./ PATTERN ".svn" EXCLUDE)
-	INSTALL(DIRECTORY "${MRPT_SOURCE_DIR}/samples" DESTINATION ./  PATTERN ".svn" EXCLUDE)
 	INSTALL(DIRECTORY "${MRPT_SOURCE_DIR}/share" DESTINATION ./  PATTERN ".svn" EXCLUDE)
-	INSTALL(DIRECTORY "${MRPT_SOURCE_DIR}/scripts" DESTINATION ./  PATTERN ".svn" EXCLUDE)
-	INSTALL(DIRECTORY "${MRPT_SOURCE_DIR}/swig" DESTINATION ./ PATTERN ".svn" EXCLUDE)
-	INSTALL(DIRECTORY "${MRPT_SOURCE_DIR}/tests" DESTINATION ./  PATTERN ".svn" EXCLUDE)
 
 	# Smart determination of the dependencies DLLs so they are also copied when installing:
 	# ---------------------------------------------------------------------------------------
@@ -114,37 +118,43 @@ ENDIF(WIN32)
 
 # The headers of all the MRPT libs:
 # (in win32 the /libs/* tree is install entirely, not only the headers):
-IF (UNIX AND NOT IS_DEBIAN_DBG_PKG)
-	FOREACH(_LIB ${ALL_MRPT_LIBS})
-		STRING(REGEX REPLACE "mrpt-(.*)" "\\1" _LIB ${_LIB})
-		SET(SRC_DIR "${MRPT_SOURCE_DIR}/libs/${_LIB}/include/")
-		IF (EXISTS "${SRC_DIR}")  # This is mainly to avoid a crash with "mrpt-core", which is a "virtual" MRPT module.
-			INSTALL(DIRECTORY "${SRC_DIR}" DESTINATION ${libmrpt_dev_INSTALL_PREFIX}include/mrpt/${_LIB}/include/  PATTERN ".svn" EXCLUDE)
-		ENDIF (EXISTS "${SRC_DIR}")
-	ENDFOREACH(_LIB)
-ENDIF(UNIX AND NOT IS_DEBIAN_DBG_PKG)
+IF (PACKAGE_INCLUDES_SOURCES)
+	IF (UNIX AND NOT IS_DEBIAN_DBG_PKG)
+		FOREACH(_LIB ${ALL_MRPT_LIBS})
+			STRING(REGEX REPLACE "mrpt-(.*)" "\\1" _LIB ${_LIB})
+			SET(SRC_DIR "${MRPT_SOURCE_DIR}/libs/${_LIB}/include/")
+			IF (EXISTS "${SRC_DIR}")  # This is mainly to avoid a crash with "mrpt-core", which is a "virtual" MRPT module.
+				INSTALL(DIRECTORY "${SRC_DIR}" DESTINATION ${libmrpt_dev_INSTALL_PREFIX}include/mrpt/${_LIB}/include/  PATTERN ".svn" EXCLUDE)
+			ENDIF (EXISTS "${SRC_DIR}")
+		ENDFOREACH(_LIB)
+	ENDIF(UNIX AND NOT IS_DEBIAN_DBG_PKG)
+ENDIF (PACKAGE_INCLUDES_SOURCES)
 
 
 # Config-dependent headers:
-IF (NOT IS_DEBIAN_DBG_PKG)
-	INSTALL(FILES "${MRPT_CONFIG_FILE_INCLUDE_DIR}/mrpt/config.h" DESTINATION "${libmrpt_dev_INSTALL_PREFIX}include/mrpt/mrpt-config/mrpt/" )
-	INSTALL(FILES "${MRPT_CONFIG_FILE_INCLUDE_DIR}/mrpt/version.h" DESTINATION "${libmrpt_dev_INSTALL_PREFIX}include/mrpt/mrpt-config/mrpt/" )
-ENDIF(NOT IS_DEBIAN_DBG_PKG)
+IF (PACKAGE_INCLUDES_SOURCES)
+	IF (NOT IS_DEBIAN_DBG_PKG)
+		INSTALL(FILES "${MRPT_CONFIG_FILE_INCLUDE_DIR}/mrpt/config.h" DESTINATION "${libmrpt_dev_INSTALL_PREFIX}include/mrpt/mrpt-config/mrpt/" )
+		INSTALL(FILES "${MRPT_CONFIG_FILE_INCLUDE_DIR}/mrpt/version.h" DESTINATION "${libmrpt_dev_INSTALL_PREFIX}include/mrpt/mrpt-config/mrpt/" )
+	ENDIF(NOT IS_DEBIAN_DBG_PKG)
+ENDIF (PACKAGE_INCLUDES_SOURCES)
 
 # If using embedded version, install embedded version as part of mrpt-base's headers:
-IF (EIGEN_USE_EMBEDDED_VERSION AND NOT IS_DEBIAN_DBG_PKG)
-	IF(WIN32)
-		# Eigen headers must end up in /Program Files/MRPT-X.Y.Z/libs/base/...
-		SET(MRPT_INSTALL_EIGEN_PREFIX "libs/base/include/")
-	ELSE(WIN32)
-		# Eigen headers must end up in /usr/...
-		SET(MRPT_INSTALL_EIGEN_PREFIX "${libmrpt_dev_INSTALL_PREFIX}include/mrpt/base/include/")
-	ENDIF(WIN32)
+IF (PACKAGE_INCLUDES_SOURCES)
+	IF (EIGEN_USE_EMBEDDED_VERSION AND NOT IS_DEBIAN_DBG_PKG)
+		IF(WIN32)
+			# Eigen headers must end up in /Program Files/MRPT-X.Y.Z/libs/base/...
+			SET(MRPT_INSTALL_EIGEN_PREFIX "libs/base/include/")
+		ELSE(WIN32)
+			# Eigen headers must end up in /usr/...
+			SET(MRPT_INSTALL_EIGEN_PREFIX "${libmrpt_dev_INSTALL_PREFIX}include/mrpt/base/include/")
+		ENDIF(WIN32)
 
-	INSTALL(
-		DIRECTORY "${MRPT_SOURCE_DIR}/otherlibs/eigen3/Eigen"
-		DESTINATION "${MRPT_INSTALL_EIGEN_PREFIX}" PATTERN ".svn" EXCLUDE)
-	INSTALL(
-		DIRECTORY "${MRPT_SOURCE_DIR}/otherlibs/eigen3/unsupported"
-		DESTINATION "${MRPT_INSTALL_EIGEN_PREFIX}" PATTERN ".svn" EXCLUDE)
-ENDIF (EIGEN_USE_EMBEDDED_VERSION AND NOT IS_DEBIAN_DBG_PKG)
+		INSTALL(
+			DIRECTORY "${MRPT_SOURCE_DIR}/otherlibs/eigen3/Eigen"
+			DESTINATION "${MRPT_INSTALL_EIGEN_PREFIX}" PATTERN ".svn" EXCLUDE)
+		INSTALL(
+			DIRECTORY "${MRPT_SOURCE_DIR}/otherlibs/eigen3/unsupported"
+			DESTINATION "${MRPT_INSTALL_EIGEN_PREFIX}" PATTERN ".svn" EXCLUDE)
+	ENDIF (EIGEN_USE_EMBEDDED_VERSION AND NOT IS_DEBIAN_DBG_PKG)
+ENDIF (PACKAGE_INCLUDES_SOURCES)

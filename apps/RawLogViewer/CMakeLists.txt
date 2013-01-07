@@ -70,13 +70,7 @@ IF(wxWidgets_FOUND)
 		DeclareAppDependencies(${TMP_TARGET_NAME} mrpt-stereoslam)
 	ENDIF(BUILD_STEREOSLAM)	
 
-	# ----------------------------------------------------------------------------
-	#   				INSTALL
-	# ----------------------------------------------------------------------------
-	INSTALL(TARGETS RawLogViewer
-	    RUNTIME DESTINATION ${mrpt_apps_INSTALL_PREFIX}bin
-	    LIBRARY DESTINATION ${mrpt_apps_INSTALL_PREFIX}lib${LIB_SUFFIX}
-	    ARCHIVE DESTINATION ${mrpt_apps_INSTALL_PREFIX}lib${LIB_SUFFIX})
+	DeclareAppForInstall(${TMP_TARGET_NAME})
 
 	AppStartMenuLink(${TMP_TARGET_NAME} "RawLog (dataset) viewer")   # Add link to the Start menu (in Windows Installable packages)
 
