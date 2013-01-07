@@ -23,6 +23,7 @@
 				<object class="wxSlider" name="ID_SLIDER1" variable="Slider1" member="yes">
 					<min>-180</min>
 					<max>180</max>
+					<size>35,150</size>
 					<style>wxSL_VERTICAL</style>
 				</object>
 				<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>

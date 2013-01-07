@@ -32,7 +32,7 @@
 								<item>a&lt;font color=&quot;red&quot;&gt;s&lt;/font&gt;asas</item>
 							</content>
 							<default>-1</default>
-							<size>400,-1</size>
+							<minsize>360,30</minsize>
 							<handler function="OnlistLinksSelect" entry="EVT_LISTBOX" />
 						</object>
 						<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
@@ -430,7 +430,7 @@
 							<style>wxTAB__TRAVERSAL</style>
 							<size>450,350</size>
 							<focused>1</focused>
-							<minsize>450,350</minsize>
+							<minsize>300,350</minsize>
 						</object>
 						<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
 						<option>1</option>

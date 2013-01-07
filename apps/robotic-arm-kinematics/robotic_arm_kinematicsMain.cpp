@@ -184,9 +184,10 @@ robotic_arm_kinematicsFrame::robotic_arm_kinematicsFrame(wxWindow* parent,wxWind
     FlexGridSizer2->AddGrowableRow(1);
     StaticText1 = new wxStaticText(this, ID_STATICTEXT1, _("List of kinematic links:"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT1"));
     FlexGridSizer2->Add(StaticText1, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
-    listLinks = new wxSimpleHtmlListBox(this, ID_SIMPLEHTMLLISTBOX1, wxDefaultPosition, wxSize(400,-1), 0, 0, wxHLB_DEFAULT_STYLE, wxDefaultValidator, _T("ID_SIMPLEHTMLLISTBOX1"));
+    listLinks = new wxSimpleHtmlListBox(this, ID_SIMPLEHTMLLISTBOX1, wxDefaultPosition, wxDefaultSize, 0, 0, wxHLB_DEFAULT_STYLE, wxDefaultValidator, _T("ID_SIMPLEHTMLLISTBOX1"));
     listLinks->Append(_("aasas"));
     listLinks->Append(_("a<font color=\"red\">s</font>asas"));
+    listLinks->SetMinSize(wxSize(360,30));
     FlexGridSizer2->Add(listLinks, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 2);
     FlexGridSizer15 = new wxFlexGridSizer(1, 3, 0, 0);
     btnAddLink = new wxButton(this, ID_BUTTON5, _("Add new link"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_BUTTON5"));
@@ -377,8 +378,9 @@ robotic_arm_kinematicsFrame::robotic_arm_kinematicsFrame(wxWindow* parent,wxWind
 	this->Maximize();
 
 	// Load default robot:
-	m_robot.addLink(0.1,0.5,0,0, false);
-	m_robot.addLink(0.2,0.3,0,0, false);
+	m_robot.addLink(0,0.4,0,DEG2RAD(90), false);
+	m_robot.addLink(0,0.3,0,DEG2RAD(90), false);
+	m_robot.addLink(0,0.2,0,0, false);
 
 
 	// Initialize 3D scene:
@@ -401,8 +403,23 @@ robotic_arm_kinematicsFrame::robotic_arm_kinematicsFrame(wxWindow* parent,wxWind
 	{
 		mrpt::opengl::COpenGLViewportPtr gl_view = m_plot3D->m_openGLScene->createViewport("small-view");
 
-		gl_view->setViewportPosition(0,0, 0.2,0.25);
+		gl_view->setViewportPosition(0,0, 0.2,0.3);
 		gl_view->setTransparent(true);
+		{
+			mrpt::opengl::CTextPtr obj=mrpt::opengl::CText::Create("X");
+			obj->setLocation(1.1,0,0);
+			gl_view->insert(obj);
+		}
+		{
+			mrpt::opengl::CTextPtr obj=mrpt::opengl::CText::Create("Y");
+			obj->setLocation(0,1.1,0);
+			gl_view->insert(obj);
+		}
+		{
+			mrpt::opengl::CTextPtr obj=mrpt::opengl::CText::Create("Z");
+			obj->setLocation(0,0,1.1);
+			gl_view->insert(obj);
+		}
 		gl_view->insert( mrpt::opengl::stock_objects::CornerXYZ() );
 	}
 

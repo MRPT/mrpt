@@ -231,11 +231,22 @@ void CKinematicChain::clear()
 
 mrpt::utils::CStream & mrpt::kinematics::operator>>(mrpt::utils::CStream &in,TKinematicLink &o)
 {
-	in >> o.theta >> o.d >> o.a >> o.alpha >> o.is_prismatic;
+	uint32_t version;
+	in >> version;
+	switch(version)
+	{
+	case 0:
+		in >> o.theta >> o.d >> o.a >> o.alpha >> o.is_prismatic;
+		break;
+	default:
+		MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
+	}
 	return in;
 }
 mrpt::utils::CStream & mrpt::kinematics::operator<<(mrpt::utils::CStream &out,const TKinematicLink &o)
 {
+	const uint32_t version = 0;
+	out << version;
 	out << o.theta << o.d << o.a << o.alpha << o.is_prismatic;
 	return out;
 }
