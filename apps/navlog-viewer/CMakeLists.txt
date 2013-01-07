@@ -54,6 +54,7 @@ IF(wxWidgets_FOUND)
 	    LIBRARY DESTINATION ${mrpt_apps_INSTALL_PREFIX}lib${LIB_SUFFIX}
 	    ARCHIVE DESTINATION ${mrpt_apps_INSTALL_PREFIX}lib${LIB_SUFFIX})
 
+	AppStartMenuLink(${TMP_TARGET_NAME} "Viewer of navigation log files")   # Add link to the Start menu (in Windows Installable packages)
 
 ELSE(wxWidgets_FOUND)
 	# ----------------------------------------------------------------------------------

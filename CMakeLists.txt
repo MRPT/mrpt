@@ -44,7 +44,6 @@ include(cmakemodules/DeclareAppDependencies.cmake REQUIRED)
 include(cmakemodules/script_detect_unix_arch.cmake REQUIRED)	# Detect machine architecture, on UNIX
 include(cmakemodules/script_detect_gcc.cmake REQUIRED)			# Detect GNU GCC version
 
-include(cmakemodules/script_setup_cpack.cmake REQUIRED)			# Prepare CPack params for building binary packages
 
 # ------------------------------------------
 # We want libraries to be named "libXXX" 
@@ -560,6 +559,8 @@ ENDIF( BUILD_TESTING)
 
 include(cmakemodules/script_create_MRPTConfig.cmake REQUIRED)  # Generate the MRPTConfig.cmake & configure files
 
+# Prepare CPack params for building binary packages (has to be after the apps/)
+include(cmakemodules/script_setup_cpack.cmake REQUIRED)			
 
 # ----------------------------------------------------------------------------
 #   Uninstall target, for "make uninstall"

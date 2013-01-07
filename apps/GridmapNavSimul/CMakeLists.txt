@@ -53,6 +53,8 @@ IF(wxWidgets_FOUND AND CMAKE_MRPT_HAS_OPENGL_GLUT)
 		LIBRARY DESTINATION ${mrpt_apps_INSTALL_PREFIX}lib${LIB_SUFFIX}
 		ARCHIVE DESTINATION ${mrpt_apps_INSTALL_PREFIX}lib${LIB_SUFFIX})
 
+	AppStartMenuLink(${TMP_TARGET_NAME} "Gridmap navigation dataset generator")   # Add link to the Start menu (in Windows Installable packages)
+		
 
 ELSE(wxWidgets_FOUND AND CMAKE_MRPT_HAS_OPENGL_GLUT)
 	# ----------------------------------------------------------------------------------

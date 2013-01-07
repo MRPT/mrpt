@@ -447,6 +447,8 @@ void robotic_arm_kinematicsFrame::OnAbout(wxCommandEvent& event)
 /** Regenerate the left list from m_robot */
 void robotic_arm_kinematicsFrame::UpdateListLinks()
 {
+	listLinks->Freeze();
+
 	const int oldSelect = listLinks->GetSelection();
 	listLinks->Clear();
 
@@ -466,9 +468,13 @@ void robotic_arm_kinematicsFrame::UpdateListLinks()
 	if (oldSelect>=0)
 		listLinks->SetSelection(oldSelect);
 
+	listLinks->Thaw();
+
 	// Update DOF panels:
 	if (m_dof_panels.size()==m_robot.size())
 	{
+		pnDOFs->Freeze();
+
 		for (size_t i=0;i<m_dof_panels.size();i++)
 		{
 			const TKinematicLink & l = m_robot.getLink(i);
@@ -504,6 +510,8 @@ void robotic_arm_kinematicsFrame::UpdateListLinks()
 			}
 
 		}
+
+		pnDOFs->Thaw();
 	}
 }
 

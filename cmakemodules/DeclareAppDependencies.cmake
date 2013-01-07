@@ -41,3 +41,10 @@ macro(DeclareAppDependencies name)
 	ENDIF (NOT "${ALL_DEPS}" STREQUAL "")
 	
 endmacro(DeclareAppDependencies)
+
+# Macro for adding links to the Start menu folder (for binary packages in Windows)
+macro(AppStartMenuLink name title)
+	get_property(_str GLOBAL PROPERTY "MRPT_CPACK_PACKAGE_EXECUTABLES")
+	set_property(GLOBAL PROPERTY "MRPT_CPACK_PACKAGE_EXECUTABLES" "${_str}${name};${title};")
+endmacro(AppStartMenuLink)
+

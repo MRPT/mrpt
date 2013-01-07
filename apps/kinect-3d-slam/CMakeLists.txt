@@ -34,3 +34,4 @@ INSTALL(TARGETS ${TMP_TARGET_NAME}
 	LIBRARY DESTINATION ${mrpt_apps_INSTALL_PREFIX}lib${LIB_SUFFIX}
 	ARCHIVE DESTINATION ${mrpt_apps_INSTALL_PREFIX}lib${LIB_SUFFIX})
 
+AppStartMenuLink(${TMP_TARGET_NAME} "Very simple live 3D-SLAM with Kinect")   # Add link to the Start menu (in Windows Installable packages)

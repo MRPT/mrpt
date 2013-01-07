@@ -40,3 +40,4 @@ INSTALL(TARGETS features-matching
 	ARCHIVE DESTINATION ${mrpt_apps_INSTALL_PREFIX}lib${LIB_SUFFIX})
 
 
+AppStartMenuLink(${TMP_TARGET_NAME} "Visual feature matching demo")   # Add link to the Start menu (in Windows Installable packages)

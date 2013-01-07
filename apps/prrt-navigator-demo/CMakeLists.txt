@@ -55,6 +55,8 @@ IF(wxWidgets_FOUND)
 	    LIBRARY DESTINATION ${mrpt_apps_INSTALL_PREFIX}lib${LIB_SUFFIX}
 	    ARCHIVE DESTINATION ${mrpt_apps_INSTALL_PREFIX}lib${LIB_SUFFIX})
 
+	AppStartMenuLink(${TMP_TARGET_NAME} "PRRT robot navigator demo")   # Add link to the Start menu (in Windows Installable packages)
+		
 ELSE(wxWidgets_FOUND)
 	# ----------------------------------------------------------------------------------
     # For convenience. When we cannot continue, inform the user

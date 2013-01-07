@@ -50,6 +50,8 @@ IF(wxWidgets_FOUND)
 		RUNTIME DESTINATION ${mrpt_apps_INSTALL_PREFIX}bin
 		LIBRARY DESTINATION ${mrpt_apps_INSTALL_PREFIX}lib${LIB_SUFFIX}
 		ARCHIVE DESTINATION ${mrpt_apps_INSTALL_PREFIX}lib${LIB_SUFFIX})
+		
+	AppStartMenuLink(${TMP_TARGET_NAME} "Kinect (and generic stereo cams) calibration tool")   # Add link to the Start menu (in Windows Installable packages)
 
 ELSE(wxWidgets_FOUND)
 	# ----------------------------------------------------------------------------------

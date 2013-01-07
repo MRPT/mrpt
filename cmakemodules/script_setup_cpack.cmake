@@ -73,13 +73,8 @@ IF(WIN32)
 		version_prefix_README.txt
 	DESTINATION .)
 
-	SET(CPACK_PACKAGE_EXECUTABLES
-		"camera-calib;Camera calibration GUI;features-matching;Visual feature matching;GridmapNavSimul;Gridmap simulator;RawLogViewer;RawLog Viewer;ReactiveNavigationDemo;Reactive navigation demo;prrt-navigator-demo;PRRT robot navigator demo;SceneViewer3D;Scene Viewer 3D;2d-slam-demo;2D KF-SLAM Simulator;navlog-viewer;Viewer of navigation log files;kinect-3d-slam;Simple live 3D-SLAM with Kinect;kinect-stereo-calib;Kinect (and generic stereo cams) calibration tool;holonomic-navigator-demo;Holonomic navigation simulator")
-
-	IF (EXISTS "${MRPT_SOURCE_DIR}/apps/hmt-slam-gui")
-		SET(CPACK_PACKAGE_EXECUTABLES "${CPACK_PACKAGE_EXECUTABLES};hmt-slam-gui;HMT-SLAM visual interface")
-	ENDIF (EXISTS "${MRPT_SOURCE_DIR}/apps/hmt-slam-gui")
-
+	get_property(_str GLOBAL PROPERTY "MRPT_CPACK_PACKAGE_EXECUTABLES")
+	SET(CPACK_PACKAGE_EXECUTABLES ${_str}) # --> Set in each apps/*/CMakeLists.txt file
 
 	SET(CPACK_NSIS_MENU_LINKS
 	    "doc;Documentation directory;bin;Directory of executables (bin);doc/chm/libMRPT-@CMAKE_MRPT_VERSION_NUMBER_MAJOR@.@CMAKE_MRPT_VERSION_NUMBER_MINOR@.@CMAKE_MRPT_VERSION_NUMBER_PATCH@.chm;MRPT libraries reference (CHM);README.txt;Read me;http://www.mrpt.org/;Online help;doc/mrpt-book.pdf;The MRPT book (PDF)")
