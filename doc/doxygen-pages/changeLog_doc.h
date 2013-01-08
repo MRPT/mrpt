@@ -41,131 +41,139 @@
  <hr>
  <a name="1.0.0">
   <h2>Version 1.0.0 - (Under development) </h2></a>
-	- New apps:
-		- <a href="http://www.mrpt.org/Application:holonomic-navigator-demo" >holonomic-navigator-demo</a>
-		- robotic-arm-kinematics
-	- Changes in apps:
-		- <a href="http://www.mrpt.org/Application%3Anavlog-viewer" >navlog-viewer</a>:
-			- Fixed some minor visualization errors.
-		- <a href="http://www.mrpt.org/Application%3ARawLogViewer" >RawLogViewer</a>:
-			- Import sequence of images as rawlog: Didn't detect "png" file extension as images - <a href="http://code.google.com/p/mrpt/source/detail?r=2940" >r2940</a> - Closes <a href="http://code.google.com/p/mrpt/issues/detail?id=34" >#34</a>
-			- The GUI toolbar has been ported from wxWidget's ToolBar to sets of wxCustomButton's to avoid visualization problems in wx 2.9.X - <a href="http://code.google.com/p/mrpt/source/detail?r=2950" >r2950</a>
-		- <a href="http://www.mrpt.org/Application:ReactiveNavigationDemo" >ReactiveNavigationDemo</a>:
-			- The default holonomic navigation method is now the VFF, since after the last bug fixes and tunes it seems to work quite well.
-		- <a href="http://www.mrpt.org/Application%3ASceneViewer" >SceneViewer3D</a>:
-			- The GUI toolbar has been ported from wxWidget's ToolBar to sets of wxCustomButton's to avoid visualization problems in wx 2.9.X - <a href="http://code.google.com/p/mrpt/source/detail?r=2952" >r2952</a>
-		- <a href="http://www.mrpt.org/Application%3Agrid-matching" >grid-matching</a>: new argument "--aligner" to select aligner method - <a href="http://code.google.com/p/mrpt/source/detail?r=3021" >r3021</a>
-	- New classes:
-		- [mrpt-base]
-			- mrpt::math::MatrixBlockSparseCols, a templated column-indexed efficient storage of block-sparse Jacobian or Hessian matrices, together with other arbitrary information - <a href="http://code.google.com/p/mrpt/source/detail?r=2995" >r2995</a>
-			- mrpt::utils::ignored_copy_ptr<>
-		- [mrpt-obs]
-			- mrpt::slam::CObservationWindSensor - <a href="http://code.google.com/p/mrpt/source/detail?r=3050" >r3050</a>
-		- [mrpt-maps]
-			- mrpt::slam::COctoMap
-		- [mrpt-opengl]
-			- mrpt::opengl::COctoMapVoxels
-	- New libraries:
-		- [mrpt-kinematics] See mrpt::kinematics
-		- ...
-	- Changes in libraries:
-		- These libs are now header-only: <a href="http://code.google.com/p/mrpt/source/detail?r=3035" >r3035</a>, <a href="http://code.google.com/p/mrpt/source/detail?r=3045" >r3045</a>
+	- <b>Most important changes:</b>
+		- New library with a flexible implementation of Sparser Relative Bundle Adjustment (RBA), as presented in ICRA 2013: <a href="http://www.mrpt.org/srba" >mrpt-srba</a>.
+		- Many MRPT modules are now header-only libraries.
+		- Support for a new Octomap metric map, via the octomap library. See mrpt::slam::COctoMap and detailed changes below.
+		- Better support for custom builds of MRPT (selective building of individual apps and libs, etc.)
+		- Many bug fixes.
+		- From now on, MRPT is released under the "New BSD" license.
+	- <b>Detailed list of changes:</b>
+		- New apps:
+			- <a href="http://www.mrpt.org/Application:holonomic-navigator-demo" >holonomic-navigator-demo</a>
+			- <a href="http://www.mrpt.org/Application:robotic-arm-kinematics" >robotic-arm-kinematics</a>: A GUI for experimenting with Denavit-Hartenberg parameters.
+		- Changes in apps:
+			- <a href="http://www.mrpt.org/Application%3Anavlog-viewer" >navlog-viewer</a>:
+				- Fixed some minor visualization errors.
+			- <a href="http://www.mrpt.org/Application%3ARawLogViewer" >RawLogViewer</a>:
+				- Import sequence of images as rawlog: Didn't detect "png" file extension as images - <a href="http://code.google.com/p/mrpt/source/detail?r=2940" >r2940</a> - Closes <a href="http://code.google.com/p/mrpt/issues/detail?id=34" >#34</a>
+				- The GUI toolbar has been ported from wxWidget's ToolBar to sets of wxCustomButton's to avoid visualization problems in wx 2.9.X - <a href="http://code.google.com/p/mrpt/source/detail?r=2950" >r2950</a>
+			- <a href="http://www.mrpt.org/Application:ReactiveNavigationDemo" >ReactiveNavigationDemo</a>:
+				- The default holonomic navigation method is now the VFF, since after the last bug fixes and tunes it seems to work quite well.
+			- <a href="http://www.mrpt.org/Application%3ASceneViewer" >SceneViewer3D</a>:
+				- The GUI toolbar has been ported from wxWidget's ToolBar to sets of wxCustomButton's to avoid visualization problems in wx 2.9.X - <a href="http://code.google.com/p/mrpt/source/detail?r=2952" >r2952</a>
+			- <a href="http://www.mrpt.org/Application%3Agrid-matching" >grid-matching</a>: new argument "--aligner" to select aligner method - <a href="http://code.google.com/p/mrpt/source/detail?r=3021" >r3021</a>
+		- New classes:
+			- [mrpt-base]
+				- mrpt::math::MatrixBlockSparseCols, a templated column-indexed efficient storage of block-sparse Jacobian or Hessian matrices, together with other arbitrary information - <a href="http://code.google.com/p/mrpt/source/detail?r=2995" >r2995</a>
+				- mrpt::utils::ignored_copy_ptr<>
+			- [mrpt-obs]
+				- mrpt::slam::CObservationWindSensor - <a href="http://code.google.com/p/mrpt/source/detail?r=3050" >r3050</a>
+			- [mrpt-maps]
+				- mrpt::slam::COctoMap
+			- [mrpt-opengl]
+				- mrpt::opengl::COctoMapVoxels
+		- New libraries:
+			- [mrpt-kinematics] See mrpt::kinematics
+			- [mrpt-srba] See <a href="http://www.mrpt.org/srba" >mrpt-srba</a>.
+		- Changes in libraries:
+			- These libs are now header-only: <a href="http://code.google.com/p/mrpt/source/detail?r=3035" >r3035</a>, <a href="http://code.google.com/p/mrpt/source/detail?r=3045" >r3045</a>
+				- [mrpt-bayes]
+				- [mrpt-graphs]
+				- [mrpt-graphslam]
+			- Integration of the Octomap C++ library (new BSD License) by Kai M. Wurm et al.: <a href="http://code.google.com/p/mrpt/source/detail?r=3081" >r3081</a>, <a href="http://code.google.com/p/mrpt/source/detail?r=3083" >r3083</a>, <a href="http://code.google.com/p/mrpt/source/detail?r=3084" >r3084</a>, <a href="http://code.google.com/p/mrpt/source/detail?r=3086" >r3086</a>, <a href="http://code.google.com/p/mrpt/source/detail?r=3087" >r3087</a>, <a href="http://code.google.com/p/mrpt/source/detail?r=3088" >r3088</a>, <a href="http://code.google.com/p/mrpt/source/detail?r=3093" >r3093</a>
+				- The main new classes are mrpt::slam::COctoMap & mrpt::opengl::COctoMapVoxels
+				- mrpt::slam::CMultiMetricMap now allows the seamless integration of octomaps in many MRPT map building or localization algorithms.
+				- New example: samples/octomap_simple
+		- Changes in classes:
+			- [mrpt-base]
+				- Eigen::MatrixBase<Derived>::loadFromTextFile(), and all MRPT derived matrix classes, are now much faster loading huge matrices from text files - <a href="http://code.google.com/p/mrpt/source/detail?r=2997" >r2997</a>
+				- The typedef Eigen::MatrixBase<Derived>::typename of MRPT's plugin to Eigen classes has been REMOVED, to avoid conflicts with some part of Eigen's sparse classes. Use Matrix::Scalar instead - <a href="http://code.google.com/p/mrpt/source/detail?r=3065" >r3065</a>
+				- New method mrpt::poses::CPose3DQuat::inverse()
+				- mrpt::utils::CTimeLogger:
+					- New method mrpt::utils::CTimeLogger::getStats() for programatic execution time stats analysis - <a href="http://code.google.com/p/mrpt/source/detail?r=2998" >r2998</a>
+					- New method mrpt::utils::CTimeLogger::registerUserMeasure() for making stats of user-providen values - <a href="http://code.google.com/p/mrpt/source/detail?r=3005" >r3005</a>
+				- mrpt::utils::map_as_vector<> can be now customized to use different underlying STL containers for storage - <a href="http://code.google.com/p/mrpt/source/detail?r=3001" >r3001</a>
+				- mrpt::utils::CDynamicGrid::setSize() now also accepts a "fill_value" argument.
+				- Added method mrpt::math::TPoint2D::norm() for consistency with mrpt::math::TPoint3D
+				- Better support for saving (and not only loading) plain text configuration files, including commented files with default values of all existing parameters: - <a href="http://code.google.com/p/mrpt/source/detail?r=2954" >r2954</a>
+					- All mrpt::utils::CConfigFileBase::write() now have an extended signature for formatting.
+					- mrpt::utils::CLoadableOptions::dumpToTextStream() is no longer pure virtual: it now relies on mrpt::utils::CLoadableOptions::saveToConfigFile()
+				- mrpt::utils::CStream::Seek() now supports files larger than 2GB by using uint64_t instead of long (still see issue report for another patch required for MSVC2010) - (Closes <a href="http://code.google.com/p/mrpt/issues/detail?id=39" >issue 39</a>, thanks Robert Schattschneider) - <a href="http://code.google.com/p/mrpt/source/detail?r=3042" >r3042</a>
+				- mrpt::utils::TTypeName<> moved to its own header <mrpt/utils/TTypeName.h> while refactoring <mrpt/utils/CSerializable.h> - <a href="http://code.google.com/p/mrpt/source/detail?r=3044" >r3044</a>
 			- [mrpt-bayes]
+				- mrpt::bayes::CKalmanFilterCapable (and all EKF-SLAM methods based on it) are now much faster. The implementation now exploits the sparsity of the Jacobian (~25% faster in a test 6D EKF-SLAM dataset) - <a href="http://code.google.com/p/mrpt/source/detail?r=3059" >r3059</a>, <a href="http://code.google.com/p/mrpt/source/detail?r=3060" >r3060</a>, <a href="http://code.google.com/p/mrpt/source/detail?r=3061" >r3061</a>
 			- [mrpt-graphs]
-			- [mrpt-graphslam]
-		- Integration of the Octomap C++ library (new BSD License) by Kai M. Wurm et al.: <a href="http://code.google.com/p/mrpt/source/detail?r=3081" >r3081</a>, <a href="http://code.google.com/p/mrpt/source/detail?r=3083" >r3083</a>, <a href="http://code.google.com/p/mrpt/source/detail?r=3084" >r3084</a>, <a href="http://code.google.com/p/mrpt/source/detail?r=3086" >r3086</a>, <a href="http://code.google.com/p/mrpt/source/detail?r=3087" >r3087</a>, <a href="http://code.google.com/p/mrpt/source/detail?r=3088" >r3088</a>, <a href="http://code.google.com/p/mrpt/source/detail?r=3093" >r3093</a>
-			- The main new classes are mrpt::slam::COctoMap & mrpt::opengl::COctoMapVoxels
-			- mrpt::slam::CMultiMetricMap now allows the seamless integration of octomaps in many MRPT map building or localization algorithms.
-			- New example: samples/octomap_simple
-	- Changes in classes:
-		- [mrpt-base]
-			- Eigen::MatrixBase<Derived>::loadFromTextFile(), and all MRPT derived matrix classes, are now much faster loading huge matrices from text files - <a href="http://code.google.com/p/mrpt/source/detail?r=2997" >r2997</a>
-			- The typedef Eigen::MatrixBase<Derived>::typename of MRPT's plugin to Eigen classes has been REMOVED, to avoid conflicts with some part of Eigen's sparse classes. Use Matrix::Scalar instead - <a href="http://code.google.com/p/mrpt/source/detail?r=3065" >r3065</a>
-			- New method mrpt::poses::CPose3DQuat::inverse()
-			- mrpt::utils::CTimeLogger:
-				- New method mrpt::utils::CTimeLogger::getStats() for programatic execution time stats analysis - <a href="http://code.google.com/p/mrpt/source/detail?r=2998" >r2998</a>
-				- New method mrpt::utils::CTimeLogger::registerUserMeasure() for making stats of user-providen values - <a href="http://code.google.com/p/mrpt/source/detail?r=3005" >r3005</a>
-			- mrpt::utils::map_as_vector<> can be now customized to use different underlying STL containers for storage - <a href="http://code.google.com/p/mrpt/source/detail?r=3001" >r3001</a>
-			- mrpt::utils::CDynamicGrid::setSize() now also accepts a "fill_value" argument.
-			- Added method mrpt::math::TPoint2D::norm() for consistency with mrpt::math::TPoint3D
-			- Better support for saving (and not only loading) plain text configuration files, including commented files with default values of all existing parameters: - <a href="http://code.google.com/p/mrpt/source/detail?r=2954" >r2954</a>
-				- All mrpt::utils::CConfigFileBase::write() now have an extended signature for formatting.
-				- mrpt::utils::CLoadableOptions::dumpToTextStream() is no longer pure virtual: it now relies on mrpt::utils::CLoadableOptions::saveToConfigFile()
-			- mrpt::utils::CStream::Seek() now supports files larger than 2GB by using uint64_t instead of long (still see issue report for another patch required for MSVC2010) - (Closes <a href="http://code.google.com/p/mrpt/issues/detail?id=39" >issue 39</a>, thanks Robert Schattschneider) - <a href="http://code.google.com/p/mrpt/source/detail?r=3042" >r3042</a>
-			- mrpt::utils::TTypeName<> moved to its own header <mrpt/utils/TTypeName.h> while refactoring <mrpt/utils/CSerializable.h> - <a href="http://code.google.com/p/mrpt/source/detail?r=3044" >r3044</a>
-		- [mrpt-bayes]
-			- mrpt::bayes::CKalmanFilterCapable (and all EKF-SLAM methods based on it) are now much faster. The implementation now exploits the sparsity of the Jacobian (~25% faster in a test 6D EKF-SLAM dataset) - <a href="http://code.google.com/p/mrpt/source/detail?r=3059" >r3059</a>, <a href="http://code.google.com/p/mrpt/source/detail?r=3060" >r3060</a>, <a href="http://code.google.com/p/mrpt/source/detail?r=3061" >r3061</a>
-		- [mrpt-graphs]
-			- mrpt::graphs::CNetworkOfPoses2D, mrpt::graphs::CNetworkOfPoses3D,... and so on, are now all typedef's instead of classes, since serialization is now implemented as pure templatized code, thus avoiding the need to declare derived auxiliary classes  - <a href="http://code.google.com/p/mrpt/source/detail?r=3044" >r3044</a>
-		- [mrpt-gui]
-			- mrpt::gui::CDisplayWindow3D::addTextMessage() (and other opengl text routines) now allows drawing text with a shadow effect - <a href="http://code.google.com/p/mrpt/source/detail?r=3007" >r3007</a>
-		- [mrpt-hwdrivers]
-			- New method mrpt::hwdrivers::CActivMediaRobotBase::areMotorsEnabled()
-			- mrpt::hwdrivers::CGenericSensor (and all derived classes) now allocate objects aligned in memory with EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-			- New static method mrpt::hwdrivers::CGPSInterface::parse_NMEA()
-		- [mrpt-maps]
-			- Better integration of point cloud classes with PCL: - <a href="http://code.google.com/p/mrpt/source/detail?r=2943" >r2943</a>
-				- mrpt::slam::CPointsMap::loadPCDFile()
-				- mrpt::slam::CPointsMap::setFromPCLPointCloud()
-				- mrpt::slam::CColouredPointsMap::setFromPCLPointCloudRGB()
-			- Integration of wind measurements in gas-concentration maps (by Javier G. Monroy) - <a href="http://code.google.com/p/mrpt/source/detail?r=3050" >r3050</a>
-		- [mrpt-obs]
-			- New method mrpt::slam::CObservationGPS::clear()
-		- [mrpt-opengl]
-			- Evaluation of bounding box of opengl objects. New methods: - <a href="http://code.google.com/p/mrpt/source/detail?r=3026" >r3026</a>
-				- mrpt::opengl::CRenderizable::getBoundingBox()
-				- mrpt::opengl::COpenGLScene::getBoundingBox()
-				- mrpt::opengl::COpenGLViewport::getBoundingBox()
-			- mrpt::opengl::COctreePointRenderer::octree_get_graphics_boundingboxes() has a new flag to draw solid boxes at each leaf node - <a href="http://code.google.com/p/mrpt/source/detail?r=3033" >r3033</a>
-		- [mrpt-reactivenav]
-			- Much code of mrpt::reactivenav classes have undergone a clean-up, slight optimizations and a translation of old Spanish names/comments to English - <a href="http://code.google.com/p/mrpt/source/detail?r=2939" >r2939</a>, <a href="http://code.google.com/p/mrpt/source/detail?r=2942" >r2942</a>, <a href="http://code.google.com/p/mrpt/source/detail?r=2958" >r2958</a>, <a href="http://code.google.com/p/mrpt/source/detail?r=3091" >r3091</a>
-			- mrpt::reactivenav::CParameterizedTrajectoryGenerator::CColisionGrid now has a more maintainable binary serialization format - <a href="http://code.google.com/p/mrpt/source/detail?r=2939" >r2939</a>
-			- mrpt::reactivenav::CParameterizedTrajectoryGenerator::debugDumpInFiles() now also saves text files which can be used to visualize PTGs from MATLAB (see scripts/viewPTG.m) - <a href="http://code.google.com/p/mrpt/source/detail?r=3009" >r3009</a>
-			- mrpt::reactivenav::CHolonomicVFF and mrpt::reactivenav::CHolonomicND now have more configurable parameters, loadable from config files. See their documentation.
-			- Repulsive forces from obstacles in mrpt::reactivenav::CHolonomicVFF are now automatically normalized wrt the density of the 360deg view of obstacles and forces follow a "1/range" law instead of the old "exp(-range)".
-			- Solved a stability issue in C-S paths, in mrpt::reactivenav::CPTG5 (By Mariano Jaimez Tarifa) - <a href="http://code.google.com/p/mrpt/source/detail?r=3085" >r3085</a>
-		- [mrpt-slam]
-			- mrpt::slam::CMetricMapBuilderICP now does not integrate the small pose changes due to odometry and/or relocalization when considering the distance and angle thresholds. This means that fewer map updates are now done for the same ICP-SLAM parameters, which should lead to "less noisy" maps.
-	- New functions:
-		- [mrpt-base]
-			- mrpt::utils::abs_diff()
-			- mrpt::system::getMRPTLicense()
-			- mrpt::math::noncentralChi2PDF_CDF() is now exposed (was private)
-			- mrpt::utils::sprintf_container()
-			- mrpt::poses::operator -(mrpt::poses::CPose3DQuat)
-	- New examples:
-		- octomap_simple
-	- Build system:
-		- Update to nanoflann 1.1.4 - <a href="http://code.google.com/p/mrpt/source/detail?r=2937" >r2937</a>, <a href="http://code.google.com/p/mrpt/source/detail?r=3017" >r3017</a>
-		- Update to Eigen 3.1.2 - <a href="http://code.google.com/p/mrpt/source/detail?r=3064" >r3064</a>
-		- MRPT's root "CMakeLists.txt" has undergone a big refactoring and cleanup - <a href="http://code.google.com/p/mrpt/source/detail?r=2961" >r2961</a>
-		- Backward compatible "mrpt-core" has been removed as a fake lib for which to search with CMake from user programs - <a href="http://code.google.com/p/mrpt/source/detail?r=2961" >r2961</a>
-		- More system libs are detected in Linux (libclang-dev, lib3ds-dev), discarding embedded versions then - <a href="http://code.google.com/p/mrpt/source/detail?r=2963" >r2963</a> - <a href="http://code.google.com/p/mrpt/issues/detail?id=17" >Closes #17</a>
-		- Automatic detection of supported SIMD extensions (SSE*) from CMake (only for Linux OS) - <a href="http://code.google.com/p/mrpt/source/detail?r=3013" >r3013</a>
-		- Fixed building with Visual Studio 2012 (MSVC11) - <a href="http://code.google.com/p/mrpt/source/detail?r=3017" >r3017</a>
-		- MRPT now allows defining header-only libraries with the define_mrpt_lib_header_only() macro - <a href="http://code.google.com/p/mrpt/source/detail?r=3034" >r3034</a>, <a href="http://code.google.com/p/mrpt/source/detail?r=3035" >r3035</a>
-		- More unit tests:
-			- for all probability distribution functions in mrpt::math,
-			- for the parser in mrpt::hwdrivers::CGPSInterface::parse_NMEA()
-			- for the octomap map
-			- for serialization/deserealization of many classes.
-		- Added new documentation page: <a href="env-vars.html" >environment variables</a>.
-		- Removed the build flag "MRPT_BACKCOMPATIB_08X".
-	- BUG FIXES:
-		- Build: Fixed detection of OpenCV 2.4.2+ installed in the system via CMake config file instead of pkg-config, which seems to be broken. - <a href="http://code.google.com/p/mrpt/source/detail?r=3019" >r3019</a>
-		- [mrpt-base] The iterator returned by end() in all MRPT vectors and matrices (based on Eigen) pointed to the last element, not to the (now correct) next position after the last element - <a href="http://code.google.com/p/mrpt/source/detail?r=2941" >r2941</a>
-		- [mrpt-base] mrpt::dynamicsize_vector::resize() performed a memory reallocation even if given the current size, due to an inherited behavior from Eigen. It is not the expected behavior, so it has been fixed. - <a href="http://code.google.com/p/mrpt/source/detail?r=3003" >r3003</a>
-		- [mrpt-base] Wrong computation of normPDF() values for the multidimensional cases. Closes <a href="http://code.google.com/p/mrpt/issues/detail?id=46" >#46</a> - <a href="http://code.google.com/p/mrpt/source/detail?r=3068" >r3068</a>
-		- [mrpt-base] mrpt::poses::CPoint::asString() confused the 2D and 3D cases (Thanks Cipri!)
-		- [mrpt-base] Fixed errors in de-serialization of mrpt::utils::CPointPDFSOG and mrpt::slam::CReflectivityGridMap2D
-		- [mrpt-graphs] Fixed bug in RecursiveSpectralPartition (Thanks to Edu!) - <a href="http://code.google.com/p/mrpt/source/detail?r=3026" >r3026</a>
-		- [mrpt-hwdrivers] Fixed potential SEGFAULT in mrpt::hwdrivers::CGPSInterface (Thanks K.Miyawaki for <a href="http://www.mrpt.org/node/2474" >reporting</a>)
-		- [mrpt-maps] mrpt::slam::COccupancyGridMap2D::getAs3DObject() returned cells with an occupancy of exactly "0" as transparent - <a href="http://code.google.com/p/mrpt/source/detail?r=2957" >r2957</a>
-		- [mrpt-maps] Fixed saving the correct point colors in mrpt::slam::CColouredPointsMap::savePCDFile() (Thanks Mariano!) - <a href="http://code.google.com/p/mrpt/source/detail?r=3090" >r3090</a>
-		- [mrpt-reactivenav] Class mrpt::reactivenav::CHolonomicVFF was not exported in Windows DLL's (Thanks Mariano for noticing!).
-		- [mrpt-reactivenav] Fixed wrong computation of obstacles force fields in mrpt::reactivenav::CHolonomicVFF (Thanks Mariano for noticing!) - <a href="http://code.google.com/p/mrpt/source/detail?r=2953" >r2953</a>
-		- [mrpt-reactivenav] Precomputed collision grids could be loaded in mrpt::reactivenav::CParameterizedTrajectoryGenerator even for different robot parameters/shape: now it correctly detects such situations and recompute when needed - <a href="http://code.google.com/p/mrpt/source/detail?r=2939" >r2939</a>  - Closes <a href="http://code.google.com/p/mrpt/issues/detail?id=33" >#33</a>
-		- [mrpt-reactivenav] ND algorithm: Fixed bugs of "last gap is never evaluated" and wrong composition of representative direction for some gaps (By Mariano) - <a href="http://code.google.com/p/mrpt/source/detail?r=3056" >r3056</a>
+				- mrpt::graphs::CNetworkOfPoses2D, mrpt::graphs::CNetworkOfPoses3D,... and so on, are now all typedef's instead of classes, since serialization is now implemented as pure templatized code, thus avoiding the need to declare derived auxiliary classes  - <a href="http://code.google.com/p/mrpt/source/detail?r=3044" >r3044</a>
+			- [mrpt-gui]
+				- mrpt::gui::CDisplayWindow3D::addTextMessage() (and other opengl text routines) now allows drawing text with a shadow effect - <a href="http://code.google.com/p/mrpt/source/detail?r=3007" >r3007</a>
+			- [mrpt-hwdrivers]
+				- New method mrpt::hwdrivers::CActivMediaRobotBase::areMotorsEnabled()
+				- mrpt::hwdrivers::CGenericSensor (and all derived classes) now allocate objects aligned in memory with EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+				- New static method mrpt::hwdrivers::CGPSInterface::parse_NMEA()
+			- [mrpt-maps]
+				- Better integration of point cloud classes with PCL: - <a href="http://code.google.com/p/mrpt/source/detail?r=2943" >r2943</a>
+					- mrpt::slam::CPointsMap::loadPCDFile()
+					- mrpt::slam::CPointsMap::setFromPCLPointCloud()
+					- mrpt::slam::CColouredPointsMap::setFromPCLPointCloudRGB()
+				- Integration of wind measurements in gas-concentration maps (by Javier G. Monroy) - <a href="http://code.google.com/p/mrpt/source/detail?r=3050" >r3050</a>
+			- [mrpt-obs]
+				- New method mrpt::slam::CObservationGPS::clear()
+			- [mrpt-opengl]
+				- Evaluation of bounding box of opengl objects. New methods: - <a href="http://code.google.com/p/mrpt/source/detail?r=3026" >r3026</a>
+					- mrpt::opengl::CRenderizable::getBoundingBox()
+					- mrpt::opengl::COpenGLScene::getBoundingBox()
+					- mrpt::opengl::COpenGLViewport::getBoundingBox()
+				- mrpt::opengl::COctreePointRenderer::octree_get_graphics_boundingboxes() has a new flag to draw solid boxes at each leaf node - <a href="http://code.google.com/p/mrpt/source/detail?r=3033" >r3033</a>
+			- [mrpt-reactivenav]
+				- Much code of mrpt::reactivenav classes have undergone a clean-up, slight optimizations and a translation of old Spanish names/comments to English - <a href="http://code.google.com/p/mrpt/source/detail?r=2939" >r2939</a>, <a href="http://code.google.com/p/mrpt/source/detail?r=2942" >r2942</a>, <a href="http://code.google.com/p/mrpt/source/detail?r=2958" >r2958</a>, <a href="http://code.google.com/p/mrpt/source/detail?r=3091" >r3091</a>
+				- mrpt::reactivenav::CParameterizedTrajectoryGenerator::CColisionGrid now has a more maintainable binary serialization format - <a href="http://code.google.com/p/mrpt/source/detail?r=2939" >r2939</a>
+				- mrpt::reactivenav::CParameterizedTrajectoryGenerator::debugDumpInFiles() now also saves text files which can be used to visualize PTGs from MATLAB (see scripts/viewPTG.m) - <a href="http://code.google.com/p/mrpt/source/detail?r=3009" >r3009</a>
+				- mrpt::reactivenav::CHolonomicVFF and mrpt::reactivenav::CHolonomicND now have more configurable parameters, loadable from config files. See their documentation.
+				- Repulsive forces from obstacles in mrpt::reactivenav::CHolonomicVFF are now automatically normalized wrt the density of the 360deg view of obstacles and forces follow a "1/range" law instead of the old "exp(-range)".
+				- Solved a stability issue in C-S paths, in mrpt::reactivenav::CPTG5 (By Mariano Jaimez Tarifa) - <a href="http://code.google.com/p/mrpt/source/detail?r=3085" >r3085</a>
+			- [mrpt-slam]
+				- mrpt::slam::CMetricMapBuilderICP now does not integrate the small pose changes due to odometry and/or relocalization when considering the distance and angle thresholds. This means that fewer map updates are now done for the same ICP-SLAM parameters, which should lead to "less noisy" maps.
+		- New functions:
+			- [mrpt-base]
+				- mrpt::utils::abs_diff()
+				- mrpt::system::getMRPTLicense()
+				- mrpt::math::noncentralChi2PDF_CDF() is now exposed (was private)
+				- mrpt::utils::sprintf_container()
+				- mrpt::poses::operator -(mrpt::poses::CPose3DQuat)
+		- New examples:
+			- octomap_simple
+		- Build system:
+			- Update to nanoflann 1.1.4 - <a href="http://code.google.com/p/mrpt/source/detail?r=2937" >r2937</a>, <a href="http://code.google.com/p/mrpt/source/detail?r=3017" >r3017</a>
+			- Update to Eigen 3.1.2 - <a href="http://code.google.com/p/mrpt/source/detail?r=3064" >r3064</a>
+			- MRPT's root "CMakeLists.txt" has undergone a big refactoring and cleanup - <a href="http://code.google.com/p/mrpt/source/detail?r=2961" >r2961</a>
+			- Backward compatible "mrpt-core" has been removed as a fake lib for which to search with CMake from user programs - <a href="http://code.google.com/p/mrpt/source/detail?r=2961" >r2961</a>
+			- More system libs are detected in Linux (libclang-dev, lib3ds-dev), discarding embedded versions then - <a href="http://code.google.com/p/mrpt/source/detail?r=2963" >r2963</a> - <a href="http://code.google.com/p/mrpt/issues/detail?id=17" >Closes #17</a>
+			- Automatic detection of supported SIMD extensions (SSE*) from CMake (only for Linux OS) - <a href="http://code.google.com/p/mrpt/source/detail?r=3013" >r3013</a>
+			- Fixed building with Visual Studio 2012 (MSVC11) - <a href="http://code.google.com/p/mrpt/source/detail?r=3017" >r3017</a>
+			- MRPT now allows defining header-only libraries with the define_mrpt_lib_header_only() macro - <a href="http://code.google.com/p/mrpt/source/detail?r=3034" >r3034</a>, <a href="http://code.google.com/p/mrpt/source/detail?r=3035" >r3035</a>
+			- More unit tests:
+				- for all probability distribution functions in mrpt::math,
+				- for the parser in mrpt::hwdrivers::CGPSInterface::parse_NMEA()
+				- for the octomap map
+				- for serialization/deserealization of many classes.
+			- Added new documentation page: <a href="env-vars.html" >environment variables</a>.
+			- Removed the build flag "MRPT_BACKCOMPATIB_08X".
+		- BUG FIXES:
+			- Build: Fixed detection of OpenCV 2.4.2+ installed in the system via CMake config file instead of pkg-config, which seems to be broken. - <a href="http://code.google.com/p/mrpt/source/detail?r=3019" >r3019</a>
+			- [mrpt-base] The iterator returned by end() in all MRPT vectors and matrices (based on Eigen) pointed to the last element, not to the (now correct) next position after the last element - <a href="http://code.google.com/p/mrpt/source/detail?r=2941" >r2941</a>
+			- [mrpt-base] mrpt::dynamicsize_vector::resize() performed a memory reallocation even if given the current size, due to an inherited behavior from Eigen. It is not the expected behavior, so it has been fixed. - <a href="http://code.google.com/p/mrpt/source/detail?r=3003" >r3003</a>
+			- [mrpt-base] Wrong computation of normPDF() values for the multidimensional cases. Closes <a href="http://code.google.com/p/mrpt/issues/detail?id=46" >#46</a> - <a href="http://code.google.com/p/mrpt/source/detail?r=3068" >r3068</a>
+			- [mrpt-base] mrpt::poses::CPoint::asString() confused the 2D and 3D cases (Thanks Cipri!)
+			- [mrpt-base] Fixed errors in de-serialization of mrpt::utils::CPointPDFSOG and mrpt::slam::CReflectivityGridMap2D
+			- [mrpt-graphs] Fixed bug in RecursiveSpectralPartition (Thanks to Edu!) - <a href="http://code.google.com/p/mrpt/source/detail?r=3026" >r3026</a>
+			- [mrpt-hwdrivers] Fixed potential SEGFAULT in mrpt::hwdrivers::CGPSInterface (Thanks K.Miyawaki for <a href="http://www.mrpt.org/node/2474" >reporting</a>)
+			- [mrpt-maps] mrpt::slam::COccupancyGridMap2D::getAs3DObject() returned cells with an occupancy of exactly "0" as transparent - <a href="http://code.google.com/p/mrpt/source/detail?r=2957" >r2957</a>
+			- [mrpt-maps] Fixed saving the correct point colors in mrpt::slam::CColouredPointsMap::savePCDFile() (Thanks Mariano!) - <a href="http://code.google.com/p/mrpt/source/detail?r=3090" >r3090</a>
+			- [mrpt-reactivenav] Class mrpt::reactivenav::CHolonomicVFF was not exported in Windows DLL's (Thanks Mariano for noticing!).
+			- [mrpt-reactivenav] Fixed wrong computation of obstacles force fields in mrpt::reactivenav::CHolonomicVFF (Thanks Mariano for noticing!) - <a href="http://code.google.com/p/mrpt/source/detail?r=2953" >r2953</a>
+			- [mrpt-reactivenav] Precomputed collision grids could be loaded in mrpt::reactivenav::CParameterizedTrajectoryGenerator even for different robot parameters/shape: now it correctly detects such situations and recompute when needed - <a href="http://code.google.com/p/mrpt/source/detail?r=2939" >r2939</a>  - Closes <a href="http://code.google.com/p/mrpt/issues/detail?id=33" >#33</a>
+			- [mrpt-reactivenav] ND algorithm: Fixed bugs of "last gap is never evaluated" and wrong composition of representative direction for some gaps (By Mariano) - <a href="http://code.google.com/p/mrpt/source/detail?r=3056" >r3056</a>
 
 
  <br>

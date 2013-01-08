@@ -22,6 +22,14 @@ digraph MRPT_LIBS {
 	stereoslam	[label="mrpt-stereoslam (*)",URL="group__mrpt__stereoslam__grp.html"];
 	
 	detectors	[label="mrpt-detectors",URL="group__mrpt__detectors__grp.html"];
+
+	kinematics	[label="mrpt-kinematics",URL="group__mrpt__kinematics__grp.html"];
+
+	srba	[label="mrpt-srba (.h)",URL="group__mrpt__srba__grp.html"];
+
+	srba -> opengl;
+
+	kinematics  -> opengl;
 	
 	graphs -> base;
 	scanmatching -> base;
