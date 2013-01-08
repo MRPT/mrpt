@@ -277,13 +277,29 @@ Description: Mobile Robot Programming Toolkit - hmtslam library
  More about MRPT libraries in: http://www.mrpt.org/Libraries
 
 
+Package: libmrpt-kinematics1.0
+Section: libs
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends},
+	  libmrpt-opengl1.0
+Description: Mobile Robot Programming Toolkit - hmtslam library
+ The Mobile Robot Programming Toolkit (MRPT) is an extensive, cross-platform,
+ and open source C++ library aimed to help robotics researchers to design and
+ implement algorithms in the fields of Simultaneous Localization and Mapping 
+ (SLAM, Graph-SLAM, Bundle Adjustment), computer vision, and motion planning 
+ (obstacle avoidance).
+ .
+ This package includes the mrpt-kinematics library. 
+ . 
+ More about MRPT libraries in: http://www.mrpt.org/Libraries
+
+
 Package: mrpt-libs
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}, 
          libmrpt-base1.0, 
          libmrpt-opengl1.0, 
          libmrpt-scanmatching1.0,
-         libmrpt-graphs1.0,
          libmrpt-gui1.0, 
          libmrpt-obs1.0, 
          libmrpt-maps1.0, 
@@ -292,6 +308,7 @@ Depends: ${shlibs:Depends}, ${misc:Depends},
          libmrpt-topography1.0, 
          libmrpt-detectors1.0, 
          libmrpt-hwdrivers1.0,
+         libmrpt-kinematics1.0,
          libmrpt-reactivenav1.0,
          libmrpt-hmtslam1.0
 Description: Mobile Robot Programming Toolkit - All the libraries
@@ -371,5 +388,6 @@ Description: Mobile Robot Programming Toolkit - Console and GUI applications
   - features-matching: Computer vision demo.
   - kinect-icp-slam: Example 3D mapping with Xbox Kinect
   - kinect-view: Example 3D mapping with Xbox Kinect
+  - robotic-arm-kinematics: GUI for design of robot arms with Denavit-Hartenberg parameters.
   - prrt-navigator-demo   (Experimental!)
 
