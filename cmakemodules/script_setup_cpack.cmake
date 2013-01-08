@@ -25,16 +25,15 @@ SET(CPACK_SOURCE_GENERATOR "TGZ")
 SET(CPACK_PACKAGE_INSTALL_DIRECTORY "mrpt-${CMAKE_MRPT_VERSION_NUMBER_MAJOR}.${CMAKE_MRPT_VERSION_NUMBER_MINOR}.${CMAKE_MRPT_VERSION_NUMBER_PATCH}" CACHE STRING "Name of the install directory")
 MARK_AS_ADVANCED(CPACK_PACKAGE_INSTALL_DIRECTORY)
 
+SET(PACKAGE_INCLUDES_SOURCES ON CACHE BOOL "Include all sources while building packages")
+MARK_AS_ADVANCED(PACKAGE_INCLUDES_SOURCES)
+
 IF(WIN32)
 	# --------------------------------
 	# Packages for Windows
 	# --------------------------------
 	SET(CPACK_SOURCE_IGNORE_FILES ".svn/;.*~;build;CMakeCache.txt;_CPack_Pakages/;CMakeFiles/;install/;Makefile;*.cmake")
 	
-	SET(PACKAGE_INCLUDES_SOURCES ON CACHE BOOL "Include all sources while building packages")
-	MARK_AS_ADVANCED(PACKAGE_INCLUDES_SOURCES)
-	
-
 	# There is a bug in NSI that does not handle full unix paths properly. Make
 	# sure there is at least one set of four (4) backlasshes.
 	SET(CPACK_NSIS_MUI_ICON "${CMAKE_CURRENT_SOURCE_DIR}/share/pixmaps\\\\mrpt_icon.ico")
