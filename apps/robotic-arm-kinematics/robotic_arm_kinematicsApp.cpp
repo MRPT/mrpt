@@ -40,7 +40,7 @@
 #include <wx/image.h>
 //*)
 
-IMPLEMENT_APP(robotic_arm_kinematicsApp);
+IMPLEMENT_APP(robotic_arm_kinematicsApp)
 
 bool robotic_arm_kinematicsApp::OnInit()
 {

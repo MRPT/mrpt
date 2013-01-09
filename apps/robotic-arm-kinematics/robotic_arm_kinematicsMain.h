@@ -38,17 +38,19 @@
 
 //(*Headers(robotic_arm_kinematicsFrame)
 #include <wx/sizer.h>
-#include <wx/stattext.h>
-#include <wx/radiobox.h>
-#include <wx/menu.h>
-#include <wx/textctrl.h>
+#include <wx/notebook.h>
 #include <wx/htmllbox.h>
-#include <wx/statline.h>
-#include "MyGLCanvas.h"
-#include <wx/slider.h>
-#include <wx/panel.h>
 #include <wx/button.h>
+#include <wx/menu.h>
+#include <wx/panel.h>
+#include <wx/slider.h>
+#include <wx/statline.h>
 #include <wx/frame.h>
+#include "MyGLCanvas.h"
+#include <wx/stattext.h>
+#include <wx/textctrl.h>
+#include <wx/radiobox.h>
+#include <wx/listbox.h>
 //*)
 
 #include "PanelDOF.h"
@@ -62,7 +64,7 @@ class robotic_arm_kinematicsFrame: public wxFrame
         robotic_arm_kinematicsFrame(wxWindow* parent,wxWindowID id = -1);
         virtual ~robotic_arm_kinematicsFrame();
 
-        
+
 		void OnSliderDOFScroll(wxScrollEvent& event);
 
     private:
@@ -78,6 +80,8 @@ class robotic_arm_kinematicsFrame: public wxFrame
         void OnLoadBinary(wxCommandEvent& event);
         void OnSaveBinary(wxCommandEvent& event);
         void OnrbTypeSelect(wxCommandEvent& event);
+        void OnbtnDeleteClick(wxCommandEvent& event);
+        void OnlbXYZsSelect(wxCommandEvent& event);
         //*)
 
         //(*Identifiers(robotic_arm_kinematicsFrame)
@@ -85,6 +89,7 @@ class robotic_arm_kinematicsFrame: public wxFrame
         static const long ID_SIMPLEHTMLLISTBOX1;
         static const long ID_BUTTON5;
         static const long ID_BUTTON6;
+        static const long ID_BUTTON7;
         static const long ID_RADIOBOX1;
         static const long ID_STATICLINE4;
         static const long ID_SIMPLEHTMLLISTBOX2;
@@ -114,6 +119,11 @@ class robotic_arm_kinematicsFrame: public wxFrame
         static const long ID_XY_GLCANVAS;
         static const long ID_STATICTEXT10;
         static const long ID_PANEL2;
+        static const long ID_STATICTEXT2;
+        static const long ID_LISTBOX1;
+        static const long ID_TEXTCTRL5;
+        static const long ID_PANEL3;
+        static const long ID_NOTEBOOK1;
         static const long ID_MENUITEM3;
         static const long ID_MENUITEM1;
         static const long ID_MENUITEM2;
@@ -122,43 +132,49 @@ class robotic_arm_kinematicsFrame: public wxFrame
         //*)
 
         //(*Declarations(robotic_arm_kinematicsFrame)
-        wxStaticText* StaticText10;
-        wxStaticText* StaticText9;
-        wxSlider* slA;
-        wxSimpleHtmlListBox* SimpleHtmlListBox5;
-        wxSimpleHtmlListBox* listLinks;
-        wxMenuItem* MenuItem5;
-        wxButton* btnAddLink;
-        wxMenuItem* MenuItem4;
-        wxButton* btnA;
-        wxTextCtrl* edD;
-        wxButton* btnD;
-        wxStaticText* StaticText1;
-        wxStaticText* StaticText3;
-        wxStaticLine* StaticLine4;
-        wxStaticLine* StaticLine2;
-        wxMenuItem* MenuItem3;
-        wxTextCtrl* edAlpha;
-        wxStaticText* StaticText5;
-        wxStaticText* StaticText7;
-        wxSimpleHtmlListBox* SimpleHtmlListBox4;
-        wxButton* btnClear;
-        wxBoxSizer* boxSizerDOFs;
-        wxStaticLine* StaticLine3;
-        wxStaticLine* StaticLine1;
-        wxButton* btnAlpha;
-        wxTextCtrl* edA;
-        wxSlider* slTheta;
-        wxPanel* panelProperties;
-        wxSlider* slAlpha;
-        wxSimpleHtmlListBox* SimpleHtmlListBox3;
-        wxPanel* pnDOFs;
-        wxButton* btnTh;
-        wxSimpleHtmlListBox* SimpleHtmlListBox2;
+        wxButton* btnDelete;
         wxSlider* slD;
+        wxPanel* pnDOFs;
+        wxPanel* Panel1;
+        wxButton* btnA;
+        wxStaticLine* StaticLine2;
+        wxSimpleHtmlListBox* SimpleHtmlListBox2;
+        wxButton* btnClear;
         wxTextCtrl* edTheta;
-        CMyGLCanvas* m_plot3D;
+        wxSimpleHtmlListBox* SimpleHtmlListBox3;
+        wxTextCtrl* edD;
         wxRadioBox* rbType;
+        wxSlider* slTheta;
+        wxStaticText* StaticText1;
+        wxStaticText* StaticText10;
+        CMyGLCanvas* m_plot3D;
+        wxStaticText* StaticText3;
+        wxTextCtrl* edA;
+        wxButton* btnAddLink;
+        wxMenuItem* MenuItem3;
+        wxStaticLine* StaticLine1;
+        wxPanel* panelProperties;
+        wxTextCtrl* edMatrix;
+        wxStaticLine* StaticLine3;
+        wxSlider* slA;
+        wxStaticText* StaticText7;
+        wxListBox* lbXYZs;
+        wxMenuItem* MenuItem5;
+        wxButton* btnD;
+        wxStaticText* StaticText5;
+        wxStaticText* StaticText2;
+        wxSimpleHtmlListBox* SimpleHtmlListBox4;
+        wxButton* btnAlpha;
+        wxNotebook* Notebook1;
+        wxSimpleHtmlListBox* SimpleHtmlListBox5;
+        wxMenuItem* MenuItem4;
+        wxButton* btnTh;
+        wxStaticLine* StaticLine4;
+        wxSimpleHtmlListBox* listLinks;
+        wxSlider* slAlpha;
+        wxBoxSizer* boxSizerDOFs;
+        wxStaticText* StaticText9;
+        wxTextCtrl* edAlpha;
         //*)
 
         DECLARE_EVENT_TABLE()
@@ -171,18 +187,22 @@ class robotic_arm_kinematicsFrame: public wxFrame
 
 		mrpt::opengl::CSetOfObjectsPtr     m_gl_robot;
 
+		mrpt::aligned_containers<mrpt::poses::CPose3D>::vector_t m_all_poses;
+
 		/** Regenerate the left list from m_robot */
-		void UpdateListLinks(); 
+		void UpdateListLinks();
 
 		/** Regenerate the bottom controls from m_robot */
-		void RegenerateDOFPanels(); 
+		void RegenerateDOFPanels();
 
 		/** Just update the DOF panel status from m_robot */
-		void UpdateDOFPanels(); 
+		void UpdateDOFPanels();
 
 		void Regenerate3DView();
-		
+
 		void OnListSelectionChange();
+
+		void UpdateMatrixView();
 
 };
 

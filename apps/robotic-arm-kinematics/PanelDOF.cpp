@@ -37,8 +37,8 @@
 
 //(*InternalHeaders(PanelDOF)
 #include <wx/settings.h>
-#include <wx/intl.h>
 #include <wx/string.h>
+#include <wx/intl.h>
 //*)
 
 #include "robotic_arm_kinematicsMain.h"
@@ -66,9 +66,11 @@ PanelDOF::PanelDOF(wxWindow* parent,wxWindowID id)
 	Label1->Disable();
 	Label1->SetBackgroundColour(wxSystemSettings::GetColour(wxSYS_COLOUR_BTNFACE));
 	FlexGridSizer1->Add(Label1, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 2);
-	Slider1 = new wxSlider(this, ID_SLIDER1, 0, -180, 180, wxDefaultPosition, wxSize(35,150), wxSL_VERTICAL, wxDefaultValidator, _T("ID_SLIDER1"));
-	FlexGridSizer1->Add(Slider1, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+	Slider1 = new wxSlider(this, ID_SLIDER1, 0, -180, 180, wxDefaultPosition, wxSize(35,150), wxSL_VERTICAL|wxSL_INVERSE, wxDefaultValidator, _T("ID_SLIDER1"));
+	Slider1->SetMinSize(wxSize(-1,80));
+	FlexGridSizer1->Add(Slider1, 1, wxLEFT|wxRIGHT|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
 	TextCtrl1 = new wxTextCtrl(this, ID_TEXTCTRL1, wxEmptyString, wxDefaultPosition, wxSize(50,-1), 0, wxDefaultValidator, _T("ID_TEXTCTRL1"));
+	TextCtrl1->Disable();
 	FlexGridSizer1->Add(TextCtrl1, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
 	SetSizer(FlexGridSizer1);
 	FlexGridSizer1->Fit(this);

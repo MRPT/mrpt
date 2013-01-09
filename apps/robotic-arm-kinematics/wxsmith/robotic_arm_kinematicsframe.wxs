@@ -61,6 +61,15 @@
 								<border>5</border>
 								<option>1</option>
 							</object>
+							<object class="sizeritem">
+								<object class="wxButton" name="ID_BUTTON7" variable="btnDelete" member="yes">
+									<label>Delete selected</label>
+									<handler function="OnbtnDeleteClick" entry="EVT_BUTTON" />
+								</object>
+								<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+								<border>5</border>
+								<option>1</option>
+							</object>
 						</object>
 						<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
 						<option>1</option>
@@ -84,6 +93,7 @@
 												</content>
 												<default>-1</default>
 												<dimension>2</dimension>
+												<style>wxRA_HORIZONTAL</style>
 												<handler function="OnrbTypeSelect" entry="EVT_RADIOBOX" />
 											</object>
 											<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
@@ -436,42 +446,135 @@
 						<option>1</option>
 					</object>
 					<object class="sizeritem">
-						<object class="wxFlexGridSizer" variable="FlexGridSizer7" member="no">
+						<object class="wxFlexGridSizer" variable="FlexGridSizer16" member="no">
 							<cols>2</cols>
-							<rows>2</rows>
-							<growablecols>1</growablecols>
-							<growablerows>1</growablerows>
-							<object class="spacer">
-								<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
-								<option>1</option>
-								<size>20,15</size>
-							</object>
+							<rows>1</rows>
+							<growablecols>0</growablecols>
+							<growablerows>0</growablerows>
 							<object class="sizeritem">
-								<object class="wxFlexGridSizer" variable="FlexGridSizer14" member="no">
-									<cols>1</cols>
-									<rows>1</rows>
-									<growablecols>0</growablecols>
-									<object class="sizeritem">
-										<object class="wxStaticText" name="ID_STATICTEXT10" variable="StaticText10" member="yes">
-											<label>Degrees of Freedom:</label>
-										</object>
+								<object class="wxFlexGridSizer" variable="FlexGridSizer7" member="no">
+									<cols>2</cols>
+									<rows>2</rows>
+									<growablecols>1</growablecols>
+									<growablerows>1</growablerows>
+									<object class="spacer">
 										<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
-										<border>5</border>
+										<option>1</option>
+										<size>1,15</size>
+									</object>
+									<object class="sizeritem">
+										<object class="wxFlexGridSizer" variable="FlexGridSizer14" member="no">
+											<cols>1</cols>
+											<rows>1</rows>
+											<growablecols>0</growablecols>
+											<object class="sizeritem">
+												<object class="wxStaticText" name="ID_STATICTEXT10" variable="StaticText10" member="yes">
+													<label>Degrees of Freedom</label>
+													<font>
+														<size>8</size>
+														<weight>bold</weight>
+														<sysfont>wxSYS_OEM_FIXED_FONT</sysfont>
+													</font>
+												</object>
+												<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+												<border>5</border>
+												<option>1</option>
+											</object>
+										</object>
+										<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+										<option>1</option>
+									</object>
+									<object class="spacer">
+										<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+										<option>1</option>
+										<size>3,55</size>
+									</object>
+									<object class="sizeritem">
+										<object class="wxPanel" name="ID_PANEL2" variable="pnDOFs" member="yes">
+											<object class="wxBoxSizer" variable="boxSizerDOFs" member="yes" />
+										</object>
+										<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
 										<option>1</option>
 									</object>
 								</object>
 								<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
 								<option>1</option>
 							</object>
-							<object class="spacer">
-								<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
-								<border>5</border>
-								<option>1</option>
-								<size>10,100</size>
-							</object>
 							<object class="sizeritem">
-								<object class="wxPanel" name="ID_PANEL2" variable="pnDOFs" member="yes">
-									<object class="wxBoxSizer" variable="boxSizerDOFs" member="yes" />
+								<object class="wxFlexGridSizer" variable="FlexGridSizer17" member="no">
+									<cols>1</cols>
+									<rows>2</rows>
+									<growablecols>0</growablecols>
+									<growablerows>1</growablerows>
+									<object class="sizeritem">
+										<object class="wxFlexGridSizer" variable="FlexGridSizer18" member="no">
+											<cols>1</cols>
+											<rows>1</rows>
+											<growablecols>0</growablecols>
+											<object class="sizeritem">
+												<object class="wxStaticText" name="ID_STATICTEXT2" variable="StaticText2" member="yes">
+													<label>State details</label>
+													<font>
+														<size>8</size>
+														<weight>bold</weight>
+														<sysfont>wxSYS_OEM_FIXED_FONT</sysfont>
+													</font>
+												</object>
+												<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+												<border>5</border>
+												<option>1</option>
+											</object>
+										</object>
+										<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+										<option>1</option>
+									</object>
+									<object class="sizeritem">
+										<object class="wxNotebook" name="ID_NOTEBOOK1" variable="Notebook1" member="yes">
+											<style>wxNB_BOTTOM</style>
+											<object class="notebookpage">
+												<object class="wxPanel" name="ID_PANEL3" variable="Panel1" member="yes">
+													<object class="wxFlexGridSizer" variable="FlexGridSizer19" member="no">
+														<cols>2</cols>
+														<rows>1</rows>
+														<growablecols>1</growablecols>
+														<growablerows>0</growablerows>
+														<object class="sizeritem">
+															<object class="wxListBox" name="ID_LISTBOX1" variable="lbXYZs" member="yes">
+																<default>-1</default>
+																<size>45,-1</size>
+																<font>
+																	<size>7</size>
+																	<family>teletype</family>
+																</font>
+																<handler function="OnlbXYZsSelect" entry="EVT_LISTBOX" />
+															</object>
+															<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+															<option>1</option>
+														</object>
+														<object class="sizeritem">
+															<object class="wxTextCtrl" name="ID_TEXTCTRL5" variable="edMatrix" member="yes">
+																<font>
+																	<size>7</size>
+																	<style>normal</style>
+																	<weight>normal</weight>
+																	<underlined>0</underlined>
+																	<family>teletype</family>
+																	<face>Monospace</face>
+																</font>
+																<minsize>300,-1</minsize>
+																<style>wxTE_MULTILINE|wxTE_READONLY|wxTE_DONTWRAP|wxALWAYS_SHOW_SB</style>
+															</object>
+															<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+															<option>1</option>
+														</object>
+													</object>
+												</object>
+												<label>Transf. matrices</label>
+											</object>
+										</object>
+										<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+										<option>1</option>
+									</object>
 								</object>
 								<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
 								<option>1</option>

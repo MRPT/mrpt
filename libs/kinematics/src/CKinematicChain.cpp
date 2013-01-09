@@ -57,6 +57,13 @@ void CKinematicChain::addLink(double theta, double d, double a, double alpha, bo
 	m_links.push_back( TKinematicLink(theta,d,a,alpha,is_prismatic) );
 }
 
+/** Removes one link from the kinematic chain (0<=idx<N) */
+void CKinematicChain::removeLink(const size_t idx)
+{
+	ASSERT_BELOW_(idx,m_links.size())
+	m_links.erase(m_links.begin()+idx);
+}
+
 const TKinematicLink& CKinematicChain::getLink(const size_t idx) const
 {
 	ASSERT_BELOW_(idx,m_links.size())
@@ -98,15 +105,17 @@ void  CKinematicChain::readFromStream(CStream &in,int version)
 	};
 }
 
-/** Go thru all the links of the chain and compute the global pose of each link. The "ground" link pose "pose0" defaults to the origin of coordinates, 
+/** Go thru all the links of the chain and compute the global pose of each link. The "ground" link pose "pose0" defaults to the origin of coordinates,
 	* but anything else can be passed as the optional argument. */
 void CKinematicChain::recomputeAllPoses( mrpt::aligned_containers<mrpt::poses::CPose3D>::vector_t & poses, const mrpt::poses::CPose3D & pose0 )const
 {
 	const size_t N=m_links.size();
 
-	poses.resize(N);
+	poses.resize(N+1);
 
 	CPose3D p = pose0;  // Cummulative pose
+
+	poses[0] = pose0;
 
 	for (size_t i=0;i<N;i++)
 	{
@@ -132,7 +141,7 @@ void CKinematicChain::recomputeAllPoses( mrpt::aligned_containers<mrpt::poses::C
 
 		p.composeFrom(p,link);
 
-		poses[i] = p;
+		poses[i+1] = p;
 	}
 }
 
@@ -140,7 +149,7 @@ const float R = 0.01;
 
 void addBar_D(mrpt::opengl::CSetOfObjectsPtr &objs, const double d)
 {
-	
+
 	mrpt::opengl::CCylinderPtr gl_cyl = mrpt::opengl::CCylinder::Create(R,R, d );
 	gl_cyl->setColor_u8( mrpt::utils::TColor(0x00,0x00,0xff) );
 	gl_cyl->setName("cyl.d");
@@ -158,7 +167,10 @@ void addBar_A(mrpt::opengl::CSetOfObjectsPtr &objs, const double a)
 	objs->insert(gl_cyl2);
 }
 
-void CKinematicChain::getAs3DObject(mrpt::opengl::CSetOfObjectsPtr &obj) const
+void CKinematicChain::getAs3DObject(
+	mrpt::opengl::CSetOfObjectsPtr &obj,
+	mrpt::aligned_containers<mrpt::poses::CPose3D>::vector_t *out_all_poses
+	) const
 {
 	ASSERT_(obj.present())
 	const size_t N=m_links.size();
@@ -173,9 +185,8 @@ void CKinematicChain::getAs3DObject(mrpt::opengl::CSetOfObjectsPtr &obj) const
 	for (size_t i=0;i<=N;i++)
 	{
 		mrpt::opengl::CSetOfObjectsPtr gl_corner = mrpt::opengl::stock_objects::CornerXYZSimple( 0.1f, 3.0f );
-		if (i>0)
-			gl_corner->setPose( all_poses[i-1] );
-		
+		gl_corner->setPose( all_poses[i] );
+
 		gl_corner->setName( mrpt::format("%u",static_cast<unsigned int>(i)) );
 		gl_corner->enableShowName();
 
@@ -185,9 +196,12 @@ void CKinematicChain::getAs3DObject(mrpt::opengl::CSetOfObjectsPtr &obj) const
 		obj->insert(gl_corner);
 		m_last_gl_objects[i] = gl_corner;
 	}
+
+	if (out_all_poses)
+		out_all_poses->swap(all_poses);
 }
 
-void CKinematicChain::update3DObject() const
+void CKinematicChain::update3DObject(mrpt::aligned_containers<mrpt::poses::CPose3D>::vector_t *out_all_poses ) const
 {
 	ASSERTMSG_((m_links.size()+1)==m_last_gl_objects.size(), "The kinematic chain has changed since the last call to getAs3DObject()")
 
@@ -200,9 +214,8 @@ void CKinematicChain::update3DObject() const
 	for (size_t i=0;i<=N;i++)
 	{
 		mrpt::opengl::CSetOfObjectsPtr gl_objs = mrpt::opengl::CSetOfObjectsPtr(m_last_gl_objects[i]);
-		if (i>0)
-			gl_objs->setPose( all_poses[i-1] );
-		
+		gl_objs->setPose( all_poses[i] );
+
 		if (i<N)
 		{
 			mrpt::opengl::CCylinderPtr glCyl = mrpt::opengl::CCylinderPtr( gl_objs->getByName("cyl.d") );
@@ -219,6 +232,8 @@ void CKinematicChain::update3DObject() const
 		}
 	}
 
+	if (out_all_poses)
+		out_all_poses->swap(all_poses);
 }
 
 /** Erases all links and leave the robot arm empty. */

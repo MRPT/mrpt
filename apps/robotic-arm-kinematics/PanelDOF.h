@@ -39,10 +39,10 @@
 
 //(*Headers(PanelDOF)
 #include <wx/sizer.h>
-#include <wx/textctrl.h>
 #include <wx/htmllbox.h>
-#include <wx/slider.h>
 #include <wx/panel.h>
+#include <wx/slider.h>
+#include <wx/textctrl.h>
 //*)
 
 class PanelDOF: public wxPanel
@@ -53,9 +53,9 @@ class PanelDOF: public wxPanel
 		virtual ~PanelDOF();
 
 		//(*Declarations(PanelDOF)
-		wxSlider* Slider1;
-		wxTextCtrl* TextCtrl1;
 		wxSimpleHtmlListBox* Label1;
+		wxTextCtrl* TextCtrl1;
+		wxSlider* Slider1;
 		//*)
 
 	protected:

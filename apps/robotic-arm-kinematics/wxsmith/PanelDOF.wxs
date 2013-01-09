@@ -24,15 +24,17 @@
 					<min>-180</min>
 					<max>180</max>
 					<size>35,150</size>
-					<style>wxSL_VERTICAL</style>
+					<minsize>-1,80</minsize>
+					<style>wxSL_VERTICAL|wxSL_INVERSE</style>
 				</object>
-				<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+				<flag>wxLEFT|wxRIGHT|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
 				<border>5</border>
 				<option>1</option>
 			</object>
 			<object class="sizeritem">
 				<object class="wxTextCtrl" name="ID_TEXTCTRL1" variable="TextCtrl1" member="yes">
 					<size>50,-1</size>
+					<enabled>0</enabled>
 				</object>
 				<flag>wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
 				<border>5</border>

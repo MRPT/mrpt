@@ -49,7 +49,7 @@ namespace mrpt
 		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CKinematicChain, mrpt::utils::CSerializable, KINEMATICS_IMPEXP )
 
 		/** An individual kinematic chain element (one link) which builds up a CKinematicChain.
-		  * The parameterization of the SE(3) transformation from the starting point to the end point 
+		  * The parameterization of the SE(3) transformation from the starting point to the end point
 		  * follows a Denavit-Hartenberg standard parameterization: [theta, d, a, alpha].
 		  */
 		struct KINEMATICS_IMPEXP TKinematicLink
@@ -77,14 +77,14 @@ namespace mrpt
 		{
 			// This must be added to any CSerializable derived class:
 			DEFINE_SERIALIZABLE( CKinematicChain )
-		
+
 		private:
 			mutable std::vector<mrpt::opengl::CRenderizablePtr>  m_last_gl_objects; //!< Smart pointers to the last objects for each link, as returned in getAs3DObject(), for usage within update3DObject()
 
 			std::vector<TKinematicLink>  m_links;  //!< The links of this robot arm
 
 		public:
-			
+
 			/** Return the number of links */
 			size_t size() const { return m_links.size(); }
 
@@ -94,14 +94,17 @@ namespace mrpt
 			/** Appends a new link to the robotic arm, with the given Denavit-Hartenberg parameters (see TKinematicLink for further details) */
 			void addLink(double theta, double d, double a, double alpha, bool is_prismatic);
 
+			/** Removes one link from the kinematic chain (0<=idx<N) */
+			void removeLink(const size_t idx);
+
 			/** Get a ref to a given link (read-only) */
 			const TKinematicLink& getLink(const size_t idx) const;
 
 			/** Get a ref to a given link (read-write) */
 			TKinematicLink& getLinkRef(const size_t idx);
 
-			/** Get all the DOFs of the arm at once, returning them in a vector with all the "q_i" values, which 
-			  * can be interpreted as rotations (radians) or displacements (meters) depending on links being "revolute" or "prismatic". 
+			/** Get all the DOFs of the arm at once, returning them in a vector with all the "q_i" values, which
+			  * can be interpreted as rotations (radians) or displacements (meters) depending on links being "revolute" or "prismatic".
 			  * The vector is automatically resized to the correct size (the number of links).
 			  * \tparam VECTOR Can be any Eigen vector, mrpt::vector_double, or std::vector<double>
 			  */
@@ -117,8 +120,8 @@ namespace mrpt
 				}
 			}
 
-			/** Set all the DOFs of the arm at once, from a vector with all the "q_i" values, which 
-			  * are interpreted as rotations (radians) or displacements (meters) depending on links being "revolute" or "prismatic". 
+			/** Set all the DOFs of the arm at once, from a vector with all the "q_i" values, which
+			  * are interpreted as rotations (radians) or displacements (meters) depending on links being "revolute" or "prismatic".
 			  * \exception std::exception If the size of the vector doesn't match the number of links.
 			  * \tparam VECTOR Can be any Eigen vector, mrpt::vector_double, or std::vector<double>
 			  */
@@ -135,18 +138,26 @@ namespace mrpt
 			}
 
 			/** Constructs a 3D representation of the kinematic chain, in its current state.
-			  * You can call update3DObject() to update the kinematic state of these OpenGL objects in the future, since 
-			  * an internal list of smart pointers to the constructed objects is kept internally. This is more efficient 
-			  * than calling this method again to build a new representation. 
+			  * You can call update3DObject() to update the kinematic state of these OpenGL objects in the future, since
+			  * an internal list of smart pointers to the constructed objects is kept internally. This is more efficient
+			  * than calling this method again to build a new representation.
+			  * \param[out] out_all_poses Optional output vector, will contain the poses in the format of recomputeAllPoses()
 			  * \sa update3DObject
 			  */
-			void getAs3DObject(mrpt::opengl::CSetOfObjectsPtr &inout_gl_obj) const;
+			void getAs3DObject(
+				mrpt::opengl::CSetOfObjectsPtr &inout_gl_obj,
+				mrpt::aligned_containers<mrpt::poses::CPose3D>::vector_t *out_all_poses = NULL
+				) const;
 
-			/** Read getAs3DObject() for a description. */
-			void update3DObject() const;
+			/** Read getAs3DObject() for a description.
+			  * \param[out] out_all_poses Optional output vector, will contain the poses in the format of recomputeAllPoses()
+			  */
+			void update3DObject( mrpt::aligned_containers<mrpt::poses::CPose3D>::vector_t *out_all_poses = NULL ) const;
 
-			/** Go thru all the links of the chain and compute the global pose of each link. The "ground" link pose "pose0" defaults to the origin of coordinates, 
-			  * but anything else can be passed as the optional argument. */
+			/** Go thru all the links of the chain and compute the global pose of each link. The "ground" link pose "pose0" defaults to the origin of coordinates,
+			  * but anything else can be passed as the optional argument.
+			  * The returned vector has N+1 elements (N=number of links), since [0] contains the base frame, [1] the pose after the first link, and so on.
+			   */
 			void recomputeAllPoses( mrpt::aligned_containers<mrpt::poses::CPose3D>::vector_t & poses, const mrpt::poses::CPose3D & pose0 = mrpt::poses::CPose3D() )const;
 
 

@@ -37,13 +37,14 @@
 #include <wx/msgdlg.h>
 
 //(*InternalHeaders(robotic_arm_kinematicsFrame)
-#include <wx/artprov.h>
+#include <wx/settings.h>
+#include <wx/string.h>
+#include <wx/intl.h>
+#include <wx/font.h>
 #include <wx/bitmap.h>
 #include <wx/icon.h>
-#include <wx/settings.h>
-#include <wx/intl.h>
 #include <wx/image.h>
-#include <wx/string.h>
+#include <wx/artprov.h>
 //*)
 
 #include "CAboutBox.h"
@@ -90,6 +91,7 @@ const long robotic_arm_kinematicsFrame::ID_STATICTEXT1 = wxNewId();
 const long robotic_arm_kinematicsFrame::ID_SIMPLEHTMLLISTBOX1 = wxNewId();
 const long robotic_arm_kinematicsFrame::ID_BUTTON5 = wxNewId();
 const long robotic_arm_kinematicsFrame::ID_BUTTON6 = wxNewId();
+const long robotic_arm_kinematicsFrame::ID_BUTTON7 = wxNewId();
 const long robotic_arm_kinematicsFrame::ID_RADIOBOX1 = wxNewId();
 const long robotic_arm_kinematicsFrame::ID_STATICLINE4 = wxNewId();
 const long robotic_arm_kinematicsFrame::ID_SIMPLEHTMLLISTBOX2 = wxNewId();
@@ -119,6 +121,11 @@ const long robotic_arm_kinematicsFrame::ID_PANEL1 = wxNewId();
 const long robotic_arm_kinematicsFrame::ID_XY_GLCANVAS = wxNewId();
 const long robotic_arm_kinematicsFrame::ID_STATICTEXT10 = wxNewId();
 const long robotic_arm_kinematicsFrame::ID_PANEL2 = wxNewId();
+const long robotic_arm_kinematicsFrame::ID_STATICTEXT2 = wxNewId();
+const long robotic_arm_kinematicsFrame::ID_LISTBOX1 = wxNewId();
+const long robotic_arm_kinematicsFrame::ID_TEXTCTRL5 = wxNewId();
+const long robotic_arm_kinematicsFrame::ID_PANEL3 = wxNewId();
+const long robotic_arm_kinematicsFrame::ID_NOTEBOOK1 = wxNewId();
 const long robotic_arm_kinematicsFrame::ID_MENUITEM3 = wxNewId();
 const long robotic_arm_kinematicsFrame::ID_MENUITEM1 = wxNewId();
 const long robotic_arm_kinematicsFrame::ID_MENUITEM2 = wxNewId();
@@ -147,34 +154,38 @@ robotic_arm_kinematicsFrame::robotic_arm_kinematicsFrame(wxWindow* parent,wxWind
 #endif
 
     //(*Initialize(robotic_arm_kinematicsFrame)
-    wxFlexGridSizer* FlexGridSizer4;
     wxMenuItem* MenuItem2;
-    wxFlexGridSizer* FlexGridSizer10;
-    wxFlexGridSizer* FlexGridSizer3;
     wxMenuItem* MenuItem1;
-    wxStaticBoxSizer* boxProperties;
-    wxFlexGridSizer* FlexGridSizer5;
-    wxFlexGridSizer* FlexGridSizer9;
-    wxFlexGridSizer* FlexGridSizer2;
-    wxMenu* Menu1;
-    wxFlexGridSizer* FlexGridSizer7;
-    wxFlexGridSizer* FlexGridSizer15;
     wxFlexGridSizer* FlexGridSizer8;
-    wxFlexGridSizer* FlexGridSizer14;
-    wxFlexGridSizer* FlexGridSizer13;
-    wxFlexGridSizer* FlexGridSizer12;
-    wxMenuBar* MenuBar1;
-    wxFlexGridSizer* FlexGridSizer6;
     wxFlexGridSizer* FlexGridSizer1;
+    wxFlexGridSizer* FlexGridSizer2;
+    wxFlexGridSizer* FlexGridSizer15;
+    wxMenu* Menu1;
+    wxFlexGridSizer* FlexGridSizer17;
+    wxFlexGridSizer* FlexGridSizer19;
     wxFlexGridSizer* FlexGridSizer11;
+    wxFlexGridSizer* FlexGridSizer7;
+    wxFlexGridSizer* FlexGridSizer4;
+    wxFlexGridSizer* FlexGridSizer9;
+    wxFlexGridSizer* FlexGridSizer14;
+    wxFlexGridSizer* FlexGridSizer6;
+    wxFlexGridSizer* FlexGridSizer3;
+    wxFlexGridSizer* FlexGridSizer16;
+    wxFlexGridSizer* FlexGridSizer10;
+    wxFlexGridSizer* FlexGridSizer13;
+    wxMenuBar* MenuBar1;
+    wxFlexGridSizer* FlexGridSizer18;
+    wxFlexGridSizer* FlexGridSizer12;
     wxMenu* Menu2;
+    wxFlexGridSizer* FlexGridSizer5;
+    wxStaticBoxSizer* boxProperties;
 
     Create(parent, wxID_ANY, _("Robotic Arm Kinematic GUI - Part of MRPT"), wxDefaultPosition, wxDefaultSize, wxDEFAULT_FRAME_STYLE, _T("wxID_ANY"));
     SetBackgroundColour(wxSystemSettings::GetColour(wxSYS_COLOUR_BTNFACE));
     {
-    	wxIcon FrameIcon;
-    	FrameIcon.CopyFromBitmap(wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("MAIN_ICON")),wxART_FRAME_ICON));
-    	SetIcon(FrameIcon);
+    wxIcon FrameIcon;
+    FrameIcon.CopyFromBitmap(wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("MAIN_ICON")),wxART_FRAME_ICON));
+    SetIcon(FrameIcon);
     }
     FlexGridSizer1 = new wxFlexGridSizer(1, 2, 0, 0);
     FlexGridSizer1->AddGrowableCol(1);
@@ -194,6 +205,8 @@ robotic_arm_kinematicsFrame::robotic_arm_kinematicsFrame(wxWindow* parent,wxWind
     FlexGridSizer15->Add(btnAddLink, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
     btnClear = new wxButton(this, ID_BUTTON6, _("Clear all"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_BUTTON6"));
     FlexGridSizer15->Add(btnClear, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+    btnDelete = new wxButton(this, ID_BUTTON7, _("Delete selected"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_BUTTON7"));
+    FlexGridSizer15->Add(btnDelete, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
     FlexGridSizer2->Add(FlexGridSizer15, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
     panelProperties = new wxPanel(this, ID_PANEL1, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL, _T("ID_PANEL1"));
     panelProperties->Disable();
@@ -202,10 +215,10 @@ robotic_arm_kinematicsFrame::robotic_arm_kinematicsFrame(wxWindow* parent,wxWind
     FlexGridSizer3->AddGrowableCol(0);
     wxString __wxRadioBoxChoices_1[2] =
     {
-    	_("Revolute"),
-    	_("Prismatic")
+    _("Revolute"),
+    _("Prismatic")
     };
-    rbType = new wxRadioBox(panelProperties, ID_RADIOBOX1, _("Type"), wxDefaultPosition, wxDefaultSize, 2, __wxRadioBoxChoices_1, 2, 0, wxDefaultValidator, _T("ID_RADIOBOX1"));
+    rbType = new wxRadioBox(panelProperties, ID_RADIOBOX1, _("Type"), wxDefaultPosition, wxDefaultSize, 2, __wxRadioBoxChoices_1, 2, wxRA_HORIZONTAL, wxDefaultValidator, _T("ID_RADIOBOX1"));
     FlexGridSizer3->Add(rbType, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 2);
     StaticLine4 = new wxStaticLine(panelProperties, ID_STATICLINE4, wxDefaultPosition, wxSize(10,-1), wxLI_HORIZONTAL, _T("ID_STATICLINE4"));
     FlexGridSizer3->Add(StaticLine4, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 1);
@@ -306,23 +319,65 @@ robotic_arm_kinematicsFrame::robotic_arm_kinematicsFrame(wxWindow* parent,wxWind
     FlexGridSizer4->AddGrowableRow(0);
     m_plot3D = new CMyGLCanvas(this,ID_XY_GLCANVAS,wxDefaultPosition,wxSize(450,350),wxTAB_TRAVERSAL,_T("ID_XY_GLCANVAS"));
     FlexGridSizer4->Add(m_plot3D, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
+    FlexGridSizer16 = new wxFlexGridSizer(1, 2, 0, 0);
+    FlexGridSizer16->AddGrowableCol(0);
+    FlexGridSizer16->AddGrowableRow(0);
     FlexGridSizer7 = new wxFlexGridSizer(2, 2, 0, 0);
     FlexGridSizer7->AddGrowableCol(1);
     FlexGridSizer7->AddGrowableRow(1);
-    FlexGridSizer7->Add(20,15,1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
+    FlexGridSizer7->Add(1,15,1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
     FlexGridSizer14 = new wxFlexGridSizer(1, 1, 0, 0);
     FlexGridSizer14->AddGrowableCol(0);
-    StaticText10 = new wxStaticText(this, ID_STATICTEXT10, _("Degrees of Freedom:"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT10"));
+    StaticText10 = new wxStaticText(this, ID_STATICTEXT10, _("Degrees of Freedom"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT10"));
+    wxFont StaticText10Font = wxSystemSettings::GetFont(wxSYS_OEM_FIXED_FONT);
+    if ( !StaticText10Font.Ok() ) StaticText10Font = wxSystemSettings::GetFont(wxSYS_DEFAULT_GUI_FONT);
+    StaticText10Font.SetPointSize(8);
+    StaticText10Font.SetWeight(wxBOLD);
+    StaticText10->SetFont(StaticText10Font);
     FlexGridSizer14->Add(StaticText10, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
     FlexGridSizer7->Add(FlexGridSizer14, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
-    FlexGridSizer7->Add(10,100,1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+    FlexGridSizer7->Add(3,55,1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
     pnDOFs = new wxPanel(this, ID_PANEL2, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL, _T("ID_PANEL2"));
     boxSizerDOFs = new wxBoxSizer(wxHORIZONTAL);
     pnDOFs->SetSizer(boxSizerDOFs);
     boxSizerDOFs->Fit(pnDOFs);
     boxSizerDOFs->SetSizeHints(pnDOFs);
     FlexGridSizer7->Add(pnDOFs, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
-    FlexGridSizer4->Add(FlexGridSizer7, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
+    FlexGridSizer16->Add(FlexGridSizer7, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
+    FlexGridSizer17 = new wxFlexGridSizer(2, 1, 0, 0);
+    FlexGridSizer17->AddGrowableCol(0);
+    FlexGridSizer17->AddGrowableRow(1);
+    FlexGridSizer18 = new wxFlexGridSizer(1, 1, 0, 0);
+    FlexGridSizer18->AddGrowableCol(0);
+    StaticText2 = new wxStaticText(this, ID_STATICTEXT2, _("State details"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT2"));
+    wxFont StaticText2Font = wxSystemSettings::GetFont(wxSYS_OEM_FIXED_FONT);
+    if ( !StaticText2Font.Ok() ) StaticText2Font = wxSystemSettings::GetFont(wxSYS_DEFAULT_GUI_FONT);
+    StaticText2Font.SetPointSize(8);
+    StaticText2Font.SetWeight(wxBOLD);
+    StaticText2->SetFont(StaticText2Font);
+    FlexGridSizer18->Add(StaticText2, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+    FlexGridSizer17->Add(FlexGridSizer18, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
+    Notebook1 = new wxNotebook(this, ID_NOTEBOOK1, wxDefaultPosition, wxDefaultSize, wxNB_BOTTOM, _T("ID_NOTEBOOK1"));
+    Panel1 = new wxPanel(Notebook1, ID_PANEL3, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL, _T("ID_PANEL3"));
+    FlexGridSizer19 = new wxFlexGridSizer(1, 2, 0, 0);
+    FlexGridSizer19->AddGrowableCol(1);
+    FlexGridSizer19->AddGrowableRow(0);
+    lbXYZs = new wxListBox(Panel1, ID_LISTBOX1, wxDefaultPosition, wxSize(45,-1), 0, 0, 0, wxDefaultValidator, _T("ID_LISTBOX1"));
+    wxFont lbXYZsFont(7,wxTELETYPE,wxFONTSTYLE_NORMAL,wxNORMAL,false,wxEmptyString,wxFONTENCODING_DEFAULT);
+    lbXYZs->SetFont(lbXYZsFont);
+    FlexGridSizer19->Add(lbXYZs, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
+    edMatrix = new wxTextCtrl(Panel1, ID_TEXTCTRL5, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_MULTILINE|wxTE_READONLY|wxTE_DONTWRAP|wxALWAYS_SHOW_SB, wxDefaultValidator, _T("ID_TEXTCTRL5"));
+    edMatrix->SetMinSize(wxSize(300,-1));
+    wxFont edMatrixFont(7,wxTELETYPE,wxFONTSTYLE_NORMAL,wxNORMAL,false,_T("Monospace"),wxFONTENCODING_DEFAULT);
+    edMatrix->SetFont(edMatrixFont);
+    FlexGridSizer19->Add(edMatrix, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
+    Panel1->SetSizer(FlexGridSizer19);
+    FlexGridSizer19->Fit(Panel1);
+    FlexGridSizer19->SetSizeHints(Panel1);
+    Notebook1->AddPage(Panel1, _("Transf. matrices"), false);
+    FlexGridSizer17->Add(Notebook1, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
+    FlexGridSizer16->Add(FlexGridSizer17, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
+    FlexGridSizer4->Add(FlexGridSizer16, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
     FlexGridSizer1->Add(FlexGridSizer4, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
     SetSizer(FlexGridSizer1);
     MenuBar1 = new wxMenuBar();
@@ -350,6 +405,7 @@ robotic_arm_kinematicsFrame::robotic_arm_kinematicsFrame(wxWindow* parent,wxWind
     Connect(ID_SIMPLEHTMLLISTBOX1,wxEVT_COMMAND_LISTBOX_SELECTED,(wxObjectEventFunction)&robotic_arm_kinematicsFrame::OnlistLinksSelect);
     Connect(ID_BUTTON5,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&robotic_arm_kinematicsFrame::OnbtnAddLinkClick);
     Connect(ID_BUTTON6,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&robotic_arm_kinematicsFrame::OnbtnClearClick);
+    Connect(ID_BUTTON7,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&robotic_arm_kinematicsFrame::OnbtnDeleteClick);
     Connect(ID_RADIOBOX1,wxEVT_COMMAND_RADIOBOX_SELECTED,(wxObjectEventFunction)&robotic_arm_kinematicsFrame::OnrbTypeSelect);
     Connect(ID_BUTTON1,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&robotic_arm_kinematicsFrame::OnButtonSaveFromEdit);
     Connect(ID_SLIDER1,wxEVT_SCROLL_TOP|wxEVT_SCROLL_BOTTOM|wxEVT_SCROLL_LINEUP|wxEVT_SCROLL_LINEDOWN|wxEVT_SCROLL_PAGEUP|wxEVT_SCROLL_PAGEDOWN|wxEVT_SCROLL_THUMBTRACK|wxEVT_SCROLL_THUMBRELEASE|wxEVT_SCROLL_CHANGED,(wxObjectEventFunction)&robotic_arm_kinematicsFrame::OnSliderScroll);
@@ -367,6 +423,7 @@ robotic_arm_kinematicsFrame::robotic_arm_kinematicsFrame(wxWindow* parent,wxWind
     Connect(ID_SLIDER4,wxEVT_SCROLL_TOP|wxEVT_SCROLL_BOTTOM|wxEVT_SCROLL_LINEUP|wxEVT_SCROLL_LINEDOWN|wxEVT_SCROLL_PAGEUP|wxEVT_SCROLL_PAGEDOWN|wxEVT_SCROLL_THUMBTRACK|wxEVT_SCROLL_THUMBRELEASE|wxEVT_SCROLL_CHANGED,(wxObjectEventFunction)&robotic_arm_kinematicsFrame::OnSliderScroll);
     Connect(ID_SLIDER4,wxEVT_SCROLL_CHANGED,(wxObjectEventFunction)&robotic_arm_kinematicsFrame::OnSliderScroll);
     Connect(ID_SLIDER4,wxEVT_COMMAND_SLIDER_UPDATED,(wxObjectEventFunction)&robotic_arm_kinematicsFrame::OnSliderScroll);
+    Connect(ID_LISTBOX1,wxEVT_COMMAND_LISTBOX_SELECTED,(wxObjectEventFunction)&robotic_arm_kinematicsFrame::OnlbXYZsSelect);
     Connect(ID_MENUITEM3,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&robotic_arm_kinematicsFrame::OnbtnClearClick);
     Connect(ID_MENUITEM1,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&robotic_arm_kinematicsFrame::OnLoadBinary);
     Connect(ID_MENUITEM2,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&robotic_arm_kinematicsFrame::OnSaveBinary);
@@ -446,7 +503,7 @@ robotic_arm_kinematicsFrame::~robotic_arm_kinematicsFrame()
 void robotic_arm_kinematicsFrame::Regenerate3DView()
 {
 	m_gl_robot->clear();
-	m_robot.getAs3DObject(m_gl_robot);
+	m_robot.getAs3DObject(m_gl_robot, &m_all_poses);
 }
 
 void robotic_arm_kinematicsFrame::OnQuit(wxCommandEvent& event)
@@ -467,7 +524,11 @@ void robotic_arm_kinematicsFrame::UpdateListLinks()
 	listLinks->Freeze();
 
 	const int oldSelect = listLinks->GetSelection();
+	const int oldSelectXYZ = lbXYZs->GetSelection();
 	listLinks->Clear();
+
+	lbXYZs->Freeze();
+	lbXYZs->Clear();
 
 	for (unsigned int i=0;i<m_robot.size();i++)
 	{
@@ -481,11 +542,16 @@ void robotic_arm_kinematicsFrame::UpdateListLinks()
 		listLinks->Append(_U(ss.str().c_str()));
 	}
 
+	for (unsigned int i=0;i<=m_robot.size();i++)
+	{
+		lbXYZs->Append( _U( mrpt::format("XYZ%u",static_cast<unsigned int>(i)).c_str() ) );
+	}
 
-	if (oldSelect>=0)
-		listLinks->SetSelection(oldSelect);
+	if (oldSelect>=0) listLinks->SetSelection(oldSelect);
+	if (oldSelectXYZ>=0) lbXYZs->SetSelection(oldSelectXYZ);
 
 	listLinks->Thaw();
+	lbXYZs->Thaw();
 
 	// Update DOF panels:
 	if (m_dof_panels.size()==m_robot.size())
@@ -545,8 +611,6 @@ void robotic_arm_kinematicsFrame::RegenerateDOFPanels()
 	m_dof_panels.resize(N);
 	for (unsigned int i=0;i<N;i++)
 	{
-		const TKinematicLink & l = m_robot.getLink(i);
-
 		m_dof_panels[i] = new PanelDOF(pnDOFs);
 		boxSizerDOFs->Add( m_dof_panels[i] );
 	}
@@ -563,8 +627,10 @@ void robotic_arm_kinematicsFrame::UpdateDOFPanels()
 
 void robotic_arm_kinematicsFrame::OnListSelectionChange()
 {
+	UpdateMatrixView();
+
 	const int sel = listLinks->GetSelection();
-	if (sel<0 || sel>=m_robot.size())
+	if (sel<0 || size_t(sel)>=m_robot.size())
 	{
 		panelProperties->Enable(false);
 		//panelProperties->Show(false);
@@ -587,7 +653,6 @@ void robotic_arm_kinematicsFrame::OnListSelectionChange()
 	slAlpha->SetValue(RAD2DEG(l.alpha));
 	slD->SetValue(1e3*l.d);
 	slA->SetValue(1e3*l.a);
-
 }
 
 void robotic_arm_kinematicsFrame::OnlistLinksSelect(wxCommandEvent& event)
@@ -608,15 +673,19 @@ void robotic_arm_kinematicsFrame::OnSliderDOFScroll(wxScrollEvent& event)
 
 	UpdateListLinks();
 
-	m_robot.update3DObject();
+	m_robot.update3DObject(&m_all_poses);
 	m_plot3D->Refresh();
+
+	UpdateMatrixView();
 }
 
 // Sliders of the left panel:
 void robotic_arm_kinematicsFrame::OnSliderScroll(wxScrollEvent& event)
 {
+	UpdateMatrixView();
+
 	const int sel = listLinks->GetSelection();
-	if (sel<0 || sel>=m_robot.size())
+	if (sel<0 || size_t(sel)>=m_robot.size())
 	{
 		panelProperties->Enable(false);
 		//panelProperties->Show(false);
@@ -642,14 +711,14 @@ void robotic_arm_kinematicsFrame::OnSliderScroll(wxScrollEvent& event)
 
 	UpdateListLinks();
 
-	m_robot.update3DObject();
+	m_robot.update3DObject(&m_all_poses);
 	m_plot3D->Refresh();
 }
 
 void robotic_arm_kinematicsFrame::OnButtonSaveFromEdit(wxCommandEvent& event)
 {
 	const int sel = listLinks->GetSelection();
-	if (sel<0 || sel>=m_robot.size())
+	if (sel<0 || size_t(sel)>=m_robot.size())
 	{
 		panelProperties->Enable(false);
 		//panelProperties->Show(false);
@@ -677,7 +746,7 @@ void robotic_arm_kinematicsFrame::OnButtonSaveFromEdit(wxCommandEvent& event)
 
 	UpdateListLinks();
 
-	m_robot.update3DObject();
+	m_robot.update3DObject(&m_all_poses);
 	m_plot3D->Refresh();
 
 }
@@ -768,5 +837,56 @@ void robotic_arm_kinematicsFrame::OnSaveBinary(wxCommandEvent& event)
 void robotic_arm_kinematicsFrame::OnrbTypeSelect(wxCommandEvent& event)
 {
 	OnButtonSaveFromEdit(event);
+}
 
+void robotic_arm_kinematicsFrame::OnbtnDeleteClick(wxCommandEvent& event)
+{
+	const int sel = listLinks->GetSelection();
+	if (sel<0 || size_t(sel)>=m_robot.size())
+	{
+		panelProperties->Enable(false);
+		return;
+	}
+
+	m_robot.removeLink(sel);
+
+	this->RegenerateDOFPanels();
+	this->UpdateListLinks();
+
+	listLinks->SetSelection( m_robot.size()-1 );
+
+	this->OnListSelectionChange();
+	this->Regenerate3DView();
+	m_plot3D->Refresh();
+}
+
+void robotic_arm_kinematicsFrame::OnlbXYZsSelect(wxCommandEvent& event)
+{
+	UpdateMatrixView();
+}
+
+void robotic_arm_kinematicsFrame::UpdateMatrixView()
+{
+	const int sel = lbXYZs->GetSelection();
+	if (sel<0 || size_t(sel)>m_all_poses.size())
+	{
+		return;
+	}
+
+	edMatrix->Freeze();
+
+	const mrpt::math::CMatrixDouble44 M = m_all_poses[sel].getHomogeneousMatrixVal();
+
+	const std::string s = format(
+		"%6.03f %6.03f %6.03f %6.03f\n"
+		"%6.03f %6.03f %6.03f %6.03f\n"
+		"%6.03f %6.03f %6.03f %6.03f\n"
+		"%6.03f %6.03f %6.03f %6.03f\n",
+		M(0,0),M(0,1),M(0,2),M(0,3),
+		M(1,0),M(1,1),M(1,2),M(1,3),
+		M(2,0),M(2,1),M(2,2),M(2,3),
+		M(3,0),M(3,1),M(3,2),M(3,3) );
+	edMatrix->SetValue(_U( s.c_str() ));
+
+	edMatrix->Thaw();
 }
