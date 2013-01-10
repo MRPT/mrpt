@@ -111,7 +111,7 @@ void  COctoMap::writeToStream(CStream &out, int *version) const
 	else
 	{
 		this->likelihoodOptions.writeToStream(out);
-		
+
 		CMemoryChunk chunk;
 		const string	tmpFil = mrpt::system::getTempFileName();
 		OCTOMAP_PTR->writeBinary(tmpFil);
@@ -136,7 +136,7 @@ void  COctoMap::readFromStream(CStream &in, int version)
 			this->likelihoodOptions.readFromStream(in);
 
 			this->clear();
-			
+
 			CMemoryChunk chunk;
 			in >> chunk;
 
@@ -221,7 +221,7 @@ bool COctoMap::internal_build_PointCloud_for_observation(const CObservation *obs
 		octomap::point3d & sensorPt = * reinterpret_cast<octomap::point3d*>(point3d_sensorPt);
 
 		if (!o->hasPoints3D)
-			return false; 
+			return false;
 
 		// Sensor_pose = robot_pose (+) sensor_pose_on_robot
 		CPose3D sensorPose(UNINITIALIZED_POSE);
@@ -255,10 +255,10 @@ bool COctoMap::internal_build_PointCloud_for_observation(const CObservation *obs
 		mrpt::math::TPoint3Df pt;
 		for (size_t i=0;i<sizeRangeScan;i++)
 		{
-			pt.x = o->points3D_x[i]; 
+			pt.x = o->points3D_x[i];
 			pt.y = o->points3D_y[i];
 			pt.z = o->points3D_z[i];
-			
+
 			// Valid point?
 			if ( pt.x!=0 || pt.y!=0 || pt.z!=0 )
 			{
@@ -610,7 +610,7 @@ bool COctoMap::isPointWithinOctoMap(const float x,const float y,const float z) c
 	return OCTOMAP_PTR_CONST->coordToKeyChecked(octomap::point3d(x,y,z), key);
 }
 
-/** Get the occupancy probability [0,1] of a point 
+/** Get the occupancy probability [0,1] of a point
 * \return false if the point is not mapped, in which case the returned "prob" is undefined. */
 bool COctoMap::getPointOccupancy(const float x,const float y,const float z, double &prob_occupancy) const
 {
@@ -637,7 +637,7 @@ void COctoMap::insertPointCloud(const CPointsMap &ptMap, const float sensor_x,co
 	MRPT_START
 
 	const octomap::point3d sensorPt(sensor_x,sensor_y,sensor_z);
-	
+
 	size_t N;
 	const float *xs,*ys,*zs;
 	ptMap.getPointsBuffer(N,xs,ys,zs);
@@ -652,4 +652,19 @@ void COctoMap::insertPointCloud(const CPointsMap &ptMap, const float sensor_x,co
 void COctoMap::insertRay(const float end_x,const float end_y,const float end_z,const float sensor_x,const float sensor_y,const float sensor_z)
 {
 	OCTOMAP_PTR->insertRay( octomap::point3d(sensor_x,sensor_y,sensor_z), octomap::point3d(end_x,end_y,end_z), insertionOptions.maxrange,insertionOptions.pruning);
+}
+
+bool COctoMap::castRay(const mrpt::math::TPoint3D & origin,const mrpt::math::TPoint3D & direction,mrpt::math::TPoint3D & end,bool ignoreUnknownCells,double maxRange) const
+{
+	octomap::point3d _end;
+
+	const bool ret=OCTOMAP_PTR->castRay(
+		octomap::point3d(origin.x,origin.y,origin.z),
+		octomap::point3d(direction.x,direction.y,direction.z),
+		_end,ignoreUnknownCells,maxRange);
+
+	end.x = _end.x();
+	end.y = _end.y();
+	end.z = _end.z();
+	return ret;
 }

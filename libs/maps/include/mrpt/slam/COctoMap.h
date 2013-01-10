@@ -58,8 +58,8 @@ namespace mrpt
 		 * As with any other mrpt::slam::CMetricMap, you can obtain a 3D representation of the map calling getAs3DObject() or getAsOctoMapVoxels()
 		 *
 		 * The octomap library was presented in:
-		 *  - K. M. Wurm, A. Hornung, M. Bennewitz, C. Stachniss, and W. Burgard, 
-		 *     <i>"OctoMap: A Probabilistic, Flexible, and Compact 3D Map Representation for Robotic Systems"</i> 
+		 *  - K. M. Wurm, A. Hornung, M. Bennewitz, C. Stachniss, and W. Burgard,
+		 *     <i>"OctoMap: A Probabilistic, Flexible, and Compact 3D Map Representation for Robotic Systems"</i>
 		 *     in Proc. of the ICRA 2010 Workshop on Best Practice in 3D Perception and Modeling for Mobile Manipulation, 2010. Software available at http://octomap.sf.net/.
 		 *
 		 * \sa CMetricMap
@@ -129,7 +129,7 @@ namespace mrpt
 
 			private:
 				mrpt::utils::ignored_copy_ptr<COctoMap> m_parent;
-			
+
 				double occupancyThres; // sets the threshold for occupancy (sensor model) (Default=0.5)
 				double probHit; // sets the probablility for a "hit" (will be converted to logodds) - sensor model (Default=0.7)
 				double probMiss; // sets the probablility for a "miss" (will be converted to logodds) - sensor model (Default=0.4)
@@ -173,7 +173,7 @@ namespace mrpt
 
 
 			/** Computes the log-likelihood of a given observation given an arbitrary robot 3D pose.
-				* In this particular class, the log-likelihood is computed by adding (product of likelihoods) 
+				* In this particular class, the log-likelihood is computed by adding (product of likelihoods)
 				* the logarithm of the occupancy probability of all cells in which an endpoint from the sensor rays.
 				*
 				* \param takenFrom The robot's pose the observation is supposed to be taken from.
@@ -290,7 +290,7 @@ namespace mrpt
 				*/
 			virtual void  getAs3DObject( mrpt::opengl::CSetOfObjectsPtr	&outObj ) const;
 
-			/** Builds a renderizable representation of the octomap as a mrpt::opengl::COctoMapVoxels object. 
+			/** Builds a renderizable representation of the octomap as a mrpt::opengl::COctoMapVoxels object.
 				* \sa renderingOptions
 				*/
 			void getAsOctoMapVoxels(mrpt::opengl::COctoMapVoxels &gl_obj) const;
@@ -298,7 +298,7 @@ namespace mrpt
 			/** Check whether the given point lies within the volume covered by the octomap (that is, whether it is "mapped") */
 			bool isPointWithinOctoMap(const float x,const float y,const float z) const;
 
-			/** Get the occupancy probability [0,1] of a point 
+			/** Get the occupancy probability [0,1] of a point
 				* \return false if the point is not mapped, in which case the returned "prob" is undefined. */
 			bool getPointOccupancy(const float x,const float y,const float z, double &prob_occupancy) const;
 
@@ -313,6 +313,26 @@ namespace mrpt
 
 			/** Just like insertPointCloud but with a single ray. */
 			void insertRay(const float end_x,const float end_y,const float end_z,const float sensor_x,const float sensor_y,const float sensor_z);
+
+			/** Performs raycasting in 3d, similar to computeRay().
+			 *
+			 * A ray is cast from origin with a given direction, the first occupied
+			 * cell is returned (as center coordinate). If the starting coordinate is already
+			 * occupied in the tree, this coordinate will be returned as a hit.
+			 *
+			 * @param origin starting coordinate of ray
+			 * @param direction A vector pointing in the direction of the raycast. Does not need to be normalized.
+			 * @param end returns the center of the cell that was hit by the ray, if successful
+			 * @param ignoreUnknownCells whether unknown cells are ignored. If false (default), the raycast aborts when an unkown cell is hit.
+			 * @param maxRange Maximum range after which the raycast is aborted (<= 0: no limit, default)
+			 * @return whether or not an occupied cell was hit
+			 */
+			bool castRay(
+				const mrpt::math::TPoint3D & origin,
+				const mrpt::math::TPoint3D & direction,
+				mrpt::math::TPoint3D & end,
+				bool ignoreUnknownCells=false,
+				double maxRange=-1.0) const;
 
 			/** @name Direct access to octomap library methods
 				@{ */
