@@ -116,4 +116,5 @@ add_subdirectory(MOXmodel-rawlog)
 add_subdirectory(captureVideoAndBuildPyr)
 add_subdirectory(stereoRectify)
 add_subdirectory(face_detection)
+add_subdirectory(srba-examples)
 

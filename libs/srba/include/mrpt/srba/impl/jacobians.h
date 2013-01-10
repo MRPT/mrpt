@@ -1,0 +1,652 @@
+/* +---------------------------------------------------------------------------+
+   |                 The Mobile Robot Programming Toolkit (MRPT)               |
+   |                                                                           |
+   |                          http://www.mrpt.org/                             |
+   |                                                                           |
+   | Copyright (c) 2005-2013, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2013, MAPIR group, University of Malaga                |
+   | Copyright (c) 2012-2013, University of Almeria                            |
+   | All rights reserved.                                                      |
+   |                                                                           |
+   | Redistribution and use in source and binary forms, with or without        |
+   | modification, are permitted provided that the following conditions are    |
+   | met:                                                                      |
+   |    * Redistributions of source code must retain the above copyright       |
+   |      notice, this list of conditions and the following disclaimer.        |
+   |    * Redistributions in binary form must reproduce the above copyright    |
+   |      notice, this list of conditions and the following disclaimer in the  |
+   |      documentation and/or other materials provided with the distribution. |
+   |    * Neither the name of the copyright holders nor the                    |
+   |      names of its contributors may be used to endorse or promote products |
+   |      derived from this software without specific prior written permission.|
+   |                                                                           |
+   | THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS       |
+   | 'AS IS' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED |
+   | TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR|
+   | PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDERS BE LIABLE |
+   | FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL|
+   | DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR|
+   |  SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)       |
+   | HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,       |
+   | STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN  |
+   | ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE           |
+   | POSSIBILITY OF SUCH DAMAGE.                                               |
+   +---------------------------------------------------------------------------+ */
+
+#pragma once
+
+#include <mrpt/math/jacobians.h>
+
+namespace mrpt { namespace srba {
+
+#define SRBA_USE_NUMERIC_JACOBIANS             0
+#define SRBA_VERIFY_AGAINST_NUMERIC_JACOBIANS  0
+
+#define SRBA_COMPUTE_NUMERIC_JACOBIANS   (SRBA_VERIFY_AGAINST_NUMERIC_JACOBIANS || SRBA_USE_NUMERIC_JACOBIANS)
+#define SRBA_COMPUTE_ANALYTIC_JACOBIANS  (SRBA_VERIFY_AGAINST_NUMERIC_JACOBIANS || !SRBA_USE_NUMERIC_JACOBIANS)
+
+#define DEBUG_JACOBIANS_SUPER_VERBOSE  0
+#define DEBUG_NOT_UPDATED_ENTRIES      0   // Extremely slow, just for debug during development! This checks that all the expected Jacobians are actually updated
+
+template <class KF2KF_POSE_TYPE,class LM_TYPE,class OBS_TYPE>
+void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE>::numeric_dh_dAp(const array_pose_t &x, const TNumeric_dh_dAp_params& params, array_obs_t &y) 
+{
+	const pose_t incr = pose_t::exp(x);
+
+	pose_t base_from_obs(mrpt::poses::UNINITIALIZED_POSE);
+	if (!params.is_inverse_dir)
+	{
+		if (params.pose_d1_wrt_obs) // "A" in papers
+				base_from_obs.composeFrom(*params.pose_d1_wrt_obs,incr);
+		else	base_from_obs = incr;
+		base_from_obs.composeFrom(base_from_obs,params.pose_base_wrt_d1);
+	}
+	else
+	{
+		// Changes due to the inverse pose:
+		// D becomes D' = p_d^{d+1} (+) D
+		ASSERT_(params.k2k_edge_id<params.k2k_edges.size())
+		const pose_t & p_d_d1 = params.k2k_edges[params.k2k_edge_id].inv_pose;
+
+		pose_t pose_base_wrt_d_prime(mrpt::poses::UNINITIALIZED_POSE);  // D' in papers
+		pose_base_wrt_d_prime.composeFrom( p_d_d1, params.pose_base_wrt_d1 );
+
+		pose_t p_d_d1_mod(mrpt::poses::UNINITIALIZED_POSE);
+		p_d_d1_mod.composeFrom(incr, p_d_d1);
+		p_d_d1_mod.inverse();
+
+		// total pose: base from obs =  pose_d1_wrt_obs (+) inv(p_d_d1_mod) (+) D'
+
+		if (params.pose_d1_wrt_obs) // "A" in papers
+				base_from_obs = *params.pose_d1_wrt_obs + p_d_d1_mod + pose_base_wrt_d_prime;
+		else	base_from_obs =  p_d_d1_mod + pose_base_wrt_d_prime;
+	}
+
+	// Generate observation:
+	sensor_model_t::observe(y,base_from_obs,params.xji_i, params.sensor_params);
+}
+
+#if DEBUG_NOT_UPDATED_ENTRIES
+
+struct TNumSTData
+{
+	TKeyFrameID from, to;
+};
+
+TNumSTData check_num_st_entry_exists(
+	const pose_flag_t * entry,
+	const TRBA_Problem_state::TSpanningTree & st)
+{
+	for (TRelativePosesForEachTarget::const_iterator it_tree=st.num.begin();it_tree!=st.num.end();++it_tree)
+	{
+		const TKeyFrameID id_from = it_tree->first;
+		const frameid2pose_map_t & tree = it_tree->second;
+
+		for (frameid2pose_map_t::const_iterator it=tree.begin();it!=tree.end();++it)
+		{
+			const TKeyFrameID id_to = it->first;
+			const pose_flag_t & e = it->second;
+			if (&e == entry)
+			{
+				TNumSTData d;
+				d.from = id_from;
+				d.to = id_to;
+				return d;
+			}
+		}
+	}
+	ASSERT_(false)
+}
+
+#endif
+
+template <class KF2KF_POSE_TYPE,class LM_TYPE,class OBS_TYPE>
+void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE>::numeric_dh_df(const array_landmark_t &x, const TNumeric_dh_df_params& params, array_obs_t &y)
+{
+	static const pose_t my_aux_null_pose;
+
+	const array_landmark_t x_local = params.xji_i + x;
+	const pose_t * pos_cam = params.pose_base_wrt_obs!=NULL ? params.pose_base_wrt_obs : &my_aux_null_pose;
+	// Generate observation:
+	sensor_model_t::observe(y,*pos_cam,x_local, params.sensor_params);
+}
+
+// ====================================================================
+//                       j,i                    lm_id,base_id
+//           \partial  h            \partial  h
+//                       l                      obs_frame_id
+// dh_dp = ------------------ = ---------------------------------
+//                       d+1                    cur_id
+//           \partial  p            \partial  p
+//                       d                      stp.next_node
+//
+//  See tech report:
+//   "A tutorial on SE(3) transformation parameterizations and
+//    on-manifold optimization", Jose-Luis Blanco, 2010.
+// ====================================================================
+template <class KF2KF_POSE_TYPE,class LM_TYPE,class OBS_TYPE>
+void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE>::compute_jacobian_dh_dp(
+	typename TSparseBlocksJacobians_dh_dAp::TEntry  &jacob,
+	const k2f_edge_t & observation,
+	const k2k_edges_deque_t  &k2k_edges,
+	std::vector<const pose_flag_t*>    *out_list_of_required_num_poses) const
+{
+	ASSERT_(observation.obs.kf_id!=jacob.sym.kf_base)
+
+	if (! *jacob.sym.is_valid )
+		return; // Another block of the same Jacobian row said this observation was invalid for some reason.
+
+	// First, we need x^{j,i}_i:
+	//const landmark_traits<LM_TYPE>::array_landmark_t & arr_xji_i = jacob.sym.feat_rel_pos->pos;
+	//const TPoint3D & xji_i = jacob.sym.feat_rel_pos->pos;
+	const typename landmark_traits<LM_TYPE>::point_t xji_i = jacob.sym.feat_rel_pos->getAsRelativeEuclideanLocation();
+
+	// And x^{j,i}_l = pose_of_i_wrt_l (+) x^{j,i}_i
+
+	// Handle the special case when d==obs, so rel_pose_d1_from_obs==NULL, and its pose is the origin:
+	const pose_flag_t * pose_d1_wrt_obs  =  jacob.sym.rel_pose_d1_from_obs; // "A" in papers
+	const pose_flag_t & pose_base_wrt_d1 = *jacob.sym.rel_pose_base_from_d1;
+	const bool is_inverse_edge_jacobian = !jacob.sym.edge_normal_dir;  // If edge points in the opposite direction than as assumed in mathematical derivation.
+
+	if (out_list_of_required_num_poses)
+	{
+		if (jacob.sym.rel_pose_d1_from_obs)
+			out_list_of_required_num_poses->push_back(jacob.sym.rel_pose_d1_from_obs);
+		out_list_of_required_num_poses->push_back(jacob.sym.rel_pose_base_from_d1);
+	}
+
+	// make sure the numeric spanning tree is working and updating all that we need:
+#if DEBUG_NOT_UPDATED_ENTRIES
+	TNumSTData d1 = check_num_st_entry_exists(&pose_base_wrt_d1, rba_state.spanning_tree);
+#endif
+
+	if (!pose_base_wrt_d1.updated)
+	{
+		std::cerr << " kf_d+1: " << jacob.sym.kf_d << ", base_id: "<< jacob.sym.kf_base << std::endl;
+		rba_state.spanning_tree.save_as_dot_file("_debug_jacob_error_all_STs.dot");
+		ASSERT_(pose_base_wrt_d1.updated)
+	}
+
+	if (pose_d1_wrt_obs)
+	{
+#if DEBUG_NOT_UPDATED_ENTRIES
+		TNumSTData d2 = check_num_st_entry_exists(pose_d1_wrt_obs, rba_state.spanning_tree);
+#endif
+		if (!pose_d1_wrt_obs->updated)
+		{
+			std::cerr << " kf_d+1: " << jacob.sym.kf_d << ", obs_frame_id: "<< observation.obs.kf_id << std::endl;
+			rba_state.spanning_tree.save_as_dot_file("_debug_jacob_error_all_STs.dot");
+		}
+		ASSERT_(pose_d1_wrt_obs->updated)
+	}
+
+
+	// i<-l = d <- obs/l  (+)  base/i <- d
+	pose_t pose_i_wrt_l(mrpt::poses::UNINITIALIZED_POSE);
+	if (pose_d1_wrt_obs!=NULL)
+			pose_i_wrt_l.composeFrom( pose_d1_wrt_obs->pose, pose_base_wrt_d1.pose);
+	else	pose_i_wrt_l = pose_base_wrt_d1.pose;
+
+	// xji_l = pose_i_wrt_l (+) xji_i
+	typename landmark_traits<LM_TYPE>::point_t xji_l;
+	pose_i_wrt_l.composePoint(xji_i, xji_l);
+
+#if DEBUG_JACOBIANS_SUPER_VERBOSE  // Debug:
+	{
+		const TKeyFrameID obs_frame_id = observation.obs.kf_id;
+		const TKeyFrameID base_id      = jacob.sym.kf_base;
+		const TKeyFrameID d_plus_1_id  = jacob.sym.kf_d;
+		cout << "compute_jacobian_dh_dp: "
+			<< " obs_frame_id: " << obs_frame_id
+			<< " base_id: " << base_id
+			<< " kf_d+1: " << d_plus_1_id
+			<< " k2k_edge_id: " << jacob.sym.k2k_edge_id
+			<< " is_inverse: " << is_inverse_edge_jacobian << endl
+			<< " pose_base_wrt_d1 (D): "<<pose_base_wrt_d1.pose << endl;
+		if (pose_d1_wrt_obs) cout << " pose_d1_wrt_obs (A): "<< pose_d1_wrt_obs->pose<< endl;
+		// Observations from the "base_id" of a fixed,known landmark are NOT considered observations for optimization:
+		//mrpt::system::pause();
+	}
+#endif
+
+#if SRBA_COMPUTE_NUMERIC_JACOBIANS
+	// Numeric jacobians
+	typename TSparseBlocksJacobians_dh_dAp::matrix_t  num_jacob;
+
+	array_pose_t x;
+	x.setZero(); // Evaluate Jacobian at manifold incr around origin
+	array_pose_t x_incrs;
+	x_incrs.setConstant(1e-4);
+
+	const TNumeric_dh_dAp_params num_params(jacob.sym.k2k_edge_id,&pose_d1_wrt_obs->pose, pose_base_wrt_d1.pose,jacob.sym.feat_rel_pos->pos, is_inverse_edge_jacobian,k2k_edges,this->sensor_params);
+
+	jacobians::jacob_numeric_estimate(x,&numeric_dh_dAp,x_incrs,num_params,num_jacob);
+
+#endif // SRBA_COMPUTE_NUMERIC_JACOBIANS
+
+
+#if SRBA_COMPUTE_ANALYTIC_JACOBIANS
+	//  d h(x^{j,i}_l)    d h(x')       d x^{j,i}_l
+	// --------------- = --------- * ----------------
+	//  d p^{d+1}_d        d x'         d epsilon
+	//
+	//                  With: x' = x^{j,i}_l
+
+	// First jacobian: (uses xji_l)
+	// -----------------------------
+	Eigen::Matrix<double,OBS_DIMS,LM_DIMS>  dh_dx;
+
+	// Invoke sensor model:
+	if (!sensor_model_t::eval_jacob_dh_dx(dh_dx,xji_l, this->sensor_params))
+	{
+		// Invalid Jacobian:
+		*jacob.sym.is_valid = 0;
+		jacob.num.setZero();
+		return;
+	}
+
+	// Second Jacobian: (uses xji_i)
+	// ------------------------------
+	if (!is_inverse_edge_jacobian)
+	{	// Normal formulation: unknown is pose "d+1 -> d"
+
+		// This is "D" in my handwritten notes:
+		// pose_i_wrt_dplus1  -> pose_base_wrt_d1
+
+		const mrpt::math::CMatrixDouble33 & ROTD = pose_base_wrt_d1.pose.getRotationMatrix();
+
+		// We need to handle the special case where "d+1"=="l", so A=Pose(0,0,0,0,0,0):
+		Eigen::Matrix<double,OBS_DIMS,3> H_ROTA;
+		if (pose_d1_wrt_obs!=NULL)
+		{
+			// pose_d_plus_1_wrt_l  -> pose_d1_wrt_obs
+
+			// 3x3 term: H*R(A)
+			H_ROTA = dh_dx * pose_d1_wrt_obs->pose.getRotationMatrix();
+		}
+		else
+		{
+			// 3x3 term: H*R(A)
+			H_ROTA = dh_dx;
+		}
+
+		// First 2x3 block:
+		jacob.num.block(0,0,OBS_DIMS,3).noalias() = H_ROTA;
+
+		// Second 2x3 block: See section 10.3.7 of technical report on SE(3) poses
+		// compute aux vector "v":
+		Eigen::Matrix<double,3,1> v;
+		v[0] =  -pose_base_wrt_d1.pose.x()  - xji_i.x*ROTD.coeff(0,0) - xji_i.y*ROTD.coeff(0,1) - xji_i.z*ROTD.coeff(0,2);
+		v[1] =  -pose_base_wrt_d1.pose.y()  - xji_i.x*ROTD.coeff(1,0) - xji_i.y*ROTD.coeff(1,1) - xji_i.z*ROTD.coeff(1,2);
+		v[2] =  -pose_base_wrt_d1.pose.z()  - xji_i.x*ROTD.coeff(2,0) - xji_i.y*ROTD.coeff(2,1) - xji_i.z*ROTD.coeff(2,2);
+
+		Eigen::Matrix<double,3,3> aux;
+
+		aux.coeffRef(0,0)=0;
+		aux.coeffRef(1,1)=0;
+		aux.coeffRef(2,2)=0;
+
+		aux.coeffRef(1,2)=-v[0];
+		aux.coeffRef(2,1)= v[0];
+		aux.coeffRef(2,0)=-v[1];
+		aux.coeffRef(0,2)= v[1];
+		aux.coeffRef(0,1)=-v[2];
+		aux.coeffRef(1,0)= v[2];
+
+		jacob.num.block(0,3,OBS_DIMS,3).noalias() = H_ROTA * aux;
+	}
+	else
+	{	// Inverse formulation: unknown is pose "d -> d+1"
+
+		// Changes due to the inverse pose:
+		// D becomes D' = p_d^{d+1} (+) D
+
+		ASSERT_(jacob.sym.k2k_edge_id<k2k_edges.size())
+		const pose_t & p_d_d1 = k2k_edges[jacob.sym.k2k_edge_id].inv_pose;
+
+		pose_t pose_base_wrt_d1_prime(mrpt::poses::UNINITIALIZED_POSE);
+		pose_base_wrt_d1_prime.composeFrom( p_d_d1 , pose_base_wrt_d1.pose );
+
+		const mrpt::math::CMatrixDouble33 & ROTD = pose_base_wrt_d1_prime.getRotationMatrix();
+
+		// We need to handle the special case where "d+1"=="l", so A=Pose(0,0,0,0,0,0):
+		Eigen::Matrix<double,OBS_DIMS,3> H_ROTA;
+		if (pose_d1_wrt_obs!=NULL)
+		{
+			// pose_d_plus_1_wrt_l  -> pose_d1_wrt_obs
+
+			// In inverse edges, A (which is "pose_d1_wrt_obs") becomes A * (p_d_d1)^-1 =>
+			//   So: ROT_A' = ROT_A * ROT_d_d1^t
+
+			// 3x3 term: H*R(A')
+			H_ROTA = dh_dx * pose_d1_wrt_obs->pose.getRotationMatrix() * p_d_d1.getRotationMatrix().transpose();
+		}
+		else
+		{
+			// Was in the normal edge: H_ROTA = dh_dx;
+
+			// 3x3 term: H*R(A')
+			H_ROTA = dh_dx * p_d_d1.getRotationMatrix().transpose();
+		}
+
+		// First 2x3 block:
+		jacob.num.block(0,0,OBS_DIMS,3).noalias() = H_ROTA;
+
+		// Second 2x3 block:
+		// compute aux vector "v":
+		Eigen::Matrix<double,3,1> v;
+		v[0] =  -pose_base_wrt_d1_prime.x()  - xji_i.x*ROTD.coeff(0,0) - xji_i.y*ROTD.coeff(0,1) - xji_i.z*ROTD.coeff(0,2);
+		v[1] =  -pose_base_wrt_d1_prime.y()  - xji_i.x*ROTD.coeff(1,0) - xji_i.y*ROTD.coeff(1,1) - xji_i.z*ROTD.coeff(1,2);
+		v[2] =  -pose_base_wrt_d1_prime.z()  - xji_i.x*ROTD.coeff(2,0) - xji_i.y*ROTD.coeff(2,1) - xji_i.z*ROTD.coeff(2,2);
+
+		Eigen::Matrix<double,3,3> aux;
+
+		aux.coeffRef(0,0)=0;
+		aux.coeffRef(1,1)=0;
+		aux.coeffRef(2,2)=0;
+
+		aux.coeffRef(1,2)=-v[0];
+		aux.coeffRef(2,1)= v[0];
+		aux.coeffRef(2,0)=-v[1];
+		aux.coeffRef(0,2)= v[1];
+		aux.coeffRef(0,1)=-v[2];
+		aux.coeffRef(1,0)= v[2];
+
+		jacob.num.block(0,3,OBS_DIMS,3).noalias() = H_ROTA * aux;
+
+		// And this comes from: d exp(-epsilon)/d epsilon = - d exp(epsilon)/d epsilon
+		jacob.num = -jacob.num;
+
+	} // end inverse edge case
+
+#endif // SRBA_COMPUTE_ANALYTIC_JACOBIANS
+
+
+#if SRBA_VERIFY_AGAINST_NUMERIC_JACOBIANS
+	// Check jacob.num vs. num_jacob
+	const double MAX_REL_ERROR = 0.1;
+	if ((jacob.num-num_jacob).array().abs().maxCoeff()>MAX_REL_ERROR*num_jacob.array().maxCoeff())
+	{
+		std::cerr << "NUMERIC VS. ANALYTIC JACOBIAN dh_dAp FAILED:"
+			<< "\njacob.num:\n" << jacob.num
+			<< "\nnum_jacob:\n" << num_jacob
+			<< "\nDiff:\n" << jacob.num-num_jacob << endl << endl;
+	}
+#endif
+
+#if SRBA_USE_NUMERIC_JACOBIANS
+	jacob.num = num_jacob;
+#endif
+}
+
+// ====================================================================
+//                       j,i                    lm_id,base_id
+//           \partial  h            \partial  h
+//                       l                      obs_frame_id
+// dh_df = ------------------ = ---------------------------------
+//
+//           \partial  f            \partial  f
+//
+//   Note: f=relative position of landmark with respect to its base kf
+// ====================================================================
+template <class KF2KF_POSE_TYPE,class LM_TYPE,class OBS_TYPE>
+void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE>::compute_jacobian_dh_df(
+	typename TSparseBlocksJacobians_dh_df::TEntry  &jacob,
+	const k2f_edge_t & observation,
+	std::vector<const pose_flag_t*> *out_list_of_required_num_poses) const
+{
+	if (! *jacob.sym.is_valid )
+		return; // Another block of the same Jacobian row said this observation was invalid for some reason.
+
+	// First, we need x^{j,i}_i:
+	//const TPoint3D & xji_i = jacob.sym.rel_pos->pos;
+	const typename landmark_traits<LM_TYPE>::point_t xji_i = jacob.sym.rel_pos->getAsRelativeEuclideanLocation();
+
+	// And x^{j,i}_l = pose_of_i_wrt_l (+) x^{j,i}_i
+
+	// Handle the special case when obs==base, for which rel_pose_base_from_obs==NULL
+	const pose_flag_t * rel_pose_base_from_obs = jacob.sym.rel_pose_base_from_obs;
+
+	if (out_list_of_required_num_poses && rel_pose_base_from_obs)
+		out_list_of_required_num_poses->push_back(jacob.sym.rel_pose_base_from_obs);
+
+	// make sure the numeric spanning tree is working and updating all that we need:
+	if (rel_pose_base_from_obs)
+	{
+#if DEBUG_NOT_UPDATED_ENTRIES
+		TNumSTData d1 = check_num_st_entry_exists(rel_pose_base_from_obs, rba_state.spanning_tree);
+#endif
+		if (!rel_pose_base_from_obs->updated)
+		{
+#if DEBUG_NOT_UPDATED_ENTRIES
+			cout << "not updated ST entry for: from=" << d1.from << ", to=" << d1.to << endl;
+#endif
+			rba_state.spanning_tree.save_as_dot_file("_debug_jacob_error_all_STs.dot");
+			ASSERT_(rel_pose_base_from_obs->updated)
+		}
+	}
+
+
+	typename landmark_traits<LM_TYPE>::point_t xji_l;
+
+	if (rel_pose_base_from_obs!=NULL)
+	{
+#if 0
+		cout << "dh_df(ft_id="<< observation.obs.obs.feat_id << ", obs_kf="<< observation.obs.kf_id << "): o2b=" << *rel_pose_base_from_obs << endl;
+#endif
+		// xji_l = rel_pose_base_from_obs (+) xji_i
+		rel_pose_base_from_obs->pose.composePoint(xji_i, xji_l);
+	}
+	else
+	{
+		// I'm observing from the same base key-frame:
+		xji_l = xji_i;
+	}
+
+
+#if SRBA_COMPUTE_NUMERIC_JACOBIANS
+	// Numeric jacobians
+	typename TSparseBlocksJacobians_dh_df::matrix_t  num_jacob;
+
+	array_landmark_t x;
+	x.setZero(); // Evaluate Jacobian at incr around origin
+	array_landmark_t x_incrs;
+	x_incrs.setConstant(1e-3);
+
+	const TNumeric_dh_df_params num_params(&rel_pose_base_from_obs->pose,jacob.sym.rel_pos->pos,this->sensor_params);
+
+	jacobians::jacob_numeric_estimate(x,&numeric_dh_df,x_incrs,num_params,num_jacob);
+
+#endif // SRBA_COMPUTE_NUMERIC_JACOBIANS
+
+
+#if SRBA_COMPUTE_ANALYTIC_JACOBIANS
+	//  d h(x^{j,i}_l)    d h(f')       d f'
+	// --------------- = --------- * ----------
+	//  d f                d f'         d f
+	//
+	//                  With: f' = x^{j,i}_l
+
+	// First jacobian: (uses xji_l)
+	// -----------------------------
+	Eigen::Matrix<double,OBS_DIMS,LM_DIMS>  dh_dx;
+
+	// Invoke sensor model:
+	if (!sensor_model_t::eval_jacob_dh_dx(dh_dx,xji_l, this->sensor_params))
+	{
+		// Invalid Jacobian:
+		*jacob.sym.is_valid = 0;
+		jacob.num.setZero();
+		return;
+	}
+
+	// Second Jacobian: Simply the 3x3 rotation matrix of base wrt observing
+	// ------------------------------
+	if (rel_pose_base_from_obs!=NULL)
+	{
+		jacob.num.noalias() = dh_dx * rel_pose_base_from_obs->pose.getRotationMatrix();
+	}
+	else
+	{
+		// if observing from the same base kf, we're done:
+		jacob.num.noalias() = dh_dx;
+	}
+#endif // SRBA_COMPUTE_ANALYTIC_JACOBIANS
+
+
+#if SRBA_VERIFY_AGAINST_NUMERIC_JACOBIANS
+	// Check jacob.num vs. num_jacob
+	const double MAX_REL_ERROR = 0.1;
+	if ((jacob.num-num_jacob).array().abs().maxCoeff()>MAX_REL_ERROR*num_jacob.array().maxCoeff())
+	{
+		std::cerr << "NUMERIC VS. ANALYTIC JACOBIAN dh_df FAILED:"
+			<< "\njacob.num:\n" << jacob.num
+			<< "\nnum_jacob:\n" << num_jacob
+			<< "\nDiff:\n" << jacob.num-num_jacob << endl << endl;
+	}
+#endif
+
+#if SRBA_USE_NUMERIC_JACOBIANS
+	jacob.num = num_jacob;
+#endif
+}
+
+
+// ------------------------------------------------------------------------
+//   prepare_Jacobians_required_tree_roots()
+// ------------------------------------------------------------------------
+template <class KF2KF_POSE_TYPE,class LM_TYPE,class OBS_TYPE>
+void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE>::prepare_Jacobians_required_tree_roots(
+	std::set<TKeyFrameID>  & lst,
+	const std::vector<typename TSparseBlocksJacobians_dh_dAp::col_t*> &lst_JacobCols_dAp,
+	const std::vector<typename TSparseBlocksJacobians_dh_df::col_t*>  &lst_JacobCols_df )
+{
+	lst.clear();
+
+	const size_t nUnknowns_k2k = lst_JacobCols_dAp.size();
+	const size_t nUnknowns_k2f = lst_JacobCols_df.size();
+
+	// k2k edges ------------------------------------------------------
+	for (size_t i=0;i<nUnknowns_k2k;i++)
+	{
+		// For each column, process each nonzero block:
+		const typename TSparseBlocksJacobians_dh_dAp::col_t *col = lst_JacobCols_dAp[i];
+
+		for (typename TSparseBlocksJacobians_dh_dAp::col_t::const_iterator it=col->begin();it!=col->end();++it)
+		{
+			// For each dh_dAp block we need:
+			//  *  (d+1) -> obs
+			//  *  (d+1) -> base
+
+			const size_t obs_idx = it->first;
+			const typename TSparseBlocksJacobians_dh_dAp::TEntry & jacob_entry = it->second;
+
+			const TKeyFrameID obs_id  = rba_state.all_observations[obs_idx].obs.kf_id;
+			const TKeyFrameID d1_id   = jacob_entry.sym.kf_d;
+			const TKeyFrameID base_id = jacob_entry.sym.kf_base;
+
+			add_edge_ij_to_list_needed_roots(lst, d1_id  , obs_id );
+			add_edge_ij_to_list_needed_roots(lst, base_id, d1_id );
+		}
+	}
+
+	// k2f edges ------------------------------------------------------
+	for (size_t i=0;i<nUnknowns_k2f;i++)
+	{
+		// For each column, process each nonzero block:
+		const typename TSparseBlocksJacobians_dh_df::col_t *col = lst_JacobCols_df[i];
+
+		for (typename TSparseBlocksJacobians_dh_df::col_t::const_iterator it=col->begin();it!=col->end();++it)
+		{
+			// For each dh_df block we need:
+			//  *  obs -> base
+			const size_t obs_idx = it->first;
+			const k2f_edge_t &k2f = rba_state.all_observations[obs_idx];
+			ASSERT_(k2f.rel_pos)
+
+			const TKeyFrameID obs_id  = k2f.obs.kf_id;
+			const TKeyFrameID base_id = k2f.rel_pos->id_frame_base;
+
+			add_edge_ij_to_list_needed_roots(lst, base_id, obs_id );
+		}
+	}
+}
+
+
+// ------------------------------------------------------------------------
+//   recompute_all_Jacobians(): Re-evaluate all Jacobians numerically
+// ------------------------------------------------------------------------
+template <class KF2KF_POSE_TYPE,class LM_TYPE,class OBS_TYPE>
+size_t RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE>::recompute_all_Jacobians(
+	std::vector<typename TSparseBlocksJacobians_dh_dAp::col_t*> &lst_JacobCols_dAp,
+	std::vector<typename TSparseBlocksJacobians_dh_df::col_t*>  &lst_JacobCols_df,
+	std::vector<const typename kf2kf_pose_traits<KF2KF_POSE_TYPE>::pose_flag_t*>    * out_list_of_required_num_poses )
+{
+	size_t nJacobs=0;
+	if (out_list_of_required_num_poses) out_list_of_required_num_poses->clear();
+
+	const size_t nUnknowns_k2k = lst_JacobCols_dAp.size();
+	const size_t nUnknowns_k2f = lst_JacobCols_df.size();
+
+	// k2k edges ------------------------------------------------------
+	for (size_t i=0;i<nUnknowns_k2k;i++)
+	{
+		// For each column, process each nonzero block:
+		typename TSparseBlocksJacobians_dh_dAp::col_t *col = lst_JacobCols_dAp[i];
+
+		for (typename TSparseBlocksJacobians_dh_dAp::col_t::iterator it=col->begin();it!=col->end();++it)
+		{
+			const size_t obs_idx = it->first;
+			typename TSparseBlocksJacobians_dh_dAp::TEntry & jacob_entry = it->second;
+			compute_jacobian_dh_dp(
+				jacob_entry,
+				rba_state.all_observations[obs_idx],
+				rba_state.k2k_edges,
+				out_list_of_required_num_poses );
+			nJacobs++;
+		}
+	}
+
+	// k2f edges ------------------------------------------------------
+	for (size_t i=0;i<nUnknowns_k2f;i++)
+	{
+		// For each column, process each nonzero block:
+		typename TSparseBlocksJacobians_dh_df::col_t *col = lst_JacobCols_df[i];
+
+		for (typename TSparseBlocksJacobians_dh_df::col_t::iterator it=col->begin();it!=col->end();++it)
+		{
+			const size_t obs_idx = it->first;
+			typename TSparseBlocksJacobians_dh_df::TEntry & jacob_entry = it->second;
+			compute_jacobian_dh_df(
+				jacob_entry,
+				rba_state.all_observations[obs_idx],
+				out_list_of_required_num_poses );
+			nJacobs++;
+		}
+	}
+
+	return nJacobs;
+} // end of recompute_all_Jacobians()
+
+
+} } // end of namespace
