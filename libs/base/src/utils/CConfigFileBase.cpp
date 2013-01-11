@@ -55,16 +55,18 @@ void  CConfigFileBase::write(const std::string &section, const std::string &name
 {
 	writeString(section, name, format("%i",value), name_padding_width,value_padding_width,comment);
 }
-void  CConfigFileBase::write(const std::string &section, const std::string &name, unsigned int value, const int name_padding_width, const int value_padding_width, const std::string &comment )
+void  CConfigFileBase::write(const std::string &section, const std::string &name, uint32_t value, const int name_padding_width, const int value_padding_width, const std::string &comment )
 {
-	writeString(section, name, format("%u",value), name_padding_width,value_padding_width,comment);
+	std::stringstream ss;
+	ss << value;
+	writeString(section, name, ss.str(), name_padding_width,value_padding_width,comment);
 }
-#if MRPT_WORD_SIZE>32
-void  CConfigFileBase::write(const std::string &section, const std::string &name, size_t value, const int name_padding_width, const int value_padding_width, const std::string &comment )
+void  CConfigFileBase::write(const std::string &section, const std::string &name, uint64_t value, const int name_padding_width, const int value_padding_width, const std::string &comment )
 {
-	writeString(section, name, format("%u",static_cast<unsigned int>(value)) , name_padding_width,value_padding_width,comment);
+	std::stringstream ss;
+	ss << value;
+	writeString(section, name, ss.str(), name_padding_width,value_padding_width,comment);
 }
-#endif
 
 void  CConfigFileBase::write(const std::string &section, const std::string &name, const std::string &value, const int name_padding_width, const int value_padding_width, const std::string &comment )
 {

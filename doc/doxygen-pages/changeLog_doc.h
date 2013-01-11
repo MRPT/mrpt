@@ -101,6 +101,7 @@
 					- mrpt::utils::CLoadableOptions::dumpToTextStream() is no longer pure virtual: it now relies on mrpt::utils::CLoadableOptions::saveToConfigFile()
 				- mrpt::utils::CStream::Seek() now supports files larger than 2GB by using uint64_t instead of long (still see issue report for another patch required for MSVC2010) - (Closes <a href="http://code.google.com/p/mrpt/issues/detail?id=39" >issue 39</a>, thanks Robert Schattschneider) - <a href="http://code.google.com/p/mrpt/source/detail?r=3042" >r3042</a>
 				- mrpt::utils::TTypeName<> moved to its own header <mrpt/utils/TTypeName.h> while refactoring <mrpt/utils/CSerializable.h> - <a href="http://code.google.com/p/mrpt/source/detail?r=3044" >r3044</a>
+				- mrpt::utils::CConfigFileBase::write() now has signatures for "uint32_t" and "uint64_t" in both 32 and 64bit builds, instead of relying of the "size_t" type. This was done to fix build errors in some GCC versions under 32bits.
 			- [mrpt-bayes]
 				- mrpt::bayes::CKalmanFilterCapable (and all EKF-SLAM methods based on it) are now much faster. The implementation now exploits the sparsity of the Jacobian (~25% faster in a test 6D EKF-SLAM dataset) - <a href="http://code.google.com/p/mrpt/source/detail?r=3059" >r3059</a>, <a href="http://code.google.com/p/mrpt/source/detail?r=3060" >r3060</a>, <a href="http://code.google.com/p/mrpt/source/detail?r=3061" >r3061</a>
 			- [mrpt-graphs]

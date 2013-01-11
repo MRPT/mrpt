@@ -93,10 +93,8 @@ namespace utils
 		void  write(const std::string &section, const std::string &name, double value, const int name_padding_width=-1, const int value_padding_width=-1, const std::string &comment = std::string() );
 		void  write(const std::string &section, const std::string &name, float value , const int name_padding_width=-1, const int value_padding_width=-1, const std::string &comment = std::string() );
 		void  write(const std::string &section, const std::string &name, int value   , const int name_padding_width=-1, const int value_padding_width=-1, const std::string &comment = std::string() );
-		void  write(const std::string &section, const std::string &name, unsigned int value , const int name_padding_width=-1, const int value_padding_width=-1, const std::string &comment = std::string() );
-#if MRPT_WORD_SIZE>32
-		void  write(const std::string &section, const std::string &name, size_t value, const int name_padding_width=-1, const int value_padding_width=-1, const std::string &comment = std::string() );
-#endif
+		void  write(const std::string &section, const std::string &name, uint32_t value , const int name_padding_width=-1, const int value_padding_width=-1, const std::string &comment = std::string() );
+		void  write(const std::string &section, const std::string &name, uint64_t value, const int name_padding_width=-1, const int value_padding_width=-1, const std::string &comment = std::string() );
 		void  write(const std::string &section, const std::string &name, const std::string &value        , const int name_padding_width=-1, const int value_padding_width=-1, const std::string &comment = std::string() );
 		void  write(const std::string &section, const std::string &name, const std::vector<int> &value   , const int name_padding_width=-1, const int value_padding_width=-1, const std::string &comment = std::string() );
 		void  write(const std::string &section, const std::string &name, const std::vector<unsigned int> &value, const int name_padding_width=-1, const int value_padding_width=-1, const std::string &comment = std::string() );
