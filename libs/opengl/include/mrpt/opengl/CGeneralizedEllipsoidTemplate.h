@@ -255,6 +255,7 @@ namespace mrpt
 				default:
 					MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
 				};
+				CRenderizableDisplayList::notifyChange();
 			}
 
 			CGeneralizedEllipsoidTemplate() :

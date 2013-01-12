@@ -160,6 +160,7 @@ void  CSetOfTriangles::readFromStream(CStream &in,int version)
 
 	};
 	polygonsUpToDate=false;
+	CRenderizableDisplayList::notifyChange();
 }
 
 bool CSetOfTriangles::traceRay(const mrpt::poses::CPose3D &o,double &dist) const	{

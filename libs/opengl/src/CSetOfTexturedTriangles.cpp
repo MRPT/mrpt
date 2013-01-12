@@ -160,6 +160,7 @@ void  CSetOfTexturedTriangles::readFromStream(CStream &in, int version)
 	default:
 		MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
 	};
+	CRenderizableDisplayList::notifyChange();
 }
 
 bool CSetOfTexturedTriangles::traceRay(const mrpt::poses::CPose3D &o, double &dist) const

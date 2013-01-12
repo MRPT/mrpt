@@ -151,6 +151,7 @@ void  CSphere::readFromStream(CStream &in,int version)
 		MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
 
 	};
+	CRenderizableDisplayList::notifyChange();
 }
 
 bool CSphere::traceRay(const mrpt::poses::CPose3D &o,double &dist) const	{

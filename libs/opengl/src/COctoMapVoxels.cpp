@@ -51,6 +51,7 @@ IMPLEMENTS_SERIALIZABLE( COctoMapVoxels, CRenderizableDisplayList, mrpt::opengl 
 /** Ctor */
 COctoMapVoxels::COctoMapVoxels() :
 	m_enable_lighting(false),
+	m_enable_cube_transparency(true),
 	m_showVoxelsAsPoints(false),
 	m_showVoxelsAsPointsSize(3.0f),
 	m_show_grids  (false),
@@ -191,6 +192,12 @@ void   COctoMapVoxels::render_dl() const
 
 	glNormalPointer(GL_FLOAT, 0, normals_cube);
 
+	if (m_enable_cube_transparency)
+	{
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	}
+
 	if (m_showVoxelsAsPoints)
 	{
 		glPointSize(m_showVoxelsAsPointsSize);
@@ -241,6 +248,8 @@ void   COctoMapVoxels::render_dl() const
 		glEnd(); // of  GL_POINTS
 	}
 
+	if (m_enable_cube_transparency)
+		glDisable(GL_BLEND);
 
 	if (m_enable_lighting)
 	{
@@ -300,7 +309,7 @@ namespace mrpt{
   ---------------------------------------------------------------*/
 void  COctoMapVoxels::writeToStream(CStream &out,int *version) const
 {
-	if (version) *version=0;
+	if (version) *version=1;
 	else	
 	{
 		writeToStreamRender(out);
@@ -309,7 +318,8 @@ void  COctoMapVoxels::writeToStream(CStream &out,int *version) const
 			<< m_grid_cubes	
 			<< m_bb_min << m_bb_max
 			<< m_enable_lighting << m_showVoxelsAsPoints <<	m_showVoxelsAsPointsSize
-			<< m_show_grids << m_grid_width << m_grid_color;
+			<< m_show_grids << m_grid_width << m_grid_color
+			<< m_enable_cube_transparency; // added in v1
 	}
 }
 
@@ -322,6 +332,7 @@ void  COctoMapVoxels::readFromStream(CStream &in,int version)
 	switch(version)
 	{
 	case 0:
+	case 1:
 		{
 			readFromStreamRender(in);
 
@@ -330,12 +341,18 @@ void  COctoMapVoxels::readFromStream(CStream &in,int version)
 				>> m_bb_min >> m_bb_max
 				>> m_enable_lighting >> m_showVoxelsAsPoints >> m_showVoxelsAsPointsSize
 				>> m_show_grids >> m_grid_width >> m_grid_color;
+			
+			if (version>=1)
+				in >> m_enable_cube_transparency;
+			else m_enable_cube_transparency = false;
 		}	
 		break;
 	default:
 		MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
 
 	};
+
+	CRenderizableDisplayList::notifyChange();
 }
 
 void COctoMapVoxels::getBoundingBox(mrpt::math::TPoint3D &bb_min, mrpt::math::TPoint3D &bb_max) const

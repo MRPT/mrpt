@@ -237,6 +237,7 @@ void  CArrow::readFromStream(CStream &in,int version)
 		MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
 
 	};
+	CRenderizableDisplayList::notifyChange();
 }
 
 

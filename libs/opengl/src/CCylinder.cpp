@@ -117,6 +117,7 @@ void CCylinder::readFromStream(CStream &in,int version)	{
 		default:
 			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
 	};
+	CRenderizableDisplayList::notifyChange();
 }
 
 bool solveEqn(double a,double b,double c,double &t)	{	//Actually, the b from the quadratic equation is the DOUBLE of this. But this way, operations are simpler.

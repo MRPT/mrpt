@@ -112,6 +112,7 @@ void COpenGLStandardObject::readFromStream(CStream &in,int version)	{
 		default:
 			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
 	};
+	CRenderizableDisplayList::notifyChange();
 }
 
 bool COpenGLStandardObject::traceRay(const mrpt::poses::CPose3D &o,float &dist) const	{

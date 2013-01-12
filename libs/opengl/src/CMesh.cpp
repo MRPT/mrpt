@@ -241,6 +241,7 @@ void  CMesh::readFromStream(CStream &in,int version)
 
 	};
 	trianglesUpToDate=false;
+	CRenderizableDisplayList::notifyChange();
 }
 
 

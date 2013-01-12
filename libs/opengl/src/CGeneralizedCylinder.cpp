@@ -209,6 +209,7 @@ void CGeneralizedCylinder::readFromStream(CStream &in,int version)	{
 		default:
 			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
 	};
+	CRenderizableDisplayList::notifyChange();
 }
 
 void generatePolygon(CPolyhedronPtr &poly,const vector<TPoint3D> &profile,const CPose3D &pose)	{

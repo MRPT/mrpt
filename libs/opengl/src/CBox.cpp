@@ -220,6 +220,7 @@ void CBox::readFromStream(CStream &in,int version)	{
 		default:
 			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
 	};
+	CRenderizableDisplayList::notifyChange();
 }
 
 void CBox::setBoxCorners(const mrpt::math::TPoint3D &corner1, const mrpt::math::TPoint3D &corner2)

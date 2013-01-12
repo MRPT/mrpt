@@ -171,6 +171,7 @@
 			- [mrpt-hwdrivers] Fixed potential SEGFAULT in mrpt::hwdrivers::CGPSInterface (Thanks K.Miyawaki for <a href="http://www.mrpt.org/node/2474" >reporting</a>)
 			- [mrpt-maps] mrpt::slam::COccupancyGridMap2D::getAs3DObject() returned cells with an occupancy of exactly "0" as transparent - <a href="http://code.google.com/p/mrpt/source/detail?r=2957" >r2957</a>
 			- [mrpt-maps] Fixed saving the correct point colors in mrpt::slam::CColouredPointsMap::savePCDFile() (Thanks Mariano!) - <a href="http://code.google.com/p/mrpt/source/detail?r=3090" >r3090</a>
+			- [mrpt-opengl] Fixed a potential bug: after deserializing an object based on a display-list (most of them), it won't update in the opengl view.
 			- [mrpt-reactivenav] Class mrpt::reactivenav::CHolonomicVFF was not exported in Windows DLL's (Thanks Mariano for noticing!).
 			- [mrpt-reactivenav] Fixed wrong computation of obstacles force fields in mrpt::reactivenav::CHolonomicVFF (Thanks Mariano for noticing!) - <a href="http://code.google.com/p/mrpt/source/detail?r=2953" >r2953</a>
 			- [mrpt-reactivenav] Precomputed collision grids could be loaded in mrpt::reactivenav::CParameterizedTrajectoryGenerator even for different robot parameters/shape: now it correctly detects such situations and recompute when needed - <a href="http://code.google.com/p/mrpt/source/detail?r=2939" >r2939</a>  - Closes <a href="http://code.google.com/p/mrpt/issues/detail?id=33" >#33</a>

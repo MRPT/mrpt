@@ -1512,6 +1512,7 @@ void CPolyhedron::readFromStream(CStream &in,int version)	{
 		default:
 			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
 	};
+	CRenderizableDisplayList::notifyChange();
 }
 
 

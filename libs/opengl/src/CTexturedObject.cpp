@@ -590,4 +590,5 @@ void  CTexturedObject::readFromStreamTexturedObject(CStream &in)
 	default:
 		MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
 	};
+	CRenderizableDisplayList::notifyChange();
 }

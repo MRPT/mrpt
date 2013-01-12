@@ -203,6 +203,7 @@ void  CAxis::readFromStream(CStream &in,int version)
 		MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
 
 	};
+	CRenderizableDisplayList::notifyChange();
 }
 
 void CAxis::getBoundingBox(mrpt::math::TPoint3D &bb_min, mrpt::math::TPoint3D &bb_max) const

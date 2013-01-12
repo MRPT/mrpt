@@ -125,6 +125,7 @@ namespace mrpt
 			mrpt::math::TPoint3D   m_bb_min, m_bb_max; //!< Cached bounding boxes
 
 			bool                   m_enable_lighting;
+			bool                   m_enable_cube_transparency;
 			bool                   m_showVoxelsAsPoints;
 			float                  m_showVoxelsAsPointsSize;
 			bool                   m_show_grids;
@@ -138,6 +139,10 @@ namespace mrpt
 
 			inline void enableLights(bool enable) { m_enable_lighting=enable; CRenderizableDisplayList::notifyChange(); }
 			inline bool areLightsEnabled() const { return m_enable_lighting; }
+
+			/** By default, the alpha (transparency) component of voxel cubes is taken into account, but transparency can be disabled with this method. */
+			inline void enableCubeTransparency(bool enable) { m_enable_cube_transparency=enable;  CRenderizableDisplayList::notifyChange(); }
+			inline bool isCubeTransparencyEnabled() const { return m_enable_cube_transparency; }
 
 			/** Shows/hides the grid lines */
 			inline void showGridLines(bool show) { m_show_grids=show; CRenderizableDisplayList::notifyChange(); }

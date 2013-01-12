@@ -112,6 +112,7 @@ void  CDisk::readFromStream(CStream &in,int version)
 		MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
 
 	};
+	CRenderizableDisplayList::notifyChange();
 }
 
 bool CDisk::traceRay(const mrpt::poses::CPose3D &o,double &dist) const	{
