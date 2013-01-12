@@ -99,6 +99,118 @@ namespace mrpt { namespace srba {
 
 	// -------------------------------------------------------------------------------------------------
 
+	/** Observation = XYZ coordinates of landmarks relative to the sensor */
+	struct observation_traits_Cartesian_3D
+	{
+		static const size_t  OBS_DIMS = 3; //!< Each observation is a triplet of coordinates (x,y,z) 
+		
+		/** The observation-specific data structure */
+		struct obs_data_t
+		{
+			mrpt::math::TPoint3D  pt;
+
+			/** Converts this observation into a plain array of its parameters */
+			template <class ARRAY>
+			inline void getAsArray(ARRAY &obs) const {
+				obs[0] = pt.x; obs[1] = pt.y; obs[2] = pt.z; 
+			}
+		};
+
+		/** The type "TObservationParams" must be declared in each "observation_traits_*" to 
+		  *  hold sensor-specific parameters, etc. needed in the sensor model. */
+		struct TObservationParams
+		{
+			// This type of observations has no further parameters.
+		};
+	};
+
+	// -------------------------------------------------------------------------------------------------
+
+	/** Observation = XY coordinates of landmarks relative to the sensor */
+	struct observation_traits_Cartesian_2D
+	{
+		static const size_t  OBS_DIMS = 2; //!< Each observation is a pair of coordinates (x,y) 
+		
+		/** The observation-specific data structure */
+		struct obs_data_t
+		{
+			mrpt::math::TPoint2D  pt;
+
+			/** Converts this observation into a plain array of its parameters */
+			template <class ARRAY>
+			inline void getAsArray(ARRAY &obs) const {
+				obs[0] = pt.x; obs[1] = pt.y;
+			}
+		};
+
+		/** The type "TObservationParams" must be declared in each "observation_traits_*" to 
+		  *  hold sensor-specific parameters, etc. needed in the sensor model. */
+		struct TObservationParams
+		{
+			// This type of observations has no further parameters.
+		};
+	};
+
+	// -------------------------------------------------------------------------------------------------
+
+	/** Observation = Range+Bearing (yaw & pitch) of landmarks relative to the sensor */
+	struct observation_traits_RangeBearing_3D
+	{
+		static const size_t  OBS_DIMS = 3; //!< Each observation is a triplet of coordinates (range,yaw,pitch) 
+		
+		/** The observation-specific data structure */
+		struct obs_data_t
+		{
+			double range; //!< Distance (in meters)
+			double yaw;   //!< Angle around +Z (in radians)
+			double pitch; //!< Angle around +Y (in radians)
+
+			/** Converts this observation into a plain array of its parameters */
+			template <class ARRAY>
+			inline void getAsArray(ARRAY &obs) const {
+				obs[0] = range; obs[1] = yaw; obs[2] = pitch; 
+			}
+		};
+
+		/** The type "TObservationParams" must be declared in each "observation_traits_*" to 
+		  *  hold sensor-specific parameters, etc. needed in the sensor model. */
+		struct TObservationParams
+		{
+			// This type of observations has no further parameters.
+		};
+	};
+
+	// -------------------------------------------------------------------------------------------------
+
+	/** Observation = Range+Bearing (yaw) of landmarks relative to the sensor, for planar environments only. */
+	struct observation_traits_RangeBearing_2D
+	{
+		static const size_t  OBS_DIMS = 2; //!< Each observation is a pair of coordinates (range,yaw) 
+		
+		/** The observation-specific data structure */
+		struct obs_data_t
+		{
+			double range; //!< Distance (in meters)
+			double yaw;   //!< Angle around +Z (in radians)
+
+			/** Converts this observation into a plain array of its parameters */
+			template <class ARRAY>
+			inline void getAsArray(ARRAY &obs) const {
+				obs[0] = range; obs[1] = yaw;
+			}
+		};
+
+		/** The type "TObservationParams" must be declared in each "observation_traits_*" to 
+		  *  hold sensor-specific parameters, etc. needed in the sensor model. */
+		struct TObservationParams
+		{
+			// This type of observations has no further parameters.
+		};
+	};
+
+	// -------------------------------------------------------------------------------------------------
+
+
 	/** @} */
 
 } } // end NS

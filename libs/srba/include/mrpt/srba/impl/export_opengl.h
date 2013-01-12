@@ -168,8 +168,7 @@ void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE>::build_opengl_representation(
 					// It's the origin.
 				}
 
-				TPoint3D p_wrt_base;
-				itLM->second.getAsRelativeEuclideanLocation(p_wrt_base);
+				const TPoint3D p_wrt_base = TPoint3D( itLM->second.getAsRelativeEuclideanLocation() );
 
 				TPoint3D p_global;
 				base_pose.composePoint(p_wrt_base,p_global);

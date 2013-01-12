@@ -45,55 +45,63 @@ using namespace std;
 typedef RBA_Problem<
 	kf2kf_pose_traits_SE3,                // Parameterization  KF-to-KF poses
 	landmark_traits_Euclidean3D,          // Parameterization of landmark positions    
-	observation_traits_StereoCamera       // Type of observations
+	observation_traits_Cartesian_3D       // Type of observations
 	> 
 	my_srba_t;
 
 // --------------------------------------------------------------------------------
-// A test dataset (generated with http://code.google.com/p/recursive-world-toolkit/ )
+// A test dataset. Generated with http://code.google.com/p/recursive-world-toolkit/ 
+//  and the script: tutorials_dataset-monocular.cfg
 // --------------------------------------------------------------------------------
-struct basic_stereo_dataset_entry_t 
+struct basic_euclidean_dataset_entry_t 
 {
 	unsigned int landmark_id;
-	double l_px_x, l_px_y, r_px_x, r_px_y;
+	double x,y,z;
 };
-// Observations for KF#0
-basic_stereo_dataset_entry_t  dataset0[] = {
-	{ 146,    349.055,    388.990,    294.633,    388.990},
-	{ 144,    166.936,    544.592,    112.938,    544.592},
-	{  55,    752.822,    474.936,    699.173,    474.936},
-	{  39,    426.136,    303.168,    387.707,    303.168},
-	{  35,    364.692,    324.945,    328.908,    324.945},
-	{  28,    451.591,    337.631,    418.692,    337.631},
-	{ 141,    585.145,    423.483,    548.951,   423.483},
-	{  84,     67.810,    186.054,     33.441,    186.054},
-	{  76,    478.439,    204.754,    448.014,    204.754},
-	{  37,    572.299,     78.108,    541.746,     78.108},
-	{ 127,     86.285,    486.340,     53.569,    486.340},
-	{  59,    591.251,    211.073,    563.092,    211.073},
-	{   6,    589.306,    385.881,    561.259,    385.881},
-	{ 113,     99.627,    301.455,     72.579,    301.455} };
-	
-// Observations for KF#1. GT pose: 10 -> 0.502744 -0.099901 0.000000 0.526224 -0.526224 0.472322 -0.472322
-basic_stereo_dataset_entry_t  dataset1[] = {
-	{  39,    425.337,    429.116,    353.568,   429.116},
-	{  35,    306.011,    463.319,    240.591,    463.319},
-	{  28,    443.661,    463.791,    389.828,    463.791},
-	{  76,    476.466,    248.034,    429.644,    248.034},
-	{ 141,    661.388,    604.077,    602.651,    604.077},
-	{  37,    609.815,     64.544,    564.845,     64.544},
-	{  59,    615.554,    259.433,    576.179,    259.433},
-	{ 128,     46.137,    121.924,      7.580,    121.924},
-	{   6,    608.662,    502.463,    569.507,    502.463},
-	{  86,    170.860,     65.237,    134.819,     65.237},
-	{  13,    175.479,    526.105,    140.839,    526.105},
-	{  26,    443.565,    211.709,    417.054,    211.709},
-	{  77,    294.908,    248.469,    269.542,    248.469},
-	{  97,     49.000,    303.886,     19.982,    303.886},
-	{  32,    474.699,    223.729,    449.313,    223.729},
-	{   3,    499.129,     85.556,    472.420,     85.556},
-	{ 105,    130.012,    390.366,    102.778,    390.366},
-	{   1,    848.206,    127.293,    815.747,    127.293} };
+// Observations for KF#0. Ground truth pose: (xyz,q)=0.000000 0.000000 0.000000 0.996195 0.000000 0.000000 0.087156
+basic_euclidean_dataset_entry_t  observations_0[] = {
+ {    21,     0.156,    -0.729,     0.000},
+ {    23,     0.433,    -1.983,     0.000},
+ {    39,     2.655,    -0.362,     0.000},
+ {    35,     2.862,    -0.047,     0.000},
+ {    20,     1.388,     2.568,     0.000},
+ {    28,     3.120,    -0.577,     0.000},
+ {    18,     1.787,    -3.011,     0.000},
+ {    37,     3.212,    -1.409,     0.000},
+ {    45,     1.245,    -3.324,     0.000},
+ {     6,     3.690,    -1.656,     0.000},
+ {    13,     4.447,     0.581,     0.000},
+ {    43,     1.003,    -4.409,     0.000},
+ {    30,     1.787,    -4.286,     0.000},
+ {    24,     4.634,     1.725,     0.000},
+ {     3,     4.703,    -1.610,     0.000},
+ };
+// Observations for KF#10:(xyz,q)= 1.230806 0.294472 0.000000 0.999999 0.000000 0.000000 0.001357
+basic_euclidean_dataset_entry_t  observations_10[] = {
+ {    21,    -0.954,    -0.983,     0.000},
+ {    39,     1.447,    -0.194,     0.000},
+ {    35,     1.597,     0.152,     0.000},
+ {    28,     1.941,    -0.327,     0.000},
+ {    23,    -0.466,    -2.171,     0.000},
+ {    37,     2.174,    -1.130,     0.000},
+ {    20,    -0.303,     2.476,     0.000},
+ {     6,     2.687,    -1.292,     0.000},
+ {    18,     1.044,    -2.952,     0.000},
+ {    13,     3.051,     1.041,     0.000},
+ {    45,     0.563,    -3.354,     0.000},
+ {    24,     3.039,     2.201,     0.000},
+ {     3,     3.677,    -1.073,     0.000},
+ {    26,     3.786,    -0.662,     0.000},
+ {    32,     3.962,    -0.937,     0.000},
+ {     8,     3.147,    -2.855,     0.000},
+ {     1,     3.046,    -3.034,     0.000},
+ {    30,     1.262,    -4.209,     0.000},
+ {    12,     4.090,     1.818,     0.000},
+ {    43,     0.511,    -4.464,     0.000},
+ {     5,     4.565,    -0.498,     0.000},
+ {     2,     4.287,     1.885,     0.000},
+ {    11,     3.162,    -3.549,     0.000},
+ };
 
 int main(int argc, char**argv)
 {
@@ -105,7 +113,7 @@ int main(int argc, char**argv)
 	rba.setVerbosityLevel( 1 );   // 0: None; 1:Important only; 2:Verbose
 
 	rba.parameters.use_robust_kernel = true;
-	rba.parameters.std_noise_pixels = 0.5;
+	rba.parameters.std_noise_pixels = 0.5;  MRPT_TODO("change!")
 
 	// =========== Topology parameters ===========
 	rba.parameters.edge_creation_policy = mrpt::srba::ecpICRA2013;
@@ -113,22 +121,12 @@ int main(int argc, char**argv)
 	rba.parameters.max_optimize_depth   = 3;
 	// ===========================================
 
-	// Set camera calib:
-	mrpt::utils::TCamera & lc = rba.sensor_params.camera_calib.leftCamera;
-	lc.ncols = 1024;
-	lc.nrows = 768;
-	lc.cx(512);
-	lc.cy(384);
-	lc.fx(200);
-	lc.fy(150);
-	lc.dist.setZero();
-	rba.sensor_params.camera_calib.rightCamera = lc;
-	rba.sensor_params.camera_calib.rightCameraPose.fromString("[0.2 0 0  1 0 0 0]");  // [X Y Z qr qx qy qz]
+	// Set sensors parameters:
+	// rba.sensor_params has no parameters for the "Cartesian" sensor.
 	
 	// Alternatively, parameters can be loaded from an .ini-like config file
 	// -----------------------------------------------------------------------
 	// rba.parameters.loadFromConfigFileName("config_file.cfg", "srba");
-	//rba.sensor_params.camera_calib.loadFromConfigFile("CAMERA","config_file.cfg");
 	
 	// --------------------------------------------------------------------------------
 	// Dump parameters to console (for checking/debugging only)
@@ -143,20 +141,14 @@ int main(int argc, char**argv)
 	my_srba_t::new_kf_observation_t   obs_field;
 
 	obs_field.is_fixed = false;   // Landmarks have unknown relative positions (i.e. treat them as unknowns to be estimated)
-#if 1
 	obs_field.is_unknown_with_init_val = false; // We don't have any guess on the initial LM position (will invoke the inverse sensor model)
-#else
-	obs_field.is_unknown_with_init_val = true;      // Set default relative position of unknown new landmarks...
-	obs_field.setRelPos( mrpt::math::TPoint3D(0.,0.,1.) ); // ...to (x,y,z)=(0,0,1), in front of the camera.
-#endif
 
-	for (size_t i=0;i<sizeof(dataset0)/sizeof(dataset0[0]);i++)
+	for (size_t i=0;i<sizeof(observations_0)/sizeof(observations_0[0]);i++)
 	{
-		obs_field.obs.feat_id = dataset0[i].landmark_id;
-		obs_field.obs.obs_data.left_px.x = dataset0[i].l_px_x;
-		obs_field.obs.obs_data.left_px.y = dataset0[i].l_px_y;
-		obs_field.obs.obs_data.right_px.x = dataset0[i].r_px_x;
-		obs_field.obs.obs_data.right_px.y = dataset0[i].r_px_y;
+		obs_field.obs.feat_id = observations_0[i].landmark_id;
+		obs_field.obs.obs_data.pt.x = observations_0[i].x;
+		obs_field.obs.obs_data.pt.y = observations_0[i].y;
+		obs_field.obs.obs_data.pt.z = observations_0[i].z;
 		list_obs.push_back( obs_field );
 	}
 
@@ -177,17 +169,16 @@ int main(int argc, char**argv)
 
 
 	// --------------------------------------------------------------------------------
-	// Define observations of KF #1:
+	// Define observations of next KF:
 	// --------------------------------------------------------------------------------
 	list_obs.clear();
 
-	for (size_t i=0;i<sizeof(dataset1)/sizeof(dataset1[0]);i++)
+	for (size_t i=0;i<sizeof(observations_10)/sizeof(observations_10[0]);i++)
 	{
-		obs_field.obs.feat_id = dataset1[i].landmark_id;
-		obs_field.obs.obs_data.left_px.x = dataset1[i].l_px_x;
-		obs_field.obs.obs_data.left_px.y = dataset1[i].l_px_y;
-		obs_field.obs.obs_data.right_px.x = dataset1[i].r_px_x;
-		obs_field.obs.obs_data.right_px.y = dataset1[i].r_px_y;
+		obs_field.obs.feat_id = observations_10[i].landmark_id;
+		obs_field.obs.obs_data.pt.x = observations_10[i].x;
+		obs_field.obs.obs_data.pt.y = observations_10[i].y;
+		obs_field.obs.obs_data.pt.z = observations_10[i].z;
 		list_obs.push_back( obs_field );
 	}
 	
@@ -207,6 +198,7 @@ int main(int argc, char**argv)
 
 	// Dump the relative pose of KF#0 wrt KF#1:
 	cout << "inv_pose of KF-to-KF edge #0 (relative pose of KF#0 wrt KF#1):\n" << rba.get_k2k_edges()[0].inv_pose << endl;
+	cout << "Relative pose of KF#1 wrt KF#0:\n" << (-rba.get_k2k_edges()[0].inv_pose) << endl;
 
 	// --------------------------------------------------------------------------------
 	// Saving RBA graph as a DOT file:

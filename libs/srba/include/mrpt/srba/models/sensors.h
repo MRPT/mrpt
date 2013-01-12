@@ -127,7 +127,7 @@ namespace mrpt { namespace srba {
 			return true;
 		}
 
-		/** Inverse observation model for firs-seen landmarks. Needed to avoid having landmarks at (0,0,0) which 
+		/** Inverse observation model for first-seen landmarks. Needed to avoid having landmarks at (0,0,0) which 
 		  *  leads to undefined Jacobians. This is invoked only when both "unknown_relative_position_init_val" and "is_fixed" are "false" 
 		  *  in an observation. 
 		  * The LM location must not be exact at all, just make sure it doesn't have an undefined Jacobian.
@@ -290,7 +290,7 @@ namespace mrpt { namespace srba {
 			return true;
 		}
 
-		/** Inverse observation model for firs-seen landmarks. Needed to avoid having landmarks at (0,0,0) which 
+		/** Inverse observation model for first-seen landmarks. Needed to avoid having landmarks at (0,0,0) which 
 		  *  leads to undefined Jacobians. This is invoked only when both "unknown_relative_position_init_val" and "is_fixed" are "false" 
 		  *  in an observation. 
 		  * The LM location must not be exact at all, just make sure it doesn't have an undefined Jacobian.
@@ -326,6 +326,186 @@ namespace mrpt { namespace srba {
 
 	};  // end of struct sensor_model<landmark_traits_Euclidean3D,observation_traits_StereoCamera>
 
+	// -------------------------------------------------------------------------------------------------------------
+
+	/** Sensor model: 3D landmarks in Euclidean coordinates + Cartesian 3D observations */
+	template <>
+	struct sensor_model<landmark_traits_Euclidean3D,observation_traits_Cartesian_3D>
+	{
+		// --------------------------------------------------------------------------------
+		// Typedefs for the sake of generality in the signature of methods below:
+		//   *DONT FORGET* to change these when writing new sensor models.
+		// --------------------------------------------------------------------------------
+		typedef observation_traits_Cartesian_3D     OBS_T;  
+		typedef landmark_traits_Euclidean3D         LANDMARK_T;
+		// --------------------------------------------------------------------------------
+
+		static const size_t OBS_DIMS = OBS_T::OBS_DIMS;
+		static const size_t LM_DIMS  = LANDMARK_T::LM_DIMS;
+		
+		typedef Eigen::Matrix<double,OBS_DIMS,LM_DIMS>  TJacobian_dh_dx;     //!< A Jacobian of the correct size for each dh_dx
+		typedef landmark_traits<LANDMARK_T>::point_t    point_t;             //!< a 2D or 3D point
+		typedef OBS_T::TObservationParams               TObservationParams;
+
+
+		/** Executes the observation model:  
+		  * \param[out] out_obs The output of the predicted sensor value
+		  * \param[in] base_pose_wrt_observer The relative pose of the observed landmark's base KF, wrt to the current observer KF.
+		  * \param[in] lm_pos The relative landmark position wrt its base KF.
+		  * \param[in] params The sensor-specific parameters.
+		  */
+		template <class POSE_T>
+		static void observe(
+			observation_traits<OBS_T>::array_obs_t              & out_obs, 
+			const POSE_T                                        & base_pose_wrt_observer,
+			const landmark_traits<LANDMARK_T>::array_landmark_t & lm_pos,
+			const OBS_T::TObservationParams                     & params)
+		{
+			double x,y,z; // wrt cam (local coords)
+			base_pose_wrt_observer.composePoint(lm_pos[0],lm_pos[1],lm_pos[2], x,y,z);
+
+			// Observations are simply the "local coords":
+			out_obs[0] = x; out_obs[1] = y; out_obs[2] = z;
+		}
+
+		/** Evaluates the partial Jacobian dh_dx:
+		  * \code
+		  *            d h(x')
+		  * dh_dx = -------------
+		  *             d x' 
+		  *
+		  * \endcode
+		  *  With: 
+		  *    - x' = x^{j,i}_l  The relative location of the observed landmark wrt to the robot/camera at the instant of observation. (See notation on papers)
+		  *    - h(x): Observation model: h(): landmark location --> observation
+		  * 
+		  * \param[out] dh_dx The output matrix Jacobian. Values at input are undefined (i.e. they cannot be asssumed to be zeros by default).
+		  * \param[in]  xji_l The relative location of the observed landmark wrt to the robot/camera at the instant of observation.
+		  * \param[in] sensor_params Sensor-specific parameters, as set by the user.
+		  *
+		  * \return true if the Jacobian is well-defined, false to mark it as ill-defined and ignore it during this step of the optimization
+		  */
+		static bool eval_jacob_dh_dx(
+			TJacobian_dh_dx          & dh_dx,
+			const point_t            & xji_l, 
+			const TObservationParams & sensor_params)
+		{
+			// This is probably the simplest Jacobian ever:
+			dh_dx.setIdentity();
+			return true;
+		}
+
+		/** Inverse observation model for first-seen landmarks. Needed to avoid having landmarks at (0,0,0) which 
+		  *  leads to undefined Jacobians. This is invoked only when both "unknown_relative_position_init_val" and "is_fixed" are "false" 
+		  *  in an observation. 
+		  * The LM location must not be exact at all, just make sure it doesn't have an undefined Jacobian.
+		  *
+		  * \param[out] out_lm_pos The relative landmark position wrt the current observing KF.
+		  * \param[in]  obs The observation itself.
+		  * \param[in]   params The sensor-specific parameters.
+		  */
+		static void inverse_sensor_model(
+			landmark_traits<LANDMARK_T>::array_landmark_t & out_lm_pos,
+			const observation_traits<OBS_T>::obs_data_t   & obs, 
+			const OBS_T::TObservationParams               & params)
+		{
+			out_lm_pos[0] = obs.pt.x;
+			out_lm_pos[1] = obs.pt.y;
+			out_lm_pos[2] = obs.pt.z;
+		}
+
+	};  // end of struct sensor_model<landmark_traits_Euclidean3D,observation_traits_Cartesian_3D>
+
+	// -------------------------------------------------------------------------------------------------------------
+
+	/** Sensor model: 2D landmarks in Euclidean coordinates + Cartesian 2D observations */
+	template <>
+	struct sensor_model<landmark_traits_Euclidean2D,observation_traits_Cartesian_2D>
+	{
+		// --------------------------------------------------------------------------------
+		// Typedefs for the sake of generality in the signature of methods below:
+		//   *DONT FORGET* to change these when writing new sensor models.
+		// --------------------------------------------------------------------------------
+		typedef observation_traits_Cartesian_2D     OBS_T;  
+		typedef landmark_traits_Euclidean2D         LANDMARK_T;
+		// --------------------------------------------------------------------------------
+
+		static const size_t OBS_DIMS = OBS_T::OBS_DIMS;
+		static const size_t LM_DIMS  = LANDMARK_T::LM_DIMS;
+		
+		typedef Eigen::Matrix<double,OBS_DIMS,LM_DIMS>  TJacobian_dh_dx;     //!< A Jacobian of the correct size for each dh_dx
+		typedef landmark_traits<LANDMARK_T>::point_t    point_t;             //!< a 2D or 3D point
+		typedef OBS_T::TObservationParams               TObservationParams;
+
+
+		/** Executes the observation model:  
+		  * \param[out] out_obs The output of the predicted sensor value
+		  * \param[in] base_pose_wrt_observer The relative pose of the observed landmark's base KF, wrt to the current observer KF.
+		  * \param[in] lm_pos The relative landmark position wrt its base KF.
+		  * \param[in] params The sensor-specific parameters.
+		  */
+		template <class POSE_T>
+		static void observe(
+			observation_traits<OBS_T>::array_obs_t              & out_obs, 
+			const POSE_T                                        & base_pose_wrt_observer,
+			const landmark_traits<LANDMARK_T>::array_landmark_t & lm_pos,
+			const OBS_T::TObservationParams                     & params)
+		{
+			double x,y,z; // wrt cam (local coords)
+			base_pose_wrt_observer.composePoint(lm_pos[0],lm_pos[1],lm_pos[2], x,y,z);
+
+			// Observations are simply the "local coords":
+			out_obs[0] = x; out_obs[1] = y;
+		}
+
+		/** Evaluates the partial Jacobian dh_dx:
+		  * \code
+		  *            d h(x')
+		  * dh_dx = -------------
+		  *             d x' 
+		  *
+		  * \endcode
+		  *  With: 
+		  *    - x' = x^{j,i}_l  The relative location of the observed landmark wrt to the robot/camera at the instant of observation. (See notation on papers)
+		  *    - h(x): Observation model: h(): landmark location --> observation
+		  * 
+		  * \param[out] dh_dx The output matrix Jacobian. Values at input are undefined (i.e. they cannot be asssumed to be zeros by default).
+		  * \param[in]  xji_l The relative location of the observed landmark wrt to the robot/camera at the instant of observation.
+		  * \param[in] sensor_params Sensor-specific parameters, as set by the user.
+		  *
+		  * \return true if the Jacobian is well-defined, false to mark it as ill-defined and ignore it during this step of the optimization
+		  */
+		static bool eval_jacob_dh_dx(
+			TJacobian_dh_dx          & dh_dx,
+			const point_t            & xji_l, 
+			const TObservationParams & sensor_params)
+		{
+			// This is probably the simplest Jacobian ever:
+			dh_dx.setIdentity();
+			return true;
+		}
+
+		/** Inverse observation model for first-seen landmarks. Needed to avoid having landmarks at (0,0,0) which 
+		  *  leads to undefined Jacobians. This is invoked only when both "unknown_relative_position_init_val" and "is_fixed" are "false" 
+		  *  in an observation. 
+		  * The LM location must not be exact at all, just make sure it doesn't have an undefined Jacobian.
+		  *
+		  * \param[out] out_lm_pos The relative landmark position wrt the current observing KF.
+		  * \param[in]  obs The observation itself.
+		  * \param[in]   params The sensor-specific parameters.
+		  */
+		static void inverse_sensor_model(
+			landmark_traits<LANDMARK_T>::array_landmark_t & out_lm_pos,
+			const observation_traits<OBS_T>::obs_data_t   & obs, 
+			const OBS_T::TObservationParams               & params)
+		{
+			out_lm_pos[0] = obs.pt.x;
+			out_lm_pos[1] = obs.pt.y;
+		}
+
+	};  // end of struct sensor_model<landmark_traits_Euclidean2D,observation_traits_Cartesian_2D>
+
+	// -------------------------------------------------------------------------------------------------------------
 
 
 	/** @} */
