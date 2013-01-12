@@ -35,3 +35,12 @@ ADD_EXECUTABLE(demo-rba-simulation ${PROGSRCS} ${PROGHDRS})
 TARGET_LINK_LIBRARIES(demo-rba-simulation ${MRPT_LIBS}) # Add the required libraries for linking:
 
 
+# -------------------------------------------------------------------------
+# This part can be removed if you are compiling this program outside of 
+#  the MRPT tree:
+# -------------------------------------------------------------------------
+IF("${CMAKE_PROJECT_NAME}" STREQUAL "MRPT") # Fails if build outside of MRPT project.
+	DeclareAppDependencies(demo-rba-simulation  mrpt-srba mrpt-gui mrpt-maps mrpt-vision) # Dependencies
+ENDIF("${CMAKE_PROJECT_NAME}" STREQUAL "MRPT")
+# -------------------------------------------------------------------------
+

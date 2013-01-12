@@ -25,14 +25,27 @@ IF(CMAKE_COMPILER_IS_GNUCXX AND NOT CMAKE_BUILD_TYPE MATCHES "Debug")
 ENDIF(CMAKE_COMPILER_IS_GNUCXX AND NOT CMAKE_BUILD_TYPE MATCHES "Debug")
 
 
+MACRO(DEFINE_TUTORIAL_EXECUTABLE name)
+	ADD_EXECUTABLE(${name} ${name}.cpp)
+	TARGET_LINK_LIBRARIES(${name} ${MRPT_LIBS}) # Add the required libraries for linking:
+	
+	# -------------------------------------------------------------------------
+	# This part can be removed if you are compiling this program outside of 
+	#  the MRPT tree:
+	# -------------------------------------------------------------------------
+	IF("${CMAKE_PROJECT_NAME}" STREQUAL "MRPT") # Fails if build outside of MRPT project.
+		DeclareAppDependencies(${name} mrpt-srba mrpt-gui) # Dependencies
+	ENDIF("${CMAKE_PROJECT_NAME}" STREQUAL "MRPT")
+	# -------------------------------------------------------------------------
+ENDMACRO(DEFINE_TUTORIAL_EXECUTABLE)
+
+
 # --------------------------------------------------------------------
 #  tutorial-srba-monocular-se3
 # --------------------------------------------------------------------
-ADD_EXECUTABLE(tutorial-srba-monocular-se3 tutorial-srba-monocular-se3.cpp)
-TARGET_LINK_LIBRARIES(tutorial-srba-monocular-se3 ${MRPT_LIBS}) # Add the required libraries for linking:
+DEFINE_TUTORIAL_EXECUTABLE(tutorial-srba-monocular-se3)
 
 # --------------------------------------------------------------------
 #  tutorial-srba-stereo-se3
 # --------------------------------------------------------------------
-ADD_EXECUTABLE(tutorial-srba-stereo-se3 tutorial-srba-stereo-se3.cpp)
-TARGET_LINK_LIBRARIES(tutorial-srba-stereo-se3 ${MRPT_LIBS})  # Add the required libraries for linking:
+DEFINE_TUTORIAL_EXECUTABLE(tutorial-srba-stereo-se3)
