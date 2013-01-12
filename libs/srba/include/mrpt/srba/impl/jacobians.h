@@ -131,6 +131,11 @@ void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE>::numeric_dh_df(const array_la
 	sensor_model_t::observe(y,*pos_cam,x_local, params.sensor_params);
 }
 
+
+/** Auxiliary sub-jacobian used in compute_jacobian_dh_dp() (it's a static method within specializations of this struct) */
+template <size_t POINT_DIMS, size_t POSE_DIMS, class RBA_ENGINE_T>
+struct compute_jacobian_dAepsDx_deps;
+
 // ====================================================================
 //                       j,i                    lm_id,base_id
 //           \partial  h            \partial  h
@@ -142,7 +147,7 @@ void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE>::numeric_dh_df(const array_la
 //
 //  See tech report:
 //   "A tutorial on SE(3) transformation parameterizations and
-//    on-manifold optimization", Jose-Luis Blanco, 2010.
+//    on-manifold optimization", Jose-Luis Blanco.
 // ====================================================================
 template <class KF2KF_POSE_TYPE,class LM_TYPE,class OBS_TYPE>
 void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE>::compute_jacobian_dh_dp(
@@ -267,117 +272,7 @@ void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE>::compute_jacobian_dh_dp(
 
 	// Second Jacobian: (uses xji_i)
 	// ------------------------------
-	if (!is_inverse_edge_jacobian)
-	{	// Normal formulation: unknown is pose "d+1 -> d"
-
-		// This is "D" in my handwritten notes:
-		// pose_i_wrt_dplus1  -> pose_base_wrt_d1
-
-		const mrpt::math::CMatrixDouble33 & ROTD = pose_base_wrt_d1.pose.getRotationMatrix();
-
-		// We need to handle the special case where "d+1"=="l", so A=Pose(0,0,0,0,0,0):
-		Eigen::Matrix<double,OBS_DIMS,3> H_ROTA;
-		if (pose_d1_wrt_obs!=NULL)
-		{
-			// pose_d_plus_1_wrt_l  -> pose_d1_wrt_obs
-
-			// 3x3 term: H*R(A)
-			H_ROTA = dh_dx * pose_d1_wrt_obs->pose.getRotationMatrix();
-		}
-		else
-		{
-			// 3x3 term: H*R(A)
-			H_ROTA = dh_dx;
-		}
-
-		// First 2x3 block:
-		jacob.num.block(0,0,OBS_DIMS,3).noalias() = H_ROTA;
-
-		// Second 2x3 block: See section 10.3.7 of technical report on SE(3) poses
-		// compute aux vector "v":
-		Eigen::Matrix<double,3,1> v;
-		v[0] =  -pose_base_wrt_d1.pose.x()  - xji_i.x*ROTD.coeff(0,0) - xji_i.y*ROTD.coeff(0,1) - xji_i.z*ROTD.coeff(0,2);
-		v[1] =  -pose_base_wrt_d1.pose.y()  - xji_i.x*ROTD.coeff(1,0) - xji_i.y*ROTD.coeff(1,1) - xji_i.z*ROTD.coeff(1,2);
-		v[2] =  -pose_base_wrt_d1.pose.z()  - xji_i.x*ROTD.coeff(2,0) - xji_i.y*ROTD.coeff(2,1) - xji_i.z*ROTD.coeff(2,2);
-
-		Eigen::Matrix<double,3,3> aux;
-
-		aux.coeffRef(0,0)=0;
-		aux.coeffRef(1,1)=0;
-		aux.coeffRef(2,2)=0;
-
-		aux.coeffRef(1,2)=-v[0];
-		aux.coeffRef(2,1)= v[0];
-		aux.coeffRef(2,0)=-v[1];
-		aux.coeffRef(0,2)= v[1];
-		aux.coeffRef(0,1)=-v[2];
-		aux.coeffRef(1,0)= v[2];
-
-		jacob.num.block(0,3,OBS_DIMS,3).noalias() = H_ROTA * aux;
-	}
-	else
-	{	// Inverse formulation: unknown is pose "d -> d+1"
-
-		// Changes due to the inverse pose:
-		// D becomes D' = p_d^{d+1} (+) D
-
-		ASSERT_(jacob.sym.k2k_edge_id<k2k_edges.size())
-		const pose_t & p_d_d1 = k2k_edges[jacob.sym.k2k_edge_id].inv_pose;
-
-		pose_t pose_base_wrt_d1_prime(mrpt::poses::UNINITIALIZED_POSE);
-		pose_base_wrt_d1_prime.composeFrom( p_d_d1 , pose_base_wrt_d1.pose );
-
-		const mrpt::math::CMatrixDouble33 & ROTD = pose_base_wrt_d1_prime.getRotationMatrix();
-
-		// We need to handle the special case where "d+1"=="l", so A=Pose(0,0,0,0,0,0):
-		Eigen::Matrix<double,OBS_DIMS,3> H_ROTA;
-		if (pose_d1_wrt_obs!=NULL)
-		{
-			// pose_d_plus_1_wrt_l  -> pose_d1_wrt_obs
-
-			// In inverse edges, A (which is "pose_d1_wrt_obs") becomes A * (p_d_d1)^-1 =>
-			//   So: ROT_A' = ROT_A * ROT_d_d1^t
-
-			// 3x3 term: H*R(A')
-			H_ROTA = dh_dx * pose_d1_wrt_obs->pose.getRotationMatrix() * p_d_d1.getRotationMatrix().transpose();
-		}
-		else
-		{
-			// Was in the normal edge: H_ROTA = dh_dx;
-
-			// 3x3 term: H*R(A')
-			H_ROTA = dh_dx * p_d_d1.getRotationMatrix().transpose();
-		}
-
-		// First 2x3 block:
-		jacob.num.block(0,0,OBS_DIMS,3).noalias() = H_ROTA;
-
-		// Second 2x3 block:
-		// compute aux vector "v":
-		Eigen::Matrix<double,3,1> v;
-		v[0] =  -pose_base_wrt_d1_prime.x()  - xji_i.x*ROTD.coeff(0,0) - xji_i.y*ROTD.coeff(0,1) - xji_i.z*ROTD.coeff(0,2);
-		v[1] =  -pose_base_wrt_d1_prime.y()  - xji_i.x*ROTD.coeff(1,0) - xji_i.y*ROTD.coeff(1,1) - xji_i.z*ROTD.coeff(1,2);
-		v[2] =  -pose_base_wrt_d1_prime.z()  - xji_i.x*ROTD.coeff(2,0) - xji_i.y*ROTD.coeff(2,1) - xji_i.z*ROTD.coeff(2,2);
-
-		Eigen::Matrix<double,3,3> aux;
-
-		aux.coeffRef(0,0)=0;
-		aux.coeffRef(1,1)=0;
-		aux.coeffRef(2,2)=0;
-
-		aux.coeffRef(1,2)=-v[0];
-		aux.coeffRef(2,1)= v[0];
-		aux.coeffRef(2,0)=-v[1];
-		aux.coeffRef(0,2)= v[1];
-		aux.coeffRef(0,1)=-v[2];
-		aux.coeffRef(1,0)= v[2];
-
-		jacob.num.block(0,3,OBS_DIMS,3).noalias() = H_ROTA * aux;
-
-		// And this comes from: d exp(-epsilon)/d epsilon = - d exp(epsilon)/d epsilon
-		jacob.num = -jacob.num;
-
-	} // end inverse edge case
+	compute_jacobian_dAepsDx_deps<LM_DIMS,REL_POSE_DIMS,rba_problem_t>::eval(jacob.num,dh_dx,is_inverse_edge_jacobian,xji_i, pose_d1_wrt_obs, pose_base_wrt_d1,jacob.sym,k2k_edges);
 
 #endif // SRBA_COMPUTE_ANALYTIC_JACOBIANS
 
@@ -398,6 +293,147 @@ void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE>::compute_jacobian_dh_dp(
 	jacob.num = num_jacob;
 #endif
 }
+
+// ====================================================================
+//  Auxiliary sub-Jacobian used in compute_jacobian_dh_dp()
+// These are specializations of the template, for each of the cases:
+//template <size_t , size_t , class MATRIX, class POINT>
+// ====================================================================
+
+// Case: 3D point, SE(3) poses:
+template <class RBA_ENGINE_T>
+struct compute_jacobian_dAepsDx_deps<3 /*POINT_DIMS*/,6 /*POSE_DIMS*/,RBA_ENGINE_T>
+{
+	template <class MATRIX, class MATRIX_DH_DX,class POINT,class pose_flag_t,class JACOB_SYM_T,class K2K_EDGES_T>
+	static void eval(
+		MATRIX      & jacob,
+		const MATRIX_DH_DX  & dh_dx,
+		const bool is_inverse_edge_jacobian,
+		const POINT & xji_i,
+		const pose_flag_t * pose_d1_wrt_obs,  // "A" in handwritten notes
+		const pose_flag_t & pose_base_wrt_d1, // "D" in handwritten notes
+		const JACOB_SYM_T & jacob_sym, 
+		const K2K_EDGES_T &k2k_edges
+		)
+	{
+		// See section 10.3.7 of technical report on SE(3) poses [http://mapir.isa.uma.es/~jlblanco/papers/jlblanco2010geometry3D_techrep.pdf]
+		if (!is_inverse_edge_jacobian)
+		{	// Normal formulation: unknown is pose "d+1 -> d"
+
+			// This is "D" in my handwritten notes:
+			// pose_i_wrt_dplus1  -> pose_base_wrt_d1
+
+			const mrpt::math::CMatrixDouble33 & ROTD = pose_base_wrt_d1.pose.getRotationMatrix();
+
+			// We need to handle the special case where "d+1"=="l", so A=Pose(0,0,0,0,0,0):
+			Eigen::Matrix<double,RBA_ENGINE_T::OBS_DIMS,3> H_ROTA;
+			if (pose_d1_wrt_obs!=NULL)
+			{
+				// pose_d_plus_1_wrt_l  -> pose_d1_wrt_obs
+
+				// 3x3 term: H*R(A)
+				H_ROTA = dh_dx * pose_d1_wrt_obs->pose.getRotationMatrix();
+			}
+			else
+			{
+				// 3x3 term: H*R(A)
+				H_ROTA = dh_dx;
+			}
+
+			// First 2x3 block:
+			jacob.block(0,0,RBA_ENGINE_T::OBS_DIMS,3).noalias() = H_ROTA;
+
+			// Second 2x3 block: 
+			// compute aux vector "v":
+			Eigen::Matrix<double,3,1> v;
+			v[0] =  -pose_base_wrt_d1.pose.x()  - xji_i.x*ROTD.coeff(0,0) - xji_i.y*ROTD.coeff(0,1) - xji_i.z*ROTD.coeff(0,2);
+			v[1] =  -pose_base_wrt_d1.pose.y()  - xji_i.x*ROTD.coeff(1,0) - xji_i.y*ROTD.coeff(1,1) - xji_i.z*ROTD.coeff(1,2);
+			v[2] =  -pose_base_wrt_d1.pose.z()  - xji_i.x*ROTD.coeff(2,0) - xji_i.y*ROTD.coeff(2,1) - xji_i.z*ROTD.coeff(2,2);
+
+			Eigen::Matrix<double,3,3> aux;
+
+			aux.coeffRef(0,0)=0;
+			aux.coeffRef(1,1)=0;
+			aux.coeffRef(2,2)=0;
+
+			aux.coeffRef(1,2)=-v[0];
+			aux.coeffRef(2,1)= v[0];
+			aux.coeffRef(2,0)=-v[1];
+			aux.coeffRef(0,2)= v[1];
+			aux.coeffRef(0,1)=-v[2];
+			aux.coeffRef(1,0)= v[2];
+
+			jacob.block(0,3,RBA_ENGINE_T::OBS_DIMS,3).noalias() = H_ROTA * aux;
+		}
+		else
+		{	// Inverse formulation: unknown is pose "d -> d+1"
+
+			// Changes due to the inverse pose:
+			// D becomes D' = p_d^{d+1} (+) D
+
+			ASSERT_(jacob_sym.k2k_edge_id<k2k_edges.size())
+			const typename RBA_ENGINE_T::pose_t & p_d_d1 = k2k_edges[jacob_sym.k2k_edge_id].inv_pose;
+
+			typename RBA_ENGINE_T::pose_t pose_base_wrt_d1_prime(mrpt::poses::UNINITIALIZED_POSE);
+			pose_base_wrt_d1_prime.composeFrom( p_d_d1 , pose_base_wrt_d1.pose );
+
+			const mrpt::math::CMatrixDouble33 & ROTD = pose_base_wrt_d1_prime.getRotationMatrix();
+
+			// We need to handle the special case where "d+1"=="l", so A=Pose(0,0,0,0,0,0):
+			Eigen::Matrix<double,RBA_ENGINE_T::OBS_DIMS,3> H_ROTA;
+			if (pose_d1_wrt_obs!=NULL)
+			{
+				// pose_d_plus_1_wrt_l  -> pose_d1_wrt_obs
+
+				// In inverse edges, A (which is "pose_d1_wrt_obs") becomes A * (p_d_d1)^-1 =>
+				//   So: ROT_A' = ROT_A * ROT_d_d1^t
+
+				// 3x3 term: H*R(A')
+				H_ROTA = dh_dx * pose_d1_wrt_obs->pose.getRotationMatrix() * p_d_d1.getRotationMatrix().transpose();
+			}
+			else
+			{
+				// Was in the normal edge: H_ROTA = dh_dx;
+
+				// 3x3 term: H*R(A')
+				H_ROTA = dh_dx * p_d_d1.getRotationMatrix().transpose();
+			}
+
+			// First 2x3 block:
+			jacob.block(0,0,RBA_ENGINE_T::OBS_DIMS,3).noalias() = H_ROTA;
+
+			// Second 2x3 block:
+			// compute aux vector "v":
+			Eigen::Matrix<double,3,1> v;
+			v[0] =  -pose_base_wrt_d1_prime.x()  - xji_i.x*ROTD.coeff(0,0) - xji_i.y*ROTD.coeff(0,1) - xji_i.z*ROTD.coeff(0,2);
+			v[1] =  -pose_base_wrt_d1_prime.y()  - xji_i.x*ROTD.coeff(1,0) - xji_i.y*ROTD.coeff(1,1) - xji_i.z*ROTD.coeff(1,2);
+			v[2] =  -pose_base_wrt_d1_prime.z()  - xji_i.x*ROTD.coeff(2,0) - xji_i.y*ROTD.coeff(2,1) - xji_i.z*ROTD.coeff(2,2);
+
+			Eigen::Matrix<double,3,3> aux;
+
+			aux.coeffRef(0,0)=0;
+			aux.coeffRef(1,1)=0;
+			aux.coeffRef(2,2)=0;
+
+			aux.coeffRef(1,2)=-v[0];
+			aux.coeffRef(2,1)= v[0];
+			aux.coeffRef(2,0)=-v[1];
+			aux.coeffRef(0,2)= v[1];
+			aux.coeffRef(0,1)=-v[2];
+			aux.coeffRef(1,0)= v[2];
+
+			jacob.block(0,3,RBA_ENGINE_T::OBS_DIMS,3).noalias() = H_ROTA * aux;
+
+			// And this comes from: d exp(-epsilon)/d epsilon = - d exp(epsilon)/d epsilon
+			jacob = -jacob;
+
+		} // end inverse edge case
+
+	}
+}; // end of specialization of "compute_jacobian_dAepsDx_deps"
+
+// Case: 2D point, SE(2) poses:
+
 
 // ====================================================================
 //                       j,i                    lm_id,base_id

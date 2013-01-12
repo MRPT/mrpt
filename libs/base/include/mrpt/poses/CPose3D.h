@@ -88,6 +88,7 @@ namespace poses
 	 *
 	 *  There are Lie algebra methods: \a exp and \a ln (see the methods for documentation).
 	 *
+	 * \note Read also: "A tutorial on SE(3) transformation parameterizations and on-manifold optimization", Jose-Luis Blanco. http://mapir.isa.uma.es/~jlblanco/papers/jlblanco2010geometry3D_techrep.pdf
 	 *
 	 * \ingroup poses_grp
 	 * \sa CPoseOrPoint,CPoint3D, mrpt::math::CQuaternion

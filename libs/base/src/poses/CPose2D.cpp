@@ -199,6 +199,12 @@ void CPose2D::composePoint(double lx,double ly,double &gx, double &gy) const
 	gy = m_coords[1] + lx * ssin + ly * ccos;
 }
 
+void CPose2D::composePoint(const mrpt::math::TPoint2D &l, mrpt::math::TPoint2D &g) const
+{
+	this->composePoint(l.x,l.y, g.x,g.y);
+}
+
+
 /*---------------------------------------------------------------
 The operator u'="this"+u is the pose/point compounding operator.
  ---------------------------------------------------------------*/
@@ -340,3 +346,20 @@ TPoint2D mrpt::poses::operator +(const CPose2D &pose, const TPoint2D &u)
 		pose.y() + u.x * ssin + u.y * ccos );
 }
 
+
+/** Make \f$ this = this \oplus b \f$  */
+CPose2D& CPose2D::operator += (const CPose2D& b)
+{
+	composeFrom(*this,b);
+	return *this;
+}
+
+void CPose2D::fromString(const std::string &s) 
+{
+	CMatrixDouble  m;
+	if (!m.fromMatlabStringFormat(s)) THROW_EXCEPTION("Malformed expression in ::fromString");
+	ASSERTMSG_(mrpt::math::size(m,1)==1 && mrpt::math::size(m,2)==3, "Wrong size of vector in ::fromString");
+	x( m.get_unsafe(0,0) );
+	y( m.get_unsafe(0,1) );
+	phi( DEG2RAD(m.get_unsafe(0,2)) );
+}

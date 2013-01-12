@@ -821,18 +821,19 @@ void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE>::optimize_edges(
 
 			DETAILED_PROFILING_LEAVE("opt.make_backup_copy_edges")
 
-			// Add SE(3) deltas to the k2k edges:
+			// Add SE(2/3) deltas to the k2k edges:
 			// ------------------------------------
 			DETAILED_PROFILING_ENTER("opt.add_se3_deltas_to_frames")
 			for (size_t i=0;i<nUnknowns_k2k;i++)
 			{
 				// edges_to_optimize:
-				const CPose3D &old_pose = k2k_edge_unknowns[i]->inv_pose;
-				CPose3D new_pose(UNINITIALIZED_POSE);
+				const pose_t &old_pose = k2k_edge_unknowns[i]->inv_pose;
+				pose_t new_pose(UNINITIALIZED_POSE);
 
 				// Use the Lie Algebra methods for the increment:
 				const CArrayDouble<POSE_DIMS> incr( &delta_eps[POSE_DIMS*i] );
-				const CPose3D         incrPose = CPose3D::exp(incr);
+				pose_t  incrPose(UNINITIALIZED_POSE);
+				se_traits_t::exp(incr,incrPose);   // incrPose = exp(incr) (Lie algebra exponential map)
 
 				//new_pose =  old_pose  [+] delta
 				//         = exp(delta) (+) old_pose

@@ -43,7 +43,7 @@ using namespace std;
 // Declare a typedef "my_srba_t" for easily referring to my RBA problem type:
 // --------------------------------------------------------------------------------
 typedef RBA_Problem<
-	kf2kf_pose_traits_SE3,                // Parameterization  KF-to-KF poses
+	kf2kf_pose_traits_SE2,                // Parameterization  KF-to-KF poses
 	landmark_traits_Euclidean2D,          // Parameterization of landmark positions    
 	observation_traits_Cartesian_2D       // Type of observations
 	> 
@@ -51,7 +51,7 @@ typedef RBA_Problem<
 
 // --------------------------------------------------------------------------------
 // A test dataset. Generated with http://code.google.com/p/recursive-world-toolkit/ 
-//  and the script: tutorials_dataset-monocular.cfg
+//  and the script: tutorials_dataset-cartesian.cfg
 // --------------------------------------------------------------------------------
 struct basic_euclidean_dataset_entry_t 
 {

@@ -70,6 +70,8 @@ namespace srba
 	public:
 		/** @name Templatized typedef's
 		    @{ */
+		typedef RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE> rba_problem_t;
+
 		typedef KF2KF_POSE_TYPE kf2kf_pose_type;
 		typedef LM_TYPE         lm_type;
 		typedef OBS_TYPE        obs_type;
@@ -77,6 +79,8 @@ namespace srba
 		static const size_t REL_POSE_DIMS = KF2KF_POSE_TYPE::REL_POSE_DIMS;
 		static const size_t LM_DIMS       = LM_TYPE::LM_DIMS;
 		static const size_t OBS_DIMS      = OBS_TYPE::OBS_DIMS;
+
+		typedef typename KF2KF_POSE_TYPE::se_traits_t  se_traits_t; //!< The SE(2) or SE(3) traits struct (for Lie algebra log/exp maps, etc.)
 
 		typedef rba_joint_parameterization_traits_t<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE>  traits_t;
 		typedef jacobian_traits<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE>                      jacobian_traits_t;
@@ -647,7 +651,6 @@ namespace srba
 			typename TSparseBlocksJacobians_dh_df::TEntry  &jacob,
 			const k2f_edge_t & observation,
 			std::vector<const pose_flag_t*> *out_list_of_required_num_poses) const;
-
 
 		void gl_aux_draw_node(mrpt::opengl::CSetOfObjects &soo, const std::string &label, const float x, const float y) const;
 

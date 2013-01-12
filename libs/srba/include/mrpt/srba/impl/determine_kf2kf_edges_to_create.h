@@ -91,7 +91,7 @@ void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE>::determine_kf2kf_edges_to_cre
 	case ecpLinearGraph:
 		{
 			// The simplest policy: Always add a single edge (n-1) => (n)
-			const mrpt::poses::CPose3D init_inv_pose;
+			const pose_t init_inv_pose;
 
 			TNewEdgeInfo nei;
 			nei.has_aprox_init_val = true; // In a linear graph it's a reasonable approx. to make each KF start at the last KF pose, which is what means a null pose init val.
@@ -125,7 +125,7 @@ void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE>::determine_kf2kf_edges_to_cre
 				if (0==((new_kf_id-1)%SUBMAP_SIZE))
 				{
 					// This is the first KF after a new center, so if we add an edge to it we must be very close:
-					this->rba_state.k2k_edges[nei.id].inv_pose = mrpt::poses::CPose3D();
+					this->rba_state.k2k_edges[nei.id].inv_pose = pose_t();
 				}
 				else
 				if (nei.id>=1)

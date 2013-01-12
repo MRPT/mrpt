@@ -54,6 +54,7 @@ namespace poses
 	 *   <img src="CPose2D.gif">
 	 *  </div>
 	 *
+	 * \note Read also: "A tutorial on SE(3) transformation parameterizations and on-manifold optimization", Jose-Luis Blanco. http://mapir.isa.uma.es/~jlblanco/papers/jlblanco2010geometry3D_techrep.pdf
 	 * \sa CPoseOrPoint,CPoint2D
 	 * \ingroup poses_grp
 	 */
@@ -131,6 +132,9 @@ namespace poses
 		 /** An alternative, slightly more efficient way of doing \f$ G = P \oplus L \f$ with G and L being 2D points and P this 2D pose.  */
 		 void composePoint(double lx,double ly,double &gx, double &gy) const;
 
+		 /** \overload \f$ G = P \oplus L \f$ with G and L being 2D points and P this 2D pose */
+		 void composePoint(const mrpt::math::TPoint2D &l, mrpt::math::TPoint2D &g) const;
+
 		 /** The operator \f$ u' = this \oplus u \f$ is the pose/point compounding operator.
 		   */
 		 CPoint3D operator + (const CPoint3D& u) const ;
@@ -159,11 +163,7 @@ namespace poses
 		 void operator *=(const double  s);
 
 		 /** Make \f$ this = this \oplus b \f$  */
-		 inline CPose2D&  operator += (const CPose2D& b)
-		 {
-		 	composeFrom(*this,b);
-		 	return *this;
-		 }
+		 CPose2D&  operator += (const CPose2D& b);
 
 		 /** Forces "phi" to be in the range [-pi,pi];
 		   */
@@ -179,14 +179,7 @@ namespace poses
 		   * \sa asString
 		   * \exception std::exception On invalid format
 		   */
-		 void fromString(const std::string &s) {
-		 	CMatrixDouble  m;
-		 	if (!m.fromMatlabStringFormat(s)) THROW_EXCEPTION("Malformed expression in ::fromString");
-		 	ASSERTMSG_(mrpt::math::size(m,1)==1 && mrpt::math::size(m,2)==3, "Wrong size of vector in ::fromString");
-		 	x( m.get_unsafe(0,0) );
-		 	y( m.get_unsafe(0,1) );
-		 	phi( DEG2RAD(m.get_unsafe(0,2)) );
-		 }
+		 void fromString(const std::string &s);
 
 		 inline const double &operator[](unsigned int i)const
 		 {
