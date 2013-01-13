@@ -433,6 +433,126 @@ struct compute_jacobian_dAepsDx_deps<3 /*POINT_DIMS*/,6 /*POSE_DIMS*/,RBA_ENGINE
 }; // end of specialization of "compute_jacobian_dAepsDx_deps"
 
 // Case: 2D point, SE(2) poses:
+template <class RBA_ENGINE_T>
+struct compute_jacobian_dAepsDx_deps<2 /*POINT_DIMS*/,3 /*POSE_DIMS*/,RBA_ENGINE_T>
+{
+	template <class MATRIX, class MATRIX_DH_DX,class POINT,class pose_flag_t,class JACOB_SYM_T,class K2K_EDGES_T>
+	static void eval(
+		MATRIX      & jacob,
+		const MATRIX_DH_DX  & dh_dx,
+		const bool is_inverse_edge_jacobian,
+		const POINT & xji_i,
+		const pose_flag_t * pose_d1_wrt_obs,  // "A" in handwritten notes
+		const pose_flag_t & pose_base_wrt_d1, // "D" in handwritten notes
+		const JACOB_SYM_T & jacob_sym, 
+		const K2K_EDGES_T &k2k_edges
+		)
+	{
+		if (!is_inverse_edge_jacobian)
+		{	// Normal formulation: unknown is pose "d+1 -> d"
+
+			const double Xd=pose_base_wrt_d1.pose.x();
+			const double Yd=pose_base_wrt_d1.pose.y();
+
+			// We need to handle the special case where "d+1"=="l", so A=Pose(0,0,0):
+			double Xa=0, Ya=0, PHIa=0;
+			mrpt::poses::CPose2D AD(mrpt::poses::UNINITIALIZED_POSE); // AD = A(+)D
+			if (pose_d1_wrt_obs!=NULL)
+			{
+				// pose_d_plus_1_wrt_l  -> pose_d1_wrt_obs
+				Xa = pose_d1_wrt_obs->pose.x();
+				Ya = pose_d1_wrt_obs->pose.y();
+				PHIa = pose_d1_wrt_obs->pose.phi();
+
+				AD.composeFrom(pose_d1_wrt_obs->pose,pose_base_wrt_d1.pose);
+			}
+			else
+			{
+				AD = pose_base_wrt_d1.pose;  // A=0 -> A(+)D is simply D
+			}
+
+			// d(P (+) x) / dP, P = A*D
+			Eigen::Matrix<double,2,3> dPx_P;
+			const double ccos_ad = cos(AD.phi());
+			const double ssin_ad = sin(AD.phi());
+			dPx_P(0,0) = 1;  dPx_P(0,1) = 0; dPx_P(0,2) = -xji_i.x*ssin_ad - xji_i.y*ccos_ad;
+			dPx_P(1,0) = 0;  dPx_P(1,1) = 1; dPx_P(1,2) =  xji_i.x*ccos_ad - xji_i.y*ssin_ad;
+
+			// d(A*exp(eps)*D) / deps
+			Eigen::Matrix<double,3,3> dAD_deps;
+			const double ccos_a = cos(PHIa);
+			const double ssin_a = sin(PHIa);
+			dAD_deps(0,0) = ccos_a; dAD_deps(0,1) = -ssin_a;
+			dAD_deps(1,0) = ssin_a; dAD_deps(1,1) =  ccos_a;
+			dAD_deps(2,0) = 0;    dAD_deps(2,1) =  0;
+			
+			dAD_deps(0,2) = -ssin_a*Xd - ccos_a*Yd;
+			dAD_deps(1,2) =  ccos_a*Xd - ssin_a*Yd;
+			dAD_deps(2,2) = 1;
+
+			// Chain rule:
+			jacob.noalias() = dh_dx * dPx_P * dAD_deps;
+		}
+		else
+		{	// Inverse formulation: unknown is pose "d -> d+1"
+
+			// Changes due to the inverse pose:
+			// D becomes D' = p_d^{d+1} (+) D
+			// and A (which is "pose_d1_wrt_obs") becomes A' = A (+) (p_d_d1)^-1
+
+			ASSERT_(jacob_sym.k2k_edge_id<k2k_edges.size())
+			const typename RBA_ENGINE_T::pose_t & p_d_d1 = k2k_edges[jacob_sym.k2k_edge_id].inv_pose;
+
+			typename RBA_ENGINE_T::pose_t pose_base_wrt_d1_prime(mrpt::poses::UNINITIALIZED_POSE);
+			pose_base_wrt_d1_prime.composeFrom( p_d_d1 , pose_base_wrt_d1.pose );
+
+			// We need to handle the special case where "d+1"=="l", so A=Pose(0,0,0):
+			const typename RBA_ENGINE_T::pose_t p_d_d1_inv = -p_d_d1;
+
+			typename RBA_ENGINE_T::pose_t A_prime = (pose_d1_wrt_obs!=NULL) ? 
+				(pose_d1_wrt_obs->pose + p_d_d1_inv)
+				:
+				p_d_d1_inv;
+
+			mrpt::poses::CPose2D AD(mrpt::poses::UNINITIALIZED_POSE); // AD = A(+)D
+			AD.composeFrom(A_prime,pose_base_wrt_d1_prime);
+
+			const double Xd=pose_base_wrt_d1_prime.x();
+			const double Yd=pose_base_wrt_d1_prime.y();
+
+			// We need to handle the special case where "d+1"=="l", so A=Pose(0,0,0):
+			const double PHIa=A_prime.phi();
+
+
+			// d(P (+) x) / dP, P = A*D
+			Eigen::Matrix<double,2,3> dPx_P;
+			const double ccos_ad = cos(AD.phi());
+			const double ssin_ad = sin(AD.phi());
+			dPx_P(0,0) = 1;  dPx_P(0,1) = 0; dPx_P(0,2) = -xji_i.x*ssin_ad - xji_i.y*ccos_ad;
+			dPx_P(1,0) = 0;  dPx_P(1,1) = 1; dPx_P(1,2) =  xji_i.x*ccos_ad - xji_i.y*ssin_ad;
+
+			// d(A*exp(eps)*D) / deps
+			Eigen::Matrix<double,3,3> dAD_deps;
+			const double ccos_a = cos(PHIa);
+			const double ssin_a = sin(PHIa);
+			dAD_deps(0,0) = ccos_a; dAD_deps(0,1) = -ssin_a;
+			dAD_deps(1,0) = ssin_a; dAD_deps(1,1) =  ccos_a;
+			dAD_deps(2,0) = 0;    dAD_deps(2,1) =  0;
+			
+			dAD_deps(0,2) = -ssin_a*Xd - ccos_a*Yd;
+			dAD_deps(1,2) =  ccos_a*Xd - ssin_a*Yd;
+			dAD_deps(2,2) = 1;
+
+			// Chain rule:
+			jacob.noalias() = dh_dx * dPx_P * dAD_deps;
+
+			// And this comes from: d exp(-epsilon)/d epsilon = - d exp(epsilon)/d epsilon
+			jacob = -jacob;
+
+		} // end inverse edge case
+
+	}
+}; // end of specialization of "compute_jacobian_dAepsDx_deps"
 
 
 // ====================================================================
@@ -517,11 +637,11 @@ void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE>::compute_jacobian_dh_df(
 
 
 #if SRBA_COMPUTE_ANALYTIC_JACOBIANS
-	//  d h(x^{j,i}_l)    d h(f')       d f'
+	//  d h(x^{j,i}_l)    d h(x')       d x'
 	// --------------- = --------- * ----------
-	//  d f                d f'         d f
+	//  d f                d x'         d x
 	//
-	//                  With: f' = x^{j,i}_l
+	//                  With: x' = x^{j,i}_l
 
 	// First jacobian: (uses xji_l)
 	// -----------------------------
@@ -536,7 +656,7 @@ void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE>::compute_jacobian_dh_df(
 		return;
 	}
 
-	// Second Jacobian: Simply the 3x3 rotation matrix of base wrt observing
+	// Second Jacobian: Simply the 2x2 or 3x3 rotation matrix of base wrt observing
 	// ------------------------------
 	if (rel_pose_base_from_obs!=NULL)
 	{

@@ -451,8 +451,8 @@ namespace mrpt { namespace srba {
 			const landmark_traits<LANDMARK_T>::array_landmark_t & lm_pos,
 			const OBS_T::TObservationParams                     & params)
 		{
-			double x,y,z; // wrt cam (local coords)
-			base_pose_wrt_observer.composePoint(lm_pos[0],lm_pos[1],lm_pos[2], x,y,z);
+			double x,y; // wrt cam (local coords)
+			base_pose_wrt_observer.composePoint(lm_pos[0],lm_pos[1], x,y);
 
 			// Observations are simply the "local coords":
 			out_obs[0] = x; out_obs[1] = y;

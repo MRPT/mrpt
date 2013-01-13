@@ -167,6 +167,22 @@ void CPose2D::composeFrom(const CPose2D &A, const CPose2D &B)
 	m_phi = math::wrapToPi(A.m_phi + B.m_phi);
 }
 
+/*---------------------------------------------------------------
+				getRotationMatrix
+ ---------------------------------------------------------------*/
+void CPose2D::getRotationMatrix(mrpt::math::CMatrixDouble22 &R) const
+{
+#ifdef HAVE_SINCOS
+	double	ccos,ssin;
+	::sincos(m_phi,&ssin,&ccos);
+#else
+	const double ccos = cos(m_phi);
+	const double ssin = sin(m_phi);
+#endif
+	R(0,0) = ccos;  R(0,1) = -ssin;
+	R(1,0) = ssin;  R(1,1) =  ccos;
+}
+
 
 /*---------------------------------------------------------------
 The operator a="this"+D is the pose compounding operator.

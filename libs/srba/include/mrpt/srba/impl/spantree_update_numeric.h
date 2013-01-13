@@ -70,7 +70,7 @@ size_t TRBA_Problem_state<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE>::TSpanningTree::upda
 		const k2k_edge_vector_t &ev = itE->second;
 
 		// Accumulate inverse poses in the order established by the path:
-		mrpt::poses::CPose3D accum;
+		pose_t accum;
 		TKeyFrameID curKF = id_from;
 
 #if UPDATE_NUM_ST_VERBOSE

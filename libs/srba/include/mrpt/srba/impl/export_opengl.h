@@ -188,7 +188,7 @@ void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE>::build_opengl_representation(
 				// Uncertainty ellipse?
 				if (options.draw_unknown_feats_ellipses && lms_to_draw_inf_covs[i] )
 				{
-					mrpt::math::CMatrixDouble33 cov;
+					mrpt::math::CMatrixFixedNumeric<double,LM_DIMS,LM_DIMS> cov;
 					lms_to_draw_inf_covs[i]->inv(cov);
 
 					mrpt::opengl::CEllipsoidPtr gl_ellip = mrpt::opengl::CEllipsoid::Create();

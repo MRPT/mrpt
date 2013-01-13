@@ -112,21 +112,25 @@ namespace poses
 		   */
 		 void  getHomogeneousMatrix(CMatrixDouble44 & out_HM ) const;
 
-		 /** The operator \f$ a = this \oplus D \f$ is the pose compounding operator.
-		  */
+		 void getRotationMatrix(mrpt::math::CMatrixDouble22 &R) const;
+		 
+		 inline mrpt::math::CMatrixDouble22 getRotationMatrix() const { 
+			 mrpt::math::CMatrixDouble22 R(UNINITIALIZED_MATRIX); 
+			 getRotationMatrix(R); 
+			 return R; 
+		 }
+
+		 /** The operator \f$ a = this \oplus D \f$ is the pose compounding operator. */
 		 CPose2D  operator + (const CPose2D& D) const ;
 
 		 /** Makes \f$ this = A \oplus B \f$
-		  *  \note A or B can be "this" without problems.
-		  */
+		  *  \note A or B can be "this" without problems.  */
 		 void composeFrom(const CPose2D &A, const CPose2D &B);
 
-		 /** The operator \f$ a = this \oplus D \f$ is the pose compounding operator.
-		  */
+		 /** The operator \f$ a = this \oplus D \f$ is the pose compounding operator. */
 		 CPose3D  operator + (const CPose3D& D) const ;
 
-		 /** The operator \f$ u' = this \oplus u \f$ is the pose/point compounding operator.
-		   */
+		 /** The operator \f$ u' = this \oplus u \f$ is the pose/point compounding operator.  */
 		 CPoint2D operator + (const CPoint2D& u) const ;
 
 		 /** An alternative, slightly more efficient way of doing \f$ G = P \oplus L \f$ with G and L being 2D points and P this 2D pose.  */
@@ -135,8 +139,7 @@ namespace poses
 		 /** \overload \f$ G = P \oplus L \f$ with G and L being 2D points and P this 2D pose */
 		 void composePoint(const mrpt::math::TPoint2D &l, mrpt::math::TPoint2D &g) const;
 
-		 /** The operator \f$ u' = this \oplus u \f$ is the pose/point compounding operator.
-		   */
+		 /** The operator \f$ u' = this \oplus u \f$ is the pose/point compounding operator. */
 		 CPoint3D operator + (const CPoint3D& u) const ;
 
 		/**  Makes \f$ this = A \ominus B \f$ this method is slightly more efficient than "this= A - B;" since it avoids the temporary object.
