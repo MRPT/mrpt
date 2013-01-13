@@ -3,8 +3,8 @@
    |                                                                           |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2012, Individual contributors, see AUTHORS file        |
-   | Copyright (c) 2005-2012, MAPIR group, University of Malaga                |
+   | Copyright (c) 2005-2013, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2013, MAPIR group, University of Malaga                |
    | Copyright (c) 2012-2013, University of Almeria                            |
    | All rights reserved.                                                      |
    |                                                                           |

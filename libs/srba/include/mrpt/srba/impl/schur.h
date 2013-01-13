@@ -363,6 +363,8 @@ namespace mrpt { namespace srba {
 			typename HESS_f::matrix_t         num_Hf_diag_blocks_inverses;
 			bool                              num_Hf_diag_blocks_invertible; //!< Whether \a num_Hf_diag_blocks_inverses could be generated
 
+			TInfoPerHfBlock() : sym_Hf_diag_blocks(NULL), num_Hf_diag_blocks_invertible(false) { }
+
 			EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 		};
 

@@ -3,8 +3,8 @@
    |                                                                           |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2012, Individual contributors, see AUTHORS file        |
-   | Copyright (c) 2005-2012, MAPIR group, University of Malaga                |
+   | Copyright (c) 2005-2013, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2013, MAPIR group, University of Malaga                |
    | Copyright (c) 2012-2013, University of Almeria                            |
    | All rights reserved.                                                      |
    |                                                                           |
@@ -35,8 +35,10 @@
 
 #include <mrpt/srba.h>
 #include <mrpt/gui.h>  // For rendering results as a 3D scene
+#include <mrpt/random.h>
 
 using namespace mrpt::srba;
+using namespace mrpt::random;
 using namespace std;
 
 // --------------------------------------------------------------------------------
@@ -53,6 +55,8 @@ typedef RBA_Problem<
 // A test dataset. Generated with http://code.google.com/p/recursive-world-toolkit/ 
 //  and the script: tutorials_dataset-cartesian.cfg
 // --------------------------------------------------------------------------------
+const double SENSOR_NOISE_STD = 1e-2;
+
 struct basic_euclidean_dataset_entry_t 
 {
 	unsigned int landmark_id;
@@ -146,8 +150,8 @@ int main(int argc, char**argv)
 	for (size_t i=0;i<sizeof(observations_0)/sizeof(observations_0[0]);i++)
 	{
 		obs_field.obs.feat_id = observations_0[i].landmark_id;
-		obs_field.obs.obs_data.pt.x = observations_0[i].x;
-		obs_field.obs.obs_data.pt.y = observations_0[i].y;
+		obs_field.obs.obs_data.pt.x = observations_0[i].x + randomGenerator.drawGaussian1D(0,SENSOR_NOISE_STD);
+		obs_field.obs.obs_data.pt.y = observations_0[i].y + randomGenerator.drawGaussian1D(0,SENSOR_NOISE_STD);
 		list_obs.push_back( obs_field );
 	}
 
@@ -175,8 +179,8 @@ int main(int argc, char**argv)
 	for (size_t i=0;i<sizeof(observations_10)/sizeof(observations_10[0]);i++)
 	{
 		obs_field.obs.feat_id = observations_10[i].landmark_id;
-		obs_field.obs.obs_data.pt.x = observations_10[i].x;
-		obs_field.obs.obs_data.pt.y = observations_10[i].y;
+		obs_field.obs.obs_data.pt.x = observations_10[i].x + randomGenerator.drawGaussian1D(0,SENSOR_NOISE_STD);
+		obs_field.obs.obs_data.pt.y = observations_10[i].y + randomGenerator.drawGaussian1D(0,SENSOR_NOISE_STD);
 		list_obs.push_back( obs_field );
 	}
 	
