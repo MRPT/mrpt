@@ -56,8 +56,6 @@ using namespace mrpt::math;
 #define PARENT_OCTOMAP_PTR_CONST  static_cast<const octomap::OcTree*>(m_parent->m_octomap)
 
 
-MRPT_TODO("TRenderingOptions should be serialized and loaded from .ini files in multimetricmaps")
-
 COctoMap::TRenderingOptions::TRenderingOptions() :
 	generateGridLines      (false),
 	generateOccupiedVoxels (true),
@@ -66,6 +64,35 @@ COctoMap::TRenderingOptions::TRenderingOptions() :
 	visibleFreeVoxels      (true)
 {
 }
+
+void COctoMap::TRenderingOptions::writeToStream(CStream &out) const
+{
+	const int8_t version = 0;
+	out << version;
+
+	out << 	generateGridLines << generateOccupiedVoxels << visibleOccupiedVoxels
+	    << generateFreeVoxels << visibleFreeVoxels;
+;
+}
+
+void COctoMap::TRenderingOptions::readFromStream(CStream &in)
+{
+	int8_t version;
+	in >> version;
+	switch(version)
+	{
+		case 0:
+		{
+			in >> generateGridLines >> generateOccupiedVoxels >> visibleOccupiedVoxels
+				>> generateFreeVoxels >> visibleFreeVoxels;
+		}
+		break;
+		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
+	}
+}
+
+
+
 
 /** Returns a 3D object representing the map.
 	*/
@@ -82,7 +109,7 @@ void COctoMap::getAsOctoMapVoxels(mrpt::opengl::COctoMapVoxels &gl_obj) const
 	// Go thru all voxels:
 	octomap::OcTree *tree = const_cast<octomap::OcTree*>(OCTOMAP_PTR_CONST); // because there's no a "OcTree::const_iterator"
 
-	//OcTreeVolume voxel; // current voxel, possibly transformed 
+	//OcTreeVolume voxel; // current voxel, possibly transformed
 	octomap::OcTree::tree_iterator it_end = tree->end_tree();
 
 	const unsigned char max_depth = 0; // all
@@ -95,23 +122,23 @@ void COctoMap::getAsOctoMapVoxels(mrpt::opengl::COctoMapVoxels &gl_obj) const
 
 	gl_obj.showVoxels(VOXEL_SET_OCCUPIED,  renderingOptions.visibleOccupiedVoxels );
 	gl_obj.showVoxels(VOXEL_SET_FREESPACE, renderingOptions.visibleFreeVoxels );
-		
+
 	const size_t nLeafs = this->getNumLeafNodes();
 	gl_obj.reserveVoxels(VOXEL_SET_OCCUPIED, nLeafs);
 	gl_obj.reserveVoxels(VOXEL_SET_FREESPACE, nLeafs);
 
-	double xmin, xmax, ymin, ymax, zmin, zmax, inv_dz; 
+	double xmin, xmax, ymin, ymax, zmin, zmax, inv_dz;
 	this->getMetricMin(xmin, ymin, zmin);
 	this->getMetricMax(xmax, ymax, zmax);
 	inv_dz = 1/(zmax-zmin + 0.01);
-	
-	for(octomap::OcTree::tree_iterator it = tree->begin_tree(max_depth);it!=it_end; ++it) 
+
+	for(octomap::OcTree::tree_iterator it = tree->begin_tree(max_depth);it!=it_end; ++it)
 	{
 		const octomap::point3d vx_center = it.getCoordinate();
 		const double           vx_length = it.getSize();
 		const double           L = 0.5*vx_length;
 
-		if (it.isLeaf()) 
+		if (it.isLeaf())
 		{
 			// voxels for leaf nodes
 			const double occ = it->getOccupancy();
@@ -121,28 +148,28 @@ void COctoMap::getAsOctoMapVoxels(mrpt::opengl::COctoMapVoxels &gl_obj) const
 				mrpt::utils::TColor vx_color;
 				double coefc, coeft;
 				switch (gl_obj.getVisualizationMode()) {
-				case visualization_mode::COLOR_FROM_HEIGHT:
+				case COctoMapVoxels::COLOR_FROM_HEIGHT:
 					coefc = 255*inv_dz*(vx_center.z()-zmin);
 					vx_color = TColor(coefc*general_color.R, coefc*general_color.G, coefc*general_color.B, 255.0*general_color.A);
 					break;
 
-				case visualization_mode::COLOR_FROM_OCCUPANCY:
-					coefc = 240*(1-occ) + 15; 
+				case COctoMapVoxels::COLOR_FROM_OCCUPANCY:
+					coefc = 240*(1-occ) + 15;
 					vx_color = TColor(coefc*general_color.R, coefc*general_color.G, coefc*general_color.B, 255.0*general_color.A);
 					break;
 
-				case visualization_mode::TRANSPARENCY_FROM_OCCUPANCY:
+				case COctoMapVoxels::TRANSPARENCY_FROM_OCCUPANCY:
 					coeft = 255 - 510*(1-occ);
 					if (coeft < 0) {	coeft = 0; }
 					vx_color = TColor(255*general_color.R, 255*general_color.G, 255*general_color.B, coeft);
 					break;
 
-				case visualization_mode::TRANS_AND_COLOR_FROM_OCCUPANCY:
+				case COctoMapVoxels::TRANS_AND_COLOR_FROM_OCCUPANCY:
 					coefc = 240*(1-occ) + 15;
 					vx_color = TColor(coefc*general_color.R, coefc*general_color.G, coefc*general_color.B, 50);
 					break;
 
-				case visualization_mode::MIXED:
+				case COctoMapVoxels::MIXED:
 					coefc = 255*inv_dz*(vx_center.z()-zmin);
 					coeft = 255 - 510*(1-occ);
 					if (coeft < 0) {	coeft = 0; }
@@ -152,7 +179,7 @@ void COctoMap::getAsOctoMapVoxels(mrpt::opengl::COctoMapVoxels &gl_obj) const
 
 				const size_t vx_set = (tree->isNodeOccupied(*it)) ? VOXEL_SET_OCCUPIED:VOXEL_SET_FREESPACE;
 
-				gl_obj.push_back_Voxel(vx_set,COctoMapVoxels::TVoxel( TPoint3D(vx_center.x(),vx_center.y(),vx_center.z()) ,vx_length, vx_color) );				
+				gl_obj.push_back_Voxel(vx_set,COctoMapVoxels::TVoxel( TPoint3D(vx_center.x(),vx_center.y(),vx_center.z()) ,vx_length, vx_color) );
 			}
 		}
 		else if (renderingOptions.generateGridLines)
@@ -171,5 +198,5 @@ void COctoMap::getAsOctoMapVoxels(mrpt::opengl::COctoMapVoxels &gl_obj) const
 		this->getMetricMax(bbmax.x,bbmax.y,bbmax.z);
 		gl_obj.setBoundingBox(bbmin, bbmax);
 	}
-	
+
 }

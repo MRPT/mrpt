@@ -57,16 +57,16 @@ COctoMapVoxels::COctoMapVoxels() :
 	m_show_grids  (false),
 	m_grid_width  (1.0f),
 	m_grid_color  (0xE0,0xE0,0xE0, 0x90),
-	m_visual_mode (visualization_mode::COLOR_FROM_OCCUPANCY)
+	m_visual_mode (COctoMapVoxels::COLOR_FROM_OCCUPANCY)
 {
 }
 
 /** Clears everything */
-void COctoMapVoxels::clear()	
+void COctoMapVoxels::clear()
 {
 	m_voxel_sets.clear();
 	m_grid_cubes.clear();
-	
+
 	CRenderizableDisplayList::notifyChange();
 }
 
@@ -96,8 +96,8 @@ const GLubyte grid_line_indices[] = {
 	0,5, 1,6, 2,7, 3,4
 	};
 
-const GLubyte cube_indices[36]  = { 
-	0,1,2, 2,3,0,   
+const GLubyte cube_indices[36]  = {
+	0,1,2, 2,3,0,
 	0,3,4, 4,5,0,
 	0,5,6, 6,1,0,
 	1,6,7, 7,2,1,
@@ -106,7 +106,7 @@ const GLubyte cube_indices[36]  = {
 
 MRPT_TODO("Check normal directions")
 // normal array
-const GLfloat normals_cube[3*6*4]  = { 
+const GLfloat normals_cube[3*6*4]  = {
 	0, 0, 1,   0, 0, 1,   0, 0, 1,   0, 0, 1,   // v0,v1,v2,v3 (front)
 	1, 0, 0,   1, 0, 0,   1, 0, 0,   1, 0, 0,   // v0,v3,v4,v5 (right)
 	0, 1, 0,   0, 1, 0,   0, 1, 0,   0, 1, 0,   // v0,v5,v6,v1 (top)
@@ -243,7 +243,7 @@ void   COctoMapVoxels::render_dl() const
 		}
 	}
 
-	
+
 	if (m_showVoxelsAsPoints)
 	{
 		glEnd(); // of  GL_POINTS
@@ -262,7 +262,7 @@ void   COctoMapVoxels::render_dl() const
 
 	glDisableClientState(GL_VERTEX_ARRAY);
 	checkOpenGLError();
-	
+
 #endif
 }
 
@@ -270,8 +270,8 @@ DECLARE_CUSTOM_TTYPENAME(COctoMapVoxels::TInfoPerVoxelSet)
 DECLARE_CUSTOM_TTYPENAME(COctoMapVoxels::TGridCube)
 DECLARE_CUSTOM_TTYPENAME(COctoMapVoxels::TVoxel)
 
-namespace mrpt{ 
-	namespace utils 
+namespace mrpt{
+	namespace utils
 	{
 		CStream & operator<<(CStream&out, const COctoMapVoxels::TInfoPerVoxelSet &a) {
 			out << a.visible << a.voxels;
@@ -310,17 +310,18 @@ namespace mrpt{
   ---------------------------------------------------------------*/
 void  COctoMapVoxels::writeToStream(CStream &out,int *version) const
 {
-	if (version) *version=1;
-	else	
+	if (version) *version=2;
+	else
 	{
 		writeToStreamRender(out);
 
 		out << m_voxel_sets
-			<< m_grid_cubes	
+			<< m_grid_cubes
 			<< m_bb_min << m_bb_max
 			<< m_enable_lighting << m_showVoxelsAsPoints <<	m_showVoxelsAsPointsSize
 			<< m_show_grids << m_grid_width << m_grid_color
-			<< m_enable_cube_transparency; // added in v1
+			<< m_enable_cube_transparency // added in v1
+			<< uint32_t(m_visual_mode); // added in v2
 	}
 }
 
@@ -334,19 +335,28 @@ void  COctoMapVoxels::readFromStream(CStream &in,int version)
 	{
 	case 0:
 	case 1:
+	case 2:
 		{
 			readFromStreamRender(in);
 
 			in  >> m_voxel_sets
-				>> m_grid_cubes	
+				>> m_grid_cubes
 				>> m_bb_min >> m_bb_max
 				>> m_enable_lighting >> m_showVoxelsAsPoints >> m_showVoxelsAsPointsSize
 				>> m_show_grids >> m_grid_width >> m_grid_color;
-			
+
 			if (version>=1)
 				in >> m_enable_cube_transparency;
 			else m_enable_cube_transparency = false;
-		}	
+
+			if (version>=2)
+			{
+				uint32_t i;
+				in >> i;
+				m_visual_mode = static_cast<COctoMapVoxels::visualization_mode_t>(i);
+			}
+			else m_visual_mode = COctoMapVoxels::COLOR_FROM_OCCUPANCY;
+		}
 		break;
 	default:
 		MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)

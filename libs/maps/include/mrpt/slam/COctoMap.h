@@ -281,6 +281,9 @@ namespace mrpt
 				bool  visibleFreeVoxels;       //!< Set free voxels visible (requires generateFreeVoxels=true) (Default=true)
 
 				TRenderingOptions();
+
+				void writeToStream(CStream &out) const;		//!< Binary dump to stream
+				void readFromStream(CStream &in);			//!< Binary dump to stream
 			};
 
 			TRenderingOptions renderingOptions;

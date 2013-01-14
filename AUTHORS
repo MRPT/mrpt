@@ -99,6 +99,7 @@ the University of Malaga.
 
 * Mariano Jaimez Tarifa, University of Malaga (2012-)
   - Several improvements and bug fixes in the mrpt-reactivenav library.
+  - Developemnt in octomap classes.
 
 * Robert Schattschneider, University of Canterbury (2012)
   - Patches for bug fixes, serialization of templates.

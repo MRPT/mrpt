@@ -50,28 +50,19 @@ namespace mrpt
 
 		enum predefined_voxel_sets_t
 		{
-			VOXEL_SET_OCCUPIED = 0, 
+			VOXEL_SET_OCCUPIED = 0,
 			VOXEL_SET_FREESPACE = 1
-		};
-
-		enum visualization_mode
-		{									//Recommendation: m_enable_lighting off
-			COLOR_FROM_HEIGHT,				//Color goes from black (at the bottom) to the chosen color (at the top)
-			COLOR_FROM_OCCUPANCY,			//Color goes from black (occupaid voxel) to the chosen color (free voxel)
-			TRANSPARENCY_FROM_OCCUPANCY,	//Transparency goes from opaque (occupaid voxel) to transparent (free voxel). 
-			TRANS_AND_COLOR_FROM_OCCUPANCY,	//Color goes from black (occupaid voxel) to the chosen color (free voxel) and they are transparent
-			MIXED							//Combination of COLOR_FROM_HEIGHT and TRANSPARENCY_FROM_OCCUPANCY
 		};
 
 		// This must be added to any CSerializable derived class:
 		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( COctoMapVoxels, CRenderizableDisplayList, OPENGL_IMPEXP )
 
 		/** A flexible renderer of voxels, typically from a 3D octo map (see mrpt::slam::COctoMap).
-		  *  This class is sort of equivalent to octovis::OcTreeDrawer from the octomap package, but 
+		  *  This class is sort of equivalent to octovis::OcTreeDrawer from the octomap package, but
 		  *  relying on MRPT's CRenderizableDisplayList so there's no need to manually cache the rendering of OpenGL primitives.
 		  *
 		  *  Normally users call mrpt::slam::COctoMap::getAs3DObject() to obtain a generic mrpt::opengl::CSetOfObjects which insides holds an instance of COctoMapVoxels.
-		  *  You can also alternativelly call COctoMapVoxels::setFromOctoMap(), so you can tune the display parameters, colors, etc. 
+		  *  You can also alternativelly call COctoMapVoxels::setFromOctoMap(), so you can tune the display parameters, colors, etc.
 		  *  As with any other mrpt::opengl class, all object coordinates refer to some frame of reference which is relative to the object parent and can be changed with mrpt::opengl::CRenderizable::setPose()
 		  *
 		  *  This class draws these separate elements to represent an OctoMap:
@@ -80,10 +71,12 @@ namespace mrpt
 		  *			- setGridLinesColor()
 		  *			- setGridLinesWidth()
 		  *			- push_back_GridCube()
-		  *		- A number of <b>voxel collections</b>, drawn as cubes each having a different color (e.g. depending on the color scheme in the original mrpt::slam::COctoMap object). 
+		  *		- A number of <b>voxel collections</b>, drawn as cubes each having a different color (e.g. depending on the color scheme in the original mrpt::slam::COctoMap object).
 		  *       The meanning of each collection is user-defined, but you can use the constants VOXEL_SET_OCCUPIED, VOXEL_SET_FREESPACE for predefined meanings.
 		  *			- showVoxels()
 		  *			- push_back_Voxel()
+		  *
+		  *  Several coloring schemes can be selected with setVisualizationMode(). See COctoMapVoxels::visualization_mode_t
 		  *
 		  *  <div align="center">
 		  *  <table border="0" cellspan="4" cellspacing="4" style="border-width: 1px; border-style: solid;">
@@ -98,6 +91,17 @@ namespace mrpt
 		{
 			DEFINE_SERIALIZABLE( COctoMapVoxels )
 		public:
+
+			/** The different coloring schemes. Set with setVisualizationMode() */
+			enum visualization_mode_t
+			{									//Recommendation: m_enable_lighting off
+				COLOR_FROM_HEIGHT,				//Color goes from black (at the bottom) to the chosen color (at the top)
+				COLOR_FROM_OCCUPANCY,			//Color goes from black (occupied voxel) to the chosen color (free voxel)
+				TRANSPARENCY_FROM_OCCUPANCY,	//Transparency goes from opaque (occupied voxel) to transparent (free voxel).
+				TRANS_AND_COLOR_FROM_OCCUPANCY,	//Color goes from black (occupaid voxel) to the chosen color (free voxel) and they are transparent
+				MIXED							//Combination of COLOR_FROM_HEIGHT and TRANSPARENCY_FROM_OCCUPANCY
+			};
+
 
 			/** The info of each of the voxels */
 			struct OPENGL_IMPEXP TVoxel
@@ -128,9 +132,9 @@ namespace mrpt
 			};
 		protected:
 
-			std::deque<TInfoPerVoxelSet>   m_voxel_sets; 
+			std::deque<TInfoPerVoxelSet>   m_voxel_sets;
 			std::vector<TGridCube>         m_grid_cubes;
-			
+
 			mrpt::math::TPoint3D   m_bb_min, m_bb_max; //!< Cached bounding boxes
 
 			bool					m_enable_lighting;
@@ -140,7 +144,7 @@ namespace mrpt
 			bool					m_show_grids;
             float					m_grid_width;
 			mrpt::utils::TColor		m_grid_color;
-			visualization_mode		m_visual_mode;
+			visualization_mode_t	m_visual_mode;
 
 		public:
 
@@ -148,16 +152,13 @@ namespace mrpt
 			void clear();
 
 			/** Select the visualization mode. To have any effect, this method has to be called before loading the octomap. */
-			inline void setVisualizationMode(visualization_mode mode) 
+			inline void setVisualizationMode(visualization_mode_t mode)
 			{
 				m_visual_mode = mode;
-				if (mode == COLOR_FROM_HEIGHT || mode == COLOR_FROM_OCCUPANCY)
-					m_enable_cube_transparency = 0;
-				else
-					m_enable_cube_transparency = 1;
+				m_enable_cube_transparency = !(mode == COLOR_FROM_HEIGHT || mode == COLOR_FROM_OCCUPANCY);
 				CRenderizableDisplayList::notifyChange();
 			}
-			inline visualization_mode getVisualizationMode() {return m_visual_mode;}
+			inline visualization_mode_t getVisualizationMode() const {return m_visual_mode;}
 
 			inline void enableLights(bool enable) { m_enable_lighting=enable; CRenderizableDisplayList::notifyChange(); }
 			inline bool areLightsEnabled() const { return m_enable_lighting; }

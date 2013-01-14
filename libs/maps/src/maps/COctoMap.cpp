@@ -107,10 +107,11 @@ void COctoMap::allocOctomap(double resolution)
 void  COctoMap::writeToStream(CStream &out, int *version) const
 {
 	if (version)
-		*version = 0;
+		*version = 1;
 	else
 	{
 		this->likelihoodOptions.writeToStream(out);
+		this->renderingOptions.writeToStream(out);  // Added in v1
 
 		CMemoryChunk chunk;
 		const string	tmpFil = mrpt::system::getTempFileName();
@@ -132,8 +133,10 @@ void  COctoMap::readFromStream(CStream &in, int version)
 	switch(version)
 	{
 	case 0:
+	case 1:
 		{
 			this->likelihoodOptions.readFromStream(in);
+			if (version>=1) this->renderingOptions.readFromStream(in);
 
 			this->clear();
 
