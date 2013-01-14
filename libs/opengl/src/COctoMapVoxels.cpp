@@ -56,7 +56,8 @@ COctoMapVoxels::COctoMapVoxels() :
 	m_showVoxelsAsPointsSize(3.0f),
 	m_show_grids  (false),
 	m_grid_width  (1.0f),
-	m_grid_color  (0xE0,0xE0,0xE0, 0x90)
+	m_grid_color  (0xE0,0xE0,0xE0, 0x90),
+	m_visual_mode (visualization_mode::COLOR_FROM_OCCUPANCY)
 {
 }
 

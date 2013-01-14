@@ -86,6 +86,7 @@ void COctoMap::getAsOctoMapVoxels(mrpt::opengl::COctoMapVoxels &gl_obj) const
 	octomap::OcTree::tree_iterator it_end = tree->end_tree();
 
 	const unsigned char max_depth = 0; // all
+	const TColorf general_color = gl_obj.getColor();
 
 	gl_obj.clear();
 	gl_obj.reserveGridCubes( this->calcNumNodes() );
@@ -98,6 +99,11 @@ void COctoMap::getAsOctoMapVoxels(mrpt::opengl::COctoMapVoxels &gl_obj) const
 	const size_t nLeafs = this->getNumLeafNodes();
 	gl_obj.reserveVoxels(VOXEL_SET_OCCUPIED, nLeafs);
 	gl_obj.reserveVoxels(VOXEL_SET_FREESPACE, nLeafs);
+
+	double xmin, xmax, ymin, ymax, zmin, zmax, inv_dz; 
+	this->getMetricMin(xmin, ymin, zmin);
+	this->getMetricMax(xmax, ymax, zmax);
+	inv_dz = 1/(zmax-zmin + 0.01);
 	
 	for(octomap::OcTree::tree_iterator it = tree->begin_tree(max_depth);it!=it_end; ++it) 
 	{
@@ -112,8 +118,37 @@ void COctoMap::getAsOctoMapVoxels(mrpt::opengl::COctoMapVoxels &gl_obj) const
 			if ( (occ>=0.5 && renderingOptions.generateOccupiedVoxels) ||
 				 (occ<0.5  && renderingOptions.generateFreeVoxels) )
 			{
-				const double c = 1-occ; // 0=max. occupancy
-				mrpt::utils::TColor vx_color(c*255,c*255,c*255);
+				mrpt::utils::TColor vx_color;
+				double coefc, coeft;
+				switch (gl_obj.getVisualizationMode()) {
+				case visualization_mode::COLOR_FROM_HEIGHT:
+					coefc = 255*inv_dz*(vx_center.z()-zmin);
+					vx_color = TColor(coefc*general_color.R, coefc*general_color.G, coefc*general_color.B, 255.0*general_color.A);
+					break;
+
+				case visualization_mode::COLOR_FROM_OCCUPANCY:
+					coefc = 240*(1-occ) + 15; 
+					vx_color = TColor(coefc*general_color.R, coefc*general_color.G, coefc*general_color.B, 255.0*general_color.A);
+					break;
+
+				case visualization_mode::TRANSPARENCY_FROM_OCCUPANCY:
+					coeft = 255 - 510*(1-occ);
+					if (coeft < 0) {	coeft = 0; }
+					vx_color = TColor(255*general_color.R, 255*general_color.G, 255*general_color.B, coeft);
+					break;
+
+				case visualization_mode::TRANS_AND_COLOR_FROM_OCCUPANCY:
+					coefc = 240*(1-occ) + 15;
+					vx_color = TColor(coefc*general_color.R, coefc*general_color.G, coefc*general_color.B, 50);
+					break;
+
+				case visualization_mode::MIXED:
+					coefc = 255*inv_dz*(vx_center.z()-zmin);
+					coeft = 255 - 510*(1-occ);
+					if (coeft < 0) {	coeft = 0; }
+					vx_color = TColor(coefc*general_color.R, coefc*general_color.G, coefc*general_color.B, coeft);
+					break;
+				}
 
 				const size_t vx_set = (tree->isNodeOccupied(*it)) ? VOXEL_SET_OCCUPIED:VOXEL_SET_FREESPACE;
 

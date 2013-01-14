@@ -54,6 +54,15 @@ namespace mrpt
 			VOXEL_SET_FREESPACE = 1
 		};
 
+		enum visualization_mode
+		{									//Recommendation: m_enable_lighting off
+			COLOR_FROM_HEIGHT,				//Color goes from black (at the bottom) to the chosen color (at the top)
+			COLOR_FROM_OCCUPANCY,			//Color goes from black (occupaid voxel) to the chosen color (free voxel)
+			TRANSPARENCY_FROM_OCCUPANCY,	//Transparency goes from opaque (occupaid voxel) to transparent (free voxel). 
+			TRANS_AND_COLOR_FROM_OCCUPANCY,	//Color goes from black (occupaid voxel) to the chosen color (free voxel) and they are transparent
+			MIXED							//Combination of COLOR_FROM_HEIGHT and TRANSPARENCY_FROM_OCCUPANCY
+		};
+
 		// This must be added to any CSerializable derived class:
 		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( COctoMapVoxels, CRenderizableDisplayList, OPENGL_IMPEXP )
 
@@ -124,18 +133,31 @@ namespace mrpt
 			
 			mrpt::math::TPoint3D   m_bb_min, m_bb_max; //!< Cached bounding boxes
 
-			bool                   m_enable_lighting;
-			bool                   m_enable_cube_transparency;
-			bool                   m_showVoxelsAsPoints;
-			float                  m_showVoxelsAsPointsSize;
-			bool                   m_show_grids;
-            float                  m_grid_width;
-			mrpt::utils::TColor    m_grid_color;
+			bool					m_enable_lighting;
+			bool					m_enable_cube_transparency;
+			bool					m_showVoxelsAsPoints;
+			float					m_showVoxelsAsPointsSize;
+			bool					m_show_grids;
+            float					m_grid_width;
+			mrpt::utils::TColor		m_grid_color;
+			visualization_mode		m_visual_mode;
 
 		public:
 
 			/** Clears everything */
 			void clear();
+
+			/** Select the visualization mode. To have any effect, this method has to be called before loading the octomap. */
+			inline void setVisualizationMode(visualization_mode mode) 
+			{
+				m_visual_mode = mode;
+				if (mode == COLOR_FROM_HEIGHT || mode == COLOR_FROM_OCCUPANCY)
+					m_enable_cube_transparency = 0;
+				else
+					m_enable_cube_transparency = 1;
+				CRenderizableDisplayList::notifyChange();
+			}
+			inline visualization_mode getVisualizationMode() {return m_visual_mode;}
 
 			inline void enableLights(bool enable) { m_enable_lighting=enable; CRenderizableDisplayList::notifyChange(); }
 			inline bool areLightsEnabled() const { return m_enable_lighting; }
