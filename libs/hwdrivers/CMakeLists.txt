@@ -70,8 +70,9 @@ define_mrpt_lib(
 	hwdrivers 	
 	# Dependencies
 	mrpt-base
+	mrpt-maps  # used to laser preview, etc.
 	mrpt-obs 
-	mrpt-gui  # used to camera preview, etc.
+	mrpt-gui    # used to camera preview, etc.
 	mrpt-opengl  # needed by mrpt-gui
 	)
 

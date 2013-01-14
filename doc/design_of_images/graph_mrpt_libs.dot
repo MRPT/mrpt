@@ -19,7 +19,7 @@ digraph MRPT_LIBS {
 	
 	hmtslam		[label="mrpt-hmtslam",URL="group__mrpt__hmtslam__grp.html"];
 	reactivenav	[label="mrpt-reactivenav",URL="group__mrpt__reactivenav__grp.html"];
-	stereoslam	[label="mrpt-stereoslam (*)",URL="group__mrpt__stereoslam__grp.html"];
+//	stereoslam	[label="mrpt-stereoslam (*)",URL="group__mrpt__stereoslam__grp.html"];
 	
 	detectors	[label="mrpt-detectors",URL="group__mrpt__detectors__grp.html"];
 
@@ -43,7 +43,7 @@ digraph MRPT_LIBS {
 	gui -> opengl;
 	
 	hwdrivers -> gui;
-	hwdrivers -> obs;
+	hwdrivers -> maps;
 	
 	topography -> obs;
 	topography -> scanmatching;
@@ -67,8 +67,7 @@ digraph MRPT_LIBS {
 	hmtslam -> slam;
 	hmtslam -> graphslam;
 
-
-	stereoslam -> vision;
+//	stereoslam -> vision;
 	
 	reactivenav -> maps;
 	reactivenav -> graphs;
