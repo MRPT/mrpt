@@ -45,67 +45,100 @@ using namespace std;
 // Declare a typedef "my_srba_t" for easily referring to my RBA problem type:
 // --------------------------------------------------------------------------------
 typedef RBA_Problem<
-	kf2kf_poses::SE2,                // Parameterization  KF-to-KF poses
-	landmarks::Euclidean2D,          // Parameterization of landmark positions    
-	observations::Cartesian_2D       // Type of observations
-	> 
+	kf2kf_poses::SE3,                // Parameterization  KF-to-KF poses
+	landmarks::Euclidean3D,          // Parameterization of landmark positions    
+	observations::RangeBearing_3D    // Type of observations
+	>
 	my_srba_t;
 
 // --------------------------------------------------------------------------------
 // A test dataset. Generated with http://code.google.com/p/recursive-world-toolkit/ 
-//  and the script: tutorials_dataset-cartesian.cfg
+//  and the script: tutorials_dataset-range-bearing-3d.cfg
 // --------------------------------------------------------------------------------
-const double SENSOR_NOISE_STD = 1e-2;
-
-struct basic_euclidean_dataset_entry_t 
+const double SENSOR_NOISE_STD = 1e-5;
+struct basic_range_bearing_dataset_entry_t 
 {
 	unsigned int landmark_id;
-	double x,y,z;
+	double range,yaw,pitch;
 };
-// Observations for KF#0
-basic_euclidean_dataset_entry_t  observations_0[] = {
- {    21,     0.156,    -0.729,     0.000},
- {    23,     0.433,    -1.983,     0.000},
- {    39,     2.655,    -0.362,     0.000},
- {    35,     2.862,    -0.047,     0.000},
- {    20,     1.388,     2.568,     0.000},
- {    28,     3.120,    -0.577,     0.000},
- {    18,     1.787,    -3.011,     0.000},
- {    37,     3.212,    -1.409,     0.000},
- {    45,     1.245,    -3.324,     0.000},
- {     6,     3.690,    -1.656,     0.000},
- {    13,     4.447,     0.581,     0.000},
- {    43,     1.003,    -4.409,     0.000},
- {    30,     1.787,    -4.286,     0.000},
- {    24,     4.634,     1.725,     0.000},
- {     3,     4.703,    -1.610,     0.000},
+
+// Observations for KF#0. Ground truth pose: (xyz,q)=0.000000 0.000000 0.000000 0.996195 0.000000 0.000000 0.087156
+basic_range_bearing_dataset_entry_t   observations_0[] = {
+ {    98,     1.604,    -1.115,    -0.896},
+ {   124,     1.588,     1.332,    -0.196},
+ {    61,     1.650,    -1.667,    -0.526},
+ {    67,     1.724,     1.206,    -0.182},
+ {   143,     1.973,    -0.403,    -1.201},
+ {   146,     1.918,     0.014,     0.262},
+ {    21,     2.087,    -1.592,     1.215},
+ {    53,     2.108,    -1.203,    -0.033},
+ {   144,     2.262,     0.357,     0.494},
+ {   119,     2.536,    -0.798,    -1.062},
+ {   118,     2.450,     0.803,     0.249},
+ {    55,     2.521,    -0.663,     0.332},
+ {    64,     2.605,    -1.134,     0.235},
+ {    39,     2.660,    -0.137,     0.098},
+ {   107,     2.775,     1.198,    -0.228},
+ {    35,     2.845,    -0.017,     0.141},
+ {   114,     3.012,     0.915,    -0.798},
+ {    20,     2.919,     1.086,     0.137},
+ {    58,     2.957,    -1.622,     0.407},
+ {    63,     3.038,     1.087,    -0.834},
+ {    23,     3.127,    -1.260,    -0.845},
+ {    28,     3.159,    -0.186,     0.163},
+ {    52,     3.320,     0.845,    -0.361},
+ {   141,     3.195,    -0.424,     0.297},
+ {    84,     3.395,     0.517,    -0.114},
+ {    76,     3.422,    -0.236,    -0.092},
+ {    71,     3.674,     0.005,    -0.546},
+ {    45,     3.536,    -1.213,     0.010},
+ {    68,     3.539,    -1.427,     0.676},
+ {    95,     3.502,     0.114,     0.864},
+ {    37,     3.761,    -0.402,    -0.307},
+ {    18,     3.650,    -1.062,     0.346},
+ {    91,     3.730,    -1.659,    -0.672},
+ {   100,     3.951,     0.869,    -0.441},
+ {   127,     3.766,     0.489,     0.386},
+ {   115,     3.908,     0.815,    -0.180},
+ {    59,     3.955,    -0.433,    -0.075},
  };
-// Observations for KF#10:
-basic_euclidean_dataset_entry_t  observations_10[] = {
- {    21,    -0.954,    -0.983,     0.000},
- {    39,     1.447,    -0.194,     0.000},
- {    35,     1.597,     0.152,     0.000},
- {    28,     1.941,    -0.327,     0.000},
- {    23,    -0.466,    -2.171,     0.000},
- {    37,     2.174,    -1.130,     0.000},
- {    20,    -0.303,     2.476,     0.000},
- {     6,     2.687,    -1.292,     0.000},
- {    18,     1.044,    -2.952,     0.000},
- {    13,     3.051,     1.041,     0.000},
- {    45,     0.563,    -3.354,     0.000},
- {    24,     3.039,     2.201,     0.000},
- {     3,     3.677,    -1.073,     0.000},
- {    26,     3.786,    -0.662,     0.000},
- {    32,     3.962,    -0.937,     0.000},
- {     8,     3.147,    -2.855,     0.000},
- {     1,     3.046,    -3.034,     0.000},
- {    30,     1.262,    -4.209,     0.000},
- {    12,     4.090,     1.818,     0.000},
- {    43,     0.511,    -4.464,     0.000},
- {     5,     4.565,    -0.498,     0.000},
- {     2,     4.287,     1.885,     0.000},
- {    11,     3.162,    -3.549,     0.000},
- };
+// Observations for KF#10:(xyz,q)= 1.230806 0.294472 0.000000 0.999999 0.000000 0.000000 0.001357
+basic_range_bearing_dataset_entry_t  observations_10[] = {
+ {   146,     0.886,     0.103,     0.838},
+ {    39,     1.510,    -0.135,     0.331},
+ {   144,     1.512,     0.983,     0.948},
+ {    35,     1.687,     0.099,     0.391},
+ {   118,     1.843,     1.511,     0.404},
+ {    55,     1.938,    -1.015,     0.547},
+ {    28,     2.068,    -0.170,     0.388},
+ {    53,     2.111,    -1.641,     0.013},
+ {    76,     2.229,    -0.232,    -0.009},
+ {    84,     2.313,     0.934,    -0.069},
+ {   141,     2.345,    -0.541,     0.535},
+ {    64,     2.490,    -1.479,     0.301},
+ {    71,     2.493,     0.126,    -0.721},
+ {    20,     2.546,     1.708,     0.190},
+ {    52,     2.592,     1.402,    -0.410},
+ {   114,     2.600,     1.735,    -0.924},
+ {    37,     2.660,    -0.463,    -0.320},
+ {    59,     2.896,    -0.472,     0.011},
+ {   127,     2.936,     0.889,     0.602},
+ {    95,     3.045,     0.391,     1.225},
+ {   115,     3.094,     1.276,    -0.167},
+ {   113,     3.134,     0.809,     0.208},
+ {    23,     3.145,    -1.694,    -0.802},
+ {   128,     3.160,     0.548,    -0.217},
+ {     6,     3.165,    -0.461,     0.415},
+ {    86,     3.176,     0.350,    -0.334},
+ {   100,     3.225,     1.368,    -0.495},
+ {    45,     3.404,    -1.406,     0.056},
+ {    18,     3.410,    -1.265,     0.433},
+ {    99,     3.472,     1.183,     0.272},
+ {    13,     3.489,     0.342,     0.469},
+ {    68,     3.714,    -1.698,     0.668},
+ {    26,     3.900,    -0.170,    -0.080},
+};
+
 
 int main(int argc, char**argv)
 {
@@ -117,7 +150,7 @@ int main(int argc, char**argv)
 	rba.setVerbosityLevel( 1 );   // 0: None; 1:Important only; 2:Verbose
 
 	rba.parameters.use_robust_kernel = true;
-	rba.parameters.std_noise_observations = 0.1;
+	rba.parameters.std_noise_observations = 0.03; //SENSOR_NOISE_STD;
 
 	// =========== Topology parameters ===========
 	rba.parameters.edge_creation_policy = mrpt::srba::ecpICRA2013;
@@ -150,8 +183,9 @@ int main(int argc, char**argv)
 	for (size_t i=0;i<sizeof(observations_0)/sizeof(observations_0[0]);i++)
 	{
 		obs_field.obs.feat_id = observations_0[i].landmark_id;
-		obs_field.obs.obs_data.pt.x = observations_0[i].x + randomGenerator.drawGaussian1D(0,SENSOR_NOISE_STD);
-		obs_field.obs.obs_data.pt.y = observations_0[i].y + randomGenerator.drawGaussian1D(0,SENSOR_NOISE_STD);
+		obs_field.obs.obs_data.range = observations_0[i].range + randomGenerator.drawGaussian1D(0,SENSOR_NOISE_STD);
+		obs_field.obs.obs_data.yaw = observations_0[i].yaw + randomGenerator.drawGaussian1D(0,SENSOR_NOISE_STD);
+		obs_field.obs.obs_data.pitch = observations_0[i].pitch + randomGenerator.drawGaussian1D(0,SENSOR_NOISE_STD);
 		list_obs.push_back( obs_field );
 	}
 
@@ -179,8 +213,9 @@ int main(int argc, char**argv)
 	for (size_t i=0;i<sizeof(observations_10)/sizeof(observations_10[0]);i++)
 	{
 		obs_field.obs.feat_id = observations_10[i].landmark_id;
-		obs_field.obs.obs_data.pt.x = observations_10[i].x + randomGenerator.drawGaussian1D(0,SENSOR_NOISE_STD);
-		obs_field.obs.obs_data.pt.y = observations_10[i].y + randomGenerator.drawGaussian1D(0,SENSOR_NOISE_STD);
+		obs_field.obs.obs_data.range = observations_10[i].range + randomGenerator.drawGaussian1D(0,SENSOR_NOISE_STD);
+		obs_field.obs.obs_data.yaw = observations_10[i].yaw + randomGenerator.drawGaussian1D(0,SENSOR_NOISE_STD);
+		obs_field.obs.obs_data.pitch = observations_10[i].pitch + randomGenerator.drawGaussian1D(0,SENSOR_NOISE_STD);
 		list_obs.push_back( obs_field );
 	}
 	
@@ -200,6 +235,7 @@ int main(int argc, char**argv)
 
 	// Dump the relative pose of KF#0 wrt KF#1:
 	cout << "inv_pose of KF-to-KF edge #0 (relative pose of KF#0 wrt KF#1):\n" << rba.get_k2k_edges()[0].inv_pose << endl;
+	cout << "Relative pose of KF#1 wrt KF#0:\n" << (-rba.get_k2k_edges()[0].inv_pose) << endl;
 
 	// --------------------------------------------------------------------------------
 	// Saving RBA graph as a DOT file:
@@ -238,3 +274,4 @@ int main(int argc, char**argv)
 		
 	return 0; // All ok
 }
+
