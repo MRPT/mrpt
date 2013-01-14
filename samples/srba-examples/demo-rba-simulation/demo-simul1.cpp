@@ -85,7 +85,7 @@ int run_demo_simul(int argc, char**argv)
 	rba.setVerbosityLevel( arg_verbose.getValue() );
 
 	rba.parameters.use_robust_kernel = false;
-	rba.parameters.std_noise_pixels = PIXEL_NOISE_STD;
+	rba.parameters.std_noise_observations = PIXEL_NOISE_STD;
 
 	rba.parameters.compute_condition_number = false;
 

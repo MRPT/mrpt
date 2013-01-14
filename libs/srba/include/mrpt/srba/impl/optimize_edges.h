@@ -990,8 +990,8 @@ void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE>::optimize_edges(
 	// Save the final information matrix of unknown features:
 	DETAILED_PROFILING_ENTER("opt.get_Hf_diag_inv_cov")
 	{
-		ASSERT_(parameters.std_noise_pixels>0)
-		const double inv_var_pixel_error = 1./parameters.std_noise_pixels;  // Scaling for information matrices below
+		ASSERT_(parameters.std_noise_observations>0)
+		const double inv_var_pixel_error = 1./parameters.std_noise_observations;  // Scaling for information matrices below
 
 		for (size_t i=0;i<nUnknowns_k2f;i++)
 		{

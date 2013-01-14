@@ -117,7 +117,7 @@ int main(int argc, char**argv)
 	rba.setVerbosityLevel( 1 );   // 0: None; 1:Important only; 2:Verbose
 
 	rba.parameters.use_robust_kernel = true;
-	rba.parameters.std_noise_pixels = 0.5;  MRPT_TODO("change!")
+	rba.parameters.std_noise_observations = 0.1;
 
 	// =========== Topology parameters ===========
 	rba.parameters.edge_creation_policy = mrpt::srba::ecpICRA2013;

@@ -63,6 +63,11 @@ namespace srba
 	  *		- Sequence of all observations, i.e. feature (x,y) coordinates. In \a all_obs_by_lm and also \a all_obs_by_frame.
 	  *		- Relative 3D positions of a subset of landmarks wrt to their base frame (in \a known_lms)
 	  *
+	  *  See http://www.mrpt.org/srba for a list of possible template arguments, code examples, etc.
+	  *
+	  * \tparam KF2KF_POSE_TYPE The parameterization of keyframe-to-keyframe relative poses (edges, problem unknowns).
+	  * \tparam LM_TYPE The parameterization of relative positions of landmarks relative poses (edges).
+	  * \tparam OBS_TYPE The type of observations.
 	  */
 	template <class KF2KF_POSE_TYPE,class LM_TYPE,class OBS_TYPE>
 	class RBA_Problem
@@ -285,7 +290,15 @@ namespace srba
 		/** @name Sub-algorithms
 		    @{ */
 
+		/** This method will call edge_creation_policy(), which has predefined algorithms but could be re-defined by the user in a derived class */
 		void determine_kf2kf_edges_to_create(
+			const TKeyFrameID               new_kf_id,
+			const typename traits_t::new_kf_observations_t   & obs,
+			std::vector<TNewEdgeInfo> &new_k2k_edge_ids );
+
+		/** Implements the edge-creation policy, by default depending on "parameters.edge_creation_policy" if the user doesn't re-implement this virtual method.
+		  * See tutorials for examples of how to implement custom policies. */
+		virtual void edge_creation_policy(
 			const TKeyFrameID               new_kf_id,
 			const typename traits_t::new_kf_observations_t   & obs,
 			std::vector<TNewEdgeInfo> &new_k2k_edge_ids );
@@ -392,8 +405,7 @@ namespace srba
 			virtual void  saveToConfigFile(mrpt::utils::CConfigFileBase &out,const std::string & section) const;
 
 
-			// Parameters for determine_kf2kf_edges_to_create(), etc.
-			// -------------------------------------------------------
+			/** Parameters for determine_kf2kf_edges_to_create(); custom user-defined policies can be also defined (see tutorials) */
 			TEdgeCreationPolicy  edge_creation_policy;
 
 			/** Maximum depth for maintained spanning trees. */
@@ -414,7 +426,7 @@ namespace srba
 			bool   numeric_jacobians;
 			void (*feedback_user_iteration)(unsigned int iter, const double total_sq_err, const double mean_sqroot_error);
 			bool   compute_condition_number; //!< Compute and return to the user the Hessian condition number of k2k edges (default=false)
-			double std_noise_pixels; //!< default: 1, the standard deviation assumed for feature coordinates (this parameter is only needed to scale the uncertainties of reconstructed LMs with unknown locations).
+			double std_noise_observations; //!< default: 1, the standard deviation assumed for feature coordinates (this parameter is only needed to scale the uncertainties of reconstructed LMs with unknown locations).
 			// -------------------------------------
 
 		};
@@ -790,6 +802,7 @@ namespace srba
 #include "impl/eval_overall_error.h"
 
 #include "impl/determine_kf2kf_edges_to_create.h"
+#include "impl/edge_creation_policy.h"
 
 #include "impl/reprojection_residuals.h"
 #include "impl/compute_minus_gradient.h"

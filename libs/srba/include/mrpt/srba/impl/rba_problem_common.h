@@ -68,7 +68,7 @@ RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE>::TSRBAParameters::TSRBAParameters(
 	numeric_jacobians	 ( false ),
 	feedback_user_iteration(NULL),
 	compute_condition_number(false),
-	std_noise_pixels     ( 1. )
+	std_noise_observations  ( 1. )
 {
 }
 
