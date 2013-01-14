@@ -45,9 +45,9 @@ using namespace std;
 // Declare a typedef "my_srba_t" for easily referring to my RBA problem type:
 // --------------------------------------------------------------------------------
 typedef RBA_Problem<
-	kf2kf_pose_traits_SE2,                // Parameterization  KF-to-KF poses
-	landmark_traits_Euclidean2D,          // Parameterization of landmark positions    
-	observation_traits_Cartesian_2D       // Type of observations
+	kf2kf_poses::SE2,                // Parameterization  KF-to-KF poses
+	landmarks::Euclidean2D,          // Parameterization of landmark positions    
+	observations::Cartesian_2D       // Type of observations
 	> 
 	my_srba_t;
 

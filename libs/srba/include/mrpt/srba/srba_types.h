@@ -58,7 +58,7 @@ namespace srba
 	template <class LANDMARK_TYPE,class OBS_TYPE>
 	struct sensor_model;
 
-	/** The argument "POSE_TRAITS" can be any of those defined in srba/models/kf2kf_poses.h (typically, either kf2kf_pose_traits_SE3 or kf2kf_pose_traits_SE2).
+	/** The argument "POSE_TRAITS" can be any of those defined in srba/models/kf2kf_poses.h (typically, either kf2kf_poses::SE3 or kf2kf_poses::SE2).
 	  * \sa landmark_traits, observation_traits
 	  */
 	template <class POSE_TRAITS>
@@ -116,7 +116,7 @@ namespace srba
 	template <> struct landmark_point_trait<3> { typedef mrpt::math::TPoint3D point_t; };
 
 
-	/** The argument "LM_TRAITS" can be any of those defined in srba/models/landmarks.h (typically, either landmark_traits_Euclidean3D or landmark_traits_Euclidean2D).
+	/** The argument "LM_TRAITS" can be any of those defined in srba/models/landmarks.h (typically, either landmarks::Euclidean3D or landmarks::Euclidean2D).
 	  * \sa landmark_traits, observation_traits
 	  */
 	template <class LM_TRAITS>

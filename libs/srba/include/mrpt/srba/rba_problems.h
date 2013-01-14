@@ -36,14 +36,15 @@
 #pragma once
 
 namespace mrpt { namespace srba {
-
-	/** @name Predefined RBA problem configurations
-	    @{ */
+	/** \defgroup mrpt_srba_predefined Predefined RBA problem configurations
+		* \ingroup mrpt_srba_grp */
+	/** \addtogroup mrpt_srba_predefined
+		* @{ */
 
 	typedef RBA_Problem<
-		kf2kf_pose_traits_SE3,
-		landmark_traits_Euclidean3D,
-		observation_traits_MonocularCamera
+		kf2kf_poses::SE3,
+		landmarks::Euclidean3D,
+		observations::MonocularCamera
 		> 
 		RBA_Problem_P6D_L3D_ObsMono; 
 	

@@ -36,11 +36,16 @@
 #pragma once
 
 namespace mrpt { namespace srba {
-	
-	/** @name Landmark parameterizations
-	    @{ */
+namespace landmarks {
 
-	struct landmark_traits_Euclidean3D
+	/** \defgroup mrpt_srba_landmarks Landmark parameterizations
+		* \ingroup mrpt_srba_grp */
+
+	/** \addtogroup mrpt_srba_landmarks
+		* @{ */
+
+	/** A parameterization of landmark positions in Euclidean coordinates (3D) */
+	struct Euclidean3D
 	{
 		static const size_t  LM_DIMS = 3; //!< The number of parameters in each LM parameterization relative to its base KF: (x,y,z)
 		static const size_t  LM_EUCLIDEAN_DIMS = 3; //!< Either 2 or 3, depending on the real minimum number of coordinates needed to parameterize the landmark.
@@ -54,7 +59,8 @@ namespace mrpt { namespace srba {
 		}
 	};
 
-	struct landmark_traits_Euclidean2D
+	/** A parameterization of landmark positions in Euclidean coordinates (2D) */
+	struct Euclidean2D
 	{
 		static const size_t  LM_DIMS = 2; //!< The number of parameters in each LM parameterization relative to its base KF: (x,y)
 		static const size_t  LM_EUCLIDEAN_DIMS = 2; //!< Either 2 or 3, depending on the real minimum number of coordinates needed to parameterize the landmark.
@@ -69,5 +75,5 @@ namespace mrpt { namespace srba {
 
 	/** @} */
 
-
+}
 } } // end NS

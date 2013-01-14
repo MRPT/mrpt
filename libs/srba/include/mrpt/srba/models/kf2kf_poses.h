@@ -40,18 +40,23 @@
 #include <mrpt/poses/SE_traits.h>
 
 namespace mrpt { namespace srba {
+namespace kf2kf_poses
+{
+	/** \defgroup mrpt_srba_kf2kf KF-to-KF relative pose parameterizations
+		* \ingroup mrpt_srba_grp */
 
-	/** @name KF-to-KF relative pose parameterizations
-	    @{ */
+	/** \addtogroup mrpt_srba_kf2kf
+		* @{ */
 
-	struct kf2kf_pose_traits_SE3
+
+	struct SE3
 	{
 		static const size_t REL_POSE_DIMS = 6;  //!< Each relative pose is parameterized as a CPose3D()
 		typedef mrpt::poses::CPose3D       pose_t;  //!< The pose class
 		typedef mrpt::poses::SE_traits<3>  se_traits_t;  //!< The SE(3) traits struct (for Lie algebra log/exp maps, etc.)
 	};
 
-	struct kf2kf_pose_traits_SE2
+	struct SE2
 	{
 		static const size_t REL_POSE_DIMS = 3;  //!< Each relative pose is parameterized as a CPose3D()
 		typedef mrpt::poses::CPose2D   pose_t;  //!< The pose class
@@ -60,4 +65,5 @@ namespace mrpt { namespace srba {
 
 	/** @} */
 
+}
 } } // end NS

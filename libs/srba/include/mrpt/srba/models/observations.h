@@ -39,12 +39,16 @@
 #include <mrpt/utils/TStereoCamera.h>
 
 namespace mrpt { namespace srba {
+namespace observations {
 
-	/** @name Observation types
-	    @{ */
+	/** \defgroup mrpt_srba_observations Observation types
+		* \ingroup mrpt_srba_grp */
+
+	/** \addtogroup mrpt_srba_observations
+		* @{ */
 
 	/** Observation = one monocular camera feature (the coordinates of one pixel) */
-	struct observation_traits_MonocularCamera
+	struct MonocularCamera
 	{
 		static const size_t  OBS_DIMS = 2; //!< Each observation is one pixel (px,py) 
 		
@@ -61,7 +65,7 @@ namespace mrpt { namespace srba {
 			}
 		};
 
-		/** The type "TObservationParams" must be declared in each "observation_traits_*" to 
+		/** The type "TObservationParams" must be declared in each "observations::TYPE" to 
 		  *  hold sensor-specific parameters, etc. needed in the sensor model. */
 		struct TObservationParams
 		{
@@ -72,7 +76,7 @@ namespace mrpt { namespace srba {
 	// -------------------------------------------------------------------------------------------------
 
 	/** Observation = one stereo camera feature (the coordinates of two pixels) */
-	struct observation_traits_StereoCamera
+	struct StereoCamera
 	{
 		static const size_t  OBS_DIMS = 4; //!< Each observation is a pair of pixels (px_l,py_l,px_r,py_r) 
 		
@@ -89,7 +93,7 @@ namespace mrpt { namespace srba {
 			}
 		};
 
-		/** The type "TObservationParams" must be declared in each "observation_traits_*" to 
+		/** The type "TObservationParams" must be declared in each "observations::TYPE" to 
 		  *  hold sensor-specific parameters, etc. needed in the sensor model. */
 		struct TObservationParams
 		{
@@ -100,7 +104,7 @@ namespace mrpt { namespace srba {
 	// -------------------------------------------------------------------------------------------------
 
 	/** Observation = XYZ coordinates of landmarks relative to the sensor */
-	struct observation_traits_Cartesian_3D
+	struct Cartesian_3D
 	{
 		static const size_t  OBS_DIMS = 3; //!< Each observation is a triplet of coordinates (x,y,z) 
 		
@@ -116,7 +120,7 @@ namespace mrpt { namespace srba {
 			}
 		};
 
-		/** The type "TObservationParams" must be declared in each "observation_traits_*" to 
+		/** The type "TObservationParams" must be declared in each "observations::TYPE" to 
 		  *  hold sensor-specific parameters, etc. needed in the sensor model. */
 		struct TObservationParams
 		{
@@ -127,7 +131,7 @@ namespace mrpt { namespace srba {
 	// -------------------------------------------------------------------------------------------------
 
 	/** Observation = XY coordinates of landmarks relative to the sensor */
-	struct observation_traits_Cartesian_2D
+	struct Cartesian_2D
 	{
 		static const size_t  OBS_DIMS = 2; //!< Each observation is a pair of coordinates (x,y) 
 		
@@ -143,7 +147,7 @@ namespace mrpt { namespace srba {
 			}
 		};
 
-		/** The type "TObservationParams" must be declared in each "observation_traits_*" to 
+		/** The type "TObservationParams" must be declared in each "observations::TYPE" to 
 		  *  hold sensor-specific parameters, etc. needed in the sensor model. */
 		struct TObservationParams
 		{
@@ -154,7 +158,7 @@ namespace mrpt { namespace srba {
 	// -------------------------------------------------------------------------------------------------
 
 	/** Observation = Range+Bearing (yaw & pitch) of landmarks relative to the sensor */
-	struct observation_traits_RangeBearing_3D
+	struct RangeBearing_3D
 	{
 		static const size_t  OBS_DIMS = 3; //!< Each observation is a triplet of coordinates (range,yaw,pitch) 
 		
@@ -172,7 +176,7 @@ namespace mrpt { namespace srba {
 			}
 		};
 
-		/** The type "TObservationParams" must be declared in each "observation_traits_*" to 
+		/** The type "TObservationParams" must be declared in each "observations::TYPE" to 
 		  *  hold sensor-specific parameters, etc. needed in the sensor model. */
 		struct TObservationParams
 		{
@@ -183,7 +187,7 @@ namespace mrpt { namespace srba {
 	// -------------------------------------------------------------------------------------------------
 
 	/** Observation = Range+Bearing (yaw) of landmarks relative to the sensor, for planar environments only. */
-	struct observation_traits_RangeBearing_2D
+	struct RangeBearing_2D
 	{
 		static const size_t  OBS_DIMS = 2; //!< Each observation is a pair of coordinates (range,yaw) 
 		
@@ -200,7 +204,7 @@ namespace mrpt { namespace srba {
 			}
 		};
 
-		/** The type "TObservationParams" must be declared in each "observation_traits_*" to 
+		/** The type "TObservationParams" must be declared in each "observations::TYPE" to 
 		  *  hold sensor-specific parameters, etc. needed in the sensor model. */
 		struct TObservationParams
 		{
@@ -213,4 +217,5 @@ namespace mrpt { namespace srba {
 
 	/** @} */
 
+}
 } } // end NS

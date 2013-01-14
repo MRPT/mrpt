@@ -409,9 +409,8 @@ bool TRBA_Problem_state<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE>::find_path_bfs(
 }
 
 
-// Aux. function for going thru the entire path between two KFs in a spanning tree, saving the path step by step.
-// Called from: TSpanningTree::update_symbolic()
-
+/** Aux. function for going thru the entire path between two KFs in a spanning tree, saving the path step by step.
+  * Called from: TSpanningTree::update_symbolic() */
 template <class KF2KF_POSE_TYPE,class LM_TYPE,class OBS_TYPE>
 void internal::recursive_update_all_edges(
 	typename kf2kf_pose_traits<KF2KF_POSE_TYPE>::k2k_edge_vector_t & path,

@@ -38,20 +38,23 @@
 #include <mrpt/poses/CPose3DQuat.h>
 
 namespace mrpt { namespace srba {
+	/** \defgroup mrpt_srba_models Sensor models: one for each combination of {landmark_parameterization,observation_type}
+	  * \ingroup mrpt_srba_grp */
 
-	/** @name Sensor models: one for each combination of {landmark_parameterization,observation_type}
-	    @{ */
+	/** \addtogroup mrpt_srba_models
+		* @{ */
+
 
 	/** Sensor model: 3D landmarks in Euclidean coordinates + Monocular camera observations (no distortion) */
 	template <>
-	struct sensor_model<landmark_traits_Euclidean3D,observation_traits_MonocularCamera>
+	struct sensor_model<landmarks::Euclidean3D,observations::MonocularCamera>
 	{
 		// --------------------------------------------------------------------------------
 		// Typedefs for the sake of generality in the signature of methods below:
 		//   *DONT FORGET* to change these when writing new sensor models.
 		// --------------------------------------------------------------------------------
-		typedef observation_traits_MonocularCamera  OBS_T;  
-		typedef landmark_traits_Euclidean3D         LANDMARK_T;
+		typedef observations::MonocularCamera  OBS_T;  
+		typedef landmarks::Euclidean3D         LANDMARK_T;
 		// --------------------------------------------------------------------------------
 
 		static const size_t OBS_DIMS = OBS_T::OBS_DIMS;
@@ -158,20 +161,20 @@ namespace mrpt { namespace srba {
 			out_lm_pos[2] = 1; // Depth in Z (undefined for monocular cameras, just use any !=0 value)
 		}
 
-	};  // end of struct sensor_model<landmark_traits_Euclidean3D,observation_traits_MonocularCamera>
+	};  // end of struct sensor_model<landmarks::Euclidean3D,observations::MonocularCamera>
 
 	// -------------------------------------------------------------------------------------------------------------
 
 	/** Sensor model: 3D landmarks in Euclidean coordinates + Stereo camera observations (no distortion) */
 	template <>
-	struct sensor_model<landmark_traits_Euclidean3D,observation_traits_StereoCamera>
+	struct sensor_model<landmarks::Euclidean3D,observations::StereoCamera>
 	{
 		// --------------------------------------------------------------------------------
 		// Typedefs for the sake of generality in the signature of methods below:
 		//   *DONT FORGET* to change these when writing new sensor models.
 		// --------------------------------------------------------------------------------
-		typedef observation_traits_StereoCamera     OBS_T;  
-		typedef landmark_traits_Euclidean3D         LANDMARK_T;
+		typedef observations::StereoCamera     OBS_T;  
+		typedef landmarks::Euclidean3D         LANDMARK_T;
 		// --------------------------------------------------------------------------------
 
 		static const size_t OBS_DIMS = OBS_T::OBS_DIMS;
@@ -324,20 +327,20 @@ namespace mrpt { namespace srba {
 			out_lm_pos[2] = Z;
 		}
 
-	};  // end of struct sensor_model<landmark_traits_Euclidean3D,observation_traits_StereoCamera>
+	};  // end of struct sensor_model<landmarks::Euclidean3D,observations::StereoCamera>
 
 	// -------------------------------------------------------------------------------------------------------------
 
 	/** Sensor model: 3D landmarks in Euclidean coordinates + Cartesian 3D observations */
 	template <>
-	struct sensor_model<landmark_traits_Euclidean3D,observation_traits_Cartesian_3D>
+	struct sensor_model<landmarks::Euclidean3D,observations::Cartesian_3D>
 	{
 		// --------------------------------------------------------------------------------
 		// Typedefs for the sake of generality in the signature of methods below:
 		//   *DONT FORGET* to change these when writing new sensor models.
 		// --------------------------------------------------------------------------------
-		typedef observation_traits_Cartesian_3D     OBS_T;  
-		typedef landmark_traits_Euclidean3D         LANDMARK_T;
+		typedef observations::Cartesian_3D     OBS_T;  
+		typedef landmarks::Euclidean3D         LANDMARK_T;
 		// --------------------------------------------------------------------------------
 
 		static const size_t OBS_DIMS = OBS_T::OBS_DIMS;
@@ -414,20 +417,20 @@ namespace mrpt { namespace srba {
 			out_lm_pos[2] = obs.pt.z;
 		}
 
-	};  // end of struct sensor_model<landmark_traits_Euclidean3D,observation_traits_Cartesian_3D>
+	};  // end of struct sensor_model<landmarks::Euclidean3D,observations::Cartesian_3D>
 
 	// -------------------------------------------------------------------------------------------------------------
 
 	/** Sensor model: 2D landmarks in Euclidean coordinates + Cartesian 2D observations */
 	template <>
-	struct sensor_model<landmark_traits_Euclidean2D,observation_traits_Cartesian_2D>
+	struct sensor_model<landmarks::Euclidean2D,observations::Cartesian_2D>
 	{
 		// --------------------------------------------------------------------------------
 		// Typedefs for the sake of generality in the signature of methods below:
 		//   *DONT FORGET* to change these when writing new sensor models.
 		// --------------------------------------------------------------------------------
-		typedef observation_traits_Cartesian_2D     OBS_T;  
-		typedef landmark_traits_Euclidean2D         LANDMARK_T;
+		typedef observations::Cartesian_2D     OBS_T;  
+		typedef landmarks::Euclidean2D         LANDMARK_T;
 		// --------------------------------------------------------------------------------
 
 		static const size_t OBS_DIMS = OBS_T::OBS_DIMS;
@@ -503,7 +506,7 @@ namespace mrpt { namespace srba {
 			out_lm_pos[1] = obs.pt.y;
 		}
 
-	};  // end of struct sensor_model<landmark_traits_Euclidean2D,observation_traits_Cartesian_2D>
+	};  // end of struct sensor_model<landmarks::Euclidean2D,observations::Cartesian_2D>
 
 	// -------------------------------------------------------------------------------------------------------------
 
