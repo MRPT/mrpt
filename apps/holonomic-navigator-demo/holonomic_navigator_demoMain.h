@@ -160,7 +160,7 @@ class holonomic_navigator_demoFrame: public wxFrame
 		{
 			double ROBOT_MAX_SPEED;
 			double MAX_SENSOR_RADIUS;
-			unsigned int SENSOR_NUM_RANGES;
+			uint64_t SENSOR_NUM_RANGES;
 			double SENSOR_RANGE_NOISE_STD;
 
 			TOptions();

@@ -354,7 +354,7 @@ class slamdemoFrame: public wxFrame
 
 			std::string  map_generator; //!< the parameter to resetSimulator
 
-			unsigned int randomMap_nLMs; //!< # of landmarks in the random map
+			uint32_t  randomMap_nLMs; //!< # of landmarks in the random map
 
 			mrpt::poses::CPose2D  sensorOnTheRobot;
 

@@ -799,7 +799,7 @@ void holonomic_navigator_demoFrame::TOptions::loadFromConfigFile(const mrpt::uti
 	// Load from config text:
 	MRPT_LOAD_CONFIG_VAR(ROBOT_MAX_SPEED,double,  source,section );
 	MRPT_LOAD_CONFIG_VAR(MAX_SENSOR_RADIUS,double,  source,section );
-	MRPT_LOAD_CONFIG_VAR(SENSOR_NUM_RANGES,int,  source,section );
+	MRPT_LOAD_CONFIG_VAR(SENSOR_NUM_RANGES, uint64_t,  source,section );
 	MRPT_LOAD_CONFIG_VAR(SENSOR_RANGE_NOISE_STD,double,  source,section );
 
 	MRPT_END

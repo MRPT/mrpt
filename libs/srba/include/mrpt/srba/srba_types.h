@@ -656,6 +656,8 @@ namespace srba
 
 		TSpanningTree           spanning_tree;
 
+		// (If you use Visual Studio 2008 and the next line raises the error "error C2719: '_Val': formal parameter with __declspec(align('16')) won't be aligned", 
+		// it's caused by this bug in either Eigen or VS2008 compiler, still to be fixed: http://eigen.tuxfamily.org/bz/show_bug.cgi?id=83  )
 		std::deque<k2f_edge_t>  all_observations;  //!< All raw observation data (k2f edges)
 		TLinearSystem           lin_system;        //!< The sparse linear system of equations
 

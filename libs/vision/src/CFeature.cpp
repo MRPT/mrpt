@@ -126,7 +126,7 @@ void TMultiResDescMatchOptions::dumpToTextStream( mrpt::utils::CStream &out) con
 	if( useOriFilter )
 	{
 	    out.printf("Yes\n");
-	    out.printf("· Orientation threshold:        %.1f º\n", RAD2DEG(oriThreshold) );
+	    out.printf("· Orientation threshold:        %.1f deg\n", RAD2DEG(oriThreshold) );
     }
     else
 	    out.printf("No\n");

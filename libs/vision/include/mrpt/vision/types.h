@@ -406,44 +406,44 @@ namespace mrpt
 		*/
 		struct VISION_IMPEXP TMultiResDescMatchOptions : public mrpt::utils::CLoadableOptions
 		{
-            bool            useOriFilter;           //!< Whether or not use the filter based on orientation test
-            double          oriThreshold;           //!< The threshold for the orientation test
+			bool      useOriFilter;           //!< Whether or not use the filter based on orientation test
+			double    oriThreshold;           //!< The threshold for the orientation test
 
-            bool            useDepthFilter;         //!< Whether or not use the filter based on the depth test
+			bool      useDepthFilter;         //!< Whether or not use the filter based on the depth test
 
-            double          matchingThreshold;      //!< The absolute threshold in descriptor distance for considering a match
-            double          matchingRatioThreshold; //!< The ratio between the two lowest distances threshold for considering a match
-            unsigned int    lowScl1, lowScl2;       //!< The lowest scales in the two features to be taken into account in the matching process
-            unsigned int    highScl1, highScl2;     //!< The highest scales in the two features to be taken into account in the matching process
+			double    matchingThreshold;      //!< The absolute threshold in descriptor distance for considering a match
+			double    matchingRatioThreshold; //!< The ratio between the two lowest distances threshold for considering a match
+			uint32_t  lowScl1, lowScl2;       //!< The lowest scales in the two features to be taken into account in the matching process
+			uint32_t  highScl1, highScl2;     //!< The highest scales in the two features to be taken into account in the matching process
 
-            int             searchAreaSize;         //!< Size of the squared area where to search for a match.
-            int             lastSeenThreshold;      //!< The allowed number of frames since a certain feature was seen for the last time.
-            int             timesSeenThreshold;     //!< The minimum number of frames for a certain feature to be considered stable.
+			uint32_t  searchAreaSize;         //!< Size of the squared area where to search for a match.
+			uint32_t  lastSeenThreshold;      //!< The allowed number of frames since a certain feature was seen for the last time.
+			uint32_t  timesSeenThreshold;     //!< The minimum number of frames for a certain feature to be considered stable.
 
-            int             minFeaturesToFind;      //!< The minimum number of features allowed in the system. If current number is below this value, more features will be found.
-            int             minFeaturesToBeLost;    //!< The minimum number of features allowed in the system to not be considered to be lost.
+			uint32_t  minFeaturesToFind;      //!< The minimum number of features allowed in the system. If current number is below this value, more features will be found.
+			uint32_t  minFeaturesToBeLost;    //!< The minimum number of features allowed in the system to not be considered to be lost.
 
-            /** Default constructor
-              */
-            TMultiResDescMatchOptions() :
-                useOriFilter( true ), oriThreshold( 0.2 ),
-                useDepthFilter( true ), matchingThreshold( 1e4 ), matchingRatioThreshold( 0.5 ),
-                lowScl1(0), lowScl2(0), highScl1(6), highScl2(6), searchAreaSize(20), lastSeenThreshold(10), timesSeenThreshold(5),
-                minFeaturesToFind(30), minFeaturesToBeLost(5) {}
+			/** Default constructor
+			  */
+			TMultiResDescMatchOptions() :
+				useOriFilter( true ), oriThreshold( 0.2 ),
+				useDepthFilter( true ), matchingThreshold( 1e4 ), matchingRatioThreshold( 0.5 ),
+				lowScl1(0), lowScl2(0), highScl1(6), highScl2(6), searchAreaSize(20), lastSeenThreshold(10), timesSeenThreshold(5),
+				minFeaturesToFind(30), minFeaturesToBeLost(5) {}
 
-            TMultiResDescMatchOptions(
-                const bool &_useOriFilter, const double &_oriThreshold, const bool &_useDepthFilter,
-                const double &_th, const double &_th2, const unsigned int &_lwscl1, const unsigned int &_lwscl2,
-                const unsigned int &_hwscl1, const unsigned int &_hwscl2, const int &_searchAreaSize, const int &_lsth, const int &_tsth,
-                const int &_minFeaturesToFind, const int &_minFeaturesToBeLost ) :
-                useOriFilter( _useOriFilter ), oriThreshold( _oriThreshold ), useDepthFilter( _useDepthFilter ),
-                matchingThreshold ( _th ), matchingRatioThreshold ( _th2 ), lowScl1( _lwscl1 ), lowScl2( _lwscl2 ),
-                highScl1( _hwscl1 ), highScl2( _hwscl2 ), searchAreaSize( _searchAreaSize ), lastSeenThreshold( _lsth ), timesSeenThreshold( _tsth ),
-                minFeaturesToFind( _minFeaturesToFind ), minFeaturesToBeLost(_minFeaturesToBeLost)  {}
+			TMultiResDescMatchOptions(
+				const bool &_useOriFilter, const double &_oriThreshold, const bool &_useDepthFilter,
+				const double &_th, const double &_th2, const unsigned int &_lwscl1, const unsigned int &_lwscl2,
+				const unsigned int &_hwscl1, const unsigned int &_hwscl2, const int &_searchAreaSize, const int &_lsth, const int &_tsth,
+				const int &_minFeaturesToFind, const int &_minFeaturesToBeLost ) :
+				useOriFilter( _useOriFilter ), oriThreshold( _oriThreshold ), useDepthFilter( _useDepthFilter ),
+				matchingThreshold ( _th ), matchingRatioThreshold ( _th2 ), lowScl1( _lwscl1 ), lowScl2( _lwscl2 ),
+				highScl1( _hwscl1 ), highScl2( _hwscl2 ), searchAreaSize( _searchAreaSize ), lastSeenThreshold( _lsth ), timesSeenThreshold( _tsth ),
+				minFeaturesToFind( _minFeaturesToFind ), minFeaturesToBeLost(_minFeaturesToBeLost)  {}
 
-            void  loadFromConfigFile( const mrpt::utils::CConfigFileBase &cfg, const std::string &section );
+			void  loadFromConfigFile( const mrpt::utils::CConfigFileBase &cfg, const std::string &section );
 			void  saveToConfigFile( mrpt::utils::CConfigFileBase &cfg, const std::string &section );
-            void  dumpToTextStream( mrpt::utils::CStream &out) const;
+			void  dumpToTextStream( mrpt::utils::CStream &out) const;
 
 		}; // end TMultiResDescMatchOptions
 
@@ -451,9 +451,9 @@ namespace mrpt
 		*/
         struct VISION_IMPEXP TMultiResDescOptions : public mrpt::utils::CLoadableOptions
         {
-            unsigned int    basePSize;          //!< The size of the base patch
+            uint32_t        basePSize;          //!< The size of the base patch
             vector<double>  scales;             //!< The set of scales relatives to the base patch
-            unsigned int    comLScl, comHScl;   //!< The subset of scales for which to compute the descriptors
+            uint32_t        comLScl, comHScl;   //!< The subset of scales for which to compute the descriptors
             double          sg1, sg2, sg3;      //!< The sigmas for the Gaussian kernels
             bool            computeDepth;       //!< Whether or not to compute the depth of the feature
             bool            blurImage;          //!< Whether or not to blur the image previously to compute the descriptors
