@@ -1,3 +1,6 @@
+
+  * Removed unneeded Debian package mrpt-libs (Closes: #698360)
+
 mrpt (1:0.9.6-1) unstable; urgency=low
 
   * New version of upstream sources.
