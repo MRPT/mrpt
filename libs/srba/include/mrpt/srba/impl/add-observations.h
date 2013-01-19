@@ -102,6 +102,9 @@ size_t RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::add_observatio
 			else {
 				// Default landmark position: Invoke sensor's inverse model.
 				sensor_model_t::inverse_sensor_model(new_rfp.pos,new_obs.obs_data,this->parameters.sensor);
+
+				// Take into account the sensor pose wrt the KF:
+				RBA_OPTIONS::sensor_pose_on_robot_t::sensor2robot_point<LM_TYPE>(new_rfp.pos, this->parameters.sensor_pose );
 			}
 
 			typename TRelativeLandmarkPosMap::iterator it_new = rba_state.unknown_lms.insert(

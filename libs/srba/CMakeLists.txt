@@ -3,10 +3,12 @@
 # -------------------------------------------------
 
 LIST(APPEND srba_EXTRA_SRCS
-	"${MRPT_LIBS_ROOT}/srba/include/mrpt/srba/impl/*.h")
+	"${MRPT_LIBS_ROOT}/srba/include/mrpt/srba/impl/*.h"
+	"${MRPT_LIBS_ROOT}/srba/include/mrpt/srba/models/*.h")
 	
 LIST(APPEND srba_EXTRA_SRCS_NAME 
-	"srba impl. headers")
+	"Template implementations" 
+	"Model implementations")
 
 #---------------------------------------------
 # Macro declared in "DeclareMRPTLib.cmake":

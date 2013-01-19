@@ -82,8 +82,12 @@ void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::numeric_dh_dAp(c
 		else	base_from_obs =  p_d_d1_mod + pose_base_wrt_d_prime;
 	}
 
+	// Sensor pose:
+	typename RBA_OPTIONS::sensor_pose_on_robot_t::resulting_pose_t<REL_POSE_DIMS>::pose_t base_pose_wrt_sensor(mrpt::poses::UNINITIALIZED_POSES);
+	RBA_OPTIONS::sensor_pose_on_robot_t::robot2sensor( *base_from_obs, base_pose_wrt_sensor, this->parameters.sensor_pose )
+
 	// Generate observation:
-	sensor_model_t::observe(y,base_from_obs,params.xji_i, params.sensor_params);
+	sensor_model_t::observe(y,base_pose_wrt_sensor,params.xji_i, params.sensor_params);
 }
 
 #if DEBUG_NOT_UPDATED_ENTRIES
@@ -127,8 +131,13 @@ void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::numeric_dh_df(co
 
 	const array_landmark_t x_local = params.xji_i + x;
 	const pose_t * pos_cam = params.pose_base_wrt_obs!=NULL ? params.pose_base_wrt_obs : &my_aux_null_pose;
+
+	// Sensor pose:
+	typename RBA_OPTIONS::sensor_pose_on_robot_t::resulting_pose_t<REL_POSE_DIMS>::pose_t  base_pose_wrt_sensor(mrpt::poses::UNINITIALIZED_POSES);
+	RBA_OPTIONS::sensor_pose_on_robot_t::robot2sensor( *pos_cam, base_pose_wrt_sensor, this->parameters.sensor_pose )
+
 	// Generate observation:
-	sensor_model_t::observe(y,*pos_cam,x_local, params.sensor_params);
+	sensor_model_t::observe(y,base_pose_wrt_sensor,x_local, params.sensor_params);
 }
 
 
@@ -269,6 +278,9 @@ void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::compute_jacobian
 		jacob.num.setZero();
 		return;
 	}
+
+	// take into account the possible displacement of the sensor wrt the keyframe: 
+	RBA_OPTIONS::sensor_pose_on_robot_t::jacob_dh_dx_rotate( dh_dx, this->parameters.sensor_pose );
 
 	// Second Jacobian: (uses xji_i)
 	// ------------------------------
@@ -680,6 +692,9 @@ void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::compute_jacobian
 		jacob.num.setZero();
 		return;
 	}
+
+	// take into account the possible displacement of the sensor wrt the keyframe: 
+	RBA_OPTIONS::sensor_pose_on_robot_t::jacob_dh_dx_rotate( dh_dx, this->parameters.sensor_pose );
 
 	// Second Jacobian: Simply the 2x2 or 3x3 rotation matrix of base wrt observing
 	// ------------------------------

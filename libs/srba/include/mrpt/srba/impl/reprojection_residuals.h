@@ -89,10 +89,14 @@ double RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::reprojection_r
 		}
 
 
+		// Sensor pose:
+		typename RBA_OPTIONS::sensor_pose_on_robot_t::resulting_pose_t<REL_POSE_DIMS>::pose_t base_pose_wrt_sensor(mrpt::poses::UNINITIALIZED_POSE);
+		RBA_OPTIONS::sensor_pose_on_robot_t::robot2sensor( *base_pose_wrt_observer, base_pose_wrt_sensor, this->parameters.sensor_pose );
+
 		// Template argument=true means: relative pose of "point" wrt camera is "frame (+) point":
 		// Generate observation:
 		array_obs_t z_pred;
-		sensor_model_t::observe(z_pred,*base_pose_wrt_observer,rel_pos->pos, this->parameters.sensor);
+		sensor_model_t::observe(z_pred,base_pose_wrt_sensor,rel_pos->pos, this->parameters.sensor);
 
 		const array_obs_t & real_obs = observations[i].k2f->obs.obs_arr;
 

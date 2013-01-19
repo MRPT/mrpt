@@ -67,7 +67,7 @@ namespace mrpt { namespace srba {
 
 		/** Executes the observation model:  
 		  * \param[out] out_obs The output of the predicted sensor value
-		  * \param[in] base_pose_wrt_observer The relative pose of the observed landmark's base KF, wrt to the current observer KF.
+		  * \param[in] base_pose_wrt_observer The relative pose of the observed landmark's base KF, wrt to the current sensor pose (which may be different than the observer KF pose if the sensor is not at the "robot origin").
 		  * \param[in] lm_pos The relative landmark position wrt its base KF.
 		  * \param[in] params The sensor-specific parameters.
 		  */
@@ -187,7 +187,7 @@ namespace mrpt { namespace srba {
 
 		/** Executes the observation model:  
 		  * \param[out] out_obs The output of the predicted sensor value
-		  * \param[in] base_pose_wrt_observer The relative pose of the observed landmark's base KF, wrt to the current observer KF.
+		  * \param[in] base_pose_wrt_observer The relative pose of the observed landmark's base KF, wrt to the current sensor pose (which may be different than the observer KF pose if the sensor is not at the "robot origin").
 		  * \param[in] lm_pos The relative landmark position wrt its base KF.
 		  * \param[in] params The sensor-specific parameters.
 		  */
@@ -353,7 +353,7 @@ namespace mrpt { namespace srba {
 
 		/** Executes the observation model:  
 		  * \param[out] out_obs The output of the predicted sensor value
-		  * \param[in] base_pose_wrt_observer The relative pose of the observed landmark's base KF, wrt to the current observer KF.
+		  * \param[in] base_pose_wrt_observer The relative pose of the observed landmark's base KF, wrt to the current sensor pose (which may be different than the observer KF pose if the sensor is not at the "robot origin").
 		  * \param[in] lm_pos The relative landmark position wrt its base KF.
 		  * \param[in] params The sensor-specific parameters.
 		  */
@@ -443,7 +443,7 @@ namespace mrpt { namespace srba {
 
 		/** Executes the observation model:  
 		  * \param[out] out_obs The output of the predicted sensor value
-		  * \param[in] base_pose_wrt_observer The relative pose of the observed landmark's base KF, wrt to the current observer KF.
+		  * \param[in] base_pose_wrt_observer The relative pose of the observed landmark's base KF, wrt to the current sensor pose (which may be different than the observer KF pose if the sensor is not at the "robot origin").
 		  * \param[in] lm_pos The relative landmark position wrt its base KF.
 		  * \param[in] params The sensor-specific parameters.
 		  */
@@ -532,7 +532,7 @@ namespace mrpt { namespace srba {
 
 		/** Executes the observation model:  
 		  * \param[out] out_obs The output of the predicted sensor value
-		  * \param[in] base_pose_wrt_observer The relative pose of the observed landmark's base KF, wrt to the current observer KF.
+		  * \param[in] base_pose_wrt_observer The relative pose of the observed landmark's base KF, wrt to the current sensor pose (which may be different than the observer KF pose if the sensor is not at the "robot origin").
 		  * \param[in] lm_pos The relative landmark position wrt its base KF.
 		  * \param[in] params The sensor-specific parameters.
 		  */

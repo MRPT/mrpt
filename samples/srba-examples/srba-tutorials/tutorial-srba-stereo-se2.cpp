@@ -42,10 +42,16 @@ using namespace std;
 // --------------------------------------------------------------------------------
 // Declare a typedef "my_srba_t" for easily referring to my RBA problem type:
 // --------------------------------------------------------------------------------
+struct my_srba_options
+{
+	typedef sensor_pose_on_robot_se3 sensor_pose_on_robot_t;
+};
+
 typedef RBA_Problem<
 	kf2kf_poses::SE2,                // Parameterization  KF-to-KF poses
 	landmarks::Euclidean3D,          // Parameterization of landmark positions    
-	observations::StereoCamera       // Type of observations
+	observations::StereoCamera,      // Type of observations
+	my_srba_options                  // Other parameters
 	> 
 	my_srba_t;
 
@@ -156,6 +162,9 @@ int main(int argc, char**argv)
 	lc.dist.setZero();
 	rba.parameters.sensor.camera_calib.rightCamera = lc;
 	rba.parameters.sensor.camera_calib.rightCameraPose.fromString("[0.2 0 0  1 0 0 0]");  // [X Y Z qr qx qy qz]
+
+	// Sensor pose on the robot parameters:
+	rba.parameters.sensor_pose.relative_pose = mrpt::poses::CPose3D(0,0,0,DEG2RAD(-90),DEG2RAD(0),DEG2RAD(-90) ); // Set camera pointing forwards (camera's +Z is robot +X)
 	
 	// Alternatively, parameters can be loaded from an .ini-like config file
 	// -----------------------------------------------------------------------

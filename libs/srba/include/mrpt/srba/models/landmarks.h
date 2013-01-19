@@ -57,6 +57,14 @@ namespace landmarks {
 			posEuclidean.y = posParams[1];
 			posEuclidean.z = posParams[2];
 		}
+
+		/** Evaluates pt = pose (+) pt
+		  * \param[in,out] pt A vector with the landmark parameterization values
+		  * \param[in] pose The relative pose */
+		template <class POSE,class VECTOR>
+		inline static void composePosePoint(VECTOR & pt, const POSE & pose) {
+			pose.composePoint(pt[0],pt[1],pt[2], pt[0],pt[1],pt[2]);
+		}
 	};
 
 	/** A parameterization of landmark positions in Euclidean coordinates (2D) */
@@ -70,6 +78,17 @@ namespace landmarks {
 		{
 			posEuclidean.x = posParams[0];
 			posEuclidean.y = posParams[1];
+		}
+
+		/** Evaluates pt = pose (+) pt
+		  * \param[in,out] pt A vector with the landmark parameterization values
+		  * \param[in] pose The relative pose */
+		template <class POSE,class VECTOR>
+		inline static void composePosePoint(VECTOR & pt, const POSE & pose) {
+			double lx,ly,lz;
+			p.relative_pose.composePoint(pt[0],pt[1],0, lx,ly,lz);
+			pt[0]=lx; pt[1]=ly;
+			ASSERT_MSG_(std::abs(lz)<1e-2, "Error: Using a 3D transformation to obtain a 2D point but it results in |z|>eps")
 		}
 	};
 

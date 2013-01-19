@@ -137,11 +137,15 @@ double RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::eval_overall_s
 			base_pose_wrt_observer = &itRelPose->second.pose;
 		}
 
+		// Sensor pose:
+		typename RBA_OPTIONS::sensor_pose_on_robot_t::resulting_pose_t<REL_POSE_DIMS>::pose_t base_pose_wrt_sensor(mrpt::poses::UNINITIALIZED_POSES);
+		RBA_OPTIONS::sensor_pose_on_robot_t::robot2sensor( *base_pose_wrt_observer, base_pose_wrt_sensor, this->parameters.sensor_pose )
+
 		// Predict observation:
 		array_obs_t z_pred;
 		sensor_model_t::observe(
 			z_pred,
-			*base_pose_wrt_observer,
+			base_pose_wrt_sensor, 
 			rel_pos->pos, // Position of LM wrt its base_id
 			this->parameters.sensor
 			);
