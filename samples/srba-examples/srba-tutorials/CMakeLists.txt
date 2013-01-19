@@ -44,6 +44,7 @@ ENDMACRO(DEFINE_TUTORIAL_EXECUTABLE)
 #  List of tutorials/examples:
 # --------------------------------------------------------------------
 DEFINE_TUTORIAL_EXECUTABLE(tutorial-srba-monocular-se3)
+DEFINE_TUTORIAL_EXECUTABLE(tutorial-srba-stereo-se2)
 DEFINE_TUTORIAL_EXECUTABLE(tutorial-srba-stereo-se3)
 DEFINE_TUTORIAL_EXECUTABLE(tutorial-srba-cartesian2d-se2)
 DEFINE_TUTORIAL_EXECUTABLE(tutorial-srba-cartesian3d-se3)

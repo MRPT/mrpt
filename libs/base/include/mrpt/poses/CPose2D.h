@@ -112,9 +112,10 @@ namespace poses
 		   */
 		 void  getHomogeneousMatrix(CMatrixDouble44 & out_HM ) const;
 
-		 void getRotationMatrix(mrpt::math::CMatrixDouble22 &R) const;
+		 void getRotationMatrix(mrpt::math::CMatrixDouble22 &R) const; //!< Returns the SE(2) 2x2 rotation matrix 
+		 void getRotationMatrix(mrpt::math::CMatrixDouble33 &R) const; //!< Returns the equivalent SE(3) 3x3 rotation matrix, with (2,2)=1.
 		 
-		 inline mrpt::math::CMatrixDouble22 getRotationMatrix() const { 
+		 inline mrpt::math::CMatrixDouble22 getRotationMatrix() const {
 			 mrpt::math::CMatrixDouble22 R(UNINITIALIZED_MATRIX); 
 			 getRotationMatrix(R); 
 			 return R; 
@@ -138,6 +139,11 @@ namespace poses
 
 		 /** \overload \f$ G = P \oplus L \f$ with G and L being 2D points and P this 2D pose */
 		 void composePoint(const mrpt::math::TPoint2D &l, mrpt::math::TPoint2D &g) const;
+
+		 /** \overload \f$ G = P \oplus L \f$ with G and L being 3D points and P this 2D pose (the "z" coordinate remains unmodified) */
+		 void composePoint(const mrpt::math::TPoint3D &l, mrpt::math::TPoint3D &g) const;
+		 /** \overload (the "z" coordinate remains unmodified) */
+		 void composePoint(double lx,double ly,double lz, double &gx, double &gy, double &gz) const;
 
 		 /** The operator \f$ u' = this \oplus u \f$ is the pose/point compounding operator. */
 		 CPoint3D operator + (const CPoint3D& u) const ;

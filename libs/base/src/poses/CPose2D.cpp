@@ -183,6 +183,22 @@ void CPose2D::getRotationMatrix(mrpt::math::CMatrixDouble22 &R) const
 	R(1,0) = ssin;  R(1,1) =  ccos;
 }
 
+void CPose2D::getRotationMatrix(mrpt::math::CMatrixDouble33 &R) const
+{
+#ifdef HAVE_SINCOS
+	double	ccos,ssin;
+	::sincos(m_phi,&ssin,&ccos);
+#else
+	const double ccos = cos(m_phi);
+	const double ssin = sin(m_phi);
+#endif
+	R(0,0) = ccos;  R(0,1) = -ssin; R(0,2)=0;
+	R(1,0) = ssin;  R(1,1) =  ccos; R(1,2)=0;
+	R(2,0) = 0; R(2,1)=0; R(2,2)=1;
+}
+
+
+
 
 /*---------------------------------------------------------------
 The operator a="this"+D is the pose compounding operator.
@@ -218,6 +234,21 @@ void CPose2D::composePoint(double lx,double ly,double &gx, double &gy) const
 void CPose2D::composePoint(const mrpt::math::TPoint2D &l, mrpt::math::TPoint2D &g) const
 {
 	this->composePoint(l.x,l.y, g.x,g.y);
+}
+
+/** \overload \f$ G = P \oplus L \f$ with G and L being 3D points and P this 2D pose (the "z" coordinate remains unmodified) */
+void CPose2D::composePoint(const mrpt::math::TPoint3D &l, mrpt::math::TPoint3D &g) const
+{
+	this->composePoint(l.x,l.y,l.z, g.x,g.y,g.z);
+}
+
+void CPose2D::composePoint(double lx,double ly,double lz, double &gx, double &gy, double &gz) const
+{
+	const double ccos = cos(m_phi);
+	const double ssin = sin(m_phi);
+	gx = m_coords[0] + lx * ccos - ly * ssin;
+	gy = m_coords[1] + lx * ssin + ly * ccos;
+	gz = lz;
 }
 
 

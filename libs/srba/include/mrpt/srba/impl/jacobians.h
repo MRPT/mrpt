@@ -432,9 +432,12 @@ struct compute_jacobian_dAepsDx_deps<3 /*POINT_DIMS*/,6 /*POSE_DIMS*/,RBA_ENGINE
 	}
 }; // end of specialization of "compute_jacobian_dAepsDx_deps"
 
-// Case: 2D point, SE(2) poses:
-template <class RBA_ENGINE_T>
-struct compute_jacobian_dAepsDx_deps<2 /*POINT_DIMS*/,3 /*POSE_DIMS*/,RBA_ENGINE_T>
+
+/** Case: 2D or 3D points, SE(2) poses
+  * Both cases are grouped because a SE(2) pose doesn't transform the "z" of 3D points, so both sets of Jacobians are almost identical.
+  */
+template <size_t POINT_DIMS, class RBA_ENGINE_T> 
+struct compute_jacobian_dAepsDx_deps_SE2
 {
 	template <class MATRIX, class MATRIX_DH_DX,class POINT,class pose_flag_t,class JACOB_SYM_T,class K2K_EDGES_T>
 	static void eval(
@@ -448,6 +451,8 @@ struct compute_jacobian_dAepsDx_deps<2 /*POINT_DIMS*/,3 /*POSE_DIMS*/,RBA_ENGINE
 		const K2K_EDGES_T &k2k_edges
 		)
 	{
+		MRPT_COMPILE_TIME_ASSERT(POINT_DIMS==2 || POINT_DIMS==3)
+
 		if (!is_inverse_edge_jacobian)
 		{	// Normal formulation: unknown is pose "d+1 -> d"
 
@@ -472,11 +477,14 @@ struct compute_jacobian_dAepsDx_deps<2 /*POINT_DIMS*/,3 /*POSE_DIMS*/,RBA_ENGINE
 			}
 
 			// d(P (+) x) / dP, P = A*D
-			Eigen::Matrix<double,2,3> dPx_P;
+			Eigen::Matrix<double,POINT_DIMS/* 2 or 3*/,3 /* x,y,phi*/> dPx_P;
 			const double ccos_ad = cos(AD.phi());
 			const double ssin_ad = sin(AD.phi());
 			dPx_P(0,0) = 1;  dPx_P(0,1) = 0; dPx_P(0,2) = -xji_i.x*ssin_ad - xji_i.y*ccos_ad;
 			dPx_P(1,0) = 0;  dPx_P(1,1) = 1; dPx_P(1,2) =  xji_i.x*ccos_ad - xji_i.y*ssin_ad;
+			if (POINT_DIMS==3) {
+				dPx_P(2,0) = 0;  dPx_P(2,1) = 0; dPx_P(2,2) =  1;
+			}			
 
 			// d(A*exp(eps)*D) / deps
 			Eigen::Matrix<double,3,3> dAD_deps;
@@ -525,11 +533,14 @@ struct compute_jacobian_dAepsDx_deps<2 /*POINT_DIMS*/,3 /*POSE_DIMS*/,RBA_ENGINE
 
 
 			// d(P (+) x) / dP, P = A*D
-			Eigen::Matrix<double,2,3> dPx_P;
+			Eigen::Matrix<double,POINT_DIMS/* 2 or 3*/,3 /* x,y,phi*/> dPx_P;
 			const double ccos_ad = cos(AD.phi());
 			const double ssin_ad = sin(AD.phi());
 			dPx_P(0,0) = 1;  dPx_P(0,1) = 0; dPx_P(0,2) = -xji_i.x*ssin_ad - xji_i.y*ccos_ad;
 			dPx_P(1,0) = 0;  dPx_P(1,1) = 1; dPx_P(1,2) =  xji_i.x*ccos_ad - xji_i.y*ssin_ad;
+			if (POINT_DIMS==3) {
+				dPx_P(2,0) = 0;  dPx_P(2,1) = 0; dPx_P(2,2) =  1;
+			}			
 
 			// d(A*exp(eps)*D) / deps
 			Eigen::Matrix<double,3,3> dAD_deps;
@@ -552,7 +563,21 @@ struct compute_jacobian_dAepsDx_deps<2 /*POINT_DIMS*/,3 /*POSE_DIMS*/,RBA_ENGINE
 		} // end inverse edge case
 
 	}
-}; // end of specialization of "compute_jacobian_dAepsDx_deps"
+}; // end of "compute_jacobian_dAepsDx_deps_SE2"
+
+// Case: 2D point, SE(2) poses: (derived from generic SE2 implementation above)
+template <class RBA_ENGINE_T>
+struct compute_jacobian_dAepsDx_deps<2 /*POINT_DIMS*/,3 /*POSE_DIMS*/,RBA_ENGINE_T> 
+	: public compute_jacobian_dAepsDx_deps_SE2<2 /*POINT_DIMS*/,RBA_ENGINE_T> 
+{
+};
+
+// Case: 3D point, SE(2) poses: (derived from generic SE2 implementation above)
+template <class RBA_ENGINE_T>
+struct compute_jacobian_dAepsDx_deps<3 /*POINT_DIMS*/,3 /*POSE_DIMS*/,RBA_ENGINE_T>
+	: public compute_jacobian_dAepsDx_deps_SE2<3 /*POINT_DIMS*/,RBA_ENGINE_T> 
+{
+};
 
 
 // ====================================================================
@@ -660,7 +685,9 @@ void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE>::compute_jacobian_dh_df(
 	// ------------------------------
 	if (rel_pose_base_from_obs!=NULL)
 	{
-		jacob.num.noalias() = dh_dx * rel_pose_base_from_obs->pose.getRotationMatrix();
+		mrpt::math::CMatrixFixedNumeric<double,LM_DIMS,LM_DIMS> R(mrpt::math::UNINITIALIZED_MATRIX);
+		rel_pose_base_from_obs->pose.getRotationMatrix(R);
+		jacob.num.noalias() = dh_dx * R;
 	}
 	else
 	{
