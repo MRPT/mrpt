@@ -488,7 +488,7 @@ namespace srba
 	  *  Operations on this structure are performed via the public API of srba::RBA_Problem
 	  * \sa RBA_Problem
 	  */
-	template <class KF2KF_POSE_TYPE,class LM_TYPE,class OBS_TYPE>
+	template <class KF2KF_POSE_TYPE,class LM_TYPE,class OBS_TYPE,class RBA_OPTIONS>
 	struct TRBA_Problem_state
 	{
 		typedef typename KF2KF_POSE_TYPE::pose_t pose_t;
@@ -524,7 +524,7 @@ namespace srba
 				std::deque<std::pair<TKeyFrameID,std::map<TKeyFrameID, k2k_edge_vector_t > > >
 				> all_edges_maps_t;
 
-			const TRBA_Problem_state<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE> *m_parent;
+			const TRBA_Problem_state<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS> *m_parent;
 
 			/** @name Data structures
 			  *  @{ */

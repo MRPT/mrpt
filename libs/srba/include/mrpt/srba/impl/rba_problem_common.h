@@ -38,8 +38,8 @@
 namespace mrpt { namespace srba {
 
 /** Default constructor */
-template <class KF2KF_POSE_TYPE,class LM_TYPE,class OBS_TYPE>
-RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE>::RBA_Problem() :
+template <class KF2KF_POSE_TYPE,class LM_TYPE,class OBS_TYPE,class RBA_OPTIONS>
+RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::RBA_Problem() :
 	rba_state(),
 	m_profiler(true)
 {
@@ -47,14 +47,14 @@ RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE>::RBA_Problem() :
 }
 
 /** Reset the entire problem to an empty state (automatically called at construction) */
-template <class KF2KF_POSE_TYPE,class LM_TYPE,class OBS_TYPE>
-void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE>::clear()
+template <class KF2KF_POSE_TYPE,class LM_TYPE,class OBS_TYPE,class RBA_OPTIONS>
+void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::clear()
 {
 	this->rba_state.clear();
 }
 
-template <class KF2KF_POSE_TYPE,class LM_TYPE,class OBS_TYPE>
-RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE>::TSRBAParameters::TSRBAParameters() :
+template <class KF2KF_POSE_TYPE,class LM_TYPE,class OBS_TYPE,class RBA_OPTIONS>
+RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::TSRBAParameters::TSRBAParameters() :
 	// -------------------------------
 	edge_creation_policy ( ecpICRA2013 ),
 	max_tree_depth       ( 4 ),
@@ -73,8 +73,8 @@ RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE>::TSRBAParameters::TSRBAParameters(
 }
 
 /** See docs of mrpt::utils::CLoadableOptions */
-template <class KF2KF_POSE_TYPE,class LM_TYPE,class OBS_TYPE>
-void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE>::TSRBAParameters::loadFromConfigFile(const mrpt::utils::CConfigFileBase & source,const std::string & section)
+template <class KF2KF_POSE_TYPE,class LM_TYPE,class OBS_TYPE,class RBA_OPTIONS>
+void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::TSRBAParameters::loadFromConfigFile(const mrpt::utils::CConfigFileBase & source,const std::string & section)
 {
 	edge_creation_policy = source.read_enum(section, "edge_creation_policy", edge_creation_policy);
 	MRPT_LOAD_CONFIG_VAR(max_tree_depth,uint64_t,source,section)
@@ -89,8 +89,8 @@ void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE>::TSRBAParameters::loadFromCon
 }
 
 /** See docs of mrpt::utils::CLoadableOptions */
-template <class KF2KF_POSE_TYPE,class LM_TYPE,class OBS_TYPE>
-void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE>::TSRBAParameters::saveToConfigFile(mrpt::utils::CConfigFileBase & out,const std::string & section) const
+template <class KF2KF_POSE_TYPE,class LM_TYPE,class OBS_TYPE,class RBA_OPTIONS>
+void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::TSRBAParameters::saveToConfigFile(mrpt::utils::CConfigFileBase & out,const std::string & section) const
 {
 	out.write(section,"edge_creation_policy", mrpt::utils::TEnumType<TEdgeCreationPolicy>::value2name(edge_creation_policy) ,  /* text width */ 30, 30, "Arc creation policy");
 	out.write(section,"max_tree_depth",max_tree_depth,  /* text width */ 30, 30, "Maximum depth of all spanning trees");
@@ -107,8 +107,8 @@ void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE>::TSRBAParameters::saveToConfi
 
 
 /** Computes stats on the degree (# of adjacent nodes) of all the nodes in the graph. Runs in O(N) with N=# of keyframes */
-template <class KF2KF_POSE_TYPE,class LM_TYPE,class OBS_TYPE>
-void TRBA_Problem_state<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE>::compute_all_node_degrees(
+template <class KF2KF_POSE_TYPE,class LM_TYPE,class OBS_TYPE,class RBA_OPTIONS>
+void TRBA_Problem_state<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::compute_all_node_degrees(
 	double &out_mean_degree,
 	double &out_std_degree,
 	double &out_max_degree) const
@@ -132,8 +132,8 @@ void TRBA_Problem_state<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE>::compute_all_node_degr
 
 /** Returns true if the pair of KFs are connected thru a kf2kf edge, no matter the direction of the edge.
   * Runs in worst-case O(D) with D the degree of the KF graph (that is, the maximum number of edges adjacent to one KF) */
-template <class KF2KF_POSE_TYPE,class LM_TYPE,class OBS_TYPE>
-bool TRBA_Problem_state<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE>::are_keyframes_connected(const TKeyFrameID id1, const TKeyFrameID id2) const
+template <class KF2KF_POSE_TYPE,class LM_TYPE,class OBS_TYPE,class RBA_OPTIONS>
+bool TRBA_Problem_state<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::are_keyframes_connected(const TKeyFrameID id1, const TKeyFrameID id2) const
 {
 	ASSERT_BELOW_(id1, keyframes.size())
 	ASSERT_BELOW_(id2, keyframes.size())

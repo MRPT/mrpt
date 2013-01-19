@@ -46,8 +46,8 @@ using namespace std;
 
 	    grad = J^t * (h(x)-z)
  *******************************************/
-template <class KF2KF_POSE_TYPE,class LM_TYPE,class OBS_TYPE>
-void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE>::compute_minus_gradient(
+template <class KF2KF_POSE_TYPE,class LM_TYPE,class OBS_TYPE,class RBA_OPTIONS>
+void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::compute_minus_gradient(
 	mrpt::vector_double & minus_grad,
 	const std::vector<typename TSparseBlocksJacobians_dh_dAp::col_t*> & sparse_jacobs_Ap,
 	const std::vector<typename TSparseBlocksJacobians_dh_df::col_t*> & sparse_jacobs_f,

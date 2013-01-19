@@ -39,8 +39,8 @@ namespace mrpt { namespace srba {
 
 #define OBS_SUPER_VERBOSE   0
 
-template <class KF2KF_POSE_TYPE,class LM_TYPE,class OBS_TYPE>
-size_t RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE>::add_observation(
+template <class KF2KF_POSE_TYPE,class LM_TYPE,class OBS_TYPE,class RBA_OPTIONS>
+size_t RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::add_observation(
 	const TKeyFrameID            observing_kf_id,
 	const typename observation_traits<OBS_TYPE>::observation_t     & new_obs,
 	const array_landmark_t * fixed_relative_position,
@@ -101,7 +101,7 @@ size_t RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE>::add_observation(
 			     new_rfp.pos =  *unknown_relative_position_init_val;
 			else {
 				// Default landmark position: Invoke sensor's inverse model.
-				sensor_model_t::inverse_sensor_model(new_rfp.pos,new_obs.obs_data,this->sensor_params);
+				sensor_model_t::inverse_sensor_model(new_rfp.pos,new_obs.obs_data,this->parameters.sensor);
 			}
 
 			typename TRelativeLandmarkPosMap::iterator it_new = rba_state.unknown_lms.insert(

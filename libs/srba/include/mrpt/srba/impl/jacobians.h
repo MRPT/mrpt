@@ -48,8 +48,8 @@ namespace mrpt { namespace srba {
 #define DEBUG_JACOBIANS_SUPER_VERBOSE  0
 #define DEBUG_NOT_UPDATED_ENTRIES      0   // Extremely slow, just for debug during development! This checks that all the expected Jacobians are actually updated
 
-template <class KF2KF_POSE_TYPE,class LM_TYPE,class OBS_TYPE>
-void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE>::numeric_dh_dAp(const array_pose_t &x, const TNumeric_dh_dAp_params& params, array_obs_t &y) 
+template <class KF2KF_POSE_TYPE,class LM_TYPE,class OBS_TYPE,class RBA_OPTIONS>
+void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::numeric_dh_dAp(const array_pose_t &x, const TNumeric_dh_dAp_params& params, array_obs_t &y) 
 {
 	const pose_t incr = pose_t::exp(x);
 
@@ -120,8 +120,8 @@ TNumSTData check_num_st_entry_exists(
 
 #endif
 
-template <class KF2KF_POSE_TYPE,class LM_TYPE,class OBS_TYPE>
-void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE>::numeric_dh_df(const array_landmark_t &x, const TNumeric_dh_df_params& params, array_obs_t &y)
+template <class KF2KF_POSE_TYPE,class LM_TYPE,class OBS_TYPE,class RBA_OPTIONS>
+void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::numeric_dh_df(const array_landmark_t &x, const TNumeric_dh_df_params& params, array_obs_t &y)
 {
 	static const pose_t my_aux_null_pose;
 
@@ -149,8 +149,8 @@ struct compute_jacobian_dAepsDx_deps;
 //   "A tutorial on SE(3) transformation parameterizations and
 //    on-manifold optimization", Jose-Luis Blanco.
 // ====================================================================
-template <class KF2KF_POSE_TYPE,class LM_TYPE,class OBS_TYPE>
-void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE>::compute_jacobian_dh_dp(
+template <class KF2KF_POSE_TYPE,class LM_TYPE,class OBS_TYPE,class RBA_OPTIONS>
+void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::compute_jacobian_dh_dp(
 	typename TSparseBlocksJacobians_dh_dAp::TEntry  &jacob,
 	const k2f_edge_t & observation,
 	const k2k_edges_deque_t  &k2k_edges,
@@ -243,7 +243,7 @@ void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE>::compute_jacobian_dh_dp(
 	array_pose_t x_incrs;
 	x_incrs.setConstant(1e-4);
 
-	const TNumeric_dh_dAp_params num_params(jacob.sym.k2k_edge_id,&pose_d1_wrt_obs->pose, pose_base_wrt_d1.pose,jacob.sym.feat_rel_pos->pos, is_inverse_edge_jacobian,k2k_edges,this->sensor_params);
+	const TNumeric_dh_dAp_params num_params(jacob.sym.k2k_edge_id,&pose_d1_wrt_obs->pose, pose_base_wrt_d1.pose,jacob.sym.feat_rel_pos->pos, is_inverse_edge_jacobian,k2k_edges,this->parameters.sensor);
 
 	jacobians::jacob_numeric_estimate(x,&numeric_dh_dAp,x_incrs,num_params,num_jacob);
 
@@ -262,7 +262,7 @@ void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE>::compute_jacobian_dh_dp(
 	Eigen::Matrix<double,OBS_DIMS,LM_DIMS>  dh_dx;
 
 	// Invoke sensor model:
-	if (!sensor_model_t::eval_jacob_dh_dx(dh_dx,xji_l, this->sensor_params))
+	if (!sensor_model_t::eval_jacob_dh_dx(dh_dx,xji_l, this->parameters.sensor))
 	{
 		// Invalid Jacobian:
 		*jacob.sym.is_valid = 0;
@@ -590,8 +590,8 @@ struct compute_jacobian_dAepsDx_deps<3 /*POINT_DIMS*/,3 /*POSE_DIMS*/,RBA_ENGINE
 //
 //   Note: f=relative position of landmark with respect to its base kf
 // ====================================================================
-template <class KF2KF_POSE_TYPE,class LM_TYPE,class OBS_TYPE>
-void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE>::compute_jacobian_dh_df(
+template <class KF2KF_POSE_TYPE,class LM_TYPE,class OBS_TYPE,class RBA_OPTIONS>
+void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::compute_jacobian_dh_df(
 	typename TSparseBlocksJacobians_dh_df::TEntry  &jacob,
 	const k2f_edge_t & observation,
 	std::vector<const pose_flag_t*> *out_list_of_required_num_poses) const
@@ -654,7 +654,7 @@ void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE>::compute_jacobian_dh_df(
 	array_landmark_t x_incrs;
 	x_incrs.setConstant(1e-3);
 
-	const TNumeric_dh_df_params num_params(&rel_pose_base_from_obs->pose,jacob.sym.rel_pos->pos,this->sensor_params);
+	const TNumeric_dh_df_params num_params(&rel_pose_base_from_obs->pose,jacob.sym.rel_pos->pos,this->parameters.sensor);
 
 	jacobians::jacob_numeric_estimate(x,&numeric_dh_df,x_incrs,num_params,num_jacob);
 
@@ -673,7 +673,7 @@ void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE>::compute_jacobian_dh_df(
 	Eigen::Matrix<double,OBS_DIMS,LM_DIMS>  dh_dx;
 
 	// Invoke sensor model:
-	if (!sensor_model_t::eval_jacob_dh_dx(dh_dx,xji_l, this->sensor_params))
+	if (!sensor_model_t::eval_jacob_dh_dx(dh_dx,xji_l, this->parameters.sensor))
 	{
 		// Invalid Jacobian:
 		*jacob.sym.is_valid = 0;
@@ -718,8 +718,8 @@ void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE>::compute_jacobian_dh_df(
 // ------------------------------------------------------------------------
 //   prepare_Jacobians_required_tree_roots()
 // ------------------------------------------------------------------------
-template <class KF2KF_POSE_TYPE,class LM_TYPE,class OBS_TYPE>
-void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE>::prepare_Jacobians_required_tree_roots(
+template <class KF2KF_POSE_TYPE,class LM_TYPE,class OBS_TYPE,class RBA_OPTIONS>
+void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::prepare_Jacobians_required_tree_roots(
 	std::set<TKeyFrameID>  & lst,
 	const std::vector<typename TSparseBlocksJacobians_dh_dAp::col_t*> &lst_JacobCols_dAp,
 	const std::vector<typename TSparseBlocksJacobians_dh_df::col_t*>  &lst_JacobCols_df )
@@ -779,8 +779,8 @@ void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE>::prepare_Jacobians_required_t
 // ------------------------------------------------------------------------
 //   recompute_all_Jacobians(): Re-evaluate all Jacobians numerically
 // ------------------------------------------------------------------------
-template <class KF2KF_POSE_TYPE,class LM_TYPE,class OBS_TYPE>
-size_t RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE>::recompute_all_Jacobians(
+template <class KF2KF_POSE_TYPE,class LM_TYPE,class OBS_TYPE,class RBA_OPTIONS>
+size_t RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::recompute_all_Jacobians(
 	std::vector<typename TSparseBlocksJacobians_dh_dAp::col_t*> &lst_JacobCols_dAp,
 	std::vector<typename TSparseBlocksJacobians_dh_df::col_t*>  &lst_JacobCols_df,
 	std::vector<const typename kf2kf_pose_traits<KF2KF_POSE_TYPE>::pose_flag_t*>    * out_list_of_required_num_poses )

@@ -37,8 +37,8 @@
 
 namespace mrpt { namespace srba {
 
-template <class KF2KF_POSE_TYPE,class LM_TYPE,class OBS_TYPE>
-double RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE>::eval_overall_squared_error() const
+template <class KF2KF_POSE_TYPE,class LM_TYPE,class OBS_TYPE,class RBA_OPTIONS>
+double RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::eval_overall_squared_error() const
 {
 	using namespace std;
 	using namespace mrpt::utils;
@@ -143,7 +143,7 @@ double RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE>::eval_overall_squared_error
 			z_pred,
 			*base_pose_wrt_observer,
 			rel_pos->pos, // Position of LM wrt its base_id
-			this->sensor_params
+			this->parameters.sensor
 			);
 
 		// Stored observation:

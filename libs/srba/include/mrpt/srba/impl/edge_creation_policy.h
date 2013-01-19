@@ -38,13 +38,13 @@
 namespace mrpt { namespace srba {
 
 /** Determines and creates the new kf2fk edges given the set of new observations: */
-template <class KF2KF_POSE_TYPE,class LM_TYPE,class OBS_TYPE>
-void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE>::edge_creation_policy(
+template <class KF2KF_POSE_TYPE,class LM_TYPE,class OBS_TYPE,class RBA_OPTIONS>
+void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::edge_creation_policy(
 	const TKeyFrameID               new_kf_id,
 	const typename traits_t::new_kf_observations_t   & obs,
 	vector<TNewEdgeInfo> &new_k2k_edge_ids )
 {
-	switch (parameters.edge_creation_policy)
+	switch (parameters.srba.edge_creation_policy)
 	{
 	// -----------------------------------------------------------
 	//  Policy: Linear graph
@@ -71,7 +71,7 @@ void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE>::edge_creation_policy(
 			ASSERT_(new_kf_id>=1)
 
 			const size_t MINIMUM_OBS_TO_LOOP_CLOSURE = 6;
-			const size_t SUBMAP_SIZE = parameters.submap_size; // In # of KFs
+			const size_t SUBMAP_SIZE = parameters.srba.submap_size; // In # of KFs
 			const TKeyFrameID cur_localmap_center = SUBMAP_SIZE*((new_kf_id-1)/SUBMAP_SIZE);
 
 
@@ -158,7 +158,7 @@ void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE>::edge_creation_policy(
 						// Since this means that the KF is aisolated from the rest of the world, leave the topological distance to infinity.
 					}
 
-					if ( found_distance>=parameters.max_optimize_depth)
+					if ( found_distance>=parameters.srba.max_optimize_depth)
 					{
 						if (num_obs_this_base>=MINIMUM_OBS_TO_LOOP_CLOSURE)
 						{
@@ -251,8 +251,8 @@ void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE>::edge_creation_policy(
 
 
 /** (Aux method) Make a list of base KFs of my new observations, ordered in descending order by # of shared observations: */
-template <class KF2KF_POSE_TYPE,class LM_TYPE,class OBS_TYPE>
-void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE>::make_ordered_list_base_kfs(
+template <class KF2KF_POSE_TYPE,class LM_TYPE,class OBS_TYPE,class RBA_OPTIONS>
+void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::make_ordered_list_base_kfs(
 	const typename traits_t::new_kf_observations_t & obs,
 	base_sorted_lst_t            & obs_for_each_base_sorted,
 	map<TKeyFrameID,size_t>       *out_obs_for_each_base ) const

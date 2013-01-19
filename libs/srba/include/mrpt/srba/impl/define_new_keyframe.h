@@ -38,8 +38,8 @@
 namespace mrpt { namespace srba {
 
 // The main entry point of SRBA. See .h and papers for docs.
-template <class KF2KF_POSE_TYPE,class LM_TYPE,class OBS_TYPE>
-void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE>::define_new_keyframe(
+template <class KF2KF_POSE_TYPE,class LM_TYPE,class OBS_TYPE,class RBA_OPTIONS>
+void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::define_new_keyframe(
 	const typename traits_t::new_kf_observations_t  & obs,
 	TNewKeyFrameInfo  & out_new_kf_info,
 	const bool          run_local_optimization )
@@ -89,8 +89,8 @@ void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE>::define_new_keyframe(
 			m_profiler.enter("define_new_keyframe.opt_new_edges");
 
 			// temporarily disable robust kernel for initialization (faster)
-			const bool old_kernel = parameters.use_robust_kernel;
-			parameters.use_robust_kernel= false;
+			const bool old_kernel = parameters.srba.use_robust_kernel;
+			parameters.srba.use_robust_kernel= false;
 
 			std::vector<size_t>  k2f_edges_to_opt;  // Empty: only initialize k2k edges.
 			std::vector<size_t>  k2k_edges_to_opt(1);
@@ -109,7 +109,7 @@ void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE>::define_new_keyframe(
 					);
 			}
 
-			parameters.use_robust_kernel = old_kernel;
+			parameters.srba.use_robust_kernel = old_kernel;
 
 			m_profiler.leave("define_new_keyframe.opt_new_edges");
 		}
@@ -118,7 +118,7 @@ void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE>::define_new_keyframe(
 
 		this->optimize_sliding_window(
 			new_kf_id, // root node
-			parameters.max_optimize_depth,   // win size
+			parameters.srba.max_optimize_depth,   // win size
 			true, // optimize_k2k_edges,
 			true, // optimize_k2f_edges,
 			out_new_kf_info.optimize_results

@@ -37,8 +37,8 @@
 
 namespace mrpt { namespace srba {
 
-template <class KF2KF_POSE_TYPE,class LM_TYPE,class OBS_TYPE>
-size_t RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE>::create_kf2kf_edge(
+template <class KF2KF_POSE_TYPE,class LM_TYPE,class OBS_TYPE,class RBA_OPTIONS>
+size_t RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::create_kf2kf_edge(
 	const TKeyFrameID        new_kf_id,
 	const TPairKeyFrameID  & new_edge,
 	const typename traits_t::new_kf_observations_t   & obs,
@@ -55,8 +55,8 @@ size_t RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE>::create_kf2kf_edge(
 	rba_state.spanning_tree.update_symbolic_new_node(
 		new_kf_id,
 		new_edge,
-		parameters.max_tree_depth,
-		(parameters.edge_creation_policy==ecpLinearGraph),   // check_all_obs_are_connected
+		parameters.srba.max_tree_depth,
+		(parameters.srba.edge_creation_policy==ecpLinearGraph),   // check_all_obs_are_connected
 		&obs   // Only needed under the "linear graph" policy, to determine missing parts of the spanning tree to be filled in here
 		);
 

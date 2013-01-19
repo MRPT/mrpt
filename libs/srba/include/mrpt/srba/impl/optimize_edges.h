@@ -61,8 +61,8 @@ using namespace std;
 //         optimize_edges
 //          (See header for docs)
 // ------------------------------------------
-template <class KF2KF_POSE_TYPE,class LM_TYPE,class OBS_TYPE>
-void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE>::optimize_edges(
+template <class KF2KF_POSE_TYPE,class LM_TYPE,class OBS_TYPE,class RBA_OPTIONS>
+void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::optimize_edges(
 	const std::vector<size_t> & run_k2k_edges_in,
 	const std::vector<size_t> & run_k2f_edges_in,
 	TOptimizeExtraOutputInfo & out_info,
@@ -333,8 +333,8 @@ void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE>::optimize_edges(
 #endif
 
 	// Extra params:
-	const size_t max_iters            = this->parameters.max_iters;
-	const double max_error_per_obs_px = this->parameters.max_error_per_obs_px;
+	const size_t max_iters            = this->parameters.srba.max_iters;
+	const double max_error_per_obs_px = this->parameters.srba.max_error_per_obs_px;
 
 
 	// Cholesky object, as a pointer to reuse it between iterations:
@@ -404,8 +404,8 @@ void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE>::optimize_edges(
 
 	VERBOSE_LEVEL(1) << "[OPT] LM: Initial avr. err in px=" <<  proj_error_per_obs_px << " #Jcbs=" << count_jacobians << " #k2k_edges=" << nUnknowns_k2k << " #k2f_edges=" << nUnknowns_k2f << " #obs=" << nObs << endl;
 
-	if (parameters.feedback_user_iteration)
-		(*parameters.feedback_user_iteration)(0,total_proj_error,proj_error_per_obs_px);
+	if (parameters.srba.feedback_user_iteration)
+		(*parameters.srba.feedback_user_iteration)(0,total_proj_error,proj_error_per_obs_px);
 
 	// Compute the gradient: "grad = J^t * (h(x)-z)"
 	// ---------------------------------------------------------------------------------
@@ -900,8 +900,8 @@ void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE>::optimize_edges(
 			{
 				// Good: Accept new values
 				VERBOSE_LEVEL(2) << "[OPT] LM iter #"<< iter << " err: " << proj_error_per_obs_px << " -> " << new_proj_error_per_obs_px <<  "px, rho=" << rho << endl;
-				if (parameters.feedback_user_iteration)
-					(*parameters.feedback_user_iteration)(iter,new_total_proj_error,new_proj_error_per_obs_px);
+				if (parameters.srba.feedback_user_iteration)
+					(*parameters.srba.feedback_user_iteration)(iter,new_total_proj_error,new_proj_error_per_obs_px);
 
 				// Switch variables to the temptative ones, which are now accepted:
 				//  (swap where possible, since it's faster)
@@ -990,8 +990,8 @@ void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE>::optimize_edges(
 	// Save the final information matrix of unknown features:
 	DETAILED_PROFILING_ENTER("opt.get_Hf_diag_inv_cov")
 	{
-		ASSERT_(parameters.std_noise_observations>0)
-		const double inv_var_pixel_error = 1./parameters.std_noise_observations;  // Scaling for information matrices below
+		ASSERT_(parameters.srba.std_noise_observations>0)
+		const double inv_var_pixel_error = 1./parameters.srba.std_noise_observations;  // Scaling for information matrices below
 
 		for (size_t i=0;i<nUnknowns_k2f;i++)
 		{
@@ -1010,7 +1010,7 @@ void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE>::optimize_edges(
 	}
 	DETAILED_PROFILING_LEAVE("opt.get_Hf_diag_inv_cov")
 
-	if (parameters.compute_condition_number)
+	if (parameters.srba.compute_condition_number)
 	{
 		DETAILED_PROFILING_ENTER("opt.condition_number")
 

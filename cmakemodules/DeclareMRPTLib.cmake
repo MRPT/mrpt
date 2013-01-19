@@ -122,7 +122,7 @@ macro(internal_define_mrpt_lib name headers_only)
 	ELSE(NOT ${headers_only})
 
 		# A custom target (needs no real compiling)
-		add_custom_target(mrpt-${name} DEPENDS ${all_${name}_srcs})
+		add_custom_target(mrpt-${name} DEPENDS ${all_${name}_srcs} SOURCES ${all_${name}_srcs})
 
 	ENDIF (NOT ${headers_only})
 

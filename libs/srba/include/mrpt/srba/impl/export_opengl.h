@@ -39,8 +39,8 @@
 
 namespace mrpt { namespace srba {
 
-template <class KF2KF_POSE_TYPE,class LM_TYPE,class OBS_TYPE>
-void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE>::build_opengl_representation(
+template <class KF2KF_POSE_TYPE,class LM_TYPE,class OBS_TYPE,class RBA_OPTIONS>
+void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::build_opengl_representation(
 	const srba::TKeyFrameID root_keyframe,
 	const TOpenGLRepresentationOptions &options,
 	mrpt::opengl::CSetOfObjectsPtr out_scene,
@@ -56,9 +56,6 @@ void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE>::build_opengl_representation(
 	if (out_scene)
 	{
 		out_scene->clear();
-
-		// Change coordinate system, so "+Z" points parallel to the ground:
-		out_scene->setPose(CPose3D(0,0,0,DEG2RAD(-90),DEG2RAD(0),DEG2RAD(-90)));
 
 		if (!rba_state.keyframes.empty())
 		{
@@ -180,7 +177,7 @@ void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE>::build_opengl_representation(
 					mrpt::format("%u",static_cast<unsigned int>( itLM->first)),
 					"mono", 0.15,
 					mrpt::opengl::NICE );
-				gl_txt->setPose(CPose3D(p_global.x,p_global.y,p_global.z,DEG2RAD(0),DEG2RAD(0),DEG2RAD(180)));
+				gl_txt->setPose(CPose3D(p_global.x,p_global.y,p_global.z,DEG2RAD(-90),DEG2RAD(0),DEG2RAD(90)));
 				gl_txt->setColor( is_known ? col_known_lms : col_unknown_lms );
 
 				out_scene->insert(gl_txt);
@@ -295,8 +292,8 @@ void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE>::build_opengl_representation(
 }
 
 
-template <class KF2KF_POSE_TYPE,class LM_TYPE,class OBS_TYPE>
-void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE>::gl_aux_draw_node(mrpt::opengl::CSetOfObjects &soo, const std::string &label, const float x, const float y) const
+template <class KF2KF_POSE_TYPE,class LM_TYPE,class OBS_TYPE,class RBA_OPTIONS>
+void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::gl_aux_draw_node(mrpt::opengl::CSetOfObjects &soo, const std::string &label, const float x, const float y) const
 {
 	{
 		mrpt::opengl::CDiskPtr obj = mrpt::opengl::CDisk::Create();

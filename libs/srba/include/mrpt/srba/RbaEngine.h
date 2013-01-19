@@ -43,6 +43,9 @@
 #include <mrpt/utils/CLoadableOptions.h>
 #include <mrpt/opengl/CSetOfObjects.h>
 
+#include "srba_types.h"
+#include "srba_options.h"
+
 #define VERBOSE_LEVEL(_LEVEL) if (m_verbose_level>=_LEVEL) std::cout
 
 namespace mrpt
@@ -50,6 +53,12 @@ namespace mrpt
 namespace srba
 {
 	using namespace std;
+
+	/** The set of default settings for RBA_Problem */
+	struct RBA_OPTIONS_DEFAULT
+	{
+		typedef sensor_pose_on_robot_none sensor_pose_on_robot_t;
+	};
 
 	/** The main class for this library: it defines a Relative Bundle-Adjustment (RBA) problem with (partially known) landmarks,
 	  *   plus the methods to update it with new observations and to optimize the relative poses with least squares optimizers.
@@ -68,14 +77,15 @@ namespace srba
 	  * \tparam KF2KF_POSE_TYPE The parameterization of keyframe-to-keyframe relative poses (edges, problem unknowns).
 	  * \tparam LM_TYPE The parameterization of relative positions of landmarks relative poses (edges).
 	  * \tparam OBS_TYPE The type of observations.
+	  * \tparam RBA_OPTIONS A struct with nested typedefs which can be used to tune and customize the behavior of this class.
 	  */
-	template <class KF2KF_POSE_TYPE,class LM_TYPE,class OBS_TYPE>
+	template <class KF2KF_POSE_TYPE,class LM_TYPE,class OBS_TYPE, class RBA_OPTIONS = RBA_OPTIONS_DEFAULT>
 	class RBA_Problem
 	{
 	public:
 		/** @name Templatized typedef's
 		    @{ */
-		typedef RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE> rba_problem_t;
+		typedef RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS> rba_problem_t;
 
 		typedef KF2KF_POSE_TYPE kf2kf_pose_type;
 		typedef LM_TYPE         lm_type;
@@ -97,7 +107,7 @@ namespace srba
 		typedef sensor_model<LM_TYPE,OBS_TYPE>   sensor_model_t; //!< The sensor model for the specified combination of LM parameterization + observation type.
 
 		typedef typename KF2KF_POSE_TYPE::pose_t  pose_t; //!< The type of relative poses (e.g. mrpt::poses::CPose3D)
-		typedef TRBA_Problem_state<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE> rba_problem_state_t;
+		typedef TRBA_Problem_state<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS> rba_problem_state_t;
 
 		typedef typename rba_problem_state_t::k2f_edge_t k2f_edge_t;
 		typedef typename rba_problem_state_t::k2k_edge_t k2k_edge_t;
@@ -430,11 +440,21 @@ namespace srba
 			// -------------------------------------
 
 		};
-		/** Different parameters for the SRBA methods \sa sensor_params */
-		TSRBAParameters  parameters;
 
-		/** Sensor-specific parameters (sensor calibration, etc.) \sa parameters */
-		typename OBS_TYPE::TObservationParams   sensor_params;
+		/** The unique struct which hold all the parameters from the different SRBA modules (sensors, optional features, optimizers,...) */
+		struct TAllParameters
+		{
+			/** Different parameters for the SRBA methods \sa sensor_params */
+			TSRBAParameters  srba;
+
+			/** Sensor-specific parameters (sensor calibration, etc.) \sa parameters */
+			typename OBS_TYPE::TObservationParams   sensor;
+
+			/** Parameters related to the relative pose of sensors wrt the robot (if applicable) */
+			typename RBA_OPTIONS::sensor_pose_on_robot_t::parameters_t  sensor_pose;
+		};
+
+		TAllParameters parameters;
 
 		/** @} */  // End of data fields
 

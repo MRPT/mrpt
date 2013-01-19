@@ -43,9 +43,9 @@ namespace mrpt { namespace srba {
   *  - HESS_Apf:  MatrixBlockSparseCols<double,6,3,THessianSymbolicInfo<double,2,6,3>, false >
   *  - JACOB_COLUMN_dh_dAp: TSparseBlocksJacobians_dh_dAp::col_t = MatrixBlockSparseCols<double,2,6,TJacobianSymbolicInfo_dh_dAp, false>::col_t
   */
-template <class KF2KF_POSE_TYPE,class LM_TYPE,class OBS_TYPE>
+template <class KF2KF_POSE_TYPE,class LM_TYPE,class OBS_TYPE,class RBA_OPTIONS>
 template <class HESS_Ap, class HESS_f,class HESS_Apf, class JACOB_COLUMN_dh_dAp,class JACOB_COLUMN_dh_df>
-void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE>::sparse_hessian_build_symbolic(
+void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::sparse_hessian_build_symbolic(
 	HESS_Ap & HAp,
 	HESS_f & Hf,
 	HESS_Apf & HApf,

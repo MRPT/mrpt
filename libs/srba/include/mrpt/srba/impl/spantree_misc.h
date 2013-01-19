@@ -43,8 +43,8 @@ namespace mrpt { namespace srba {
 
 using namespace std;
 
-template <class KF2KF_POSE_TYPE,class LM_TYPE,class OBS_TYPE>
-void TRBA_Problem_state<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE>::TSpanningTree::clear()
+template <class KF2KF_POSE_TYPE,class LM_TYPE,class OBS_TYPE,class RBA_OPTIONS>
+void TRBA_Problem_state<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::TSpanningTree::clear()
 {
 	num.clear();
 	sym.next_edge.clear();
@@ -52,8 +52,8 @@ void TRBA_Problem_state<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE>::TSpanningTree::clear(
 }
 
 
-template <class KF2KF_POSE_TYPE,class LM_TYPE,class OBS_TYPE>
-void TRBA_Problem_state<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE>::TSpanningTree::dump_as_text(string &s)  const
+template <class KF2KF_POSE_TYPE,class LM_TYPE,class OBS_TYPE,class RBA_OPTIONS>
+void TRBA_Problem_state<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::TSpanningTree::dump_as_text(string &s)  const
 {
 	using mrpt::format;
 
@@ -95,8 +95,8 @@ void TRBA_Problem_state<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE>::TSpanningTree::dump_a
 	}
 }
 
-template <class KF2KF_POSE_TYPE,class LM_TYPE,class OBS_TYPE>
-bool TRBA_Problem_state<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE>::TSpanningTree::dump_as_text_to_file(const string &sFileName) const
+template <class KF2KF_POSE_TYPE,class LM_TYPE,class OBS_TYPE,class RBA_OPTIONS>
+bool TRBA_Problem_state<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::TSpanningTree::dump_as_text_to_file(const string &sFileName) const
 {
 	ofstream f;
 	f.open(sFileName.c_str());
@@ -110,14 +110,14 @@ bool TRBA_Problem_state<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE>::TSpanningTree::dump_a
 
 namespace internal
 {
-	template <class KF2KF_POSE_TYPE,class LM_TYPE,class OBS_TYPE>
+	template <class KF2KF_POSE_TYPE,class LM_TYPE,class OBS_TYPE,class RBA_OPTIONS>
 	void recursive_print_st_dot(
 		set< pair<string,string> > & all_edges,
 		const string &prefix,
 		const TKeyFrameID came_from,
 		const TKeyFrameID root,
 		const map<TKeyFrameID,TSpanTreeEntry> &root_entries,
-		const typename TRBA_Problem_state<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE>::TSpanningTree::next_edge_maps_t &all,
+		const typename TRBA_Problem_state<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::TSpanningTree::next_edge_maps_t &all,
 		set<TKeyFrameID> &visited,
 		const map<TKeyFrameID,TSpanTreeEntry> &top_root_entries)
 	{
@@ -136,7 +136,7 @@ namespace internal
 
 				if (!visited.count(it->first))
 				{
-					typename TRBA_Problem_state<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE>::TSpanningTree::next_edge_maps_t::const_iterator it_ce = all.find(child);
+					typename TRBA_Problem_state<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::TSpanningTree::next_edge_maps_t::const_iterator it_ce = all.find(child);
 					ASSERT_(it_ce != all.end())
 					internal::recursive_print_st_dot(all_edges,prefix,root,child,it_ce->second,all,visited,top_root_entries);
 				}
@@ -146,8 +146,8 @@ namespace internal
 
 } // end NS "internal"
 
-template <class KF2KF_POSE_TYPE,class LM_TYPE,class OBS_TYPE>
-bool TRBA_Problem_state<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE>::TSpanningTree::save_as_dot_file(const string &sFileName, const std::vector<TKeyFrameID> &kf_roots_to_save )  const
+template <class KF2KF_POSE_TYPE,class LM_TYPE,class OBS_TYPE,class RBA_OPTIONS>
+bool TRBA_Problem_state<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::TSpanningTree::save_as_dot_file(const string &sFileName, const std::vector<TKeyFrameID> &kf_roots_to_save )  const
 {
 	using mrpt::format;
 
@@ -281,8 +281,8 @@ bool TRBA_Problem_state<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE>::TSpanningTree::save_a
 
 
 /** Returns min/max and mean/std stats on the number of nodes found on all the spanning trees. Runs in O(N), N=number of keyframes. */
-template <class KF2KF_POSE_TYPE,class LM_TYPE,class OBS_TYPE>
-void TRBA_Problem_state<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE>::TSpanningTree::get_stats(
+template <class KF2KF_POSE_TYPE,class LM_TYPE,class OBS_TYPE,class RBA_OPTIONS>
+void TRBA_Problem_state<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::TSpanningTree::get_stats(
 	size_t &num_nodes_min,
 	size_t &num_nodes_max,
 	double &num_nodes_mean,

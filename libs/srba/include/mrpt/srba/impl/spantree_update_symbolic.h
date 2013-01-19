@@ -49,18 +49,18 @@ using namespace std;
 // Aux. function for going thru the entire path between two KFs in a spanning tree, saving the path step by step.
 namespace internal
 {
-	template <class KF2KF_POSE_TYPE,class LM_TYPE,class OBS_TYPE>
+	template <class KF2KF_POSE_TYPE,class LM_TYPE,class OBS_TYPE,class RBA_OPTIONS>
 	void recursive_update_all_edges(
 		typename kf2kf_pose_traits<KF2KF_POSE_TYPE>::k2k_edge_vector_t & path,
 		const TKeyFrameID dst_id,
 		const TKeyFrameID cur_id,
-		const TRBA_Problem_state<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE> * rba
+		const TRBA_Problem_state<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS> * rba
 		);
 }
 
 /** Incremental update of spanning trees after the insertion of ONE new node and ONE OR MORE edges */
-template <class KF2KF_POSE_TYPE,class LM_TYPE,class OBS_TYPE>
-void TRBA_Problem_state<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE>::TSpanningTree::update_symbolic_new_node(
+template <class KF2KF_POSE_TYPE,class LM_TYPE,class OBS_TYPE,class RBA_OPTIONS>
+void TRBA_Problem_state<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::TSpanningTree::update_symbolic_new_node(
 	const TKeyFrameID                    new_node_id,
 	const TPairKeyFrameID & new_edge,
 	const topo_dist_t                    max_depth,
@@ -338,8 +338,8 @@ struct TBFSEntry
 // Aux. function for "check_all_obs_are_connected":
 //  Breadth-first search (BFS) for "trg_node"
 //  Return: true: found
-template <class KF2KF_POSE_TYPE,class LM_TYPE,class OBS_TYPE>
-bool TRBA_Problem_state<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE>::find_path_bfs(
+template <class KF2KF_POSE_TYPE,class LM_TYPE,class OBS_TYPE,class RBA_OPTIONS>
+bool TRBA_Problem_state<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::find_path_bfs(
 	const TKeyFrameID           cur_node,
 	const TKeyFrameID           trg_node,
 	std::vector<TKeyFrameID>  & found_path) const
@@ -411,18 +411,18 @@ bool TRBA_Problem_state<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE>::find_path_bfs(
 
 /** Aux. function for going thru the entire path between two KFs in a spanning tree, saving the path step by step.
   * Called from: TSpanningTree::update_symbolic() */
-template <class KF2KF_POSE_TYPE,class LM_TYPE,class OBS_TYPE>
+template <class KF2KF_POSE_TYPE,class LM_TYPE,class OBS_TYPE,class RBA_OPTIONS>
 void internal::recursive_update_all_edges(
 	typename kf2kf_pose_traits<KF2KF_POSE_TYPE>::k2k_edge_vector_t & path,
 	const TKeyFrameID dst_id,
 	const TKeyFrameID cur_id,
-	const TRBA_Problem_state<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE> * rba
+	const TRBA_Problem_state<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS> * rba
 	)
 {
 	MRPT_TODO("Do non-recursive")
 
 	// Move from "cur_id" in the direction of "dst_id":
-	typename TRBA_Problem_state<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE>::TSpanningTree::next_edge_maps_t::const_iterator it_next_ed = rba->spanning_tree.sym.next_edge.find(cur_id);
+	typename TRBA_Problem_state<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::TSpanningTree::next_edge_maps_t::const_iterator it_next_ed = rba->spanning_tree.sym.next_edge.find(cur_id);
 	ASSERT_(it_next_ed != rba->spanning_tree.sym.next_edge.end())
 
 	map<TKeyFrameID,TSpanTreeEntry>::const_iterator it_dst = it_next_ed->second.find(dst_id);

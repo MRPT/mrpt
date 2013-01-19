@@ -46,8 +46,8 @@ namespace mrpt { namespace srba {
 
 
 /** reprojection_residuals */
-template <class KF2KF_POSE_TYPE,class LM_TYPE,class OBS_TYPE>
-double RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE>::reprojection_residuals(
+template <class KF2KF_POSE_TYPE,class LM_TYPE,class OBS_TYPE,class RBA_OPTIONS>
+double RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::reprojection_residuals(
 	vector_residuals_t & residuals, // Out:
 	const std::vector<TObsUsed> & observations // In:
 	) const
@@ -92,7 +92,7 @@ double RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE>::reprojection_residuals(
 		// Template argument=true means: relative pose of "point" wrt camera is "frame (+) point":
 		// Generate observation:
 		array_obs_t z_pred;
-		sensor_model_t::observe(z_pred,*base_pose_wrt_observer,rel_pos->pos, this->sensor_params);
+		sensor_model_t::observe(z_pred,*base_pose_wrt_observer,rel_pos->pos, this->parameters.sensor);
 
 		const array_obs_t & real_obs = observations[i].k2f->obs.obs_arr;
 
@@ -100,10 +100,10 @@ double RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE>::reprojection_residuals(
 		delta = real_obs-z_pred;
 
 		const double sum_2 = delta.squaredNorm();
-		if (this->parameters.use_robust_kernel)
+		if (this->parameters.srba.use_robust_kernel)
 		{
 			const double nrm = std::max(1e-11,std::sqrt(sum_2));
-			const double w = std::sqrt(huber_kernel(nrm,parameters.kernel_param))/nrm;
+			const double w = std::sqrt(huber_kernel(nrm,parameters.srba.kernel_param))/nrm;
 			delta *= w;
 			total_sqr_err += (w*w)*sum_2;
 		}

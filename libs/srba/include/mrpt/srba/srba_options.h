@@ -33,56 +33,44 @@
    | POSSIBILITY OF SUCH DAMAGE.                                               |
    +---------------------------------------------------------------------------+ */
 
-
 #pragma once
 
-namespace mrpt { namespace srba {
+#include <mrpt/poses/CPose2D.h>
+#include <mrpt/poses/CPose3D.h>
 
-// See header & papers for docs
-template <class KF2KF_POSE_TYPE,class LM_TYPE,class OBS_TYPE,class RBA_OPTIONS>
-size_t TRBA_Problem_state<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::alloc_kf2kf_edge(
-	const TPairKeyFrameID &ids,
-	const pose_t &init_inv_pose_val )
+namespace mrpt
 {
-	// Create edge:
-	k2k_edges.push_back(k2k_edge_t());         // O(1)
-	k2k_edge_t & new_edge = *k2k_edges.rbegin();
-	new_edge.from = ids.first;
-	new_edge.to   = ids.second;
+namespace srba
+{
+	/** \defgroup mrpt_srba_options Struct traits used for setting different SRBA options at compile time
+		* \ingroup mrpt_srba_grp */
 
-	ASSERT_(new_edge.from!=new_edge.to)
+	/** \addtogroup mrpt_srba_options
+		* @{ */
 
-	new_edge.inv_pose = init_inv_pose_val;
-
-	new_edge.id = k2k_edges.size()-1; // For convenience, save index within the same structure.
-
-#ifdef _DEBUG
-	{
-		// Security consistency check for user introducing duplicated edges:
-		std::deque<k2k_edge_t*> &edges = keyframes[ids.first ].adjacent_k2k_edges;
-		for (size_t i=0;i<edges.size();++i)
+		/** Usage: A possible type for RBA_OPTIONS::sensor_pose_on_robot_t. 
+		  * Meaning: The robot pose and the sensor pose coincide, i.e. the sensor pose on the robot is the identitity transformation.  */
+		struct sensor_pose_on_robot_none
 		{
-			const k2k_edge_t &e = *edges[i];
-			if ( (e.to==ids.first && e.from==ids.second) ||
-				 (e.from==ids.first && e.to==ids.second) )
+			/** In this case there are no needed parameters */
+			struct parameters_t 
 			{
-				throw std::runtime_error( mrpt::format("[alloc_kf2kf_edge] ERROR: Edge already exists between %u -> %u",static_cast<unsigned int>(ids.first),static_cast<unsigned int>(ids.second) ) );
-			}
-		}
-	}
-#endif
+			};
+		};
 
-	// Update adjacency lists:  O(1)
-	keyframes[ids.first ].adjacent_k2k_edges.push_back(&new_edge);
-	keyframes[ids.second].adjacent_k2k_edges.push_back(&new_edge);
+		/** Usage: A possible type for RBA_OPTIONS::sensor_pose_on_robot_t. 
+		  * Meaning: The sensor is located at an arbitrary SE(3) pose wrt the robot reference frame. */
+		struct sensor_pose_on_robot_se3
+		{
+			/** In this case there are no needed parameters */
+			struct parameters_t
+			{
+				mrpt::poses::CPose3D  relative_pose;
+			};
+		};
 
-	// Expand dh_dAp Jacobian to make room for a new column for this new edge:
-	const size_t remapIdx = new_edge.id;
-	//TSparseBlocksJacobians_dh_dAp::col_t & col =
-	lin_system.dh_dAp.appendCol(remapIdx);         // O(1) with map_as_vector
 
-	return new_edge.id;
+		/** @} */
 
-} // end of alloc_kf2kf_edge
-
-} } // end NS
+} // End of namespace
+} // end of namespace

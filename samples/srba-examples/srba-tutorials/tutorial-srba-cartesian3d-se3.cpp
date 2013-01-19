@@ -55,7 +55,7 @@ typedef RBA_Problem<
 // A test dataset. Generated with http://code.google.com/p/recursive-world-toolkit/ 
 //  and the script: tutorials_dataset-cartesian.cfg
 // --------------------------------------------------------------------------------
-const double SENSOR_NOISE_STD = 1e-2;
+const double SENSOR_NOISE_STD = 1e-8;
 struct basic_euclidean_dataset_entry_t 
 {
 	unsigned int landmark_id;
@@ -125,13 +125,13 @@ int main(int argc, char**argv)
 	// --------------------------------------------------------------------------------
 	rba.setVerbosityLevel( 1 );   // 0: None; 1:Important only; 2:Verbose
 
-	rba.parameters.use_robust_kernel = true;
-	rba.parameters.std_noise_observations = 0.1;
+	rba.parameters.srba.use_robust_kernel = true;
+	rba.parameters.srba.std_noise_observations = 0.1;
 
 	// =========== Topology parameters ===========
-	rba.parameters.edge_creation_policy = mrpt::srba::ecpICRA2013;
-	rba.parameters.max_tree_depth       = 3;
-	rba.parameters.max_optimize_depth   = 3;
+	rba.parameters.srba.edge_creation_policy = mrpt::srba::ecpICRA2013;
+	rba.parameters.srba.max_tree_depth       = 3;
+	rba.parameters.srba.max_optimize_depth   = 3;
 	// ===========================================
 
 	// Set sensors parameters:
