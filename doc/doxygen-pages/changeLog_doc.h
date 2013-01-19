@@ -142,6 +142,7 @@
 				- mrpt::math::noncentralChi2PDF_CDF() is now exposed (was private)
 				- mrpt::utils::sprintf_container()
 				- mrpt::poses::operator -(mrpt::poses::CPose3DQuat)
+				- max3() and min3() moved from the global namespace to mrpt::utils::max3() and mrpt::utils::min3()
 		- New examples:
 			- octomap_simple
 		- Build system:

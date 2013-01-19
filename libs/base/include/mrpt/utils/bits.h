@@ -166,6 +166,9 @@ namespace mrpt
 			return std::max(a,b) - std::min(a,b);
 		}
 
+		template<typename T> inline const T  min3(const T& A, const T& B,const T& C) { return std::min<T>(A, std::min<T>(B,C) ); }
+		template<typename T> inline const T  max3(const T& A, const T& B,const T& C) { return std::max<T>(A, std::max<T>(B,C) ); }
+
 		/** Rounds toward zero  */
 		template <typename T>
 		inline int fix(T x) { return  x>0 ? static_cast<int>(floor(static_cast<double>(x))) : static_cast<int>(ceil(static_cast<double>(x))) ; }

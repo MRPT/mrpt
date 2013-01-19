@@ -259,6 +259,10 @@
 		if (!math::isFinite(v)) THROW_EXCEPTION("Check failed (value is not finite)"); \
 	}
 
+// Static asserts: use compiler version if we have a modern GCC (>=4.3) or MSVC (>=2010) version, otherwise rely on custom implementation:
+#if (defined(_MSC_VER) && (_MSC_VER>=1600 /*VS2010*/)) || (defined(__GNUC__) && __cplusplus>=201100L )
+	#define MRPT_COMPILE_TIME_ASSERT(expression) static_assert(expression,#expression);
+#else
 	// The following macro is based on dclib:
 	// Copyright (C) 2003  Davis E. King (davisking@users.sourceforge.net)
 	// License: Boost Software License   See LICENSE.txt for the full license.
@@ -272,6 +276,7 @@
 	}
 	#define MRPT_COMPILE_TIME_ASSERT(expression) \
 			typedef char BOOST_JOIN(MRPT_CTA, __LINE__)[::mrpt::utils::compile_time_assert<(bool)(expression)>::value];
+#endif
 
 	/** Assert comparing two values, reporting their actual values upon failure */
 	#define ASSERT_EQUAL_( __A, __B)      { if (__A!=__B) { std::ostringstream s;s<<"ASSERT_EQUAL_("<<#__A<<","<<#__B<<") failed with\n"<<#__A<<"=" <<__A <<"\n"<<#__B<<"="<<__B; THROW_EXCEPTION(s.str()) } }

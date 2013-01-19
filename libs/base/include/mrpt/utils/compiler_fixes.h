@@ -74,27 +74,3 @@
 #		undef	min
 #	endif
 #endif
-
-//  We want to avoid defining "max" & "min" as #define's since it create conflicts
-//    with methods, variables, etc... with the same name in some compilers.
-// Use std::max & std::min for all compilers by default, but for MSVC6 it does not exist:
-#if defined(_MSC_VER) && (_MSC_VER<1300)
-#	ifndef max
-		namespace std
-		{
-			template<class T> inline const T max(const T& A,const T& B) { return A>B ? A:B; }
-			template<class T> inline const T min(const T& A,const T& B) { return A<B ? A:B; }
-		}
-#	else
-#		define  MAX3_MSVC6_VERSION
-#	endif
-#endif
-
-// Min & Max:
-#ifndef MAX3_MSVC6_VERSION
-	template<typename T> inline const T  min3(const T& A, const T& B,const T& C) { return std::min<T>(A, std::min<T>(B,C) ); }
-	template<typename T> inline const T  max3(const T& A, const T& B,const T& C) { return std::max<T>(A, std::max<T>(B,C) ); }
-#else
-#	define max3(A,B,C) max(A,max(B,C))
-#	define min3(A,B,C) min(A,min(B,C))
-#endif
