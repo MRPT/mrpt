@@ -57,6 +57,12 @@ using namespace std;
 
 					robustRigidTransformation
 
+  The technique was described in the paper:
+    J.L. Blanco, J. González-Jimenez and J.A. Fernandez-Madrigal. 
+	"A robust, multi-hypothesis approach to matching occupancy grid maps". 
+	Robotica, available on CJO2013. doi:10.1017/S0263574712000732. 
+	http://journals.cambridge.org/action/displayAbstract?aid=8815308
+
  This works as follows:
 	- Repeat "ransac_nSimulations" times:
 		- Randomly pick TWO correspondences from the set "in_correspondences".
@@ -433,7 +439,7 @@ void  scanmatching::robustRigidTransformation(
 
 			if (indexFound!=-1)
 			{
-				// This is an alrady added mode:
+				// This is an already added mode:
 				if (ransac_algorithmForLandmarks)
 						out_transformation.get(indexFound).log_w = log(1+ exp(out_transformation.get(indexFound).log_w));
 				else	out_transformation.get(indexFound).log_w = log(subSet.size()+ exp(out_transformation.get(indexFound).log_w));

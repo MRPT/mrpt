@@ -172,7 +172,11 @@ namespace mrpt
 			TMatchingPairList	&in_correspondences,
 			CPosePDFGaussian				&out_transformation );
 
-		/** This method implements a RANSAC-based robust estimation of the rigid transformation between two planes, returning a probability distribution over all the posibilities as a Sum of Gaussians.
+		/** This method implements a RANSAC-based robust estimation of the rigid transformation between two planar frames of references, returning a probability distribution over all the posibilities as a Sum of Gaussians.
+		  * 
+		  *  The technique was described in the paper:
+		  *		- J.L. Blanco, J. González-Jimenez and J.A. Fernandez-Madrigal. "A robust, multi-hypothesis approach to matching occupancy grid maps". Robotica, available on CJO2013. doi:10.1017/S0263574712000732. http://journals.cambridge.org/action/displayAbstract?aid=8815308
+		  *
 		  * This works are follows:
 				- Repeat "ransac_nSimulations" times:
 					- Randomly pick TWO correspondences from the set "in_correspondences".
