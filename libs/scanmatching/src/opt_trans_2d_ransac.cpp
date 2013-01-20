@@ -89,10 +89,7 @@ void  scanmatching::robustRigidTransformation(
 	const bool                  verbose
 	)
 {
-	size_t								i,N = in_correspondences.size();
-	unsigned int						maxThis=0, maxOther=0;
-	CPosePDFGaussian					temptativeEstimation, referenceEstimation;
-	TMatchingPairList::iterator		matchIt;
+	const size_t nCorrs = in_correspondences.size();
 	std::vector<bool>					alreadySelectedThis;
 	std::vector<bool>					alreadySelectedOther;
 
@@ -101,15 +98,21 @@ void  scanmatching::robustRigidTransformation(
 	MRPT_START
 
 	// Asserts:
-	if( N < ransac_minSetSize )
+	if( nCorrs < ransac_minSetSize )
 	{
 		// Nothing to do!
 		out_transformation.clear();
+		if (out_largestSubSet!=NULL)
+		{
+			TMatchingPairList		emptySet;
+			*out_largestSubSet = emptySet;
+		}
 		return;
 	}
 
 	// Find the max. index of "this" and "other:
-	for (matchIt=in_correspondences.begin();matchIt!=in_correspondences.end(); matchIt++)
+	unsigned int maxThis=0, maxOther=0;
+	for (TMatchingPairList::iterator matchIt=in_correspondences.begin();matchIt!=in_correspondences.end(); ++matchIt)
 	{
 		maxThis = max(maxThis , matchIt->this_idx  );
 		maxOther= max(maxOther, matchIt->other_idx );
@@ -119,8 +122,8 @@ void  scanmatching::robustRigidTransformation(
 	std::vector<bool>	hasCorrThis(maxThis+1,false);
 	std::vector<bool>	hasCorrOther(maxOther+1,false);
 	unsigned int		howManyDifCorrs = 0;
-	//for (i=0;i<N;i++)
-	for (matchIt=in_correspondences.begin();matchIt!=in_correspondences.end(); matchIt++)
+	//for (i=0;i<nCorrs;i++)
+	for (TMatchingPairList::iterator matchIt=in_correspondences.begin();matchIt!=in_correspondences.end(); ++matchIt)
 	{
 		if (!hasCorrThis[matchIt->this_idx] &&
 			!hasCorrOther[matchIt->other_idx] )
@@ -134,14 +137,8 @@ void  scanmatching::robustRigidTransformation(
 	// Clear the set of output particles:
 	out_transformation.clear();
 
-	// The max. number of corrs!
-	//ransac_maxSetSize = min(ransac_maxSetSize, max(2,(howManyDifCorrs-1)));
-	ransac_maxSetSize = min(ransac_maxSetSize, max((unsigned int)2,howManyDifCorrs) );
-
-	//printf("howManyDifCorrs=%u  ransac_maxSetSize=%u\n",howManyDifCorrs,ransac_maxSetSize);
-
-	//ASSERT_( ransac_maxSetSize>=ransac_minSetSize );
-	if ( ransac_maxSetSize < ransac_minSetSize )
+	// If there are less different correspondences than the minimum required, quit:
+	if ( howManyDifCorrs < ransac_minSetSize )
 	{
 		// Nothing we can do here!!! :~$
 		if (out_largestSubSet!=NULL)
@@ -162,11 +159,11 @@ void  scanmatching::robustRigidTransformation(
 	//   this is to avoid establishing multiple correspondences for the same physical point!
 	// ------------------------------------------------------------------------------------------------
 	std::vector<vector_int>		listDuplicatedLandmarksThis(maxThis+1);
-	ASSERT_(N>=1);
-	for (k=0;k<N-1;k++)
+	ASSERT_(nCorrs>=1);
+	for (k=0;k<nCorrs-1;k++)
 	{
 		vector_int		duplis;
-		for (unsigned j=k;j<N-1;j++)
+		for (unsigned j=k;j<nCorrs-1;j++)
 		{
 			if ( in_correspondences[k].this_x == in_correspondences[j].this_x &&
 				 in_correspondences[k].this_y == in_correspondences[j].this_y &&
@@ -177,10 +174,10 @@ void  scanmatching::robustRigidTransformation(
 	}
 
 	std::vector<vector_int>		listDuplicatedLandmarksOther(maxOther+1);
-	for (k=0;k<N-1;k++)
+	for (k=0;k<nCorrs-1;k++)
 	{
 		vector_int		duplis;
-		for (unsigned j=k;j<N-1;j++)
+		for (unsigned j=k;j<nCorrs-1;j++)
 		{
 			if ( in_correspondences[k].other_x == in_correspondences[j].other_x &&
 				 in_correspondences[k].other_y == in_correspondences[j].other_y &&
@@ -192,8 +189,8 @@ void  scanmatching::robustRigidTransformation(
 #endif
 
 	std::deque<TMatchingPairList>	alreadyAddedSubSets;
-	std::vector<size_t> 	corrsIdxs( N), corrsIdxsPermutation;
-	for (i=0;i<N;i++) corrsIdxs[i]= i;
+	std::vector<size_t> 	corrsIdxs( nCorrs), corrsIdxsPermutation;
+	for (size_t i=0;i<nCorrs;i++) corrsIdxs[i]= i;
 
 	// If we put this out of the loop, each correspondence will be used just ONCE!
 	/**/
@@ -203,7 +200,7 @@ void  scanmatching::robustRigidTransformation(
 	alreadySelectedOther.resize(maxOther+1, false);
 	/**/
 
-	//~ CPosePDFGaussian	temptativeEstimation;
+	CPosePDFGaussian  temptativeEstimation, referenceEstimation;
 
 	// -------------------------
 	//		The RANSAC loop
@@ -219,24 +216,19 @@ void  scanmatching::robustRigidTransformation(
 	}
 
 
-	i = 0;
-	while (i<ransac_nSimulations)  // ransac_nSimulations can be dynamic
+	for (size_t i = 0;i<ransac_nSimulations; i++) // ransac_nSimulations can be dynamic
 	{
-		i++;
-
-		TMatchingPairList		subSet,temptativeSubSet;
+		TMatchingPairList subSet,temptativeSubSet;
 
 		// Select a subset of correspondences at random:
 		if (ransac_algorithmForLandmarks)
 		{
-			alreadySelectedThis.clear();
-			alreadySelectedThis.resize(maxThis+1,false);
-			alreadySelectedOther.clear();
-			alreadySelectedOther.resize(maxOther+1, false);
+			alreadySelectedThis.assign(maxThis+1,false);
+			alreadySelectedOther.assign(maxOther+1, false);
 		}
 		else
 		{
-			// For points: Do not repeat the corrs, and take the numer of corrs as weights
+			// For points: Do not repeat the corrs, and take the number of corrs as weights
 		}
 
 		// Try to build a subsetof "ransac_maxSetSize" (maximum) elements that achieve consensus:
@@ -248,31 +240,25 @@ void  scanmatching::robustRigidTransformation(
 		{
 			ASSERT_(j<corrsIdxsPermutation.size())
 
-			size_t	idx = corrsIdxsPermutation[j];
+			const size_t idx = corrsIdxsPermutation[j];
 
-			matchIt = in_correspondences.begin() + idx;
+			const TMatchingPair & corr_j = in_correspondences[idx];
 
-			ASSERT_( matchIt->this_idx < alreadySelectedThis.size() );
-			ASSERT_( matchIt->other_idx < alreadySelectedOther.size() );
+			ASSERTDEB_( corr_j.this_idx < alreadySelectedThis.size() );
+			ASSERTDEB_( corr_j.other_idx < alreadySelectedOther.size() );
 
-			if ( !(alreadySelectedThis [ matchIt->this_idx ] &&
-					alreadySelectedOther[ matchIt->other_idx]) )
-//			if ( !alreadySelectedThis [ matchIt->this_idx ] &&
-//			     !alreadySelectedOther[ matchIt->other_idx]  )
+			if ( !alreadySelectedThis [ corr_j.this_idx ] &&
+			     !alreadySelectedOther[ corr_j.other_idx]  )
 			{
-				// mark as "selected" for this pair not to be selected again:
-				//  ***NOTE***: That the expresion of the "if" above requires the
-				//  same PAIR not to be selected again, but one of the elements
-				//  may be selected again with a diferent matching! This improves the
-				//  robustness and posibilities of the algorithm! (JLBC - NOV/2006)
+				// mark as "selected" for this pair not to be selected again.
 
 #ifndef  AVOID_MULTIPLE_CORRESPONDENCES
-				alreadySelectedThis[ matchIt->this_idx ]= true;
-				alreadySelectedOther[ matchIt->other_idx ] = true;
+				alreadySelectedThis[ corr_j.this_idx ]= true;
+				alreadySelectedOther[ corr_j.other_idx ] = true;
 #else
-				for (vector_int::iterator it1 = listDuplicatedLandmarksThis[matchIt->this_idx].begin();it1!=listDuplicatedLandmarksThis[matchIt->this_idx].end();it1++)
+				for (vector_int::iterator it1 = listDuplicatedLandmarksThis[corr_j.this_idx].begin();it1!=listDuplicatedLandmarksThis[corr_j.this_idx].end();it1++)
 					alreadySelectedThis[ *it1 ] = true;
-				for (vector_int::iterator it2 = listDuplicatedLandmarksOther[matchIt->other_idx].begin();it2!=listDuplicatedLandmarksOther[matchIt->other_idx].end();it2++)
+				for (vector_int::iterator it2 = listDuplicatedLandmarksOther[corr_j.other_idx].begin();it2!=listDuplicatedLandmarksOther[corr_j.other_idx].end();it2++)
 					alreadySelectedOther[ *it2 ] = true;
 #endif
 				if (subSet.size()<2)
@@ -280,7 +266,7 @@ void  scanmatching::robustRigidTransformation(
 					// ------------------------------------------------------------------------------------------------------
 					// If we are within the first two correspondences, just add them to the subset:
 					// ------------------------------------------------------------------------------------------------------
-					subSet.push_back( *matchIt );
+					subSet.push_back( corr_j );
 
 					if (subSet.size()==2)
 					{
@@ -319,7 +305,7 @@ void  scanmatching::robustRigidTransformation(
 					// ------------------------------------------------------------------------------------------------------
 
 					// Compute the temptative new estimation (matchIt will be removed after the test!):
-					temptativeSubSet.push_back( *matchIt );
+					temptativeSubSet.push_back( corr_j );
 
 					scanmatching::leastSquareErrorRigidTransformation(
 						temptativeSubSet,
@@ -348,21 +334,21 @@ void  scanmatching::robustRigidTransformation(
 						if (ransac_algorithmForLandmarks)
 						{
 							// Compatibility test: Mahalanobis distance between Gaussians:
-							double	mahaDist = temptativeEstimation.mahalanobisDistanceTo( referenceEstimation );
+							const double	mahaDist = temptativeEstimation.mahalanobisDistanceTo( referenceEstimation );
 							passTest = mahaDist < ransac_mahalanobisDistanceThreshold;
 						}
 						else
 						{
 							// Compatibility test: Euclidean distances
-							double diffXY = referenceEstimation.mean.distanceTo( temptativeEstimation.mean );
-							double diffPhi = fabs( math::wrapToPi( referenceEstimation.mean.phi() - temptativeEstimation.mean.phi() ) );
+							const double diffXY = referenceEstimation.mean.distanceTo( temptativeEstimation.mean );
+							const double diffPhi = fabs( math::wrapToPi( referenceEstimation.mean.phi() - temptativeEstimation.mean.phi() ) );
 							passTest  = diffXY < 0.02f && diffPhi < DEG2RAD(2.0f);
 						}
 
 						if ( passTest )
 						{
 							// OK, consensus passed!!
-							subSet.push_back( *matchIt );
+							subSet.push_back( corr_j );
 							//referenceEstimation = temptativeEstimation;
 						}
 						else
@@ -475,7 +461,7 @@ void  scanmatching::robustRigidTransformation(
 			{
 				largest_consensus_yet = ninliers;
 
-				// Update estimate of N, the number of trials to ensure we pick,
+				// Update estimate of nCorrs, the number of trials to ensure we pick,
 				// with probability p, a data set with no outliers.
 				const double fracinliers =  ninliers/static_cast<double>(howManyDifCorrs); // corrsIdxs.size());
 				double pNoOutliers = 1 -  pow(fracinliers,static_cast<double>(2.0 /*minimumSizeSamplesToFit*/ ));
@@ -519,8 +505,7 @@ void  scanmatching::robustRigidTransformation(
 	// Done!
 
 	MRPT_END_WITH_CLEAN_UP( \
-		printf("maxThis=%u, maxOther=%u\n",static_cast<unsigned int>(maxThis), static_cast<unsigned int>(maxOther)); \
-		printf("N=%u\n",static_cast<unsigned int>(N)); \
+		printf("nCorrs=%u\n",static_cast<unsigned int>(nCorrs)); \
 		printf("Saving '_debug_in_correspondences.txt'..."); \
 		in_correspondences.dumpToFile("_debug_in_correspondences.txt"); \
 		printf("Ok\n"); \

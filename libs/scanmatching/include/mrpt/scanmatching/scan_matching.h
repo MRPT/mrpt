@@ -194,6 +194,7 @@ namespace mrpt
 		  *        - If ransac_nSimulations=0 then an adaptive algorithm is used to determine the number of iterations, such as
 		  *           a good model is found with a probability p=0.999, or that passed as the parameter probability_find_good_model
 		  *        - When using "probability_find_good_model", the minimum number of iterations can be set with "ransac_min_nSimulations".
+		  *        - "ransac_maxSetSize" should be set to "in_correspondences.size()" to make sure that every correspondence is tested for each random permutation.
 		  *
 		  *  If ransac_fuseByCorrsMatch=true (the default), the weight of Gaussian modes will be increased when an exact match in the
 		  *   subset of correspondences for the modes is found. Otherwise, an approximate method is used as test by just looking at the
