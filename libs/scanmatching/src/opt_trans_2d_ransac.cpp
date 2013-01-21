@@ -53,6 +53,33 @@ using namespace mrpt::utils;
 using namespace std;
 
 
+//#define AVOID_MULTIPLE_CORRESPONDENCES
+
+// mark this pair as "selected" so it won't be picked again:
+void markAsPicked(
+	const TMatchingPair & c, 
+	std::vector<bool> &alreadySelectedThis, 
+	std::vector<bool> &alreadySelectedOther
+#ifdef  AVOID_MULTIPLE_CORRESPONDENCES
+	, const std::vector<vector_int> &listDuplicatedLandmarksThis 
+#endif
+	)
+{
+	ASSERTDEB_( c.this_idx < alreadySelectedThis.size() );
+	ASSERTDEB_( c.other_idx < alreadySelectedOther.size() );
+
+#ifndef  AVOID_MULTIPLE_CORRESPONDENCES
+	alreadySelectedThis[ c.this_idx ]= true;
+	alreadySelectedOther[ c.other_idx ] = true;
+#else
+	for (vector_int::iterator it1 = listDuplicatedLandmarksThis[c.this_idx].begin();it1!=listDuplicatedLandmarksThis[c.this_idx].end();it1++)
+		alreadySelectedThis[ *it1 ] = true;
+	for (vector_int::iterator it2 = listDuplicatedLandmarksOther[c.other_idx].begin();it2!=listDuplicatedLandmarksOther[c.other_idx].end();it2++)
+		alreadySelectedOther[ *it2 ] = true;
+#endif
+}
+
+
 /*---------------------------------------------------------------
 
 					robustRigidTransformation
@@ -90,8 +117,6 @@ void  scanmatching::robustRigidTransformation(
 	)
 {
 	const size_t nCorrs = in_correspondences.size();
-	std::vector<bool>					alreadySelectedThis;
-	std::vector<bool>					alreadySelectedOther;
 
 //#define DEBUG_OUT
 
@@ -151,7 +176,6 @@ void  scanmatching::robustRigidTransformation(
 		return;
 	}
 
-//#define AVOID_MULTIPLE_CORRESPONDENCES
 
 #ifdef  AVOID_MULTIPLE_CORRESPONDENCES
 	unsigned 					k;
@@ -192,14 +216,6 @@ void  scanmatching::robustRigidTransformation(
 	std::vector<size_t> 	corrsIdxs( nCorrs), corrsIdxsPermutation;
 	for (size_t i=0;i<nCorrs;i++) corrsIdxs[i]= i;
 
-	// If we put this out of the loop, each correspondence will be used just ONCE!
-	/**/
-	alreadySelectedThis.clear();
-	alreadySelectedThis.resize(maxThis+1,false);
-	alreadySelectedOther.clear();
-	alreadySelectedOther.resize(maxOther+1, false);
-	/**/
-
 	CPosePDFGaussian    referenceEstimation;
 	CPoint2DPDFGaussian pt_this;
 
@@ -210,6 +226,7 @@ void  scanmatching::robustRigidTransformation(
 	//		The RANSAC loop
 	// -------------------------
 	size_t largest_consensus_yet = 0; // Used for dynamic # of steps
+	double largestSubSet_sqerr = 0;
 
 	const bool use_dynamic_iter_number = ransac_nSimulations==0;
 	if (use_dynamic_iter_number)
@@ -218,6 +235,15 @@ void  scanmatching::robustRigidTransformation(
 		// Set an initial # of iterations:
 		ransac_nSimulations = 10;  // It doesn't matter actually, since will be changed in the first loop
 	}
+
+	std::vector<bool> alreadySelectedThis, alreadySelectedOther;
+	
+	if (!ransac_algorithmForLandmarks) 
+	{
+		alreadySelectedThis.assign(maxThis+1,false);
+		alreadySelectedOther.assign(maxOther+1, false);
+	}
+	// else -> It will be done anyway inside the for() below
 
 
 	for (size_t i = 0;i<ransac_nSimulations; i++) // ransac_nSimulations can be dynamic
@@ -242,114 +268,101 @@ void  scanmatching::robustRigidTransformation(
 
 		for (unsigned int j=0;j<ransac_maxSetSize;j++)
 		{
-			ASSERT_(j<corrsIdxsPermutation.size())
+			ASSERTDEB_(j<corrsIdxsPermutation.size())
 
 			const size_t idx = corrsIdxsPermutation[j];
 
 			const TMatchingPair & corr_j = in_correspondences[idx];
 
-			ASSERTDEB_( corr_j.this_idx < alreadySelectedThis.size() );
-			ASSERTDEB_( corr_j.other_idx < alreadySelectedOther.size() );
+			// Don't pick the same features twice!
+			if (alreadySelectedThis [corr_j.this_idx] || alreadySelectedOther[corr_j.other_idx]) 
+				continue;
 
-			if ( !alreadySelectedThis [ corr_j.this_idx ] &&
-			     !alreadySelectedOther[ corr_j.other_idx]  )
+			if (subSet.size()<2)
 			{
-				// mark as "selected" for this pair not to be selected again.
+				// ------------------------------------------------------------------------------------------------------
+				// If we are within the first two correspondences, just add them to the subset:
+				// ------------------------------------------------------------------------------------------------------
+				subSet.push_back( corr_j );
+				markAsPicked(corr_j, alreadySelectedThis,alreadySelectedOther);
 
-#ifndef  AVOID_MULTIPLE_CORRESPONDENCES
-				alreadySelectedThis[ corr_j.this_idx ]= true;
-				alreadySelectedOther[ corr_j.other_idx ] = true;
-#else
-				for (vector_int::iterator it1 = listDuplicatedLandmarksThis[corr_j.this_idx].begin();it1!=listDuplicatedLandmarksThis[corr_j.this_idx].end();it1++)
-					alreadySelectedThis[ *it1 ] = true;
-				for (vector_int::iterator it2 = listDuplicatedLandmarksOther[corr_j.other_idx].begin();it2!=listDuplicatedLandmarksOther[corr_j.other_idx].end();it2++)
-					alreadySelectedOther[ *it2 ] = true;
-#endif
-				if (subSet.size()<2)
+				if (subSet.size()==2)
 				{
-					// ------------------------------------------------------------------------------------------------------
-					// If we are within the first two correspondences, just add them to the subset:
-					// ------------------------------------------------------------------------------------------------------
-					subSet.push_back( corr_j );
+					// Consistency Test: From 
 
-					if (subSet.size()==2)
+					// Check the feasibility of this pair "idx1"-"idx2":
+					//  The distance between the pair of points in MAP1 must be very close
+					//   to that of their correspondences in MAP2:
+					const double corrs_dist1 = mrpt::math::distanceBetweenPoints(
+						subSet[0].this_x, subSet[0].this_y,
+						subSet[1].this_x, subSet[1].this_y );
+
+					const double corrs_dist2 = mrpt::math::distanceBetweenPoints(
+						subSet[0].other_x, subSet[0].other_y,
+						subSet[1].other_x, subSet[1].other_y );
+
+					// Is is a consistent possibility?
+					//  We use a chi2 test (see paper for the derivation)
+					const double corrs_dist_chi2 =
+						square( square(corrs_dist1)-square(corrs_dist2) ) /
+						(8.0* square(normalizationStd) * (square(corrs_dist1)+square(corrs_dist2)) );
+
+					bool is_acceptable = (corrs_dist_chi2 < chi2_thres_dim1  );
+
+					if (is_acceptable)
 					{
-						// Consistency Test: From 
+						// Perform estimation:
+						scanmatching::leastSquareErrorRigidTransformation(
+							subSet,
+							referenceEstimation.mean,
+							&referenceEstimation.cov );
+						// Normalized covariance: scale!
+						referenceEstimation.cov *= square(normalizationStd);
 
-						// Check the feasibility of this pair "idx1"-"idx2":
-						//  The distance between the pair of points in MAP1 must be very close
-						//   to that of their correspondences in MAP2:
-						const double corrs_dist1 = mrpt::math::distanceBetweenPoints(
-							subSet[0].this_x, subSet[0].this_y,
-							subSet[1].this_x, subSet[1].this_y );
-
-						const double corrs_dist2 = mrpt::math::distanceBetweenPoints(
-							subSet[0].other_x, subSet[0].other_y,
-							subSet[1].other_x, subSet[1].other_y );
-
-						// Is is a consistent possibility?
-						//  We use a chi2 test (see paper for the derivation)
-						const double corrs_dist_chi2 =
-							square( square(corrs_dist1)-square(corrs_dist2) ) /
-							(8.0* square(normalizationStd) * (square(corrs_dist1)+square(corrs_dist2)) );
-
-						bool is_acceptable = (corrs_dist_chi2 < chi2_thres_dim1  );
-
-
-						if (is_acceptable)
-						{
-							// Perform estimation:
-							scanmatching::leastSquareErrorRigidTransformation(
-								subSet,
-								referenceEstimation.mean,
-								&referenceEstimation.cov );
-							// Normalized covariance: scale!
-							referenceEstimation.cov *= square(normalizationStd);
-
-							// Additional filter:
-							//  If the correspondences as such the transformation has a high ambiguity, we discard it!
-							is_acceptable = ( referenceEstimation.cov(2,2)<square(DEG2RAD(5.0f)) );
-						}
-
-						if (!is_acceptable)
-						{
-						 	// Remove this correspondence & try again with a different pair:
-						 	subSet.erase( subSet.begin() + (subSet.size() -1) );
-						}
+						// Additional filter:
+						//  If the correspondences as such the transformation has a high ambiguity, we discard it!
+						is_acceptable = ( referenceEstimation.cov(2,2)<square(DEG2RAD(5.0f)) );
 					}
-				}
-				else
-				{
-					// ------------------------------------------------------------------------------------------------------
-					// The normal case:
-					//  - test for "consensus" with the current group:
-					//		- If it is compatible (ransac_maxErrorXY, ransac_maxErrorPHI), grow the "consensus set"
-					//		- If not, do not add it.
-					// ------------------------------------------------------------------------------------------------------
 
-					// Test for the mahalanobis distance between:
-					//  "referenceEstimation (+) point_other" AND "point_this"
-					referenceEstimation.composePoint( mrpt::math::TPoint2D(corr_j.other_x,corr_j.other_y), pt_this);
-
-					const double maha_dist = pt_this.mahalanobisDistanceToPoint(corr_j.this_x,corr_j.this_y);
-
-					const bool passTest = maha_dist < ransac_mahalanobisDistanceThreshold;
-
-					if ( passTest )
+					if (!is_acceptable)
 					{
-						// OK, consensus passed:
-						subSet.push_back( corr_j );
-						//referenceEstimation = temptativeEstimation;
-						//cout << "referenceEstimation: " << referenceEstimation.mean << endl << "Pass with: " << maha_dist << endl;
+						// Remove this correspondence & try again with a different pair:
+						subSet.erase( subSet.begin() + (subSet.size() -1) );
 					}
 					else
 					{
-						// Test failed
+						// Only mark as picked if we're really keeping it:
+						markAsPicked(corr_j, alreadySelectedThis,alreadySelectedOther);
 					}
+				}
+			}
+			else
+			{
+				// ------------------------------------------------------------------------------------------------------
+				// The normal case:
+				//  - test for "consensus" with the current group:
+				//		- If it is compatible (ransac_maxErrorXY, ransac_maxErrorPHI), grow the "consensus set"
+				//		- If not, do not add it.
+				// ------------------------------------------------------------------------------------------------------
 
-				} // end else "normal case"
+				// Test for the mahalanobis distance between:
+				//  "referenceEstimation (+) point_other" AND "point_this"
+				referenceEstimation.composePoint( mrpt::math::TPoint2D(corr_j.other_x,corr_j.other_y), pt_this);
 
-			} // end "if" the randomly selected item is new
+				const double maha_dist = pt_this.mahalanobisDistanceToPoint(corr_j.this_x,corr_j.this_y);
+
+				const bool passTest = maha_dist < ransac_mahalanobisDistanceThreshold;
+
+				if ( passTest )
+				{
+					// OK, consensus passed:
+					subSet.push_back( corr_j );
+					markAsPicked(corr_j, alreadySelectedThis,alreadySelectedOther);
+				}
+				// else -> Test failed
+
+			} // end else "normal case"
+
 
 		} // end for j
 
@@ -433,14 +446,14 @@ void  scanmatching::robustRigidTransformation(
 			}
 		} // end if subSet.size()>=ransac_minSetSize
 
-		// Dynamic # of steps:
-		if (use_dynamic_iter_number)
+		const size_t ninliers = subSet.size();
+		if (largest_consensus_yet<ninliers )
 		{
-			const size_t ninliers = subSet.size();
-			if (largest_consensus_yet<ninliers )
-			{
-				largest_consensus_yet = ninliers;
+			largest_consensus_yet = ninliers;
 
+			// Dynamic # of steps:
+			if (use_dynamic_iter_number)
+			{
 				// Update estimate of nCorrs, the number of trials to ensure we pick,
 				// with probability p, a data set with no outliers.
 				const double fracinliers =  ninliers/static_cast<double>(howManyDifCorrs); // corrsIdxs.size());
@@ -451,21 +464,40 @@ void  scanmatching::robustRigidTransformation(
 				// Number of
 				ransac_nSimulations = log(1-probability_find_good_model)/log(pNoOutliers);
 
-				if (ransac_nSimulations<ransac_min_nSimulations)
-					ransac_nSimulations = ransac_min_nSimulations;
+				ransac_nSimulations = std::max(ransac_nSimulations, ransac_min_nSimulations);
 
 				if (verbose)
 					cout << "[scanmatching::RANSAC] Iter #" << i << " Estimated number of iters: " << ransac_nSimulations << "  pNoOutliers = " << pNoOutliers << " #inliers: " << ninliers << endl;
-
 			}
+
 		}
 
 		// Save the largest subset:
 		if (out_largestSubSet!=NULL)
 		{
-			if (subSet.size()>out_largestSubSet->size())
+			CPose2D estPose;
+			scanmatching::leastSquareErrorRigidTransformation( subSet, estPose);
+
+			double this_subset_sqerr = 0;
+			for (size_t k=0;k<subSet.size();k++)
 			{
+				double gx,gy;
+				estPose.composePoint( 
+					subSet[k].other_x, subSet[k].other_y,
+					gx,gy);
+
+				this_subset_sqerr += mrpt::math::distanceSqrBetweenPoints<double>( subSet[k].this_x,subSet[k].this_y, gx,gy );
+			}
+
+			if (subSet.size()>out_largestSubSet->size() || 
+			    ( subSet.size()==out_largestSubSet->size() && this_subset_sqerr<largestSubSet_sqerr) 
+			   )
+			{
+				if (verbose)
+					cout << "[scanmatching::RANSAC] Iter #" << i << " Better subset with " << subSet.size() << " inliers found: sqErr=" << this_subset_sqerr << endl;
+
 				*out_largestSubSet = subSet;
+				largestSubSet_sqerr = this_subset_sqerr;
 			}
 		}
 
