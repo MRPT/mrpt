@@ -200,7 +200,11 @@ void  scanmatching::robustRigidTransformation(
 	alreadySelectedOther.resize(maxOther+1, false);
 	/**/
 
-	CPosePDFGaussian  temptativeEstimation, referenceEstimation;
+	CPosePDFGaussian    referenceEstimation;
+	CPoint2DPDFGaussian pt_this;
+
+	const double ransac_consistency_test_chi2_quantile = 0.99;
+	const double chi2_thres_dim1 = mrpt::math::chi2inv(ransac_consistency_test_chi2_quantile, 1);
 
 	// -------------------------
 	//		The RANSAC loop
@@ -218,7 +222,7 @@ void  scanmatching::robustRigidTransformation(
 
 	for (size_t i = 0;i<ransac_nSimulations; i++) // ransac_nSimulations can be dynamic
 	{
-		TMatchingPairList subSet,temptativeSubSet;
+		TMatchingPairList subSet;
 
 		// Select a subset of correspondences at random:
 		if (ransac_algorithmForLandmarks)
@@ -270,28 +274,47 @@ void  scanmatching::robustRigidTransformation(
 
 					if (subSet.size()==2)
 					{
-						temptativeSubSet = subSet;
-						// JLBC: Modification DEC/2007: If we leave only ONE correspondence in the ref. set
-						//  the algorithm will be pretty much sensible to reject bad correspondences:
-						temptativeSubSet.erase( temptativeSubSet.begin() + (temptativeSubSet.size() -1) );
+						// Consistency Test: From 
 
-						// Perform estimation:
-						scanmatching::leastSquareErrorRigidTransformation(
-							subSet,
-							referenceEstimation.mean,
-							&referenceEstimation.cov );
-						// Normalized covariance: scale!
-						referenceEstimation.cov *= square(normalizationStd);
+						// Check the feasibility of this pair "idx1"-"idx2":
+						//  The distance between the pair of points in MAP1 must be very close
+						//   to that of their correspondences in MAP2:
+						const double corrs_dist1 = mrpt::math::distanceBetweenPoints(
+							subSet[0].this_x, subSet[0].this_y,
+							subSet[1].this_x, subSet[1].this_y );
 
-						// Additional filter:
-						//  If the correspondences as such the transformation has a high ambiguity, we discard it!
-						if ( referenceEstimation.cov(2,2)>=square(DEG2RAD(5.0f)) )
+						const double corrs_dist2 = mrpt::math::distanceBetweenPoints(
+							subSet[0].other_x, subSet[0].other_y,
+							subSet[1].other_x, subSet[1].other_y );
+
+						// Is is a consistent possibility?
+						//  We use a chi2 test (see paper for the derivation)
+						const double corrs_dist_chi2 =
+							square( square(corrs_dist1)-square(corrs_dist2) ) /
+							(8.0* square(normalizationStd) * (square(corrs_dist1)+square(corrs_dist2)) );
+
+						bool is_acceptable = (corrs_dist_chi2 < chi2_thres_dim1  );
+
+
+						if (is_acceptable)
+						{
+							// Perform estimation:
+							scanmatching::leastSquareErrorRigidTransformation(
+								subSet,
+								referenceEstimation.mean,
+								&referenceEstimation.cov );
+							// Normalized covariance: scale!
+							referenceEstimation.cov *= square(normalizationStd);
+
+							// Additional filter:
+							//  If the correspondences as such the transformation has a high ambiguity, we discard it!
+							is_acceptable = ( referenceEstimation.cov(2,2)<square(DEG2RAD(5.0f)) );
+						}
+
+						if (!is_acceptable)
 						{
 						 	// Remove this correspondence & try again with a different pair:
 						 	subSet.erase( subSet.begin() + (subSet.size() -1) );
-						}
-						else
-						{
 						}
 					}
 				}
@@ -304,68 +327,25 @@ void  scanmatching::robustRigidTransformation(
 					//		- If not, do not add it.
 					// ------------------------------------------------------------------------------------------------------
 
-					// Compute the temptative new estimation (matchIt will be removed after the test!):
-					temptativeSubSet.push_back( corr_j );
+					// Test for the mahalanobis distance between:
+					//  "referenceEstimation (+) point_other" AND "point_this"
+					referenceEstimation.composePoint( mrpt::math::TPoint2D(corr_j.other_x,corr_j.other_y), pt_this);
 
-					scanmatching::leastSquareErrorRigidTransformation(
-						temptativeSubSet,
-						temptativeEstimation.mean,
-						&temptativeEstimation.cov );
-					// Normalized covariance: scale!
-					temptativeEstimation.cov *= square(normalizationStd);
+					const double maha_dist = pt_this.mahalanobisDistanceToPoint(corr_j.this_x,corr_j.this_y);
 
-					// Additional filter:
-					//  If the correspondences as such the transformation has a high ambiguity, we discard it!
-					if ( temptativeEstimation.cov(2,2)<square(DEG2RAD(5.0f)) )
+					const bool passTest = maha_dist < ransac_mahalanobisDistanceThreshold;
+
+					if ( passTest )
 					{
-						// Assure a minimum variance!!
-						/*temptativeEstimation.cov(0,0) = max( temptativeEstimation.cov(0,0), square( 0.03 ) );
-						temptativeEstimation.cov(1,1) = max( temptativeEstimation.cov(1,1), square( 0.03 ) );
-
-						referenceEstimation.cov(0,0) = max( referenceEstimation.cov(0,0), square( 0.03 ) );
-						referenceEstimation.cov(1,1) = max( referenceEstimation.cov(1,1), square( 0.03 ) );*/
-
-						temptativeEstimation.cov(2,2) = max( temptativeEstimation.cov(2,2), square( DEG2RAD(0.2) ) );
-						referenceEstimation.cov(2,2) = max( referenceEstimation.cov(2,2), square( DEG2RAD(0.2) ) );
-
-						// Test for compatibility:
-						bool passTest;
-
-						if (ransac_algorithmForLandmarks)
-						{
-							// Compatibility test: Mahalanobis distance between Gaussians:
-							const double	mahaDist = temptativeEstimation.mahalanobisDistanceTo( referenceEstimation );
-							passTest = mahaDist < ransac_mahalanobisDistanceThreshold;
-						}
-						else
-						{
-							// Compatibility test: Euclidean distances
-							const double diffXY = referenceEstimation.mean.distanceTo( temptativeEstimation.mean );
-							const double diffPhi = fabs( math::wrapToPi( referenceEstimation.mean.phi() - temptativeEstimation.mean.phi() ) );
-							passTest  = diffXY < 0.02f && diffPhi < DEG2RAD(2.0f);
-						}
-
-						if ( passTest )
-						{
-							// OK, consensus passed!!
-							subSet.push_back( corr_j );
-							//referenceEstimation = temptativeEstimation;
-						}
-						else
-						{
-							// Test failed!
-							//printf("Discarded!:\n");
-							//std::cout << "temptativeEstimation:" << temptativeEstimation << " referenceEstimation:" << referenceEstimation << " mahaDist:" << mahaDist << "\n";
-						}
+						// OK, consensus passed:
+						subSet.push_back( corr_j );
+						//referenceEstimation = temptativeEstimation;
+						//cout << "referenceEstimation: " << referenceEstimation.mean << endl << "Pass with: " << maha_dist << endl;
 					}
 					else
 					{
-						// Test failed!
-						//printf("Discarded! stdPhi=%f\n",RAD2DEG(sqrt(temptativeEstimation.cov(2,2))));
+						// Test failed
 					}
-
-					// Remove the temporaryy added last correspondence:
-					temptativeSubSet.pop_back();
 
 				} // end else "normal case"
 

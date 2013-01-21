@@ -550,7 +550,7 @@ void  CPosePDFGaussian::operator += ( const CPosePDFGaussian &Ap)
 {
 	// COV:
 	const CMatrixDouble33  OLD_COV = this->cov;
-	CMatrixDouble33  df_dx, df_du;
+	CMatrixDouble33  df_dx(UNINITIALIZED_MATRIX), df_du(UNINITIALIZED_MATRIX);
 
 	CPosePDF::jacobiansPoseComposition(
 		this->mean,  // x
@@ -566,7 +566,47 @@ void  CPosePDFGaussian::operator += ( const CPosePDFGaussian &Ap)
 	this->mean = this->mean + Ap.mean;
 }
 
+/** Returns the PDF of the 2D point \f$ g = q \oplus l\f$ with "q"=this pose and "l" a point without uncertainty */
+void CPosePDFGaussian::composePoint(const mrpt::math::TPoint2D &l, CPoint2DPDFGaussian &g ) const
+{
+	// Mean:
+	double gx,gy;
+	mean.composePoint(l.x,l.y, gx,gy);
+	g.mean.x(gx);
+	g.mean.y(gy);
+
+	// COV:
+	CMatrixDouble33  df_dx(UNINITIALIZED_MATRIX), df_du(UNINITIALIZED_MATRIX);
+	CPosePDF::jacobiansPoseComposition(
+		this->mean,  // x
+		this->mean,  // u
+		df_dx,
+		df_du, 
+		true,   // Eval df_dx
+		false   // Eval df_du (not needed)
+		);
+
+	const CMatrixFixedNumeric<double,2,3> dp_dx = df_dx.block<2,3>(0,0);
+	g.cov = dp_dx * this->cov * dp_dx.transpose();
+}
+
+
 bool mrpt::poses::operator==(const CPosePDFGaussian &p1,const CPosePDFGaussian &p2)
 {
 	return p1.mean==p1.mean && p1.cov==p2.cov;
+}
+
+
+CPosePDFGaussian mrpt::poses::operator +( const CPosePDFGaussian &a, const CPosePDFGaussian &b  ) 
+{
+	CPosePDFGaussian res(a);
+	res+=b;
+	return res;
+}
+
+CPosePDFGaussian mrpt::poses::operator -( const CPosePDFGaussian &a, const CPosePDFGaussian &b  ) 
+{
+	CPosePDFGaussian res;
+	res.inverseComposition(a,b);
+	return res;
 }

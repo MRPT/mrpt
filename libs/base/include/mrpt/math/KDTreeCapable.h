@@ -586,10 +586,10 @@ namespace mrpt
 				MRPT_START
 				rebuild_kdTree_2D(); // First: Create the 2D KD-Tree if required
 				out_indices_dist.clear();
-				if ( m_kdtree3d_data.m_num_points!=0 )
+				if ( m_kdtree2d_data.m_num_points!=0 )
 				{
 					const float xyz[2] = {x0,y0};
-					m_kdtree3d_data.index->radiusSearch(&xyz[0], maxRadius, out_indices_dist, nanoflann::SearchParams(kdtree_search_params.nChecks) );
+					m_kdtree2d_data.index->radiusSearch(&xyz[0], maxRadius, out_indices_dist, nanoflann::SearchParams(kdtree_search_params.nChecks) );
 				}
 				return out_indices_dist.size();
 				MRPT_END

@@ -103,7 +103,9 @@ namespace poses
 			const CPose2D &x,
 			const CPose2D &u,
 			CMatrixDouble33			 &df_dx,
-			CMatrixDouble33			 &df_du);
+			CMatrixDouble33			 &df_du,
+			const bool compute_df_dx = true, 
+			const bool compute_df_du = true );
 
 		/** \overload */
 		static void jacobiansPoseComposition(

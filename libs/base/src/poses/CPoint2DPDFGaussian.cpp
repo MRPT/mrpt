@@ -268,3 +268,15 @@ double CPoint2DPDFGaussian::mahalanobisDistanceTo( const CPoint2DPDFGaussian & o
 	return std::sqrt( deltaX.multiply_HtCH_scalar( (other.cov + this->cov).inverse() ) );
 }
 
+/** Returns the Mahalanobis distance from this PDF to some point */
+double CPoint2DPDFGaussian::mahalanobisDistanceToPoint( const double x, const double y ) const
+{
+	// The difference in means:
+	Eigen::Matrix<double,2,1> deltaX;
+	deltaX[0] = x - mean.x();
+	deltaX[1] = y - mean.y();
+
+	// The inverse of the combined covs:
+	return std::sqrt( deltaX.multiply_HtCH_scalar( this->cov.inverse() ) );
+}
+

@@ -45,6 +45,7 @@ namespace poses
 	using namespace mrpt::math;
 
 	class CPose3DPDF;
+	class CPoint2DPDFGaussian;
 
 	// This must be added to any CSerializable derived class:
 	DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE( CPosePDFGaussian, CPosePDF )
@@ -111,16 +112,13 @@ namespace poses
 			cov = this->cov;
 		}
 
-		/** Copy operator, translating if necesary (for example, between particles and gaussian representations)
-		  */
+		/** Copy operator, translating if necesary (for example, between particles and gaussian representations) */
 		void  copyFrom(const CPosePDF &o);
 
-		/** Copy operator, translating if necesary (for example, between particles and gaussian representations)
-		  */
+		/** Copy operator, translating if necesary (for example, between particles and gaussian representations) */
 		void  copyFrom(const CPose3DPDF &o);
 
-		/** Save PDF's particles to a text file, containing the 2D pose in the first line, then the covariance matrix in next 3 lines.
-		 */
+		/** Save PDF's particles to a text file, containing the 2D pose in the first line, then the covariance matrix in next 3 lines. */
 		void  saveToTextFile(const std::string &file) const;
 
 		/** this = p (+) this. This can be used to convert a PDF from local coordinates to global, providing the point (newReferenceBase) from which
@@ -137,12 +135,10 @@ namespace poses
 		  */
 		void  rotateCov(const double ang);
 
-		/** Set \f$ this = x1 \ominus x0 \f$ , computing the mean using the "-" operator and the covariances through the corresponding Jacobians (For 'x0' and 'x1' being independent variables!).
-		  */
+		/** Set \f$ this = x1 \ominus x0 \f$ , computing the mean using the "-" operator and the covariances through the corresponding Jacobians (For 'x0' and 'x1' being independent variables!). */
 		void inverseComposition( const CPosePDFGaussian &x, const CPosePDFGaussian &ref  );
 
-		/** Set \f$ this = x1 \ominus x0 \f$ , computing the mean using the "-" operator and the covariances through the corresponding Jacobians (Given the 3x3 cross-covariance matrix of variables x0 and x1).
-		  */
+		/** Set \f$ this = x1 \ominus x0 \f$ , computing the mean using the "-" operator and the covariances through the corresponding Jacobians (Given the 3x3 cross-covariance matrix of variables x0 and x1). */
 		void inverseComposition(
 			const CPosePDFGaussian &x1,
 			const CPosePDFGaussian &x0,
@@ -172,60 +168,46 @@ namespace poses
 		  */
 		void	 inverse(CPosePDF &o) const;
 
-		/** Makes: thisPDF = thisPDF + Ap, where "+" is pose composition (both the mean, and the covariance matrix are updated).
-		  */
+		/** Makes: thisPDF = thisPDF + Ap, where "+" is pose composition (both the mean, and the covariance matrix are updated). */
 		void  operator += ( const CPose2D &Ap);
 
-		/** Evaluates the PDF at a given point.
-		  */
+		/** Evaluates the PDF at a given point. */
 		double  evaluatePDF( const CPose2D &x ) const;
 
-		/** Evaluates the ratio PDF(x) / PDF(MEAN), that is, the normalized PDF in the range [0,1].
-		  */
+		/** Evaluates the ratio PDF(x) / PDF(MEAN), that is, the normalized PDF in the range [0,1]. */
 		double  evaluateNormalizedPDF( const CPose2D &x ) const;
 
-		/** Computes the Mahalanobis distance between the centers of two Gaussians.
-		  */
+		/** Computes the Mahalanobis distance between the centers of two Gaussians.  */
 		double  mahalanobisDistanceTo( const CPosePDFGaussian& theOther );
 
-		/** Substitutes the diagonal elements if (square) they are below some given minimum values (Use this before bayesianFusion, for example, to avoid inversion of singular matrixes, etc...)
-		  */
+		/** Substitutes the diagonal elements if (square) they are below some given minimum values (Use this before bayesianFusion, for example, to avoid inversion of singular matrixes, etc...)  */
 		void  assureMinCovariance( const double & minStdXY, const double &minStdPhi );
 
-		/** Makes: thisPDF = thisPDF + Ap, where "+" is pose composition (both the mean, and the covariance matrix are updated) (see formulas in jacobiansPoseComposition ).
-		  */
+		/** Makes: thisPDF = thisPDF + Ap, where "+" is pose composition (both the mean, and the covariance matrix are updated) (see formulas in jacobiansPoseComposition ). */
 		void  operator += ( const CPosePDFGaussian &Ap);
 
-		/** Makes: thisPDF = thisPDF - Ap, where "-" is pose inverse composition (both the mean, and the covariance matrix are updated)
-		  */
+		/** Makes: thisPDF = thisPDF - Ap, where "-" is pose inverse composition (both the mean, and the covariance matrix are updated) */
 		inline void operator -=( const CPosePDFGaussian &ref  ) {
 			this->inverseComposition(*this,ref);
 		}
+
+		/** Returns the PDF of the 2D point \f$ g = q \oplus l\f$ with "q"=this pose and "l" a point without uncertainty */
+		void composePoint(const mrpt::math::TPoint2D &l, CPoint2DPDFGaussian &g ) const;
 
 
 	}; // End of class def.
 
 
 	/** Pose compose operator: RES = A (+) B , computing both the mean and the covariance */
-	inline CPosePDFGaussian operator +( const CPosePDFGaussian &a, const CPosePDFGaussian &b  ) {
-		CPosePDFGaussian res(a);
-		res+=b;
-		return res;
-	}
+	CPosePDFGaussian BASE_IMPEXP operator +( const CPosePDFGaussian &a, const CPosePDFGaussian &b  );
 
 	/** Pose inverse compose operator: RES = A (-) B , computing both the mean and the covariance */
-	inline CPosePDFGaussian operator -( const CPosePDFGaussian &a, const CPosePDFGaussian &b  ) {
-		CPosePDFGaussian res;
-		res.inverseComposition(a,b);
-		return res;
-	}
+	CPosePDFGaussian BASE_IMPEXP  operator -( const CPosePDFGaussian &a, const CPosePDFGaussian &b  );
 
-	/** Dumps the mean and covariance matrix to a text stream.
-	  */
+	/** Dumps the mean and covariance matrix to a text stream. */
 	std::ostream BASE_IMPEXP & operator << (std::ostream & out, const CPosePDFGaussian& obj);
 
-	/** Returns the Gaussian distribution of \f$ \mathbf{C} \f$, for \f$ \mathbf{C} = \mathbf{A} \oplus \mathbf{B} \f$.
-	  */
+	/** Returns the Gaussian distribution of \f$ \mathbf{C} \f$, for \f$ \mathbf{C} = \mathbf{A} \oplus \mathbf{B} \f$. */
 	poses::CPosePDFGaussian	BASE_IMPEXP operator + ( const mrpt::poses::CPose2D &A, const mrpt::poses::CPosePDFGaussian &B  );
 
 	bool BASE_IMPEXP operator==(const CPosePDFGaussian &p1,const CPosePDFGaussian &p2);

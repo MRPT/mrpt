@@ -142,9 +142,11 @@ namespace poses
 		void  bayesianFusion( const CPoint2DPDF &p1, const CPoint2DPDF &p2, const double &minMahalanobisDistToDrop = 0);
 
 
-		/** Returns the Mahalanobis distance from this PDF to another PDF, that is, it's evaluation at (0,0,0)
-		  */
+		/** Returns the Mahalanobis distance from this PDF to another PDF, that is, it's evaluation at (0,0,0) */
 		double mahalanobisDistanceTo( const CPoint2DPDFGaussian & other ) const;
+
+		/** Returns the Mahalanobis distance from this PDF to some point */
+		double mahalanobisDistanceToPoint( const double x, const double y ) const;
 
 
 	}; // End of class def.
