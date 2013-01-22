@@ -248,7 +248,7 @@ void  scanmatching::robustRigidTransformation(
 	//		The RANSAC loop
 	// -------------------------
 	size_t largest_consensus_yet = 0; // Used for dynamic # of steps
-	double largestSubSet_RMSE = 0;
+	double largestSubSet_RMSE = std::numeric_limits<double>::max();
 
 	const bool use_dynamic_iter_number = ransac_nSimulations==0;
 	if (use_dynamic_iter_number)
@@ -420,9 +420,7 @@ void  scanmatching::robustRigidTransformation(
 #endif
 
 
-		const bool has_to_eval_RMSE = 
-			((out_largestSubSet!=NULL) && (subSet.size()>out_largestSubSet->size()))
-			|| (subSet.size()>=ransac_minSetSize);
+		const bool has_to_eval_RMSE = (subSet.size()>=ransac_minSetSize);
 
 		// Compute the RMSE of this matching and the corresponding transformation (only if we'll use this value below)
 		double this_subset_RMSE = 0;
@@ -553,9 +551,8 @@ void  scanmatching::robustRigidTransformation(
 		// Save the largest subset:
 		if (out_largestSubSet!=NULL)
 		{
-			if (subSet.size()>out_largestSubSet->size() || 
-			    ( subSet.size()==out_largestSubSet->size() && this_subset_RMSE<largestSubSet_RMSE) 
-			   )
+			if (subSet.size()>=ransac_minSetSize && 
+			    this_subset_RMSE<largestSubSet_RMSE ) 
 			{
 				if (verbose)
 					cout << "[scanmatching::RANSAC] Iter #" << iter_idx << " Better subset: " << subSet.size() << " inliers, RMSE=" << this_subset_RMSE << endl;
