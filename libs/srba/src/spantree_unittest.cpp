@@ -68,7 +68,7 @@ void test_spantree_topology(
 	// The test object:
 	my_rba_t rba;
 	rba.enable_time_profiler(false);
-	rba.parameters.max_tree_depth = max_depth;
+	rba.parameters.srba.max_tree_depth = max_depth;
 
 	const double PROB_LOOP_CLOSURE = 0.05;
 

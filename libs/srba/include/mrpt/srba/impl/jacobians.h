@@ -82,7 +82,7 @@ void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::numeric_dh_dAp(c
 		else	base_from_obs =  p_d_d1_mod + pose_base_wrt_d_prime;
 	}
 
-	// Sensor pose:
+	// Sensor pose: base_pose_wrt_sensor = robot_pose (+) sensor_pose_on_the_robot
 	typename RBA_OPTIONS::sensor_pose_on_robot_t::resulting_pose_t<REL_POSE_DIMS>::pose_t base_pose_wrt_sensor(mrpt::poses::UNINITIALIZED_POSES);
 	RBA_OPTIONS::sensor_pose_on_robot_t::robot2sensor( *base_from_obs, base_pose_wrt_sensor, this->parameters.sensor_pose )
 
@@ -132,7 +132,7 @@ void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::numeric_dh_df(co
 	const array_landmark_t x_local = params.xji_i + x;
 	const pose_t * pos_cam = params.pose_base_wrt_obs!=NULL ? params.pose_base_wrt_obs : &my_aux_null_pose;
 
-	// Sensor pose:
+	// Sensor pose: base_pose_wrt_sensor = robot_pose (+) sensor_pose_on_the_robot
 	typename RBA_OPTIONS::sensor_pose_on_robot_t::resulting_pose_t<REL_POSE_DIMS>::pose_t  base_pose_wrt_sensor(mrpt::poses::UNINITIALIZED_POSES);
 	RBA_OPTIONS::sensor_pose_on_robot_t::robot2sensor( *pos_cam, base_pose_wrt_sensor, this->parameters.sensor_pose )
 

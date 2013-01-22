@@ -137,7 +137,7 @@ double RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::eval_overall_s
 			base_pose_wrt_observer = &itRelPose->second.pose;
 		}
 
-		// Sensor pose:
+		// Sensor pose: base_pose_wrt_sensor = robot_pose (+) sensor_pose_on_the_robot
 		typename RBA_OPTIONS::sensor_pose_on_robot_t::resulting_pose_t<REL_POSE_DIMS>::pose_t base_pose_wrt_sensor(mrpt::poses::UNINITIALIZED_POSE);
 		RBA_OPTIONS::sensor_pose_on_robot_t::robot2sensor( *base_pose_wrt_observer, base_pose_wrt_sensor, this->parameters.sensor_pose );
 
