@@ -37,6 +37,7 @@
 
 
 #include <mrpt/poses/CPosePDFGaussian.h>
+#include <mrpt/poses/CPoint2DPDFGaussian.h>
 #include <mrpt/poses/CPose3DPDF.h>
 #include <mrpt/math/CMatrix.h>
 
