@@ -152,13 +152,13 @@ int main(int argc, char**argv)
 	// --------------------------------------------------------------------------------
 	rba.setVerbosityLevel( 1 );   // 0: None; 1:Important only; 2:Verbose
 
-	rba.parameters.use_robust_kernel = false; // true
-	rba.parameters.std_noise_observations = 0.03; //SENSOR_NOISE_STD;
+	rba.parameters.srba.use_robust_kernel = false; // true
+	rba.parameters.srba.std_noise_observations = 0.03; //SENSOR_NOISE_STD;
 
 	// =========== Topology parameters ===========
-	rba.parameters.edge_creation_policy = mrpt::srba::ecpICRA2013;
-	rba.parameters.max_tree_depth       = 3;
-	rba.parameters.max_optimize_depth   = 3;
+	rba.parameters.srba.edge_creation_policy = mrpt::srba::ecpICRA2013;
+	rba.parameters.srba.max_tree_depth       = 3;
+	rba.parameters.srba.max_optimize_depth   = 3;
 	// ===========================================
 
 	// Set sensors parameters:

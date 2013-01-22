@@ -42,10 +42,16 @@ using namespace std;
 // --------------------------------------------------------------------------------
 // Declare a typedef "my_srba_t" for easily referring to my RBA problem type:
 // --------------------------------------------------------------------------------
+struct my_srba_options
+{
+	typedef sensor_pose_on_robot_se3 sensor_pose_on_robot_t;
+};
+
 typedef RBA_Problem<
 	kf2kf_poses::SE3,                // Parameterization  KF-to-KF poses
 	landmarks::Euclidean3D,          // Parameterization of landmark positions    
-	observations::StereoCamera       // Type of observations
+	observations::StereoCamera,      // Type of observations
+	my_srba_options                  // Other parameters
 	> 
 	my_srba_t;
 
@@ -104,17 +110,17 @@ int main(int argc, char**argv)
 	// --------------------------------------------------------------------------------
 	rba.setVerbosityLevel( 1 );   // 0: None; 1:Important only; 2:Verbose
 
-	rba.parameters.use_robust_kernel = true;
-	rba.parameters.std_noise_observations = 0.5; // pixels
+	rba.parameters.srba.use_robust_kernel = true;
+	rba.parameters.srba.std_noise_observations = 0.5; // pixels
 
 	// =========== Topology parameters ===========
-	rba.parameters.edge_creation_policy = mrpt::srba::ecpICRA2013;
-	rba.parameters.max_tree_depth       = 3;
-	rba.parameters.max_optimize_depth   = 3;
+	rba.parameters.srba.edge_creation_policy = mrpt::srba::ecpICRA2013;
+	rba.parameters.srba.max_tree_depth       = 3;
+	rba.parameters.srba.max_optimize_depth   = 3;
 	// ===========================================
 
 	// Set camera calib:
-	mrpt::utils::TCamera & lc = rba.sensor_params.camera_calib.leftCamera;
+	mrpt::utils::TCamera & lc = rba.parameters.sensor.camera_calib.leftCamera;
 	lc.ncols = 1024;
 	lc.nrows = 768;
 	lc.cx(512);
@@ -122,9 +128,12 @@ int main(int argc, char**argv)
 	lc.fx(200);
 	lc.fy(150);
 	lc.dist.setZero();
-	rba.sensor_params.camera_calib.rightCamera = lc;
-	rba.sensor_params.camera_calib.rightCameraPose.fromString("[0.2 0 0  1 0 0 0]");  // [X Y Z qr qx qy qz]
+	rba.parameters.sensor.camera_calib.rightCamera = lc;
+	rba.parameters.sensor.camera_calib.rightCameraPose.fromString("[0.2 0 0  1 0 0 0]");  // [X Y Z qr qx qy qz]
 	
+	// Sensor pose on the robot parameters:
+	rba.parameters.sensor_pose.relative_pose = mrpt::poses::CPose3D(0,0,0,DEG2RAD(-90),DEG2RAD(0),DEG2RAD(-90) ); // Set camera pointing forwards (camera's +Z is robot +X)
+
 	// Alternatively, parameters can be loaded from an .ini-like config file
 	// -----------------------------------------------------------------------
 	// rba.parameters.loadFromConfigFileName("config_file.cfg", "srba");

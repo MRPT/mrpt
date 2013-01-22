@@ -42,10 +42,16 @@ using namespace std;
 // --------------------------------------------------------------------------------
 // Declare a typedef "my_srba_t" for easily referring to my RBA problem type:
 // --------------------------------------------------------------------------------
+struct my_srba_options
+{
+	typedef sensor_pose_on_robot_se3 sensor_pose_on_robot_t;
+};
+
 typedef RBA_Problem<
 	kf2kf_poses::SE3,                // Parameterization  KF-to-KF poses
 	landmarks::Euclidean3D,          // Parameterization of landmark positions    
-	observations::MonocularCamera    // Type of observations
+	observations::MonocularCamera,    // Type of observations
+	my_srba_options                  // Other parameters
 	> 
 	my_srba_t;
 
@@ -112,17 +118,17 @@ int main(int argc, char**argv)
 	// --------------------------------------------------------------------------------
 	rba.setVerbosityLevel( 1 );   // 0: None; 1:Important only; 2:Verbose
 
-	rba.parameters.use_robust_kernel = true;
-	rba.parameters.std_noise_observations = 0.5;  // pixels
+	rba.parameters.srba.use_robust_kernel = true;
+	rba.parameters.srba.std_noise_observations = 0.5;  // pixels
 
 	// =========== Topology parameters ===========
-	rba.parameters.edge_creation_policy = mrpt::srba::ecpICRA2013;
-	rba.parameters.max_tree_depth       = 3;
-	rba.parameters.max_optimize_depth   = 3;
+	rba.parameters.srba.edge_creation_policy = mrpt::srba::ecpICRA2013;
+	rba.parameters.srba.max_tree_depth       = 3;
+	rba.parameters.srba.max_optimize_depth   = 3;
 	// ===========================================
 
 	// Set camera calib:
-	mrpt::utils::TCamera & c = rba.sensor_params.camera_calib;
+	mrpt::utils::TCamera & c = rba.parameters.sensor.camera_calib;
 	c.ncols = 800;
 	c.nrows = 640;
 	c.cx(400);
@@ -130,6 +136,9 @@ int main(int argc, char**argv)
 	c.fx(200);
 	c.fy(200);
 	c.dist.setZero();
+
+	// Sensor pose on the robot parameters:
+	rba.parameters.sensor_pose.relative_pose = mrpt::poses::CPose3D(0,0,0,DEG2RAD(-90),DEG2RAD(0),DEG2RAD(-90) ); // Set camera pointing forwards (camera's +Z is robot +X)
 	
 	// Alternatively, parameters can be loaded from an .ini-like config file
 	// -----------------------------------------------------------------------

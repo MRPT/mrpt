@@ -7,7 +7,6 @@
 #include <mrpt/random.h>
 #include <mrpt/math/CMatrixTemplateNumeric.h>  // For CMatrixDouble
 #include <mrpt/math/CMatrixD.h>  // For the serializable version of matrices
-//#include <mrpt/vision/types.h>
 #include <mrpt/vision/CVideoFileWriter.h>
 
 #include <mrpt/gui/CDisplayWindow3D.h>
@@ -19,10 +18,22 @@
 #include <locale>
 
 using namespace mrpt;
+using namespace mrpt::srba;
 using namespace std;
 
-// ----------------------------------------------------------
-typedef srba::RBA_Problem_P6D_L3D_ObsMono my_srba_t;
+// ----------- Define SRBA type ----------------------------
+struct my_srba_options
+{
+	typedef sensor_pose_on_robot_se3 sensor_pose_on_robot_t;
+};
+
+typedef RBA_Problem<
+	kf2kf_poses::SE3,                // Parameterization  KF-to-KF poses
+	landmarks::Euclidean3D,          // Parameterization of landmark positions    
+	observations::MonocularCamera,      // Type of observations
+	my_srba_options                  // Other parameters
+	> 
+	my_srba_t;
 // ----------------------------------------------------------
 
 
@@ -84,13 +95,13 @@ int run_demo_simul(int argc, char**argv)
 
 	rba.setVerbosityLevel( arg_verbose.getValue() );
 
-	rba.parameters.use_robust_kernel = false;
-	rba.parameters.std_noise_observations = PIXEL_NOISE_STD;
+	rba.parameters.srba.use_robust_kernel = false;
+	rba.parameters.srba.std_noise_observations = PIXEL_NOISE_STD;
 
-	rba.parameters.compute_condition_number = false;
+	rba.parameters.srba.compute_condition_number = false;
 
-	rba.parameters.max_error_per_obs_px = 1e-8;
-	rba.parameters.feedback_user_iteration = &optimization_feedback;
+	rba.parameters.srba.max_error_per_obs_px = 1e-8;
+	rba.parameters.srba.feedback_user_iteration = &optimization_feedback;
 
 	// =========== Topology parameters ===========
 //	rba.parameters.edge_creation_policy = mrpt::srba::ecpICRA2013;
@@ -98,54 +109,54 @@ int run_demo_simul(int argc, char**argv)
 	// ===========================================
 
 	if (arg_rba_params_cfg_file.isSet() && mrpt::system::fileExists(arg_rba_params_cfg_file.getValue()))
-		rba.parameters.loadFromConfigFileName(arg_rba_params_cfg_file.getValue(), "srba");
+		rba.parameters.srba.loadFromConfigFileName(arg_rba_params_cfg_file.getValue(), "srba");
 
 	if (arg_write_rba_params_cfg_file.isSet())
 	{
-		rba.parameters.saveToConfigFileName(arg_write_rba_params_cfg_file.getValue(), "srba");
+		rba.parameters.srba.saveToConfigFileName(arg_write_rba_params_cfg_file.getValue(), "srba");
 		return 0; // end program
 	}
 
 	// Override max ST depth:
 	if (arg_max_tree_depth.isSet())
 	{
-		rba.parameters.max_tree_depth = arg_max_tree_depth.getValue();
-		cout << "Overriding max_tree_depth to value: " << rba.parameters.max_tree_depth << endl;
+		rba.parameters.srba.max_tree_depth = arg_max_tree_depth.getValue();
+		cout << "Overriding max_tree_depth to value: " << rba.parameters.srba.max_tree_depth << endl;
 	}
 
 	// Override policy:
 	if (arg_edge_policy.isSet())
 	{
-		rba.parameters.edge_creation_policy = mrpt::utils::TEnumType<srba::TEdgeCreationPolicy>::name2value(arg_edge_policy.getValue());
+		rba.parameters.srba.edge_creation_policy = mrpt::utils::TEnumType<srba::TEdgeCreationPolicy>::name2value(arg_edge_policy.getValue());
 		cout << "Overriding edge_creation_policy to value: " << arg_edge_policy.getValue() << endl;
 	}
 
 	// Override max optimize depth:
 	if (arg_max_opt_depth.isSet())
 	{
-		rba.parameters.max_optimize_depth = arg_max_opt_depth.getValue();
-		cout << "Overriding max_optimize_depth to value: " << rba.parameters.max_optimize_depth << endl;
+		rba.parameters.srba.max_optimize_depth = arg_max_opt_depth.getValue();
+		cout << "Overriding max_optimize_depth to value: " << rba.parameters.srba.max_optimize_depth << endl;
 	}
 
 	// Override max optimize depth:
 	if (arg_max_iters.isSet())
 	{
-		rba.parameters.max_iters = arg_max_iters.getValue();
-		cout << "Overriding max_iters to value: " << rba.parameters.max_iters << endl;
+		rba.parameters.srba.max_iters = arg_max_iters.getValue();
+		cout << "Overriding max_iters to value: " << rba.parameters.srba.max_iters << endl;
 	}
 
 	// Override submap
 	if (arg_submap_size.isSet())
 	{
-		rba.parameters.submap_size = arg_submap_size.getValue();
-		cout << "Overriding submap_size to value: " << rba.parameters.submap_size << endl;
+		rba.parameters.srba.submap_size = arg_submap_size.getValue();
+		cout << "Overriding submap_size to value: " << rba.parameters.srba.submap_size << endl;
 	}
 
 	if (arg_verbose.getValue()>=1)
 	{
 		cout << "RBA parameters:\n"
 		        "-----------------\n";
-		rba.parameters.dumpToConsole();
+		rba.parameters.srba.dumpToConsole();
 		cout << endl;
 	}
 
@@ -188,7 +199,11 @@ int run_demo_simul(int argc, char**argv)
 	const size_t nTotalObs = load_simulated_dataset(FILE_PATH_AND_PREFIX,OBS,GT_path,GT_MAP,CAM_CALIB, arg_verbose.getValue() );
 
 	// Set camera calib from dataset:
-	rba.sensor_params.camera_calib = CAM_CALIB;
+	rba.parameters.sensor.camera_calib = CAM_CALIB;
+
+	// Sensor pose on the robot parameters:
+	rba.parameters.sensor_pose.relative_pose = mrpt::poses::CPose3D(0,0,0,DEG2RAD(-90),DEG2RAD(0),DEG2RAD(-90) ); // Set camera pointing forwards (camera's +Z is robot +X)
+
 
 	mrpt::gui::CDisplayWindow3DPtr win;
 	mrpt::opengl::COpenGLViewportPtr gl_view2D, gl_view_cur_tree;
@@ -439,7 +454,7 @@ int run_demo_simul(int argc, char**argv)
 		// Draw simulated "camera" image:
 		if (DEMO_SIMUL_SHOW_GUI && win && win->isOpen())
 		{
-			mrpt::utils::CImage img(rba.sensor_params.camera_calib.ncols/2,rba.sensor_params.camera_calib.nrows/2,CH_RGB);
+			mrpt::utils::CImage img(rba.parameters.sensor.camera_calib.ncols/2,rba.parameters.sensor.camera_calib.nrows/2,CH_RGB);
 			img.filledRectangle(0,0,img.getWidth()-1,img.getHeight()-1, mrpt::utils::TColor(0,0,0) );
 			img.selectTextFont("6x13");
 
@@ -469,7 +484,7 @@ int run_demo_simul(int argc, char**argv)
 			// Update 3D objects:
 			const srba::TKeyFrameID root_kf = next_rba_keyframe_ID-1;
 			my_srba_t::TOpenGLRepresentationOptions opengl_params;
-			opengl_params.span_tree_max_depth = rba.parameters.max_tree_depth; // Render these past keyframes at most.
+			opengl_params.span_tree_max_depth = rba.parameters.srba.max_tree_depth; // Render these past keyframes at most.
 			opengl_params.draw_unknown_feats_ellipses_quantiles = 3;
 
 			mrpt::opengl::CSetOfObjectsPtr gl_obj = mrpt::opengl::CSetOfObjects::Create();
