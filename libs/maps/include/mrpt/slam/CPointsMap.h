@@ -687,10 +687,10 @@ namespace slam
 			float dmy1,dmy2,dmy3,dmy4,dmy5,dmy6;
 			boundingBox(dmy1,dmy2,dmy3,dmy4,dmy5,dmy6);
 			pMin.x=dmy1;
-			pMin.y=dmy2;
-			pMin.z=dmy3;
-			pMax.x=dmy4;
-			pMax.y=dmy5;
+			pMin.y=dmy3;
+			pMin.z=dmy5;
+			pMax.x=dmy2;
+			pMax.y=dmy4;
 			pMax.z=dmy6;
 		}
 
