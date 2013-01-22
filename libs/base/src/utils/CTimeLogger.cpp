@@ -226,11 +226,20 @@ CTimeLogger::TCallData::TCallData() :
 {
 }
 
-
 double CTimeLogger::getMeanTime(const std::string &name)  const
 {
 	map<string,TCallData>::const_iterator it = m_data.find(name);
 	if (it==m_data.end())
 		 return 0;
 	else return it->second.n_calls ? it->second.mean_t/it->second.n_calls : 0;
+}
+
+
+CTimeLoggerEntry::CTimeLoggerEntry(CTimeLogger &logger, const char*section_name ) : m_logger(logger),m_section_name(section_name) 
+{ 
+	m_logger.enter(m_section_name); 
+}
+CTimeLoggerEntry::~CTimeLoggerEntry() 
+{ 
+	m_logger.leave(m_section_name); 
 }

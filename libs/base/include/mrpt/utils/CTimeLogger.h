@@ -52,6 +52,8 @@ namespace mrpt
 		 *
 		 *  This class can be also used to monitorize min/mean/max/total stats of any user-provided parameters via the method CTimeLogger::registerUserMeasure()
 		 *
+		 * \sa CTimeLoggerEntry
+		 * 
 		 * \note The default behavior is dumping all the information at destruction.
 		 * \ingroup mrpt_base_grp
 		 */
@@ -108,6 +110,30 @@ namespace mrpt
 			/** Return the mean execution time of the given "section", or 0 if it hasn't ever been called "enter" with that section name */
 			double getMeanTime(const std::string &name) const;
 		}; // End of class def.
+
+
+		/** A safe way to call enter() and leave() of a mrpt::utils::CTimeLogger upon construction and destruction of 
+		 * this auxiliary object, making sure that leave() will be called upon exceptions, etc.
+		 * Usage: 
+		 * \code
+		 *    CTimeLogger logger;
+		 *    // ...
+		 *    { // Start of scope to be monitorized
+		 *       CTimeLoggerEntry tle(logger,"operation-name");
+		 *
+		 *       // do whatever
+		 *
+		 *    } // End of scope 
+		 * \endcode
+		 * \ingroup mrpt_base_grp
+		 */
+		struct BASE_IMPEXP CTimeLoggerEntry
+		{
+			CTimeLoggerEntry(CTimeLogger &logger, const char*section_name );
+			~CTimeLoggerEntry();
+			CTimeLogger &m_logger;
+			const char *m_section_name;
+		};
 
 
 		/** @name Auxiliary stuff for the global profiler used in MRPT_START / MRPT_END macros.

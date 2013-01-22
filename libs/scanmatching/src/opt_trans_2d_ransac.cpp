@@ -43,6 +43,7 @@
 #include <mrpt/math/CMatrixD.h>
 #include <mrpt/math/utils.h>
 #include <mrpt/math/CQuaternion.h>
+#include <mrpt/utils/CTimeLogger.h>
 
 #include <algorithm>
 
@@ -52,6 +53,8 @@ using namespace mrpt::random;
 using namespace mrpt::utils;
 using namespace std;
 
+
+MRPT_TODO("Mark as deprecated and rewrite a clearer and more consistent API for all least-squares transform methods!")
 
 //#define AVOID_MULTIPLE_CORRESPONDENCES
 
@@ -116,9 +119,16 @@ void  scanmatching::robustRigidTransformation(
 	const bool                  verbose
 	)
 {
+//#define DO_PROFILING 
+
+#ifdef DO_PROFILING
+	CTimeLogger timlog;
+#endif
+
 	const size_t nCorrs = in_correspondences.size();
 
-//#define DEBUG_OUT
+	const double MAX_RMSE_TO_END = 2*normalizationStd;
+
 
 	MRPT_START
 
@@ -135,6 +145,10 @@ void  scanmatching::robustRigidTransformation(
 		return;
 	}
 
+
+#ifdef DO_PROFILING
+	timlog.enter("ransac.find_max*");
+#endif
 	// Find the max. index of "this" and "other:
 	unsigned int maxThis=0, maxOther=0;
 	for (TMatchingPairList::iterator matchIt=in_correspondences.begin();matchIt!=in_correspondences.end(); ++matchIt)
@@ -142,12 +156,19 @@ void  scanmatching::robustRigidTransformation(
 		maxThis = max(maxThis , matchIt->this_idx  );
 		maxOther= max(maxOther, matchIt->other_idx );
 	}
+#ifdef DO_PROFILING
+	timlog.leave("ransac.find_max*");
+#endif
+
+
+#ifdef DO_PROFILING
+	timlog.enter("ransac.count_unique_corrs");
+#endif
 
 	// Fill out 2 arrays indicating whether each element has a correspondence:
 	std::vector<bool>	hasCorrThis(maxThis+1,false);
 	std::vector<bool>	hasCorrOther(maxOther+1,false);
 	unsigned int		howManyDifCorrs = 0;
-	//for (i=0;i<nCorrs;i++)
 	for (TMatchingPairList::iterator matchIt=in_correspondences.begin();matchIt!=in_correspondences.end(); ++matchIt)
 	{
 		if (!hasCorrThis[matchIt->this_idx] &&
@@ -158,6 +179,9 @@ void  scanmatching::robustRigidTransformation(
 			howManyDifCorrs++;
 		}
 	}
+#ifdef DO_PROFILING
+	timlog.leave("ransac.count_unique_corrs");
+#endif
 
 	// Clear the set of output particles:
 	out_transformation.clear();
@@ -213,8 +237,6 @@ void  scanmatching::robustRigidTransformation(
 #endif
 
 	std::deque<TMatchingPairList>	alreadyAddedSubSets;
-	std::vector<size_t> 	corrsIdxs( nCorrs), corrsIdxsPermutation;
-	for (size_t i=0;i<nCorrs;i++) corrsIdxs[i]= i;
 
 	CPosePDFGaussian    referenceEstimation;
 	CPoint2DPDFGaussian pt_this;
@@ -226,7 +248,7 @@ void  scanmatching::robustRigidTransformation(
 	//		The RANSAC loop
 	// -------------------------
 	size_t largest_consensus_yet = 0; // Used for dynamic # of steps
-	double largestSubSet_sqerr = 0;
+	double largestSubSet_RMSE = 0;
 
 	const bool use_dynamic_iter_number = ransac_nSimulations==0;
 	if (use_dynamic_iter_number)
@@ -246,15 +268,39 @@ void  scanmatching::robustRigidTransformation(
 	// else -> It will be done anyway inside the for() below
 
 
-	for (size_t i = 0;i<ransac_nSimulations; i++) // ransac_nSimulations can be dynamic
+	// First: Build a permutation of the correspondences to pick from it sequentially:
+	std::vector<size_t> corrsIdxs(nCorrs), corrsIdxsPermutation;
+	for (size_t i=0;i<nCorrs;i++) corrsIdxs[i]= i;
+
+	size_t iter_idx;
+	for (iter_idx = 0;iter_idx<ransac_nSimulations; iter_idx++) // ransac_nSimulations can be dynamic
 	{
+#ifdef DO_PROFILING
+		CTimeLoggerEntry tle(timlog,"ransac.iter");
+#endif
+
+#ifdef DO_PROFILING
+		timlog.enter("ransac.permute");
+#endif
+		randomGenerator.permuteVector(corrsIdxs,corrsIdxsPermutation );
+
+#ifdef DO_PROFILING
+		timlog.leave("ransac.permute");
+#endif
+
 		TMatchingPairList subSet;
 
 		// Select a subset of correspondences at random:
 		if (ransac_algorithmForLandmarks)
 		{
+#ifdef DO_PROFILING
+			timlog.enter("ransac.reset_selection_marks");
+#endif
 			alreadySelectedThis.assign(maxThis+1,false);
 			alreadySelectedOther.assign(maxOther+1, false);
+#ifdef DO_PROFILING
+			timlog.leave("ransac.reset_selection_marks");
+#endif
 		}
 		else
 		{
@@ -263,14 +309,12 @@ void  scanmatching::robustRigidTransformation(
 
 		// Try to build a subsetof "ransac_maxSetSize" (maximum) elements that achieve consensus:
 		// ------------------------------------------------------------------------------------------
-		// First: Build a permutation of the correspondences to pick from it sequentially:
-		randomGenerator.permuteVector(corrsIdxs,corrsIdxsPermutation );
-
-		for (unsigned int j=0;j<ransac_maxSetSize;j++)
+#ifdef DO_PROFILING
+		timlog.enter("ransac.inner_loops");
+#endif
+		for (unsigned int j=0;j<nCorrs && subSet.size()<ransac_maxSetSize;j++)
 		{
-			ASSERTDEB_(j<corrsIdxsPermutation.size())
-
-			const size_t idx = corrsIdxsPermutation[j];
+			const size_t idx = corrsIdxsPermutation[j]; 
 
 			const TMatchingPair & corr_j = in_correspondences[idx];
 
@@ -338,6 +382,10 @@ void  scanmatching::robustRigidTransformation(
 			}
 			else
 			{
+#ifdef DO_PROFILING
+				timlog.enter("ransac.test_consistency");
+#endif
+
 				// ------------------------------------------------------------------------------------------------------
 				// The normal case:
 				//  - test for "consensus" with the current group:
@@ -361,10 +409,52 @@ void  scanmatching::robustRigidTransformation(
 				}
 				// else -> Test failed
 
+#ifdef DO_PROFILING
+				timlog.leave("ransac.test_consistency");
+#endif
 			} // end else "normal case"
 
-
 		} // end for j
+#ifdef DO_PROFILING
+		timlog.leave("ransac.inner_loops");
+#endif
+
+
+		const bool has_to_eval_RMSE = 
+			((out_largestSubSet!=NULL) && (subSet.size()>out_largestSubSet->size()))
+			|| (subSet.size()>=ransac_minSetSize);
+
+		// Compute the RMSE of this matching and the corresponding transformation (only if we'll use this value below)
+		double this_subset_RMSE = 0;
+		if (has_to_eval_RMSE)
+		{
+#ifdef DO_PROFILING
+			CTimeLoggerEntry tle(timlog,"ransac.comp_rmse");
+#endif
+
+			// Recompute referenceEstimation from all the corrs:
+			scanmatching::leastSquareErrorRigidTransformation(
+				subSet,
+				referenceEstimation.mean,
+				&referenceEstimation.cov );
+			// Normalized covariance: scale!
+			referenceEstimation.cov *= square(normalizationStd);
+
+			for (size_t k=0;k<subSet.size();k++)
+			{
+				double gx,gy;
+				referenceEstimation.mean.composePoint( 
+					subSet[k].other_x, subSet[k].other_y,
+					gx,gy);
+
+				this_subset_RMSE += mrpt::math::distanceSqrBetweenPoints<double>( subSet[k].this_x,subSet[k].this_y, gx,gy );
+			}
+			this_subset_RMSE /= std::max( static_cast<size_t>(1), subSet.size() );
+		}
+		else
+		{
+			this_subset_RMSE = std::numeric_limits<double>::max();
+		}
 
 		// Save the estimation result as a "particle", only if the subSet contains
 		//  "ransac_minSetSize" elements at least:
@@ -379,13 +469,6 @@ void  scanmatching::robustRigidTransformation(
 			{
 				// Find matching by approximate match in the X,Y,PHI means
 				// -------------------------------------------------------------------
-				// Recompute referenceEstimation from all the corrs:
-				scanmatching::leastSquareErrorRigidTransformation(
-					subSet,
-					referenceEstimation.mean,
-					&referenceEstimation.cov );
-				// Normalized covariance: scale!
-				referenceEstimation.cov *= square(normalizationStd);
 				for (size_t i=0;i<out_transformation.size();i++)
 				{
 					double diffXY = out_transformation.get(i).mean.distanceTo( referenceEstimation.mean );
@@ -433,13 +516,8 @@ void  scanmatching::robustRigidTransformation(
 						newSOGMode.log_w = 0; //log(1);
 				else	newSOGMode.log_w = log(static_cast<double>(subSet.size()));
 
-				scanmatching::leastSquareErrorRigidTransformation(
-					subSet,
-					newSOGMode.mean,
-					&newSOGMode.cov );
-
-				// Normalized covariance: scale!
-				newSOGMode.cov *= square(normalizationStd);
+				newSOGMode.mean = referenceEstimation.mean;
+				newSOGMode.cov  = referenceEstimation.cov;
 
 				// Add a new mode to the SOG!
 				out_transformation.push_back(newSOGMode);
@@ -467,7 +545,7 @@ void  scanmatching::robustRigidTransformation(
 				ransac_nSimulations = std::max(ransac_nSimulations, ransac_min_nSimulations);
 
 				if (verbose)
-					cout << "[scanmatching::RANSAC] Iter #" << i << " Estimated number of iters: " << ransac_nSimulations << "  pNoOutliers = " << pNoOutliers << " #inliers: " << ninliers << endl;
+					cout << "[scanmatching::RANSAC] Iter #" << iter_idx << ":est. # iters=" << ransac_nSimulations << " pNoOutliers=" << pNoOutliers << " #inliers: " << ninliers << endl;
 			}
 
 		}
@@ -475,40 +553,33 @@ void  scanmatching::robustRigidTransformation(
 		// Save the largest subset:
 		if (out_largestSubSet!=NULL)
 		{
-			CPose2D estPose;
-			scanmatching::leastSquareErrorRigidTransformation( subSet, estPose);
-
-			double this_subset_sqerr = 0;
-			for (size_t k=0;k<subSet.size();k++)
-			{
-				double gx,gy;
-				estPose.composePoint( 
-					subSet[k].other_x, subSet[k].other_y,
-					gx,gy);
-
-				this_subset_sqerr += mrpt::math::distanceSqrBetweenPoints<double>( subSet[k].this_x,subSet[k].this_y, gx,gy );
-			}
-
 			if (subSet.size()>out_largestSubSet->size() || 
-			    ( subSet.size()==out_largestSubSet->size() && this_subset_sqerr<largestSubSet_sqerr) 
+			    ( subSet.size()==out_largestSubSet->size() && this_subset_RMSE<largestSubSet_RMSE) 
 			   )
 			{
 				if (verbose)
-					cout << "[scanmatching::RANSAC] Iter #" << i << " Better subset with " << subSet.size() << " inliers found: sqErr=" << this_subset_sqerr << endl;
+					cout << "[scanmatching::RANSAC] Iter #" << iter_idx << " Better subset: " << subSet.size() << " inliers, RMSE=" << this_subset_RMSE << endl;
 
 				*out_largestSubSet = subSet;
-				largestSubSet_sqerr = this_subset_sqerr;
+				largestSubSet_RMSE = this_subset_RMSE;
 			}
 		}
 
-#ifdef DEBUG_OUT
-		printf("[RANSAC] Sim #%i/%i \t--> |subSet|=%u \n",
-			(int)i,
-			(int)ransac_nSimulations,
-			(unsigned)subSet.size()
-			);
+		// Is the found subset good enough? 
+		if (subSet.size()>=ransac_minSetSize && 
+			this_subset_RMSE<MAX_RMSE_TO_END)
+		{
+				break; // end RANSAC iterations.
+		}
+
+#ifdef DO_PROFILING
+	timlog.leave("ransac.iter");
 #endif
-	} // end for i
+	} // end for each iteration
+
+	if (verbose)
+		cout << "[scanmatching::RANSAC] Finished after " << iter_idx << " iterations.\n";
+	
 
 	// Set the weights of the particles to sum the unity:
 	out_transformation.normalizeWeights();

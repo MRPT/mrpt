@@ -67,6 +67,7 @@
 			- [mrpt-base]
 				- mrpt::math::MatrixBlockSparseCols, a templated column-indexed efficient storage of block-sparse Jacobian or Hessian matrices, together with other arbitrary information - <a href="http://code.google.com/p/mrpt/source/detail?r=2995" >r2995</a>
 				- mrpt::utils::ignored_copy_ptr<>
+				- mrpt::utils::CTimeLoggerEntry
 			- [mrpt-obs]
 				- mrpt::slam::CObservationWindSensor - <a href="http://code.google.com/p/mrpt/source/detail?r=3050" >r3050</a>
 			- [mrpt-maps]
