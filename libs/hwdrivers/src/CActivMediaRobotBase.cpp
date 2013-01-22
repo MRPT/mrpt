@@ -277,13 +277,18 @@ void CActivMediaRobotBase::connectAndEnableMotors()
 
 bool CActivMediaRobotBase::areMotorsEnabled() const
 {
+#if MRPT_HAS_ARIA
 	return THE_ROBOT->areMotorsEnabled();
+#else
+	THROW_EXCEPTION("MRPT has been compiled with 'MRPT_BUILD_ARIA'=OFF, so this class cannot be used.");
+#endif
 }
 /*-------------------------------------------------------------
 						DisableMotors
 -------------------------------------------------------------*/
 void CActivMediaRobotBase::DisableMotors()
 {
+#if MRPT_HAS_ARIA
 	THE_ROBOT->lock();
 	if (THE_ROBOT->areMotorsEnabled())
 	{
@@ -292,6 +297,9 @@ void CActivMediaRobotBase::DisableMotors()
 			cout << "[CActivMediaRobotBase] Disabling motors...";
 	}
 	THE_ROBOT->unlock();
+#else
+	THROW_EXCEPTION("MRPT has been compiled with 'MRPT_BUILD_ARIA'=OFF, so this class cannot be used.");
+#endif
 
 }
 /*-------------------------------------------------------------
@@ -299,6 +307,7 @@ void CActivMediaRobotBase::DisableMotors()
 -------------------------------------------------------------*/
 void CActivMediaRobotBase::EnableMotors()
 {
+#if MRPT_HAS_ARIA
 	THE_ROBOT->lock();
 	if (!THE_ROBOT->areMotorsEnabled())
 	{
@@ -306,7 +315,9 @@ void CActivMediaRobotBase::EnableMotors()
 			cout << "[CActivMediaRobotBase] Enabling motors...";		
 	}
 	THE_ROBOT->unlock();
-
+#else
+	THROW_EXCEPTION("MRPT has been compiled with 'MRPT_BUILD_ARIA'=OFF, so this class cannot be used.");
+#endif
 }
 
 /*-------------------------------------------------------------
