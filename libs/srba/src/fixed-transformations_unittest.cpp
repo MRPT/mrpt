@@ -74,6 +74,7 @@ basic_euclidean_dataset_entry_t  dummy_obs[] = {
  {    3,   4 , -2,  9 },
 };
 
+template <bool INVERSE_INCR>
 void run_test(const mrpt::poses::CPose3D &incr)
 {
 	my_srba_t rba;     //  Create an empty RBA problem
@@ -133,7 +134,12 @@ void run_test(const mrpt::poses::CPose3D &incr)
 		obs_field.obs.obs_data.pt.y = dummy_obs[i].y;
 		obs_field.obs.obs_data.pt.z = dummy_obs[i].z;
 
-		incr.composePoint(obs_field.obs.obs_data.pt, obs_field.obs.obs_data.pt);
+		if (INVERSE_INCR)
+			incr.inverseComposePoint(
+				obs_field.obs.obs_data.pt.x, obs_field.obs.obs_data.pt.y, obs_field.obs.obs_data.pt.z,
+				obs_field.obs.obs_data.pt.x, obs_field.obs.obs_data.pt.y, obs_field.obs.obs_data.pt.z);
+		else
+			incr.composePoint(obs_field.obs.obs_data.pt, obs_field.obs.obs_data.pt);
 
 		list_obs.push_back( obs_field );
 	}
@@ -146,10 +152,12 @@ void run_test(const mrpt::poses::CPose3D &incr)
 		true           // Also run local optimization?
 		);
 
-	const mrpt::poses::CPose3D estIncr = rba.get_k2k_edges()[0].inv_pose;
+	mrpt::poses::CPose3D estIncr = rba.get_k2k_edges()[0].inv_pose;
+	if (INVERSE_INCR)
+		estIncr.inverse();
 
 	EXPECT_NEAR( (incr.getHomogeneousMatrixVal()-estIncr.getHomogeneousMatrixVal()).array().abs().sum(),0, 1e-3)
-		<< "=> Ground truth: " << incr 
+		<< "=> Ground truth: " << incr << " Inverse: " << (INVERSE_INCR ? "YES":"NO") << endl
 		<< "=> inv_pose of KF-to-KF edge #0 (relative pose of KF#0 wrt KF#1):\n" << estIncr << endl
 		<< "=> Optimization error: " << new_kf_info.optimize_results.total_sqr_error_init << " -> " << new_kf_info.optimize_results.total_sqr_error_final << endl;
 }
@@ -196,6 +204,7 @@ TEST(MiniProblems,FixedTransformations)
 		const double *p = test_fixed_transfs[i];
 
 		const mrpt::poses::CPose3D incr(p[0],p[1],p[2],p[3],p[4],p[5]);
-		run_test(incr);
+		run_test<false>(incr);
+		run_test<true>(incr);
 	}
 }
