@@ -49,7 +49,7 @@ namespace mrpt { namespace srba {
 #define DEBUG_NOT_UPDATED_ENTRIES      0   // Extremely slow, just for debug during development! This checks that all the expected Jacobians are actually updated
 
 template <class KF2KF_POSE_TYPE,class LM_TYPE,class OBS_TYPE,class RBA_OPTIONS>
-void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::numeric_dh_dAp(const array_pose_t &x, const TNumeric_dh_dAp_params& params, array_obs_t &y) 
+void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::numeric_dh_dAp(const array_pose_t &x, const TNumeric_dh_dAp_params& params, array_obs_t &y)
 {
 	const pose_t incr = pose_t::exp(x);
 
@@ -83,8 +83,8 @@ void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::numeric_dh_dAp(c
 	}
 
 	// Sensor pose: base_pose_wrt_sensor = robot_pose (+) sensor_pose_on_the_robot
-	typename RBA_OPTIONS::sensor_pose_on_robot_t::resulting_pose_t<REL_POSE_DIMS>::pose_t base_pose_wrt_sensor(mrpt::poses::UNINITIALIZED_POSES);
-	RBA_OPTIONS::sensor_pose_on_robot_t::robot2sensor( *base_from_obs, base_pose_wrt_sensor, this->parameters.sensor_pose )
+	typename resulting_pose_t<typename RBA_OPTIONS::sensor_pose_on_robot_t,REL_POSE_DIMS>::pose_t base_pose_wrt_sensor(mrpt::poses::UNINITIALIZED_POSE);
+	RBA_OPTIONS::sensor_pose_on_robot_t::robot2sensor( *base_from_obs, base_pose_wrt_sensor, this->parameters.sensor_pose );
 
 	// Generate observation:
 	sensor_model_t::observe(y,base_pose_wrt_sensor,params.xji_i, params.sensor_params);
@@ -133,8 +133,8 @@ void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::numeric_dh_df(co
 	const pose_t * pos_cam = params.pose_base_wrt_obs!=NULL ? params.pose_base_wrt_obs : &my_aux_null_pose;
 
 	// Sensor pose: base_pose_wrt_sensor = robot_pose (+) sensor_pose_on_the_robot
-	typename RBA_OPTIONS::sensor_pose_on_robot_t::resulting_pose_t<REL_POSE_DIMS>::pose_t  base_pose_wrt_sensor(mrpt::poses::UNINITIALIZED_POSES);
-	RBA_OPTIONS::sensor_pose_on_robot_t::robot2sensor( *pos_cam, base_pose_wrt_sensor, this->parameters.sensor_pose )
+	typename resulting_pose_t<typename RBA_OPTIONS::sensor_pose_on_robot_t,REL_POSE_DIMS>::pose_t  base_pose_wrt_sensor(mrpt::poses::UNINITIALIZED_POSE);
+	RBA_OPTIONS::sensor_pose_on_robot_t::robot2sensor( *pos_cam, base_pose_wrt_sensor, this->parameters.sensor_pose );
 
 	// Generate observation:
 	sensor_model_t::observe(y,base_pose_wrt_sensor,x_local, params.sensor_params);
@@ -279,7 +279,7 @@ void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::compute_jacobian
 		return;
 	}
 
-	// take into account the possible displacement of the sensor wrt the keyframe: 
+	// take into account the possible displacement of the sensor wrt the keyframe:
 	RBA_OPTIONS::sensor_pose_on_robot_t::jacob_dh_dx_rotate( dh_dx, this->parameters.sensor_pose );
 
 	// Second Jacobian: (uses xji_i)
@@ -324,7 +324,7 @@ struct compute_jacobian_dAepsDx_deps<3 /*POINT_DIMS*/,6 /*POSE_DIMS*/,RBA_ENGINE
 		const POINT & xji_i,
 		const pose_flag_t * pose_d1_wrt_obs,  // "A" in handwritten notes
 		const pose_flag_t & pose_base_wrt_d1, // "D" in handwritten notes
-		const JACOB_SYM_T & jacob_sym, 
+		const JACOB_SYM_T & jacob_sym,
 		const K2K_EDGES_T &k2k_edges
 		)
 	{
@@ -355,7 +355,7 @@ struct compute_jacobian_dAepsDx_deps<3 /*POINT_DIMS*/,6 /*POSE_DIMS*/,RBA_ENGINE
 			// First 2x3 block:
 			jacob.block(0,0,RBA_ENGINE_T::OBS_DIMS,3).noalias() = H_ROTA;
 
-			// Second 2x3 block: 
+			// Second 2x3 block:
 			// compute aux vector "v":
 			Eigen::Matrix<double,3,1> v;
 			v[0] =  -pose_base_wrt_d1.pose.x()  - xji_i.x*ROTD.coeff(0,0) - xji_i.y*ROTD.coeff(0,1) - xji_i.z*ROTD.coeff(0,2);
@@ -448,7 +448,7 @@ struct compute_jacobian_dAepsDx_deps<3 /*POINT_DIMS*/,6 /*POSE_DIMS*/,RBA_ENGINE
 /** Case: 2D or 3D points, SE(2) poses
   * Both cases are grouped because a SE(2) pose doesn't transform the "z" of 3D points, so both sets of Jacobians are almost identical.
   */
-template <size_t POINT_DIMS, class RBA_ENGINE_T> 
+template <size_t POINT_DIMS, class RBA_ENGINE_T>
 struct compute_jacobian_dAepsDx_deps_SE2
 {
 	template <class MATRIX, class MATRIX_DH_DX,class POINT,class pose_flag_t,class JACOB_SYM_T,class K2K_EDGES_T>
@@ -459,7 +459,7 @@ struct compute_jacobian_dAepsDx_deps_SE2
 		const POINT & xji_i,
 		const pose_flag_t * pose_d1_wrt_obs,  // "A" in handwritten notes
 		const pose_flag_t & pose_base_wrt_d1, // "D" in handwritten notes
-		const JACOB_SYM_T & jacob_sym, 
+		const JACOB_SYM_T & jacob_sym,
 		const K2K_EDGES_T &k2k_edges
 		)
 	{
@@ -496,7 +496,7 @@ struct compute_jacobian_dAepsDx_deps_SE2
 			dPx_P(1,0) = 0;  dPx_P(1,1) = 1; dPx_P(1,2) =  xji_i.x*ccos_ad - xji_i.y*ssin_ad;
 			if (POINT_DIMS==3) {
 				dPx_P(2,0) = 0;  dPx_P(2,1) = 0; dPx_P(2,2) =  1;
-			}			
+			}
 
 			// d(A*exp(eps)*D) / deps
 			Eigen::Matrix<double,3,3> dAD_deps;
@@ -505,7 +505,7 @@ struct compute_jacobian_dAepsDx_deps_SE2
 			dAD_deps(0,0) = ccos_a; dAD_deps(0,1) = -ssin_a;
 			dAD_deps(1,0) = ssin_a; dAD_deps(1,1) =  ccos_a;
 			dAD_deps(2,0) = 0;    dAD_deps(2,1) =  0;
-			
+
 			dAD_deps(0,2) = -ssin_a*Xd - ccos_a*Yd;
 			dAD_deps(1,2) =  ccos_a*Xd - ssin_a*Yd;
 			dAD_deps(2,2) = 1;
@@ -529,7 +529,7 @@ struct compute_jacobian_dAepsDx_deps_SE2
 			// We need to handle the special case where "d+1"=="l", so A=Pose(0,0,0):
 			const typename RBA_ENGINE_T::pose_t p_d_d1_inv = -p_d_d1;
 
-			typename RBA_ENGINE_T::pose_t A_prime = (pose_d1_wrt_obs!=NULL) ? 
+			typename RBA_ENGINE_T::pose_t A_prime = (pose_d1_wrt_obs!=NULL) ?
 				(pose_d1_wrt_obs->pose + p_d_d1_inv)
 				:
 				p_d_d1_inv;
@@ -552,7 +552,7 @@ struct compute_jacobian_dAepsDx_deps_SE2
 			dPx_P(1,0) = 0;  dPx_P(1,1) = 1; dPx_P(1,2) =  xji_i.x*ccos_ad - xji_i.y*ssin_ad;
 			if (POINT_DIMS==3) {
 				dPx_P(2,0) = 0;  dPx_P(2,1) = 0; dPx_P(2,2) =  1;
-			}			
+			}
 
 			// d(A*exp(eps)*D) / deps
 			Eigen::Matrix<double,3,3> dAD_deps;
@@ -561,7 +561,7 @@ struct compute_jacobian_dAepsDx_deps_SE2
 			dAD_deps(0,0) = ccos_a; dAD_deps(0,1) = -ssin_a;
 			dAD_deps(1,0) = ssin_a; dAD_deps(1,1) =  ccos_a;
 			dAD_deps(2,0) = 0;    dAD_deps(2,1) =  0;
-			
+
 			dAD_deps(0,2) = -ssin_a*Xd - ccos_a*Yd;
 			dAD_deps(1,2) =  ccos_a*Xd - ssin_a*Yd;
 			dAD_deps(2,2) = 1;
@@ -579,15 +579,15 @@ struct compute_jacobian_dAepsDx_deps_SE2
 
 // Case: 2D point, SE(2) poses: (derived from generic SE2 implementation above)
 template <class RBA_ENGINE_T>
-struct compute_jacobian_dAepsDx_deps<2 /*POINT_DIMS*/,3 /*POSE_DIMS*/,RBA_ENGINE_T> 
-	: public compute_jacobian_dAepsDx_deps_SE2<2 /*POINT_DIMS*/,RBA_ENGINE_T> 
+struct compute_jacobian_dAepsDx_deps<2 /*POINT_DIMS*/,3 /*POSE_DIMS*/,RBA_ENGINE_T>
+	: public compute_jacobian_dAepsDx_deps_SE2<2 /*POINT_DIMS*/,RBA_ENGINE_T>
 {
 };
 
 // Case: 3D point, SE(2) poses: (derived from generic SE2 implementation above)
 template <class RBA_ENGINE_T>
 struct compute_jacobian_dAepsDx_deps<3 /*POINT_DIMS*/,3 /*POSE_DIMS*/,RBA_ENGINE_T>
-	: public compute_jacobian_dAepsDx_deps_SE2<3 /*POINT_DIMS*/,RBA_ENGINE_T> 
+	: public compute_jacobian_dAepsDx_deps_SE2<3 /*POINT_DIMS*/,RBA_ENGINE_T>
 {
 };
 
@@ -693,7 +693,7 @@ void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::compute_jacobian
 		return;
 	}
 
-	// take into account the possible displacement of the sensor wrt the keyframe: 
+	// take into account the possible displacement of the sensor wrt the keyframe:
 	RBA_OPTIONS::sensor_pose_on_robot_t::jacob_dh_dx_rotate( dh_dx, this->parameters.sensor_pose );
 
 	// Second Jacobian: Simply the 2x2 or 3x3 rotation matrix of base wrt observing

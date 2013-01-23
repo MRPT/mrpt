@@ -49,37 +49,38 @@ namespace srba
 	/** \addtogroup mrpt_srba_options
 		* @{ */
 
-		/** Usage: A possible type for RBA_OPTIONS::sensor_pose_on_robot_t. 
+		/** Typedefs for determining whether the result of combining a KF pose (+) a sensor pose leads to a SE(2) or SE(3) pose */
+		template <class SENSOR_POSE_CLASS, size_t KF_POSE_DIMS> struct resulting_pose_t;
+
+		/** Usage: A possible type for RBA_OPTIONS::sensor_pose_on_robot_t.
 		  * Meaning: The robot pose and the sensor pose coincide, i.e. the sensor pose on the robot is the identitity transformation.  */
 		struct sensor_pose_on_robot_none
 		{
 			/** In this case there are no needed parameters */
-			struct parameters_t 
+			struct parameters_t
 			{
 			};
 
-			/** Typedefs for determining whether the result of combining a KF pose (+) a sensor pose leads to a SE(2) or SE(3) pose */
-			template <size_t KF_POSE_DIMS> struct resulting_pose_t;
-			template <> struct resulting_pose_t<3> { typedef mrpt::poses::CPose2D pose_t; };
-			template <> struct resulting_pose_t<6> { typedef mrpt::poses::CPose3D pose_t; };
-			
 			template <class POSE>
-			static inline void robot2sensor(const POSE & robot, POSE & sensor, const parameters_t &p) { 
+			static inline void robot2sensor(const POSE & robot, POSE & sensor, const parameters_t &p) {
 				sensor = robot;
 			}
 
 			/** Take into account the possible displacement of the sensor wrt the keyframe when evaluating the Jacobian dh_dx */
 			template <class MATRIX>
-			static inline void jacob_dh_dx_rotate( MATRIX & dh_dx, const parameters_t &p) { 
-				/* nothing to do, since there's no displacement */ 
-			} 
+			static inline void jacob_dh_dx_rotate( MATRIX & dh_dx, const parameters_t &p) {
+				/* nothing to do, since there's no displacement */
+			}
 			template <class LANDMARK_T>
 			static inline void sensor2robot_point(typename landmark_traits<LANDMARK_T>::array_landmark_t & pt, const parameters_t &p) {
-				/* nothing to do, since there's no displacement */ 
+				/* nothing to do, since there's no displacement */
 			}
 		};
+		/** Typedefs for determining whether the result of combining a KF pose (+) a sensor pose leads to a SE(2) or SE(3) pose */
+		template <> struct resulting_pose_t<sensor_pose_on_robot_none,3> { typedef mrpt::poses::CPose2D pose_t; };
+		template <> struct resulting_pose_t<sensor_pose_on_robot_none,6> { typedef mrpt::poses::CPose3D pose_t; };
 
-		/** Usage: A possible type for RBA_OPTIONS::sensor_pose_on_robot_t. 
+		/** Usage: A possible type for RBA_OPTIONS::sensor_pose_on_robot_t.
 		  * Meaning: The sensor is located at an arbitrary SE(3) pose wrt the robot reference frame. */
 		struct sensor_pose_on_robot_se3
 		{
@@ -89,28 +90,25 @@ namespace srba
 				mrpt::poses::CPose3D  relative_pose;
 			};
 
-			/** Typedefs for determining whether the result of combining a KF pose (+) a sensor pose leads to a SE(2) or SE(3) pose */
-			template <size_t KF_POSE_DIMS> struct resulting_pose_t;
-			template <> struct resulting_pose_t<3> { typedef mrpt::poses::CPose3D pose_t; };
-			template <> struct resulting_pose_t<6> { typedef mrpt::poses::CPose3D pose_t; };
-
 			template <class KF_POSE>
-			static inline void robot2sensor(const KF_POSE & robot, mrpt::poses::CPose3D & sensor, const parameters_t &p) { 
+			static inline void robot2sensor(const KF_POSE & robot, mrpt::poses::CPose3D & sensor, const parameters_t &p) {
 				sensor.composeFrom(robot,p.relative_pose);
 			}
 			/** Take into account the possible displacement of the sensor wrt the keyframe when evaluating the Jacobian dh_dx */
 			template <class MATRIX>
-			static inline void jacob_dh_dx_rotate( MATRIX & dh_dx, const parameters_t &p) { 
+			static inline void jacob_dh_dx_rotate( MATRIX & dh_dx, const parameters_t &p) {
 				// dh(R2S+x)_dx = dh(x')_dx' * d(x')_dx
 				dh_dx = dh_dx * p.relative_pose.getRotationMatrix();
-			} 
-			
+			}
+
 			template <class LANDMARK_T>
 			static inline void sensor2robot_point(typename landmark_traits<LANDMARK_T>::array_landmark_t & pt, const parameters_t &p) {
 				landmark_traits<LANDMARK_T>::composePosePoint(pt, p.relative_pose);
 			}
 		};
-
+		/** Typedefs for determining whether the result of combining a KF pose (+) a sensor pose leads to a SE(2) or SE(3) pose */
+		template <> struct resulting_pose_t<sensor_pose_on_robot_se3,3> { typedef mrpt::poses::CPose3D pose_t; };
+		template <> struct resulting_pose_t<sensor_pose_on_robot_se3,6> { typedef mrpt::poses::CPose3D pose_t; };
 
 		/** @} */
 

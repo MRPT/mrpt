@@ -51,7 +51,7 @@ namespace landmarks {
 		static const size_t  LM_EUCLIDEAN_DIMS = 3; //!< Either 2 or 3, depending on the real minimum number of coordinates needed to parameterize the landmark.
 
 		/** Converts the landmark parameterization into 3D Eucliden coordinates (used for OpenGL rendering, etc.) */
-		template <class VECTOR> inline static void relativeEuclideanLocation(const VECTOR &posParams, mrpt::math::TPoint3D &posEuclidean) 
+		template <class VECTOR> inline static void relativeEuclideanLocation(const VECTOR &posParams, mrpt::math::TPoint3D &posEuclidean)
 		{
 			posEuclidean.x = posParams[0];
 			posEuclidean.y = posParams[1];
@@ -74,7 +74,7 @@ namespace landmarks {
 		static const size_t  LM_EUCLIDEAN_DIMS = 2; //!< Either 2 or 3, depending on the real minimum number of coordinates needed to parameterize the landmark.
 
 		/** Converts the landmark parameterization into 3D Eucliden coordinates (used for OpenGL rendering, etc.) */
-		template <class VECTOR> inline static void relativeEuclideanLocation(const VECTOR &posParams, mrpt::math::TPoint2D &posEuclidean) 
+		template <class VECTOR> inline static void relativeEuclideanLocation(const VECTOR &posParams, mrpt::math::TPoint2D &posEuclidean)
 		{
 			posEuclidean.x = posParams[0];
 			posEuclidean.y = posParams[1];
@@ -86,9 +86,9 @@ namespace landmarks {
 		template <class POSE,class VECTOR>
 		inline static void composePosePoint(VECTOR & pt, const POSE & pose) {
 			double lx,ly,lz;
-			p.relative_pose.composePoint(pt[0],pt[1],0, lx,ly,lz);
+			pose.composePoint(pt[0],pt[1],0, lx,ly,lz);
 			pt[0]=lx; pt[1]=ly;
-			ASSERT_MSG_(std::abs(lz)<1e-2, "Error: Using a 3D transformation to obtain a 2D point but it results in |z|>eps")
+			ASSERTMSG_(std::abs(lz)<1e-2, "Error: Using a 3D transformation to obtain a 2D point but it results in |z|>eps")
 		}
 	};
 
