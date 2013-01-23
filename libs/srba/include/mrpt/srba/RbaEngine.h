@@ -290,7 +290,7 @@ namespace srba
 			const TKeyFrameID           trg_kf,
 			std::vector<TKeyFrameID>    & found_path) const
 		{
-			return rba_state.find_path_bfs(src_kf,trg_kf,found_path);
+			return rba_state.find_path_bfs(src_kf,trg_kf,&found_path);
 		}
 
 

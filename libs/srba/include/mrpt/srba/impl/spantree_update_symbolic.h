@@ -46,18 +46,6 @@ namespace mrpt { namespace srba {
 
 using namespace std;
 
-// Aux. function for going thru the entire path between two KFs in a spanning tree, saving the path step by step.
-namespace internal
-{
-	template <class KF2KF_POSE_TYPE,class LM_TYPE,class OBS_TYPE,class RBA_OPTIONS>
-	void recursive_update_all_edges(
-		typename kf2kf_pose_traits<KF2KF_POSE_TYPE>::k2k_edge_vector_t & path,
-		const TKeyFrameID dst_id,
-		const TKeyFrameID cur_id,
-		const TRBA_Problem_state<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS> * rba
-		);
-}
-
 /** Incremental update of spanning trees after the insertion of ONE new node and ONE OR MORE edges */
 template <class KF2KF_POSE_TYPE,class LM_TYPE,class OBS_TYPE,class RBA_OPTIONS>
 void TRBA_Problem_state<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::TSpanningTree::update_symbolic_new_node(
@@ -78,7 +66,7 @@ void TRBA_Problem_state<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::TSpanning
 	// Generic algorithm for 1 or more new edges at once from the new_kf_id to the rest of the graph:
 	// -----------------------------------------------------------------------------------------------
 	// The first edge was already introduced in the STs above. Go on with the rest:
-	// (Notation is according to the published paper, see explanatory graphs or understanding this is a hell!! ;-)
+	// (Notation is according to the ICRA2013 paper, see explanatory graphs or understanding this is a hell!! ;-)
 	{
 		//const TKeyFrameID ik = getTheOtherFromPair(new_node_id, new_edges[nE] );
 		const TKeyFrameID ik = getTheOtherFromPair(new_node_id, new_edge );
@@ -246,7 +234,7 @@ cout << "ST: New path ST["<<s<<"]["<<r<<"].N ="<<(ste_s2ik ? ste_s2ik->next : ne
 				bool found = m_parent->find_path_bfs(
 					ft.first, // from
 					ft.second, // target node
-					found_path);
+					&found_path);
 
 				ASSERT_(found && !found_path.empty())
 
@@ -298,9 +286,13 @@ cout << "ST: New path ST["<<s<<"]["<<r<<"].N ="<<(ste_s2ik ? ste_s2ik->next : ne
 			const TKeyFrameID from = std::max(dst_kf_id, kf_id);
 			const TKeyFrameID to   = std::min(dst_kf_id, kf_id);
 
+			// find_path_bfs
+
 			typename kf2kf_pose_traits<KF2KF_POSE_TYPE>::k2k_edge_vector_t & path = sym.all_edges[from][to];  // O(1) in map_as_vector
 			path.clear();
-			internal::recursive_update_all_edges(path, to, from, this->m_parent );
+			//internal::recursive_update_all_edges(path, to, from, this->m_parent );
+			bool path_found = m_parent->find_path_bfs(from,to, NULL, &path);
+			ASSERT_(path_found)
 		}
 	} // end for each "kfs_with_modified_next_edge"
 
@@ -325,13 +317,14 @@ cout << "ST: New path ST["<<s<<"]["<<r<<"].N ="<<(ste_s2ik ? ste_s2ik->next : ne
 #endif
 }
 
-
+template <class k2k_edge_t>
 struct TBFSEntry
 {
-	TBFSEntry() : dist( std::numeric_limits<topo_dist_t>::max() )
+	TBFSEntry() : prev_edge(NULL),dist( std::numeric_limits<topo_dist_t>::max() )
 	{}
 
 	TKeyFrameID prev;
+	k2k_edge_t *prev_edge;
 	topo_dist_t dist;
 };
 
@@ -342,14 +335,16 @@ template <class KF2KF_POSE_TYPE,class LM_TYPE,class OBS_TYPE,class RBA_OPTIONS>
 bool TRBA_Problem_state<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::find_path_bfs(
 	const TKeyFrameID           cur_node,
 	const TKeyFrameID           trg_node,
-	std::vector<TKeyFrameID>  & found_path) const
+	std::vector<TKeyFrameID>  * out_path_IDs,
+	typename kf2kf_pose_traits<KF2KF_POSE_TYPE>::k2k_edge_vector_t * out_path_edges ) const
 {
-	found_path.clear();
+	if (out_path_IDs) out_path_IDs->clear();
+	if (out_path_edges) out_path_edges->clear();
 	if (cur_node==trg_node) return true; // No need to do any search...
 
 	std::set<TKeyFrameID>   visited;
 	std::queue<TKeyFrameID> pending;
-	std::map<TKeyFrameID,TBFSEntry>    preceding;
+	std::map<TKeyFrameID,TBFSEntry<k2k_edge_t> >    preceding;
 
 	// Insert:
 	pending.push(cur_node);
@@ -361,23 +356,26 @@ bool TRBA_Problem_state<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::find_path
 		const TKeyFrameID next_kf = pending.front();
 		pending.pop();
 
-		TBFSEntry & bfs_data_next = preceding[next_kf];
+		TBFSEntry<k2k_edge_t> & bfs_data_next = preceding[next_kf];
 		const topo_dist_t cur_dist = bfs_data_next.dist;
 
 		if (next_kf==trg_node)
 		{
 			// Path found: go thru the path in inverse order:
 			topo_dist_t  dist = bfs_data_next.dist;
-			found_path.resize(dist);
+			if (out_path_IDs) out_path_IDs->resize(dist);
+			if (out_path_edges) out_path_edges->resize(dist);
 			TKeyFrameID path_node = trg_node;
 			while (path_node != cur_node)
 			{
 				ASSERT_(dist>=0)
-				found_path[--dist] = path_node;
+				if (out_path_IDs) (*out_path_IDs)[--dist] = path_node;
 
-				std::map<TKeyFrameID,TBFSEntry>::const_iterator it_prec = preceding.find(path_node);
+				typename std::map<TKeyFrameID,TBFSEntry<k2k_edge_t> >::const_iterator it_prec = preceding.find(path_node);
 				ASSERT_(it_prec != preceding.end())
 				path_node = it_prec->second.prev;
+
+				if (out_path_edges) (*out_path_edges)[--dist] = it_prec->second.prev_edge;
 			}
 			return true; // End of search
 		}
@@ -394,60 +392,19 @@ bool TRBA_Problem_state<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::find_path
 			{
 				pending.push(new_kf);
 				visited.insert(new_kf);
-				
-				TBFSEntry & p = preceding[new_kf];
+
+				TBFSEntry<k2k_edge_t> & p = preceding[new_kf];
 
 				if (p.dist>cur_dist+1)
 				{
 					p.dist = cur_dist+1;
 					p.prev = next_kf;
+					p.prev_edge = const_cast<k2k_edge_t*>(ed);
 				}
 			}
 		}
 	}
 	return false; // No path found.
-}
-
-
-/** Aux. function for going thru the entire path between two KFs in a spanning tree, saving the path step by step.
-  * Called from: TSpanningTree::update_symbolic() */
-template <class KF2KF_POSE_TYPE,class LM_TYPE,class OBS_TYPE,class RBA_OPTIONS>
-void internal::recursive_update_all_edges(
-	typename kf2kf_pose_traits<KF2KF_POSE_TYPE>::k2k_edge_vector_t & path,
-	const TKeyFrameID dst_id,
-	const TKeyFrameID cur_id,
-	const TRBA_Problem_state<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS> * rba
-	)
-{
-	MRPT_TODO("Do non-recursive")
-
-	// Move from "cur_id" in the direction of "dst_id":
-	typename TRBA_Problem_state<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::TSpanningTree::next_edge_maps_t::const_iterator it_next_ed = rba->spanning_tree.sym.next_edge.find(cur_id);
-	ASSERT_(it_next_ed != rba->spanning_tree.sym.next_edge.end())
-
-	map<TKeyFrameID,TSpanTreeEntry>::const_iterator it_dst = it_next_ed->second.find(dst_id);
-	ASSERT_(it_dst != it_next_ed->second.end())
-
-	const TKeyFrameID next_id = it_dst->second.next;
-
-	// Search for the edge: "cur_id" -> "next_id":
-	ASSERT_(cur_id< rba->keyframes.size())
-
-	const typename kf2kf_pose_traits<KF2KF_POSE_TYPE>::k2k_edge_vector_t &edges = rba->keyframes[cur_id].adjacent_k2k_edges;
-
-	for (size_t i=0;i<edges.size();i++)
-	{
-		if ( (edges[i]->to==cur_id && edges[i]->from==next_id) ||
-			 (edges[i]->from==cur_id && edges[i]->to==next_id) )
-		{
-			path.push_back(edges[i]);
-			if (next_id==dst_id)
-				 return; // Done! End of recursion
-			else return internal::recursive_update_all_edges(path, dst_id,next_id, rba);
-		}
-	}
-	// If we reach here it means we didn't find a path...
-	THROW_EXCEPTION(mrpt::format("Couldn't find a topological path %u -> %u", static_cast<unsigned int>(cur_id),static_cast<unsigned int>(dst_id) ).c_str() )
 }
 
 } } // end NS

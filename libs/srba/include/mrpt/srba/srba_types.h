@@ -394,8 +394,8 @@ namespace srba
 
 		typedef typename kf2kf_traits_t::k2k_edge_t k2k_edge_t;
 
-		/** Observations, as provided by the user. The following combinations are possible: 
-		  *  \code 
+		/** Observations, as provided by the user. The following combinations are possible:
+		  *  \code
 		  *  +-----------+---------------------------------------------+---------------------------------+
 		  *  |                  DATA FIELDS                            |                                 |
 		  *  +-----------+-------------------------+-------------------+       RESULTING OBSERVATION     |
@@ -656,7 +656,7 @@ namespace srba
 
 		TSpanningTree           spanning_tree;
 
-		// (If you use Visual Studio 2008 and the next line raises the error "error C2719: '_Val': formal parameter with __declspec(align('16')) won't be aligned", 
+		// (If you use Visual Studio 2008 and the next line raises the error "error C2719: '_Val': formal parameter with __declspec(align('16')) won't be aligned",
 		// it's caused by this bug in either Eigen or VS2008 compiler, still to be fixed: http://eigen.tuxfamily.org/bz/show_bug.cgi?id=83  )
 		std::deque<k2f_edge_t>  all_observations;  //!< All raw observation data (k2f edges)
 		TLinearSystem           lin_system;        //!< The sparse linear system of equations
@@ -690,13 +690,15 @@ namespace srba
 
 		/** Auxiliary, brute force (BFS) method for finding the shortest path between any two Keyframes.
 		  * Use only when the distance between nodes can be larger than the maximum depth of incrementally-built spanning trees
-		  * \param[in,out] visited Just leave this vector uninitialized at input, it'll be automatically initialized to the right size and values.
+		  * \param[in,out] out_path_IDs (Ignored if ==NULL) Just leave this vector uninitialized at input, it'll be automatically initialized to the right size and values.
+		  * \param[in,out] out_path_edges (Ignored if ==NULL) Just like out_path_IDs, but here you'll receive the list of traversed edges, instead of the IDs of the visited KFs.
 		  * \return false if no path was found.
 		  */
 		bool find_path_bfs(
 			const TKeyFrameID           from,
 			const TKeyFrameID           to,
-			std::vector<TKeyFrameID>  & found_path) const;
+			std::vector<TKeyFrameID>  * out_path_IDs,
+			typename kf2kf_pose_traits<KF2KF_POSE_TYPE>::k2k_edge_vector_t * out_path_edges = NULL) const;
 
 
 		/** Computes stats on the degree (# of adjacent nodes) of all the nodes in the graph. Runs in O(N) with N=# of keyframes */

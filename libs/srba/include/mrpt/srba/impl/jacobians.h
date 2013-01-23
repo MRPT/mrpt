@@ -472,15 +472,13 @@ struct compute_jacobian_dAepsDx_deps_SE2
 			const double Yd=pose_base_wrt_d1.pose.y();
 
 			// We need to handle the special case where "d+1"=="l", so A=Pose(0,0,0):
-			double Xa=0, Ya=0, PHIa=0;
+			double PHIa=0; // Xa, Ya: Are not really needed, since they don't appear in the Jacobian.
 			mrpt::poses::CPose2D AD(mrpt::poses::UNINITIALIZED_POSE); // AD = A(+)D
 			if (pose_d1_wrt_obs!=NULL)
 			{
 				// pose_d_plus_1_wrt_l  -> pose_d1_wrt_obs
-				Xa = pose_d1_wrt_obs->pose.x();
-				Ya = pose_d1_wrt_obs->pose.y();
+				//Xa = pose_d1_wrt_obs->pose.x(); Ya = pose_d1_wrt_obs->pose.y(); // Not needed
 				PHIa = pose_d1_wrt_obs->pose.phi();
-
 				AD.composeFrom(pose_d1_wrt_obs->pose,pose_base_wrt_d1.pose);
 			}
 			else

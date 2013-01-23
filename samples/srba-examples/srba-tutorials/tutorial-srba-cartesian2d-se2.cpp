@@ -46,18 +46,18 @@ using namespace std;
 // --------------------------------------------------------------------------------
 typedef RBA_Problem<
 	kf2kf_poses::SE2,                // Parameterization  KF-to-KF poses
-	landmarks::Euclidean2D,          // Parameterization of landmark positions    
+	landmarks::Euclidean2D,          // Parameterization of landmark positions
 	observations::Cartesian_2D       // Type of observations
-	> 
+	>
 	my_srba_t;
 
 // --------------------------------------------------------------------------------
-// A test dataset. Generated with http://code.google.com/p/recursive-world-toolkit/ 
+// A test dataset. Generated with http://code.google.com/p/recursive-world-toolkit/
 //  and the script: tutorials_dataset-cartesian.cfg
 // --------------------------------------------------------------------------------
 const double SENSOR_NOISE_STD = 1e-2;
 
-struct basic_euclidean_dataset_entry_t 
+struct basic_euclidean_dataset_entry_t
 {
 	unsigned int landmark_id;
 	double x,y,z;
@@ -116,7 +116,7 @@ int main(int argc, char**argv)
 	my_srba_t rba;     //  Create an empty RBA problem
 
 	// --------------------------------------------------------------------------------
-	// Set parameters 
+	// Set parameters
 	// --------------------------------------------------------------------------------
 	rba.setVerbosityLevel( 1 );   // 0: None; 1:Important only; 2:Verbose
 
@@ -131,11 +131,11 @@ int main(int argc, char**argv)
 
 	// Set sensors parameters:
 	// rba.sensor_params has no parameters for the "Cartesian" sensor.
-	
+
 	// Alternatively, parameters can be loaded from an .ini-like config file
 	// -----------------------------------------------------------------------
 	// rba.parameters.loadFromConfigFileName("config_file.cfg", "srba");
-	
+
 	// --------------------------------------------------------------------------------
 	// Dump parameters to console (for checking/debugging only)
 	// --------------------------------------------------------------------------------
@@ -169,7 +169,7 @@ int main(int argc, char**argv)
 		true           // Also run local optimization?
 		);
 
-	cout << "Created KF #" << new_kf_info.kf_id 
+	cout << "Created KF #" << new_kf_info.kf_id
 		<< " | # kf-to-kf edges created:" <<  new_kf_info.created_edge_ids.size()  << endl
 		<< "Optimization error: " << new_kf_info.optimize_results.total_sqr_error_init << " -> " << new_kf_info.optimize_results.total_sqr_error_final << endl
 		<< "-------------------------------------------------------" << endl;
@@ -187,7 +187,7 @@ int main(int argc, char**argv)
 		obs_field.obs.obs_data.pt.y = observations_10[i].y + randomGenerator.drawGaussian1D(0,SENSOR_NOISE_STD);
 		list_obs.push_back( obs_field );
 	}
-	
+
 	//  Here happens the main stuff: create Key-frames, build structures, run optimization, etc.
 	//  ============================================================================================
 	rba.define_new_keyframe(
@@ -196,7 +196,7 @@ int main(int argc, char**argv)
 		true           // Also run local optimization?
 		);
 
-	cout << "Created KF #" << new_kf_info.kf_id 
+	cout << "Created KF #" << new_kf_info.kf_id
 		<< " | # kf-to-kf edges created:" <<  new_kf_info.created_edge_ids.size() << endl
 		<< "Optimization error: " << new_kf_info.optimize_results.total_sqr_error_init << " -> " << new_kf_info.optimize_results.total_sqr_error_final << endl
 		<< "-------------------------------------------------------" << endl;
@@ -226,7 +226,7 @@ int main(int argc, char**argv)
 	rba.build_opengl_representation(
 		0,  // Root KF,
 		opengl_options, // Rendering options
-		rba_3d  // Output scene 
+		rba_3d  // Output scene
 		);
 
 	// Display:
@@ -237,12 +237,12 @@ int main(int argc, char**argv)
 		scene->insert(rba_3d);
 		win.unlockAccess3DScene();
 	}
-	win.setCameraZoom( 4 ); 
+	win.setCameraZoom( 4 );
 	win.repaint();
 
 	cout << "Press any key or close window to exit.\n";
 	win.waitForKey();
 #endif
-		
+
 	return 0; // All ok
 }

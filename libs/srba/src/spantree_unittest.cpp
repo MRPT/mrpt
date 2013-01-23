@@ -78,7 +78,7 @@ void test_spantree_topology(
 	// Create random global coordinates GT pose:
 	for (size_t kf=0;kf<nKFs;kf++)
 	{
-		GT_KF_poses[kf] = mrpt::poses::CPose3D( 
+		GT_KF_poses[kf] = mrpt::poses::CPose3D(
 			randomGenerator.drawUniform(-SPACE_MAX_XYZ,SPACE_MAX_XYZ),
 			randomGenerator.drawUniform(-SPACE_MAX_XYZ,SPACE_MAX_XYZ),
 			randomGenerator.drawUniform(-SPACE_MAX_XYZ,SPACE_MAX_XYZ),
@@ -140,7 +140,7 @@ void test_spantree_topology(
 
 	// Update ALL numeric relative poses.
 	// --------------------------------------------
-	rba.get_rba_state().spanning_tree.update_numeric(false); 
+	rba.get_rba_state().spanning_tree.update_numeric(false /*skip those marked as up-to-date => So: false=just update them all*/);
 
 	// Compare incremental STs with BFS trees:
 	// --------------------------------------------
@@ -157,7 +157,7 @@ void test_spantree_topology(
 		ASSERT_(it_st_it != kf_nexts.end())
 
 		const std::map<TKeyFrameID,TSpanTreeEntry> & st_i = it_st_it->second;
-		
+
 		EXPECT_GE(st.size(),1); // "create_complete_spanning_tree()" returns the root node, in the STs we don't, so that's the why of the "-1" next:
 		EXPECT_EQ(st_i.size(), st.size()-1 )
 			<< "Expected ST of KF " << kf << " of depth "<<max_depth<<" to be of size " << st.size()-1 << " but it's " << st_i.size() << endl;
@@ -188,34 +188,34 @@ void test_spantree_topology(
 			std::vector<TKeyFrameID>  found_path;
 			bool found = rba.find_path_bfs(kf, dst_kf, found_path);
 
-			EXPECT_TRUE(found && !found_path.empty()) 
+			EXPECT_TRUE(found && !found_path.empty())
 				<< "Expected to find path between " << kf << " <-> " << dst_kf << " path.size()=" << found_path.size() << endl;
-			if (!found || found_path.empty()) 
-			{ 
+			if (!found || found_path.empty())
+			{
 #ifdef _DEBUG
 				rba.save_graph_as_dot("dbg.dot");
 				::system("dot dbg.dot -o dbg.png -Tpng");
 				mrpt::system::pause();
 #endif
-				return; 
+				return;
 			}
 
 			// Check that they are the same KFs, by the way...
 			std::map<TKeyFrameID,TSpanTreeEntry>::const_iterator it_st_i = st_i.find(dst_kf);
 			EXPECT_TRUE(it_st_i != st_i.end())
 				<< "Expected to find KF " << dst_kf << " in the ST of kf " << kf <<", but it wasn't." << endl;
-			if (it_st_i == st_i.end()) 
-			{ 
+			if (it_st_i == st_i.end())
+			{
 #ifdef _DEBUG
 				rba.save_graph_as_dot("dbg.dot");
 				::system("dot dbg.dot -o dbg.png -Tpng");
 				mrpt::system::pause();
 #endif
-				return; 
+				return;
 			}
 
 			const TSpanTreeEntry &st_ij = it_st_i->second;
-						
+
 			EXPECT_EQ(found_path.size(), st_ij.distance);
 
 			// and the final check: both reconstructions must lead to the same relative poses!
@@ -266,4 +266,3 @@ TEST(SpanTreeTests,LinearGraphsInv)        { run_spantree_topology(100);  }
 TEST(SpanTreeTests,LinearGraphsWithLoops)     { run_spantree_topology(1);  }
 TEST(SpanTreeTests,LinearGraphsWithLoopsInv)  { run_spantree_topology(101);  }
 
-//TEST(SpanTreeTests,RoundAboutMany)         { run_spantree_topology(2);  }
