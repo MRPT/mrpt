@@ -123,9 +123,11 @@ namespace mrpt
 		  */
 		std::string BASE_IMPEXP fileNameChangeExtension( const std::string &filename, const std::string &newExtension );
 
-		/** Return the size of the given file, or size_t(-1) if some error is found accessing that file.
-		  */
+		/** Return the size of the given file, or size_t(-1) if some error is found accessing that file.  */
 		uint64_t BASE_IMPEXP getFileSize(const std::string &fileName);
+
+		/** Return the time of the file last modification, or "0" if the file doesn't exist.  */
+		time_t BASE_IMPEXP getFileModificationTime(const std::string &filename);
 
 		/** Windows: replace all '/'->'\' , in Linux/MacOS: replace all '\'->'/' */
 		std::string BASE_IMPEXP filePathSeparatorsToNative(const std::string & filePath);

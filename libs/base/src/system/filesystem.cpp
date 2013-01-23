@@ -575,3 +575,11 @@ std::string mrpt::system::filePathSeparatorsToNative(const std::string & filePat
 	}
 	return ret;
 }
+
+time_t mrpt::system::getFileModificationTime(const std::string &filename)
+{
+	struct stat fS;
+	if (0!=stat( filename.c_str(), &fS)) return 0;
+	else return fS.st_mtime;
+}
+

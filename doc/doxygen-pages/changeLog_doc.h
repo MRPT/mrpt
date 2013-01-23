@@ -43,13 +43,14 @@
   <h2>Version 1.0.0 - (Under development) </h2></a>
 	- <b>Most important changes:</b>
 		- New library with a flexible implementation of Sparser Relative Bundle Adjustment (RBA), as presented in ICRA 2013: <a href="http://www.mrpt.org/srba" >mrpt-srba</a>.
-		- Many MRPT modules are now header-only libraries.
+		- Some MRPT modules are now header-only libraries.
 		- Support for a new Octomap metric map, via the octomap library. See mrpt::slam::COctoMap and detailed changes below.
 		- Better support for custom builds of MRPT (selective building of individual apps and libs, etc.)
 		- Many bug fixes.
 		- From now on, MRPT is released under the "New BSD" license.
 	- <b>Detailed list of changes:</b>
 		- New apps:
+			- <a href="http://www.mrpt.org/Application:srba-slam" >srba-slam</a>: A command-line frontend for the Relative Bundle Adjustment engine in mrpt-srba.
 			- <a href="http://www.mrpt.org/Application:holonomic-navigator-demo" >holonomic-navigator-demo</a>
 			- <a href="http://www.mrpt.org/Application:robotic-arm-kinematics" >robotic-arm-kinematics</a>: A GUI for experimenting with Denavit-Hartenberg parameters.
 		- Changes in apps:
@@ -144,6 +145,7 @@
 			- [mrpt-base]
 				- mrpt::utils::abs_diff()
 				- mrpt::system::getMRPTLicense()
+				- mrpt::system::getFileModificationTime()
 				- mrpt::math::noncentralChi2PDF_CDF() is now exposed (was private)
 				- mrpt::utils::sprintf_container()
 				- mrpt::poses::operator -(mrpt::poses::CPose3DQuat)
