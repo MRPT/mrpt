@@ -64,8 +64,8 @@ RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::TSRBAParameters::TSRB
 	use_robust_kernel    ( false ),
 	kernel_param         ( 3. ),
 	max_iters            ( 30 ),
-	max_error_per_obs_px ( 1e-3 ),
-	numeric_jacobians	 ( false ),
+	max_error_per_obs_to_stop    ( 1e-9 ),
+	numeric_jacobians    ( false ),
 	feedback_user_iteration(NULL),
 	compute_condition_number(false),
 	std_noise_observations  ( 1. )
@@ -84,7 +84,7 @@ void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::TSRBAParameters:
 	MRPT_LOAD_CONFIG_VAR(use_robust_kernel,bool,source,section)
 	MRPT_LOAD_CONFIG_VAR(kernel_param,double,source,section)
 	MRPT_LOAD_CONFIG_VAR(max_iters,uint64_t,source,section)
-	MRPT_LOAD_CONFIG_VAR(max_error_per_obs_px,double,source,section)
+	MRPT_LOAD_CONFIG_VAR(max_error_per_obs_to_stop,double,source,section)
 
 }
 
@@ -100,7 +100,7 @@ void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::TSRBAParameters:
 	out.write(section,"use_robust_kernel",use_robust_kernel,  /* text width */ 30, 30, "Use pseudo-Huber kernel?");
 	out.write(section,"kernel_param",kernel_param,  /* text width */ 30, 30, "robust kernel parameter");
 	out.write(section,"max_iters",max_iters,  /* text width */ 30, 30, "Max. iterations for optimization");
-	out.write(section,"max_error_per_obs_px",max_error_per_obs_px,  /* text width */ 30, 30, "Another criterion for stopping optimization");
+	out.write(section,"max_error_per_obs_to_stop",max_error_per_obs_to_stop,  /* text width */ 30, 30, "Another criterion for stopping optimization");
 
 
 }

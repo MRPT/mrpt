@@ -100,7 +100,7 @@ int run_demo_simul(int argc, char**argv)
 
 	rba.parameters.srba.compute_condition_number = false;
 
-	rba.parameters.srba.max_error_per_obs_px = 1e-8;
+	rba.parameters.srba.max_error_per_obs_to_stop = 1e-8;
 	rba.parameters.srba.feedback_user_iteration = &optimization_feedback;
 
 	// =========== Topology parameters ===========

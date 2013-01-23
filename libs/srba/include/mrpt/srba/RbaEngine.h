@@ -432,7 +432,7 @@ namespace srba
 			bool   use_robust_kernel;
 			double kernel_param;
 			size_t max_iters;
-			double max_error_per_obs_px; //!< default: 1e-3
+			double max_error_per_obs_to_stop; //!< default: 1e-9
 			bool   numeric_jacobians;
 			void (*feedback_user_iteration)(unsigned int iter, const double total_sq_err, const double mean_sqroot_error);
 			bool   compute_condition_number; //!< Compute and return to the user the Hessian condition number of k2k edges (default=false)

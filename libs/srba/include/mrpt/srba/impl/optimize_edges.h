@@ -42,14 +42,18 @@ using namespace mrpt::math;
 using namespace std;
 
 // Build flags:
-#define SOLVE_USING_SCHUR_COMPLEMENT  1
-#define USE_DENSE_CHOLESKY            1
-#define DETAILED_TIME_PROFILING       0          //  Enabling this has a measurable impact in performance, so use only for debugging.
-
-//#define DEBUG_DUMP_SCHUR_MATRICES
+#ifndef SRBA_SOLVE_USING_SCHUR_COMPLEMENT
+#	define SRBA_SOLVE_USING_SCHUR_COMPLEMENT  1
+#endif
+#ifndef SRBA_USE_DENSE_CHOLESKY
+#	define SRBA_USE_DENSE_CHOLESKY            1
+#endif
+#ifndef SRBA_DETAILED_TIME_PROFILING
+#	define SRBA_DETAILED_TIME_PROFILING       0          //  Enabling this has a measurable impact in performance, so use only for debugging.
+#endif
 
 // Macros:
-#if DETAILED_TIME_PROFILING
+#if SRBA_DETAILED_TIME_PROFILING
 #	define DETAILED_PROFILING_ENTER(_STR) m_profiler.enter(_STR);
 #	define DETAILED_PROFILING_LEAVE(_STR) m_profiler.leave(_STR);
 #else
@@ -334,7 +338,7 @@ void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::optimize_edges(
 
 	// Extra params:
 	const size_t max_iters            = this->parameters.srba.max_iters;
-	const double max_error_per_obs_px = this->parameters.srba.max_error_per_obs_px;
+	const double max_error_per_obs_to_stop = this->parameters.srba.max_error_per_obs_to_stop;
 
 
 	// Cholesky object, as a pointer to reuse it between iterations:
@@ -425,7 +429,7 @@ void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::optimize_edges(
 
 	// Build symbolic structures for Schur complement:
 	// ---------------------------------------------------------------------------------
-#if SOLVE_USING_SCHUR_COMPLEMENT
+#if SRBA_SOLVE_USING_SCHUR_COMPLEMENT
 	DETAILED_PROFILING_ENTER("opt.schur_compl_build_symbolic")
 
 	SchurComplement<
@@ -469,10 +473,10 @@ void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::optimize_edges(
 			stop=true;
 			VERBOSE_LEVEL(2) << "[OPT] LM end criterion: lambda too large. " << lambda << ">=" <<MAX_LAMBDA<<endl;
 		}
-		if (proj_error_per_obs_px < max_error_per_obs_px)
+		if (proj_error_per_obs_px < max_error_per_obs_to_stop)
 		{
 			stop=true;
-			VERBOSE_LEVEL(2) << "[OPT] LM end criterion: error too small. " << proj_error_per_obs_px << "<" <<max_error_per_obs_px<<endl;
+			VERBOSE_LEVEL(2) << "[OPT] LM end criterion: error too small. " << proj_error_per_obs_px << "<" <<max_error_per_obs_to_stop<<endl;
 		}
 
 		while(rho<=0 && !stop)
@@ -481,7 +485,7 @@ void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::optimize_edges(
 			//  Build the sparse sS=(H+\lambda I) matrix to be decomposed with Cholesky
 			// -------------------------------------------------------------------------
 
-#if !SOLVE_USING_SCHUR_COMPLEMENT
+#if !SRBA_SOLVE_USING_SCHUR_COMPLEMENT
 			// --------------------------------------------------------
 			// Strategy #1: Solve the entire H Ax = -g system with
 			//               H as a single sparse Hessian.
@@ -602,7 +606,7 @@ void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::optimize_edges(
 
 			DETAILED_PROFILING_LEAVE("opt.backsub")
 
-#else // SOLVE_USING_SCHUR_COMPLEMENT
+#else // SRBA_SOLVE_USING_SCHUR_COMPLEMENT
 
 			// --------------------------------------------------------
 			// Strategy #2: Solve the H·Ax = -g system using the schur
@@ -630,7 +634,7 @@ void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::optimize_edges(
 			if (schur_compl.getNumFeaturesFullRank()!=schur_compl.getNumFeatures())
 				VERBOSE_LEVEL(1) << "[OPT] Schur: " << schur_compl.getNumFeaturesFullRank() << " out of " << schur_compl.getNumFeatures() << " features have full-rank.\n";
 
-#if !USE_DENSE_CHOLESKY
+#if !SRBA_USE_DENSE_CHOLESKY
 			CSparseMatrix sS(nUnknowns_k2k*POSE_DIMS,nUnknowns_k2k*POSE_DIMS);  // Only for the H_Ap part of the Hessian
 
 			// Now write the updated "HAp" into its sparse matrix form:
@@ -714,7 +718,7 @@ void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::optimize_edges(
 
 			DETAILED_PROFILING_LEAVE("opt.backsub")
 
-#else // USE_DENSE_CHOLESKY
+#else // SRBA_USE_DENSE_CHOLESKY
 
 			// Use a dense Cholesky method for solving the set of unknowns:
 			Eigen::MatrixXd  denseH(nUnknowns_k2k*POSE_DIMS,nUnknowns_k2k*POSE_DIMS);  // Only for the H_Ap part of the Hessian
@@ -804,7 +808,7 @@ void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::optimize_edges(
 			delta_eps.saveToTextFile("deltas_Ap_f_schur.txt");
 #endif
 
-#endif // SOLVE_USING_SCHUR_COMPLEMENT
+#endif // SRBA_SOLVE_USING_SCHUR_COMPLEMENT
 
 
 			// Make a copy of the old edge values, just in case we need to restore them back...
@@ -933,7 +937,7 @@ void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::optimize_edges(
 				sparse_hessian_update_numeric(HApf);
 				DETAILED_PROFILING_LEAVE("opt.sparse_hessian_update_numeric")
 
-#if SOLVE_USING_SCHUR_COMPLEMENT
+#if SRBA_SOLVE_USING_SCHUR_COMPLEMENT
 				DETAILED_PROFILING_ENTER("opt.schur_realize_HAp_changed")
 
 				// Update the starting value of HAp for Schur:
@@ -948,8 +952,8 @@ void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::optimize_edges(
 				DETAILED_PROFILING_LEAVE("opt.compute_minus_gradient")
 
 				// Reset other vars:
-				stop = norm_inf(minus_grad)<=eps  || (proj_error_per_obs_px < max_error_per_obs_px);
-				lambda *= max(1.0/3.0, 1-std::pow(2*rho-1,3.0) );
+				stop = norm_inf(minus_grad)<=eps  || (proj_error_per_obs_px < max_error_per_obs_to_stop);
+				lambda *= std::max(1.0/3.0, 1-std::pow(2*rho-1,3.0) );
 				nu = 2.0;
 			}
 			else
@@ -995,7 +999,7 @@ void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::optimize_edges(
 
 		for (size_t i=0;i<nUnknowns_k2f;i++)
 		{
-#if SOLVE_USING_SCHUR_COMPLEMENT
+#if SRBA_SOLVE_USING_SCHUR_COMPLEMENT
 			if (!schur_compl.was_ith_feature_invertible(i))
 				continue;
 #endif
