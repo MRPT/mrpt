@@ -697,7 +697,8 @@ namespace srba
 				const array_landmark_t & _xji_i,
 				const bool _is_inverse_dir,
 				const k2k_edges_deque_t  &_k2k_edges,
-				const typename OBS_TYPE::TObservationParams   & _sensor_params
+				const typename OBS_TYPE::TObservationParams   & _sensor_params,
+				const typename RBA_OPTIONS::sensor_pose_on_robot_t::parameters_t  & _sensor_pose
 				) :
 			k2k_edge_id(_k2k_edge_id),
 			pose_d1_wrt_obs(_pose_d1_wrt_obs),
@@ -705,7 +706,8 @@ namespace srba
 			xji_i(_xji_i),
 			is_inverse_dir(_is_inverse_dir),
 			k2k_edges(_k2k_edges),
-			sensor_params(_sensor_params)
+			sensor_params(_sensor_params),
+			sensor_pose(_sensor_pose)
 			{
 			}
 
@@ -716,6 +718,7 @@ namespace srba
 			const bool is_inverse_dir;
 			const k2k_edges_deque_t  &k2k_edges;
 			const typename OBS_TYPE::TObservationParams   & sensor_params;
+			const typename RBA_OPTIONS::sensor_pose_on_robot_t::parameters_t  & sensor_pose;
 		};
 
 		struct TNumeric_dh_df_params
@@ -723,17 +726,20 @@ namespace srba
 			TNumeric_dh_df_params(
 				const pose_t * _pose_base_wrt_obs,
 				const array_landmark_t & _xji_i,
-				const typename OBS_TYPE::TObservationParams   & _sensor_params
+				const typename OBS_TYPE::TObservationParams   & _sensor_params,
+				const typename RBA_OPTIONS::sensor_pose_on_robot_t::parameters_t  & _sensor_pose
 				) :
 			pose_base_wrt_obs(_pose_base_wrt_obs),
 			xji_i(_xji_i),
-			sensor_params(_sensor_params)
+			sensor_params(_sensor_params),
+			sensor_pose(_sensor_pose)
 			{
 			}
 
 			const pose_t * pose_base_wrt_obs;
 			const array_landmark_t & xji_i;
 			const typename OBS_TYPE::TObservationParams   & sensor_params;
+			const typename RBA_OPTIONS::sensor_pose_on_robot_t::parameters_t  & sensor_pose;
 		};
 
 		/** Auxiliary method for numeric Jacobian: numerically evaluates the new observation "y" for a small increment "x" in a relative KF-to-KF pose */

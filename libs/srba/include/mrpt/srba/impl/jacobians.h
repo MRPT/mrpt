@@ -84,7 +84,7 @@ void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::numeric_dh_dAp(c
 
 	// Sensor pose: base_pose_wrt_sensor = robot_pose (+) sensor_pose_on_the_robot
 	typename resulting_pose_t<typename RBA_OPTIONS::sensor_pose_on_robot_t,REL_POSE_DIMS>::pose_t base_pose_wrt_sensor(mrpt::poses::UNINITIALIZED_POSE);
-	RBA_OPTIONS::sensor_pose_on_robot_t::robot2sensor( *base_from_obs, base_pose_wrt_sensor, this->parameters.sensor_pose );
+	RBA_OPTIONS::sensor_pose_on_robot_t::robot2sensor( *base_from_obs, base_pose_wrt_sensor, params.sensor_pose );
 
 	// Generate observation:
 	sensor_model_t::observe(y,base_pose_wrt_sensor,params.xji_i, params.sensor_params);
@@ -134,7 +134,7 @@ void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::numeric_dh_df(co
 
 	// Sensor pose: base_pose_wrt_sensor = robot_pose (+) sensor_pose_on_the_robot
 	typename resulting_pose_t<typename RBA_OPTIONS::sensor_pose_on_robot_t,REL_POSE_DIMS>::pose_t  base_pose_wrt_sensor(mrpt::poses::UNINITIALIZED_POSE);
-	RBA_OPTIONS::sensor_pose_on_robot_t::robot2sensor( *pos_cam, base_pose_wrt_sensor, this->parameters.sensor_pose );
+	RBA_OPTIONS::sensor_pose_on_robot_t::robot2sensor( *pos_cam, base_pose_wrt_sensor, params.sensor_pose );
 
 	// Generate observation:
 	sensor_model_t::observe(y,base_pose_wrt_sensor,x_local, params.sensor_params);
@@ -252,7 +252,7 @@ void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::compute_jacobian
 	array_pose_t x_incrs;
 	x_incrs.setConstant(1e-4);
 
-	const TNumeric_dh_dAp_params num_params(jacob.sym.k2k_edge_id,&pose_d1_wrt_obs->pose, pose_base_wrt_d1.pose,jacob.sym.feat_rel_pos->pos, is_inverse_edge_jacobian,k2k_edges,this->parameters.sensor);
+	const TNumeric_dh_dAp_params num_params(jacob.sym.k2k_edge_id,&pose_d1_wrt_obs->pose, pose_base_wrt_d1.pose,jacob.sym.feat_rel_pos->pos, is_inverse_edge_jacobian,k2k_edges,this->parameters.sensor,this->parameters.sensor_pose);
 
 	jacobians::jacob_numeric_estimate(x,&numeric_dh_dAp,x_incrs,num_params,num_jacob);
 
@@ -666,7 +666,7 @@ void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::compute_jacobian
 	array_landmark_t x_incrs;
 	x_incrs.setConstant(1e-3);
 
-	const TNumeric_dh_df_params num_params(&rel_pose_base_from_obs->pose,jacob.sym.rel_pos->pos,this->parameters.sensor);
+	const TNumeric_dh_df_params num_params(&rel_pose_base_from_obs->pose,jacob.sym.rel_pos->pos,this->parameters.sensor,this->parameters.sensor_pose);
 
 	jacobians::jacob_numeric_estimate(x,&numeric_dh_df,x_incrs,num_params,num_jacob);
 

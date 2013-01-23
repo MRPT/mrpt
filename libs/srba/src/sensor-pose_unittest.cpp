@@ -44,11 +44,11 @@ using namespace mrpt::random;
 using namespace std;
 
 // --------------------------------------------------------------------------------
-// A test dataset. Generated with http://code.google.com/p/recursive-world-toolkit/ 
+// A test dataset. Generated with http://code.google.com/p/recursive-world-toolkit/
 //  and the script: tutorials_dataset-cartesian.cfg
 // --------------------------------------------------------------------------------
 const double SENSOR_NOISE_STD = 1e-9;
-struct basic_euclidean_dataset_entry_t 
+struct basic_euclidean_dataset_entry_t
 {
 	unsigned int landmark_id;
 	double x,y,z;
@@ -236,16 +236,16 @@ void run_test()
 	// Declare a typedef "my_srba_t" for easily referring to my RBA problem type:
 	typedef RBA_Problem<
 		kf2kf_poses::SE3,                // Parameterization  KF-to-KF poses
-		landmarks::Euclidean3D,          // Parameterization of landmark positions    
+		landmarks::Euclidean3D,          // Parameterization of landmark positions
 		observations::Cartesian_3D,       // Type of observations
 		typename DATASET::my_srba_options
-		> 
+		>
 		my_srba_t;
 
 	my_srba_t rba;     //  Create an empty RBA problem
 
 	// --------------------------------------------------------------------------------
-	// Set parameters 
+	// Set parameters
 	// --------------------------------------------------------------------------------
 	rba.setVerbosityLevel( 0 );   // 0: None; 1:Important only; 2:Verbose
 
@@ -271,8 +271,8 @@ void run_test()
 	// --------------------------------------------------------------------------------
 	// Define observations of KF #0:
 	// --------------------------------------------------------------------------------
-	my_srba_t::new_kf_observations_t  list_obs;
-	my_srba_t::new_kf_observation_t   obs_field;
+	typename my_srba_t::new_kf_observations_t  list_obs;
+	typename my_srba_t::new_kf_observation_t   obs_field;
 
 	obs_field.is_fixed = false;   // Landmarks have unknown relative positions (i.e. treat them as unknowns to be estimated)
 	obs_field.is_unknown_with_init_val = false; // We don't have any guess on the initial LM position (will invoke the inverse sensor model)
@@ -308,7 +308,7 @@ void run_test()
 		obs_field.obs.obs_data.pt.z = d1[i].z + randomGenerator.drawGaussian1D(0,SENSOR_NOISE_STD);
 		list_obs.push_back( obs_field );
 	}
-	
+
 	rba.define_new_keyframe(
 		list_obs,      // Input observations for the new KF
 		new_kf_info,   // Output info
@@ -320,9 +320,8 @@ void run_test()
 	const mrpt::poses::CPose3D P = -rba.get_k2k_edges()[0].inv_pose;
 	const mrpt::poses::CPose3D P_GT = GT1-GT0;
 
-	cout 
 	EXPECT_NEAR(0, (P.getAsVectorVal()-P_GT.getAsVectorVal()).array().abs().sum(), 1e-2 )
-		<< "P : " << P << endl 
+		<< "P : " << P << endl
 		<< "GT: " << P_GT << endl;
 }
 
@@ -330,5 +329,5 @@ void run_test()
 TEST(MiniProblems,SensorAtRobot_vs_SensorDisplaced)
 {
 	run_test<TEST_DATASET0>();
-	run_test<TEST_DATASET1>();		
+	run_test<TEST_DATASET1>();
 }
