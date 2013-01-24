@@ -1182,9 +1182,6 @@ void  CPointsMap::computeMatchingWith3D(
 
 				p.errorSquareAfterTransformation  = tentativ_err_sq;
 
-				// save the correspondence:
-				correspondences.push_back( p );
-
 				// At least one:
 				nOtherMapPointsWithCorrespondence++;
 
