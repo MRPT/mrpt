@@ -35,6 +35,37 @@
 
 #pragma once
 
+#include "CDatasetParserBase.h"
 
+template <>
+struct CDatasetParserTempl<mrpt::srba::observations::RangeBearing_2D> : public CDatasetParserBase
+{
+	double m_noise_std_range;
+	double m_noise_std_yaw;
 
+	CDatasetParserTempl(RBASLAM_Params &cfg) : 
+		CDatasetParserBase(cfg),
+		m_noise_std_range(1e-4),
+		m_noise_std_yaw(1e-5)
+	{
+		//m_noise_std_range=cfg.arg_pixel_noise.getValue();
+		//m_noise_std_yaw=...
+	}
 
+	virtual void checkObsProperSize() const
+	{
+		// Columns: KeyframeIndex  LandmarkID | Range Yaw
+		ASSERT_(m_OBS.getColCount()==(2+2))
+	}
+
+	void getObs(
+		size_t idx, 
+		mrpt::srba::observation_traits<mrpt::srba::observations::RangeBearing_2D>::observation_t & o 
+		) const
+	{
+		o.feat_id        = m_OBS(idx,1);
+		o.obs_data.range = m_OBS(idx,2) + mrpt::random::randomGenerator.drawGaussian1D(0, m_noise_std_range);
+		o.obs_data.yaw   = m_OBS(idx,3) + mrpt::random::randomGenerator.drawGaussian1D(0, m_noise_std_yaw);
+	}
+
+};
