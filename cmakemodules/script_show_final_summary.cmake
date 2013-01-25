@@ -122,7 +122,7 @@ SHOW_CONFIG_LINE_SYSTEM("Has PCL (Pointscloud library)           " CMAKE_MRPT_HA
 IF(NOT UNIX)	# In fact, it's not "support for Bumblebee" but for it thru PGR vendor libraries.
 SHOW_CONFIG_LINE("Has PGR Digiclops/Triclops              " CMAKE_MRPT_HAS_BUMBLEBEE)
 ENDIF(NOT UNIX)
-SHOW_CONFIG_LINE_SYSTEM("Has SuiteSparse/CHOLMOD                 " CMAKE_MRPT_HAS_CHOLDMOD)
+SHOW_CONFIG_LINE_SYSTEM("Has SuiteSparse/CHOLMOD                 " CMAKE_MRPT_HAS_CHOLMOD)
 SHOW_CONFIG_LINE_SYSTEM("Has SuiteSparse/CSparse                 " CMAKE_MRPT_HAS_CSPARSE)
 SHOW_CONFIG_LINE_SYSTEM("Has SwissRanger 3/4000 3D camera        " CMAKE_MRPT_HAS_SWISSRANGE )
 SHOW_CONFIG_LINE_SYSTEM("Has Phidget                             " CMAKE_MRPT_HAS_PHIDGET)
