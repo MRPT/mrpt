@@ -1,0 +1,229 @@
+// ---------------------------------------------------------------
+// A first demonstration of the Recursive World Language (RWL)
+//  Defines a corridor-like square closed loop
+//
+//  Author: Jose Luis Blanco Claraco, Aug 2012.
+// ---------------------------------------------------------------
+
+LIST main
+	// At the origin there is always a "node" (#0), there is no need to 
+	//  manually create it.
+
+	// Start creating the corridors:
+	CALL areas_long_row1
+	CALL areas_long_row2
+	CALL areas_long_row1
+ENDLIST
+
+LIST areas_long_row1
+	PUSH
+	CALL areas_1210321012
+	POP
+	Y+= 100
+ENDLIST
+
+LIST areas_long_row2
+	PUSH
+	CALL areas_3101230123
+	POP
+	Y+= 100
+ENDLIST
+
+
+LIST areas_1210321012
+	CALL area1
+	X+= 100
+	CALL area2
+	X+= 100
+	CALL area1
+	X+= 100
+ENDLIST
+
+LIST areas_3101230123
+	CALL area3
+	X+= 100
+	CALL area1
+	X+= 100
+	CALL area0
+	X+= 100
+ENDLIST
+
+LIST random_lms
+	LM_RANDOM 0 2 -3 3 0 0
+ENDLIST
+
+LIST corridor_lms  // A simple corridor segment of length=1m
+	CALL *6 random_lms
+ENDLIST
+
+LIST corridor_1  // A simple corridor segment of length=1m
+	CALL corridor_lms
+	X+= 1
+ENDLIST
+
+LIST corridor_sqrt2  // A simple corridor segment of length=sqrt(2)
+	CALL corridor_lms
+	X+= 1.41421356237
+ENDLIST
+
+
+LIST area0
+	PUSH
+	// Empty area
+	NODE NO_ARC
+
+	POP
+ENDLIST
+
+
+LIST area1
+	PUSH
+	NODE NO_ARC
+
+	CALL *30 corridor_1
+	NODE
+
+	PUSH
+	YAW+= 90
+	CALL *40 corridor_1
+	NODE
+	POP
+
+	CALL *40 corridor_1
+	NODE
+
+	PUSH
+	YAW+= 90
+	CALL *40 corridor_1
+	NODE
+	POP
+
+	CALL *30 corridor_1
+	NODE
+	YAW+= 90
+
+	CALL *40 corridor_1
+	NODE
+
+	PUSH
+	YAW+= 90
+	CALL *100 corridor_1
+	NODE
+	POP
+
+	CALL *20 corridor_1
+	NODE
+
+	PUSH
+	YAW+= 90
+	CALL *100 corridor_1
+	NODE
+	POP
+
+	CALL *40 corridor_1
+	NODE
+
+	YAW+= 90
+	CALL *25 corridor_1
+	NODE
+
+	PUSH
+	YAW+= 90
+	CALL *40 corridor_1
+	NODE
+	POP
+
+	CALL *25 corridor_1
+	NODE
+
+	PUSH
+	YAW+= 90
+	CALL *40 corridor_1
+	NODE
+	CALL *20 corridor_1
+	NODE
+	POP
+
+	CALL *25 corridor_1
+	NODE
+
+	PUSH
+	YAW+= 90
+	CALL *40 corridor_1
+	NODE
+	POP
+
+	CALL *25 corridor_1
+	NODE
+
+	YAW+= 90
+	CALL *40 corridor_1
+	NODE
+
+	CALL *20 corridor_1
+	NODE
+
+	CALL *40 corridor_1
+	NODE
+
+	POP
+ENDLIST
+
+
+LIST area2
+	PUSH
+	NODE NO_ARC
+
+	CALL *100 corridor_1
+	NODE
+	YAW+= 90
+
+	CALL *100 corridor_1
+	NODE
+	YAW+= 90
+
+	CALL *100 corridor_1
+	NODE
+	YAW+= 90
+
+	CALL *100 corridor_1
+	NODE
+
+	POP
+ENDLIST
+
+LIST area3
+	PUSH
+	NODE NO_ARC
+
+	NODE
+	YAW+= 45
+	CALL *50 corridor_sqrt2
+	NODE
+
+	PUSH
+	CALL *50 corridor_sqrt2
+	NODE
+	POP
+
+	YAW+= 90
+	PUSH
+	CALL *50 corridor_sqrt2
+	NODE
+	POP
+
+	YAW+= 90
+	PUSH
+	CALL *50 corridor_sqrt2
+	NODE
+	POP
+
+	YAW+= 90
+	PUSH
+	CALL *50 corridor_sqrt2
+	NODE
+	POP
+
+	POP
+ENDLIST
+
