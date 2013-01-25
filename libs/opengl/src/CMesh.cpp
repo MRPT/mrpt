@@ -55,6 +55,8 @@ IMPLEMENTS_SERIALIZABLE( CMesh, CRenderizableDisplayList, mrpt::opengl )
 void CMesh::updateTriangles() const	{
 	CRenderizableDisplayList::notifyChange();
 
+	actualMesh.clear();
+
 	float cR[3],cG[3],cB[3];
 	const size_t cols=Z.getColCount();
 	const size_t rows=Z.getRowCount();
