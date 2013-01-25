@@ -31,6 +31,9 @@
    | STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN  |
    | ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE           |
    | POSSIBILITY OF SUCH DAMAGE.                                               |
+   |     You should have received a copy of the GNU General Public License     |
+   |     along with MRPT.  If not, see <http://www.gnu.org/licenses/>.         |
+   |                                                                           |
    +---------------------------------------------------------------------------+ */
 
 #include <mrpt/hwdrivers.h> // Precompiled headers
@@ -149,25 +152,64 @@ bool CLMS100Eth::turnOn()
                 char msg[] = {"sMN SetAccessMode 03 F4724744"};
                 char msgIn[100];
                 sendCommand(msg);
-                read = m_client.readAsync(msgIn, 100, 100, 100);  //18
-                printf_debug("message : %s\n",string(msgIn).c_str());
+
+                read = m_client.readAsync(msgIn, 100, 1000, 1000);  //18
+                
+                msgIn[read-1] = 0;
+                printf_debug("read : %d\n",read);
+                printf_debug("message : %s\n",string(&msgIn[1]).c_str());
+                
                 if(!read) return false;
             }
             {
-                char msg[] = {"sMN mLMPsetscancfg 2500 1 2500 -450000 +2250000"};
+                char msg[] = {"sMN mLMPsetscancfg +2500 +1 +2500 -450000 +2250000"};
                 char msgIn[100];
                 sendCommand(msg);
-                m_client.readAsync(msgIn, 100, 100, 100);
-                printf_debug("message : %s\n",string(msgIn).c_str());
+
+                read = m_client.readAsync(msgIn, 100, 1000, 1000);
+
+                msgIn[read-1] = 0;
+                printf_debug("read : %d\n",read);
+                printf_debug("message : %s\n",string(&msgIn[1]).c_str());
+
                 if(!read) return false;
             }
             {
-                char msg[] = {"sWN mLMDscandatacfg 01 00 0 1 0 00 00 0 0 0 0 +1"};
+                char msg[] = {"sWN LMDscandatacfg 01 00 0 1 0 00 00 0 0 0 0 +1"};
                 char msgIn[100];
                 sendCommand(msg);
-                m_client.readAsync(msgIn, 100, 100, 100);
-                printf_debug("message : %s\n",string(msgIn).c_str());
+
+                read = m_client.readAsync(msgIn, 100, 1000, 1000);
+
+                msgIn[read-1] = 0;
+                printf_debug("read : %d\n",read);
+                printf_debug("message : %s\n",string(&msgIn[1]).c_str());
+
                 if(!read) return false;
+            }
+            {
+                char msg[] = {"sMN LMCstartmeas"};
+                char msgIn[100];
+                sendCommand(msg);
+                read = m_client.readAsync(msgIn, 100, 1000, 1000);
+                
+                msgIn[read-1] = 0;
+                printf_debug("message : %s\n",string(&msgIn[1]).c_str());
+                if(!read) return false;
+            }
+            {
+                char msgIn[100];
+                char msg[] = {"sRN STlms"};
+                do{
+                    sendCommand(msg);
+                    read = m_client.readAsync(msgIn, 100, 1000, 1000);
+                    sleep(10000);
+                    
+                    msgIn[read-1] = 0;
+                    printf_debug("message : %s\n",&msgIn[1]);
+                    printf_debug("%c\n", msgIn[11]);
+                    if(!read) return false;
+                } while(msgIn[11] != '7');
             }
             m_turnedOn = true;
         }catch(std::exception &e)
@@ -212,9 +254,9 @@ bool CLMS100Eth::decodeScan(char* buff, CObservation2DRangeScan& outObservation)
 
     next = strtok(buff, " ", &tmp);
 
-
     while(next && scanCount==0)
     {
+
         //cout << "Interpreting : " << next << endl;
         switch(++idx)
         {
@@ -225,7 +267,7 @@ bool CLMS100Eth::decodeScan(char* buff, CObservation2DRangeScan& outObservation)
             if(strcmp(next, "LMDscandata")) return false;
             break;
         case 6 :
-            if(strcmp(next, "0"))
+            if(strcmp(next, "1"))
             {
                 THROW_EXCEPTION("STATUS error on LMS100");
                 return false;
@@ -288,7 +330,8 @@ void CLMS100Eth::doProcessSimple(bool &outThereIsObservation, CObservation2DRang
     //size_t read = m_client.readAsync(buffIn, sizeof(buffIn), 100, 100);
     //cout << "read :" << read << endl;
     //while(m_client.readAsync(buffIn, sizeof(buffIn), 100, 100)) cout << "Lit dans le vent" << endl;
-    m_client.readAsync(buffIn, sizeof(buffIn), 100, 100);
+    
+    m_client.readAsync(buffIn, sizeof(buffIn), 1000, 1000);
 
     if(decodeScan(buffIn, outObservation))
     {

@@ -178,6 +178,7 @@
 			- [mrpt-base] mrpt::math::KDTreeCapable::kdTreeRadiusSearch2D() always returned 0 matched.
 			- [mrpt-graphs] Fixed bug in RecursiveSpectralPartition (Thanks to Edu!) - <a href="http://code.google.com/p/mrpt/source/detail?r=3026" >r3026</a>
 			- [mrpt-hwdrivers] Fixed potential SEGFAULT in mrpt::hwdrivers::CGPSInterface (Thanks K.Miyawaki for <a href="http://www.mrpt.org/node/2474" >reporting</a>)
+			- [mrpt-hwdrivers] Fixed communications to LMS 1xx scanners (Thanks Henry! See http://code.google.com/p/mrpt/issues/detail?id=49 )
 			- [mrpt-maps] mrpt::slam::COccupancyGridMap2D::getAs3DObject() returned cells with an occupancy of exactly "0" as transparent - <a href="http://code.google.com/p/mrpt/source/detail?r=2957" >r2957</a>
 			- [mrpt-maps] Fixed saving the correct point colors in mrpt::slam::CColouredPointsMap::savePCDFile() (Thanks Mariano!) - <a href="http://code.google.com/p/mrpt/source/detail?r=3090" >r3090</a>
 			- [mrpt-maps] In CPointsMap::computeMatchingWith3D. Fixed matching two 3D point clouds as each correspondence was inserted twice into the output vector. (By Paco) - <a href="http://code.google.com/p/mrpt/source/detail?r=3162" >r3162</a>
