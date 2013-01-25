@@ -179,6 +179,7 @@ include(cmakemodules/script_swissrange.cmake REQUIRED)  # Support for SWISSRANGE
 include(cmakemodules/script_SIMD.cmake REQUIRED)        # SSE2/SSE3/... optimization options
 include(cmakemodules/script_gtest.cmake REQUIRED)       # Unit testing lib
 include(cmakemodules/script_clang.cmake REQUIRED)       # clang library (For UTFConvert)
+include(cmakemodules/script_national_instruments.cmake REQUIRED)  # NI C library
 
 include(cmakemodules/script_disable_stuff.cmake REQUIRED)  # Let the user disable auto-detected stuff.
 
