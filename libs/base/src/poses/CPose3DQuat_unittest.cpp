@@ -319,6 +319,57 @@ protected:
 		EXPECT_NEAR(z,aux.z, 1e-7);
 	}
 
+	void test_composePoint_vs_CPose3D(
+		double x1,double y1,double z1, double yaw1,double pitch1,double roll1,
+		double x, double y, double z)
+	{
+		const CPose3D p1(x1,y1,z1,yaw1,pitch1,roll1);
+		const CPose3DQuat q1(p1);
+		TPoint3D pt1,pt2;
+		p1.composePoint( x,y,z, pt1.x,pt1.y,pt1.z);
+		q1.composePoint( x,y,z, pt2.x,pt2.y,pt2.z);
+
+		EXPECT_NEAR(pt1.x,pt2.x, 1e-7);
+		EXPECT_NEAR(pt1.y,pt2.y, 1e-7);
+		EXPECT_NEAR(pt1.z,pt2.z, 1e-7);
+	}
+
+	void test_invComposePoint_vs_CPose3D(
+		double x1,double y1,double z1, double yaw1,double pitch1,double roll1,
+		double x, double y, double z)
+	{
+		const CPose3D p1(x1,y1,z1,yaw1,pitch1,roll1);
+		const CPose3DQuat q1(p1);
+		TPoint3D pt1,pt2;
+		p1.inverseComposePoint( x,y,z, pt1.x,pt1.y,pt1.z);
+		q1.inverseComposePoint( x,y,z, pt2.x,pt2.y,pt2.z);
+
+		EXPECT_NEAR(pt1.x,pt2.x, 1e-7);
+		EXPECT_NEAR(pt1.y,pt2.y, 1e-7);
+		EXPECT_NEAR(pt1.z,pt2.z, 1e-7);
+
+		{
+			CPose3DQuat q = mrpt::poses::CPose3DQuat(p1);
+
+			float gx=x,gy=y,gz=z;
+
+			double dist,yaw,pitch;
+			p1.sphericalCoordinates(TPoint3D(gx,gy,gz), dist,yaw,pitch);
+
+			double lx,ly,lz;
+			p1.inverseComposePoint(gx,gy,gz, lx,ly,lz);
+
+			double lx2,ly2,lz2;
+			q.inverseComposePoint(gx,gy,gz, lx2,ly2,lz2);
+
+			EXPECT_NEAR(lx,lx2, 1e-7);
+			EXPECT_NEAR(ly,ly2, 1e-7);
+			EXPECT_NEAR(lz,lz2, 1e-7);
+		}
+
+	}
+	
+
 
 	static void func_spherical_coords(const CArrayDouble<7+3> &x, const double &dummy, CArrayDouble<3> &Y)
 	{
@@ -518,6 +569,31 @@ TEST_F(Pose3DQuatTests,ComposeInvComposePoint)
 	test_composeAndInvComposePoint(1.0,2.0,3.0, DEG2RAD(10),DEG2RAD(-50),DEG2RAD(-40),  -5.0, -15.0, 8.0 );
 }
 
+TEST_F(Pose3DQuatTests,ComposePoint_vs_CPose3D)
+{
+	test_composePoint_vs_CPose3D(1.0,2.0,3.0, DEG2RAD(0),DEG2RAD(0),DEG2RAD(0),   10,11,12 );
+	test_composePoint_vs_CPose3D(1.0,2.0,3.0, DEG2RAD(10),DEG2RAD(0),DEG2RAD(0),   10,11,12 );
+	test_composePoint_vs_CPose3D(1.0,2.0,3.0, DEG2RAD(0),DEG2RAD(10),DEG2RAD(0),   10,11,12 );
+	test_composePoint_vs_CPose3D(1.0,2.0,3.0, DEG2RAD(0),DEG2RAD(0),DEG2RAD(10),   10,11,12 );
+	test_composePoint_vs_CPose3D(1.0,2.0,3.0, DEG2RAD(-30),DEG2RAD(10),DEG2RAD(60),   10.0, 20.0, 30.0 );
+	test_composePoint_vs_CPose3D(1.0,2.0,3.0, DEG2RAD(10),DEG2RAD(-50),DEG2RAD(-40),  -5.0, -15.0, 8.0 );
+}
+
+TEST_F(Pose3DQuatTests,InvComposePoint_vs_CPose3D)
+{
+	test_invComposePoint_vs_CPose3D(1.0,2.0,3.0, DEG2RAD(0),DEG2RAD(0),DEG2RAD(0),   10,11,12 );
+	test_invComposePoint_vs_CPose3D(1.0,2.0,3.0, DEG2RAD(10),DEG2RAD(0),DEG2RAD(0),   10,11,12 );
+	test_invComposePoint_vs_CPose3D(1.0,2.0,3.0, DEG2RAD(0),DEG2RAD(10),DEG2RAD(0),   10,11,12 );
+	test_invComposePoint_vs_CPose3D(1.0,2.0,3.0, DEG2RAD(0),DEG2RAD(0),DEG2RAD(10),   10,11,12 );
+
+	for (size_t i=0;i<10;i++)
+	{
+		std::vector<double> v(9);
+		mrpt::random::randomGenerator.drawGaussian1DVector(v,0,1);
+		test_invComposePoint_vs_CPose3D(v[0],v[1],v[2],v[3],v[4],v[5],  v[6],v[7],v[8]);
+	}
+}
+
 TEST_F(Pose3DQuatTests,SphericalCoordsJacobian)
 {
 	test_sphericalCoords(1.0,2.0,3.0, DEG2RAD(0),DEG2RAD(0),DEG2RAD(0),   10,11,12 );
@@ -537,7 +613,4 @@ TEST_F(Pose3DQuatTests,NormalizationJacobian)
 	test_normalizeJacob(DEG2RAD(-30),DEG2RAD(10),DEG2RAD(60));
 	test_normalizeJacob(DEG2RAD(10),DEG2RAD(-50),DEG2RAD(-40));
 }
-
-
-
 

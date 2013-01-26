@@ -51,7 +51,8 @@ namespace mrpt { namespace srba {
 template <class KF2KF_POSE_TYPE,class LM_TYPE,class OBS_TYPE,class RBA_OPTIONS>
 void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::numeric_dh_dAp(const array_pose_t &x, const TNumeric_dh_dAp_params& params, array_obs_t &y)
 {
-	const pose_t incr = pose_t::exp(x);
+	pose_t incr(mrpt::poses::UNINITIALIZED_POSE);
+	pose_t::exp(x,incr, true /*pseudo-exp*/);
 
 	pose_t base_from_obs(mrpt::poses::UNINITIALIZED_POSE);
 	if (!params.is_inverse_dir)
@@ -84,7 +85,7 @@ void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::numeric_dh_dAp(c
 
 	// Sensor pose: base_pose_wrt_sensor = robot_pose (+) sensor_pose_on_the_robot
 	typename resulting_pose_t<typename RBA_OPTIONS::sensor_pose_on_robot_t,REL_POSE_DIMS>::pose_t base_pose_wrt_sensor(mrpt::poses::UNINITIALIZED_POSE);
-	RBA_OPTIONS::sensor_pose_on_robot_t::robot2sensor( *base_from_obs, base_pose_wrt_sensor, params.sensor_pose );
+	RBA_OPTIONS::sensor_pose_on_robot_t::robot2sensor( base_from_obs, base_pose_wrt_sensor, params.sensor_pose );
 
 	// Generate observation:
 	sensor_model_t::observe(y,base_pose_wrt_sensor,params.xji_i, params.sensor_params);
