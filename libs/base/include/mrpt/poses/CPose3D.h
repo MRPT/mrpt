@@ -463,8 +463,12 @@ namespace poses
 		    @{ */
 
 		/** Exponentiate a Vector in the SE(3) Lie Algebra to generate a new CPose3D (static method).
+		  * \param pseudo_exponential If set to true, XYZ are copied from the first three elements in the vector instead of using the proper Lie Algebra formulas (this is actually the common practice in robotics literature).
 		  * \note Method from TooN (C) Tom Drummond (GNU GPL) */
-		static CPose3D exp(const mrpt::math::CArrayNumeric<double,6> & vect);
+		static CPose3D exp(const mrpt::math::CArrayNumeric<double,6> & vect, bool pseudo_exponential = false);
+		
+		/** \overload */
+		static void exp(const mrpt::math::CArrayNumeric<double,6> & vect, CPose3D &out_pose, bool pseudo_exponential = false);
 
 		/** Exponentiate a vector in the Lie algebra to generate a new SO(3) (a 3x3 rotation matrix).
 		  * \note Method from TooN (C) Tom Drummond (GNU GPL) */

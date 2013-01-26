@@ -395,7 +395,7 @@ void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::optimize_edges(
 		);
 	DETAILED_PROFILING_LEAVE("opt.reprojection_residuals")
 
-	double proj_error_per_obs_px = std::sqrt(total_proj_error/nObs);
+	double RMSE = std::sqrt(total_proj_error/nObs);
 
 	out_info.num_observations     = nObs;
 	out_info.num_jacobians        = count_jacobians;
@@ -406,10 +406,10 @@ void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::optimize_edges(
 	out_info.total_sqr_error_init = total_proj_error;
 
 
-	VERBOSE_LEVEL(1) << "[OPT] LM: Initial avr. err in px=" <<  proj_error_per_obs_px << " #Jcbs=" << count_jacobians << " #k2k_edges=" << nUnknowns_k2k << " #k2f_edges=" << nUnknowns_k2f << " #obs=" << nObs << endl;
+	VERBOSE_LEVEL(1) << "[OPT] LM: Initial RMSE=" <<  RMSE << " #Jcbs=" << count_jacobians << " #k2k_edges=" << nUnknowns_k2k << " #k2f_edges=" << nUnknowns_k2f << " #obs=" << nObs << endl;
 
 	if (parameters.srba.feedback_user_iteration)
-		(*parameters.srba.feedback_user_iteration)(0,total_proj_error,proj_error_per_obs_px);
+		(*parameters.srba.feedback_user_iteration)(0,total_proj_error,RMSE);
 
 	// Compute the gradient: "grad = J^t * (h(x)-z)"
 	// ---------------------------------------------------------------------------------
@@ -473,10 +473,10 @@ void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::optimize_edges(
 			stop=true;
 			VERBOSE_LEVEL(2) << "[OPT] LM end criterion: lambda too large. " << lambda << ">=" <<MAX_LAMBDA<<endl;
 		}
-		if (proj_error_per_obs_px < max_error_per_obs_to_stop)
+		if (RMSE < max_error_per_obs_to_stop)
 		{
 			stop=true;
-			VERBOSE_LEVEL(2) << "[OPT] LM end criterion: error too small. " << proj_error_per_obs_px << "<" <<max_error_per_obs_to_stop<<endl;
+			VERBOSE_LEVEL(2) << "[OPT] LM end criterion: error too small. " << RMSE << "<" <<max_error_per_obs_to_stop<<endl;
 		}
 
 		while(rho<=0 && !stop)
@@ -837,11 +837,13 @@ void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::optimize_edges(
 				// Use the Lie Algebra methods for the increment:
 				const CArrayDouble<POSE_DIMS> incr( &delta_eps[POSE_DIMS*i] );
 				pose_t  incrPose(UNINITIALIZED_POSE);
-				se_traits_t::exp(incr,incrPose);   // incrPose = exp(incr) (Lie algebra exponential map)
+				se_traits_t::pseudo_exp(incr,incrPose);   // incrPose = exp(incr) (Lie algebra pseudo-exponential map)
 
 				//new_pose =  old_pose  [+] delta
 				//         = exp(delta) (+) old_pose
 				new_pose.composeFrom(incrPose, old_pose);
+
+				VERBOSE_LEVEL(3) << "[OPT] Update k2k_edge[" <<i<< "]: eps=" << incr.transpose() << "\n" << " such that: " << old_pose << " => " << new_pose << "\n";
 
 				//  Overwrite problem graph:
 				k2k_edge_unknowns[i]->inv_pose = new_pose;
@@ -894,7 +896,7 @@ void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::optimize_edges(
 				);
 			DETAILED_PROFILING_LEAVE("opt.reprojection_residuals")
 
-			double new_proj_error_per_obs_px = std::sqrt(new_total_proj_error/nObs);
+			double new_RMSE = std::sqrt(new_total_proj_error/nObs);
 
 			// is this better or worse?
 			// -----------------------------
@@ -903,9 +905,9 @@ void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::optimize_edges(
 			if(rho>0)
 			{
 				// Good: Accept new values
-				VERBOSE_LEVEL(2) << "[OPT] LM iter #"<< iter << " err: " << proj_error_per_obs_px << " -> " << new_proj_error_per_obs_px <<  "px, rho=" << rho << endl;
+				VERBOSE_LEVEL(2) << "[OPT] LM iter #"<< iter << " RMSE: " << RMSE << " -> " << new_RMSE <<  ", rho=" << rho << endl;
 				if (parameters.srba.feedback_user_iteration)
-					(*parameters.srba.feedback_user_iteration)(iter,new_total_proj_error,new_proj_error_per_obs_px);
+					(*parameters.srba.feedback_user_iteration)(iter,new_total_proj_error,new_RMSE);
 
 				// Switch variables to the temptative ones, which are now accepted:
 				//  (swap where possible, since it's faster)
@@ -913,7 +915,7 @@ void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::optimize_edges(
 				residuals.swap( new_residuals );
 
 				total_proj_error      = new_total_proj_error;
-				proj_error_per_obs_px = new_proj_error_per_obs_px;
+				RMSE = new_RMSE;
 
 
 				DETAILED_PROFILING_ENTER("opt.reset_Jacobs_validity")
@@ -952,7 +954,7 @@ void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::optimize_edges(
 				DETAILED_PROFILING_LEAVE("opt.compute_minus_gradient")
 
 				// Reset other vars:
-				stop = norm_inf(minus_grad)<=eps  || (proj_error_per_obs_px < max_error_per_obs_to_stop);
+				stop = norm_inf(minus_grad)<=eps  || (RMSE < max_error_per_obs_to_stop);
 				lambda *= std::max(1.0/3.0, 1-std::pow(2*rho-1,3.0) );
 				nu = 2.0;
 			}
@@ -1030,7 +1032,7 @@ void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::optimize_edges(
 
 	m_profiler.leave("opt");
 
-	VERBOSE_LEVEL(1) << "[OPT] ->LM: Final avr. err in px=" <<  proj_error_per_obs_px << " #iters=" << iter << "\n";
+	VERBOSE_LEVEL(1) << "[OPT] Final RMSE=" <<  RMSE << " #iters=" << iter << "\n";
 }
 
 

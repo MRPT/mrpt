@@ -59,15 +59,17 @@ namespace mrpt
 			typedef CMatrixFixedNumeric<double,VECTOR_SIZE,VECTOR_SIZE> matrix_VxV_t;
 			typedef CPose3D  pose_t;
 
-			/** Exponential map in SE(3) */
-			static inline void exp(const array_t &x, CPose3D &P) { P = CPose3D::exp(x); }
+			/** Exponential map in SE(3), with XYZ different from the first three values of "x" \sa pseudo_exp */
+			static inline void exp(const array_t &x, CPose3D &P) { CPose3D::exp(x, P, false); }
+			
+			/** Pseudo-Exponential map in SE(3), with XYZ copied from the first three values of "x" \sa exp */
+			static inline void pseudo_exp(const array_t &x, CPose3D &P) { CPose3D::exp(x, P, true); }
 
 			/** Logarithm map in SE(3) */
 			static inline void ln(const CPose3D &P, array_t &x) { P.ln(x); }
 
 			/** A pseudo-Logarithm map in SE(3), where the output = [X,Y,Z, Ln(ROT)], that is, the normal
-			  *  SO(3) logarithm is used for the rotation components, but the translation is left unmodified.
-			  */
+			  *  SO(3) logarithm is used for the rotation components, but the translation is left unmodified. */
 			static void pseudo_ln(const CPose3D &P, array_t &x);
 
 			/** Return one or both of the following 6x6 Jacobians, useful in graph-slam problems:
@@ -92,6 +94,9 @@ namespace mrpt
 
 			/** Exponential map in SE(2) */
 			static inline void exp(const array_t &x, CPose2D &P) { P.x(x[0]); P.y(x[1]); P.phi(x[2]); }
+			
+			/** Pseudo-Exponential map in SE(2), in this case identical to exp() */
+			static inline void pseudo_exp(const array_t &x, CPose2D &P) { exp(x,P); }
 
 			/** Logarithm map in SE(2) */
 			static inline void ln(const CPose2D &P, array_t &x) { x[0] = P.x(); x[1] = P.y(); x[2] = P.phi();  }

@@ -785,7 +785,14 @@ void CPose3D::inverseComposePoint(const double gx,const double gy,const double g
 /** Exponentiate a Vector in the SE3 Lie Algebra to generate a new CPose3D.
   * \note Method from TooN (C) Tom Drummond (GNU GPL)
   */
-CPose3D CPose3D::exp(const mrpt::math::CArrayNumeric<double,6> & mu)
+CPose3D CPose3D::exp(const mrpt::math::CArrayNumeric<double,6> & mu,bool pseudo_exponential )
+{
+	CPose3D P(UNINITIALIZED_POSE);
+	CPose3D::exp(mu,P,pseudo_exponential);
+	return P;
+}
+
+void CPose3D::exp(const mrpt::math::CArrayNumeric<double,6> & mu, CPose3D &out_pose, bool pseudo_exponential)
 {
 	static const double one_6th = 1.0/6.0;
 	static const double one_20th = 1.0/20.0;
@@ -810,9 +817,13 @@ CPose3D CPose3D::exp(const mrpt::math::CArrayNumeric<double,6> & mu)
 	{
 		A = 1.0 - one_6th * theta_sq;
 		B = 0.5;
-		res_xyz[0] = mu_xyz[0] + 0.5 * cross[0];
-		res_xyz[1] = mu_xyz[1] + 0.5 * cross[1];
-		res_xyz[2] = mu_xyz[2] + 0.5 * cross[2];
+
+		if (!pseudo_exponential)
+		{
+			res_xyz[0] = mu_xyz[0] + 0.5 * cross[0];
+			res_xyz[1] = mu_xyz[1] + 0.5 * cross[1];
+			res_xyz[2] = mu_xyz[2] + 0.5 * cross[2];
+		}
 	}
 	else
 	{
@@ -834,18 +845,23 @@ CPose3D CPose3D::exp(const mrpt::math::CArrayNumeric<double,6> & mu)
 		CArrayDouble<3> w_cross;	// = w^cross
 		mrpt::math::crossProduct3D(w, cross, w_cross );
 
-		//result.get_translation() = mu_xyz + B * cross + C * (w ^ cross);
-		res_xyz[0] = mu_xyz[0] + B * cross[0] + C * w_cross[0];
-		res_xyz[1] = mu_xyz[1] + B * cross[1] + C * w_cross[1];
-		res_xyz[2] = mu_xyz[2] + B * cross[2] + C * w_cross[2];
+		if (!pseudo_exponential)
+		{
+			//result.get_translation() = mu_xyz + B * cross + C * (w ^ cross);
+			res_xyz[0] = mu_xyz[0] + B * cross[0] + C * w_cross[0];
+			res_xyz[1] = mu_xyz[1] + B * cross[1] + C * w_cross[1];
+			res_xyz[2] = mu_xyz[2] + B * cross[2] + C * w_cross[2];
+		}
 	}
 
 	// 3x3 rotation part:
-	CMatrixDouble33 res_ROT(UNINITIALIZED_MATRIX);
-	mrpt::math::rodrigues_so3_exp(w, A, B, res_ROT);
-
-	return CPose3D(res_ROT, res_xyz);
+	mrpt::math::rodrigues_so3_exp(w, A, B, out_pose.m_ROT);
+	
+	if (pseudo_exponential)
+	     out_pose.m_coords = mu_xyz;
+	else out_pose.m_coords = res_xyz;
 }
+
 
 
 /** Take the logarithm of the 3x3 rotation matrix, generating the corresponding vector in the Lie Algebra.
