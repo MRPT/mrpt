@@ -55,7 +55,7 @@ typedef RBA_Problem<
 // A test dataset. Generated with http://code.google.com/p/recursive-world-toolkit/ 
 //  and the script: tutorials_dataset-cartesian.cfg
 // --------------------------------------------------------------------------------
-const double SENSOR_NOISE_STD = 1e-8;
+const double SENSOR_NOISE_STD = 1e-4;
 struct basic_euclidean_dataset_entry_t 
 {
 	unsigned int landmark_id;
