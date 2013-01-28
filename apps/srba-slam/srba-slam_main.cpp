@@ -77,6 +77,9 @@ struct RBASLAM_Params
 	TCLAP::ValueArg<string> arg_gt_map;
 	TCLAP::ValueArg<string> arg_gt_path;
 	TCLAP::ValueArg<unsigned int> arg_max_known_feats_per_frame;
+	TCLAP::SwitchArg  arg_se2,arg_se3;
+	TCLAP::SwitchArg  arg_lm2d,arg_lm3d;
+	TCLAP::ValueArg<string> arg_obs;
 	TCLAP::SwitchArg  arg_no_gui;
 	TCLAP::SwitchArg  arg_gui_step_by_step;
 	TCLAP::ValueArg<string>  arg_profile_stats;
@@ -108,6 +111,11 @@ struct RBASLAM_Params
 		arg_gt_map("","gt-map","Ground-truth landmark map file (e.g. 'dataset1_GT_MAP.txt', etc.)",false,"","",cmd),
 		arg_gt_path("","gt-path","Ground-truth robot path file (e.g. 'dataset1_GT_PATH.txt', etc.)",false,"","",cmd),
 		arg_max_known_feats_per_frame("","max-fixed-feats-per-kf","Create fixed & known-location features",false,0,"",cmd),
+		arg_se2("","se2","Relative poses are SE(2)",cmd, false),
+		arg_se3("","se3","Relative poses are SE(3)",cmd, false),
+		arg_lm2d("","lm-2d","Relative landmarks are Euclidean 2D points",cmd, false),
+		arg_lm3d("","lm-3d","Relative landmarks are Euclidean 2D points",cmd, false),
+		arg_obs("","obs","Type of observations in the dataset (use --list-obs to see available types)",true,"","",cmd),
 		arg_no_gui("","no-gui","Don't show the live gui",cmd, false),
 		arg_gui_step_by_step("","step-by-step","If showing the gui, go step by step",cmd, false),
 		arg_profile_stats("","profile-stats","Generate profile stats to CSV files, with the given prefix",false,"","stats",cmd),
@@ -134,12 +142,22 @@ struct RBASLAM_Params
 		// Parse arguments:
 		if (!cmd.parse( argc, argv ))
 			throw std::runtime_error(""); // should exit, but without any error msg (should have been dumped to cerr)
+
+		if ( (arg_se2.isSet() && arg_se3.isSet()) ||
+			 (!arg_se2.isSet() && !arg_se3.isSet()) )
+			 throw std::runtime_error("Exactly one of --se2 or --se3 flags must be set.");
+
+		if ( (arg_lm2d.isSet() && arg_lm3d.isSet()) ||
+			 (!arg_lm2d.isSet() && !arg_lm3d.isSet()) )
+			 throw std::runtime_error("Exactly one of --lm-2d or --lm-3d flags must be set.");
+		
 	}
 };
 
 // ---------------- INCLUDE DATASET PARSERS -------------------------
 #include "CDatasetParserBase.h"
 #include "CDatasetParser_RangeBearing2D.h"
+#include "CDatasetParser_Stereo.h"
 // ------------------------------------------------------------------
 
 
@@ -152,7 +170,32 @@ struct RBA_Run_Base
 	virtual ~RBA_Run_Base() {}
 };
 
-template <class KF2KF_POSE_TYPE,class LM_TYPE,class OBS_TYPE, class RBA_OPTIONS = RBA_OPTIONS_DEFAULT>
+
+template <class SENSOR_POSE_OPTION> 
+struct InitializerSensorPoseParams;
+
+template <> 
+struct InitializerSensorPoseParams<sensor_pose_on_robot_none>
+{
+	template <class RBA>
+	static void init(RBA &rba)
+	{
+		// Nothing to do.
+	}
+};
+
+template <> 
+struct InitializerSensorPoseParams<sensor_pose_on_robot_se3>
+{
+	template <class RBA>
+	static void init(RBA &rba)
+	{
+		// Sensor pose on the robot parameters:
+		rba.parameters.sensor_pose.relative_pose = mrpt::poses::CPose3D(0,0,0,DEG2RAD(-90),DEG2RAD(0),DEG2RAD(-90) );
+	}
+};
+
+template <class KF2KF_POSE_TYPE,class LM_TYPE,class OBS_TYPE, class RBA_OPTIONS>
 struct RBA_Run : public RBA_Run_Base
 {
 	typedef RBA_Problem<
@@ -174,6 +217,9 @@ struct RBA_Run : public RBA_Run_Base
 		// Create an empty RBA problem:
 		// ------------------------------------------
 		my_srba_t rba;
+
+		// Init sensor-to-robot relative pose parameters:
+		InitializerSensorPoseParams<typename RBA_OPTIONS::sensor_pose_on_robot_t>::init(rba);
 
 		// Process cmd-line flags:
 		// ------------------------------------------
@@ -866,13 +912,19 @@ struct RBA_Run : public RBA_Run_Base
 
 
 // ----------- RBA Problem factories ----------------------------
-template <class KF2KF_POSE_TYPE,class LM_TYPE,class OBS_TYPE>
+template <class KF2KF_POSE_TYPE,class LM_TYPE,class OBS_TYPE, class SRBA_OPTIONS>
 struct RBA_Run_Factory
 {
 	static auto_ptr<RBA_Run_Base> create()
 	{
-		return auto_ptr<RBA_Run_Base>(new RBA_Run<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE>());
+		return auto_ptr<RBA_Run_Base>(new RBA_Run<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,SRBA_OPTIONS>());
 	}
+};
+
+// Camera sensors have a different coordinate system wrt the robot (rotated yaw=-90, pitch=0, roll=-90)
+struct my_srba_options_cameras
+{
+	typedef sensor_pose_on_robot_se3 sensor_pose_on_robot_t;
 };
 
 
@@ -887,8 +939,16 @@ int main(int argc, char**argv)
 		// Construct the RBA problem object:
 		// -----------------------------------
 		auto_ptr<RBA_Run_Base> rba;
-		if (1) // config.
-			rba = RBA_Run_Factory<kf2kf_poses::SE2,landmarks::Euclidean2D,observations::RangeBearing_2D>::create();
+
+		if (config.arg_se2.isSet() && config.arg_lm2d.isSet() && config.arg_obs.getValue()=="RangeBearing_2D")
+			rba = RBA_Run_Factory<kf2kf_poses::SE2,landmarks::Euclidean2D,observations::RangeBearing_2D,RBA_OPTIONS_DEFAULT>::create();
+		else 
+		if (config.arg_se3.isSet() && config.arg_lm3d.isSet() && config.arg_obs.getValue()=="StereoCamera")
+			rba = RBA_Run_Factory<kf2kf_poses::SE3,landmarks::Euclidean3D,observations::StereoCamera,my_srba_options_cameras>::create();
+		else
+		{
+			throw std::runtime_error("Sorry: the given combination of pose, point and sensor wasn't precompiled in this program!");
+		}
 
 		// Run:
 		// ------

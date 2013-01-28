@@ -68,7 +68,7 @@ namespace srba
 			}
 			/** Converts a pose relative to the robot coordinate frame (P) into a pose relative to the sensor (RES = P \ominus POSE_IN_ROBOT ) */
 			template <class KF_POSE> 
-			static inline void pose_robot2sensor(const KF_POSE & pose_wrt_robot, mrpt::poses::CPose3D & pose_wrt_sensor, const parameters_t &p) {
+			static inline void pose_robot2sensor(const KF_POSE & pose_wrt_robot, KF_POSE /*mrpt::poses::CPose3D*/ & pose_wrt_sensor, const parameters_t &p) {
 				pose_wrt_sensor = pose_wrt_robot;
 			}
 			/** Converts a point relative to the robot coordinate frame (P) into a point relative to the sensor (RES = P \ominus POSE_IN_ROBOT ) */

@@ -15,6 +15,7 @@ ADD_EXECUTABLE(srba-slam
 	srba-slam_main.cpp
 	CDatasetParserBase.h
 	CDatasetParser_RangeBearing2D.h
+	CDatasetParser_Stereo.h
 	)
 
 SET(TMP_TARGET_NAME "srba-slam")
