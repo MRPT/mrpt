@@ -61,9 +61,20 @@ namespace srba
 			{
 			};
 
+			/** Gets the pose of the sensor given the robot pose (robot->sensor) */
 			template <class POSE>
 			static inline void robot2sensor(const POSE & robot, POSE & sensor, const parameters_t &p) {
 				sensor = robot;
+			}
+			/** Converts a pose relative to the robot coordinate frame (P) into a pose relative to the sensor (RES = P \ominus POSE_IN_ROBOT ) */
+			template <class KF_POSE> 
+			static inline void pose_robot2sensor(const KF_POSE & pose_wrt_robot, mrpt::poses::CPose3D & pose_wrt_sensor, const parameters_t &p) {
+				pose_wrt_sensor = pose_wrt_robot;
+			}
+			/** Converts a point relative to the robot coordinate frame (P) into a point relative to the sensor (RES = P \ominus POSE_IN_ROBOT ) */
+			template <class POINT> 
+			static inline void point_robot2sensor(const POINT & pt_wrt_robot, POINT & pt_wrt_sensor, const parameters_t &p) {
+				pt_wrt_sensor=pt_wrt_robot;
 			}
 
 			/** Take into account the possible displacement of the sensor wrt the keyframe when evaluating the Jacobian dh_dx */
@@ -90,15 +101,26 @@ namespace srba
 				mrpt::poses::CPose3D  relative_pose;
 			};
 
-			template <class KF_POSE>
+			/** Gets the pose of the sensor given the robot pose (robot->sensor) */
+			template <class KF_POSE> 
 			static inline void robot2sensor(const KF_POSE & robot, mrpt::poses::CPose3D & sensor, const parameters_t &p) {
 				sensor.composeFrom(robot,p.relative_pose);
+			}
+			/** Converts a pose relative to the robot coordinate frame (P) into a pose relative to the sensor (RES = P \ominus POSE_IN_ROBOT ) */
+			template <class KF_POSE> 
+			static inline void pose_robot2sensor(const KF_POSE & pose_wrt_robot, mrpt::poses::CPose3D & pose_wrt_sensor, const parameters_t &p) {
+				pose_wrt_sensor.inverseComposeFrom(pose_wrt_robot,p.relative_pose);
+			}
+			/** Converts a point relative to the robot coordinate frame (P) into a point relative to the sensor (RES = P \ominus POSE_IN_ROBOT ) */
+			template <class POINT> 
+			static inline void point_robot2sensor(const POINT & pt_wrt_robot, POINT & pt_wrt_sensor, const parameters_t &p) {
+				p.relative_pose.inverseComposePoint(pt_wrt_robot,pt_wrt_sensor);
 			}
 			/** Take into account the possible displacement of the sensor wrt the keyframe when evaluating the Jacobian dh_dx */
 			template <class MATRIX>
 			static inline void jacob_dh_dx_rotate( MATRIX & dh_dx, const parameters_t &p) {
 				// dh(R2S+x)_dx = dh(x')_dx' * d(x')_dx
-				dh_dx = dh_dx * p.relative_pose.getRotationMatrix();
+				dh_dx = dh_dx * p.relative_pose.getRotationMatrix().transpose();
 			}
 
 			template <class LANDMARK_T>

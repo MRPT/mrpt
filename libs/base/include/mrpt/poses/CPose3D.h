@@ -267,6 +267,18 @@ namespace poses
 			mrpt::math::CMatrixFixedNumeric<double,3,6>  *out_jacobian_df_dpose=NULL,
 			mrpt::math::CMatrixFixedNumeric<double,3,6>  *out_jacobian_df_dse3=NULL ) const;
 
+		/** \overload */
+		inline void inverseComposePoint(const mrpt::math::TPoint3D &g, mrpt::math::TPoint3D &l) const {
+			inverseComposePoint(g.x,g.y,g.z, l.x,l.y,l.z);
+		}
+
+		/** \overload for 2D points \exception If the z component of the result is greater than some epsilon */
+		inline void inverseComposePoint(const mrpt::math::TPoint2D &g, mrpt::math::TPoint2D &l, const double eps=1e-6) const {
+			double lz;
+			inverseComposePoint(g.x,g.y,0, l.x,l.y,lz);
+			ASSERT_BELOW_(std::abs(lz),eps)
+		}
+
 		/**  Makes "this = A (+) B"; this method is slightly more efficient than "this= A + B;" since it avoids the temporary object.
 		  *  \note A or B can be "this" without problems.
 		  */

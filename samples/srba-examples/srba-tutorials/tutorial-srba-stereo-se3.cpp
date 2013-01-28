@@ -63,7 +63,8 @@ struct basic_stereo_dataset_entry_t
 	unsigned int landmark_id;
 	double l_px_x, l_px_y, r_px_x, r_px_y;
 };
-// Observations for KF#0
+// Observations for KF#0: 0.000000 0.000000 0.000000 0.564787 -0.517532 0.434261 -0.473913
+const mrpt::poses::CPose3DQuat GT_pose0(0,0,0, mrpt::math::CQuaternionDouble(0.564787, -0.517532, 0.434261, -0.473913));
 basic_stereo_dataset_entry_t  dataset0[] = {
  {   146,  509.16046143,  437.46981812,  487.56234741,  437.46981812},
  {   144,  437.15927124,  483.60800171,  415.72924805,  483.60800171},
@@ -98,7 +99,8 @@ basic_stereo_dataset_entry_t  dataset0[] = {
  {    13,  485.14672852,  439.37075806,  475.89678955,  439.37075806},
  {   148,  880.86297607,  206.19326782,  860.58264160,  206.19326782},
 };	
-// Observations for KF#10.
+// Observations for KF#10. 1.226071 0.293637 0.110099 0.521317 -0.478835 0.477946 -0.520108
+const mrpt::poses::CPose3DQuat GT_pose10(1.226071, 0.293637, 0.110099, mrpt::math::CQuaternionDouble(0.521317, -0.478835, 0.477946, -0.520108));
 basic_stereo_dataset_entry_t  dataset1[] = {
  {   146,  491.26168823,  551.57379150,  423.40914917,  551.57379150},
  {    39,  539.21508789,  436.04541016,  510.94876099,  436.04541016},
@@ -253,6 +255,10 @@ int main(int argc, char**argv)
 
 	// Dump the relative pose of KF#0 wrt KF#1:
 	cout << "inv_pose of KF-to-KF edge #0 (relative pose of KF#0 wrt KF#1):\n" << rba.get_k2k_edges()[0].inv_pose << endl;
+	cout << "Relative pose of KF#1 wrt KF#0:\n" << (-rba.get_k2k_edges()[0].inv_pose) << endl;
+
+	// Compare to ground truth:
+	cout << "Ground truth: relative pose of KF#1 wrt KF#0: \n" << mrpt::poses::CPose3D(GT_pose10-GT_pose0) << endl;
 
 	// --------------------------------------------------------------------------------
 	// Saving RBA graph as a DOT file:
