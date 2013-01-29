@@ -797,9 +797,6 @@ void CPose3D::exp(const mrpt::math::CArrayNumeric<double,6> & mu, CPose3D &out_p
 	static const double one_6th = 1.0/6.0;
 	static const double one_20th = 1.0/20.0;
 
-	// Resulting XYZ coords:
-	CArrayDouble<3> res_xyz;
-
 	CArrayDouble<3> mu_xyz;
 	for (int i=0;i<3;i++) mu_xyz[i] = mu[i];
 
@@ -820,9 +817,9 @@ void CPose3D::exp(const mrpt::math::CArrayNumeric<double,6> & mu, CPose3D &out_p
 
 		if (!pseudo_exponential)
 		{
-			res_xyz[0] = mu_xyz[0] + 0.5 * cross[0];
-			res_xyz[1] = mu_xyz[1] + 0.5 * cross[1];
-			res_xyz[2] = mu_xyz[2] + 0.5 * cross[2];
+			out_pose.m_coords[0] = mu_xyz[0] + 0.5 * cross[0];
+			out_pose.m_coords[1] = mu_xyz[1] + 0.5 * cross[1];
+			out_pose.m_coords[2] = mu_xyz[2] + 0.5 * cross[2];
 		}
 	}
 	else
@@ -848,18 +845,17 @@ void CPose3D::exp(const mrpt::math::CArrayNumeric<double,6> & mu, CPose3D &out_p
 		if (!pseudo_exponential)
 		{
 			//result.get_translation() = mu_xyz + B * cross + C * (w ^ cross);
-			res_xyz[0] = mu_xyz[0] + B * cross[0] + C * w_cross[0];
-			res_xyz[1] = mu_xyz[1] + B * cross[1] + C * w_cross[1];
-			res_xyz[2] = mu_xyz[2] + B * cross[2] + C * w_cross[2];
+			out_pose.m_coords[0] = mu_xyz[0] + B * cross[0] + C * w_cross[0];
+			out_pose.m_coords[1] = mu_xyz[1] + B * cross[1] + C * w_cross[1];
+			out_pose.m_coords[2] = mu_xyz[2] + B * cross[2] + C * w_cross[2];
 		}
 	}
 
 	// 3x3 rotation part:
 	mrpt::math::rodrigues_so3_exp(w, A, B, out_pose.m_ROT);
 	
-	if (pseudo_exponential)
-	     out_pose.m_coords = mu_xyz;
-	else out_pose.m_coords = res_xyz;
+	if (pseudo_exponential) out_pose.m_coords = mu_xyz;
+	// else: has been already filled in above.
 }
 
 
