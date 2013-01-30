@@ -321,6 +321,7 @@ namespace mrpt { namespace srba {
 			const double cyl = params.camera_calib.leftCamera.cy();
 			const double disparity = std::max(0.001f, obs.left_px.x - obs.right_px.x);
 			const double baseline  = params.camera_calib.rightCameraPose.x();
+			ASSERT_(baseline!=0)
 			const double Z = fxl*baseline/disparity;
 			out_lm_pos[0] = (obs.left_px.x - cxl)*Z/fxl;
 			out_lm_pos[1] = (obs.left_px.y - cyl)*Z/fyl;

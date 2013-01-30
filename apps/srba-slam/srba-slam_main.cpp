@@ -80,6 +80,7 @@ struct RBASLAM_Params
 	TCLAP::SwitchArg  arg_se2,arg_se3;
 	TCLAP::SwitchArg  arg_lm2d,arg_lm3d;
 	TCLAP::ValueArg<string> arg_obs;
+	TCLAP::ValueArg<string> arg_sensor_params;
 	TCLAP::SwitchArg  arg_no_gui;
 	TCLAP::SwitchArg  arg_gui_step_by_step;
 	TCLAP::ValueArg<string>  arg_profile_stats;
@@ -115,7 +116,8 @@ struct RBASLAM_Params
 		arg_se3("","se3","Relative poses are SE(3)",cmd, false),
 		arg_lm2d("","lm-2d","Relative landmarks are Euclidean 2D points",cmd, false),
 		arg_lm3d("","lm-3d","Relative landmarks are Euclidean 2D points",cmd, false),
-		arg_obs("","obs","Type of observations in the dataset (use --list-obs to see available types)",true,"","",cmd),
+		arg_obs("","obs","Type of observations in the dataset (use --list-obs to see available types)",false,"","",cmd),
+		arg_sensor_params("","sensor-params-cfg-file","Config file from where to load the sensor parameters",false,"","",cmd),
 		arg_no_gui("","no-gui","Don't show the live gui",cmd, false),
 		arg_gui_step_by_step("","step-by-step","If showing the gui, go step by step",cmd, false),
 		arg_profile_stats("","profile-stats","Generate profile stats to CSV files, with the given prefix",false,"","stats",cmd),
@@ -142,6 +144,9 @@ struct RBASLAM_Params
 		// Parse arguments:
 		if (!cmd.parse( argc, argv ))
 			throw std::runtime_error(""); // should exit, but without any error msg (should have been dumped to cerr)
+
+		if (!arg_obs.isSet())
+			throw std::runtime_error("Error: argument --obs is mandatory to select the type of observations.\nRun with --help to see all the options or visit http://www.mrpt.org/srba for docs and examples.\n");
 
 		if ( (arg_se2.isSet() && arg_se3.isSet()) ||
 			 (!arg_se2.isSet() && !arg_se3.isSet()) )
@@ -171,6 +176,36 @@ struct RBA_Run_Base
 };
 
 
+// -------------------- InitializerSensorParams -------------------------
+template <class OBS_TYPE> 
+struct InitializerSensorParams
+{
+	template <class RBA>
+	static void init(RBA &rba, RBASLAM_Params &config)
+	{
+		// Nothing to do by default:
+	}
+};
+
+template <> 
+struct InitializerSensorParams<mrpt::srba::observations::StereoCamera>
+{
+	template <class RBA>
+	static void init(RBA &rba, RBASLAM_Params &config)
+	{
+		// Load params from file: 
+
+		if (!config.arg_sensor_params.isSet())
+			throw std::runtime_error("Error: --sensor-params-cfg-file is mandatory for this type of observations.");
+
+		const std::string sCfgFile = config.arg_sensor_params.getValue();
+		rba.parameters.sensor.camera_calib.loadFromConfigFile("CAMERA",mrpt::utils::CConfigFile(sCfgFile) );
+		const double baseline = rba.parameters.sensor.camera_calib.rightCameraPose.x();
+		ASSERT_(baseline!=0)
+	}
+};
+
+// -------------------- InitializerSensorPoseParams  -------------------------
 template <class SENSOR_POSE_OPTION> 
 struct InitializerSensorPoseParams;
 
@@ -178,7 +213,7 @@ template <>
 struct InitializerSensorPoseParams<sensor_pose_on_robot_none>
 {
 	template <class RBA>
-	static void init(RBA &rba)
+	static void init(RBA &rba, RBASLAM_Params &config)
 	{
 		// Nothing to do.
 	}
@@ -188,12 +223,13 @@ template <>
 struct InitializerSensorPoseParams<sensor_pose_on_robot_se3>
 {
 	template <class RBA>
-	static void init(RBA &rba)
+	static void init(RBA &rba, RBASLAM_Params &config)
 	{
 		// Sensor pose on the robot parameters:
 		rba.parameters.sensor_pose.relative_pose = mrpt::poses::CPose3D(0,0,0,DEG2RAD(-90),DEG2RAD(0),DEG2RAD(-90) );
 	}
 };
+
 
 template <class KF2KF_POSE_TYPE,class LM_TYPE,class OBS_TYPE, class RBA_OPTIONS>
 struct RBA_Run : public RBA_Run_Base
@@ -218,8 +254,11 @@ struct RBA_Run : public RBA_Run_Base
 		// ------------------------------------------
 		my_srba_t rba;
 
+		// Init/load sensor parameters:
+		InitializerSensorParams<OBS_TYPE>::init(rba,cfg);
+
 		// Init sensor-to-robot relative pose parameters:
-		InitializerSensorPoseParams<typename RBA_OPTIONS::sensor_pose_on_robot_t>::init(rba);
+		InitializerSensorPoseParams<typename RBA_OPTIONS::sensor_pose_on_robot_t>::init(rba, cfg);
 
 		// Process cmd-line flags:
 		// ------------------------------------------

@@ -63,13 +63,6 @@ struct CDatasetParserBase
 		load_obs();
 		load_GT_map();
 		load_GT_path();
-
-	//// Load Camera calibration:
-	//// -----------------------------------------------------------------
-	//const std::string sFil_CAMCALIB = FILE_PATH_AND_PREFIX + std::string("_CAMCALIB.txt");
-	//ASSERT_FILE_EXISTS_(sFil_CAMCALIB)
-	//CAM_CALIB.loadFromConfigFile("CAMERA",mrpt::utils::CConfigFile(sFil_CAMCALIB));
-
 	}
 
 	// ========= Virtual methods: ========= 
