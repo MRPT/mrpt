@@ -367,7 +367,8 @@ struct RBA_Run : public RBA_Run_Base
 		mrpt::opengl::CSetOfObjectsPtr gl_rba_scene, gl_cur_kf_tree;
 
 		// Arbitrary unique IDs for text labels in the 3D gui.
-		const size_t TXTID_KF = 1000;
+		const size_t TXTID_KF   = 1000;
+		const size_t TXTID_RMSE = 1001;
 
 		if (DEMO_SIMUL_SHOW_GUI)
 		{
@@ -591,8 +592,10 @@ struct RBA_Run : public RBA_Run_Base
 					ASSERT_EQUAL_(next_rba_keyframe_ID, curFrameIdx)  // This should occur if key_frames in simulation are ordered
 				}
 
-			} // end while
+			} // end while (for each KF to process at once)
 
+			// Eval RMSE:
+			const double RMSE = new_kf_info.optimize_results.num_observations ? std::sqrt(new_kf_info.optimize_results.total_sqr_error_final / new_kf_info.optimize_results.num_observations) : 0;
 
 			// Draw simulated "camera" image:
 			//if (DEMO_SIMUL_SHOW_GUI && win && win->isOpen())
@@ -621,8 +624,15 @@ struct RBA_Run : public RBA_Run_Base
 				win->addTextMessage(
 					5,-15,
 					mrpt::format("Current KF=%u",static_cast<unsigned int>(new_kf_info.kf_id)),
-					mrpt::utils::TColorf(1,1,1), "mono",10, mrpt::opengl::NICE, TXTID_KF,1.5,0.1,
+					mrpt::utils::TColorf(0.9,0.9,0.9), "mono",10, mrpt::opengl::NICE, TXTID_KF,1.5,0.1,
 					true /* draw shadow */ );
+
+				win->addTextMessage(
+					5,-30,
+					mrpt::format("After opt RMSE=%.06f",RMSE),
+					mrpt::utils::TColorf(0.9,0.9,0.9), "mono",10, mrpt::opengl::NICE, TXTID_RMSE,1.5,0.1,
+					true /* draw shadow */ );
+				
 
 				// Update 3D objects:
 				const srba::TKeyFrameID root_kf = next_rba_keyframe_ID-1;
