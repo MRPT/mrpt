@@ -41,6 +41,7 @@
 
 #include <mrpt/synch/CSemaphore.h>
 #include <mrpt/utils/CStdOutStream.h>
+#include <mrpt/system/threads.h>
 
 
 #include <iostream>
@@ -152,13 +153,24 @@ bool CSemaphore::waitForSignal( unsigned int timelimit )
     tm.tv_sec = tp.time;
     tm.tv_nsec = tp.millitm * 1000000 ;
 
-	int rc = timelimit==0 ?
+	int rc;
+	
+#if defined(MRPT_OS_APPLE)
+	// Mac version: we don't have sem_timedwait()
+	while (0!= (rc=sem_trywait(token->semid)) )
+	{
+		mrpt::system::sleep(1);
+	}
+
+#else
+	rc = timelimit==0 ?
 		// No timeout
 		sem_wait( token->semid )
 		:
 		// We have a timeout:
 		sem_timedwait( token->semid, &tm );
-
+#endif
+	
 	// If there's an error != than a timeout, dump to stderr:
 	if (rc!=0 && errno!=ETIMEDOUT)
 		std::cerr << format("[CSemaphore::waitForSignal] In semaphore named '%s', error: %s\n", m_name.c_str(),strerror(errno) );

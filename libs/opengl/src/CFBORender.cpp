@@ -102,11 +102,20 @@ CFBORender::CFBORender( unsigned int width, unsigned int height, const bool skip
 	glGenTextures(1, &m_tex);
 
 	// initialize texture that will store the framebuffer image
-	glBindTexture(GL_TEXTURE_RECTANGLE_NV, m_tex);
-	glTexImage2D(GL_TEXTURE_RECTANGLE_NV, 0, GL_RGB, m_width, m_height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+	const GLenum texTarget =
+#	if defined(GL_TEXTURE_RECTANGLE_NV)
+		GL_TEXTURE_RECTANGLE_NV;
+#	elif defined(GL_TEXTURE_RECTANGLE_ARB)
+		GL_TEXTURE_RECTANGLE_ARB;
+#	else
+		GL_TEXTURE_RECTANGLE_EXT;
+#	endif
+
+	glBindTexture(texTarget, m_tex);
+	glTexImage2D(texTarget, 0, GL_RGB, m_width, m_height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
 
 	// bind this texture to the current framebuffer obj. as color_attachement_0
-	glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT, GL_TEXTURE_RECTANGLE_NV, m_tex, 0);
+	glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT, texTarget, m_tex, 0);
 
 	//'unbind' the frambuffer object, so subsequent drawing ops are not drawn into the FBO.
 	// '0' means "windowing system provided framebuffer
@@ -252,8 +261,17 @@ void CFBORender::resize( unsigned int width, unsigned int height )
 	glViewport(0, 0, m_width, m_height);
 
 	// change texture size
-	glBindTexture(GL_TEXTURE_RECTANGLE_NV, m_tex);
-	glTexImage2D(GL_TEXTURE_RECTANGLE_NV, 0, GL_RGB, m_width, m_height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+	const GLenum texTarget =
+#	if defined(GL_TEXTURE_RECTANGLE_NV)
+		GL_TEXTURE_RECTANGLE_NV;
+#	elif defined(GL_TEXTURE_RECTANGLE_ARB)
+		GL_TEXTURE_RECTANGLE_ARB;
+#	else
+		GL_TEXTURE_RECTANGLE_EXT;
+#	endif
+
+	glBindTexture(texTarget, m_tex);
+	glTexImage2D(texTarget, 0, GL_RGB, m_width, m_height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
 
 	//'unbind' the frambuffer object, so subsequent drawing ops are not drawn into the FBO.
 	// '0' means "windowing system provided framebuffer
