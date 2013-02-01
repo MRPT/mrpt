@@ -173,7 +173,15 @@ IF(BUILD_EXAMPLES)
 	SET(CMAKE_EXAMPLE_LINK_LIBS ${MRPT_LINKER_LIBS})
 	GENERATE_CMAKE_FILES_SAMPLES_DIRECTORY()
 	
-
+	# === Depending on: maps, scanmatching, gui ===
+	#  list of examples for each directory:
+	SET(LIST_EXAMPLES_IN_THIS_DIR
+		ransac-data-association
+		)
+	SET(CMAKE_EXAMPLE_DEPS mrpt-maps mrpt-gui mrpt-scanmatching)
+	SET(CMAKE_EXAMPLE_LINK_LIBS ${MRPT_LINKER_LIBS})
+	GENERATE_CMAKE_FILES_SAMPLES_DIRECTORY()
+	
 	# === Depending on: graphs & gui ===
 	#  list of examples for each directory:
 	SET(LIST_EXAMPLES_IN_THIS_DIR
@@ -206,7 +214,6 @@ IF(BUILD_EXAMPLES)
 	SET(CMAKE_EXAMPLE_LINK_LIBS ${MRPT_LINKER_LIBS})
 	GENERATE_CMAKE_FILES_SAMPLES_DIRECTORY()
 	
-
 	# === HWDRIVERS ===
 	IF(BUILD_HWDRIVERS)
 

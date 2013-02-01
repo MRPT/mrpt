@@ -116,7 +116,8 @@ void  scanmatching::robustRigidTransformation(
 	bool						ransac_algorithmForLandmarks,
 	double 						probability_find_good_model,
 	unsigned int				ransac_min_nSimulations,
-	const bool                  verbose
+	const bool                  verbose,
+	double                      max_rmse_to_end
 	)
 {
 //#define DO_PROFILING 
@@ -127,8 +128,8 @@ void  scanmatching::robustRigidTransformation(
 
 	const size_t nCorrs = in_correspondences.size();
 
-	const double MAX_RMSE_TO_END = 2*normalizationStd;
-
+	// Default: 2 * normalizationStd ("noise level")
+	const double MAX_RMSE_TO_END = (max_rmse_to_end<=0 ? 2*normalizationStd : max_rmse_to_end);
 
 	MRPT_START
 

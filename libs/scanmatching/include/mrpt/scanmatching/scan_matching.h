@@ -199,6 +199,8 @@ namespace mrpt
 		  *  If ransac_fuseByCorrsMatch=true (the default), the weight of Gaussian modes will be increased when an exact match in the
 		  *   subset of correspondences for the modes is found. Otherwise, an approximate method is used as test by just looking at the
 		  *   resulting X,Y,PHI means (Threshold in this case are: ransac_fuseMaxDiffXY, ransac_fuseMaxDiffPhi).
+		  * 
+		  * \param[in] max_rmse_to_end Stop searching for solutions when the RMSE of one solution is below this threshold. Special value "0" means "auto", which employs "2*normalizationStd".
 		  *
 		  * \exception Raises a std::exception if the list "in_correspondences" has not a minimum of two correspondences.
 		  * \sa leastSquareErrorRigidTransformation
@@ -218,7 +220,8 @@ namespace mrpt
 			bool						ransac_algorithmForLandmarks = true,
 			double 						probability_find_good_model = 0.999,
 			unsigned int				ransac_min_nSimulations = 1500,
-			const bool                  verbose = false
+			const bool                  verbose = false,
+			double                      max_rmse_to_end = 0
 			);
 
 

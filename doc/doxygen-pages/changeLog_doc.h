@@ -154,6 +154,7 @@
 				- max3() and min3() moved from the global namespace to mrpt::utils::max3() and mrpt::utils::min3()
 		- New examples:
 			- octomap_simple
+			- ransac-data-association
 		- Build system:
 			- Update to nanoflann 1.1.4 - <a href="http://code.google.com/p/mrpt/source/detail?r=2937" >r2937</a>, <a href="http://code.google.com/p/mrpt/source/detail?r=3017" >r3017</a>
 			- Update to Eigen 3.1.2 - <a href="http://code.google.com/p/mrpt/source/detail?r=3064" >r3064</a>
