@@ -46,7 +46,7 @@ namespace bayes
 {
 	class CParticleFilterCapable;
 
-	/** A curiously recurring template pattern (CRTP) approach to providing the basic functionality of any CParticleFilterData<> class. 
+	/** A curiously recurring template pattern (CRTP) approach to providing the basic functionality of any CParticleFilterData<> class.
 	  *  Users should inherit from CParticleFilterData<>, which in turn will automatically inhirit from this base class.
 	  * \sa CParticleFilter, CParticleFilterCapable, CParticleFilterData
 	  * \ingroup mrpt_base_grp
@@ -71,9 +71,9 @@ namespace bayes
 			derived().m_particles[i].log_w = w;
 		}
 
-		size_t particlesCount() const 
-		{ 
-			return derived().m_particles.size(); 
+		size_t particlesCount() const
+		{
+			return derived().m_particles.size();
 		}
 
 		double normalizeWeights( double *out_max_log_w = NULL )
@@ -84,13 +84,13 @@ namespace bayes
 			double maxW = minW;
 
 			/* Compute the max/min of weights: */
-			for (particle_list_t::iterator it=derived().m_particles.begin();it!=derived().m_particles.end();it++)
+			for (typename particle_list_t::iterator it=derived().m_particles.begin();it!=derived().m_particles.end();it++)
 			{
 				maxW = std::max<double>( maxW, it->log_w );
 				minW = std::min<double>( minW, it->log_w );
 			}
 			/* Normalize: */
-			for (particle_list_t::iterator it=derived().m_particles.begin();it!=derived().m_particles.end();it++)
+			for (typename particle_list_t::iterator it=derived().m_particles.begin();it!=derived().m_particles.end();it++)
 				it->log_w -= maxW;
 			if (out_max_log_w) *out_max_log_w = maxW;
 
@@ -103,15 +103,15 @@ namespace bayes
 		{
 			MRPT_START
 			double	cum = 0;
-			
+
 			/* Sum of weights: */
 			double sumLinearWeights = 0;
-			for (particle_list_t::const_iterator it=derived().m_particles.begin();it!=derived().m_particles.end();it++)
+			for (typename particle_list_t::const_iterator it=derived().m_particles.begin();it!=derived().m_particles.end();it++)
 				sumLinearWeights += exp( it->log_w  );
 			/* Compute ESS: */
-			for (particle_list_t::const_iterator it=derived().m_particles.begin();it!=derived().m_particles.end();it++)
+			for (typename particle_list_t::const_iterator it=derived().m_particles.begin();it!=derived().m_particles.end();it++)
 				cum+= utils::square( exp( it->log_w ) / sumLinearWeights );
-			
+
 			if (cum==0)
 					return 0;
 			else	return 1.0/(derived().m_particles.size()*cum);
@@ -205,7 +205,7 @@ namespace bayes
 		typedef T                         CParticleDataContent; 	//!< This is the type inside the corresponding CParticleData class
 		typedef CProbabilityParticle<T>   CParticleData;			//!< Use this to refer to each element in the m_particles array.
 		typedef std::deque<CParticleData> CParticleList;			//!< Use this type to refer to the list of particles m_particles.
-		
+
 		CParticleList  m_particles;	//!< The array of particles
 
 		/** Default constructor */
