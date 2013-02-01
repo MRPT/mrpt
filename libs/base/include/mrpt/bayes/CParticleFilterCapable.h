@@ -172,7 +172,7 @@ namespace bayes
 		/** Returns the normalized ESS (Estimated Sample Size), in the range [0,1].
 		  *  Note that you do NOT need to normalize the weights before calling this.
 		 */
-		virtual double ESS() = 0;
+		virtual double ESS() const = 0;
 
 		/** Performs a resample of the m_particles, using the method selected in the constructor.
 		  * After computing the surviving samples, this method internally calls "performSubstitution" to actually perform the particle replacement.

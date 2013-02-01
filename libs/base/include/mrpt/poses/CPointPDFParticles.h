@@ -37,6 +37,7 @@
 
 #include <mrpt/poses/CPointPDF.h>
 #include <mrpt/math/CMatrix.h>
+#include <mrpt/bayes/CParticleFilterCapable.h>
 #include <mrpt/bayes/CProbabilityParticle.h>
 #include <mrpt/bayes/CParticleFilterData.h>
 
@@ -75,13 +76,13 @@ namespace poses
 	 * \sa CPointPDF
 	 * \ingroup poses_pdf_grp
 	 */
-	class BASE_IMPEXP CPointPDFParticles : public CPointPDF, public mrpt::bayes::CParticleFilterData<TSimple3DPoint>
+	class BASE_IMPEXP CPointPDFParticles : 
+		public CPointPDF, 
+		public mrpt::bayes::CParticleFilterData<TSimple3DPoint>,
+		public mrpt::bayes::CParticleFilterDataImpl<CPointPDFParticles,mrpt::bayes::CParticleFilterData<TSimple3DPoint>::CParticleList>
 	{
 		// This must be added to any CSerializable derived class:
 		DEFINE_SERIALIZABLE( CPointPDFParticles )
-
-		// This uses CParticleFilterData to implement some methods required for CParticleFilterCapable:
-		IMPLEMENT_PARTICLE_FILTER_CAPABLE(TSimple3DPoint);
 
 	 public:
 		/** Default constructor

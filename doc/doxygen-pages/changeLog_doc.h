@@ -107,6 +107,7 @@
 				- mrpt::utils::CConfigFileBase::write() now has signatures for "uint32_t" and "uint64_t" in both 32 and 64bit builds, instead of relying of the "size_t" type. This was done to fix build errors in some GCC versions under 32bits.
 			- [mrpt-bayes]
 				- mrpt::bayes::CKalmanFilterCapable (and all EKF-SLAM methods based on it) are now much faster. The implementation now exploits the sparsity of the Jacobian (~25% faster in a test 6D EKF-SLAM dataset) - <a href="http://code.google.com/p/mrpt/source/detail?r=3059" >r3059</a>, <a href="http://code.google.com/p/mrpt/source/detail?r=3060" >r3060</a>, <a href="http://code.google.com/p/mrpt/source/detail?r=3061" >r3061</a>
+				- mrpt::bayes::CParticleFilterCapable now makes use of the Curiously Recurring Template Pattern (CRTP) design instead of ugly #define macros - <a href="http://code.google.com/p/mrpt/source/detail?r=3182" >r3182</a>
 			- [mrpt-graphs]
 				- mrpt::graphs::CNetworkOfPoses2D, mrpt::graphs::CNetworkOfPoses3D,... and so on, are now all typedef's instead of classes, since serialization is now implemented as pure templatized code, thus avoiding the need to declare derived auxiliary classes  - <a href="http://code.google.com/p/mrpt/source/detail?r=3044" >r3044</a>
 			- [mrpt-gui]

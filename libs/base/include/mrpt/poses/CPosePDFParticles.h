@@ -61,13 +61,10 @@ namespace mrpt
 		class BASE_IMPEXP CPosePDFParticles :
 			public CPosePDF,
 			public mrpt::bayes::CParticleFilterData<CPose2D>,
-			public mrpt::bayes::CParticleFilterCapable
+			public mrpt::bayes::CParticleFilterDataImpl<CPosePDFParticles,mrpt::bayes::CParticleFilterData<CPose2D>::CParticleList>
 		{
 			// This must be added to any CSerializable derived class:
 			DEFINE_SERIALIZABLE( CPosePDFParticles )
-
-			// This uses CParticleFilterData to implement some methods required for CParticleFilterCapable:
-			IMPLEMENT_PARTICLE_FILTER_CAPABLE(CPose2D);
 
 		public:
 			/** Free all the memory associated to m_particles, and set the number of parts = 0

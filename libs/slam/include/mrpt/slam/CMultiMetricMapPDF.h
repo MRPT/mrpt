@@ -86,7 +86,7 @@ namespace slam
 	class SLAM_IMPEXP CMultiMetricMapPDF :
 		public mrpt::utils::CSerializable,
 		public mrpt::bayes::CParticleFilterData<CRBPFParticleData>,
-		public mrpt::bayes::CParticleFilterCapable,
+		public mrpt::bayes::CParticleFilterDataImpl<CMultiMetricMapPDF,mrpt::bayes::CParticleFilterData<CRBPFParticleData>::CParticleList>,
 		public mrpt::slam::PF_implementation<CRBPFParticleData,CMultiMetricMapPDF>
 	{
 		friend class CMetricMapBuilderRBPF;
@@ -94,9 +94,6 @@ namespace slam
 
 		// This must be added to any CSerializable derived class:
 		DEFINE_SERIALIZABLE( CMultiMetricMapPDF )
-
-		// This uses CParticleFilterData to implement some methods required for CParticleFilterCapable:
-		IMPLEMENT_PARTICLE_FILTER_CAPABLE(CRBPFParticleData);
 
 	protected:
 		/** The PF algorithm implementation.
