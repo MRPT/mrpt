@@ -67,8 +67,8 @@ namespace mrpt
 			DEFINE_SERIALIZABLE( CSetOfLines )
 		protected:
 			std::vector<TSegment3D> mSegments;
-            float			mLineWidth;
-
+            float	mLineWidth;
+			bool    m_antiAliasing;
 		public:
 			/**
 			  * Clear the list of segments
@@ -193,8 +193,8 @@ namespace mrpt
 			/**
 			  * Class factory
 			  */
-			inline static CSetOfLinesPtr Create(const std::vector<TSegment3D> &sgms)	{
-				return CSetOfLinesPtr(new CSetOfLines(sgms));
+			inline static CSetOfLinesPtr Create(const std::vector<TSegment3D> &sgms, const bool antiAliasing = true)	{
+				return CSetOfLinesPtr(new CSetOfLines(sgms,antiAliasing));
 			}
 			/** Render
 			  */
@@ -246,17 +246,15 @@ namespace mrpt
 			/** Evaluates the bounding box of this object (including possible children) in the coordinate frame of the object parent. */
 			virtual void getBoundingBox(mrpt::math::TPoint3D &bb_min, mrpt::math::TPoint3D &bb_max) const;
 
+			void enableAntiAliasing(bool enable=true) { m_antiAliasing =enable; CRenderizableDisplayList::notifyChange(); }
+			bool isAntiAliasingEnabled() const { return m_antiAliasing; }
+
 		private:
-			/** Constructor
-			  */
-			CSetOfLines():mSegments(),mLineWidth(1.0)	{}
-			/**
-			  * Constructor with a initial set of lines.
-			  */
-			CSetOfLines(const std::vector<TSegment3D> &sgms):mSegments(sgms),mLineWidth(1.0)	{}
-			/**
-			  * Private, virtual destructor: only can be deleted from smart pointers.
-			  */
+			/** Constructor */
+			CSetOfLines();
+			/** Constructor with a initial set of lines. */
+			CSetOfLines(const std::vector<TSegment3D> &sgms,bool antiAliasing=true);
+			/** Private, virtual destructor: only can be deleted from smart pointers. */
 			virtual ~CSetOfLines() { }
 		};
 		/** Inserts a set of segments into the list. Allows call chaining.

@@ -130,6 +130,11 @@
 					- mrpt::opengl::COpenGLScene::getBoundingBox()
 					- mrpt::opengl::COpenGLViewport::getBoundingBox()
 				- mrpt::opengl::COctreePointRenderer::octree_get_graphics_boundingboxes() has a new flag to draw solid boxes at each leaf node - <a href="http://code.google.com/p/mrpt/source/detail?r=3033" >r3033</a>
+				- mrpt::opengl::COpenGLViewport has a new set of "global OpenGL switches" that affect the rendering of entire scenes - <a href="http://code.google.com/p/mrpt/source/detail?r=3185" >r3185</a>
+				- Classes drawing lines now by default enable anti-aliasing (can be disabled by the programmer): - <a href="http://code.google.com/p/mrpt/source/detail?r=3185" >r3185</a>
+					- mrpt::opengl::CGridPlaneXY, mrpt::opengl::CGridPlaneXZ
+					- mrpt::opengl::CSimpleLine
+					- mrpt::opengl::CSetOfLines 
 			- [mrpt-reactivenav]
 				- Much code of mrpt::reactivenav classes have undergone a clean-up, slight optimizations and a translation of old Spanish names/comments to English - <a href="http://code.google.com/p/mrpt/source/detail?r=2939" >r2939</a>, <a href="http://code.google.com/p/mrpt/source/detail?r=2942" >r2942</a>, <a href="http://code.google.com/p/mrpt/source/detail?r=2958" >r2958</a>, <a href="http://code.google.com/p/mrpt/source/detail?r=3091" >r3091</a>
 				- mrpt::reactivenav::CParameterizedTrajectoryGenerator::CColisionGrid now has a more maintainable binary serialization format - <a href="http://code.google.com/p/mrpt/source/detail?r=2939" >r2939</a>

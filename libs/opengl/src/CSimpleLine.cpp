@@ -48,34 +48,49 @@ using namespace std;
 
 IMPLEMENTS_SERIALIZABLE( CSimpleLine, CRenderizableDisplayList, mrpt::opengl )
 
+
+CSimpleLine::CSimpleLine(
+	float x0,float y0, float z0,
+	float x1,float y1, float z1, float lineWidth, 
+	bool antiAliasing) :
+		m_x0(x0),m_y0(y0),m_z0(z0),
+		m_x1(x1),m_y1(y1),m_z1(z1),
+		m_lineWidth(lineWidth),
+		m_antiAliasing(antiAliasing)
+{
+}
+
 /*---------------------------------------------------------------
 							render_dl
   ---------------------------------------------------------------*/
 void   CSimpleLine::render_dl() const
 {
 #if MRPT_HAS_OPENGL_GLUT
-	glEnable (GL_BLEND);
-	checkOpenGLError();
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	checkOpenGLError();
+	// Enable antialiasing:
+	if (m_antiAliasing)
+	{
+		glPushAttrib( GL_COLOR_BUFFER_BIT | GL_LINE_BIT );
+		glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
+		glEnable(GL_BLEND);
+		glEnable(GL_LINE_SMOOTH);
+	}
+	glLineWidth(m_lineWidth);
 
-    glLineWidth(m_lineWidth);
-	checkOpenGLError();
+	glBegin( GL_LINES );
 
-    glBegin( GL_LINES );
-
-    glColor4ub(m_color.R,m_color.G,m_color.B,m_color.A);
+	glColor4ub(m_color.R,m_color.G,m_color.B,m_color.A);
 	glVertex3f( m_x0, m_y0, m_z0 );
-    glVertex3f( m_x1, m_y1, m_z1 );
+	glVertex3f( m_x1, m_y1, m_z1 );
 
-    glEnd();
+	glEnd();
 	checkOpenGLError();
 
-    glLineWidth(1.0f);
-	checkOpenGLError();
-
-	glDisable (GL_BLEND);
-	checkOpenGLError();
+	// End antialiasing:
+	if (m_antiAliasing) 
+	{
+		glPopAttrib();
+		checkOpenGLError();
+	}
 #endif
 }
 
@@ -87,12 +102,13 @@ void  CSimpleLine::writeToStream(CStream &out,int *version) const
 {
 
 	if (version)
-		*version = 0;
+		*version = 1;
 	else
 	{
 		writeToStreamRender(out);
 		out << m_x0 << m_y0 << m_z0;
 		out << m_x1 << m_y1 << m_z1 << m_lineWidth;
+		out << m_antiAliasing; // Added in v1
 	}
 }
 
@@ -104,11 +120,14 @@ void  CSimpleLine::readFromStream(CStream &in,int version)
 {
 	switch(version)
 	{
-	case 0:
+	case 1:
 		{
 			readFromStreamRender(in);
 			in >> m_x0 >> m_y0 >> m_z0;
 			in >> m_x1 >> m_y1 >> m_z1 >> m_lineWidth;
+			if (version>=1)
+				in >> m_antiAliasing;
+			else m_antiAliasing=true;
 		} break;
 	default:
 		MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)

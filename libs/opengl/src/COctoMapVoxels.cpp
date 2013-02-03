@@ -130,8 +130,10 @@ void   COctoMapVoxels::render_dl() const
 	{
 		glLineWidth(m_grid_width);
 		checkOpenGLError();
-		glEnable(GL_LINE_SMOOTH);
 
+		// Antialiasing:
+        glPushAttrib( GL_COLOR_BUFFER_BIT | GL_LINE_BIT );
+        glEnable(GL_LINE_SMOOTH);
 		if ( m_grid_color.A != 255 )
 		{
 			glEnable(GL_BLEND);
@@ -159,10 +161,8 @@ void   COctoMapVoxels::render_dl() const
 			glDrawElements(GL_LINES, sizeof(grid_line_indices)/sizeof(grid_line_indices[0]), GL_UNSIGNED_BYTE, grid_line_indices);
 		}
 
-		if ( m_grid_color.A != 255 )
-			glDisable(GL_BLEND);
-
-		glDisable(GL_LINE_SMOOTH);
+		// End of antialiasing:
+        glPopAttrib();
 	}
 
 	// Draw cubes ====================================

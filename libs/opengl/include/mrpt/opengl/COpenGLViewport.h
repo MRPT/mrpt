@@ -120,6 +120,16 @@ namespace mrpt
 			// ------------------------------------------------------
 
 
+			/** @name OpenGL global settings that affect rendering all objects in the scene/viewport
+			    @{ */
+
+			/** Sets glHint(GL_POLYGON_SMOOTH_HINT, GL_NICEST) is enabled, or GL_FASTEST otherwise. */
+			void enablePolygonNicest(bool enable=true) { m_OpenGL_enablePolygonNicest=enable; }
+			bool isPolygonNicestEnabled() const { return m_OpenGL_enablePolygonNicest; }
+			
+
+			/** @} */ // end of OpenGL settings
+
 			// -------------------------------------------------------------------
 			/** @name Change or read viewport properties (except "viewport modes")
 			    @{ */
@@ -339,6 +349,9 @@ namespace mrpt
 			opengl::CListOpenGLObjects		m_objects;
 
 			void internal_setImageView_fast(const mrpt::utils::CImage &img, bool is_fast);
+
+			// OpenGL global settings:
+			bool  m_OpenGL_enablePolygonNicest;
 
 		};
 		/**

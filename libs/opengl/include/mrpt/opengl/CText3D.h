@@ -138,7 +138,7 @@ namespace mrpt
 				const std::string &str = std::string(""),
 				const std::string &fontName = std::string("sans"),
 				const double scale = 1.0,
-				const mrpt::opengl::TOpenGLFontStyle text_style = mrpt::opengl::FILL,
+				const mrpt::opengl::TOpenGLFontStyle text_style = mrpt::opengl::NICE,
 				const double text_spacing = 1.5,
 				const double text_kerning = 0.1 );
 

@@ -525,6 +525,25 @@ void TestOpenGLObjects()
 	}
 	off_x+=STEP_X;
 
+	// CSimpleLine
+	{
+		{
+			opengl::CSimpleLinePtr obj = opengl::CSimpleLine::Create();
+			obj->setLocation(off_x,0,0);
+
+			obj->setLineCoords(
+				mrpt::random::randomGenerator.drawUniform(-5,5),mrpt::random::randomGenerator.drawUniform(-5,5),mrpt::random::randomGenerator.drawUniform(-5,5),
+				mrpt::random::randomGenerator.drawUniform(-5,5),mrpt::random::randomGenerator.drawUniform(-5,5),mrpt::random::randomGenerator.drawUniform(-5,5) );
+
+			theScene->insert( obj );
+		}
+
+		opengl::CTextPtr gl_txt = opengl::CText::Create("CSimpleLine");
+		gl_txt->setLocation(off_x,off_y_label,0);
+		theScene->insert(gl_txt);
+	}
+	off_x+=STEP_X;
+
 	// stock_objects::BumblebeeCamera
 	{
 		{

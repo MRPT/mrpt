@@ -47,15 +47,44 @@ using namespace std;
 
 IMPLEMENTS_SERIALIZABLE( CGridPlaneXZ, CRenderizableDisplayList, mrpt::opengl )
 
+/** Constructor */
+CGridPlaneXZ::CGridPlaneXZ(
+	float xMin,
+	float xMax,
+	float zMin,
+	float zMax,
+	float y,
+	float frequency,
+	float lineWidth,
+	bool  antiAliasing
+	) :
+	m_xMin(xMin),m_xMax(xMax),
+	m_zMin(zMin),m_zMax(zMax),
+	m_plane_y(y),
+	m_frequency(frequency),
+	m_lineWidth(lineWidth),
+	m_antiAliasing(antiAliasing)
+{
+}
+
+
 /*---------------------------------------------------------------
 							render
   ---------------------------------------------------------------*/
 void   CGridPlaneXZ::render_dl() const
 {
 #if MRPT_HAS_OPENGL_GLUT
-	MRPT_START
+	ASSERT_(m_frequency>=0)
 
-	glLineWidth(1);
+	// Enable antialiasing:
+	if (m_antiAliasing)
+	{
+		glPushAttrib( GL_COLOR_BUFFER_BIT | GL_LINE_BIT );
+		glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
+		glEnable(GL_BLEND);
+		glEnable(GL_LINE_SMOOTH);
+	}
+	glLineWidth(m_lineWidth);
 
     glBegin(GL_LINES);
 
@@ -75,7 +104,12 @@ void   CGridPlaneXZ::render_dl() const
 
     glEnd();
 
-	MRPT_END
+	// End antialiasing:
+	if (m_antiAliasing) 
+	{
+		glPopAttrib();
+		checkOpenGLError();
+	}
 #endif
 }
 
@@ -87,13 +121,14 @@ void  CGridPlaneXZ::writeToStream(CStream &out,int *version) const
 {
 
 	if (version)
-		*version = 0;
+		*version = 1;
 	else
 	{
 		writeToStreamRender(out);
 		out << m_xMin << m_xMax;
 		out << m_zMin << m_zMax << m_plane_y;
 		out << m_frequency;
+		out << m_lineWidth << m_antiAliasing; // v1
 	}
 }
 
@@ -107,11 +142,19 @@ void  CGridPlaneXZ::readFromStream(CStream &in,int version)
 	switch(version)
 	{
 	case 0:
+	case 1:
 		{
 			readFromStreamRender(in);
 			in >> m_xMin >> m_xMax;
 			in >> m_zMin >> m_zMax >> m_plane_y;
 			in >> m_frequency;
+			if (version>=1) 
+				in >> m_lineWidth >> m_antiAliasing;
+			else 
+			{
+				m_lineWidth=1.0f;
+				m_antiAliasing=true;
+			}
 		} break;
 	default:
 		MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)

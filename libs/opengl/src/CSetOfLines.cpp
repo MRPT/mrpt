@@ -49,6 +49,18 @@ using namespace std;
 IMPLEMENTS_SERIALIZABLE( CSetOfLines, CRenderizableDisplayList, mrpt::opengl )
 
 
+/** Constructor */
+CSetOfLines::CSetOfLines()
+	: mSegments(),mLineWidth(1.0),m_antiAliasing(true)	
+{
+}
+
+/** Constructor with a initial set of lines. */
+CSetOfLines::CSetOfLines(const std::vector<TSegment3D> &sgms,bool antiAliasing)
+	: mSegments(sgms),mLineWidth(1.0),m_antiAliasing(antiAliasing)	
+{
+}
+
 /*---------------------------------------------------------------
 							setLineByIndex
   ---------------------------------------------------------------*/
@@ -66,15 +78,18 @@ void CSetOfLines::setLineByIndex(size_t index,const mrpt::math::TSegment3D &segm
 void   CSetOfLines::render_dl() const
 {
 #if MRPT_HAS_OPENGL_GLUT
-	glEnable(GL_LINE_SMOOTH);
+
+	// Enable antialiasing:
+	glPushAttrib( GL_COLOR_BUFFER_BIT | GL_LINE_BIT );
+	if (m_antiAliasing || m_color.A != 255)
+	{
+		glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
+		glEnable(GL_BLEND);
+	}
+	if (m_antiAliasing)
+		glEnable(GL_LINE_SMOOTH);
 	glLineWidth(mLineWidth);
 	checkOpenGLError();
-
-	if ( m_color.A != 255 )
-	{
-		glEnable(GL_BLEND);
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	}
 
 	glBegin(GL_LINES);
 	glColor4ub(m_color.R,m_color.G,m_color.B,m_color.A);
@@ -85,10 +100,8 @@ void   CSetOfLines::render_dl() const
 	glEnd();
 	checkOpenGLError();
 
-	if ( m_color.A != 255 )
-		glDisable(GL_BLEND);
-
-	glDisable(GL_LINE_SMOOTH);
+	// End of antialiasing:
+    glPopAttrib();
 
 #endif
 }
@@ -99,10 +112,11 @@ void   CSetOfLines::render_dl() const
   ---------------------------------------------------------------*/
 void  CSetOfLines::writeToStream(CStream &out,int *version) const
 {
-	if (version) *version=2;
+	if (version) *version=3;
 	else	{
 		writeToStreamRender(out);
 		out<<mSegments<<mLineWidth;
+		out << m_antiAliasing; // Added in v3
 	}
 }
 
@@ -134,9 +148,15 @@ void  CSetOfLines::readFromStream(CStream &in,int version)
 			}
 		}	break;
 	case 2:
-		readFromStreamRender(in);
-		in>>mSegments;
-		in>>mLineWidth;
+	case 3:
+		{
+			readFromStreamRender(in);
+			in>>mSegments;
+			in>>mLineWidth;
+			if (version>=3)
+				in >> m_antiAliasing;
+			else m_antiAliasing = true;
+		}
 		break;
 	default:
 		MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)

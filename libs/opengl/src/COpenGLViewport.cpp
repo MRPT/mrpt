@@ -92,9 +92,10 @@ COpenGLViewport::COpenGLViewport( COpenGLScene *parent, const string &name  ) :
 	m_background_color(0.6,0.6,0.6),
 	m_isImageView(false),
 	m_imageview_img(),
-	m_objects()
+	m_objects(),
+	// OpenGL settings:
+	m_OpenGL_enablePolygonNicest(true)
 {
-
 }
 
 
@@ -449,6 +450,11 @@ void  COpenGLViewport::render( const int render_width, const int render_height  
 				this->publishEvent(ev);
 			}
 
+
+			// Global OpenGL settings:
+			// ---------------------------------
+			glHint(GL_POLYGON_SMOOTH_HINT, m_OpenGL_enablePolygonNicest ? GL_NICEST : GL_FASTEST);
+
 			// Render objects:
 			// -------------------------------------------
 			glMatrixMode(GL_MODELVIEW);
@@ -519,7 +525,7 @@ void  COpenGLViewport::render( const int render_width, const int render_height  
 void  COpenGLViewport::writeToStream(CStream &out,int *version) const
 {
 	if (version)
-		*version = 1;
+		*version = 2;
 	else
 	{
 		// Save data:
@@ -539,6 +545,10 @@ void  COpenGLViewport::writeToStream(CStream &out,int *version) const
 		out << n;
 		for (CListOpenGLObjects::const_iterator	it=m_objects.begin();it!=m_objects.end();++it)
 			out << **it;
+
+		// Added in v2: Global OpenGL settings:
+		out << m_OpenGL_enablePolygonNicest;
+
 	}
 }
 
@@ -552,6 +562,7 @@ void  COpenGLViewport::readFromStream(CStream &in,int version)
 	{
 	case 0:
 	case 1:
+	case 2:
 		{
 			// Load data:
 			in  >> m_camera
@@ -578,6 +589,15 @@ void  COpenGLViewport::readFromStream(CStream &in,int version)
 			m_objects.resize(n);
 
 			for_each(m_objects.begin(), m_objects.end(), ObjectReadFromStream(&in) );
+
+			// Added in v2: Global OpenGL settings:
+			if (version>=2)
+			{
+				in >> m_OpenGL_enablePolygonNicest;
+			}
+			else { 
+				// Defaults 
+			}
 
 		} break;
 	default:

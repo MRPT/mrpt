@@ -67,8 +67,15 @@ namespace mrpt
 			float	m_zMin, m_zMax;
 			float	m_plane_y;
 			float	m_frequency;
+            float	m_lineWidth;
+			bool    m_antiAliasing;
 
 		public:
+			void setLineWidth(float w) { m_lineWidth=w; CRenderizableDisplayList::notifyChange(); }
+			float getLineWidth() const { return  m_lineWidth;}
+
+			void enableAntiAliasing(bool enable=true) { m_antiAliasing =enable; CRenderizableDisplayList::notifyChange(); }
+			bool isAntiAliasingEnabled() const { return m_antiAliasing; }
 
 			void setPlaneLimits(float xmin,float xmax, float zmin, float zmax)
 			{
@@ -93,15 +100,17 @@ namespace mrpt
 
 			/** Class factory  */
 			static CGridPlaneXZPtr Create(
-				float				xMin = -10,
-				float				xMax = 10,
-				float				zMin = -10,
-				float				zMax = 10,
-				float				y = 0,
-				float				frequency = 1
+				float xMin = -10,
+				float xMax = 10,
+				float zMin = -10,
+				float zMax = 10,
+				float y = 0,
+				float frequency = 1,
+				float lineWidth = 1.3f,
+				bool  antiAliasing = true
 				)
 			{
-				return CGridPlaneXZPtr( new CGridPlaneXZ( xMin,xMax, zMin, zMax, y, frequency ) );
+				return CGridPlaneXZPtr( new CGridPlaneXZ( xMin,xMax, zMin, zMax, y, frequency,lineWidth,antiAliasing ) );
 			}
 
 			/** Render
@@ -111,22 +120,17 @@ namespace mrpt
 			/** Evaluates the bounding box of this object (including possible children) in the coordinate frame of the object parent. */
 			virtual void getBoundingBox(mrpt::math::TPoint3D &bb_min, mrpt::math::TPoint3D &bb_max) const;
 		private:
-			/** Constructor
-			  */
+			/** Constructor */
 			CGridPlaneXZ(
-				float				xMin = -10,
-				float				xMax = 10,
-				float				zMin = -10,
-				float				zMax = 10,
-				float				y = 0,
-				float				frequency = 1
-				) :
-				m_xMin(xMin),m_xMax(xMax),
-				m_zMin(zMin),m_zMax(zMax),
-				m_plane_y(y),
-				m_frequency(frequency)
-			{
-			}
+				float xMin = -10,
+				float xMax = 10,
+				float zMin = -10,
+				float zMax = 10,
+				float y = 0,
+				float frequency = 1,
+				float lineWidth = 1.3f,
+				bool  antiAliasing = true
+				);
 			/** Private, virtual destructor: only can be deleted from smart pointers */
 			virtual ~CGridPlaneXZ() { }
 		};

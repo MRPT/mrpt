@@ -67,9 +67,16 @@ namespace mrpt
 			float	m_yMin, m_yMax;
 			float	m_plane_z;
 			float	m_frequency;
-
+            float	m_lineWidth;
+			bool    m_antiAliasing;
 
 		public:
+			void setLineWidth(float w) { m_lineWidth=w; CRenderizableDisplayList::notifyChange(); }
+			float getLineWidth() const { return  m_lineWidth;}
+
+			void enableAntiAliasing(bool enable=true) { m_antiAliasing =enable; CRenderizableDisplayList::notifyChange(); }
+			bool isAntiAliasingEnabled() const { return m_antiAliasing; }
+
 			void setPlaneLimits(float xmin,float xmax, float ymin, float ymax)
 			{
 				m_xMin=xmin; m_xMax = xmax;
@@ -98,42 +105,31 @@ namespace mrpt
 
 			/** Class factory  */
 			static CGridPlaneXYPtr Create(
-				float				xMin,
-				float				xMax,
-				float				yMin,
-				float				yMax,
-				float				z    = 0,
-				float				frequency = 1 )
+				float xMin,
+				float xMax,
+				float yMin,
+				float yMax,
+				float z    = 0,
+				float frequency = 1, 
+				float lineWidth = 1.3f,
+				bool  antiAliasing = true)
 			{
-				return CGridPlaneXYPtr( new CGridPlaneXY(
-					xMin,
-					xMax,
-					yMin,
-					yMax,
-					z,
-					frequency ) );
+				return CGridPlaneXYPtr( new CGridPlaneXY(xMin,xMax,yMin,yMax, z, frequency,lineWidth,antiAliasing ) );
 			}
 
 
 		private:
-			/** Constructor
-			  */
+			/** Constructor  */
 			CGridPlaneXY(
-				float				xMin = -10,
-				float				xMax = 10 ,
-				float				yMin = -10,
-				float				yMax = 10,
-				float				z    = 0,
-				float				frequency = 1
-				) :
-				m_xMin(xMin),
-				m_xMax(xMax),
-				m_yMin(yMin),
-				m_yMax(yMax),
-				m_plane_z(z),
-				m_frequency(frequency)
-			{
-			}
+				float xMin = -10,
+				float xMax = 10 ,
+				float yMin = -10,
+				float yMax = 10,
+				float z    = 0,
+				float frequency = 1,
+				float lineWidth = 1.3f,
+				bool  antiAliasing = true);
+
 			/** Private, virtual destructor: only can be deleted from smart pointers */
 			virtual ~CGridPlaneXY() { }
 		};
