@@ -636,7 +636,7 @@ void  CGasConcentrationGridMap2D::getWindAs3DObject( mrpt::opengl::CSetOfObjects
 						increaseUncertainty
 ---------------------------------------------------------------*/
 void CGasConcentrationGridMap2D::increaseUncertainty(const double STD_increase_value)
-    {
+{
 	//Increase cell variance
 //	unsigned int cx,cy;
 //	double memory_retention;
@@ -667,47 +667,36 @@ void CGasConcentrationGridMap2D::increaseUncertainty(const double STD_increase_v
 						simulateAdvection
 ---------------------------------------------------------------*/
 bool CGasConcentrationGridMap2D::simulateAdvection( const double &STD_increase_value )
-			{
+{
 
 	/* 1- Ensure we can use Wind Information
 	-------------------------------------------------*/
 	if(!insertionOptions.useWindInformation)
-	{
 		return false;
-			}
-
-	/* 2- Define Variables
-	-------------------------------------------------------------------------------------------*/
-	int cell_i_cx,cell_i_cy;
-	//float cell_i_x, cell_i_y;
-	float mu_phi, mu_r, mu_modwind;
-
+	
 	//Get time since last simulation
 	double At = mrpt::system::timeDifference(timeLastSimulated, mrpt::system::now());
-	cout << " - At since last simulation = " << At << "seconds" << endl;
+	cout << endl << " - At since last simulation = " << At << "seconds" << endl;
 	//update time of last updated.
 	timeLastSimulated = mrpt::system::now();
 
-	// Sparse Matrix depicting the relation between cells with the wind
-	// mean(t+1) = SA * mean(t)
-	// Cov(t+1) = SA * Cov(t) * SA'
-	const size_t N = m_map.size();
-	//mrpt::math::CSparseMatrix SA(N,N);
-	//mrpt::math::CSparseMatrix SAtranspose(N,N);
-	std::vector<float> row_prob (N, 0.0);
-
-
+	
 	/* 3- Build Transition Matrix (SA)
 	  This Matrix contains the probabilities of each cell
 	  to "be displaced" to other cells by the wind effect.
 	------------------------------------------------------*/
 	mrpt::utils::CTicTac tictac;
 	size_t i,c;
+	int cell_i_cx,cell_i_cy;	
+	float mu_phi, mu_r, mu_modwind;
+	const size_t N = m_map.size();
 	mrpt::math::CMatrix A(N,N);
 	A.fill(0.0);
+	//std::vector<double> row_sum(N,0.0);
+	double *row_sum = (double*)calloc(N, sizeof(double));
 
 	try
-			{
+		{
 		//Ensure map dimensions match with wind map
 		unsigned int wind_map_size = windGrid_direction.getSizeX() * windGrid_direction.getSizeY();
 		ASSERT_( wind_map_size == windGrid_module.getSizeX() * windGrid_module.getSizeY() );
@@ -715,7 +704,7 @@ bool CGasConcentrationGridMap2D::simulateAdvection( const double &STD_increase_v
 		{
 			cout << " GAS MAP DIMENSIONS DO NOT MATCH WIND INFORMATION " << endl;
 			mrpt::system::pause();
-			}
+		}
 
 		tictac.Tic();
 
@@ -723,9 +712,7 @@ bool CGasConcentrationGridMap2D::simulateAdvection( const double &STD_increase_v
 		for(i=0; i<N; i++)
 		{
 			//Cell_i indx and coordinates
-			idx2cxcy(i,cell_i_cx,cell_i_cy);
-			//cell_i_x = idx2x(cell_i_cx);
-			//cell_i_y = idx2y(cell_i_cy);
+			idx2cxcy(i,cell_i_cx,cell_i_cy);			
 
 			//Read dirwind value of cell i
 			mu_phi = *windGrid_direction.cellByIndex(cell_i_cx,cell_i_cy);		//[0,2*pi]
@@ -758,24 +745,14 @@ bool CGasConcentrationGridMap2D::simulateAdvection( const double &STD_increase_v
 					// Add Value to SA Matrix
 					if( cells_to_update[ci].value != 0.0 )
 					{
-						A(final_idx,i) = cells_to_update[ci].value;
-						//Sparse
-						//SA.insert_entry(final_idx,i,cells_to_update[ci].value);
-						row_prob[ci] += cells_to_update[ci].value;
-        }
-    }
+						A(final_idx,i) = cells_to_update[ci].value;						
+						row_sum[final_idx] += cells_to_update[ci].value;						
+					}
+				}
 			}//end-for ci
-		}//end-for cell i
+		}//end-for cell i				
 
-		// normalize each row of A so the sum(prob)=1
-
-
-		//Compress and transpose Sparse Matrix A
-		//---------------------------------------
-		//cout << " - SA NotNullElements= " << SA.getNumElementsNotNull() << endl;
-//		SA.compressFromTriplet();
-//		SAtranspose = SA.transpose();
-		//cout << " - SA matrix computed in " << tictac.Tac() << "s" << endl<<endl;
+		cout << " - SA matrix computed in " << tictac.Tac() << "s" << endl << endl;
 	}
 	catch( mrpt::utils::exception e)
 	{
@@ -783,158 +760,78 @@ bool CGasConcentrationGridMap2D::simulateAdvection( const double &STD_increase_v
 		cout << "on cell i= " << i << "  c=" << c << endl << endl;
 		return false;
 	}
-
-
-
-
+	
+	
 	/* Update Mean + Variance as a Gaussian Mixture
 	------------------------------------------------*/
 	try
-		{
-		std::vector<double> new_means(N,0.0);
-		std::vector<double> new_variances(N,0.0);
+	{
+		tictac.Tic();
+		//std::vector<double> new_means(N,0.0);
+		double *new_means = (double*)calloc(N, sizeof(double));
+		//std::vector<double> new_variances(N,0.0);
+		double *new_variances = (double*)calloc(N, sizeof(double));
 
 		for( size_t it_i=0; it_i<N; it_i++)
-			{
-			//mean
+		{	
+			//--------
+			// mean
+			//--------
 			for( size_t it_j=0; it_j<N; it_j++)
-			{
-				new_means[it_i] += ( A(it_i,it_j) * m_map[it_j].kf_mean );
+			{	
+				if (m_map[it_j].kf_mean!=0 && A(it_i,it_j)!=0)
+				{
+					if (row_sum[it_i] >= 1)
+						new_means[it_i] += ( A(it_i,it_j)/row_sum[it_i] ) * m_map[it_j].kf_mean;
+					else
+						new_means[it_i] +=  A(it_i,it_j) * m_map[it_j].kf_mean;
+				}
 			}
-			//variance
+			
+			
+			//----------
+			// variance
+			//----------
+			//Consider special case (borders cells)
+			if (row_sum[it_i] < 1)
+				new_variances[it_i] = (1-row_sum[it_i]) * square(insertionOptions.KF_initialCellStd);			
+
 			for( size_t it_j=0; it_j<N; it_j++)
 			{
-				new_variances[it_i] += A(it_i,it_j) * ( m_stackedCov(it_j,0) + square( m_map[it_j].kf_mean - new_means[it_i]) );
+				if (A(it_i,it_j)!=0)
+				{
+					if (row_sum[it_i] >= 1)
+						new_variances[it_i] += ( A(it_i,it_j)/row_sum[it_i] ) * ( m_stackedCov(it_j,0) + square( m_map[it_j].kf_mean - new_means[it_i]) );
+					else
+						new_variances[it_i] += A(it_i,it_j) * ( m_stackedCov(it_j,0) + square( m_map[it_j].kf_mean - new_means[it_i]) );
+				}
 			}
 		}
 
+		//Update means and Cov of the Kalman filter state
 		for( size_t it_i=0; it_i<N; it_i++)
 		{
 			m_map[it_i].kf_mean = new_means[it_i];		//means
-			m_stackedCov(it_i,0) = new_variances[it_i];	//variances
+
+			//Variances
+			// Scale the Current Covariances with the new variances
+			for (size_t it_j=0; it_j<N; it_j++)
+			{
+				m_stackedCov(it_i,it_j) = (m_stackedCov(it_i,it_j)/m_stackedCov(it_i,it_i) )* new_variances[it_i];	//variances
+				m_stackedCov(it_j,it_i) = m_stackedCov(it_i,it_j);
+			}
 		}
 		m_hasToRecoverMeanAndCov = true;
 		recoverMeanAndCov();
 
+		cout << " - Mean&Var updated in " << tictac.Tac() << "s" << endl;
+	
 
-
-
-	///* 4. Update Means: C(t+1) = A * C(t)
-	//-------------------------------------*/
-	//	tictac.Tic();
-	//	//Transform from vector to CSparseMatrix
-	//	mrpt::math::CSparseMatrix Smeans(N,1);
-	//	for( size_t it=0; it<N; it++)
-	//	{
-	//		if( m_map[it].kf_mean > 0.0 )	//keep only non null values
-	//			Smeans.insert_entry(it,0,m_map[it].kf_mean);
-	//	}
-	//
-	//	//Compress Sparse Matrix
-	//	Smeans.compressFromTriplet();
-
-	//	//Update Means with Transition Matrix
-	//	Smeans.multiply_AB(SA,Smeans);
-
-	//	//Transform from CSparse to vector
-	//	mrpt::math::CMatrixDouble meanMatrix;
-	//	Smeans.get_dense(meanMatrix);
-	//	ASSERT_(meanMatrix.getRowCount() == N);
-	//	ASSERT_(meanMatrix.getColCount() == 1);
-	//	for( size_t row=0; row<N; row++)
-	//	{
-	//		m_map[row].kf_mean = meanMatrix(row,0);
-	//	}
-	//	//cout << " - Mean updated in " << tictac.Tac() << "s" << endl;
-	//}
-	//catch( mrpt::utils::exception e)
-	//{
-	//	cout << " #########  EXCEPTION Updating Means ##########\n: " << e.what() << endl;
-	//	return false;
-	//}
-
-	//
-	//
-	///* 5. Update Covariances: Cov(t+1) = A * Cov(t) * A'
-	//----------------------------------------------------*/
-	//try
-	//{
-	//	tictac.Tic();
-	//	CSparseMatrix SCov(N,N);
-	//	const uint16_t	W = m_insertOptions_common->KF_W_size;
-	//	const size_t _2W1 = 2*W +1;
-	//	const size_t	K = 2*W*(W+1)+1;
-	//	//Check dimensions
-	//	_ASSERT(m_stackedCov.rows() == N);
-	//	_ASSERT(m_stackedCov.cols() == K);
-
-
-	//	//m_stackedCov.saveToTextFile("old_cov");
-
-	//	// Transform from m_stackedCov to CSparse
-	//	for( i=0;i<N;i++ )	//for each row of the Compresed Cov Matrix
-	//	{
-	//		for( c=0; c<K; c++ ) //for each column of the Compresed Cov Matrix
-	//		{
-	//			if( m_stackedCov(i,c)>0.0 )
-	//			{
-	//				if( c==0 )	//j==i Variance of cell i
-	//				{
-	//					SCov.insert_entry(i,i,m_stackedCov(i,c));
-	//				}
-	//				else if( c<=W )	//j>i in the same row
-	//				{
-	//					//calculate index of cells in the MAP, corresponding to the actual covariance in the m_stackedCov(i,c) = sigma(i,j)
-	//					size_t j = i+c;
-	//					if( (j<N) && ( (j/m_size_x) == (i/m_size_x) ) )	//inside the map and in the same row
-	//					{
-	//						SCov.insert_entry(i,j,m_stackedCov(i,c));
-	//						SCov.insert_entry(j,i,m_stackedCov(i,c));
-	//					}
-	//				}
-	//				else //cell_j belongs to a row over cell_i
-	//				{
-	//					size_t row = (c+W)/_2W1;
-	//
-	//					//calculate index of cells in the MAP, corresponding to the actual covariance in the Compressed_Cov(i,c) = sigma(i,j)
-	//					//size_t j = i+(row*m_size_x)+counter;
-	//					size_t j = i+(row*m_size_x)+c-(row*_2W1);
-	//					if( (j<N) && ( (j/m_size_x) == ((i/m_size_x) +row)) )
-	//					{
-	//						SCov.insert_entry(i,j,m_stackedCov(i,c));
-	//						SCov.insert_entry(j,i,m_stackedCov(i,c));
-	//					}
-	//				}
-	//			}
-	//		}//end-for c
-	//	}//end-for i
-
-	//	//ensure conversion is ok
-	//	//CMatrixD new_m_stackedCov(N,K);
-	//	//SCov.getCompressedCov(new_m_stackedCov, W, m_size_x);
-	//	//new_m_stackedCov.saveToTextFile("new_cov.txt");
-	//
-
-	//
-	//	//Compress the Sparse Cov Matrix
-	//	//cout << " - SCov NotNullElements= " << SCov.getNumElementsNotNull() << endl;
-	//	SCov.compressFromTriplet();
-	//	//cout << " - SCov generated in " << tictac.Tac() << "s" << endl << endl;
-	//	tictac.Tic();
-
-	//
-	//	//Multiply!!
-	//	CSparseMatrix SCov_t_1;
-	//	SCov_t_1.multiply_AB(SA,SCov);
-	//	SCov_t_1.multiply_AB(SCov_t_1,SAtranspose);
-	//	//cout << " - Multiplication in " << tictac.Tac() << "s" << endl;
-	//	//tictac.Tic();
-
-	//	SCov_t_1.getCompressedCov(m_stackedCov, W, m_size_x);
-	//	m_hasToRecoverMeanAndCov = true;
-	//	recoverMeanAndCov();
-	//	//cout << " - Covariances updates in " << tictac.Tac() << "s" << endl;
-
+		//Free Memory
+		free(row_sum);
+		free(new_means);
+		free(new_variances);
+	
 	}
 	catch( mrpt::utils::exception e)
 				{
@@ -1007,7 +904,7 @@ bool CGasConcentrationGridMap2D::build_Gaussian_Wind_Grid()
 	cout << "Looking for file: " << filename.c_str() << endl;
 
 	if( mrpt::system::fileExists(filename.c_str()) )
-						{
+	{
 		// file exists. Load lookUptable from file
 		cout << "LookUp table found for this configuration. Loading..." << endl;
 		return load_Gaussian_Wind_Grid_From_File();
