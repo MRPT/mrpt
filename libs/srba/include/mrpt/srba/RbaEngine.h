@@ -57,7 +57,8 @@ namespace srba
 	/** The set of default settings for RBA_Problem */
 	struct RBA_OPTIONS_DEFAULT
 	{
-		typedef sensor_pose_on_robot_none sensor_pose_on_robot_t;
+		typedef sensor_pose_on_robot_none    sensor_pose_on_robot_t;  // The sensor pose coincides with the robot pose
+		typedef observation_noise_identity   obs_noise_matrix_t;      // The sensor noise matrix is the same for all observations and equal to \sigma * I(identity)
 	};
 
 	/** The main class for this library: it defines a Relative Bundle-Adjustment (RBA) problem with (partially known) landmarks,
@@ -436,7 +437,6 @@ namespace srba
 			bool   numeric_jacobians;
 			void (*feedback_user_iteration)(unsigned int iter, const double total_sq_err, const double mean_sqroot_error);
 			bool   compute_condition_number; //!< Compute and return to the user the Hessian condition number of k2k edges (default=false)
-			double std_noise_observations; //!< default: 1, the standard deviation assumed for feature coordinates (this parameter is only needed to scale the uncertainties of reconstructed LMs with unknown locations).
 			// -------------------------------------
 
 		};
@@ -452,6 +452,9 @@ namespace srba
 
 			/** Parameters related to the relative pose of sensors wrt the robot (if applicable) */
 			typename RBA_OPTIONS::sensor_pose_on_robot_t::parameters_t  sensor_pose;
+
+			/** Parameters related to the sensor noise covariance matrix */
+			typename RBA_OPTIONS::obs_noise_matrix_t::parameters_t      obs_noise;
 		};
 
 		TAllParameters parameters;
@@ -511,7 +514,7 @@ namespace srba
 			* \return The number of Jacobian multiplications skipped due to its observation being marked as "invalid"
 			*/
 		template <class SPARSEBLOCKHESSIAN>
-		static size_t sparse_hessian_update_numeric( SPARSEBLOCKHESSIAN & H );
+		size_t sparse_hessian_update_numeric( SPARSEBLOCKHESSIAN & H ) const;
 
 
 	private:

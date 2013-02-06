@@ -49,6 +49,9 @@ namespace srba
 	/** \addtogroup mrpt_srba_options
 		* @{ */
 
+		/** \name  Types for RBA_OPTIONS::sensor_pose_on_robot_t 
+		  *  @{ */
+
 		/** Typedefs for determining whether the result of combining a KF pose (+) a sensor pose leads to a SE(2) or SE(3) pose */
 		template <class SENSOR_POSE_CLASS, size_t KF_POSE_DIMS> struct resulting_pose_t;
 
@@ -132,7 +135,54 @@ namespace srba
 		template <> struct resulting_pose_t<sensor_pose_on_robot_se3,3> { typedef mrpt::poses::CPose3D pose_t; };
 		template <> struct resulting_pose_t<sensor_pose_on_robot_se3,6> { typedef mrpt::poses::CPose3D pose_t; };
 
-		/** @} */
+		/** @} */ // end @name
+		// ---------------------------------------------------------------------------------------------
+
+		/** \name  Types for RBA_OPTIONS::obs_noise_matrix_t 
+		  *  @{ */
+
+		/** Usage: A possible type for RBA_OPTIONS::obs_noise_matrix_t.
+		  * Meaning: The sensor noise matrix is the same for all observations and equal to \sigma * I(identity).  */
+		struct observation_noise_identity
+		{
+			/** Observation noise parameters to be filled by the user in srba.parameters.obs_noise */
+			struct parameters_t
+			{
+				/** One sigma of the Gaussian noise assumed for every component of observations (Default value: 1) */
+				double std_noise_observations;
+
+				parameters_t() : std_noise_observations (1.) 
+				{ }
+			};
+
+			/** Internal struct for data that must be stored for each observation  */
+			struct noise_data_per_obs_t
+			{
+				// None: all obs. have the same value="std_noise_observations" 
+			};
+
+			/** Must execute H+= J1^t * \Lambda * J2 */
+			template <class MATRIX_H,class MATRIX_J1,class MATRIX_J2>
+			inline static void accum_JtJ(MATRIX_H & H, const MATRIX_J1 & J1, const MATRIX_J2 &J2, const size_t obs_idx, const parameters_t & obs_noise_params) 
+			{
+				H.noalias() += J1.transpose() * J2;  // The constant scale factor 1/sigma will be applied in the end (below)
+			}
+
+			/** Do scaling, if applicable, to H after end of all calls to accum_JtJ()  */
+			template <class MATRIX_H>
+			inline static void scale_H(MATRIX_H & H, const parameters_t & obs_noise_params) 
+			{
+				ASSERTDEB_(obs_noise_params.std_noise_observations>0)
+				H *= 1.0/obs_noise_params.std_noise_observations;
+			}
+
+		};  // end of "observation_noise_identity"
+
+
+		/** @} */ // end @name
+
+
+		/** @} */ // end \addtogroup
 
 } // End of namespace
 } // end of namespace

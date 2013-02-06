@@ -45,7 +45,7 @@ namespace mrpt { namespace srba {
 	*/
 template <class KF2KF_POSE_TYPE,class LM_TYPE,class OBS_TYPE,class RBA_OPTIONS>
 template <class SPARSEBLOCKHESSIAN>
-size_t RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::sparse_hessian_update_numeric( SPARSEBLOCKHESSIAN & H )
+size_t RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::sparse_hessian_update_numeric( SPARSEBLOCKHESSIAN & H ) const
 {
 	size_t nInvalid = 0;
 	const size_t nUnknowns = H.getColCount();
@@ -57,15 +57,26 @@ size_t RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::sparse_hessian
 		{
 			typename SPARSEBLOCKHESSIAN::TEntry & entry = it->second;
 
-			// Compute: Hij = \Sum_k  J_{ki}^t * J_{kj}
+			// Compute: Hij = \Sum_k  J_{ki}^t * \Lambda_k *  J_{kj}
 
 			typename SPARSEBLOCKHESSIAN::matrix_t Hij;
 			Hij.setZero();
 			const size_t nJacobs = entry.sym.lst_jacob_blocks.size();
 			for (size_t k=0;k<nJacobs;k++)
-				//if (*entry.sym.lst_jacob_blocks[k].first.first && *entry.sym.lst_jacob_blocks[k].second.first)
-					Hij.noalias() += entry.sym.lst_jacob_blocks[k].first.second->transpose() * (*entry.sym.lst_jacob_blocks[k].second.second);
-				//else nInvalid++;
+			{
+				const typename SPARSEBLOCKHESSIAN::symbolic_t::THessianSymbolicInfoEntry & sym_k = entry.sym.lst_jacob_blocks[k];
+
+				if (*sym_k.J1_valid && *sym_k.J2_valid)
+				{
+					// Accumulate Hessian sub-blocks:
+					RBA_OPTIONS::obs_noise_matrix_t::template accum_JtJ(Hij, *sym_k.J1, *sym_k.J2, sym_k.obs_idx, this->parameters.obs_noise );
+				}
+				else nInvalid++;
+			}
+
+			// Do scaling (if applicable):
+			RBA_OPTIONS::obs_noise_matrix_t::template scale_H(Hij, this->parameters.obs_noise );
+
 			entry.num = Hij;
 		}
 	}

@@ -67,8 +67,7 @@ RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::TSRBAParameters::TSRB
 	max_error_per_obs_to_stop    ( 1e-9 ),
 	numeric_jacobians    ( false ),
 	feedback_user_iteration(NULL),
-	compute_condition_number(false),
-	std_noise_observations  ( 1. )
+	compute_condition_number(false)	
 {
 }
 

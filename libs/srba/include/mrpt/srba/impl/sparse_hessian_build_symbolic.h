@@ -52,6 +52,10 @@ void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::sparse_hessian_b
 	const std::vector<JACOB_COLUMN_dh_dAp*> & dh_dAp,
 	const std::vector<JACOB_COLUMN_dh_df*>  & dh_df)
 {
+	typedef typename HESS_Ap::symbolic_t::THessianSymbolicInfoEntry  hess_Ap_sym_entry_t;   // These are concrete instances of THessianSymbolicInfo<...>::THessianSymbolicInfoEntry
+	typedef typename HESS_f::symbolic_t::THessianSymbolicInfoEntry   hess_f_sym_entry_t;
+	typedef typename HESS_Apf::symbolic_t::THessianSymbolicInfoEntry hess_Apf_sym_entry_t;
+
 	const size_t nUnknowns_k2k = dh_dAp.size();
 	const size_t nUnknowns_k2f = dh_df.size();
 
@@ -71,10 +75,16 @@ void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::sparse_hessian_b
 			typename HESS_Ap::symbolic_t & Hii_sym = HAp.getCol(i)[i].sym;
 
 			for (typename JACOB_COLUMN_dh_dAp::const_iterator it=col_i.begin();it!=col_i.end();++it)
+			{
+				const size_t obs_idx = it->first;
+
 				Hii_sym.lst_jacob_blocks.push_back(
-					std::make_pair(
-						std::make_pair(it->second.sym.is_valid, &it->second.num),
-						std::make_pair(it->second.sym.is_valid, &it->second.num) ) );
+					hess_Ap_sym_entry_t(
+						&it->second.num, &it->second.num, // J1, J2,
+						it->second.sym.is_valid,it->second.sym.is_valid, // J1_valid, J2_valid,
+						obs_idx
+						) );
+			}
 		}
 
 		// j=[i+1, nUnknowns-1]
@@ -100,10 +110,14 @@ void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::sparse_hessian_b
 				else
 				{
 					// match between: it_i->first == it_j->first
+					const size_t obs_idx = it_i->first;
+
 					Hij_sym.lst_jacob_blocks.push_back( //std::make_pair(&it_i->second.num, &it_j->second.num) );
-						std::make_pair(
-							std::make_pair(it_i->second.sym.is_valid, &it_i->second.num),
-							std::make_pair(it_j->second.sym.is_valid, &it_j->second.num) ) );
+						hess_Ap_sym_entry_t(
+							&it_i->second.num, &it_j->second.num, // J1, J2,
+							it_i->second.sym.is_valid,it_j->second.sym.is_valid, // J1_valid, J2_valid,
+							obs_idx
+							) );
 
 					// Move:
 					++it_i; ++it_j;
@@ -133,10 +147,16 @@ void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::sparse_hessian_b
 			typename HESS_f::symbolic_t & Hii_sym = Hf.getCol(i)[i].sym;
 
 			for (typename JACOB_COLUMN_dh_df::const_iterator it=col_i.begin();it!=col_i.end();++it)
+			{
+				const size_t obs_idx = it->first;
+
 				Hii_sym.lst_jacob_blocks.push_back( //std::make_pair(&it->second.num, &it->second.num) );
-					std::make_pair(
-						std::make_pair(it->second.sym.is_valid, &it->second.num),
-						std::make_pair(it->second.sym.is_valid, &it->second.num) ) );
+					hess_f_sym_entry_t(
+						&it->second.num, &it->second.num, // J1, J2,
+						it->second.sym.is_valid,it->second.sym.is_valid, // J1_valid, J2_valid,
+						obs_idx
+						) );
+			}
 		}
 
 		// j=[i+1, nUnknowns-1]
@@ -162,11 +182,14 @@ void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::sparse_hessian_b
 				else
 				{
 					// match between: it_i->first == it_j->first
+					const size_t obs_idx = it_i->first;
 
 					Hij_sym.lst_jacob_blocks.push_back( //std::make_pair(&it_i->second.num, &it_j->second.num) );
-						std::make_pair(
-							std::make_pair(it_i->second.sym.is_valid, &it_i->second.num),
-							std::make_pair(it_j->second.sym.is_valid, &it_j->second.num) ) );
+						hess_f_sym_entry_t(
+							&it_i->second.num, &it_j->second.num, // J1, J2,
+							it_i->second.sym.is_valid,it_j->second.sym.is_valid, // J1_valid, J2_valid,
+							obs_idx
+							) );
 
 					// Move:
 					++it_i; ++it_j;
@@ -216,11 +239,14 @@ void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::sparse_hessian_b
 				else
 				{
 					// match between: it_i->first == it_j->first
+					const size_t obs_idx = it_i->first;
 
-					Hij_sym.lst_jacob_blocks.push_back( //std::make_pair(&it_i->second.num, &it_j->second.num) );
-						std::make_pair(
-							std::make_pair(it_i->second.sym.is_valid, &it_i->second.num),
-							std::make_pair(it_j->second.sym.is_valid, &it_j->second.num) ) );
+					Hij_sym.lst_jacob_blocks.push_back(
+						hess_Apf_sym_entry_t(
+							&it_i->second.num, &it_j->second.num, // J1, J2,
+							it_i->second.sym.is_valid,it_j->second.sym.is_valid, // J1_valid, J2_valid,
+							obs_idx
+							) );
 
 					// Move:
 					++it_i; ++it_j;

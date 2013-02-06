@@ -325,11 +325,24 @@ namespace srba
 		typedef Eigen::Matrix<Scalar,N,M1> matrix1_t;
 		typedef Eigen::Matrix<Scalar,N,M2> matrix2_t;
 
-		/** This Hessian block equals the sum of all J1^t * J2, with J1=first, J2=second in each std::pair
+		/** This Hessian block equals the sum of all J1^t * \Lambda * J2, with J1=first, J2=second in each std::pair
 		  * "const char *" are pointers to the validity bit of each Jacobian, so if it evaluates to false we
-		  * should discard both blocks.
+		  * should discard the Hessian entry.
 		  */
-		std::vector<std::pair<std::pair<const char*,const matrix1_t*>,std::pair<const char*, const matrix2_t*> > > lst_jacob_blocks;
+		struct THessianSymbolicInfoEntry
+		{
+			const matrix1_t * J1; 
+			const matrix2_t * J2; 
+			const char *      J1_valid;
+			const char *      J2_valid;
+			size_t            obs_idx; //!< Global index of the observation that generated this Hessian entry (used to retrieve the \Lambda in "J1^t * \Lambda * J2", if applicable).
+
+			THessianSymbolicInfoEntry(const matrix1_t * const J1_, const matrix2_t * const J2_, const char * const J1_valid_, const char * const J2_valid_, const size_t obs_idx_ ) :
+				J1(J1_), J2(J2_),J1_valid(J1_valid_),J2_valid(J2_valid_),obs_idx(obs_idx_) 
+			{ }
+		};
+
+		std::vector<THessianSymbolicInfoEntry> lst_jacob_blocks;
 	};
 
 	/** Types for the Jacobians:

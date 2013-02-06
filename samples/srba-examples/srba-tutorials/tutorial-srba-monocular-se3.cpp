@@ -46,7 +46,8 @@ using namespace std;
 // --------------------------------------------------------------------------------
 struct my_srba_options
 {
-	typedef sensor_pose_on_robot_se3 sensor_pose_on_robot_t;
+	typedef sensor_pose_on_robot_se3      sensor_pose_on_robot_t;
+	typedef observation_noise_identity    obs_noise_matrix_t;      // The sensor noise matrix is the same for all observations and equal to \sigma * I(identity)
 };
 
 typedef RBA_Problem<
@@ -140,7 +141,7 @@ int main(int argc, char**argv)
 	rba.setVerbosityLevel( 2 );   // 0: None; 1:Important only; 2:Verbose
 
 	rba.parameters.srba.use_robust_kernel = true;
-	rba.parameters.srba.std_noise_observations = 0.5;  // pixels
+	rba.parameters.obs_noise.std_noise_observations = 0.5;  // pixels
 
 	// =========== Topology parameters ===========
 	rba.parameters.srba.edge_creation_policy = mrpt::srba::ecpICRA2013;

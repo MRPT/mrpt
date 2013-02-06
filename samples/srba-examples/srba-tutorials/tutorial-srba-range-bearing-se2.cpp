@@ -44,10 +44,17 @@ using namespace std;
 // --------------------------------------------------------------------------------
 // Declare a typedef "my_srba_t" for easily referring to my RBA problem type:
 // --------------------------------------------------------------------------------
+struct my_srba_options
+{
+	typedef sensor_pose_on_robot_none     sensor_pose_on_robot_t;  // The sensor pose coincides with the robot pose
+	typedef observation_noise_identity    obs_noise_matrix_t;      // The sensor noise matrix is the same for all observations and equal to \sigma * I(identity)
+};
+
 typedef RBA_Problem<
 	kf2kf_poses::SE2,                // Parameterization  KF-to-KF poses
 	landmarks::Euclidean2D,          // Parameterization of landmark positions    
-	observations::RangeBearing_2D    // Type of observations
+	observations::RangeBearing_2D,   // Type of observations
+	my_srba_options                  // Other options
 	>
 	my_srba_t;
 
@@ -104,7 +111,8 @@ int main(int argc, char**argv)
 	rba.setVerbosityLevel( 1 );   // 0: None; 1:Important only; 2:Verbose
 
 	rba.parameters.srba.use_robust_kernel = false; // true
-	rba.parameters.srba.std_noise_observations = 0.03; //SENSOR_NOISE_STD;
+
+	rba.parameters.obs_noise.std_noise_observations = 0.05; //SENSOR_NOISE_STD;
 
 	// =========== Topology parameters ===========
 	rba.parameters.srba.edge_creation_policy = mrpt::srba::ecpICRA2013;

@@ -996,9 +996,6 @@ void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::optimize_edges(
 	// Save the final information matrix of unknown features:
 	DETAILED_PROFILING_ENTER("opt.get_Hf_diag_inv_cov")
 	{
-		ASSERT_(parameters.srba.std_noise_observations>0)
-		const double inv_var_pixel_error = 1./parameters.srba.std_noise_observations;  // Scaling for information matrices below
-
 		for (size_t i=0;i<nUnknowns_k2f;i++)
 		{
 #if SRBA_SOLVE_USING_SCHUR_COMPLEMENT
@@ -1011,7 +1008,7 @@ void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::optimize_edges(
 
 			const typename hessian_traits_t::TSparseBlocksHessian_f::matrix_t & inf_mat_src = col_i.rbegin()->second.num;
 			typename hessian_traits_t::TSparseBlocksHessian_f::matrix_t & inf_mat_dst = rba_state.unknown_lms_inf_matrices[ run_k2f_edges[i] ];
-			inf_mat_dst.noalias() = inf_mat_src * inv_var_pixel_error;
+			inf_mat_dst = inf_mat_src;
 		}
 	}
 	DETAILED_PROFILING_LEAVE("opt.get_Hf_diag_inv_cov")
