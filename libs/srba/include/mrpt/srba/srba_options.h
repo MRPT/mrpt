@@ -173,7 +173,7 @@ namespace srba
 			inline static void scale_H(MATRIX_H & H, const parameters_t & obs_noise_params) 
 			{
 				ASSERTDEB_(obs_noise_params.std_noise_observations>0)
-				H *= 1.0/obs_noise_params.std_noise_observations;
+				//H *= 1.0/obs_noise_params.std_noise_observations;
 			}
 
 		};  // end of "observation_noise_identity"

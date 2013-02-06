@@ -342,7 +342,9 @@ namespace srba
 			{ }
 		};
 
-		std::vector<THessianSymbolicInfoEntry> lst_jacob_blocks;
+		typedef std::vector<THessianSymbolicInfoEntry> list_jacob_blocks_t;
+
+		list_jacob_blocks_t lst_jacob_blocks; //!< The list of Jacobian blocks itself
 	};
 
 	/** Types for the Jacobians:

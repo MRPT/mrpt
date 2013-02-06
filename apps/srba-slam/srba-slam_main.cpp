@@ -60,8 +60,7 @@ Info: A front-end for Relative Bundle Adjustment (RBA). The program is
 
 #include <sstream>  // For stringstream
 #include <memory>  // For auto_ptr
-//#include <iostream>
-//#include <locale>
+
 
 using namespace mrpt;
 using namespace mrpt::srba;
@@ -163,6 +162,7 @@ struct RBASLAM_Params
 #include "CDatasetParserBase.h"
 #include "CDatasetParser_RangeBearing2D.h"
 #include "CDatasetParser_Stereo.h"
+#include "CDatasetParser_Cartesian_3D.h"
 // ------------------------------------------------------------------
 
 
@@ -272,7 +272,6 @@ struct RBA_Run : public RBA_Run_Base
 		rba.setVerbosityLevel(cfg.arg_verbose.getValue() );
 
 		rba.parameters.srba.use_robust_kernel = false;
-		rba.parameters.srba.std_noise_observations = 0.02; // PIXEL_NOISE_STD;
 
 		rba.parameters.srba.compute_condition_number = false;
 
@@ -973,7 +972,8 @@ struct RBA_Run_Factory
 // Camera sensors have a different coordinate system wrt the robot (rotated yaw=-90, pitch=0, roll=-90)
 struct my_srba_options_cameras
 {
-	typedef sensor_pose_on_robot_se3 sensor_pose_on_robot_t;
+	typedef sensor_pose_on_robot_se3     sensor_pose_on_robot_t;
+	typedef observation_noise_identity   obs_noise_matrix_t;      // The sensor noise matrix is the same for all observations and equal to \sigma * I(identity)
 };
 
 
@@ -994,6 +994,9 @@ int main(int argc, char**argv)
 		else 
 		if (config.arg_se3.isSet() && config.arg_lm3d.isSet() && config.arg_obs.getValue()=="StereoCamera")
 			rba = RBA_Run_Factory<kf2kf_poses::SE3,landmarks::Euclidean3D,observations::StereoCamera,my_srba_options_cameras>::create();
+		else 
+		if (config.arg_se3.isSet() && config.arg_lm3d.isSet() && config.arg_obs.getValue()=="Cartesian_3D")
+			rba = RBA_Run_Factory<kf2kf_poses::SE3,landmarks::Euclidean3D,observations::Cartesian_3D,RBA_OPTIONS_DEFAULT>::create();
 		else
 		{
 			throw std::runtime_error("Sorry: the given combination of pose, point and sensor wasn't precompiled in this program!");
