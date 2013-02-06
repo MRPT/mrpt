@@ -68,4 +68,15 @@ struct CDatasetParserTempl<mrpt::srba::observations::RangeBearing_2D> : public C
 		o.obs_data.yaw   = m_OBS(idx,3) + mrpt::random::randomGenerator.drawGaussian1D(0, m_noise_std_yaw);
 	}
 
+	void loadNoiseParamsInto( mrpt::srba::observation_noise_identity::parameters_t & p )
+	{
+		p.std_noise_observations = m_noise_std_range;
+	}
+
+	//void loadNoiseParamsInto( mrpt::srba::observation_noise_identity::parameters_t & p )
+	//{
+	//	//p. ... = m_noise_std_range, m_noise_std_yaw
+	//}
+
+
 };

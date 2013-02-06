@@ -81,12 +81,16 @@ void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::compute_minus_gr
 		for (typename TSparseBlocksJacobians_dh_dAp::col_t::const_iterator itJ = col_i.begin();itJ != col_i.end();++itJ)
 		{
 			//const size_t resid_idx = sequential_obs_indices[running_idx_obs++];
-			map<size_t,size_t>::const_iterator it_obs = obs_global_idx2residual_idx.find(itJ->first);
+			const size_t obs_idx = itJ->first;
+			map<size_t,size_t>::const_iterator it_obs = obs_global_idx2residual_idx.find(obs_idx);
 			ASSERT_(it_obs!=obs_global_idx2residual_idx.end())
 			const size_t resid_idx = it_obs->second;
 
-			accum_g_i.noalias() += itJ->second.num.transpose() * residuals[ resid_idx ];
+			// Accumulate sub-gradient: // g += J^t * \Lambda * residual 
+			RBA_OPTIONS::obs_noise_matrix_t::template accum_Jtr(accum_g_i, itJ->second.num, residuals[ resid_idx ], obs_idx, this->parameters.obs_noise );
 		}
+		// Do scaling (if applicable):
+		RBA_OPTIONS::obs_noise_matrix_t::template scale_Jtr(accum_g_i, this->parameters.obs_noise );
 
 		minus_grad.block<POSE_DIMS,1>(i*POSE_DIMS,0) = accum_g_i;
 	}
@@ -101,12 +105,16 @@ void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::compute_minus_gr
 		for (typename TSparseBlocksJacobians_dh_df::col_t::const_iterator itJ = col_i.begin();itJ != col_i.end();++itJ)
 		{
 			//const size_t resid_idx = sequential_obs_indices[running_idx_obs++];
-			map<size_t,size_t>::const_iterator it_obs = obs_global_idx2residual_idx.find(itJ->first);
+			const size_t obs_idx = itJ->first;
+			map<size_t,size_t>::const_iterator it_obs = obs_global_idx2residual_idx.find(obs_idx);
 			ASSERT_(it_obs!=obs_global_idx2residual_idx.end())
 			const size_t resid_idx = it_obs->second;
 
-			accum_g_i.noalias() += itJ->second.num.transpose() * residuals[ resid_idx ];
+			// Accumulate sub-gradient: // g += J^t * \Lambda * residual 
+			RBA_OPTIONS::obs_noise_matrix_t::template accum_Jtr(accum_g_i, itJ->second.num, residuals[ resid_idx ], obs_idx, this->parameters.obs_noise );
 		}
+		// Do scaling (if applicable):
+		RBA_OPTIONS::obs_noise_matrix_t::template scale_Jtr(accum_g_i, this->parameters.obs_noise );
 
 		minus_grad.block<LM_DIMS,1>(idx_start_f+i*LM_DIMS,0) = accum_g_i;
 	}

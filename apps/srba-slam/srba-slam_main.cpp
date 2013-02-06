@@ -202,6 +202,7 @@ struct InitializerSensorParams<mrpt::srba::observations::StereoCamera>
 		rba.parameters.sensor.camera_calib.loadFromConfigFile("CAMERA",mrpt::utils::CConfigFile(sCfgFile) );
 		const double baseline = rba.parameters.sensor.camera_calib.rightCameraPose.x();
 		ASSERT_(baseline!=0)
+
 	}
 };
 
@@ -256,6 +257,10 @@ struct RBA_Run : public RBA_Run_Base
 
 		// Init/load sensor parameters:
 		InitializerSensorParams<OBS_TYPE>::init(rba,cfg);
+
+		// Init/load sensor noise params:
+		dataset.loadNoiseParamsInto( rba.parameters.obs_noise );
+
 
 		// Init sensor-to-robot relative pose parameters:
 		InitializerSensorPoseParams<typename RBA_OPTIONS::sensor_pose_on_robot_t>::init(rba, cfg);
