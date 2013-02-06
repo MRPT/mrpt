@@ -114,6 +114,7 @@ struct TEST_DATASET0
 	struct my_srba_options
 	{
 		typedef sensor_pose_on_robot_none sensor_pose_on_robot_t;
+		typedef observation_noise_identity   obs_noise_matrix_t;      // The sensor noise matrix is the same for all observations and equal to \sigma * I(identity)
 	};
 
 	static basic_euclidean_dataset_entry_t * getData0(size_t &N, mrpt::poses::CPose3DQuat &GT_pose)
@@ -202,6 +203,7 @@ struct TEST_DATASET1
 	struct my_srba_options
 	{
 		typedef sensor_pose_on_robot_se3 sensor_pose_on_robot_t;
+		typedef observation_noise_identity   obs_noise_matrix_t;      // The sensor noise matrix is the same for all observations and equal to \sigma * I(identity)
 	};
 
 	static basic_euclidean_dataset_entry_t * getData0(size_t &N, mrpt::poses::CPose3DQuat &GT_pose)
@@ -255,7 +257,8 @@ void run_test()
 	rba.setVerbosityLevel( 0 );   // 0: None; 1:Important only; 2:Verbose
 
 	rba.parameters.srba.use_robust_kernel = true;
-	rba.parameters.srba.std_noise_observations = 0.1;
+
+	rba.parameters.obs_noise.std_noise_observations = 0.1;
 
 	// =========== Topology parameters ===========
 	rba.parameters.srba.edge_creation_policy = mrpt::srba::ecpICRA2013;

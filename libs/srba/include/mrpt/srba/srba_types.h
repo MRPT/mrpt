@@ -340,6 +340,9 @@ namespace srba
 			THessianSymbolicInfoEntry(const matrix1_t * const J1_, const matrix2_t * const J2_, const char * const J1_valid_, const char * const J2_valid_, const size_t obs_idx_ ) :
 				J1(J1_), J2(J2_),J1_valid(J1_valid_),J2_valid(J2_valid_),obs_idx(obs_idx_) 
 			{ }
+
+			// Default ctor: should not be invoked under normal usage, but just in case:
+			THessianSymbolicInfoEntry() : J1(NULL),J2(NULL),J1_valid(NULL),J2_valid(NULL),obs_idx(static_cast<size_t>(-1)) {}
 		};
 
 		typedef std::vector<THessianSymbolicInfoEntry> list_jacob_blocks_t;

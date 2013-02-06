@@ -125,6 +125,8 @@ protected:
 		// Create observations:
 		// Don't populate the symbolic structure, just the numeric part.
 		{
+			char valid_true = 1; // Just to initialize valid bit pointers to this one.
+
 			lin_system.dh_dAp.setColCount(nUnknowns_k2k);
 			lin_system.dh_df.setColCount(nUnknowns_k2f);
 			size_t idx_obs = 0;
@@ -148,8 +150,12 @@ protected:
 
 						// Random is ok for this test:
 						if (dh_dAp_i)
+						{
 							randomGenerator.drawGaussian1DMatrix( (*dh_dAp_i)[idx_obs].num  );
+							(*dh_dAp_i)[idx_obs].sym.is_valid = &valid_true;
+						}
 						randomGenerator.drawGaussian1DMatrix( dh_df_j[idx_obs].num.setRandom() );
+						dh_df_j[idx_obs].sym.is_valid = &valid_true;
 
 						idx_obs++; 
 					}
@@ -231,9 +237,12 @@ protected:
 			dh_dAp,dh_df
 			);
 
-		my_rba_t::sparse_hessian_update_numeric(HAp);
-		my_rba_t::sparse_hessian_update_numeric(Hf);
-		my_rba_t::sparse_hessian_update_numeric(HApf);
+		
+		my_rba_t rba;
+
+		rba.sparse_hessian_update_numeric(HAp);
+		rba.sparse_hessian_update_numeric(Hf);
+		rba.sparse_hessian_update_numeric(HApf);
 
 	#if 0
 		HAp.saveToTextFileAsDense("HAp.txt", true, true );
