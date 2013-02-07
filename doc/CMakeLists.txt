@@ -10,6 +10,8 @@ IF(UNIX)
 	add_subdirectory(man-pages)
 ENDIF(UNIX)
 
+add_subdirectory(srba-guide)
+
 FIND_PACKAGE(Doxygen)
 
 # --------------------------------
