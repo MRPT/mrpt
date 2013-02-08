@@ -331,7 +331,7 @@ void CLMS100Eth::doProcessSimple(bool &outThereIsObservation, CObservation2DRang
     //cout << "read :" << read << endl;
     //while(m_client.readAsync(buffIn, sizeof(buffIn), 100, 100)) cout << "Lit dans le vent" << endl;
     
-    m_client.readAsync(buffIn, sizeof(buffIn), 1000, 1000);
+    m_client.readAsync(buffIn, sizeof(buffIn), 40, 40);
 
     if(decodeScan(buffIn, outObservation))
     {
