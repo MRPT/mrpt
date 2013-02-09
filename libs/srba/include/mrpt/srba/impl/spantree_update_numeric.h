@@ -156,9 +156,10 @@ size_t TRBA_Problem_state<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::TSpanni
 	for (std::set<TKeyFrameID>::const_iterator it=kfs_to_update.begin();it!=kfs_to_update.end();++it)
 	{
 		typename all_edges_maps_t::const_iterator it_edge=sym.all_edges.find( *it );
-		ASSERT_(it_edge!=sym.all_edges.end())
-
-		pose_count += update_numeric_only_all_from_node(it_edge,  skip_marked_as_uptodate);
+		if (it_edge!=sym.all_edges.end())
+		{
+			pose_count += update_numeric_only_all_from_node(it_edge,  skip_marked_as_uptodate);
+		}
 	}
 	return pose_count;
 }

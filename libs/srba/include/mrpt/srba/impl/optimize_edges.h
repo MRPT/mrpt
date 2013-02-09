@@ -68,7 +68,7 @@ using namespace std;
 template <class KF2KF_POSE_TYPE,class LM_TYPE,class OBS_TYPE,class RBA_OPTIONS>
 void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::optimize_edges(
 	const std::vector<size_t> & run_k2k_edges_in,
-	const std::vector<size_t> & run_k2f_edges_in,
+	const std::vector<size_t> & run_feat_ids_in,
 	TOptimizeExtraOutputInfo & out_info,
 	const std::vector<size_t> & in_observation_indices_to_optimize
 	)
@@ -87,7 +87,7 @@ void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::optimize_edges(
 	DETAILED_PROFILING_ENTER("opt.filter_unknowns")
 
 	std::vector<size_t> run_k2k_edges; run_k2k_edges.reserve(run_k2k_edges_in.size());
-	std::vector<size_t> run_k2f_edges; run_k2f_edges.reserve(run_k2f_edges_in.size());
+	std::vector<size_t> run_feat_ids; run_feat_ids.reserve(run_feat_ids_in.size());
 
 	for (size_t i=0;i<run_k2k_edges_in.size();i++)
 	{
@@ -97,9 +97,9 @@ void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::optimize_edges(
 	}
 
 	const mrpt::utils::map_as_vector<size_t,size_t> & dh_df_remap = rba_state.lin_system.dh_df.getColInverseRemappedIndices();
-	for (size_t i=0;i<run_k2f_edges_in.size();i++)
+	for (size_t i=0;i<run_feat_ids_in.size();i++)
 	{
-		const TLandmarkID feat_id = run_k2f_edges_in[i];
+		const TLandmarkID feat_id = run_feat_ids_in[i];
 		ASSERT_(feat_id<rba_state.all_lms.size())
 
 		const typename rba_problem_state_t::TLandmarkEntry &lm_e = rba_state.all_lms[feat_id];
@@ -111,8 +111,8 @@ void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::optimize_edges(
 
 		const typename TSparseBlocksJacobians_dh_df::col_t & col_i = rba_state.lin_system.dh_df.getCol( it_remap->second );
 
-		if (!col_i.empty()) run_k2f_edges.push_back( run_k2f_edges_in[i] );
-		else { std::cerr << "[RBA_Problem::optimize_edges] *Warning*: Skipping optimization of k2f edge #"<<run_k2f_edges_in[i] << " since no observation depends on it.\n"; }
+		if (!col_i.empty()) run_feat_ids.push_back( run_feat_ids_in[i] );
+		else { std::cerr << "[RBA_Problem::optimize_edges] *Warning*: Skipping optimization of k2f edge #"<<run_feat_ids_in[i] << " since no observation depends on it.\n"; }
 	}
 
 	DETAILED_PROFILING_LEAVE("opt.filter_unknowns")
@@ -120,7 +120,7 @@ void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::optimize_edges(
 	// Build list of unknowns, and their corresponding columns in the Sparse Jacobian:
 	// -------------------------------------------------------------------------------
 	const size_t nUnknowns_k2k = run_k2k_edges.size();
-	const size_t nUnknowns_k2f = run_k2f_edges.size();
+	const size_t nUnknowns_k2f = run_feat_ids.size();
 
 	const size_t idx_start_f = POSE_DIMS*nUnknowns_k2k; // In the vector of unknowns, the 0-based first index of the first feature variable (before that, all are SE(3) edges)
 	const size_t nUnknowns_scalars = POSE_DIMS*nUnknowns_k2k + LM_DIMS*nUnknowns_k2f;
@@ -140,7 +140,7 @@ void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::optimize_edges(
 	vector<TRelativeLandmarkPos*> k2f_edge_unknowns(nUnknowns_k2f);
 	for (size_t i=0;i<nUnknowns_k2f;i++)
 	{
-		const TLandmarkID feat_id = run_k2f_edges[i];
+		const TLandmarkID feat_id = run_feat_ids[i];
 		const typename rba_problem_state_t::TLandmarkEntry &lm_e = rba_state.all_lms[feat_id];
 
 		mrpt::utils::map_as_vector<size_t,size_t>::const_iterator it_remap = dh_df_remap.find(feat_id);  // O(1) with map_as_vector
@@ -322,7 +322,7 @@ void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::optimize_edges(
 
 	VERBOSE_LEVEL(2) << "[OPT] Individual Jacobs: " << count_jacobians << " #k2k_edges=" << nUnknowns_k2k << " #k2f_edges=" << nUnknowns_k2f << " #obs=" << nObs << endl;
 	VERBOSE_LEVEL(2) << "[OPT] k2k_edges to optimize: " << sprintf_container("% u",run_k2k_edges) << endl;
-	VERBOSE_LEVEL(2) << "[OPT] k2f_edges to optimize: " << sprintf_container("% u",run_k2f_edges) << endl;
+	VERBOSE_LEVEL(2) << "[OPT] k2f_edges to optimize: " << sprintf_container("% u",run_feat_ids) << endl;
 
 	// VERY IMPORTANT: For J^t*J to be invertible, we need a full rank Hessian:
 	//    nObs*OBS_DIMS >= nUnknowns_k2k*POSE_DIMS+nUnknowns_k2f*LM_DIMS
@@ -400,7 +400,7 @@ void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::optimize_edges(
 	out_info.num_observations     = nObs;
 	out_info.num_jacobians        = count_jacobians;
 	out_info.num_kf2kf_edges_optimized = run_k2k_edges.size();
-	out_info.num_kf2lm_edges_optimized = run_k2f_edges.size();
+	out_info.num_kf2lm_edges_optimized = run_feat_ids.size();
 	out_info.num_total_scalar_optimized = nUnknowns_scalars;
 	out_info.num_span_tree_numeric_updates = count_span_tree_num_update;
 	out_info.total_sqr_error_init = total_proj_error;
@@ -1007,7 +1007,7 @@ void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::optimize_edges(
 			ASSERT_(col_i.rbegin()->first==i)  // Make sure the last block matrix is the diagonal term of the upper-triangular matrix.
 
 			const typename hessian_traits_t::TSparseBlocksHessian_f::matrix_t & inf_mat_src = col_i.rbegin()->second.num;
-			typename hessian_traits_t::TSparseBlocksHessian_f::matrix_t & inf_mat_dst = rba_state.unknown_lms_inf_matrices[ run_k2f_edges[i] ];
+			typename hessian_traits_t::TSparseBlocksHessian_f::matrix_t & inf_mat_dst = rba_state.unknown_lms_inf_matrices[ run_feat_ids[i] ];
 			inf_mat_dst = inf_mat_src;
 		}
 	}

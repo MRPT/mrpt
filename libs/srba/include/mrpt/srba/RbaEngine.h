@@ -139,7 +139,7 @@ namespace srba
 		  *
 		  * \param[in]  obs All the landmark observations gathered from this new KF (with data association already solved).
 		  * \param[out] out_new_kf_info Returned information about the newly created KF.
-		  * \param[in]  run_local_optimization If set to true (default), the local map around the new KF will be optimized.
+		  * \param[in]  run_local_optimization If set to true (default), the local map around the new KF will be optimized (i.e. optimize_local_area() will be called automatically).
 		  */
 		void define_new_keyframe(
 			const typename traits_t::new_kf_observations_t  & obs,
@@ -147,47 +147,35 @@ namespace srba
 			const bool                     run_local_optimization = true
 			);
 
-		/** Runs the least-squares optimization procedure to optimize the neighborhood of a given root KeyFrame.
+		/** Parameters for optimize_local_area() */
+		struct TOptimizeLocalAreaParams
+		{
+			bool        optimize_k2k_edges;
+			bool        optimize_landmarks;
+			TKeyFrameID max_visitable_kf_id; //!< While exploring around the root KF, stop the BFS when KF_ID>=this number (default:infinity)
+			size_t      dont_optimize_landmarks_seen_less_than_n_times;
+
+			TOptimizeLocalAreaParams() :
+				optimize_k2k_edges(true),
+				optimize_landmarks(true),
+				max_visitable_kf_id( static_cast<TKeyFrameID>(-1) ),
+				dont_optimize_landmarks_seen_less_than_n_times( 2 )
+			{}
+		};
+
+		/** Runs least-squares optimization for all the unknowns within a given topological distance to a given KeyFrame.
 		  *
-		  * \param observation_indices_to_optimize Indices wrt \a rba_state.all_observations. An empty vector means use ALL the observations involving the selected unknowns.
+		  * \param[in] observation_indices_to_optimize Indices wrt \a rba_state.all_observations. An empty vector means use ALL the observations involving the selected unknowns.
 		  * \note Extra options are available in \a parameters
-		  *  \sa add_observation, optimize_edges
+		  *  \sa define_new_keyframe, add_observation, optimize_edges
 		  */
-		void optimize_sliding_window(
+		void optimize_local_area(
 			const TKeyFrameID  root_id,
 			const unsigned int win_size,
-			const bool         optimize_k2k_edges,
-			const bool         optimize_k2f_edges,
 			TOptimizeExtraOutputInfo & out_info,
-			const TKeyFrameID max_visitable_kf_id =  static_cast<TKeyFrameID>(-1),
+			const TOptimizeLocalAreaParams &params = TOptimizeLocalAreaParams(),
 			const std::vector<size_t> & observation_indices_to_optimize = std::vector<size_t>()
-			)
-		{
-			m_profiler.enter("optimize_sliding_window");
-
-			// 1st) Find list of edges to optimize:
-			m_profiler.enter("optimize_sliding_window.find_edges2opt");
-
-			MRPT_TODO("Reuse existing spanning trees?")
-
-			vector<size_t> k2k_edges_to_optimize, k2f_edges_to_optimize;
-			this->find_sliding_window_edges(
-				k2k_edges_to_optimize, k2f_edges_to_optimize,
-				root_id,
-				win_size,
-				optimize_k2k_edges, optimize_k2f_edges,
-				max_visitable_kf_id);
-
-			m_profiler.leave("optimize_sliding_window.find_edges2opt");
-
-			// 2nd) Optimize them:
-			if (!k2k_edges_to_optimize.empty() || !k2f_edges_to_optimize.empty())
-			{
-				this->optimize_edges(k2k_edges_to_optimize,k2f_edges_to_optimize, out_info, observation_indices_to_optimize);
-			}
-
-			m_profiler.leave("optimize_sliding_window");
-		}
+			);
 
 		struct TOpenGLRepresentationOptions
 		{
@@ -294,11 +282,29 @@ namespace srba
 			return rba_state.find_path_bfs(src_kf,trg_kf,&found_path);
 		}
 
+		/** Visits all k2k & k2f edges following a BFS starting at a given starting node and up to a given maximum depth. 
+		  * Only k2k edges are considered for BFS paths.
+		  */
+		template <
+			class KF_VISITOR,
+			class FEAT_VISITOR,
+			class K2K_EDGE_VISITOR,
+			class K2F_EDGE_VISITOR
+			>
+		void bfs_visitor(
+			const TKeyFrameID  root_id,
+			const topo_dist_t  max_distance,
+			KF_VISITOR       & kf_visitor,
+			FEAT_VISITOR     & feat_visitor,
+			K2K_EDGE_VISITOR & k2k_edge_visitor,
+			K2F_EDGE_VISITOR & k2f_edge_visitor ) const;
+
 
 		/** @} */  // End of Extra API methods
 
-	private:
-		/** @name Sub-algorithms
+	protected:
+
+		/** @name (Protected) Sub-algorithms 
 		    @{ */
 
 		/** This method will call edge_creation_policy(), which has predefined algorithms but could be re-defined by the user in a derived class */
@@ -316,87 +322,14 @@ namespace srba
 
 		/**
 		  * \param observation_indices_to_optimize Indices wrt \a rba_state.all_observations. An empty vector means use ALL the observations involving the selected unknowns.
-		  * \sa optimize_sliding_window
+		  * \sa optimize_local_area
 		  */
 		void optimize_edges(
 			const std::vector<size_t> & run_k2k_edges,
-			const std::vector<size_t> & run_k2f_edges,
+			const std::vector<size_t> & run_feat_ids_in,
 			TOptimizeExtraOutputInfo & out_info,
 			const std::vector<size_t> & observation_indices_to_optimize = std::vector<size_t>()
 			);
-
-		/** Aux struct made for find_sliding_window_edges(). Always returns true, so all edges pass the filter. */
-		struct Default_Filter
-		{
-			inline bool operator()(const size_t idx) const { return true; }
-		};
-
-		/** Makes a list of edges (unknowns) using a spanning tree from a given root keyframe ID.
-		  * Version without an ID filter
-		  */
-		void find_sliding_window_edges(
-			std::vector<size_t> &out_k2k_edges,
-			std::vector<size_t> &out_k2f_edges,
-			const TKeyFrameID  root_id,
-			const unsigned int win_size,
-			const bool         include_k2k_edges,
-			const bool         include_k2f_edges,
-			const TKeyFrameID  max_visitable_kf_id  =  static_cast<TKeyFrameID>(-1)
-			)  const
-		{
-			Default_Filter k2k_filter, k2f_filter;
-			this->find_sliding_window_edges<Default_Filter,Default_Filter>(
-				out_k2k_edges,out_k2f_edges,
-				root_id, win_size,
-				include_k2k_edges, include_k2f_edges,
-				k2k_filter, k2f_filter,
-				max_visitable_kf_id);
-		}
-
-
-		/** Makes a list of edges (unknowns) using a spanning tree from a given root keyframe ID.
-		  * Version with an ID filter
-		  */
-		template <class K2K_EDGE_FILTER,class K2F_EDGE_FILTER>
-		void find_sliding_window_edges(
-			std::vector<size_t> &out_k2k_edges,
-			std::vector<size_t> &out_k2f_edges,
-			const TKeyFrameID  root_id,
-			const unsigned int win_size,
-			const bool         include_k2k_edges,
-			const bool         include_k2f_edges,
-			const K2K_EDGE_FILTER & k2k_filter,
-			const K2F_EDGE_FILTER & k2f_filter,
-			const TKeyFrameID  max_visitable_kf_id  =  static_cast<TKeyFrameID>(-1)
-			) const
-		{
-			ASSERT_(win_size>=1)
-			ASSERT_(include_k2k_edges || include_k2f_edges)
-			m_profiler.enter("find_sliding_window_edges");
-			std::set<size_t> kfs_visited, k2k_edges_visited;
-			std::map<size_t,bool> k2f_edges_visited;
-
-			recursive_find_slidwindow(
-				kfs_visited,
-				k2k_edges_visited, k2f_edges_visited,
-				include_k2k_edges, include_k2f_edges,
-				root_id,
-				rba_state.keyframes[root_id],
-				rba_state, win_size, max_visitable_kf_id);
-
-			// Convert into a vector:
-			out_k2k_edges.clear(); out_k2k_edges.reserve(k2k_edges_visited.size());
-			out_k2f_edges.clear(); out_k2f_edges.reserve(k2f_edges_visited.size());
-			for (std::set<size_t>::const_iterator it=k2k_edges_visited.begin();it!=k2k_edges_visited.end();++it)
-				if (k2k_filter(*it))
-					out_k2k_edges.push_back(*it);
-
-			for (std::map<size_t,bool>::const_iterator it=k2f_edges_visited.begin();it!=k2f_edges_visited.end();++it)
-				if (!it->second && k2f_filter(it->first))
-					out_k2f_edges.push_back(it->first);
-			m_profiler.leave("find_sliding_window_edges");
-		}
-
 
 		/** @} */
 
@@ -556,74 +489,6 @@ namespace srba
 			const array_landmark_t * fixed_relative_position = NULL,
 			const array_landmark_t * unknown_relative_position_init_val = NULL
 			);
-
-		static void recursive_find_slidwindow(
-			std::set<size_t> &kf_visited, std::set<size_t> &edges_visited, std::map<size_t,bool> &k2f_edges_visited,
-			const bool   optimize_k2k_edges,const bool optimize_k2f_edges,
-			const TKeyFrameID    kf_id,
-			const keyframe_info &kfi,
-			const rba_problem_state_t &rba,unsigned int win_size,const TKeyFrameID max_visitable_kf_id )
-		{
-			MRPT_TODO("Replace with non-assoc containers")
-
-			ASSERTDEB_(kf_id< rba.keyframes.size())
-
-			// k2f edges:
-			if (optimize_k2f_edges)
-			{
-				const deque<k2f_edge_t*> & vf = kfi.adjacent_k2f_edges;
-
-				for (typename deque<k2f_edge_t*>::const_iterator it=vf.begin();it!=vf.end();++it)
-				{
-					const k2f_edge_t* ed = *it;
-
-					// Only count as k2f_edges the first observation of a feature with an unknown relative position:
-					if (!ed->feat_has_known_rel_pos)
-					{
-						const TLandmarkID feat_id = ed->obs.obs.feat_id;
-
-						map<size_t,bool>::iterator it_visited = k2f_edges_visited.find(feat_id);
-
-						if (it_visited != k2f_edges_visited.end())
-							it_visited->second = false; // Seen once = false
-						else
-							k2f_edges_visited[feat_id] = true; // First observation:
-					}
-				}
-			}
-
-			// explore next edges?
-			if (!win_size--) return;
-
-			kf_visited.insert(kf_id);
-
-			// k2k edges:
-			const std::deque<k2k_edge_t*> & vc = kfi.adjacent_k2k_edges;
-
-			for (size_t i=0;i<vc.size();i++)
-			{
-				if (kf_id != vc[i]->from)
-				{
-					if (vc[i]->from<=max_visitable_kf_id && !kf_visited.count(vc[i]->from))
-					{
-						if (optimize_k2k_edges) edges_visited.insert(vc[i]->id);
-						recursive_find_slidwindow(kf_visited,edges_visited,k2f_edges_visited,optimize_k2k_edges,optimize_k2f_edges,
-							vc[i]->from, rba.keyframes[vc[i]->from],
-							rba,win_size,max_visitable_kf_id);
-					}
-				}
-				else
-				{
-					if (vc[i]->to<=max_visitable_kf_id &&!kf_visited.count(vc[i]->to))
-					{
-						if (optimize_k2k_edges) edges_visited.insert(vc[i]->id);
-						recursive_find_slidwindow(kf_visited,edges_visited,k2f_edges_visited,optimize_k2k_edges,optimize_k2f_edges,
-							vc[i]->to,rba.keyframes[vc[i]->to],
-							rba,win_size,max_visitable_kf_id);
-					}
-				}
-			}
-		}
 
 		typedef typename jacobian_traits<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE>::TSparseBlocksJacobians_dh_dAp TSparseBlocksJacobians_dh_dAp;
 		typedef typename jacobian_traits<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE>::TSparseBlocksJacobians_dh_df TSparseBlocksJacobians_dh_df;
@@ -836,6 +701,9 @@ namespace srba
 #include "impl/reprojection_residuals.h"
 #include "impl/compute_minus_gradient.h"
 #include "impl/optimize_edges.h"
+
+#include "impl/bfs_visitor.h"
+#include "impl/optimize_local_area.h"
 // -----------------------------------------------------------------
 //            ^^ End of implementation files ^^
 // -----------------------------------------------------------------

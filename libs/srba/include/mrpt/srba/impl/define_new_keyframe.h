@@ -116,12 +116,13 @@ void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::define_new_keyfr
 
 		m_profiler.enter("define_new_keyframe.optimize");
 
-		this->optimize_sliding_window(
+		TOptimizeLocalAreaParams opt_params; // Default values
+
+		this->optimize_local_area(
 			new_kf_id, // root node
 			parameters.srba.max_optimize_depth,   // win size
-			true, // optimize_k2k_edges,
-			true, // optimize_k2f_edges,
-			out_new_kf_info.optimize_results
+			out_new_kf_info.optimize_results,
+			opt_params
 			);
 
 		m_profiler.leave("define_new_keyframe.optimize");

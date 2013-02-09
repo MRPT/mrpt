@@ -160,7 +160,7 @@ namespace srba
 		/** Used in the vector \a "all_lms" */
 		struct TLandmarkEntry
 		{
-			bool                 has_known_pos; //!< Whether it has a fixed, known position or in turn it's an unknown of the problem.
+			bool                 has_known_pos; //!< true: This landmark has a fixed (known) relative position. false: The relative pos of this landmark is an unknown of the problem.
 			TRelativeLandmarkPos *rfp;           //!< Pointers to elements in \a unknown_lms and \a known_lms.
 
 			TLandmarkEntry() : has_known_pos(true), rfp(NULL) {}
@@ -482,7 +482,7 @@ namespace srba
 			kf_observation_t  obs;
 			bool              feat_has_known_rel_pos;   //!< whether it's a known or unknown relative position feature
 			bool              is_first_obs_of_unknown;  //!< true if this is the first observation of a feature with unknown relative position
-			typename lm_traits_t::TRelativeLandmarkPos *rel_pos; //!< Pointer to the known/unknown rel.pos.
+			typename lm_traits_t::TRelativeLandmarkPos *rel_pos; //!< Pointer to the known/unknown rel.pos. (always!=NULL)
 		};
 
 		/** Information per key-frame needed for RBA */
