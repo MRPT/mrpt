@@ -158,7 +158,7 @@ void test_spantree_topology(
 
 		const std::map<TKeyFrameID,TSpanTreeEntry> & st_i = it_st_it->second;
 
-		EXPECT_GE(st.size(),1); // "create_complete_spanning_tree()" returns the root node, in the STs we don't, so that's the why of the "-1" next:
+		EXPECT_GE(st.size(),1u); // "create_complete_spanning_tree()" returns the root node, in the STs we don't, so that's the why of the "-1" next:
 		EXPECT_EQ(st_i.size(), st.size()-1 )
 			<< "Expected ST of KF " << kf << " of depth "<<max_depth<<" to be of size " << st.size()-1 << " but it's " << st_i.size() << endl;
 

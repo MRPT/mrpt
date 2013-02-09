@@ -282,7 +282,7 @@ namespace srba
 			return rba_state.find_path_bfs(src_kf,trg_kf,&found_path);
 		}
 
-		/** Visits all k2k & k2f edges following a BFS starting at a given starting node and up to a given maximum depth. 
+		/** Visits all k2k & k2f edges following a BFS starting at a given starting node and up to a given maximum depth.
 		  * Only k2k edges are considered for BFS paths.
 		  */
 		template <
@@ -300,11 +300,73 @@ namespace srba
 			K2F_EDGE_VISITOR & k2f_edge_visitor ) const;
 
 
+		/** Aux visitor struct */
+		struct VisitorOptimizeLocalArea
+		{
+			VisitorOptimizeLocalArea(const rba_problem_state_t & rba_state_, const TOptimizeLocalAreaParams &params_) :
+				rba_state(rba_state_),
+				params(params_)
+			{ }
+
+			const rba_problem_state_t & rba_state;
+			const TOptimizeLocalAreaParams &params;
+
+			vector<size_t> k2k_edges_to_optimize, lm_IDs_to_optimize;
+			map<TLandmarkID,size_t>  lm_times_seen;
+
+			/* Implementation of FEAT_VISITOR */
+			inline bool visit_filter_feat(const TLandmarkID lm_ID,const topo_dist_t cur_dist)
+			{
+				return false; // Don't need to visit landmark nodes.
+			}
+			inline void visit_feat(const TLandmarkID lm_ID,const topo_dist_t cur_dist)
+			{
+				// Nothing to do
+			}
+
+			/* Implementation of KF_VISITOR */
+			inline bool visit_filter_kf(const TKeyFrameID kf_ID,const topo_dist_t cur_dist)
+			{
+				return (kf_ID<=params.max_visitable_kf_id);
+			}
+			inline void visit_kf(const TKeyFrameID kf_ID,const topo_dist_t cur_dist)
+			{
+				// Nothing to do.
+			}
+
+			/* Implementation of K2K_EDGE_VISITOR */
+			inline bool visit_filter_k2k(const TKeyFrameID current_kf, const TKeyFrameID next_kf,const k2k_edge_t* edge, const topo_dist_t cur_dist)
+			{
+				return true; // Visit all k2k edges
+			}
+			inline void visit_k2k(const TKeyFrameID current_kf, const TKeyFrameID next_kf,const k2k_edge_t* edge, const topo_dist_t cur_dist)
+			{
+				if (params.optimize_k2k_edges)
+					k2k_edges_to_optimize.push_back(edge->id);
+			}
+
+			/* Implementation of K2F_EDGE_VISITOR */
+			inline bool visit_filter_k2f(const TKeyFrameID current_kf, const k2f_edge_t* edge, const topo_dist_t cur_dist)
+			{
+				return params.optimize_landmarks; // Yes: visit all feature nodes if we're asked to
+			}
+			inline void visit_k2f(const TKeyFrameID current_kf, const k2f_edge_t* edge, const topo_dist_t cur_dist)
+			{
+				if (!edge->feat_has_known_rel_pos)
+				{
+					const TLandmarkID lm_ID = edge->obs.obs.feat_id;
+					if (++lm_times_seen[lm_ID] >= params.dont_optimize_landmarks_seen_less_than_n_times)
+						lm_IDs_to_optimize.push_back(lm_ID);
+				}
+			}
+		};
+
+
 		/** @} */  // End of Extra API methods
 
 	protected:
 
-		/** @name (Protected) Sub-algorithms 
+		/** @name (Protected) Sub-algorithms
 		    @{ */
 
 		/** This method will call edge_creation_policy(), which has predefined algorithms but could be re-defined by the user in a derived class */
