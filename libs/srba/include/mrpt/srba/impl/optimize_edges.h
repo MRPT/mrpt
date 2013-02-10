@@ -336,12 +336,6 @@ void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::optimize_edges(
 	}
 #endif
 
-	// Extra params:
-	const size_t max_iters = this->parameters.srba.max_iters;
-	const double max_error_per_obs_to_stop = this->parameters.srba.max_error_per_obs_to_stop;
-	const double max_rho = this->parameters.srba.max_rho;
-
-
 	// Cholesky object, as a pointer to reuse it between iterations:
 	std::auto_ptr<CSparseMatrix::CholeskyDecomp>  ptrCh;
 
@@ -452,18 +446,22 @@ void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::optimize_edges(
 	const double MAX_LAMBDA = 1e20;
 
 	// These are defined here to avoid allocatin/deallocating memory with each iteration:
-	vector<k2k_edge_t>                old_k2k_edge_unknowns;
-	vector<TRelativeLandmarkPos>      old_k2f_edge_unknowns;
-	//srba::TRelativePosesForEachTarget old_span_tree;
-	std::vector<pose_flag_t> 		old_span_tree; // In the same order than "list_of_required_num_poses"
-
+	vector<k2k_edge_t>            old_k2k_edge_unknowns;
+	vector<TRelativeLandmarkPos>  old_k2f_edge_unknowns;
+	std::vector<pose_flag_t>      old_span_tree; // In the same order than "list_of_required_num_poses"
 
 	const std::string sLabelProfilerLM_iter = mrpt::format("opt.lm_iteration_k2k=%03u_k2f=%03u", static_cast<unsigned int>(nUnknowns_k2k), static_cast<unsigned int>(nUnknowns_k2f) );
+
+#if SRBA_USE_DENSE_CHOLESKY
+	Eigen::MatrixXd  denseH;
+	Eigen::LLT<Eigen::MatrixXd,Eigen::Upper>  denseChol;
+	bool  denseChol_is_uptodate = false;
+#endif
 
 	// LevMar iterations -------------------------------------
 	size_t iter; // Declared here so we can read the final # of iterations out of the "for" loop.
 	bool   stop = false;
-	for (iter=0; iter<max_iters && !stop; iter++)
+	for (iter=0; iter<this->parameters.srba.max_iters && !stop; iter++)
 	{
 		DETAILED_PROFILING_ENTER(sLabelProfilerLM_iter.c_str())
 
@@ -474,10 +472,10 @@ void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::optimize_edges(
 			stop=true;
 			VERBOSE_LEVEL(2) << "[OPT] LM end criterion: lambda too large. " << lambda << ">=" <<MAX_LAMBDA<<endl;
 		}
-		if (RMSE < max_error_per_obs_to_stop)
+		if (RMSE < this->parameters.srba.max_error_per_obs_to_stop)
 		{
 			stop=true;
-			VERBOSE_LEVEL(2) << "[OPT] LM end criterion: error too small. " << RMSE << "<" <<max_error_per_obs_to_stop<<endl;
+			VERBOSE_LEVEL(2) << "[OPT] LM end criterion: error too small. " << RMSE << "<" <<this->parameters.srba.max_error_per_obs_to_stop<<endl;
 		}
 
 		while(rho<=0 && !stop)
@@ -610,7 +608,7 @@ void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::optimize_edges(
 #else // SRBA_SOLVE_USING_SCHUR_COMPLEMENT
 
 			// --------------------------------------------------------
-			// Strategy #2: Solve the H·Ax = -g system using the schur
+			// Strategy #2: Solve the H·Ax = -g system using the Schur
 			//               complement to generate a Ap-only reduced
 			//               system.
 			// --------------------------------------------------------
@@ -633,7 +631,7 @@ void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::optimize_edges(
 			DETAILED_PROFILING_LEAVE("opt.schur_build_reduced")
 
 			if (schur_compl.getNumFeaturesFullRank()!=schur_compl.getNumFeatures())
-				VERBOSE_LEVEL(1) << "[OPT] Schur: " << schur_compl.getNumFeaturesFullRank() << " out of " << schur_compl.getNumFeatures() << " features have full-rank.\n";
+				VERBOSE_LEVEL(1) << "[OPT] Schur warning: only " << schur_compl.getNumFeaturesFullRank() << " out of " << schur_compl.getNumFeatures() << " features have full-rank.\n";
 
 #if !SRBA_USE_DENSE_CHOLESKY
 			CSparseMatrix sS(nUnknowns_k2k*POSE_DIMS,nUnknowns_k2k*POSE_DIMS);  // Only for the H_Ap part of the Hessian
@@ -720,60 +718,61 @@ void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::optimize_edges(
 			DETAILED_PROFILING_LEAVE("opt.backsub")
 
 #else // SRBA_USE_DENSE_CHOLESKY
+			if (!denseChol_is_uptodate)
+			{
+				// Use a dense Cholesky method for solving the set of unknowns:
+				denseH.setZero(nUnknowns_k2k*POSE_DIMS,nUnknowns_k2k*POSE_DIMS);  // Only for the H_Ap part of the Hessian
 
-			// Use a dense Cholesky method for solving the set of unknowns:
-			Eigen::MatrixXd  denseH(nUnknowns_k2k*POSE_DIMS,nUnknowns_k2k*POSE_DIMS);  // Only for the H_Ap part of the Hessian
-			denseH.setZero();
+				// Now write the updated "HAp" into its sparse matrix form:
+				DETAILED_PROFILING_ENTER("opt.DenseFill")
+				for (size_t i=0;i<nUnknowns_k2k;i++)
+				{	// Only upper-half triangle:
+					const typename hessian_traits_t::TSparseBlocksHessian_Ap::col_t & col_i = HAp.getCol(i);
 
-			// Now write the updated "HAp" into its sparse matrix form:
-			DETAILED_PROFILING_ENTER("opt.DenseFill")
-			for (size_t i=0;i<nUnknowns_k2k;i++)
-			{	// Only upper-half triangle:
-				const typename hessian_traits_t::TSparseBlocksHessian_Ap::col_t & col_i = HAp.getCol(i);
-
-				for (typename hessian_traits_t::TSparseBlocksHessian_Ap::col_t::const_iterator itRowEntry = col_i.begin();itRowEntry != col_i.end(); ++itRowEntry )
-				{
-					if (itRowEntry->first==i)
+					for (typename hessian_traits_t::TSparseBlocksHessian_Ap::col_t::const_iterator itRowEntry = col_i.begin();itRowEntry != col_i.end(); ++itRowEntry )
 					{
-						// block Diagonal: Add lambda*I to these ones
-						typename hessian_traits_t::TSparseBlocksHessian_Ap::matrix_t sSii = itRowEntry->second.num;
-						for (size_t k=0;k<POSE_DIMS;k++)
-							sSii.coeffRef(k,k)+=lambda;
-						denseH.block<POSE_DIMS,POSE_DIMS>(POSE_DIMS*i,POSE_DIMS*i) = sSii;
-					}
-					else
-					{
-						denseH.block<POSE_DIMS,POSE_DIMS>(
-							POSE_DIMS*itRowEntry->first,  // row index
-							POSE_DIMS*i)                   // col index
-							= itRowEntry->second.num;
+						if (itRowEntry->first==i)
+						{
+							// block Diagonal: Add lambda*I to these ones
+							typename hessian_traits_t::TSparseBlocksHessian_Ap::matrix_t sSii = itRowEntry->second.num;
+							for (size_t k=0;k<POSE_DIMS;k++)
+								sSii.coeffRef(k,k)+=lambda;
+							denseH.block<POSE_DIMS,POSE_DIMS>(POSE_DIMS*i,POSE_DIMS*i) = sSii;
+						}
+						else
+						{
+							denseH.block<POSE_DIMS,POSE_DIMS>(
+								POSE_DIMS*itRowEntry->first,  // row index
+								POSE_DIMS*i)                   // col index
+								= itRowEntry->second.num;
+						}
 					}
 				}
-			}
-			DETAILED_PROFILING_LEAVE("opt.DenseFill")
+				DETAILED_PROFILING_LEAVE("opt.DenseFill")
 
 #if defined(DEBUG_DUMP_SCHUR_MATRICES)
-			denseH.saveToTextFile("schur_HAp.txt");
-			minus_grad.saveToTextFile("schur_minus_grad_Ap.txt");
+				denseH.saveToTextFile("schur_HAp.txt");
+				minus_grad.saveToTextFile("schur_minus_grad_Ap.txt");
 #endif
 
-			// Dense cholesky:
-			// ----------------------------------
-			DETAILED_PROFILING_ENTER("opt.DenseChol")
+				// Dense cholesky:
+				// ----------------------------------
+				DETAILED_PROFILING_ENTER("opt.DenseChol")
+				denseChol = denseH.selfadjointView<Eigen::Upper>().llt();
+				DETAILED_PROFILING_LEAVE("opt.DenseChol")
 
-			Eigen::LLT<Eigen::MatrixXd,Eigen::Upper> Chol = denseH.selfadjointView<Eigen::Upper>().llt();
+				if (denseChol.info()!=Eigen::Success)
+				{
+					// not positive definite so increase lambda and try again
+					lambda *= nu;
+					nu *= 2.;
+					stop = (lambda>MAX_LAMBDA);
 
-			DETAILED_PROFILING_LEAVE("opt.DenseChol")
+					VERBOSE_LEVEL(2) << "[OPT] LM iter #"<< iter << " NotDefPos in Cholesky. Retrying with lambda=" << lambda << endl;
+					continue;
+				}
 
-			if (Chol.info()!=Eigen::Success)
-			{
-				// not positive definite so increase lambda and try again
-				lambda *= nu;
-				nu *= 2.;
-				stop = (lambda>MAX_LAMBDA);
-
-				VERBOSE_LEVEL(2) << "[OPT] LM iter #"<< iter << " NotDefPos in Cholesky. Retrying with lambda=" << lambda << endl;
-				continue;
+				denseChol_is_uptodate = true;
 			}
 
 
@@ -786,7 +785,7 @@ void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::optimize_edges(
 			Eigen::VectorXd  delta_eps(nUnknowns_k2k*POSE_DIMS + nUnknowns_k2f*LM_DIMS );
 			delta_eps.tail(nUnknowns_k2f*LM_DIMS).setZero();
 
-			delta_eps.head(nUnknowns_k2k*POSE_DIMS) = Chol.solve( minus_grad.head(nUnknowns_k2k*POSE_DIMS) );
+			delta_eps.head(nUnknowns_k2k*POSE_DIMS) = denseChol.solve( minus_grad.head(nUnknowns_k2k*POSE_DIMS) );
 
 			DETAILED_PROFILING_LEAVE("opt.backsub")
 #endif
@@ -897,7 +896,9 @@ void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::optimize_edges(
 				);
 			DETAILED_PROFILING_LEAVE("opt.reprojection_residuals")
 
-			double new_RMSE = std::sqrt(new_total_proj_error/nObs);
+			const double new_RMSE = std::sqrt(new_total_proj_error/nObs);
+
+			const double error_reduction_ratio = total_proj_error>0 ? (total_proj_error - new_total_proj_error)/total_proj_error : 0;
 
 			// is this better or worse?
 			// -----------------------------
@@ -906,7 +907,11 @@ void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::optimize_edges(
 			if(rho>0)
 			{
 				// Good: Accept new values
-				VERBOSE_LEVEL(2) << "[OPT] LM iter #"<< iter << " RMSE: " << RMSE << " -> " << new_RMSE <<  ", rho=" << rho << endl;
+
+				// Recalculate Jacobians?
+				bool do_relinearize = (error_reduction_ratio<0 || error_reduction_ratio> this->parameters.srba.min_error_reduction_ratio_to_relinearize );
+
+				VERBOSE_LEVEL(2) << "[OPT] LM iter #"<< iter << " RMSE: " << RMSE << " -> " << new_RMSE <<  ", rho=" << rho << ", Err.reduc.ratio="<< error_reduction_ratio << " => Relinearize?:" << (do_relinearize ? "YES":"NO") << endl;
 				if (parameters.srba.feedback_user_iteration)
 					(*parameters.srba.feedback_user_iteration)(iter,new_total_proj_error,new_RMSE);
 
@@ -918,36 +923,38 @@ void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::optimize_edges(
 				total_proj_error = new_total_proj_error;
 				RMSE = new_RMSE;
 
+				if (do_relinearize)
+				{
+#if SRBA_USE_DENSE_CHOLESKY
+					denseChol_is_uptodate = false;
+#endif
+					DETAILED_PROFILING_ENTER("opt.reset_Jacobs_validity")
+					// Before evaluating Jacobians we must reset as "valid" all the involved observations.
+					//  If needed, they'll be marked as invalid by the Jacobian evaluator if just one of the components
+					//  for one observation leads to an error.
+					for (size_t i=0;i<nObs;i++)
+						rba_state.all_observations_Jacob_validity[ involved_obs[i].obs_idx ] = 1;
 
-				DETAILED_PROFILING_ENTER("opt.reset_Jacobs_validity")
-				// Before evaluating Jacobians we must reset as "valid" all the involved observations.
-				//  If needed, they'll be marked as invalid by the Jacobian evaluator if just one of the components
-				//  for one observation leads to an error.
-				for (size_t i=0;i<nObs;i++)
-					rba_state.all_observations_Jacob_validity[ involved_obs[i].obs_idx ] = 1;
+					DETAILED_PROFILING_LEAVE("opt.reset_Jacobs_validity")
 
-				DETAILED_PROFILING_LEAVE("opt.reset_Jacobs_validity")
+					DETAILED_PROFILING_ENTER("opt.recompute_all_Jacobians")
+					recompute_all_Jacobians(dh_dAp, dh_df);
+					DETAILED_PROFILING_LEAVE("opt.recompute_all_Jacobians")
 
-				// Recalculate Jacobians:
-				DETAILED_PROFILING_ENTER("opt.recompute_all_Jacobians")
-				recompute_all_Jacobians(dh_dAp, dh_df);
-				DETAILED_PROFILING_LEAVE("opt.recompute_all_Jacobians")
-
-				// Recalculate Hessian:
-				DETAILED_PROFILING_ENTER("opt.sparse_hessian_update_numeric")
-				sparse_hessian_update_numeric(HAp);
-				sparse_hessian_update_numeric(Hf);
-				sparse_hessian_update_numeric(HApf);
-				DETAILED_PROFILING_LEAVE("opt.sparse_hessian_update_numeric")
+					// Recalculate Hessian:
+					DETAILED_PROFILING_ENTER("opt.sparse_hessian_update_numeric")
+					sparse_hessian_update_numeric(HAp);
+					sparse_hessian_update_numeric(Hf);
+					sparse_hessian_update_numeric(HApf);
+					DETAILED_PROFILING_LEAVE("opt.sparse_hessian_update_numeric")
 
 #if SRBA_SOLVE_USING_SCHUR_COMPLEMENT
-				DETAILED_PROFILING_ENTER("opt.schur_realize_HAp_changed")
-
-				// Update the starting value of HAp for Schur:
-				schur_compl.realize_HAp_changed();
-
-				DETAILED_PROFILING_LEAVE("opt.schur_realize_HAp_changed")
+					DETAILED_PROFILING_ENTER("opt.schur_realize_HAp_changed")
+					// Update the starting value of HAp for Schur:
+					schur_compl.realize_HAp_changed();
+					DETAILED_PROFILING_LEAVE("opt.schur_realize_HAp_changed")
 #endif
+				}
 
 				// Update gradient:
 				DETAILED_PROFILING_ENTER("opt.compute_minus_gradient")
@@ -960,14 +967,14 @@ void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::optimize_edges(
 					VERBOSE_LEVEL(2) << "[OPT] LM end criterion: norm_inf(minus_grad) below threshold: " << norm_inf_min_grad << " <= " <<max_gradient_to_stop<<endl;
 					stop = true;
 				}
-				if (RMSE<max_error_per_obs_to_stop)
+				if (RMSE<this->parameters.srba.max_error_per_obs_to_stop)
 				{
-					VERBOSE_LEVEL(2) << "[OPT] LM end criterion: RMSE below threshold: " << RMSE << " < " <<max_error_per_obs_to_stop<<endl;
+					VERBOSE_LEVEL(2) << "[OPT] LM end criterion: RMSE below threshold: " << RMSE << " < " <<this->parameters.srba.max_error_per_obs_to_stop<<endl;
 					stop = true;
 				}
-				if (rho>max_rho)
+				if (rho>this->parameters.srba.max_rho)
 				{
-					VERBOSE_LEVEL(2) << "[OPT] LM end criterion: rho above threshold: " << rho << " > " <<max_rho<<endl;
+					VERBOSE_LEVEL(2) << "[OPT] LM end criterion: rho above threshold: " << rho << " > " <<this->parameters.srba.max_rho<<endl;
 					stop = true;
 				}
 				// Reset other vars:
@@ -997,6 +1004,9 @@ void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::optimize_edges(
 				lambda *= nu;
 				nu *= 2.0;
 				stop = (lambda>MAX_LAMBDA);
+#if SRBA_USE_DENSE_CHOLESKY
+				denseChol_is_uptodate = false;   // Must rebuilt the Hessian for the new Lambda
+#endif
 			}
 
 		}; // end while rho

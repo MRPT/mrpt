@@ -57,6 +57,7 @@ void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::optimize_local_a
 	this->bfs_visitor(
 		root_id,  // Starting keyframe
 		win_size, // max. depth
+		true, // Use prebuilt spanning trees for speed-up
 		my_visitor, //kf_visitor,
 		my_visitor, //feat_visitor,
 		my_visitor, //k2k_edge_visitor,
