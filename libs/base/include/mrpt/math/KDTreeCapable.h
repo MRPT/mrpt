@@ -521,6 +521,62 @@ namespace mrpt
 				MRPT_END
 			}
 
+            /** KD Tree-based search for the N closest points to some given 3D coordinates.
+			  *  This method automatically build the "m_kdtree_data" structure when:
+			  *		- It is called for the first time
+			  *		- The map has changed
+			  *		- The KD-tree was build for 2D.
+			  *
+			  * \param x0  The X coordinate of the query.
+			  * \param y0  The Y coordinate of the query.
+			  * \param z0  The Z coordinate of the query.
+			  * \param N The number of closest points to search.
+			  * \param out_x The vector containing the X coordinates of the correspondences.
+			  * \param out_y The vector containing the Y coordinates of the correspondences.
+			  * \param out_z The vector containing the Z coordinates of the correspondences.
+			  * \param out_idx The vector containing the indexes of the correspondences.
+			  * \param out_dist_sqr The vector containing the square distance between the query and the returned points.
+			  *
+			  *  \sa kdTreeNClosestPoint2D
+			  */
+			inline void kdTreeNClosestPoint3DWithIdx(
+				float			x0,
+				float			y0,
+				float			z0,
+				size_t  knn,
+				std::vector<float>  &out_x,
+				std::vector<float>  &out_y,
+				std::vector<float>  &out_z,
+				std::vector<size_t>  &out_idx,
+				std::vector<float>  &out_dist_sqr ) const
+			{
+				MRPT_START
+				rebuild_kdTree_3D(); // First: Create the 3D KD-Tree if required
+				if ( !m_kdtree3d_data.m_num_points ) THROW_EXCEPTION("There are no points in the KD-tree.")
+
+				out_x.resize(knn);
+				out_y.resize(knn);
+				out_z.resize(knn);
+				out_idx.resize(knn);
+				out_dist_sqr.resize(knn);
+
+				nanoflann::KNNResultSet<num_t> resultSet(knn);
+				resultSet.init(&out_idx[0], &out_dist_sqr[0] );
+
+				m_kdtree3d_data.query_point[0] = x0;
+				m_kdtree3d_data.query_point[1] = y0;
+				m_kdtree3d_data.query_point[2] = z0;
+				m_kdtree3d_data.index->findNeighbors(resultSet, &m_kdtree3d_data.query_point[0], nanoflann::SearchParams(kdtree_search_params.nChecks));
+
+				for (size_t i=0;i<knn;i++)
+				{
+					out_x[i] = derived().kdtree_get_pt(out_idx[i],0);
+					out_y[i] = derived().kdtree_get_pt(out_idx[i],1);
+					out_z[i] = derived().kdtree_get_pt(out_idx[i],2);
+				}
+				MRPT_END
+			}
+
 			inline void kdTreeNClosestPoint3D(const TPoint3D &p0,size_t N,std::vector<TPoint3D> &pOut,std::vector<float> &outDistSqr) const	{
 				std::vector<float> dmy1,dmy2,dmy3;
 				kdTreeNClosestPoint3D(static_cast<float>(p0.x),static_cast<float>(p0.y),static_cast<float>(p0.z),N,dmy1,dmy2,dmy3,outDistSqr);
