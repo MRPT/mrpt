@@ -153,7 +153,7 @@ namespace srba
 			bool        optimize_k2k_edges;
 			bool        optimize_landmarks;
 			TKeyFrameID max_visitable_kf_id; //!< While exploring around the root KF, stop the BFS when KF_ID>=this number (default:infinity)
-			size_t      dont_optimize_landmarks_seen_less_than_n_times;
+			size_t      dont_optimize_landmarks_seen_less_than_n_times;  //!< Set to 1 to try to optimize all landmarks even if they're just observed once, which may makes sense depending on the sensor type (default: 2)
 
 			TOptimizeLocalAreaParams() :
 				optimize_k2k_edges(true),
@@ -176,6 +176,7 @@ namespace srba
 			const TOptimizeLocalAreaParams &params = TOptimizeLocalAreaParams(),
 			const std::vector<size_t> & observation_indices_to_optimize = std::vector<size_t>()
 			);
+
 
 		struct TOpenGLRepresentationOptions
 		{
@@ -355,7 +356,8 @@ namespace srba
 				if (!edge->feat_has_known_rel_pos)
 				{
 					const TLandmarkID lm_ID = edge->obs.obs.feat_id;
-					if (++lm_times_seen[lm_ID] >= params.dont_optimize_landmarks_seen_less_than_n_times)
+					// Use an "==" so we only add the LM_ID to the list ONCE, just when it passes the threshold
+					if (++lm_times_seen[lm_ID] == params.dont_optimize_landmarks_seen_less_than_n_times)
 						lm_IDs_to_optimize.push_back(lm_ID);
 				}
 			}
@@ -429,6 +431,7 @@ namespace srba
 			double kernel_param;
 			size_t max_iters;
 			double max_error_per_obs_to_stop; //!< default: 1e-9
+			double max_rho; //!< default: 1.0
 			bool   numeric_jacobians;
 			void (*feedback_user_iteration)(unsigned int iter, const double total_sq_err, const double mean_sqroot_error);
 			bool   compute_condition_number; //!< Compute and return to the user the Hessian condition number of k2k edges (default=false)

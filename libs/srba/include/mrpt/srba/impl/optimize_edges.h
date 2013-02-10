@@ -337,8 +337,9 @@ void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::optimize_edges(
 #endif
 
 	// Extra params:
-	const size_t max_iters            = this->parameters.srba.max_iters;
+	const size_t max_iters = this->parameters.srba.max_iters;
 	const double max_error_per_obs_to_stop = this->parameters.srba.max_error_per_obs_to_stop;
+	const double max_rho = this->parameters.srba.max_rho;
 
 
 	// Cholesky object, as a pointer to reuse it between iterations:
@@ -353,7 +354,7 @@ void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::optimize_edges(
 
 	// LevMar parameters:
 	double nu = 2;
-	const double eps = 1e-16;
+	const double max_gradient_to_stop = 1e-15;  // Stop if the infinity norm of the gradient is smaller than this
 	double lambda = -1;  // initial value. <0 = auto.
 
 	// Automatic guess of "lambda" = tau * max(diag(Hessian))   (Hessian=H here)
@@ -914,7 +915,7 @@ void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::optimize_edges(
 				// ---------------------------------------------------------------------
 				residuals.swap( new_residuals );
 
-				total_proj_error      = new_total_proj_error;
+				total_proj_error = new_total_proj_error;
 				RMSE = new_RMSE;
 
 
@@ -953,9 +954,24 @@ void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::optimize_edges(
 				compute_minus_gradient(/* Out: */ minus_grad, /* In: */ dh_dAp, dh_df, residuals, obs_global_idx2residual_idx); //sequential_obs_indices);
 				DETAILED_PROFILING_LEAVE("opt.compute_minus_gradient")
 
+				const double norm_inf_min_grad = norm_inf(minus_grad);
+				if (norm_inf_min_grad<=max_gradient_to_stop)
+				{
+					VERBOSE_LEVEL(2) << "[OPT] LM end criterion: norm_inf(minus_grad) below threshold: " << norm_inf_min_grad << " <= " <<max_gradient_to_stop<<endl;
+					stop = true;
+				}
+				if (RMSE<max_error_per_obs_to_stop)
+				{
+					VERBOSE_LEVEL(2) << "[OPT] LM end criterion: RMSE below threshold: " << RMSE << " < " <<max_error_per_obs_to_stop<<endl;
+					stop = true;
+				}
+				if (rho>max_rho)
+				{
+					VERBOSE_LEVEL(2) << "[OPT] LM end criterion: rho above threshold: " << rho << " > " <<max_rho<<endl;
+					stop = true;
+				}
 				// Reset other vars:
-				stop = norm_inf(minus_grad)<=eps  || (RMSE < max_error_per_obs_to_stop);
-				lambda *= std::max(1.0/3.0, 1-std::pow(2*rho-1,3.0) );
+				lambda *= 1.0/3.0; //std::max(1.0/3.0, 1-std::pow(2*rho-1,3.0) );
 				nu = 2.0;
 			}
 			else
@@ -980,7 +996,7 @@ void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::optimize_edges(
 				VERBOSE_LEVEL(2) << "[OPT] LM iter #"<< iter << " no update,errs: " << sqrt(total_proj_error/nObs) << " < " << sqrt(new_total_proj_error/nObs) << " lambda=" << lambda <<endl;
 				lambda *= nu;
 				nu *= 2.0;
-				stop = (lambda>1e9);
+				stop = (lambda>MAX_LAMBDA);
 			}
 
 		}; // end while rho

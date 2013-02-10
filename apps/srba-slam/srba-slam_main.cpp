@@ -44,6 +44,8 @@ Info: A front-end for Relative Bundle Adjustment (RBA). The program is
 	  [2] http://www.mrpt.org/srba
 */
 
+//#define SRBA_DETAILED_TIME_PROFILING 1
+
 #include <mrpt/srba.h>
 
 #include <mrpt/utils.h> // We use a lot of classes from here
