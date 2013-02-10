@@ -1,0 +1,46 @@
+=head1 NAME
+
+srba-slam - A demo program for Relative Bundle Adjustment (RBA)
+
+=head1 SYNOPSIS
+
+srba-slam --help
+
+srba-slam --list-problems
+
+srba-slam [--se2|--se3] [--lm-2d|--lm-3d] --obs [StereoCamera|...] 
+          -d I<DATASET.txt> [--sensor-params-cfg-file I<SENSOR_CONFIG.cfg>] 
+          [--noise I<NOISE_SIGMA>] [--verbose 0|1|2|3] [--step-by-step]
+
+=head1 DESCRIPTION
+
+B<srba-slam> is a command-line application for offline processing 
+of robotic/vision datasets. See also the manual online: http://www.mrpt.org/srba
+
+=head1 BUGS
+
+Please report bugs at http://www.mrpt.org/project/issues/MRPT
+
+=head1 SEE ALSO
+
+The application wiki page at http://www.mrpt.org/Applications
+
+=head1 AUTHORS
+
+B<srba-slam> is part of the Mobile Robot Programming Toolkit (MRPT), and was originally 
+written by the MAPIR laboratory (University of Malaga).
+
+This manual page was written by Jose Luis Blanco <joseluisblancoc@gmail.com>.
+
+=head1 COPYRIGHT
+
+This program is free software; you can redistribute it and/or modify it
+under the terms of the GNU General Public License as published by the
+Free Software Foundation; either version 3, or (at your option) any
+later version.
+
+On Debian GNU/Linux systems, the complete text of the GNU General
+Public License can be found in `/usr/share/common-licenses/GPL'.
+
+=cut
+

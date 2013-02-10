@@ -66,7 +66,7 @@ RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::TSRBAParameters::TSRB
 	max_iters            ( 20 ),
 	max_error_per_obs_to_stop    ( 1e-6 ),
 	max_rho              ( 10.0 ),
-	min_error_reduction_ratio_to_relinearize ( 0.05 ),
+	min_error_reduction_ratio_to_relinearize ( 0.01 ),
 	numeric_jacobians    ( false ),
 	feedback_user_iteration(NULL),
 	compute_condition_number(false)

@@ -185,7 +185,12 @@ void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::build_opengl_rep
 				// Uncertainty ellipse?
 				if (options.draw_unknown_feats_ellipses && lms_to_draw_inf_covs[i] )
 				{
-					mrpt::math::CMatrixFixedNumeric<double,LM_DIMS,LM_DIMS> cov;
+					double min_inf_diag=std::numeric_limits<double>::max();
+					for (size_t k=0;k<LM_DIMS;k++)
+						mrpt::utils::keep_min(min_inf_diag, (*lms_to_draw_inf_covs[i])(k,k));
+					if (min_inf_diag<1e-5) continue; // Too large covariance!
+
+					mrpt::math::CMatrixFixedNumeric<double,LM_DIMS,LM_DIMS> cov(mrpt::math::UNINITIALIZED_MATRIX);
 					lms_to_draw_inf_covs[i]->inv(cov);
 
 					mrpt::opengl::CEllipsoidPtr gl_ellip = mrpt::opengl::CEllipsoid::Create();
