@@ -44,6 +44,9 @@
 An implementation of Sparser Relative Bundle Adjustment (RBA), a generic framework for SLAM with 
 a different number of sensors or pose-to-pose constraints. 
 
+Refer to the <b><a href="srba-guide.pdf" >SRBA Guide (PDF)</a></b>.
+
+
 See: 
 - Online web with papers, tutorials, etc: http://www.mrpt.org/srba
 - Namespace mrpt::srba
