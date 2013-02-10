@@ -42,11 +42,12 @@ struct CDatasetParserTempl<mrpt::srba::observations::StereoCamera> : public CDat
 {
 	double m_noise_std_px;
 
-	CDatasetParserTempl(RBASLAM_Params &cfg) : 
+	CDatasetParserTempl(RBASLAM_Params &cfg) :
 		CDatasetParserBase(cfg),
 		m_noise_std_px(1e-4)
 	{
-		//m_noise_std_px=cfg.arg_pixel_noise.getValue();
+		if (cfg.arg_noise.isSet())
+			m_noise_std_px=cfg.arg_noise.getValue();
 	}
 
 	virtual void checkObsProperSize() const
@@ -56,8 +57,8 @@ struct CDatasetParserTempl<mrpt::srba::observations::StereoCamera> : public CDat
 	}
 
 	void getObs(
-		size_t idx, 
-		mrpt::srba::observation_traits<mrpt::srba::observations::StereoCamera>::observation_t & o 
+		size_t idx,
+		mrpt::srba::observation_traits<mrpt::srba::observations::StereoCamera>::observation_t & o
 		) const
 	{
 		o.feat_id = m_OBS(idx,1);

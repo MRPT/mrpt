@@ -42,11 +42,12 @@ struct CDatasetParserTempl<mrpt::srba::observations::Cartesian_3D> : public CDat
 {
 	double m_noise_std;
 
-	CDatasetParserTempl(RBASLAM_Params &cfg) : 
+	CDatasetParserTempl(RBASLAM_Params &cfg) :
 		CDatasetParserBase(cfg),
 		m_noise_std(1e-3)
 	{
-		//m_noise_std=cfg.arg_pixel_noise.getValue();
+		if (cfg.arg_noise.isSet())
+			m_noise_std=cfg.arg_noise.getValue();
 	}
 
 	virtual void checkObsProperSize() const
@@ -56,8 +57,8 @@ struct CDatasetParserTempl<mrpt::srba::observations::Cartesian_3D> : public CDat
 	}
 
 	void getObs(
-		size_t idx, 
-		mrpt::srba::observation_traits<mrpt::srba::observations::Cartesian_3D>::observation_t & o 
+		size_t idx,
+		mrpt::srba::observation_traits<mrpt::srba::observations::Cartesian_3D>::observation_t & o
 		) const
 	{
 		o.feat_id = m_OBS(idx,1);

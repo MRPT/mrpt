@@ -39,9 +39,9 @@
 #include <mrpt/system/filesystem.h>
 #include <mrpt/system.h>
 
-// Specializations of this class will also inherit from 
+// Specializations of this class will also inherit from
 // CDatasetParserBase to build a working dataset parser.
-template <class OBS_TYPE> struct CDatasetParserTempl; 
+template <class OBS_TYPE> struct CDatasetParserTempl;
 
 
 // Base of all parsers:
@@ -65,7 +65,7 @@ struct CDatasetParserBase
 		load_GT_path();
 	}
 
-	// ========= Virtual methods: ========= 
+	// ========= Virtual methods: =========
 	virtual void checkObsProperSize() const = 0;
 	// ====================================
 
@@ -78,7 +78,7 @@ struct CDatasetParserBase
 		bool obs_cache_found = false;
 
 		const std::string sFil_OBS    = m_cfg.arg_dataset.getValue();
-		const std::string sFil_OBSbin = mrpt::system::fileNameChangeExtension(sFil_OBS,".bin");
+		const std::string sFil_OBSbin = mrpt::system::fileNameChangeExtension(sFil_OBS,"bin");
 
 		if (mrpt::system::fileExists(sFil_OBSbin) && mrpt::system::fileExists(sFil_OBS) &&
 			mrpt::system::getFileModificationTime(sFil_OBSbin)>mrpt::system::getFileModificationTime(sFil_OBS) )
@@ -143,7 +143,7 @@ struct CDatasetParserBase
 		bool map_cache_found = false;
 
 		const std::string sFil_MAP    = m_cfg.arg_gt_map.getValue();
-		const std::string sFil_MAPbin = mrpt::system::fileNameChangeExtension(sFil_MAP,".bin");
+		const std::string sFil_MAPbin = mrpt::system::fileNameChangeExtension(sFil_MAP,"bin");
 
 		if (mrpt::system::fileExists(sFil_MAPbin) && mrpt::system::fileExists(sFil_MAP) &&
 			getFileModificationTime(sFil_MAPbin)>getFileModificationTime(sFil_MAP) )
@@ -205,7 +205,7 @@ struct CDatasetParserBase
 		bool map_cache_found = false;
 
 		const std::string sFil_PATH    = m_cfg.arg_gt_path.getValue();
-		const std::string sFil_PATHbin = mrpt::system::fileNameChangeExtension(sFil_PATH,".bin");
+		const std::string sFil_PATHbin = mrpt::system::fileNameChangeExtension(sFil_PATH,"bin");
 
 		if (mrpt::system::fileExists(sFil_PATHbin) && mrpt::system::fileExists(sFil_PATH) &&
 			getFileModificationTime(sFil_PATHbin)>getFileModificationTime(sFil_PATH) )

@@ -80,11 +80,12 @@ struct RBASLAM_Params
 	TCLAP::SwitchArg  arg_lm2d,arg_lm3d;
 	TCLAP::ValueArg<string> arg_obs;
 	TCLAP::ValueArg<string> arg_sensor_params;
+	TCLAP::SwitchArg  arg_list_obs;
 	TCLAP::SwitchArg  arg_no_gui;
 	TCLAP::SwitchArg  arg_gui_step_by_step;
 	TCLAP::ValueArg<string>  arg_profile_stats;
 	TCLAP::ValueArg<unsigned int> arg_profile_stats_length;
-	TCLAP::ValueArg<double> arg_pixel_noise;
+	TCLAP::ValueArg<double> arg_noise;
 	TCLAP::ValueArg<unsigned int> arg_max_tree_depth;
 	TCLAP::ValueArg<unsigned int> arg_max_opt_depth;
 	TCLAP::ValueArg<unsigned int> arg_max_iters;
@@ -115,19 +116,20 @@ struct RBASLAM_Params
 		arg_se3("","se3","Relative poses are SE(3)",cmd, false),
 		arg_lm2d("","lm-2d","Relative landmarks are Euclidean 2D points",cmd, false),
 		arg_lm3d("","lm-3d","Relative landmarks are Euclidean 2D points",cmd, false),
-		arg_obs("","obs","Type of observations in the dataset (use --list-obs to see available types)",false,"","",cmd),
+		arg_obs("","obs","Type of observations in the dataset (use --list-problems to see available types)",false,"","",cmd),
 		arg_sensor_params("","sensor-params-cfg-file","Config file from where to load the sensor parameters",false,"","",cmd),
+		arg_list_obs("","list-problems","List all implemented values for '--obs'",cmd, false),
 		arg_no_gui("","no-gui","Don't show the live gui",cmd, false),
 		arg_gui_step_by_step("","step-by-step","If showing the gui, go step by step",cmd, false),
 		arg_profile_stats("","profile-stats","Generate profile stats to CSV files, with the given prefix",false,"","stats",cmd),
 		arg_profile_stats_length("","profile-stats-length","Length in KFs of each saved profiled segment",false,10,"",cmd),
-		arg_pixel_noise("","pixel-noise","Std of the AWGN of feature coordinates (px).\n If a SRBA config is provided, it will override this value.",false,0.05,"noise_std",cmd),
+		arg_noise("","noise","One sigma of the AWGN to be added to every component of observations loaded from dataset (default: sensor-dependant)\n If a SRBA config is provided, it will override this value.",false,0.0,"noise_std",cmd),
 		arg_max_tree_depth("","max-spanning-tree-depth","Overrides this parameter in config files",false,4,"depth",cmd),
 		arg_max_opt_depth("","max-optimize-depth","Overrides this parameter in config files",false,4,"depth",cmd),
 		arg_max_iters("","max-iters","Max. number of optimization iterations.",false,20,"",cmd),
 		arg_edge_policy("","edge-policy","Policy for edge creation, as textual names of the enum TEdgeCreationPolicy",false,"ecpICRA2013","ecpOptimizeICRA2013",cmd),
 		arg_submap_size("","submap-size","Number of KFs in each 'submap' of the arc-creation policy.",false,20,"20",cmd),
-		arg_verbose("v","verbose-level","0:quiet, 1:informative, 2:tons of info",false,1,"",cmd),
+		arg_verbose("v","verbose","0:quiet, 1:informative, 2:tons of info",false,1,"",cmd),
 		arg_random_seed("","random-seed","<0: randomize; >=0, use this random seed.",false,-1,"",cmd),
 		arg_rba_params_cfg_file("","cfg-file-rba","Config file (*.cfg) for the RBA parameters",false,"","rba.cfg",cmd),
 		arg_write_rba_params_cfg_file("","cfg-file-rba-bootstrap","Writes an empty config file (*.cfg) for the RBA parameters and exit.",false,"","rba.cfg",cmd),
@@ -144,8 +146,17 @@ struct RBASLAM_Params
 		if (!cmd.parse( argc, argv ))
 			throw std::runtime_error(""); // should exit, but without any error msg (should have been dumped to cerr)
 
+		if (arg_list_obs.isSet())
+		{
+			cout << "Implemented RBA problem types:\n";
+			cout << " --se2 --lm-2d --obs RangeBearing_2D \n";
+			cout << " --se3 --lm-3d --obs StereoCamera \n";
+			cout << " --se3 --lm-3d --obs Cartesian_3D \n";
+			throw std::runtime_error(""); // Exit
+		}
+
 		if (!arg_obs.isSet())
-			throw std::runtime_error("Error: argument --obs is mandatory to select the type of observations.\nRun with --help to see all the options or visit http://www.mrpt.org/srba for docs and examples.\n");
+			throw std::runtime_error("Error: argument --obs is mandatory to select the type of observations.\nRun with --list-problems or --help to see all the options or visit http://www.mrpt.org/srba for docs and examples.\n");
 
 		if ( (arg_se2.isSet() && arg_se3.isSet()) ||
 			 (!arg_se2.isSet() && !arg_se3.isSet()) )
@@ -154,7 +165,7 @@ struct RBASLAM_Params
 		if ( (arg_lm2d.isSet() && arg_lm3d.isSet()) ||
 			 (!arg_lm2d.isSet() && !arg_lm3d.isSet()) )
 			 throw std::runtime_error("Exactly one of --lm-2d or --lm-3d flags must be set.");
-		
+
 	}
 };
 
@@ -177,7 +188,7 @@ struct RBA_Run_Base
 
 
 // -------------------- InitializerSensorParams -------------------------
-template <class OBS_TYPE> 
+template <class OBS_TYPE>
 struct InitializerSensorParams
 {
 	template <class RBA>
@@ -187,13 +198,13 @@ struct InitializerSensorParams
 	}
 };
 
-template <> 
+template <>
 struct InitializerSensorParams<mrpt::srba::observations::StereoCamera>
 {
 	template <class RBA>
 	static void init(RBA &rba, RBASLAM_Params &config)
 	{
-		// Load params from file: 
+		// Load params from file:
 
 		if (!config.arg_sensor_params.isSet())
 			throw std::runtime_error("Error: --sensor-params-cfg-file is mandatory for this type of observations.");
@@ -207,10 +218,10 @@ struct InitializerSensorParams<mrpt::srba::observations::StereoCamera>
 };
 
 // -------------------- InitializerSensorPoseParams  -------------------------
-template <class SENSOR_POSE_OPTION> 
+template <class SENSOR_POSE_OPTION>
 struct InitializerSensorPoseParams;
 
-template <> 
+template <>
 struct InitializerSensorPoseParams<sensor_pose_on_robot_none>
 {
 	template <class RBA>
@@ -220,7 +231,7 @@ struct InitializerSensorPoseParams<sensor_pose_on_robot_none>
 	}
 };
 
-template <> 
+template <>
 struct InitializerSensorPoseParams<sensor_pose_on_robot_se3>
 {
 	template <class RBA>
@@ -271,7 +282,6 @@ struct RBA_Run : public RBA_Run_Base
 				mrpt::random::randomGenerator.randomize();
 		else 	mrpt::random::randomGenerator.randomize( cfg.arg_random_seed.getValue() );
 
-		//const double PIXEL_NOISE_STD =cfg.arg_pixel_noise.getValue();  // pixels
 		const bool DEBUG_DUMP_ALL_SPANNING_TREES =cfg.arg_debug_dump_cur_spantree.getValue();
 
 		rba.setVerbosityLevel(cfg.arg_verbose.getValue() );
@@ -636,7 +646,7 @@ struct RBA_Run : public RBA_Run_Base
 					mrpt::format("After opt RMSE=%.06f",RMSE),
 					mrpt::utils::TColorf(0.9,0.9,0.9), "mono",10, mrpt::opengl::NICE, TXTID_RMSE,1.5,0.1,
 					true /* draw shadow */ );
-				
+
 
 				// Update 3D objects:
 				const srba::TKeyFrameID root_kf = next_rba_keyframe_ID-1;
@@ -996,15 +1006,15 @@ int main(int argc, char**argv)
 
 		if (config.arg_se2.isSet() && config.arg_lm2d.isSet() && config.arg_obs.getValue()=="RangeBearing_2D")
 			rba = RBA_Run_Factory<kf2kf_poses::SE2,landmarks::Euclidean2D,observations::RangeBearing_2D,RBA_OPTIONS_DEFAULT>::create();
-		else 
+		else
 		if (config.arg_se3.isSet() && config.arg_lm3d.isSet() && config.arg_obs.getValue()=="StereoCamera")
 			rba = RBA_Run_Factory<kf2kf_poses::SE3,landmarks::Euclidean3D,observations::StereoCamera,my_srba_options_cameras>::create();
-		else 
+		else
 		if (config.arg_se3.isSet() && config.arg_lm3d.isSet() && config.arg_obs.getValue()=="Cartesian_3D")
 			rba = RBA_Run_Factory<kf2kf_poses::SE3,landmarks::Euclidean3D,observations::Cartesian_3D,RBA_OPTIONS_DEFAULT>::create();
 		else
 		{
-			throw std::runtime_error("Sorry: the given combination of pose, point and sensor wasn't precompiled in this program!");
+			throw std::runtime_error("Sorry: the given combination of pose, point and sensor wasn't precompiled in this program!\nRun with '--list-problems' to see available options.\n");
 		}
 
 		// Run:

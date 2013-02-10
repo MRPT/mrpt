@@ -43,13 +43,16 @@ struct CDatasetParserTempl<mrpt::srba::observations::RangeBearing_2D> : public C
 	double m_noise_std_range;
 	double m_noise_std_yaw;
 
-	CDatasetParserTempl(RBASLAM_Params &cfg) : 
+	CDatasetParserTempl(RBASLAM_Params &cfg) :
 		CDatasetParserBase(cfg),
 		m_noise_std_range(1e-4),
 		m_noise_std_yaw(1e-5)
 	{
-		//m_noise_std_range=cfg.arg_pixel_noise.getValue();
-		//m_noise_std_yaw=...
+		if (cfg.arg_noise.isSet())
+		{
+			m_noise_std_range=cfg.arg_noise.getValue();
+			m_noise_std_yaw=cfg.arg_noise.getValue();
+		}
 	}
 
 	virtual void checkObsProperSize() const
@@ -59,8 +62,8 @@ struct CDatasetParserTempl<mrpt::srba::observations::RangeBearing_2D> : public C
 	}
 
 	void getObs(
-		size_t idx, 
-		mrpt::srba::observation_traits<mrpt::srba::observations::RangeBearing_2D>::observation_t & o 
+		size_t idx,
+		mrpt::srba::observation_traits<mrpt::srba::observations::RangeBearing_2D>::observation_t & o
 		) const
 	{
 		o.feat_id        = m_OBS(idx,1);
