@@ -369,10 +369,13 @@ void  CPointsMap::computeMatchingWith2D(
 
 	const float *x_other_it,*y_other_it,*z_other_it; // *x_global_it,*y_global_it; //,*z_global_it;
 
-	// No correspondences initially:
+	// Prepare output: no correspondences initially:
 	correspondences.clear();
 	correspondences.reserve(nLocalPoints);
 	correspondencesRatio = 0;
+
+    TMatchingPairList _correspondences;
+    _correspondences.reserve(nLocalPoints);
 
 	// Hay mapa global?
 	if (!nGlobalPoints) return;  // No
@@ -525,9 +528,9 @@ void  CPointsMap::computeMatchingWith2D(
 		if ( tentativ_err_sq < maxDistForCorrespondenceSquared )
 		{
 			// Save all the correspondences:
-			correspondences.resize(correspondences.size()+1);
+			_correspondences.resize(_correspondences.size()+1);
 
-			TMatchingPair & p = correspondences.back();
+			TMatchingPair & p = _correspondences.back();
 
 			p.this_idx = tentativ_this_idx;
 			p.this_x = x[tentativ_this_idx];
@@ -564,7 +567,7 @@ void  CPointsMap::computeMatchingWith2D(
 
 		//   1) Go through all the correspondences and keep the best corresp.
 		//       for each "global map" (this) point.
-		for (it=correspondences.begin();it!=correspondences.end();it++)
+		for (it=_correspondences.begin();it!=_correspondences.end();it++)
 		{
 			if (!bestMatchForThisMap[it->this_idx])
 			{
@@ -579,17 +582,10 @@ void  CPointsMap::computeMatchingWith2D(
 
 		//   2) Go again through the list of correspondences and remove those
 		//       who are not the best one for their corresponding global map.
-		for (it=correspondences.begin();it!=correspondences.end();)
+		for (it=_correspondences.begin();it!=_correspondences.end(); ++it)
 		{
 			if ( bestMatchForThisMap[it->this_idx] != &(*it) )
-			{
-				// Remove & get next:
-				it = correspondences.erase( it );
-			}
-			else // Do not remove, get next:
-			{
-				it++;
-			}
+                correspondences.push_back( *it );   				// Add to the output
 		}
 	} // end of additional consistency filer for "onlyKeepTheClosest"
 
@@ -1083,10 +1079,13 @@ void  CPointsMap::computeMatchingWith3D(
 	double					maxDistForCorrespondenceSquared;
 
 
-	// No correspondences initially:
+	// Prepare output: no correspondences initially:
 	correspondences.clear();
 	correspondences.reserve(nLocalPoints);
 	correspondencesRatio = 0;
+
+    TMatchingPairList _correspondences;
+	_correspondences.reserve(nLocalPoints);
 
 	// Hay mapa global?
 	if (!nGlobalPoints) return;  // No
@@ -1166,9 +1165,9 @@ void  CPointsMap::computeMatchingWith3D(
 			if ( tentativ_err_sq < maxDistForCorrespondenceSquared )
 			{
 				// Save all the correspondences:
-				correspondences.resize(correspondences.size()+1);
+				_correspondences.resize(_correspondences.size()+1);
 
-				TMatchingPair & p = correspondences.back();
+				TMatchingPair & p = _correspondences.back();
 
 				p.this_idx = tentativ_this_idx;
 				p.this_x = x[tentativ_this_idx];
@@ -1207,7 +1206,7 @@ void  CPointsMap::computeMatchingWith3D(
 
 		//   1) Go through all the correspondences and keep the best corresp.
 		//       for each "global map" (this) point.
-		for (it=correspondences.begin();it!=correspondences.end();it++)
+		for (it=_correspondences.begin();it!=_correspondences.end();it++)
 		{
 			if (!bestMatchForThisMap[it->this_idx])
 			{
@@ -1222,17 +1221,10 @@ void  CPointsMap::computeMatchingWith3D(
 
 		//   2) Go again through the list of correspondences and remove those
 		//       who are not the best one for their corresponding global map.
-		for (it=correspondences.begin();it!=correspondences.end();)
+		for (it=_correspondences.begin();it!=_correspondences.end(); ++it)
 		{
 			if ( bestMatchForThisMap[it->this_idx] != &(*it) )
-			{
-				// Remove & get next:
-				it = correspondences.erase( it );
-			}
-			else // Do not remove, get next:
-			{
-				it++;
-			}
+				correspondences.push_back(*it); 				// Add to the output
 		}
 	} // end of additional consistency filer for "onlyKeepTheClosest"
 
@@ -1251,6 +1243,9 @@ void  CPointsMap::computeMatchingWith3D(
 	MRPT_END
 }
 
+/*---------------------------------------------------------------
+				extractCylinder
+---------------------------------------------------------------*/
 void CPointsMap::extractCylinder( const CPoint2D &center, const double radius, const double zmin, const double zmax, CPointsMap *outMap )
 {
 	outMap->clear();
@@ -1259,8 +1254,186 @@ void CPointsMap::extractCylinder( const CPoint2D &center, const double radius, c
 		if( (z[k] <= zmax && z[k] >= zmin) && (center.distance2DTo( x[k],y[k] ) < radius ) )
 			outMap->insertPoint( x[k], y[k], z[k] );
 	}
+}
 
+/*---------------------------------------------------------------
+				extractPoints
+---------------------------------------------------------------*/
+void CPointsMap::extractPoints( const TPoint3D &corner1, const TPoint3D &corner2, CPointsMap *outMap, const double &R, const double &G, const double &B )
+{
+	outMap->clear();
+	double minX,maxX,minY,maxY,minZ,maxZ;
+	minX = min(corner1.x,corner2.x);    maxX = max(corner1.x,corner2.x);
+	minY = min(corner1.y,corner2.y);    maxY = max(corner1.y,corner2.y);
+	minZ = min(corner1.z,corner2.z);    maxZ = max(corner1.z,corner2.z);
+	for( size_t k = 0; k < x.size(); k++ )
+	{
+		if( (x[k] >= minX && x[k] <= maxX) &&
+            (y[k] >= minY && y[k] <= maxY) &&
+            (z[k] >= minZ && z[k] <= maxZ) )
+			outMap->insertPoint( x[k], y[k], z[k], R, G, B );
+	}
+}
 
+/*---------------------------------------------------------------
+				compute3DDistanceToMesh
+---------------------------------------------------------------*/
+void CPointsMap::compute3DDistanceToMesh(
+    const CMetricMap						*otherMap2,
+	const CPose3D							&otherMapPose,
+	float									maxDistForCorrespondence,
+	TMatchingPairList                       &correspondences,
+	float           						&correspondencesRatio )
+{
+    MRPT_START
+    MRPT_UNUSED_PARAM(otherMapPose);
+
+    const CPointsMap		*otherMap = static_cast<const CPointsMap*>( otherMap2 );
+
+	const size_t nLocalPoints   = otherMap->size();
+	const size_t nGlobalPoints  = this->size();
+	size_t nOtherMapPointsWithCorrespondence = 0;	// Number of points with one corrs. at least
+
+    // Prepare output: no correspondences initially:
+    correspondences.clear();
+	correspondences.reserve(nLocalPoints);
+	correspondencesRatio = 0;
+
+    // aux correspondence vector
+    TMatchingPairList _correspondences;
+    _correspondences.reserve(nLocalPoints);
+
+	// Hay mapa global?
+	if (!nGlobalPoints) return;  // No
+
+	// Hay mapa local?
+	if (!nLocalPoints)  return;  // No
+
+	// we'll assume by now both reference systems are the same
+    float local_x_min, local_x_max, local_y_min, local_y_max, local_z_min, local_z_max;
+    otherMap->boundingBox(
+        local_x_min, local_x_max,
+        local_y_min, local_y_max,
+        local_z_min, local_z_max );
+
+	// Find the bounding box:
+	float global_x_min, global_x_max, global_y_min, global_y_max, global_z_min, global_z_max;
+	this->boundingBox(
+		global_x_min,global_x_max,
+		global_y_min,global_y_max,
+		global_z_min,global_z_max );
+
+	// Solo hacer matching si existe alguna posibilidad de que
+	//  los dos mapas se toquen:
+	if (local_x_min>global_x_max ||
+		local_x_max<global_x_min ||
+		local_y_min>global_y_max ||
+		local_y_max<global_y_min) return;	// No hace falta hacer matching,
+											//   porque es de CERO.
+
+    std::vector< std::vector<size_t> > vIdx;
+
+	// Loop for each point in local map:
+	// --------------------------------------------------
+	std::vector<float> outX,outY,outZ,tentativeErrSq;
+	std::vector<size_t> outIdx;
+	for (unsigned int localIdx = 0; localIdx < nLocalPoints; ++localIdx )
+	{
+		// For speed-up:
+		const float x_local = otherMap->x[localIdx];
+		const float y_local = otherMap->y[localIdx];
+		const float z_local = otherMap->z[localIdx];
+
+		{
+			// KD-TREE implementation
+			// Use a KD-tree to look for the nearnest neighbor of:
+			//   (x_local, y_local, z_local)
+			// In "this" (global/reference) points map.
+			kdTreeNClosestPoint3DWithIdx(
+				x_local,  y_local, z_local,     // Look closest to this guy
+				3,                              // get the three closest points
+				outX,outY,outZ,                 // output vectors
+				outIdx,                         // output indexes
+				tentativeErrSq                  // save here the min. distance squared
+				);
+
+            // get the centroid
+            const float mX = (outX[0]+outX[1]+outX[2])/3.0;
+            const float mY = (outY[0]+outY[1]+outY[2])/3.0;
+            const float mZ = (outZ[0]+outZ[1]+outZ[2])/3.0;
+
+            const float distanceForThisPoint = fabs(mrpt::math::distance(TPoint3D(x_local,y_local,z_local),TPoint3D(mX,mY,mZ)));
+
+			// Distance below the threshold??
+			if ( distanceForThisPoint < maxDistForCorrespondence )
+			{
+				// Save all the correspondences:
+				_correspondences.resize(_correspondences.size()+1);
+
+				TMatchingPair & p = _correspondences.back();
+
+				p.this_idx = nOtherMapPointsWithCorrespondence++; // insert a consecutive index here
+				p.this_x = mX;
+				p.this_y = mY;
+				p.this_z = mZ;
+
+				p.other_idx = localIdx;
+				p.other_x = otherMap->x[localIdx];
+				p.other_y = otherMap->y[localIdx];
+				p.other_z = otherMap->z[localIdx];
+
+				p.errorSquareAfterTransformation  = distanceForThisPoint;
+
+                // save the indexes
+                std::sort(outIdx.begin(),outIdx.end());
+				vIdx.push_back(outIdx);
+			}
+		} // End of test_match
+	} // For each local point
+
+	// Additional consistency filter: "onlyKeepTheClosest" up to now
+	//  led to just one correspondence for each "local map" point, but
+	//  many of them may have as corresponding pair the same "global point"!!
+	// -------------------------------------------------------------------------
+    std::map<size_t, std::map<size_t, std::map<size_t, pair<size_t,float> > > > best; // 3D associative map
+    TMatchingPairList::iterator it;
+    for (it = _correspondences.begin(); it != _correspondences.end(); ++it)
+    {
+        const size_t i0 = vIdx[it->this_idx][0];
+        const size_t i1 = vIdx[it->this_idx][1];
+        const size_t i2 = vIdx[it->this_idx][2];
+
+        if( best.find(i0) != best.end() &&
+            best[i0].find(i1) != best[i0].end() &&
+            best[i0][i1].find(i2) != best[i0][i1].end() )   // if there is a match, check if it is better
+        {
+            if( best[i0][i1][i2].second > it->errorSquareAfterTransformation )
+            {
+                best[i0][i1][i2].first  = it->this_idx;
+                best[i0][i1][i2].second = it->errorSquareAfterTransformation;
+            }
+        }
+        else    // if there is no match
+        {
+            best[i0][i1][i2].first  = it->this_idx;
+            best[i0][i1][i2].second = it->errorSquareAfterTransformation;
+        }
+    } // end it correspondences
+
+    for (it = _correspondences.begin(); it != _correspondences.end(); ++it)
+    {
+        const size_t i0 = vIdx[it->this_idx][0];
+        const size_t i1 = vIdx[it->this_idx][1];
+        const size_t i2 = vIdx[it->this_idx][2];
+
+        if( best[i0][i1][i2].first == it->this_idx )
+            correspondences.push_back(*it);
+    }
+
+	// The ratio of points in the other map with corrs:
+	correspondencesRatio = nOtherMapPointsWithCorrespondence / static_cast<float>(nLocalPoints);
+
+    MRPT_END
 }
 
 /*---------------------------------------------------------------

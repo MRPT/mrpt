@@ -592,6 +592,26 @@ namespace slam
 				float									minMahaDistForCorr = 2.0f
 				) const;
 
+
+		/** Computes the matchings between this and another 3D points map.
+		   This method matches each point in the other map with the centroid of the 3 closest points in 3D
+		   from this map (if the distance is below a defined threshold).
+
+		 * \param  otherMap					  [IN] The other map to compute the matching with.
+		 * \param  otherMapPose				  [IN] The pose of the other map as seen from "this".
+		 * \param  maxDistForCorrespondence   [IN] Maximum 2D linear distance between two points to be matched.
+		 * \param  correspondences			  [OUT] The detected matchings pairs.
+		 * \param  correspondencesRatio		  [OUT] The ratio [0,1] of points in otherMap with at least one correspondence.
+		 *
+		 * \sa computeMatchingWith3D
+		 */
+		 void compute3DDistanceToMesh(
+                const CMetricMap						*otherMap2,
+                const CPose3D							&otherMapPose,
+                float									maxDistForCorrespondence,
+                TMatchingPairList                       &correspondences,
+                float						            &correspondencesRatio );
+
 		/** Transform the range scan into a set of cartessian coordinated
 		  *	 points. The options in "insertionOptions" are considered in this method.
 		  * \param rangeScan The scan to be inserted into this map
@@ -694,7 +714,14 @@ namespace slam
 			pMax.z=dmy6;
 		}
 
+		/** Extracts the points in the map within a cylinder in 3D defined the provided radius and zmin/zmax values.
+		  */
 		void extractCylinder( const CPoint2D &center, const double radius, const double zmin, const double zmax, CPointsMap *outMap );
+
+		/** Extracts the points in the map within the area defined by two corners.
+		  *  The points are coloured according the R,G,B input data.
+		  */
+        void extractPoints( const TPoint3D &corner1, const TPoint3D &corner2, CPointsMap *outMap, const double &R = 1, const double &G = 1, const double &B = 1 );
 
 		/** @name Filter-by-height stuff
 			@{ */
