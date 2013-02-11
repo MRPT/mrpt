@@ -588,6 +588,10 @@ void  CPointsMap::computeMatchingWith2D(
                 correspondences.push_back( *it );   				// Add to the output
 		}
 	} // end of additional consistency filer for "onlyKeepTheClosest"
+	else
+	{
+	    correspondences.swap(_correspondences);
+	}
 
 	// If requested, copy sum of squared distances to output pointer:
 	// -------------------------------------------------------------------
@@ -1227,6 +1231,10 @@ void  CPointsMap::computeMatchingWith3D(
 				correspondences.push_back(*it); 				// Add to the output
 		}
 	} // end of additional consistency filer for "onlyKeepTheClosest"
+	else
+	{
+	    correspondences.swap(_correspondences);
+	}
 
 	// If requested, copy sum of squared distances to output pointer:
 	// -------------------------------------------------------------------
