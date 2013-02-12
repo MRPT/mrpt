@@ -188,11 +188,10 @@ struct CParticleVehicleData
 	float x,y, vx,vy; // Vehicle state (position & velocities)
 };
 
-class CRangeBearingParticleFilter : public mrpt::bayes::CParticleFilterCapable, public mrpt::bayes::CParticleFilterData<CParticleVehicleData>
+class CRangeBearingParticleFilter :
+	public mrpt::bayes::CParticleFilterData<CParticleVehicleData>,
+	public mrpt::bayes::CParticleFilterDataImpl<CRangeBearingParticleFilter,mrpt::bayes::CParticleFilterData<CParticleVehicleData>::CParticleList>
 {
-	// This uses CParticleFilterData to implement some methods required for CParticleFilterCapable:
-	IMPLEMENT_PARTICLE_FILTER_CAPABLE(CParticleVehicleData);
-
 public:
 
 	 /** Update the m_particles, predicting the posterior of robot pose and map after a movement command.

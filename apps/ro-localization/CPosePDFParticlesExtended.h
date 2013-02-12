@@ -71,14 +71,11 @@ namespace mrpt
 		 */
 		class CPosePDFParticlesExtended :
 			public CPosePDF,
-			public mrpt::bayes::CParticleFilterCapable,
-			public mrpt::bayes::CParticleFilterData<TExtendedCPose2D>
+			public mrpt::bayes::CParticleFilterData<TExtendedCPose2D>,
+			public mrpt::bayes::CParticleFilterDataImpl<CPosePDFParticlesExtended,mrpt::bayes::CParticleFilterData<TExtendedCPose2D>::CParticleList>
 		{
 			// This must be added to any CSerializable derived class:
 			DEFINE_SERIALIZABLE( CPosePDFParticlesExtended )
-
-			// This uses CParticleFilterData to implement some methods required for CParticleFilterCapable:
-			IMPLEMENT_PARTICLE_FILTER_CAPABLE(TExtendedCPose2D);
 
 		public:
 
