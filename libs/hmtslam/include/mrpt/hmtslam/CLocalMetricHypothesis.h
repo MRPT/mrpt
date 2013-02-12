@@ -98,7 +98,8 @@ namespace mrpt
 		 * \sa CHMTSLAM, CLSLAM_RBPF_2DLASER
 		 */
 		class HMTSLAM_IMPEXP CLocalMetricHypothesis :
-			public bayes::CParticleFilterCapable, public bayes::CParticleFilterData<CLSLAMParticleData>,
+			public mrpt::bayes::CParticleFilterData<CLSLAMParticleData>,
+			public mrpt::bayes::CParticleFilterDataImpl<CLocalMetricHypothesis,mrpt::bayes::CParticleFilterData<CLSLAMParticleData>::CParticleList>,
 			public mrpt::utils::CSerializable
 		{
 			friend class HMTSLAM_IMPEXP CLSLAM_RBPF_2DLASER;
@@ -261,17 +262,6 @@ namespace mrpt
 			/** Auxiliary variable used in the "pfAuxiliaryPFOptimal" algorithm.
 			  */
 			mutable StdVector_CPose2D		m_movementDrawMaximumLikelihood;
-
-
-		 /** The following implements:
-		  *   - CParticleFilterCapable::getW
-		  *   - CParticleFilterCapable::setW
-		  *   - CParticleFilterCapable::particlesCount
-		  *   - CParticleFilterCapable::normalizeWeights
-		  *   - CParticleFilterCapable::ESS
-		  *   - CParticleFilterCapable::performSubstitution
-		  */
-		  IMPLEMENT_PARTICLE_FILTER_CAPABLE(CLSLAMParticleData)
 
 		}; // End of class def.
 
