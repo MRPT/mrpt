@@ -178,7 +178,7 @@ namespace srba
 			);
 
 
-		struct TOpenGLRepresentationOptions
+		struct TOpenGLRepresentationOptions : public LM_TYPE::render_mode_t::TOpenGLRepresentationOptionsExtra
 		{
 			TOpenGLRepresentationOptions() :
 				span_tree_max_depth(static_cast<size_t>(-1)),

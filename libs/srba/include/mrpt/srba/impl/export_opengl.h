@@ -36,9 +36,12 @@
 #pragma once
 
 #include <mrpt/opengl.h>
+#include "export_opengl_landmark_renderers.h" // Declare LandmarkRendererBase<> specializations
 
 namespace mrpt { namespace srba {
-
+//
+// RBA_Problem<>::build_opengl_representation
+//
 template <class KF2KF_POSE_TYPE,class LM_TYPE,class OBS_TYPE,class RBA_OPTIONS>
 void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::build_opengl_representation(
 	const srba::TKeyFrameID root_keyframe,
@@ -107,106 +110,9 @@ void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::build_opengl_rep
 			}
 			out_scene->insert(gl_edges);
 
-			// For each fixed known LM, add a point to a point cloud
-			//  and a text label with the landmark ID:
-			mrpt::opengl::CPointCloudPtr  gl_lms = mrpt::opengl::CPointCloud::Create();
-			gl_lms->setPointSize(5);
-			gl_lms->setColor(0,0,1);
+			// Render landmarks:
+			LandmarkRendererBase<typename LM_TYPE::render_mode_t>::render(*this,root_keyframe,spantree, options,*out_scene);
 
-			out_scene->insert(gl_lms);
-
-			vector<typename TRelativeLandmarkPosMap::const_iterator> lms_to_draw;
-			vector<const typename hessian_traits_t::TSparseBlocksHessian_f::matrix_t *> lms_to_draw_inf_covs;
-
-			for (typename TRelativeLandmarkPosMap::const_iterator itLM = rba_state.known_lms.begin();itLM != rba_state.known_lms.end();++itLM)
-			{
-				lms_to_draw.push_back(itLM);
-				lms_to_draw_inf_covs.push_back( NULL );
-			}
-
-			const size_t nKnown = lms_to_draw.size();
-
-			if (options.draw_unknown_feats)
-			{
-				for (typename TRelativeLandmarkPosMap::const_iterator itLM = rba_state.unknown_lms.begin();itLM != rba_state.unknown_lms.end();++itLM)
-				{
-					lms_to_draw.push_back(itLM);
-
-					typename hessian_traits_t::landmarks2infmatrix_t::const_iterator it_inf = rba_state.unknown_lms_inf_matrices.find(itLM->first);
-
-					if (it_inf != rba_state.unknown_lms_inf_matrices.end())
-							lms_to_draw_inf_covs.push_back( &it_inf->second );
-					else	lms_to_draw_inf_covs.push_back(NULL);
-				}
-			}
-
-			const mrpt::utils::TColorf col_known_lms(1.f,1.f,0.f);
-			const mrpt::utils::TColorf col_unknown_lms(1.f,0.f,0.f);
-
-			for (size_t i=0;i<lms_to_draw.size();i++)
-			{
-				const typename TRelativeLandmarkPosMap::const_iterator &itLM = lms_to_draw[i];
-				const bool is_known = (i<nKnown);
-
-				// Don't draw those unknown LMs which hasn't been estimated not even once:
-				if (!is_known && lms_to_draw_inf_covs[i]==NULL)
-					continue;
-
-				CPose3D base_pose;
-				if (itLM->second.id_frame_base!=root_keyframe)
-				{
-					typename frameid2pose_map_t::const_iterator itBaseNode = spantree.find(itLM->second.id_frame_base);
-					if(itBaseNode==spantree.end())
-						continue;
-					base_pose = itBaseNode->second.pose; // Inverse!
-				}
-				else
-				{
-					// It's the origin.
-				}
-
-				const TPoint3D p_wrt_base = TPoint3D( itLM->second.getAsRelativeEuclideanLocation() );
-
-				TPoint3D p_global;
-				base_pose.composePoint(p_wrt_base,p_global);
-
-				gl_lms->insertPoint(p_global.x,p_global.y,p_global.z);
-
-				// Add text label:
-				mrpt::opengl::CText3DPtr  gl_txt = mrpt::opengl::CText3D::Create(
-					mrpt::format("%u",static_cast<unsigned int>( itLM->first)),
-					"mono", 0.15,
-					mrpt::opengl::NICE );
-				gl_txt->setPose(CPose3D(p_global.x,p_global.y,p_global.z,DEG2RAD(-90),DEG2RAD(0),DEG2RAD(90)));
-				gl_txt->setColor( is_known ? col_known_lms : col_unknown_lms );
-
-				out_scene->insert(gl_txt);
-
-				// Uncertainty ellipse?
-				if (options.draw_unknown_feats_ellipses && lms_to_draw_inf_covs[i] )
-				{
-					double min_inf_diag=std::numeric_limits<double>::max();
-					for (size_t k=0;k<LM_DIMS;k++)
-						mrpt::utils::keep_min(min_inf_diag, (*lms_to_draw_inf_covs[i])(k,k));
-					if (min_inf_diag<1e-5) continue; // Too large covariance!
-
-					mrpt::math::CMatrixFixedNumeric<double,LM_DIMS,LM_DIMS> cov(mrpt::math::UNINITIALIZED_MATRIX);
-					lms_to_draw_inf_covs[i]->inv(cov);
-
-					mrpt::opengl::CEllipsoidPtr gl_ellip = mrpt::opengl::CEllipsoid::Create();
-					gl_ellip->setQuantiles( options.draw_unknown_feats_ellipses_quantiles );
-					gl_ellip->enableDrawSolid3D(false);
-
-					gl_ellip->setCovMatrix(cov);
-					CPose3D ellip_pose = base_pose;
-					ellip_pose.x(p_global.x);
-					ellip_pose.y(p_global.y);
-					ellip_pose.z(p_global.z);
-
-					gl_ellip->setPose(ellip_pose);
-					out_scene->insert(gl_ellip);
-				}
-			}
 		} // end if graph is not empty
 
 	} // end of "out_scene"

@@ -214,6 +214,34 @@ namespace observations {
 
 	// -------------------------------------------------------------------------------------------------
 
+	/** Observation = Relative SE(2) poses (x,y,yaw) */
+	struct RelativePoses_2D
+	{
+		static const size_t  OBS_DIMS = 3; //!< Each observation is a triplet (x,y,yaw) 
+		
+		/** The observation-specific data structure */
+		struct obs_data_t
+		{
+			double x,y;   //!< Displacement (in meters)
+			double yaw;   //!< Angle around +Z (in radians)
+
+			/** Converts this observation into a plain array of its parameters */
+			template <class ARRAY>
+			inline void getAsArray(ARRAY &obs) const {
+				obs[0]=x; obs[1]=y; obs[2]=yaw;
+			}
+		};
+
+		/** The type "TObservationParams" must be declared in each "observations::TYPE" to 
+		  *  hold sensor-specific parameters, etc. needed in the sensor model. */
+		struct TObservationParams
+		{
+			// This type of observations has no further parameters.
+		};
+	};
+
+	// -------------------------------------------------------------------------------------------------
+
 
 	/** @} */
 

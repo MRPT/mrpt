@@ -37,7 +37,7 @@ FOREACH(_TSTLIB ${LST_LIB_TESTS})
 	STRING(REGEX REPLACE "mrpt_(.*)" "mrpt-\\1" _TSTLIB_DASH ${_TSTLIB})
 	get_property(lstfiles GLOBAL PROPERTY "${_TSTLIB}_UNIT_TEST_FILES")
 
-	MESSAGE(STATUS "Generating tests for ${_TSTLIB} -> ${_TSTLIB_DASH}")
+	#MESSAGE(STATUS "Generating tests for ${_TSTLIB} -> ${_TSTLIB_DASH}")
 	#MESSAGE(STATUS "  Files: ${lstfiles}")
 
 	# Test project:
