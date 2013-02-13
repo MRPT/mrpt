@@ -36,6 +36,7 @@
 #pragma once
 
 #include <mrpt/opengl.h>
+#include <mrpt/math/lightweight_geom_data.h>
 #include <mrpt/srba/landmark_render_models.h>
 
 namespace mrpt { namespace srba {
@@ -49,12 +50,14 @@ template <> struct LandmarkRendererBase<landmark_rendering_as_point>
 {
 	template <class RBA>
 	static void render(
-		const RBA &rba, 
+		const RBA &rba,
 		const srba::TKeyFrameID root_keyframe,
 		const typename RBA::frameid2pose_map_t  &spantree,
-		const typename RBA::TOpenGLRepresentationOptions &options, 
-		mrpt::opengl::CSetOfObjects& scene) 
+		const typename RBA::TOpenGLRepresentationOptions &options,
+		mrpt::opengl::CSetOfObjects& scene)
 	{
+		using namespace mrpt::math;
+
 		// For each fixed known LM, add a point to a point cloud
 		//  and a text label with the landmark ID:
 		mrpt::opengl::CPointCloudPtr  gl_lms = mrpt::opengl::CPointCloud::Create();
@@ -154,7 +157,7 @@ template <> struct LandmarkRendererBase<landmark_rendering_as_point>
 				gl_ellip->setPose(ellip_pose);
 				scene.insert(gl_ellip);
 			}
-		}		
+		}
 	}
 };
 
@@ -163,11 +166,11 @@ template <> struct LandmarkRendererBase<landmark_rendering_as_pose_constraints>
 {
 	template <class RBA>
 	static void render(
-		const RBA &rba, 
+		const RBA &rba,
 		const srba::TKeyFrameID root_keyframe,
 		const typename RBA::frameid2pose_map_t  &spantree,
-		const typename RBA::TOpenGLRepresentationOptions &options, 
-		mrpt::opengl::CSetOfObjects& scene) 
+		const typename RBA::TOpenGLRepresentationOptions &options,
+		mrpt::opengl::CSetOfObjects& scene)
 	{
 		// TODO
 	}
@@ -178,11 +181,11 @@ template <> struct LandmarkRendererBase<landmark_rendering_none>
 {
 	template <class RBA>
 	static void render(
-		const RBA &rba, 
+		const RBA &rba,
 		const srba::TKeyFrameID root_keyframe,
 		const typename RBA::frameid2pose_map_t  &spantree,
-		const typename RBA::TOpenGLRepresentationOptions &options, 
-		mrpt::opengl::CSetOfObjects& scene) 
+		const typename RBA::TOpenGLRepresentationOptions &options,
+		mrpt::opengl::CSetOfObjects& scene)
 	{
 		// Nothing to render
 	}
