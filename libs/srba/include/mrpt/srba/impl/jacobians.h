@@ -36,6 +36,7 @@
 #pragma once
 
 #include <mrpt/math/jacobians.h>
+#include <mrpt/srba/landmark_jacob_families.h>
 
 namespace mrpt { namespace srba {
 
@@ -143,7 +144,7 @@ void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::numeric_dh_df(co
 
 
 /** Auxiliary sub-jacobian used in compute_jacobian_dh_dp() (it's a static method within specializations of this struct) */
-template <size_t POINT_DIMS, size_t POSE_DIMS, class RBA_ENGINE_T>
+template <landmark_jacob_family_t JACOB_FAMILY, size_t POINT_DIMS, size_t POSE_DIMS, class RBA_ENGINE_T>
 struct compute_jacobian_dAepsDx_deps;
 
 // ====================================================================
@@ -170,11 +171,6 @@ void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::compute_jacobian
 
 	if (! *jacob.sym.is_valid )
 		return; // Another block of the same Jacobian row said this observation was invalid for some reason.
-
-	// First, we need x^{j,i}_i:
-	//const landmark_traits<LM_TYPE>::array_landmark_t & arr_xji_i = jacob.sym.feat_rel_pos->pos;
-	//const TPoint3D & xji_i = jacob.sym.feat_rel_pos->pos;
-	const typename landmark_traits<LM_TYPE>::point_t xji_i = jacob.sym.feat_rel_pos->getAsRelativeEuclideanLocation();
 
 	// And x^{j,i}_l = pose_of_i_wrt_l (+) x^{j,i}_i
 
@@ -222,9 +218,17 @@ void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::compute_jacobian
 			pose_i_wrt_l.composeFrom( pose_d1_wrt_obs->pose, pose_base_wrt_d1.pose);
 	else	pose_i_wrt_l = pose_base_wrt_d1.pose;
 
+	// First, we need x^{j,i}_i:
+	// LM parameters in: jacob.sym.feat_rel_pos->pos[0:N-1]
+	//const typename landmark_traits<LM_TYPE>::point_t xji_i = jacob.sym.feat_rel_pos->getAsRelativeEuclideanLocation();
+	const array_landmark_t &xji_i = jacob.sym.feat_rel_pos->pos;
+
 	// xji_l = pose_i_wrt_l (+) xji_i
-	typename landmark_traits<LM_TYPE>::point_t xji_l;
-	pose_i_wrt_l.composePoint(xji_i, xji_l);
+	array_landmark_t xji_l = xji_i; // 
+	LM_TYPE::composePosePoint(xji_l, pose_i_wrt_l);
+
+	//typename landmark_traits<LM_TYPE>::point_t xji_l;
+	//pose_i_wrt_l.composePoint(xji_i, xji_l);
 
 #if DEBUG_JACOBIANS_SUPER_VERBOSE  // Debug:
 	{
@@ -272,7 +276,7 @@ void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::compute_jacobian
 	Eigen::Matrix<double,OBS_DIMS,LM_DIMS>  dh_dx;
 
 	// Converts a point relative to the robot coordinate frame (P) into a point relative to the sensor (RES = P \ominus POSE_IN_ROBOT )
-	RBA_OPTIONS::sensor_pose_on_robot_t::point_robot2sensor(xji_l,xji_l,this->parameters.sensor_pose );
+	RBA_OPTIONS::sensor_pose_on_robot_t::point_robot2sensor<LM_TYPE,array_landmark_t>(xji_l,xji_l,this->parameters.sensor_pose );
 
 	// Invoke sensor model:
 	if (!sensor_model_t::eval_jacob_dh_dx(dh_dx,xji_l, this->parameters.sensor))
@@ -288,7 +292,7 @@ void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::compute_jacobian
 
 	// Second Jacobian: (uses xji_i)
 	// ------------------------------
-	compute_jacobian_dAepsDx_deps<LM_DIMS,REL_POSE_DIMS,rba_problem_t>::eval(jacob.num,dh_dx,is_inverse_edge_jacobian,xji_i, pose_d1_wrt_obs, pose_base_wrt_d1,jacob.sym,k2k_edges);
+	compute_jacobian_dAepsDx_deps<LM_TYPE::jacob_family,LM_DIMS,REL_POSE_DIMS,rba_problem_t>::eval(jacob.num,dh_dx,is_inverse_edge_jacobian,xji_i, pose_d1_wrt_obs, pose_base_wrt_d1,jacob.sym,k2k_edges);
 
 #endif // SRBA_COMPUTE_ANALYTIC_JACOBIANS
 
@@ -318,7 +322,7 @@ void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::compute_jacobian
 
 // Case: 3D point, SE(3) poses:
 template <class RBA_ENGINE_T>
-struct compute_jacobian_dAepsDx_deps<3 /*POINT_DIMS*/,6 /*POSE_DIMS*/,RBA_ENGINE_T>
+struct compute_jacobian_dAepsDx_deps<jacob_point_landmark /* Jacobian family: this LM is a point */, 3 /*POINT_DIMS*/,6 /*POSE_DIMS*/,RBA_ENGINE_T>
 {
 	template <class MATRIX, class MATRIX_DH_DX,class POINT,class pose_flag_t,class JACOB_SYM_T,class K2K_EDGES_T>
 	static void eval(
@@ -362,9 +366,9 @@ struct compute_jacobian_dAepsDx_deps<3 /*POINT_DIMS*/,6 /*POSE_DIMS*/,RBA_ENGINE
 			// Second 2x3 block:
 			// compute aux vector "v":
 			Eigen::Matrix<double,3,1> v;
-			v[0] =  -pose_base_wrt_d1.pose.x()  - xji_i.x*ROTD.coeff(0,0) - xji_i.y*ROTD.coeff(0,1) - xji_i.z*ROTD.coeff(0,2);
-			v[1] =  -pose_base_wrt_d1.pose.y()  - xji_i.x*ROTD.coeff(1,0) - xji_i.y*ROTD.coeff(1,1) - xji_i.z*ROTD.coeff(1,2);
-			v[2] =  -pose_base_wrt_d1.pose.z()  - xji_i.x*ROTD.coeff(2,0) - xji_i.y*ROTD.coeff(2,1) - xji_i.z*ROTD.coeff(2,2);
+			v[0] =  -pose_base_wrt_d1.pose.x()  - xji_i[0]*ROTD.coeff(0,0) - xji_i[1]*ROTD.coeff(0,1) - xji_i[2]*ROTD.coeff(0,2);
+			v[1] =  -pose_base_wrt_d1.pose.y()  - xji_i[0]*ROTD.coeff(1,0) - xji_i[1]*ROTD.coeff(1,1) - xji_i[2]*ROTD.coeff(1,2);
+			v[2] =  -pose_base_wrt_d1.pose.z()  - xji_i[0]*ROTD.coeff(2,0) - xji_i[1]*ROTD.coeff(2,1) - xji_i[2]*ROTD.coeff(2,2);
 
 			Eigen::Matrix<double,3,3> aux;
 
@@ -421,9 +425,9 @@ struct compute_jacobian_dAepsDx_deps<3 /*POINT_DIMS*/,6 /*POSE_DIMS*/,RBA_ENGINE
 			// Second 2x3 block:
 			// compute aux vector "v":
 			Eigen::Matrix<double,3,1> v;
-			v[0] =  -pose_base_wrt_d1_prime.x()  - xji_i.x*ROTD.coeff(0,0) - xji_i.y*ROTD.coeff(0,1) - xji_i.z*ROTD.coeff(0,2);
-			v[1] =  -pose_base_wrt_d1_prime.y()  - xji_i.x*ROTD.coeff(1,0) - xji_i.y*ROTD.coeff(1,1) - xji_i.z*ROTD.coeff(1,2);
-			v[2] =  -pose_base_wrt_d1_prime.z()  - xji_i.x*ROTD.coeff(2,0) - xji_i.y*ROTD.coeff(2,1) - xji_i.z*ROTD.coeff(2,2);
+			v[0] =  -pose_base_wrt_d1_prime.x()  - xji_i[0]*ROTD.coeff(0,0) - xji_i[1]*ROTD.coeff(0,1) - xji_i[2]*ROTD.coeff(0,2);
+			v[1] =  -pose_base_wrt_d1_prime.y()  - xji_i[0]*ROTD.coeff(1,0) - xji_i[1]*ROTD.coeff(1,1) - xji_i[2]*ROTD.coeff(1,2);
+			v[2] =  -pose_base_wrt_d1_prime.z()  - xji_i[0]*ROTD.coeff(2,0) - xji_i[1]*ROTD.coeff(2,1) - xji_i[2]*ROTD.coeff(2,2);
 
 			Eigen::Matrix<double,3,3> aux;
 
@@ -581,14 +585,14 @@ struct compute_jacobian_dAepsDx_deps_SE2
 
 // Case: 2D point, SE(2) poses: (derived from generic SE2 implementation above)
 template <class RBA_ENGINE_T>
-struct compute_jacobian_dAepsDx_deps<2 /*POINT_DIMS*/,3 /*POSE_DIMS*/,RBA_ENGINE_T>
+struct compute_jacobian_dAepsDx_deps<jacob_point_landmark /* Jacobian family: this LM is a point */, 2 /*POINT_DIMS*/,3 /*POSE_DIMS*/,RBA_ENGINE_T>
 	: public compute_jacobian_dAepsDx_deps_SE2<2 /*POINT_DIMS*/,RBA_ENGINE_T>
 {
 };
 
 // Case: 3D point, SE(2) poses: (derived from generic SE2 implementation above)
 template <class RBA_ENGINE_T>
-struct compute_jacobian_dAepsDx_deps<3 /*POINT_DIMS*/,3 /*POSE_DIMS*/,RBA_ENGINE_T>
+struct compute_jacobian_dAepsDx_deps<jacob_point_landmark /* Jacobian family: this LM is a point */, 3 /*POINT_DIMS*/,3 /*POSE_DIMS*/,RBA_ENGINE_T>
 	: public compute_jacobian_dAepsDx_deps_SE2<3 /*POINT_DIMS*/,RBA_ENGINE_T>
 {
 };
@@ -613,12 +617,6 @@ void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::compute_jacobian
 	if (! *jacob.sym.is_valid )
 		return; // Another block of the same Jacobian row said this observation was invalid for some reason.
 
-	// First, we need x^{j,i}_i:
-	//const TPoint3D & xji_i = jacob.sym.rel_pos->pos;
-	const typename landmark_traits<LM_TYPE>::point_t xji_i = jacob.sym.rel_pos->getAsRelativeEuclideanLocation();
-
-	// And x^{j,i}_l = pose_of_i_wrt_l (+) x^{j,i}_i
-
 	// Handle the special case when obs==base, for which rel_pose_base_from_obs==NULL
 	const pose_flag_t * rel_pose_base_from_obs = jacob.sym.rel_pose_base_from_obs;
 
@@ -641,8 +639,13 @@ void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::compute_jacobian
 		}
 	}
 
-
-	typename landmark_traits<LM_TYPE>::point_t xji_l;
+	// First, we need x^{j,i}_i:
+	//const TPoint3D & xji_i = jacob.sym.feat_rel_pos->pos;
+	//const typename landmark_traits<LM_TYPE>::point_t xji_i = jacob.sym.feat_rel_pos->getAsRelativeEuclideanLocation();
+	const array_landmark_t &xji_i = jacob.sym.feat_rel_pos->pos;
+	
+	//typename landmark_traits<LM_TYPE>::point_t xji_l;
+	array_landmark_t xji_l = xji_i; // 
 
 	if (rel_pose_base_from_obs!=NULL)
 	{
@@ -650,12 +653,12 @@ void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::compute_jacobian
 		cout << "dh_df(ft_id="<< observation.obs.obs.feat_id << ", obs_kf="<< observation.obs.kf_id << "): o2b=" << *rel_pose_base_from_obs << endl;
 #endif
 		// xji_l = rel_pose_base_from_obs (+) xji_i
-		rel_pose_base_from_obs->pose.composePoint(xji_i, xji_l);
+		//rel_pose_base_from_obs->pose.composePoint(xji_i, xji_l);
+		LM_TYPE::composePosePoint(xji_l, rel_pose_base_from_obs->pose);
 	}
 	else
 	{
-		// I'm observing from the same base key-frame:
-		xji_l = xji_i;
+		// I'm observing from the same base key-frame: xji_l = xji_i (already done above)
 	}
 
 
@@ -668,7 +671,7 @@ void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::compute_jacobian
 	array_landmark_t x_incrs;
 	x_incrs.setConstant(1e-3);
 
-	const TNumeric_dh_df_params num_params(&rel_pose_base_from_obs->pose,jacob.sym.rel_pos->pos,this->parameters.sensor,this->parameters.sensor_pose);
+	const TNumeric_dh_df_params num_params(&rel_pose_base_from_obs->pose,jacob.sym.feat_rel_pos->pos,this->parameters.sensor,this->parameters.sensor_pose);
 
 	jacobians::jacob_numeric_estimate(x,&numeric_dh_df,x_incrs,num_params,num_jacob);
 
@@ -687,7 +690,7 @@ void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::compute_jacobian
 	Eigen::Matrix<double,OBS_DIMS,LM_DIMS>  dh_dx;
 
 	// Converts a point relative to the robot coordinate frame (P) into a point relative to the sensor (RES = P \ominus POSE_IN_ROBOT )
-	RBA_OPTIONS::sensor_pose_on_robot_t::point_robot2sensor(xji_l,xji_l,this->parameters.sensor_pose );
+	RBA_OPTIONS::sensor_pose_on_robot_t::point_robot2sensor<LM_TYPE,array_landmark_t>(xji_l,xji_l,this->parameters.sensor_pose );
 
 	// Invoke sensor model:
 	if (!sensor_model_t::eval_jacob_dh_dx(dh_dx,xji_l, this->parameters.sensor))
@@ -785,10 +788,10 @@ void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::prepare_Jacobian
 			//  *  obs -> base
 			const size_t obs_idx = it->first;
 			const k2f_edge_t &k2f = rba_state.all_observations[obs_idx];
-			ASSERT_(k2f.rel_pos)
+			ASSERT_(k2f.feat_rel_pos)
 
 			const TKeyFrameID obs_id  = k2f.obs.kf_id;
-			const TKeyFrameID base_id = k2f.rel_pos->id_frame_base;
+			const TKeyFrameID base_id = k2f.feat_rel_pos->id_frame_base;
 
 			add_edge_ij_to_list_needed_roots(lst, base_id, obs_id );
 		}

@@ -75,7 +75,7 @@ namespace srba
 				pose_wrt_sensor = pose_wrt_robot;
 			}
 			/** Converts a point relative to the robot coordinate frame (P) into a point relative to the sensor (RES = P \ominus POSE_IN_ROBOT ) */
-			template <class POINT> 
+			template <class LM_TYPE, class POINT> 
 			static inline void point_robot2sensor(const POINT & pt_wrt_robot, POINT & pt_wrt_sensor, const parameters_t &p) {
 				pt_wrt_sensor=pt_wrt_robot;
 			}
@@ -115,9 +115,9 @@ namespace srba
 				pose_wrt_sensor.inverseComposeFrom(pose_wrt_robot,p.relative_pose);
 			}
 			/** Converts a point relative to the robot coordinate frame (P) into a point relative to the sensor (RES = P \ominus POSE_IN_ROBOT ) */
-			template <class POINT> 
+			template <class LM_TYPE,class POINT> 
 			static inline void point_robot2sensor(const POINT & pt_wrt_robot, POINT & pt_wrt_sensor, const parameters_t &p) {
-				p.relative_pose.inverseComposePoint(pt_wrt_robot,pt_wrt_sensor);
+				LM_TYPE::inverseComposePosePoint(pt_wrt_robot,pt_wrt_sensor,p.relative_pose);
 			}
 			/** Take into account the possible displacement of the sensor wrt the keyframe when evaluating the Jacobian dh_dx */
 			template <class MATRIX>

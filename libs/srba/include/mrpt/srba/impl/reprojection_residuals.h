@@ -62,11 +62,11 @@ double RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::reprojection_r
 		// Actually measured pixel coords: observations[i]->obs.px
 		//const TLandmarkID  lm_id        = observations[i]->obs.feat_id;
 		const TKeyFrameID  obs_frame_id = observations[i].k2f->obs.kf_id; // Observed from here.
-		const TRelativeLandmarkPos *rel_pos = observations[i].k2f->rel_pos;
+		const TRelativeLandmarkPos *feat_rel_pos = observations[i].k2f->feat_rel_pos;
 
-		ASSERTDEB_(rel_pos!=NULL)
+		ASSERTDEB_(feat_rel_pos!=NULL)
 
-		const TKeyFrameID  base_id  = rel_pos->id_frame_base;
+		const TKeyFrameID  base_id  = feat_rel_pos->id_frame_base;
 
 		pose_t const * base_pose_wrt_observer=NULL;
 
@@ -96,7 +96,7 @@ double RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::reprojection_r
 		// Template argument=true means: relative pose of "point" wrt camera is "frame (+) point":
 		// Generate observation:
 		array_obs_t z_pred;
-		sensor_model_t::observe(z_pred,base_pose_wrt_sensor,rel_pos->pos, this->parameters.sensor);
+		sensor_model_t::observe(z_pred,base_pose_wrt_sensor,feat_rel_pos->pos, this->parameters.sensor);
 
 		const array_obs_t & real_obs = observations[i].k2f->obs.obs_arr;
 

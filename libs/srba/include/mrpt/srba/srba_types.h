@@ -109,11 +109,11 @@ namespace srba
 	}; // end of kf2kf_pose_traits
 
 	/** A selected struct for selecting TPoint2D or TPoint3D depending on the dimensionality of landmarks */
-	template <unsigned int LM_EUCLIDEAN_DIMS> struct landmark_point_trait;
-	/** Specialization for 2D */
-	template <> struct landmark_point_trait<2> { typedef mrpt::math::TPoint2D point_t; };
-	/** Specialization for 3D */
-	template <> struct landmark_point_trait<3> { typedef mrpt::math::TPoint3D point_t; };
+	//template <unsigned int LM_EUCLIDEAN_DIMS> struct landmark_point_trait;
+	///** Specialization for 2D */
+	//template <> struct landmark_point_trait<2> { typedef mrpt::math::TPoint2D point_t; };
+	///** Specialization for 3D */
+	//template <> struct landmark_point_trait<3> { typedef mrpt::math::TPoint3D point_t; };
 
 
 	/** The argument "LM_TRAITS" can be any of those defined in srba/models/landmarks.h (typically, either landmarks::Euclidean3D or landmarks::Euclidean2D).
@@ -124,7 +124,7 @@ namespace srba
 	{
 		typedef landmark_traits<LM_TRAITS> me_t;
 		typedef typename mrpt::math::CArrayDouble<LM_TRAITS::LM_DIMS>        array_landmark_t;  //!< A fixed-length array of the size of the parameters of one landmark in the map (e.g. if Euclidean coordinates are used, this will hold the coordinates)
-		typedef typename landmark_point_trait<LM_TRAITS::LM_EUCLIDEAN_DIMS>::point_t  point_t;  //!< Will end up being mrpt::math::TPoint2D or mrpt::math::TPoint3D
+		//typedef typename landmark_point_trait<LM_TRAITS::LM_EUCLIDEAN_DIMS>::point_t  point_t;  //!< Will end up being mrpt::math::TPoint2D or mrpt::math::TPoint3D
 
 		/** One relative feature observation entry, used with some relative bundle-adjustment functions. */
 		struct TRelativeLandmarkPos
@@ -141,17 +141,17 @@ namespace srba
 			TKeyFrameID  id_frame_base;	//!< The ID of the camera frame which is the coordinate reference of \a pos
 			array_landmark_t   pos;  //!< The parameterization of the feature location, wrt to the camera frame \a id_frame_base - For example, this could simply be Euclidean coordinates (x,y,z)
 
-			/** Converts the landmark parameterization into 3D Eucliden coordinates (used for OpenGL rendering, etc.) */
-			inline void getAsRelativeEuclideanLocation(point_t &posEucliden) const {
-				LM_TRAITS::relativeEuclideanLocation(pos,posEucliden);
-			}
-			inline point_t getAsRelativeEuclideanLocation() const {
-				point_t p;
-				LM_TRAITS::relativeEuclideanLocation(pos,p);
-				return p;
-			}
+			///** Converts the landmark parameterization into 3D Eucliden coordinates (used for OpenGL rendering, etc.) */
+			//inline void getAsRelativeEuclideanLocation(point_t &posEucliden) const {
+			//	LM_TRAITS::relativeEuclideanLocation(pos,posEucliden);
+			//}
+			//inline point_t getAsRelativeEuclideanLocation() const {
+			//	point_t p;
+			//	LM_TRAITS::relativeEuclideanLocation(pos,p);
+			//	return p;
+			//}
 
-			EIGEN_MAKE_ALIGNED_OPERATOR_NEW  // Needed because we have fixed-length Eigen matrices (within CPose3D)
+			EIGEN_MAKE_ALIGNED_OPERATOR_NEW  // Needed because we have fixed-length Eigen matrices ("array_landmark_t")
 		};
 
 		/** An index of feature IDs and their relative locations */
@@ -300,7 +300,7 @@ namespace srba
 
 		/** A pointer to the relative position structure within rba_state.unknown_lms[] for this feature
 		  */
-		typename lm_traits_t::TRelativeLandmarkPos  *rel_pos;
+		typename lm_traits_t::TRelativeLandmarkPos  *feat_rel_pos;
 
 		/** The relative poses used in this Jacobian (see papers)
 		  * Pointers to the elements in the "numeric" part of the spanning tree ( TRBA_Problem_state::TSpanningTree )
@@ -417,7 +417,7 @@ namespace srba
 		  *  +-----------+---------------------------------------------+---------------------------------+
 		  *  |                  DATA FIELDS                            |                                 |
 		  *  +-----------+-------------------------+-------------------+       RESULTING OBSERVATION     |
-		  *  | is_fixed  | is_unknown_with_init_val|      rel_pos      |                                 |
+		  *  | is_fixed  | is_unknown_with_init_val|      feat_rel_pos      |                                 |
 		  *  +-----------+-------------------------+-------------------+---------------------------------+
 		  *  |           |                         |                   | First observation of a landmark |
 		  *  |   true    |     ( IGNORED )         | Landmark position |  with a fixed (known) relative  |
@@ -425,7 +425,7 @@ namespace srba
 		  *  +-----------+-------------------------+-------------------+---------------------------------+
 		  *  |           |                         |                   | First observation of a landmark |
 		  *  |   false   |         true            | Landmark position |  with unknown relative position |
-		  *  |           |                         |                   | whose guess is given in rel_pos |
+		  *  |           |                         |                   | whose guess is given in feat_rel_pos |
 		  *  +-----------+-------------------------+-------------------+---------------------------------+
 		  *  |           |                         |                   | Either:                         |
 		  *  |           |                         |                   |  * First observation of a LM    |
@@ -439,24 +439,24 @@ namespace srba
 		struct new_kf_observation_t
 		{
 			/** Default ctor */
-			new_kf_observation_t() : is_fixed(false), is_unknown_with_init_val(false) { rel_pos.setZero(); }
+			new_kf_observation_t() : is_fixed(false), is_unknown_with_init_val(false) { feat_rel_pos.setZero(); }
 
 			typename obs_traits_t::observation_t  obs;
 
-			/** If true, \a rel_pos has the fixed relative position of this landmark (Can be set to true only upon the FIRST observation of a fixed landmark)
+			/** If true, \a feat_rel_pos has the fixed relative position of this landmark (Can be set to true only upon the FIRST observation of a fixed landmark)
 			  */
 			bool is_fixed;
 
 			/** Can be set to true only upon FIRST observation of a landmark with UNKNOWN relative position (the normal case).
-			  *  If set to true, \a rel_pos has the fixed relative position of this landmark.
+			  *  If set to true, \a feat_rel_pos has the fixed relative position of this landmark.
 			  */
 			bool is_unknown_with_init_val;
 
-			typename lm_traits_t::array_landmark_t rel_pos; //!< Ignored unless \a is_fixed OR \a is_unknown_with_init_val are true (only one of them at once).
+			typename lm_traits_t::array_landmark_t feat_rel_pos; //!< Ignored unless \a is_fixed OR \a is_unknown_with_init_val are true (only one of them at once).
 
-			/** Sets \a rel_pos from any object that offers a [] operator and has the expected length "LM_TYPE::LM_DIMS" */
+			/** Sets \a feat_rel_pos from any object that offers a [] operator and has the expected length "LM_TYPE::LM_DIMS" */
 			template <class REL_POS> inline void setRelPos(const REL_POS &pos) {
-				for (size_t i=0;i<LM_TYPE::LM_DIMS;i++) rel_pos[i]=pos[i];
+				for (size_t i=0;i<LM_TYPE::LM_DIMS;i++) feat_rel_pos[i]=pos[i];
 			}
 		};
 
@@ -482,7 +482,7 @@ namespace srba
 			kf_observation_t  obs;
 			bool              feat_has_known_rel_pos;   //!< whether it's a known or unknown relative position feature
 			bool              is_first_obs_of_unknown;  //!< true if this is the first observation of a feature with unknown relative position
-			typename lm_traits_t::TRelativeLandmarkPos *rel_pos; //!< Pointer to the known/unknown rel.pos. (always!=NULL)
+			typename lm_traits_t::TRelativeLandmarkPos *feat_rel_pos; //!< Pointer to the known/unknown rel.pos. (always!=NULL)
 		};
 
 		/** Information per key-frame needed for RBA */

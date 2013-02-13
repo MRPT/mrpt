@@ -116,7 +116,9 @@ template <> struct LandmarkRendererBase<landmark_rendering_as_point>
 				// It's the origin.
 			}
 
-			const TPoint3D p_wrt_base = TPoint3D( itLM->second.getAsRelativeEuclideanLocation() );
+			// If LM_TYPE defines this kind of renderer, we 
+			TPoint3D p_wrt_base;
+			RBA::lm_type::relativeEuclideanLocation(itLM->second.pos, p_wrt_base);
 
 			TPoint3D p_global;
 			base_pose.composePoint(p_wrt_base,p_global);

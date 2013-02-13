@@ -61,7 +61,7 @@ namespace mrpt { namespace srba {
 		static const size_t LM_DIMS  = LANDMARK_T::LM_DIMS;
 		
 		typedef Eigen::Matrix<double,OBS_DIMS,LM_DIMS>  TJacobian_dh_dx;     //!< A Jacobian of the correct size for each dh_dx
-		typedef landmark_traits<LANDMARK_T>::point_t    point_t;             //!< a 2D or 3D point
+		typedef landmark_traits<LANDMARK_T>::array_landmark_t    array_landmark_t;             //!< a 2D or 3D point
 		typedef OBS_T::TObservationParams               TObservationParams;
 
 
@@ -106,14 +106,15 @@ namespace mrpt { namespace srba {
 		  */
 		static bool eval_jacob_dh_dx(
 			TJacobian_dh_dx          & dh_dx,
-			const point_t            & xji_l, 
+			const array_landmark_t   & xji_l, 
 			const TObservationParams & sensor_params)
 		{
+			// xji_l[0:2]=[X Y Z]
 			// If the point is behind us, mark this Jacobian as invalid. This is probably a temporary situation until we get closer to the optimum.
-			if (xji_l.z<=0)
+			if (xji_l[2]<=0)
 				return false;
 
-			const double pz_inv = 1.0/xji_l.z;
+			const double pz_inv = 1.0/xji_l[2];
 			const double pz_inv2 = pz_inv*pz_inv;
 
 			const double cam_fx = sensor_params.camera_calib.fx();
@@ -121,11 +122,11 @@ namespace mrpt { namespace srba {
 
 			dh_dx.coeffRef(0,0)=  cam_fx * pz_inv;
 			dh_dx.coeffRef(0,1)=  0;
-			dh_dx.coeffRef(0,2)=  -cam_fx * xji_l.x * pz_inv2;
+			dh_dx.coeffRef(0,2)=  -cam_fx * xji_l[0] * pz_inv2;
 
 			dh_dx.coeffRef(1,0)=  0;
 			dh_dx.coeffRef(1,1)=  cam_fy * pz_inv;
-			dh_dx.coeffRef(1,2)=  -cam_fy * xji_l.y * pz_inv2;
+			dh_dx.coeffRef(1,2)=  -cam_fy * xji_l[1] * pz_inv2;
 
 			return true;
 		}
@@ -181,7 +182,7 @@ namespace mrpt { namespace srba {
 		static const size_t LM_DIMS  = LANDMARK_T::LM_DIMS;
 		
 		typedef Eigen::Matrix<double,OBS_DIMS,LM_DIMS>  TJacobian_dh_dx;     //!< A Jacobian of the correct size for each dh_dx
-		typedef landmark_traits<LANDMARK_T>::point_t    point_t;             //!< a 2D or 3D point
+		typedef landmark_traits<LANDMARK_T>::array_landmark_t    array_landmark_t;             //!< a 2D or 3D point
 		typedef OBS_T::TObservationParams               TObservationParams;
 
 
@@ -246,16 +247,17 @@ namespace mrpt { namespace srba {
 		  */
 		static bool eval_jacob_dh_dx(
 			TJacobian_dh_dx          & dh_dx,
-			const point_t            & xji_l, 
+			const array_landmark_t   & xji_l, 
 			const TObservationParams & sensor_params)
 		{
+			// xji_l[0:2]=[X Y Z]
 			// If the point is behind us, mark this Jacobian as invalid. This is probably a temporary situation until we get closer to the optimum.
-			if (xji_l.z<=0)
+			if (xji_l[2]<=0)
 				return false;
 			
 			// Left camera:
 			{
-				const double pz_inv = 1.0/xji_l.z;
+				const double pz_inv = 1.0/xji_l[2];
 				const double pz_inv2 = pz_inv*pz_inv;
 
 				const double cam_fx = sensor_params.camera_calib.leftCamera.fx();
@@ -263,19 +265,21 @@ namespace mrpt { namespace srba {
 
 				dh_dx.coeffRef(0,0)=  cam_fx * pz_inv;
 				dh_dx.coeffRef(0,1)=  0;
-				dh_dx.coeffRef(0,2)=  -cam_fx * xji_l.x * pz_inv2;
+				dh_dx.coeffRef(0,2)=  -cam_fx * xji_l[0] * pz_inv2;
 
 				dh_dx.coeffRef(1,0)=  0;
 				dh_dx.coeffRef(1,1)=  cam_fy * pz_inv;
-				dh_dx.coeffRef(1,2)=  -cam_fy * xji_l.y * pz_inv2;
+				dh_dx.coeffRef(1,2)=  -cam_fy * xji_l[1] * pz_inv2;
 			}
 
 			// Right camera:
-			point_t   xji_l_right; // xji_l_right = R2L (+) Xji_l
+			array_landmark_t   xji_l_right; // xji_l_right = R2L (+) Xji_l
 			const mrpt::poses::CPose3DQuat R2L = -sensor_params.camera_calib.rightCameraPose; // R2L = (-) Left-to-right_camera_pose
-			R2L.composePoint(xji_l, xji_l_right);
+			R2L.composePoint(
+				xji_l[0],xji_l[1],xji_l[2],
+				xji_l_right[0],xji_l_right[1],xji_l_right[2]);
 			{
-				const double pz_inv = 1.0/xji_l_right.z;
+				const double pz_inv = 1.0/xji_l_right[2];
 				const double pz_inv2 = pz_inv*pz_inv;
 
 				const double cam_fx = sensor_params.camera_calib.rightCamera.fx();
@@ -283,11 +287,11 @@ namespace mrpt { namespace srba {
 
 				dh_dx.coeffRef(2,0)=  cam_fx * pz_inv;
 				dh_dx.coeffRef(2,1)=  0;
-				dh_dx.coeffRef(2,2)=  -cam_fx * xji_l_right.x * pz_inv2;
+				dh_dx.coeffRef(2,2)=  -cam_fx * xji_l_right[0] * pz_inv2;
 
 				dh_dx.coeffRef(3,0)=  0;
 				dh_dx.coeffRef(3,1)=  cam_fy * pz_inv;
-				dh_dx.coeffRef(3,2)=  -cam_fy * xji_l_right.y * pz_inv2;
+				dh_dx.coeffRef(3,2)=  -cam_fy * xji_l_right[1] * pz_inv2;
 			}
 
 			return true;
@@ -347,9 +351,9 @@ namespace mrpt { namespace srba {
 		static const size_t OBS_DIMS = OBS_T::OBS_DIMS;
 		static const size_t LM_DIMS  = LANDMARK_T::LM_DIMS;
 		
-		typedef Eigen::Matrix<double,OBS_DIMS,LM_DIMS>  TJacobian_dh_dx;     //!< A Jacobian of the correct size for each dh_dx
-		typedef landmark_traits<LANDMARK_T>::point_t    point_t;             //!< a 2D or 3D point
-		typedef OBS_T::TObservationParams               TObservationParams;
+		typedef Eigen::Matrix<double,OBS_DIMS,LM_DIMS>        TJacobian_dh_dx;     //!< A Jacobian of the correct size for each dh_dx
+		typedef landmark_traits<LANDMARK_T>::array_landmark_t array_landmark_t;             //!< a 2D or 3D point
+		typedef OBS_T::TObservationParams                     TObservationParams;
 
 
 		/** Executes the observation model:  
@@ -391,9 +395,10 @@ namespace mrpt { namespace srba {
 		  */
 		static bool eval_jacob_dh_dx(
 			TJacobian_dh_dx          & dh_dx,
-			const point_t            & xji_l, 
+			const array_landmark_t   & xji_l, 
 			const TObservationParams & sensor_params)
 		{
+			// xji_l[0:2]=[X Y Z]
 			// This is probably the simplest Jacobian ever:
 			dh_dx.setIdentity();
 			return true;
@@ -438,7 +443,7 @@ namespace mrpt { namespace srba {
 		static const size_t LM_DIMS  = LANDMARK_T::LM_DIMS;
 		
 		typedef Eigen::Matrix<double,OBS_DIMS,LM_DIMS>  TJacobian_dh_dx;     //!< A Jacobian of the correct size for each dh_dx
-		typedef landmark_traits<LANDMARK_T>::point_t    point_t;             //!< a 2D or 3D point
+		typedef landmark_traits<LANDMARK_T>::array_landmark_t    array_landmark_t;             //!< a 2D or 3D point
 		typedef OBS_T::TObservationParams               TObservationParams;
 
 
@@ -481,9 +486,10 @@ namespace mrpt { namespace srba {
 		  */
 		static bool eval_jacob_dh_dx(
 			TJacobian_dh_dx          & dh_dx,
-			const point_t            & xji_l, 
+			const array_landmark_t   & xji_l, 
 			const TObservationParams & sensor_params)
 		{
+			// xji_l[0:1]=[X Y]
 			// This is probably the simplest Jacobian ever:
 			dh_dx.setIdentity();
 			return true;
@@ -527,7 +533,7 @@ namespace mrpt { namespace srba {
 		static const size_t LM_DIMS  = LANDMARK_T::LM_DIMS;
 		
 		typedef Eigen::Matrix<double,OBS_DIMS,LM_DIMS>  TJacobian_dh_dx;     //!< A Jacobian of the correct size for each dh_dx
-		typedef landmark_traits<LANDMARK_T>::point_t    point_t;             //!< a 2D or 3D point
+		typedef landmark_traits<LANDMARK_T>::array_landmark_t    array_landmark_t;             //!< a 2D or 3D point
 		typedef OBS_T::TObservationParams               TObservationParams;
 
 
@@ -578,15 +584,16 @@ namespace mrpt { namespace srba {
 		  */
 		static bool eval_jacob_dh_dx(
 			TJacobian_dh_dx          & dh_dx,
-			const point_t            & xji_l, 
+			const array_landmark_t   & xji_l, 
 			const TObservationParams & sensor_params)
 		{
+			// xji_l[0:2]=[X Y Z]
 			mrpt::math::CMatrixDouble33 dh_dx_(mrpt::math::UNINITIALIZED_MATRIX);
 
 			static const mrpt::poses::CPose3DQuat origin;
 			double range,yaw,pitch;
 			origin.sphericalCoordinates(
-				xji_l,  // In: point
+				mrpt::math::TPoint3D(xji_l[0],xji_l[1],xji_l[2]),  // In: point
 				range,yaw,pitch, // Out: spherical coords
 				&dh_dx_,   // dh_dx
 				NULL       // dh_dp (not needed)
@@ -638,7 +645,7 @@ namespace mrpt { namespace srba {
 		static const size_t LM_DIMS  = LANDMARK_T::LM_DIMS;
 		
 		typedef Eigen::Matrix<double,OBS_DIMS,LM_DIMS>  TJacobian_dh_dx;     //!< A Jacobian of the correct size for each dh_dx
-		typedef landmark_traits<LANDMARK_T>::point_t    point_t;             //!< a 2D or 3D point
+		typedef landmark_traits<LANDMARK_T>::array_landmark_t    array_landmark_t;             //!< a 2D or 3D point
 		typedef OBS_T::TObservationParams               TObservationParams;
 
 
@@ -684,18 +691,19 @@ namespace mrpt { namespace srba {
 		  */
 		static bool eval_jacob_dh_dx(
 			TJacobian_dh_dx          & dh_dx,
-			const point_t            & xji_l, 
+			const array_landmark_t   & xji_l, 
 			const TObservationParams & sensor_params)
 		{
-			const double r = hypot(xji_l.x, xji_l.y);
+			// xji_l[0:1]=[X Y]
+			const double r = hypot(xji_l[0], xji_l[1]);
 			if (r==0) return false;
 
 			const double r_inv = 1.0/r;
 			const double r_inv2 = r_inv*r_inv;
-			dh_dx(0,0) = xji_l.x * r_inv;
-			dh_dx(0,1) = xji_l.y * r_inv;
-			dh_dx(1,0) = -xji_l.y * r_inv2;
-			dh_dx(1,1) =  xji_l.x * r_inv2;
+			dh_dx(0,0) = xji_l[0] * r_inv;
+			dh_dx(0,1) = xji_l[1] * r_inv;
+			dh_dx(1,0) = -xji_l[1] * r_inv2;
+			dh_dx(1,1) =  xji_l[0] * r_inv2;
 			return true;
 		}
 

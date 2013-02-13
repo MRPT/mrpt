@@ -70,8 +70,8 @@ void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::define_new_keyfr
 
 	for (typename new_kf_observations_t::const_iterator it_obs = obs.begin();it_obs != obs.end();++it_obs)
 	{
-		const typename landmark_traits_t::array_landmark_t *fixed_rel_pos       = it_obs->is_fixed                 ? &it_obs->rel_pos : NULL;
-		const typename landmark_traits_t::array_landmark_t *unk_rel_pos_initval = it_obs->is_unknown_with_init_val ? &it_obs->rel_pos : NULL;
+		const typename landmark_traits_t::array_landmark_t *fixed_rel_pos       = it_obs->is_fixed                 ? &it_obs->feat_rel_pos : NULL;
+		const typename landmark_traits_t::array_landmark_t *unk_rel_pos_initval = it_obs->is_unknown_with_init_val ? &it_obs->feat_rel_pos : NULL;
 
 		this->add_observation( new_kf_id, it_obs->obs, fixed_rel_pos, unk_rel_pos_initval );
 	}

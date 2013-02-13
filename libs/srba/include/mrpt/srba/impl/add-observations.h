@@ -134,7 +134,7 @@ size_t RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::add_observatio
 	new_k2f_edge.obs.obs.obs_data.getAsArray(new_k2f_edge.obs.obs_arr);  // Save the observation data as an array now only once, and reuse it from now on in optimizations, etc.
 	new_k2f_edge.is_first_obs_of_unknown = is_1st_time_seen && !is_fixed;
 	new_k2f_edge.feat_has_known_rel_pos  = is_fixed;
-	new_k2f_edge.rel_pos = lm_rel_pos;
+	new_k2f_edge.feat_rel_pos = lm_rel_pos;
 
 
 	// Update keyframe incident edge list:
@@ -271,7 +271,7 @@ size_t RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::add_observatio
 		entry.sym.is_valid  = jacob_valid_bit;
 
 		// Pointer to relative position:
-		entry.sym.rel_pos = lm_rel_pos;
+		entry.sym.feat_rel_pos = lm_rel_pos;
 
 		// Pointers to placeholders of future numeric results of the spanning tree:
 		entry.sym.rel_pose_base_from_obs  =

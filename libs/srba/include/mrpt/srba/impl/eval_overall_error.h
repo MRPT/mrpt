@@ -55,7 +55,7 @@ double RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::eval_overall_s
 	for (typename deque<k2f_edge_t>::const_iterator itO=rba_state.all_observations.begin();itO!=rba_state.all_observations.end();++itO)
 	{
 		const TKeyFrameID obs_id = itO->obs.kf_id;
-		const TKeyFrameID base_id = itO->rel_pos->id_frame_base;
+		const TKeyFrameID base_id = itO->feat_rel_pos->id_frame_base;
 
 		base_ids[base_id] = true;
 		ob_pairs[ std::min(obs_id,base_id) ].insert( std::max(obs_id,base_id) );
@@ -113,10 +113,10 @@ double RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::eval_overall_s
 		// Actually measured pixel coords: observations[i]->obs.px
 
 		const TKeyFrameID obs_frame_id = itO->obs.kf_id;          // Observed from here.
-		const TKeyFrameID base_id = itO->rel_pos->id_frame_base;
+		const TKeyFrameID base_id = itO->feat_rel_pos->id_frame_base;
 
-		const TRelativeLandmarkPos *rel_pos = itO->rel_pos;
-		ASSERTDEB_(rel_pos!=NULL)
+		const TRelativeLandmarkPos *feat_rel_pos = itO->feat_rel_pos;
+		ASSERTDEB_(feat_rel_pos!=NULL)
 
 		pose_t const * base_pose_wrt_observer=NULL;
 
@@ -146,7 +146,7 @@ double RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::eval_overall_s
 		sensor_model_t::observe(
 			z_pred,
 			base_pose_wrt_sensor,
-			rel_pos->pos, // Position of LM wrt its base_id
+			feat_rel_pos->pos, // Position of LM wrt its base_id
 			this->parameters.sensor
 			);
 
