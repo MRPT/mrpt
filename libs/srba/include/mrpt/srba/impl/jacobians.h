@@ -224,7 +224,7 @@ void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::compute_jacobian
 	const array_landmark_t &xji_i = jacob.sym.feat_rel_pos->pos;
 
 	// xji_l = pose_i_wrt_l (+) xji_i
-	array_landmark_t xji_l = xji_i; // 
+	array_landmark_t xji_l = xji_i; //
 	LM_TYPE::composePosePoint(xji_l, pose_i_wrt_l);
 
 	//typename landmark_traits<LM_TYPE>::point_t xji_l;
@@ -276,7 +276,7 @@ void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::compute_jacobian
 	Eigen::Matrix<double,OBS_DIMS,LM_DIMS>  dh_dx;
 
 	// Converts a point relative to the robot coordinate frame (P) into a point relative to the sensor (RES = P \ominus POSE_IN_ROBOT )
-	RBA_OPTIONS::sensor_pose_on_robot_t::point_robot2sensor<LM_TYPE,array_landmark_t>(xji_l,xji_l,this->parameters.sensor_pose );
+	RBA_OPTIONS::sensor_pose_on_robot_t::template point_robot2sensor<LM_TYPE,array_landmark_t>(xji_l,xji_l,this->parameters.sensor_pose );
 
 	// Invoke sensor model:
 	if (!sensor_model_t::eval_jacob_dh_dx(dh_dx,xji_l, this->parameters.sensor))
@@ -643,9 +643,9 @@ void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::compute_jacobian
 	//const TPoint3D & xji_i = jacob.sym.feat_rel_pos->pos;
 	//const typename landmark_traits<LM_TYPE>::point_t xji_i = jacob.sym.feat_rel_pos->getAsRelativeEuclideanLocation();
 	const array_landmark_t &xji_i = jacob.sym.feat_rel_pos->pos;
-	
+
 	//typename landmark_traits<LM_TYPE>::point_t xji_l;
-	array_landmark_t xji_l = xji_i; // 
+	array_landmark_t xji_l = xji_i; //
 
 	if (rel_pose_base_from_obs!=NULL)
 	{
@@ -690,7 +690,7 @@ void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::compute_jacobian
 	Eigen::Matrix<double,OBS_DIMS,LM_DIMS>  dh_dx;
 
 	// Converts a point relative to the robot coordinate frame (P) into a point relative to the sensor (RES = P \ominus POSE_IN_ROBOT )
-	RBA_OPTIONS::sensor_pose_on_robot_t::point_robot2sensor<LM_TYPE,array_landmark_t>(xji_l,xji_l,this->parameters.sensor_pose );
+	RBA_OPTIONS::sensor_pose_on_robot_t::template point_robot2sensor<LM_TYPE,array_landmark_t>(xji_l,xji_l,this->parameters.sensor_pose );
 
 	// Invoke sensor model:
 	if (!sensor_model_t::eval_jacob_dh_dx(dh_dx,xji_l, this->parameters.sensor))
