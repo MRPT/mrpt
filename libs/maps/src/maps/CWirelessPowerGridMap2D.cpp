@@ -178,6 +178,8 @@ bool  CWirelessPowerGridMap2D::internal_insertObservation(
 				case mrKernelDMV:          insertObservation_KernelDM_DMV(sensorReading,sensorPose, true); break;
 				case mrKalmanFilter:       insertObservation_KF(sensorReading,sensorPose); break;
 				case mrKalmanApproximate:  insertObservation_KF2(sensorReading,sensorPose);
+			default:
+				THROW_EXCEPTION("insertObservation: Unsupported value in m_mapType")
 			};
 
 	//	} // for each e-nose obs.

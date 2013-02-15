@@ -336,7 +336,7 @@ namespace slam
 
 		/** @name Auxiliary vars for GMRF method
 		    @{ */
-		std::vector<std::map<size_t,double>> H_vm;	// A vector of maps to store the contents of H
+		std::vector<std::map<size_t,double> > H_vm;	// A vector of maps to store the contents of H
 		Eigen::VectorXd g;							// Gradient vector
 		size_t nConsFixed;							// L
 		size_t nConsObs;							// M
@@ -345,11 +345,11 @@ namespace slam
 
 		struct TobservationGMRF
 		{
-			float	obsValue;			
+			float	obsValue;
 			float	Lambda;
 		};
-		
-		std::vector<std::vector<TobservationGMRF>> activeObs;		//Vector with the active observations and their respective Information
+
+		std::vector<std::vector<TobservationGMRF> > activeObs;		//Vector with the active observations and their respective Information
 
 
 		/** @} */
