@@ -78,6 +78,7 @@ CRandomFieldGridMap2D::CRandomFieldGridMap2D(
 		m_average_normreadings_mean(0),
 		m_average_normreadings_var(0),
 		m_average_normreadings_count(0)
+		
 {
 	// We can't set "m_insertOptions_common" here via "getCommonInsertOptions()" since
 	//  it's a pure virtual method and we're at the constructor.
@@ -219,6 +220,124 @@ void  CRandomFieldGridMap2D::internal_clear()
 			//printf("[CRandomFieldGridMap2D::clear] %ux%u cells done in %.03fms\n", unsigned(m_size_x),unsigned(m_size_y),1000*tictac.Tac());
 		}
 		break;
+		
+	case mrGMRF:
+		{
+			CTicTac	tictac;
+			tictac.Tic();
+
+			printf("[CRandomFieldGridMap2D::clear] Generating initial Cell Constraints\n");
+			
+			// Set the grid to initial values:
+			TRandomFieldCell	def(0,0);		// mean, std
+			fill( def );
+			
+			//Set initial restrictions: L "cell Constraints" + 0 "Observations constraints"
+			const uint16_t Gsize = m_insertOptions_common->GMRF_constraintsSize;
+			const uint16_t Gside = round((Gsize-1)/2);
+			const float Gsigma = m_insertOptions_common->GMRF_constraintsSigma;
+			gauss_val.resize(Gside);
+			const size_t N = m_map.size();
+
+			// Weigths of the constratints
+			for (uint16_t i=1;i<=Gside;i++)
+			{
+					gauss_val[i-1] = exp( -0.5 *i /Gsigma );		//Fixed constraints are modeled as Gaussian
+			}
+
+			//Determine the number of Initial constraints --> L+M
+			 nConsFixed = 0;	// L
+			 nConsObs = 0;		// M			
+
+			for (size_t j=0; j<N; j++)
+			{
+				//Get (row(x), col(y))
+				int		cx = ( j % m_size_x );		// [0, m_size_x-1]
+				int		cy = ( j / m_size_x );		// [0, m_size_y-1]
+
+				//Determine the Number of restrictions of the current cell j
+				//Determine num of columns out of the gridmap
+				size_t outc_left = max( 0 , Gside-cx );
+				size_t outc_right = max(int (0) , int (Gside-(m_size_x-cx-1)) );
+				size_t outc = outc_left + outc_right;
+				//Determine num of rows out of the gridmap
+				size_t outr_down = max( 0 , Gside-(cy) );
+				size_t outr_up = max(int (0) , int (Gside-(m_size_y-cy-1)) );
+				size_t outr = outr_up + outr_down;
+
+				nConsFixed = nConsFixed + (Gsize - outc -1) + (Gsize - outr -1 );   //only vertical and horizontal restrictions				
+			}
+    
+			nConstraints = nConsFixed + nConsObs;
+
+			cout << "Generating " << nConstraints << "cell constraints for a map size of N=" << N << endl;
+
+			//Reset the vector of maps (Hessian_vm), the gradient, and the vector of active observations
+			H_vm.clear();
+			H_vm.resize(N);			
+			g.resize(N);			//Initially the gradient is all 0
+			g.fill(0.0);
+			activeObs.resize(N);	//No initial Observations
+
+			// Load default values:
+			size_t count = 0;
+			for (size_t j=0; j<N; j++)
+			{
+				//Get (row(x), col(y))
+				int		cx = ( j % m_size_x );		// [0, m_size_x-1]
+				int		cy = ( j / m_size_x );		// [0, m_size_y-1]
+
+				//Determine the Number of restrictions of the current cell j
+				//Determine num of columns out of the gridmap
+				int outc_left = max( 0 , Gside-cx );
+				int outc_right = max(int (0) , int (Gside-(m_size_x-cx-1)) );
+				int outc = outc_left + outc_right;
+				//Determine num of rows out of the gridmap
+				int outr_down = max( 0 , Gside-(cy) );
+				int outr_up = max(int (0) , int (Gside-(m_size_y-cy-1)) );
+				int outr = outr_up + outr_down;
+				
+				size_t nConsFixed_j = (Gsize - outc -1) + (Gsize - outr -1 );   //only vertical and horizontal restrictions
+				
+				//Set constraints of cell j with all neighbord cells i
+				for (int kr=-(Gside-outr_down); kr<=(Gside-outr_up); kr++ )
+				{
+					for (int kc=-(Gside-outc_left); kc<=(Gside-outc_right); kc++)
+					{
+						// get index of cell i
+						size_t icx = cx + kc;
+						size_t icy = cy + kr;
+						size_t i = icx + icy*m_size_x;
+
+						if (j==i)
+						{
+							//H_ii = Nº constraints * Lambda_cell * (J_ij^2 +1)
+							std::pair<size_t,float> Hentry (j , nConsFixed_j * m_insertOptions_common->GMRF_lambdaConstraints * (square(1.0/gauss_val[abs(kr+kc)]) + 1) );
+							H_vm.at(i).insert(Hentry);
+						}
+						else
+						{
+							if (kr==0 || kc==0)      //only vertical and horizontal restrictions/constraints
+							{
+								// H_ji = 2 * Lambda_cell * J_ij
+								std::pair<size_t,float> Hentry (j , -2 * m_insertOptions_common->GMRF_lambdaConstraints * 1/gauss_val[abs(kr+kc)-1]);
+								H_vm.at(i).insert(Hentry);
+
+								//g_j = [m(j) - alpha*m(i) ]* lambda
+								g[j] += (m_map[j].gmrf_mean - m_map[i].gmrf_mean) * m_insertOptions_common->GMRF_lambdaConstraints;
+
+								count = count + 1;
+							}
+						}
+					}
+				}
+			}
+
+			cout << "		Ready in: " << tictac.Tac() << "s" << endl;
+			//Solve system and update map estimation
+			updateMapEstimation_GMRF();
+		}
+		break;
 	};
 
 }
@@ -339,7 +458,13 @@ CRandomFieldGridMap2D::TInsertionOptionsCommon::TInsertionOptionsCommon() :
 	KF_initialCellStd			( 1.0 ),		// std in normalized concentration units
 	KF_observationModelNoise	( 0.25f ),		// in normalized concentration units
 	KF_defaultCellMeanValue		( 0.25f ),
-	KF_W_size					( 4 )
+	KF_W_size					( 4 ),
+
+	GMRF_lambdaConstraints		( 0.01f ),		// [GMRF model] The information (Lambda) of fixed map constraints
+	GMRF_lambdaObs				( 10.0f ),		// [GMRF model] The initial information (Lambda) of each observation (this information will decrease with time)
+	GMRF_lambdaObsLoss			( 1.0f ),		//!< The loss of information of the observations with each iteration
+	GMRF_constraintsSize		( 3	),			// [GMRF model] The size (cells) of the Gaussian window to impose fixed restrictions between cells.
+	GMRF_constraintsSigma		( 4.0f )  		// [GMRF model] The sigma of the Gaussian window to impose fixed restrictions between cells.
 {
 }
 
@@ -352,12 +477,19 @@ void  CRandomFieldGridMap2D::TInsertionOptionsCommon::internal_dumpToTextStream_
 	out.printf("cutoffRadius                            = %f\n", cutoffRadius);
 	out.printf("R_min                                   = %f\n", R_min);
 	out.printf("R_max                                   = %f\n", R_max);
+	out.printf("dm_sigma_omega	                        = %f\n", dm_sigma_omega);
+
 	out.printf("KF_covSigma                             = %f\n", KF_covSigma);
 	out.printf("KF_initialCellStd                       = %f\n", KF_initialCellStd);
 	out.printf("KF_observationModelNoise                = %f\n", KF_observationModelNoise);
 	out.printf("KF_defaultCellMeanValue                 = %f\n", KF_defaultCellMeanValue);
-	out.printf("KF_W_size                               = %u\n", (unsigned)KF_W_size);
-	out.printf("dm_sigma_omega	                        = %f\n", dm_sigma_omega);
+	out.printf("KF_W_size                               = %u\n", (unsigned)KF_W_size);	
+
+	out.printf("GMRF_lambdaConstraints                  = %f\n", GMRF_lambdaConstraints);
+	out.printf("GMRF_lambdaObs	                        = %f\n", GMRF_lambdaObs);
+	out.printf("GMRF_lambdaObsLoss                      = %f\n", GMRF_lambdaObs);
+	out.printf("GMRF_constraintsSize                    = %u\n", (unsigned)GMRF_constraintsSize);
+	out.printf("GMRF_constraintsSigma	                = %f\n", GMRF_constraintsSigma);
 }
 
 /*---------------------------------------------------------------
@@ -371,12 +503,19 @@ void  CRandomFieldGridMap2D::TInsertionOptionsCommon::internal_loadFromConfigFil
 	cutoffRadius			= iniFile.read_float(section.c_str(),"cutoffRadius",cutoffRadius);
 	R_min					= iniFile.read_float(section.c_str(),"R_min",R_min);
 	R_max					= iniFile.read_float(section.c_str(),"R_max",R_max);
+	MRPT_LOAD_CONFIG_VAR(dm_sigma_omega, double,   iniFile, section );
+
 	KF_covSigma				= iniFile.read_float(section.c_str(),"KF_covSigma",KF_covSigma);
 	KF_initialCellStd		= iniFile.read_float(section.c_str(),"KF_initialCellStd",KF_initialCellStd);
 	KF_observationModelNoise= iniFile.read_float(section.c_str(),"KF_observationModelNoise",KF_observationModelNoise);
 	KF_defaultCellMeanValue = iniFile.read_float(section.c_str(),"KF_defaultCellMeanValue",KF_defaultCellMeanValue);
 	MRPT_LOAD_CONFIG_VAR(KF_W_size, int,   iniFile, section );
-	MRPT_LOAD_CONFIG_VAR(dm_sigma_omega, double,   iniFile, section );
+	
+	GMRF_lambdaConstraints	= iniFile.read_float(section.c_str(),"GMRF_lambdaConstraints",GMRF_lambdaConstraints);
+	GMRF_lambdaObs			= iniFile.read_float(section.c_str(),"GMRF_lambdaObs",GMRF_lambdaObs);
+	GMRF_lambdaObsLoss		= iniFile.read_float(section.c_str(),"GMRF_lambdaObsLoss",GMRF_lambdaObsLoss);
+	GMRF_constraintsSigma	= iniFile.read_float(section.c_str(),"GMRF_constraintsSigma",GMRF_constraintsSigma);
+	MRPT_LOAD_CONFIG_VAR(GMRF_constraintsSize, int,   iniFile, section );
 }
 
 
@@ -427,6 +566,9 @@ void  CRandomFieldGridMap2D::getAsBitmapFile(mrpt::utils::CImage &out_img) const
 			case mrKalmanFilter:
 			case mrKalmanApproximate:
 				c = cell->kf_mean;
+				break;
+			case mrGMRF:
+				c = cell->gmrf_mean;
 				break;
 
 			default:
@@ -909,16 +1051,12 @@ void  CRandomFieldGridMap2D::saveMetricMapRepresentationToFile(
 			all_vars.saveToTextFile( filNamePrefix + std::string("_var.txt"), MATRIX_FORMAT_FIXED );
 	}
 
-	if ( m_mapType == mrKalmanApproximate )
-	{
-		m_stackedCov.saveToTextFile( filNamePrefix + std::string("_mean_compressed_cov.txt"), MATRIX_FORMAT_FIXED );
-	}
-
+	
 	if ( m_mapType == mrKalmanFilter || m_mapType == mrKalmanApproximate )
 	{
 		recoverMeanAndCov();
 
-		// Save the mean matrix:
+		// Save the mean and std matrix:
 		CMatrix	MEAN( m_size_y,m_size_x);
 		CMatrix	STDs( m_size_y, m_size_x );
 
@@ -931,7 +1069,11 @@ void  CRandomFieldGridMap2D::saveMetricMapRepresentationToFile(
 
 		MEAN.saveToTextFile( filNamePrefix + std::string("_mean.txt"), MATRIX_FORMAT_FIXED );
 		STDs.saveToTextFile( filNamePrefix + std::string("_cells_std.txt"), MATRIX_FORMAT_FIXED );
-
+		
+		if ( m_mapType == mrKalmanApproximate )
+			{
+				m_stackedCov.saveToTextFile( filNamePrefix + std::string("_mean_compressed_cov.txt"), MATRIX_FORMAT_FIXED );
+			}
 		if (m_mapType == mrKalmanFilter)
 		{
 			// Save the covariance matrix:
@@ -945,6 +1087,25 @@ void  CRandomFieldGridMap2D::saveMetricMapRepresentationToFile(
 
 		// Save the 3D graphs:
 		saveAsMatlab3DGraph( filNamePrefix + std::string("_3D.m") );
+	}
+
+	if (m_mapType == mrGMRF)
+	{
+		// Save the mean and std matrix:
+		CMatrix	MEAN( m_size_y, m_size_x );
+		CMatrix	STDs( m_size_y, m_size_x );
+
+		for (size_t i=0; i<m_size_y; i++)
+		{
+			for (size_t j=0; j<m_size_x; j++)
+			{
+				MEAN(i,j) = cellByIndex(j,i)->gmrf_mean;
+				STDs(i,j) = cellByIndex(j,i)->gmrf_std;
+			}
+		}
+
+		MEAN.saveToTextFile( filNamePrefix + std::string("_mean.txt"), MATRIX_FORMAT_FIXED );
+		STDs.saveToTextFile( filNamePrefix + std::string("_cells_std.txt"), MATRIX_FORMAT_FIXED );
 	}
 
 }
@@ -1096,12 +1257,12 @@ void  CRandomFieldGridMap2D::getAs3DObject( mrpt::opengl::CSetOfObjectsPtr	&outO
 /*---------------------------------------------------------------
 						getAs3DObject
 ---------------------------------------------------------------*/
-void  CRandomFieldGridMap2D::getAs3DObject( mrpt::opengl::CSetOfObjectsPtr	&meanObj, mrpt::opengl::CSetOfObjectsPtr	&varObj ) const
+void  CRandomFieldGridMap2D::getAs3DObject( mrpt::opengl::CSetOfObjectsPtr	&meanObj, mrpt::opengl::CSetOfObjectsPtr &varObj ) const
 {
 	if (m_disableSaveAs3DObject)
 		return;
 
-	recoverMeanAndCov();
+	recoverMeanAndCov();		//Only works for KF2 method
 
 	opengl::CSetOfTriangles::TTriangle		triag;
 
@@ -1121,6 +1282,7 @@ void  CRandomFieldGridMap2D::getAs3DObject( mrpt::opengl::CSetOfObjectsPtr	&mean
 	{
 	case mrKalmanFilter:
 	case mrKalmanApproximate:
+	case mrGMRF:
 		{
 			// for Kalman models:
 			// ----------------------------------
@@ -1987,4 +2149,258 @@ void CRandomFieldGridMap2D::setMeanAndSTD( vector_double &in_means, vector_doubl
 CRandomFieldGridMap2D::TMapRepresentation	 CRandomFieldGridMap2D::getMapType()
 {
 	return m_mapType;
+}
+
+
+/*---------------------------------------------------------------
+					insertObservation_GMRF
+  ---------------------------------------------------------------*/
+void CRandomFieldGridMap2D::insertObservation_GMRF(	
+	float normReading, 
+	const CPose3D &sensorPose_ )
+{
+
+	try{
+		const TPose3D sensorPose= TPose3D(sensorPose_);
+		const TPose2D sensorPose2D = TPose2D( sensorPose );		
+		const size_t N = m_map.size();
+	
+		//Get index of observed cell
+		const int			cellIdx = xy2idx( sensorPose.x, sensorPose.y );
+		TRandomFieldCell	*cell = cellByPos( sensorPose.x, sensorPose.y );
+		ASSERT_(cell!=NULL);
+	
+		if (true)
+		{
+			// Insert observation in the vector of Active Observations
+			TobservationGMRF new_obs;
+			new_obs.obsValue = normReading;
+			new_obs.Lambda = m_insertOptions_common->GMRF_lambdaObs;
+			activeObs[cellIdx].push_back(new_obs);
+		}
+		//display active Observations (DEBUG)		
+		/*size_t num_act_obs = 0;
+		cout << endl;
+		cout << "Map: " << m_map.size() << "cells (" << m_size_x << "x" << m_size_y << ")"<< endl;
+		for (size_t j=0; j<activeObs.size(); j++)
+		{
+			num_act_obs += activeObs[j].size();
+			std::vector<TobservationGMRF>::iterator it;			
+			for (it = activeObs[j].begin(); it !=activeObs[j].end(); ++it)
+				cout << endl << "Obs Cell: "<< j << " Value: " << it->obsValue << " Lambda: " << it->Lambda << endl;
+		}
+		cout << num_act_obs << " Acive Obs" << endl;*/
+		
+	}catch(std::exception e){
+		cout << "Exception while Inserting new Observation: "  << e.what() << endl;
+	}
+
+	//Solve system and update map estimation
+	updateMapEstimation_GMRF();
+}
+
+
+/*---------------------------------------------------------------
+					updateMapEstimation_GMRF
+  ---------------------------------------------------------------*/
+void CRandomFieldGridMap2D::updateMapEstimation_GMRF()
+{
+	size_t N = m_map.size();
+	const uint16_t Gsize = m_insertOptions_common->GMRF_constraintsSize;
+	const uint16_t Gside = round((Gsize-1)/2);
+	const float Gsigma = m_insertOptions_common->GMRF_constraintsSigma;	
+
+	CTicTac tictac;
+	tictac.Tic();
+
+	// Build Sparse Hessian Matrix based on H_vm vector of maps
+	Eigen::SparseMatrix<double> Hsparse(N,N);				// declares a column-major sparse matrix type of float
+	Hsparse.reserve(Eigen::VectorXi::Constant(N,5));		// Reserve 5 slots for each column	
+	for (size_t j=0; j<N; j++)								// cols
+	{
+		for (std::map<size_t,double>::iterator it=H_vm[j].begin(); it!=H_vm[j].end(); ++it)
+		{
+			
+			if (it->first == j)								//Diagonal + Observations
+			{
+				//Sum the information of all observations on cell j
+				std::vector<TobservationGMRF>::iterator ito;
+				float Lambda_obs_j = 0.0;
+				for (ito = activeObs[j].begin(); ito !=activeObs[j].end(); ++ito)
+					Lambda_obs_j += ito->Lambda;
+
+				Hsparse.insert(it->first,j) = (it->second) + Lambda_obs_j;
+			}
+			else //if (it->first > j )						//(only lower triangular)
+				Hsparse.insert(it->first,j) = it->second;
+		}
+	}
+	Hsparse.makeCompressed();	
+	cout << "		Hessian in: " << tictac.Tac() << "s" << endl;
+	tictac.Tic();
+
+	// Reset and Built Gradient Vector	
+	g.setZero();
+	for (size_t j=0; j<N; j++)
+	{
+		//A- Gradient of Observations contraints 
+			std::vector<TobservationGMRF>::iterator ito;
+			for (ito = activeObs[j].begin(); ito !=activeObs[j].end(); ++ito)
+				g[j] += ((m_map[j].gmrf_mean - ito->obsValue) * ito->Lambda);
+
+		//B- Gradient of Cell constraints
+			int		cx = ( j % m_size_x );		// [0, m_size_x-1]
+			int		cy = ( j / m_size_x );		// [0, m_size_y-1]
+
+			//Determine num of columns out of the gridmap
+			int outc_left = max( 0 , Gside-cx );
+			int outc_right = max(int (0) , int (Gside-(m_size_x-cx-1)) );
+			int outc = outc_left + outc_right;
+			//Determine num of rows out of the gridmap
+			int outr_down = max( 0 , Gside-(cy) );
+			int outr_up = max(int (0) , int (Gside-(m_size_y-cy-1)) );
+			int outr = outr_up + outr_down;
+				
+			//Gradients between cell j and all neighbord cells i that have constraints
+			for (int kr=-(Gside-outr_down); kr<=(Gside-outr_up); kr++ )
+			{
+				for (int kc=-(Gside-outc_left); kc<=(Gside-outc_right); kc++)
+				{
+					// get index of cell i
+					size_t icx = cx + kc;
+					size_t icy = cy + kr;
+					size_t i = icx + icy*m_size_x;
+
+					if (j!=i)
+					{	
+						if (kr==0 || kc==0)      //only vertical and horizontal restrictions/constraints
+						{
+							//Resvisar!!
+							g[j] += ( m_map[j].gmrf_mean - (m_map[i].gmrf_mean * gauss_val[abs(kr+kc)-1])) * m_insertOptions_common->GMRF_lambdaConstraints;
+						}
+					}
+				}
+			}
+	}
+	cout << "		Gradient in: " << tictac.Tac() << "s" << endl;
+	tictac.Tic();
+
+	//Cholesky Factorization of Hessian --> Realmente se hace: chol( P * H * inv(P) )
+	Eigen::SimplicialLLT< Eigen::SparseMatrix <double> > solver;
+	solver.compute(Hsparse);
+	// Solve System:    m = m + H\(-g);
+	Eigen::VectorXd m_inc = solver.solve(-g);
+
+	cout << "		Solved in: " << tictac.Tac() << "s" << endl;	
+	tictac.Tic();		
+	
+	// VARIANCE SIGMA = inv(P) * inv( P*H*inv(P) ) * P
+	//Get triangular supperior P*H*inv(P) = UT' * UT = P * R'*R * inv(P) 	
+	Eigen::SparseMatrix<double> UT = solver.matrixU();
+	Eigen::SparseMatrix<double> Sigma(N,N);								//Variance Matrix
+
+	//Apply custom equations to obtain the inverse -> inv( P*H*inv(P) )
+	for (int l=N-1; l>=0; l--)
+	{
+		//Computes variances in the inferior submatrix of "l"
+		double subSigmas = 0.0;
+		for( size_t j=l+1; j<N; j++)
+		{
+			if (UT.coeff(l,j) != 0)
+			{
+				//Compute off-diagonal variances Sigma(j,l) = Sigma(l,j);
+				size_t jd, ld;
+				if(j<l)	
+				{
+					jd = j;
+					ld = l;
+				}else{
+					jd = l;
+					ld = j;
+				}
+				
+				//SUM 1
+				double sum = 0.0;
+				for(size_t i=jd+1; i<=ld; i++)
+				{
+					if( UT.coeff(jd,i) !=0 )
+					{
+						sum += UT.coeff(jd,i) * Sigma.coeff(i,ld);
+					}
+				}
+				//SUM 2				
+				for(size_t i=ld+1; i<N; ++i)
+				{
+					if( UT.coeff(jd,i) !=0 )
+					{
+						sum += UT.coeff(jd,i) * Sigma.coeff(ld,i);
+					}
+				}
+				//Save off-diagonal variances
+				Sigma.insert(jd,ld) = ( -sum/UT.coeff(jd,jd) );
+				Sigma.insert(ld,jd) = Sigma.coeff(jd,ld);
+				subSigmas += UT.coeff(l,j) * Sigma.coeff(j,l);
+			}
+		}
+
+		Sigma.insert(l,l) = (1/UT.coeff(l,l)) * ( 1/UT.coeff(l,l) - subSigmas );		
+	}
+
+	//Get the real Variance Matrix. Undo permutation
+	Sigma = solver.permutationPinv() * Sigma * solver.permutationP();
+
+	cout << "		Variance in: " << tictac.Tac() << "s" << endl;	
+	tictac.Tic();
+
+
+	// Update Mean-Variance and force (0 < m_map[i].mean < 1)
+	for (size_t j=0; j<N; j++)
+	{
+		m_map[j].gmrf_std = sqrt(Sigma.coeff(j,j));
+		m_map[j].gmrf_mean += m_inc[j];
+		if (m_map[j].gmrf_mean >1) m_map[j].gmrf_mean = 1.0;
+		if (m_map[j].gmrf_mean <0) m_map[j].gmrf_mean = 0.0;
+	}
+
+	// Update Information/Strength of Active Observations	
+	for (size_t j=0; j<activeObs.size(); j++)
+	{
+		std::vector<TobservationGMRF>::iterator ito = activeObs[j].begin();
+		while ( ito!=activeObs[j].end() )
+		{
+			ito->Lambda -= m_insertOptions_common->GMRF_lambdaObsLoss;
+			if (ito->Lambda <= 0.0) 
+				ito = activeObs[j].erase(ito);
+			else
+				ito++;			
+		}
+	}
+
+	
+	/* //Save Hessian matrix to text file
+	Eigen::MatrixXd H = Hsparse.toDense();
+	H.saveToTextFile("_Hessian_Matrix_GMRF.txt");
+	UT.toDense().saveToTextFile("_UT_GMRF.txt");
+	solver.permutationP().toDenseMatrix().saveToTextFile("_P_GMRF.txt");
+	solver.permutationPinv().toDenseMatrix().saveToTextFile("_Pinv_GMRF.txt");
+	
+	//Save Variance matrix to text file
+	Sigma.toDense().saveToTextFile("_Var_GMRF.txt");*/
+
+	
+	//Sigma.toDense().saveToTextFile("_Sigma_GMRF.txt");
+
+	//Hsparse = solver.permutationP() * Hsparse * solver.permutationPinv();
+	//Hsparse.toDense().saveToTextFile("_PHPinv_GMRF.txt");
+
+	//Save gradient vector
+	//g.saveToTextFile("_gradient_vector_GMRF.txt");
+	//
+	////Save map
+	//Eigen::VectorXd mymap;
+	//mymap.resize(N);
+	//m_inc.saveToTextFile("_m_inc_GMRF.txt");
+	//for (size_t i=0; i<N; i++)
+	//	mymap[i] = m_map[i].gmrf_mean;
+	//mymap.saveToTextFile("_meanMap_GMRF.txt");
 }

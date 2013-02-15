@@ -43,6 +43,8 @@
 #include <mrpt/utils/CLoadableOptions.h>
 #include <mrpt/slam/CMetricMap.h>
 
+#include <Eigen/Sparse>
+
 #include <mrpt/maps/link_pragmas.h>
 
 namespace mrpt
@@ -82,14 +84,16 @@ namespace slam
 
 		union
 		{
-			double kf_mean; //!< [KF-methods only] The mean value of this cell
-			double dm_mean; //!< [Kernel-methods only] The cumulative weighted readings of this cell
-
+			double kf_mean;		//!< [KF-methods only] The mean value of this cell
+			double dm_mean;		//!< [Kernel-methods only] The cumulative weighted readings of this cell
+			double gmrf_mean;	//!< [GMRF only] The mean value of this cell
 		};
+
 		union
 		{
 			double kf_std;    //!< [KF-methods only] The standard deviation value of this cell
 			double dm_mean_w; //!< [Kernel-methods only] The cumulative weights (concentration = alpha * dm_mean / dm_mean_w + (1-alpha)*r0 )
+			double gmrf_std;
 		};
 
 		double dmv_var_mean;   //!< [Kernel DM-V only] The cumulative weighted variance of this cell
@@ -148,7 +152,8 @@ namespace slam
 			mrAchim = 0,      // Another alias for "mrKernelDM", for backward compatibility
 			mrKalmanFilter,
 			mrKalmanApproximate,
-			mrKernelDMV			
+			mrKernelDMV,
+			mrGMRF
 		};
 
 		/** Constructor
@@ -215,6 +220,15 @@ namespace slam
 			float	KF_observationModelNoise;	//!< The sensor model noise (in normalized concentration units).
 			float	KF_defaultCellMeanValue;	//!< The default value for the mean of cells' concentration.
 			uint16_t	KF_W_size;	//!< [mrKalmanApproximate] The size of the window of neighbor cells.
+			/** @} */
+
+			/** @name Gaussian Markov Random Fields methods (mrGMRF)
+			    @{ */
+			float		GMRF_lambdaConstraints;	//!< The information (Lambda) of fixed map constraints
+			float		GMRF_lambdaObs;			//!< The initial information (Lambda) of each observation (this information will decrease with time)
+			float		GMRF_lambdaObsLoss;		//!< The loss of information of the observations with each iteration
+			uint16_t	GMRF_constraintsSize;	//!< The size of the Gaussian window to impose fixed restrictions between cells.
+			float		GMRF_constraintsSigma;  //!< The sigma of the Gaussian window to impose fixed restrictions between cells.
 			/** @} */
 		};
 
@@ -320,6 +334,26 @@ namespace slam
 		size_t              m_average_normreadings_count;
 		/** @} */
 
+		/** @name Auxiliary vars for GMRF method
+		    @{ */
+		std::vector<std::map<size_t,double>> H_vm;	// A vector of maps to store the contents of H
+		Eigen::VectorXd g;							// Gradient vector
+		size_t nConsFixed;							// L
+		size_t nConsObs;							// M
+		size_t nConstraints;						// L+M
+		std::vector<float> gauss_val;				// For Weigths of cell constraints
+
+		struct TobservationGMRF
+		{
+			float	obsValue;			
+			float	Lambda;
+		};
+		
+		std::vector<std::vector<TobservationGMRF>> activeObs;		//Vector with the active observations and their respective Information
+
+
+		/** @} */
+
 		/** The implementation of "insertObservation" for Achim Lilienthal's map models DM & DM+V.
 		  * \param normReading Is a [0,1] normalized concentration reading.
 		  * \param sensorPose Is the sensor pose on the robot
@@ -345,6 +379,17 @@ namespace slam
 		void  insertObservation_KF2(
 			float			normReading,
 			const CPose3D	&sensorPose );
+
+		/** The implementation of "insertObservation" for the Gaussian Markov Random Field map model.
+		  * \param normReading Is a [0,1] normalized concentration reading.
+		  * \param sensorPose Is the sensor pose
+		  */
+		void  insertObservation_GMRF(
+			float			normReading,
+			const CPose3D	&sensorPose );
+
+		/** solves the minimum quadratic system to determine the new concentration of each cell */
+		void  updateMapEstimation_GMRF();
 
 		/** Computes the average cell concentration, or the overall average value if it has never been observed  */
 		double computeMeanCellValue_DM_DMV (const TRandomFieldCell *cell ) const;
@@ -379,6 +424,7 @@ namespace slam
 				m_map.insert(slam::CRandomFieldGridMap2D::mrKalmanFilter,      "mrKalmanFilter");
 				m_map.insert(slam::CRandomFieldGridMap2D::mrKalmanApproximate, "mrKalmanApproximate");
 				m_map.insert(slam::CRandomFieldGridMap2D::mrKernelDMV,         "mrKernelDMV");
+				m_map.insert(slam::CRandomFieldGridMap2D::mrGMRF,			   "mrGMRF");
 			}
 		};
 	} // End of namespace

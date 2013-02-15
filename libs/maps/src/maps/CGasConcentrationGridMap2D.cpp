@@ -219,7 +219,8 @@ bool  CGasConcentrationGridMap2D::internal_insertObservation(
 					case mrKernelDM:           insertObservation_KernelDM_DMV(sensorReading,sensorPose, false); break;
 					case mrKernelDMV:          insertObservation_KernelDM_DMV(sensorReading,sensorPose, true); break;
 					case mrKalmanFilter:       insertObservation_KF(sensorReading,sensorPose); break;
-					case mrKalmanApproximate:  insertObservation_KF2(sensorReading,sensorPose);
+					case mrKalmanApproximate:  insertObservation_KF2(sensorReading,sensorPose);break;
+					case mrGMRF:			   insertObservation_GMRF(sensorReading,sensorPose);
 				};
 
 			} // Selected e-noseID obs.
