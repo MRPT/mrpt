@@ -129,7 +129,7 @@ namespace landmarks {
 		  * \param[in] pose The relative pose */
 		template <class POSE,class VECTOR>
 		inline static void composePosePoint(VECTOR & pt, const POSE & pose) {
-			// Not applicable
+			// Not applicable: nothing to do on "pt"
 		}
 		/** Evaluates lm_local = lm_global (-) pose
 		  * \param[in]  lm_global A vector with the landmark parameterization values in "global" coordinates

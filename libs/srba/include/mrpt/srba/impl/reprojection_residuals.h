@@ -93,15 +93,12 @@ double RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::reprojection_r
 		typename resulting_pose_t<typename RBA_OPTIONS::sensor_pose_on_robot_t,REL_POSE_DIMS>::pose_t base_pose_wrt_sensor(mrpt::poses::UNINITIALIZED_POSE);
 		RBA_OPTIONS::sensor_pose_on_robot_t::pose_robot2sensor( *base_pose_wrt_observer, base_pose_wrt_sensor, this->parameters.sensor_pose );
 
-		// Template argument=true means: relative pose of "point" wrt camera is "frame (+) point":
-		// Generate observation:
-		array_obs_t z_pred;
-		sensor_model_t::observe(z_pred,base_pose_wrt_sensor,feat_rel_pos->pos, this->parameters.sensor);
 
 		const array_obs_t & real_obs = observations[i].k2f->obs.obs_arr;
-
 		residual_t &delta = residuals[i];
-		delta = real_obs-z_pred;
+
+		// Generate observation and compare to real obs:
+		sensor_model_t::observe_error(delta,real_obs, base_pose_wrt_sensor,feat_rel_pos->pos, this->parameters.sensor);
 
 		const double sum_2 = delta.squaredNorm();
 		if (this->parameters.srba.use_robust_kernel)

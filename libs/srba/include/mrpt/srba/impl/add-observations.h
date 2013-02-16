@@ -131,7 +131,7 @@ size_t RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::add_observatio
 	// ------------------------------------
 	new_k2f_edge.obs.kf_id = observing_kf_id;
 	new_k2f_edge.obs.obs   = new_obs;
-	new_k2f_edge.obs.obs.obs_data.getAsArray(new_k2f_edge.obs.obs_arr);  // Save the observation data as an array now only once, and reuse it from now on in optimizations, etc.
+	new_k2f_edge.obs.obs.obs_data.getAsArray(new_k2f_edge.obs.obs_arr);  // Save the observation data as an array now, only once, and reuse it from now on in optimizations, etc.
 	new_k2f_edge.is_first_obs_of_unknown = is_1st_time_seen && !is_fixed;
 	new_k2f_edge.feat_has_known_rel_pos  = is_fixed;
 	new_k2f_edge.feat_rel_pos = lm_rel_pos;

@@ -89,7 +89,10 @@ void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::numeric_dh_dAp(c
 	RBA_OPTIONS::sensor_pose_on_robot_t::pose_robot2sensor( base_from_obs, base_pose_wrt_sensor, params.sensor_pose );
 
 	// Generate observation:
-	sensor_model_t::observe(y,base_pose_wrt_sensor,params.xji_i, params.sensor_params);
+	array_obs_t z_zero; 
+	z_zero.setZero();
+
+	sensor_model_t::observe_error(y,z_zero,base_pose_wrt_sensor,params.xji_i, params.sensor_params);
 }
 
 #if DEBUG_NOT_UPDATED_ENTRIES
@@ -139,7 +142,9 @@ void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::numeric_dh_df(co
 	RBA_OPTIONS::sensor_pose_on_robot_t::pose_robot2sensor( *pos_cam, base_pose_wrt_sensor, params.sensor_pose );
 
 	// Generate observation:
-	sensor_model_t::observe(y,base_pose_wrt_sensor,x_local, params.sensor_params);
+	array_obs_t z_zero; 
+	z_zero.setZero();
+	sensor_model_t::observe_error(y,z_zero,base_pose_wrt_sensor,x_local, params.sensor_params);
 }
 
 
@@ -226,9 +231,6 @@ void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::compute_jacobian
 	// xji_l = pose_i_wrt_l (+) xji_i
 	array_landmark_t xji_l = xji_i; //
 	LM_TYPE::composePosePoint(xji_l, pose_i_wrt_l);
-
-	//typename landmark_traits<LM_TYPE>::point_t xji_l;
-	//pose_i_wrt_l.composePoint(xji_i, xji_l);
 
 #if DEBUG_JACOBIANS_SUPER_VERBOSE  // Debug:
 	{
@@ -596,6 +598,90 @@ struct compute_jacobian_dAepsDx_deps<jacob_point_landmark /* Jacobian family: th
 	: public compute_jacobian_dAepsDx_deps_SE2<3 /*POINT_DIMS*/,RBA_ENGINE_T>
 {
 };
+
+// Case: SE(2) relative-poses, SE(2) poses:
+template <class RBA_ENGINE_T>
+struct compute_jacobian_dAepsDx_deps<jacob_relpose_landmark /* Jacobian family: this LM is a point */, 3 /*POINT_DIMS*/,3 /*POSE_DIMS*/,RBA_ENGINE_T>
+{
+	template <class MATRIX, class MATRIX_DH_DX,class POINT,class pose_flag_t,class JACOB_SYM_T,class K2K_EDGES_T>
+	static void eval(
+		MATRIX      & jacob,
+		const MATRIX_DH_DX  & dh_dx,
+		const bool is_inverse_edge_jacobian,
+		const POINT & xji_i,
+		const pose_flag_t * pose_d1_wrt_obs,  // "A" in handwritten notes
+		const pose_flag_t & pose_base_wrt_d1, // "D" in handwritten notes
+		const JACOB_SYM_T & jacob_sym,
+		const K2K_EDGES_T &k2k_edges
+		)
+	{
+		double Xd,Yd,PHIa;
+
+		if (!is_inverse_edge_jacobian)
+		{	// Normal formulation: unknown is pose "d+1 -> d"
+
+			Xd=pose_base_wrt_d1.pose.x();
+			Yd=pose_base_wrt_d1.pose.y();
+
+			// We need to handle the special case where "d+1"=="l", so A=Pose(0,0,0):
+			PHIa=0; // Xa, Ya: Are not really needed, since they don't appear in the Jacobian.
+			if (pose_d1_wrt_obs!=NULL)
+			{
+				// pose_d_plus_1_wrt_l  -> pose_d1_wrt_obs
+				PHIa = pose_d1_wrt_obs->pose.phi();
+			}
+		}
+		else
+		{	// Inverse formulation: unknown is pose "d -> d+1"
+
+			// Changes due to the inverse pose:
+			// D becomes D' = p_d^{d+1} (+) D
+			// and A (which is "pose_d1_wrt_obs") becomes A' = A (+) (p_d_d1)^-1
+
+			ASSERT_(jacob_sym.k2k_edge_id<k2k_edges.size())
+			const typename RBA_ENGINE_T::pose_t & p_d_d1 = k2k_edges[jacob_sym.k2k_edge_id].inv_pose;
+
+			typename RBA_ENGINE_T::pose_t pose_base_wrt_d1_prime(mrpt::poses::UNINITIALIZED_POSE);
+			pose_base_wrt_d1_prime.composeFrom( p_d_d1 , pose_base_wrt_d1.pose );
+
+			// We need to handle the special case where "d+1"=="l", so A=Pose(0,0,0):
+			const typename RBA_ENGINE_T::pose_t p_d_d1_inv = -p_d_d1;
+
+			typename RBA_ENGINE_T::pose_t A_prime = (pose_d1_wrt_obs!=NULL) ?
+				(pose_d1_wrt_obs->pose + p_d_d1_inv)
+				:
+				p_d_d1_inv;
+
+			Xd=pose_base_wrt_d1_prime.x();
+			Yd=pose_base_wrt_d1_prime.y();
+
+			// We need to handle the special case where "d+1"=="l", so A=Pose(0,0,0):
+			PHIa=A_prime.phi();
+		}
+
+		const double ccos_a = cos(PHIa), ssin_a=sin(PHIa);
+
+		Eigen::Matrix<double,3,3> dAD_dD;
+		dAD_dD(0,0)=ccos_a;  dAD_dD(0,1)=-ssin_a;  dAD_dD(0,2)=0;
+		dAD_dD(1,0)=ssin_a;  dAD_dD(1,1)= ccos_a;  dAD_dD(1,2)=0;
+		dAD_dD(2,0)=0;       dAD_dD(2,1)=0;        dAD_dD(2,2)=1;
+
+		Eigen::Matrix<double,3,3> deD_de;
+		deD_de(0,0)=1; deD_de(0,1)=0; deD_de(0,2)= -Yd;
+		deD_de(1,0)=0; deD_de(1,1)=1; deD_de(1,2)=  Xd;
+		deD_de(2,0)=0; deD_de(2,1)=0; deD_de(2,2)=  1;
+
+		// Chain rule:
+		jacob.noalias() = dh_dx * dAD_dD * deD_de;
+
+		if (is_inverse_edge_jacobian)
+		{
+			// And this comes from: d exp(-epsilon)/d epsilon = - d exp(epsilon)/d epsilon
+			jacob = -jacob;
+		}
+	}
+}; // end of "compute_jacobian_dAepsDx_deps", Case: SE(2) relative-poses, SE(2) poses:
+
 
 
 // ====================================================================

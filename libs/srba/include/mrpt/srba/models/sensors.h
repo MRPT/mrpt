@@ -65,15 +65,17 @@ namespace mrpt { namespace srba {
 		typedef OBS_T::TObservationParams               TObservationParams;
 
 
-		/** Executes the observation model:  
-		  * \param[out] out_obs The output of the predicted sensor value
+		/** Executes the observation-error model: "h(lm_pos,pose) - z_obs" 
+		  * \param[out] out_obs_err The output of the predicted sensor value
+		  * \param[in] z_obs The real observation, to be contrasted to the prediction of this sensor model
 		  * \param[in] base_pose_wrt_observer The relative pose of the observed landmark's base KF, wrt to the current sensor pose (which may be different than the observer KF pose if the sensor is not at the "robot origin").
 		  * \param[in] lm_pos The relative landmark position wrt its base KF.
 		  * \param[in] params The sensor-specific parameters.
 		  */
 		template <class POSE_T>
-		static void observe(
-			observation_traits<OBS_T>::array_obs_t              & out_obs, 
+		static void observe_error(
+			observation_traits<OBS_T>::array_obs_t              & out_obs_err, 
+			const observation_traits<OBS_T>::array_obs_t        & z_obs, 
 			const POSE_T                                        & base_pose_wrt_observer,
 			const landmark_traits<LANDMARK_T>::array_landmark_t & lm_pos,
 			const OBS_T::TObservationParams                     & params)
@@ -83,8 +85,10 @@ namespace mrpt { namespace srba {
 			ASSERT_(z!=0)
 
 			// Pinhole model:
-			out_obs[0] = params.camera_calib.cx() + params.camera_calib.fx() * x/z;
-			out_obs[1] = params.camera_calib.cy() + params.camera_calib.fy() * y/z;
+			observation_traits<OBS_T>::array_obs_t  pred_obs;  // prediction
+			pred_obs[0] = params.camera_calib.cx() + params.camera_calib.fx() * x/z;
+			pred_obs[1] = params.camera_calib.cy() + params.camera_calib.fy() * y/z;
+			out_obs_err = pred_obs - z_obs;
 		}
 
 		/** Evaluates the partial Jacobian dh_dx:
@@ -186,15 +190,17 @@ namespace mrpt { namespace srba {
 		typedef OBS_T::TObservationParams               TObservationParams;
 
 
-		/** Executes the observation model:  
-		  * \param[out] out_obs The output of the predicted sensor value
+		/** Executes the observation-error model: "h(lm_pos,pose) - z_obs" 
+		  * \param[out] out_obs_err The output of the predicted sensor value
+		  * \param[in] z_obs The real observation, to be contrasted to the prediction of this sensor model
 		  * \param[in] base_pose_wrt_observer The relative pose of the observed landmark's base KF, wrt to the current sensor pose (which may be different than the observer KF pose if the sensor is not at the "robot origin").
 		  * \param[in] lm_pos The relative landmark position wrt its base KF.
 		  * \param[in] params The sensor-specific parameters.
 		  */
 		template <class POSE_T>
-		static void observe(
-			observation_traits<OBS_T>::array_obs_t              & out_obs, 
+		static void observe_error(
+			observation_traits<OBS_T>::array_obs_t              & out_obs_err, 
+			const observation_traits<OBS_T>::array_obs_t        & z_obs, 
 			const POSE_T                                        & base_pose_wrt_observer,
 			const landmark_traits<LANDMARK_T>::array_landmark_t & lm_pos,
 			const OBS_T::TObservationParams                     & params)
@@ -203,10 +209,11 @@ namespace mrpt { namespace srba {
 			base_pose_wrt_observer.composePoint(lm_pos[0],lm_pos[1],lm_pos[2], lx,ly,lz);
 			ASSERT_(lz!=0)
 
+			observation_traits<OBS_T>::array_obs_t  pred_obs;  // prediction
 			// Pinhole model: Left camera.
 			const mrpt::utils::TCamera &lc = params.camera_calib.leftCamera;
-			out_obs[0] = lc.cx() + lc.fx() * lx/lz;
-			out_obs[1] = lc.cy() + lc.fy() * ly/lz;
+			pred_obs[0] = lc.cx() + lc.fx() * lx/lz;
+			pred_obs[1] = lc.cy() + lc.fy() * ly/lz;
 
 			// Project point relative to right-camera:
 			const mrpt::poses::CPose3DQuat R2L = -params.camera_calib.rightCameraPose; // R2L = (-) Left-to-right_camera_pose
@@ -224,8 +231,9 @@ namespace mrpt { namespace srba {
 
 			// Pinhole model: Right camera.
 			const mrpt::utils::TCamera &rc = params.camera_calib.rightCamera;
-			out_obs[2] = rc.cx() + rc.fx() * rx/rz;
-			out_obs[3] = rc.cy() + rc.fy() * ry/rz;
+			pred_obs[2] = rc.cx() + rc.fx() * rx/rz;
+			pred_obs[3] = rc.cy() + rc.fy() * ry/rz;
+			out_obs_err = pred_obs - z_obs;
 		}
 
 		/** Evaluates the partial Jacobian dh_dx:
@@ -356,15 +364,17 @@ namespace mrpt { namespace srba {
 		typedef OBS_T::TObservationParams                     TObservationParams;
 
 
-		/** Executes the observation model:  
-		  * \param[out] out_obs The output of the predicted sensor value
+		/** Executes the observation-error model: "h(lm_pos,pose) - z_obs" 
+		  * \param[out] out_obs_err The output of the predicted sensor value
+		  * \param[in] z_obs The real observation, to be contrasted to the prediction of this sensor model
 		  * \param[in] base_pose_wrt_observer The relative pose of the observed landmark's base KF, wrt to the current sensor pose (which may be different than the observer KF pose if the sensor is not at the "robot origin").
 		  * \param[in] lm_pos The relative landmark position wrt its base KF.
 		  * \param[in] params The sensor-specific parameters.
 		  */
 		template <class POSE_T>
-		static void observe(
-			observation_traits<OBS_T>::array_obs_t              & out_obs, 
+		static void observe_error(
+			observation_traits<OBS_T>::array_obs_t              & out_obs_err, 
+			const observation_traits<OBS_T>::array_obs_t        & z_obs, 
 			const POSE_T                                        & base_pose_wrt_observer,
 			const landmark_traits<LANDMARK_T>::array_landmark_t & lm_pos,
 			const OBS_T::TObservationParams                     & params)
@@ -372,8 +382,10 @@ namespace mrpt { namespace srba {
 			double x,y,z; // wrt cam (local coords)
 			base_pose_wrt_observer.composePoint(lm_pos[0],lm_pos[1],lm_pos[2], x,y,z);
 
+			observation_traits<OBS_T>::array_obs_t  pred_obs;  // prediction
 			// Observations are simply the "local coords":
-			out_obs[0] = x; out_obs[1] = y; out_obs[2] = z;
+			pred_obs[0] = x; pred_obs[1] = y; pred_obs[2] = z;
+			out_obs_err = pred_obs - z_obs;
 		}
 
 		/** Evaluates the partial Jacobian dh_dx:
@@ -447,15 +459,17 @@ namespace mrpt { namespace srba {
 		typedef OBS_T::TObservationParams               TObservationParams;
 
 
-		/** Executes the observation model:  
-		  * \param[out] out_obs The output of the predicted sensor value
+		/** Executes the observation-error model: "h(lm_pos,pose) - z_obs" 
+		  * \param[out] out_obs_err The output of the predicted sensor value
+		  * \param[in] z_obs The real observation, to be contrasted to the prediction of this sensor model
 		  * \param[in] base_pose_wrt_observer The relative pose of the observed landmark's base KF, wrt to the current sensor pose (which may be different than the observer KF pose if the sensor is not at the "robot origin").
 		  * \param[in] lm_pos The relative landmark position wrt its base KF.
 		  * \param[in] params The sensor-specific parameters.
 		  */
 		template <class POSE_T>
-		static void observe(
-			observation_traits<OBS_T>::array_obs_t              & out_obs, 
+		static void observe_error(
+			observation_traits<OBS_T>::array_obs_t              & out_obs_err, 
+			const observation_traits<OBS_T>::array_obs_t        & z_obs, 
 			const POSE_T                                        & base_pose_wrt_observer,
 			const landmark_traits<LANDMARK_T>::array_landmark_t & lm_pos,
 			const OBS_T::TObservationParams                     & params)
@@ -463,8 +477,10 @@ namespace mrpt { namespace srba {
 			double x,y; // wrt cam (local coords)
 			base_pose_wrt_observer.composePoint(lm_pos[0],lm_pos[1], x,y);
 
+			observation_traits<OBS_T>::array_obs_t  pred_obs;  // prediction
 			// Observations are simply the "local coords":
-			out_obs[0] = x; out_obs[1] = y;
+			pred_obs[0] = x; pred_obs[1] = y;
+			out_obs_err = pred_obs - z_obs;
 		}
 
 		/** Evaluates the partial Jacobian dh_dx:
@@ -537,15 +553,17 @@ namespace mrpt { namespace srba {
 		typedef OBS_T::TObservationParams               TObservationParams;
 
 
-		/** Executes the observation model:  
-		  * \param[out] out_obs The output of the predicted sensor value
+		/** Executes the observation-error model: "h(lm_pos,pose) - z_obs" 
+		  * \param[out] out_obs_err The output of the predicted sensor value
+		  * \param[in] z_obs The real observation, to be contrasted to the prediction of this sensor model
 		  * \param[in] base_pose_wrt_observer The relative pose of the observed landmark's base KF, wrt to the current sensor pose (which may be different than the observer KF pose if the sensor is not at the "robot origin").
 		  * \param[in] lm_pos The relative landmark position wrt its base KF.
 		  * \param[in] params The sensor-specific parameters.
 		  */
 		template <class POSE_T>
-		static void observe(
-			observation_traits<OBS_T>::array_obs_t              & out_obs, 
+		static void observe_error(
+			observation_traits<OBS_T>::array_obs_t              & out_obs_err, 
+			const observation_traits<OBS_T>::array_obs_t        & z_obs, 
 			const POSE_T                                        & base_pose_wrt_observer,
 			const landmark_traits<LANDMARK_T>::array_landmark_t & lm_pos,
 			const OBS_T::TObservationParams                     & params)
@@ -560,9 +578,11 @@ namespace mrpt { namespace srba {
 				range,yaw,pitch // Out: spherical coords							
 				);
 
-			out_obs[0] = range;
-			out_obs[1] = yaw;
-			out_obs[2] = pitch;
+			observation_traits<OBS_T>::array_obs_t  pred_obs;  // prediction
+			pred_obs[0] = range;
+			pred_obs[1] = yaw;
+			pred_obs[2] = pitch;
+			out_obs_err = pred_obs - z_obs;
 		}
 
 		/** Evaluates the partial Jacobian dh_dx:
@@ -649,15 +669,17 @@ namespace mrpt { namespace srba {
 		typedef OBS_T::TObservationParams               TObservationParams;
 
 
-		/** Executes the observation model:  
-		  * \param[out] out_obs The output of the predicted sensor value
+		/** Executes the observation-error model: "h(lm_pos,pose) - z_obs" 
+		  * \param[out] out_obs_err The output of the predicted sensor value
+		  * \param[in] z_obs The real observation, to be contrasted to the prediction of this sensor model
 		  * \param[in] base_pose_wrt_observer The relative pose of the observed landmark's base KF, wrt to the current sensor pose (which may be different than the observer KF pose if the sensor is not at the "robot origin").
 		  * \param[in] lm_pos The relative landmark position wrt its base KF.
 		  * \param[in] params The sensor-specific parameters.
 		  */
 		template <class POSE_T>
-		static void observe(
-			observation_traits<OBS_T>::array_obs_t              & out_obs, 
+		static void observe_error(
+			observation_traits<OBS_T>::array_obs_t              & out_obs_err, 
+			const observation_traits<OBS_T>::array_obs_t        & z_obs, 
 			const POSE_T                                        & base_pose_wrt_observer,
 			const landmark_traits<LANDMARK_T>::array_landmark_t & lm_pos,
 			const OBS_T::TObservationParams                     & params)
@@ -668,8 +690,10 @@ namespace mrpt { namespace srba {
 			const double range = hypot(l.x,l.y);
 			const double yaw   = atan2(l.y,l.x);
 
-			out_obs[0] = range;
-			out_obs[1] = yaw;
+			observation_traits<OBS_T>::array_obs_t  pred_obs;  // prediction
+			pred_obs[0] = range;
+			pred_obs[1] = yaw;
+			out_obs_err = pred_obs - z_obs;
 		}
 
 		/** Evaluates the partial Jacobian dh_dx:
@@ -725,6 +749,101 @@ namespace mrpt { namespace srba {
 			// The new point, relative to the sensor:
 			out_lm_pos[0] = obs.range * chn_y;
 			out_lm_pos[1] = obs.range * shn_y;
+		}
+
+	};  // end of struct sensor_model<landmarks::Euclidean2D,observations::RangeBearing_2D>
+
+	// -------------------------------------------------------------------------------------------------------------
+
+	/** Sensor model: 2D landmarks in Euclidean coordinates + 2D Range-Bearing observations */
+	template <>
+	struct sensor_model<landmarks::RelativePoses2D,observations::RelativePoses_2D>
+	{
+		// --------------------------------------------------------------------------------
+		// Typedefs for the sake of generality in the signature of methods below:
+		//   *DONT FORGET* to change these when writing new sensor models.
+		// --------------------------------------------------------------------------------
+		typedef observations::RelativePoses_2D  OBS_T;  
+		typedef landmarks::RelativePoses2D      LANDMARK_T;
+		// --------------------------------------------------------------------------------
+
+		static const size_t OBS_DIMS = OBS_T::OBS_DIMS;
+		static const size_t LM_DIMS  = LANDMARK_T::LM_DIMS;
+		
+		typedef Eigen::Matrix<double,OBS_DIMS,LM_DIMS>  TJacobian_dh_dx;     //!< A Jacobian of the correct size for each dh_dx
+		typedef landmark_traits<LANDMARK_T>::array_landmark_t    array_landmark_t;             //!< a 2D or 3D point
+		typedef OBS_T::TObservationParams               TObservationParams;
+
+
+		/** Executes the observation-error model: "h(lm_pos,pose) - z_obs" 
+		  * \param[out] out_obs_err The output of the predicted sensor value
+		  * \param[in] z_obs The real observation, to be contrasted to the prediction of this sensor model
+		  * \param[in] base_pose_wrt_observer The relative pose of the observed landmark's base KF, wrt to the current sensor pose (which may be different than the observer KF pose if the sensor is not at the "robot origin").
+		  * \param[in] lm_pos The relative landmark position wrt its base KF.
+		  * \param[in] params The sensor-specific parameters.
+		  */
+		template <class POSE_T>
+		static void observe_error(
+			observation_traits<OBS_T>::array_obs_t              & out_obs_err, 
+			const observation_traits<OBS_T>::array_obs_t        & z_obs, 
+			const POSE_T                                        & base_pose_wrt_observer,
+			const landmark_traits<LANDMARK_T>::array_landmark_t & lm_pos,
+			const OBS_T::TObservationParams                     & params)
+		{
+			// Relative pose observation: 
+			//  OUT_OBS_ERR = pseudo-log( PREDICTED_REL_POSE \ominus Z_OBS )
+			const POSE_T h = POSE_T(z_obs[0],z_obs[1],z_obs[2]) - base_pose_wrt_observer;
+
+			out_obs_err[0] = h.x();
+			out_obs_err[1] = h.y();
+			out_obs_err[2] = h.phi();
+		}
+
+		/** Evaluates the partial Jacobian dh_dx:
+		  * \code
+		  *            d h(x')
+		  * dh_dx = -------------
+		  *             d x' 
+		  *
+		  * \endcode
+		  *  With: 
+		  *    - x' = x^{j,i}_l  The relative location of the observed landmark wrt to the robot/camera at the instant of observation. (See notation on papers)
+		  *    - h(x): Observation model: h(): landmark location --> observation
+		  * 
+		  * \param[out] dh_dx The output matrix Jacobian. Values at input are undefined (i.e. they cannot be asssumed to be zeros by default).
+		  * \param[in]  xji_l The relative location of the observed landmark wrt to the robot/camera at the instant of observation.
+		  * \param[in] sensor_params Sensor-specific parameters, as set by the user.
+		  *
+		  * \return true if the Jacobian is well-defined, false to mark it as ill-defined and ignore it during this step of the optimization
+		  */
+		static bool eval_jacob_dh_dx(
+			TJacobian_dh_dx          & dh_dx,
+			const array_landmark_t   & xji_l, 
+			const TObservationParams & sensor_params)
+		{
+			// h(x) = pseudo-log(x)
+			// with x: relative pose in SE(2)
+			dh_dx.setIdentity();
+			return true;
+		}
+
+		/** Inverse observation model for first-seen landmarks. Needed to avoid having landmarks at (0,0,0) which 
+		  *  leads to undefined Jacobians. This is invoked only when both "unknown_relative_position_init_val" and "is_fixed" are "false" 
+		  *  in an observation. 
+		  * The LM location must not be exact at all, just make sure it doesn't have an undefined Jacobian.
+		  *
+		  * \param[out] out_lm_pos The relative landmark position wrt the current observing KF.
+		  * \param[in]  obs The observation itself.
+		  * \param[in]   params The sensor-specific parameters.
+		  */
+		static void inverse_sensor_model(
+			landmark_traits<LANDMARK_T>::array_landmark_t & out_lm_pos,
+			const observation_traits<OBS_T>::obs_data_t   & obs, 
+			const OBS_T::TObservationParams               & params)
+		{
+			out_lm_pos[0] = obs.x;
+			out_lm_pos[1] = obs.y;
+			out_lm_pos[2] = obs.yaw;
 		}
 
 	};  // end of struct sensor_model<landmarks::Euclidean2D,observations::RangeBearing_2D>

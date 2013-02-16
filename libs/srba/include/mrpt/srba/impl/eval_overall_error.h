@@ -141,19 +141,18 @@ double RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::eval_overall_s
 		typename resulting_pose_t<typename RBA_OPTIONS::sensor_pose_on_robot_t,REL_POSE_DIMS>::pose_t base_pose_wrt_sensor(mrpt::poses::UNINITIALIZED_POSE);
 		RBA_OPTIONS::sensor_pose_on_robot_t::robot2sensor( *base_pose_wrt_observer, base_pose_wrt_sensor, this->parameters.sensor_pose );
 
-		// Predict observation:
-		array_obs_t z_pred;
-		sensor_model_t::observe(
-			z_pred,
+		// Stored observation:
+		const array_obs_t & z_real = itO->obs.obs_arr;
+
+		// Predict observation and compare to real obs:
+		residual_t delta;
+		sensor_model_t::observe_error(
+			delta,
+			z_real,
 			base_pose_wrt_sensor,
 			feat_rel_pos->pos, // Position of LM wrt its base_id
 			this->parameters.sensor
 			);
-
-		// Stored observation:
-		const array_obs_t & z_real = itO->obs.obs_arr;
-
-		const residual_t delta = z_real - z_pred;
 
 		sqerr+= delta.squaredNorm();
 	}
