@@ -93,6 +93,7 @@ void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::numeric_dh_dAp(c
 	z_zero.setZero();
 
 	sensor_model_t::observe_error(y,z_zero,base_pose_wrt_sensor,params.xji_i, params.sensor_params);
+	y=-y; // because the method above evals: "z_zero - h(x)"
 }
 
 #if DEBUG_NOT_UPDATED_ENTRIES
@@ -145,6 +146,7 @@ void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::numeric_dh_df(co
 	array_obs_t z_zero; 
 	z_zero.setZero();
 	sensor_model_t::observe_error(y,z_zero,base_pose_wrt_sensor,x_local, params.sensor_params);
+	y=-y; // because the method above evals: "z_zero - h(x)"
 }
 
 

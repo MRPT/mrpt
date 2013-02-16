@@ -65,7 +65,7 @@ namespace mrpt { namespace srba {
 		typedef OBS_T::TObservationParams               TObservationParams;
 
 
-		/** Executes the observation-error model: "h(lm_pos,pose) - z_obs" 
+		/** Executes the (negative) observation-error model: "-( h(lm_pos,pose) - z_obs)" 
 		  * \param[out] out_obs_err The output of the predicted sensor value
 		  * \param[in] z_obs The real observation, to be contrasted to the prediction of this sensor model
 		  * \param[in] base_pose_wrt_observer The relative pose of the observed landmark's base KF, wrt to the current sensor pose (which may be different than the observer KF pose if the sensor is not at the "robot origin").
@@ -88,7 +88,7 @@ namespace mrpt { namespace srba {
 			observation_traits<OBS_T>::array_obs_t  pred_obs;  // prediction
 			pred_obs[0] = params.camera_calib.cx() + params.camera_calib.fx() * x/z;
 			pred_obs[1] = params.camera_calib.cy() + params.camera_calib.fy() * y/z;
-			out_obs_err = pred_obs - z_obs;
+			out_obs_err = z_obs - pred_obs;
 		}
 
 		/** Evaluates the partial Jacobian dh_dx:
@@ -190,7 +190,7 @@ namespace mrpt { namespace srba {
 		typedef OBS_T::TObservationParams               TObservationParams;
 
 
-		/** Executes the observation-error model: "h(lm_pos,pose) - z_obs" 
+		/** Executes the (negative) observation-error model: "-( h(lm_pos,pose) - z_obs)" 
 		  * \param[out] out_obs_err The output of the predicted sensor value
 		  * \param[in] z_obs The real observation, to be contrasted to the prediction of this sensor model
 		  * \param[in] base_pose_wrt_observer The relative pose of the observed landmark's base KF, wrt to the current sensor pose (which may be different than the observer KF pose if the sensor is not at the "robot origin").
@@ -233,7 +233,7 @@ namespace mrpt { namespace srba {
 			const mrpt::utils::TCamera &rc = params.camera_calib.rightCamera;
 			pred_obs[2] = rc.cx() + rc.fx() * rx/rz;
 			pred_obs[3] = rc.cy() + rc.fy() * ry/rz;
-			out_obs_err = pred_obs - z_obs;
+			out_obs_err = z_obs - pred_obs;
 		}
 
 		/** Evaluates the partial Jacobian dh_dx:
@@ -364,7 +364,7 @@ namespace mrpt { namespace srba {
 		typedef OBS_T::TObservationParams                     TObservationParams;
 
 
-		/** Executes the observation-error model: "h(lm_pos,pose) - z_obs" 
+		/** Executes the (negative) observation-error model: "-( h(lm_pos,pose) - z_obs)" 
 		  * \param[out] out_obs_err The output of the predicted sensor value
 		  * \param[in] z_obs The real observation, to be contrasted to the prediction of this sensor model
 		  * \param[in] base_pose_wrt_observer The relative pose of the observed landmark's base KF, wrt to the current sensor pose (which may be different than the observer KF pose if the sensor is not at the "robot origin").
@@ -385,7 +385,7 @@ namespace mrpt { namespace srba {
 			observation_traits<OBS_T>::array_obs_t  pred_obs;  // prediction
 			// Observations are simply the "local coords":
 			pred_obs[0] = x; pred_obs[1] = y; pred_obs[2] = z;
-			out_obs_err = pred_obs - z_obs;
+			out_obs_err = z_obs - pred_obs;
 		}
 
 		/** Evaluates the partial Jacobian dh_dx:
@@ -459,7 +459,7 @@ namespace mrpt { namespace srba {
 		typedef OBS_T::TObservationParams               TObservationParams;
 
 
-		/** Executes the observation-error model: "h(lm_pos,pose) - z_obs" 
+		/** Executes the (negative) observation-error model: "-( h(lm_pos,pose) - z_obs)" 
 		  * \param[out] out_obs_err The output of the predicted sensor value
 		  * \param[in] z_obs The real observation, to be contrasted to the prediction of this sensor model
 		  * \param[in] base_pose_wrt_observer The relative pose of the observed landmark's base KF, wrt to the current sensor pose (which may be different than the observer KF pose if the sensor is not at the "robot origin").
@@ -480,7 +480,7 @@ namespace mrpt { namespace srba {
 			observation_traits<OBS_T>::array_obs_t  pred_obs;  // prediction
 			// Observations are simply the "local coords":
 			pred_obs[0] = x; pred_obs[1] = y;
-			out_obs_err = pred_obs - z_obs;
+			out_obs_err = z_obs - pred_obs;
 		}
 
 		/** Evaluates the partial Jacobian dh_dx:
@@ -553,7 +553,7 @@ namespace mrpt { namespace srba {
 		typedef OBS_T::TObservationParams               TObservationParams;
 
 
-		/** Executes the observation-error model: "h(lm_pos,pose) - z_obs" 
+		/** Executes the (negative) observation-error model: "-( h(lm_pos,pose) - z_obs)" 
 		  * \param[out] out_obs_err The output of the predicted sensor value
 		  * \param[in] z_obs The real observation, to be contrasted to the prediction of this sensor model
 		  * \param[in] base_pose_wrt_observer The relative pose of the observed landmark's base KF, wrt to the current sensor pose (which may be different than the observer KF pose if the sensor is not at the "robot origin").
@@ -582,7 +582,7 @@ namespace mrpt { namespace srba {
 			pred_obs[0] = range;
 			pred_obs[1] = yaw;
 			pred_obs[2] = pitch;
-			out_obs_err = pred_obs - z_obs;
+			out_obs_err = z_obs - pred_obs;
 		}
 
 		/** Evaluates the partial Jacobian dh_dx:
@@ -669,7 +669,7 @@ namespace mrpt { namespace srba {
 		typedef OBS_T::TObservationParams               TObservationParams;
 
 
-		/** Executes the observation-error model: "h(lm_pos,pose) - z_obs" 
+		/** Executes the (negative) observation-error model: "-( h(lm_pos,pose) - z_obs)" 
 		  * \param[out] out_obs_err The output of the predicted sensor value
 		  * \param[in] z_obs The real observation, to be contrasted to the prediction of this sensor model
 		  * \param[in] base_pose_wrt_observer The relative pose of the observed landmark's base KF, wrt to the current sensor pose (which may be different than the observer KF pose if the sensor is not at the "robot origin").
@@ -693,7 +693,7 @@ namespace mrpt { namespace srba {
 			observation_traits<OBS_T>::array_obs_t  pred_obs;  // prediction
 			pred_obs[0] = range;
 			pred_obs[1] = yaw;
-			out_obs_err = pred_obs - z_obs;
+			out_obs_err = z_obs - pred_obs;
 		}
 
 		/** Evaluates the partial Jacobian dh_dx:
@@ -775,7 +775,7 @@ namespace mrpt { namespace srba {
 		typedef OBS_T::TObservationParams               TObservationParams;
 
 
-		/** Executes the observation-error model: "h(lm_pos,pose) - z_obs" 
+		/** Executes the (negative) observation-error model: "-( h(lm_pos,pose) - z_obs)" 
 		  * \param[out] out_obs_err The output of the predicted sensor value
 		  * \param[in] z_obs The real observation, to be contrasted to the prediction of this sensor model
 		  * \param[in] base_pose_wrt_observer The relative pose of the observed landmark's base KF, wrt to the current sensor pose (which may be different than the observer KF pose if the sensor is not at the "robot origin").
@@ -791,7 +791,7 @@ namespace mrpt { namespace srba {
 			const OBS_T::TObservationParams                     & params)
 		{
 			// Relative pose observation: 
-			//  OUT_OBS_ERR = pseudo-log( PREDICTED_REL_POSE \ominus Z_OBS )
+			//  OUT_OBS_ERR = - pseudo-log( PREDICTED_REL_POSE \ominus Z_OBS )
 			const POSE_T h = POSE_T(z_obs[0],z_obs[1],z_obs[2]) - base_pose_wrt_observer;
 
 			out_obs_err[0] = h.x();
