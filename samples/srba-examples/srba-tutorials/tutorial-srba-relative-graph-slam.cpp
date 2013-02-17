@@ -51,10 +51,10 @@ struct my_srba_options
 
 typedef RBA_Problem<
 	kf2kf_poses::SE2,                // Parameterization  KF-to-KF poses
-	landmarks::RelativePoses2D,      // Parameterization of landmark positions    
+	landmarks::RelativePoses2D,      // Parameterization of landmark positions
 	observations::RelativePoses_2D,  // Type of observations
 	my_srba_options                  // Other parameters
-	> 
+	>
 	my_srba_t;
 
 // --------------------------------------------------------------------------------
@@ -97,14 +97,14 @@ basic_graph_slam_dataset_entry_t dataset[] = {
  {    16,      0,      1.58658626,      0.30349575,      0.00000000,      1.57079633,     -0.00000000,      0.00000000,      0.70710678,      0.00000000,      0.00000000,      0.70710678},
  {    16,     15,     -2.58251586,     -0.37288971,      0.00000000,      0.00000000,     -0.00000000,      0.00000000,      1.00000000,      0.00000000,      0.00000000,      0.00000000},
  {    16,      1,      1.97243380,      2.36770815,      0.00000000,      1.94479552,     -0.00000000,      0.00000000,      0.56332003,      0.00000000,      0.00000000,      0.82623879},
-};	
+};
 
 int main(int argc, char**argv)
 {
 	my_srba_t rba;     //  Create an empty RBA problem
 
 	// --------------------------------------------------------------------------------
-	// Set parameters 
+	// Set parameters
 	// --------------------------------------------------------------------------------
 	rba.setVerbosityLevel( 1 );   // 0: None; 1:Important only; 2:Verbose
 
@@ -115,10 +115,10 @@ int main(int argc, char**argv)
 	{
 		Eigen::Matrix3d ObsL;
 		ObsL.setZero();
-		ObsL(0,0) = 1/STD_NOISE_XY; // x
-		ObsL(1,1) = 1/STD_NOISE_XY; // y
-		ObsL(2,2) = 1/STD_NOISE_YAW; // phi
-		
+		ObsL(0,0) = 1/square(STD_NOISE_XY); // x
+		ObsL(1,1) = 1/square(STD_NOISE_XY); // y
+		ObsL(2,2) = 1/square(STD_NOISE_YAW); // phi
+
 		// Set:
 		rba.parameters.obs_noise.lambda = ObsL;
 	}
@@ -134,8 +134,8 @@ int main(int argc, char**argv)
 	// --------------------------------------------------------------------------------
 	// Dump parameters to console (for checking/debugging only)
 	// --------------------------------------------------------------------------------
-	//cout << "RBA parameters:\n-----------------\n";
-	//rba.parameters.dumpToConsole();
+	cout << "RBA parameters:\n-----------------\n";
+	rba.parameters.srba.dumpToConsole();
 
 #if MRPT_HAS_WXWIDGETS
 	mrpt::gui::CDisplayWindow3D win("RBA results",640,480);
@@ -152,7 +152,7 @@ int main(int argc, char**argv)
 		// Create list of observations for keyframe: "cur_kf"
 		my_srba_t::new_kf_observations_t  list_obs;
 
-		// To emulate graph-SLAM, each keyframe MUST have exactly ONE fixed "fake landmark", representing its pose: 
+		// To emulate graph-SLAM, each keyframe MUST have exactly ONE fixed "fake landmark", representing its pose:
 		// ------------------------------------------------------------------------------------------------------------
 		{
 			my_srba_t::new_kf_observation_t obs_field;
@@ -160,7 +160,7 @@ int main(int argc, char**argv)
 			obs_field.obs.feat_id = cur_kf; // Feature ID == keyframe ID
 			obs_field.obs.obs_data.x = 0;   // Landmark values are actually ignored.
 			obs_field.obs.obs_data.y = 0;
-			obs_field.obs.obs_data.yaw = 0; 
+			obs_field.obs.obs_data.yaw = 0;
 			list_obs.push_back( obs_field );
 		}
 
@@ -190,7 +190,7 @@ int main(int argc, char**argv)
 			true           // Also run local optimization?
 			);
 
-		cout << "Created KF #" << new_kf_info.kf_id 
+		cout << "Created KF #" << new_kf_info.kf_id
 			<< " | # kf-to-kf edges created:" <<  new_kf_info.created_edge_ids.size()  << endl
 			<< "Optimization error: " << new_kf_info.optimize_results.total_sqr_error_init << " -> " << new_kf_info.optimize_results.total_sqr_error_final << endl
 			<< "-------------------------------------------------------" << endl;
@@ -206,7 +206,7 @@ int main(int argc, char**argv)
 		rba.build_opengl_representation(
 			new_kf_info.kf_id ,  // Root KF: the current (latest) KF
 			opengl_options, // Rendering options
-			rba_3d  // Output scene 
+			rba_3d  // Output scene
 			);
 
 		{
@@ -222,7 +222,7 @@ int main(int argc, char**argv)
 #endif
 
 	} // end-for each dataset entry
-	
+
 
 	// --------------------------------------------------------------------------------
 	// Saving RBA graph as a DOT file:
@@ -232,6 +232,6 @@ int main(int argc, char**argv)
 	rba.save_graph_as_dot(sFil, true /* LMs=save */);
 	cout << "Done.\n";
 
-	
+
 	return 0; // All ok
 }

@@ -47,8 +47,8 @@ struct CDatasetParserTempl<mrpt::srba::observations::RelativePoses_2D> : public 
 		m_noise_std_xy(1e-3),
 		m_noise_std_yaw(1e-5)
 	{
-		if (cfg.arg_noise.isSet())
-			m_noise_std_xy=cfg.arg_noise.getValue();
+		if (cfg.arg_noise.isSet()) m_noise_std_xy=cfg.arg_noise.getValue();
+		if (cfg.arg_noise_ang.isSet()) m_noise_std_yaw=DEG2RAD(cfg.arg_noise_ang.getValue());
 	}
 
 	virtual void checkObsProperSize() const
@@ -70,10 +70,11 @@ struct CDatasetParserTempl<mrpt::srba::observations::RelativePoses_2D> : public 
 
 	void loadNoiseParamsInto( mrpt::srba::observation_noise_constant_matrix<mrpt::srba::observations::RelativePoses_2D>::parameters_t & p )
 	{
+		using mrpt::utils::square;
 		p.lambda.setZero();
-		p.lambda(0,0) = m_noise_std_xy;
-		p.lambda(1,1) = m_noise_std_xy;
-		p.lambda(2,2) = m_noise_std_yaw;
+		p.lambda(0,0) = 1.0/square(m_noise_std_xy);
+		p.lambda(1,1) = p.lambda(0,0);
+		p.lambda(2,2) = 1.0/square(m_noise_std_yaw);
 	}
 
 };

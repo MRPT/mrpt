@@ -89,6 +89,7 @@ struct RBASLAM_Params
 	TCLAP::ValueArg<string>  arg_profile_stats;
 	TCLAP::ValueArg<unsigned int> arg_profile_stats_length;
 	TCLAP::ValueArg<double> arg_noise;
+	TCLAP::ValueArg<double> arg_noise_ang;
 	TCLAP::ValueArg<unsigned int> arg_max_tree_depth;
 	TCLAP::ValueArg<unsigned int> arg_max_opt_depth;
 	TCLAP::ValueArg<unsigned int> arg_max_iters;
@@ -99,6 +100,7 @@ struct RBASLAM_Params
 	TCLAP::ValueArg<string> arg_rba_params_cfg_file;
 	TCLAP::ValueArg<string> arg_write_rba_params_cfg_file;
 	TCLAP::ValueArg<string> arg_video;
+	TCLAP::ValueArg<unsigned int> arg_gui_delay;
 	TCLAP::ValueArg<double> arg_video_fps;
 	TCLAP::SwitchArg   arg_debug_dump_cur_spantree;
 	TCLAP::ValueArg<string> arg_save_final_graph;
@@ -127,7 +129,8 @@ struct RBASLAM_Params
 		arg_gui_step_by_step("","step-by-step","If showing the gui, go step by step",cmd, false),
 		arg_profile_stats("","profile-stats","Generate profile stats to CSV files, with the given prefix",false,"","stats",cmd),
 		arg_profile_stats_length("","profile-stats-length","Length in KFs of each saved profiled segment",false,10,"",cmd),
-		arg_noise("","noise","One sigma of the AWGN to be added to every component of observations loaded from dataset (default: sensor-dependant)\n If a SRBA config is provided, it will override this value.",false,0.0,"noise_std",cmd),
+		arg_noise("","noise","One sigma of the AWGN to be added to every component of observations (images,...) or to linear components if they're mixed (default: sensor-dependant)\n If a SRBA config is provided, it will override this value.",false,0.0,"noise_std",cmd),
+		arg_noise_ang("","noise-ang","One sigma of the AWGN to be added to every angular component of observations, in degrees (default: sensor-dependant)\n If a SRBA config is provided, it will override this value.",false,0.0,"noise_std",cmd),
 		arg_max_tree_depth("","max-spanning-tree-depth","Overrides this parameter in config files",false,4,"depth",cmd),
 		arg_max_opt_depth("","max-optimize-depth","Overrides this parameter in config files",false,4,"depth",cmd),
 		arg_max_iters("","max-iters","Max. number of optimization iterations.",false,20,"",cmd),
@@ -138,6 +141,7 @@ struct RBASLAM_Params
 		arg_rba_params_cfg_file("","cfg-file-rba","Config file (*.cfg) for the RBA parameters",false,"","rba.cfg",cmd),
 		arg_write_rba_params_cfg_file("","cfg-file-rba-bootstrap","Writes an empty config file (*.cfg) for the RBA parameters and exit.",false,"","rba.cfg",cmd),
 		arg_video("","create-video","Creates a video with the animated GUI output (*.avi).",false,"","out.avi",cmd),
+		arg_gui_delay("","gui-delay","Milliseconds of delay between GUI frames. Default:0. Increase for correctly generating videos, etc.",false,-1,"",cmd),
 		arg_video_fps("","video-fps","If creating a video, its FPS (Hz).",false,30.0,"",cmd),
 		arg_debug_dump_cur_spantree("","debug-dump-cur-spantree","Dump to files the current spanning tree",cmd, false),
 		arg_save_final_graph("","save-final-graph","Save the final graph-map of KFs to a .dot file",false,"","final-map.dot",cmd),
@@ -156,12 +160,13 @@ struct RBASLAM_Params
 			cout << " --se2 --lm-2d --obs RangeBearing_2D \n";
 			cout << " --se3 --lm-3d --obs StereoCamera \n";
 			cout << " --se3 --lm-3d --obs Cartesian_3D \n";
+			cout << " --se2 --graph-slam \n";
 			throw std::runtime_error(""); // Exit
 		}
 
 		if (!arg_obs.isSet() && !arg_graph_slam.isSet())
 			throw std::runtime_error("Error: argument --obs is mandatory (in non-graph-SLAM) to select the type of observations.\nRun with --list-problems or --help to see all the options or visit http://www.mrpt.org/srba for docs and examples.\n");
-		
+
 		if (arg_obs.isSet() && arg_graph_slam.isSet())
 			throw std::runtime_error("Error: argument --obs doesn't apply to relative graph-SLAM.\nRun with --list-problems or --help to see all the options or visit http://www.mrpt.org/srba for docs and examples.\n");
 
@@ -300,11 +305,6 @@ struct RBA_Run : public RBA_Run_Base
 		rba.parameters.srba.max_error_per_obs_to_stop = 1e-8;
 		//rba.parameters.srba.feedback_user_iteration = &optimization_feedback;
 
-		// =========== Topology parameters ===========
-	//	rba.parameters.edge_creation_policy = mrpt::srba::ecpICRA2013;
-	//	rba.parameters.max_tree_depth       = 4;
-		// ===========================================
-
 		if (cfg.arg_rba_params_cfg_file.isSet() && mrpt::system::fileExists(cfg.arg_rba_params_cfg_file.getValue()))
 			rba.parameters.srba.loadFromConfigFileName(cfg.arg_rba_params_cfg_file.getValue(), "srba");
 
@@ -352,6 +352,7 @@ struct RBA_Run : public RBA_Run_Base
 		if (cfg.arg_graph_slam.isSet())
 		{
 			rba.parameters.srba.min_obs_to_loop_closure = 1;
+			rba.parameters.srba.optimize_new_edges_alone = false;
 		}
 
 		if (cfg.arg_verbose.getValue()>=1)
@@ -363,7 +364,7 @@ struct RBA_Run : public RBA_Run_Base
 		}
 
 		const unsigned int	INCREMENTAL_FRAMES_AT_ONCE  = 1;
-		const unsigned int	MAX_KNOWN_FEATS_PER_FRAME   =cfg.arg_max_known_feats_per_frame.getValue();
+		//const unsigned int	MAX_KNOWN_FEATS_PER_FRAME   =cfg.arg_max_known_feats_per_frame.getValue();
 
 		//const double REL_POS_NOISE_STD_KNOWN    = 0.0001;  // m
 		//const double REL_POS_NOISE_STD_UNKNOWN  = 0.3;  // m
@@ -437,7 +438,7 @@ struct RBA_Run : public RBA_Run_Base
 			win->captureImagesStart();
 
 		const double VIDEO_FPS =cfg.arg_video_fps.getValue();
-
+		const unsigned int GUI_DELAY_MS = cfg.arg_gui_delay.getValue();
 
 		// All LMs with known, fixed relative coordinates: this will be automatically filled-in
 		//  the first time a LM is seen, so the current frame  ID becomes its base frame.
@@ -477,7 +478,7 @@ struct RBA_Run : public RBA_Run_Base
 
 			while (obsIdx<nTotalObs && curFrameIdx<frameIdxMax)
 			{
-				size_t  nKnownFeatsInThisFrame = 0;
+				//size_t  nKnownFeatsInThisFrame = 0;
 				typename my_srba_t::new_kf_observations_t  new_obs_in_this_frame;
 
 				if (obsIdx-last_obs_idx_reported>REPORT_PROGRESS_OBS_COUNT)
@@ -492,14 +493,28 @@ struct RBA_Run : public RBA_Run_Base
 					cout.flush();
 				}
 
+				// To emulate graph-SLAM, each keyframe MUST have exactly ONE fixed "fake landmark", representing its pose:
+				// ------------------------------------------------------------------------------------------------------------
+				if (cfg.arg_graph_slam.isSet())
+				{
+					typename my_srba_t::new_kf_observation_t obs_field;
+					obs_field.is_fixed = true;
+					obs_field.obs.feat_id = next_rba_keyframe_ID; // Feature ID == keyframe ID
+					//obs_field.obs.obs_data.x = 0;   // Landmark values are actually ignored.
+					new_obs_in_this_frame.push_back( obs_field );
+				}
+
 				while (obsIdx<nTotalObs && (curFrameIdx=dataset.obs().coeff(obsIdx,0))==next_rba_keyframe_ID)
 				{
 					// Is this observation of a LM with known (i.e. FIXED) relative position?
-					bool this_feat_has_known_rel_pos = (nKnownFeatsInThisFrame<MAX_KNOWN_FEATS_PER_FRAME);
+					//bool this_feat_has_known_rel_pos = (nKnownFeatsInThisFrame<MAX_KNOWN_FEATS_PER_FRAME);
 
 					// Get observation from the specific dataset parser:
 					typename my_srba_t::new_kf_observation_t new_obs;
 					dataset.getObs(obsIdx,new_obs.obs);
+
+					new_obs.is_fixed                 = false;
+					new_obs.is_unknown_with_init_val = false;
 
 					// Already has a base ID?
 #if 0
@@ -562,17 +577,6 @@ struct RBA_Run : public RBA_Run_Base
 
 					++obsIdx; // next observation
 				} // end while
-
-				// To emulate graph-SLAM, each keyframe MUST have exactly ONE fixed "fake landmark", representing its pose: 
-				// ------------------------------------------------------------------------------------------------------------
-				if (cfg.arg_graph_slam.isSet())
-				{
-					my_srba_t::new_kf_observation_t obs_field;
-					obs_field.is_fixed = true;
-					obs_field.obs.feat_id = next_rba_keyframe_ID; // Feature ID == keyframe ID
-					//obs_field.obs.obs_data.x = 0;   // Landmark values are actually ignored.
-					new_obs_in_this_frame.push_back( obs_field );
-				}
 
 				ASSERT_(!new_obs_in_this_frame.empty())
 
@@ -703,6 +707,7 @@ struct RBA_Run : public RBA_Run_Base
 
 				win->unlockAccess3DScene();
 				win->repaint();
+				if (GUI_DELAY_MS) mrpt::system::sleep(GUI_DELAY_MS);
 			}
 
 			// Write images to video?
