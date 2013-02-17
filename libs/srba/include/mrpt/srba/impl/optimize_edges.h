@@ -443,7 +443,7 @@ void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::optimize_edges(
 
 #endif
 
-	const double MAX_LAMBDA = 1e20;
+	const double MAX_LAMBDA = this->parameters.srba.max_lambda;
 
 	// These are defined here to avoid allocatin/deallocating memory with each iteration:
 	vector<k2k_edge_t>            old_k2k_edge_unknowns;

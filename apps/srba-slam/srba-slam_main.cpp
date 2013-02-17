@@ -92,6 +92,7 @@ struct RBASLAM_Params
 	TCLAP::ValueArg<double> arg_noise_ang;
 	TCLAP::ValueArg<unsigned int> arg_max_tree_depth;
 	TCLAP::ValueArg<unsigned int> arg_max_opt_depth;
+	TCLAP::ValueArg<double> arg_max_lambda;
 	TCLAP::ValueArg<unsigned int> arg_max_iters;
 	TCLAP::ValueArg<string>       arg_edge_policy;
 	TCLAP::ValueArg<unsigned int> arg_submap_size;
@@ -133,6 +134,7 @@ struct RBASLAM_Params
 		arg_noise_ang("","noise-ang","One sigma of the AWGN to be added to every angular component of observations, in degrees (default: sensor-dependant)\n If a SRBA config is provided, it will override this value.",false,0.0,"noise_std",cmd),
 		arg_max_tree_depth("","max-spanning-tree-depth","Overrides this parameter in config files",false,4,"depth",cmd),
 		arg_max_opt_depth("","max-optimize-depth","Overrides this parameter in config files",false,4,"depth",cmd),
+		arg_max_lambda("","max-lambda","Marq-Lev. optimization: maximum lambda to stop iterating",false,1e20,"depth",cmd),
 		arg_max_iters("","max-iters","Max. number of optimization iterations.",false,20,"",cmd),
 		arg_edge_policy("","edge-policy","Policy for edge creation, as textual names of the enum TEdgeCreationPolicy",false,"ecpICRA2013","ecpOptimizeICRA2013",cmd),
 		arg_submap_size("","submap-size","Number of KFs in each 'submap' of the arc-creation policy.",false,20,"20",cmd),
@@ -335,6 +337,13 @@ struct RBA_Run : public RBA_Run_Base
 			cout << "Overriding max_optimize_depth to value: " << rba.parameters.srba.max_optimize_depth << endl;
 		}
 
+		// Override max lambda:
+		if (cfg.arg_max_lambda.isSet())
+		{
+			rba.parameters.srba.max_lambda =cfg.arg_max_lambda.getValue();
+			cout << "Overriding max_lambda to value: " << rba.parameters.srba.max_lambda << endl;
+		}
+
 		// Override max optimize depth:
 		if (cfg.arg_max_iters.isSet())
 		{
@@ -352,7 +361,7 @@ struct RBA_Run : public RBA_Run_Base
 		if (cfg.arg_graph_slam.isSet())
 		{
 			rba.parameters.srba.min_obs_to_loop_closure = 1;
-			rba.parameters.srba.optimize_new_edges_alone = false;
+			rba.parameters.srba.optimize_new_edges_alone = true;
 		}
 
 		if (cfg.arg_verbose.getValue()>=1)

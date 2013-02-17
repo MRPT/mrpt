@@ -68,21 +68,21 @@ void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::build_opengl_rep
 			frameid2pose_map_t  spantree;
 			create_complete_spanning_tree(root_keyframe,spantree, options.span_tree_max_depth );
 
-			// For each camera frame, add a 3D corner:
-			for (size_t kf_id=0;kf_id<rba_state.keyframes.size();++kf_id)
+			// For each key-frame, add a 3D corner:
+			for (typename frameid2pose_map_t::const_iterator itP = spantree.begin();itP!=spantree.end();++itP)
 			{
-				CPose3D p;
+				if (root_keyframe==itP->first) continue;
 
-				if (root_keyframe!=kf_id)
-				{
-					typename frameid2pose_map_t::const_iterator itP = spantree.find(kf_id);
-					if (itP != spantree.end())
-						p = itP->second.pose;
-				}
+				const CPose3D p = itP->second.pose;
 
-
-				mrpt::opengl::CSetOfObjectsPtr o = mrpt::opengl::stock_objects::CornerXYZSimple(0.2,2.0);
+				mrpt::opengl::CSetOfObjectsPtr o = mrpt::opengl::stock_objects::CornerXYZSimple(0.75,2.0);
 				o->setPose(p);
+				out_scene->insert(o);
+			}
+			// And a bigger one for the root:
+			{
+				mrpt::opengl::CSetOfObjectsPtr o = mrpt::opengl::stock_objects::CornerXYZSimple(1.0,4.0);
+				//o->setPose(...);  // At the origin
 				out_scene->insert(o);
 			}
 

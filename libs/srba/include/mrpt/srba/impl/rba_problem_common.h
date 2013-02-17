@@ -68,6 +68,7 @@ RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::TSRBAParameters::TSRB
 	max_iters            ( 20 ),
 	max_error_per_obs_to_stop    ( 1e-6 ),
 	max_rho              ( 10.0 ),
+	max_lambda           ( 1e20 ),
 	min_error_reduction_ratio_to_relinearize ( 0.01 ),
 	numeric_jacobians    ( false ),
 	feedback_user_iteration(NULL),
@@ -87,6 +88,8 @@ void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::TSRBAParameters:
 
 	MRPT_LOAD_CONFIG_VAR(optimize_new_edges_alone,bool,source,section)
 	MRPT_LOAD_CONFIG_VAR(use_robust_kernel,bool,source,section)
+	MRPT_LOAD_CONFIG_VAR(max_rho,double,source,section)
+	MRPT_LOAD_CONFIG_VAR(max_lambda,double,source,section)
 	MRPT_LOAD_CONFIG_VAR(kernel_param,double,source,section)
 	MRPT_LOAD_CONFIG_VAR(max_iters,uint64_t,source,section)
 	MRPT_LOAD_CONFIG_VAR(max_error_per_obs_to_stop,double,source,section)
@@ -103,10 +106,12 @@ void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::TSRBAParameters:
 	out.write(section,"submap_size",submap_size, /* text width */ 30, 30, "Max. local optimization distance");
 	out.write(section,"min_obs_to_loop_closure",min_obs_to_loop_closure, /* text width */ 30, 30, "Min. num. of covisible observations to add a loop closure edge");
 
-	
+
 	out.write(section,"optimize_new_edges_alone",optimize_new_edges_alone,  /* text width */ 30, 30, "Optimize new edges alone before optimizing the entire local area?");
 	out.write(section,"use_robust_kernel",use_robust_kernel,  /* text width */ 30, 30, "Use pseudo-Huber kernel?");
 	out.write(section,"kernel_param",kernel_param,  /* text width */ 30, 30, "robust kernel parameter");
+	out.write(section,"max_rho",max_rho,  /* text width */ 30, 30, "Lev-Marq optimization: maximum rho value to stop");
+	out.write(section,"max_lambda",max_lambda,  /* text width */ 30, 30, "Lev-Marq optimization: maximum lambda to stop");
 	out.write(section,"max_iters",max_iters,  /* text width */ 30, 30, "Max. iterations for optimization");
 	out.write(section,"max_error_per_obs_to_stop",max_error_per_obs_to_stop,  /* text width */ 30, 30, "Another criterion for stopping optimization");
 

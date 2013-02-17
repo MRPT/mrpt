@@ -56,7 +56,7 @@ void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::numeric_dh_dAp(c
 {
 	pose_t incr(mrpt::poses::UNINITIALIZED_POSE);
 	mrpt::poses::SE_traits<pose_t::rotation_dimensions>::pseudo_exp(x,incr);
-	
+
 	pose_t base_from_obs(mrpt::poses::UNINITIALIZED_POSE);
 	if (!params.is_inverse_dir)
 	{
@@ -90,7 +90,7 @@ void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::numeric_dh_dAp(c
 	RBA_OPTIONS::sensor_pose_on_robot_t::pose_robot2sensor( base_from_obs, base_pose_wrt_sensor, params.sensor_pose );
 
 	// Generate observation:
-	array_obs_t z_zero; 
+	array_obs_t z_zero;
 	z_zero.setZero();
 
 	sensor_model_t::observe_error(y,z_zero,base_pose_wrt_sensor,params.xji_i, params.sensor_params);
@@ -144,7 +144,7 @@ void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::numeric_dh_df(co
 	RBA_OPTIONS::sensor_pose_on_robot_t::pose_robot2sensor( *pos_cam, base_pose_wrt_sensor, params.sensor_pose );
 
 	// Generate observation:
-	array_obs_t z_zero; 
+	array_obs_t z_zero;
 	z_zero.setZero();
 	sensor_model_t::observe_error(y,z_zero,base_pose_wrt_sensor,x_local, params.sensor_params);
 	y=-y; // because the method above evals: "z_zero - h(x)"
@@ -263,7 +263,7 @@ void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::compute_jacobian
 
 	const TNumeric_dh_dAp_params num_params(jacob.sym.k2k_edge_id,&pose_d1_wrt_obs->pose, pose_base_wrt_d1.pose,jacob.sym.feat_rel_pos->pos, is_inverse_edge_jacobian,k2k_edges,this->parameters.sensor,this->parameters.sensor_pose);
 
-	jacobians::jacob_numeric_estimate(x,&numeric_dh_dAp,x_incrs,num_params,num_jacob);
+	mrpt::math::jacobians::jacob_numeric_estimate(x,&numeric_dh_dAp,x_incrs,num_params,num_jacob);
 
 #endif // SRBA_COMPUTE_NUMERIC_JACOBIANS
 
@@ -788,7 +788,7 @@ void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::compute_jacobian
 
 	const TNumeric_dh_df_params num_params(&rel_pose_base_from_obs->pose,jacob.sym.feat_rel_pos->pos,this->parameters.sensor,this->parameters.sensor_pose);
 
-	jacobians::jacob_numeric_estimate(x,&numeric_dh_df,x_incrs,num_params,num_jacob);
+	mrpt::math::jacobians::jacob_numeric_estimate(x,&numeric_dh_df,x_incrs,num_params,num_jacob);
 
 #endif // SRBA_COMPUTE_NUMERIC_JACOBIANS
 

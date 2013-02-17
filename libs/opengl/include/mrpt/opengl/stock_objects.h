@@ -74,7 +74,7 @@ namespace mrpt
 			  * \sa CornerXYZSimple, CornerXYSimple
 			  *  <div align="center">
 			  *  <table border="0" cellspan="4" cellspacing="4" style="border-width: 1px; border-style: solid;">
-			  *    <tr> <td> mrpt::opengl::stock_objects::CornerXYZ() </td> <td> \image html preview_stock_objects_CornerXYZEye.png </td> </tr>
+			  *    <tr> <td> mrpt::opengl::stock_objects::CornerXYZ() </td> <td> \image html preview_stock_objects_CornerXYZ.png </td> </tr>
 			  *  </table>
 			  *  </div>
 			  */

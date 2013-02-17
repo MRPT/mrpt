@@ -435,6 +435,7 @@ namespace srba
 			size_t max_iters;
 			double max_error_per_obs_to_stop; //!< default: 1e-9
 			double max_rho; //!< default: 1.0
+			double max_lambda; //!< default: 1e20
 			double min_error_reduction_ratio_to_relinearize; //!< default 0.01
 			bool   numeric_jacobians;
 			void (*feedback_user_iteration)(unsigned int iter, const double total_sq_err, const double mean_sqroot_error);
