@@ -54,7 +54,7 @@ Info: A front-end for Relative Bundle Adjustment (RBA). The program is
 #include <mrpt/random.h>
 #include <mrpt/math/CMatrixTemplateNumeric.h>  // For CMatrixDouble
 #include <mrpt/math/CMatrixD.h>  // For the serializable version of matrices
-//#include <mrpt/vision/CVideoFileWriter.h>
+#include <mrpt/vision/CVideoFileWriter.h>
 
 #include <mrpt/gui/CDisplayWindow3D.h>
 
@@ -80,6 +80,7 @@ struct RBASLAM_Params
 	TCLAP::ValueArg<unsigned int> arg_max_known_feats_per_frame;
 	TCLAP::SwitchArg  arg_se2,arg_se3;
 	TCLAP::SwitchArg  arg_lm2d,arg_lm3d;
+	TCLAP::SwitchArg  arg_graph_slam;
 	TCLAP::ValueArg<string> arg_obs;
 	TCLAP::ValueArg<string> arg_sensor_params;
 	TCLAP::SwitchArg  arg_list_obs;
@@ -117,7 +118,8 @@ struct RBASLAM_Params
 		arg_se2("","se2","Relative poses are SE(2)",cmd, false),
 		arg_se3("","se3","Relative poses are SE(3)",cmd, false),
 		arg_lm2d("","lm-2d","Relative landmarks are Euclidean 2D points",cmd, false),
-		arg_lm3d("","lm-3d","Relative landmarks are Euclidean 2D points",cmd, false),
+		arg_lm3d("","lm-3d","Relative landmarks are Euclidean 3D points",cmd, false),
+		arg_graph_slam("","graph-slam","Define a relative graph-slam problem (no landmarks)",cmd, false),
 		arg_obs("","obs","Type of observations in the dataset (use --list-problems to see available types)",false,"","",cmd),
 		arg_sensor_params("","sensor-params-cfg-file","Config file from where to load the sensor parameters",false,"","",cmd),
 		arg_list_obs("","list-problems","List all implemented values for '--obs'",cmd, false),
@@ -157,17 +159,19 @@ struct RBASLAM_Params
 			throw std::runtime_error(""); // Exit
 		}
 
-		if (!arg_obs.isSet())
-			throw std::runtime_error("Error: argument --obs is mandatory to select the type of observations.\nRun with --list-problems or --help to see all the options or visit http://www.mrpt.org/srba for docs and examples.\n");
+		if (!arg_obs.isSet() && !arg_graph_slam.isSet())
+			throw std::runtime_error("Error: argument --obs is mandatory (in non-graph-SLAM) to select the type of observations.\nRun with --list-problems or --help to see all the options or visit http://www.mrpt.org/srba for docs and examples.\n");
+		
+		if (arg_obs.isSet() && arg_graph_slam.isSet())
+			throw std::runtime_error("Error: argument --obs doesn't apply to relative graph-SLAM.\nRun with --list-problems or --help to see all the options or visit http://www.mrpt.org/srba for docs and examples.\n");
 
 		if ( (arg_se2.isSet() && arg_se3.isSet()) ||
 			 (!arg_se2.isSet() && !arg_se3.isSet()) )
 			 throw std::runtime_error("Exactly one of --se2 or --se3 flags must be set.");
 
-		if ( (arg_lm2d.isSet() && arg_lm3d.isSet()) ||
-			 (!arg_lm2d.isSet() && !arg_lm3d.isSet()) )
-			 throw std::runtime_error("Exactly one of --lm-2d or --lm-3d flags must be set.");
-
+		if ( (!arg_graph_slam.isSet() && ( (arg_lm2d.isSet() && arg_lm3d.isSet()) || (!arg_lm2d.isSet() && !arg_lm3d.isSet()) ) ) ||
+			 (arg_graph_slam.isSet() && (arg_lm2d.isSet() || arg_lm3d.isSet()) ) )
+			 throw std::runtime_error("Exactly one of --lm-2d or --lm-3d or --arg_graph_slam flags must be set.");
 	}
 };
 
@@ -176,6 +180,7 @@ struct RBASLAM_Params
 #include "CDatasetParser_RangeBearing2D.h"
 #include "CDatasetParser_Stereo.h"
 #include "CDatasetParser_Cartesian_3D.h"
+#include "CDatasetParser_RelGraphSLAM2D.h"
 // ------------------------------------------------------------------
 
 
@@ -344,6 +349,11 @@ struct RBA_Run : public RBA_Run_Base
 			cout << "Overriding submap_size to value: " << rba.parameters.srba.submap_size << endl;
 		}
 
+		if (cfg.arg_graph_slam.isSet())
+		{
+			rba.parameters.srba.min_obs_to_loop_closure = 1;
+		}
+
 		if (cfg.arg_verbose.getValue()>=1)
 		{
 			cout << "RBA parameters:\n"
@@ -355,8 +365,8 @@ struct RBA_Run : public RBA_Run_Base
 		const unsigned int	INCREMENTAL_FRAMES_AT_ONCE  = 1;
 		const unsigned int	MAX_KNOWN_FEATS_PER_FRAME   =cfg.arg_max_known_feats_per_frame.getValue();
 
-		const double REL_POS_NOISE_STD_KNOWN    = 0.0001;  // m
-		const double REL_POS_NOISE_STD_UNKNOWN  = 0.3;  // m
+		//const double REL_POS_NOISE_STD_KNOWN    = 0.0001;  // m
+		//const double REL_POS_NOISE_STD_UNKNOWN  = 0.3;  // m
 
 		const bool DEMO_SIMUL_SHOW_GUI = !cfg.arg_no_gui.getValue();
 		bool DEMO_SIMUL_SHOW_STEPBYSTEP =cfg.arg_gui_step_by_step.getValue();
@@ -421,12 +431,12 @@ struct RBA_Run : public RBA_Run_Base
 		}
 
 		// Create video?
-		//mrpt::vision::CVideoFileWriter  outVideo;
-		//const string sOutVideo =cfg.arg_video.getValue();
-		//if (cfg.arg_video.isSet() && win)
-		//	win->captureImagesStart();
+		mrpt::vision::CVideoFileWriter  outVideo;
+		const string sOutVideo =cfg.arg_video.getValue();
+		if (cfg.arg_video.isSet() && win)
+			win->captureImagesStart();
 
-		//const double VIDEO_FPS =cfg.arg_video_fps.getValue();
+		const double VIDEO_FPS =cfg.arg_video_fps.getValue();
 
 
 		// All LMs with known, fixed relative coordinates: this will be automatically filled-in
@@ -553,6 +563,16 @@ struct RBA_Run : public RBA_Run_Base
 					++obsIdx; // next observation
 				} // end while
 
+				// To emulate graph-SLAM, each keyframe MUST have exactly ONE fixed "fake landmark", representing its pose: 
+				// ------------------------------------------------------------------------------------------------------------
+				if (cfg.arg_graph_slam.isSet())
+				{
+					my_srba_t::new_kf_observation_t obs_field;
+					obs_field.is_fixed = true;
+					obs_field.obs.feat_id = next_rba_keyframe_ID; // Feature ID == keyframe ID
+					//obs_field.obs.obs_data.x = 0;   // Landmark values are actually ignored.
+					new_obs_in_this_frame.push_back( obs_field );
+				}
 
 				ASSERT_(!new_obs_in_this_frame.empty())
 
@@ -686,25 +706,25 @@ struct RBA_Run : public RBA_Run_Base
 			}
 
 			// Write images to video?
-			//if (cfg.arg_video.isSet() && win && win->isOpen())
-			//{
-			//	// Screenshot:
-			//	const mrpt::utils::CImagePtr pImg = win->getLastWindowImagePtr();
-			//	if (pImg)
-			//	{
-			//		// Create video upon first pass:
-			//		if (!outVideo.isOpen())
-			//		{
-			//			outVideo.open(sOutVideo,VIDEO_FPS, pImg->getSize(), "PIM1" );
+			if (cfg.arg_video.isSet() && win && win->isOpen())
+			{
+				// Screenshot:
+				const mrpt::utils::CImagePtr pImg = win->getLastWindowImagePtr();
+				if (pImg)
+				{
+					// Create video upon first pass:
+					if (!outVideo.isOpen())
+					{
+						outVideo.open(sOutVideo,VIDEO_FPS, pImg->getSize(), "PIM1" );
 
-			//			if (!outVideo.isOpen())
-			//				cerr << "Error opening output video file!" << endl;
-			//		}
+						if (!outVideo.isOpen())
+							cerr << "Error opening output video file!" << endl;
+					}
 
-			//		// Write image to video:
-			//		outVideo << *pImg;
-			//	}
-			//}
+					// Write image to video:
+					outVideo << *pImg;
+				}
+			}
 
 
 	#if 0
@@ -993,6 +1013,12 @@ struct my_srba_options_cameras
 	typedef observation_noise_identity   obs_noise_matrix_t;      // The sensor noise matrix is the same for all observations and equal to \sigma * I(identity)
 };
 
+// Camera sensors have a different coordinate system wrt the robot (rotated yaw=-90, pitch=0, roll=-90)
+struct my_srba_options_graph_slam2D
+{
+	typedef sensor_pose_on_robot_none   sensor_pose_on_robot_t;
+	typedef observation_noise_constant_matrix<observations::RelativePoses_2D> obs_noise_matrix_t;      // The sensor noise matrix is the same for all observations and equal to an arbitrary matrix
+};
 
 int main(int argc, char**argv)
 {
@@ -1008,12 +1034,12 @@ int main(int argc, char**argv)
 
 		if (config.arg_se2.isSet() && config.arg_lm2d.isSet() && config.arg_obs.getValue()=="RangeBearing_2D")
 			rba = RBA_Run_Factory<kf2kf_poses::SE2,landmarks::Euclidean2D,observations::RangeBearing_2D,RBA_OPTIONS_DEFAULT>::create();
-		else
-		if (config.arg_se3.isSet() && config.arg_lm3d.isSet() && config.arg_obs.getValue()=="StereoCamera")
+		else if (config.arg_se3.isSet() && config.arg_lm3d.isSet() && config.arg_obs.getValue()=="StereoCamera")
 			rba = RBA_Run_Factory<kf2kf_poses::SE3,landmarks::Euclidean3D,observations::StereoCamera,my_srba_options_cameras>::create();
-		else
-		if (config.arg_se3.isSet() && config.arg_lm3d.isSet() && config.arg_obs.getValue()=="Cartesian_3D")
+		else if (config.arg_se3.isSet() && config.arg_lm3d.isSet() && config.arg_obs.getValue()=="Cartesian_3D")
 			rba = RBA_Run_Factory<kf2kf_poses::SE3,landmarks::Euclidean3D,observations::Cartesian_3D,RBA_OPTIONS_DEFAULT>::create();
+		else if (config.arg_se2.isSet() && config.arg_graph_slam.isSet())
+			rba = RBA_Run_Factory<kf2kf_poses::SE2,landmarks::RelativePoses2D,observations::RelativePoses_2D,my_srba_options_graph_slam2D>::create();
 		else
 		{
 			throw std::runtime_error("Sorry: the given combination of pose, point and sensor wasn't precompiled in this program!\nRun with '--list-problems' to see available options.\n");

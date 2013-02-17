@@ -17,6 +17,7 @@ ADD_EXECUTABLE(srba-slam
 	CDatasetParser_RangeBearing2D.h
 	CDatasetParser_Stereo.h
 	CDatasetParser_Cartesian_3D.h
+	CDatasetParser_RelGraphSLAM2D.h
 	)
 
 SET(TMP_TARGET_NAME "srba-slam")
@@ -29,6 +30,6 @@ TARGET_LINK_LIBRARIES(${TMP_TARGET_NAME} ${MRPT_LINKER_LIBS})
 # Dependencies on MRPT libraries:
 #  Just mention the top-level dependency, the rest will be detected automatically,
 #  and all the needed #include<> dirs added (see the script DeclareAppDependencies.cmake for further details)
-DeclareAppDependencies(${TMP_TARGET_NAME} mrpt-srba mrpt-gui)
+DeclareAppDependencies(${TMP_TARGET_NAME} mrpt-srba mrpt-gui mrpt-vision)
 
 DeclareAppForInstall(${TMP_TARGET_NAME})

@@ -504,8 +504,8 @@ struct compute_jacobian_dAepsDx_deps_SE2
 			Eigen::Matrix<double,POINT_DIMS/* 2 or 3*/,3 /* x,y,phi*/> dPx_P;
 			const double ccos_ad = cos(AD.phi());
 			const double ssin_ad = sin(AD.phi());
-			dPx_P(0,0) = 1;  dPx_P(0,1) = 0; dPx_P(0,2) = -xji_i.x*ssin_ad - xji_i.y*ccos_ad;
-			dPx_P(1,0) = 0;  dPx_P(1,1) = 1; dPx_P(1,2) =  xji_i.x*ccos_ad - xji_i.y*ssin_ad;
+			dPx_P(0,0) = 1;  dPx_P(0,1) = 0; dPx_P(0,2) = -xji_i[0]*ssin_ad - xji_i[1]*ccos_ad;
+			dPx_P(1,0) = 0;  dPx_P(1,1) = 1; dPx_P(1,2) =  xji_i[0]*ccos_ad - xji_i[1]*ssin_ad;
 			if (POINT_DIMS==3) {
 				dPx_P(2,0) = 0;  dPx_P(2,1) = 0; dPx_P(2,2) =  1;
 			}
@@ -560,8 +560,8 @@ struct compute_jacobian_dAepsDx_deps_SE2
 			Eigen::Matrix<double,POINT_DIMS/* 2 or 3*/,3 /* x,y,phi*/> dPx_P;
 			const double ccos_ad = cos(AD.phi());
 			const double ssin_ad = sin(AD.phi());
-			dPx_P(0,0) = 1;  dPx_P(0,1) = 0; dPx_P(0,2) = -xji_i.x*ssin_ad - xji_i.y*ccos_ad;
-			dPx_P(1,0) = 0;  dPx_P(1,1) = 1; dPx_P(1,2) =  xji_i.x*ccos_ad - xji_i.y*ssin_ad;
+			dPx_P(0,0) = 1;  dPx_P(0,1) = 0; dPx_P(0,2) = -xji_i[0]*ssin_ad - xji_i[1]*ccos_ad;
+			dPx_P(1,0) = 0;  dPx_P(1,1) = 1; dPx_P(1,2) =  xji_i[0]*ccos_ad - xji_i[1]*ssin_ad;
 			if (POINT_DIMS==3) {
 				dPx_P(2,0) = 0;  dPx_P(2,1) = 0; dPx_P(2,2) =  1;
 			}
