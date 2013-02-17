@@ -70,7 +70,7 @@ void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::edge_creation_po
 		{
 			ASSERT_(new_kf_id>=1)
 
-			const size_t MINIMUM_OBS_TO_LOOP_CLOSURE = 6;
+			const size_t MINIMUM_OBS_TO_LOOP_CLOSURE = parameters.srba.min_obs_to_loop_closure;
 			const size_t SUBMAP_SIZE = parameters.srba.submap_size; // In # of KFs
 			const TKeyFrameID cur_localmap_center = SUBMAP_SIZE*((new_kf_id-1)/SUBMAP_SIZE);
 

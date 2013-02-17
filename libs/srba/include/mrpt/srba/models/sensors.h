@@ -821,8 +821,8 @@ namespace mrpt { namespace srba {
 			const array_landmark_t   & xji_l, 
 			const TObservationParams & sensor_params)
 		{
-			// h(x) = pseudo-log(x)
-			// with x: relative pose in SE(2)
+			// h(z_obs \ominus p) = pseudo-log(z_obs \ominus  p)
+			// with p: relative pose in SE(2)
 			dh_dx.setIdentity();
 			return true;
 		}

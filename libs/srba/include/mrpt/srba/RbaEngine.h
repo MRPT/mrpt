@@ -424,10 +424,12 @@ namespace srba
 			topo_dist_t          max_optimize_depth;
 
 			size_t              submap_size;
+			size_t              min_obs_to_loop_closure; //!< Default:6, reduce to 1 for relative graph-slam
 			// -------------------------------------------------------
 
 			// Parameters for optimize_*()
 			// -------------------------------------
+			bool   optimize_new_edges_alone; //!< (Default:true) Before running a whole "local area" optimization, try to optimize new edges one by one to have a better starting point.
 			bool   use_robust_kernel;
 			double kernel_param;
 			size_t max_iters;

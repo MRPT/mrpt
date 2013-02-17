@@ -108,14 +108,6 @@ namespace srba
 		typedef std::deque<k2k_edge_t*>  k2k_edge_vector_t; //!< A sequence of edges (a "path")
 	}; // end of kf2kf_pose_traits
 
-	/** A selected struct for selecting TPoint2D or TPoint3D depending on the dimensionality of landmarks */
-	//template <unsigned int LM_EUCLIDEAN_DIMS> struct landmark_point_trait;
-	///** Specialization for 2D */
-	//template <> struct landmark_point_trait<2> { typedef mrpt::math::TPoint2D point_t; };
-	///** Specialization for 3D */
-	//template <> struct landmark_point_trait<3> { typedef mrpt::math::TPoint3D point_t; };
-
-
 	/** The argument "LM_TRAITS" can be any of those defined in srba/models/landmarks.h (typically, either landmarks::Euclidean3D or landmarks::Euclidean2D).
 	  * \sa landmark_traits, observation_traits
 	  */
@@ -124,7 +116,6 @@ namespace srba
 	{
 		typedef landmark_traits<LM_TRAITS> me_t;
 		typedef typename mrpt::math::CArrayDouble<LM_TRAITS::LM_DIMS>        array_landmark_t;  //!< A fixed-length array of the size of the parameters of one landmark in the map (e.g. if Euclidean coordinates are used, this will hold the coordinates)
-		//typedef typename landmark_point_trait<LM_TRAITS::LM_EUCLIDEAN_DIMS>::point_t  point_t;  //!< Will end up being mrpt::math::TPoint2D or mrpt::math::TPoint3D
 
 		/** One relative feature observation entry, used with some relative bundle-adjustment functions. */
 		struct TRelativeLandmarkPos
@@ -140,16 +131,6 @@ namespace srba
 
 			TKeyFrameID  id_frame_base;	//!< The ID of the camera frame which is the coordinate reference of \a pos
 			array_landmark_t   pos;  //!< The parameterization of the feature location, wrt to the camera frame \a id_frame_base - For example, this could simply be Euclidean coordinates (x,y,z)
-
-			///** Converts the landmark parameterization into 3D Eucliden coordinates (used for OpenGL rendering, etc.) */
-			//inline void getAsRelativeEuclideanLocation(point_t &posEucliden) const {
-			//	LM_TRAITS::relativeEuclideanLocation(pos,posEucliden);
-			//}
-			//inline point_t getAsRelativeEuclideanLocation() const {
-			//	point_t p;
-			//	LM_TRAITS::relativeEuclideanLocation(pos,p);
-			//	return p;
-			//}
 
 			EIGEN_MAKE_ALIGNED_OPERATOR_NEW  // Needed because we have fixed-length Eigen matrices ("array_landmark_t")
 		};

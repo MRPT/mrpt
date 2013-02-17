@@ -60,7 +60,9 @@ RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::TSRBAParameters::TSRB
 	max_tree_depth       ( 4 ),
 	max_optimize_depth   ( 4 ),
 	submap_size          ( 15 ),
+	min_obs_to_loop_closure ( 6 ),
 	// -------------------------------
+	optimize_new_edges_alone (true),
 	use_robust_kernel    ( false ),
 	kernel_param         ( 3. ),
 	max_iters            ( 20 ),
@@ -81,7 +83,9 @@ void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::TSRBAParameters:
 	MRPT_LOAD_CONFIG_VAR(max_tree_depth,uint64_t,source,section)
 	MRPT_LOAD_CONFIG_VAR(max_optimize_depth,uint64_t,source,section)
 	MRPT_LOAD_CONFIG_VAR(submap_size,uint64_t,source,section)
+	MRPT_LOAD_CONFIG_VAR(min_obs_to_loop_closure,uint64_t,source,section)
 
+	MRPT_LOAD_CONFIG_VAR(optimize_new_edges_alone,bool,source,section)
 	MRPT_LOAD_CONFIG_VAR(use_robust_kernel,bool,source,section)
 	MRPT_LOAD_CONFIG_VAR(kernel_param,double,source,section)
 	MRPT_LOAD_CONFIG_VAR(max_iters,uint64_t,source,section)
@@ -97,7 +101,10 @@ void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::TSRBAParameters:
 	out.write(section,"max_tree_depth",max_tree_depth,  /* text width */ 30, 30, "Maximum depth of all spanning trees");
 	out.write(section,"max_optimize_depth",max_optimize_depth, /* text width */ 30, 30, "Max. local optimization distance");
 	out.write(section,"submap_size",submap_size, /* text width */ 30, 30, "Max. local optimization distance");
+	out.write(section,"min_obs_to_loop_closure",min_obs_to_loop_closure, /* text width */ 30, 30, "Min. num. of covisible observations to add a loop closure edge");
 
+	
+	out.write(section,"optimize_new_edges_alone",optimize_new_edges_alone,  /* text width */ 30, 30, "Optimize new edges alone before optimizing the entire local area?");
 	out.write(section,"use_robust_kernel",use_robust_kernel,  /* text width */ 30, 30, "Use pseudo-Huber kernel?");
 	out.write(section,"kernel_param",kernel_param,  /* text width */ 30, 30, "robust kernel parameter");
 	out.write(section,"max_iters",max_iters,  /* text width */ 30, 30, "Max. iterations for optimization");

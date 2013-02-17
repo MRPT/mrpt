@@ -154,6 +154,9 @@ namespace poses
 		  */
 		void inverseComposeFrom(const CPose2D& A, const CPose2D& B );
 
+		/** Convert this pose into its inverse, saving the result in itself. \sa operator- */
+		void inverse();
+
 		/** Compute \f$ RET = this \oplus b \f$  */
 		inline CPose2D  operator - (const CPose2D& b) const
 		{
@@ -248,7 +251,7 @@ namespace poses
 
 	std::ostream BASE_IMPEXP & operator << (std::ostream& o, const CPose2D& p);
 
-	/** Unary - operator: return the inverse pose "-p" (Note that is NOT the same than a pose with negative x y phi) */
+	/** Unary - operator: return the inverse pose "-p" (Note that is NOT the same than a pose with negative x y phi) \sa CPose2D::inverse() */
 	CPose2D BASE_IMPEXP operator -(const CPose2D &p);
 
 	mrpt::math::TPoint2D BASE_IMPEXP  operator +(const CPose2D &pose, const mrpt::math::TPoint2D &pnt);  //!< Compose a 2D point from a new coordinate base given by a 2D pose.

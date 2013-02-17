@@ -37,14 +37,6 @@
 
 namespace mrpt { namespace srba {
 
-//void build_obs_indices(
-//	std::vector<size_t> & sequential_obs_indices,
-//	const std::vector<TSparseBlocksJacobians_dh_dAp::col_t*> & sparse_jacobs_Ap,
-//	const std::vector<TSparseBlocksJacobians_dh_df::col_t*> & sparse_jacobs_f,
-//	const RBA_Problem::TMyMapSize2Size & obs_global_idx2residual_idx
-//	);
-
-
 /** reprojection_residuals */
 template <class KF2KF_POSE_TYPE,class LM_TYPE,class OBS_TYPE,class RBA_OPTIONS>
 double RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::reprojection_residuals(
@@ -60,7 +52,6 @@ double RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::reprojection_r
 	for (size_t i=0;i<nObs;i++)
 	{
 		// Actually measured pixel coords: observations[i]->obs.px
-		//const TLandmarkID  lm_id        = observations[i]->obs.feat_id;
 		const TKeyFrameID  obs_frame_id = observations[i].k2f->obs.kf_id; // Observed from here.
 		const TRelativeLandmarkPos *feat_rel_pos = observations[i].k2f->feat_rel_pos;
 
@@ -78,7 +69,6 @@ double RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::reprojection_r
 		else
 		{
 			// num[SOURCE] |--> map[TARGET] = CPose3D of TARGET as seen from SOURCE
-
 			const typename TRelativePosesForEachTarget::const_iterator itPoseMap_for_base_id = rba_state.spanning_tree.num.find(obs_frame_id);
 			ASSERT_( itPoseMap_for_base_id != rba_state.spanning_tree.num.end() )
 
@@ -88,11 +78,9 @@ double RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::reprojection_r
 			base_pose_wrt_observer = &itRelPose->second.pose;
 		}
 
-
 		// pose_robot2sensor(): pose wrt sensor = pose_wrt_robot (-) sensor_pose_on_the_robot
 		typename resulting_pose_t<typename RBA_OPTIONS::sensor_pose_on_robot_t,REL_POSE_DIMS>::pose_t base_pose_wrt_sensor(mrpt::poses::UNINITIALIZED_POSE);
 		RBA_OPTIONS::sensor_pose_on_robot_t::pose_robot2sensor( *base_pose_wrt_observer, base_pose_wrt_sensor, this->parameters.sensor_pose );
-
 
 		const array_obs_t & real_obs = observations[i].k2f->obs.obs_arr;
 		residual_t &delta = residuals[i];

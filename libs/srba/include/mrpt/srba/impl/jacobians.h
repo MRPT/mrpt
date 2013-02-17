@@ -36,6 +36,7 @@
 #pragma once
 
 #include <mrpt/math/jacobians.h>
+#include <mrpt/poses/SE_traits.h>
 #include <mrpt/srba/landmark_jacob_families.h>
 
 namespace mrpt { namespace srba {
@@ -49,12 +50,13 @@ namespace mrpt { namespace srba {
 #define DEBUG_JACOBIANS_SUPER_VERBOSE  0
 #define DEBUG_NOT_UPDATED_ENTRIES      0   // Extremely slow, just for debug during development! This checks that all the expected Jacobians are actually updated
 
+/** Numeric implementation of the partial Jacobian dh_dAp */
 template <class KF2KF_POSE_TYPE,class LM_TYPE,class OBS_TYPE,class RBA_OPTIONS>
 void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::numeric_dh_dAp(const array_pose_t &x, const TNumeric_dh_dAp_params& params, array_obs_t &y)
 {
 	pose_t incr(mrpt::poses::UNINITIALIZED_POSE);
-	pose_t::exp(x,incr, true /*pseudo-exp*/);
-
+	mrpt::poses::SE_traits<pose_t::rotation_dimensions>::pseudo_exp(x,incr);
+	
 	pose_t base_from_obs(mrpt::poses::UNINITIALIZED_POSE);
 	if (!params.is_inverse_dir)
 	{
@@ -78,7 +80,6 @@ void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::numeric_dh_dAp(c
 		p_d_d1_mod.inverse();
 
 		// total pose: base from obs =  pose_d1_wrt_obs (+) inv(p_d_d1_mod) (+) D'
-
 		if (params.pose_d1_wrt_obs) // "A" in papers
 				base_from_obs = *params.pose_d1_wrt_obs + p_d_d1_mod + pose_base_wrt_d_prime;
 		else	base_from_obs =  p_d_d1_mod + pose_base_wrt_d_prime;
@@ -227,7 +228,6 @@ void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::compute_jacobian
 
 	// First, we need x^{j,i}_i:
 	// LM parameters in: jacob.sym.feat_rel_pos->pos[0:N-1]
-	//const typename landmark_traits<LM_TYPE>::point_t xji_i = jacob.sym.feat_rel_pos->getAsRelativeEuclideanLocation();
 	const array_landmark_t &xji_i = jacob.sym.feat_rel_pos->pos;
 
 	// xji_l = pose_i_wrt_l (+) xji_i
@@ -296,7 +296,7 @@ void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::compute_jacobian
 
 	// Second Jacobian: (uses xji_i)
 	// ------------------------------
-	compute_jacobian_dAepsDx_deps<LM_TYPE::jacob_family,LM_DIMS,REL_POSE_DIMS,rba_problem_t>::eval(jacob.num,dh_dx,is_inverse_edge_jacobian,xji_i, pose_d1_wrt_obs, pose_base_wrt_d1,jacob.sym,k2k_edges);
+	compute_jacobian_dAepsDx_deps<LM_TYPE::jacob_family,LM_DIMS,REL_POSE_DIMS,rba_problem_t>::eval(jacob.num,dh_dx,is_inverse_edge_jacobian,xji_i, pose_d1_wrt_obs, pose_base_wrt_d1,jacob.sym,k2k_edges,rba_state.all_observations);
 
 #endif // SRBA_COMPUTE_ANALYTIC_JACOBIANS
 
@@ -328,7 +328,7 @@ void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::compute_jacobian
 template <class RBA_ENGINE_T>
 struct compute_jacobian_dAepsDx_deps<jacob_point_landmark /* Jacobian family: this LM is a point */, 3 /*POINT_DIMS*/,6 /*POSE_DIMS*/,RBA_ENGINE_T>
 {
-	template <class MATRIX, class MATRIX_DH_DX,class POINT,class pose_flag_t,class JACOB_SYM_T,class K2K_EDGES_T>
+	template <class MATRIX, class MATRIX_DH_DX,class POINT,class pose_flag_t,class JACOB_SYM_T,class K2K_EDGES_T,class OBS_VECTOR>
 	static void eval(
 		MATRIX      & jacob,
 		const MATRIX_DH_DX  & dh_dx,
@@ -337,7 +337,8 @@ struct compute_jacobian_dAepsDx_deps<jacob_point_landmark /* Jacobian family: th
 		const pose_flag_t * pose_d1_wrt_obs,  // "A" in handwritten notes
 		const pose_flag_t & pose_base_wrt_d1, // "D" in handwritten notes
 		const JACOB_SYM_T & jacob_sym,
-		const K2K_EDGES_T &k2k_edges
+		const K2K_EDGES_T & k2k_edges,
+		const OBS_VECTOR  & all_obs
 		)
 	{
 		// See section 10.3.7 of technical report on SE(3) poses [http://mapir.isa.uma.es/~jlblanco/papers/jlblanco2010geometry3D_techrep.pdf]
@@ -463,7 +464,7 @@ struct compute_jacobian_dAepsDx_deps<jacob_point_landmark /* Jacobian family: th
 template <size_t POINT_DIMS, class RBA_ENGINE_T>
 struct compute_jacobian_dAepsDx_deps_SE2
 {
-	template <class MATRIX, class MATRIX_DH_DX,class POINT,class pose_flag_t,class JACOB_SYM_T,class K2K_EDGES_T>
+	template <class MATRIX, class MATRIX_DH_DX,class POINT,class pose_flag_t,class JACOB_SYM_T,class K2K_EDGES_T,class OBS_VECTOR>
 	static void eval(
 		MATRIX      & jacob,
 		const MATRIX_DH_DX  & dh_dx,
@@ -472,7 +473,8 @@ struct compute_jacobian_dAepsDx_deps_SE2
 		const pose_flag_t * pose_d1_wrt_obs,  // "A" in handwritten notes
 		const pose_flag_t & pose_base_wrt_d1, // "D" in handwritten notes
 		const JACOB_SYM_T & jacob_sym,
-		const K2K_EDGES_T &k2k_edges
+		const K2K_EDGES_T & k2k_edges,
+		const OBS_VECTOR  & all_obs
 		)
 	{
 		MRPT_COMPILE_TIME_ASSERT(POINT_DIMS==2 || POINT_DIMS==3)
@@ -605,7 +607,7 @@ struct compute_jacobian_dAepsDx_deps<jacob_point_landmark /* Jacobian family: th
 template <class RBA_ENGINE_T>
 struct compute_jacobian_dAepsDx_deps<jacob_relpose_landmark /* Jacobian family: this LM is a point */, 3 /*POINT_DIMS*/,3 /*POSE_DIMS*/,RBA_ENGINE_T>
 {
-	template <class MATRIX, class MATRIX_DH_DX,class POINT,class pose_flag_t,class JACOB_SYM_T,class K2K_EDGES_T>
+	template <class MATRIX, class MATRIX_DH_DX,class POINT,class pose_flag_t,class JACOB_SYM_T,class K2K_EDGES_T,class OBS_VECTOR>
 	static void eval(
 		MATRIX      & jacob,
 		const MATRIX_DH_DX  & dh_dx,
@@ -614,10 +616,12 @@ struct compute_jacobian_dAepsDx_deps<jacob_relpose_landmark /* Jacobian family: 
 		const pose_flag_t * pose_d1_wrt_obs,  // "A" in handwritten notes
 		const pose_flag_t & pose_base_wrt_d1, // "D" in handwritten notes
 		const JACOB_SYM_T & jacob_sym,
-		const K2K_EDGES_T &k2k_edges
+		const K2K_EDGES_T & k2k_edges,
+		const OBS_VECTOR  & all_obs
 		)
 	{
 		double Xd,Yd,PHIa;
+		mrpt::poses::CPose2D  base_wrt_obs(mrpt::poses::UNINITIALIZED_POSE); // A(+)D
 
 		if (!is_inverse_edge_jacobian)
 		{	// Normal formulation: unknown is pose "d+1 -> d"
@@ -631,6 +635,11 @@ struct compute_jacobian_dAepsDx_deps<jacob_relpose_landmark /* Jacobian family: 
 			{
 				// pose_d_plus_1_wrt_l  -> pose_d1_wrt_obs
 				PHIa = pose_d1_wrt_obs->pose.phi();
+				base_wrt_obs.composeFrom(pose_d1_wrt_obs->pose, pose_base_wrt_d1.pose);  // A (+) D
+			}
+			else
+			{
+				base_wrt_obs = pose_base_wrt_d1.pose;  // A (+) D
 			}
 		}
 		else
@@ -659,22 +668,42 @@ struct compute_jacobian_dAepsDx_deps<jacob_relpose_landmark /* Jacobian family: 
 
 			// We need to handle the special case where "d+1"=="l", so A=Pose(0,0,0):
 			PHIa=A_prime.phi();
+
+			base_wrt_obs.composeFrom(A_prime, pose_base_wrt_d1_prime);  // A (+) D
 		}
 
+		//const mrpt::poses::CPose2D base_wrt_obs_inv = -base_wrt_obs;
+		const double PHIad = base_wrt_obs.phi();
+
+		//const mrpt::poses::CPose2D p_obs(0,0,0);
+			//all_obs[jacob_sym.obs_idx].obs.obs.obs_data.x,
+			//all_obs[jacob_sym.obs_idx].obs.obs.obs_data.y,
+			//all_obs[jacob_sym.obs_idx].obs.obs.obs_data.yaw);
+
+		const double ccos_ad = cos(PHIad), ssin_ad=sin(PHIad);
 		const double ccos_a = cos(PHIa), ssin_a=sin(PHIa);
+		//const double ccos_obs = cos(p_obs.phi()), ssin_obs=sin(p_obs.phi());
 
-		Eigen::Matrix<double,3,3> dAD_dD;
-		dAD_dD(0,0)=ccos_a;  dAD_dD(0,1)=-ssin_a;  dAD_dD(0,2)=0;
-		dAD_dD(1,0)=ssin_a;  dAD_dD(1,1)= ccos_a;  dAD_dD(1,2)=0;
-		dAD_dD(2,0)=0;       dAD_dD(2,1)=0;        dAD_dD(2,2)=1;
+		//const double Ax = base_wrt_obs.x()-p_obs.x();
+		//const double Ay = base_wrt_obs.y()-p_obs.y();
 
-		Eigen::Matrix<double,3,3> deD_de;
-		deD_de(0,0)=1; deD_de(0,1)=0; deD_de(0,2)= -Yd;
-		deD_de(1,0)=0; deD_de(1,1)=1; deD_de(1,2)=  Xd;
-		deD_de(2,0)=0; deD_de(2,1)=0; deD_de(2,2)=  1;
+		Eigen::Matrix<double,3,3> J0; // -d(\ominus p)_dp, with p=A*D
+		J0(0,0)= ccos_ad; J0(0,1)= ssin_ad; J0(0,2)= 0;
+		J0(1,0)=-ssin_ad; J0(1,1)= ccos_ad; J0(1,2)= 0;
+		J0(2,0)=0;        J0(2,1)=0;        J0(2,2)= 1;
+
+		Eigen::Matrix<double,3,3> J1; // dAD_dA;
+		J1(0,0)=1; J1(0,1)=0; J1(0,2)= -Xd*ssin_a-Yd*ccos_a;
+		J1(1,0)=0; J1(1,1)=1; J1(1,2)=  Xd*ccos_a-Yd*ssin_a;
+		J1(2,0)=0; J1(2,1)=0; J1(2,2)= 1;
+
+		Eigen::Matrix<double,3,3> J2; // dAe_de
+		J2(0,0)=ccos_a;  J2(0,1)=-ssin_a;  J2(0,2)=0;
+		J2(1,0)=ssin_a;  J2(1,1)= ccos_a;  J2(1,2)=0;
+		J2(2,0)=0;       J2(2,1)=0;        J2(2,2)=1;
 
 		// Chain rule:
-		jacob.noalias() = dh_dx * dAD_dD * deD_de;
+		jacob.noalias() = dh_dx * J0* J1 * J2;
 
 		if (is_inverse_edge_jacobian)
 		{
@@ -729,10 +758,8 @@ void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::compute_jacobian
 
 	// First, we need x^{j,i}_i:
 	//const TPoint3D & xji_i = jacob.sym.feat_rel_pos->pos;
-	//const typename landmark_traits<LM_TYPE>::point_t xji_i = jacob.sym.feat_rel_pos->getAsRelativeEuclideanLocation();
 	const array_landmark_t &xji_i = jacob.sym.feat_rel_pos->pos;
 
-	//typename landmark_traits<LM_TYPE>::point_t xji_l;
 	array_landmark_t xji_l = xji_i; //
 
 	if (rel_pose_base_from_obs!=NULL)

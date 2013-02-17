@@ -34,6 +34,7 @@
    +---------------------------------------------------------------------------+ */
 
 #include <mrpt/srba.h>
+#include <mrpt/random.h>
 #include <mrpt/gui.h>  // For rendering results as a 3D scene
 
 using namespace mrpt::srba;
@@ -59,6 +60,9 @@ typedef RBA_Problem<
 // --------------------------------------------------------------------------------
 // A test dataset (generated with http://code.google.com/p/recursive-world-toolkit/ )
 // --------------------------------------------------------------------------------
+const double STD_NOISE_XY = 0.001;
+const double STD_NOISE_YAW = DEG2RAD(0.05);
+
 struct basic_graph_slam_dataset_entry_t
 {
 	unsigned int current_kf;
@@ -105,14 +109,15 @@ int main(int argc, char**argv)
 	rba.setVerbosityLevel( 1 );   // 0: None; 1:Important only; 2:Verbose
 
 	rba.parameters.srba.use_robust_kernel = false;
+	rba.parameters.srba.optimize_new_edges_alone  = false;  // skip optimizing new edges one by one: relative graph-slam without landmarks should be robust enough
 
 	// Information matrix for relative pose observations:
 	{
 		Eigen::Matrix3d ObsL;
 		ObsL.setZero();
-		ObsL(0,0) = 1/0.10; // x
-		ObsL(1,1) = 1/0.10; // y
-		ObsL(2,2) = 1/DEG2RAD(10); // phi
+		ObsL(0,0) = 1/STD_NOISE_XY; // x
+		ObsL(1,1) = 1/STD_NOISE_XY; // y
+		ObsL(2,2) = 1/STD_NOISE_YAW; // phi
 		
 		// Set:
 		rba.parameters.obs_noise.lambda = ObsL;
@@ -122,6 +127,8 @@ int main(int argc, char**argv)
 	rba.parameters.srba.edge_creation_policy = mrpt::srba::ecpICRA2013;
 	rba.parameters.srba.max_tree_depth       = 3;
 	rba.parameters.srba.max_optimize_depth   = 3;
+	rba.parameters.srba.submap_size          = 5;
+	rba.parameters.srba.min_obs_to_loop_closure = 1;
 	// ===========================================
 
 	// --------------------------------------------------------------------------------
@@ -159,16 +166,16 @@ int main(int argc, char**argv)
 
 		// The rest "observations" are real observations of relative poses:
 		// -----------------------------------------------------------------
-		while ( dataset[obsIdx].current_kf == cur_kf )
+		while ( dataset[obsIdx].current_kf == cur_kf && obsIdx<nObs )
 		{
 			my_srba_t::new_kf_observation_t obs_field;
 			obs_field.is_fixed = false;   // "Landmarks" (relative poses) have unknown relative positions (i.e. treat them as unknowns to be estimated)
 			obs_field.is_unknown_with_init_val = false; // Ignored, since all observed "fake landmarks" already have an initialized value.
 
 			obs_field.obs.feat_id      = dataset[obsIdx].observed_kf;
-			obs_field.obs.obs_data.x   = dataset[obsIdx].x;
-			obs_field.obs.obs_data.y   = dataset[obsIdx].y;
-			obs_field.obs.obs_data.yaw = dataset[obsIdx].yaw;
+			obs_field.obs.obs_data.x   = dataset[obsIdx].x + mrpt::random::randomGenerator.drawGaussian1D(0,STD_NOISE_XY);
+			obs_field.obs.obs_data.y   = dataset[obsIdx].y + mrpt::random::randomGenerator.drawGaussian1D(0,STD_NOISE_XY);
+			obs_field.obs.obs_data.yaw = dataset[obsIdx].yaw  + mrpt::random::randomGenerator.drawGaussian1D(0,STD_NOISE_YAW);
 
 			list_obs.push_back( obs_field );
 			obsIdx++; // Next dataset entry
@@ -197,13 +204,14 @@ int main(int argc, char**argv)
 		mrpt::opengl::CSetOfObjectsPtr rba_3d = mrpt::opengl::CSetOfObjects::Create();
 
 		rba.build_opengl_representation(
-			0,  // Root KF,
+			new_kf_info.kf_id ,  // Root KF: the current (latest) KF
 			opengl_options, // Rendering options
 			rba_3d  // Output scene 
 			);
 
 		{
 			mrpt::opengl::COpenGLScenePtr &scene = win.get3DSceneAndLock();
+			scene->clear();
 			scene->insert(rba_3d);
 			win.unlockAccess3DScene();
 		}

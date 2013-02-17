@@ -344,14 +344,24 @@ CPose2D::CPose2D(const CPoint3D &o): m_phi(0)	{
 ---------------------------------------------------------------*/
 CPose2D mrpt::poses::operator -(const CPose2D&b)
 {
-	double ccos = cos(b.phi());
-	double ssin = sin(b.phi());
-
-	return CPose2D(
-		-(b.x()) * ccos + (- b.y()) * ssin,
-		-(-b.x()) * ssin + (- b.y()) * ccos,
-		- b.phi() );
+	CPose2D ret = b;
+	ret.inverse();
+	return ret;
 }
+
+/** Convert this pose into its inverse, saving the result in itself. \sa operator- */
+void CPose2D::inverse()
+{
+	const double ccos = cos(m_phi);
+	const double ssin = sin(m_phi);
+	const double x = m_coords[0];
+	const double y = m_coords[1];
+	
+	m_coords[0] = -x * ccos - y * ssin;
+	m_coords[1] =  x * ssin - y * ccos;
+	m_phi = - m_phi;
+}
+
 
 /*---------------------------------------------------------------
 		getAsVector

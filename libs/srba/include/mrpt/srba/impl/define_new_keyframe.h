@@ -83,35 +83,38 @@ void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::define_new_keyfr
 	if (run_local_optimization)
 	{
 		// Try to initialize the new edges in separate optimizations?
-		// Do it one by one so we can detect rank-deficient situations, etc.
-		if (!new_k2k_edge_ids.empty())
+		if (parameters.srba.optimize_new_edges_alone)
 		{
-			m_profiler.enter("define_new_keyframe.opt_new_edges");
-
-			// temporarily disable robust kernel for initialization (faster)
-			const bool old_kernel = parameters.srba.use_robust_kernel;
-			parameters.srba.use_robust_kernel= false;
-
-			std::vector<size_t>  k2f_edges_to_opt;  // Empty: only initialize k2k edges.
-			std::vector<size_t>  k2k_edges_to_opt(1);
-
-			for (size_t i=0;i<new_k2k_edge_ids.size();i++)
+			// Do it one by one so we can detect rank-deficient situations, etc.
+			if (!new_k2k_edge_ids.empty())
 			{
-				if (new_k2k_edge_ids[i].has_aprox_init_val)
-					continue;  // Already initialized, can skip it.
-				k2k_edges_to_opt[0] = new_k2k_edge_ids[i].id ;
+				m_profiler.enter("define_new_keyframe.opt_new_edges");
 
-				TOptimizeExtraOutputInfo  init_opt_info;
-				this->optimize_edges(
-					k2k_edges_to_opt,
-					k2f_edges_to_opt,
-					init_opt_info
-					);
+				// temporarily disable robust kernel for initialization (faster)
+				const bool old_kernel = parameters.srba.use_robust_kernel;
+				parameters.srba.use_robust_kernel= false;
+
+				std::vector<size_t>  k2f_edges_to_opt;  // Empty: only initialize k2k edges.
+				std::vector<size_t>  k2k_edges_to_opt(1);
+
+				for (size_t i=0;i<new_k2k_edge_ids.size();i++)
+				{
+					if (new_k2k_edge_ids[i].has_aprox_init_val)
+						continue;  // Already initialized, can skip it.
+					k2k_edges_to_opt[0] = new_k2k_edge_ids[i].id ;
+
+					TOptimizeExtraOutputInfo  init_opt_info;
+					this->optimize_edges(
+						k2k_edges_to_opt,
+						k2f_edges_to_opt,
+						init_opt_info
+						);
+				}
+
+				parameters.srba.use_robust_kernel = old_kernel;
+
+				m_profiler.leave("define_new_keyframe.opt_new_edges");
 			}
-
-			parameters.srba.use_robust_kernel = old_kernel;
-
-			m_profiler.leave("define_new_keyframe.opt_new_edges");
 		}
 
 		m_profiler.enter("define_new_keyframe.optimize");

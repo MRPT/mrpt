@@ -174,7 +174,43 @@ template <> struct LandmarkRendererBase<landmark_rendering_as_pose_constraints>
 		const typename RBA::TOpenGLRepresentationOptions &options,
 		mrpt::opengl::CSetOfObjects& scene)
 	{
-		// TODO
+		using namespace mrpt::math;
+
+		mrpt::opengl::CSetOfLinesPtr gl_edges = mrpt::opengl::CSetOfLines::Create();
+		gl_edges->setLineWidth(1);
+		gl_edges->setColor(0,0,1);
+
+		scene.insert(gl_edges);
+
+		// For each KF: check all its "observations"
+		for (typename RBA::frameid2pose_map_t::const_iterator it=spantree.begin();it!=spantree.end();++it)
+		{
+			const TKeyFrameID kf_id = it->first;
+			const typename RBA::pose_flag_t & pf = it->second;
+
+			const typename RBA::keyframe_info &kfi = rba.get_rba_state().keyframes[kf_id];
+			
+			for (size_t i=0;i<kfi.adjacent_k2f_edges.size();i++)
+			{
+				const typename RBA::k2f_edge_t * k2f = kfi.adjacent_k2f_edges[i];
+				const TKeyFrameID other_kf_id = k2f->feat_rel_pos->id_frame_base;
+				if (kf_id==other_kf_id)
+					continue; // It's not an constraint with ANOTHER keyframe
+
+				// Is the other KF in the spanning tree?
+				typename RBA::frameid2pose_map_t::const_iterator other_it=spantree.find(other_kf_id);				
+				if (other_it==spantree.end()) continue;
+
+				const typename RBA::pose_flag_t & other_pf = other_it->second;
+				
+				// Add edge between the two KFs to represent the pose constraint:
+				mrpt::poses::CPose3D p1 = mrpt::poses::CPose3D(pf.pose);  // Convert to 3D
+				mrpt::poses::CPose3D p2 = mrpt::poses::CPose3D(other_pf.pose);
+				
+				gl_edges->appendLine( p1.x(),p1.y(),p1.z()+0.10, p2.x(),p2.y(),p2.z()+0.10 );
+			}
+
+		} // end for each KF
 	}
 };
 
