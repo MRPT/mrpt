@@ -50,8 +50,9 @@ struct CDatasetParserBase
 	CDatasetParserBase(RBASLAM_Params &cfg) :
 		m_cfg(cfg),
 		m_verbose_level(m_cfg.arg_verbose.getValue()),
-		m_has_GT_map(false), // Do we have a ground truth map?
-		m_has_GT_path(false) //!< Do we have a ground truth path?
+		m_has_GT_map(false), //!< Do we have a ground truth map?
+		m_has_GT_path(false), //!< Do we have a ground truth path?
+		m_add_noise(false)
 	{
 		using namespace std;
 
@@ -59,6 +60,8 @@ struct CDatasetParserBase
 		// ------------------------------
 		if (!m_cfg.arg_dataset.isSet())
 			throw std::runtime_error("Error: argument -d or --dataset is mandatory.\nRun with --help to see all the options or visit http://www.mrpt.org/srba for docs and examples.\n");
+
+		m_add_noise = m_cfg.arg_add_noise.getValue();
 
 		load_obs();
 		load_GT_map();
@@ -266,6 +269,11 @@ struct CDatasetParserBase
 	}
 
 	inline const mrpt::math::CMatrixD & obs() const  { return m_OBS; }
+	inline bool has_GT_map() const { return m_has_GT_map; }
+	inline bool has_GT_path() const { return m_has_GT_path; }
+
+	inline const mrpt::math::CMatrixD & gt_map() const  { return m_GT_MAP; }
+	inline const mrpt::poses::CPose3DQuat & gt_path(size_t timestep) const {  ASSERT_BELOW_(timestep,m_GT_path.size()) return m_GT_path[timestep]; }
 
 protected:
 	RBASLAM_Params &m_cfg;
@@ -273,6 +281,8 @@ protected:
 
 	bool  m_has_GT_map; //!< Do we have a ground truth map?
 	bool  m_has_GT_path; //!< Do we have a ground truth path?
+
+	bool  m_add_noise;
 
 	mrpt::math::CMatrixD   m_OBS;
 	mrpt::math::CMatrixD   m_GT_MAP;

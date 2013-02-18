@@ -67,8 +67,8 @@ struct CDatasetParserTempl<mrpt::srba::observations::RangeBearing_2D> : public C
 		) const
 	{
 		o.feat_id        = m_OBS(idx,1);
-		o.obs_data.range = m_OBS(idx,2) + mrpt::random::randomGenerator.drawGaussian1D(0, m_noise_std_range);
-		o.obs_data.yaw   = m_OBS(idx,3) + mrpt::random::randomGenerator.drawGaussian1D(0, m_noise_std_yaw);
+		o.obs_data.range = m_OBS(idx,2) + (!m_add_noise ? .0 : mrpt::random::randomGenerator.drawGaussian1D(0, m_noise_std_range));
+		o.obs_data.yaw   = m_OBS(idx,3) + (!m_add_noise ? .0 : mrpt::random::randomGenerator.drawGaussian1D(0, m_noise_std_yaw));
 	}
 
 	void loadNoiseParamsInto( mrpt::srba::observation_noise_identity::parameters_t & p )

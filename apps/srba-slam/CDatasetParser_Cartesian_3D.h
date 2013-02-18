@@ -62,19 +62,14 @@ struct CDatasetParserTempl<mrpt::srba::observations::Cartesian_3D> : public CDat
 		) const
 	{
 		o.feat_id = m_OBS(idx,1);
-		o.obs_data.pt.x = m_OBS(idx,2) + mrpt::random::randomGenerator.drawGaussian1D(0, m_noise_std);
-		o.obs_data.pt.y = m_OBS(idx,3) + mrpt::random::randomGenerator.drawGaussian1D(0, m_noise_std);
-		o.obs_data.pt.z = m_OBS(idx,4) + mrpt::random::randomGenerator.drawGaussian1D(0, m_noise_std);
+		o.obs_data.pt.x = m_OBS(idx,2) + (!m_add_noise ? .0 : mrpt::random::randomGenerator.drawGaussian1D(0, m_noise_std));
+		o.obs_data.pt.y = m_OBS(idx,3) + (!m_add_noise ? .0 : mrpt::random::randomGenerator.drawGaussian1D(0, m_noise_std));
+		o.obs_data.pt.z = m_OBS(idx,4) + (!m_add_noise ? .0 : mrpt::random::randomGenerator.drawGaussian1D(0, m_noise_std));
 	}
 
 	void loadNoiseParamsInto( mrpt::srba::observation_noise_identity::parameters_t & p )
 	{
 		p.std_noise_observations = m_noise_std;
 	}
-
-	//void loadNoiseParamsInto( mrpt::srba::observation_noise_identity::parameters_t & p )
-	//{
-	//	//p. ... = m_noise_std_range, m_noise_std_yaw
-	//}
 
 };

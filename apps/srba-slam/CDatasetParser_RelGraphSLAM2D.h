@@ -41,13 +41,11 @@ template <>
 struct CDatasetParserTempl<mrpt::srba::observations::RelativePoses_2D> : public CDatasetParserBase
 {
 	double m_noise_std_xy,m_noise_std_yaw;
-	bool  add_noise;
 
 	CDatasetParserTempl(RBASLAM_Params &cfg) :
 		CDatasetParserBase(cfg),
 		m_noise_std_xy(0.10),
-		m_noise_std_yaw(DEG2RAD(4)),
-		add_noise(false)
+		m_noise_std_yaw(DEG2RAD(4))
 	{
 		if (cfg.arg_noise.isSet()) m_noise_std_xy=cfg.arg_noise.getValue();
 		if (cfg.arg_noise_ang.isSet()) m_noise_std_yaw=DEG2RAD(cfg.arg_noise_ang.getValue());
@@ -65,15 +63,9 @@ struct CDatasetParserTempl<mrpt::srba::observations::RelativePoses_2D> : public 
 		) const
 	{
 		o.feat_id = m_OBS(idx,1);
-		o.obs_data.x   = m_OBS(idx,2);
-		o.obs_data.y   = m_OBS(idx,3);
-		o.obs_data.yaw = m_OBS(idx,5);
-		if (add_noise)
-		{
-			o.obs_data.x+=mrpt::random::randomGenerator.drawGaussian1D(0, m_noise_std_xy);
-			o.obs_data.y+=mrpt::random::randomGenerator.drawGaussian1D(0, m_noise_std_xy);
-			o.obs_data.yaw+=mrpt::random::randomGenerator.drawGaussian1D(0, m_noise_std_yaw);
-		}
+		o.obs_data.x   = m_OBS(idx,2) + (!m_add_noise ? .0 : mrpt::random::randomGenerator.drawGaussian1D(0, m_noise_std_xy));
+		o.obs_data.y   = m_OBS(idx,3) + (!m_add_noise ? .0 : mrpt::random::randomGenerator.drawGaussian1D(0, m_noise_std_xy));
+		o.obs_data.yaw = m_OBS(idx,5) + (!m_add_noise ? .0 : mrpt::random::randomGenerator.drawGaussian1D(0, m_noise_std_yaw));
 	}
 
 	void loadNoiseParamsInto( mrpt::srba::observation_noise_constant_matrix<mrpt::srba::observations::RelativePoses_2D>::parameters_t & p )

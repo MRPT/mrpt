@@ -88,6 +88,7 @@ struct RBASLAM_Params
 	TCLAP::SwitchArg  arg_gui_step_by_step;
 	TCLAP::ValueArg<string>  arg_profile_stats;
 	TCLAP::ValueArg<unsigned int> arg_profile_stats_length;
+	TCLAP::SwitchArg  arg_add_noise;
 	TCLAP::ValueArg<double> arg_noise;
 	TCLAP::ValueArg<double> arg_noise_ang;
 	TCLAP::ValueArg<unsigned int> arg_max_tree_depth;
@@ -130,8 +131,9 @@ struct RBASLAM_Params
 		arg_gui_step_by_step("","step-by-step","If showing the gui, go step by step",cmd, false),
 		arg_profile_stats("","profile-stats","Generate profile stats to CSV files, with the given prefix",false,"","stats",cmd),
 		arg_profile_stats_length("","profile-stats-length","Length in KFs of each saved profiled segment",false,10,"",cmd),
-		arg_noise("","noise","One sigma of the AWGN to be added to every component of observations (images,...) or to linear components if they're mixed (default: sensor-dependant)\n If a SRBA config is provided, it will override this value.",false,0.0,"noise_std",cmd),
-		arg_noise_ang("","noise-ang","One sigma of the AWGN to be added to every angular component of observations, in degrees (default: sensor-dependant)\n If a SRBA config is provided, it will override this value.",false,0.0,"noise_std",cmd),
+		arg_add_noise("","add-noise","Add AWG noise to the dataset",cmd, false),
+		arg_noise("","noise","One sigma of the noise model of every component of observations (images,...) or to linear components if they're mixed (default: sensor-dependant)\n If a SRBA config is provided, it will override this value.",false,0.0,"noise_std",cmd),
+		arg_noise_ang("","noise-ang","One sigma of the noise model of every angular component of observations, in degrees (default: sensor-dependant)\n If a SRBA config is provided, it will override this value.",false,0.0,"noise_std",cmd),
 		arg_max_tree_depth("","max-spanning-tree-depth","Overrides this parameter in config files",false,4,"depth",cmd),
 		arg_max_opt_depth("","max-optimize-depth","Overrides this parameter in config files",false,4,"depth",cmd),
 		arg_max_lambda("","max-lambda","Marq-Lev. optimization: maximum lambda to stop iterating",false,1e20,"depth",cmd),
@@ -387,43 +389,37 @@ struct RBA_Run : public RBA_Run_Base
 		// Load dataset:
 		const size_t nTotalObs = dataset.obs().getRowCount();
 
-		// Set camera calib from dataset:
-		//rba.parameters.sensor.camera_calib = CAM_CALIB;
-
-		// Sensor pose on the robot parameters:
-		//rba.parameters.sensor_pose.relative_pose = mrpt::poses::CPose3D(0,0,0,DEG2RAD(-90),DEG2RAD(0),DEG2RAD(-90) ); // Set camera pointing forwards (camera's +Z is robot +X)
-
 		// ------------------------------------------------------------------------
 		// Process the dataset sequentially, add observations to the RBA problem
 		// and solve it:
 		// ------------------------------------------------------------------------
 
 		mrpt::gui::CDisplayWindow3DPtr win;
-		mrpt::opengl::COpenGLViewportPtr gl_view2D, gl_view_cur_tree;
-		mrpt::opengl::CSetOfObjectsPtr gl_rba_scene, gl_cur_kf_tree;
+		mrpt::opengl::COpenGLViewportPtr gl_view_cur_tree, gl_view_GT;
+		mrpt::opengl::CSetOfObjectsPtr gl_rba_scene, gl_cur_kf_tree, gl_gt_pose;
+		mrpt::opengl::CPointCloudPtr  gl_gt_map;
+		mrpt::opengl::CSetOfLinesPtr  gl_gt_path_track;
 
 		// Arbitrary unique IDs for text labels in the 3D gui.
 		const size_t TXTID_KF   = 1000;
 		const size_t TXTID_RMSE = 1001;
+		const size_t TXTID_LABEL_ST = 1002;
+		const size_t TXTID_LABEL_GT = 1003;
 
 		if (DEMO_SIMUL_SHOW_GUI)
 		{
 			win = mrpt::gui::CDisplayWindow3D::Create("Simulation state",1000,800);
 			win->setCameraPointingToPoint(8,8,0);
 
-			//win->grabImagesStart("capture_");
-
-			gl_rba_scene   = mrpt::opengl::CSetOfObjects::Create();
-			gl_cur_kf_tree = mrpt::opengl::CSetOfObjects::Create();
-
 			{
 				mrpt::opengl::COpenGLScenePtr scene = win->get3DSceneAndLock();
 
-				//gl_view2D = scene->createViewport("view2D");
-				//gl_view2D->setViewportPosition(0,0,640/2,480/2);
+				gl_rba_scene   = mrpt::opengl::CSetOfObjects::Create();
+				scene->insert(gl_rba_scene);
 
+				// Viewport: tree view
 				gl_view_cur_tree = scene->createViewport("view_tree");
-				gl_view_cur_tree->setViewportPosition(-600,0, 600,200);
+				gl_view_cur_tree->setViewportPosition(-500,0, 500,300);
 				gl_view_cur_tree->setBorderSize(1);
 				gl_view_cur_tree->setTransparent(true);
 				mrpt::opengl::CCamera & cam = gl_view_cur_tree->getCamera();
@@ -433,8 +429,59 @@ struct RBA_Run : public RBA_Run_Base
 				cam.setOrthogonal();
 				cam.setZoomDistance(25);
 
-				scene->insert(gl_rba_scene);
+				win->addTextMessage(
+					-478,302, "LOCAL SPANNING TREE:",
+					mrpt::utils::TColorf(0.8,0.8,0), "mono",11, mrpt::opengl::NICE, TXTID_LABEL_ST,1.5,0.1,
+					true /* draw shadow */ );
+
+
+				gl_cur_kf_tree = mrpt::opengl::CSetOfObjects::Create();
 				gl_view_cur_tree->insert(gl_cur_kf_tree);
+
+				// Show ground-truth map?
+				if (dataset.has_GT_map() && dataset.has_GT_path())
+				{
+					win->addTextMessage(
+						20,302, "GROUND TRUTH:",
+						mrpt::utils::TColorf(0.8,0.8,0), "mono",11, mrpt::opengl::NICE, TXTID_LABEL_GT,1.5,0.1,
+						true /* draw shadow */ );
+
+					gl_view_GT = scene->createViewport("view_GT");
+					gl_view_GT->setViewportPosition(0,0,500,300);
+					gl_view_GT->setBorderSize(1);
+					gl_view_GT->setTransparent(false);
+					mrpt::opengl::CCamera & cam = gl_view_GT->getCamera();
+					cam.setPointingAt(0,0,0);
+					cam.setElevationDegrees(90);
+					cam.setAzimuthDegrees(-90);
+					cam.setOrthogonal();
+					cam.setZoomDistance(55);
+
+					// GT Map:
+					const mrpt::math::CMatrixD &M = dataset.gt_map();
+					const size_t nLMs = M.rows();
+					ASSERTMSG_(M.cols()==3, "Ground truth map file: expected exactly 3 columns (X,Y,Z)!")
+
+					gl_gt_map = mrpt::opengl::CPointCloud::Create();
+					gl_gt_map->resize(nLMs);
+					for (size_t i=0;i<nLMs;i++)
+						gl_gt_map->setPoint_fast(i, M(i,0),M(i,1),M(i,2));
+
+					gl_view_GT->insert(gl_gt_map);
+
+					// Ground grid:
+					mrpt::math::TPoint3D bb_min, bb_max;
+					gl_gt_map->getBoundingBox(bb_min,bb_max);
+					gl_view_GT->insert( mrpt::opengl::CGridPlaneXY::Create(bb_min.x-10,bb_max.x+10, bb_min.y-10,bb_max.y+10, -0.001, 10) );
+
+					// GT pose:
+					gl_gt_pose = mrpt::opengl::stock_objects::CornerXYZSimple(2.0f,4.0f);
+					gl_view_GT->insert(gl_gt_pose);
+
+					gl_gt_path_track = mrpt::opengl::CSetOfLines::Create();
+					gl_view_GT->insert(gl_gt_path_track);
+					gl_gt_path_track->appendLine(0,0,0, 0,0,0); // Create a first dummy segment so the rest can be "strip lines".
+				}
 
 				win->unlockAccess3DScene();
 			}
@@ -467,7 +514,8 @@ struct RBA_Run : public RBA_Run_Base
 		size_t last_obs_idx_reported = 0;
 		const size_t REPORT_PROGRESS_OBS_COUNT = 200;
 
-		mrpt::utils::CTicTac  mytimer;
+		mrpt::utils::CTicTac  mytimer, mytimer2;
+		double new_kf_time=0;
 		mytimer.Tic();
 
 
@@ -591,6 +639,7 @@ struct RBA_Run : public RBA_Run_Base
 
 				// Append new key_frame to the RBA state:
 
+				mytimer2.Tic();
 				//  ======================================
 				//  ==          Here is the beef        ==
 				//  ======================================
@@ -600,6 +649,7 @@ struct RBA_Run : public RBA_Run_Base
 					true // Optimize?
 					);
 				//  ======================================
+				new_kf_time = mytimer2.Tac();
 
 				// Append optimization stat as new entries in the time logger:
 				{
@@ -646,26 +696,6 @@ struct RBA_Run : public RBA_Run_Base
 			// Eval RMSE:
 			const double RMSE = new_kf_info.optimize_results.num_observations ? std::sqrt(new_kf_info.optimize_results.total_sqr_error_final / new_kf_info.optimize_results.num_observations) : 0;
 
-			// Draw simulated "camera" image:
-			//if (DEMO_SIMUL_SHOW_GUI && win && win->isOpen())
-			//{
-			//	mrpt::utils::CImage img(rba.parameters.sensor.camera_calib.ncols/2,rba.parameters.sensor.camera_calib.nrows/2,CH_RGB);
-			//	img.filledRectangle(0,0,img.getWidth()-1,img.getHeight()-1, mrpt::utils::TColor(0,0,0) );
-			//	img.selectTextFont("6x13");
-
-			//	for (mrpt::vision::TSequenceFeatureObservations::const_iterator it=feats_to_draw.begin();it!=feats_to_draw.end();++it)
-			//	{
-			//		img.cross(it->px.x/2,it->px.y/2, mrpt::utils::TColor::red,'+');
-			//		img.textOut(it->px.x/2+2,it->px.y/2+2,mrpt::format("%i",static_cast<int>(it->id_feature)), mrpt::utils::TColor::white);
-			//	}
-
-			//	{
-			//		win->get3DSceneAndLock();
-			//		gl_view2D->setImageView(img);
-			//		win->unlockAccess3DScene();
-			//	}
-			//}
-
 			// Draw 3D scene of the SRBA map:
 			if (DEMO_SIMUL_SHOW_GUI && win && win->isOpen())
 			{
@@ -678,10 +708,9 @@ struct RBA_Run : public RBA_Run_Base
 
 				win->addTextMessage(
 					5,-30,
-					mrpt::format("After opt RMSE=%.06f",RMSE),
+					mrpt::format("After opt RMSE=%.06f | Total step time=%.03fms",RMSE, 1e3*new_kf_time ),
 					mrpt::utils::TColorf(0.9,0.9,0.9), "mono",10, mrpt::opengl::NICE, TXTID_RMSE,1.5,0.1,
 					true /* draw shadow */ );
-
 
 				// Update 3D objects:
 				const srba::TKeyFrameID root_kf = next_rba_keyframe_ID-1;
@@ -713,6 +742,19 @@ struct RBA_Run : public RBA_Run_Base
 				gl_obj_tree->getBoundingBox(bbmin,bbmax);
 				const double cur_tree_width = 1+std::min(bbmax.x-bbmin.x, bbmax.y-bbmin.y);
 				gl_view_cur_tree->getCamera().setZoomDistance(1.5*cur_tree_width);
+
+				// Update ground truth:
+				if (gl_view_GT)
+				{
+					const mrpt::poses::CPose3DQuat & gt_pose = dataset.gt_path(new_kf_info.kf_id);
+
+					mrpt::opengl::CCamera & cam = gl_view_GT->getCamera();
+					cam.setPointingAt(gt_pose.x(),gt_pose.y(),gt_pose.z());
+					gl_gt_pose->setPose(mrpt::poses::CPose3D(gt_pose));
+
+					gl_gt_path_track->appendLineStrip(gt_pose.x(),gt_pose.y(),gt_pose.z());
+				}
+
 
 				win->unlockAccess3DScene();
 				win->repaint();

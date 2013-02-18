@@ -62,10 +62,10 @@ struct CDatasetParserTempl<mrpt::srba::observations::StereoCamera> : public CDat
 		) const
 	{
 		o.feat_id = m_OBS(idx,1);
-		o.obs_data.left_px.x  = m_OBS(idx,2) + mrpt::random::randomGenerator.drawGaussian1D(0, m_noise_std_px);
-		o.obs_data.left_px.y  = m_OBS(idx,3) + mrpt::random::randomGenerator.drawGaussian1D(0, m_noise_std_px);
-		o.obs_data.right_px.x = m_OBS(idx,4) + mrpt::random::randomGenerator.drawGaussian1D(0, m_noise_std_px);
-		o.obs_data.right_px.y = m_OBS(idx,5) + mrpt::random::randomGenerator.drawGaussian1D(0, m_noise_std_px);
+		o.obs_data.left_px.x  = m_OBS(idx,2) + (!m_add_noise ? .0 : mrpt::random::randomGenerator.drawGaussian1D(0, m_noise_std_px));
+		o.obs_data.left_px.y  = m_OBS(idx,3) + (!m_add_noise ? .0 : mrpt::random::randomGenerator.drawGaussian1D(0, m_noise_std_px));
+		o.obs_data.right_px.x = m_OBS(idx,4) + (!m_add_noise ? .0 : mrpt::random::randomGenerator.drawGaussian1D(0, m_noise_std_px));
+		o.obs_data.right_px.y = m_OBS(idx,5) + (!m_add_noise ? .0 : mrpt::random::randomGenerator.drawGaussian1D(0, m_noise_std_px));
 	}
 
 	void loadNoiseParamsInto( mrpt::srba::observation_noise_identity::parameters_t & p )
