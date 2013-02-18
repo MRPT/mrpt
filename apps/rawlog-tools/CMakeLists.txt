@@ -33,7 +33,7 @@ ADD_EXECUTABLE(rawlog-edit
 	rawlog-edit_rename_externals.cpp
 	)
 SET(TMP_TARGET_NAME "rawlog-edit")
-SET_TARGET_PROPERTIES(${TMP_TARGET_NAME} PROPERTIES PROJECT_LABEL "(APP) ${TMP_TARGET_NAME}")
+
 # Add the required libraries for linking:
 TARGET_LINK_LIBRARIES(${TMP_TARGET_NAME} ${MRPT_LINKER_LIBS})
 DeclareAppForInstall(${TMP_TARGET_NAME})
@@ -51,7 +51,7 @@ ADD_EXECUTABLE(carmen2rawlog
 	carmen2rawlog_main.cpp
 	)
 SET(TMP_TARGET_NAME "carmen2rawlog")
-SET_TARGET_PROPERTIES(${TMP_TARGET_NAME} PROPERTIES PROJECT_LABEL "(APP) ${TMP_TARGET_NAME}")
+
 # Add the required libraries for linking:
 TARGET_LINK_LIBRARIES(${TMP_TARGET_NAME} ${MRPT_LINKER_LIBS})
 DeclareAppForInstall(${TMP_TARGET_NAME})
@@ -68,7 +68,7 @@ ADD_EXECUTABLE(carmen2simplemap
         carmen2simplemap_main.cpp
         )
 SET(TMP_TARGET_NAME "carmen2simplemap")
-SET_TARGET_PROPERTIES(${TMP_TARGET_NAME} PROPERTIES PROJECT_LABEL "(APP) ${TMP_TARGET_NAME}")
+
 # Add the required libraries for linking:
 TARGET_LINK_LIBRARIES(${TMP_TARGET_NAME} ${MRPT_LINKER_LIBS})
 DeclareAppForInstall(${TMP_TARGET_NAME})
@@ -87,7 +87,7 @@ ADD_EXECUTABLE(rawlog2carmen
 	rawlog2carmen_main.cpp
 	)
 SET(TMP_TARGET_NAME "rawlog2carmen")
-SET_TARGET_PROPERTIES(${TMP_TARGET_NAME} PROPERTIES PROJECT_LABEL "(APP) ${TMP_TARGET_NAME}")
+
 # Add the required libraries for linking:
 TARGET_LINK_LIBRARIES(${TMP_TARGET_NAME} ${MRPT_LINKER_LIBS})
 DeclareAppForInstall(${TMP_TARGET_NAME})

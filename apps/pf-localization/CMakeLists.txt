@@ -19,7 +19,7 @@ ADD_EXECUTABLE(pf-localization pf_localization_main.cpp)
 
 SET(TMP_TARGET_NAME "pf-localization")
 
-SET_TARGET_PROPERTIES(${TMP_TARGET_NAME} PROPERTIES PROJECT_LABEL "(APP) ${TMP_TARGET_NAME}")
+
 
 # Add the required libraries for linking:
 TARGET_LINK_LIBRARIES(${TMP_TARGET_NAME} ${MRPT_LINKER_LIBS})

@@ -34,7 +34,7 @@ IF(wxWidgets_FOUND)
 	SET(TMP_TARGET_NAME "2d-slam-demo")
 
 
-	SET_TARGET_PROPERTIES(${TMP_TARGET_NAME} PROPERTIES PROJECT_LABEL "(APP) ${TMP_TARGET_NAME}")
+	
 
 	# Add the required libraries for linking:
 	INCLUDE_DIRECTORIES( ${wxWidgets_INCLUDE_DIRS} )

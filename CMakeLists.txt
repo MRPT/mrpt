@@ -86,6 +86,18 @@ IF(PKG_CONFIG_FOUND)
 	INCLUDE(FindPkgConfig)
 ENDIF(PKG_CONFIG_FOUND)
 
+# Group projects in "folders"
+# ===================================================
+IF (CMAKE_VERSION VERSION_GREATER "2.8.0")
+	SET(ENABLE_SOLUTION_FOLDERS ON CACHE BOOL "Group projects under virtual folders of the compiler IDE (e.g. VisualStudio)")
+ENDIF (CMAKE_VERSION VERSION_GREATER "2.8.0")
+
+if (ENABLE_SOLUTION_FOLDERS)
+  set_property(GLOBAL PROPERTY USE_FOLDERS ON)
+  set_property(GLOBAL PROPERTY PREDEFINED_TARGETS_FOLDER "CMakeTargets")
+endif (ENABLE_SOLUTION_FOLDERS)
+
+
 # Build the ARIA library?
 SET(BUILD_ARIA ON CACHE BOOL "Build an embedded version of ActivMedia ARIA library (interface to mobile robots)")
 #MARK_AS_ADVANCED(BUILD_ARIA)
@@ -574,6 +586,9 @@ CONFIGURE_FILE(
 ADD_CUSTOM_TARGET(uninstall
   "${CMAKE_COMMAND}" -P "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake")
 
+if(ENABLE_SOLUTION_FOLDERS)
+	set_target_properties(uninstall PROPERTIES FOLDER "CMakeTargets")
+endif(ENABLE_SOLUTION_FOLDERS)
 
 # ----------------------------------------------------------------------------
 #  Hide some variables to the user, just show the important variables:

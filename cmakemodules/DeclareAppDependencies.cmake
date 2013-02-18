@@ -2,6 +2,14 @@
 # Usage: DeclareAppDependencies( appTargetName [mrpt-xxx [mrpt-yyy] ...] )
 #
 macro(DeclareAppDependencies name)
+	# Set app names:
+	if(ENABLE_SOLUTION_FOLDERS)
+		set_target_properties(${name} PROPERTIES FOLDER "applications")
+	else(ENABLE_SOLUTION_FOLDERS)
+		SET_TARGET_PROPERTIES(${name} PROPERTIES PROJECT_LABEL "(APP) ${name}")	
+	endif(ENABLE_SOLUTION_FOLDERS)
+	
+	# set deps:
 	set(ALL_DEPS "")
 	
 	FOREACH(DEP ${ARGN})

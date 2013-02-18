@@ -17,6 +17,9 @@ endif(MSVC)
 # Add the "make test" target:
 # -----------------------------
 ADD_CUSTOM_TARGET(test)
+if(ENABLE_SOLUTION_FOLDERS)
+	set_target_properties(test PROPERTIES FOLDER "unit tests")
+endif(ENABLE_SOLUTION_FOLDERS)
 
 # Tests based on Google gtest:
 # -----------------------------
@@ -81,6 +84,11 @@ ENDIF (CMAKE_MRPT_HAS_GTEST_SYSTEM)
 	ADD_DEPENDENCIES(run_tests_${_TSTLIB} test_${_TSTLIB})
 	ADD_DEPENDENCIES(test run_tests_${_TSTLIB})
 
+if(ENABLE_SOLUTION_FOLDERS)
+	set_target_properties(test_${_TSTLIB} PROPERTIES FOLDER "unit tests")
+	set_target_properties(run_tests_${_TSTLIB} PROPERTIES FOLDER "unit tests")
+endif(ENABLE_SOLUTION_FOLDERS)
+	
 ENDFOREACH(_TSTLIB)
 
 

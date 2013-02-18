@@ -178,7 +178,11 @@ macro(internal_define_mrpt_lib name headers_only)
 			)
 	ENDIF (NOT ${headers_only})
 
-	SET_TARGET_PROPERTIES(mrpt-${name} PROPERTIES PROJECT_LABEL "(LIB) mrpt-${name}")
+	if(ENABLE_SOLUTION_FOLDERS)
+		set_target_properties(mrpt-${name} PROPERTIES FOLDER "modules")
+	else(ENABLE_SOLUTION_FOLDERS)
+		SET_TARGET_PROPERTIES(mrpt-${name} PROPERTIES PROJECT_LABEL "(LIB) mrpt-${name}")
+	endif(ENABLE_SOLUTION_FOLDERS)
 
 	# Set custom name of lib + dynamic link numbering convenions in Linux:
 	IF (NOT ${headers_only})

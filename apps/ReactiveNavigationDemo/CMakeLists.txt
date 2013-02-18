@@ -33,7 +33,7 @@ IF(wxWidgets_FOUND)
 	SET(TMP_TARGET_NAME "ReactiveNavigationDemo")
 
 
-	SET_TARGET_PROPERTIES(${TMP_TARGET_NAME} PROPERTIES PROJECT_LABEL "(APP) ${TMP_TARGET_NAME}")
+	
 
 	# Add the required libraries for linking:
 	TARGET_LINK_LIBRARIES(${TMP_TARGET_NAME} ${wxWidgets_LIBRARIES} )

@@ -21,12 +21,10 @@ ADD_EXECUTABLE(grid-matching
 SET(TMP_TARGET_NAME     "grid-matching")
 SET(TMP_TARGET_NAME_OUT "grid-matching")
 
-SET_TARGET_PROPERTIES(${TMP_TARGET_NAME} PROPERTIES PROJECT_LABEL "(APP) ${TMP_TARGET_NAME_OUT}")
-
 SET_TARGET_PROPERTIES(${TMP_TARGET_NAME} PROPERTIES OUTPUT_NAME ${TMP_TARGET_NAME_OUT})
 
 # Add the required libraries for linking:
-TARGET_LINK_LIBRARIES(${TMP_TARGET_NAME} ${MRPT_LINKER_LIBS} ${MY_Boost_LIBRARIES})
+TARGET_LINK_LIBRARIES(${TMP_TARGET_NAME} ${MRPT_LINKER_LIBS})
 
 # Dependencies on MRPT libraries:
 #  Just mention the top-level dependency, the rest will be detected automatically, 

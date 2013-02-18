@@ -14,6 +14,10 @@ ADD_LIBRARY(mrptwxthings
 	src/toggle.cpp    # fancy button
 	)
 
+if(ENABLE_SOLUTION_FOLDERS)
+	set_target_properties(mrptwxthings PROPERTIES FOLDER "3rd party")
+else(ENABLE_SOLUTION_FOLDERS)
 SET_TARGET_PROPERTIES(mrptwxthings  PROPERTIES PROJECT_LABEL "(LIB) mrptwxthings")
+endif(ENABLE_SOLUTION_FOLDERS)
 
 

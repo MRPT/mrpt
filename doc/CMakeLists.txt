@@ -23,6 +23,11 @@ add_custom_target(documentation_performance_html
 	)
 add_dependencies(documentation_performance_html mrpt-perfdata2html)
 
+if(ENABLE_SOLUTION_FOLDERS)
+	set_target_properties(documentation_performance_html PROPERTIES FOLDER "documentation")
+endif(ENABLE_SOLUTION_FOLDERS)
+
+
 
 IF(DOXYGEN_EXECUTABLE)
 	# --------------------------------
@@ -39,6 +44,9 @@ IF(DOXYGEN_EXECUTABLE)
 		WORKING_DIRECTORY	${MRPT_SOURCE_DIR}/
 		COMMENT 		"Generating MRPT documentation (html)"
 		)
+	if(ENABLE_SOLUTION_FOLDERS)
+		set_target_properties(documentation_html PROPERTIES FOLDER "documentation")
+	endif(ENABLE_SOLUTION_FOLDERS)
 
 	# --------------------------------
 	#   documentation_chm
@@ -54,6 +62,9 @@ IF(DOXYGEN_EXECUTABLE)
 		WORKING_DIRECTORY	${MRPT_SOURCE_DIR}/
 		COMMENT 		"Generating MRPT documentation (chm)"
 		)
+	if(ENABLE_SOLUTION_FOLDERS)
+		set_target_properties(documentation_chm PROPERTIES FOLDER "documentation")
+	endif(ENABLE_SOLUTION_FOLDERS)
 
 	# --------------------------------
 	#   documentation_html_chm
@@ -69,5 +80,8 @@ IF(DOXYGEN_EXECUTABLE)
 		WORKING_DIRECTORY	${MRPT_SOURCE_DIR}/
 		COMMENT 		"Generating MRPT documentation (html+chm)"
 		)
+	if(ENABLE_SOLUTION_FOLDERS)
+		set_target_properties(documentation_html_chm PROPERTIES FOLDER "documentation")
+	endif(ENABLE_SOLUTION_FOLDERS)
 		
 ENDIF(DOXYGEN_EXECUTABLE)
