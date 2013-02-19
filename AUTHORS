@@ -61,6 +61,7 @@ the University of Malaga.
   - Many hacks and optimizations in different parts of MRPT.
   
 * Eduardo Fernandez Moral , University of Malaga.
+  - The new library: mrpt-pbmap
   - Driver for Rovio mobile robot with webcam. 
   - Some other functions.
 
