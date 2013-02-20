@@ -42,7 +42,7 @@ namespace mrpt { namespace srba {
   * \note Runs in O(1)
   */
 template <class KF2KF_POSE_TYPE,class LM_TYPE,class OBS_TYPE,class RBA_OPTIONS>
-TKeyFrameID RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::alloc_keyframe()
+TKeyFrameID RbaEngine<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::alloc_keyframe()
 {
 	// ==== Assign a free ID to the new KF   : O(1) ====
 	const TKeyFrameID new_kf_id = rba_state.keyframes.size();

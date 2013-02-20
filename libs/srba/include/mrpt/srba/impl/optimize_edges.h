@@ -66,7 +66,7 @@ using namespace std;
 //          (See header for docs)
 // ------------------------------------------
 template <class KF2KF_POSE_TYPE,class LM_TYPE,class OBS_TYPE,class RBA_OPTIONS>
-void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::optimize_edges(
+void RbaEngine<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::optimize_edges(
 	const std::vector<size_t> & run_k2k_edges_in,
 	const std::vector<size_t> & run_feat_ids_in,
 	TOptimizeExtraOutputInfo & out_info,
@@ -93,7 +93,7 @@ void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::optimize_edges(
 	{
 		const typename TSparseBlocksJacobians_dh_dAp::col_t & col_i = rba_state.lin_system.dh_dAp.getCol( run_k2k_edges_in[i] );
 		if (!col_i.empty()) run_k2k_edges.push_back( run_k2k_edges_in[i] );
-		else std::cerr << "[RBA_Problem::optimize_edges] *Warning*: Skipping optimization of k2k edge #"<<run_k2k_edges_in[i] << " (" <<rba_state.k2k_edges[run_k2k_edges_in[i]].from <<"->"<<rba_state.k2k_edges[run_k2k_edges_in[i]].to <<") since no observation depends on it.\n";
+		else std::cerr << "[RbaEngine::optimize_edges] *Warning*: Skipping optimization of k2k edge #"<<run_k2k_edges_in[i] << " (" <<rba_state.k2k_edges[run_k2k_edges_in[i]].from <<"->"<<rba_state.k2k_edges[run_k2k_edges_in[i]].to <<") since no observation depends on it.\n";
 	}
 
 	const mrpt::utils::map_as_vector<size_t,size_t> & dh_df_remap = rba_state.lin_system.dh_df.getColInverseRemappedIndices();
@@ -112,7 +112,7 @@ void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::optimize_edges(
 		const typename TSparseBlocksJacobians_dh_df::col_t & col_i = rba_state.lin_system.dh_df.getCol( it_remap->second );
 
 		if (!col_i.empty()) run_feat_ids.push_back( run_feat_ids_in[i] );
-		else { std::cerr << "[RBA_Problem::optimize_edges] *Warning*: Skipping optimization of k2f edge #"<<run_feat_ids_in[i] << " since no observation depends on it.\n"; }
+		else { std::cerr << "[RbaEngine::optimize_edges] *Warning*: Skipping optimization of k2f edge #"<<run_feat_ids_in[i] << " since no observation depends on it.\n"; }
 	}
 
 	DETAILED_PROFILING_LEAVE("opt.filter_unknowns")

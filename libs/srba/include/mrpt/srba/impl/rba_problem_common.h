@@ -39,7 +39,7 @@ namespace mrpt { namespace srba {
 
 /** Default constructor */
 template <class KF2KF_POSE_TYPE,class LM_TYPE,class OBS_TYPE,class RBA_OPTIONS>
-RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::RBA_Problem() :
+RbaEngine<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::RbaEngine() :
 	rba_state(),
 	m_profiler(true)
 {
@@ -48,13 +48,13 @@ RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::RBA_Problem() :
 
 /** Reset the entire problem to an empty state (automatically called at construction) */
 template <class KF2KF_POSE_TYPE,class LM_TYPE,class OBS_TYPE,class RBA_OPTIONS>
-void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::clear()
+void RbaEngine<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::clear()
 {
 	this->rba_state.clear();
 }
 
 template <class KF2KF_POSE_TYPE,class LM_TYPE,class OBS_TYPE,class RBA_OPTIONS>
-RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::TSRBAParameters::TSRBAParameters() :
+RbaEngine<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::TSRBAParameters::TSRBAParameters() :
 	// -------------------------------
 	edge_creation_policy ( ecpICRA2013 ),
 	max_tree_depth       ( 4 ),
@@ -78,7 +78,7 @@ RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::TSRBAParameters::TSRB
 
 /** See docs of mrpt::utils::CLoadableOptions */
 template <class KF2KF_POSE_TYPE,class LM_TYPE,class OBS_TYPE,class RBA_OPTIONS>
-void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::TSRBAParameters::loadFromConfigFile(const mrpt::utils::CConfigFileBase & source,const std::string & section)
+void RbaEngine<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::TSRBAParameters::loadFromConfigFile(const mrpt::utils::CConfigFileBase & source,const std::string & section)
 {
 	edge_creation_policy = source.read_enum(section, "edge_creation_policy", edge_creation_policy);
 	MRPT_LOAD_CONFIG_VAR(max_tree_depth,uint64_t,source,section)
@@ -98,7 +98,7 @@ void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::TSRBAParameters:
 
 /** See docs of mrpt::utils::CLoadableOptions */
 template <class KF2KF_POSE_TYPE,class LM_TYPE,class OBS_TYPE,class RBA_OPTIONS>
-void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::TSRBAParameters::saveToConfigFile(mrpt::utils::CConfigFileBase & out,const std::string & section) const
+void RbaEngine<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::TSRBAParameters::saveToConfigFile(mrpt::utils::CConfigFileBase & out,const std::string & section) const
 {
 	out.write(section,"edge_creation_policy", mrpt::utils::TEnumType<TEdgeCreationPolicy>::value2name(edge_creation_policy) ,  /* text width */ 30, 30, "Arc creation policy");
 	out.write(section,"max_tree_depth",max_tree_depth,  /* text width */ 30, 30, "Maximum depth of all spanning trees");

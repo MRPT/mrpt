@@ -40,7 +40,7 @@ namespace mrpt { namespace srba {
 #define OBS_SUPER_VERBOSE   0
 
 template <class KF2KF_POSE_TYPE,class LM_TYPE,class OBS_TYPE,class RBA_OPTIONS>
-size_t RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::add_observation(
+size_t RbaEngine<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::add_observation(
 	const TKeyFrameID            observing_kf_id,
 	const typename observation_traits<OBS_TYPE>::observation_t     & new_obs,
 	const array_landmark_t * fixed_relative_position,

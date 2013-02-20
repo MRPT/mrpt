@@ -41,7 +41,7 @@ namespace mrpt { namespace srba {
 	/** \addtogroup mrpt_srba_predefined
 		* @{ */
 
-	typedef RBA_Problem<
+	typedef RbaEngine<
 		kf2kf_poses::SE3,
 		landmarks::Euclidean3D,
 		observations::MonocularCamera

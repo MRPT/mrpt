@@ -262,7 +262,7 @@ struct InitializerSensorPoseParams<sensor_pose_on_robot_se3>
 template <class KF2KF_POSE_TYPE,class LM_TYPE,class OBS_TYPE, class RBA_OPTIONS>
 struct RBA_Run : public RBA_Run_Base
 {
-	typedef RBA_Problem<
+	typedef RbaEngine<
 		KF2KF_POSE_TYPE, // Parameterization  KF-to-KF poses
 		LM_TYPE,         // Parameterization of landmark positions
 		OBS_TYPE,        // Type of observations
@@ -785,7 +785,7 @@ struct RBA_Run : public RBA_Run_Base
 
 	#if 0
 			cout << "Optimized edges:\n";
-			for (srba::RBA_Problem::k2k_edges_t::const_iterator itEdge=rba.get_k2k_edges().begin();itEdge!=rba.get_k2k_edges().end();++itEdge)
+			for (srba::RbaEngine::k2k_edges_t::const_iterator itEdge=rba.get_k2k_edges().begin();itEdge!=rba.get_k2k_edges().end();++itEdge)
 			{
 				const mrpt::utils::TNodeID nodeFrom = itEdge->from;
 				const mrpt::utils::TNodeID nodeTo   = itEdge->to;

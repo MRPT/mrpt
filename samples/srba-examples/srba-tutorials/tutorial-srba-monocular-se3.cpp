@@ -50,7 +50,7 @@ struct my_srba_options
 	typedef observation_noise_identity    obs_noise_matrix_t;      // The sensor noise matrix is the same for all observations and equal to \sigma * I(identity)
 };
 
-typedef RBA_Problem<
+typedef RbaEngine<
 	kf2kf_poses::SE3,                // Parameterization  KF-to-KF poses
 	landmarks::Euclidean3D,          // Parameterization of landmark positions    
 	observations::MonocularCamera,    // Type of observations

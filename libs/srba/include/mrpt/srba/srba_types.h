@@ -223,7 +223,7 @@ namespace srba
 		bool    has_aprox_init_val;
 	};
 
-	/** Information returned by RBA_Problem::srba_new_keyframe() */
+	/** Information returned by RbaEngine::srba_new_keyframe() */
 	struct TNewKeyFrameInfo
 	{
 		TKeyFrameID                   kf_id;         //!< The ID of the newly created KF.
@@ -484,8 +484,8 @@ namespace srba
 	};
 
 	/** All the important data of a RBA problem at any given instant of time
-	  *  Operations on this structure are performed via the public API of srba::RBA_Problem
-	  * \sa RBA_Problem
+	  *  Operations on this structure are performed via the public API of srba::RbaEngine
+	  * \sa RbaEngine
 	  */
 	template <class KF2KF_POSE_TYPE,class LM_TYPE,class OBS_TYPE,class RBA_OPTIONS>
 	struct TRBA_Problem_state

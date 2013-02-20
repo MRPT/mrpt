@@ -33,6 +33,9 @@
    | POSSIBILITY OF SUCH DAMAGE.                                               |
    +---------------------------------------------------------------------------+ */
 
+#define SRBA_SOLVE_USING_SCHUR_COMPLEMENT 1
+#define SRBA_USE_DENSE_CHOLESKY 0
+
 #include <mrpt/srba.h>
 #include <mrpt/random.h>
 #include <mrpt/gui.h>  // For rendering results as a 3D scene
@@ -49,7 +52,7 @@ struct my_srba_options
 	typedef observation_noise_constant_matrix<observations::RelativePoses_2D>   obs_noise_matrix_t;      // The sensor noise matrix is the same for all observations and equal to some given matrix
 };
 
-typedef RBA_Problem<
+typedef RbaEngine<
 	kf2kf_poses::SE2,                // Parameterization  KF-to-KF poses
 	landmarks::RelativePoses2D,      // Parameterization of landmark positions
 	observations::RelativePoses_2D,  // Type of observations
@@ -109,7 +112,7 @@ int main(int argc, char**argv)
 	rba.setVerbosityLevel( 1 );   // 0: None; 1:Important only; 2:Verbose
 
 	rba.parameters.srba.use_robust_kernel = false;
-	rba.parameters.srba.optimize_new_edges_alone  = false;  // skip optimizing new edges one by one: relative graph-slam without landmarks should be robust enough
+	//rba.parameters.srba.optimize_new_edges_alone  = false;  // skip optimizing new edges one by one? Relative graph-slam without landmarks should be robust enough, but just to make sure we can leave this to "true" (default)
 
 	// Information matrix for relative pose observations:
 	{

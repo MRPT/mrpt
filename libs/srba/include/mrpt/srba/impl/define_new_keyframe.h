@@ -39,7 +39,7 @@ namespace mrpt { namespace srba {
 
 // The main entry point of SRBA. See .h and papers for docs.
 template <class KF2KF_POSE_TYPE,class LM_TYPE,class OBS_TYPE,class RBA_OPTIONS>
-void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::define_new_keyframe(
+void RbaEngine<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::define_new_keyframe(
 	const typename traits_t::new_kf_observations_t  & obs,
 	TNewKeyFrameInfo  & out_new_kf_info,
 	const bool          run_local_optimization )
@@ -140,7 +140,7 @@ void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::define_new_keyfr
 	m_profiler.leave("define_new_keyframe");
 
 	VERBOSE_LEVEL(1) << "[define_new_keyframe] Done. New KF #" << out_new_kf_info.kf_id << " with " << out_new_kf_info.created_edge_ids.size() << " new edges.\n";
-} // end of RBA_Problem::define_new_keyframe
+} // end of RbaEngine::define_new_keyframe
 
 
 } } // end NS

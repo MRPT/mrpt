@@ -45,7 +45,7 @@ namespace mrpt { namespace srba {
 	*/
 template <class KF2KF_POSE_TYPE,class LM_TYPE,class OBS_TYPE,class RBA_OPTIONS>
 template <class SPARSEBLOCKHESSIAN>
-size_t RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::sparse_hessian_update_numeric( SPARSEBLOCKHESSIAN & H ) const
+size_t RbaEngine<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::sparse_hessian_update_numeric( SPARSEBLOCKHESSIAN & H ) const
 {
 	size_t nInvalid = 0;
 	const size_t nUnknowns = H.getColCount();

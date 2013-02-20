@@ -39,7 +39,7 @@ namespace mrpt { namespace srba {
 
 /** reprojection_residuals */
 template <class KF2KF_POSE_TYPE,class LM_TYPE,class OBS_TYPE,class RBA_OPTIONS>
-double RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::reprojection_residuals(
+double RbaEngine<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::reprojection_residuals(
 	vector_residuals_t & residuals, // Out:
 	const std::vector<TObsUsed> & observations // In:
 	) const

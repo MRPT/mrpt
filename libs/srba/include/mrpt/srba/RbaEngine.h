@@ -54,7 +54,7 @@ namespace srba
 {
 	using namespace std;
 
-	/** The set of default settings for RBA_Problem */
+	/** The set of default settings for RbaEngine */
 	struct RBA_OPTIONS_DEFAULT
 	{
 		typedef sensor_pose_on_robot_none    sensor_pose_on_robot_t;  // The sensor pose coincides with the robot pose
@@ -81,12 +81,12 @@ namespace srba
 	  * \tparam RBA_OPTIONS A struct with nested typedefs which can be used to tune and customize the behavior of this class.
 	  */
 	template <class KF2KF_POSE_TYPE,class LM_TYPE,class OBS_TYPE, class RBA_OPTIONS = RBA_OPTIONS_DEFAULT>
-	class RBA_Problem
+	class RbaEngine
 	{
 	public:
 		/** @name Templatized typedef's
 		    @{ */
-		typedef RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS> rba_problem_t;
+		typedef RbaEngine<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS> rba_problem_t;
 
 		typedef KF2KF_POSE_TYPE kf2kf_pose_type;
 		typedef LM_TYPE         lm_type;
@@ -465,7 +465,7 @@ namespace srba
 		/** @} */  // End of data fields
 
 		/** Default constructor */
-		RBA_Problem();
+		RbaEngine();
 
 		/** Reset the entire problem to an empty state (automatically called at construction) */
 		void clear();
@@ -733,7 +733,7 @@ namespace srba
 			return std::abs(2*mrpt::utils::square(kernel_param)*(std::sqrt(1+mrpt::utils::square(delta/kernel_param))-1));
 		}
 
-	}; // end of class "RBA_Problem"
+	}; // end of class "RbaEngine"
 
 
 } // end of namespace "srba"
@@ -777,3 +777,7 @@ namespace srba
 // -----------------------------------------------------------------
 //            ^^ End of implementation files ^^
 // -----------------------------------------------------------------
+
+// Undefine temporary macro for verbose output
+#undef VERBOSE_LEVEL
+

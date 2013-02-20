@@ -40,10 +40,10 @@
 
 namespace mrpt { namespace srba {
 //
-// RBA_Problem<>::build_opengl_representation
+// RbaEngine<>::build_opengl_representation
 //
 template <class KF2KF_POSE_TYPE,class LM_TYPE,class OBS_TYPE,class RBA_OPTIONS>
-void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::build_opengl_representation(
+void RbaEngine<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::build_opengl_representation(
 	const srba::TKeyFrameID root_keyframe,
 	const TOpenGLRepresentationOptions &options,
 	mrpt::opengl::CSetOfObjectsPtr out_scene,
@@ -204,7 +204,7 @@ void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::build_opengl_rep
 
 
 template <class KF2KF_POSE_TYPE,class LM_TYPE,class OBS_TYPE,class RBA_OPTIONS>
-void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::gl_aux_draw_node(mrpt::opengl::CSetOfObjects &soo, const std::string &label, const float x, const float y) const
+void RbaEngine<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::gl_aux_draw_node(mrpt::opengl::CSetOfObjects &soo, const std::string &label, const float x, const float y) const
 {
 	{
 		mrpt::opengl::CDiskPtr obj = mrpt::opengl::CDisk::Create();

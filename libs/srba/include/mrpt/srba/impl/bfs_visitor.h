@@ -44,7 +44,7 @@ template <
 	class K2K_EDGE_VISITOR,
 	class K2F_EDGE_VISITOR
 	>
-void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::bfs_visitor(
+void RbaEngine<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::bfs_visitor(
 	const TKeyFrameID  root_id,
 	const topo_dist_t  max_distance,
 	const bool         rely_on_prebuilt_spanning_trees,

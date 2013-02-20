@@ -44,7 +44,7 @@ namespace mrpt { namespace srba {
 
 	/** Render 2D/3D point landmarks. */
 	struct landmark_rendering_as_point 
-	{   /** Parameters to be merged with RBA_Problem<>::TOpenGLRepresentationOptions */
+	{   /** Parameters to be merged with RbaEngine<>::TOpenGLRepresentationOptions */
 		struct TOpenGLRepresentationOptionsExtra
 		{
 		};
@@ -52,7 +52,7 @@ namespace mrpt { namespace srba {
 
 	/** Render "fake graph-slam-like landmarks" as keyframe-to-keyframe constraints. */
 	struct landmark_rendering_as_pose_constraints 
-	{   /** Parameters to be merged with RBA_Problem<>::TOpenGLRepresentationOptions */
+	{   /** Parameters to be merged with RbaEngine<>::TOpenGLRepresentationOptions */
 		struct TOpenGLRepresentationOptionsExtra
 		{
 		};
@@ -60,7 +60,7 @@ namespace mrpt { namespace srba {
 
 	/** Not to be rendered. */
 	struct landmark_rendering_none 
-	{   /** Parameters to be merged with RBA_Problem<>::TOpenGLRepresentationOptions */
+	{   /** Parameters to be merged with RbaEngine<>::TOpenGLRepresentationOptions */
 		struct TOpenGLRepresentationOptionsExtra
 		{
 		};

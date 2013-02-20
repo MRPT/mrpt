@@ -39,7 +39,7 @@ namespace mrpt { namespace srba {
 
 /** Determines and creates the new kf2fk edges given the set of new observations: */
 template <class KF2KF_POSE_TYPE,class LM_TYPE,class OBS_TYPE,class RBA_OPTIONS>
-void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::edge_creation_policy(
+void RbaEngine<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::edge_creation_policy(
 	const TKeyFrameID               new_kf_id,
 	const typename traits_t::new_kf_observations_t   & obs,
 	vector<TNewEdgeInfo> &new_k2k_edge_ids )
@@ -247,12 +247,12 @@ void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::edge_creation_po
 		THROW_EXCEPTION("Unknown value for 'parameters.edge_creation_policy'!")
 	};
 
-} // end of RBA_Problem::determine_kf2kf_edges_to_create
+} // end of RbaEngine::determine_kf2kf_edges_to_create
 
 
 /** (Aux method) Make a list of base KFs of my new observations, ordered in descending order by # of shared observations: */
 template <class KF2KF_POSE_TYPE,class LM_TYPE,class OBS_TYPE,class RBA_OPTIONS>
-void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::make_ordered_list_base_kfs(
+void RbaEngine<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::make_ordered_list_base_kfs(
 	const typename traits_t::new_kf_observations_t & obs,
 	base_sorted_lst_t            & obs_for_each_base_sorted,
 	map<TKeyFrameID,size_t>       *out_obs_for_each_base ) const

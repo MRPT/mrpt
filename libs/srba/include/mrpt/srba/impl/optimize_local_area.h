@@ -38,7 +38,7 @@
 namespace mrpt { namespace srba {
 
 template <class KF2KF_POSE_TYPE,class LM_TYPE,class OBS_TYPE,class RBA_OPTIONS>
-void RBA_Problem<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::optimize_local_area(
+void RbaEngine<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::optimize_local_area(
 	const TKeyFrameID  root_id,
 	const unsigned int win_size,
 	TOptimizeExtraOutputInfo & out_info,
