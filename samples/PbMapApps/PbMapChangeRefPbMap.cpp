@@ -38,13 +38,15 @@
  *  Writen by Eduardo Fernandez-Moral. See docs for <a href="group__mrpt__pbmap__grp.html" >mrpt-pbmap</a>
  */
 
-//#include "../include/ChangeRefPbMap.h"
-#include "../include/PbMapSerializer.h"
-#include <pcl/io/pcd_io.h>
+#include <mrpt/pbmap/PbMapSerializer.h>
+
+#if MRPT_HAS_PCL
+#    include <pcl/io/pcd_io.h>
+#endif
 
 #include <TooN/TooN.h>
-using namespace TooN;
 #include <TooN/se3.h>
+using namespace TooN;
 
 using namespace std;
 
@@ -62,7 +64,7 @@ int main(int argc, char **argv)
   }
 
 //  string mapFile = argv[1];
-  string destinyMapFile = argv[1];
+  string destinyMapFile = string(argv[1]);
   string bar = "/";
 
   // Load PbMap

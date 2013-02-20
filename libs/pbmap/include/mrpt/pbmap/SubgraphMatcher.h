@@ -41,16 +41,19 @@
 #ifndef __SUBGRAPHMATCHER_H
 #define __SUBGRAPHMATCHER_H
 
-#include "heuristicParams.h"
+#include <mrpt/config.h>
+#include <mrpt/utils/utils_defs.h>
 
+#include "heuristicParams.h"
 #include "PbMap.h"
 #include "Subgraph.h"
 
-namespace pbmap
-{
+namespace mrpt {
+namespace pbmap {
 
-  /*!This class finds the best correspondence between the planes of two subgraphs (i.e. sets of neighbor planes).
-    It relies on an interpretation tree employing geometric restrictions that are represented as a set of unary and binary constraints.
+  /** This class finds the best correspondence between the planes of two subgraphs (i.e. sets of neighbor planes).
+   * It relies on an interpretation tree employing geometric restrictions that are represented as a set of unary and binary constraints.
+   * \ingroup mrpt_pbmap_grp
    */
   class SubgraphMatcher
   {
@@ -94,6 +97,6 @@ namespace pbmap
 
   };
 
-} // End namespace pbmap
+} } // End of namespaces
 
 #endif

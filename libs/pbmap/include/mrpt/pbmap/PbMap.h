@@ -41,26 +41,25 @@
 #ifndef __PBMAP_H
 #define __PBMAP_H
 
+#include <mrpt/config.h>
+#include <mrpt/utils/utils_defs.h>
+
 #include <mrpt/utils/CSerializable.h>
 //#include <mrpt/utils/CStream.h>
-#include <vector>
-#include <map>
-#include <set>
-#include <string>
 
 #include "Plane.h"
 
 typedef pcl::PointXYZRGBA PointT;
 
-namespace pbmap
-{
+namespace mrpt {
+namespace pbmap {
 
 //// This must be added to any CSerializable derived class:
 //DEFINE_SERIALIZABLE_PRE( PbMap )
 
 	/** A class used to store a Plane-based Map (PbMap), as a set of planar patches (Planes).
-	 *
-	 */
+	  * \ingroup mrpt_pbmap_grp
+	  */
   class PbMap //: public mrpt::utils::CSerializable
   {
 //    // This must be added to any CSerializable derived class:
@@ -91,6 +90,8 @@ namespace pbmap
     pcl::PointCloud<pcl::PointXYZRGBA>::Ptr outEdgeCloudPtr;
     unsigned background, foreground, groundplane;
   };
-} // End namespace pbmap
+
+
+} } // End of namespaces
 
 #endif

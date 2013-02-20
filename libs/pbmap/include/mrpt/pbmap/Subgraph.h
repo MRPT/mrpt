@@ -41,10 +41,13 @@
 #ifndef __SUBGRAPH_H
 #define __SUBGRAPH_H
 
+#include <mrpt/config.h>
+#include <mrpt/utils/utils_defs.h>
+
 #include "PbMap.h"
 
-namespace pbmap
-{
+namespace mrpt {
+namespace pbmap {
 
   /*! This class defines a subgraph inside a PbMap.
    *  This subgraph represents the entity to be matched in order to recognize a previous place.
@@ -78,6 +81,6 @@ namespace pbmap
 
   };
 
-} // End namespace pbmap
+} } // End of namespaces
 
 #endif

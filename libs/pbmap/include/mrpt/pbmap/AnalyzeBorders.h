@@ -41,18 +41,25 @@
 #ifndef __ANALYZEBORDERS_H
 #define __ANALYZEBORDERS_H
 
-#include "Plane.h"
-#include <pcl/point_types.h>
-#include <pcl/visualization/cloud_viewer.h>
-#include <pcl/visualization/pcl_visualizer.h>
-#include <vector>
-#include <map>
-#include <set>
-#include <string>
+#include <mrpt/config.h>
+#include <mrpt/utils/utils_defs.h>
+#include <mrpt/pbmap/Plane.h>
+
+#if MRPT_HAS_PCL
+#    include <pcl/point_types.h>
+#    include <pcl/visualization/cloud_viewer.h>
+#    include <pcl/visualization/pcl_visualizer.h>
 
 typedef pcl::PointXYZRGBA PointT;
+#endif
 
-class AnalyzeBorders
+namespace mrpt {
+namespace pbmap {
+
+/**
+  * \ingroup mrpt_pbmap_grp
+  */
+class PBMAP_IMPEXP AnalyzeBorders
 {
  public:
 
@@ -86,5 +93,7 @@ class AnalyzeBorders
   // Evaluation
   unsigned background, foreground, groundplane, highCurvature, normalNaN;
 };
+
+} } // end of NS
 
 #endif

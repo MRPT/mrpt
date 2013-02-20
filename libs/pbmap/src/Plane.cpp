@@ -37,10 +37,13 @@
  *  Construction of plane-based maps and localization in it from RGBD Images.
  *  Writen by Eduardo Fernandez-Moral. See docs for <a href="group__mrpt__pbmap__grp.html" >mrpt-pbmap</a>
  */
+#include <mrpt/pbmap.h> // precomp. hdr
 
-#include "../include/Plane.h"
-#include "../include/Miscellaneous.h"
-#include <pcl/common/time.h>
+#include <mrpt/pbmap/Plane.h"
+#include <mrpt/pbmap/Miscellaneous.h"
+#if MRPT_HAS_PCL
+#    include <pcl/common/time.h>
+#endif
 
 using namespace pbmap;
 

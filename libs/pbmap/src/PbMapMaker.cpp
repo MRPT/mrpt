@@ -37,32 +37,35 @@
  *  Construction of plane-based maps and localization in it from RGBD Images.
  *  Writen by Eduardo Fernandez-Moral. See docs for <a href="group__mrpt__pbmap__grp.html" >mrpt-pbmap</a>
  */
+#include <mrpt/pbmap.h> // precomp. hdr
 
 #include <mrpt/base.h>			      // Use MRPT
 #include <mrpt/system/threads.h>
 //#include <mrpt/synch/CCriticalSection.h>
 //#include <mrpt/graphs/CGraphPartitioner.h>
 
-#include <pcl/io/io.h>
-#include <pcl/io/pcd_io.h>
-#include <pcl/features/integral_image_normal.h>
-#include <pcl/features/normal_3d.h>
-#include <pcl/ModelCoefficients.h>
-#include <pcl/segmentation/planar_region.h>
-#include <pcl/segmentation/organized_multi_plane_segmentation.h>
-#include <pcl/segmentation/organized_connected_component_segmentation.h>
-#include <pcl/filters/extract_indices.h>
-#include <pcl/surface/convex_hull.h>
-#include <pcl/filters/voxel_grid.h>
-#include <pcl/common/transforms.h>
-#include <pcl/geometry/polygon_operations.h>
-#include <pcl/common/time.h>
+#if MRPT_HAS_PCL
+#    include <pcl/io/io.h>
+#    include <pcl/io/pcd_io.h>
+#    include <pcl/features/integral_image_normal.h>
+#    include <pcl/features/normal_3d.h>
+#    include <pcl/ModelCoefficients.h>
+#    include <pcl/segmentation/planar_region.h>
+#    include <pcl/segmentation/organized_multi_plane_segmentation.h>
+#    include <pcl/segmentation/organized_connected_component_segmentation.h>
+#    include <pcl/filters/extract_indices.h>
+#    include <pcl/surface/convex_hull.h>
+#    include <pcl/filters/voxel_grid.h>
+#    include <pcl/common/transforms.h>
+#    include <pcl/geometry/polygon_operations.h>
+#    include <pcl/common/time.h>
+#endif
 //#include <boost/make_shared.hpp>
 //#include <boost/thread/thread.hpp>
 #include <iostream>
 
-#include "../include/PbMapMaker.h"
-#include "../include/Miscellaneous.h"
+#include <mrpt/pbmap/PbMapMaker.h"
+#include <mrpt/pbmap/Miscellaneous.h"
 
 //#include <gvars3/instances.h>
 

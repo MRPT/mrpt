@@ -37,18 +37,21 @@
  *  Construction of plane-based maps and localization in it from RGBD Images.
  *  Writen by Eduardo Fernandez-Moral. See docs for <a href="group__mrpt__pbmap__grp.html" >mrpt-pbmap</a>
  */
+#include <mrpt/pbmap.h> // precomp. hdr
 
 #include <mrpt/utils/CConfigFile.h>
-#include <pcl/io/pcd_io.h>
-#include <pcl/common/time.h>
+#if MRPT_HAS_PCL
+#    include <pcl/io/pcd_io.h>
+#    include <pcl/common/time.h>
+#endif
 #include <fstream>
 #include <iostream>
 
-#include "../include/PbMapLocaliser.h"
-#include "../include/heuristicParams.h"
-#include "../include/ConsistencyTest.h"
-//#include "../include/PbMapSerializer.h"
-#include "../include/Miscellaneous.h"
+#include <mrpt/pbmap/PbMapLocaliser.h"
+#include <mrpt/pbmap/heuristicParams.h"
+#include <mrpt/pbmap/ConsistencyTest.h"
+//#include <mrpt/pbmap/PbMapSerializer.h"
+#include <mrpt/pbmap/Miscellaneous.h"
 
 
 using namespace pbmap;

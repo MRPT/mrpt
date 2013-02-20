@@ -41,12 +41,13 @@
 #ifndef __PBMAP_SERIALIZER__
 #define __PBMAP_SERIALIZER__
 
+#include <mrpt/config.h>
+#include <mrpt/utils/utils_defs.h>
 
 #include <fstream>
-//#include <cvd/thread.h>
 
 //#include <Utils.h>
-#include <tinyxml.h>
+//#include <tinyxml.h>
 #include "PbMap.h"
 #include "Plane.h"
 
@@ -55,8 +56,12 @@
 #define PBMAP_XML_ID "PTAM_Xtion"
 #define PBMAP_VERSION "1.1"
 
+namespace mrpt {
+namespace pbmap {
+
 /**
  * This class is used for serializing and deserializing maps into a xml format
+ * \ingroup mrpt_pbmap_grp
  */
 class PbMapSerializer //: public CVD::Thread
 {
@@ -150,6 +155,7 @@ class PbMapSerializer //: public CVD::Thread
   bool	m_pbMapSerialiser_finished;
 };
 
+} } // End of namespaces
 
 #endif
 

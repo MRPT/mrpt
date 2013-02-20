@@ -41,18 +41,22 @@
 #ifndef __PBMAPLOCALISER_H
 #define __PBMAPLOCALISER_H
 
+#include <mrpt/config.h>
+#include <mrpt/utils/utils_defs.h>
+
 #include <mrpt/system/threads.h>
 
 #include "PbMap.h"
 #include "SubgraphMatcher.h"
 #include "ConsistencyTest.h"
 
-namespace pbmap
-{
+namespace mrpt {
+namespace pbmap {
 
   /*! This class is used to explore the PbMap (or other previously acquired PbMaps)
    *  to find places observed previously (it has uses in e.g. place recognition or relocalization).
    *  PbMapLocaliser run its own thread, which is created at initialization.
+   * \ingroup mrpt_pbmap_grp
    */
   class PbMapLocaliser
   {
@@ -137,6 +141,6 @@ namespace pbmap
     bool	m_pbMapLocaliser_finished;
   };
 
-} // End namespace pbmap
+} } // End of namespaces
 
 #endif

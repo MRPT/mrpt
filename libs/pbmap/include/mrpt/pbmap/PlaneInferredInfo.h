@@ -41,14 +41,19 @@
 #ifndef __PlaneInferredInfo_H
 #define __PlaneInferredInfo_H
 
-#include <mrpt/utils.h>
+#include <mrpt/config.h>
+#include <mrpt/utils/utils_defs.h>
+//#include <mrpt/utils.h>
 
 #include "PbMap.h"
 #include "Plane.h"
 
-namespace pbmap
-{
+namespace mrpt {
+namespace pbmap {
 
+	/**
+	* \ingroup mrpt_pbmap_grp
+	*/
   class PlaneInferredInfo
   {
    public:
@@ -94,6 +99,6 @@ namespace pbmap
 
   };
 
-} // End namespace pbmap
+} } // End of namespaces
 
 #endif

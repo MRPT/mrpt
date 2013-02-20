@@ -41,14 +41,23 @@
 #ifndef __PBMAPVISUALIZER_H
 #define __PBMAPVISUALIZER_H
 
+#include <mrpt/config.h>
+#include <mrpt/utils/utils_defs.h>
+
 #include "PbMap.h"
 
-#include <pcl/visualization/cloud_viewer.h>
-#include <boost/thread/thread.hpp>
-#include <pcl/visualization/pcl_visualizer.h>
-#include <pcl/io/io.h>
-#include <pcl/io/pcd_io.h>
+#    include <pcl/visualization/cloud_viewer.h>
+//#include <boost/thread/thread.hpp>
+#    include <pcl/visualization/pcl_visualizer.h>
+#    include <pcl/io/io.h>
+#    include <pcl/io/pcd_io.h>
 
+namespace mrpt {
+namespace pbmap {
+
+/**
+  * \ingroup mrpt_pbmap_grp
+  */
 class PbMapVisualizer
 {
   public:
@@ -71,5 +80,8 @@ class PbMapVisualizer
 
     void viz_cb (pcl::visualization::PCLVisualizer& viz);
 };
+
+} } // End of namespaces
+
 
 #endif

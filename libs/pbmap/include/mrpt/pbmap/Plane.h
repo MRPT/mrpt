@@ -41,23 +41,29 @@
 #ifndef __PBMAP_PLANE_H
 #define __PBMAP_PLANE_H
 
+#include <mrpt/config.h>
+#include <mrpt/utils/utils_defs.h>
+
+#include <mrpt/pbmap/link_pragmas.h>
+
 #include <mrpt/utils/CSerializable.h>
 //#include <mrpt/pbmap/link_pragmas.h>
 //#include <mrpt/math/CArray.h>
-#include <pcl/point_types.h>
-#include <pcl/segmentation/planar_region.h>
-#include <pcl/common/pca.h>
-
-using namespace std;
+#if MRPT_HAS_PCL
+#    include <pcl/point_types.h>
+#    include <pcl/segmentation/planar_region.h>
+#    include <pcl/common/pca.h>
+#endif
 
 #define USE_COMPLETNESS_HEURISTICS 1
 #define USE_INFERRED_STRUCTURE 1
 
 static vector<size_t> DEFAULT_VECTOR;
 
-namespace pbmap
-{
-  class Plane;
+namespace mrpt {
+namespace pbmap {
+
+	class Plane;
 
   // This must be added to any CSerializable derived class:
 //  DEFINE_SERIALIZABLE_PRE_CUSTOM_LINKAGE( Plane, )
@@ -67,6 +73,7 @@ namespace pbmap
 	 *  location of the patch (area, normal vector, elongation, 3D-convex hull, etc.)
 	 *  and radiometric features (the most representative color).
 	 *
+	 * \ingroup mrpt_pbmap_grp
 	 */
   class Plane //: public mrpt::utils::CSerializable
   {
@@ -183,6 +190,7 @@ namespace pbmap
     void calcMainColor();
 
   };
-} // End namespace pbmap
+
+} } // End of namespaces
 
 #endif

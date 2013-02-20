@@ -38,7 +38,7 @@
  *  Writen by Eduardo Fernandez-Moral. See docs for <a href="group__mrpt__pbmap__grp.html" >mrpt-pbmap</a>
  */
 
-#include "../include/Miscellaneous.h"
+#include <mrpt/pbmap/Miscellaneous.h>
 
 //using namespace pbmap;
 

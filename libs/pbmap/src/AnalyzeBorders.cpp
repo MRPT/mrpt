@@ -37,39 +37,29 @@
  *  Construction of plane-based maps and localization in it from RGBD Images.
  *  Writen by Eduardo Fernandez-Moral. See docs for <a href="group__mrpt__pbmap__grp.html" >mrpt-pbmap</a>
  */
+#include <mrpt/pbmap.h> // precomp. hdr
 
-#include "../include/AnalyzeBorders.h"
+#include <mrpt/pbmap/AnalyzeBorders.h>
 
-//#include <pcl/visualization/cloud_viewer.h>
-//#include <pcl/visualization/pcl_visualizer.h>
-#include <boost/thread/thread.hpp>
-#include <pcl/io/io.h>
-#include <pcl/io/pcd_io.h>
-#include <boost/make_shared.hpp>
-#include <pcl/features/integral_image_normal.h>
-#include <pcl/features/normal_3d.h>
-#include <pcl/ModelCoefficients.h>
-#include <pcl/segmentation/planar_region.h>
-#include <pcl/segmentation/organized_multi_plane_segmentation.h>
-#include <pcl/segmentation/organized_connected_component_segmentation.h>
-#include <pcl/surface/convex_hull.h>
-#include <pcl/filters/extract_indices.h>
-#include <pcl/filters/voxel_grid.h>
-#include <pcl/common/pca.h>
-
-#include <pcl/filters/fast_bilateral.h>
+//#include <boost/thread/thread.hpp>
+//#include <boost/make_shared.hpp>
+#if MRPT_HAS_PCL
+#  include <pcl/io/io.h>
+#  include <pcl/io/pcd_io.h>
+#  include <pcl/features/integral_image_normal.h>
+#  include <pcl/features/normal_3d.h>
+#  include <pcl/ModelCoefficients.h>
+#  include <pcl/segmentation/planar_region.h>
+#  include <pcl/segmentation/organized_multi_plane_segmentation.h>
+#  include <pcl/segmentation/organized_connected_component_segmentation.h>
+#  include <pcl/surface/convex_hull.h>
+#  include <pcl/filters/extract_indices.h>
+#  include <pcl/filters/voxel_grid.h>
+#  include <pcl/common/pca.h>
+#  include <pcl/filters/fast_bilateral.h>
+#endif
 
 using namespace std;
-
-void printHelp()
-{
-    std::cout<<"---------------------------------------------------------------------------------------"<< std::endl;
-    std::cout<<"./AnalyzeBorders <pointCloud.pcd>" << std::endl;
-//    std::cout<<"       options: " << std::endl;
-//    std::cout<<"         -p | P: Show/hide point cloud" << std::endl;
-//    std::cout<<"         -l | L: Show/hide PbMap" << std::endl;
-//    std::cout<<"         -r | R: Switch between point cloud and graph representation" << std::endl;
-};
 
 bool keyPressed = false;
 void keyboardEventOccurred (const pcl::visualization::KeyboardEvent &event, void* viewer_void)
@@ -502,31 +492,3 @@ cout << "AnalyzeBorders::Run...\n";
   }
 }
 
-int main(int argc, char** argv)
-{
-//  for(unsigned i=0; i<argc; i++)
-//    cout << static_cast<string>(argv[i]) << endl;
-
-  if(argc != 2)
-  {
-    printHelp();
-    return -1;
-  }
-
-  // Read in the cloud data
-  pcl::PCDReader reader;
-  string pointCloudFile = static_cast<string>(argv[1]);
-  pcl::PointCloud<pcl::PointXYZRGBA>::Ptr pointCloudPtr(new pcl::PointCloud<pcl::PointXYZRGBA>);
-  reader.read (pointCloudFile, *pointCloudPtr);
-
-
-  AnalyzeBorders analyzeBorder(pointCloudPtr);
-
-//  pcl::visualization::CloudViewer cloudViewer;
-//  cloudViewer.runOnVisualizationThread (boost::bind(&AnalyzeBorders::viz_cb, this, _1), "viz_cb");
-//  cloudViewer.registerKeyboardCallback ( keyboardEventOccurred );
-
-  analyzeBorder.Run();
-
-  return 0;
-}

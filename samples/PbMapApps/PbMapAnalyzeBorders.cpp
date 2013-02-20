@@ -37,74 +37,61 @@
  *  Construction of plane-based maps and localization in it from RGBD Images.
  *  Writen by Eduardo Fernandez-Moral. See docs for <a href="group__mrpt__pbmap__grp.html" >mrpt-pbmap</a>
  */
-#include <mrpt/pbmap.h> // precomp. hdr
 
-#include <mrpt/utils/CStream.h>
+#include <mrpt/pbmap.h>
 
-#include <mrpt/pbmap/PbMap.h"
+#if MRPT_HAS_PCL
+#    include <pcl/io/io.h>
+#    include <pcl/io/pcd_io.h>
+// #    include <pcl/features/integral_image_normal.h>
+// #    include <pcl/features/normal_3d.h>
+// #    include <pcl/ModelCoefficients.h>
+// #    include <pcl/segmentation/planar_region.h>
+// #    include <pcl/segmentation/organized_multi_plane_segmentation.h>
+// #    include <pcl/segmentation/organized_connected_component_segmentation.h>
+// #    include <pcl/surface/convex_hull.h>
+// #    include <pcl/filters/extract_indices.h>
+// #    include <pcl/filters/voxel_grid.h>
+// #    include <pcl/common/pca.h>
+// #    include <pcl/filters/fast_bilateral.h>
+#endif
 
-using namespace mrpt;
-using namespace mrpt::math;
-using namespace mrpt::utils;
-using namespace pbmap;
+using namespace std;
 
-//mrpt::utils::registerClass(CLASS_ID(Plane));
+void printHelp()
+{
+    std::cout<<"---------------------------------------------------------------------------------------"<< std::endl;
+    std::cout<<"./AnalyzeBorders <pointCloud.pcd>" << std::endl;
+//    std::cout<<"       options: " << std::endl;
+//    std::cout<<"         -p | P: Show/hide point cloud" << std::endl;
+//    std::cout<<"         -l | L: Show/hide PbMap" << std::endl;
+//    std::cout<<"         -r | R: Switch between point cloud and graph representation" << std::endl;
+};
 
-//IMPLEMENTS_SERIALIZABLE(PbMap, CSerializable, pbmap)
+int main(int argc, char** argv)
+{
+//  for(unsigned i=0; i<argc; i++)
+//    cout << static_cast<string>(argv[i]) << endl;
 
-///*---------------------------------------------------------------
-//	Constructor
-//  ---------------------------------------------------------------*/
-//PbMap::PbMap() :
-//    globalMapPtr( new pcl::PointCloud<pcl::PointXYZRGBA>() ),
-//    edgeCloudPtr(new pcl::PointCloud<pcl::PointXYZRGBA>),
-//    outEdgeCloudPtr(new pcl::PointCloud<pcl::PointXYZRGBA>),
-//    FloorPlane(-1)
-//{
-//};
+  if(argc != 2)
+  {
+    printHelp();
+    return -1;
+  }
 
-///*---------------------------------------------------------------
-//						writeToStream
-// ---------------------------------------------------------------*/
-//void  PbMap::writeToStream(CStream &out, int *out_Version) const
-//{
-//	if (out_Version)
-//		*out_Version = 0;
-//	else
-//	{
-//		uint32_t						n;
-//
-//		// The data
-//		n = uint32_t( vPlanes.size() );
-//		out << n;
-//		for (uint32_t i=0; i < n; i++)
-//			out << vPlanes[i];
-//	}
-//}
-//
-///*---------------------------------------------------------------
-//						readFromStream
-// ---------------------------------------------------------------*/
-//void  PbMap::readFromStream(CStream &in, int version)
-//{
-//	switch(version)
-//	{
-//	case 0:
-//		{
-//			uint32_t	n;
-//			uint32_t	i;
-//
-//			// Delete previous content:
-//			vPlanes.clear();
-//
-//			// The data
-//			// First, write the number of planes:
-//			in >> n;
-//			vPlanes.resize(n);
-//      for (uint32_t i=0; i < n; i++)
-//				in >> vPlanes[i];
-//		} break;
-//	default:
-//		MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
-//	};
-//}
+  // Read in the cloud data
+  pcl::PCDReader reader;
+  string pointCloudFile = static_cast<string>(argv[1]);
+  pcl::PointCloud<pcl::PointXYZRGBA>::Ptr pointCloudPtr(new pcl::PointCloud<pcl::PointXYZRGBA>);
+  reader.read (pointCloudFile, *pointCloudPtr);
+
+  AnalyzeBorders analyzeBorder(pointCloudPtr);
+
+//  pcl::visualization::CloudViewer cloudViewer;
+//  cloudViewer.runOnVisualizationThread (boost::bind(&AnalyzeBorders::viz_cb, this, _1), "viz_cb");
+//  cloudViewer.registerKeyboardCallback ( keyboardEventOccurred );
+
+  analyzeBorder.Run();
+
+  return 0;
+}

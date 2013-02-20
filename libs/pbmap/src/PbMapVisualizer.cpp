@@ -38,20 +38,12 @@
  *  Writen by Eduardo Fernandez-Moral. See docs for <a href="group__mrpt__pbmap__grp.html" >mrpt-pbmap</a>
  */
 
-#include "../include/PbMapVisualizer.h"
-#include "../include/PbMapSerializer.h"
+#include <mrpt/pbmap.h> // precomp. hdr
+
+#include <mrpt/pbmap/PbMapVisualizer.h>
+#include <mrpt/pbmap/PbMapSerializer.h>
 
 using namespace std;
-
-void printHelp()
-{
-    std::cout<<"---------------------------------------------------------------------------------------"<< std::endl;
-    std::cout<<"./PbMapVisualizer <pointCloud.pcd> <MapPlanes.xml>" << std::endl;
-    std::cout<<"       options: " << std::endl;
-    std::cout<<"         -p | P: Show/hide point cloud" << std::endl;
-    std::cout<<"         -l | L: Show/hide PbMap" << std::endl;
-    std::cout<<"         -r | R: Switch between point cloud and graph representation" << std::endl;
-};
 
 PbMapVisualizer::PbMapVisualizer() :
   globalMapPtr(new pcl::PointCloud<pcl::PointXYZRGBA>),
@@ -241,30 +233,3 @@ void PbMapVisualizer::Run()
     boost::this_thread::sleep (boost::posix_time::microseconds (10000));
   }
 };
-
-
-int main(int argc, char** argv)
-{
-//  for(unsigned i=0; i<argc; i++)
-//    cout << static_cast<string>(argv[i]) << endl;
-
-  if(argc != 3)
-  {
-    printHelp();
-    return -1;
-  }
-
-//  string pointCloudFile = "/home/edu/Projects/PbMaps/" + static_cast<string>(argv[1]) + "/MapPlanes.pcd";
-//  string PbMapFile = "/home/edu/Projects/PbMaps/" + static_cast<string>(argv[1]) + "/MapPlanes.xml";
-  string pointCloudFile = static_cast<string>(argv[1]);
-  string PbMapFile = static_cast<string>(argv[2]);
-
-  PbMapVisualizer mapViewer;
-
-  if( !mapViewer.loadPlaneMap(pointCloudFile, PbMapFile) )
-    cerr << "viewMapPlane cannot load the map\n";
-
-  mapViewer.Run();
-
-  return 0;
-}

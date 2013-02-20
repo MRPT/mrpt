@@ -47,7 +47,7 @@
 #include <iostream>
 #include <iterator>
 #include <vector>
-#include <pcl/point_types.h>
+#    include <pcl/point_types.h>
 
 typedef pcl::PointXYZRGBA PointT;
 

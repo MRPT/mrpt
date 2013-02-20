@@ -37,9 +37,10 @@
  *  Construction of plane-based maps and localization in it from RGBD Images.
  *  Writen by Eduardo Fernandez-Moral. See docs for <a href="group__mrpt__pbmap__grp.html" >mrpt-pbmap</a>
  */
+#include <mrpt/pbmap.h> // precomp. hdr
 
-#include "../include/PbMapSerializer.h"
-#include "../include/Miscellaneous.h"
+#include <mrpt/pbmap/PbMapSerializer.h>
+#include <mrpt/pbmap/Miscellaneous.h>
 #include <gvars3/GStringUtil.h>
 
 #include <iostream>
