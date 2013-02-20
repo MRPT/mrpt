@@ -47,11 +47,6 @@ namespace mrpt
 		using namespace mrpt::bayes;
 		using namespace mrpt::utils;
 
-		/** \typedef CProbabilityParticle<CPose3D> CPose3DParticle
-		 *  A type definition for m_particles containing a 3D pose.
-		 */
-		typedef CProbabilityParticle<CPose3D> CPose3DParticle;
-
 		// This must be added to any CSerializable derived class:
 		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE(CPose3DPDFParticles,CPose3DPDF)
 
