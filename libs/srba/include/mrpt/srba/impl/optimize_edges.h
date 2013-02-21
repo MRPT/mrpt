@@ -244,7 +244,7 @@ void RbaEngine<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::optimize_edges(
 
 	DETAILED_PROFILING_LEAVE("opt.prep_list_num_tree_roots")
 
-	VERBOSE_LEVEL(2) << "[OPT] KF roots whose spantrees need numeric-updates: " << srba::sprintf_container("%u", kfs_num_spantrees_to_update) <<endl;
+	VERBOSE_LEVEL(2) << "[OPT] KF roots whose spantrees need numeric-updates: " << mrpt::system::sprintf_container("%u", kfs_num_spantrees_to_update) <<endl;
 
 
 	// Spanning tree: Update numerically only those entries which we really need:
@@ -321,8 +321,8 @@ void RbaEngine<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::optimize_edges(
 		VERBOSE_LEVEL(1) << "[OPT] " << nInvalidJacobs << " Jacobian blocks ignored for 'invalid'.\n";
 
 	VERBOSE_LEVEL(2) << "[OPT] Individual Jacobs: " << count_jacobians << " #k2k_edges=" << nUnknowns_k2k << " #k2f_edges=" << nUnknowns_k2f << " #obs=" << nObs << endl;
-	VERBOSE_LEVEL(2) << "[OPT] k2k_edges to optimize: " << sprintf_container("% u",run_k2k_edges) << endl;
-	VERBOSE_LEVEL(2) << "[OPT] k2f_edges to optimize: " << sprintf_container("% u",run_feat_ids) << endl;
+	VERBOSE_LEVEL(2) << "[OPT] k2k_edges to optimize: " << mrpt::system::sprintf_container("% u",run_k2k_edges) << endl;
+	VERBOSE_LEVEL(2) << "[OPT] k2f_edges to optimize: " << mrpt::system::sprintf_container("% u",run_feat_ids) << endl;
 
 	// VERY IMPORTANT: For J^t*J to be invertible, we need a full rank Hessian:
 	//    nObs*OBS_DIMS >= nUnknowns_k2k*POSE_DIMS+nUnknowns_k2f*LM_DIMS

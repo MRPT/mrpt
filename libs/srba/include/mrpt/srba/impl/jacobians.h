@@ -296,7 +296,7 @@ void RbaEngine<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::compute_jacobian_d
 
 	// Second Jacobian: (uses xji_i)
 	// ------------------------------
-	compute_jacobian_dAepsDx_deps<LM_TYPE::jacob_family,LM_DIMS,REL_POSE_DIMS,rba_problem_t>::eval(jacob.num,dh_dx,is_inverse_edge_jacobian,xji_i, pose_d1_wrt_obs, pose_base_wrt_d1,jacob.sym,k2k_edges,rba_state.all_observations);
+	compute_jacobian_dAepsDx_deps<LM_TYPE::jacob_family,LM_DIMS,REL_POSE_DIMS,rba_engine_t>::eval(jacob.num,dh_dx,is_inverse_edge_jacobian,xji_i, pose_d1_wrt_obs, pose_base_wrt_d1,jacob.sym,k2k_edges,rba_state.all_observations);
 
 #endif // SRBA_COMPUTE_ANALYTIC_JACOBIANS
 

@@ -86,7 +86,7 @@ namespace srba
 	public:
 		/** @name Templatized typedef's
 		    @{ */
-		typedef RbaEngine<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS> rba_problem_t;
+		typedef RbaEngine<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS> rba_engine_t;
 
 		typedef KF2KF_POSE_TYPE kf2kf_pose_type;
 		typedef LM_TYPE         lm_type;
