@@ -49,7 +49,7 @@ CStartUpClassesRegister  mrpt_pbmap_class_reg(&registerAllClasses_mrpt_pbmap);
   ---------------------------------------------------------------*/
 void registerAllClasses_mrpt_pbmap()
 {
-//	registerClass( CLASS_ID( XXXX ) );
-
+	registerClass( CLASS_ID( Plane ) );
+	registerClass( CLASS_ID( PbMap ) );
 }
 

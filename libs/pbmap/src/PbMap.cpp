@@ -45,66 +45,65 @@
 
 //using namespace mrpt;
 //using namespace mrpt::math;
-//using namespace mrpt::utils;
+using namespace mrpt::utils;
 using namespace mrpt::pbmap;
 
-//mrpt::utils::registerClass(CLASS_ID(Plane));
 
-//IMPLEMENTS_SERIALIZABLE(PbMap, CSerializable, pbmap)
+IMPLEMENTS_SERIALIZABLE(PbMap, CSerializable, pbmap)
 
-///*---------------------------------------------------------------
-//	Constructor
-//  ---------------------------------------------------------------*/
-//PbMap::PbMap() :
-//    globalMapPtr( new pcl::PointCloud<pcl::PointXYZRGBA>() ),
-//    edgeCloudPtr(new pcl::PointCloud<pcl::PointXYZRGBA>),
-//    outEdgeCloudPtr(new pcl::PointCloud<pcl::PointXYZRGBA>),
-//    FloorPlane(-1)
-//{
-//};
+/*---------------------------------------------------------------
+	Constructor
+  ---------------------------------------------------------------*/
+PbMap::PbMap() :
+    globalMapPtr( new pcl::PointCloud<pcl::PointXYZRGBA>() ),
+    edgeCloudPtr(new pcl::PointCloud<pcl::PointXYZRGBA>),
+    outEdgeCloudPtr(new pcl::PointCloud<pcl::PointXYZRGBA>),
+    FloorPlane(-1)
+{
+};
 
-///*---------------------------------------------------------------
-//						writeToStream
-// ---------------------------------------------------------------*/
-//void  PbMap::writeToStream(CStream &out, int *out_Version) const
-//{
-//	if (out_Version)
-//		*out_Version = 0;
-//	else
-//	{
-//		uint32_t						n;
-//
-//		// The data
-//		n = uint32_t( vPlanes.size() );
-//		out << n;
-//		for (uint32_t i=0; i < n; i++)
-//			out << vPlanes[i];
-//	}
-//}
-//
-///*---------------------------------------------------------------
-//						readFromStream
-// ---------------------------------------------------------------*/
-//void  PbMap::readFromStream(CStream &in, int version)
-//{
-//	switch(version)
-//	{
-//	case 0:
-//		{
-//			uint32_t	n;
-//			uint32_t	i;
-//
-//			// Delete previous content:
-//			vPlanes.clear();
-//
-//			// The data
-//			// First, write the number of planes:
-//			in >> n;
-//			vPlanes.resize(n);
-//      for (uint32_t i=0; i < n; i++)
-//				in >> vPlanes[i];
-//		} break;
-//	default:
-//		MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
-//	};
-//}
+/*---------------------------------------------------------------
+						writeToStream
+ ---------------------------------------------------------------*/
+void  PbMap::writeToStream(CStream &out, int *out_Version) const
+{
+	if (out_Version)
+		*out_Version = 0;
+	else
+	{
+		uint32_t						n;
+
+		// The data
+		n = uint32_t( vPlanes.size() );
+		out << n;
+		for (uint32_t i=0; i < n; i++)
+			out << vPlanes[i];
+	}
+}
+
+/*---------------------------------------------------------------
+						readFromStream
+ ---------------------------------------------------------------*/
+void  PbMap::readFromStream(CStream &in, int version)
+{
+	switch(version)
+	{
+	case 0:
+		{
+			uint32_t	n;
+			uint32_t	i;
+
+			// Delete previous content:
+			vPlanes.clear();
+
+			// The data
+			// First, write the number of planes:
+			in >> n;
+			vPlanes.resize(n);
+      for (uint32_t i=0; i < n; i++)
+				in >> vPlanes[i];
+		} break;
+	default:
+		MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
+	};
+}

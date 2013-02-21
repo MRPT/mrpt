@@ -55,18 +55,19 @@
 
 namespace mrpt {
 namespace pbmap {
+	using namespace mrpt::utils;
 
-//// This must be added to any CSerializable derived class:
-//DEFINE_SERIALIZABLE_PRE( PbMap )
+	// This must be added to any CSerializable derived class:
+	DEFINE_SERIALIZABLE_PRE_CUSTOM_LINKAGE( PbMap, PBMAP_IMPEXP)
 
 	/** A class used to store a Plane-based Map (PbMap), as a set of planar patches (Planes).
 	 *
      * \ingroup mrpt_pbmap_grp
 	 */
-  class PBMAP_IMPEXP PbMap //: public mrpt::utils::CSerializable
+  class PBMAP_IMPEXP PbMap : public mrpt::utils::CSerializable
   {
-//    // This must be added to any CSerializable derived class:
-//    DEFINE_SERIALIZABLE( PbMap )
+    // This must be added to any CSerializable derived class:
+    DEFINE_SERIALIZABLE( PbMap )
 
    public:
   /*!Constructor.*/

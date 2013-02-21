@@ -47,108 +47,109 @@
 #include <pcl/common/time.h>
 
 using namespace mrpt::pbmap;
+using namespace mrpt::utils;
 
-//IMPLEMENTS_SERIALIZABLE(Plane, CSerializable, pbmap)
-//
-///*---------------------------------------------------------------
-//						writeToStream
-// ---------------------------------------------------------------*/
-//void  Plane::writeToStream(CStream &out, int *out_Version) const
-//{
-//	if (out_Version)
-//		*out_Version = 0;
-//	else
-//	{
-//		// The data
-//		out << (uint32_t)numObservations;
-//		out << areaVoxels;
-//		out << areaHull;
-//		out << elongation;
-////    out << v3normal;
-////    out << v3center;
-////    out << v3PpalDir;
-////    out << v3colorNrgb;
-////    out << v3colorNrgbDev;
-//    out.WriteBufferFixEndianness<Scalar>(&v3normal(0),3);
-//    out.WriteBufferFixEndianness<Scalar>(&v3center(0),3);
-//    out.WriteBufferFixEndianness<Scalar>(&v3PpalDir(0),3);
-//    out.WriteBufferFixEndianness<Scalar>(&v3colorNrgb(0),3);
-//    out.WriteBufferFixEndianness<Scalar>(&v3colorNrgbDev(0),3);
-//
-//    out << (uint32_t)neighborPlanes.size();
-//    for (std::map<unsigned,unsigned>::iterator it=neighborPlanes.begin(); it != neighborPlanes.end(); it++)
-//      out << it->first << it->second;
-//
-//    out << (uint32_t)polygonContourPtr->size();
-//    for (uint32_t i=0; i < polygonContourPtr->size(); i++)
-//      out << polygonContourPtr->points[i].x << polygonContourPtr->points[i].y << polygonContourPtr->points[i].z;
-//
-//    out << bFullExtent;
-//    out << bFromStructure;
-//    out << semanticGroup;
-////    out << semanticLabel;
-//    out << label;
-//
-//	}
-//
-//}
-//
-///*---------------------------------------------------------------
-//						readFromStream
-// ---------------------------------------------------------------*/
-//void  Plane::readFromStream(CStream &in, int version)
-//{
-//	switch(version)
-//	{
-//	case 0:
-//		{
-//			uint32_t	n;
-//			uint32_t	i;
-//
-//			// Delete previous content:
-//			vPlanes.clear();
-//
-//			// The data
-//			in >> numObservations;
-//			in >> areaVoxels;
-//			in >> areaHull;
-//			in >> elongation;
-////			in >> v3normal;
-////			in >> v3center;
-////			in >> v3PpalDir;
-////			in >> v3colorNrgb;
-////			in >> v3colorNrgbDev;
-//			in.ReadBuffer(v3normal[0],sizeof(v3normal[0])*3);
-//			in.ReadBuffer(v3normal[0],sizeof(v3center[0])*3);
-//			in.ReadBuffer(v3normal[0],sizeof(v3PpalDir[0])*3);
-//			in.ReadBuffer(v3normal[0],sizeof(v3colorNrgb[0])*3);
-//			in.ReadBuffer(v3normal[0],sizeof(v3colorNrgbDev[0])*3);
-//
-//			uint32_t n;
-//			in >> n;
-//			unsigned neighbor, commonObs;
-//			neighborPlanes.clear();
-//      for (unsigned i=0; i < n; i++)
-//      {
-//        in >> neighbor >> commonObs;
-//        neighborPlanes[neighbor] = commonObs;
-//      }
-//
-//			in >> n;
-//			polygonContourPtr->resize(n);
-//      for (unsigned i=0; i < n; i++)
-//        in >> polygonContourPtr->points[i].x >> polygonContourPtr->points[i].y >> polygonContourPtr->points[i].z;
-//
-//      in >> bFullExtent;
-//      in >> bFromStructure;
-//      in >> semanticGroup;
-//  //    out << semanticLabel;
-//      in >> label;
-//		} break;
-//	default:
-//		MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
-//  };
-//}
+IMPLEMENTS_SERIALIZABLE(Plane, CSerializable, pbmap)
+
+/*---------------------------------------------------------------
+						writeToStream
+ ---------------------------------------------------------------*/
+void  Plane::writeToStream(CStream &out, int *out_Version) const
+{
+	if (out_Version)
+		*out_Version = 0;
+	else
+	{
+		// The data
+		out << (uint32_t)numObservations;
+		out << areaVoxels;
+		out << areaHull;
+		out << elongation;
+//    out << v3normal;
+//    out << v3center;
+//    out << v3PpalDir;
+//    out << v3colorNrgb;
+//    out << v3colorNrgbDev;
+    out.WriteBufferFixEndianness<Scalar>(&v3normal(0),3);
+    out.WriteBufferFixEndianness<Scalar>(&v3center(0),3);
+    out.WriteBufferFixEndianness<Scalar>(&v3PpalDir(0),3);
+    out.WriteBufferFixEndianness<Scalar>(&v3colorNrgb(0),3);
+    out.WriteBufferFixEndianness<Scalar>(&v3colorNrgbDev(0),3);
+
+    out << (uint32_t)neighborPlanes.size();
+    for (std::map<unsigned,unsigned>::iterator it=neighborPlanes.begin(); it != neighborPlanes.end(); it++)
+      out << it->first << it->second;
+
+    out << (uint32_t)polygonContourPtr->size();
+    for (uint32_t i=0; i < polygonContourPtr->size(); i++)
+      out << polygonContourPtr->points[i].x << polygonContourPtr->points[i].y << polygonContourPtr->points[i].z;
+
+    out << bFullExtent;
+    out << bFromStructure;
+    out << semanticGroup;
+//    out << semanticLabel;
+    out << label;
+
+	}
+
+}
+
+/*---------------------------------------------------------------
+						readFromStream
+ ---------------------------------------------------------------*/
+void  Plane::readFromStream(CStream &in, int version)
+{
+	switch(version)
+	{
+	case 0:
+		{
+			uint32_t	n;
+			uint32_t	i;
+
+			// Delete previous content:
+			vPlanes.clear();
+
+			// The data
+			in >> numObservations;
+			in >> areaVoxels;
+			in >> areaHull;
+			in >> elongation;
+//			in >> v3normal;
+//			in >> v3center;
+//			in >> v3PpalDir;
+//			in >> v3colorNrgb;
+//			in >> v3colorNrgbDev;
+			in.ReadBuffer(v3normal[0],sizeof(v3normal[0])*3);
+			in.ReadBuffer(v3normal[0],sizeof(v3center[0])*3);
+			in.ReadBuffer(v3normal[0],sizeof(v3PpalDir[0])*3);
+			in.ReadBuffer(v3normal[0],sizeof(v3colorNrgb[0])*3);
+			in.ReadBuffer(v3normal[0],sizeof(v3colorNrgbDev[0])*3);
+
+			uint32_t n;
+			in >> n;
+			unsigned neighbor, commonObs;
+			neighborPlanes.clear();
+      for (unsigned i=0; i < n; i++)
+      {
+        in >> neighbor >> commonObs;
+        neighborPlanes[neighbor] = commonObs;
+      }
+
+			in >> n;
+			polygonContourPtr->resize(n);
+      for (unsigned i=0; i < n; i++)
+        in >> polygonContourPtr->points[i].x >> polygonContourPtr->points[i].y >> polygonContourPtr->points[i].z;
+
+      in >> bFullExtent;
+      in >> bFromStructure;
+      in >> semanticGroup;
+  //    out << semanticLabel;
+      in >> label;
+		} break;
+	default:
+		MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
+  };
+}
 
 //SE3<> calcPlanePose(Vector<3> &normal, Vector<3> &center)
 //{
