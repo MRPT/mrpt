@@ -56,7 +56,7 @@ namespace pbmap {
    *  This subgraph represents the entity to be matched in order to recognize a previous place.
    * \ingroup mrpt_pbmap_grp
    */
-  class Subgraph
+  class PBMAP_IMPEXP Subgraph
   {
    public:
 

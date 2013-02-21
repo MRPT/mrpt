@@ -56,7 +56,7 @@ namespace pbmap {
   /**
     * \ingroup mrpt_pbmap_grp
 	*/
-  class PlaneInferredInfo
+  class PBMAP_IMPEXP PlaneInferredInfo
   {
    public:
 

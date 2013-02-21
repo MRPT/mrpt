@@ -63,7 +63,7 @@ namespace pbmap {
 	 *
      * \ingroup mrpt_pbmap_grp
 	 */
-  class PbMap //: public mrpt::utils::CSerializable
+  class PBMAP_IMPEXP PbMap //: public mrpt::utils::CSerializable
   {
 //    // This must be added to any CSerializable derived class:
 //    DEFINE_SERIALIZABLE( PbMap )

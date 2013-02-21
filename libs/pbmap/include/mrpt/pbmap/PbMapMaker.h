@@ -60,7 +60,7 @@ namespace mrpt {
 namespace pbmap {
 
   /*!frameRGBDandPose stores a dupla containing a pointCloud (built from a RGBD frame) and a pose.*/
-  struct frameRGBDandPose
+  struct PBMAP_IMPEXP frameRGBDandPose
   {
     pcl::PointCloud<PointT>::Ptr cloudPtr;
     Eigen::Matrix4f pose;
@@ -71,7 +71,7 @@ namespace pbmap {
    *  PbMapMaker run its own thread, which is created at initialization.
    * \ingroup mrpt_pbmap_grp
    */
-  class PbMapMaker
+  class PBMAP_IMPEXP PbMapMaker
   {
    public:
 

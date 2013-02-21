@@ -62,7 +62,7 @@ namespace pbmap {
    * relocalization.
    * \ingroup mrpt_pbmap_grp
    */
-  class SemanticClustering //: public PbMap
+  class PBMAP_IMPEXP SemanticClustering //: public PbMap
   {
    private:
 

@@ -72,7 +72,7 @@ namespace pbmap {
 	 *
      * \ingroup mrpt_pbmap_grp
 	 */
-  class Plane //: public mrpt::utils::CSerializable
+  class PBMAP_IMPEXP Plane //: public mrpt::utils::CSerializable
   {
     // This must be added to any CSerializable derived class:
 //    DEFINE_SERIALIZABLE( Plane )

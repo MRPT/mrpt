@@ -113,9 +113,9 @@ namespace pbmap {
 
   /*! Squre distance between two segments
    */
-  extern float dist3D_Segment_to_Segment2( Segment S1, Segment S2);
+  float PBMAP_IMPEXP dist3D_Segment_to_Segment2( Segment S1, Segment S2);
 
-  extern bool isInHull(PointT &point3D, pcl::PointCloud<PointT>::Ptr hull3D);
+  bool PBMAP_IMPEXP isInHull(PointT &point3D, pcl::PointCloud<PointT>::Ptr hull3D);
 
   template<class dataType>
   dataType calcMean(std::vector<dataType> &data)

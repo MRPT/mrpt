@@ -61,7 +61,7 @@ namespace pbmap {
    *  PbMapLocaliser run its own thread, which is created at initialization.
    * \ingroup mrpt_pbmap_grp
    */
-  class PbMapLocaliser
+  class PBMAP_IMPEXP PbMapLocaliser
   {
    public:
 
