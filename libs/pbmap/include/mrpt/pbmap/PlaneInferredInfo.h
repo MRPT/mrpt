@@ -45,14 +45,17 @@
 
 #include <mrpt/config.h>
 #include <mrpt/utils/utils_defs.h>
-//#include <mrpt/utils.h>
 
-#include "PbMap.h"
-#include "Plane.h"
+#include <mrpt/pbmap/PbMap.h>
+#include <mrpt/pbmap/Plane.h>
 
 namespace mrpt {
 namespace pbmap {
 
+
+  /**
+    * \ingroup mrpt_pbmap_grp
+	*/
   class PlaneInferredInfo
   {
    public:

@@ -47,11 +47,12 @@
 #include <mrpt/utils/utils_defs.h>
 #include <pcl/visualization/cloud_viewer.h>
 #include <pcl/visualization/pcl_visualizer.h>
-#include "Plane.h"
-#include "PlaneInferredInfo.h"
-#include "PbMap.h"
-#include "PbMapLocaliser.h"
-#include "SemanticClustering.h"
+#include <mrpt/pbmap/Plane.h>
+#include <mrpt/pbmap/PlaneInferredInfo.h>
+#include <mrpt/pbmap/PbMap.h>
+#include <mrpt/pbmap/PbMapLocaliser.h>
+#include <mrpt/pbmap/SemanticClustering.h>
+#include <mrpt/pbmap/link_pragmas.h>
 
 typedef pcl::PointXYZRGBA PointT;
 
@@ -68,6 +69,7 @@ namespace pbmap {
   /*! This class construct the PbMap extracting planar segments from Range images, which pose must be also provided.
    *  The range images and their poses are communicated with the object frameQueue.
    *  PbMapMaker run its own thread, which is created at initialization.
+   * \ingroup mrpt_pbmap_grp
    */
   class PbMapMaker
   {

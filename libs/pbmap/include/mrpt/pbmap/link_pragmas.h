@@ -113,7 +113,7 @@
 #		define PBMAP_IMPEXP MRPT_PBMAP_IMPORT
 #	endif
 #else /* not making nor using DLL */
-#    define PBMAP_IMPEXP 
+#    define PBMAP_IMPEXP
 #endif
 
 

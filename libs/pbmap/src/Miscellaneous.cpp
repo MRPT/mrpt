@@ -44,8 +44,10 @@
 
 #include <mrpt/pbmap/Miscellaneous.h>
 
+using namespace mrpt::pbmap;
+
 #define SMALL_NUM  0.00000001 // anything that avoids division overflow
-float dist3D_Segment_to_Segment2( Segment S1, Segment S2)
+float mrpt::pbmap::dist3D_Segment_to_Segment2( Segment S1, Segment S2)
 {
   Eigen::Vector3f   u = diffPoints(S1.P1, S1.P0);
   Eigen::Vector3f   v = diffPoints(S2.P1, S2.P0);
@@ -112,11 +114,10 @@ float dist3D_Segment_to_Segment2( Segment S1, Segment S2)
   // get the difference of the two closest points
   Eigen::Vector3f dP = w + (sc * u) - (tc * v);  // = S1(sc) - S2(tc)
 
-//    return norm(dP);   // return the closest distance
-  return norm2(dP);   // return the closest distance
+  return dP.squaredNorm();   // return the closest distance
 }
 
-bool isInHull(PointT &point3D, pcl::PointCloud<PointT>::Ptr hull3D)
+bool mrpt::pbmap::isInHull(PointT &point3D, pcl::PointCloud<PointT>::Ptr hull3D)
 {
   Eigen::Vector2f normalLine; // This vector points inward the hull
   Eigen::Vector2f r;
@@ -131,20 +132,5 @@ bool isInHull(PointT &point3D, pcl::PointCloud<PointT>::Ptr hull3D)
   }
   return true;
 }
-
-//#include <sstream>
-//#include <gvars3/GStringUtil.h>
-//void PruneWhiteSpace(std::string & str)
-//{
-//  std::vector< std::string > tokens = GVars3::ChopAndUnquoteString(str);
-//  std::ostringstream os;
-//  os << tokens;
-//
-//  str = os.str();
-//
-//  if(str.at( str.size() - 1 ) == ' ' ) {
-//    str.erase(  str.end() - 1 );
-//  }
-//}
 
 #endif

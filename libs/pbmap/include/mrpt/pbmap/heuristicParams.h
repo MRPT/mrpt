@@ -42,11 +42,15 @@
 #define __HEURISTICPARAMS_H
 
 #include <mrpt/utils/CConfigFile.h>
+#include <mrpt/pbmap/link_pragmas.h>
 
 namespace mrpt {
 namespace pbmap {
 
-  struct config_heuristics
+  /**
+    * \ingroup mrpt_pbmap_grp
+    */
+  struct PBMAP_IMPEXP config_heuristics
   {
     config_heuristics()
     {

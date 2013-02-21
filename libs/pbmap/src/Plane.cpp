@@ -221,7 +221,7 @@ float Plane::compute2DPolygonalArea (/*pcl::PointCloud<pcl::PointXYZRGBA>::Ptr &
 
 /** \brief Compute the patch's convex-hull area and mass center
   */
-float Plane::computeMassCenterAndArea()
+void Plane::computeMassCenterAndArea()
 {
   int k0, k1, k2;
 
@@ -280,8 +280,8 @@ void Plane::getPlaneNrgb()
   g.resize(planePointCloudPtr->size());
   b.resize(planePointCloudPtr->size());
 
-  int i=0, countPix=0;
-  for(int i=0; i < planePointCloudPtr->size(); i++)
+  size_t countPix=0;
+  for(size_t i=0; i < planePointCloudPtr->size(); i++)
   {
     float sumRGB = (float)planePointCloudPtr->points[i].r + planePointCloudPtr->points[i].g + planePointCloudPtr->points[i].b;
     if(sumRGB != 0)
@@ -319,7 +319,7 @@ struct mPointHull {
 double cross(const mPointHull &O, const mPointHull &A, const mPointHull &B)
 {
     return (A.x - O.x) * (B.y - O.y) - (A.y - O.y) * (B.x - O.x);
-};
+}
 
 /**!
  * Calculate the plane's convex hull with the monotone chain algorithm.
@@ -393,7 +393,7 @@ void Plane::calcConvexHull(pcl::PointCloud<pcl::PointXYZRGBA>::Ptr &pointCloud, 
 //  cout << H[i].id << " pt hull " << polygonContourPtr->points[i].x << " " << polygonContourPtr->points[i].y << " " << polygonContourPtr->points[i].z << endl;
   }
 
-};
+}
 
 /**!
  * Verify that the plane's convex hull is efectively convex, and if it isn't, then recalculate its points
@@ -442,7 +442,7 @@ bool Plane::verifyConvexHull()
 
   // Check that the arrangement of the points defining the convex hull has not changed, in which case the previous convex hull was correct
   bool isBad = false;
-  for (int i = 0; i < H.size(); i++) {
+  for (size_t i = 0; i < H.size(); i++) {
     if( H[i].id != i )
     {
       isBad = true;
@@ -452,7 +452,7 @@ bool Plane::verifyConvexHull()
   if(isBad) // If the previous convex hull was not correct, swap with the one calculated in this function
   {
     pcl::PointCloud<pcl::PointXYZRGBA>::Ptr newHull(new pcl::PointCloud<pcl::PointXYZRGBA>);
-    for (int i = 0; i < H.size(); i++)
+    for (size_t i = 0; i < H.size(); i++)
       newHull->points.push_back( polygonContourPtr->points[ H[i].id ] );
     newHull.swap(polygonContourPtr);
   }

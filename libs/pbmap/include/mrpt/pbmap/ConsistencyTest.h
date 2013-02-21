@@ -44,8 +44,8 @@
 #if MRPT_HAS_PCL
 
 #include <mrpt/base.h>
-
-#include "PbMap.h"
+#include <mrpt/pbmap/link_pragmas.h>
+#include <mrpt/pbmap/PbMap.h>
 
 namespace mrpt {
 namespace pbmap {

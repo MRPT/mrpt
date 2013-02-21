@@ -47,11 +47,11 @@
 #include <mrpt/utils/utils_defs.h>
 
 #include <mrpt/utils/CSerializable.h>
-//#include <mrpt/utils/CStream.h>
+#include <mrpt/pbmap/link_pragmas.h>
 
-#include "Plane.h"
+#include <mrpt/pbmap/Plane.h>
+#include <mrpt/pbmap/Miscellaneous.h>  // For typedef PointT;
 
-typedef pcl::PointXYZRGBA PointT;
 
 namespace mrpt {
 namespace pbmap {
@@ -61,6 +61,7 @@ namespace pbmap {
 
 	/** A class used to store a Plane-based Map (PbMap), as a set of planar patches (Planes).
 	 *
+     * \ingroup mrpt_pbmap_grp
 	 */
   class PbMap //: public mrpt::utils::CSerializable
   {
@@ -68,15 +69,14 @@ namespace pbmap {
 //    DEFINE_SERIALIZABLE( PbMap )
 
    public:
-
   /*!Constructor.*/
   //  PbMap();
     PbMap():
+      currentSemanticGroup(0),
+      FloorPlane(-1),
       globalMapPtr( new pcl::PointCloud<pcl::PointXYZRGBA>() ),
       edgeCloudPtr(new pcl::PointCloud<pcl::PointXYZRGBA>),
-      outEdgeCloudPtr(new pcl::PointCloud<pcl::PointXYZRGBA>),
-      currentSemanticGroup(0),
-      FloorPlane(-1)
+      outEdgeCloudPtr(new pcl::PointCloud<pcl::PointXYZRGBA>)
       {};
 
 

@@ -45,9 +45,10 @@
 
 #include <mrpt/utils.h>
 #include <mrpt/graphs/CGraphPartitioner.h>
+#include <mrpt/pbmap/link_pragmas.h>
 
-#include "PbMap.h"
-#include "Plane.h"
+#include <mrpt/pbmap/PbMap.h>
+#include <mrpt/pbmap/Plane.h>
 
 static std::vector<unsigned> DEFAULT_VECTOR_U;
 
@@ -59,6 +60,7 @@ namespace pbmap {
    * be used to represent semantic groups corresponding human identifiable structures such as rooms,
    * or environments as an office. These groups of closely related planes can be used also for
    * relocalization.
+   * \ingroup mrpt_pbmap_grp
    */
   class SemanticClustering //: public PbMap
   {
@@ -120,7 +122,7 @@ namespace pbmap {
     /*!
     * Arrange the semantic groups
     */
-    bool arrangeNewGroups(std::vector<mrpt::vector_uint> &parts)//,neighborGroups)
+    void arrangeNewGroups(std::vector<mrpt::vector_uint> &parts)
     {
       int group_diff = parts.size() - neighborGroups.size();
       std::map<unsigned, std::vector<unsigned> > newGroups;
@@ -129,7 +131,7 @@ namespace pbmap {
       {
         for(unsigned i=0; i < neighborGroups.size(); i++)
           newGroups[neighborGroups[i]] = DEFAULT_VECTOR_U;
-        for(unsigned i=0; i < group_diff; i++)
+        for(int i=0; i < group_diff; i++)
           newGroups[groups.size()+i] = DEFAULT_VECTOR_U;
 //          groups[groups.size()] = DEFAULT_VECTOR_U;
       }
@@ -244,7 +246,7 @@ namespace pbmap {
 
       // Re-define second order vicinity
 
-    };
+    }
 
    public:
 
@@ -263,10 +265,10 @@ namespace pbmap {
 //      mrpt::utils::CTicTac time;
 //      time.Tic();
 //
-      unsigned currentSemanticGroup = current_group;
+      //unsigned currentSemanticGroup = current_group;
       buildCoVisibilityMatrix();
       std::vector<mrpt::vector_uint> parts;  // Vector of vectors to keep the KFs index of the different partitions (submaps)
-      mrpt::graphs::CGraphPartitioner::RecursiveSpectralPartition(co_visibility, parts, 0.8, false, true, true);
+      mrpt::graphs::CGraphPartitioner<mrpt::math::CMatrix>::RecursiveSpectralPartition(co_visibility, parts, 0.8, false, true, true);
 
 //    cout << "Time RecursiveSpectralPartition " << time.Tac()*1000 << "ms" << endl;
 

@@ -61,9 +61,9 @@ config_heuristics configLocaliser;
 
 //PbMapLocaliser::PbMapLocaliser(PbMap &mPbM, std::set<unsigned> &sQueuePlanes) :
 PbMapLocaliser::PbMapLocaliser(PbMap &mPbM) :
+    mPbMap(mPbM),
     m_pbMapLocaliser_must_stop(false),
-    m_pbMapLocaliser_finished(false),
-    mPbMap(mPbM)
+    m_pbMapLocaliser_finished(false)
 {
 std::cout << "PbMapLocaliser::PbMapLocaliser min_planes_recognition " << configLocaliser.min_planes_recognition << endl;
 
@@ -72,7 +72,7 @@ std::cout << "PbMapLocaliser::PbMapLocaliser min_planes_recognition " << configL
 //  LoadPreviousPbMaps("/home/edu/Projects/PbMaps/PbMaps.txt");
 
   pbMapLocaliser_hd = mrpt::system::createThreadFromObjectMethod(this, &PbMapLocaliser::run);
-};
+}
 
 //// Load Previous PbMaps
 //void PbMapLocaliser::LoadPreviousPbMaps(std::string fileMaps)
@@ -377,7 +377,9 @@ void PbMapLocaliser::run()
             continue;
           }
         matcher.nCheckConditions = 0;
+#ifdef _VERBOSE
         double search_plane_start = pcl::getTime ();
+#endif
         if( searchPlaneContext(mPbMap.vPlanes[vQueueObservedPlanes[0]]) )
         {
           placeFound = true;

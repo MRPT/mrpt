@@ -44,49 +44,33 @@
 #if MRPT_HAS_PCL
 
 #include <mrpt/base.h>
-//#include <mrpt/math.h>
 #include <string>
 #include <iostream>
 #include <iterator>
 #include <vector>
-//#if MRPT_HAS_PCL
 #include <pcl/point_types.h>
-//#endif
+#include <mrpt/pbmap/link_pragmas.h>
 
-typedef pcl::PointXYZRGBA PointT;
-
-
-/** A class containing miscellaneous external functions.
- *
- */
+namespace mrpt {
+namespace pbmap {
+	typedef pcl::PointXYZRGBA PointT;
 
   /*!Transform the (x,y,z) coordinates of a PCL point into a Eigen::Vector3f.*/
   template<class pointPCL>
   Eigen::Vector3f getVector3fromPointXYZ(pointPCL &pt)
   {
     return Eigen::Vector3f(pt.x,pt.y,pt.z);
-  };
+  }
 
-  inline Eigen::Vector3f diffPoints(PointT &P1, PointT &P2)
+  template <class POINT>
+  inline Eigen::Vector3f diffPoints(const POINT &P1, const POINT &P2)
   {
     Eigen::Vector3f diff;
     diff[0] = P1.x - P2.x;
     diff[1] = P1.y - P2.y;
     diff[2] = P1.z - P2.z;
     return diff;
-  };
-
-  inline float norm2(Eigen::Vector3f v)
-  {
-    return v.dot(v);
-  };
-
-  //template<class dataType>
-  //float norm2(Eigen::Matrix<dataType,3,1> v)
-  //{
-  //  return v.transpose() * v;
-  ////  return v.dot(v);
-  //};
+  }
 
   /*!Compose a 3D-point with a pose.*/
   template<class dataType>
@@ -94,7 +78,7 @@ typedef pcl::PointXYZRGBA PointT;
   {
     Eigen::Matrix<dataType,3,1> transformedPoint = pose.block(0,0,3,3) * point + pose.block(0,3,3,1);
     return transformedPoint;
-  };
+  }
 
   /*!Compose two poses.*/
   template<class dataType>
@@ -105,7 +89,7 @@ typedef pcl::PointXYZRGBA PointT;
     transformedPose.block(0,3,3,1) = pose1.block(0,3,3,1) + pose1.block(0,0,3,3)*pose2.block(0,3,3,1);
     transformedPose.row(3) << 0,0,0,1;
     return transformedPose;
-  };
+  }
 
   /*!Get the pose's inverse.*/
   template<class dataType>
@@ -116,10 +100,10 @@ typedef pcl::PointXYZRGBA PointT;
     inverse.block(0,3,3,1) = inverse.block(0,0,3,3) * pose.block(0,3,3,1);
     inverse.row(3) << 0,0,0,1;
     return inverse;
-  };
-  //#endif
+  }
 
-  struct Segment{
+  struct Segment
+  {
     Segment(PointT p0, PointT p1) :
       P0(p0), P1(p1)
     {};
@@ -141,7 +125,7 @@ typedef pcl::PointXYZRGBA PointT;
       sum += data[i];
 
     return sum/data.size();
-  };
+  }
 
   template<typename dataType>
   dataType calcStdDev(std::vector<dataType> &data, dataType mean)
@@ -154,7 +138,7 @@ typedef pcl::PointXYZRGBA PointT;
     dataType stdDev = sqrt(sum / data.size());
 
     return stdDev;
-  };
+  }
 
   template<typename dataType>
   dataType getMode(std::vector<dataType> data, dataType range)
@@ -180,7 +164,7 @@ typedef pcl::PointXYZRGBA PointT;
       }
 
     return (dataType)mode/normalizeConst;
-  };
+  }
 
   // Gets the center of a sinle-mode distribution, it performs variable mean shift
   template<typename dataType>
@@ -199,8 +183,7 @@ typedef pcl::PointXYZRGBA PointT;
 
     stdDevHist = calcStdDev(data, meanShift);
 
-    dataType step = 1;
-
+    //dataType step = 1;
     dataType shift = 1000;
     int iteration_counter = 0;
     dataType convergence = range * 0.001;
@@ -231,7 +214,7 @@ typedef pcl::PointXYZRGBA PointT;
   //  stdDevHist = calcStdDev(data, meanShift);
 
     return meanShift;
-  };
+  }
 
   /**
    * Output a vector as a stream that is space separated.
@@ -244,15 +227,9 @@ typedef pcl::PointXYZRGBA PointT;
   {
     std::copy(v.begin(), v.end(), std::ostream_iterator<T>(os, " "));
     return os;
-  };
+  }
 
-  /**
-   * Edit a string so that the only whitespace is a single space between elements.
-   * @param str the string to edit. This gets replaced.
-   */
-  extern void PruneWhiteSpace(std::string & str);
-
-//} // End namespace pbmap
+} } // End of namespaces
 
 #endif
 

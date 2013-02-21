@@ -38,10 +38,6 @@
 
 #include <mrpt/config.h>
 
-// Only really include all headers if we come from a user program (anything
-//  not defining mrpt_pbmap_EXPORTS) or MRPT is being built with precompiled headers.
-#if !defined(mrpt_pbmap_EXPORTS) || MRPT_ENABLE_PRECOMPILED_HDRS || defined(MRPT_ALWAYS_INCLUDE_ALL_HEADERS)
-
 #include <mrpt/pbmap/ConsistencyTest.h>
 #include <mrpt/pbmap/heuristicParams.h>
 #include <mrpt/pbmap/Miscellaneous.h>
@@ -56,4 +52,3 @@
 
 #endif
 
-#endif

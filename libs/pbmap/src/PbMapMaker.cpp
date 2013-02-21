@@ -63,8 +63,8 @@
 
 #include <iostream>
 
-#include <mrpt/pbmap/PbMapMaker.h"
-#include <mrpt/pbmap/Miscellaneous.h"
+#include <mrpt/pbmap/PbMapMaker.h>
+#include <mrpt/pbmap/Miscellaneous.h>
 
 using namespace std;
 using namespace Eigen;
@@ -171,13 +171,13 @@ void readConfigFile()
   #ifdef _VERBOSE
     cout << "readConfigFile configPbMap.ini dist_threshold " << configPbMap.dist_threshold << endl;
   #endif
-};
+}
 
 PbMapMaker::PbMapMaker() :
-    m_pbmaker_must_stop(false),
-    m_pbmaker_finished(false),
+    cloudViewer("Cloud Viewer"),
     mpPbMapLocaliser(NULL),
-    cloudViewer("Cloud Viewer")
+    m_pbmaker_must_stop(false),
+    m_pbmaker_finished(false)
 {
 //  GVars3::GUI.RegisterCommand("SavePbMap", GUICommandCallBack, this);
 
@@ -194,27 +194,27 @@ PbMapMaker::PbMapMaker() :
 
 //  mrpt::system::createThread (&run, T param);
   pbmaker_hd = mrpt::system::createThreadFromObjectMethod(this,&PbMapMaker::run);
-};
+}
 
 bool PbMapMaker::arePlanesNearby(Plane &plane1, Plane &plane2, const float distThreshold)
 {
   float distThres2 = distThreshold * distThreshold;
 
   // First we check distances between centroids and vertex to accelerate this check
-  if( norm2(plane1.v3center - plane2.v3center) < distThres2 )
+  if( (plane1.v3center - plane2.v3center).squaredNorm() < distThres2 )
     return true;
 
   for(unsigned i=1; i < plane1.polygonContourPtr->size(); i++)
-    if( norm2(getVector3fromPointXYZ(plane1.polygonContourPtr->points[i]) - plane2.v3center) < distThres2 )
+    if( (getVector3fromPointXYZ(plane1.polygonContourPtr->points[i]) - plane2.v3center).squaredNorm() < distThres2 )
       return true;
 
   for(unsigned j=1; j < plane2.polygonContourPtr->size(); j++)
-    if( norm2(plane1.v3center - getVector3fromPointXYZ(plane2.polygonContourPtr->points[j]) ) < distThres2 )
+    if( (plane1.v3center - getVector3fromPointXYZ(plane2.polygonContourPtr->points[j]) ).squaredNorm() < distThres2 )
       return true;
 
   for(unsigned i=1; i < plane1.polygonContourPtr->size(); i++)
     for(unsigned j=1; j < plane2.polygonContourPtr->size(); j++)
-      if( norm2(diffPoints(plane1.polygonContourPtr->points[i], plane2.polygonContourPtr->points[j]) ) < distThres2 )
+      if( (diffPoints(plane1.polygonContourPtr->points[i], plane2.polygonContourPtr->points[j]) ).squaredNorm() < distThres2 )
         return true;
 
   //If not found yet, search properly by checking distances:
@@ -322,13 +322,13 @@ void PbMapMaker::detectPlanesCloud( pcl::PointCloud<PointT>::Ptr &pointCloudPtr_
   mps.setAngularThreshold (angleThreshold); // (0.017453 * 2.0) // 3 degrees
   mps.setDistanceThreshold (distThreshold); //2cm
 
-  char name[1024];
-
   pcl::PointCloud<pcl::Normal>::Ptr normal_cloud (new pcl::PointCloud<pcl::Normal>);
   ne.setInputCloud (pointCloudPtr_arg2);
   ne.compute (*normal_cloud);
 
+#ifdef _VERBOSE
   double plane_extract_start = pcl::getTime ();
+#endif
   mps.setInputNormals (normal_cloud);
 //    mps.setInputCloud (alignedCloudPtr);
   mps.setInputCloud (pointCloudPtr_arg2);
@@ -665,14 +665,14 @@ void PbMapMaker::viz_cb (pcl::visualization::PCLVisualizer& viz)
           pcl::PointXYZ center(2*mPbMap.vPlanes[i].v3center[0], 2*mPbMap.vPlanes[i].v3center[1], 2*mPbMap.vPlanes[i].v3center[2]);
           double radius = 0.1 * sqrt(mPbMap.vPlanes[i].areaVoxels);
 //        cout << "radius " << radius << endl;
-          sprintf (name, "sphere%zu", i);
+          sprintf (name, "sphere%u", static_cast<unsigned>(i));
           viz.addSphere (center, radius, ared[i%10], agrn[i%10], ablu[i%10], name);
 
           if( !mPbMap.vPlanes[i].label.empty() )
               viz.addText3D (mPbMap.vPlanes[i].label, center, 0.1, ared[i%10], agrn[i%10], ablu[i%10], mPbMap.vPlanes[i].label);
           else
           {
-            sprintf (name, "P%zu", i);
+            sprintf (name, "P%u", static_cast<unsigned>(i));
             viz.addText3D (name, center, 0.1, ared[i%10], agrn[i%10], ablu[i%10], name);
           }
 
@@ -683,7 +683,7 @@ void PbMapMaker::viz_cb (pcl::visualization::PCLVisualizer& viz)
               if(*it > mPbMap.vPlanes[i].id)
                 break;
 
-              sprintf (name, "commonObs%zu_%u", i, *it);
+              sprintf (name, "commonObs%u_%u", static_cast<unsigned>(i), static_cast<unsigned>(*it));
               pcl::PointXYZ center_it(2*mPbMap.vPlanes[*it].v3center[0], 2*mPbMap.vPlanes[*it].v3center[1], 2*mPbMap.vPlanes[*it].v3center[2]);
               viz.addLine (center, center_it, ared[i%10], agrn[i%10], ablu[i%10], name);
             }
@@ -693,11 +693,11 @@ void PbMapMaker::viz_cb (pcl::visualization::PCLVisualizer& viz)
               if(it->first > mPbMap.vPlanes[i].id)
                 break;
 
-              sprintf (name, "commonObs%zu_%u", i, it->first);
+              sprintf (name, "commonObs%u_%u", static_cast<unsigned>(i), static_cast<unsigned>(it->first));
               pcl::PointXYZ center_it(2*mPbMap.vPlanes[it->first].v3center[0], 2*mPbMap.vPlanes[it->first].v3center[1], 2*mPbMap.vPlanes[it->first].v3center[2]);
               viz.addLine (center, center_it, ared[i%10], agrn[i%10], ablu[i%10], name);
 
-              sprintf (name, "edge%zu_%u", i, it->first);
+              sprintf (name, "edge%u_%u", static_cast<unsigned>(i), static_cast<unsigned>(it->first));
               char commonObs[8];
               sprintf (commonObs, "%u", it->second);
               pcl::PointXYZ half_edge( (center_it.x+center.x)/2, (center_it.y+center.y)/2, (center_it.z+center.z)/2 );
@@ -717,13 +717,13 @@ void PbMapMaker::viz_cb (pcl::visualization::PCLVisualizer& viz)
             if (!viz.updatePointCloud (mpPbMapLocaliser->alignedModelPtr, "model"))
               viz.addPointCloud (mpPbMapLocaliser->alignedModelPtr, "model");}
 
-        sprintf (name, "PointCloud size %zu", mPbMap.globalMapPtr->size() );
+        sprintf (name, "PointCloud size %u", static_cast<unsigned>( mPbMap.globalMapPtr->size() ) );
         viz.addText(name, 10, 20);
 
         for(size_t i=0; i<mPbMap.vPlanes.size(); i++)
         {
           Plane &plane_i = mPbMap.vPlanes[i];
-          sprintf (name, "normal_%zu", i);
+          sprintf (name, "normal_%u", static_cast<unsigned>(i));
           pcl::PointXYZ pt1, pt2; // Begin and end points of normal's arrow for visualization
           pt1 = pcl::PointXYZ(plane_i.v3center[0], plane_i.v3center[1], plane_i.v3center[2]);
           pt2 = pcl::PointXYZ(plane_i.v3center[0] + (0.5f * plane_i.v3normal[0]),
@@ -734,7 +734,7 @@ void PbMapMaker::viz_cb (pcl::visualization::PCLVisualizer& viz)
           // Draw Ppal diretion
 //          if( plane_i.elongation > 1.3 )
 //          {
-//            sprintf (name, "ppalComp_%zu", i);
+//            sprintf (name, "ppalComp_%u", static_cast<unsigned>(i));
 //            pcl::PointXYZ pt3 = pcl::PointXYZ ( plane_i.v3center[0] + (0.2f * plane_i.v3PpalDir[0]),
 //                                                plane_i.v3center[1] + (0.2f * plane_i.v3PpalDir[1]),
 //                                                plane_i.v3center[2] + (0.2f * plane_i.v3PpalDir[2]));
@@ -745,36 +745,36 @@ void PbMapMaker::viz_cb (pcl::visualization::PCLVisualizer& viz)
             viz.addText3D (plane_i.label, pt2, 0.1, ared[i%10], agrn[i%10], ablu[i%10], plane_i.label);
           else
           {
-            sprintf (name, "n%zu", i);
+            sprintf (name, "n%u", static_cast<unsigned>(i));
             viz.addText3D (name, pt2, 0.1, ared[i%10], agrn[i%10], ablu[i%10], name);
           }
 
-//          sprintf (name, "planeRaw_%02zu", i);
+//          sprintf (name, "planeRaw_%02u", static_cast<unsigned>(i));
 //          viz.addPointCloud (plane_i.planeRawPointCloudPtr, name);// contourPtr, planePointCloudPtr, polygonContourPtr
 
-          sprintf (name, "plane_%02zu", i);
+          sprintf (name, "plane_%02u", static_cast<unsigned>(i));
           pcl::visualization::PointCloudColorHandlerCustom <PointT> color (plane_i.planePointCloudPtr, red[i%10], grn[i%10], blu[i%10]);
           viz.addPointCloud (plane_i.planePointCloudPtr, color, name);// contourPtr, planePointCloudPtr, polygonContourPtr
           viz.setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 2, name);
 
-          sprintf (name, "planeBorder_%02zu", i);
+          sprintf (name, "planeBorder_%02u", static_cast<unsigned>(i));
           pcl::visualization::PointCloudColorHandlerCustom <PointT> color2 (plane_i.contourPtr, 255, 255, 255);
           viz.addPointCloud (plane_i.contourPtr, color2, name);// contourPtr, planePointCloudPtr, polygonContourPtr
 
 //          //Edges
 //          if(mPbMap.edgeCloudPtr->size() > 0)
 //          {
-//            sprintf (name, "planeEdge_%02zu", i);
+//            sprintf (name, "planeEdge_%02u", static_cast<unsigned>(i));
 //            pcl::visualization::PointCloudColorHandlerCustom <PointT> color4 (mPbMap.edgeCloudPtr, 255, 255, 0);
 //            viz.addPointCloud (mPbMap.edgeCloudPtr, color4, name);// contourPtr, planePointCloudPtr, polygonContourPtr
 //            viz.setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 5, name);
 //
-//            sprintf (name, "edge%zu", i);
+//            sprintf (name, "edge%u", static_cast<unsigned>(i));
 //            viz.addLine (mPbMap.edgeCloudPtr->points.front(), mPbMap.edgeCloudPtr->points.back(), ared[3], agrn[3], ablu[3], name);
 //          }
 
 //
-//          sprintf (name, "planeEdgeOut_%02zu", i);
+//          sprintf (name, "planeEdgeOut_%02u", static_cast<unsigned>(i));
 //          pcl::visualization::PointCloudColorHandlerCustom <PointT> color3 (mPbMap.outEdgeCloudPtr, 0, 255, 255);
 //          viz.addPointCloud (mPbMap.outEdgeCloudPtr, color3, name);// contourPtr, planePointCloudPtr, polygonContourPtr
 //          viz.setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 5, name);
@@ -784,7 +784,7 @@ void PbMapMaker::viz_cb (pcl::visualization::PCLVisualizer& viz)
 ////            viz.addText3D (name, pt2, 0.05, ared[3], agrn[3], ablu[3], name);
 //          //Edges Fin
 
-//          sprintf (name, "outerPoly_%zu", i);
+//          sprintf (name, "outerPoly_%u", static_cast<unsigned>(i));
 //          pcl::visualization::PointCloudColorHandlerCustom <PointT> colorOuterP (plane_i.planePointCloudPtr, red[i%10], grn[i%10], blu[i%10]);
 //          viz.addPointCloud (plane_i.outerPolygonPtr, colorOuterP, name);// contourPtr, planePointCloudPtr, polygonContourPtr
 //          viz.setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 5, name);
@@ -819,8 +819,8 @@ void PbMapMaker::run()
   cloudViewer.runOnVisualizationThread (boost::bind(&PbMapMaker::viz_cb, this, _1), "viz_cb");
   cloudViewer.registerKeyboardCallback ( keyboardEventOccurred );
 
-  int numPrevKFs = 0;
-  int minGrowPlanes = 10;
+  size_t numPrevKFs = 0;
+  size_t minGrowPlanes = 10;
   while(!m_pbmaker_must_stop)  // Stop loop if PbMapMaker
   {
     if( numPrevKFs == frameQueue.size() )

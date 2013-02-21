@@ -48,9 +48,10 @@
 
 #include <mrpt/system/threads.h>
 
-#include "PbMap.h"
-#include "SubgraphMatcher.h"
-#include "ConsistencyTest.h"
+#include <mrpt/pbmap/PbMap.h>
+#include <mrpt/pbmap/SubgraphMatcher.h>
+#include <mrpt/pbmap/ConsistencyTest.h>
+#include <mrpt/pbmap/link_pragmas.h>
 
 namespace mrpt {
 namespace pbmap {
@@ -58,6 +59,7 @@ namespace pbmap {
   /*! This class is used to explore the PbMap (or other previously acquired PbMaps)
    *  to find places observed previously (it has uses in e.g. place recognition or relocalization).
    *  PbMapLocaliser run its own thread, which is created at initialization.
+   * \ingroup mrpt_pbmap_grp
    */
   class PbMapLocaliser
   {

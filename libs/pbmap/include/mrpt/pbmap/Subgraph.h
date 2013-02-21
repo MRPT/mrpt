@@ -45,14 +45,16 @@
 
 #include <mrpt/config.h>
 #include <mrpt/utils/utils_defs.h>
+#include <mrpt/pbmap/link_pragmas.h>
 
-#include "PbMap.h"
+#include <mrpt/pbmap/PbMap.h>
 
 namespace mrpt {
 namespace pbmap {
 
   /*! This class defines a subgraph inside a PbMap.
    *  This subgraph represents the entity to be matched in order to recognize a previous place.
+   * \ingroup mrpt_pbmap_grp
    */
   class Subgraph
   {

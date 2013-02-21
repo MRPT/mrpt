@@ -46,13 +46,10 @@
 #if MRPT_HAS_PCL
 
 #include <mrpt/utils/utils_defs.h>
-
 #include <mrpt/pbmap/link_pragmas.h>
 
 #include <mrpt/utils/CSerializable.h>
-//#include <mrpt/math/CArray.h>
 #include <pcl/point_types.h>
-//#include <pcl/segmentation/planar_region.h>
 #include <pcl/common/pca.h>
 
 #define USE_COMPLETNESS_HEURISTICS 1
@@ -73,6 +70,7 @@ namespace pbmap {
 	 *  location of the patch (area, normal vector, elongation, 3D-convex hull, etc.)
 	 *  and radiometric features (the most representative color).
 	 *
+     * \ingroup mrpt_pbmap_grp
 	 */
   class Plane //: public mrpt::utils::CSerializable
   {
@@ -81,17 +79,17 @@ namespace pbmap {
 
    public:
     Plane() :
-      planePointCloudPtr(new pcl::PointCloud<pcl::PointXYZRGBA>),
-      contourPtr(new pcl::PointCloud<pcl::PointXYZRGBA>),
-      polygonContourPtr(new pcl::PointCloud<pcl::PointXYZRGBA>),
-  //    planeRawPointCloudPtr(new pcl::PointCloud<pcl::PointXYZRGBA>),
-  //    outerPolygonPtr(new pcl::PointCloud<pcl::PointXYZRGBA>),
+      semanticGroup(0),
+      elongation(1.0),
       bFullExtent(false),
       bFromStructure(false),
-      semanticGroup(0),
-      elongation(1.0)
+      contourPtr(new pcl::PointCloud<pcl::PointXYZRGBA>),
+      polygonContourPtr(new pcl::PointCloud<pcl::PointXYZRGBA>),
+  //    outerPolygonPtr(new pcl::PointCloud<pcl::PointXYZRGBA>),
+      planePointCloudPtr(new pcl::PointCloud<pcl::PointXYZRGBA>)
+  //    planeRawPointCloudPtr(new pcl::PointCloud<pcl::PointXYZRGBA>)
     {
-    };
+    }
 
   //  /*!
   //   * Check if the the input plane is the same than this plane for some given angle and distance thresholds.
@@ -122,7 +120,7 @@ namespace pbmap {
 
     /** \brief Compute the patch's convex-hull area and mass center
       */
-    float computeMassCenterAndArea();
+    void computeMassCenterAndArea();
 
     /*!
      * Calculate plane's elongation and principal direction

@@ -146,8 +146,8 @@ bool SubgraphMatcher::evalBinaryConstraints(Plane &Ref, Plane &neigRef, Plane &C
   // If the plane has been fully detected use a narrower threshold for the comparison
   bool RefBothFull = (Ref.bFullExtent && neigRef.bFullExtent);// ? true : false;
   bool CheckBothFull = (Check.bFullExtent && neigCheck.bFullExtent);// ? true : false;
-  bool RefBothShape = (Ref.elongation > 1.3 && neigRef.elongation > 1.3);
-  bool CheckBothShape = (Check.elongation > 1.3 && neigCheck.elongation > 1.3);
+  //bool RefBothShape = (Ref.elongation > 1.3 && neigRef.elongation > 1.3);
+  //bool CheckBothShape = (Check.elongation > 1.3 && neigCheck.elongation > 1.3);
 
   if(configLocaliser.use_completeness)
   {

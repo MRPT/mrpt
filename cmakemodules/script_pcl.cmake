@@ -12,7 +12,7 @@ IF(NOT DISABLE_PCL)
 
 	# PCL library:
 	# --------------------------------------------
-	find_package(PCL COMPONENTS io common registration) # QUIET)
+	find_package(PCL COMPONENTS io common registration QUIET)
 	if (PCL_FOUND)
 		SET(CMAKE_MRPT_HAS_PCL 1)
 		SET(CMAKE_MRPT_HAS_PCL_SYSTEM 1)
