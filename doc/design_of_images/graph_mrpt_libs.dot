@@ -27,7 +27,12 @@ digraph MRPT_LIBS {
 
 	srba	[label="mrpt-srba (.h)",URL="group__mrpt__srba__grp.html"];
 
+	pbmap    [label="mrpt-pbmap",URL="group__mrpt__pbmap__grp.html"];
+
+
 	srba -> opengl;
+
+	pbmap -> graphs;
 
 	kinematics  -> opengl;
 	

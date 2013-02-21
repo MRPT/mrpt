@@ -12,7 +12,7 @@ IF(NOT DISABLE_PCL)
 
 	# PCL library:
 	# --------------------------------------------
-	find_package(PCL COMPONENTS io common registration QUIET)
+	find_package(PCL COMPONENTS io common registration) # QUIET)
 	if (PCL_FOUND)
 		SET(CMAKE_MRPT_HAS_PCL 1)
 		SET(CMAKE_MRPT_HAS_PCL_SYSTEM 1)
@@ -20,7 +20,17 @@ IF(NOT DISABLE_PCL)
 		INCLUDE_DIRECTORIES(${PCL_INCLUDE_DIRS})
 		link_directories(${PCL_LIBRARY_DIRS})
 		add_definitions(${PCL_DEFINITIONS})
+		
+		IF (NOT Boost_FOUND)
+			MESSAGE("*MRPT ERROR MESSAGE*: PCL requires Boost. Either disable PCL (with DISABLE_PCL=ON) or, to fix the error, create the entries BOOST_ROOT and BOOST_LIBRARYDIR and set them to the correct values")
+		ENDIF (NOT Boost_FOUND)
 
+		MESSAGE(STATUS "PCL:")
+		MESSAGE(STATUS " Include dirs: ${PCL_INCLUDE_DIRS}")
+		MESSAGE(STATUS " Library dirs: ${PCL_LIBRARY_DIRS}")
+		MESSAGE(STATUS " Definitions : ${PCL_DEFINITIONS}")
+		MESSAGE(STATUS " Libraries   : ${PCL_LIBRARIES}")
+		
 		# Add PCL directories as "-isystem" to avoid warnings:
 		ADD_DIRECTORIES_AS_ISYSTEM(PCL_INCLUDE_DIRS)
 

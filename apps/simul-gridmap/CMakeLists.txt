@@ -20,10 +20,8 @@ ADD_EXECUTABLE(simul-gridmap
 			   
 SET(TMP_TARGET_NAME "simul-gridmap")
 
-
-
 # Add the required libraries for linking:
-TARGET_LINK_LIBRARIES(${TMP_TARGET_NAME} ${MRPT_LINKER_LIBS} ${MY_Boost_LIBRARIES})
+TARGET_LINK_LIBRARIES(${TMP_TARGET_NAME} ${MRPT_LINKER_LIBS})
 
 # Dependencies on MRPT libraries:
 #  Just mention the top-level dependency, the rest will be detected automatically, 
