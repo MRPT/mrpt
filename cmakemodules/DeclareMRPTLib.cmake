@@ -38,6 +38,7 @@ macro(internal_define_mrpt_lib name headers_only)
 		"${CMAKE_SOURCE_DIR}/libs/${name}/src/*.h"
 		"${CMAKE_SOURCE_DIR}/libs/${name}/include/mrpt/${name}/*.h"
 		"${CMAKE_SOURCE_DIR}/libs/${name}/include/mrpt/${name}/*.hpp"
+		"${CMAKE_SOURCE_DIR}/doc/doxygen-pages/lib_mrpt_${name}.h"
 		)
 	LIST(APPEND ${name}_EXTRA_SRCS_NAME
 		"${name}"
@@ -46,6 +47,7 @@ macro(internal_define_mrpt_lib name headers_only)
 		"${name} Internal Headers"
 		"${name} Public Headers"
 		"${name} Public Headers"
+		"Documentation"
 		)
 	# Only add these ones for "normal" libraries:
 	IF (NOT ${headers_only})
