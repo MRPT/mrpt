@@ -71,14 +71,7 @@ namespace pbmap {
 
    public:
   /*!Constructor.*/
-  //  PbMap();
-    PbMap():
-      currentSemanticGroup(0),
-      FloorPlane(-1),
-      globalMapPtr( new pcl::PointCloud<pcl::PointXYZRGBA>() ),
-      edgeCloudPtr(new pcl::PointCloud<pcl::PointXYZRGBA>),
-      outEdgeCloudPtr(new pcl::PointCloud<pcl::PointXYZRGBA>)
-      {};
+    PbMap();
 
 
   /*!Vector to store the 3D-planes which are the basic characteristic of our map.*/

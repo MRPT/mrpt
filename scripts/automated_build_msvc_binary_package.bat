@@ -10,7 +10,7 @@ REM
 REM ---------------------------------------------------------------------------
 
 REM  Extra params we want on all public binary releases:
-set EXTRA_CMAKE_VARS=-DDISABLE_SWISSRANGER_3DCAM_LIBS=ON
+set EXTRA_CMAKE_VARS=-DDISABLE_SWISSRANGER_3DCAM_LIBS=ON -DDISABLE_PCL=ON -DDISABLE_NationalInstruments=ON 
 set MSBUILDPARALLEL=/maxcpucount:2
 
 REM set MSVC_VERBOSITY=minimal

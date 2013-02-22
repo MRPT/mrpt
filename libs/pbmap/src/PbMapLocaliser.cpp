@@ -53,6 +53,7 @@
 #include <mrpt/pbmap/ConsistencyTest.h>
 //#include <mrpt/pbmap/PbMapSerializer.h>
 #include <mrpt/pbmap/Miscellaneous.h>
+#include <mrpt/system/threads.h>  // for sleep()
 
 using namespace std;
 using namespace mrpt::pbmap;
@@ -354,7 +355,7 @@ void PbMapLocaliser::run()
   while(!m_pbMapLocaliser_must_stop && !placeFound)
   {
     if(vQueueObservedPlanes.empty()) //if(sQueueObservedPlanes.empty())
-      usleep(50000);
+      mrpt::system::sleep(50);
 
     else
     {
@@ -406,7 +407,7 @@ bool PbMapLocaliser::stop_pbMapLocaliser()
 {
   m_pbMapLocaliser_must_stop = true;
   while(!m_pbMapLocaliser_finished)
-    usleep(5);
+    mrpt::system::sleep(1);
   cout << "Waiting for PbMapMaker thread to die.." << endl;
 
   mrpt::system::joinThread(pbMapLocaliser_hd);

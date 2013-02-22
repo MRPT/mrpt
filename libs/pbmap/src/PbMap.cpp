@@ -55,12 +55,13 @@ IMPLEMENTS_SERIALIZABLE(PbMap, CSerializable, pbmap)
 	Constructor
   ---------------------------------------------------------------*/
 PbMap::PbMap() :
+    currentSemanticGroup(0),
+    FloorPlane(-1),
     globalMapPtr( new pcl::PointCloud<pcl::PointXYZRGBA>() ),
     edgeCloudPtr(new pcl::PointCloud<pcl::PointXYZRGBA>),
-    outEdgeCloudPtr(new pcl::PointCloud<pcl::PointXYZRGBA>),
-    FloorPlane(-1)
+    outEdgeCloudPtr(new pcl::PointCloud<pcl::PointXYZRGBA>)
 {
-};
+}
 
 /*---------------------------------------------------------------
 						writeToStream

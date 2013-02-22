@@ -41,6 +41,8 @@
 #ifndef __PBMAPMAKER_H
 #define __PBMAPMAKER_H
 
+#include <mrpt/config.h>
+
 #if MRPT_HAS_PCL
 
 #include <mrpt/config.h>

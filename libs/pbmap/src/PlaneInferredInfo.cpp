@@ -200,7 +200,7 @@ bool PlaneInferredInfo::isSurroundingBackground(Plane &plane, pcl::PointCloud<pc
   // Fill outerPolygonPtr point cloud
   for(unsigned i=1; i < outerPolygon.size(); i++)
   {
-    double edgeLenght = sqrt((outerPolygon[i][0] - outerPolygon[i-1][0])*(outerPolygon[i][0] - outerPolygon[i-1][0]) + (outerPolygon[i][1] - outerPolygon[i-1][1])*(outerPolygon[i][1] - outerPolygon[i-1][1]));
+    double edgeLenght = std::sqrt(static_cast<double>( (outerPolygon[i][0] - outerPolygon[i-1][0])*(outerPolygon[i][0] - outerPolygon[i-1][0]) + (outerPolygon[i][1] - outerPolygon[i-1][1])*(outerPolygon[i][1] - outerPolygon[i-1][1])) );
     Eigen::Vector2f direction;
     direction[0] = (outerPolygon[i][0] - outerPolygon[i-1][0]) / edgeLenght;
     direction[1] = (outerPolygon[i][1] - outerPolygon[i-1][1]) / edgeLenght;
