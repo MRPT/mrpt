@@ -45,6 +45,7 @@
 The <a href="http://www.pointclouds.org/" >PointCloud library</a> (PCL) is optinal for building MRPT. 
 If available, it will provide the following functionality:
 
+- The library <a href="group__mrpt__pbmap__grp.html" >mrpt-pbmap</a> cannot be compiled without PCL.
 - <a href="http://www.mrpt.org/Application:rawlog-edit" >rawlog-edit</a> program: The --generate-pcd command.
 - In point map classes:
 	- mrpt::slam::CPointsMap::getPCLPointCloud() (*)

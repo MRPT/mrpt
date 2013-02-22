@@ -43,6 +43,7 @@
   <h2>Version 1.0.0 - (Under development) </h2></a>
 	- <b>Most important changes:</b>
 		- New library with a flexible implementation of Sparser Relative Bundle Adjustment (RBA), as presented in ICRA 2013: <a href="http://www.mrpt.org/srba" >mrpt-srba</a>.
+		- New library for Plane-based Maps: <a href="group__mrpt__pbmap__grp.html" >mrpt-pbmap</a> (also presented in ICRA 2013).
 		- Some MRPT modules are now header-only libraries.
 		- Support for a new Octomap metric map, via the octomap library. See mrpt::slam::COctoMap and detailed changes below.
 		- Better support for custom builds of MRPT (selective building of individual apps and libs, etc.)

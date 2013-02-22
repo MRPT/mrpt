@@ -13,9 +13,11 @@ define_mrpt_lib(
 	mrpt-base
 	)
 	
-IF (CMAKE_MRPT_HAS_PCL)
-	target_link_libraries(mrpt-pbmap ${PCL_LIBRARIES})
-ENDIF(CMAKE_MRPT_HAS_PCL)
+IF(BUILD_mrpt-pbmap)
+	IF (CMAKE_MRPT_HAS_PCL)
+		target_link_libraries(mrpt-pbmap ${PCL_LIBRARIES})
+	ENDIF(CMAKE_MRPT_HAS_PCL)
+ENDIF(BUILD_mrpt-pbmap)
 
 
 ENDIF(CMAKE_MRPT_HAS_PCL)
