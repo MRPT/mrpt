@@ -2192,6 +2192,7 @@ void CRandomFieldGridMap2D::insertObservation_GMRF(
   ---------------------------------------------------------------*/
 void CRandomFieldGridMap2D::updateMapEstimation_GMRF()
 {
+#if EIGEN_VERSION_AT_LEAST(3,1,0)
 	size_t N = m_map.size();
 	const uint16_t Gsize = m_insertOptions_common->GMRF_constraintsSize;
 	const uint16_t Gside = round((Gsize-1)/2);
@@ -2385,4 +2386,7 @@ void CRandomFieldGridMap2D::updateMapEstimation_GMRF()
 	//for (size_t i=0; i<N; i++)
 	//	mymap[i] = m_map[i].gmrf_mean;
 	//mymap.saveToTextFile("_meanMap_GMRF.txt");
+#else
+	THROW_EXCEPTION("This method requires Eigen 3.1.0 or above")
+#endif
 }
