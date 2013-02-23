@@ -96,7 +96,7 @@ ENDIF($ENV{VERBOSE})
 
 MESSAGE(STATUS  " ____________________ WILL USE THESE LIBRARIES __________________")
 
-SHOW_CONFIG_LINE_SYSTEM("Has eigen3                              " CMAKE_MRPT_HAS_EIGEN "[Version: ${PKG_EIGEN3_VERSION}]")
+SHOW_CONFIG_LINE_SYSTEM("Has eigen3                              " CMAKE_MRPT_HAS_EIGEN "[Version: ${MRPT_EIGEN_VERSION}]")
 SHOW_CONFIG_LINE_SYSTEM("Has ffmpeg libs (Video streaming)       " CMAKE_MRPT_HAS_FFMPEG "[avcodec ${LIBAVCODEC_VERSION}, avutil ${LIBAVUTIL_VERSION}, avformat ${LIBAVFORMAT_VERSION}]")
 SHOW_CONFIG_LINE_SYSTEM("Has gtest (Google unit testing library) " CMAKE_MRPT_HAS_GTEST )
 SHOW_CONFIG_LINE("Has Intel threading lib (TBB)           " CMAKE_MRPT_HAS_TBB)
