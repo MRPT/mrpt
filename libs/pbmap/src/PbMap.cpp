@@ -72,7 +72,7 @@ void  PbMap::writeToStream(CStream &out, int *out_Version) const
 		*out_Version = 0;
 	else
 	{
-		uint32_t						n;
+		uint32_t n;
 
 		// The data
 		n = uint32_t( vPlanes.size() );
@@ -92,7 +92,6 @@ void  PbMap::readFromStream(CStream &in, int version)
 	case 0:
 		{
 			uint32_t	n;
-			uint32_t	i;
 
 			// Delete previous content:
 			vPlanes.clear();

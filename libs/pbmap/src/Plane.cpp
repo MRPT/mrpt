@@ -65,20 +65,15 @@ void  Plane::writeToStream(CStream &out, int *out_Version) const
 		out << areaVoxels;
 		out << areaHull;
 		out << elongation;
-//    out << v3normal;
-//    out << v3center;
-//    out << v3PpalDir;
-//    out << v3colorNrgb;
-//    out << v3colorNrgbDev;
-    out.WriteBufferFixEndianness<Scalar>(&v3normal(0),3);
-    out.WriteBufferFixEndianness<Scalar>(&v3center(0),3);
-    out.WriteBufferFixEndianness<Scalar>(&v3PpalDir(0),3);
-    out.WriteBufferFixEndianness<Scalar>(&v3colorNrgb(0),3);
-    out.WriteBufferFixEndianness<Scalar>(&v3colorNrgbDev(0),3);
+    out.WriteBufferFixEndianness<Eigen::Vector3f::Scalar>(&v3normal(0),3);
+    out.WriteBufferFixEndianness<Eigen::Vector3f::Scalar>(&v3center(0),3);
+    out.WriteBufferFixEndianness<Eigen::Vector3f::Scalar>(&v3PpalDir(0),3);
+    out.WriteBufferFixEndianness<Eigen::Vector3f::Scalar>(&v3colorNrgb(0),3);
+    out.WriteBufferFixEndianness<Eigen::Vector3f::Scalar>(&v3colorNrgbDev(0),3);
 
     out << (uint32_t)neighborPlanes.size();
-    for (std::map<unsigned,unsigned>::iterator it=neighborPlanes.begin(); it != neighborPlanes.end(); it++)
-      out << it->first << it->second;
+    for (std::map<unsigned,unsigned>::const_iterator it=neighborPlanes.begin(); it != neighborPlanes.end(); it++)
+      out << static_cast<uint32_t>(it->first) << static_cast<uint32_t>(it->second);
 
     out << (uint32_t)polygonContourPtr->size();
     for (uint32_t i=0; i < polygonContourPtr->size(); i++)
@@ -103,34 +98,26 @@ void  Plane::readFromStream(CStream &in, int version)
 	{
 	case 0:
 		{
-			uint32_t	n;
-			uint32_t	i;
-
 			// Delete previous content:
-			vPlanes.clear();
+			//vPlanes.clear();
 
 			// The data
 			in >> numObservations;
 			in >> areaVoxels;
 			in >> areaHull;
 			in >> elongation;
-//			in >> v3normal;
-//			in >> v3center;
-//			in >> v3PpalDir;
-//			in >> v3colorNrgb;
-//			in >> v3colorNrgbDev;
-			in.ReadBuffer(v3normal[0],sizeof(v3normal[0])*3);
-			in.ReadBuffer(v3normal[0],sizeof(v3center[0])*3);
-			in.ReadBuffer(v3normal[0],sizeof(v3PpalDir[0])*3);
-			in.ReadBuffer(v3normal[0],sizeof(v3colorNrgb[0])*3);
-			in.ReadBuffer(v3normal[0],sizeof(v3colorNrgbDev[0])*3);
+			in.ReadBufferFixEndianness<Eigen::Vector3f::Scalar>(&v3normal[0],sizeof(v3normal[0])*3);
+			in.ReadBufferFixEndianness<Eigen::Vector3f::Scalar>(&v3center[0],sizeof(v3center[0])*3);
+			in.ReadBufferFixEndianness<Eigen::Vector3f::Scalar>(&v3PpalDir[0],sizeof(v3PpalDir[0])*3);
+			in.ReadBufferFixEndianness<Eigen::Vector3f::Scalar>(&v3colorNrgb[0],sizeof(v3colorNrgb[0])*3);
+			in.ReadBufferFixEndianness<Eigen::Vector3f::Scalar>(&v3colorNrgbDev[0],sizeof(v3colorNrgbDev[0])*3);
 
 			uint32_t n;
 			in >> n;
-			unsigned neighbor, commonObs;
 			neighborPlanes.clear();
-      for (unsigned i=0; i < n; i++)
+      for (uint32_t i=0; i < n; i++)
       {
+		uint32_t neighbor, commonObs;
         in >> neighbor >> commonObs;
         neighborPlanes[neighbor] = commonObs;
       }
