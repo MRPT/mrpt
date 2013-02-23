@@ -53,9 +53,12 @@ namespace mrpt {
 namespace pbmap {
 
 
-  /**
-    * \ingroup mrpt_pbmap_grp
-	*/
+	/** A class used to infer some semantic meaning to the planes of a PbMap. This knowledge
+	 *  is inferred through some heristics to determine if a plane correspond to the floor, or
+	 *  to a wall ("structural plane") or if instead it is a contextual plane (e.g. TV, worktop).
+	 *
+	 * \ingroup mrpt_pbmap_grp
+	 */
   class PBMAP_IMPEXP PlaneInferredInfo
   {
    public:

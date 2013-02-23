@@ -48,11 +48,11 @@
 #include <fstream>
 #include <iostream>
 
-#include <mrpt/pbmap/PbMapLocaliser.h>
-#include <mrpt/pbmap/heuristicParams.h>
-#include <mrpt/pbmap/ConsistencyTest.h>
-//#include <mrpt/pbmap/PbMapSerializer.h>
-#include <mrpt/pbmap/Miscellaneous.h>
+//#include <mrpt/pbmap/PbMapLocaliser.h>
+//#include <mrpt/pbmap/heuristicParams.h>
+//#include <mrpt/pbmap/ConsistencyTest.h>
+////#include <mrpt/pbmap/PbMapSerializer.h>
+//#include <mrpt/pbmap/Miscellaneous.h>
 #include <mrpt/system/threads.h>  // for sleep()
 
 using namespace std;
@@ -219,11 +219,16 @@ bool PbMapLocaliser::searchPlaneContext(Plane &searchPlane)
 
       // Do not consider evaluating planes which do not have more than min_planes_recognition neighbor planes (too much uncertainty)
       if(!configLocaliser.graph_rule)
+      {
         if( targetPlane.neighborPlanes.size() < configLocaliser.min_planes_recognition ){
           continue;}
+      }
       else
+      {
         if( targetPlane.nearbyPlanes.size() < configLocaliser.min_planes_recognition ){
           continue;}
+      }
+
 
       Subgraph targetSubgraph(&prevPbMap, targetPlane.id);
 //      matcher.setTargetSubgraph(targetSubgraph);
@@ -366,11 +371,13 @@ void PbMapLocaliser::run()
 
         // Do not consider searching planes which do not have more than 2 neighbor planes (too much uncertainty)
         if(!configLocaliser.graph_rule) // Nearby neighbors
+        {
           if(mPbMap.vPlanes[vQueueObservedPlanes[0]].nearbyPlanes.size() < configLocaliser.min_planes_recognition)
           {
             vQueueObservedPlanes.erase(vQueueObservedPlanes.begin());
             continue;
           }
+        }
         else
           if(mPbMap.vPlanes[vQueueObservedPlanes[0]].neighborPlanes.size() < configLocaliser.min_planes_recognition)
           {

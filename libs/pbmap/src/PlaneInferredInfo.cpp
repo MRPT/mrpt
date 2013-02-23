@@ -42,8 +42,8 @@
 
 #if MRPT_HAS_PCL
 
-#include <mrpt/pbmap/PlaneInferredInfo.h>
-#include <mrpt/pbmap/Miscellaneous.h>
+//#include <mrpt/pbmap/PlaneInferredInfo.h>
+//#include <mrpt/pbmap/Miscellaneous.h>
 
 using namespace std;
 using namespace mrpt::pbmap;
@@ -148,14 +148,14 @@ bool PlaneInferredInfo::isSurroundingBackground(Plane &plane, pcl::PointCloud<pc
 {
 //cout << "isSurroundingBackground\n";
   // Find in the frame the 2D position of the convex hull vertex by brute force // Innefficient
-  vector< pair<int, int> > polyImg;
+  vector< pair<unsigned, unsigned> > polyImg;
   for(unsigned i=0; i < plane.polygonContourPtr->size(); i++)
     for(unsigned j=0; j < planeIndices.size(); j++)
       if( frame->points[planeIndices[j] ].x == plane.polygonContourPtr->points[i].x &&
           frame->points[planeIndices[j] ].y == plane.polygonContourPtr->points[i].y &&
           frame->points[planeIndices[j] ].z == plane.polygonContourPtr->points[i].z )
           {
-            polyImg.push_back(pair<int, int>(planeIndices[j] % frame->width, planeIndices[j] / frame->width) );
+            polyImg.push_back(pair<unsigned, unsigned>(planeIndices[j] % frame->width, planeIndices[j] / frame->width) );
             break;
           }
 
@@ -189,9 +189,9 @@ bool PlaneInferredInfo::isSurroundingBackground(Plane &plane, pcl::PointCloud<pc
     outVertex[0] = dir[0]*Threshold + polyImg[i].first;
     outVertex[1] = dir[1]*Threshold + polyImg[i].second;
     if(outVertex[0] < 0) outVertex[0] = 0;
-    else if(outVertex[0] >= frame->width) outVertex[0] = frame->width-1;
+    else if(outVertex[0] >= static_cast<int>(frame->width)) outVertex[0] = frame->width-1;
     if(outVertex[1] < 0) outVertex[1] = 0;
-    else if(outVertex[1] >= frame->height) outVertex[1] = frame->height-1;
+    else if(outVertex[1] >= static_cast<int>(frame->height)) outVertex[1] = frame->height-1;
 //  cout << "outVertex " << outVertex << endl;
     outerPolygon.push_back(outVertex);
   }
@@ -220,11 +220,7 @@ bool PlaneInferredInfo::isSurroundingBackground(Plane &plane, pcl::PointCloud<pc
 
       // Fill pointCloud corresponding to the outerPolygon
       plane.outerPolygonPtr->points.push_back(outerPt);
-    #ifdef _USE_TOON
-      double dist2Plane = plane.v3normal * makeVector(outerPt.x -plane.v3center[0], outerPt.y -plane.v3center[1], outerPt.z -plane.v3center[2] );
-    #else
       double dist2Plane = plane.v3normal .dot (getVector3fromPointXYZ(outerPt) - plane.v3center);
-    #endif
       if(dist2Plane > 0.1)
         return false;
     }

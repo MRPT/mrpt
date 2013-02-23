@@ -61,9 +61,9 @@ namespace pbmap {
 	DEFINE_SERIALIZABLE_PRE_CUSTOM_LINKAGE( PbMap, PBMAP_IMPEXP)
 
 	/** A class used to store a Plane-based Map (PbMap), as a set of planar patches (Planes).
-	 *
-     * \ingroup mrpt_pbmap_grp
-	 */
+   *
+   * \ingroup mrpt_pbmap_grp
+   */
   class PBMAP_IMPEXP PbMap : public mrpt::utils::CSerializable
   {
     // This must be added to any CSerializable derived class:
@@ -76,9 +76,6 @@ namespace pbmap {
 
   /*!Vector to store the 3D-planes which are the basic characteristic of our map.*/
     std::vector<Plane> vPlanes;
-
-  /*!Current semantic group*/
-    unsigned currentSemanticGroup;
 
   /*!Floor plane id*/
     int FloorPlane; // Modificar nombres, y clase. Crear la clase inferKnowledge

@@ -42,7 +42,7 @@
 
 #if MRPT_HAS_PCL
 
-#include <mrpt/pbmap/Miscellaneous.h>
+//#include <mrpt/pbmap/Miscellaneous.h>
 
 using namespace mrpt::pbmap;
 

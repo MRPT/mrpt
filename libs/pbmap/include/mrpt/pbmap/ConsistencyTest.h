@@ -52,6 +52,8 @@ namespace pbmap {
 
   /*! This class computes the rigid transformation between two sets of matched planes,
    *  and provides a measure of their rigid adjustment
+   *
+   * \ingroup mrpt_pbmap_grp
    */
   class PBMAP_IMPEXP ConsistencyTest
   {

@@ -47,9 +47,11 @@
 namespace mrpt {
 namespace pbmap {
 
-  /**
-    * \ingroup mrpt_pbmap_grp
-    */
+	/** A class used to define the heuristic parameters and thresholds used to match sets of planes.
+	 *  These parameters are loaded from a configuration file.
+	 *
+	 * \ingroup mrpt_pbmap_grp
+	 */
   struct PBMAP_IMPEXP config_heuristics
   {
     config_heuristics()

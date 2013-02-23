@@ -166,7 +166,7 @@ namespace pbmap {
     return (dataType)mode/normalizeConst;
   }
 
-  // Gets the center of a sinle-mode distribution, it performs variable mean shift
+  // Gets the center of a single-mode distribution, it performs variable mean shift
   template<typename dataType>
   dataType getHistogramMeanShift(std::vector<dataType> &data, dataType range, dataType &stdDevHist)
   {

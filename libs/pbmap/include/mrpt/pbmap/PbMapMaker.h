@@ -61,7 +61,9 @@ typedef pcl::PointXYZRGBA PointT;
 namespace mrpt {
 namespace pbmap {
 
-  /*!frameRGBDandPose stores a dupla containing a pointCloud (built from a RGBD frame) and a pose.*/
+  /*!frameRGBDandPose stores a dupla containing a pointCloud (built from a RGBD frame) and a pose.
+   * \ingroup mrpt_pbmap_grp
+   */
   struct PBMAP_IMPEXP frameRGBDandPose
   {
     pcl::PointCloud<PointT>::Ptr cloudPtr;
@@ -71,6 +73,7 @@ namespace pbmap {
   /*! This class construct the PbMap extracting planar segments from Range images, which pose must be also provided.
    *  The range images and their poses are communicated with the object frameQueue.
    *  PbMapMaker run its own thread, which is created at initialization.
+   *
    * \ingroup mrpt_pbmap_grp
    */
   class PBMAP_IMPEXP PbMapMaker

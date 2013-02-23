@@ -40,9 +40,8 @@
 
 #include <mrpt/pbmap.h> // precomp. hdr
 
-
-#include <mrpt/pbmap/Miscellaneous.h>
-#include <mrpt/pbmap/ConsistencyTest.h>
+//#include <mrpt/pbmap/Miscellaneous.h>
+//#include <mrpt/pbmap/ConsistencyTest.h>
 
 using namespace std;
 using namespace Eigen;

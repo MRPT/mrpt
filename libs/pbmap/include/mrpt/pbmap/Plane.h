@@ -69,7 +69,7 @@ namespace pbmap {
 	 *  location of the patch (area, normal vector, elongation, 3D-convex hull, etc.)
 	 *  and radiometric features (the most representative color).
 	 *
-     * \ingroup mrpt_pbmap_grp
+	 * \ingroup mrpt_pbmap_grp
 	 */
   class PBMAP_IMPEXP Plane : public mrpt::utils::CSerializable
   {
@@ -137,7 +137,7 @@ namespace pbmap {
     */
     unsigned id;
     unsigned numObservations;
-    int semanticGroup;
+    unsigned semanticGroup;
     std::set<unsigned> nearbyPlanes;
     std::map<unsigned,unsigned> neighborPlanes;
     std::string label;

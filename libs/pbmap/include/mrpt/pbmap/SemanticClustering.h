@@ -60,9 +60,10 @@ namespace pbmap {
    * be used to represent semantic groups corresponding human identifiable structures such as rooms,
    * or environments as an office. These groups of closely related planes can be used also for
    * relocalization.
+   *
    * \ingroup mrpt_pbmap_grp
    */
-  class PBMAP_IMPEXP SemanticClustering //: public PbMap
+  class PBMAP_IMPEXP SemanticClustering
   {
    private:
 
@@ -99,6 +100,7 @@ namespace pbmap {
       }
 
       // Fill the matrix
+    assert(neigSize <= mPbMap.vPlanes.size());
       co_visibility.resize(neigSize,neigSize);
       co_visibility.zeros();
       for(unsigned i=0; i < planesVicinity_order.size(); i++)
@@ -249,6 +251,8 @@ namespace pbmap {
     }
 
    public:
+
+    friend class PbMapMaker;
 
     // Constructor
     SemanticClustering(PbMap &mPbM) :

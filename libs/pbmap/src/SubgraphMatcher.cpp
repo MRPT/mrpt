@@ -40,7 +40,7 @@
 
 #include <mrpt/pbmap.h> // precomp. hdr
 
-#include <mrpt/pbmap/SubgraphMatcher.h>
+//#include <mrpt/pbmap/SubgraphMatcher.h>
 
 using namespace std;
 using namespace mrpt::pbmap;
@@ -243,8 +243,10 @@ void SubgraphMatcher::exploreSubgraphTreeR(set<unsigned> &sourcePlanes, set<unsi
     return;
 
   int requiredMatchable = (int)configLocaliser.min_planes_recognition - matched.size();
-  if( sourcePlanes.empty() || targetPlanes.empty()
-     || sourcePlanes.size() < requiredMatchable || targetPlanes.size() < requiredMatchable ) // New condition to speed up the search when there are not a minimum number of candidates
+  if( sourcePlanes.empty() ||
+      targetPlanes.empty() ||
+     static_cast<int>(sourcePlanes.size() ) < requiredMatchable ||
+     static_cast<int>(targetPlanes.size() ) < requiredMatchable ) // New condition to speed up the search when there are not a minimum number of candidates
   {
 //  cout << "End branch recursive search. matched " << matched.size() << " prev winner " << winnerMatch.size() << endl;
     if(matched.size() > winnerMatch.size())

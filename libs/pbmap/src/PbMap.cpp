@@ -41,7 +41,7 @@
 
 #include <mrpt/utils/CStream.h>
 
-#include <mrpt/pbmap/PbMap.h>
+//#include <mrpt/pbmap/PbMap.h>
 
 //using namespace mrpt;
 //using namespace mrpt::math;
@@ -55,7 +55,6 @@ IMPLEMENTS_SERIALIZABLE(PbMap, CSerializable, pbmap)
 	Constructor
   ---------------------------------------------------------------*/
 PbMap::PbMap() :
-    currentSemanticGroup(0),
     FloorPlane(-1),
     globalMapPtr( new pcl::PointCloud<pcl::PointXYZRGBA>() ),
     edgeCloudPtr(new pcl::PointCloud<pcl::PointXYZRGBA>),
@@ -72,7 +71,7 @@ void  PbMap::writeToStream(CStream &out, int *out_Version) const
 		*out_Version = 0;
 	else
 	{
-		uint32_t n;
+		uint32_t						n;
 
 		// The data
 		n = uint32_t( vPlanes.size() );
@@ -91,13 +90,12 @@ void  PbMap::readFromStream(CStream &in, int version)
 	{
 	case 0:
 		{
-			uint32_t	n;
-
 			// Delete previous content:
 			vPlanes.clear();
 
 			// The data
 			// First, write the number of planes:
+			uint32_t	n;
 			in >> n;
 			vPlanes.resize(n);
       for (uint32_t i=0; i < n; i++)

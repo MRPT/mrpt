@@ -63,8 +63,8 @@
 
 #include <iostream>
 
-#include <mrpt/pbmap/PbMapMaker.h>
-#include <mrpt/pbmap/Miscellaneous.h>
+//#include <mrpt/pbmap/PbMapMaker.h>
+//#include <mrpt/pbmap/Miscellaneous.h>
 
 using namespace std;
 using namespace Eigen;
@@ -467,6 +467,8 @@ void PbMapMaker::detectPlanesCloud( pcl::PointCloud<PointT>::Ptr &pointCloudPtr_
       detectedPlanes[i].numObservations = 1;
       detectedPlanes[i].bFullExtent = false;
       detectedPlanes[i].nFramesAreaIsStable = 0;
+      detectedPlanes[i].semanticGroup = clusterize->currentSemanticGroup;
+      clusterize->groups[clusterize->currentSemanticGroup].push_back(detectedPlanes[i].id);
 
       #ifdef _VERBOSE
         cout << "New plane " << detectedPlanes[i].id << " area " << detectedPlanes[i].areaVoxels<< " of polygon " << detectedPlanes[i].areaHull << endl;
@@ -519,7 +521,7 @@ void PbMapMaker::detectPlanesCloud( pcl::PointCloud<PointT>::Ptr &pointCloudPtr_
 
       for(set<unsigned>::reverse_iterator it = observedPlanes.rbegin(); it != observedPlanes.rend(); it++)
       {
-        if(*it == mPbMap.FloorPlane)
+        if(static_cast<int>(*it) == mPbMap.FloorPlane)
           continue;
         if( mPbMap.vPlanes[mPbMap.FloorPlane].v3normal .dot (mPbMap.vPlanes[*it].v3center - mPbMap.vPlanes[mPbMap.FloorPlane].v3center) < -0.1 )
         {
