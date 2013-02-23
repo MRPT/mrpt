@@ -2162,7 +2162,7 @@ void CRandomFieldGridMap2D::insertObservation_GMRF(
 
 	try{
 		const TPose3D sensorPose= TPose3D(sensorPose_);
-		
+
 		//Get index of observed cell
 		const int			cellIdx = xy2idx( sensorPose.x, sensorPose.y );
 		TRandomFieldCell	*cell = cellByPos( sensorPose.x, sensorPose.y );
@@ -2176,7 +2176,7 @@ void CRandomFieldGridMap2D::insertObservation_GMRF(
 			new_obs.Lambda = m_insertOptions_common->GMRF_lambdaObs;
 			activeObs[cellIdx].push_back(new_obs);
 		}
-		
+
 
 	}catch(std::exception e){
 		cout << "Exception while Inserting new Observation: "  << e.what() << endl;
@@ -2194,7 +2194,7 @@ void CRandomFieldGridMap2D::updateMapEstimation_GMRF()
 {
 	size_t N = m_map.size();
 	const uint16_t Gsize = m_insertOptions_common->GMRF_constraintsSize;
-	const uint16_t Gside = round((Gsize-1)/2);	
+	const uint16_t Gside = round((Gsize-1)/2);
 
 	CTicTac tictac;
 	tictac.Tic();
@@ -2241,11 +2241,11 @@ void CRandomFieldGridMap2D::updateMapEstimation_GMRF()
 			//Determine num of columns out of the gridmap
 			int outc_left = max( 0 , Gside-cx );
 			int outc_right = max(int (0) , int (Gside-(m_size_x-cx-1)) );
-			
+
 			//Determine num of rows out of the gridmap
 			int outr_down = max( 0 , Gside-(cy) );
 			int outr_up = max(int (0) , int (Gside-(m_size_y-cy-1)) );
-			
+
 			//Gradients between cell j and all neighbord cells i that have constraints
 			for (int kr=-(Gside-outr_down); kr<=(Gside-outr_up); kr++ )
 			{
@@ -2290,12 +2290,12 @@ void CRandomFieldGridMap2D::updateMapEstimation_GMRF()
 	{
 		//Computes variances in the inferior submatrix of "l"
 		double subSigmas = 0.0;
-		for( int j=l+1; j<N; j++)
+		for(size_t j=l+1; j<N; j++)
 		{
 			if (UT.coeff(l,j) != 0)
 			{
 				//Compute off-diagonal variances Sigma(j,l) = Sigma(l,j);
-								
+
 				//SUM 1
 				double sum = 0.0;
 				for(size_t i=l+1; i<=j; i++)
@@ -2327,9 +2327,9 @@ void CRandomFieldGridMap2D::updateMapEstimation_GMRF()
 
 	//Get the real Variance Matrix. Undo permutation
 	// TODO: This is very slow (permutation seems to be a dense matrix...)
-	////Sigma = solver.permutationPinv() * Sigma * solver.permutationP();
-	Sigma.applyThisOnTheLeft(solver.permutationPinv());
-	Sigma.applyThisOnTheRight(solver.permutationP());
+	Sigma = solver.permutationPinv() * Sigma * solver.permutationP();
+	//Sigma.applyThisOnTheLeft(solver.permutationPinv());
+	//Sigma.applyThisOnTheRight(solver.permutationP());
 
 	cout << "		Permutation in: " << tictac.Tac() << "s" << endl;
 	tictac.Tic();

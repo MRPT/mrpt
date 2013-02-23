@@ -525,7 +525,7 @@ namespace octomap {
     nf_multiple_values[LUT_RSW][2] =  LUT_NO_REC;
     nf_multiple_values[LUT_RSW][3] =  LUT_NO_REC;
 
-  };
+  }
 
 
   unsigned int OcTreeLUT::genPos(const OcTreeKey& key, const int& i) const {
@@ -588,14 +588,14 @@ namespace octomap {
 
   bool OcTreeLUT::genNeighborKey(const OcTreeKey& node_key, const signed char& dir,
                                  OcTreeKey& neighbor_key) const {
-    
+
     neighbor_key.k[0] = node_key.k[0];
     neighbor_key.k[1] = node_key.k[1];
     neighbor_key.k[2] = node_key.k[2];
 
     unsigned int depth = 0;
     signed char curDir = dir;
-    
+
     signed char pos;
     while (depth < max_depth) {
       pos = static_cast<signed char>(genPos(neighbor_key, depth));
@@ -604,14 +604,14 @@ namespace octomap {
       if (nf_rec_values[pos][curDir] != LUT_NO_REC) { // recurs
         curDir -= nf_rec_values[pos][curDir];
         depth++;
-      } 
-      else { 
+      }
+      else {
         return true;
       }
     }
 
     return false;
-  };
+  }
 
 
 

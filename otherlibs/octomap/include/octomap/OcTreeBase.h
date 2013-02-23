@@ -56,7 +56,7 @@ namespace octomap {
     std::string getTreeType() const {return "OcTreeBase";}
   };
 
-  };
+  }
 
 
 #endif
