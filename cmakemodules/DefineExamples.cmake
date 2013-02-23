@@ -293,11 +293,6 @@ IF(BUILD_EXAMPLES)
 	# === SRBA examples ===
 	ADD_SAMPLES_DIRECTORY(srba-examples)
 
-	IF(CMAKE_MRPT_HAS_PCL)
-		# === PbMap apps and examples ===
-		ADD_SAMPLES_DIRECTORY(PbMapApps)
-	ENDIF(CMAKE_MRPT_HAS_PCL)
-
 	# Generate the CMakeLists.txt in the "/samples" directory
 	SET(CMAKE_COMMANDS_INCLUDE_EXAMPLE_DIRS ${CMAKE_COMMANDS_INCLUDE_EXAMPLE_DIRS_ROOT})
 	CONFIGURE_FILE(${CMAKE_SOURCE_DIR}/samples/CMakeLists_list_template.txt.in "${CMAKE_SOURCE_DIR}/samples/CMakeLists.txt" )
