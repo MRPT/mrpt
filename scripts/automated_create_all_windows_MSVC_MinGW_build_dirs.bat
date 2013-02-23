@@ -21,7 +21,7 @@ REM =================== SET ALL IMPORTANT PATHS ===================
 set msvc9_DIR=C:\Program Files (x86)\Microsoft Visual Studio 9.0
 set msvc10_DIR=C:\Program Files (x86)\Microsoft Visual Studio 10.0
 set msvc11_DIR=D:\Program Files (x86)\Microsoft Visual Studio 11.0
-set CMAKE_DIR=C:\Program Files (x86)\CMake 2.8\bin
+set CMAKE_DIR=D:\Program Files (x86)\CMake 2.8\bin
 set LIBUSBDIR=d:\code\libusb-win32-bin
 REM MinGW directories will be: %MINGW_ROOT%-32 and %MINGW_ROOT%-64  
 REM  (NOTE: Use "/" for paths in this one)

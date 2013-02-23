@@ -17,11 +17,10 @@ macro(internal_define_mrpt_lib name headers_only)
 	INCLUDE(../../cmakemodules/AssureCMakeRootFile.cmake) # Avoid user mistake in CMake source directory
 
 	# Allow programmers of mrpt libs to change the default value of build_mrpt-LIB, which is "ON" by default.
-	IF ("DEFAULT_BUILD_mrpt-${name}" STREQUAL "")
+	SET(_DEFVAL "${DEFAULT_BUILD_mrpt-${name}}")
+	IF ("${_DEFVAL}" STREQUAL "")
 		SET(_DEFVAL "ON")
-	ELSE ("DEFAULT_BUILD_mrpt-${name}" STREQUAL "")
-		SET(_DEFVAL "DEFAULT_BUILD_mrpt-${name}")
-	ENDIF ("DEFAULT_BUILD_mrpt-${name}" STREQUAL "")
+	ENDIF ("${_DEFVAL}" STREQUAL "")
 
 	SET(BUILD_mrpt-${name} ${_DEFVAL} CACHE BOOL "Build the library mrpt-${name}")
 	IF(BUILD_mrpt-${name}) 

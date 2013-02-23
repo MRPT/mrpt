@@ -21,7 +21,7 @@ REM MinGW directories will be: %MINGW_ROOT%-32 and %MINGW_ROOT%-64
 REM  (NOTE: Use "/" for paths in this one)
 set MINGW_ROOT=d:/MinGW
 set MINGW_ROOT_BKSLH=d:\MinGW
-set CMAKE_DIR=C:\Program Files (x86)\CMake 2.8\bin
+set CMAKE_DIR=D:\Program Files (x86)\CMake 2.8\bin
 REM ==============================================================
 
 del BUILD_ALL_OPENCV.bat 2> NUL
