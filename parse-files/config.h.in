@@ -113,6 +113,9 @@ ${CMAKE_MRPT_BUILD_SHARED_LIB}
 /** The file ftdi.h exists (Linux only) */
 #define MRPT_HAS_FTDI             ${CMAKE_MRPT_HAS_FTDI}
 
+/** Support for the liblas library (A standard for LiDAR data format)  */
+#define MRPT_HAS_LIBLAS           ${CMAKE_MRPT_HAS_LIBLAS}
+
 /** wxWidgets is present in the system (required for UTILS::CDisplayWindow, etc.) */
 #define MRPT_HAS_WXWIDGETS        ${CMAKE_MRPT_HAS_WXWIDGETS}
 

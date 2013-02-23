@@ -60,7 +60,35 @@ macro(list_subdirectories retval curdir)
     if(IS_DIRECTORY ${curdir}/${dir} AND NOT "${dir1st}" STREQUAL ".")
         set(list_of_dirs ${list_of_dirs} ${dir})
     endif(IS_DIRECTORY ${curdir}/${dir} AND NOT "${dir1st}" STREQUAL ".")
-  endforeach(dir ${sub_dir})
+  endforeach(dir)
   set(${retval} ${list_of_dirs})
 endmacro(list_subdirectories)
+
+
+# Parse a list of "pkg-config"-like flags and split them into INCLUDE_DIRS,etc.
+# Example: pkgconfig_parse("-Ldir1 -llib1 -Idir2" "FOO")
+#  --> FOO_INCLUDE_DIRS = "dir2"
+#  --> FOO_LINK_DIRS = "dir1"
+#  --> FOO_LIBS = "lib1"
+macro(pkgconfig_parse _FLAGS _OUT_PREFIX)
+	string(REPLACE " " ";" _FLAGS_LST ${_FLAGS})
+	SET(${_OUT_PREFIX}_INCLUDE_DIRS "")
+	SET(${_OUT_PREFIX}_LINK_DIRS "")
+	SET(${_OUT_PREFIX}_LIBS "")
+	foreach(str ${_FLAGS_LST})
+		string(LENGTH ${str} _LEN)
+		if (_LEN GREATER 2)
+			string(SUBSTRING ${str} 0 2 _START)
+			MATH( EXPR _LEN2 "${_LEN}-2" )
+			string(SUBSTRING ${str} 2 ${_LEN2} _REST)
+			IF (${_START} STREQUAL "-L")
+				LIST(APPEND ${_OUT_PREFIX}_LINK_DIRS ${_REST})
+			ELSEIF (${_START} STREQUAL "-l")
+				LIST(APPEND ${_OUT_PREFIX}_LIBS ${_REST})
+			ELSEIF (${_START} STREQUAL "-I")
+				LIST(APPEND ${_OUT_PREFIX}_INCLUDE_DIRS ${_REST})
+			ENDIF (${_START} STREQUAL "-L")
+		endif (_LEN GREATER 2)
+	endforeach(str)
+endmacro(pkgconfig_parse )
 

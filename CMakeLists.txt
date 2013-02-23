@@ -184,6 +184,7 @@ include(cmakemodules/script_ffmpeg.cmake REQUIRED)      # Check for ffmpeg C lib
 include(cmakemodules/script_wxwidgets.cmake REQUIRED)   # Check for wxWidgets + GL
 include(cmakemodules/script_libdc1394.cmake REQUIRED)   # Check for libdc1394-2
 include(cmakemodules/script_lib3ds.cmake REQUIRED)      # Check for system lib3ds
+include(cmakemodules/script_liblas.cmake REQUIRED)      # Check for the LAS LiDAR format library
 include(cmakemodules/script_libtclap.cmake REQUIRED)    # Check for system libtclap
 include(cmakemodules/script_zlib.cmake REQUIRED)        # Check for zlib
 include(cmakemodules/script_jpeg.cmake REQUIRED)        # Check for jpeg
