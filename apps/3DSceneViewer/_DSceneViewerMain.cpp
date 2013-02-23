@@ -39,13 +39,13 @@
 #include <wx/app.h>
 
 //(*InternalHeaders(_DSceneViewerFrame)
-#include <wx/artprov.h>
-#include <wx/bitmap.h>
-#include <wx/tglbtn.h>
-#include <wx/icon.h>
-#include <wx/intl.h>
-#include <wx/image.h>
 #include <wx/string.h>
+#include <wx/intl.h>
+#include <wx/tglbtn.h>
+#include <wx/bitmap.h>
+#include <wx/icon.h>
+#include <wx/image.h>
+#include <wx/artprov.h>
 //*)
 
 #include "CDialogOptions.h"
@@ -83,6 +83,8 @@
 #include <mrpt/opengl.h>  // All objects in mrpt-opengl
 #include <mrpt/opengl/CPlanarLaserScan.h>			// It's in lib mrpt-maps
 #include <mrpt/opengl/CAngularObservationMesh.h>	// It's in lib mrpt-maps
+
+#include <mrpt/slam/CColouredPointsMap.h>
 
 // A custom Art provider for customizing the icons:
 class MyArtProvider : public wxArtProvider
@@ -343,6 +345,7 @@ const long _DSceneViewerFrame::ID_MENUITEM5 = wxNewId();
 const long _DSceneViewerFrame::ID_MENUITEM7 = wxNewId();
 const long _DSceneViewerFrame::ID_MENUITEM6 = wxNewId();
 const long _DSceneViewerFrame::ID_MENUITEM20 = wxNewId();
+const long _DSceneViewerFrame::ID_MENUITEM25 = wxNewId();
 const long _DSceneViewerFrame::ID_MENUITEM19 = wxNewId();
 const long _DSceneViewerFrame::ID_MENUITEM22 = wxNewId();
 const long _DSceneViewerFrame::ID_MENUITEM21 = wxNewId();
@@ -404,22 +407,22 @@ _DSceneViewerFrame::_DSceneViewerFrame(wxWindow* parent,wxWindowID id)
     wxMenuItem* MenuItem2;
     wxMenu* MenuItem15;
     wxMenuItem* MenuItem1;
-    wxMenuItem* MenuItem4;
+    wxFlexGridSizer* FlexGridSizer1;
     wxFlexGridSizer* FlexGridSizer2;
-    wxMenuItem* MenuItem13;
     wxMenu* Menu1;
     wxMenuItem* MenuItem12;
     wxMenuItem* MenuItem3;
     wxMenuBar* MenuBar1;
-    wxFlexGridSizer* FlexGridSizer1;
+    wxMenuItem* MenuItem4;
+    wxMenuItem* MenuItem13;
     wxMenu* Menu2;
 
     Create(parent, id, _("3DSceneViewer - Part of the MRPT project - Jose Luis Blanco (C) 2005-2008"), wxDefaultPosition, wxDefaultSize, wxDEFAULT_FRAME_STYLE, _T("id"));
     SetMinSize(wxSize(150,100));
     {
-    	wxIcon FrameIcon;
-    	FrameIcon.CopyFromBitmap(wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("MAIN_ICON")),wxART_FRAME_ICON));
-    	SetIcon(FrameIcon);
+    wxIcon FrameIcon;
+    FrameIcon.CopyFromBitmap(wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("MAIN_ICON")),wxART_FRAME_ICON));
+    SetIcon(FrameIcon);
     }
     FlexGridSizer1 = new wxFlexGridSizer(1, 2, 0, 0);
     FlexGridSizer1->AddGrowableCol(1);
@@ -493,6 +496,8 @@ _DSceneViewerFrame::_DSceneViewerFrame(wxWindow* parent,wxWindowID id)
     MenuItem18->Append(MenuItem8);
     MenuItem19 = new wxMenuItem(MenuItem18, ID_MENUITEM20, _("a PLY point cloud..."), wxEmptyString, wxITEM_NORMAL);
     MenuItem18->Append(MenuItem19);
+    mnuImportLAS = new wxMenuItem(MenuItem18, ID_MENUITEM25, _("a LAS LiDAR file..."), wxEmptyString, wxITEM_NORMAL);
+    MenuItem18->Append(mnuImportLAS);
     Menu1->Append(ID_MENUITEM19, _("Import"), MenuItem18, wxEmptyString);
     MenuItem20 = new wxMenu();
     MenuItem21 = new wxMenuItem(MenuItem20, ID_MENUITEM22, _("point clouds to PLY file..."), wxEmptyString, wxITEM_NORMAL);
@@ -581,6 +586,7 @@ _DSceneViewerFrame::_DSceneViewerFrame(wxWindow* parent,wxWindowID id)
     Connect(ID_MENUITEM7,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&_DSceneViewerFrame::OnMenuSave);
     Connect(ID_MENUITEM6,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&_DSceneViewerFrame::OnInsert3DS);
     Connect(ID_MENUITEM20,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&_DSceneViewerFrame::OnMenuItemImportPLYPointCloud);
+    Connect(ID_MENUITEM25,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&_DSceneViewerFrame::OnmnuImportLASSelected);
     Connect(ID_MENUITEM22,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&_DSceneViewerFrame::OnMenuItemExportPointsPLY);
     Connect(ID_MENUITEM12,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&_DSceneViewerFrame::OnMenuItem14Selected);
     Connect(ID_MENUITEM23,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&_DSceneViewerFrame::OnMenuItemHighResRender);
@@ -1765,3 +1771,164 @@ void _DSceneViewerFrame::OnmnuSelectionScaleSelected(wxCommandEvent& event)
 }
 
 
+// Import a LAS LiDAR file:
+void _DSceneViewerFrame::OnmnuImportLASSelected(wxCommandEvent& event)
+{
+	try
+	{
+		wxFileDialog dialog(
+			this,
+			_("Choose the LAS file to import"),
+			_U( iniFile->read_string(iniFileSect,"LastDir",".").c_str() ),
+			_("*.las"),
+			_("LAS files (*.las, *.laz)|*.las;*.LAS;*.laz;*.LAZ|All files (*.*)|*.*"),
+			wxFD_OPEN | wxFD_FILE_MUST_EXIST );
+
+		if (dialog.ShowModal() != wxID_OK)
+			return;
+
+		const std::string fil = string(dialog.GetPath().mb_str());
+		saveLastUsedDirectoryToCfgFile(fil);
+
+		CDlgPLYOptions dlgPLY(this);
+
+		// Default values for LAS:
+		dlgPLY.SetTitle(_("LAS import options"));
+		dlgPLY.edRoll->SetValue(_("0"));
+		dlgPLY.rbIntFromXYZ->SetSelection(3);
+
+		if (dlgPLY.ShowModal()!=wxID_OK)
+			return;
+
+		opengl::CPointCloudPtr         gl_points;
+		opengl::CPointCloudColouredPtr gl_points_col;
+
+		if (dlgPLY.rbClass->GetSelection()==0)
+			gl_points     = opengl::CPointCloud::Create();
+		else
+			gl_points_col = opengl::CPointCloudColoured::Create();
+
+		mrpt::slam::CColouredPointsMap pts_map;
+		mrpt::slam::CPointsMap::LAS_HeaderInfo  las_hdr;
+
+		bool res;
+		{
+			wxBusyCursor  busy;
+			res = pts_map.loadLASFile(fil,las_hdr);
+		}
+
+		if (!res)
+		{
+	        wxMessageBox( _("Error loading or parsing the LAS file"), _("Exception"), wxOK, this);
+	        return;
+		}
+
+		mrpt::math::TPoint3D bb_min,bb_max;
+		{
+			wxBusyCursor  busy;
+			if (gl_points_col) {
+				gl_points_col->loadFromPointsMap(&pts_map);
+				gl_points_col->getBoundingBox(bb_min,bb_max);
+			}
+			else {
+				gl_points->loadFromPointsMap(&pts_map);
+				gl_points->getBoundingBox(bb_min,bb_max);
+			}
+		}
+
+		const double scene_size = bb_min.distanceTo(bb_max);
+
+		// Set the point cloud as the only object in scene:
+		m_canvas->m_openGLScene = opengl::COpenGLScene::Create();
+
+		if (dlgPLY.cbXYGrid->GetValue())
+		{
+			mrpt::opengl::CGridPlaneXYPtr obj = mrpt::opengl::CGridPlaneXY::Create( bb_min.x,bb_max.x, bb_min.y,bb_max.y, 0, scene_size*0.02 );
+			obj->setColor(0.3,0.3,0.3);
+			m_canvas->m_openGLScene->insert( obj );
+		}
+
+		if (dlgPLY.cbXYZ->GetValue())
+			m_canvas->m_openGLScene->insert( mrpt::opengl::stock_objects::CornerXYZ() );
+
+		double ptSize;
+		dlgPLY.cbPointSize->GetStringSelection().ToDouble(&ptSize);
+		if (gl_points)     gl_points->setPointSize( ptSize );
+		if (gl_points_col) gl_points_col->setPointSize( ptSize );
+
+		if (gl_points)
+		{
+			switch(dlgPLY.rbIntFromXYZ->GetSelection())
+			{
+				case 1: gl_points->enableColorFromX(); break;
+				case 2: gl_points->enableColorFromY(); break;
+				case 3: gl_points->enableColorFromZ(); break;
+			};
+		}
+
+		TPose3D ptCloudPose(0,0,0, 0,0,0);
+
+		dlgPLY.edYaw->GetValue().ToDouble(&ptCloudPose.yaw);
+		dlgPLY.edPitch->GetValue().ToDouble(&ptCloudPose.pitch);
+		dlgPLY.edRoll->GetValue().ToDouble(&ptCloudPose.roll);
+		ptCloudPose.yaw   = DEG2RAD(ptCloudPose.yaw);
+		ptCloudPose.pitch = DEG2RAD(ptCloudPose.pitch);
+		ptCloudPose.roll  = DEG2RAD(ptCloudPose.roll);
+
+		if (gl_points)     gl_points->setPose(CPose3D(ptCloudPose));
+		if (gl_points_col) gl_points_col->setPose(CPose3D(ptCloudPose));
+
+		// Insert point cloud into scene:
+		if (gl_points)     m_canvas->m_openGLScene->insert(gl_points);
+		if (gl_points_col) m_canvas->m_openGLScene->insert(gl_points_col);
+
+		m_canvas->cameraPointingX = (bb_min.x+bb_max.x)*0.5;
+		m_canvas->cameraPointingY = (bb_min.y+bb_max.y)*0.5;
+		m_canvas->cameraPointingZ = (bb_min.z+bb_max.z)*0.5;
+
+		m_canvas->cameraZoomDistance = 2*scene_size;
+		m_canvas->cameraAzimuthDeg   = 45;
+		m_canvas->cameraElevationDeg = 30;
+
+		COpenGLViewportPtr gl_view = m_canvas->m_openGLScene->getViewport();
+		gl_view->setViewportClipDistances(0.01,10*scene_size);
+
+		loadedFileName = std::string("Imported_")+fil+std::string(".3Dscene");
+		updateTitle();
+
+		// Typically, LAS scenes have millions of points:
+		mrpt::global_settings::OCTREE_RENDER_MAX_DENSITY_POINTS_PER_SQPIXEL = 1000;
+
+
+		Refresh(false);
+
+		std::stringstream ss;
+		ss << pts_map.size() << " points loaded.\n"
+		   << "Bounding box:\n"
+		   << " X: " << bb_min.x << " <=> " << bb_max.x << "\n"
+		   << " Y: " << bb_min.y << " <=> " << bb_max.y << "\n"
+		   << " Z: " << bb_min.z << " <=> " << bb_max.z << "\n"
+		   << "LAS header info:\n"
+		   << "---------------------------------\n"
+		   << "FileSignature      : " << las_hdr.FileSignature << endl
+		   << "SystemIdentifier   : " << las_hdr.SystemIdentifier << endl
+		   << "SoftwareIdentifier : " << las_hdr.SoftwareIdentifier << endl
+		   << "project GUID       : " << las_hdr.project_guid << endl
+		   << "SRS Proj.4         : " << las_hdr.spatial_reference_proj4 << endl
+		   << "Creation date      : Year=" << las_hdr.creation_year << " DOY=" << las_hdr.creation_DOY<< endl;
+
+		wxMessageBox(
+			_U(ss.str().c_str()),
+			_("File info"),
+			wxOK,
+			this);
+    }
+    catch(std::exception &e)
+    {
+        wxMessageBox( _U(e.what()), _("Exception"), wxOK, this);
+    }
+}
+
+void _DSceneViewerFrame::OnmnuImportLASSelected1(wxCommandEvent& event)
+{
+}

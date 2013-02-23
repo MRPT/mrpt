@@ -230,6 +230,10 @@
 						<label>a PLY point cloud...</label>
 						<handler function="OnMenuItemImportPLYPointCloud" entry="EVT_MENU" />
 					</object>
+					<object class="wxMenuItem" name="ID_MENUITEM25" variable="mnuImportLAS" member="yes">
+						<label>a LAS LiDAR file...</label>
+						<handler function="OnmnuImportLASSelected" entry="EVT_MENU" />
+					</object>
 				</object>
 				<object class="wxMenu" name="ID_MENUITEM21" variable="MenuItem20" member="yes">
 					<label>Export</label>

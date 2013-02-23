@@ -79,6 +79,8 @@ namespace slam
 	 *		- mrpt::slam::CObservation3DRangeScan: 3D range scans (Kinect, etc...)
 	 *		- mrpt::slam::CObservationRange: IRs, Sonars, etc.
 	 *
+	 * If built against liblas, this class also provides method for loading and saving in the standard LAS LiDAR point cloud format: saveLASFile(), loadLASFile()
+	 *
 	 * \sa CMetricMap, CPoint, mrpt::utils::CSerializable
 	  * \ingroup mrpt_maps_grp
 	 */
@@ -308,6 +310,43 @@ namespace slam
 
 		/** Load the point cloud from a PCL PCD file (requires MRPT built against PCL) \return false on any error */
 		virtual bool loadPCDFile(const std::string &filename);
+
+
+		/** Optional settings for saveLASFile() */
+		struct MAPS_IMPEXP LAS_WriteParams
+		{
+			// None.
+		};
+
+		/** Optional settings for loadLASFile() */
+		struct MAPS_IMPEXP LAS_LoadParams
+		{
+			// None.
+		};
+
+		/** Extra information gathered from the LAS file header */
+		struct MAPS_IMPEXP LAS_HeaderInfo
+		{
+			std::string FileSignature;
+			std::string SystemIdentifier;
+			std::string SoftwareIdentifier;
+			std::string project_guid;
+			std::string spatial_reference_proj4;  //!< Proj.4 string describing the Spatial Reference System.
+			uint16_t    creation_year;//!< Creation date (Year number)
+			uint16_t    creation_DOY; //!< Creation day of year
+
+			LAS_HeaderInfo() : creation_year(0),creation_DOY(0)
+			{}
+		};
+
+		/** Save the point cloud as an ASPRS LAS binary file (requires MRPT built against liblas). Refer to http://www.liblas.org/
+		  * \return false on any error */
+		virtual bool saveLASFile(const std::string &filename, const LAS_WriteParams & params = LAS_WriteParams() ) const;
+
+		/** Load the point cloud from an ASPRS LAS binary file (requires MRPT built against liblas). Refer to http://www.liblas.org/
+		  * \note Color (RGB) information will be taken into account if using the derived class mrpt::slam::CColouredPointsMap
+		  * \return false on any error */
+		virtual bool loadLASFile(const std::string &filename, LAS_HeaderInfo &out_headerInfo, const LAS_LoadParams &params = LAS_LoadParams() );
 
 		/** @} */ // End of: File input/output methods
 		// --------------------------------------------------

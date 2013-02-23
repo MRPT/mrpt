@@ -33,63 +33,21 @@
    | POSSIBILITY OF SUCH DAMAGE.                                               |
    +---------------------------------------------------------------------------+ */
 
-/** \page dependencies External library dependencies and build options
+/** \page dep-liblas External dependency: liblas
  *
 
-<small> <a href="index.html">Back to main page</a> </small>
+<small> <a href="dependencies.html">Back to list of dependencies</a> </small>
 <br>
 
-<h2>List of all MRPT dependencies / build options</h2>
+<h2>Dependency: <code>LAS (liblas)</code></h2>
 <hr>
 
-<center>
-<table style="border:1px solid black; " >
-<tr>
-	<td align="center" bgcolor="#E0E0E0" ><b>Library/Build option</b></td>
-	<td align="center" bgcolor="#E0E0E0" ><b>Mandatory?</b></td>
-</tr>
-<tr>
-	<td align="center" > \ref dep-eigen3 "eigen3" </td>
-	<td align="center" > Mandatory (embedded if not external found) </td>
-</tr>
-<tr>
-	<td align="center" > \ref dep-opencv "opencv" </td>
-	<td align="center" > Optional but recommended </td>
-</tr>
-<tr>
-	<td align="center" > \ref  dep-wxwidgets "wxWidgets" </td>
-	<td align="center" > Optional but recommended</td>
-</tr>
-<tr>
-	<td align="center" > \ref  dep-opengl-glut "opengl+glut" </td>
-	<td align="center" > Optional but recommended </td>
-</tr>
-<tr>
-	<td align="center" > \ref  dep-sse "SSE* optimizations" </td>
-	<td align="center" > Optional but recommended</td>
-</tr>
-<tr>
-	<td align="center" > \ref dep-libftdi "libftdi" </td>
-	<td align="center" > Optional </td>
-</tr>
-<tr>
-	<td align="center" > \ref dep-libusb "libfusb" </td>
-	<td align="center" > Optional (needed for Kinect) </td>
-</tr>
-<tr>
-	<td align="center" > \ref  dep-pcl "pcl" </td>
-	<td align="center" > Optional </td>
-</tr>
-<tr>
-	<td align="center" > \ref  dep-liblas "LAS (liblas)" </td>
-	<td align="center" > Optional </td>
-</tr>
-<tr>
-	<td align="center" > \ref dep-suitesparse "suitesparse" </td>
-	<td align="center" > Optional (but partly embedded) </td>
-</tr>
-</table>
-</center>
+The <a href="http://www.liblas.org/" >ASPRS LiDAR LAS</a> file format for point cloud datasets. 
+If available, it will provide the following functionality:
 
+- The following methods:
+	- mrpt::slam::CPointsMap::saveLASFile()
+	- mrpt::slam::CPointsMap::loadLASFile()
+		
 */
 

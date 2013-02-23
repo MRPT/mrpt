@@ -31,6 +31,10 @@ IF(UNIX)
 		SET(CMAKE_LAS_CFGS "${CMAKE_LAS_LIBS} ${CMAKE_LAS_INCLUDES}")
 
 		pkgconfig_parse(${CMAKE_LAS_CFGS} "LAS")
+
+		# For some reason, "liblas-config --libs" return all other libs, except liblas itself:
+		LIST(APPEND LAS_LIBS "las")
+
 		IF($ENV{VERBOSE})
 			MESSAGE(STATUS "liblas configuration:")
 			MESSAGE(STATUS "  LAS_INCLUDE_DIRS: ${LAS_INCLUDE_DIRS}")

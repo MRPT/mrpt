@@ -46,6 +46,7 @@
 		- New library for Plane-based Maps: <a href="group__mrpt__pbmap__grp.html" >mrpt-pbmap</a> (also presented in ICRA 2013).
 		- Some MRPT modules are now header-only libraries.
 		- Support for a new Octomap metric map, via the octomap library. See mrpt::slam::COctoMap and detailed changes below.
+		- Support for importing/exporting point clouds in the standard LAS format (Look for liblas below).
 		- Better support for custom builds of MRPT (selective building of individual apps and libs, etc.)
 		- Many bug fixes.
 		- From now on, MRPT is released under the "New BSD" license.
@@ -64,6 +65,7 @@
 				- The default holonomic navigation method is now the VFF, since after the last bug fixes and tunes it seems to work quite well.
 			- <a href="http://www.mrpt.org/Application%3ASceneViewer" >SceneViewer3D</a>:
 				- The GUI toolbar has been ported from wxWidget's ToolBar to sets of wxCustomButton's to avoid visualization problems in wx 2.9.X - <a href="http://code.google.com/p/mrpt/source/detail?r=2952" >r2952</a>
+				- Added a new menu: "File -> Import -> From LAS file..." - <a href="http://code.google.com/p/mrpt/source/detail?r=3244" >r3244</a>
 			- <a href="http://www.mrpt.org/Application%3Agrid-matching" >grid-matching</a>: new argument "--aligner" to select aligner method - <a href="http://code.google.com/p/mrpt/source/detail?r=3021" >r3021</a>
 		- New classes:
 			- [mrpt-base]
@@ -126,6 +128,9 @@
 					- mrpt::slam::CPointsMap::loadPCDFile()
 					- mrpt::slam::CPointsMap::setFromPCLPointCloud()
 					- mrpt::slam::CColouredPointsMap::setFromPCLPointCloudRGB()
+				- Point cloud loading & saving in the standard ASPRS LiDAR LAS format (if liblas is installed in the system, see http://www.liblas.org/ ). See also the ready-to-use import menu in SceneViewer3D - <a href="http://code.google.com/p/mrpt/source/detail?r=3244" >r3244</a>
+					- mrpt::slam::CPointsMap::loadLASFile()
+					- mrpt::slam::CPointsMap::saveLASFile()
 				- Integration of wind measurements in gas-concentration maps (by Javier G. Monroy) - <a href="http://code.google.com/p/mrpt/source/detail?r=3050" >r3050</a>
 			- [mrpt-obs]
 				- New method mrpt::slam::CObservationGPS::clear()
