@@ -14,11 +14,7 @@ define_mrpt_lib(
 	)
 	
 IF(BUILD_mrpt-pbmap)
-	IF (CMAKE_MRPT_HAS_PCL)
-		target_link_libraries(mrpt-pbmap ${PCL_LIBRARIES})
-#	ELSEIF (CMAKE_MRPT_HAS_PCL)
-#		MESSAGE(PbMap requires PCL)
-	ENDIF(CMAKE_MRPT_HAS_PCL)
+	target_link_libraries(mrpt-pbmap ${PCL_LIBRARIES})
 ENDIF(BUILD_mrpt-pbmap)
 
 
