@@ -79,10 +79,10 @@ int DoTrackingDemo(CCameraSensorPtr  cam, bool  DO_SAVE_VIDEO)
 	bool  SHOW_RESPONSES = true;
 	bool  SHOW_FEAT_TRACKS = true;
 
-	
+
 	const double SAVE_VIDEO_FPS = 30; // If DO_SAVE_VIDEO=true, the FPS of the video file
 	const char*  SAVE_VIDEO_CODEC = "XVID"; // "XVID", "PIM1", "MJPG"
-	
+
 	bool  DO_HIST_EQUALIZE_IN_GRAYSCALE = false;
 	string VIDEO_OUTPUT_FILE = "./tracking_video.avi";
 
@@ -92,8 +92,6 @@ int DoTrackingDemo(CCameraSensorPtr  cam, bool  DO_SAVE_VIDEO)
 
 	// "CFeatureTracker_KL" is by far the most robust implementation for now:
 	tracker = CGenericFeatureTrackerAutoPtr( new CFeatureTracker_KL );
-	//tracker = CGenericFeatureTrackerAutoPtr( new CFeatureTracker_FAST );
-	//tracker = CGenericFeatureTrackerAutoPtr( new CFeatureTracker_PatchMatch );
 
 	tracker->enableTimeLogger(true); // Do time profiling.
 
@@ -408,7 +406,7 @@ int main(int argc, char **argv)
 			showUsage(argv[0]);
 			return -1;
 		}
-		
+
 		const bool last_arg_is_save_video = !strcmp("--save-video",argv[argc-1]);
 		if (last_arg_is_save_video)
 			argc--; // Discard last argument
@@ -482,7 +480,7 @@ int main(int argc, char **argv)
 
 		// do it:
 		const int ret = DoTrackingDemo(cam, last_arg_is_save_video);
-		
+
 		win.clear();
 		mrpt::system::sleep(150); // give time to close GUI threads
 		return ret;

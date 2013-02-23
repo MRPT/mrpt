@@ -272,52 +272,6 @@ namespace mrpt
 
 		};
 
-		/** Track a set of features from old_img -> new_img by patch correlation over the closest FAST features, using a KD-tree for looking closest correspondences.
-		  *  See CGenericFeatureTracker for a more detailed explanation on how to use this class.
-		  *
-		  *   List of additional parameters in "extra_params" (apart from those in CGenericFeatureTracker) accepted by this class:
-		  *		- "window_width"  (Default=15)
-		  *		- "window_height" (Default=15)
-		  *
-		  */
-		struct VISION_IMPEXP CFeatureTracker_FAST : public CGenericFeatureTracker
-		{
-			/** Ctor */
-			CFeatureTracker_FAST(const mrpt::utils::TParametersDouble & extraParams = mrpt::utils::TParametersDouble() );
-
-		protected:
-			virtual void trackFeatures_impl(
-				const CImage &old_img,
-				const CImage &new_img,
-				vision::CFeatureList &inout_featureList );
-
-			virtual void trackFeatures_impl(
-				const CImage &old_img,
-				const CImage &new_img,
-				TSimpleFeatureList  &inout_featureList );
-
-		};
-
-
-		/** Track a set of features from old_img -> new_img by patch matching over a fixed window centered at each feature's previous location.
-		  *  See CGenericFeatureTracker for a more detailed explanation on how to use this class.
-		  *
-		  *   List of additional parameters in "extra_params" (apart from those in CGenericFeatureTracker) accepted by this class:
-		  *		- "window_width"  (Default=15)
-		  *		- "window_height" (Default=15)
-		  *
-		  */
-		struct VISION_IMPEXP CFeatureTracker_PatchMatch : public CGenericFeatureTracker
-		{
-			/** Ctor */
-			CFeatureTracker_PatchMatch(const mrpt::utils::TParametersDouble & extraParams = mrpt::utils::TParametersDouble() );
-
-		protected:
-			virtual void trackFeatures_impl(
-				const CImage &old_img,
-				const CImage &new_img,
-				vision::CFeatureList &inout_featureList );
-		};
 
 		/** Search for correspondences which are not in the same row and deletes them
 		  * ...

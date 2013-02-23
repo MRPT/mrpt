@@ -76,8 +76,12 @@
 				- mrpt::slam::COctoMap
 			- [mrpt-opengl]
 				- mrpt::opengl::COctoMapVoxels
+		- Deleted classes:
+			- [mrpt-vision]
+				- CFeatureTracker_FAST and CFeatureTracker_PatchMatch have been removed since they didn't work robustly. Replace with mrpt::vision::CFeatureTracker_KL
 		- New libraries:
 			- [mrpt-kinematics] See mrpt::kinematics
+			- [mrpt-pbmap] See <a href="group__mrpt__pbmap__grp.html" >mrpt-pbmap</a>.
 			- [mrpt-srba] See <a href="http://www.mrpt.org/srba" >mrpt-srba</a>.
 		- Changes in libraries:
 			- These libs are now header-only: <a href="http://code.google.com/p/mrpt/source/detail?r=3035" >r3035</a>, <a href="http://code.google.com/p/mrpt/source/detail?r=3045" >r3045</a>

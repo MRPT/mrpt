@@ -25,11 +25,13 @@ IF(NOT DISABLE_PCL)
 			MESSAGE("*MRPT ERROR MESSAGE*: PCL requires Boost. Either disable PCL (with DISABLE_PCL=ON) or, to fix the error, create the entries BOOST_ROOT and BOOST_LIBRARYDIR and set them to the correct values")
 		ENDIF (NOT Boost_FOUND)
 
-		MESSAGE(STATUS "PCL:")
-		MESSAGE(STATUS " Include dirs: ${PCL_INCLUDE_DIRS}")
-		MESSAGE(STATUS " Library dirs: ${PCL_LIBRARY_DIRS}")
-		MESSAGE(STATUS " Definitions : ${PCL_DEFINITIONS}")
-		MESSAGE(STATUS " Libraries   : ${PCL_LIBRARIES}")
+		IF($ENV{VERBOSE})
+			MESSAGE(STATUS "PCL:")
+			MESSAGE(STATUS " Include dirs: ${PCL_INCLUDE_DIRS}")
+			MESSAGE(STATUS " Library dirs: ${PCL_LIBRARY_DIRS}")
+			MESSAGE(STATUS " Definitions : ${PCL_DEFINITIONS}")
+			MESSAGE(STATUS " Libraries   : ${PCL_LIBRARIES}")
+		ENDIF($ENV{VERBOSE})
 		
 		# Add PCL directories as "-isystem" to avoid warnings:
 		ADD_DIRECTORIES_AS_ISYSTEM(PCL_INCLUDE_DIRS)
