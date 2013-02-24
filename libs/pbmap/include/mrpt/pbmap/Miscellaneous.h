@@ -41,6 +41,7 @@
 #ifndef __MISCELLANEOUS_H
 #define __MISCELLANEOUS_H
 
+#include <mrpt/config.h>
 #if MRPT_HAS_PCL
 
 #include <mrpt/base.h>

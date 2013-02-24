@@ -41,9 +41,9 @@
 #ifndef __PlaneInferredInfo_H
 #define __PlaneInferredInfo_H
 
+#include <mrpt/config.h>
 #if MRPT_HAS_PCL
 
-#include <mrpt/config.h>
 #include <mrpt/utils/utils_defs.h>
 
 #include <mrpt/pbmap/PbMap.h>

@@ -41,9 +41,9 @@
 #ifndef __PBMAP_H
 #define __PBMAP_H
 
+#include <mrpt/config.h>
 #if MRPT_HAS_PCL
 
-#include <mrpt/config.h>
 #include <mrpt/utils/utils_defs.h>
 
 #include <mrpt/utils/CSerializable.h>

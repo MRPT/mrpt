@@ -41,6 +41,7 @@
 #ifndef __CONSISTENCYTEST_H
 #define __CONSISTENCYTEST_H
 
+#include <mrpt/config.h>
 #if MRPT_HAS_PCL
 
 #include <mrpt/base.h>

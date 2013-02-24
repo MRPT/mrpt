@@ -41,6 +41,7 @@
 #ifndef __SemanticClustering_H
 #define __SemanticClustering_H
 
+#include <mrpt/config.h>
 #if MRPT_HAS_PCL
 
 #include <mrpt/utils.h>
