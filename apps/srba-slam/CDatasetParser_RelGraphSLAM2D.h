@@ -68,7 +68,7 @@ struct CDatasetParserTempl<mrpt::srba::observations::RelativePoses_2D> : public 
 		o.obs_data.yaw = m_OBS(idx,5) + (!m_add_noise ? .0 : mrpt::random::randomGenerator.drawGaussian1D(0, m_noise_std_yaw));
 	}
 
-	void loadNoiseParamsInto( mrpt::srba::observation_noise_constant_matrix<mrpt::srba::observations::RelativePoses_2D>::parameters_t & p )
+	void loadNoiseParamsInto( mrpt::srba::options::observation_noise_constant_matrix<mrpt::srba::observations::RelativePoses_2D>::parameters_t & p )
 	{
 		using mrpt::utils::square;
 		p.lambda.setZero();

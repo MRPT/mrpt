@@ -68,7 +68,7 @@ struct CDatasetParserTempl<mrpt::srba::observations::StereoCamera> : public CDat
 		o.obs_data.right_px.y = m_OBS(idx,5) + (!m_add_noise ? .0 : mrpt::random::randomGenerator.drawGaussian1D(0, m_noise_std_px));
 	}
 
-	void loadNoiseParamsInto( mrpt::srba::observation_noise_identity::parameters_t & p )
+	void loadNoiseParamsInto( mrpt::srba::options::observation_noise_identity::parameters_t & p )
 	{
 		p.std_noise_observations = m_noise_std_px;
 	}

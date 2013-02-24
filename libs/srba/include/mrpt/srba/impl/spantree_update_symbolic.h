@@ -56,8 +56,7 @@ void TRBA_Problem_state<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::TSpanning
 
 	// Maintain a list of those nodes whose list of shortest spanning trees ("next_edge") has been modified, so we
 	// can rebuild their "all_edges" lists.
-	MRPT_TODO("Optimize and specify [i]->[j], not only [i]->all")
-	std::set<TKeyFrameID>  kfs_with_modified_next_edge;
+	std::set<TPairKeyFrameID> kfs_with_modified_next_edge;
 
 	// Generic algorithm for 1 or more new edges at once from the new_kf_id to the rest of the graph:
 	// -----------------------------------------------------------------------------------------------
@@ -144,8 +143,8 @@ cout << "ST: Shorter path ST["<<s<<"]["<<r<<"].N was "<<st_s[r].next << " => "<<
 						ASSERT_NOT_EQUAL_(s,ste_r_inSTs.next) // no self-loops!
 
 						// Mark nodes with their "next_node" modified:
-						kfs_with_modified_next_edge.insert(s);
-						kfs_with_modified_next_edge.insert(r);
+						kfs_with_modified_next_edge.insert( make_pair(s,r) );
+						kfs_with_modified_next_edge.insert( make_pair(r,s) );
 					}
 					// Otherwise, leave things stay.
 				}
@@ -173,8 +172,8 @@ cout << "ST: New path ST["<<s<<"]["<<r<<"].N ="<<(ste_s2ik ? ste_s2ik->next : ne
 						ASSERT_NOT_EQUAL_(s,ste_r_inSTs.next) // no self-loops!
 
 						// Mark nodes with their "next_node" modified:
-						kfs_with_modified_next_edge.insert(r);
-						kfs_with_modified_next_edge.insert(s);
+						kfs_with_modified_next_edge.insert(make_pair(r,s));
+						kfs_with_modified_next_edge.insert(make_pair(s,r));
 					}
 				}
 
@@ -245,7 +244,7 @@ cout << "ST: New path ST["<<s<<"]["<<r<<"].N ="<<(ste_s2ik ? ste_s2ik->next : ne
 						pending_checks.insert( TPairKeyFrameID( found_path[i] , ft.second ) );
 
 				// Remember to update the node's "all_edges" field:
-				kfs_with_modified_next_edge.insert( ft.first );
+				kfs_with_modified_next_edge.insert( ft );
 			}
 
 			// Mark as done:
@@ -255,7 +254,7 @@ cout << "ST: New path ST["<<s<<"]["<<r<<"].N ="<<(ste_s2ik ? ste_s2ik->next : ne
 	} // end if "check_all_obs_are_connected"
 
 
-#if 0
+#if defined(SYM_ST_SUPER_VERBOSE_SAVE_ALL_SPANNING_TREES)
 	{
 		static int i=0;
 		const std::string sFil    = mrpt::format("debug_spantree_%05i.txt",i);
@@ -270,30 +269,29 @@ cout << "ST: New path ST["<<s<<"]["<<r<<"].N ="<<(ste_s2ik ? ste_s2ik->next : ne
 
 	// Update "all_edges" --------------------------------------------
 	// Only for those who were really modified.
-	for (std::set<TKeyFrameID>::const_iterator it=kfs_with_modified_next_edge.begin();it!=kfs_with_modified_next_edge.end();++it)
+	for (std::set<TPairKeyFrameID>::const_iterator it=kfs_with_modified_next_edge.begin();it!=kfs_with_modified_next_edge.end();++it)
 	{
-		const TKeyFrameID kf_id = *it;
+		const TKeyFrameID kf_id = it->first;
 		const std::map<TKeyFrameID,TSpanTreeEntry> & Ds = sym.next_edge[ kf_id ];  // O(1) in map_as_vector
 
-		for (std::map<TKeyFrameID,TSpanTreeEntry>::const_iterator it2=Ds.begin();it2!=Ds.end();++it2)
-		{
-			const TKeyFrameID dst_kf_id = it2->first;
+		std::map<TKeyFrameID,TSpanTreeEntry>::const_iterator it2=Ds.find(it->second);
+		ASSERT_(it2!=Ds.end())
+		
 
-			const TKeyFrameID from = std::max(dst_kf_id, kf_id);
-			const TKeyFrameID to   = std::min(dst_kf_id, kf_id);
+		const TKeyFrameID dst_kf_id = it2->first;
 
-			// find_path_bfs
+		const TKeyFrameID from = std::max(dst_kf_id, kf_id);
+		const TKeyFrameID to   = std::min(dst_kf_id, kf_id);
 
-			typename kf2kf_pose_traits<KF2KF_POSE_TYPE>::k2k_edge_vector_t & path = sym.all_edges[from][to];  // O(1) in map_as_vector
-			path.clear();
-			//internal::recursive_update_all_edges(path, to, from, this->m_parent );
-			bool path_found = m_parent->find_path_bfs(from,to, NULL, &path);
-			ASSERT_(path_found)
-		}
+		// find_path_bfs
+		typename kf2kf_pose_traits<KF2KF_POSE_TYPE>::k2k_edge_vector_t & path = sym.all_edges[from][to];  // O(1) in map_as_vector
+		path.clear();
+		bool path_found = m_parent->find_path_bfs(from,to, NULL, &path);
+		ASSERT_(path_found)
 	} // end for each "kfs_with_modified_next_edge"
 
 
-#if 0
+#if defined(SYM_ST_EXTRA_SECURITY_CHECKS)
 	{
 		// Security check: All spanning trees must have a max. depth of "max_depth"
 		// 1st step: define nodes & their depths:

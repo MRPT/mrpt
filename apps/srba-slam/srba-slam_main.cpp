@@ -238,7 +238,7 @@ template <class SENSOR_POSE_OPTION>
 struct InitializerSensorPoseParams;
 
 template <>
-struct InitializerSensorPoseParams<sensor_pose_on_robot_none>
+struct InitializerSensorPoseParams<options::sensor_pose_on_robot_none>
 {
 	template <class RBA>
 	static void init(RBA &rba, RBASLAM_Params &config)
@@ -248,7 +248,7 @@ struct InitializerSensorPoseParams<sensor_pose_on_robot_none>
 };
 
 template <>
-struct InitializerSensorPoseParams<sensor_pose_on_robot_se3>
+struct InitializerSensorPoseParams<options::sensor_pose_on_robot_se3>
 {
 	template <class RBA>
 	static void init(RBA &rba, RBASLAM_Params &config)
