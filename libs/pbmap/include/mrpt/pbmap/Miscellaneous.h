@@ -118,29 +118,6 @@ namespace pbmap {
 
   bool PBMAP_IMPEXP isInHull(PointT &point3D, pcl::PointCloud<PointT>::Ptr hull3D);
 
-  template<class dataType>
-  dataType calcMean(std::vector<dataType> &data)
-  {
-    dataType sum = 0;
-    for(size_t i=0; i < data.size(); i++)
-      sum += data[i];
-
-    return sum/data.size();
-  }
-
-  template<typename dataType>
-  dataType calcStdDev(std::vector<dataType> &data, dataType mean)
-  {
-    dataType sum = 0;
-    for(size_t i=0; i < data.size(); i++)
-      sum += pow(data[i] - mean, 2);
-  //    sum += mrpt::math::square(data[i] - mean);
-
-    dataType stdDev = sqrt(sum / data.size());
-
-    return stdDev;
-  }
-
   template<typename dataType>
   dataType getMode(std::vector<dataType> data, dataType range)
   {
@@ -176,13 +153,15 @@ namespace pbmap {
     size_t size = data.size();
     std::vector<dataType> dataTemp = data;
 
-    dataType sum = 0;
-    for(size_t i=0; i < data.size(); i++)
-      sum += data[i];
-    dataType meanShift =sum/size;
-  //  std::cout << "Initial meanShift: " << meanShift << std::endl;
+//    dataType sum = 0;
+//    for(size_t i=0; i < data.size(); i++)
+//      sum += data[i];
+//    dataType meanShift =sum/size;
+//    stdDevHist = mrpt::math::stddev(data);
 
-    stdDevHist = calcStdDev(data, meanShift);
+    dataType meanShift;
+    mrpt::math::meanAndStd(data,meanShift,stdDevHist);
+    dataType sum = meanShift*data.size();
 
     //dataType step = 1;
     dataType shift = 1000;
@@ -205,7 +184,7 @@ namespace pbmap {
       dataType meanUpdated = sum / dataTemp.size();
       shift = fabs(meanUpdated - meanShift);
       meanShift = meanUpdated;
-      stdDevHist = calcStdDev(dataTemp, meanShift);
+      stdDevHist = mrpt::math::stddev(dataTemp);
 
       iteration_counter++;
     }

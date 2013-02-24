@@ -55,10 +55,10 @@
 #include <pcl/segmentation/organized_multi_plane_segmentation.h>
 #include <pcl/segmentation/organized_connected_component_segmentation.h>
 #include <pcl/filters/extract_indices.h>
-#include <pcl/surface/convex_hull.h>
+//#include <pcl/surface/convex_hull.h>
 #include <pcl/filters/voxel_grid.h>
 #include <pcl/common/transforms.h>
-#include <pcl/geometry/polygon_operations.h>
+//#include <pcl/geometry/polygon_operations.h>
 #include <pcl/common/time.h>
 
 #include <iostream>

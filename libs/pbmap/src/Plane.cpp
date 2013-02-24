@@ -65,25 +65,25 @@ void  Plane::writeToStream(CStream &out, int *out_Version) const
 		out << areaVoxels;
 		out << areaHull;
 		out << elongation;
-    out.WriteBufferFixEndianness<Eigen::Vector3f::Scalar>(&v3normal(0),3);
-    out.WriteBufferFixEndianness<Eigen::Vector3f::Scalar>(&v3center(0),3);
-    out.WriteBufferFixEndianness<Eigen::Vector3f::Scalar>(&v3PpalDir(0),3);
-    out.WriteBufferFixEndianness<Eigen::Vector3f::Scalar>(&v3colorNrgb(0),3);
-    out.WriteBufferFixEndianness<Eigen::Vector3f::Scalar>(&v3colorNrgbDev(0),3);
+        out.WriteBufferFixEndianness<Eigen::Vector3f::Scalar>(&v3normal(0),3);
+        out.WriteBufferFixEndianness<Eigen::Vector3f::Scalar>(&v3center(0),3);
+        out.WriteBufferFixEndianness<Eigen::Vector3f::Scalar>(&v3PpalDir(0),3);
+        out.WriteBufferFixEndianness<Eigen::Vector3d::Scalar>(&v3colorNrgb(0),3);
+        out.WriteBufferFixEndianness<Eigen::Vector3d::Scalar>(&v3colorNrgbDev(0),3);
 
-    out << (uint32_t)neighborPlanes.size();
-    for (std::map<unsigned,unsigned>::const_iterator it=neighborPlanes.begin(); it != neighborPlanes.end(); it++)
-      out << static_cast<uint32_t>(it->first) << static_cast<uint32_t>(it->second);
+        out << (uint32_t)neighborPlanes.size();
+        for (std::map<unsigned,unsigned>::const_iterator it=neighborPlanes.begin(); it != neighborPlanes.end(); it++)
+          out << static_cast<uint32_t>(it->first) << static_cast<uint32_t>(it->second);
 
-    out << (uint32_t)polygonContourPtr->size();
-    for (uint32_t i=0; i < polygonContourPtr->size(); i++)
-      out << polygonContourPtr->points[i].x << polygonContourPtr->points[i].y << polygonContourPtr->points[i].z;
+        out << (uint32_t)polygonContourPtr->size();
+        for (uint32_t i=0; i < polygonContourPtr->size(); i++)
+          out << polygonContourPtr->points[i].x << polygonContourPtr->points[i].y << polygonContourPtr->points[i].z;
 
-    out << bFullExtent;
-    out << bFromStructure;
-    out << semanticGroup;
-//    out << semanticLabel;
-    out << label;
+        out << bFullExtent;
+        out << bFromStructure;
+        out << semanticGroup;
+    //    out << semanticLabel;
+        out << label;
 
 	}
 
@@ -109,8 +109,8 @@ void  Plane::readFromStream(CStream &in, int version)
 			in.ReadBufferFixEndianness<Eigen::Vector3f::Scalar>(&v3normal[0],sizeof(v3normal[0])*3);
 			in.ReadBufferFixEndianness<Eigen::Vector3f::Scalar>(&v3center[0],sizeof(v3center[0])*3);
 			in.ReadBufferFixEndianness<Eigen::Vector3f::Scalar>(&v3PpalDir[0],sizeof(v3PpalDir[0])*3);
-			in.ReadBufferFixEndianness<Eigen::Vector3f::Scalar>(&v3colorNrgb[0],sizeof(v3colorNrgb[0])*3);
-			in.ReadBufferFixEndianness<Eigen::Vector3f::Scalar>(&v3colorNrgbDev[0],sizeof(v3colorNrgbDev[0])*3);
+			in.ReadBufferFixEndianness<Eigen::Vector3d::Scalar>(&v3colorNrgb[0],sizeof(v3colorNrgb[0])*3);
+			in.ReadBufferFixEndianness<Eigen::Vector3d::Scalar>(&v3colorNrgbDev[0],sizeof(v3colorNrgbDev[0])*3);
 
 			uint32_t n;
 			in >> n;
@@ -286,9 +286,9 @@ void Plane::getPlaneNrgb()
 void Plane::calcMainColor()
 {
   getPlaneNrgb();
-  v3colorNrgb(0) = getHistogramMeanShift(r, (float)1.0, v3colorNrgbDev(0));
-  v3colorNrgb(1) = getHistogramMeanShift(g, (float)1.0, v3colorNrgbDev(1));
-  v3colorNrgb(2) = getHistogramMeanShift(b, (float)1.0, v3colorNrgbDev(2));
+  v3colorNrgb(0) = getHistogramMeanShift(r, 1.0, v3colorNrgbDev(0));
+  v3colorNrgb(1) = getHistogramMeanShift(g, 1.0, v3colorNrgbDev(1));
+  v3colorNrgb(2) = getHistogramMeanShift(b, 1.0, v3colorNrgbDev(2));
 }
 
 //**!

@@ -158,11 +158,11 @@ namespace pbmap {
     /**!
      *  Radiometric description
     */
-    Eigen::Vector3f v3colorNrgb;
-    Eigen::Vector3f v3colorNrgbDev;
-    std::vector<float> r;
-    std::vector<float> g;
-    std::vector<float> b;
+    Eigen::Vector3d v3colorNrgb;
+    Eigen::Vector3d v3colorNrgbDev;
+    std::vector<double> r;
+    std::vector<double> g;
+    std::vector<double> b;
 
     pcl::PointCloud<pcl::PointXYZRGBA>::Ptr contourPtr;
     pcl::PointCloud<pcl::PointXYZRGBA>::Ptr polygonContourPtr;
