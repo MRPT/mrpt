@@ -45,7 +45,12 @@ using namespace mrpt::math;
 using namespace mrpt::random;
 using namespace std;
 
-typedef  RBA_Problem_P6D_L3D_ObsMono my_rba_t;
+typedef RbaEngine<
+	kf2kf_poses::SE3,                // Parameterization  KF-to-KF poses
+	landmarks::Euclidean3D,          // Parameterization of landmark positions    
+	observations::MonocularCamera    // Type of observations
+	> 
+	my_rba_t;
 
 /*
  topo=0 -> linear graph

@@ -44,8 +44,14 @@ using namespace std;
 // --------------------------------------------------------------------------------
 struct my_srba_options
 {
-	typedef sensor_pose_on_robot_se3      sensor_pose_on_robot_t;
-	typedef observation_noise_identity    obs_noise_matrix_t;      // The sensor noise matrix is the same for all observations and equal to \sigma * I(identity)
+	typedef options::sensor_pose_on_robot_se3       sensor_pose_on_robot_t;
+	typedef options::observation_noise_identity     obs_noise_matrix_t;      // The sensor noise matrix is the same for all observations and equal to \sigma * I(identity)
+	
+	// Solver algorithm:
+	typedef options::solver_LM_schur_dense_cholesky      solver_t;
+	//typedef options::solver_LM_schur_sparse_cholesky     solver_t;
+	//typedef options::solver_LM_no_schur_sparse_cholesky  solver_t;
+			
 };
 
 typedef RbaEngine<

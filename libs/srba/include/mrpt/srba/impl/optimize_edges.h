@@ -41,13 +41,6 @@ using namespace mrpt;
 using namespace mrpt::math;
 using namespace std;
 
-// Build flags:
-#ifndef SRBA_SOLVE_USING_SCHUR_COMPLEMENT
-#	define SRBA_SOLVE_USING_SCHUR_COMPLEMENT  1
-#endif
-#ifndef SRBA_USE_DENSE_CHOLESKY
-#	define SRBA_USE_DENSE_CHOLESKY            1
-#endif
 #ifndef SRBA_DETAILED_TIME_PROFILING
 #	define SRBA_DETAILED_TIME_PROFILING       0          //  Enabling this has a measurable impact in performance, so use only for debugging.
 #endif
@@ -61,6 +54,16 @@ using namespace std;
 #	define DETAILED_PROFILING_LEAVE(_STR)
 #endif
 
+namespace internal
+{
+	/** Generic solver declaration */
+	template <bool USE_SCHUR, bool DENSE_CHOL,class RBA_ENGINE>
+	struct solver_engine;
+
+	// Implemented in lev-marq_solvers.h
+}
+
+
 // ------------------------------------------
 //         optimize_edges
 //          (See header for docs)
@@ -73,6 +76,10 @@ void RbaEngine<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::optimize_edges(
 	const std::vector<size_t> & in_observation_indices_to_optimize
 	)
 {
+	// This method deals with many common tasks to any optimizer: update Jacobians, prepare Hessians, etc. 
+	// The specific solver method details are implemented in "my_solver_t":
+	typedef internal::solver_engine<RBA_OPTIONS::solver_t::USE_SCHUR,RBA_OPTIONS::solver_t::DENSE_CHOLESKY,rba_engine_t> my_solver_t;
+	
 	m_profiler.enter("opt");
 
 	// Problem dimensions:
@@ -155,15 +162,8 @@ void RbaEngine<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::optimize_edges(
 	// -------------------------------------------------------------------------------
 	DETAILED_PROFILING_ENTER("opt.build_obs_list")
 
-
-	// Clear the entries in "m_cached_obs_global_idx2residual_idx" marked as used in the last step in "m_used_indices_in_obs_map".
-	// This may seem double work, but in this way the size of "m_used_indices_in_obs_map" is bounded, while the unbounded "obs_global_idx2residual_idx"
-	// is reused over time, avoiding O(n) memory allocations ;-)
-	//for (size_t i=0;i<m_used_indices_in_obs_map.size();i++) m_cached_obs_global_idx2residual_idx[i].valid=false;
-	//m_used_indices_in_obs_map.clear();
-
 	// Mapping betwwen obs. indices in the residuals vector & the global list of all the observations:
-	std::map<size_t,size_t>   obs_global_idx2residual_idx; //--> m_cached_obs_global_idx2residual_idx
+	std::map<size_t,size_t>   obs_global_idx2residual_idx;
 
 	std::vector<TObsUsed>  involved_obs;  //  + obs. data
 	if (in_observation_indices_to_optimize.empty())
@@ -180,8 +180,6 @@ void RbaEngine<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::optimize_edges(
 				const size_t obs_idx = involved_obs.size();
 
 				obs_global_idx2residual_idx[global_obs_idx] = obs_idx;
-
-				//m_used_indices_in_obs_map.push_back(global_obs_idx);
 
 				involved_obs.push_back( TObsUsed (global_obs_idx, &rba_state.all_observations[global_obs_idx] ) );
 			}
@@ -204,8 +202,6 @@ void RbaEngine<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::optimize_edges(
 
 					obs_global_idx2residual_idx[global_obs_idx] = obs_idx;
 
-					//m_used_indices_in_obs_map.push_back(global_obs_idx);
-
 					involved_obs.push_back( TObsUsed( global_obs_idx,  &rba_state.all_observations[global_obs_idx] ) );
 				}
 			}
@@ -220,10 +216,6 @@ void RbaEngine<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::optimize_edges(
 			const size_t global_obs_idx = in_observation_indices_to_optimize[i];
 			const size_t obs_idx = involved_obs.size();
 
-			//TSizeFlag & sf = obs_global_idx2residual_idx[global_obs_idx];
-			//m_used_indices_in_obs_map.push_back(global_obs_idx);
-			//sf.value = obs_idx;
-			//sf.valid = true;
 			obs_global_idx2residual_idx[global_obs_idx] = obs_idx;
 
 			involved_obs.push_back(TObsUsed(global_obs_idx, &rba_state.all_observations[global_obs_idx] ) );
@@ -279,9 +271,7 @@ void RbaEngine<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::optimize_edges(
 	for (size_t i=0;i<list_of_required_num_poses.size();i++)
 		list_of_required_num_poses[i]->mark_outdated();
 
-
-
-#if 0
+#if 0  // Save a sparse block representation of the Jacobian.
 	{
 		CMatrixDouble Jbin;
 		rba_state.lin_system.dh_dAp.getBinaryBlocksRepresentation(Jbin);
@@ -329,23 +319,9 @@ void RbaEngine<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::optimize_edges(
 	//
 	ASSERT_ABOVEEQ_(OBS_DIMS*nObs,POSE_DIMS*nUnknowns_k2k+LM_DIMS*nUnknowns_k2f)
 
-#if 0
-	{
-		static int cnt=0;
-		HAp.saveToTextFileAsDense(mrpt::format("debug_Hessian_%05i.txt",++cnt));
-	}
-#endif
-
-	// Cholesky object, as a pointer to reuse it between iterations:
-	std::auto_ptr<CSparseMatrix::CholeskyDecomp>  ptrCh;
-
 	// ----------------------------------------------------------------
 	//         Iterative Levenberg Marquardt (LM) algorithm
-	//
-	//   For a description, see:
-	//    http://www.mrpt.org/Levenberg%E2%80%93Marquardt_algorithm
 	// ----------------------------------------------------------------
-
 	// LevMar parameters:
 	double nu = 2;
 	const double max_gradient_to_stop = 1e-15;  // Stop if the infinity norm of the gradient is smaller than this
@@ -408,40 +384,21 @@ void RbaEngine<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::optimize_edges(
 
 	// Compute the gradient: "grad = J^t * (h(x)-z)"
 	// ---------------------------------------------------------------------------------
-	// The indices of observations in the residuals vector, in the same order than we go thru them in compute_minus_gradient()
-	//std::vector<size_t> sequential_obs_indices;
-
-	//DETAILED_PROFILING_ENTER("opt.build_obs_indices")
-	//build_obs_indices(/* Out: */ sequential_obs_indices, /* In: */ dh_dAp, dh_df, m_cached_obs_global_idx2residual_idx);
-	//DETAILED_PROFILING_LEAVE("opt.build_obs_indices")
-
 	vector_double  minus_grad; // The negative of the gradient.
 
 	DETAILED_PROFILING_ENTER("opt.compute_minus_gradient")
-	compute_minus_gradient(/* Out: */ minus_grad, /* In: */ dh_dAp, dh_df, residuals, obs_global_idx2residual_idx); //sequential_obs_indices);
+	compute_minus_gradient(/* Out: */ minus_grad, /* In: */ dh_dAp, dh_df, residuals, obs_global_idx2residual_idx);
 	DETAILED_PROFILING_LEAVE("opt.compute_minus_gradient")
 
 
 	// Build symbolic structures for Schur complement:
 	// ---------------------------------------------------------------------------------
-#if SRBA_SOLVE_USING_SCHUR_COMPLEMENT
-	DETAILED_PROFILING_ENTER("opt.schur_compl_build_symbolic")
-
-	SchurComplement<
-		typename hessian_traits_t::TSparseBlocksHessian_Ap,
-		typename hessian_traits_t::TSparseBlocksHessian_f,
-		typename hessian_traits_t::TSparseBlocksHessian_Apf
-		>
-		schur_compl(
-			HAp,Hf,HApf, // The different symbolic/numeric Hessian
-			&minus_grad[0],  // minus gradient of the Ap part
-			// Handle case of no unknown features:
-			nUnknowns_k2f!=0 ? &minus_grad[idx_start_f] : NULL   // minus gradient of the features part
-			);
-
-	DETAILED_PROFILING_LEAVE("opt.schur_compl_build_symbolic")
-
-#endif
+	my_solver_t my_solver(
+		m_verbose_level, m_profiler, 
+		HAp,Hf,HApf, // The different symbolic/numeric Hessian
+		minus_grad,  // minus gradient of the Ap part
+		nUnknowns_k2k,
+		nUnknowns_k2f);
 
 	const double MAX_LAMBDA = this->parameters.srba.max_lambda;
 
@@ -451,12 +408,6 @@ void RbaEngine<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::optimize_edges(
 	std::vector<pose_flag_t>      old_span_tree; // In the same order than "list_of_required_num_poses"
 
 	const std::string sLabelProfilerLM_iter = mrpt::format("opt.lm_iteration_k2k=%03u_k2f=%03u", static_cast<unsigned int>(nUnknowns_k2k), static_cast<unsigned int>(nUnknowns_k2f) );
-
-#if SRBA_USE_DENSE_CHOLESKY
-	Eigen::MatrixXd  denseH;
-	Eigen::LLT<Eigen::MatrixXd,Eigen::Upper>  denseChol;
-	bool  denseChol_is_uptodate = false;
-#endif
 
 	// LevMar iterations -------------------------------------
 	size_t iter; // Declared here so we can read the final # of iterations out of the "for" loop.
@@ -481,110 +432,10 @@ void RbaEngine<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::optimize_edges(
 		while(rho<=0 && !stop)
 		{
 			// -------------------------------------------------------------------------
-			//  Build the sparse sS=(H+\lambda I) matrix to be decomposed with Cholesky
+			//  Build the matrix (Hessian+ \lambda I) and decompose it with Cholesky:
 			// -------------------------------------------------------------------------
-
-#if !SRBA_SOLVE_USING_SCHUR_COMPLEMENT
-			// --------------------------------------------------------
-			// Strategy #1: Solve the entire H Ax = -g system with
-			//               H as a single sparse Hessian.
-			// --------------------------------------------------------
-			DETAILED_PROFILING_ENTER("opt.SparseTripletFill")
-
-			CSparseMatrix sS(nUnknowns_scalars,nUnknowns_scalars);
-
-			// 1/3: Hp --------------------------------------
-			for (size_t i=0;i<nUnknowns_k2k;i++)
-			{	// Only upper-half triangle:
-				const typename hessian_traits_t::TSparseBlocksHessian_Ap::col_t & col_i = HAp.getCol(i);
-
-				for (typename hessian_traits_t::TSparseBlocksHessian_Ap::col_t::const_iterator itRowEntry = col_i.begin();itRowEntry != col_i.end(); ++itRowEntry )
-				{
-					if (itRowEntry->first==i)
-					{
-						// block Diagonal: Add lambda*I to these ones
-						typename hessian_traits_t::TSparseBlocksHessian_Ap::matrix_t sSii = itRowEntry->second.num;
-						for (int k=0;k<POSE_DIMS;k++)
-							sSii.coeffRef(k,k)+=lambda;
-						sS.insert_submatrix(POSE_DIMS*i,POSE_DIMS*i, sSii );
-					}
-					else
-					{
-						sS.insert_submatrix(
-							POSE_DIMS*itRowEntry->first,  // row index
-							POSE_DIMS*i,                  // col index
-							itRowEntry->second.num );
-					}
-				}
-			}
-
-			// 2/3: HApf --------------------------------------
-			for (size_t i=0;i<nUnknowns_k2k;i++)
+			if ( !my_solver.solve(lambda) )
 			{
-				const typename hessian_traits_t::TSparseBlocksHessian_Apf::col_t & row_i = HApf.getCol(i);
-
-				for (typename hessian_traits_t::TSparseBlocksHessian_Apf::col_t::const_iterator itColEntry = row_i.begin();itColEntry != row_i.end(); ++itColEntry )
-				{
-					sS.insert_submatrix(
-						POSE_DIMS*i,  // row index
-						idx_start_f+LM_DIMS*itColEntry->first,  // col index
-						itColEntry->second.num );
-				}
-			}
-
-			// 3/3: Hf --------------------------------------
-			for (size_t i=0;i<nUnknowns_k2f;i++)
-			{	// Only upper-half triangle:
-				const typename hessian_traits_t::TSparseBlocksHessian_f::col_t & col_i = Hf.getCol(i);
-
-				for (typename hessian_traits_t::TSparseBlocksHessian_f::col_t::const_iterator itRowEntry = col_i.begin();itRowEntry != col_i.end(); ++itRowEntry )
-				{
-					if (itRowEntry->first==i)
-					{
-						// block Diagonal: Add lambda*I to these ones
-						typename hessian_traits_t::TSparseBlocksHessian_f::matrix_t sSii = itRowEntry->second.num;
-						for (int k=0;k<LM_DIMS;k++)
-							sSii.coeffRef(k,k)+=lambda;
-						sS.insert_submatrix(idx_start_f+LM_DIMS*i,idx_start_f+LM_DIMS*i, sSii );
-					}
-					else
-					{
-						sS.insert_submatrix(
-							idx_start_f+LM_DIMS*itRowEntry->first,  // row index
-							idx_start_f+LM_DIMS*i,                  // col index
-							itRowEntry->second.num );
-					}
-				}
-			}
-			DETAILED_PROFILING_LEAVE("opt.SparseTripletFill")
-
-			// Compress the sparse matrix:
-			// --------------------------------------
-			DETAILED_PROFILING_ENTER("opt.SparseTripletCompress")
-			sS.compressFromTriplet();
-			DETAILED_PROFILING_LEAVE("opt.SparseTripletCompress")
-
-#if 0
-			sS.saveToTextFile_dense("full_H.txt");
-			minus_grad.saveToTextFile("full_minus_grad.txt");
-#endif
-
-
-			// Sparse cholesky
-			// --------------------------------------
-			DETAILED_PROFILING_ENTER("opt.SparseChol")
-			try
-			{
-				if (!ptrCh.get())
-						ptrCh = std::auto_ptr<CSparseMatrix::CholeskyDecomp>(new CSparseMatrix::CholeskyDecomp(sS) );
-				else ptrCh.get()->update(sS);
-
-				DETAILED_PROFILING_LEAVE("opt.SparseChol")
-			}
-			catch (CExceptionNotDefPos &)
-			{
-				DETAILED_PROFILING_LEAVE("opt.SparseChol")
-
 				// not positive definite so increase lambda and try again
 				lambda *= nu;
 				nu *= 2.;
@@ -593,223 +444,6 @@ void RbaEngine<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::optimize_edges(
 				VERBOSE_LEVEL(2) << "[OPT] LM iter #"<< iter << " NotDefPos in Cholesky. Retrying with lambda=" << lambda << endl;
 				continue;
 			}
-
-			// backsubtitution gives us "DeltaEps" from Cholesky and "-grad":
-			//
-			//    (J^tJ + lambda*I) DeltaEps = -grad
-			// ----------------------------------------------------------------
-			DETAILED_PROFILING_ENTER("opt.backsub")
-
-			vector_double  delta_eps;
-			ptrCh->backsub(minus_grad,delta_eps);
-
-			DETAILED_PROFILING_LEAVE("opt.backsub")
-
-#else // SRBA_SOLVE_USING_SCHUR_COMPLEMENT
-
-			// --------------------------------------------------------
-			// Strategy #2: Solve the H·Ax = -g system using the Schur
-			//               complement to generate a Ap-only reduced
-			//               system.
-			// --------------------------------------------------------
-
-			// 1st: Numeric part: Update HAp hessian into the reduced system ----------
-#if defined(DEBUG_DUMP_SCHUR_MATRICES)
-	HAp.saveToTextFileAsDense("HAp.txt", true, true );
-	Hf.saveToTextFileAsDense("Hf.txt", true, true);
-	HApf.saveToTextFileAsDense("HApf.txt",false, false);
-	minus_grad.saveToTextFile("minus_grad.txt");
-	{ ofstream f("lambda.txt"); f << lambda << endl; }
-#endif
-			// Note: We have to re-evaluate the entire reduced Hessian HAp even if
-			//       only lambda changed, because of the terms inv(Hf+\lambda*I).
-
-			DETAILED_PROFILING_ENTER("opt.schur_build_reduced")
-
-			schur_compl.numeric_build_reduced_system(lambda);
-
-			DETAILED_PROFILING_LEAVE("opt.schur_build_reduced")
-
-			if (schur_compl.getNumFeaturesFullRank()!=schur_compl.getNumFeatures())
-				VERBOSE_LEVEL(1) << "[OPT] Schur warning: only " << schur_compl.getNumFeaturesFullRank() << " out of " << schur_compl.getNumFeatures() << " features have full-rank.\n";
-
-#if !SRBA_USE_DENSE_CHOLESKY
-			CSparseMatrix sS(nUnknowns_k2k*POSE_DIMS,nUnknowns_k2k*POSE_DIMS);  // Only for the H_Ap part of the Hessian
-
-			// Now write the updated "HAp" into its sparse matrix form:
-			DETAILED_PROFILING_ENTER("opt.SparseTripletFill")
-			for (size_t i=0;i<nUnknowns_k2k;i++)
-			{	// Only upper-half triangle:
-				const typename hessian_traits_t::TSparseBlocksHessian_Ap::col_t & col_i = HAp.getCol(i);
-
-				for (typename hessian_traits_t::TSparseBlocksHessian_Ap::col_t::const_iterator itRowEntry = col_i.begin();itRowEntry != col_i.end(); ++itRowEntry )
-				{
-					if (itRowEntry->first==i)
-					{
-						// block Diagonal: Add lambda*I to these ones
-						typename hessian_traits_t::TSparseBlocksHessian_Ap::matrix_t sSii = itRowEntry->second.num;
-						for (int k=0;k<POSE_DIMS;k++)
-							sSii.coeffRef(k,k)+=lambda;
-						sS.insert_submatrix(POSE_DIMS*i,POSE_DIMS*i, sSii );
-					}
-					else
-					{
-						sS.insert_submatrix(
-							POSE_DIMS*itRowEntry->first,  // row index
-							POSE_DIMS*i,                  // col index
-							itRowEntry->second.num );
-					}
-				}
-			}
-			DETAILED_PROFILING_LEAVE("opt.SparseTripletFill")
-
-#if defined(DEBUG_DUMP_SCHUR_MATRICES)
-			sS.saveToTextFile_dense("schur_HAp.txt");
-			minus_grad.saveToTextFile("schur_minus_grad_Ap.txt");
-#endif
-
-			// Compress the sparse matrix:
-			// ----------------------------------
-			DETAILED_PROFILING_ENTER("opt.SparseTripletCompress")
-			sS.compressFromTriplet();
-			DETAILED_PROFILING_LEAVE("opt.SparseTripletCompress")
-
-			// Sparse cholesky:
-			// ----------------------------------
-			DETAILED_PROFILING_ENTER("opt.SparseChol")
-			try
-			{
-				if (!ptrCh.get())
-						ptrCh = std::auto_ptr<CSparseMatrix::CholeskyDecomp>(new CSparseMatrix::CholeskyDecomp(sS) );
-				else ptrCh.get()->update(sS);
-
-				DETAILED_PROFILING_LEAVE("opt.SparseChol")
-			}
-			catch (CExceptionNotDefPos &)
-			{
-				DETAILED_PROFILING_LEAVE("opt.SparseChol")
-
-				// not positive definite so increase lambda and try again
-				lambda *= nu;
-				nu *= 2.;
-				stop = (lambda>MAX_LAMBDA);
-
-#ifdef _DEBUG
-				{
-					static int cnt=0;
-					sS.saveToTextFile_dense(mrpt::format("_DEBUG_Hessian_error_cholesky_%03i.txt",cnt++));
-				}
-#endif
-
-				VERBOSE_LEVEL(2) << "[OPT] LM iter #"<< iter << " NotDefPos in Cholesky. Retrying with lambda=" << lambda << endl;
-				continue;
-			}
-
-			// backsubtitution gives us "DeltaEps" from Cholesky and "-grad":
-			//
-			//    (J^tJ + lambda*I) DeltaEps = -grad
-			// ----------------------------------------------------------------
-			DETAILED_PROFILING_ENTER("opt.backsub")
-
-			vector_double  delta_eps(nUnknowns_k2k*POSE_DIMS + nUnknowns_k2f*LM_DIMS );  // Important: It's initialized to zeros!
-
-			ptrCh->backsub(&minus_grad[0],&delta_eps[0],nUnknowns_k2k*POSE_DIMS);
-
-			DETAILED_PROFILING_LEAVE("opt.backsub")
-
-#else // SRBA_USE_DENSE_CHOLESKY
-			if (!denseChol_is_uptodate)
-			{
-				// Use a dense Cholesky method for solving the set of unknowns:
-				denseH.setZero(nUnknowns_k2k*POSE_DIMS,nUnknowns_k2k*POSE_DIMS);  // Only for the H_Ap part of the Hessian
-
-				// Now write the updated "HAp" into its sparse matrix form:
-				DETAILED_PROFILING_ENTER("opt.DenseFill")
-				for (size_t i=0;i<nUnknowns_k2k;i++)
-				{	// Only upper-half triangle:
-					const typename hessian_traits_t::TSparseBlocksHessian_Ap::col_t & col_i = HAp.getCol(i);
-
-					for (typename hessian_traits_t::TSparseBlocksHessian_Ap::col_t::const_iterator itRowEntry = col_i.begin();itRowEntry != col_i.end(); ++itRowEntry )
-					{
-						if (itRowEntry->first==i)
-						{
-							// block Diagonal: Add lambda*I to these ones
-							typename hessian_traits_t::TSparseBlocksHessian_Ap::matrix_t sSii = itRowEntry->second.num;
-							for (size_t k=0;k<POSE_DIMS;k++)
-								sSii.coeffRef(k,k)+=lambda;
-							denseH.block<POSE_DIMS,POSE_DIMS>(POSE_DIMS*i,POSE_DIMS*i) = sSii;
-						}
-						else
-						{
-							denseH.block<POSE_DIMS,POSE_DIMS>(
-								POSE_DIMS*itRowEntry->first,  // row index
-								POSE_DIMS*i)                   // col index
-								= itRowEntry->second.num;
-						}
-					}
-				}
-				DETAILED_PROFILING_LEAVE("opt.DenseFill")
-
-#if defined(DEBUG_DUMP_SCHUR_MATRICES)
-				denseH.saveToTextFile("schur_HAp.txt");
-				minus_grad.saveToTextFile("schur_minus_grad_Ap.txt");
-#endif
-
-				// Dense cholesky:
-				// ----------------------------------
-				DETAILED_PROFILING_ENTER("opt.DenseChol")
-				denseChol = denseH.selfadjointView<Eigen::Upper>().llt();
-				DETAILED_PROFILING_LEAVE("opt.DenseChol")
-
-				if (denseChol.info()!=Eigen::Success)
-				{
-					// not positive definite so increase lambda and try again
-					lambda *= nu;
-					nu *= 2.;
-					stop = (lambda>MAX_LAMBDA);
-
-					VERBOSE_LEVEL(2) << "[OPT] LM iter #"<< iter << " NotDefPos in Cholesky. Retrying with lambda=" << lambda << endl;
-					continue;
-				}
-
-				denseChol_is_uptodate = true;
-			}
-
-
-			// backsubtitution gives us "DeltaEps" from Cholesky and "-grad":
-			//
-			//    (J^tJ + lambda*I) DeltaEps = -grad
-			// ----------------------------------------------------------------
-			DETAILED_PROFILING_ENTER("opt.backsub")
-
-			Eigen::VectorXd  delta_eps(nUnknowns_k2k*POSE_DIMS + nUnknowns_k2f*LM_DIMS );
-			delta_eps.tail(nUnknowns_k2f*LM_DIMS).setZero();
-
-			delta_eps.head(nUnknowns_k2k*POSE_DIMS) = denseChol.solve( minus_grad.head(nUnknowns_k2k*POSE_DIMS) );
-
-			DETAILED_PROFILING_LEAVE("opt.backsub")
-#endif
-
-			// If using the Schur complement, at this point we must now solve the secondary
-			//  system for features:
-			// -----------------------------------------------------------------------------
-			// 2nd numeric part: Solve for increments in features ----------
-			DETAILED_PROFILING_ENTER("opt.schur_features")
-
-			schur_compl.numeric_solve_for_features(
-				&delta_eps[0],
-				// Handle case of no unknown features:
-				nUnknowns_k2f!=0 ? &delta_eps[nUnknowns_k2k*POSE_DIMS] : NULL   // minus gradient of the features part
-				);
-
-			DETAILED_PROFILING_LEAVE("opt.schur_features")
-
-#if defined(DEBUG_DUMP_SCHUR_MATRICES)
-			delta_eps.saveToTextFile("deltas_Ap_f_schur.txt");
-#endif
-
-#endif // SRBA_SOLVE_USING_SCHUR_COMPLEMENT
-
 
 			// Make a copy of the old edge values, just in case we need to restore them back...
 			// ----------------------------------------------------------------------------------
@@ -835,7 +469,7 @@ void RbaEngine<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::optimize_edges(
 				pose_t new_pose(UNINITIALIZED_POSE);
 
 				// Use the Lie Algebra methods for the increment:
-				const CArrayDouble<POSE_DIMS> incr( &delta_eps[POSE_DIMS*i] );
+				const CArrayDouble<POSE_DIMS> incr( & my_solver.delta_eps[POSE_DIMS*i] );
 				pose_t  incrPose(UNINITIALIZED_POSE);
 				se_traits_t::pseudo_exp(incr,incrPose);   // incrPose = exp(incr) (Lie algebra pseudo-exponential map)
 
@@ -856,7 +490,7 @@ void RbaEngine<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::optimize_edges(
 			DETAILED_PROFILING_ENTER("opt.add_deltas_to_feats")
 			for (size_t i=0;i<nUnknowns_k2f;i++)
 			{
-				const double *delta_feat = &delta_eps[idx_start_f+LM_DIMS*i];
+				const double *delta_feat = &my_solver.delta_eps[idx_start_f+LM_DIMS*i];
 				for (size_t k=0;k<LM_DIMS;k++)
 					k2f_edge_unknowns[i]->pos[k] += delta_feat[k];
 			}
@@ -902,7 +536,7 @@ void RbaEngine<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::optimize_edges(
 
 			// is this better or worse?
 			// -----------------------------
-			rho = (total_proj_error - new_total_proj_error)/ (delta_eps.array()*(lambda*delta_eps + minus_grad).array() ).sum();
+			rho = (total_proj_error - new_total_proj_error)/ (my_solver.delta_eps.array()*(lambda*my_solver.delta_eps + minus_grad).array() ).sum();
 
 			if(rho>0)
 			{
@@ -925,9 +559,6 @@ void RbaEngine<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::optimize_edges(
 
 				if (do_relinearize)
 				{
-#if SRBA_USE_DENSE_CHOLESKY
-					denseChol_is_uptodate = false;
-#endif
 					DETAILED_PROFILING_ENTER("opt.reset_Jacobs_validity")
 					// Before evaluating Jacobians we must reset as "valid" all the involved observations.
 					//  If needed, they'll be marked as invalid by the Jacobian evaluator if just one of the components
@@ -948,17 +579,12 @@ void RbaEngine<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::optimize_edges(
 					sparse_hessian_update_numeric(HApf);
 					DETAILED_PROFILING_LEAVE("opt.sparse_hessian_update_numeric")
 
-#if SRBA_SOLVE_USING_SCHUR_COMPLEMENT
-					DETAILED_PROFILING_ENTER("opt.schur_realize_HAp_changed")
-					// Update the starting value of HAp for Schur:
-					schur_compl.realize_HAp_changed();
-					DETAILED_PROFILING_LEAVE("opt.schur_realize_HAp_changed")
-#endif
+					my_solver.realize_relinearized();
 				}
 
 				// Update gradient:
 				DETAILED_PROFILING_ENTER("opt.compute_minus_gradient")
-				compute_minus_gradient(/* Out: */ minus_grad, /* In: */ dh_dAp, dh_df, residuals, obs_global_idx2residual_idx); //sequential_obs_indices);
+				compute_minus_gradient(/* Out: */ minus_grad, /* In: */ dh_dAp, dh_df, residuals, obs_global_idx2residual_idx);
 				DETAILED_PROFILING_LEAVE("opt.compute_minus_gradient")
 
 				const double norm_inf_min_grad = norm_inf(minus_grad);
@@ -980,6 +606,8 @@ void RbaEngine<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::optimize_edges(
 				// Reset other vars:
 				lambda *= 1.0/3.0; //std::max(1.0/3.0, 1-std::pow(2*rho-1,3.0) );
 				nu = 2.0;
+
+				my_solver.realize_lambda_changed();
 			}
 			else
 			{
@@ -1004,9 +632,8 @@ void RbaEngine<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::optimize_edges(
 				lambda *= nu;
 				nu *= 2.0;
 				stop = (lambda>MAX_LAMBDA);
-#if SRBA_USE_DENSE_CHOLESKY
-				denseChol_is_uptodate = false;   // Must rebuilt the Hessian for the new Lambda
-#endif
+
+				my_solver.realize_lambda_changed();
 			}
 
 		}; // end while rho
@@ -1024,10 +651,8 @@ void RbaEngine<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::optimize_edges(
 	{
 		for (size_t i=0;i<nUnknowns_k2f;i++)
 		{
-#if SRBA_SOLVE_USING_SCHUR_COMPLEMENT
-			if (!schur_compl.was_ith_feature_invertible(i))
+			if (!my_solver.was_ith_feature_invertible(i))
 				continue;
-#endif
 
 			const typename hessian_traits_t::TSparseBlocksHessian_f::col_t & col_i = Hf.getCol(i);
 			ASSERT_(col_i.rbegin()->first==i)  // Make sure the last block matrix is the diagonal term of the upper-triangular matrix.
@@ -1060,3 +685,4 @@ void RbaEngine<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::optimize_edges(
 
 
 } }  // end namespaces
+

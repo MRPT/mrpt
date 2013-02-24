@@ -48,8 +48,9 @@ using namespace std;
 // --------------------------------------------------------------------------------
 struct my_srba_options
 {
-	typedef sensor_pose_on_robot_none           sensor_pose_on_robot_t;  // sensor pose == robot pose
-	typedef observation_noise_constant_matrix<observations::RelativePoses_2D>   obs_noise_matrix_t;      // The sensor noise matrix is the same for all observations and equal to some given matrix
+	typedef options::sensor_pose_on_robot_none           sensor_pose_on_robot_t;  // sensor pose == robot pose
+	typedef options::observation_noise_constant_matrix<observations::RelativePoses_2D>   obs_noise_matrix_t;      // The sensor noise matrix is the same for all observations and equal to some given matrix
+	typedef options::solver_LM_schur_dense_cholesky  solver_t;
 };
 
 typedef RbaEngine<

@@ -47,7 +47,4 @@
 #include "srba/models/observations.h"
 #include "srba/models/sensors.h"
 
-// Predefined RBA problems:
-#include "srba/rba_problems.h"
-
 #endif

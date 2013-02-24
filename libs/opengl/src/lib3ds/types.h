@@ -26,7 +26,7 @@
 extern "C" {
 #endif
 
-// JLBC: Commented since in MRPT we use lib3ds as a static lib within mrpt-core
+// JLBC: Commented since in MRPT we use lib3ds as a static lib within mrpt-base
 //#ifdef _MSC_VER
 //#ifdef LIB3DS_EXPORTS
 //#define LIB3DSAPI __declspec(dllexport)

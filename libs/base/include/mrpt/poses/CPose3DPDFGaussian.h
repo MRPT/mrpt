@@ -233,7 +233,7 @@ namespace poses
 	} // End of namespace
 
 
-	/** Global variables to change the run-time behaviour of some MRPT classes within mrpt-core.
+	/** Global variables to change the run-time behaviour of some MRPT classes within mrpt-base.
 	  *  See each variable for the description of what classes it affects.
 	  */
 	namespace global_settings

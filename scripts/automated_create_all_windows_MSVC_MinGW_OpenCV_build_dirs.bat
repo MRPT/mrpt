@@ -96,9 +96,6 @@ set CMAKE_EXTRA1=-DCMAKE_C_COMPILER=%MINGW_ROOT%-%ARCHN%/bin/gcc.exe
 set CMAKE_EXTRA2=-DCMAKE_CXX_COMPILER=%MINGW_ROOT%-%ARCHN%/bin/g++.exe
 set CMAKE_EXTRA3=-DCMAKE_MAKE_PROGRAM=%MINGW_ROOT%-%ARCHN%/bin/mingw32-make.exe
 
-set FFMPEGDIR=D:/code/ffmpeg-win%ARCHN%-dev
-set WXLIBDIR=%WXDIR%/lib/gcc_dll
-
 REM Common part to all compilers -----------
 :subGen_common
 

@@ -255,7 +255,7 @@ namespace mrpt
 		/**  This declaration must be inserted in all CObject classes definition, before the class declaration.
 		  */
 		#define DEFINE_MRPT_OBJECT_PRE(class_name) \
-			DEFINE_MRPT_OBJECT_PRE_CUSTOM_LINKAGE(class_name, BASE_IMPEXP )  // This macro is valid for classes within mrpt-core only.
+			DEFINE_MRPT_OBJECT_PRE_CUSTOM_LINKAGE(class_name, BASE_IMPEXP )  // This macro is valid for classes within mrpt-base only.
 
 		/** This must be inserted in all CObject classes implementation files
 		  */

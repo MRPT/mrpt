@@ -33,11 +33,9 @@
    | POSSIBILITY OF SUCH DAMAGE.                                               |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/math/CSparseMatrix.h>
-#include <memory>  // for auto_ptr<>
-#include <queue>
-
 #pragma once
+
+#include <queue>
 
 namespace mrpt { namespace srba {
 

@@ -113,8 +113,9 @@ struct TEST_DATASET0
 {
 	struct my_srba_options
 	{
-		typedef sensor_pose_on_robot_none sensor_pose_on_robot_t;
-		typedef observation_noise_identity   obs_noise_matrix_t;      // The sensor noise matrix is the same for all observations and equal to \sigma * I(identity)
+		typedef options::sensor_pose_on_robot_none sensor_pose_on_robot_t;
+		typedef options::observation_noise_identity   obs_noise_matrix_t;      // The sensor noise matrix is the same for all observations and equal to \sigma * I(identity)
+		typedef options::solver_LM_schur_dense_cholesky      solver_t;
 	};
 
 	static basic_euclidean_dataset_entry_t * getData0(size_t &N, mrpt::poses::CPose3DQuat &GT_pose)
@@ -202,8 +203,9 @@ struct TEST_DATASET1
 {
 	struct my_srba_options
 	{
-		typedef sensor_pose_on_robot_se3 sensor_pose_on_robot_t;
-		typedef observation_noise_identity   obs_noise_matrix_t;      // The sensor noise matrix is the same for all observations and equal to \sigma * I(identity)
+		typedef options::sensor_pose_on_robot_se3 sensor_pose_on_robot_t;
+		typedef options::observation_noise_identity   obs_noise_matrix_t;      // The sensor noise matrix is the same for all observations and equal to \sigma * I(identity)
+		typedef options::solver_LM_schur_dense_cholesky      solver_t;
 	};
 
 	static basic_euclidean_dataset_entry_t * getData0(size_t &N, mrpt::poses::CPose3DQuat &GT_pose)

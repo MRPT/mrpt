@@ -35,10 +35,6 @@
 
 #pragma once
 
-#include <mrpt/math/CSparseMatrix.h>
-#include <memory>  // for auto_ptr<>
-#include <queue>
-
 namespace mrpt { namespace srba {
 
 using namespace std;

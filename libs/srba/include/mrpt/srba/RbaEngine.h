@@ -50,6 +50,7 @@
 
 namespace mrpt
 {
+/** An heavily template-based implementation of Relative Bundle Adjustment (RBA) - See \ref mrpt_srba_grp */
 namespace srba
 {
 	using namespace std;
@@ -57,23 +58,24 @@ namespace srba
 	/** The set of default settings for RbaEngine */
 	struct RBA_OPTIONS_DEFAULT
 	{
-		typedef sensor_pose_on_robot_none    sensor_pose_on_robot_t;  // The sensor pose coincides with the robot pose
-		typedef observation_noise_identity   obs_noise_matrix_t;      // The sensor noise matrix is the same for all observations and equal to \sigma * I(identity)
+		typedef options::sensor_pose_on_robot_none      sensor_pose_on_robot_t;  // The sensor pose coincides with the robot pose
+		typedef options::observation_noise_identity     obs_noise_matrix_t;      // The sensor noise matrix is the same for all observations and equal to \sigma * I(identity)
+		typedef options::solver_LM_schur_dense_cholesky solver_t;                // Solver algorithm
 	};
 
-	/** The main class for this library: it defines a Relative Bundle-Adjustment (RBA) problem with (partially known) landmarks,
-	  *   plus the methods to update it with new observations and to optimize the relative poses with least squares optimizers.
+	/** The main class for this library: it defines a Relative Bundle-Adjustment (RBA) problem with (optionally, partially known) landmarks,
+	  *   the methods to update it with new observations and to optimize the relative poses with least squares optimizers.
 	  *
 	  *   The unknowns to be solved are:
-	  *		- Relative 6D poses among keyframes.
-	  *		- Relative 3D positions of landmarks wrt to their base frame.
+	  *		- Relative poses among keyframes.
+	  *		- Relative positions of landmarks wrt to their base frame (or no landmarks for graph-SLAM-like problems)
 	  *
 	  *   The set of known data used to run the optimization comprises:
-	  *		- Camera calibration parameters. In \a camera_calib
-	  *		- Sequence of all observations, i.e. feature (x,y) coordinates. In \a all_obs_by_lm and also \a all_obs_by_frame.
-	  *		- Relative 3D positions of a subset of landmarks wrt to their base frame (in \a known_lms)
+	  *		- Sequence of all observations.
+	  *		- Optional sensor parameters (e.g. camera calibration)
+	  *		- Optionally, the relative positions of a subset of landmarks wrt to their base frame (these are the "fixed" or "known" landmarks).
 	  *
-	  *  See http://www.mrpt.org/srba for a list of possible template arguments, code examples, etc.
+	  *  See http://www.mrpt.org/srba and the <a href="srba-guide.pdf" >library guide</a> for a list of possible template arguments, code examples, etc.
 	  *
 	  * \tparam KF2KF_POSE_TYPE The parameterization of keyframe-to-keyframe relative poses (edges, problem unknowns).
 	  * \tparam LM_TYPE The parameterization of relative positions of landmarks relative poses (edges).
@@ -487,19 +489,6 @@ namespace srba
 		/** Changes the verbosity level: 0=None (only critical msgs), 1=verbose, 2=so verbose you'll have to say "Stop!" */
 		inline void setVerbosityLevel(int level) { m_verbose_level = level; }
 
-
-		struct TSizeFlag
-		{
-			TSizeFlag() : value(), valid(false) { }
-
-			size_t value;
-			bool    valid;
-		};
-		typedef mrpt::utils::map_as_vector<
-			size_t,
-			TSizeFlag,
-			std::deque<std::pair<size_t,TSizeFlag> > > TMyMapSize2Size;
-
 		/** Rebuild the Hessian symbolic information from the given Jacobians.
 		  *  \param[out] H Output hessian (must be empty at input)
 		  */
@@ -522,12 +511,6 @@ namespace srba
 
 	private:
 		rba_problem_state_t  rba_state;  //!< All the beef is here.
-
-		/** Aux. vector used during optimization.
-		  * Made a class member to avoid reallocating the memory with each optimization
-		  */
-		TMyMapSize2Size m_cached_obs_global_idx2residual_idx;
-		std::vector<size_t>  m_used_indices_in_obs_map; //!< Used indices in \a m_cached_obs_global_idx2residual_idx, to be cleared.
 
 		mutable std::vector<bool> m_complete_st_ws; //!< Temporary working space used in \a create_complete_spanning_tree()
 
@@ -771,6 +754,7 @@ namespace srba
 #include "impl/reprojection_residuals.h"
 #include "impl/compute_minus_gradient.h"
 #include "impl/optimize_edges.h"
+#include "impl/lev-marq_solvers.h"
 
 #include "impl/bfs_visitor.h"
 #include "impl/optimize_local_area.h"

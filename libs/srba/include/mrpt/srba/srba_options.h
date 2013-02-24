@@ -39,24 +39,23 @@
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/math/lightweight_geom_data.h>
 
-namespace mrpt
-{
-namespace srba
+namespace mrpt { namespace srba {
+namespace options
 {
 	/** \defgroup mrpt_srba_options Struct traits used for setting different SRBA options at compile time
 		* \ingroup mrpt_srba_grp */
+	
+	/** \defgroup mrpt_srba_options_pose_on_robot Types for RBA_OPTIONS::sensor_pose_on_robot_t 
+		* \ingroup mrpt_srba_options */
 
-	/** \addtogroup mrpt_srba_options
-		* @{ */
-
-		/** \name  Types for RBA_OPTIONS::sensor_pose_on_robot_t 
-		  *  @{ */
-
-		/** Typedefs for determining whether the result of combining a KF pose (+) a sensor pose leads to a SE(2) or SE(3) pose */
-		template <class SENSOR_POSE_CLASS, size_t KF_POSE_DIMS> struct resulting_pose_t;
+		namespace internal {
+			/** Typedefs for determining whether the result of combining a KF pose (+) a sensor pose leads to a SE(2) or SE(3) pose */
+			template <class SENSOR_POSE_CLASS, size_t KF_POSE_DIMS> struct resulting_pose_t;
+		}
 
 		/** Usage: A possible type for RBA_OPTIONS::sensor_pose_on_robot_t.
-		  * Meaning: The robot pose and the sensor pose coincide, i.e. the sensor pose on the robot is the identitity transformation.  */
+		  * Meaning: The robot pose and the sensor pose coincide, i.e. the sensor pose on the robot is the identitity transformation.  
+		  * \ingroup mrpt_srba_options_pose_on_robot */
 		struct sensor_pose_on_robot_none
 		{
 			/** In this case there are no needed parameters */
@@ -90,12 +89,16 @@ namespace srba
 				/* nothing to do, since there's no displacement */
 			}
 		};
-		/** Typedefs for determining whether the result of combining a KF pose (+) a sensor pose leads to a SE(2) or SE(3) pose */
-		template <> struct resulting_pose_t<sensor_pose_on_robot_none,3> { typedef mrpt::poses::CPose2D pose_t; };
-		template <> struct resulting_pose_t<sensor_pose_on_robot_none,6> { typedef mrpt::poses::CPose3D pose_t; };
+
+		namespace internal {
+			/** Typedefs for determining whether the result of combining a KF pose (+) a sensor pose leads to a SE(2) or SE(3) pose */
+			template <> struct resulting_pose_t<sensor_pose_on_robot_none,3> { typedef mrpt::poses::CPose2D pose_t; };
+			template <> struct resulting_pose_t<sensor_pose_on_robot_none,6> { typedef mrpt::poses::CPose3D pose_t; };
+		}
 
 		/** Usage: A possible type for RBA_OPTIONS::sensor_pose_on_robot_t.
-		  * Meaning: The sensor is located at an arbitrary SE(3) pose wrt the robot reference frame. */
+		  * Meaning: The sensor is located at an arbitrary SE(3) pose wrt the robot reference frame.
+		  * \ingroup mrpt_srba_options_pose_on_robot */
 		struct sensor_pose_on_robot_se3
 		{
 			/** In this case there are no needed parameters */
@@ -131,18 +134,20 @@ namespace srba
 				landmark_traits<LANDMARK_T>::composePosePoint(pt, p.relative_pose);
 			}
 		};
-		/** Typedefs for determining whether the result of combining a KF pose (+) a sensor pose leads to a SE(2) or SE(3) pose */
-		template <> struct resulting_pose_t<sensor_pose_on_robot_se3,3> { typedef mrpt::poses::CPose3D pose_t; };
-		template <> struct resulting_pose_t<sensor_pose_on_robot_se3,6> { typedef mrpt::poses::CPose3D pose_t; };
+		namespace internal {
+			/** Typedefs for determining whether the result of combining a KF pose (+) a sensor pose leads to a SE(2) or SE(3) pose */
+			template <> struct resulting_pose_t<sensor_pose_on_robot_se3,3> { typedef mrpt::poses::CPose3D pose_t; };
+			template <> struct resulting_pose_t<sensor_pose_on_robot_se3,6> { typedef mrpt::poses::CPose3D pose_t; };
+		}
 
-		/** @} */ // end @name
 		// ---------------------------------------------------------------------------------------------
 
-		/** \name  Types for RBA_OPTIONS::obs_noise_matrix_t 
-		  *  @{ */
+	/** \defgroup mrpt_srba_options_noise Types for RBA_OPTIONS::obs_noise_matrix_t 
+		* \ingroup mrpt_srba_options */
 
 		/** Usage: A possible type for RBA_OPTIONS::obs_noise_matrix_t.
-		  * Meaning: The sensor noise matrix is the same for all observations and equal to \sigma * I(identity).  */
+		  * Meaning: The sensor noise matrix is the same for all observations and equal to \sigma * I(identity).  
+		  * \ingroup mrpt_srba_options_noise */
 		struct observation_noise_identity
 		{
 			/** Observation noise parameters to be filled by the user in srba.parameters.obs_noise */
@@ -192,7 +197,8 @@ namespace srba
 		};  // end of "observation_noise_identity"
 
 		/** Usage: A possible type for RBA_OPTIONS::obs_noise_matrix_t.
-		  * Meaning: The sensor noise matrix is the same for all observations and equal to \sigma * I(identity).  */
+		  * Meaning: The sensor noise matrix is the same for all observations and equal to \sigma * I(identity). 
+		  * \ingroup mrpt_srba_options_noise */
 		template <class OBS_TYPE>
 		struct observation_noise_constant_matrix
 		{
@@ -240,13 +246,38 @@ namespace srba
 			{  // Nothing else to do.
 			}
 
-		};  // end of "observation_noise_identity"
+		};  // end of "observation_noise_constant_matrix"
 
+		// ---------------------------------------------------------------------------------------------
 
-		/** @} */ // end @name
+	/** \defgroup mrpt_srba_options_solver Types for RBA_OPTIONS::solver_t 
+		* \ingroup mrpt_srba_options */
 
+		/** Usage: A possible type for RBA_OPTIONS::solver_t.
+		  * Meaning: Levenberg-Marquardt solver, Schur complement to reduce landmarks, dense Cholesky solver for Ax=b.
+		  * \ingroup mrpt_srba_options_solver */
+		struct solver_LM_schur_dense_cholesky
+		{
+			static const bool USE_SCHUR      = true;
+			static const bool DENSE_CHOLESKY = true;
+		};
 
-		/** @} */ // end \addtogroup
+		/** Usage: A possible type for RBA_OPTIONS::solver_t.
+		  * Meaning: Levenberg-Marquardt solver, Schur complement to reduce landmarks, sparse Cholesky solver for Ax=b.
+		  * \ingroup mrpt_srba_options_solver */
+		struct solver_LM_schur_sparse_cholesky
+		{
+			static const bool USE_SCHUR      = true;
+			static const bool DENSE_CHOLESKY = false;
+		};
 
-} // End of namespace
-} // end of namespace
+		/** Usage: A possible type for RBA_OPTIONS::solver_t.
+		  * Meaning: Levenberg-Marquardt solver, without Schur complement, sparse Cholesky solver for Ax=b.
+		  * \ingroup mrpt_srba_options_solver */
+		struct solver_LM_no_schur_sparse_cholesky
+		{
+			static const bool USE_SCHUR      = false;
+			static const bool DENSE_CHOLESKY = false;
+		};
+
+} } } // End of namespaces
