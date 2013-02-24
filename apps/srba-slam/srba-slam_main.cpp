@@ -138,7 +138,7 @@ struct RBASLAM_Params
 		arg_max_opt_depth("","max-optimize-depth","Overrides this parameter in config files",false,4,"depth",cmd),
 		arg_max_lambda("","max-lambda","Marq-Lev. optimization: maximum lambda to stop iterating",false,1e20,"depth",cmd),
 		arg_max_iters("","max-iters","Max. number of optimization iterations.",false,20,"",cmd),
-		arg_edge_policy("","edge-policy","Policy for edge creation, as textual names of the enum TEdgeCreationPolicy",false,"ecpICRA2013","ecpOptimizeICRA2013",cmd),
+		arg_edge_policy("","edge-policy","Policy for edge creation, as textual names of the enum TEdgeCreationPolicy",false,"ecpICRA2013","ecpICRA2013",cmd),
 		arg_submap_size("","submap-size","Number of KFs in each 'submap' of the arc-creation policy.",false,20,"20",cmd),
 		arg_verbose("v","verbose","0:quiet, 1:informative, 2:tons of info",false,1,"",cmd),
 		arg_random_seed("","random-seed","<0: randomize; >=0, use this random seed.",false,-1,"",cmd),
@@ -1075,7 +1075,7 @@ struct my_srba_options_graph_slam2D
 {
 	typedef options::sensor_pose_on_robot_none   sensor_pose_on_robot_t;
 	typedef options::observation_noise_constant_matrix<observations::RelativePoses_2D> obs_noise_matrix_t;      // The sensor noise matrix is the same for all observations and equal to an arbitrary matrix
-	typedef options::solver_LM_schur_dense_cholesky      solver_t;
+	typedef options::solver_LM_no_schur_sparse_cholesky  solver_t;
 };
 
 int main(int argc, char**argv)

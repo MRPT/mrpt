@@ -36,6 +36,7 @@
 #pragma once
 
 #include <mrpt/math/CSparseMatrix.h>
+#include <memory> // for auto_ptr<>
 
 namespace mrpt { namespace srba {
 
@@ -51,18 +52,18 @@ namespace internal
 	struct solver_engine<false /*Schur*/,false /*dense Chol*/,RBA_ENGINE>
 	{
 		typedef typename RBA_ENGINE::hessian_traits_t hessian_traits_t;
-		
+
 		static const size_t POSE_DIMS = RBA_ENGINE::kf2kf_pose_type::REL_POSE_DIMS;
 		static const size_t LM_DIMS   = RBA_ENGINE::lm_type::LM_DIMS;
 
 		const int m_verbose_level;
 		mrpt::utils::CTimeLogger &m_profiler;
-		const size_t nUnknowns_k2k, nUnknowns_k2f, nUnknowns_scalars,idx_start_f;
 		vector_double  delta_eps; //!< The result of solving Ax=b will be stored here
 		typename hessian_traits_t::TSparseBlocksHessian_Ap  &HAp;
 		typename hessian_traits_t::TSparseBlocksHessian_f   &Hf;
 		typename hessian_traits_t::TSparseBlocksHessian_Apf &HApf;
 		vector_double  &minus_grad;
+		const size_t nUnknowns_k2k, nUnknowns_k2f, nUnknowns_scalars,idx_start_f;
 
 		/** Cholesky object, as a pointer to reuse it between iterations */
 		std::auto_ptr<CSparseMatrix::CholeskyDecomp>  ptrCh;
@@ -109,7 +110,7 @@ namespace internal
 					{
 						// block Diagonal: Add lambda*I to these ones
 						typename hessian_traits_t::TSparseBlocksHessian_Ap::matrix_t sSii = itRowEntry->second.num;
-						for (int k=0;k<POSE_DIMS;k++)
+						for (size_t k=0;k<POSE_DIMS;k++)
 							sSii.coeffRef(k,k)+=lambda;
 						sS.insert_submatrix(POSE_DIMS*i,POSE_DIMS*i, sSii );
 					}
@@ -148,7 +149,7 @@ namespace internal
 					{
 						// block Diagonal: Add lambda*I to these ones
 						typename hessian_traits_t::TSparseBlocksHessian_f::matrix_t sSii = itRowEntry->second.num;
-						for (int k=0;k<LM_DIMS;k++)
+						for (size_t k=0;k<LM_DIMS;k++)
 							sSii.coeffRef(k,k)+=lambda;
 						sS.insert_submatrix(idx_start_f+LM_DIMS*i,idx_start_f+LM_DIMS*i, sSii );
 					}
@@ -217,13 +218,13 @@ namespace internal
 	struct solver_engine<true /*Schur*/,false /*dense Chol*/,RBA_ENGINE>
 	{
 		typedef typename RBA_ENGINE::hessian_traits_t hessian_traits_t;
-		
+
 		static const size_t POSE_DIMS = RBA_ENGINE::kf2kf_pose_type::REL_POSE_DIMS;
 		static const size_t LM_DIMS   = RBA_ENGINE::lm_type::LM_DIMS;
 
 		const int m_verbose_level;
 		mrpt::utils::CTimeLogger &m_profiler;
-		
+
 		const size_t   nUnknowns_k2k, nUnknowns_k2f;
 		vector_double  delta_eps;
 		typename hessian_traits_t::TSparseBlocksHessian_Ap  &HAp;
@@ -238,7 +239,7 @@ namespace internal
 			typename hessian_traits_t::TSparseBlocksHessian_Ap,
 			typename hessian_traits_t::TSparseBlocksHessian_f,
 			typename hessian_traits_t::TSparseBlocksHessian_Apf
-			> 
+			>
 			schur_compl;
 
 		/** Constructor */
@@ -267,7 +268,7 @@ namespace internal
 		}
 
 		// ----------------------------------------------------------------------
-		// Solve the H·Ax = -g system using the Schur complement to generate a 
+		// Solve the H·Ax = -g system using the Schur complement to generate a
 		//   Ap-only reduced system.
 		// Return: always true (success).
 		// ----------------------------------------------------------------------
@@ -298,7 +299,7 @@ namespace internal
 					{
 						// block Diagonal: Add lambda*I to these ones
 						typename hessian_traits_t::TSparseBlocksHessian_Ap::matrix_t sSii = itRowEntry->second.num;
-						for (int k=0;k<POSE_DIMS;k++)
+						for (size_t k=0;k<POSE_DIMS;k++)
 							sSii.coeffRef(k,k)+=lambda;
 						sS.insert_submatrix(POSE_DIMS*i,POSE_DIMS*i, sSii );
 					}
@@ -390,7 +391,7 @@ namespace internal
 	struct solver_engine<true /*Schur*/,true /*dense Chol*/,RBA_ENGINE>
 	{
 		typedef typename RBA_ENGINE::hessian_traits_t hessian_traits_t;
-		
+
 		static const size_t POSE_DIMS = RBA_ENGINE::kf2kf_pose_type::REL_POSE_DIMS;
 		static const size_t LM_DIMS   = RBA_ENGINE::lm_type::LM_DIMS;
 
@@ -408,7 +409,7 @@ namespace internal
 			typename hessian_traits_t::TSparseBlocksHessian_Ap,
 			typename hessian_traits_t::TSparseBlocksHessian_f,
 			typename hessian_traits_t::TSparseBlocksHessian_Apf
-			> 
+			>
 			schur_compl;
 
 
@@ -445,7 +446,7 @@ namespace internal
 		}
 
 		// ----------------------------------------------------------------------
-		// Solve the H·Ax = -g system using the Schur complement to generate a 
+		// Solve the H·Ax = -g system using the Schur complement to generate a
 		//   Ap-only reduced system.
 		// Return: always true (success).
 		// ----------------------------------------------------------------------

@@ -8,14 +8,169 @@ srba-slam --help
 
 srba-slam --list-problems
 
-srba-slam [--se2|--se3] [--lm-2d|--lm-3d] --obs [StereoCamera|...] 
+srba-slam {--se2|--se3} {--lm-2d|--lm-3d} --obs [StereoCamera|...] 
           -d I<DATASET.txt> [--sensor-params-cfg-file I<SENSOR_CONFIG.cfg>] 
-          [--noise I<NOISE_SIGMA>] [--verbose 0|1|2|3] [--step-by-step]
+          [--noise I<NOISE_SIGMA>] [--verbose {0|1|2|3}] [--step-by-step]
+
+=head1 COMPLETE LIST OF PARAMETERS
+
+   srba-slam  [--eval-connectivity] [--eval-overall-se3-error]
+              [--eval-overall-sqr-error] [--save-final-graph-landmarks
+              <final-map.dot>] [--save-final-graph <final-map.dot>]
+              [--debug-dump-cur-spantree] [--video-fps <>] [--gui-delay <>]
+              [--create-video <out.avi>] [--cfg-file-rba-bootstrap
+              <rba.cfg>] [--cfg-file-rba <rba.cfg>] [--random-seed <>] [-v
+              <>] [--submap-size <20>] [--edge-policy
+              <ecpOptimizeICRA2013>] [--max-iters <>] [--max-lambda
+              <depth>] [--max-optimize-depth <depth>]
+              [--max-spanning-tree-depth <depth>] [--noise-ang <noise_std>]
+              [--noise <noise_std>] [--add-noise] [--profile-stats-length
+              <>] [--profile-stats <stats>] [--step-by-step] [--no-gui]
+              [--list-problems] [--sensor-params-cfg-file <>] [--obs <>]
+              [--graph-slam] [--lm-3d] [--lm-2d] [--se3] [--se2]
+              [--max-fixed-feats-per-kf <>] [--gt-path <>] [--gt-map <>]
+              [-d <>] [--] [--version] [-h]
+
 
 =head1 DESCRIPTION
 
 B<srba-slam> is a command-line application for offline processing 
 of robotic/vision datasets. See also the manual online: http://www.mrpt.org/srba
+
+   --eval-connectivity
+     At end, make stats on the graph connectivity
+
+   --eval-overall-se3-error
+     At end, evaluate the overall SE3 error for all relative poses
+
+   --eval-overall-sqr-error
+     At end, evaluate the overall square error for all the observations
+     with the final estimated model
+
+   --save-final-graph-landmarks <final-map.dot>
+     Save the final graph-map (all KFs and all Landmarks) to a .dot file
+
+   --save-final-graph <final-map.dot>
+     Save the final graph-map of KFs to a .dot file
+
+   --debug-dump-cur-spantree
+     Dump to files the current spanning tree
+
+   --video-fps <>
+     If creating a video, its FPS (Hz).
+
+   --gui-delay <>
+     Milliseconds of delay between GUI frames. Default:0. Increase for
+     correctly generating videos, etc.
+
+   --create-video <out.avi>
+     Creates a video with the animated GUI output (*.avi).
+
+   --cfg-file-rba-bootstrap <rba.cfg>
+     Writes an empty config file (*.cfg) for the RBA parameters and exit.
+
+   --cfg-file-rba <rba.cfg>
+     Config file (*.cfg) for the RBA parameters
+
+   --random-seed <>
+     <0: randomize; >=0, use this random seed.
+
+   -v <>,  --verbose <>
+     0:quiet, 1:informative, 2:tons of info
+
+   --submap-size <20>
+     Number of KFs in each 'submap' of the arc-creation policy.
+
+   --edge-policy <ecpOptimizeICRA2013>
+     Policy for edge creation, as textual names of the enum
+     TEdgeCreationPolicy
+
+   --max-iters <>
+     Max. number of optimization iterations.
+
+   --max-lambda <depth>
+     Marq-Lev. optimization: maximum lambda to stop iterating
+
+   --max-optimize-depth <depth>
+     Overrides this parameter in config files
+
+   --max-spanning-tree-depth <depth>
+     Overrides this parameter in config files
+
+   --noise-ang <noise_std>
+     One sigma of the noise model of every angular component of
+     observations, in degrees (default: sensor-dependant)
+
+     If a SRBA config is provided, it will override this value.
+
+   --noise <noise_std>
+     One sigma of the noise model of every component of observations
+     (images,...) or to linear components if they're mixed (default:
+     sensor-dependant)
+
+     If a SRBA config is provided, it will override this value.
+
+   --add-noise
+     Add AWG noise to the dataset
+
+   --profile-stats-length <>
+     Length in KFs of each saved profiled segment
+
+   --profile-stats <stats>
+     Generate profile stats to CSV files, with the given prefix
+
+   --step-by-step
+     If showing the gui, go step by step
+
+   --no-gui
+     Don't show the live gui
+
+   --list-problems
+     List all implemented values for '--obs'
+
+   --sensor-params-cfg-file <>
+     Config file from where to load the sensor parameters
+
+   --obs <>
+     Type of observations in the dataset (use --list-problems to see
+     available types)
+
+   --graph-slam
+     Define a relative graph-slam problem (no landmarks)
+
+   --lm-3d
+     Relative landmarks are Euclidean 3D points
+
+   --lm-2d
+     Relative landmarks are Euclidean 2D points
+
+   --se3
+     Relative poses are SE(3)
+
+   --se2
+     Relative poses are SE(2)
+
+   --max-fixed-feats-per-kf <>
+     Create fixed & known-location features
+
+   --gt-path <>
+     Ground-truth robot path file (e.g. 'dataset1_GT_PATH.txt', etc.)
+
+   --gt-map <>
+     Ground-truth landmark map file (e.g. 'dataset1_GT_MAP.txt', etc.)
+
+   -d <>,  --dataset <>
+     Dataset file (e.g. 'dataset1_SENSOR.txt', etc.)
+
+   --,  --ignore_rest
+     Ignores the rest of the labeled arguments following this flag.
+
+   --version
+     Displays version information and exits.
+
+   -h,  --help
+     Displays usage information and exits.
+
 
 =head1 BUGS
 
@@ -27,20 +182,17 @@ The application wiki page at http://www.mrpt.org/Applications
 
 =head1 AUTHORS
 
-B<srba-slam> is part of the Mobile Robot Programming Toolkit (MRPT), and was originally 
-written by the MAPIR laboratory (University of Malaga).
+B<srba-slam> is part of the Mobile Robot Programming Toolkit (MRPT).
 
 This manual page was written by Jose Luis Blanco <joseluisblancoc@gmail.com>.
 
 =head1 COPYRIGHT
 
 This program is free software; you can redistribute it and/or modify it
-under the terms of the GNU General Public License as published by the
-Free Software Foundation; either version 3, or (at your option) any
-later version.
+under the terms of the BSD License.
 
-On Debian GNU/Linux systems, the complete text of the GNU General
-Public License can be found in `/usr/share/common-licenses/GPL'.
+On Debian GNU/Linux systems, the complete text of the BSD License can be 
+found in `/usr/share/common-licenses/BSD'.
 
 =cut
 
