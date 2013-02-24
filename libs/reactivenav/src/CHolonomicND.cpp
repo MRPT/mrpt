@@ -390,7 +390,7 @@ void  CHolonomicND::searchBestGap(
 			if (dist > 0.5*obstacles.size())
 				dist = obstacles.size() - dist;
 						
-			if ( in_gaps[i].maxDistance >= target_dist && dist <= (int)floor(options.MAX_SECTOR_DIST_FOR_D2_PERCENT * obstacles.size()) )
+			if ( in_gaps[i].maxDistance >= target_dist && dist <= floor(options.MAX_SECTOR_DIST_FOR_D2_PERCENT * obstacles.size()) )
 											 
 				if ( gaps_evaluation[i]>selected_gap_eval )
 				{
