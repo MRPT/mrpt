@@ -100,8 +100,7 @@ template <> struct LandmarkRendererBase<landmark_rendering_as_point>
 			const bool is_known = (i<nKnown);
 
 			// Don't draw those unknown LMs which hasn't been estimated not even once:
-			if (!is_known && lms_to_draw_inf_covs[i]==NULL)
-				continue;
+			//if (!is_known && lms_to_draw_inf_covs[i]==NULL) continue;
 
 			mrpt::poses::CPose3D base_pose;
 			if (itLM->second.id_frame_base!=root_keyframe)

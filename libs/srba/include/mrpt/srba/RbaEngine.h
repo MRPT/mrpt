@@ -58,12 +58,12 @@ namespace srba
 	/** The set of default settings for RbaEngine */
 	struct RBA_OPTIONS_DEFAULT
 	{
-		typedef options::sensor_pose_on_robot_none      sensor_pose_on_robot_t;  // The sensor pose coincides with the robot pose
-		typedef options::observation_noise_identity     obs_noise_matrix_t;      // The sensor noise matrix is the same for all observations and equal to \sigma * I(identity)
-		typedef options::solver_LM_schur_dense_cholesky solver_t;                // Solver algorithm
+		typedef options::sensor_pose_on_robot_none      sensor_pose_on_robot_t;  //!< The sensor pose coincides with the robot pose
+		typedef options::observation_noise_identity     obs_noise_matrix_t;      //!< The sensor noise matrix is the same for all observations and equal to \sigma * I(identity)
+		typedef options::solver_LM_schur_dense_cholesky solver_t;                //!< Solver algorithm (Default: Lev-Marq, with Schur, with dense Cholesky)
 	};
 
-	/** The main class for this library: it defines a Relative Bundle-Adjustment (RBA) problem with (optionally, partially known) landmarks,
+	/** The main class for the mrpt-srba: it defines a Relative Bundle-Adjustment (RBA) problem with (optionally, partially known) landmarks,
 	  *   the methods to update it with new observations and to optimize the relative poses with least squares optimizers.
 	  *
 	  *   The unknowns to be solved are:
@@ -132,6 +132,8 @@ namespace srba
 		typedef typename observation_traits_t::vector_residuals_t  vector_residuals_t;
 		/** @} */
 
+		/** Default constructor */
+		RbaEngine();
 
 		/** @name Main API methods
 		    @{ */
@@ -225,11 +227,13 @@ namespace srba
 		double eval_overall_squared_error() const;
 
 		/** @} */  // End of main API methods
-
-
+		
 
 		/** @name Extra API methods (for debugging, etc.)
 		    @{ */
+
+		/** Reset the entire problem to an empty state (automatically called at construction) */
+		void clear();
 
 		/** Users normally won't need to call this directly. Use define_new_keyframe() instead.
 		  * This method appends an empty new keyframe to the data structures
@@ -303,8 +307,144 @@ namespace srba
 			K2K_EDGE_VISITOR & k2k_edge_visitor,
 			K2F_EDGE_VISITOR & k2f_edge_visitor ) const;
 
+		/** @} */  // End of Extra API methods
 
-		/** Aux visitor struct */
+
+		/** @name Public data fields
+			@{ */
+
+		/** Different parameters for the SRBA methods */
+		struct TSRBAParameters : public mrpt::utils::CLoadableOptions
+		{
+			TSRBAParameters();
+
+			/** See docs of mrpt::utils::CLoadableOptions */
+			virtual void  loadFromConfigFile(const mrpt::utils::CConfigFileBase & source,const std::string & section);
+			/** See docs of mrpt::utils::CLoadableOptions */
+			virtual void  saveToConfigFile(mrpt::utils::CConfigFileBase &out,const std::string & section) const;
+
+
+			/** Parameters for determine_kf2kf_edges_to_create(); custom user-defined policies can be also defined (see tutorials) */
+			TEdgeCreationPolicy  edge_creation_policy;
+
+			/** Maximum depth for maintained spanning trees. */
+			topo_dist_t          max_tree_depth;
+
+			/** The maximum topological distance of keyframes to be optimized around the most recent keyframe. */
+			topo_dist_t          max_optimize_depth;
+
+			size_t              submap_size;
+			size_t              min_obs_to_loop_closure; //!< Default:6, reduce to 1 for relative graph-slam
+			// -------------------------------------------------------
+
+			// Parameters for optimize_*()
+			// -------------------------------------
+			bool   optimize_new_edges_alone; //!< (Default:true) Before running a whole "local area" optimization, try to optimize new edges one by one to have a better starting point.
+			bool   use_robust_kernel;
+			double kernel_param;
+			size_t max_iters;
+			double max_error_per_obs_to_stop; //!< default: 1e-9
+			double max_rho; //!< default: 1.0
+			double max_lambda; //!< default: 1e20
+			double min_error_reduction_ratio_to_relinearize; //!< default 0.01
+			bool   numeric_jacobians;
+			void (*feedback_user_iteration)(unsigned int iter, const double total_sq_err, const double mean_sqroot_error);
+			bool   compute_condition_number; //!< Compute and return to the user the Hessian condition number of k2k edges (default=false)
+
+			TCovarianceRecoveryPolicy  cov_recovery; //!< Recover covariance? What method to use? (Default: crpLandmarksApprox)
+			// -------------------------------------
+
+		};
+
+		/** The unique struct which hold all the parameters from the different SRBA modules (sensors, optional features, optimizers,...) */
+		struct TAllParameters
+		{
+			/** Different parameters for the SRBA methods \sa sensor_params */
+			TSRBAParameters  srba;
+
+			/** Sensor-specific parameters (sensor calibration, etc.) \sa parameters */
+			typename OBS_TYPE::TObservationParams   sensor;
+
+			/** Parameters related to the relative pose of sensors wrt the robot (if applicable) */
+			typename RBA_OPTIONS::sensor_pose_on_robot_t::parameters_t  sensor_pose;
+
+			/** Parameters related to the sensor noise covariance matrix */
+			typename RBA_OPTIONS::obs_noise_matrix_t::parameters_t      obs_noise;
+		};
+
+		TAllParameters parameters;
+
+		/** @} */  // End of data fields
+
+
+		/** Enable or disables time profiling of all operations (default=enabled), which will be reported upon destruction */
+		void inline enable_time_profiler(bool enable=true) { m_profiler.enable(enable); }
+
+		const k2k_edges_deque_t & get_k2k_edges() const { return rba_state.k2k_edges; }
+
+		const TRelativeLandmarkPosMap & get_known_feats()   const { return rba_state.known_lms; }
+		const TRelativeLandmarkPosMap & get_unknown_feats() const { return rba_state.unknown_lms; }
+
+		const rba_problem_state_t & get_rba_state() const { return rba_state; }
+		rba_problem_state_t       & get_rba_state()       { return rba_state; }
+
+		/** Access to the time profiler */
+		inline mrpt::utils::CTimeLogger & get_time_profiler() { return m_profiler; }
+
+		/** Changes the verbosity level: 0=None (only critical msgs), 1=verbose, 2=so verbose you'll have to say "Stop!" */
+		inline void setVerbosityLevel(int level) { m_verbose_level = level; }
+
+		/** Rebuild the Hessian symbolic information from the given Jacobians.
+		  *  \param[out] H Output hessian (must be empty at input)
+		  */
+		template <class HESS_Ap, class HESS_f,class HESS_Apf, class JACOB_COLUMN_dh_dAp,class JACOB_COLUMN_dh_df>
+		static void sparse_hessian_build_symbolic(
+			HESS_Ap & HAp,
+			HESS_f & Hf,
+			HESS_Apf & HApf,
+			const std::vector<JACOB_COLUMN_dh_dAp*> & dh_dAp,
+			const std::vector<JACOB_COLUMN_dh_df*>  & dh_df);
+
+		/** Rebuild the Hessian symbolic information from the internal pointers to blocks of Jacobians.
+			*  Only the upper triangle is filled-in (all what is needed for Cholesky) for square Hessians, in whole for rectangular ones (it depends on the symbolic decomposition, done elsewhere).
+			* \tparam SPARSEBLOCKHESSIAN can be: TSparseBlocksHessian_6x6, TSparseBlocksHessian_3x3 or TSparseBlocksHessian_6x3
+			* \return The number of Jacobian multiplications skipped due to its observation being marked as "invalid"
+			*/
+		template <class SPARSEBLOCKHESSIAN>
+		size_t sparse_hessian_update_numeric( SPARSEBLOCKHESSIAN & H ) const;
+
+
+	protected:
+		/** @name (Protected) Sub-algorithms
+		    @{ */
+
+		/** This method will call edge_creation_policy(), which has predefined algorithms but could be re-defined by the user in a derived class */
+		void determine_kf2kf_edges_to_create(
+			const TKeyFrameID               new_kf_id,
+			const typename traits_t::new_kf_observations_t   & obs,
+			std::vector<TNewEdgeInfo> &new_k2k_edge_ids );
+
+		/** Implements the edge-creation policy, by default depending on "parameters.edge_creation_policy" if the user doesn't re-implement this virtual method.
+		  * See tutorials for examples of how to implement custom policies. */
+		virtual void edge_creation_policy(
+			const TKeyFrameID               new_kf_id,
+			const typename traits_t::new_kf_observations_t   & obs,
+			std::vector<TNewEdgeInfo> &new_k2k_edge_ids );
+
+		/**
+		  * \param observation_indices_to_optimize Indices wrt \a rba_state.all_observations. An empty vector means use ALL the observations involving the selected unknowns.
+		  * \sa optimize_local_area
+		  */
+		void optimize_edges(
+			const std::vector<size_t> & run_k2k_edges,
+			const std::vector<size_t> & run_feat_ids_in,
+			TOptimizeExtraOutputInfo & out_info,
+			const std::vector<size_t> & observation_indices_to_optimize = std::vector<size_t>()
+			);
+
+		/** @} */
+
+		/** Aux visitor struct, used in optimize_local_area() */
 		struct VisitorOptimizeLocalArea
 		{
 			VisitorOptimizeLocalArea(const rba_problem_state_t & rba_state_, const TOptimizeLocalAreaParams &params_) :
@@ -366,149 +506,6 @@ namespace srba
 			}
 		};
 
-
-		/** @} */  // End of Extra API methods
-
-	protected:
-
-		/** @name (Protected) Sub-algorithms
-		    @{ */
-
-		/** This method will call edge_creation_policy(), which has predefined algorithms but could be re-defined by the user in a derived class */
-		void determine_kf2kf_edges_to_create(
-			const TKeyFrameID               new_kf_id,
-			const typename traits_t::new_kf_observations_t   & obs,
-			std::vector<TNewEdgeInfo> &new_k2k_edge_ids );
-
-		/** Implements the edge-creation policy, by default depending on "parameters.edge_creation_policy" if the user doesn't re-implement this virtual method.
-		  * See tutorials for examples of how to implement custom policies. */
-		virtual void edge_creation_policy(
-			const TKeyFrameID               new_kf_id,
-			const typename traits_t::new_kf_observations_t   & obs,
-			std::vector<TNewEdgeInfo> &new_k2k_edge_ids );
-
-		/**
-		  * \param observation_indices_to_optimize Indices wrt \a rba_state.all_observations. An empty vector means use ALL the observations involving the selected unknowns.
-		  * \sa optimize_local_area
-		  */
-		void optimize_edges(
-			const std::vector<size_t> & run_k2k_edges,
-			const std::vector<size_t> & run_feat_ids_in,
-			TOptimizeExtraOutputInfo & out_info,
-			const std::vector<size_t> & observation_indices_to_optimize = std::vector<size_t>()
-			);
-
-		/** @} */
-
-
-		/** @name Public data fields
-			@{ */
-	public:
-
-		/** Different parameters for the SRBA methods */
-		struct TSRBAParameters : public mrpt::utils::CLoadableOptions
-		{
-			TSRBAParameters();
-
-			/** See docs of mrpt::utils::CLoadableOptions */
-			virtual void  loadFromConfigFile(const mrpt::utils::CConfigFileBase & source,const std::string & section);
-			/** See docs of mrpt::utils::CLoadableOptions */
-			virtual void  saveToConfigFile(mrpt::utils::CConfigFileBase &out,const std::string & section) const;
-
-
-			/** Parameters for determine_kf2kf_edges_to_create(); custom user-defined policies can be also defined (see tutorials) */
-			TEdgeCreationPolicy  edge_creation_policy;
-
-			/** Maximum depth for maintained spanning trees. */
-			topo_dist_t          max_tree_depth;
-
-			/** The maximum topological distance of keyframes to be optimized around the most recent keyframe. */
-			topo_dist_t          max_optimize_depth;
-
-			size_t              submap_size;
-			size_t              min_obs_to_loop_closure; //!< Default:6, reduce to 1 for relative graph-slam
-			// -------------------------------------------------------
-
-			// Parameters for optimize_*()
-			// -------------------------------------
-			bool   optimize_new_edges_alone; //!< (Default:true) Before running a whole "local area" optimization, try to optimize new edges one by one to have a better starting point.
-			bool   use_robust_kernel;
-			double kernel_param;
-			size_t max_iters;
-			double max_error_per_obs_to_stop; //!< default: 1e-9
-			double max_rho; //!< default: 1.0
-			double max_lambda; //!< default: 1e20
-			double min_error_reduction_ratio_to_relinearize; //!< default 0.01
-			bool   numeric_jacobians;
-			void (*feedback_user_iteration)(unsigned int iter, const double total_sq_err, const double mean_sqroot_error);
-			bool   compute_condition_number; //!< Compute and return to the user the Hessian condition number of k2k edges (default=false)
-			// -------------------------------------
-
-		};
-
-		/** The unique struct which hold all the parameters from the different SRBA modules (sensors, optional features, optimizers,...) */
-		struct TAllParameters
-		{
-			/** Different parameters for the SRBA methods \sa sensor_params */
-			TSRBAParameters  srba;
-
-			/** Sensor-specific parameters (sensor calibration, etc.) \sa parameters */
-			typename OBS_TYPE::TObservationParams   sensor;
-
-			/** Parameters related to the relative pose of sensors wrt the robot (if applicable) */
-			typename RBA_OPTIONS::sensor_pose_on_robot_t::parameters_t  sensor_pose;
-
-			/** Parameters related to the sensor noise covariance matrix */
-			typename RBA_OPTIONS::obs_noise_matrix_t::parameters_t      obs_noise;
-		};
-
-		TAllParameters parameters;
-
-		/** @} */  // End of data fields
-
-		/** Default constructor */
-		RbaEngine();
-
-		/** Reset the entire problem to an empty state (automatically called at construction) */
-		void clear();
-
-		/** Enable or disables time profiling of all operations (default=enabled), which will be reported upon destruction */
-		void inline enable_time_profiler(bool enable=true) { m_profiler.enable(enable); }
-
-		const k2k_edges_deque_t & get_k2k_edges() const { return rba_state.k2k_edges; }
-
-		const TRelativeLandmarkPosMap & get_known_feats()   const { return rba_state.known_lms; }
-		const TRelativeLandmarkPosMap & get_unknown_feats() const { return rba_state.unknown_lms; }
-
-		const rba_problem_state_t & get_rba_state() const { return rba_state; }
-		rba_problem_state_t       & get_rba_state()       { return rba_state; }
-
-		/** Access to the time profiler */
-		inline mrpt::utils::CTimeLogger & get_time_profiler() { return m_profiler; }
-
-		/** Changes the verbosity level: 0=None (only critical msgs), 1=verbose, 2=so verbose you'll have to say "Stop!" */
-		inline void setVerbosityLevel(int level) { m_verbose_level = level; }
-
-		/** Rebuild the Hessian symbolic information from the given Jacobians.
-		  *  \param[out] H Output hessian (must be empty at input)
-		  */
-		template <class HESS_Ap, class HESS_f,class HESS_Apf, class JACOB_COLUMN_dh_dAp,class JACOB_COLUMN_dh_df>
-		static void sparse_hessian_build_symbolic(
-			HESS_Ap & HAp,
-			HESS_f & Hf,
-			HESS_Apf & HApf,
-			const std::vector<JACOB_COLUMN_dh_dAp*> & dh_dAp,
-			const std::vector<JACOB_COLUMN_dh_df*>  & dh_df);
-
-		/** Rebuild the Hessian symbolic information from the internal pointers to blocks of Jacobians.
-			*  Only the upper triangle is filled-in (all what is needed for Cholesky) for square Hessians, in whole for rectangular ones (it depends on the symbolic decomposition, done elsewhere).
-			* \tparam SPARSEBLOCKHESSIAN can be: TSparseBlocksHessian_6x6, TSparseBlocksHessian_3x3 or TSparseBlocksHessian_6x3
-			* \return The number of Jacobian multiplications skipped due to its observation being marked as "invalid"
-			*/
-		template <class SPARSEBLOCKHESSIAN>
-		size_t sparse_hessian_update_numeric( SPARSEBLOCKHESSIAN & H ) const;
-
-
 	private:
 		rba_problem_state_t  rba_state;  //!< All the beef is here.
 
@@ -519,7 +516,7 @@ namespace srba
 		  */
 		mutable mrpt::utils::CTimeLogger  m_profiler;
 
-		int m_verbose_level; //!< 0: None (only critical msgs), 1: verbose, 2:even more verbose
+		int m_verbose_level; //!< 0: None (only critical msgs), 1: verbose, 2:even more verbose, 3: even more
 
 		/** Creates a new known/unknown position landmark (upon first LM observation ), and expands Jacobians with new observation
 		  * \param[in] new_obs The basic data on the observed landmark: landmark ID, keyframe from which it's observed and parameters ("z" vector) of the observation itself (e.g. pixel coordinates).

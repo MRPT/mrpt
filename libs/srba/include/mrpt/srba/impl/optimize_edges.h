@@ -646,23 +646,34 @@ void RbaEngine<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::optimize_edges(
 	// Final output info:
 	out_info.total_sqr_error_final = total_proj_error;
 
-	// Save the final information matrix of unknown features:
-	DETAILED_PROFILING_ENTER("opt.get_Hf_diag_inv_cov")
+	// Recover information on covariances?
+	// ----------------------------------------------
+	DETAILED_PROFILING_ENTER("opt.cov_recovery")
+	rba_state.unknown_lms_inf_matrices.clear();
+	switch (parameters.srba.cov_recovery)
 	{
-		for (size_t i=0;i<nUnknowns_k2f;i++)
+		case crpNone:
+			break;
+		case crpLandmarksApprox:
 		{
-			if (!my_solver.was_ith_feature_invertible(i))
-				continue;
+			for (size_t i=0;i<nUnknowns_k2f;i++)
+			{
+				if (!my_solver.was_ith_feature_invertible(i))
+					continue;
 
-			const typename hessian_traits_t::TSparseBlocksHessian_f::col_t & col_i = Hf.getCol(i);
-			ASSERT_(col_i.rbegin()->first==i)  // Make sure the last block matrix is the diagonal term of the upper-triangular matrix.
+				const typename hessian_traits_t::TSparseBlocksHessian_f::col_t & col_i = Hf.getCol(i);
+				ASSERT_(col_i.rbegin()->first==i)  // Make sure the last block matrix is the diagonal term of the upper-triangular matrix.
 
-			const typename hessian_traits_t::TSparseBlocksHessian_f::matrix_t & inf_mat_src = col_i.rbegin()->second.num;
-			typename hessian_traits_t::TSparseBlocksHessian_f::matrix_t & inf_mat_dst = rba_state.unknown_lms_inf_matrices[ run_feat_ids[i] ];
-			inf_mat_dst = inf_mat_src;
+				const typename hessian_traits_t::TSparseBlocksHessian_f::matrix_t & inf_mat_src = col_i.rbegin()->second.num;
+				typename hessian_traits_t::TSparseBlocksHessian_f::matrix_t & inf_mat_dst = rba_state.unknown_lms_inf_matrices[ run_feat_ids[i] ];
+				inf_mat_dst = inf_mat_src;
+			}
 		}
+		break;
+		default: 
+			throw std::runtime_error("Unknown value found for 'parameters.srba.cov_recovery'");
 	}
-	DETAILED_PROFILING_LEAVE("opt.get_Hf_diag_inv_cov")
+	DETAILED_PROFILING_LEAVE("opt.cov_recovery")
 
 	if (parameters.srba.compute_condition_number)
 	{

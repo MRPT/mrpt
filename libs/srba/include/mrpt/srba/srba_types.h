@@ -175,9 +175,22 @@ namespace srba
 	  *  \note Implements mrpt::utils::TEnumType
 	  */
 	enum TEdgeCreationPolicy {
+		/** The sub-map method introduced in the ICRA2013 paper */
 		ecpICRA2013 = 0,
+		/** Each keyframe is only connected to its predecessor (no loop closures) */
 		ecpLinearGraph,
+		/** All keyframes are connected to the first one (it can be used to emulate global coordinates) */
 		ecpStarGraph
+	};
+
+	/** Covariances recovery from Hessian matrix policy, for usage in RbaEngine.parameters
+	  *  \note Implements mrpt::utils::TEnumType
+	  */
+	enum TCovarianceRecoveryPolicy {
+		/** Don't recover any covariance information */
+		crpNone = 0,
+		/** Approximate covariances of landmarks as the inverse of the hessian diagonal blocks */
+		crpLandmarksApprox
 	};
 
 	/** Aux function for getting, from a std::pair, "the other" element which is different to a known given one. */
@@ -744,6 +757,18 @@ namespace utils
 			m_map.insert(srba::ecpStarGraph,     "ecpStarGraph");
 		}
 	};
+
+	template <>
+	struct TEnumTypeFiller<mrpt::srba::TCovarianceRecoveryPolicy>
+	{
+		typedef mrpt::srba::TCovarianceRecoveryPolicy enum_t;
+		static void fill(bimap<enum_t,std::string>  &m_map)
+		{
+			m_map.insert(srba::crpNone,      "crpNone");
+			m_map.insert(srba::crpLandmarksApprox,   "crpLandmarksApprox");
+		}
+	};
+
 } // End of namespace
 
 } // end of namespace

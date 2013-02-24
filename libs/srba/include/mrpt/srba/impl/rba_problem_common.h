@@ -72,7 +72,8 @@ RbaEngine<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::TSRBAParameters::TSRBAP
 	min_error_reduction_ratio_to_relinearize ( 0.01 ),
 	numeric_jacobians    ( false ),
 	feedback_user_iteration(NULL),
-	compute_condition_number(false)
+	compute_condition_number(false),
+	cov_recovery         ( crpLandmarksApprox )
 {
 }
 
@@ -94,6 +95,7 @@ void RbaEngine<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::TSRBAParameters::l
 	MRPT_LOAD_CONFIG_VAR(max_iters,uint64_t,source,section)
 	MRPT_LOAD_CONFIG_VAR(max_error_per_obs_to_stop,double,source,section)
 
+	cov_recovery = source.read_enum(section, "cov_recovery", cov_recovery);
 }
 
 /** See docs of mrpt::utils::CLoadableOptions */
@@ -101,6 +103,7 @@ template <class KF2KF_POSE_TYPE,class LM_TYPE,class OBS_TYPE,class RBA_OPTIONS>
 void RbaEngine<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::TSRBAParameters::saveToConfigFile(mrpt::utils::CConfigFileBase & out,const std::string & section) const
 {
 	out.write(section,"edge_creation_policy", mrpt::utils::TEnumType<TEdgeCreationPolicy>::value2name(edge_creation_policy) ,  /* text width */ 30, 30, "Arc creation policy");
+
 	out.write(section,"max_tree_depth",max_tree_depth,  /* text width */ 30, 30, "Maximum depth of all spanning trees");
 	out.write(section,"max_optimize_depth",max_optimize_depth, /* text width */ 30, 30, "Max. local optimization distance");
 	out.write(section,"submap_size",submap_size, /* text width */ 30, 30, "Max. local optimization distance");
@@ -114,8 +117,7 @@ void RbaEngine<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::TSRBAParameters::s
 	out.write(section,"max_lambda",max_lambda,  /* text width */ 30, 30, "Lev-Marq optimization: maximum lambda to stop");
 	out.write(section,"max_iters",max_iters,  /* text width */ 30, 30, "Max. iterations for optimization");
 	out.write(section,"max_error_per_obs_to_stop",max_error_per_obs_to_stop,  /* text width */ 30, 30, "Another criterion for stopping optimization");
-
-
+	out.write(section,"cov_recovery", mrpt::utils::TEnumType<TCovarianceRecoveryPolicy>::value2name(cov_recovery) ,  /* text width */ 30, 30, "Covariance recovery policy");
 }
 
 

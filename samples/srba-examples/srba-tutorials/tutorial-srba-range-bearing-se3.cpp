@@ -175,6 +175,7 @@ int main(int argc, char**argv)
 	rba.parameters.srba.edge_creation_policy = mrpt::srba::ecpICRA2013;
 	rba.parameters.srba.max_tree_depth       = 3;
 	rba.parameters.srba.max_optimize_depth   = 3;
+	//rba.parameters.srba.cov_recovery = crpNone;
 	// ===========================================
 
 	// Set sensors parameters:
