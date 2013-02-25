@@ -55,6 +55,8 @@ install: build
 	make documentation_performance_html
 	# Create man pages:
 	make man_pages_all
+	# Compile manual(s):
+	make documentation_srba-guide || echo "*** Ignoring failed manual build! ***"
 	# Build all
 	$(MAKE) VERBOSE=1
 	# Run tests

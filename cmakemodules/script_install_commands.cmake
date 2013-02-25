@@ -105,6 +105,10 @@ ELSE(WIN32)
 			INSTALL(FILES "${MRPT_SOURCE_DIR}/doc/mrpt-book.ps.gz" DESTINATION ${mrpt_doc_INSTALL_PREFIX}share/doc/mrpt-doc/ )
 		ENDIF(EXISTS "${MRPT_SOURCE_DIR}/doc/mrpt-book.ps.gz")
 
+		IF(EXISTS "${MRPT_SOURCE_DIR}/doc/srba-guide/srba-guide.ps.gz")
+			INSTALL(FILES "${MRPT_SOURCE_DIR}/doc/srba-guide/srba-guide.ps.gz" DESTINATION ${mrpt_doc_INSTALL_PREFIX}share/doc/mrpt-doc/ )
+		ENDIF(EXISTS "${MRPT_SOURCE_DIR}/doc/srba-guide/srba-guide.ps.gz")
+
 		# applications config files
 		INSTALL(DIRECTORY "${MRPT_SOURCE_DIR}/share/applications" DESTINATION ${mrpt_apps_INSTALL_PREFIX}share PATTERN ".svn" EXCLUDE)
 		#INSTALL(DIRECTORY "${MRPT_SOURCE_DIR}/share/menu" DESTINATION ${mrpt_apps_INSTALL_PREFIX}share  PATTERN ".svn" EXCLUDE)

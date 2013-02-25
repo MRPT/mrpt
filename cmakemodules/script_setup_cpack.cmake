@@ -85,7 +85,7 @@ IF(WIN32)
 	SET(CPACK_PACKAGE_EXECUTABLES ${_str}) # --> Set in each apps/*/CMakeLists.txt file
 
 	SET(CPACK_NSIS_MENU_LINKS
-	    "doc;Documentation directory;bin;Directory of executables (bin);doc/chm/libMRPT-@CMAKE_MRPT_VERSION_NUMBER_MAJOR@.@CMAKE_MRPT_VERSION_NUMBER_MINOR@.@CMAKE_MRPT_VERSION_NUMBER_PATCH@.chm;MRPT libraries reference (CHM);README.txt;Read me;http://www.mrpt.org/;Online help;doc/mrpt-book.pdf;The MRPT book (PDF)")
+	    "doc;Documentation directory;bin;Directory of executables (bin);doc/chm/libMRPT-@CMAKE_MRPT_VERSION_NUMBER_MAJOR@.@CMAKE_MRPT_VERSION_NUMBER_MINOR@.@CMAKE_MRPT_VERSION_NUMBER_PATCH@.chm;MRPT libraries reference (CHM);README.txt;Read me;http://www.mrpt.org/;Online help;doc/mrpt-book.pdf;The MRPT book (PDF);doc/srba-guide.pdf;The SRBA programming guide (PDF)")
 
 	# File types association:
 	SET(CPACK_NSIS_DEFINES "

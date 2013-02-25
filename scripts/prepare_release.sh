@@ -50,11 +50,16 @@ else
 fi
 
 # Copy the MRPT book:
-if [ -f /Trabajo/Papers/mrpt-book/mrpt-book.ps ];
+if [ -f /Work/MyBooks/mrpt-book/mrpt-book.ps ];
 then
-	cp  /Trabajo/Papers/mrpt-book/mrpt-book.ps $MRPT_DEB_DIR/mrpt-${MRPT_VERSION_STR}/doc/
+	cp  /Work/MyBooks/mrpt-book/mrpt-book.ps $MRPT_DEB_DIR/mrpt-${MRPT_VERSION_STR}/doc/
 	ps2pdf $MRPT_DEB_DIR/mrpt-${MRPT_VERSION_STR}/doc/mrpt-book.ps $MRPT_DEB_DIR/mrpt-${MRPT_VERSION_STR}/doc/mrpt-book.pdf
 	gzip $MRPT_DEB_DIR/mrpt-${MRPT_VERSION_STR}/doc/mrpt-book.ps
+fi
+
+if [ -f $MRPTSRC/doc/srba-guide/srba-guide.pdf ];
+then
+	cp $MRPTSRC/doc/srba-guide/srba-guide.pdf $MRPT_DEB_DIR/mrpt-${MRPT_VERSION_STR}/doc/
 fi
 
 #printf "Generating mrpt.spec ..."

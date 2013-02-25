@@ -1,6 +1,6 @@
 # From: http://tex.stackexchange.com/questions/40738/how-to-properly-make-a-latex-project
 # You want latexmk to *always* run, because make does not have all the info.
-.PHONY: srba-guide.pdf
+.PHONY: srba-guide.pdf srba-guide.ps.gz
 
 # First rule should always be the default "all" rule, so both "make all" and
 # "make" will invoke it.
@@ -17,6 +17,10 @@ all: srba-guide.pdf
 
 srba-guide.pdf: srba-guide.tex
 	latexmk -pdf -pdflatex="pdflatex -interactive=nonstopmode" -use-make srba-guide.tex
+
+srba-guide.ps.gz: srba-guide.pdf
+	pdf2ps srba-guide.pdf
+	gzip -f srba-guide.ps
 
 clean:
 	latexmk -CA

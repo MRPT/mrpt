@@ -85,3 +85,16 @@ IF(DOXYGEN_EXECUTABLE)
 	endif(ENABLE_SOLUTION_FOLDERS)
 		
 ENDIF(DOXYGEN_EXECUTABLE)
+
+
+# Compile Latex targets:
+find_program(LATEXMK_PROGRAM latexmk)
+mark_as_advanced(LATEXMK_PROGRAM)
+IF(LATEXMK_PROGRAM)
+	add_custom_target(documentation_srba-guide
+		COMMAND 		make -C ${MRPT_SOURCE_DIR}/doc/srba-guide/ srba-guide.ps.gz
+		COMMENT 		"Generating srba-guide (ps.gz)"
+		)
+ENDIF(LATEXMK_PROGRAM)
+
+
