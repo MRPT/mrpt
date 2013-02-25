@@ -27,7 +27,7 @@
 % C++ listings settings
 \lstset{ %
 language=C++,                % choose the language of the code
-basicstyle=\footnotesize,       % the size of the fonts that are used for the code
+basicstyle=\scriptsize,       % the size of the fonts that are used for the code
 numbers=none,                   % where to put the line-numbers
 numberstyle=\footnotesize,      % the size of the fonts that are used for the line-numbers
 stepnumber=1,                   % the step between two line-numbers. If it is 1 each line will be numbered
@@ -151,63 +151,198 @@ The illustration depicts many elements, some of which are \emph{known} data, oth
 The goal of RBA is to recover a \emph{maximum-likelihood estimation (MLE)} of those unknowns. Optionally, the covariances and 
 cross-covariances between estimated variables can be also evaluated.
 
-\begin{figure}[h]
+\begin{figure}
 \centering
-%\includegraphics[width=1.0\textwidth]{imgs/rba-entities.pdf} 
+\includegraphics[width=0.7\textwidth]{imgs/srba_toy_problem.pdf} 
 \caption{A toy RBA problem.}
 \label{fig:rba.entities}
 \end{figure}
 
-We find the following entities in \texttt{mrpt-srba}:
+We find the following entities in \texttt{mrpt-srba} (refer to Fig.~\ref{fig:rba.entities}):
 
 \begin{itemize}
-\item{\textbf{Keyframes}: A keyframe (KF) represents the \emph{pose} of the robot (or any device of interest) at one 
- particular instant of time. In RBA we will never work with the absolute coordinates of any of these KFs. This is 
- completely different than ``common'' Bundle Adjustment, where these poses are the unknowns to estimated  
- complete 
+\item{\textbf{Keyframes}: A keyframe (KF), as each $KF_i$ in the figure, represents the \emph{pose} of the robot (or the 
+camera or whatever) at one  particular instant of time. In RBA we will never work with the absolute coordinates of any of 
+these KFs. This is completely different than ``common'' Bundle Adjustment, where these poses are the unknowns to 
+estimate.
+}
+\item{\textbf{Keyframe-to-keyframe edges}: An edge $k2k_i^j$ represents the relative pose of $KF_i$ with respect to 
+$KF_j$. Notice that ``inverse poses'' (i.e. in the inverse order than one would expect from the edge direction) are 
+stored for efficiency\footnote{In RBA we may need to chain sequences of relative poses, and the direction will often 
+be from newer KFs towards older KFs, hence if we store inverse poses we save the computational burden of inverting them 
+over and over again.}. These edges are always treated as \emph{unknowns} to be estimated from observation data.
+They can be parameterized in different ways (see \S\ref{sec:k2k_types}), but in practice it will be enough to work 
+with SE(2) or SE(3) poses.
+}
+\item{\textbf{Landmarks}: A landmark (LM) is any entity which can be observed from different locations. Typically a 2D 
+or 3D point in space, but could be a line, segment, plane or any user-defined entity. They are represented in 
+the Fig.~\ref{fig:rba.entities} as stars named $LM_i$. The concept of absolute coordinates of a LM 
+does not exist in RBA.
+}
+\item{\textbf{Relative position and "base keyframe" of a LM}: Each LM is associated to exactly one KF, its {base KF}, with 
+respect to which the LM has a \emph{relative position}. This relative position can be either ``known'' (``\emph{fixed}'' 
+in the C++ API) or ``unknown'', in which case it is also estimated during the problem optimization. There exist several 
+possible ways of parameterizing relative positions, as discussed in \S\ref{sec:k2f_types}. These relative positions are 
+represented in the figure as thick edges with a middle circle mark.
+}
+\item{\textbf{Observations}: An observation $z^{i,j}_k$ stands for any piece of sensory data which \emph{is related}, 
+somehow, with the position of the $i-th$ LM, whose base KF is $j$, as seen from the observing KF $k$. They are 
+depicted as dashed lines in the figure above. Rank-deficient observations, like those from monocular cameras, are 
+acceptable but two or more observations may be required before being able to estimate the relative position of the 
+observed LM.
 }
 \end{itemize}
 
-
+\newpage
 
 
 \section{Programmer's first steps}
 \label{sect:program_first}
 
-\subsection{First program}
+The central class in \texttt{libmrpt-srba} is the template \texttt{RbaEngine<>}, which 
+adopts a ``policy-based design'' \cite{andrei2001modern}:
 
 \begin{lstlisting}
-void main()
+template <
+	class KF2KF_POSE_TYPE,
+	class LM_TYPE,
+	class OBS_TYPE, 
+	class RBA_OPTIONS = RBA_OPTIONS_DEFAULT>
+class RbaEngine;
+\end{lstlisting}
+
+This means that by setting each of the \emph{template arguments} we literally control the process 
+of code generation to address one particular instance of a RBA problem. 
+Since all this happens at \emph{compile time}, the compiler produces optimized code for 
+the problem at hand (e.g. SSE2 code for multiplying matrices of a particular size), 
+avoids code bifurcations, etc.
+
+Due to the combinatorial nature of all the possibilities, 
+detailed in \S\ref{sect:rba_configs}--\ref{sect:rba_options}, one template class 
+can generate specialized code for dozens of concrete problems.
+
+
+\subsection{The simplest program}
+
+The following code illustrates the declaration of an RBA problem for 3D point landmarks, 
+with SE(3) relative poses for keyframes and 3D range-bearing observations. 
+Only two keyframes are defined, which means that after introducing the second one
+there will be only one k2k edge (an unknown), which will be estimated by the least-squares 
+optimizer along the relative positions of all landmarks.
+
+\begin{lstlisting}
+#include <mrpt/srba.h>
+
+using namespace mrpt::srba;
+using namespace std;
+
+typedef RbaEngine<
+	kf2kf_poses::SE3,       // Parameterization  KF-to-KF poses
+	landmarks::Euclidean3D, // Parameterization of landmark positions    
+	observations::RangeBearing_3D // Type of observations
+	>
+	my_srba_t;
+
+int main(int argc, char**argv)
 {
-	// Code 
-    int a; /* pepe */
+	my_srba_t rba;  //  Create an empty RBA problem
+	
+	// Define observations of KF #0:
+	// ----------------------------------------------
+	my_srba_t::new_kf_observations_t  list_obs;
+	my_srba_t::new_kf_observation_t   obs_field;
+	obs_field.is_fixed = false; // Landmarks have unknown relative 
+	                            // positions (i.e. are unknowns )
+	obs_field.is_unknown_with_init_val = false; // We don't have 
+       // any guess on the initial LM position (will invoke the 
+       // inverse sensor model)
+
+	// For each observation:
+	for (...) {
+		obs_field.obs.feat_id = ...; // The landmark ID
+		obs_field.obs.obs_data.range = ...;
+		obs_field.obs.obs_data.yaw   = ...;
+		obs_field.obs.obs_data.pitch = ...;
+		list_obs.push_back( obs_field );
+	}
+
+	//  This is the main API entry point: Define KF #0
+	srba::TNewKeyFrameInfo new_kf_info; // Placeholder of out info.
+	rba.define_new_keyframe(
+		list_obs,      // Input observations for the new KF
+		new_kf_info,   // Output info
+		true           // Run optimization of the local area
+		);
+
+	// Define observations of KF #1:
+	// ----------------------------------------------
+	list_obs.clear();
+	// For each observation:
+	for (...) {
+		obs_field.obs.feat_id = ...; // The landmark ID
+		obs_field.obs.obs_data.range = ...;
+		obs_field.obs.obs_data.yaw   = ...;
+		obs_field.obs.obs_data.pitch = ...;
+		list_obs.push_back( obs_field );
+	}
+
+	//  This is the main API entry point: Define KF #1
+	rba.define_new_keyframe(
+		list_obs,      // Input observations for the new KF
+		new_kf_info,   // Output info
+		true           // Run optimization of the local area
+		);
+
+	cout << "Created KF #" << new_kf_info.kf_id 
+	 << " | # kf-to-kf edges created:" <<  
+	 new_kf_info.created_edge_ids.size() << endl <<
+	 "Optimization error: " << 
+	 new_kf_info.optimize_results.total_sqr_error_init << 
+	 " -> " << 
+	 new_kf_info.optimize_results.total_sqr_error_final << endl;
+
+	// Save RBA graph as Graphviz file:
+	rba.save_graph_as_dot("graph.dot", true /* LMs=save */);
+
+	return 0;
 }
 \end{lstlisting}
 
+\newpage
+
 \subsection{Tutorials}
 
+More complete versions of the program above, including sample datasets and rendering of the optimization result 
+as OpenGL scenes are shipped with MRPT\footnote{See the directory \texttt{[MRPT]/samples/srba-examples/srba-tutorials/}, 
+or \href{http://mrpt.googlecode.com/svn/trunk/samples/srba-examples/srba-tutorials/}{browse online}.}.
 An example screenshot is shown in Fig.~\ref{fig:screenshot.tutorial1}.
 
-\begin{figure}
+\begin{figure}[h]
 \centering
-\includegraphics[width=1.0\textwidth]{imgs/screenshot_tutorial_range-bearing-3D.pdf} 
+\includegraphics[width=0.9\textwidth]{imgs/screenshot_tutorial_range-bearing-3D.pdf} 
 \caption{Screenshot for \texttt{tutorial-srba-range-bearing-se3.cpp}.}
 \label{fig:screenshot.tutorial1}
 \end{figure}
 
+\newpage
 
-\section{Existing models}
-\label{sect:program_models}
+\section{Configuring \texttt{RbaEngine<>}}
+\label{sect:rba_configs}
 
-\subsection{KF-to-KF relative poses}
+\subsection{\texttt{KF2KF\_POSE\_TYPE}: KF-to-KF relative poses}
+\label{sec:k2k_types}
+
+Given that the least-squares optimization runs on the linearized neighborhood of the manifold \cite{blanco2010tutorial} 
+around the instantaneous solutions, the choice between different parameterizations of SE(3) poses becomes irrelevant. 
 
 XXXX XXXX 
 
-\subsection{Relative landmark parameterizations}
+\subsection{\texttt{LM\_TYPE}: Relative landmark parameterizations}
+\label{sec:k2f_types}
 
 XXXX XXXX 
 
-\subsection{Observation types}
+\subsection{\texttt{OBS\_TYPE}: Observation types}
 
 XXXX XXXX 
 
@@ -216,6 +351,22 @@ XXXX XXXX
 \label{sect:program_sensors}
 
 XXXX XXXX 
+
+
+\section{\texttt{RBA\_OPTIONS}: Other options}
+\label{sect:rba_options}
+
+XXXX XXXX 
+
+
+\subsection{\texttt{sensor\_pose\_on\_robot\_t}}
+
+
+\subsection{\texttt{obs\_noise\_matrix\_t}}
+
+
+\subsection{\texttt{solver\_t}}
+
 
 
 \section{The \texttt{srba-slam} application}
