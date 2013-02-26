@@ -56,7 +56,7 @@ void printHelp()
     cout<<"         -p | P: Show/hide point cloud" << endl;
     cout<<"         -l | L: Show/hide PbMap" << endl;
     cout<<"         -r | R: Switch between point cloud and graph representation" << endl;
-};
+}
 
 bool graphRepresentation = false;
 bool showPointCloud = true;

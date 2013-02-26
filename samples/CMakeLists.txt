@@ -118,4 +118,5 @@ add_subdirectory(captureVideoAndBuildPyr)
 add_subdirectory(stereoRectify)
 add_subdirectory(face_detection)
 add_subdirectory(srba-examples)
+add_subdirectory(pbmap_visualizer)
 

@@ -1,10 +1,10 @@
 #-----------------------------------------------------------------------------------------------
-# CMake file for the MRPT example:  /PbMapApps
+# CMake file for the MRPT example:  /pbmap_visualizer
 #
 #  Run with "ccmake ." at the root directory, or use it as a template for 
 #   starting your own programs
 #-----------------------------------------------------------------------------------------------
-SET(sampleName PbMapApps)
+SET(sampleName pbmap_visualizer)
 SET(PRJ_NAME "EXAMPLE_${sampleName}")
 
 # ---------------------------------------
@@ -31,14 +31,13 @@ SET(EXECUTABLE_OUTPUT_PATH ".")
 #   The dependencies of a library are automatically added, so you only 
 #    need to specify the top-most libraries your code depend on.
 # --------------------------------------------------------------------------
-FIND_PACKAGE(MRPT REQUIRED base;pbmap)
+FIND_PACKAGE(MRPT REQUIRED pbmap;gui)
 
-SET(sampleName pbmap_test)
 # ---------------------------------------------
 # TARGET:
 # ---------------------------------------------
 # Define the executable target:
-ADD_EXECUTABLE($sampleName test.cpp  ) 
+ADD_EXECUTABLE(${sampleName} test.cpp  ) 
 
 SET_TARGET_PROPERTIES(
 	${sampleName} 
@@ -54,32 +53,6 @@ ENDIF(MY_DEFS)
 # Add the required libraries for linking:
 TARGET_LINK_LIBRARIES(${sampleName} 
 	${MRPT_LIBS}  # This is filled by FIND_PACKAGE(MRPT ...)
-	${PCL_LIBRARIES}
-	""  # Optional extra libs...
-	)
-
-SET(sampleName pbmap_visualizer)
-# ---------------------------------------------
-# TARGET:
-# ---------------------------------------------
-# Define the executable target:
-ADD_EXECUTABLE(${sampleName} pbmap_visualizer.cpp  ) 
-
-SET_TARGET_PROPERTIES(
-	${sampleName} 
-	PROPERTIES 
-	PROJECT_LABEL "(EXAMPLE) ${sampleName}")
-
-# Add special defines needed by this example, if any:
-SET(MY_DEFS )
-IF(MY_DEFS) # If not empty
-	ADD_DEFINITIONS("-D${MY_DEFS}")
-ENDIF(MY_DEFS)
-
-# Add the required libraries for linking:
-TARGET_LINK_LIBRARIES(${sampleName} 
-	${MRPT_LIBS}  # This is filled by FIND_PACKAGE(MRPT ...)
-	${PCL_LIBRARIES}
 	""  # Optional extra libs...
 	)
 
@@ -94,7 +67,7 @@ ENDIF(CMAKE_COMPILER_IS_GNUCXX AND NOT CMAKE_BUILD_TYPE MATCHES "Debug")
 #  the MRPT tree:
 # -------------------------------------------------------------------------
 IF("${CMAKE_PROJECT_NAME}" STREQUAL "MRPT") # Fails if build outside of MRPT project.
-	DeclareAppDependencies(${sampleName} mrpt-base;mrpt-pbmap) # Dependencies
+	DeclareAppDependencies(${sampleName} mrpt-pbmap;mrpt-gui) # Dependencies
 ENDIF("${CMAKE_PROJECT_NAME}" STREQUAL "MRPT")
 # -------------------------------------------------------------------------
 

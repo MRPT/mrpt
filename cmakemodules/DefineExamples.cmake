@@ -287,11 +287,22 @@ IF(BUILD_EXAMPLES)
 		SET(CMAKE_EXAMPLE_DEPS mrpt-slam mrpt-hwdrivers mrpt-detectors)
 		SET(CMAKE_EXAMPLE_LINK_LIBS ${MRPT_LINKER_LIBS})
 		GENERATE_CMAKE_FILES_SAMPLES_DIRECTORY()
-	
+
+
 	ENDIF(BUILD_HWDRIVERS)
 
 	# === SRBA examples ===
 	ADD_SAMPLES_DIRECTORY(srba-examples)
+
+	# === PbMap examples ===
+	IF(BUILD_mrpt-pbmap)
+		SET(LIST_EXAMPLES_IN_THIS_DIR
+			pbmap_visualizer
+			)
+		SET(CMAKE_EXAMPLE_DEPS mrpt-pbmap mrpt-gui)
+		SET(CMAKE_EXAMPLE_LINK_LIBS ${MRPT_LINKER_LIBS})
+		GENERATE_CMAKE_FILES_SAMPLES_DIRECTORY()
+	ENDIF(BUILD_mrpt-pbmap)
 
 	# Generate the CMakeLists.txt in the "/samples" directory
 	SET(CMAKE_COMMANDS_INCLUDE_EXAMPLE_DIRS ${CMAKE_COMMANDS_INCLUDE_EXAMPLE_DIRS_ROOT})
