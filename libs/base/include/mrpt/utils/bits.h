@@ -89,6 +89,12 @@ namespace mrpt
 			~CProfilerProxy() { global_profiler_leave(f); }
 		};
 
+#ifdef DEG2RAD  // functions are preferred over macros
+#undef DEG2RAD
+#endif
+#ifdef RAD2DEG
+#undef RAD2DEG
+#endif
 		/** Degrees to radians */
 		inline double DEG2RAD(const double x) { return x*M_PI/180.0;	}
 		/** Degrees to radians */
@@ -159,9 +165,9 @@ namespace mrpt
 		#endif
 		}
 
-		/** Efficient and portable evaluation of the absolute difference of two unsigned integer values 
+		/** Efficient and portable evaluation of the absolute difference of two unsigned integer values
 		  * (but will also work for signed and floating point types) */
-		template <typename T> 
+		template <typename T>
 		inline T abs_diff(const T a, const T b) {
 			return std::max(a,b) - std::min(a,b);
 		}
