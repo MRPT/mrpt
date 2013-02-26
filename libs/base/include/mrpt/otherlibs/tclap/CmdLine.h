@@ -416,15 +416,15 @@ inline bool CmdLine::parse(int argc, char** argv)
 
 	return true; // Ok
 
-	} 
+	}
 	catch ( ActionDoneException e )
 	{
 		return false; // Done
 	}
 	catch ( ArgException e )
 	{
-		_output->failure(*this,e); 
-		return false; // Error 
+		_output->failure(*this,e);
+		return false; // Error
 	}
 }
 
