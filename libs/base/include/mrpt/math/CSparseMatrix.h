@@ -219,8 +219,11 @@ namespace mrpt
 			/** Copy operator from another existing object */
 			void operator = (const CSparseMatrix & other);
 
-			/** Erase all previous contents and leave the matrix as a "triplet" 1x1 matrix without any data. */
-			void clear();
+			/** Fast swap contents with another sparse matrix */
+			void swap(CSparseMatrix & other);
+
+			/** Erase all previous contents and leave the matrix as a "triplet" ROWS x COLS matrix without any nonzero entry. */
+			void clear(const size_t nRows=1, const size_t nCols=1);
 
 			/** @}  */
 

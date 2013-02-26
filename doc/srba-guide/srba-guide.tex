@@ -267,7 +267,7 @@ int main(int argc, char**argv)
 	}
 
 	//  This is the main API entry point: Define KF #0
-	srba::TNewKeyFrameInfo new_kf_info; // Placeholder of out info.
+	my_srba_t::TNewKeyFrameInfo new_kf_info; // Placeholder of out info.
 	rba.define_new_keyframe(
 		list_obs,      // Input observations for the new KF
 		new_kf_info,   // Output info

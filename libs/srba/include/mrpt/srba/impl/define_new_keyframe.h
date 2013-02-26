@@ -46,7 +46,7 @@ void RbaEngine<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::define_new_keyfram
 {
 	m_profiler.enter("define_new_keyframe");
 
-	out_new_kf_info = TNewKeyFrameInfo();
+	out_new_kf_info.clear();
 
 	// Update KFs data structures ;  O(1)
 	// ------------------------------------

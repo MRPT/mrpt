@@ -205,28 +205,6 @@ namespace srba
 		return p.from==one ? p.to: p.from;
 	}
 
-	struct TOptimizeExtraOutputInfo
-	{
-		TOptimizeExtraOutputInfo() :
-			num_observations(0),
-			num_jacobians(0),
-			num_kf2kf_edges_optimized(0), num_kf2lm_edges_optimized(0), num_total_scalar_optimized(0),
-			num_span_tree_numeric_updates(0),
-			total_sqr_error_init(0), total_sqr_error_final(0),
-			HAp_condition_number(0)
-		{ }
-
-		size_t  num_observations;     //!< Number of individual feature observations taken into account in the optimization
-		size_t  num_jacobians;        //!< Number of Jacobian blocks which had been to be evaluated for each relinearization step.
-		size_t  num_kf2kf_edges_optimized; //!< Number of solved unknowns of type "kf-to-kf edge".
-		size_t  num_kf2lm_edges_optimized; //!< Number of solved unknowns of type "kf-to-landmark".
-		size_t  num_total_scalar_optimized;  //!< The total number of dimensions (scalar values) in all the optimized unknowns.
-		size_t  num_span_tree_numeric_updates; //!< Number of poses updated in the spanning tree numeric-update stage.
-		double  total_sqr_error_init, total_sqr_error_final; //!< Initial and final total squared error for all the observations
-		double  HAp_condition_number; //!< To be computed only if enabled in parameters.compute_condition_number
-
-	};
-
 	/** Used in TNewKeyFrameInfo */
 	struct TNewEdgeInfo
 	{
@@ -234,15 +212,6 @@ namespace srba
 		/**  Whether the edge was assigned an approximated initial value. If not, it will need an independent optimization step before getting into the complete problem optimization.
 		  */
 		bool    has_aprox_init_val;
-	};
-
-	/** Information returned by RbaEngine::srba_new_keyframe() */
-	struct TNewKeyFrameInfo
-	{
-		TKeyFrameID                   kf_id;         //!< The ID of the newly created KF.
-		std::vector<TNewEdgeInfo>  created_edge_ids;  //!< The newly created edges (minimum: 1 edge)
-
-		TOptimizeExtraOutputInfo      optimize_results;  //!< Results from the least-squares optimization
 	};
 
 	/** Symbolic information of each Jacobian dh_dAp

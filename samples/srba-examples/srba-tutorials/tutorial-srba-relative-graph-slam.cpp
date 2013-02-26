@@ -187,7 +187,7 @@ int main(int argc, char**argv)
 
 		//  Here happens the main stuff: create Key-frames, build structures, run optimization, etc.
 		//  ============================================================================================
-		srba::TNewKeyFrameInfo new_kf_info;
+		my_srba_t::TNewKeyFrameInfo new_kf_info;
 		rba.define_new_keyframe(
 			list_obs,      // Input observations for the new KF
 			new_kf_info,   // Output info

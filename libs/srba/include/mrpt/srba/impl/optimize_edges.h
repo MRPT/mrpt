@@ -689,6 +689,16 @@ void RbaEngine<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::optimize_edges(
 		DETAILED_PROFILING_LEAVE("opt.condition_number")
 	}
 
+	// Fill in any other extra info from the solver:
+	DETAILED_PROFILING_ENTER("opt.get_extra_results")
+	my_solver.get_extra_results(out_info.extra_results);
+	DETAILED_PROFILING_LEAVE("opt.get_extra_results")
+
+	// Save (quick swap) the list of unknowns to the output structure, 
+	//  now that these vectors are not needed anymore:
+	out_info.optimized_k2k_edge_indices.swap(run_k2k_edges);
+	out_info.optimized_landmark_indices.swap(run_feat_ids);
+
 	m_profiler.leave("opt");
 
 	VERBOSE_LEVEL(1) << "[OPT] Final RMSE=" <<  RMSE << " #iters=" << iter << "\n";

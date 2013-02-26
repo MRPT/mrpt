@@ -110,6 +110,21 @@ void  CSparseMatrix::copy_fast(cs  * const sm)
 	sm->x=NULL;
 }
 
+/** Fast swap contents with another sparse matrix */
+void CSparseMatrix::swap(CSparseMatrix & other)
+{
+	// Fast copy / Move:
+	std::swap( sparse_matrix.m, other.sparse_matrix.m );
+	std::swap( sparse_matrix.n, sparse_matrix.n);
+	std::swap( sparse_matrix.nz, other.sparse_matrix.nz);
+	std::swap( sparse_matrix.nzmax, other.sparse_matrix.nzmax);
+
+	std::swap( sparse_matrix.i, other.sparse_matrix.i);
+	std::swap( sparse_matrix.p, other.sparse_matrix.p);
+	std::swap( sparse_matrix.x, other.sparse_matrix.x);
+}
+
+
 
 // Dtor
 CSparseMatrix::~CSparseMatrix()
@@ -118,15 +133,15 @@ CSparseMatrix::~CSparseMatrix()
 }
 
 /** Erase all previous contents and leave the matrix as a "triplet" 1x1 matrix without any data. */
-void CSparseMatrix::clear()
+void CSparseMatrix::clear(const size_t nRows, const size_t nCols)
 {
 	// Free old data:
 	internal_free_mem();
 
 	// Init as 1x1 triplet:
 	sparse_matrix.nzmax = 1;
-	sparse_matrix.m = 1; //nRows;
-	sparse_matrix.n = 1; // nCols;
+	sparse_matrix.m = nRows;
+	sparse_matrix.n = nCols;
 	sparse_matrix.i = (int*)malloc(sizeof(int)*sparse_matrix.nzmax);
 	sparse_matrix.p = (int*)malloc(sizeof(int)*(sparse_matrix.n+1));
 	sparse_matrix.x = (double*)malloc(sizeof(double)*sparse_matrix.nzmax);

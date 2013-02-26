@@ -380,7 +380,7 @@ struct RBA_Run : public RBA_Run_Base
 
 			//mrpt::vision::TSequenceFeatureObservations  feats_to_draw; // For the GUI
 
-			srba::TNewKeyFrameInfo new_kf_info;
+			my_srba_t::TNewKeyFrameInfo new_kf_info;
 
 			while (obsIdx<nTotalObs && curFrameIdx<frameIdxMax)
 			{

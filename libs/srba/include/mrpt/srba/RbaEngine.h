@@ -93,6 +93,7 @@ namespace srba
 		typedef KF2KF_POSE_TYPE kf2kf_pose_type;
 		typedef LM_TYPE         lm_type;
 		typedef OBS_TYPE        obs_type;
+		typedef RBA_OPTIONS     rba_options_type;
 
 		static const size_t REL_POSE_DIMS = KF2KF_POSE_TYPE::REL_POSE_DIMS;
 		static const size_t LM_DIMS       = LM_TYPE::LM_DIMS;
@@ -134,6 +135,61 @@ namespace srba
 
 		/** Default constructor */
 		RbaEngine();
+
+		/** All the information returned by the local area optimizer \sa define_new_keyframe() */
+		struct TOptimizeExtraOutputInfo
+		{
+			TOptimizeExtraOutputInfo()
+			{
+				clear();
+			}
+			
+			size_t  num_observations;     //!< Number of individual feature observations taken into account in the optimization
+			size_t  num_jacobians;        //!< Number of Jacobian blocks which had been to be evaluated for each relinearization step.
+			size_t  num_kf2kf_edges_optimized; //!< Number of solved unknowns of type "kf-to-kf edge".
+			size_t  num_kf2lm_edges_optimized; //!< Number of solved unknowns of type "kf-to-landmark".
+			size_t  num_total_scalar_optimized;  //!< The total number of dimensions (scalar values) in all the optimized unknowns.
+			size_t  num_span_tree_numeric_updates; //!< Number of poses updated in the spanning tree numeric-update stage.
+			double  total_sqr_error_init, total_sqr_error_final; //!< Initial and final total squared error for all the observations
+			double  HAp_condition_number; //!< To be computed only if enabled in parameters.compute_condition_number
+			
+			std::vector<size_t> optimized_k2k_edge_indices; //!< The 0-based indices of all kf-to-kf edges which were considered in the optimization
+			std::vector<size_t> optimized_landmark_indices; //!< The 0-based indices of all landmarks whose relative positions were considered as unknowns in the optimization
+
+			/** Other solver-specific output information */
+			typename RBA_OPTIONS::solver_t::extra_results_t   extra_results; 
+
+			void clear()
+			{
+				num_observations = 0;
+				num_jacobians = 0;
+				num_kf2kf_edges_optimized = 0;
+				num_kf2lm_edges_optimized = 0;
+				num_total_scalar_optimized = 0;
+				num_span_tree_numeric_updates=0;
+				total_sqr_error_init=0.;
+				total_sqr_error_final=0.;
+				HAp_condition_number=0.;
+				optimized_k2k_edge_indices.clear();
+				optimized_landmark_indices.clear();
+				extra_results.clear();
+			}
+		};
+
+		/** Information returned by RbaEngine::define_new_keyframe() */
+		struct TNewKeyFrameInfo
+		{
+			TKeyFrameID                kf_id;         //!< The ID of the newly created KF.
+			std::vector<TNewEdgeInfo>  created_edge_ids;  //!< The newly created edges (minimum: 1 edge)
+			TOptimizeExtraOutputInfo   optimize_results;  //!< Results from the least-squares optimization
+
+			void clear()
+			{
+				kf_id = static_cast<TKeyFrameID>(-1);
+				created_edge_ids.clear();
+				optimize_results.clear();
+			}
+		};
 
 		/** @name Main API methods
 		    @{ */
