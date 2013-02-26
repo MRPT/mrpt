@@ -36,13 +36,16 @@
 #pragma once
 
 #include <mrpt/math/CMatrixD.h>
+#include <mrpt/utils/CTextFileLinesParser.h>
+#include <mrpt/utils/CFileGZInputStream.h>
+#include <mrpt/utils/CFileGZOutputStream.h>
+#include <mrpt/utils/CConfigFile.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/system.h>
 
 // Specializations of this class will also inherit from
 // CDatasetParserBase to build a working dataset parser.
 template <class OBS_TYPE> struct CDatasetParserTempl;
-
 
 // Base of all parsers:
 struct CDatasetParserBase

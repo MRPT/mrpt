@@ -6,7 +6,7 @@ IF(BUILD_EXAMPLES)
 	# Fix "\" --> "\\" for windows:
 	string(REPLACE "\\" "\\\\" CMAKE_MRPT_EXAMPLES_BASE_DIRECTORY ${CMAKE_MRPT_EXAMPLES_BASE_DIRECTORY})
 
-	MESSAGE(STATUS "Parsing 'examples_config.h.in'")
+	#MESSAGE(STATUS "Parsing 'examples_config.h.in'")
 	CONFIGURE_FILE("${CMAKE_SOURCE_DIR}/parse-files/examples_config.h.in" "${MRPT_CONFIG_FILE_INCLUDE_DIR}/mrpt/examples_config.h")
 
 	# Generate CMakeLists.txt from the template project file for examples:
@@ -54,7 +54,7 @@ IF(BUILD_EXAMPLES)
 		db
 		times
 		SocketsTest
-		directoryExplorer	
+		directoryExplorer
 		exceptionDemo
 		http_tests
 		critSectionDeadLock
@@ -144,11 +144,11 @@ IF(BUILD_EXAMPLES)
 		unscented_transform_test
 		grab3Dvideo
 		coordinate_conversions
-		params-by-name		
+		params-by-name
 		checkerboardDetectors
-		multipleCheckerboards		
+		multipleCheckerboards
 		voronoi_test
-		keypoint_matching				
+		keypoint_matching
 		)
 	SET(CMAKE_EXAMPLE_DEPS mrpt-slam mrpt-vision mrpt-gui mrpt-topography)
 	SET(CMAKE_EXAMPLE_LINK_LIBS ${MRPT_LINKER_LIBS})
@@ -172,7 +172,7 @@ IF(BUILD_EXAMPLES)
 	SET(CMAKE_EXAMPLE_DEPS mrpt-maps mrpt-gui)
 	SET(CMAKE_EXAMPLE_LINK_LIBS ${MRPT_LINKER_LIBS})
 	GENERATE_CMAKE_FILES_SAMPLES_DIRECTORY()
-	
+
 	# === Depending on: maps, scanmatching, gui ===
 	#  list of examples for each directory:
 	SET(LIST_EXAMPLES_IN_THIS_DIR
@@ -181,7 +181,7 @@ IF(BUILD_EXAMPLES)
 	SET(CMAKE_EXAMPLE_DEPS mrpt-maps mrpt-gui mrpt-scanmatching)
 	SET(CMAKE_EXAMPLE_LINK_LIBS ${MRPT_LINKER_LIBS})
 	GENERATE_CMAKE_FILES_SAMPLES_DIRECTORY()
-	
+
 	# === Depending on: graphs & gui ===
 	#  list of examples for each directory:
 	SET(LIST_EXAMPLES_IN_THIS_DIR
@@ -192,8 +192,8 @@ IF(BUILD_EXAMPLES)
 	SET(CMAKE_EXAMPLE_DEPS mrpt-graphs mrpt-gui)
 	SET(CMAKE_EXAMPLE_LINK_LIBS ${MRPT_LINKER_LIBS})
 	GENERATE_CMAKE_FILES_SAMPLES_DIRECTORY()
-		
-		
+
+
 	# === Depending on: graphslam & gui ===
 	#  list of examples for each directory:
 	SET(LIST_EXAMPLES_IN_THIS_DIR
@@ -202,7 +202,7 @@ IF(BUILD_EXAMPLES)
 	SET(CMAKE_EXAMPLE_DEPS mrpt-graphslam mrpt-gui)
 	SET(CMAKE_EXAMPLE_LINK_LIBS ${MRPT_LINKER_LIBS})
 	GENERATE_CMAKE_FILES_SAMPLES_DIRECTORY()
-		
+
 
 	# === Depending on: vision & gui ===
 	#  list of examples for each directory:
@@ -213,7 +213,7 @@ IF(BUILD_EXAMPLES)
 	SET(CMAKE_EXAMPLE_DEPS mrpt-vision mrpt-gui)
 	SET(CMAKE_EXAMPLE_LINK_LIBS ${MRPT_LINKER_LIBS})
 	GENERATE_CMAKE_FILES_SAMPLES_DIRECTORY()
-	
+
 	# === HWDRIVERS ===
 	IF(BUILD_HWDRIVERS)
 
@@ -270,7 +270,7 @@ IF(BUILD_EXAMPLES)
 		SET(CMAKE_EXAMPLE_DEPS mrpt-slam mrpt-hwdrivers)
 		SET(CMAKE_EXAMPLE_LINK_LIBS ${MRPT_LINKER_LIBS})
 		GENERATE_CMAKE_FILES_SAMPLES_DIRECTORY()
-		
+
 		# === HWDRIVERS & VISION ===
 		SET(LIST_EXAMPLES_IN_THIS_DIR
 			captureVideoAndBuildPyr
@@ -279,7 +279,7 @@ IF(BUILD_EXAMPLES)
 		SET(CMAKE_EXAMPLE_DEPS mrpt-vision mrpt-hwdrivers)
 		SET(CMAKE_EXAMPLE_LINK_LIBS ${MRPT_LINKER_LIBS})
 		GENERATE_CMAKE_FILES_SAMPLES_DIRECTORY()
-		
+
 		# === HWDRIVERS & DETECTORS ===
 		SET(LIST_EXAMPLES_IN_THIS_DIR
 			face_detection

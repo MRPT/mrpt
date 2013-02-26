@@ -11,13 +11,13 @@ PROJECT(srba_slam)
 # TARGET:
 # ---------------------------------------------
 # Define the executable target:
+FILE(GLOB LST_SRCS "*.cpp")
+FILE(GLOB LST_HDRS "*.h")
+
+
 ADD_EXECUTABLE(srba-slam
-	srba-slam_main.cpp
-	CDatasetParserBase.h
-	CDatasetParser_RangeBearing2D.h
-	CDatasetParser_Stereo.h
-	CDatasetParser_Cartesian_3D.h
-	CDatasetParser_RelGraphSLAM2D.h
+	${LST_SRCS}
+	${LST_HDRS}
 	)
 
 SET(TMP_TARGET_NAME "srba-slam")
