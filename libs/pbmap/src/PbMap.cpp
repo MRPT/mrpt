@@ -41,10 +41,6 @@
 
 #include <mrpt/utils/CStream.h>
 
-//#include <mrpt/pbmap/PbMap.h>
-
-//using namespace mrpt;
-//using namespace mrpt::math;
 using namespace mrpt::utils;
 using namespace mrpt::pbmap;
 
@@ -71,10 +67,8 @@ void  PbMap::writeToStream(CStream &out, int *out_Version) const
 		*out_Version = 0;
 	else
 	{
-		uint32_t						n;
-
 		// The data
-		n = uint32_t( vPlanes.size() );
+		uint32_t n = uint32_t( vPlanes.size() );
 		out << n;
 		for (uint32_t i=0; i < n; i++)
 			out << vPlanes[i];
@@ -89,18 +83,21 @@ void  PbMap::readFromStream(CStream &in, int version)
 	switch(version)
 	{
 	case 0:
-		{
-			// Delete previous content:
-			vPlanes.clear();
+    {
+        // Delete previous content:
+        vPlanes.clear();
 
-			// The data
-			// First, write the number of planes:
-			uint32_t	n;
-			in >> n;
-			vPlanes.resize(n);
-      for (uint32_t i=0; i < n; i++)
-				in >> vPlanes[i];
-		} break;
+        // The data
+        // First, write the number of planes:
+        uint32_t	n;
+        in >> n;
+        vPlanes.resize(n);
+          for (uint32_t i=0; i < n; i++)
+          {
+            vPlanes[i].id = i;
+            in >> vPlanes[i];
+          }
+    } break;
 	default:
 		MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
 	};

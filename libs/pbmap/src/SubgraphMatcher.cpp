@@ -40,12 +40,8 @@
 
 #include <mrpt/pbmap.h> // precomp. hdr
 
-//#include <mrpt/pbmap/SubgraphMatcher.h>
-
 using namespace std;
 using namespace mrpt::pbmap;
-
-//#define RAD2DEG 57.2958
 
 extern config_heuristics configLocaliser;
 
@@ -121,53 +117,43 @@ bool SubgraphMatcher::evalBinaryConstraints(Plane &Ref, Plane &neigRef, Plane &C
   // Check height
   double dif_height = Ref.v3normal .dot (neigRef.v3center - Ref.v3center) - Check.v3normal .dot (neigCheck.v3center - Check.v3center);
   if(dif_height > configLocaliser.height_threshold){
-//      cout << "dif_height parallel " << dif_height << endl;
     return false;}
   ++nCheckConditions;
 
   double dif_height2 = neigRef.v3normal .dot (Ref.v3center - neigRef.v3center) - neigCheck.v3normal .dot (Check.v3center - neigCheck.v3center);
   if(dif_height2 > configLocaliser.height_threshold){
-//      cout << "dif_height parallel " << dif_height << endl;
     return false;}
   ++nCheckConditions;
 
   // Normal
   double dif_normal = fabs(RAD2DEG( acos( Ref.v3normal .dot (neigRef.v3normal)) - acos( Check.v3normal .dot (neigCheck.v3normal)) ) );
-//cout << "dif_normal " << dif_normal << endl;
   if( dif_normal > configLocaliser.angle_threshold ){
-//    cout << "dif_normal " << dif_normal << endl;
     return false;}
   ++nCheckConditions;
 
   // Relative distance
   double rel_dist_centers = sqrt( (Ref.v3center - neigRef.v3center) .dot (Ref.v3center - neigRef.v3center) / ((Check.v3center - neigCheck.v3center) .dot (Check.v3center - neigCheck.v3center)) );
-//cout << "rel_dist_centers " << rel_dist_centers << endl;
 
   // If the plane has been fully detected use a narrower threshold for the comparison
   bool RefBothFull = (Ref.bFullExtent && neigRef.bFullExtent);// ? true : false;
   bool CheckBothFull = (Check.bFullExtent && neigCheck.bFullExtent);// ? true : false;
-  //bool RefBothShape = (Ref.elongation > 1.3 && neigRef.elongation > 1.3);
-  //bool CheckBothShape = (Check.elongation > 1.3 && neigCheck.elongation > 1.3);
 
   if(configLocaliser.use_completeness)
   {
     if(RefBothFull && CheckBothFull)
     {
       if( rel_dist_centers < configLocaliser.dist_threshold_inv || rel_dist_centers > configLocaliser.dist_threshold ){
-//        cout << "rel_dist all-full" << rel_dist_centers << endl;
         return false;}
   ++nCheckConditions;
     }
     else if(RefBothFull || CheckBothFull)
     {
       if( rel_dist_centers < configLocaliser.dist_threshold_inv || rel_dist_centers > configLocaliser.dist_threshold ){
-//        cout << "rel_dist half-full " << rel_dist_centers << endl;
         return false;}
   ++nCheckConditions;
     }
     else if( !Ref.bFromStructure && !Check.bFromStructure && !neigRef.bFromStructure && !neigCheck.bFromStructure )
       if( rel_dist_centers < configLocaliser.dist_threshold_inv || rel_dist_centers > configLocaliser.dist_threshold ){
-//        cout << "rel_dist no-pair-full " << rel_dist_centers << endl;
         return false;}
   ++nCheckConditions;
   }
@@ -175,19 +161,12 @@ bool SubgraphMatcher::evalBinaryConstraints(Plane &Ref, Plane &neigRef, Plane &C
   {
     if( Ref.areaVoxels< 1 && neigCheck.areaVoxels< 1 && Check.areaVoxels< 1 && neigRef.areaVoxels< 1 ){ // Use the restriction only when all the planes involved are smaller than 1m2
       if( rel_dist_centers < configLocaliser.dist_threshold_inv || rel_dist_centers > configLocaliser.dist_threshold){
-//        cout << "rel_dist areas<1 " << rel_dist_centers << endl;
         return false;}
-  ++nCheckConditions;
+      ++nCheckConditions;
     }
-//    else if( !Ref.bFromStructure && !Check.bFromStructure && !neigRef.bFromStructure && !neigCheck.bFromStructure )
-//      if( rel_dist_centers < configLocaliser.area_threshold_inv || rel_dist_centers > configLocaliser.area_threshold){
-////        cout << "rel_dist no-pair-full " << rel_dist_centers << endl;
-//        return false;}
   }
 
   // We do not check ppal direction constraint -> It has demonstrated to be very little distinctive
-
-//cout << "evalBinaryConstraints TRUE\n";
 
   return true;
 }
@@ -197,7 +176,7 @@ bool isSubgraphContained(map<unsigned, unsigned> &contained, map<unsigned, unsig
   if( contained.size() > container.size() )
     return false;
 
-//cout << "isSubgraphContained\n";
+  //is Subgraph Contained?
   for(map<unsigned, unsigned>::iterator it = contained.begin(); it != contained.end(); it++)
     if(container.count(it->first) == 0)
       return false;
@@ -274,7 +253,6 @@ void SubgraphMatcher::exploreSubgraphTreeR(set<unsigned> &sourcePlanes, set<unsi
       if(alreadyEval)
         continue;
 
-//    cout << "Test edge " << *it1 << " - " << *it2 << endl;
       // Check that it1 and it2 correspond to the same plane
       if( !evalUnaryConstraints(subgraphSrc->pPBM->vPlanes[*it1], subgraphTrg->pPBM->vPlanes[*it2], *subgraphTrg->pPBM, false ) )//(FloorPlane != -1 && FloorPlaneMap != -1) ? true : false ) )
         continue;

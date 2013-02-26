@@ -78,23 +78,14 @@ namespace pbmap {
 
    public:
     Plane() :
-      semanticGroup(0),
       elongation(1.0),
       bFullExtent(false),
       bFromStructure(false),
       contourPtr(new pcl::PointCloud<pcl::PointXYZRGBA>),
       polygonContourPtr(new pcl::PointCloud<pcl::PointXYZRGBA>),
-  //    outerPolygonPtr(new pcl::PointCloud<pcl::PointXYZRGBA>),
       planePointCloudPtr(new pcl::PointCloud<pcl::PointXYZRGBA>)
-  //    planeRawPointCloudPtr(new pcl::PointCloud<pcl::PointXYZRGBA>)
     {
     }
-
-  //  /*!
-  //   * Check if the the input plane is the same than this plane for some given angle and distance thresholds.
-  //   * If the planes are the same they are merged in this and the function returns true. Otherwise it returns false.
-  //   */
-  //  bool isSamePlane(Plane &plane, const float &angleThreshold=5.0, const float &distThreshold=0.05);
 
     /*!
      * Force the plane inliers to lay on the plane
@@ -137,7 +128,7 @@ namespace pbmap {
     */
     unsigned id;
     unsigned numObservations;
-    unsigned semanticGroup;
+//    unsigned semanticGroup;
     std::set<unsigned> nearbyPlanes;
     std::map<unsigned,unsigned> neighborPlanes;
     std::string label;
@@ -158,22 +149,16 @@ namespace pbmap {
     /**!
      *  Radiometric description
     */
-    Eigen::Vector3d v3colorNrgb;
-    Eigen::Vector3d v3colorNrgbDev;
-    std::vector<double> r;
-    std::vector<double> g;
-    std::vector<double> b;
+    Eigen::Vector3f v3colorNrgb;
+    Eigen::Vector3f v3colorNrgbDev;
+    std::vector<float> r;
+    std::vector<float> g;
+    std::vector<float> b;
 
     pcl::PointCloud<pcl::PointXYZRGBA>::Ptr contourPtr;
     pcl::PointCloud<pcl::PointXYZRGBA>::Ptr polygonContourPtr;
     pcl::PointCloud<pcl::PointXYZRGBA>::Ptr outerPolygonPtr;
     pcl::PointCloud<pcl::PointXYZRGBA>::Ptr planePointCloudPtr;
-//    pcl::PlanarPolygon<pcl::PointXYZRGBA> polygon;
-//    pcl::PlanarRegion<pcl::PointXYZRGBA> planar_region;
-
-  //  pcl::PointCloud<pcl::PointXYZRGBA>::Ptr edgeCloudPtr;
-  //  pcl::PointCloud<pcl::PointXYZRGBA>::Ptr outEdgeCloudPtr;
-  //  unsigned background, foreground, groundplane;
 
     /*!
      * Calculate plane's main color in C1C2C3 representation

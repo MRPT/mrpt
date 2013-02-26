@@ -112,10 +112,10 @@ namespace pbmap {
     PointT P0, P1;
   };
 
-  /*! Squre distance between two segments
-   */
+  /*! Square of the distance between two segments */
   float PBMAP_IMPEXP dist3D_Segment_to_Segment2( Segment S1, Segment S2);
 
+  /*! Check if a point lays inside a convex hull */
   bool PBMAP_IMPEXP isInHull(PointT &point3D, pcl::PointCloud<PointT>::Ptr hull3D);
 
   template<typename dataType>
@@ -146,7 +146,7 @@ namespace pbmap {
 
   // Gets the center of a single-mode distribution, it performs variable mean shift
   template<typename dataType>
-  dataType getHistogramMeanShift(std::vector<dataType> &data, dataType range, dataType &stdDevHist)
+  dataType getHistogramMeanShift(std::vector<dataType> &data, double range, dataType &stdDevHist_out)
   {
   //  mrpt::utils::CTicTac clock;
   //  clock.Tic();
@@ -159,14 +159,15 @@ namespace pbmap {
 //    dataType meanShift =sum/size;
 //    stdDevHist = mrpt::math::stddev(data);
 
-    dataType meanShift;
+//    dataType meanShift;
+    double meanShift, stdDevHist;
     mrpt::math::meanAndStd(data,meanShift,stdDevHist);
-    dataType sum = meanShift*data.size();
+    double sum = meanShift*data.size();
 
     //dataType step = 1;
-    dataType shift = 1000;
+    double shift = 1000;
     int iteration_counter = 0;
-    dataType convergence = range * 0.001;
+    double convergence = range * 0.001;
     while(2*dataTemp.size() > size && shift > convergence)
     {
   //std::cout << "iteration " << iteration_counter << " Std " << stdDevHist << std::endl;
@@ -181,7 +182,7 @@ namespace pbmap {
         else
           it++;
       }
-      dataType meanUpdated = sum / dataTemp.size();
+      double meanUpdated = sum / dataTemp.size();
       shift = fabs(meanUpdated - meanShift);
       meanShift = meanUpdated;
       stdDevHist = mrpt::math::stddev(dataTemp);
@@ -193,7 +194,8 @@ namespace pbmap {
 
   //  stdDevHist = calcStdDev(data, meanShift);
 
-    return meanShift;
+    stdDevHist_out = static_cast<float>(stdDevHist);
+    return static_cast<float>(meanShift);
   }
 
   /**

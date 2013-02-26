@@ -73,11 +73,6 @@ namespace pbmap {
     {
     };
 
-  //  inline void setCurrentPbMap(PbMap &mPbM)
-  //  {
-  //    mPbMap = mPbM;
-  //  };
-
   /*!Check if the input plane fulfill some heuristics and so we can infer some knowledge, e.g. the plane correspond to the floor,
      a wall, the ceiling, in the world. It also makes use of the current sensor pose to verify some assumptions. // Modificar con un define esto ultimo
     */
@@ -95,7 +90,7 @@ namespace pbmap {
 
     /*!Check if the input plane represents completely a 3D planar surface. It uses some heuristics to mark a plane as "Complete" when its area does not grow after
       subsequent observations.
-    */ // Mover a plane o a
+    */
     void isFullExtent(Plane &plane, double newArea);
 
    private:

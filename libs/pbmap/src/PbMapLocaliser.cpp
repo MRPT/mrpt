@@ -43,24 +43,17 @@
 #if MRPT_HAS_PCL
 
 #include <mrpt/utils/CConfigFile.h>
+#include <mrpt/system/threads.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/common/time.h>
 #include <fstream>
 #include <iostream>
-
-//#include <mrpt/pbmap/PbMapLocaliser.h>
-//#include <mrpt/pbmap/heuristicParams.h>
-//#include <mrpt/pbmap/ConsistencyTest.h>
-////#include <mrpt/pbmap/PbMapSerializer.h>
-//#include <mrpt/pbmap/Miscellaneous.h>
-#include <mrpt/system/threads.h>  // for sleep()
 
 using namespace std;
 using namespace mrpt::pbmap;
 
 config_heuristics configLocaliser;
 
-//PbMapLocaliser::PbMapLocaliser(PbMap &mPbM, std::set<unsigned> &sQueuePlanes) :
 PbMapLocaliser::PbMapLocaliser(PbMap &mPbM) :
     mPbMap(mPbM),
     m_pbMapLocaliser_must_stop(false),
@@ -68,60 +61,8 @@ PbMapLocaliser::PbMapLocaliser(PbMap &mPbM) :
 {
 std::cout << "PbMapLocaliser::PbMapLocaliser min_planes_recognition " << configLocaliser.min_planes_recognition << endl;
 
-  // Load previous PbMaps to search for previous places
-//  LoadPreviousPbMaps(configLocaliser.path_prev_pbmap);
-//  LoadPreviousPbMaps("/home/edu/Projects/PbMaps/PbMaps.txt");
-
   pbMapLocaliser_hd = mrpt::system::createThreadFromObjectMethod(this, &PbMapLocaliser::run);
 }
-
-//// Load Previous PbMaps
-//void PbMapLocaliser::LoadPreviousPbMaps(std::string fileMaps)
-//{
-//cout << "PbMapLocaliser::LoadPreviousPbMaps(...)\n";
-//  std::ifstream configFile;
-//  configFile.open(fileMaps.c_str());
-//
-////    vector<string> previousPbMapNames;
-////    vector<PbMap> previousPbMaps;
-////    int floorPlane;
-////    MapSerializer loader(vPlanesTemp, floorPlane);
-//  string mapFile, filepath = "/home/edu/Projects/PbMaps/", file = "/MapPlanes.xml";
-//  totalPrevPlanes = 0;
-//  while( !configFile.eof() )
-//  {
-////      floorPlane = -1;
-//    getline(configFile, mapFile);
-//    if(mapFile == "")
-//      break;
-//
-//    if(mapFile.at(0) == '%')
-//      continue;
-//  cout << "Load map: " << filepath << mapFile << file << endl;
-//
-//    PbMap previousPbMap;
-//    PbMapSerializer loadMap(previousPbMap);
-//    if(loadMap.LoadPbMap(filepath + mapFile + file) == PbMapSerializer::MAP_FAILED2 )
-//      break;
-//
-//    previousPbMapNames.push_back(mapFile);
-//    previousPbMaps.push_back(previousPbMap);
-//
-////      prevPbMap.vPlaness.push_back(vPlanesTemp);
-////      previousPbMapNames.push_back(mapFile);
-////      vFloors.push_back(floorPlane);
-//    totalPrevPlanes += previousPbMap.vPlanes.size();
-////  cout << "PbMap loaded has " << previousPbMap.vPlanes.size() << " planes" << endl;
-//  }
-////cout << "Size: " << totalPrevPlanes << " " << vFloors.size() << endl;
-////cout << "Floors: ";
-////for(unsigned i=0; i< vFloors.size(); i++)
-////  cout << vFloors[i] << " ";
-////cout << endl;
-//
-//  configFile.close();
-//cout << "PbMapLocaliser:: previous PbMaps loaded\n";
-//}
 
 // Check 2nd order neighbors of the reference plane
 void PbMapLocaliser::compareSubgraphNeighbors(SubgraphMatcher &matcher)
@@ -131,9 +72,6 @@ cout << "PbMapLocaliser::compareSubgraphNeighbors\n";
 
   for(map<unsigned, unsigned>::iterator it = bestMatch.begin(); it != bestMatch.end(); it++)
   {
-//    if(it->first == searchPlane.id)
-//      continue;
-
   // TODO: use the graph to grow
     if(!configLocaliser.graph_rule) // Nearby neighbors - Check the 2nd order neighbors of the matched planes
       for(set<unsigned>::iterator it1 = mPbMap.vPlanes[it->first].nearbyPlanes.begin(); it1 != mPbMap.vPlanes[it->first].nearbyPlanes.end(); it1++)
@@ -204,7 +142,7 @@ bool PbMapLocaliser::searchPlaneContext(Plane &searchPlane)
         << " in map composed of " << totalPrevPlanes << " planes\n";
   #endif
 
-  // REVISAR: Esto cambia el codigo anterior (antes la vecindad actual contenia todos los vecionos de los planos observados
+  // REVISAR: Esto cambia el codigo anterior (antes la vecindad actual contenia todos los vecinos de los planos observados
   Subgraph currentSubgraph(&mPbMap, searchPlane.id);
 //  matcher.setSourceSubgraph(currentSubgraph);
 
@@ -212,7 +150,6 @@ bool PbMapLocaliser::searchPlaneContext(Plane &searchPlane)
   {
     PbMap &prevPbMap = previousPbMaps[mapId];
 
-//    mrpt::math::CMatrix matchContext(nObserved,prevPbMap.vPlanes.size());
     for(size_t i=0; i < prevPbMap.vPlanes.size(); i++)
     {
       Plane &targetPlane = prevPbMap.vPlanes[i];
@@ -243,6 +180,7 @@ bool PbMapLocaliser::searchPlaneContext(Plane &searchPlane)
         bestMatch = resultingMatch;
       }
 
+      // Evaluate Score of the matched places
 //      if( score > maxScore)
 //      {
 //        max2ndScore = maxScore;
@@ -344,7 +282,6 @@ bool PbMapLocaliser::searchPlaneContext(Plane &searchPlane)
     reader.read (filename, *model);
     alignedModelPtr.reset(new pcl::PointCloud<pcl::PointXYZRGBA>);
     pcl::transformPointCloud(*model,*alignedModelPtr,rigidTransfInv);
-//    *globalMapPtr += *alignedModelPtr;
 
     return true;
   }
@@ -367,8 +304,6 @@ void PbMapLocaliser::run()
 
       while( !vQueueObservedPlanes.empty() )
       {
-//        std::cout << "PbMapLocaliser analyse plane. Queue has " << vQueueObservedPlanes.size() << " planes\n";
-
         // Do not consider searching planes which do not have more than 2 neighbor planes (too much uncertainty)
         if(!configLocaliser.graph_rule) // Nearby neighbors
         {
@@ -385,9 +320,10 @@ void PbMapLocaliser::run()
             continue;
           }
         matcher.nCheckConditions = 0;
-#ifdef _VERBOSE
+        #ifdef _VERBOSE
         double search_plane_start = pcl::getTime ();
-#endif
+        #endif
+
         if( searchPlaneContext(mPbMap.vPlanes[vQueueObservedPlanes[0]]) )
         {
           placeFound = true;

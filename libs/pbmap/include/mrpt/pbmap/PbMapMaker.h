@@ -82,7 +82,6 @@ namespace pbmap {
 
   /*!PbMapMaker's constructor sets some threshold for plane segmentation and map growing from a configuration file (or default).
      This constructor also starts PbMapMaker's own thread.*/
-  //  PbMapMaker(PbMap &mPbM);
     PbMapMaker();
 
   /*!PbMapMaker's destructor is used to save some debugging info to file.*/
@@ -130,9 +129,6 @@ namespace pbmap {
     /*!Serialize PbMap"*/  // Cambiar nombre o Quitar!
     void PbMapSerialization(std::string sCommand, std::string sParams);
 
-  //  /*!PbMapMaker command callback"*/
-  //  static void GUICommandCallBack(void* ptr, std::string sCommand, std::string sParams);
-
     /*!File containing some paramteres and heuristic thresholds"*/
     FILE *config_Param;
 
@@ -152,9 +148,6 @@ namespace pbmap {
 
     /*!Object to infer some knowledge in the map planes.*/
     PlaneInferredInfo *mpPlaneInferInfo;
-
-  //  static bool graphRepresentation; // Swithches between regular representation and graph of planes representation
-  //  static void keyboardEventOccurred (const pcl::visualization::KeyboardEvent &event, void* viewer_void);
 
     /*!PCL visualizer callback*/
     void viz_cb (pcl::visualization::PCLVisualizer& viz);

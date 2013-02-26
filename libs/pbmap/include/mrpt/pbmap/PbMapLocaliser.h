@@ -127,9 +127,6 @@ namespace pbmap {
 
    protected:
 
-  //  /*!PbMapLocaliser command callback"*/
-  //  static void GUICommandCallBack(void* ptr, std::string sCommand, std::string sParams);
-
     /*!This executes the PbMapLocaliser's thread*/
     void run();
 

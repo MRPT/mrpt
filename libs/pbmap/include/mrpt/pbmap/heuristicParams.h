@@ -88,11 +88,6 @@ namespace pbmap {
       height_threshold_parallel = config_file.read_float("binary","height_threshold_parallel",0.2);
       cos_angle_parallel = config_file.read_float("binary","cos_angle_parallel",0.985);
 
-    //  // [debug]
-    //  configPbMap.verbose = config_file.read_bool("debug","verbose",false);
-    //
-    //  // [visualization]
-    //  configPbMap.visualizeIntensity = config_file.read_bool("visualization","visualizeIntensity",false);
     };
 
     // [global]
@@ -119,11 +114,6 @@ namespace pbmap {
     float height_threshold_parallel;    // Binary constraint: Height from one plane wrt a neighbor (in meters) for complete marked planes
     float cos_angle_parallel;
 
-  //  // [debug]
-  //  bool verbose;
-  //
-  //  // [visualization]
-  //  bool superimposeCloud;
   };
 
 } } // End of namespaces

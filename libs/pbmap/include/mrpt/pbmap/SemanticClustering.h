@@ -153,26 +153,19 @@ namespace pbmap {
       for(unsigned i=0; i < neighborGroups.size(); i++)
         group_limits.push_back(group_limits.back() + groups[neighborGroups[i]].size());
 
-//      unsigned lim_low = 0;
-//      unsigned lim_up = 0;
-
       // Re-assign plane's semanticGroup and groups
       for(unsigned i=0; i < parts.size(); i++)
       {
-//        lim_up += groups[neighborGroups[i] ].size();
         for(unsigned j=0; j < parts[i].size(); j++)
         {
-//          if(parts[i][j] < lim_low || parts[i][j] >= lim_up) // The plane has changed the group
           if(i < neighborGroups.size())
           {
             if(parts[i][j] < group_limits[i] || parts[i][j] >= group_limits[i+1]) // The plane has changed the group
             {
-//              unsigned group_num = 0;
               for(unsigned k=0; k < neighborGroups.size() && i != k; k++)
                 if(parts[i][j] >= group_limits[k] || parts[i][j] < group_limits[k+1]) // The plane has changed the group
                 {
                 assert(groups[neighborGroups[k]][parts[i][j]-group_limits[k]] == planesVicinity_order[parts[i][j]]);
-                  mPbMap.vPlanes[groups[neighborGroups[k]][parts[i][j]-group_limits[k]]].semanticGroup = neighborGroups[k];
                   newGroups[neighborGroups[k]].push_back(mPbMap.vPlanes[groups[neighborGroups[k]][parts[i][j]-group_limits[k]]].id);
                 }
             }
@@ -187,13 +180,11 @@ namespace pbmap {
               if(parts[i][j] >= group_limits[k] || parts[i][j] < group_limits[k+1]) // The plane has changed the group
               {
               assert(groups[neighborGroups[k]][parts[i][j]-group_limits[k]] == planesVicinity_order[parts[i][j]]);
-                mPbMap.vPlanes[groups[neighborGroups[k]][parts[i][j]-group_limits[k]]].semanticGroup = neighborGroups[k];
                 newGroups[neighborGroups[k]].push_back(mPbMap.vPlanes[groups[neighborGroups[k]][parts[i][j]-group_limits[k]]].id);
               }
           }
 
         }
-//        lim_low = lim_up;
       }
 
       for(unsigned i=0; i < newGroups.size(); i++)
@@ -201,7 +192,6 @@ namespace pbmap {
 
       if(group_diff < 0)
       {
-//      assert(0);
         int sizeVicinity = neighborGroups.size();
         for(int i=-1; i >= group_diff; i--)
         {
@@ -209,9 +199,6 @@ namespace pbmap {
             groups.erase(neighborGroups[sizeVicinity+i]);
           else
           {
-            for(unsigned j=0; j < mPbMap.vPlanes.size(); j++)
-              if(mPbMap.vPlanes[j].semanticGroup > neighborGroups[sizeVicinity+i])
-                mPbMap.vPlanes[j].semanticGroup--;
             for(unsigned j=neighborGroups[sizeVicinity+i]; j < groups.size()-1; j++)
               groups[j] = groups[j+1];
             groups.erase(groups.size()-1);
@@ -270,7 +257,6 @@ namespace pbmap {
 //      mrpt::utils::CTicTac time;
 //      time.Tic();
 //
-      //unsigned currentSemanticGroup = current_group;
       buildCoVisibilityMatrix();
       std::vector<mrpt::vector_uint> parts;  // Vector of vectors to keep the KFs index of the different partitions (submaps)
       mrpt::graphs::CGraphPartitioner<mrpt::math::CMatrix>::RecursiveSpectralPartition(co_visibility, parts, 0.8, false, true, true);

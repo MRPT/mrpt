@@ -45,8 +45,8 @@
 #include <mrpt/slam/CBeacon.h>
 #include <mrpt/slam/CBeaconMap.h>
 #include <mrpt/slam/CColouredPointsMap.h>
-#include <mrpt/slam/CGasConcentrationGridMap2D.h>
-#include <mrpt/slam/CWirelessPowerGridMap2D.h>
+//#include <mrpt/slam/CGasConcentrationGridMap2D.h>
+//#include <mrpt/slam/CWirelessPowerGridMap2D.h>
 #include <mrpt/slam/CHeightGridMap2D.h>
 #include <mrpt/slam/CReflectivityGridMap2D.h>
 #include <mrpt/slam/COccupancyGridMap2D.h>
@@ -55,7 +55,7 @@
 #include <mrpt/slam/CWeightedPointsMap.h>
 #include <mrpt/slam/COctoMap.h>
 
-//#include <mrpt/slam/PCL_adapters.h>  // NOTE: This file must be included from the user 
+//#include <mrpt/slam/PCL_adapters.h>  // NOTE: This file must be included from the user
                                        // code only if he has already #include'd PCL headers.
 
 #include <mrpt/opengl/CAngularObservationMesh.h>

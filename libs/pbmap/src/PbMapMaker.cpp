@@ -51,20 +51,14 @@
 #include <pcl/features/integral_image_normal.h>
 #include <pcl/features/normal_3d.h>
 #include <pcl/ModelCoefficients.h>
-//#include <pcl/segmentation/planar_region.h>
 #include <pcl/segmentation/organized_multi_plane_segmentation.h>
 #include <pcl/segmentation/organized_connected_component_segmentation.h>
 #include <pcl/filters/extract_indices.h>
-//#include <pcl/surface/convex_hull.h>
 #include <pcl/filters/voxel_grid.h>
 #include <pcl/common/transforms.h>
-//#include <pcl/geometry/polygon_operations.h>
 #include <pcl/common/time.h>
 
 #include <iostream>
-
-//#include <mrpt/pbmap/PbMapMaker.h>
-//#include <mrpt/pbmap/Miscellaneous.h>
 
 using namespace std;
 using namespace Eigen;
@@ -111,12 +105,6 @@ struct config_pbmap
   bool save_registered_cloud;
   std::string path_save_registered_cloud;
 
-//  // [visualization]
-//  bool visualizeIntensity;
-//
-//  // [debug]
-//  bool verbose;  // Prints on screen some variables to debug the program
-
 } configPbMap;
 
 void readConfigFile()
@@ -162,12 +150,6 @@ void readConfigFile()
   configPbMap.path_save_registered_cloud = config_file.read_string("serialize","path_save_registered_cloud","/home/edu/Projects/PbMaps/PbMaps.txt");
 //cout << "path_save_registered_cloud " << configPbMap.path_save_registered_cloud << endl;
 
-//  // [visualization]
-//  configPbMap.visualizeIntensity = config_file.read_bool("visualization","visualizeIntensity",false);
-//
-//  // [debug]
-//  configPbMap.verbose = config_file.read_bool("debug","verbose",false);
-
   #ifdef _VERBOSE
     cout << "readConfigFile configPbMap.ini dist_threshold " << configPbMap.dist_threshold << endl;
   #endif
@@ -192,7 +174,6 @@ PbMapMaker::PbMapMaker() :
   if(configPbMap.makeCovisibilityClusters)
     clusterize = new SemanticClustering(mPbMap);
 
-//  mrpt::system::createThread (&run, T param);
   pbmaker_hd = mrpt::system::createThreadFromObjectMethod(this,&PbMapMaker::run);
 }
 
@@ -286,10 +267,6 @@ void PbMapMaker::detectPlanesCloud( pcl::PointCloud<PointT>::Ptr &pointCloudPtr_
 
   #ifdef _VERBOSE
     cout << "detectPlanes in a cloud with " << pointCloudPtr_arg->size() << " points " << minInliers << " minInliers\n";
-//    cout << "Number of pts of the clouds: ";
-//    for(unsigned i=0; i < frameQueue.size(); i++)
-//      cout << frameQueue[i].cloudPtr->size() << " ";
-//    cout << endl;
   #endif
 
   pcl::PointCloud<PointT>::Ptr pointCloudPtr_arg2(new pcl::PointCloud<PointT>);
@@ -330,7 +307,6 @@ void PbMapMaker::detectPlanesCloud( pcl::PointCloud<PointT>::Ptr &pointCloudPtr_
   double plane_extract_start = pcl::getTime ();
 #endif
   mps.setInputNormals (normal_cloud);
-//    mps.setInputCloud (alignedCloudPtr);
   mps.setInputCloud (pointCloudPtr_arg2);
 
   std::vector<pcl::PlanarRegion<PointT>, aligned_allocator<pcl::PlanarRegion<PointT> > > regions;
@@ -340,7 +316,6 @@ void PbMapMaker::detectPlanesCloud( pcl::PointCloud<PointT>::Ptr &pointCloudPtr_
   std::vector<pcl::PointIndices> label_indices;
   std::vector<pcl::PointIndices> boundary_indices;
   mps.segmentAndRefine (regions, model_coefficients, inlier_indices, labels, label_indices, boundary_indices);
-
 
   #ifdef _VERBOSE
     double plane_extract_end = pcl::getTime();
@@ -467,7 +442,7 @@ void PbMapMaker::detectPlanesCloud( pcl::PointCloud<PointT>::Ptr &pointCloudPtr_
       detectedPlanes[i].numObservations = 1;
       detectedPlanes[i].bFullExtent = false;
       detectedPlanes[i].nFramesAreaIsStable = 0;
-      detectedPlanes[i].semanticGroup = clusterize->currentSemanticGroup;
+//      detectedPlanes[i].semanticGroup = clusterize->currentSemanticGroup;
       clusterize->groups[clusterize->currentSemanticGroup].push_back(detectedPlanes[i].id);
 
       #ifdef _VERBOSE
@@ -505,6 +480,10 @@ void PbMapMaker::detectPlanesCloud( pcl::PointCloud<PointT>::Ptr &pointCloudPtr_
 
       // Calculate principal direction
       observedPlane.calcElongationAndPpalDir();
+
+      // Update color
+      observedPlane.calcMainColor();
+//    cout << "Plane " << observedPlane.id << " color\n" << observedPlane.v3colorNrgb << endl;
 
       // Infer knowledge from the planes (e.g. do these planes represent the floor, walls, etc.)
       if(configPbMap.inferStructure)
@@ -568,18 +547,12 @@ void keyboardEventOccurred (const pcl::visualization::KeyboardEvent &event, void
  * If the planes are the same they are merged in this and the function returns true. Otherwise it returns false.*/
 bool PbMapMaker::areSamePlane(Plane &plane1, Plane &plane2, const float &cosAngleThreshold, const float &distThreshold, const float &proxThreshold)
 {
-//cout << "areSamePlane...\n";
   // Check that both planes have similar orientation
-//cout << "Angle between planes centers (cos) " << plane1.v3normal * plane2.v3normal << " " << cosAngleThreshold << endl;
   if( plane1.v3normal .dot (plane2.v3normal) < cosAngleThreshold )
     return false;
 
   // Check the normal distance of the planes centers using their average normal
-//  double sumAreas = plane1.areaVoxels+ plane2.areaVoxels;
-//  Vector<3> avNormal = (plane1.areaVoxels*plane1.v3normal + plane2.areaVoxels*plane2.v3normal) / sumAreas;
-//  float dist_normal = avNormal * (plane1.v3center - plane2.v3center);
   float dist_normal = plane1.v3normal .dot (plane2.v3center - plane1.v3center);
-//cout << "Normal Dist between planes centers " << dist_normal << " " << distThreshold << endl;
   if(fabs(dist_normal) > distThreshold ) // Then merge the planes
     return false;
 
@@ -609,10 +582,8 @@ void PbMapMaker::mergePlanes(Plane &updatePlane, Plane &discardPlane)
   updatePlane.planePointCloudPtr->clear();
   *updatePlane.planePointCloudPtr = mergeCloud;
 
-  if(configPbMap.use_color)
-  {
-    updatePlane.calcMainColor();
-  }
+//  if(configPbMap.use_color)
+//    updatePlane.calcMainColor();
 
   *discardPlane.polygonContourPtr += *updatePlane.planePointCloudPtr;
   updatePlane.calcConvexHull(discardPlane.polygonContourPtr);
@@ -626,7 +597,6 @@ void PbMapMaker::mergePlanes(Plane &updatePlane, Plane &discardPlane)
   mpPlaneInferInfo->isFullExtent(updatePlane, area_recalc);
   updatePlane.areaVoxels= updatePlane.planePointCloudPtr->size() * 0.0025;
 
-//cout << "Previous plane " << updatePlane.id << " area " << updatePlane.areaVoxels<< " of polygon " << updatePlane.compute2DPolygonalArea() << endl;
 }
 
 // Color = (red[i], grn[i], blu[i])
@@ -651,9 +621,6 @@ void PbMapMaker::viz_cb (pcl::visualization::PCLVisualizer& viz)
 
     // Render the data
     {
-//      viz.spinOnce(100);
-//      viz.setUseVbos (true);
-//      viz.setSize (840, 740);
       viz.removeAllShapes();
       viz.removeAllPointClouds();
 
@@ -661,12 +628,10 @@ void PbMapMaker::viz_cb (pcl::visualization::PCLVisualizer& viz)
 
       if(graphRepresentation)
       {
-//      cout << "show graphRepresentation\n";
         for(size_t i=0; i<mPbMap.vPlanes.size(); i++)
         {
           pcl::PointXYZ center(2*mPbMap.vPlanes[i].v3center[0], 2*mPbMap.vPlanes[i].v3center[1], 2*mPbMap.vPlanes[i].v3center[2]);
           double radius = 0.1 * sqrt(mPbMap.vPlanes[i].areaVoxels);
-//        cout << "radius " << radius << endl;
           sprintf (name, "sphere%u", static_cast<unsigned>(i));
           viz.addSphere (center, radius, ared[i%10], agrn[i%10], ablu[i%10], name);
 
@@ -759,9 +724,9 @@ void PbMapMaker::viz_cb (pcl::visualization::PCLVisualizer& viz)
           viz.addPointCloud (plane_i.planePointCloudPtr, color, name);// contourPtr, planePointCloudPtr, polygonContourPtr
           viz.setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 2, name);
 
-          sprintf (name, "planeBorder_%02u", static_cast<unsigned>(i));
-          pcl::visualization::PointCloudColorHandlerCustom <PointT> color2 (plane_i.contourPtr, 255, 255, 255);
-          viz.addPointCloud (plane_i.contourPtr, color2, name);// contourPtr, planePointCloudPtr, polygonContourPtr
+//          sprintf (name, "planeBorder_%02u", static_cast<unsigned>(i));
+//          pcl::visualization::PointCloudColorHandlerCustom <PointT> color2 (plane_i.contourPtr, 255, 255, 255);
+//          viz.addPointCloud (plane_i.contourPtr, color2, name);// contourPtr, planePointCloudPtr, polygonContourPtr
 
 //          //Edges
 //          if(mPbMap.edgeCloudPtr->size() > 0)
@@ -774,22 +739,6 @@ void PbMapMaker::viz_cb (pcl::visualization::PCLVisualizer& viz)
 //            sprintf (name, "edge%u", static_cast<unsigned>(i));
 //            viz.addLine (mPbMap.edgeCloudPtr->points.front(), mPbMap.edgeCloudPtr->points.back(), ared[3], agrn[3], ablu[3], name);
 //          }
-
-//
-//          sprintf (name, "planeEdgeOut_%02u", static_cast<unsigned>(i));
-//          pcl::visualization::PointCloudColorHandlerCustom <PointT> color3 (mPbMap.outEdgeCloudPtr, 0, 255, 255);
-//          viz.addPointCloud (mPbMap.outEdgeCloudPtr, color3, name);// contourPtr, planePointCloudPtr, polygonContourPtr
-//          viz.setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 5, name);
-//
-////          // Draw plane info (descriptor)
-////          sprintf (name, "B%u F%u P%u", PbMap.background, PbMap.foreground, PbMap.groundplane);
-////            viz.addText3D (name, pt2, 0.05, ared[3], agrn[3], ablu[3], name);
-//          //Edges Fin
-
-//          sprintf (name, "outerPoly_%u", static_cast<unsigned>(i));
-//          pcl::visualization::PointCloudColorHandlerCustom <PointT> colorOuterP (plane_i.planePointCloudPtr, red[i%10], grn[i%10], blu[i%10]);
-//          viz.addPointCloud (plane_i.outerPolygonPtr, colorOuterP, name);// contourPtr, planePointCloudPtr, polygonContourPtr
-//          viz.setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 5, name);
 
           sprintf (name, "approx_plane_%02d", int (i));
           viz.addPolygon<PointT> (plane_i.polygonContourPtr, 0.5 * red[i%10], 0.5 * grn[i%10], 0.5 * blu[i%10], name);
@@ -804,17 +753,6 @@ void PbMapMaker::viz_cb (pcl::visualization::PCLVisualizer& viz)
     }
   }
 }
-
-//void PbMapMaker::saveInfoFiles()
-//{
-//  string results_file;
-//  ofstream file;
-//
-//  results_file = "areaRestriction.txt";
-//  file.open(results_file.c_str(), ios::app);
-//    file << configPbMap.area_THRESHOLD << " " << rejectAreaT << " " << acceptAreaT << " " << rejectAreaF << " " << acceptAreaF << endl;
-//  file.close();
-//}
 
 void PbMapMaker::run()
 {
@@ -831,7 +769,7 @@ void PbMapMaker::run()
     }
     else
     {
-//    // Assign pointCloud of last KF to the global map
+    // Assign pointCloud of last KF to the global map
     detectPlanesCloud( frameQueue.back().cloudPtr, frameQueue.back().pose,
                       configPbMap.dist_threshold, configPbMap.angle_threshold, configPbMap.minInliersRate);
 
@@ -855,43 +793,17 @@ void PbMapMaker::run()
 
         // Evaluate the partition of the current groups with minNcut
         int size_partition = clusterize->evalPartition(current_group);
-      cout << "PARTITION SIZE " << size_partition << endl;
+        cout << "PARTITION SIZE " << size_partition << endl;
         assert(size_partition < 2);
 
         minGrowPlanes += 5;
       }
-
-//  cout << "PbMapMaker iteration\n";
 
       ++numPrevKFs;
     }
   }
   m_pbmaker_finished = true;
 }
-
-
-///**
-// * Set up the map serialization thread for saving/loading and the start the thread
-// * @param sCommand the function that was called (eg. SaveMap)
-// * @param sParams the params string, which may contain a filename and/or a map number
-// */
-//void PbMapMaker::PbMapSerialization(std::string sCommand, std::string sParams)
-//{
-//cout << "\n\nPbMapSerialization()\n";
-//  if( mpPbMapSerializer->Init( sCommand, sParams) )
-//    mpPbMapSerializer->start();
-//
-//  // Save the global map as a PCD file
-//  pcl::io::savePCDFile("pointCloud_PbMap.pcd",*mPbMap.globalMapPtr);
-//}
-
-//void PbMapMaker::GUICommandCallBack(void *ptr, string sCommand, string sParams)
-//{
-//  if( sCommand == "SavePbMap" /*|| sCommand == "LoadPbMap" */)
-//  {
-//    static_cast<PbMapMaker*>(ptr)->PbMapSerialization(sCommand, "PbMap.xml");
-//  }
-//}
 
 bool PbMapMaker::stop_pbMapMaker()
 {
@@ -908,14 +820,6 @@ bool PbMapMaker::stop_pbMapMaker()
 
 PbMapMaker::~PbMapMaker()
 {
-  cout << "PbMapMaker destructor called -> Save color information to file\n";
-
-//  saveInfoFiles();
-
-//  PbMapSerialization("SavePbMap","PbMap_die.xml");
-
-  // Delete pointers
-//  delete mpPbMapSerializer;
   delete mpPlaneInferInfo;
   delete mpPbMapLocaliser;
 

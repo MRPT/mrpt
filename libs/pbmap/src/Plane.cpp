@@ -61,30 +61,31 @@ void  Plane::writeToStream(CStream &out, int *out_Version) const
 	else
 	{
 		// The data
-		out << (uint32_t)numObservations;
+		out << static_cast<uint32_t>(numObservations);//out << uint32_t(numObservations);
 		out << areaVoxels;
 		out << areaHull;
 		out << elongation;
-        out.WriteBufferFixEndianness<Eigen::Vector3f::Scalar>(&v3normal(0),3);
-        out.WriteBufferFixEndianness<Eigen::Vector3f::Scalar>(&v3center(0),3);
-        out.WriteBufferFixEndianness<Eigen::Vector3f::Scalar>(&v3PpalDir(0),3);
-        out.WriteBufferFixEndianness<Eigen::Vector3d::Scalar>(&v3colorNrgb(0),3);
-        out.WriteBufferFixEndianness<Eigen::Vector3d::Scalar>(&v3colorNrgbDev(0),3);
+    out << v3normal(0) << v3normal(1) << v3normal(2);
+    out << v3center(0) << v3center(1) << v3center(2);
+    out << v3PpalDir(0) << v3PpalDir(1) << v3PpalDir(2);
+    out << v3colorNrgb(0) << v3colorNrgb(1) << v3colorNrgb(2);
+    out << v3colorNrgbDev(0) << v3colorNrgbDev(1) << v3colorNrgbDev(2);
+//    out.WriteBufferFixEndianness<Eigen::Vector3f::Scalar>(&v3normal(0),3);
+//    out.WriteBufferFixEndianness<Eigen::Vector3f::Scalar>(&v3center(0),3);
+//    out.WriteBufferFixEndianness<Eigen::Vector3f::Scalar>(&v3PpalDir(0),3);
+//    out.WriteBufferFixEndianness<Eigen::Vector3f::Scalar>(&v3colorNrgb(0),3);
+//    out.WriteBufferFixEndianness<Eigen::Vector3f::Scalar>(&v3colorNrgbDev(0),3);
 
-        out << (uint32_t)neighborPlanes.size();
-        for (std::map<unsigned,unsigned>::const_iterator it=neighborPlanes.begin(); it != neighborPlanes.end(); it++)
-          out << static_cast<uint32_t>(it->first) << static_cast<uint32_t>(it->second);
+    out << (uint32_t)neighborPlanes.size();
+    for (std::map<unsigned,unsigned>::const_iterator it=neighborPlanes.begin(); it != neighborPlanes.end(); it++)
+      out << static_cast<uint32_t>(it->first) << static_cast<uint32_t>(it->second);
 
-        out << (uint32_t)polygonContourPtr->size();
-        for (uint32_t i=0; i < polygonContourPtr->size(); i++)
-          out << polygonContourPtr->points[i].x << polygonContourPtr->points[i].y << polygonContourPtr->points[i].z;
+    out << (uint32_t)polygonContourPtr->size();
+    for (uint32_t i=0; i < polygonContourPtr->size(); i++)
+      out << polygonContourPtr->points[i].x << polygonContourPtr->points[i].y << polygonContourPtr->points[i].z;
 
-        out << bFullExtent;
-        out << bFromStructure;
-        out << semanticGroup;
-    //    out << semanticLabel;
-        out << label;
-
+    out << bFullExtent;
+    out << bFromStructure;
 	}
 
 }
@@ -98,26 +99,29 @@ void  Plane::readFromStream(CStream &in, int version)
 	{
 	case 0:
 		{
-			// Delete previous content:
-			//vPlanes.clear();
-
 			// The data
-			in >> numObservations;
+			uint32_t n;
+			in >> n;
+			numObservations = (unsigned)n;
 			in >> areaVoxels;
 			in >> areaHull;
 			in >> elongation;
-			in.ReadBufferFixEndianness<Eigen::Vector3f::Scalar>(&v3normal[0],sizeof(v3normal[0])*3);
-			in.ReadBufferFixEndianness<Eigen::Vector3f::Scalar>(&v3center[0],sizeof(v3center[0])*3);
-			in.ReadBufferFixEndianness<Eigen::Vector3f::Scalar>(&v3PpalDir[0],sizeof(v3PpalDir[0])*3);
-			in.ReadBufferFixEndianness<Eigen::Vector3d::Scalar>(&v3colorNrgb[0],sizeof(v3colorNrgb[0])*3);
-			in.ReadBufferFixEndianness<Eigen::Vector3d::Scalar>(&v3colorNrgbDev[0],sizeof(v3colorNrgbDev[0])*3);
+			in >> v3normal(0) >> v3normal(1) >> v3normal(2);
+			in >> v3center(0) >> v3center(1) >> v3center(2);
+			in >> v3PpalDir(0) >> v3PpalDir(1) >> v3PpalDir(2);
+			in >> v3colorNrgb(0) >> v3colorNrgb(1) >> v3colorNrgb(2);
+			in >> v3colorNrgbDev(0) >> v3colorNrgbDev(1) >> v3colorNrgbDev(2);
+//			in.ReadBufferFixEndianness<Eigen::Vector3f::Scalar>(&v3normal[0],sizeof(v3normal[0])*3);
+//			in.ReadBufferFixEndianness<Eigen::Vector3f::Scalar>(&v3center[0],sizeof(v3center[0])*3);
+//			in.ReadBufferFixEndianness<Eigen::Vector3f::Scalar>(&v3PpalDir[0],sizeof(v3PpalDir[0])*3);
+//			in.ReadBufferFixEndianness<Eigen::Vector3f::Scalar>(&v3colorNrgb[0],sizeof(v3colorNrgb[0])*3);
+//			in.ReadBufferFixEndianness<Eigen::Vector3f::Scalar>(&v3colorNrgbDev[0],sizeof(v3colorNrgbDev[0])*3);
 
-			uint32_t n;
 			in >> n;
 			neighborPlanes.clear();
       for (uint32_t i=0; i < n; i++)
       {
-		uint32_t neighbor, commonObs;
+        uint32_t neighbor, commonObs;
         in >> neighbor >> commonObs;
         neighborPlanes[neighbor] = commonObs;
       }
@@ -129,26 +133,12 @@ void  Plane::readFromStream(CStream &in, int version)
 
       in >> bFullExtent;
       in >> bFromStructure;
-      in >> semanticGroup;
-  //    out << semanticLabel;
-      in >> label;
+
 		} break;
 	default:
 		MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
   };
 }
-
-//SE3<> calcPlanePose(Vector<3> &normal, Vector<3> &center)
-//{
-//    SE3<> planePose;
-//    Matrix<3> m3Rot = Identity;
-//    m3Rot[2] = normal;
-//    m3Rot[0] = m3Rot[0] - (normal * (m3Rot[0] * normal));
-//    normalize(m3Rot[0]);
-//    m3Rot[1] = m3Rot[2] ^ m3Rot[0];
-//    planePose.get_rotation() = m3Rot;
-//    planePose.get_translation() = -(m3Rot * center);
-//};
 
 /*!
  * Force the plane inliers to lay on the plane
@@ -160,7 +150,6 @@ void Plane::forcePtsLayOnPlane()
   for(unsigned i = 0; i < planePointCloudPtr->size(); i++)
   {
     double dist = v3normal[0]*planePointCloudPtr->points[i].x + v3normal[1]*planePointCloudPtr->points[i].y + v3normal[2]*planePointCloudPtr->points[i].z + D;
-//  cout << "dist " << dist << endl;
     planePointCloudPtr->points[i].x -= v3normal[0] * dist;
     planePointCloudPtr->points[i].y -= v3normal[1] * dist;
     planePointCloudPtr->points[i].z -= v3normal[2] * dist;
@@ -169,7 +158,6 @@ void Plane::forcePtsLayOnPlane()
   for(unsigned i = 0; i < polygonContourPtr->size(); i++)
   {
     double dist = v3normal[0]*polygonContourPtr->points[i].x + v3normal[1]*polygonContourPtr->points[i].y + v3normal[2]*polygonContourPtr->points[i].z + D;
-//  cout << "dist " << dist << endl;
     polygonContourPtr->points[i].x -= v3normal[0] * dist;
     polygonContourPtr->points[i].y -= v3normal[1] * dist;
     polygonContourPtr->points[i].z -= v3normal[2] * dist;
@@ -179,7 +167,7 @@ void Plane::forcePtsLayOnPlane()
 
 /** \brief Compute the area of a 2D planar polygon patch
   */
-float Plane::compute2DPolygonalArea (/*pcl::PointCloud<pcl::PointXYZRGBA>::Ptr &polygonContourPtr, Vector<3> &normal*/)
+float Plane::compute2DPolygonalArea ()
 {
   int k0, k1, k2;
 
@@ -222,7 +210,6 @@ void Plane::computeMassCenterAndArea()
   // cos(theta), where theta is the angle between the polygon and the projected plane
   float ct = fabs ( v3normal[k0] );
   float AreaX2 = 0.0;
-//  Vector<3> massCenter = Zeros;
   Eigen::Vector3f massCenter = Eigen::Vector3f::Zero();
   float p_i[3], p_j[3];
 
@@ -291,10 +278,10 @@ void Plane::calcMainColor()
   v3colorNrgb(2) = getHistogramMeanShift(b, 1.0, v3colorNrgbDev(2));
 }
 
-//**!
-// * mPointHull serves to calculate the convex hull of a set of points in 2D, which are defined by its position (x,y)
-// * and an identity id
-//*/
+/**!
+ * mPointHull serves to calculate the convex hull of a set of points in 2D, which are defined by its position (x,y)
+ * and an identity id
+*/
 struct mPointHull {
     double x, y;
     size_t id;
@@ -373,12 +360,10 @@ void Plane::calcConvexHull(pcl::PointCloud<pcl::PointXYZRGBA>::Ptr &pointCloud, 
   polygonContourPtr->resize(hull_noRep);
   indices.resize(hull_noRep);
 
-//cout << "\nHull k " << k0 << endl;
   for(size_t i=0; i < hull_noRep; i++)
   {
     polygonContourPtr->points[i] = pointCloud->points[ H[i].id ];
     indices[i] = H[i].id;
-//  cout << H[i].id << " pt hull " << polygonContourPtr->points[i].x << " " << polygonContourPtr->points[i].y << " " << polygonContourPtr->points[i].z << endl;
   }
 
 }

@@ -42,9 +42,6 @@
 
 #if MRPT_HAS_PCL
 
-//#include <mrpt/pbmap/PlaneInferredInfo.h>
-//#include <mrpt/pbmap/Miscellaneous.h>
-
 using namespace std;
 using namespace mrpt::pbmap;
 
@@ -58,25 +55,15 @@ using namespace mrpt::pbmap;
 
 bool PlaneInferredInfo::searchTheFloor(Eigen::Matrix4f &poseSensor, Plane &plane)
 {
-//cout << "searchTheFloor\n";
-//cout << "P" << plane.id << " area " << plane.areaVoxels<< endl;
   if(plane.areaVoxels< 2.0)
     return false;
 
   // The angle between the Y axis of the camera and the normal of the plane will normally be around: a) -1 for the floor b) 1 for the ceiling c) 0 for the walls
-//  double cosGravityDir = poseSensor.block(0,1,3,1) .dot (plane.v3normal);
   double cosGravityDir = poseSensor.col(1).head(3) .dot (plane.v3normal);
-//cout << "cosGravityDir " << cosGravityDir << endl;
-//  if( fabs(cosGravityDir) < 0.94 ) // cos 20º = 0.9397
-//    return false;
-
   if( cosGravityDir < -0.94 ) // cos 20º = 0.9397
   {
     double sensorHeight = ( plane.v3normal .dot ( poseSensor.col(3).head(3) - plane.v3center) );
-//    Eigen::Vector3f translation = poseSensor.block(0,3,3,1);
-//    double sensorHeight = ( plane.v3normal .dot ( poseSensor.col(3).head(3) - plane.v3center) );
 
-  //cout << "sensorHeight " << sensorHeight << endl;
     if( sensorHeight < 0.7 || sensorHeight > 2.0 )
       return false;
 
@@ -102,16 +89,6 @@ bool PlaneInferredInfo::searchTheFloor(Eigen::Matrix4f &poseSensor, Plane &plane
     }
   }
 
-//cout << "\n\n\n\nFloor detected in plane P" << plane.id << "\n\n\n\n";
-//  if(cosGravityDir < 0){
-//    plane.label = "Floor";
-//    FloorPlane = plane.id;
-//  }
-//  else
-//    plane.label = "Ceiling";
-
-//cout << "FinishsearchTheFloor\n";
-
   plane.bFromStructure = true;
 
   return true;
@@ -123,7 +100,6 @@ bool PlaneInferredInfo::searchTheFloor(Eigen::Matrix4f &poseSensor, Plane &plane
 */
 bool PlaneInferredInfo::isPlaneCutbyImage(vector<int> &planeIndices, unsigned &widthSampledImage, unsigned &heightSampledImage, unsigned threshold)
 {
-//cout << "isPlaneCutbyImage... widthSampledImage " << widthSampledImage << " heightSampledImage " << heightSampledImage << " threshold " << threshold << endl;
   unsigned upperLimWidth = widthSampledImage - threshold;
   unsigned upperLimHeight = heightSampledImage - threshold;
   unsigned u, v;
@@ -132,11 +108,10 @@ bool PlaneInferredInfo::isPlaneCutbyImage(vector<int> &planeIndices, unsigned &w
   {
     u = planeIndices[i] % widthSampledImage;
     v = planeIndices[i] / widthSampledImage;
-  cout << "idx " << planeIndices[i] << " u " << u << " v " << v << endl;
-    if(u < threshold || u > upperLimWidth || v < threshold || v > upperLimHeight){cout << "\nRETURN TRUE " << u << " " << v << endl;
+//  cout << "idx " << planeIndices[i] << " u " << u << " v " << v << endl;
+    if(u < threshold || u > upperLimWidth || v < threshold || v > upperLimHeight){//cout << "\nRETURN TRUE " << u << " " << v << endl;
       return true;}
   }
-
 //cout << "\n\n\nRETURN FALSE\n";
   return false;
 }
@@ -236,7 +211,6 @@ bool PlaneInferredInfo::isSurroundingBackground(Plane &plane, pcl::PointCloud<pc
 */
 void PlaneInferredInfo::isFullExtent(Plane &plane, double newArea)
 {
-//cout << "isFullExtent\n";
 //cout << "Plane " << plane.id << " newArea " << newArea << " limit " << 1.1*plane.areaVoxels<< endl;
   if(plane.areaVoxels> 1.0 || newArea > 1.0)
   {
@@ -249,20 +223,10 @@ void PlaneInferredInfo::isFullExtent(Plane &plane, double newArea)
   else
     plane.nFramesAreaIsStable = 0;
 
-//cout << "nFramesAreaIsStable " << plane.nFramesAreaIsStable << endl;
-
   if( plane.nFramesAreaIsStable > 2 )
   {
     plane.bFullExtent = true;
-//    plane.label = "constArea";
   }
 }
-
-///*!Check that the patch borders are either occluding or high-curvature edges, according to the thresholds 'depth_threshold' and 'curvature_threshold'.*/
-//bool PlaneInferredInfo::isPlaneFull(Plane &plane, int dist_threshold)
-//{
-//
-//  return true;
-//}
 
 #endif

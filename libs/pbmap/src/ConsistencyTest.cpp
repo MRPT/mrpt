@@ -40,9 +40,6 @@
 
 #include <mrpt/pbmap.h> // precomp. hdr
 
-//#include <mrpt/pbmap/Miscellaneous.h>
-//#include <mrpt/pbmap/ConsistencyTest.h>
-
 using namespace std;
 using namespace Eigen;
 using namespace mrpt::pbmap;
@@ -106,12 +103,10 @@ Eigen::Matrix4f ConsistencyTest::initPose( std::map<unsigned, unsigned> &matched
   }
   if(numFull > 0)
   {
-//    cout << "numFull " << numFull << endl;
     translation = (centerFull_model - Rotation * centerFull_data) / numFull;
   }
   else
   {
-//    cout << "No fullPlanes in matched context\n";
     translation = (center_model - Rotation * center_data) / numNonStruct;
   }
 
