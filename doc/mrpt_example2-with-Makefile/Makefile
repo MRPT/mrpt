@@ -35,7 +35,7 @@ LDFLAGS    += `pkg-config --libs   mrpt-obs mrpt-hwdrivers mrpt-gui`
 all: $(SOURCES) $(EXECUTABLE)
 	
 $(EXECUTABLE): $(OBJECTS)
-	$(CC) $(LDFLAGS) $(OBJECTS) -o $@
+	$(CC) $(OBJECTS) -o $@ $(LDFLAGS) 
 
 .cpp.o:
 	$(CC) $(CFLAGS) $< -o $@
