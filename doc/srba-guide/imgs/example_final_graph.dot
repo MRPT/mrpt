@@ -1,0 +1,80 @@
+digraph G {
+/* KEYFRAMES */
+node [shape=box,style=filled];
+0; 1; 2; 3; 4; 5; 6; 7; 8; 9; 10; 11; 12; 13; 14; 15; 16; 
+/* KEYFRAME->KEYFRAME edges */
+edge [style=bold];
+0->1;
+0->2;
+0->3;
+0->4;
+0->5;
+5->6;
+5->7;
+5->8;
+5->9;
+5->10;
+10->11;
+10->12;
+10->13;
+10->14;
+0->15;
+10->15;
+15->16;
+/* LANDMARKS with known relative position, and its base keyframe */
+node [shape=triangle,style=filled,fillcolor=gray80];
+edge [style=bold,color=black];
+0 -> L0; 1 -> L1; 2 -> L2; 3 -> L3; 4 -> L4; 5 -> L5; 6 -> L6; 7 -> L7; 8 -> L8; 9 -> L9; 10 -> L10; 11 -> L11; 12 -> L12; 13 -> L13; 14 -> L14; 15 -> L15; 16 -> L16; 
+/* LANDMARKS with unknown relative position */
+node [shape=triangle,style=filled,fillcolor=white];
+edge [style=solid,color=gray20];
+
+/* OBSERVATIONS */
+edge [style=dotted,color=black];
+0 -> L0;
+1 -> L1;
+1 -> L0;
+2 -> L2;
+2 -> L1;
+2 -> L0;
+3 -> L3;
+3 -> L2;
+4 -> L4;
+4 -> L3;
+4 -> L2;
+5 -> L5;
+5 -> L4;
+5 -> L3;
+6 -> L6;
+6 -> L5;
+6 -> L4;
+7 -> L7;
+7 -> L6;
+8 -> L8;
+8 -> L7;
+9 -> L9;
+9 -> L8;
+9 -> L7;
+10 -> L10;
+10 -> L9;
+10 -> L8;
+11 -> L11;
+11 -> L10;
+12 -> L12;
+12 -> L11;
+13 -> L13;
+13 -> L12;
+13 -> L11;
+14 -> L14;
+14 -> L13;
+14 -> L12;
+15 -> L15;
+15 -> L14;
+15 -> L0;
+16 -> L16;
+16 -> L0;
+16 -> L15;
+16 -> L1;
+
+
+}
