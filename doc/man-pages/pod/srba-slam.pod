@@ -21,7 +21,7 @@ srba-slam {--se2|--se3} {--lm-2d|--lm-3d} --obs [StereoCamera|...]
               [--create-video <out.avi>] [--cfg-file-rba-bootstrap
               <rba.cfg>] [--cfg-file-rba <rba.cfg>] [--random-seed <>] [-v
               <>] [--submap-size <20>] [--edge-policy
-              <ecpOptimizeICRA2013>] [--max-iters <>] [--max-lambda
+              <ecpICRA2013>] [--max-iters <>] [--max-lambda
               <depth>] [--max-optimize-depth <depth>]
               [--max-spanning-tree-depth <depth>] [--noise-ang <noise_std>]
               [--noise <noise_std>] [--add-noise] [--profile-stats-length
@@ -81,7 +81,7 @@ of robotic/vision datasets. See also the manual online: http://www.mrpt.org/srba
    --submap-size <20>
      Number of KFs in each 'submap' of the arc-creation policy.
 
-   --edge-policy <ecpOptimizeICRA2013>
+   --edge-policy <ecpICRA2013>
      Policy for edge creation, as textual names of the enum
      TEdgeCreationPolicy
 
