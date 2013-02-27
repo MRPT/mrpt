@@ -11,7 +11,22 @@
 \usepackage{hyperref}
 \usepackage{rotating}
 
-\usepackage{amsfonts}  % For \mathbb
+\usepackage{amsfonts,amsmath,amsthm,amssymb}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+
+\renewcommand{\algorithmicrequire}{\textbf{Input:}}
+\renewcommand{\algorithmicensure}{\textbf{Output:}}
+
+%% --------- Algorithms -------------
+\providecommand{\BeginAlgSize}[0]{\begin{scriptsize}}
+\providecommand{\EndAlgSize}[0]{\end{scriptsize}}
+\providecommand{\ForEach}[1]{\For{\textbf{each} #1}}
+\providecommand{\Or}[0]{O}
+\providecommand{\A}[0]{\mathbf{\alpha}}
+%% --------- End of Algorithms -------------
+
+
 
 % Read MRPT version:
 \newread\file
@@ -312,6 +327,47 @@ int main(int argc, char**argv)
 
 \newpage
 
+\subsection{API entry points}
+
+It must be highlighted that, at present, the only API for inserting new KFs 
+into the RBA problem is the method \texttt{define\_new\_keyframe()}:
+
+\begin{lstlisting}
+template <...> class RbaEngine {
+    ...
+	void define_new_keyframe(
+		const typename traits_t::new_kf_observations_t  & obs,
+		TNewKeyFrameInfo  & out_new_kf_info,
+		const bool        run_local_optimization = true
+		);
+    ...
+};
+\end{lstlisting}
+
+\noindent which accepts as its main input the list of all the observations gathered at this 
+new KF. This method \emph{always creates a new KF}, without analyzing whether it was 
+too close or too far from the last one. Thus, it is (for now) the user's responsibility 
+not to call the method too often, which would create an unnecessarily large amount of KFs with 
+the subsequent degradation of the performance. \emph{The constant-time complexity} of the overall 
+method assumes that there exists a maximum number of KFs per area --which is perfectly reasonable.
+
+As output, this method provides a structure with:
+\begin{itemize}
+ \item The ID of the newly-created KF. 
+ \item{ The list of all the created KF-to-KF edges. At least one, or more in the case of loop-closures. 
+        The way in which edges are created depends on the \emph{edge-creation policy} (see \S\ref{sect:edge.policy}).
+        An exception will be raised if no suitable edge is found to connect the new KF to the existing graph.}
+ \item The numerical results from the local optimization process: the exact list of unknowns that undergone optimization, 
+       the initial and final root mean-squared error (RMSE), etc.
+\end{itemize}
+
+Please, refer to the pseudocode description of this method 
+in \S\ref{sect:code:define_new_keyframe} for a better insight of 
+what happens inside.
+
+
+\newpage
+
 \subsection{Tutorials}
 
 More complete versions of the program above, including sample datasets and rendering of the optimization result 
@@ -328,7 +384,7 @@ An example screenshot is shown in Fig.~\ref{fig:screenshot.tutorial1}.
 
 \newpage
 
-\section{Configuring \texttt{RbaEngine<>}}
+\section{Configuring \texttt{RbaEngine<>}: template arguments}
 \label{sect:rba_configs}
 
 On the following, all class names assume the existence of a previous:
@@ -377,25 +433,41 @@ XXXX XXXX
 XXXX XXXX 
 
 
-\section{Sensor models}
+\subsection{Sensor models}
 \label{sect:program_sensors}
 
 XXXX XXXX 
 
 
-\section{\texttt{RBA\_OPTIONS}: Other options}
+\subsection{\texttt{RBA\_OPTIONS}: Other options}
 \label{sect:rba_options}
 
 XXXX XXXX 
 
 
-\subsection{\texttt{sensor\_pose\_on\_robot\_t}}
+\subsubsection{\texttt{sensor\_pose\_on\_robot\_t}}
 
 
-\subsection{\texttt{obs\_noise\_matrix\_t}}
+\subsubsection{\texttt{obs\_noise\_matrix\_t}}
 
 
-\subsection{\texttt{solver\_t}}
+\subsubsection{\texttt{solver\_t}}
+
+
+\section{Configuring \texttt{RbaEngine<>}: dynamic parameters}
+\label{sect:rba_dyn_parameters}
+
+Can be changed at run-time, not at build-time.
+
+\subsection{Edge-creation policy}
+\label{sect:edge.policy}
+
+(...)
+
+\subsection{Levenberg-Marquardt solver parameters}
+\label{sect:lm-params}
+
+(...)
 
 
 
@@ -404,14 +476,12 @@ XXXX XXXX
 
 XXXX
 
-
 \section{Library inner structure}
 
 \subsection{Directory layout}
 
 
 \subsection{Data structures}
-
 
 \begin{sidewaysfigure}
 \centering
@@ -420,6 +490,31 @@ XXXX
 \label{fig:detailed.data.structures}
 \end{sidewaysfigure}
 
+
+
+\newpage
+\section{Pseudo-code}
+
+The following symbols are employed in the following:
+
+\begin{itemize}
+\item{$D_{max}$: Maximum depth for which spanning trees are maintained. It is also the maximum topological distance 
+   from the given KF to look for unknowns to optimize during a ``local area'' optimization. Obviously, all KFs within 
+   that distance are also in the spanning tree.}
+\item{$(\mathbf{z}_n^i,\mathbf{\alpha}_n^i)$: The $i-th$ individual observation of the $n-th$ time step, and 
+  its corresponding data association (i.e. its correspondence, the ID of an existing landmark or a new ID if this 
+  is a new LM).}
+\end{itemize}
+
+
+
+\subsection{\texttt{define\_new\_keyframe()}}
+\label{sect:code:define_new_keyframe}
+
+%% ==============================================
+%%  Alg: define_new_keyframe
+%% ==============================================
+\input{algo_srba_define_new_keyframe}
 
 
 

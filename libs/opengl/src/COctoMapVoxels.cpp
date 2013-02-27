@@ -147,7 +147,7 @@ void   COctoMapVoxels::render_dl() const
 		{
 			const TGridCube &c = m_grid_cubes[i];
 
-			const GLfloat vertices[8*3] = {
+			const GLdouble vertices[8*3] = {
 				c.max.x,c.max.y,c.max.z,
 				c.max.x,c.min.y,c.max.z,
 				c.max.x,c.min.y,c.min.z,
@@ -157,7 +157,7 @@ void   COctoMapVoxels::render_dl() const
 				c.min.x,c.min.y,c.max.z,
 				c.min.x,c.min.y,c.min.z
 			};
-			glVertexPointer(3, GL_FLOAT, 0, vertices);
+			glVertexPointer(3, GL_DOUBLE, 0, vertices);
 			glDrawElements(GL_LINES, sizeof(grid_line_indices)/sizeof(grid_line_indices[0]), GL_UNSIGNED_BYTE, grid_line_indices);
 		}
 
@@ -222,7 +222,7 @@ void   COctoMapVoxels::render_dl() const
 			if (!m_showVoxelsAsPoints)
 			{
 				// Render as cubes:
-				const GLfloat vertices[8*3] = {
+				const GLdouble vertices[8*3] = {
 					c.x+L,c.y+L,c.z+L,
 					c.x+L,c.y-L,c.z+L,
 					c.x+L,c.y-L,c.z-L,
@@ -232,7 +232,7 @@ void   COctoMapVoxels::render_dl() const
 					c.x-L,c.y-L,c.z+L,
 					c.x-L,c.y-L,c.z-L
 				};
-				glVertexPointer(3, GL_FLOAT, 0, vertices);
+				glVertexPointer(3, GL_DOUBLE, 0, vertices);
 				glDrawElements(GL_TRIANGLES, sizeof(cube_indices)/sizeof(cube_indices[0]), GL_UNSIGNED_BYTE, cube_indices);
 			}
 			else

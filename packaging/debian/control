@@ -313,7 +313,7 @@ Package: libmrpt-dbg
 Section: debug
 Priority: extra
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}
+Depends: libmrpt-dev, ${shlibs:Depends}, ${misc:Depends}
 Description: Mobile Robot Programming Toolkit - Debug libraries
  The Mobile Robot Programming Toolkit (MRPT) is an extensive, cross-platform,
  and open source C++ library aimed to help robotics researchers to design and

@@ -99,7 +99,7 @@ CImageGrabber_dc1394::CImageGrabber_dc1394(
 		if (!THE_CAMERA)
 		{
 			dc1394_camera_free_list(list);
-			cerr << format("[CImageGrabber_dc1394] ERROR: Failed to initialize camera with GUID %"PRIX64"\n", list->ids[0].guid );
+			cerr << "[CImageGrabber_dc1394] ERROR: Failed to initialize camera with GUID "<<list->ids[0].guid<<"\n";
 			return;
 		}
 	}
@@ -114,7 +114,7 @@ CImageGrabber_dc1394::CImageGrabber_dc1394(
 				if (!THE_CAMERA)
 				{
 					dc1394_camera_free_list(list);
-					cerr << format("[CImageGrabber_dc1394] ERROR: Failed to initialize camera with GUID %"PRIX64"\n", list->ids[0].guid );
+					cerr << "[CImageGrabber_dc1394] ERROR: Failed to initialize camera with GUID "<<list->ids[0].guid<<"\n";
 					return;
 				}
 				break;
@@ -124,7 +124,7 @@ CImageGrabber_dc1394::CImageGrabber_dc1394(
 		if (!m_dc1394camera)
 		{
 			dc1394_camera_free_list(list);
-			cerr << format("[CImageGrabber_dc1394] ERROR: Camera with GUID=0x%"PRIX64" and UNIT=%i not found.", cameraGUID, int(cameraUnit) );
+			cerr << "[CImageGrabber_dc1394] ERROR: Camera with GUID="<<cameraGUID<<" and UNIT="<<cameraUnit<<" not found.\n";
 			return;
 		}
 
@@ -559,7 +559,7 @@ void CImageGrabber_dc1394::enumerateCameras( TCameraInfoList &out_list )
 			// Try to open it:
 			dc1394camera_t *cam = dc1394_camera_new_unit(lib_context, list->ids[i].guid, list->ids[i].unit);
 			if (!cam)
-				throw std::runtime_error(format("[CImageGrabber_dc1394] ERROR: Failed to query camera with GUID %"PRIX64"\n", list->ids[i].guid ));
+				throw std::runtime_error(format("[CImageGrabber_dc1394] ERROR: Failed to query camera with GUID %u\n", static_cast<unsigned int>(list->ids[i].guid) ));
 
 
 

@@ -18,5 +18,7 @@ IF(BUILD_mrpt-pbmap)
 ENDIF(BUILD_mrpt-pbmap)
 
 
+ELSE(CMAKE_MRPT_HAS_PCL)
+	SET(BUILD_mrpt-pbmap "OFF")
 ENDIF(CMAKE_MRPT_HAS_PCL)
 

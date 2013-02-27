@@ -203,8 +203,8 @@ namespace srba
 		  */
 		void define_new_keyframe(
 			const typename traits_t::new_kf_observations_t  & obs,
-			TNewKeyFrameInfo             & out_new_kf_info,
-			const bool                     run_local_optimization = true
+			TNewKeyFrameInfo   & out_new_kf_info,
+			const bool           run_local_optimization = true
 			);
 
 		/** Parameters for optimize_local_area() */

@@ -1,0 +1,63 @@
+%% ==============================================
+%%  Alg: srba_process_new_kf
+%% ==============================================
+\begin{algorithm}
+\BeginAlgSize
+\caption{\texttt{srba\_define\_new\_keyframe}   \hfill 
+ \textcolor{white}{.}
+$\text{Worst case: }\Or( (\gamma N_R)^3+ N_o ( D_{max} + \log N_R)  )$  }
+\label{alg:srba}
+\begin{algorithmic}[1]
+\Statex{C++: \texttt{RBA\_Problem::define\_new\_keyframe()}}
+\Statex
+  %\medskip
+\Require{ $\left( \mathbf{z}_n,\mathbf{\alpha}_n \right) =
+\left\{ \left( \mathbf{z}^1_n,\A^1_n \right),...,
+   \left( \mathbf{z}^{N_o}_n,\A^{N_o}_n \right) \right\}$ 
+\Comment{Set of $N_o$ new observations 
+$\mathbf{z}^i_n$ and their data association $\A^i_n$ }}
+\Ensure { The updated, locally consistent map }
+\Statex
+%-----------
+\Statex{\underline{// Update keyframes (KFs) data structures}}
+\State{$n \gets $number of KFs in the map} \Comment{Assign a free ID to the new KF -- $\Or(1)$}
+\State{$KF[n] \gets $empty KF data structure} \Comment{Insert at the end of \texttt{std::map} --
+$\Or(1)$}
+%-----------
+\Statex
+\Statex{\underline{// Apply edge-creation policy to decide how to handle loop closures, etc.}}
+%% \State{$\mathbf{new\_edges} = \varnothing $}
+\While{$ \varnothing \neq \left[ (i_k \leftrightarrow n) = \text{\texttt{decide\_edge\_to\_create}()}\right]$ }
+  \Comment{\begin{tiny}$\Or(N_o \log N_R)$\end{tiny}}
+	\State{\texttt{add\_kf2kf\_edge}$( i_k \leftrightarrow n )$ } 
+	\Comment{Update KF-to-KF edge structures -- $\Or(1)$ }
+\State{\texttt{update\_sym\_spanning\_trees}$( i_k \leftrightarrow n )$ }
+\Comment{$\Or(N_R^2\log N_R)$}
+\EndWhile \Comment{Typ. iterations: $\Or(\gamma)$}
+
+%% ---
+%-----------
+\Statex
+\Statex{\underline{// Update symbolic Jacobian structures}}
+ \Comment{$\Or\left(N_o (D_{max}+ \log N_R) \right)$}
+\ForEach{$ \left( \mathbf{z}_n^i,\mathbf{\alpha}_n^i \right) \in \left(
+\mathbf{z}_n,\mathbf{\alpha}_n \right)$}  
+\Comment{For each of the $N_o$ new observations}
+	\State{\texttt{add\_observation}$(
+ \underbrace{\mathbf{z}_n^i}_{\text{obs. data}},
+ \underbrace{n}_{\text{observing KF}},
+ \underbrace{\mathbf{\alpha}_n^i}_{\text{\text{landmark ID}}} 
+)$ }
+\Comment{\begin{tiny}$\Or(D_{max}+ \log N_R)$\end{tiny}}
+\EndFor
+%-----------
+\Statex
+\Statex{\underline{// Update SLAM estimation}}
+\State{$\mathbf{edges\_to\_optimize} \gets$ all within a $D_{max}$ distance from $n$}
+\Comment{$\Or(N_R)$}
+\State{\texttt{non\_linear\_optimizer}$\left( \mathbf{edges\_to\_optimize}
+\right)$} \Comment{$\Or( (\gamma N_R)^3)$}
+\end{algorithmic}
+\EndAlgSize
+\end{algorithm}
+
