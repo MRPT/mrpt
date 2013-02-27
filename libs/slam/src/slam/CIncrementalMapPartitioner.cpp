@@ -694,7 +694,7 @@ void CIncrementalMapPartitioner::getAs3DScene(
 		i_sph->setColor(0,0,1);
 
 		if (!renameIndexes)
-				i_sph->setName( format("%"PRIuPTR,i) );
+				i_sph->setName( format("%u",static_cast<unsigned int>(i)) );
 		else
 		{
 			std::map<uint32_t,int64_t>::const_iterator itName = renameIndexes->find(i);

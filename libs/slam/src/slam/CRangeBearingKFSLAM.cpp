@@ -984,7 +984,7 @@ void  CRangeBearingKFSLAM::getAs3DObject( mrpt::opengl::CSetOfObjectsPtr	&outObj
 
 		opengl::CEllipsoidPtr ellip = opengl::CEllipsoid::Create();
 
-		ellip->setName( format( "%"PRIuPTR,i ) );
+		ellip->setName( format( "%u",static_cast<unsigned int>(i) ) );
 		ellip->enableShowName(true);
 		ellip->setPose( pointGauss.mean );
 		ellip->setCovMatrix( pointGauss.cov );

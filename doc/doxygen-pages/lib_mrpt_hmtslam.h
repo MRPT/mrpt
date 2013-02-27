@@ -44,6 +44,7 @@
 This library includes an implementation of the HMT-SLAM framework. 
 See the list of classes in mrpt::hmtslam, and the application hmt-slam-gui.
 
+<b>NOTE:</b> For new designs, it is recommended to try the \ref mrpt_srba_grp "[mrpt-srba]" library instead.
 
 
 */

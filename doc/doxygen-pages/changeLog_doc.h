@@ -48,8 +48,9 @@
 		- Support for a new Octomap metric map, via the octomap library. See mrpt::slam::COctoMap and detailed changes below.
 		- Support for importing/exporting point clouds in the standard LAS format (Look for liblas below).
 		- Better support for custom builds of MRPT (selective building of individual apps and libs, etc.)
-		- Many bug fixes.
+		- Ready for Visual Studio 2012 and GCC 4.7
 		- From now on, MRPT is released under the "New BSD" license.
+		- Many bug fixes.
 	- <b>Detailed list of changes:</b>
 		- New apps:
 			- <a href="http://www.mrpt.org/Application:srba-slam" >srba-slam</a>: A command-line frontend for the Relative Bundle Adjustment engine in mrpt-srba.

@@ -357,17 +357,16 @@ void  CHierarchicalMHMap::dumpAsXMLfile(std::string fileName) const
 	printf("Generating nodes\n");
 	for (TNodeList::const_iterator it=m_nodes.begin();it!=m_nodes.end();++it)
 	{
-
 		i=tablenodes->appendRecord();
 		tablenodes->set(i,"nodename",it->second->m_label.c_str());
-		tablenodes->set(i,"id",format("%"PRIi64,it->second->getID()));
+		tablenodes->set(i,"id",format("%i",static_cast<int>(it->second->getID())));
 		tablenodes->set(i,"nodetype",it->second->m_nodeType.getType());
 
 		tablenodes->set(i,"annotation-list",".");
 		for (CMHPropertiesValuesList::const_iterator ann = it->second->m_annotations.begin(); ann != it->second->m_annotations.end(); ++ann)
 		{
 			size_t j=tableannots->appendRecord();
-			tableannots->set(j,"id",format("%"PRIuPTR,j));
+			tableannots->set(j,"id",format("%u",static_cast<unsigned int>(j)));
 			tableannots->set(j,"annotation-type",ann->name.c_str());
 			ASSERT_(ann->value.present())
 			string  str;
@@ -382,14 +381,14 @@ void  CHierarchicalMHMap::dumpAsXMLfile(std::string fileName) const
 			}
 			tableannots->set(j,"annotation-value",str);
 			if (tablenodes->get(j,"annotation-list")==".")
-				tablenodes->set(i,"annotation-list",format("%"PRIuPTR" ",j));
+				tablenodes->set(i,"annotation-list",format("%u",static_cast<unsigned int>(j)));
 			else
-				tablenodes->set(i,"annotation-list",tablenodes->get(j,"annotation-list")+format("%"PRIuPTR" ",j));
+				tablenodes->set(i,"annotation-list",tablenodes->get(j,"annotation-list")+format("%u",static_cast<unsigned int>(j)));
 		}
 	}
 
 	//for arcs
-	printf("Generating arcs (%"PRIuPTR")\n",m_arcs.size());
+	printf("Generating arcs (%u)\n",static_cast<unsigned int>(m_arcs.size()));
 
 
 
@@ -403,9 +402,9 @@ void  CHierarchicalMHMap::dumpAsXMLfile(std::string fileName) const
 
 
 		i=tablearcs->appendRecord();
-		tablearcs->set(i,"id",format("%"PRIuPTR,i));
-		tablearcs->set(i,"from",format("%"PRIuPTR,fromid));
-		tablearcs->set(i,"to",format("%"PRIuPTR,toid));
+		tablearcs->set(i,"id",format("%u",static_cast<unsigned int>(i)));
+		tablearcs->set(i,"from",format("%u",static_cast<unsigned int>(fromid)));
+		tablearcs->set(i,"to",format("%u",static_cast<unsigned int>(toid)));
 		tablearcs->set(i,"arctype",(*it)->m_arcType.getType());
 
 
@@ -413,7 +412,7 @@ void  CHierarchicalMHMap::dumpAsXMLfile(std::string fileName) const
 		{
 
 			i=tableannots->appendRecord();
-			tableannots->set(i,"id",format("%"PRIuPTR,i));
+			tableannots->set(i,"id",format("%u",static_cast<unsigned int>(i)));
 			tableannots->set(i,"annotation-type",ann->name.c_str());
 
 			// CSerializable *o=ann->value->duplicate();  // JL: duplicate???

@@ -61,9 +61,10 @@ void TestEnumerate_1394()
 	for (CImageGrabber_dc1394::TCameraInfoList::const_iterator it=lstCams.begin(); it!=lstCams.end();it++)
 	{
 		cout << "======= CAMERA =========" << endl;
-		cout << format("   GUID: %"PRIX64"\n   Unit: %i\n", it->guid, it->unit );
+		cout << "   GUID : "<< it->guid << endl;
+		cout << "   Unit : "<<it->unit << endl;
 		cout << "  Vendor: " << it->vendor << endl;
-		cout << "  Model: " << it->model << endl;
+		cout << "  Model : " << it->model << endl;
 		cout << endl;
 	}
 }
