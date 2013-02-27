@@ -52,26 +52,26 @@ IMPLEMENTS_SERIALIZABLE(CPose2D, CSerializable ,mrpt::poses)
 /*---------------------------------------------------------------
 	Constructors
   ---------------------------------------------------------------*/
-CPose2D::CPose2D() : m_phi(0)
+CPose2D::CPose2D() : m_phi(0),m_cossin_uptodate(false)
 {
 	m_coords[0] =
 	m_coords[1] = 0;
 }
 
-CPose2D::CPose2D(const double x,const double y,const double _phi) : m_phi(_phi)
+CPose2D::CPose2D(const double x,const double y,const double _phi) : m_phi(_phi),m_cossin_uptodate(false)
 {
 	m_coords[0] = x;
 	m_coords[1] = y;
 	normalizePhi();
 }
 
-CPose2D::CPose2D(const CPoint2D &p) : m_phi(0)
+CPose2D::CPose2D(const CPoint2D &p) : m_phi(0),m_cossin_uptodate(false)
 {
 	m_coords[0] = p.x();
 	m_coords[1] = p.y();
 }
 
-CPose2D::CPose2D(const CPose3D &p) : m_phi(p.yaw())
+CPose2D::CPose2D(const CPose3D &p) : m_phi(p.yaw()),m_cossin_uptodate(false)
 {
 	m_coords[0] = p.x();
 	m_coords[1] = p.y();
@@ -107,16 +107,16 @@ void  CPose2D::readFromStream(CStream &in,int version)
 			in >> x0 >> y0 >> phi0;
 			m_coords[0] = x0;
 			m_coords[1] = y0;
-			m_phi = phi0;
+			this->phi( phi0 );
 		} break;
 	case 1:
 		{
 			// The coordinates:
 			in >> m_coords[0] >> m_coords[1] >> m_phi;
+			m_cossin_uptodate=false;
 		} break;
 	default:
 		MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
-
 	};
 }
 
@@ -133,17 +133,11 @@ The operator a="this"+D is the pose compounding operator.
  ---------------------------------------------------------------*/
 CPose2D  CPose2D::operator + (const CPose2D& D)const
 {
-#ifdef HAVE_SINCOS
-	double	ccos,ssin;
-	::sincos(m_phi,&ssin,&ccos);
-#else
-	const double ccos = cos(m_phi);
-	const double ssin = sin(m_phi);
-#endif
+	update_cached_cos_sin();
 
 	return CPose2D(
-		m_coords[0] + D.m_coords[0] * ccos - D.m_coords[1] * ssin,
-		m_coords[1] + D.m_coords[0] * ssin + D.m_coords[1] * ccos,
+		m_coords[0] + D.m_coords[0] * m_cosphi - D.m_coords[1] * m_sinphi,
+		m_coords[1] + D.m_coords[0] * m_sinphi + D.m_coords[1] * m_cosphi,
 		m_phi + D.m_phi );
 }
 
@@ -152,19 +146,16 @@ CPose2D  CPose2D::operator + (const CPose2D& D)const
  ---------------------------------------------------------------*/
 void CPose2D::composeFrom(const CPose2D &A, const CPose2D &B)
 {
-#ifdef HAVE_SINCOS
-	double	ccos,ssin;
-	::sincos(A.m_phi,&ssin,&ccos);
-#else
-	const double ccos = cos(A.m_phi);
-	const double ssin = sin(A.m_phi);
-#endif
+	A.update_cached_cos_sin();
+
 	// Use temporary variables for the cases (A==this) or (B==this)
-	const double new_x = A.m_coords[0] + B.m_coords[0] * ccos - B.m_coords[1] * ssin;
-	const double new_y = A.m_coords[1] + B.m_coords[0] * ssin + B.m_coords[1] * ccos;
+	const double new_x = A.m_coords[0] + B.m_coords[0] * A.m_cosphi - B.m_coords[1] * A.m_sinphi;
+	const double new_y = A.m_coords[1] + B.m_coords[0] * A.m_sinphi + B.m_coords[1] * A.m_cosphi;
 	m_coords[0] = new_x;
 	m_coords[1] = new_y;
+
 	m_phi = math::wrapToPi(A.m_phi + B.m_phi);
+	m_cossin_uptodate=false;
 }
 
 /*---------------------------------------------------------------
@@ -172,28 +163,16 @@ void CPose2D::composeFrom(const CPose2D &A, const CPose2D &B)
  ---------------------------------------------------------------*/
 void CPose2D::getRotationMatrix(mrpt::math::CMatrixDouble22 &R) const
 {
-#ifdef HAVE_SINCOS
-	double	ccos,ssin;
-	::sincos(m_phi,&ssin,&ccos);
-#else
-	const double ccos = cos(m_phi);
-	const double ssin = sin(m_phi);
-#endif
-	R(0,0) = ccos;  R(0,1) = -ssin;
-	R(1,0) = ssin;  R(1,1) =  ccos;
+	update_cached_cos_sin();
+	R(0,0) = m_cosphi;  R(0,1) = -m_sinphi;
+	R(1,0) = m_sinphi;  R(1,1) =  m_cosphi;
 }
 
 void CPose2D::getRotationMatrix(mrpt::math::CMatrixDouble33 &R) const
 {
-#ifdef HAVE_SINCOS
-	double	ccos,ssin;
-	::sincos(m_phi,&ssin,&ccos);
-#else
-	const double ccos = cos(m_phi);
-	const double ssin = sin(m_phi);
-#endif
-	R(0,0) = ccos;  R(0,1) = -ssin; R(0,2)=0;
-	R(1,0) = ssin;  R(1,1) =  ccos; R(1,2)=0;
+	update_cached_cos_sin();
+	R(0,0) = m_cosphi;  R(0,1) = -m_sinphi; R(0,2)=0;
+	R(1,0) = m_sinphi;  R(1,1) =  m_cosphi; R(1,2)=0;
 	R(2,0) = 0; R(2,1)=0; R(2,2)=1;
 }
 
@@ -213,22 +192,20 @@ The operator u'="this"+u is the pose/point compounding operator.
  ---------------------------------------------------------------*/
 CPoint2D CPose2D::operator + (const CPoint2D& u)const
 {
-	const double ccos = cos(m_phi);
-	const double ssin = sin(m_phi);
+	update_cached_cos_sin();
 
 	return CPoint2D(
-		m_coords[0] + u.x() * ccos - u.y() * ssin,
-		m_coords[1] + u.x() * ssin + u.y() * ccos );
+		m_coords[0] + u.x() * m_cosphi - u.y() * m_sinphi,
+		m_coords[1] + u.x() * m_sinphi + u.y() * m_cosphi );
 }
 
 /** An alternative, slightly more efficient way of doing \f$ G = P \oplus L \f$ with G and L being 2D points and P this 2D pose.  */
 void CPose2D::composePoint(double lx,double ly,double &gx, double &gy) const
 {
-	const double ccos = cos(m_phi);
-	const double ssin = sin(m_phi);
+	update_cached_cos_sin();
 
-	gx = m_coords[0] + lx * ccos - ly * ssin;
-	gy = m_coords[1] + lx * ssin + ly * ccos;
+	gx = m_coords[0] + lx * m_cosphi - ly * m_sinphi;
+	gy = m_coords[1] + lx * m_sinphi + ly * m_cosphi;
 }
 
 void CPose2D::composePoint(const mrpt::math::TPoint2D &l, mrpt::math::TPoint2D &g) const
@@ -244,10 +221,9 @@ void CPose2D::composePoint(const mrpt::math::TPoint3D &l, mrpt::math::TPoint3D &
 
 void CPose2D::composePoint(double lx,double ly,double lz, double &gx, double &gy, double &gz) const
 {
-	const double ccos = cos(m_phi);
-	const double ssin = sin(m_phi);
-	gx = m_coords[0] + lx * ccos - ly * ssin;
-	gy = m_coords[1] + lx * ssin + ly * ccos;
+	update_cached_cos_sin();
+	gx = m_coords[0] + lx * m_cosphi - ly * m_sinphi;
+	gy = m_coords[1] + lx * m_sinphi + ly * m_cosphi;
 	gz = lz;
 }
 
@@ -257,12 +233,11 @@ The operator u'="this"+u is the pose/point compounding operator.
  ---------------------------------------------------------------*/
 CPoint3D CPose2D::operator + (const CPoint3D& u)const
 {
-	double ccos = cos(m_phi);
-	double ssin = sin(m_phi);
+	update_cached_cos_sin();
 
 	return CPoint3D(
-		m_coords[0] + u.x() * ccos - u.y() * ssin,
-		m_coords[1] + u.x() * ssin + u.y() * ccos,
+		m_coords[0] + u.x() * m_cosphi - u.y() * m_sinphi,
+		m_coords[1] + u.x() * m_sinphi + u.y() * m_cosphi,
 		u.z() );
 }
 
@@ -272,12 +247,12 @@ The operator D="this"-b is the pose inverse compounding operator.
  ---------------------------------------------------------------*/
 void CPose2D::inverseComposeFrom(const CPose2D& A, const CPose2D& B )
 {
-	const double ccos = cos(B.m_phi);
-	const double ssin = sin(B.m_phi);
+	B.update_cached_cos_sin();
 
-	m_coords[0] = (A.m_coords[0] - B.m_coords[0]) * ccos + (A.m_coords[1] - B.m_coords[1]) * ssin;
-	m_coords[1] =-(A.m_coords[0] - B.m_coords[0]) * ssin + (A.m_coords[1] - B.m_coords[1]) * ccos;
+	m_coords[0] = (A.m_coords[0] - B.m_coords[0]) * B.m_cosphi + (A.m_coords[1] - B.m_coords[1]) * B.m_sinphi;
+	m_coords[1] =-(A.m_coords[0] - B.m_coords[0]) * B.m_sinphi + (A.m_coords[1] - B.m_coords[1]) * B.m_cosphi;
 	m_phi = math::wrapToPi(A.m_phi - B.m_phi);
+	m_cossin_uptodate=false;
 }
 
 /*---------------------------------------------------------------
@@ -289,6 +264,7 @@ void CPose2D::AddComponents(CPose2D &p)
 	m_coords[0]+=p.m_coords[0];
 	m_coords[1]+=p.m_coords[1];
 	m_phi+=p.m_phi;
+	m_cossin_uptodate=false;
 }
 
 
@@ -300,6 +276,7 @@ void CPose2D::operator *= (const double s)
 	m_coords[0]*=s;
 	m_coords[1]*=s;
 	m_phi*=s;
+	m_cossin_uptodate=false;
 }
 
 /*---------------------------------------------------------------
@@ -314,11 +291,10 @@ void  CPose2D::getHomogeneousMatrix(CMatrixDouble44& m) const
 	m.set_unsafe(0,3, m_coords[0] );
 	m.set_unsafe(1,3, m_coords[1] );
 
-	const double ccos = cos(m_phi);
-	const double csin = sin(m_phi);
+	update_cached_cos_sin();
 
-	m.get_unsafe(0,0) = ccos;  m.get_unsafe(0,1)=-csin;
-	m.get_unsafe(1,0) = csin;  m.get_unsafe(1,1)= ccos;
+	m.get_unsafe(0,0) = m_cosphi;  m.get_unsafe(0,1)=-m_sinphi;
+	m.get_unsafe(1,0) = m_sinphi;  m.get_unsafe(1,1)= m_cosphi;
 }
 
 /** Forces "phi" to be in the range [-pi,pi];
@@ -326,14 +302,15 @@ void  CPose2D::getHomogeneousMatrix(CMatrixDouble44& m) const
 void  CPose2D::normalizePhi()
 {
 	m_phi = math::wrapToPi(m_phi);
+	m_cossin_uptodate=false;
 }
 
-CPose2D::CPose2D(const mrpt::math::TPose2D &o):m_phi(o.phi)	{
+CPose2D::CPose2D(const mrpt::math::TPose2D &o):m_phi(o.phi),m_cossin_uptodate(false) {
 	m_coords[0]=o.x;
 	m_coords[1]=o.y;
 }
 
-CPose2D::CPose2D(const CPoint3D &o): m_phi(0)	{
+CPose2D::CPose2D(const CPoint3D &o): m_phi(0),m_cossin_uptodate(false) {
 	this->m_coords[0]	= o.x();
 	this->m_coords[1]	= o.y();
 	normalizePhi();
@@ -352,14 +329,14 @@ CPose2D mrpt::poses::operator -(const CPose2D&b)
 /** Convert this pose into its inverse, saving the result in itself. \sa operator- */
 void CPose2D::inverse()
 {
-	const double ccos = cos(m_phi);
-	const double ssin = sin(m_phi);
+	update_cached_cos_sin();
 	const double x = m_coords[0];
 	const double y = m_coords[1];
-	
-	m_coords[0] = -x * ccos - y * ssin;
-	m_coords[1] =  x * ssin - y * ccos;
+
+	m_coords[0] = -x * m_cosphi - y * m_sinphi;
+	m_coords[1] =  x * m_sinphi - y * m_cosphi;
 	m_phi = - m_phi;
+	m_cossin_uptodate=false;
 }
 
 
@@ -396,8 +373,8 @@ bool mrpt::poses::operator!=(const CPose2D &p1,const CPose2D &p2)
 
 TPoint2D mrpt::poses::operator +(const CPose2D &pose, const TPoint2D &u)
 {
-	double ccos = cos(pose.phi());
-	double ssin = sin(pose.phi());
+	const double ccos = pose.phi_cos();
+	const double ssin = pose.phi_sin();
 	return TPoint2D(
 		pose.x() + u.x * ccos - u.y * ssin,
 		pose.y() + u.x * ssin + u.y * ccos );
@@ -411,7 +388,7 @@ CPose2D& CPose2D::operator += (const CPose2D& b)
 	return *this;
 }
 
-void CPose2D::fromString(const std::string &s) 
+void CPose2D::fromString(const std::string &s)
 {
 	CMatrixDouble  m;
 	if (!m.fromMatlabStringFormat(s)) THROW_EXCEPTION("Malformed expression in ::fromString");

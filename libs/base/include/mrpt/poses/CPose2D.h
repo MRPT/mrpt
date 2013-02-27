@@ -69,6 +69,19 @@ namespace poses
 
 	protected:
 		double m_phi;  //!< The orientation of the pose, in radians.
+		mutable double m_cosphi, m_sinphi; //!< Precomputed cos() & sin() of phi.
+		mutable bool   m_cossin_uptodate;
+
+		inline void update_cached_cos_sin() const {
+			if (m_cossin_uptodate) return;
+#ifdef HAVE_SINCOS
+			::sincos(m_phi,&m_sinphi,&m_cosphi);
+#else
+			m_cosphi=::cos(m_phi);
+			m_sinphi=::sin(m_phi);
+#endif
+			m_cossin_uptodate=true;
+		}
 
 	public:
 		 /** Default constructor (all coordinates to 0) */
@@ -90,17 +103,22 @@ namespace poses
 		 explicit CPose2D(const CPoint3D &);
 
 		 /** Fast constructor that leaves all the data uninitialized - call with UNINITIALIZED_POSE as argument */
-		 inline CPose2D(TConstructorFlags_Poses constructor_dummy_param) { }
+		 inline CPose2D(TConstructorFlags_Poses constructor_dummy_param) : m_cossin_uptodate(false) { }
 
 		 /** Get the phi angle of the 2D pose (in radians) */
 		 inline const double &phi() const { return m_phi; }
 		 //! \overload
-		 inline       double &phi()       { return m_phi; }
+		 inline       double &phi()       { m_cossin_uptodate=false; return m_phi; }
+
+		 /** Get a (cached) value of cos(phi), recomputing it only once when phi changes. */
+		 inline double phi_cos() const { update_cached_cos_sin(); return m_cosphi; }
+		 /** Get a (cached) value of sin(phi), recomputing it only once when phi changes. */
+		 inline double phi_sin() const { update_cached_cos_sin(); return m_sinphi; }
 
 		 /** Set the phi angle of the 2D pose (in radians) */
-		 inline void phi(double angle) { m_phi=angle; }
+		 inline void phi(double angle) { m_phi=angle; m_cossin_uptodate=false; }
 
-		 inline void phi_incr(const double Aphi) { m_phi+=Aphi; }  //!< Increment the PHI angle (without checking the 2 PI range, call normalizePhi is needed)
+		 inline void phi_incr(const double Aphi) { m_phi+=Aphi; m_cossin_uptodate=false; }  //!< Increment the PHI angle (without checking the 2 PI range, call normalizePhi is needed)
 
 		/** Returns a 1x3 vector with [x y phi] */
 		void getAsVector(vector_double &v) const;
@@ -112,13 +130,13 @@ namespace poses
 		   */
 		 void  getHomogeneousMatrix(CMatrixDouble44 & out_HM ) const;
 
-		 void getRotationMatrix(mrpt::math::CMatrixDouble22 &R) const; //!< Returns the SE(2) 2x2 rotation matrix 
+		 void getRotationMatrix(mrpt::math::CMatrixDouble22 &R) const; //!< Returns the SE(2) 2x2 rotation matrix
 		 void getRotationMatrix(mrpt::math::CMatrixDouble33 &R) const; //!< Returns the equivalent SE(3) 3x3 rotation matrix, with (2,2)=1.
-		 
+
 		 inline mrpt::math::CMatrixDouble22 getRotationMatrix() const {
-			 mrpt::math::CMatrixDouble22 R(UNINITIALIZED_MATRIX); 
-			 getRotationMatrix(R); 
-			 return R; 
+			 mrpt::math::CMatrixDouble22 R(UNINITIALIZED_MATRIX);
+			 getRotationMatrix(R);
+			 return R;
 		 }
 
 		 /** The operator \f$ a = this \oplus D \f$ is the pose compounding operator. */
