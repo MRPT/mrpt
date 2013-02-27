@@ -90,7 +90,6 @@ CImage::CImage( unsigned int	width,
 		m_imgIsReadOnly(false),
 		m_imgIsExternalStorage(false)
 {
-	cout << "CImage::Const 1\n";
 	MRPT_START
 	changeSize( width, height, nChannels, originTopLeft );
 	MRPT_END

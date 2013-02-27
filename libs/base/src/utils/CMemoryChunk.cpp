@@ -33,7 +33,7 @@
    | POSSIBILITY OF SUCH DAMAGE.                                               |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/base.h>  // Precompiled headers 
+#include <mrpt/base.h>  // Precompiled headers
 
 
 #include <mrpt/utils/CMemoryChunk.h>
@@ -78,7 +78,8 @@ void  CMemoryChunk::readFromStream(CStream &in, int version)
 
 			m_bytesWritten = N;
 			m_position     = 0;
-			in.ReadBuffer( m_memory.get(), N );
+			if (N)
+				in.ReadBuffer( m_memory.get(), N );
 
 		} break;
 	default:
