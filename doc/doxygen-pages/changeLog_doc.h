@@ -187,6 +187,7 @@
 			- Added new documentation page: <a href="env-vars.html" >environment variables</a>.
 			- Removed the build flag "MRPT_BACKCOMPATIB_08X".
 			- Fixes for building under Mac OSX: <a href="http://code.google.com/p/mrpt/source/detail?r=3181" >r3181</a>
+			- Enable some c++11 features if the compiler supports them - <a href="http://code.google.com/p/mrpt/source/detail?r=3273" >r3273</a> 
 		- BUG FIXES:
 			- Build: Fixed detection of OpenCV 2.4.2+ installed in the system via CMake config file instead of pkg-config, which seems to be broken. - <a href="http://code.google.com/p/mrpt/source/detail?r=3019" >r3019</a>
 			- [mrpt-base] The iterator returned by end() in all MRPT vectors and matrices (based on Eigen) pointed to the last element, not to the (now correct) next position after the last element - <a href="http://code.google.com/p/mrpt/source/detail?r=2941" >r2941</a>

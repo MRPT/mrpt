@@ -332,8 +332,8 @@ namespace mrpt
 			/** Returns the square distance from the 2D point (x0,y0) to the closest correspondence in the map.
 			  */
 			virtual float squareDistanceToClosestCorrespondence(
-				const float   &x0,
-				const float   &y0 ) const
+				float x0,
+				float y0 ) const
 			{
 				MRPT_START
 				THROW_EXCEPTION("Virtual method not implemented in derived class.")

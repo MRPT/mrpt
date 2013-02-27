@@ -40,6 +40,19 @@
 #ifndef MRPT_MACROS_H
 #define MRPT_MACROS_H
 
+/** Does the compiler support C++11? */
+#if (__cplusplus>199711L)
+#	define MRPT_HAS_CXX11  1
+#else
+#	define MRPT_HAS_CXX11  0
+#endif
+
+/** C++11 "override" for virtuals: */
+#if MRPT_HAS_CXX11
+#	define MRPT_OVERRIDE  override
+#else
+#	define MRPT_OVERRIDE
+#endif
 // A cross-compiler definition for "deprecated"-warnings
 #if defined(__GNUC__) && (__GNUC__ - 0 > 3 || (__GNUC__ - 0 == 3 && __GNUC_MINOR__ - 0 >= 2))
    /* gcc >= 3.2 */

@@ -180,7 +180,7 @@ namespace slam
 		  */
 		virtual float squareDistanceToClosestCorrespondence(
 			float   x0,
-			float   y0 ) const;
+			float   y0 ) const MRPT_OVERRIDE;
 
 		inline float squareDistanceToClosestCorrespondenceT(const TPoint2D &p0) const	{
 			return squareDistanceToClosestCorrespondence(static_cast<float>(p0.x),static_cast<float>(p0.y));
