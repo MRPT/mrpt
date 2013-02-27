@@ -297,6 +297,7 @@ IF(BUILD_EXAMPLES)
 	# === PbMap examples ===
 	IF(BUILD_mrpt-pbmap)
 		SET(LIST_EXAMPLES_IN_THIS_DIR
+			pbmap_example
 			pbmap_visualizer
 			)
 		SET(CMAKE_EXAMPLE_DEPS mrpt-pbmap mrpt-gui)

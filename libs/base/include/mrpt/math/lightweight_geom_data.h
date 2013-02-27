@@ -742,6 +742,10 @@ namespace math	{
 		  */
 		double distance(const TPoint3D &point) const;
 		/**
+		  * Distance to another segment.
+		  */
+		double distance(const TSegment3D &segment) const;
+		/**
 		  * Check whether a point is inside the segment.
 		  */
 		bool contains(const TPoint3D &point) const;

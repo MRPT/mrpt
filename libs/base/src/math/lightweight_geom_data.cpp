@@ -197,6 +197,78 @@ double TSegment3D::length() const	{
 double TSegment3D::distance(const TPoint3D &point) const	{
 	return min(min(math::distance(point,point1),math::distance(point,point2)),TLine3D(*this).distance(point));
 }
+double TSegment3D::distance(const TSegment3D &segment) const	{
+    vector_double u, v, w;
+    TPoint3D diff_vect = point2 - point1;
+    diff_vect.getAsVector(u);
+    diff_vect = segment.point2 - segment.point1;
+    diff_vect.getAsVector(v);
+    diff_vect = point1 - segment.point1;
+    diff_vect.getAsVector(w);
+    double a = u.dot(u);        // always >= 0
+    double b = u.dot(v);
+    double c = v.dot(v);        // always >= 0
+    double d = u.dot(w);
+    double e = v.dot(w);
+    double D = a*c - b*b;       // always >= 0
+    double sc, sN, sD = D;      // sc = sN / sD, default sD = D >= 0
+    double tc, tN, tD = D;      // tc = tN / tD, default tD = D >= 0
+
+    // compute the line parameters of the two closest points
+    if (D < 0.00000001) { // the lines are almost parallel
+        sN = 0.0;        // force using point P0 on segment S1
+        sD = 1.0;        // to prevent possible division by 0.0 later
+        tN = e;
+        tD = c;
+    }
+    else {                // get the closest points on the infinite lines
+        sN = (b*e - c*d);
+        tN = (a*e - b*d);
+        if (sN < 0.0) {       // sc < 0 => the s=0 edge is visible
+            sN = 0.0;
+            tN = e;
+            tD = c;
+        }
+        else if (sN > sD) {  // sc > 1 => the s=1 edge is visible
+            sN = sD;
+            tN = e + b;
+            tD = c;
+        }
+    }
+
+    if (tN < 0.0) {           // tc < 0 => the t=0 edge is visible
+        tN = 0.0;
+        // recompute sc for this edge
+        if (-d < 0.0)
+            sN = 0.0;
+        else if (-d > a)
+            sN = sD;
+        else {
+            sN = -d;
+            sD = a;
+        }
+    }
+    else if (tN > tD) {      // tc > 1 => the t=1 edge is visible
+        tN = tD;
+        // recompute sc for this edge
+        if ((-d + b) < 0.0)
+            sN = 0;
+        else if ((-d + b) > a)
+            sN = sD;
+        else {
+            sN = (-d + b);
+            sD = a;
+        }
+    }
+    // finally do the division to get sc and tc
+    sc = (fabs(sN) < 0.00000001 ? 0.0 : sN / sD);
+    tc = (fabs(tN) < 0.00000001 ? 0.0 : tN / tD);
+
+    // get the difference of the two closest points
+    vector_double dP = w + (sc * u) - (tc * v);  // = S1(sc) - S2(tc)
+
+    return dP.norm();   // return the closest distance
+}
 bool TSegment3D::contains(const TPoint3D &point) const	{
 	//Not very intuitive, but very fast, method.
 	return abs(math::distance(point1,point)+math::distance(point2,point)-math::distance(point1,point2))<geometryEpsilon;
