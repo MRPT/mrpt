@@ -36,7 +36,7 @@
 #pragma once
 
 #include <mrpt/math/CSparseMatrix.h>
-#include <memory> // for auto_ptr<>
+#include <memory> // for auto_ptr, unique_ptr
 
 namespace mrpt { namespace srba {
 
@@ -46,6 +46,12 @@ using namespace std;
 
 namespace internal
 {
+#if MRPT_HAS_CXX11
+	typedef std::unique_ptr<CSparseMatrix::CholeskyDecomp>  SparseCholeskyDecompPtr;
+#else
+	typedef std::auto_ptr<CSparseMatrix::CholeskyDecomp>    SparseCholeskyDecompPtr;
+#endif
+
 	// ------------------------------------------------------------------------------------------
 	/** SOLVER: Lev-Marq without Schur, with Sparse Cholesky (CSparse library)  */
 	template <class RBA_ENGINE>
@@ -68,7 +74,7 @@ namespace internal
 		CSparseMatrix* sS; //!< Sparse Hessian
 		bool           sS_is_valid; //!< Whether the Hessian was filled in, in sS
 		/** Cholesky object, as a pointer to reuse it between iterations */
-		std::auto_ptr<CSparseMatrix::CholeskyDecomp>  ptrCh;
+		SparseCholeskyDecompPtr ptrCh;
 
 		/** Constructor */
 		solver_engine(
@@ -92,7 +98,7 @@ namespace internal
 		{
 		}
 
-		~solver_engine() 
+		~solver_engine()
 		{
 			if (sS) { delete sS; sS=NULL; }
 		}
@@ -186,9 +192,9 @@ namespace internal
 			try
 			{
 				if (!ptrCh.get())
-						ptrCh = std::auto_ptr<CSparseMatrix::CholeskyDecomp>(new CSparseMatrix::CholeskyDecomp(*sS) );
+						ptrCh = SparseCholeskyDecompPtr(new CSparseMatrix::CholeskyDecomp(*sS) );
 				else ptrCh.get()->update(*sS);
-				
+
 				sS_is_valid=true;
 
 				DETAILED_PROFILING_LEAVE("opt.SparseChol")
@@ -254,7 +260,7 @@ namespace internal
 		CSparseMatrix* sS; //!< Sparse Hessian
 		bool           sS_is_valid; //!< Whether the Hessian was filled in, in sS
 		/** Cholesky object, as a pointer to reuse it between iterations */
-		std::auto_ptr<CSparseMatrix::CholeskyDecomp>  ptrCh;
+		SparseCholeskyDecompPtr  ptrCh;
 
 		SchurComplement<
 			typename hessian_traits_t::TSparseBlocksHessian_Ap,
@@ -289,7 +295,7 @@ namespace internal
 		{
 		}
 
-		~solver_engine() 
+		~solver_engine()
 		{
 			if (sS) { delete sS; sS=NULL; }
 		}
@@ -357,7 +363,7 @@ namespace internal
 			try
 			{
 				if (!ptrCh.get())
-						ptrCh = std::auto_ptr<CSparseMatrix::CholeskyDecomp>(new CSparseMatrix::CholeskyDecomp(*sS) );
+						ptrCh = SparseCholeskyDecompPtr(new CSparseMatrix::CholeskyDecomp(*sS) );
 				else ptrCh.get()->update(*sS);
 
 				sS_is_valid=true;

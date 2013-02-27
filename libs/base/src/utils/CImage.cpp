@@ -50,7 +50,7 @@
 #include <mrpt/system/memory.h>
 
 // Universal include for all versions of OpenCV
-#include <mrpt/otherlibs/do_opencv_includes.h> 
+#include <mrpt/otherlibs/do_opencv_includes.h>
 
 // Prototypes of SSE2/SSE3/SSSE3 optimized functions:
 #include "CImage_SSEx.h"
@@ -90,6 +90,7 @@ CImage::CImage( unsigned int	width,
 		m_imgIsReadOnly(false),
 		m_imgIsExternalStorage(false)
 {
+	cout << "CImage::Const 1\n";
 	MRPT_START
 	changeSize( width, height, nChannels, originTopLeft );
 	MRPT_END
@@ -102,9 +103,11 @@ CImage::CImage( ) :
 		m_imgIsReadOnly(false),
 		m_imgIsExternalStorage(false)
 {
+#if MRPT_HAS_OPENCV
 	MRPT_START
 	changeSize( 1, 1, CH_RGB, true );
 	MRPT_END
+#endif
 }
 
 /*---------------------------------------------------------------
@@ -546,7 +549,18 @@ unsigned char*  CImage::get_unsafe(
  ---------------------------------------------------------------*/
 void  CImage::writeToStream(CStream &out, int *version) const
 {
-#if MRPT_HAS_OPENCV
+#if !MRPT_HAS_OPENCV
+	if (version)
+		*version = 100;
+	else
+	{
+		out << m_imgIsExternalStorage;
+
+		if (m_imgIsExternalStorage)
+			out << m_externalFile;
+		// Nothing else to serialize!
+	}
+#else
 	if (version)
 		*version = 8;
 	else
@@ -560,7 +574,6 @@ void  CImage::writeToStream(CStream &out, int *version) const
 		}
 		else
 		{ // Normal image loaded in memory:
-
 			ASSERT_(img!=NULL);
 
 			const bool hasColor = isColor();
@@ -644,9 +657,9 @@ void  CImage::writeToStream(CStream &out, int *version) const
 					// Dump raw image data:
 					const IplImage *ipl = static_cast<const IplImage*>(img);
 					const size_t bytes_per_row = ipl->width * 3;
-					
-					out.WriteBuffer( &ipl->imageData[0], bytes_per_row*ipl->height );				
-					
+
+					out.WriteBuffer( &ipl->imageData[0], bytes_per_row*ipl->height );
+
 				}
 			}
 		} // end m_imgIsExternalStorage=false
@@ -660,13 +673,28 @@ void  CImage::writeToStream(CStream &out, int *version) const
 void  CImage::readFromStream(CStream &in, int version)
 {
 #if !MRPT_HAS_OPENCV
-	THROW_EXCEPTION("[CImage] Cannot deserialize image since MRPT has been compiled without OpenCV")
+	if (version==100)
+	{
+		in >> m_imgIsExternalStorage;
+		if (m_imgIsExternalStorage)
+			in >> m_externalFile;
+		else
+		{
+			THROW_EXCEPTION("[CImage] Cannot deserialize image since MRPT has been compiled without OpenCV")
+		}
+	}
 #else
-
 	releaseIpl();  // First, free current image.
 
 	switch(version)
 	{
+	case -1: // Saved from an MRPT build without OpenCV:
+		{
+			in >> m_imgIsExternalStorage;
+			if (m_imgIsExternalStorage)
+				in >> m_externalFile;
+		}
+		break;
 	case 0:
 		{
 			uint32_t		width, height, nChannels, imgLength;

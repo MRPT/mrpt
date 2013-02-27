@@ -47,9 +47,9 @@ using namespace std;
 
 typedef RbaEngine<
 	kf2kf_poses::SE3,                // Parameterization  KF-to-KF poses
-	landmarks::Euclidean3D,          // Parameterization of landmark positions    
+	landmarks::Euclidean3D,          // Parameterization of landmark positions
 	observations::MonocularCamera    // Type of observations
-	> 
+	>
 	my_rba_t;
 
 
@@ -59,7 +59,7 @@ struct TGraphInitRandom
 		const uint32_t random_seed_,
 		const size_t nUnknowns_k2k_,
 		const size_t nUnknowns_k2f_,
-		const double PROB_OBS_) 
+		const double PROB_OBS_)
 	:	random_seed(random_seed_),
 		nUnknowns_k2k(nUnknowns_k2k_),
 		nUnknowns_k2f(nUnknowns_k2f_),
@@ -77,8 +77,8 @@ struct TGraphInitManual
 	TGraphInitManual(
 		const size_t nUnknowns_k2k_,
 		const size_t nUnknowns_k2f_,
-		const bool *visible_) 
-	: 
+		const bool *visible_)
+	:
 		nUnknowns_k2k(nUnknowns_k2k_),
 		nUnknowns_k2f(nUnknowns_k2f_),
 		visible(visible_)
@@ -89,7 +89,7 @@ struct TGraphInitManual
 };
 
 
-class SchurTests : public ::testing::Test 
+class SchurTests : public ::testing::Test
 {
 protected:
 	virtual void SetUp()
@@ -99,7 +99,7 @@ protected:
 	virtual void TearDown() {  }
 
 	void test_schur_dense_vs_sparse(
-		const TGraphInitRandom  *init_random, 
+		const TGraphInitRandom  *init_random,
 		const TGraphInitManual  *init_manual,
 		const double lambda = 1e3 )
 	{
@@ -119,12 +119,12 @@ protected:
 			nUnknowns_k2k=init_manual->nUnknowns_k2k;
 			nUnknowns_k2f=init_manual->nUnknowns_k2f;
 		}
-			
+
 		// Fill example Jacobians for the test:
 		//  * 2 keyframes -> 1 k2k edge (edges=unknowns)
 		//  * 6 features with unknown positions.
 		//  * 6*2 observations: each feature seen once from each keyframe
-		// Note: 6*2*2 = 24 is the minimum >= 1*6+3*6=24 unknowns so 
+		// Note: 6*2*2 = 24 is the minimum >= 1*6+3*6=24 unknowns so
 		//   Hessians are invertible
 		// -----------------------------------------------------------------
 		// Create observations:
@@ -162,7 +162,7 @@ protected:
 						randomGenerator.drawGaussian1DMatrix( dh_df_j[idx_obs].num.setRandom() );
 						dh_df_j[idx_obs].sym.is_valid = &valid_true;
 
-						idx_obs++; 
+						idx_obs++;
 					}
 				}
 			}
@@ -198,7 +198,7 @@ protected:
 		CMatrixDouble  dense_Hf_plus_lambda = dense_Hf;
 		for (size_t i=0;i<nLMs_scalars;i++)
 			dense_Hf_plus_lambda(i,i)+=lambda;
-		
+
 
 		// Schur: naive dense computation:
 		const CMatrixDouble  dense_HAp_schur  = dense_HAp - dense_HApf*dense_Hf_plus_lambda.inv()*dense_HApf.transpose();
@@ -216,7 +216,7 @@ protected:
 		// Build a list with ALL the unknowns:
 		vector<my_rba_t::jacobian_traits_t::TSparseBlocksJacobians_dh_dAp::col_t*> dh_dAp;
 		vector<my_rba_t::jacobian_traits_t::TSparseBlocksJacobians_dh_df::col_t*>  dh_df;
-		
+
 		for (size_t i=0;i<lin_system.dh_dAp.getColCount();i++)
 			dh_dAp.push_back( & lin_system.dh_dAp.getCol(i) );
 
@@ -242,7 +242,7 @@ protected:
 			dh_dAp,dh_df
 			);
 
-		
+
 		my_rba_t rba;
 
 		rba.sparse_hessian_update_numeric(HAp);
@@ -262,7 +262,7 @@ protected:
 			my_rba_t::hessian_traits_t::TSparseBlocksHessian_Ap,
 			my_rba_t::hessian_traits_t::TSparseBlocksHessian_f,
 			my_rba_t::hessian_traits_t::TSparseBlocksHessian_Apf
-			>  
+			>
 			schur_compl(
 				HAp,Hf,HApf, // The different symbolic/numeric Hessian
 				&minus_grad[0],  // minus gradient of the Ap part
@@ -270,7 +270,7 @@ protected:
 				);
 
 		schur_compl.numeric_build_reduced_system(lambda);
-		
+
 		// ------------------------------------------------------------
 		// 3rd) Both must match!
 		// ------------------------------------------------------------
@@ -284,18 +284,18 @@ protected:
 #endif
 
 
-		EXPECT_NEAR( (dense_HAp_schur-final_HAp_schur).array().abs().maxCoeff()/(dense_HAp_schur.array().abs().maxCoeff()),0, 1e-10) 
-			<< "nUnknowns_k2k=" << nUnknowns_k2k << endl 
-			<< "nUnknowns_k2f=" << nUnknowns_k2f << endl 
-			//<< "final_HAp_schur:\n" << final_HAp_schur << endl
-			//<< "dense_HAp_schur:\n" << dense_HAp_schur << endl
+		EXPECT_NEAR( (dense_HAp_schur-final_HAp_schur).array().abs().maxCoeff()/(dense_HAp_schur.array().abs().maxCoeff()),0, 1e-10)
+			<< "nUnknowns_k2k=" << nUnknowns_k2k << endl
+			<< "nUnknowns_k2f=" << nUnknowns_k2f << endl
+			<< "final_HAp_schur:\n" << final_HAp_schur << endl
+			<< "dense_HAp_schur:\n" << dense_HAp_schur << endl
 			;
 
 		const vector_double final_minus_grad_Ap = minus_grad.head(idx_start_f);
 		const double Ap_minus_grad_Ap_max_error = (dense_minus_grad_schur-final_minus_grad_Ap).array().abs().maxCoeff();
 		EXPECT_NEAR( Ap_minus_grad_Ap_max_error/dense_minus_grad_schur.array().abs().maxCoeff(),0, 1e-10)
-			<< "nUnknowns_k2k=" << nUnknowns_k2k << endl 
-			<< "nUnknowns_k2f=" << nUnknowns_k2f << endl 
+			<< "nUnknowns_k2k=" << nUnknowns_k2k << endl
+			<< "nUnknowns_k2f=" << nUnknowns_k2f << endl
 			//<< "dense_minus_grad_schur:\n" << dense_minus_grad_schur
 			//<< "final_minus_grad_Ap:\n" << final_minus_grad_Ap << endl
 			;
@@ -313,20 +313,20 @@ protected:
 // The minimum case: 1 k2k edge, 6 k2f features (with 6*2=12 observations)
 TEST_F(SchurTests,DenseVsSparseCheck_1k2k_6k2f)
 {
-	for (uint32_t random_seed=1;random_seed<5;random_seed++) 
+	for (uint32_t random_seed=1;random_seed<5;random_seed++)
 	{
 		TGraphInitRandom gir(random_seed, 1,6,  1.0 /* Probability of Obs. */);
-		test_schur_dense_vs_sparse(&gir,NULL ); 
+		test_schur_dense_vs_sparse(&gir,NULL );
 	}
 }
 
 // other random tests:
 TEST_F(SchurTests,DenseVsSparseCheck_1k2k_7k2f)
-{	
+{
 	for (uint32_t random_seed=1;random_seed<15;random_seed++)
 	{
 		TGraphInitRandom gir(random_seed, 1,7,  1.0 /* Probability of Obs. */);
-		test_schur_dense_vs_sparse(&gir,NULL ); 
+		test_schur_dense_vs_sparse(&gir,NULL );
 	}
 }
 
@@ -335,7 +335,7 @@ TEST_F(SchurTests,DenseVsSparseCheck_1k2k_8k2f_random_visible)
 	for (uint32_t random_seed=1;random_seed<15;random_seed++)
 	{
 		TGraphInitRandom gir(random_seed, 1,7,  0.95 /* Probability of Obs. */);
-		test_schur_dense_vs_sparse(&gir,NULL ); 
+		test_schur_dense_vs_sparse(&gir,NULL );
 	}
 }
 
@@ -344,7 +344,7 @@ TEST_F(SchurTests,DenseVsSparseCheck_1k2k_30k2f)
 	for (uint32_t random_seed=1;random_seed<15;random_seed++)
 	{
 		TGraphInitRandom gir(random_seed, 1,30,  1.0 /* Probability of Obs. */);
-		test_schur_dense_vs_sparse(&gir,NULL ); 
+		test_schur_dense_vs_sparse(&gir,NULL );
 	}
 }
 
@@ -353,7 +353,7 @@ TEST_F(SchurTests,DenseVsSparseCheck_2k2k_20k2f)
 	for (uint32_t random_seed=1;random_seed<5;random_seed++)
 	{
 		TGraphInitRandom gir(random_seed, 2,20, 0.9 /* Probability of Obs. */);
-		test_schur_dense_vs_sparse(&gir,NULL ); 
+		test_schur_dense_vs_sparse(&gir,NULL );
 	}
 }
 
@@ -361,12 +361,12 @@ TEST_F(SchurTests,DenseVsSparseCheck_2k2k_some_unobserved)
 {
 	{
 		const bool visibles[] = {
-			true,true, true, true, false, 
-			true,true, true, false, true, 
+			true,true, true, true, false,
+			true,true, true, false, true,
 			true,true, false, true, true
 		};
 		TGraphInitManual gim(2,5,visibles);
-		test_schur_dense_vs_sparse(NULL,&gim); 
+		test_schur_dense_vs_sparse(NULL,&gim);
 	}
 	{
 		const bool visibles[] = {
@@ -375,7 +375,7 @@ TEST_F(SchurTests,DenseVsSparseCheck_2k2k_some_unobserved)
 			true ,true , true , true , true , true
 		};
 		TGraphInitManual gim(2,6,visibles);
-		test_schur_dense_vs_sparse(NULL,&gim); 
+		test_schur_dense_vs_sparse(NULL,&gim);
 	}
 }
 
@@ -384,6 +384,6 @@ TEST_F(SchurTests,DenseVsSparseCheck_5k2k_30k2f)
 	for (uint32_t random_seed=1;random_seed<5;random_seed++)
 	{
 		TGraphInitRandom gir(random_seed, 5,30, 0.9 /* Probability of Obs. */);
-		test_schur_dense_vs_sparse(&gir,NULL ); 
+		test_schur_dense_vs_sparse(&gir,NULL );
 	}
 }

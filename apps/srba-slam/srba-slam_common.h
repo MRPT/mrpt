@@ -41,7 +41,7 @@
 #include <mrpt/otherlibs/tclap/CmdLine.h>
 
 #include <sstream>  // For stringstream
-#include <memory>  // For auto_ptr
+#include <memory>  // For auto_ptr, unique_ptr
 
 // ---------------- All the parameters of this app: --------------
 struct RBASLAM_Params
@@ -101,6 +101,12 @@ struct RBA_Run_Base
 	virtual ~RBA_Run_Base() {}
 };
 
+#if MRPT_HAS_CXX11
+	typedef std::unique_ptr<RBA_Run_Base> RBA_Run_BasePtr;
+#else
+	typedef std::auto_ptr< RBA_Run_Base > RBA_Run_BasePtr;
+#endif
+
 // Forward decl:
 template <class KF2KF_POSE_TYPE,class LM_TYPE,class OBS_TYPE, class RBA_OPTIONS>
 struct RBA_Run;
@@ -110,13 +116,13 @@ template <class KF2KF_POSE_TYPE,class LM_TYPE,class OBS_TYPE>
 struct RBA_Run_Factory
 {
 	// Fwd. declaration: instantiated in separate .cpp files to avoid huge RAM requirements while compiling.
-	static std::auto_ptr<RBA_Run_Base> create();
+	static RBA_Run_BasePtr create();
 };
 
 // ----------- A registry of implemented RBA problems -------------------
 // Each implementation should return an empty pointer if the params do not
 // match the RBA problem type, or a problem object if it does.
-typedef std::auto_ptr<RBA_Run_Base> (*factory_functor_t)( RBASLAM_Params &params);
+typedef RBA_Run_BasePtr (*factory_functor_t)( RBASLAM_Params &params);
 
 struct RBA_implemented_registry
 {
@@ -124,7 +130,7 @@ struct RBA_implemented_registry
 	static RBA_implemented_registry & getInstance();
 
 	void doRegister(factory_functor_t functor, const std::string &description);
-	std::auto_ptr<RBA_Run_Base> searchImplementation( RBASLAM_Params &params) const;
+	RBA_Run_BasePtr searchImplementation( RBASLAM_Params &params) const;
 	void dumpAllKnownProblems() const;
 
 private:

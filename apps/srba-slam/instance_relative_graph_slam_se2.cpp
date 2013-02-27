@@ -54,12 +54,12 @@ struct problem_options_traits_t<kf2kf_poses::SE2,landmarks::RelativePoses2D,obse
 template struct RBA_Run_Factory<kf2kf_poses::SE2,landmarks::RelativePoses2D,observations::RelativePoses_2D>;
 
 // Register this RBA problem:
-std::auto_ptr<RBA_Run_Base> my_creator_rel_graph_slam_se2(RBASLAM_Params &config)
+RBA_Run_BasePtr my_creator_rel_graph_slam_se2(RBASLAM_Params &config)
 {
 	if (config.arg_se2.isSet() && config.arg_graph_slam.isSet())
 		return RBA_Run_Factory<kf2kf_poses::SE2,landmarks::RelativePoses2D,observations::RelativePoses_2D>::create();
 
-	return std::auto_ptr<RBA_Run_Base>();
+	return RBA_Run_BasePtr();
 }
 
 struct TMyRegister

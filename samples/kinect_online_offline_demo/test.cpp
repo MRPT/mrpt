@@ -47,7 +47,7 @@
 #include <mrpt/gui.h>
 #include <mrpt/maps.h>
 #include <mrpt/slam/CRawlog.h>
-#include <memory> // for std::auto_ptr<>
+#include <memory> // for std::auto_ptr, unique_ptr
 
 // Demonstrate MRPT RGB+D --> PCL point cloud conversion:
 #if MRPT_HAS_PCL
@@ -101,7 +101,11 @@ void thread_grabbing(TThreadParam &p)
 {
 	try
 	{
+#if MRPT_HAS_CXX11
+		typedef std::unique_ptr<CKinect> CKinectPtr;  // This assures automatic destruction
+#else
 		typedef std::auto_ptr<CKinect> CKinectPtr;  // This assures automatic destruction
+#endif
 
 		// Only one of these will be actually used:
 		CKinectPtr          kinect;

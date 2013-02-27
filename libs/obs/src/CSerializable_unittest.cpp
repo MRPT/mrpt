@@ -83,7 +83,6 @@ TEST(SerializeTestObs, WriteReadToMem)
 		{
 			CMemoryStream  buf;
 			{
-			    //cout << lstClasses[i]->className << endl;
 				CSerializable* o = static_cast<CSerializable*>(lstClasses[i]->createObject());
 				buf << *o;
 				delete o;

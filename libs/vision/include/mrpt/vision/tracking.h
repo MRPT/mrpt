@@ -47,7 +47,7 @@
 
 #include <mrpt/utils/metaprogramming.h>
 
-#include <memory> 	// for auto_ptr
+#include <memory> 	// for auto_ptr, unique_ptr
 
 namespace mrpt
 {
@@ -234,8 +234,11 @@ namespace mrpt
 				FEATLIST &inout_featureList );
 		};
 
+#if MRPT_HAS_CXX11
+		typedef std::unique_ptr<CGenericFeatureTracker> CGenericFeatureTrackerAutoPtr;
+#else
 		typedef std::auto_ptr<CGenericFeatureTracker> CGenericFeatureTrackerAutoPtr;
-
+#endif
 
 		/** Track a set of features from old_img -> new_img using sparse optimal flow (classic KL method).
 		  *

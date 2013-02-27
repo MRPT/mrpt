@@ -1721,7 +1721,7 @@ bool mrpt::math::isNaN(double v) MRPT_NO_THROWS
 #if defined(__BORLANDC__) || defined(_MSC_VER)
 		return 0!=_isnan(v);
 #elif defined(__GNUC__)
-		return isnan(v);
+		return std::isnan(v);
 #else
         return false;
 #endif
@@ -1734,7 +1734,7 @@ bool mrpt::math::isFinite(float v) MRPT_NO_THROWS
 #if defined(__BORLANDC__) || defined(_MSC_VER)
 		return 0!=_finite(v);
 #elif defined(__GNUC__)
-		return isfinite(v);
+		return std::isfinite(v);
 #else
         return false;
 #endif
@@ -1764,7 +1764,7 @@ bool mrpt::math::isFinite(double v) MRPT_NO_THROWS
 	#if defined(__BORLANDC__) || defined(_MSC_VER)
 		return 0!=_isnan(f);
 	#else
-		return isnan(f);
+		return std::isnan(f);
 	#endif
 	}
 
@@ -1776,7 +1776,7 @@ bool mrpt::math::isFinite(double v) MRPT_NO_THROWS
 	#if defined(__BORLANDC__) || defined(_MSC_VER)
 		return 0!=_finite(f);
 	#else
-		return isfinite(f);
+		return std::isfinite(f);
 	#endif
 	}
 #endif

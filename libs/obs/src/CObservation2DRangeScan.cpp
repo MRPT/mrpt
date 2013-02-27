@@ -199,7 +199,6 @@ void  CObservation2DRangeScan::readFromStream(CStream &in, int version)
 			uint32_t		N;
 
 			CMatrix covSensorPose;
-
 			in >> aperture >> rightToLeft  >> maxRange >> sensorPose;
 
 			if (version<6) // covSensorPose was removed in version 6
@@ -235,7 +234,6 @@ void  CObservation2DRangeScan::readFromStream(CStream &in, int version)
 	};
 
 	m_cachedMap.clear();
-
 }
 
 /*---------------------------------------------------------------

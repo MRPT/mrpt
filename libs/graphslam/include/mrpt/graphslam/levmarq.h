@@ -191,7 +191,12 @@ namespace mrpt
 			ASSERT_ABOVE_(nObservations,0)
 
 			// Cholesky object, as a pointer to reuse it between iterations:
-			std::auto_ptr<CSparseMatrix::CholeskyDecomp>  ptrCh;
+#if MRPT_HAS_CXX11
+			typedef std::unique_ptr<CSparseMatrix::CholeskyDecomp> SparseCholeskyDecompPtr;
+#else
+			typedef std::auto_ptr<CSparseMatrix::CholeskyDecomp> SparseCholeskyDecompPtr;
+#endif
+			SparseCholeskyDecompPtr ptrCh;
 
 			// The list of Jacobians: for each constraint i->j,
 			//  we need the pair of Jacobians: { dh(xi,xj)_dxi, dh(xi,xj)_dxj },
@@ -459,7 +464,7 @@ namespace mrpt
 				{
 					profiler.enter("optimize_graph_spa_levmarq.sp_H:chol");
 					if (!ptrCh.get())
-							ptrCh = std::auto_ptr<CSparseMatrix::CholeskyDecomp>(new CSparseMatrix::CholeskyDecomp(sp_H) );
+							ptrCh = SparseCholeskyDecompPtr(new CSparseMatrix::CholeskyDecomp(sp_H) );
 					else ptrCh.get()->update(sp_H);
 					profiler.leave("optimize_graph_spa_levmarq.sp_H:chol");
 

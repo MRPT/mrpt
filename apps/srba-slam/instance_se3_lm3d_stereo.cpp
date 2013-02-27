@@ -76,12 +76,12 @@ template struct RBA_Run_Factory<kf2kf_poses::SE3,landmarks::Euclidean3D,observat
 
 
 // Register this RBA problem:
-std::auto_ptr<RBA_Run_Base> my_creator_se3_lm3d_stereo(RBASLAM_Params &config)
+RBA_Run_BasePtr my_creator_se3_lm3d_stereo(RBASLAM_Params &config)
 {
 	if (config.arg_se3.isSet() && config.arg_lm3d.isSet() && config.arg_obs.getValue()=="StereoCamera")
 		return RBA_Run_Factory<kf2kf_poses::SE3,landmarks::Euclidean3D,observations::StereoCamera>::create();
 
-	return std::auto_ptr<RBA_Run_Base>();
+	return RBA_Run_BasePtr();
 }
 
 struct TMyRegister

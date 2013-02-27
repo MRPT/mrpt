@@ -72,6 +72,7 @@ CStream::~CStream()
  ---------------------------------------------------------------*/
 size_t  CStream::ReadBuffer(void *Buffer, size_t Count)
 {
+	ASSERT_(Buffer!=NULL)
 	if (Count)
 	{
 		size_t		actuallyRead = Read(Buffer,Count);
@@ -93,9 +94,10 @@ size_t  CStream::ReadBuffer(void *Buffer, size_t Count)
  ---------------------------------------------------------------*/
 void  CStream::WriteBuffer(const void *Buffer, size_t Count)
 {
+	ASSERT_(Buffer!=NULL)
 	if (Count)
 		if ( Count != Write(Buffer,Count) )
-			THROW_EXCEPTION("Can not write bytes to stream!" );
+			THROW_EXCEPTION("Cannot write bytes to stream!" );
 }
 
 
@@ -190,6 +192,7 @@ CStream& utils::operator << (CStream&out, const std::string &str)
 void CStream::WriteObject(const  CSerializable *o )
 {
     MRPT_START
+	ASSERT_(o!=NULL)
 
 	int		version;
 
@@ -331,6 +334,7 @@ CStream& utils::operator>>(CStream&in, std::string &str)
 
 CStream& utils::operator>>(CStream&in, char *s)
 {
+	ASSERT_(s!=NULL)
 	uint32_t  l;
 	in >>l;
 	if (l)

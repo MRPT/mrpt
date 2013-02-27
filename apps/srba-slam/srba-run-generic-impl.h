@@ -55,9 +55,9 @@ using namespace mrpt::utils;
 
 
 template <class KF2KF_POSE_TYPE,class LM_TYPE,class OBS_TYPE>
-auto_ptr<RBA_Run_Base> RBA_Run_Factory<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE>::create()
+RBA_Run_BasePtr RBA_Run_Factory<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE>::create()
 {
-	return auto_ptr<RBA_Run_Base>(
+	return RBA_Run_BasePtr(
 		new RBA_Run<
 			KF2KF_POSE_TYPE,
 			LM_TYPE,

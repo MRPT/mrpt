@@ -54,7 +54,7 @@
 #include <mrpt/poses/CPoint2DPDFGaussian.h>
 
 #include <numeric>  // accumulate
-#include <memory>   // auto_ptr
+#include <memory>   // auto_ptr, unique_ptr
 
 #include <mrpt/otherlibs/nanoflann/nanoflann.hpp> // For kd-tree's
 #include <mrpt/math/KDTreeCapable.h>   // For kd-tree's
@@ -335,7 +335,12 @@ void mrpt::slam::data_association_full_covariance(
 	// ------------------------------------------------------------
 	// Build a KD-tree of the predictions for quick look-up:
 	// ------------------------------------------------------------
-	std::auto_ptr<KDTreeEigenMatrixAdaptor<CMatrixDouble> >  kd_tree;
+#if MRPT_HAS_CXX11
+	typedef std::unique_ptr<KDTreeEigenMatrixAdaptor<CMatrixDouble> > KDTreeMatrixPtr;
+#else
+	typedef std::auto_ptr<KDTreeEigenMatrixAdaptor<CMatrixDouble> > KDTreeMatrixPtr;
+#endif
+	KDTreeMatrixPtr  kd_tree;
 	const size_t N_KD_RESULTS = nPredictions;
 	std::vector<double>	kd_result_distances(DAT_ASOC_USE_KDTREE ? N_KD_RESULTS : 0);
 	std::vector<size_t>	kd_result_indices(DAT_ASOC_USE_KDTREE ? N_KD_RESULTS : 0);
@@ -344,7 +349,7 @@ void mrpt::slam::data_association_full_covariance(
 	if (DAT_ASOC_USE_KDTREE)
 	{
 		// Construct kd-tree for the predictions:
-		kd_tree = std::auto_ptr<KDTreeEigenMatrixAdaptor<CMatrixDouble> >( new KDTreeEigenMatrixAdaptor<CMatrixDouble>(length_O, Y_predictions_mean) );
+		kd_tree = KDTreeMatrixPtr( new KDTreeEigenMatrixAdaptor<CMatrixDouble>(length_O, Y_predictions_mean) );
 	}
 
 	// Initialize with the worst possible distance:

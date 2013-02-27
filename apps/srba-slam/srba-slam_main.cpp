@@ -72,15 +72,15 @@ void RBA_implemented_registry::dumpAllKnownProblems() const
 		cout << " " << it->description << endl;
 }
 
-std::auto_ptr<RBA_Run_Base> RBA_implemented_registry::searchImplementation( RBASLAM_Params &params) const
+RBA_Run_BasePtr RBA_implemented_registry::searchImplementation( RBASLAM_Params &params) const
 {
 	for (list_t::const_iterator it=m_registered.begin();it!=m_registered.end();++it)
 	{
-		std::auto_ptr<RBA_Run_Base> ptr = (*(it->functor))(params);
+		RBA_Run_BasePtr ptr = (*(it->functor))(params);
 		if (ptr.get()!=NULL) return ptr;
 	}
 
-	return std::auto_ptr<RBA_Run_Base>();
+	return RBA_Run_BasePtr();
 }
 
 
@@ -168,7 +168,7 @@ int main(int argc, char**argv)
 		// -----------------------------------
 		RBA_implemented_registry &inst = RBA_implemented_registry::getInstance();
 		// Search in the registry of all implemented instances:
-		auto_ptr<RBA_Run_Base> rba = inst.searchImplementation(config);
+		RBA_Run_BasePtr rba = inst.searchImplementation(config);
 
 		if (rba.get()==NULL)
 			throw std::runtime_error("Sorry: the given combination of pose, landmark and sensor models wasn't precompiled in this program!\nRun with '--list-problems' to see available options.\n");

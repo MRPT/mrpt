@@ -43,12 +43,12 @@
 template struct RBA_Run_Factory<kf2kf_poses::SE3,landmarks::Euclidean3D,observations::Cartesian_3D>;
 
 // Register this RBA problem:
-std::auto_ptr<RBA_Run_Base> my_creator_se3_lm3d_cart3d(RBASLAM_Params &config)
+RBA_Run_BasePtr my_creator_se3_lm3d_cart3d(RBASLAM_Params &config)
 {
 	if (config.arg_se3.isSet() && config.arg_lm3d.isSet() && config.arg_obs.getValue()=="Cartesian_3D")
 		return RBA_Run_Factory<kf2kf_poses::SE3,landmarks::Euclidean3D,observations::Cartesian_3D>::create();
 
-	return std::auto_ptr<RBA_Run_Base>();
+	return RBA_Run_BasePtr();
 }
 
 struct TMyRegister

@@ -133,10 +133,6 @@ CObject* TRuntimeClassId::createObject() const
 	{
 		throw e;
 	}
-	catch (...)
-	{
-		return NULL;
-	}
 }
 
 

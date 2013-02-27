@@ -43,12 +43,12 @@
 template struct RBA_Run_Factory<kf2kf_poses::SE2, landmarks::Euclidean2D, observations::RangeBearing_2D>;
 
 // Register this RBA problem:
-std::auto_ptr<RBA_Run_Base> my_creator_se2_lm2d_rb2d(RBASLAM_Params &config)
+RBA_Run_BasePtr my_creator_se2_lm2d_rb2d(RBASLAM_Params &config)
 {
 	if (config.arg_se2.isSet() && config.arg_lm2d.isSet() && config.arg_obs.getValue()=="RangeBearing_2D")
 		return RBA_Run_Factory<kf2kf_poses::SE2,landmarks::Euclidean2D,observations::RangeBearing_2D>::create();
 
-	return std::auto_ptr<RBA_Run_Base>();
+	return RBA_Run_BasePtr();
 }
 
 struct TMyRegister

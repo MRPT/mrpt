@@ -39,7 +39,7 @@
 #include <mrpt/utils/CTimeLogger.h>
 #include <mrpt/math/CSparseMatrix.h>
 
-#include <memory>  // std::auto_ptr
+#include <memory>  // std::auto_ptr, unique_ptr
 
 #include "ba_internals.h"
 
@@ -210,8 +210,12 @@ double mrpt::vision::bundle_adj_full(
 	Matrix_PxP   I_muPoint(UNINITIALIZED_MATRIX);
 
 	// Cholesky object, as a pointer to reuse it between iterations:
-	std::auto_ptr<CSparseMatrix::CholeskyDecomp>  ptrCh; //  Ch(sS);
-
+#if MRPT_HAS_CXX11
+	typedef std::unique_ptr<CSparseMatrix::CholeskyDecomp> SparseCholDecompPtr;
+#else
+	typedef std::auto_ptr<CSparseMatrix::CholeskyDecomp> SparseCholDecompPtr;
+#endif
+	SparseCholDecompPtr ptrCh;
 
 	for (size_t iter=0; iter<max_iters; iter++)
 	{
@@ -345,7 +349,7 @@ double mrpt::vision::bundle_adj_full(
 			{
 				profiler.enter("sS:chol");
 				if (!ptrCh.get())
-						ptrCh = std::auto_ptr<CSparseMatrix::CholeskyDecomp>(new CSparseMatrix::CholeskyDecomp(sS) );
+						ptrCh = SparseCholDecompPtr(new CSparseMatrix::CholeskyDecomp(sS) );
 				else ptrCh.get()->update(sS);
 				profiler.leave("sS:chol");
 
