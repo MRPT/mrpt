@@ -103,14 +103,14 @@ The framework of \emph{Relative Bundle Adjustment (RBA)} was introduced in a ser
 colleagues in \cite{sibley2009rba,sibley2009adaptive}. 
 
 \emph{Sparser RBA (SRBA)} is the name of the generic and extensible framework for RBA, implemented in 
-the C++ library \texttt{mrpt-srba}. It features the introduction of 
+the C++ library \texttt{libmrpt-srba}. It features the introduction of 
 a \emph{constant-time algorithm} for maintaining problem graphs with arbitrary topologies 
 (as presented in \cite{blanco2013srba}), as well as a generic design which allows turning RBA 
 into \emph{relative Graph-SLAM} (i.e. networks of relative pose constraints whose solution are also relative poses).
 
 \section{Library installation}
 
-\texttt{mrpt-srba} is one of the libraries of the Mobile Robot Programming Toolkit (MRPT). 
+\texttt{libmrpt-srba} is one of the libraries of the Mobile Robot Programming Toolkit (MRPT). 
 It is header-only and makes \emph{intensive} use of templates and design patterns for the sake of customization, 
 flexibility and extensibility. 
 
@@ -120,7 +120,7 @@ the RBA problems. Despite its name, the latter library can be built for platform
 functional \texttt{OpenGL} implementation, though it is recommended to always visualize the results for getting a better 
 insight of what is going on in your programs. The header-only library \texttt{Eigen} \cite{eigenweb} is also a mandatory dependency, but 
 an embedded version is shipped with \texttt{mrpt-base} in case the user does not have it installed.}, 
-so in practice before using \texttt{mrpt-srba} in your program you need
+so in practice before using \texttt{libmrpt-srba} in your program you need
 both (i) access to headers (\texttt{.h} files) and (ii) binary libraries to link against them. 
 
 In Ubuntu, installing the package \texttt{libmrpt-dev} (version 1.0.0 or newer) is the easiest way to have 
@@ -158,7 +158,7 @@ cross-covariances between estimated variables can be also evaluated.
 \label{fig:rba.entities}
 \end{figure}
 
-We find the following entities in \texttt{mrpt-srba} (refer to Fig.~\ref{fig:rba.entities}):
+We find the following entities in \texttt{libmrpt-srba} (refer to Fig.~\ref{fig:rba.entities}):
 
 \begin{itemize}
 \item{\textbf{Keyframes}: A keyframe (KF), as each $KF_i$ in the figure, represents the \emph{pose} of the robot (or the 
@@ -219,7 +219,9 @@ avoids code bifurcations, etc.
 
 Due to the combinatorial nature of all the possibilities, 
 detailed in \S\ref{sect:rba_configs}--\ref{sect:rba_options}, one template class 
-can generate specialized code for dozens of concrete problems.
+can generate specialized code for dozens of concrete problems. 
+The only price to pay is the longer build time associated to any complex C++ program 
+that exploits metaprogramming with templates.
 
 
 \subsection{The simplest program}
@@ -329,13 +331,41 @@ An example screenshot is shown in Fig.~\ref{fig:screenshot.tutorial1}.
 \section{Configuring \texttt{RbaEngine<>}}
 \label{sect:rba_configs}
 
+On the following, all class names assume the existence of a previous:
+
+\begin{lstlisting}
+ using namespace mrpt::srba;
+\end{lstlisting}
+
+
+
 \subsection{\texttt{KF2KF\_POSE\_TYPE}: KF-to-KF relative poses}
 \label{sec:k2k_types}
 
-Given that the least-squares optimization runs on the linearized neighborhood of the manifold \cite{blanco2010tutorial} 
-around the instantaneous solutions, the choice between different parameterizations of SE(3) poses becomes irrelevant. 
+This template argument selects the model for the relative poses between keyframes. 
+The two natural possibilities are SE(2) and SE(3) poses, which you should employ 
+depending on whether your problem can be considered \emph{planar} or not:
 
-XXXX XXXX 
+\begin{itemize}
+\item{\textbf{ \texttt{kf2kf\_poses::SE2} }: For 2D relative poses, i.e. they consists of a $(x,y)$ displacement 
+plus a heading $\phi$. Poses are mapped to 
+\href{http://reference.mrpt.org/stable/classmrpt_1_1poses_1_1_c_pose2_d.html}
+{\texttt{mrpt::poses::CPose2D}} classes. 
+}
+\item{\textbf{ \texttt{kf2kf\_poses::SE3} }: For 3D relative poses. Given that the least-squares optimization runs 
+on the linearized neighborhood of the manifold \cite{blanco2010tutorial} around the instantaneous solutions, the 
+choice between different parameterizations (i.e. quaternions, Euler angles,etc.) becomes irrelevant. 
+In this case poses become 
+\href{http://reference.mrpt.org/stable/classmrpt_1_1poses_1_1_c_pose3_d.html}
+{\texttt{mrpt::poses::CPose3D}}
+classes, which internally hold the $3 \times 3$ rotation matrix for the SO(3) rotation and a $(x,y,z)$ vector 
+for the translational part, with optional conversion to/from quaternions and yaw/pitch/roll angles.
+}
+\end{itemize}
+
+Notice that the usage of 2D relative poses limits the robot trajectory to one single plane, but 
+it does not mean that landmarks must also be 2D. It is perfectly legal to use planar poses with 3D landmarks.
+
 
 \subsection{\texttt{LM\_TYPE}: Relative landmark parameterizations}
 \label{sec:k2f_types}

@@ -57,6 +57,8 @@ then
 	gzip $MRPT_DEB_DIR/mrpt-${MRPT_VERSION_STR}/doc/mrpt-book.ps
 fi
 
+# Try to compile guide now:
+make -C $MRPTSRC/doc/srba-guide/
 if [ -f $MRPTSRC/doc/srba-guide/srba-guide.pdf ];
 then
 	cp $MRPTSRC/doc/srba-guide/srba-guide.pdf $MRPT_DEB_DIR/mrpt-${MRPT_VERSION_STR}/doc/
