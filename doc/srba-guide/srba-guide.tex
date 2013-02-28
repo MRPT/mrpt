@@ -80,7 +80,7 @@ This work is licensed under a Creative Commons Attribution-NonCommercial-NoDeriv
 
 \textbf{Revision history:}
 \begin{itemize}
- \item Feb 2013: First version. Released along MRPT 1.0.0.
+ \item March 2013: First version. Released along MRPT 1.0.0.
 \end{itemize}
 
 \vfill
@@ -109,20 +109,30 @@ In case you want to cite this guide in your academic publications, here is a Bib
 
 \section{Introduction}
 
-Bundle adjustment (BA) is the name given to one solution to visual SLAM based on maximum-likelihood estimation (MLE) 
-over the space of map features and camera poses. However, it is by no way limited to visual maps, since the same 
-optimization techniques employed in BA are also applicable to maps of pose constraints (graph-SLAM) and to many other 
-kind of feature maps, not necessarily involving visual information.
+Bundle adjustment (BA) is the name given to one solution to visual Simultaneous Localization and Mapping (SLAM) (or Structure From Motion, SFM) 
+based on maximum-likelihood estimation (MLE) over the space of map features and camera poses. 
+However, it is by no way limited to visual maps, since the same 
+optimization techniques employed in BA are also applicable to many other 
+kind of feature maps, not necessarily involving visual information, or even to maps of pose constraints 
+(\emph{Graph-SLAM}).
 
-The framework of \emph{Relative Bundle Adjustment (RBA)} was introduced in a series of works by Gabe Sibley and 
+For readers without a solid background in SLAM or BA, it is \emph{strongly} recommended 
+to first read seminar works on SLAM \cite{thrun2005pr,durrantwhyte2006sla,bailey2006sla}, 
+BA \cite{triggs2000bundle} and Graph-SLAM \cite{grisetti2010tgb}.
+
+
+The idea of \emph{Relative Bundle Adjustment (RBA)} was introduced in a series of works by Gabe Sibley and 
 colleagues in \cite{sibley2009rba,sibley2009adaptive}. 
 
 \emph{Sparser RBA (SRBA)} is the name of the generic and extensible framework for RBA, implemented in 
 the C++ library \texttt{libmrpt-srba}. It features the introduction of 
-a \emph{constant-time algorithm} for maintaining problem graphs with arbitrary topologies 
-(as presented in \cite{blanco2013srba}), as well as a generic design which allows turning RBA 
-into \emph{relative Graph-SLAM} (i.e. networks of relative pose constraints whose solution are also relative poses).
+a \emph{constant-time algorithm} for maintaining problem graphs with arbitrary topologies \cite{blanco2013srba}, 
+as well as a generic design which allows turning RBA 
+into \emph{relative Graph-SLAM} (i.e. networks of relative pose constraints whose solutions are also relative poses).
+The \emph{sparser} in its name refers to the proposal of creating graph edges in a way that increases the sparseness 
+of the involved matrices \cite{blanco2013srba}.
 
+\newpage
 \section{Library installation}
 
 \texttt{libmrpt-srba} is one of the libraries of the Mobile Robot Programming Toolkit (MRPT). 
@@ -154,24 +164,41 @@ Binary packages for Windows are also available online (\href{http://www.mrpt.org
 If you prefer to build MRPT from sources, please visit the official web\footnote{\href{http://www.mrpt.org/}{http://www.mrpt.org/}} 
 for detailed instructions.
 
+If you prefer to build MRPT from sources and do not need all the functionality of the rest of libraries, 
+remember to uncheck all the CMake configuration variables \texttt{BUILD\_mrpt-*} for the unneeded modules. 
+To make sure your SRBA library is working properly, it is recommended to run the set of \emph{unit tests} associated 
+to \texttt{libmrpt-srba} with: 
 
+\begin{lstlisting}
+ make run_tests_mrpt_srba  # To run the unit tests of mrpt-srba only
+ make test                 # To run all unit tests in MRPT
+\end{lstlisting}
+
+The tests include solving a few predefined datasets, verifying the expected results from 
+Sch\"ur-complement functions, etc. At present there are 13 unit tests just for \texttt{libmrpt-srba}
+and more than 160 for the entire MRPT. 
+It is almost impossible to assure that a library is bug-free with 100\% certainty, 
+but at least those tests assure that no regressions will be introduced along future features of bug fixes.
+
+
+\newpage
 \section{RBA primer}
 \label{sect:rba_primer}
 
 This manual will not explain the mathematical details of how RBA is modeled and solved -- please, refer to cited papers.
 Though, it is mandatory to clearly establish which \textbf{entities} define an RBA problem before discussing the library API.
 
-An example such that the one in Fig.~\ref{fig:rba.entities} will help introducing the different elements.
-The illustration depicts many elements, some of which are \emph{known} data, others are the problem \emph{unknowns}. 
-The goal of RBA is to recover a \emph{maximum-likelihood estimation (MLE)} of those unknowns. Optionally, the covariances and 
-cross-covariances between estimated variables can be also evaluated.
-
-\begin{figure}
+\begin{figure}[h]
 \centering
 \includegraphics[width=0.7\textwidth]{imgs/srba_toy_problem.pdf} 
 \caption{A toy RBA problem.}
 \label{fig:rba.entities}
 \end{figure}
+
+An example such that the one in Fig.~\ref{fig:rba.entities} will help introducing the different elements.
+The illustration depicts many elements, some of which are \emph{known} data, others are the problem \emph{unknowns}. 
+The goal of RBA is to recover a \emph{maximum-likelihood estimation (MLE)} of those unknowns. Optionally, the covariances and 
+cross-covariances between estimated variables can be also evaluated.
 
 We find the following entities in \texttt{libmrpt-srba} (refer to Fig.~\ref{fig:rba.entities}):
 
@@ -181,7 +208,7 @@ camera or whatever) at one  particular instant of time. In RBA we will never wor
 these KFs. This is completely different than ``common'' Bundle Adjustment, where these poses are the unknowns to 
 estimate.
 }
-\item{\textbf{Keyframe-to-keyframe edges}: An edge $k2k_i^j$ represents the relative pose of $KF_i$ with respect to 
+\item{\textbf{Keyframe-to-keyframe (k2k) edges}: An edge $k2k_i^j$ represents the relative pose of $KF_i$ with respect to 
 $KF_j$. Notice that ``inverse poses'' (i.e. in the inverse order than one would expect from the edge direction) are 
 stored for efficiency\footnote{In RBA we may need to chain sequences of relative poses, and the direction will often 
 be from newer KFs towards older KFs, hence if we store inverse poses we save the computational burden of inverting them 
@@ -203,7 +230,7 @@ represented in the figure as thick edges with a middle circle mark.
 \item{\textbf{Observations}: An observation $z^{i,j}_k$ stands for any piece of sensory data which \emph{is related}, 
 somehow, with the position of the $i-th$ LM, whose base KF is $j$, as seen from the observing KF $k$. They are 
 depicted as dashed lines in the figure above. Rank-deficient observations, like those from monocular cameras, are 
-acceptable but two or more observations may be required before being able to estimate the relative position of the 
+acceptable but two or more observations are then required before being able to estimate the relative position of the 
 observed LM.
 }
 \end{itemize}
@@ -233,9 +260,9 @@ the problem at hand (e.g. SSE2 code for multiplying matrices of a particular siz
 avoids code bifurcations, etc.
 
 Due to the combinatorial nature of all the possibilities, 
-detailed in \S\ref{sect:rba_configs}--\ref{sect:rba_options}, one template class 
+detailed in \S\ref{sect:rba_configs}, one template class 
 can generate specialized code for dozens of concrete problems. 
-The only price to pay is the longer build time associated to any complex C++ program 
+The only price to pay is the longer compiling time associated to any complex C++ program 
 that exploits metaprogramming with templates.
 
 
@@ -346,12 +373,17 @@ template <...> class RbaEngine {
 
 \noindent which accepts as its main input the list of all the observations gathered at this 
 new KF. This method \emph{always creates a new KF}, without analyzing whether it was 
-too close or too far from the last one. Thus, it is (for now) the user's responsibility 
+too close or too far from other KFs. Thus, it is (for now) the user's responsibility 
 not to call the method too often, which would create an unnecessarily large amount of KFs with 
 the subsequent degradation of the performance. \emph{The constant-time complexity} of the overall 
-method assumes that there exists a maximum number of KFs per area --which is perfectly reasonable.
+method assumes that there exists a maximum number of KFs per area --which is perfectly reasonable\footnote{TO DO: Future
+versions of the software will probably incorporate an automatic mechanism to help deciding whether to insert
+KFs.}.
 
-As output, this method provides a structure with:
+As output, this method fills a 
+\href{http://reference.mrpt.org/svn/structmrpt_1_1srba_1_1_rba_engine_1_1_t_new_key_frame_info.html}
+{\texttt{RbaEngine<>::TNewKeyFrameInfo}} 
+structure with:
 \begin{itemize}
  \item The ID of the newly-created KF. 
  \item{ The list of all the created KF-to-KF edges. At least one, or more in the case of loop-closures. 
@@ -478,8 +510,231 @@ Can be changed at run-time, not at build-time.
 
 (...)
 
+\newpage
+\section{Accessing \texttt{RbaEngine<>}: the RBA problem graph}
+\label{sect:rba_access}
+
+This section is meant to be complemented by checking the complete Doxygen documentation online.
+
+\subsection{Programmatic access to edges and nodes}
+
+The first step for programmatic access to the data structures that 
+represent KFs, observations, etc. is getting a (\texttt{const}, i.e. unmodifiable) 
+reference to the internal object that holds the entire RBA state:
+
+\begin{lstlisting}
+template <...> class RbaEngine {
+    ...
+	typedef TRBA_Problem_state<...> rba_problem_state_t;
+	...
+	const rba_problem_state_t & get_rba_state() const;
+    ...
+};
+\end{lstlisting}
+
+\noindent which is an instance of the class 
+\href{http://reference.mrpt.org/svn/structmrpt_1_1srba_1_1_t_r_b_a___problem__state.html}
+{\texttt{TRBA\_Problem\_state<...>}}. It is recommended to check its Doxygen documentation
+for a better description of all the existing data fields, as well as the description in \S\ref{sect:data.structs}.
+The most relevant public data fields are:
+\begin{itemize}
+\item \texttt{keyframe\_vector\_t keyframes}: A vector with information about each existing KF, indexed by their ID.
+\item \texttt{k2k\_edges\_deque\_t k2k\_edges}: All KF-to-KF edges, indexed by their ID.
+\item \texttt{TRelativeLandmarkPosMap unknown\_lms}: The positioning of each (non-fixed) landmark.
+\end{itemize}
 
 
+\newpage
+\subsection{Exporting as OpenGL objects}
+
+The following method is provided to convert (part of) an RBA problem into a graphical representation 
+suitable for rendering:
+
+\begin{lstlisting}
+template <...> class RbaEngine {
+    ...
+	void build_opengl_representation(
+		const srba::TKeyFrameID root_keyframe,
+		const TOpenGLRepresentationOptions &options,
+		mrpt::opengl::CSetOfObjectsPtr out_scene,
+		mrpt::opengl::CSetOfObjectsPtr out_root_tree = mrpt::opengl::CSetOfObjectsPtr()
+		) const;
+    ...
+};
+\end{lstlisting}
+
+It is recommended to check the Doxygen documentation of 
+\href{http://reference.mrpt.org/svn/structmrpt_1_1srba_1_1_rba_engine_1_1_t_open_g_l_representation_options.html}
+{\texttt{TOpenGLRepresentationOptions}} to see all available rendering options, but just a few important remarks:
+
+\begin{itemize}
+\item{ In RBA there is no ``global map'', obviously. So each graphical representation must explicitly choose the 
+       origin of coordinates. This is done by selecting the \texttt{root\_keyframe} (a KF's ID) which becomes the 
+       root of a spanning tree of all nearby KFs up to some maximum topological distance (settable in \texttt{options}).}
+\item{ For obtaining relative coordinates with respect to the selected root, this method is capable of building deeper
+       spanning trees than those maintained for online optimization. However, this clearly has an unbounded computational 
+       cost that grows with the desired topological distance, so keep this distance as reduced as possible if the intention 
+       is to render the state of the RBA problem in real time. In particular, it is recommended to set: 
+
+\begin{lstlisting}
+	typename my_srba_t::TOpenGLRepresentationOptions opengl_params;
+	opengl_params.span_tree_max_depth = rba.parameters.srba.max_tree_depth; // Render these past keyframes at most.
+\end{lstlisting}
+}
+\end{itemize}
+
+\newpage
+\subsection{Exporting as Graphviz graphs}
+
+The following method allows exporting the RBA problem, in its current state, to a plain text 
+file in the standard Graphviz format:
+
+\begin{lstlisting}
+template <...> class RbaEngine {
+    ...
+	bool save_graph_as_dot(
+		const std::string &targetFileName,
+		const bool all_landmarks = false
+		) const;
+    ...
+};
+\end{lstlisting}
+
+Note that exporting all landmarks will lead to excessively dense graphs in any mid to large-size problem. 
+An example is shown in Fig.~\ref{fig:dot.graph}.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=1.0\textwidth]{imgs/example_final_graph.pdf} 
+\caption{Example of an RBA graph rendered with Graphviz's \texttt{dot}: rectangles are keyframes, triangles are landmarks, 
+dotted lines are observations and solid lines are either kf-to-kf edges or landmark relative positions 
+(with respect to their \emph{base} keyframes).}
+\label{fig:dot.graph}
+\end{figure}
+
+\newpage
+\subsection{Generic graph visitor}
+
+There exists a fully-customizable breadth-first search (BFS) \emph{visitor}, which allows any user-supplied 
+class to process every node and edge in the RBA graph, starting at a given root KF 
+and expanding in a classic breadth-first fashion:
+
+\begin{lstlisting}
+template <...> class RbaEngine {
+    ...
+	template <
+		class KF_VISITOR,
+		class FEAT_VISITOR,
+		class K2K_EDGE_VISITOR,
+		class K2F_EDGE_VISITOR
+		>
+	void bfs_visitor(
+		const TKeyFrameID  root_id,
+		const topo_dist_t  max_distance,
+		const bool rely_on_prebuilt_spanning_trees,
+		KF_VISITOR       & kf_visitor,
+		FEAT_VISITOR     & feat_visitor,
+		K2K_EDGE_VISITOR & k2k_edge_visitor,
+		K2F_EDGE_VISITOR & k2f_edge_visitor ) const;
+    ...
+};
+\end{lstlisting}
+
+The option \texttt{rely\_on\_prebuilt\_spanning\_trees} is the only one requiring a few words.
+It selects between two different ways of performing the BFS:
+\begin{itemize}
+ \item Relying on prebuilt spanning trees: such that the search is limited to the maximum depth of those trees, and 
+ \item Not relying on them: then a complete BFS algorithm is run, suitable for exploration of the entire RBA problem graph.
+\end{itemize}
+
+The four template argument, the visitor classes, must be defined by the user. 
+They may be four different classes or just one. 
+Next follows a sketch of the expected minimum interface for each class:
+
+
+\begin{lstlisting}
+/* Implementation of FEAT_VISITOR */
+struct MY_FEAT_VISITOR
+{
+	bool visit_filter_feat(
+		const TLandmarkID lm_ID,
+		const topo_dist_t cur_dist) 
+	{
+		// Return "true" if it's desired to visit this landmark node.
+	}
+	void visit_feat(
+		const TLandmarkID lm_ID,
+		const topo_dist_t cur_dist) 
+	{
+		// Process this landmark node.
+	}
+};
+\end{lstlisting}
+\begin{lstlisting}
+/* Implementation of KF_VISITOR */
+struct MY_KF_VISITOR
+{
+	bool visit_filter_kf(
+		const TKeyFrameID kf_ID,
+		const topo_dist_t cur_dist) 
+	{
+		// Return "true" if it's desired to visit this keyframe node.
+	}
+	void visit_kf(
+		const TKeyFrameID kf_ID,
+		const topo_dist_t cur_dist) 
+	{
+		// Process this keyframe node.
+	}
+};
+\end{lstlisting}
+\begin{lstlisting}
+/* Implementation of K2K_EDGE_VISITOR */
+struct MY_K2K_EDGE_VISITOR
+{
+	bool visit_filter_k2k(
+		const TKeyFrameID current_kf, 
+		const TKeyFrameID next_kf,
+		const k2k_edge_t* edge, 
+		const topo_dist_t cur_dist) 
+	{
+		// Return "true" if it's desired to visit this kf-to-kf edge.
+	}
+	void visit_k2k(
+		const TKeyFrameID current_kf, 
+		const TKeyFrameID next_kf,
+		const k2k_edge_t* edge, 
+		const topo_dist_t cur_dist)
+	{
+		// Process this kf-to-kf edge.
+	}
+};
+\end{lstlisting}
+\begin{lstlisting}
+/* Implementation of K2F_EDGE_VISITOR */
+struct MY_K2F_EDGE_VISITOR
+{
+	bool visit_filter_k2f(
+		const TKeyFrameID current_kf, 
+		const k2f_edge_t* edge, 
+		const topo_dist_t cur_dist)
+	{
+		// Return "true" if it's desired to visit this kf-to-feat edge.
+	}
+	void visit_k2f(
+		const TKeyFrameID current_kf, 
+		const k2f_edge_t* edge, 
+		const topo_dist_t cur_dist)
+	{
+		// Process this kf-to-feat edge.
+	}
+}; 
+\end{lstlisting}
+
+
+
+
+\newpage
 \section{The \texttt{srba-slam} application}
 \label{sect:srba_slam_app}
 
@@ -491,6 +746,7 @@ XXXX
 
 
 \subsection{Data structures}
+\label{sect:data.structs}
 
 \begin{sidewaysfigure}
 \centering
@@ -504,7 +760,7 @@ XXXX
 \newpage
 \section{Pseudo-code}
 
-The following symbols are employed in the following:
+These symbols are employed in the following:
 
 \begin{itemize}
 \item{$D_{max}$: Maximum depth for which spanning trees are maintained. It is also the maximum topological distance 
