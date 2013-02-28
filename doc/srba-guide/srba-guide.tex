@@ -134,7 +134,7 @@ for geometry, math auxiliary classes, serialization,... and \texttt{mrpt-opengl}
 the RBA problems. Despite its name, the latter library can be built for platforms without any 
 functional \texttt{OpenGL} implementation, though it is recommended to always visualize the results for getting a better 
 insight of what is going on in your programs. The header-only library \texttt{Eigen} \cite{eigenweb} is also a mandatory dependency, but 
-an embedded version is shipped with \texttt{mrpt-base} in case the user does not have it installed.}, 
+an embedded version is shipped with \texttt{mrpt-base}.}, 
 so in practice before using \texttt{libmrpt-srba} in your program you need
 both (i) access to headers (\texttt{.h} files) and (ii) binary libraries to link against them. 
 
@@ -150,7 +150,7 @@ If your official repository has an older version of the package, use this PPA re
  sudo apt-get install libmrpt-dev mrpt-apps
 \end{lstlisting}
 
-Binary packages for Windows are also available online\footnote{\href{http://www.mrpt.org/download}{http://www.mrpt.org/download}}.
+Binary packages for Windows are also available online (\href{http://www.mrpt.org/download}{link}).
 If you prefer to build MRPT from sources, please visit the official web\footnote{\href{http://www.mrpt.org/}{http://www.mrpt.org/}} 
 for detailed instructions.
 
@@ -373,7 +373,7 @@ what happens inside.
 More complete versions of the program above, including sample datasets and rendering of the optimization result 
 as OpenGL scenes are shipped with MRPT\footnote{See the directory \texttt{[MRPT]/samples/srba-examples/srba-tutorials/}, 
 or \href{http://mrpt.googlecode.com/svn/trunk/samples/srba-examples/srba-tutorials/}{browse online}.}.
-An example screenshot is shown in Fig.~\ref{fig:screenshot.tutorial1}.
+Screenshots are shown in Figs.~\ref{fig:screenshot.tutorial1}--\ref{fig:screenshot.tutorial2}.
 
 \begin{figure}[h]
 \centering
@@ -384,10 +384,19 @@ An example screenshot is shown in Fig.~\ref{fig:screenshot.tutorial1}.
 
 \newpage
 
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.8\textwidth]{imgs/screenshot_tutorial_relative-graph-slam-2D.pdf} 
+\caption{Screenshot for \texttt{tutorial-srba-relative-graph-slam.cpp}.}
+\label{fig:screenshot.tutorial2}
+\end{figure}
+
+\newpage
+
 \section{Configuring \texttt{RbaEngine<>}: template arguments}
 \label{sect:rba_configs}
 
-On the following, all class names assume the existence of a previous:
+In the following, all class names assume the existence of a previous:
 
 \begin{lstlisting}
  using namespace mrpt::srba;
@@ -501,13 +510,17 @@ The following symbols are employed in the following:
 \item{$D_{max}$: Maximum depth for which spanning trees are maintained. It is also the maximum topological distance 
    from the given KF to look for unknowns to optimize during a ``local area'' optimization. Obviously, all KFs within 
    that distance are also in the spanning tree.}
+\item{$N_o$: Number of observed landmarks from the new KF being inserted in the problem.}
+\item{$N_R$: The maximum number of reachable KFs for a fixed $D_{max}$. It is reasonable to consider that this number 
+is bounded for any map, as long as redundant KFs are not continuously added for the same area.}
+\item{$\gamma$: A constant coefficient that models the ``sparseness'' of the graph being solved by least-squares minimization.}
 \item{$(\mathbf{z}_n^i,\mathbf{\alpha}_n^i)$: The $i-th$ individual observation of the $n-th$ time step, and 
   its corresponding data association (i.e. its correspondence, the ID of an existing landmark or a new ID if this 
   is a new LM).}
 \end{itemize}
 
 
-
+\newpage
 \subsection{\texttt{define\_new\_keyframe()}}
 \label{sect:code:define_new_keyframe}
 
@@ -515,6 +528,17 @@ The following symbols are employed in the following:
 %%  Alg: define_new_keyframe
 %% ==============================================
 \input{algo_srba_define_new_keyframe}
+
+
+\newpage
+\subsection{\texttt{update\_sym\_spanning\_trees()}}
+
+This algorithm is explained in \cite{blanco2013srba}.
+
+%% ==============================================
+%%  Alg: update_sp_sym
+%% ==============================================
+\input{algo_update_sp_sym}
 
 
 

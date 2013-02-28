@@ -1,0 +1,55 @@
+%% ==============================================
+%%  Alg: update_sp_sym
+%% ==============================================
+\begin{algorithm}
+\BeginAlgSize
+\caption{\texttt{update\_sym\_spanning\_trees} \hfill 
+ \textcolor{white}{.}
+$\text{Worst case: }\Or(N_R^2 \log N_R)$ }
+\label{alg:update_sp_sym}
+\begin{algorithmic}[1]
+  %\medskip
+\Require{~\newline 
+$(i_k \leftrightarrow n) $ \Comment{A new edge} }\newline
+$D_{max}$ \Comment{The maximum desired depth of span. trees}
+\Statex
+%-----------
+  \State{$ST_{D_{max}-1}(i_k) \gets \{ \forall v / d(v,i_k)\leq D_{max}-1 \}$}
+    \Comment{$\Or(N_R)$}
+  \State{$ST_{D_{max}}(n) \gets \{ \forall v / d(v,n)\leq D_{max} \}$}
+    \Comment{$\Or(N_R)$}
+   %\Comment{Changes with each $i_k$}
+  \Statex
+  \ForEach{$r \in ST_{D_{max}}(n)$} \Comment{$\Or(N_R)$ iterations}
+   \ForEach{$s \in ST_{D_{max}-1}(i_k)$} \Comment{$\Or(N_R)$ iterations}
+    \State{// New tentative distance between $r$ and $s$}
+    \State{$d \gets \mathcal{ST.D}[n][r] + \mathcal{ST.D}[i_k][s] + 1 $}
+      \Comment{$\Or(\log N_R)$}
+     %\Comment{$\Or(\log X)$}
+    \If{$\left(s \in \text{\texttt{spanning\_tree}}(r) \text{ \textbf{and} } d < \mathcal{ST.D}[r][s]\right)$ 
+$\text{ \textbf{or} }$ $\left(s \notin \text{\texttt{spanning\_tree}}(r) \text{ \textbf{and} } d \leq D_{max}\right)$}
+     \Comment{$\Or(\log N_R)$}
+       \State{// Shorter or new path found. Update trees:}
+       \State{$\mathcal{ST.D}[r][s] \gets d$}
+       \State{$\mathcal{ST.N}[r][s] \gets \left\{
+	\begin{array}{ll}
+	  i_k  & r =n \\
+	  \mathcal{ST.N}[r][n] & r \neq n 
+	\end{array}
+	\right. $}
+       \State{$\mathcal{ST.D}[s][r] \gets d$}
+        \Comment{$\Or(\log N_R)$}
+       \State{$\mathcal{ST.N}[s][r] \gets \left\{
+	\begin{array}{ll}
+	  n  & s = i_k \\
+	  \mathcal{ST.N}[s][i_k] & s\neq i_k 
+	\end{array}
+	\right. $}
+    \EndIf
+   \EndFor
+  \EndFor
+\end{algorithmic}
+\EndAlgSize
+\end{algorithm}
+%% ==============================================
+

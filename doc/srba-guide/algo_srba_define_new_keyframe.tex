@@ -16,6 +16,7 @@ $\text{Worst case: }\Or( (\gamma N_R)^3+ N_o ( D_{max} + \log N_R)  )$  }
    \left( \mathbf{z}^{N_o}_n,\A^{N_o}_n \right) \right\}$ 
 \Comment{Set of $N_o$ new observations 
 $\mathbf{z}^i_n$ and their data association $\A^i_n$ }}
+\Require{ $run\_local\_optimization$ \Comment{Whether to also run optimizations}}
 \Ensure { The updated, locally consistent map }
 \Statex
 %-----------
@@ -52,11 +53,21 @@ $\Or(1)$}
 \EndFor
 %-----------
 \Statex
-\Statex{\underline{// Update SLAM estimation}}
+\If{$run\_local\_optimization$}
+\If{$optimize\_new\_edges\_alone$}
+\Statex{~~~~~~~~\underline{// Initialize new edges}}
+\ForEach{$ (i_k \leftrightarrow n) $} \Comment{For each new kf2kf edge created above}
+\State{\texttt{non\_linear\_optimizer}$\left( i_k \leftrightarrow n \right)$} \Comment{$\Or(N_o)$}
+\EndFor
+\EndIf
+%-----------
+\Statex
+\Statex{~~~~\underline{// Update SLAM estimation}}
 \State{$\mathbf{edges\_to\_optimize} \gets$ all within a $D_{max}$ distance from $n$}
 \Comment{$\Or(N_R)$}
 \State{\texttt{non\_linear\_optimizer}$\left( \mathbf{edges\_to\_optimize}
 \right)$} \Comment{$\Or( (\gamma N_R)^3)$}
+\EndIf
 \end{algorithmic}
 \EndAlgSize
 \end{algorithm}
