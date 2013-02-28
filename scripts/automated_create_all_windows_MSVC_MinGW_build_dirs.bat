@@ -29,6 +29,8 @@ set MINGW_ROOT=d:/MinGW
 set MINGW_ROOT_BKSLH=d:\MinGW
 REM === wxWidgets directory base name will be: %WX_ROOT%-win%ARCHN%-%COMP%
 set WX_ROOT=D:/code/wxWidgets-2.9.4
+REM MSVC Redistributables: %MSVC_REDIST_BASE_DIR%/%COMP%/vcredist_%ARCH%.exe
+set MSVC_REDIST_BASE_DIR=d:/code/MSVC_Redist
 
 REM ==============================================================
 
@@ -107,6 +109,8 @@ if %ARCHN%==64 set ARCH_NAME=amd64
 
 set WXDIR=%WX_ROOT%-win%ARCHN%-%COMP%
 
+set MSVC_REDIST=%MSVC_REDIST_BASE_DIR%/%COMP%/vcredist_%ARCH%.exe
+
 if %COMP%==mingw GOTO :subGen_mingw
 REM Visual Studio --------------------------
 if %COMP%==msvc9 set MSVC_DIR=%msvc9_DIR%
@@ -117,7 +121,7 @@ if %COMP%==msvc10 set CMAKE_GEN=Visual Studio 10
 if %COMP%==msvc11 set CMAKE_GEN=Visual Studio 11
 if %ARCHN%==64 set CMAKE_GEN=%CMAKE_GEN% Win64
 
-set CMAKE_EXTRA1=
+set CMAKE_EXTRA1=-DINSTALL_MSVC_REDISTRIBUTABLE=%MSVC_REDIST%
 set CMAKE_EXTRA2=
 set CMAKE_EXTRA3=
 
