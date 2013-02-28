@@ -181,7 +181,7 @@ namespace mrpt
 			  * \sa setFromMatrix
 			  */
 			template <typename Derived>
-			explicit inline CImage(const Eigen::MatrixBase<Derived> &m, bool matrix_is_normalized)
+			explicit inline CImage(const Eigen::MatrixBase<Derived> &m, bool matrix_is_normalized) : img(NULL),m_imgIsReadOnly(false), m_imgIsExternalStorage(false)
 			{
 				this->setFromMatrix(m,matrix_is_normalized);
 			}

@@ -98,9 +98,9 @@ CImage::CImage( unsigned int	width,
 				Default	Constructor
  ---------------------------------------------------------------*/
 CImage::CImage( ) :
-		img(NULL),
-		m_imgIsReadOnly(false),
-		m_imgIsExternalStorage(false)
+	img(NULL),
+	m_imgIsReadOnly(false),
+	m_imgIsExternalStorage(false)
 {
 #if MRPT_HAS_OPENCV
 	MRPT_START
@@ -225,12 +225,11 @@ void CImage::copyFastFrom( CImage &o )
 						Constructor from IplImage
  ---------------------------------------------------------------*/
 CImage::CImage( void *iplImage ) :
+	img(NULL),
 	m_imgIsReadOnly(false),
 	m_imgIsExternalStorage(false)
 {
 	MRPT_START
-
-	img = NULL; // Initialize
 
 #if MRPT_HAS_OPENCV
 	if (!iplImage)
