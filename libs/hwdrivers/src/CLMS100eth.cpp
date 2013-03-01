@@ -267,7 +267,7 @@ bool CLMS100Eth::decodeScan(char* buff, CObservation2DRangeScan& outObservation)
             if(strcmp(next, "LMDscandata")) return false;
             break;
         case 6 :
-            if(strcmp(next, "1"))
+            if(!strcmp(next, "1"))
             {
                 THROW_EXCEPTION("STATUS error on LMS100");
                 return false;
@@ -277,7 +277,7 @@ bool CLMS100Eth::decodeScan(char* buff, CObservation2DRangeScan& outObservation)
         case 21 :
             if(strcmp(next, "DIST1"))
             {
-                THROW_EXCEPTION("LMS100 is not configured to send ditances.");
+                THROW_EXCEPTION("LMS100 is not configured to send distances.");
                 return false;
             }
             printf_debug("Distance : OK\n");
