@@ -152,7 +152,13 @@ void run_test(const mrpt::poses::CPose3D &incr)
 		true           // Also run local optimization?
 		);
 
-	mrpt::poses::CPose3D estIncr = rba.get_k2k_edges()[0].inv_pose;
+	mrpt::poses::CPose3D estIncr = rba.get_k2k_edges()[0]
+#ifdef SRBA_WORKAROUND_MSVC9_DEQUE_BUG
+		->
+#else
+		.
+#endif
+		inv_pose;
 	if (INVERSE_INCR)
 		estIncr.inverse();
 
