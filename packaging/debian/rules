@@ -58,9 +58,9 @@ install: build
 	# Compile manual(s):
 	make documentation_psgz_guides || echo "*** Ignoring failed manual build! ***"
 	# Build all
-	$(MAKE) VERBOSE=1 -j4
+	$(MAKE) VERBOSE=1
 	# Run tests
-	make test -j4 || echo "*** Ignoring failed tests! ***"
+	make test || echo "*** Ignoring failed tests! ***"
 
 	# Install
 	$(MAKE) install
@@ -74,7 +74,7 @@ install: build
 
 	# Build libs only
 	cmake . -DBUILD_APPLICATIONS=OFF
-	$(MAKE) VERBOSE=1 -j4
+	$(MAKE) VERBOSE=1 
 
 	# Install
 	$(MAKE) install
