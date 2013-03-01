@@ -13,8 +13,7 @@ REM                              Jose Luis Blanco, 2011-12
 REM =========================================================
 
 REM  === THIS IS WHERE MRPT SOURCE TREE IS FROM THE CWD ===
-REM set MRPT_BASE_DIR=mrpt-0.9.5
-set MRPT_BASE_DIR=mrpt-svn
+set MRPT_BASE_DIR=mrpt-1.0.0
 
 REM =================== SET ALL IMPORTANT PATHS ===================
 
@@ -80,6 +79,8 @@ set KINECT=1
 call :subGen
 
 
+goto End
+
 :MINGW_PARTS
 REM MinGW ========================
 set COMP=mingw
@@ -111,7 +112,8 @@ if %ARCHN%==64 set ARCH_NAME=amd64
 
 set WXDIR=%WX_ROOT%-win%ARCHN%-%COMP%
 
-set MSVC_REDIST=%MSVC_REDIST_BASE_DIR%/%COMP%/vcredist_%ARCH%.exe
+if %ARCHN%==32 set MSVC_REDIST=%MSVC_REDIST_BASE_DIR%/%COMP%/vcredist_x86.exe
+if %ARCHN%==64 set MSVC_REDIST=%MSVC_REDIST_BASE_DIR%/%COMP%/vcredist_x64.exe
 
 if %COMP%==mingw GOTO :subGen_mingw
 REM Visual Studio --------------------------
