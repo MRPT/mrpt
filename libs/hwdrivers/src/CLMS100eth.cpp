@@ -272,6 +272,12 @@ bool CLMS100Eth::decodeScan(char* buff, CObservation2DRangeScan& outObservation)
                 THROW_EXCEPTION("STATUS error on LMS100");
                 return false;
             }
+			else 
+			if(!strcmp(next, "4"))
+			{
+				THROW_EXCEPTION("Contamination error on LMS100");
+				return false;
+			}
             printf_debug("STATUS Ok.\n");
             break;
         case 21 :
