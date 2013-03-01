@@ -84,16 +84,16 @@ RBA_Run_BasePtr my_creator_se3_lm3d_stereo(RBASLAM_Params &config)
 	return RBA_Run_BasePtr();
 }
 
-struct TMyRegister
+struct TMyRegister_se3_lm3d_stereo
 {
-	TMyRegister()
+	TMyRegister_se3_lm3d_stereo()
 	{
 		RBA_implemented_registry & reg = RBA_implemented_registry::getInstance();
 		reg.doRegister( &my_creator_se3_lm3d_stereo, "--se3 --lm-3d --obs StereoCamera" );
 	}
 };
 
-static TMyRegister my_initializer;
+static TMyRegister_se3_lm3d_stereo my_initializer_se3_lm3d_stereo;
 
 
 

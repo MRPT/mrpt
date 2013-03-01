@@ -86,13 +86,24 @@ void RbaEngine<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::edge_creation_poli
 				if (0==((new_kf_id-1)%SUBMAP_SIZE))
 				{
 					// This is the first KF after a new center, so if we add an edge to it we must be very close:
-					this->rba_state.k2k_edges[nei.id].inv_pose = pose_t();
+
+					this->rba_state.k2k_edges[nei.id]
+#ifdef SRBA_WORKAROUND_MSVC9_DEQUE_BUG
+					->
+#else
+					.
+#endif
+					inv_pose = pose_t();
 				}
 				else
 				if (nei.id>=1)
 				{
 					// Idea: the new KF should be close to the last one.
+#ifdef SRBA_WORKAROUND_MSVC9_DEQUE_BUG
+					this->rba_state.k2k_edges[nei.id]->inv_pose = this->rba_state.k2k_edges[nei.id-1]->inv_pose;
+#else
 					this->rba_state.k2k_edges[nei.id].inv_pose = this->rba_state.k2k_edges[nei.id-1].inv_pose;
+#endif
 				}
 
 				new_k2k_edge_ids.push_back(nei);
@@ -207,7 +218,13 @@ void RbaEngine<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::edge_creation_poli
 				{
 					cout << "\n[edge_creation_policy] Loop closure detected for KF#"<< new_kf_id << ", edges: ";
 					for (size_t j=0;j<new_k2k_edge_ids.size();j++)
+					{
+#ifdef SRBA_WORKAROUND_MSVC9_DEQUE_BUG
+						cout << rba_state.k2k_edges[new_k2k_edge_ids[j].id]->from <<"->"<<rba_state.k2k_edges[new_k2k_edge_ids[j].id]->to<<", ";
+#else
 						cout << rba_state.k2k_edges[new_k2k_edge_ids[j].id].from <<"->"<<rba_state.k2k_edges[new_k2k_edge_ids[j].id].to<<", ";
+#endif
+					}
 					cout << endl;
 				}
 
@@ -233,7 +250,11 @@ void RbaEngine<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::edge_creation_poli
 			// Idea: the new KF should be close to the last one.
 			if (!this_is_first) {
 				nei.has_aprox_init_val = true; // Use pose of the last edge since the new one should be close.
+#ifdef SRBA_WORKAROUND_MSVC9_DEQUE_BUG
+				this->rba_state.k2k_edges[nei.id]->inv_pose = this->rba_state.k2k_edges[nei.id-1]->inv_pose;
+#else
 				this->rba_state.k2k_edges[nei.id].inv_pose = this->rba_state.k2k_edges[nei.id-1].inv_pose;
+#endif
 			}
 			else {
 				nei.has_aprox_init_val = false;

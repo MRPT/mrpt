@@ -62,14 +62,14 @@ RBA_Run_BasePtr my_creator_rel_graph_slam_se2(RBASLAM_Params &config)
 	return RBA_Run_BasePtr();
 }
 
-struct TMyRegister
+struct TMyRegister_rel_graph_slam_se2
 {
-	TMyRegister()
+	TMyRegister_rel_graph_slam_se2()
 	{
 		RBA_implemented_registry & reg = RBA_implemented_registry::getInstance();
 		reg.doRegister( &my_creator_rel_graph_slam_se2, "--se2 --graph-slam" );
 	}
 };
 
-static TMyRegister my_initializer;
+static TMyRegister_rel_graph_slam_se2 my_initializer_rel_graph_slam_se2;
 

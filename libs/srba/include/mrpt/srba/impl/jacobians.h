@@ -70,7 +70,13 @@ void RbaEngine<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::numeric_dh_dAp(con
 		// Changes due to the inverse pose:
 		// D becomes D' = p_d^{d+1} (+) D
 		ASSERT_(params.k2k_edge_id<params.k2k_edges.size())
-		const pose_t & p_d_d1 = params.k2k_edges[params.k2k_edge_id].inv_pose;
+		const pose_t & p_d_d1 = params.k2k_edges[params.k2k_edge_id]
+#ifdef SRBA_WORKAROUND_MSVC9_DEQUE_BUG
+		->
+#else
+		.
+#endif
+		inv_pose;				
 
 		pose_t pose_base_wrt_d_prime(mrpt::poses::UNINITIALIZED_POSE);  // D' in papers
 		pose_base_wrt_d_prime.composeFrom( p_d_d1, params.pose_base_wrt_d1 );
@@ -397,7 +403,13 @@ struct compute_jacobian_dAepsDx_deps<jacob_point_landmark /* Jacobian family: th
 			// D becomes D' = p_d^{d+1} (+) D
 
 			ASSERT_(jacob_sym.k2k_edge_id<k2k_edges.size())
-			const typename RBA_ENGINE_T::pose_t & p_d_d1 = k2k_edges[jacob_sym.k2k_edge_id].inv_pose;
+			const typename RBA_ENGINE_T::pose_t & p_d_d1 = k2k_edges[jacob_sym.k2k_edge_id]
+#ifdef SRBA_WORKAROUND_MSVC9_DEQUE_BUG
+			->
+#else
+			.
+#endif
+			inv_pose;				
 
 			typename RBA_ENGINE_T::pose_t pose_base_wrt_d1_prime(mrpt::poses::UNINITIALIZED_POSE);
 			pose_base_wrt_d1_prime.composeFrom( p_d_d1 , pose_base_wrt_d1.pose );
@@ -533,7 +545,13 @@ struct compute_jacobian_dAepsDx_deps_SE2
 			// and A (which is "pose_d1_wrt_obs") becomes A' = A (+) (p_d_d1)^-1
 
 			ASSERT_(jacob_sym.k2k_edge_id<k2k_edges.size())
-			const typename RBA_ENGINE_T::pose_t & p_d_d1 = k2k_edges[jacob_sym.k2k_edge_id].inv_pose;
+			const typename RBA_ENGINE_T::pose_t & p_d_d1 = k2k_edges[jacob_sym.k2k_edge_id]
+#ifdef SRBA_WORKAROUND_MSVC9_DEQUE_BUG
+			->
+#else
+			.
+#endif
+			inv_pose;				
 
 			typename RBA_ENGINE_T::pose_t pose_base_wrt_d1_prime(mrpt::poses::UNINITIALIZED_POSE);
 			pose_base_wrt_d1_prime.composeFrom( p_d_d1 , pose_base_wrt_d1.pose );
@@ -650,7 +668,13 @@ struct compute_jacobian_dAepsDx_deps<jacob_relpose_landmark /* Jacobian family: 
 			// and A (which is "pose_d1_wrt_obs") becomes A' = A (+) (p_d_d1)^-1
 
 			ASSERT_(jacob_sym.k2k_edge_id<k2k_edges.size())
-			const typename RBA_ENGINE_T::pose_t & p_d_d1 = k2k_edges[jacob_sym.k2k_edge_id].inv_pose;
+			const typename RBA_ENGINE_T::pose_t & p_d_d1 = k2k_edges[jacob_sym.k2k_edge_id]
+#ifdef SRBA_WORKAROUND_MSVC9_DEQUE_BUG
+			->
+#else
+			.
+#endif
+			inv_pose;				
 
 			typename RBA_ENGINE_T::pose_t pose_base_wrt_d1_prime(mrpt::poses::UNINITIALIZED_POSE);
 			pose_base_wrt_d1_prime.composeFrom( p_d_d1 , pose_base_wrt_d1.pose );

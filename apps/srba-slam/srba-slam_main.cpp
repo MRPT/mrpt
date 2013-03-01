@@ -121,7 +121,7 @@ RBASLAM_Params::RBASLAM_Params(int argc, char**argv) :
 	arg_rba_params_cfg_file("","cfg-file-rba","Config file (*.cfg) for the RBA parameters",false,"","rba.cfg",cmd),
 	arg_write_rba_params_cfg_file("","cfg-file-rba-bootstrap","Writes an empty config file (*.cfg) for the RBA parameters and exit.",false,"","rba.cfg",cmd),
 	arg_video("","create-video","Creates a video with the animated GUI output (*.avi).",false,"","out.avi",cmd),
-	arg_gui_delay("","gui-delay","Milliseconds of delay between GUI frames. Default:0. Increase for correctly generating videos, etc.",false,-1,"",cmd),
+	arg_gui_delay("","gui-delay","Milliseconds of delay between GUI frames. Default:0. Increase for correctly generating videos, etc.",false,0,"",cmd),
 	arg_video_fps("","video-fps","If creating a video, its FPS (Hz).",false,30.0,"",cmd),
 	arg_debug_dump_cur_spantree("","debug-dump-cur-spantree","Dump to files the current spanning tree",cmd, false),
 	arg_save_final_graph("","save-final-graph","Save the final graph-map of KFs to a .dot file",false,"","final-map.dot",cmd),

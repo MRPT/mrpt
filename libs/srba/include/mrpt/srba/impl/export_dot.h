@@ -64,8 +64,16 @@ bool RbaEngine<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::save_graph_as_dot(
 		// k2k edges:
 		f << "/* KEYFRAME->KEYFRAME edges */\n"
 		     "edge [style=bold];\n";
-		for (typename rba_problem_state_t::k2k_edges_deque_t::const_iterator itEdge = rba_state.k2k_edges.begin();itEdge!=rba_state.k2k_edges.end();++itEdge)
-			f << itEdge->from << "->" << itEdge->to << ";\n";
+#ifdef SRBA_WORKAROUND_MSVC9_DEQUE_BUG
+			for (typename rba_problem_state_t::k2k_edges_deque_t::const_iterator itEdge2 = rba_state.k2k_edges.begin();itEdge2!=rba_state.k2k_edges.end();++itEdge2)
+			{
+				const k2k_edge_t * itEdge = itEdge2->pointer();
+#else
+			for (typename rba_problem_state_t::k2k_edges_deque_t::const_iterator itEdge = rba_state.k2k_edges.begin();itEdge!=rba_state.k2k_edges.end();++itEdge)
+			{
+#endif
+				f << itEdge->from << "->" << itEdge->to << ";\n";
+			}
 
 		if (all_landmarks)
 		{
@@ -90,7 +98,7 @@ bool RbaEngine<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::save_graph_as_dot(
 				 "edge [style=dotted,color=black];\n";
 
 #ifdef SRBA_WORKAROUND_MSVC9_DEQUE_BUG
-			for (typename deque<std::auto_ptr<k2f_edge_t> >::const_iterator itO=rba_state.all_observations.begin();itO!=rba_state.all_observations.end();++itO)
+			for (typename deque<stlplus::smart_ptr<k2f_edge_t> >::const_iterator itO=rba_state.all_observations.begin();itO!=rba_state.all_observations.end();++itO)
 				f << (*itO)->obs.kf_id << " -> L" << (*itO)->obs.obs.feat_id << ";\n";
 #else
 			for(typename deque<k2f_edge_t>::const_iterator itO=rba_state.all_observations.begin();itO!=rba_state.all_observations.end();++itO)

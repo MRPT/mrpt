@@ -327,7 +327,14 @@ void run_test()
 
 	// Compare to ground truth:
 	// Relative pose of KF#1 wrt KF#0:
-	const mrpt::poses::CPose3D P = -rba.get_k2k_edges()[0].inv_pose;
+	const mrpt::poses::CPose3D P = -rba.get_k2k_edges()[0]
+#ifdef SRBA_WORKAROUND_MSVC9_DEQUE_BUG
+		->
+#else
+		.
+#endif
+		inv_pose;
+
 	const mrpt::poses::CPose3D P_GT = GT1-GT0;
 
 	EXPECT_NEAR(0, (P.getAsVectorVal()-P_GT.getAsVectorVal()).array().abs().sum(), 1e-2 )

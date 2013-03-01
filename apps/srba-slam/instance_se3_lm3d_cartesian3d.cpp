@@ -51,15 +51,15 @@ RBA_Run_BasePtr my_creator_se3_lm3d_cart3d(RBASLAM_Params &config)
 	return RBA_Run_BasePtr();
 }
 
-struct TMyRegister
+struct TMyRegister_se3_lm3d_cart3d
 {
-	TMyRegister()
+	TMyRegister_se3_lm3d_cart3d()
 	{
 		RBA_implemented_registry & reg = RBA_implemented_registry::getInstance();
 		reg.doRegister( &my_creator_se3_lm3d_cart3d, "--se3 --lm-3d --obs Cartesian_3D" );
 	}
 };
 
-static TMyRegister my_initializer;
+static TMyRegister_se3_lm3d_cart3d my_initializer_se3_lm3d_cart3d;
 
 

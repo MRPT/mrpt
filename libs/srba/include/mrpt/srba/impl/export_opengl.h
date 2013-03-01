@@ -88,8 +88,14 @@ void RbaEngine<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::build_opengl_repre
 
 			// Draw all edges between frames:
 			mrpt::opengl::CSetOfLinesPtr gl_edges = mrpt::opengl::CSetOfLines::Create();
+#ifdef SRBA_WORKAROUND_MSVC9_DEQUE_BUG
+			for (typename rba_problem_state_t::k2k_edges_deque_t::const_iterator itEdge2 = rba_state.k2k_edges.begin();itEdge2!=rba_state.k2k_edges.end();++itEdge2)
+			{
+				const k2k_edge_t * itEdge = itEdge2->pointer();
+#else
 			for (typename rba_problem_state_t::k2k_edges_deque_t::const_iterator itEdge = rba_state.k2k_edges.begin();itEdge!=rba_state.k2k_edges.end();++itEdge)
 			{
+#endif
 				CPose3D p1;
 				if (itEdge->from!=root_keyframe)
 				{

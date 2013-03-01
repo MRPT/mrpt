@@ -81,16 +81,16 @@ RBA_Run_BasePtr my_creator_se3_lm3d_monocular(RBASLAM_Params &config)
 	return RBA_Run_BasePtr();
 }
 
-struct TMyRegister
+struct TMyRegister_se3_lm3d_monocular
 {
-	TMyRegister()
+	TMyRegister_se3_lm3d_monocular()
 	{
 		RBA_implemented_registry & reg = RBA_implemented_registry::getInstance();
 		reg.doRegister( &my_creator_se3_lm3d_monocular, "--se3 --lm-3d --obs MonocularCamera" );
 	}
 };
 
-static TMyRegister my_initializer;
+static TMyRegister_se3_lm3d_monocular my_initializer_se3_lm3d_monocular;
 
 
 

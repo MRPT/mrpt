@@ -51,14 +51,14 @@ RBA_Run_BasePtr my_creator_se2_lm2d_rb2d(RBASLAM_Params &config)
 	return RBA_Run_BasePtr();
 }
 
-struct TMyRegister
+struct TMyRegister_se2_lm2d_rb2d
 {
-	TMyRegister()
+	TMyRegister_se2_lm2d_rb2d()
 	{
 		RBA_implemented_registry & reg = RBA_implemented_registry::getInstance();
 		reg.doRegister( &my_creator_se2_lm2d_rb2d, "--se2 --lm-2d --obs RangeBearing_2D" );
 	}
 };
 
-static TMyRegister my_initializer;
+static TMyRegister_se2_lm2d_rb2d my_initializer_se2_lm2d_rb2d;
 
