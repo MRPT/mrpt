@@ -360,7 +360,9 @@ Description: Mobile Robot Programming Toolkit - Console and GUI applications
   - features-matching: Computer vision demo.
   - kinect-icp-slam: Example 3D mapping with Xbox Kinect
   - kinect-view: Example 3D mapping with Xbox Kinect
-  - robotic-arm-kinematics: GUI for design of robot arms with Denavit-Hartenberg parameters.
-  - srba-slam: Sparser Relative Bundle Adjustment (RBA) and Relative Graph-SLAM.
+  - robotic-arm-kinematics: GUI for design of robot arms with 
+                            Denavit-Hartenberg parameters.
+  - srba-slam: Sparser Relative Bundle Adjustment (RBA) and 
+               Relative Graph-SLAM.
   - prrt-navigator-demo   (Experimental!)
 
