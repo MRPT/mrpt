@@ -40,7 +40,7 @@
 
  <hr>
  <a name="1.0.0">
-  <h2>Version 1.0.0: Released 1-MAR-2013 (SVN 3285)  </h2></a>
+  <h2>Version 1.0.0: Released 1-MAR-2013 (SVN 3287)  </h2></a>
 	- <b>Most important changes:</b>
 		- New library with a flexible implementation of Sparser Relative Bundle Adjustment (RBA), as presented in ICRA 2013: <a href="http://www.mrpt.org/srba" >mrpt-srba</a>.
 		- New library for Plane-based Maps: <a href="group__mrpt__pbmap__grp.html" >mrpt-pbmap</a> (also presented in ICRA 2013).

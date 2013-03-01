@@ -8,8 +8,10 @@
 \usepackage{color}
 \usepackage{listings}
 \usepackage[utf8x]{inputenc}
-\usepackage{hyperref}
+\usepackage[colorlinks=true,linkcolor=red,citecolor=blue]{hyperref}
 \usepackage{rotating}
+\usepackage{cite}
+\usepackage{enumitem}
 
 \usepackage{amsfonts,amsmath,amsthm,amssymb}
 \usepackage{algorithm}
@@ -116,13 +118,13 @@ optimization techniques employed in BA are also applicable to many other
 kind of feature maps, not necessarily involving visual information, or even to maps of pose constraints 
 (\emph{Graph-SLAM}).
 
-For readers without a solid background in SLAM or BA, it is \emph{strongly} recommended 
-to first read seminar works on SLAM \cite{thrun2005pr,durrantwhyte2006sla,bailey2006sla}, 
-BA \cite{triggs2000bundle} and Graph-SLAM \cite{grisetti2010tgb}.
+For readers without a solid background in mobile robotics or computer vision, it is \emph{strongly} recommended 
+to start reading seminar works on SLAM \cite{thrun2005pr,durrantwhyte2006sla,bailey2006sla}, 
+BA \cite{triggs2000bundle} and graph-SLAM \cite{grisetti2010tgb} before putting hands on
+programming with \texttt{libmrpt-srba}.
 
-
-The idea of \emph{Relative Bundle Adjustment (RBA)} was introduced in a series of works by Gabe Sibley and 
-colleagues in \cite{sibley2009rba,sibley2009adaptive}. 
+The idea of \emph{Relative Bundle Adjustment (RBA)} and \emph{Relative SLAM} was introduced in a series 
+of works by Gabe Sibley and colleagues in \cite{sibley2009rba,sibley2009adaptive,mei2011rslam}. 
 
 \emph{Sparser RBA (SRBA)} is the name of the generic and extensible framework for RBA, implemented in 
 the C++ library \texttt{libmrpt-srba}. It features the introduction of 
@@ -146,7 +148,7 @@ functional \texttt{OpenGL} implementation, though it is recommended to always vi
 insight of what is going on in your programs. The header-only library \texttt{Eigen} \cite{eigenweb} is also a mandatory dependency, but 
 an embedded version is shipped with \texttt{mrpt-base}.}, 
 so in practice before using \texttt{libmrpt-srba} in your program you need
-both (i) access to headers (\texttt{.h} files) and (ii) binary libraries to link against them. 
+both (i) access to headers (\texttt{.h} files) and (ii) binary libraries to link against. 
 
 In Ubuntu, installing the package \texttt{libmrpt-dev} (version 1.0.0 or newer) is the easiest way to have 
 everything ready to start coding your own programs. You can also install \texttt{mrpt-apps} for the application \texttt{srba-slam} 
@@ -160,13 +162,13 @@ If your official repository has an older version of the package, use this PPA re
  sudo apt-get install libmrpt-dev mrpt-apps
 \end{lstlisting}
 
-Binary packages for Windows are also available online (\href{http://www.mrpt.org/download}{link}).
+Binary packages for Windows are also available \href{http://www.mrpt.org/download}{online}.
 If you prefer to build MRPT from sources, please visit the official web\footnote{\href{http://www.mrpt.org/}{http://www.mrpt.org/}} 
 for detailed instructions.
 
 If you prefer to build MRPT from sources and do not need all the functionality of the rest of libraries, 
-remember to uncheck all the CMake configuration variables \texttt{BUILD\_mrpt-*} for the unneeded modules. 
-To make sure your SRBA library is working properly, it is recommended to run the set of \emph{unit tests} associated 
+uncheck all the CMake configuration variables \texttt{BUILD\_mrpt-*} for the unneeded modules. 
+To make sure everything is working properly it is recommended to run the set of \emph{unit tests} associated 
 to \texttt{libmrpt-srba} with: 
 
 \begin{lstlisting}
@@ -177,7 +179,7 @@ to \texttt{libmrpt-srba} with:
 The tests include solving a few predefined datasets, verifying the expected results from 
 Sch\"ur-complement functions, etc. At present there are 13 unit tests just for \texttt{libmrpt-srba}
 and more than 160 for the entire MRPT. 
-It is almost impossible to assure that a library is bug-free with 100\% certainty, 
+It is almost impossible to guarantee that a library is bug-free with 100\% certainty, 
 but at least those tests assure that no regressions will be introduced along future features of bug fixes.
 
 
@@ -210,22 +212,22 @@ estimate.
 }
 \item{\textbf{Keyframe-to-keyframe (k2k) edges}: An edge $k2k_i^j$ represents the relative pose of $KF_i$ with respect to 
 $KF_j$. Notice that ``inverse poses'' (i.e. in the inverse order than one would expect from the edge direction) are 
-stored for efficiency\footnote{In RBA we may need to chain sequences of relative poses, and the direction will often 
+stored for efficiency\footnote{In RBA we may need to chain sequences of relative poses and the direction will often 
 be from newer KFs towards older KFs, hence if we store inverse poses we save the computational burden of inverting them 
 over and over again.}. These edges are always treated as \emph{unknowns} to be estimated from observation data.
-They can be parameterized in different ways (see \S\ref{sec:k2k_types}), but in practice it will be enough to work 
-with SE(2) or SE(3) poses.
+They can be parameterized in different ways (see \S\ref{sec:k2k_types}), but the two choices in practice are 
+either SE(2) or SE(3) poses.
 }
 \item{\textbf{Landmarks}: A landmark (LM) is any entity which can be observed from different locations. Typically a 2D 
 or 3D point in space, but could be a line, segment, plane or any user-defined entity. They are represented in 
-the Fig.~\ref{fig:rba.entities} as stars named $LM_i$. The concept of absolute coordinates of a LM 
+the Fig.~\ref{fig:rba.entities} as stars denoted as $LM_i$. The concept of absolute coordinates of a LM 
 does not exist in RBA.
 }
 \item{\textbf{Relative position and "base keyframe" of a LM}: Each LM is associated to exactly one KF, its {base KF}, with 
 respect to which the LM has a \emph{relative position}. This relative position can be either ``known'' (``\emph{fixed}'' 
 in the C++ API) or ``unknown'', in which case it is also estimated during the problem optimization. There exist several 
 possible ways of parameterizing relative positions, as discussed in \S\ref{sec:k2f_types}. These relative positions are 
-represented in the figure as thick edges with a middle circle mark.
+represented in the figure as thick edges with circle marks in the middle.
 }
 \item{\textbf{Observations}: An observation $z^{i,j}_k$ stands for any piece of sensory data which \emph{is related}, 
 somehow, with the position of the $i-th$ LM, whose base KF is $j$, as seen from the observing KF $k$. They are 
@@ -253,7 +255,7 @@ template <
 class RbaEngine;
 \end{lstlisting}
 
-This means that by setting each of the \emph{template arguments} we literally control the process 
+Thus, by setting each of the \emph{template arguments} we literally control the process 
 of code generation to address one particular instance of a RBA problem. 
 Since all this happens at \emph{compile time}, the compiler produces optimized code for 
 the problem at hand (e.g. SSE2 code for multiplying matrices of a particular size), 
@@ -261,7 +263,8 @@ avoids code bifurcations, etc.
 
 Due to the combinatorial nature of all the possibilities, 
 detailed in \S\ref{sect:rba_configs}, one template class 
-can generate specialized code for dozens of concrete problems. 
+can generate specialized code for dozens of concrete problems, 
+including new ones defined by the user without modifying the library at all.
 The only price to pay is the longer compiling time associated to any complex C++ program 
 that exploits metaprogramming with templates.
 
@@ -403,14 +406,14 @@ what happens inside.
 \subsection{Tutorials}
 
 More complete versions of the program above, including sample datasets and rendering of the optimization result 
-as OpenGL scenes are shipped with MRPT\footnote{See the directory \texttt{[MRPT]/samples/srba-examples/srba-tutorials/}, 
+as OpenGL scenes are shipped with the source code\footnote{See the directory \texttt{[MRPT]/samples/srba-examples/srba-tutorials/}, 
 or \href{http://mrpt.googlecode.com/svn/trunk/samples/srba-examples/srba-tutorials/}{browse online}.}.
 Screenshots are shown in Figs.~\ref{fig:screenshot.tutorial1}--\ref{fig:screenshot.tutorial2}.
 
 \begin{figure}[h]
 \centering
 \includegraphics[width=0.9\textwidth]{imgs/screenshot_tutorial_range-bearing-3D.pdf} 
-\caption{Screenshot for \texttt{tutorial-srba-range-bearing-se3.cpp}.}
+\caption{Screenshot for \texttt{tutorial-srba-range-bearing-se3.cpp}. Only two KFs are defined in this example.}
 \label{fig:screenshot.tutorial1}
 \end{figure}
 
@@ -418,8 +421,9 @@ Screenshots are shown in Figs.~\ref{fig:screenshot.tutorial1}--\ref{fig:screensh
 
 \begin{figure}[h]
 \centering
-\includegraphics[width=0.8\textwidth]{imgs/screenshot_tutorial_relative-graph-slam-2D.pdf} 
-\caption{Screenshot for \texttt{tutorial-srba-relative-graph-slam.cpp}.}
+\includegraphics[width=0.75\textwidth]{imgs/screenshot_tutorial_relative-graph-slam-2D.pdf} 
+\caption{Screenshot for \texttt{tutorial-srba-relative-graph-slam.cpp}. 
+White lines represent KF-to-KF edges (unknowns), blue lines are observations (known data).}
 \label{fig:screenshot.tutorial2}
 \end{figure}
 
@@ -455,60 +459,339 @@ choice between different parameterizations (i.e. quaternions, Euler angles,etc.)
 In this case poses become 
 \href{http://reference.mrpt.org/stable/classmrpt_1_1poses_1_1_c_pose3_d.html}
 {\texttt{mrpt::poses::CPose3D}}
-classes, which internally hold the $3 \times 3$ rotation matrix for the SO(3) rotation and a $(x,y,z)$ vector 
-for the translational part, with optional conversion to/from quaternions and yaw/pitch/roll angles.
+classes, which internally hold the $3 \times 3$ rotation matrices for SO(3) rotations and $(x,y,z)$ vectors 
+for the translational parts, with optional conversion to/from quaternions and yaw/pitch/roll angles.
 }
 \end{itemize}
 
 Notice that the usage of 2D relative poses limits the robot trajectory to one single plane, but 
-it does not mean that landmarks must also be 2D. It is perfectly legal to use planar poses with 3D landmarks.
+does not restrict landmarks to also be planar. 
+It is perfectly legal to use planar poses and 3D landmarks.
 
 
 \subsection{\texttt{LM\_TYPE}: Relative landmark parameterizations}
 \label{sec:k2f_types}
 
-XXXX XXXX 
+\begin{itemize}
+\item{\textbf{ \texttt{landmarks::Euclidean2D} }: Point landmarks, parameterized with 2D Euclidean coordinates with respect to the base KF.
+}
+\item{\textbf{ \texttt{landmarks::Euclidean3D} }: Point landmarks, parameterized with 3D Euclidean coordinates with respect to the base KF.
+}
+\item{\textbf{ \texttt{landmarks::RelativePoses2D} }: A kind of ``fake landmark'' used in relative graph-SLAM. 
+Represents the pose of the base KF, which can be observed from another KF.}
+\end{itemize}
 
+The implementation of these models can be seen in:
+
+\texttt{\#include <mrpt/srba/models/landmarks.h>}.
+
+\vspace{1cm}
 \subsection{\texttt{OBS\_TYPE}: Observation types}
 
-XXXX XXXX 
+The following observations are implemented and ready to use in the library:
+
+\begin{itemize}
+\item{\textbf{ \texttt{observations::MonocularCamera} }: A pair of pixel coordinates $(x,y)$ for the observed landmark.}
+\item{\textbf{ \texttt{observations::StereoCamera} }: Pixel coordinates for one left and one right camera.}
+\item{\textbf{ \texttt{observations::Cartesian\_2D} }: The $(x,y)$ coordinates of the observed landmark, relative to the sensor.}
+\item{\textbf{ \texttt{observations::Cartesian\_3D} }: The $(x,y,z)$ coordinates of the observed landmark, relative to the sensor.}
+\item{\textbf{ \texttt{observations::RangeBearing\_2D} }: The distance and the angle (polar coordinates) of the observed landmark, relative to
+the sensor.}
+\item{\textbf{ \texttt{observations::RangeBearing\_3D} }: The distance and two angles (yaw and pitch) of the observed landmark, relative
+to the sensor.}
+\item{\textbf{ \texttt{observations::RelativePoses\_2D} }: The $(x,y,\phi)$ pose of the observed KF, relative to the observer KF.}
+\end{itemize}
+
+The implementation of these models can be seen in:
+
+\texttt{\#include <mrpt/srba/models/observations.h>}.
 
 
 \subsection{Sensor models}
 \label{sect:program_sensors}
 
-XXXX XXXX 
+In order to use together each combination of landmark parameterization (\texttt{LM\_TYPE}) and 
+observation (\texttt{OBS\_TYPE}) a correct \emph{sensor model} must be implemented which 
+takes care of providing a set of Jacobians, an inverse sensor model, etc.
+
+These are the models already implemented with this library: 
+
+\begin{itemize}
+\item{\textbf{ \texttt{landmarks::Euclidean3D + observations::MonocularCamera}}: 3D landmarks in Euclidean coordinates, observed 
+with a monocular camera (without distortion).}
+\item{\textbf{ \texttt{landmarks::Euclidean3D + observations::StereoCamera}}: 3D landmarks in Euclidean coordinates, observed 
+with a stereo camera (without distortion).}
+\item{\textbf{ \texttt{landmarks::Euclidean2D + observations::Cartesian\_2D}}: 2D landmarks in Euclidean coordinates, whose
+Euclidean coordinates are directly observed.}
+\item{\textbf{ \texttt{landmarks::Euclidean3D + observations::Cartesian\_3D}}: 3D landmarks in Euclidean coordinates, whose
+Euclidean coordinates are directly observed.}
+\item{\textbf{ \texttt{landmarks::Euclidean2D + observations::RangeBearing\_2D}}: 2D landmarks in Euclidean coordinates, observed
+via range and bearing.}
+\item{\textbf{ \texttt{landmarks::Euclidean3D + observations::RangeBearing\_3D}}: 3D landmarks in Euclidean coordinates, observed
+via range and bearing.}
+\item{\textbf{ \texttt{landmarks::RelativePoses2D + observations::RelativePoses\_2D}}: The sensor model for 2D relative graph-SLAM.}
+\end{itemize}
+
+The implementation of these models can be seen in:
+
+\texttt{\#include <mrpt/srba/models/sensors.h>}.
 
 
 \subsection{\texttt{RBA\_OPTIONS}: Other options}
 \label{sect:rba_options}
 
-XXXX XXXX 
+This template argument must be a user-defined structure with a set of \texttt{typedef}s 
+that configure specific aspects of the RBA problem, explored below:
+
+\begin{lstlisting}
+struct my_rba_options
+{
+  typedef <TYPE_1>  sensor_pose_on_robot_t;
+  typedef <TYPE_2>  obs_noise_matrix_t;
+  typedef <TYPE_3>  solver_t;
+};
+\end{lstlisting}
 
 
-\subsubsection{\texttt{sensor\_pose\_on\_robot\_t}}
+\subsubsection{Choices for \texttt{sensor\_pose\_on\_robot\_t}}
+
+\begin{itemize}
+\item{\textbf{ \texttt{options::sensor\_pose\_on\_robot\_none}}: The pose of a KF the exactly pose of the sensor. That is, 
+there is no distinction between the pose of the ``robot'' and that of the ``sensor''.}
+\item{\textbf{ \texttt{options::sensor\_pose\_on\_robot\_se3}}: The sensor is located at an arbitrary pose with respect to 
+the frame of reference of each KF (the ``robot''). This is the most common case of sensors placed on a mobile robot, 
+and should be used if we are interested in obtaining the pose of the robot instead of that of the sensor itself. 
+In the case of cameras, this option is employed within the program \texttt{srba-slam} to establish a change of coordinates
+between the Z-points-up standard for robot poses and the Z-points-forward of typical camera models. 
+Using this option has a small computational overhead in comparison to the one above.}
+\end{itemize}
+
+The list of possible types can be found in: 
+
+\texttt{\#include <mrpt/srba/srba\_options\_sensor\_pose.h>}.
 
 
-\subsubsection{\texttt{obs\_noise\_matrix\_t}}
+\subsubsection{Choices for \texttt{obs\_noise\_matrix\_t}}
+
+This option controls the way in which the information matrix $\boldsymbol \Lambda_k$ for the $k-th$ observation 
+(inverse of the sensor error
+covariance matrix) is incorporated into the weighted least-squares optimizer.
+Depending on the chosen model, different data fields to set the model parameters 
+will be available under \texttt{srba.parameters.obs\_noise}.
+
+\begin{itemize}
+\item{\textbf{ \texttt{options::observation\_noise\_identity}}: 
+This is the most computationally efficient method, since it is assumed that:
+  \begin{equation}
+  \boldsymbol \Lambda_k = \Lambda \mathbf{I}
+  \end{equation}
+\noindent with $\mathbf{I}$ an identity matrix of the correct size. 
+The error is exactly the same for all observations.}
+
+\item{\textbf{ \texttt{options::observation\_noise\_constant\_matrix}}: 
+In this case $\boldsymbol \Lambda_k$ can be any arbitrary matrix\footnote{As long
+as it is a valid information matrix: symmetric, positive definite.}. The same 
+matrix will be used for all observations.}
+
+\end{itemize}
+
+The list of possible types can be found in: 
+
+\texttt{\#include <mrpt/srba/srba\_options\_sensor\_noise.h>}.
 
 
-\subsubsection{\texttt{solver\_t}}
+\subsubsection{Choices for \texttt{solver\_t}}
+\label{sect:choices.solvers}
+
+At present all solvers are different versions of the Levenberg-Marquardt (LM) algorithm:
+
+\begin{itemize}
+\item{\textbf{ \texttt{options::solver\_LM\_schur\_dense\_cholesky}}: A LM solver, 
+using the Sch\"ur complement to build a reduced system of equations for relative poses only, 
+which is then solved using a dense Cholesky factorization.}
+
+\item{\textbf{ \texttt{options::solver\_LM\_schur\_sparse\_cholesky}}: Like above, but 
+using a sparse Cholesky factorization (with the \texttt{CSparse} library) for the reduced system.}
+
+\item{\textbf{ \texttt{options::solver\_LM\_no\_schur\_sparse\_cholesky}}: A LM solver,
+directly using a sparse Cholesky factorization (with the \texttt{CSparse} library) on 
+the entire system of equations (both poses and landmarks).}
+
+\end{itemize}
+
+The list of possible types can be found in: 
+
+\texttt{\#include <mrpt/srba/srba\_options\_solver.h>}.
 
 
 \section{Configuring \texttt{RbaEngine<>}: dynamic parameters}
 \label{sect:rba_dyn_parameters}
 
-Can be changed at run-time, not at build-time.
+In contrast to the template arguments, which determine the type of problem at compile time, 
+there exist another set of parameters, suitable for change at run-time.
+
+They are all found in the public field \texttt{parameters}, which 
+in turn is built up of other \texttt{struct}s whose contents are determined
+at compile time depending on the template arguments:
+
+\begin{lstlisting}
+template <...> class RbaEngine {
+  ...
+  struct TAllParameters
+  {
+    /** Different parameters for the SRBA methods */
+    TSRBAParameters  srba;
+
+    /** Sensor-specific parameters (sensor calibration, etc.) */
+    typename OBS_TYPE::TObservationParams   sensor;
+
+    /** Parameters related to the relative pose of sensors wrt the robot (if applicable) */
+    typename RBA_OPTIONS::sensor_pose_on_robot_t::parameters_t  sensor_pose;
+
+    /** Parameters related to the sensor noise covariance matrix */
+    typename RBA_OPTIONS::obs_noise_matrix_t::parameters_t  obs_noise;
+  };
+
+  TAllParameters parameters;
+  ...
+};
+\end{lstlisting}
+
+  
+\subsection{Depth of spanning trees}
+
+Two of the most important parameters are:
+
+\begin{lstlisting}
+template <...> class RbaEngine {
+  ...
+  struct TSRBAParameters
+  {
+  ...
+  /** Maximum depth for maintained spanning trees. */
+  topo_dist_t          max_tree_depth;
+  /** The maximum topological distance of keyframes 
+     to be optimized around the most recent keyframe. */
+  topo_dist_t          max_optimize_depth;
+  ...
+  };
+  ...
+};
+\end{lstlisting}
+
+In general, \texttt{parameters.srba.max\_optimize\_depth} should not be larger than 
+\texttt{parameters.srba.max\_tree\_depth}, 
+since optimization needs using the prebuilt spanning trees. Normally, both values will be the same and very small (e.g. 3 or 4).
 
 \subsection{Edge-creation policy}
 \label{sect:edge.policy}
 
-(...)
+Another critical parameter is:
 
+\begin{lstlisting}
+template <...> class RbaEngine {
+  ...
+  struct TSRBAParameters
+  {
+  ...
+    TEdgeCreationPolicy edge_creation_policy;
+  ...
+  };
+  ...
+};
+\end{lstlisting}
+
+Here, \texttt{parameters.srba.edge\_creation\_policy} controls the policy 
+to decide, given a set of observations for a new KF, 
+how many KF-to-KF edges must be created and how should they be connected.
+
+Check the doxygen documentation for 
+\href{http://reference.mrpt.org/svn/namespacemrpt_1_1srba.html#af0fbe388a6a76d59f66e7b8d1353926c}
+{\texttt{TEdgeCreationPolicy}} for a description of the possibilities.
+
+Note that the user can implement new custom policies by overriding the virtual method:
+
+\begin{lstlisting}
+template <...> class RbaEngine {
+  ...
+  virtual void edge_creation_policy(
+    const TKeyFrameID               new_kf_id,
+    const typename traits_t::new_kf_observations_t   & obs,
+    std::vector<TNewEdgeInfo> &new_k2k_edge_ids );
+  ...
+};
+\end{lstlisting}
+
+\noindent in which case the value of 
+\texttt{parameters.srba.edge\_creation\_policy}
+is ignored.
+
+
+\newpage
 \subsection{Levenberg-Marquardt solver parameters}
 \label{sect:lm-params}
 
-(...)
+All these can be found under
+\texttt{parameters.srba.*}:
+
+
+\subsubsection{Fluid relinearization}
+
+\textbf{\texttt{double min\_error\_reduction\_ratio\_to\_relinearize}:} If the error-reduction ratio 
+between two consecutive solver iterations is below this threshold, Jacobians will not be re-evaluated 
+at the new solution. This a kind of ``fluid relinearization'', which reduces the computational burden.
+
+\subsubsection{Covariance recovery}
+
+\textbf{\texttt{TCovarianceRecoveryPolicy  cov\_recovery}:} Controls how or whether covariances 
+are to be recovered from the final Hessian matrix used by the solver. Naive exact recovery implies 
+inverting a sparse matrix, leading to a dense (fully-correlated) covariance matrix, which is normally expensive.
+That is why, by default, only an approximation of the landmark covariances are evaluated.
+See the Doxygen documentation for 
+\href{http://reference.mrpt.org/svn/namespacemrpt_1_1srba.html#a14e4d971f53601c3b72ba1a321e7b9e1}
+{\texttt{TCovarianceRecoveryPolicy}}
+for further details.
+
+Note that the Hessian itself (i.e. the sparse inverse of the covariance of all unknowns) 
+is also always provided in the member \texttt{extra\_results}:
+
+\begin{lstlisting}
+template <...> class RbaEngine {
+  ...
+  struct TOptimizeExtraOutputInfo 
+  {
+    ...
+    typename RBA_OPTIONS::solver_t::extra_results_t   extra_results; 
+    ...
+  };
+  ...
+};
+\end{lstlisting}
+
+\noindent after each successful optimization. 
+The specific format in which this Hessian is provided (i.e. sparse vs. dense) depends on the selected solver 
+(see \S\ref{sect:choices.solvers}). 
+The user can apply any advanced algorithm for recovering only the part of the covariances really required 
+for the application at hand.
+
+\newpage
+\subsubsection{Others}
+
+These other parameters are also worth mentioning:
+
+\begin{itemize}
+\item{\textbf{\texttt{bool optimize\_new\_edges\_alone}:} Runs an optimization with the new KF-to-KF edges, 
+one by one, as if they were the unique unknowns before running the local area optimization. This assures 
+that there are no variables with such a bad initialization that could ruin the overall estimation. 
+Normally should be left to \texttt{true}, disable for a speed up if you are sure this step is not needed 
+in your problem. }
+
+\item{\textbf{\texttt{bool use\_robust\_kernel}:} Employs a robustifying kernel (pseudo-Huber) to reduce the 
+impact of outliers. Enabled by default. Should also tune the \texttt{kernel\_param} parameter.}
+
+\item{\textbf{\texttt{size\_t max\_iters}:} Maximum number of iterations in the least-squares solver.}
+\end{itemize}
+
 
 \newpage
 \section{Accessing \texttt{RbaEngine<>}: the RBA problem graph}
@@ -738,15 +1021,151 @@ struct MY_K2F_EDGE_VISITOR
 \section{The \texttt{srba-slam} application}
 \label{sect:srba_slam_app}
 
-XXXX
+This program is ready to use in binary installations of MRPT, so it could be a good starting 
+point to test the possibilities of SRBA without having to write a single line of code.
 
+\subsection{Interface}
+
+\texttt{srba-slam} is a command-line program that loads a dataset from plain text files 
+and processes it with a given instance of the generic \texttt{RbaEngine}. 
+A typical call must specify the desired models for relative poses, landmarks 
+and observations, as well as the data set file:
+
+\begin{lstlisting}
+srba-slam {--se2|--se3} {--lm-2d|--lm-3d} --obs [StereoCamera|...]
+          -d DATASET.txt [--sensor-params-cfg-file SENSOR_CONFIG.cfg]
+          [--noise NOISE_SIGMA] [--verbose {0|1|2|3}] [--step-by-step]
+\end{lstlisting}
+
+The sensor configuration file (\texttt{--sensor-params-cfg-file }) is
+only required for certain types of observations (e.g. camera calibration files
+for vision sensors). 
+Noise parameters can be provided via \texttt{--noise} (and \texttt{--noise-ang} for angular components) 
+to modify the weighting of least squares optimization 
+and, optionally (if \texttt{--add-noise} is set) actual random noise will be also generated and added to the dataset.
+
+Naturally, not all possible RBA problems are precompiled in this
+application. To see the list of available problems, run:
+
+\begin{lstlisting}
+srba-slam --list-problems
+\end{lstlisting}
+
+
+To explore all the existing parameters, please execute:
+
+\begin{lstlisting}
+srba-slam --help
+\end{lstlisting}
+
+\noindent or see the program man page:
+
+\begin{lstlisting}
+man srba-slam
+\end{lstlisting}
+
+
+\subsection{Running with sample datasets}
+
+A small collection of datasets is shipped with MRPT and can be found under:
+
+\begin{lstlisting}
+[MRPT_ROOT]/share/mrpt/datasets/srba-demos/
+\end{lstlisting}
+
+\noindent where \texttt{[MRPT\_ROOT]} is: 
+\begin{itemize}
+ \item \texttt{C:/Program Files/MRPT/} if a Windows binary package was installed,
+ \item \texttt{/usr/} if a GNU/Linux binary package was installed, or
+ \item the root directory of source packages.
+\end{itemize}
+
+In all cases, shipped files are not the datasets themselves, but the \emph{sources}
+for the RWT dataset generator\footnote{See: 
+\href{http://code.google.com/p/recursive-world-toolkit/}{http://code.google.com/p/recursive-world-toolkit/}}. 
+Follow instructions in the \texttt{README.txt} to generate the datasets. 
+
+Then, see one of the \texttt{*.sh} files in the same directory for example calls to \texttt{srba-slam} for each dataset. 
+As an example, this is how to run the 2D relative graph-SLAM dataset:
+
+
+\begin{lstlisting}
+srba-slam --se2 --graph-slam -d dataset_30k_rel_graph_slam_SENSOR.txt 
+          --submap-size 10 
+          --max-spanning-tree-depth 3 --max-optimize-depth 3
+          --verbose 1 --noise 0.001 --noise-ang 0.2 --add-noise 
+          --gt-map dataset_30k_rel_graph_slam_GT_MAP.txt 
+          --gt-path dataset_30k_rel_graph_slam_GT_PATH.txt 
+          # --step-by-step 
+\end{lstlisting}
+
+
+
+
+
+\newpage
 \section{Library inner structure}
 
 \subsection{Directory layout}
 
+As said above, \texttt{libmrpt-srba} is a header-only library. 
+Thus the headers include both: ``public'' declarations and template implementations. 
+
+The user normally includes just one public header,
+
+\begin{lstlisting}
+ #include <mrpt/srba.h>
+\end{lstlisting}
+
+\noindent which in turn includes all the other required headers. 
+However, thinking of those programmers that intend modifying or extending the library, 
+the directory layout of all headers is explained below. 
+
+\begin{itemize}[label=$\rhd$]
+  \item{\textbf{mrpt}
+    \begin{itemize}[label=$\rhd$]
+    \item{\texttt{srba.h}: The main file that users should include.}
+    \item{\textbf{srba}
+      \begin{itemize}[label=$\rhd$]
+      \item{RbaEngine.h}
+      \item{(other``public'' headers)}
+      \item{\textbf{models}
+	\begin{itemize}[label=$\rhd$]
+	  \item \texttt{kf2kf\_poses.h}
+	  \item \texttt{landmarks.h}
+	  \item \texttt{observations.h}
+	  \item \texttt{sensors.h}
+	\end{itemize}
+      }
+      \item{\textbf{impl}
+	\begin{itemize}[label=$\rhd$]
+	\item Implementations of template methods.
+	\end{itemize}
+	}
+      \end{itemize}
+    }
+    \end{itemize}
+  }
+\end{itemize}
+
+
 
 \subsection{Data structures}
 \label{sect:data.structs}
+
+All the data types and containers employed in this library 
+have been carefully selected taking into account that the goal
+is achieving a constant (bounded) computational cost: no matter 
+how many keyframes ($N$) or landmarks ($M$) already exist in the problem, 
+introducing a new keyframe with a bounded number of observations
+should \emph{never} lead to operations that scale with $N$ or $M$, not even logarithmically.
+
+This need has materialized into the requirement of a network of crossed \emph{references} (in the C++ sense)
+between the different containers, which may seem quite complex at first glance but 
+is necessary to avoid look-up operations and assure the efficiency of all the SRBA sub-algorithms. 
+
+A detailed view of these relationships is provided in Fig.~\ref{fig:detailed.data.structures} 
+for the reference of those interested in the low-level implementation details.
 
 \begin{sidewaysfigure}
 \centering

@@ -97,7 +97,7 @@ namespace options
 		};  // end of "observation_noise_identity"
 
 		/** Usage: A possible type for RBA_OPTIONS::obs_noise_matrix_t.
-		  * Meaning: The sensor noise matrix is the same for all observations and equal to \sigma * I(identity). 
+		  * Meaning: The sensor noise matrix is an arbitrary matrix and the same for all observations. 
 		  * \ingroup mrpt_srba_options_noise */
 		template <class OBS_TYPE>
 		struct observation_noise_constant_matrix

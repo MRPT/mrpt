@@ -403,7 +403,7 @@ namespace srba
 			double max_rho; //!< default: 1.0
 			double max_lambda; //!< default: 1e20
 			double min_error_reduction_ratio_to_relinearize; //!< default 0.01
-			bool   numeric_jacobians;
+			bool   numeric_jacobians; //!< (Default:false) Use a numeric approximation of the Jacobians (very slow!) instead of analytical ones.
 			void (*feedback_user_iteration)(unsigned int iter, const double total_sq_err, const double mean_sqroot_error);
 			bool   compute_condition_number; //!< Compute and return to the user the Hessian condition number of k2k edges (default=false)
 
