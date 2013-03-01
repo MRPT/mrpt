@@ -56,7 +56,7 @@ install: build
 	# Create man pages:
 	make man_pages_all
 	# Compile manual(s):
-	make documentation_srba-guide || echo "*** Ignoring failed manual build! ***"
+	make documentation_psgz_guides || echo "*** Ignoring failed manual build! ***"
 	# Build all
 	$(MAKE) VERBOSE=1 -j4
 	# Run tests

@@ -64,6 +64,12 @@ then
 	cp $MRPTSRC/doc/srba-guide/srba-guide.pdf $MRPT_DEB_DIR/mrpt-${MRPT_VERSION_STR}/doc/
 fi
 
+make -C $MRPTSRC/doc/pbmap-guide/
+if [ -f $MRPTSRC/doc/pbmap-guide/pbmap-guide.pdf ];
+then
+	cp $MRPTSRC/doc/pbmap-guide/pbmap-guide.pdf $MRPT_DEB_DIR/mrpt-${MRPT_VERSION_STR}/doc/
+fi
+
 #printf "Generating mrpt.spec ..."
 #eval "echo \"`cat mrpt.spec.in`\"" > $MRPT_DEB_DIR/mrpt-${MRPT_VERSION_STR}/mrpt.spec
 #printf "OK\n"

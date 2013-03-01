@@ -556,7 +556,8 @@ struct my_rba_options
 \subsubsection{Choices for \texttt{sensor\_pose\_on\_robot\_t}}
 
 \begin{itemize}
-\item{\textbf{ \texttt{options::sensor\_pose\_on\_robot\_none}}: The pose of a KF the exactly pose of the sensor. That is, 
+\item{\textbf{ \texttt{options::sensor\_pose\_on\_robot\_none}}: The pose of a KF corresponds exactly to the pose of the 
+sensor. That is, 
 there is no distinction between the pose of the ``robot'' and that of the ``sensor''.}
 \item{\textbf{ \texttt{options::sensor\_pose\_on\_robot\_se3}}: The sensor is located at an arbitrary pose with respect to 
 the frame of reference of each KF (the ``robot''). This is the most common case of sensors placed on a mobile robot, 

@@ -176,6 +176,12 @@ make 2> /dev/null
 mv *.pdf ..
 cd ..
 
+cd pbmap-guide
+make 2> /dev/null
+mv *.pdf ..
+cd ..
+
+
 rm html/*.pdf 2> /dev/null
 cp *.pdf html/ 2> /dev/null
 

@@ -32,6 +32,8 @@ set WX_ROOT=D:/code/wxWidgets-2.9.4
 REM MSVC Redistributables: %MSVC_REDIST_BASE_DIR%/%COMP%/vcredist_%ARCH%.exe
 set MSVC_REDIST_BASE_DIR=d:/code/MSVC_Redist
 
+set DISABLE_STUFF=-DDISABLE_SWISSRANGER_3DCAM_LIBS=ON -DDISABLE_PCL=ON -DDISABLE_NationalInstruments=ON -DENABLE_SOLUTION_FOLDERS=OFF
+
 REM ==============================================================
 
 REM msvc9 ========================
@@ -168,7 +170,7 @@ if %COMP%==mingw echo %MINGW_ROOT_BKSLH%-%ARCHN%\bin\mingw32-make package >> AUT
 
 REM ---------------- Call CMake ----------------
 call %PATH_FIL%
-set ALL_PARAMS=-DDISABLE_SWISSRANGER_3DCAM_LIBS=ON -DDISABLE_PCL=ON -DDISABLE_NationalInstruments=ON -DOpenCV_DIR=d:/code/opencv-%COMP%-%ARCH% -DMRPT_HAS_FFMPEG_WIN32=ON -DFFMPEG_WIN32_ROOT_DIR=%FFMPEGDIR% -DwxWidgets_ROOT_DIR=%WXDIR% -DwxWidgets_LIB_DIR=%WXLIBDIR%
+set ALL_PARAMS=%DISABLE_STUFF% -DOpenCV_DIR=d:/code/opencv-%COMP%-%ARCH% -DMRPT_HAS_FFMPEG_WIN32=ON -DFFMPEG_WIN32_ROOT_DIR=%FFMPEGDIR% -DwxWidgets_ROOT_DIR=%WXDIR% -DwxWidgets_LIB_DIR=%WXLIBDIR%
 
 if %ARCHN%==32 set LIBUSBLIB=%LIBUSBDIR%\lib\msvc\libusb.lib 
 if %ARCHN%==64 set LIBUSBLIB=%LIBUSBDIR%\lib\msvc_x64\libusb.lib 
