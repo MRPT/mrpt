@@ -394,7 +394,7 @@ namespace mrpt
 			{
 		#ifdef _DEBUG
 				if (row >= m_Rows)
-					THROW_EXCEPTION( format("Row index %"PRIuPTR" out of range. Matrix is %"PRIuPTR"x%"PRIuPTR,static_cast<unsigned long>(row),static_cast<unsigned long>(m_Rows),static_cast<unsigned long>(m_Cols)) );
+					THROW_EXCEPTION( format("Row index %lu out of range. Matrix is %lux%lu",static_cast<unsigned long>(row),static_cast<unsigned long>(m_Rows),static_cast<unsigned long>(m_Cols)) );
 		#endif
 				return m_Val[row];
 			}
