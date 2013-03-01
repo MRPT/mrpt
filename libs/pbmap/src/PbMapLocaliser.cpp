@@ -74,7 +74,7 @@ cout << "PbMapLocaliser::compareSubgraphNeighbors\n";
   for(map<unsigned, unsigned>::iterator it = bestMatch.begin(); it != bestMatch.end(); it++)
   {
   // TODO: use the graph to grow
-    if(!configLocaliser.graph_rule) // Nearby neighbors - Check the 2nd order neighbors of the matched planes
+    if(configLocaliser.graph_mode == 0) // Nearby neighbors - Check the 2nd order neighbors of the matched planes
       for(set<unsigned>::iterator it1 = mPbMap.vPlanes[it->first].nearbyPlanes.begin(); it1 != mPbMap.vPlanes[it->first].nearbyPlanes.end(); it1++)
       {
         if(matcher.subgraphSrc->subgraphPlanesIdx.count(*it1) )
@@ -95,7 +95,7 @@ cout << "PbMapLocaliser::compareSubgraphNeighbors\n";
           bestMatch[*it1] = *it2;
         }
       }
-    else // Co-visible neighbors - Check the 2nd order neighbors of the matched planes
+    else //if(configLocaliser.graph_mode == 1)// Co-visible neighbors - Check the 2nd order neighbors of the matched planes
       for(map<unsigned, unsigned>::iterator it1 = mPbMap.vPlanes[it->first].neighborPlanes.begin(); it1 != mPbMap.vPlanes[it->first].neighborPlanes.end(); it1++)
       {
         if(matcher.subgraphSrc->subgraphPlanesIdx.count(it1->first) )
@@ -116,6 +116,7 @@ cout << "PbMapLocaliser::compareSubgraphNeighbors\n";
           bestMatch[it1->first] = it2->first;
         }
       }
+
   }
 }
 
@@ -156,12 +157,12 @@ bool PbMapLocaliser::searchPlaneContext(Plane &searchPlane)
       Plane &targetPlane = prevPbMap.vPlanes[i];
 
       // Do not consider evaluating planes which do not have more than min_planes_recognition neighbor planes (too much uncertainty)
-      if(!configLocaliser.graph_rule)
+      if(configLocaliser.graph_mode == 0)
       {
         if( targetPlane.neighborPlanes.size() < configLocaliser.min_planes_recognition ){
           continue;}
       }
-      else
+      else // configLocaliser.graph_mode = 1
       {
         if( targetPlane.nearbyPlanes.size() < configLocaliser.min_planes_recognition ){
           continue;}
@@ -306,7 +307,7 @@ void PbMapLocaliser::run()
       while( !vQueueObservedPlanes.empty() )
       {
         // Do not consider searching planes which do not have more than 2 neighbor planes (too much uncertainty)
-        if(!configLocaliser.graph_rule) // Nearby neighbors
+        if(configLocaliser.graph_mode == 0) // Nearby neighbors
         {
           if(mPbMap.vPlanes[vQueueObservedPlanes[0]].nearbyPlanes.size() < configLocaliser.min_planes_recognition)
           {
@@ -314,7 +315,7 @@ void PbMapLocaliser::run()
             continue;
           }
         }
-        else
+        else //configLocaliser.graph_mode = 1
           if(mPbMap.vPlanes[vQueueObservedPlanes[0]].neighborPlanes.size() < configLocaliser.min_planes_recognition)
           {
             vQueueObservedPlanes.erase(vQueueObservedPlanes.begin());

@@ -56,6 +56,7 @@ namespace pbmap {
   {
     void load_params(const string &config_file_name)
     {
+      ASSERT_FILE_EXISTS_(config_file_name)
       mrpt::utils::CConfigFile config_file(config_file_name);
 
       // global
@@ -64,7 +65,7 @@ namespace pbmap {
       use_structure = config_file.read_bool("global","use_structure",true);
       use_completeness = config_file.read_bool("global","use_completeness",true);
       min_planes_recognition = config_file.read_int("global","min_planes_recognition",4);
-      graph_rule = config_file.read_bool("global","graph_rule",false);
+      graph_mode = config_file.read_int("global","graph_mode",0);
 
       // Unary constraints
       color_threshold = config_file.read_float("unary","color_threshold",0.09);
@@ -101,7 +102,7 @@ namespace pbmap {
     float area_full_threshold, area_full_threshold_inv;
     float area_half_threshold, area_half_threshold_inv;     // Constraint with "half confidence": one plana is fully observed
     float elongation_threshold, elongation_threshold_inv;         // Unary constraint:
-    bool  graph_rule;  // This var selects the condition to create edges in the graph, either proximity of planar patches or co-visibility in a single frame
+    int   graph_mode;  // This var selects the condition to create edges in the graph, either proximity of planar patches or co-visibility in a single frame
 
     // [binary]
     float dist_threshold, dist_threshold_inv;  // Binary constraint: distence between the centers of two pair of planes

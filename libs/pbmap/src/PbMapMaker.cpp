@@ -87,7 +87,7 @@ struct config_pbmap
   float max_cos_normal;
   float max_dist_center_plane; // Two planar patches that represent the same surface must have their center in the same plane
   float proximity_threshold;  // Two planar patches that represent the same surface must overlap or be nearby
-  bool  graph_rule;  // This var selects the condition to create edges in the graph, either proximity of planar patches or co-visibility in a single frame
+  int   graph_mode;  // This var selects the condition to create edges in the graph, either proximity of planar patches or co-visibility in a single frame
 
   // [semantics]
   bool inferStructure;    // Infer if the planes correspond to the floor, ceiling or walls
@@ -116,7 +116,7 @@ void readConfigFile(const string &config_file_name)
   // map_construction
   configPbMap.use_color = config_file.read_bool("map_construction","use_color",false);
   configPbMap.proximity_neighbor_planes = config_file.read_float("map_construction","proximity_neighbor_planes",1.0);
-  configPbMap.graph_rule = config_file.read_bool("map_construction","graph_rule",false);
+  configPbMap.graph_mode = config_file.read_int("map_construction","graph_mode",0);
   configPbMap.max_cos_normal = config_file.read_float("map_construction","max_cos_normal",0.9848,true);
   configPbMap.max_dist_center_plane = config_file.read_float("map_construction","max_dist_center_plane",0.1,true);
   configPbMap.proximity_threshold = config_file.read_float("map_construction","proximity_threshold",0.15);
@@ -151,6 +151,7 @@ PbMapMaker::PbMapMaker(const string &config_file) :
 //  GVars3::GUI.RegisterCommand("SavePbMap", GUICommandCallBack, this);
 
   // Load parameters
+  ASSERT_FILE_EXISTS_(config_file)
   readConfigFile(config_file);
 
   mpPlaneInferInfo = new PlaneInferredInfo(mPbMap);
@@ -631,7 +632,7 @@ void PbMapMaker::viz_cb (pcl::visualization::PCLVisualizer& viz)
           }
 
           // Draw edges
-          if(!configPbMap.graph_rule) // Nearby neighbors
+          if(!configPbMap.graph_mode) // Nearby neighbors
             for(set<unsigned>::iterator it = mPbMap.vPlanes[i].nearbyPlanes.begin(); it != mPbMap.vPlanes[i].nearbyPlanes.end(); it++)
             {
               if(*it > mPbMap.vPlanes[i].id)

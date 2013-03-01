@@ -129,7 +129,7 @@ There are some heuristic parameters which govern the plane segmentation proces, 
 \emph{Global settings:}
 \begin{itemize}
 \item \emph{bool use\_color} → Choose wether to add color information or not to the planes (default set to true);
-\item \emph{bool graph\_rule} → Choose between establishing edges in the graph according to distance (false) or to visibility (true) (default is set to false = distance);
+\item \emph{int graph\_mode} → Choose between establishing edges in the graph according to distance (0) or to visibility (1) (default is set to 0);
 \item \emph{float proximity\_neighbor\_planes} → Set the maximum distance between two planar patches to consider them as neighbors (default is set to 1 m);
 
 \end{itemize}
@@ -204,7 +204,8 @@ using namespace std;
 
 int main(int argc, char**argv)
 {
-	PbMapMaker pbmap_maker;  //  Create a PbMapMaker object
+	//  Create a PbMapMaker object specifying the configPbMap.ini
+	PbMapMaker pbmap_maker("path_to/config_files/pbmap/configPbMap.ini"); 
 	
 	// While certain condition is fulfilled (e.g. while exploration)
 	while (...) {
