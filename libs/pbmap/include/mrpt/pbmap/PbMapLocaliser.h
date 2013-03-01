@@ -68,7 +68,7 @@ namespace pbmap {
    public:
 
   /*!Constructor.*/
-    PbMapLocaliser(PbMap &mPbM);
+    PbMapLocaliser(PbMap &mPbM, const std::string &config_file);
     ~PbMapLocaliser();
 
   /*!Vector to store the name of previous PbMaps (previous places).*/

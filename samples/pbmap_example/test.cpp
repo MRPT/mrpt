@@ -47,21 +47,21 @@
 using namespace std;
 using namespace mrpt::pbmap;
 
-string path("../../share/mrpt/datasets/pbmap-demos/");
+string path("/home/edu/Libraries/mrpt-svn/share/mrpt/datasets/pbmap-demos/");
 
 void printHelp()
 {
   cout << "./pbmap_test reads a set of pairs pointCloud+Pose to build a PbMap\n";
 }
 
-void testPbMapConstruction()
+void testPbMapConstruction(const string &config_file)
 {
   printHelp();
 
   // Reconstructed PointCloud
   pcl::PointCloud<PointT> globalCloud;
 
-  PbMapMaker pbmap_maker;
+  PbMapMaker pbmap_maker(config_file);
 
   // Read in the cloud data
   pcl::PCDReader reader;
@@ -116,10 +116,30 @@ void testPbMapConstruction()
 
 int main(int argc, char **argv)
 {
+
   try
   {
-    testPbMapConstruction();
+		bool showHelp    = argc>1 && !os::_strcmp(argv[1],"--help");
+
+		// Process arguments:
+		if (argc<2 || showHelp )
+		{
+			printf("Usage: %s <config_file.ini>\n\n",argv[0]);
+			if (!showHelp)
+			{
+				mrpt::system::pause();
+				return -1;
+			}
+			else	return 0;
+		}
+
+    const string INI_FILENAME = string( argv[1] );
+		ASSERT_FILE_EXISTS_(INI_FILENAME)
+
+    testPbMapConstruction(INI_FILENAME);
+
     return 0;
+
   } catch (exception &e)
   {
     cout << "MRPT exception caught: " << e.what() << endl;

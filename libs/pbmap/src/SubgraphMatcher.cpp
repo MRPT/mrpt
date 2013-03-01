@@ -39,8 +39,10 @@
  */
 
 #include <mrpt/pbmap.h> // precomp. hdr
+#include<mrpt/utils/utils_defs.h>
 
 using namespace std;
+using namespace mrpt::utils;
 using namespace mrpt::pbmap;
 
 extern config_heuristics configLocaliser;
@@ -51,10 +53,11 @@ extern config_heuristics configLocaliser;
 bool SubgraphMatcher::evalUnaryConstraints(Plane &plane1, Plane &plane2, PbMap &trgPbMap, bool useStructure)
 {
   // Main color
-  if( fabs(plane1.v3colorNrgb[0] - plane2.v3colorNrgb[0]) > configLocaliser.color_threshold ||
-      fabs(plane1.v3colorNrgb[1] - plane2.v3colorNrgb[1]) > configLocaliser.color_threshold ||
-      fabs(plane1.v3colorNrgb[2] - plane2.v3colorNrgb[2]) > configLocaliser.color_threshold )
-    return false;
+  if(configLocaliser.color_threshold >= 0)
+    if( fabs(plane1.v3colorNrgb[0] - plane2.v3colorNrgb[0]) > configLocaliser.color_threshold ||
+        fabs(plane1.v3colorNrgb[1] - plane2.v3colorNrgb[1]) > configLocaliser.color_threshold ||
+        fabs(plane1.v3colorNrgb[2] - plane2.v3colorNrgb[2]) > configLocaliser.color_threshold )
+      return false;
 
   ++nCheckConditions;
 

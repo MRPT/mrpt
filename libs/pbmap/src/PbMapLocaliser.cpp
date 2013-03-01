@@ -54,11 +54,12 @@ using namespace mrpt::pbmap;
 
 config_heuristics configLocaliser;
 
-PbMapLocaliser::PbMapLocaliser(PbMap &mPbM) :
+PbMapLocaliser::PbMapLocaliser(PbMap &mPbM, const string &config_file) :
     mPbMap(mPbM),
     m_pbMapLocaliser_must_stop(false),
     m_pbMapLocaliser_finished(false)
 {
+  configLocaliser.load_params(config_file);
 std::cout << "PbMapLocaliser::PbMapLocaliser min_planes_recognition " << configLocaliser.min_planes_recognition << endl;
 
   pbMapLocaliser_hd = mrpt::system::createThreadFromObjectMethod(this, &PbMapLocaliser::run);

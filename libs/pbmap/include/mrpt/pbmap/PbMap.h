@@ -60,7 +60,12 @@ namespace pbmap {
 	// This must be added to any CSerializable derived class:
 	DEFINE_SERIALIZABLE_PRE_CUSTOM_LINKAGE( PbMap, PBMAP_IMPEXP)
 
-	/** A class used to store a Plane-based Map (PbMap), as a set of planar patches (Planes).
+	/** A class used to store a Plane-based Map (PbMap). A PbMap consists of a set of planar patches
+	* described by geometric features (shape, relative position, etc.) and/or radiometric features
+	* (dominant color). It is organized as an annotated, undirected graph, where nodes stand for planar
+	* patches and edges connect neighbor planes when the distance between their closest points is under
+	* a threshold. This graph structure permits to find efficiently the closest neighbors of a plane,
+	* or to select groups of nearby planes representing part of the scene.
    *
    * \ingroup mrpt_pbmap_grp
    */
@@ -78,7 +83,7 @@ namespace pbmap {
     std::vector<Plane> vPlanes;
 
   /*!Floor plane id*/
-    int FloorPlane; // Modificar nombres, y clase. Crear la clase inferKnowledge
+    int FloorPlane;
 
   /*!Registered point cloud from the RGB-D or Depth frames and visual odometry.*/
     pcl::PointCloud<PointT>::Ptr globalMapPtr;

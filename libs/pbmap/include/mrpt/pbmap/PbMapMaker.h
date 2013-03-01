@@ -82,7 +82,7 @@ namespace pbmap {
 
   /*!PbMapMaker's constructor sets some threshold for plane segmentation and map growing from a configuration file (or default).
      This constructor also starts PbMapMaker's own thread.*/
-    PbMapMaker();
+    PbMapMaker(const std::string &config_file);
 
   /*!PbMapMaker's destructor is used to save some debugging info to file.*/
     ~PbMapMaker();
@@ -125,9 +125,6 @@ namespace pbmap {
      *  Recalculate center, normal vector, area, inlier points (filtered), convex hull, etc.
      */
     void mergePlanes(Plane &updatePlane, Plane &discardPlane);
-
-    /*!Serialize PbMap"*/  // Cambiar nombre o Quitar!
-    void PbMapSerialization(std::string sCommand, std::string sParams);
 
     /*!File containing some paramteres and heuristic thresholds"*/
     FILE *config_Param;

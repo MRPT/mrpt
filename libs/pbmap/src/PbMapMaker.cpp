@@ -73,7 +73,6 @@ struct config_pbmap
   bool input_from_rawlog;
   std::string rawlog_path;
   bool record_rawlog;
-  bool use_color;
   float color_threshold;
 
   // [plane_segmentation]
@@ -82,6 +81,7 @@ struct config_pbmap
   float minInliersRate; // Minimum ratio of inliers/image points required
 
   // [map_construction]
+  bool use_color;                   // Add color information to the planes
   float proximity_neighbor_planes;  // Two planar patches are considered neighbors when the closest distance between them is under proximity_neighbor_planes
 //  float max_angle_normals; // (10º) Two planar patches that represent the same surface must have similar normals // QUITAR
   float max_cos_normal;
@@ -95,10 +95,7 @@ struct config_pbmap
 
   // [localisation]
   bool detect_loopClosure;             // Run PbMapLocaliser in a different threads to detect loop closures or preloaded PbMaps
-  float color_THRESHOLD;
-  float area_THRESHOLD;
-  float elongation_THRESHOLD;
-//  std::string path_prev_pbmap;
+  string config_localiser;
 
   // [serialize]
   std::string path_save_pbmap;
@@ -107,18 +104,9 @@ struct config_pbmap
 
 } configPbMap;
 
-void readConfigFile()
+void readConfigFile(const string &config_file_name)
 {
-  mrpt::utils::CConfigFile config_file("/home/edu/Projects/PbMapLocalizer/pbmap/configPbMap.ini");
-
-  // global
-//  configPbMap.input_from_rawlog = config_file.read_bool("global","input_from_rawlog",false);
-//  if(configPbMap.input_from_rawlog)
-//    configPbMap.rawlog_path = config_file.read_string("global","rawlog_path","");
-//  else
-//    configPbMap.record_rawlog = config_file.read_bool("global","record_rawlog",false);
-  configPbMap.use_color = config_file.read_bool("global","use_color",false);
-//std::cout << "use_color " << configPbMap.use_color << std::endl;
+  mrpt::utils::CConfigFile config_file(config_file_name);
 
   // Plane segmentation
   configPbMap.dist_threshold = config_file.read_float("plane_segmentation","dist_threshold",0.04,true);
@@ -126,12 +114,12 @@ void readConfigFile()
   configPbMap.minInliersRate = config_file.read_float("plane_segmentation","minInliersRate",0.01,true);
 
   // map_construction
-//  configPbMap.max_angle_normals = config_file.read_float("map_construction","max_angle_normals",0.17453,true);
+  configPbMap.use_color = config_file.read_bool("map_construction","use_color",false);
+  configPbMap.proximity_neighbor_planes = config_file.read_float("map_construction","proximity_neighbor_planes",1.0);
+  configPbMap.graph_rule = config_file.read_bool("map_construction","graph_rule",false);
   configPbMap.max_cos_normal = config_file.read_float("map_construction","max_cos_normal",0.9848,true);
   configPbMap.max_dist_center_plane = config_file.read_float("map_construction","max_dist_center_plane",0.1,true);
   configPbMap.proximity_threshold = config_file.read_float("map_construction","proximity_threshold",0.15);
-  configPbMap.proximity_neighbor_planes = config_file.read_float("map_construction","proximity_neighbor_planes",1.0);
-  configPbMap.graph_rule = config_file.read_bool("map_construction","graph_rule",false);
 
   // [semantics]
   configPbMap.inferStructure = config_file.read_bool("semantics","inferStructure",true);
@@ -140,9 +128,8 @@ void readConfigFile()
 
   // [localisation]
   configPbMap.detect_loopClosure = config_file.read_bool("localisation","detect_loopClosure",true);
-  configPbMap.color_THRESHOLD = config_file.read_float("localisation","color_THRESHOLD",0.2);
-  configPbMap.area_THRESHOLD = config_file.read_float("localisation","area_THRESHOLD",4.0);
-  configPbMap.elongation_THRESHOLD = config_file.read_float("localisation","elongation_THRESHOLD",3.0);
+  if(configPbMap.detect_loopClosure)
+    configPbMap.config_localiser = config_file.read_string("localisation","config_localiser","",true);
 
   // serialize
   configPbMap.path_save_pbmap = config_file.read_string("serialize","path_save_pbmap","map");
@@ -155,7 +142,7 @@ void readConfigFile()
   #endif
 }
 
-PbMapMaker::PbMapMaker() :
+PbMapMaker::PbMapMaker(const string &config_file) :
     cloudViewer("Cloud Viewer"),
     mpPbMapLocaliser(NULL),
     m_pbmaker_must_stop(false),
@@ -164,12 +151,12 @@ PbMapMaker::PbMapMaker() :
 //  GVars3::GUI.RegisterCommand("SavePbMap", GUICommandCallBack, this);
 
   // Load parameters
-  readConfigFile();
+  readConfigFile(config_file);
 
   mpPlaneInferInfo = new PlaneInferredInfo(mPbMap);
 
   if(configPbMap.detect_loopClosure)
-    mpPbMapLocaliser = new PbMapLocaliser(mPbMap);
+    mpPbMapLocaliser = new PbMapLocaliser(mPbMap, configPbMap.config_localiser);
 
   if(configPbMap.makeCovisibilityClusters)
     clusterize = new SemanticClustering(mPbMap);

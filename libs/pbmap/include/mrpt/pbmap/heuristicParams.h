@@ -54,14 +54,13 @@ namespace pbmap {
 	 */
   struct PBMAP_IMPEXP config_heuristics
   {
-    config_heuristics()
+    void load_params(const string &config_file_name)
     {
-      mrpt::utils::CConfigFile config_file("/home/edu/Projects/PbMapLocalizer/pbmap/configLocaliser.ini");
+      mrpt::utils::CConfigFile config_file(config_file_name);
 
       // global
       path_prev_pbmaps = config_file.read_string("global","path_prev_pbmaps","",false);
   //  std::cout << path_prev_pbmaps << std::endl;
-      use_color = config_file.read_bool("global","use_color",false);
       use_structure = config_file.read_bool("global","use_structure",true);
       use_completeness = config_file.read_bool("global","use_completeness",true);
       min_planes_recognition = config_file.read_int("global","min_planes_recognition",4);
@@ -69,8 +68,7 @@ namespace pbmap {
 
       // Unary constraints
       color_threshold = config_file.read_float("unary","color_threshold",0.09);
-  //  std::cout << "color_threshold " << color_threshold << std::endl;
-      colorDev_threshold = config_file.read_float("unary","colorDev_threshold",0.005);
+//      colorDev_threshold = config_file.read_float("unary","colorDev_threshold",0.005);
       area_threshold = config_file.read_float("unary","area_threshold",3.0);
       area_threshold_inv = 1/area_threshold;
       area_full_threshold = config_file.read_float("unary","area_full_threshold",1.6);
@@ -92,20 +90,18 @@ namespace pbmap {
 
     // [global]
     std::string path_prev_pbmaps;
-    bool use_color;                      // Use color information to recognize previos places
     unsigned min_planes_recognition;    // Minimum number of planes to accept a match between two neighborhoods of planes
     bool use_structure;                  // Use inferred knowledge
     bool use_completeness;               // Use inferred knowledge
-    bool  graph_rule;  // This var selects the condition to create edges in the graph, either proximity of planar patches or co-visibility in a single frame
 
     // [unary]
-    float colorDev_threshold;
     float color_threshold;
-    float area_threshold, area_threshold_inv;               // Unary constraint:
+//    float colorDev_threshold;
+    float area_threshold, area_threshold_inv;
     float area_full_threshold, area_full_threshold_inv;
     float area_half_threshold, area_half_threshold_inv;     // Constraint with "half confidence": one plana is fully observed
     float elongation_threshold, elongation_threshold_inv;         // Unary constraint:
-  //  float elongation_full_threshold, elongation_full_threshold_inv;
+    bool  graph_rule;  // This var selects the condition to create edges in the graph, either proximity of planar patches or co-visibility in a single frame
 
     // [binary]
     float dist_threshold, dist_threshold_inv;  // Binary constraint: distence between the centers of two pair of planes
