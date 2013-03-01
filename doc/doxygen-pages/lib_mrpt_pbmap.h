@@ -50,6 +50,7 @@ A method for PbMap place recognition (useful for re-localization or loop closure
 Refer to the <b><a href="pbmap-guide.pdf" >PbMap Guide (PDF)</a></b>.
 
 See:
+- Online web with papers, tutorials, etc: http://www.mrpt.org/pbmap
 - Namespace mrpt::pbmap
 
 
