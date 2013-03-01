@@ -52,10 +52,17 @@ double RbaEngine<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::eval_overall_squ
 	// ---------------------------------------------------------------------------
 	vector<bool>                         base_ids(rba_state.keyframes.size(), false);
 	map<TKeyFrameID, set<TKeyFrameID> >  ob_pairs; // Minimum ID first index.
+#ifdef SRBA_WORKAROUND_MSVC9_DEQUE_BUG
+	for (typename deque<std::auto_ptr<k2f_edge_t> >::const_iterator itO=rba_state.all_observations.begin();itO!=rba_state.all_observations.end();++itO)
+	{
+		const TKeyFrameID obs_id = (*itO)->obs.kf_id;
+		const TKeyFrameID base_id = (*itO)->feat_rel_pos->id_frame_base;
+#else
 	for (typename deque<k2f_edge_t>::const_iterator itO=rba_state.all_observations.begin();itO!=rba_state.all_observations.end();++itO)
 	{
 		const TKeyFrameID obs_id = itO->obs.kf_id;
 		const TKeyFrameID base_id = itO->feat_rel_pos->id_frame_base;
+#endif
 
 		base_ids[base_id] = true;
 		ob_pairs[ std::min(obs_id,base_id) ].insert( std::max(obs_id,base_id) );

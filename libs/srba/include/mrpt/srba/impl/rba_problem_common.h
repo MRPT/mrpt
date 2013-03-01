@@ -106,8 +106,8 @@ void RbaEngine<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::TSRBAParameters::s
 
 	out.write(section,"max_tree_depth",max_tree_depth,  /* text width */ 30, 30, "Maximum depth of all spanning trees");
 	out.write(section,"max_optimize_depth",max_optimize_depth, /* text width */ 30, 30, "Max. local optimization distance");
-	out.write(section,"submap_size",submap_size, /* text width */ 30, 30, "Max. local optimization distance");
-	out.write(section,"min_obs_to_loop_closure",min_obs_to_loop_closure, /* text width */ 30, 30, "Min. num. of covisible observations to add a loop closure edge");
+	out.write(section,"submap_size",static_cast<uint64_t>(submap_size), /* text width */ 30, 30, "Max. local optimization distance");
+	out.write(section,"min_obs_to_loop_closure",static_cast<uint64_t>(min_obs_to_loop_closure), /* text width */ 30, 30, "Min. num. of covisible observations to add a loop closure edge");
 
 
 	out.write(section,"optimize_new_edges_alone",optimize_new_edges_alone,  /* text width */ 30, 30, "Optimize new edges alone before optimizing the entire local area?");
@@ -115,7 +115,7 @@ void RbaEngine<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::TSRBAParameters::s
 	out.write(section,"kernel_param",kernel_param,  /* text width */ 30, 30, "robust kernel parameter");
 	out.write(section,"max_rho",max_rho,  /* text width */ 30, 30, "Lev-Marq optimization: maximum rho value to stop");
 	out.write(section,"max_lambda",max_lambda,  /* text width */ 30, 30, "Lev-Marq optimization: maximum lambda to stop");
-	out.write(section,"max_iters",max_iters,  /* text width */ 30, 30, "Max. iterations for optimization");
+	out.write(section,"max_iters",static_cast<uint64_t>(max_iters),  /* text width */ 30, 30, "Max. iterations for optimization");
 	out.write(section,"max_error_per_obs_to_stop",max_error_per_obs_to_stop,  /* text width */ 30, 30, "Another criterion for stopping optimization");
 	out.write(section,"cov_recovery", mrpt::utils::TEnumType<TCovarianceRecoveryPolicy>::value2name(cov_recovery) ,  /* text width */ 30, 30, "Covariance recovery policy");
 }

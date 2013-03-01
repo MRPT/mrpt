@@ -181,7 +181,13 @@ void RbaEngine<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::optimize_edges(
 
 				obs_global_idx2residual_idx[global_obs_idx] = obs_idx;
 
-				involved_obs.push_back( TObsUsed (global_obs_idx, &rba_state.all_observations[global_obs_idx] ) );
+				involved_obs.push_back( TObsUsed (global_obs_idx, 
+#ifdef SRBA_WORKAROUND_MSVC9_DEQUE_BUG
+				&(*rba_state.all_observations[global_obs_idx])
+#else
+				&rba_state.all_observations[global_obs_idx]
+#endif
+				 ) );
 			}
 		}
 		// Observations for k2f edges Jacobians
@@ -202,7 +208,13 @@ void RbaEngine<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::optimize_edges(
 
 					obs_global_idx2residual_idx[global_obs_idx] = obs_idx;
 
-					involved_obs.push_back( TObsUsed( global_obs_idx,  &rba_state.all_observations[global_obs_idx] ) );
+					involved_obs.push_back( TObsUsed( global_obs_idx,  
+#ifdef SRBA_WORKAROUND_MSVC9_DEQUE_BUG
+						&(*rba_state.all_observations[global_obs_idx]) 
+#else
+						&rba_state.all_observations[global_obs_idx] 
+#endif
+					) );
 				}
 			}
 		}
@@ -218,7 +230,13 @@ void RbaEngine<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::optimize_edges(
 
 			obs_global_idx2residual_idx[global_obs_idx] = obs_idx;
 
-			involved_obs.push_back(TObsUsed(global_obs_idx, &rba_state.all_observations[global_obs_idx] ) );
+			involved_obs.push_back(TObsUsed(global_obs_idx, 
+#ifdef SRBA_WORKAROUND_MSVC9_DEQUE_BUG
+				&(*rba_state.all_observations[global_obs_idx])
+#else
+				&rba_state.all_observations[global_obs_idx] 
+#endif
+			) );
 		}
 	}
 

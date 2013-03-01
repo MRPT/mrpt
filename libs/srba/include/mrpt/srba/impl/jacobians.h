@@ -882,7 +882,11 @@ void RbaEngine<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::prepare_Jacobians_
 			const size_t obs_idx = it->first;
 			const typename TSparseBlocksJacobians_dh_dAp::TEntry & jacob_entry = it->second;
 
+#ifdef SRBA_WORKAROUND_MSVC9_DEQUE_BUG
+			const TKeyFrameID obs_id  = rba_state.all_observations[obs_idx]->obs.kf_id;
+#else
 			const TKeyFrameID obs_id  = rba_state.all_observations[obs_idx].obs.kf_id;
+#endif
 			const TKeyFrameID d1_id   = jacob_entry.sym.kf_d;
 			const TKeyFrameID base_id = jacob_entry.sym.kf_base;
 
@@ -902,7 +906,12 @@ void RbaEngine<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::prepare_Jacobians_
 			// For each dh_df block we need:
 			//  *  obs -> base
 			const size_t obs_idx = it->first;
-			const k2f_edge_t &k2f = rba_state.all_observations[obs_idx];
+			const k2f_edge_t &k2f = 
+#ifdef SRBA_WORKAROUND_MSVC9_DEQUE_BUG
+			*
+#endif
+			rba_state.all_observations[obs_idx];
+
 			ASSERT_(k2f.feat_rel_pos)
 
 			const TKeyFrameID obs_id  = k2f.obs.kf_id;
@@ -941,7 +950,11 @@ size_t RbaEngine<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::recompute_all_Ja
 			typename TSparseBlocksJacobians_dh_dAp::TEntry & jacob_entry = it->second;
 			compute_jacobian_dh_dp(
 				jacob_entry,
+#ifdef SRBA_WORKAROUND_MSVC9_DEQUE_BUG
+				*rba_state.all_observations[obs_idx],
+#else
 				rba_state.all_observations[obs_idx],
+#endif
 				rba_state.k2k_edges,
 				out_list_of_required_num_poses );
 			nJacobs++;
@@ -960,7 +973,11 @@ size_t RbaEngine<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::recompute_all_Ja
 			typename TSparseBlocksJacobians_dh_df::TEntry & jacob_entry = it->second;
 			compute_jacobian_dh_df(
 				jacob_entry,
+#ifdef SRBA_WORKAROUND_MSVC9_DEQUE_BUG
+				*rba_state.all_observations[obs_idx],
+#else
 				rba_state.all_observations[obs_idx],
+#endif
 				out_list_of_required_num_poses );
 			nJacobs++;
 		}

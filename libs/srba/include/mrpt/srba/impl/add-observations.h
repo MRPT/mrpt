@@ -62,12 +62,22 @@ size_t RbaEngine<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::add_observation(
 	// Append all new observation to raw vector:
 	// ---------------------------------------------------------------------
 	const size_t new_obs_idx = rba_state.all_observations.size();    // O(1)
+
+#ifdef SRBA_WORKAROUND_MSVC9_DEQUE_BUG
+	rba_state.all_observations.push_back(stlplus::smart_ptr<k2f_edge_t>(new k2f_edge_t)); // Create new k2f_edge -- O(1)
+#else
 	rba_state.all_observations.push_back(k2f_edge_t()); // Create new k2f_edge -- O(1)
+#endif
+
 	rba_state.all_observations_Jacob_validity.push_back(1);  // Also grow this vector (its content now are irrelevant, they'll be updated in optimization)
 	char * const jacob_valid_bit = &(*rba_state.all_observations_Jacob_validity.rbegin());
 
 	// Get a ref. to observation info, filled in below:
+#ifdef SRBA_WORKAROUND_MSVC9_DEQUE_BUG
+	k2f_edge_t & new_k2f_edge = *(*rba_state.all_observations.rbegin());
+#else
 	k2f_edge_t & new_k2f_edge = *rba_state.all_observations.rbegin();
+#endif
 
 	// New landmark? Update LMs structures if this is the 1st time we see this landmark:
 	// -----------------------------------------------------------------------
