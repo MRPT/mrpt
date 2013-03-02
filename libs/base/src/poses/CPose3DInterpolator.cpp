@@ -36,6 +36,7 @@
 #include <mrpt/base.h>  // Precompiled headers
 
 #include <mrpt/poses/CPose3D.h>
+#include <mrpt/poses/CPose3DPDFParticles.h>
 #include <mrpt/poses/CPose3DInterpolator.h>
 #include <mrpt/utils/CFileOutputStream.h>
 
@@ -542,7 +543,6 @@ void CPose3DInterpolator::filter( unsigned int component, unsigned int samples )
 	post	= (samples%2) ? (unsigned int)(samples/2) : samples/2;
 	ant		= (unsigned int)(samples/2);
 
-	double	filteredValue;
 	int		k = 0;
 	CPose3DInterpolator::iterator it1, it2, it3;
 
@@ -571,40 +571,25 @@ void CPose3DInterpolator::filter( unsigned int component, unsigned int samples )
 
 		CPose3D auxPose;
 
-		auxPose.setFromValues(
-			it1->second.x(), it1->second.y(), it1->second.z(),
-			it1->second.yaw(), it1->second.pitch(), it1->second.roll()
-			);
-
-		filteredValue = 0;
-		for( ; it2 != it3; it2++ )
+		unsigned int nsamples = distance(it2,it3);
+		CPose3DPDFParticles particles(nsamples);
+		for( unsigned int i = 0; it2 != it3; ++it2, ++i )
 		{
+		    particles.m_particles[i].log_w = 0;
+		    particles.m_particles[i].d->setFromValues(
+                        it1->second.x(), it1->second.y(), it1->second.z(),
+                        it1->second.yaw(), it1->second.pitch(), it1->second.roll() );
 			switch( component )
 			{
-				case 0:	filteredValue += it2->second.x();		break;
-				case 1:	filteredValue += it2->second.y();		break;
-				case 2:	filteredValue += it2->second.z();		break;
-				case 3:	filteredValue += it2->second.yaw();		break;
-				case 4:	filteredValue += it2->second.pitch();	break;
-				case 5:	filteredValue += it2->second.roll();	break;
+				case 0:	particles.m_particles[i].d->x(it2->second.x());		break;
+				case 1:	particles.m_particles[i].d->y(it2->second.y());		break;
+				case 2:	particles.m_particles[i].d->z(it2->second.z());		break;
+				case 3:	particles.m_particles[i].d->setYawPitchRoll(it2->second.yaw(),it1->second.pitch(),it1->second.roll()); break;
+				case 4:	particles.m_particles[i].d->setYawPitchRoll(it1->second.yaw(),it2->second.pitch(),it1->second.roll()); 	break;
+				case 5:	particles.m_particles[i].d->setYawPitchRoll(it1->second.yaw(),it1->second.pitch(),it2->second.roll()); 	break;
 			} // end switch
 		} // end for it2
-
-		switch( component )
-		{
-			case 0:
-				auxPose.x( filteredValue/samples );		break;
-			case 1:
-				auxPose.y( filteredValue/samples );		break;
-			case 2:
-				auxPose.y( filteredValue/samples );		break;
-			case 3:
-				auxPose.setYawPitchRoll( filteredValue/samples, it1->second.pitch(), it1->second.roll() );	break;
-			case 4:
-				auxPose.setYawPitchRoll( it1->second.yaw(), filteredValue/samples, it1->second.roll() );	break;
-			case 5:
-				auxPose.setYawPitchRoll( it1->second.yaw(), it1->second.pitch(), filteredValue/samples );	break;
-		} // end switch
+        particles.getMean( auxPose );
 		aux[it1->first] = auxPose;
 	} // end for it1
 	m_path = aux;
