@@ -195,10 +195,9 @@ echo rmdir /Q /S _CPack_Packages  >> AUTOBUILD.bat
 cd ..
 
 rem UPDATE THE "BUILD ALL" SCRIPT
-echo cd %CD% >> BUILD_ALL_MRPT.bat
-echo cd %DIR% >> BUILD_ALL_MRPT.bat
-echo AUTOBUILD.bat >> BUILD_ALL_MRPT.bat
-
+echo cd %CD% >> BUILD_ALL_MRPT_%COMP%.bat
+echo cd %DIR% >> BUILD_ALL_MRPT_%COMP%.bat
+echo call AUTOBUILD.bat >> BUILD_ALL_MRPT_%COMP%.bat
 
 REM End of Subroutine
 GOTO :EOF
