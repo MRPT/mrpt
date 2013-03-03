@@ -80,7 +80,7 @@ void TRBA_Problem_state<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::TSpanning
 		vector<pair<TKeyFrameID,const TSpanTreeEntry*> > STn;
 		for (map<TKeyFrameID,TSpanTreeEntry>::const_iterator it=st_n.begin();it!=st_n.end();++it)
 			STn.push_back( make_pair(it->first,&it->second) );
-		STn.push_back( pair<TKeyFrameID,const TSpanTreeEntry*>(new_node_id,NULL) ); // The set includes the root itself, which is not in the STs structures.
+		STn.push_back( pair<TKeyFrameID,const TSpanTreeEntry*>(new_node_id,static_cast<const TSpanTreeEntry*>(NULL)) ); // The set includes the root itself, which is not in the STs structures.
 
 		// for each r \in ST_W(n)
 		for (size_t r_idx=0;r_idx<STn.size();r_idx++)
