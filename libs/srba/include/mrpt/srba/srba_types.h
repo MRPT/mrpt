@@ -42,7 +42,7 @@
 // (If you use Visual Studio 2008 and the "std::deque<k2f_edge_t>" line raises the error "error C2719: '_Val': formal parameter with __declspec(align('16')) won't be aligned",
 // it's caused by this bug in either Eigen or VS2008 compiler, still to be fixed: http://eigen.tuxfamily.org/bz/show_bug.cgi?id=83  )
 // Meanwhile, let's just breath slow, count to 10, and go on with a workaround:
-#if defined(_MSC_VER) && (_MSC_VER < 1600 ) && (MRPT_WORD_SIZE==32) // handle MSVC versions older than 2010:
+#if defined(_MSC_VER) && (_MSC_VER < 1700 ) && (MRPT_WORD_SIZE==32) // handle MSVC versions older than 2012
 #	define SRBA_WORKAROUND_MSVC9_DEQUE_BUG
 #endif
 
