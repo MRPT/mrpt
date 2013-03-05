@@ -2123,7 +2123,7 @@ double kinect_calibrate_guiDialog::parseGridLine(int r)
 	const wxString s = m_grid_live_calib->GetCellValue(r,0);
 
 	if (!s.ToDouble(&R))
-			throw std::runtime_error( mrpt::format("Error parsing double string: '%s'",s.mb_str(wxConvUTF8).data() ).c_str() );
+			throw std::runtime_error( mrpt::format("Error parsing double string: '%s'", (const char*)s.mb_str(wxConvUTF8) ).c_str() );
 	else 	return R;
 }
 
