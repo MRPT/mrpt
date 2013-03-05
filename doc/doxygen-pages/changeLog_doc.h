@@ -42,7 +42,8 @@
  <hr>
  <a name="1.0.1">
   <h2>Version 1.0.1 - (Under development) </h2></a>
-	- (no changes yet)
+	- Build system:
+		- Fixed a potential build error if including FFMPEG's <time.h> instead of the standard header - <a href="http://code.google.com/p/mrpt/source/detail?r=3316" >r3316</a> 
 
  <hr>
  <a name="1.0.0">
