@@ -129,8 +129,8 @@ protected:
 		// -----------------------------------------------------------------
 		// Create observations:
 		// Don't populate the symbolic structure, just the numeric part.
+        static char valid_true = 1; // Just to initialize valid bit pointers to this one.
 		{
-			char valid_true = 1; // Just to initialize valid bit pointers to this one.
 
 			lin_system.dh_dAp.setColCount(nUnknowns_k2k);
 			lin_system.dh_df.setColCount(nUnknowns_k2f);
@@ -270,6 +270,7 @@ protected:
 				);
 
 		schur_compl.numeric_build_reduced_system(lambda);
+		//cout << "getNumFeaturesFullRank: " << schur_compl.getNumFeaturesFullRank() << endl;
 
 		// ------------------------------------------------------------
 		// 3rd) Both must match!

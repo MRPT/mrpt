@@ -43,7 +43,9 @@
  <a name="1.0.1">
   <h2>Version 1.0.1 - (Under development) </h2></a>
 	- Build system:
-		- Fixed a potential build error if including FFMPEG's <time.h> instead of the standard header - <a href="http://code.google.com/p/mrpt/source/detail?r=3316" >r3316</a> 
+		- Fixed a potential build error if including FFMPEG's <time.h> instead of the standard header - <a href="http://code.google.com/p/mrpt/source/detail?r=3316" >r3316</a>
+    - BUG FIXES:
+        - Unit tests "SchurTests" for mrpt-srba incorrectly reported errors due to an improperly initialized reference to a local variable - <a href="http://code.google.com/p/mrpt/source/detail?r=3318" >r3318</a>
 
  <hr>
  <a name="1.0.0">
@@ -153,7 +155,7 @@
 				- Classes drawing lines now by default enable anti-aliasing (can be disabled by the programmer): - <a href="http://code.google.com/p/mrpt/source/detail?r=3185" >r3185</a>
 					- mrpt::opengl::CGridPlaneXY, mrpt::opengl::CGridPlaneXZ
 					- mrpt::opengl::CSimpleLine
-					- mrpt::opengl::CSetOfLines 
+					- mrpt::opengl::CSetOfLines
 			- [mrpt-reactivenav]
 				- Much code of mrpt::reactivenav classes have undergone a clean-up, slight optimizations and a translation of old Spanish names/comments to English - <a href="http://code.google.com/p/mrpt/source/detail?r=2939" >r2939</a>, <a href="http://code.google.com/p/mrpt/source/detail?r=2942" >r2942</a>, <a href="http://code.google.com/p/mrpt/source/detail?r=2958" >r2958</a>, <a href="http://code.google.com/p/mrpt/source/detail?r=3091" >r3091</a>
 				- mrpt::reactivenav::CParameterizedTrajectoryGenerator::CColisionGrid now has a more maintainable binary serialization format - <a href="http://code.google.com/p/mrpt/source/detail?r=2939" >r2939</a>
@@ -162,7 +164,7 @@
 				- Repulsive forces from obstacles in mrpt::reactivenav::CHolonomicVFF are now automatically normalized wrt the density of the 360deg view of obstacles and forces follow a "1/range" law instead of the old "exp(-range)".
 				- Solved a stability issue in C-S paths, in mrpt::reactivenav::CPTG5 (By Mariano Jaimez Tarifa) - <a href="http://code.google.com/p/mrpt/source/detail?r=3085" >r3085</a>
 			- [mrpt-scanmatching]
-				- mrpt::scanmatching::robustRigidTransformation(): 
+				- mrpt::scanmatching::robustRigidTransformation():
 					- Changed behavior not to allow features to appear in duplicated pairings.
 					- Added a consistency test to avoid seeding RANSAC with an inconsistent initial model.
 			- [mrpt-slam]
@@ -196,7 +198,7 @@
 			- Added new documentation page: <a href="env-vars.html" >environment variables</a>.
 			- Removed the build flag "MRPT_BACKCOMPATIB_08X".
 			- Fixes for building under Mac OSX: <a href="http://code.google.com/p/mrpt/source/detail?r=3181" >r3181</a>
-			- Enable some c++11 features if the compiler supports them - <a href="http://code.google.com/p/mrpt/source/detail?r=3273" >r3273</a> 
+			- Enable some c++11 features if the compiler supports them - <a href="http://code.google.com/p/mrpt/source/detail?r=3273" >r3273</a>
 		- BUG FIXES:
 			- Build: Fixed detection of OpenCV 2.4.2+ installed in the system via CMake config file instead of pkg-config, which seems to be broken. - <a href="http://code.google.com/p/mrpt/source/detail?r=3019" >r3019</a>
 			- [mrpt-base] The iterator returned by end() in all MRPT vectors and matrices (based on Eigen) pointed to the last element, not to the (now correct) next position after the last element - <a href="http://code.google.com/p/mrpt/source/detail?r=2941" >r2941</a>
