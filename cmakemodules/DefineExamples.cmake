@@ -241,7 +241,8 @@ IF(BUILD_EXAMPLES)
 			eNosesRealtime_test
 			IRBoard_test
 			phidgetProximitySensor
-	                )
+			ni845x_basic_io
+			)
 	        SET(CMAKE_EXAMPLE_DEPS mrpt-hwdrivers mrpt-gui)
 	        SET(CMAKE_EXAMPLE_LINK_LIBS ${MRPT_LINKER_LIBS})
 	        GENERATE_CMAKE_FILES_SAMPLES_DIRECTORY()

@@ -116,6 +116,14 @@ IF(BUILD_mrpt-hwdrivers)
 		TARGET_LINK_LIBRARIES(mrpt-hwdrivers phidget21)
 	ENDIF(CMAKE_MRPT_HAS_PHIDGET)
 
+	# Link to National Instrument libraries:
+	IF(CMAKE_MRPT_HAS_NATIONAL_INSTRUMENTS)
+		IF (CMAKE_MRPT_HAS_NI845x)
+			# link_directories() was added in the configuration script under /cmakemodules/*_ni.cmake
+			TARGET_LINK_LIBRARIES(mrpt-hwdrivers ni845x.lib nisyscfg.lib)
+		ENDIF (CMAKE_MRPT_HAS_NI845x)
+	ENDIF(CMAKE_MRPT_HAS_NATIONAL_INSTRUMENTS)
+
 	# Build with link on SVS lib
 	IF(CMAKE_MRPT_HAS_SVS)
 		TARGET_LINK_LIBRARIES(mrpt-hwdrivers dcap)

@@ -67,6 +67,14 @@ include(cmakemodules/script_select_app_to_build.cmake REQUIRED)		# Build (or not
 # 		CHECK FOR SYSTEM LIBRARIES, OPTIONS, ETC..
 # ----------------------------------------------------------------------------
 
+# Detect wordsize:
+# -------------------------------------------
+IF(CMAKE_SIZEOF_VOID_P EQUAL 8)  # Size in bytes!
+	SET(CMAKE_MRPT_WORD_SIZE 64)
+ELSE(CMAKE_SIZEOF_VOID_P EQUAL 8)  # Size in bytes!
+	SET(CMAKE_MRPT_WORD_SIZE 32)
+ENDIF(CMAKE_SIZEOF_VOID_P EQUAL 8)
+
 # Build static or dynamic libs?
 # ===================================================
 # Default: dynamic libraries:
@@ -262,14 +270,6 @@ IF(CMAKE_BUILD_TYPE STREQUAL "Debug")
 ELSE(CMAKE_BUILD_TYPE STREQUAL "Debug")
 	SET(MRPT_LINKER_LIBS_POSTFIX "")
 ENDIF(CMAKE_BUILD_TYPE STREQUAL "Debug")
-
-# Detect wordsize:
-# -------------------------------------------
-IF(CMAKE_SIZEOF_VOID_P EQUAL 8)  # Size in bytes!
-	SET(CMAKE_MRPT_WORD_SIZE 64)
-ELSE(CMAKE_SIZEOF_VOID_P EQUAL 8)  # Size in bytes!
-	SET(CMAKE_MRPT_WORD_SIZE 32)
-ENDIF(CMAKE_SIZEOF_VOID_P EQUAL 8)
 
 # Include Asian fonts in utils::CMRPTCanvas ?
 SET( MRPT_HAS_ASIAN_FONTS ON CACHE BOOL "Enable Asian fonts in utils::CMRPTCanvas (increases library size).")

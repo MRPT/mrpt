@@ -42,6 +42,9 @@
  <hr>
  <a name="1.0.1">
   <h2>Version 1.0.1 - (Under development) </h2></a>
+	- New classes:
+		- [mrpt-hwdrivers]
+			- mrpt::hwdrivers::CInterfaceNI845x: An interface for this USB SPI/I2C data acquisition board.
 	- Build system:
 		- Fixed a potential build error if including FFMPEG's <time.h> instead of the standard header - <a href="http://code.google.com/p/mrpt/source/detail?r=3316" >r3316</a>
     - BUG FIXES:
