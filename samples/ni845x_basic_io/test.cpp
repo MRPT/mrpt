@@ -34,11 +34,11 @@
    +---------------------------------------------------------------------------+ */
 
 #include <mrpt/hwdrivers/CInterfaceNI845x.h>
+#include <mrpt/system.h>
 
+using namespace std;
 using namespace mrpt;
 using namespace mrpt::hwdrivers;
-using namespace mrpt::system;
-using namespace mrpt::utils;
 
 
 // ------------------------------------------------------
@@ -48,8 +48,41 @@ void TestNI_USB_845x()
 {
 	CInterfaceNI845x  ni_usb;
 
+	// Open first connected device:
+	cout << "Openning device...\n";
+	ni_usb.open(); 
+	cout << "Done! Connected to: " << ni_usb.getDeviceDescriptor() << endl;
+
+	ni_usb.setIOVoltageLevel( 12 ); // 1.2 volts
+	
+#if 0
+	ni_usb.setIOPortDirection(0, 0xFF);
+	while (!mrpt::system::os::kbhit())
+	{
+		ni_usb.writeIOPort(0, 0xFF); 
+		mrpt::system::sleep(500);
+		ni_usb.writeIOPort(0, 0x00); 
+		mrpt::system::sleep(500);
+	}
+#endif
+
+#if 1
+	ni_usb.create_SPI_configurations(1);
+	ni_usb.set_SPI_configuration(0 /*idx*/, 0 /* CS */, 48 /* Khz */, true /* clock_polarity_idle_low */, false /* clock_phase_first_edge */ );
+
+	while (!mrpt::system::os::kbhit())
+	{
+		const uint8_t write[4] = { 0x11, 0x22, 0x33, 0x44 };
+		uint8_t read[4];
+		size_t nRead;
+		ni_usb.read_write_SPI(0, 4, write, nRead, read );
+	}
 
 
+#endif
+
+
+	mrpt::system::pause();
 }
 
 // ------------------------------------------------------

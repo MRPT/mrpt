@@ -57,9 +57,54 @@ namespace mrpt
 			/** Destructor */
 			virtual ~CInterfaceNI845x();
 
+			/** Opens the i'th device connected to the system (0=first one) \exception std::exception If any error was found */
+			void open(const size_t deviceIdx = 0);
+
+			/** Opens the device with the given "resource name" \exception std::exception If any error was found */
+			void open(const std::string &resourceName);
+
+			bool isOpen() const; //!< Check whether the device is correctly open.
+			std::string getDeviceDescriptor() const; //!< Get the descriptor of the device to which this object has been connected.
+
+			void close(); //!< Close the connection (there's no need to explicitly call this, it is called anyway at destructor).
+
+			/** Changes the IO voltage. Accepted values are: 12 (1.2), 15 (1.5), 18 (1.8), 25 (2.5), 33 (3.3)
+			  * \exception std::exception If any error was found
+			  */
+			void setIOVoltageLevel(const int volt); 
+
+			/** Change port direction (each bit=1:output, =0:input) */
+			void setIOPortDirection(const uint8_t port, const uint8_t dir);
+
+			/** Write port */
+			void writeIOPort(const uint8_t port, const uint8_t value);
+			/** Read port */
+			uint8_t readIOPort(const uint8_t port);
+
+			void create_SPI_configurations(size_t num_configurations);
+			/** Must call reserveSPI_configurations() first to reserve configuration blocks, whose indices are selected with config_idx  */
+			void set_SPI_configuration(size_t config_idx, uint8_t  chip_select_line, uint16_t clock_speed_Khz, bool clock_polarity_idle_low, bool clock_phase_first_edge );
+
+			/** Performs one SPI transaction  */
+			void read_write_SPI(size_t config_idx, size_t num_write_bytes, const uint8_t *write_data, size_t &out_read_bytes, uint8_t * read_data );
+
+
+			void deviceLock();   //!< Lock (for multi-threading apps)
+			void deviceUnlock();   //!< Unlock (for multi-threading apps)
+
+
+		private:
+			void checkErr(int errCode); 
+			void* m_niDevHandle; //!< opaque handler
+			void* m_niSPIConfHandles; //!< opaque handler
+			size_t m_niSPIConfHandlesCount;
+			std::string m_deviceDescr; //!< The descriptor of the open device
+
+			void close_SPI_configurations(); //!< Closes and free these structs
 
 
 		}; // end of class
+
 	} // end of namespace
 } // end of namespace
 #endif

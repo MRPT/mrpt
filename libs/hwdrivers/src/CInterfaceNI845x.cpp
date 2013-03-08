@@ -38,6 +38,9 @@
 #include <mrpt/hwdrivers/CInterfaceNI845x.h>
 
 #if MRPT_HAS_NI845x
+#	if (MRPT_WORD_SIZE==64) && !defined(WIN64)
+#		define WIN64
+#	endif
 #	include "ni845x.h"  // Include file for NI-485x functions and constants
 #endif
 
@@ -45,18 +48,257 @@ using namespace mrpt;
 using namespace mrpt::hwdrivers;
 using namespace mrpt::synch;
 
-/*-------------------------------------------------------------
-				Ctor
--------------------------------------------------------------*/
-CInterfaceNI845x::CInterfaceNI845x()
-{
+#if MRPT_HAS_NI845x
+#	define DEV_HANDLER  reinterpret_cast<NiHandle*>(m_niDevHandle)
+#	define CONF_HANDLERS  reinterpret_cast<NiHandle*>(m_niSPIConfHandles)
+#endif
 
+// Ctor
+CInterfaceNI845x::CInterfaceNI845x() : 
+#if MRPT_HAS_NI845x
+	m_niDevHandle     ( new NiHandle[1] ),
+#else
+	m_niDevHandle( NULL ),
+#endif
+	m_niSPIConfHandles ( NULL ),
+	m_niSPIConfHandlesCount(0)
+{
+#if MRPT_HAS_NI845x
+	*DEV_HANDLER = 0;
+#endif
 }
 
-/*-------------------------------------------------------------
-				Dtor
--------------------------------------------------------------*/
+// Dtor
 CInterfaceNI845x::~CInterfaceNI845x()
 {
+	this->close();
 
+	if (m_niDevHandle) 
+	{
+		delete[] m_niDevHandle;
+		m_niDevHandle=NULL;
+	}
+}
+
+void CInterfaceNI845x::checkErr(int errCode)
+{
+#if MRPT_HAS_NI845x
+	if (errCode<0)
+	{
+		char auxStr[1024];
+		ni845xStatusToString(errCode, sizeof (auxStr), auxStr);
+		THROW_EXCEPTION_CUSTOM_MSG1("Device error: %s",auxStr)
+	}
+#endif
+}
+
+/** Opens the i'th device connected to the system (0=first one) \return true on success */
+void CInterfaceNI845x::open(const size_t deviceIdx)
+{
+#if MRPT_HAS_NI845x
+	if (isOpen()) this->close();
+
+	NiHandle hSearch=0;
+	uInt32   nDevFound=0;
+	char     devDescr[260];
+
+	/* find first device */
+	size_t dev_idx = 0;
+	checkErr( ni845xFindDevice(devDescr, &hSearch, &nDevFound) );
+
+	if (deviceIdx>nDevFound)
+	{
+		THROW_EXCEPTION( mrpt::format("Error: Cannot open the device #%u because only %u were found.",static_cast<unsigned int>(deviceIdx),static_cast<unsigned int>(nDevFound)  ) )
+	}
+
+	while (dev_idx<deviceIdx)
+	{
+		dev_idx++;
+		checkErr( ni845xFindDeviceNext(nDevFound,devDescr) );
+		if (!strlen(devDescr))
+			THROW_EXCEPTION( mrpt::format("Error: Cannot open the device #%u (enumeration stops before reaching that index).",static_cast<unsigned int>(deviceIdx) ) )
+	}
+
+	ni845xCloseFindDeviceHandle(hSearch);
+
+	this->open( std::string(devDescr) );
+
+#else
+	THROW_EXCEPTION("MRPT was compiled without support for this device")
+#endif
+}
+
+/** Opens the device with the given "resource name" \return true on success */
+void CInterfaceNI845x::open(const std::string &resourceName)
+{
+#if MRPT_HAS_NI845x
+	if (isOpen()) this->close();
+
+	checkErr( ni845xOpen(const_cast<char*>(resourceName.c_str()), DEV_HANDLER ) );
+	m_deviceDescr = resourceName;
+
+#else
+	THROW_EXCEPTION("MRPT was compiled without support for this device")
+#endif
+}
+
+// Check whether the device is correctly open.
+bool CInterfaceNI845x::isOpen() const 
+{
+#if MRPT_HAS_NI845x
+	return DEV_HANDLER &&  *DEV_HANDLER!=0;
+#else
+	return false;
+#endif
+}
+
+//!< Close the connection (there's no need to explicitly call this, it is called anyway at destructor).
+void CInterfaceNI845x::close()
+{
+#if MRPT_HAS_NI845x
+	if (!isOpen()) return;
+
+	// Close configurations:
+	this->close_SPI_configurations();
+
+	// Close device:
+	ni845xClose(*DEV_HANDLER);
+	*DEV_HANDLER = 0;
+	m_deviceDescr.clear();
+#endif
+}
+
+void CInterfaceNI845x::close_SPI_configurations()
+{
+#if MRPT_HAS_NI845x
+	if (m_niSPIConfHandles && m_niSPIConfHandlesCount)
+	{
+		for (size_t i=0;i<m_niSPIConfHandlesCount;i++)
+		{
+			ni845xSpiConfigurationClose(CONF_HANDLERS[i]);
+			CONF_HANDLERS[i]=0;
+		}
+		delete[] m_niSPIConfHandles;
+		m_niSPIConfHandles=NULL;
+	}
+	m_niSPIConfHandlesCount=0;
+#endif
+}
+
+
+std::string CInterfaceNI845x::getDeviceDescriptor() const
+{
+	return m_deviceDescr;	
+}
+
+/** Changes the IO voltage. Accepted values are: 1.2, 1.5, 1.8, 2.5, 3.3
+	* \exception std::exception If any error was found
+	*/
+void CInterfaceNI845x::setIOVoltageLevel(const int volt)
+{
+	if (!isOpen()) THROW_EXCEPTION("Device is not open!")
+#if MRPT_HAS_NI845x
+	checkErr( ni845xSetIoVoltageLevel(*DEV_HANDLER,volt) );
+#else
+	THROW_EXCEPTION("MRPT was compiled without support for this device")
+#endif
+}
+
+
+void CInterfaceNI845x::deviceLock()
+{
+	if (!isOpen()) THROW_EXCEPTION("Device is not open!")
+#if MRPT_HAS_NI845x
+	checkErr( ni845xDeviceLock(*DEV_HANDLER) );
+#else
+	THROW_EXCEPTION("MRPT was compiled without support for this device")
+#endif
+}
+
+void CInterfaceNI845x::deviceUnlock()
+{
+	if (!isOpen()) THROW_EXCEPTION("Device is not open!")
+#if MRPT_HAS_NI845x
+	checkErr( ni845xDeviceUnlock(*DEV_HANDLER) );
+#else
+	THROW_EXCEPTION("MRPT was compiled without support for this device")
+#endif
+}
+
+/** Change port direction (each bit=1:output, =0:input) */
+void CInterfaceNI845x::setIOPortDirection(const uint8_t port, const uint8_t dir)
+{
+	if (!isOpen()) THROW_EXCEPTION("Device is not open!")
+#if MRPT_HAS_NI845x
+	checkErr( ni845xDioSetPortLineDirectionMap(*DEV_HANDLER,port,dir) );
+#else
+	THROW_EXCEPTION("MRPT was compiled without support for this device")
+#endif
+}
+
+/** Write port */
+void CInterfaceNI845x::writeIOPort(const uint8_t port, const uint8_t value)
+{
+	if (!isOpen()) THROW_EXCEPTION("Device is not open!")
+#if MRPT_HAS_NI845x
+	checkErr( ni845xDioWritePort(*DEV_HANDLER,port,value) );
+#else
+	THROW_EXCEPTION("MRPT was compiled without support for this device")
+#endif
+}
+
+/** Read port */
+uint8_t CInterfaceNI845x::readIOPort(const uint8_t port)
+{
+	if (!isOpen()) THROW_EXCEPTION("Device is not open!")
+#if MRPT_HAS_NI845x
+	uInt8 data;
+	checkErr( ni845xDioReadPort(*DEV_HANDLER,port,&data) );
+	return data;
+#else
+	THROW_EXCEPTION("MRPT was compiled without support for this device")
+#endif
+}
+
+void CInterfaceNI845x::create_SPI_configurations(size_t num_configurations)
+{
+#if MRPT_HAS_NI845x
+	this->close_SPI_configurations();
+	
+	m_niSPIConfHandles = new NiHandle[num_configurations];
+	m_niSPIConfHandlesCount = num_configurations;
+
+	// Create one SPI configuration:
+	for (size_t i=0;i<num_configurations;i++)
+		checkErr( ni845xSpiConfigurationOpen(&CONF_HANDLERS[i]) );
+	
+#else
+	THROW_EXCEPTION("MRPT was compiled without support for this device")
+#endif
+}
+/** Must call reserveSPI_configurations() first to reserve configuration blocks, whose indices are selected with config_idx  */
+void CInterfaceNI845x::set_SPI_configuration(size_t config_idx, uint8_t  chip_select_line, uint16_t clock_speed_Khz, bool clock_polarity_idle_low, bool clock_phase_first_edge )
+{
+#if MRPT_HAS_NI845x
+	NiHandle hConf = CONF_HANDLERS[config_idx];
+
+	checkErr (ni845xSpiConfigurationSetChipSelect (hConf, chip_select_line ));
+	checkErr (ni845xSpiConfigurationSetClockRate (hConf,clock_speed_Khz));
+	checkErr (ni845xSpiConfigurationSetClockPolarity (hConf, clock_polarity_idle_low ? kNi845xSpiClockPolarityIdleLow : kNi845xSpiClockPolarityIdleHigh ));
+	checkErr (ni845xSpiConfigurationSetClockPhase (hConf, clock_phase_first_edge ? kNi845xSpiClockPhaseFirstEdge : kNi845xSpiClockPhaseSecondEdge));
+#else
+	THROW_EXCEPTION("MRPT was compiled without support for this device")
+#endif
+}
+
+/** Performs one SPI transaction  */
+void CInterfaceNI845x::read_write_SPI(size_t config_idx, size_t num_write_bytes, const uint8_t *write_data, size_t &out_read_bytes, uint8_t * read_data  )
+{
+#if MRPT_HAS_NI845x
+	uInt32 nRead;
+	checkErr (ni845xSpiWriteRead (*DEV_HANDLER, CONF_HANDLERS[config_idx], num_write_bytes,const_cast<uInt8*>(write_data), &nRead, read_data));
+	out_read_bytes = nRead;
+#else
+	THROW_EXCEPTION("MRPT was compiled without support for this device")
+#endif
 }
