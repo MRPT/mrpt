@@ -268,7 +268,12 @@ void Eigen::MatrixBase<Derived>::saveToTextFile(
 	const std::string &userHeader
 	) const
 {
+#if defined(_MSC_VER) && (_MSC_VER>=1400) // Use a secure version in Visual Studio 2005+
+	FILE *f;
+	if (0!=::fopen_s(&f,file.c_str(),"wt")) f= NULL;
+#else
 	FILE *f= ::fopen(file.c_str(),"wt");
+#endif
 	if (!f)
 		throw std::runtime_error(std::string("saveToTextFile: Error opening file ")+file+std::string("' for writing a matrix as text."));
 
@@ -279,11 +284,25 @@ void Eigen::MatrixBase<Derived>::saveToTextFile(
 	{
 		time_t rawtime;
 		::time(&rawtime);
+#if defined(_MSC_VER) && (_MSC_VER>=1400) // Use a secure version in Visual Studio 2005+
+		struct tm   timeinfo_data;
+		struct tm * timeinfo;
+		if (0!=::localtime_s(&timeinfo_data,&rawtime)) timeinfo=NULL;
+		else timeinfo = &timeinfo_data;
+#else
 		struct tm * timeinfo = ::localtime(&rawtime);
+#endif
 
+#if defined(_MSC_VER) && (_MSC_VER>=1400) // Use a secure version in Visual Studio 2005+
+		char strTimeBuf[100];
+		if (0!=asctime_s(strTimeBuf,sizeof(strTimeBuf),timeinfo)) strTimeBuf[0]='\0';
+		char *strTime = &strTimeBuf[0];
+#else
+		char *strTime = asctime(timeinfo);
+#endif
 		fprintf(f,"%% File generated with MRPT %s at %s\n%%-----------------------------------------------------------------\n",
 			mrpt::system::MRPT_getVersion().c_str(),
-			asctime(timeinfo) );
+			strTime);
 	}
 
 	for (Index i=0; i < rows(); i++)
