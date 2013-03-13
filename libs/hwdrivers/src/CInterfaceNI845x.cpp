@@ -56,7 +56,7 @@ using namespace mrpt::synch;
 // Ctor
 CInterfaceNI845x::CInterfaceNI845x() : 
 #if MRPT_HAS_NI845x
-	m_niDevHandle     ( new NiHandle[1] ),
+	m_niDevHandle     ( malloc(sizeof(NiHandle)) ),
 #else
 	m_niDevHandle( NULL ),
 #endif
@@ -75,7 +75,7 @@ CInterfaceNI845x::~CInterfaceNI845x()
 
 	if (m_niDevHandle) 
 	{
-		delete[] m_niDevHandle;
+		free(m_niDevHandle);
 		m_niDevHandle=NULL;
 	}
 }
