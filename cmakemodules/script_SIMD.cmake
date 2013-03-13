@@ -1,30 +1,50 @@
 # SSE{2,3,4} extensions?
 # ===================================================
-IF(EXISTS "/proc/cpuinfo")
-	SET(MRPT_AUTODETECT_SSE ON CACHE BOOL "Check /proc/cpuinfo to determine if SSE{2,3,4} optimizations are available")
-	MARK_AS_ADVANCED(MRPT_AUTODETECT_SSE)
-	FILE(READ "/proc/cpuinfo" MRPT_CPU_INFO)
+SET(MRPT_AUTODETECT_SSE ON CACHE BOOL "Check /proc/cpuinfo to determine if SSE{2,3,4} optimizations are available")
+MARK_AS_ADVANCED(MRPT_AUTODETECT_SSE)
 
-	SET(CMAKE_MRPT_HAS_SSE2 0)
-	IF ("${MRPT_CPU_INFO}" MATCHES ".*sse2.*")
-		SET(CMAKE_MRPT_HAS_SSE2 1)
-	ENDIF("${MRPT_CPU_INFO}" MATCHES ".*sse2.*")
+IF (MRPT_AUTODETECT_SSE AND EXISTS "/proc/cpuinfo")
 
-	SET(CMAKE_MRPT_HAS_SSE3 0)
-	IF ("${MRPT_CPU_INFO}" MATCHES ".*sse3.*")
-		SET(CMAKE_MRPT_HAS_SSE3 1)
-	ENDIF("${MRPT_CPU_INFO}" MATCHES ".*sse3.*")
+    FILE(READ "/proc/cpuinfo" MRPT_CPU_INFO)
 
-	SET(CMAKE_MRPT_HAS_SSE4 0)
-	IF ("${MRPT_CPU_INFO}" MATCHES ".*sse4.*")
-		SET(CMAKE_MRPT_HAS_SSE4 1)
-	ENDIF("${MRPT_CPU_INFO}" MATCHES ".*sse4.*")
+    SET(CMAKE_MRPT_HAS_SSE2 0)
+    IF ("${MRPT_CPU_INFO}" MATCHES ".*sse2.*")
+        SET(CMAKE_MRPT_HAS_SSE2 1)
+    ENDIF("${MRPT_CPU_INFO}" MATCHES ".*sse2.*")
 
-	MESSAGE(STATUS "CPU supported SIMD extensions: SSE2=${CMAKE_MRPT_HAS_SSE2} SSE3=${CMAKE_MRPT_HAS_SSE3} SSE4=${CMAKE_MRPT_HAS_SSE4} ")
-ELSE(EXISTS "/proc/cpuinfo")
-	# By default: Leave all optimizations enabled. If the compiler doesn't support them it will be ignored anyway.
-	SET(CMAKE_MRPT_HAS_SSE2 1)
-	SET(CMAKE_MRPT_HAS_SSE3 1)
-	SET(CMAKE_MRPT_HAS_SSE4 1)
-ENDIF(EXISTS "/proc/cpuinfo")
+    SET(CMAKE_MRPT_HAS_SSE3 0)
+    IF ("${MRPT_CPU_INFO}" MATCHES ".*sse3.*")
+        SET(CMAKE_MRPT_HAS_SSE3 1)
+    ENDIF("${MRPT_CPU_INFO}" MATCHES ".*sse3.*")
+
+    SET(CMAKE_MRPT_HAS_SSE4 0)
+    IF ("${MRPT_CPU_INFO}" MATCHES ".*sse4.*")
+        SET(CMAKE_MRPT_HAS_SSE4 1)
+    ENDIF("${MRPT_CPU_INFO}" MATCHES ".*sse4.*")
+
+ELSE (MRPT_AUTODETECT_SSE AND EXISTS "/proc/cpuinfo")
+	SET(DISABLE_SSE2 OFF CACHE BOOL "Forces compilation WITHOUT SSE2/MMX extensions")
+	MARK_AS_ADVANCED(DISABLE_SSE2)
+    SET(CMAKE_MRPT_HAS_SSE2 0)
+    IF (NOT DISABLE_SSE2)
+        SET(CMAKE_MRPT_HAS_SSE2 1)
+    ENDIF (NOT DISABLE_SSE2)
+
+	SET(DISABLE_SSE3 OFF CACHE BOOL "Forces compilation WITHOUT SSE3 extensions")
+	MARK_AS_ADVANCED(DISABLE_SSE3)
+    SET(CMAKE_MRPT_HAS_SSE3 0)
+    IF (NOT DISABLE_SSE3)
+        SET(CMAKE_MRPT_HAS_SSE3 1)
+    ENDIF (NOT DISABLE_SSE3)
+
+	SET(DISABLE_SSE4 OFF CACHE BOOL "Forces compilation WITHOUT SSE4 extensions")
+	MARK_AS_ADVANCED(DISABLE_SSE4)
+    SET(CMAKE_MRPT_HAS_SSE4 0)
+    IF (NOT DISABLE_SSE4)
+        SET(CMAKE_MRPT_HAS_SSE4 1)
+    ENDIF (NOT DISABLE_SSE4)
+
+ENDIF(MRPT_AUTODETECT_SSE AND EXISTS "/proc/cpuinfo")
+
+MESSAGE(STATUS "CPU supported SIMD extensions: SSE2=${CMAKE_MRPT_HAS_SSE2} SSE3=${CMAKE_MRPT_HAS_SSE3} SSE4=${CMAKE_MRPT_HAS_SSE4} ")
 

@@ -202,8 +202,6 @@ include(cmakemodules/script_gtest.cmake REQUIRED)       # Unit testing lib
 include(cmakemodules/script_clang.cmake REQUIRED)       # clang library (For UTFConvert)
 include(cmakemodules/script_national_instruments.cmake REQUIRED)  # NI C library
 
-include(cmakemodules/script_disable_stuff.cmake REQUIRED)  # Let the user disable auto-detected stuff.
-
 # ---------------------------------------------------------------------------
 #			OPTIONS
 #The options for the user when using "cmakesetup" or "ccmake":
