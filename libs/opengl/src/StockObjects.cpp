@@ -40,6 +40,7 @@
 #include <mrpt/opengl/CSetOfTriangles.h>
 #include <mrpt/opengl/CArrow.h>
 #include <mrpt/opengl/CCylinder.h>
+#include <mrpt/opengl/CBox.h>
 #include <mrpt/opengl/CPolyhedron.h>
 #include <mrpt/opengl/CSimpleLine.h>
 #include <mrpt/opengl/C3DSScene.h>
@@ -287,6 +288,124 @@ CSetOfObjectsPtr stock_objects::CornerXYSimple(float scale, float lineWidth)
 		lin->setColor(0,1,0);
 		lin->setLineCoords(0,0,0, 0,scale,0);
 		ret->insert(lin);
+	}
+    return ret;
+}
+
+CSetOfObjectsPtr stock_objects::Hokuyo_URG()
+{
+	CSetOfObjectsPtr ret = CSetOfObjects::Create();
+
+	{
+		CBoxPtr base = CBox::Create(TPoint3D(-0.025,-0.025,-0.0575),TPoint3D(0.025,0.025,-0.0185));
+		base->setColor(0.7,0.7,0.7);
+		ret->insert(base);
+	}
+	{
+		CCylinderPtr cyl1 = CCylinder::Create(0.02,0.02,0.01);
+		cyl1->setColor(0,0,0);
+		cyl1->setPose(CPoint3D(0,0,-0.014));
+		ret->insert(cyl1);
+	}
+	{
+		CCylinderPtr cyl2 = CCylinder::Create(0.02,0.0175,0.01);
+		cyl2->setColor(0,0,0);
+		cyl2->setPose(CPoint3D(0,0,-0.004));
+		ret->insert(cyl2);
+	}
+	{
+		CCylinderPtr cyl3 = CCylinder::Create(0.0175,0.0175,0.01);
+		cyl3->setColor(0,0,0);
+		cyl3->setPose(CPoint3D(0,0,0.004));
+		ret->insert(cyl3);
+	}
+
+    return ret;
+}
+
+CSetOfObjectsPtr stock_objects::Hokuyo_UTM()
+{
+	CSetOfObjectsPtr ret = CSetOfObjects::Create();
+
+	{
+		CBoxPtr base = CBox::Create(TPoint3D(-0.03,-0.03,-0.055),TPoint3D(0.03,0.03,-0.014));
+		base->setColor(0,0,0);
+		ret->insert(base);
+	}
+	{
+		CCylinderPtr cyl1 = CCylinder::Create(0.028,0.024,0.028);
+		cyl1->setColor(0,0,0);
+		cyl1->setPose(CPose3D(0,0,-0.014));
+		ret->insert(cyl1);
+	}
+	{
+		CCylinderPtr cyl2 = CCylinder::Create(0.028,0.028,0.01);
+		cyl2->setColor(1,69/255.0,0);
+		cyl2->setPose(CPoint3D(0,0,0.014));
+		ret->insert(cyl2);
+	}
+	{
+		CCylinderPtr cyl3 = CCylinder::Create(0.028,0.028,0.01);
+		cyl3->setColor(0,0,0);
+		cyl3->setPose(CPoint3D(0,0,0.024));
+		ret->insert(cyl3);
+	}
+
+    return ret;
+}
+
+CSetOfObjectsPtr stock_objects::Househam_Sprayer()
+{
+	CSetOfObjectsPtr ret = CSetOfObjects::Create();
+
+	{
+		CBoxPtr cabin = CBox::Create(TPoint3D(0.878,0.723,-0.12),TPoint3D(-0.258,-0.723,-1.690));
+		cabin->setColor(0.7,0.7,0.7);
+		ret->insert(cabin);
+	}
+	{
+		CBoxPtr back = CBox::Create(TPoint3D(-0.258,0.723,-0.72),TPoint3D(-5.938,-0.723,-1.690));
+		back->setColor(1,1,1);
+		ret->insert(back);
+	}
+    {
+		CBoxPtr boomAxis = CBox::Create(TPoint3D(-5.938,0.723,-1.0),TPoint3D(-6.189,-0.723,-1.690));
+		boomAxis->setColor(0,0,0);
+		ret->insert(boomAxis);
+	}
+	{
+		CBoxPtr boom1 = CBox::Create(TPoint3D(-5.938,0.723,-1.0),TPoint3D(-6.189,11.277,-1.620));
+		boom1->setColor(0,1,0);
+		ret->insert(boom1);
+	}
+	{
+		CBoxPtr boom2 = CBox::Create(TPoint3D(-5.938,-0.723,-1.0),TPoint3D(-6.189,-11.277,-1.620));
+		boom2->setColor(0,1,0);
+		ret->insert(boom2);
+	}
+	{
+		CCylinderPtr cyl1 = CCylinder::Create(0.716,0.716,0.387,30);
+		cyl1->setColor(0,0,0);
+		cyl1->setPose(CPose3D(-0.710,0.923,-2.480,0,0,DEG2RAD(90)));
+		ret->insert(cyl1);
+	}
+	{
+		CCylinderPtr cyl2 = CCylinder::Create(0.716,0.716,0.387,30);
+		cyl2->setColor(0,0,0);
+		cyl2->setPose(CPose3D(-3.937,0.923,-2.480,0,0,DEG2RAD(90)));
+		ret->insert(cyl2);
+	}
+	{
+		CCylinderPtr cyl1 = CCylinder::Create(0.716,0.716,0.387,30);
+		cyl1->setColor(0,0,0);
+		cyl1->setPose(CPose3D(-0.710,-0.423,-2.480,0,0,DEG2RAD(90)));
+		ret->insert(cyl1);
+	}
+	{
+		CCylinderPtr cyl2 = CCylinder::Create(0.716,0.716,0.387,30);
+		cyl2->setColor(0,0,0);
+		cyl2->setPose(CPose3D(-3.937,-0.423,-2.480,0,0,DEG2RAD(90)));
+		ret->insert(cyl2);
 	}
     return ret;
 }

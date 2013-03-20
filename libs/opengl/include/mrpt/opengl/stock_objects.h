@@ -66,7 +66,7 @@ namespace mrpt
 			  *  </div>
 			  */
 			CSetOfObjectsPtr OPENGL_IMPEXP CornerXYZ(float scale=1.0);
-			
+
 			/** Returns three arrows representing a X,Y,Z 3D corner.
 			  *  Differently from CornerXYZ the arrowhead of Z axis ends where the object is placed.
 			  *  This is useful if you want to place this object with the same position and orientation of a camera.
@@ -111,6 +111,10 @@ namespace mrpt
 			  *  </div>
 			  */
 			CSetOfObjectsPtr OPENGL_IMPEXP BumblebeeCamera();
+
+			CSetOfObjectsPtr OPENGL_IMPEXP Hokuyo_URG();
+			CSetOfObjectsPtr OPENGL_IMPEXP Hokuyo_UTM();
+			CSetOfObjectsPtr OPENGL_IMPEXP Househam_Sprayer();
 
 		} // end namespace stock_objects
 	}

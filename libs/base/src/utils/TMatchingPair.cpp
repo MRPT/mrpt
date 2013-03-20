@@ -56,7 +56,7 @@ void  TMatchingPairList::dumpToFile(const std::string &fileName)
 
 	for (iterator it=begin();it!=end();it++)
 	{
-		f.printf("%u %u %f %f %f %f %f %f\n",
+		f.printf("%u %u %f %f %f %f %f %f %f\n",
 				it->this_idx,
 				it->other_idx,
 				it->this_x,
@@ -64,7 +64,8 @@ void  TMatchingPairList::dumpToFile(const std::string &fileName)
 				it->this_z,
 				it->other_x,
 				it->other_y,
-				it->other_z);
+				it->other_z,
+				it->errorSquareAfterTransformation);
 	}
 }
 

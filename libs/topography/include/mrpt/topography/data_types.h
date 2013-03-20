@@ -99,7 +99,7 @@ namespace mrpt
 				int deg,min;
 				double sec;
 				getDegMinSec( deg,min,sec);
-				return mrpt::format("%ddeg %d' %.010f''",deg,min,sec );
+				return mrpt::format("%ddeg %d' %.04f''",deg,min,sec );
 			}
 
 		};

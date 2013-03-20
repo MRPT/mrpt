@@ -3,9 +3,9 @@
    |                                                                           |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2013, Individual contributors, see AUTHORS file        |
-   | Copyright (c) 2005-2013, MAPIR group, University of Malaga                |
-   | Copyright (c) 2012-2013, University of Almeria                            |
+   | Copyright (c) 2005-2012, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2012, MAPIR group, University of Malaga                |
+   | Copyright (c) 2012, University of Almeria                                 |
    | All rights reserved.                                                      |
    |                                                                           |
    | Redistribution and use in source and binary forms, with or without        |
@@ -32,57 +32,71 @@
    | ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE           |
    | POSSIBILITY OF SUCH DAMAGE.                                               |
    +---------------------------------------------------------------------------+ */
-#ifndef mrpt_obs_H
-#define mrpt_obs_H
+#ifndef CObservationCANBusJ1939_H
+#define CObservationCANBusJ1939_H
 
-#include <mrpt/config.h>
-
-// Only really include all headers if we come from a user program (anything
-//  not defining mrpt_*_EXPORTS) or MRPT is being built with precompiled headers.
-#if !defined(mrpt_obs_EXPORTS) || MRPT_ENABLE_PRECOMPILED_HDRS  || defined(MRPT_ALWAYS_INCLUDE_ALL_HEADERS)
-
-// Observations:
+#include <mrpt/utils/CSerializable.h>
 #include <mrpt/slam/CObservation.h>
-#include <mrpt/slam/CObservation2DRangeScan.h>
-#include <mrpt/slam/CObservation3DRangeScan.h>
-#include <mrpt/slam/CObservationRange.h>
-#include <mrpt/slam/CObservationImage.h>
-// #include <mrpt/slam/CObservationVisualLandmarks.h>  // This one is in mrpt-core
-#include <mrpt/slam/CObservationStereoImages.h>
-#include <mrpt/slam/CObservationStereoImagesFeatures.h>
-#include <mrpt/slam/CObservationBeaconRanges.h>
-#include <mrpt/slam/CObservationGasSensors.h>
-#include <mrpt/slam/CObservationGPS.h>
-#include <mrpt/slam/CObservationBatteryState.h>
-#include <mrpt/slam/CObservationIMU.h>
-#include <mrpt/slam/CObservationOdometry.h>
-#include <mrpt/slam/CObservationBearingRange.h>
-#include <mrpt/slam/CObservationComment.h>
-#include <mrpt/slam/CObservationReflectivity.h>
-#include <mrpt/slam/CObservationWirelessPower.h>
-#include <mrpt/slam/CObservationRFID.h>
-#include <mrpt/slam/CSensoryFrame.h>
-#include <mrpt/slam/CObservationWindSensor.h>
-#include <mrpt/slam/CObservationCANBusJ1939.h>
 
+namespace mrpt
+{
+namespace slam
+{
+	DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CObservationCANBusJ1939 , CObservation, OBS_IMPEXP)
 
-// Observations:
-#include <mrpt/slam/CAction.h>
-#include <mrpt/slam/CActionCollection.h>
-#include <mrpt/slam/CActionRobotMovement2D.h>
-#include <mrpt/slam/CActionRobotMovement3D.h>
+	/** This class stores a message from a CAN BUS with the protocol J1939
+	 *
+	 * \sa CObservation
+	 * \ingroup mrpt_obs_grp
+	 */
+	class OBS_IMPEXP CObservationCANBusJ1939 : public CObservation
+	{
+		// This must be added to any CSerializable derived class:
+		DEFINE_SERIALIZABLE( CObservationCANBusJ1939 )
 
+	 public:
+		/** Constructor.
+		 */
+		CObservationCANBusJ1939(  ) :
+            m_pgn(0), m_src_address(0), m_priority(0), m_pdu_format(0), m_pdu_spec(0), m_data_length(0)
+            { }
 
-// Others:
-#include <mrpt/slam/CRawlog.h>
-#include <mrpt/slam/carmen_log_tools.h>
+		/** Destructor
+		  */
+		virtual ~CObservationCANBusJ1939()
+		{ }
 
-// Very basic classes for maps:
-#include <mrpt/slam/CMetricMap.h>
-#include <mrpt/slam/CSimpleMap.h>
+		/** The Parameter Group Number within this frame */
+		uint16_t m_pgn;
 
+		/** The address of the source node within this frame */
+		uint8_t m_src_address;
 
-#endif // end precomp.headers
+		/** The priority */
+		uint8_t m_priority;
 
+        /** PDU Format */
+        uint8_t m_pdu_format;
+
+        /** PDU Specific */
+        uint8_t m_pdu_spec;
+
+        /** Data length  */
+        uint8_t m_data_length;
+
+		/** The data within this frame (0-8 bytes) */
+		std::vector<uint8_t> m_data;
+
+        /** The ASCII frame */
+		std::vector<char> m_raw_frame;
+
+        /** Not used */
+		void getSensorPose( CPose3D &out_sensorPose ) const { }
+		void setSensorPose( const CPose3D & ) { }
+
+	}; // End of class def.
+
+	} // End of namespace
+} // End of namespace
 
 #endif

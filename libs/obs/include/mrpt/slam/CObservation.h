@@ -71,7 +71,7 @@ namespace mrpt
 		  */
 		#define INVALID_BEACON_ID  		(-1)
 
-		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CObservation, mrpt::utils::CSerializable,OBS_IMPEXP )
+		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CObservation, mrpt::utils::CSerializable, OBS_IMPEXP )
 
 		/** Declares a class that represents any robot's observation.
 			   This is a base class for many types of sensors
@@ -163,11 +163,11 @@ namespace mrpt
 		  *  If all the data were alredy loaded or this object has no externally stored data fields, calling this method has no effects.
 		  * \sa unload
 		  */
-		virtual void load() const { /* Default implementation: do nothing */ } 
+		virtual void load() const { /* Default implementation: do nothing */ }
 		/** Unload all images, for the case they being delayed-load images stored in external files (othewise, has no effect).
 		  * \sa load
 		  */
-		virtual void unload() { /* Default implementation: do nothing */ } 
+		virtual void unload() { /* Default implementation: do nothing */ }
 
 		/** @} */
 

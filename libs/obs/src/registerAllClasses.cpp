@@ -94,5 +94,7 @@ void registerAllClasses_mrpt_obs()
 	registerClass( CLASS_ID( CActionCollection ) );
 	registerClass( CLASS_ID( CActionRobotMovement2D ) );
 	registerClass( CLASS_ID( CActionRobotMovement3D ) );
+
+	registerClass( CLASS_ID( CObservationCANBusJ1939 ) );
 }
 

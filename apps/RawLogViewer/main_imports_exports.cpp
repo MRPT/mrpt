@@ -1289,7 +1289,6 @@ void xRawLogViewerFrame::OnGenGasTxt(wxCommandEvent& event)
 			default: continue;
 			}//end-case
 
-
 			//If we have a GAS obs, then process it:
 			if (obs)
 			{

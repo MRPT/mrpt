@@ -43,6 +43,7 @@
 #include <mrpt/system/os.h>
 #include <mrpt/utils/CLoadableOptions.h>
 #include <mrpt/utils/stl_extensions.h>
+#include <mrpt/utils/color_maps.h>
 
 #include <mrpt/slam/CMetricMap.h>
 
@@ -177,6 +178,8 @@ namespace mrpt
 
 				float	minDistBetweenPointsWhenInserting;	//!< When inserting a scan, a point cloud is first created with this minimum distance between the 3D points (default=0).
 
+				mrpt::utils::TColormap colorMap;
+
 			} insertionOptions;
 
 			/** Computes the ratio in [0,1] of correspondences between "this" and the "otherMap" map, whose 6D pose relative to "this" is "otherMapPose"
@@ -222,7 +225,7 @@ namespace mrpt
 			bool getMinMaxHeight(float &z_min, float &z_max) const;
 
 			/** Return the number of cells with at least one height data inserted. */
-			size_t countObservedCells() const; 
+			size_t countObservedCells() const;
 
 		protected:
 

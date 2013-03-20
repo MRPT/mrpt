@@ -416,7 +416,7 @@ xRawLogViewerFrame::xRawLogViewerFrame(wxWindow* parent,wxWindowID id)
 	wxMenu* Menu2;
 	wxMenuItem* MenuItem18;
 	wxMenuItem* MenuItem19;
-	
+
 	Create(parent, id, _("RawlogViewer - Part of the MRPT project"), wxDefaultPosition, wxDefaultSize, wxCAPTION|wxDEFAULT_FRAME_STYLE|wxSYSTEM_MENU|wxRESIZE_BORDER|wxCLOSE_BOX|wxMAXIMIZE_BOX|wxMINIMIZE_BOX, _T("id"));
 	SetClientSize(wxSize(700,500));
 	{
@@ -920,7 +920,7 @@ xRawLogViewerFrame::xRawLogViewerFrame(wxWindow* parent,wxWindowID id)
 	timAutoLoad.SetOwner(this, ID_TIMER1);
 	timAutoLoad.Start(50, true);
 	FlexGridSizer1->SetSizeHints(this);
-	
+
 	Connect(ID_BUTTON2,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&xRawLogViewerFrame::OnFileOpen);
 	Connect(ID_BUTTON3,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&xRawLogViewerFrame::OnSaveFile);
 	Connect(ID_BUTTON4,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&xRawLogViewerFrame::OnEditRawlog);
@@ -2301,9 +2301,9 @@ void xRawLogViewerFrame::SelectObjectInTreeView( const CSerializablePtr & sel_ob
 													RAD2DEG( obs->rawMeasurements[IMU_PITCH] ),
 													RAD2DEG( obs->rawMeasurements[IMU_ROLL] ) );
 
-												// Units: 
+												// Units:
 												// Use "COUNT_IMU_DATA_FIELDS" so a compile error happens if the sizes don't fit ;-)
-												static const char * imu_units[ mrpt::slam::COUNT_IMU_DATA_FIELDS ] = 
+												static const char * imu_units[ mrpt::slam::COUNT_IMU_DATA_FIELDS ] =
 												{
 													"m/s^2", //	IMU_X_ACC,
 													"m/s^2", //	IMU_Y_ACC,
@@ -2326,7 +2326,7 @@ void xRawLogViewerFrame::SelectObjectInTreeView( const CSerializablePtr & sel_ob
 		cout << format("%15s = ",#x); \
 		if (obs->dataIsPresent[x]) \
 			cout << format("%10f %s\n", obs->rawMeasurements[x], imu_units[x]); \
-		else  	cout << "(not present)\n"; 
+		else  	cout << "(not present)\n";
 
 
 												DUMP_IMU_DATA(IMU_X_ACC)
@@ -2648,6 +2648,36 @@ void xRawLogViewerFrame::SelectObjectInTreeView( const CSerializablePtr & sel_ob
 
 													}
 													else
+                                                    if ( classID  == CLASS_ID(CObservationCANBusJ1939) )
+                                                    {
+                                                        // ----------------------------------------------------------------------
+                                                        //              CObservationCANBusJ1939
+                                                        // ----------------------------------------------------------------------
+                                                        Notebook1->ChangeSelection( 0 );
+                                                        CObservationCANBusJ1939Ptr obs = CObservationCANBusJ1939Ptr( sel_obj );
+                                                        curSelectedObservation = CObservationPtr( sel_obj );
+
+                                                        cout << "Priority: " << format("0x%02X",obs->m_priority) << " [Dec: " << int(obs->m_priority) << "]" << endl;
+                                                        cout << "Parameter Group Number (PGN): " << format("0x%04X",obs->m_pgn) << " [Dec: " << int(obs->m_pgn) << "]" << endl;
+                                                        cout << "PDU Format: " << format("0x%02X",obs->m_pdu_format) << " [Dec: " << int(obs->m_pdu_format) << "]" << endl;
+                                                        cout << "PDU Spec: " << format("0x%02X",obs->m_pdu_spec) << " [Dec: " << int(obs->m_pdu_spec) << "]" << endl;
+                                                        cout << "Source address: " << format("0x%02X",obs->m_src_address) << " [Dec: " << int(obs->m_src_address) << "]" << endl;
+                                                        cout << "Data length: " << format("0x%02X",obs->m_data_length) << " [Dec: " << int(obs->m_data_length) << "]" << endl;
+                                                        cout << "Data: ";
+                                                        for(uint8_t k = 0; k < obs->m_data.size(); ++k)
+                                                            cout << format("0x%02X",obs->m_data[k]) << " ";
+                                                        cout << " [Dec: ";
+                                                        for(uint8_t k = 0; k < obs->m_data.size(); ++k)
+                                                            cout << int(obs->m_data[k]) << " ";
+                                                        cout << "]" << endl;
+
+                                                        cout << "Raw frame: ";
+                                                        for(uint8_t k = 0; k < obs->m_raw_frame.size(); ++k)
+                                                            cout << obs->m_raw_frame[k];
+                                                        cout << endl;
+
+                                                    }
+                                                    else
 													{
 														// Other selections:
 														Notebook1->ChangeSelection( 0 );

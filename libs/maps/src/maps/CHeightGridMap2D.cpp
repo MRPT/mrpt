@@ -297,7 +297,8 @@ CHeightGridMap2D::TInsertionOptions::TInsertionOptions() :
 	filterByHeight				( false ),
 	z_min						( -0.5  ),
 	z_max						(  0.5  ),
-	minDistBetweenPointsWhenInserting ( 0 )
+	minDistBetweenPointsWhenInserting ( 0 ),
+	colorMap( cmJET )
 {
 }
 
@@ -311,6 +312,7 @@ void  CHeightGridMap2D::TInsertionOptions::dumpToTextStream(CStream	&out) const
 	out.printf("z_min                                   = %f\n", z_min);
 	out.printf("z_max                                   = %f\n", z_max);
 	out.printf("minDistBetweenPointsWhenInserting       = %f\n", minDistBetweenPointsWhenInserting);
+	out.printf("colormap                                = %s\n", colorMap == cmJET ? "jet" : "grayscale");
 	out.printf("\n");
 }
 
@@ -325,6 +327,12 @@ void  CHeightGridMap2D::TInsertionOptions::loadFromConfigFile(
 	MRPT_LOAD_CONFIG_VAR( z_min,			float, iniFile, section )
 	MRPT_LOAD_CONFIG_VAR( z_max,			float, iniFile, section )
 	MRPT_LOAD_CONFIG_VAR( minDistBetweenPointsWhenInserting, float, iniFile, section )
+	string aux = iniFile.read_string(section, "colorMap", "jet");
+
+	if(strCmp(aux,"jet") )
+        colorMap = cmJET;
+    else if(strCmp(aux,"grayscale") )
+        colorMap = cmGRAYSCALE;
 }
 
 /*---------------------------------------------------------------
@@ -356,7 +364,7 @@ void  CHeightGridMap2D::getAs3DObject( mrpt::opengl::CSetOfObjectsPtr	&outObj ) 
 		mesh->setColor(0.4, 0.4, 0.4 );
 
 		mesh->enableWireFrame(true);
-		mesh->enableColorFromZ(true, cmJET);
+		mesh->enableColorFromZ(true, insertionOptions.colorMap /*cmJET*/);
 
 		CMatrixFloat Z,mask;
 		/*mesh->getZ(Z);
@@ -405,7 +413,7 @@ void  CHeightGridMap2D::getAs3DObject( mrpt::opengl::CSetOfObjectsPtr	&outObj ) 
 					float r,g,b;
 					const float col_idx = (c->h-z_min)*K;
 					colormap(
-						cmGRAYSCALE, //cmJET,
+						insertionOptions.colorMap, //cmJET, //cmGRAYSCALE,
 						col_idx, r,g,b );
 					obj->push_back( idx2x(x),idx2y(y), c->h, r,g,b );
 				}
