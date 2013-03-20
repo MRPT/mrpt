@@ -175,7 +175,7 @@ CImageGrabber_OpenCV::CImageGrabber_OpenCV(
 	}
 
 	// Settings only for V4L
-	if(cameraType == CAMERA_CV_VFL || cameraType == CAMERA_CV_VFW || cameraType == CAMERA_CV_DSHOW  )
+	if(cameraType == CAMERA_CV_AUTODETECT || cameraType == CAMERA_CV_VFL || cameraType == CAMERA_CV_VFW || cameraType == CAMERA_CV_DSHOW  )
 	{
 		if (options.frame_width!=0 && options.frame_height!=0)
 		{

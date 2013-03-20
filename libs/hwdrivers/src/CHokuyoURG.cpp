@@ -39,12 +39,15 @@
 #include <mrpt/hwdrivers/CHokuyoURG.h>
 #include <mrpt/hwdrivers/CSerialPort.h>
 
+#include <mrpt/opengl/CPlanarLaserScan.h> // in library mrpt-maps
+
 IMPLEMENTS_GENERIC_SENSOR(CHokuyoURG,mrpt::hwdrivers)
 
 using namespace mrpt::utils;
 using namespace mrpt::slam;
 using namespace mrpt::hwdrivers;
 using namespace mrpt::system;
+using namespace mrpt::opengl;
 using namespace std;
 
 
@@ -64,9 +67,10 @@ CHokuyoURG::CHokuyoURG() :
 	m_ip_dir(""),
 	m_port_dir(0),
 	m_I_am_owner_serial_port(false),
-	m_timeStartUI( 0 )
+	m_timeStartUI( 0 ),
+	m_showPreview ( false )
 {
-	m_sensorLabel = "Hokuyo";	
+	m_sensorLabel = "Hokuyo";
 }
 
 /*-------------------------------------------------------------
@@ -82,6 +86,9 @@ CHokuyoURG::~CHokuyoURG()
 			delete m_stream;
 		m_stream = NULL;
 	}
+
+	// FAMD
+    m_win.clear(); // clear window
 }
 
 /*-------------------------------------------------------------
@@ -184,6 +191,49 @@ void  CHokuyoURG::doProcessSimple(
 	this->filterByExclusionAreas( outObservation );
 	this->filterByExclusionAngles( outObservation );
 
+	// FAMD
+	// show laser scan
+	if( m_showPreview )
+    {
+        if( !m_win )
+        {
+            string caption = string("Preview of ")+m_sensorLabel;
+            m_win = mrpt::gui::CDisplayWindow3D::Create( caption, 640, 480 );
+            if( m_win->isOpen() )
+            {
+               COpenGLScenePtr &theScene = m_win->get3DSceneAndLock();
+                {
+//                    opengl::CGridPlaneXYPtr obj = opengl::CGridPlaneXY::Create(-20,20,-20,20,0,1);
+//                    obj->setColor(0.8,0.8,0.8);
+//                    theScene->insert( obj );
+                    theScene->insert(CAxisPtr( CAxis::Create(-300,-300,-50, 300,300,50, 1.0, 3, true  ) ));
+                }
+                m_win->unlockAccess3DScene();
+            } // end if
+        } // end if
+        if( m_win->isOpen() )
+        {
+            COpenGLScenePtr &theScene = m_win->get3DSceneAndLock();
+            opengl::CPlanarLaserScanPtr laser;
+            CRenderizablePtr obj = theScene->getByName("laser");
+            if( !obj )
+            {
+                laser = opengl::CPlanarLaserScan::Create();
+                laser->setName("laser");
+                laser->setScan(outObservation);
+                theScene->insert(laser);
+            }
+            else
+            {
+                laser = static_cast<CPlanarLaserScanPtr>(obj);
+                laser->setScan(outObservation);
+//                cout << "nueva obs" << endl;
+            }
+            m_win->unlockAccess3DScene();
+            m_win->forceRepaint();
+        } // end if
+    } // end if
+
 	outThereIsObservation = true;
 }
 
@@ -217,6 +267,9 @@ void  CHokuyoURG::loadConfig_sensorSpecific(
 	m_ip_dir = configSource.read_string(iniSection, "IP_DIR", m_ip_dir );
 	m_port_dir = configSource.read_int(iniSection, "PORT_DIR", m_port_dir );
 
+	// FAMD
+	m_showPreview = configSource.read_bool(iniSection, "preview", false );
+
 	// Parent options:
 	this->loadExclusionAreas(configSource,iniSection);
 }
@@ -241,14 +294,14 @@ bool  CHokuyoURG::turnOn()
 			// It is a COM:
 			COM->setConfig( 19200 );
 			COM->setTimeouts(100,0,200,0,0);
-	
+
 			// Assure the laser is off and quiet:
 			switchLaserOff();
 			mrpt::system::sleep(10);
 
 			COM->purgeBuffers();
 			mrpt::system::sleep(10);
-	
+
 			COM->setConfig( 115200 );
 			switchLaserOff();
 			mrpt::system::sleep(10);
@@ -278,12 +331,12 @@ bool  CHokuyoURG::turnOn()
 
 			purgeBuffers();
 			mrpt::system::sleep(10);
-	
+
 			switchLaserOff();
 			mrpt::system::sleep(10);
-			purgeBuffers();			
+			purgeBuffers();
 		}
-	
+
 	}
 
 	if (!enableSCIP20()) return false;
@@ -406,7 +459,7 @@ bool CHokuyoURG::assureBufferHasBytes(const size_t nDesiredBytes)
 			}
 			else
 			{
-				nRead = m_stream->ReadBuffer(buf,to_read);				
+				nRead = m_stream->ReadBuffer(buf,to_read);
 			}
 
 			m_rx_buffer.push_many(buf,nRead);
@@ -987,7 +1040,7 @@ bool  CHokuyoURG::checkCOMisOpen()
 			else
 			{
 				return true;		// Assume OK
-			}			
+			}
 		}
 		else
 		{
@@ -1113,7 +1166,7 @@ void CHokuyoURG::purgeBuffers()
 		{
 
 			void *buf = malloc(sizeof(uint8_t)*to_read);
-			
+
 			size_t nRead = m_stream->ReadBuffer(buf,to_read);
 
 			if ( nRead != to_read )
