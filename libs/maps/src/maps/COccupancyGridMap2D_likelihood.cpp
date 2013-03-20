@@ -37,6 +37,7 @@
 
 #include <mrpt/slam/COccupancyGridMap2D.h>
 #include <mrpt/slam/CObservation2DRangeScan.h>
+#include <mrpt/slam/CObservationRange.h>
 #include <mrpt/slam/CSimplePointsMap.h>
 
 
@@ -490,7 +491,7 @@ double	 COccupancyGridMap2D::computeObservationLikelihood_likelihoodField_Thrun(
 
 	// This function depends on the observation type:
 	// -----------------------------------------------------
-	if ( obs->GetRuntimeClass() == CLASS_ID(CObservation2DRangeScan) )
+	if ( IS_CLASS(obs, CObservation2DRangeScan) )
 	{
 		// Observation is a laser range scan:
 		// -------------------------------------------
@@ -510,6 +511,20 @@ double	 COccupancyGridMap2D::computeObservationLikelihood_likelihoodField_Thrun(
 		ret = computeLikelihoodField_Thrun( o->buildAuxPointsMap<mrpt::slam::CPointsMap>(&opts), &takenFrom );
 
 	} // end of observation is a scan range 2D
+	else if ( IS_CLASS(obs, CObservationRange) )
+	{
+	    // Sonar-like observations:
+	    // ---------------------------------------
+		const CObservationRange		*o = static_cast<const CObservationRange*>( obs );
+
+        // Create a point map representation of the observation:
+	    CSimplePointsMap pts;
+	    pts.insertionOptions.minDistBetweenLaserPoints	= resolution*0.5f;
+	    pts.insertObservation(o);
+
+		// Compute the likelihood of the points in this grid map:
+		ret = computeLikelihoodField_Thrun( &pts, &takenFrom );
+	}
 
 	return ret;
 
