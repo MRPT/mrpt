@@ -83,4 +83,6 @@
 #include <mrpt/hwdrivers/CInterfaceNI845x.h>
 #include <mrpt/hwdrivers/CKinect.h>
 
+#include <mrpt/hwdrivers/CCANBusReader.h>
+
 #endif

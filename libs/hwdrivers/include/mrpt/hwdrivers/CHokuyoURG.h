@@ -39,6 +39,9 @@
 #include <mrpt/hwdrivers/C2DRangeFinderAbstract.h>
 #include <mrpt/utils/stl_extensions.h>
 
+#include <mrpt/gui/CDisplayWindow3D.h>
+#include <mrpt/opengl.h>
+
 namespace mrpt
 {
 	namespace hwdrivers
@@ -105,6 +108,7 @@ namespace mrpt
 
 			bool 			m_verbose;
 			bool			m_highSensMode;  //!< High sensitivity [HS] mode (default: false)
+			mrpt::gui::CDisplayWindow3DPtr m_win;
 
 			/** Enables the SCIP2.0 protocol (this must be called at the very begining!).
 			  * \return false on any error
@@ -198,7 +202,7 @@ namespace mrpt
 
 			/** If set to non-empty, the serial port will be attempted to be opened automatically when this class is first used to request data from the laser.  */
 			void setSerialPort(const std::string &port_name) { m_com_port = port_name; }
-			
+
 			/** Set the ip direction and port to connect using Ethernet communication */
 			void setIPandPort(const std::string &ip, const unsigned int &port) { m_ip_dir = ip; m_port_dir = port; }
 
@@ -228,7 +232,7 @@ namespace mrpt
 			std::string		m_com_port;		//!< If set to non-empty, the serial port will be attempted to be opened automatically when this class is first used to request data from the laser.
 
 			std::string		m_ip_dir;	//!< If set to non-empty and m_port_dir too, the program will try to connect to a Hokuyo using Ethernet communication
-			unsigned int	m_port_dir;	//!< If set to non-empty and m_ip_dir too, the program will try to connect to a Hokuyo using Ethernet communication	
+			unsigned int	m_port_dir;	//!< If set to non-empty and m_ip_dir too, the program will try to connect to a Hokuyo using Ethernet communication
 
 			/** The information gathered when the laser is first open */
 			TSensorInfo		m_sensor_info;
@@ -237,6 +241,9 @@ namespace mrpt
 
 			uint32_t		m_timeStartUI;	//!< Time of the first data packet, for synchronization purposes.
 			mrpt::system::TTimeStamp	m_timeStartTT;
+
+			// FAMD
+			bool            m_showPreview; //!< If true, shows a 3D window with a preview of the grabber data
 
 			/** Loads specific configuration for the device from a given source of configuration parameters, for example, an ".ini" file, loading from the section "[iniSection]" (see utils::CConfigFileBase and derived classes)
 			  *  See hwdrivers::CHokuyoURG for the possible parameters
