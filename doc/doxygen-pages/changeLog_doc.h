@@ -45,6 +45,14 @@
 	- New classes:
 		- [mrpt-hwdrivers]
 			- mrpt::hwdrivers::CInterfaceNI845x: An interface for this USB SPI/I2C data acquisition board.
+			- mrpt::hwdrivers::CCANBusReader: A class to record CAN bus frames with a CAN232 converter.
+		- [mrpt-obs]
+			- mrpt::slam::CObservationCANBusJ1939 
+	- New functions:
+		- New opengl_stock objects:
+			- mrpt::opengl::stock_objects::Hokuyo_URG()
+			- mrpt::opengl::stock_objects::Hokuyo_UTM()
+			- mrpt::opengl::stock_objects::Househam_Sprayer()
 	- Changes in classes:
         - [mrpt-maps]
             - mrpt::slam::COccupancyGridMap2D now also evalutes likelihoods for sonar-like observations (mrpt::slam::CObservationRange), allowing particle-filter localization with these sensors - <a href="http://code.google.com/p/mrpt/source/detail?r=3330" >r3330</a>

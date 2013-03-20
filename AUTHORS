@@ -16,6 +16,7 @@ the University of Malaga.
   - Work in CLandmarksMap for efficiency of visual SLAM.
   - Many image-related functions.
   - Many functions in mrpt::topography
+  - mrpt::hwdrivers::CCANBusReader and related classes
 
 * Antonio J. Ortiz de Galisteo, University of Malaga (2007).
   - Addition of many mathematical functions.
