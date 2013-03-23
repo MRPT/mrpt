@@ -56,13 +56,13 @@ namespace slam
 
 	 public:
 		/** Constructor.
-		 */
+		*/
 		CObservationCANBusJ1939(  ) :
-            m_pgn(0), m_src_address(0), m_priority(0), m_pdu_format(0), m_pdu_spec(0), m_data_length(0)
-            { }
+			m_pgn(0), m_src_address(0), m_priority(0), m_pdu_format(0), m_pdu_spec(0), m_data_length(0)
+		{ }
 
 		/** Destructor
-		  */
+		*/
 		virtual ~CObservationCANBusJ1939()
 		{ }
 
@@ -75,22 +75,22 @@ namespace slam
 		/** The priority */
 		uint8_t m_priority;
 
-        /** PDU Format */
-        uint8_t m_pdu_format;
+		/** PDU Format */
+		uint8_t m_pdu_format;
 
-        /** PDU Specific */
-        uint8_t m_pdu_spec;
+		/** PDU Specific */
+		uint8_t m_pdu_spec;
 
-        /** Data length  */
-        uint8_t m_data_length;
+		/** Data length  */
+		uint8_t m_data_length;
 
 		/** The data within this frame (0-8 bytes) */
 		std::vector<uint8_t> m_data;
 
-        /** The ASCII frame */
+		/** The ASCII frame */
 		std::vector<char> m_raw_frame;
 
-        /** Not used */
+		/** Not used */
 		void getSensorPose( CPose3D &out_sensorPose ) const { }
 		void setSensorPose( const CPose3D & ) { }
 
