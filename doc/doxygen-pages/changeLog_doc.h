@@ -54,8 +54,8 @@
 			- mrpt::opengl::stock_objects::Hokuyo_UTM()
 			- mrpt::opengl::stock_objects::Househam_Sprayer()
 	- Changes in classes:
-        - [mrpt-maps]
-            - mrpt::slam::COccupancyGridMap2D now also evalutes likelihoods for sonar-like observations (mrpt::slam::CObservationRange), allowing particle-filter localization with these sensors - <a href="http://code.google.com/p/mrpt/source/detail?r=3330" >r3330</a>
+		- [mrpt-maps]
+			- mrpt::slam::COccupancyGridMap2D now also evalutes likelihoods for sonar-like observations (mrpt::slam::CObservationRange), allowing particle-filter localization with these sensors - <a href="http://code.google.com/p/mrpt/source/detail?r=3330" >r3330</a>
 	- Build system:
 		- Fixed a potential build error if including FFMPEG's <time.h> instead of the standard header - <a href="http://code.google.com/p/mrpt/source/detail?r=3316" >r3316</a>
 		- Fixed determination of GCC version for all GCC builds - <a href="http://code.google.com/p/mrpt/source/detail?r=3324" >r3324</a>
