@@ -61,6 +61,7 @@
 		- Fixed determination of GCC version for all GCC builds - <a href="http://code.google.com/p/mrpt/source/detail?r=3324" >r3324</a>
 	- BUG FIXES:
 		- Unit tests "SchurTests" for mrpt-srba incorrectly reported errors due to an improperly initialized reference to a local variable - <a href="http://code.google.com/p/mrpt/source/detail?r=3318" >r3318</a>
+		- Debian packages: added missing binary deps for libmrpt-dev  - <a href="http://code.google.com/p/mrpt/source/detail?r=3335" >r3335</a>
 
  <hr>
  <a name="1.0.0">
