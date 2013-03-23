@@ -112,8 +112,34 @@ namespace mrpt
 			  */
 			CSetOfObjectsPtr OPENGL_IMPEXP BumblebeeCamera();
 
+			/** Returns a simple 3D model of a Hokuyo URG scanner.
+			  *  The generated object must be inserted in a opengl::COpenGLScene or opengl::CSetOfObjects.
+			  *  <div align="center">
+			  *  <table border="0" cellspan="4" cellspacing="4" style="border-width: 1px; border-style: solid;">
+			  *    <tr> <td> mrpt::opengl::stock_objects::Hokuyo_URG() </td> <td> \image html preview_stock_objects_Hokuyo_URG.png </td> </tr>
+			  *  </table>
+			  *  </div>
+			  */
 			CSetOfObjectsPtr OPENGL_IMPEXP Hokuyo_URG();
+
+			/** Returns a simple 3D model of a Hokuyo UTM scanner.
+			  *  The generated object must be inserted in a opengl::COpenGLScene or opengl::CSetOfObjects.
+			  *  <div align="center">
+			  *  <table border="0" cellspan="4" cellspacing="4" style="border-width: 1px; border-style: solid;">
+			  *    <tr> <td> mrpt::opengl::stock_objects::Hokuyo_UTM() </td> <td> \image html preview_stock_objects_Hokuyo_UTM.png </td> </tr>
+			  *  </table>
+			  *  </div>
+			  */
 			CSetOfObjectsPtr OPENGL_IMPEXP Hokuyo_UTM();
+
+			/** Returns a simple 3D model of a househam sprayer.
+			  *  The generated object must be inserted in a opengl::COpenGLScene or opengl::CSetOfObjects.
+			  *  <div align="center">
+			  *  <table border="0" cellspan="4" cellspacing="4" style="border-width: 1px; border-style: solid;">
+			  *    <tr> <td> mrpt::opengl::stock_objects::Househam_Sprayer() </td> <td> \image html preview_stock_objects_Househam_Sprayer.png </td> </tr>
+			  *  </table>
+			  *  </div>
+			  */
 			CSetOfObjectsPtr OPENGL_IMPEXP Househam_Sprayer();
 
 		} // end namespace stock_objects

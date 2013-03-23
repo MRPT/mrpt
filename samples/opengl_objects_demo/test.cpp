@@ -614,6 +614,50 @@ void TestOpenGLObjects()
 	}
 	off_x+=STEP_X;
 
+
+	// stock_objects::Hokuyo_URG
+	{
+		{
+			opengl::CSetOfObjectsPtr obj = opengl::stock_objects::Hokuyo_URG();
+			obj->setLocation(off_x,0,0);
+			theScene->insert( obj );
+		}
+
+		opengl::CTextPtr gl_txt = opengl::CText::Create("stock_objects::Hokuyo_URG()");
+		gl_txt->setLocation(off_x,off_y_label,0);
+		theScene->insert(gl_txt);
+	}
+	off_x+=STEP_X;
+
+	// stock_objects::Hokuyo_UTM
+	{
+		{
+			opengl::CSetOfObjectsPtr obj = opengl::stock_objects::Hokuyo_UTM();
+			obj->setLocation(off_x,0,0);
+			theScene->insert( obj );
+		}
+
+		opengl::CTextPtr gl_txt = opengl::CText::Create("stock_objects::Hokuyo_UTM()");
+		gl_txt->setLocation(off_x,off_y_label,0);
+		theScene->insert(gl_txt);
+	}
+	off_x+=STEP_X;
+
+	// stock_objects::Househam_Sprayer
+	{
+		{
+			opengl::CSetOfObjectsPtr obj = opengl::stock_objects::Househam_Sprayer();
+			obj->setLocation(off_x,0,0);
+			theScene->insert( obj );
+		}
+
+		opengl::CTextPtr gl_txt = opengl::CText::Create("stock_objects::Househam_Sprayer()");
+		gl_txt->setLocation(off_x,off_y_label,0);
+		theScene->insert(gl_txt);
+	}
+	off_x+=STEP_X;
+
+
 #endif
 
 	win.setCameraZoom(150);
