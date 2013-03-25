@@ -59,6 +59,7 @@
 	- Build system:
 		- Fixed a potential build error if including FFMPEG's <time.h> instead of the standard header - <a href="http://code.google.com/p/mrpt/source/detail?r=3316" >r3316</a>
 		- Fixed determination of GCC version for all GCC builds - <a href="http://code.google.com/p/mrpt/source/detail?r=3324" >r3324</a>
+		- Updated to nanoflann 1.1.5
 	- BUG FIXES:
 		- Unit tests "SchurTests" for mrpt-srba incorrectly reported errors due to an improperly initialized reference to a local variable - <a href="http://code.google.com/p/mrpt/source/detail?r=3318" >r3318</a>
 		- Debian packages: added missing binary deps for libmrpt-dev  - <a href="http://code.google.com/p/mrpt/source/detail?r=3335" >r3335</a>
