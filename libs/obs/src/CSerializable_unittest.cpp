@@ -72,6 +72,7 @@ TEST(SerializeTestObs, WriteReadToMem)
 		CLASS_ID(CObservationOdometry),
 		CLASS_ID(CObservationRange),
 		CLASS_ID(CObservationStereoImages),
+		CLASS_ID(CObservationCANBusJ1939),
 		// Actions:
 		CLASS_ID(CActionRobotMovement2D),
 		CLASS_ID(CActionRobotMovement3D)
