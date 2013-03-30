@@ -12,11 +12,16 @@ export DH_VERBOSE=1
 DEB_HOST_GNU_TYPE   ?= $(shell dpkg-architecture -qDEB_HOST_GNU_TYPE)
 DEB_BUILD_GNU_TYPE  ?= $(shell dpkg-architecture -qDEB_BUILD_GNU_TYPE)
 
+ifneq (,$(filter parallel=%,$(DEB_BUILD_OPTIONS)))
+         NUMJOBS = $(patsubst parallel=%,%,$(filter parallel=%,$(DEB_BUILD_OPTIONS)))
+         MAKEFLAGS += -j$(NUMJOBS)
+endif
 
 config.status: configure
 	dh_testdir
 	# Add here commands to configure the package.
-	./configure MRPT_IS_DEB_PACKAGE=1 --host=$(DEB_HOST_GNU_TYPE) --build=$(DEB_BUILD_GNU_TYPE) --prefix=/usr --mandir=\$${prefix}/share/man --infodir=\$${prefix}/share/info CFLAGS="$(CFLAGS)" LDFLAGS="-Wl,-z,defs"
+	# Add here commands to install the package into debian/mrpt.
+	./configure MRPT_IS_DEB_PACKAGE=1 CMAKE_MRPT_USE_DEB_POSTFIXS="1" --host=$(DEB_HOST_GNU_TYPE) --build=$(DEB_BUILD_GNU_TYPE) --prefix=$(CURDIR)/debian/ --mandir=\$${prefix}/share/man --infodir=\$${prefix}/share/info CFLAGS="$(CFLAGS) $(CPPFLAGS)" CXXFLAGS="$(CXXFLAGS) $(CPPFLAGS)" LDFLAGS="$(LDFLAGS)" CC="$(CC)" CXX="$(CXX)"
 
 build: build-arch build-indep
 
@@ -47,12 +52,9 @@ install: build
 	dh_clean -k 
 	dh_installdirs
 
-	# Add here commands to install the package into debian/mrpt.
-	./configure MRPT_IS_DEB_PACKAGE=1 --prefix=$(CURDIR)/debian/ CMAKE_MRPT_USE_DEB_POSTFIXS="1"
-
 	# Create mrpt documentation
-	make documentation_html
-	make documentation_performance_html
+	VERBOSE=1 make documentation_html
+	VERBOSE=1 make documentation_performance_html
 	# Create man pages:
 	make man_pages_all
 	# Compile manual(s):
@@ -109,7 +111,6 @@ binary-arch: build install
 	dh_strip --exclude=-dbg
 	dh_compress
 	dh_fixperms
-	#export LD_LIBRARY_PATH=$(CURDIR)/debian/libmrpt-base0.X/usr/lib
 	dh_makeshlibs -a
 	dh_installdeb
 	dh_shlibdeps

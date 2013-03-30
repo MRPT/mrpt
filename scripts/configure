@@ -78,15 +78,31 @@ done
 # Only go on for Debian packages:
 if [ "${MRPT_IS_DEB_PACKAGE}" != "1" ] && [ "${MRPT_IS_RPM_PACKAGE}" != "1" ] ; then usage; exit 1 ; fi
 
-#echo "Running configure with:"
-#echo "   prefix: ${prefix}"
-#echo "   host: ${host}"
-#echo "   build: ${build}"
-#echo "   mandir: ${mandir}"
-#echo "   infodir: ${infodir}"
-#echo "   CFLAGS: ${CFLAGS}"
-#echo "   LDFLAGS: ${LDFLAGS}"
+echo "Running configure with:"
+echo "   prefix: ${prefix}"
+echo "   host: ${host}"
+echo "   build: ${build}"
+echo "   mandir: ${mandir}"
+echo "   infodir: ${infodir}"
+echo "   CC: ${CC}"
+echo "   CXX: ${CXX}"
+echo "   CFLAGS: ${CFLAGS}"
+echo "   LDFLAGS: ${LDFLAGS}"
 
-cmake . -DCMAKE_INSTALL_PREFIX="${prefix}" -DCMAKE_HOST=${host} -DCMAKE_BUILD=${build} -DCMAKE_BUILD_TYPE=${buildtype} -DCMAKE_MANDIR="${MANDIR}" -DCMAKE_INFODIR="${INFODIR}" -DCMAKE_CONFIGURE_CFLAGS="${CFLAGS}" -DCMAKE_CONFIGURE_LDFLAGS="${LDFLAGS}" -DCMAKE_MRPT_USE_DEB_POSTFIXS="${CMAKE_MRPT_USE_DEB_POSTFIXS}" -DCMAKE_MRPT_IS_RPM_PACKAGE="${MRPT_IS_RPM_PACKAGE}" ${EXTRA_CMAKE_PARAMS}
-
+cmake . \
+	-DCMAKE_INSTALL_PREFIX="${prefix}" \
+	-DCMAKE_HOST=${host} \
+	-DCMAKE_BUILD=${build} \
+	-DCMAKE_BUILD_TYPE=${buildtype} \
+	-DCMAKE_MANDIR="${MANDIR}" \
+	-DCMAKE_INFODIR="${INFODIR}" \
+	-DCMAKE_CONFIGURE_LDFLAGS="${LDFLAGS}" \
+	-DCMAKE_MRPT_USE_DEB_POSTFIXS="${CMAKE_MRPT_USE_DEB_POSTFIXS}" \
+	-DCMAKE_MRPT_IS_RPM_PACKAGE="${MRPT_IS_RPM_PACKAGE}" ${EXTRA_CMAKE_PARAMS} \
+	-DCMAKE_C_COMPILER:FILEPATH="${CC}" \
+	-DCMAKE_CXX_COMPILER:FILEPATH="${CXX}" \
+	-DCMAKE_C_FLAGS="${CFLAGS}" \
+	-DCMAKE_CXX_FLAGS="${CXXFLAGS}" \
+	-DCMAKE_SKIP_RPATH=ON \
+	-DCMAKE_VERBOSE_MAKEFILE=ON
 

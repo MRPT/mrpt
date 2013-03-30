@@ -301,20 +301,20 @@ Package: libmrpt-dev
 Section: libdevel
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends},
-         libmrpt-base1.0,
-         libmrpt-detectors1.0,
-         libmrpt-gui1.0,
-         libmrpt-hmtslam1.0,
-         libmrpt-hwdrivers1.0,
-         libmrpt-kinematics1.0,
-         libmrpt-maps1.0,
-         libmrpt-obs1.0,
-         libmrpt-opengl1.0,
-         libmrpt-reactivenav1.0,
-         libmrpt-scanmatching1.0,
-         libmrpt-slam1.0,
-         libmrpt-topography1.0,
-         libmrpt-vision1.0
+         libmrpt-base1.0 (= ${binary:Version}),
+         libmrpt-detectors1.0 (= ${binary:Version}),
+         libmrpt-gui1.0 (= ${binary:Version}),
+         libmrpt-hmtslam1.0 (= ${binary:Version}),
+         libmrpt-hwdrivers1.0 (= ${binary:Version}),
+         libmrpt-kinematics1.0 (= ${binary:Version}),
+         libmrpt-maps1.0 (= ${binary:Version}),
+         libmrpt-obs1.0 (= ${binary:Version}),
+         libmrpt-opengl1.0 (= ${binary:Version}),
+         libmrpt-reactivenav1.0 (= ${binary:Version}),
+         libmrpt-scanmatching1.0 (= ${binary:Version}),
+         libmrpt-slam1.0 (= ${binary:Version}),
+         libmrpt-topography1.0 (= ${binary:Version}),
+         libmrpt-vision1.0 (= ${binary:Version})
 Description: Mobile Robot Programming Toolkit - Development headers
  The Mobile Robot Programming Toolkit (MRPT) is an extensive, cross-platform,
  and open source C++ library aimed to help robotics researchers to design and
