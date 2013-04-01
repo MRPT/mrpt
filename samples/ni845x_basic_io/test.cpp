@@ -35,9 +35,11 @@
 
 #include <mrpt/hwdrivers/CInterfaceNI845x.h>
 #include <mrpt/system.h>
+#include <mrpt/gui.h>
 
 using namespace std;
 using namespace mrpt;
+using namespace mrpt::gui;
 using namespace mrpt::hwdrivers;
 
 
@@ -53,7 +55,7 @@ void TestNI_USB_845x()
 	ni_usb.open(); 
 	cout << "Done! Connected to: " << ni_usb.getDeviceDescriptor() << endl;
 
-	ni_usb.setIOVoltageLevel( 12 ); // 1.2 volts
+	ni_usb.setIOVoltageLevel( 25 ); // 2.5 volts
 	
 #if 0
 	ni_usb.setIOPortDirection(0, 0xFF);
@@ -66,16 +68,51 @@ void TestNI_USB_845x()
 	}
 #endif
 
+#if 0
+	const size_t N=1000;
+	std::vector<double> d0(N),d1(N),d2(N);
+
+	ni_usb.setIOPortDirection(0, 0x00);
+	for (size_t i=0;i<N;i++)
+	{
+		uint8_t d = ni_usb.readIOPort(0);
+		mrpt::system::sleep(1);
+		d0[i]= (d & 0x01) ? 1.0 : 0.0;
+		d1[i]= (d & 0x02) ? 3.0 : 2.0;
+		d2[i]= (d & 0x04) ? 5.0 : 4.0;
+	}
+
+	CDisplayWindowPlots win("Signals",640,480);
+
+	win.hold_on();
+	win.plot(d0, "b-");
+	win.plot(d1, "r-");
+	win.plot(d2, "k-");
+	win.axis_fit();
+	win.waitForKey();
+#endif
+
 #if 1
 	ni_usb.create_SPI_configurations(1);
-	ni_usb.set_SPI_configuration(0 /*idx*/, 0 /* CS */, 48 /* Khz */, true /* clock_polarity_idle_low */, false /* clock_phase_first_edge */ );
+	ni_usb.set_SPI_configuration(0 /*idx*/, 0 /* CS */, 1000 /* Khz */, false /* clock_polarity_idle_high */, false /* clock_phase_first_edge */ );
 
+	{
+		const uint8_t write[2] = { 0x20, 0xFF };
+		uint8_t read[2];
+		size_t nRead;
+		printf("TX: %02X %02X\n", write[0],write[1]);
+		ni_usb.read_write_SPI(0 /* config idx */, 2, write, nRead, read );
+	}
+
+	const uint8_t write[2] = { 0x80 | 0x28, 0x00 };
+	uint8_t read[2];
+	size_t nRead;
 	while (!mrpt::system::os::kbhit())
 	{
-		const uint8_t write[4] = { 0x11, 0x22, 0x33, 0x44 };
-		uint8_t read[4];
-		size_t nRead;
-		ni_usb.read_write_SPI(0, 4, write, nRead, read );
+		printf("TX: %02X %02X\n", write[0],write[1]);
+		ni_usb.read_write_SPI(0 /* config idx */, 2, write, nRead, read );
+		printf("RX: %02X %02X\n\n", read[0],read[1]);
+		mrpt::system::sleep(100);
 	}
 
 
