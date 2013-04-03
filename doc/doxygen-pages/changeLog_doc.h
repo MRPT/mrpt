@@ -42,6 +42,9 @@
  <hr>
  <a name="1.0.1">
   <h2>Version 1.0.1 - (Under development) </h2></a>
+	- Changes in apps:
+		- <a href="http://www.mrpt.org/Application%3ARawLogViewer" >RawLogViewer</a>:
+			- Better description of the "too much memory used" warning while loading large datasets. 
 	- New classes:
 		- [mrpt-hwdrivers]
 			- mrpt::hwdrivers::CInterfaceNI845x: An interface for this USB SPI/I2C data acquisition board.

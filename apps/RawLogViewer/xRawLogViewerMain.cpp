@@ -1445,20 +1445,17 @@ void xRawLogViewerFrame::loadRawlogFile(
 				progDia.Fit();
 				wxTheApp->Yield();  // Let the app. process messages
 
-				if (memUsg_Mb>1600 && !alreadyWarnedTooLargeFile)
+				if (memUsg_Mb>2600 && !alreadyWarnedTooLargeFile)
 				{
 					alreadyWarnedTooLargeFile=true;
 					string msg;
 					msg += "It seems that the file you are loading will consume a large amount of memory if loaded in memory completely.\n";
-					msg += "Note that large rawlogs are better managed by selecting 'Process rawlog in files' in the corresponding \n";
-					msg += "RawLogViewer dialogs, or in File -> Operations on files -> ...\n \n";
-					msg += "Do you want to continue loading this file? (Not recommended)";
+					msg += "This is just a warning to make you watch whether your system runs out of memory while still loading.\n";
+					msg += "Do you want to continue loading this file?";
 					if (wxNO==wxMessageBox( _U(msg.c_str()),_("Warning"),wxYES_NO | wxICON_EXCLAMATION))
 						keepLoading = false;
 				}
-
 			}
-
 		}
 
 		CSerializablePtr newObj;
