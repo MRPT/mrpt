@@ -214,14 +214,7 @@ bool  CGasConcentrationGridMap2D::internal_insertObservation(
 #endif
 
 				// Finally, do the actual map update with that value:
-				switch (m_mapType)
-				{
-					case mrKernelDM:           insertObservation_KernelDM_DMV(sensorReading,sensorPose, false); break;
-					case mrKernelDMV:          insertObservation_KernelDM_DMV(sensorReading,sensorPose, true); break;
-					case mrKalmanFilter:       insertObservation_KF(sensorReading,sensorPose); break;
-					case mrKalmanApproximate:  insertObservation_KF2(sensorReading,sensorPose);break;
-					case mrGMRF:			   insertObservation_GMRF(sensorReading,sensorPose);
-				};
+				this->insertIndividualReading(sensorReading, mrpt::math::TPoint2D(sensorPose.x(),sensorPose.y()) );
 
 			} // Selected e-noseID obs.
 

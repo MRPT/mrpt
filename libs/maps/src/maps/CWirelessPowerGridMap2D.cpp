@@ -120,69 +120,22 @@ bool  CWirelessPowerGridMap2D::internal_insertObservation(
 		const CObservationWirelessPower	*o = static_cast<const CObservationWirelessPower*>( obs );
 		float						sensorReading;
 
-		//Cover all robot e-noses (m_readings)
 
-		// Get index to differentiate between enoses --> insertionoptions.enose_id
-//		for (std::vector<CObservationWirelessPower::TObservationENose>::const_iterator it = o->m_readings.begin(); it!=o->m_readings.end();it+=1)
+		// Compute the 3D sensor pose in world coordinates:
+		CPose2D		sensorPose = CPose2D(robotPose3D + o->sensorPoseOnRobot );
 
-//		ASSERT_(o->m_readings.size() > insertionOptions.enose_id);
-//		const CObservationWirelessPower::TObservationENose *it = &o->m_readings[insertionOptions.enose_id];
-//		{
-			// Compute the 3D sensor pose in world coordinates:
-			CPose2D		sensorPose = CPose2D(robotPose3D + o->sensorPoseOnRobot );
+		sensorReading = o->power;
 
-			// Compute the sensor reading value (Volts):
-		/*	if (insertionOptions.sensorType==0x0000){	//compute the mean
-				sensorReading = math::mean( it->readingsVoltage );
-			}
-			else
-			{
-				// Look for the correct sensor type
-				size_t i;
-				for (i=0; i<it->sensorTypes.size(); i++)
-				{
-					if (it->sensorTypes.at(i) == int(insertionOptions.sensorType) )
-						break;
-				}
+		// Normalization:
+		sensorReading = (sensorReading - insertionOptions.R_min) /( insertionOptions.R_max - insertionOptions.R_min );
 
-				if (i<it->sensorTypes.size()){
-					sensorReading = it->readingsVoltage[i];
-				}
-				else
-				{
-					//Sensor especified not found, compute default mean value
-					sensorReading = math::mean( it->readingsVoltage );
-				}
-			}*/
-			sensorReading = o->power;
+		// Update the gross estimates of mean/vars for the whole reading history (see IROS2009 paper):
+		m_average_normreadings_mean = (sensorReading + m_average_normreadings_count*m_average_normreadings_mean)/(1+m_average_normreadings_count);
+		m_average_normreadings_var  = (square(sensorReading - m_average_normreadings_mean) + m_average_normreadings_count*m_average_normreadings_var) /(1+m_average_normreadings_count);
+		m_average_normreadings_count++;
 
-			// Conversion Voltage(V)-->1/Resistance(1/Ohms)
-			//sensorReading = 1/ (5 * insertionOptions.VoltageDivider_Res /sensorReading - insertionOptions.VoltageDivider_Res);
-
-			// Normalization:
-			sensorReading = (sensorReading - insertionOptions.R_min) /( insertionOptions.R_max - insertionOptions.R_min );
-
-			// Update the gross estimates of mean/vars for the whole reading history (see IROS2009 paper):
-			m_average_normreadings_mean = (sensorReading + m_average_normreadings_count*m_average_normreadings_mean)/(1+m_average_normreadings_count);
-			m_average_normreadings_var  = (square(sensorReading - m_average_normreadings_mean) + m_average_normreadings_count*m_average_normreadings_var) /(1+m_average_normreadings_count);
-			m_average_normreadings_count++;
-
-#if 0
-			cout << "[DEBUG] m_average_normreadings_count: " << m_average_normreadings_count << " -> mean: " << m_average_normreadings_mean << " var: " <<  m_average_normreadings_var  << endl;
-#endif
-
-			// Finally, do the actual map update with that value:
-			switch (m_mapType)
-			{
-				case mrKernelDM:           insertObservation_KernelDM_DMV(sensorReading,sensorPose, false); break;
-				case mrKernelDMV:          insertObservation_KernelDM_DMV(sensorReading,sensorPose, true); break;
-				case mrKalmanFilter:       insertObservation_KF(sensorReading,sensorPose); break;
-				case mrKalmanApproximate:  insertObservation_KF2(sensorReading,sensorPose);
-			default:
-				THROW_EXCEPTION("insertObservation: Unsupported value in m_mapType")
-			};
-
-	//	} // for each e-nose obs.
+		// Finally, do the actual map update with that value:
+		this->insertIndividualReading(sensorReading, mrpt::math::TPoint2D(sensorPose.x(),sensorPose.y()) );
 
 		return true;	// Done!
 

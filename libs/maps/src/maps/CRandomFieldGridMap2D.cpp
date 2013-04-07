@@ -356,26 +356,22 @@ bool  CRandomFieldGridMap2D::isEmpty() const
   ---------------------------------------------------------------*/
 /** The implementation of "insertObservation" for Achim Lilienthal's map models DM & DM+V.
 * \param normReading Is a [0,1] normalized concentration reading.
-* \param sensorPose Is the sensor pose on the robot
 * \param is_DMV = false -> map type is Kernel DM; true -> map type is DM+V
 */
 void  CRandomFieldGridMap2D::insertObservation_KernelDM_DMV(
 	float			normReading,
-	const CPose3D	&sensorPose_,
+	const mrpt::math::TPoint2D &point,
 	bool             is_DMV )
 {
 	MRPT_START
 
 	static const TRandomFieldCell defCell(0,0);
 
-	const TPose3D sensorPose= TPose3D(sensorPose_);
-	const TPose2D sensorPose2D = TPose2D( sensorPose );
-
 	// Assure we have room enough in the grid!
-	resize(	sensorPose2D.x - m_insertOptions_common->cutoffRadius*2,
-			sensorPose2D.x + m_insertOptions_common->cutoffRadius*2,
-			sensorPose2D.y - m_insertOptions_common->cutoffRadius*2,
-			sensorPose2D.y + m_insertOptions_common->cutoffRadius*2,
+	resize(	point.x - m_insertOptions_common->cutoffRadius*2,
+			point.x + m_insertOptions_common->cutoffRadius*2,
+			point.y - m_insertOptions_common->cutoffRadius*2,
+			point.y + m_insertOptions_common->cutoffRadius*2,
 			defCell );
 
 	// Compute the "parzen Gaussian" once only:
@@ -413,8 +409,8 @@ void  CRandomFieldGridMap2D::insertObservation_KernelDM_DMV(
 
 	//	Fuse with current content of grid (the MEAN of each cell):
 	// --------------------------------------------------------------
-	const int sensor_cx = x2idx( sensorPose.x );
-	const int sensor_cy = y2idx( sensorPose.y );
+	const int sensor_cx = x2idx( point.x );
+	const int sensor_cy = y2idx( point.y );
 	TRandomFieldCell	*cell;
 	vector<float>::iterator	windowIt = m_DM_gaussWindow.begin();
 
@@ -868,7 +864,7 @@ void  CRandomFieldGridMap2D::resize(
   ---------------------------------------------------------------*/
 void  CRandomFieldGridMap2D::insertObservation_KF(
 	float			normReading,
-	const CPose3D	&sensorPose_ )
+	const mrpt::math::TPoint2D &point )
 {
 	MRPT_START
 
@@ -877,18 +873,15 @@ void  CRandomFieldGridMap2D::insertObservation_KF(
 				m_insertOptions_common->KF_initialCellStd			// std
 				);
 
-	const TPose3D sensorPose= TPose3D(sensorPose_);
-	const TPose2D sensorPose2D = TPose2D( sensorPose );
-
 	// DEBUG
 	// Save to file the actual cov_matrix to plot it with matlab
 	//m_cov.saveToTextFile( std::string("LOG_ICP-SLAM\_mean_compressed_cov.txt"), MATRIX_FORMAT_FIXED );
 
 	// Assure we have room enough in the grid!
-	resize(	sensorPose2D.x - 1,
-			sensorPose2D.x + 1,
-			sensorPose2D.y - 1,
-			sensorPose2D.y + 1,
+	resize(	point.x - 1,
+			point.x + 1,
+			point.y - 1,
+			point.y + 1,
 			defCell );
 
 	// --------------------------------------------------------
@@ -903,8 +896,8 @@ void  CRandomFieldGridMap2D::insertObservation_KF(
 	//  We directly apply optimized formulas arising
 	//   from our concrete sensor model.
 	// -------------------------------------------------
-	int						cellIdx = xy2idx( sensorPose.x, sensorPose.y );
-	TRandomFieldCell	*cell = cellByPos( sensorPose.x, sensorPose.y );
+	int						cellIdx = xy2idx( point.x, point.y );
+	TRandomFieldCell	*cell = cellByPos( point.x, point.y );
 	ASSERT_(cell!=NULL);
 	size_t					N,i,j;
 
@@ -924,7 +917,7 @@ void  CRandomFieldGridMap2D::insertObservation_KF(
 
 #if RANDOMFIELDGRIDMAP_VERBOSE
 	CTicTac		tictac;
-	//cout << "[insertObservation_KF] Sensor: " << sensorPose2D << " measur: " << normReading << endl;
+	//cout << "[insertObservation_KF] Sensor: " << point << " measur: " << normReading << endl;
 	printf("[insertObservation_KF] Updating mean values...");
 	tictac.Tic();
 #endif
@@ -1852,7 +1845,7 @@ void CRandomFieldGridMap2D::predictMeasurement(
   ---------------------------------------------------------------*/
 void  CRandomFieldGridMap2D::insertObservation_KF2(
 	float			normReading,
-	const CPose3D	&sensorPose_ )
+	const mrpt::math::TPoint2D &point )
 {
 	MRPT_START
 
@@ -1870,16 +1863,13 @@ void  CRandomFieldGridMap2D::insertObservation_KF2(
 				-1	// Just to indicate that cells are new, next changed to: m_insertOptions_common->KF_initialCellStd			// std
 				);
 
-	const TPose3D sensorPose= TPose3D(sensorPose_);
-	const TPose2D sensorPose2D = TPose2D( sensorPose );
-
 	// Assure we have room enough in the grid!
 	const double Aspace = (W+1) * m_resolution;
 
-	resize(	sensorPose2D.x - Aspace,
-			sensorPose2D.x + Aspace,
-			sensorPose2D.y - Aspace,
-			sensorPose2D.y + Aspace,
+	resize(	point.x - Aspace,
+			point.x + Aspace,
+			point.y - Aspace,
+			point.y + Aspace,
 			defCell,
 			Aspace );
 
@@ -1903,8 +1893,8 @@ void  CRandomFieldGridMap2D::insertObservation_KF2(
 	//const double	KF_covSigma2 = square(m_insertOptions_common->KF_covSigma);
 	//const double	std0 = m_insertOptions_common->KF_initialCellStd;
 	//const double	res2 = square(m_resolution);
-	const int				cellIdx = xy2idx( sensorPose.x, sensorPose.y );
-	TRandomFieldCell	*cell = cellByPos( sensorPose.x, sensorPose.y );
+	const int				cellIdx = xy2idx( point.x, point.y );
+	TRandomFieldCell	*cell = cellByPos( point.x, point.y );
 	ASSERT_(cell!=NULL);
 
 	// Predicted observation mean
@@ -1931,8 +1921,8 @@ void  CRandomFieldGridMap2D::insertObservation_KF2(
 	//
 	//   What follows is *** REALLY UGLY *** for efficiency, sorry!!  :-)
 	// ------------------------------------------------------------
-	const int	cx_c = x2idx( sensorPose.x );
-	const int	cy_c = y2idx( sensorPose.y );
+	const int	cx_c = x2idx( point.x );
+	const int	cy_c = y2idx( point.y );
 
 	const int	Acx0 = max(-W, -cx_c);
 	const int	Acy0 = max(-W, -cy_c);
@@ -2151,21 +2141,33 @@ CRandomFieldGridMap2D::TMapRepresentation	 CRandomFieldGridMap2D::getMapType()
 	return m_mapType;
 }
 
+void CRandomFieldGridMap2D::insertIndividualReading(const float sensorReading,const mrpt::math::TPoint2D & point)
+{
+	switch (m_mapType)
+	{
+		case mrKernelDM:           insertObservation_KernelDM_DMV(sensorReading,point, false); break;
+		case mrKernelDMV:          insertObservation_KernelDM_DMV(sensorReading,point, true); break;
+		case mrKalmanFilter:       insertObservation_KF(sensorReading,point); break;
+		case mrKalmanApproximate:  insertObservation_KF2(sensorReading,point);break;
+		case mrGMRF:			   insertObservation_GMRF(sensorReading,point); break;
+	default:
+		THROW_EXCEPTION("insertObservation() isn't implemented for selected 'mapType'")
+	};
+}
+
 
 /*---------------------------------------------------------------
 					insertObservation_GMRF
   ---------------------------------------------------------------*/
 void CRandomFieldGridMap2D::insertObservation_GMRF(
 	float normReading,
-	const CPose3D &sensorPose_ )
+	const mrpt::math::TPoint2D &point )
 {
 
 	try{
-		const TPose3D sensorPose= TPose3D(sensorPose_);
-
 		//Get index of observed cell
-		const int			cellIdx = xy2idx( sensorPose.x, sensorPose.y );
-		TRandomFieldCell	*cell = cellByPos( sensorPose.x, sensorPose.y );
+		const int			cellIdx = xy2idx( point.x, point.y );
+		TRandomFieldCell	*cell = cellByPos( point.x, point.y );
 		ASSERT_(cell!=NULL);
 
 		if (true)

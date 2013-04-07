@@ -59,6 +59,8 @@ namespace slam
 	  *  There are a number of methods available to build the gas grid-map, depending on the value of
 	  *    "TMapRepresentation maptype" passed in the constructor (see base class mrpt::slam::CRandomFieldGridMap2D).
 	  *
+	  * Update the map with insertIndividualReading() or insertObservation()
+	  *
 	  * \sa mrpt::slam::CRandomFieldGridMap2D, mrpt::slam::CMetricMap, mrpt::utils::CDynamicGrid, The application icp-slam, mrpt::slam::CMultiMetricMap
 	  * \ingroup mrpt_maps_grp
 	  */

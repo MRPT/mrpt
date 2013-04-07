@@ -110,12 +110,15 @@ namespace slam
 	  *    "TMapRepresentation maptype" passed in the constructor.
 	  *
 	  *  The following papers describe the mapping alternatives implemented here:
-	  *		- mrKernelDM: A kernel-based method:
-	  *		"Building gas concentration gridmaps with a mobile robot", Lilienthal, A. and Duckett, T., Robotics and Autonomous Systems, v.48, 2004.
-	  *
-	  *		- mrKernelDMV: A kernel-based method:
-	  *		"A Statistical Approach to Gas Distribution Modelling with Mobile Robots--The Kernel DM+ V Algorithm"
-	  * 	  , Lilienthal, A.J. and Reggente, M. and Trincavelli, M. and Blanco, J.L. and Gonzalez, J., IROS 2009.
+	  *		- mrKernelDM: A kernel-based method. See:
+	  *			- "Building gas concentration gridmaps with a mobile robot", Lilienthal, A. and Duckett, T., Robotics and Autonomous Systems, v.48, 2004.
+	  *		- mrKernelDMV: A kernel-based method. See:
+	  *			- "A Statistical Approach to Gas Distribution Modelling with Mobile Robots--The Kernel DM+ V Algorithm", Lilienthal, A.J. and Reggente, M. and Trincavelli, M. and Blanco, J.L. and Gonzalez, J., IROS 2009.
+	  *		- mrKalmanFilter: A "brute-force" approach to estimate the entire map with a dense (linear) Kalman filter. Will be very slow for mid or large maps. It's provided just for comparison purposes, not useful in practice.
+	  *		- mrKalmanApproximate: A compressed/sparse Kalman filter approach. See:
+	  *			- "A Kalman Filter Based Approach to Probabilistic Gas Distribution Mapping", JL Blanco, JG Monroy, J González-Jimenez, A Lilienthal, 28th Symposium On Applied Computing (SAC), 2013.
+	  *		- mrGMRF: A Gaussian Markov Random Field (GMRF) approach to map updating. See: 
+	  *			- (under review)
 	  *
 	  *  Note that this class is virtual, since derived classes still have to implement:
 	  *		- mrpt::slam::CMetricMap::computeObservationLikelihood()
@@ -144,12 +147,12 @@ namespace slam
 			return c.kf_mean;
 		}
 
-		/** The type of map representation to be used.
+		/** The type of map representation to be used, see CRandomFieldGridMap2D for a discussion.
 		  */
 		enum TMapRepresentation
 		{
-			mrKernelDM = 0,   //
-			mrAchim = 0,      // Another alias for "mrKernelDM", for backward compatibility
+			mrKernelDM = 0,   
+			mrAchim = 0,      //!< Another alias for "mrKernelDM", for backwards compatibility
 			mrKalmanFilter,
 			mrKalmanApproximate,
 			mrKernelDMV,
@@ -289,6 +292,13 @@ namespace slam
 		  */
 		TMapRepresentation	 getMapType();
 
+		/** Direct update of the map with a reading in a given position of the map, using 
+		  *  the appropriate method according to mapType passed in the constructor.
+		  *
+		  * This is a direct way to update the map, an alternative to the generic insertObservation() method which works with CObservation objects.
+		  */
+		void insertIndividualReading(const float sensorReading,const mrpt::math::TPoint2D & point);
+
 		/** Returns the prediction of the measurement at some (x,y) coordinates, and its certainty (in the form of the expected variance).
 		  *  This methods is implemented differently for the different gas map types.
 		  */
@@ -356,37 +366,37 @@ namespace slam
 
 		/** The implementation of "insertObservation" for Achim Lilienthal's map models DM & DM+V.
 		  * \param normReading Is a [0,1] normalized concentration reading.
-		  * \param sensorPose Is the sensor pose on the robot
+		  * \param point Is the sensor location on the map
 		  * \param is_DMV = false -> map type is Kernel DM; true -> map type is DM+V
 		  */
 		void  insertObservation_KernelDM_DMV(
 			float            normReading,
-			const CPose3D   &sensorPose,
+			const mrpt::math::TPoint2D &point,
 			bool             is_DMV );
 
 		/** The implementation of "insertObservation" for the (whole) Kalman Filter map model.
 		  * \param normReading Is a [0,1] normalized concentration reading.
-		  * \param sensorPose Is the sensor pose
+		  * \param point Is the sensor location on the map
 		  */
 		void  insertObservation_KF(
 			float			normReading,
-			const CPose3D	&sensorPose );
+			const mrpt::math::TPoint2D &point );
 
 		/** The implementation of "insertObservation" for the Efficient Kalman Filter map model.
 		  * \param normReading Is a [0,1] normalized concentration reading.
-		  * \param sensorPose Is the sensor pose
+		  * \param point Is the sensor location on the map
 		  */
 		void  insertObservation_KF2(
 			float			normReading,
-			const CPose3D	&sensorPose );
+			const mrpt::math::TPoint2D &point );
 
 		/** The implementation of "insertObservation" for the Gaussian Markov Random Field map model.
 		  * \param normReading Is a [0,1] normalized concentration reading.
-		  * \param sensorPose Is the sensor pose
+		  * \param point Is the sensor location on the map
 		  */
 		void  insertObservation_GMRF(
 			float			normReading,
-			const CPose3D	&sensorPose );
+			const mrpt::math::TPoint2D &point );
 
 		/** solves the minimum quadratic system to determine the new concentration of each cell */
 		void  updateMapEstimation_GMRF();

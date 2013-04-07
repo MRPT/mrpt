@@ -168,6 +168,7 @@ IF(BUILD_EXAMPLES)
 	#  list of examples for each directory:
 	SET(LIST_EXAMPLES_IN_THIS_DIR
 		octomap_simple
+		gmrf_map_demo
 		)
 	SET(CMAKE_EXAMPLE_DEPS mrpt-maps mrpt-gui)
 	SET(CMAKE_EXAMPLE_LINK_LIBS ${MRPT_LINKER_LIBS})

@@ -55,15 +55,9 @@ namespace slam
 	/** CWirelessPowerGridMap2D represents a PDF of wifi concentrations over a 2D area.
 	  *
 	  *  There are a number of methods available to build the wifi grid-map, depending on the value of
-	  *    "TMapRepresentation maptype" passed in the constructor.
+	  *    "TMapRepresentation maptype" passed in the constructor (see CRandomFieldGridMap2D for a discussion).
 	  *
-	  *  The following papers describe the mapping alternatives implemented here:
-	  *		- mrKernelDM: A kernel-based method:
-	  *		"Building gas concentration gridmaps with a mobile robot", Lilienthal, A. and Duckett, T., Robotics and Autonomous Systems, v.48, 2004.
-	  *
-	  *		- mrKernelDMV: A kernel-based method:
-	  *		"A Statistical Approach to Gas Distribution Modelling with Mobile Robots--The Kernel DM+ V Algorithm"
-	  * 	  , Lilienthal, A.J. and Reggente, M. and Trincavelli, M. and Blanco, J.L. and Gonzalez, J., IROS 2009.
+	  * Update the map with insertIndividualReading() or insertObservation()
 	  *
 	  * \sa mrpt::slam::CRandomFieldGridMap2D, mrpt::slam::CMetricMap, mrpt::utils::CDynamicGrid, The application icp-slam, mrpt::slam::CMultiMetricMap
 	  * \ingroup mrpt_maps_grp
@@ -76,7 +70,7 @@ namespace slam
 		/** Constructor
 		  */
 		CWirelessPowerGridMap2D(
-			TMapRepresentation	mapType = mrAchim,
+			TMapRepresentation	mapType = mrKernelDM,
             float				x_min = -2,
 			float				x_max = 2,
 			float				y_min = -2,
@@ -115,6 +109,7 @@ namespace slam
 			void  dumpToTextStream(CStream	&out) const; //!< See utils::CLoadableOptions
 
 		} insertionOptions;
+
 
 		/** Returns an image just as described in \a saveAsBitmapFile */
 		virtual void  getAsBitmapFile(mrpt::utils::CImage &out_img) const;
