@@ -48,7 +48,7 @@ void Example_GMRF()
 {
 	const double X_SIZE     = 10.0;
 	const double Y_SIZE     = 10.0;
-	const double RESOLUTION = 1.0;
+	const double RESOLUTION = 0.5;
 
 	mrpt::slam::CGasConcentrationGridMap2D  gasmap(
 		CRandomFieldGridMap2D::mrGMRF /*map type*/, 

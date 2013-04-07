@@ -39,6 +39,7 @@
 #include <mrpt/system/os.h>
 #include <mrpt/math/utils.h>
 #include <mrpt/utils/CTicTac.h>
+#include <mrpt/utils/CTimeLogger.h>
 #include <mrpt/utils/color_maps.h>
 
 #include <mrpt/opengl.h>
@@ -2199,10 +2200,19 @@ void CRandomFieldGridMap2D::updateMapEstimation_GMRF()
 	const uint16_t Gsize = m_insertOptions_common->GMRF_constraintsSize;
 	const uint16_t Gside = round((Gsize-1)/2);
 
-	CTicTac tictac;
-	tictac.Tic();
+#define DO_PROFILE
+
+#ifdef DO_PROFILE
+	static mrpt::utils::CTimeLogger timelogger;
+#endif
+
 
 	// Build Sparse Hessian Matrix based on H_vm vector of maps
+	//
+#ifdef DO_PROFILE
+	timelogger.enter("GMRF.build_hessian");
+#endif
+
 	Eigen::SparseMatrix<double> Hsparse(N,N);				// declares a column-major sparse matrix type of float
 	Hsparse.reserve(Eigen::VectorXi::Constant(N,5));		// Reserve 5 slots for each column
 	for (size_t j=0; j<N; j++)								// cols
@@ -2225,8 +2235,11 @@ void CRandomFieldGridMap2D::updateMapEstimation_GMRF()
 		}
 	}
 	Hsparse.makeCompressed();
-	cout << "		Hessian in: " << tictac.Tac() << "s" << endl;
-	tictac.Tic();
+
+#ifdef DO_PROFILE
+	timelogger.leave("GMRF.build_hessian");
+	timelogger.enter("GMRF.build_grad");
+#endif
 
 	// Reset and Built Gradient Vector
 	g.setZero();
@@ -2270,23 +2283,33 @@ void CRandomFieldGridMap2D::updateMapEstimation_GMRF()
 				}
 			}
 	}
-	cout << "		Gradient in: " << tictac.Tac() << "s" << endl;
-	tictac.Tic();
+
+#ifdef DO_PROFILE
+	timelogger.leave("GMRF.build_grad");
+	timelogger.enter("GMRF.solve");
+#endif
 
 	//Cholesky Factorization of Hessian --> Realmente se hace: chol( P * H * inv(P) )
 	Eigen::SimplicialLLT< Eigen::SparseMatrix <double> > solver;
 	solver.compute(Hsparse);
-	// Solve System:    m = m + H\(-g);
-	Eigen::VectorXd m_inc = solver.solve(-g);
+	// Solve System:    m = m + H\(-g);  
+	// Note: we solve for (+g) to avoid creating a temporary "-g", then we'll substract the result in m_inc instead of adding it:
+	Eigen::VectorXd m_inc = solver.solve(g);
 
-	cout << "		Solved in: " << tictac.Tac() << "s" << endl;
-	tictac.Tic();
+#ifdef DO_PROFILE
+	timelogger.leave("GMRF.solve");
+	timelogger.enter("GMRF.variance");
+#endif
 
 	// VARIANCE SIGMA = inv(P) * inv( P*H*inv(P) ) * P
 	//Get triangular supperior P*H*inv(P) = UT' * UT = P * R'*R * inv(P)
 	Eigen::SparseMatrix<double> UT = solver.matrixU();
 	Eigen::SparseMatrix<double> Sigma(N,N);								//Variance Matrix
 	Sigma.reserve(UT.nonZeros());
+
+
+	// TODO: UT.coeff() implies a heavy time cost in sparse matrices... the following
+	//       should be rewritten for efficiency exploiting the knowledge about the nonzero pattern.
 
 	//Apply custom equations to obtain the inverse -> inv( P*H*inv(P) )
 	for (int l=N-1; l>=0; l--)
@@ -2325,24 +2348,20 @@ void CRandomFieldGridMap2D::updateMapEstimation_GMRF()
 		Sigma.insert(l,l) = (1/UT.coeff(l,l)) * ( 1/UT.coeff(l,l) - subSigmas );
 	}
 
-	cout << "		Variance in: " << tictac.Tac() << "s" << endl;
-	tictac.Tic();
-
-	//Get the real Variance Matrix. Undo permutation
-	// TODO: This is very slow (permutation seems to be a dense matrix...)
-	Sigma = solver.permutationPinv() * Sigma * solver.permutationP();
-	//Sigma.applyThisOnTheLeft(solver.permutationPinv());
-	//Sigma.applyThisOnTheRight(solver.permutationP());
-
-	cout << "		Permutation in: " << tictac.Tac() << "s" << endl;
-	tictac.Tic();
-
+#ifdef DO_PROFILE
+	timelogger.leave("GMRF.variance");
+	timelogger.enter("GMRF.copy_to_map");
+#endif
 
 	// Update Mean-Variance and force (0 < m_map[i].mean < 1)
 	for (size_t j=0; j<N; j++)
 	{
-		m_map[j].gmrf_std = sqrt(Sigma.coeff(j,j));
-		m_map[j].gmrf_mean += m_inc[j];
+		// Recover the diagonal covariance values, undoing the permutation:
+		int idx = solver.permutationP().indices().coeff(j);
+		const double variance = Sigma.coeff(idx,idx);
+
+		m_map[j].gmrf_std = std::sqrt(variance);
+		m_map[j].gmrf_mean -= m_inc[j]; // "-" because we solved for "+grad" instead of "-grad".
 		if (m_map[j].gmrf_mean >1) m_map[j].gmrf_mean = 1.0;
 		if (m_map[j].gmrf_mean <0) m_map[j].gmrf_mean = 0.0;
 	}
@@ -2361,6 +2380,9 @@ void CRandomFieldGridMap2D::updateMapEstimation_GMRF()
 		}
 	}
 
+#ifdef DO_PROFILE
+	timelogger.leave("GMRF.copy_to_map");
+#endif
 
 	/* //Save Hessian matrix to text file
 	Eigen::MatrixXd H = Hsparse.toDense();
