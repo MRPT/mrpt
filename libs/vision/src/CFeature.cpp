@@ -424,7 +424,7 @@ void  CFeature::readFromStream(CStream &in,int version)
                 in  >> descriptors.multiSIFTDescriptors;
 
 			type		    = (TFeatureType)aux_type;
-			track_status	= (TKLTFeatureStatus)aux_KLTS;
+			track_status	= (TFeatureTrackStatus)aux_KLTS;
 		} break;
 	default:
 		MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)

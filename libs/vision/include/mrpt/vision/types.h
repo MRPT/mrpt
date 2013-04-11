@@ -48,7 +48,7 @@ namespace mrpt
 	{
 		/** \addtogroup mrpt_vision_grp
 		  *  @{ */
-	
+
 		using std::vector;
 		//using namespace mrpt::slam;
 		using namespace mrpt::math;
@@ -105,20 +105,9 @@ namespace mrpt
 			status_TRACKED 	= 5,	//!< Feature correctly tracked
 
 			// Bad:
-			status_OOB		= 1,	//!< Feature felt Out Of Bounds
-			status_LOST 	= 10,	//!< Unable to track this feature
-
-			// KLT specific:
-			statusKLT_IDLE 	= 0,	//!< Inactive
-			statusKLT_OOB	= 1,	//!< Out Of Bounds	(Value identical to status_OOB)
-			statusKLT_SMALL_DET	= 2,	//!< Determinant of the matrix too small
-			statusKLT_LARGE_RESIDUE = 3,	//!< Error too big
-			statusKLT_MAX_RESIDUE	= 4,
-			statusKLT_TRACKED 	= 5,	//!< Feature correctly tracked (Value identical to status_TRACKED)
-			statusKLT_MAX_ITERATIONS	= 6	//!< Iteration maximum reached
+			status_OOB		= 1,	//!< Feature fell Out Of Bounds (out of the image limits, too close to image borders)
+			status_LOST 	= 10	//!< Unable to track this feature (mismatch is too high for the given tracking window: lack of texture? oclussion?)
 		};
-
-		typedef TFeatureTrackStatus TKLTFeatureStatus; //!< For backward compatibility
 
 
 		/** One feature observation entry, used within sequences with TSequenceFeatureObservations */

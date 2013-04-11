@@ -40,7 +40,7 @@
 #include <mrpt/vision/CFeatureExtraction.h>
 
 // Universal include for all versions of OpenCV
-#include <mrpt/otherlibs/do_opencv_includes.h> 
+#include <mrpt/otherlibs/do_opencv_includes.h>
 
 
 using namespace mrpt;
@@ -133,13 +133,13 @@ MRPT_START
 				// Feature could be tracked
 				featureList.setFeatureXf(i, points[1][i].x );
 				featureList.setFeatureYf(i, points[1][i].y );
-				featureList.setTrackStatus(i, statusKLT_TRACKED );
+				featureList.setTrackStatus(i, status_TRACKED );
 			} // end if
 			else	// Feature could not be tracked
 			{
 				featureList.setFeatureX(i,-1);
 				featureList.setFeatureY(i,-1);
-				featureList.setTrackStatus(i, trck_err_too_large ? status_LOST : statusKLT_OOB );
+				featureList.setTrackStatus(i, trck_err_too_large ? status_LOST : status_OOB );
 			} // end else
 		} // end for
 

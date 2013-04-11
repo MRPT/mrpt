@@ -312,7 +312,7 @@ void  CRandomFieldGridMap2D::internal_clear()
 
 						if (j==i)
 						{
-							//H_ii = Nº constraints * Lambda_cell * (J_ij^2 +1)
+							//H_ii = NÂº constraints * Lambda_cell * (J_ij^2 +1)
 							std::pair<size_t,float> Hentry (j , nConsFixed_j * m_insertOptions_common->GMRF_lambdaConstraints * (square(1.0/gauss_val[abs(kr+kc)]) + 1) );
 							H_vm.at(i).insert(Hentry);
 						}

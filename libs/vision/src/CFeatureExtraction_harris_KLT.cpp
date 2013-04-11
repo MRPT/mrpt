@@ -38,7 +38,7 @@
 #include <mrpt/vision/CFeatureExtraction.h>
 
 // Universal include for all versions of OpenCV
-#include <mrpt/otherlibs/do_opencv_includes.h> 
+#include <mrpt/otherlibs/do_opencv_includes.h>
 
 
 using namespace mrpt;
@@ -201,7 +201,7 @@ void CFeatureExtraction::selectGoodFeaturesKLT(
 				ft->type		= featKLT;
 				ft->x			= points[i].x;				// X position
 				ft->y			= points[i].y;				// Y position
-				ft->track_status = statusKLT_TRACKED;		// Feature Status
+				ft->track_status = status_TRACKED;		    // Feature Status
 				ft->response	= 0.0;						// A value proportional to the quality of the feature (unused yet)
 				ft->ID			= nCFeats++;				// Feature ID into extraction
 				ft->patchSize	= options.patchSize;		// The size of the feature patch
