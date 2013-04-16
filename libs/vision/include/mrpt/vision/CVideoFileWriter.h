@@ -32,8 +32,8 @@
    | ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE           |
    | POSSIBILITY OF SUCH DAMAGE.                                               |
    +---------------------------------------------------------------------------+ */
-#ifndef CVideoFileWritter_H
-#define CVideoFileWritter_H
+#ifndef CVideoFileWriter_H
+#define CVideoFileWriter_H
 
 #include <mrpt/vision/utils.h>
 #include <mrpt/utils/CImage.h>
