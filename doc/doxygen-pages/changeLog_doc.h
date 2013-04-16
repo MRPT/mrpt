@@ -68,6 +68,7 @@
 	- Build system:
 		- Fixed a potential build error if including FFMPEG's <time.h> instead of the standard header - <a href="http://code.google.com/p/mrpt/source/detail?r=3316" >r3316</a>
 		- Fixed determination of GCC version for all GCC builds - <a href="http://code.google.com/p/mrpt/source/detail?r=3324" >r3324</a>
+		- Updated to Eigen 3.1.3 - <a href="http://code.google.com/p/mrpt/source/detail?r=3349" >r3349</a>
 		- Updated to nanoflann 1.1.5
 	- BUG FIXES:
 		- Unit tests "SchurTests" for mrpt-srba incorrectly reported errors due to an improperly initialized reference to a local variable - <a href="http://code.google.com/p/mrpt/source/detail?r=3318" >r3318</a>
