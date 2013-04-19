@@ -1191,6 +1191,38 @@ namespace mrpt
 
 		/** @} */  // end grouping interpolation_grp
 
+
+		/** \defgroup mrpt_math_io Custom I/O for math containers
+		  * \ingroup mrpt_base_grp */
+		/** \addtogroup mrpt_math_io
+		  * @{ */
+
+		/** Saves to a plain-text file the nonzero entries of a Eigen sparse matrix, represented as a vector of triplets.
+		  *  Output format is one line per entry with the format: "i j val", i:row, j:col, val:value.
+		  * \tparam TRIPLET should be Eigen::Triplet<T>
+		  */
+		template <class TRIPLET>
+		bool saveEigenSparseTripletsToFile(const std::string &sFile, std::vector<TRIPLET> &tri)
+		{
+#if defined(_MSC_VER) && (_MSC_VER>=1400) // Use a secure version in Visual Studio 2005+
+			FILE *f;
+			if (0!=::fopen_s(&f,sFile.c_str(),"wt")) f= NULL;
+#else
+			FILE *f= ::fopen(sFile.c_str(),"wt");
+#endif
+
+			if (!f) return false;
+
+			for (size_t i=0;i<tri.size();i++)
+				fprintf(f,"%u %u %e\n", 1+tri[i].row(), 1+tri[i].col(), tri[i].value() );
+
+			fclose(f);
+			return true;
+		}
+
+		/** @} */  // End of mrpt_math_io
+
+
 	} // End of MATH namespace
 
 } // End of namespace

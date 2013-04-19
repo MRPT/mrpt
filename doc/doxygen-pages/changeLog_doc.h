@@ -56,6 +56,7 @@
 			- mrpt::opengl::stock_objects::Hokuyo_URG()
 			- mrpt::opengl::stock_objects::Hokuyo_UTM()
 			- mrpt::opengl::stock_objects::Househam_Sprayer()
+		- mrpt::math::saveEigenSparseTripletsToFile() - <a href="http://code.google.com/p/mrpt/source/detail?r=3351" >r3351</a>
 	- New examples:
 			- gmrf_map_demo
 	- Changes in classes:
