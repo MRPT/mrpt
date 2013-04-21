@@ -237,101 +237,122 @@ void  CRandomFieldGridMap2D::internal_clear()
 			const uint16_t Gsize = m_insertOptions_common->GMRF_constraintsSize;
 			const uint16_t Gside = round((Gsize-1)/2);
 			const float Gsigma = m_insertOptions_common->GMRF_constraintsSigma;
-			gauss_val.resize(Gside);
+			gauss_val.resize(2*Gside);
 			const size_t N = m_map.size();
 
 			// Weigths of the constratints
-			for (uint16_t i=1;i<=Gside;i++)
-			{
-					gauss_val[i-1] = exp( -0.5 *i /Gsigma );		//Fixed constraints are modeled as Gaussian
-			}
+			for (uint16_t i=1;i<=2*Gside;i++)  // Compute larger distances than Gside to account for "diagonal" distances.
+				gauss_val[i-1] = exp( -0.5 *i /Gsigma );		//Fixed constraints are modeled as Gaussian
 
 			//Determine the number of Initial constraints --> L+M
-			 nConsFixed = 0;	// L
-			 nConsObs = 0;		// M
+			nConsFixed = 0;	// L
+			nConsObs = 0;		// M
 
-			for (size_t j=0; j<N; j++)
 			{
-				//Get (row(x), col(y))
-				int		cx = ( j % m_size_x );		// [0, m_size_x-1]
-				int		cy = ( j / m_size_x );		// [0, m_size_y-1]
+				// Avoid the costly % and / operations:
+				int cx = 0; // ( j % m_size_x );		// [0, m_size_x-1]
+				int	cy = 0; // ( j / m_size_x );		// [0, m_size_y-1]
+				for (size_t j=0; j<N; j++)
+				{
+					//Determine the Number of restrictions of the current cell j
+					//Determine num of columns out of the gridmap
+					size_t outc_left = max( 0 , Gside-cx );
+					size_t outc_right = max(int (0) , int (Gside-(m_size_x-cx-1)) );
+					size_t outc = outc_left + outc_right;
+					//Determine num of rows out of the gridmap
+					size_t outr_down = max( 0 , Gside-(cy) );
+					size_t outr_up = max(int (0) , int (Gside-(m_size_y-cy-1)) );
+					size_t outr = outr_up + outr_down;
 
-				//Determine the Number of restrictions of the current cell j
-				//Determine num of columns out of the gridmap
-				size_t outc_left = max( 0 , Gside-cx );
-				size_t outc_right = max(int (0) , int (Gside-(m_size_x-cx-1)) );
-				size_t outc = outc_left + outc_right;
-				//Determine num of rows out of the gridmap
-				size_t outr_down = max( 0 , Gside-(cy) );
-				size_t outr_up = max(int (0) , int (Gside-(m_size_y-cy-1)) );
-				size_t outr = outr_up + outr_down;
+					nConsFixed += (Gsize - outc -1) + (Gsize - outr -1 );   //only vertical and horizontal restrictions
 
-				nConsFixed = nConsFixed + (Gsize - outc -1) + (Gsize - outr -1 );   //only vertical and horizontal restrictions
+					//Increment (row(x), col(y))
+					if (++cx>=m_size_x)
+					{
+						cx=0;
+						cy++;
+					}
+				}
 			}
 
 			nConstraints = nConsFixed + nConsObs;
-
 			cout << "Generating " << nConstraints << "cell constraints for a map size of N=" << N << endl;
 
 			//Reset the vector of maps (Hessian_vm), the gradient, and the vector of active observations
-			H_vm.clear();
-			H_vm.resize(N);
+#if EIGEN_VERSION_AT_LEAST(3,1,0)
+			H_prior.clear();
+			H_prior.reserve(nConsFixed);
+#endif
 			g.resize(N);			//Initially the gradient is all 0
 			g.fill(0.0);
 			activeObs.resize(N);	//No initial Observations
 
 			// Load default values:
-			size_t count = 0;
-			for (size_t j=0; j<N; j++)
 			{
-				//Get (row(x), col(y))
-				int		cx = ( j % m_size_x );		// [0, m_size_x-1]
-				int		cy = ( j / m_size_x );		// [0, m_size_y-1]
-
-				//Determine the Number of restrictions of the current cell j
-				//Determine num of columns out of the gridmap
-				int outc_left = max( 0 , Gside-cx );
-				int outc_right = max(int (0) , int (Gside-(m_size_x-cx-1)) );
-				int outc = outc_left + outc_right;
-				//Determine num of rows out of the gridmap
-				int outr_down = max( 0 , Gside-(cy) );
-				int outr_up = max(int (0) , int (Gside-(m_size_y-cy-1)) );
-				int outr = outr_up + outr_down;
-
-				size_t nConsFixed_j = (Gsize - outc -1) + (Gsize - outr -1 );   //only vertical and horizontal restrictions
-
-				//Set constraints of cell j with all neighbord cells i
-				for (int kr=-(Gside-outr_down); kr<=(Gside-outr_up); kr++ )
+				// Avoid the costly % and / operations:
+				int cx = 0; // ( j % m_size_x );		// [0, m_size_x-1]
+				int	cy = 0; // ( j / m_size_x );		// [0, m_size_y-1]
+				size_t count = 0;
+				for (size_t j=0; j<N; j++)
 				{
-					for (int kc=-(Gside-outc_left); kc<=(Gside-outc_right); kc++)
+					//Determine the Number of restrictions of the current cell j
+					//Determine num of columns out of the gridmap
+					int outc_left = max( 0 , Gside-cx );
+					int outc_right = max(int (0) , int (Gside-(m_size_x-cx-1)) );
+					int outc = outc_left + outc_right;
+					//Determine num of rows out of the gridmap
+					int outr_down = max( 0 , Gside-(cy) );
+					int outr_up = max(int (0) , int (Gside-(m_size_y-cy-1)) );
+					int outr = outr_up + outr_down;
+
+					size_t nConsFixed_j = (Gsize - outc -1) + (Gsize - outr -1 );   //only vertical and horizontal restrictions
+
+					//Set constraints of cell j with all neighbord cells i
+					for (int kr=-(Gside-outr_down); kr<=(Gside-outr_up); kr++ )
 					{
-						// get index of cell i
-						size_t icx = cx + kc;
-						size_t icy = cy + kr;
-						size_t i = icx + icy*m_size_x;
+						for (int kc=-(Gside-outc_left); kc<=(Gside-outc_right); kc++)
+						{
+							// get index of cell i
+							size_t icx = cx + kc;
+							size_t icy = cy + kr;
+							size_t i = icx + icy*m_size_x;
 
-						if (j==i)
-						{
-							//H_ii = Nº constraints * Lambda_cell * (J_ij^2 +1)
-							std::pair<size_t,float> Hentry (j , nConsFixed_j * m_insertOptions_common->GMRF_lambdaConstraints * (square(1.0/gauss_val[abs(kr+kc)]) + 1) );
-							H_vm.at(i).insert(Hentry);
-						}
-						else
-						{
-							if (kr==0 || kc==0)      //only vertical and horizontal restrictions/constraints
+							if (j==i)
 							{
-								// H_ji = 2 * Lambda_cell * J_ij
-								std::pair<size_t,float> Hentry (j , -2 * m_insertOptions_common->GMRF_lambdaConstraints * 1/gauss_val[abs(kr+kc)-1]);
-								H_vm.at(i).insert(Hentry);
+								//H_ii = Nº constraints * Lambda_cell * (J_ij^2 +1)
+#if EIGEN_VERSION_AT_LEAST(3,1,0)
+								//std::pair<size_t,float> Hentry (j , nConsFixed_j * m_insertOptions_common->GMRF_lambdaConstraints * (square(1.0/gauss_val[abs(kr+kc)]) + 1) );
+								//H_vm.at(i).insert(Hentry);
 
-								//g_j = [m(j) - alpha*m(i) ]* lambda
-								g[j] += (m_map[j].gmrf_mean - m_map[i].gmrf_mean) * m_insertOptions_common->GMRF_lambdaConstraints;
+								Eigen::Triplet<double> Hentry(i,j , nConsFixed_j * m_insertOptions_common->GMRF_lambdaConstraints * (square(1.0/gauss_val[abs(kr+kc)]) + 1) );
+								H_prior.push_back( Hentry );
+#endif
+							}
+							else
+							{
+								if (kr==0 || kc==0)      //only vertical and horizontal restrictions/constraints
+								{
+									// H_ji = 2 * Lambda_cell * J_ij
+#if EIGEN_VERSION_AT_LEAST(3,1,0)
+									Eigen::Triplet<double> Hentry(i,j , -2 * m_insertOptions_common->GMRF_lambdaConstraints * 1/gauss_val[abs(kr+kc)-1]);
+									H_prior.push_back( Hentry );
+#endif
+									//g_j = [m(j) - alpha*m(i) ]* lambda
+									g[j] += (m_map[j].gmrf_mean - m_map[i].gmrf_mean) * m_insertOptions_common->GMRF_lambdaConstraints;
 
-								count = count + 1;
+									count++;
+								}
 							}
 						}
 					}
-				}
+
+					// Increment (row(x), col(y))
+					if (++cx>=m_size_x)
+					{
+						cx=0;
+						cy++;
+					}
+				} // end for "j"
 			}
 
 			cout << "		Ready in: " << tictac.Tac() << "s" << endl;
@@ -2207,34 +2228,36 @@ void CRandomFieldGridMap2D::updateMapEstimation_GMRF()
 #endif
 
 
-	// Build Sparse Hessian Matrix based on H_vm vector of maps
+	// Build Sparse Hessian Matrix based on H_prior vector of maps
 	//
 #ifdef DO_PROFILE
 	timelogger.enter("GMRF.build_hessian");
 #endif
 
-	Eigen::SparseMatrix<double> Hsparse(N,N);				// declares a column-major sparse matrix type of float
-	Hsparse.reserve(Eigen::VectorXi::Constant(N,5));		// Reserve 5 slots for each column
-	for (size_t j=0; j<N; j++)								// cols
+	// Build list of triplets:
+	ASSERT_(!H_prior.empty())
+	std::vector<Eigen::Triplet<double> > H_tri(H_prior.size());
+	H_tri.reserve( H_prior.size()+N );
+	std::copy( H_prior.begin(), H_prior.end(), H_tri.begin() );
+
+	for (size_t j=0; j<N; j++) // cols
 	{
-		for (std::map<size_t,double>::iterator it=H_vm[j].begin(); it!=H_vm[j].end(); ++it)
-		{
+		//Sum the information of all observations on cell j
+		std::vector<TobservationGMRF>::iterator ito;
+		float Lambda_obs_j = 0.0;
+		for (ito = activeObs[j].begin(); ito !=activeObs[j].end(); ++ito)
+			Lambda_obs_j += ito->Lambda;
 
-			if (it->first == j)								//Diagonal + Observations
-			{
-				//Sum the information of all observations on cell j
-				std::vector<TobservationGMRF>::iterator ito;
-				float Lambda_obs_j = 0.0;
-				for (ito = activeObs[j].begin(); ito !=activeObs[j].end(); ++ito)
-					Lambda_obs_j += ito->Lambda;
-
-				Hsparse.insert(it->first,j) = (it->second) + Lambda_obs_j;
-			}
-			else //if (it->first > j )						//(only lower triangular)
-				Hsparse.insert(it->first,j) = it->second;
-		}
+		H_tri.push_back( Eigen::Triplet<double>(j,j, Lambda_obs_j ) ); // Duplicated entries (from obs + from the prior) will be summed in setFromTriplets()
 	}
-	Hsparse.makeCompressed();
+
+	Eigen::SparseMatrix<double> Hsparse(N,N);				// declares a column-major sparse matrix type of float
+	Hsparse.setFromTriplets(H_tri.begin(), H_tri.end() );
+
+#if 0 // For debug only
+	mrpt::math::saveEigenSparseTripletsToFile( "H_tri.txt", H_tri);
+#endif	
+
 
 #ifdef DO_PROFILE
 	timelogger.leave("GMRF.build_hessian");

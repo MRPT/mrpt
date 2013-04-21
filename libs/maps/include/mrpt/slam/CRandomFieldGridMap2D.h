@@ -346,7 +346,9 @@ namespace slam
 
 		/** @name Auxiliary vars for GMRF method
 		    @{ */
-		std::vector<std::map<size_t,double> > H_vm;	// A vector of maps to store the contents of H
+#if EIGEN_VERSION_AT_LEAST(3,1,0)
+		std::vector<Eigen::Triplet<double> >  H_prior;	// the prior part of H
+#endif
 		Eigen::VectorXd g;							// Gradient vector
 		size_t nConsFixed;							// L
 		size_t nConsObs;							// M
