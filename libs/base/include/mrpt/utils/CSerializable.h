@@ -51,7 +51,7 @@ namespace mrpt
 
 		/** The virtual base class which provides a unified interface for all persistent objects in MRPT.
 		 *  Many important properties of this class are inherited from mrpt::utils::CObject. See that class for more details.
-		 *	 Refer to the tutorial about <a href="http://www.mrpt.org/Serialization" >serialization</a> in the wiki.
+		 *	 Refer to the tutorial about <a href="http://www.mrpt.org/Serialization" >serialization</a> online.
 		 * \sa CStream
 		 * \ingroup mrpt_base_grp
 		 */
@@ -141,16 +141,19 @@ namespace mrpt
 
 		/** @} */
 
-		/** This declaration must be inserted in all CSerializable classes definition, within the class declaration.
-		  */
-		#define DEFINE_SERIALIZABLE(class_name) \
-			DEFINE_MRPT_OBJECT(class_name) \
+		/** Like DEFINE_SERIALIZABLE, but for template classes that need the DLL imp/exp keyword in Windows. */
+		#define DEFINE_SERIALIZABLE_CUSTOM_LINKAGE(class_name, _LINKAGE_) \
+			DEFINE_MRPT_OBJECT_CUSTOM_LINKAGE(class_name, _LINKAGE_) \
 		protected: \
 			/*! @name CSerializable virtual methods */ \
 			/*! @{ */ \
-			void  writeToStream(mrpt::utils::CStream &out, int *getVersion) const;\
-			void  readFromStream(mrpt::utils::CStream &in, int version); \
+			void  _LINKAGE_ writeToStream(mrpt::utils::CStream &out, int *getVersion) const;\
+			void  _LINKAGE_ readFromStream(mrpt::utils::CStream &in, int version); \
 			/*! @} */
+
+		/** This declaration must be inserted in all CSerializable classes definition, within the class declaration. */
+		#define DEFINE_SERIALIZABLE(class_name) \
+			DEFINE_SERIALIZABLE_CUSTOM_LINKAGE(class_name, /*none*/)
 
 		/**  This declaration must be inserted in all CSerializable classes definition, before the class declaration.
 		  */

@@ -164,27 +164,30 @@ namespace mrpt
 
 		}; // End of class def.
 
-		/** This declaration must be inserted in all CObject classes definition, within the class declaration.
-		  */
-		#define DEFINE_MRPT_OBJECT(class_name) \
+
+		/** Just like DEFINE_MRPT_OBJECT but with DLL export/import linkage keywords. */
+		#define DEFINE_MRPT_OBJECT_CUSTOM_LINKAGE(class_name, _LINKAGE_) \
 			/*! @name RTTI stuff  */ \
 			/*! @{  */ \
 		protected: \
-			static  const mrpt::utils::TRuntimeClassId* _GetBaseClass(); \
-			static mrpt::utils::CLASSINIT _init_##class_name;\
+			static _LINKAGE_ const mrpt::utils::TRuntimeClassId* _GetBaseClass(); \
+			static _LINKAGE_ mrpt::utils::CLASSINIT _init_##class_name;\
 		public: \
 			/*! A typedef for the associated smart pointer */ \
 			typedef class_name##Ptr SmartPtr; \
-			static  mrpt::utils::TRuntimeClassId  class##class_name; \
-			static  const mrpt::utils::TRuntimeClassId *classinfo; \
-			virtual const mrpt::utils::TRuntimeClassId* GetRuntimeClass() const; \
-			static  mrpt::utils::CObject* CreateObject(); \
-			static class_name##Ptr Create(); \
-			virtual mrpt::utils::CObject *duplicate() const; \
+			static  _LINKAGE_ mrpt::utils::TRuntimeClassId  class##class_name; \
+			static  _LINKAGE_ const mrpt::utils::TRuntimeClassId *classinfo; \
+			virtual _LINKAGE_ const mrpt::utils::TRuntimeClassId* GetRuntimeClass() const; \
+			static  _LINKAGE_ mrpt::utils::CObject* CreateObject(); \
+			static _LINKAGE_ class_name##Ptr Create(); \
+			virtual _LINKAGE_ mrpt::utils::CObject *duplicate() const; \
 			/*! @} */ \
 		public: \
 			EIGEN_MAKE_ALIGNED_OPERATOR_NEW \
 
+		/** This declaration must be inserted in all CObject classes definition, within the class declaration. */
+		#define DEFINE_MRPT_OBJECT(class_name) \
+			DEFINE_MRPT_OBJECT_CUSTOM_LINKAGE(class_name, /*none*/)
 
 		// This macro is a workaround to avoid possibly empty arguments to MACROS (when _LINKAGE_ evals to nothing...)
 		#define DEFINE_MRPT_OBJECT_PRE_CUSTOM_BASE_LINKAGE(class_name, base_name, _LINKAGE_ ) \

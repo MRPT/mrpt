@@ -391,11 +391,6 @@ _DSceneViewerFrame::_DSceneViewerFrame(wxWindow* parent,wxWindowID id)
 	logWin = new wxLogWindow(this,wxT("Log window"),false);
 	theWindow = this;
 
-	// make sure we register all mrpt-maps classes:
-	registerClass( CLASS_ID( CPlanarLaserScan ));
-	registerClass( CLASS_ID( CAngularObservationMesh ));
-
-
 	// Load my custom icons:
 #if wxCHECK_VERSION(2, 8, 0)
     wxArtProvider::Push(new MyArtProvider);

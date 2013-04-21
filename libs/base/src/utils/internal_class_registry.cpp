@@ -94,14 +94,26 @@ namespace mrpt
 
 			void Add( const std::string &className, const TRuntimeClassId &id )
 			{
-				mrpt::synch::CCriticalSectionLocker lock(&m_cs);
-				registeredClasses[className] = &id;
+				m_being_modified=true;
+				{
+					mrpt::synch::CCriticalSectionLocker lock(&m_cs);
+					registeredClasses[className] = &id;
+				}
+				m_being_modified=false;
 			}
 
 			const TRuntimeClassId *Get(const std::string &className)
 			{
-				mrpt::synch::CCriticalSectionLocker lock(&m_cs);
-				return registeredClasses[className];
+				// Optimization to avoid the costly lock() in virtually all situations:
+				bool has_to_unlock = false;
+				if (m_being_modified)
+				{
+					m_cs.enter();
+					has_to_unlock = true;
+				}
+				const TRuntimeClassId *ret = registeredClasses[className];
+				if (has_to_unlock) m_cs.leave();
+				return ret;
 			}
 
 			std::vector<const TRuntimeClassId*> getListOfAllRegisteredClasses()
@@ -116,7 +128,7 @@ namespace mrpt
 
 		private:
 			// PRIVATE constructor
-			CClassRegistry()
+			CClassRegistry() : m_being_modified(false)
 			{
 				// A good place to put this... it will be always invoked without the user needing to call it ;-)
 				mrpt::system::registerFatalExceptionHandlers();
@@ -129,6 +141,7 @@ namespace mrpt
 			// initialized before other classes that call it...
 			TClassnameToRuntimeId			registeredClasses;
 			mrpt::synch::CCriticalSection 	m_cs;
+			volatile bool                   m_being_modified;
 
 		};
 

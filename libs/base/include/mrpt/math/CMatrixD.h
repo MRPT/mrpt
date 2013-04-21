@@ -59,26 +59,7 @@ namespace mrpt
 		class BASE_IMPEXP_TEMPL CMatrixD : public mrpt::utils::CSerializable, public CMatrixTemplateNumeric<double>
 		{
 			// This must be added to any CSerializable derived class:
-			//DEFINE_SERIALIZABLE( CMatrixD )
-			//DEFINE_MRPT_OBJECT(CMatrixD)
-		protected:
-			static  const mrpt::utils::TRuntimeClassId* _GetBaseClass();
-			static mrpt::utils::CLASSINIT _init_CMatrixD;
-		public:
-			/*! A typedef for the associated smart pointer */
-			typedef CMatrixDPtr SmartPtr;
-			static BASE_IMPEXP  mrpt::utils::TRuntimeClassId  classCMatrixD;
-			static BASE_IMPEXP  const mrpt::utils::TRuntimeClassId *classinfo;
-			virtual BASE_IMPEXP  const mrpt::utils::TRuntimeClassId* GetRuntimeClass() const;
-			static  BASE_IMPEXP mrpt::utils::CObject* CreateObject();
-			static BASE_IMPEXP CMatrixDPtr Create();
-			virtual BASE_IMPEXP mrpt::utils::CObject *duplicate() const;
-		protected:
-			/*! @name CSerializable virtual methods */
-			/*! @{ */
-			BASE_IMPEXP void writeToStream(mrpt::utils::CStream &out, int *getVersion) const;
-			BASE_IMPEXP void readFromStream(mrpt::utils::CStream &in, int version);
-			/*! @} */
+			DEFINE_SERIALIZABLE_CUSTOM_LINKAGE( CMatrixD, BASE_IMPEXP )
 
 		public:
 			/** Constructor */

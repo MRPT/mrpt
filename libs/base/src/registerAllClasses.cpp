@@ -47,6 +47,15 @@ using namespace mrpt::math;
 using namespace mrpt::slam;
 using namespace mrpt::poses;
 
+/*
+Note: Why do we need "CStartUpClassesRegister" and "registerAllClasses_mrpt_base()" at all?
+ One idea is to use static const members in every CObject, initialized via a call to registerClass(). 
+ In this way, there is NO NEED to build the ugly list of classes to be registered below, and it works...
+ but when building as STATIC LIBRARIES, the compiler optimizes out all non-directly used classes, 
+ thus not registering them!!
+ So, it seems we must live with this ugly method for the sake of static libs...
+(Jose Luis Blanco, April 2013)
+*/
 
 void registerAllClasses_mrpt_base();
 

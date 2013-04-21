@@ -40,7 +40,7 @@
 	AUTHOR: Jose Luis Blanco Claraco <jlblanco@ctima.uma.es>
 
 	For instructions and details, see:
-	 http://www.mrpt.org/Application:RawLogGrabber
+	 http://www.mrpt.org/Application:rawlog-grabber
   -----------------------------------------------------------------------------*/
 
 #include <mrpt/obs.h>
@@ -97,11 +97,6 @@ int main(int argc, char **argv)
 			mrpt::system::pause();
 			return -1;
 		}
-
-		// If we have plug-ins, we need to register them manually here:
-#ifdef RAWLOGGRABBER_PLUGIN
-
-#endif
 
 		string INI_FILENAME( argv[1] );
 		ASSERT_FILE_EXISTS_(INI_FILENAME)
