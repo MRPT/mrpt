@@ -162,19 +162,18 @@ bool  CGasConcentrationGridMap2D::internal_insertObservation(
 		********************************************************************/
 		const CObservationGasSensors	*o = static_cast<const CObservationGasSensors*>( obs );
 
-		if (o->sensorLabel == insertionOptions.gasSensorLabel)
+		if ( o->sensorLabel.compare(insertionOptions.gasSensorLabel) == 0 )
 		{
-			/** Correct gasSensorLabel, process the observation */
+			float		sensorReading;
+			CPose2D		sensorPose;
 
-			float sensorReading;
-			// Get index to differentiate between enoses --> insertionoptions.enose_id
-			//for (std::vector<CObservationGasSensors::TObservationENose>::const_iterator it = o->m_readings.begin(); it!=o->m_readings.end();it+=1)
-
-			ASSERT_(o->m_readings.size() > insertionOptions.enose_id);
-			const CObservationGasSensors::TObservationENose *it = &o->m_readings[insertionOptions.enose_id];
-			{
+			if ( o->sensorLabel.compare("MCEnose")==0 || o->sensorLabel.compare("Full_MCEnose")==0 )
+			{							
+				ASSERT_(o->m_readings.size() > insertionOptions.enose_id);
+				const CObservationGasSensors::TObservationENose *it = &o->m_readings[insertionOptions.enose_id];
+				
 				// Compute the 3D sensor pose in world coordinates:
-				CPose2D		sensorPose( CPose3D(robotPose2D) + it->eNosePoseOnTheRobot );
+				sensorPose = CPose2D( CPose3D(robotPose2D) + it->eNosePoseOnTheRobot );
 
 				// Compute the sensor reading value (Volts):
 				if (insertionOptions.gasSensorType==0x0000){	//compute the mean
@@ -199,25 +198,31 @@ bool  CGasConcentrationGridMap2D::internal_insertObservation(
 						sensorReading = math::mean( it->readingsVoltage );
 					}
 				}
+			}
+			else if (o->sensorLabel.compare("GDM")==0 || o->sensorLabel.compare("RAE_PID")==0)
+			{
+				const CObservationGasSensors::TObservationENose *it = &o->m_readings[0];
+				// Compute the 3D sensor pose in world coordinates:
+				sensorPose = CPose2D( CPose3D(robotPose2D) + it->eNosePoseOnTheRobot );
+				sensorReading = it->readingsVoltage[0];
+			}
 
-				// Normalization:
-				sensorReading = (sensorReading - insertionOptions.R_min) /( insertionOptions.R_max - insertionOptions.R_min );
+
+			// Normalization:
+			sensorReading = (sensorReading - insertionOptions.R_min) /( insertionOptions.R_max - insertionOptions.R_min );
 
 
-				// Update the gross estimates of mean/vars for the whole reading history (see IROS2009 paper):
-				m_average_normreadings_mean = (sensorReading + m_average_normreadings_count*m_average_normreadings_mean)/(1+m_average_normreadings_count);
-				m_average_normreadings_var  = (square(sensorReading - m_average_normreadings_mean) + m_average_normreadings_count*m_average_normreadings_var) /(1+m_average_normreadings_count);
-				m_average_normreadings_count++;
+			// Update the gross estimates of mean/vars for the whole reading history (see IROS2009 paper):
+			m_average_normreadings_mean = (sensorReading + m_average_normreadings_count*m_average_normreadings_mean)/(1+m_average_normreadings_count);
+			m_average_normreadings_var  = (square(sensorReading - m_average_normreadings_mean) + m_average_normreadings_count*m_average_normreadings_var) /(1+m_average_normreadings_count);
+			m_average_normreadings_count++;
 
 #if 0
 			cout << "[DEBUG] m_average_normreadings_count: " << m_average_normreadings_count << " -> mean: " << m_average_normreadings_mean << " var: " <<  m_average_normreadings_var  << endl;
 #endif
 
-				// Finally, do the actual map update with that value:
-				this->insertIndividualReading(sensorReading, mrpt::math::TPoint2D(sensorPose.x(),sensorPose.y()) );
-
-			} // Selected e-noseID obs.
-
+			// Finally, do the actual map update with that value:
+			this->insertIndividualReading(sensorReading, mrpt::math::TPoint2D(sensorPose.x(),sensorPose.y()) );
 			return true;	// Done!
 
 		} //endif correct "gasSensorLabel"
