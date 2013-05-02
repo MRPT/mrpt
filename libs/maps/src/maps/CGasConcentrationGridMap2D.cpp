@@ -199,7 +199,7 @@ bool  CGasConcentrationGridMap2D::internal_insertObservation(
 					}
 				}
 			}
-			else if (o->sensorLabel.compare("GDM")==0 || o->sensorLabel.compare("RAE_PID")==0)
+			else if (o->sensorLabel.compare("GDM")==0 || o->sensorLabel.compare("RAE_PID")==0 || o->sensorLabel.compare("ENOSE_SIMUL")==0)
 			{
 				const CObservationGasSensors::TObservationENose *it = &o->m_readings[0];
 				// Compute the 3D sensor pose in world coordinates:
