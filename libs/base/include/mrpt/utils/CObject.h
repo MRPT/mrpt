@@ -165,29 +165,29 @@ namespace mrpt
 		}; // End of class def.
 
 
-		/** Just like DEFINE_MRPT_OBJECT but with DLL export/import linkage keywords. */
-		#define DEFINE_MRPT_OBJECT_CUSTOM_LINKAGE(class_name, _LINKAGE_) \
+		/** Just like DEFINE_MRPT_OBJECT but with DLL export/import linkage keywords. Note: The replication of macro arguments is to avoid errors with empty macro arguments */
+		#define DEFINE_MRPT_OBJECT_CUSTOM_LINKAGE(class_name, _STATIC_LINKAGE_, _VIRTUAL_LINKAGE_) \
 			/*! @name RTTI stuff  */ \
 			/*! @{  */ \
 		protected: \
-			static _LINKAGE_ const mrpt::utils::TRuntimeClassId* _GetBaseClass(); \
-			static _LINKAGE_ mrpt::utils::CLASSINIT _init_##class_name;\
+			_STATIC_LINKAGE_ const mrpt::utils::TRuntimeClassId* _GetBaseClass(); \
+			_STATIC_LINKAGE_ mrpt::utils::CLASSINIT _init_##class_name;\
 		public: \
 			/*! A typedef for the associated smart pointer */ \
 			typedef class_name##Ptr SmartPtr; \
-			static  _LINKAGE_ mrpt::utils::TRuntimeClassId  class##class_name; \
-			static  _LINKAGE_ const mrpt::utils::TRuntimeClassId *classinfo; \
-			virtual _LINKAGE_ const mrpt::utils::TRuntimeClassId* GetRuntimeClass() const; \
-			static  _LINKAGE_ mrpt::utils::CObject* CreateObject(); \
-			static _LINKAGE_ class_name##Ptr Create(); \
-			virtual _LINKAGE_ mrpt::utils::CObject *duplicate() const; \
+			_STATIC_LINKAGE_ mrpt::utils::TRuntimeClassId  class##class_name; \
+			_STATIC_LINKAGE_ const mrpt::utils::TRuntimeClassId *classinfo; \
+			_VIRTUAL_LINKAGE_ const mrpt::utils::TRuntimeClassId* GetRuntimeClass() const; \
+			_STATIC_LINKAGE_ mrpt::utils::CObject* CreateObject(); \
+			_STATIC_LINKAGE_ class_name##Ptr Create(); \
+			_VIRTUAL_LINKAGE_ mrpt::utils::CObject *duplicate() const; \
 			/*! @} */ \
 		public: \
 			EIGEN_MAKE_ALIGNED_OPERATOR_NEW \
 
 		/** This declaration must be inserted in all CObject classes definition, within the class declaration. */
 		#define DEFINE_MRPT_OBJECT(class_name) \
-			DEFINE_MRPT_OBJECT_CUSTOM_LINKAGE(class_name, /*none*/)
+			DEFINE_MRPT_OBJECT_CUSTOM_LINKAGE(class_name, static /*none*/, virtual /*none*/)
 
 		// This macro is a workaround to avoid possibly empty arguments to MACROS (when _LINKAGE_ evals to nothing...)
 		#define DEFINE_MRPT_OBJECT_PRE_CUSTOM_BASE_LINKAGE(class_name, base_name, _LINKAGE_ ) \

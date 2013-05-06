@@ -59,7 +59,7 @@ namespace mrpt
 		class BASE_IMPEXP_TEMPL CMatrixD : public mrpt::utils::CSerializable, public CMatrixTemplateNumeric<double>
 		{
 			// This must be added to any CSerializable derived class:
-			DEFINE_SERIALIZABLE_CUSTOM_LINKAGE( CMatrixD, BASE_IMPEXP )
+			DEFINE_SERIALIZABLE_CUSTOM_LINKAGE( CMatrixD, void BASE_IMPEXP, static BASE_IMPEXP, virtual BASE_IMPEXP )
 
 		public:
 			/** Constructor */

@@ -142,18 +142,18 @@ namespace mrpt
 		/** @} */
 
 		/** Like DEFINE_SERIALIZABLE, but for template classes that need the DLL imp/exp keyword in Windows. */
-		#define DEFINE_SERIALIZABLE_CUSTOM_LINKAGE(class_name, _LINKAGE_) \
-			DEFINE_MRPT_OBJECT_CUSTOM_LINKAGE(class_name, _LINKAGE_) \
+		#define DEFINE_SERIALIZABLE_CUSTOM_LINKAGE(class_name, _VOID_LINKAGE_, _STATIC_LINKAGE_, _VIRTUAL_LINKAGE_ ) \
+			DEFINE_MRPT_OBJECT_CUSTOM_LINKAGE(class_name, _STATIC_LINKAGE_, _VIRTUAL_LINKAGE_ ) \
 		protected: \
 			/*! @name CSerializable virtual methods */ \
 			/*! @{ */ \
-			void  _LINKAGE_ writeToStream(mrpt::utils::CStream &out, int *getVersion) const;\
-			void  _LINKAGE_ readFromStream(mrpt::utils::CStream &in, int version); \
+			_VOID_LINKAGE_ writeToStream(mrpt::utils::CStream &out, int *getVersion) const;\
+			_VOID_LINKAGE_ readFromStream(mrpt::utils::CStream &in, int version); \
 			/*! @} */
 
 		/** This declaration must be inserted in all CSerializable classes definition, within the class declaration. */
 		#define DEFINE_SERIALIZABLE(class_name) \
-			DEFINE_SERIALIZABLE_CUSTOM_LINKAGE(class_name, /*none*/)
+			DEFINE_SERIALIZABLE_CUSTOM_LINKAGE(class_name, void /*no extra linkage keyword*/, static /*none*/,virtual /*none*/ )
 
 		/**  This declaration must be inserted in all CSerializable classes definition, before the class declaration.
 		  */

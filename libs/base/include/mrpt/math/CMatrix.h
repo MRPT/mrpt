@@ -57,7 +57,7 @@ namespace mrpt
 		class BASE_IMPEXP_TEMPL CMatrix : public mrpt::utils::CSerializable, public CMatrixFloat
 		{
 			// This must be added to any CSerializable derived class:
-			DEFINE_SERIALIZABLE_CUSTOM_LINKAGE( CMatrix, BASE_IMPEXP )
+			DEFINE_SERIALIZABLE_CUSTOM_LINKAGE( CMatrix, void BASE_IMPEXP, static BASE_IMPEXP, virtual BASE_IMPEXP )
 
 		public:
 			/** Constructor  */
