@@ -82,6 +82,7 @@ This work is licensed under a Creative Commons Attribution-NonCommercial-NoDeriv
 
 \textbf{Revision history:}
 \begin{itemize}
+ \item May 2013: Second version. Added Fig.~\ref{fig:Nr} and the section on spanning trees.
  \item March 2013: First version. Released along MRPT 1.0.0.
 \end{itemize}
 
@@ -89,7 +90,20 @@ This work is licensed under a Creative Commons Attribution-NonCommercial-NoDeriv
 
 
 \begin{small}
-In case you want to cite this guide in your academic publications, here is a BibTeX entry: 
+In case you want to cite SRBA in your academic publications, here is a BibTeX entry: 
+
+\begin{verbatim}
+@INPROCEEDINGS{blanco2013srba,
+  author = {Blanco, J.L. and Gonzalez-Jimenez, J. and Fernandez-Madrigal, J.A.},
+  month = {{may}},
+  title = {{Sparser Relative Bundle Adjustment (SRBA): constant-time 
+    maintenance  and local optimization of arbitrarily large maps}},
+  booktitle = {IEEE International Conference on Robotics and Automation (ICRA)},
+  year = {2013}
+}
+\end{verbatim} 
+
+\noindent and here the one for this guide:
 
 \begin{verbatim}
 @MISC{libmrpt-srba-guide,
@@ -236,6 +250,7 @@ acceptable but two or more observations are then required before being able to e
 observed LM.
 }
 \end{itemize}
+
 
 \newpage
 
@@ -1102,7 +1117,40 @@ srba-slam --se2 --graph-slam -d dataset_30k_rel_graph_slam_SENSOR.txt
 
 
 
+\newpage
+\section{Spanning trees}
 
+The need to hold spanning trees for every KF in the problem is motivated 
+by the realization that \emph{topological paths} appear in the observation 
+model of landmarks (or in that of relative poses in relative Graph-SLAM). 
+In particular, we need the shortest path
+between an observing KF and the base KF of the observed landmark, as highlighted 
+in Figure~\ref{fig:STs1}.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=1.0\textwidth]{imgs/spanning-tree-motivation1.pdf} 
+\caption{(left) Paths between keyframes involved in observation models. (right) The corresponding spanning tree.}
+\label{fig:STs1}
+\end{figure}
+
+Internally, each spanning tree is stored as a pair of sparse tables:
+\begin{itemize}
+ \item $ST.D[i][j]$: A symmetric table with the topological distance between keyframes $i \leftrightarrow j$.
+ \item $ST.N[i][j]$: This table holds the next edge to follow if we are at $i$ and want to reach $j$. 
+\end{itemize}
+
+Our paper \cite{blanco2013srba} describes an algorithm for incrementally update those tables as new keyframes and edges
+are added to the problem.
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=1.0\textwidth]{imgs/spanning-tree-tables.pdf} 
+\caption{(top) An example RBA problem. (left-bottom) The $ST.D$ table. (right-bottom) The $ST.N$ table.}
+\label{fig:STs2}
+\end{figure}
+
+\clearpage
 
 \newpage
 \section{Library inner structure}
@@ -1188,7 +1236,16 @@ These symbols are employed in the following:
    that distance are also in the spanning tree.}
 \item{$N_o$: Number of observed landmarks from the new KF being inserted in the problem.}
 \item{$N_R$: The maximum number of reachable KFs for a fixed $D_{max}$. It is reasonable to consider that this number 
-is bounded for any map, as long as redundant KFs are not continuously added for the same area.}
+is bounded for any map, as long as redundant KFs are not continuously added for the same area. 
+Figure~\ref{fig:Nr} illustrates the meaning of $N_R$, in a particular example where the local optimization is performed
+centered at the keyframe $\#5$.
+\begin{figure}[h!]
+\centering
+\includegraphics[width=0.5\textwidth]{imgs/Nr.pdf} 
+\caption{Example regarding the definition of $N_R$. Here, $N_R=5$ including the origin $\#5$.}
+\label{fig:Nr}
+\end{figure}
+}
 \item{$\gamma$: A constant coefficient that models the ``sparseness'' of the graph being solved by least-squares minimization.}
 \item{$(\mathbf{z}_n^i,\mathbf{\alpha}_n^i)$: The $i-th$ individual observation of the $n-th$ time step, and 
   its corresponding data association (i.e. its correspondence, the ID of an existing landmark or a new ID if this 
