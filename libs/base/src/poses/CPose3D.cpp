@@ -652,16 +652,9 @@ void CPose3D::inverse()
  ---------------------------------------------------------------*/
 bool CPose3D::isHorizontal( const double tolerance  ) const
 {
-#if 0
-	// The angle of the Z axis defined by this rotation matrix with the canonical Z axis:
-	double ang = std::abs( std::atan2( hypot(m_ROT.get_unsafe(0,2),m_ROT.get_unsafe(1,2)), m_ROT.get_unsafe(2,2) ) );
-	if (ang>M_PI*0.5) ang=M_PI-ang;
-	return ang <= tolerance;
-#else
 	updateYawPitchRoll();
 	return (fabs(m_pitch)<=tolerance || M_PI-fabs(m_pitch) <=tolerance ) &&
 	       ( fabs(m_roll)<=tolerance || fabs(mrpt::math::wrapToPi( m_roll-M_PI))<=tolerance );
-#endif
 }
 
 
@@ -1017,15 +1010,6 @@ namespace mrpt
 				a[2], -B(2,2), B(2,1), B(2,2), a[2], -B(2,0),-B(2,1), B(2,0), a[2]
 				};
 			RES.loadFromArray(vals);
-//			J.T()[0] = a;
-//			J.T()[1] = -B.T()[2];
-//			J.T()[2] = B.T()[1];
-//			J.T()[3] = B.T()[2];
-//			J.T()[4] = a;
-//			J.T()[5] = -B.T()[0];
-//			J.T()[6] = -B.T()[1];
-//			J.T()[7] = B.T()[0];
-//			J.T()[8] = a;
 		}
 
 		inline CMatrixDouble33 ddeltaRt_dR(const CPose3D & P)
@@ -1091,18 +1075,10 @@ namespace mrpt
 				skewR2_t*= (((theta*sq-d*theta2)*(0.5*theta*cot-1))-theta*sq*((0.25*theta*cot)+0.125*theta2*csc2-1))/(4*theta2*square(oned2));
 				a += skewR2_t;
 
-//				a = -(d*theta-sq)/(8*pow(sq,3))*skewR*t
-//					+ (((theta*sq-d*theta2)*(0.5*theta*cot-1))
-//					-theta*sq*((0.25*theta*cot)+0.125*theta2*csc2-1))
-//					/(4*theta2*Po2(oned2))*(skewR*skewR*t);
-
 				mrpt::math::skew_symmetric3(t,B);
 				B *=-0.5*theta/(2*sq);
 
 				B += -(theta*cot-2)/(8*oned2) * ddeltaRt_dR(P);
-
-//				B = -0.5*theta/(2*sq)*skew(t)
-//					- (theta*cot-2)/(8*oned2) * ddeltaRt_dR(T);
 			}
 			M3x9(a,B,J);
 		}
@@ -1126,12 +1102,12 @@ void CPose3D::ln_jacob(mrpt::math::CMatrixFixedNumeric<double,6,12> &J) const
 	{
 		CMatrixFixedNumeric<double,3,9> M(UNINITIALIZED_MATRIX);
 		ln_rot_jacob(m_ROT, M);
-		J.insertMatrix(3,0, M);  //J.template slice<0,0,3,9>() = ln_rot_jacob(T.get_rotation().get_matrix());
+		J.insertMatrix(3,0, M);
 	}
 	{
 		CMatrixFixedNumeric<double,3,9> M(UNINITIALIZED_MATRIX);
 		dVinvt_dR(*this,M);
-		J.insertMatrix(0,0, M);  //J.template slice<3,0,3,9>() = dVinvt_dR(T);
+		J.insertMatrix(0,0, M);
 	}
 
 	const CMatrixDouble33 & R = m_ROT;
@@ -1147,7 +1123,6 @@ void CPose3D::ln_jacob(mrpt::math::CMatrixFixedNumeric<double,6,12> &J) const
 		mrpt::poses::deltaR(R,omega);
 		omega*=0.5;
 		mrpt::math::skew_symmetric3(omega,Omega);
-		//V_inv = TooN::Identity(3)- 0.5*Omega + (1./12.)*(Omega*Omega);
 		CMatrixDouble33 Omega2(UNINITIALIZED_MATRIX);
 		Omega2.multiply_AAt(Omega);
 		Omega2*=1.0/12.0;
@@ -1175,7 +1150,7 @@ void CPose3D::ln_jacob(mrpt::math::CMatrixFixedNumeric<double,6,12> &J) const
 		V_inv -= Omega;
 		V_inv += Omega2;
 	}
-	J.insertMatrix(0,9, V_inv);    //J.template slice<3,9,3,3>() = V_inv;
+	J.insertMatrix(0,9, V_inv);
 }
 
 void CPose3D::ln_rot_jacob(const CMatrixDouble33 &R, CMatrixFixedNumeric<double,3,9> &M)
