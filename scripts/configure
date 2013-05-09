@@ -90,7 +90,6 @@ echo "   CFLAGS: ${CFLAGS}"
 echo "   LDFLAGS: ${LDFLAGS}"
 
 cmake . \
-	-DCMAKE_INSTALL_PREFIX="${prefix}" \
 	-DCMAKE_HOST=${host} \
 	-DCMAKE_BUILD=${build} \
 	-DCMAKE_BUILD_TYPE=${buildtype} \

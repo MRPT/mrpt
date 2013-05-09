@@ -21,7 +21,7 @@ config.status: configure
 	dh_testdir
 	# Add here commands to configure the package.
 	# Add here commands to install the package into debian/mrpt.
-	./configure MRPT_IS_DEB_PACKAGE=1 CMAKE_MRPT_USE_DEB_POSTFIXS="1" --host=$(DEB_HOST_GNU_TYPE) --build=$(DEB_BUILD_GNU_TYPE) --prefix=$(CURDIR)/debian/ --mandir=\$${prefix}/share/man --infodir=\$${prefix}/share/info CFLAGS="$(CFLAGS) $(CPPFLAGS)" CXXFLAGS="$(CXXFLAGS) $(CPPFLAGS)" LDFLAGS="$(LDFLAGS)" CC="$(CC)" CXX="$(CXX)"
+	./configure MRPT_IS_DEB_PACKAGE=1 CMAKE_MRPT_USE_DEB_POSTFIXS="1" --host=$(DEB_HOST_GNU_TYPE) --build=$(DEB_BUILD_GNU_TYPE) --prefix=/usr --mandir=\$${prefix}/share/man --infodir=\$${prefix}/share/info CFLAGS="$(CFLAGS) $(CPPFLAGS)" CXXFLAGS="$(CXXFLAGS) $(CPPFLAGS)" LDFLAGS="$(LDFLAGS)" CC="$(CC)" CXX="$(CXX)"
 
 build: build-arch build-indep
 
