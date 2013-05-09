@@ -117,7 +117,7 @@ namespace slam
 	  *		- mrKalmanFilter: A "brute-force" approach to estimate the entire map with a dense (linear) Kalman filter. Will be very slow for mid or large maps. It's provided just for comparison purposes, not useful in practice.
 	  *		- mrKalmanApproximate: A compressed/sparse Kalman filter approach. See:
 	  *			- "A Kalman Filter Based Approach to Probabilistic Gas Distribution Mapping", JL Blanco, JG Monroy, J González-Jimenez, A Lilienthal, 28th Symposium On Applied Computing (SAC), 2013.
-	  *		- mrGMRF: A Gaussian Markov Random Field (GMRF) approach to map updating. See: 
+	  *		- mrGMRF: Time-Varying Gas Distribution Mapping with a Sparse MArkov Random Field estimator. See: 
 	  *			- (under review)
 	  *
 	  *  Note that this class is virtual, since derived classes still have to implement:
@@ -156,7 +156,9 @@ namespace slam
 			mrKalmanFilter,
 			mrKalmanApproximate,
 			mrKernelDMV,
-			mrGMRF
+			mrGMRF_G,
+			mrGMRF_SD,
+			mrGMRF_L
 		};
 
 		/** Constructor
@@ -225,9 +227,9 @@ namespace slam
 			uint16_t	KF_W_size;	//!< [mrKalmanApproximate] The size of the window of neighbor cells.
 			/** @} */
 
-			/** @name Gaussian Markov Random Fields methods (mrGMRF)
+			/** @name Gaussian Markov Random Fields methods (mrGMRF_)
 			    @{ */
-			float		GMRF_lambdaConstraints;	//!< The information (Lambda) of fixed map constraints
+			float		GMRF_lambdaPrior;	//!< The information (Lambda) of fixed map constraints
 			float		GMRF_lambdaObs;			//!< The initial information (Lambda) of each observation (this information will decrease with time)
 			float		GMRF_lambdaObsLoss;		//!< The loss of information of the observations with each iteration
 			uint16_t	GMRF_constraintsSize;	//!< The size of the Gaussian window to impose fixed restrictions between cells.
@@ -242,7 +244,7 @@ namespace slam
 									float	new_x_max,
 									float	new_y_min,
 									float	new_y_max,
-									const TRandomFieldCell& defaultValueNewCells,
+									const	TRandomFieldCell& defaultValueNewCells,
 									float	additionalMarginMeters = 1.0f );
 
 		/** Computes the ratio in [0,1] of correspondences between "this" and the "otherMap" map, whose 6D pose relative to "this" is "otherMapPose"
@@ -349,11 +351,11 @@ namespace slam
 #if EIGEN_VERSION_AT_LEAST(3,1,0)
 		std::vector<Eigen::Triplet<double> >  H_prior;	// the prior part of H
 #endif
-		Eigen::VectorXd g;							// Gradient vector
-		size_t nConsFixed;							// L
-		size_t nConsObs;							// M
-		size_t nConstraints;						// L+M
-		std::vector<float> gauss_val;				// For Weigths of cell constraints
+		Eigen::VectorXd g;								// Gradient vector
+		size_t nPriorFactors;							// L
+		size_t nObsFactors;								// M
+		size_t nFactors;								// L+M
+		std::vector<float> gauss_val;					// For factor Weigths (only for mrGMRF_G)
 
 		struct TobservationGMRF
 		{
@@ -401,7 +403,7 @@ namespace slam
 			const mrpt::math::TPoint2D &point );
 
 		/** solves the minimum quadratic system to determine the new concentration of each cell */
-		void  updateMapEstimation_GMRF();
+		void  updateMapEstimation_GMRF();		
 
 		/** Computes the average cell concentration, or the overall average value if it has never been observed  */
 		double computeMeanCellValue_DM_DMV (const TRandomFieldCell *cell ) const;
@@ -436,7 +438,9 @@ namespace slam
 				m_map.insert(slam::CRandomFieldGridMap2D::mrKalmanFilter,      "mrKalmanFilter");
 				m_map.insert(slam::CRandomFieldGridMap2D::mrKalmanApproximate, "mrKalmanApproximate");
 				m_map.insert(slam::CRandomFieldGridMap2D::mrKernelDMV,         "mrKernelDMV");
-				m_map.insert(slam::CRandomFieldGridMap2D::mrGMRF,			   "mrGMRF");
+				m_map.insert(slam::CRandomFieldGridMap2D::mrGMRF_G,			   "mrGMRF_G");
+				m_map.insert(slam::CRandomFieldGridMap2D::mrGMRF_SD,		   "mrGMRF_SD");
+				m_map.insert(slam::CRandomFieldGridMap2D::mrGMRF_L,			   "mrGMRF_L");
 			}
 		};
 	} // End of namespace
