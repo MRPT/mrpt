@@ -89,19 +89,10 @@ else
 	svn export . $MRPT_DEB_DIR/mrpt-${MRPT_VERSION_STR}
 fi
 
-# Copy dummy "configure" script:
-TRG_CONFIGURE_FILE=$MRPT_DEB_DIR/mrpt-${MRPT_VERSION_STR}/configure
-cp scripts/configure $TRG_CONFIGURE_FILE
-
-# Replace the text "REPLACE_HERE_EXTRA_CMAKE_PARAMS" in the "configure" file
-# with: ${${VALUE_EXTRA_CMAKE_PARAMS}}
-sed -i -e "s/REPLACE_HERE_EXTRA_CMAKE_PARAMS/${VALUE_EXTRA_CMAKE_PARAMS}/g" $TRG_CONFIGURE_FILE
-echo "Using these extra parameters for CMake: '${VALUE_EXTRA_CMAKE_PARAMS}'"
-
 # Copy the MRPT book:
-if [ -f /Trabajo/Papers/mrpt-book/mrpt-book.ps ];
+if [ -f /Work/MyBooks/mrpt-book/mrpt-book.ps ];
 then
-	cp  /Trabajo/Papers/mrpt-book/mrpt-book.ps $MRPT_DEB_DIR/mrpt-${MRPT_VERSION_STR}/doc/
+	cp  /Work/MyBooks/mrpt-book/mrpt-book.ps $MRPT_DEB_DIR/mrpt-${MRPT_VERSION_STR}/doc/
 	ps2pdf $MRPT_DEB_DIR/mrpt-${MRPT_VERSION_STR}/doc/mrpt-book.ps $MRPT_DEB_DIR/mrpt-${MRPT_VERSION_STR}/doc/mrpt-book.pdf
 	gzip $MRPT_DEB_DIR/mrpt-${MRPT_VERSION_STR}/doc/mrpt-book.ps
 fi
@@ -149,6 +140,14 @@ tar czf mrpt_${MRPT_VERSION_STR}.orig.tar.gz mrpt-${MRPT_VERSION_STR}
 # Copy debian directory:
 mkdir mrpt-${MRPT_VERSION_STR}/debian
 cp -r ${MRPT_EXTERN_DEBIAN_DIR}/* mrpt-${MRPT_VERSION_STR}/debian
+
+# Replace the text "REPLACE_HERE_EXTRA_CMAKE_PARAMS" in the "debian/rules" file
+# with: ${${VALUE_EXTRA_CMAKE_PARAMS}}
+RULES_FILE=mrpt-${MRPT_VERSION_STR}/debian/rules
+sed -i -e "s/REPLACE_HERE_EXTRA_CMAKE_PARAMS/${VALUE_EXTRA_CMAKE_PARAMS}/g" $RULES_FILE
+echo "Using these extra parameters for CMake: '${VALUE_EXTRA_CMAKE_PARAMS}'"
+
+
 # Strip my custom files...
 rm mrpt-${MRPT_VERSION_STR}/debian/*.new 
 # debian/source file issues for old Ubuntu distros:

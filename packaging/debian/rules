@@ -17,11 +17,28 @@ ifneq (,$(filter parallel=%,$(DEB_BUILD_OPTIONS)))
          MAKEFLAGS += -j$(NUMJOBS)
 endif
 
-config.status: configure
+config.status: CMakeLists.txt
 	dh_testdir
 	# Add here commands to configure the package.
 	# Add here commands to install the package into debian/mrpt.
-	./configure MRPT_IS_DEB_PACKAGE=1 CMAKE_MRPT_USE_DEB_POSTFIXS="1" --host=$(DEB_HOST_GNU_TYPE) --build=$(DEB_BUILD_GNU_TYPE) --prefix=/usr --mandir=\$${prefix}/share/man --infodir=\$${prefix}/share/info CFLAGS="$(CFLAGS) $(CPPFLAGS)" CXXFLAGS="$(CXXFLAGS) $(CPPFLAGS)" LDFLAGS="$(LDFLAGS)" CC="$(CC)" CXX="$(CXX)"
+#	./configure MRPT_IS_DEB_PACKAGE=1 CMAKE_MRPT_USE_DEB_POSTFIXS="1" --host=$(DEB_HOST_GNU_TYPE) --build=$(DEB_BUILD_GNU_TYPE) --prefix=/usr --mandir=\$${prefix}/share/man --infodir=\$${prefix}/share/info CFLAGS="$(CFLAGS) $(CPPFLAGS)" CXXFLAGS="$(CXXFLAGS) $(CPPFLAGS)" LDFLAGS="$(LDFLAGS)" CC="$(CC)" CXX="$(CXX)"
+#	./configure MRPT_IS_DEB_PACKAGE=1 --prefix=$(CURDIR)/debian/ CMAKE_MRPT_USE_DEB_POSTFIXS="1" --buildtype=Debug
+	cmake . \
+		-DCMAKE_HOST=$(DEB_HOST_GNU_TYPE) \
+		-DCMAKE_BUILD=$(DEB_BUILD_GNU_TYPE) \
+		-DCMAKE_BUILD_TYPE=Release  \
+		-DCMAKE_INSTALL_PREFIX=$(CURDIR)/debian/ \
+		-DCMAKE_CONFIGURE_LDFLAGS="$(LDFLAGS)" \
+		-DCMAKE_MRPT_USE_DEB_POSTFIXS="1" \
+		-DCMAKE_MRPT_IS_RPM_PACKAGE="0" \
+		REPLACE_HERE_EXTRA_CMAKE_PARAMS \
+		-DCMAKE_C_COMPILER:FILEPATH="$(CC)" \
+		-DCMAKE_CXX_COMPILER:FILEPATH="$(CXX)" \
+		-DCMAKE_C_FLAGS="$(CFLAGS) $(CPPFLAGS)" \
+		-DCMAKE_CXX_FLAGS="$(CXXFLAGS) $(CPPFLAGS)" \
+		-DCMAKE_SKIP_RPATH=ON \
+		-DCMAKE_VERBOSE_MAKEFILE=ON
+
 
 build: build-arch build-indep
 
@@ -72,10 +89,9 @@ install: build
 	find $(CURDIR)/debian/ -name "*.so" | grep -v 'libmrpt-dev' | xargs -I FIL mv -f FIL $(CURDIR)/debian/libmrpt-dev/usr/lib/
 
 	# DEBUG PACKAGES -------------	
-	./configure MRPT_IS_DEB_PACKAGE=1 --prefix=$(CURDIR)/debian/ CMAKE_MRPT_USE_DEB_POSTFIXS="1" --buildtype=Debug
-
+	#./configure MRPT_IS_DEB_PACKAGE=1 --prefix=$(CURDIR)/debian/ CMAKE_MRPT_USE_DEB_POSTFIXS="1" --buildtype=Debug
 	# Build libs only
-	cmake . -DBUILD_APPLICATIONS=OFF
+	cmake . -DCMAKE_BUILD_TYPE=Debug -DBUILD_APPLICATIONS=OFF
 	$(MAKE) VERBOSE=1 
 
 	# Install
