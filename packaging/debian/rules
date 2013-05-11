@@ -19,10 +19,7 @@ endif
 
 config.status: CMakeLists.txt
 	dh_testdir
-	# Add here commands to configure the package.
-	# Add here commands to install the package into debian/mrpt.
-#	./configure MRPT_IS_DEB_PACKAGE=1 CMAKE_MRPT_USE_DEB_POSTFIXS="1" --host=$(DEB_HOST_GNU_TYPE) --build=$(DEB_BUILD_GNU_TYPE) --prefix=/usr --mandir=\$${prefix}/share/man --infodir=\$${prefix}/share/info CFLAGS="$(CFLAGS) $(CPPFLAGS)" CXXFLAGS="$(CXXFLAGS) $(CPPFLAGS)" LDFLAGS="$(LDFLAGS)" CC="$(CC)" CXX="$(CXX)"
-#	./configure MRPT_IS_DEB_PACKAGE=1 --prefix=$(CURDIR)/debian/ CMAKE_MRPT_USE_DEB_POSTFIXS="1" --buildtype=Debug
+	# Add here commands to configure the package and install it into debian/mrpt-*
 	cmake . \
 		-DCMAKE_HOST=$(DEB_HOST_GNU_TYPE) \
 		-DCMAKE_BUILD=$(DEB_BUILD_GNU_TYPE) \
@@ -33,10 +30,8 @@ config.status: CMakeLists.txt
 		-DCMAKE_MRPT_IS_RPM_PACKAGE="0" \
 		-DCMAKE_C_FLAGS="$(CFLAGS) $(CPPFLAGS)" \
 		-DCMAKE_CXX_FLAGS="$(CXXFLAGS) $(CPPFLAGS)" \
-		-DCMAKE_SKIP_RPATH=ON \
 		-DCMAKE_VERBOSE_MAKEFILE=ON \
 		REPLACE_HERE_EXTRA_CMAKE_PARAMS 
-
 
 build: build-arch build-indep
 
