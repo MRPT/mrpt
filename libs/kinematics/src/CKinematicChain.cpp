@@ -76,16 +76,26 @@ TKinematicLink& CKinematicChain::getLinkRef(const size_t idx)
 	return m_links[idx];
 }
 
+void CKinematicChain::setOriginPose(const mrpt::poses::CPose3D &new_pose)
+{
+	m_origin = new_pose;
+}
+
+const mrpt::poses::CPose3D &CKinematicChain::getOriginPose() const
+{
+	return m_origin;
+}
+
 /*---------------------------------------------------------------
    Implements the writing to a CStream capability of CSerializable objects
   ---------------------------------------------------------------*/
 void  CKinematicChain::writeToStream(CStream &out,int *version) const
 {
 	if (version)
-		*version = 0;
+		*version = 1;
 	else
 	{
-		out << m_links;
+		out << m_links << m_origin;
 	}
 }
 
@@ -97,8 +107,14 @@ void  CKinematicChain::readFromStream(CStream &in,int version)
 	switch(version)
 	{
 	case 0:
+	case 1:
 		{
 			in >> m_links;
+			if (version>=1)
+			{
+				in >> m_origin;
+			}
+			else m_origin=mrpt::poses::CPose3D();
 		} break;
 	default:
 		MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
@@ -113,9 +129,9 @@ void CKinematicChain::recomputeAllPoses( mrpt::aligned_containers<mrpt::poses::C
 
 	poses.resize(N+1);
 
-	CPose3D p = pose0;  // Cummulative pose
+	CPose3D p = m_origin;  // Cummulative pose
 
-	poses[0] = pose0;
+	poses[0] = p;
 
 	for (size_t i=0;i<N;i++)
 	{

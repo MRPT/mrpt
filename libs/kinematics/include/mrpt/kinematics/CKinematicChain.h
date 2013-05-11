@@ -69,6 +69,9 @@ namespace mrpt
 		KINEMATICS_IMPEXP mrpt::utils::CStream &operator<<(mrpt::utils::CStream &out,const TKinematicLink &o);
 
 		/** A open-loop kinematic chain model, suitable to robotic manipulators.
+		  *  Each link is parameterized with standard Denavit-Hartenberg standard parameterization [theta, d, a, alpha].
+		  *
+		  *  The orientation of the first link can be modified with setOriginPose(), which defaults to standard XYZ axes with +Z pointing upwards.
 		  *
 		  * \sa CPose3D
 		  * \ingroup kinematics_grp
@@ -82,6 +85,7 @@ namespace mrpt
 			mutable std::vector<mrpt::opengl::CRenderizablePtr>  m_last_gl_objects; //!< Smart pointers to the last objects for each link, as returned in getAs3DObject(), for usage within update3DObject()
 
 			std::vector<TKinematicLink>  m_links;  //!< The links of this robot arm
+			mrpt::poses::CPose3D         m_origin; //!< The pose of the first link.
 
 		public:
 
@@ -102,6 +106,12 @@ namespace mrpt
 
 			/** Get a ref to a given link (read-write) */
 			TKinematicLink& getLinkRef(const size_t idx);
+
+			/** Can be used to define a first degree of freedom along a +Z axis which does not coincide with the global +Z axis. */
+			void setOriginPose(const mrpt::poses::CPose3D &new_pose);
+
+			/** Returns the current pose of the first link. */
+			const mrpt::poses::CPose3D & getOriginPose() const;
 
 			/** Get all the DOFs of the arm at once, returning them in a vector with all the "q_i" values, which
 			  * can be interpreted as rotations (radians) or displacements (meters) depending on links being "revolute" or "prismatic".

@@ -45,6 +45,8 @@
 	- Changes in apps:
 		- <a href="http://www.mrpt.org/Application%3ARawLogViewer" >RawLogViewer</a>:
 			- Better description of the "too much memory used" warning while loading large datasets. 
+		- <a href="http://www.mrpt.org/Application%3Arobotic-arm-kinematics" >robotic-arm-kinematics</a>:
+			- Now allows changing the orientation of the first DOF (X,Y,Z).
 	- New classes:
 		- [mrpt-hwdrivers]
 			- mrpt::hwdrivers::CInterfaceNI845x: An interface for this USB SPI/I2C data acquisition board.
@@ -63,6 +65,8 @@
 		- [mrpt-maps]
 			- mrpt::slam::COccupancyGridMap2D now also evalutes likelihoods for sonar-like observations (mrpt::slam::CObservationRange), allowing particle-filter localization with these sensors - <a href="http://code.google.com/p/mrpt/source/detail?r=3330" >r3330</a>
 			- New method mrpt::slam::CRandomFieldGridMap2D::insertIndividualReading()
+		- [mrpt-kinematics]
+			- mrpt::kinematics::CKinematicChain: Now allows changing the orientation of the first DOF (X,Y,Z).
 	- Removed stuff:
 		- Backwards-compatibility typedef mrpt::vision::TKLTFeatureStatus has been removed. Replace with mrpt::vision::TFeatureTrackStatus
 		- KLT-specific values for mrpt::vision::TFeatureTrackStatus has been removed, since they were not used in detected features anyway.

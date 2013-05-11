@@ -87,6 +87,7 @@ using namespace std;
 
 
 //(*IdInit(robotic_arm_kinematicsFrame)
+const long robotic_arm_kinematicsFrame::ID_RADIOBOX2 = wxNewId();
 const long robotic_arm_kinematicsFrame::ID_STATICTEXT1 = wxNewId();
 const long robotic_arm_kinematicsFrame::ID_SIMPLEHTMLLISTBOX1 = wxNewId();
 const long robotic_arm_kinematicsFrame::ID_BUTTON5 = wxNewId();
@@ -190,9 +191,17 @@ robotic_arm_kinematicsFrame::robotic_arm_kinematicsFrame(wxWindow* parent,wxWind
     FlexGridSizer1 = new wxFlexGridSizer(1, 2, 0, 0);
     FlexGridSizer1->AddGrowableCol(1);
     FlexGridSizer1->AddGrowableRow(0);
-    FlexGridSizer2 = new wxFlexGridSizer(4, 1, 0, 0);
+    FlexGridSizer2 = new wxFlexGridSizer(5, 1, 0, 0);
     FlexGridSizer2->AddGrowableCol(0);
-    FlexGridSizer2->AddGrowableRow(1);
+    FlexGridSizer2->AddGrowableRow(2);
+    wxString __wxRadioBoxChoices_1[3] =
+    {
+    _("Z"),
+    _("Y"),
+    _("X")
+    };
+    RadioBox1 = new wxRadioBox(this, ID_RADIOBOX2, _(" Orientation of first DOF "), wxDefaultPosition, wxDefaultSize, 3, __wxRadioBoxChoices_1, 1, wxRA_VERTICAL, wxDefaultValidator, _T("ID_RADIOBOX2"));
+    FlexGridSizer2->Add(RadioBox1, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 2);
     StaticText1 = new wxStaticText(this, ID_STATICTEXT1, _("List of kinematic links:"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT1"));
     FlexGridSizer2->Add(StaticText1, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
     listLinks = new wxSimpleHtmlListBox(this, ID_SIMPLEHTMLLISTBOX1, wxDefaultPosition, wxDefaultSize, 0, 0, wxHLB_DEFAULT_STYLE, wxDefaultValidator, _T("ID_SIMPLEHTMLLISTBOX1"));
@@ -213,12 +222,12 @@ robotic_arm_kinematicsFrame::robotic_arm_kinematicsFrame(wxWindow* parent,wxWind
     boxProperties = new wxStaticBoxSizer(wxHORIZONTAL, panelProperties, _(" Link properties: "));
     FlexGridSizer3 = new wxFlexGridSizer(9, 1, 0, 0);
     FlexGridSizer3->AddGrowableCol(0);
-    wxString __wxRadioBoxChoices_1[2] =
+    wxString __wxRadioBoxChoices_2[2] =
     {
     _("Revolute"),
     _("Prismatic")
     };
-    rbType = new wxRadioBox(panelProperties, ID_RADIOBOX1, _("Type"), wxDefaultPosition, wxDefaultSize, 2, __wxRadioBoxChoices_1, 2, wxRA_HORIZONTAL, wxDefaultValidator, _T("ID_RADIOBOX1"));
+    rbType = new wxRadioBox(panelProperties, ID_RADIOBOX1, _("Type"), wxDefaultPosition, wxDefaultSize, 2, __wxRadioBoxChoices_2, 2, wxRA_HORIZONTAL, wxDefaultValidator, _T("ID_RADIOBOX1"));
     FlexGridSizer3->Add(rbType, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 2);
     StaticLine4 = new wxStaticLine(panelProperties, ID_STATICLINE4, wxDefaultPosition, wxSize(10,-1), wxLI_HORIZONTAL, _T("ID_STATICLINE4"));
     FlexGridSizer3->Add(StaticLine4, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 1);
@@ -402,6 +411,7 @@ robotic_arm_kinematicsFrame::robotic_arm_kinematicsFrame(wxWindow* parent,wxWind
     FlexGridSizer1->SetSizeHints(this);
     Center();
 
+    Connect(ID_RADIOBOX2,wxEVT_COMMAND_RADIOBOX_SELECTED,(wxObjectEventFunction)&robotic_arm_kinematicsFrame::On1stXYZSelect);
     Connect(ID_SIMPLEHTMLLISTBOX1,wxEVT_COMMAND_LISTBOX_SELECTED,(wxObjectEventFunction)&robotic_arm_kinematicsFrame::OnlistLinksSelect);
     Connect(ID_BUTTON5,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&robotic_arm_kinematicsFrame::OnbtnAddLinkClick);
     Connect(ID_BUTTON6,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&robotic_arm_kinematicsFrame::OnbtnClearClick);
@@ -521,6 +531,19 @@ void robotic_arm_kinematicsFrame::OnAbout(wxCommandEvent& event)
 /** Regenerate the left list from m_robot */
 void robotic_arm_kinematicsFrame::UpdateListLinks()
 {
+	// Show orientation of 1st DOF:
+	{
+		const CPose3D &pose0 = m_robot.getOriginPose();
+		const CMatrixDouble33 & R= pose0.getRotationMatrix();
+
+		if (abs(R(0,2))>abs(R(1,2)) && abs(R(0,2))>abs(R(2,2)))
+			RadioBox1->SetSelection(2); // X
+		else if (abs(R(1,2))>abs(R(0,2)) && abs(R(1,2))>abs(R(2,2)))
+			RadioBox1->SetSelection(1); // Y
+		else if (abs(R(2,2))>abs(R(0,2)) && abs(R(2,2))>abs(R(1,2)))
+			RadioBox1->SetSelection(0); // Z
+	}
+
 	listLinks->Freeze();
 
 	const int oldSelect = listLinks->GetSelection();
@@ -718,36 +741,38 @@ void robotic_arm_kinematicsFrame::OnSliderScroll(wxScrollEvent& event)
 void robotic_arm_kinematicsFrame::OnButtonSaveFromEdit(wxCommandEvent& event)
 {
 	const int sel = listLinks->GetSelection();
-	if (sel<0 || size_t(sel)>=m_robot.size())
+	if (sel>=0 && size_t(sel)<m_robot.size())
+	{
+		// Get ref to selected link and apply:
+		TKinematicLink & l = m_robot.getLinkRef(sel);
+
+		double d;
+		edTheta->GetValue().ToDouble(&d);
+		l.theta = DEG2RAD(d);
+
+		edD->GetValue().ToDouble(&d);
+		l.d = 1e-3*d;
+
+		edA->GetValue().ToDouble(&d);
+		l.a = 1e-3*d;
+
+		edAlpha->GetValue().ToDouble(&d);
+		l.alpha = DEG2RAD(d);
+
+		l.is_prismatic = (rbType->GetSelection()==1);
+
+		OnListSelectionChange();
+		UpdateListLinks();
+		UpdateMatrixView();
+		m_robot.update3DObject(&m_all_poses);
+		m_plot3D->Refresh();
+	}
+	else
 	{
 		panelProperties->Enable(false);
-		//panelProperties->Show(false);
 		return;
 	}
 
-	TKinematicLink & l = m_robot.getLinkRef(sel);
-
-	double d;
-	edTheta->GetValue().ToDouble(&d);
-	l.theta = DEG2RAD(d);
-
-	edD->GetValue().ToDouble(&d);
-	l.d = 1e-3*d;
-
-	edA->GetValue().ToDouble(&d);
-	l.a = 1e-3*d;
-
-	edAlpha->GetValue().ToDouble(&d);
-	l.alpha = DEG2RAD(d);
-
-	l.is_prismatic = (rbType->GetSelection()==1);
-
-	OnListSelectionChange();
-
-	UpdateListLinks();
-
-	m_robot.update3DObject(&m_all_poses);
-	m_plot3D->Refresh();
 
 }
 
@@ -889,4 +914,27 @@ void robotic_arm_kinematicsFrame::UpdateMatrixView()
 	edMatrix->SetValue(_U( s.c_str() ));
 
 	edMatrix->Thaw();
+}
+
+void robotic_arm_kinematicsFrame::On1stXYZSelect(wxCommandEvent& event)
+{
+	// Save orientation of 1st DOF:
+	CPose3D pose0;
+
+	switch( RadioBox1->GetSelection() )
+	{
+		// Z:
+		default:
+		case 0: pose0 = CPose3D(0,0,0, DEG2RAD(0),DEG2RAD(0),DEG2RAD(0) ); break;
+		// Y:
+		case 1: pose0 = CPose3D(0,0,0, DEG2RAD(0),DEG2RAD(0),DEG2RAD(-90) ); break;
+		// X:
+		case 2: pose0 = CPose3D(0,0,0, DEG2RAD(0),DEG2RAD(90),DEG2RAD(0) ); break;
+	};
+
+	m_robot.setOriginPose(pose0);
+	UpdateListLinks();
+	UpdateMatrixView();
+	m_robot.update3DObject(&m_all_poses);
+	m_plot3D->Refresh();
 }

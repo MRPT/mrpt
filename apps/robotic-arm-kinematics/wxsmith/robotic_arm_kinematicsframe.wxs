@@ -14,9 +14,25 @@
 			<object class="sizeritem">
 				<object class="wxFlexGridSizer" variable="FlexGridSizer2" member="no">
 					<cols>1</cols>
-					<rows>4</rows>
+					<rows>5</rows>
 					<growablecols>0</growablecols>
-					<growablerows>1</growablerows>
+					<growablerows>2</growablerows>
+					<object class="sizeritem">
+						<object class="wxRadioBox" name="ID_RADIOBOX2" variable="RadioBox1" member="yes">
+							<label> Orientation of first DOF </label>
+							<content>
+								<item>Z</item>
+								<item>Y</item>
+								<item>X</item>
+							</content>
+							<default>-1</default>
+							<style>wxRA_VERTICAL</style>
+							<handler function="On1stXYZSelect" entry="EVT_RADIOBOX" />
+						</object>
+						<flag>wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL</flag>
+						<border>2</border>
+						<option>1</option>
+					</object>
 					<object class="sizeritem">
 						<object class="wxStaticText" name="ID_STATICTEXT1" variable="StaticText1" member="yes">
 							<label>List of kinematic links:</label>

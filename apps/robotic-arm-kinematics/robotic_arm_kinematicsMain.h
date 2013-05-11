@@ -82,9 +82,11 @@ class robotic_arm_kinematicsFrame: public wxFrame
         void OnrbTypeSelect(wxCommandEvent& event);
         void OnbtnDeleteClick(wxCommandEvent& event);
         void OnlbXYZsSelect(wxCommandEvent& event);
+        void On1stXYZSelect(wxCommandEvent& event);
         //*)
 
         //(*Identifiers(robotic_arm_kinematicsFrame)
+        static const long ID_RADIOBOX2;
         static const long ID_STATICTEXT1;
         static const long ID_SIMPLEHTMLLISTBOX1;
         static const long ID_BUTTON5;
@@ -167,6 +169,7 @@ class robotic_arm_kinematicsFrame: public wxFrame
         wxButton* btnAlpha;
         wxNotebook* Notebook1;
         wxSimpleHtmlListBox* SimpleHtmlListBox5;
+        wxRadioBox* RadioBox1;
         wxMenuItem* MenuItem4;
         wxButton* btnTh;
         wxStaticLine* StaticLine4;
