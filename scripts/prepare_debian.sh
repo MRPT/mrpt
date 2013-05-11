@@ -127,9 +127,7 @@ rm -fR scripts/Hha.dll scripts/hhc.exe scripts/prepare_*.sh scripts/recompile*
 
 rm -fR doc/papers
 
-
-# And remove the corrs. lines:
-#(echo "g/console2gui/d"; echo 'wq') | ex -s apps/CMakeLists.txt
+rm -fR otherlibs/eigen3/
 
 
 # Orig tarball:

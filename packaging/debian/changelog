@@ -1,6 +1,7 @@
  * Fixed typo in short description of libmrpt-kinematics1.0 (Closes: #703923)
  * Fixed wrong dependencies of libmrpt-dev
  * Fix of Lintian's hardening-no-fortify-functions
+ * Fixed embedded copy of libeigen-dev in mrpt sources package (Closes: #707860)
 
 mrpt (1:1.0.0-1) unstable; urgency=low
 
