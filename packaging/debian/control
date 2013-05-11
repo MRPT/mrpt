@@ -29,7 +29,7 @@ Build-Depends: debhelper (>= 5),
                libeigen3-dev | perl,
                libdc1394-22-dev [!hurd-i386],
                libusb-1.0-0-dev [!hurd-i386]
-Standards-Version: 3.9.3
+Standards-Version: 3.9.4
 Homepage: http://www.mrpt.org/
 
 Package: mrpt-doc
