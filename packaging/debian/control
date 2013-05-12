@@ -301,6 +301,7 @@ Package: libmrpt-dev
 Section: libdevel
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends},
+		 libeigen3-dev,
          libmrpt-base1.0 (= ${binary:Version}),
          libmrpt-detectors1.0 (= ${binary:Version}),
          libmrpt-gui1.0 (= ${binary:Version}),
