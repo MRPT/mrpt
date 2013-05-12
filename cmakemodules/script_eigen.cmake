@@ -14,15 +14,15 @@ IF(PKG_CONFIG_FOUND)
 	PKG_CHECK_MODULES(PKG_EIGEN3 eigen3)	# Find eigen3 with pkg-config:
 	IF(PKG_EIGEN3_FOUND)
 		# Special case: There's a problem with GCC 4.7+ and Eigen before ~May 2012, so
-		#  if we have GCC>=4.7 and Eigen<4.1.0, switch to our embedded version which is 
+		#  if we have GCC>=4.7 and Eigen<3.1.0, switch to our embedded version which is 
 		#  already fixed to cope with this.
 		# (See: http://forum.kde.org/viewtopic.php?f=74&t=99314 )
-		IF ("${PKG_EIGEN3_VERSION}" VERSION_LESS 4.1.0 AND NOT "${CMAKE_MRPT_GCC_VERSION}" VERSION_LESS "47")
+		IF ("${PKG_EIGEN3_VERSION}" VERSION_LESS 3.1.0 AND NOT "${CMAKE_MRPT_GCC_VERSION}" VERSION_LESS "47")
 			# Remain using embedded version.
-		ELSE("${PKG_EIGEN3_VERSION}" VERSION_LESS 4.1.0 AND NOT "${CMAKE_MRPT_GCC_VERSION}" VERSION_LESS "47")
+		ELSE("${PKG_EIGEN3_VERSION}" VERSION_LESS 3.1.0 AND NOT "${CMAKE_MRPT_GCC_VERSION}" VERSION_LESS "47")
 			# Use system version:
 			SET(DEFAULT_EIGEN_USE_EMBEDDED_VERSION OFF)
-		ENDIF("${PKG_EIGEN3_VERSION}" VERSION_LESS 4.1.0 AND NOT "${CMAKE_MRPT_GCC_VERSION}" VERSION_LESS "47")
+		ENDIF("${PKG_EIGEN3_VERSION}" VERSION_LESS 3.1.0 AND NOT "${CMAKE_MRPT_GCC_VERSION}" VERSION_LESS "47")
 	ENDIF(PKG_EIGEN3_FOUND)
 ENDIF(PKG_CONFIG_FOUND)
 
