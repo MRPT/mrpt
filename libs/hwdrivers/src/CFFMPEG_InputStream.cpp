@@ -42,6 +42,7 @@
 #if MRPT_HAS_FFMPEG
 	extern "C"
 	{
+	#define __STDC_CONSTANT_MACROS  // Needed for having "UINT64_C" and so
 	#define _MSC_STDINT_H_    // We already have pstdint.h in MRPT
 	#include <avformat.h>
 	#include <avcodec.h>
