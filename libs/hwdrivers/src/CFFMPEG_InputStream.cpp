@@ -33,8 +33,11 @@
    | POSSIBILITY OF SUCH DAMAGE.                                               |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/hwdrivers.h> // Precompiled headers
+#if defined(__GNUC__)  // Needed for ffmpeg headers. Only allowed here when not using precomp. headers
+	#define __STDC_CONSTANT_MACROS  // Needed for having "UINT64_C" and so
+#endif
 
+#include <mrpt/hwdrivers.h> // Precompiled headers
 
 #include <mrpt/config.h>
 #include <mrpt/utils/utils_defs.h>
@@ -42,7 +45,6 @@
 #if MRPT_HAS_FFMPEG
 	extern "C"
 	{
-	#define __STDC_CONSTANT_MACROS  // Needed for having "UINT64_C" and so
 	#define _MSC_STDINT_H_    // We already have pstdint.h in MRPT
 	#include <avformat.h>
 	#include <avcodec.h>
