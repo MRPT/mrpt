@@ -26,7 +26,7 @@ Build-Depends: debhelper (>= 5),
                texlive-science,
                doxygen-latex | perl,
                subversion,
-               libeigen3-dev,
+               libeigen3-dev ,
                libdc1394-22-dev [!hurd-i386],
                libusb-1.0-0-dev [!hurd-i386]
 Standards-Version: 3.9.4
@@ -300,8 +300,7 @@ Description: Mobile Robot Programming Toolkit - kinematics library
 Package: libmrpt-dev
 Section: libdevel
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends},
-		 libeigen3-dev,
+Depends: ${shlibs:Depends}, ${misc:Depends}, libeigen3-dev,
          libmrpt-base1.0 (= ${binary:Version}),
          libmrpt-detectors1.0 (= ${binary:Version}),
          libmrpt-gui1.0 (= ${binary:Version}),

@@ -7,9 +7,10 @@ set +o verbose # echo off
 
 APPEND_SVN_NUM=0
 IS_FOR_UBUNTU=0
+LEAVE_EMBEDDED_EIGEN=0
 APPEND_LINUX_DISTRO=""
 VALUE_EXTRA_CMAKE_PARAMS=""
-while getopts "sud:c:" OPTION
+while getopts "sued:c:" OPTION
 do
      case $OPTION in
          s)
@@ -20,6 +21,9 @@ do
              ;;
          d)
              APPEND_LINUX_DISTRO=$OPTARG
+             ;;
+         e)
+             LEAVE_EMBEDDED_EIGEN=1
              ;;
          c)
              VALUE_EXTRA_CMAKE_PARAMS=$OPTARG
@@ -127,7 +131,11 @@ rm -fR scripts/Hha.dll scripts/hhc.exe scripts/prepare_*.sh scripts/recompile*
 
 rm -fR doc/papers
 
-rm -fR otherlibs/eigen3/
+if [ ${LEAVE_EMBEDDED_EIGEN} == "0" ];
+then
+	# Normal for Debian pkgs: remove embedded copy of Eigen
+	rm -fR otherlibs/eigen3/
+fi
 
 
 # Orig tarball:
@@ -135,9 +143,18 @@ cd ..
 echo "Creating orig tarball: mrpt_${MRPT_VERSION_STR}.orig.tar.gz"
 tar czf mrpt_${MRPT_VERSION_STR}.orig.tar.gz mrpt-${MRPT_VERSION_STR}
 
+echo "LEAVE_EMBEDDED_EIGEN=${LEAVE_EMBEDDED_EIGEN}"
+
 # Copy debian directory:
 mkdir mrpt-${MRPT_VERSION_STR}/debian
 cp -r ${MRPT_EXTERN_DEBIAN_DIR}/* mrpt-${MRPT_VERSION_STR}/debian
+
+if [ ${LEAVE_EMBEDDED_EIGEN} == "1" ];
+then
+	# 2) ... and relax the dependency on libeigen3-dev
+	sed -i 's/libeigen3-dev ,/libeigen3-dev | perl ,/g' mrpt-${MRPT_VERSION_STR}/debian/control
+	sed -i 's/libeigen3-dev,//g' mrpt-${MRPT_VERSION_STR}/debian/control
+fi
 
 # Replace the text "REPLACE_HERE_EXTRA_CMAKE_PARAMS" in the "debian/rules" file
 # with: ${${VALUE_EXTRA_CMAKE_PARAMS}}
