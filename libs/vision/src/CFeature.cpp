@@ -283,11 +283,7 @@ void CFeature::dumpToTextStream( mrpt::utils::CStream &out) const
 	{
 	    case 0: out.printf("Idle\n"); break;
 	    case 1: out.printf("[KLT] Out of bounds [KLT]\n"); break;
-	    case 2: out.printf("[KLT] Determinant too small\n"); break;
-	    case 3: out.printf("[KLT] Residue is too big\n"); break;
-	    case 4: out.printf("[KLT] Residue is maximum\n"); break;
 	    case 5: out.printf("[KLT] Tracked\n"); break;
-	    case 6: out.printf("[KLT] Maximum iteration reached\n"); break;
 	    case 10: out.printf("[KLT] Lost\n"); break;
 	}
 
