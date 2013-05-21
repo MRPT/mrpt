@@ -178,19 +178,22 @@ namespace bayes
 		  * After computing the surviving samples, this method internally calls "performSubstitution" to actually perform the particle replacement.
 		  * This method is called automatically by CParticleFilter::execute, andshould not be invoked manually normally.
 		  * To just obtaining the sequence of resampled indexes from a sequence of weights, use "resample"
+		  * \param[in] out_particle_count The desired number of output particles after resampling; 0 means don't modify the current number.
 		  * \sa resample
 		  */
-		void  performResampling( const bayes::CParticleFilter::TParticleFilterOptions &PF_options );
+		void  performResampling( const bayes::CParticleFilter::TParticleFilterOptions &PF_options,size_t out_particle_count = 0 );
 
 		/** A static method to perform the computation of the samples resulting from resampling a given set of particles, given their logarithmic weights, and a resampling method.
 		  * It returns the sequence of indexes from the resampling. The number of output samples is the same than the input population.
 		  *  This generic method just computes these indexes, to actually perform a resampling in a particle filter object, call performResampling
+		  * \param[in] out_particle_count The desired number of output particles after resampling; 0 means don't modify the current number.
 		  * \sa performResampling
 		  */
 		static void computeResampling(
 			CParticleFilter::TParticleResamplingAlgorithm	method,
 			const vector_double	&in_logWeights,
-			std::vector<size_t>			&out_indexes
+			std::vector<size_t>			&out_indexes,
+			size_t          out_particle_count = 0
 			);
 
 		/** A static method to compute the linear, normalized (the sum the unity) weights from log-weights.

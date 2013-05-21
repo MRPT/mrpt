@@ -61,32 +61,35 @@ const unsigned CParticleFilterCapable::PARTICLE_FILTER_CAPABLE_FAST_DRAW_BINS = 
 /*---------------------------------------------------------------
 					performResampling
  ---------------------------------------------------------------*/
-void  CParticleFilterCapable::performResampling( const bayes::CParticleFilter::TParticleFilterOptions &PF_options )
+void  CParticleFilterCapable::performResampling(
+	const bayes::CParticleFilter::TParticleFilterOptions &PF_options,
+	size_t out_particle_count )
 {
 	MRPT_START
 
 	// Make a vector with the particles' log. weights:
-	size_t				i,M=particlesCount();
-	ASSERT_(M>0);
+	const size_t in_particle_count = particlesCount();
+	ASSERT_(in_particle_count>0)
 
 	std::vector<size_t>	indxs;
-	vector_double	log_ws(M,0);
+	vector_double	log_ws(in_particle_count,0);
 	vector_double::iterator		it;
 
-	for (i=0,it=log_ws.begin();i<M;i++,it++)
-		*it = getW(i);
+	for (size_t i=0;i<in_particle_count;i++)
+		log_ws[i] = getW(i);
 
 	// Compute the surviving indexes:
 	computeResampling(
 		PF_options.resamplingMethod,
 		log_ws,
-		indxs );
+		indxs,
+		out_particle_count );
 
 	// And perform the particle replacement:
 	performSubstitution( indxs );
 
 	// Finally, equal weights:
-	for (i=0;i<M;i++) setW(i, 0 /* Logarithmic weight */ );
+	for (size_t i=0;i<out_particle_count;i++) setW(i, 0 /* Logarithmic weight */ );
 
 	MRPT_END
 }
@@ -97,7 +100,8 @@ void  CParticleFilterCapable::performResampling( const bayes::CParticleFilter::T
 void CParticleFilterCapable::computeResampling(
 	CParticleFilter::TParticleResamplingAlgorithm	method,
 	const vector_double	&in_logWeights,
-	std::vector<size_t>			&out_indexes )
+	std::vector<size_t>			&out_indexes,
+	size_t out_particle_count )
 {
 	MRPT_START
 
@@ -105,7 +109,10 @@ void CParticleFilterCapable::computeResampling(
 	//  The array "linW" will be the input to the actual
 	//  resampling algorithms.
 	size_t							i,j,M=in_logWeights.size();
-	ASSERT_(M>0);
+	ASSERT_(M>0)
+
+	if (!out_particle_count)
+		out_particle_count = M;
 
 	vector_double					linW( M,0 );
 	vector_double::const_iterator	inIt;
@@ -140,10 +147,10 @@ void CParticleFilterCapable::computeResampling(
 			// --------------------
 			std::sort( T.begin(), T.end() );
 
-			out_indexes.resize(M);
+			out_indexes.resize(out_particle_count);
 			i=j=0;
 
-			while (i < M)
+			while (i < out_particle_count)
 			{
 				if (T[i]<Q[j])
 				{
@@ -171,11 +178,11 @@ void CParticleFilterCapable::computeResampling(
 				N[i] = int( M*linW[i] );
 				R+= N[i];
 			}
-			size_t  N_rnd = M-R; // # of particles to be drawn randomly (the "residual" part)
+			size_t  N_rnd =  out_particle_count>=R ? (out_particle_count-R) : 0; // # of particles to be drawn randomly (the "residual" part)
 
 			// Fillout the deterministic part of the resampling:
-			out_indexes.resize(M);
-			for (i=0, j=0 ;i<M;i++)
+			out_indexes.resize(out_particle_count);
+			for (i=0, j=0 ;i<out_particle_count;i++)
 				for (size_t k=0;k<N[i];k++)
 					out_indexes[j++] = i;
 
@@ -243,9 +250,9 @@ void CParticleFilterCapable::computeResampling(
 			}
 			T[M] = 1;
 
-			out_indexes.resize(M);
+			out_indexes.resize(out_particle_count);
 			i=j=0;
-			while (i < M)
+			while (i < out_particle_count)
 			{
 				if (T[i]<Q[j])
 					out_indexes[i++] = (unsigned int)j;
@@ -273,9 +280,9 @@ void CParticleFilterCapable::computeResampling(
 			for (i=1;i<M;i++)	T[i] = T[i-1] + _1_M;
 			T[M] = 1;
 
-			out_indexes.resize(M);
+			out_indexes.resize(out_particle_count);
 			i=j=0;
-			while (i < M)
+			while (i < out_particle_count)
 			{
 				if (T[i]<Q[j])
 					out_indexes[i++] = (unsigned int)j;

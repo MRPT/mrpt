@@ -41,8 +41,11 @@
  <hr>
  <a name="1.0.2">
  <h2>Version 1.0.2: (Under development)</h2></a>
-	- (...)
-
+	- Changes in classes:
+		- [mrpt-base]
+			- Generic particle filter classes now allow directly resampling to a dynamic number of particles. Affected methods: - <a href="http://code.google.com/p/mrpt/source/detail?r=3380" >r3380</a>
+				- mrpt::bayes::CParticleFilterCapable::performResampling()
+				- mrpt::bayes::CParticleFilterCapable::computeResampling()
 
  <br/>
  <hr>
@@ -50,7 +53,7 @@
   <h2>Version 1.0.1: Released 12-MAY-2013 (SVN 3370)  </h2></a>
 	- Changes in apps:
 		- <a href="http://www.mrpt.org/Application%3ARawLogViewer" >RawLogViewer</a>:
-			- Better description of the "too much memory used" warning while loading large datasets. 
+			- Better description of the "too much memory used" warning while loading large datasets.
 		- <a href="http://www.mrpt.org/Application%3Arobotic-arm-kinematics" >robotic-arm-kinematics</a>:
 			- Now allows changing the orientation of the first DOF (X,Y,Z).
 	- New classes:
@@ -58,7 +61,7 @@
 			- mrpt::hwdrivers::CInterfaceNI845x: An interface for this USB SPI/I2C data acquisition board.
 			- mrpt::hwdrivers::CCANBusReader: A class to record CAN bus frames with a CAN232 converter.
 		- [mrpt-obs]
-			- mrpt::slam::CObservationCANBusJ1939 
+			- mrpt::slam::CObservationCANBusJ1939
 	- New functions:
 		- New opengl_stock objects:
 			- mrpt::opengl::stock_objects::Hokuyo_URG()
