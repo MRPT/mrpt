@@ -43,9 +43,11 @@
  <h2>Version 1.0.2: (Under development)</h2></a>
 	- Changes in classes:
 		- [mrpt-base]
-			- Generic particle filter classes now allow directly resampling to a dynamic number of particles. Affected methods: - <a href="http://code.google.com/p/mrpt/source/detail?r=3380" >r3380</a>
+			- Generic particle filter classes now allow directly resampling to a dynamic number of particles. Affected methods: - <a href="http://code.google.com/p/mrpt/source/detail?r=3381" >r3381</a>
 				- mrpt::bayes::CParticleFilterCapable::performResampling()
 				- mrpt::bayes::CParticleFilterCapable::computeResampling()
+    - BUG FIXES:
+        - CTimeLogger::registerUserMeasure() ignored the enable/disable state of the logger - <a href="http://code.google.com/p/mrpt/source/detail?r=3382" >r3382</a>
 
  <br/>
  <hr>

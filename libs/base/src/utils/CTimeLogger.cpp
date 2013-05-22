@@ -200,6 +200,7 @@ double CTimeLogger::do_leave(const char *func_name)
 
 void CTimeLogger::registerUserMeasure(const char *event_name, const double value)
 {
+    if (!m_enabled) return;
 	const string  s = event_name;
 	TCallData &d = m_data[s];
 
@@ -235,11 +236,11 @@ double CTimeLogger::getMeanTime(const std::string &name)  const
 }
 
 
-CTimeLoggerEntry::CTimeLoggerEntry(CTimeLogger &logger, const char*section_name ) : m_logger(logger),m_section_name(section_name) 
-{ 
-	m_logger.enter(m_section_name); 
+CTimeLoggerEntry::CTimeLoggerEntry(CTimeLogger &logger, const char*section_name ) : m_logger(logger),m_section_name(section_name)
+{
+	m_logger.enter(m_section_name);
 }
-CTimeLoggerEntry::~CTimeLoggerEntry() 
-{ 
-	m_logger.leave(m_section_name); 
+CTimeLoggerEntry::~CTimeLoggerEntry()
+{
+	m_logger.leave(m_section_name);
 }
