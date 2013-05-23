@@ -92,33 +92,120 @@ void TestNI_USB_845x()
 	win.waitForKey();
 #endif
 
-#if 1
+#if 0
 	ni_usb.create_SPI_configurations(1);
 	ni_usb.set_SPI_configuration(0 /*idx*/, 0 /* CS */, 1000 /* Khz */, false /* clock_polarity_idle_high */, false /* clock_phase_first_edge */ );
 
-	{
-		const uint8_t write[2] = { 0x20, 0xFF };
-		uint8_t read[2];
-		size_t nRead;
-		printf("TX: %02X %02X\n", write[0],write[1]);
-		ni_usb.read_write_SPI(0 /* config idx */, 2, write, nRead, read );
-	}
-
-	const uint8_t write[2] = { 0x80 | 0x28, 0x00 };
+	// Powerdown OFF
+	const uint8_t write1[2] = { 0x20, 0x0F };
 	uint8_t read[2];
 	size_t nRead;
+	ni_usb.read_write_SPI(0 /* config idx */, 2, write1, nRead, read );
+
+	// High pass filter:
+	//const uint8_t writeHF[2] = { 0x21, 0x09 };
+	//ni_usb.read_write_SPI(0 /* config idx */, 2, writeHF, nRead, read );
+
+	//const double K = 250 / ((1<<16) -1);
+	const double K = 8.75e-3;
+
+
+	std::vector<double> Zs;
+
+	// Read Gyro X,Y,Z
 	while (!mrpt::system::os::kbhit())
 	{
-		printf("TX: %02X %02X\n", write[0],write[1]);
-		ni_usb.read_write_SPI(0 /* config idx */, 2, write, nRead, read );
-		printf("RX: %02X %02X\n\n", read[0],read[1]);
-		mrpt::system::sleep(100);
+		const uint8_t write2[7] = { 0xC0 | 0x28, 0x00,0x00, 0x00,0x00, 0x00,0x00 };
+		uint8_t       read2[7];
+
+		ni_usb.read_write_SPI(0 /* config idx */, sizeof(write2), write2, nRead, read2);
+
+		double acc[3];
+		acc[0] = K*int16_t( read2[1] | (read2[2]<<8) );
+		acc[1] = K*int16_t( read2[3] | (read2[4]<<8) );
+		acc[2] = K*int16_t( read2[5] | (read2[6]<<8) );
+
+		printf("Gyros: X=%05.02f Y=%05.02f Z=%05.02f     \r", acc[0], acc[1],acc[2] );
+
+		Zs.push_back(acc[2]);
+
+		//mrpt::system::sleep(300);
+	}
+#endif
+
+#if 1
+	ni_usb.create_I2C_configurations(1);
+	ni_usb.set_I2C_configuration(0 /*config_idx*/, 0x69 /*address*/, 0 /*timeout*/, 7 /*addr_size*/, 100 /* clock_rate_khz*/, 0 /*I2C_port*/ );
+
+
+#define CTRL_REG1 0x20
+#define CTRL_REG2 0x21
+#define CTRL_REG3 0x22
+#define CTRL_REG4 0x23
+
+	// writeI2C(CTRL_REG1, 0x1F);  // Turn on all axes, disable power down
+	{
+		const uint8_t write[2] = { CTRL_REG1, 0x1F };
+		ni_usb.write_I2C(0, sizeof(write), write);
+	}
+
+	//writeI2C(CTRL_REG3, 0x08);    // Enable control ready signal
+	{
+		const uint8_t write[2] = {CTRL_REG3, 0x08 };
+		ni_usb.write_I2C(0, sizeof(write), write);
+	}
+
+	//writeI2C(CTRL_REG4, 0x80);    // Set scale (500 deg/sec)
+	{
+		const uint8_t write[2] = { CTRL_REG4, 0x80 };
+		ni_usb.write_I2C(0, sizeof(write), write);
+	}
+	mrpt::system::sleep(10);
+	
+	//const double K = 250 / ((1<<16) -1);
+	const double K = 500.0 / ((1<<16) -1);
+
+	std::vector<double> Zs;
+
+	// Read Gyro X,Y,Z
+	while (!mrpt::system::os::kbhit())
+	{
+		uint8_t gx[2],gy[2],gz[2];
+		size_t num_read;
+
+		uint8_t wr_x_MSB[1] = {0x29}, wr_x_LSB[1] = {0x28};
+		uint8_t wr_y_MSB[1] = {0x2B}, wr_y_LSB[1] = {0x2A};
+		uint8_t wr_z_MSB[1] = {0x2D}, wr_z_LSB[1] = {0x2C};
+
+		ni_usb.write_read_I2C(0, 1, wr_x_MSB, 1, num_read,&gx[1] );  ASSERT_(num_read==1)
+		ni_usb.write_read_I2C(0, 1, wr_x_LSB, 1, num_read,&gx[0] ); ASSERT_(num_read==1)
+
+		ni_usb.write_read_I2C(0, 1, wr_y_MSB, 1, num_read,&gy[1] );  ASSERT_(num_read==1)
+		ni_usb.write_read_I2C(0, 1, wr_y_LSB, 1, num_read,&gy[0] ); ASSERT_(num_read==1)
+
+		ni_usb.write_read_I2C(0, 1, wr_z_MSB, 1, num_read,&gz[1] );  ASSERT_(num_read==1)
+		ni_usb.write_read_I2C(0, 1, wr_z_LSB, 1, num_read,&gz[0] ); ASSERT_(num_read==1)
+
+		double acc[3];
+		acc[0] = K*int16_t( gx[0] | (gx[1]<<8) );
+		acc[1] = K*int16_t( gy[0] | (gy[1]<<8) );
+		acc[2] = K*int16_t( gz[0] | (gz[1]<<8) );
+
+		printf("Gyros: X=%05.02f Y=%05.02f Z=%05.02f     \r", acc[0], acc[1],acc[2] );
+
+		Zs.push_back(acc[2]);
+
+		mrpt::system::sleep(500);
 	}
 
 
+	CDisplayWindowPlots win;
+
+	win.plot(Zs);
+	win.axis_fit();
+	win.waitForKey();
+
 #endif
-
-
 	mrpt::system::pause();
 }
 

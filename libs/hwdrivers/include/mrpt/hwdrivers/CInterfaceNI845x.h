@@ -89,6 +89,21 @@ namespace mrpt
 			void read_write_SPI(size_t config_idx, size_t num_write_bytes, const uint8_t *write_data, size_t &out_read_bytes, uint8_t * read_data );
 
 
+			void create_I2C_configurations(size_t num_configurations);
+			/** Must call create_I2C_configurations() first to reserve configuration blocks, whose indices are selected with config_idx  */
+			void set_I2C_configuration(size_t config_idx, uint16_t address, uint16_t  timeout, int32_t addr_size, uint16_t clock_rate_khz, uint8_t I2C_port );
+
+			/** Read I2C  */
+			void read_I2C(size_t config_idx, size_t num_bytes_to_read, size_t & num_bytes_read, uint8_t * read_data );
+			
+			/** Write I2C */
+			void write_I2C(size_t config_idx, size_t num_bytes_to_write, const uint8_t * write_data );
+
+			/** Write+read I2C */
+			void write_read_I2C(size_t config_idx, size_t num_bytes_to_write, const uint8_t * write_data, size_t num_bytes_to_read, size_t & num_bytes_read, uint8_t * read_data );
+
+
+
 			void deviceLock();   //!< Lock (for multi-threading apps)
 			void deviceUnlock();   //!< Unlock (for multi-threading apps)
 
@@ -98,9 +113,14 @@ namespace mrpt
 			void* m_niDevHandle; //!< opaque handler
 			void* m_niSPIConfHandles; //!< opaque handler
 			size_t m_niSPIConfHandlesCount;
+
+			void* m_niI2CConfHandles; //!< opaque handler
+			size_t m_niI2CConfHandlesCount;
+
 			std::string m_deviceDescr; //!< The descriptor of the open device
 
 			void close_SPI_configurations(); //!< Closes and free these structs
+			void close_I2C_configurations(); //!< Closes and free these structs
 
 
 		}; // end of class

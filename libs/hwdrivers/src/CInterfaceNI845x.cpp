@@ -51,6 +51,7 @@ using namespace mrpt::synch;
 #if MRPT_HAS_NI845x
 #	define DEV_HANDLER  reinterpret_cast<NiHandle*>(m_niDevHandle)
 #	define CONF_HANDLERS  reinterpret_cast<NiHandle*>(m_niSPIConfHandles)
+#	define I2C_CONF_HANDLERS  reinterpret_cast<NiHandle*>(m_niI2CConfHandles)
 #endif
 
 // Ctor
@@ -61,7 +62,9 @@ CInterfaceNI845x::CInterfaceNI845x() :
 	m_niDevHandle( NULL ),
 #endif
 	m_niSPIConfHandles ( NULL ),
-	m_niSPIConfHandlesCount(0)
+	m_niSPIConfHandlesCount(0),
+	m_niI2CConfHandles (NULL),
+	m_niI2CConfHandlesCount(0)
 {
 #if MRPT_HAS_NI845x
 	*DEV_HANDLER = 0;
@@ -160,6 +163,7 @@ void CInterfaceNI845x::close()
 
 	// Close configurations:
 	this->close_SPI_configurations();
+	this->close_I2C_configurations();
 
 	// Close device:
 	ni845xClose(*DEV_HANDLER);
@@ -286,6 +290,7 @@ void CInterfaceNI845x::set_SPI_configuration(size_t config_idx, uint8_t  chip_se
 	checkErr (ni845xSpiConfigurationSetClockRate (hConf,clock_speed_Khz));
 	checkErr (ni845xSpiConfigurationSetClockPolarity (hConf, clock_polarity_idle_low ? kNi845xSpiClockPolarityIdleLow : kNi845xSpiClockPolarityIdleHigh ));
 	checkErr (ni845xSpiConfigurationSetClockPhase (hConf, clock_phase_first_edge ? kNi845xSpiClockPhaseFirstEdge : kNi845xSpiClockPhaseSecondEdge));
+	checkErr (ni845xSpiConfigurationSetNumBitsPerSample(hConf, 8 ) );
 #else
 	THROW_EXCEPTION("MRPT was compiled without support for this device")
 #endif
@@ -300,5 +305,89 @@ void CInterfaceNI845x::read_write_SPI(size_t config_idx, size_t num_write_bytes,
 	out_read_bytes = nRead;
 #else
 	THROW_EXCEPTION("MRPT was compiled without support for this device")
+#endif
+}
+
+void CInterfaceNI845x::create_I2C_configurations(size_t num_configurations)
+{
+#if MRPT_HAS_NI845x
+	this->close_I2C_configurations();
+	
+	m_niI2CConfHandles = new NiHandle[num_configurations];
+	m_niI2CConfHandlesCount = num_configurations;
+
+	// Create one I2C configuration:
+	for (size_t i=0;i<num_configurations;i++)
+		checkErr( ni845xI2cConfigurationOpen(&I2C_CONF_HANDLERS[i]) );
+#else
+	THROW_EXCEPTION("MRPT was compiled without support for this device")
+#endif
+}
+
+/** Must call create_I2C_configurations() first to reserve configuration blocks, whose indices are selected with config_idx  */
+void CInterfaceNI845x::set_I2C_configuration(
+	size_t config_idx, 
+	uint16_t address, 
+	uint16_t  timeout, 
+	int32_t addr_size, 
+	uint16_t clock_rate_khz, 
+	uint8_t I2C_port )
+{
+#if MRPT_HAS_NI845x
+	NiHandle hConf = I2C_CONF_HANDLERS[config_idx];
+
+	checkErr (ni845xI2cConfigurationSetAckPollTimeout (hConf, timeout ));
+	checkErr (ni845xI2cConfigurationSetAddress (hConf, address ));
+	checkErr (ni845xI2cConfigurationSetAddressSize (hConf, addr_size==7 ? kNi845xI2cAddress7Bit : kNi845xI2cAddress10Bit  ));
+	checkErr (ni845xI2cConfigurationSetClockRate (hConf, clock_rate_khz ));
+	checkErr (ni845xI2cConfigurationSetPort (hConf, I2C_port ));
+
+#else
+	THROW_EXCEPTION("MRPT was compiled without support for this device")
+#endif
+}
+
+void CInterfaceNI845x::close_I2C_configurations() //!< Closes and free these struct
+{
+#if MRPT_HAS_NI845x
+	if (m_niI2CConfHandles && m_niI2CConfHandlesCount)
+	{
+		for (size_t i=0;i<m_niI2CConfHandlesCount;i++)
+		{
+			ni845xI2cConfigurationClose(I2C_CONF_HANDLERS[i]);
+			I2C_CONF_HANDLERS[i]=0;
+		}
+		delete[] m_niI2CConfHandles;
+		m_niI2CConfHandles=NULL;
+	}
+	m_niI2CConfHandlesCount=0;
+#endif
+}
+
+/** Read I2C \return false on any error */
+void CInterfaceNI845x::read_I2C(size_t config_idx, size_t num_bytes_to_read, size_t & num_bytes_read, uint8_t * read_data )
+{
+#if MRPT_HAS_NI845x
+	uInt32 nRead;
+	checkErr (ni845xI2cRead(*DEV_HANDLER, I2C_CONF_HANDLERS[config_idx], num_bytes_to_read,&nRead, read_data));
+	num_bytes_read = nRead;
+#endif
+}
+			
+/** Write I2C \return false on any error */
+void CInterfaceNI845x::write_I2C(size_t config_idx, size_t num_bytes_to_write, const uint8_t * write_data )
+{
+#if MRPT_HAS_NI845x
+	checkErr (ni845xI2cWrite(*DEV_HANDLER, I2C_CONF_HANDLERS[config_idx], num_bytes_to_write, const_cast<uint8_t*>(write_data) ));
+#endif
+}
+
+/** Write+read I2C */
+void CInterfaceNI845x::write_read_I2C(size_t config_idx, size_t num_bytes_to_write, const uint8_t * write_data, size_t num_bytes_to_read, size_t & num_bytes_read, uint8_t * read_data )
+{
+#if MRPT_HAS_NI845x
+	uInt32 nRead;
+	checkErr (ni845xI2cWriteRead(*DEV_HANDLER, I2C_CONF_HANDLERS[config_idx], num_bytes_to_write, const_cast<uint8_t*>(write_data), num_bytes_to_read,&nRead, read_data));
+	num_bytes_read = nRead;
 #endif
 }
