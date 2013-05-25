@@ -36,6 +36,7 @@
 #include <mrpt/hwdrivers/CInterfaceNI845x.h>
 #include <mrpt/system.h>
 #include <mrpt/gui.h>
+#include <mrpt/utils/CTicTac.h>
 
 using namespace std;
 using namespace mrpt;
@@ -135,17 +136,19 @@ void TestNI_USB_845x()
 
 #if 1
 	ni_usb.create_I2C_configurations(1);
-	ni_usb.set_I2C_configuration(0 /*config_idx*/, 0x69 /*address*/, 0 /*timeout*/, 7 /*addr_size*/, 100 /* clock_rate_khz*/, 0 /*I2C_port*/ );
+	ni_usb.set_I2C_configuration(0 /*config_idx*/, 0x69 /*address*/, 0 /*timeout*/, 7 /*addr_size*/, 400 /* clock_rate_khz*/, 0 /*I2C_port*/ );
 
+	// For the encoders:
+	ni_usb.setIOPortDirection(0, 0x00);
 
 #define CTRL_REG1 0x20
 #define CTRL_REG2 0x21
 #define CTRL_REG3 0x22
 #define CTRL_REG4 0x23
 
-	// writeI2C(CTRL_REG1, 0x1F);  // Turn on all axes, disable power down
+	// writeI2C(CTRL_REG1, 0x0F);  // Turn on all axes, disable power down
 	{
-		const uint8_t write[2] = { CTRL_REG1, 0x1F };
+		const uint8_t write[2] = { CTRL_REG1, 0xFF };
 		ni_usb.write_I2C(0, sizeof(write), write);
 	}
 
@@ -155,7 +158,7 @@ void TestNI_USB_845x()
 		ni_usb.write_I2C(0, sizeof(write), write);
 	}
 
-	//writeI2C(CTRL_REG4, 0x80);    // Set scale (500 deg/sec)
+	//writeI2C(CTRL_REG4, 0x80);    // Set scale (250 deg/sec)
 	{
 		const uint8_t write[2] = { CTRL_REG4, 0x80 };
 		ni_usb.write_I2C(0, sizeof(write), write);
@@ -163,9 +166,15 @@ void TestNI_USB_845x()
 	mrpt::system::sleep(10);
 	
 	//const double K = 250 / ((1<<16) -1);
-	const double K = 500.0 / ((1<<16) -1);
+	const double K = 250.0 / ((1<<16) -1);
 
 	std::vector<double> Zs;
+	std::vector<double> Ts;
+	std::vector<double> E0,E1,E2;
+
+	mrpt::utils::CTicTac tictac;
+
+	tictac.Tic();
 
 	// Read Gyro X,Y,Z
 	while (!mrpt::system::os::kbhit())
@@ -186,24 +195,54 @@ void TestNI_USB_845x()
 		ni_usb.write_read_I2C(0, 1, wr_z_MSB, 1, num_read,&gz[1] );  ASSERT_(num_read==1)
 		ni_usb.write_read_I2C(0, 1, wr_z_LSB, 1, num_read,&gz[0] ); ASSERT_(num_read==1)
 
+		// Encoder:
+		uint8_t d = ni_usb.readIOPort(0);
+		E0.push_back((d & 0x01) ? 1.0 : 0.0);
+		E1.push_back((d & 0x02) ? 1.0 : 0.0);
+		E2.push_back((d & 0x04) ? 1.0 : 0.0);
+
 		double acc[3];
 		acc[0] = K*int16_t( gx[0] | (gx[1]<<8) );
 		acc[1] = K*int16_t( gy[0] | (gy[1]<<8) );
 		acc[2] = K*int16_t( gz[0] | (gz[1]<<8) );
 
-		printf("Gyros: X=%05.02f Y=%05.02f Z=%05.02f     \r", acc[0], acc[1],acc[2] );
+		//printf("Gyros: X=%05.02f Y=%05.02f Z=%05.02f     \r", acc[0], acc[1],acc[2] );
 
 		Zs.push_back(acc[2]);
+		Ts.push_back(tictac.Tac());
 
-		mrpt::system::sleep(500);
+		//mrpt::system::sleep(0);
 	}
 
+	const double tim_tot = tictac.Tac();
+	size_t N=Ts.size();
+	cout << "Rate: " << N / tim_tot << " N=" << N << endl;
 
 	CDisplayWindowPlots win;
 
-	win.plot(Zs);
+	win.plot(Ts,Zs);
 	win.axis_fit();
 	win.waitForKey();
+
+	// Save all in one matrix:
+	CMatrixDouble DAT(N,5);
+	for (size_t i=0;i<N;i++)
+	{
+		DAT(i,0) = Ts[i];
+		DAT(i,1) = Zs[i];
+		DAT(i,2) = E0[i];
+		DAT(i,3) = E1[i];
+		DAT(i,4) = E2[i];
+	}
+	
+	const string sFil = mrpt::utils::fileNameStripInvalidChars( string("LOG_")+ mrpt::system::dateTimeLocalToString(mrpt::system::now()) + string(".txt"));
+	cout << "Saving log to: " << sFil << endl;
+	DAT.saveToTextFile( 
+		sFil, 
+		mrpt::math::MATRIX_FORMAT_FIXED, 
+		true, 
+		"% Columns: TIME (s)  Wz (deg/s) Encoders_A/B/C"
+		); 
 
 #endif
 	mrpt::system::pause();

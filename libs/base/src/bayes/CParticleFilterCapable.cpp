@@ -73,8 +73,6 @@ void  CParticleFilterCapable::performResampling(
 
 	std::vector<size_t>	indxs;
 	vector_double	log_ws(in_particle_count,0);
-	vector_double::iterator		it;
-
 	for (size_t i=0;i<in_particle_count;i++)
 		log_ws[i] = getW(i);
 
