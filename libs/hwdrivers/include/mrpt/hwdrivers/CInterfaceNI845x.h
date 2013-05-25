@@ -102,7 +102,19 @@ namespace mrpt
 			/** Write+read I2C */
 			void write_read_I2C(size_t config_idx, size_t num_bytes_to_write, const uint8_t * write_data, size_t num_bytes_to_read, size_t & num_bytes_read, uint8_t * read_data );
 
+			/** Write+read I2C script: prepare */
+			void script_I2C_prepare(
+				uint16_t clock_rate,
+				uint8_t  slave_addr,
+				uint32_t write_size,
+				const uint8_t  *write_data,
+				uint32_t read_count
+				);
 
+			/** Write+read I2C script: run */
+			void script_I2C_run(
+				uint32_t  &read_data_count,
+				uint8_t   *out_read_data);
 
 			void deviceLock();   //!< Lock (for multi-threading apps)
 			void deviceUnlock();   //!< Unlock (for multi-threading apps)
@@ -116,6 +128,9 @@ namespace mrpt
 
 			void* m_niI2CConfHandles; //!< opaque handler
 			size_t m_niI2CConfHandlesCount;
+
+			void *m_script_handle; //!< opaque handler
+			uint32_t m_script_read0_idx;
 
 			std::string m_deviceDescr; //!< The descriptor of the open device
 

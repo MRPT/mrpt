@@ -52,12 +52,14 @@ using namespace mrpt::synch;
 #	define DEV_HANDLER  reinterpret_cast<NiHandle*>(m_niDevHandle)
 #	define CONF_HANDLERS  reinterpret_cast<NiHandle*>(m_niSPIConfHandles)
 #	define I2C_CONF_HANDLERS  reinterpret_cast<NiHandle*>(m_niI2CConfHandles)
+#	define SCRIPT_HANDLER  reinterpret_cast<NiHandle*>(m_script_handle)
 #endif
 
 // Ctor
 CInterfaceNI845x::CInterfaceNI845x() : 
 #if MRPT_HAS_NI845x
 	m_niDevHandle     ( malloc(sizeof(NiHandle)) ),
+	m_script_handle   ( malloc(sizeof(NiHandle)) ),
 #else
 	m_niDevHandle( NULL ),
 #endif
@@ -76,10 +78,13 @@ CInterfaceNI845x::~CInterfaceNI845x()
 {
 	this->close();
 
-	if (m_niDevHandle) 
-	{
+	if (m_niDevHandle) {
 		free(m_niDevHandle);
 		m_niDevHandle=NULL;
+	}
+	if (m_script_handle) {
+		free(m_script_handle);
+		m_script_handle=NULL;
 	}
 }
 
@@ -341,7 +346,6 @@ void CInterfaceNI845x::set_I2C_configuration(
 	checkErr (ni845xI2cConfigurationSetAddressSize (hConf, addr_size==7 ? kNi845xI2cAddress7Bit : kNi845xI2cAddress10Bit  ));
 	checkErr (ni845xI2cConfigurationSetClockRate (hConf, clock_rate_khz ));
 	checkErr (ni845xI2cConfigurationSetPort (hConf, I2C_port ));
-
 #else
 	THROW_EXCEPTION("MRPT was compiled without support for this device")
 #endif
@@ -389,5 +393,56 @@ void CInterfaceNI845x::write_read_I2C(size_t config_idx, size_t num_bytes_to_wri
 	uInt32 nRead;
 	checkErr (ni845xI2cWriteRead(*DEV_HANDLER, I2C_CONF_HANDLERS[config_idx], num_bytes_to_write, const_cast<uint8_t*>(write_data), num_bytes_to_read,&nRead, read_data));
 	num_bytes_read = nRead;
+#endif
+}
+
+/** Write+read I2C script: prepare */
+void CInterfaceNI845x::script_I2C_prepare(
+	uint16_t clock_rate,
+	uint8_t  slave_addr,
+	uint32_t write_size,
+	const uint8_t  *write_data,
+	uint32_t read_count
+	)
+{
+#if MRPT_HAS_NI845x
+	checkErr (ni845xI2cScriptOpen(SCRIPT_HANDLER) );
+	checkErr (ni845xI2cScriptClockRate(*SCRIPT_HANDLER, clock_rate) );
+	checkErr (ni845xI2cScriptIssueStart(*SCRIPT_HANDLER) );
+	// Slave addr + write:
+	checkErr (ni845xI2cScriptAddressWrite(*SCRIPT_HANDLER,slave_addr) );
+	checkErr (ni845xI2cScriptWrite(*SCRIPT_HANDLER,write_size,const_cast<uint8_t*>(write_data)) );
+	// Start repeat
+	checkErr (ni845xI2cScriptIssueStart(*SCRIPT_HANDLER) );
+	// Slave addr + read:
+	checkErr (ni845xI2cScriptAddressRead(*SCRIPT_HANDLER,slave_addr) );
+	// Read:
+	uInt32 out_idx;
+	checkErr (ni845xI2cScriptRead(*SCRIPT_HANDLER,read_count,kNi845xI2cNakTrue,&out_idx) );
+	m_script_read0_idx = out_idx;
+
+	checkErr (ni845xI2cScriptIssueStop(*SCRIPT_HANDLER) );
+#endif
+}
+
+/** Write+read I2C script: run */
+void CInterfaceNI845x::script_I2C_run(
+	uint32_t  &read_data_count,
+	uint8_t   *out_read_data
+	)
+{
+#if MRPT_HAS_NI845x
+	uint8_t I2C_port=0;
+
+	// Run script:
+	checkErr (ni845xI2cScriptRun(*SCRIPT_HANDLER,*DEV_HANDLER,I2C_port) );
+
+	// Extract data:
+	uInt32 out_data_cnt;
+	checkErr (ni845xI2cScriptExtractReadDataSize(*SCRIPT_HANDLER,m_script_read0_idx,&out_data_cnt) );
+	read_data_count = out_data_cnt;
+
+	checkErr (ni845xI2cScriptExtractReadData(*SCRIPT_HANDLER,m_script_read0_idx,out_read_data) );
+
 #endif
 }
