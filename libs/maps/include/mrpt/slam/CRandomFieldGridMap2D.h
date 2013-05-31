@@ -42,6 +42,7 @@
 #include <mrpt/math/CMatrixD.h>
 #include <mrpt/utils/CLoadableOptions.h>
 #include <mrpt/slam/CMetricMap.h>
+#include <mrpt/slam/COccupancyGridMap2D.h>
 
 #include <Eigen/Sparse>
 
@@ -229,9 +230,17 @@ namespace slam
 
 			/** @name Gaussian Markov Random Fields methods (mrGMRF_)
 			    @{ */
-			float		GMRF_lambdaPrior;	//!< The information (Lambda) of fixed map constraints
+			float		GMRF_lambdaPrior;		//!< The information (Lambda) of fixed map constraints
 			float		GMRF_lambdaObs;			//!< The initial information (Lambda) of each observation (this information will decrease with time)
 			float		GMRF_lambdaObsLoss;		//!< The loss of information of the observations with each iteration
+			
+			bool GMRF_use_occupancy_information;	//!< wether to use information of an occupancy_gridmap map for buidling the GMRF
+			std::string GMRF_simplemap_file;		//!< simplemap_file name of the occupancy_gridmap
+			std::string GMRF_gridmap_image_file;	//!< image name of the occupancy_gridmap
+			float GMRF_gridmap_image_res;			//!< occupancy_gridmap resolution: size of each pixel (m)
+			size_t GMRF_gridmap_image_cx;			//!< Pixel coordinates of the origin for the occupancy_gridmap
+			size_t GMRF_gridmap_image_cy;			//!< Pixel coordinates of the origin for the occupancy_gridmap
+
 			uint16_t	GMRF_constraintsSize;	//!< The size of the Gaussian window to impose fixed restrictions between cells.
 			float		GMRF_constraintsSigma;  //!< The sigma of the Gaussian window to impose fixed restrictions between cells.
 			/** @} */
@@ -355,12 +364,15 @@ namespace slam
 		size_t nPriorFactors;							// L
 		size_t nObsFactors;								// M
 		size_t nFactors;								// L+M
+		std::multimap<size_t,size_t> cell_interconnections;		//Store the interconnections (relations) of each cell with its neighbourds
+
 		std::vector<float> gauss_val;					// For factor Weigths (only for mrGMRF_G)
 
 		struct TobservationGMRF
 		{
 			float	obsValue;
 			float	Lambda;
+			bool	time_invariant;						//if the observation will lose weight (lambda) as time goes on (default false)
 		};
 
 		std::vector<std::vector<TobservationGMRF> > activeObs;		//Vector with the active observations and their respective Information
@@ -419,6 +431,17 @@ namespace slam
 		/** Erase all the contents of the map */
 		virtual void  internal_clear();
 
+		/** Check if two cells of the gridmap (m_map) are connected, based on the provided occupancy gridmap*/
+		bool exist_relation_between2cells(
+			const mrpt::slam::COccupancyGridMap2D *m_Ocgridmap,
+			size_t cxo_min, 
+			size_t cxo_max, 
+			size_t cyo_min, 
+			size_t cyo_max, 
+			const size_t seed_cxo, 
+			const size_t seed_cyo, 
+			const size_t objective_cxo, 
+			const size_t objective_cyo);
 	};
 
 
