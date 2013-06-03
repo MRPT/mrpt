@@ -71,7 +71,7 @@ void CAbstractReactiveNavigationSystem::resume()
 
 
 /*---------------------------------------------------------------
-							Continue
+							Suspend
   ---------------------------------------------------------------*/
 void  CAbstractReactiveNavigationSystem::suspend()
 {
@@ -135,6 +135,7 @@ void CAbstractReactiveNavigationSystem::navigationStep()
 	case NAVIGATING:
 		try
 		{
+			
 			// Si acabamos de llegar a este estado, parar el robot:
 			if ( m_lastNavigationState != NAVIGATING )
 			{

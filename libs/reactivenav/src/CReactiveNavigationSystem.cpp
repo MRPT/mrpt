@@ -1260,7 +1260,7 @@ void  CReactiveNavigationSystem::navigate(CReactiveNavigationSystem::TNavigation
 }
 
 /*************************************************************************
-        Cambiar params. de la navegacion actual
+				Cambiar params. de la navegacion actual
 *************************************************************************/
 void  CReactiveNavigationSystem::setParams( CReactiveNavigationSystem::TNavigationParams  *params )
 {

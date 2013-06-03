@@ -123,6 +123,7 @@ void  CHolonomicND::navigate(
 
 	m_last_selected_sector = selectedSector;
 
+
 	// LOG --------------------------
 	if (log)
 	{
@@ -159,7 +160,7 @@ void  CHolonomicND::gapsEstimator(
 	const size_t n = obstacles.size();
 
 	// ================ Parameters ================
-	const int		GAPS_MIN_WIDTH = 5;
+	const int		GAPS_MIN_WIDTH = 3;
 	const double	GAPS_MIN_DEPTH_CONSIDERED = 0.6;
 	const double	GAPS_MAX_RELATIVE_DEPTH = 0.5;
 	// ============================================
@@ -204,7 +205,7 @@ void  CHolonomicND::gapsEstimator(
 
 					is_inside = false;
 
-					if ( (sec_end-sec_ini) > GAPS_MIN_WIDTH )
+					if ( (sec_end-sec_ini) >= GAPS_MIN_WIDTH )
 					{
 						// Add new gap:
 						gaps_temp.resize( gaps_temp.size() + 1 );
@@ -381,23 +382,24 @@ void  CHolonomicND::searchBestGap(
 
 		if (log) log->gaps_eval = gaps_evaluation;
 
-		// D2: is there any gap "beyond" the target (and not too far away)?
-		// -----------------------------------------------------------------
-		unsigned int dist;
-		for ( unsigned int i=0;i<in_gaps.size();i++ )
-		{
-			dist = mrpt::utils::abs_diff(target_sector, in_gaps[i].representative_sector );
-			if (dist > 0.5*obstacles.size())
-				dist = obstacles.size() - dist;
-						
-			if ( in_gaps[i].maxDistance >= target_dist && dist <= floor(options.MAX_SECTOR_DIST_FOR_D2_PERCENT * obstacles.size()) )
-											 
-				if ( gaps_evaluation[i]>selected_gap_eval )
-				{
-					selected_gap_eval = gaps_evaluation[i];
-					selected_gap = i;
-				}
-		}
+		// D2: is there any gap "beyond" the target (and not too far away)?   (Not used)
+		// ----------------------------------------------------------------
+
+		//unsigned int dist;
+		//for ( unsigned int i=0;i<in_gaps.size();i++ )
+		//{
+		//	dist = mrpt::utils::abs_diff(target_sector, in_gaps[i].representative_sector );
+		//	if (dist > 0.5*obstacles.size())
+		//		dist = obstacles.size() - dist;
+		//				
+		//	if ( in_gaps[i].maxDistance >= target_dist && dist <= (int)floor(options.MAX_SECTOR_DIST_FOR_D2_PERCENT * obstacles.size()) )
+		//									 
+		//		if ( gaps_evaluation[i]>selected_gap_eval )
+		//		{
+		//			selected_gap_eval = gaps_evaluation[i];
+		//			selected_gap = i;
+		//		}
+		//}
 
 
 		// Keep the best gaps (if none was picked up to this point)
@@ -564,6 +566,7 @@ void  CHolonomicND::evaluateGaps(
 		else  factor1 = meanDist;
 
 
+
 		// Factor #2: Distance to target in "sectors"
 		// -------------------------------------------
 		unsigned int dif = mrpt::utils::abs_diff(target_sector, gap->representative_sector );
@@ -575,7 +578,8 @@ void  CHolonomicND::evaluateGaps(
 		const double factor2= exp(-square( dif / (obstacles.size()*0.25))) ;
 
 
-		// Factor #3: Punish paths that take us far away wrt the target:
+
+		// Factor #3: Punish paths that take us far away wrt the target:  **** I don't understand it *********
 		// -----------------------------------------------------
 		double	closestX,closestY;
 		double dist_eucl = math::minimumDistanceFromPointToSegment(
@@ -584,19 +588,23 @@ void  CHolonomicND::evaluateGaps(
 			closestX,closestY   // Out
 			);
 
-		const double factor3 = ( maxObsRange - std::min(maxObsRange ,dist_eucl) ) / maxObsRange;		
+		const double factor3 = ( maxObsRange - std::min(maxObsRange ,dist_eucl) ) / maxObsRange;
+
 		
 		
 		// Factor #4: Stabilizing factor (hysteresis) to avoid quick switch among very similar paths:
 		// ------------------------------------------------------------------------------------------
 		double factor_AntiCab;
+
+
 		if (m_last_selected_sector != std::numeric_limits<unsigned int>::max() )
 		{
 			unsigned int dist = mrpt::utils::abs_diff(m_last_selected_sector, gap->representative_sector);
-			if (dist> (obstacles.size()/2) )
-				dist = obstacles.size() - dist;
 
-			factor_AntiCab = (dist > 0.10*obstacles.size()) ? 0.0:1.0;
+			if (dist > unsigned(0.1*obstacles.size()))
+				factor_AntiCab = 0.0;
+			else
+				factor_AntiCab = 1.0;
 		}
 		else
 		{

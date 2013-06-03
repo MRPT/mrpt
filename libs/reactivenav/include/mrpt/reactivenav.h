@@ -37,6 +37,7 @@
 #define __mrpt_reactivenav_H
 
 #include <mrpt/reactivenav/CReactiveNavigationSystem.h>
+#include <mrpt/reactivenav/CReactiveNavigationSystem3D.h>
 #include <mrpt/reactivenav/CAbstractReactiveNavigationSystem.h>
 #include <mrpt/reactivenav/CPRRTNavigator.h>
 #include <mrpt/reactivenav/motion_planning_utils.h>
