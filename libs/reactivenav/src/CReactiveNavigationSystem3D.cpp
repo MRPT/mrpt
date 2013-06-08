@@ -219,7 +219,7 @@ void CReactiveNavigationSystem3D::loadConfigFile(const mrpt::utils::CConfigFileB
 
 		}
 	}
-		
+
 	printf_debug("\n");
 
 	// Show configuration parameters:
@@ -267,7 +267,7 @@ void CReactiveNavigationSystem3D::setHolonomicMethod(
 {
 	for (unsigned int i=0; i<height_sections; i++)
 	{
-	
+
 		// Delete current method:
 		if (holonomicMethod[i]) delete holonomicMethod[i];
 
@@ -345,7 +345,7 @@ void CReactiveNavigationSystem3D::enableLogFile(bool enable)
 	  				performNavigationStep
 
   This method implements the 3D reactive navigation algorithm.
-  It is executed periodically only if the robot is in 
+  It is executed periodically only if the robot is in
   "NAVIGATING" state.
   ---------------------------------------------------------------*/
 void  CReactiveNavigationSystem3D::performNavigationStep()
@@ -377,7 +377,7 @@ void  CReactiveNavigationSystem3D::performNavigationStep()
 	m_timelogger.enter("navigationStep");
 	try
 	{
-		
+
 		// Iterations count:
 		nIteration++;
 
@@ -504,10 +504,11 @@ void  CReactiveNavigationSystem3D::performNavigationStep()
 			for (unsigned int i=0; i<m_ptgmultilevel.size(); i++)
 			{
 				m_ptgmultilevel[i].holonomicmov.PTG = m_ptgmultilevel[i].PTGs[0];
+                CPoint2D TP_Target_i = CPoint2D(m_ptgmultilevel[i].TP_Target);
 				STEP5_PTGEvaluator(	m_ptgmultilevel[i].holonomicmov,
 									m_ptgmultilevel[i].TPObstacles,
 									relTarget,
-									CPoint2D(m_ptgmultilevel[i].TP_Target),
+									TP_Target_i,
 									newLogRec.infoPerPTG[i]);
 			}
 
@@ -515,7 +516,7 @@ void  CReactiveNavigationSystem3D::performNavigationStep()
 
 			// STEP6: Selects the best movement
 			// ---------------------------------------------------------------------
-			
+
 			STEP6_Selector( selectedHolonomicMovement, nSelectedPTG );
 
 
@@ -600,7 +601,7 @@ void  CReactiveNavigationSystem3D::performNavigationStep()
 
 		printf_debug("\n");
 
-		
+
 		// ---------------------------------------
 		// STEP8: Generate log record
 		// ---------------------------------------
@@ -657,8 +658,8 @@ void  CReactiveNavigationSystem3D::performNavigationStep()
 				newLogRec.robotShape_y[cuenta]= paux.y;
 				cuenta++;
 			}
-		}		
-		
+		}
+
 
 		size_t sizeobs;
 		// For each PTG:
@@ -770,25 +771,25 @@ bool CReactiveNavigationSystem3D::STEP2_LoadAndSortObstacles(
 		// The user must implement its own method to load the obstacles from
 		// either sensor measurements or simulators (m_robot.senseObstacles(...))
 		// Data have to be subsequently sorted in height bands according to the
-		// height sections of the robot. 
+		// height sections of the robot.
 		//-------------------------------------------------------------------
 
 		m_timelogger.enter("navigationStep.STEP2_LoadAndSortObstacle");
 
 		m_robot.senseObstacles( *WS_Obstacles_unsorted );
-		
+
 		unsigned int cont;
 		bool classified;
 		float h;
 		TPoint3D paux;
 		out_obstacles.resize(m_robotShape.heights.size());
-		
+
 		for (unsigned int j=0; j<WS_Obstacles_unsorted->getPointsCount(); j++)
 		{
 			WS_Obstacles_unsorted->getPoint(j,paux.x,paux.y,paux.z);
 			classified  = 0;
 			cont  = 0;
-			h = 0;					
+			h = 0;
 			while (classified == 0)
 			{
 				if (paux.z < 0.01)
@@ -807,7 +808,7 @@ bool CReactiveNavigationSystem3D::STEP2_LoadAndSortObstacles(
 				}
 			}
 		}
-		
+
 
 		m_timelogger.leave("navigationStep.STEP2_LoadAndSortObstacle");
 
@@ -841,7 +842,7 @@ void CReactiveNavigationSystem3D::STEP3_WSpaceToTPSpace(
 	try
 	{
 		m_timelogger.enter("navigationStep.STEP3_WSpaceToTPSpace");
-		
+
 		size_t Ki,nObs;
 		float invoperation;
 
@@ -849,7 +850,7 @@ void CReactiveNavigationSystem3D::STEP3_WSpaceToTPSpace(
 		{
 			//				Transform the obstacles
 			//========================================================
-			
+
 			Ki = m_ptgmultilevel[a].PTGs[0]->getAlfaValuesCount();
 
 			if ( m_ptgmultilevel[a].TPObstacles.size() != Ki )
@@ -1152,10 +1153,10 @@ void CReactiveNavigationSystem3D::STEP7_GenerateSpeedCommands( THolonomicMovemen
 		m_timelogger.enter("navigationStep.STEP7_NonHolonomicMovement");
 
 		last_cmd_v = new_cmd_v;
-		last_cmd_w = new_cmd_w;		
-		
+		last_cmd_w = new_cmd_w;
+
 		const float r = 0.1;
-		
+
 		if (in_movement.speed == 0)
 		{
 			// The robot will stop:

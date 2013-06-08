@@ -374,7 +374,7 @@ void  CRandomFieldGridMap2D::internal_clear()
 			fill( def );
 
 			mrpt::slam::COccupancyGridMap2D	m_Ocgridmap;
-			float res_coef;			
+			float res_coef;
 
 			if (this->m_insertOptions_common->GMRF_use_occupancy_information)
 			{
@@ -409,9 +409,9 @@ void  CRandomFieldGridMap2D::internal_clear()
 
 					//m_gridmap = *metricMap.m_gridMaps[0];
 					//res_coef = XXX;
-				}				
+				}
 				else if( m_insertOptions_common->GMRF_gridmap_image_file.compare("") )
-				{					
+				{
 					//Load from image
 					bool loaded = m_Ocgridmap.loadFromBitmapFile(this->m_insertOptions_common->GMRF_gridmap_image_file,this->m_insertOptions_common->GMRF_gridmap_image_res,this->m_insertOptions_common->GMRF_gridmap_image_cx,this->m_insertOptions_common->GMRF_gridmap_image_cy);
 					printf ("Occupancy Gridmap loaded : %b",loaded);
@@ -449,25 +449,25 @@ void  CRandomFieldGridMap2D::internal_clear()
 			g.fill(0.0);
 			activeObs.resize(N);	//No initial Observations
 
-			
+
 			//-------------------------------------
 			// Load default values for H_prior:
 			//-------------------------------------
 			if (this->m_insertOptions_common->GMRF_use_occupancy_information)
-			{	
+			{
 				printf("LOADING PRIOR BASED ON OCCUPANCY GRIDMAP \n");
 				//Use region growing algorithm to determine the gascell interconnections (Factors)
 				size_t cx = 0;
 				size_t cy = 0;
-				
+
 				size_t cxoj_min, cxoj_max, cyoj_min, cyoj_max, seed_cxo, seed_cyo;				//Cell j limits in the Occupancy
 				size_t cxoi_min, cxoi_max, cyoi_min, cyoi_max, objective_cxo, objective_cyo;	//Cell i limits in the Occupancy
-				size_t cxo_min, cxo_max, cyo_min, cyo_max;										//Cell i+j limits in the Occupancy				
+				size_t cxo_min, cxo_max, cyo_min, cyo_max;										//Cell i+j limits in the Occupancy
 				bool first_obs = false;
 
 				for (size_t j=0; j<N; j++)		//For each cell in the gas_map
-				{	
-					// Get cell_j indx-limits in Occuppancy gridmap						
+				{
+					// Get cell_j indx-limits in Occuppancy gridmap
 					cxoj_min = floor(cx*res_coef);
 					cxoj_max = cxoj_min + ceil(res_coef-1);
 					cyoj_min = floor(cy*res_coef);
@@ -477,16 +477,16 @@ void  CRandomFieldGridMap2D::internal_clear()
 					seed_cyo = cyoj_min + ceil(res_coef/2-1);
 
 								//DEBUG
-								//If cell occpuped then add observation								 
+								//If cell occpuped then add observation
 								if ( m_Ocgridmap.getCell(seed_cxo,seed_cyo) < 0.5 )
 								{
 									TobservationGMRF new_obs;
 									new_obs.obsValue = 0.0;
 									new_obs.Lambda = 10e-5f;
 									new_obs.time_invariant = true;	//Obs that will not dissapear with time.
-									activeObs[j].push_back(new_obs);									
+									activeObs[j].push_back(new_obs);
 								}
-					
+
 								//// Insert 1 observation in the vector of Active Observations for a free cell
 								//if( ( m_Ocgridmap.getCell(seed_cxo,seed_cyo) > 0.5 ) && first_obs )
 								//{
@@ -506,7 +506,7 @@ void  CRandomFieldGridMap2D::internal_clear()
 						size_t i = j+1;
 						size_t cxi = cx+1;
 						size_t cyi = cy;
-							
+
 						// Get cell_i indx-limits in Occuppancy gridmap
 						cxoi_min = floor(cxi*res_coef);
 						cxoi_max = cxoi_min + ceil(res_coef-1);
@@ -521,19 +521,19 @@ void  CRandomFieldGridMap2D::internal_clear()
 						cxo_max = max(cxoj_max, cxoi_max );
 						cyo_min = min(cyoj_min, cyoi_min );
 						cyo_max = max(cyoj_max, cyoi_max );
-						
+
 						//Check using Region growing if cell j is connected to cell i (Occupancy gridmap)
 						if( exist_relation_between2cells(&m_Ocgridmap, cxo_min,cxo_max,cyo_min,cyo_max,seed_cxo,seed_cyo,objective_cxo,objective_cyo))
 						{
 							Eigen::Triplet<double> Hentry(i,j, - m_insertOptions_common->GMRF_lambdaPrior);
-							H_prior.push_back( Hentry );							
+							H_prior.push_back( Hentry );
 
 							//Save relation between cells
 							cell_interconnections.insert ( std::pair<size_t,size_t>(j,i) );
 							cell_interconnections.insert ( std::pair<size_t,size_t>(i,j) );
 						}
 					}
-        
+
 					//Factor with the upper node: H_ji = - Lamda_prior
 					//-------------------------------------------------
 					if (cy<(m_size_y-1))
@@ -541,7 +541,7 @@ void  CRandomFieldGridMap2D::internal_clear()
 						size_t i = j+m_size_x;
 						size_t cxi = cx;
 						size_t cyi = cy+1;
-							
+
 						// Get cell_i indx-limits in Occuppancy gridmap
 						cxoi_min = floor(cxi*res_coef);
 						cxoi_max = cxoi_min + ceil(res_coef-1);
@@ -557,12 +557,12 @@ void  CRandomFieldGridMap2D::internal_clear()
 						cyo_min = min(cyoj_min, cyoi_min );
 						cyo_max = max(cyoj_max, cyoi_max );
 
-						
+
 						//Check using Region growing if cell j is connected to cell i (Occupancy gridmap)
 						if( exist_relation_between2cells(&m_Ocgridmap, cxo_min,cxo_max,cyo_min,cyo_max,seed_cxo,seed_cyo,objective_cxo,objective_cyo))
 						{
 							Eigen::Triplet<double> Hentry(i,j, - m_insertOptions_common->GMRF_lambdaPrior);
-							H_prior.push_back( Hentry );							
+							H_prior.push_back( Hentry );
 
 							//Save relation
 							cell_interconnections.insert ( std::pair<size_t,size_t>(j,i) );
@@ -582,15 +582,15 @@ void  CRandomFieldGridMap2D::internal_clear()
 					}
 					Eigen::Triplet<double> Hentry(j,j , nFactors_j * m_insertOptions_common->GMRF_lambdaPrior );
 					H_prior.push_back( Hentry );
-				
+
 					// Increment j coordinates (row(x), col(y))
 					if (++cx>=m_size_x)
 					{
 						cx=0;
-						cy++;						
-					}					
-				} // end for "j"				
-				
+						cy++;
+					}
+				} // end for "j"
+
 				//DEBUG - Save cell interconnections to file
 				ofstream myfile;
 				myfile.open("MRF.txt");
@@ -615,13 +615,13 @@ void  CRandomFieldGridMap2D::internal_clear()
 					if (cx<(m_size_x-1))
 					{
 						size_t i = j+1;
-					
-	
+
+
 						Eigen::Triplet<double> Hentry(i,j, - m_insertOptions_common->GMRF_lambdaPrior);
 						H_prior.push_back( Hentry );
 						count = count +1;
 					}
-        
+
 					//Factor with the above node: H_ji = - Lamda_prior
 					//-------------------------------------------------
 					if (cy<(m_size_y-1))
@@ -638,7 +638,7 @@ void  CRandomFieldGridMap2D::internal_clear()
 					size_t nFactors_j = 4 - (cx==0) - (cx==m_size_x-1) - (cy==0) - (cy==m_size_y-1);
 					Eigen::Triplet<double> Hentry(j,j , nFactors_j * m_insertOptions_common->GMRF_lambdaPrior );
 					H_prior.push_back( Hentry );
-				
+
 					// Increment j coordinates (row(x), col(y))
 					if (++cx>=m_size_x)
 					{
@@ -647,12 +647,12 @@ void  CRandomFieldGridMap2D::internal_clear()
 					}
 				} // end for "j"
 			} // end if_use_Occupancy
-		
+
 			cout << "---------- Prior Built in: " << tictac.Tac() << "s ----------" << endl;
-			
+
 			//Solve system and update map estimation
 			updateMapEstimation_GMRF();
-#endif		
+#endif
 		}//end case
 		break;
 	default:
@@ -779,8 +779,8 @@ CRandomFieldGridMap2D::TInsertionOptionsCommon::TInsertionOptionsCommon() :
 	GMRF_lambdaPrior			( 0.01f ),		// [GMRF model] The information (Lambda) of fixed map constraints
 	GMRF_lambdaObs				( 10.0f ),		// [GMRF model] The initial information (Lambda) of each observation (this information will decrease with time)
 	GMRF_lambdaObsLoss			( 1.0f ),		//!< The loss of information of the observations with each iteration
-	
-	GMRF_use_occupancy_information	( false ), 
+
+	GMRF_use_occupancy_information	( false ),
 	GMRF_simplemap_file				( "" ),
 	GMRF_gridmap_image_file			( "" ),
 	GMRF_gridmap_image_res			( 0.01f ),
@@ -813,9 +813,9 @@ void  CRandomFieldGridMap2D::TInsertionOptionsCommon::internal_dumpToTextStream_
 	out.printf("GMRF_lambdaObs	                        = %f\n", GMRF_lambdaObs);
 	out.printf("GMRF_lambdaObsLoss                      = %f\n", GMRF_lambdaObs);
 
-	out.printf("GMRF_use_occupancy_information			= %b\n", GMRF_use_occupancy_information); 
-	out.printf("GMRF_simplemap_file						= %s\n", GMRF_simplemap_file);
-	out.printf("GMRF_gridmap_image_file					= %s\n", GMRF_gridmap_image_file);
+	out.printf("GMRF_use_occupancy_information			= %b\n", GMRF_use_occupancy_information);
+	out.printf("GMRF_simplemap_file						= %s\n", GMRF_simplemap_file.c_str());
+	out.printf("GMRF_gridmap_image_file					= %s\n", GMRF_gridmap_image_file.c_str());
 	out.printf("GMRF_gridmap_image_res					= %f\n", GMRF_gridmap_image_res);
 	out.printf("GMRF_gridmap_image_cx					= %u\n", GMRF_gridmap_image_cx);
 	out.printf("GMRF_gridmap_image_cy					= %u\n", GMRF_gridmap_image_cy);
@@ -853,7 +853,7 @@ void  CRandomFieldGridMap2D::TInsertionOptionsCommon::internal_loadFromConfigFil
 	GMRF_gridmap_image_res			= iniFile.read_float(section.c_str(),"gridmap_image_res",0.01,false);
 	GMRF_gridmap_image_cx			= iniFile.read_int(section.c_str(),"gridmap_image_cx",0,false);
 	GMRF_gridmap_image_cy			= iniFile.read_int(section.c_str(),"gridmap_image_cy",0,false);
-			
+
 	GMRF_constraintsSigma	= iniFile.read_float(section.c_str(),"GMRF_constraintsSigma",GMRF_constraintsSigma);
 	MRPT_LOAD_CONFIG_VAR(GMRF_constraintsSize, int,   iniFile, section );
 }
@@ -2584,7 +2584,7 @@ void CRandomFieldGridMap2D::updateMapEstimation_GMRF()
 
 #if 0 // For debug only
 	mrpt::math::saveEigenSparseTripletsToFile( "H_tri.txt", H_tri);
-#endif	
+#endif
 
 
 #ifdef DO_PROFILE
@@ -2650,11 +2650,11 @@ void CRandomFieldGridMap2D::updateMapEstimation_GMRF()
 				{
 					//Consider only cells correlated with the cell j
 					std::pair < std::multimap<size_t,size_t>::iterator, std::multimap<size_t,size_t>::iterator > range;
-					range = cell_interconnections.equal_range(j);					
+					range = cell_interconnections.equal_range(j);
 					while ( range.first!=range.second )
 					{
 						size_t cell_i_indx = range.first->second;
-						g[j] += ( m_map[j].gmrf_mean - m_map[cell_i_indx].gmrf_mean) * m_insertOptions_common->GMRF_lambdaPrior;						
+						g[j] += ( m_map[j].gmrf_mean - m_map[cell_i_indx].gmrf_mean) * m_insertOptions_common->GMRF_lambdaPrior;
 						range.first++;
 					}
 
@@ -2662,13 +2662,13 @@ void CRandomFieldGridMap2D::updateMapEstimation_GMRF()
 				else
 				{
 					//Gradient with all 4 neighbours
-					if (cx != 0)	//factor with lef node			
+					if (cx != 0)	//factor with lef node
 						g[j] += ( m_map[j].gmrf_mean - m_map[j-1].gmrf_mean) * m_insertOptions_common->GMRF_lambdaPrior;
 
 					if (cx != (m_size_x-1))	//factor with right node
 						g[j] += ( m_map[j].gmrf_mean - m_map[j+1].gmrf_mean) * m_insertOptions_common->GMRF_lambdaPrior;
 
-					if (cy != 0)	//factor with benith node			
+					if (cy != 0)	//factor with benith node
 						g[j] += ( m_map[j].gmrf_mean - m_map[j-m_size_x].gmrf_mean) * m_insertOptions_common->GMRF_lambdaPrior;
 
 					if (cy != (m_size_y-1))	//factor with upper node
@@ -2700,7 +2700,7 @@ void CRandomFieldGridMap2D::updateMapEstimation_GMRF()
 	//Cholesky Factorization of Hessian --> Realmente se hace: chol( P * H * inv(P) )
 	Eigen::SimplicialLLT< Eigen::SparseMatrix <double> > solver;
 	solver.compute(Hsparse);
-	// Solve System:    m = m + H\(-g);  
+	// Solve System:    m = m + H\(-g);
 	// Note: we solve for (+g) to avoid creating a temporary "-g", then we'll substract the result in m_inc instead of adding it:
 	Eigen::VectorXd m_inc = solver.solve(g);
 
@@ -2712,16 +2712,16 @@ void CRandomFieldGridMap2D::updateMapEstimation_GMRF()
 	cout << "variance" << endl;
 	// VARIANCE SIGMA = inv(P) * inv( P*H*inv(P) ) * P
 	//Get triangular supperior P*H*inv(P) = UT' * UT = P * R'*R * inv(P)
-	
+
 	Eigen::SparseMatrix<double> UT = solver.matrixU();
-	
+
 	cout << "variance - Custom Equations" << endl;
 	Eigen::SparseMatrix<double> Sigma(N,N);								//Variance Matrix
 	Sigma.reserve(UT.nonZeros());
-	
+
 	// TODO: UT.coeff() implies a heavy time cost in sparse matrices... the following
 	//       should be rewritten for efficiency exploiting the knowledge about the nonzero pattern.
-	
+
 	//Apply custom equations to obtain the inverse -> inv( P*H*inv(P) )
 	for (int l=N-1; l>=0; l--)
 	{
@@ -2838,25 +2838,25 @@ void CRandomFieldGridMap2D::updateMapEstimation_GMRF()
 
 bool CRandomFieldGridMap2D::exist_relation_between2cells(
 	const mrpt::slam::COccupancyGridMap2D *m_Ocgridmap,
-	size_t cxo_min, 
-	size_t cxo_max, 
-	size_t cyo_min, 
-	size_t cyo_max, 
-	const size_t seed_cxo, 
-	const size_t seed_cyo, 
-	const size_t objective_cxo, 
+	size_t cxo_min,
+	size_t cxo_max,
+	size_t cyo_min,
+	size_t cyo_max,
+	const size_t seed_cxo,
+	const size_t seed_cyo,
+	const size_t objective_cxo,
 	const size_t objective_cyo)
 {
 	//printf("Checking relation between cells (%i,%i) and (%i,%i)", seed_cxo,seed_cyo,objective_cxo,objective_cyo);
-	
+
 	//Ensure delimited region is within the Occupancy map
 	cxo_min = max (cxo_min, (size_t)0);
-	cxo_max = min (cxo_max, m_Ocgridmap->getSizeX()-1);
+	cxo_max = min (cxo_max, (size_t)m_Ocgridmap->getSizeX()-1);
 	cyo_min = max (cyo_min, (size_t)0);
-	cyo_max = min (cyo_max, m_Ocgridmap->getSizeY()-1);
-	
+	cyo_max = min (cyo_max, (size_t)m_Ocgridmap->getSizeY()-1);
+
 	//printf("Under gridlimits cx=(%i,%i) and cy=(%i,%i) \n", cxo_min,cxo_max,cyo_min,cyo_max);
-	
+
 	//Check that seed and objective are inside the delimited Occupancy gridmap
 	if( (seed_cxo < cxo_min) || (seed_cxo >= cxo_max) || (seed_cyo < cyo_min) || (seed_cyo >= cyo_max) )
 	{
@@ -2875,8 +2875,8 @@ bool CRandomFieldGridMap2D::exist_relation_between2cells(
 		//cout << "Seed and objective have diff occupation (false)" << endl;
 		return false;
 	}
-		
-	
+
+
 	//Create Matrix for region growing (row,col)
 	mrpt::math::CMatrixUInt matExp(cxo_max-cxo_min+1, cyo_max-cyo_min+1);
 	//cout << "Matrix creted with dimension:" << matExp.getRowCount() << " x " << matExp.getColCount() << endl;
@@ -2888,11 +2888,11 @@ bool CRandomFieldGridMap2D::exist_relation_between2cells(
 	int seedsOld = 0;
 	int seedsNew = 1;
 
-	//NOT VERY EFFICIENT!! 
+	//NOT VERY EFFICIENT!!
 	while (seedsOld < seedsNew)
 	{
 		seedsOld = seedsNew;
-		
+
 		for (size_t col=0; col<matExp.getColCount(); col++)
 		{
 			for (size_t row=0; row<matExp.getRowCount(); row++)
@@ -2920,12 +2920,12 @@ bool CRandomFieldGridMap2D::exist_relation_between2cells(
 											return true;		//Objective connected
 										}
 										matExp(row+j,col+i) = 1;
-										seedsNew++;										
+										seedsNew++;
 									}
 								}
-							}							
+							}
 						}
-					}					
+					}
 				}
 			}
 		}
