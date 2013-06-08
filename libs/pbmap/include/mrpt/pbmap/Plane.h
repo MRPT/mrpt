@@ -81,7 +81,7 @@ namespace pbmap {
       elongation(1.0),
       bFullExtent(false),
       bFromStructure(false),
-      contourPtr(new pcl::PointCloud<pcl::PointXYZRGBA>),
+//      contourPtr(new pcl::PointCloud<pcl::PointXYZRGBA>),
       polygonContourPtr(new pcl::PointCloud<pcl::PointXYZRGBA>),
       planePointCloudPtr(new pcl::PointCloud<pcl::PointXYZRGBA>)
     {
@@ -96,11 +96,6 @@ namespace pbmap {
      * Calculate the plane's convex hull with the monotone chain algorithm.
     */
     void calcConvexHull(pcl::PointCloud<pcl::PointXYZRGBA>::Ptr &pointCloud, std::vector<size_t> &indices = DEFAULT_VECTOR );
-
-    /**!
-     * Verify that the plane's convex hull is efectively convex, and if it isn't, then recalculate its points
-    */
-    bool verifyConvexHull();
 
     /** \brief Compute the area of a 2D planar polygon patch - using a given normal
       * \param polygonContourPtr the point cloud (planar)
@@ -117,10 +112,18 @@ namespace pbmap {
      */
     void calcElongationAndPpalDir();
 
-    /**!
-     * Calculate the median of the RGB values
-    */
-    void getMedianColor();
+
+    /*!Returns true when the closest distance between the patches "plane1" and "plane2" is under distThreshold.*/
+    bool isPlaneNearby(Plane &plane, const float distThreshold);
+
+    /*! Returns true if the two input planes represent the same physical surface for some given angle and distance thresholds.
+     * If the planes are the same they are merged in this and the function returns true. Otherwise it returns false.*/
+    bool isSamePlane(Plane &plane, const float &cosAngleThreshold, const float &distThreshold, const float &proxThreshold);
+
+    /*! Merge the two input patches into "updatePlane".
+     *  Recalculate center, normal vector, area, inlier points (filtered), convex hull, etc.
+     */
+    void mergePlane(Plane &plane);
 
 
     /**!
@@ -128,7 +131,7 @@ namespace pbmap {
     */
     unsigned id;
     unsigned numObservations;
-//    unsigned semanticGroup;
+    unsigned semanticGroup;
     std::set<unsigned> nearbyPlanes;
     std::map<unsigned,unsigned> neighborPlanes;
     std::string label;
@@ -151,24 +154,30 @@ namespace pbmap {
     */
     Eigen::Vector3f v3colorNrgb;
     Eigen::Vector3f v3colorNrgbDev;
-    std::vector<float> r;
-    std::vector<float> g;
-    std::vector<float> b;
 
-    pcl::PointCloud<pcl::PointXYZRGBA>::Ptr contourPtr;
+    /**!
+     *  Convex Hull
+    */
+//    pcl::PointCloud<pcl::PointXYZRGBA>::Ptr contourPtr;
     pcl::PointCloud<pcl::PointXYZRGBA>::Ptr polygonContourPtr;
-    pcl::PointCloud<pcl::PointXYZRGBA>::Ptr outerPolygonPtr;
-    pcl::PointCloud<pcl::PointXYZRGBA>::Ptr planePointCloudPtr;
-
-    /*!
-     * Calculate plane's main color in C1C2C3 representation
-     */
-    void getPlaneNrgb();
+    pcl::PointCloud<pcl::PointXYZRGBA>::Ptr outerPolygonPtr; // This is going to be deprecated
+    pcl::PointCloud<pcl::PointXYZRGBA>::Ptr planePointCloudPtr; // This is going to be deprecated
 
     /*!
      * Calculate plane's main color using "MeanShift" method
      */
     void calcMainColor();
+
+
+   private:
+    /*!
+     * Calculate plane's main color in C1C2C3 representation
+     */
+    void getPlaneNrgb();
+
+    std::vector<float> r;
+    std::vector<float> g;
+    std::vector<float> b;
 
   };
 

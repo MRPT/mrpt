@@ -78,7 +78,6 @@ namespace pbmap {
   /*!Constructor.*/
     PbMap();
 
-
   /*!Vector to store the 3D-planes which are the basic characteristic of our map.*/
     std::vector<Plane> vPlanes;
 
@@ -91,6 +90,15 @@ namespace pbmap {
     pcl::PointCloud<pcl::PointXYZRGBA>::Ptr edgeCloudPtr;
     pcl::PointCloud<pcl::PointXYZRGBA>::Ptr outEdgeCloudPtr;
     unsigned background, foreground, groundplane;
+
+    /*!Save PbMap in the given filePath*/
+    void savePbMap(std::string filePath);
+
+    /*!Merge two pbmaps*/
+    void MergeWith(PbMap &pbm, Eigen::Matrix4f &T);
+
+    /*! Print PbMap content to a text file*/
+    void printPbMap(std::string txtFilePbm);
   };
 
 } } // End of namespaces

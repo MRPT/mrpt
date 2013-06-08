@@ -59,10 +59,10 @@ bool PlaneInferredInfo::searchTheFloor(Eigen::Matrix4f &poseSensor, Plane &plane
     return false;
 
   // The angle between the Y axis of the camera and the normal of the plane will normally be around: a) -1 for the floor b) 1 for the ceiling c) 0 for the walls
-  double cosGravityDir = poseSensor.col(1).head(3) .dot (plane.v3normal);
+  double cosGravityDir = poseSensor.col(1).head(3).dot(plane.v3normal);
   if( cosGravityDir < -0.94 ) // cos 20º = 0.9397
   {
-    double sensorHeight = ( plane.v3normal .dot ( poseSensor.col(3).head(3) - plane.v3center) );
+    double sensorHeight = ( plane.v3normal.dot( poseSensor.col(3).head(3) - plane.v3center) );
 
     if( sensorHeight < 0.7 || sensorHeight > 2.0 )
       return false;
@@ -82,7 +82,7 @@ bool PlaneInferredInfo::searchTheFloor(Eigen::Matrix4f &poseSensor, Plane &plane
   {
     if(plane.id == mPbMap.vPlanes[i].id)
       continue;
-    if( plane.v3normal .dot (mPbMap.vPlanes[i].v3center - plane.v3center) < -0.1 )
+    if( plane.v3normal.dot(mPbMap.vPlanes[i].v3center - plane.v3center) < -0.1 )
     {
       plane.label = "";
       return false;
@@ -195,7 +195,7 @@ bool PlaneInferredInfo::isSurroundingBackground(Plane &plane, pcl::PointCloud<pc
 
       // Fill pointCloud corresponding to the outerPolygon
       plane.outerPolygonPtr->points.push_back(outerPt);
-      double dist2Plane = plane.v3normal .dot (getVector3fromPointXYZ(outerPt) - plane.v3center);
+      double dist2Plane = plane.v3normal.dot(getVector3fromPointXYZ(outerPt) - plane.v3center);
       if(dist2Plane > 0.1)
         return false;
     }

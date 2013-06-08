@@ -44,10 +44,9 @@ using namespace std;
 using namespace Eigen;
 using namespace mrpt::pbmap;
 
-ConsistencyTest::ConsistencyTest(PbMap &PBM_source, PbMap &PBM_target, std::map<unsigned, unsigned> &matched_planes) :
+ConsistencyTest::ConsistencyTest(PbMap &PBM_source, PbMap &PBM_target) :
     PBMSource(PBM_source),
-    PBMTarget(PBM_target),
-    matched_planes(matched_planes)
+    PBMTarget(PBM_target)
 {}
 
 double ConsistencyTest::calcAlignmentError( std::map<unsigned, unsigned> &matched_planes, Eigen::Matrix4f &rigidTransf )
@@ -58,7 +57,7 @@ double ConsistencyTest::calcAlignmentError( std::map<unsigned, unsigned> &matche
   for(map<unsigned, unsigned>::iterator it = matched_planes.begin(); it != matched_planes.end(); it++)
   {
       sum_depth_errors2 += (PBMSource.vPlanes[it->first].areaVoxels + PBMTarget.vPlanes[it->second].areaVoxels) *
-                            pow(PBMTarget.vPlanes[it->second].v3normal .dot (compose(rigidTransf, PBMSource.vPlanes[it->first].v3center) - PBMTarget.vPlanes[it->second].v3center), 2);
+                            pow(PBMTarget.vPlanes[it->second].v3normal.dot(compose(rigidTransf, PBMSource.vPlanes[it->first].v3center) - PBMTarget.vPlanes[it->second].v3center), 2);
       sum_areas += PBMSource.vPlanes[it->first].areaVoxels + PBMTarget.vPlanes[it->second].areaVoxels;
   }
   double avError2 = sum_depth_errors2 / sum_areas;
@@ -71,15 +70,14 @@ Eigen::Matrix4f ConsistencyTest::initPose( std::map<unsigned, unsigned> &matched
   //Calculate rotation
   Matrix3f normalCovariances = Matrix3f::Zero();
   for(map<unsigned, unsigned>::iterator it = matched_planes.begin(); it != matched_planes.end(); it++)
-    for(unsigned i=0; i < 3; i++)
-      for(unsigned j=0; j < 3; j++)
-        normalCovariances(i,j) += PBMTarget.vPlanes[it->second].v3normal[i] * PBMSource.vPlanes[it->first].v3normal[i];
+    normalCovariances += PBMTarget.vPlanes[it->second].v3normal * PBMSource.vPlanes[it->first].v3normal.transpose();
 
   JacobiSVD<MatrixXf> svd(normalCovariances, ComputeThinU | ComputeThinV);
   Matrix3f Rotation = svd.matrixU() * svd.matrixV().transpose();
 
   if(Rotation.determinant() < 0)
-    Rotation = -Rotation;
+    Rotation.row(2) *= -1;
+//    Rotation = -Rotation;
 
   // Calculate translation
   Vector3f translation;
@@ -104,11 +102,67 @@ Eigen::Matrix4f ConsistencyTest::initPose( std::map<unsigned, unsigned> &matched
   if(numFull > 0)
   {
     translation = (centerFull_model - Rotation * centerFull_data) / numFull;
+//    translation = (centerFull_data - Rotation * centerFull_model) / numFull;
   }
   else
   {
     translation = (center_model - Rotation * center_data) / numNonStruct;
+//    translation = (center_data - Rotation * center_model) / numNonStruct;
   }
+
+  // Form SE3 transformation matrix. This matrix maps the model into the current data reference frame
+  Eigen::Matrix4f rigidTransf;
+  rigidTransf.block(0,0,3,3) = Rotation;
+  rigidTransf.block(0,3,3,1) = translation;
+  rigidTransf.row(3) << 0,0,0,1;
+  return rigidTransf;
+}
+
+Eigen::Matrix4f ConsistencyTest::initPose2D( std::map<unsigned, unsigned> &matched_planes )
+{
+  //Calculate rotation
+  Matrix3f normalCovariances = Matrix3f::Zero();
+  for(map<unsigned, unsigned>::iterator it = matched_planes.begin(); it != matched_planes.end(); it++)
+    normalCovariances += PBMTarget.vPlanes[it->second].v3normal * PBMSource.vPlanes[it->first].v3normal.transpose();
+  normalCovariances(1,1) += 100; // Rotation "restricted" to the y axis
+
+  JacobiSVD<MatrixXf> svd(normalCovariances, ComputeThinU | ComputeThinV);
+  Matrix3f Rotation = svd.matrixU() * svd.matrixV().transpose();
+
+  if(Rotation.determinant() < 0)
+//    Rotation.row(2) *= -1;
+    Rotation = -Rotation;
+
+  // Calculate translation
+  Vector3f translation;
+  Vector3f center_data = Vector3f::Zero(), center_model = Vector3f::Zero();
+  Vector3f centerFull_data = Vector3f::Zero(), centerFull_model = Vector3f::Zero();
+  unsigned numFull = 0, numNonStruct = 0;
+  for(map<unsigned, unsigned>::iterator it = matched_planes.begin(); it != matched_planes.end(); it++)
+  {
+    if(PBMSource.vPlanes[it->first].bFromStructure) // The certainty in center of structural planes is too low
+      continue;
+
+    ++numNonStruct;
+    center_data += PBMSource.vPlanes[it->first].v3center;
+    center_model += PBMTarget.vPlanes[it->second].v3center;
+    if(PBMSource.vPlanes[it->first].bFullExtent)
+    {
+      centerFull_data += PBMSource.vPlanes[it->first].v3center;
+      centerFull_model += PBMTarget.vPlanes[it->second].v3center;
+      ++numFull;
+    }
+  }
+  if(numFull > 0)
+  {
+    translation = (-centerFull_model + Rotation * centerFull_data) / numFull;
+  }
+  else
+  {
+    translation = (-center_model + Rotation * center_data) / numNonStruct;
+  }
+
+  translation[1] = 0; // Restrict no translation in the y axis
 
   // Form SE3 transformation matrix. This matrix maps the model into the current data reference frame
   Eigen::Matrix4f rigidTransf;
@@ -123,9 +177,12 @@ Eigen::Matrix4f ConsistencyTest::getRTwithModel( std::map<unsigned, unsigned> &m
   assert(matched_planes.size() > 3);
   Eigen::Matrix4f rigidTransf = initPose( matched_planes ); // Inverse-Pose which maps from model to data
 
+//  std::map<unsigned, unsigned> surrounding_planes = matched_planes;
+//  surrounding_planes.insert(...);
   double alignmentError = calcAlignmentError( matched_planes, rigidTransf );
 
   #ifdef _VERBOSE
+    cout << "INITIALIZATION POSE \n" << rigidTransf << endl;
     cout << "Alignment error " << alignmentError << endl;
   #endif
 

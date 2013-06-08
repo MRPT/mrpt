@@ -41,6 +41,8 @@
 #include <mrpt/pbmap.h> // precomp. hdr
 #include<mrpt/utils/utils_defs.h>
 
+//#define _VERBOSE 1
+
 using namespace std;
 using namespace mrpt::utils;
 using namespace mrpt::pbmap;
@@ -52,8 +54,12 @@ extern config_heuristics configLocaliser;
 */
 bool SubgraphMatcher::evalUnaryConstraints(Plane &plane1, Plane &plane2, PbMap &trgPbMap, bool useStructure)
 {
+Eigen::Vector3f color_dif = plane1.v3colorNrgb - plane2.v3colorNrgb;
+if(plane1.id==6 && plane2.id==8)
+cout << "color_dif \n" << color_dif << endl;
+
   // Main color
-  if(configLocaliser.color_threshold >= 0)
+  if(configLocaliser.color_threshold > 0)
     if( fabs(plane1.v3colorNrgb[0] - plane2.v3colorNrgb[0]) > configLocaliser.color_threshold ||
         fabs(plane1.v3colorNrgb[1] - plane2.v3colorNrgb[1]) > configLocaliser.color_threshold ||
         fabs(plane1.v3colorNrgb[2] - plane2.v3colorNrgb[2]) > configLocaliser.color_threshold )
@@ -65,8 +71,11 @@ bool SubgraphMatcher::evalUnaryConstraints(Plane &plane1, Plane &plane2, PbMap &
     return true;
 
   double rel_areas = plane1.areaVoxels/ plane2.areaVoxels;
-//cout << "rel_areas " << rel_areas << endl;
+if(plane1.id==6 && plane2.id==8)
+cout << "rel_areas " << rel_areas << endl;
   double rel_ratios = plane1.elongation / plane2.elongation;
+  if(plane1.id==6 && plane2.id==8)
+cout << "rel_ratios " << rel_ratios << endl;
 
   // If the plane has been fully detected use a narrower threshold for the comparison
   if(plane1.bFullExtent && plane2.bFullExtent)
@@ -118,24 +127,37 @@ bool SubgraphMatcher::evalUnaryConstraints(Plane &plane1, Plane &plane2, PbMap &
 bool SubgraphMatcher::evalBinaryConstraints(Plane &Ref, Plane &neigRef, Plane &Check, Plane &neigCheck)
 {
   // Check height
-  double dif_height = Ref.v3normal .dot (neigRef.v3center - Ref.v3center) - Check.v3normal .dot (neigCheck.v3center - Check.v3center);
-  if(dif_height > configLocaliser.height_threshold){
-    return false;}
-  ++nCheckConditions;
+  if(neigRef.areaHull < 2 && neigCheck.areaHull < 2)
+  {
+    double dif_height = Ref.v3normal.dot(neigRef.v3center - Ref.v3center) - Check.v3normal.dot(neigCheck.v3center - Check.v3center);
+  if(Ref.id==6 && Check.id==8)
+  cout << "dif_height " << dif_height << endl;
+    if(dif_height > configLocaliser.height_threshold){
+      return false;}
+    ++nCheckConditions;
+  }
 
-  double dif_height2 = neigRef.v3normal .dot (Ref.v3center - neigRef.v3center) - neigCheck.v3normal .dot (Check.v3center - neigCheck.v3center);
-  if(dif_height2 > configLocaliser.height_threshold){
-    return false;}
-  ++nCheckConditions;
+
+  if(Ref.areaHull < 2 && Check.areaHull < 2)
+  {
+    double dif_height2 = neigRef.v3normal.dot(Ref.v3center - neigRef.v3center) - neigCheck.v3normal.dot(Check.v3center - neigCheck.v3center);
+  if(Ref.id==6 && Check.id==8)
+  cout << "dif_height2 " << dif_height2 << endl;
+    if(dif_height2 > configLocaliser.height_threshold){
+      return false;}
+    ++nCheckConditions;
+  }
+
 
   // Normal
-  double dif_normal = fabs(RAD2DEG( acos( Ref.v3normal .dot (neigRef.v3normal)) - acos( Check.v3normal .dot (neigCheck.v3normal)) ) );
+  double dif_normal = fabs(RAD2DEG( acos( Ref.v3normal.dot(neigRef.v3normal)) - acos( Check.v3normal.dot(neigCheck.v3normal)) ) );
   if( dif_normal > configLocaliser.angle_threshold ){
+    cout << "FALSE angle " << dif_normal << " with " << neigRef.id << endl;
     return false;}
   ++nCheckConditions;
 
   // Relative distance
-  double rel_dist_centers = sqrt( (Ref.v3center - neigRef.v3center) .dot (Ref.v3center - neigRef.v3center) / ((Check.v3center - neigCheck.v3center) .dot (Check.v3center - neigCheck.v3center)) );
+  double rel_dist_centers = sqrt( (Ref.v3center - neigRef.v3center).dot(Ref.v3center - neigRef.v3center) / ((Check.v3center - neigCheck.v3center).dot(Check.v3center - neigCheck.v3center)) );
 
   // If the plane has been fully detected use a narrower threshold for the comparison
   bool RefBothFull = (Ref.bFullExtent && neigRef.bFullExtent);// ? true : false;
@@ -146,17 +168,20 @@ bool SubgraphMatcher::evalBinaryConstraints(Plane &Ref, Plane &neigRef, Plane &C
     if(RefBothFull && CheckBothFull)
     {
       if( rel_dist_centers < configLocaliser.dist_threshold_inv || rel_dist_centers > configLocaliser.dist_threshold ){
+      cout << "FALSE dist_centers1 with " << neigRef.id << endl;
         return false;}
   ++nCheckConditions;
     }
     else if(RefBothFull || CheckBothFull)
     {
       if( rel_dist_centers < configLocaliser.dist_threshold_inv || rel_dist_centers > configLocaliser.dist_threshold ){
+      cout << "FALSE dist_centers2 with " << neigRef.id << endl;
         return false;}
   ++nCheckConditions;
     }
     else if( !Ref.bFromStructure && !Check.bFromStructure && !neigRef.bFromStructure && !neigCheck.bFromStructure )
       if( rel_dist_centers < configLocaliser.dist_threshold_inv || rel_dist_centers > configLocaliser.dist_threshold ){
+      cout << "FALSE dist_centers3 with " << neigRef.id << endl;
         return false;}
   ++nCheckConditions;
   }
@@ -164,6 +189,7 @@ bool SubgraphMatcher::evalBinaryConstraints(Plane &Ref, Plane &neigRef, Plane &C
   {
     if( Ref.areaVoxels< 1 && neigCheck.areaVoxels< 1 && Check.areaVoxels< 1 && neigRef.areaVoxels< 1 ){ // Use the restriction only when all the planes involved are smaller than 1m2
       if( rel_dist_centers < configLocaliser.dist_threshold_inv || rel_dist_centers > configLocaliser.dist_threshold){
+      cout << "FALSE dist_centers4 with " << neigRef.id << endl;
         return false;}
       ++nCheckConditions;
     }
@@ -211,12 +237,13 @@ void SubgraphMatcher::exploreSubgraphTreeR(set<unsigned> &sourcePlanes, set<unsi
     cout << "matched:\n";
     for(map<unsigned, unsigned>::iterator it = matched.begin(); it != matched.end(); it++)
       cout << it->first << " - " << it->second << " =" << subgraphTrg->pPBM->vPlanes[it->second].label << endl;
-    cout << "sourcePlanes: ";
+    cout << "sourcePlanes: " << sourcePlanes.size() << ": ";
     for(set<unsigned>::iterator it1 = sourcePlanes.begin(); it1 != sourcePlanes.end(); it1++)
       cout << *it1 << " ";
-    cout << "\ntargetPlanes: ";
+    cout << "\ntargetPlanes " << targetPlanes.size() << ": ";
     for(set<unsigned>::iterator it2 = targetPlanes.begin(); it2 != targetPlanes.end(); it2++)
-      cout << subgraphTrg->pPBM->vPlanes[*it2].label << " ";
+      cout << *it2 << " ";
+//      cout << subgraphTrg->pPBM->vPlanes[*it2].label << " ";
     cout << endl;
   #endif
 
@@ -224,11 +251,12 @@ void SubgraphMatcher::exploreSubgraphTreeR(set<unsigned> &sourcePlanes, set<unsi
   if( winnerMatch.size() == subgraphSrc->subgraphPlanesIdx.size() || winnerMatch.size() == subgraphTrg->subgraphPlanesIdx.size() )
     return;
 
-  int requiredMatchable = (int)configLocaliser.min_planes_recognition - matched.size();
+  int requiredMatches = max(configLocaliser.min_planes_recognition, static_cast<unsigned>(winnerMatch.size()));
   if( sourcePlanes.empty() ||
       targetPlanes.empty() ||
-     static_cast<int>(sourcePlanes.size() ) < requiredMatchable ||
-     static_cast<int>(targetPlanes.size() ) < requiredMatchable ) // New condition to speed up the search when there are not a minimum number of candidates
+      (matched.size() + min(sourcePlanes.size(),targetPlanes.size())) < requiredMatches )
+//     static_cast<int>(sourcePlanes.size() ) < requiredMatches ||
+//     static_cast<int>(targetPlanes.size() ) < requiredMatches ) // New condition to speed up the search when there are not a minimum number of candidates
   {
 //  cout << "End branch recursive search. matched " << matched.size() << " prev winner " << winnerMatch.size() << endl;
     if(matched.size() > winnerMatch.size())
@@ -239,19 +267,25 @@ void SubgraphMatcher::exploreSubgraphTreeR(set<unsigned> &sourcePlanes, set<unsi
   while(!sourcePlanes.empty())
   {
     set<unsigned>::iterator it1 = sourcePlanes.begin();
+//  cout << "Compare " << *it1 << endl;
     for(set<unsigned>::iterator it2 = targetPlanes.begin(); it2 != targetPlanes.end(); it2++)
     {
+//    cout << " with " << *it2 << endl;
       bool alreadyEval = false;
       for(unsigned i=0; i<alreadyExplored.size(); i++)
       {
         map<unsigned, unsigned> checkMatch = matched;
         checkMatch[*it1] = *it2;
-        if( isSubgraphContained(checkMatch, alreadyExplored[i]) )
+        if( matched.size() + min(sourcePlanes.size(),targetPlanes.size()) < alreadyExplored[i].size())
         {
+          if( isSubgraphContained(checkMatch, alreadyExplored[i]) )
+          {
 //          cout << "Combination already evaluated\n";
-          alreadyEval = true;
-          break;
+            alreadyEval = true;
+            break;
+          }
         }
+
       }
       if(alreadyEval)
         continue;

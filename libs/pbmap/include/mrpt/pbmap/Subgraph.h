@@ -60,6 +60,8 @@ namespace pbmap {
   class PBMAP_IMPEXP Subgraph
   {
    public:
+    /*!Subgraph constructor with no parameters*/
+    Subgraph(){};
 
     /*!Construct a subgraph, inside a given PbMap, as a set of neighborh planes (1-connected) of a reference plane.*/
     Subgraph(PbMap *pPbMap, const unsigned &refPlaneId) :

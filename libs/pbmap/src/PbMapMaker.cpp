@@ -46,8 +46,8 @@
 #include <mrpt/base.h>
 #include <mrpt/system/threads.h>
 
-#include <pcl/io/io.h>
-#include <pcl/io/pcd_io.h>
+//#include <pcl/io/io.h>
+//#include <pcl/io/pcd_io.h>
 #include <pcl/features/integral_image_normal.h>
 #include <pcl/features/normal_3d.h>
 #include <pcl/ModelCoefficients.h>
@@ -59,6 +59,8 @@
 #include <pcl/common/time.h>
 
 #include <iostream>
+
+//#define _VERBOSE 1
 
 using namespace std;
 using namespace Eigen;
@@ -91,7 +93,7 @@ struct config_pbmap
 
   // [semantics]
   bool inferStructure;    // Infer if the planes correspond to the floor, ceiling or walls
-  bool makeCovisibilityClusters; // Should the PbMapMaker cluster the planes according to their co-visibility
+  bool makeClusters; // Should the PbMapMaker cluster the planes according to their co-visibility
 
   // [localisation]
   bool detect_loopClosure;             // Run PbMapLocaliser in a different threads to detect loop closures or preloaded PbMaps
@@ -123,7 +125,7 @@ void readConfigFile(const string &config_file_name)
 
   // [semantics]
   configPbMap.inferStructure = config_file.read_bool("semantics","inferStructure",true);
-  configPbMap.makeCovisibilityClusters = config_file.read_bool("semantics","makeCovisibilityClusters",true);
+  configPbMap.makeClusters = config_file.read_bool("semantics","makeClusters",true);
 //  configPbMap.path_prev_pbmap = config_file.read_string("localisation","path_prev_pbmap","",true);
 
   // [localisation]
@@ -159,11 +161,12 @@ PbMapMaker::PbMapMaker(const string &config_file) :
   if(configPbMap.detect_loopClosure)
     mpPbMapLocaliser = new PbMapLocaliser(mPbMap, configPbMap.config_localiser);
 
-  if(configPbMap.makeCovisibilityClusters)
+  if(configPbMap.makeClusters)
     clusterize = new SemanticClustering(mPbMap);
 
   pbmaker_hd = mrpt::system::createThreadFromObjectMethod(this,&PbMapMaker::run);
 }
+
 
 bool PbMapMaker::arePlanesNearby(Plane &plane1, Plane &plane2, const float distThreshold)
 {
@@ -200,31 +203,33 @@ bool PbMapMaker::arePlanesNearby(Plane &plane1, Plane &plane2, const float distT
 
   // c)
   for(unsigned i=1; i < plane1.polygonContourPtr->size(); i++)
-    if( plane2.v3normal .dot (getVector3fromPointXYZ(plane1.polygonContourPtr->points[i]) - plane2.v3center) < distThreshold )
+    if( plane2.v3normal.dot(getVector3fromPointXYZ(plane1.polygonContourPtr->points[i]) - plane2.v3center) < distThreshold )
       if(isInHull(plane1.polygonContourPtr->points[i], plane2.polygonContourPtr) )
         return true;
 
   for(unsigned j=1; j < plane2.polygonContourPtr->size(); j++)
-    if( plane1.v3normal .dot (getVector3fromPointXYZ(plane2.polygonContourPtr->points[j]) - plane1.v3center) < distThreshold )
+    if( plane1.v3normal.dot(getVector3fromPointXYZ(plane2.polygonContourPtr->points[j]) - plane1.v3center) < distThreshold )
       if(isInHull(plane2.polygonContourPtr->points[j], plane1.polygonContourPtr) )
         return true;
 
+//cout << "Polygons intersect?\n";
   // d)
-  for(unsigned i=1; i < plane1.polygonContourPtr->size(); i++)
-    if( plane2.v3normal .dot (getVector3fromPointXYZ(plane1.polygonContourPtr->points[i]) - plane2.v3center) < distThreshold )
-    {
-//    cout << "Elements\n" << plane2.v3normal << "\n xyz " << plane1.polygonContourPtr->points[i].x << " " << plane1.polygonContourPtr->points[i].y << " " << plane1.polygonContourPtr->points[i].z
-//          << " xyz2 " << plane1.polygonContourPtr->points[i-1].x << " " << plane1.polygonContourPtr->points[i-1].y << " " << plane1.polygonContourPtr->points[i-1].z << endl;
-      assert( plane2.v3normal .dot (diffPoints(plane1.polygonContourPtr->points[i], plane1.polygonContourPtr->points[i-1]) ) != 0 );
-      float d = (plane2.v3normal .dot (plane2.v3center - getVector3fromPointXYZ(plane1.polygonContourPtr->points[i-1]) ) ) / (plane2.v3normal .dot (diffPoints(plane1.polygonContourPtr->points[i], plane1.polygonContourPtr->points[i-1]) ) );
-      PointT intersection;
-      intersection.x = d * plane1.polygonContourPtr->points[i].x + (1-d) * plane1.polygonContourPtr->points[i-1].x;
-      intersection.y = d * plane1.polygonContourPtr->points[i].y + (1-d) * plane1.polygonContourPtr->points[i-1].y;
-      intersection.z = d * plane1.polygonContourPtr->points[i].z + (1-d) * plane1.polygonContourPtr->points[i-1].z;
-      if(isInHull(intersection, plane2.polygonContourPtr) )
-        return true;
-    }
-
+//  for(unsigned i=1; i < plane1.polygonContourPtr->size(); i++)
+//    if( plane2.v3normal.dot(getVector3fromPointXYZ(plane1.polygonContourPtr->points[i]) - plane2.v3center) < distThreshold )
+//    {
+////    cout << "Elements\n" << plane2.v3normal << "\n xyz " << plane1.polygonContourPtr->points[i].x << " " << plane1.polygonContourPtr->points[i].y << " " << plane1.polygonContourPtr->points[i].z
+////          << " xyz2 " << plane1.polygonContourPtr->points[i-1].x << " " << plane1.polygonContourPtr->points[i-1].y << " " << plane1.polygonContourPtr->points[i-1].z << endl;
+////    assert( plane2.v3normal.dot(diffPoints(plane1.polygonContourPtr->points[i], plane1.polygonContourPtr->points[i-1]) ) != 0 );
+//      float d = (plane2.v3normal.dot(plane2.v3center - getVector3fromPointXYZ(plane1.polygonContourPtr->points[i-1]) ) ) / (plane2.v3normal.dot(diffPoints(plane1.polygonContourPtr->points[i], plane1.polygonContourPtr->points[i-1]) ) );
+//      PointT intersection;
+//      intersection.x = d * plane1.polygonContourPtr->points[i].x + (1-d) * plane1.polygonContourPtr->points[i-1].x;
+//      intersection.y = d * plane1.polygonContourPtr->points[i].y + (1-d) * plane1.polygonContourPtr->points[i-1].y;
+//      intersection.z = d * plane1.polygonContourPtr->points[i].z + (1-d) * plane1.polygonContourPtr->points[i-1].z;
+//      if(isInHull(intersection, plane2.polygonContourPtr) )
+//        return true;
+//    }
+//if (plane1.id==2 && frameQueue.size() == 12)
+//cout << "pasaFinal\n";
   return false;
 }
 
@@ -322,6 +327,9 @@ void PbMapMaker::detectPlanesCloud( pcl::PointCloud<PointT>::Ptr &pointCloudPtr_
     Vector3f centroid = regions[i].getCentroid ();
     plane.v3center = compose(poseKF, centroid);
     plane.v3normal = poseKF.block(0,0,3,3) * Vector3f(model_coefficients[i].values[0], model_coefficients[i].values[1], model_coefficients[i].values[2]);
+//  assert(plane.v3normal*plane.v3center.transpose() <= 0);
+//    if(plane.v3normal*plane.v3center.transpose() <= 0)
+//      plane.v3normal *= -1;
 
     // Extract the planar inliers from the input cloud
     pcl::ExtractIndices<pcl::PointXYZRGBA> extract;
@@ -338,12 +346,16 @@ void PbMapMaker::detectPlanesCloud( pcl::PointCloud<PointT>::Ptr &pointCloudPtr_
     plane.planePointCloudPtr->clear();
     pcl::transformPointCloud(planeCloud,*plane.planePointCloudPtr,poseKF);
 
-    plane.contourPtr->points = regions[i].getContour();
-    pcl::transformPointCloud(*plane.contourPtr,*plane.polygonContourPtr,poseKF);
+    pcl::PointCloud<pcl::PointXYZRGBA>::Ptr contourPtr(new pcl::PointCloud<pcl::PointXYZRGBA>);
+    contourPtr->points = regions[i].getContour();
+//    plane.contourPtr->points = regions[i].getContour();
+//    pcl::transformPointCloud(*plane.contourPtr,*plane.polygonContourPtr,poseKF);
+    pcl::transformPointCloud(*contourPtr,*plane.polygonContourPtr,poseKF);
     plane_grid.setInputCloud (plane.polygonContourPtr);
-    plane_grid.filter (*plane.contourPtr);
-
-    plane.calcConvexHull(plane.contourPtr);
+//    plane_grid.filter (*plane.contourPtr);
+//    plane.calcConvexHull(plane.contourPtr);
+    plane_grid.filter (*contourPtr);
+    plane.calcConvexHull(contourPtr);
     plane.computeMassCenterAndArea();
     plane.areaVoxels= plane.planePointCloudPtr->size() * 0.0025;
 
@@ -382,44 +394,135 @@ void PbMapMaker::detectPlanesCloud( pcl::PointCloud<PointT>::Ptr &pointCloudPtr_
   {
     // Check similarity with previous planes detected
     bool isSamePlane = false;
-    for(size_t j = 0; j < numPrevPlanes; j++) // numPrevPlanes
+    vector<Plane>::iterator itPlane = mPbMap.vPlanes.begin();
+//  if(frameQueue.size() != 12)
+    for(size_t j = 0; j < numPrevPlanes; j++, itPlane++) // numPrevPlanes
     {
       if( areSamePlane(mPbMap.vPlanes[j], detectedPlanes[i], configPbMap.max_cos_normal, configPbMap.max_dist_center_plane, configPbMap.proximity_threshold) ) // The planes are merged if they are the same
       {
+//        if (j==2 && frameQueue.size() == 12)
+//        {
+//          cout << "Same plane\n";
+//
+////          ofstream pbm;
+////          pbm.open("comparePlanes.txt");
+//          {
+//            cout << " ID " << mPbMap.vPlanes[j].id << " obs " << mPbMap.vPlanes[j].numObservations;
+//            cout << " areaVoxels " << mPbMap.vPlanes[j].areaVoxels << " areaVoxels " << mPbMap.vPlanes[j].areaHull;
+//            cout << " ratioXY " << mPbMap.vPlanes[j].elongation << " structure " << mPbMap.vPlanes[j].bFromStructure << " label " << mPbMap.vPlanes[j].label;
+//            cout << "\n normal\n" << mPbMap.vPlanes[j].v3normal << "\n center\n" << mPbMap.vPlanes[j].v3center;
+//            cout << "\n PpalComp\n" << mPbMap.vPlanes[j].v3PpalDir << "\n RGB\n" << mPbMap.vPlanes[j].v3colorNrgb;
+//            cout << "\n Neighbors (" << mPbMap.vPlanes[j].neighborPlanes.size() << "): ";
+//            for(map<unsigned,unsigned>::iterator it=mPbMap.vPlanes[j].neighborPlanes.begin(); it != mPbMap.vPlanes[j].neighborPlanes.end(); it++)
+//              cout << it->first << " ";
+//            cout << "\n CommonObservations: ";
+//            for(map<unsigned,unsigned>::iterator it=mPbMap.vPlanes[j].neighborPlanes.begin(); it != mPbMap.vPlanes[j].neighborPlanes.end(); it++)
+//              cout << it->second << " ";
+//            cout << "\n ConvexHull (" << mPbMap.vPlanes[j].polygonContourPtr->size() << "): \n";
+//            for(unsigned jj=0; jj < mPbMap.vPlanes[j].polygonContourPtr->size(); jj++)
+//              cout << "\t" << mPbMap.vPlanes[j].polygonContourPtr->points[jj].x << " " << mPbMap.vPlanes[j].polygonContourPtr->points[jj].y << " " << mPbMap.vPlanes[j].polygonContourPtr->points[jj].z << endl;
+//            cout << endl;
+//          }
+//          {
+////            cout << " ID " << detectedPlanes[i].id << " obs " << detectedPlanes[i].numObservations;
+////            cout << " areaVoxels " << detectedPlanes[i].areaVoxels << " areaVoxels " << detectedPlanes[i].areaHull;
+////            cout << " ratioXY " << detectedPlanes[i].elongation << " structure " << detectedPlanes[i].bFromStructure << " label " << detectedPlanes[i].label;
+//            cout << "\n normal\n" << detectedPlanes[i].v3normal << "\n center\n" << detectedPlanes[i].v3center;
+////            cout << "\n PpalComp\n" << detectedPlanes[i].v3PpalDir << "\n RGB\n" << detectedPlanes[i].v3colorNrgb;
+////            cout << "\n Neighbors (" << detectedPlanes[i].neighborPlanes.size() << "): ";
+////            for(map<unsigned,unsigned>::iterator it=detectedPlanes[i].neighborPlanes.begin(); it != detectedPlanes[i].neighborPlanes.end(); it++)
+////              cout << it->first << " ";
+////            cout << "\n CommonObservations: ";
+////            for(map<unsigned,unsigned>::iterator it=detectedPlanes[i].neighborPlanes.begin(); it != detectedPlanes[i].neighborPlanes.end(); it++)
+////              cout << it->second << " ";
+//            cout << "\n ConvexHull (" << detectedPlanes[i].polygonContourPtr->size() << "): \n";
+//            for(unsigned jj=0; jj < detectedPlanes[i].polygonContourPtr->size(); jj++)
+//              cout << "\t" << detectedPlanes[i].polygonContourPtr->points[jj].x << " " << detectedPlanes[i].polygonContourPtr->points[jj].y << " " << detectedPlanes[i].polygonContourPtr->points[jj].z << endl;
+//            cout << endl;
+//          }
+////          pbm.close();
+//        }
+
         isSamePlane = true;
 
         mergePlanes(mPbMap.vPlanes[j], detectedPlanes[i]);
+
+        // Update proximity graph
+        checkProximity(mPbMap.vPlanes[j], configPbMap.proximity_neighbor_planes); // Detect neighbors
 
         #ifdef _VERBOSE
           cout << "Previous plane " << mPbMap.vPlanes[j].id << " area " << mPbMap.vPlanes[j].areaVoxels<< " of polygon " << mPbMap.vPlanes[j].compute2DPolygonalArea() << endl;
         #endif
 
-        if( observedPlanes.count(mPbMap.vPlanes[j].id) ) // If this plane has already been observed through a previous partial plane in this same keyframe, then we must not account twice in the observation count
-          break;
+        if( observedPlanes.count(mPbMap.vPlanes[j].id) == 0 ) // If this plane has already been observed through a previous partial plane in this same keyframe, then we must not account twice in the observation count
+        {
+          mPbMap.vPlanes[j].numObservations++;
 
-        mPbMap.vPlanes[j].numObservations++;
+          // Update co-visibility graph
+          for(set<unsigned>::iterator it = observedPlanes.begin(); it != observedPlanes.end(); it++)
+            if(mPbMap.vPlanes[j].neighborPlanes.count(*it))
+            {
+              mPbMap.vPlanes[j].neighborPlanes[*it]++;
+              mPbMap.vPlanes[*it].neighborPlanes[mPbMap.vPlanes[j].id]++; // j = mPbMap.vPlanes[j]
+            }
+            else
+            {
+              mPbMap.vPlanes[j].neighborPlanes[*it] = 1;
+              mPbMap.vPlanes[*it].neighborPlanes[mPbMap.vPlanes[j].id] = 1;
+            }
 
-        // Update proximity graph
-        checkProximity(mPbMap.vPlanes[j], configPbMap.proximity_neighbor_planes); // Detect neighbors
-
-        // Update co-visibility graph
-        for(set<unsigned>::iterator it = observedPlanes.begin(); it != observedPlanes.end(); it++)
-          if(mPbMap.vPlanes[j].neighborPlanes.count(*it))
-          {
-            mPbMap.vPlanes[j].neighborPlanes[*it]++;
-            mPbMap.vPlanes[*it].neighborPlanes[mPbMap.vPlanes[j].id]++; // j = mPbMap.vPlanes[j]
-          }
-          else
-          {
-            mPbMap.vPlanes[j].neighborPlanes[*it] = 1;
-            mPbMap.vPlanes[*it].neighborPlanes[mPbMap.vPlanes[j].id] = 1;
-          }
-
-        observedPlanes.insert(mPbMap.vPlanes[j].id);
+          observedPlanes.insert(mPbMap.vPlanes[j].id);
+        }
 
         #ifdef _VERBOSE
           cout << "Same plane\n";
         #endif
+
+        itPlane++;
+        for(size_t k = j+1; k < numPrevPlanes; k++, itPlane++) // numPrevPlanes
+          if( areSamePlane(mPbMap.vPlanes[j], mPbMap.vPlanes[k], configPbMap.max_cos_normal, configPbMap.max_dist_center_plane, configPbMap.proximity_threshold) ) // The planes are merged if they are the same
+          {
+            mergePlanes(mPbMap.vPlanes[j], mPbMap.vPlanes[k]);
+
+            mPbMap.vPlanes[j].numObservations += mPbMap.vPlanes[k].numObservations;
+
+            for(set<unsigned>::iterator it = mPbMap.vPlanes[k].nearbyPlanes.begin(); it != mPbMap.vPlanes[k].nearbyPlanes.end(); it++)
+              mPbMap.vPlanes[*it].nearbyPlanes.erase(mPbMap.vPlanes[k].id);
+
+            for(map<unsigned,unsigned>::iterator it = mPbMap.vPlanes[k].neighborPlanes.begin(); it != mPbMap.vPlanes[k].neighborPlanes.end(); it++)
+              mPbMap.vPlanes[it->first].neighborPlanes.erase(mPbMap.vPlanes[k].id);
+
+            // Update plane index
+            for(size_t h = k+1; h < numPrevPlanes; h++)
+              --mPbMap.vPlanes[h].id;
+
+            for(size_t h = 0; h < numPrevPlanes; h++)
+            {
+              if(k==h)
+                continue;
+
+              for(set<unsigned>::iterator it = mPbMap.vPlanes[h].nearbyPlanes.begin(); it != mPbMap.vPlanes[h].nearbyPlanes.end(); it++)
+                if(*it > mPbMap.vPlanes[k].id)
+                {
+                  mPbMap.vPlanes[h].nearbyPlanes.insert(*it-1);
+                  mPbMap.vPlanes[h].nearbyPlanes.erase(*it);
+                }
+
+              for(map<unsigned,unsigned>::iterator it = mPbMap.vPlanes[h].neighborPlanes.begin(); it != mPbMap.vPlanes[h].neighborPlanes.end(); it++)
+                if(it->first > mPbMap.vPlanes[k].id)
+                {
+                  mPbMap.vPlanes[h].neighborPlanes[it->first-1] = it->second;
+                  mPbMap.vPlanes[h].neighborPlanes.erase(it);
+                }
+            }
+
+            mPbMap.vPlanes.erase(itPlane);
+            --numPrevPlanes;
+
+            #ifdef _VERBOSE
+              cout << "MERGE TWO PREVIOUS PLANES WHEREBY THE INCORPORATION OF A NEW REGION \n";
+            #endif
+          }
 
         break;
       }
@@ -430,8 +533,11 @@ void PbMapMaker::detectPlanesCloud( pcl::PointCloud<PointT>::Ptr &pointCloudPtr_
       detectedPlanes[i].numObservations = 1;
       detectedPlanes[i].bFullExtent = false;
       detectedPlanes[i].nFramesAreaIsStable = 0;
-//      detectedPlanes[i].semanticGroup = clusterize->currentSemanticGroup;
-      clusterize->groups[clusterize->currentSemanticGroup].push_back(detectedPlanes[i].id);
+      if(configPbMap.makeClusters)
+      {
+        detectedPlanes[i].semanticGroup = clusterize->currentSemanticGroup;
+        clusterize->groups[clusterize->currentSemanticGroup].push_back(detectedPlanes[i].id);
+      }
 
       #ifdef _VERBOSE
         cout << "New plane " << detectedPlanes[i].id << " area " << detectedPlanes[i].areaVoxels<< " of polygon " << detectedPlanes[i].areaHull << endl;
@@ -452,6 +558,9 @@ void PbMapMaker::detectPlanesCloud( pcl::PointCloud<PointT>::Ptr &pointCloudPtr_
       mPbMap.vPlanes.push_back(detectedPlanes[i]);
     }
   }
+
+  if(frameQueue.size() == 12)
+   cout << "Same plane? " << areSamePlane(mPbMap.vPlanes[2], mPbMap.vPlanes[9], configPbMap.max_cos_normal, configPbMap.max_dist_center_plane, configPbMap.proximity_threshold) << endl;
 
   #ifdef _VERBOSE
     cout << "\n\tobservedPlanes: ";
@@ -490,9 +599,9 @@ void PbMapMaker::detectPlanesCloud( pcl::PointCloud<PointT>::Ptr &pointCloudPtr_
       {
         if(static_cast<int>(*it) == mPbMap.FloorPlane)
           continue;
-        if( mPbMap.vPlanes[mPbMap.FloorPlane].v3normal .dot (mPbMap.vPlanes[*it].v3center - mPbMap.vPlanes[mPbMap.FloorPlane].v3center) < -0.1 )
+        if( mPbMap.vPlanes[mPbMap.FloorPlane].v3normal.dot(mPbMap.vPlanes[*it].v3center - mPbMap.vPlanes[mPbMap.FloorPlane].v3center) < -0.1 )
         {
-          if(mPbMap.vPlanes[mPbMap.FloorPlane].v3normal .dot (mPbMap.vPlanes[*it].v3normal) > 0.99) //(cos 8.1º = 0.99)
+          if(mPbMap.vPlanes[mPbMap.FloorPlane].v3normal.dot(mPbMap.vPlanes[*it].v3normal) > 0.99) //(cos 8.1º = 0.99)
           {
             mPbMap.vPlanes[*it].label = "Floor";
             mPbMap.vPlanes[mPbMap.FloorPlane].label = "";
@@ -500,7 +609,7 @@ void PbMapMaker::detectPlanesCloud( pcl::PointCloud<PointT>::Ptr &pointCloudPtr_
           }
           else
           {
-            assert(0);
+//            assert(false);
             mPbMap.vPlanes[mPbMap.FloorPlane].label = "";
             mPbMap.FloorPlane = -1;
             break;
@@ -536,19 +645,28 @@ void keyboardEventOccurred (const pcl::visualization::KeyboardEvent &event, void
 bool PbMapMaker::areSamePlane(Plane &plane1, Plane &plane2, const float &cosAngleThreshold, const float &distThreshold, const float &proxThreshold)
 {
   // Check that both planes have similar orientation
-  if( plane1.v3normal .dot (plane2.v3normal) < cosAngleThreshold )
+  if( plane1.v3normal.dot(plane2.v3normal) < cosAngleThreshold )
     return false;
+//  if(plane1.id == 2)
+//    cout << "normal " << plane1.v3normal.dot(plane2.v3normal) << " " << cosAngleThreshold << endl;
 
   // Check the normal distance of the planes centers using their average normal
-  float dist_normal = plane1.v3normal .dot (plane2.v3center - plane1.v3center);
-  if(fabs(dist_normal) > distThreshold ) // Then merge the planes
+  float dist_normal = plane1.v3normal.dot(plane2.v3center - plane1.v3center);
+//  if(fabs(dist_normal) > distThreshold ) // Avoid matching different parallel planes
+//    return false;
+  float thres_max_dist = max(distThreshold, distThreshold*2*norm(plane2.v3center - plane1.v3center));
+  if(fabs(dist_normal) > thres_max_dist ) // Avoid matching different parallel planes
     return false;
+//  if(plane1.id == 2)
+//  {
+//    cout << "dist_normal " << dist_normal << " " << thres_max_dist << endl;
+//    if(arePlanesNearby(plane1, plane2, proxThreshold))
+//      cout << "planes rearby" << endl;
+//  }
 
-  // Check that the distance between the planes centers is not too big
-  if( !arePlanesNearby(plane1, plane2, proxThreshold) )
-    return false;
-
-  return true;
+  // Once we know that the planes are almost coincident (parallelism and position)
+  // we check that the distance between the planes is not too big
+  return arePlanesNearby(plane1, plane2, proxThreshold);
 }
 
 void PbMapMaker::mergePlanes(Plane &updatePlane, Plane &discardPlane)
@@ -696,21 +814,33 @@ void PbMapMaker::viz_cb (pcl::visualization::PCLVisualizer& viz)
 //            viz.addArrow (pt3, plane_i.pt1, ared[i%10], agrn[i%10], ablu[i%10], false, name);
 //          }
 
-          if( !plane_i.label.empty() )
-            viz.addText3D (plane_i.label, pt2, 0.1, ared[i%10], agrn[i%10], ablu[i%10], plane_i.label);
-          else
+//          if( !plane_i.label.empty() )
+//            viz.addText3D (plane_i.label, pt2, 0.1, ared[i%10], agrn[i%10], ablu[i%10], plane_i.label);
+//          else
           {
             sprintf (name, "n%u", static_cast<unsigned>(i));
+//            sprintf (name, "n%u_%u", static_cast<unsigned>(i), static_cast<unsigned>(plane_i.semanticGroup));
             viz.addText3D (name, pt2, 0.1, ared[i%10], agrn[i%10], ablu[i%10], name);
           }
 
 //          sprintf (name, "planeRaw_%02u", static_cast<unsigned>(i));
 //          viz.addPointCloud (plane_i.planeRawPointCloudPtr, name);// contourPtr, planePointCloudPtr, polygonContourPtr
 
-          sprintf (name, "plane_%02u", static_cast<unsigned>(i));
-          pcl::visualization::PointCloudColorHandlerCustom <PointT> color (plane_i.planePointCloudPtr, red[i%10], grn[i%10], blu[i%10]);
-          viz.addPointCloud (plane_i.planePointCloudPtr, color, name);// contourPtr, planePointCloudPtr, polygonContourPtr
-          viz.setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 2, name);
+//          if(!configPbMap.makeClusters)
+//          {
+//          sprintf (name, "plane_%02u", static_cast<unsigned>(i));
+//          pcl::visualization::PointCloudColorHandlerCustom <PointT> color (plane_i.planePointCloudPtr, red[i%10], grn[i%10], blu[i%10]);
+////          pcl::visualization::PointCloudColorHandlerCustom <PointT> color (plane_i.planePointCloudPtr, red[plane_i.semanticGroup%10], grn[plane_i.semanticGroup%10], blu[plane_i.semanticGroup%10]);
+//          viz.addPointCloud (plane_i.planePointCloudPtr, color, name);
+//          viz.setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 2, name);
+//          }
+//          else
+//          {
+//            sprintf (name, "plane_%02u", static_cast<unsigned>(i));
+//            pcl::visualization::PointCloudColorHandlerCustom <PointT> color (plane_i.planePointCloudPtr, red[plane_i.semanticGroup%10], grn[plane_i.semanticGroup%10], blu[plane_i.semanticGroup%10]);
+//            viz.addPointCloud (plane_i.planePointCloudPtr, color, name);
+//            viz.setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 4, name);
+//          }
 
 //          sprintf (name, "planeBorder_%02u", static_cast<unsigned>(i));
 //          pcl::visualization::PointCloudColorHandlerCustom <PointT> color2 (plane_i.contourPtr, 255, 255, 255);
@@ -732,6 +862,18 @@ void PbMapMaker::viz_cb (pcl::visualization::PCLVisualizer& viz)
           viz.addPolygon<PointT> (plane_i.polygonContourPtr, 0.5 * red[i%10], 0.5 * grn[i%10], 0.5 * blu[i%10], name);
         }
 
+//if(configPbMap.makeClusters)
+//  for(map<unsigned, std::vector<unsigned> >::iterator it=clusterize->groups.begin(); it != clusterize->groups.end(); it++)
+//    for(size_t i=0; i < it->second.size(); i++)
+//    {
+//      unsigned planeID = it->second[i];
+//      Plane &plane_i = mPbMap.vPlanes[planeID];
+//      sprintf (name, "plane_%02u", static_cast<unsigned>(planeID));
+//      pcl::visualization::PointCloudColorHandlerCustom <PointT> color (plane_i.planePointCloudPtr, red[planeID%10], grn[planeID%10], blu[planeID%10]);
+//      viz.addPointCloud (plane_i.planePointCloudPtr, color, name);// contourPtr, planePointCloudPtr, polygonContourPtr
+//      viz.setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 3, name);
+//    }
+
         // Draw recognized plane labels
         if(mpPbMapLocaliser != NULL)
           for(map<string, pcl::PointXYZ>::iterator it = mpPbMapLocaliser->foundPlaces.begin(); it != mpPbMapLocaliser->foundPlaces.end(); it++)
@@ -748,7 +890,7 @@ void PbMapMaker::run()
   cloudViewer.registerKeyboardCallback ( keyboardEventOccurred );
 
   size_t numPrevKFs = 0;
-  size_t minGrowPlanes = 10;
+  size_t minGrowPlanes = 5;
   while(!m_pbmaker_must_stop)  // Stop loop if PbMapMaker
   {
     if( numPrevKFs == frameQueue.size() )
@@ -761,30 +903,15 @@ void PbMapMaker::run()
     detectPlanesCloud( frameQueue.back().cloudPtr, frameQueue.back().pose,
                       configPbMap.dist_threshold, configPbMap.angle_threshold, configPbMap.minInliersRate);
 
-    if(configPbMap.makeCovisibilityClusters)
+    if(configPbMap.makeClusters)
       if(mPbMap.vPlanes.size() > minGrowPlanes)
       {
-        // Select current group
-        unsigned current_group, current_group_votes = 0;
-        map<unsigned, unsigned> observed_group;
-        for(set<unsigned>::iterator it = observedPlanes.begin(); it != observedPlanes.end(); it++)
-          if(observed_group.count(mPbMap.vPlanes[*it].id))
-            observed_group[mPbMap.vPlanes[*it].id ]++;
-          else
-            observed_group[mPbMap.vPlanes[*it].id ] = 1;
-        for(map<unsigned, unsigned>::iterator it = observed_group.begin(); it != observed_group.end(); it++)
-          if(it->second > current_group_votes)
-          {
-            current_group = it->first;
-            current_group_votes = it->second;
-          }
-
         // Evaluate the partition of the current groups with minNcut
-        int size_partition = clusterize->evalPartition(current_group);
+        int size_partition = clusterize->evalPartition(observedPlanes);
         cout << "PARTITION SIZE " << size_partition << endl;
         assert(size_partition < 2);
 
-        minGrowPlanes += 5;
+        minGrowPlanes += 2;
       }
 
       ++numPrevKFs;

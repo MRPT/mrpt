@@ -51,7 +51,7 @@ using namespace mrpt::pbmap;
 void printHelp()
 {
     cout<<"---------------------------------------------------------------------------------------"<< endl;
-    cout<<"./pbmap_visualizer <pointCloud.pcd> <MapPlanes.xml>" << endl;
+    cout<<"./pbmap_visualizer <pointCloud.pcd> <planes.pbmap>" << endl;
     cout<<"       options: " << endl;
     cout<<"         -p | P: Show/hide point cloud" << endl;
     cout<<"         -l | L: Show/hide PbMap" << endl;
@@ -139,30 +139,30 @@ void PbMapVisualizer::viz_cb (pcl::visualization::PCLVisualizer& viz)
         }
 
         // Draw edges
-        for(set<unsigned>::iterator it = pbmap.vPlanes[i].nearbyPlanes.begin(); it != pbmap.vPlanes[i].nearbyPlanes.end(); it++)
-        {
-          if(*it > pbmap.vPlanes[i].id)
-            break;
-
-          sprintf (name, "commonObs%u_%u", static_cast<unsigned>(i), static_cast<unsigned>(*it));
-          pcl::PointXYZ center_it(2*pbmap.vPlanes[*it].v3center[0], 2*pbmap.vPlanes[*it].v3center[1], 2*pbmap.vPlanes[*it].v3center[2]);
-          viz.addLine (center, center_it, ared[i%10], agrn[i%10], ablu[i%10], name);
-        }
-//        for(map<unsigned,unsigned>::iterator it = pbmap.vPlanes[i].neighborPlanes.begin(); it != pbmap.vPlanes[i].neighborPlanes.end(); it++)
+//        for(set<unsigned>::iterator it = pbmap.vPlanes[i].nearbyPlanes.begin(); it != pbmap.vPlanes[i].nearbyPlanes.end(); it++)
 //        {
-//          if(it->first > pbmap.vPlanes[i].id)
+//          if(*it > pbmap.vPlanes[i].id)
 //            break;
 //
-//          sprintf (name, "commonObs%u_%u", static_cast<unsigned>(i), static_cast<unsigned>(it->first));
-//          pcl::PointXYZ center_it(2*pbmap.vPlanes[it->first].v3center[0], 2*pbmap.vPlanes[it->first].v3center[1], 2*pbmap.vPlanes[it->first].v3center[2]);
+//          sprintf (name, "commonObs%u_%u", static_cast<unsigned>(i), static_cast<unsigned>(*it));
+//          pcl::PointXYZ center_it(2*pbmap.vPlanes[*it].v3center[0], 2*pbmap.vPlanes[*it].v3center[1], 2*pbmap.vPlanes[*it].v3center[2]);
 //          viz.addLine (center, center_it, ared[i%10], agrn[i%10], ablu[i%10], name);
-//
-//          sprintf (name, "edge%u_%u", static_cast<unsigned>(i), static_cast<unsigned>(it->first));
-//          char commonObs[8];
-//          sprintf (commonObs, "%u", it->second);
-//          pcl::PointXYZ half_edge( (center_it.x+center.x)/2, (center_it.y+center.y)/2, (center_it.z+center.z)/2 );
-//          viz.addText3D (commonObs, half_edge, 0.05, 1.0, 1.0, 1.0, name);
 //        }
+        for(map<unsigned,unsigned>::iterator it = pbmap.vPlanes[i].neighborPlanes.begin(); it != pbmap.vPlanes[i].neighborPlanes.end(); it++)
+        {
+          if(it->first > pbmap.vPlanes[i].id)
+            break;
+
+          sprintf (name, "commonObs%u_%u", static_cast<unsigned>(i), static_cast<unsigned>(it->first));
+          pcl::PointXYZ center_it(2*pbmap.vPlanes[it->first].v3center[0], 2*pbmap.vPlanes[it->first].v3center[1], 2*pbmap.vPlanes[it->first].v3center[2]);
+          viz.addLine (center, center_it, ared[i%10], agrn[i%10], ablu[i%10], name);
+
+          sprintf (name, "edge%u_%u", static_cast<unsigned>(i), static_cast<unsigned>(it->first));
+          char commonObs[8];
+          sprintf (commonObs, "%u", it->second);
+          pcl::PointXYZ half_edge( (center_it.x+center.x)/2, (center_it.y+center.y)/2, (center_it.z+center.z)/2 );
+          viz.addText3D (commonObs, half_edge, 0.05, 1.0, 1.0, 1.0, name);
+        }
       }
     }
     else

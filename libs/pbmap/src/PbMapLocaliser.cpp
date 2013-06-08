@@ -273,7 +273,7 @@ bool PbMapLocaliser::searchPlaneContext(Plane &searchPlane)
   // Superimpose model
     Eigen::Matrix4f rigidTransf;    // Pose of map as from current model
     Eigen::Matrix4f rigidTransfInv; // Pose of model as from current map
-    ConsistencyTest fitModel(mPbMap, winnerPbMap, bestMatch);
+    ConsistencyTest fitModel(mPbMap, winnerPbMap);
     rigidTransf = fitModel.getRTwithModel(bestMatch);
     rigidTransfInv = inverse(rigidTransf);
 

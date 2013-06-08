@@ -61,7 +61,7 @@ namespace pbmap {
    public:
 
     /*!Constructor */
-    ConsistencyTest(PbMap &PBM_source, PbMap &PBM_target, std::map<unsigned, unsigned> &matched_planes);
+    ConsistencyTest(PbMap &PBM_source, PbMap &PBM_target);
 
   //  /**! Get diamond of points around the center. This is used to calculate the adjustment error with a model plane */
   //  void calcDiamondPlane(Plane& plane);
@@ -74,6 +74,11 @@ namespace pbmap {
     /*!Return an initial guess for the rigid transformation which aligns two matched places.
     The translation is calculated from the planes centroids and the rotation from the alignment of the plane's normals.*/
     Eigen::Matrix4f initPose( std::map<unsigned, unsigned> &matched_planes);
+
+    /*!Return an initial guess for the rigid transformation which aligns two matched places.
+    The translation is calculated from the planes centroids and the rotation from the alignment of the plane's normals.
+    A planar movement is assumed (wheeled robot)*/
+    Eigen::Matrix4f initPose2D( std::map<unsigned, unsigned> &matched_planes);
 
     /*!Return the estimated rigid transformation which aligns two matched subgraphs (i.e. neighborhoods of planes).
     This function iteratively minimizes the alignment error of the matched planes wrt the rigid transformation.*/

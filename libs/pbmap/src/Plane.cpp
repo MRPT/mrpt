@@ -45,6 +45,7 @@
 #include <mrpt/pbmap/Plane.h>
 #include <mrpt/pbmap/Miscellaneous.h>
 #include <pcl/common/time.h>
+#include <pcl/filters/voxel_grid.h>
 
 using namespace mrpt::pbmap;
 using namespace mrpt::utils;
@@ -146,7 +147,7 @@ void  Plane::readFromStream(CStream &in, int version)
 void Plane::forcePtsLayOnPlane()
 {
   // The plane equation has the form Ax + By + Cz + D = 0, where the vector N=(A,B,C) is the normal and the constant D can be calculated as D = -N*(PlanePoint) = -N*PlaneCenter
-  const double D = -(v3normal .dot (v3center));
+  const double D = -(v3normal.dot(v3center));
   for(unsigned i = 0; i < planePointCloudPtr->size(); i++)
   {
     double dist = v3normal[0]*planePointCloudPtr->points[i].x + v3normal[1]*planePointCloudPtr->points[i].y + v3normal[2]*planePointCloudPtr->points[i].z + D;
@@ -368,71 +369,87 @@ void Plane::calcConvexHull(pcl::PointCloud<pcl::PointXYZRGBA>::Ptr &pointCloud, 
 
 }
 
-/**!
- * Verify that the plane's convex hull is efectively convex, and if it isn't, then recalculate its points
-*/
-bool Plane::verifyConvexHull()
+
+bool Plane::isPlaneNearby(Plane &plane, const float distThreshold)
 {
-  Eigen::Matrix3f m3Rot;
-  m3Rot.Identity();
-  m3Rot.row(2) = v3normal;
-  m3Rot.row(0) = m3Rot.row(0) - (m3Rot.row(2) * (m3Rot.row(0).dot(m3Rot.row(2))));
-  m3Rot.row(0).normalize();
-  m3Rot.row(1) = m3Rot.row(2).cross(m3Rot.row(0));
+  float distThres2 = distThreshold * distThreshold;
 
-  // Create a vector of 2D-points from the plane vertex laying on the plane
-  std::vector<mPointHull> planePts;
-  for(unsigned i=0; i < polygonContourPtr->size(); i++)
-  {
-    Eigen::Vector3f v3Pt(polygonContourPtr->points[i].x, polygonContourPtr->points[i].y, polygonContourPtr->points[i].z);
-//  cout << "v3Pt " << v3Pt << endl;
-    mPointHull v2PtPlane;
-    v2PtPlane.x = m3Rot.row(0).dot(v3Pt);
-    v2PtPlane.y = m3Rot.row(1).dot(v3Pt);
-    v2PtPlane.id = i;
-    planePts.push_back(v2PtPlane);
-  }
+  // First we check distances between centroids and vertex to accelerate this check
+  if( (v3center - plane.v3center).squaredNorm() < distThres2 )
+    return true;
 
-  int n = planePts.size(), k = 0;
-  std::vector<mPointHull> H(2*n);
+  for(unsigned i=1; i < polygonContourPtr->size(); i++)
+    if( (getVector3fromPointXYZ(polygonContourPtr->points[i]) - plane.v3center).squaredNorm() < distThres2 )
+      return true;
 
-  // Sort points lexicographically
-  sort(planePts.begin(), planePts.end());
+  for(unsigned j=1; j < plane.polygonContourPtr->size(); j++)
+    if( (v3center - getVector3fromPointXYZ(plane.polygonContourPtr->points[j]) ).squaredNorm() < distThres2 )
+      return true;
 
-  // Build lower hull
-  for (int i = 0; i < n; i++) {
-      while (k >= 2 && cross(H[k-2], H[k-1], planePts[i]) <= 0) k--;
-      H[k++] = planePts[i];
-  }
+  for(unsigned i=1; i < polygonContourPtr->size(); i++)
+    for(unsigned j=1; j < plane.polygonContourPtr->size(); j++)
+      if( (diffPoints(polygonContourPtr->points[i], plane.polygonContourPtr->points[j]) ).squaredNorm() < distThres2 )
+        return true;
 
-  // Build upper hull
-  for (int i = n-2, t = k+1; i >= 0; i--) {
-      while (k >= t && cross(H[k-2], H[k-1], planePts[i]) <= 0) k--;
-      H[k++] = planePts[i];
-  }
-
-  H.resize(k);
-
-  // Check that the arrangement of the points defining the convex hull has not changed, in which case the previous convex hull was correct
-  bool isBad = false;
-  for (size_t i = 0; i < H.size(); i++) {
-    if( H[i].id != i )
-    {
-      isBad = true;
-      break;
-    }
-  }
-  if(isBad) // If the previous convex hull was not correct, swap with the one calculated in this function
-  {
-    pcl::PointCloud<pcl::PointXYZRGBA>::Ptr newHull(new pcl::PointCloud<pcl::PointXYZRGBA>);
-    for (size_t i = 0; i < H.size(); i++)
-      newHull->points.push_back( polygonContourPtr->points[ H[i].id ] );
-    newHull.swap(polygonContourPtr);
-  }
-
-  assert(isBad);
-
-  return isBad;
+  return false;
 }
+
+/*!Check if the the input plane is the same than this plane for some given angle and distance thresholds.
+ * If the planes are the same they are merged in this and the function returns true. Otherwise it returns false.*/
+bool Plane::isSamePlane(Plane &plane, const float &cosAngleThreshold, const float &distThreshold, const float &proxThreshold)
+{
+  // Check that both planes have similar orientation
+  if( v3normal.dot(plane.v3normal) < cosAngleThreshold )
+    return false;
+
+  // Check the normal distance of the planes centers using their average normal
+  float dist_normal = v3normal.dot(plane.v3center - v3center);
+//  if(fabs(dist_normal) > distThreshold ) // Avoid matching different parallel planes
+//    return false;
+  float thres_max_dist = max(distThreshold, distThreshold*2*norm(plane.v3center - v3center));
+  if(fabs(dist_normal) > thres_max_dist ) // Avoid matching different parallel planes
+    return false;
+
+  // Once we know that the planes are almost coincident (parallelism and position)
+  // we check that the distance between the planes is not too big
+  return isPlaneNearby(plane, proxThreshold);
+}
+
+void Plane::mergePlane(Plane &plane)
+{
+  // Update normal and center
+  double sumAreas = areaVoxels + plane.areaVoxels;
+  v3normal = (areaVoxels*v3normal + plane.areaVoxels*plane.v3normal) / sumAreas;
+
+  // Update point inliers
+//  *polygonContourPtr += *plane.polygonContourPtr; // Merge polygon points
+  *planePointCloudPtr += *plane.planePointCloudPtr; // Add the points of the new detection and perform a voxel grid
+
+  // Filter the points of the patch with a voxel-grid. This points are used only for visualization
+  static pcl::VoxelGrid<pcl::PointXYZRGBA> merge_grid;
+  merge_grid.setLeafSize(0.05,0.05,0.05);
+  pcl::PointCloud<pcl::PointXYZRGBA> mergeCloud;
+  merge_grid.setInputCloud (planePointCloudPtr);
+  merge_grid.filter (mergeCloud);
+  planePointCloudPtr->clear();
+  *planePointCloudPtr = mergeCloud;
+
+//  if(configPbMap.use_color)
+//    calcMainColor();
+
+  *plane.polygonContourPtr += *planePointCloudPtr;
+  calcConvexHull(plane.polygonContourPtr);
+  computeMassCenterAndArea();
+
+  // Move the points to fulfill the plane equation
+  forcePtsLayOnPlane();
+
+  // Update area
+//  double area_recalc = planePointCloudPtr->size() * 0.0025;
+//  mpPlaneInferInfo->isFullExtent(this, area_recalc);
+  areaVoxels= planePointCloudPtr->size() * 0.0025;
+
+}
+
 
 #endif
