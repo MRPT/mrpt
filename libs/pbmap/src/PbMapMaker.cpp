@@ -672,9 +672,8 @@ bool PbMapMaker::areSamePlane(Plane &plane1, Plane &plane2, const float &cosAngl
 void PbMapMaker::mergePlanes(Plane &updatePlane, Plane &discardPlane)
 {
   // Update normal and center
-  double sumAreas = updatePlane.areaVoxels + discardPlane.areaVoxels;
-  updatePlane.v3normal = (updatePlane.areaVoxels*updatePlane.v3normal + discardPlane.areaVoxels*discardPlane.v3normal) / sumAreas;
-
+  updatePlane.v3normal = updatePlane.areaVoxels*updatePlane.v3normal + discardPlane.areaVoxels*discardPlane.v3normal;
+  updatePlane.v3normal = updatePlane.v3normal / norm(updatePlane.v3normal);
   // Update point inliers
 //  *updatePlane.polygonContourPtr += *discardPlane.polygonContourPtr; // Merge polygon points
   *updatePlane.planePointCloudPtr += *discardPlane.planePointCloudPtr; // Add the points of the new detection and perform a voxel grid

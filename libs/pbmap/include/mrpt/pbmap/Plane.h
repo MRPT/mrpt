@@ -113,7 +113,7 @@ namespace pbmap {
     void calcElongationAndPpalDir();
 
 
-    /*!Returns true when the closest distance between the patches "plane1" and "plane2" is under distThreshold.*/
+    /*!Returns true when the closest distance between the patches "this" and "plane" is under distThreshold.*/
     bool isPlaneNearby(Plane &plane, const float distThreshold);
 
     /*! Returns true if the two input planes represent the same physical surface for some given angle and distance thresholds.

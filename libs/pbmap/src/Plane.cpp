@@ -370,60 +370,63 @@ void Plane::calcConvexHull(pcl::PointCloud<pcl::PointXYZRGBA>::Ptr &pointCloud, 
 }
 
 
-bool Plane::isPlaneNearby(Plane &plane, const float distThreshold)
+/*!Returns true when the closest distance between the patches "this" and the input "plane_nearby" is under distThreshold. This function is approximated*/
+bool Plane::isPlaneNearby(Plane &plane_nearby, const float distThreshold)
 {
   float distThres2 = distThreshold * distThreshold;
 
   // First we check distances between centroids and vertex to accelerate this check
-  if( (v3center - plane.v3center).squaredNorm() < distThres2 )
+  if( (v3center - plane_nearby.v3center).squaredNorm() < distThres2 )
     return true;
 
   for(unsigned i=1; i < polygonContourPtr->size(); i++)
-    if( (getVector3fromPointXYZ(polygonContourPtr->points[i]) - plane.v3center).squaredNorm() < distThres2 )
+    if( (getVector3fromPointXYZ(polygonContourPtr->points[i]) - plane_nearby.v3center).squaredNorm() < distThres2 )
       return true;
 
-  for(unsigned j=1; j < plane.polygonContourPtr->size(); j++)
-    if( (v3center - getVector3fromPointXYZ(plane.polygonContourPtr->points[j]) ).squaredNorm() < distThres2 )
+  for(unsigned j=1; j < plane_nearby.polygonContourPtr->size(); j++)
+    if( (v3center - getVector3fromPointXYZ(plane_nearby.polygonContourPtr->points[j]) ).squaredNorm() < distThres2 )
       return true;
 
   for(unsigned i=1; i < polygonContourPtr->size(); i++)
-    for(unsigned j=1; j < plane.polygonContourPtr->size(); j++)
-      if( (diffPoints(polygonContourPtr->points[i], plane.polygonContourPtr->points[j]) ).squaredNorm() < distThres2 )
+    for(unsigned j=1; j < plane_nearby.polygonContourPtr->size(); j++)
+      if( (diffPoints(polygonContourPtr->points[i], plane_nearby.polygonContourPtr->points[j]) ).squaredNorm() < distThres2 )
         return true;
 
   return false;
 }
 
-/*!Check if the the input plane is the same than this plane for some given angle and distance thresholds.
- * If the planes are the same they are merged in this and the function returns true. Otherwise it returns false.*/
-bool Plane::isSamePlane(Plane &plane, const float &cosAngleThreshold, const float &distThreshold, const float &proxThreshold)
+/*! Returns true if the two input planes represent the same physical surface for some given angle and distance thresholds.
+* If the planes are the same they are merged in this and the function returns true. Otherwise it returns false.*/
+bool Plane::isSamePlane(Plane &plane_nearby, const float &cosAngleThreshold, const float &distThreshold, const float &proxThreshold)
 {
   // Check that both planes have similar orientation
-  if( v3normal.dot(plane.v3normal) < cosAngleThreshold )
+  if( v3normal .dot (plane_nearby.v3normal) < cosAngleThreshold )
     return false;
 
   // Check the normal distance of the planes centers using their average normal
-  float dist_normal = v3normal.dot(plane.v3center - v3center);
-//  if(fabs(dist_normal) > distThreshold ) // Avoid matching different parallel planes
-//    return false;
-  float thres_max_dist = max(distThreshold, distThreshold*2*norm(plane.v3center - v3center));
-  if(fabs(dist_normal) > thres_max_dist ) // Avoid matching different parallel planes
+  float dist_normal = v3normal .dot (plane_nearby.v3center - v3center);
+  if(fabs(dist_normal) > distThreshold ) // Then merge the planes
     return false;
 
-  // Once we know that the planes are almost coincident (parallelism and position)
-  // we check that the distance between the planes is not too big
-  return isPlaneNearby(plane, proxThreshold);
+  // Check that the distance between the planes centers is not too big
+  if( !isPlaneNearby(plane_nearby, proxThreshold) )
+    return false;
+
+  return true;
 }
 
-void Plane::mergePlane(Plane &plane)
+/*! Merge the input "plane_nearby" into "this".
+*  Recalculate center, normal vector, area, inlier points (filtered), convex hull, etc.
+*/
+void Plane::mergePlane(Plane &plane_nearby)
 {
   // Update normal and center
-  double sumAreas = areaVoxels + plane.areaVoxels;
-  v3normal = (areaVoxels*v3normal + plane.areaVoxels*plane.v3normal) / sumAreas;
+  v3normal = (areaVoxels*v3normal + plane_nearby.areaVoxels*plane_nearby.v3normal);
+  v3normal = v3normal / norm(v3normal);
 
   // Update point inliers
-//  *polygonContourPtr += *plane.polygonContourPtr; // Merge polygon points
-  *planePointCloudPtr += *plane.planePointCloudPtr; // Add the points of the new detection and perform a voxel grid
+//  *polygonContourPtr += *plane_nearby.polygonContourPtr; // Merge polygon points
+  *planePointCloudPtr += *plane_nearby.planePointCloudPtr; // Add the points of the new detection and perform a voxel grid
 
   // Filter the points of the patch with a voxel-grid. This points are used only for visualization
   static pcl::VoxelGrid<pcl::PointXYZRGBA> merge_grid;
@@ -437,8 +440,8 @@ void Plane::mergePlane(Plane &plane)
 //  if(configPbMap.use_color)
 //    calcMainColor();
 
-  *plane.polygonContourPtr += *planePointCloudPtr;
-  calcConvexHull(plane.polygonContourPtr);
+  *plane_nearby.polygonContourPtr += *planePointCloudPtr;
+  calcConvexHull(plane_nearby.polygonContourPtr);
   computeMassCenterAndArea();
 
   // Move the points to fulfill the plane equation
@@ -446,7 +449,7 @@ void Plane::mergePlane(Plane &plane)
 
   // Update area
 //  double area_recalc = planePointCloudPtr->size() * 0.0025;
-//  mpPlaneInferInfo->isFullExtent(this, area_recalc);
+//  mpPlaneInferInfo->isFullExtent(plane_nearby, area_recalc);
   areaVoxels= planePointCloudPtr->size() * 0.0025;
 
 }
