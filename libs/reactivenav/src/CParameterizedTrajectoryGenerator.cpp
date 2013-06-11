@@ -211,11 +211,10 @@ void CParameterizedTrajectoryGenerator::simulateTrajectories(
 				}
 
 				// Compute new movement command (v,w):
-				float cmd_v, cmd_w;
-				PTG_Generator( alpha,t, x, y, phi, cmd_v,cmd_w );
+				PTG_Generator( alpha,t, x, y, phi, v,w );
 
 				if (t==0)
-					mrpt::utils::keep_max(maxV_inTPSpace, (float)( sqrt( square(cmd_v) + square(cmd_w*turningRadiusReference) ) ) );
+					mrpt::utils::keep_max(maxV_inTPSpace, (float)( sqrt( square(v) + square(w*turningRadiusReference) ) ) );
 
 				// History of v/w ----------------------------------
 				last_vs[1]=last_vs[0];
