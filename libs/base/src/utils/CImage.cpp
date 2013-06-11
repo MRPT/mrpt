@@ -55,6 +55,10 @@
 // Prototypes of SSE2/SSE3/SSSE3 optimized functions:
 #include "CImage_SSEx.h"
 
+#if MRPT_HAS_WXWIDGETS
+#	include <wx/image.h>
+#endif
+
 using namespace mrpt;
 using namespace mrpt::utils;
 using namespace mrpt::math;
@@ -2624,5 +2628,31 @@ void CImage::setChannelsOrder_BGR()
 #else
 		THROW_EXCEPTION("MRPT compiled without OpenCV")
 #endif
+}
+
+
+/** Loads the image from an XPM array, as #include'd from a ".xpm" file.
+  * \sa loadFromFile
+  * \return false on any error */
+bool CImage::loadFromXPM( const char** xpm_array, bool swap_rb )
+{
+#if MRPT_HAS_OPENCV && MRPT_HAS_WXWIDGETS
+	try {
+		const wxImage b(xpm_array);
+
+		const size_t lx = b.GetWidth();
+		const size_t ly = b.GetHeight();
+
+		this->loadFromMemoryBuffer(lx,ly,true,b.GetData(), swap_rb);
+		return true;
+	}
+	catch(std::exception &e)
+	{
+		std::cerr << "[CImage::loadFromXPM] " << e.what() << std::endl;
+		return false;
+	}
+#else
+	return false;
+#endif // MRPT_HAS_OPENCV
 }
 

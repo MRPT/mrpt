@@ -49,6 +49,7 @@
 			- Generic particle filter classes now allow directly resampling to a dynamic number of particles. Affected methods: - <a href="http://code.google.com/p/mrpt/source/detail?r=3381" >r3381</a>
 				- mrpt::bayes::CParticleFilterCapable::performResampling()
 				- mrpt::bayes::CParticleFilterCapable::computeResampling()
+			- New method: CImage::loadFromXPM() - <a href="http://code.google.com/p/mrpt/source/detail?r=3397" >r3397</a>
 		- [mrpt-reactivenav]
 			- mrpt::reactivenav::CParameterizedTrajectoryGenerator: The "low pass filter" has been removed since it wasn't practical and was never used; thus, parameters "TAU" and "DELAY" has been removed. - <a href="http://code.google.com/p/mrpt/source/detail?r=3395" >r3395</a>
     - BUG FIXES:

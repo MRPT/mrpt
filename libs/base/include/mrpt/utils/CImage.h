@@ -80,6 +80,7 @@ namespace mrpt
 		 *		- Binary dump using the CSerializable interface(<< and >> operators), just as most objects
 		 *          in the MRPT library. This format is not compatible with any standarized image format.
 		 *		- Saving/loading from files of different formats (bmp,jpg,png,...) using the methods CImage::loadFromFile and CImage::saveToFile.
+		 *		- Importing from an XPM array (.xpm file format) using CImage::loadFromXPM
 		 *
 		 *  How to create color/grayscale images:
 		 *  \code
@@ -841,9 +842,15 @@ namespace mrpt
 			 * - TIFF files - TIFF, TIF.
 			 *
 			 * \return False on any error
-			 * \sa saveToFile, setExternalStorage
+			 * \sa saveToFile, setExternalStorage,loadFromXPM
 			 */
 			bool  loadFromFile( const std::string& fileName, int isColor = -1  );
+
+			/** Loads the image from an XPM array, as #include'd from a ".xpm" file.
+			  * \param[in] swap_rb Swaps red/blue channels from loaded image. *Seems* to be always needed, so it's enabled by default.
+			  * \sa loadFromFile
+			  * \return false on any error */
+			bool loadFromXPM( const char** xpm_array, bool swap_rb = true );
 
 			/** Save the image to a file, whose format is determined from the extension (internally uses OpenCV).
 			 * \param fileName The file to write to.
