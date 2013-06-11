@@ -65,7 +65,6 @@ namespace mrpt
 		 *   - ref_distance: The maximum distance in PTGs
 		 *   - resolution: The cell size
 		 *   - v_max, w_max: Maximum robot speeds.
-		 *   - system_TAU, system_DELAY (Optional): Robot dynamics
 		 */
         CParameterizedTrajectoryGenerator(const TParameters<double> &params);
 
@@ -248,8 +247,6 @@ namespace mrpt
 
 protected:
         float			V_MAX, W_MAX;
-		float			TAU, DELAY;
-
 		float			turningRadiusReference;
 
 		/** Specifies the min/max values for "k" and "n", respectively.

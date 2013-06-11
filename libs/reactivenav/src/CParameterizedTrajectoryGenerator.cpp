@@ -56,7 +56,6 @@ using namespace std;
  *   - ref_distance: The maximum distance in PTGs
  *   - resolution: The cell size
  *   - v_max, w_max: Maximum robot speeds.
- *   - system_TAU, system_DELAY (Optional): Robot dynamics
  */
 CParameterizedTrajectoryGenerator::CParameterizedTrajectoryGenerator(const TParameters<double> &params) :
 	m_collisionGrid(-1,1,-1,1,0.5,this)
@@ -64,8 +63,6 @@ CParameterizedTrajectoryGenerator::CParameterizedTrajectoryGenerator(const TPara
 	this->refDistance	= params["ref_distance"];
 	this->V_MAX			= params["v_max"];
 	this->W_MAX			= params["w_max"];
-	this->TAU			= params.has("system_TAU") ? params["system_TAU"] : 0;
-	this->DELAY			= params.has("system_DELAY") ? params["system_DELAY"] : 0;
 
 	m_alphaValuesCount=0;
 	nVertices = 0;
@@ -196,32 +193,7 @@ void CParameterizedTrajectoryGenerator::simulateTrajectories(
 			float x = .0f, y = .0f, phi = .0f, v = .0f, w = .0f, _x = .0f, _y = .0f, _phi = .0f;
 
 			// Sliding window with latest movement commands (for the optional low-pass filtering):
-			vector<float>   last_cmd_vs, last_cmd_ws;
-			vector<float>   last_vs, last_ws;
-			int             M = 5;
-
-			// cmd_v[i] = cmd_v[k-i]
-			last_cmd_vs.clear();last_cmd_ws.clear();
-			last_cmd_vs.resize(M,0);
-			last_cmd_ws.resize(M,0);
-
-			// cmd_v[i] = cmd_v[k-i]
-			last_vs.clear();last_ws.clear();
-			last_vs.resize(M,0);
-			last_ws.resize(M,0);
-
-			// -------------------------------------------
-			// Low-pass filter model:
-			//
-			//            (1-alpha)·z(-NDELAY)
-			//  H(z) = ------------------------
-			//            1 -  z(-1)·alpha
-			//
-			//    alpha = exp( -1 / d ), d = TAU/T
-			// -------------------------------------------
-			const int N_Delay = round(DELAY / diferencial_t);
-			if (TAU==0) TAU=0.01f;
-			const double filter_alpha = exp(-1/(TAU/diferencial_t));
+			float  last_vs[2], last_ws[2];
 
 			// Add the first, initial point:
 			points.push_back( TCPoint(	x,y,phi, t,dist, v,w ) );
@@ -245,22 +217,11 @@ void CParameterizedTrajectoryGenerator::simulateTrajectories(
 				if (t==0)
 					mrpt::utils::keep_max(maxV_inTPSpace, (float)( sqrt( square(cmd_v) + square(cmd_w*turningRadiusReference) ) ) );
 
-				// Low-pass filter ----------------------------------
-				for (int i=M-1;i>=1;i--)
-				{
-					last_cmd_vs[i]=last_cmd_vs[i-1];
-					last_cmd_ws[i]=last_cmd_ws[i-1];
-					last_vs[i]=last_vs[i-1];
-					last_ws[i]=last_ws[i-1];
-				}
+				// History of v/w ----------------------------------
+				last_vs[1]=last_vs[0];
+				last_ws[1]=last_ws[0];
 				last_vs[0] = v;
 				last_ws[0] = w;
-				last_cmd_vs[0] = cmd_v;
-				last_cmd_ws[0] = cmd_w;
-
-				v = (float)(last_cmd_vs[ N_Delay ]*(1-filter_alpha) + filter_alpha*last_vs[1]);
-				w = (float)(last_cmd_ws[ N_Delay ]*(1-filter_alpha) + filter_alpha*last_ws[1]);
-
 				// -------------------------------------------
 
 				// Finite difference equation:
