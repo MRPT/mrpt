@@ -206,7 +206,7 @@ namespace mrpt
 			float   refDistance;				// "dmax" in papers.
 			float   colGridRes_x,colGridRes_y;  // Resolucion de la rejilla de distancias de choque precalculadas
 			float   robotMax_V_mps;				// Max. vel del robot en m/s
-			float   robotMax_W_degps;              // Max. vel del robot en rad/s
+			float   robotMax_W_degps;           // Max. vel del robot en grados/s
 			float	ROBOTMODEL_TAU,ROBOTMODEL_DELAY; // Params for the motor system modelation
 			std::vector<float> weights; // length: 6 [0,5]
 			float	minObstaclesHeight, maxObstaclesHeight; // The range of "z" coordinates for obstacles to be considered

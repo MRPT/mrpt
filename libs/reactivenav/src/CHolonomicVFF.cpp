@@ -96,6 +96,8 @@ void  CHolonomicVFF::navigate(
 	const double obstcl_weight = 20.0/obstacles.size();
 	resultantForce *= obstcl_weight;
 
+	const double obstacleNearnessFactor = std::min( 1.0, 6.0/resultantForce.norm());
+
 	// Target:
 	const double ang = atan2( target.y, target.x );
 	const double mod = options.TARGET_ATTRACTIVE_FORCE;
@@ -107,8 +109,9 @@ void  CHolonomicVFF::navigate(
 
 	// Speed control: Reduction factors
 	// ---------------------------------------------
-	const double targetNearnessFactor = std::min( 1.0, target.norm()/(2*options.TARGET_SLOW_APPROACHING_DISTANCE));
-	desiredSpeed = maxRobotSpeed * targetNearnessFactor;
+	const double targetNearnessFactor = std::min( 1.0, target.norm()/(options.TARGET_SLOW_APPROACHING_DISTANCE));
+	//desiredSpeed = maxRobotSpeed * std::min(obstacleNearnessFactor, targetNearnessFactor);
+	desiredSpeed = std::min(obstacleNearnessFactor, targetNearnessFactor);
 }
 
 /*---------------------------------------------------------------

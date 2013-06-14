@@ -1147,7 +1147,10 @@ void CReactiveNavigationSystem::STEP7_NonHolonomicMovement(
 			    out_w );
 
 			// Scale holonomic speeds to real-world one:
-			const double reduction = min(1.0, in_movement.speed / in_movement.PTG->getMax_V_inTPSpace());
+			//const double reduction = min(1.0, in_movement.speed / in_movement.PTG->getMax_V_inTPSpace());
+			double reduction = in_movement.speed;
+			if (reduction < 0.5)
+				reduction = 0.5;
 
 			// To scale:
 			out_v*=reduction;

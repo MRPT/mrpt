@@ -150,7 +150,8 @@ void CReactiveNavigationSystem3D::loadConfigFile(const mrpt::utils::CConfigFileB
 	//Read navigation params
 	refDistance = ini.read_float("NAVIGATION_CONFIG","MAX_DISTANCE_PTG", 1, true);
 	robotMax_V_mps = ini.read_float("NAVIGATION_CONFIG","VMAX_MPS", 1, true);
-	robotMax_W_degps = ini.read_float("NAVIGATION_CONFIG","WMAX_DEGPS", 30, true);
+	robotMax_W_degps = ini.read_float("NAVIGATION_CONFIG","WMAX_DEGPS", 60, true);
+	SPEEDFILTER_TAU =  ini.read_float("NAVIGATION_CONFIG","SPEEDFILTER_TAU", 0, true);
 	ROBOTMODEL_DELAY = ini.read_float("NAVIGATION_CONFIG","ROBOTMODEL_DELAY", 0, true);
 	ROBOTMODEL_TAU = ini.read_float("NAVIGATION_CONFIG","ROBOTMODEL_TAU", 0, true);
 
@@ -158,12 +159,6 @@ void CReactiveNavigationSystem3D::loadConfigFile(const mrpt::utils::CConfigFileB
 
 	ini.read_vector("NAVIGATION_CONFIG", "weights", vector<float> (0), weights, 1);
 	ASSERT_(weights.size()==6);
-
-	holonomicMethodSel = ini.read_int("NAVIGATION_CONFIG", "HOLONOMIC_METHOD",1, true);
-	holonomicMethod.resize(num_levels);
-	setHolonomicMethod( (THolonomicMethod) holonomicMethodSel , num_levels );
-	for (unsigned int i=0; i<num_levels; i++)
-		holonomicMethod[i]->initialize( ini );
 
 	badNavAlarm_AlarmTimeout = ini.read_float("NAVIGATION_CONFIG","ALARM_SEEMS_NOT_APPROACHING_TARGET_TIMEOUT", 10, false);
 
@@ -188,9 +183,9 @@ void CReactiveNavigationSystem3D::loadConfigFile(const mrpt::utils::CConfigFileB
 	m_ptgmultilevel.resize(num_ptgs);
 
 
-	// Read each PTG parameters, and generate N x L collisiongrids
-	//	N - Number of PTGs
-	//	L - Number of levels
+	// Read each PTG parameters, and generate K x N collisiongrids
+	//	K - Number of PTGs
+	//	N - Number of height sections
 
 	for (unsigned int j=1; j<=num_ptgs; j++)
 	{
@@ -220,10 +215,17 @@ void CReactiveNavigationSystem3D::loadConfigFile(const mrpt::utils::CConfigFileB
 		}
 	}
 
+	//Load holonomic method params
+	holonomicMethodSel = ini.read_int("NAVIGATION_CONFIG", "HOLONOMIC_METHOD",1, true);
+	holonomicMethod.resize(num_ptgs);
+	setHolonomicMethod( (THolonomicMethod) holonomicMethodSel , num_ptgs );
+	for (unsigned int i=0; i<num_ptgs; i++)
+		holonomicMethod[i]->initialize( ini );
+
 	printf_debug("\n");
 
 	// Show configuration parameters:
-	// --------------------------------------------------------
+	// -------------------------------------------------------------------
 	printf_debug("\tLOADED CONFIGURATION:\n");
 	printf_debug("-------------------------------------------------------------\n");
 	printf_debug("  Holonomic method \t\t= ");
@@ -262,12 +264,11 @@ void CReactiveNavigationSystem3D::loadConfigFile(const mrpt::utils::CConfigFileB
   ---------------------------------------------------------------*/
 void CReactiveNavigationSystem3D::setHolonomicMethod(
     THolonomicMethod	method,
-	unsigned int		height_sections,
+	unsigned int		num_PTGs,
     const char			*config_INIfile)
 {
-	for (unsigned int i=0; i<height_sections; i++)
+	for (unsigned int i=0; i<num_PTGs; i++)
 	{
-
 		// Delete current method:
 		if (holonomicMethod[i]) delete holonomicMethod[i];
 
@@ -454,7 +455,7 @@ void  CReactiveNavigationSystem3D::performNavigationStep()
 
 		// STEP1: Collision Grids Builder. (Only once using the "initialize" method)
 		// -----------------------------------------------------------------------------
-		//STEP1_CollisionGridsBuilder();
+		// STEP1_CollisionGridsBuilder();
 
 		// STEP2: Load the obstacles and sort them in height bands.
 		// -----------------------------------------------------------------------------
@@ -577,6 +578,7 @@ void  CReactiveNavigationSystem3D::performNavigationStep()
 		                      0.7f * min(1.0f, (float)timerForExecutionPeriod.Tac());
 
 
+
 		timerForExecutionPeriod.Tic();
 
 
@@ -606,13 +608,11 @@ void  CReactiveNavigationSystem3D::performNavigationStep()
 		// STEP8: Generate log record
 		// ---------------------------------------
 
-		//Nothing decides wheter it should be saved or not??????***********************************
-
 		m_timelogger.enter("navigationStep.populate_log_info");
 
 		CSimplePointsMap auxpointmap;
 
-		//Include the points of all levels (this could be improve depending on STEP2)
+		//Include the points of all levels (this could be improved depending on STEP2)
 		for (unsigned int i=0; i < WS_Obstacles_inlevels.size(); i++)
 			auxpointmap += *WS_Obstacles_inlevels[i].getAsSimplePointsMap();
 
@@ -628,10 +628,10 @@ void  CReactiveNavigationSystem3D::performNavigationStep()
 		newLogRec.estimatedExecutionPeriod	= meanExecutionPeriod;
 		newLogRec.timestamp					= tim_start_iteration;
 		newLogRec.nPTGs						= m_ptgmultilevel.size();
-		newLogRec.navigatorBehavior			= holonomicMethodSel;  // Not used now
+		newLogRec.navigatorBehavior			= holonomicMethodSel; 
 
 
-		//Polygons of each height level are drawn (but they are shown connected...)
+		//Polygons of each height level are drawn (but they are all shown connected...)
 		if (newLogRec.robotShape_x.size() == 0)
 		{
 			size_t nVerts = 0;
@@ -934,7 +934,7 @@ void CReactiveNavigationSystem3D::STEP4_HolonomicMethod(vector <CHolonomicLogFil
 		{
 			holonomicMethod[i]->navigate(	m_ptgmultilevel[i].TP_Target,
 										m_ptgmultilevel[i].TPObstacles,
-										m_ptgmultilevel[i].PTGs[0]->getMax_V_inTPSpace(),	//******************************************
+										m_ptgmultilevel[i].PTGs[0]->getMax_V_inTPSpace(),
 										m_ptgmultilevel[i].holonomicmov.direction,
 										m_ptgmultilevel[i].holonomicmov.speed,
 										in_HLFR[i]);
@@ -1070,7 +1070,7 @@ void CReactiveNavigationSystem3D::STEP5_PTGEvaluator(
 		}
 		else
 		{
-			// Sum: two cases: *************************************Esto qué sentido tiene???
+			// Sum: two cases: *************************************I'm not sure about this...
 			if (dif<2	&&											// Heading the target
 			        in_TPObstacles[kDirection]*0.95f>TargetDist 	// and free space towards the target
 			   )
@@ -1171,7 +1171,10 @@ void CReactiveNavigationSystem3D::STEP7_GenerateSpeedCommands( THolonomicMovemen
 			    new_cmd_w );
 
 			// Scale holonomic speeds to real-world one:
-			const double reduction = min(1.0, in_movement.speed / sqrt( square(new_cmd_v) + square(r*new_cmd_w))); //Always takes 1...************
+			//const double reduction = min(1.0, in_movement.speed / sqrt( square(new_cmd_v) + square(r*new_cmd_w)));
+			double reduction = in_movement.speed;
+			if (reduction < 0.5)
+				reduction = 0.5;
 
 			// To scale:
 			new_cmd_v*=reduction;
@@ -1193,6 +1196,12 @@ void CReactiveNavigationSystem3D::STEP7_GenerateSpeedCommands( THolonomicMovemen
 				new_cmd_v *= F;
 				new_cmd_w *= F;
 			}
+
+			//First order low-pass filter
+			float alfa = meanExecutionPeriod/( meanExecutionPeriod + SPEEDFILTER_TAU);
+			new_cmd_v = alfa*new_cmd_v + (1-alfa)*last_cmd_v;
+			new_cmd_w = alfa*new_cmd_w + (1-alfa)*last_cmd_w;
+
 		}
 		m_timelogger.leave("navigationStep.STEP7_NonHolonomicMovement");
 	}

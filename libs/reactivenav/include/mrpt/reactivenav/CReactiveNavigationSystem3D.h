@@ -134,7 +134,7 @@ namespace mrpt
 			  */
 			void setHolonomicMethod(
 				THolonomicMethod	method,
-				unsigned int		height_sections,
+				unsigned int		num_PTGs,
 				const char			*config_INIfile = "./CONFIG_ReactiveNavigator.ini");
 
 			/** Change the robot shape, which is taken into account for collision
@@ -226,7 +226,8 @@ namespace mrpt
 			float		refDistance;					// "dmax" in papers.
 			float		colGridRes;						// CollisionGrid resolution
 			float		robotMax_V_mps;					// Max. linear speed (m/s)
-			float		robotMax_W_degps;				// Max. angular speed (rad/s)
+			float		robotMax_W_degps;				// Max. angular speed (deg/s)
+			float		SPEEDFILTER_TAU;				// Time constant for the low-pass filter applied to the speed commands
 			float		ROBOTMODEL_TAU,ROBOTMODEL_DELAY;// Params for the robot system modelation
 			std::vector<float> weights;					// length: 6 [0,5]
 			float		DIST_TO_TARGET_FOR_SENDING_EVENT;
@@ -244,10 +245,11 @@ namespace mrpt
 			float						badNavAlarm_AlarmTimeout;
 
 
-			/** The robot 2D shape model
+			/** The robot 3D shape model
 			  */
-
 			TRobotShape		m_robotShape;
+
+
 			bool			m_collisionGridsMustBeUpdated;
 
 
