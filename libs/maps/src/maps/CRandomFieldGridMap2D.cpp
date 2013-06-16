@@ -367,14 +367,14 @@ void  CRandomFieldGridMap2D::internal_clear()
 			tictac.Tic();
 
 			printf("[CRandomFieldGridMap2D::clear] Generating Prior based on 'Squared Differences'\n");
-			printf("Initial map dimension: %i cells, x=(%.2f,%.2f) y=(%.2f,%.2f)\n", m_map.size(), getXMin(),getXMax(),getYMin(),getYMax());
+			printf("Initial map dimension: %u cells, x=(%.2f,%.2f) y=(%.2f,%.2f)\n", static_cast<unsigned int>(m_map.size()), getXMin(),getXMax(),getYMin(),getYMax());
 
 			// Set the gasgridmap (m_map) to initial values:
 			TRandomFieldCell	def(0,0);		// mean, std
 			fill( def );
 
 			mrpt::slam::COccupancyGridMap2D	m_Ocgridmap;
-			float res_coef;
+			float res_coef = 1.f; // Default value
 
 			if (this->m_insertOptions_common->GMRF_use_occupancy_information)
 			{
@@ -414,7 +414,7 @@ void  CRandomFieldGridMap2D::internal_clear()
 				{
 					//Load from image
 					bool loaded = m_Ocgridmap.loadFromBitmapFile(this->m_insertOptions_common->GMRF_gridmap_image_file,this->m_insertOptions_common->GMRF_gridmap_image_res,this->m_insertOptions_common->GMRF_gridmap_image_cx,this->m_insertOptions_common->GMRF_gridmap_image_cy);
-					printf ("Occupancy Gridmap loaded : %b",loaded);
+					printf ("Occupancy Gridmap loaded : %s",loaded ? "YES" : "NO");
 					res_coef = this->getResolution() / this->m_insertOptions_common->GMRF_gridmap_image_res;
 				}
 				else
@@ -425,9 +425,9 @@ void  CRandomFieldGridMap2D::internal_clear()
 				resize(m_Ocgridmap.getXMin(),m_Ocgridmap.getXMax(),m_Ocgridmap.getYMin(),m_Ocgridmap.getYMax(),def,0.0);
 
 				printf("Occupancy Gridmap dimensions: x=(%.2f,%.2f)m y=(%.2f,%.2f)m \n",m_Ocgridmap.getXMin(),m_Ocgridmap.getXMax(),m_Ocgridmap.getYMin(),m_Ocgridmap.getYMax());
-				printf("Occupancy Gridmap dimensions: %i cells, cx=%i cy=%i\n\n", m_Ocgridmap.getSizeX()*m_Ocgridmap.getSizeY(), m_Ocgridmap.getSizeX(), m_Ocgridmap.getSizeY());
-				printf("New map dimensions: %i cells, x=(%.2f,%.2f) y=(%.2f,%.2f)\n", m_map.size(), getXMin(),getXMax(),getYMin(),getYMax());
-				printf("New map dimensions: %i cells, cx=%i cy=%i\n", m_map.size(), getSizeX(), getSizeY());
+				printf("Occupancy Gridmap dimensions: %u cells, cx=%i cy=%i\n\n", static_cast<unsigned int>(m_Ocgridmap.getSizeX()*m_Ocgridmap.getSizeY()), m_Ocgridmap.getSizeX(), m_Ocgridmap.getSizeY());
+				printf("New map dimensions: %u cells, x=(%.2f,%.2f) y=(%.2f,%.2f)\n", static_cast<unsigned int>(m_map.size()), getXMin(),getXMax(),getYMin(),getYMax());
+				printf("New map dimensions: %u cells, cx=%u cy=%u\n", static_cast<unsigned int>(m_map.size()), static_cast<unsigned int>(getSizeX()), static_cast<unsigned int>(getSizeY()));
 			}
 
 			//m_map number of cells
@@ -463,7 +463,7 @@ void  CRandomFieldGridMap2D::internal_clear()
 				size_t cxoj_min, cxoj_max, cyoj_min, cyoj_max, seed_cxo, seed_cyo;				//Cell j limits in the Occupancy
 				size_t cxoi_min, cxoi_max, cyoi_min, cyoi_max, objective_cxo, objective_cyo;	//Cell i limits in the Occupancy
 				size_t cxo_min, cxo_max, cyo_min, cyo_max;										//Cell i+j limits in the Occupancy
-				bool first_obs = false;
+				//bool first_obs = false;
 
 				for (size_t j=0; j<N; j++)		//For each cell in the gas_map
 				{
@@ -813,12 +813,12 @@ void  CRandomFieldGridMap2D::TInsertionOptionsCommon::internal_dumpToTextStream_
 	out.printf("GMRF_lambdaObs	                        = %f\n", GMRF_lambdaObs);
 	out.printf("GMRF_lambdaObsLoss                      = %f\n", GMRF_lambdaObs);
 
-	out.printf("GMRF_use_occupancy_information			= %b\n", GMRF_use_occupancy_information);
+	out.printf("GMRF_use_occupancy_information			= %s\n", GMRF_use_occupancy_information ? "YES":"NO" );
 	out.printf("GMRF_simplemap_file						= %s\n", GMRF_simplemap_file.c_str());
 	out.printf("GMRF_gridmap_image_file					= %s\n", GMRF_gridmap_image_file.c_str());
 	out.printf("GMRF_gridmap_image_res					= %f\n", GMRF_gridmap_image_res);
-	out.printf("GMRF_gridmap_image_cx					= %u\n", GMRF_gridmap_image_cx);
-	out.printf("GMRF_gridmap_image_cy					= %u\n", GMRF_gridmap_image_cy);
+	out.printf("GMRF_gridmap_image_cx					= %u\n", static_cast<unsigned int>(GMRF_gridmap_image_cx));
+	out.printf("GMRF_gridmap_image_cy					= %u\n", static_cast<unsigned int>(GMRF_gridmap_image_cy));
 
 	out.printf("GMRF_constraintsSize                    = %u\n", (unsigned)GMRF_constraintsSize);
 	out.printf("GMRF_constraintsSigma	                = %f\n", GMRF_constraintsSigma);
@@ -1618,6 +1618,10 @@ void  CRandomFieldGridMap2D::getAs3DObject( mrpt::opengl::CSetOfObjectsPtr	&mean
 	// Draw the surfaces:
 	switch(m_mapType)
 	{
+	case mrGMRF_L:
+		THROW_EXCEPTION("Rendering not implemented for map type:'mrGMRF_L'")
+		break;
+
 	case mrKalmanFilter:
 	case mrKalmanApproximate:
 	case mrGMRF_G:
