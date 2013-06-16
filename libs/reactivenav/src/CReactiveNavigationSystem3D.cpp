@@ -59,18 +59,18 @@ CReactiveNavigationSystem3D::CReactiveNavigationSystem3D(
 	last_cmd_v                   (0),
 	last_cmd_w                   (0),
 	navigationEndEventSent       (false),
-	holonomicMethod              (NULL),
+	holonomicMethod              (0),
 	logFile                      (NULL),
 	m_enableConsoleOutput        (enableConsoleOutput),
 	m_init_done                  (false),
 	nIteration                   (0),
 	meanExecutionPeriod          (0.1f),
 	m_timelogger                 (false), // default: disabled
+	m_collisionGridsMustBeUpdated(true),
 	meanExecutionTime            (0.1f),
 	meanTotalExecutionTime       (0.1f),
 	m_decimateHeadingEstimate    (0),
-	m_closing_navigator          (false),
-	m_collisionGridsMustBeUpdated(true)
+	m_closing_navigator          (false)
 {
 	WS_Obstacles_unsorted = CSimplePointsMap::Create();
 	enableLogFile( enableLogToFile );
@@ -168,7 +168,7 @@ void CReactiveNavigationSystem3D::loadConfigFile(const mrpt::utils::CConfigFileB
 	// Load PTGs from file:
 	// ---------------------------------------------
 
-	unsigned int num_ptgs, levels = m_robotShape.heights.size(), num_alfas;
+	unsigned int num_ptgs, num_alfas; // levels = m_robotShape.heights.size()
 	vector <CPolygon> shape;
 	vector <double> x,y;
 	TParameters<double> params;
@@ -365,7 +365,7 @@ void  CReactiveNavigationSystem3D::performNavigationStep()
 	HLFRs.resize(m_ptgmultilevel.size());
 	newLogRec.infoPerPTG.resize(m_ptgmultilevel.size());
 
-	float cur_approx_heading_dir = 0;
+	//float cur_approx_heading_dir = 0;
 
 	// Already closing??
 	if (m_closing_navigator) return;
@@ -628,7 +628,7 @@ void  CReactiveNavigationSystem3D::performNavigationStep()
 		newLogRec.estimatedExecutionPeriod	= meanExecutionPeriod;
 		newLogRec.timestamp					= tim_start_iteration;
 		newLogRec.nPTGs						= m_ptgmultilevel.size();
-		newLogRec.navigatorBehavior			= holonomicMethodSel; 
+		newLogRec.navigatorBehavior			= holonomicMethodSel;
 
 
 		//Polygons of each height level are drawn (but they are all shown connected...)
@@ -661,13 +661,12 @@ void  CReactiveNavigationSystem3D::performNavigationStep()
 		}
 
 
-		size_t sizeobs;
 		// For each PTG:
 		if (!skipNormalReactiveNavigation)
 		{
 			for (size_t i = 0; i< m_ptgmultilevel.size(); i++)
 			{
-				sizeobs = m_ptgmultilevel[i].TPObstacles.size();
+				//sizeobs = m_ptgmultilevel[i].TPObstacles.size();
 				metaprogramming::copy_container_typecasting(m_ptgmultilevel[i].TPObstacles, newLogRec.infoPerPTG[i].TP_Obstacles);
 				newLogRec.infoPerPTG[i].PTG_desc					= m_ptgmultilevel[i].PTGs[0]->getDescription();
 				newLogRec.infoPerPTG[i].TP_Target					= m_ptgmultilevel[i].TP_Target;
@@ -853,7 +852,7 @@ void CReactiveNavigationSystem3D::STEP3_WSpaceToTPSpace(
 
 			Ki = m_ptgmultilevel[a].PTGs[0]->getAlfaValuesCount();
 
-			if ( m_ptgmultilevel[a].TPObstacles.size() != Ki )
+			if ( static_cast<size_t>(m_ptgmultilevel[a].TPObstacles.size()) != Ki )
 				m_ptgmultilevel[a].TPObstacles.resize(Ki);
 
 
@@ -1155,8 +1154,6 @@ void CReactiveNavigationSystem3D::STEP7_GenerateSpeedCommands( THolonomicMovemen
 		last_cmd_v = new_cmd_v;
 		last_cmd_w = new_cmd_w;
 
-		const float r = 0.1;
-
 		if (in_movement.speed == 0)
 		{
 			// The robot will stop:
@@ -1244,21 +1241,10 @@ CReactiveNavigationSystem3D::~CReactiveNavigationSystem3D()
 		mrpt::utils::delete_safe(holonomicMethod[i]);
 }
 
-
-
-
-/*************************************************************************
-					Evaluate navigation (not used)
-*************************************************************************/
-float  CReactiveNavigationSystem3D::evaluate( TNavigationParams *params )
-{
-	return 0.5f;
-}
-
 /*************************************************************************
 							Start navigation
 *************************************************************************/
-void  CReactiveNavigationSystem3D::navigate(CReactiveNavigationSystem3D::TNavigationParams *params )
+void  CReactiveNavigationSystem3D::navigate(const CReactiveNavigationSystem3D::TNavigationParams *params )
 {
 	navigationEndEventSent = false;
 
@@ -1294,14 +1280,6 @@ void  CReactiveNavigationSystem3D::navigate(CReactiveNavigationSystem3D::TNaviga
 }
 
 /*************************************************************************
-				Change params. of current navigation
-*************************************************************************/
-void  CReactiveNavigationSystem3D::setParams( CReactiveNavigationSystem::TNavigationParams  *params )
-{
-
-}
-
-/*************************************************************************
                 Stop the robot and show an error message
 *************************************************************************/
 void CReactiveNavigationSystem3D::doEmergencyStop( const char *msg )
@@ -1315,5 +1293,3 @@ void CReactiveNavigationSystem3D::doEmergencyStop( const char *msg )
 	m_navigationState = NAV_ERROR;
 	return;
 }
-
-

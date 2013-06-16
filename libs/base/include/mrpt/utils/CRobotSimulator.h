@@ -146,7 +146,7 @@ namespace utils
 
 			/** Reset actual robot pose (inmediately, without simulating the movement along time)
 			  */
-			void  setRealPose(mrpt::poses::CPose2D &p ) { this->m_pose = p; }
+			void  setRealPose(const mrpt::poses::CPose2D &p ) { this->m_pose = p; }
 
 			/** Read the instantaneous, error-free status of the simulated robot
 			  */

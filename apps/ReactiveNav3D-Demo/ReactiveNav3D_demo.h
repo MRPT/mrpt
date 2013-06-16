@@ -89,7 +89,7 @@ public:
 	void CorrectFloorPoints(CPose3D kinectrelpose)
 	{
 		TSegment3D ray;
-		TPoint3D p1,p2,pint;
+		TPoint3D p1,p2,pint(0,0,0);
 		TObject3D pintobj;
 		TPlane ground(0,0,1,0);
 		vector <float> x, y, z;
@@ -109,6 +109,7 @@ public:
 				p1.z = z[i];
 				ray.point1 = p1;
 				intersect(ray,ground,pintobj);
+				ASSERT_(pintobj.isPoint())
 				pintobj.getPoint(pint);
 				x[i] = pint.x;
 				y[i] = pint.y;
@@ -122,7 +123,7 @@ public:
 	void CorrectCeiling(CPose3D kinectrelpose, float height)
 	{
 		TSegment3D ray;
-		TPoint3D p1,p2,pint;
+		TPoint3D p1,p2,pint(0,0,0);
 		TObject3D pintobj;
 		TPlane ceiling(0,0,1,-height);
 		vector <float> x, y, z;
@@ -143,6 +144,7 @@ public:
 				p1.z = z[i];
 				ray.point1 = p1;
 				intersect(ray,ceiling,pintobj);
+				ASSERT_(pintobj.isPoint())
 				pintobj.getPoint(pint);
 				x[i] = pint.x;
 				y[i] = pint.y;
@@ -178,7 +180,7 @@ public:
 
 	void KinectScan(vector <COccupancyGridMap2D> m_maps, vector <float> heights, CPose3D robotpose, CPose3D kinectrelpose)
 	{
-	unsigned int acc_factor = max(1,mrpt::math::round(80.0/m_columns));
+	unsigned int acc_factor = max(1.0,mrpt::math::round(80.0/m_columns));
 	float h = 0, incrz;
 	CObservation2DRangeScan m_auxlaser;
 	CPose2D scanpose2d;
@@ -198,7 +200,7 @@ public:
 	for (unsigned int k=0;k<m_maps.size();k++)
 	{
 		//acc_factor is used to get a higher resolution
-		m_maps[k].laserScanSimulator( m_auxlaser, scanpose2d, 0.5f, acc_factor*m_columns, m_std_error, 1, 0);  
+		m_maps[k].laserScanSimulator( m_auxlaser, scanpose2d, 0.5f, acc_factor*m_columns, m_std_error, 1, 0);
 		row_points.insertObservation(&m_auxlaser);
 
 		for (unsigned int i=0;i<m_rows;i++)
@@ -210,7 +212,7 @@ public:
 					row_points.getPoint(acc_factor*j,point.x,point.y,point.z);
 					incrz = kinectrelpose.distance3DTo(point.x,point.y,point.z)*tan((float(i)/(m_rows-1)-0.5)*m_fov_v+m_pitch_angle)*cos((float(j)/(m_columns-1)-0.5)*m_fov_h);
 					point.z = point.z + incrz;
-					
+
 					//Points which belong to their height level are inserted. Otherwise they are deleted.
 					if (m_maps.size() == 1)
 					{
@@ -268,28 +270,28 @@ public:
 		//First, move the robot respect to the grid and adjust the likelihood values in the grid according to that movement
 		//-----------------------------------------------------------------------------------------------------------------
 
-		if (( abs(robot_ingrid.x + incrx) < obsgrids[0].getResolution())&&( abs(robot_ingrid.y + incry) < obsgrids[0].getResolution())) 
+		if (( abs(robot_ingrid.x + incrx) < obsgrids[0].getResolution())&&( abs(robot_ingrid.y + incry) < obsgrids[0].getResolution()))
 		// The grid doesn't have to be diplaced
 		{
 			robot_ingrid.x = robot_ingrid.x + incrx;
 			robot_ingrid.y = robot_ingrid.y + incry;
 		}
-		else if (sqrt(square(incrx) + square(incry)) > 2.6*obsgrids[0].getXMax()) 
+		else if (sqrt(square(incrx) + square(incry)) > 2.6*obsgrids[0].getXMax())
 		// The displacement is too big so the grid is reset
 		{
 			for (unsigned int i=0; i < obsgrids.size(); i++)
 			{
 				obsgrids[i].setSize(obsgrids[0].getXMin(), obsgrids[0].getXMax(), obsgrids[0].getYMin(), obsgrids[0].getXMax(), obsgrids[0].getResolution(), 0.5);
-			}		
+			}
 		}
 		else
 		// The grid is displaced according to the robot movement
 		{
-			int despx = obsgrids[0].x2idx(robot_ingrid.x + incrx) - obsgrids[0].x2idx(robot_ingrid.x); 
+			int despx = obsgrids[0].x2idx(robot_ingrid.x + incrx) - obsgrids[0].x2idx(robot_ingrid.x);
 			int despy = obsgrids[0].y2idx(robot_ingrid.y + incry) - obsgrids[0].y2idx(robot_ingrid.y);
-			int despxpos = abs(despx);
-			int despypos = abs(despy);
-			float despxmeters = despx*obsgrids[0].getResolution(); 
+			//int despxpos = abs(despx);
+			//int despypos = abs(despy);
+			float despxmeters = despx*obsgrids[0].getResolution();
 			float despymeters = despy*obsgrids[0].getResolution();
 
 			float xcel, ycel;
@@ -299,7 +301,7 @@ public:
 			for (unsigned int n=0; n < obsgrids.size(); n++)
 			{
 				cells_newval.clear();
-			
+
 				//Cell values are stored
 				for (unsigned int i = 0; i < obsgrids[n].getSizeX(); i++)
 				{
@@ -327,7 +329,7 @@ public:
 				}
 			}
 
-			robot_ingrid.x = sign<float>(robot_ingrid.x + incrx)*remainder(abs(robot_ingrid.x + incrx),obsgrids[0].getResolution()); 
+			robot_ingrid.x = sign<float>(robot_ingrid.x + incrx)*remainder(abs(robot_ingrid.x + incrx),obsgrids[0].getResolution());
 			robot_ingrid.y = sign<float>(robot_ingrid.y + incry)*remainder(abs(robot_ingrid.y + incry),obsgrids[0].getResolution());
 		}
 
@@ -337,7 +339,7 @@ public:
 
 		float angrot = -phi;
 		float aux_xpass;
-		float incr_grid_reactive = 0.2/obsgrids[0].getResolution();  //This number marks distance in meters (but it's transformed into an index) 
+		float incr_grid_reactive = 0.2/obsgrids[0].getResolution();  //This number marks distance in meters (but it's transformed into an index)
 		TPoint3D paux;
 		unsigned int index;
 		unsigned int lim_visionxn = obsgrids[0].x2idx(-vision_limit + robot_ingrid.x);
@@ -350,12 +352,12 @@ public:
 		float level_height = 0.0;
 		vector <bool> obs_in;
 		obs_in.resize(square(num_col),0);
-		grid_points.clear();	
+		grid_points.clear();
 
 		for (unsigned int n=0; n < obsgrids.size(); n++)
 		{
 			obs_in.assign(square(num_col),0);
-		
+
 			//Vector obs_in is filled with 0 or 1 depending on the presence of any obstacle at each cell (of the grid)
 			for (unsigned int i=0; i<kinects[0].m_points.size(); i++)
 			{
@@ -385,7 +387,7 @@ public:
 						obsgrids[n].updateCell(i,j,likelihood_incr);
 					else if (((i < lim_visionxn)||(i > lim_visionxp))||((j < lim_visionyn)||(j > lim_visionyp)))
 					{
-						//The angle between the advance direction of the robot and the cell is calculated				
+						//The angle between the advance direction of the robot and the cell is calculated
 						angle_cell = atan2(obsgrids[n].idx2y(j)-robot_ingrid.y, obsgrids[n].idx2x(i)-robot_ingrid.x);
 						dif_angle = abs(angle_cell - phi);
 						if (dif_angle > M_PI)
@@ -393,7 +395,7 @@ public:
 						if (abs(dif_angle) < rango)
 							obsgrids[n].updateCell(i,j,likelihood_decr);
 					}
-		
+
 					//Transform the cell with high occupancy likelihood into 3D points
 					if (((i >= lim_visionxn-incr_grid_reactive)&&(i <= lim_visionxp+incr_grid_reactive))&&((j >= lim_visionyn-incr_grid_reactive)&&(j <= lim_visionyp+incr_grid_reactive)))
 					{
@@ -410,7 +412,7 @@ public:
 				}
 			}
 			level_height += heights[n];
-		}	
+		}
 	}
 
 };
@@ -433,7 +435,7 @@ public:
 	COpenGLScenePtr					scene;
 
 
-	
+
 	bool getCurrentPoseAndSpeeds( poses::CPose2D &curPose, float &curV, float &curW)
 	{
 		robotSim.getRealPose( curPose );
@@ -467,7 +469,7 @@ public:
 
 			obstacles.insertObservation(&lasers[i].m_scan);
 		}
-		
+
 		//Depth scans
 		for (unsigned int i=0; i<kinects.size();i++)
 		{
@@ -487,7 +489,7 @@ public:
 			stm.updateObsGrids(incrx, incry, float(new_pose.phi()), kinects, robotShape.heights);
 			obstacles.insertAnotherMap(&stm.grid_points, CPose3D(0,0,0,0,0,0));
 		}
-		
+
 		return true;
 	}
 
@@ -496,10 +498,10 @@ public:
 	{
 		COccupancyGridMap2D grid;
 		CImage myImg;
-		int family = ini.read_int("MAP_CONFIG","FAMILY", 1, true);
+		//int family = ini.read_int("MAP_CONFIG","FAMILY", 1, true);
 		float resolution = ini.read_float("MAP_CONFIG","MAP_RESOLUTION", 0.02, true);
-		int num_maps = ini.read_int("MAP_CONFIG","NUM_MAPS", 1, true);
-		
+		//int num_maps = ini.read_int("MAP_CONFIG","NUM_MAPS", 1, true);
+
 		//Maps are loaded here. Different maps can be loaded changing these lines
 		//and including them above (#define...)
 		myImg.loadFromXPM(map2_1_xpm);
@@ -615,7 +617,7 @@ public:
 
 
 		//The display window is created
-		mrpt::global_settings::OCTREE_RENDER_MAX_POINTS_PER_NODE = 10000; 
+		mrpt::global_settings::OCTREE_RENDER_MAX_POINTS_PER_NODE = 10000;
 		window.setWindowTitle("Reactive Navigation. Robot motion simulation");
 		window.resize(1800,980);
 		window.setPos(50,0);
@@ -752,7 +754,7 @@ public:
 		legend.append(format("\n        %.02fFPS", window.getRenderingFPS()));
 
 		window.addTextMessage(5,180, legend,utils::TColorf(1,1,1),"Arial",13);
-		window.repaint();	
+		window.repaint();
 	}
 
 	void updateScene()
@@ -766,7 +768,7 @@ public:
 
 		//The robot pose is updated
 		{
-			float h;
+			float h=0;
 			for (unsigned int i=0; i<robotShape.heights.size();i++)
 			{
 				obj = scene->getByName(format("Level%d",i+1));
@@ -853,7 +855,7 @@ public:
 		}
 		return navparams;
 	}
-	
+
 };
 
 

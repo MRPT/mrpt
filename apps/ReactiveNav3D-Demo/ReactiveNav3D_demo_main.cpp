@@ -37,7 +37,7 @@
 #include "ReactiveNav3D_demo.h"
 
 
-const char *default_cfg_txt = 
+const char *default_cfg_txt =
 	"; ---------------------------------------------------------------\n"
 	"; FILE: Reactive Parameters.txt\n"
 	";\n"
@@ -149,7 +149,7 @@ const char *default_cfg_txt =
 	"weights = 0.5 0.05 0.5 2.0 0.5 0.3 \n\n"
 
 	"; 1: Free space \n"
-	"; 2: Dist. in sectors \n"			
+	"; 2: Dist. in sectors \n"
 	"; 3: Heading toward target \n"
 	"; 4: Closer to target (euclidean) \n"
 	"; 5: Hysteresis \n"
@@ -167,10 +167,10 @@ const char *default_cfg_txt =
 	"ROBOTMODEL_TAU = 0.2		; The 'TAU' time constant of a first order robot model (s) \n"
 	"MAX_DISTANCE_PTG = 2		; Marks the maximum distance regarded by the reactive navigator (m) \n"
 	"GRID_RESOLUTION = 0.02 	; Resolutions used to build the collision_grid \n\n\n"
-		
-		
 
-	";	PTGs	.All of them has the same fields to fill, but they don't use all of them. \n" 
+
+
+	";	PTGs	.All of them has the same fields to fill, but they don't use all of them. \n"
 	";----------------------------------------------------------------------------------- \n"
 	";	Types:	1 - Circular arcs \n"
 	";			2 - alpha - A, Trajectories with asymptotical heading \n"
@@ -219,7 +219,7 @@ const char *default_cfg_txt =
 	"; 3: Closer to target (euclidean) \n"
 	"; 4: Hysteresis \n"
 
-	"WIDE_GAP_SIZE_PERCENT = 0.25			; The robot travels nearer to obstacles if this parameter is small. \n" 
+	"WIDE_GAP_SIZE_PERCENT = 0.25			; The robot travels nearer to obstacles if this parameter is small. \n"
 	"										; The smaller it is, the closer the selected direction is respect to \n"
 	"										; the Target direction in TP-Space (under some conditions) \n"
 	"MAX_SECTOR_DIST_FOR_D2_PERCENT = 0.25	; \n"
@@ -250,7 +250,7 @@ const char *default_cfg_txt =
 	"Vision_limit = 0.5			; Min. Limit of vision of the RGBD sensor \n"
 	"Pos_likelihood_incr = 0.8	; Range: 0.51 - 1 \n"
 	"Neg_likelihood_incr = 0.4	; Range: 0 - 0.49 \n"
-	"Occupancy_threshold = 0.8	; Threshold used to include or not a virtual obstacle \n"; 
+	"Occupancy_threshold = 0.8	; Threshold used to include or not a virtual obstacle \n";
 
 
 
@@ -281,7 +281,7 @@ int main(int num_arg, char *argv[])
 			printf(" --save-logfile: Enable saving a log file with navigation data \n\n");
 			system::os::getch();
 			return 1;
-		}	
+		}
 		else if ( string(argv[1]) == "--create-config")
 		{
 			filename = argv[2];
@@ -295,7 +295,7 @@ int main(int num_arg, char *argv[])
 		}
 		else
 		{
-			for (unsigned int i=1; i<num_arg; i++)
+			for (int i=1; i<num_arg; i++)
 			{
 				if ( string(argv[i]) == "--save-logfile")
 					enable_logfile = 1;
@@ -323,7 +323,7 @@ int main(int num_arg, char *argv[])
 			ReactInterface.loadConfiguration( configNavigation );
 		}
 		else
-		{		
+		{
 			CConfigFile configNavigation(filename);
 			rn3d.loadConfigFile( configNavigation );
 			ReactInterface.loadMaps( configNavigation );
@@ -333,11 +333,11 @@ int main(int num_arg, char *argv[])
 		ReactInterface.initializeScene();
 		rn3d.initialize();
 
-		
+
 		bool stop = 0;
 		bool moving_target = 0;
 		int pushed_key = 0;
-		TPoint3D last_Target_Pos;
+		TPoint3D last_Target_Pos(0,0,0);
 		CTicTac	reactive_period;
 		reactive_period.Tic();
 
@@ -384,7 +384,8 @@ int main(int num_arg, char *argv[])
 				if (moving_target == 1)
 				{
 					moving_target = 0;
-					rn3d.navigate(&ReactInterface.createNewTarget(last_Target_Pos.x, last_Target_Pos.y, 0.3, 0));
+					const CAbstractReactiveNavigationSystem::TNavigationParams  nav_params = ReactInterface.createNewTarget(last_Target_Pos.x, last_Target_Pos.y, 0.3, 0);
+					rn3d.navigate(&nav_params);
 				}
 			}
 

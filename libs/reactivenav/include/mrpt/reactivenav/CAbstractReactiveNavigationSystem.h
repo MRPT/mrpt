@@ -153,22 +153,14 @@ namespace mrpt
 		 */
 		void resume();
 
-		/** Evaluates the practicability of a navigation for given parameters:
-		 * \returns An estimation in the range [0,1], for 0 being imposible and 1 being easy.
-		 */
-		virtual float  evaluate( TNavigationParams *params )=0;
-
 		/** This method must be called periodically in order to effectively run the navigation.
 		 */
 		void navigationStep();
 
 		/** Navigation request. It starts a new navigation.
+		  * \param[in] params Pointer to structure with navigation info (its contents will be copied, so the original can be freely destroyed upon return.)
 		 */
-		virtual void  navigate( TNavigationParams *params )=0;
-
-		/** Changes the parameters for current navigation
-		 */
-		virtual void  setParams( TNavigationParams *params)=0;
+		virtual void  navigate( const TNavigationParams *params )=0;
 
 		/** Suspend current navegation
 		 * \sa resume

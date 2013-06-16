@@ -1214,20 +1214,10 @@ CReactiveNavigationSystem::~CReactiveNavigationSystem()
 }
 
 
-
-
-/*************************************************************************
-			 Evaluate navigation (not used)
-*************************************************************************/
-float  CReactiveNavigationSystem::evaluate( TNavigationParams *params )
-{
-	return 0.5f;
-}
-
 /*************************************************************************
 			 Start navigation
 *************************************************************************/
-void  CReactiveNavigationSystem::navigate(CReactiveNavigationSystem::TNavigationParams *params )
+void  CReactiveNavigationSystem::navigate(const CReactiveNavigationSystem::TNavigationParams *params )
 {
 	navigationEndEventSent = false;
 
@@ -1260,14 +1250,6 @@ void  CReactiveNavigationSystem::navigate(CReactiveNavigationSystem::TNavigation
 	// Reset the bad navigation alarm:
 	badNavAlarm_minDistTarget = 1e10f;
 	badNavAlarm_lastMinDistTime = system::getCurrentTime();
-}
-
-/*************************************************************************
-				Cambiar params. de la navegacion actual
-*************************************************************************/
-void  CReactiveNavigationSystem::setParams( CReactiveNavigationSystem::TNavigationParams  *params )
-{
-
 }
 
 /*************************************************************************

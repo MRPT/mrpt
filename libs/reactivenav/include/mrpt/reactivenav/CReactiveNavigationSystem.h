@@ -114,17 +114,10 @@ namespace mrpt
 			  */
 			void initialize();
 
-			/** Evaluate navigation hardness:
-			  */
-			float  evaluate( TNavigationParams *params );
-
 			/** Start navigation:
+			  * \param[in] params Pointer to structure with navigation info (its contents will be copied, so the original can be freely destroyed upon return.)
 			  */
-			void  navigate( TNavigationParams *params );
-
-			/** Change current navigation params:
-			  */
-			void  setParams( TNavigationParams *params );
+			void  navigate( const TNavigationParams *params );
 
 			/** Selects which one from the set of available holonomic methods will be used
 			  *  into transformed TP-Space, and sets its configuration from a configuration file.

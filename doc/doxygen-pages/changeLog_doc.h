@@ -52,6 +52,9 @@
 			- New method: CImage::loadFromXPM() - <a href="http://code.google.com/p/mrpt/source/detail?r=3397" >r3397</a>
 		- [mrpt-reactivenav]
 			- mrpt::reactivenav::CParameterizedTrajectoryGenerator: The "low pass filter" has been removed since it wasn't practical and was never used; thus, parameters "TAU" and "DELAY" has been removed. - <a href="http://code.google.com/p/mrpt/source/detail?r=3395" >r3395</a>
+			- Methods removed since they weren't implemented in any derived class and there are no plans for doing it.
+				- mrpt::reactivenav::CReactiveNavigationSystem ::evaluate()
+				- mrpt::reactivenav::CReactiveNavigationSystem ::setParams()
     - BUG FIXES:
         - CTimeLogger::registerUserMeasure() ignored the enable/disable state of the logger - <a href="http://code.google.com/p/mrpt/source/detail?r=3382" >r3382</a>
 
