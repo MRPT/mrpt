@@ -180,7 +180,7 @@ public:
 
 	void KinectScan(vector <COccupancyGridMap2D> m_maps, vector <float> heights, CPose3D robotpose, CPose3D kinectrelpose)
 	{
-	unsigned int acc_factor = max(1,mrpt::math::round(80.0/m_columns));
+	unsigned int acc_factor = max(1,mrpt::math::round<double>(80.0/m_columns));
 	float h = 0, incrz;
 	CObservation2DRangeScan m_auxlaser;
 	CPose2D scanpose2d;
