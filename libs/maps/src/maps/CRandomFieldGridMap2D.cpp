@@ -428,6 +428,8 @@ void  CRandomFieldGridMap2D::internal_clear()
 				printf("Occupancy Gridmap dimensions: %u cells, cx=%i cy=%i\n\n", static_cast<unsigned int>(m_Ocgridmap.getSizeX()*m_Ocgridmap.getSizeY()), m_Ocgridmap.getSizeX(), m_Ocgridmap.getSizeY());
 				printf("New map dimensions: %u cells, x=(%.2f,%.2f) y=(%.2f,%.2f)\n", static_cast<unsigned int>(m_map.size()), getXMin(),getXMax(),getYMin(),getYMax());
 				printf("New map dimensions: %u cells, cx=%u cy=%u\n", static_cast<unsigned int>(m_map.size()), static_cast<unsigned int>(getSizeX()), static_cast<unsigned int>(getSizeY()));
+
+				m_Ocgridmap.saveAsBitmapFile("./obstacle_map_from_MRPT.png");
 			}
 
 			//m_map number of cells
@@ -456,6 +458,10 @@ void  CRandomFieldGridMap2D::internal_clear()
 			if (this->m_insertOptions_common->GMRF_use_occupancy_information)
 			{
 				printf("LOADING PRIOR BASED ON OCCUPANCY GRIDMAP \n");
+				printf("Gas Map Dimmensions: %i x %i cells \n", m_size_x, m_size_y);
+				printf("Occupancy map Dimmensions: %i x %i cells \n", m_Ocgridmap.getSizeX(), m_Ocgridmap.getSizeY());
+				printf("Res_Coeff = %f pixels/celda",res_coef);
+
 				//Use region growing algorithm to determine the gascell interconnections (Factors)
 				size_t cx = 0;
 				size_t cy = 0;
@@ -2523,16 +2529,13 @@ void CRandomFieldGridMap2D::insertObservation_GMRF(
 		TRandomFieldCell	*cell = cellByPos( point.x, point.y );
 		ASSERT_(cell!=NULL);
 
-		if (true)
-		{
-			// Insert observation in the vector of Active Observations
-			TobservationGMRF new_obs;
-			new_obs.obsValue = normReading;
-			new_obs.Lambda = m_insertOptions_common->GMRF_lambdaObs;
-			new_obs.time_invariant = false;		//Default behaviour, the obs will lose weight with time.
-			activeObs[cellIdx].push_back(new_obs);
-		}
-
+		// Insert observation in the vector of Active Observations
+		TobservationGMRF new_obs;
+		new_obs.obsValue = normReading;
+		new_obs.Lambda = m_insertOptions_common->GMRF_lambdaObs;
+		new_obs.time_invariant = false;		//Default behaviour, the obs will lose weight with time.
+		activeObs[cellIdx].push_back(new_obs);
+	
 
 	}catch(std::exception e){
 		cout << "Exception while Inserting new Observation: "  << e.what() << endl;
@@ -2563,7 +2566,6 @@ void CRandomFieldGridMap2D::updateMapEstimation_GMRF()
 	//------------------
 	//  1- HESSIAN
 	//------------------
-	cout << "Hessian" << endl;
 	//Build Sparse Hessian H, from list of triplets (Hprior):
 	ASSERT_(!H_prior.empty())
 	std::vector<Eigen::Triplet<double> > H_tri(H_prior.size());
@@ -2598,8 +2600,7 @@ void CRandomFieldGridMap2D::updateMapEstimation_GMRF()
 
 	//------------------
 	//  2- GRADIENT
-	//------------------
-	cout << "gradient" << endl;
+	//------------------	
 	//Reset and Built Gradient Vector
 	g.setZero();
 	size_t cx = 0;
@@ -2712,14 +2713,12 @@ void CRandomFieldGridMap2D::updateMapEstimation_GMRF()
 	timelogger.leave("GMRF.solve");
 	timelogger.enter("GMRF.variance");
 #endif
-
-	cout << "variance" << endl;
+		
 	// VARIANCE SIGMA = inv(P) * inv( P*H*inv(P) ) * P
 	//Get triangular supperior P*H*inv(P) = UT' * UT = P * R'*R * inv(P)
 
 	Eigen::SparseMatrix<double> UT = solver.matrixU();
 
-	cout << "variance - Custom Equations" << endl;
 	Eigen::SparseMatrix<double> Sigma(N,N);								//Variance Matrix
 	Sigma.reserve(UT.nonZeros());
 
@@ -2768,7 +2767,6 @@ void CRandomFieldGridMap2D::updateMapEstimation_GMRF()
 	timelogger.enter("GMRF.copy_to_map");
 #endif
 
-	cout << "Updating Mean & Variance" << endl;
 	// Update Mean-Variance and force (0 < m_map[i].mean < 1)
 	for (size_t j=0; j<N; j++)
 	{
@@ -2782,7 +2780,6 @@ void CRandomFieldGridMap2D::updateMapEstimation_GMRF()
 		if (m_map[j].gmrf_mean <0) m_map[j].gmrf_mean = 0.0;
 	}
 
-	cout << "Increasing uncertainty of Obs." << endl;
 	// Update Information/Strength of Active Observations
 	//---------------------------------------------------------
 	for (size_t j=0; j<activeObs.size(); j++)
@@ -2806,7 +2803,6 @@ void CRandomFieldGridMap2D::updateMapEstimation_GMRF()
 	timelogger.leave("GMRF.copy_to_map");
 #endif
 
-	cout << "end of updating" << endl;
 	/* //Save Hessian matrix to text file
 	Eigen::MatrixXd H = Hsparse.toDense();
 	H.saveToTextFile("_Hessian_Matrix_GMRF.txt");

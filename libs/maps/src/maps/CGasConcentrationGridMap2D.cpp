@@ -199,7 +199,7 @@ bool  CGasConcentrationGridMap2D::internal_insertObservation(
 					}
 				}
 			}
-			else if (o->sensorLabel.compare("GDM")==0 || o->sensorLabel.compare("RAE_PID")==0 || o->sensorLabel.compare("ENOSE_SIMUL")==0)
+			else //"GDM, RAE_PID, ENOSE_SIMUL
 			{
 				const CObservationGasSensors::TObservationENose *it = &o->m_readings[0];
 				// Compute the 3D sensor pose in world coordinates:
@@ -685,7 +685,7 @@ bool CGasConcentrationGridMap2D::simulateAdvection( const double &STD_increase_v
 	  to "be displaced" to other cells by the wind effect.
 	------------------------------------------------------*/
 	mrpt::utils::CTicTac tictac;
-	size_t i,c=0;
+	size_t i=0,c=0;
 	int cell_i_cx,cell_i_cy;	
 	float mu_phi, mu_r, mu_modwind;
 	const size_t N = m_map.size();
