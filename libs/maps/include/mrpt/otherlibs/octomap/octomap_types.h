@@ -45,9 +45,9 @@
 
 #include <mrpt/utils/mrpt_stdint.h>    // compiler-independent version of "stdint.h"
 
-#include <octomap/math/Vector3.h>
-#include <octomap/math/Pose6D.h>
-#include <octomap/octomap_deprecated.h>
+#include <mrpt/otherlibs/octomap/math/Vector3.h>
+#include <mrpt/otherlibs/octomap/math/Pose6D.h>
+#include <mrpt/otherlibs/octomap/octomap_deprecated.h>
 
 namespace octomap {
 

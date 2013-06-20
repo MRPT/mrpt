@@ -41,6 +41,7 @@
 #define OCTOMATH_QUATERNION_H
 
 #include "Vector3.h"
+#include <mrpt/maps/link_pragmas.h>  // For DLL export within mrpt-maps via the MAPS_IMPEXP macro
 
 #include <iostream>
 #include <vector>
@@ -59,7 +60,7 @@ namespace octomath {
    * Rotation Vectors. Stanford University. 2006. - Technical Report.
    */
 
-  class Quaternion {
+  class MAPS_IMPEXP Quaternion {
 
   public:
 
@@ -202,7 +203,7 @@ namespace octomath {
   };
 
   //! user friendly output in format (u x y z)
-  std::ostream& operator<<(std::ostream& s, const Quaternion& q);
+  std::ostream MAPS_IMPEXP & operator<<(std::ostream& s, const Quaternion& q);
 
 }
 

@@ -40,8 +40,8 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <octomap/OcTreeNode.h>
-#include <octomap/OccupancyOcTreeBase.h>
+#include <mrpt/otherlibs/octomap/OcTreeNode.h>
+#include <mrpt/otherlibs/octomap/OccupancyOcTreeBase.h>
 #include <ctime>
 
 namespace octomap {

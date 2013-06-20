@@ -82,7 +82,7 @@ namespace octomap {
 
     // the actual iterator implementation is included here
     // as a member from this file
-    #include <octomap/OcTreeIterator.hxx>
+    #include <mrpt/otherlibs/octomap/OcTreeIterator.hxx>
 
     OcTreeBaseImpl(double resolution);
     virtual ~OcTreeBaseImpl();
@@ -544,6 +544,6 @@ namespace octomap {
 
 }
 
-#include <octomap/OcTreeBaseImpl.hxx>
+#include <mrpt/otherlibs/octomap/OcTreeBaseImpl.hxx>
 
 #endif

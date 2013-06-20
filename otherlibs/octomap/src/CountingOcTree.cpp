@@ -38,7 +38,7 @@
  */
 
 #include <cassert>
-#include <octomap/CountingOcTree.h>
+#include <mrpt/otherlibs/octomap/CountingOcTree.h>
 
 namespace octomap {
 

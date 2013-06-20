@@ -12,8 +12,8 @@ LIST(APPEND maps_EXTRA_SRCS_NAME 	"opengl" "opengl")
 #
 LIST(APPEND maps_EXTRA_SRCS			"${MRPT_SOURCE_DIR}/otherlibs/octomap/src/*.cpp" "${MRPT_SOURCE_DIR}/otherlibs/octomap/src/math/*.cpp")
 LIST(APPEND maps_EXTRA_SRCS_NAME 	"octomap" "octomath")
-INCLUDE_DIRECTORIES("${MRPT_SOURCE_DIR}/otherlibs/octomap/include/")
-
+#INCLUDE_DIRECTORIES("${MRPT_SOURCE_DIR}/otherlibs/octomap/include/") 
+# Headers are publicly exposed in <mrpt/otherlibs/octomap/*.h>
 
 #---------------------------------------------
 # Macro declared in "DeclareMRPTLib.cmake":

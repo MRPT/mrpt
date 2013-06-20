@@ -44,6 +44,7 @@
 #include <stdio.h>
 #include "OcTreeBase.h"
 #include "OcTreeDataNode.h"
+#include <mrpt/maps/link_pragmas.h>  // For DLL export within mrpt-maps via the MAPS_IMPEXP macro
 
 namespace octomap {
 
@@ -56,7 +57,7 @@ namespace octomap {
    * \note In our mapping system this data structure is used in
    *       CountingOcTree in the sensor model only
    */
-  class CountingOcTreeNode : public OcTreeDataNode<unsigned int> {
+  class /*MAPS_IMPEXP*/ CountingOcTreeNode : public OcTreeDataNode<unsigned int> {
 
   public:
 
@@ -91,7 +92,7 @@ namespace octomap {
    * \note In our mapping system this data structure is used in
    *       the sensor model only. Do not use, e.g., insertScan.
    */
-  class CountingOcTree : public OcTreeBase <CountingOcTreeNode> {
+  class /*MAPS_IMPEXP*/ CountingOcTree : public OcTreeBase <CountingOcTreeNode> {
 
   public:
     /// Default constructor, sets resolution of leafs

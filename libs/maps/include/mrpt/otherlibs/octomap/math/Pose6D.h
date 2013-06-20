@@ -42,6 +42,7 @@
 
 #include "Vector3.h"
 #include "Quaternion.h"
+#include <mrpt/maps/link_pragmas.h>  // For DLL export within mrpt-maps via the MAPS_IMPEXP macro
 
 namespace octomath {
 
@@ -52,7 +53,7 @@ namespace octomath {
    * translation vector representing the position of the object and
    * a Quaternion representing the attitude of the object
    */
-  class Pose6D {
+  class MAPS_IMPEXP Pose6D {
   public:
 
     Pose6D();
@@ -203,7 +204,7 @@ namespace octomath {
   };
 
   //! user friendly output in format (x y z, u x y z) which is (translation, rotation)
-  std::ostream& operator<<(std::ostream& s, const Pose6D& p);
+  std::ostream MAPS_IMPEXP & operator<<(std::ostream& s, const Pose6D& p);
 
 }
 

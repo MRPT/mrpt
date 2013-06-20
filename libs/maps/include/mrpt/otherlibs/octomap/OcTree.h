@@ -43,6 +43,7 @@
 #include "OccupancyOcTreeBase.h"
 #include "OcTreeNode.h"
 #include "ScanGraph.h"
+#include <mrpt/maps/link_pragmas.h>  // For DLL export within mrpt-maps via the MAPS_IMPEXP macro
 
 namespace octomap {
 

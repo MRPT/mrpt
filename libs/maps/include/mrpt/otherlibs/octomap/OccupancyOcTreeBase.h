@@ -477,6 +477,6 @@ namespace octomap {
 
 } // namespace
 
-#include "octomap/OccupancyOcTreeBase.hxx"
+#include "mrpt/otherlibs/octomap/OccupancyOcTreeBase.hxx"
 
 #endif

@@ -41,13 +41,14 @@
  */
 
 #include <iostream>
-#include <octomap/OcTreeNode.h>
-#include <octomap/OccupancyOcTreeBase.h>
+#include <mrpt/otherlibs/octomap/OcTreeNode.h>
+#include <mrpt/otherlibs/octomap/OccupancyOcTreeBase.h>
+#include <mrpt/maps/link_pragmas.h>  // For DLL export within mrpt-maps via the MAPS_IMPEXP macro
 
 namespace octomap {
   
   // node definition
-  class ColorOcTreeNode : public OcTreeNode {    
+  class  /*MAPS_IMPEXP*/ ColorOcTreeNode : public OcTreeNode {    
   public:
     
     class Color {
@@ -118,7 +119,7 @@ namespace octomap {
 
 
   // tree definition
-  class ColorOcTree : public OccupancyOcTreeBase <ColorOcTreeNode> {
+  class /*MAPS_IMPEXP*/ ColorOcTree : public OccupancyOcTreeBase <ColorOcTreeNode> {
 
   public:
     /// Default constructor, sets resolution of leafs
@@ -192,7 +193,7 @@ namespace octomap {
   };
 
   //! user friendly output in format (r g b)
-  std::ostream& operator<<(std::ostream& out, ColorOcTreeNode::Color const& c);
+  std::ostream & operator<<(std::ostream& out, ColorOcTreeNode::Color const& c);
 
 } // end namespace
 

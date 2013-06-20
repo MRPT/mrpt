@@ -32,12 +32,14 @@
    | ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE           |
    | POSSIBILITY OF SUCH DAMAGE.                                               |
    +---------------------------------------------------------------------------+ */
+
 #ifndef MRPT_COctoMap_H
 #define MRPT_COctoMap_H
 
 #include <mrpt/slam/CMetricMap.h>
 #include <mrpt/utils/CLoadableOptions.h>
 #include <mrpt/utils/safe_pointers.h>
+#include <mrpt/otherlibs/octomap/octomap.h>
 
 #include <mrpt/maps/link_pragmas.h>
 
@@ -57,12 +59,14 @@ namespace mrpt
 		 *
 		 * As with any other mrpt::slam::CMetricMap, you can obtain a 3D representation of the map calling getAs3DObject() or getAsOctoMapVoxels()
 		 *
+		 * To use octomap's iterators to go through the voxels, use COctoMap::getOctomap()
+		 *
 		 * The octomap library was presented in:
 		 *  - K. M. Wurm, A. Hornung, M. Bennewitz, C. Stachniss, and W. Burgard,
 		 *     <i>"OctoMap: A Probabilistic, Flexible, and Compact 3D Map Representation for Robotic Systems"</i>
 		 *     in Proc. of the ICRA 2010 Workshop on Best Practice in 3D Perception and Modeling for Mobile Manipulation, 2010. Software available at http://octomap.sf.net/.
 		 *
-		 * \sa CMetricMap
+		 * \sa CMetricMap, the example in "MRPT/samples/octomap_simple"
 	  	 * \ingroup mrpt_maps_grp
 		 */
 		class MAPS_IMPEXP COctoMap : public CMetricMap
@@ -74,11 +78,22 @@ namespace mrpt
 			 COctoMap(const double resolution=0.10);          //!< Default constructor
 			 virtual ~COctoMap(); //!< Destructor
 
-				/** With this struct options are provided to the observation insertion process.
-				* \sa CObservation::insertObservationInto()
-				*/
-				struct MAPS_IMPEXP TInsertionOptions : public utils::CLoadableOptions
-				{
+			 /** Get a reference to the internal octomap object. Example:
+			   * \code
+			   *  mrpt::maps::COctoMap  map;
+			   *  ...
+			   *  octomap::OcTree &om = map.getOctomap();
+			   *
+			   *
+			   * \endcode
+			   */
+			 octomap::OcTree & getOctomap() { return *m_octomap; }
+
+			/** With this struct options are provided to the observation insertion process.
+			* \sa CObservation::insertObservationInto()
+			*/
+			struct MAPS_IMPEXP TInsertionOptions : public utils::CLoadableOptions
+			{
 				/** Initilization of default parameters */
 				TInsertionOptions( COctoMap &parent );
 
@@ -135,17 +150,17 @@ namespace mrpt
 				double probMiss; // sets the probablility for a "miss" (will be converted to logodds) - sensor model (Default=0.4)
 				double clampingThresMin; // sets the minimum threshold for occupancy clamping (sensor model) (Default=0.1192, -2 in log odds)
 				double clampingThresMax; // sets the maximum threshold for occupancy clamping (sensor model) (Default=0.971, 3.5 in log odds)
-				};
+			};
 
 			TInsertionOptions insertionOptions; //!< The options used when inserting observations in the map
 
 			friend struct mrpt::slam::COctoMap::TInsertionOptions;
 
-				/** Options used when evaluating "computeObservationLikelihood"
-				* \sa CObservation::computeObservationLikelihood
-				*/
-				struct MAPS_IMPEXP TLikelihoodOptions: public utils::CLoadableOptions
-				{
+			/** Options used when evaluating "computeObservationLikelihood"
+			* \sa CObservation::computeObservationLikelihood
+			*/
+			struct MAPS_IMPEXP TLikelihoodOptions: public utils::CLoadableOptions
+			{
 				/** Initilization of default parameters
 					*/
 				TLikelihoodOptions( );
@@ -163,9 +178,9 @@ namespace mrpt
 				void readFromStream(CStream &in);			//!< Binary dump to stream
 
 				uint32_t	decimation; //!< Speed up the likelihood computation by considering only one out of N rays (default=1)
-				};
+			};
 
-				TLikelihoodOptions  likelihoodOptions;
+			TLikelihoodOptions  likelihoodOptions;
 
 			/** Returns true if the map is empty/no observation has been inserted.
 				*/
@@ -393,7 +408,7 @@ namespace mrpt
 			void freeOctomap();  //!< Internal use only
 			void allocOctomap(double resolution); //!< Internal use only
 
-			void *m_octomap; //!< The (user-opaque) pointer to the actual octo-map object.
+			octomap::OcTree *m_octomap; //!< The pointer to the actual octo-map object.
 
 		}; // End of class def.
 	} // End of namespace

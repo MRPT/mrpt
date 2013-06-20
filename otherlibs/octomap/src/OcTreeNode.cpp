@@ -43,7 +43,7 @@
 #include <fstream>
 #include <stdlib.h>
 
-#include <octomap/OcTreeNode.h>
+#include <mrpt/otherlibs/octomap/OcTreeNode.h>
 
 namespace octomap {
 

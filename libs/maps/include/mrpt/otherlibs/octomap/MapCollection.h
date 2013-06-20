@@ -41,7 +41,7 @@
  */
 
 #include <vector>
-#include <octomap/MapNode.h>
+#include <mrpt/otherlibs/octomap/MapNode.h>
 
 namespace octomap {
 
@@ -103,6 +103,6 @@ namespace octomap {
 
 } // end namespace
 
-#include "octomap/MapCollection.hxx"
+#include "mrpt/otherlibs/octomap/MapCollection.hxx"
 
 #endif

@@ -46,6 +46,7 @@
 
 #include "Pointcloud.h"
 #include "octomap_types.h"
+#include <mrpt/maps/link_pragmas.h>  // For DLL export within mrpt-maps via the MAPS_IMPEXP macro
 
 namespace octomap {
 
@@ -55,7 +56,7 @@ namespace octomap {
   /**
    * A 3D scan as Pointcloud, performed from a Pose6D.
    */
-  class ScanNode {
+  class /*MAPS_IMPEXP*/ ScanNode {
 
    public:
 
@@ -85,7 +86,7 @@ namespace octomap {
   /**
    * A connection between two \ref ScanNode "ScanNodes"
    */
-  class ScanEdge {
+  class /*MAPS_IMPEXP*/ ScanEdge {
 
    public:
 
@@ -117,7 +118,7 @@ namespace octomap {
    * Each ScanNode contains a 3D scan performed from a pose.
    *
    */
-  class ScanGraph {
+  class /*MAPS_IMPEXP*/ ScanGraph {
 
    public:
 

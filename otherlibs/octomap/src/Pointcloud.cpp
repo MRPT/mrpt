@@ -45,7 +45,7 @@
 #include <fstream>
 #include <math.h>
 
-#include <octomap/Pointcloud.h>
+#include <mrpt/otherlibs/octomap/Pointcloud.h>
 
 namespace octomap {
 

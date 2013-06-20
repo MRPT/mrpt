@@ -39,7 +39,7 @@
 #include <mrpt/opengl/COctoMapVoxels.h>
 #include <mrpt/utils/color_maps.h>
 
-#include <octomap/octomap.h>
+#include <mrpt/otherlibs/octomap/octomap.h>
 
 using namespace std;
 using namespace mrpt;

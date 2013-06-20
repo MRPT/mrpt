@@ -42,6 +42,7 @@
 
 #include <iostream>
 #include <math.h>
+#include <mrpt/maps/link_pragmas.h>  // For DLL export within mrpt-maps via the MAPS_IMPEXP macro
 
 
 namespace octomath {
@@ -53,7 +54,7 @@ namespace octomath {
    * translation in three-dimensional space or to represent the
    * attitude of an object using Euler angle.
    */
-  class Vector3 {
+  class MAPS_IMPEXP Vector3 {
   public:
 
     /*!
@@ -319,7 +320,7 @@ namespace octomath {
 
 
   //! user friendly output in format (x y z)
-  std::ostream& operator<<(std::ostream& out, octomath::Vector3 const& v);
+  std::ostream MAPS_IMPEXP & operator<<(std::ostream& out, octomath::Vector3 const& v);
 
 }
 

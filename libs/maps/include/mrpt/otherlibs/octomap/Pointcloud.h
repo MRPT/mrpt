@@ -42,7 +42,9 @@
 
 #include <vector>
 #include <list>
-#include <octomap/octomap_types.h>
+#include <mrpt/otherlibs/octomap/octomap_types.h>
+
+#include <mrpt/maps/link_pragmas.h>  // For DLL export within mrpt-maps via the MAPS_IMPEXP macro
 
 namespace octomap {
 

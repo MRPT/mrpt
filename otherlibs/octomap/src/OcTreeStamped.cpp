@@ -37,7 +37,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "octomap/OcTreeStamped.h"
+#include "mrpt/otherlibs/octomap/OcTreeStamped.h"
 
 namespace octomap {
 

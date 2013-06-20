@@ -54,7 +54,7 @@ char  SCAN_VALID_1[] = {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
 // ------------------------------------------------------
 void TestOctoMap()
 {
-	COctoMap  map(0.1);
+	COctoMap  map(0.2);
 
 	if (0)
 	{
@@ -118,6 +118,19 @@ void TestOctoMap()
 		scene->insert(gl_map);
 
 		win.unlockAccess3DScene();
+	}
+
+
+	// Go through voxels:
+	if (1)
+	{
+		const octomap::OcTree &om = map.getOctomap();
+
+		for (octomap::OcTree::leaf_iterator it=om.begin_leafs();it!=om.end_leafs(); ++it)
+		{
+			const octomap::point3d pt = it.getCoordinate();
+			cout << "pt: " << pt << " -> occupancy = " << it->getOccupancy() << endl;
+		}
 	}
 
 

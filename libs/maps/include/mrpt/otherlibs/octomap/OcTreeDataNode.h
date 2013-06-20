@@ -161,6 +161,6 @@ namespace octomap {
 
 } // end namespace
 
-#include "octomap/OcTreeDataNode.hxx"
+#include "mrpt/otherlibs/octomap/OcTreeDataNode.hxx"
 
 #endif

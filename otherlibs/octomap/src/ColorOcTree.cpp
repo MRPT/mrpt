@@ -37,7 +37,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <octomap/ColorOcTree.h>
+#include <mrpt/otherlibs/octomap/ColorOcTree.h>
 
 namespace octomap {
 

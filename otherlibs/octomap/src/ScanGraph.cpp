@@ -43,8 +43,8 @@
 #include <stdexcept>
 #include <stdlib.h>
 
-#include <octomap/math/Pose6D.h>
-#include <octomap/ScanGraph.h>
+#include <mrpt/otherlibs/octomap/math/Pose6D.h>
+#include <mrpt/otherlibs/octomap/ScanGraph.h>
 
 namespace octomap {
 

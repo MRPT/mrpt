@@ -38,9 +38,8 @@
  */
 
 
-#include <octomap/AbstractOccupancyOcTree.h>
-#include <octomap/octomap_types.h>
-
+#include <mrpt/otherlibs/octomap/AbstractOccupancyOcTree.h>
+#include <mrpt/otherlibs/octomap/octomap_types.h>
 
 namespace octomap {
   AbstractOccupancyOcTree::AbstractOccupancyOcTree(){

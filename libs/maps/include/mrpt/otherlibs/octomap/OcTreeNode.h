@@ -44,6 +44,7 @@
 #include "octomap_utils.h"
 #include "OcTreeDataNode.h"
 #include <limits>
+#include <mrpt/maps/link_pragmas.h>  // For DLL export within mrpt-maps via the MAPS_IMPEXP macro
 
 namespace octomap {
 
@@ -55,7 +56,7 @@ namespace octomap {
    * createChild, getChild, and getChild const. See OcTreeNodeLabeled for an example.
    *
    */
-  class OcTreeNode : public OcTreeDataNode<float> {
+  class /*MAPS_IMPEXP*/ OcTreeNode : public OcTreeDataNode<float> {
 
   public:
     OcTreeNode();

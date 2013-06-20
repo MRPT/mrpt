@@ -685,7 +685,7 @@ bool CGasConcentrationGridMap2D::simulateAdvection( const double &STD_increase_v
 	  to "be displaced" to other cells by the wind effect.
 	------------------------------------------------------*/
 	mrpt::utils::CTicTac tictac;
-	size_t i,c;
+	size_t i,c=0;
 	int cell_i_cx,cell_i_cy;	
 	float mu_phi, mu_r, mu_modwind;
 	const size_t N = m_map.size();

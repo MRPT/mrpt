@@ -41,7 +41,7 @@
  */
 
 #include <string>
-#include <octomap/OcTree.h>
+#include <mrpt/otherlibs/octomap/OcTree.h>
 
 namespace octomap {
 
@@ -82,6 +82,6 @@ namespace octomap {
 
 } // end namespace
 
-#include "octomap/MapNode.hxx"
+#include "mrpt/otherlibs/octomap/MapNode.hxx"
 
 #endif
