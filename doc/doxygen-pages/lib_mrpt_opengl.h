@@ -85,6 +85,7 @@ Below follows a table with the preview of most rendering primitive classes:
  <tr> <td> mrpt::opengl::stock_objects::CornerXYZSimple() </td> <td> \image html preview_stock_objects_CornerXYZSimple.png </td> </tr>
  <tr> <td> mrpt::opengl::stock_objects::CornerXYZ() </td> <td> \image html preview_stock_objects_CornerXYZ.png </td> </tr>
  <tr> <td> mrpt::opengl::stock_objects::RobotPioneer() </td> <td> \image html preview_stock_objects_RobotPioneer.png </td> </tr>
+ <tr> <td> mrpt::opengl::stock_objects::RobotRhodon() </td> <td> \image html preview_stock_objects_RobotRhodon.png </td> </tr>
  <tr> <td> mrpt::opengl::stock_objects::Hokuyo_URG() </td> <td> \image html preview_stock_objects_Hokuyo_URG.png </td> </tr>
  <tr> <td> mrpt::opengl::stock_objects::Hokuyo_UTM() </td> <td> \image html preview_stock_objects_Hokuyo_UTM.png </td> </tr>
  <tr> <td> mrpt::opengl::stock_objects::Househam_Sprayer() </td> <td> \image html preview_stock_objects_Househam_Sprayer.png </td> </tr>

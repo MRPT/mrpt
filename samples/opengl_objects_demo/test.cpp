@@ -657,6 +657,19 @@ void TestOpenGLObjects()
 	}
 	off_x+=STEP_X;
 
+	// stock_objects::RobotRhodon
+	{
+		{
+			opengl::CSetOfObjectsPtr obj = opengl::stock_objects::RobotRhodon();
+			obj->setLocation(off_x,0,0);
+			theScene->insert( obj );
+		}
+
+		opengl::CTextPtr gl_txt = opengl::CText::Create("stock_objects::RobotRhodon()");
+		gl_txt->setLocation(off_x,off_y_label,0);
+		theScene->insert(gl_txt);
+	}
+	off_x+=STEP_X;
 
 #endif
 

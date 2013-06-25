@@ -50,7 +50,7 @@ namespace mrpt
 			  *  The generated object must be inserted in a opengl::COpenGLScene or opengl::CSetOfObjects.
 			  *  <div align="center">
 			  *  <table border="0" cellspan="4" cellspacing="4" style="border-width: 1px; border-style: solid;">
-			  *    <tr> <td> mrpt::opengl::stock_objects::RobotPioneer() </td> <td> \image html preview_stock_objects_RobotPioneer.png </td> </tr>
+			  *    <tr> <td> mrpt::opengl::stock_objects::RobotRhodon() </td> <td> \image html preview_stock_objects_RobotRhodon.png </td> </tr>
 			  *  </table>
 			  *  </div>
 			  */

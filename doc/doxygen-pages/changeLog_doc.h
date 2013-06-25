@@ -46,6 +46,9 @@
 	- New classes:
 		- [mrpt-reactivenav]
 			- mrpt::reactivenav::CReactiveNavigationSystem3D - By Mariano Jaimez Tarifa - <a href="http://code.google.com/p/mrpt/source/detail?r=3389" >r3389</a>
+	- New functions:
+		- [mrpt-opengl]
+			- 
 	- Changes in classes:
 		- [mrpt-base]
 			- Generic particle filter classes now allow directly resampling to a dynamic number of particles. Affected methods: - <a href="http://code.google.com/p/mrpt/source/detail?r=3381" >r3381</a>
