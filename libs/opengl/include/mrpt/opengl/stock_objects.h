@@ -46,6 +46,16 @@ namespace mrpt
 		  */
 		namespace stock_objects
 		{
+			/** Returns a representation of Rhodon.
+			  *  The generated object must be inserted in a opengl::COpenGLScene or opengl::CSetOfObjects.
+			  *  <div align="center">
+			  *  <table border="0" cellspan="4" cellspacing="4" style="border-width: 1px; border-style: solid;">
+			  *    <tr> <td> mrpt::opengl::stock_objects::RobotPioneer() </td> <td> \image html preview_stock_objects_RobotPioneer.png </td> </tr>
+			  *  </table>
+			  *  </div>
+			  */
+			CSetOfObjectsPtr OPENGL_IMPEXP RobotRhodon();
+			
 			/** Returns a representation of a Pioneer II mobile base.
 			  *  The generated object must be inserted in a opengl::COpenGLScene or opengl::CSetOfObjects.
 			  *  <div align="center">

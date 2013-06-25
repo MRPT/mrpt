@@ -183,6 +183,66 @@ CSetOfObjectsPtr stock_objects::CornerXYZ(float scale)
 
 	return ret;
 }
+
+CSetOfObjectsPtr stock_objects::RobotRhodon()
+{
+	CSetOfObjectsPtr ret = CSetOfObjects::Create();
+	float height = 0;
+	
+	vector<TPoint2D> level1;
+	level1.push_back(TPoint2D(0.31, 0));
+	level1.push_back(TPoint2D(0.22, 0.24));
+	level1.push_back(TPoint2D(-0.22, 0.24));
+	level1.push_back(TPoint2D(-0.31, 0));
+	level1.push_back(TPoint2D(-0.22, -0.24));
+	level1.push_back(TPoint2D(0.22, -0.24));
+
+	CPolyhedronPtr obj1 = opengl::CPolyhedron::CreateCustomPrism(level1, 0.38);
+	obj1->setLocation(0,0,height);
+	height+=0.38;
+	obj1->setColor(0.6,0.6,0.6);
+	ret->insert( obj1 );
+
+
+	vector<TPoint2D> level2;
+	level2.push_back(TPoint2D(0.16, 0.21));
+	level2.push_back(TPoint2D(-0.16, 0.21));
+	level2.push_back(TPoint2D(-0.16, -0.21));
+	level2.push_back(TPoint2D(0.16, -0.21));
+
+	CPolyhedronPtr obj2 = opengl::CPolyhedron::CreateCustomPrism(level2, 0.35);
+	obj2->setLocation(0,0,height);
+	height+=0.35;
+	obj2->setColor(0.2,0.2,0.2);
+	ret->insert( obj2 );
+
+
+	vector<TPoint2D> level3;
+	level3.push_back(TPoint2D(-0.12, 0.12));
+	level3.push_back(TPoint2D(-0.16, 0.12));
+	level3.push_back(TPoint2D(-0.16, -0.12));
+	level3.push_back(TPoint2D(-0.12, -0.12));
+
+	CPolyhedronPtr obj3 = opengl::CPolyhedron::CreateCustomPrism(level3, 1);
+	obj3->setLocation(0,0,height);
+	height+=1;
+	obj3->setColor(0.6,0.6,0.6);
+	ret->insert( obj3 );
+
+	
+	opengl::CCylinderPtr obj4 = opengl::CCylinder::Create(0.05, 0.05, 0.4, 20, 20);
+	obj4->setLocation(0,0,0.73);
+	obj4->setColor(0,0,0.9);
+	ret->insert( obj4 );
+
+	opengl::CCylinderPtr obj5 = opengl::CCylinder::Create(0.05, 0.05, 0.4, 20, 20);
+	obj5->setPose(CPose3D(0.32,0,0.89,0,-1,0));
+	obj5->setColor(0,0,0.9);
+	ret->insert( obj5 );
+
+	return ret;
+}
+
 CSetOfObjectsPtr stock_objects::CornerXYZEye()
 {
 	CSetOfObjectsPtr ret = CSetOfObjects::Create();
