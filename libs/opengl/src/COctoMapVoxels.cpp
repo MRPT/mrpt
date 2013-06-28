@@ -131,6 +131,8 @@ void   COctoMapVoxels::render_dl() const
 		glLineWidth(m_grid_width);
 		checkOpenGLError();
 
+		glDisable(GL_LIGHTING);  // Disable lights when drawing lines
+
 		// Antialiasing:
         glPushAttrib( GL_COLOR_BUFFER_BIT | GL_LINE_BIT );
         glEnable(GL_LINE_SMOOTH);
@@ -161,36 +163,13 @@ void   COctoMapVoxels::render_dl() const
 			glDrawElements(GL_LINES, sizeof(grid_line_indices)/sizeof(grid_line_indices[0]), GL_UNSIGNED_BYTE, grid_line_indices);
 		}
 
+		glEnable(GL_LIGHTING);  // Disable lights when drawing lines
 		// End of antialiasing:
         glPopAttrib();
 	}
 
 	// Draw cubes ====================================
     glEnableClientState(GL_NORMAL_ARRAY);
-
-	if (m_enable_lighting)
-	{
-		 // track material ambient and diffuse from surface color, call it before glEnable(GL_COLOR_MATERIAL)
-		glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
-		glEnable(GL_COLOR_MATERIAL);
-
-		// set up light colors (ambient, diffuse, specular)
-		GLfloat lightKa[] = {.2f, .2f, .2f, 1.0f};  // ambient light
-		GLfloat lightKd[] = {.7f, .7f, .7f, 1.0f};  // diffuse light
-		GLfloat lightKs[] = {1, 1, 1, 1};           // specular light
-		glLightfv(GL_LIGHT0, GL_AMBIENT, lightKa);
-		glLightfv(GL_LIGHT0, GL_DIFFUSE, lightKd);
-		glLightfv(GL_LIGHT0, GL_SPECULAR, lightKs);
-
-		// position the light
-		float lightPos[4] = {1, 1, 1, 0}; // positional light: w=0 means directional light
-		glLightfv(GL_LIGHT0, GL_POSITION, lightPos);
-		//glShadeModel(GL_SMOOTH);
-
-		glEnable(GL_LIGHT0);                        // MUST enable each light source after configuration
-
-		glEnable(GL_LIGHTING);
-	}
 
 	glNormalPointer(GL_FLOAT, 0, normals_cube);
 
@@ -205,7 +184,6 @@ void   COctoMapVoxels::render_dl() const
 		glPointSize(m_showVoxelsAsPointsSize);
 	    glBegin( GL_POINTS );
 	}
-
 
 	for (size_t i=0;i<m_voxel_sets.size();i++)
 	{
@@ -252,12 +230,6 @@ void   COctoMapVoxels::render_dl() const
 
 	if (m_enable_cube_transparency)
 		glDisable(GL_BLEND);
-
-	if (m_enable_lighting)
-	{
-		glDisable(GL_COLOR_MATERIAL);
-		glDisable(GL_LIGHTING);
-	}
 
     glDisableClientState(GL_NORMAL_ARRAY);
 

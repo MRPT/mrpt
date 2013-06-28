@@ -86,6 +86,7 @@ void   CGridPlaneXZ::render_dl() const
 	}
 	glLineWidth(m_lineWidth);
 
+	glDisable(GL_LIGHTING);  // Disable lights when drawing lines
     glBegin(GL_LINES);
 
 	ASSERT_(m_frequency>=0);
@@ -103,6 +104,7 @@ void   CGridPlaneXZ::render_dl() const
 	}
 
     glEnd();
+	glEnable(GL_LIGHTING);
 
 	// End antialiasing:
 	if (m_antiAliasing) 

@@ -58,6 +58,7 @@ void TestOpenGLObjects()
 	theScene->getViewport()->setNumberOfLights(1);
 	mrpt::opengl::CLight & light0 = theScene->getViewport()->getLight(0);
 	light0.light_ID = 0;
+	light0.setPosition(1,1,0,0);
 
 
 	// Objects:
@@ -96,6 +97,7 @@ void TestOpenGLObjects()
 	{
 		opengl::CArrowPtr obj = opengl::CArrow::Create(0,0,0, 3,0,0, 0.2, 0.1,0.2, 0,0,0 );
 		obj->setLocation(off_x,0,0);
+		obj->setColor(1,0,0);
 		theScene->insert( obj );
 
 		opengl::CTextPtr gl_txt = opengl::CText::Create("CArrow");

@@ -63,12 +63,16 @@ void renderGeneralizedEllipsoidTemplate<2>(
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);   gl_utils::checkOpenGLError();
 	glLineWidth(lineWidth); gl_utils::checkOpenGLError();
 
+	glDisable(GL_LIGHTING);  // Disable lights when drawing lines
+
 	glBegin( GL_LINE_LOOP );
 	const size_t N = pts.size();
 	for (size_t i=0;i<N;i++)
 		glVertex2f( pts[i][0], pts[i][1] );
 
 	glEnd();
+
+	glEnable(GL_LIGHTING);
 	glDisable(GL_BLEND);
 #endif
 }
@@ -88,6 +92,7 @@ void renderGeneralizedEllipsoidTemplate<3>(
 	glEnable(GL_BLEND);  gl_utils::checkOpenGLError();
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);   gl_utils::checkOpenGLError();
 	glLineWidth(lineWidth); gl_utils::checkOpenGLError();
+	glDisable(GL_LIGHTING);  // Disable lights when drawing lines
 
 	// Points in the ellipsoid:
 	//  * "#slices" slices, with "#stacks" points each, but for the two ends
@@ -148,6 +153,7 @@ void renderGeneralizedEllipsoidTemplate<3>(
 	//glEnd();
 
 	glDisable(GL_BLEND);
+	glEnable(GL_LIGHTING);
 #endif
 }
 

@@ -147,16 +147,22 @@ void CMesh::render_dl() const	{
 		float az=t.z[1]-t.z[0];
 		float bz=t.z[2]-t.z[0];
 		glNormal3f(ay*bz-az*by,az*bx-ax*bz,ax*by-ay*bx);
-		if (m_isWireFrame) glBegin(GL_LINE_LOOP);
+		if (m_isWireFrame) {
+			glDisable(GL_LIGHTING);  // Disable lights when drawing lines
+			glBegin(GL_LINE_LOOP);
+		}
 		for (int i=0;i<3;i++)	{
 			glColor4f(t.r[i],t.g[i],t.b[i],t.a[i]);
 			glVertex3f(t.x[i],t.y[i],t.z[i]);
 		}
-		if (m_isWireFrame) glEnd();
+		if (m_isWireFrame) 
+		{
+			glEnd();
+			glEnable(GL_LIGHTING);
+		}
 	}
 	if (!m_isWireFrame) glEnd();
 	glDisable(GL_BLEND);
-	glDisable(GL_LIGHTING);
 #endif
 }
 

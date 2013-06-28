@@ -54,6 +54,7 @@ void   CAxis::render_dl() const
 {
 #if MRPT_HAS_OPENGL_GLUT
 	MRPT_START
+	glDisable(GL_LIGHTING);
 
 	glEnable (GL_BLEND);
 	checkOpenGLError();
@@ -64,7 +65,6 @@ void   CAxis::render_dl() const
 
     glLineWidth(m_lineWidth);
 	checkOpenGLError();
-
     glBegin( GL_LINES );
     glColor4ub(m_color.R,m_color.G,m_color.B,m_color.A);
 	//X axis
@@ -161,6 +161,7 @@ void   CAxis::render_dl() const
 
 	}
 
+	glEnable(GL_LIGHTING);
 	MRPT_END
 /*******************************************************/
 #endif

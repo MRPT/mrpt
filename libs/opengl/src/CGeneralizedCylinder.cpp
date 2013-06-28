@@ -94,12 +94,9 @@ void CGeneralizedCylinder::render_dl() const	{
 #if MRPT_HAS_OPENGL_GLUT
 	if (!meshUpToDate) updateMesh();
 	checkOpenGLError();
-	glEnable(GL_LIGHTING);
-	glEnable(GL_LIGHT0);
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
-	glEnable(GL_COLOR_MATERIAL);
-	glShadeModel(GL_SMOOTH);
+
 	glBegin(GL_QUADS);
 	glColor4ub(m_color.R,m_color.G,m_color.B,m_color.A);
 	vector<TQuadrilateral>::const_iterator begin,end;
@@ -107,9 +104,7 @@ void CGeneralizedCylinder::render_dl() const	{
 	for_each(begin,end,FQuadrilateralRenderer(m_color));
 	glEnd();
 	if (m_color.A!=1.0) glDisable(GL_BLEND);
-	glDisable(GL_COLOR_MATERIAL);
-	glDisable(GL_LIGHT0);
-	glDisable(GL_LIGHTING);
+
 #endif
 }
 

@@ -56,11 +56,6 @@ IMPLEMENTS_SERIALIZABLE( CSphere, CRenderizableDisplayList, mrpt::opengl )
 void   CSphere::render_dl() const
 {
 #if MRPT_HAS_OPENGL_GLUT
-	glEnable(GL_LIGHTING);
-	glEnable(GL_LIGHT0);
-    glEnable(GL_COLOR_MATERIAL);
-    glShadeModel(GL_SMOOTH);
-
 	if ( m_color.A != 255 )
 	{
 		glDisable(GL_DEPTH_TEST);
@@ -103,9 +98,6 @@ void   CSphere::render_dl() const
 		glDisable(GL_BLEND);
 	}
 
-	glDisable(GL_LIGHTING);
-	glDisable(GL_LIGHT0);
-    glDisable(GL_COLOR_MATERIAL);
 #endif
 }
 /*---------------------------------------------------------------

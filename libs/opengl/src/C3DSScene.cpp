@@ -85,9 +85,6 @@ void   C3DSScene::render_dl() const
 	if (!file) return;
 
 	glEnable(GL_POLYGON_SMOOTH);
-	glShadeModel(GL_SMOOTH);
-	glEnable(GL_LIGHTING);
-//	glEnable(GL_DEPTH_TEST);
 
 	glEnable(GL_CULL_FACE);
 	glCullFace(GL_BACK);
@@ -158,15 +155,7 @@ void   C3DSScene::render_dl() const
 	for (Lib3dsNode *p=file->nodes; p!=0; p=p->next)
 	  render_node(p,file);
 
-
 	glDisable(GL_CULL_FACE);
-//
-//	glDisable(GL_POLYGON_SMOOTH);
-	glDisable(GL_LIGHTING);
-//	glDisable(GL_LIGHT0);
-//	glDisable(GL_LIGHT1);
-//	glDisable(GL_DEPTH_TEST);
-
 	MRPT_END
 #endif
 }

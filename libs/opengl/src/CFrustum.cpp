@@ -82,7 +82,7 @@ void CFrustum::render_dl() const	{
     // Render lines:
 	if (m_draw_lines)
 	{
-		glDisable(GL_LIGHTING);
+		glDisable(GL_LIGHTING);  // Disable lights when drawing lines
 
 		const int draw_path[] = {
 			0,1,3,2,0,4,6,2,
@@ -98,6 +98,7 @@ void CFrustum::render_dl() const	{
 
 		glEnd();
 
+		glEnable(GL_LIGHTING);  // Disable lights when drawing lines
 	}
 
 	if (m_draw_planes)

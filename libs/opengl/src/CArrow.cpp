@@ -59,11 +59,6 @@ IMPLEMENTS_SERIALIZABLE( CArrow, CRenderizableDisplayList, mrpt::opengl )
 void   CArrow::render_dl() const
 {
 #if MRPT_HAS_OPENGL_GLUT
-	glEnable(GL_LIGHTING);
-	glEnable(GL_LIGHT0);
-    glEnable(GL_COLOR_MATERIAL);
-    glShadeModel(GL_SMOOTH);
-
 
 	GLUquadricObj	*obj1 = gluNewQuadric();
 	GLUquadricObj	*obj2 = gluNewQuadric();
@@ -183,9 +178,6 @@ void   CArrow::render_dl() const
 	gluDeleteQuadric(obj1);
 	gluDeleteQuadric(obj2);
 
-	glDisable(GL_LIGHTING);
-	glDisable(GL_LIGHT0);
-    glDisable(GL_COLOR_MATERIAL);
 #endif
 }
 

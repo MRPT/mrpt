@@ -33,114 +33,64 @@
    | POSSIBILITY OF SUCH DAMAGE.                                               |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/opengl.h>  // Precompiled header
+#ifndef opengl_CLight_H
+#define opengl_CLight_H
 
+#include <mrpt/utils/utils_defs.h>
+#include <mrpt/utils/TTypeName.h>
+#include <mrpt/opengl/link_pragmas.h>
 
-#include <mrpt/opengl/CText.h>
-#include "opengl_internals.h"
-
-using namespace mrpt;
-using namespace mrpt::opengl;
-using namespace mrpt::utils;
-using namespace mrpt::math;
-using namespace std;
-
-IMPLEMENTS_SERIALIZABLE( CText, CRenderizable, mrpt::opengl )
-
-/*---------------------------------------------------------------
-							Constructor
-  ---------------------------------------------------------------*/
-CText::CText( const string &str )
+namespace mrpt
 {
-	m_str 	= str;
+	namespace utils { class CStream; }
 
-    m_fontName = "Arial";
-    m_fontHeight = 10;
-    m_fontWidth = 0;
-}
-
-/*---------------------------------------------------------------
-							Destructor
-  ---------------------------------------------------------------*/
-CText::~CText()
-{
-}
-
-/*---------------------------------------------------------------
-							render
-  ---------------------------------------------------------------*/
-void   CText::render() const
-{
-#if MRPT_HAS_OPENGL_GLUT
-    glDisable(GL_DEPTH_TEST);
-    glDisable(GL_LIGHTING);
-
-	glColor4ub(m_color.R,m_color.G,m_color.B,m_color.A);
-    // Set the "cursor" to the XYZ position:
-    glRasterPos3f(0,0,0);//m_x,m_y,m_z);
-
-    // Call the lists for drawing the text:
-	renderTextBitmap( m_str.c_str(), GLUT_BITMAP_TIMES_ROMAN_10 );
-
-    glEnable(GL_LIGHTING);
-    glEnable(GL_DEPTH_TEST);
-#endif
-}
-
-/*---------------------------------------------------------------
-   Implements the writing to a CStream capability of
-     CSerializable objects
-  ---------------------------------------------------------------*/
-void  CText::writeToStream(CStream &out,int *version) const
-{
-	if (version)
-		*version = 1;
-	else
+	namespace opengl
 	{
-		writeToStreamRender(out);
-		out << m_str;
-        out << m_fontName;
-        out << (uint32_t)m_fontHeight << (uint32_t)m_fontWidth;
-
-	}
-}
-
-/*---------------------------------------------------------------
-	Implements the reading from a CStream capability of
-		CSerializable objects
-  ---------------------------------------------------------------*/
-void  CText::readFromStream(CStream &in,int version)
-{
-	switch(version)
-	{
-	case 0:
-	case 1:
+		/** Each of the possible lights of a 3D scene \sa COpenGLViewport 
+		  * *IMPORTANT NOTE*: It's the user responsibility to define unique light IDs for each light. 
+		  *  The OpenGL standard only assures that valid IDs are 0,1,..7
+		  * Refer to standard OpenGL literature and tutorials for the meaning of each field.
+		  */
+		struct OPENGL_IMPEXP CLight
 		{
-			uint32_t	i;
-			readFromStreamRender(in);
-			in >> m_str;
-			if (version>=1)
-			{
-				in >> m_fontName;
-				in >> i; m_fontHeight = i;
-				in >> i; m_fontWidth = i;
-			}
-		} break;
-	default:
-		MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
+			CLight(); //!< Default constructor, sets default values
 
-	};
-}
+			void setPosition(float x,float y,float z,float w);
+			void setDirection(float dx,float dy,float dz);
 
-void CText::getBoundingBox(mrpt::math::TPoint3D &bb_min, mrpt::math::TPoint3D &bb_max) const
-{
-	bb_min.x = 0;
-	bb_min.y = 0;
-	bb_min.z = 0;
+			uint8_t light_ID; //!< OpenGL ID (typical range: 0-7)
 
-	bb_max = bb_min;
+			float	color_ambient[4];
+			float	color_diffuse[4];
+			float	color_specular[4];
 
-	// Convert to coordinates of my parent:
-	m_pose.composePoint(bb_min, bb_min);
-	m_pose.composePoint(bb_max, bb_max);
-}
+			float	position[4];  //!< [x,y,z,w]: w=0 means directional light, w=1 means a light at a real 3D position.
+			float	direction[3]; //!< [x,y,z]
+			float	constant_attenuation;
+			float	linear_attenuation;
+			float	quadratic_attenuation;
+			float	spot_exponent;
+			float	spot_cutoff;
+
+			void writeToStream(mrpt::utils::CStream &out) const;
+			void readFromStream(mrpt::utils::CStream &in);
+
+			void  sendToOpenGL() const; //!< Define the light in the current OpenGL rendering context (users normally don't need to call this explicitly, it's done from within a \sa COpenGLViewport)
+		};
+
+		OPENGL_IMPEXP mrpt::utils::CStream& operator>>(mrpt::utils::CStream& in,mrpt::opengl::CLight &o);
+		OPENGL_IMPEXP mrpt::utils::CStream& operator<<(mrpt::utils::CStream& out,const mrpt::opengl::CLight &o);
+
+
+	} // end namespace
+
+	namespace utils 
+	{
+		template<> struct TTypeName <mrpt::opengl::CLight> { \
+			static std::string get() { return std::string("mrpt::opengl::CLight"); } };
+	}
+
+} // End of namespace
+
+
+#endif

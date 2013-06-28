@@ -91,6 +91,7 @@ void   CSetOfLines::render_dl() const
 	glLineWidth(mLineWidth);
 	checkOpenGLError();
 
+	glDisable(GL_LIGHTING);  // Disable lights when drawing lines
 	glBegin(GL_LINES);
 	glColor4ub(m_color.R,m_color.G,m_color.B,m_color.A);
 	for (std::vector<TSegment3D>::const_iterator it=mSegments.begin();it!=mSegments.end();++it)	{
@@ -99,6 +100,7 @@ void   CSetOfLines::render_dl() const
 	}
 	glEnd();
 	checkOpenGLError();
+	glEnable(GL_LIGHTING);  // Disable lights when drawing lines
 
 	// End of antialiasing:
     glPopAttrib();

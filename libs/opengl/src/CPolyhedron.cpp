@@ -802,6 +802,8 @@ CPolyhedronPtr CPolyhedron::CreateJohnsonSolidWithConstantBase(uint32_t numBaseE
 void CPolyhedron::render_dl() const	{
 #if MRPT_HAS_OPENGL_GLUT
 	if (mWireframe)	{
+		glDisable(GL_LIGHTING);  // Disable lights when drawing lines
+
 		glLineWidth(mLineWidth);
 		checkOpenGLError();
 		glColor4ub(m_color.R,m_color.G,m_color.B,m_color.A);
@@ -813,14 +815,12 @@ void CPolyhedron::render_dl() const	{
 			glVertex3f(p.x,p.y,p.z);
 		}
 		glEnd();
+		glEnable(GL_LIGHTING);  // Disable lights when drawing lines
 	}	else	{
 		checkOpenGLError();
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
-		glEnable(GL_LIGHTING);
-		glEnable(GL_LIGHT0);
-		glEnable(GL_COLOR_MATERIAL);
-		glShadeModel(GL_SMOOTH);
+
 		glColor4ub(m_color.R,m_color.G,m_color.B,m_color.A);
 		for (vector<TPolyhedronFace>::const_iterator it=mFaces.begin();it!=mFaces.end();++it)	{
 			glBegin(GL_POLYGON);
@@ -832,8 +832,7 @@ void CPolyhedron::render_dl() const	{
 			glEnd();
 		}
 		glDisable(GL_BLEND);
-		glDisable(GL_LIGHTING);
-		glDisable(GL_LIGHT0);
+
 	}
 #endif
 }

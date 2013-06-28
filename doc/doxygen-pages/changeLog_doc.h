@@ -44,6 +44,8 @@
 	- New apps:
 		- <a href="http://www.mrpt.org/Application%3AReactiveNav3D-Demo" >ReactiveNav3D-Demo</a> (By Mariano Jaimez Tarifa)
 	- New classes:
+		- [mrpt-opengl]
+			- mrpt::opengl::CLight - OpenGL scenes now allow customization of OpenGL lighting. See also new lighting methods in mrpt::opengl::COpenGLViewport - <a href="http://code.google.com/p/mrpt/source/detail?r=3409" >r3409</a>
 		- [mrpt-reactivenav]
 			- mrpt::reactivenav::CReactiveNavigationSystem3D - By Mariano Jaimez Tarifa - <a href="http://code.google.com/p/mrpt/source/detail?r=3389" >r3389</a>
 	- New functions:

@@ -40,6 +40,7 @@
 #include <mrpt/utils/CImage.h>
 #include <mrpt/opengl/CCamera.h>
 #include <mrpt/opengl/CSetOfObjects.h>
+#include <mrpt/opengl/CLight.h>
 #include <mrpt/math/lightweight_geom_data.h>
 #include <mrpt/utils/CObservable.h>
 
@@ -126,8 +127,20 @@ namespace mrpt
 			/** Sets glHint(GL_POLYGON_SMOOTH_HINT, GL_NICEST) is enabled, or GL_FASTEST otherwise. */
 			void enablePolygonNicest(bool enable=true) { m_OpenGL_enablePolygonNicest=enable; }
 			bool isPolygonNicestEnabled() const { return m_OpenGL_enablePolygonNicest; }
-			
 
+			/** Removes all lights (and disables the global "GL_LIGHTING") */
+			void lightsClearAll() { m_lights.clear(); }
+
+			/** Append a new light to the scene. By default there are no lights. "GL_LIGHTING" is enabled
+			  *  only if there's at least one user-defined TLight.  */
+			void addLight(const CLight &l) { m_lights.push_back(l); }
+
+			/** Allocates a number of lights, which must be correctly defined via getLight(i), etc. */
+			void setNumberOfLights(const size_t N) { m_lights.resize(N); }
+
+			CLight & getLight(const size_t i) { ASSERT_BELOW_(i,m_lights.size()) return m_lights[i]; }
+			const CLight & getLight(const size_t i) const  { ASSERT_BELOW_(i,m_lights.size()) return m_lights[i]; }
+								
 			/** @} */ // end of OpenGL settings
 
 			// -------------------------------------------------------------------
@@ -353,6 +366,7 @@ namespace mrpt
 			// OpenGL global settings:
 			bool  m_OpenGL_enablePolygonNicest;
 
+			std::vector<CLight>  m_lights;
 		};
 		/**
 		  * Inserts an openGL object into a viewport. Allows call chaining.

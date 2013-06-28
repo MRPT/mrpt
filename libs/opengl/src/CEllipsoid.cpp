@@ -72,6 +72,8 @@ void   CEllipsoid::render_dl() const
 
 		if (dim==2)
 		{
+			glDisable(GL_LIGHTING);  // Disable lights when drawing lines
+
 			// ---------------------
 			//     2D ellipse
 			// ---------------------
@@ -117,6 +119,7 @@ void   CEllipsoid::render_dl() const
 			m_pose.composePoint(m_bb_min, m_bb_min);
 			m_pose.composePoint(m_bb_max, m_bb_max);
 
+			glEnable(GL_LIGHTING);
 		}
 		else
 		{
@@ -140,13 +143,10 @@ void   CEllipsoid::render_dl() const
 			mat[4] = m_eigVec(0,1); mat[5] = m_eigVec(1,1); mat[6] = m_eigVec(2,1);	// New X-axis
 			mat[8] = m_eigVec(0,2); mat[9] = m_eigVec(1,2); mat[10] = m_eigVec(2,2);	// New X-axis
 
-			glEnable(GL_LIGHTING);
-			glEnable(GL_LIGHT0);
-			glEnable(GL_COLOR_MATERIAL);
-			glShadeModel(GL_SMOOTH);
-
 			GLUquadricObj	*obj = gluNewQuadric();
 			checkOpenGLError();
+
+			if (!m_drawSolid3D) glDisable(GL_LIGHTING);  // Disable lights when drawing lines
 
 			gluQuadricDrawStyle( obj, m_drawSolid3D ? GLU_FILL : GLU_LINE);
 
@@ -162,9 +162,6 @@ void   CEllipsoid::render_dl() const
 			gluDeleteQuadric(obj);
 			checkOpenGLError();
 
-			glDisable(GL_LIGHTING);
-			glDisable(GL_LIGHT0);
-
 			// 3D: Save bounding box:
 			const double max_radius = m_quantiles * std::max( m_eigVal(0,0), std::max(m_eigVal(1,1), m_eigVal(2,2) ) );
 			m_bb_min = mrpt::math::TPoint3D(-max_radius,-max_radius, 0);
@@ -175,8 +172,9 @@ void   CEllipsoid::render_dl() const
 		}
 
 
-	    	glLineWidth(1.0f);
 		glDisable(GL_BLEND);
+
+		glEnable(GL_LIGHTING);
 	}
 	MRPT_END_WITH_CLEAN_UP( \
 		cout << "Covariance matrix leading to error is:" << endl << m_cov << endl; \

@@ -94,8 +94,11 @@ COpenGLViewport::COpenGLViewport( COpenGLScene *parent, const string &name  ) :
 	m_imageview_img(),
 	m_objects(),
 	// OpenGL settings:
-	m_OpenGL_enablePolygonNicest(true)
+	m_OpenGL_enablePolygonNicest(true),
+	m_lights()
 {
+	// Default: one light from default direction
+	m_lights.push_back( CLight() );
 }
 
 
@@ -463,7 +466,18 @@ void  COpenGLViewport::render( const int render_width, const int render_height  
 			glEnable(GL_DEPTH_TEST);
 			glDepthFunc(GL_LEQUAL); //GL_LESS
 
+			// Setup lights
+			// -------------------------------------------
+			glEnable( GL_LIGHTING );
+			glEnable( GL_COLOR_MATERIAL );
+			glColorMaterial( GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
+			glShadeModel( GL_SMOOTH );
+
+			for (size_t i=0;i<m_lights.size();i++)
+				m_lights[i].sendToOpenGL();
+
 			// Render all the objects:
+			// -------------------------------------------
 			mrpt::opengl::gl_utils::renderSetOfObjects(*objectsToRender);
 
         } // end of non "image mode" rendering
@@ -482,12 +496,14 @@ void  COpenGLViewport::render( const int render_width, const int render_height  
             glMatrixMode(GL_PROJECTION);
             glLoadIdentity();
 
+			glDisable(GL_LIGHTING);  // Disable lights when drawing lines
             glBegin( GL_LINE_LOOP );
                 glVertex2f(-1,-1);
                 glVertex2f(-1, 1);
                 glVertex2f( 1, 1);
                 glVertex2f( 1,-1);
             glEnd();
+			glEnable(GL_LIGHTING);  // Disable lights when drawing lines
 
             glEnable(GL_DEPTH_TEST);
 		}
@@ -525,7 +541,7 @@ void  COpenGLViewport::render( const int render_width, const int render_height  
 void  COpenGLViewport::writeToStream(CStream &out,int *version) const
 {
 	if (version)
-		*version = 2;
+		*version = 3;
 	else
 	{
 		// Save data:
@@ -549,6 +565,9 @@ void  COpenGLViewport::writeToStream(CStream &out,int *version) const
 		// Added in v2: Global OpenGL settings:
 		out << m_OpenGL_enablePolygonNicest;
 
+		// Added in v3: Lights
+		out << m_lights;
+
 	}
 }
 
@@ -563,6 +582,7 @@ void  COpenGLViewport::readFromStream(CStream &in,int version)
 	case 0:
 	case 1:
 	case 2:
+	case 3:
 		{
 			// Load data:
 			in  >> m_camera
@@ -597,6 +617,16 @@ void  COpenGLViewport::readFromStream(CStream &in,int version)
 			}
 			else { 
 				// Defaults 
+			}
+
+			// Added in v3: Lights
+			if (version>=3)
+				in >>m_lights;
+			else 
+			{
+				// Default: one light from default direction
+				m_lights.clear();
+				m_lights.push_back( CLight() );
 			}
 
 		} break;

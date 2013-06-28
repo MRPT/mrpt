@@ -424,12 +424,14 @@ void gl_utils::renderMessageBox(
 	// Border:
 	glColor4ub(border_col.R,border_col.G,border_col.B,border_col.A);
 	glLineWidth(border_width);
+	glDisable(GL_LIGHTING);  // Disable lights when drawing lines
 	glBegin(GL_LINE_LOOP);
 	glVertex2f( msg_x0,msg_y0 );
 	glVertex2f( msg_x1,msg_y0 );
 	glVertex2f( msg_x1,msg_y1 );
 	glVertex2f( msg_x0,msg_y1 );
 	glEnd();
+	glEnable(GL_LIGHTING);  // Disable lights when drawing lines
 
 
 	// Draw text (centered):
@@ -518,7 +520,9 @@ namespace Internal
 			if(!ch || !ch->numTriangles)
 				return;
 			glVertexPointer(2, GL_FLOAT, 0, vertices + ch->vertexOffset);
+			glDisable(GL_LIGHTING);  // Disable lights when drawing lines
 			glDrawElements(GL_TRIANGLES, ch->numTriangles, GL_UNSIGNED_SHORT, triangles + ch->triangleOffset);
+			glEnable(GL_LIGHTING);
 		}
 
 		void outline( const char c ) const {
@@ -526,7 +530,9 @@ namespace Internal
 			if(!ch || !ch->numOutlines)
 				return;
 			glVertexPointer(2, GL_FLOAT, 0, vertices + ch->vertexOffset);
+			glDisable(GL_LIGHTING);  // Disable lights when drawing lines
 			glDrawElements(GL_LINES, ch->numOutlines, GL_UNSIGNED_SHORT, outlines + ch->outlineOffset);
+			glEnable(GL_LIGHTING);
 		}
 
 		void draw( const char c ) const {
@@ -534,8 +540,10 @@ namespace Internal
 			if(!ch || !ch->numTriangles || !ch->numOutlines)
 				return;
 			glVertexPointer(2, GL_FLOAT, 0, vertices + ch->vertexOffset);
+			glDisable(GL_LIGHTING);  // Disable lights when drawing lines
 			glDrawElements(GL_TRIANGLES, ch->numTriangles, GL_UNSIGNED_SHORT, triangles + ch->triangleOffset);
 			glDrawElements(GL_LINES, ch->numOutlines, GL_UNSIGNED_SHORT, outlines + ch->outlineOffset);
+			glEnable(GL_LIGHTING);  // Disable lights when drawing lines
 		}
 	};
 

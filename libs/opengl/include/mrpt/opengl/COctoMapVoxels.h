@@ -94,7 +94,7 @@ namespace mrpt
 
 			/** The different coloring schemes. Set with setVisualizationMode() */
 			enum visualization_mode_t
-			{									//Recommendation: m_enable_lighting off
+			{									
 				COLOR_FROM_HEIGHT,				//Color goes from black (at the bottom) to the chosen color (at the top)
 				COLOR_FROM_OCCUPANCY,			//Color goes from black (occupied voxel) to the chosen color (free voxel)
 				TRANSPARENCY_FROM_OCCUPANCY,	//Transparency goes from opaque (occupied voxel) to transparent (free voxel).

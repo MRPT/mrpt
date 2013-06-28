@@ -71,13 +71,9 @@ void   CSetOfTriangles::render_dl() const
 		glDisable(GL_BLEND);
     }
 
-	/*glEnable(GL_LIGHTING);
-	glEnable(GL_LIGHT0);*/
-    glEnable(GL_COLOR_MATERIAL);
-    glShadeModel(GL_SMOOTH);
-
 	vector<TTriangle>::const_iterator	it;
 
+	glEnable(GL_NORMALIZE); // Normalize normals
 	glBegin(GL_TRIANGLES);
 
 	for (it=m_triangles.begin();it!=m_triangles.end();it++)
@@ -105,9 +101,9 @@ void   CSetOfTriangles::render_dl() const
 	}
 
 	glEnd();
+	glDisable(GL_NORMALIZE);
 
 	glDisable(GL_BLEND);
-//	glDisable(GL_LIGHTING);
 #endif
 }
 

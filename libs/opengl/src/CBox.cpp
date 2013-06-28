@@ -66,7 +66,6 @@ void CBox::render_dl() const	{
 	if (this->m_wireframe)
 	{
 		glDisable(GL_LIGHTING);
-
 		// wireframe:
 		glLineWidth(m_lineWidth); checkOpenGLError();
 		glBegin(GL_LINE_STRIP);
@@ -107,14 +106,10 @@ void CBox::render_dl() const	{
 		glVertex3d(m_corner_max.x,m_corner_min.y,m_corner_max.z);
 		glEnd();
 
+		glEnable(GL_LIGHTING);
 	}
 	else
 	{
-		glEnable(GL_LIGHTING);
-		glEnable(GL_LIGHT0);
-		glEnable(GL_COLOR_MATERIAL);
-		glShadeModel(GL_SMOOTH);
-
 		// solid:
 		glBegin(GL_TRIANGLES);
 		glColor4ub(m_color.R,m_color.G,m_color.B,m_color.A);
