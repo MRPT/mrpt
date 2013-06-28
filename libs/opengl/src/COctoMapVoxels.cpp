@@ -183,8 +183,9 @@ void   COctoMapVoxels::render_dl() const
 		glLightfv(GL_LIGHT0, GL_SPECULAR, lightKs);
 
 		// position the light
-		float lightPos[4] = {10, 10, 10, 1}; // positional light
+		float lightPos[4] = {1, 1, 1, 0}; // positional light: w=0 means directional light
 		glLightfv(GL_LIGHT0, GL_POSITION, lightPos);
+		//glShadeModel(GL_SMOOTH);
 
 		glEnable(GL_LIGHT0);                        // MUST enable each light source after configuration
 

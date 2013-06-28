@@ -158,6 +158,10 @@ void TestOctoMap()
 			case 'O':
 				gl_map->showVoxels(VOXEL_SET_OCCUPIED, !gl_map->areVoxelsVisible(VOXEL_SET_OCCUPIED) );
 				break;
+			case 'l':
+			case 'L':
+				gl_map->enableLights( !gl_map->areLightsEnabled() );
+				break;
 			};
 			update_msg = true;
 	
@@ -168,10 +172,11 @@ void TestOctoMap()
 			update_msg= false;
 
 			win.addTextMessage(
-				5,5,mrpt::format("Show/hide with keyboard: 'g' (grids=%s) | 'f' (freespace=%s) | 'o' (occupied=%s)", 
+				5,5,mrpt::format("Commands: 'g' (grids=%s) | 'f' (freespace=%s) | 'o' (occupied=%s) | 'l' (lights=%s)", 
 					gl_map->areGridLinesVisible() ? "YES":"NO",
 					gl_map->areVoxelsVisible(VOXEL_SET_FREESPACE) ? "YES":"NO",
-					gl_map->areVoxelsVisible(VOXEL_SET_OCCUPIED) ? "YES":"NO"
+					gl_map->areVoxelsVisible(VOXEL_SET_OCCUPIED) ? "YES":"NO",
+					gl_map->areLightsEnabled() ? "YES":"NO"
 					),
 				TColorf(1,1,1),"sans",15);
 
