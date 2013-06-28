@@ -99,6 +99,23 @@ COpenGLViewport::COpenGLViewport( COpenGLScene *parent, const string &name  ) :
 {
 	// Default: one light from default direction
 	m_lights.push_back( CLight() );
+	m_lights.push_back( CLight() );
+	
+	m_lights[0].setPosition(1,1,1,0);
+	m_lights[0].setDirection(-1,-1,-1);
+	
+	m_lights[1].light_ID = 1;
+	m_lights[1].setPosition(1,2,-1,0);
+	m_lights[1].setDirection(1,2,1);
+
+	m_lights[1].color_diffuse[0] = 0.3;
+	m_lights[1].color_diffuse[1] = 0.3;
+	m_lights[1].color_diffuse[2] = 0.3;
+
+	m_lights[1].color_ambient[0] = 0.3;
+	m_lights[1].color_ambient[1] = 0.3;
+	m_lights[1].color_ambient[2] = 0.3;
+
 }
 
 
@@ -472,6 +489,7 @@ void  COpenGLViewport::render( const int render_width, const int render_height  
 			glEnable( GL_COLOR_MATERIAL );
 			glColorMaterial( GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
 			glShadeModel( GL_SMOOTH );
+			glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE);
 
 			for (size_t i=0;i<m_lights.size();i++)
 				m_lights[i].sendToOpenGL();

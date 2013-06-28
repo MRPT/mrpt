@@ -55,10 +55,10 @@ void TestOpenGLObjects()
 	COpenGLScenePtr &theScene = win.get3DSceneAndLock();
 
 	// Lights:
-	theScene->getViewport()->setNumberOfLights(1);
-	mrpt::opengl::CLight & light0 = theScene->getViewport()->getLight(0);
-	light0.light_ID = 0;
-	light0.setPosition(1,1,0,0);
+	//theScene->getViewport()->setNumberOfLights(1);
+	//mrpt::opengl::CLight & light0 = theScene->getViewport()->getLight(0);
+	//light0.light_ID = 0;
+	//light0.setPosition(1,1,0,0);
 
 
 	// Objects:

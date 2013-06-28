@@ -111,6 +111,8 @@ void CBox::render_dl() const	{
 	else
 	{
 		// solid:
+		glEnable(GL_NORMALIZE);
+
 		glBegin(GL_TRIANGLES);
 		glColor4ub(m_color.R,m_color.G,m_color.B,m_color.A);
 
@@ -175,6 +177,7 @@ void CBox::render_dl() const	{
 			TPoint3D(m_corner_max.x,m_corner_max.y,m_corner_max.z) );
 
 		glEnd();
+		glDisable(GL_NORMALIZE);
 	}
 
 
