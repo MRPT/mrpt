@@ -137,11 +137,15 @@ void   CPointCloud::render() const
 	else 	glDisable( GL_POINT_SMOOTH );
 
 
+	// Disable lighting for point clouds:
+	glDisable(GL_LIGHTING);
 
     glBegin( GL_POINTS );
     glColor4ub(m_color.R,m_color.G,m_color.B,m_color.A); // The default if m_colorFromDepth=false
 	octree_render(ri); // Render all points recursively:
     glEnd();
+
+	glEnable(GL_LIGHTING);
 
 	if ( m_color.A != 255 )
 		glDisable(GL_BLEND);

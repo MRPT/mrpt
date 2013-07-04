@@ -55,19 +55,28 @@ IMPLEMENTS_SERIALIZABLE( CMesh, CRenderizableDisplayList, mrpt::opengl )
 void CMesh::updateTriangles() const	{
 	CRenderizableDisplayList::notifyChange();
 
-	actualMesh.clear();
+// Remember:
+//mutable std::vector<std::pair<CSetOfTriangles::TTriangle,TTriangleVertexIndices> > actualMesh;	//!< List of triangles in the mesh
+//mutable std::vector<std::pair<mrpt::math::TPoint3D,size_t> > vertex_normals; //!< The accumulated normals & counts for each vertex, so normals can be averaged.
 
-	float cR[3],cG[3],cB[3];
 	const size_t cols=Z.getColCount();
 	const size_t rows=Z.getRowCount();
+
+	actualMesh.clear();
+	// we have 1 more row & col of vertices than of triangles:
+	vertex_normals.assign((1+cols)*(1+rows), std::pair<TPoint3D,size_t>(TPoint3D(0,0,0),0) );
+
+	float cR[3],cG[3],cB[3];
 	if (m_colorFromZ) updateColorsMatrix();
 	else	{
 		cR[0]=cR[1]=cR[2]=m_color.R/255.f;
 		cG[0]=cG[1]=cG[2]=m_color.G/255.f;
 		cB[0]=cB[1]=cB[2]=m_color.B/255.f;
 	}
-	ASSERT_(cols>0&&rows>0);
-	ASSERT_(xMax>xMin&&yMax>yMin);
+
+	ASSERT_(cols>0&&rows>0)
+	ASSERT_(xMax>xMin&&yMax>yMin)
+
 	bool useMask=false;
 	if (mask.getColCount()!=0&&mask.getRowCount()!=0)	{
 		ASSERT_(mask.getColCount()==cols&&mask.getRowCount()==rows);
@@ -77,47 +86,122 @@ void CMesh::updateTriangles() const	{
 	//const float sCellY=(yMax-yMin)/(rows-1);
 	const float sCellX=(xMax-xMin)/(rows-1);
 	const float sCellY=(yMax-yMin)/(cols-1);
-	actualMesh.empty();
+
 	CSetOfTriangles::TTriangle tri;
-	for (size_t i=0;i<rows-1;i++) for (size_t j=0;j<cols-1;j++)	{
-		if (useMask&&(!mask(i,j)||!mask(i+1,j+1))) continue;
-		tri.x[0]=xMin+i*sCellX;
-		tri.y[0]=yMin+j*sCellY;
-		tri.z[0]=Z(i,j);
+	for (size_t iX=0;iX<rows-1;iX++) for (size_t iY=0;iY<cols-1;iY++)	{
+		if (useMask&&(!mask(iX,iY)||!mask(iX+1,iY+1))) continue;
+		tri.x[0]=xMin+iX*sCellX;
+		tri.y[0]=yMin+iY*sCellY;
+		tri.z[0]=Z(iX,iY);
 		tri.x[2]=tri.x[0]+sCellX;
 		tri.y[2]=tri.y[0]+sCellY;
-		tri.z[2]=Z(i+1,j+1);
-		if (!useMask||mask(i+1,j))	{
+		tri.z[2]=Z(iX+1,iY+1);
+
+		// Vertex indices:
+		TTriangleVertexIndices tvi;
+		tvi.vind[0] = iX+rows*iY;
+		tvi.vind[2] = (iX+1)+rows*(iY+1);
+
+		// Each quadrangle has up to 2 triangles:
+		//  [0]
+		//   |
+		//   |
+		//  [1]--[2]
+		// Order: 0,1,2
+		if (!useMask||mask(iX+1,iY))
+		{
 			tri.x[1]=tri.x[2];
 			tri.y[1]=tri.y[0];
-			tri.z[1]=Z(i+1,j);
+			tri.z[1]=Z(iX+1,iY);
 			if (m_colorFromZ)	{
-				colormap(m_colorMap,C(i,j),tri.r[0],tri.g[0],tri.b[0]);
-				colormap(m_colorMap,C(i+1,j),tri.r[1],tri.g[1],tri.b[1]);
-				colormap(m_colorMap,C(i+1,j+1),tri.r[2],tri.g[2],tri.b[2]);
+				colormap(m_colorMap,C(iX,iY),tri.r[0],tri.g[0],tri.b[0]);
+				colormap(m_colorMap,C(iX+1,iY),tri.r[1],tri.g[1],tri.b[1]);
+				colormap(m_colorMap,C(iX+1,iY+1),tri.r[2],tri.g[2],tri.b[2]);
 			}	else	{
 				tri.r[0]=tri.r[1]=tri.r[2]=m_color.R/255.f;
 				tri.g[0]=tri.g[1]=tri.g[2]=m_color.G/255.f;
 				tri.b[0]=tri.b[1]=tri.b[2]=m_color.B/255.f;
 			}
-			actualMesh.push_back(tri);
+
+			// Compute normal of this triangle, and add it up to the 3 neighboring vertices:
+			// A = P1 - P0, B = P2 - P0
+			float ax=tri.x[1]-tri.x[0];
+			float bx=tri.x[2]-tri.x[0];
+			float ay=tri.y[1]-tri.y[0];
+			float by=tri.y[2]-tri.y[0];
+			float az=tri.z[1]-tri.z[0];
+			float bz=tri.z[2]-tri.z[0];
+			const TPoint3D this_normal(ay*bz-az*by,az*bx-ax*bz,ax*by-ay*bx);
+
+			// Vertex indices:
+			tvi.vind[1] = iX+1+rows*iY;
+
+			// Add triangle:
+			actualMesh.push_back( std::pair<CSetOfTriangles::TTriangle,TTriangleVertexIndices>(tri,tvi) );
+
+			// For averaging normals:
+			for (int k=0;k<3;k++) {
+				vertex_normals[ tvi.vind[k] ].first  += this_normal;
+				vertex_normals[ tvi.vind[k] ].second ++;
+			}
 		}
-		if (!useMask||mask(i,j+1))	{
-			tri.x[1]=tri.x[0];
+		// 2:
+		//  [0]--[1->2]
+		//     \  |
+		//       \|
+		//       [2->1]
+		// Order: 0,2,1
+		if (!useMask||mask(iX,iY+1))
+		{
+			tri.x[1]=tri.x[2];
 			tri.y[1]=tri.y[2];
-			tri.z[1]=Z(i,j+1);
+			tri.z[1]=tri.z[2];
+
+			tri.x[2]=tri.x[0];
+			//tri.y[2]=tri.y[1];
+			tri.z[2]=Z(iX,iY+1);
 			if (m_colorFromZ)	{
-				colormap(m_colorMap,C(i,j),tri.r[0],tri.g[0],tri.b[0]);
-				colormap(m_colorMap,C(i,j+1),tri.r[1],tri.g[1],tri.b[1]);
-				colormap(m_colorMap,C(i+1,j+1),tri.r[2],tri.g[2],tri.b[2]);
+				colormap(m_colorMap,C(iX,iY),tri.r[0],tri.g[0],tri.b[0]);
+				colormap(m_colorMap,C(iX,iY+1),tri.r[2],tri.g[2],tri.b[2]);
+				colormap(m_colorMap,C(iX+1,iY+1),tri.r[1],tri.g[1],tri.b[1]);
 			}	else	{
 				tri.r[0]=tri.r[1]=tri.r[2]=m_color.R/255.f;
 				tri.g[0]=tri.g[1]=tri.g[2]=m_color.G/255.f;
 				tri.b[0]=tri.b[1]=tri.b[2]=m_color.B/255.f;
 			}
-			actualMesh.push_back(tri);
+
+			// Compute normal of this triangle, and add it up to the 3 neighboring vertices:
+			// A = P1 - P0, B = P2 - P0
+			float ax=tri.x[1]-tri.x[0];
+			float bx=tri.x[2]-tri.x[0];
+			float ay=tri.y[1]-tri.y[0];
+			float by=tri.y[2]-tri.y[0];
+			float az=tri.z[1]-tri.z[0];
+			float bz=tri.z[2]-tri.z[0];
+			const TPoint3D this_normal(ay*bz-az*by,az*bx-ax*bz,ax*by-ay*bx);
+
+			// Vertex indices:
+			tvi.vind[1] = tvi.vind[2];
+			tvi.vind[2] = iX+rows*(iY+1);
+
+			// Add triangle:
+			actualMesh.push_back( std::pair<CSetOfTriangles::TTriangle,TTriangleVertexIndices>(tri,tvi) );
+
+			// For averaging normals:
+			for (int k=0;k<3;k++) {
+				vertex_normals[ tvi.vind[k] ].first  += this_normal;
+				vertex_normals[ tvi.vind[k] ].second ++;
+			}
 		}
 	}
+
+	// Average normals:
+	for (size_t i=0;i<vertex_normals.size();i++)
+	{
+		const size_t N = vertex_normals[i].second;
+		if (N>0) vertex_normals[i].first *= 1.0/N;
+	}
+
 	trianglesUpToDate=true;
 	polygonsUpToDate=false;
 }
@@ -134,28 +218,26 @@ void CMesh::render_dl() const	{
 		glEnable(GL_DEPTH_TEST);
 		glDisable(GL_BLEND);
 	}
+	glEnable(GL_NORMALIZE);  // So the GPU normalizes the normals instead of doing it in the CPU
 	glEnable(GL_COLOR_MATERIAL);
 	glShadeModel(GL_SMOOTH);
 	if (!trianglesUpToDate) updateTriangles();
 	if (!m_isWireFrame) glBegin(GL_TRIANGLES);
 	for (size_t i=0;i<actualMesh.size();i++)	{
-		const CSetOfTriangles::TTriangle &t=actualMesh[i];
-		float ax=t.x[1]-t.x[0];
-		float bx=t.x[2]-t.x[0];
-		float ay=t.y[1]-t.y[0];
-		float by=t.y[2]-t.y[0];
-		float az=t.z[1]-t.z[0];
-		float bz=t.z[2]-t.z[0];
-		glNormal3f(ay*bz-az*by,az*bx-ax*bz,ax*by-ay*bx);
+		const CSetOfTriangles::TTriangle &t=actualMesh[i].first;
+		const TTriangleVertexIndices &tvi=actualMesh[i].second;
+
 		if (m_isWireFrame) {
 			glDisable(GL_LIGHTING);  // Disable lights when drawing lines
 			glBegin(GL_LINE_LOOP);
 		}
 		for (int i=0;i<3;i++)	{
+			const mrpt::math::TPoint3D &n = vertex_normals[tvi.vind[i]].first;
+			glNormal3f(n.x,n.y,n.z);
 			glColor4f(t.r[i],t.g[i],t.b[i],t.a[i]);
 			glVertex3f(t.x[i],t.y[i],t.z[i]);
 		}
-		if (m_isWireFrame) 
+		if (m_isWireFrame)
 		{
 			glEnd();
 			glEnable(GL_LIGHTING);
@@ -163,6 +245,7 @@ void CMesh::render_dl() const	{
 	}
 	if (!m_isWireFrame) glEnd();
 	glDisable(GL_BLEND);
+	glDisable(GL_NORMALIZE);
 #endif
 }
 
@@ -264,49 +347,11 @@ void CMesh::updateColorsMatrix() const
 
 	C.setSize(rows,cols);
 
-	// Compute the "smoothed" height matrix:
-	// ------------------------------------------
-	//CMatrixFloat	MEANS(rows,cols);
-	//const int W = 20;
-	//for (size_t i=0;i<rows;i++)
-	//{
-	//	for (size_t j=0;j<cols;j++)
-	//	{
-	//		int j0 = max(0,int(j)-W);
-	//		int j1 = min(int(cols-1),int(j)+W);
-
-	//		int i0 = max(0,int(i)-W);
-	//		int i1 = min(int(rows-1),int(i)+W);
-
-	//		double S = 0;
-	//		int    N = 0;
-	//		for (int ii=i0;ii<=i1;ii++)
-	//		{
-	//			for (int jj=j0;jj<=j1;jj++)
-	//			{
-	//				S+=Z(ii,jj);
-	//				N++;
-	//			}
-	//		}
-
-	//		if (N)
-	//			MEANS(i,j) = S / N;
-	//	}
-	//}
-
 	// Color is proportional to difference between height of a cell and
 	//  the mean of the nearby cells MEANS:
-	C = Z; //- MEANS(i,j);
-
-	// Ignore cells with mask==0
-	//for (size_t i=0;i<rows;i++)
-	//	for (size_t j=0;j<cols;j++)
-	//		if (!mask(i,j))
-	//			C(i,j) = 0;
+	C = Z;
 
 	C.normalize(0.01f,0.99f);
-
-	//SAVE_MATRIX(C);
 
 	m_modified_Z = false; // Done
 	trianglesUpToDate=false;
@@ -340,7 +385,8 @@ bool CMesh::traceRay(const mrpt::poses::CPose3D &o,double &dist) const	{
 }
 
 static math::TPolygon3D tmpPoly(3);
-mrpt::math::TPolygonWithPlane createPolygonFromTriangle(const CSetOfTriangles::TTriangle &t)	{
+mrpt::math::TPolygonWithPlane createPolygonFromTriangle(const std::pair<CSetOfTriangles::TTriangle,CMesh::TTriangleVertexIndices> &p)	{
+	const CSetOfTriangles::TTriangle &t = p.first;
 	for (size_t i=0;i<3;i++)	{
 		tmpPoly[i].x=t.x[i];
 		tmpPoly[i].y=t.y[i];

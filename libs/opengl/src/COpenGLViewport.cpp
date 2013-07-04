@@ -100,10 +100,10 @@ COpenGLViewport::COpenGLViewport( COpenGLScene *parent, const string &name  ) :
 	// Default: one light from default direction
 	m_lights.push_back( CLight() );
 	m_lights.push_back( CLight() );
-	
+
 	m_lights[0].setPosition(1,1,1,0);
 	m_lights[0].setDirection(-1,-1,-1);
-	
+
 	m_lights[1].light_ID = 1;
 	m_lights[1].setPosition(1,2,-1,0);
 	m_lights[1].setDirection(1,2,1);
@@ -633,14 +633,14 @@ void  COpenGLViewport::readFromStream(CStream &in,int version)
 			{
 				in >> m_OpenGL_enablePolygonNicest;
 			}
-			else { 
-				// Defaults 
+			else {
+				// Defaults
 			}
 
 			// Added in v3: Lights
 			if (version>=3)
 				in >>m_lights;
-			else 
+			else
 			{
 				// Default: one light from default direction
 				m_lights.clear();
@@ -919,12 +919,12 @@ void COpenGLViewport::getBoundingBox(mrpt::math::TPoint3D &bb_min, mrpt::math::T
 	bb_min = TPoint3D( std::numeric_limits<double>::max(), std::numeric_limits<double>::max(), std::numeric_limits<double>::max() );
 	bb_max = TPoint3D(-std::numeric_limits<double>::max(),-std::numeric_limits<double>::max(),-std::numeric_limits<double>::max() );
 
-	for (CListOpenGLObjects::const_iterator it=m_objects.begin();it!=m_objects.end();++it) 
+	for (CListOpenGLObjects::const_iterator it=m_objects.begin();it!=m_objects.end();++it)
 	{
 		TPoint3D child_bbmin( std::numeric_limits<double>::max(), std::numeric_limits<double>::max(), std::numeric_limits<double>::max() );
 		TPoint3D child_bbmax(-std::numeric_limits<double>::max(),-std::numeric_limits<double>::max(),-std::numeric_limits<double>::max() );
 		(*it)->getBoundingBox(child_bbmin, child_bbmax);
-		
+
 		keep_min(bb_min.x, child_bbmin.x);
 		keep_min(bb_min.y, child_bbmin.y);
 		keep_min(bb_min.z, child_bbmin.z);

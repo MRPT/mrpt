@@ -47,6 +47,25 @@ using namespace std;
 
 IMPLEMENTS_SERIALIZABLE(CBox,CRenderizableDisplayList,mrpt::opengl)
 
+CBox::CBox() : 
+	m_corner_min(-1,-1,-1),
+	m_corner_max(1,1,1),
+	m_wireframe(false),
+	m_lineWidth(1),
+	m_draw_border(false),
+	m_solidborder_color(0,0,0) 
+{ 
+}
+
+CBox::CBox(const mrpt::math::TPoint3D &corner1, const mrpt::math::TPoint3D &corner2, bool  is_wireframe, float lineWidth) :
+	m_wireframe(is_wireframe) , 
+	m_lineWidth( lineWidth ),
+	m_draw_border(false),
+	m_solidborder_color(0,0,0) 
+{
+	setBoxCorners(corner1,corner2);			
+}
+
 /*---------------------------------------------------------------
 							render
   ---------------------------------------------------------------*/
@@ -57,58 +76,13 @@ void CBox::render_dl() const	{
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	}
-    else
-    {
+	else
+	{
 		glEnable(GL_DEPTH_TEST);
 		glDisable(GL_BLEND);
-    }
-
-	if (this->m_wireframe)
-	{
-		glDisable(GL_LIGHTING);
-		// wireframe:
-		glLineWidth(m_lineWidth); checkOpenGLError();
-		glBegin(GL_LINE_STRIP);
-		glColor4ub(m_color.R,m_color.G,m_color.B,m_color.A);
-
-		glVertex3d(m_corner_min.x,m_corner_min.y,m_corner_min.z);
-		glVertex3d(m_corner_max.x,m_corner_min.y,m_corner_min.z);
-		glVertex3d(m_corner_max.x,m_corner_min.y,m_corner_max.z);
-		glVertex3d(m_corner_min.x,m_corner_min.y,m_corner_max.z);
-		glVertex3d(m_corner_min.x,m_corner_min.y,m_corner_min.z);
-
-		glEnd();
-
-		glBegin(GL_LINE_STRIP);
-		glColor4ub(m_color.R,m_color.G,m_color.B,m_color.A);
-
-		glVertex3d(m_corner_min.x,m_corner_max.y,m_corner_min.z);
-		glVertex3d(m_corner_max.x,m_corner_max.y,m_corner_min.z);
-		glVertex3d(m_corner_max.x,m_corner_max.y,m_corner_max.z);
-		glVertex3d(m_corner_min.x,m_corner_max.y,m_corner_max.z);
-		glVertex3d(m_corner_min.x,m_corner_max.y,m_corner_min.z);
-
-		glEnd();
-
-		glBegin(GL_LINE_STRIP);
-		glColor4ub(m_color.R,m_color.G,m_color.B,m_color.A);
-		glVertex3d(m_corner_min.x,m_corner_min.y,m_corner_min.z);
-		glVertex3d(m_corner_min.x,m_corner_max.y,m_corner_min.z);
-		glVertex3d(m_corner_min.x,m_corner_max.y,m_corner_max.z);
-		glVertex3d(m_corner_min.x,m_corner_min.y,m_corner_max.z);
-		glEnd();
-
-		glBegin(GL_LINE_STRIP);
-		glColor4ub(m_color.R,m_color.G,m_color.B,m_color.A);
-		glVertex3d(m_corner_max.x,m_corner_min.y,m_corner_min.z);
-		glVertex3d(m_corner_max.x,m_corner_max.y,m_corner_min.z);
-		glVertex3d(m_corner_max.x,m_corner_max.y,m_corner_max.z);
-		glVertex3d(m_corner_max.x,m_corner_min.y,m_corner_max.z);
-		glEnd();
-
-		glEnable(GL_LIGHTING);
 	}
-	else
+
+	if (!m_wireframe)
 	{
 		// solid:
 		glEnable(GL_NORMALIZE);
@@ -165,8 +139,8 @@ void CBox::render_dl() const	{
 			TPoint3D(m_corner_min.x,m_corner_max.y,m_corner_min.z),
 			TPoint3D(m_corner_min.x,m_corner_min.y,m_corner_min.z),
 			TPoint3D(m_corner_max.x,m_corner_max.y,m_corner_min.z) );
-
 		// Top face:
+
 		gl_utils::renderTriangleWithNormal(
 			TPoint3D(m_corner_min.x,m_corner_min.y,m_corner_max.z),
 			TPoint3D(m_corner_max.x,m_corner_min.y,m_corner_max.z),
@@ -180,6 +154,65 @@ void CBox::render_dl() const	{
 		glDisable(GL_NORMALIZE);
 	}
 
+	if (m_wireframe || m_draw_border)
+	{
+		glDisable(GL_LIGHTING);
+
+		if (m_draw_border)
+		{
+			glEnable(GL_BLEND);
+			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		}
+
+		// wireframe:
+		glLineWidth(m_lineWidth); checkOpenGLError();
+			
+		mrpt::math::TPoint3D  	a = m_corner_min, b = m_corner_max;
+
+		if (m_wireframe)
+			glColor4ub(m_color.R,m_color.G,m_color.B,m_color.A);
+		else 
+		{
+			glColor4ub(m_solidborder_color.R,m_solidborder_color.G,m_solidborder_color.B,m_solidborder_color.A);
+
+			// Draw lines "a bit" far above the solid surface:
+		/*	mrpt::math::TPoint3D d = b-a;
+			d*=0.001;
+			a-=d; b+=d;*/
+		}
+
+		glBegin(GL_LINE_STRIP);
+		glVertex3d(a.x,a.y,a.z);
+		glVertex3d(b.x,a.y,a.z);
+		glVertex3d(b.x,a.y,b.z);
+		glVertex3d(a.x,a.y,b.z);
+		glVertex3d(a.x,a.y,a.z);
+		glEnd();
+
+		glBegin(GL_LINE_STRIP);
+		glVertex3d(a.x,b.y,a.z);
+		glVertex3d(b.x,b.y,a.z);
+		glVertex3d(b.x,b.y,b.z);
+		glVertex3d(a.x,b.y,b.z);
+		glVertex3d(a.x,b.y,a.z);
+		glEnd();
+
+		glBegin(GL_LINE_STRIP);
+		glVertex3d(a.x,a.y,a.z);
+		glVertex3d(a.x,b.y,a.z);
+		glVertex3d(a.x,b.y,b.z);
+		glVertex3d(a.x,a.y,b.z);
+		glEnd();
+
+		glBegin(GL_LINE_STRIP);
+		glVertex3d(b.x,a.y,a.z);
+		glVertex3d(b.x,b.y,a.z);
+		glVertex3d(b.x,b.y,b.z);
+		glVertex3d(b.x,a.y,b.z);
+		glEnd();
+
+		glEnable(GL_LIGHTING);
+	}
 
 	glDisable(GL_BLEND);
 
@@ -191,7 +224,7 @@ void CBox::render_dl() const	{
      CSerializable objects
   ---------------------------------------------------------------*/
 void CBox::writeToStream(CStream &out,int *version) const	{
-	if (version) *version=0;
+	if (version) *version=1;
 	else	{
 		writeToStreamRender(out);
 		//version 0
@@ -199,6 +232,8 @@ void CBox::writeToStream(CStream &out,int *version) const	{
 			m_corner_min.x << m_corner_min.y << m_corner_min.z <<
 			m_corner_max.x << m_corner_max.y << m_corner_max.z <<
 			m_wireframe << m_lineWidth;
+		// Version 1:
+		out << m_draw_border << m_solidborder_color;
 	}
 }
 
@@ -209,11 +244,20 @@ void CBox::writeToStream(CStream &out,int *version) const	{
 void CBox::readFromStream(CStream &in,int version)	{
 	switch (version)	{
 		case 0:
+		case 1:
 			readFromStreamRender(in);
 			in >>
 			m_corner_min.x >> m_corner_min.y >> m_corner_min.z >>
 			m_corner_max.x >> m_corner_max.y >> m_corner_max.z >>
 			m_wireframe >> m_lineWidth;
+			// Version 1:
+			if (version>=1) 
+				in >> m_draw_border >> m_solidborder_color;
+			else
+			{
+				m_draw_border = false;
+			}
+
 			break;
 		default:
 			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)

@@ -59,6 +59,8 @@
 			- New method: CImage::loadFromXPM() - <a href="http://code.google.com/p/mrpt/source/detail?r=3397" >r3397</a>
 		- [mrpt-maps]
 			- mrpt::slam::COctoMap now exposes the inner octomap::OcTree object. See example samples/octomap_simple - <a href="http://code.google.com/p/mrpt/source/detail?r=4304" >r4304</a> 
+		- [mrpt-openg]
+			- mrpt::opengl::CBox now be also rendered as a solid box + line borders. See mrpt::opengl::CBox::enableBoxBorder()
 		- [mrpt-reactivenav]
 			- mrpt::reactivenav::CParameterizedTrajectoryGenerator: The "low pass filter" has been removed since it wasn't practical and was never used; thus, parameters "TAU" and "DELAY" has been removed. - <a href="http://code.google.com/p/mrpt/source/detail?r=3395" >r3395</a>
 			- Methods removed since they weren't implemented in any derived class and there are no plans for doing it.

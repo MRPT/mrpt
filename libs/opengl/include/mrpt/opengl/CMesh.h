@@ -54,18 +54,20 @@ namespace mrpt
 		/** A planar (XY) grid where each cell has an associated height and, optionally, a texture map.
 		  *  A typical usage example would be an elevation map or a 3D model of a terrain.
 		  *  \sa opengl::COpenGLScene
-		  *  
+		  *
 		  *  <div align="center">
 		  *  <table border="0" cellspan="4" cellspacing="4" style="border-width: 1px; border-style: solid;">
 		  *   <tr> <td> mrpt::opengl::CMesh </td> <td> \image html preview_CMesh.png </td> </tr>
 		  *  </table>
 		  *  </div>
-		  *  
+		  *
 		  * \ingroup mrpt_opengl_grp
 		  */
 		class OPENGL_IMPEXP CMesh : public CRenderizableDisplayList
 		{
 			DEFINE_SERIALIZABLE( CMesh )
+		public:
+			struct TTriangleVertexIndices { size_t vind[3]; };
 		protected:
 			mrpt::utils::CImage		m_textureImage;
 
@@ -87,7 +89,8 @@ namespace mrpt
 			void updatePolygons() const;	//<!Called internally to assure that the polygon list is updated.
 
 			float xMin,xMax,yMin,yMax;	//!< Mesh bounds
-			mutable std::vector<CSetOfTriangles::TTriangle> actualMesh;	//!< List of triangles in the mesh
+			mutable std::vector<std::pair<CSetOfTriangles::TTriangle,TTriangleVertexIndices> > actualMesh;	//!< List of triangles in the mesh
+			mutable std::vector<std::pair<mrpt::math::TPoint3D,size_t> > vertex_normals; //!< The accumulated normals & counts for each vertex, so normals can be averaged.
 			mutable bool trianglesUpToDate;		//!<Whether the actual mesh needs to be recalculated
 			mutable bool polygonsUpToDate;	//<!Whether the polygon mesh (auxiliary structure for ray tracing) needs to be recalculated
 			mutable std::vector<mrpt::math::TPolygonWithPlane> tmpPolys;

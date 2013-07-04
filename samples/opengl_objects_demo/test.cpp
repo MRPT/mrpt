@@ -73,6 +73,12 @@ void TestOpenGLObjects()
 		obj->setLocation(off_x,0,0);
 		theScene->insert( obj );
 
+		opengl::CGridPlaneXYPtr obj2 = opengl::CGridPlaneXY::Create(-7,7,-7,7,0,1);
+		obj2->setColor(0.7,0.7,0.7,0.99);
+		obj2->setLocation(off_x,15,0);
+		obj2->enableAntiAliasing();
+		theScene->insert( obj2 );
+
 		opengl::CTextPtr gl_txt = opengl::CText::Create("CGridPlaneXY");
 		gl_txt->setLocation(off_x,off_y_label,0);
 		theScene->insert(gl_txt);
@@ -128,6 +134,12 @@ void TestOpenGLObjects()
 		opengl::CBoxPtr obj2 = opengl::CBox::Create(TPoint3D(0,0,0),TPoint3D(1,1,1), false);
 		obj2->setLocation(off_x,4,0);
 		theScene->insert( obj2 );
+
+		opengl::CBoxPtr obj3 = opengl::CBox::Create(TPoint3D(0,0,0),TPoint3D(1,1,1), false);
+		obj3->enableBoxBorder(true);
+		obj3->setLineWidth(3);
+		obj3->setLocation(off_x,8,0);
+		theScene->insert( obj3 );
 
 		opengl::CTextPtr gl_txt = opengl::CText::Create("CBox");
 		gl_txt->setLocation(off_x,off_y_label,0);
