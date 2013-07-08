@@ -43,6 +43,9 @@
  <h2>Version 1.0.2: (Under development)</h2></a>
 	- New apps:
 		- <a href="http://www.mrpt.org/Application%3AReactiveNav3D-Demo" >ReactiveNav3D-Demo</a> (By Mariano Jaimez Tarifa)
+	- Changes in apps:
+		- <a href="http://www.mrpt.org/Application%3Arawlog-edit" >rawlog-edit</a>: 
+			- New operation: --list-timestamps
 	- New classes:
 		- [mrpt-opengl]
 			- mrpt::opengl::CLight - OpenGL scenes now allow customization of OpenGL lighting. See also new lighting methods in mrpt::opengl::COpenGLViewport - <a href="http://code.google.com/p/mrpt/source/detail?r=3409" >r3409</a>

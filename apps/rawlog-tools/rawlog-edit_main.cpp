@@ -79,6 +79,7 @@ DECLARE_OP_FUNCTION(op_generate_3d_pointclouds);
 DECLARE_OP_FUNCTION(op_generate_pcd);
 DECLARE_OP_FUNCTION(op_stereo_rectify);
 DECLARE_OP_FUNCTION(op_rename_externals);
+DECLARE_OP_FUNCTION(op_list_timestamps);
 
 // Declare the supported command line switches ===========
 TCLAP::CmdLine cmd("rawlog-edit", ' ', MRPT_getVersion().c_str());
@@ -133,6 +134,12 @@ int main(int argc, char **argv)
 			"Optionally the output text file can be changed with --text-file-output."
 			,cmd, false) );
 		ops_functors["list-images"] = &op_list_images;
+
+		arg_ops.push_back(new TCLAP::SwitchArg("","list-timestamps",
+			"Op: generates a list with all the observations' timestamp, sensor label and C++ class name.\n"
+			"Optionally the output text file can be changed with --text-file-output."
+			,cmd, false) );
+		ops_functors["list-timestamps"] = &op_list_timestamps;
 
 		arg_ops.push_back(new TCLAP::SwitchArg("","list-range-bearing",
 			"Op: dump a list of all landmark observations of type range-bearing.\n"

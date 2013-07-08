@@ -447,6 +447,7 @@ DECLARE_OP_FUNCTION(op_export_gps_txt)
 					"%21s %21s %21s "	// X Y Z Cartessian (GPS)
 					"%21s %21s %21s "	// VX VY VZ Cartessian (GPS)
 					"%21s %21s %21s "	// VX VY VZ Cartessian (Local)
+					"%14s "				// SAT Time
 					"\n"
 					,
 					"Time",
@@ -457,7 +458,8 @@ DECLARE_OP_FUNCTION(op_export_gps_txt)
 					"Geocen X","Geocen Y","Geocen Z",
 					"GPS X","GPS Y","GPS Z",
 					"GPS VX","GPS VY","GPS VZ",
-					"Local VX","Local VY","Local VZ"
+					"Local VX","Local VY","Local VZ",
+					"SAT Time"
 					);
 			}
 			else
@@ -519,6 +521,7 @@ DECLARE_OP_FUNCTION(op_export_gps_txt)
 					"%21.16f %21.16f %21.16f "	// X Y Z Cartessian (GPS)
 					"%21.16f %21.16f %21.16f "	// VX VY VZ Cartessian (GPS)
 					"%21.16f %21.16f %21.16f "	// VX VY VZ Cartessian (Local)
+					"%14.4f "				// SAT Time
 					"\n",
 						tim,
 						DEG2RAD(obs->GGA_datum.latitude_degrees),
@@ -533,7 +536,8 @@ DECLARE_OP_FUNCTION(op_export_gps_txt)
 						geo.x, geo.y, geo.z,
 						cart_pos.x,cart_pos.y,cart_pos.z,
 						cart_vel.x,cart_vel.y,cart_vel.z,
-						cart_vel_local.x,cart_vel_local.y,cart_vel_local.z
+						cart_vel_local.x,cart_vel_local.y,cart_vel_local.z,
+						static_cast<double>(obs->GGA_datum.UTCTime.hour * 3600.0 + obs->GGA_datum.UTCTime.minute * 60.0 + obs->GGA_datum.UTCTime.sec)
 					   );
 
 				m_GPS_entriesSaved++;

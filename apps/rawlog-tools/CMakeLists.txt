@@ -31,6 +31,7 @@ ADD_EXECUTABLE(rawlog-edit
 	rawlog-edit_generate-pcd.cpp
 	rawlog-edit_stereo-rectify.cpp
 	rawlog-edit_rename_externals.cpp
+	rawlog-edit_list-timestamps.cpp
 	)
 SET(TMP_TARGET_NAME "rawlog-edit")
 
