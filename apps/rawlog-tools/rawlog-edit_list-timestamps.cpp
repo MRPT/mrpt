@@ -70,7 +70,7 @@ DECLARE_OP_FUNCTION(op_list_timestamps)
 
 		bool processOneObservation(CObservationPtr  &obs)
 		{
-			m_out << mrpt::system::timestampToDouble(obs->timestamp) << " " << obs->sensorLabel << " " << obs->GetRuntimeClass()->className << std::endl;
+			m_out << std::fixed <<  mrpt::system::timestampToDouble(obs->timestamp) << " " << obs->sensorLabel << " " << obs->GetRuntimeClass()->className << std::endl;
 			return true;
 		}
 
