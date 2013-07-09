@@ -221,6 +221,9 @@ ${CMAKE_MRPT_BUILD_SHARED_LIB}
 /** Has CHOLDMOD library? (From SuiteSparse) */
 #define MRPT_HAS_CHOLMOD ${CMAKE_MRPT_HAS_CHOLMOD}
 
+/** Has SPQR library? (From SuiteSparse) */
+#define MRPT_HAS_SPQR ${CMAKE_MRPT_HAS_SPQR}
+
 /** Has NationalInstruments headers/libraries? */
 // At least basic NI headers/libs are present:
 #define MRPT_HAS_NATIONAL_INSTRUMENTS ${CMAKE_MRPT_HAS_NATIONAL_INSTRUMENTS}    

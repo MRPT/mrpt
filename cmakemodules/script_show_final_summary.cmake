@@ -131,6 +131,7 @@ SHOW_CONFIG_LINE("Has PGR Digiclops/Triclops              " CMAKE_MRPT_HAS_BUMBL
 ENDIF(NOT UNIX)
 SHOW_CONFIG_LINE_SYSTEM("Has SuiteSparse/CHOLMOD                 " CMAKE_MRPT_HAS_CHOLMOD)
 SHOW_CONFIG_LINE_SYSTEM("Has SuiteSparse/CSparse                 " CMAKE_MRPT_HAS_CSPARSE)
+SHOW_CONFIG_LINE_SYSTEM("Has SuiteSparse/SPQR                    " CMAKE_MRPT_HAS_SPQR)
 SHOW_CONFIG_LINE_SYSTEM("Has SwissRanger 3/4000 3D camera        " CMAKE_MRPT_HAS_SWISSRANGE )
 SHOW_CONFIG_LINE_SYSTEM("Has Phidget                             " CMAKE_MRPT_HAS_PHIDGET)
 SHOW_CONFIG_LINE_SYSTEM("Has Videre SVS stereo camera            " CMAKE_MRPT_HAS_SVS)
