@@ -80,6 +80,7 @@ DECLARE_OP_FUNCTION(op_generate_pcd);
 DECLARE_OP_FUNCTION(op_stereo_rectify);
 DECLARE_OP_FUNCTION(op_rename_externals);
 DECLARE_OP_FUNCTION(op_list_timestamps);
+DECLARE_OP_FUNCTION(op_remap_timestamps);
 
 // Declare the supported command line switches ===========
 TCLAP::CmdLine cmd("rawlog-edit", ' ', MRPT_getVersion().c_str());
@@ -140,6 +141,12 @@ int main(int argc, char **argv)
 			"Optionally the output text file can be changed with --text-file-output."
 			,cmd, false) );
 		ops_functors["list-timestamps"] = &op_list_timestamps;
+
+		arg_ops.push_back(new TCLAP::ValueArg<std::string>("","remap-timestamps",
+			"Op: Change all timestamps t replacing it with the linear map 'a*t+b'."
+			"The parameters 'a' and 'b' must be given separated with a semicolon.\n"
+			"Requires: -o (or --output)",false,"","a;b",cmd) );
+		ops_functors["remap-timestamps"] = &op_remap_timestamps;
 
 		arg_ops.push_back(new TCLAP::SwitchArg("","list-range-bearing",
 			"Op: dump a list of all landmark observations of type range-bearing.\n"

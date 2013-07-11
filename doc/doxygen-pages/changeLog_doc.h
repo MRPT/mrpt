@@ -45,7 +45,7 @@
 		- <a href="http://www.mrpt.org/Application%3AReactiveNav3D-Demo" >ReactiveNav3D-Demo</a> (By Mariano Jaimez Tarifa)
 	- Changes in apps:
 		- <a href="http://www.mrpt.org/Application%3Arawlog-edit" >rawlog-edit</a>: 
-			- New operation: --list-timestamps
+			- New operations: --list-timestamps, --remap-timestamps
 	- New classes:
 		- [mrpt-opengl]
 			- mrpt::opengl::CLight - OpenGL scenes now allow customization of OpenGL lighting. See also new lighting methods in mrpt::opengl::COpenGLViewport - <a href="http://code.google.com/p/mrpt/source/detail?r=3409" >r3409</a>
@@ -53,7 +53,7 @@
 			- mrpt::reactivenav::CReactiveNavigationSystem3D - By Mariano Jaimez Tarifa - <a href="http://code.google.com/p/mrpt/source/detail?r=3389" >r3389</a>
 	- New functions:
 		- [mrpt-opengl]
-			- 
+			- mrpt::opengl::stock_objects::RobotRhodon()
 	- Changes in classes:
 		- [mrpt-base]
 			- Generic particle filter classes now allow directly resampling to a dynamic number of particles. Affected methods: - <a href="http://code.google.com/p/mrpt/source/detail?r=3381" >r3381</a>
