@@ -537,7 +537,7 @@ DECLARE_OP_FUNCTION(op_export_gps_txt)
 						cart_pos.x,cart_pos.y,cart_pos.z,
 						cart_vel.x,cart_vel.y,cart_vel.z,
 						cart_vel_local.x,cart_vel_local.y,cart_vel_local.z,
-						static_cast<double>(obs->GGA_datum.UTCTime.hour * 3600.0 + obs->GGA_datum.UTCTime.minute * 60.0 + obs->GGA_datum.UTCTime.sec)
+                        mrpt::system::timestampTotime_t( obs->GGA_datum.UTCTime.getAsTimestamp( obs->timestamp ) )
 					   );
 
 				m_GPS_entriesSaved++;

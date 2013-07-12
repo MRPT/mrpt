@@ -879,7 +879,7 @@ void xRawLogViewerFrame::OnGenGPSTxt(wxCommandEvent& event)
 									"%21.16f %21.16f %21.16f "	// X Y Z Cartessian (GPS)
 									"%21.16f %21.16f %21.16f "	// VX VY VZ Cartessian (GPS)
 									"%21.16f %21.16f %21.16f "	// VX VY VZ Cartessian (Local)
-									"%14.4f "				// SAT Time 
+									"%14.4f "				// SAT Time
 									"\n",
 										tim,
 										DEG2RAD(obs->GGA_datum.latitude_degrees),
@@ -895,7 +895,7 @@ void xRawLogViewerFrame::OnGenGPSTxt(wxCommandEvent& event)
 										cart_pos.x,cart_pos.y,cart_pos.z,
 										cart_vel.x,cart_vel.y,cart_vel.z,
 										cart_vel_local.x,cart_vel_local.y,cart_vel_local.z,
-										obs->GGA_datum.UTCTime.hour * 3600.0 + obs->GGA_datum.UTCTime.minute * 60.0 +obs->GGA_datum.UTCTime.sec
+                                        mrpt::system::timestampTotime_t( obs->GGA_datum.UTCTime.getAsTimestamp( obs->timestamp ) )
 									   );
 								M++;
 

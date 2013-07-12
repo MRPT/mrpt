@@ -86,6 +86,7 @@ namespace slam
 			uint8_t	minute;
 			double  sec;
 
+            mrpt::system::TTimeStamp getAsTimestamp(const mrpt::system::TTimeStamp &date) const; //!< Build an MRPT timestamp with the hour/minute/sec of this structure and the date from the given timestamp.
 			bool operator == (const TUTCTime& o) const { return hour==o.hour && minute==o.minute && sec==o.sec; }
 			bool operator != (const TUTCTime& o) const { return hour!=o.hour || minute!=o.minute || sec!=o.sec; }
 			inline TUTCTime& operator = (const TUTCTime& o)

@@ -510,3 +510,19 @@ void CObservationGPS::clear()
 	has_PZS_datum = false;
 	has_SATS_datum = false;
 }
+
+
+// Build an MRPT timestamp with the hour/minute/sec of this structure and the date from the given timestamp.
+mrpt::system::TTimeStamp CObservationGPS::TUTCTime::getAsTimestamp(const mrpt::system::TTimeStamp &date) const
+{
+    using namespace mrpt::system;
+
+    TTimeParts parts;
+    timestampToParts(date,parts, false /* UTC, not local */);
+
+    parts.hour   = this->hour;
+    parts.minute = this->minute;
+    parts.second = this->sec;
+
+    return buildTimestampFromParts(parts);
+}
