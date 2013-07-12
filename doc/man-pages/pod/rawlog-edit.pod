@@ -4,16 +4,19 @@ rawlog-edit - Command-line robotic datasets (rawlogs) manipulation tool
 
 =head1 SYNOPSIS
 
-   rawlog-edit  [--camera-params <SENSOR_LABEL,file.ini>] [--sensors-pose
+   rawlog-edit  [--rename-externals] [--stereo-rectify <SENSOR_LABEL,0.5>]
+                [--camera-params <SENSOR_LABEL,file.ini>] [--sensors-pose
                 <file.ini>] [--generate-pcd] [--generate-3d-pointclouds]
                 [--cut] [--export-gps-txt] [--export-gps-kml] [--keep-label
                 <label[,label...]>] [--remove-label <label[,label...]>]
-                [--list-range-bearing] [--list-images] [--info]
+                [--list-range-bearing] [--remap-timestamps <a;b>]
+                [--list-timestamps] [--list-images] [--info]
                 [--externalize] [-q] [-w] [--to-time <T1>] [--from-time
                 <T0>] [--to-index <N1>] [--from-index <N0>]
-                [--text-file-output <out.txt>] [--image-format <jpg,png,pgm
-                ,...>] [--out-dir <.>] [-o <dataset_out.rawlog>] -i
-                <dataset.rawlog> [--] [--version] [-h]
+                [--text-file-output <out.txt>] [--image-size <COLSxROWS>]
+                [--image-format <jpg,png,pgm,...>] [--out-dir <.>] [-o
+                <dataset_out.rawlog>] -i <dataset.rawlog> [--] [--version]
+                [-h]
 
 
 
@@ -66,10 +69,33 @@ dataset files in the "rawlog" standardized format.
 
 These are the supported arguments and operations:
 
+   --rename-externals
+     Op: Renames all the external storage file names within the rawlog (it
+     doesn't change the external files, which may even not exist).
+
+
+   --stereo-rectify <SENSOR_LABEL,0.5>
+     Op: creates a new set of external images for all
+     CObservationStereoImages with the given SENSOR_LABEL, using the camera
+     parameters stored in the observations (which must be a valid
+     calibration) and with the given alpha value. Alpha can be -1 for auto,
+     or otherwise be in the range [0,1] (see OpenCV's docs for
+     cvStereoRectify).
+
+     Requires: -o (or --output)
+
+     Optional: --image-format to set image format (default=jpg), 
+
+     --image-size to resize output images (example: --image-size 640x480)
+     
+
+
    --camera-params <SENSOR_LABEL,file.ini>
      Op: change the camera parameters of all CObservationImage's with the
      given SENSOR_LABEL, with new params loaded from the given file,
-     section '[CAMERA_PARAMS]'.
+     section '[CAMERA_PARAMS]' for monocular cameras, or
+     '[CAMERA_PARAMS_LEFT]' and '[CAMERA_PARAMS_RIGHT]' for
+     stereo.
 
      Requires: -o (or --output)
 
@@ -87,7 +113,7 @@ These are the supported arguments and operations:
      for each sensor observation that can be converted into this
      representation: laser scans, 3D camera images, etc.
 
-     May use: --out-dir to change the output directory (default: "./")
+     Optional: --out-dir to change the output directory (default: "./")
 
 
    --generate-3d-pointclouds
@@ -145,6 +171,20 @@ These are the supported arguments and operations:
      Optionally the output text file can be changed with
      --text-file-output.
 
+   --remap-timestamps <a;b>
+     Op: Change all timestamps t replacing it with the linear map
+     'a*t+b'.The parameters 'a' and 'b' must be given separated with a
+     semicolon.
+
+     Requires: -o (or --output)
+
+   --list-timestamps
+     Op: generates a list with all the observations' timestamp, sensor
+     label and C++ class name.
+
+     Optionally the output text file can be changed with
+     --text-file-output.
+
    --list-images
      Op: dump a list of all external image files in the dataset.
 
@@ -183,6 +223,9 @@ These are the supported arguments and operations:
 
    --text-file-output <out.txt>
      Output for a text file
+
+   --image-size <COLSxROWS>
+     Resize output images
 
    --image-format <jpg,png,pgm,...>
      External image format
