@@ -113,79 +113,119 @@ namespace mrpt
 		/** @name Simple intersection operations, relying basically on geometrical operations.
 			@{
 		 */
-		/**
-		  * Gets the intersection between two 3D segments.
+		/** Gets the intersection between two 3D segments. Possible outcomes:
+		  *		- Segments intersect: Return=true, obj.getType()=GEOMETRIC_TYPE_POINT
+		  *		- Segments don't intersect & are parallel: Return=true, obj.getType()=GEOMETRIC_TYPE_SEGMENT, obj is the segment "in between" both segments.
+		  *		- Segments don't intersect & aren't parallel: Return=false.
 		  * \sa TObject3D
 		  */
 		bool BASE_IMPEXP intersect(const TSegment3D &s1,const TSegment3D &s2,TObject3D &obj);
-		/**
-		  * Gets the intersection between a 3D segment and a plane.
+		
+		/** Gets the intersection between a 3D segment and a plane. Possible outcomes:
+		  *		- Don't intersect: Return=false
+		  *		- s1 is within the plane: Return=true, obj.getType()=GEOMETRIC_TYPE_SEGMENT
+		  *		- s1 intersects the plane at one point: Return=true, obj.getType()=GEOMETRIC_TYPE_POINT
 		  * \sa TObject3D
 		  */
 		bool BASE_IMPEXP intersect(const TSegment3D &s1,const TPlane &p2,TObject3D &obj);
-		/**
-		  * Gets the intersection between a 3D segment and a 3D line.
+		
+		/** Gets the intersection between a 3D segment and a 3D line. Possible outcomes:
+		  *		- They don't intersect : Return=false
+		  *		- s1 lies within the line: Return=true, obj.getType()=GEOMETRIC_TYPE_SEGMENT
+		  *		- s1 intersects the line at a point: Return=true, obj.getType()=GEOMETRIC_TYPE_POINT
 		  * \sa TObject3D
 		  */
 		bool BASE_IMPEXP intersect(const TSegment3D &s1,const TLine3D &r2,TObject3D &obj);
-		/**
-		  * Gets the intersection between a plane and a 3D segment.
+		
+		/** Gets the intersection between a plane and a 3D segment. Possible outcomes:
+		  *		- Don't intersect: Return=false
+		  *		- s2 is within the plane: Return=true, obj.getType()=GEOMETRIC_TYPE_SEGMENT
+		  *		- s2 intersects the plane at one point: Return=true, obj.getType()=GEOMETRIC_TYPE_POINT
 		  * \sa TObject3D
 		  */
 		inline bool intersect(const TPlane &p1,const TSegment3D &s2,TObject3D &obj)	{
 			return intersect(s2,p1,obj);
 		}
-		/**
-		  * Gets the intersection between two planes.
+		
+		/** Gets the intersection between two planes. Possible outcomes:
+		  *		- Planes are parallel: Return=false
+		  *		- Planes intersect into a line: Return=true, obj.getType()=GEOMETRIC_TYPE_LINE
 		  * \sa TObject3D
 		  */
 		bool BASE_IMPEXP intersect(const TPlane &p1,const TPlane &p2,TObject3D &obj);
-		/**
-		  * Gets the intersection between a plane and a 3D line.
+		
+		/** Gets the intersection between a plane and a 3D line. Possible outcomes:
+		  *		- Line is parallel to plane but not within it: Return=false
+		  *		- Line is contained in the plane: Return=true, obj.getType()=GEOMETRIC_TYPE_LINE
+		  *		- Line intersects the plane at one point: Return=true, obj.getType()=GEOMETRIC_TYPE_POINT
 		  * \sa TObject3D
 		  */
 		bool BASE_IMPEXP intersect(const TPlane &p1,const TLine3D &p2,TObject3D &obj);
-		/**
-		  * Gets the intersection between a 3D line and a 3D segment.
+		
+		/** Gets the intersection between a 3D line and a 3D segment. Possible outcomes:
+		  *		- They don't intersect : Return=false
+		  *		- s2 lies within the line: Return=true, obj.getType()=GEOMETRIC_TYPE_SEGMENT
+		  *		- s2 intersects the line at a point: Return=true, obj.getType()=GEOMETRIC_TYPE_POINT
 		  * \sa TObject3D
 		  */
 		inline bool intersect(const TLine3D &r1,const TSegment3D &s2,TObject3D &obj)	{
 			return intersect(s2,r1,obj);
 		}
-		/**
-		  * Gets the intersection between a 3D line and a plane.
+		
+		/** Gets the intersection between a 3D line and a plane. Possible outcomes:
+		  *		- Line is parallel to plane but not within it: Return=false
+		  *		- Line is contained in the plane: Return=true, obj.getType()=GEOMETRIC_TYPE_LINE
+		  *		- Line intersects the plane at one point: Return=true, obj.getType()=GEOMETRIC_TYPE_POINT
 		  * \sa TObject3D
 		  */
 		inline bool intersect(const TLine3D &r1,const TPlane &p2,TObject3D &obj)	{
 			return intersect(p2,r1,obj);
 		}
-		/**
-		  * Gets the intersection between two 3D lines.
+		
+		/** Gets the intersection between two 3D lines. Possible outcomes:
+		  *		- Lines do not intersect: Return=false
+		  *		- Lines are parallel and do not coincide: Return=false
+		  *		- Lines coincide (are the same): Return=true, obj.getType()=GEOMETRIC_TYPE_LINE
+		  *		- Lines intesect in a point: Return=true, obj.getType()=GEOMETRIC_TYPE_POINT
 		  * \sa TObject3D
 		  */
 		bool BASE_IMPEXP intersect(const TLine3D &r1,const TLine3D &r2,TObject3D &obj);
-		/**
-		  * Gets the intersection between two 2D lines.
+		
+		/** Gets the intersection between two 2D lines. Possible outcomes:
+		  *		- Lines do not intersect: Return=false
+		  *		- Lines are parallel and do not coincide: Return=false
+		  *		- Lines coincide (are the same): Return=true, obj.getType()=GEOMETRIC_TYPE_LINE
+		  *		- Lines intesect in a point: Return=true, obj.getType()=GEOMETRIC_TYPE_POINT
 		  * \sa TObject2D
 		  */
 		bool BASE_IMPEXP intersect(const TLine2D &r1,const TLine2D &r2,TObject2D &obj);
-		/**
-		  * Gets the intersection between a 2D line and a 2D segment.
+		
+		/** Gets the intersection between a 2D line and a 2D segment. Possible outcomes:
+		  *		- They don't intersect: Return=false
+		  *		- s2 lies within the line: Return=true, obj.getType()=GEOMETRIC_TYPE_SEGMENT
+		  *		- Both intersects in one point: Return=true, obj.getType()=GEOMETRIC_TYPE_POINT
 		  * \sa TObject2D
 		  */
 		bool BASE_IMPEXP intersect(const TLine2D &r1,const TSegment2D &s2,TObject2D &obj);
-		/**
-		  * Gets the intersection between a 2D line and a 2D segment.
+		
+		/** Gets the intersection between a 2D line and a 2D segment. Possible outcomes:
+		  *		- They don't intersect: Return=false
+		  *		- s1 lies within the line: Return=true, obj.getType()=GEOMETRIC_TYPE_SEGMENT
+		  *		- Both intersects in one point: Return=true, obj.getType()=GEOMETRIC_TYPE_POINT
 		  * \sa TObject2D
 		  */
 		inline bool intersect(const TSegment2D &s1,const TLine2D &r2,TObject2D &obj)	{
 			return intersect(r2,s1,obj);
 		}
-		/**
-		  * Gets the intersection between two 2D segments.
+		
+		/** Gets the intersection between two 2D segments. Possible outcomes:
+		  *		- Segments intersect: Return=true, obj.getType()=GEOMETRIC_TYPE_POINT
+		  *		- Segments don't intersect & are parallel: Return=true, obj.getType()=GEOMETRIC_TYPE_SEGMENT, obj is the segment "in between" both segments.
+		  *		- Segments don't intersect & aren't parallel: Return=false.
 		  * \sa TObject2D
 		  */
 		bool BASE_IMPEXP intersect(const TSegment2D &s1,const TSegment2D &s2,TObject2D &obj);
+		
 		/** @}
 		 */
 

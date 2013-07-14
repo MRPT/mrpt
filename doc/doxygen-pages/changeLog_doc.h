@@ -69,6 +69,9 @@
 			- Methods removed since they weren't implemented in any derived class and there are no plans for doing it.
 				- mrpt::reactivenav::CReactiveNavigationSystem ::evaluate()
 				- mrpt::reactivenav::CReactiveNavigationSystem ::setParams()
+	- Build system:
+		- More unit tests:
+			- [mrpt-base] geometry module.
 	- BUG FIXES:
 		- CTimeLogger::registerUserMeasure() ignored the enable/disable state of the logger - <a href="http://code.google.com/p/mrpt/source/detail?r=3382" >r3382</a>
 
