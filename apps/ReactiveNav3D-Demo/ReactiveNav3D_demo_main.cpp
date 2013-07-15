@@ -286,7 +286,7 @@ int main(int num_arg, char *argv[])
 		{
 			filename = argv[2];
 			cout << endl << "Nombre del archivo: " << filename;
-			ofstream new_file(filename);
+			ofstream new_file(filename.c_str());
 			new_file << string(default_cfg_txt);
 			new_file.close();
 			cout << endl << "File saved" << endl;
