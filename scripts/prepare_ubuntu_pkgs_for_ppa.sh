@@ -43,8 +43,8 @@ rm -fr $MRPT_UBUNTU_OUT_DIR/
 # -------------------------------------------------------------------
 # And now create the custom packages for each Ubuntu distribution:
 # -------------------------------------------------------------------
-LST_DISTROS=(saucy raring quantal precise natty lucid)
-LST_EBDEIGN=(  0     0       0       1      1     1  )
+LST_DISTROS=(saucy raring quantal precise lucid)
+LST_EBDEIGN=(  0     0       0       1      1  )
 
 count=${#LST_DISTROS[@]}
 IDXS=$(seq 0 $(expr $count - 1))
