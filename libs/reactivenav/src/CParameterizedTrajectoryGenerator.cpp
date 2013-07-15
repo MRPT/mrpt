@@ -193,7 +193,7 @@ void CParameterizedTrajectoryGenerator::simulateTrajectories(
 			float x = .0f, y = .0f, phi = .0f, v = .0f, w = .0f, _x = .0f, _y = .0f, _phi = .0f;
 
 			// Sliding window with latest movement commands (for the optional low-pass filtering):
-			float  last_vs[2], last_ws[2];
+			float  last_vs[2] = {.0f,.0f}, last_ws[2] = {.0f,.0f};
 
 			// Add the first, initial point:
 			points.push_back( TCPoint(	x,y,phi, t,dist, v,w ) );

@@ -56,10 +56,10 @@ CReactiveNavigationSystem3D::CReactiveNavigationSystem3D(
     bool					enableLogToFile)
 	:
 	CAbstractReactiveNavigationSystem(react_iterf_impl),
-	new_cmd_v                   (0),
-	new_cmd_w					(0),
 	last_cmd_v                  (0),
 	last_cmd_w                  (0),
+	new_cmd_v                   (0),
+	new_cmd_w                   (0),
 	navigationEndEventSent       (false),
 	holonomicMethod              (0),
 	logFile                      (NULL),
