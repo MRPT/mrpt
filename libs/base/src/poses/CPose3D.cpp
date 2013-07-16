@@ -41,6 +41,7 @@
 #include <mrpt/poses/CPoint3D.h>
 
 #include <mrpt/poses/CPose3DQuat.h>
+#include <mrpt/poses/CPose3DRotVec.h>
 
 #include <mrpt/math/utils.h>
 #include <mrpt/math/geometry.h>
@@ -127,7 +128,7 @@ CPose3D::CPose3D(const mrpt::math::CQuaternionDouble &q, const double _x, const 
 	this->setFromValues(_x,_y,_z,yaw,pitch,roll);
 }
 
-/** Constructor from a quaternion (which only represents the 3D rotation part) and a 3D displacement. */
+/** Constructor from a quaternion-based full pose. */
 CPose3D::CPose3D(const CPose3DQuat &p )
 	: m_ROT( UNINITIALIZED_MATRIX ), m_ypr_uptodate(false)
 {
@@ -136,6 +137,17 @@ CPose3D::CPose3D(const CPose3DQuat &p )
 	m_coords[1] = p.y();
 	m_coords[2] = p.z();
 	p.quat().rotationMatrixNoResize(m_ROT);
+}
+
+/** Constructor from a rotation vector-based full pose. */
+CPose3D::CPose3D(const CPose3DRotVec &p )
+    : m_ROT( UNINITIALIZED_MATRIX ), m_ypr_uptodate(false)
+{
+    m_coords[0] = p.m_coords[0];
+    m_coords[1] = p.m_coords[1];
+    m_coords[2] = p.m_coords[2];
+
+    this->setRotationMatrix( this->exp_rotation( p.m_rotvec ) );
 }
 
 /*---------------------------------------------------------------
@@ -774,7 +786,6 @@ void CPose3D::inverseComposePoint(const double gx,const double gy,const double g
 	}
 }
 
-
 /** Exponentiate a Vector in the SE3 Lie Algebra to generate a new CPose3D.
   * \note Method from TooN (C) Tom Drummond (GNU GPL)
   */
@@ -846,7 +857,7 @@ void CPose3D::exp(const mrpt::math::CArrayNumeric<double,6> & mu, CPose3D &out_p
 
 	// 3x3 rotation part:
 	mrpt::math::rodrigues_so3_exp(w, A, B, out_pose.m_ROT);
-	
+
 	if (pseudo_exponential) out_pose.m_coords = mu_xyz;
 	// else: has been already filled in above.
 }

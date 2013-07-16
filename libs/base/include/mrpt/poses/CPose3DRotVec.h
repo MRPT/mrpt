@@ -52,12 +52,12 @@ namespace poses
 
 	/** A 3D pose (a 3D translation + a rotation in 3D).
 	 *   The 6D transformation in SE(3) stored in this class is kept in two
-	 *   separate containers: a 3-array for the translation, and a 3-array for a rotation vector.
+	 *   separate containers: a 3-array for the rotation vector, and a 3-array for the translation.
 	 *
 	 *   \code
 	 *    CPose3DRotVec  pose;
-	 *    pose.m_coords[{0:2}]=... // Translation
 	 *    pose.m_rotvec[{0:2}]=... // Rotation vector
+	 *    pose.m_coords[{0:2}]=... // Translation
 	 *   \endcode
 	 *
 	 *  For a complete descriptionan of Points/Poses, see mrpt::poses::CPoseOrPoint, or refer
@@ -90,33 +90,40 @@ namespace poses
 		inline CPose3DRotVec(TConstructorFlags_Poses constructor_dummy_param) : m_coords(),m_rotvec()  { }
 
 		/** Constructor with initilization of the pose */
-		inline CPose3DRotVec(const double x,const double  y,const double  z,const double  vx, const double  vy, const double vz) {
+		inline CPose3DRotVec(const double  vx, const double  vy, const double vz, const double x,const double  y,const double  z) {
 		    m_coords[0]= x; m_coords[1]= y; m_coords[2]= z;
 		    m_rotvec[0]=vx; m_rotvec[1]=vy; m_rotvec[2]=vz;
 		}
 
-		/** Constructor with initilization of the pose from a vector [x y z rx ry rz] */
+		/** Constructor with initilization of the pose from a vector [w1 w2 w3 x y z] */
 		inline CPose3DRotVec(const CArrayDouble<6> &v) {
-		    m_coords[0]=v[0]; m_coords[1]=v[1]; m_coords[2]=v[2];
-		    m_rotvec[0]=v[3]; m_rotvec[1]=v[4]; m_rotvec[2]=v[5];
+		    m_rotvec[0]=v[0]; m_rotvec[1]=v[1]; m_rotvec[2]=v[2];
+		    m_coords[0]=v[3]; m_coords[1]=v[4]; m_coords[2]=v[5];
+		}
+
+		/** Copy constructor */
+		inline CPose3DRotVec(const CPose3DRotVec &o)
+		{
+		    this->m_rotvec = o.m_rotvec;
+		    this->m_coords = o.m_coords;
 		}
 
 		/** Constructor from a 4x4 homogeneous matrix: */
 		explicit CPose3DRotVec(const math::CMatrixDouble44 &m);
 
 		/** Constructor from a CPose3D object.*/
-		explicit CPose3DRotVec(const CPose3D &);
+		explicit CPose3DRotVec(const CPose3D &m);
 
 		/** Constructor from a quaternion (which only represents the 3D rotation part) and a 3D displacement. */
 		CPose3DRotVec(const mrpt::math::CQuaternionDouble &q, const double x, const double y, const double z );
 
-		/** Constructor from an array with these 6 elements: [x y z vx vy vz]
+		/** Constructor from an array with these 6 elements: [w1 w2 w3 x y z]
 		  *  where r{ij} are the entries of the 3x3 rotation matrix and t{x,y,z} are the 3D translation of the pose
 		  *  \sa setFrom12Vector, getAs12Vector
 		  */
 		inline explicit CPose3DRotVec(const double *vec6) {
-		    m_coords[0]=vec6[0]; m_coords[1]=vec6[1]; m_coords[2]=vec6[2];
-		    m_rotvec[0]=vec6[3]; m_rotvec[1]=vec6[4]; m_rotvec[2]=vec6[5];
+		    m_coords[0]=vec6[3]; m_coords[1]=vec6[4]; m_coords[2]=vec6[5];
+		    m_rotvec[0]=vec6[0]; m_rotvec[1]=vec6[1]; m_rotvec[2]=vec6[2];
 		}
 
 		/** @} */  // end Constructors
@@ -130,10 +137,10 @@ namespace poses
 		  */
 		inline void  getHomogeneousMatrix(CMatrixDouble44 & out_HM) const {
 		    out_HM.block<3,3>(0,0) = getRotationMatrix();
-		    out_HM.get_unsafe(0,3)=m_coords[0];
-		    out_HM.get_unsafe(1,3)=m_coords[1];
-		    out_HM.get_unsafe(2,3)=m_coords[2];
-		    out_HM.get_unsafe(3,0)=0; out_HM.get_unsafe(3,1)=0; out_HM.get_unsafe(3,2)=0; out_HM.get_unsafe(3,3)=1;
+		    out_HM.set_unsafe(0,3,m_coords[0]);
+		    out_HM.set_unsafe(1,3,m_coords[1]);
+		    out_HM.set_unsafe(2,3,m_coords[2]);
+		    out_HM.set_unsafe(3,0,0); out_HM.set_unsafe(3,1,0); out_HM.set_unsafe(3,2,0); out_HM.set_unsafe(3,3,1);
 		}
 
 		inline CMatrixDouble44 getHomogeneousMatrixVal() const { CMatrixDouble44 M; getHomogeneousMatrix(M); return M;}
@@ -162,6 +169,22 @@ namespace poses
 
 		/** The operator \f$ a \oplus b \f$ is the pose compounding operator. */
 		CPoint3D  operator + (const CPoint2D& b) const;
+
+		inline void setFromTransformationMatrix( const CMatrixDouble44 &m )
+		{
+//		    mrpt::poses::SE_traits<2>::ln_rotation( m.extractSubmatrix )
+		    CArrayDouble<3> aux = rotVecFromRotMat( m );
+
+		    this->m_rotvec[0] = aux[0];
+		    this->m_rotvec[1] = aux[1];
+		    this->m_rotvec[2] = aux[2];
+
+		    this->m_coords[0] = m.get_unsafe(0,3);
+		    this->m_coords[1] = m.get_unsafe(1,3);
+		    this->m_coords[2] = m.get_unsafe(2,3);
+		}
+
+		void setFromXYZAndAngles( const double x,const double  y,const double  z,const double  yaw=0, const double  pitch=0, const double roll=0 );
 
         /** Computes the spherical coordinates of a 3D point as seen from the 6D pose specified by this object. For the coordinate system see mrpt::poses::CPose3D */
         void sphericalCoordinates(
@@ -197,13 +220,29 @@ namespace poses
 		/**  Makes "this = A (+) B"; this method is slightly more efficient than "this= A + B;" since it avoids the temporary object.
 		  *  \note A or B can be "this" without problems.
 		  */
-		void composeFrom(const CPose3DRotVec& A, const CPose3DRotVec& B );
+		void composeFrom(const CPose3DRotVec& A,
+                         const CPose3DRotVec& B,
+                         mrpt::math::CMatrixFixedNumeric<double,6,6>  *out_jacobian_drvtC_drvtA=NULL,
+                         mrpt::math::CMatrixFixedNumeric<double,6,6>  *out_jacobian_drvtC_drvtB=NULL);
+
+
+		/**  Convert this RVT into a quaternion + XYZ
+		  */
+        void toQuatXYZ(CPose3DQuat &q) const;
 
 		/** Make \f$ this = this \oplus b \f$  (\a b can be "this" without problems) */
 		inline CPose3DRotVec&  operator += (const CPose3DRotVec& b)
 		{
 			composeFrom(*this,b);
 		 	return *this;
+		}
+
+		/** Copy operator */
+		inline CPose3DRotVec& operator = (const CPose3DRotVec& o)
+		{
+            this->m_rotvec = o.m_rotvec;
+		    this->m_coords = o.m_coords;
+		    return *this;
 		}
 
 		/**  Makes \f$ this = A \ominus B \f$ this method is slightly more efficient than "this= A - B;" since it avoids the temporary object.
@@ -222,6 +261,9 @@ namespace poses
 
 		/** Convert this pose into its inverse, saving the result in itself. \sa operator- */
 		void inverse();
+
+		/** Compute the inverse of this pose and return the result. */
+		CPose3DRotVec getInverse() const;
 
 		/** makes: this = p (+) this */
 		inline void  changeCoordinatesReference( const CPose3DRotVec & p ) { composeFrom(p,CPose3DRotVec(*this)); }
@@ -251,6 +293,10 @@ namespace poses
             m_coords*=s;
             m_rotvec*=s;
 		}
+
+		/** Create a vector with 3 components according to the input transformation matrix (only the rotation will be taken into account)
+		  */
+		CArrayDouble<3> rotVecFromRotMat( const math::CMatrixDouble44 &m );
 
 		/** Set the pose from a 3D position (meters) and yaw/pitch/roll angles (radians) - This method recomputes the internal rotation matrix.
 		  * \sa getYawPitchRoll, setYawPitchRoll

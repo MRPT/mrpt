@@ -46,6 +46,7 @@ namespace poses
 	using namespace mrpt::math;
 
 	class BASE_IMPEXP CPose3DQuat;
+	class BASE_IMPEXP CPose3DRotVec;
 
 	DEFINE_SERIALIZABLE_PRE( CPose3D )
 
@@ -56,7 +57,7 @@ namespace poses
 	 *  This class allows parameterizing 6D poses as a 6-vector: [x y z yaw pitch roll] (read below
 	 *   for the angles convention). Note however,
 	 *   that the yaw/pitch/roll angles are only computed (on-demand and transparently)
-	 *   when the user requests them. Normally, rotations and transformations are always handled 
+	 *   when the user requests them. Normally, rotations and transformations are always handled
 	 *   via the 3x3 rotation matrix.
 	 *
 	 *  Yaw/Pitch/Roll angles are defined as successive rotations around *local* (dynamic) axes in the Z/Y/X order:
@@ -66,13 +67,13 @@ namespace poses
 	 *  </div>
 	 *
 	 * It may be extremely confusing and annoying to find a different criterion also involving
-	 * the names "yaw, pitch, roll" but regarding rotations around *global* (static) axes. 
-	 * Fortunately, it's very easy to see (by writing down the product of the three 
-	 * rotation matrices) that both conventions lead to exactly the same numbers. 
-	 * Only, that it's conventional to write the numbers in reverse order. 
-	 * That is, the same rotation can be described equivalently with any of these two 
+	 * the names "yaw, pitch, roll" but regarding rotations around *global* (static) axes.
+	 * Fortunately, it's very easy to see (by writing down the product of the three
+	 * rotation matrices) that both conventions lead to exactly the same numbers.
+	 * Only, that it's conventional to write the numbers in reverse order.
+	 * That is, the same rotation can be described equivalently with any of these two
 	 *  parameterizations:
-	 * 
+	 *
  	 * - In local axes Z/Y/X convention: [yaw pitch roll]   (This is the convention used in mrpt::poses::CPose3D)
  	 * - In global axes X/Y/Z convention: [roll pitch yaw] (One of the Euler angles conventions)
 	 *
@@ -159,6 +160,9 @@ namespace poses
 
 		/** Constructor from a CPose3DQuat. */
 		CPose3D(const CPose3DQuat &);
+
+		/** Constructor from a CPose3DRotVec. */
+		CPose3D(const CPose3DRotVec &p );
 
 		/** Fast constructor that leaves all the data uninitialized - call with UNINITIALIZED_POSE as argument */
 		inline CPose3D(TConstructorFlags_Poses constructor_dummy_param) : m_ROT(UNINITIALIZED_MATRIX), m_ypr_uptodate(false) { }
@@ -478,7 +482,7 @@ namespace poses
 		  * \param pseudo_exponential If set to true, XYZ are copied from the first three elements in the vector instead of using the proper Lie Algebra formulas (this is actually the common practice in robotics literature).
 		  * \note Method from TooN (C) Tom Drummond (GNU GPL) */
 		static CPose3D exp(const mrpt::math::CArrayNumeric<double,6> & vect, bool pseudo_exponential = false);
-		
+
 		/** \overload */
 		static void exp(const mrpt::math::CArrayNumeric<double,6> & vect, CPose3D &out_pose, bool pseudo_exponential = false);
 
