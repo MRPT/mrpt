@@ -73,6 +73,8 @@ DECLARE_OP_FUNCTION(op_rename_externals)
 
 		bool processOneObservation(CObservationPtr  &obs)
 		{
+			map<string,string> files2rename;
+
 			const string label_time = format("%s_%f", obs->sensorLabel.c_str(), timestampTotime_t(obs->timestamp) );
 			if (IS_CLASS(obs, CObservationStereoImages ) )
 			{
@@ -80,17 +82,29 @@ DECLARE_OP_FUNCTION(op_rename_externals)
 				// save image to file & convert into external storage:
 				if (obsSt->imageLeft.isExternallyStored())
 				{
+					string prevName, newName;
+					obsSt->imageLeft.getExternalStorageFileAbsolutePath( prevName );
+
 					const string fileName = string("img_") + label_time + string("_left.") + imgFileExtension;
 					obsSt->imageLeft.setExternalStorage( fileName );
 					entries_converted++;
+
+					obsSt->imageLeft.getExternalStorageFileAbsolutePath( newName );
+					files2rename[prevName] = newName;
 				}
 				else entries_skipped++;
 
 				if (obsSt->imageRight.isExternallyStored())
 				{
+					string prevName, newName;
+					obsSt->imageRight.getExternalStorageFileAbsolutePath( prevName );
+
 					const string fileName = string("img_") + label_time + string("_right.") + imgFileExtension;
 					obsSt->imageRight.setExternalStorage( fileName );
 					entries_converted++;
+
+					obsSt->imageRight.getExternalStorageFileAbsolutePath( newName );
+					files2rename[prevName] = newName;
 				}
 				else entries_skipped++;
 			}
@@ -100,9 +114,15 @@ DECLARE_OP_FUNCTION(op_rename_externals)
 
 				if (obsIm->image.isExternallyStored())
 				{
+					string prevName, newName;
+					obsIm->image.getExternalStorageFileAbsolutePath( prevName );
+
 					const string fileName = string("img_") + label_time +string(".")+ imgFileExtension;
 					obsIm->image.setExternalStorage( fileName );
 					entries_converted++;
+
+					obsIm->image.getExternalStorageFileAbsolutePath( newName );
+					files2rename[prevName] = newName;
 				}
 				else entries_skipped++;
 			}
@@ -114,20 +134,49 @@ DECLARE_OP_FUNCTION(op_rename_externals)
 				// Intensity channel:
 				if (obs3D->hasIntensityImage && obs3D->intensityImage.isExternallyStored())
 				{
+					string prevName, newName;
+					obs3D->intensityImage.getExternalStorageFileAbsolutePath( prevName );
+
 					const string fileName = string("3DCAM_") + label_time + string("_INT.") + imgFileExtension;
 					obs3D->intensityImage.setExternalStorage( fileName );
 					entries_converted++;
+
+					obs3D->intensityImage.getExternalStorageFileAbsolutePath( newName );
+					files2rename[prevName] = newName;
 				}
 				else entries_skipped++;
 
 				// Confidence channel:
 				if (obs3D->hasConfidenceImage && obs3D->confidenceImage.isExternallyStored())
 				{
+					string prevName, newName;
+					obs3D->confidenceImage.getExternalStorageFileAbsolutePath( prevName );
+
 					const string fileName = string("3DCAM_") + label_time + string("_CONF.") + imgFileExtension;
 					obs3D->confidenceImage.setExternalStorage( fileName );
 					entries_converted++;
+
+					obs3D->confidenceImage.getExternalStorageFileAbsolutePath( newName );
+					files2rename[prevName] = newName;
 				}
 				else entries_skipped++;
+			}
+
+			// Do the actual file renaming:
+			for (map<string,string>::const_iterator it=files2rename.begin();it!=files2rename.end();++it)
+			{
+				const string &prevFil = it->first;
+				const string &newFil = it->second;
+
+				if (mrpt::system::fileExists(prevFil))
+				{
+					string strErr;
+					if (!mrpt::system::renameFile(prevFil,newFil,&strErr)) THROW_EXCEPTION(strErr)
+				}
+				else 
+				{
+					std::cerr << "Warning: Missing external file: " << prevFil << std::endl;
+				}
 			}
 
 			return true;
