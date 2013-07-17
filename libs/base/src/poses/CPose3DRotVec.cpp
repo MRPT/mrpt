@@ -136,7 +136,7 @@ CArrayDouble<3> CPose3DRotVec::rotVecFromRotMat( const math::CMatrixDouble44 &m 
     CPose3D aux(m);
     out = aux.ln_rotation();
 
-    /** /
+#if 0
     CArrayDouble<3> out;
     const double a = acos(0.5*(m(0,0)+m(1,1)+m(2,2)-1));    // a = acos((tr(R)-1)/2)
     if( a == 0 )
@@ -152,7 +152,7 @@ CArrayDouble<3> CPose3DRotVec::rotVecFromRotMat( const math::CMatrixDouble44 &m 
         out[1] = R(0,2);
         out[2] = R(1,0);
     }
-    /**/
+#endif
     return out;
 } // end-rotVecFromRotMat
 
@@ -176,7 +176,7 @@ void CPose3DRotVec::getRotationMatrix( mrpt::math::CMatrixDouble33 & ROT ) const
     ROT = CPose3D().exp_rotation( this->m_rotvec );
 //    cout << "CPOSE_3D: " << ROT;
 
-    /** /
+#if 0
     const double &v1 = m_rotvec[0];
     const double &v2 = m_rotvec[1];
     const double &v3 = m_rotvec[2];
@@ -211,8 +211,8 @@ void CPose3DRotVec::getRotationMatrix( mrpt::math::CMatrixDouble33 & ROT ) const
     ROT(0,2) = a2_1*( 2*s*(v1*v3*s - a*v2*c) );
     ROT(1,2) = a2_1*( 2*s*(v2*v3*s + a*v1*c) );
     ROT(2,2) = a2_1*( (v3*v3-v1*v1-v2*v2)*s2 + a2*c2 );
-    /**/
 //    cout << "CPOSE_RVT: " << ROT;
+#endif
 
     return;
 }
@@ -419,8 +419,7 @@ void CPose3DRotVec::composeFrom(const CPose3DRotVec& A,
     this->m_coords[2] = coords[2];
 
     // Rotation part:
-    /** /
-
+#if 0
     else if (A_is_small)            this->m_rotvec = B.m_rotvec;
     else if (B_is_small)            this->m_rotvec = A.m_rotvec;
     else
@@ -458,17 +457,17 @@ void CPose3DRotVec::composeFrom(const CPose3DRotVec& A,
         this->m_rotvec[1] = param*q3[2];
         this->m_rotvec[2] = param*q3[3];
     }
+#endif
 
-    /**/
-
-    /**/
+    /* */
 
     // Rotation part
     CArrayDouble<12> aux_vals(0);
     aux_vals[0] = RC(0,0); aux_vals[1] = RC(1,0); aux_vals[2] = RC(2,0);
     aux_vals[3] = RC(0,1); aux_vals[4] = RC(1,1); aux_vals[5] = RC(2,1);
     aux_vals[6] = RC(0,2); aux_vals[7] = RC(1,2); aux_vals[8] = RC(2,2);
-    aux_vals[11] = 1;
+    // XYZ coords (ignored anyway, put to 0 to avoid compiler warnings on uninitialized values):
+    aux_vals[9] = aux_vals[10] = aux_vals[11] = 0;
 
     CPose3D aux;
     aux.setFrom12Vector(aux_vals);
@@ -476,7 +475,7 @@ void CPose3DRotVec::composeFrom(const CPose3DRotVec& A,
 
 //    cout << "WO Approx: " << *this << endl;
 
-    /**/
+    /* */
 
     // Output Jacobians (if desired)
     if( out_jacobian_drvtC_drvtA || out_jacobian_drvtC_drvtB )

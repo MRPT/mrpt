@@ -55,7 +55,7 @@ TEST(Geometry, Line2DIntersect)
 	EXPECT_TRUE(do_inter);
 	EXPECT_EQ( inter.getType(), GEOMETRIC_TYPE_POINT );
 
-	TPoint2D i;
+	TPoint2D i(0,0);
 	inter.getPoint(i);
 	EXPECT_NEAR(i.x, 0.5, 1e-9);
 	EXPECT_NEAR(i.y, 0.5, 1e-9);
@@ -74,7 +74,7 @@ TEST(Geometry, Segment2DIntersect)
 		EXPECT_TRUE(do_inter);
 		EXPECT_EQ( inter.getType(), GEOMETRIC_TYPE_POINT );
 
-		TPoint2D i;
+		TPoint2D i(0,0);
 		inter.getPoint(i);
 		EXPECT_NEAR(i.x, 0.5, 1e-9);
 		EXPECT_NEAR(i.y, 0.5, 1e-9);

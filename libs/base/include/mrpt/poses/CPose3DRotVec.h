@@ -50,7 +50,7 @@ namespace poses
 
 	DEFINE_SERIALIZABLE_PRE( CPose3DRotVec )
 
-	/** A 3D pose (a 3D translation + a rotation in 3D).
+	/** A 3D pose, with a 3D translation and a rotation in 3D parameterized in rotation-vector form (equivalent to axis-angle).
 	 *   The 6D transformation in SE(3) stored in this class is kept in two
 	 *   separate containers: a 3-array for the rotation vector, and a 3-array for the translation.
 	 *

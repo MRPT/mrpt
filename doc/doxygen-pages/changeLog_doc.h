@@ -47,6 +47,8 @@
 		- <a href="http://www.mrpt.org/Application%3Arawlog-edit" >rawlog-edit</a>: 
 			- New operations: --list-timestamps, --remap-timestamps
 	- New classes:
+		- [mrpt-base]
+			- mrpt::poses::CPose3DRotVec is now fully implemented (By Francisco Angel Moreno).
 		- [mrpt-opengl]
 			- mrpt::opengl::CLight - OpenGL scenes now allow customization of OpenGL lighting. See also new lighting methods in mrpt::opengl::COpenGLViewport - <a href="http://code.google.com/p/mrpt/source/detail?r=3409" >r3409</a>
 		- [mrpt-reactivenav]
