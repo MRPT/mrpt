@@ -7,8 +7,9 @@ rawlog-edit - Command-line robotic datasets (rawlogs) manipulation tool
    rawlog-edit  [--rename-externals] [--stereo-rectify <SENSOR_LABEL,0.5>]
                 [--camera-params <SENSOR_LABEL,file.ini>] [--sensors-pose
                 <file.ini>] [--generate-pcd] [--generate-3d-pointclouds]
-                [--cut] [--export-gps-txt] [--export-gps-kml] [--keep-label
-                <label[,label...]>] [--remove-label <label[,label...]>]
+                [--cut] [--export-2d-scans-txt] [--export-imu-txt]
+                [--export-gps-txt] [--export-gps-kml] [--keep-label <label[
+                ,label...]>] [--remove-label <label[,label...]>]
                 [--list-range-bearing] [--remap-timestamps <a;b>]
                 [--list-timestamps] [--list-images] [--info]
                 [--externalize] [-q] [-w] [--to-time <T1>] [--from-time
@@ -17,7 +18,6 @@ rawlog-edit - Command-line robotic datasets (rawlogs) manipulation tool
                 [--image-format <jpg,png,pgm,...>] [--out-dir <.>] [-o
                 <dataset_out.rawlog>] -i <dataset.rawlog> [--] [--version]
                 [-h]
-
 
 
 =head1 USAGE EXAMPLES
@@ -135,6 +135,24 @@ These are the supported arguments and operations:
      If only a --to-* is given, the rawlog will be saved from its
      beginning.
 
+
+   --export-2d-scans-txt
+     Op: Export 2D scans to TXT files.
+
+     Generates two .txt files for each different sensor label of 2D scan
+     observations, one with the timestamps and the other with range
+     data.
+
+     The generated .txt files will be saved in the same path than the input
+     rawlog, with the same filename + each sensorLabel.
+
+   --export-imu-txt
+     Op: Export IMU readings to TXT files.
+
+     Generates one .txt file for each different sensor label of an IMU
+     observation in the dataset. The generated .txt files will be saved in
+     the same path than the input rawlog, with the same filename + each
+     sensorLabel.
 
    --export-gps-txt
      Op: Export GPS readings to TXT files.

@@ -35,73 +35,124 @@
 
 #include "rawlog-edit-declarations.h"
 
+#include <mrpt/topography.h>
+
 using namespace mrpt;
 using namespace mrpt::utils;
 using namespace mrpt::slam;
 using namespace mrpt::system;
 using namespace mrpt::rawlogtools;
+using namespace mrpt::topography;
 using namespace std;
 
-
 // ======================================================================
-//		op_list_images
+//		op_export_2d_scans_txt
 // ======================================================================
-DECLARE_OP_FUNCTION(op_list_images)
+DECLARE_OP_FUNCTION(op_export_2d_scans_txt)
 {
 	// A class to do this operation:
-	class CRawlogProcessor_ListImages : public CRawlogProcessorOnEachObservation
+	class CRawlogProcessor_Export2DSCANS_TXT : public CRawlogProcessorOnEachObservation
 	{
 	protected:
-		string 	       m_out_file;
-		std::ofstream  m_out;
+		string	m_inFile;
+
+		map<string, FILE*>	lstFiles,lstFilesTimes;
+		string				m_filPrefix;
 
 	public:
-		CRawlogProcessor_ListImages(CFileGZInputStream &in_rawlog, TCLAP::CmdLine &cmdline, bool verbose) :
-			CRawlogProcessorOnEachObservation(in_rawlog,cmdline,verbose)
+		size_t				m_entriesSaved;
+
+
+		CRawlogProcessor_Export2DSCANS_TXT(CFileGZInputStream &in_rawlog, TCLAP::CmdLine &cmdline, bool verbose) :
+			CRawlogProcessorOnEachObservation(in_rawlog,cmdline,verbose),
+			m_entriesSaved(0)
 		{
-			getArgValue<std::string>(cmdline,"text-file-output",  m_out_file);
-			VERBOSE_COUT << "Writing list to: " << m_out_file << endl;
+			getArgValue<string>(cmdline,"input",m_inFile);
 
-			m_out.open(m_out_file.c_str());
-
-			if (!m_out.is_open())
-				throw std::runtime_error("list-images: Cannot open output text file.");
+			m_filPrefix =
+				extractFileDirectory(m_inFile) +
+				extractFileName(m_inFile);
 		}
 
-		bool processOneObservation(CObservationPtr  &obs)
+		// return false on any error.
+		bool processOneObservation(CObservationPtr  &o)
 		{
-			const string label_time = format("%s_%f", obs->sensorLabel.c_str(), timestampTotime_t(obs->timestamp) );
-			if (IS_CLASS(obs, CObservationStereoImages ) )
+			if (!IS_CLASS(o, CObservation2DRangeScan ) )
+				return true;
+
+			const CObservation2DRangeScan* obs = CObservation2DRangeScanPtr(o).pointer();
+
+			map<string, FILE*>::const_iterator  it = lstFiles.find( obs->sensorLabel );
+
+			FILE *f_this, *f_this_times;
+
+			if ( it==lstFiles.end() )	// A new file for this sensorlabel??
 			{
-				CObservationStereoImagesPtr obsSt = CObservationStereoImagesPtr(obs);
-				// save image to file & convert into external storage:
-				if (obsSt->imageLeft.isExternallyStored())
-					m_out << obsSt->imageLeft.getExternalStorageFile() << std::endl;
+				const std::string fileName =
+					m_filPrefix+
+					string("_") +
+					fileNameStripInvalidChars( obs->sensorLabel ) +
+					string(".txt");
 
-				if (obsSt->imageRight.isExternallyStored())
-					m_out << obsSt->imageRight.getExternalStorageFile() << std::endl;
+				const std::string fileNameTimes =
+					m_filPrefix+
+					string("_") +
+					fileNameStripInvalidChars( obs->sensorLabel ) +
+					string("_times.txt");
+
+				VERBOSE_COUT << "Writing LASER TXT file: " << fileName << endl;
+
+				f_this        = lstFiles[ obs->sensorLabel ] = os::fopen( fileName.c_str(), "wt");
+				f_this_times  = lstFilesTimes[ obs->sensorLabel ] = os::fopen( fileNameTimes.c_str(), "wt");
+				if (!f_this || !f_this_times)
+					THROW_EXCEPTION_CUSTOM_MSG1("Cannot open output file for write: %s", fileName.c_str() );
 			}
-			else if (IS_CLASS(obs, CObservationImage ) )
+			else
 			{
-				CObservationImagePtr obsIm = CObservationImagePtr(obs);
-
-				if (obsIm->image.isExternallyStored())
-					m_out << obsIm->image.getExternalStorageFile() << std::endl;
+				f_this = it->second;
+				f_this_times = lstFilesTimes.find( obs->sensorLabel )->second;
 			}
 
-			return true;
+            // Time:
+            const double 	sampleTime = timestampTotime_t(obs->timestamp);
+            ::fprintf(f_this_times,"%14.4f\n",sampleTime);
+
+            // Ranges:
+            for (size_t j=0;j<obs->scan.size();j++)
+                ::fprintf(f_this,"%.6f ", obs->validRange[j] ? obs->scan[j] : 0 );
+            ::fprintf(f_this,"\n");
+
+			m_entriesSaved++;
+
+			return true; // All ok
 		}
+
+
+		// Destructor: close files and generate summary files:
+		~CRawlogProcessor_Export2DSCANS_TXT()
+		{
+			for (map<string, FILE*>::const_iterator  it=lstFiles.begin();it!=lstFiles.end();++it)
+			{
+				os::fclose(it->second);
+			}
+
+			// Save the joint file:
+			// -------------------------
+			VERBOSE_COUT << "Number of different 2D-SCAN sensorLabels     : " << lstFiles.size() << endl;
+
+			lstFiles.clear();
+		} // end of destructor
 
 	};
 
 	// Process
 	// ---------------------------------
-	CRawlogProcessor_ListImages proc(in_rawlog,cmdline,verbose);
+	CRawlogProcessor_Export2DSCANS_TXT proc(in_rawlog,cmdline,verbose);
 	proc.doProcessRawlog();
 
 	// Dump statistics:
 	// ---------------------------------
 	VERBOSE_COUT << "Time to process file (sec)        : " << proc.m_timToParse << "\n";
+	VERBOSE_COUT << "Number of records saved           : " << proc.m_entriesSaved << "\n";
 
 }
-

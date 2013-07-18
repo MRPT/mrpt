@@ -45,7 +45,7 @@
 		- <a href="http://www.mrpt.org/Application%3AReactiveNav3D-Demo" >ReactiveNav3D-Demo</a> (By Mariano Jaimez Tarifa)
 	- Changes in apps:
 		- <a href="http://www.mrpt.org/Application%3Arawlog-edit" >rawlog-edit</a>: 
-			- New operations: --list-timestamps, --remap-timestamps
+			- New operations: --list-timestamps, --remap-timestamps, --export-2d-scans-txt, --export-imu-txt
 	- New classes:
 		- [mrpt-base]
 			- mrpt::poses::CPose3DRotVec is now fully implemented (By Francisco Angel Moreno).

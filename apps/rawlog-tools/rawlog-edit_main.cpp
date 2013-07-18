@@ -73,6 +73,8 @@ DECLARE_OP_FUNCTION(op_keep_label);
 DECLARE_OP_FUNCTION(op_cut);
 DECLARE_OP_FUNCTION(op_export_gps_kml);
 DECLARE_OP_FUNCTION(op_export_gps_txt);
+DECLARE_OP_FUNCTION(op_export_imu_txt);
+DECLARE_OP_FUNCTION(op_export_2d_scans_txt);
 DECLARE_OP_FUNCTION(op_sensors_pose);
 DECLARE_OP_FUNCTION(op_camera_params);
 DECLARE_OP_FUNCTION(op_generate_3d_pointclouds);
@@ -182,6 +184,23 @@ int main(int argc, char **argv)
 			,cmd,false) );
 		ops_functors["export-gps-txt"] = &op_export_gps_txt;
 
+		arg_ops.push_back(new TCLAP::SwitchArg("","export-imu-txt",
+			"Op: Export IMU readings to TXT files.\n"
+			"Generates one .txt file for each different sensor label of an IMU observation in the dataset. "
+			"The generated .txt files will be saved in the same path than the input rawlog, with the same "
+			"filename + each sensorLabel."
+			,cmd,false) );
+		ops_functors["export-imu-txt"] = &op_export_imu_txt;
+
+		arg_ops.push_back(new TCLAP::SwitchArg("","export-2d-scans-txt",
+			"Op: Export 2D scans to TXT files.\n"
+			"Generates two .txt files for each different sensor label of 2D scan observations, one with "
+			"the timestamps and the other with range data.\n"
+			"The generated .txt files will be saved in the same path than the input rawlog, with the same "
+			"filename + each sensorLabel."
+			,cmd,false) );
+		ops_functors["export-2d-scans-txt"] = &op_export_2d_scans_txt;
+
 		arg_ops.push_back(new TCLAP::SwitchArg("","cut",
 			"Op: Cut a part of the input rawlog.\n"
 			"Requires: -o (or --output)\n"
@@ -229,7 +248,7 @@ int main(int argc, char **argv)
 			"Op: Renames all the external storage file names within the rawlog (it doesn't change the external files, which may even not exist).\n"
 			,cmd,false));
 		ops_functors["rename-externals"] = &op_rename_externals;
-		
+
 
 
 		// --------------- End of list of possible operations --------
