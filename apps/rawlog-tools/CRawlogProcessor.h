@@ -119,7 +119,7 @@ namespace mrpt
 					}
 
 					// Do whatever:
-					processOneEntry(actions,SF,obs);
+					bool process_ret = processOneEntry(actions,SF,obs);
 
 					// Post process:
 					OnPostProcess(actions,SF,obs);
@@ -128,6 +128,13 @@ namespace mrpt
 					actions.clear_unique();
 					SF.clear_unique();
 					obs.clear_unique();
+
+					if (!process_ret)
+					{
+					    // Returning false means we should stop parsing the rest of the rawlog:
+                        std::cerr << "\nParsing stopped due to request from Rawlog filter implementation.\n";
+					    break;
+					}
 				}; // end while
 
 				if(verbose) std::cout << "\n"; // new line after the "\r".
@@ -212,12 +219,14 @@ namespace mrpt
 		public:
 			mrpt::utils::CFileGZOutputStream 	&m_out_rawlog;
 			size_t  				m_entries_removed, m_entries_parsed;
+			bool                    m_we_are_done_with_this_rawlog; //!< Set to true to indicate that we are sure we don't have to keep on reading.
 
 			CRawlogProcessorFilterObservations(mrpt::utils::CFileGZInputStream &in_rawlog, TCLAP::CmdLine &cmdline, bool verbose, mrpt::utils::CFileGZOutputStream &out_rawlog) :
 				CRawlogProcessorOnEachObservation(in_rawlog,cmdline,verbose),
 				m_out_rawlog(out_rawlog),
 				m_entries_removed(0),
-				m_entries_parsed(0)
+				m_entries_parsed(0),
+				m_we_are_done_with_this_rawlog(false)
 			{
 			}
 
@@ -233,6 +242,10 @@ namespace mrpt
 					m_entries_removed++;
 				}
 				m_entries_parsed++;
+
+				if (m_we_are_done_with_this_rawlog)
+                    return false; // We are done, finish execution.
+
 				return true;
 			}
 			// Save those entries which are not NULL.

@@ -96,7 +96,8 @@ DECLARE_OP_FUNCTION(op_cut)
 			}
 			if (has_to_index && m_rawlogEntry>m_to_index)
 			{
-				// TODO: We could also say to not read anymore...
+				// say not to read anymore...
+				m_we_are_done_with_this_rawlog = true;
 				return false;
 			}
 
@@ -104,7 +105,11 @@ DECLARE_OP_FUNCTION(op_cut)
 			{
 				ASSERT_(obs->timestamp!=INVALID_TIMESTAMP);
 				if (timestampToDouble(obs->timestamp)>m_to_time)
-					return false;
+				{
+                    // say not to read anymore...
+                    m_we_are_done_with_this_rawlog = true;
+				    return false;
+				}
 			}
 
 			// All filters passed.
