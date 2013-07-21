@@ -76,6 +76,7 @@
 			- [mrpt-base] geometry module.
 	- BUG FIXES:
 		- CTimeLogger::registerUserMeasure() ignored the enable/disable state of the logger - <a href="http://code.google.com/p/mrpt/source/detail?r=3382" >r3382</a>
+		- mrpt-srba: SEGFAULT in 32bit builds due to missing EIGEN_MAKE_ALIGNED_OPERATOR_NEW - <a href="http://code.google.com/p/mrpt/source/detail?r=3429" >r3429</a>
 
  <br/>
  <hr>

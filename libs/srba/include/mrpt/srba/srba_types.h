@@ -454,6 +454,8 @@ namespace srba
 			typename obs_traits_t::observation_t obs;      //!< Observation data
 			typename obs_traits_t::array_obs_t   obs_arr;  //!< Observation data, summarized as an array of its parameters:  obs.obs_data.getAsArray(obs_arr);
 			TKeyFrameID   kf_id;    //!< Observed from
+
+			EIGEN_MAKE_ALIGNED_OPERATOR_NEW  // This forces aligned mem allocation
 		};
 
 
@@ -464,6 +466,8 @@ namespace srba
 			bool              feat_has_known_rel_pos;   //!< whether it's a known or unknown relative position feature
 			bool              is_first_obs_of_unknown;  //!< true if this is the first observation of a feature with unknown relative position
 			typename lm_traits_t::TRelativeLandmarkPos *feat_rel_pos; //!< Pointer to the known/unknown rel.pos. (always!=NULL)
+
+			EIGEN_MAKE_ALIGNED_OPERATOR_NEW  // This forces aligned mem allocation
 		};
 
 		/** Information per key-frame needed for RBA */
