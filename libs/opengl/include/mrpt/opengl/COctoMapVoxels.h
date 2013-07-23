@@ -92,14 +92,15 @@ namespace mrpt
 			DEFINE_SERIALIZABLE( COctoMapVoxels )
 		public:
 
-			/** The different coloring schemes. Set with setVisualizationMode() */
+			/** The different coloring schemes, which modulate the generic mrpt::opengl::CRenderizable object color. Set with setVisualizationMode() */
 			enum visualization_mode_t
-			{									
-				COLOR_FROM_HEIGHT,				//Color goes from black (at the bottom) to the chosen color (at the top)
-				COLOR_FROM_OCCUPANCY,			//Color goes from black (occupied voxel) to the chosen color (free voxel)
-				TRANSPARENCY_FROM_OCCUPANCY,	//Transparency goes from opaque (occupied voxel) to transparent (free voxel).
-				TRANS_AND_COLOR_FROM_OCCUPANCY,	//Color goes from black (occupaid voxel) to the chosen color (free voxel) and they are transparent
-				MIXED							//Combination of COLOR_FROM_HEIGHT and TRANSPARENCY_FROM_OCCUPANCY
+			{
+				COLOR_FROM_HEIGHT,				//!< Color goes from black (at the bottom) to the chosen color (at the top)
+				COLOR_FROM_OCCUPANCY,			//!< Color goes from black (occupied voxel) to the chosen color (free voxel)
+				TRANSPARENCY_FROM_OCCUPANCY,	//!< Transparency goes from opaque (occupied voxel) to transparent (free voxel).
+				TRANS_AND_COLOR_FROM_OCCUPANCY,	//!< Color goes from black (occupaid voxel) to the chosen color (free voxel) and they are transparent
+				MIXED,							//!< Combination of COLOR_FROM_HEIGHT and TRANSPARENCY_FROM_OCCUPANCY
+				FIXED							//!< All cubes are of identical color.
 			};
 
 
@@ -152,16 +153,16 @@ namespace mrpt
 			void clear();
 
 			/** Select the visualization mode. To have any effect, this method has to be called before loading the octomap. */
-			inline void setVisualizationMode(visualization_mode_t mode)
-			{
-				m_visual_mode = mode;
-				m_enable_cube_transparency = !(mode == COLOR_FROM_HEIGHT || mode == COLOR_FROM_OCCUPANCY);
-				CRenderizableDisplayList::notifyChange();
+			inline void setVisualizationMode(visualization_mode_t mode) {
+				m_visual_mode = mode; CRenderizableDisplayList::notifyChange();
 			}
 			inline visualization_mode_t getVisualizationMode() const {return m_visual_mode;}
 
+			/** Can be used to enable/disable the effects of lighting in this object */
 			inline void enableLights(bool enable) { m_enable_lighting=enable; CRenderizableDisplayList::notifyChange(); }
 			inline bool areLightsEnabled() const { return m_enable_lighting; }
+
+
 
 			/** By default, the alpha (transparency) component of voxel cubes is taken into account, but transparency can be disabled with this method. */
 			inline void enableCubeTransparency(bool enable) { m_enable_cube_transparency=enable;  CRenderizableDisplayList::notifyChange(); }
@@ -216,6 +217,8 @@ namespace mrpt
 
 			inline void push_back_GridCube(const TGridCube & c) { CRenderizableDisplayList::notifyChange(); m_grid_cubes.push_back(c); }
 			inline void push_back_Voxel(const size_t set_index, const TVoxel & v) { ASSERTDEB_(set_index<m_voxel_sets.size()) CRenderizableDisplayList::notifyChange(); m_voxel_sets[set_index].voxels.push_back(v); }
+
+			void sort_voxels_by_z();
 
 			/** Render */
 			void  render_dl() const;

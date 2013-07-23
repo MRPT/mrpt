@@ -82,13 +82,15 @@ void COctoMapVoxels::setBoundingBox(const mrpt::math::TPoint3D &bb_min, const mr
 // See: http://www.songho.ca/opengl/gl_vertexarray.html
 
 // cube ///////////////////////////////////////////////////////////////////////
-//    v6----- v5
-//   /|      /|
-//  v1------v0|
-//  | |     | |
-//  | |v7---|-|v4
-//  |/      |/
-//  v2------v3
+//        v6----- v5
+// +Z    /|      /|
+// A    v1------v0|
+// |    | |     | |
+// |    | |v7---|-|v4   / -X
+// |    |/      |/     /
+// |    v2------v3    L +X
+// ----------------------> +Y
+//
 
 const GLubyte grid_line_indices[] = {
 	0,1, 1,2, 2,3, 3,0,
@@ -104,15 +106,14 @@ const GLubyte cube_indices[36]  = {
 	7,4,3, 3,2,7,
 	4,7,6, 6,5,4};
 
-MRPT_TODO("Check normal directions")
 // normal array
 const GLfloat normals_cube[3*6*4]  = {
-	0, 0, 1,   0, 0, 1,   0, 0, 1,   0, 0, 1,   // v0,v1,v2,v3 (front)
-	1, 0, 0,   1, 0, 0,   1, 0, 0,   1, 0, 0,   // v0,v3,v4,v5 (right)
-	0, 1, 0,   0, 1, 0,   0, 1, 0,   0, 1, 0,   // v0,v5,v6,v1 (top)
-	-1, 0, 0,  -1, 0, 0,  -1, 0, 0,  -1, 0, 0,   // v1,v6,v7,v2 (left)
-	0,-1, 0,   0,-1, 0,   0,-1, 0,   0,-1, 0,   // v7,v4,v3,v2 (bottom)
-	0, 0,-1,   0, 0,-1,   0, 0,-1,   0, 0,-1 }; // v4,v7,v6,v5 (back)
+  1, 0, 0,   1, 0, 0,   1, 0, 0,   0, 0, 0,   // v0,v1,v2,v3 (front)
+  0, 1, 0,   0, 1, 0,   0, 1, 0,   0, 1, 0,   // v0,v3,v4,v5 (right)
+  0, 0, 1,   0, 0, 1,   0, 0, 1,   0, 0, 1,   // v0,v5,v6,v1 (top)
+  0,-1, 0,   0,-1, 0,   0,-1, 0,   0,-1, 0,   // v1,v6,v7,v2 (left)
+  0, 0,-1,   0, 0,-1,   0, 0,-1,   0, 0,-1,   // v7,v4,v3,v2 (bottom)
+ -1, 0, 0,  -1, 0, 0,  -1, 0, 0,  -1, 0, 0 }; // v4,v7,v6,v5 (back)
 
 #endif
 
@@ -169,6 +170,8 @@ void   COctoMapVoxels::render_dl() const
 	}
 
 	// Draw cubes ====================================
+	if (!m_enable_lighting) glDisable(GL_LIGHTING);
+
     glEnableClientState(GL_NORMAL_ARRAY);
 
 	glNormalPointer(GL_FLOAT, 0, normals_cube);
@@ -232,6 +235,8 @@ void   COctoMapVoxels::render_dl() const
 		glDisable(GL_BLEND);
 
     glDisableClientState(GL_NORMAL_ARRAY);
+
+	if (!m_enable_lighting) glEnable(GL_LIGHTING);
 
 	glDisableClientState(GL_VERTEX_ARRAY);
 	checkOpenGLError();
@@ -347,4 +352,17 @@ void COctoMapVoxels::getBoundingBox(mrpt::math::TPoint3D &bb_min, mrpt::math::TP
 	// Convert to coordinates of my parent:
 	m_pose.composePoint(bb_min, bb_min);
 	m_pose.composePoint(bb_max, bb_max);
+}
+
+bool sort_voxels_z(const COctoMapVoxels::TVoxel &a, const COctoMapVoxels::TVoxel& b)
+{
+	return a.coords.z < b.coords.z;
+}
+
+void COctoMapVoxels::sort_voxels_by_z()
+{
+	for (size_t i=0;i<m_voxel_sets.size();i++)
+	{
+		std::sort( m_voxel_sets[i].voxels.begin(),m_voxel_sets[i].voxels.end(), &sort_voxels_z );
+	}
 }

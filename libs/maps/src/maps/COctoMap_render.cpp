@@ -114,6 +114,7 @@ void COctoMap::getAsOctoMapVoxels(mrpt::opengl::COctoMapVoxels &gl_obj) const
 
 	const unsigned char max_depth = 0; // all
 	const TColorf general_color = gl_obj.getColor();
+	const TColor general_color_u(general_color.R*255,general_color.G*255,general_color.B*255,general_color.A*255);
 
 	gl_obj.clear();
 	gl_obj.reserveGridCubes( this->calcNumNodes() );
@@ -148,6 +149,9 @@ void COctoMap::getAsOctoMapVoxels(mrpt::opengl::COctoMapVoxels &gl_obj) const
 				mrpt::utils::TColor vx_color;
 				double coefc, coeft;
 				switch (gl_obj.getVisualizationMode()) {
+				case COctoMapVoxels::FIXED:
+					vx_color = general_color_u;
+					break;
 				case COctoMapVoxels::COLOR_FROM_HEIGHT:
 					coefc = 255*inv_dz*(vx_center.z()-zmin);
 					vx_color = TColor(coefc*general_color.R, coefc*general_color.G, coefc*general_color.B, 255.0*general_color.A);
@@ -175,6 +179,9 @@ void COctoMap::getAsOctoMapVoxels(mrpt::opengl::COctoMapVoxels &gl_obj) const
 					if (coeft < 0) {	coeft = 0; }
 					vx_color = TColor(coefc*general_color.R, coefc*general_color.G, coefc*general_color.B, coeft);
 					break;
+
+				default:
+					THROW_EXCEPTION("Unknown coloring scheme!")
 				}
 
 				const size_t vx_set = (tree->isNodeOccupied(*it)) ? VOXEL_SET_OCCUPIED:VOXEL_SET_FREESPACE;
@@ -190,6 +197,10 @@ void COctoMap::getAsOctoMapVoxels(mrpt::opengl::COctoMapVoxels &gl_obj) const
 			gl_obj.push_back_GridCube( COctoMapVoxels::TGridCube( pt_min, pt_max ) );
 		}
 	} // end for each voxel
+
+	// if we use transparency, sort cubes by "Z" as an approximation to far-to-near render ordering:
+	if (gl_obj.isCubeTransparencyEnabled())
+		gl_obj.sort_voxels_by_z();
 
 	// Set bounding box:
 	{

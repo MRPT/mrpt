@@ -44,7 +44,7 @@
 	- New apps:
 		- <a href="http://www.mrpt.org/Application%3AReactiveNav3D-Demo" >ReactiveNav3D-Demo</a> (By Mariano Jaimez Tarifa)
 	- Changes in apps:
-		- <a href="http://www.mrpt.org/Application%3Arawlog-edit" >rawlog-edit</a>: 
+		- <a href="http://www.mrpt.org/Application%3Arawlog-edit" >rawlog-edit</a>:
 			- New operations: --list-timestamps, --remap-timestamps, --export-2d-scans-txt, --export-imu-txt
 	- New classes:
 		- [mrpt-base]
@@ -63,9 +63,14 @@
 				- mrpt::bayes::CParticleFilterCapable::computeResampling()
 			- New method: CImage::loadFromXPM() - <a href="http://code.google.com/p/mrpt/source/detail?r=3397" >r3397</a>
 		- [mrpt-maps]
-			- mrpt::slam::COctoMap now exposes the inner octomap::OcTree object. See example samples/octomap_simple - <a href="http://code.google.com/p/mrpt/source/detail?r=4304" >r4304</a> 
+			- mrpt::slam::COctoMap now exposes the inner octomap::OcTree object. See example samples/octomap_simple - <a href="http://code.google.com/p/mrpt/source/detail?r=4304" >r4304</a>
 		- [mrpt-openg]
 			- mrpt::opengl::CBox now be also rendered as a solid box + line borders. See mrpt::opengl::CBox::enableBoxBorder()
+			- mrpt::opengl::COctoMapVoxels - <a href="http://code.google.com/p/mrpt/source/detail?r=4329" >r4329</a>
+				- Fixed calculation of normals (fix shading)
+				- Added new coloring scheme to mrpt::opengl::COctoMapVoxels::visualization_mode_t : "FIXED"
+				- By default, light effects are disabled in this object, because shadows aren't computed anyway and the effect isn't pleasant.
+				- Voxels cubes are sorted in ascending Z order so the visual effect is correct when rendering with transparency.
 		- [mrpt-reactivenav]
 			- mrpt::reactivenav::CParameterizedTrajectoryGenerator: The "low pass filter" has been removed since it wasn't practical and was never used; thus, parameters "TAU" and "DELAY" has been removed. - <a href="http://code.google.com/p/mrpt/source/detail?r=3395" >r3395</a>
 			- Methods removed since they weren't implemented in any derived class and there are no plans for doing it.
