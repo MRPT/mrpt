@@ -77,6 +77,7 @@
 				- mrpt::reactivenav::CReactiveNavigationSystem ::evaluate()
 				- mrpt::reactivenav::CReactiveNavigationSystem ::setParams()
 	- Build system:
+		- Updated to nanoflann 1.1.7: ICP is ~5% faster.
 		- More unit tests:
 			- [mrpt-base] geometry module.
 	- BUG FIXES:
