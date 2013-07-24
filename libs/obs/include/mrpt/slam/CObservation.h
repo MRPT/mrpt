@@ -74,13 +74,12 @@ namespace mrpt
 		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CObservation, mrpt::utils::CSerializable, OBS_IMPEXP )
 
 		/** Declares a class that represents any robot's observation.
-			   This is a base class for many types of sensors
-				 observations. Users can add a new observation type
-				 creating a new class deriving from this one.<br>
-			   <b>IMPORTANT</b>: Observations don't include any information about the
-				robot pose beliefs, just the raw observation and, where
-				aplicable, information about sensor position or
-				orientation respect to robotic coordinates origin.
+		 *  This is a base class for many types of sensor observations. 
+		 *  Users can add new observation types creating a new class deriving from this one.
+		 *
+		 *  <b>IMPORTANT</b>: Observations don't include any information about the robot pose, 
+		 *   just  raw sensory data and, where aplicable, information about the sensor position and
+		 *   orientation in the local frame of the robot.
 		 *
 		 * \sa CSensoryFrame, CMetricMap
 	 	 * \ingroup mrpt_obs_grp
