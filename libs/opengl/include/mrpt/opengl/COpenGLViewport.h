@@ -72,6 +72,10 @@ namespace mrpt
 		  *   - mrpt::opengl::mrptEventGLPreRender
 		  *   - mrpt::opengl::mrptEventGLPostRender
 		  *
+		  * Two directional light sources at infinity are created by default, with directions (-1,-1,-1) and (1,2,1), respectively.
+		  * All OpenGL properties of light sources are accesible via the methods: setNumberOfLights(), lightsClearAll(), addLight(), and getLight(). 
+		  * Please, refer to mrpt::opengl::CLight and the standard OpenGL documentation for the meaning of all light properties.
+		  *
 		  *  Refer to mrpt::opengl::COpenGLScene for further details.
 		  * \ingroup mrpt_opengl_grp
 		  */
@@ -131,8 +135,7 @@ namespace mrpt
 			/** Removes all lights (and disables the global "GL_LIGHTING") */
 			void lightsClearAll() { m_lights.clear(); }
 
-			/** Append a new light to the scene. By default there are no lights. "GL_LIGHTING" is enabled
-			  *  only if there's at least one user-defined TLight.  */
+			/** Append a new light to the scene. By default there are two lights. "GL_LIGHTING" is disabled if all lights are removed */
 			void addLight(const CLight &l) { m_lights.push_back(l); }
 
 			/** Allocates a number of lights, which must be correctly defined via getLight(i), etc. */
