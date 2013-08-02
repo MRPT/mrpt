@@ -51,7 +51,7 @@ void Example_GMRF()
 	const double RESOLUTION = 0.5;
 
 	mrpt::slam::CGasConcentrationGridMap2D  gasmap(
-		CRandomFieldGridMap2D::mrGMRF /*map type*/, 
+		CRandomFieldGridMap2D::mrGMRF_G /*map type*/,
 		0,X_SIZE,
 		0,Y_SIZE,
 		RESOLUTION /* resolution */

@@ -40,7 +40,7 @@
 
  <hr>
  <a name="1.0.2">
- <h2>Version 1.0.2: (Under development)</h2></a>
+  <h2>Version 1.0.2: Released 2-AUG-2013 (SVN 3435)  </h2></a>
 	- New apps:
 		- <a href="http://www.mrpt.org/Application%3AReactiveNav3D-Demo" >ReactiveNav3D-Demo</a> (By Mariano Jaimez Tarifa)
 	- Changes in apps:
