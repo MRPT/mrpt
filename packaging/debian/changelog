@@ -1,5 +1,9 @@
+mrpt (1:1.0.2-1) unstable; urgency=low
 
+  * New version of upstream sources.
   * Fix FTBFS with newer ffmpeg headers (Closes: #718146)
+
+ -- Jose Luis Blanco (University of Malaga) <joseluisblancoc@gmail.com>  Sat, 03 Aug 2013 12:48:20 +0200
 
 mrpt (1:1.0.1-1) unstable; urgency=low
 
