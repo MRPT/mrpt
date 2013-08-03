@@ -55,7 +55,7 @@ using namespace std;
 
 /*---------------------------------------------------------------
 The method for aligning a pair of 2D points map.
-*   The meaning of some parameters are implementation dependant,
+*   The meaning of some parameters are implementation dependent,
 *    so look for derived classes for instructions.
 *  The target is to find a PDF for the pose displacement between
 *   maps, <b>thus the pose of m2 relative to m1</b>. This pose

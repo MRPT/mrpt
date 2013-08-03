@@ -463,7 +463,7 @@ TPlane::TPlane(const TPoint3D &p1,const TPoint3D &p2,const TPoint3D &p3)  throw(
 	coefs[0]=dy1*dz2-dy2*dz1;
 	coefs[1]=dz1*dx2-dz2*dx1;
 	coefs[2]=dx1*dy2-dx2*dy1;
-	if (abs(coefs[0])<geometryEpsilon&&abs(coefs[1])<geometryEpsilon&&abs(coefs[2])<geometryEpsilon) throw logic_error("Points are linearly dependant");
+	if (abs(coefs[0])<geometryEpsilon&&abs(coefs[1])<geometryEpsilon&&abs(coefs[2])<geometryEpsilon) throw logic_error("Points are linearly dependent");
 	coefs[3]=-coefs[0]*p1.x-coefs[1]*p1.y-coefs[2]*p1.z;
 }
 TPlane::TPlane(const TPoint3D &p1,const TLine3D &r2) throw(std::logic_error)	{
