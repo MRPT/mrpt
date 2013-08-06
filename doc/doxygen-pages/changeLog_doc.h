@@ -38,6 +38,10 @@
 
 <p> <b>Note:</b> <i>If you are displaying a local version of this page and you have not built the whole HTML documentation, the links above will be broken. Either build the documentation invoking <code>make documentation_html</code> or browse it on-line <a href="http://www.mrpt.org/" target="_blank">here</a>.</i></p>
 
+ <a name="1.0.3">
+  <h2>Version 1.0.3: (Under development)  </h2></a>
+	- (no changes yet)
+
  <hr>
  <a name="1.0.2">
   <h2>Version 1.0.2: Released 2-AUG-2013 (SVN 3435)  </h2></a>
