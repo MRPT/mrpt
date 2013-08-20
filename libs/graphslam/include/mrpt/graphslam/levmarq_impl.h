@@ -183,8 +183,10 @@ namespace mrpt
 				lstJacobians.insert(lstJacobians.end(),newMapEntry );
 			}
 
-			// return overall square error:
-			return std::accumulate( errs.begin(), errs.end(),0.0, mrpt::math::squareNorm_accum<typename gst::Array_O, typename gst::Array_O::Scalar> );
+			// return overall square error:  (Was: std::accumulate(...,mrpt::math::squareNorm_accum<>), but led to GCC errors when enabling parallelization)
+			double ret_err = 0.0;
+			for (size_t i=0;i<errs.size();i++) ret_err+=errs[i].squaredNorm();
+			return ret_err;
 		}
 
 	} // end of NS
