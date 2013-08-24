@@ -40,6 +40,8 @@
 
  <a name="1.0.3">
   <h2>Version 1.0.3: (Under development)  </h2></a>
+	- Build system:
+		- Updated to the latest nanoflann 1.1.7.
 	- BUG FIXES:
 		- Fixed build error with GCC when experimental parallelization is enabled. <a href="http://code.google.com/p/mrpt/source/detail?r=3441" >r3441</a>
 
