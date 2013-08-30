@@ -73,9 +73,7 @@ namespace mrpt
 			virtual void getAsOctoMapVoxels(mrpt::opengl::COctoMapVoxels &gl_obj) const;
 
 		protected:
-
 			bool internal_insertObservation(const CObservation *obs,const CPose3D *robotPose);
-
 
 		}; // End of class def.
 	} // End of namespace

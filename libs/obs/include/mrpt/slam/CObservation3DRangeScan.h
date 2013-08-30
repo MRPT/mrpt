@@ -108,7 +108,7 @@ namespace slam
 	 *  The "intensity" channel may come from different channels in sesnsors as Kinect. Look at field \a intensityImageChannel to
 	 *    find out if the image was grabbed from the visible (RGB) or IR channels.
 	 *
-	 *  3D point clouds can be generated at any moment after grabbing with CObservation3DRangeScan::project3DPointsFromDepthImage(), provided the correct
+	 *  3D point clouds can be generated at any moment after grabbing with CObservation3DRangeScan::project3DPointsFromDepthImage() and CObservation3DRangeScan::project3DPointsFromDepthImageInto(), provided the correct
 	 *   calibration parameters.
 	 *
 	 *  \note Starting at serialization version 2 (MRPT 0.9.1+), the confidence channel is stored as an image instead of a matrix to optimize memory and disk space.

@@ -42,6 +42,7 @@
 
 #include <mrpt/opengl/COctoMapVoxels.h>
 #include <mrpt/opengl/COpenGLScene.h>
+#include <mrpt/opengl/CPointCloudColoured.h>
 
 #include <mrpt/system/filesystem.h>
 #include <mrpt/utils/CMemoryChunk.h>
@@ -140,17 +141,113 @@ bool CColouredOctoMap::internal_insertObservation(const CObservation *obs,const 
 	octomap::point3d     sensorPt;
 	octomap::Pointcloud  scan;
 
-	if (!internal_build_PointCloud_for_observation(obs,robotPose, sensorPt, scan))
-		return false; // Nothing to do.
+	CPose3D		robotPose3D;
+	if (robotPose) // Default values are (0,0,0)
+		robotPose3D = (*robotPose);
 
-	// Insert rays:
-	m_octomap.insertScan(scan, sensorPt, insertionOptions.maxrange, insertionOptions.pruning);
-	return true;
+	if ( IS_CLASS(obs,CObservation2DRangeScan) )
+	{
+		/********************************************************************
+				OBSERVATION TYPE: CObservation2DRangeScan
+		********************************************************************/
+		const CObservation2DRangeScan	*o = static_cast<const CObservation2DRangeScan*>( obs );
+
+		// Build a points-map representation of the points from the scan (coordinates are wrt the robot base)
+
+		// Sensor_pose = robot_pose (+) sensor_pose_on_robot
+		CPose3D sensorPose(UNINITIALIZED_POSE);
+		sensorPose.composeFrom(robotPose3D,o->sensorPose);
+		sensorPt = octomap::point3d(sensorPose.x(),sensorPose.y(),sensorPose.z());
+
+		const CPointsMap *scanPts = o->buildAuxPointsMap<mrpt::slam::CPointsMap>();
+		const size_t nPts = scanPts->size();
+
+		// Transform 3D point cloud:
+		scan.reserve(nPts);
+
+		mrpt::math::TPoint3Df pt;
+		for (size_t i=0;i<nPts;i++)
+		{
+			// Load the next point:
+			scanPts->getPointFast(i,pt.x,pt.y,pt.z);
+
+			// Translation:
+			double gx,gy,gz;
+			robotPose3D.composePoint(pt.x,pt.y,pt.z,  gx,gy,gz);
+
+			// Add to this map:
+			scan.push_back(gx,gy,gz);
+		}
+
+		// Insert rays:
+		m_octomap.insertScan(scan, sensorPt, insertionOptions.maxrange, insertionOptions.pruning);
+		return true;
+	}
+	else if ( IS_CLASS(obs,CObservation3DRangeScan) )
+	{
+		/********************************************************************
+				OBSERVATION TYPE: CObservation3DRangeScan
+		********************************************************************/
+		const CObservation3DRangeScan	*o = static_cast<const CObservation3DRangeScan*>( obs );
+
+		o->load(); // Just to make sure the points are loaded from an external source, if that's the case...
+
+		// Project 3D points & color:
+		mrpt::opengl::CPointCloudColouredPtr pts = mrpt::opengl::CPointCloudColoured::Create();
+		const_cast<CObservation3DRangeScan*>(o)->project3DPointsFromDepthImageInto(*pts,true,robotPose);
+
+		// Sensor_pose = robot_pose (+) sensor_pose_on_robot
+		CPose3D sensorPose(UNINITIALIZED_POSE);
+		sensorPose.composeFrom(robotPose3D,o->sensorPose);
+		sensorPt = octomap::point3d(sensorPose.x(),sensorPose.y(),sensorPose.z());
+		
+		const size_t sizeRangeScan = pts->size();
+		scan.reserve(sizeRangeScan);
+
+		for (size_t i=0;i<sizeRangeScan;i++)
+		{
+			const mrpt::opengl::CPointCloudColoured::TPointColour & pt = pts->getPoint(i);
+
+			// Add to this map:
+			if (pt.x!=0 || pt.y!=0 || pt.z!=0)			
+				scan.push_back(pt.x,pt.y,pt.z);
+		}
+
+		// Insert rays:
+		octomap::KeySet free_cells, occupied_cells;
+		m_octomap.computeUpdate(scan, sensorPt, free_cells, occupied_cells, insertionOptions.maxrange);    
+		
+		// insert data into tree  -----------------------
+		for (octomap::KeySet::iterator it = free_cells.begin(); it != free_cells.end(); ++it) {
+			m_octomap.updateNode(*it, false, false);
+		}
+		for (octomap::KeySet::iterator it = occupied_cells.begin(); it != occupied_cells.end(); ++it) {
+			m_octomap.updateNode(*it, true, false);
+		}
+
+		// Update color -----------------------
+		const float colF2B = 255.0f;
+		for (size_t i=0;i<sizeRangeScan;i++)
+		{
+			const mrpt::opengl::CPointCloudColoured::TPointColour & pt = pts->getPoint(i);
+
+			// Add to this map:
+			if (pt.x!=0 || pt.y!=0 || pt.z!=0)
+				this->updateVoxelColour(pt.x,pt.y,pt.z, uint8_t(pt.R*colF2B),uint8_t(pt.G*colF2B),uint8_t(pt.B*colF2B) );
+		}
+
+		// TODO: does pruning make sense if we used "lazy_eval"?
+		if (insertionOptions.pruning) m_octomap.prune();
+
+		return true;
+	}
+
+	return false;
 }
 
 /** Get the RGB colour of a point
 * \return false if the point is not mapped, in which case the returned colour is undefined. */
-bool CColouredOctoMap::getPointColour(const float x, const float y, const float z, char& r, char& g, char& b) const
+bool CColouredOctoMap::getPointColour(const float x, const float y, const float z, uint8_t& r, uint8_t& g, uint8_t& b) const
 {
     octomap::OcTreeKey key;
 	if (m_octomap.coordToKeyChecked(octomap::point3d(x,y,z), key))
@@ -158,16 +255,17 @@ bool CColouredOctoMap::getPointColour(const float x, const float y, const float 
 		octomap::ColorOcTreeNode *node = m_octomap.search(key,0 /*depth*/);
 		if (!node) return false;
 
-		r = node->getColor().r;
-		g = node->getColor().g;
-		b = node->getColor().b;
+		const octomap::ColorOcTreeNode::Color &col = node->getColor();
+		r = col.r;
+		g = col.g;
+		b = col.b;
 		return true;
 	}
 	else return false;
 }
 
 /** Manually update the colour of the voxel at (x,y,z) */
-void CColouredOctoMap::updateVoxelColour(const double x, const double y, const double z, const char r, const char g, const char b)
+void CColouredOctoMap::updateVoxelColour(const double x, const double y, const double z, const uint8_t r, const uint8_t g, const uint8_t b)
 {
 	switch (m_colour_method) {
 	case INTEGRATE:

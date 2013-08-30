@@ -82,10 +82,10 @@ namespace mrpt
 
 			/** Get the RGB colour of a point
 				* \return false if the point is not mapped, in which case the returned colour is undefined. */
-			bool getPointColour(const float x, const float y, const float z, char& r, char& g, char& b) const;
+			bool getPointColour(const float x, const float y, const float z, uint8_t& r, uint8_t& g, uint8_t& b) const;
 
 			/** Manually update the colour of the voxel at (x,y,z) */
-			void updateVoxelColour(const double x, const double y, const double z, const char r, const char g, const char b);
+			void updateVoxelColour(const double x, const double y, const double z, const uint8_t r, const uint8_t g, const uint8_t b);
 
 			///Set the method used to update voxels colour
 			void setVoxelColourMethod(TColourUpdate new_method) {m_colour_method = new_method;}

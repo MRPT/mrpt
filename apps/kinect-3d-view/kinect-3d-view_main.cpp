@@ -55,6 +55,8 @@ using namespace mrpt::slam;
 using namespace mrpt::utils;
 using namespace std;
 
+//#define VIEW_AS_OCTOMAP
+
 // Thread for grabbing: Do this is another thread so we divide rendering and grabbing
 //   and exploit multicore CPUs.
 struct TThreadParam
@@ -187,8 +189,12 @@ void Test_Kinect()
 	win3D.setFOV(90);
 	win3D.setCameraPointingToPoint(2.5,0,0);
 
+#if !defined(VIEW_AS_OCTOMAP)
 	mrpt::opengl::CPointCloudColouredPtr gl_points = mrpt::opengl::CPointCloudColoured::Create();
 	gl_points->setPointSize(2.5);
+#else
+	mrpt::opengl::COctoMapVoxelsPtr gl_voxels = mrpt::opengl::COctoMapVoxels::Create();
+#endif
 
 	const double aspect_ratio =  480.0 / 640.0; // kinect.getRowCount() / double( kinect.getColCount() );
 
@@ -197,7 +203,11 @@ void Test_Kinect()
 		mrpt::opengl::COpenGLScenePtr &scene = win3D.get3DSceneAndLock();
 
 		// Create the Opengl object for the point cloud:
+#if !defined(VIEW_AS_OCTOMAP)
 		scene->insert( gl_points );
+#else
+		scene->insert( gl_voxels );
+#endif
 		scene->insert( mrpt::opengl::CGridPlaneXY::Create() );
 		scene->insert( mrpt::opengl::stock_objects::CornerXYZ() );
 
@@ -264,6 +274,7 @@ void Test_Kinect()
 			// Show 3D points:
 			if (last_obs->hasPoints3D )
 			{
+#if !defined(VIEW_AS_OCTOMAP)
 				// For alternative ways to generate the 3D point cloud, read:
 				// http://www.mrpt.org/Generating_3D_point_clouds_from_RGB_D_observations
 				CColouredPointsMap pntsMap;
@@ -273,9 +284,18 @@ void Test_Kinect()
 				win3D.get3DSceneAndLock();
 					gl_points->loadFromPointsMap(&pntsMap);
 				win3D.unlockAccess3DScene();
+#else
+				CColouredOctoMap  octoMap(0.10);
+				octoMap.setVoxelColourMethod( CColouredOctoMap::INTEGRATE );
+				octoMap.insertObservationPtr( last_obs );
+
+				win3D.get3DSceneAndLock();
+					octoMap.getAsOctoMapVoxels( *gl_voxels );
+					gl_voxels->showVoxels(VOXEL_SET_FREESPACE, false);
+				win3D.unlockAccess3DScene();
+#endif
 				do_refresh=true;
 			}
-
 
 			// Estimated grabbing rate:
 			win3D.get3DSceneAndLock();
