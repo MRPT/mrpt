@@ -145,8 +145,6 @@ bool CColouredOctoMap::internal_insertObservation(const CObservation *obs,const 
 
 	// Insert rays:
 	m_octomap.insertScan(scan, sensorPt, insertionOptions.maxrange, insertionOptions.pruning);
-	octomap::point3d a = scan.getPoint(1);
-
 	return true;
 }
 
@@ -181,7 +179,7 @@ void CColouredOctoMap::updateVoxelColour(const double x, const double y, const d
 	case AVERAGE:
 		m_octomap.averageNodeColor(x,y,z,r,g,b);
 		break;
-	default: 
+	default:
 		THROW_EXCEPTION("Invalid value found for 'm_colour_method'")
 	}
 }
@@ -211,10 +209,9 @@ void CColouredOctoMap::getAsOctoMapVoxels(mrpt::opengl::COctoMapVoxels &gl_obj) 
 	gl_obj.reserveVoxels(VOXEL_SET_OCCUPIED, nLeafs);
 	gl_obj.reserveVoxels(VOXEL_SET_FREESPACE, nLeafs);
 
-	double xmin, xmax, ymin, ymax, zmin, zmax, inv_dz;
+	double xmin, xmax, ymin, ymax, zmin, zmax;
 	this->getMetricMin(xmin, ymin, zmin);
 	this->getMetricMax(xmax, ymax, zmax);
-	inv_dz = 1/(zmax-zmin + 0.01);
 
 	for(octomap::ColorOcTree::tree_iterator it = m_octomap.begin_tree(max_depth);it!=it_end; ++it)
 	{
@@ -260,4 +257,3 @@ void CColouredOctoMap::getAsOctoMapVoxels(mrpt::opengl::COctoMapVoxels &gl_obj) 
 	}
 
 }
-

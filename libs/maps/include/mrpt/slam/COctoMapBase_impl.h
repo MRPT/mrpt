@@ -35,6 +35,9 @@
 
 // This file is to be included from <mrpt/slam/COctoMapBase.h>
 #include <mrpt/utils/CFileOutputStream.h>
+#include <mrpt/slam/CObservation2DRangeScan.h>
+#include <mrpt/slam/CObservation3DRangeScan.h>
+#include <mrpt/slam/CPointsMap.h>
 
 namespace mrpt
 {
@@ -148,7 +151,7 @@ namespace mrpt
 
 			return false;
 		}
-		
+
 		template <class OCTREE,class OCTREE_NODE>
 		bool COctoMapBase<OCTREE,OCTREE_NODE>::isEmpty() const
 		{
@@ -284,25 +287,6 @@ namespace mrpt
 			clampingThresMax(0.971)
 		{
 		}
-
-		template <class OCTREE,class OCTREE_NODE>
-		typename COctoMapBase<OCTREE,OCTREE_NODE>::TInsertionOptions & COctoMapBase<OCTREE,OCTREE_NODE>::TInsertionOptions::operator = (typename const COctoMapBase<OCTREE,OCTREE_NODE>::TInsertionOptions &o)
-		{
-			// Copy all but the m_parent pointer!
-			maxrange = o.maxrange;
-			pruning  = o.pruning;
-
-			const bool o_has_parent = o.m_parent.get()!=NULL;
-
-			setOccupancyThres( o_has_parent ? o.getOccupancyThres() : o.occupancyThres );
-			setProbHit( o_has_parent ? o.getProbHit() : o.probHit );
-			setProbMiss( o_has_parent ? o.getProbMiss() : o.probMiss );
-			setClampingThresMin( o_has_parent ? o.getClampingThresMin() : o.clampingThresMin );
-			setClampingThresMax( o_has_parent ? o.getClampingThresMax() : o.clampingThresMax );
-
-			return *this;
-		}
-
 
 		template <class OCTREE,class OCTREE_NODE>
 		COctoMapBase<OCTREE,OCTREE_NODE>::TLikelihoodOptions::TLikelihoodOptions() :

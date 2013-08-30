@@ -101,7 +101,19 @@ namespace mrpt
 				TInsertionOptions( myself_t &parent );
 
 				TInsertionOptions(); //!< Especial constructor, not attached to a real COctoMap object: used only in limited situations, since get*() methods don't work, etc.
-				TInsertionOptions & operator = (const TInsertionOptions &other);
+				TInsertionOptions & operator = (const TInsertionOptions &o)
+				{
+					// Copy all but the m_parent pointer!
+					maxrange = o.maxrange;
+					pruning  = o.pruning;
+					const bool o_has_parent = o.m_parent.get()!=NULL;
+					setOccupancyThres( o_has_parent ? o.getOccupancyThres() : o.occupancyThres );
+					setProbHit( o_has_parent ? o.getProbHit() : o.probHit );
+					setProbMiss( o_has_parent ? o.getProbMiss() : o.probMiss );
+					setClampingThresMin( o_has_parent ? o.getClampingThresMin() : o.clampingThresMin );
+					setClampingThresMax( o_has_parent ? o.getClampingThresMax() : o.clampingThresMax );
+					return *this;
+				}
 
 				/** See utils::CLoadableOptions */
 				void  loadFromConfigFile(const mrpt::utils::CConfigFileBase  &source,const std::string &section);
@@ -281,7 +293,7 @@ namespace mrpt
 					generateOccupiedVoxels (true),
 					visibleOccupiedVoxels  (true),
 					generateFreeVoxels     (true),
-					visibleFreeVoxels      (true) 
+					visibleFreeVoxels      (true)
 				{ }
 
 				void writeToStream(CStream &out) const;		//!< Binary dump to stream
@@ -392,7 +404,7 @@ namespace mrpt
 
 		protected:
 			virtual void  internal_clear() {  m_octomap.clear(); }
- 
+
 			/**  Builds the list of 3D points in global coordinates for a generic observation. Used for both, insertObservation() and computeLikelihood().
 			  * \param[out] point3d_sensorPt Is a pointer to a "point3D".
 			  * \param[out] ptr_scan Is in fact a pointer to "octomap::Pointcloud". Not declared as such to avoid headers dependencies in user code.
