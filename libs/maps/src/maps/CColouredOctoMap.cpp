@@ -35,11 +35,17 @@
 
 #include <mrpt/maps.h>  // Precompiled header
 
-#include <mrpt/slam/COctoMap.h>
-#include <mrpt/opengl/COctoMapVoxels.h>
-#include <mrpt/utils/color_maps.h>
+#include <mrpt/slam/CColouredOctoMap.h>
+#include <mrpt/slam/CPointsMap.h>
+#include <mrpt/slam/CObservation2DRangeScan.h>
+#include <mrpt/slam/CObservation3DRangeScan.h>
 
-#include <mrpt/otherlibs/octomap/octomap.h>
+#include <mrpt/opengl/COctoMapVoxels.h>
+#include <mrpt/opengl/COpenGLScene.h>
+
+#include <mrpt/system/filesystem.h>
+#include <mrpt/utils/CMemoryChunk.h>
+#include <mrpt/utils/CFileOutputStream.h>
 
 using namespace std;
 using namespace mrpt;
@@ -49,68 +55,145 @@ using namespace mrpt::poses;
 using namespace mrpt::opengl;
 using namespace mrpt::math;
 
-#define OCTOMAP_PTR        static_cast<octomap::OcTree*>(m_octomap)
-#define OCTOMAP_PTR_CONST  static_cast<const octomap::OcTree*>(m_octomap)
+IMPLEMENTS_SERIALIZABLE(CColouredOctoMap, CMetricMap,mrpt::slam)
 
-#define PARENT_OCTOMAP_PTR        static_cast<octomap::OcTree*>(m_parent->m_octomap)
-#define PARENT_OCTOMAP_PTR_CONST  static_cast<const octomap::OcTree*>(m_parent->m_octomap)
-
-
-COctoMap::TRenderingOptions::TRenderingOptions() :
-	generateGridLines      (false),
-	generateOccupiedVoxels (true),
-	visibleOccupiedVoxels  (true),
-	generateFreeVoxels     (true),
-	visibleFreeVoxels      (true)
+/*---------------------------------------------------------------
+						Constructor
+  ---------------------------------------------------------------*/
+CColouredOctoMap::CColouredOctoMap(const double resolution) :
+	COctoMapBase<octomap::ColorOcTree,octomap::ColorOcTreeNode>(resolution),
+	m_colour_method(INTEGRATE)
 {
 }
 
-void COctoMap::TRenderingOptions::writeToStream(CStream &out) const
+/*---------------------------------------------------------------
+						Destructor
+  ---------------------------------------------------------------*/
+CColouredOctoMap::~CColouredOctoMap()
 {
-	const int8_t version = 0;
-	out << version;
-
-	out << 	generateGridLines << generateOccupiedVoxels << visibleOccupiedVoxels
-	    << generateFreeVoxels << visibleFreeVoxels;
-;
 }
 
-void COctoMap::TRenderingOptions::readFromStream(CStream &in)
+/*---------------------------------------------------------------
+					writeToStream
+   Implements the writing to a CStream capability of
+				CSerializable objects
+  ---------------------------------------------------------------*/
+void  CColouredOctoMap::writeToStream(CStream &out, int *version) const
 {
-	int8_t version;
-	in >> version;
+	if (version)
+		*version = 1;
+	else
+	{
+		this->likelihoodOptions.writeToStream(out);
+		this->renderingOptions.writeToStream(out);  // Added in v1
+
+		CMemoryChunk chunk;
+		const string	tmpFil = mrpt::system::getTempFileName();
+		const_cast<octomap::ColorOcTree*>(&m_octomap)->writeBinary(tmpFil);
+		chunk.loadBufferFromFile(tmpFil);
+		mrpt::system::deleteFile(tmpFil);
+		out << chunk;
+
+	}
+}
+
+/*---------------------------------------------------------------
+					readFromStream
+   Implements the reading from a CStream capability of
+      CSerializable objects
+  ---------------------------------------------------------------*/
+void  CColouredOctoMap::readFromStream(CStream &in, int version)
+{
 	switch(version)
 	{
-		case 0:
+	case 0:
+	case 1:
 		{
-			in >> generateGridLines >> generateOccupiedVoxels >> visibleOccupiedVoxels
-				>> generateFreeVoxels >> visibleFreeVoxels;
-		}
+			this->likelihoodOptions.readFromStream(in);
+			if (version>=1) this->renderingOptions.readFromStream(in);
+
+			this->clear();
+
+			CMemoryChunk chunk;
+			in >> chunk;
+
+			if (chunk.getTotalBytesCount())
+			{
+				const string	tmpFil = mrpt::system::getTempFileName();
+				if (!chunk.saveBufferToFile( tmpFil ) ) THROW_EXCEPTION("Error saving temporary file");
+				m_octomap.readBinary(tmpFil);
+				mrpt::system::deleteFile( tmpFil );
+			}
+
+		} break;
+	default:
+		MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
+	};
+
+}
+
+/*---------------------------------------------------------------
+				insertObservation
+ ---------------------------------------------------------------*/
+bool CColouredOctoMap::internal_insertObservation(const CObservation *obs,const CPose3D *robotPose)
+{
+	octomap::point3d     sensorPt;
+	octomap::Pointcloud  scan;
+
+	if (!internal_build_PointCloud_for_observation(obs,robotPose, sensorPt, scan))
+		return false; // Nothing to do.
+
+	// Insert rays:
+	m_octomap.insertScan(scan, sensorPt, insertionOptions.maxrange, insertionOptions.pruning);
+	octomap::point3d a = scan.getPoint(1);
+
+	return true;
+}
+
+/** Get the RGB colour of a point
+* \return false if the point is not mapped, in which case the returned colour is undefined. */
+bool CColouredOctoMap::getPointColour(const float x, const float y, const float z, char& r, char& g, char& b) const
+{
+    octomap::OcTreeKey key;
+	if (m_octomap.coordToKeyChecked(octomap::point3d(x,y,z), key))
+	{
+		octomap::ColorOcTreeNode *node = m_octomap.search(key,0 /*depth*/);
+		if (!node) return false;
+
+		r = node->getColor().r;
+		g = node->getColor().g;
+		b = node->getColor().b;
+		return true;
+	}
+	else return false;
+}
+
+/** Manually update the colour of the voxel at (x,y,z) */
+void CColouredOctoMap::updateVoxelColour(const double x, const double y, const double z, const char r, const char g, const char b)
+{
+	switch (m_colour_method) {
+	case INTEGRATE:
+		m_octomap.integrateNodeColor(x,y,z,r,g,b);
 		break;
-		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
+	case SET:
+		m_octomap.setNodeColor(x,y,z,r,g,b);
+		break;
+	case AVERAGE:
+		m_octomap.averageNodeColor(x,y,z,r,g,b);
+		break;
+	default: 
+		THROW_EXCEPTION("Invalid value found for 'm_colour_method'")
 	}
 }
 
 
-
-
-/** Returns a 3D object representing the map.
-	*/
-void COctoMap::getAs3DObject( mrpt::opengl::CSetOfObjectsPtr &outObj ) const
-{
-	mrpt::opengl::COctoMapVoxelsPtr gl_obj = mrpt::opengl::COctoMapVoxels::Create();
-	this->getAsOctoMapVoxels(*gl_obj);
-	outObj->insert(gl_obj);
-}
-
 /** Builds a renderizable representation of the octomap as a mrpt::opengl::COctoMapVoxels object. */
-void COctoMap::getAsOctoMapVoxels(mrpt::opengl::COctoMapVoxels &gl_obj) const
+void CColouredOctoMap::getAsOctoMapVoxels(mrpt::opengl::COctoMapVoxels &gl_obj) const
 {
 	// Go thru all voxels:
-	octomap::OcTree *tree = const_cast<octomap::OcTree*>(OCTOMAP_PTR_CONST); // because there's no a "OcTree::const_iterator"
 
 	//OcTreeVolume voxel; // current voxel, possibly transformed
-	octomap::OcTree::tree_iterator it_end = tree->end_tree();
+	octomap::ColorOcTree::tree_iterator it_end = m_octomap.end_tree();
 
 	const unsigned char max_depth = 0; // all
 	const TColorf general_color = gl_obj.getColor();
@@ -133,7 +216,7 @@ void COctoMap::getAsOctoMapVoxels(mrpt::opengl::COctoMapVoxels &gl_obj) const
 	this->getMetricMax(xmax, ymax, zmax);
 	inv_dz = 1/(zmax-zmin + 0.01);
 
-	for(octomap::OcTree::tree_iterator it = tree->begin_tree(max_depth);it!=it_end; ++it)
+	for(octomap::ColorOcTree::tree_iterator it = m_octomap.begin_tree(max_depth);it!=it_end; ++it)
 	{
 		const octomap::point3d vx_center = it.getCoordinate();
 		const double           vx_length = it.getSize();
@@ -147,44 +230,10 @@ void COctoMap::getAsOctoMapVoxels(mrpt::opengl::COctoMapVoxels &gl_obj) const
 				 (occ<0.5  && renderingOptions.generateFreeVoxels) )
 			{
 				mrpt::utils::TColor vx_color;
-				double coefc, coeft;
-				switch (gl_obj.getVisualizationMode()) {
-				case COctoMapVoxels::FIXED:
-					vx_color = general_color_u;
-					break;
-				case COctoMapVoxels::COLOR_FROM_HEIGHT:
-					coefc = 255*inv_dz*(vx_center.z()-zmin);
-					vx_color = TColor(coefc*general_color.R, coefc*general_color.G, coefc*general_color.B, 255.0*general_color.A);
-					break;
+				octomap::ColorOcTreeNode::Color node_color = it->getColor();
+				vx_color = TColor(node_color.r, node_color.g, node_color.b);
 
-				case COctoMapVoxels::COLOR_FROM_OCCUPANCY:
-					coefc = 240*(1-occ) + 15;
-					vx_color = TColor(coefc*general_color.R, coefc*general_color.G, coefc*general_color.B, 255.0*general_color.A);
-					break;
-
-				case COctoMapVoxels::TRANSPARENCY_FROM_OCCUPANCY:
-					coeft = 255 - 510*(1-occ);
-					if (coeft < 0) {	coeft = 0; }
-					vx_color = TColor(255*general_color.R, 255*general_color.G, 255*general_color.B, coeft);
-					break;
-
-				case COctoMapVoxels::TRANS_AND_COLOR_FROM_OCCUPANCY:
-					coefc = 240*(1-occ) + 15;
-					vx_color = TColor(coefc*general_color.R, coefc*general_color.G, coefc*general_color.B, 50);
-					break;
-
-				case COctoMapVoxels::MIXED:
-					coefc = 255*inv_dz*(vx_center.z()-zmin);
-					coeft = 255 - 510*(1-occ);
-					if (coeft < 0) {	coeft = 0; }
-					vx_color = TColor(coefc*general_color.R, coefc*general_color.G, coefc*general_color.B, coeft);
-					break;
-
-				default:
-					THROW_EXCEPTION("Unknown coloring scheme!")
-				}
-
-				const size_t vx_set = (tree->isNodeOccupied(*it)) ? VOXEL_SET_OCCUPIED:VOXEL_SET_FREESPACE;
+				const size_t vx_set = (m_octomap.isNodeOccupied(*it)) ? VOXEL_SET_OCCUPIED:VOXEL_SET_FREESPACE;
 
 				gl_obj.push_back_Voxel(vx_set,COctoMapVoxels::TVoxel( TPoint3D(vx_center.x(),vx_center.y(),vx_center.z()) ,vx_length, vx_color) );
 			}
@@ -211,3 +260,4 @@ void COctoMap::getAsOctoMapVoxels(mrpt::opengl::COctoMapVoxels &gl_obj) const
 	}
 
 }
+

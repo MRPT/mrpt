@@ -37,6 +37,7 @@
 
 #include <mrpt/slam/COccupancyGridMap2D.h>
 #include <mrpt/slam/COctoMap.h>
+#include <mrpt/slam/CColouredOctoMap.h>
 #include <mrpt/slam/CGasConcentrationGridMap2D.h>
 #include <mrpt/slam/CWirelessPowerGridMap2D.h>
 #include <mrpt/slam/CHeightGridMap2D.h>
@@ -70,6 +71,7 @@ namespace slam
 	 *		- mrpt::slam::CPointsMap: For laser 2D range scans, and posibly for IR ranges,... (It keeps the full 3D structure of scans)
 	 *		- mrpt::slam::COccupancyGridMap2D: Exclusively for 2D, <b>horizontal</b>  laser range scans, at different altitudes.
 	 *		- mrpt::slam::COctoMap: For 3D occupancy grids of variable resolution, with octrees (based on the library "octomap").
+	 *		- mrpt::slam::CColouredOctoMap: The same than above, but nodes can store RGB data appart from occupancy.
 	 *		- mrpt::slam::CLandmarksMap: For visual landmarks,etc...
 	 *		- mrpt::slam::CGasConcentrationGridMap2D: For gas concentration maps.
 	 *		- mrpt::slam::CWirelessPowerGridMap2D: For wifi power maps.
@@ -147,7 +149,8 @@ namespace slam
 				mapColourPoints,
 				mapReflectivity,
 				mapWeightedPoints,
-				mapOctoMaps
+				mapOctoMaps,
+				mapColourOctoMaps
 			} likelihoodMapSelection;
 
 			bool	enableInsertion_pointsMap;			//!< Default = true (set to false to avoid "insertObservation" to update a given map)
@@ -161,6 +164,7 @@ namespace slam
 			bool	enableInsertion_colourPointsMaps;	//!< Default = true (set to false to avoid "insertObservation" to update a given map)
 			bool	enableInsertion_weightedPointsMaps;	//!< Default = true (set to false to avoid "insertObservation" to update a given map)
 			bool	enableInsertion_octoMaps;			//!< Default = true (set to false to avoid "insertObservation" to update a given map)
+			bool	enableInsertion_colourOctoMaps;		//!< Default = true (set to false to avoid "insertObservation" to update a given map)
 
 		} options;
 
@@ -173,6 +177,7 @@ namespace slam
 		std::deque<CSimplePointsMapPtr>              m_pointsMaps;
 		std::deque<COccupancyGridMap2DPtr>           m_gridMaps;
 		std::deque<COctoMapPtr>                      m_octoMaps;
+		std::deque<CColouredOctoMapPtr>              m_colourOctoMaps;
 		std::deque<CGasConcentrationGridMap2DPtr>    m_gasGridMaps;
 		std::deque<CWirelessPowerGridMap2DPtr>       m_wifiGridMaps;
 		std::deque<CHeightGridMap2DPtr>              m_heightMaps;
@@ -331,8 +336,7 @@ namespace slam
 
 		} occupancyGridMap2D_options;
 
-		/** Specific options for 3D octo maps (mrpt::slam::COctoMap)
-		  */
+		/** Specific options for 3D octo maps (mrpt::slam::COctoMap) */
 		struct SLAM_IMPEXP TOctoMapOptions
 		{
 			TOctoMapOptions();	//!< Default values loader
@@ -341,6 +345,16 @@ namespace slam
 			COctoMap::TInsertionOptions	  insertionOpts;	//!< Customizable initial options.
 			COctoMap::TLikelihoodOptions  likelihoodOpts;	//!< Customizable initial options.
 		} octoMap_options;
+
+		/** Specific options for 3D octo maps (mrpt::slam::COctoMap) */
+		struct SLAM_IMPEXP TColourOctoMapOptions
+		{
+			TColourOctoMapOptions();	//!< Default values loader
+
+			double resolution;	//!< The finest resolution of the octomap (default: 0.10 meters)
+			CColouredOctoMap::TInsertionOptions	  insertionOpts;	//!< Customizable initial options.
+			CColouredOctoMap::TLikelihoodOptions  likelihoodOpts;	//!< Customizable initial options.
+		} colourOctoMap_options;		
 
 		/** Specific options for point maps (mrpt::slam::CPointsMap)
 		  */
@@ -483,6 +497,7 @@ namespace slam
 		  *  // Creation of maps:
 		  *  occupancyGrid_count=<Number of mrpt::slam::COccupancyGridMap2D maps>
 		  *  octoMap_count=<Number of mrpt::slam::COctoMap maps>
+		  *  colourOctoMap_count=<Number of mrpt::slam::CColourOctoMap maps>
 		  *  gasGrid_count=<Number of mrpt::slam::CGasConcentrationGridMap2D maps>
 		  *  wifiGrid_count=<Number of mrpt::slam::CWirelessPowerGridMap2D maps>
 		  *  landmarksMap_count=<0 or 1, for creating a mrpt::slam::CLandmarksMap map>
@@ -508,6 +523,8 @@ namespace slam
 		  *  enableInsertion_reflectivityMap=<0/1>
 		  *  enableInsertion_colourPointsMap=<0/1>
 		  *  enableInsertion_weightedPointsMap=<0/1>
+		  *  enableInsertion_octoMaps=<0/1>
+		  *  enableInsertion_colourOctoMaps=<0/1>
 		  *
 		  * // ====================================================
 		  * //  Creation Options for OccupancyGridMap ##:
@@ -538,6 +555,19 @@ namespace slam
 		  * // Likelihood Options for OctoMap ##:
 		  * [<sectionName>+"_octoMap_##_likelihoodOpts"]
 		  *  <See COctoMap::TLikelihoodOptions>
+		  *
+		  * // ====================================================
+		  * //  Creation Options for ColourOctoMap ##:
+		  * [<sectionName>+"_colourOctoMap_##_creationOpts"]
+		  *  resolution=<value>
+		  *
+		  * // Insertion Options for ColourOctoMap ##:
+		  * [<sectionName>+"_colourOctoMap_##_insertOpts"]
+		  *  <See CColourOctoMap::TInsertionOptions>
+		  *
+		  * // Likelihood Options for ColourOctoMap ##:
+		  * [<sectionName>+"_colourOctoMap_##_likelihoodOpts"]
+		  *  <See CColourOctoMap::TLikelihoodOptions>
 		  *
 		  *
 		  * // ====================================================
@@ -697,6 +727,7 @@ namespace slam
 				m_map.insert(slam::CMultiMetricMap::TOptions::mapFuseAll,   "mapFuseAll");
 				m_map.insert(slam::CMultiMetricMap::TOptions::mapGrid,      "mapGrid");
 				m_map.insert(slam::CMultiMetricMap::TOptions::mapOctoMaps,  "mapOctoMaps");
+				m_map.insert(slam::CMultiMetricMap::TOptions::mapColourOctoMaps,  "mapColourOctoMaps");
 				m_map.insert(slam::CMultiMetricMap::TOptions::mapPoints,    "mrSimpleAverage");
 				m_map.insert(slam::CMultiMetricMap::TOptions::mapLandmarks, "mapLandmarks");
 				m_map.insert(slam::CMultiMetricMap::TOptions::mapGasGrid,   "mapGasGrid");

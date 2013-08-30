@@ -78,6 +78,7 @@ struct MapExecutor {
 		for_each( mmm.m_pointsMaps.begin(),mmm.m_pointsMaps.end(), op );
 		for_each( mmm.m_gridMaps.begin(),mmm.m_gridMaps.end(),  op );
 		for_each( mmm.m_octoMaps.begin(),mmm.m_octoMaps.end(),  op );
+		for_each( mmm.m_colourOctoMaps.begin(),mmm.m_colourOctoMaps.end(),  op );
 		for_each( mmm.m_gasGridMaps.begin(),mmm.m_gasGridMaps.end(),  op );
 		for_each( mmm.m_wifiGridMaps.begin(),mmm.m_wifiGridMaps.end(),  op );
 		for_each( mmm.m_heightMaps.begin(),mmm.m_heightMaps.end(),  op );
@@ -99,6 +100,7 @@ struct MapExecutor {
 		op( mmm.m_pointsMaps );
 		op( mmm.m_gridMaps );
 		op( mmm.m_octoMaps );
+		op( mmm.m_colourOctoMaps );
 		op( mmm.m_gasGridMaps );
 		op( mmm.m_wifiGridMaps );
 		op( mmm.m_heightMaps );
@@ -111,6 +113,7 @@ struct MapExecutor {
 		mmm.m_pointsMaps = other.m_pointsMaps;
 		mmm.m_gridMaps = other.m_gridMaps;
 		mmm.m_octoMaps = other.m_octoMaps;
+		mmm.m_colourOctoMaps = other.m_colourOctoMaps;
 		mmm.m_gasGridMaps = other.m_gasGridMaps;
 		mmm.m_wifiGridMaps = other.m_wifiGridMaps;
 		mmm.m_heightMaps = other.m_heightMaps;
@@ -149,6 +152,10 @@ struct MapTraits
 		return (ptr.present() && (mmm.options.likelihoodMapSelection==CMultiMetricMap::TOptions::mapFuseAll ||
 				mmm.options.likelihoodMapSelection==CMultiMetricMap::TOptions::mapOctoMaps ) );
 	}
+	inline bool isUsedLik(CColouredOctoMapPtr &ptr) {
+		return (ptr.present() && (mmm.options.likelihoodMapSelection==CMultiMetricMap::TOptions::mapFuseAll ||
+				mmm.options.likelihoodMapSelection==CMultiMetricMap::TOptions::mapColourOctoMaps) );
+	}
 	inline bool isUsedLik(CGasConcentrationGridMap2DPtr &ptr) {
 		return (ptr.present() && (mmm.options.likelihoodMapSelection==CMultiMetricMap::TOptions::mapFuseAll ||
 				mmm.options.likelihoodMapSelection==CMultiMetricMap::TOptions::mapGasGrid ) );
@@ -186,6 +193,7 @@ struct MapTraits
 	inline bool isUsedInsert(CSimplePointsMapPtr &ptr) { return ptr.present() && mmm.options.enableInsertion_pointsMap; }
 	inline bool isUsedInsert(COccupancyGridMap2DPtr &ptr) { return ptr.present() && mmm.options.enableInsertion_gridMaps; }
 	inline bool isUsedInsert(COctoMapPtr &ptr) { return ptr.present() && mmm.options.enableInsertion_octoMaps; }
+	inline bool isUsedInsert(CColouredOctoMapPtr &ptr) { return ptr.present() && mmm.options.enableInsertion_colourOctoMaps; }
 	inline bool isUsedInsert(CGasConcentrationGridMap2DPtr &ptr) { return ptr.present() && mmm.options.enableInsertion_gasGridMaps; }
 	inline bool isUsedInsert(CWirelessPowerGridMap2DPtr &ptr) { return ptr.present() && mmm.options.enableInsertion_wifiGridMaps; }
 	inline bool isUsedInsert(CHeightGridMap2DPtr &ptr) { return ptr.present() && mmm.options.enableInsertion_heightMaps; }
@@ -396,6 +404,22 @@ void  CMultiMetricMap::setListOfMaps(
 				newOctomap->likelihoodOptions= it->octoMap_options.likelihoodOpts;
 
 				m_octoMaps.push_back( newOctomap );
+			}
+			else
+			if ( it->metricMapClassType == CLASS_ID(CColouredOctoMap) )
+			{
+				// -------------------------------------------------------
+				//						COLOURED OCTO MAPS
+				// -------------------------------------------------------
+				CColouredOctoMapPtr newOctomap = CColouredOctoMapPtr( new CColouredOctoMap(
+					it->octoMap_options.resolution ) );
+
+				newOctomap->m_disableSaveAs3DObject = it->m_disableSaveAs3DObject;
+
+				newOctomap->insertionOptions = it->colourOctoMap_options.insertionOpts;
+				newOctomap->likelihoodOptions= it->colourOctoMap_options.likelihoodOpts;
+
+				m_colourOctoMaps.push_back( newOctomap );
 			}
 			else
 			if ( it->metricMapClassType == CLASS_ID(CGasConcentrationGridMap2D) )
@@ -636,7 +660,7 @@ void  CMultiMetricMap::deleteAllMaps( )
 void  CMultiMetricMap::writeToStream(CStream &out, int *version) const
 {
 	if (version)
-		*version = 9;
+		*version = 10;
 	else
 	{
 		// Version 5: The options:
@@ -648,7 +672,8 @@ void  CMultiMetricMap::writeToStream(CStream &out, int *version) const
 			<< options.enableInsertion_beaconMap
 			<< options.enableInsertion_heightMaps	// Added in v6
 			<< options.enableInsertion_reflectivityMaps // Added in v8
-			<< options.enableInsertion_octoMaps; // Added in v9
+			<< options.enableInsertion_octoMaps // Added in v9
+			<< options.enableInsertion_colourOctoMaps; // Added in v10
 
 		// The data
 		uint32_t	i,n = static_cast<uint32_t>(m_gridMaps.size());
@@ -663,6 +688,12 @@ void  CMultiMetricMap::writeToStream(CStream &out, int *version) const
 		n = m_octoMaps.size();
 		out << n;
 		for (i=0;i<n;i++)	out << *m_octoMaps[i];
+
+		// Colored OctoMaps: (Added in v10)
+		// --------------------
+		n = m_colourOctoMaps.size();
+		out << n;
+		for (i=0;i<n;i++)	out << *m_colourOctoMaps[i];
 
 		// Points maps:
 		// ----------------------
@@ -733,6 +764,7 @@ void  CMultiMetricMap::readFromStream(CStream &in, int version)
 	case 7:
 	case 8:
 	case 9:
+	case 10:
 		{
 			uint32_t  n;
 
@@ -757,6 +789,10 @@ void  CMultiMetricMap::readFromStream(CStream &in, int version)
 				if (version>=9)
 					in >> options.enableInsertion_octoMaps;
 				else options.enableInsertion_octoMaps = true;			
+
+				if (version>=10)
+					in >> options.enableInsertion_colourOctoMaps;
+				else options.enableInsertion_colourOctoMaps = true;			
 			}
 			else
 			{ } // Default!
@@ -793,6 +829,19 @@ void  CMultiMetricMap::readFromStream(CStream &in, int version)
 			// Load from stream:
 			m_octoMaps.resize(n);
 			for_each( m_octoMaps.begin(), m_octoMaps.end(), ObjectReadFromStream(&in) );
+
+			// Color Octomaps:
+			// ----------------------
+			if (version>=10)
+						in >> n;
+			else		n = 0;			// Compatibility: Previously there were no such maps!
+
+			// Free previous maps:
+			m_colourOctoMaps.clear();
+
+			// Load from stream:
+			m_colourOctoMaps.resize(n);
+			for_each( m_colourOctoMaps.begin(), m_colourOctoMaps.end(), ObjectReadFromStream(&in) );
 
 			// Points maps:
 			// ----------------------
@@ -1140,6 +1189,15 @@ TMetricMapInitializer::TOctoMapOptions::TOctoMapOptions() :
 {
 }
 
+/*---------------------------------------------------------------
+					TColouredOctoMapOptions
+ ---------------------------------------------------------------*/
+TMetricMapInitializer::TColourOctoMapOptions::TColourOctoMapOptions() :
+	resolution(0.10),
+	insertionOpts(),
+	likelihoodOpts()
+{
+}
 
 /*---------------------------------------------------------------
 					CPointsMapOptions
@@ -1274,6 +1332,17 @@ void  CMultiMetricMap::saveMetricMapRepresentationToFile(
 		{
 			std::string		fil( filNamePrefix );
 			fil += format("_octomap_no%02u",idx);
+			(*it)->saveMetricMapRepresentationToFile( fil );
+		}
+	}
+
+	// colored octo maps:
+	{
+		std::deque<CColouredOctoMapPtr>::const_iterator	it;
+		for (idx=0,it = m_colourOctoMaps.begin();it!=m_colourOctoMaps.end();it++,idx++)
+		{
+			std::string		fil( filNamePrefix );
+			fil += format("_colour_octomap_no%02u",idx);
 			(*it)->saveMetricMapRepresentationToFile( fil );
 		}
 	}
@@ -1423,14 +1492,39 @@ void  TSetOfMetricMapInitializers::loadFromConfigFile(
 		init.octoMap_options.resolution = ini.read_float(subSectName,"resolution",init.octoMap_options.resolution);
 
 		// [<sectionName>+"_octoMap_##_insertOpts"]
-		init.occupancyGridMap2D_options.insertionOpts.loadFromConfigFile(ini,format("%s_octoMap_%02u_insertOpts",sectionName.c_str(),i));
+		init.octoMap_options.insertionOpts.loadFromConfigFile(ini,format("%s_octoMap_%02u_insertOpts",sectionName.c_str(),i));
 
 		// [<sectionName>+"_octoMap_##_likelihoodOpts"]
-		init.occupancyGridMap2D_options.likelihoodOpts.loadFromConfigFile(ini,format("%s_octoMap_%02u_likelihoodOpts",sectionName.c_str(),i));
+		init.octoMap_options.likelihoodOpts.loadFromConfigFile(ini,format("%s_octoMap_%02u_likelihoodOpts",sectionName.c_str(),i));
 
 		// Add the map and its params to the list of "to-create":
 		this->push_back(init);
 	} // end for i
+
+
+	n = ini.read_int(sectionName,"colourOctoMap_count",0);
+	for (unsigned int i=0;i<n;i++)
+	{
+		TMetricMapInitializer	init;
+
+		init.metricMapClassType					= CLASS_ID( COctoMap );
+
+		// [<sectionName>+"_colourOctoMap_##_creationOpts"]
+		subSectName = format("%s_colourOctoMap_%02u_creationOpts",sectionName.c_str(),i);
+
+		init.m_disableSaveAs3DObject = ini.read_bool(subSectName,"disableSaveAs3DObject",false);
+		init.colourOctoMap_options.resolution = ini.read_float(subSectName,"resolution",init.octoMap_options.resolution);
+
+		// [<sectionName>+"_colourOctoMap_##_insertOpts"]
+		init.colourOctoMap_options.insertionOpts.loadFromConfigFile(ini,format("%s_colourOctoMap_%02u_insertOpts",sectionName.c_str(),i));
+
+		// [<sectionName>+"_colourOctoMap_##_likelihoodOpts"]
+		init.colourOctoMap_options.likelihoodOpts.loadFromConfigFile(ini,format("%s_colourOctoMap_%02u_likelihoodOpts",sectionName.c_str(),i));
+
+		// Add the map and its params to the list of "to-create":
+		this->push_back(init);
+	} // end for i
+
 
 	n = ini.read_int(sectionName,"pointsMap_count",0);
 	for (unsigned int i=0;i<n;i++)
@@ -1673,6 +1767,7 @@ void  TSetOfMetricMapInitializers::loadFromConfigFile(
 	MRPT_LOAD_HERE_CONFIG_VAR(enableInsertion_landmarksMap,bool, options.enableInsertion_landmarksMap,	ini,sectionName);
 	MRPT_LOAD_HERE_CONFIG_VAR(enableInsertion_gridMaps,bool,		options.enableInsertion_gridMaps,		ini,sectionName);
 	MRPT_LOAD_HERE_CONFIG_VAR(enableInsertion_octoMaps,bool,		options.enableInsertion_octoMaps,		ini,sectionName);
+	MRPT_LOAD_HERE_CONFIG_VAR(enableInsertion_colourOctoMaps,bool,		options.enableInsertion_colourOctoMaps,		ini,sectionName);
 	MRPT_LOAD_HERE_CONFIG_VAR(enableInsertion_gasGridMaps,bool,	options.enableInsertion_gasGridMaps,	ini,sectionName);
 	MRPT_LOAD_HERE_CONFIG_VAR(enableInsertion_wifiGridMaps,bool,	options.enableInsertion_wifiGridMaps,	ini,sectionName);
 	MRPT_LOAD_HERE_CONFIG_VAR(enableInsertion_beaconMap,bool,	options.enableInsertion_beaconMap,		ini,sectionName);
@@ -1703,6 +1798,7 @@ void  TSetOfMetricMapInitializers::dumpToTextStream(CStream	&out) const
 	LOADABLEOPTS_DUMP_VAR(options.enableInsertion_beaconMap		, bool)
 	LOADABLEOPTS_DUMP_VAR(options.enableInsertion_gridMaps		, bool)
 	LOADABLEOPTS_DUMP_VAR(options.enableInsertion_octoMaps		, bool)
+	LOADABLEOPTS_DUMP_VAR(options.enableInsertion_colourOctoMaps		, bool)
 	LOADABLEOPTS_DUMP_VAR(options.enableInsertion_gasGridMaps		, bool)
 	LOADABLEOPTS_DUMP_VAR(options.enableInsertion_wifiGridMaps		, bool)
 	LOADABLEOPTS_DUMP_VAR(options.enableInsertion_reflectivityMaps		, bool)
@@ -1838,6 +1934,14 @@ void  TSetOfMetricMapInitializers::dumpToTextStream(CStream	&out) const
 			it->octoMap_options.likelihoodOpts.dumpToTextStream(out);
 		}
 		else
+			if (it->metricMapClassType==CLASS_ID(CColouredOctoMap))
+		{
+			out.printf("m_disableSaveAs3DObject                 = %s\n",it->m_disableSaveAs3DObject ? "true":"false");
+
+			it->colourOctoMap_options.insertionOpts.dumpToTextStream(out);
+			it->colourOctoMap_options.likelihoodOpts.dumpToTextStream(out);
+		}
+		else
 		{
 			THROW_EXCEPTION_CUSTOM_MSG1("Unknown class!: '%s'",it->metricMapClassType->className);
 		}
@@ -1942,6 +2046,7 @@ void  CMultiMetricMap::TOptions::loadFromConfigFile(
 	MRPT_LOAD_CONFIG_VAR(enableInsertion_landmarksMap, bool,  source, section );
 	MRPT_LOAD_CONFIG_VAR(enableInsertion_gridMaps, bool,  source, section );
 	MRPT_LOAD_CONFIG_VAR(enableInsertion_octoMaps, bool,  source, section );
+	MRPT_LOAD_CONFIG_VAR(enableInsertion_colourOctoMaps, bool,  source, section );
 	MRPT_LOAD_CONFIG_VAR(enableInsertion_gasGridMaps, bool,  source, section );
 	MRPT_LOAD_CONFIG_VAR(enableInsertion_wifiGridMaps, bool,  source, section );
 	MRPT_LOAD_CONFIG_VAR(enableInsertion_beaconMap, bool,  source, section );
@@ -1962,6 +2067,7 @@ void  CMultiMetricMap::TOptions::dumpToTextStream(CStream	&out) const
 	out.printf("enableInsertion_landmarksMap            = %c\n",	enableInsertion_landmarksMap ? 'Y':'N');
 	out.printf("enableInsertion_gridMaps                = %c\n",	enableInsertion_gridMaps ? 'Y':'N');
 	out.printf("enableInsertion_octoMaps                = %c\n",	enableInsertion_octoMaps ? 'Y':'N');
+	out.printf("enableInsertion_colourOctoMaps          = %c\n",	enableInsertion_colourOctoMaps? 'Y':'N');
 	out.printf("enableInsertion_gasGridMaps             = %c\n",	enableInsertion_gasGridMaps ? 'Y':'N');
 	out.printf("enableInsertion_wifiGridMaps             = %c\n",	enableInsertion_gasGridMaps ? 'Y':'N');
 	out.printf("enableInsertion_beaconMap               = %c\n",	enableInsertion_beaconMap ? 'Y':'N');
@@ -2006,6 +2112,7 @@ CMultiMetricMap::TOptions::TOptions() :
 	enableInsertion_reflectivityMaps(true),
 	enableInsertion_colourPointsMaps(true),
 	enableInsertion_weightedPointsMaps(true),
-	enableInsertion_octoMaps(true)
+	enableInsertion_octoMaps(true),
+	enableInsertion_colourOctoMaps(true)
 {
 }

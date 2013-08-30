@@ -124,9 +124,9 @@ void TestOctoMap()
 	// Go through voxels:
 	if (1)
 	{
-		const octomap::OcTree &om = map.getOctomap();
+		const COctoMap::octree_t &om = map.getOctomap();
 
-		for (octomap::OcTree::leaf_iterator it=om.begin_leafs();it!=om.end_leafs(); ++it)
+		for (COctoMap::octree_t::leaf_iterator it=om.begin_leafs();it!=om.end_leafs(); ++it)
 		{
 			const octomap::point3d pt = it.getCoordinate();
 			cout << "pt: " << pt << " -> occupancy = " << it->getOccupancy() << endl;

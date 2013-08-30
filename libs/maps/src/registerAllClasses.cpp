@@ -69,7 +69,9 @@ void registerAllClasses_mrpt_maps()
 	registerClass( CLASS_ID( CWirelessPowerGridMap2D ) );
 	registerClass( CLASS_ID( CHeightGridMap2D ) );
 	registerClass( CLASS_ID( CReflectivityGridMap2D ) );
+
 	registerClass( CLASS_ID( COctoMap ) );
+	registerClass( CLASS_ID( CColouredOctoMap ) );
 
 
 	registerClass( CLASS_ID( CAngularObservationMesh ) );
