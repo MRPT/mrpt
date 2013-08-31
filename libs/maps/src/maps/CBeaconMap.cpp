@@ -699,33 +699,20 @@ bool  CBeaconMap::internal_insertObservation( const CObservation *obs, const CPo
 }
 
 /*---------------------------------------------------------------
-				loadSiftFeaturesFromImageObservation
+				determineMatching2D
   ---------------------------------------------------------------*/
-void  CBeaconMap::computeMatchingWith2D(
-        const CMetricMap						*otherMap,
-		const CPose2D							&otherMapPose,
-		float									maxDistForCorrespondence,
-		float									maxAngularDistForCorrespondence,
-		const CPose2D							&angularDistPivotPoint,
-		TMatchingPairList						&correspondences,
-		float									&correspondencesRatio,
-		float									*sumSqrDist	,
-		bool									onlyKeepTheClosest,
-		bool									onlyUniqueRobust,
-		const size_t          decimation_other_map_points,
-		const size_t          offset_other_map_points) const
+void CBeaconMap::determineMatching2D(
+	const CMetricMap      * otherMap,
+	const CPose2D         & otherMapPose,
+	TMatchingPairList     & correspondences,
+	const TMatchingParams & params,
+	TMatchingExtraResults & extraResults ) const 
 {
-	MRPT_UNUSED_PARAM(decimation_other_map_points);
-	MRPT_UNUSED_PARAM(onlyKeepTheClosest);MRPT_UNUSED_PARAM(sumSqrDist);
-	MRPT_UNUSED_PARAM(angularDistPivotPoint);MRPT_UNUSED_PARAM(maxDistForCorrespondence);MRPT_UNUSED_PARAM(maxAngularDistForCorrespondence);
-
 	MRPT_START
-
+	extraResults = TMatchingExtraResults();
 
 	CBeaconMap	auxMap;
-	CPose3D			otherMapPose3D(otherMapPose);
-
-	correspondencesRatio = 0;
+	CPose3D		otherMapPose3D(otherMapPose);
 
 	// Check the other map class:
 	ASSERT_( otherMap->GetRuntimeClass() == CLASS_ID(CBeaconMap) );
@@ -738,7 +725,7 @@ void  CBeaconMap::computeMatchingWith2D(
 	// Use the 3D matching method:
 	computeMatchingWith3DLandmarks( otherMap2,
 									correspondences,
-									correspondencesRatio,
+									extraResults.correspondencesRatio,
 									otherCorrespondences );
 
 	MRPT_END
@@ -1111,8 +1098,8 @@ void  CBeaconMap::getAs3DObject( mrpt::opengl::CSetOfObjectsPtr	&outObj ) const
  *   In the case of a multi-metric map, this returns the average between the maps. This method always return 0 for grid maps.
  * \param  otherMap					  [IN] The other map to compute the matching with.
  * \param  otherMapPose				  [IN] The 6D pose of the other map as seen from "this".
- * \param  minDistForCorr			  [IN] The minimum distance between 2 non-probabilistic map elements for counting them as a correspondence.
- * \param  minMahaDistForCorr		  [IN] The minimum Mahalanobis distance between 2 probabilistic map elements for counting them as a correspondence.
+ * \param  maxDistForCorr			  [IN] The minimum distance between 2 non-probabilistic map elements for counting them as a correspondence.
+ * \param  maxMahaDistForCorr		  [IN] The minimum Mahalanobis distance between 2 probabilistic map elements for counting them as a correspondence.
  *
  * \return The matching ratio [0,1]
  * \sa computeMatchingWith2D
@@ -1120,11 +1107,11 @@ void  CBeaconMap::getAs3DObject( mrpt::opengl::CSetOfObjectsPtr	&outObj ) const
 float  CBeaconMap::compute3DMatchingRatio(
     const CMetricMap								*otherMap2,
     const CPose3D							&otherMapPose,
-    float									minDistForCorr,
-    float									minMahaDistForCorr ) const
+    float									maxDistForCorr,
+    float									maxMahaDistForCorr ) const
 {
-	MRPT_UNUSED_PARAM(minDistForCorr);
-	MRPT_UNUSED_PARAM(minMahaDistForCorr);
+	MRPT_UNUSED_PARAM(maxDistForCorr);
+	MRPT_UNUSED_PARAM(maxMahaDistForCorr);
 
 	MRPT_START
 

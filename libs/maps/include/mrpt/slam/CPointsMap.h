@@ -550,85 +550,28 @@ namespace slam
 		  */
 		void  applyDeletionMask( const std::vector<bool> &mask );
 
-		/** Computes the matchings between this and another 2D/3D points map.
-		   This includes finding:
-				- The set of points pairs in each map
-				- The mean squared distance between corresponding pairs.
-		   This method is the most time critical one into the ICP algorithm.
+		// See docs in base class.
+		virtual void  determineMatching2D(
+			const CMetricMap      * otherMap,
+			const CPose2D         & otherMapPose,
+			TMatchingPairList     & correspondences,
+			const TMatchingParams & params,
+			TMatchingExtraResults & extraResults ) const; 
 
-		 * \param  otherMap					  [IN] The other map to compute the matching with.
-		 * \param  otherMapPose				  [IN] The pose of the other map as seen from "this".
-		 * \param  maxDistForCorrespondence [IN] Maximum 2D distance between two points to be matched.
-		 * \param  maxAngularDistForCorrespondence [IN] Maximum angular distance in radians to allow far points to be matched.
-		 * \param  angularDistPivotPoint      [IN] The point from which to measure the "angular distances"
-		 * \param  correspondences			  [OUT] The detected matchings pairs.
-		 * \param  correspondencesRatio		  [OUT] The number of correct correspondences.
-		 * \param  sumSqrDist				  [OUT] The sum of all matched points squared distances.If undesired, set to NULL, as default.
-		 * \param  covariance				  [OUT] The resulting matching covariance 3x3 matrix, or NULL if undesired.
-		 * \param  onlyKeepTheClosest		  [OUT] Returns only the closest correspondence (default=false)
-		 *
-		 * \sa computeMatching3DWith
-		 */
-		void  computeMatchingWith2D(
-				const CMetricMap     *otherMap,
-				const CPose2D        &otherMapPose,
-				float                maxDistForCorrespondence,
-				float                maxAngularDistForCorrespondence,
-				const CPose2D        &angularDistPivotPoint,
-				TMatchingPairList    &correspondences,
-				float                &correspondencesRatio,
-				float                *sumSqrDist	= NULL,
-				bool                  onlyKeepTheClosest = false,
-				bool                  onlyUniqueRobust = false,
-				const size_t          decimation_other_map_points = 1,
-				const size_t          offset_other_map_points = 0 ) const;
+		// See docs in base class
+		virtual void  determineMatching3D(
+			const CMetricMap      * otherMap,
+			const CPose3D         & otherMapPose,
+			TMatchingPairList     & correspondences,
+			const TMatchingParams & params,
+			TMatchingExtraResults & extraResults ) const; 
 
-		/** Computes the matchings between this and another 3D points map - method used in 3D-ICP.
-		   This method finds the set of point pairs in each map.
-
-		   The method is the most time critical one into the ICP algorithm.
-
-		 * \param  otherMap					  [IN] The other map to compute the matching with.
-		 * \param  otherMapPose				  [IN] The pose of the other map as seen from "this".
-		 * \param  maxDistForCorrespondence   [IN] Maximum 2D linear distance between two points to be matched.
-		 * \param  maxAngularDistForCorrespondence [IN] In radians: The aim is to allow larger distances to more distant correspondences.
-		 * \param  angularDistPivotPoint      [IN] The point used to calculate distances from in both maps.
-		 * \param  correspondences			  [OUT] The detected matchings pairs.
-		 * \param  correspondencesRatio		  [OUT] The ratio [0,1] of points in otherMap with at least one correspondence.
-		 * \param  sumSqrDist				  [OUT] The sum of all matched points squared distances.If undesired, set to NULL, as default.
-		 * \param  onlyKeepTheClosest         [IN] If set to true, only the closest correspondence will be returned. If false (default) all are returned.
-		 *
-		 * \sa compute3DMatchingRatio
-		 */
-		void  computeMatchingWith3D(
-			const CMetricMap						*otherMap,
-			const CPose3D							&otherMapPose,
-			float									maxDistForCorrespondence,
-			float									maxAngularDistForCorrespondence,
-			const CPoint3D							&angularDistPivotPoint,
-			TMatchingPairList						&correspondences,
-			float									&correspondencesRatio,
-			float									*sumSqrDist	= NULL,
-			bool									onlyKeepTheClosest = true,
-			bool									onlyUniqueRobust = false,
-			const size_t          decimation_other_map_points = 1,
-			const size_t                            offset_other_map_points = 0 ) const;
-
-		/** Computes the ratio in [0,1] of correspondences between "this" and the "otherMap" map, whose 6D pose relative to "this" is "otherMapPose"
-		 *   In the case of a multi-metric map, this returns the average between the maps. This method always return 0 for grid maps.
-		 * \param  otherMap					  [IN] The other map to compute the matching with.
-		 * \param  otherMapPose				  [IN] The 6D pose of the other map as seen from "this".
-		 * \param  minDistForCorr			  [IN] The minimum distance between 2 non-probabilistic map elements for counting them as a correspondence.
-		 * \param  minMahaDistForCorr		  [IN] The minimum Mahalanobis distance between 2 probabilistic map elements for counting them as a correspondence.
-		 *
-		 * \return The matching ratio [0,1]
-		 * \sa computeMatchingWith2D
-		 */
+		// See docs in base class
 		float  compute3DMatchingRatio(
 				const CMetricMap						*otherMap,
 				const CPose3D							&otherMapPose,
-				float									minDistForCorr = 0.10f,
-				float									minMahaDistForCorr = 2.0f
+				float									maxDistForCorr = 0.10f,
+				float									maxMahaDistForCorr = 2.0f
 				) const;
 
 
@@ -642,7 +585,7 @@ namespace slam
 		 * \param  correspondences			  [OUT] The detected matchings pairs.
 		 * \param  correspondencesRatio		  [OUT] The ratio [0,1] of points in otherMap with at least one correspondence.
 		 *
-		 * \sa computeMatchingWith3D
+		 * \sa determineMatching3D
 		 */
 		 void compute3DDistanceToMesh(
                 const CMetricMap						*otherMap2,
@@ -783,14 +726,7 @@ namespace slam
 		static float COLOR_3DSCENE_B;
 
 
-		/** Computes the likelihood of taking a given observation from a given pose in the world being modeled with this map.
-		 * \param takenFrom The robot's pose the observation is supposed to be taken from.
-		 * \param obs The observation.
-		 * \return This method returns a likelihood in the range [0,1].
-		 *
-		 * \sa Used in particle filter algorithms, see: CMultiMetricMapPDF
-		 * \note In CPointsMap this method is virtual so it can be redefined in derived classes, if desired.
-		 */
+		// See docs in base class
 		virtual double computeObservationLikelihood( const CObservation *obs, const CPose3D &takenFrom );
 
 		/** @name PCL library support

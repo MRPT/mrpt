@@ -147,6 +147,7 @@ CICP::TConfigParams::TConfigParams() :
 	LM_initial_lambda			( 1e-4f ),
 
 	skip_cov_calculation		(false),
+	skip_quality_calculation	(true),
 
 	corresponding_points_decimation ( 5 )
 {
@@ -190,6 +191,7 @@ void  CICP::TConfigParams::loadFromConfigFile(
 	MRPT_LOAD_CONFIG_VAR( LM_initial_lambda, float,			iniFile, section);
 
 	MRPT_LOAD_CONFIG_VAR( skip_cov_calculation, bool, 				iniFile, section);
+	MRPT_LOAD_CONFIG_VAR( skip_quality_calculation, bool, 				iniFile, section);
 
 	MRPT_LOAD_CONFIG_VAR( corresponding_points_decimation, int, 				iniFile, section);
 
@@ -232,6 +234,7 @@ void  CICP::TConfigParams::dumpToTextStream(CStream	&out) const
 	out.printf("Axy_aprox_derivatives                   = %f\n",Axy_aprox_derivatives );
 	out.printf("LM_initial_lambda                       = %f\n",LM_initial_lambda);
 	out.printf("skip_cov_calculation                    = %c\n",skip_cov_calculation ? 'Y':'N');
+	out.printf("skip_quality_calculation                = %c\n",skip_quality_calculation ? 'Y':'N');
 	out.printf("corresponding_points_decimation         = %u\n",(unsigned int)corresponding_points_decimation);
 	out.printf("\n");
 }
@@ -263,15 +266,10 @@ CPosePDFPtr CICP::ICP_Method_Classic(
 	CPosePDFSOGPtr							SOG;
 
 	size_t  nCorrespondences=0;
-	float   umbral_dist,umbral_ang;
 	bool    keepApproaching;
 	CPose2D	grossEst = initialEstimationPDF.mean;
 	mrpt::utils::TMatchingPairList correspondences,old_correspondences;
-	float   correspondencesRatio;
 	CPose2D lastMeanPose;
-
-	const bool onlyUniqueRobust = options.onlyUniqueRobust;
-	const bool onlyKeepTheClosest = options.onlyClosestCorrespondences;
 
 	// Assure the class of the maps:
 	const CMetricMap		*m2 = mm2;
@@ -295,15 +293,21 @@ CPosePDFPtr CICP::ICP_Method_Classic(
 	gaussPdf->mean = grossEst;
 
 	// Initial thresholds:
-	umbral_dist		= options.thresholdDist;
-	umbral_ang		= options.thresholdAng;
+	TMatchingParams matchParams;
+	TMatchingExtraResults matchExtraResults;
+
+	matchParams.maxDistForCorrespondence = options.thresholdDist;			// Distance threshold
+	matchParams.maxAngularDistForCorrespondence = options.thresholdAng;	// Angular threshold
+	matchParams.onlyKeepTheClosest = options.onlyClosestCorrespondences;
+	matchParams.onlyUniqueRobust = options.onlyUniqueRobust;
+	matchParams.decimation_other_map_points = options.corresponding_points_decimation;
 
 
 	// Asure maps are not empty!
 	// ------------------------------------------------------
 	if ( !m2->isEmpty() )
 	{
-		size_t offset_other_map_points = 0;
+		matchParams.offset_other_map_points = 0;
 
 		// ------------------------------------------------------
 		//					The ICP loop
@@ -313,19 +317,13 @@ CPosePDFPtr CICP::ICP_Method_Classic(
 			// ------------------------------------------------------
 			//		Find the matching (for a points map)
 			// ------------------------------------------------------
-			m1->computeMatchingWith2D(
+			matchParams.angularDistPivotPoint = TPoint3D(gaussPdf->mean.x(),gaussPdf->mean.y(),0); // Pivot point for angular measurements
+
+			m1->determineMatching2D(
 				m2,						// The other map
-				gaussPdf->mean,			// The other map pose
-				umbral_dist,			// Distance threshold
-				umbral_ang,				// Angular threshold
-				gaussPdf->mean,			// Pivot point for angular measurements
-				correspondences,		// Output
-				correspondencesRatio,	// Ratio
-				NULL,					// MSE
-				onlyKeepTheClosest,
-				onlyUniqueRobust,
-				options.corresponding_points_decimation,
-				offset_other_map_points );
+				gaussPdf->mean,						// The other map pose
+				correspondences, 
+				matchParams, matchExtraResults);
 
 			nCorrespondences = correspondences.size();
 
@@ -352,13 +350,13 @@ CPosePDFPtr CICP::ICP_Method_Classic(
 					fabs(lastMeanPose.y()-gaussPdf->mean.y())>options.minAbsStep_trans ||
 					fabs(math::wrapToPi(lastMeanPose.phi()-gaussPdf->mean.phi()))>options.minAbsStep_rot))
 				{
-					umbral_dist		*= options.ALFA;
-					umbral_ang		*= options.ALFA;
-					if (umbral_dist < options.smallestThresholdDist )
+					matchParams.maxDistForCorrespondence		*= options.ALFA;
+					matchParams.maxAngularDistForCorrespondence		*= options.ALFA;
+					if (matchParams.maxDistForCorrespondence < options.smallestThresholdDist )
 						keepApproaching = false;
 
-					if (++offset_other_map_points>=options.corresponding_points_decimation)
-						offset_other_map_points=0;
+					if (++matchParams.offset_other_map_points>=options.corresponding_points_decimation)
+						matchParams.offset_other_map_points=0;
 
 				}
 
@@ -369,13 +367,13 @@ CPosePDFPtr CICP::ICP_Method_Classic(
 			// Next iteration:
 			outInfo.nIterations++;
 
-			if (outInfo.nIterations >= options.maxIterations && umbral_dist>options.smallestThresholdDist)
+			if (outInfo.nIterations >= options.maxIterations && matchParams.maxDistForCorrespondence>options.smallestThresholdDist)
 			{
-				umbral_dist		*= options.ALFA;
+				matchParams.maxDistForCorrespondence		*= options.ALFA;
 			}
 
 		} while	( (keepApproaching && outInfo.nIterations<options.maxIterations) ||
-					(outInfo.nIterations >= options.maxIterations && umbral_dist>options.smallestThresholdDist) );
+					(outInfo.nIterations >= options.maxIterations && matchParams.maxDistForCorrespondence>options.smallestThresholdDist) );
 
 
 		// -------------------------------------------------
@@ -465,94 +463,69 @@ CPosePDFPtr CICP::ICP_Method_Classic(
 			// COV = ( D*D^T + lamba*I )^-1
 			CMatrixDouble33  DDt = D*D.transpose();
 
-			for (i=0;i<3;i++) DDt( i,i ) += 1;  // Just to make sure the matrix is not singular, while not changing its covariance significantly.
+			for (i=0;i<3;i++) DDt( i,i ) += 1e-6;  // Just to make sure the matrix is not singular, while not changing its covariance significantly.
 
 			DDt.inv(gaussPdf->cov);
 #endif
 		}
 
 		//
-		outInfo.goodness = correspondencesRatio;
+		outInfo.goodness = matchExtraResults.correspondencesRatio;
 
-		// Compute a crude estimate of the quality of scan matching at this local minimum:
-		// -----------------------------------------------------------------------------------
-		float  	Axy = umbral_dist*0.9f;
 
-		float	E0,EX1,EX2,EY1,EY2;		// sqr. errors at each point:
+		if (!nCorrespondences || options.skip_quality_calculation)
+		{
+			outInfo.quality = matchExtraResults.correspondencesRatio;
+		}
+		else
+		{
+			// Compute a crude estimate of the quality of scan matching at this local minimum:
+			// -----------------------------------------------------------------------------------
+			float  	Axy = matchParams.maxDistForCorrespondence*0.9f;
 
-		TPose2D  	P0( gaussPdf->mean );
-		TPose2D  	PX1(P0);	PX1.x -= Axy;
-		TPose2D  	PX2(P0);	PX2.x += Axy;
-		TPose2D  	PY1(P0);	PY1.y -= Axy;
-		TPose2D  	PY2(P0);	PY2.y += Axy;
+			TPose2D  	P0( gaussPdf->mean );
+			TPose2D  	PX1(P0);	PX1.x -= Axy;
+			TPose2D  	PX2(P0);	PX2.x += Axy;
+			TPose2D  	PY1(P0);	PY1.y -= Axy;
+			TPose2D  	PY2(P0);	PY2.y += Axy;
 
-		float		dist_thresh = umbral_dist;
-
-		m1->computeMatchingWith2D(
+			matchParams.angularDistPivotPoint = TPoint3D( gaussPdf->mean.x(),gaussPdf->mean.y(),0);
+			m1->determineMatching2D(
 				m2,						// The other map
-				P0,			// The other map pose
-				dist_thresh,			// Distance threshold
-				umbral_ang,				// Angular threshold
-				gaussPdf->mean,			// Pivot point for angular measurements
-				correspondences,		// Output
-				E0, //correspondencesRatio,	// Ratio
-				NULL, //&E0,					// MSE
-				onlyKeepTheClosest,
-				onlyUniqueRobust,
-				options.corresponding_points_decimation );
+				P0,						// The other map pose
+				correspondences, 
+				matchParams, matchExtraResults);
+			const float E0 = matchExtraResults.correspondencesRatio;
 
-		m1->computeMatchingWith2D(
+			m1->determineMatching2D(
 				m2,						// The other map
-				PX1,			// The other map pose
-				dist_thresh,			// Distance threshold
-				umbral_ang,				// Angular threshold
-				gaussPdf->mean,			// Pivot point for angular measurements
-				correspondences,		// Output
-				EX1,	// Ratio
-				NULL, //&EX1,					// MSE
-				true, 					// onlyKeepTheClosest
-				false,				//onlyUniqueRobust
-				options.corresponding_points_decimation );
+				PX1,					// The other map pose
+				correspondences, 
+				matchParams, matchExtraResults);
+			const float EX1 = matchExtraResults.correspondencesRatio;
 
-		m1->computeMatchingWith2D(
+			m1->determineMatching2D(
 				m2,						// The other map
-				PX2,			// The other map pose
-				dist_thresh,			// Distance threshold
-				umbral_ang,				// Angular threshold
-				gaussPdf->mean,			// Pivot point for angular measurements
-				correspondences,		// Output
-				EX2,	// Ratio
-				NULL, //&EX2,					// MSE
-				true, 					// onlyKeepTheClosest
-				false,				//onlyUniqueRobust
-				options.corresponding_points_decimation );
+				PX2,						// The other map pose
+				correspondences, 
+				matchParams, matchExtraResults);
+			const float EX2 = matchExtraResults.correspondencesRatio;
 
-		m1->computeMatchingWith2D(
+			m1->determineMatching2D(
 				m2,						// The other map
-				PY1,			// The other map pose
-				dist_thresh,			// Distance threshold
-				umbral_ang,				// Angular threshold
-				gaussPdf->mean,			// Pivot point for angular measurements
-				correspondences,		// Output
-				EY1,	// Ratio
-				NULL, //&EY1,					// MSE
-				true, 					// onlyKeepTheClosest
-				false,				//onlyUniqueRobust
-				options.corresponding_points_decimation );
-		m1->computeMatchingWith2D(
+				PY1,						// The other map pose
+				correspondences, 
+				matchParams, matchExtraResults);
+			const float EY1 = matchExtraResults.correspondencesRatio;
+			m1->determineMatching2D(
 				m2,						// The other map
-				PY2,			// The other map pose
-				dist_thresh,			// Distance threshold
-				umbral_ang,				// Angular threshold
-				gaussPdf->mean,			// Pivot point for angular measurements
-				correspondences,		// Output
-				EY2,	// Ratio
-				NULL, //&EY2,					// MSE
-				true, 					// onlyKeepTheClosest
-				false,				//onlyUniqueRobust
-				options.corresponding_points_decimation );
+				PY2,						// The other map pose
+				correspondences, 
+				matchParams, matchExtraResults);
+			const float EY2 = matchExtraResults.correspondencesRatio;
 
-		outInfo.quality= -max(EX1-E0, max(EX2-E0, max(EY1-E0 , EY2-E0 ) ) )/(E0+1e-1);
+			outInfo.quality= -max(EX1-E0, max(EX2-E0, max(EY1-E0 , EY2-E0 ) ) )/(E0+1e-1);
+		}
 
 	} // end of "if m2 is not empty"
 
@@ -614,11 +587,9 @@ CPosePDFPtr CICP::ICP_Method_LM(
 
 	// The result can be either a Gaussian or a SOG:
 	size_t									nCorrespondences=0;
-	double									umbral_dist,umbral_ang;
 	bool									keepIteratingICP;
 	CPose2D									grossEst = initialEstimationPDF.mean;
 	mrpt::utils::TMatchingPairList			correspondences,old_correspondences;
-	float									correspondencesRatio;
 	CPose2D									lastMeanPose;
 	vector_float							other_xs_trans,other_ys_trans; // temporary container of "other" map (map2) transformed by "q"
 	CMatrixFloat  							dJ_dq;  // The jacobian
@@ -642,14 +613,20 @@ CPosePDFPtr CICP::ICP_Method_LM(
 	outInfo.nIterations		= 0;
 	outInfo.goodness		= 1.0f;
 
+	TMatchingParams matchParams;
+	TMatchingExtraResults matchExtraResults;
+
+	matchParams.maxDistForCorrespondence = options.thresholdDist;			// Distance threshold
+	matchParams.maxAngularDistForCorrespondence = options.thresholdAng;	// Angular threshold
+	matchParams.angularDistPivotPoint = TPoint3D(q.x(),q.y(),0); // Pivot point for angular measurements
+	matchParams.onlyKeepTheClosest = onlyKeepTheClosest;
+	matchParams.onlyUniqueRobust = onlyUniqueRobust;
+	matchParams.decimation_other_map_points = options.corresponding_points_decimation;
+
 	// The gaussian PDF to estimate:
 	// ------------------------------------------------------
 	// First gross approximation:
 	q = grossEst;
-
-	// Initial thresholds:
-	umbral_dist		= options.thresholdDist;
-	umbral_ang		= options.thresholdAng;
 
 	// For LM inverse
 	CMatrixFixedNumeric<float,3,3>	C;
@@ -659,7 +636,7 @@ CPosePDFPtr CICP::ICP_Method_LM(
 	// ------------------------------------------------------
 	if ( !m2->isEmpty() )
 	{
-		size_t offset_other_map_points = 0;
+		matchParams.offset_other_map_points = 0;
 		// ------------------------------------------------------
 		//					The ICP loop
 		// ------------------------------------------------------
@@ -668,20 +645,11 @@ CPosePDFPtr CICP::ICP_Method_LM(
 			// ------------------------------------------------------
 			//		Find the matching (for a points map)
 			// ------------------------------------------------------
-			m1->computeMatchingWith2D(
+			m1->determineMatching2D(
 				m2,						// The other map
 				q,						// The other map pose
-				umbral_dist,			// Distance threshold
-				umbral_ang,				// Angular threshold
-				q,						// Pivot point for angular measurements
-				correspondences,		// Output
-				correspondencesRatio,	// Ratio
-				NULL,					// MSE
-				onlyKeepTheClosest,
-				onlyUniqueRobust,
-				options.corresponding_points_decimation,
-				offset_other_map_points );
-
+				correspondences, 
+				matchParams, matchExtraResults);
 
 			nCorrespondences = correspondences.size();
 
@@ -885,7 +853,7 @@ CPosePDFPtr CICP::ICP_Method_LM(
 				} // end iterative LM
 
 #if 0  // Debuggin'
-				cout << "ICP loop: " << lastMeanPose  << " -> " << q << " LM iters: " << nLMiters  << " threshold: " << umbral_dist << endl;
+				cout << "ICP loop: " << lastMeanPose  << " -> " << q << " LM iters: " << nLMiters  << " threshold: " << matchParams.maxDistForCorrespondence << endl;
 #endif
 				// --------------------------------------------------------
 				// now the conditions for the outer ICP loop
@@ -895,13 +863,13 @@ CPosePDFPtr CICP::ICP_Method_LM(
 					fabs(lastMeanPose.y()-q.y())<options.minAbsStep_trans &&
 					fabs( math::wrapToPi( lastMeanPose.phi()-q.phi()) )<options.minAbsStep_rot)
 				{
-					umbral_dist		*= options.ALFA;
-					umbral_ang		*= options.ALFA;
-					if (umbral_dist < options.smallestThresholdDist )
+					matchParams.maxDistForCorrespondence		*= options.ALFA;
+					matchParams.maxAngularDistForCorrespondence		*= options.ALFA;
+					if (matchParams.maxDistForCorrespondence < options.smallestThresholdDist )
 						keepIteratingICP = false;
 
-					if (++offset_other_map_points>=options.corresponding_points_decimation)
-						offset_other_map_points=0;
+					if (++matchParams.offset_other_map_points>=options.corresponding_points_decimation)
+						matchParams.offset_other_map_points=0;
 				}
 				lastMeanPose = q;
 			}	// end of "else, there are correspondences"
@@ -909,97 +877,25 @@ CPosePDFPtr CICP::ICP_Method_LM(
 			// Next iteration:
 			outInfo.nIterations++;
 
-			if (outInfo.nIterations >= options.maxIterations && umbral_dist>options.smallestThresholdDist)
+			if (outInfo.nIterations >= options.maxIterations && matchParams.maxDistForCorrespondence>options.smallestThresholdDist)
 			{
-				umbral_dist		*= options.ALFA;
+				matchParams.maxDistForCorrespondence		*= options.ALFA;
 			}
 
 		} while	( (keepIteratingICP && outInfo.nIterations<options.maxIterations) ||
-					(outInfo.nIterations >= options.maxIterations && umbral_dist>options.smallestThresholdDist) );
+					(outInfo.nIterations >= options.maxIterations && matchParams.maxDistForCorrespondence>options.smallestThresholdDist) );
 
-		outInfo.goodness = correspondencesRatio;
+		outInfo.goodness = matchExtraResults.correspondencesRatio;
 
-
-
+		
+		if (!options.skip_quality_calculation)
 		{
-			// Compute a crude estimate of the quality of scan matching at this local minimum:
-			// -----------------------------------------------------------------------------------
-			float  	Axy = 0.03;
-
-			float	E0,EX1,EX2,EY1,EY2;		// sqr. errors at each point:
-
-			TPose2D  	P0( q );
-			TPose2D  	PX1(P0);	PX1.x -= Axy;
-			TPose2D  	PX2(P0);	PX2.x += Axy;
-			TPose2D  	PY1(P0);	PY1.y -= Axy;
-			TPose2D  	PY2(P0);	PY2.y += Axy;
-
-			m1->computeMatchingWith2D(
-					m2,						// The other map
-					P0,			// The other map pose
-					umbral_dist,			// Distance threshold
-					umbral_ang,				// Angular threshold
-					q,			// Pivot point for angular measurements
-					correspondences,		// Output
-					correspondencesRatio,	// Ratio
-					&E0,					// MSE
-					onlyKeepTheClosest,
-					onlyUniqueRobust,
-					options.corresponding_points_decimation );
-
-			m1->computeMatchingWith2D(
-					m2,						// The other map
-					PX1,			// The other map pose
-					umbral_dist,			// Distance threshold
-					umbral_ang,				// Angular threshold
-					q,			// Pivot point for angular measurements
-					correspondences,		// Output
-					correspondencesRatio,	// Ratio
-					&EX1,					// MSE
-					true, 					// onlyKeepTheClosest
-					false, 				//onlyUniqueRobust
-					options.corresponding_points_decimation );
-			m1->computeMatchingWith2D(
-					m2,						// The other map
-					PX2,			// The other map pose
-					umbral_dist,			// Distance threshold
-					umbral_ang,				// Angular threshold
-					q,			// Pivot point for angular measurements
-					correspondences,		// Output
-					correspondencesRatio,	// Ratio
-					&EX2,					// MSE
-					true, 					// onlyKeepTheClosest
-					false, 				//onlyUniqueRobust
-					options.corresponding_points_decimation );
-
-			m1->computeMatchingWith2D(
-					m2,						// The other map
-					PY1,			// The other map pose
-					umbral_dist,			// Distance threshold
-					umbral_ang,				// Angular threshold
-					q,			// Pivot point for angular measurements
-					correspondences,		// Output
-					correspondencesRatio,	// Ratio
-					&EY1,					// MSE
-					true, 					// onlyKeepTheClosest
-					false, 				//onlyUniqueRobust
-					options.corresponding_points_decimation );
-			m1->computeMatchingWith2D(
-					m2,						// The other map
-					PY2,			// The other map pose
-					umbral_dist,			// Distance threshold
-					umbral_ang,				// Angular threshold
-					q,			// Pivot point for angular measurements
-					correspondences,		// Output
-					correspondencesRatio,	// Ratio
-					&EY2,					// MSE
-					true, 					// onlyKeepTheClosest
-					false, 				//onlyUniqueRobust
-					options.corresponding_points_decimation );
-
-			outInfo.quality= min(EX1-E0, min(EX2-E0, min(EY1-E0 , EY2-E0 ) ) )/(E0+1e-10);
+			outInfo.quality= matchExtraResults.correspondencesRatio;
 		}
-
+		else
+		{
+			THROW_EXCEPTION("Quality evaluation not implemented for ICP3D")
+		}
 
 	} // end of "if m2 is not empty"
 
@@ -1102,15 +998,10 @@ CPose3DPDFPtr CICP::ICP3D_Method_Classic(
 	CPose3DPDFGaussianPtr						gaussPdf;
 
 	size_t									nCorrespondences=0;
-	float									umbral_dist,umbral_ang;
 	bool									keepApproaching;
 	CPose3D									grossEst = initialEstimationPDF.mean;
 	mrpt::utils::TMatchingPairList			correspondences,old_correspondences;
-	float									correspondencesRatio;
 	CPose3D									lastMeanPose;
-
-	bool									onlyUniqueRobust = options.onlyUniqueRobust;
-	bool									onlyKeepTheClosest = options.onlyClosestCorrespondences;
 
 	// Assure the class of the maps:
 	ASSERT_(mm2->GetRuntimeClass()->derivedFrom(CLASS_ID(CPointsMap)));
@@ -1135,38 +1026,36 @@ CPose3DPDFPtr CICP::ICP3D_Method_Classic(
 	gaussPdf->mean = grossEst;
 
 	// Initial thresholds:
-	umbral_dist		= options.thresholdDist;
-	umbral_ang		= options.thresholdAng;
+	TMatchingParams matchParams;
+	TMatchingExtraResults matchExtraResults;
+
+	matchParams.maxDistForCorrespondence = options.thresholdDist;			// Distance threshold
+	matchParams.maxAngularDistForCorrespondence = options.thresholdAng;	// Angular threshold
+	matchParams.onlyKeepTheClosest = options.onlyClosestCorrespondences;
+	matchParams.onlyUniqueRobust = options.onlyUniqueRobust;
+	matchParams.decimation_other_map_points = options.corresponding_points_decimation;
 
 	// Asure maps are not empty!
 	// ------------------------------------------------------
 	if ( !m2->isEmpty() )
 	{
-		size_t offset_other_map_points = 0;
+		matchParams.offset_other_map_points = 0;
 
 		// ------------------------------------------------------
 		//					The ICP loop
 		// ------------------------------------------------------
 		do
 		{
-			CPoint3D  pivotPoint = CPoint3D( gaussPdf->mean );
+			matchParams.angularDistPivotPoint = TPoint3D(gaussPdf->mean.x(),gaussPdf->mean.y(),gaussPdf->mean.z());
 
 			// ------------------------------------------------------
 			//		Find the matching (for a points map)
 			// ------------------------------------------------------
-			m1->computeMatchingWith3D(
-					m2,						// The other map
-					gaussPdf->mean,			// The other map pose
-					umbral_dist,			// Distance threshold
-					umbral_ang,				// Angular threshold
-					pivotPoint,				// Pivot point for angular measurements
-					correspondences,		// Output
-					correspondencesRatio,	// Ratio
-					NULL,					// MSE
-					onlyKeepTheClosest,
-					onlyUniqueRobust,
-					options.corresponding_points_decimation,
-					offset_other_map_points );
+			m1->determineMatching3D(
+				m2,						// The other map
+				gaussPdf->mean,						// The other map pose
+				correspondences, 
+				matchParams, matchExtraResults);
 
 			nCorrespondences = correspondences.size();
 
@@ -1192,13 +1081,13 @@ CPose3DPDFPtr CICP::ICP3D_Method_Classic(
 					fabs(math::wrapToPi(lastMeanPose.pitch()-gaussPdf->mean.pitch()))>options.minAbsStep_rot ||
 					fabs(math::wrapToPi(lastMeanPose.roll()-gaussPdf->mean.roll()))>options.minAbsStep_rot ))
 				{
-					umbral_dist		*= options.ALFA;
-					umbral_ang		*= options.ALFA;
-					if (umbral_dist < options.smallestThresholdDist )
+					matchParams.maxDistForCorrespondence		*= options.ALFA;
+					matchParams.maxAngularDistForCorrespondence		*= options.ALFA;
+					if (matchParams.maxDistForCorrespondence < options.smallestThresholdDist )
 						keepApproaching = false;
 
-					if (++offset_other_map_points>=options.corresponding_points_decimation)
-						offset_other_map_points=0;
+					if (++matchParams.offset_other_map_points>=options.corresponding_points_decimation)
+						matchParams.offset_other_map_points=0;
 				}
 
 				lastMeanPose = gaussPdf->mean;
@@ -1208,13 +1097,13 @@ CPose3DPDFPtr CICP::ICP3D_Method_Classic(
 			// Next iteration:
 			outInfo.nIterations++;
 
-			if (outInfo.nIterations >= options.maxIterations && umbral_dist>options.smallestThresholdDist)
+			if (outInfo.nIterations >= options.maxIterations && matchParams.maxDistForCorrespondence>options.smallestThresholdDist)
 			{
-				umbral_dist		*= options.ALFA;
+				matchParams.maxDistForCorrespondence		*= options.ALFA;
 			}
 
 		} while	( (keepApproaching && outInfo.nIterations<options.maxIterations) ||
-					(outInfo.nIterations >= options.maxIterations && umbral_dist>options.smallestThresholdDist) );
+					(outInfo.nIterations >= options.maxIterations && matchParams.maxDistForCorrespondence>options.smallestThresholdDist) );
 
 
 		// -------------------------------------------------
@@ -1226,7 +1115,7 @@ CPose3DPDFPtr CICP::ICP3D_Method_Classic(
 		}
 
 		//
-		outInfo.goodness = correspondencesRatio;
+		outInfo.goodness = matchExtraResults.correspondencesRatio;
 
 
 	} // end of "if m2 is not empty"

@@ -45,6 +45,14 @@
 			- There are now two versions of octomaps (by Mariano Jaimez Tarifa/Jose Luis Blanco) - <a href="http://code.google.com/p/mrpt/source/detail?r=3443" >r3443</a>
 				- mrpt::slam::COctoMap (only occupancy)
 				- mrpt::slam::CColouredOctoMap (occupancy + RGB color)
+	- Changes in classes:
+		- Clean up and slight optimization of metric map matching API: - <a href="http://code.google.com/p/mrpt/source/detail?r=3446" >r3446</a>
+			- <b>Methods marked as deprecated: </b>
+				- mrpt::slam::CMetricMap::computeMatchingWith2D() --> mrpt::slam::CMetricMap::determineMatching2D()
+				- mrpt::slam::CMetricMap::computeMatchingWith3D() --> mrpt::slam::CMetricMap::determineMatching3D()
+			- New structures: 
+				- mrpt::slam::TMatchingParams
+				- mrpt::slam::TMatchingExtraResults
 	- Build system:
 		- Updated to the latest nanoflann 1.1.7.
 	- BUG FIXES:

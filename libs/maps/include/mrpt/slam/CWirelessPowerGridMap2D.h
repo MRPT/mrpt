@@ -82,15 +82,8 @@ namespace slam
 		virtual ~CWirelessPowerGridMap2D();
 
 
-		/** Computes the likelihood that a given observation was taken from a given pose in the world being modeled with this map.
-		 *
-		 * \param takenFrom The robot's pose the observation is supposed to be taken from.
-		 * \param obs The observation.
-		 * \return This method returns a likelihood in the range [0,1].
-		 *
-		 * \sa Used in particle filter algorithms, see: CMultiMetricMapPDF::update
-		 */
-		 double	 computeObservationLikelihood( const CObservation *obs, const CPose3D &takenFrom );
+		// See docs in base class
+		double	 computeObservationLikelihood( const CObservation *obs, const CPose3D &takenFrom );
 
 
 		/** Parameters related with inserting observations into the map:

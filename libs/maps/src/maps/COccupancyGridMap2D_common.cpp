@@ -491,25 +491,19 @@ void  COccupancyGridMap2D::subSample( int downRatio )
 /*---------------------------------------------------------------
 							computeMatchingWith
  ---------------------------------------------------------------*/
-void  COccupancyGridMap2D::computeMatchingWith2D(
-    const CMetricMap								*otherMap2,
-    const CPose2D									&otherMapPose_,
-    float									maxDistForCorrespondence,
-    float									maxAngularDistForCorrespondence,
-    const CPose2D									&angularDistPivotPoint,
-    TMatchingPairList						&correspondences,
-    float									&correspondencesRatio,
-    float									*sumSqrDist,
-    bool									onlyKeepTheClosest,
-	bool									onlyUniqueRobust,
-	const size_t                            decimation_other_map_points,
-	const size_t          offset_other_map_points ) const
+void COccupancyGridMap2D::determineMatching2D(
+	const CMetricMap      * otherMap2,
+	const CPose2D         & otherMapPose_,
+	TMatchingPairList     & correspondences,
+	const TMatchingParams & params,
+	TMatchingExtraResults & extraResults ) const 
 {
 	MRPT_START
 
-	ASSERT_ABOVE_(decimation_other_map_points,0)
-	ASSERT_BELOW_(offset_other_map_points, decimation_other_map_points)
-	const size_t incr = decimation_other_map_points; // Just to save some typing...
+	extraResults = TMatchingExtraResults();
+
+	ASSERT_ABOVE_(params.decimation_other_map_points,0)
+	ASSERT_BELOW_(params.offset_other_map_points, params.decimation_other_map_points)
 
 	ASSERT_(otherMap2->GetRuntimeClass()->derivedFrom( CLASS_ID(CPointsMap) ));
 	const CPointsMap			*otherMap = static_cast<const CPointsMap*>(otherMap2);
@@ -519,7 +513,6 @@ void  COccupancyGridMap2D::computeMatchingWith2D(
 	const size_t nLocalPoints = otherMap->getPointsCount();
 	std::vector<float>				x_locals(nLocalPoints), y_locals(nLocalPoints),z_locals(nLocalPoints);
 
-
 	const float sin_phi = sin(otherMapPose.phi);
 	const float cos_phi = cos(otherMapPose.phi);
 
@@ -528,11 +521,10 @@ void  COccupancyGridMap2D::computeMatchingWith2D(
 	float _sumSqrDist=0;
 
 	// The number of cells to look around each point:
-	const int cellsSearchRange = round( maxDistForCorrespondence / resolution );
+	const int cellsSearchRange = round( params.maxDistForCorrespondence / resolution );
 
 	// Initially there are no correspondences:
 	correspondences.clear();
-	correspondencesRatio = 0;
 
 	// Hay mapa local?
 	if (!nLocalPoints)  return;  // No
@@ -550,7 +542,7 @@ void  COccupancyGridMap2D::computeMatchingWith2D(
 	const std::vector<float> & otherMap_pzs = otherMap->getPointsBufferRef_z();
 
 	// Translate all local map points:
-	for (unsigned int localIdx=offset_other_map_points;localIdx<nLocalPoints;localIdx+=incr)
+	for (unsigned int localIdx=params.offset_other_map_points;localIdx<nLocalPoints;localIdx+=params.decimation_other_map_points)
 	{
 		// Girar y desplazar cada uno de los puntos del local map:
 		const float xx = x_locals[localIdx] = otherMapPose.x + cos_phi* otherMap_pxs[localIdx] - sin_phi* otherMap_pys[localIdx] ;
@@ -575,10 +567,10 @@ void  COccupancyGridMap2D::computeMatchingWith2D(
 	const cellType thresholdCellValue = p2l(0.5f);
 
 	// For each point in the other map:
-	for (unsigned int localIdx=offset_other_map_points;localIdx<nLocalPoints;localIdx+=incr)
+	for (unsigned int localIdx=params.offset_other_map_points;localIdx<nLocalPoints;localIdx+=params.decimation_other_map_points)
 	{
 		// Starting value:
-		float maxDistForCorrespondenceSquared = square( maxDistForCorrespondence );
+		float maxDistForCorrespondenceSquared = square( params.maxDistForCorrespondence );
 
 		// For speed-up:
 		const float x_local = x_locals[localIdx];
@@ -616,15 +608,15 @@ void  COccupancyGridMap2D::computeMatchingWith2D(
 
 					// Compute max. allowed distance:
 					maxDistForCorrespondenceSquared = square(
-								maxAngularDistForCorrespondence * angularDistPivotPoint.distance2DTo(x_local,y_local) +
-								maxDistForCorrespondence );
+						params.maxAngularDistForCorrespondence * params.angularDistPivotPoint.distanceTo(TPoint3D(x_local,y_local,0) ) +
+								params.maxDistForCorrespondence );
 
 					// Square distance to the point:
 					const float this_dist = square( residual_x ) + square( residual_y );
 
 					if (this_dist<maxDistForCorrespondenceSquared)
 					{
-						if (!onlyKeepTheClosest)
+						if (!params.onlyKeepTheClosest)
 						{
 							// save the correspondence:
 							nTotalCorrespondences++;
@@ -665,7 +657,7 @@ void  COccupancyGridMap2D::computeMatchingWith2D(
 		} // End of find closest nearby cell
 
 		// save the closest correspondence:
-		if (onlyKeepTheClosest && (min_dist<maxDistForCorrespondenceSquared))
+		if (params.onlyKeepTheClosest && (min_dist<maxDistForCorrespondenceSquared))
 		{
 			nTotalCorrespondences++;
 			correspondences.push_back( closestCorr );
@@ -682,17 +674,11 @@ void  COccupancyGridMap2D::computeMatchingWith2D(
 
 	}	// End "for each local point"...
 
-	correspondencesRatio = nOtherMapPointsWithCorrespondence / static_cast<float>(nLocalPoints/incr);
+	extraResults.correspondencesRatio = nOtherMapPointsWithCorrespondence / static_cast<float>(nLocalPoints/params.decimation_other_map_points);
+	extraResults.sumSqrDist = _sumSqrDist;
 
-	// If requested, copy sum of squared distances to output pointer:
-	// -------------------------------------------------------------------
-	if (sumSqrDist) *sumSqrDist = _sumSqrDist;
-
-
-//		os::fclose(fDebug);
 
 	MRPT_END
-
 }
 
 
@@ -738,28 +724,3 @@ float  COccupancyGridMap2D::computePathCost( float x1, float y1, float x2, float
 	else	return 0;
 }
 
-/*---------------------------------------------------------------
-  Computes the ratio in [0,1] of correspondences between "this" and the "otherMap" map, whose 6D pose relative to "this" is "otherMapPose"
- *   In the case of a multi-metric map, this returns the average between the maps. This method always return 0 for grid maps.
- * \param  otherMap					  [IN] The other map to compute the matching with.
- * \param  otherMapPose				  [IN] The 6D pose of the other map as seen from "this".
- * \param  minDistForCorr			  [IN] The minimum distance between 2 non-probabilistic map elements for counting them as a correspondence.
- * \param  minMahaDistForCorr		  [IN] The minimum Mahalanobis distance between 2 probabilistic map elements for counting them as a correspondence.
- *
- * \return The matching ratio [0,1]
- * \sa computeMatchingWith2D
-  --------------------------------------------------------------- */
-float  COccupancyGridMap2D::compute3DMatchingRatio(
-		const CMetricMap						*otherMap,
-		const CPose3D							&otherMapPose,
-		float									minDistForCorr,
-		float									minMahaDistForCorr
-		) const
-{
-	MRPT_UNUSED_PARAM(otherMap);
-	MRPT_UNUSED_PARAM(otherMapPose);
-	MRPT_UNUSED_PARAM(minDistForCorr);
-	MRPT_UNUSED_PARAM(minMahaDistForCorr);
-
-	return 0;
-}

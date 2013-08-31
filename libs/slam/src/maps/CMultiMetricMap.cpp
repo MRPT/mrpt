@@ -1017,45 +1017,32 @@ float  CMultiMetricMap::getNewStaticPointsRatio(
 		CPointsMap		*points,
 		CPose2D			&takenFrom )
 {
-	size_t						    i;
-	size_t							nStaticPoints = 0;
-	size_t							nTotalPoints = points->getPointsCount();
-	CPoint2D								g,l;
-	mrpt::utils::TMatchingPairList			correspondences;
-	float									correspondencesRatio;
-	mrpt::utils::TMatchingPairList::iterator	corrsIt;
-	static CPose2D							nullPose(0,0,0);
-
-
+	const size_t nTotalPoints = points->getPointsCount();
 	ASSERT_( m_gridMaps.size()>0 );
 
 	// There must be points!
 	if ( !nTotalPoints ) return 0.0f;
 
-	// Used below:
-	float	maxDistThreshold = 0.95f*m_gridMaps[0]->insertionOptions.maxDistanceInsertion;
-
 	// Compute matching:
-	m_gridMaps[0]->computeMatchingWith2D(
-				points,
-				takenFrom,
-				m_gridMaps[0]->getResolution() * 2,
-				0,
-				nullPose,
-				correspondences,
-				correspondencesRatio,
-				NULL,
-				true);
+	mrpt::utils::TMatchingPairList correspondences;
+	TMatchingExtraResults extraResults;
+	TMatchingParams params;
+	params.maxDistForCorrespondence = 0.95f*m_gridMaps[0]->insertionOptions.maxDistanceInsertion;
 
-//	gridMap->saveAsBitmapFile("debug_occ_grid.bmp");
-//	points->save2D_to_text_file(std::string("debug_points.txt"));
-//	printf("%u corrs, %f corrsRatio\n",correspondences.size(),correspondencesRatio);
+	m_gridMaps[0]->determineMatching2D(
+		points,
+		takenFrom,
+		correspondences, 
+		params, extraResults);
+		
+	size_t nStaticPoints = 0;
+	CPoint2D g,l;
 
-	for (i=0;i<nTotalPoints;i++)
+	for (size_t i=0;i<nTotalPoints;i++)
 	{
 		bool	hasCoor = false;
 		// Has any correspondence?
-		for (corrsIt=correspondences.begin();!hasCoor && corrsIt!=correspondences.end();corrsIt++)
+		for (mrpt::utils::TMatchingPairList::iterator corrsIt=correspondences.begin();!hasCoor && corrsIt!=correspondences.end();corrsIt++)
 			if (corrsIt->other_idx==i)
 				hasCoor = true;
 
@@ -1066,7 +1053,7 @@ float  CMultiMetricMap::getNewStaticPointsRatio(
 			points->getPoint(i,l);
 
 			CPoint2D	temp = l - takenFrom;
-			if ( temp.norm() < maxDistThreshold)
+			if ( temp.norm() < params.maxDistForCorrespondence)
 			{
 				// A new point
 				// ------------------------------------------
@@ -1104,36 +1091,16 @@ bool  CMultiMetricMap::internal_insertObservation(
 /*---------------------------------------------------------------
 					computeMatchingWith2D
  ---------------------------------------------------------------*/
-void  CMultiMetricMap::computeMatchingWith2D(
-		const CMetricMap						*otherMap,
-		const CPose2D							&otherMapPose,
-		float									maxDistForCorrespondence,
-		float									maxAngularDistForCorrespondence,
-		const CPose2D							&angularDistPivotPoint,
-		TMatchingPairList						&correspondences,
-		float									&correspondencesRatio,
-		float									*sumSqrDist	,
-		bool									onlyKeepTheClosest,
-		bool									onlyUniqueRobust,
-		const size_t          decimation_other_map_points,
-		const size_t          offset_other_map_points ) const
+void CMultiMetricMap::determineMatching2D(
+	const CMetricMap      * otherMap,
+	const CPose2D         & otherMapPose,
+	TMatchingPairList     & correspondences,
+	const TMatchingParams & params,
+	TMatchingExtraResults & extraResults ) const
 {
     MRPT_START
-
 	ASSERTMSG_( m_pointsMaps.empty()==1, "There is not exactly 1 points maps in the multimetric map." );
-
-	m_pointsMaps[0]->computeMatchingWith2D(
-									otherMap,
-									otherMapPose,
-									maxDistForCorrespondence,
-									maxAngularDistForCorrespondence,
-									angularDistPivotPoint,
-									correspondences,
-									correspondencesRatio,
-									sumSqrDist	,
-									onlyKeepTheClosest,
-									onlyUniqueRobust,
-									decimation_other_map_points);
+	m_pointsMaps[0]->determineMatching2D(otherMap,otherMapPose,correspondences,params,extraResults);
     MRPT_END
 }
 
@@ -1968,8 +1935,8 @@ void  CMultiMetricMap::getAs3DObject( mrpt::opengl::CSetOfObjectsPtr	&outObj ) c
  *   In the case of a multi-metric map, this returns the average between the maps. This method always return 0 for grid maps.
  * \param  otherMap					  [IN] The other map to compute the matching with.
  * \param  otherMapPose				  [IN] The 6D pose of the other map as seen from "this".
- * \param  minDistForCorr			  [IN] The minimum distance between 2 non-probabilistic map elements for counting them as a correspondence.
- * \param  minMahaDistForCorr		  [IN] The minimum Mahalanobis distance between 2 probabilistic map elements for counting them as a correspondence.
+ * \param  maxDistForCorr			  [IN] The minimum distance between 2 non-probabilistic map elements for counting them as a correspondence.
+ * \param  maxMahaDistForCorr		  [IN] The minimum Mahalanobis distance between 2 probabilistic map elements for counting them as a correspondence.
  *
  * \return The matching ratio [0,1]
  * \sa computeMatchingWith2D
@@ -1977,8 +1944,8 @@ void  CMultiMetricMap::getAs3DObject( mrpt::opengl::CSetOfObjectsPtr	&outObj ) c
 float  CMultiMetricMap::compute3DMatchingRatio(
 		const CMetricMap								*otherMap,
 		const CPose3D							&otherMapPose,
-		float									minDistForCorr,
-		float									minMahaDistForCorr
+		float									maxDistForCorr,
+		float									maxMahaDistForCorr
 		) const
 {
 	MRPT_START
@@ -1996,21 +1963,21 @@ float  CMultiMetricMap::compute3DMatchingRatio(
 	if (m_pointsMaps.size()>0)
 	{
 		ASSERT_(m_pointsMaps.size()==1);
-		accumResult += m_pointsMaps[0]->compute3DMatchingRatio( otherMap, otherMapPose,minDistForCorr,minMahaDistForCorr );
+		accumResult += m_pointsMaps[0]->compute3DMatchingRatio( otherMap, otherMapPose,maxDistForCorr,maxMahaDistForCorr );
 		nMapsComputed++;
 	}
 
 	// Landmarks maps:
 	if (m_landmarksMap.present())
 	{
-		accumResult += m_landmarksMap->compute3DMatchingRatio( otherMap, otherMapPose,minDistForCorr,minMahaDistForCorr );
+		accumResult += m_landmarksMap->compute3DMatchingRatio( otherMap, otherMapPose,maxDistForCorr,maxMahaDistForCorr );
 		nMapsComputed++;
 	}
 
 	// Landmark SOG maps:
 	if (m_beaconMap.present())
 	{
-		accumResult += m_beaconMap->compute3DMatchingRatio( otherMap, otherMapPose,minDistForCorr,minMahaDistForCorr );
+		accumResult += m_beaconMap->compute3DMatchingRatio( otherMap, otherMapPose,maxDistForCorr,maxMahaDistForCorr );
 		nMapsComputed++;
 	}
 

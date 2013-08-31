@@ -200,80 +200,8 @@ namespace mrpt
 			virtual bool  isEmpty() const;
 
 
-			/** Computes the log-likelihood of a given observation given an arbitrary robot 3D pose.
-				* In this particular class, the log-likelihood is computed by adding (product of likelihoods)
-				* the logarithm of the occupancy probability of all cells in which an endpoint from the sensor rays.
-				*
-				* \param takenFrom The robot's pose the observation is supposed to be taken from.
-				* \param obs The observation.
-				* \return This method returns a log-likelihood.
-				*
-				* \sa Used in particle filter algorithms, see: CMultiMetricMapPDF::update
-				*/
+			// See docs in base class
 			virtual double	 computeObservationLikelihood( const CObservation *obs, const CPose3D &takenFrom );
-
-			/** Computes the matchings between this and another 2D points map.
-				This includes finding:
-					- The set of points pairs in each map
-					- The mean squared distance between corresponding pairs.
-				This method is the most time critical one into the ICP algorithm.
-
-				* \param  otherMap					  [IN] The other map to compute the matching with.
-				* \param  otherMapPose				  [IN] The pose of the other map as seen from "this".
-				* \param  maxDistForCorrespondence   [IN] Maximum 2D linear distance between two points to be matched.
-				* \param  maxAngularDistForCorrespondence [IN] In radians: The aim is to allow larger distances to more distant correspondences.
-				* \param  angularDistPivotPoint      [IN] The point used to calculate distances from in both maps.
-				* \param  correspondences			  [OUT] The detected matchings pairs.
-				* \param  correspondencesRatio		  [OUT] The ratio [0,1] of points in otherMap with at least one correspondence.
-				* \param  sumSqrDist				  [OUT] The sum of all matched points squared distances.If undesired, set to NULL, as default.
-				* \param  onlyKeepTheClosest         [IN] If set to true, only the closest correspondence will be returned. If false (default) all are returned.
-				*
-				* \sa compute3DMatchingRatio
-				*/
-			virtual void  computeMatchingWith2D(
-				const CMetricMap						*otherMap,
-				const CPose2D							&otherMapPose,
-				float									maxDistForCorrespondence,
-				float									maxAngularDistForCorrespondence,
-				const CPose2D							&angularDistPivotPoint,
-				TMatchingPairList						&correspondences,
-				float									&correspondencesRatio,
-				float									*sumSqrDist	= NULL,
-				bool									onlyKeepTheClosest = true,
-				bool									onlyUniqueRobust = false,
-				const size_t                            decimation_other_map_points = 1,
-				const size_t                            offset_other_map_points = 0 ) const
-			{
-				THROW_EXCEPTION("Method not implemented in this class of map")
-			}
-
-
-			virtual void  computeMatchingWith3D(
-				const CMetricMap						*otherMap,
-				const CPose3D							&otherMapPose,
-				float									maxDistForCorrespondence,
-				float									maxAngularDistForCorrespondence,
-				const CPoint3D							&angularDistPivotPoint,
-				TMatchingPairList						&correspondences,
-				float									&correspondencesRatio,
-				float									*sumSqrDist	= NULL,
-				bool									onlyKeepTheClosest = true,
-				bool									onlyUniqueRobust = false,
-				const size_t                            decimation_other_map_points = 1,
-				const size_t                            offset_other_map_points = 0 ) const
-			{
-				THROW_EXCEPTION("Method not implemented in this class of map")
-			}
-
-			virtual float  compute3DMatchingRatio(
-				const CMetricMap								*otherMap,
-				const CPose3D							&otherMapPose,
-				float									minDistForCorr = 0.10f,
-				float									minMahaDistForCorr = 2.0f
-			) const
-			{
-				THROW_EXCEPTION("Method not implemented in this class of map")
-			}
 
 			virtual void  saveMetricMapRepresentationToFile(const std::string	&filNamePrefix) const;
 

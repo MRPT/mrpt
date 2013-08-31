@@ -256,22 +256,16 @@ namespace slam
 									const	TRandomFieldCell& defaultValueNewCells,
 									float	additionalMarginMeters = 1.0f );
 
-		/** Computes the ratio in [0,1] of correspondences between "this" and the "otherMap" map, whose 6D pose relative to "this" is "otherMapPose"
-		 *   In the case of a multi-metric map, this returns the average between the maps. This method always return 0 for grid maps.
-		 * \param  otherMap					  [IN] The other map to compute the matching with.
-		 * \param  otherMapPose				  [IN] The 6D pose of the other map as seen from "this".
-		 * \param  minDistForCorr			  [IN] The minimum distance between 2 non-probabilistic map elements for counting them as a correspondence.
-		 * \param  minMahaDistForCorr		  [IN] The minimum Mahalanobis distance between 2 probabilistic map elements for counting them as a correspondence.
-		 *
-		 * \return The matching ratio [0,1]
-		 * \sa computeMatchingWith2D
-		 */
+		/** See docs in base class: in this class this always returns 0 */
 		float  compute3DMatchingRatio(
 				const CMetricMap						*otherMap,
 				const CPose3D							&otherMapPose,
-				float									minDistForCorr = 0.10f,
-				float									minMahaDistForCorr = 2.0f
-				) const;
+				float									maxDistForCorr = 0.10f,
+				float									maxMahaDistForCorr = 2.0f
+				) const
+		{
+			return 0;
+		}
 
 
 		/** The implementation in this class just calls all the corresponding method of the contained metric maps.

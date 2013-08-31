@@ -304,75 +304,45 @@ void  CPointsMap::clipOutOfRange(const CPoint2D	&point, float maxRange)
 	mark_as_modified();
 }
 
-/*---------------------------------------------------------------
-					ComputeMatchingWith
-
- Computes the matching between two 2D points maps.
-   This includes finding:
-		- The set of points pairs in each map
-		- The mean squared distance between corresponding pairs.
-   This method is the most time critical one in the ICP algorithm.
-
- otherMap					  [IN] The other map to compute the matching with.
- otherMapPose				  [IN] The pose of the other map as seen from "this".
- maxDistForCorrespondenceSqrt [IN] Maximum 2D distance between two points to be matched.
- maxAngErrorForCorrespondence [IN] Maximum angular distance in radians to allow far points to be matched.
- correspondences			  [OUT] The detected matchings pairs.Value at [i] is the index in this map
-									 corresponding to point "i" in the "other" map, or -1 if none.
- nCorrespondences			  [OUT] The number of correct correspondences.
- auxInfo					  [IN/OUT] Auxiliar structure.Initialize "loop_count" to 0.
- sumSqrDist					  [OUT] The sum of all matched points squared distances.If undesired,
-									 set to NULL, as default.
- covariance					  [OUT] The resulting matching covariance 3x3 matrix, or NULL if undesired.
-  ---------------------------------------------------------------*/
-void  CPointsMap::computeMatchingWith2D(
-	const CMetricMap								*otherMap2,
-	const CPose2D									&otherMapPose_,
-	float									maxDistForCorrespondence,
-	float									maxAngularDistForCorrespondence,
-	const CPose2D									&angularDistPivotPoint,
-	TMatchingPairList						&correspondences,
-	float									&correspondencesRatio,
-	float									*sumSqrDist	,
-	bool									onlyKeepTheClosest,
-	bool									onlyUniqueRobust,
-	const size_t          decimation_other_map_points,
-	const size_t                            offset_other_map_points ) const
+void CPointsMap::determineMatching2D(
+	const CMetricMap      * otherMap2,
+	const CPose2D         & otherMapPose_,
+	TMatchingPairList     & correspondences,
+	const TMatchingParams & params,
+	TMatchingExtraResults & extraResults ) const
 {
 	MRPT_START
 
-	ASSERT_ABOVE_(decimation_other_map_points,0)
-	ASSERT_BELOW_(offset_other_map_points, decimation_other_map_points)
+	extraResults = TMatchingExtraResults(); // Clear output
+
+	ASSERT_ABOVE_(params.decimation_other_map_points,0)
+	ASSERT_BELOW_(params.offset_other_map_points, params.decimation_other_map_points)
 	ASSERT_(otherMap2->GetRuntimeClass()->derivedFrom( CLASS_ID(CPointsMap) ));
 	const CPointsMap		*otherMap = static_cast<const CPointsMap*>( otherMap2 );
 
-	const TPose2D	otherMapPose(otherMapPose_.x(),otherMapPose_.y(),otherMapPose_.phi());
+	const TPose2D otherMapPose(otherMapPose_.x(),otherMapPose_.y(),otherMapPose_.phi());
 
-	const size_t incr = decimation_other_map_points;  // To save typing!
+	const size_t nLocalPoints = otherMap->size();
+	const size_t nGlobalPoints = this->size();
+	float _sumSqrDist=0;
+	size_t _sumSqrCount = 0;
+	size_t nOtherMapPointsWithCorrespondence = 0;	// Number of points with one corrs. at least
 
+	float local_x_min= std::numeric_limits<float>::max(), local_x_max= -std::numeric_limits<float>::max();
+	float global_x_min=std::numeric_limits<float>::max(), global_x_max= -std::numeric_limits<float>::max();
+	float local_y_min= std::numeric_limits<float>::max(), local_y_max= -std::numeric_limits<float>::max();
+	float global_y_min=std::numeric_limits<float>::max(), global_y_max= -std::numeric_limits<float>::max();
 
-	size_t					nLocalPoints = otherMap->size();
-	size_t					nGlobalPoints = this->size();
-	float					_sumSqrDist=0;
-	size_t					_sumSqrCount = 0;
-	size_t					nOtherMapPointsWithCorrespondence = 0;	// Number of points with one corrs. at least
-
-	float					local_x_min= std::numeric_limits<float>::max(), local_x_max= -std::numeric_limits<float>::max();
-	float					global_x_min=std::numeric_limits<float>::max(), global_x_max= -std::numeric_limits<float>::max();
-	float					local_y_min= std::numeric_limits<float>::max(), local_y_max= -std::numeric_limits<float>::max();
-	float					global_y_min=std::numeric_limits<float>::max(), global_y_max= -std::numeric_limits<float>::max();
-
-	double					maxDistForCorrespondenceSquared;
-	float			        x_local, y_local;
-	unsigned int			localIdx;
-
-
+	double       maxDistForCorrespondenceSquared;
+	float        x_local, y_local;
+	unsigned int localIdx;
+	
 	const float *x_other_it,*y_other_it,*z_other_it; // *x_global_it,*y_global_it; //,*z_global_it;
 
 	// Prepare output: no correspondences initially:
 	correspondences.clear();
 	correspondences.reserve(nLocalPoints);
-	correspondencesRatio = 0;
+	extraResults.correspondencesRatio = 0;
 
     TMatchingPairList _correspondences;
     _correspondences.reserve(nLocalPoints);
@@ -495,12 +465,12 @@ void  CPointsMap::computeMatchingWith2D(
 
 	// Loop for each point in local map:
 	// --------------------------------------------------
-	for ( localIdx=offset_other_map_points,
-			x_other_it=&otherMap->x[offset_other_map_points],
-			y_other_it=&otherMap->y[offset_other_map_points],
-			z_other_it=&otherMap->z[offset_other_map_points];
+	for ( localIdx=params.offset_other_map_points,
+			x_other_it=&otherMap->x[params.offset_other_map_points],
+			y_other_it=&otherMap->y[params.offset_other_map_points],
+			z_other_it=&otherMap->z[params.offset_other_map_points];
 			localIdx<nLocalPoints;
-			x_other_it+=incr,y_other_it+=incr,z_other_it+=incr,localIdx+=incr )
+			x_other_it+=params.decimation_other_map_points,y_other_it+=params.decimation_other_map_points,z_other_it+=params.decimation_other_map_points,localIdx+=params.decimation_other_map_points )
 	{
 		// For speed-up:
 		x_local = x_locals[localIdx]; // *x_locals_it;
@@ -521,8 +491,8 @@ void  CPointsMap::computeMatchingWith2D(
 
 		// Compute max. allowed distance:
 		maxDistForCorrespondenceSquared = square(
-					maxAngularDistForCorrespondence * angularDistPivotPoint.distance2DTo(x_local,y_local) +
-					maxDistForCorrespondence );
+			params.maxAngularDistForCorrespondence * std::sqrt( square(params.angularDistPivotPoint.x-x_local) + square(params.angularDistPivotPoint.y-y_local) ) +
+					params.maxDistForCorrespondence );
 
 		// Distance below the threshold??
 		if ( tentativ_err_sq < maxDistForCorrespondenceSquared )
@@ -558,9 +528,9 @@ void  CPointsMap::computeMatchingWith2D(
 	//  led to just one correspondence for each "local map" point, but
 	//  many of them may have as corresponding pair the same "global point"!!
 	// -------------------------------------------------------------------------
-	if (onlyUniqueRobust)
+	if (params.onlyUniqueRobust)
 	{
-		if (!onlyKeepTheClosest)  THROW_EXCEPTION("ERROR: onlyKeepTheClosest must be also set to true when onlyUniqueRobust=true.")
+		//if (!params.onlyKeepTheClosest)  THROW_EXCEPTION("ERROR: onlyKeepTheClosest must be also set to true when onlyUniqueRobust=true.")
 
 		vector<TMatchingPairPtr>	bestMatchForThisMap( nGlobalPoints, TMatchingPairPtr(NULL) );
 		TMatchingPairList::iterator it;
@@ -595,15 +565,12 @@ void  CPointsMap::computeMatchingWith2D(
 
 	// If requested, copy sum of squared distances to output pointer:
 	// -------------------------------------------------------------------
-	if (sumSqrDist)
-	{
-		if (_sumSqrCount)
-				*sumSqrDist = _sumSqrDist / static_cast<double>(_sumSqrCount);
-		else	*sumSqrDist = 0;
-	}
+	if (_sumSqrCount)
+			extraResults.sumSqrDist = _sumSqrDist / static_cast<double>(_sumSqrCount);
+	else	extraResults.sumSqrDist = 0;
 
 	// The ratio of points in the other map with corrs:
-	correspondencesRatio = incr*nOtherMapPointsWithCorrespondence / static_cast<float>(nLocalPoints);
+	extraResults.correspondencesRatio = params.decimation_other_map_points*nOtherMapPointsWithCorrespondence / static_cast<float>(nLocalPoints);
 
 	MRPT_END
 }
@@ -789,36 +756,34 @@ void  CPointsMap::getAs3DObject( mrpt::opengl::CSetOfObjectsPtr	&outObj ) const
  *   In the case of a multi-metric map, this returns the average between the maps. This method always return 0 for grid maps.
  * \param  otherMap					  [IN] The other map to compute the matching with.
  * \param  otherMapPose				  [IN] The 6D pose of the other map as seen from "this".
- * \param  minDistForCorr			  [IN] The minimum distance between 2 non-probabilistic map elements for counting them as a correspondence.
- * \param  minMahaDistForCorr		  [IN] The minimum Mahalanobis distance between 2 probabilistic map elements for counting them as a correspondence.
+ * \param  maxDistForCorr			  [IN] The minimum distance between 2 non-probabilistic map elements for counting them as a correspondence.
+ * \param  maxMahaDistForCorr		  [IN] The minimum Mahalanobis distance between 2 probabilistic map elements for counting them as a correspondence.
  *
  * \return The matching ratio [0,1]
- * \sa computeMatchingWith2D
+ * \sa determineMatching2D
 ---------------------------------------------------------------*/
 float  CPointsMap::compute3DMatchingRatio(
 		const CMetricMap								*otherMap2,
 		const CPose3D							&otherMapPose,
-		float									minDistForCorr,
-		float									minMahaDistForCorr
+		float									maxDistForCorr,
+		float									maxMahaDistForCorr
 		) const
 {
-	MRPT_UNUSED_PARAM(minMahaDistForCorr);
+	MRPT_UNUSED_PARAM(maxMahaDistForCorr);
 
-	static const CPoint3D origin(0,0,0);
-	float correspondencesRatio;
+	TMatchingPairList     correspondences;
+	TMatchingParams       params;
+	TMatchingExtraResults extraResults;
 
-	TMatchingPairList correspondences;
+	params.maxDistForCorrespondence = maxDistForCorr;
 
-	this->computeMatchingWith3D(
+	this->determineMatching3D(
 		otherMap2->getAsSimplePointsMap(),
 		otherMapPose,
-		minDistForCorr,
-		0, // maxAngularDistForCorrespondence,
-		origin, // angularDistPivotPoint,
 		correspondences,
-		correspondencesRatio);
+		params, extraResults);
 
-	return correspondencesRatio;
+	return extraResults.correspondencesRatio;
 }
 
 /*---------------------------------------------------------------
@@ -1047,25 +1012,19 @@ void CPointsMap::boundingBox(
 /*---------------------------------------------------------------
 				computeMatchingWith3D
 ---------------------------------------------------------------*/
-void  CPointsMap::computeMatchingWith3D(
-	const CMetricMap						*otherMap2,
-	const CPose3D							&otherMapPose,
-	float									maxDistForCorrespondence,
-	float									maxAngularDistForCorrespondence,
-	const CPoint3D 							&angularDistPivotPoint,
-	TMatchingPairList						&correspondences,
-	float									&correspondencesRatio,
-	float									*sumSqrDist	,
-	bool									onlyKeepTheClosest,
-	bool									onlyUniqueRobust,
-	const size_t          					decimation_other_map_points,
-	const size_t                            offset_other_map_points ) const
+void  CPointsMap::determineMatching3D(
+	const CMetricMap      * otherMap2,
+	const CPose3D         & otherMapPose,
+	TMatchingPairList     & correspondences,
+	const TMatchingParams & params,
+	TMatchingExtraResults & extraResults ) const
 {
 	MRPT_START
 
-	ASSERT_ABOVE_(decimation_other_map_points,0)
-	ASSERT_BELOW_(offset_other_map_points, decimation_other_map_points)
-	const size_t incr = decimation_other_map_points; // Just to save some typing...
+	extraResults = TMatchingExtraResults();
+
+	ASSERT_ABOVE_(params.decimation_other_map_points,0)
+	ASSERT_BELOW_(params.offset_other_map_points, params.decimation_other_map_points)
 
 	ASSERT_(otherMap2->GetRuntimeClass()->derivedFrom( CLASS_ID(CPointsMap) ));
 	const CPointsMap		*otherMap = static_cast<const CPointsMap*>( otherMap2 );
@@ -1086,7 +1045,6 @@ void  CPointsMap::computeMatchingWith3D(
 	// Prepare output: no correspondences initially:
 	correspondences.clear();
 	correspondences.reserve(nLocalPoints);
-	correspondencesRatio = 0;
 
     TMatchingPairList _correspondences;
 	_correspondences.reserve(nLocalPoints);
@@ -1104,7 +1062,7 @@ void  CPointsMap::computeMatchingWith3D(
 	// Transladar y rotar ya todos los puntos locales
 	vector<float> x_locals(nLocalPoints), y_locals(nLocalPoints), z_locals(nLocalPoints);
 
-	for (unsigned int localIdx=offset_other_map_points;localIdx<nLocalPoints;localIdx+=incr)
+	for (unsigned int localIdx=params.offset_other_map_points;localIdx<nLocalPoints;localIdx+=params.decimation_other_map_points)
 	{
 		float x_local,y_local,z_local;
 		otherMapPose.composePoint(
@@ -1141,7 +1099,7 @@ void  CPointsMap::computeMatchingWith3D(
 
 	// Loop for each point in local map:
 	// --------------------------------------------------
-	for (unsigned int localIdx=offset_other_map_points; localIdx<nLocalPoints; localIdx+=incr)
+	for (unsigned int localIdx=params.offset_other_map_points; localIdx<nLocalPoints; localIdx+=params.decimation_other_map_points)
 	{
 		// For speed-up:
 		const float x_local = x_locals[localIdx];
@@ -1162,8 +1120,8 @@ void  CPointsMap::computeMatchingWith3D(
 
 			// Compute max. allowed distance:
 			maxDistForCorrespondenceSquared = square(
-						maxAngularDistForCorrespondence * angularDistPivotPoint.distance3DTo(x_local,y_local,z_local) +
-						maxDistForCorrespondence );
+						params.maxAngularDistForCorrespondence * params.angularDistPivotPoint.distanceTo(TPoint3D(x_local,y_local,z_local)) +
+						params.maxDistForCorrespondence );
 
 			// Distance below the threshold??
 			if ( tentativ_err_sq < maxDistForCorrespondenceSquared )
@@ -1201,9 +1159,9 @@ void  CPointsMap::computeMatchingWith3D(
 	//  led to just one correspondence for each "local map" point, but
 	//  many of them may have as corresponding pair the same "global point"!!
 	// -------------------------------------------------------------------------
-	if (onlyUniqueRobust)
+	if (params.onlyUniqueRobust)
 	{
-		if (!onlyKeepTheClosest)  THROW_EXCEPTION("ERROR: onlyKeepTheClosest must be also set to true when onlyUniqueRobust=true.")
+		if (!params.onlyKeepTheClosest)  THROW_EXCEPTION("ERROR: onlyKeepTheClosest must be also set to true when onlyUniqueRobust=true.")
 
 		vector<TMatchingPairPtr>	bestMatchForThisMap( nGlobalPoints, TMatchingPairPtr(NULL) );
 		TMatchingPairList::iterator it;
@@ -1238,15 +1196,8 @@ void  CPointsMap::computeMatchingWith3D(
 
 	// If requested, copy sum of squared distances to output pointer:
 	// -------------------------------------------------------------------
-	if (sumSqrDist)
-	{
-		if (_sumSqrCount)
-				*sumSqrDist = _sumSqrDist / static_cast<double>(_sumSqrCount);
-		else	*sumSqrDist = 0;
-	}
-
-	// The ratio of points in the other map with corrs:
-	correspondencesRatio = incr*nOtherMapPointsWithCorrespondence / static_cast<float>(nLocalPoints);
+	extraResults.sumSqrDist = (_sumSqrCount) ? _sumSqrDist / static_cast<double>(_sumSqrCount) : 0;
+	extraResults.correspondencesRatio = params.decimation_other_map_points*nOtherMapPointsWithCorrespondence / static_cast<float>(nLocalPoints);
 
 	MRPT_END
 }
@@ -1994,7 +1945,6 @@ void  CPointsMap::fuseWith(
 {
 	TMatchingPairList	correspondences;
 	TPoint3D			a,b;
-	float				corrRatio;
 	const CPose2D		nullPose(0,0,0);
 
 	mark_as_modified();
@@ -2004,13 +1954,17 @@ void  CPointsMap::fuseWith(
 
 	// Find correspondences between this map and the other one:
 	// ------------------------------------------------------------
-	computeMatchingWith2D( otherMap,			// The other map
-						   nullPose,	// The other map's pose
-						   minDistForFuse,	// Max. dist. for correspondence
-						   0,
-						   nullPose,
-						   correspondences,
-						   corrRatio );
+	TMatchingParams params;
+	TMatchingExtraResults extraResults;
+
+	params.maxAngularDistForCorrespondence = 0;
+	params.maxDistForCorrespondence = minDistForFuse;
+
+	determineMatching2D( 
+		otherMap,// The other map
+		nullPose,	// The other map's pose
+		correspondences,
+		params, extraResults);
 
 	// Initially, all set to "true" -> "not fused".
 	if (notFusedPoints)

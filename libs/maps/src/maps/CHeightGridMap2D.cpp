@@ -455,32 +455,6 @@ bool CHeightGridMap2D::getMinMaxHeight(float &z_min, float &z_max) const
 
 
 /*---------------------------------------------------------------
-  Computes the ratio in [0,1] of correspondences between "this" and the "otherMap" map, whose 6D pose relative to "this" is "otherMapPose"
- *   In the case of a multi-metric map, this returns the average between the maps. This method always return 0 for grid maps.
- * \param  otherMap					  [IN] The other map to compute the matching with.
- * \param  otherMapPose				  [IN] The 6D pose of the other map as seen from "this".
- * \param  minDistForCorr			  [IN] The minimum distance between 2 non-probabilistic map elements for counting them as a correspondence.
- * \param  minMahaDistForCorr		  [IN] The minimum Mahalanobis distance between 2 probabilistic map elements for counting them as a correspondence.
- *
- * \return The matching ratio [0,1]
- * \sa computeMatchingWith2D
-  --------------------------------------------------------------- */
-float  CHeightGridMap2D::compute3DMatchingRatio(
-		const CMetricMap						*otherMap,
-		const CPose3D							&otherMapPose,
-		float									minDistForCorr,
-		float									minMahaDistForCorr
-		) const
-{
-	MRPT_UNUSED_PARAM(otherMap);
-	MRPT_UNUSED_PARAM(otherMapPose);
-	MRPT_UNUSED_PARAM(minDistForCorr);
-	MRPT_UNUSED_PARAM(minMahaDistForCorr);
-
-	return 0;
-}
-
-/*---------------------------------------------------------------
 					auxParticleFilterCleanUp
   Gets the intersection between a 3D line and a Height Grid map
    (taking into account the different heights of each individual cell).

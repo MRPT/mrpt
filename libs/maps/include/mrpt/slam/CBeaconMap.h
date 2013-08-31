@@ -137,21 +137,12 @@ namespace slam
 			m_beacons.push_back( m );
 		}
 
-		/** Computes the ratio in [0,1] of correspondences between "this" and the "otherMap" map, whose 6D pose relative to "this" is "otherMapPose"
-		 *   In the case of a multi-metric map, this returns the average between the maps. This method always return 0 for grid maps.
-		 * \param  otherMap					  [IN] The other map to compute the matching with.
-		 * \param  otherMapPose				  [IN] The 6D pose of the other map as seen from "this".
-		 * \param  minDistForCorr			  [IN] The minimum distance between 2 non-probabilistic map elements for counting them as a correspondence.
-		 * \param  minMahaDistForCorr		  [IN] The minimum Mahalanobis distance between 2 probabilistic map elements for counting them as a correspondence.
-		 *
-		 * \return The matching ratio [0,1]
-		 * \sa computeMatchingWith2D
-		 */
+		// See docs in base class
 		float  compute3DMatchingRatio(
 				const CMetricMap	*otherMap,
 				const CPose3D		&otherMapPose,
-				float				minDistForCorr = 0.10f,
-				float				minMahaDistForCorr = 2.0f
+				float				maxDistForCorr = 0.10f,
+				float				maxMahaDistForCorr = 2.0f
 				) const;
 
 		 /** With this struct options are provided to the likelihood computations.
@@ -259,53 +250,16 @@ namespace slam
 		size_t  size() const;
 
 
-		/** Computes the (logarithmic) likelihood that a given observation was taken from a given pose in the world being modeled with this map.
-		 *
-		 *  In the current implementation, this method behaves in a different way according to the nature of
-		 *   the observation's class:
-		 *		- "mrpt::slam::CObservation2DRangeScan": This calls "computeLikelihood_RSLC_2007".
-		 *		- "mrpt::slam::CObservationStereoImages": This calls "computeLikelihood_SIFT_LandmarkMap".
-		 *
-		 * \param takenFrom The robot's pose the observation is supposed to be taken from.
-		 * \param obs The observation.
-		 * \return This method returns a likelihood value > 0.
-		 *
-		 * \sa Used in particle filter algorithms, see: CMultiMetricMapPDF::update
-		 */
+		// See docs in base class
 		double	 computeObservationLikelihood( const CObservation *obs, const CPose3D &takenFrom );
 
-		/** Computes the matchings between this and another 2D points map.
-		   This includes finding:
-				- The set of points pairs in each map
-				- The mean squared distance between corresponding pairs.
-		   This method is the most time critical one into the ICP algorithm.
-
-		 * \param  otherMap					  [IN] The other map to compute the matching with.
-		 * \param  otherMapPose				  [IN] The pose of the other map as seen from "this".
-		 * \param  maxDistForCorrespondence   [IN] Maximum 2D linear distance between two points to be matched.
-		 * \param  maxAngularDistForCorrespondence [IN] In radians: The aim is to allow larger distances to more distant correspondences.
-		 * \param  angularDistPivotPoint      [IN] The point used to calculate distances from in both maps.
-		 * \param  correspondences			  [OUT] The detected matchings pairs.
-		 * \param  correspondencesRatio		  [OUT] The ratio [0,1] of points in otherMap with at least one correspondence.
-		 * \param  sumSqrDist				  [OUT] The sum of all matched points squared distances.If undesired, set to NULL, as default.
-		 * \param  covariance				  [OUT] The resulting matching covariance 3x3 matrix, or NULL if undesired.
-		 * \param  onlyKeepTheClosest         [IN] If set to true, only the closest correspondence will be returned. If false (default) all are returned.
-		 *
-		 * \sa compute3DMatchingRatio
-		 */
-		void  computeMatchingWith2D(
-				const CMetricMap     *otherMap,
-				const CPose2D        &otherMapPose,
-				float                maxDistForCorrespondence,
-				float                maxAngularDistForCorrespondence,
-				const CPose2D        &angularDistPivotPoint,
-				TMatchingPairList    &correspondences,
-				float                &correspondencesRatio,
-				float                *sumSqrDist	= NULL,
-				bool                  onlyKeepTheClosest = false,
-				bool                  onlyUniqueRobust = false,
-				const size_t          decimation_other_map_points = 1,
-				const size_t          offset_other_map_points = 0 ) const;
+		// See docs in base class
+		virtual void  determineMatching2D(
+			const CMetricMap      * otherMap,
+			const CPose2D         & otherMapPose,
+			TMatchingPairList     & correspondences,
+			const TMatchingParams & params,
+			TMatchingExtraResults & extraResults ) const ;
 
 		/** Perform a search for correspondences between "this" and another lansmarks map:
 		  *  Firsly, the landmarks' descriptor is used to find correspondences, then inconsistent ones removed by

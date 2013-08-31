@@ -2376,8 +2376,8 @@ const CLandmark* 	CLandmarksMap::TCustomSequenceLandmarks::getByBeaconID( unsign
  *   In the case of a multi-metric map, this returns the average between the maps. This method always return 0 for grid maps.
  * \param  otherMap					  [IN] The other map to compute the matching with.
  * \param  otherMapPose				  [IN] The 6D pose of the other map as seen from "this".
- * \param  minDistForCorr			  [IN] The minimum distance between 2 non-probabilistic map elements for counting them as a correspondence.
- * \param  minMahaDistForCorr		  [IN] The minimum Mahalanobis distance between 2 probabilistic map elements for counting them as a correspondence.
+ * \param  maxDistForCorr			  [IN] The minimum distance between 2 non-probabilistic map elements for counting them as a correspondence.
+ * \param  maxMahaDistForCorr		  [IN] The minimum Mahalanobis distance between 2 probabilistic map elements for counting them as a correspondence.
  *
  * \return The matching ratio [0,1]
  * \sa computeMatchingWith2D
@@ -2385,11 +2385,11 @@ const CLandmark* 	CLandmarksMap::TCustomSequenceLandmarks::getByBeaconID( unsign
 float  CLandmarksMap::compute3DMatchingRatio(
 		const CMetricMap						*otherMap2,
 		const CPose3D							&otherMapPose,
-		float									minDistForCorr,
-		float									minMahaDistForCorr
+		float									maxDistForCorr,
+		float									maxMahaDistForCorr
 		) const
 {
-	MRPT_UNUSED_PARAM(minDistForCorr);
+	MRPT_UNUSED_PARAM(maxDistForCorr);
 	MRPT_START
 
 	// Compare to a similar map only:
@@ -2460,7 +2460,7 @@ float  CLandmarksMap::compute3DMatchingRatio(
 
 			float	distMaha = sqrt(  d.multiply_HCHt_scalar(COV.inv()) );  //(d*COV.inv()*(~d))(0,0) );
 
-			if (distMaha<minMahaDistForCorr )
+			if (distMaha<maxMahaDistForCorr )
 			{
 				// Now test the SIFT descriptors:
 				if ( !itThis->features.empty() && !itOther->features.empty() &&

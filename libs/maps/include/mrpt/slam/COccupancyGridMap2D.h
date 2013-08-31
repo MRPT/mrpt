@@ -869,17 +869,7 @@ namespace slam
 
 		/** @} */
 
-		/** Computes the likelihood that a given observation was taken from a given pose in the world being modeled with this map.
-		 *  See "likelihoodOptions" for configuration parameters.
-		 *
-		 * \param takenFrom The robot's pose the observation is supposed to be taken from.
-		 * \param obs The observation.
-		 * \return This method returns a likelihood in the range [0,1].
-		 *
-		 * Used in particle filter algorithms, see: CMultiMetricMapPDF::prediction_and_update
-		 *
-		 * \sa likelihoodOptions, likelihoodOutputs
-		 */
+		// See docs in base class
 		double	 computeObservationLikelihood( const CObservation *obs, const CPose3D &takenFrom );
 
 		/** Returns true if this map is able to compute a sensible likelihood function for this observation (i.e. an occupancy grid map cannot with an image).
@@ -1004,37 +994,24 @@ namespace slam
 		 *
 		 * \sa computeMatching3DWith
 		 */
-		void  computeMatchingWith2D(
-				const CMetricMap     *otherMap,
-				const CPose2D        &otherMapPose,
-				float                maxDistForCorrespondence,
-				float                maxAngularDistForCorrespondence,
-				const CPose2D        &angularDistPivotPoint,
-				TMatchingPairList    &correspondences,
-				float                &correspondencesRatio,
-				float                *sumSqrDist	= NULL,
-				bool                  onlyKeepTheClosest = false,
-				bool                  onlyUniqueRobust = false,
-				const size_t          decimation_other_map_points = 1,
-				const size_t          offset_other_map_points = 0 ) const;
+		virtual void  determineMatching2D(
+			const CMetricMap      * otherMap,
+			const CPose2D         & otherMapPose,
+			TMatchingPairList     & correspondences,
+			const TMatchingParams & params,
+			TMatchingExtraResults & extraResults ) const ;
 
 
-		/** Computes the ratio in [0,1] of correspondences between "this" and the "otherMap" map, whose 6D pose relative to "this" is "otherMapPose"
-		 *   In the case of a multi-metric map, this returns the average between the maps. This method always return 0 for grid maps.
-		 * \param  otherMap					  [IN] The other map to compute the matching with.
-		 * \param  otherMapPose				  [IN] The 6D pose of the other map as seen from "this".
-		 * \param  minDistForCorr			  [IN] The minimum distance between 2 non-probabilistic map elements for counting them as a correspondence.
-		 * \param  minMahaDistForCorr		  [IN] The minimum Mahalanobis distance between 2 probabilistic map elements for counting them as a correspondence.
-		 *
-		 * \return The matching ratio [0,1]
-		 * \sa computeMatchingWith2D
-		 */
+		/** See docs in base class: in this class this always returns 0 */
 		float  compute3DMatchingRatio(
 				const CMetricMap						*otherMap,
 				const CPose3D							&otherMapPose,
-				float									minDistForCorr = 0.10f,
-				float									minMahaDistForCorr = 2.0f
-				) const;
+				float									maxDistForCorr = 0.10f,
+				float									maxMahaDistForCorr = 2.0f
+				) const
+		{
+			return 0;
+		}
 
 		/** This virtual method saves the map to a file "filNamePrefix"+< some_file_extension >, as an image or in any other applicable way (Notice that other methods to save the map may be implemented in classes implementing this virtual interface).
 		  */

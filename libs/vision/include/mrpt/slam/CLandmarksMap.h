@@ -195,21 +195,12 @@ namespace slam
 		 mrpt::slam::CLandmark::TLandmarkID  getMapMaxID();
 		 /**** END FAMD *****/
 
-		/** Computes the ratio in [0,1] of correspondences between "this" and the "otherMap" map, whose 6D pose relative to "this" is "otherMapPose"
-		 *   In the case of a multi-metric map, this returns the average between the maps. This method always return 0 for grid maps.
-		 * \param  otherMap					  [IN] The other map to compute the matching with.
-		 * \param  otherMapPose				  [IN] The 6D pose of the other map as seen from "this".
-		 * \param  minDistForCorr			  [IN] The minimum distance between 2 non-probabilistic map elements for counting them as a correspondence.
-		 * \param  minMahaDistForCorr		  [IN] The minimum Mahalanobis distance between 2 probabilistic map elements for counting them as a correspondence.
-		 *
-		 * \return The matching ratio [0,1]
-		 * \sa computeMatchingWith2D
-		 */
+		// See docs in base class
 		float  compute3DMatchingRatio(
 				const CMetricMap						*otherMap,
 				const CPose3D							&otherMapPose,
-				float									minDistForCorr = 0.10f,
-				float									minMahaDistForCorr = 2.0f
+				float									maxDistForCorr = 0.10f,
+				float									maxMahaDistForCorr = 2.0f
 				) const;
 
 		 /** With this struct options are provided to the observation insertion process.
@@ -522,6 +513,7 @@ namespace slam
 		 */
 		double	 computeObservationLikelihood( const CObservation *obs, const CPose3D &takenFrom );
 
+		// See docs in base class
 		void  computeMatchingWith2D(
 				const CMetricMap								*otherMap,
 				const CPose2D									&otherMapPose,
