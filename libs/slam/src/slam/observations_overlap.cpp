@@ -64,21 +64,19 @@ double mrpt::slam::observationsOverlap(
 		if (pose_o2_wrt_o1)
 			otherObsPose = *pose_o2_wrt_o1;
 
-		const float maxDisForCorrespondence = 0.04f;
 		mrpt::utils::TMatchingPairList	correspondences;
-		float	correspondencesRatio;
-		static const CPoint3D pivotPoint(0,0,0);
+		TMatchingParams matchParams;
+		TMatchingExtraResults matchExtraResults;
 
-		map1->computeMatchingWith3D(
-				map2,
-				otherObsPose,
-				maxDisForCorrespondence,
-				0,
-				pivotPoint,
-				correspondences,
-				correspondencesRatio);
+		matchParams.maxDistForCorrespondence = 0.04f;
+		matchParams.maxAngularDistForCorrespondence = 0;
+		map1->determineMatching3D(
+			map2,				// The other map
+			otherObsPose,		// The other map pose
+			correspondences,
+			matchParams, matchExtraResults);
 
-		return correspondencesRatio;
+		return matchExtraResults.correspondencesRatio;
 	}
 	else
 	{

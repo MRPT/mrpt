@@ -221,19 +221,20 @@ double grid_test_9(int a1, int a2)
 
 	const CPose2D nullPose(0,0,0);
 	TMatchingPairList	correspondences;
-	float				corrRatio;
+
+	TMatchingParams matchParams;
+	TMatchingExtraResults matchExtraResults;
+	matchParams.maxDistForCorrespondence = 0.10;
+	matchParams.maxAngularDistForCorrespondence = 0;
 
 	CTicTac	 tictac;
 	for (long i=0;i<a1;i++)
 	{
-		gridmap.computeMatchingWith2D(
+		gridmap.determineMatching2D(
 			&pt_map2,			// The other map
 			nullPose,	// The other map's pose
-			0.10, 		// Max. dist. for correspondence
-			0,
-			nullPose,
 			correspondences,
-			corrRatio );
+			matchParams, matchExtraResults);
 	}
 	return tictac.Tac()/a1;
 }
@@ -252,6 +253,6 @@ void register_tests_grids()
 	lstTests.push_back( TestData("gridmap2D: insert scan with widening",grid_test_5_6, 1) );
 	lstTests.push_back( TestData("gridmap2D: resize",grid_test_7) );
 	lstTests.push_back( TestData("gridmap2D: computeLikelihood",grid_test_8) );
-	lstTests.push_back( TestData("gridmap2D: computeMatchingWith2D",grid_test_9, 5000 ) );
+	lstTests.push_back( TestData("gridmap2D: determineMatching2D",grid_test_9, 5000 ) );
 }
 

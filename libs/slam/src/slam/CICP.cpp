@@ -322,7 +322,7 @@ CPosePDFPtr CICP::ICP_Method_Classic(
 			m1->determineMatching2D(
 				m2,						// The other map
 				gaussPdf->mean,						// The other map pose
-				correspondences, 
+				correspondences,
 				matchParams, matchExtraResults);
 
 			nCorrespondences = correspondences.size();
@@ -493,34 +493,34 @@ CPosePDFPtr CICP::ICP_Method_Classic(
 			m1->determineMatching2D(
 				m2,						// The other map
 				P0,						// The other map pose
-				correspondences, 
+				correspondences,
 				matchParams, matchExtraResults);
 			const float E0 = matchExtraResults.correspondencesRatio;
 
 			m1->determineMatching2D(
 				m2,						// The other map
 				PX1,					// The other map pose
-				correspondences, 
+				correspondences,
 				matchParams, matchExtraResults);
 			const float EX1 = matchExtraResults.correspondencesRatio;
 
 			m1->determineMatching2D(
 				m2,						// The other map
 				PX2,						// The other map pose
-				correspondences, 
+				correspondences,
 				matchParams, matchExtraResults);
 			const float EX2 = matchExtraResults.correspondencesRatio;
 
 			m1->determineMatching2D(
 				m2,						// The other map
 				PY1,						// The other map pose
-				correspondences, 
+				correspondences,
 				matchParams, matchExtraResults);
 			const float EY1 = matchExtraResults.correspondencesRatio;
 			m1->determineMatching2D(
 				m2,						// The other map
 				PY2,						// The other map pose
-				correspondences, 
+				correspondences,
 				matchParams, matchExtraResults);
 			const float EY2 = matchExtraResults.correspondencesRatio;
 
@@ -648,7 +648,7 @@ CPosePDFPtr CICP::ICP_Method_LM(
 			m1->determineMatching2D(
 				m2,						// The other map
 				q,						// The other map pose
-				correspondences, 
+				correspondences,
 				matchParams, matchExtraResults);
 
 			nCorrespondences = correspondences.size();
@@ -887,14 +887,10 @@ CPosePDFPtr CICP::ICP_Method_LM(
 
 		outInfo.goodness = matchExtraResults.correspondencesRatio;
 
-		
-		if (!options.skip_quality_calculation)
+
+		//if (!options.skip_quality_calculation)
 		{
 			outInfo.quality= matchExtraResults.correspondencesRatio;
-		}
-		else
-		{
-			THROW_EXCEPTION("Quality evaluation not implemented for ICP3D")
 		}
 
 	} // end of "if m2 is not empty"
@@ -1054,7 +1050,7 @@ CPose3DPDFPtr CICP::ICP3D_Method_Classic(
 			m1->determineMatching3D(
 				m2,						// The other map
 				gaussPdf->mean,						// The other map pose
-				correspondences, 
+				correspondences,
 				matchParams, matchExtraResults);
 
 			nCorrespondences = correspondences.size();

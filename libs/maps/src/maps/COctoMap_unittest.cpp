@@ -66,10 +66,12 @@ TEST(COctoMapTests, updateVoxels)
 	pt = mrpt::math::TPoint3D(1,1,1);
 	is_mapped = map.getPointOccupancy(pt.x,pt.y,pt.z, occup);
 	EXPECT_GT(occup,0.5);
+	EXPECT_TRUE(is_mapped);
 
 	pt = mrpt::math::TPoint3D(-1,-1,1);
 	is_mapped = map.getPointOccupancy(pt.x,pt.y,pt.z, occup);
 	EXPECT_LT(occup,0.5);
+	EXPECT_TRUE(is_mapped);
 }
 
 TEST(COctoMapTests, insert2DScan)

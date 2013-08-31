@@ -248,19 +248,19 @@ double pointmap_test_4(int a1, int a2)
 
 	const CPose2D nullPose(0,0,0);
 	TMatchingPairList	correspondences;
-	float				corrRatio;
+	TMatchingParams matchParams;
+	TMatchingExtraResults matchExtraResults;
+	matchParams.maxDistForCorrespondence = 0.10;
+	matchParams.maxAngularDistForCorrespondence = 0;
 
 	CTicTac	 tictac;
 	for (long i=0;i<a1;i++)
 	{
-		pt_map.computeMatchingWith2D(
+		pt_map.determineMatching2D(
 			&pt_map2,			// The other map
 			nullPose,	// The other map's pose
-			0.10, 		// Max. dist. for correspondence
-			0,
-			nullPose,
 			correspondences,
-			corrRatio );
+			matchParams, matchExtraResults);
 	}
 	return tictac.Tac()/a1;
 }
@@ -300,7 +300,7 @@ double pointmap_test_5(int a1, int a2)
 
 		pt_map.boundingBox(x0,x1, y0,y1, z0,z1);
 	}
-	
+
 	return tictac.Tac()/a2;
 }
 
