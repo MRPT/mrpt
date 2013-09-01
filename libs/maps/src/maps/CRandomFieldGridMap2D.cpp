@@ -458,7 +458,7 @@ void  CRandomFieldGridMap2D::internal_clear()
 			if (this->m_insertOptions_common->GMRF_use_occupancy_information)
 			{
 				printf("LOADING PRIOR BASED ON OCCUPANCY GRIDMAP \n");
-				printf("Gas Map Dimmensions: %i x %i cells \n", m_size_x, m_size_y);
+				printf("Gas Map Dimmensions: %u x %u cells \n", static_cast<unsigned int>(m_size_x), static_cast<unsigned int>(m_size_y));
 				printf("Occupancy map Dimmensions: %i x %i cells \n", m_Ocgridmap.getSizeX(), m_Ocgridmap.getSizeY());
 				printf("Res_Coeff = %f pixels/celda",res_coef);
 
@@ -2508,7 +2508,7 @@ void CRandomFieldGridMap2D::insertObservation_GMRF(
 		new_obs.Lambda = m_insertOptions_common->GMRF_lambdaObs;
 		new_obs.time_invariant = false;		//Default behaviour, the obs will lose weight with time.
 		activeObs[cellIdx].push_back(new_obs);
-	
+
 
 	}catch(std::exception e){
 		cout << "Exception while Inserting new Observation: "  << e.what() << endl;
@@ -2573,7 +2573,7 @@ void CRandomFieldGridMap2D::updateMapEstimation_GMRF()
 
 	//------------------
 	//  2- GRADIENT
-	//------------------	
+	//------------------
 	//Reset and Built Gradient Vector
 	g.setZero();
 	size_t cx = 0;
@@ -2686,7 +2686,7 @@ void CRandomFieldGridMap2D::updateMapEstimation_GMRF()
 	timelogger.leave("GMRF.solve");
 	timelogger.enter("GMRF.variance");
 #endif
-		
+
 	// VARIANCE SIGMA = inv(P) * inv( P*H*inv(P) ) * P
 	//Get triangular supperior P*H*inv(P) = UT' * UT = P * R'*R * inv(P)
 
