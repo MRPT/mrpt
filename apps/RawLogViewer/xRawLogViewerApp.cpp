@@ -70,8 +70,9 @@ bool xRawLogViewerApp::OnInit()
         global_fileToOpen = wxString(wxApp::argv[1]).mb_str();
 
     // Create the INI file:
-    wxStandardPaths stdPaths;
-    wxString    dataDir = stdPaths.GetUserDataDir();
+    // wxStandardPaths stdPaths;
+    // wxString    dataDir = stdPaths.GetUserDataDir();
+	wxString    dataDir = wxStandardPaths::Get().GetUserDataDir();
     std::string dataDirStr( dataDir.mb_str() );
     mrpt::system::createDirectory( dataDirStr ); // Create dir!
     std::string iniFileName( dataDirStr + std::string("/config.cfg") );
