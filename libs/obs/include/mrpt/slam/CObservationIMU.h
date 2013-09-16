@@ -53,29 +53,56 @@ namespace slam
 	  */
 	enum TIMUDataIndex
 	{
-		IMU_X_ACC = 0,
+		/// x-axis acceleration (m/sec<sup>2</sup>)
+		IMU_X_ACC = 0 ,
+		/// y-axis acceleration (m/sec<sup>2</sup>)
 		IMU_Y_ACC,
+		/// z-axis acceleration (m/sec<sup>2</sup>)
 		IMU_Z_ACC,
+		/// yaw angular velocity (rad/sec)
 		IMU_YAW_VEL,
+		/// pitch angular velocity (rad/sec)
 		IMU_PITCH_VEL,
+		/// roll angular velocity (rad/sec)
 		IMU_ROLL_VEL,
+		/// x-axis velocity (m/sec)
 		IMU_X_VEL,
+		/// y-axis velocity (m/sec)
 		IMU_Y_VEL,
+		/// z-axis velocity (m/sec)
 		IMU_Z_VEL,
+		/// yaw absolute value (rad)
 		IMU_YAW,
+		/// pitch absolute value (rad)
 		IMU_PITCH,
+		/// roll absolute value (rad)
 		IMU_ROLL,
+		/// x absolute value (meters)
 		IMU_X,
+		/// y absolute value (meters)
 		IMU_Y,
+		/// z absolute value (meters)
 		IMU_Z, 
+		/// x magnetic field value (gauss)
+		IMU_MAG_X,
+		/// y magnetic field value (gauss)
+		IMU_MAG_Y,
+		/// z magnetic field value (gauss)
+		IMU_MAG_Z,
+		/// air pressure (Pascals)
+		IMU_PRESSURE,
+		/// altitude from an altimeter (meters)
+		IMU_ALTITUDE,
+		/// temperature (degrees Celsius)
+		IMU_TEMPERATURE,
 
 		// Always leave this last value to reflect the number of enum values:
 		COUNT_IMU_DATA_FIELDS
 	};
 
-	/** This class stores measurements from an Inertial Measurement Unit (IMU), and/or its attitude estimation (integration of raw measurements).
+	/** This class stores measurements from an Inertial Measurement Unit (IMU) (attitude estimation, raw gyroscope and accelerometer values), altimeters or magnetometers.
 	 *
-	 *  The order of the 15 raw values in each entry of mrpt::slam::CObservationIMU::rawMeasurements is (you can use the TIMUDataIndex "enum" symbolic names):
+	 *  The order of the 21 raw values in each entry of mrpt::slam::CObservationIMU::rawMeasurements is (you can use the TIMUDataIndex "enum" symbolic names):
 		<table>
 		<tr> <td> 0 </td> <td>IMU_X_ACC</td> <td> x-axis acceleration (m/sec<sup>2</sup>)</td> </tr>
 		<tr> <td> 1 </td> <td>IMU_Y_ACC</td> <td> y-axis acceleration (m/sec<sup>2</sup>)</td> </tr>
@@ -92,9 +119,16 @@ namespace slam
 		<tr> <td> 12 </td> <td>IMU_X</td> <td> x absolute value (meters)</td> </tr>
 		<tr> <td> 13 </td> <td>IMU_Y</td> <td> y absolute value (meters)</td> </tr>
 		<tr> <td> 14 </td> <td>IMU_Z</td> <td> z absolute value (meters)</td> </tr>
+		<tr> <td> 15 </td> <td>IMU_MAG_X</td> <td> x magnetic field value (gauss)</td> </tr>
+		<tr> <td> 16 </td> <td>IMU_MAG_X</td> <td> x magnetic field value (gauss)</td> </tr>
+		<tr> <td> 17 </td> <td>IMU_MAG_X</td> <td> x magnetic field value (gauss)</td> </tr>
+		<tr> <td> 18 </td> <td>IMU_PRESSURE</td> <td> air pressure (Pascals)</td> </tr>
+		<tr> <td> 19 </td> <td>IMU_ALTITUDE</td> <td>altitude from an altimeter (meters)</td> </tr>
+		<tr> <td> 20 </td> <td>IMU_TEMPERATURE</td> <td> temperature (degrees Celsius)</td> </tr>
 		</table>
 	 *
-	 *  The first 6 values are directly measured by accelerometers & gyroscopes. The rest, if present, are estimates from the IMU unit.
+	 *  Values from 0 to 5 are direct measurements measured by accelerometers & gyroscopes. 
+	 *  Values at indices from 6 to 14, if present, are estimates (dead reckoning) from the IMU unit.
 	 *
 	 * \sa CObservation
 	 * \ingroup mrpt_obs_grp
@@ -109,8 +143,8 @@ namespace slam
 		 */
 		CObservationIMU(  ) :
 			sensorPose(),
-			dataIsPresent(15,false),
-			rawMeasurements(15,0)
+			dataIsPresent(21,false),
+			rawMeasurements(21,0)
 		{ }
 
 		/** Destructor
@@ -122,7 +156,7 @@ namespace slam
 		  */
 		CPose3D  sensorPose;
 
-		/** Each of the 15 entries of this vector is true if the corresponding data index contains valid data (the IMU unit supplies that kind of data).
+		/** Each entry in this vector is true if the corresponding data index contains valid data (the IMU unit supplies that kind of data).
 		  *  See the top of this page for the meaning of the indices.
 		  */
 		vector_bool dataIsPresent;

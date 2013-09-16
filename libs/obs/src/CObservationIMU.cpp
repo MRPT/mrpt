@@ -52,7 +52,7 @@ IMPLEMENTS_SERIALIZABLE(CObservationIMU, CObservation,mrpt::slam)
 void  CObservationIMU::writeToStream(CStream &out, int *version) const
 {
 	if (version)
-		*version = 2;  // v1->v2 was only done to fix a bug in the ordering of YAW/PITCH/ROLL rates.
+		*version = 3;  // v1->v2 was only done to fix a bug in the ordering of YAW/PITCH/ROLL rates.
 	else
 	{
 		out << sensorPose
@@ -60,6 +60,7 @@ void  CObservationIMU::writeToStream(CStream &out, int *version) const
 		    << timestamp;
 
 		out << rawMeasurements;
+		// Version 3: Added 6 new raw measurements (IMU_MAG_X=15 to IMU_TEMPERATURE=20)
 
 		out << sensorLabel;
 	}
@@ -75,8 +76,9 @@ void  CObservationIMU::readFromStream(CStream &in, int version)
 	case 0:
 	case 1:
 	case 2:
-		in >> sensorPose
-		   >> dataIsPresent;
+	case 3:
+		in >> sensorPose;
+		in >> dataIsPresent;
 
 		in >> timestamp;
 
@@ -105,6 +107,24 @@ void  CObservationIMU::readFromStream(CStream &in, int version)
 		}
 
 		in >> sensorLabel;
+
+		// Version 3: Added 6 new raw measurements (IMU_MAG_X=15 to IMU_TEMPERATURE=20)
+		if (version<3)
+		{
+			// Fill the last 6 entries with default values:
+			const size_t nOld = dataIsPresent.size();
+			ASSERT_(nOld==15)
+			ASSERT_(rawMeasurements.size()==nOld)
+
+			dataIsPresent.resize(COUNT_IMU_DATA_FIELDS);
+			rawMeasurements.resize(COUNT_IMU_DATA_FIELDS);
+			for (size_t i=nOld;i<COUNT_IMU_DATA_FIELDS;i++)
+			{
+				dataIsPresent[i]=false;
+				rawMeasurements[i]=0;
+			}
+		}
+
 		break;
 	default:
 		MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)

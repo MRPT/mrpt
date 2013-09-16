@@ -109,6 +109,8 @@ DECLARE_OP_FUNCTION(op_export_imu_txt)
 					"%22s %22s %22s "	// IMU_X_VEL...
 					"%22s %22s %22s "	// IMU_YAW...
 					"%22s %22s %22s "	// IMU_X...
+					"%22s %22s %22s "   // MAG_X MAG_Y MAG_Z 
+					"%22s %22s %22s "   // PRESS ALTIT TEMP
 					"\n"
 					,
 					"Time",
@@ -116,7 +118,9 @@ DECLARE_OP_FUNCTION(op_export_imu_txt)
 					"IMU_YAW_VEL","IMU_PITCH_VEL","IMU_ROLL_VEL",
 					"IMU_X_VEL","IMU_Y_VEL","IMU_Z_VEL",
 					"IMU_YAW","IMU_PITCH","IMU_ROLL",
-					"IMU_X","IMU_Y","IMU_Z"
+					"IMU_X","IMU_Y","IMU_Z",
+					"MAG_X","MAG_Y","MAG_Z",
+					"PRESS","ALTITUDE","TEMPERATURE"
 					);
 			}
 			else

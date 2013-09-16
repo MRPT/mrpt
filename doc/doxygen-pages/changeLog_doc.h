@@ -53,6 +53,7 @@
 			- New structures: 
 				- mrpt::slam::TMatchingParams
 				- mrpt::slam::TMatchingExtraResults
+		- mrpt::slam::CObservationIMU now includes data fields for 3D magnetometers and altimeters. - <a href="http://code.google.com/p/mrpt/source/detail?r=3451" >r3451</a>
 	- Build system:
 		- Updated to the latest nanoflann 1.1.7.
 	- BUG FIXES:

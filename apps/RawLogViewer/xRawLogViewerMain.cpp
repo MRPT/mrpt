@@ -2316,7 +2316,13 @@ void xRawLogViewerFrame::SelectObjectInTreeView( const CSerializablePtr & sel_ob
 													"rad", //	IMU_ROLL,
 													"m", //	IMU_X,
 													"m", //	IMU_Y,
-													"m"  //	IMU_Z
+													"m",  //	IMU_Z
+													"gauss", // IMU_MAG_X,
+													"gauss", // IMU_MAG_Y,
+													"gauss", // IMU_MAG_Z,
+													"Pa", // IMU_PRESSURE,
+													"m", // IMU_ALTITUDE,
+													"deg." // IMU_TEMPERATURE,
 												};
 
 	#define DUMP_IMU_DATA(x)  \
@@ -2341,8 +2347,12 @@ void xRawLogViewerFrame::SelectObjectInTreeView( const CSerializablePtr & sel_ob
 												DUMP_IMU_DATA(IMU_X)
 												DUMP_IMU_DATA(IMU_Y)
 												DUMP_IMU_DATA(IMU_Z)
-
-
+												DUMP_IMU_DATA(IMU_MAG_X)
+												DUMP_IMU_DATA(IMU_MAG_Y)
+												DUMP_IMU_DATA(IMU_MAG_Z)
+												DUMP_IMU_DATA(IMU_PRESSURE)
+												DUMP_IMU_DATA(IMU_ALTITUDE)
+												DUMP_IMU_DATA(IMU_TEMPERATURE)
 											}
 											else
 												if ( classID  == CLASS_ID(CObservationOdometry) )
