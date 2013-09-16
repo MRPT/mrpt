@@ -221,7 +221,6 @@ namespace mrpt
 			float		robotMax_V_mps;					// Max. linear speed (m/s)
 			float		robotMax_W_degps;				// Max. angular speed (deg/s)
 			float		SPEEDFILTER_TAU;				// Time constant for the low-pass filter applied to the speed commands
-			float		ROBOTMODEL_TAU,ROBOTMODEL_DELAY;// Params for the robot system modelation
 			std::vector<float> weights;					// length: 6 [0,5]
 			float		DIST_TO_TARGET_FOR_SENDING_EVENT;
 

@@ -134,8 +134,6 @@ void CReactiveNavigationSystem::loadConfigFile(const mrpt::utils::CConfigFileBas
 
 	MRPT_LOAD_CONFIG_VAR_NO_DEFAULT(robotMax_V_mps,float,  ini,robotName);
 	MRPT_LOAD_CONFIG_VAR_NO_DEFAULT(robotMax_W_degps,float,  ini,robotName);
-	MRPT_LOAD_CONFIG_VAR_NO_DEFAULT(ROBOTMODEL_TAU,float,  ini,robotName);
-	MRPT_LOAD_CONFIG_VAR_NO_DEFAULT(ROBOTMODEL_DELAY,float,  ini,robotName);
 
 
 	ini.read_vector( robotName, "weights", vector<float>(0), weights, true );

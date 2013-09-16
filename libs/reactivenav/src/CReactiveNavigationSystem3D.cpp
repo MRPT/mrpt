@@ -154,8 +154,6 @@ void CReactiveNavigationSystem3D::loadConfigFile(const mrpt::utils::CConfigFileB
 	robotMax_V_mps = ini.read_float("NAVIGATION_CONFIG","VMAX_MPS", 1, true);
 	robotMax_W_degps = ini.read_float("NAVIGATION_CONFIG","WMAX_DEGPS", 60, true);
 	SPEEDFILTER_TAU =  ini.read_float("NAVIGATION_CONFIG","SPEEDFILTER_TAU", 0, true);
-	ROBOTMODEL_DELAY = ini.read_float("NAVIGATION_CONFIG","ROBOTMODEL_DELAY", 0, true);
-	ROBOTMODEL_TAU = ini.read_float("NAVIGATION_CONFIG","ROBOTMODEL_TAU", 0, true);
 
 	DIST_TO_TARGET_FOR_SENDING_EVENT = ini.read_float("NAVIGATION_CONFIG", "DIST_TO_TARGET_FOR_SENDING_EVENT", 0.4, false);
 
