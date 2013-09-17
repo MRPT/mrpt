@@ -1684,6 +1684,80 @@ void  CImage::getAsMatrix(
 }
 
 /*---------------------------------------------------------------
+						getAsRGBMatrices
+ ---------------------------------------------------------------*/
+void  CImage::getAsRGBMatrices(
+	mrpt::math::CMatrixFloat	&outMatrixR,
+	mrpt::math::CMatrixFloat	&outMatrixG,
+	mrpt::math::CMatrixFloat	&outMatrixB,
+	bool	doResize,
+	int		x_min,
+	int		y_min,
+	int		x_max,
+	int		y_max
+	)  const
+{
+#if MRPT_HAS_OPENCV
+	MRPT_START
+
+	makeSureImageIsLoaded();   // For delayed loaded images stored externally
+	ASSERT_(img);
+
+	// Set sizes:
+	if (x_max==-1) x_max=((IplImage*)img)->width-1;
+	if (y_max==-1) y_max=((IplImage*)img)->height-1;
+
+	ASSERT_(x_min>=0 && x_min<((IplImage*)img)->width && x_min<x_max);
+	ASSERT_(y_min>=0 && y_min<((IplImage*)img)->height && y_min<y_max);
+
+	int		lx = (x_max-x_min+1);
+	int		ly = (y_max-y_min+1);
+
+	if (doResize || (int)outMatrixR.getRowCount()<ly || (int)outMatrixR.getColCount()<lx)
+		outMatrixR.setSize( y_max-y_min+1,x_max-x_min+1 );
+	if (doResize || (int)outMatrixG.getRowCount()<ly || (int)outMatrixG.getColCount()<lx)
+		outMatrixG.setSize( y_max-y_min+1,x_max-x_min+1 );
+	if (doResize || (int)outMatrixB.getRowCount()<ly || (int)outMatrixB.getColCount()<lx)
+		outMatrixB.setSize( y_max-y_min+1,x_max-x_min+1 );
+
+	if (isColor())
+	{
+		for (int y=0;y<ly;y++)
+		{
+			unsigned char	*pixels = this->get_unsafe(x_min,y_min+y,0);
+			float           aux;
+			for (int x=0;x<lx;x++)
+			{
+                aux = *pixels++ * (1.0f/255);
+				outMatrixR.set_unsafe(y,x, aux);
+                aux = *pixels++ * (1.0f/255);
+				outMatrixG.set_unsafe(y,x, aux);
+                aux = *pixels++ * (1.0f/255);
+				outMatrixB.set_unsafe(y,x, aux);
+
+			}
+		}
+	}
+	else
+	{
+		for (int y=0;y<ly;y++)
+		{
+			unsigned char	*pixels = this->get_unsafe(x_min,y_min+y,0);
+			for (int x=0;x<lx;x++)
+			{
+				outMatrixR.set_unsafe(y,x, (*pixels)*(1.0f/255) );
+				outMatrixG.set_unsafe(y,x, (*pixels)*(1.0f/255) );
+				outMatrixB.set_unsafe(y,x, (*pixels++)*(1.0f/255) );
+			}
+		}
+	}
+
+	MRPT_END
+#endif
+}
+
+
+/*---------------------------------------------------------------
 						cross_correlation_FFT
  ---------------------------------------------------------------*/
 void  CImage::cross_correlation_FFT(

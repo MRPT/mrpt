@@ -672,7 +672,7 @@ namespace mrpt
 			  */
 			TImageChannels getChannelCount() const;
 
-			/**	Returns the image as a matrix with pixel grayscale values in the range [0,1]
+			/**	Returns the image as a matrix with pixel grayscale values in the range [0,1]. Matrix indexes in this order: M(row,column)
 			  *  \param doResize If set to true (default), the output matrix will be always the size of the image at output. If set to false, the matrix will be enlarged to the size of the image, but it will not be cropped if it has room enough (useful for FFT2D,...)
 			  *  \param x_min The starting "x" coordinate to extract (default=0=the first column)
 			  *  \param y_min The starting "y" coordinate to extract (default=0=the first row)
@@ -682,6 +682,25 @@ namespace mrpt
 			  */
 			void  getAsMatrix(
 				mrpt::math::CMatrixFloat	&outMatrix,
+				bool		doResize = true,
+				int			x_min = 0,
+				int			y_min = 0,
+				int			x_max = -1,
+				int			y_max = -1
+				)  const;
+
+			/**	Returns the image as RGB matrices with pixel values in the range [0,1]. Matrix indexes in this order: M(row,column)
+			  *  \param doResize If set to true (default), the output matrix will be always the size of the image at output. If set to false, the matrix will be enlarged to the size of the image, but it will not be cropped if it has room enough (useful for FFT2D,...)
+			  *  \param x_min The starting "x" coordinate to extract (default=0=the first column)
+			  *  \param y_min The starting "y" coordinate to extract (default=0=the first row)
+			  *  \param x_max The final "x" coordinate (inclusive) to extract (default=-1=the last column)
+			  *  \param y_max The final "y" coordinate (inclusive) to extract (default=-1=the last row)
+			  * \sa setFromRGBMatrices
+			  */
+			void  getAsRGBMatrices(
+				mrpt::math::CMatrixFloat	&outMatrixR,
+				mrpt::math::CMatrixFloat	&outMatrixG,
+				mrpt::math::CMatrixFloat	&outMatrixB,
 				bool		doResize = true,
 				int			x_min = 0,
 				int			y_min = 0,
@@ -793,6 +812,7 @@ namespace mrpt
 			inline void setFromImageReadOnly( const CImage &other_img ) { setFromIplImageReadOnly(const_cast<void*>(other_img.getAs<void>()) ); }
 
 			/** Set the image from a matrix, interpreted as grayscale intensity values, in the range [0,1] (normalized=true) or [0,255] (normalized=false)
+			  *	Matrix indexes are assumed to be in this order: M(row,column)
 			  * \sa getAsMatrix
 			  */
 			template <typename Derived>
@@ -816,6 +836,47 @@ namespace mrpt
 						unsigned char *pixels = this->get_unsafe(0,y,0);
 						for (unsigned int x=0;x<lx;x++)
 							(*pixels++) = static_cast<unsigned char>( m.get_unsafe(y,x) );
+					}
+				}
+				MRPT_END
+			}
+
+			/** Set the image from RGB matrices, given the pixels in the range [0,1] (normalized=true) or [0,255] (normalized=false)
+			  * Matrix indexes are assumed to be in this order: M(row,column)
+			  * \sa getAsRGBMatrices
+			  */
+			template <typename Derived>
+			void setFromRGBMatrices(const Eigen::MatrixBase<Derived> &m_r, const Eigen::MatrixBase<Derived> &m_g, const Eigen::MatrixBase<Derived> &m_b, bool matrix_is_normalized=true)
+			{
+				MRPT_START
+				makeSureImageIsLoaded();   // For delayed loaded images stored externally
+				ASSERT_(img);
+				ASSERT_((m_r.size() == m_g.size())&&(m_r.size() == m_b.size()));
+				const unsigned int lx = m_r.cols();
+				const unsigned int ly = m_r.rows();
+				this->changeSize(lx,ly,3,true);
+				this->setChannelsOrder_RGB();
+
+				if (matrix_is_normalized) {  // Matrix: [0,1]
+					for (unsigned int y=0;y<ly;y++) {
+						unsigned char *pixels = this->get_unsafe(0,y,0);
+						for (unsigned int x=0;x<lx;x++)
+						{
+							(*pixels++) = static_cast<unsigned char>( m_r.get_unsafe(y,x) * 255 );
+							(*pixels++) = static_cast<unsigned char>( m_g.get_unsafe(y,x) * 255 );
+							(*pixels++) = static_cast<unsigned char>( m_b.get_unsafe(y,x) * 255 );
+						}
+					}
+				}
+				else {  // Matrix: [0,255]
+					for (unsigned int y=0;y<ly;y++) {
+						unsigned char *pixels = this->get_unsafe(0,y,0);
+						for (unsigned int x=0;x<lx;x++)
+						{
+							(*pixels++) = static_cast<unsigned char>( m_r.get_unsafe(y,x) );
+							(*pixels++) = static_cast<unsigned char>( m_g.get_unsafe(y,x) );
+							(*pixels++) = static_cast<unsigned char>( m_b.get_unsafe(y,x) );
+						}
 					}
 				}
 				MRPT_END

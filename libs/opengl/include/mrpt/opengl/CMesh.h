@@ -74,15 +74,20 @@ namespace mrpt
 			bool						m_enableTransparency;
 			bool						m_colorFromZ;
 			bool						m_isWireFrame;
+			bool						m_isImage;
 
 			math::CMatrix		Z;		//!< Z(x,y): Z-coordinate of the point (x,y)
 			math::CMatrix		mask;
 			math::CMatrix		U, V;	//!< Texture coordinates
-			mutable math::CMatrix		C;		//!< Color [0,1] for each cell, updated by updateColorsMatrix
+			mutable math::CMatrix		C;		//!< Grayscale Color [0,1] for each cell, updated by updateColorsMatrix
+			mutable math::CMatrix		C_r;	//!< Red Component of the Color [0,1] for each cell, updated by updateColorsMatrix
+			mutable math::CMatrix		C_g;	//!< Green Component of the  Color [0,1] for each cell, updated by updateColorsMatrix
+			mutable math::CMatrix		C_b;	//!< Blue Component of the  Color [0,1] for each cell, updated by updateColorsMatrix
 
 			mrpt::utils::TColormap		m_colorMap; //!< Used when m_colorFromZ is true
 
 			mutable bool	m_modified_Z;		//!< Whether C is not up-to-date wrt to Z
+			mutable bool	m_modified_Image;	//!< Whether C is not up-to-date wrt to the texture image
 
 			void updateColorsMatrix() const;	//!< Called internally to assure C is updated.
 			void updateTriangles() const;		//!< Called internally to assure the triangle list is updated.
@@ -194,6 +199,22 @@ namespace mrpt
 			  */
 			void  assignImage(const utils::CImage&	img );
 
+			/** Assigns a texture image and Z simultaneously, and disable transparency.
+			  */
+			void  assignImageAndZ( const CImage& img, const mrpt::math::CMatrixTemplateNumeric<float> &in_Z);
+
+			/** Adjust grid limits according to the image aspect ratio, maintaining the X limits and resizing in the Y direction.
+			  */
+			inline void adjustGridToImageAR() 	{
+				ASSERT_(m_isImage);
+				const float ycenter = 0.5*(yMin+yMax);
+				const float xwidth = xMax - xMin;
+				const float newratio = float(m_textureImage.getWidth())/float(m_textureImage.getHeight());
+				yMax = ycenter + 0.5*newratio*xwidth;
+				yMin = ycenter - 0.5*newratio*xwidth;
+				CRenderizableDisplayList::notifyChange();
+			}
+
 			/** Trace ray
 			  */
 			virtual bool traceRay(const mrpt::poses::CPose3D &o,double &dist) const;
@@ -206,9 +227,11 @@ namespace mrpt
 				m_enableTransparency(enableTransparency),
 				m_colorFromZ(false),
 				m_isWireFrame(false),
-				Z(0,0), mask(0,0), U(0,0), V(0,0), C(0,0),
+				m_isImage(false),
+				Z(0,0), mask(0,0), U(0,0), V(0,0), C(0,0), C_r(0,0), C_g(0,0), C_b(0,0),
 				m_colorMap( mrpt::utils::cmJET ),
 				m_modified_Z(true),
+				m_modified_Image(false),
 				xMin(xMin), xMax(xMax), yMin(yMin), yMax(yMax),
 				trianglesUpToDate(false)
 			{

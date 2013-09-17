@@ -67,7 +67,7 @@ void CMesh::updateTriangles() const	{
 	vertex_normals.assign((1+cols)*(1+rows), std::pair<TPoint3D,size_t>(TPoint3D(0,0,0),0) );
 
 	float cR[3],cG[3],cB[3];
-	if (m_colorFromZ) updateColorsMatrix();
+	if ((m_colorFromZ)||(m_isImage)) updateColorsMatrix();
 	else	{
 		cR[0]=cR[1]=cR[2]=m_color.R/255.f;
 		cG[0]=cG[1]=cG[2]=m_color.G/255.f;
@@ -117,7 +117,22 @@ void CMesh::updateTriangles() const	{
 				colormap(m_colorMap,C(iX,iY),tri.r[0],tri.g[0],tri.b[0]);
 				colormap(m_colorMap,C(iX+1,iY),tri.r[1],tri.g[1],tri.b[1]);
 				colormap(m_colorMap,C(iX+1,iY+1),tri.r[2],tri.g[2],tri.b[2]);
-			}	else	{
+			}
+			else if (m_isImage)	{
+				if (m_textureImage.isColor())
+				{
+					tri.r[0]=tri.r[1]=tri.r[2]=C_r(iX,iY);
+					tri.g[0]=tri.g[1]=tri.g[2]=C_g(iX,iY);
+					tri.b[0]=tri.b[1]=tri.b[2]=C_b(iX,iY);
+				}
+				else
+				{
+					tri.r[0]=tri.r[1]=tri.r[2]=C(iX,iY);
+					tri.g[0]=tri.g[1]=tri.g[2]=C(iX,iY);
+					tri.b[0]=tri.b[1]=tri.b[2]=C(iX,iY);
+				}
+			}
+			else {
 				tri.r[0]=tri.r[1]=tri.r[2]=m_color.R/255.f;
 				tri.g[0]=tri.g[1]=tri.g[2]=m_color.G/255.f;
 				tri.b[0]=tri.b[1]=tri.b[2]=m_color.B/255.f;
@@ -162,9 +177,24 @@ void CMesh::updateTriangles() const	{
 			tri.z[2]=Z(iX,iY+1);
 			if (m_colorFromZ)	{
 				colormap(m_colorMap,C(iX,iY),tri.r[0],tri.g[0],tri.b[0]);
-				colormap(m_colorMap,C(iX,iY+1),tri.r[2],tri.g[2],tri.b[2]);
-				colormap(m_colorMap,C(iX+1,iY+1),tri.r[1],tri.g[1],tri.b[1]);
-			}	else	{
+				colormap(m_colorMap,C(iX+1,iY),tri.r[1],tri.g[1],tri.b[1]);
+				colormap(m_colorMap,C(iX+1,iY+1),tri.r[2],tri.g[2],tri.b[2]);
+			}	
+			else if (m_isImage)	{
+				if (m_textureImage.isColor())
+				{
+					tri.r[0]=tri.r[1]=tri.r[2]=C_r(iX,iY);
+					tri.g[0]=tri.g[1]=tri.g[2]=C_g(iX,iY);
+					tri.b[0]=tri.b[1]=tri.b[2]=C_b(iX,iY);
+				}
+				else
+				{
+					tri.r[0]=tri.r[1]=tri.r[2]=C(iX,iY);
+					tri.g[0]=tri.g[1]=tri.g[2]=C(iX,iY);
+					tri.b[0]=tri.b[1]=tri.b[2]=C(iX,iY);
+				}
+			}
+			else {
 				tri.r[0]=tri.r[1]=tri.r[2]=m_color.R/255.f;
 				tri.g[0]=tri.g[1]=tri.g[2]=m_color.G/255.f;
 				tri.b[0]=tri.b[1]=tri.b[2]=m_color.B/255.f;
@@ -259,12 +289,49 @@ void  CMesh::assignImage(
 
 	// Make a copy:
 	m_textureImage = img;
+
+	// Delete content in Z
+	Z.setSize( img.getHeight(), img.getWidth());
+	Z.assign(0);
+
+
+	m_modified_Image = true;
 	m_enableTransparency = false;
+	m_colorFromZ = false;
+	m_isImage = true;
+	trianglesUpToDate=false;
+	
 
 	CRenderizableDisplayList::notifyChange();
 
 	MRPT_END
 }
+
+/*---------------------------------------------------------------
+							assign Image and Z
+  ---------------------------------------------------------------*/
+void  CMesh::assignImageAndZ( const CImage& img, const mrpt::math::CMatrixTemplateNumeric<float> &in_Z)
+{
+	MRPT_START
+
+	ASSERT_((img.getWidth() == in_Z.cols())&&(img.getHeight() == in_Z.rows()));
+		
+	// Make a copy:
+	m_textureImage = img;
+
+
+	m_modified_Image = true;
+	m_enableTransparency = false;
+	m_colorFromZ = false;
+	m_isImage = true;
+	trianglesUpToDate=false;
+	
+
+	CRenderizableDisplayList::notifyChange();
+
+	MRPT_END
+}
+
 /*---------------------------------------------------------------
    Implements the writing to a CStream capability of
      CSerializable objects
@@ -338,21 +405,48 @@ void  CMesh::readFromStream(CStream &in,int version)
 
 void CMesh::updateColorsMatrix() const
 {
-	if (!m_modified_Z) return;
+	if ((!m_modified_Z)&&(!m_modified_Image)) return;
 
 	CRenderizableDisplayList::notifyChange();
 
-	const size_t cols = Z.getColCount();
-	const size_t rows = Z.getRowCount();
+	if (m_isImage)
+	{
+		const size_t cols = m_textureImage.getWidth();
+		const size_t rows = m_textureImage.getHeight();
+		
+		if ((cols != Z.getColCount())||(rows != Z.getRowCount()))
+		{
+			printf("\nTexture Image and Z sizes have to be equal");
 
-	C.setSize(rows,cols);
+		}
+		else if (m_textureImage.isColor())
+		{
+			C_r.setSize(rows, cols);
+			C_g.setSize(rows, cols);
+			C_b.setSize(rows, cols);
+			m_textureImage.getAsRGBMatrices(C_r, C_g, C_b);
+		}
+		else
+		{
+			C.setSize(rows, cols);
+			m_textureImage.getAsMatrix(C);
+		}
+	}
+	else
+	{
+		const size_t cols = Z.getColCount();
+		const size_t rows = Z.getRowCount();
 
-	// Color is proportional to difference between height of a cell and
-	//  the mean of the nearby cells MEANS:
-	C = Z;
+		C.setSize(rows,cols);
 
-	C.normalize(0.01f,0.99f);
+		// Color is proportional to difference between height of a cell and
+		//  the mean of the nearby cells MEANS:
+		C = Z;
+		C.normalize(0.01f,0.99f);
+	}
 
+
+	m_modified_Image = false;
 	m_modified_Z = false; // Done
 	trianglesUpToDate=false;
 }
@@ -362,6 +456,10 @@ void CMesh::setZ( const mrpt::math::CMatrixTemplateNumeric<float> &in_Z )
 	Z=in_Z;
 	m_modified_Z = true;
 	trianglesUpToDate=false;
+
+	//Delete previously loaded images
+	m_isImage = false;
+
 	CRenderizableDisplayList::notifyChange();
 }
 
