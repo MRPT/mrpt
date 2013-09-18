@@ -314,7 +314,7 @@ void  CMesh::assignImageAndZ( const CImage& img, const mrpt::math::CMatrixTempla
 {
 	MRPT_START
 
-	ASSERT_((img.getWidth() == in_Z.cols())&&(img.getHeight() == in_Z.rows()));
+	ASSERT_((img.getWidth() == static_cast<size_t>(in_Z.cols()))&&(img.getHeight() == static_cast<size_t>(in_Z.rows())))
 		
 	// Make a copy:
 	m_textureImage = img;

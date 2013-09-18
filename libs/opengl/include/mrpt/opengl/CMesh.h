@@ -197,11 +197,11 @@ namespace mrpt
 
 			/** Assigns a texture image, and disable transparency.
 			  */
-			void  assignImage(const utils::CImage&	img );
+			void  assignImage(const mrpt::utils::CImage&	img );
 
 			/** Assigns a texture image and Z simultaneously, and disable transparency.
 			  */
-			void  assignImageAndZ( const CImage& img, const mrpt::math::CMatrixTemplateNumeric<float> &in_Z);
+			void  assignImageAndZ( const mrpt::utils::CImage& img, const mrpt::math::CMatrixTemplateNumeric<float> &in_Z);
 
 			/** Adjust grid limits according to the image aspect ratio, maintaining the X limits and resizing in the Y direction.
 			  */
