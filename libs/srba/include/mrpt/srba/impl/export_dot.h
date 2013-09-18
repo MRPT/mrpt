@@ -97,13 +97,15 @@ bool RbaEngine<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::save_graph_as_dot(
 			f << "/* OBSERVATIONS */\n"
 				 "edge [style=dotted,color=black];\n";
 
+
+			for (typename rba_problem_state_t::all_observations_deque_t::const_iterator itO=rba_state.all_observations.begin();itO!=rba_state.all_observations.end();++itO)
+			{
 #ifdef SRBA_WORKAROUND_MSVC9_DEQUE_BUG
-			for (typename deque<stlplus::smart_ptr<k2f_edge_t> >::const_iterator itO=rba_state.all_observations.begin();itO!=rba_state.all_observations.end();++itO)
 				f << (*itO)->obs.kf_id << " -> L" << (*itO)->obs.obs.feat_id << ";\n";
 #else
-			for(typename deque<k2f_edge_t>::const_iterator itO=rba_state.all_observations.begin();itO!=rba_state.all_observations.end();++itO)
 				f << itO->obs.kf_id << " -> L" << itO->obs.obs.feat_id << ";\n";
 #endif
+			}
 			f << "\n";
 		}
 

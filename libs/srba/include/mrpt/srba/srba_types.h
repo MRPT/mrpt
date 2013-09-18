@@ -509,8 +509,10 @@ namespace srba
 
 #ifdef SRBA_WORKAROUND_MSVC9_DEQUE_BUG
 		typedef typename std::deque< stlplus::smart_ptr<k2k_edge_t> > k2k_edges_deque_t;  // Note: A std::deque() does not invalidate pointers/references, as we always insert elements at the end; we'll exploit this...
+		typedef std::deque< stlplus::smart_ptr<k2f_edge_t> >   all_observations_deque_t;  
 #else
 		typedef typename mrpt::aligned_containers<k2k_edge_t>::deque_t  k2k_edges_deque_t;  // Note: A std::deque() does not invalidate pointers/references, as we always insert elements at the end; we'll exploit this...
+		typedef typename mrpt::aligned_containers<k2f_edge_t>::deque_t  all_observations_deque_t;
 #endif
 
 		typedef std::deque<keyframe_info>  keyframe_vector_t;  //!< Index are "TKeyFrameID" IDs. There's no NEED to make this a deque<> for preservation of references, but is an efficiency improvement
@@ -659,16 +661,11 @@ namespace srba
 
 		/** Index (by feat ID) of ALL landmarks stored in \a unknown_lms and \a known_lms.
 		  * Note that if gaps occur in the observed feature IDs, some pointers here will be NULL and some mem will be wasted, but in turn we have a O(1) search mechanism for all LMs. */
-		std::deque<TLandmarkEntry>   all_lms;
+		typename mrpt::aligned_containers<TLandmarkEntry>::deque_t   all_lms;
 
-		TSpanningTree           spanning_tree;
-
-#ifdef SRBA_WORKAROUND_MSVC9_DEQUE_BUG
-		std::deque< stlplus::smart_ptr<k2f_edge_t> >   all_observations;  //!< All raw observation data (k2f edges)
-#else
-		std::deque<k2f_edge_t>  all_observations;  //!< All raw observation data (k2f edges)
-#endif
-		TLinearSystem           lin_system;        //!< The sparse linear system of equations
+		TSpanningTree            spanning_tree;
+		all_observations_deque_t all_observations;  //!< All raw observation data (k2f edges)
+		TLinearSystem            lin_system;        //!< The sparse linear system of equations
 
 		/** Its size grows simultaneously to all_observations, its values are updated during optimization to
 		  *  reflect invalid conditions in some Jacobians so we can completely discard their information

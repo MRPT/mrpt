@@ -52,14 +52,13 @@ double RbaEngine<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::eval_overall_squ
 	// ---------------------------------------------------------------------------
 	vector<bool>                         base_ids(rba_state.keyframes.size(), false);
 	map<TKeyFrameID, set<TKeyFrameID> >  ob_pairs; // Minimum ID first index.
-#ifdef SRBA_WORKAROUND_MSVC9_DEQUE_BUG
-	for (typename deque<std::auto_ptr<k2f_edge_t> >::const_iterator itO=rba_state.all_observations.begin();itO!=rba_state.all_observations.end();++itO)
+
+	for (typename all_observations_deque_t::const_iterator itO=rba_state.all_observations.begin();itO!=rba_state.all_observations.end();++itO)
 	{
+#ifdef SRBA_WORKAROUND_MSVC9_DEQUE_BUG
 		const TKeyFrameID obs_id = (*itO)->obs.kf_id;
 		const TKeyFrameID base_id = (*itO)->feat_rel_pos->id_frame_base;
 #else
-	for (typename deque<k2f_edge_t>::const_iterator itO=rba_state.all_observations.begin();itO!=rba_state.all_observations.end();++itO)
-	{
 		const TKeyFrameID obs_id = itO->obs.kf_id;
 		const TKeyFrameID base_id = itO->feat_rel_pos->id_frame_base;
 #endif
@@ -115,14 +114,19 @@ double RbaEngine<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::eval_overall_squ
 	// ---------------------------------------------------------------------------
 	// Evaluate errors:
 	// ---------------------------------------------------------------------------
-	for (typename deque<k2f_edge_t>::const_iterator itO=rba_state.all_observations.begin();itO!=rba_state.all_observations.end();++itO)
+	for (typename rba_problem_state_t::all_observations_deque_t::const_iterator itO=rba_state.all_observations.begin();itO!=rba_state.all_observations.end();++itO)
 	{
 		// Actually measured pixel coords: observations[i]->obs.px
 
-		const TKeyFrameID obs_frame_id = itO->obs.kf_id;          // Observed from here.
+#ifdef SRBA_WORKAROUND_MSVC9_DEQUE_BUG
+		const TKeyFrameID obs_frame_id = (*itO)->obs.kf_id;
+		const TKeyFrameID base_id = (*itO)->feat_rel_pos->id_frame_base;
+		const TRelativeLandmarkPos *feat_rel_pos = (*itO)->feat_rel_pos;
+#else
+		const TKeyFrameID obs_frame_id = itO->obs.kf_id;
 		const TKeyFrameID base_id = itO->feat_rel_pos->id_frame_base;
-
 		const TRelativeLandmarkPos *feat_rel_pos = itO->feat_rel_pos;
+#endif
 		ASSERTDEB_(feat_rel_pos!=NULL)
 
 		pose_t const * base_pose_wrt_observer=NULL;
