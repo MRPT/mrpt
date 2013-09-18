@@ -12,7 +12,7 @@
 
 namespace Eigen 
 {
-/** \ingroup Unsupported_modules
+/**
   * \defgroup Splines_Module Spline and spline fitting module 
  * \ingroup eigen_grp
   *

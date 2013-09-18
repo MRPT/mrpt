@@ -15,7 +15,7 @@
 
 namespace Eigen {
 
-/** \ingroup Unsupported_modules
+/**
   * \defgroup OpenGLSUpport_Module OpenGL Support module 
  * \ingroup eigen_grp
   *

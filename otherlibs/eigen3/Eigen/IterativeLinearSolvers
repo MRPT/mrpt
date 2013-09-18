@@ -6,7 +6,7 @@
 
 #include "src/Core/util/DisableStupidWarnings.h"
 
-/** \ingroup Sparse_modules
+/** 
   * \defgroup IterativeLinearSolvers_Module IterativeLinearSolvers module 
  * \ingroup eigen_grp
   *
