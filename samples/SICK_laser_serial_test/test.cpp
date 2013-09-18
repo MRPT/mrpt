@@ -70,8 +70,8 @@ void TestPLS()
 	laser.setSerialPort(SERIAL_NAME);
 
 #if 1
-	laser.setBaudRate(500000);
-	//laser.setBaudRate(38400);
+	//laser.setBaudRate(500000);
+	laser.setBaudRate(9600);
 	laser.setScanFOV(180);
 	laser.setScanResolution(50);  // 25=0.25deg, 50=0.5deg, 100=1deg
 	//laser.setMillimeterMode(true);
