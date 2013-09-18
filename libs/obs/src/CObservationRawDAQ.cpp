@@ -3,9 +3,9 @@
    |                                                                           |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2013, Individual contributors, see AUTHORS file        |
-   | Copyright (c) 2005-2013, MAPIR group, University of Malaga                |
-   | Copyright (c) 2012-2013, University of Almeria                            |
+   | Copyright (c) 2005-2012, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2012, MAPIR group, University of Malaga                |
+   | Copyright (c) 2012, University of Almeria                                 |
    | All rights reserved.                                                      |
    |                                                                           |
    | Redistribution and use in source and binary forms, with or without        |
@@ -32,58 +32,51 @@
    | ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE           |
    | POSSIBILITY OF SUCH DAMAGE.                                               |
    +---------------------------------------------------------------------------+ */
-#ifndef mrpt_obs_H
-#define mrpt_obs_H
 
-#include <mrpt/config.h>
+#include <mrpt/obs.h>   // Precompiled headers
 
-// Only really include all headers if we come from a user program (anything
-//  not defining mrpt_*_EXPORTS) or MRPT is being built with precompiled headers.
-#if !defined(mrpt_obs_EXPORTS) || MRPT_ENABLE_PRECOMPILED_HDRS  || defined(MRPT_ALWAYS_INCLUDE_ALL_HEADERS)
-
-// Observations:
-#include <mrpt/slam/CObservation.h>
-#include <mrpt/slam/CObservation2DRangeScan.h>
-#include <mrpt/slam/CObservation3DRangeScan.h>
-#include <mrpt/slam/CObservationRange.h>
-#include <mrpt/slam/CObservationImage.h>
-// #include <mrpt/slam/CObservationVisualLandmarks.h>  // This one is in mrpt-core
-#include <mrpt/slam/CObservationStereoImages.h>
-#include <mrpt/slam/CObservationStereoImagesFeatures.h>
-#include <mrpt/slam/CObservationBeaconRanges.h>
-#include <mrpt/slam/CObservationGasSensors.h>
-#include <mrpt/slam/CObservationGPS.h>
-#include <mrpt/slam/CObservationBatteryState.h>
-#include <mrpt/slam/CObservationIMU.h>
-#include <mrpt/slam/CObservationOdometry.h>
-#include <mrpt/slam/CObservationBearingRange.h>
-#include <mrpt/slam/CObservationComment.h>
-#include <mrpt/slam/CObservationReflectivity.h>
-#include <mrpt/slam/CObservationWirelessPower.h>
-#include <mrpt/slam/CObservationRFID.h>
-#include <mrpt/slam/CSensoryFrame.h>
-#include <mrpt/slam/CObservationWindSensor.h>
-#include <mrpt/slam/CObservationCANBusJ1939.h>
 #include <mrpt/slam/CObservationRawDAQ.h>
 
+using namespace mrpt::slam;
+using namespace mrpt::utils;
+using namespace mrpt::poses;
+using namespace std;
 
-// Observations:
-#include <mrpt/slam/CAction.h>
-#include <mrpt/slam/CActionCollection.h>
-#include <mrpt/slam/CActionRobotMovement2D.h>
-#include <mrpt/slam/CActionRobotMovement3D.h>
+// This must be added to any CSerializable class implementation file.
+IMPLEMENTS_SERIALIZABLE(CObservationRawDAQ, CObservation,mrpt::slam)
 
+/*---------------------------------------------------------------
+  Implements the writing to a CStream capability of CSerializable objects
+ ---------------------------------------------------------------*/
+void  CObservationRawDAQ::writeToStream(CStream &out, int *version) const
+{
+	if (version)
+		*version = 0;
+	else
+	{
+		out << sensorLabel << timestamp
+			<< AIN_8bits << AIN_16bits << AIN_32bits
+			<< AOUT_8bits << AOUT_16bits << DIN << DOUT;
+	}
+}
 
-// Others:
-#include <mrpt/slam/CRawlog.h>
-#include <mrpt/slam/carmen_log_tools.h>
+/*---------------------------------------------------------------
+  Implements the reading from a CStream capability of CSerializable objects
+ ---------------------------------------------------------------*/
+void  CObservationRawDAQ::readFromStream(CStream &in, int version)
+{
+	switch(version)
+	{
+	case 0:
+		{
+			in  >> sensorLabel >> timestamp
+				>> AIN_8bits >> AIN_16bits >> AIN_32bits
+				>> AOUT_8bits >> AOUT_16bits >> DIN >> DOUT;
 
-// Very basic classes for maps:
-#include <mrpt/slam/CMetricMap.h>
-#include <mrpt/slam/CSimpleMap.h>
+		} break;
+	default:
+		MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
 
+	};
 
-#endif // end precomp.headers
-
-
-#endif
+}

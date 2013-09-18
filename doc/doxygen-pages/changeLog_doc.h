@@ -45,6 +45,8 @@
 			- There are now two versions of octomaps (by Mariano Jaimez Tarifa/Jose Luis Blanco) - <a href="http://code.google.com/p/mrpt/source/detail?r=3443" >r3443</a>
 				- mrpt::slam::COctoMap (only occupancy)
 				- mrpt::slam::CColouredOctoMap (occupancy + RGB color)
+		- [mrpt-obs]
+			 - mrpt::slam::CObservationRawDAQ, a placeholder for raw and generic measurements from data acquisition devices. - <a href="http://code.google.com/p/mrpt/source/detail?r=3459" >r3459</a>
 	- Changes in classes:
 		- Clean up and slight optimization of metric map matching API: - <a href="http://code.google.com/p/mrpt/source/detail?r=3446" >r3446</a>
 			- <b>Methods marked as deprecated: </b>

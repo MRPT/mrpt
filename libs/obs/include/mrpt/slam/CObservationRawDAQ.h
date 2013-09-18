@@ -3,9 +3,9 @@
    |                                                                           |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2013, Individual contributors, see AUTHORS file        |
-   | Copyright (c) 2005-2013, MAPIR group, University of Malaga                |
-   | Copyright (c) 2012-2013, University of Almeria                            |
+   | Copyright (c) 2005-2012, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2012, MAPIR group, University of Malaga                |
+   | Copyright (c) 2012, University of Almeria                                 |
    | All rights reserved.                                                      |
    |                                                                           |
    | Redistribution and use in source and binary forms, with or without        |
@@ -32,58 +32,51 @@
    | ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE           |
    | POSSIBILITY OF SUCH DAMAGE.                                               |
    +---------------------------------------------------------------------------+ */
-#ifndef mrpt_obs_H
-#define mrpt_obs_H
+#ifndef CObservationRawDAQ_H
+#define CObservationRawDAQ_H
 
-#include <mrpt/config.h>
-
-// Only really include all headers if we come from a user program (anything
-//  not defining mrpt_*_EXPORTS) or MRPT is being built with precompiled headers.
-#if !defined(mrpt_obs_EXPORTS) || MRPT_ENABLE_PRECOMPILED_HDRS  || defined(MRPT_ALWAYS_INCLUDE_ALL_HEADERS)
-
-// Observations:
+#include <mrpt/utils/CSerializable.h>
 #include <mrpt/slam/CObservation.h>
-#include <mrpt/slam/CObservation2DRangeScan.h>
-#include <mrpt/slam/CObservation3DRangeScan.h>
-#include <mrpt/slam/CObservationRange.h>
-#include <mrpt/slam/CObservationImage.h>
-// #include <mrpt/slam/CObservationVisualLandmarks.h>  // This one is in mrpt-core
-#include <mrpt/slam/CObservationStereoImages.h>
-#include <mrpt/slam/CObservationStereoImagesFeatures.h>
-#include <mrpt/slam/CObservationBeaconRanges.h>
-#include <mrpt/slam/CObservationGasSensors.h>
-#include <mrpt/slam/CObservationGPS.h>
-#include <mrpt/slam/CObservationBatteryState.h>
-#include <mrpt/slam/CObservationIMU.h>
-#include <mrpt/slam/CObservationOdometry.h>
-#include <mrpt/slam/CObservationBearingRange.h>
-#include <mrpt/slam/CObservationComment.h>
-#include <mrpt/slam/CObservationReflectivity.h>
-#include <mrpt/slam/CObservationWirelessPower.h>
-#include <mrpt/slam/CObservationRFID.h>
-#include <mrpt/slam/CSensoryFrame.h>
-#include <mrpt/slam/CObservationWindSensor.h>
-#include <mrpt/slam/CObservationCANBusJ1939.h>
-#include <mrpt/slam/CObservationRawDAQ.h>
 
+namespace mrpt
+{
+namespace slam
+{
+	DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CObservationRawDAQ , CObservation, OBS_IMPEXP)
 
-// Observations:
-#include <mrpt/slam/CAction.h>
-#include <mrpt/slam/CActionCollection.h>
-#include <mrpt/slam/CActionRobotMovement2D.h>
-#include <mrpt/slam/CActionRobotMovement3D.h>
+	/** Store raw data from a Data Acquisition (DAQ) device, such that input or output analog and digital channels, counters from encoders, etc. at one sampling instant.
+	 *  All analog values are assumed to be volts. 
+	 * \sa CObservation
+	 * \ingroup mrpt_obs_grp
+	 */
+	class OBS_IMPEXP CObservationRawDAQ : public CObservation
+	{
+		// This must be added to any CSerializable derived class:
+		DEFINE_SERIALIZABLE( CObservationRawDAQ )
+	 public:
+		/** Constructor */
+		inline CObservationRawDAQ(  ) { }
+		/** Destructor */
+		virtual ~CObservationRawDAQ()
+		{ }
 
+		std::vector<uint8_t>  AIN_8bits;  /** Readings from 8-bit analog input (ADCs) channels (vector length=channel count) in Volts. */
+		std::vector<uint16_t> AIN_16bits; /** Readings from 16-bit analog input (ADCs) channels (vector length=channel count) in Volts. */
+		std::vector<uint32_t> AIN_32bits; /** Readings from 16-bit analog input (ADCs) channels (vector length=channel count) in Volts. */
+		std::vector<uint8_t>  AOUT_8bits;  /** Present output values for 8-bit analog output (DACs) channels (vector length=channel count) in Volts.*/
+		std::vector<uint16_t> AOUT_16bits;  /** Present output values for 16-bit analog output (DACs) channels (vector length=channel count) in Volts.*/
 
-// Others:
-#include <mrpt/slam/CRawlog.h>
-#include <mrpt/slam/carmen_log_tools.h>
+		std::vector<uint8_t>  DIN;   /** Readings from digital inputs; each byte stores 8 digital inputs, or 8-bit port. */
+		std::vector<uint8_t>  DOUT;  /** Present digital output values; each byte stores 8 digital inputs, or 8-bit port. */
 
-// Very basic classes for maps:
-#include <mrpt/slam/CMetricMap.h>
-#include <mrpt/slam/CSimpleMap.h>
+		/** Not used in this class */
+		void getSensorPose( CPose3D &out_sensorPose ) const { }
+		/** Not used in this class */
+		void setSensorPose( const CPose3D & ) { }
 
+	}; // End of class def.
 
-#endif // end precomp.headers
-
+	} // End of namespace
+} // End of namespace
 
 #endif
