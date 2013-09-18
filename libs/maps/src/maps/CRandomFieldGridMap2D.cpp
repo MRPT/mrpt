@@ -45,7 +45,6 @@
 #include <mrpt/opengl.h>
 #include <numeric>
 
-
 // =========== DEBUG MACROS =============
 #define RANDOMFIELDGRIDMAP_VERBOSE		    0
 #define RANDOMFIELDGRIDMAP_KF2_VERBOSE		0
