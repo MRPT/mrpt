@@ -46,7 +46,9 @@
 				- mrpt::slam::COctoMap (only occupancy)
 				- mrpt::slam::CColouredOctoMap (occupancy + RGB color)
 		- [mrpt-obs]
-			 - mrpt::slam::CObservationRawDAQ, a placeholder for raw and generic measurements from data acquisition devices. - <a href="http://code.google.com/p/mrpt/source/detail?r=3459" >r3459</a>
+			- mrpt::slam::CObservationRawDAQ, a placeholder for raw and generic measurements from data acquisition devices. - <a href="http://code.google.com/p/mrpt/source/detail?r=3459" >r3459</a>
+		- [mrpt-opengl]
+			- mrpt::opengl::CVectorField2D, an opengl object that shows a 2D Vector Field (by Mariano Jaimez Tarifa). - <a href="http://code.google.com/p/mrpt/source/detail?r=3461" >r3461</a>
 	- Changes in classes:
 		- Clean up and slight optimization of metric map matching API: - <a href="http://code.google.com/p/mrpt/source/detail?r=3446" >r3446</a>
 			- <b>Methods marked as deprecated: </b>

@@ -80,6 +80,7 @@ Below follows a table with the preview of most rendering primitive classes:
  <tr> <td> mrpt::opengl::CEllipsoidInverseDepth2D </td> <td> \image html preview_CEllipsoidInverseDepth2D.png </td> </tr>
  <tr> <td> mrpt::opengl::CEllipsoidInverseDepth3D </td> <td> \image html preview_CEllipsoidInverseDepth3D.png </td> </tr>
  <tr> <td> mrpt::opengl::COctoMapVoxels </td> <td> \image html preview_COctoMapVoxels.png </td> </tr>
+ <tr> <td> mrpt::opengl::CVectorField2D </td> <td> \image html imagen.png </td> </tr>
  <tr> <td> mrpt::opengl::stock_objects::BumblebeeCamera() </td> <td> \image html preview_stock_objects_BumblebeeCamera.png </td> </tr>
  <tr> <td> mrpt::opengl::stock_objects::CornerXYSimple() </td> <td> \image html preview_stock_objects_CornerXYSimple.png </td> </tr>
  <tr> <td> mrpt::opengl::stock_objects::CornerXYZSimple() </td> <td> \image html preview_stock_objects_CornerXYZSimple.png </td> </tr>

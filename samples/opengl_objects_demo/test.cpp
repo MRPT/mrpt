@@ -565,6 +565,35 @@ void TestOpenGLObjects()
 	}
 	off_x+=STEP_X;
 
+	// CVectorField2D
+	{
+		{
+			opengl::CVectorField2DPtr obj = opengl::CVectorField2D::Create();
+			obj->setLocation(off_x,0,0);
+
+			CMatrixFloat x(16,16), y(16,16);
+			for (unsigned int i=0; i<x.getRowCount(); i++)
+				for (unsigned int j=0; j<x.getColCount(); j++)
+				{
+					x(i,j) = sin(0.3*i);
+					y(i,j) = cos(0.3*i);
+				}
+			obj->setVectorField(x,y);
+			obj->setPointColor(1,0.3,0);
+			obj->setVectorFieldColor(0,0,1);
+			obj->setPointSize(3.0);
+			obj->setLineWidth(2.0);
+			obj->setGridCenterAndCellSize(0,0,1.2,1.2);
+			obj->adjustVectorFieldToGrid();			
+			theScene->insert( obj );
+		}
+
+		opengl::CTextPtr gl_txt = opengl::CText::Create("CVectorField2D");
+		gl_txt->setLocation(off_x,off_y_label,0);
+		theScene->insert(gl_txt);
+	}
+	off_x+=STEP_X;
+
 	// stock_objects::BumblebeeCamera
 	{
 		{

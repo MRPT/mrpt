@@ -130,6 +130,7 @@ namespace mrpt
 		typedef CMatrixFixedNumeric<double,1,7> CMatrixDouble17;
 		typedef CMatrixFixedNumeric<double,5,1> CMatrixDouble51;
 		typedef CMatrixFixedNumeric<double,1,5> CMatrixDouble15;
+		typedef CMatrixFixedNumeric<double,4,1> CMatrixDouble41;
 
 		typedef CMatrixFixedNumeric<float,2,2> CMatrixFloat22;
 		typedef CMatrixFixedNumeric<float,2,3> CMatrixFloat23;

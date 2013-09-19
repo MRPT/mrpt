@@ -80,6 +80,7 @@
 #include <mrpt/opengl/CEllipsoidInverseDepth3D.h>
 #include <mrpt/opengl/CEllipsoidRangeBearing2D.h>
 #include <mrpt/opengl/COctoMapVoxels.h>
+#include <mrpt/opengl/CVectorField2D.h>
 
 #include <mrpt/opengl/stock_objects.h>
 #include <mrpt/opengl/pose_pdfs.h>
