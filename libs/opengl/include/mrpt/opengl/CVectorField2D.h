@@ -46,8 +46,10 @@ namespace mrpt
 	{
 		using mrpt::math::TPoint3D;
 		using mrpt::math::TSegment3D;
+		using mrpt::math::CMatrix;
 		using mrpt::math::CMatrixFloat;
 		using mrpt::utils::TColor;
+		using mrpt::utils::TColorf;
 		class OPENGL_IMPEXP CVectorField2D;
 
 		// This must be added to any CSerializable derived class:
@@ -101,7 +103,7 @@ namespace mrpt
 
 			/**
 			  * Get the point color in the range [0,1]
-			  */			
+			  */
 			inline TColorf getPointColor() const { return mrpt::utils::TColorf(m_point_color); }
 
 			/**
@@ -115,18 +117,18 @@ namespace mrpt
 
 			/**
 			  * Get the arrow color in the range [0,1]
-			  */			
+			  */
 			inline TColorf getVectorFieldColor() const	{ return mrpt::utils::TColorf(m_field_color); }
 
 			/**
 			  * Set the size with which points will be drawn. By default 1.0
 			  */
-			inline void setPointSize(const float p) { m_pointSize=p; CRenderizableDisplayList::notifyChange(); } 
+			inline void setPointSize(const float p) { m_pointSize=p; CRenderizableDisplayList::notifyChange(); }
 
 			/**
 			  * Get the size with which points are drawn. By default 1.0
 			  */
-			inline float getPointSize() const { return m_pointSize; } 
+			inline float getPointSize() const { return m_pointSize; }
 
 			/**
 			  * Set the width with which lines will be drawn.
@@ -153,7 +155,7 @@ namespace mrpt
 				yMax = center_y + 0.5*cellsize_y*(xcomp.getRowCount()-1);
 				CRenderizableDisplayList::notifyChange();
 			}
-			
+
 			/**
 			  * Set the coordinates of the grid on where the vector field will be drawn using x-y max and min values.
 			  */
@@ -181,6 +183,16 @@ namespace mrpt
 				Matrix_y = ycomp;
 			}
 
+			/** Get the "x" component of the vector field, as a matrix where each entry represents a point in the 2D grid. */
+			inline const CMatrixFloat & getVectorField_x() const { return xcomp; }
+			/** \overload */
+			inline CMatrixFloat & getVectorField_x() { return xcomp; }
+
+			/** Get the "y" component of the vector field, as a matrix where each entry represents a point in the 2D grid. */
+			inline const CMatrixFloat & getVectorField_y() const { return ycomp; }
+			/** \overload */
+			inline CMatrixFloat & getVectorField_y() { return ycomp; }
+
 			/**
 			  * Set the vector field. Matrix_x contains the "x" component and Matrix_y contains the "y" component.
 			  */
@@ -193,7 +205,7 @@ namespace mrpt
 
 			/**
 			  * Adjust the vector field in the scene (vectors magnitude) according to the grid size.
-			  */			
+			  */
 			void adjustVectorFieldToGrid();
 
 			/**

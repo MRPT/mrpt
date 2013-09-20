@@ -51,7 +51,7 @@ IMPLEMENTS_SERIALIZABLE( CVectorField2D, CRenderizableDisplayList, mrpt::opengl 
 
 /** Constructor */
 CVectorField2D::CVectorField2D()
-	: m_LineWidth(1.0),m_pointSize(1.0),m_antiAliasing(true), xcomp(0,0), ycomp(0,0), xMin(-1.0), xMax(1.0), yMin(-1.0), yMax(1.0)	
+	: xcomp(0,0), ycomp(0,0), xMin(-1.0), xMax(1.0), yMin(-1.0), yMax(1.0), m_LineWidth(1.0),m_pointSize(1.0),m_antiAliasing(true)
 {
 	m_point_color = m_color;
 	m_field_color = m_color;
@@ -59,7 +59,7 @@ CVectorField2D::CVectorField2D()
 
 /** Constructor with a initial set of lines. */
 CVectorField2D::CVectorField2D( CMatrixFloat Matrix_x, CMatrixFloat Matrix_y, float xmin, float xmax, float ymin, float ymax)
-	: m_LineWidth(1.0),m_pointSize(1.0),m_antiAliasing(true)	
+	: m_LineWidth(1.0),m_pointSize(1.0),m_antiAliasing(true)
 {
 	m_point_color = m_color;
 	m_field_color = m_color;
@@ -88,7 +88,7 @@ void CVectorField2D::render_dl() const
 
 	glLineWidth(m_LineWidth);
 	glPointSize(m_pointSize);
-	
+
 	checkOpenGLError();
 
 	glDisable(GL_LIGHTING);  // Disable lights when drawing lines
@@ -122,7 +122,7 @@ void CVectorField2D::render_dl() const
 		for (unsigned int j=0; j<xcomp.getRowCount(); j++)
 		{
 			const float tri_side = 0.25*sqrt(xcomp(j,i)*xcomp(j,i) + ycomp(j,i)*ycomp(j,i));
-			const float ang = math::atan2(ycomp(j,i), xcomp(j,i)) - 1.5708;
+			const float ang = ::atan2(ycomp(j,i), xcomp(j,i)) - 1.5708;
 			glVertex3f( -sin(ang)*0.866*tri_side + xMin+i*x_cell_size + xcomp(j,i), cos(ang)*0.866*tri_side + yMin+j*y_cell_size + ycomp(j,i), 0);
 			glVertex3f( cos(ang)*0.5*tri_side + xMin+i*x_cell_size + xcomp(j,i), sin(ang)*0.5*tri_side + yMin+j*y_cell_size + ycomp(j,i), 0);
 			glVertex3f( -cos(ang)*0.5*tri_side + xMin+i*x_cell_size + xcomp(j,i), -sin(ang)*0.5*tri_side + yMin+j*y_cell_size + ycomp(j,i), 0);
@@ -206,8 +206,8 @@ void CVectorField2D::getBoundingBox(mrpt::math::TPoint3D &bb_min, mrpt::math::TP
 		for (unsigned int j=0; j<xcomp.getRowCount(); j++)
 		{
 			const float tri_side = 0.25*sqrt(xcomp(j,i)*xcomp(j,i) + ycomp(j,i)*ycomp(j,i));
-			const float ang = math::atan2(ycomp(j,i), xcomp(j,i)) - 1.5708;
-			
+			const float ang = ::atan2(ycomp(j,i), xcomp(j,i)) - 1.5708;
+
 			if ( -sin(ang)*0.866*tri_side + xMin+i*x_cell_size + xcomp(j,i) < bb_min.x)
 				bb_min.x = -sin(ang)*0.866*tri_side + xMin+i*x_cell_size + xcomp(j,i);
 
