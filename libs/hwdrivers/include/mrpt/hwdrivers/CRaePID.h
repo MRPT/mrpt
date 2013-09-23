@@ -58,7 +58,8 @@ namespace mrpt
 		private:
 			/** COM port name
 			 */
-			std::string com_port;
+			std::string		com_port;
+			int				com_bauds;
 
 			/** COM port
 			 */
@@ -68,15 +69,22 @@ namespace mrpt
 			 */
 			float pose_x, pose_y, pose_z, pose_yaw, pose_pitch, pose_roll;
 
+			/** Returns true if the COM port is already open, or try to open it in other case.
+			  * \return true if everything goes OK, or false if there are problems opening the port.
+			  */
+			bool  tryToOpenTheCOM();
+
 		public:
 			/** Default constructor.
 			 */
 			CRaePID();
+			/** Default destructor.
+			 */
 			virtual ~CRaePID(){COM.close();};
+			
+			void doProcess();
 
-
-			 void doProcess();
-			 void  loadConfig_sensorSpecific(
+			void  loadConfig_sensorSpecific(
 				 const mrpt::utils::CConfigFileBase &configSource,
 				const std::string			&section);
 

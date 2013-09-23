@@ -41,58 +41,106 @@
 #include <iostream>
 #include <sstream>
 
-#ifdef MRPT_OS_WINDOWS
-	#  if defined(__GNUC__)
-		// MinGW: Nothing to do here (yet)
-	# else
-
-	# endif
-//#include <windows.h> // Rly needed?
-#endif
-
 using namespace mrpt::utils;
 using namespace mrpt::hwdrivers;
 
+
 IMPLEMENTS_GENERIC_SENSOR(CRaePID,mrpt::hwdrivers)
 
+/* -----------------------------------------------------
+                Constructor
+   ----------------------------------------------------- */
 CRaePID::CRaePID()
 {
 	m_sensorLabel = "RAE_PID";
 }
 
+
+/* -----------------------------------------------------
+                loadConfig_sensorSpecific
+   ----------------------------------------------------- */
 void  CRaePID::loadConfig_sensorSpecific(
 	const mrpt::utils::CConfigFileBase &configSource,
 	const std::string			&iniSection )
 {
-		pose_x = configSource.read_float(iniSection,"pose_x",0,true);
-		pose_y = configSource.read_float(iniSection,"pose_y",0,true);
-		pose_z = configSource.read_float(iniSection,"pose_z",0,true);
-		pose_roll = configSource.read_float(iniSection,"pose_roll",0,true);
-		pose_pitch = configSource.read_float(iniSection,"pose_pitch",0,true);
-		pose_yaw = configSource.read_float(iniSection,"pose_yaw",0,true);
-	#ifdef MRPT_OS_WINDOWS
-		com_port = configSource.read_string(iniSection, "COM_port_PID", "COM1", true ) ;
-	#else
-		com_port = configSource.read_string(iniSection, "COM_port_PID", "/dev/tty0", true );
-	#endif
-		COM.open(com_port);
-		COM.setConfig(9600,0,8,1,true);
-		mrpt::system::sleep(10);
-		COM.purgeBuffers();
-		mrpt::system::sleep(10);
-		COM.setTimeouts(50,1,100, 1,20);
-	//std::cout << "PASA config" << std::endl;
+#ifdef MRPT_OS_WINDOWS
+	com_port = configSource.read_string(iniSection, "COM_port_PID", "COM1", true ) ;
+#else
+	com_port = configSource.read_string(iniSection, "COM_port_PID", "/dev/tty0", true );
+#endif
+
+	com_bauds		= configSource.read_int( iniSection, "baudRate",9600, false );
+
+	pose_x = configSource.read_float(iniSection,"pose_x",0,true);
+	pose_y = configSource.read_float(iniSection,"pose_y",0,true);
+	pose_z = configSource.read_float(iniSection,"pose_z",0,true);
+	pose_roll = configSource.read_float(iniSection,"pose_roll",0,true);
+	pose_pitch = configSource.read_float(iniSection,"pose_pitch",0,true);
+	pose_yaw = configSource.read_float(iniSection,"pose_yaw",0,true);
+	
 }
 
+/* -----------------------------------------------------
+				tryToOpenTheCOM
+----------------------------------------------------- */
+bool  CRaePID::tryToOpenTheCOM()
+{
+    if (COM.isOpen())
+        return true;	// Already open
+
+    if (m_verbose) cout << "[CRaePID] Opening " << com_port << " @ " <<com_bauds << endl;
+
+	try
+	{
+        COM.open(com_port);
+        // Config:
+        COM.setConfig( com_bauds, 0, 8, 1 );
+        //COM.setTimeouts( 1, 0, 1, 1, 1 );
+		COM.setTimeouts(50,1,100, 1,20);
+		//mrpt::system::sleep(10);
+		COM.purgeBuffers();
+		//mrpt::system::sleep(10);
+				
+		return true; // All OK!
+	}
+	catch (std::exception &e)
+	{
+		std::cerr << "[CRaePID::tryToOpenTheCOM] Error opening or configuring the serial port:" << std::endl << e.what();
+        COM.close();
+		return false;
+	}
+	catch (...)
+	{
+		std::cerr << "[CRaePID::tryToOpenTheCOM] Error opening or configuring the serial port." << std::endl;
+		COM.close();
+		return false;
+	}
+}
+
+/* -----------------------------------------------------
+				doProcess
+----------------------------------------------------- */
 void CRaePID::doProcess()
 {
-	// Send the command
+	// Is the COM open?
+	if (!tryToOpenTheCOM())
+	{
+		m_state = ssError;
+		THROW_EXCEPTION("Cannot open the serial port");
+	}
+
+	// Send command to PID to request a measurement
 	COM.purgeBuffers();
 	COM.Write("R",1);
 
-	// Read the returned text
+	// Read PID response
 	std::string power_reading;
-	power_reading = COM.ReadString();
+	bool time_out = false;
+	power_reading = COM.ReadString(500,&time_out);
+	if (time_out)
+		power_reading =  "Time_out";
+	
+	cout << "[CRaePID] " << com_port << " @ " <<com_bauds << " - measurement -> " << power_reading << endl;
 
 	// Convert the text to a number (ppm)
 	const float readnum = atof(power_reading.c_str());
@@ -116,11 +164,16 @@ void CRaePID::doProcess()
 std::string CRaePID::getFirmware()
 {
 	// Send the command
+	cout << "Firmware version: " << endl;
 	COM.purgeBuffers();
-	COM.Write("F",1);
+	size_t B_written = COM.Write("F",1);	
 
 	// Read the returned text
-	return COM.ReadString();
+	bool time_out = false;	
+	std::string s_read = COM.ReadString(2000,&time_out);
+	if (time_out)
+		s_read =  "Time_out";
+	return s_read;
 }
 
 std::string CRaePID::getModel()
