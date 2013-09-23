@@ -229,9 +229,12 @@ void CVectorField2D::getBoundingBox(mrpt::math::TPoint3D &bb_min, mrpt::math::TP
 void CVectorField2D::adjustVectorFieldToGrid()
 {
 	ASSERT_(xcomp.size() > 0)
-	const float ratio_x = xcomp.maxCoeff()*(xcomp.getColCount()-1)/(xMax-xMin);
-	const float ratio_y = ycomp.maxCoeff()*(ycomp.getRowCount()-1)/(yMax-yMin);
-	const float norm_factor = 0.85/max(ratio_x, ratio_y);
+	
+	const float ratio_xp = xcomp.maxCoeff()*(xcomp.getColCount()-1)/(xMax-xMin);
+	const float ratio_xn = xcomp.minCoeff()*(xcomp.getColCount()-1)/(xMax-xMin);
+	const float ratio_yp = ycomp.maxCoeff()*(ycomp.getRowCount()-1)/(yMax-yMin);
+	const float ratio_yn = ycomp.minCoeff()*(ycomp.getRowCount()-1)/(yMax-yMin);
+	const float norm_factor = 0.85/max(max(ratio_xp, abs(ratio_xn)), max(ratio_yp, abs(ratio_yn)));
 
 	xcomp *= norm_factor;
 	ycomp *= norm_factor;
