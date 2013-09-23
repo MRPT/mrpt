@@ -129,16 +129,26 @@ void CRaePID::doProcess()
 		THROW_EXCEPTION("Cannot open the serial port");
 	}
 
-	// Send command to PID to request a measurement
-	COM.purgeBuffers();
-	COM.Write("R",1);
-
-	// Read PID response
+	bool have_reading = false;
 	std::string power_reading;
 	bool time_out = false;
-	power_reading = COM.ReadString(500,&time_out);
-	if (time_out)
-		power_reading =  "Time_out";
+
+	while (!have_reading)
+	{
+		// Send command to PID to request a measurement
+		COM.purgeBuffers();
+		COM.Write("R",1);
+	
+		// Read PID response		
+		power_reading = COM.ReadString(500,&time_out);
+		if (time_out)
+		{
+			cout << "[CRaePID] " << com_port << " @ " <<com_bauds << " - measurement Timed-Out" << endl;
+			sleep(10);
+		}
+		else
+			have_reading = true;
+	}
 	
 	cout << "[CRaePID] " << com_port << " @ " <<com_bauds << " - measurement -> " << power_reading << endl;
 
