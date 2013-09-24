@@ -176,7 +176,8 @@ std::string CRaePID::getFirmware()
 	// Send the command
 	cout << "Firmware version: " << endl;
 	COM.purgeBuffers();
-	size_t B_written = COM.Write("F",1);	
+	size_t B_written = COM.Write("F",1);
+	if (!B_written) return std::string("COMMS.ERROR");
 
 	// Read the returned text
 	bool time_out = false;	
