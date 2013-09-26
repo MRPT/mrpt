@@ -64,6 +64,8 @@ namespace mrpt
 		  *   relative to some user-provided point, with local X axis being east-ward, Y north-ward, Z up-ward.
 		  *  For an explanation, refer to http://en.wikipedia.org/wiki/Reference_ellipsoid
 		  * \sa coordinatesTransformation_WGS84_geocentric, ENU_axes_from_WGS84, ENUToGeocentric
+		  * \note The "Up" (Z) direction in ENU used in this library is not exactly the normal to the ellipsoid, 
+		  *    but rather the direction of the line from the Earth center towards the given reference point.
 		  */
 		void  TOPO_IMPEXP geodeticToENU_WGS84(
 			const TGeodeticCoords		&in_coords,
@@ -275,6 +277,8 @@ namespace mrpt
 		/** Returns the East-North-Up (ENU) coordinate system associated to the given point.
 		  * This is the reference employed in geodeticToENU_WGS84
 		  * \param only_angles If set to true, the (x,y,z) fields will be left zeroed.
+		  * \note The returned "Up" (Z) direction is not exactly the normal to the ellipsoid, but rather the 
+		  *       direction of the line from the Earth center towards the given reference point.
 		  * \sa geodeticToENU_WGS84
 		  */
 		void TOPO_IMPEXP ENU_axes_from_WGS84(
@@ -285,11 +289,7 @@ namespace mrpt
 			bool		only_angles = false
 			);
 
-		/** Returns the East-North-Up (ENU) coordinate system associated to the given point.
-		  * This is the reference employed in coordinatesTransformation_WGS84
-		  * \param only_angles If set to true, the (x,y,z) fields will be left zeroed.
-		  * \sa geodeticToENU_WGS84
-		  */
+		/** \overload */
 		inline void ENU_axes_from_WGS84(
 			const TGeodeticCoords		&in_coords,
 			mrpt::math::TPose3D &out_ENU,
