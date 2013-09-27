@@ -225,9 +225,7 @@ ${CMAKE_MRPT_BUILD_SHARED_LIB}
 #define MRPT_HAS_SPQR ${CMAKE_MRPT_HAS_SPQR}
 
 /** Has NationalInstruments headers/libraries? */
-// At least basic NI headers/libs are present:
-#define MRPT_HAS_NATIONAL_INSTRUMENTS ${CMAKE_MRPT_HAS_NATIONAL_INSTRUMENTS}    
-// Hardware-specific headers:
+#define MRPT_HAS_NIDAQmx ${CMAKE_MRPT_HAS_NIDAQmx}
 #define MRPT_HAS_NI845x ${CMAKE_MRPT_HAS_NI845x}
 
 /** Standard headers */
