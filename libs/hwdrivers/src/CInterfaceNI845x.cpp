@@ -42,6 +42,9 @@
 #		define WIN64
 #	endif
 #	include "ni845x.h"  // Include file for NI-485x functions and constants
+#if defined(_MSC_VER)
+#	pragma comment (lib,"ni845x.lib")
+#endif
 #endif
 
 using namespace mrpt;
