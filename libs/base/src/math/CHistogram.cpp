@@ -54,7 +54,7 @@ CHistogram::CHistogram(const double min, const double max, const size_t nBins) :
 {
 	ASSERT_(nBins>0)
 	ASSERT_(max>min)
-	m_binSizeInv = (nBins-1) / (m_max-m_min);
+	m_binSizeInv = nBins / (m_max-m_min);
 }
 
 /*---------------------------------------------------------------
