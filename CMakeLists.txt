@@ -309,6 +309,17 @@ MARK_AS_ADVANCED(MRPT_WHOLE_PROGRAM_OPTIMIZATION)
 
 IF(MSVC)
 	SET(EXTRA_CPP_FLAGS "/W3 /D _CRT_SECURE_NO_DEPRECATE /D _CRT_NONSTDC_NO_DEPRECATE")
+	
+	# "In earlier versions of Visual C++, the compiler used several discrete
+	#   heaps, and each had a finite limit. Currently, the compiler dynamically
+	#   grows the heaps as necessary up to a total heap size limit, and requires
+	#   a fixed-size buffer only to construct precompiled headers. Consequently,
+	#   the /Zm compiler option is rarely necessary."
+ 	# http://msdn.microsoft.com/en-us/library/bdscwf1c.aspx
+	# 
+	if(MSVC_VERSION LESS 1700) # <=VS 2012 (from my experience, in VS2012 this isn't needed).
+		SET(EXTRA_CPP_FLAGS "${EXTRA_CPP_FLAGS} /Zm1000")
+	endif(MSVC_VERSION LESS 1700)
 
 	# Whole program optimization
 	IF(MRPT_WHOLE_PROGRAM_OPTIMIZATION AND MSVC)
@@ -470,6 +481,7 @@ ENDIF(MRPT_EXTRA_WARNINGS)
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${EXTRA_CPP_FLAGS} ${USER_EXTRA_CPP_FLAGS}")
 SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${EXTRA_CPP_FLAGS} ${USER_EXTRA_CPP_FLAGS}")
 
+
 # Some tricks for MSVC:
 if(MSVC)
 	STRING(REGEX REPLACE "/EHsc" "/EHa" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
@@ -480,8 +492,7 @@ if(MSVC)
 	endif (COMPILE_IN_PARALLEL)
 
 	# For MSVC to avoid the C1128 error about too large object files:
-	SET(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /bigobj")
-	SET(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /bigobj")
+	SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /bigobj")
 
 endif(MSVC)
 
