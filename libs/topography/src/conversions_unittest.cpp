@@ -83,8 +83,21 @@ TEST(TopographyConversion, geodeticToENU_WGS84 )
 	TPoint3D P;
 	mrpt::topography::geodeticToENU_WGS84(gps_point, P,gps_ref);
 
-	TPoint3D P_true(279.679068,216.650884,8.647818);
+	TPoint3D P_true(279.679067794,216.621954,9.34448);
 	EXPECT_NEAR(P.x,P_true.x, 3e-3); // Precision should be *much* better than 1mm, but don't be so hard...
 	EXPECT_NEAR(P.y,P_true.y, 3e-3);
 	EXPECT_NEAR(P.z,P_true.z, 3e-3);
+
+
+	// 2nd test: just modify the height and verify that ENU coordinates only change in Z:
+	mrpt::topography::TGeodeticCoords gps_point2 = gps_ref;
+	const double A_height = 15.0;
+	gps_point2.height += A_height;
+
+	mrpt::topography::geodeticToENU_WGS84(gps_point2, P,gps_ref);
+
+	EXPECT_NEAR(P.x,0, 0.1e-3);  // Precision: 0.1mm
+	EXPECT_NEAR(P.y,0, 0.1e-3);
+	EXPECT_NEAR(P.z,A_height, 0.1e-3);
+
 }

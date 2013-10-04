@@ -43,6 +43,7 @@ using namespace std;
 
 void TestGPS_coords()
 {
+	// ENU:
 	const mrpt::topography::TGeodeticCoords p0(
 		RAD2DEG( 0.6408472493152757 ), // lat
 		RAD2DEG(-0.0780454933097760 ), // lon
@@ -60,10 +61,26 @@ void TestGPS_coords()
 
 	mrpt::poses::TPoint3D   p;
 	mrpt::topography::geodeticToENU_WGS84(p1,p, p0);
-
-	// OLD: coordinatesTransformation_WGS84(lon1,lat1,h1, p.x,p.y,p.z, lon0,lat0,h0);
-
 	cout << "ENU XYZ coords: " << p << endl;
+
+	// Geocentric:
+	const mrpt::topography::TGeodeticCoords pt0(32.0, -10.0, 0.0 );
+	const mrpt::topography::TGeodeticCoords pt1(32.0, -10.0, 500.0 );
+
+	mrpt::poses::TPoint3D   geo0,geo1;
+	mrpt::topography::geodeticToGeocentric_WGS84(pt0,geo0);
+	mrpt::topography::geodeticToGeocentric_WGS84(pt1,geo1);
+	cout << "P0 XYZ geocentric coords: " << geo0 << endl;
+	cout << "P1 XYZ geocentric coords: " << geo1 << endl;
+
+
+	// ENU_axes_from_WGS84
+	mrpt::math::TPose3D pose_ENU;
+	mrpt::topography::ENU_axes_from_WGS84(pt0.lon, pt0.lat, pt0.height, pose_ENU);
+	cout << "ENU system of coordinates for lat=" << pt0.lat << " lon=" << pt0.lon << " alt="<< pt0.height << " is: \n" << mrpt::poses::CPose3D(pose_ENU).getHomogeneousMatrixVal() << endl;
+
+	cout << "P0->P1: " << (geo1-geo0) << endl;
+	cout << "(p1.h-p0.h)*ENU_Z: " << (pt1.height-pt0.height)*mrpt::poses::CPose3D(pose_ENU).getRotationMatrix().block<3,1>(0,2).transpose() << endl;
 
 	// UTM:
 	// See: http://www.mathworks.com/matlabcentral/fileexchange/10915

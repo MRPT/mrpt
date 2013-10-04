@@ -89,6 +89,7 @@ void  mrpt::topography::geodeticToENU_WGS84(
 	//
 	// See: http://en.wikipedia.org/wiki/Reference_ellipsoid
 	// (JLBC 21/DEC/2006)  (Fixed: JLBC 9/JUL/2008)
+	// - Oct/2013, Emilio Sanjurjo: Fixed UP vector pointing exactly normal to ellipsoid surface.
 	// --------------------------------------------------------------------
 	// Generate 3D point:
 	TPoint3D	P_geocentric;
@@ -97,42 +98,19 @@ void  mrpt::topography::geodeticToENU_WGS84(
 	// Generate reference 3D point:
 	TPoint3D P_geocentric_ref;
 	geodeticToGeocentric_WGS84(in_coords_origin,P_geocentric_ref);
-
-	vector_double   P_ref(3);
-	P_ref[0] = P_geocentric_ref.x;
-	P_ref[1] = P_geocentric_ref.y;
-	P_ref[2] = P_geocentric_ref.z;
-
-	// Z axis -> In direction out-ward the center of the Earth:
-	vector_double	REF_X(3),REF_Y(3),REF_Z(3);
-	math::normalize(P_ref, REF_Z);
-
-	// 1st column: Starting at the reference point, move in the tangent direction
-	//   east-ward: I compute this as the derivative of P_ref wrt "longitude":
-	//      A_east[0] =-(N+in_height_meters)*cos(lat)*sin(lon);  --> -Z[1]
-	//      A_east[1] = (N+in_height_meters)*cos(lat)*cos(lon);  -->  Z[0]
-	//      A_east[2] = 0;                                       -->  0
-	// ---------------------------------------------------------------------------
-	vector_double AUX_X(3);
-	AUX_X[0]=-REF_Z[1];
-	AUX_X[1]= REF_Z[0];
-	AUX_X[2]= 0;
-	math::normalize(AUX_X, REF_X);
-
-	// 2nd column: The cross product:
-	math::crossProduct3D(REF_Z, REF_X, REF_Y);
-
+	
+	const double clat = cos(DEG2RAD(in_coords_origin.lat)), slat = sin(DEG2RAD(in_coords_origin.lat));
+	const double clon = cos(DEG2RAD(in_coords_origin.lon)), slon = sin(DEG2RAD(in_coords_origin.lon));
+	
 	// Compute the resulting relative coordinates:
 	// For using smaller numbers:
-	P_geocentric.x -= P_ref[0];
-	P_geocentric.y -= P_ref[1];
-	P_geocentric.z -= P_ref[2];
+	P_geocentric -= P_geocentric_ref;
 
 	// Optimized calculation: Local transformed coordinates of P_geo(x,y,z)
-	//   after rotation given by the three vectors REF_X,Y,Z:
-	out_ENU_point.x = REF_X[0]*P_geocentric.x+REF_X[1]*P_geocentric.y+REF_X[2]*P_geocentric.z;
-	out_ENU_point.y = REF_Y[0]*P_geocentric.x+REF_Y[1]*P_geocentric.y+REF_Y[2]*P_geocentric.z;
-	out_ENU_point.z = REF_Z[0]*P_geocentric.x+REF_Z[1]*P_geocentric.y+REF_Z[2]*P_geocentric.z;
+	//   after rotation given by the transposed rotation matrix from ENU -> ECEF.
+	out_ENU_point.x = -slon*P_geocentric.x + clon*P_geocentric.y;
+	out_ENU_point.y = -clon*slat*P_geocentric.x -slon*slat*P_geocentric.y + clat*P_geocentric.z;
+	out_ENU_point.z = clon*clat*P_geocentric.x + slon*clat*P_geocentric.y +slat*P_geocentric.z;
 }
 
 
@@ -148,40 +126,28 @@ void mrpt::topography::ENU_axes_from_WGS84(
 	)
 {
 	// See "coordinatesTransformation_WGS84" for more comments.
-
 	TPoint3D PPref;
 	mrpt::topography::geodeticToGeocentric_WGS84(
 		TGeodeticCoords(in_latitude_reference_degrees, in_longitude_reference_degrees, in_height_reference_meters),
 		PPref );
 
-	vector_double   P_ref(3);
-	P_ref[0]=PPref.x; P_ref[1]=PPref.y;  P_ref[2]=PPref.z;
+	const double clat = cos(DEG2RAD(in_latitude_reference_degrees)), slat = sin(DEG2RAD(in_latitude_reference_degrees));
+	const double clon = cos(DEG2RAD(in_longitude_reference_degrees)), slon = sin(DEG2RAD(in_longitude_reference_degrees));
 
-	// Z axis -> In direction out-ward the center of the Earth:
-	vector_double	REF_X(3),REF_Y(3),REF_Z(3);
-	math::normalize(P_ref, REF_Z);
-
-	vector_double AUX_X(3);
-	AUX_X[0]=-REF_Z[1];
-	AUX_X[1]= REF_Z[0];
-	AUX_X[2]= 0;
-	math::normalize(AUX_X, REF_X);
-
-	math::crossProduct3D(REF_Z, REF_X, REF_Y);
-
-	CMatrixDouble44	 HM;
-
-	for (size_t i=0;i<3;i++)
-	{
-		HM(i,0) = REF_X[i];
-		HM(i,1) = REF_Y[i];
-		HM(i,2) = REF_Z[i];
-		HM(i,3) = only_angles ? 0 : P_ref[i];
-	}
+	CMatrixDouble44	 HM; // zeros by default
+	HM(0,0) = -slon;   HM(0,1) = -clon*slat;  HM(0,2) = clon*clat; 
+	HM(1,0) = clon;    HM(1,1) = -slon*slat;  HM(1,2) = slon*clat; 
+	HM(2,0) = 0;       HM(2,1) = clat;       HM(2,2) = slat; 
 	HM(3,3)=1;
 
-	const CPose3D  p= CPose3D(HM);
-	out_ENU = p;
+	if (!only_angles)
+	{
+		HM(0,3) = PPref.x;
+		HM(1,3) = PPref.y;
+		HM(2,3) = PPref.z;
+	}
+	
+	out_ENU = mrpt::math::TPose3D(CPose3D(HM));
 }
 
 //*---------------------------------------------------------------

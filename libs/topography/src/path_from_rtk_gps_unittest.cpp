@@ -93,8 +93,8 @@ TEST(TopographyReconstructPathFrom3RTK, sampleDataset )
 		//1226225380.000000 377.095830 233.343569 9.724171 0.177037 -0.073565 -0.019024
 		const mrpt::system::TTimeStamp t1 = mrpt::system::time_tToTimestamp( 1226225355.000000 );
 		const mrpt::system::TTimeStamp t2 = mrpt::system::time_tToTimestamp( 1226225380.000000 );
-		const CPose3D pose_GT_1(279.705647,216.651473,8.517821,0.194222,-0.083873,-0.045293);
-		const CPose3D pose_GT_2(377.095830,233.343569,9.724171,0.177037,-0.073565,-0.019024);
+		const CPose3D pose_GT_1(279.696, 216.623, 9.21315, 0.195764, -0.0319733, -0.0420478 );
+		const CPose3D pose_GT_2(377.087, 233.311, 10.474,0.178932,-0.0212096,-0.0154982 );
 
 		CPose3D pose1,pose2;
 		bool    valid;
@@ -103,7 +103,6 @@ TEST(TopographyReconstructPathFrom3RTK, sampleDataset )
 
 		robot_path.interpolate(t2,pose2,valid);
 		EXPECT_TRUE(valid);
-
 
 		vector_double p1vec(12), p2vec(12);
 		pose1.getAs12Vector(p1vec);
