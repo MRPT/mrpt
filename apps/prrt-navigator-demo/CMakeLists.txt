@@ -10,15 +10,6 @@ INCLUDE(../../cmakemodules/AssureCMakeRootFile.cmake) # Avoid user mistake in CM
 
 PROJECT(prrt_navigator_demo)
 
-FIND_PACKAGE(OMPL REQUIRED)
-IF(OMPL_FOUND)
-      MESSAGE(STATUS "OMPL successfully found!")
-
-ELSE(OMPL_FOUND)
-      MESSAGE(STATUS "OMPL not found!: **This target will not be included in the Makefiles**")
-
-ENDIF(OMPL_FOUND)
-
 IF(wxWidgets_FOUND)
 
 	# ---------------------------------------------

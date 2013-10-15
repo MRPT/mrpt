@@ -59,8 +59,8 @@
 //*)
 
 //(*Including external Open Motion Planning Library - OMPL
-#include <ompl/geometric/planners/rrt/RRTstar.h>
-#include <omplapp/apps/DynamicCarPlanning.h>
+//#include <ompl/geometric/planners/rrt/RRTstar.h>
+//#include <omplapp/apps/DynamicCarPlanning.h>
 //*)
 
 #include <mrpt/gui/WxUtils.h>
