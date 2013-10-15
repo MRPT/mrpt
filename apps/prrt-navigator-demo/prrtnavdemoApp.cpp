@@ -61,6 +61,7 @@ bool ReactiveNavigationDemoApp::OnInit()
     	ReactiveNavigationDemoFrame* Frame = new ReactiveNavigationDemoFrame(0);
     	Frame->Show();
     	SetTopWindow(Frame);
+
     }
     //*)
     return wxsOK;

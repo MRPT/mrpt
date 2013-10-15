@@ -625,6 +625,8 @@ bool CParameterizedTrajectoryGenerator::CColisionGrid::loadFromFile( CStream *f,
   ---------------------------------------------------------------*/
 void CParameterizedTrajectoryGenerator::lambdaFunction( float x, float y, int &k_out, float &d_out )
 {
+    ASSERTMSG_(m_alphaValuesCount>0, "Have you called simulateTrajectories() first?")
+
 	// -------------------------------------------------------------------
 	// Optimization: (24-JAN-2007 @ Jose Luis Blanco):
 	//  Use a "grid" to determine the range of [k,d] values to check!!

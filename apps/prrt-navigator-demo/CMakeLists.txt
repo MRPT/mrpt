@@ -10,6 +10,15 @@ INCLUDE(../../cmakemodules/AssureCMakeRootFile.cmake) # Avoid user mistake in CM
 
 PROJECT(prrt_navigator_demo)
 
+FIND_PACKAGE(OMPL REQUIRED)
+IF(OMPL_FOUND)
+      MESSAGE(STATUS "OMPL successfully found!")
+
+ELSE(OMPL_FOUND)
+      MESSAGE(STATUS "OMPL not found!: **This target will not be included in the Makefiles**")
+
+ENDIF(OMPL_FOUND)
+
 IF(wxWidgets_FOUND)
 
 	# ---------------------------------------------
@@ -34,7 +43,7 @@ IF(wxWidgets_FOUND)
 	SET(TMP_TARGET_NAME "prrt-navigator-demo")
 
 
-	
+
 
 	# Add the required libraries for linking:
 	TARGET_LINK_LIBRARIES(${TMP_TARGET_NAME} ${wxWidgets_LIBRARIES} )
@@ -43,14 +52,14 @@ IF(wxWidgets_FOUND)
 	TARGET_LINK_LIBRARIES(${TMP_TARGET_NAME} mrpt-reactivenav)
 
 	# Dependencies on MRPT libraries:
-	#  Just mention the top-level dependency, the rest will be detected automatically, 
+	#  Just mention the top-level dependency, the rest will be detected automatically,
 	#  and all the needed #include<> dirs added (see the script DeclareAppDependencies.cmake for further details)
 	DeclareAppDependencies(${TMP_TARGET_NAME} mrpt-reactivenav mrpt-gui)
 
 	DeclareAppForInstall(${TMP_TARGET_NAME})
 
 	AppStartMenuLink(${TMP_TARGET_NAME} "PRRT robot navigator demo")   # Add link to the Start menu (in Windows Installable packages)
-		
+
 ELSE(wxWidgets_FOUND)
 	# ----------------------------------------------------------------------------------
     # For convenience. When we cannot continue, inform the user

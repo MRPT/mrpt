@@ -41,7 +41,6 @@
 
 #include <mrpt/base.h>
 
-
 // In milliseconds:
 #define SIMULATION_TIME_STEPS   20
 
@@ -57,6 +56,11 @@
 #include <wx/intl.h>
 #include <wx/image.h>
 #include <wx/string.h>
+//*)
+
+//(*Including external Open Motion Planning Library - OMPL
+#include <ompl/geometric/planners/rrt/RRTstar.h>
+#include <omplapp/apps/DynamicCarPlanning.h>
 //*)
 
 #include <mrpt/gui/WxUtils.h>
@@ -209,7 +213,7 @@ ReactiveNavigationDemoFrame::ReactiveNavigationDemoFrame(wxWindow* parent,wxWind
     wxFlexGridSizer* FlexGridSizer6;
     wxFlexGridSizer* FlexGridSizer1;
     wxFlexGridSizer* FlexGridSizer11;
-    
+
     Create(parent, wxID_ANY, _("PTG-based RRT navigator demo - Part of MRPT"), wxDefaultPosition, wxDefaultSize, wxDEFAULT_FRAME_STYLE, _T("wxID_ANY"));
     {
     	wxIcon FrameIcon;
@@ -360,7 +364,7 @@ ReactiveNavigationDemoFrame::ReactiveNavigationDemoFrame(wxWindow* parent,wxWind
     FlexGridSizer1->Fit(this);
     FlexGridSizer1->SetSizeHints(this);
     Center();
-    
+
     Connect(ID_BUTTON1,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&ReactiveNavigationDemoFrame::OnbtnStartClick);
     Connect(ID_BUTTON2,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&ReactiveNavigationDemoFrame::OnbtnPauseClick);
     Connect(ID_BUTTON6,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&ReactiveNavigationDemoFrame::OnbtnResetSimClick);
