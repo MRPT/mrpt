@@ -315,6 +315,8 @@ void  CMesh::assignImageAndZ( const CImage& img, const mrpt::math::CMatrixTempla
 	MRPT_START
 
 	ASSERT_((img.getWidth() == static_cast<size_t>(in_Z.cols()))&&(img.getHeight() == static_cast<size_t>(in_Z.rows())))
+
+	Z = in_Z;
 		
 	// Make a copy:
 	m_textureImage = img;
@@ -324,7 +326,7 @@ void  CMesh::assignImageAndZ( const CImage& img, const mrpt::math::CMatrixTempla
 	m_enableTransparency = false;
 	m_colorFromZ = false;
 	m_isImage = true;
-	trianglesUpToDate=false;
+	trianglesUpToDate = false;
 	
 
 	CRenderizableDisplayList::notifyChange();
