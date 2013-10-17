@@ -177,8 +177,8 @@ void CMesh::updateTriangles() const	{
 			tri.z[2]=Z(iX,iY+1);
 			if (m_colorFromZ)	{
 				colormap(m_colorMap,C(iX,iY),tri.r[0],tri.g[0],tri.b[0]);
-				colormap(m_colorMap,C(iX+1,iY),tri.r[1],tri.g[1],tri.b[1]);
-				colormap(m_colorMap,C(iX+1,iY+1),tri.r[2],tri.g[2],tri.b[2]);
+				colormap(m_colorMap,C(iX+1,iY+1),tri.r[1],tri.g[1],tri.b[1]);
+				colormap(m_colorMap,C(iX,iY+1),tri.r[2],tri.g[2],tri.b[2]);
 			}	
 			else if (m_isImage)	{
 				if (m_textureImage.isColor())
