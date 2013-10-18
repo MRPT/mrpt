@@ -2948,20 +2948,24 @@ void mpPolygon::setPoints(
     {
     	m_shape_xs.resize(points_xs.size());
     	m_shape_ys.resize(points_xs.size());
-    	std::vector<float>::const_iterator itX,itY;
-    	std::vector<double>::iterator itXo,itYo;
-    	for (itX=points_xs.begin(),itY=points_ys.begin(),itXo=m_shape_xs.begin(),itYo=m_shape_ys.begin();
-    	  itX!=points_xs.end();itX++,itY++,itXo++,itYo++)
-		{
-			*itXo = (double) *itX;
-			*itYo = (double) *itY;
-		}
 
-        if ( closedShape && points_xs.size())
-        {
-            m_shape_xs.push_back( (double)points_xs[0] );
-            m_shape_ys.push_back( (double)points_ys[0] );
-        }
+		if (!points_xs.empty())
+		{
+    		std::vector<float>::const_iterator itX,itY;
+    		std::vector<double>::iterator itXo,itYo;
+    		for (itX=points_xs.begin(),itY=points_ys.begin(),itXo=m_shape_xs.begin(),itYo=m_shape_ys.begin();
+    		  itX!=points_xs.end();itX++,itY++,itXo++,itYo++)
+			{
+				*itXo = (double) *itX;
+				*itYo = (double) *itY;
+			}
+
+			if ( closedShape)
+			{
+				m_shape_xs.push_back( (double)points_xs[0] );
+				m_shape_ys.push_back( (double)points_ys[0] );
+			}
+		}
 
         ShapeUpdated();
     }
