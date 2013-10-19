@@ -17,6 +17,7 @@ REM =================== SET ALL IMPORTANT PATHS ===================
 set msvc9_DIR=C:\Program Files (x86)\Microsoft Visual Studio 9.0
 set msvc10_DIR=C:\Program Files (x86)\Microsoft Visual Studio 10.0
 set msvc11_DIR=D:\Program Files (x86)\Microsoft Visual Studio 11.0
+set msvc12_DIR=D:\Program Files (x86)\Microsoft Visual Studio 12.0
 REM MinGW directories will be: %MINGW_ROOT%-32 and %MINGW_ROOT%-64  
 REM  (NOTE: Use "/" for paths in this one)
 set MINGW_ROOT=d:/MinGW
@@ -50,6 +51,14 @@ call :subGen
 set ARCHN=64
 call :subGen
 
+REM msvc12 ========================
+set COMP=msvc12
+set ARCHN=32
+call :subGen
+
+set ARCHN=64
+call :subGen
+
 
 :MINGW_PARTS
 REM MinGW ========================
@@ -77,9 +86,11 @@ REM Visual Studio --------------------------
 if %COMP%==msvc9 set MSVC_DIR=%msvc9_DIR%
 if %COMP%==msvc10 set MSVC_DIR=%msvc10_DIR%
 if %COMP%==msvc11 set MSVC_DIR=%msvc11_DIR%
+if %COMP%==msvc12 set MSVC_DIR=%msvc12_DIR%
 if %COMP%==msvc9 set CMAKE_GEN=Visual Studio 9 2008
 if %COMP%==msvc10 set CMAKE_GEN=Visual Studio 10
 if %COMP%==msvc11 set CMAKE_GEN=Visual Studio 11
+if %COMP%==msvc12 set CMAKE_GEN=Visual Studio 12
 if %ARCHN%==64 set CMAKE_GEN=%CMAKE_GEN% Win64
 
 set CMAKE_EXTRA1=
