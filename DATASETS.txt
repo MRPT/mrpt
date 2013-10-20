@@ -1,4 +1,7 @@
-Some sample datasets are stored in MRPT/share/mrpt/datasets.
+Some sample datasets are stored in: 
 
-More datasets are available for download at:
-http://www.mrpt.org/Downloads
+ [MRPT]/share/mrpt/datasets
+ 
+A more complete dataset repository is available online:
+  http://www.mrpt.org/robotics_datasets
+
