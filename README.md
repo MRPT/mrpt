@@ -17,6 +17,14 @@ avoidance, etc.
   * Main website [http://www.mrpt.org/](http://www.mrpt.org/)
   * C++ API reference: [http://reference.mrpt.org/](http://reference.mrpt.org/).
   * Google group for questions: [http://www.mrpt.org/forum/](http://www.mrpt.org/forum/)
+  * Download the latest unstable code with: 
+    * Git: 
+    
+            git clone https://github.com/jlblancoc/mrpt.git mrpt-git
+
+    * Subversion: 
+    
+            svn co https://github.com/jlblancoc/mrpt/trunk/ mrpt-svn
 
 
 3. Compiling
