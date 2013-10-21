@@ -8,8 +8,8 @@ SET(CPACK_PACKAGE_DESCRIPTION_SUMMARY "The Mobile Robot Programming Toolkit (MRP
 SET(CPACK_PACKAGE_VENDOR "Jose Luis Blanco Claraco")
 SET(CPACK_PACKAGE_CONTACT "Jose Luis Blanco Claraco <joseluisblancoc@gmail.com>")
 
-SET(CPACK_PACKAGE_DESCRIPTION_FILE "${CMAKE_CURRENT_SOURCE_DIR}/README.txt")
-SET(CPACK_RESOURCE_FILE_WELCOME "${CMAKE_CURRENT_SOURCE_DIR}/README.txt")
+SET(CPACK_PACKAGE_DESCRIPTION_FILE "${CMAKE_CURRENT_SOURCE_DIR}/README.md")
+SET(CPACK_RESOURCE_FILE_WELCOME "${CMAKE_CURRENT_SOURCE_DIR}/README.md")
 SET(CPACK_PACKAGE_DESCRIPTION_SUMMARY "MRPT is a set of C++ libraries and applications for mobile robot software development.")
 FILE(READ ${CPACK_PACKAGE_DESCRIPTION_FILE} CPACK_DESCRIPTION_TEXT)
 
@@ -18,7 +18,7 @@ SET(CPACK_PACKAGE_VERSION_MINOR "${CMAKE_MRPT_VERSION_NUMBER_MINOR}")
 SET(CPACK_PACKAGE_VERSION_PATCH "${CMAKE_MRPT_VERSION_NUMBER_PATCH}")
 
 SET(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/COPYING")
-SET(CPACK_RESOURCE_FILE_README "${CMAKE_CURRENT_SOURCE_DIR}/README.txt")
+SET(CPACK_RESOURCE_FILE_README "${CMAKE_CURRENT_SOURCE_DIR}/README.md")
 
 SET(CPACK_SOURCE_GENERATOR "TGZ")
 
@@ -74,9 +74,8 @@ IF(WIN32)
 		INSTALL_COMPILE.html
 		MRPTConfig.cmake.in
 		NEWS.html
-		README
 		README.Debian
-		README.txt
+		README.md
 		version_prefix.txt
 		version_prefix_README.txt
 	DESTINATION .)
@@ -85,7 +84,7 @@ IF(WIN32)
 	SET(CPACK_PACKAGE_EXECUTABLES ${_str}) # --> Set in each apps/*/CMakeLists.txt file
 
 	SET(CPACK_NSIS_MENU_LINKS
-	    "doc;Documentation directory;bin;Directory of executables (bin);doc/chm/libMRPT-@CMAKE_MRPT_VERSION_NUMBER_MAJOR@.@CMAKE_MRPT_VERSION_NUMBER_MINOR@.@CMAKE_MRPT_VERSION_NUMBER_PATCH@.chm;MRPT libraries reference (CHM);README.txt;Read me;http://www.mrpt.org/;Online help;doc/mrpt-book.pdf;The MRPT book (PDF);doc/srba-guide.pdf;The SRBA programming guide (PDF)")
+	    "doc;Documentation directory;bin;Directory of executables (bin);doc/chm/libMRPT-@CMAKE_MRPT_VERSION_NUMBER_MAJOR@.@CMAKE_MRPT_VERSION_NUMBER_MINOR@.@CMAKE_MRPT_VERSION_NUMBER_PATCH@.chm;MRPT libraries reference (CHM);http://www.mrpt.org/;Online help;doc/mrpt-book.pdf;The MRPT book (PDF);doc/srba-guide.pdf;The SRBA programming guide (PDF)")
 
 	# File types association:
 	SET(CPACK_NSIS_DEFINES "
