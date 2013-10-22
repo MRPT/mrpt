@@ -590,7 +590,7 @@ include(cmakemodules/script_setup_cpack.cmake REQUIRED)
 #   Uninstall target, for "make uninstall"
 # ----------------------------------------------------------------------------
 CONFIGURE_FILE(
-  "${CMAKE_CURRENT_SOURCE_DIR}/cmake_uninstall.cmake.in"
+  "${CMAKE_CURRENT_SOURCE_DIR}/parse-files/cmake_uninstall.cmake.in"
   "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake"
   IMMEDIATE @ONLY)
 

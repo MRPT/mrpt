@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------------
 #  Loads the current version number:
 # ----------------------------------------------------------------------------
-FILE(READ "${CMAKE_CURRENT_SOURCE_DIR}/version_prefix.txt" CMAKE_MRPT_VERSION_NUMBER)
+FILE(STRINGS "${CMAKE_CURRENT_SOURCE_DIR}/version_prefix.txt" CMAKE_MRPT_VERSION_NUMBER LIMIT_COUNT 1) # Read only the first line
 
 # For example: "0.5.1"
 STRING(REGEX MATCHALL "[0-9]+" CMAKE_MRPT_VERSION_PARTS "${CMAKE_MRPT_VERSION_NUMBER}")

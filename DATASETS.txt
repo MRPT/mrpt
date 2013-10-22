@@ -1,7 +1,0 @@
-Some sample datasets are stored in: 
-
- [MRPT]/share/mrpt/datasets
- 
-A more complete dataset repository is available online:
-  http://www.mrpt.org/robotics_datasets
-

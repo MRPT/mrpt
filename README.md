@@ -26,6 +26,13 @@ avoidance, etc.
     
             svn co https://github.com/jlblancoc/mrpt/trunk/ mrpt-svn
 
+  * Example configuration files for  MRPT applications can be found at: 
+     [MRPT]/share/mrpt/config_files
+
+  * Some sample datasets are stored in: 
+     [MRPT]/share/mrpt/datasets
+    A more complete dataset repository is [available online](http://www.mrpt.org/robotics_datasets).
+
 
 3. Compiling
 ------------------------------------------------------------------------------

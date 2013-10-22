@@ -66,18 +66,12 @@ IF(WIN32)
 	ENDIF (PACKAGE_INCLUDES_SOURCES)
 
 	INSTALL(FILES
-		cmake_uninstall.cmake.in
 		CMakeLists.txt
-		config_file_examples.txt
 		COPYING
-		DATASETS.txt
 		INSTALL_COMPILE.html
-		MRPTConfig.cmake.in
 		NEWS.html
-		README.Debian
 		README.md
 		version_prefix.txt
-		version_prefix_README.txt
 	DESTINATION .)
 
 	get_property(_str GLOBAL PROPERTY "MRPT_CPACK_PACKAGE_EXECUTABLES")

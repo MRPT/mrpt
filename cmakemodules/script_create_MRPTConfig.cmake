@@ -26,7 +26,7 @@ SET(THE_CMAKE_BINARY_DIR "${CMAKE_BINARY_DIR}")
 SET(THE_MRPT_CONFIG_FILE_INCLUDE_DIR "${MRPT_CONFIG_FILE_INCLUDE_DIR}")
 SET(MRPT_CONFIGFILE_IS_INSTALL 0)
 
-CONFIGURE_FILE("${MRPT_SOURCE_DIR}/MRPTConfig.cmake.in"
+CONFIGURE_FILE("${MRPT_SOURCE_DIR}/parse-files/MRPTConfig.cmake.in"
                "${MRPT_BINARY_DIR}/MRPTConfig.cmake" @ONLY IMMEDIATE )
 
 # ----------------------------------------------------------------------------
@@ -56,5 +56,5 @@ ELSE(WIN32)
 	ENDIF(CMAKE_MRPT_USE_DEB_POSTFIXS)
 ENDIF(WIN32)
 
-CONFIGURE_FILE("${MRPT_SOURCE_DIR}/MRPTConfig.cmake.in"
+CONFIGURE_FILE("${MRPT_SOURCE_DIR}/parse-files/MRPTConfig.cmake.in"
                "${MRPT_BINARY_DIR}/unix-install/MRPTConfig.cmake" @ONLY IMMEDIATE )
