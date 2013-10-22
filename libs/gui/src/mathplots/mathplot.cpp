@@ -50,6 +50,7 @@
 #include <cmath>
 #include <cstdio> // used only for debug
 #include <ctime> // used for representation of x axes involving date
+#include <algorithm> // For std::min()/max()
 
 // #include "pixel.xpm"
 
