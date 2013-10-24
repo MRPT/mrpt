@@ -92,9 +92,7 @@ namespace mrpt
 
 			bool	checkCRC( const std::vector<unsigned char> &frame );
 
-			/** Loads specific configuration for the device from a given source of configuration parameters, for example, an ".ini" file, loading from the section "[iniSection]" (see utils::CConfigFileBase and derived classes)
-			  *  See hwdrivers::CBoardDLMS for the possible parameters
-			  */
+			/** See the class documentation at the top for expected parameters */
 			void  loadConfig_sensorSpecific(
 				const mrpt::utils::CConfigFileBase &configSource,
 				const std::string	  &iniSection );

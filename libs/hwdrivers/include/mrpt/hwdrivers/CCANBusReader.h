@@ -117,9 +117,7 @@ namespace mrpt
 			bool            m_CANBusChannel_isOpen; // if the can bus channel is open or not
 
 		protected:
-			/** Loads specific configuration for the device from a given source of configuration parameters, for example, an ".ini" file, loading from the section "[iniSection]" (see utils::CConfigFileBase and derived classes)
-			  *  See hwdrivers::CCANBusReader for the possible parameters
-			  */
+			/** See the class documentation at the top for expected parameters */
 			void  loadConfig_sensorSpecific(
 				const mrpt::utils::CConfigFileBase &configSource,
 				const std::string	  &iniSection );

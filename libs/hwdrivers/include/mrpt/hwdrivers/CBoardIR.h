@@ -134,9 +134,7 @@ namespace mrpt
 			  */
 			std::map<uint16_t,mrpt::math::TPose3D>	m_IRPoses;
 
-			/** Loads specific configuration for the device from a given source of configuration parameters, for example, an ".ini" file, loading from the section "[iniSection]" (see utils::CConfigFileBase and derived classes)
-			  *  See hwdrivers::CGPSInterface for the possible parameters
-			  */
+			/** See the class documentation at the top for expected parameters */
 			void  loadConfig_sensorSpecific(
 				const mrpt::utils::CConfigFileBase &configSource,
 				const std::string	  &iniSection );
