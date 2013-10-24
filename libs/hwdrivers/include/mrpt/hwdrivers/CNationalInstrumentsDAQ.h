@@ -33,57 +33,60 @@
    | POSSIBILITY OF SUCH DAMAGE.                                               |
    +---------------------------------------------------------------------------+ */
 
-/**  This is the main "include file" for classes into the mrpt::hwdrivers namespace. This file
- *	   includes all the other ones, so user applications must include just this one
- *     and link against the library file "lib_hwdrivers.lib" / "lib_hwdrivers.a"
- */
-#ifndef HWDRIVERS_H
-#define HWDRIVERS_H
+#ifndef CNationalInstrumentsDAQ_H
+#define CNationalInstrumentsDAQ_H
 
-// Classes into HWDRIVERS
-// --------------------------------------------
+#include <mrpt/slam/CObservationRawDAQ.h>
+#include <mrpt/utils/CDebugOutputCapable.h>
 #include <mrpt/hwdrivers/CGenericSensor.h>
-#include <mrpt/hwdrivers/C2DRangeFinderAbstract.h>
-#include <mrpt/hwdrivers/CHokuyoURG.h>
-#include <mrpt/hwdrivers/CSickLaserUSB.h>
-#include <mrpt/hwdrivers/CSickLaserSerial.h>
-#include <mrpt/hwdrivers/CIbeoLuxETH.h>
-#include <mrpt/hwdrivers/CGPSInterface.h>
-#include <mrpt/hwdrivers/CInterfaceFTDIMessages.h>
-#include <mrpt/hwdrivers/CWirelessPower.h>
-#include <mrpt/hwdrivers/CRaePID.h>
-#include <mrpt/hwdrivers/CImpinjRFID.h>
-#include <mrpt/hwdrivers/CSerialPort.h>
-#include <mrpt/hwdrivers/CBoardDLMS.h>
-#include <mrpt/hwdrivers/CBoardIR.h>
-#include <mrpt/hwdrivers/CIMUXSens.h>
-#include <mrpt/hwdrivers/CActivMediaRobotBase.h>
-#include <mrpt/hwdrivers/CJoystick.h>
-#include <mrpt/hwdrivers/CCameraSensor.h>
-#include <mrpt/hwdrivers/CPtuDPerception.h>
-#include <mrpt/hwdrivers/CPtuHokuyo.h>
-#include <mrpt/hwdrivers/CTuMicos.h>
-#include <mrpt/hwdrivers/CFFMPEG_InputStream.h>
-#include <mrpt/hwdrivers/CNTRIPClient.h>
-#include <mrpt/hwdrivers/CLMS100eth.h>
-#include <mrpt/hwdrivers/CBoardSonars.h>
-#include <mrpt/hwdrivers/CBoardENoses.h>
-#include <mrpt/hwdrivers/CServoeNeck.h>
-#include <mrpt/hwdrivers/CNTRIPEmitter.h>
-#include <mrpt/hwdrivers/CRoboticHeadInterface.h>
-#include <mrpt/hwdrivers/CRovio.h>
-#include <mrpt/hwdrivers/CSwissRanger3DCamera.h>
-#include <mrpt/hwdrivers/CGyroKVHDSP3000.h>
 
-#include <mrpt/hwdrivers/CImageGrabber_dc1394.h>
-#include <mrpt/hwdrivers/CImageGrabber_OpenCV.h>
-#include <mrpt/hwdrivers/CStereoGrabber_Bumblebee.h>
-#include <mrpt/hwdrivers/CStereoGrabber_SVS.h>
-#include <mrpt/hwdrivers/CPhidgetInterfaceKitProximitySensors.h>
-#include <mrpt/hwdrivers/CInterfaceNI845x.h>
-#include <mrpt/hwdrivers/CKinect.h>
+namespace mrpt
+{
+	namespace slam { class CObservationRawDAQ; }
 
-#include <mrpt/hwdrivers/CCANBusReader.h>
-#include <mrpt/hwdrivers/CNationalInstrumentsDAQ.h>
+	namespace hwdrivers
+	{
+		/** An interface to read from data acquisition boards compatible with National Instruments DAQmx.
+		  *
+		  *  \code
+		  *  PARAMETERS IN THE ".INI"-LIKE CONFIGURATION STRINGS:
+		  * -------------------------------------------------------
+		  *   [supplied_section_name]
+		  *    num_tasks  = 2
+		  *    task0_ai_volt_channels    =  ai0, ai3:6     // Any NI-compliant sequence of channels
+		  *    task1_ang_encoder_channel =  Dev1/ai3:6     // Any NI-compliant sequence of channels
+		  *
+		  *  \endcode
+		  *
+		  * \ingroup mrpt_hwdrivers_grp
+		  */
+		class HWDRIVERS_IMPEXP CNationalInstrumentsDAQ : public utils::CDebugOutputCapable, public CGenericSensor
+		{
+			DEFINE_GENERIC_SENSOR(CNationalInstrumentsDAQ)
+		public:
+			/** Constructor */
+			CNationalInstrumentsDAQ();
+
+			/** Destructor */
+			virtual ~CNationalInstrumentsDAQ();
+
+			// See docs in parent class
+			void  doProcess();
+
+		protected:
+			/** See the class documentation at the top for expected parameters */
+			void  loadConfig_sensorSpecific(
+				const mrpt::utils::CConfigFileBase &configSource,
+				const std::string	  &iniSection );
+
+		private:
+			/* A private copy of the last received obs: */
+			mrpt::slam::CObservationRawDAQ	            m_latestDAQ_data;
+
+			
+		}; // end class
+
+	} // end namespace
+} // end namespace
 
 #endif

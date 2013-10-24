@@ -72,5 +72,6 @@ void registerAllClasses_mrpt_hwdrivers()
 	CGyroKVHDSP3000::doRegister();
 	CKinect::doRegister();
 	CCANBusReader::doRegister();
+	CNationalInstrumentsDAQ::doRegister();
 }
 
