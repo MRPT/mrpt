@@ -84,7 +84,7 @@ MRPT_EXAMPLE_PATH="$CUR_DIR/doc/doxygen-examples/"
 # --------------------------------
 if [ -f version_prefix.txt ]
 then
-	MRPT_VERSION_STR=`cat version_prefix.txt`
+	MRPT_VERSION_STR=`head -n 1 version_prefix.txt`
 else
 	echo "ERROR: Cannot find the file version_prefix.txt!\nIt should be at the MRPT root directory."
 	exit 1

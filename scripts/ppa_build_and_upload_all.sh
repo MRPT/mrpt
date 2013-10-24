@@ -5,7 +5,7 @@
 # Check:
 if [ -f version_prefix.txt ];
 then
-	MRPT_VERSION_STR=`cat version_prefix.txt`
+	MRPT_VERSION_STR=`head -n 1 version_prefix.txt`
 	echo "MRPT version: ${MRPT_VERSION_STR}"
 else
 	echo "ERROR: Run this script from the MRPT root directory."
