@@ -54,9 +54,9 @@ void  CObservationRawDAQ::writeToStream(CStream &out, int *version) const
 		*version = 0;
 	else
 	{
-		out << sensorLabel << timestamp
+		out << sensorLabel << timestamp << sample_rate
 			<< AIN_8bits << AIN_16bits << AIN_32bits
-			<< AOUT_8bits << AOUT_16bits << DIN << DOUT;
+			<< AOUT_8bits << AOUT_16bits << DIN << DOUT << CNTRIN_32bits << CNTRIN_double;
 	}
 }
 
@@ -69,9 +69,9 @@ void  CObservationRawDAQ::readFromStream(CStream &in, int version)
 	{
 	case 0:
 		{
-			in  >> sensorLabel >> timestamp
+			in  >> sensorLabel >> timestamp >> sample_rate
 				>> AIN_8bits >> AIN_16bits >> AIN_32bits
-				>> AOUT_8bits >> AOUT_16bits >> DIN >> DOUT;
+				>> AOUT_8bits >> AOUT_16bits >> DIN >> DOUT >> CNTRIN_32bits >> CNTRIN_double;
 
 		} break;
 	default:

@@ -46,6 +46,10 @@ namespace slam
 
 	/** Store raw data from a Data Acquisition (DAQ) device, such that input or output analog and digital channels, counters from encoders, etc. at one sampling instant.
 	 *  All analog values are assumed to be volts. 
+	 * On timing: 
+	 * - CObservation::timestamp corresponds to the time of the first samples in each of the vectors. 
+	 * - CObservationRawDAQ::sample_rate is the sampling rate, in samples per second per channel, as stored by the source driver.
+	 *
 	 * \sa CObservation
 	 * \ingroup mrpt_obs_grp
 	 */
@@ -55,19 +59,24 @@ namespace slam
 		DEFINE_SERIALIZABLE( CObservationRawDAQ )
 	 public:
 		/** Constructor */
-		inline CObservationRawDAQ(  ) { }
+		inline CObservationRawDAQ() : sample_rate(0) { }
 		/** Destructor */
 		virtual ~CObservationRawDAQ()
 		{ }
 
 		std::vector<uint8_t>  AIN_8bits;  /** Readings from 8-bit analog input (ADCs) channels (vector length=channel count) in Volts. */
 		std::vector<uint16_t> AIN_16bits; /** Readings from 16-bit analog input (ADCs) channels (vector length=channel count) in Volts. */
-		std::vector<uint32_t> AIN_32bits; /** Readings from 16-bit analog input (ADCs) channels (vector length=channel count) in Volts. */
+		std::vector<uint32_t> AIN_32bits; /** Readings from 32-bit analog input (ADCs) channels (vector length=channel count) in Volts. */
 		std::vector<uint8_t>  AOUT_8bits;  /** Present output values for 8-bit analog output (DACs) channels (vector length=channel count) in Volts.*/
 		std::vector<uint16_t> AOUT_16bits;  /** Present output values for 16-bit analog output (DACs) channels (vector length=channel count) in Volts.*/
 
 		std::vector<uint8_t>  DIN;   /** Readings from digital inputs; each byte stores 8 digital inputs, or 8-bit port. */
 		std::vector<uint8_t>  DOUT;  /** Present digital output values; each byte stores 8 digital inputs, or 8-bit port. */
+
+		std::vector<uint32_t> CNTRIN_32bits; /** Readings from ticks counters, such as quadrature encoders. (vector length=channel count) in ticks. */
+		std::vector<double>   CNTRIN_double; /** Readings from ticks counters, such as quadrature encoders. (vector length=channel count) in radians, degrees or any other unit (depends on the source driver). */
+
+		double sample_rate; //!< The sampling rate, in samples per second per channel
 
 		/** Not used in this class */
 		void getSensorPose( CPose3D &out_sensorPose ) const { }
