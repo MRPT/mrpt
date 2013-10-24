@@ -64,6 +64,7 @@ IF(BUILD_EXAMPLES)
 		poses
 		se3
 		csparse_demo
+		threadsPipe
 		)
 	SET(CMAKE_EXAMPLE_DEPS mrpt-base)
 	SET(CMAKE_EXAMPLE_LINK_LIBS ${MRPT_LINKER_LIBS})

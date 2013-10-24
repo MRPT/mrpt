@@ -33,15 +33,88 @@
    | POSSIBILITY OF SUCH DAMAGE.                                               |
    +---------------------------------------------------------------------------+ */
 
-#ifndef _mrpt_synch_H
-#define _mrpt_synch_H
+#include <mrpt/utils.h>
+#include <mrpt/system.h>
+#include <mrpt/synch.h>
 
-#include "synch/atomic_incr.h"
-#include "synch/CCriticalSection.h"
-#include "synch/CEvent.h"
-#include "synch/CSemaphore.h"
-#include "synch/MT_buffer.h"
-#include "synch/CThreadSafeVariable.h"
-#include "synch/CPipe.h"
+using namespace mrpt;
+using namespace mrpt::utils;
+using namespace mrpt::synch;
+using namespace mrpt::system;
+using namespace mrpt::random;
+using namespace std;
 
-#endif
+
+void thread_reader(std::auto_ptr<CPipeReadEndPoint> read_pipe)
+{
+	try
+	{
+		printf("[thread_reader ID:%lu] Started.\n", getCurrentThreadId());
+
+
+
+		printf("[thread_reader] Finished.\n");
+
+	}
+	catch(std::exception &e)
+	{
+		cerr << e.what() << endl;
+	}
+}
+
+void thread_writer(std::auto_ptr<CPipeWriteEndPoint> write_pipe)
+{
+	try
+	{
+		printf("[thread_writer ID:%lu] Started.\n", getCurrentThreadId());
+
+
+
+		printf("[thread_writer] Finished.\n");
+
+	}
+	catch(std::exception &e)
+	{
+		cerr << e.what() << endl;
+	}
+}
+
+
+// ------------------------------------------------------
+//				ThreadsTest
+// ------------------------------------------------------
+void ThreadsTest()
+{
+	std::auto_ptr<CPipeReadEndPoint>  read_pipe; 
+	std::auto_ptr<CPipeWriteEndPoint> write_pipe;
+		
+	CPipe::createPipe(read_pipe,write_pipe);
+
+	createThread( thread_reader, read_pipe );
+	createThread( thread_writer, write_pipe );
+
+
+	mrpt::system::sleep(2000);
+}
+
+// ------------------------------------------------------
+//						MAIN
+// ------------------------------------------------------
+int main()
+{
+	try
+	{
+		ThreadsTest();
+
+		return 0;
+	} catch (std::exception &e)
+	{
+		std::cout << "MRPT exception caught: " << e.what() << std::endl;
+		return -1;
+	}
+	catch (...)
+	{
+		printf("Untyped exception!!");
+		return -1;
+	}
+}

@@ -33,15 +33,79 @@
    | POSSIBILITY OF SUCH DAMAGE.                                               |
    +---------------------------------------------------------------------------+ */
 
-#ifndef _mrpt_synch_H
-#define _mrpt_synch_H
+#include <mrpt/base.h>  // Precompiled headers 
 
-#include "synch/atomic_incr.h"
-#include "synch/CCriticalSection.h"
-#include "synch/CEvent.h"
-#include "synch/CSemaphore.h"
-#include "synch/MT_buffer.h"
-#include "synch/CThreadSafeVariable.h"
-#include "synch/CPipe.h"
+#include <mrpt/synch/CPipe.h>
+
+#ifdef MRPT_OS_WINDOWS
+#	include <windows.h>
+#else
+#	include <sys/types.h>
+#	include <unistd.h>
+#	include <stdio.h>
+#	include <stdlib.h>
+#endif
+
+using namespace mrpt::utils;
+using namespace mrpt::synch;
+
+
+CPipeBaseEndPoint::CPipeBaseEndPoint() :
+	m_pipe_file(0)
+{
+}
+
+CPipeBaseEndPoint::~CPipeBaseEndPoint()
+{
+	// Close:
+	if (m_pipe_file)
+	{
+#		ifdef MRPT_OS_WINDOWS
+		// Win32 pipes
+
+
+#else
+		// UNIX pipes
 
 #endif
+	}
+	m_pipe_file = 0;
+}
+
+/** De-serializes one end-point description, for example, from a parent process. */
+CPipeBaseEndPoint::CPipeBaseEndPoint(const std::string &serialized)
+{
+	std::istringstream ss;
+	ss.str(serialized);
+
+#ifdef MRPT_OS_WINDOWS
+	// Win32 pipes
+	uint64_t val;
+	if (!(ss >> val))
+	{ THROW_EXCEPTION("Error parsing PIPE handle!") }
+	m_pipe_file = reinterpret_cast<void*>(val);
+#else
+	// UNIX pipes
+	ss >> m_pipe_file;
+#endif
+}
+			
+#include <mrpt/utils/mrpt_inttypes.h>
+
+/** Converts the end-point into a string suitable for reconstruction at a child process.
+* This *invalidates* this object, since only one real end-point can exist at once.
+*/
+std::string CPipeBaseEndPoint::serialize()
+{
+	std::string ret;
+#ifdef MRPT_OS_WINDOWS
+	// Win32 pipes
+	ret = mrpt::format("%"PRIu64 ,reinterpret_cast<uint64_t>(m_pipe_file) );
+#else
+	// UNIX pipes
+	ret= mrpt::format("%i",m_pipe_file);
+#endif
+	m_pipe_file=0; // We don't own this file anymore...
+	return ret;
+}
+
