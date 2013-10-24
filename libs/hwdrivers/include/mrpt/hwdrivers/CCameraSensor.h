@@ -187,18 +187,13 @@ namespace mrpt
 			DEFINE_GENERIC_SENSOR(CCameraSensor)
 
 		public:
-			/** Constructor
-			  *  The camera is not open until "initialize" is called.
-			  */
+			/** Constructor. The camera is not open until "initialize" is called. */
 			CCameraSensor();
-
-			/** Destructor
-			  */
+			
+			/** Destructor */
 			virtual ~CCameraSensor();
 
-			/** This method should be called periodically (at least at 1Hz to capture ALL the real-time data)
-			*  It is thread safe, i.e. you can call this from one thread, then to other methods from other threads.
-			*/
+			// See docs in parent class
 			void  doProcess();
 
 			/** Retrieves the next frame from the video source, raising an exception on any error.

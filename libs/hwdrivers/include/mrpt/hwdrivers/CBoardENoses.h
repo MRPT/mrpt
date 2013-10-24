@@ -140,9 +140,7 @@ namespace mrpt
 			bool getObservation( mrpt::slam::CObservationGasSensors &outObservation );
 
 
-			/** This method should be called periodically (at least at 1Hz to capture ALL the real-time data)
-			*  It is thread safe, i.e. you can call this from one thread, then to other methods from other threads.
-			*/
+			// See docs in parent class
 			void  doProcess();
 
 			/** Tries to open the camera, after setting all the parameters with a call to loadConfig.

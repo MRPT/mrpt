@@ -100,10 +100,7 @@ namespace mrpt
 			  */
 			virtual ~CGPSInterface();
 
-			/** This method should be called periodically (at least at 1Hz to capture ALL the real-time data)
-			*  It is thread safe, i.e. you can call this from one thread, then to other methods from other threads.
-			*  This method processes data from the GPS and update the object state accordingly.
-			*/
+			// See docs in parent class
 			void  doProcess();
 
 			/** Returns true if communications work.
