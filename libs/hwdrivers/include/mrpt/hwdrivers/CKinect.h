@@ -379,9 +379,7 @@ namespace mrpt
 #endif
 
 		protected:
-			/** Loads specific configuration for the device from a given source of configuration parameters, for example, an ".ini" file, loading from the section "[iniSection]" (see utils::CConfigFileBase and derived classes)
-			  *  \exception This method must throw an exception with a descriptive message if some critical parameter is missing or has an invalid value.
-			  */
+			/** See the class documentation at the top for expected parameters */
 			virtual void  loadConfig_sensorSpecific(
 				const mrpt::utils::CConfigFileBase &configSource,
 				const std::string			&section );

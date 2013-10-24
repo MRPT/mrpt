@@ -106,10 +106,7 @@ namespace mrpt
 				mrpt::slam::CObservationRange	&outObservation,
 				bool							&hardwareError );
 
-			/** This method should be called periodically (at least at 1Hz to capture ALL the real-time data)
-			*  It is thread safe, i.e. you can call this from one thread, then to other methods from other threads.
-			*  This method processes data from the GPS and update the object state accordingly.
-			*/
+			// See docs in parent class
 			void  doProcess();
 
 			void  setSerialPortName(const std::string &COM_port);	//!< Set the serial port to use (COM1, ttyUSB0, etc).
@@ -137,9 +134,7 @@ namespace mrpt
 			  */
 			std::map<uint16_t,mrpt::math::TPose3D>	m_IRPoses;
 
-			/** Loads specific configuration for the device from a given source of configuration parameters, for example, an ".ini" file, loading from the section "[iniSection]" (see utils::CConfigFileBase and derived classes)
-			  *  See hwdrivers::CGPSInterface for the possible parameters
-			  */
+			/** See the class documentation at the top for expected parameters */
 			void  loadConfig_sensorSpecific(
 				const mrpt::utils::CConfigFileBase &configSource,
 				const std::string	  &iniSection );

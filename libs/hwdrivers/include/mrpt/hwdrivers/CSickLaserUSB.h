@@ -90,9 +90,7 @@ namespace mrpt
 			bool  	waitContinuousSampleFrame( std::vector<float> &ranges, unsigned char &LMS_status, uint32_t &out_board_timestamp, bool &is_mm_mode );
 
 		protected:
-			/** Loads specific configuration for the device from a given source of configuration parameters, for example, an ".ini" file, loading from the section "[iniSection]" (see utils::CConfigFileBase and derived classes)
-			  *  See hwdrivers::CSickLaserUSB for the possible parameters
-			  */
+			/** See the class documentation at the top for expected parameters */
 			void  loadConfig_sensorSpecific(
 				const mrpt::utils::CConfigFileBase &configSource,
 				const std::string	  &iniSection );

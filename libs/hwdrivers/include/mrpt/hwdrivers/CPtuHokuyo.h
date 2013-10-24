@@ -72,9 +72,7 @@ namespace mrpt
 			char m_axis;			
 			double m_velocity, m_initial, m_final, m_hokuyo_frec;
 
-			/** Loads specific configuration for the device from a given source of configuration parameters, for example, an ".ini" file, loading from the section "[iniSection]" (see utils::CConfigFileBase and derived classes)
-			 *  \exception This method must throw an exception with a descriptive message if some critical parameter is missing or has an invalid value.
-			 */
+			/** See the class documentation at the top for expected parameters */
 			void  loadConfig_sensorSpecific(
 				const mrpt::utils::CConfigFileBase &configSource,
 				const std::string			&section );

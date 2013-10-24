@@ -227,10 +227,8 @@ namespace mrpt
 
 			void disconnectAndDisableMotors();
 			void connectAndEnableMotors();
-			/** Loads specific configuration for the device from a given source of configuration parameters, for example, an ".ini" file, loading from the section "[iniSection]" (see utils::CConfigFileBase and derived classes)
-			  *  See hwdrivers::CActivMediaRobotBase for the possible parameters
-			  * \sa setSerialPortConfig
-			  */
+			
+			/** See the class documentation at the top for expected parameters */
 			void  loadConfig_sensorSpecific(
 				const mrpt::utils::CConfigFileBase &configSource,
 				const std::string	  &iniSection );
