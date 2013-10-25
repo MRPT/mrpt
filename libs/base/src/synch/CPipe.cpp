@@ -33,7 +33,7 @@
    | POSSIBILITY OF SUCH DAMAGE.                                               |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/base.h>  // Precompiled headers 
+#include <mrpt/base.h>  // Precompiled headers
 #include <mrpt/utils/mrpt_inttypes.h>  // For PRIu64
 
 #include <mrpt/synch/CPipe.h>
@@ -55,19 +55,24 @@ using namespace mrpt::synch;
 /** Creates a new pipe and returns the read & write end-points as newly allocated objects. */
 void CPipe::createPipe(std::auto_ptr<CPipeReadEndPoint>& outReadPipe,std::auto_ptr<CPipeWriteEndPoint>& outWritePipe)
 {
+	outReadPipe  = std::auto_ptr<CPipeReadEndPoint>(new CPipeReadEndPoint);
+	outWritePipe = std::auto_ptr<CPipeWriteEndPoint>(new CPipeWriteEndPoint);
 #	ifdef MRPT_OS_WINDOWS
 	// Win32 pipes
 	HANDLE hRead, hWrite;
 	if (!CreatePipe(&hRead, &hWrite, NULL, 0))
 		THROW_EXCEPTION("Win32 error creating pipe endpoints!")
 
-	outReadPipe  = std::auto_ptr<CPipeReadEndPoint>(new CPipeReadEndPoint);
 	outReadPipe->m_pipe_file = hRead;
-	outWritePipe = std::auto_ptr<CPipeWriteEndPoint>(new CPipeWriteEndPoint); 
 	outWritePipe->m_pipe_file = hWrite;
 #else
 	// UNIX pipes
-	THROW_EXCEPTION("TODO")
+	int fds[2];
+	if (::pipe(fds))
+		THROW_EXCEPTION("Unix error creating pipe endpoints!")
+
+	outReadPipe->m_pipe_file = fds[0];
+	outWritePipe->m_pipe_file = fds[1];
 #endif
 }
 
@@ -86,15 +91,16 @@ CPipeBaseEndPoint::~CPipeBaseEndPoint()
 #		ifdef MRPT_OS_WINDOWS
 		// Win32 pipes
 
-		// Flush the pipe to allow the client to read the pipe's contents 
-		// before disconnecting. 
-		FlushFileBuffers((HANDLE)m_pipe_file); 
+		// Flush the pipe to allow the client to read the pipe's contents
+		// before disconnecting.
+		FlushFileBuffers((HANDLE)m_pipe_file);
 
-		DisconnectNamedPipe((HANDLE)m_pipe_file); 
-		CloseHandle((HANDLE)m_pipe_file); 
+		DisconnectNamedPipe((HANDLE)m_pipe_file);
+		CloseHandle((HANDLE)m_pipe_file);
 #else
 		// UNIX pipes
-
+		::fsync(m_pipe_file);
+		::close(m_pipe_file);
 #endif
 	}
 	m_pipe_file = 0;
@@ -117,7 +123,7 @@ CPipeBaseEndPoint::CPipeBaseEndPoint(const std::string &serialized)
 	ss >> m_pipe_file;
 #endif
 }
-			
+
 /** Converts the end-point into a string suitable for reconstruction at a child process.
 * This *invalidates* this object, since only one real end-point can exist at once.
 */
@@ -151,8 +157,7 @@ size_t  CPipeBaseEndPoint::Read(void *Buffer, size_t Count)
 	else return static_cast<size_t>(nActuallyRead);
 #else
 	// UNIX pipes
-	THROW_EXCEPTION("TODO")
-	return 0;
+	return ::read(m_pipe_file,Buffer,Count);
 #endif
 }
 
@@ -168,13 +173,12 @@ size_t  CPipeBaseEndPoint::Write(const void *Buffer, size_t Count)
 	else return static_cast<size_t>(nActuallyWritten);
 #else
 	// UNIX pipes
-	THROW_EXCEPTION("TODO")
-	return 0;
+	return ::write(m_pipe_file,Buffer,Count);
 #endif
 }
 
 
-//  ------------- CPipeReadEndPoint  ------------- 
+//  ------------- CPipeReadEndPoint  -------------
 CPipeReadEndPoint::CPipeReadEndPoint() : CPipeBaseEndPoint()
 {
 }
@@ -183,7 +187,7 @@ CPipeReadEndPoint::CPipeReadEndPoint(const std::string &serialized) : CPipeBaseE
 {
 }
 
-//  ------------- CPipeWriteEndPoint  ------------- 
+//  ------------- CPipeWriteEndPoint  -------------
 CPipeWriteEndPoint::CPipeWriteEndPoint() : CPipeBaseEndPoint()
 {
 }

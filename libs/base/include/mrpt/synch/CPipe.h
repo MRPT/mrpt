@@ -38,20 +38,21 @@
 #include <mrpt/utils/utils_defs.h>
 #include <mrpt/utils/CUncopiable.h>
 #include <mrpt/utils/CStream.h>
+#include <memory> // for auto_ptr<>
 
 namespace mrpt
 {
 	namespace synch
 	{
-		class CPipeReadEndPoint; 
+		class CPipeReadEndPoint;
 		class CPipeWriteEndPoint;
 
-		/** A pipe, portable across different OS. 
-		  * Pipes can be used as intraprocess (inter-threads) or interprocess communication mechanism. 
+		/** A pipe, portable across different OS.
+		  * Pipes can be used as intraprocess (inter-threads) or interprocess communication mechanism.
 		  * Read more on pipes here: http://www.gnu.org/software/libc/manual/html_node/Pipes-and-FIFOs.html
 		  *
 		  *  \code
-		  *    std::auto_ptr<CPipeReadEndPoint>  read_pipe; 
+		  *    std::auto_ptr<CPipeReadEndPoint>  read_pipe;
 		  *    std::auto_ptr<CPipeWriteEndPoint> write_pipe;
 		  *
 		  *    CPipe::createPipe(read_pipe,write_pipe);
@@ -77,8 +78,8 @@ namespace mrpt
 
 
 		/** Common interface of read & write pipe end-points */
-		class BASE_IMPEXP CPipeBaseEndPoint : 
-			public mrpt::utils::CUncopiable, 
+		class BASE_IMPEXP CPipeBaseEndPoint :
+			public mrpt::utils::CUncopiable,
 			public mrpt::utils::CStream
 		{
 			friend class CPipe;
@@ -88,7 +89,7 @@ namespace mrpt
 
 			/** De-serializes one end-point description, for example, from a parent process. */
 			explicit CPipeBaseEndPoint(const std::string &serialized);
-			
+
 			/** Converts the end-point into a string suitable for reconstruction at a child process.
 			  * This *invalidates* this object, since only one real end-point can exist at once.
 			  */
@@ -102,14 +103,14 @@ namespace mrpt
 #endif
 			virtual size_t  Read(void *Buffer, size_t Count);
 			virtual size_t  Write(const void *Buffer, size_t Count);
-			
+
 			virtual uint64_t Seek(uint64_t Offset, CStream::TSeekOrigin Origin = sFromBeginning); //!< Without effect in this class
 			virtual uint64_t getTotalBytesCount(); //!< Without effect in this class
 			virtual uint64_t getPosition(); //!< Without effect in this class
 
-		}; // end of CPipeBaseEndPoint 
+		}; // end of CPipeBaseEndPoint
 
-		/** The read end-point in a pipe created with mrpt::synch::CPipe. 
+		/** The read end-point in a pipe created with mrpt::synch::CPipe.
 		  * Use the method mrpt::utils::CStream::ReadBuffer() of the base class CStream for blocking reading. */
 		class BASE_IMPEXP CPipeReadEndPoint : public CPipeBaseEndPoint
 		{
