@@ -41,6 +41,8 @@
  <a name="1.0.3">
   <h2>Version 1.0.3: (Under development)  </h2></a>
 	- New classes:
+		- [mrpt-base]
+			- mrpt::synch::CPipe: OS-independent pipe support. 
 		- [mrpt-maps]
 			- There are now two versions of octomaps (by Mariano Jaimez Tarifa/Jose Luis Blanco) - <a href="http://code.google.com/p/mrpt/source/detail?r=3443" >r3443</a>
 				- mrpt::slam::COctoMap (only occupancy)
