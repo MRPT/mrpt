@@ -37,6 +37,7 @@
 
 #include <mrpt/utils/utils_defs.h>
 #include <mrpt/utils/CUncopiable.h>
+#include <mrpt/utils/CStream.h>
 
 namespace mrpt
 {
@@ -76,7 +77,9 @@ namespace mrpt
 
 
 		/** Common interface of read & write pipe end-points */
-		class BASE_IMPEXP CPipeBaseEndPoint : public mrpt::utils::CUncopiable
+		class BASE_IMPEXP CPipeBaseEndPoint : 
+			public mrpt::utils::CUncopiable, 
+			public mrpt::utils::CStream
 		{
 			friend class CPipe;
 		public:
@@ -97,34 +100,42 @@ namespace mrpt
 #else
 			int m_pipe_file;
 #endif
+			virtual size_t  Read(void *Buffer, size_t Count);
+			virtual size_t  Write(const void *Buffer, size_t Count);
+			
+			virtual uint64_t Seek(uint64_t Offset, CStream::TSeekOrigin Origin = sFromBeginning); //!< Without effect in this class
+			virtual uint64_t getTotalBytesCount(); //!< Without effect in this class
+			virtual uint64_t getPosition(); //!< Without effect in this class
 
 		}; // end of CPipeBaseEndPoint 
 
-		/** The read end-point in a pipe created with mrpt::synch::CPipe */
+		/** The read end-point in a pipe created with mrpt::synch::CPipe. 
+		  * Use the method mrpt::utils::CStream::ReadBuffer() of the base class CStream for blocking reading. */
 		class BASE_IMPEXP CPipeReadEndPoint : public CPipeBaseEndPoint
 		{
 			friend class CPipe;
         public:
 			/** De-serializes one end-point description, for example, from a parent process. */
-			explicit CPipeReadEndPoint(const std::string &serialized) : CPipeBaseEndPoint(serialized)
-			{}
+			explicit CPipeReadEndPoint(const std::string &serialized);
 
 		private:
 			CPipeReadEndPoint();
+			void  WriteBuffer (const void *Buffer, size_t Count);  //!< Hide the write method in this read-only pipe.
 
 		}; // end of CPipeReadEndPoint
 
-		/** The write end-point in a pipe created with mrpt::synch::CPipe */
+		/** The write end-point in a pipe created with mrpt::synch::CPipe.
+		  * Use the method mrpt::utils::CStream::WriteBuffer() of the base class CStream for blocking writing. */
 		class BASE_IMPEXP CPipeWriteEndPoint : public CPipeBaseEndPoint
 		{
 			friend class CPipe;
         public:
 			/** De-serializes one end-point description, for example, from a parent process. */
-			explicit CPipeWriteEndPoint(const std::string &serialized) : CPipeBaseEndPoint(serialized)
-			{}
+			explicit CPipeWriteEndPoint(const std::string &serialized);
 
 		private:
 			CPipeWriteEndPoint();
+			size_t ReadBuffer(void *Buffer, size_t Count);  //!< Hide the read method in this write-only pipe.
 
 		}; // end of CPipeWriteEndPoint
 

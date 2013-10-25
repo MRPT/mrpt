@@ -34,6 +34,7 @@
    +---------------------------------------------------------------------------+ */
 
 #include <mrpt/base.h>  // Precompiled headers 
+#include <mrpt/utils/mrpt_inttypes.h>  // For PRIu64
 
 #include <mrpt/synch/CPipe.h>
 
@@ -49,7 +50,29 @@
 using namespace mrpt::utils;
 using namespace mrpt::synch;
 
+// ------------------  CPipe ------------------
 
+/** Creates a new pipe and returns the read & write end-points as newly allocated objects. */
+void CPipe::createPipe(std::auto_ptr<CPipeReadEndPoint>& outReadPipe,std::auto_ptr<CPipeWriteEndPoint>& outWritePipe)
+{
+#	ifdef MRPT_OS_WINDOWS
+	// Win32 pipes
+	HANDLE hRead, hWrite;
+	if (!CreatePipe(&hRead, &hWrite, NULL, 0))
+		THROW_EXCEPTION("Win32 error creating pipe endpoints!")
+
+	outReadPipe  = std::auto_ptr<CPipeReadEndPoint>(new CPipeReadEndPoint);
+	outReadPipe->m_pipe_file = hRead;
+	outWritePipe = std::auto_ptr<CPipeWriteEndPoint>(new CPipeWriteEndPoint); 
+	outWritePipe->m_pipe_file = hWrite;
+#else
+	// UNIX pipes
+	THROW_EXCEPTION("TODO")
+#endif
+}
+
+
+// ------------------  CPipeBaseEndPoint ------------------
 CPipeBaseEndPoint::CPipeBaseEndPoint() :
 	m_pipe_file(0)
 {
@@ -63,7 +86,12 @@ CPipeBaseEndPoint::~CPipeBaseEndPoint()
 #		ifdef MRPT_OS_WINDOWS
 		// Win32 pipes
 
+		// Flush the pipe to allow the client to read the pipe's contents 
+		// before disconnecting. 
+		FlushFileBuffers((HANDLE)m_pipe_file); 
 
+		DisconnectNamedPipe((HANDLE)m_pipe_file); 
+		CloseHandle((HANDLE)m_pipe_file); 
 #else
 		// UNIX pipes
 
@@ -90,8 +118,6 @@ CPipeBaseEndPoint::CPipeBaseEndPoint(const std::string &serialized)
 #endif
 }
 			
-#include <mrpt/utils/mrpt_inttypes.h>
-
 /** Converts the end-point into a string suitable for reconstruction at a child process.
 * This *invalidates* this object, since only one real end-point can exist at once.
 */
@@ -109,3 +135,59 @@ std::string CPipeBaseEndPoint::serialize()
 	return ret;
 }
 
+// Methods that don't make sense in pipes:
+uint64_t CPipeBaseEndPoint::Seek(uint64_t Offset, CStream::TSeekOrigin Origin) {  return 0; }
+uint64_t CPipeBaseEndPoint::getTotalBytesCount() { return 0; }
+uint64_t CPipeBaseEndPoint::getPosition() { return 0; }
+
+/** Introduces a pure virtual method responsible for reading from the stream */
+size_t  CPipeBaseEndPoint::Read(void *Buffer, size_t Count)
+{
+#ifdef MRPT_OS_WINDOWS
+	// Win32 pipes
+	DWORD nActuallyRead;
+	if (!ReadFile((HANDLE)m_pipe_file, Buffer, Count,&nActuallyRead, NULL ))
+		return 0;
+	else return static_cast<size_t>(nActuallyRead);
+#else
+	// UNIX pipes
+	THROW_EXCEPTION("TODO")
+	return 0;
+#endif
+}
+
+/** Introduces a pure virtual method responsible for writing to the stream.
+	*  Write attempts to write up to Count bytes to Buffer, and returns the number of bytes actually written. */
+size_t  CPipeBaseEndPoint::Write(const void *Buffer, size_t Count)
+{
+#ifdef MRPT_OS_WINDOWS
+	// Win32 pipes
+	DWORD nActuallyWritten;
+	if (!WriteFile((HANDLE)m_pipe_file, Buffer, Count,&nActuallyWritten, NULL ))
+		return 0;
+	else return static_cast<size_t>(nActuallyWritten);
+#else
+	// UNIX pipes
+	THROW_EXCEPTION("TODO")
+	return 0;
+#endif
+}
+
+
+//  ------------- CPipeReadEndPoint  ------------- 
+CPipeReadEndPoint::CPipeReadEndPoint() : CPipeBaseEndPoint()
+{
+}
+
+CPipeReadEndPoint::CPipeReadEndPoint(const std::string &serialized) : CPipeBaseEndPoint(serialized)
+{
+}
+
+//  ------------- CPipeWriteEndPoint  ------------- 
+CPipeWriteEndPoint::CPipeWriteEndPoint() : CPipeBaseEndPoint()
+{
+}
+
+CPipeWriteEndPoint::CPipeWriteEndPoint(const std::string &serialized) : CPipeBaseEndPoint(serialized)
+{
+}
