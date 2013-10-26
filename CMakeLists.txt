@@ -31,7 +31,6 @@ SET(MRPT_LIBS_ROOT "${CMAKE_SOURCE_DIR}/libs" CACHE INTERNAL "")  # This emulate
 #        automatically included through "#pragma"'s ;-)
 # ---------------------------------------------------------------------------
 SET(MRPT_LINKER_LIBS "")
-SET(MRPT_LINKER_LIBS_FOR_PKGCONFIG "")
 
 # ----- Useful macros ------
 include(cmakemodules/UtilsMacros.cmake REQUIRED)
@@ -251,13 +250,6 @@ ENDIF($ENV{VERBOSE})
 IF(BUILD_SHARED_LIBS)
 	SET(MRPT_LINKER_LIBS "")
 ENDIF(BUILD_SHARED_LIBS)
-
-
-IF(NOT MSVC AND NOT BORLAND)
-	FOREACH(_LIB ${ALL_MRPT_LIBS})
-		LIST(APPEND MRPT_LINKER_LIBS_FOR_PKGCONFIG "-l${_LIB}")
-	ENDFOREACH(_LIB)
-ENDIF(NOT MSVC AND NOT BORLAND)
 
 # Save the list of libraries according to the current debug/release build (gcc only)
 # -------------------------------------------------------------------------------------
