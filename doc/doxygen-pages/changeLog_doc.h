@@ -63,6 +63,7 @@
 	- Deleted classes: 
 		- mrpt::utils::CEvent, which was actually unimplemented (!)
 	- Build system:
+		- Fixed compilation with clang.
 		- Updated to the latest nanoflann 1.1.7.
 		- Updated to Eigen 3.2.0 - <a href="http://code.google.com/p/mrpt/source/detail?r=3455" >r3455</a>
 	- BUG FIXES:

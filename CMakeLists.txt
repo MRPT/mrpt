@@ -137,8 +137,6 @@ MARK_AS_ADVANCED(BUILD_HWDRIVERS)
 # GCC only:
 # ===================================================
 IF(CMAKE_COMPILER_IS_GNUCXX)
-	# Enable GCC profiling?
-	SET(MRPT_ENABLE_PROFILING OFF CACHE BOOL "Enable profiling in the GCC compiler (Add flags: -g -pg)")
 	# Enable libstdc++ parallel mode?
 	SET(MRPT_ENABLE_LIBSTD_PARALLEL_MODE OFF CACHE BOOL "Enable parallel mode in libstdc++ (requires GCC 4.2.2+)")
 ENDIF(CMAKE_COMPILER_IS_GNUCXX)
@@ -314,14 +312,14 @@ IF(MSVC)
 	#endif(MSVC_VERSION LESS 1700)
 
 	# Whole program optimization
-	IF(MRPT_WHOLE_PROGRAM_OPTIMIZATION AND MSVC)
+	IF(MRPT_WHOLE_PROGRAM_OPTIMIZATION)
 		SET(EXTRA_CPP_FLAGS "${EXTRA_CPP_FLAGS} /GL")
 		SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /LTCG ")
 		#SET(CMAKE_EXE_LINKER_FLAGS_RELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE} /LTCG ")
 		SET(CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} /LTCG ")
 		#SET(CMAKE_MODULE_LINKER_FLAGS_RELEASE "${CMAKE_MODULE_LINKER_FLAGS_RELEASE} /LTCG ")
 		SET(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} /LTCG ")
-	ENDIF(MRPT_WHOLE_PROGRAM_OPTIMIZATION AND MSVC)
+	ENDIF(MRPT_WHOLE_PROGRAM_OPTIMIZATION)
 
 	# Remove unreferenced functions: function level linking
 	SET(EXTRA_CPP_FLAGS "${EXTRA_CPP_FLAGS} /Gy")
@@ -339,6 +337,7 @@ IF(MSVC)
 
 ENDIF(MSVC)
 
+# GNU GCC options ================================
 IF(CMAKE_COMPILER_IS_GNUCXX)
 	# Wall & pedantic?
 	IF(APPLE)
@@ -365,40 +364,89 @@ IF(CMAKE_COMPILER_IS_GNUCXX)
  		SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -pedantic")
 	ENDIF(MRPT_BUILD_GCC_PEDANTIC)
 
-	# We need pthread's
-	IF (UNIX)
-		SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
-	ENDIF(UNIX)
+	# Enable C++11 features in GCC 4.7+
+	IF (NOT CMAKE_MRPT_GCC_VERSION LESS 47)
+		SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+	ENDIF (NOT CMAKE_MRPT_GCC_VERSION LESS 47)
+
+	# Parallel stdlibc++?
+	IF(MRPT_ENABLE_LIBSTD_PARALLEL_MODE)
+		SET(EXTRA_CPP_FLAGS "${EXTRA_CPP_FLAGS} -D_GLIBCXX_PARALLEL -fopenmp")
+	ENDIF(MRPT_ENABLE_LIBSTD_PARALLEL_MODE)
+ENDIF(CMAKE_COMPILER_IS_GNUCXX)
+
+# Even more warnings: "Scott Meyers' Effective C++ book"
+IF(MRPT_EXTRA_WARNINGS)
+	IF(CMAKE_COMPILER_IS_GNUCXX)
+		SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Weffc++")  # -Wold-style-cast  -Woverloaded-virtual
+	ENDIF(CMAKE_COMPILER_IS_GNUCXX)
+ENDIF(MRPT_EXTRA_WARNINGS)
+
+
+# CLang options ================================
+if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
+	SET( MRPT_BUILD_CLANG_PEDANTIC OFF CACHE BOOL "Enable pedantic error detection (clang)")
+	MARK_AS_ADVANCED(MRPT_BUILD_CLANG_PEDANTIC)
+
+	# High level of warnings.
+	# no-unused-private-field: clang seems to complain in templates without reason.
+ 	SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CMAKE_CONFIGURE_CFLAGS} -Wall -Wno-unused-private-field")
+ 	SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${CMAKE_CONFIGURE_CFLAGS}")
+
+	# Use modern C++11
+ 	SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} std=c++11")
+
+	# This is to fix the compilation of C++ templates
+	SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fdelayed-template-parsing")
+
+endif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
+
+# Shared options between GCC and CLANG:
+# ======================================
+if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang" OR CMAKE_COMPILER_IS_GNUCXX)
 
 	IF(MRPT_WARNINGS_ARE_ERRORS)
 		SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror")
 		SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Werror")
 	ENDIF(MRPT_WARNINGS_ARE_ERRORS)
 
+	# We need pthread's
+	IF (UNIX)
+		SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
+	ENDIF(UNIX)
+
+	IF(CMAKE_BUILD_TYPE MATCHES "Debug")
+		SET(EXTRA_CPP_FLAGS "${EXTRA_CPP_FLAGS} -g")
+		ADD_DEFINITIONS( -D_DEBUG)
+		ADD_DEFINITIONS( -DDEBUG)
+	ENDIF(CMAKE_BUILD_TYPE MATCHES "Debug")
+
+	# Enable GCC profiling?
+	SET(MRPT_ENABLE_PROFILING OFF CACHE BOOL "Enable profiling in the GCC/CLANG compiler (Add flags: -g -pg)")
+	# Profiling?
+	IF(MRPT_ENABLE_PROFILING)
+		SET(EXTRA_CPP_FLAGS "${EXTRA_CPP_FLAGS} -pg -g")
+	ELSEIF(MRPT_ENABLE_PROFILING)
+		# Remove unreferenced functions: function level linking
+        # Remove unreferenced functions: function level linking
+        if(NOT APPLE)
+			SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ffunction-sections")
+        endif(NOT APPLE)
+	ENDIF(MRPT_ENABLE_PROFILING)
 
 	# Whole program optimization
 	IF(MRPT_WHOLE_PROGRAM_OPTIMIZATION)
 		SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --combine")
-
 		SET(MRPT_EXES_CXX_FLAGS "${MRPT_EXES_CXX_FLAGS} -fwhole-program --combine")
 	ENDIF(MRPT_WHOLE_PROGRAM_OPTIMIZATION)
 
 
 	# "-mtune=native" generates code optimized for the detected current processor.
-	set(opt_native_def OFF)
-	IF (CMAKE_MRPT_GCC_VERSION GREATER 41)
-		if (WIN32 OR "${CMAKE_MRPT_ARCH}" MATCHES ".*86" OR "${CMAKE_MRPT_ARCH}" MATCHES "amd64")
-			set(opt_native_def ON)
-		endif (WIN32 OR "${CMAKE_MRPT_ARCH}" MATCHES ".*86" OR "${CMAKE_MRPT_ARCH}" MATCHES "amd64")
-	ENDIF (CMAKE_MRPT_GCC_VERSION GREATER 41)
+	if (WIN32 OR "${CMAKE_MRPT_ARCH}" MATCHES ".*86" OR "${CMAKE_MRPT_ARCH}" MATCHES "amd64")
+		set(opt_native_def ON)
+	endif (WIN32 OR "${CMAKE_MRPT_ARCH}" MATCHES ".*86" OR "${CMAKE_MRPT_ARCH}" MATCHES "amd64")
 
-	# Enable C++11 features in GCC 4.7+
-	IF (NOT CMAKE_MRPT_GCC_VERSION LESS 47)
-		SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
-	ENDIF (NOT CMAKE_MRPT_GCC_VERSION LESS 47)
-
-	SET( MRPT_OPTIMIZE_NATIVE ${opt_native_def} CACHE BOOL "GCC optimizations for current processor (-mtune=native). Requires GCC 4.2+")
-
+	SET( MRPT_OPTIMIZE_NATIVE ${opt_native_def} CACHE BOOL "GCC/clang optimizations for current processor (-mtune=native). Requires GCC 4.2+")
 
 	IF(CMAKE_BUILD_TYPE STREQUAL "Debug")  # Not in debug!
 		SET(MRPT_OPTIMIZE_NATIVE OFF)
@@ -414,25 +462,17 @@ IF(CMAKE_COMPILER_IS_GNUCXX)
 	ENDIF(CMAKE_MRPT_USE_DEB_POSTFIXS OR CMAKE_MRPT_IS_RPM_PACKAGE)
 
 	# "-ffast-math"
-	SET( MRPT_OPTIMIZE_FFAST-MATH OFF CACHE BOOL "GCC optimization for floating math (-ffast-math).")
+	SET( MRPT_OPTIMIZE_FFAST-MATH OFF CACHE BOOL "GCC/clang optimization for floating math (-ffast-math).")
 	IF(MRPT_OPTIMIZE_FFAST-MATH)
 		SET(EXTRA_CPP_FLAGS "${EXTRA_CPP_FLAGS} -ffast-math")
 	ENDIF(MRPT_OPTIMIZE_FFAST-MATH)
 
-	# Profiling?
-	IF(MRPT_ENABLE_PROFILING)
-		SET(EXTRA_CPP_FLAGS "${EXTRA_CPP_FLAGS} -pg -g")
-	ELSEIF(MRPT_ENABLE_PROFILING)
-		# Remove unreferenced functions: function level linking
-        # Remove unreferenced functions: function level linking
-        if(NOT APPLE)
-			SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ffunction-sections")
-        endif(NOT APPLE)
-	ENDIF(MRPT_ENABLE_PROFILING)
-
 	# SSE2?
 	IF (CMAKE_MRPT_HAS_SSE2)
-		SET(EXTRA_CPP_FLAGS "${EXTRA_CPP_FLAGS} -mfpmath=sse -msse2 -funroll-loops")
+		SET(EXTRA_CPP_FLAGS "${EXTRA_CPP_FLAGS} -msse2 -funroll-loops")
+		IF (CMAKE_COMPILER_IS_GNUCXX)
+			SET(EXTRA_CPP_FLAGS "${EXTRA_CPP_FLAGS} -mfpmath=sse")
+		ENDIF(CMAKE_COMPILER_IS_GNUCXX)
 	ENDIF(CMAKE_MRPT_HAS_SSE2)
 
 	# SSE3?
@@ -445,27 +485,7 @@ IF(CMAKE_COMPILER_IS_GNUCXX)
 		SET(EXTRA_CPP_FLAGS "${EXTRA_CPP_FLAGS} -msse4")
 	ENDIF(CMAKE_MRPT_HAS_SSE4)
 
-	# Parallel stdlibc++?
-	IF(MRPT_ENABLE_LIBSTD_PARALLEL_MODE)
-		SET(EXTRA_CPP_FLAGS "${EXTRA_CPP_FLAGS} -D_GLIBCXX_PARALLEL -fopenmp")
-	ENDIF(MRPT_ENABLE_LIBSTD_PARALLEL_MODE)
-
-	IF(CMAKE_BUILD_TYPE MATCHES "Debug")
-		# This is to enable stack walker:
-		SET(EXTRA_CPP_FLAGS "${EXTRA_CPP_FLAGS} -g")
-		ADD_DEFINITIONS( -D_DEBUG)
-		ADD_DEFINITIONS( -DDEBUG)
-	ENDIF(CMAKE_BUILD_TYPE MATCHES "Debug")
-
-ENDIF(CMAKE_COMPILER_IS_GNUCXX)
-
-# Even more warnings: "Scott Meyers' Effective C++ book"
-IF(MRPT_EXTRA_WARNINGS)
-	IF(CMAKE_COMPILER_IS_GNUCXX)
-		SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Weffc++")  # -Wold-style-cast  -Woverloaded-virtual
-	ENDIF(CMAKE_COMPILER_IS_GNUCXX)
-ENDIF(MRPT_EXTRA_WARNINGS)
-
+endif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang" OR CMAKE_COMPILER_IS_GNUCXX)
 
 
 # Add user supplied extra options (optimization, etc...)
