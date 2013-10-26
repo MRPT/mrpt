@@ -60,6 +60,11 @@
 				- mrpt::slam::TMatchingParams
 				- mrpt::slam::TMatchingExtraResults
 		- mrpt::slam::CObservationIMU now includes data fields for 3D magnetometers and altimeters. - <a href="http://code.google.com/p/mrpt/source/detail?r=3451" >r3451</a>
+	- Deleted classes:
+		- mrpt::hwdrivers::CInterfaceNI845x has been deleted. It didn't offer features enough to justify a class.
+	- New examples:
+		- [MRPT]/samples/threadsPipe
+		- [MRPT]/samples/NIDAQ_test
 	- Build system:
 		- Updated to the latest nanoflann 1.1.7.
 		- Updated to Eigen 3.2.0 - <a href="http://code.google.com/p/mrpt/source/detail?r=3455" >r3455</a>

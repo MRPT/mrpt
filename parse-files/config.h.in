@@ -225,8 +225,7 @@ ${CMAKE_MRPT_BUILD_SHARED_LIB}
 #define MRPT_HAS_SPQR ${CMAKE_MRPT_HAS_SPQR}
 
 /** Has NationalInstruments headers/libraries? */
-#define MRPT_HAS_NIDAQmx ${CMAKE_MRPT_HAS_NIDAQmx}
-#define MRPT_HAS_NI845x ${CMAKE_MRPT_HAS_NI845x}
+#define MRPT_HAS_NIDAQMXBASE ${CMAKE_MRPT_HAS_NIDAQMXBASE}
 
 /** Standard headers */
 #ifndef HAVE_INTTYPES_H

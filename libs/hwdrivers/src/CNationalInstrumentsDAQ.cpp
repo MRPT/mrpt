@@ -37,27 +37,52 @@
 
 #include <mrpt/hwdrivers/CNationalInstrumentsDAQ.h>
 
-#if MRPT_HAS_NIDAQmx
-#	if (MRPT_WORD_SIZE==64) && !defined(WIN64)
-#		define WIN64
-#	endif
-#	include "NIDAQmx.h"  // Include file for NI-DAQmx API
-#if defined(_MSC_VER)
-#	pragma comment (lib,"NIDAQmx.lib")
-#endif
+#if MRPT_HAS_NIDAQMXBASE
+#	include "NIDAQmxBase.h"  // Include file for NI-DAQmx API
 #endif
 
-#if MRPT_HAS_NIDAQmx
+#if MRPT_HAS_NIDAQMXBASE
 //#	define DEV_HANDLER  reinterpret_cast<NiHandle*>(m_niDevHandle)
 #endif
+
+// An auxiliary macro to check and report errors in the DAQmx library as exceptions with a well-explained message.
+#define MRPT_DAQmx_ErrChk(functionCall) \
+	if( (functionCall)<0) \
+	{ \
+		char errBuff[2048]; \
+		DAQmxBaseGetExtendedErrorInfo(errBuff,2048); \
+		std::string sErr = mrpt::format("DAQ error: '%s'\nCalling: '%s'",errBuff,#functionCall); \
+		THROW_EXCEPTION(sErr) \
+	}
+
 
 using namespace mrpt::hwdrivers;
 using namespace mrpt::slam;
 using namespace mrpt::system;
-using namespace mrpt::synch;
 using namespace std;
 
 IMPLEMENTS_GENERIC_SENSOR(CNationalInstrumentsDAQ,mrpt::hwdrivers)
+
+// -------------  CNationalInstrumentsDAQ::TInfoPerTask  -----------
+// Default ctor:
+CNationalInstrumentsDAQ::TInfoPerTask::TInfoPerTask() : 
+	taskHandle(0),
+	must_close(false), 
+	is_closed(false)
+{ }
+
+// Copy ctor (needed for the auto_ptr semantics)
+CNationalInstrumentsDAQ::TInfoPerTask::TInfoPerTask(const TInfoPerTask &o) : 
+	taskHandle(o.taskHandle),
+	hThread(o.hThread),
+	read_pipe(o.read_pipe.get()),
+	write_pipe(o.write_pipe.get()),
+	must_close(o.must_close), 
+	is_closed(o.is_closed)
+{ 
+	const_cast<TInfoPerTask*>(&o)->read_pipe.release(); 
+	const_cast<TInfoPerTask*>(&o)->write_pipe.release(); 
+}
 
 
 /* -----------------------------------------------------
@@ -75,11 +100,8 @@ void  CNationalInstrumentsDAQ::loadConfig_sensorSpecific(
 	const mrpt::utils::CConfigFileBase &configSource,
 	const std::string	  &iniSection )
 {
-#ifdef MRPT_OS_WINDOWS
 	//m_COMname = configSource.read_string(iniSection, "COM_port_WIN", m_COMname, true );
-#else
-	//m_COMname = configSource.read_string(iniSection, "COM_port_LIN", m_COMname, true );
-#endif
+
 }
 
 /* -----------------------------------------------------
@@ -87,6 +109,128 @@ void  CNationalInstrumentsDAQ::loadConfig_sensorSpecific(
    ----------------------------------------------------- */
 CNationalInstrumentsDAQ::~CNationalInstrumentsDAQ()
 {
+	this->stop();
+}
+
+
+/* -----------------------------------------------------
+				initialize
+----------------------------------------------------- */
+void  CNationalInstrumentsDAQ::initialize()
+{
+#if MRPT_HAS_NIDAQMXBASE
+
+//#define CHANNEL_NAME "cDAQ1Mod1/ai0"
+	#define CHANNEL_NAME "Dev1/ai0"
+
+	// Try to create a new task:
+	m_running_tasks.push_back(TInfoPerTask());
+	TInfoPerTask &ipt = m_running_tasks.back();
+
+	try
+	{
+		/*********************************************/
+		// DAQmx Configure Code
+		/*********************************************/
+		TaskHandle  &taskHandle= *reinterpret_cast<TaskHandle*>(&ipt.taskHandle);
+
+		MRPT_DAQmx_ErrChk (DAQmxBaseCreateTask("",&taskHandle));
+		MRPT_DAQmx_ErrChk (DAQmxBaseCreateAIVoltageChan(taskHandle,CHANNEL_NAME,"",
+			DAQmx_Val_Cfg_Default,
+			-10.0,10.0,
+			DAQmx_Val_Volts,
+			NULL));
+		MRPT_DAQmx_ErrChk (DAQmxBaseCfgSampClkTiming(taskHandle,"",10000.0,DAQmx_Val_Rising,
+			DAQmx_Val_ContSamps, //DAQmx_Val_FiniteSamps,
+			1000));
+
+		// Create pipe:
+		mrpt::synch::CPipe::createPipe(ipt.read_pipe, ipt.write_pipe);
+
+		ipt.hThread = mrpt::system::createThreadFromObjectMethodRef<CNationalInstrumentsDAQ,TInfoPerTask>(this, &CNationalInstrumentsDAQ::grabbing_thread, ipt);
+
+		MRPT_DAQmx_ErrChk (DAQmxBaseCfgInputBuffer(taskHandle,200000)); // sample DMA buffer
+		MRPT_DAQmx_ErrChk (DAQmxBaseStartTask(taskHandle));
+
+	}
+	catch (std::exception &e)
+	{
+		if( ipt.taskHandle!=NULL )  
+		{
+			TaskHandle  &taskHandle= *reinterpret_cast<TaskHandle*>(&ipt.taskHandle);
+			DAQmxBaseStopTask(taskHandle);
+			DAQmxBaseClearTask(taskHandle);
+		}
+		// Stop thread:
+		MRPT_TODO("XXX")
+
+		// Remove from list:
+		m_running_tasks.erase(--m_running_tasks.end());
+
+		throw e;
+	}
+
+	
+	bool end = false;
+	while (!end)
+	{
+		mrpt::system::sleep(100);
+	}
+
+
+#else
+	THROW_EXCEPTION("MRPT was compiled without support for NI DAQmx!!")
+#endif
+}
+
+/** Stop the grabbing threads for DAQ tasks. It is automatically called at destruction. */
+void CNationalInstrumentsDAQ::stop()
+{
+
+}
+
+/** Returns true if initialize() was called successfully. */
+bool CNationalInstrumentsDAQ::checkDAQIsConnected() const
+{
+	MRPT_TODO("XX")
+	return true;
+}
+
+
+/*-------------------------------------------------------------
+						readFromDAQ
+-------------------------------------------------------------*/
+void  CNationalInstrumentsDAQ::readFromDAQ(
+	bool							&outThereIsObservation,
+	mrpt::slam::CObservationRawDAQ	&outObservation,
+	bool							&hardwareError )
+{
+	outThereIsObservation	= false;
+	hardwareError			= false;
+
+	if ( !checkDAQIsConnected() )
+	{
+		hardwareError = true;
+		return;
+	}
+
+	// Read from the pipe:
+    m_state = ssWorking;
+
+	if (1) 
+		return;
+
+	// Yes, we have a new scan:
+
+	// -----------------------------------------------
+	//   Extract the observation:
+	// -----------------------------------------------
+	outObservation.timestamp = mrpt::system::now();
+	outObservation.sensorLabel  = m_sensorLabel;	// Set label
+
+	//outObservation....
+
+	outThereIsObservation = true;
 }
 
 
@@ -95,101 +239,57 @@ CNationalInstrumentsDAQ::~CNationalInstrumentsDAQ()
 ----------------------------------------------------- */
 void  CNationalInstrumentsDAQ::doProcess()
 {
-	// Is the COM open?
-	//if (!tryToOpenTheCOM())
-	//{
-	//	m_state = ssError;
-	//	THROW_EXCEPTION("Cannot open the serial port");
-	//}
+	bool	thereIs, hwError;
 
+	if (!m_nextObservation)
+		m_nextObservation =  CObservationRawDAQ::Create();
+
+	readFromDAQ( thereIs, *m_nextObservation, hwError );
+
+	if (hwError)
+	{
+		m_state = ssError;
+	    THROW_EXCEPTION("Couldn't start DAQ task!");
+	}
+
+	if (thereIs)
+	{
+		m_state = ssWorking;
+		appendObservation( m_nextObservation );
+		m_nextObservation.clear_unique(); // Create a new object in the next call
+	}
 }
 
-#if 0
-// Dev1/ai0, Dev1/ai3:6 
-#define CHANNEL_NAME "cDAQ1Mod1/ai0"
 
-#define DAQmxErrChk(functionCall) if( DAQmxFailed(error=(functionCall)) ) goto Error; else
-
-int32 my_callbackFunction(TaskHandle taskHandle, int32 everyNsamplesEventType, uInt32 nSamples, void *callbackData)
+/* -----------------------------------------------------
+				grabbing_thread
+----------------------------------------------------- */
+void CNationalInstrumentsDAQ::grabbing_thread(TInfoPerTask &ipt)
 {
-	mrpt::vector_double  data(1000);
-	int32       read=0;
-	const int32 toRead = 1000;
-
-	DAQmxReadAnalogF64(taskHandle,toRead,1.0,DAQmx_Val_GroupByChannel,&data[0],data.size(),&read,NULL);
-	if ( read == toRead)
+#if MRPT_HAS_NIDAQMXBASE
+	try 
 	{
-		last_read = data.mean();
-		const double eps = gauge_volt2strain_quarter(last_read-offset_volt,K_GAUGE_FACTOR);
-		printf("Volt = %f --> \t  eps = %f \t uEps = %f\n",last_read, eps, 1e6*eps  );
+		TaskHandle  &taskHandle= *reinterpret_cast<TaskHandle*>(&ipt.taskHandle);
 
-		win.plot(data);
-	}
-	return 0;
-}
+		const int pointsToRead = 1024; // samples per channel to read
+		const float timeout = 10e-3;
 
-	int32       error=0;
-	TaskHandle  taskHandle=0;
-	char        errBuff[2048]={'\0'};
+		double buf[8*1024];
 
-
-	/*********************************************/
-	// DAQmx Configure Code
-	/*********************************************/
-	DAQmxErrChk (DAQmxCreateTask("",&taskHandle));
-	DAQmxErrChk (DAQmxCreateAIVoltageChan(taskHandle,CHANNEL_NAME,"",
-		DAQmx_Val_Cfg_Default,
-		-10.0,10.0,
-		DAQmx_Val_Volts,
-		NULL));
-	DAQmxErrChk (DAQmxCfgSampClkTiming(taskHandle,"",10000.0,DAQmx_Val_Rising,
-		DAQmx_Val_ContSamps, //DAQmx_Val_FiniteSamps,
-		1000));
-
-	DAQmxRegisterEveryNSamplesEvent(taskHandle, DAQmx_Val_Acquired_Into_Buffer, 1000, 0, &my_callbackFunction, NULL);
-
-	/*********************************************/
-	// DAQmx Start Code
-	/*********************************************/
-	DAQmxErrChk (DAQmxStartTask(taskHandle));
-
-
-	bool end = false;
-	while (!end)
-	{
-		mrpt::system::sleep(100);
-		if (kbhit())
+		while (!ipt.must_close)
 		{
-			const int c = getch();
-			switch(c)
-			{
-			case 'r':
-				offset_volt = last_read;
-				printf("** Setting offset level = %f\n",last_read);
-				break;
+			int32  pointsReadPerChan;
+			MRPT_DAQmx_ErrChk( DAQmxBaseReadAnalogF64(taskHandle,pointsToRead,timeout,DAQmx_Val_GroupByScanNumber,buf,sizeof(buf)/2,&pointsReadPerChan,NULL) );
+			
 
-			case 'q': 
-				end=true;
-				break;
-			};
-		}
+		} // end of main thread loop
 	}
-
-Error:
-	if( DAQmxFailed(error) )
-		DAQmxGetExtendedErrorInfo(errBuff,2048);
-	if( taskHandle!=0 )  {
-		/*********************************************/
-		// DAQmx Stop Code
-		/*********************************************/
-		DAQmxStopTask(taskHandle);
-		DAQmxClearTask(taskHandle);
+	catch(std::exception &e)
+	{
+		std::cerr << "[CNationalInstrumentsDAQ::grabbing_thread] Exception:\n" << e.what() << std::endl;
 	}
-	if( DAQmxFailed(error) )
-		printf("DAQmx Error: %s\n",errBuff);
-	printf("End of program, press Enter key to quit\n");
-	getchar();
-	return 0;
-
-#endif
+#endif //MRPT_HAS_NIDAQMXBASE
+	
+	ipt.is_closed = true;
+}
 
