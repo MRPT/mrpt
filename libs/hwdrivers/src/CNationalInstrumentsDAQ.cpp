@@ -41,9 +41,6 @@
 #	include "NIDAQmxBase.h"  // Include file for NI-DAQmx API
 #endif
 
-#if MRPT_HAS_NIDAQMXBASE
-//#	define DEV_HANDLER  reinterpret_cast<NiHandle*>(m_niDevHandle)
-#endif
 
 // An auxiliary macro to check and report errors in the DAQmx library as exceptions with a well-explained message.
 #define MRPT_DAQmx_ErrChk(functionCall) \
@@ -120,6 +117,8 @@ void  CNationalInstrumentsDAQ::initialize()
 {
 #if MRPT_HAS_NIDAQMXBASE
 
+	MRPT_TODO("Parse config and create the needed tasks")
+
 //#define CHANNEL_NAME "cDAQ1Mod1/ai0"
 	#define CHANNEL_NAME "Dev1/ai0"
 
@@ -129,9 +128,6 @@ void  CNationalInstrumentsDAQ::initialize()
 
 	try
 	{
-		/*********************************************/
-		// DAQmx Configure Code
-		/*********************************************/
 		TaskHandle  &taskHandle= *reinterpret_cast<TaskHandle*>(&ipt.taskHandle);
 
 		MRPT_DAQmx_ErrChk (DAQmxBaseCreateTask("",&taskHandle));
@@ -142,15 +138,15 @@ void  CNationalInstrumentsDAQ::initialize()
 			NULL));
 		MRPT_DAQmx_ErrChk (DAQmxBaseCfgSampClkTiming(taskHandle,"",10000.0,DAQmx_Val_Rising,
 			DAQmx_Val_ContSamps, //DAQmx_Val_FiniteSamps,
-			1000));
+			0));
 
 		// Create pipe:
 		mrpt::synch::CPipe::createPipe(ipt.read_pipe, ipt.write_pipe);
 
-		ipt.hThread = mrpt::system::createThreadFromObjectMethodRef<CNationalInstrumentsDAQ,TInfoPerTask>(this, &CNationalInstrumentsDAQ::grabbing_thread, ipt);
-
 		MRPT_DAQmx_ErrChk (DAQmxBaseCfgInputBuffer(taskHandle,200000)); // sample DMA buffer
 		MRPT_DAQmx_ErrChk (DAQmxBaseStartTask(taskHandle));
+
+		ipt.hThread = mrpt::system::createThreadFromObjectMethodRef<CNationalInstrumentsDAQ,TInfoPerTask>(this, &CNationalInstrumentsDAQ::grabbing_thread, ipt);
 
 	}
 	catch (std::exception &e)
@@ -161,23 +157,21 @@ void  CNationalInstrumentsDAQ::initialize()
 			DAQmxBaseStopTask(taskHandle);
 			DAQmxBaseClearTask(taskHandle);
 		}
-		// Stop thread:
-		MRPT_TODO("XXX")
 
+		// Stop thread:
+		if (!ipt.hThread.isClear())
+		{
+			ipt.must_close=true;
+			cerr << "[CNationalInstrumentsDAQ::initialize] Waiting for the grabbing thread to end due to exception...\n";
+			mrpt::system::joinThread(ipt.hThread);
+			cerr << "[CNationalInstrumentsDAQ::initialize] Grabbing thread ended.\n";
+		}
+		
 		// Remove from list:
 		m_running_tasks.erase(--m_running_tasks.end());
 
 		throw e;
 	}
-
-	
-	bool end = false;
-	while (!end)
-	{
-		mrpt::system::sleep(100);
-	}
-
-
 #else
 	THROW_EXCEPTION("MRPT was compiled without support for NI DAQmx!!")
 #endif
@@ -186,7 +180,31 @@ void  CNationalInstrumentsDAQ::initialize()
 /** Stop the grabbing threads for DAQ tasks. It is automatically called at destruction. */
 void CNationalInstrumentsDAQ::stop()
 {
+	// Stop all threads:
+	for (list<TInfoPerTask>::iterator it=m_running_tasks.begin();it!=m_running_tasks.end();++it)
+	{
+		it->must_close=true;
+	}
+	for (list<TInfoPerTask>::iterator it=m_running_tasks.begin();it!=m_running_tasks.end();++it)
+	{
+		if (!it->hThread.isClear())
+		{
+			mrpt::system::joinThread(it->hThread);
+			it->hThread.clear();
+		}
+	}
 
+	// Stop all NI tasks:
+#if MRPT_HAS_NIDAQMXBASE
+	for (list<TInfoPerTask>::iterator it=m_running_tasks.begin();it!=m_running_tasks.end();++it)
+	{
+		TaskHandle  &taskHandle= *reinterpret_cast<TaskHandle*>(&it->taskHandle);
+	
+		DAQmxBaseStopTask(taskHandle);
+		DAQmxBaseClearTask(taskHandle);
+		taskHandle=NULL;
+	}
+#endif
 }
 
 /** Returns true if initialize() was called successfully. */
@@ -279,8 +297,18 @@ void CNationalInstrumentsDAQ::grabbing_thread(TInfoPerTask &ipt)
 		while (!ipt.must_close)
 		{
 			int32  pointsReadPerChan;
-			MRPT_DAQmx_ErrChk( DAQmxBaseReadAnalogF64(taskHandle,pointsToRead,timeout,DAQmx_Val_GroupByScanNumber,buf,sizeof(buf)/2,&pointsReadPerChan,NULL) );
-			
+			int err = DAQmxBaseReadAnalogF64(taskHandle,pointsToRead,timeout,DAQmx_Val_GroupByScanNumber,buf,sizeof(buf)/2,&pointsReadPerChan,NULL);
+			if (err<0 && 
+				err!=DAQmxErrorSamplesNotYetAvailable // That's not so bad...
+				)
+			{
+				MRPT_DAQmx_ErrChk(err<0)
+			}
+			else
+			{
+				// Read without errors:
+				cout << "[CNationalInstrumentsDAQ::grabbing_thread] " << pointsReadPerChan << " samples read.\n";
+			}
 
 		} // end of main thread loop
 	}

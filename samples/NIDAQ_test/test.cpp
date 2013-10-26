@@ -61,6 +61,8 @@ void Test_NIDAQ()
 	daq.initialize(); 
 	printf("[Example] Init passed.\n");
 
+	printf("\n ** Press any key to stop grabbing ** \n");
+
 	while (!mrpt::system::os::kbhit())
 	{
 		bool                thereIsObservation,hardError;

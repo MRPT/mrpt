@@ -67,7 +67,8 @@ namespace mrpt
 		  * DAQmx Base Installation
 		  * ------------------------
 		  * Go to http://ni.com and download the "DAQmx Base" package for your OS. Install following NI's instructions. 
-		  * As of 2013, the latest version is 3.7 and these are the download links:
+		  * As of 2013, the latest version is 3.7. NI seems to only support 32bit OSes. 
+		  * These are the download links:
 		  * - Windows: http://joule.ni.com/nidu/cds/view/p/id/4281/lang/en
 		  * - Linux: http://joule.ni.com/nidu/cds/view/p/id/4269/lang/en
 		  * - MacOS: http://joule.ni.com/nidu/cds/view/p/id/4272/lang/en
@@ -85,6 +86,8 @@ namespace mrpt
 
 			/** Destructor */
 			virtual ~CNationalInstrumentsDAQ();
+			
+
 
 			/** Setup and launch the DAQ tasks, in parallel threads. 
 			  * Access to grabbed data with CNationalInstrumentsDAQ::readFromDAQ() or the standard CGenericSensor::doProcess() */
