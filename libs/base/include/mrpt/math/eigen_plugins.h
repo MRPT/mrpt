@@ -715,7 +715,7 @@ public:
 	/** Cholesky M=U<sup>T</sup> * U decomposition for simetric matrix (upper-half of the matrix will be actually ignored) */
 	template <class MATRIX> EIGEN_STRONG_INLINE bool chol(MATRIX &U) const
 	{
-		Eigen::LLT<PlainObject> Chol = derived().selfadjointView<Eigen::Lower>().llt();
+		Eigen::LLT<PlainObject> Chol = derived().template selfadjointView<Eigen::Lower>().llt();
 		if (Chol.info()==Eigen::NoConvergence)
 			return false;
 		U = PlainObject(Chol.matrixU());

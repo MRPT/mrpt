@@ -38,7 +38,6 @@
 #include <mrpt/synch/atomic_incr.h>
 
 using namespace mrpt::synch;
-using namespace std;
 
 #ifdef MRPT_OS_WINDOWS
 	#include <windows.h>

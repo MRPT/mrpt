@@ -264,7 +264,7 @@ void insertRotunda(double angleShift,double baseRadius,bool isRotated,bool isUpw
 inline size_t additionalFaces(JohnsonBodyPart j,uint32_t numBaseEdges)	{
 	if (j==INF_NO_BODY||j==SUP_NO_BODY) return 1;	//j is a base
 	else if (j<UPWARDS_CUPOLA) return numBaseEdges;	//j is a pyramid
-	else if (j<PRISM) return numBaseEdges+(numBaseEdges>=6)?1:0;	//j is a cupola
+	else if (j<PRISM) return numBaseEdges+ ((numBaseEdges>=6)?1:0);	//j is a cupola
 	else if (j==PRISM) return numBaseEdges;
 	else if (j==ANTIPRISM) return numBaseEdges<<1;
 	else return 16;	//j is a rotunda
@@ -1451,7 +1451,7 @@ bool CPolyhedron::checkConsistence(const vector<TPoint3D> &vertices,const vector
 	if (vertices.size()>0) for (vector<TPoint3D>::const_iterator it=vertices.begin();it!=vertices.end()-1;++it) for (vector<TPoint3D>::const_iterator it2=it+1;it2!=vertices.end();++it2) if (*it==*it2) return false;
 	for (vector<TPolyhedronFace>::const_iterator it=faces.begin();it!=faces.end();++it)	{
 		const vector<uint32_t> &e=it->vertices;
-		for (vector<uint32_t>::const_iterator it2=e.begin();it2!=e.end();++it2) if (*it2<0||*it2>=N) return false;
+		for (vector<uint32_t>::const_iterator it2=e.begin();it2!=e.end();++it2) if (*it2>=N) return false;
 	}
 	return true;
 }

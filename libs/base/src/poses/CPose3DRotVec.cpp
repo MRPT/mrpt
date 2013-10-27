@@ -271,7 +271,11 @@ void CPose3DRotVec::composePoint(double lx,double ly,double lz, double &gx, doub
     gy = lx*(K1*w3+K2*w1*w2)   + ly*(1-K2*(w1_2+w3_2)) + lz*(K2*w2*w3-K1*w1)   + ty;
     gz = lx*(K2*w1*w3-K1*w2)   + ly*(K1*w1+K2*w2*w3)   + lz*(1-K2*(w1_2+w2_2)) + tz;
 
-    MRPT_TODO("Jacobians")
+	if (out_jacobian_df_dpoint || out_jacobian_df_dpose)
+	{
+		MRPT_TODO("Jacobians")
+		THROW_EXCEPTION("Jacobians not implemented yet")
+	}
 }
 
 /*---------------------------------------------------------------
