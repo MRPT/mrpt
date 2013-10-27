@@ -330,8 +330,10 @@ namespace mrpt
 					}
 					else
 					{
+#ifdef __clang__
 #pragma clang diagnostic push  // clang complains about unused vars (becase it doesn't realize of the macros?)
 #pragma clang diagnostic ignored "-Wunused-variable"
+#endif
 
 						// Precompute the 19 (3*9-8) intermediary points so children don't have to compute them several times:
 						const TPoint3Df p_Xm_Ym_Zm ( node.bb_min.x, node.bb_min.y, node.bb_min.z ); // 0
@@ -429,7 +431,9 @@ namespace mrpt
 #undef PROJ_SUB_NODE
 #undef PROJ_SUB_NODE_ALREADY_DONE
 
+#ifdef __clang__
 #pragma clang diagnostic pop
+#endif
 					} // end "children_are_all_visible_for_sure"=false
 				}
 			}
