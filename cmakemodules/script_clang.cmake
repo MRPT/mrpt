@@ -1,5 +1,5 @@
-# Check for the clang library. (Linux only, in win32 we use built-in 
-#  version of ConvertUTF.c):
+# Check for the clang library (NOT the LLVM CLANG compiler!!!). 
+# (Linux only, in win32 we use built-in version of ConvertUTF.c):
 # ===================================================
 
 # In any case we'll have this lib: embedded or system.
