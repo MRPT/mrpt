@@ -243,7 +243,6 @@ IF(BUILD_EXAMPLES)
 			eNosesRealtime_test
 			IRBoard_test
 			phidgetProximitySensor
-			ni845x_basic_io
 			NIDAQ_test
 			)
 	        SET(CMAKE_EXAMPLE_DEPS mrpt-hwdrivers mrpt-gui)
