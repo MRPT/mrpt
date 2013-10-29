@@ -119,6 +119,7 @@ void  CNationalInstrumentsDAQ::initialize()
 
 	MRPT_TODO("Parse config and create the needed tasks")
 
+
 //#define CHANNEL_NAME "cDAQ1Mod1/ai0"
 	#define CHANNEL_NAME "Dev1/ai0"
 
