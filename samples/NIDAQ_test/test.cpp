@@ -58,7 +58,7 @@ void Test_NIDAQ()
 #endif
 
 	printf("[Example] Initializing DAQ...\n");
-	daq.initialize(); 
+	daq.initialize();
 	printf("[Example] Init passed.\n");
 
 	printf("\n ** Press any key to stop grabbing ** \n");
@@ -101,7 +101,7 @@ int main()
 
 	} catch (std::exception &e)
 	{
-		std::cout << "EXCEPCION: " << e.what() << std::endl;
+		std::cout << "EXCEPTION: " << e.what() << std::endl;
 		return -1;
 	}
 }

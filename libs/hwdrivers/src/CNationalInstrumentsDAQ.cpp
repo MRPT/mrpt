@@ -62,23 +62,23 @@ IMPLEMENTS_GENERIC_SENSOR(CNationalInstrumentsDAQ,mrpt::hwdrivers)
 
 // -------------  CNationalInstrumentsDAQ::TInfoPerTask  -----------
 // Default ctor:
-CNationalInstrumentsDAQ::TInfoPerTask::TInfoPerTask() : 
+CNationalInstrumentsDAQ::TInfoPerTask::TInfoPerTask() :
 	taskHandle(0),
-	must_close(false), 
+	must_close(false),
 	is_closed(false)
 { }
 
 // Copy ctor (needed for the auto_ptr semantics)
-CNationalInstrumentsDAQ::TInfoPerTask::TInfoPerTask(const TInfoPerTask &o) : 
+CNationalInstrumentsDAQ::TInfoPerTask::TInfoPerTask(const TInfoPerTask &o) :
 	taskHandle(o.taskHandle),
 	hThread(o.hThread),
 	read_pipe(o.read_pipe.get()),
 	write_pipe(o.write_pipe.get()),
-	must_close(o.must_close), 
+	must_close(o.must_close),
 	is_closed(o.is_closed)
-{ 
-	const_cast<TInfoPerTask*>(&o)->read_pipe.release(); 
-	const_cast<TInfoPerTask*>(&o)->write_pipe.release(); 
+{
+	const_cast<TInfoPerTask*>(&o)->read_pipe.release();
+	const_cast<TInfoPerTask*>(&o)->write_pipe.release();
 }
 
 
@@ -152,7 +152,7 @@ void  CNationalInstrumentsDAQ::initialize()
 	}
 	catch (std::exception &e)
 	{
-		if( ipt.taskHandle!=NULL )  
+		if( ipt.taskHandle!=NULL )
 		{
 			TaskHandle  &taskHandle= *reinterpret_cast<TaskHandle*>(&ipt.taskHandle);
 			DAQmxBaseStopTask(taskHandle);
@@ -167,11 +167,11 @@ void  CNationalInstrumentsDAQ::initialize()
 			mrpt::system::joinThread(ipt.hThread);
 			cerr << "[CNationalInstrumentsDAQ::initialize] Grabbing thread ended.\n";
 		}
-		
+
 		// Remove from list:
 		m_running_tasks.erase(--m_running_tasks.end());
 
-		throw e;
+		throw; // Rethrow
 	}
 #else
 	THROW_EXCEPTION("MRPT was compiled without support for NI DAQmx!!")
@@ -200,7 +200,7 @@ void CNationalInstrumentsDAQ::stop()
 	for (list<TInfoPerTask>::iterator it=m_running_tasks.begin();it!=m_running_tasks.end();++it)
 	{
 		TaskHandle  &taskHandle= *reinterpret_cast<TaskHandle*>(&it->taskHandle);
-	
+
 		DAQmxBaseStopTask(taskHandle);
 		DAQmxBaseClearTask(taskHandle);
 		taskHandle=NULL;
@@ -236,7 +236,7 @@ void  CNationalInstrumentsDAQ::readFromDAQ(
 	// Read from the pipe:
     m_state = ssWorking;
 
-	if (1) 
+	if (1)
 		return;
 
 	// Yes, we have a new scan:
@@ -286,7 +286,7 @@ void  CNationalInstrumentsDAQ::doProcess()
 void CNationalInstrumentsDAQ::grabbing_thread(TInfoPerTask &ipt)
 {
 #if MRPT_HAS_NIDAQMXBASE
-	try 
+	try
 	{
 		TaskHandle  &taskHandle= *reinterpret_cast<TaskHandle*>(&ipt.taskHandle);
 
@@ -299,7 +299,7 @@ void CNationalInstrumentsDAQ::grabbing_thread(TInfoPerTask &ipt)
 		{
 			int32  pointsReadPerChan;
 			int err = DAQmxBaseReadAnalogF64(taskHandle,pointsToRead,timeout,DAQmx_Val_GroupByScanNumber,buf,sizeof(buf)/2,&pointsReadPerChan,NULL);
-			if (err<0 && 
+			if (err<0 &&
 				err!=DAQmxErrorSamplesNotYetAvailable // That's not so bad...
 				)
 			{
@@ -318,7 +318,7 @@ void CNationalInstrumentsDAQ::grabbing_thread(TInfoPerTask &ipt)
 		std::cerr << "[CNationalInstrumentsDAQ::grabbing_thread] Exception:\n" << e.what() << std::endl;
 	}
 #endif //MRPT_HAS_NIDAQMXBASE
-	
+
 	ipt.is_closed = true;
 }
 
