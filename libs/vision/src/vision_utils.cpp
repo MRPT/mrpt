@@ -54,7 +54,7 @@
 #include <mrpt/math/geometry.h>
 
 // Universal include for all versions of OpenCV
-#include <mrpt/otherlibs/do_opencv_includes.h> 
+#include <mrpt/otherlibs/do_opencv_includes.h>
 
 using namespace mrpt;
 using namespace mrpt::vision;
@@ -442,7 +442,7 @@ float vision::computeMainOrientation(
 {
 	MRPT_START
 	float orientation=0;
-	if( ( x-1 >= 0 ) && ( y-1 >= 0 ) && ( x+1 < image.getWidth() ) && ( y+1 < image.getHeight() ) )
+	if( ( int(x)-1 >= 0 ) && ( int(y)-1 >= 0 ) && ( x+1 < image.getWidth() ) && ( y+1 < image.getHeight() ) )
 		orientation = (float) atan2( (double)*image(x,y+1) - (double)*image(x,y-1), (double)*image(x+1,y) - (double)*image(x-1,y) );
 
 	// Convert from [-pi,pi] to [0,2pi]
@@ -901,8 +901,7 @@ double vision::computeSAD(
             res += fabs((double)(im1->imageData[ii*im1->widthStep+jj]) - ((double)(im2->imageData[ii*im2->widthStep+jj])) );
     return res/(255.0f*im1->width*im1->height);
 #else
-    MRPT_WARNING( "[computeSAD] MRPT compiled without OpenCV -> return 0." )
-    return 0;
+    THROW_EXCEPTION("MRPT compiled without OpenCV, can't compute SAD of images!" )
 #endif
     MRPT_END
 } // end computeSAD

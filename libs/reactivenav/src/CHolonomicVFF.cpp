@@ -104,7 +104,7 @@ void  CHolonomicVFF::navigate(
 	resultantForce += mrpt::math::TPoint2D(cos(ang) * mod, sin(ang) * mod );
 
 	// Result:
-	desiredDirection = (resultantForce.y==0 && resultantForce.x==0) ? 
+	desiredDirection = (resultantForce.y==0 && resultantForce.x==0) ?
 		0 : atan2( resultantForce.y, resultantForce.x );
 
 	// Speed control: Reduction factors
@@ -148,7 +148,7 @@ void  CLogFileRecord_VFF::readFromStream(CStream &in,int version)
   ---------------------------------------------------------------*/
 CHolonomicVFF::TOptions::TOptions() :
 	TARGET_SLOW_APPROACHING_DISTANCE ( 0.10 ),
-	TARGET_ATTRACTIVE_FORCE          ( 20.0 )	
+	TARGET_ATTRACTIVE_FORCE          ( 20.0 )
 {
 }
 
@@ -163,7 +163,7 @@ void CHolonomicVFF::TOptions::loadFromConfigFile(const mrpt::utils::CConfigFileB
 	MRPT_END
 }
 
-void CHolonomicVFF::TOptions::saveToConfigFile(const std::string &section,  mrpt::utils::CConfigFileBase &cfg ) const
+void CHolonomicVFF::TOptions::saveToConfigFile(mrpt::utils::CConfigFileBase &cfg , const std::string &section) const
 {
 	MRPT_START
 	const int WN = 40, WV = 20;

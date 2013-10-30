@@ -446,10 +446,10 @@ holonomic_navigator_demoFrame::holonomic_navigator_demoFrame(wxWindow* parent,wx
 		m_simul_options.saveToConfigFile("SIMULATOR",cfg);
 
 		mrpt::reactivenav::CHolonomicVFF holo_VFF;
-		holo_VFF.options.saveToConfigFile("VFF_CONFIG",cfg);
+		holo_VFF.options.saveToConfigFile(cfg,"VFF_CONFIG");
 
 		mrpt::reactivenav::CHolonomicND holo_ND;
-		holo_ND.options.saveToConfigFile("ND_CONFIG",cfg);
+		holo_ND.options.saveToConfigFile(cfg,"ND_CONFIG");
 
 		this->edHoloParams->SetValue( _U( cfg.getContent().c_str() ) );
 	}

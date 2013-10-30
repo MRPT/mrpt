@@ -64,6 +64,7 @@ void CFeatureTracker_KL::trackFeatures_impl_templ(
 {
 MRPT_START
 
+#if MRPT_HAS_OPENCV
 	const unsigned int 	window_width = extra_params.getWithDefaultVal("window_width",15);
 	const unsigned int 	window_height = extra_params.getWithDefaultVal("window_height",15);
 
@@ -72,7 +73,7 @@ MRPT_START
 	const int 	LK_epsilon   = extra_params.getWithDefaultVal("LK_epsilon",0.1);
 	const float LK_max_tracking_error = extra_params.getWithDefaultVal("LK_max_tracking_error",150.0f);
 
-#if MRPT_HAS_OPENCV
+
 	// Both images must be of the same size
 	ASSERT_( old_img.getWidth() == new_img.getWidth() && old_img.getHeight() == new_img.getHeight() );
 

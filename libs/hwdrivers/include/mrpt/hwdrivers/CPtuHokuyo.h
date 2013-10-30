@@ -65,11 +65,11 @@ namespace mrpt
 		{
 
 		DEFINE_GENERIC_SENSOR(CPtuHokuyo)
-		
+
 		protected:
 
 			std::string		m_ptu_port;
-			char m_axis;			
+			char m_axis;
 			double m_velocity, m_initial, m_final, m_hokuyo_frec;
 
 			/** See the class documentation at the top for expected parameters */
@@ -84,12 +84,12 @@ namespace mrpt
 
 			/** Specify type of ptu. Current options are:
 			*	m_ptu_type = 0 => CPtuDPerception
-			*	m_ptu_type = 1 => CPtuMicos 
+			*	m_ptu_type = 1 => CPtuMicos
 			*/
 			int					m_ptu_type;
 
 			std::vector<mrpt::slam::CObservation2DRangeScan> vObs;
-			
+
 			// High between ptu tilt axis and hokuyo laser scan
 			double high;
 
@@ -138,11 +138,11 @@ namespace mrpt
 
 			/** Save vector of observations in a CFileOutputStream file */
 
-			bool saveVObs2File(char *fname="Data.rawlog");
+			bool saveVObs2File(const char *fname="Data.rawlog");
 
 			/** Save vector points of observations into a simple file */
 
-			bool saveVObsPoints2File(char *fname="Data.pts",const bool &colours=false);
+			bool saveVObsPoints2File(const char *fname="Data.pts",const bool &colours=false);
 
 			/** Save pitchs and raw distances of all scans */
 

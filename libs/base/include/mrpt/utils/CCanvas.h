@@ -270,7 +270,7 @@ namespace mrpt
 				int		x,
 				int		y,
 				int		radius,
-				const mrpt::utils::TColor	color = mrpt::utils::TColor(255,255,255),
+				const mrpt::utils::TColor	&color = mrpt::utils::TColor(255,255,255),
 				unsigned int	width = 1 );
 
 			/** Draws an ellipse representing a given confidence interval of a 2D Gaussian distribution.

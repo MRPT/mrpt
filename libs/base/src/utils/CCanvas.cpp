@@ -382,7 +382,7 @@ void  CCanvas::drawCircle(
 	int		x,
 	int		y,
 	int		radius,
-	const mrpt::utils::TColor	color,
+	const mrpt::utils::TColor	&color,
 	unsigned int	width
 	)
 {

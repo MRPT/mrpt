@@ -431,7 +431,7 @@ namespace mrpt
 				minFeaturesToFind( _minFeaturesToFind ), minFeaturesToBeLost(_minFeaturesToBeLost)  {}
 
 			void  loadFromConfigFile( const mrpt::utils::CConfigFileBase &cfg, const std::string &section );
-			void  saveToConfigFile( mrpt::utils::CConfigFileBase &cfg, const std::string &section );
+			void  saveToConfigFile( mrpt::utils::CConfigFileBase &cfg, const std::string &section ) const;
 			void  dumpToTextStream( mrpt::utils::CStream &out) const;
 
 		}; // end TMultiResDescMatchOptions
@@ -482,7 +482,7 @@ namespace mrpt
             }
 
             void  loadFromConfigFile( const mrpt::utils::CConfigFileBase &cfg, const std::string &section );
-			void  saveToConfigFile( mrpt::utils::CConfigFileBase &cfg, const std::string &section );
+			void  saveToConfigFile( mrpt::utils::CConfigFileBase &cfg, const std::string &section ) const;
             void  dumpToTextStream( mrpt::utils::CStream &out) const;
 
         }; // end TMultiResDescOptions

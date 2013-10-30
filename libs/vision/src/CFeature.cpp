@@ -87,7 +87,7 @@ void TMultiResDescMatchOptions::loadFromConfigFile( const mrpt::utils::CConfigFi
 // --------------------------------------------------
 //			saveToConfigFile
 // --------------------------------------------------
-void TMultiResDescMatchOptions::saveToConfigFile( mrpt::utils::CConfigFileBase &cfg, const std::string &section )
+void TMultiResDescMatchOptions::saveToConfigFile( mrpt::utils::CConfigFileBase &cfg, const std::string &section ) const
 {
 	if( useOriFilter )
 	{
@@ -190,7 +190,7 @@ void TMultiResDescOptions::loadFromConfigFile( const mrpt::utils::CConfigFileBas
 // --------------------------------------------------
 //			saveToConfigFile
 // --------------------------------------------------
-void TMultiResDescOptions::saveToConfigFile( mrpt::utils::CConfigFileBase &cfg, const std::string &section )
+void TMultiResDescOptions::saveToConfigFile( mrpt::utils::CConfigFileBase &cfg, const std::string &section ) const
 {
 	cfg.write(section,"basePSize", basePSize);
 	cfg.write(section,"comLScl", comLScl );

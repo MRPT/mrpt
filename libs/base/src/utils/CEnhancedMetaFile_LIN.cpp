@@ -131,9 +131,9 @@ void  CEnhancedMetaFile::textOut(
 }
 
 /*---------------------------------------------------------------
-					selectTextFont
+					selectVectorTextFont
 ---------------------------------------------------------------*/
-void  CEnhancedMetaFile::selectTextFont(
+void  CEnhancedMetaFile::selectVectorTextFont(
 	const std::string  &fontName,
 	int					fontSize,
 	bool				bold,
@@ -148,7 +148,7 @@ void  CEnhancedMetaFile::selectTextFont(
 
 
 /*---------------------------------------------------------------
-					selectTextFont
+					setPixel
 ---------------------------------------------------------------*/
 void  CEnhancedMetaFile::setPixel( int x, int y, size_t color)
 {

@@ -549,7 +549,7 @@ void CPtuHokuyo::refineVObs(const char &axis){
 					   saveVObs2File
 -------------------------------------------------------------*/
 
-bool CPtuHokuyo::saveVObs2File(char *fname){
+bool CPtuHokuyo::saveVObs2File(const char *fname){
 
 	CFileOutputStream file;
 
@@ -882,7 +882,7 @@ void CPtuHokuyo::doProcess(){
 	CObservation2DRangeScan obs;
 
 	// Query actual position and save it
-	while(!ptu->absPosQ(m_axis,last_position));
+	while(!ptu->absPosQ(m_axis,last_position))
 		mrpt::system::sleep(100);
 
 	v_ptu_pos.push_back(last_position);

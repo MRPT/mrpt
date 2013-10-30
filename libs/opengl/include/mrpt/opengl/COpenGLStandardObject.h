@@ -83,7 +83,7 @@ namespace mrpt	{
 			  * Ray Tracing. Will always return false, since objects of this class are not intended to have geometric properties.
 			  * \sa mrpt::opengl::CRenderizable
 			  */
-			virtual bool traceRay(const mrpt::poses::CPose3D &o,float &dist) const;
+			virtual bool traceRay(const mrpt::poses::CPose3D &o,double &dist) const;
 			/**
 			  * Creation of object from type, vertices, chunk size and a list of enabled openGL flags.
 			  * \throw std::logic_error if the number of vertices is not an exact multiple of the chunk size.

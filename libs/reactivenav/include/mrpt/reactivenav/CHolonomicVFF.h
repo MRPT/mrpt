@@ -61,7 +61,7 @@ namespace mrpt
 
 
 	/** A holonomic reactive navigation method, based on Virtual Force Fields (VFF).
-	 * 
+	 *
 	 * These are the optional parameters of the method which can be set by means of a configuration file passed to the constructor or to CHolonomicND::initialize (see also the field CHolonomicVFF::options).
 	 *
 	 * \code
@@ -69,7 +69,7 @@ namespace mrpt
 	 * TARGET_SLOW_APPROACHING_DISTANCE = 0.10  // For stopping gradually
 	 * TARGET_ATTRACTIVE_FORCE          = 20    // Dimension-less (may have to be tuned depending on the density of obstacle sampling)
 	 * \endcode
-	 * 
+	 *
 	 *  \sa CAbstractHolonomicReactiveMethod,CReactiveNavigationSystem
 	 */
 	class REACTIVENAV_IMPEXP CHolonomicVFF : public CAbstractHolonomicReactiveMethod
@@ -112,7 +112,7 @@ namespace mrpt
 			double TARGET_ATTRACTIVE_FORCE;          //!< Dimension-less (may have to be tuned depending on the density of obstacle sampling) (Default: 20)
 
 			TOptions();
-			virtual void saveToConfigFile(const std::string &section,  mrpt::utils::CConfigFileBase &cfg ) const;
+			virtual void saveToConfigFile(mrpt::utils::CConfigFileBase &cfg, const std::string &section) const;
 			virtual void loadFromConfigFile(const mrpt::utils::CConfigFileBase &source,const std::string &section);
 		};
 

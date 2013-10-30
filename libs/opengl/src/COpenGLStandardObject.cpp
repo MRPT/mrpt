@@ -115,7 +115,7 @@ void COpenGLStandardObject::readFromStream(CStream &in,int version)	{
 	CRenderizableDisplayList::notifyChange();
 }
 
-bool COpenGLStandardObject::traceRay(const mrpt::poses::CPose3D &o,float &dist) const	{
+bool COpenGLStandardObject::traceRay(const mrpt::poses::CPose3D &o,double &dist) const	{
 	//This object isn't intended to hold geometric properties. No trace ray should be performed on it.
 	return false;
 }

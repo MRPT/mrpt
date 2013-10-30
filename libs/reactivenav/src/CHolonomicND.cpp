@@ -221,7 +221,7 @@ void  CHolonomicND::gapsEstimator(
 					}
 				}
 
-				if (is_inside) 
+				if (is_inside)
 					maxDist = std::max( maxDist, obstacles[i] );
 			}
 	}
@@ -239,7 +239,7 @@ void  CHolonomicND::gapsEstimator(
 	{
 		if (delete_gaps[i] == 1)
 			continue;
-		
+
 		for (size_t j=i+1;j<nTempGaps;j++)
 		{
 			if (gaps_temp[i].ini == gaps_temp[j].ini || gaps_temp[i].end == gaps_temp[j].end)
@@ -260,7 +260,7 @@ void  CHolonomicND::gapsEstimator(
 	//Delete gaps which contain more than one other gaps
 	for (size_t i=0;i<nTempGaps;i++)
 	{
-		if (delete_gaps[i]) 
+		if (delete_gaps[i])
 			continue;
 
 		unsigned int inner_gap_count = 0;
@@ -283,7 +283,7 @@ void  CHolonomicND::gapsEstimator(
 	//Delete gaps included in other gaps
 	for (size_t i=0;i<nTempGaps;i++)
 	{
-		if (delete_gaps[i]) 
+		if (delete_gaps[i])
 			continue;
 
 		for (unsigned int j=0;j<nTempGaps;j++)
@@ -336,7 +336,7 @@ void  CHolonomicND::searchBestGap(
 
 	// D1 : Straight path?
 	// --------------------------------------------------------
-	const int freeSectorsNearTarget = 0.05*obstacles.size();  
+	const int freeSectorsNearTarget = 0.05*obstacles.size();
 	bool theyAreFree = true, caseD1 = false;
 	if (target_sector>static_cast<unsigned int>(freeSectorsNearTarget) &&
 		target_sector<static_cast<unsigned int>(obstacles.size()-freeSectorsNearTarget) )
@@ -346,7 +346,7 @@ void  CHolonomicND::searchBestGap(
 
 		for (int j=-freeSectorsNearTarget;j<=freeSectorsNearTarget;j++)
 		{
-			if (target_sector + j < 0)
+			if (int(target_sector) + j < 0)
 				index_obstacles = obstacles.size() + (target_sector + j);
 			else if (target_sector + j >= obstacles.size())
 				index_obstacles = (target_sector + j) - obstacles.size();
@@ -394,9 +394,9 @@ void  CHolonomicND::searchBestGap(
 		//	dist = mrpt::utils::abs_diff(target_sector, in_gaps[i].representative_sector );
 		//	if (dist > 0.5*obstacles.size())
 		//		dist = obstacles.size() - dist;
-		//				
+		//
 		//	if ( in_gaps[i].maxDistance >= target_dist && dist <= (int)floor(options.MAX_SECTOR_DIST_FOR_D2_PERCENT * obstacles.size()) )
-		//									 
+		//
 		//		if ( gaps_evaluation[i]>selected_gap_eval )
 		//		{
 		//			selected_gap_eval = gaps_evaluation[i];
@@ -593,8 +593,8 @@ void  CHolonomicND::evaluateGaps(
 
 		const double factor3 = ( maxObsRange - std::min(maxObsRange ,dist_eucl) ) / maxObsRange;
 
-		
-		
+
+
 		// Factor #4: Stabilizing factor (hysteresis) to avoid quick switch among very similar paths:
 		// ------------------------------------------------------------------------------------------
 		double factor_AntiCab;
@@ -725,7 +725,7 @@ void CHolonomicND::TOptions::loadFromConfigFile(const mrpt::utils::CConfigFileBa
 	MRPT_END
 }
 
-void CHolonomicND::TOptions::saveToConfigFile(const std::string &section,  mrpt::utils::CConfigFileBase &cfg ) const
+void CHolonomicND::TOptions::saveToConfigFile(mrpt::utils::CConfigFileBase &cfg , const std::string &section) const
 {
 	MRPT_START
 	const int WN = 40, WV = 20;

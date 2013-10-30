@@ -42,7 +42,7 @@
   <h2>Version 1.0.3: (Under development)  </h2></a>
 	- New classes:
 		- [mrpt-base]
-			- mrpt::synch::CPipe: OS-independent pipe support. 
+			- mrpt::synch::CPipe: OS-independent pipe support.
 		- [mrpt-maps]
 			- There are now two versions of octomaps (by Mariano Jaimez Tarifa/Jose Luis Blanco) - <a href="http://code.google.com/p/mrpt/source/detail?r=3443" >r3443</a>
 				- mrpt::slam::COctoMap (only occupancy)
@@ -56,11 +56,12 @@
 			- <b>Methods marked as deprecated: </b>
 				- mrpt::slam::CMetricMap::computeMatchingWith2D() --> mrpt::slam::CMetricMap::determineMatching2D()
 				- mrpt::slam::CMetricMap::computeMatchingWith3D() --> mrpt::slam::CMetricMap::determineMatching3D()
-			- New structures: 
+			- New structures:
 				- mrpt::slam::TMatchingParams
 				- mrpt::slam::TMatchingExtraResults
 		- mrpt::slam::CObservationIMU now includes data fields for 3D magnetometers and altimeters. - <a href="http://code.google.com/p/mrpt/source/detail?r=3451" >r3451</a>
-	- Deleted classes: 
+		- Method renamed mrpt::utils::CEnhancedMetaFile::selectVectorTextFont() to avoid shadowing mrpt::utils::CCanvas::selectTextFont()
+	- Deleted classes:
 		- mrpt::utils::CEvent, which was actually unimplemented (!)
 	- Build system:
 		- Fixed compilation with clang.

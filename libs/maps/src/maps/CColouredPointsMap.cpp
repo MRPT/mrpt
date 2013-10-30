@@ -923,8 +923,8 @@ namespace mrpt {
 									img_idx_y = cy + fy * pt.y/pt.z;
 
 									hasValidColor=
-										img_idx_x>=0 && img_idx_x<imgW &&
-										img_idx_y>=0 && img_idx_y<imgH;
+										img_idx_x<imgW &&   // img_idx_x>=0  isn't needed for unsigned.
+										img_idx_y<imgH;
 								}
 							}
 

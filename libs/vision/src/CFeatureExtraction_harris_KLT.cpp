@@ -57,8 +57,6 @@ void CFeatureExtraction::selectGoodFeaturesKLT(
 		unsigned int		nDesiredFeatures,
 		void				*mask_ ) const
 {
-	const unsigned int MAX_COUNT = 300;
-
 //#define VERBOSE_TIMING
 
 #ifdef VERBOSE_TIMING
@@ -67,6 +65,7 @@ void CFeatureExtraction::selectGoodFeaturesKLT(
 		MRPT_START
 
 		#if MRPT_HAS_OPENCV
+        const unsigned int MAX_COUNT = 300;
 
 		// Reinterpret opencv formal arguments
 		CvMatrix *mask = reinterpret_cast<CvMatrix*>(mask_);

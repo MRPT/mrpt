@@ -136,7 +136,7 @@ namespace mrpt
 
 
 			TOptions();
-			virtual void saveToConfigFile(const std::string &section,  mrpt::utils::CConfigFileBase &cfg ) const;
+			virtual void saveToConfigFile(mrpt::utils::CConfigFileBase &cfg ,const std::string &section) const;
 			virtual void loadFromConfigFile(const mrpt::utils::CConfigFileBase &source,const std::string &section);
 		};
 

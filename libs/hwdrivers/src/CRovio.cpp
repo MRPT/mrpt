@@ -419,7 +419,7 @@ bool CRovio::getRovioState(CRovio::TRovioState &status)
 	string state;
 	general_command(1, state, error);
 
-	MRPT_TODO("status??")
+	//MRPT_TODO("status??")
 	return error.empty();
 }
 

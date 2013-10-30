@@ -142,9 +142,9 @@ namespace utils
 		  * \param fontSize The size of the font in pts.
 		  * \param bold Whether the font is bold
 		  * \param italic Whether the font is italic
-		  * \sa textOut
+		  * \sa textOut, CCanvas::selectTextFont
 		  */
-		virtual void  selectTextFont(
+		virtual void  selectVectorTextFont(
 			const std::string  &fontName,
 			int					fontSize,
 			bool				bold = false,

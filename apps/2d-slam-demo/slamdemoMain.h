@@ -346,7 +346,7 @@ class slamdemoFrame: public wxFrame
 
 			void  saveToConfigFile(
 				mrpt::utils::CConfigFileBase	&source,
-				const std::string		&section);
+				const std::string		&section) const;
 
 			void  dumpToTextStream( mrpt::utils::CStream		&out) const;
 

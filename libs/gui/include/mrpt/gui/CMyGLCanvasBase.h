@@ -41,6 +41,9 @@
 
 #include <mrpt/gui/link_pragmas.h>
 
+namespace mrpt { namespace gui { } }  // At least declare the existence of the namespace mrpt::gui even if we don't have wxWidgets libs
+
+
 #if MRPT_HAS_WXWIDGETS
 
 #include <wx/string.h>

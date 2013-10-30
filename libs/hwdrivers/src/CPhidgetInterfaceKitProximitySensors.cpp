@@ -58,8 +58,6 @@ IMPLEMENTS_GENERIC_SENSOR(CPhidgetInterfaceKitProximitySensors,mrpt::hwdrivers)
                 Constructor
    ----------------------------------------------------- */
 CPhidgetInterfaceKitProximitySensors::CPhidgetInterfaceKitProximitySensors() :
-	m_minRange(0.1f),
-	m_maxRange(0.8f),
 	m_serialNumber(-1)
 {
 #if MRPT_HAS_PHIDGET
@@ -67,17 +65,12 @@ CPhidgetInterfaceKitProximitySensors::CPhidgetInterfaceKitProximitySensors() :
 	*((CPhidgetInterfaceKitHandle*)m_carteInterfaceKit) = 0;
 	m_sensorLabel = "PhidgetInterfaceKit";
 
-	m_sensorIsPlugged.reserve(8);
-	m_minRange.reserve(8);
-	m_maxRange.reserve(8);
-	m_sensorPoses.reserve(8);
-	m_sensorType.reserve(8);
+	m_sensorIsPlugged.assign(8,false);
+	m_minRange.assign(8, 0.1f);
+	m_maxRange.assign(8, 0.8f);
+	m_sensorPoses.resize(8);
+	m_sensorType.assign(8,UNPLUGGED);
 
-	for(int i = 0 ; i < 8 ; i++)
-	{
-		m_sensorType[i] = UNPLUGGED;
-		m_sensorIsPlugged[i]=false;
-	}
 #else
 	THROW_EXCEPTION("MRPT Was compiled without the CPhidget support. Recompile MRPT to use this class")
 #endif

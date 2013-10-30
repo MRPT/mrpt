@@ -226,7 +226,7 @@ slamdemoFrame::slamdemoFrame(wxWindow* parent,wxWindowID id)
     wxMenu* Menu2;
     wxGridSizer* GridSizer12;
     wxFlexGridSizer* FlexGridSizer5;
-    
+
     Create(parent, wxID_ANY, _("2D SLAM Demo - Part of the MRPT project"), wxDefaultPosition, wxDefaultSize, wxDEFAULT_FRAME_STYLE, _T("wxID_ANY"));
     {
     wxIcon FrameIcon;
@@ -547,7 +547,7 @@ slamdemoFrame::slamdemoFrame(wxWindow* parent,wxWindowID id)
     timSimul.SetOwner(this, ID_TIMER1);
     FlexGridSizer1->Fit(this);
     FlexGridSizer1->SetSizeHints(this);
-    
+
     Connect(ID_MENUITEM1,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&slamdemoFrame::OnbtnResetClicked);
     Connect(ID_MENUITEM2,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&slamdemoFrame::OnbtnOneStepClicked);
     Connect(ID_MENUITEM3,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&slamdemoFrame::OnbtnRunClicked);
@@ -1555,7 +1555,7 @@ void  slamdemoFrame::TSimulationOptions::loadFromConfigFile(
 
 void  slamdemoFrame::TSimulationOptions::saveToConfigFile(
 	mrpt::utils::CConfigFileBase	&f,
-	const std::string		&c)
+	const std::string		&c) const
 {
 	MRPT_SAVE_CONFIG_VAR(random_seed,  	f,c)
 	MRPT_SAVE_CONFIG_VAR(map_generator,	f,c)
