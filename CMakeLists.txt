@@ -399,6 +399,13 @@ if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
 	# Use modern C++11
 # 	SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
+#	IF(APPLE) # any reason for not using it in all platforms?
+	# Use the libstdc++ lib vs. libc++, to avoid some build errors in MacOS
+	SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libstdc++")
+	SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -stdlib=libstdc++")
+	SET(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -stdlib=libstdc++")
+#	ENDIF(APPLE)
+
 	# This is to fix the compilation of C++ templates
 	SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fdelayed-template-parsing")
 
