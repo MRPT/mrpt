@@ -1,10 +1,17 @@
 # Look for the libusb1 lib
 # ------------------------------
-IF(UNIX)
-	IF(PKG_CONFIG_FOUND)
-        	PKG_CHECK_MODULES(PKG_LIBUSB10 libusb-1.0)
-	ENDIF(PKG_CONFIG_FOUND)
-ENDIF(UNIX)
+OPTION(DISABLE_LIBUSB "Force to not detecting the libusb library" OFF)
+mark_as_advanced(DISABLE_LIBUSB)
+
+IF (NOT DISABLE_LIBUSB)
+	IF(UNIX)
+		IF(PKG_CONFIG_FOUND)
+			PKG_CHECK_MODULES(PKG_LIBUSB10 libusb-1.0)
+		ENDIF(PKG_CONFIG_FOUND)
+	ENDIF(UNIX)
+ELSE (NOT DISABLE_LIBUSB)
+	SET(PKG_LIBUSB10_FOUND "")
+ENDIF (NOT DISABLE_LIBUSB)
 
 
 # Build the XBox Kinect support (via libfreenect)
