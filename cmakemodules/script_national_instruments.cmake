@@ -2,6 +2,7 @@
 # -----------------------------------------
 
 SET( MRPT_HAS_NI_DAQmxBASE OFF CACHE BOOL "Build with support for National Instruments DAQmx Base C API")
+SET(CMAKE_MRPT_HAS_NIDAQMXBASE 0)
 
 # Leave at the user's choice to disable the SWR libs:
 OPTION(DISABLE_NationalInstruments "Forces NOT using NationalInstrument libs, even if they are found by CMake" "OFF")
@@ -33,9 +34,7 @@ IF(NOT DISABLE_NationalInstruments)
 		IF (NI_DAQmxBASE_INCLUDE_DIR AND NI_DAQmxBASE_LIB_FILE)
 			SET(CMAKE_MRPT_HAS_NIDAQMXBASE 1) 
 		ELSE(NI_DAQmxBASE_INCLUDE_DIR AND NI_DAQmxBASE_LIB_FILE)
-			SET(CMAKE_MRPT_HAS_NIDAQMXBASE 0)
 			MESSAGE("Error: Correct NI_DAQmxBASE_LIB_FILE and NI_DAQmxBASE_INCLUDE_DIR, or uncheck MRPT_HAS_NI_DAQmxBASE")
 		ENDIF (NI_DAQmxBASE_INCLUDE_DIR AND NI_DAQmxBASE_LIB_FILE)
-			
 	ENDIF(MRPT_HAS_NI_DAQmxBASE)
 ENDIF(NOT DISABLE_NationalInstruments)	
