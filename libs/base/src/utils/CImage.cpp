@@ -2041,20 +2041,21 @@ void CImage::rectifyImageInPlace( void *mapX, void *mapY )
     makeSureImageIsLoaded();   // For delayed loaded images stored externally
     ASSERT_(img!=NULL);
 
-    IplImage *srcImg = getAs<IplImage>();	// Source Image
-	IplImage *outImg;												// Output Image
-	outImg = cvCreateImage( cvGetSize( srcImg ), srcImg->depth, srcImg->nChannels );
-
 #if MRPT_OPENCV_VERSION_NUM<0x200
 	THROW_EXCEPTION("This method requires OpenCV 2.0.0 or above.")
 #else
+
+    IplImage *srcImg = getAs<IplImage>();	// Source Image
+	IplImage *outImg = cvCreateImage( cvGetSize( srcImg ), srcImg->depth, srcImg->nChannels );
+
     cv::Mat *_mapX, *_mapY;
     _mapX = static_cast<cv::Mat*>(mapX);
     _mapY = static_cast<cv::Mat*>(mapY);
 
-    cv::Mat outMat = outImg;
-    cv::Mat auxMat = srcImg;
-    cv::remap( auxMat, outMat, *_mapX, *_mapY, cv::INTER_CUBIC );
+    IplImage _mapXX = *_mapX;
+    IplImage _mapYY = *_mapY;
+
+    cvRemap(srcImg,outImg, &_mapXX,&_mapYY,CV_INTER_CUBIC);
 #endif
 
     releaseIpl();

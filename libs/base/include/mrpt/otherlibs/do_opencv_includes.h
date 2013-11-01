@@ -62,6 +62,9 @@
 
 #		include <opencv2/legacy/legacy.hpp>  // CvImage
 #		include <opencv2/legacy/compat.hpp>
+		// For cvLoadImage(), etc.:
+#		include <opencv2/core/core_c.h>
+#		include <opencv2/highgui/highgui_c.h>
 #		if (MRPT_OPENCV_VERSION_NUM>=0x240) && MRPT_HAS_OPENCV_NONFREE
 #			include <opencv2/nonfree/nonfree.hpp>
 #		endif

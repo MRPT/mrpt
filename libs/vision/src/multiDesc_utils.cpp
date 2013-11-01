@@ -54,7 +54,7 @@
 #include <mrpt/math/geometry.h>
 
 // Universal include for all versions of OpenCV
-#include <mrpt/otherlibs/do_opencv_includes.h> 
+#include <mrpt/otherlibs/do_opencv_includes.h>
 
 using namespace mrpt;
 using namespace mrpt::vision;
@@ -1378,7 +1378,7 @@ int vision::computeMoreDescriptors(
     cv::Mat tempImg1;
     IplImage aux1;
 
-    const cv::Mat inImg1 = image.getAs<IplImage>();
+    const cv::Mat inImg1 = cv::Mat(image.getAs<IplImage>(),false);
 
     cv::GaussianBlur( inImg1, tempImg1, cvSize(0,0), opts.sg1 /*sigmaX*/, opts.sg1 /*sigmaY*/ );
     aux1 = tempImg1;

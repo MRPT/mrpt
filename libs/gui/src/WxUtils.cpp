@@ -43,24 +43,7 @@
 
 #if MRPT_HAS_WXWIDGETS
 
-#if MRPT_HAS_OPENCV
-	// OPENCV HEADERS
-	#define CV_NO_CVV_IMAGE   // Avoid CImage name crash
-
-#	if MRPT_OPENCV_VERSION_NUM>=0x211
-#		include <opencv2/core/core.hpp>
-#		include <opencv2/highgui/highgui.hpp>
-#		include <opencv2/imgproc/imgproc.hpp>
-#		include <opencv2/imgproc/imgproc_c.h>
-#	else
-#		include <cv.h>
-#		include <highgui.h>
-#	endif
-
-	#ifdef CImage	// For old OpenCV versions (<=1.0.0)
-	#undef CImage
-	#endif
-#endif
+#include <mrpt/otherlibs/do_opencv_includes.h>
 
 using namespace mrpt;
 using namespace mrpt::gui;
@@ -657,7 +640,7 @@ CPanelCameraSelection::CPanelCameraSelection(wxWindow* parent,wxWindowID id)
 	FlexGridSizer5->Add(cbKinect_Depth, 1, wxALL|wxALIGN_LEFT|wxALIGN_BOTTOM, 5);
 	StaticBoxSizer2->Add(FlexGridSizer5, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_BOTTOM, 0);
 	FlexGridSizer4->Add(StaticBoxSizer2, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_BOTTOM, 5);
-	wxString __wxRadioBoxChoices_3[2] = 
+	wxString __wxRadioBoxChoices_3[2] =
 	{
 		_("RGB camera"),
 		_("IR camera")
