@@ -68,6 +68,7 @@
 		- Fixed building against OpenCV 3.0.0 (GIT head)
 		- Updated to the latest nanoflann 1.1.7.
 		- Updated to Eigen 3.2.0 - <a href="http://code.google.com/p/mrpt/source/detail?r=3455" >r3455</a>
+		- Binary packages for Windows now include .pdb files to help debugging with Visual Studio.
 	- BUG FIXES:
 		- Fixed build error with GCC when experimental parallelization is enabled. <a href="http://code.google.com/p/mrpt/source/detail?r=3441" >r3441</a>
 		- mrpt::reactivenav::CReactiveNavigationSystem complained about missing config variables ROBOTMODEL_TAU & ROBOTMODEL_DELAY, which were removed in MRPT 1.0.2 - <a href="http://code.google.com/p/mrpt/source/detail?r=3452" >r3452</a>

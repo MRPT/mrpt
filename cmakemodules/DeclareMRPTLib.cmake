@@ -244,6 +244,14 @@ macro(internal_define_mrpt_lib name headers_only)
 			LIBRARY DESTINATION ${MRPT_PREFIX_INSTALL}lib${LIB_SUFFIX} COMPONENT Libraries
 			ARCHIVE DESTINATION ${MRPT_PREFIX_INSTALL}lib${LIB_SUFFIX} COMPONENT Libraries
 			)
+			
+		# Collect .pdb debug files for optional installation:
+		IF (MSVC)
+			SET(PDB_FILE "${CMAKE_BINARY_DIR}/bin/Debug/libmrpt-${name}${CMAKE_MRPT_VERSION_NUMBER_MAJOR}${CMAKE_MRPT_VERSION_NUMBER_MINOR}${CMAKE_MRPT_VERSION_NUMBER_PATCH}-dbg.pdb")
+			IF (EXISTS "${PDB_FILE}")
+				INSTALL(FILES ${PDB_FILE} DESTINATION bin COMPONENT LibrariesDebugInfoPDB)
+			ENDIF (EXISTS "${PDB_FILE}")
+		ENDIF(MSVC)		
 	ENDIF (NOT ${headers_only})
 
 	# Generate the libmrpt-$NAME.pc file for pkg-config:

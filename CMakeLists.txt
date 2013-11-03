@@ -198,6 +198,7 @@ include(cmakemodules/script_SIMD.cmake REQUIRED)        # SSE2/SSE3/... optimiza
 include(cmakemodules/script_gtest.cmake REQUIRED)       # Unit testing lib
 include(cmakemodules/script_clang.cmake REQUIRED)       # clang library (For UTFConvert)
 include(cmakemodules/script_national_instruments.cmake REQUIRED)  # NI C library
+include(cmakemodules/script_sift_hess.cmake REQUIRED)  # SIFT Hess implementation 
 
 # ---------------------------------------------------------------------------
 #			OPTIONS
@@ -206,7 +207,6 @@ include(cmakemodules/script_national_instruments.cmake REQUIRED)  # NI C library
 OPTION(MRPT_ALWAYS_CHECKS_DEBUG "Additional checks even in Release" "OFF")
 OPTION(MRPT_ALWAYS_CHECKS_DEBUG_MATRICES "Additional checks even in Release (Only in matrix classes)" "OFF")
 
-include(cmakemodules/script_sift_hess.cmake REQUIRED)  # SIFT Hess implementation 
 
 # ---------------------------------------------------------------------------
 # Create the minimum list of libraries required by an application that
