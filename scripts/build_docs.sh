@@ -78,7 +78,7 @@ else
 fi
 MRPT_LIST_INPUT="$MRPT_LIST_DIRECTORIES $EXTRA_INDIV_FILES $EIGEN_INDIV_FILES"
 
-MRPT_EXAMPLE_PATH="$CUR_DIR/doc/doxygen-examples/"
+MRPT_EXAMPLE_PATH="$CUR_DIR/samples/ $CUR_DIR/share/mrpt/config_files/"
 
 # Checks
 # --------------------------------
