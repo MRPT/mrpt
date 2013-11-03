@@ -65,6 +65,7 @@
 		- mrpt::utils::CEvent, which was actually unimplemented (!)
 	- Build system:
 		- Fixed compilation with clang.
+		- Fixed building against OpenCV 3.0.0 (GIT head)
 		- Updated to the latest nanoflann 1.1.7.
 		- Updated to Eigen 3.2.0 - <a href="http://code.google.com/p/mrpt/source/detail?r=3455" >r3455</a>
 	- BUG FIXES:
