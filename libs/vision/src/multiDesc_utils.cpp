@@ -1378,7 +1378,7 @@ int vision::computeMoreDescriptors(
     cv::Mat tempImg1;
     IplImage aux1;
 
-    const cv::Mat inImg1 = cv::Mat(image.getAs<IplImage>(),false);
+    const cv::Mat inImg1 = cv::cvarrToMat(image.getAs<IplImage>(),false /*dont copy data*/);
 
     cv::GaussianBlur( inImg1, tempImg1, cvSize(0,0), opts.sg1 /*sigmaX*/, opts.sg1 /*sigmaY*/ );
     aux1 = tempImg1;
@@ -1428,7 +1428,7 @@ int vision::computeMoreDescriptors(
             cv::Mat out_mat_patch;
             // The size is a+2xa+2 because we have to compute the gradient (magnitude and orientation) in every pixel within the axa patch so we need
             // one more row and column. For instance, for a 23x23 patch we need a 25x25 patch.
-            cv::resize( cv::Mat( tPatch.getAs<IplImage>() ), out_mat_patch, cv::Size(a+2,a+2) );
+            cv::resize( cv::cvarrToMat(tPatch.getAs<IplImage>(),false ), out_mat_patch, cv::Size(a+2,a+2) );
             IplImage aux_img = IplImage(out_mat_patch);
             CImage rsPatch( &aux_img );
 
@@ -1493,7 +1493,7 @@ int vision::computeMoreDescriptors(
             cv::Mat out_mat_patch;
             // The size is a+2xa+2 because we have to compute the gradient (magnitude and orientation) in every pixel within the axa patch so we need
             // one more row and column. For instance, for a 23x23 patch we need a 25x25 patch.
-            cv::resize( cv::Mat( tPatch.getAs<IplImage>() ), out_mat_patch, cv::Size(a+2,a+2) );
+            cv::resize( cv::cvarrToMat( tPatch.getAs<IplImage>(),false), out_mat_patch, cv::Size(a+2,a+2) );
             IplImage aux_img = IplImage(out_mat_patch);
             CImage rsPatch( &aux_img );
 
@@ -1622,8 +1622,8 @@ void vision::computeMultiResolutionDescriptors(
     cv::Mat tempImg1, tempImg2;
     IplImage aux1, aux2;
 
-    const cv::Mat inImg1 = imageLeft.getAs<IplImage>();
-    const cv::Mat inImg2 = imageRight.getAs<IplImage>();
+    const cv::Mat inImg1 = cv::cvarrToMat(imageLeft.getAs<IplImage>());
+    const cv::Mat inImg2 = cv::cvarrToMat(imageRight.getAs<IplImage>());
 
     cv::GaussianBlur( inImg1, tempImg1, cvSize(0,0), opts.sg1 /*sigmaX*/, opts.sg1 /*sigmaY*/ );
     aux1 = tempImg1;
@@ -1703,7 +1703,7 @@ void vision::computeMultiResolutionDescriptors(
             cv::Mat out_mat_patch;
             // The size is a+2xa+2 because we have to compute the gradient (magnitude and orientation) in every pixel within the axa patch so we need
             // one more row and column. For instance, for a 23x23 patch we need a 25x25 patch.
-            cv::resize( cv::Mat( tPatch.getAs<IplImage>() ), out_mat_patch, cv::Size(a+2,a+2) );
+            cv::resize( cv::cvarrToMat( tPatch.getAs<IplImage>(),false ), out_mat_patch, cv::Size(a+2,a+2) );
             IplImage aux_img = IplImage(out_mat_patch);
             CImage rsPatch( &aux_img );
             tlogger.leave("extract & resize");
@@ -1736,7 +1736,7 @@ void vision::computeMultiResolutionDescriptors(
             tlogger.enter("extract & resize");
             imageRight.extract_patch( tPatch, itMatch->second->x-hpSize, itMatch->second->y-hpSize, npSize, npSize );
 
-            cv::resize( cv::Mat( tPatch.getAs<IplImage>() ), out_mat_patch, cv::Size(a+2,a+2) );
+            cv::resize( cv::cvarrToMat( tPatch.getAs<IplImage>(),false), out_mat_patch, cv::Size(a+2,a+2) );
             IplImage aux_img2 = IplImage(out_mat_patch);
             CImage rsPatch2( &aux_img2 );
             tlogger.leave("extract & resize");
@@ -1827,7 +1827,7 @@ bool vision::computeMultiResolutionDescriptors(
         cv::Mat out_mat_patch;
         // The size is a+2xa+2 because we have to compute the gradient (magnitude and orientation) in every pixel within the axa patch so we need
         // one more row and column. For instance, for a 23x23 patch we need a 25x25 patch.
-        cv::resize( cv::Mat( tPatch.getAs<IplImage>() ), out_mat_patch, cv::Size(a+2,a+2) );
+        cv::resize( cv::cvarrToMat(tPatch.getAs<IplImage>(),false), out_mat_patch, cv::Size(a+2,a+2) );
         IplImage aux_img = IplImage(out_mat_patch);
         CImage rsPatch( &aux_img );
 
@@ -1898,7 +1898,7 @@ vector<bool> vision::computeMultiResolutionDescriptors(
         cv::Mat tempImg;
         IplImage aux;
 
-        const cv::Mat inImg = image.getAs<IplImage>();
+        const cv::Mat inImg = cv::cvarrToMat(image.getAs<IplImage>());
 
         cv::GaussianBlur( inImg, tempImg, cvSize(0,0), opts.sg1 /*sigmaX*/, opts.sg1 /*sigmaY*/ );
         aux = tempImg;
@@ -1943,7 +1943,7 @@ void vision::computeMultiOrientations(
     cv::Mat tempImg1;
     IplImage aux1;
 
-    const cv::Mat inImg1 = image.getAs<IplImage>();
+    const cv::Mat inImg1 = cv::cvarrToMat(image.getAs<IplImage>(),false);
 
     cv::GaussianBlur( inImg1, tempImg1, cvSize(0,0), opts.sg1 /*sigmaX*/, opts.sg1 /*sigmaY*/ );
     aux1 = tempImg1;
@@ -1991,7 +1991,7 @@ void vision::computeMultiOrientations(
             cv::Mat out_mat_patch;
             // The size is a+2xa+2 because we have to compute the gradient (magnitude and orientation) in every pixel within the axa patch so we need
             // one more row and column. For instance, for a 23x23 patch we need a 25x25 patch.
-            cv::resize( cv::Mat( tPatch.getAs<IplImage>() ), out_mat_patch, cv::Size(a+2,a+2) );
+            cv::resize( cv::cvarrToMat(tPatch.getAs<IplImage>(),false), out_mat_patch, cv::Size(a+2,a+2) );
             IplImage aux_img = IplImage(out_mat_patch);
             CImage rsPatch( &aux_img );
             tlogger.leave("extract & resize");

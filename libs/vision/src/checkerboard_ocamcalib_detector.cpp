@@ -762,7 +762,12 @@ void icvCleanFoundConnectedQuads( std::vector<CvCBQuadPtr> &quad_group, const Cv
 
     // Create an array of quadrangle centers
     vector<CvPoint2D32f>	centers( quad_group.size() );
+#if CV_MAJOR_VERSION==1
 	temp_storage = cvCreateMemStorage(0);
+#else
+	temp_storage = cv::MemStorage(cvCreateMemStorage(0));
+#endif
+
 
     for( size_t i = 0; i < quad_group.size(); i++ )
     {
@@ -1905,12 +1910,10 @@ int icvGenerateQuads( vector<CvCBQuadPtr> &out_quads, vector<CvCBCornerPtr> &out
     // Create temporary storage for contours and the sequence of pointers to
 	// found quadrangles
 #if CV_MAJOR_VERSION==1
-	CvMemStorage* temp_storage = NULL;
+	CvMemStorage* temp_storage = cvCreateMemStorage(0);
 #else
-	cv::MemStorage temp_storage;
+	cv::MemStorage temp_storage = cv::MemStorage(cvCreateMemStorage(0));
 #endif
-
-	temp_storage = cvCreateMemStorage();
 
 	out_quads.clear();
 	out_corners.clear();

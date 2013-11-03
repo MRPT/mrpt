@@ -36,28 +36,9 @@
 #include <mrpt/hwdrivers.h> // Precompiled header
 
 #include <mrpt/system/threads.h>
+#include <mrpt/hwdrivers/CImageGrabber_OpenCV.h>
 
-#if MRPT_HAS_OPENCV
-	// Include the OPENCV libraries:
-	#define CV_NO_CVV_IMAGE   // Avoid CImage name crash
-
-#	if MRPT_OPENCV_VERSION_NUM>=0x211
-#		include <opencv2/core/core.hpp>
-#		include <opencv2/highgui/highgui.hpp>
-#		include <opencv2/imgproc/imgproc.hpp>
-#		include <opencv2/imgproc/imgproc_c.h>
-#		include <opencv2/calib3d/calib3d.hpp>
-#	else
-#		include <cv.h>
-#		include <highgui.h>
-#	endif
-
-	#ifdef CImage	// For old OpenCV versions (<=1.0.0)
-	#undef CImage
-	#endif
-
-	#include <mrpt/hwdrivers/CImageGrabber_OpenCV.h>
-#endif
+#include <mrpt/otherlibs/do_opencv_includes.h>
 
 #define M_CAPTURE  (static_cast<CvCapture*>(m_capture.get()))
 
