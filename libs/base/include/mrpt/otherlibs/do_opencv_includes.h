@@ -59,7 +59,9 @@
 #		include <opencv2/imgproc/imgproc_c.h>
 #		include <opencv2/features2d/features2d.hpp>
 #		include <opencv2/video/tracking.hpp>
-#		include <opencv2/video/tracking_c.h>
+#		if MRPT_OPENCV_VERSION_NUM>=0x300
+#			include <opencv2/video/tracking_c.h>
+#		endif
 #		include <opencv2/calib3d/calib3d.hpp>
 #		include <opencv2/objdetect/objdetect.hpp>
 
