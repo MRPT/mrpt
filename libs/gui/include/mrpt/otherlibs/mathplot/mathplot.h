@@ -69,7 +69,7 @@
 #define WXDLLIMPEXP_MATHPLOT GUI_IMPEXP
 
 
-#if defined(__GNUG__) && !defined(__APPLE__)
+#if defined(__GNUG__) && !defined(__clang__)
 #pragma interface "mathplot.h"
 #endif
 

@@ -443,7 +443,7 @@ holonomic_navigator_demoFrame::holonomic_navigator_demoFrame(wxWindow* parent,wx
 	{
 		mrpt::utils::CConfigFileMemory cfg;
 
-		m_simul_options.saveToConfigFile("SIMULATOR",cfg);
+		m_simul_options.saveToConfigFile(cfg,"SIMULATOR");
 
 		mrpt::reactivenav::CHolonomicVFF holo_VFF;
 		holo_VFF.options.saveToConfigFile(cfg,"VFF_CONFIG");
@@ -805,7 +805,7 @@ void holonomic_navigator_demoFrame::TOptions::loadFromConfigFile(const mrpt::uti
 	MRPT_END
 }
 
-void holonomic_navigator_demoFrame::TOptions::saveToConfigFile(const std::string &section,  mrpt::utils::CConfigFileBase &cfg ) const
+void holonomic_navigator_demoFrame::TOptions::saveToConfigFile(mrpt::utils::CConfigFileBase &cfg,const std::string &section) const
 {
 	MRPT_START
 	const int WN = 40, WV = 20;

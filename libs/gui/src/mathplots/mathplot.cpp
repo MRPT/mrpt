@@ -10,9 +10,8 @@
 // Licence:         wxWindows licence
 /////////////////////////////////////////////////////////////////////////////
 
-#ifdef __GNUG__
-// #pragma implementation "plot.h"
-#pragma implementation "mathplot.h"
+#if defined(__GNUG__) && !defined(__clang__)
+#	pragma implementation "mathplot.h"
 #endif
 
 // For compilers that support precompilation, includes "wx.h".

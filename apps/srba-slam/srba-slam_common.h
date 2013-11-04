@@ -72,7 +72,7 @@ struct RBASLAM_Params
 	TCLAP::ValueArg<std::string>       arg_edge_policy;
 	TCLAP::ValueArg<unsigned int> arg_submap_size;
 	TCLAP::ValueArg<unsigned int> arg_verbose;
-	TCLAP::ValueArg<unsigned int> arg_random_seed;
+	TCLAP::ValueArg<int> arg_random_seed;
 	TCLAP::ValueArg<std::string> arg_rba_params_cfg_file;
 	TCLAP::ValueArg<std::string> arg_write_rba_params_cfg_file;
 	TCLAP::ValueArg<std::string> arg_video;
