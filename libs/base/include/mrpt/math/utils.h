@@ -814,7 +814,7 @@ namespace mrpt
 
 			va_list args;
 			va_start(args,val1);
-			for (size_t i=0;i<N-1;i++)
+			for (size_t i=1;i<N;i++)
 				ret.push_back( va_arg(args,T) );
 
 			va_end(args);
