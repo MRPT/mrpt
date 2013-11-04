@@ -171,7 +171,7 @@ void CIbeoLuxETH::dataCollection()
 					SPdistance = ScanPointData[5] * 0x100 + ScanPointData[4];
 
 					// Sanity checks
-					if ((SPlayer < 0) || (SPlayer > 4))
+					if (SPlayer > 4)
 					{
 						dropPacket = true;
 						//std::cerr << "Invalid layer: " << SPlayer << " should be element of [0,3] Scanpoint dropped.\n";
