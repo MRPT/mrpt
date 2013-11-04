@@ -2355,7 +2355,7 @@ bool CImage::drawChessboardCorners(
     const int r = 4;
 
 	unsigned int x, y,i;
-	CvPoint prev_pt = {0, 0};
+	CvPoint prev_pt = CvPoint(0, 0);
 	const int line_max = 8;
 	CvScalar line_colors[8];
 

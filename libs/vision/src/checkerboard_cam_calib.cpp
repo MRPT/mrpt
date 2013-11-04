@@ -43,7 +43,7 @@
 #include <mrpt/vision/chessboard_camera_calib.h>
 
 // Universal include for all versions of OpenCV
-#include <mrpt/otherlibs/do_opencv_includes.h> 
+#include <mrpt/otherlibs/do_opencv_includes.h>
 
 using namespace mrpt;
 using namespace mrpt::vision;
@@ -226,7 +226,7 @@ bool mrpt::vision::checkerBoardCameraCalibration(
 				if ( !dat.img_original.isExternallyStored() )
 				{
 					const int r = 4;
-					CvPoint prev_pt = { 0, 0};
+					CvPoint prev_pt(0, 0);
 					const int line_max = 8;
 					CvScalar line_colors[8];
 

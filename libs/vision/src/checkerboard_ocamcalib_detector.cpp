@@ -748,7 +748,7 @@ void icvCleanFoundConnectedQuads( std::vector<CvCBQuadPtr> &quad_group, const Cv
 	cv::MemStorage temp_storage;  // JL: "Modernized" to use C++ STL stuff.
 #endif
 
-	CvPoint2D32f center = {0,0};
+	CvPoint2D32f center = CvPoint2D32f(0,0);
 
     // Number of quads this pattern should contain
     const size_t expected_quads_count = ((pattern_size.width + 1)*(pattern_size.height + 1) + 1)/2;
@@ -771,7 +771,7 @@ void icvCleanFoundConnectedQuads( std::vector<CvCBQuadPtr> &quad_group, const Cv
 
     for( size_t i = 0; i < quad_group.size(); i++ )
     {
-        CvPoint2D32f ci = {0,0};
+        CvPoint2D32f ci(0,0);
         const CvCBQuadPtr& q = quad_group[i];
 
         for( size_t j = 0; j < 4; j++ )

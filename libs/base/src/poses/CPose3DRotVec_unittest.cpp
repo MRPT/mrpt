@@ -171,15 +171,6 @@ TEST_F(Pose3DRotVecTests,Initialization)
 
 TEST_F(Pose3DRotVecTests,Compose)
 {
-	/** /test_compose(1.0,2.0,3.0, DEG2RAD(0),DEG2RAD(0),DEG2RAD(0),
-	             0,  0,  0,   DEG2RAD(0),DEG2RAD(0),DEG2RAD(0));/**/
-
-	/** /test_compose(1.0, 2.0, 3.0, DEG2RAD(0),DEG2RAD(0),DEG2RAD(0),
-	             4.0, 5.0, 6.0, DEG2RAD(0),DEG2RAD(0),DEG2RAD(0));/**/
-
-	/** /test_compose(1.0,  2.0, 3.0, DEG2RAD(-30),DEG2RAD(10),DEG2RAD(60),
-	             2.0, -5.0, 8.0, DEG2RAD( 40),DEG2RAD(-5),DEG2RAD(25));/**/
-
 	test_compose( 25.0, 2.0,  3.0, DEG2RAD(-30),DEG2RAD(89),DEG2RAD(0),
-	             -10.0, 4.0, -8.0, DEG2RAD( 20),DEG2RAD( 9),DEG2RAD(0));/**/
+	             -10.0, 4.0, -8.0, DEG2RAD( 20),DEG2RAD( 9),DEG2RAD(0));
 }
