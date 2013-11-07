@@ -246,7 +246,7 @@ namespace mrpt
 				return reverse_iterator(*this,m_mat->getColCount()-1);
 			}
 			inline const_reverse_iterator rbegin() const	{
-				return const_reverse_iterator(*this,m_mat.getColCount()-1);
+				return const_reverse_iterator(*this,m_mat->getColCount()-1);
 			}
 			inline reverse_iterator rend()	{
 				return reverse_iterator(*this,-1);

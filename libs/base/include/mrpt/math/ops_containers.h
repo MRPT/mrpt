@@ -195,7 +195,7 @@ namespace mrpt
 			return res;
 		}
 
-		/** v1·v2: The dot product of two containers (vectors/arrays/matrices) */
+		/** v1Â·v2: The dot product of two containers (vectors/arrays/matrices) */
 		template <class CONTAINER1,class CONTAINER2>
 		inline typename CONTAINER1::Scalar
 		dotProduct(const CONTAINER1 &v1,const CONTAINER1 &v2)
@@ -203,7 +203,7 @@ namespace mrpt
 			return v1.dot(v2);
 		}
 
-		/** v1·v2: The dot product of any two objects supporting []  */
+		/** v1Â·v2: The dot product of any two objects supporting []  */
 		template<size_t N,class T,class U,class V>
 		inline T dotProduct(const U &v1,const V &v2)	{
 			T res=0;
@@ -221,7 +221,7 @@ namespace mrpt
 
 		/** Computes the sum of all the elements, with a custom return type.
 		   \sa sum, cumsum  */
-		template <class CONTAINER,typename RET> inline RET sumRetType(const CONTAINER &v) { return v.sumRetType<RET>(); }
+		template <class CONTAINER,typename RET> inline RET sumRetType(const CONTAINER &v) { return v.template sumRetType<RET>(); }
 
 		/** Computes the mean value of a vector  \return The mean, as a double number.
 		  * \sa math::stddev,math::meanAndStd  */
