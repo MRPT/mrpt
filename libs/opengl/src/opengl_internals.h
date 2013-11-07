@@ -53,7 +53,23 @@
 		#include <GL/glew.h>
 	#endif	// MRPT_OS_WINDOWS
 
-	#include <GL/glut.h>
+
+	#ifdef MRPT_OS_APPLE
+		#include <OpenGL/gl.h>
+		#include <OpenGL/glu.h>
+		#include <GLUT/glut.h>
+		#include <OpenGL/glext.h>
+	#else
+		#include <GL/gl.h>
+		#include <GL/glu.h>
+		#include <GL/glut.h>
+		// gl-ext
+		#ifdef MRPT_OS_WINDOWS
+			#include "glext/glext.h"
+		#else
+			#include <GL/glext.h>
+		#endif
+	#endif
 
 	/* Jerome Monceaux : bilock@gmail.com
 	 * Add inclusion of otherlibs/freeglut/GL/glut.h
@@ -69,12 +85,6 @@
 	#endif
 
 
-	// gl-ext
-	#ifdef MRPT_OS_WINDOWS
-		#include "glext/glext.h"
-	#else
-		#include <GL/glext.h>
-	#endif
 
 #endif // MRPT_HAS_OPENGL_GLUT
 
