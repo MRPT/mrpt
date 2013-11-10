@@ -114,19 +114,6 @@ ELSE(BUILD_ARIA)
 	SET(CMAKE_MRPT_HAS_ARIA 0)
 ENDIF(BUILD_ARIA)
 
-# Build the xSENS library
-# ===================================================
-SET(BUILD_XSENS ON CACHE BOOL "Build an embedded version of xSens library (interface to xSens MTi device)")
-#MARK_AS_ADVANCED(BUILD_XSENS)
-
-IF(BUILD_XSENS)
-	SET(CMAKE_MRPT_HAS_xSENS 1)
-	SET(CMAKE_MRPT_HAS_xSENS_SYSTEM 0)
-ELSE(BUILD_XSENS)
-	SET(CMAKE_MRPT_HAS_xSENS 0)
-	SET(CMAKE_MRPT_HAS_xSENS_SYSTEM 0)
-ENDIF(BUILD_XSENS)
-
 #-----------------------------------
 #  Build the hardware drivers?
 #-----------------------------------
@@ -199,6 +186,7 @@ include(cmakemodules/script_gtest.cmake REQUIRED)       # Unit testing lib
 include(cmakemodules/script_clang.cmake REQUIRED)       # clang library (For UTFConvert)
 include(cmakemodules/script_national_instruments.cmake REQUIRED)  # NI C library
 include(cmakemodules/script_sift_hess.cmake REQUIRED)  # SIFT Hess implementation 
+include(cmakemodules/script_xsens.cmake REQUIRED)      # XSens Motion trackers / IMU drivers
 
 # ---------------------------------------------------------------------------
 #			OPTIONS

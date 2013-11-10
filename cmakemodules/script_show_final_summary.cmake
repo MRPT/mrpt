@@ -137,7 +137,8 @@ SHOW_CONFIG_LINE_SYSTEM("Has SwissRanger 3/4000 3D camera        " CMAKE_MRPT_HA
 SHOW_CONFIG_LINE_SYSTEM("Has Phidget                             " CMAKE_MRPT_HAS_PHIDGET)
 SHOW_CONFIG_LINE_SYSTEM("Has Videre SVS stereo camera            " CMAKE_MRPT_HAS_SVS)
 SHOW_CONFIG_LINE_SYSTEM("Has wxWidgets                           " CMAKE_MRPT_HAS_WXWIDGETS)
-SHOW_CONFIG_LINE_SYSTEM("Has xSENS MTi library (inertial sensor) " CMAKE_MRPT_HAS_xSENS)
+SHOW_CONFIG_LINE_SYSTEM("Has xSENS MT 3rd generation support     " CMAKE_MRPT_HAS_xSENS_MT3)
+SHOW_CONFIG_LINE_SYSTEM("Has xSENS MT 4th generation support     " CMAKE_MRPT_HAS_xSENS_MT4)
 SHOW_CONFIG_LINE_SYSTEM("Has zlib (compression)                  " CMAKE_MRPT_HAS_ZLIB)
 
 MESSAGE(STATUS  "")

@@ -43,6 +43,8 @@
 	- New classes:
 		- [mrpt-base]
 			- mrpt::synch::CPipe: OS-independent pipe support.
+		- [mrpt-hwdrivers]
+			- mrpt::hwdrivers::CIMUXSens_MT4 : Support for 4th generation xSens MT IMU devices.
 		- [mrpt-maps]
 			- There are now two versions of octomaps (by Mariano Jaimez Tarifa/Jose Luis Blanco) - <a href="http://code.google.com/p/mrpt/source/detail?r=3443" >r3443</a>
 				- mrpt::slam::COctoMap (only occupancy)

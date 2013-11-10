@@ -47,18 +47,18 @@ using namespace mrpt::slam;
 using namespace mrpt::hwdrivers;
 
 #if MRPT_HAS_xSENS
-	#include "xSens/cmt1.h"
-	#include "xSens/cmt2.h"
-	#include "xSens/cmt3.h"
-	#include "xSens/cmtdef.h"
-	#include "xSens/cmtmessage.h"
-	#include "xSens/cmtpacket.h"
-	#include "xSens/cmtscan.h"
-	#include "xSens/xsens_fifoqueue.h"
-	#include "xSens/xsens_janitors.h"
-	#include "xSens/xsens_list.h"
-	#include "xSens/xsens_std.h"
-	#include "xSens/xsens_time.h"
+	#include "xSens_MT3/cmt1.h"
+	#include "xSens_MT3/cmt2.h"
+	#include "xSens_MT3/cmt3.h"
+	#include "xSens_MT3/cmtdef.h"
+	#include "xSens_MT3/cmtmessage.h"
+	#include "xSens_MT3/cmtpacket.h"
+	#include "xSens_MT3/cmtscan.h"
+	#include "xSens_MT3/xsens_fifoqueue.h"
+	#include "xSens_MT3/xsens_janitors.h"
+	#include "xSens_MT3/xsens_list.h"
+	#include "xSens_MT3/xsens_std.h"
+	#include "xSens_MT3/xsens_time.h"
 #endif
 
 

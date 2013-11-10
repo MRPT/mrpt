@@ -2,17 +2,36 @@
 #  See "DeclareMRPTLib.cmake" for explanations
 # -------------------------------------------------
 
-# Build xSens?
-IF(CMAKE_MRPT_HAS_xSENS)
+# Build xSens MT3?
+IF(CMAKE_MRPT_HAS_xSENS_MT3)
 	LIST(APPEND hwdrivers_EXTRA_SRCS
-		"${MRPT_LIBS_ROOT}/hwdrivers/src/xSens/*.cpp"
-		"${MRPT_LIBS_ROOT}/hwdrivers/src/xSens/*.h"
+		"${MRPT_LIBS_ROOT}/hwdrivers/src/xSens_MT3/*.cpp"
+		"${MRPT_LIBS_ROOT}/hwdrivers/src/xSens_MT3/*.h"
+		)
+	LIST(APPEND hwdrivers_EXTRA_SRCS_NAME "xSens_MT3" "xSens_MT3" )
+ENDIF(CMAKE_MRPT_HAS_xSENS_MT3)
+
+# Build xSens MT4?
+IF(CMAKE_MRPT_HAS_xSENS_MT4)
+	LIST(APPEND hwdrivers_EXTRA_SRCS
+		"${MRPT_LIBS_ROOT}/hwdrivers/src/xSens_MT4/xcommunication/src/*.cpp"
+		"${MRPT_LIBS_ROOT}/hwdrivers/src/xSens_MT4/xcommunication/src/*.c"
+		"${MRPT_LIBS_ROOT}/hwdrivers/src/xSens_MT4/xcommunication/include/xsens/*.h"
+		"${MRPT_LIBS_ROOT}/hwdrivers/src/xSens_MT4/xstypes/src/*.c"
+		"${MRPT_LIBS_ROOT}/hwdrivers/src/xSens_MT4/xstypes/include/xsens/*.h"
 		)
 	LIST(APPEND hwdrivers_EXTRA_SRCS_NAME 
-		"xSens"
-		"xSens"
+		"xSens_MT4" "xSens_MT4" "xSens_MT4" 
+		"xSens_MT4" "xSens_MT4"
 		)
-ENDIF(CMAKE_MRPT_HAS_xSENS)
+	# XSens MT4 sources seem to expect to have both [DIR]/ and [DIR]/xsens/ as INCLUDE_DIRS:
+	INCLUDE_DIRECTORIES(
+		"${MRPT_LIBS_ROOT}/hwdrivers/src/xSens_MT4/xcommunication/include/"
+		"${MRPT_LIBS_ROOT}/hwdrivers/src/xSens_MT4/xcommunication/include/xsens/"
+		"${MRPT_LIBS_ROOT}/hwdrivers/src/xSens_MT4/xstypes/include/"
+		"${MRPT_LIBS_ROOT}/hwdrivers/src/xSens_MT4/xstypes/include/xsens/"
+		)
+ENDIF(CMAKE_MRPT_HAS_xSENS_MT4)
 
 # Build Xbox Kinect?
 IF(CMAKE_MRPT_HAS_FREENECT)
@@ -78,20 +97,24 @@ define_mrpt_lib(
 	)
 
 IF(BUILD_mrpt-hwdrivers) 
-	
-	IF(CMAKE_MRPT_HAS_xSENS)
-		# Ignore precompiled headers in xSens sources:
+	# Ignore precompiled headers in xSens sources:
+	IF(CMAKE_MRPT_HAS_xSENS_MT3 OR CMAKE_MRPT_HAS_xSENS_MT4)
 		IF(MRPT_ENABLE_PRECOMPILED_HDRS AND MSVC)
-			set_source_files_properties(${xSens_FILES} PROPERTIES COMPILE_FLAGS "/Y-")
+			set_source_files_properties(${xSens_MT3_FILES} ${xSens_MT4_FILES} PROPERTIES COMPILE_FLAGS "/Y-")
 		ENDIF(MRPT_ENABLE_PRECOMPILED_HDRS AND MSVC)
 
 		# Avoid some annoying warnings:
 		IF (CMAKE_COMPILER_IS_GNUCXX)
-			set_source_files_properties(${xSens_FILES} PROPERTIES COMPILE_FLAGS "-Wno-variadic-macros")
+			set_source_files_properties(${xSens_MT3_FILES} ${xSens_MT4_FILES} PROPERTIES COMPILE_FLAGS "-Wno-variadic-macros")
 		ENDIF (CMAKE_COMPILER_IS_GNUCXX)
 
 		ADD_DEFINITIONS(-D_LOG_TO_STDOUT)
-	ENDIF(CMAKE_MRPT_HAS_xSENS)
+	ENDIF(CMAKE_MRPT_HAS_xSENS_MT3 OR CMAKE_MRPT_HAS_xSENS_MT4)
+	
+	# xSens MT4 in Windows requires WinUsb.lib
+	IF (WIN32 AND CMAKE_MRPT_HAS_xSENS_MT4)
+		TARGET_LINK_LIBRARIES(mrpt-hwdrivers "WinUsb.lib" "Setupapi.lib")	
+	ENDIF (WIN32 AND CMAKE_MRPT_HAS_xSENS_MT4)
 
 	IF(CMAKE_MRPT_HAS_FREENECT)
 		# Add linking against these libs:
