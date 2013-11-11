@@ -45,9 +45,12 @@ namespace mrpt
 	{
 
 		/** A class for interfacing XSens 4th generation Inertial Measuring Units (IMUs): MTi 10-series, MTi 100-series.
-		  *  In Windows, you only need to install XSens drivers. In Linux, this class only requires MRPT to be built with libusb-1.0 support.
+		  *  Usage considerations:
+		  *    - In Windows, you only need to install XSens drivers.
+		  *    - In Linux, this class only requires MRPT to be built with libusb-1.0 support. Accessing USB devices may require
+		  *      running the program as super user ("sudo"). To avoid that, Or, install <code> MRPT/scripts/52-xsens.rules </code> in <code>/etc/udev/rules.d/</code> to allow access to all users.
 		  *
-		  *  For the older 3rd generation devices, see the class mrpt::hwdrivers::CIMUXSens_MT4.
+		  *  For the older 3rd generation devices, see the class mrpt::hwdrivers::CIMUXSens
 		  *
 		  *  \code
 		  *  PARAMETERS IN THE ".INI"-LIKE CONFIGURATION STRINGS:
@@ -61,8 +64,8 @@ namespace mrpt
 		  *    pose_roll=0
 		  *	   sensorLabel = <label>   // Label of the sensor
 		  *    # If a portname is not provided, the first found device will be opened:
-		  *	   #portname_LIN	=        
-		  *	   #portname_WIN	= \\?\usb#vid_2639&pid_0003#...  
+		  *	   #portname_LIN	= USB002:005
+		  *	   #portname_WIN	= \\?\usb#vid_2639&pid_0003#...
 		  *	   #baudRate	    = 115200             ; Baudrate for communicating, only if the port is a COM port
 		  *  \endcode
 		  * \ingroup mrpt_hwdrivers_grp

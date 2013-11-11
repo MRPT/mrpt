@@ -106,6 +106,7 @@ IF(BUILD_mrpt-hwdrivers)
 		# Avoid some annoying warnings:
 		IF (CMAKE_COMPILER_IS_GNUCXX)
 			set_source_files_properties(${xSens_MT3_FILES} ${xSens_MT4_FILES} PROPERTIES COMPILE_FLAGS "-Wno-variadic-macros")
+			set_source_files_properties(${xSens_MT4_FILES} PROPERTIES COMPILE_FLAGS "-D_POSIX_C_SOURCE=199309L") # Needed to have CLOCK_REALTIME,... in gcc
 		ENDIF (CMAKE_COMPILER_IS_GNUCXX)
 
 		ADD_DEFINITIONS(-D_LOG_TO_STDOUT)
