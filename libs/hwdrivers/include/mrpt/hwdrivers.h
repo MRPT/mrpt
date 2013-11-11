@@ -57,6 +57,7 @@
 #include <mrpt/hwdrivers/CBoardDLMS.h>
 #include <mrpt/hwdrivers/CBoardIR.h>
 #include <mrpt/hwdrivers/CIMUXSens.h>
+#include <mrpt/hwdrivers/CIMUXSens_MT4.h>
 #include <mrpt/hwdrivers/CActivMediaRobotBase.h>
 #include <mrpt/hwdrivers/CJoystick.h>
 #include <mrpt/hwdrivers/CCameraSensor.h>

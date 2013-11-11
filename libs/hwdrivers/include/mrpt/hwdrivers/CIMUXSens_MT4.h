@@ -33,13 +33,10 @@
    | POSSIBILITY OF SUCH DAMAGE.                                               |
    +---------------------------------------------------------------------------+ */
 
-#ifndef CIMUXSens_H
-#define CIMUXSens_H
-
+#ifndef CIMUXSens_MT4_H
+#define CIMUXSens_MT4_H
 
 #include <mrpt/hwdrivers/CGenericSensor.h>
-#include <mrpt/hwdrivers/CSerialPort.h>
-
 #include <mrpt/poses/CPose3D.h>
 
 namespace mrpt
@@ -47,33 +44,32 @@ namespace mrpt
 	namespace hwdrivers
 	{
 
-		/** A class for interfacing XSens 3rd generation Inertial Measuring Units (IMUs), the "XSens MTi" model.
-		  *  It uses a serial port or USB-to-serial adapter to communicate to the device, so no special drivers are needed.
-		  *  For the more recent 4th generation devices, see the class mrpt::hwdrivers::CIMUXSens_MT4
+		/** A class for interfacing XSens 4th generation Inertial Measuring Units (IMUs): MTi 10-series, MTi 100-series.
+		  *  In Windows, you only need to install XSens drivers. In Linux, this class only requires MRPT to be built with libusb-1.0 support.
 		  *
-		  *  See also the application "rawlog-grabber" for a ready-to-use application to gather data from the scanner.
+		  *  For the older 3rd generation devices, see the class mrpt::hwdrivers::CIMUXSens_MT4.
 		  *
 		  *  \code
 		  *  PARAMETERS IN THE ".INI"-LIKE CONFIGURATION STRINGS:
 		  * -------------------------------------------------------
 		  *   [supplied_section_name]
-		  *    pose_x=0	    ; Sensor 3D position relative to the robot (meters)
+		  *    pose_x=0	    // Sensor 3D position relative to the robot (meters)
 		  *    pose_y=0
 		  *    pose_z=0
-		  *    pose_yaw=0	; Angles in degrees
+		  *    pose_yaw=0	// Angles in degrees
 		  *    pose_pitch=0
 		  *    pose_roll=0
-		  *	   sensorLabel = <label> ; Label of the sensor
-		  *	   COM_port_LIN	= /dev/ttyUSB0       ; COM PORT in LINUX (optional. If not provided, the system will search the connected port)
-		  *	   COM_port_WIN	= COM1               ; COM PORT in Windows (optional. If not provided, the system will search the connected port)
-		  *	   baudRate	                         ; Baudrate for communicating with the COM port (mandatory for Linux)
-		  *						                    (for Windows, if COM_port_WIN is not provided, this value is ignored)
+		  *	   sensorLabel = <label>   // Label of the sensor
+		  *    # If a portname is not provided, the first found device will be opened:
+		  *	   #portname_LIN	=        
+		  *	   #portname_WIN	= \\?\usb#vid_2639&pid_0003#...  
+		  *	   #baudRate	    = 115200             ; Baudrate for communicating, only if the port is a COM port
 		  *  \endcode
 		  * \ingroup mrpt_hwdrivers_grp
  		  */
-		class HWDRIVERS_IMPEXP CIMUXSens : public hwdrivers::CGenericSensor
+		class HWDRIVERS_IMPEXP CIMUXSens_MT4 : public hwdrivers::CGenericSensor
 		{
-			DEFINE_GENERIC_SENSOR(CIMUXSens)
+			DEFINE_GENERIC_SENSOR(CIMUXSens_MT4)
 		protected:
 
 			/** This serial port will be attempted to be opened automatically when this class is first used to request data from the device.
@@ -104,11 +100,11 @@ namespace mrpt
 		public:
 			/** Constructor
 			  */
-			CIMUXSens( );
+			CIMUXSens_MT4( );
 
 			/** Destructor
 			  */
-			virtual ~CIMUXSens();
+			virtual ~CIMUXSens_MT4();
 
 
 			/** This method will be invoked at a minimum rate of "process_rate" (Hz)

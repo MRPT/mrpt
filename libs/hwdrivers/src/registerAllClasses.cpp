@@ -57,6 +57,7 @@ void registerAllClasses_mrpt_hwdrivers()
 	CBoardIR::doRegister();
 	CBoardDLMS::doRegister();
 	CIMUXSens::doRegister();
+	CIMUXSens_MT4::doRegister();
 	CCameraSensor::doRegister();
 	CActivMediaRobotBase::doRegister();
 	CPtuHokuyo::doRegister();

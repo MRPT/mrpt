@@ -46,7 +46,7 @@ using namespace mrpt::utils;
 using namespace mrpt::slam;
 using namespace mrpt::hwdrivers;
 
-#if MRPT_HAS_xSENS
+#if MRPT_HAS_xSENS_MT3
 	#include "xSens_MT3/cmt1.h"
 	#include "xSens_MT3/cmt2.h"
 	#include "xSens_MT3/cmt3.h"
@@ -68,14 +68,14 @@ using namespace mrpt::hwdrivers;
 
 
 // Include libraries in linking:
-#if MRPT_HAS_xSENS
+#if MRPT_HAS_xSENS_MT3
 	#ifdef MRPT_OS_WINDOWS
 		// WINDOWS:
 		#if defined(_MSC_VER) || defined(__BORLANDC__)
 			#pragma comment (lib,"SetupAPI.lib")
 		#endif
 	#endif	// MRPT_OS_WINDOWS
-#endif // MRPT_HAS_xSENS
+#endif // MRPT_HAS_xSENS_MT3
 
 /*-------------------------------------------------------------
 					CIMUXSens
@@ -91,12 +91,12 @@ CIMUXSens::CIMUXSens( ) :
 	m_toutCounter	(0)
 {
 	m_sensorLabel = "XSensMTi";
-#if MRPT_HAS_xSENS
+#if MRPT_HAS_xSENS_MT3
     m_cmt3_ptr  = new xsens::Cmt3[1];
     m_deviceId_ptr = new CmtDeviceId[1];
 
 #else
-	THROW_EXCEPTION("MRPT has been compiled with 'MRPT_BUILD_xSENS'=OFF, so this class cannot be used.");
+	THROW_EXCEPTION("MRPT has been compiled with 'BUILD_XSENS_MT3'=OFF, so this class cannot be used.");
 #endif
 
 }
@@ -106,7 +106,7 @@ CIMUXSens::CIMUXSens( ) :
 -------------------------------------------------------------*/
 CIMUXSens::~CIMUXSens()
 {
-#if MRPT_HAS_xSENS
+#if MRPT_HAS_xSENS_MT3
 	cmt3.closePort();
 
     delete[] &cmt3;     m_cmt3_ptr= NULL;
@@ -119,7 +119,7 @@ CIMUXSens::~CIMUXSens()
 -------------------------------------------------------------*/
 void CIMUXSens::doProcess()
 {
-#if MRPT_HAS_xSENS
+#if MRPT_HAS_xSENS_MT3
 
 	if(m_state == ssError)
 	{
@@ -232,7 +232,7 @@ void CIMUXSens::doProcess()
 	} while( res == XRV_OK && cont++ < 30);
 
 #else
-	THROW_EXCEPTION("MRPT has been compiled with 'MRPT_BUILD_xSENS'=OFF, so this class cannot be used.");
+	THROW_EXCEPTION("MRPT has been compiled with 'BUILD_XSENS_MT3'=OFF, so this class cannot be used.");
 #endif
 }
 
@@ -241,7 +241,7 @@ void CIMUXSens::doProcess()
 -------------------------------------------------------------*/
 bool CIMUXSens::searchPortAndConnect()
 {
-#if MRPT_HAS_xSENS
+#if MRPT_HAS_xSENS_MT3
 	uint32_t baudrate;
 	if(cmt3.getBaudrate(baudrate) == XRV_OK)
 		return true;
@@ -312,7 +312,7 @@ bool CIMUXSens::searchPortAndConnect()
 -------------------------------------------------------------*/
 void CIMUXSens::initialize()
 {
-#if MRPT_HAS_xSENS
+#if MRPT_HAS_xSENS_MT3
 
 	XsensResultValue	res;
 
@@ -379,7 +379,7 @@ void CIMUXSens::initialize()
 	m_state = ssWorking;
 
 #else
-	THROW_EXCEPTION("MRPT has been compiled with 'MRPT_BUILD_xSENS'=OFF, so this class cannot be used.");
+	THROW_EXCEPTION("MRPT has been compiled with 'BUILD_XSENS_MT3'=OFF, so this class cannot be used.");
 #endif
 }
 
