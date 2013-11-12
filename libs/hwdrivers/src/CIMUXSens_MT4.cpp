@@ -45,6 +45,7 @@ IMPLEMENTS_GENERIC_SENSOR(CIMUXSens_MT4,mrpt::hwdrivers)
 using namespace mrpt::utils;
 using namespace mrpt::slam;
 using namespace mrpt::hwdrivers;
+using namespace std;
 
 #if MRPT_HAS_xSENS_MT4
 	/* Copyright (c) Xsens Technologies B.V., 2006-2012. All rights reserved.
@@ -328,11 +329,9 @@ using namespace mrpt::hwdrivers;
 	};
 #endif
 
-
 // Adaptors for the "void*" memory blocks:
-//#define cmt3	    (*static_cast<xsens::Cmt3*>(m_cmt3_ptr))
-//#define deviceId    (*static_cast<CmtDeviceId*>(m_deviceId_ptr))
-
+#define my_xsens_device  (*static_cast<DeviceClass*>(m_dev_ptr))
+#define my_xsens_devid   (*static_cast<XsDeviceId*>(m_devid_ptr))
 
 // Include libraries in linking:
 #if MRPT_HAS_xSENS_MT4
@@ -340,6 +339,7 @@ using namespace mrpt::hwdrivers;
 		// WINDOWS:
 		#if defined(_MSC_VER) || defined(__BORLANDC__)
 			#pragma comment (lib,"SetupAPI.lib")
+			#pragma comment (lib,"WinUsb.lib")
 		#endif
 	#endif	// MRPT_OS_WINDOWS
 #endif // MRPT_HAS_xSENS_MT4
@@ -348,194 +348,22 @@ using namespace mrpt::hwdrivers;
 					CIMUXSens_MT4
 -------------------------------------------------------------*/
 CIMUXSens_MT4::CIMUXSens_MT4( ) :
-	m_COMbauds		(0),
-	m_com_port		(),
+	m_port_bauds	(0),
+	m_portname		(),
 	m_timeStartUI	(0),
 	m_timeStartTT	(0),
 	m_sensorPose    (),
-	m_cmt3_ptr	(NULL),
-	m_deviceId_ptr	(NULL),
-	m_toutCounter	(0)
+	m_dev_ptr		(NULL),
+	m_devid_ptr     (NULL)
 {
 	m_sensorLabel = "XSensMTi_MT4";
-
-
-
-	DeviceClass device;
-
-	try
-	{
-		// Scan for connected USB devices
-		std::cout << "Scanning for USB devices..." << std::endl;
-		XsPortInfoArray portInfoArray;
-		xsEnumerateUsbDevices(portInfoArray);
-		if (!portInfoArray.size())
-		{
-			std::string portName;
-			int baudRate;
-#ifdef WIN32
-			std::cout << "No USB Motion Tracker found." << std::endl << std::endl << "Please enter COM port name (eg. COM1): " <<
-#else
-			std::cout << "No USB Motion Tracker found." << std::endl << std::endl << "Please enter COM port name (eg. /dev/ttyUSB0): " <<
-#endif
-			std::endl;
-			std::cin >> portName;
-			std::cout << "Please enter baud rate (eg. 115200): ";
-			std::cin >> baudRate;
-
-			XsPortInfo portInfo(portName, XsBaud::numericToRate(baudRate));
-			portInfoArray.push_back(portInfo);
-		}
-
-		// Use the first detected device
-		XsPortInfo mtPort = portInfoArray.at(0);
-
-		// Open the port with the detected device
-		std::cout << "Opening port: " << (&mtPort.portName()[0]) << std::endl;
-		if (!device.openPort(mtPort))
-			throw std::runtime_error("Could not open port. Aborting.");
-
-		// Put the device in configuration mode
-		std::cout << "Putting device into configuration mode..." << std::endl;
-		if (!device.gotoConfig()) // Put the device into configuration mode before configuring the device
-		{
-			throw std::runtime_error("Could not put device into configuration mode. Aborting.");
-		}
-
-		// Request the device Id to check the device type
-		mtPort.setDeviceId(device.getDeviceId());
-
-		// Check if we have an MTi / MTx / MTmk4 device
-		if (!mtPort.deviceId().isMtix() && !mtPort.deviceId().isMtMk4())
-		{
-			throw std::runtime_error("No MTi / MTx / MTmk4 device found. Aborting.");
-		}
-		std::cout << "Found a device with id: " << mtPort.deviceId().toString().toStdString() << " @ port: " << mtPort.portName().toStdString() << ", baudrate: " << mtPort.baudrate() << std::endl;
-
-		try
-		{
-			// Print information about detected MTi / MTx / MTmk4 device
-			std::cout << "Device: " << device.getProductCode().toStdString() << " opened." << std::endl;
-
-			// Configure the device. Note the differences between MTix and MTmk4
-			std::cout << "Configuring the device..." << std::endl;
-			if (mtPort.deviceId().isMtix())
-			{
-				XsOutputMode outputMode = XOM_Orientation; // output orientation data
-				XsOutputSettings outputSettings = XOS_OrientationMode_Quaternion; // output orientation data as quaternion
-
-				// set the device configuration
-				if (!device.setDeviceMode(outputMode, outputSettings))
-				{
-					throw std::runtime_error("Could not configure MT device. Aborting.");
-				}
-			}
-			else if (mtPort.deviceId().isMtMk4())
-			{
-				XsOutputConfiguration quat(XDI_Quaternion, 100);
-				XsOutputConfigurationArray configArray;
-				configArray.push_back(quat);
-				if (!device.setOutputConfiguration(configArray))
-				{
-
-					throw std::runtime_error("Could not configure MTmk4 device. Aborting.");
-				}
-			}
-			else
-			{
-				throw std::runtime_error("Unknown device while configuring. Aborting.");
-			}
-
-			// Put the device in measurement mode
-			std::cout << "Putting device into measurement mode..." << std::endl;
-			if (!device.gotoMeasurement())
-			{
-				throw std::runtime_error("Could not put device into measurement mode. Aborting.");
-			}
-
-			std::cout << "\nMain loop (press any key to quit)" << std::endl;
-			std::cout << std::string(79, '-') << std::endl;
-
-			XsByteArray data;
-			XsMessageArray msgs;
-			while (! mrpt::system::os::kbhit())
-			{
-				device.readDataToBuffer(data);
-				device.processBufferedData(data, msgs);
-				for (XsMessageArray::iterator it = msgs.begin(); it != msgs.end(); ++it)
-				{
-					// Retrieve a packet
-					XsDataPacket packet;
-					if ((*it).getMessageId() == XMID_MtData) {
-						LegacyDataPacket lpacket(1, false);
-						lpacket.setMessage((*it));
-						lpacket.setXbusSystem(false, false);
-						lpacket.setDeviceId(mtPort.deviceId(), 0);
-						lpacket.setDataFormat(XOM_Orientation, XOS_OrientationMode_Quaternion,0);	//lint !e534
-						XsDataPacket_assignFromXsLegacyDataPacket(&packet, &lpacket, 0);
-					}
-					else if ((*it).getMessageId() == XMID_MtData2) {
-						packet.setMessage((*it));
-						packet.setDeviceId(mtPort.deviceId());
-					}
-
-					// Get the quaternion data
-					XsQuaternion quaternion = packet.orientationQuaternion();
-					std::cout << "\r"
-							  << "W:" << std::setw(5) << std::fixed << std::setprecision(2) << quaternion.m_w
-							  << ",X:" << std::setw(5) << std::fixed << std::setprecision(2) << quaternion.m_x
-							  << ",Y:" << std::setw(5) << std::fixed << std::setprecision(2) << quaternion.m_y
-							  << ",Z:" << std::setw(5) << std::fixed << std::setprecision(2) << quaternion.m_z
-					;
-
-					// Convert packet to euler
-					XsEuler euler = packet.orientationEuler();
-					std::cout << ",Roll:" << std::setw(7) << std::fixed << std::setprecision(2) << euler.m_roll
-							  << ",Pitch:" << std::setw(7) << std::fixed << std::setprecision(2) << euler.m_pitch
-							  << ",Yaw:" << std::setw(7) << std::fixed << std::setprecision(2) << euler.m_yaw
-					;
-
-					std::cout << std::flush;
-				}
-				msgs.clear();
-				XsTime::msleep(0);
-			}
-			mrpt::system::os::getch();
-			std::cout << "\n" << std::string(79, '-') << "\n";
-			std::cout << std::endl;
-		}
-		catch (std::runtime_error const & error)
-		{
-			std::cout << error.what() << std::endl;
-		}
-		catch (...)
-		{
-			std::cout << "An unknown fatal error has occured. Aborting." << std::endl;
-		}
-
-		// Close port
-		std::cout << "Closing port..." << std::endl;
-		device.close();
-	}
-	catch (std::runtime_error const & error)
-	{
-		std::cout << error.what() << std::endl;
-	}
-	catch (...)
-	{
-		std::cout << "An unknown fatal error has occured. Aborting." << std::endl;
-	}
-
-
-
-#if 0 && MRPT_HAS_xSENS_MT4
-    m_cmt3_ptr  = new xsens::Cmt3[1];
-    m_deviceId_ptr = new CmtDeviceId[1];
-
+	
+#if MRPT_HAS_xSENS_MT4
+    m_dev_ptr  = new DeviceClass;
+    m_devid_ptr  = new XsDeviceId;
 #else
 	THROW_EXCEPTION("MRPT has been compiled with 'BUILD_XSENS_MT4'=OFF, so this class cannot be used.");
 #endif
-
 }
 
 /*-------------------------------------------------------------
@@ -543,11 +371,13 @@ CIMUXSens_MT4::CIMUXSens_MT4( ) :
 -------------------------------------------------------------*/
 CIMUXSens_MT4::~CIMUXSens_MT4()
 {
-#if 0 && MRPT_HAS_xSENS_MT4
-	cmt3.closePort();
+#if MRPT_HAS_xSENS_MT4
+	my_xsens_device.close();
+	delete static_cast<DeviceClass*>(m_dev_ptr);
+	m_dev_ptr=NULL;
 
-    delete[] &cmt3;     m_cmt3_ptr= NULL;
-    delete[] &deviceId; m_deviceId_ptr = NULL;
+	delete static_cast<XsDeviceId*>(m_devid_ptr);
+	m_devid_ptr=NULL;
 #endif
 }
 
@@ -556,8 +386,7 @@ CIMUXSens_MT4::~CIMUXSens_MT4()
 -------------------------------------------------------------*/
 void CIMUXSens_MT4::doProcess()
 {
-#if 0 && MRPT_HAS_xSENS_MT4
-
+#if MRPT_HAS_xSENS_MT4
 	if(m_state == ssError)
 	{
 		mrpt::system::sleep(200);
@@ -567,65 +396,77 @@ void CIMUXSens_MT4::doProcess()
 	if(m_state == ssError)
 		return;
 
-	XsensResultValue	res;
-	unsigned int		cont = 0;
+	XsByteArray data;
+	XsMessageArray msgs;
 
-	do
+	my_xsens_device.readDataToBuffer(data);
+	my_xsens_device.processBufferedData(data, msgs);
+	for (XsMessageArray::iterator it = msgs.begin(); it != msgs.end(); ++it)
 	{
-		CmtTimeStamp		nowUI;	// ms
-
-		xsens::Packet packet(1/*NDevices*/,cmt3.isXm()/*Is Bus master*/);
-
-		res = cmt3.waitForDataMessage(&packet);
-
-		if( res == XRV_OK )
+		// Retrieve a packet
+		XsDataPacket packet;
+		if ((*it).getMessageId() == XMID_MtData) 
 		{
-			// Data properly collected
-			nowUI		= packet.getRtc();
-			m_state		= ssWorking;
+			LegacyDataPacket lpacket(1, false);
 
-			CObservationIMUPtr obs			= CObservationIMU::Create();
+			lpacket.setMessage((*it));
+			lpacket.setXbusSystem(false, false);
+			lpacket.setDeviceId(my_xsens_devid, 0);
+			lpacket.setDataFormat(XOM_Orientation, XOS_OrientationMode_Euler | XOS_Timestamp_PacketCounter | XOS_CalibratedMode_All/*XOS_OrientationMode_Quaternion*/,0);	//lint !e534
+			XsDataPacket_assignFromXsLegacyDataPacket(&packet, &lpacket, 0);
+		}
+		else if ((*it).getMessageId() == XMID_MtData2) {
+			packet.setMessage((*it));
+			packet.setDeviceId(my_xsens_devid);
+		}
 
-			// ANGLE MEASUREMENTS:
-			if ( packet.containsOriEuler() )
-			{
-				CmtEuler	euler_data	= packet.getOriEuler();
+		// Data properly collected: extract data fields
+		// -------------------------------------------------
+		m_state		= ssWorking;
+		CObservationIMUPtr obs			= CObservationIMU::Create();
 
-				obs->rawMeasurements[IMU_YAW]	= DEG2RAD(euler_data.m_yaw);
-				obs->dataIsPresent[IMU_YAW]		= true;
-				obs->rawMeasurements[IMU_PITCH] = DEG2RAD(euler_data.m_pitch);
-				obs->dataIsPresent[IMU_PITCH]	= true;
-				obs->rawMeasurements[IMU_ROLL]	= DEG2RAD(euler_data.m_roll);
-				obs->dataIsPresent[IMU_ROLL]	= true;
-			}
+		if (packet.containsOrientation())
+		{
+			XsEuler euler = packet.orientationEuler();
+			obs->rawMeasurements[IMU_YAW]   = DEG2RAD(euler.yaw());   obs->dataIsPresent[IMU_YAW] = true;
+			obs->rawMeasurements[IMU_PITCH] = DEG2RAD(euler.pitch()); obs->dataIsPresent[IMU_PITCH]   = true;
+			obs->rawMeasurements[IMU_ROLL]  = DEG2RAD(euler.roll());  obs->dataIsPresent[IMU_ROLL]  = true;
+		}
 
-			// ACCELEROMETERS MEASUREMENTS:
-			if ( packet.containsCalAcc())
-			{
-				CmtVector 	acc_data = packet.getCalAcc(); // getRawAcc();
+		if (packet.containsCalibratedAcceleration())
+		{
+			XsVector acc_data = packet.calibratedAcceleration();
+			obs->rawMeasurements[IMU_X_ACC] = acc_data[0]; obs->dataIsPresent[IMU_X_ACC] = true;
+			obs->rawMeasurements[IMU_Y_ACC] = acc_data[1]; obs->dataIsPresent[IMU_Y_ACC] = true;
+			obs->rawMeasurements[IMU_Z_ACC] = acc_data[2]; obs->dataIsPresent[IMU_Z_ACC] = true;
+		}
 
-				obs->rawMeasurements[IMU_X_ACC]	= acc_data.m_data[0];
-				obs->dataIsPresent[IMU_X_ACC]	= true;
-				obs->rawMeasurements[IMU_Y_ACC]	= acc_data.m_data[1];
-				obs->dataIsPresent[IMU_Y_ACC]	= true;
-				obs->rawMeasurements[IMU_Z_ACC]	= acc_data.m_data[2];
-				obs->dataIsPresent[IMU_Z_ACC]	= true;
-			}
+		if (packet.containsCalibratedGyroscopeData())
+		{
+			XsVector gyr_data = packet.calibratedGyroscopeData();
+			obs->rawMeasurements[IMU_YAW_VEL]   = gyr_data[2]; obs->dataIsPresent[IMU_YAW_VEL]   = true;
+			obs->rawMeasurements[IMU_PITCH_VEL] = gyr_data[1]; obs->dataIsPresent[IMU_PITCH_VEL] = true;
+			obs->rawMeasurements[IMU_ROLL_VEL]  = gyr_data[0]; obs->dataIsPresent[IMU_ROLL_VEL]  = true;
+		}
 
-			// GYROSCOPES MEASUREMENTS:
-			if ( packet.containsCalGyr())
-			{
-				CmtVector gir_data	= packet.getCalGyr(); // getRawGyr();
+		if (packet.containsCalibratedMagneticField())
+		{
+			XsVector mag_data = packet.calibratedMagneticField();
+			obs->rawMeasurements[IMU_MAG_X]   = mag_data[0]; obs->dataIsPresent[IMU_MAG_X]   = true;
+			obs->rawMeasurements[IMU_MAG_Y]   = mag_data[1]; obs->dataIsPresent[IMU_MAG_Y]   = true;
+			obs->rawMeasurements[IMU_MAG_Z]   = mag_data[2]; obs->dataIsPresent[IMU_MAG_Z]   = true;
+		}
 
-				obs->rawMeasurements[IMU_YAW_VEL]	= gir_data.m_data[2];
-				obs->dataIsPresent[IMU_YAW_VEL]	= true;
-				obs->rawMeasurements[IMU_PITCH_VEL]	= gir_data.m_data[1];
-				obs->dataIsPresent[IMU_PITCH_VEL]	= true;
-				obs->rawMeasurements[IMU_ROLL_VEL]	= gir_data.m_data[0];
-				obs->dataIsPresent[IMU_ROLL_VEL]	= true;
-			}
+		if (packet.containsTemperature())
+		{
+			obs->rawMeasurements[IMU_TEMPERATURE]   = packet.temperature(); obs->dataIsPresent[IMU_TEMPERATURE]   = true;
+		}
 
-			// TimeStamp
+		// TimeStamp
+		if (packet.containsSampleTime64())
+		{
+			const uint64_t  nowUI = packet.sampleTime64();
+
 			uint64_t AtUI = 0;
 			if( m_timeStartUI == 0 )
 			{
@@ -637,36 +478,20 @@ void CIMUXSens_MT4::doProcess()
 
 			double AtDO	= AtUI * 10000.0;								// Difference in intervals of 100 nsecs
 			obs->timestamp		= m_timeStartTT	+ AtDO;
-			obs->sensorPose		= m_sensorPose;
-			obs->sensorLabel	= m_sensorLabel;
-
-			appendObservation(obs);
-			m_toutCounter	= 0;
-
-		} // end if XRV_OK
-
-		if(res == XRV_TIMEOUT)
+		}
+		else
 		{
-			if(++m_toutCounter>3)
-			{
-				m_toutCounter	= 0;
-				m_state			= ssError;
-				if( cmt3.isPortOpen() )
-					cmt3.closePort();
+			obs->timestamp		= mrpt::system::now();
+		}
 
-				std::cerr << "[CIMUXSens_MT4::doProcess()] Error: No data available [XRV_TIMEOUT]" << std::endl;
-			}
-		} // end if XRV_TIMEOUT
+		obs->sensorPose		= m_sensorPose;
+		obs->sensorLabel	= m_sensorLabel;
 
-		if(res == XRV_TIMEOUTNODATA)
-		{
-//			m_state			= ssError;
-//			m_timeStartUI	= 0;
-//			if( cmt3.isPortOpen() )
-//				cmt3.closePort();
-//			std::cerr << "[CIMUXSens_MT4::doProcess()] Error: No data available [XRV_TIMEOUTNODATA]" << std::endl;
-		} // end if XRV_TIMEOUTNODATA
-	} while( res == XRV_OK && cont++ < 30);
+		appendObservation(obs);
+
+		std::cout << std::flush;
+	}
+	msgs.clear();
 
 #else
 	THROW_EXCEPTION("MRPT has been compiled with 'BUILD_XSENS_MT4'=OFF, so this class cannot be used.");
@@ -674,146 +499,110 @@ void CIMUXSens_MT4::doProcess()
 }
 
 /*-------------------------------------------------------------
-					lookForPort
--------------------------------------------------------------*/
-bool CIMUXSens_MT4::searchPortAndConnect()
-{
-#if 0 && MRPT_HAS_xSENS_MT4
-	uint32_t baudrate;
-	if(cmt3.getBaudrate(baudrate) == XRV_OK)
-		return true;
-
-	XsensResultValue res;
-	xsens::List<CmtPortInfo> portInfo;
-	unsigned long portCount = 0;
-	unsigned short mtCount = 0;
-
-	if( m_com_port.empty() ) {		// Scan COM ports
-		std::cout << "Scanning for connected Xsens devices..." << std::endl;
-		xsens::cmtScanPorts(portInfo);
-		portCount = portInfo.length();
-		std::cout << "Done" << std::endl;
-		if (portCount == 0) {
-			std::cout << "No xSens device found" << std::endl;
-			m_state = ssError;
-			return false;
-
-		} // end if (error)
-	} // end if
-	else														// Port defined by user in .ini file
-	{
-		CmtPortInfo	pInfo;
-		pInfo.m_baudrate	= m_COMbauds;
-		strcpy( pInfo.m_portName, m_com_port.c_str());  //m_portNr		= (unsigned char)m_com_port;
-		portInfo.append( pInfo );
-		portCount++;
-	} // end else
-
-	ASSERT_(portCount == 1);
-	std::cout << "Using COM port " << portInfo[0].m_portName /*(long)portInfo[0].m_portNr*/ << " at " << portInfo[0].m_baudrate << " baud" << std::endl;
-	std::cout << "Opening port..." << std::endl;
-	//open the port which the device is connected to and connect at the device's baudrate.
-	res = cmt3.openPort(portInfo[0].m_portName , portInfo[0].m_baudrate);
-	if (res != XRV_OK) {
-		std::cerr << "COM Port could not be opened" << std::endl;
-		m_state = ssError;
-		return false;
-	}
-	std::cout << "done" << std::endl;
-
-	//get the Mt sensor count.
-	std::cout << "Retrieving MotionTracker count (excluding attached Xbus Master(s))" << std::endl;
-	mtCount = cmt3.getMtCount();
-	std::cout << "MotionTracker count: " << mtCount << std::endl;
-
-	ASSERT_(mtCount == 1);
-
-	// retrieve the device IDs
-	std::cout << "Retrieving MotionTracker device ID" << std::endl;
-	res = cmt3.getDeviceId(mtCount, deviceId);
-	std::cout << "Device ID at busId 1: " << (long) deviceId << std::endl;	//printf("Device ID at busId 1: %08x\n",(long) deviceId);
-	if (res != XRV_OK) {
-		std::cerr << "Device ID could not be gathered" << std::endl;
-		m_state = ssError;
-		return false;
-	}
-
-	return true;
-#else
-	return false;
-#endif
-} // end lookForPort
-
-/*-------------------------------------------------------------
 					initialize
 -------------------------------------------------------------*/
 void CIMUXSens_MT4::initialize()
 {
-#if 0 && MRPT_HAS_xSENS_MT4
-
-	XsensResultValue	res;
-
-	if(cmt3.isPortOpen())
-		return;
-
+#if MRPT_HAS_xSENS_MT4
 	m_state = ssInitializing;
 
-	// Search for the COM PORT and connect
-	if(!searchPortAndConnect())
+	try
+	{
+		// Try to open a specified device, or scan the bus?
+		XsPortInfoArray portInfoArray;
+
+		if (m_portname.empty())
+		{
+			if (m_verbose) cout << "[CIMUXSens_MT4] Scanning for USB devices...\n";
+			xsEnumerateUsbDevices(portInfoArray);
+
+			if (portInfoArray.empty())
+				THROW_EXCEPTION("CIMUXSens_MT4: No 'portname' was specified and no XSens device was found after scanning the system!")
+
+			if (m_verbose) cout << "[CIMUXSens_MT4] Found " <<  portInfoArray.size() <<" devices. Opening the first one.\n";
+		}
+		else
+		{
+			XsPortInfo portInfo(m_portname, XsBaud::numericToRate(m_port_bauds));
+			if (m_verbose) cout << "[CIMUXSens_MT4] Using user-supplied portname '"<<m_portname<<"' at "<<m_port_bauds<<" baudrate.\n";
+			portInfoArray.push_back(portInfo);
+		}
+
+		// Use the first detected device
+		XsPortInfo mtPort = portInfoArray.at(0);
+
+		// Open the port with the detected device
+		cout << "[CIMUXSens_MT4] Opening port " << mtPort.portName().toStdString() << std::endl;
+
+		if (!my_xsens_device.openPort(mtPort))
+			throw std::runtime_error("Could not open port. Aborting.");
+
+		// Put the device in configuration mode
+		if (m_verbose) cout << "[CIMUXSens_MT4] Putting device into configuration mode...\n";
+		if (!my_xsens_device.gotoConfig()) // Put the device into configuration mode before configuring the device
+			throw std::runtime_error("Could not put device into configuration mode. Aborting.");
+
+		// Request the device Id to check the device type
+		mtPort.setDeviceId(my_xsens_device.getDeviceId());
+
+		my_xsens_devid = mtPort.deviceId();
+
+		// Check if we have an MTi / MTx / MTmk4 device
+		if (!mtPort.deviceId().isMtix() && !mtPort.deviceId().isMtMk4())
+		{
+			throw std::runtime_error("No MTi / MTx / MTmk4 device found. Aborting.");
+		}
+		cout << "[CIMUXSens_MT4] Found a device with id: " << mtPort.deviceId().toString().toStdString() << " @ port: " << mtPort.portName().toStdString() << ", baudrate: " << mtPort.baudrate() << std::endl;
+
+		// Print information about detected MTi / MTx / MTmk4 device
+		if (m_verbose) cout << "[CIMUXSens_MT4] Device: " << my_xsens_device.getProductCode().toStdString() << " opened." << std::endl;
+
+		// Configure the device. Note the differences between MTix and MTmk4
+		if (m_verbose) cout << "[CIMUXSens_MT4] Configuring the device..." << std::endl;
+		if (mtPort.deviceId().isMtix())
+		{
+			XsOutputMode outputMode = XOM_Orientation; // output orientation data
+			XsOutputSettings outputSettings = XOS_OrientationMode_Euler | XOS_Timestamp_PacketCounter | XOS_CalibratedMode_All; // XOS_OrientationMode_Quaternion; // output orientation data as quaternion
+
+			// set the device configuration
+			if (!my_xsens_device.setDeviceMode(outputMode, outputSettings))
+				throw std::runtime_error("Could not configure MT device. Aborting.");
+		}
+		else if (mtPort.deviceId().isMtMk4())
+		{
+			XsOutputConfigurationArray configArray;
+			configArray.push_back( XsOutputConfiguration(XDI_SampleTime64,100) );
+			configArray.push_back( XsOutputConfiguration(XDI_SampleTimeFine,100) );
+			configArray.push_back( XsOutputConfiguration(XDI_SampleTimeCoarse,100) );
+			configArray.push_back( XsOutputConfiguration(XDI_Quaternion,100) );
+			configArray.push_back( XsOutputConfiguration(XDI_Temperature,100) );
+			configArray.push_back( XsOutputConfiguration(XDI_Acceleration,100) );
+			configArray.push_back( XsOutputConfiguration(XDI_RateOfTurn,100) );
+			configArray.push_back( XsOutputConfiguration(XDI_MagneticField,100) );
+			configArray.push_back( XsOutputConfiguration(XDI_VelocityXYZ,100) );			
+
+			if (!my_xsens_device.setOutputConfiguration(configArray))
+				throw std::runtime_error("Could not configure MTmk4 device. Aborting.");
+		}
+		else
+		{
+			throw std::runtime_error("Unknown device while configuring. Aborting.");
+		}
+
+		// Put the device in measurement mode
+		if (m_verbose) cout << "[CIMUXSens_MT4] Putting device into measurement mode..." << std::endl;
+		if (!my_xsens_device.gotoMeasurement())
+			throw std::runtime_error("Could not put device into measurement mode. Aborting.");
+
+		m_state = ssWorking;
+
+	}
+	catch(std::exception &)
 	{
 		m_state = ssError;
 		std::cerr << "Error Could not initialize the device" << std::endl;
-		return;
+		throw;
 	}
-
-	std::cout << "xSens IMU detected and connected" << std::endl;
-	CmtOutputMode		mode		= CMT_OUTPUTMODE_ORIENT | CMT_OUTPUTMODE_CALIB;
-	CmtOutputSettings	settings	= CMT_OUTPUTSETTINGS_ORIENTMODE_EULER | CMT_OUTPUTSETTINGS_TIMESTAMP_SAMPLECNT | CMT_OUTPUTSETTINGS_CALIBMODE_ACCGYR;
-
-	// set the sensor to config state
-	res = cmt3.gotoConfig();
-	if (res != XRV_OK) {
-		m_state = ssError;	//EXIT_ON_ERROR(res,"gotoConfig");
-		std::cerr << "An error ocurred when setting the device to config mode" << std::endl;
-		return;
-	}
-
-	unsigned short sampleFreq;
-	sampleFreq = cmt3.getSampleFrequency();
-
-	// set the device output mode for the device(s)
-	std::cout << "Configuring mode selection" << std::endl;
-	CmtDeviceMode deviceMode(mode, settings, sampleFreq);
-	res = cmt3.setDeviceMode(deviceMode, true, deviceId);
-	if (res != XRV_OK) {
-		m_state = ssError;	//EXIT_ON_ERROR(res,"setDeviceMode");
-		std::cerr << "An error ocurred when configuring the device" << std::endl;
-		return;
-	}
-
-	// start receiving data
-	res = cmt3.gotoMeasurement();
-	if (res != XRV_OK) {
-		m_state = ssError;	//EXIT_ON_ERROR(res,"gotoMeasurement");
-		std::cerr << "An error ocurred when setting the device to measurement mode" << std::endl;
-		return;
-	}
-
-	std::cout << "Getting initial TimeStamp" << std::endl;
-	// Get initial TimeStamp
-	xsens::Packet packet(1/*NDevices*/,cmt3.isXm()/*Is Bus master*/);
-	do
-	{
-		res = cmt3.waitForDataMessage(&packet);
-		if( res == XRV_OK )
-		{
-			m_timeStartUI = (uint64_t)packet.getRtc();
-			m_timeStartTT = mrpt::system::now();
-		} // end if
-	} while( res != XRV_OK );
-
-	std::cout << "Gathering data" << std::endl;
-	m_state = ssWorking;
 
 #else
 	THROW_EXCEPTION("MRPT has been compiled with 'BUILD_XSENS_MT4'=OFF, so this class cannot be used.");
@@ -835,12 +624,12 @@ void  CIMUXSens_MT4::loadConfig_sensorSpecific(
         DEG2RAD( configSource.read_float( iniSection, "pose_pitch", 0, false ) ),
         DEG2RAD( configSource.read_float( iniSection, "pose_roll", 0, false ) ) );
 
-	m_COMbauds = configSource.read_int(iniSection, "baudRate", m_COMbauds, false );
+	m_port_bauds = configSource.read_int(iniSection, "baudRate", m_port_bauds, false );
 
 #ifdef MRPT_OS_WINDOWS
-	m_com_port = configSource.read_string(iniSection, "COM_port_WIN", m_com_port, false );
+	m_portname = configSource.read_string(iniSection, "portname_WIN", m_portname, false );
 #else
-	m_com_port = configSource.read_string(iniSection, "COM_port_LIN", m_com_port, false );
+	m_portname = configSource.read_string(iniSection, "portname_LIN", m_portname, false );
 #endif
 
 

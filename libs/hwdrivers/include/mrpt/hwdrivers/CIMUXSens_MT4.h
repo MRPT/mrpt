@@ -68,32 +68,25 @@ namespace mrpt
 		  *	   #portname_WIN	= \\?\usb#vid_2639&pid_0003#...
 		  *	   #baudRate	    = 115200             ; Baudrate for communicating, only if the port is a COM port
 		  *  \endcode
+		  *
+		  *  \note Set the environment variable "MRPT_HWDRIVERS_VERBOSE" to "1" to enable diagnostic information while using this class.
+		  *
 		  * \ingroup mrpt_hwdrivers_grp
  		  */
 		class HWDRIVERS_IMPEXP CIMUXSens_MT4 : public hwdrivers::CGenericSensor
 		{
 			DEFINE_GENERIC_SENSOR(CIMUXSens_MT4)
 		protected:
+			int							m_port_bauds; //!< Baudrate, only for COM ports.
+			std::string					m_portname;   //!< The USB or COM port name (if blank -> autodetect)
 
-			/** This serial port will be attempted to be opened automatically when this class is first used to request data from the device.
-			  * \sa hwdrivers::CSerialPort
-			  */
-			int							m_COMbauds;
-			std::string					m_com_port;
 			uint64_t					m_timeStartUI;
 			mrpt::system::TTimeStamp	m_timeStartTT;
 
 			mrpt::poses::CPose3D		m_sensorPose;
 
-			/** Search the port where the sensor is located and connect to it
-			  */
-			bool 			searchPortAndConnect();
-
-			//CSerialPort		m_serial_port;			//!< The serial port connection
-
-			void * /*xsens::Cmt3 */		m_cmt3_ptr;
-			void * /*CmtDeviceId */		m_deviceId_ptr;
-			unsigned int				m_toutCounter;				//!< Timeout counter (for internal use only)
+			void * /*DeviceClass */		m_dev_ptr;
+			void * /*XsDeviceId */      m_devid_ptr;
 
 			/** See the class documentation at the top for expected parameters */
 			void  loadConfig_sensorSpecific(

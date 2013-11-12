@@ -112,11 +112,6 @@ IF(BUILD_mrpt-hwdrivers)
 		ADD_DEFINITIONS(-D_LOG_TO_STDOUT)
 	ENDIF(CMAKE_MRPT_HAS_xSENS_MT3 OR CMAKE_MRPT_HAS_xSENS_MT4)
 	
-	# xSens MT4 in Windows requires WinUsb.lib
-	IF (WIN32 AND CMAKE_MRPT_HAS_xSENS_MT4)
-		TARGET_LINK_LIBRARIES(mrpt-hwdrivers "WinUsb.lib" "Setupapi.lib")	
-	ENDIF (WIN32 AND CMAKE_MRPT_HAS_xSENS_MT4)
-
 	IF(CMAKE_MRPT_HAS_FREENECT)
 		# Add linking against these libs:
 		IF(NOT "${FREENECT_LIBS}" STREQUAL "")
