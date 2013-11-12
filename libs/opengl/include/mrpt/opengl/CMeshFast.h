@@ -58,7 +58,7 @@ namespace mrpt
 		  *
 		  *  <div align="center">
 		  *  <table border="0" cellspan="4" cellspacing="4" style="border-width: 1px; border-style: solid;">
-		  *   <tr> <td> mrpt::opengl::CMesh </td> <td> \image html preview_CMeshFast.png </td> </tr>
+		  *   <tr> <td> mrpt::opengl::CMeshFast </td> <td> \image html preview_CMeshFast.png </td> </tr>
 		  *  </table>
 		  *  </div>
 		  *
