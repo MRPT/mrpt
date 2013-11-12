@@ -59,16 +59,24 @@ namespace slam
 		DEFINE_SERIALIZABLE( CObservationRawDAQ )
 	 public:
 		/** Constructor */
-		inline CObservationRawDAQ() : sample_rate(0) { }
+		inline CObservationRawDAQ() : sample_rate(0),AIN_channel_count(0),AIN_interleaved(true) { }
 		/** Destructor */
 		virtual ~CObservationRawDAQ()
 		{ }
 
-		std::vector<uint8_t>  AIN_8bits;  /** Readings from 8-bit analog input (ADCs) channels (vector length=channel count) in Volts. */
-		std::vector<uint16_t> AIN_16bits; /** Readings from 16-bit analog input (ADCs) channels (vector length=channel count) in Volts. */
-		std::vector<uint32_t> AIN_32bits; /** Readings from 32-bit analog input (ADCs) channels (vector length=channel count) in Volts. */
-		std::vector<uint8_t>  AOUT_8bits;  /** Present output values for 8-bit analog output (DACs) channels (vector length=channel count) in Volts.*/
-		std::vector<uint16_t> AOUT_16bits;  /** Present output values for 16-bit analog output (DACs) channels (vector length=channel count) in Volts.*/
+		std::vector<uint8_t>  AIN_8bits;  /** Readings from 8-bit analog input (ADCs) channels (vector length=channel count) in ADC units. */
+		std::vector<uint16_t> AIN_16bits; /** Readings from 16-bit analog input (ADCs) channels (vector length=channel count) in ADC units. */
+		std::vector<uint32_t> AIN_32bits; /** Readings from 32-bit analog input (ADCs) channels (vector length=channel count) in ADC units. */
+		std::vector<float>    AIN_float;  /** Readings from analog input (ADCs) channels (vector length=channel count) in Volts. */
+		std::vector<double>   AIN_double; /** Readings from analog input (ADCs) channels (vector length=channel count) in Volts. */
+
+		uint16_t AIN_channel_count; //!< How many different ADC channels are present in the AIN_* vectors.
+		bool     AIN_interleaved; //!< Whether the channels are interleaved (A0 A1 A2 A0 A1 A2...) or not (A0 A0 A0 A1 A1 A1 A2 A2 A2...) in the AIN_* vectors.
+
+		std::vector<uint8_t>  AOUT_8bits;  /** Present output values for 8-bit analog output (DACs) channels (vector length=channel count) in DAC units.*/
+		std::vector<uint16_t> AOUT_16bits; /** Present output values for 16-bit analog output (DACs) channels (vector length=channel count) in DAC units.*/
+		std::vector<float>    AOUT_float;  /** Present output values for 16-bit analog output (DACs) channels (vector length=channel count) in volts.*/
+		std::vector<double>   AOUT_double; /** Present output values for 16-bit analog output (DACs) channels (vector length=channel count) in volts.*/
 
 		std::vector<uint8_t>  DIN;   /** Readings from digital inputs; each byte stores 8 digital inputs, or 8-bit port. */
 		std::vector<uint8_t>  DOUT;  /** Present digital output values; each byte stores 8 digital inputs, or 8-bit port. */

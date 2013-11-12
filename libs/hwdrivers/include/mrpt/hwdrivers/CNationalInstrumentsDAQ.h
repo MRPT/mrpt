@@ -55,6 +55,14 @@ namespace mrpt
 		*  This class can be used as a sensor from the application "rawlog-grabber", or directly as a C++ class from a user program.
 		*  Refer to the example:  [MRPT]/samples/NIDAQ_test
 		*
+		*  Samples will be returned inside mrpt::slam::CObservationRawDAQ in "packets" of a predefined number of samples, which can 
+		*  be changed by the user through the "samplesPerChannelToRead" parameter of each task.
+		*
+		*  For multichannels tasks, samples will be **interleaved**. For example, the readings from succesive timesteps for 4 ADC channels 
+		*  will be available in the ADC vector inside mrpt::slam::CObservationRawDAQ in this order:
+		*
+		*   - A0[0] A1[0] A2[0] A3[0]  A0[1] A1[1] A2[1] A3[1]  A0[2] A1[2] A2[2] A3[2] ...
+		*
 		*  \code
 		*  PARAMETERS IN THE ".INI"-LIKE CONFIGURATION STRINGS:
 		* -------------------------------------------------------
@@ -73,15 +81,19 @@ namespace mrpt
 		* //    "ci_lin_encoder", "ci_ang_encoder" : Counters & encoders (WARNING: NI says "a task can include only one counter input channel")
 		* //
 		* task0.channels = ai, ao, di, do, ci_ang_encoder
+		* task0.samplesPerSecond = 1000 // Samples per second. Continuous (infinite) sampling is assumed.
+		* task0.samplesPerChannelToRead = 1000  // The number of samples to grab at once from each channel.
 		* 
 		* // Analog input channel params. 
 		* task0.ai.physicalChannel = Dev1/ai0:3, Dev1/ai6
+		* task0.ai.physicalChannelCount = 5  // *IMPORTANT* This must be the total number of channels listed in "physicalChannel" (e.g. 4 for "Dev1/ai0:3")
 		* task0.ai.terminalConfig  = DAQmx_Val_Cfg_Default | DAQmx_Val_RSE | DAQmx_Val_NRSE | DAQmx_Val_Diff   // One of these strings
 		* task0.ai.minVal          = -10.0    // Volts
 		* task0.ai.maxVal          =  10.0    // Volts
 		* 
 		* // Analog output channel params.
 		* task0.ao.physicalChannel = Dev1/ao0, Dev1/ao2:4
+		* task0.ao.physicalChannelCount = 4  // *IMPORTANT* This must be the total number of channels listed in "physicalChannel" (e.g. 1 for "Dev1/ao0")
 		* task0.ao.minVal          = -10.0    // Volts
 		* task0.ao.maxVal          =  10.0    // Volts
 		* 
@@ -181,8 +193,117 @@ namespace mrpt
 				mrpt::slam::CObservationRawDAQ	&outObservation,
 				bool							&hardwareError );
 
-			/** Returns true if initialize() was called successfully. */
-			bool checkDAQIsConnected() const;
+			/** Returns true if initialize() was called and at least one task is running. */
+			bool checkDAQIsWorking() const;
+
+
+			/** Each of the tasks to create in CNationalInstrumentsDAQ::initialize(). 
+			  * Refer to the docs on config file formats of mrpt::hwdrivers::CNationalInstrumentsDAQ to learn on the meaning 
+			  * of each field. Also, see National Instruments' DAQmx API docs online.
+			  */
+			struct HWDRIVERS_IMPEXP TaskDescription
+			{
+				TaskDescription();
+
+				bool has_ai, has_ao, has_di, has_do;
+				bool has_ci_period, has_ci_count_edges,has_ci_pulse_width,has_ci_lin_encoder,has_ci_ang_encoder;
+
+				double   samplesPerSecond; //!< Sample clock config: samples per second. Continuous (infinite) sampling is assumed.
+				uint32_t bufferSamplesPerChannel; //!< (Default=0) From NI's docs: The number of samples the buffer can hold for each channel in the task. Zero indicates no buffer should be allocated. Use a buffer size of 0 to perform a hardware-timed operation without using a buffer.
+				uint32_t samplesPerChannelToRead; //!< (Default=1000) The number of samples to grab at once from each channel.
+
+				struct HWDRIVERS_IMPEXP desc_ai_t
+				{
+					desc_ai_t() : terminalConfig("DAQmx_Val_NRSE"),minVal(-10), maxVal(10),physicalChannelCount(0) { }
+
+					std::string physicalChannel, terminalConfig;
+					double minVal, maxVal;
+					unsigned int physicalChannelCount; //!< *IMPORTANT* This must be the total number of channels listed in "physicalChannel" (e.g. 4 for "Dev1/ai0:3")
+				} 
+				ai; //!< Analog inputs
+				
+				struct HWDRIVERS_IMPEXP desc_ao_t
+				{
+					desc_ao_t() : minVal(-10), maxVal(10),physicalChannelCount(0) { }
+
+					std::string physicalChannel;
+					unsigned int physicalChannelCount; //!< *IMPORTANT* This must be the total number of channels listed in "physicalChannel" (e.g. 1 for "Dev1/ao0")
+					double minVal, maxVal;
+				} 
+				ao; //!< Analog outputs
+
+				struct HWDRIVERS_IMPEXP desc_di_t
+				{
+					std::string lines;
+					unsigned int linesCount; //!< *IMPORTANT* This must be the total number of lines listed in "physicalChannel" (e.g. 1 for "Dev1/ao0")
+				} 
+				di; //!< Digital inputs (di)
+
+				struct HWDRIVERS_IMPEXP desc_do_t
+				{
+					std::string lines;
+				} 
+				douts; //!< Digital outs (do)
+
+				struct HWDRIVERS_IMPEXP desc_ci_period_t
+				{
+					desc_ci_period_t() : minVal(0),maxVal(0),measTime(0),divisor(1) { }
+
+					std::string counter, units, edge;
+					double      minVal,maxVal; 
+					double      measTime;
+					int         divisor; 
+				} 
+				ci_period; //!< Counter: period of a digital signal
+
+				struct HWDRIVERS_IMPEXP desc_ci_count_edges_t
+				{
+					desc_ci_count_edges_t() : initialCount(0) { }
+
+					std::string counter, edge, countDirection;
+					int         initialCount; 
+				} 
+				ci_count_edges; //!< Counter: period of a digital signal
+
+				struct HWDRIVERS_IMPEXP desc_ci_pulse_width_t
+				{
+					desc_ci_pulse_width_t() : minVal(0),maxVal(0) { }
+
+					std::string counter, units, startingEdge;
+					double      minVal,maxVal; 
+				} 
+				ci_pulse_width; //!< Counter: measure the width of a digital pulse
+
+				struct HWDRIVERS_IMPEXP desc_ci_lin_encoder_t
+				{
+					desc_ci_lin_encoder_t() : ZidxEnable(false),ZidxVal(0),distPerPulse(0.1),initialPos(0) { }
+
+					std::string counter, decodingType, ZidxPhase,units;
+					bool        ZidxEnable;
+					double      ZidxVal;
+					double      distPerPulse;
+					double      initialPos;
+				} 
+				ci_lin_encoder; //!< Counter: uses a linear encoder to measure linear position
+
+				struct HWDRIVERS_IMPEXP desc_ci_ang_encoder_t
+				{
+					desc_ci_ang_encoder_t() : ZidxEnable(false),ZidxVal(0),pulsesPerRev(512),initialAngle(0) { }
+
+					std::string counter, decodingType, ZidxPhase,units;
+					bool        ZidxEnable;
+					double      ZidxVal;
+					int         pulsesPerRev;
+					double      initialAngle;
+				} 
+				ci_ang_encoder; //!< Counter: uses an angular encoder to measure angular position
+
+			}; // end of TaskDescription
+			
+			/** Publicly accessible vector with the list of tasks to be launched upon call to CNationalInstrumentsDAQ::initialize().
+			  * Changing these while running will have no effects.
+			  */
+			std::vector<TaskDescription>  task_definitions; 
 			
 		protected:
 			/** See the class documentation at the top for expected parameters */
@@ -203,6 +324,8 @@ namespace mrpt
 				std::auto_ptr<mrpt::synch::CPipeReadEndPoint> read_pipe;
 				std::auto_ptr<mrpt::synch::CPipeWriteEndPoint> write_pipe;
 				bool must_close, is_closed;
+
+				TaskDescription task; //!< A copy of the original task description that generated this thread.
 			};
 
 			std::list<TInfoPerTask> m_running_tasks;

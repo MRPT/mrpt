@@ -55,6 +55,17 @@ void Test_NIDAQ()
 #else
 	// Or set params programatically:
 
+	// Define a task with analog inputs:
+	CNationalInstrumentsDAQ::TaskDescription task;
+	task.has_ai = true;
+	task.ai.physicalChannel = "Dev1/ai0:7";
+	task.ai.physicalChannelCount = 8; // Must be the number of channels encoded in the "physicalChannel" string.
+	task.ai.terminalConfig  = "DAQmx_Val_NRSE";
+	task.ai.minVal = -10;
+	task.ai.maxVal =  10;
+
+	daq.task_definitions.push_back(task);
+
 #endif
 
 	printf("[Example] Initializing DAQ...\n");
@@ -83,7 +94,8 @@ void Test_NIDAQ()
 
 		if (thereIsObservation)
 		{
-			// ...
+			size_t nSamplPerChan = obs.AIN_double.size() / obs.AIN_channel_count;
+			cout << "Read " << nSamplPerChan << " samples. a[0]=" << obs.AIN_double[0] << endl;
 		}
 
 		mrpt::system::sleep(1);
