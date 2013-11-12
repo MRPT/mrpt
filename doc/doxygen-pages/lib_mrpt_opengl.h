@@ -69,6 +69,7 @@ Below follows a table with the preview of most rendering primitive classes:
  <tr> <td> mrpt::opengl::CGridPlaneXY </td> <td> \image html preview_CGridPlaneXY.png </td> </tr>
  <tr> <td> mrpt::opengl::CGridPlaneXZ </td> <td> \image html preview_CGridPlaneXZ.png </td> </tr>
  <tr> <td> mrpt::opengl::CMesh </td> <td> \image html preview_CMesh.png </td> </tr>
+ <tr> <td> mrpt::opengl::CMeshFast </td> <td> \image html preview_CMeshFast.png </td> </tr>
  <tr> <td> mrpt::opengl::CPointCloud </td> <td> \image html preview_CPointCloud.png </td> </tr>
  <tr> <td> mrpt::opengl::CPointCloudColoured </td> <td> \image html preview_CPointCloudColoured.png </td> </tr>
  <tr> <td> mrpt::opengl::CPolyhedron </td> <td> \image html preview_CPolyhedron.png </td> </tr>

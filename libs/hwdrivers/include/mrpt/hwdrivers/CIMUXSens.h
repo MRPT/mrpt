@@ -47,8 +47,10 @@ namespace mrpt
 	namespace hwdrivers
 	{
 
-		/** A class for interfacing Inertial Measuring Units (IMUs) of the type "XSens MTi"
-		  *  It uses a serial port connection to the device. The class implements the generic
+		/** A class for interfacing XSens 3rd generation Inertial Measuring Units (IMUs), the "XSens MTi" model.
+		  *  It uses a serial port or USB-to-serial adapter to communicate to the device, so no special drivers are needed.
+		  *  For the more recent 4th generation devices, see the class mrpt::hwdrivers::CIMUXSens_MT4
+		  *
 		  *  See also the application "rawlog-grabber" for a ready-to-use application to gather data from the scanner.
 		  *
 		  *  \code

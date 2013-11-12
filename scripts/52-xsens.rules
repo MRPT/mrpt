@@ -1,0 +1,25 @@
+# UDEV-style hotplug map for xSens MTi* devices
+#   to have proper permissions.
+#
+# Put this file in /etc/udev/rules.d
+#
+#  J.L. Blanco, NOV/2013
+# ---------------------------------------
+
+# MTi 10 IMU
+ATTR{idVendor}=="2639", ATTR{idProduct}=="0001", MODE="666"
+# MTi 20 VRU
+ATTR{idVendor}=="2639", ATTR{idProduct}=="0002", MODE="666"
+# MTi 30 AHRS
+ATTR{idVendor}=="2639", ATTR{idProduct}=="0003", MODE="666"
+
+# MTi 100 IMU
+ATTR{idVendor}=="2639", ATTR{idProduct}=="0011", MODE="666"
+# MTi 200 VRU
+ATTR{idVendor}=="2639", ATTR{idProduct}=="0012", MODE="666"
+# MTi 300 AHRS
+ATTR{idVendor}=="2639", ATTR{idProduct}=="0013", MODE="666"
+
+# MTi G 700 GPS INS
+ATTR{idVendor}=="2639", ATTR{idProduct}=="0017", MODE="666"
+

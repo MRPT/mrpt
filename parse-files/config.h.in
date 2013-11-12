@@ -184,7 +184,8 @@ ${CMAKE_MRPT_BUILD_SHARED_LIB}
 #define MRPT_HAS_ARIA ${CMAKE_MRPT_HAS_ARIA}
 
 /** Whether to include the xSens MTi device interface: */
-#define MRPT_HAS_xSENS ${CMAKE_MRPT_HAS_xSENS}
+#define MRPT_HAS_xSENS_MT3 ${CMAKE_MRPT_HAS_xSENS_MT3}
+#define MRPT_HAS_xSENS_MT4 ${CMAKE_MRPT_HAS_xSENS_MT4}
 
 /** Whether to compile support for .gz compressed I/O streams: */
 #define MRPT_HAS_GZ_STREAMS ${CMAKE_MRPT_HAS_GZ_STREAMS}

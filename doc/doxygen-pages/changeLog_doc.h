@@ -43,6 +43,8 @@
 	- New classes:
 		- [mrpt-base]
 			- mrpt::synch::CPipe: OS-independent pipe support.
+		- [mrpt-hwdrivers]
+			- mrpt::hwdrivers::CIMUXSens_MT4 : Support for 4th generation xSens MT IMU devices.
 		- [mrpt-maps]
 			- There are now two versions of octomaps (by Mariano Jaimez Tarifa/Jose Luis Blanco) - <a href="http://code.google.com/p/mrpt/source/detail?r=3443" >r3443</a>
 				- mrpt::slam::COctoMap (only occupancy)
@@ -50,6 +52,7 @@
 		- [mrpt-obs]
 			- mrpt::slam::CObservationRawDAQ, a placeholder for raw and generic measurements from data acquisition devices. - <a href="http://code.google.com/p/mrpt/source/detail?r=3459" >r3459</a>
 		- [mrpt-opengl]
+			- mrpt::opengl::CMeshFast, an open gl object that draws a "mesh" as a structured point cloud which is faster to render (by Mariano Jaimez Tarifa). -<a href="https://github.com/jlblancoc/mrpt/commit/9306bb4a585387d4c85b3f6e41dd2cbe5a354e80" >r9306bb4a58</a>
 			- mrpt::opengl::CVectorField2D, an opengl object that shows a 2D Vector Field (by Mariano Jaimez Tarifa). - <a href="http://code.google.com/p/mrpt/source/detail?r=3461" >r3461</a>
 	- Changes in classes:
 		- Clean up and slight optimization of metric map matching API: - <a href="http://code.google.com/p/mrpt/source/detail?r=3446" >r3446</a>

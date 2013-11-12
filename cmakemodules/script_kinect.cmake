@@ -1,10 +1,10 @@
 # Look for the libusb1 lib
 # ------------------------------
-IF(UNIX)
+IF(UNIX OR APPLE)
 	IF(PKG_CONFIG_FOUND)
         	PKG_CHECK_MODULES(PKG_LIBUSB10 libusb-1.0)
 	ENDIF(PKG_CONFIG_FOUND)
-ENDIF(UNIX)
+ENDIF(UNIX OR APPLE)
 
 
 # Build the XBox Kinect support (via libfreenect)
