@@ -65,6 +65,7 @@ void registerAllClasses_mrpt_hwdrivers()
 	CImpinjRFID::doRegister();
 	CSickLaserSerial::doRegister();
 	CBoardENoses::doRegister();
+	CEnoseModular::doRegister();
 	CNTRIPEmitter::doRegister();
 	CSwissRanger3DCamera::doRegister();
 	CLMS100Eth::doRegister();

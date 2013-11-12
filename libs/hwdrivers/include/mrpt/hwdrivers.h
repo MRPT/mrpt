@@ -68,6 +68,7 @@
 #include <mrpt/hwdrivers/CLMS100eth.h>
 #include <mrpt/hwdrivers/CBoardSonars.h>
 #include <mrpt/hwdrivers/CBoardENoses.h>
+#include <mrpt/hwdrivers/CEnoseModular.h>
 #include <mrpt/hwdrivers/CServoeNeck.h>
 #include <mrpt/hwdrivers/CNTRIPEmitter.h>
 #include <mrpt/hwdrivers/CRoboticHeadInterface.h>
