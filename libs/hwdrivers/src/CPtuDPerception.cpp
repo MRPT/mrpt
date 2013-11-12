@@ -337,7 +337,7 @@ bool CPtuDPerception::version(char * sVersion) {
 
 bool CPtuDPerception::powerModeQ(bool transit,char &mode){
 
-	char * response="";
+	const char * response="";
 
 	if (transit)
 	{

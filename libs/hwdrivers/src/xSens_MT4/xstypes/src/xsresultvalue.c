@@ -25,9 +25,9 @@ const char* XsResultValue_toString(XsResultValue result)
 		case XRV_MEASUREMENTFAIL1:		return "Timer overflow - period too short to collect all data from Motion Trackers";
 		case XRV_MEASUREMENTFAIL2:		return "Motion Tracker responds with other than SlaveData message";
 		case XRV_MEASUREMENTFAIL3:		return "Total bytes of data of Motion Trackers incl sample counter exceeds 255 bytes";
-		case XRV_MEASUREMENTFAIL4:		return "Timer overflow during measurement – MT does not respond within measurement period. Increase period (lower update rate)";
-		case XRV_MEASUREMENTFAIL5:		return "Timer overflow during measurement – MT response was not received within measurement period. Increase period (lower update rate) or use fewer Motion Trackers";
-		case XRV_MEASUREMENTFAIL6:		return "No correct response from Motion Tracker during measurement";		
+		case XRV_MEASUREMENTFAIL4:		return "Timer overflow during measurement - MT does not respond within measurement period. Increase period (lower update rate)";
+		case XRV_MEASUREMENTFAIL5:		return "Timer overflow during measurement - MT response was not received within measurement period. Increase period (lower update rate) or use fewer Motion Trackers";
+		case XRV_MEASUREMENTFAIL6:		return "No correct response from Motion Tracker during measurement";
 		case XRV_TIMEROVERFLOW:			return "Timer overflow during measurement";
 		case XRV_BAUDRATEINVALID:		return "Baudrate does not comply with valid range";
 		case XRV_INVALIDPARAM:			return "Invalid parameter supplied";
