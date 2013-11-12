@@ -62,11 +62,12 @@ namespace mrpt
 		  *    pose_yaw=0	// Angles in degrees
 		  *    pose_pitch=0
 		  *    pose_roll=0
-		  *	   sensorLabel = <label>   // Label of the sensor
-		  *    # If a portname is not provided, the first found device will be opened:
-		  *	   #portname_LIN	= USB002:005
-		  *	   #portname_WIN	= \\?\usb#vid_2639&pid_0003#...
-		  *	   #baudRate	    = 115200             ; Baudrate for communicating, only if the port is a COM port
+		  *    sensorLabel = <label>   // Label of the sensor
+		  *    ;sampleFreq  = 100  // The requested rate of sensor packets (default: 100Hz)
+		  *    ; If a portname is not provided, the first found device will be opened:
+		  *    ;portname_LIN	= USB002:005
+		  *    ;portname_WIN	= \\?\usb#vid_2639&pid_0003#...
+		  *    ;baudRate	    = 115200             ; Baudrate for communicating, only if the port is a COM port
 		  *  \endcode
 		  *
 		  *  \note Set the environment variable "MRPT_HWDRIVERS_VERBOSE" to "1" to enable diagnostic information while using this class.
@@ -79,6 +80,7 @@ namespace mrpt
 		protected:
 			int							m_port_bauds; //!< Baudrate, only for COM ports.
 			std::string					m_portname;   //!< The USB or COM port name (if blank -> autodetect)
+			int      m_sampleFreq;
 
 			uint64_t					m_timeStartUI;
 			mrpt::system::TTimeStamp	m_timeStartTT;

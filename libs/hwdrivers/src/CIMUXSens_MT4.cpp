@@ -348,12 +348,13 @@ using namespace std;
 					CIMUXSens_MT4
 -------------------------------------------------------------*/
 CIMUXSens_MT4::CIMUXSens_MT4( ) :
-	m_port_bauds	(0),
-	m_portname		(),
-	m_timeStartUI	(0),
-	m_timeStartTT	(0),
+	m_port_bauds    (0),
+	m_portname      (),
+	m_sampleFreq    (100),
+	m_timeStartUI   (0),
+	m_timeStartTT   (0),
 	m_sensorPose    (),
-	m_dev_ptr		(NULL),
+	m_dev_ptr       (NULL),
 	m_devid_ptr     (NULL)
 {
 	m_sensorLabel = "XSensMTi_MT4";
@@ -484,7 +485,7 @@ void CIMUXSens_MT4::doProcess()
 			else
 				AtUI	= nowUI - m_timeStartUI;
 
-			double AtDO	= AtUI * 10000.0;								// Difference in intervals of 100 nsecs
+			double AtDO	= AtUI * 1000.0;								// Difference in intervals of 100 nsecs
 			obs->timestamp		= m_timeStartTT	+ AtDO;
 		}
 		else
@@ -579,15 +580,15 @@ void CIMUXSens_MT4::initialize()
 		else if (mtPort.deviceId().isMtMk4())
 		{
 			XsOutputConfigurationArray configArray;
-			configArray.push_back( XsOutputConfiguration(XDI_SampleTime64,100) );
-			configArray.push_back( XsOutputConfiguration(XDI_SampleTimeFine,100) );
-			configArray.push_back( XsOutputConfiguration(XDI_SampleTimeCoarse,100) );
-			configArray.push_back( XsOutputConfiguration(XDI_Quaternion,100) );
-			configArray.push_back( XsOutputConfiguration(XDI_Temperature,100) );
-			configArray.push_back( XsOutputConfiguration(XDI_Acceleration,100) );
-			configArray.push_back( XsOutputConfiguration(XDI_RateOfTurn,100) );
-			configArray.push_back( XsOutputConfiguration(XDI_MagneticField,100) );
-			configArray.push_back( XsOutputConfiguration(XDI_VelocityXYZ,100) );			
+			configArray.push_back( XsOutputConfiguration(XDI_SampleTime64,m_sampleFreq) );
+			configArray.push_back( XsOutputConfiguration(XDI_SampleTimeFine,m_sampleFreq) );
+			configArray.push_back( XsOutputConfiguration(XDI_SampleTimeCoarse,m_sampleFreq) );
+			configArray.push_back( XsOutputConfiguration(XDI_Quaternion,m_sampleFreq) );
+			configArray.push_back( XsOutputConfiguration(XDI_Temperature,m_sampleFreq) );
+			configArray.push_back( XsOutputConfiguration(XDI_Acceleration,m_sampleFreq) );
+			configArray.push_back( XsOutputConfiguration(XDI_RateOfTurn,m_sampleFreq) );
+			configArray.push_back( XsOutputConfiguration(XDI_MagneticField,m_sampleFreq) );
+			configArray.push_back( XsOutputConfiguration(XDI_VelocityXYZ,m_sampleFreq) );			
 
 			if (!my_xsens_device.setOutputConfiguration(configArray))
 				throw std::runtime_error("Could not configure MTmk4 device. Aborting.");
@@ -631,6 +632,8 @@ void  CIMUXSens_MT4::loadConfig_sensorSpecific(
         DEG2RAD( configSource.read_float( iniSection, "pose_yaw", 0, false ) ),
         DEG2RAD( configSource.read_float( iniSection, "pose_pitch", 0, false ) ),
         DEG2RAD( configSource.read_float( iniSection, "pose_roll", 0, false ) ) );
+
+	m_sampleFreq = configSource.read_int(iniSection, "sampleFreq", m_sampleFreq, false );
 
 	m_port_bauds = configSource.read_int(iniSection, "baudRate", m_port_bauds, false );
 
