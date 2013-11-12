@@ -457,6 +457,14 @@ void CIMUXSens_MT4::doProcess()
 			obs->rawMeasurements[IMU_MAG_Z]   = mag_data[2]; obs->dataIsPresent[IMU_MAG_Z]   = true;
 		}
 
+		if (packet.containsVelocity())
+		{
+			XsVector vel_data = packet.velocity();
+			obs->rawMeasurements[IMU_X_VEL]   = vel_data[0]; obs->dataIsPresent[IMU_X_VEL]   = true;
+			obs->rawMeasurements[IMU_Y_VEL]   = vel_data[1]; obs->dataIsPresent[IMU_Y_VEL]   = true;
+			obs->rawMeasurements[IMU_Z_VEL]   = vel_data[2]; obs->dataIsPresent[IMU_Z_VEL]   = true;
+		}
+
 		if (packet.containsTemperature())
 		{
 			obs->rawMeasurements[IMU_TEMPERATURE]   = packet.temperature(); obs->dataIsPresent[IMU_TEMPERATURE]   = true;
