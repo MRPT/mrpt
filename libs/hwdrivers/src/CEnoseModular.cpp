@@ -36,7 +36,7 @@
 #include <mrpt/hwdrivers.h> // Precompiled headers
 
 #include <mrpt/system/os.h>
-#include <mrpt/hwdrivers/CENoseModular.h>
+#include <mrpt/hwdrivers/CEnoseModular.h>
 #include <mrpt/math.h>
 
 using namespace mrpt::utils;
