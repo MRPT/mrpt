@@ -42,7 +42,7 @@ namespace mrpt
   /** \ingroup mrpt_reactivenav_grp */
   namespace reactivenav
   {
-	/** A PTG for optimal paths of type "C|C,S".
+	/** A PTG for optimal paths of type "CS", as named in PTG papers.
 	  *  See "Obstacle Distance for Car-Like Robots", IEEE Trans. Rob. And Autom, 1999.
 	  *  \ingroup mrpt_reactivenav_grp
 	 */

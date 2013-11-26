@@ -41,14 +41,14 @@ namespace mrpt
 {
   namespace reactivenav
   {
-	/** A PTG for circular paths.
+	/** Trajectories with a fixed linear speed (V_MAX) and a first turning part followed by a straight segment.
+	 *
 	 *  \ingroup mrpt_reactivenav_grp
 	 */
 	class REACTIVENAV_IMPEXP  CPTG7 : public CParameterizedTrajectoryGenerator
 	{
 	 public:
-			/** Constructor: possible values in "params", those of CParameterizedTrajectoryGenerator plus:
-			 *   - cte_a0v, cte_a0w: Parameters of this PTG
+			/** Constructor (this PTG has no parameters)
 			 */
 			CPTG7(const TParameters<double> &params );
 
@@ -63,10 +63,8 @@ namespace mrpt
 			bool PTG_IsIntoDomain( float x, float y );
 
 			void PTG_Generator( float alpha, float t,float x, float y, float phi, float &v, float &w );
-	 protected:
-			float	cte_a0v;
-			float	cte_a0w;
 
+		protected:
 
 	};
   }

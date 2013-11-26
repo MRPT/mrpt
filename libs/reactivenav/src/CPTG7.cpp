@@ -44,8 +44,6 @@ using namespace mrpt::system;
   ---------------------------------------------------------------*/
 CPTG7::CPTG7(const TParameters<double> &params ) : CParameterizedTrajectoryGenerator(params)
 {
-	cte_a0v = params["cte_a0v"];
-	cte_a0w = params["cte_a0w"];
 }
 
 /*---------------------------------------------------------------
@@ -53,7 +51,7 @@ CPTG7::CPTG7(const TParameters<double> &params ) : CParameterizedTrajectoryGener
   ---------------------------------------------------------------*/
 std::string CPTG7::getDescription() const
 {
-	return std::string( format("Type#7PTG,av=%udeg,aw=%udeg",(int)RAD2DEG(cte_a0v),(int)RAD2DEG(cte_a0w)) );
+	return std::string( format("Type#7PTG") );
 }
 
 /*---------------------------------------------------------------
