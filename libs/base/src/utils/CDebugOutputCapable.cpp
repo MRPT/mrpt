@@ -77,7 +77,7 @@ void CDebugOutputCapable::printf_debug( const char *fmt, ... )
 	// Output:
 	std::cout << &buffer[0];
 
-#ifdef MRPT_OS_WINDOWS
+#ifdef _MSC_VER
 	OutputDebugStringA(&buffer[0]);
 #endif
 }
