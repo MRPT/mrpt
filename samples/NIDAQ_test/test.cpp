@@ -33,58 +33,88 @@
    | POSSIBILITY OF SUCH DAMAGE.                                               |
    +---------------------------------------------------------------------------+ */
 
-/**  This is the main "include file" for classes into the mrpt::hwdrivers namespace. This file
- *	   includes all the other ones, so user applications must include just this one
- *     and link against the library file "lib_hwdrivers.lib" / "lib_hwdrivers.a"
- */
-#ifndef HWDRIVERS_H
-#define HWDRIVERS_H
-
-// Classes into HWDRIVERS
-// --------------------------------------------
-#include <mrpt/hwdrivers/CGenericSensor.h>
-#include <mrpt/hwdrivers/C2DRangeFinderAbstract.h>
-#include <mrpt/hwdrivers/CHokuyoURG.h>
-#include <mrpt/hwdrivers/CSickLaserUSB.h>
-#include <mrpt/hwdrivers/CSickLaserSerial.h>
-#include <mrpt/hwdrivers/CIbeoLuxETH.h>
-#include <mrpt/hwdrivers/CGPSInterface.h>
-#include <mrpt/hwdrivers/CInterfaceFTDIMessages.h>
-#include <mrpt/hwdrivers/CWirelessPower.h>
-#include <mrpt/hwdrivers/CRaePID.h>
-#include <mrpt/hwdrivers/CImpinjRFID.h>
-#include <mrpt/hwdrivers/CSerialPort.h>
-#include <mrpt/hwdrivers/CBoardDLMS.h>
-#include <mrpt/hwdrivers/CBoardIR.h>
-#include <mrpt/hwdrivers/CIMUXSens.h>
-#include <mrpt/hwdrivers/CIMUXSens_MT4.h>
-#include <mrpt/hwdrivers/CActivMediaRobotBase.h>
-#include <mrpt/hwdrivers/CJoystick.h>
-#include <mrpt/hwdrivers/CCameraSensor.h>
-#include <mrpt/hwdrivers/CPtuDPerception.h>
-#include <mrpt/hwdrivers/CPtuHokuyo.h>
-#include <mrpt/hwdrivers/CTuMicos.h>
-#include <mrpt/hwdrivers/CFFMPEG_InputStream.h>
-#include <mrpt/hwdrivers/CNTRIPClient.h>
-#include <mrpt/hwdrivers/CLMS100eth.h>
-#include <mrpt/hwdrivers/CBoardSonars.h>
-#include <mrpt/hwdrivers/CBoardENoses.h>
-#include <mrpt/hwdrivers/CEnoseModular.h>
-#include <mrpt/hwdrivers/CServoeNeck.h>
-#include <mrpt/hwdrivers/CNTRIPEmitter.h>
-#include <mrpt/hwdrivers/CRoboticHeadInterface.h>
-#include <mrpt/hwdrivers/CRovio.h>
-#include <mrpt/hwdrivers/CSwissRanger3DCamera.h>
-#include <mrpt/hwdrivers/CGyroKVHDSP3000.h>
-
-#include <mrpt/hwdrivers/CImageGrabber_dc1394.h>
-#include <mrpt/hwdrivers/CImageGrabber_OpenCV.h>
-#include <mrpt/hwdrivers/CStereoGrabber_Bumblebee.h>
-#include <mrpt/hwdrivers/CStereoGrabber_SVS.h>
-#include <mrpt/hwdrivers/CPhidgetInterfaceKitProximitySensors.h>
-#include <mrpt/hwdrivers/CKinect.h>
-
-#include <mrpt/hwdrivers/CCANBusReader.h>
+#include <mrpt/base.h>
 #include <mrpt/hwdrivers/CNationalInstrumentsDAQ.h>
 
+using namespace mrpt;
+using namespace mrpt::utils;
+using namespace mrpt::slam;
+using namespace mrpt::hwdrivers;
+using namespace std;
+
+// ------------------------------------------------------
+//				Test_NIDAQ
+// ------------------------------------------------------
+void Test_NIDAQ()
+{
+	CNationalInstrumentsDAQ	 daq;
+
+	// Load config:
+#if 0
+	//daq.loadConfig( CConfigFile( "./DAQ_example.ini") ,"DAQ1" );
+#else
+	// Or set params programatically:
+
+	// Define a task with analog inputs:
+	CNationalInstrumentsDAQ::TaskDescription task;
+	task.has_ai = true;
+	task.ai.physicalChannel = "Dev1/ai0:7";
+	task.ai.physicalChannelCount = 8; // Must be the number of channels encoded in the "physicalChannel" string.
+	task.ai.terminalConfig  = "DAQmx_Val_NRSE";
+	task.ai.minVal = -10;
+	task.ai.maxVal =  10;
+
+	daq.task_definitions.push_back(task);
+
 #endif
+
+	printf("[Example] Initializing DAQ...\n");
+	daq.initialize();
+	printf("[Example] Init passed.\n");
+
+	printf("\n ** Press any key to stop grabbing ** \n");
+
+	while (!mrpt::system::os::kbhit())
+	{
+		bool                thereIsObservation,hardError;
+		CObservationRawDAQ  obs;
+
+		try
+		{
+			daq.readFromDAQ( thereIsObservation, obs, hardError );
+		}
+		catch (std::exception &e)
+		{
+			cerr << e.what() << endl;
+			hardError = true;
+		}
+
+		if (hardError)
+			printf("[TEST] Hardware error=true!!\n");
+
+		if (thereIsObservation)
+		{
+			size_t nSamplPerChan = obs.AIN_double.size() / obs.AIN_channel_count;
+			cout << "Read " << nSamplPerChan << " samples. a[0]=" << obs.AIN_double[0] << endl;
+		}
+
+		mrpt::system::sleep(1);
+	};
+
+
+}
+
+int main()
+{
+	try
+	{
+		Test_NIDAQ();
+		return 0;
+
+	} catch (std::exception &e)
+	{
+		std::cout << "EXCEPTION: " << e.what() << std::endl;
+		return -1;
+	}
+}
+

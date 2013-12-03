@@ -54,9 +54,10 @@ void  CObservationRawDAQ::writeToStream(CStream &out, int *version) const
 		*version = 0;
 	else
 	{
-		out << sensorLabel << timestamp
-			<< AIN_8bits << AIN_16bits << AIN_32bits
-			<< AOUT_8bits << AOUT_16bits << DIN << DOUT;
+		out << sensorLabel << timestamp << sample_rate
+			<< AIN_8bits << AIN_16bits << AIN_32bits << AIN_float << AIN_double
+			<< AIN_channel_count << AIN_interleaved
+			<< AOUT_8bits << AOUT_16bits << AOUT_float << AOUT_double << DIN << DOUT << CNTRIN_32bits << CNTRIN_double;
 	}
 }
 
@@ -69,10 +70,10 @@ void  CObservationRawDAQ::readFromStream(CStream &in, int version)
 	{
 	case 0:
 		{
-			in  >> sensorLabel >> timestamp
-				>> AIN_8bits >> AIN_16bits >> AIN_32bits
-				>> AOUT_8bits >> AOUT_16bits >> DIN >> DOUT;
-
+			in  >> sensorLabel >> timestamp >> sample_rate
+				>> AIN_8bits >> AIN_16bits >> AIN_32bits >> AIN_float >> AIN_double
+				>> AIN_channel_count >> AIN_interleaved
+				>> AOUT_8bits >> AOUT_16bits >> AOUT_float >> AOUT_double >> DIN >> DOUT >> CNTRIN_32bits >> CNTRIN_double;
 		} break;
 	default:
 		MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)

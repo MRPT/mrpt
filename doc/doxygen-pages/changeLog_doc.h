@@ -66,6 +66,10 @@
 		- Method renamed mrpt::utils::CEnhancedMetaFile::selectVectorTextFont() to avoid shadowing mrpt::utils::CCanvas::selectTextFont()
 	- Deleted classes:
 		- mrpt::utils::CEvent, which was actually unimplemented (!)
+		- mrpt::hwdrivers::CInterfaceNI845x has been deleted. It didn't offer features enough to justify a class.
+	- New examples:
+		- [MRPT]/samples/threadsPipe
+		- [MRPT]/samples/NIDAQ_test
 	- Build system:
 		- Fixed compilation with clang.
 		- Fixed building against OpenCV 3.0.0 (GIT head)
