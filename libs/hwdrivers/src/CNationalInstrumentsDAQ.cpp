@@ -581,8 +581,6 @@ void CNationalInstrumentsDAQ::grabbing_thread(TInfoPerTask &ipt)
 				const int32 totalSamplesToRead = ipt.task.ai.physicalChannelCount * ipt.task.samplesPerChannelToRead;
 				dBuf.resize(totalSamplesToRead);
 				int32  pointsReadPerChan;
-
-				// 
 				if ((err = DAQmxBaseReadAnalogF64(
 					taskHandle,
 					ipt.task.samplesPerChannelToRead,timeout, obs.AIN_interleaved ? DAQmx_Val_GroupByScanNumber : DAQmx_Val_GroupByChannel,
@@ -591,16 +589,33 @@ void CNationalInstrumentsDAQ::grabbing_thread(TInfoPerTask &ipt)
 				{
 					MRPT_DAQmx_ErrChk(err)
 				}
-				else if (pointsReadPerChan>0)
-				{
+				else if (pointsReadPerChan>0) {
 					ASSERT_EQUAL_(totalSamplesToRead,pointsReadPerChan*ipt.task.ai.physicalChannelCount)
 					obs.AIN_double = dBuf;
-
 					there_are_data = true;
 					//cout << "[CNationalInstrumentsDAQ::grabbing_thread] " << pointsReadPerChan << " samples read.\n";
 				}
 			} // end AI
-
+			if (ipt.task.has_ci_ang_encoder || ipt.task.has_ci_lin_encoder) 
+			{
+				const int32 totalSamplesToRead = ipt.task.samplesPerChannelToRead;
+				dBuf.resize(totalSamplesToRead);
+				int32  pointsReadPerChan;
+				if ((err = DAQmxBaseReadCounterF64(
+					taskHandle,
+					totalSamplesToRead,timeout,
+					&dBuf[0],dBuf.size(),
+					&pointsReadPerChan,NULL))<0 && err!=DAQmxErrorSamplesNotYetAvailable) 
+				{
+					MRPT_DAQmx_ErrChk(err)
+				}
+				else if (pointsReadPerChan>0) {
+					ASSERT_EQUAL_(totalSamplesToRead,pointsReadPerChan)
+					obs.CNTRIN_double = dBuf;
+					there_are_data = true;
+					//cout << "[CNationalInstrumentsDAQ::grabbing_thread] " << pointsReadPerChan << " samples read.\n";
+				}
+			} // end COUNTERS
 
 			// Send the observation to the main thread:
 			if (there_are_data)
