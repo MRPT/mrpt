@@ -41,8 +41,8 @@ namespace mrpt
 {
   namespace reactivenav
   {
-	/** A PTG for optimal paths of type "C|C,S".
-	  *  See "Obstacle Distance for Car-Like Robots", IEEE Trans. Rob. And Autom, 1999.
+	/** A PTG for optimal paths of type "C|C,S" (as named in PTG papers).
+	  *  See also "Obstacle Distance for Car-Like Robots", IEEE Trans. Rob. And Autom, 1999.
 	  *  \ingroup mrpt_reactivenav_grp
 	 */
 	class REACTIVENAV_IMPEXP  CPTG3 : public CParameterizedTrajectoryGenerator

@@ -36,7 +36,7 @@
 #include <mrpt/hwdrivers.h> // Precompiled headers
 
 #include <mrpt/system/os.h>
-#include <mrpt/hwdrivers/CENoseModular.h>
+#include <mrpt/hwdrivers/CEnoseModular.h>
 #include <mrpt/math.h>
 
 using namespace mrpt::utils;
@@ -85,25 +85,7 @@ void  CEnoseModular::loadConfig_sensorSpecific(
 #endif
 	m_COM_baud = configSource.read_uint64_t(iniSection, "COM_baudRate",m_COM_baud);
 
-	configSource.read_vector( iniSection, "enose_poses_x", vector<float>(0), enose_poses_x, true);
-	configSource.read_vector( iniSection, "enose_poses_y", vector<float>(0), enose_poses_y, true);
-	configSource.read_vector( iniSection, "enose_poses_z", vector<float>(0), enose_poses_z, true);
-
-	configSource.read_vector( iniSection, "enose_poses_yaw", vector<float>(0), enose_poses_yaw, true);
-	configSource.read_vector( iniSection, "enose_poses_pitch", vector<float>(0), enose_poses_pitch, true);
-	configSource.read_vector( iniSection, "enose_poses_roll", vector<float>(0), enose_poses_roll, true);
-
-	ASSERT_( enose_poses_x.size() == enose_poses_y.size() );
-	ASSERT_( enose_poses_x.size() == enose_poses_z.size() );
-	ASSERT_( enose_poses_x.size() == enose_poses_yaw.size() );
-	ASSERT_( enose_poses_x.size() == enose_poses_pitch.size() );
-	ASSERT_( enose_poses_x.size() == enose_poses_roll.size() );
-
-	// Pass angles to radians:
-	enose_poses_yaw *= M_PIf / 180.0f;
-	enose_poses_pitch *= M_PIf / 180.0f;
-	enose_poses_roll *= M_PIf / 180.0f;
-
+	
 	MRPT_END
 
 }
@@ -213,7 +195,10 @@ bool CEnoseModular::getObservation( mrpt::slam::CObservationGasSensors &obs )
 		CStream *comms = checkConnectionAndConnect();
 
 		if (!comms)
+		{
+			cout << "Problem connecting to Device." << endl;
 			return false;
+		}
 
 		utils::CMessage		msg;
 		CObservationGasSensors::TObservationENose	newRead;
@@ -226,7 +211,10 @@ bool CEnoseModular::getObservation( mrpt::slam::CObservationGasSensors &obs )
 		// Modular-nose provides a 4B+body frame lenght 
 		
 		if (!comms->receiveMessage( msg ))
-			return false;		
+		{
+			cout << "Problem receiving Message." << endl;
+			return false;
+		}
 
 		if (msg.content.size()>0)
 		{
@@ -317,6 +305,7 @@ void  CEnoseModular::doProcess()
 	else
 	{
 		m_state = ssError;
+		cout << "No observation received from the USB board!" << endl;
 	   // THROW_EXCEPTION("No observation received from the USB board!");
 	}
 }

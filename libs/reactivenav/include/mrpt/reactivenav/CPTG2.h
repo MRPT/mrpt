@@ -41,14 +41,14 @@ namespace mrpt
 {
   namespace reactivenav
   {
-	/** The alpha-PTG
+	/** The "alpha-PTG", as named in PTG papers.
 	 *  \ingroup mrpt_reactivenav_grp
 	 */
 	class REACTIVENAV_IMPEXP  CPTG2 : public CParameterizedTrajectoryGenerator
 	{
 	 public:
 			/** Constructor: possible values in "params", those of CParameterizedTrajectoryGenerator plus:
-			 *   - cte_a0v, cte_a0w: Parameters of this PTG
+			 *   - cte_a0v, cte_a0w: Parameters of this PTG (both are angles in radians).
 			 */
 			CPTG2(const TParameters<double> &params );
 

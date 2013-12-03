@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <wxsmith>
 	<object class="wxFrame" name="ReactiveNavigationDemoFrame">
-		<title>Reactive Navigation Demo - Part of the MRPT project - J.L. Blanco (C) 2005-2008</title>
+		<title>Reactive Navigation Demo - Part of the MRPT project</title>
 		<centered>1</centered>
 		<icon stock_id="MAIN_ICON" stock_client="wxART_FRAME_ICON" />
 		<object class="wxFlexGridSizer" variable="FlexGridSizer1" member="no">
