@@ -92,17 +92,31 @@ CNationalInstrumentsDAQ::CNationalInstrumentsDAQ()
 	m_sensorLabel = "NIDAQ";
 }
 
+// Just like "MRPT_LOAD_HERE_CONFIG_VAR" but...
+#define MY_LOAD_HERE_CONFIG_VAR(variableName,variableType,targetVariable,configFileObject,sectionNameStr) \
+		targetVariable = configFileObject.read_##variableType(sectionNameStr,variableName,targetVariable,false);
+
+#define MY_LOAD_HERE_CONFIG_VAR_NO_DEFAULT(variableName,variableType,targetVariable,configFileObject,sectionNameStr) \
+	{ try { \
+		targetVariable = configFileObject.read_##variableType(sectionNameStr,variableName,targetVariable,true); \
+    } catch (std::exception &) \
+    { \
+		THROW_EXCEPTION( format( "Value for '%s' not found in config file", std::string(variableName).c_str() )); \
+	} }\
+
+
+
 /* -----------------------------------------------------
                 loadConfig_sensorSpecific
    ----------------------------------------------------- */
 void  CNationalInstrumentsDAQ::loadConfig_sensorSpecific(
-	const mrpt::utils::CConfigFileBase &configSource,
-	const std::string	  &iniSection )
+	const mrpt::utils::CConfigFileBase &cfg,
+	const std::string	  &sect )
 {
 	//std::vector<TaskDescription>  task_definitions; 
 	task_definitions.clear();
 
-	const unsigned int nTasks = configSource.read_uint64_t(iniSection, "num_tasks", 0, true );
+	const unsigned int nTasks = cfg.read_uint64_t(sect, "num_tasks", 0, true );
 	if (!nTasks) {
 		std::cerr << "[CNationalInstrumentsDAQ] Warning: Number of tasks is zero. No datalogging will be done.\n";
 	}
@@ -112,12 +126,116 @@ void  CNationalInstrumentsDAQ::loadConfig_sensorSpecific(
 	{
 		TaskDescription & t = task_definitions[i];
 		const string sTask = mrpt::format("task%u",i);
+
+		// Read general settings for this task:
+		// ---------------------------------------
+		const string sChanns = cfg.read_string(sect,sTask+string(".channels"),"",true);
+		vector<string> lstStrChanns;
+		mrpt::utils::tokenize(sChanns," \t,",lstStrChanns);
+		if (lstStrChanns.empty())
+			THROW_EXCEPTION_CUSTOM_MSG1("List of channels for task %u is empty!",i)
 		
-		MRPT_TODO("XXX")
+		MY_LOAD_HERE_CONFIG_VAR_NO_DEFAULT( sTask+string(".samplesPerSecond"), double, t.samplesPerSecond, cfg,sect)
+		MY_LOAD_HERE_CONFIG_VAR_NO_DEFAULT( sTask+string(".samplesPerChannelToRead"), double, t.samplesPerChannelToRead, cfg,sect)
 
-
-	} // end for i
-	
+		for (size_t j=0;j<lstStrChanns.size();j++)
+		{
+			if (strCmpI(lstStrChanns[j],"ai"))
+			{
+				t.has_ai = true;
+				MY_LOAD_HERE_CONFIG_VAR_NO_DEFAULT( sTask+string(".ai.physicalChannel"), string, t.ai.physicalChannel, cfg,sect)
+				MY_LOAD_HERE_CONFIG_VAR_NO_DEFAULT( sTask+string(".ai.physicalChannelCount"), uint64_t, t.ai.physicalChannelCount, cfg,sect)
+				MY_LOAD_HERE_CONFIG_VAR_NO_DEFAULT( sTask+string(".ai.terminalConfig"), string, t.ai.terminalConfig, cfg,sect)
+				MY_LOAD_HERE_CONFIG_VAR_NO_DEFAULT( sTask+string(".ai.minVal"), double, t.ai.minVal, cfg,sect)
+				MY_LOAD_HERE_CONFIG_VAR_NO_DEFAULT( sTask+string(".ai.maxVal"), double, t.ai.maxVal, cfg,sect)
+			}
+			else if (strCmpI(lstStrChanns[j],"ao"))
+			{
+				t.has_ao = true;
+				MY_LOAD_HERE_CONFIG_VAR_NO_DEFAULT( sTask+string(".ao.physicalChannel"), string, t.ao.physicalChannel, cfg,sect)
+				MY_LOAD_HERE_CONFIG_VAR_NO_DEFAULT( sTask+string(".ao.physicalChannelCount"), uint64_t, t.ao.physicalChannelCount, cfg,sect)
+				MY_LOAD_HERE_CONFIG_VAR_NO_DEFAULT( sTask+string(".ao.minVal"), double, t.ao.minVal, cfg,sect)
+				MY_LOAD_HERE_CONFIG_VAR_NO_DEFAULT( sTask+string(".ao.maxVal"), double, t.ao.maxVal, cfg,sect)
+			}
+			else if (strCmpI(lstStrChanns[j],"di"))
+			{
+				t.has_di = true;
+				MY_LOAD_HERE_CONFIG_VAR_NO_DEFAULT( sTask+string(".di.lines"), string, t.di.lines, cfg,sect)
+				MY_LOAD_HERE_CONFIG_VAR_NO_DEFAULT( sTask+string(".di.linesCount"), uint64_t, t.di.linesCount, cfg,sect)
+			}
+			else if (strCmpI(lstStrChanns[j],"do"))
+			{
+				t.has_do = true;
+				MY_LOAD_HERE_CONFIG_VAR_NO_DEFAULT( sTask+string(".do.lines"), string, t.douts.lines, cfg,sect)
+				MY_LOAD_HERE_CONFIG_VAR_NO_DEFAULT( sTask+string(".do.linesCount"), uint64_t, t.douts.linesCount, cfg,sect)
+			}
+			else if (strCmpI(lstStrChanns[j],"ci_period"))
+			{
+				t.has_ci_period = true;
+				MY_LOAD_HERE_CONFIG_VAR_NO_DEFAULT( sTask+string(".ci_period.counter"), string, t.ci_period.counter, cfg,sect)
+				MY_LOAD_HERE_CONFIG_VAR_NO_DEFAULT( sTask+string(".ci_period.minVal"), double, t.ci_period.minVal, cfg,sect)
+				MY_LOAD_HERE_CONFIG_VAR_NO_DEFAULT( sTask+string(".ci_period.maxVal"), double, t.ci_period.maxVal, cfg,sect)
+				MY_LOAD_HERE_CONFIG_VAR_NO_DEFAULT( sTask+string(".ci_period.units"), string, t.ci_period.units, cfg,sect)
+				MY_LOAD_HERE_CONFIG_VAR_NO_DEFAULT( sTask+string(".ci_period.edge"), string, t.ci_period.edge, cfg,sect)
+				MY_LOAD_HERE_CONFIG_VAR( sTask+string(".ci_period.measTime"), double, t.ci_period.measTime, cfg,sect)
+				MY_LOAD_HERE_CONFIG_VAR( sTask+string(".ci_period.divisor"), int, t.ci_period.divisor, cfg,sect)				
+			}
+			else if (strCmpI(lstStrChanns[j],"ci_count_edges"))
+			{
+				t.has_ci_count_edges = true;
+				MY_LOAD_HERE_CONFIG_VAR_NO_DEFAULT( sTask+string(".ci_count_edges.counter"), string, t.ci_count_edges.counter, cfg,sect)
+				MY_LOAD_HERE_CONFIG_VAR_NO_DEFAULT( sTask+string(".ci_count_edges.edge"), string, t.ci_count_edges.edge, cfg,sect)
+				MY_LOAD_HERE_CONFIG_VAR( sTask+string(".ci_count_edges.initialCount"), int, t.ci_count_edges.initialCount, cfg,sect)
+				MY_LOAD_HERE_CONFIG_VAR( sTask+string(".ci_count_edges.countDirection"), string, t.ci_count_edges.countDirection, cfg,sect)
+			}
+			else if (strCmpI(lstStrChanns[j],"ci_pulse_width"))
+			{
+				t.has_ci_pulse_width = true;
+				MY_LOAD_HERE_CONFIG_VAR_NO_DEFAULT( sTask+string(".ci_pulse_width.counter"), string, t.ci_pulse_width.counter, cfg,sect)
+				MY_LOAD_HERE_CONFIG_VAR_NO_DEFAULT( sTask+string(".ci_pulse_width.minVal"), double, t.ci_pulse_width.minVal, cfg,sect)
+				MY_LOAD_HERE_CONFIG_VAR_NO_DEFAULT( sTask+string(".ci_pulse_width.maxVal"), double, t.ci_pulse_width.maxVal, cfg,sect)
+				MY_LOAD_HERE_CONFIG_VAR_NO_DEFAULT( sTask+string(".ci_pulse_width.units"), string, t.ci_pulse_width.units, cfg,sect)
+				MY_LOAD_HERE_CONFIG_VAR_NO_DEFAULT( sTask+string(".ci_pulse_width.startingEdge"), string, t.ci_pulse_width.startingEdge, cfg,sect)
+			}
+			else if (strCmpI(lstStrChanns[j],"ci_lin_encoder"))
+			{
+				t.has_ci_lin_encoder = true;
+				MY_LOAD_HERE_CONFIG_VAR_NO_DEFAULT( sTask+string(".ci_lin_encoder.counter"), string, t.ci_lin_encoder.counter, cfg,sect)
+				MY_LOAD_HERE_CONFIG_VAR_NO_DEFAULT( sTask+string(".ci_lin_encoder.decodingType"), string, t.ci_lin_encoder.decodingType, cfg,sect)
+				MY_LOAD_HERE_CONFIG_VAR_NO_DEFAULT( sTask+string(".ci_lin_encoder.ZidxEnable"), bool, t.ci_lin_encoder.ZidxEnable, cfg,sect)
+				MY_LOAD_HERE_CONFIG_VAR_NO_DEFAULT( sTask+string(".ci_lin_encoder.ZidxVal"), double, t.ci_lin_encoder.ZidxVal, cfg,sect)
+				MY_LOAD_HERE_CONFIG_VAR_NO_DEFAULT( sTask+string(".ci_lin_encoder.ZidxPhase"), string, t.ci_lin_encoder.ZidxPhase, cfg,sect)
+				MY_LOAD_HERE_CONFIG_VAR_NO_DEFAULT( sTask+string(".ci_lin_encoder.units"), string, t.ci_lin_encoder.units, cfg,sect)
+				MY_LOAD_HERE_CONFIG_VAR_NO_DEFAULT( sTask+string(".ci_lin_encoder.distPerPulse"), double, t.ci_lin_encoder.distPerPulse, cfg,sect)
+				MY_LOAD_HERE_CONFIG_VAR_NO_DEFAULT( sTask+string(".ci_lin_encoder.initialPos"), double, t.ci_lin_encoder.initialPos, cfg,sect)
+			}
+			else if (strCmpI(lstStrChanns[j],"ci_ang_encoder"))
+			{
+				t.has_ci_ang_encoder = true;
+				MY_LOAD_HERE_CONFIG_VAR_NO_DEFAULT( sTask+string(".ci_ang_encoder.counter"), string, t.ci_ang_encoder.counter, cfg,sect)
+				MY_LOAD_HERE_CONFIG_VAR_NO_DEFAULT( sTask+string(".ci_ang_encoder.decodingType"), string, t.ci_ang_encoder.decodingType, cfg,sect)
+				MY_LOAD_HERE_CONFIG_VAR_NO_DEFAULT( sTask+string(".ci_ang_encoder.ZidxEnable"), bool, t.ci_ang_encoder.ZidxEnable, cfg,sect)
+				MY_LOAD_HERE_CONFIG_VAR_NO_DEFAULT( sTask+string(".ci_ang_encoder.ZidxVal"), double, t.ci_ang_encoder.ZidxVal, cfg,sect)
+				MY_LOAD_HERE_CONFIG_VAR_NO_DEFAULT( sTask+string(".ci_ang_encoder.ZidxPhase"), string, t.ci_ang_encoder.ZidxPhase, cfg,sect)
+				MY_LOAD_HERE_CONFIG_VAR_NO_DEFAULT( sTask+string(".ci_ang_encoder.units"), string, t.ci_ang_encoder.units, cfg,sect)
+				MY_LOAD_HERE_CONFIG_VAR_NO_DEFAULT( sTask+string(".ci_ang_encoder.pulsesPerRev"), int, t.ci_ang_encoder.pulsesPerRev, cfg,sect)
+				MY_LOAD_HERE_CONFIG_VAR_NO_DEFAULT( sTask+string(".ci_ang_encoder.initialAngle"), double, t.ci_ang_encoder.initialAngle, cfg,sect)
+			}
+			else if (strCmpI(lstStrChanns[j],"co_pulses"))
+			{
+				t.has_co_pulses = true;
+				MY_LOAD_HERE_CONFIG_VAR_NO_DEFAULT( sTask+string(".co_pulses.counter"), string, t.co_pulses.counter, cfg,sect)
+				MY_LOAD_HERE_CONFIG_VAR( sTask+string(".co_pulses.idleState"), string, t.co_pulses.idleState, cfg,sect)
+				MY_LOAD_HERE_CONFIG_VAR_NO_DEFAULT( sTask+string(".co_pulses.initialDelay"), double, t.co_pulses.initialDelay, cfg,sect)
+				MY_LOAD_HERE_CONFIG_VAR_NO_DEFAULT( sTask+string(".co_pulses.freq"), double, t.co_pulses.freq, cfg,sect)
+				MY_LOAD_HERE_CONFIG_VAR_NO_DEFAULT( sTask+string(".co_pulses.dutyCycle"), double, t.co_pulses.dutyCycle, cfg,sect)
+			}
+			else
+			{
+				THROW_EXCEPTION_CUSTOM_MSG1("Unknown channel type '%s'! See the docs of CNationalInstrumentsDAQ",lstStrChanns[j].c_str())
+			}
+		} // end for each "k" channel in channel "i"
+	} // end for "i", each task	
 }
 
 /* -----------------------------------------------------
@@ -150,11 +268,16 @@ const daqmx_str_val daqmx_vals[] = {
 	{ "DAQmx_Val_AHighBLow", DAQmx_Val_AHighBLow },
 	{ "DAQmx_Val_ALowBHigh", DAQmx_Val_ALowBHigh },
 	{ "DAQmx_Val_ALowBLow", DAQmx_Val_ALowBLow },
+	{ "DAQmx_Val_X1", DAQmx_Val_X1},
+	{ "DAQmx_Val_X2", DAQmx_Val_X2},
+	{ "DAQmx_Val_X4", DAQmx_Val_X4},
 	{ "DAQmx_Val_Meters", DAQmx_Val_Meters },
 	{ "DAQmx_Val_Inches", DAQmx_Val_Inches },
 	{ "DAQmx_Val_Ticks", DAQmx_Val_Ticks },
 	{ "DAQmx_Val_Degrees", DAQmx_Val_Degrees },
-	{ "DAQmx_Val_Radians", DAQmx_Val_Radians }
+	{ "DAQmx_Val_Radians", DAQmx_Val_Radians },
+	{ "DAQmx_Val_High", DAQmx_Val_High},
+	{ "DAQmx_Val_Low", DAQmx_Val_Low}
 };
 
 int daqmx_defstr2num(const std::string &str)
@@ -265,7 +388,15 @@ void  CNationalInstrumentsDAQ::initialize()
 					tf.ci_ang_encoder.initialAngle,
 					NULL));
 			}
-			MRPT_TODO("Add: DAQmxBaseCreateCOPulseChanFreq")
+			if (tf.has_co_pulses) {
+				MRPT_DAQmx_ErrChk(DAQmxBaseCreateCOPulseChanFreq(taskHandle,
+					tf.co_pulses.counter.c_str(),NULL,
+					DAQmx_Val_Hz,
+					daqmx_defstr2num(tf.co_pulses.idleState),
+					tf.co_pulses.initialDelay,
+					tf.co_pulses.freq,
+					tf.co_pulses.dutyCycle));
+			}
 
 			// sample rate:
 			ASSERT_ABOVE_(tf.samplesPerSecond,0)
@@ -451,6 +582,7 @@ void CNationalInstrumentsDAQ::grabbing_thread(TInfoPerTask &ipt)
 				dBuf.resize(totalSamplesToRead);
 				int32  pointsReadPerChan;
 
+				// 
 				if ((err = DAQmxBaseReadAnalogF64(
 					taskHandle,
 					ipt.task.samplesPerChannelToRead,timeout, obs.AIN_interleaved ? DAQmx_Val_GroupByScanNumber : DAQmx_Val_GroupByChannel,
@@ -492,7 +624,7 @@ void CNationalInstrumentsDAQ::grabbing_thread(TInfoPerTask &ipt)
 // Ctor:
 CNationalInstrumentsDAQ::TaskDescription::TaskDescription() :
 	has_ai(false), has_ao(false), has_di(false), has_do(false),
-	has_ci_period(false), has_ci_count_edges(false), has_ci_pulse_width(false), has_ci_lin_encoder(false),has_ci_ang_encoder(false),
+	has_ci_period(false), has_ci_count_edges(false), has_ci_pulse_width(false), has_ci_lin_encoder(false),has_ci_ang_encoder(false),has_co_pulses(false),
 	samplesPerSecond(1000.0),
 	bufferSamplesPerChannel(0),
 	samplesPerChannelToRead(1000)

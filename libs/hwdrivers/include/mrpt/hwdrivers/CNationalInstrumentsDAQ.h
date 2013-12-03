@@ -67,43 +67,46 @@ namespace mrpt
 		*  PARAMETERS IN THE ".INI"-LIKE CONFIGURATION STRINGS:
 		* -------------------------------------------------------
 		*   [supplied_section_name]
-		* // Number of tasks (each will run in a thread). Task indices are 0-based.
-		* // (Parameters below follow NI's DAQmx API notation)
+		* ; Number of tasks (each will run in a thread). Task indices are 0-based.
+		* ; (Parameters below follow NI's DAQmx API notation)
 		* num_tasks  = 1
 		* 
-		* // Channels, separated by commas if more than one.
-		* //  - "ai": Analog inputs
-		* //  - "ao": Analog outputs
-		* //  - "di": Digital inputs
-		* //  - "do": Digital inputs
-		* //  - "ci_period", 
-		* //    "ci_count_edges", "ci_pulse_width",
-		* //    "ci_lin_encoder", "ci_ang_encoder" : Counters & encoders (WARNING: NI says "a task can include only one counter input channel")
-		* //
-		* task0.channels = ai, ao, di, do, ci_ang_encoder
+		* ; Channels, separated by commas if more than one.
+		* ;  - "ai": Analog inputs
+		* ;  - "ao": Analog outputs
+		* ;  - "di": Digital inputs
+		* ;  - "do": Digital inputs
+		* ;  - "ci_period", 
+		* ;    "ci_count_edges", "ci_pulse_width",
+		* ;    "ci_lin_encoder", "ci_ang_encoder" : Counters & encoders (WARNING: NI says "a task can include only one counter input channel")
+		* ;  - "co_pulses": Output digital pulses (WARNING: NI says "a task can include only one counter output channel")
+		* ;
+		* task0.channels = ai  //, ao, di, do, ci_ang_encoder
 		* task0.samplesPerSecond = 1000 // Samples per second. Continuous (infinite) sampling is assumed.
 		* task0.samplesPerChannelToRead = 1000  // The number of samples to grab at once from each channel.
 		* 
-		* // Analog input channel params. 
+		* ; Analog input channel params. 
 		* task0.ai.physicalChannel = Dev1/ai0:3, Dev1/ai6
 		* task0.ai.physicalChannelCount = 5  // *IMPORTANT* This must be the total number of channels listed in "physicalChannel" (e.g. 4 for "Dev1/ai0:3")
 		* task0.ai.terminalConfig  = DAQmx_Val_Cfg_Default | DAQmx_Val_RSE | DAQmx_Val_NRSE | DAQmx_Val_Diff   // One of these strings
 		* task0.ai.minVal          = -10.0    // Volts
 		* task0.ai.maxVal          =  10.0    // Volts
 		* 
-		* // Analog output channel params.
+		* ; Analog output channel params.
 		* task0.ao.physicalChannel = Dev1/ao0, Dev1/ao2:4
 		* task0.ao.physicalChannelCount = 4  // *IMPORTANT* This must be the total number of channels listed in "physicalChannel" (e.g. 1 for "Dev1/ao0")
 		* task0.ao.minVal          = -10.0    // Volts
 		* task0.ao.maxVal          =  10.0    // Volts
 		* 
-		* // Digital input channel params.
+		* ; Digital input channel params.
 		* task0.di.lines           = Dev1/port2, Dev1/port0/line0:4
+		* task0.di.linesCount      = 12  // *IMPORTANT* This must be the total number of lines
 		* 
-		* // Digital input channel params.
+		* ; Digital input channel params.
 		* task0.do.lines           = Dev1/port0/line6:7, Dev1/port1
+		* task0.do.linesCount      = 10  // *IMPORTANT* This must be the total number of lines
 		* 
-		* // Counter: period of a digital signal
+		* ; Counter: period of a digital signal
 		* task0.ci_period.counter  = Dev1/ctr0
 		* task0.ci_period.minVal   = 0   // The minimum value, in units, that you expect to measure.
 		* task0.ci_period.maxVal   = 0   // The minimum value, in units, that you expect to measure.
@@ -112,20 +115,20 @@ namespace mrpt
 		* task0.ci_period.measTime = 0   // NI says: "Always pass 0 for this parameter."
 		* task0.ci_period.divisor  = 1   // NI says: "Always pass 1 for this parameter."
 		* 
-		* // Counter: count the number of rising or falling edges of a digital signal 
+		* ; Counter: count the number of rising or falling edges of a digital signal 
 		* task0.ci_count_edges.counter        = Dev1/ctr0
 		* task0.ci_count_edges.edge           = DAQmx_Val_Rising | DAQmx_Val_Falling // One of these strings
 		* task0.ci_count_edges.initialCount   = 0    // The value from which to start counting
 		* task0.ci_count_edges.countDirection = DAQmx_Val_CountUp | DAQmx_Val_CountDown | DAQmx_Val_ExtControlled  // One of these strings
 		* 
-		* // Counter:  measure the width of a digital pulse
+		* ; Counter:  measure the width of a digital pulse
 		* task0.ci_pulse_width.counter      = Dev1/ctr0
 		* task0.ci_pulse_width.minVal       = 0   // The minimum value, in units, that you expect to measure.
 		* task0.ci_pulse_width.maxVal       = 0   // The minimum value, in units, that you expect to measure.
 		* task0.ci_pulse_width.units        = DAQmx_Val_Seconds | DAQmx_Val_Ticks  // One of these strings
 		* task0.ci_pulse_width.startingEdge = DAQmx_Val_Rising | DAQmx_Val_Falling // One of these strings
 		* 
-		* // Counter:  uses a linear encoder to measure linear position
+		* ; Counter:  uses a linear encoder to measure linear position
 		* task0.ci_lin_encoder.counter      = Dev1/ctr0
 		* task0.ci_lin_encoder.decodingType = DAQmx_Val_X1 | DAQmx_Val_X2 | DAQmx_Val_X4 | DAQmx_Val_TwoPulseCounting // One of these strings
 		* task0.ci_lin_encoder.ZidxEnable   = false | true | 0 | 1    //  enable z indexing?
@@ -135,7 +138,7 @@ namespace mrpt
 		* task0.ci_lin_encoder.distPerPulse = 0.1  // The distance measured for each pulse the encoder generates. Specify this value in units.
 		* task0.ci_lin_encoder.initialPos   = 0.0 // The position of the encoder when the measurement begins. This value is in units.
 		* 
-		* // Counter:  uses an angular encoder to measure angular position
+		* ; Counter:  uses an angular encoder to measure angular position
 		* task0.ci_ang_encoder.counter      = Dev1/ctr0
 		* task0.ci_ang_encoder.decodingType = DAQmx_Val_X1 | DAQmx_Val_X2 | DAQmx_Val_X4 | DAQmx_Val_TwoPulseCounting // One of these strings
 		* task0.ci_ang_encoder.ZidxEnable   = 0 | 1 | false | true  //  enable z indexing
@@ -144,10 +147,17 @@ namespace mrpt
 		* task0.ci_ang_encoder.units        = DAQmx_Val_Degrees | DAQmx_Val_Radians | DAQmx_Val_Ticks  // One of these strings
 		* task0.ci_ang_encoder.pulsesPerRev = 512  // The number of pulses the encoder generates per revolution. 
 		* task0.ci_ang_encoder.initialAngle = 0.0 // The position of the encoder when the measurement begins. This value is in units.
+		*
+		* ; Output digital pulses:
+		* task0.co_pulses.counter           = Dev1/ctr1
+		* task0.co_pulses.idleState         = DAQmx_Val_High | DAQmx_Val_Low
+		* task0.co_pulses.initialDelay      = 0  // The amount of time in seconds to wait before generating the first pulse.
+		* task0.co_pulses.freq              = 100 // The frequency of the pulses to generate (Hertz)
+		* task0.co_pulses.dutyCycle         = 0.5  // The width of the pulse divided by the pulse period.
 		*  \endcode
 		*
 		* See also: 
-		*  - [MRPT]samples/NIDAQ_test 
+		*  - [MRPT]/samples/NIDAQ_test 
 		*  - Sample .ini files for rawlog-grabber in [MRPT]/share/mrpt/config_files/rawlog-grabber/
 		*
 		* DAQmx Base Installation
@@ -171,8 +181,6 @@ namespace mrpt
 
 			/** Destructor */
 			virtual ~CNationalInstrumentsDAQ();
-			
-
 
 			/** Setup and launch the DAQ tasks, in parallel threads. 
 			  * Access to grabbed data with CNationalInstrumentsDAQ::readFromDAQ() or the standard CGenericSensor::doProcess() */
@@ -206,7 +214,8 @@ namespace mrpt
 				TaskDescription();
 
 				bool has_ai, has_ao, has_di, has_do;
-				bool has_ci_period, has_ci_count_edges,has_ci_pulse_width,has_ci_lin_encoder,has_ci_ang_encoder;
+				bool has_ci_period, has_ci_count_edges,has_ci_pulse_width,has_ci_lin_encoder,has_ci_ang_encoder, has_co_pulses;
+
 
 				double   samplesPerSecond; //!< Sample clock config: samples per second. Continuous (infinite) sampling is assumed.
 				uint32_t bufferSamplesPerChannel; //!< (Default=0) From NI's docs: The number of samples the buffer can hold for each channel in the task. Zero indicates no buffer should be allocated. Use a buffer size of 0 to perform a hardware-timed operation without using a buffer.
@@ -234,6 +243,8 @@ namespace mrpt
 
 				struct HWDRIVERS_IMPEXP desc_di_t
 				{
+					desc_di_t(): linesCount(0) {}
+
 					std::string lines;
 					unsigned int linesCount; //!< *IMPORTANT* This must be the total number of lines listed in "physicalChannel" (e.g. 1 for "Dev1/ao0")
 				} 
@@ -241,7 +252,10 @@ namespace mrpt
 
 				struct HWDRIVERS_IMPEXP desc_do_t
 				{
+					desc_do_t(): linesCount(0) {}
+
 					std::string lines;
+					unsigned int linesCount; //!< *IMPORTANT* This must be the total number of lines listed in "physicalChannel" (e.g. 1 for "Dev1/ao0")
 				} 
 				douts; //!< Digital outs (do)
 
@@ -258,7 +272,7 @@ namespace mrpt
 
 				struct HWDRIVERS_IMPEXP desc_ci_count_edges_t
 				{
-					desc_ci_count_edges_t() : initialCount(0) { }
+					desc_ci_count_edges_t() : initialCount(0),countDirection("DAQmx_Val_CountUp") { }
 
 					std::string counter, edge, countDirection;
 					int         initialCount; 
@@ -298,6 +312,15 @@ namespace mrpt
 				} 
 				ci_ang_encoder; //!< Counter: uses an angular encoder to measure angular position
 
+				struct HWDRIVERS_IMPEXP desc_co_pulses_t
+				{
+					desc_co_pulses_t() : idleState("DAQmx_Val_Low"),initialDelay(0),freq(1000),dutyCycle(0.5) { }
+
+					std::string counter, idleState;
+					double      initialDelay,freq,dutyCycle;
+				} 
+				co_pulses; //!< Output counter: digital pulses output
+
 			}; // end of TaskDescription
 			
 			/** Publicly accessible vector with the list of tasks to be launched upon call to CNationalInstrumentsDAQ::initialize().
@@ -332,7 +355,6 @@ namespace mrpt
 
 			/** Method to be executed in each parallel thread. */
 			void grabbing_thread(TInfoPerTask &ipt);
-
 			
 		}; // end class
 
