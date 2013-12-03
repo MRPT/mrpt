@@ -137,6 +137,7 @@ void  CNationalInstrumentsDAQ::loadConfig_sensorSpecific(
 		
 		MY_LOAD_HERE_CONFIG_VAR_NO_DEFAULT( sTask+string(".samplesPerSecond"), double, t.samplesPerSecond, cfg,sect)
 		MY_LOAD_HERE_CONFIG_VAR_NO_DEFAULT( sTask+string(".samplesPerChannelToRead"), double, t.samplesPerChannelToRead, cfg,sect)
+		MY_LOAD_HERE_CONFIG_VAR( sTask+string(".bufferSamplesPerChannel"), double, t.bufferSamplesPerChannel, cfg,sect)
 
 		for (size_t j=0;j<lstStrChanns.size();j++)
 		{
@@ -402,7 +403,8 @@ void  CNationalInstrumentsDAQ::initialize()
 			ASSERT_ABOVE_(tf.samplesPerSecond,0)
 			MRPT_DAQmx_ErrChk (DAQmxBaseCfgSampClkTiming(taskHandle,"",tf.samplesPerSecond,DAQmx_Val_Rising, DAQmx_Val_ContSamps,0));
 
-			// samples/ch buffer:
+			// Seems to be needed to avoid an errors avoid like: 
+			// " Onboard device memory overflow. Because of system and/or bus-bandwidth limitations, the driver could not read data from the device fast enough to keep up with the device throughput."
 			MRPT_DAQmx_ErrChk (DAQmxBaseCfgInputBuffer(taskHandle,tf.bufferSamplesPerChannel));
 
 			// Create pipe:
@@ -455,14 +457,16 @@ void CNationalInstrumentsDAQ::stop()
 	{
 		it->must_close=true;
 	}
+	if (m_verbose) cout << "[CNationalInstrumentsDAQ::stop] Waiting for grabbing threads to end...\n";
 	for (list<TInfoPerTask>::iterator it=m_running_tasks.begin();it!=m_running_tasks.end();++it)
 	{
-		if (!it->hThread.isClear())
-		{
-			mrpt::system::joinThread(it->hThread);
-			it->hThread.clear();
-		}
+		// For some reason, join doesn't work...
+		// if (!it->hThread.isClear()) mrpt::system::joinThread(it->hThread);
+		// Polling:
+		while (!it->is_closed) { mrpt::system::sleep(1); }
+		it->hThread.clear();
 	}
+	if (m_verbose) cout << "[CNationalInstrumentsDAQ::stop] All threads ended.\n";
 
 	// Stop all NI tasks:
 #if MRPT_HAS_NIDAQMXBASE
@@ -502,16 +506,17 @@ void  CNationalInstrumentsDAQ::readFromDAQ(
 	}
 
 	// Read from the pipe:
-    m_state = ssWorking;
+	m_state = ssWorking;
 
 	for (list<TInfoPerTask>::iterator it=m_running_tasks.begin();it!=m_running_tasks.end();++it)
 	{
+		MRPT_TODO("Timeout!")
 		it->read_pipe->ReadObject(&outObservation);
 		outThereIsObservation = true;
 		return;
+
 		MRPT_TODO("Multiple objs!")
 	}
-
 }
 
 
@@ -551,8 +556,9 @@ void CNationalInstrumentsDAQ::grabbing_thread(TInfoPerTask &ipt)
 	try
 	{
 		TaskHandle  &taskHandle= *reinterpret_cast<TaskHandle*>(&ipt.taskHandle);
+		if (m_verbose) cout << "[CNationalInstrumentsDAQ::grabbing_thread] Starting thread for task " << ipt.taskHandle << "\n";
 
-		const float timeout = 1.5*ipt.task.samplesPerChannelToRead/ipt.task.samplesPerSecond;
+		const float timeout = 2*ipt.task.samplesPerChannelToRead/ipt.task.samplesPerSecond;
 
 		int err=0;
 		vector<double> dBuf;
@@ -580,7 +586,7 @@ void CNationalInstrumentsDAQ::grabbing_thread(TInfoPerTask &ipt)
 
 				const uint32_t totalSamplesToRead = ipt.task.ai.physicalChannelCount * ipt.task.samplesPerChannelToRead;
 				dBuf.resize(totalSamplesToRead);
-				int32  pointsReadPerChan;
+				int32  pointsReadPerChan=-1;
 				if ((err = DAQmxBaseReadAnalogF64(
 					taskHandle,
 					ipt.task.samplesPerChannelToRead,timeout, obs.AIN_interleaved ? DAQmx_Val_GroupByScanNumber : DAQmx_Val_GroupByChannel,
@@ -593,14 +599,14 @@ void CNationalInstrumentsDAQ::grabbing_thread(TInfoPerTask &ipt)
 					ASSERT_EQUAL_(totalSamplesToRead,pointsReadPerChan*ipt.task.ai.physicalChannelCount)
 					obs.AIN_double = dBuf;
 					there_are_data = true;
-					//cout << "[CNationalInstrumentsDAQ::grabbing_thread] " << pointsReadPerChan << " samples read.\n";
+					if (m_verbose) cout << "[CNationalInstrumentsDAQ::grabbing_thread] " << pointsReadPerChan << " analog samples read.\n";
 				}
 			} // end AI
 			if (ipt.task.has_ci_ang_encoder || ipt.task.has_ci_lin_encoder) 
 			{
 				const int32 totalSamplesToRead = ipt.task.samplesPerChannelToRead;
 				dBuf.resize(totalSamplesToRead);
-				int32  pointsReadPerChan;
+				int32  pointsReadPerChan=-1;
 				if ((err = DAQmxBaseReadCounterF64(
 					taskHandle,
 					totalSamplesToRead,timeout,
@@ -613,7 +619,7 @@ void CNationalInstrumentsDAQ::grabbing_thread(TInfoPerTask &ipt)
 					ASSERT_EQUAL_(totalSamplesToRead,pointsReadPerChan)
 					obs.CNTRIN_double = dBuf;
 					there_are_data = true;
-					//cout << "[CNationalInstrumentsDAQ::grabbing_thread] " << pointsReadPerChan << " samples read.\n";
+					if (m_verbose) cout << "[CNationalInstrumentsDAQ::grabbing_thread] " << pointsReadPerChan << " counter samples read.\n";
 				}
 			} // end COUNTERS
 
@@ -641,7 +647,7 @@ CNationalInstrumentsDAQ::TaskDescription::TaskDescription() :
 	has_ai(false), has_ao(false), has_di(false), has_do(false),
 	has_ci_period(false), has_ci_count_edges(false), has_ci_pulse_width(false), has_ci_lin_encoder(false),has_ci_ang_encoder(false),has_co_pulses(false),
 	samplesPerSecond(1000.0),
-	bufferSamplesPerChannel(0),
+	bufferSamplesPerChannel(200000),
 	samplesPerChannelToRead(1000)
 {
 }

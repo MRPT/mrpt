@@ -84,6 +84,7 @@ namespace mrpt
 		* task0.channels = ai  //, ao, di, do, ci_ang_encoder
 		* task0.samplesPerSecond = 1000 // Samples per second. Continuous (infinite) sampling is assumed.
 		* task0.samplesPerChannelToRead = 1000  // The number of samples to grab at once from each channel.
+		* ;task0.bufferSamplesPerChannel = 200000 // Increase if you have errors about " Onboard device memory overflow.(...)"
 		* 
 		* ; Analog input channel params. 
 		* task0.ai.physicalChannel = Dev1/ai0:3, Dev1/ai6
