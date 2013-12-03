@@ -233,7 +233,7 @@ namespace mrpt
 				
 				struct HWDRIVERS_IMPEXP desc_ao_t
 				{
-					desc_ao_t() : minVal(-10), maxVal(10),physicalChannelCount(0) { }
+					desc_ao_t() : physicalChannelCount(0),minVal(-10), maxVal(10) { }
 
 					std::string physicalChannel;
 					unsigned int physicalChannelCount; //!< *IMPORTANT* This must be the total number of channels listed in "physicalChannel" (e.g. 1 for "Dev1/ao0")
@@ -272,7 +272,7 @@ namespace mrpt
 
 				struct HWDRIVERS_IMPEXP desc_ci_count_edges_t
 				{
-					desc_ci_count_edges_t() : initialCount(0),countDirection("DAQmx_Val_CountUp") { }
+					desc_ci_count_edges_t() : countDirection("DAQmx_Val_CountUp"),initialCount(0) { }
 
 					std::string counter, edge, countDirection;
 					int         initialCount; 

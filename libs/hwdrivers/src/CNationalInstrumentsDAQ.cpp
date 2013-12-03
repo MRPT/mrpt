@@ -286,7 +286,7 @@ int daqmx_defstr2num(const std::string &str)
 
 	for (unsigned int i=0;i<sizeof(daqmx_vals)/sizeof(daqmx_vals[0]);i++)
 	{
-		if (!strcmpi(daqmx_vals[i].str,s.c_str()))
+		if (strCmpI(daqmx_vals[i].str,s.c_str()))
 			return daqmx_vals[i].val;
 	}
 	THROW_EXCEPTION_CUSTOM_MSG1("Error: Unknown DAQmxBase constant: %s",s.c_str())
@@ -578,7 +578,7 @@ void CNationalInstrumentsDAQ::grabbing_thread(TInfoPerTask &ipt)
 				obs.AIN_channel_count = ipt.task.ai.physicalChannelCount;
 				obs.AIN_interleaved = true;
 
-				const int32 totalSamplesToRead = ipt.task.ai.physicalChannelCount * ipt.task.samplesPerChannelToRead;
+				const uint32_t totalSamplesToRead = ipt.task.ai.physicalChannelCount * ipt.task.samplesPerChannelToRead;
 				dBuf.resize(totalSamplesToRead);
 				int32  pointsReadPerChan;
 				if ((err = DAQmxBaseReadAnalogF64(

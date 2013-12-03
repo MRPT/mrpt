@@ -59,7 +59,7 @@ namespace slam
 		DEFINE_SERIALIZABLE( CObservationRawDAQ )
 	 public:
 		/** Constructor */
-		inline CObservationRawDAQ() : sample_rate(0),AIN_channel_count(0),AIN_interleaved(true) { }
+		inline CObservationRawDAQ() : AIN_channel_count(0),AIN_interleaved(true),sample_rate(0) { }
 		/** Destructor */
 		virtual ~CObservationRawDAQ()
 		{ }
