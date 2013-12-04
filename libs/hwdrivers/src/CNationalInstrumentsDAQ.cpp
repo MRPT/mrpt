@@ -137,7 +137,8 @@ void  CNationalInstrumentsDAQ::loadConfig_sensorSpecific(
 		
 		MY_LOAD_HERE_CONFIG_VAR_NO_DEFAULT( sTask+string(".samplesPerSecond"), double, t.samplesPerSecond, cfg,sect)
 		MY_LOAD_HERE_CONFIG_VAR_NO_DEFAULT( sTask+string(".samplesPerChannelToRead"), double, t.samplesPerChannelToRead, cfg,sect)
-		MY_LOAD_HERE_CONFIG_VAR( sTask+string(".bufferSamplesPerChannel"), double, t.bufferSamplesPerChannel, cfg,sect)
+        MY_LOAD_HERE_CONFIG_VAR( sTask+string(".sampleClkSource"), string, t.sampleClkSource, cfg,sect)
+        MY_LOAD_HERE_CONFIG_VAR( sTask+string(".bufferSamplesPerChannel"), double, t.bufferSamplesPerChannel, cfg,sect)
 
 		for (size_t j=0;j<lstStrChanns.size();j++)
 		{
@@ -401,7 +402,7 @@ void  CNationalInstrumentsDAQ::initialize()
 
 			// sample rate:
 			ASSERT_ABOVE_(tf.samplesPerSecond,0)
-			MRPT_DAQmx_ErrChk (DAQmxBaseCfgSampClkTiming(taskHandle,"",tf.samplesPerSecond,DAQmx_Val_Rising, DAQmx_Val_ContSamps,0));
+            MRPT_DAQmx_ErrChk (DAQmxBaseCfgSampClkTiming(taskHandle,tf.sampleClkSource.c_str(),tf.samplesPerSecond,DAQmx_Val_Rising, DAQmx_Val_ContSamps,0));
 
 			// Seems to be needed to avoid an errors avoid like: 
 			// " Onboard device memory overflow. Because of system and/or bus-bandwidth limitations, the driver could not read data from the device fast enough to keep up with the device throughput."
@@ -558,7 +559,7 @@ void CNationalInstrumentsDAQ::grabbing_thread(TInfoPerTask &ipt)
 		TaskHandle  &taskHandle= *reinterpret_cast<TaskHandle*>(&ipt.taskHandle);
 		if (m_verbose) cout << "[CNationalInstrumentsDAQ::grabbing_thread] Starting thread for task " << ipt.taskHandle << "\n";
 
-		const float timeout = 2*ipt.task.samplesPerChannelToRead/ipt.task.samplesPerSecond;
+        const float timeout = 10*ipt.task.samplesPerChannelToRead/ipt.task.samplesPerSecond;
 
 		int err=0;
 		vector<double> dBuf;

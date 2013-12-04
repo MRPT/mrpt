@@ -218,7 +218,9 @@ namespace mrpt
 				bool has_ci_period, has_ci_count_edges,has_ci_pulse_width,has_ci_lin_encoder,has_ci_ang_encoder, has_co_pulses;
 
 
-				double   samplesPerSecond; //!< Sample clock config: samples per second. Continuous (infinite) sampling is assumed.
+                double   samplesPerSecond;   //!< Sample clock config: samples per second. Continuous (infinite) sampling is assumed.
+                std::string sampleClkSource; //!< Sample clock source: may be empty (default value) for some channels.
+
 				uint32_t bufferSamplesPerChannel; //!< (Default=0) From NI's docs: The number of samples the buffer can hold for each channel in the task. Zero indicates no buffer should be allocated. Use a buffer size of 0 to perform a hardware-timed operation without using a buffer.
 				uint32_t samplesPerChannelToRead; //!< (Default=1000) The number of samples to grab at once from each channel.
 
