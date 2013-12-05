@@ -118,6 +118,7 @@ CNationalInstrumentsDAQ::TInfoPerTask::TInfoPerTask() :
 	taskHandle(0),
 	must_close(false),
 	is_closed(false),
+	new_data_available(false),
 	task()
 { }
 
@@ -129,6 +130,7 @@ CNationalInstrumentsDAQ::TInfoPerTask::TInfoPerTask(const TInfoPerTask &o) :
 	write_pipe(o.write_pipe.get()),
 	must_close(o.must_close),
 	is_closed(o.is_closed),
+	new_data_available(o.new_data_available),
 	task(o.task)
 {
 	const_cast<TInfoPerTask*>(&o)->read_pipe.release();
@@ -520,7 +522,7 @@ void CNationalInstrumentsDAQ::stop()
 		// For some reason, join doesn't work...
 		// if (!it->hThread.isClear()) mrpt::system::joinThread(it->hThread);
 		// Polling:
-		while (!it->is_closed) { mrpt::system::sleep(1); }
+		for (size_t tim=0;tim<250 && !it->is_closed;tim++) { mrpt::system::sleep(1); }
 		it->hThread.clear();
 	}
 	if (m_verbose) cout << "[CNationalInstrumentsDAQ::stop] All threads ended.\n";
@@ -564,15 +566,24 @@ void  CNationalInstrumentsDAQ::readFromDAQ(
 	// Read from the pipe:
 	m_state = ssWorking;
 	
-	CObservationRawDAQ tmp_obs;
 
 	for (list<TInfoPerTask>::iterator it=m_running_tasks.begin();it!=m_running_tasks.end();++it)
 	{
-		it->read_pipe->ReadObject(&tmp_obs);
-
-		if (true) {
-			// Yes, valid block of samples was adquired:
-			outObservations.push_back(CObservationRawDAQPtr(new CObservationRawDAQ(tmp_obs)));
+		CObservationRawDAQ tmp_obs;
+		try
+		{
+			if (it->new_data_available) 
+			{
+				it->read_pipe->ReadObject(&tmp_obs);
+				it->new_data_available=false;  MRPT_TODO("Any better synch method?")
+				
+				// Yes, valid block of samples was adquired:
+				outObservations.push_back(CObservationRawDAQPtr(new CObservationRawDAQ(tmp_obs)));
+			}
+		}
+		catch (...)
+		{
+			// Timeout...
 		}
 	}
 }
@@ -686,6 +697,7 @@ void CNationalInstrumentsDAQ::grabbing_thread(TInfoPerTask &ipt)
 			// Send the observation to the main thread:
 			if (there_are_data)
 			{
+				ipt.new_data_available = true;
 				ipt.write_pipe->WriteObject(&obs);
 			}
 

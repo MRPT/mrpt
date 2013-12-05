@@ -2701,7 +2701,7 @@ void xRawLogViewerFrame::SelectObjectInTreeView( const CSerializablePtr & sel_ob
 #define RAWDAQ_SHOW_FIRSTS(_VEC) \
     cout << "Raw data in " #_VEC " ("<< obs->_VEC.size() <<" entries): First values ["; \
     if (!obs->_VEC.empty()) { \
-        for (size_t i=1;i<std::min(obs->_VEC.size(),static_cast<size_t>(10));i++) \
+        for (size_t i=1;i<=std::min(obs->_VEC.size(),static_cast<size_t>(10));i++) \
             cout << obs->_VEC[i-1] << " "; \
         cout << " ... "; \
         } \

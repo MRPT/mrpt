@@ -369,6 +369,9 @@ int main(int argc, char **argv)
 			cerr << "[main thread] Ended due to other thread signal to exit application." << endl;
 		}
 
+		// Flush file to disk:
+		out_file.close();
+
 		// Wait all threads:
 		// ----------------------------
 		allThreadsMustExit = true;
