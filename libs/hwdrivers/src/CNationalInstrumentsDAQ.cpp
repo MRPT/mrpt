@@ -493,12 +493,11 @@ bool CNationalInstrumentsDAQ::checkDAQIsWorking() const
 						readFromDAQ
 -------------------------------------------------------------*/
 void  CNationalInstrumentsDAQ::readFromDAQ(
-	bool							&outThereIsObservation,
-	mrpt::slam::CObservationRawDAQ	&outObservation,
-	bool							&hardwareError )
+	std::vector<mrpt::slam::CObservationRawDAQPtr> &outObservations,
+	bool &hardwareError )
 {
-	outThereIsObservation	= false;
 	hardwareError			= false;
+	outObservations.clear();
 
 	if ( !checkDAQIsWorking() )
 	{
@@ -508,15 +507,18 @@ void  CNationalInstrumentsDAQ::readFromDAQ(
 
 	// Read from the pipe:
 	m_state = ssWorking;
+	
+	CObservationRawDAQ tmp_obs;
 
 	for (list<TInfoPerTask>::iterator it=m_running_tasks.begin();it!=m_running_tasks.end();++it)
 	{
 		MRPT_TODO("Timeout!")
-		it->read_pipe->ReadObject(&outObservation);
-		outThereIsObservation = true;
-		return;
+		it->read_pipe->ReadObject(&tmp_obs);
 
-		MRPT_TODO("Multiple objs!")
+		if (true) {
+			// Yes, valid block of samples was adquired:
+			outObservations.push_back(CObservationRawDAQPtr(new CObservationRawDAQ(tmp_obs)));
+		}
 	}
 }
 
@@ -526,12 +528,8 @@ void  CNationalInstrumentsDAQ::readFromDAQ(
 ----------------------------------------------------- */
 void  CNationalInstrumentsDAQ::doProcess()
 {
-	bool	thereIs, hwError;
-
-	if (!m_nextObservation)
-		m_nextObservation =  CObservationRawDAQ::Create();
-
-	readFromDAQ( thereIs, *m_nextObservation, hwError );
+	bool hwError;
+	readFromDAQ(m_nextObservations, hwError );
 
 	if (hwError)
 	{
@@ -539,11 +537,17 @@ void  CNationalInstrumentsDAQ::doProcess()
 	    THROW_EXCEPTION("Couldn't start DAQ task!");
 	}
 
-	if (thereIs)
+	if (!m_nextObservations.empty())
 	{
 		m_state = ssWorking;
-		appendObservation( m_nextObservation );
-		m_nextObservation.clear_unique(); // Create a new object in the next call
+					
+		std::vector<mrpt::utils::CSerializablePtr> new_obs;
+		new_obs.resize(m_nextObservations.size());
+
+		for (size_t i=0;i<m_nextObservations.size();i++)
+			new_obs[i] = m_nextObservations[i];
+
+		appendObservations(new_obs);
 	}
 }
 

@@ -193,14 +193,14 @@ namespace mrpt
 			// See docs in parent class
 			void  doProcess();
 
-			/** Receives data from the DAQ thread(s). It only returns a new observation, filled with samples, if there was new data waiting. 
+			/** Receives data from the DAQ thread(s). It returns a maximum number of one observation object per running grabber threads, that is, per each DAQmx "task".
 			  *  This method MUST BE CALLED in a timely fashion by the user to allow the proccessing of incoming data. It can be run in a different thread safely.
 			  *  This is internally called when using the alternative CGenericSensor::doProcess() interface.
+			  *  No observations may be returned if there are not samples enough yet from any task.
 			  */
 			void  readFromDAQ(
-				bool							&outThereIsObservation,
-				mrpt::slam::CObservationRawDAQ	&outObservation,
-				bool							&hardwareError );
+				std::vector<mrpt::slam::CObservationRawDAQPtr> &outObservations,
+				bool & hardwareError );
 
 			/** Returns true if initialize() was called and at least one task is running. */
 			bool checkDAQIsWorking() const;
@@ -338,7 +338,7 @@ namespace mrpt
 				const std::string	  &iniSection );
 
 		private:
-			mrpt::slam::CObservationRawDAQPtr	m_nextObservation; //!< A dynamic object used as buffer in doProcess
+			std::vector<mrpt::slam::CObservationRawDAQPtr> m_nextObservations; //!< A buffer for doProcess
 
 			struct TInfoPerTask
 			{
