@@ -95,6 +95,15 @@ namespace mrpt
 			  */
 			std::string serialize();
 
+			unsigned int timeout_read_start_us;   //!< (Default=0) Timeout for read operations: microseconds (us) to wait for the first byte. 0 means infinite timeout.
+			unsigned int timeout_read_between_us; //!< (Default=0) Timeout between burst reads operations: microseconds (us) to wait between two partial reads inside one large read. 0 means infinite timeout.
+
+			/** Returns false if the pipe was closed due to some error. */
+			inline bool isOpen() const { return m_pipe_file!=0; }
+
+			/** Closes the pipe (normally not needed to be called by users, automatically done at destructor) */
+			void close();
+			
 		protected:
 #ifdef MRPT_OS_WINDOWS
 			void * m_pipe_file;

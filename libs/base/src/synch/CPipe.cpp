@@ -79,13 +79,20 @@ void CPipe::createPipe(std::auto_ptr<CPipeReadEndPoint>& outReadPipe,std::auto_p
 
 // ------------------  CPipeBaseEndPoint ------------------
 CPipeBaseEndPoint::CPipeBaseEndPoint() :
-	m_pipe_file(0)
+	m_pipe_file(0),
+	timeout_read_start_us(0), 
+	timeout_read_between_us(0)
 {
 }
 
 CPipeBaseEndPoint::~CPipeBaseEndPoint()
 {
-	// Close:
+	this->close();
+}
+
+// Close:
+void CPipeBaseEndPoint::close()
+{
 	if (m_pipe_file)
 	{
 #		ifdef MRPT_OS_WINDOWS
@@ -129,6 +136,7 @@ CPipeBaseEndPoint::CPipeBaseEndPoint(const std::string &serialized)
 */
 std::string CPipeBaseEndPoint::serialize()
 {
+	ASSERTMSG_(m_pipe_file!=0, "Pipe is closed, can't serialize!")
 	std::string ret;
 #ifdef MRPT_OS_WINDOWS
 	// Win32 pipes
@@ -149,7 +157,9 @@ uint64_t CPipeBaseEndPoint::getPosition() { return 0; }
 /** Introduces a pure virtual method responsible for reading from the stream */
 size_t  CPipeBaseEndPoint::Read(void *Buffer, size_t Count)
 {
-#ifdef MRPT_OS_WINDOWS
+	ASSERTMSG_(m_pipe_file!=0, "Pipe is closed, can't read!")
+
+#if defined(MRPT_OS_WINDOWS)
 	// Win32 pipes
 	DWORD nActuallyRead;
 	if (!ReadFile((HANDLE)m_pipe_file, Buffer, Count,&nActuallyRead, NULL ))
@@ -157,7 +167,80 @@ size_t  CPipeBaseEndPoint::Read(void *Buffer, size_t Count)
 	else return static_cast<size_t>(nActuallyRead);
 #else
 	// UNIX pipes
-	return ::read(m_pipe_file,Buffer,Count);
+	if (!timeout_read_start_us && !timeout_read_between_us) {
+		// Read without timeout:
+		return ::read(m_pipe_file,Buffer,Count);
+	}
+	else
+	{
+		// Use timeouts:
+		size_t alreadyRead = 0;
+		bool   timeoutExpired = false;
+
+		struct timeval	timeoutSelect;
+		struct timeval	*ptrTimeout;
+
+		// Init fd_set structure & add our socket to it:
+		fd_set read_fds;
+		FD_ZERO(&read_fds);
+		FD_SET(m_pipe_file, &read_fds);
+
+		// Loop until timeout expires or the socket is closed.
+		while ( alreadyRead<Count && !timeoutExpired )
+		{
+			// Use the "first" or "between" timeouts:
+			unsigned int curTimeout_us = alreadyRead==0 ? timeout_read_start_us : timeout_read_between_us;
+
+			if (curTimeout_us==0)
+				ptrTimeout = NULL;
+			else
+			{
+				timeoutSelect.tv_sec = curTimeout_us / 1000000;
+				timeoutSelect.tv_usec = (curTimeout_us % 1000000);
+				ptrTimeout = &timeoutSelect;
+			}
+
+			// Wait for received data
+			if (::select(
+							 m_pipe_file+1,		// __nfds
+							 &read_fds,		// Wait for read
+							 NULL,			// Wait for write
+							 NULL,			// Wait for except.
+							 ptrTimeout)	// Timeout
+					!= 1)
+			{ // Timeout:
+				timeoutExpired = true;
+			}
+			else
+			{
+				// Compute remaining part:
+				const size_t remainToRead = Count - alreadyRead;
+
+				// Receive bytes:
+				const size_t readNow = ::read(m_pipe_file,((char*)Buffer) + alreadyRead, (int)remainToRead);
+
+				if (readNow != -1)
+				{
+					// Accumulate the received length:
+					alreadyRead += readNow;
+				}
+				else
+				{
+					// Error:
+					this->close();
+					return alreadyRead;
+				}
+				if (readNow==0 && remainToRead!=0)
+				{
+					// We had an event of data available, so if we have now a zero,
+					//  the socket has been gracefully closed:
+					timeoutExpired = true;
+					close();
+				}
+			}
+		} // end while
+		return alreadyRead;
+	}
 #endif
 }
 
@@ -165,6 +248,8 @@ size_t  CPipeBaseEndPoint::Read(void *Buffer, size_t Count)
 	*  Write attempts to write up to Count bytes to Buffer, and returns the number of bytes actually written. */
 size_t  CPipeBaseEndPoint::Write(const void *Buffer, size_t Count)
 {
+	ASSERTMSG_(m_pipe_file!=0, "Pipe is closed, can't write!")
+
 #ifdef MRPT_OS_WINDOWS
 	// Win32 pipes
 	DWORD nActuallyWritten;
