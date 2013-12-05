@@ -142,6 +142,11 @@ IF(BUILD_mrpt-hwdrivers)
 		INCLUDE_DIRECTORIES(${NI_DAQmxBASE_INCLUDE_DIR})
 		TARGET_LINK_LIBRARIES(mrpt-hwdrivers ${NI_DAQmxBASE_LIB_FILE})
 	ENDIF(MRPT_HAS_NI_DAQmxBASE)
+	IF(MRPT_HAS_NI_DAQmx)
+		# link_directories() was added in the configuration script under /cmakemodules/*_ni.cmake
+		INCLUDE_DIRECTORIES(${NI_DAQmx_INCLUDE_DIR})
+		TARGET_LINK_LIBRARIES(mrpt-hwdrivers ${NI_DAQmx_LIB_FILE})
+	ENDIF(MRPT_HAS_NI_DAQmx)
 
 	# Build with link on SVS lib
 	IF(CMAKE_MRPT_HAS_SVS)

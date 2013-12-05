@@ -37,17 +37,69 @@
 
 #include <mrpt/hwdrivers/CNationalInstrumentsDAQ.h>
 
-#if MRPT_HAS_NIDAQMXBASE
-#	include "NIDAQmxBase.h"  // Include file for NI-DAQmx API
+// If we have both, DAQmx & DAQmxBase, prefer DAQmx:
+#define MRPT_HAS_SOME_NIDAQMX (MRPT_HAS_NIDAQMXBASE || MRPT_HAS_NIDAQMX)
+
+#define MRPT_USE_NIDAQMXBASE (MRPT_HAS_NIDAQMXBASE && !MRPT_HAS_NIDAQMX)
+#define MRPT_USE_NIDAQMX (MRPT_HAS_NIDAQMX)
+
+
+#if MRPT_USE_NIDAQMXBASE
+#	include "NIDAQmxBase.h"  // Include file for NI-DAQmx Base API
+#endif
+#if MRPT_USE_NIDAQMX
+#	include "NIDAQmx.h"  // Include file for NI-DAQmx API
 #endif
 
+// Macros to use either DAQmx or DAQmx Base automatically, depending on the installed libraries:
+#if MRPT_USE_NIDAQMXBASE
+#	define MRPT_DAQmxGetExtendedErrorInfo DAQmxBaseGetExtendedErrorInfo
+#	define MRPT_DAQmxCreateTask DAQmxBaseCreateTask
+#	define MRPT_DAQmxCreateAIVoltageChan DAQmxBaseCreateAIVoltageChan
+#	define MRPT_DAQmxCreateAOVoltageChan DAQmxBaseCreateAOVoltageChan
+#	define MRPT_DAQmxCreateDIChan DAQmxBaseCreateDIChan
+#	define MRPT_DAQmxCreateDOChan DAQmxBaseCreateDOChan
+#	define MRPT_DAQmxCreateCIPeriodChan DAQmxBaseCreateCIPeriodChan
+#	define MRPT_DAQmxCreateCICountEdgesChan DAQmxBaseCreateCICountEdgesChan
+#	define MRPT_DAQmxCreateCIPulseWidthChan DAQmxBaseCreateCIPulseWidthChan
+#	define MRPT_DAQmxCreateCILinEncoderChan DAQmxBaseCreateCILinEncoderChan
+#	define MRPT_DAQmxCreateCIAngEncoderChan DAQmxBaseCreateCIAngEncoderChan
+#	define MRPT_DAQmxCreateCOPulseChanFreq DAQmxBaseCreateCOPulseChanFreq
+#	define MRPT_DAQmxCfgSampClkTiming DAQmxBaseCfgSampClkTiming
+#	define MRPT_DAQmxCfgInputBuffer DAQmxBaseCfgInputBuffer
+#	define MRPT_DAQmxStartTask DAQmxBaseStartTask
+#	define MRPT_DAQmxStopTask DAQmxBaseStopTask
+#	define MRPT_DAQmxClearTask DAQmxBaseClearTask
+#	define MRPT_DAQmxReadAnalogF64 DAQmxBaseReadAnalogF64
+#	define MRPT_DAQmxReadCounterF64 DAQmxBaseReadCounterF64
+#else
+#	define MRPT_DAQmxGetExtendedErrorInfo DAQmxGetExtendedErrorInfo
+#	define MRPT_DAQmxCreateTask DAQmxCreateTask
+#	define MRPT_DAQmxCreateAIVoltageChan DAQmxCreateAIVoltageChan
+#	define MRPT_DAQmxCreateAOVoltageChan DAQmxCreateAOVoltageChan
+#	define MRPT_DAQmxCreateDIChan DAQmxCreateDIChan
+#	define MRPT_DAQmxCreateDOChan DAQmxCreateDOChan
+#	define MRPT_DAQmxCreateCIPeriodChan DAQmxCreateCIPeriodChan
+#	define MRPT_DAQmxCreateCICountEdgesChan DAQmxCreateCICountEdgesChan
+#	define MRPT_DAQmxCreateCIPulseWidthChan DAQmxCreateCIPulseWidthChan
+#	define MRPT_DAQmxCreateCILinEncoderChan DAQmxCreateCILinEncoderChan
+#	define MRPT_DAQmxCreateCIAngEncoderChan DAQmxCreateCIAngEncoderChan
+#	define MRPT_DAQmxCreateCOPulseChanFreq DAQmxCreateCOPulseChanFreq
+#	define MRPT_DAQmxCfgSampClkTiming DAQmxCfgSampClkTiming
+#	define MRPT_DAQmxCfgInputBuffer DAQmxCfgInputBuffer
+#	define MRPT_DAQmxStartTask DAQmxStartTask
+#	define MRPT_DAQmxStopTask DAQmxStopTask
+#	define MRPT_DAQmxClearTask DAQmxClearTask
+#	define MRPT_DAQmxReadAnalogF64 DAQmxReadAnalogF64
+#	define MRPT_DAQmxReadCounterF64 DAQmxReadCounterF64
+#endif
 
 // An auxiliary macro to check and report errors in the DAQmx library as exceptions with a well-explained message.
 #define MRPT_DAQmx_ErrChk(functionCall) \
 	if( (functionCall)<0) \
 	{ \
 		char errBuff[2048]; \
-		DAQmxBaseGetExtendedErrorInfo(errBuff,2048); \
+		MRPT_DAQmxGetExtendedErrorInfo(errBuff,2048); \
 		std::string sErr = mrpt::format("DAQ error: '%s'\nCalling: '%s'",errBuff,#functionCall); \
 		THROW_EXCEPTION(sErr) \
 	}
@@ -248,7 +300,7 @@ CNationalInstrumentsDAQ::~CNationalInstrumentsDAQ()
 	this->stop();
 }
 
-#if MRPT_HAS_NIDAQMXBASE
+#if MRPT_HAS_SOME_NIDAQMX
 // Declare a table to convert strings to their DAQmx #define values:
 struct daqmx_str_val {
 	const char* str;
@@ -291,7 +343,7 @@ int daqmx_defstr2num(const std::string &str)
 		if (strCmpI(daqmx_vals[i].str,s.c_str()))
 			return daqmx_vals[i].val;
 	}
-	THROW_EXCEPTION_CUSTOM_MSG1("Error: Unknown DAQmxBase constant: %s",s.c_str())
+	THROW_EXCEPTION_CUSTOM_MSG1("Error: Unknown DAQmx constant: %s",s.c_str())
 }
 #endif
 
@@ -300,7 +352,7 @@ int daqmx_defstr2num(const std::string &str)
 ----------------------------------------------------- */
 void  CNationalInstrumentsDAQ::initialize()
 {
-#if MRPT_HAS_NIDAQMXBASE
+#if MRPT_HAS_SOME_NIDAQMX
 	this->stop();
 
 	for (size_t i=0;i<task_definitions.size();i++)
@@ -316,12 +368,12 @@ void  CNationalInstrumentsDAQ::initialize()
 		{
 			TaskHandle  &taskHandle= *reinterpret_cast<TaskHandle*>(&ipt.taskHandle);
 
-			MRPT_DAQmx_ErrChk (DAQmxBaseCreateTask("",&taskHandle));
+			MRPT_DAQmx_ErrChk (MRPT_DAQmxCreateTask("",&taskHandle));
 
 			if (tf.has_ai) {
 				ASSERTMSG_(tf.ai.physicalChannelCount>0, "ai.physicalChannelCount is zero! Please, define it correctly.")
 
-				MRPT_DAQmx_ErrChk(DAQmxBaseCreateAIVoltageChan(taskHandle,
+				MRPT_DAQmx_ErrChk(MRPT_DAQmxCreateAIVoltageChan(taskHandle,
 					tf.ai.physicalChannel.c_str(),NULL,
 					daqmx_defstr2num(tf.ai.terminalConfig),
 					tf.ai.minVal, tf.ai.maxVal,DAQmx_Val_Volts,NULL));
@@ -329,20 +381,20 @@ void  CNationalInstrumentsDAQ::initialize()
 			if (tf.has_ao) {
 				ASSERTMSG_(tf.ao.physicalChannelCount>0, "ai.physicalChannelCount is zero! Please, define it correctly.")
 
-				MRPT_DAQmx_ErrChk(DAQmxBaseCreateAOVoltageChan(taskHandle,
+				MRPT_DAQmx_ErrChk(MRPT_DAQmxCreateAOVoltageChan(taskHandle,
 					tf.ao.physicalChannel.c_str(),NULL,
 					tf.ao.minVal, tf.ao.maxVal,DAQmx_Val_Volts,NULL));
 			}
 			if (tf.has_di) {
-				MRPT_DAQmx_ErrChk(DAQmxBaseCreateDIChan(taskHandle,
+				MRPT_DAQmx_ErrChk(MRPT_DAQmxCreateDIChan(taskHandle,
 					tf.di.lines.c_str(),NULL,DAQmx_Val_ChanForAllLines));
 			}
 			if (tf.has_do) {
-				MRPT_DAQmx_ErrChk(DAQmxBaseCreateDOChan(taskHandle,
+				MRPT_DAQmx_ErrChk(MRPT_DAQmxCreateDOChan(taskHandle,
 					tf.douts.lines.c_str(),NULL,DAQmx_Val_ChanForAllLines));
 			}
 			if (tf.has_ci_period) {
-				MRPT_DAQmx_ErrChk(DAQmxBaseCreateCIPeriodChan(taskHandle,
+				MRPT_DAQmx_ErrChk(MRPT_DAQmxCreateCIPeriodChan(taskHandle,
 					tf.ci_period.counter.c_str(),NULL,
 					tf.ci_period.minVal, tf.ci_period.maxVal,
 					daqmx_defstr2num(tf.ci_period.units),
@@ -352,14 +404,14 @@ void  CNationalInstrumentsDAQ::initialize()
 					tf.ci_period.divisor,NULL));
 			}
 			if (tf.has_ci_count_edges) {
-				MRPT_DAQmx_ErrChk(DAQmxBaseCreateCICountEdgesChan(taskHandle,
+				MRPT_DAQmx_ErrChk(MRPT_DAQmxCreateCICountEdgesChan(taskHandle,
 					tf.ci_count_edges.counter.c_str(),NULL,
 					daqmx_defstr2num(tf.ci_count_edges.edge),
 					tf.ci_count_edges.initialCount,
 					daqmx_defstr2num(tf.ci_count_edges.countDirection)));
 			}
 			if (tf.has_ci_pulse_width) {
-				MRPT_DAQmx_ErrChk(DAQmxBaseCreateCIPulseWidthChan(taskHandle,
+				MRPT_DAQmx_ErrChk(MRPT_DAQmxCreateCIPulseWidthChan(taskHandle,
 					tf.ci_pulse_width.counter.c_str(),NULL,
 					tf.ci_pulse_width.minVal, tf.ci_pulse_width.maxVal,
 					daqmx_defstr2num(tf.ci_pulse_width.units),
@@ -367,7 +419,7 @@ void  CNationalInstrumentsDAQ::initialize()
 					NULL));
 			}
 			if (tf.has_ci_lin_encoder) {
-				MRPT_DAQmx_ErrChk(DAQmxBaseCreateCILinEncoderChan(taskHandle,
+				MRPT_DAQmx_ErrChk(MRPT_DAQmxCreateCILinEncoderChan(taskHandle,
 					tf.ci_lin_encoder.counter.c_str(),NULL,
 					daqmx_defstr2num(tf.ci_lin_encoder.decodingType),
 					tf.ci_lin_encoder.ZidxEnable,
@@ -379,7 +431,7 @@ void  CNationalInstrumentsDAQ::initialize()
 					NULL));
 			}
 			if (tf.has_ci_ang_encoder) {
-				MRPT_DAQmx_ErrChk(DAQmxBaseCreateCIAngEncoderChan(taskHandle,
+				MRPT_DAQmx_ErrChk(MRPT_DAQmxCreateCIAngEncoderChan(taskHandle,
 					tf.ci_ang_encoder.counter.c_str(),NULL,
 					daqmx_defstr2num(tf.ci_ang_encoder.decodingType),
 					tf.ci_ang_encoder.ZidxEnable,
@@ -391,7 +443,7 @@ void  CNationalInstrumentsDAQ::initialize()
 					NULL));
 			}
 			if (tf.has_co_pulses) {
-				MRPT_DAQmx_ErrChk(DAQmxBaseCreateCOPulseChanFreq(taskHandle,
+				MRPT_DAQmx_ErrChk(MRPT_DAQmxCreateCOPulseChanFreq(taskHandle,
 					tf.co_pulses.counter.c_str(),NULL,
 					DAQmx_Val_Hz,
 					daqmx_defstr2num(tf.co_pulses.idleState),
@@ -402,11 +454,11 @@ void  CNationalInstrumentsDAQ::initialize()
 
 			// sample rate:
 			ASSERT_ABOVE_(tf.samplesPerSecond,0)
-            MRPT_DAQmx_ErrChk (DAQmxBaseCfgSampClkTiming(taskHandle,tf.sampleClkSource.c_str(),tf.samplesPerSecond,DAQmx_Val_Rising, DAQmx_Val_ContSamps,0));
+			MRPT_DAQmx_ErrChk (MRPT_DAQmxCfgSampClkTiming(taskHandle,tf.sampleClkSource.c_str(),tf.samplesPerSecond,DAQmx_Val_Rising, DAQmx_Val_ContSamps,tf.samplesPerChannelToRead));
 
 			// Seems to be needed to avoid an errors avoid like: 
 			// " Onboard device memory overflow. Because of system and/or bus-bandwidth limitations, the driver could not read data from the device fast enough to keep up with the device throughput."
-			MRPT_DAQmx_ErrChk (DAQmxBaseCfgInputBuffer(taskHandle,tf.bufferSamplesPerChannel));
+			MRPT_DAQmx_ErrChk (MRPT_DAQmxCfgInputBuffer(taskHandle,tf.bufferSamplesPerChannel));
 
 			// Create pipe:
 			mrpt::synch::CPipe::createPipe(ipt.read_pipe, ipt.write_pipe);
@@ -415,7 +467,7 @@ void  CNationalInstrumentsDAQ::initialize()
 			ipt.read_pipe->timeout_read_start_us   = 100000; // 100ms
 			ipt.read_pipe->timeout_read_between_us = 100000; // 100ms
 
-			MRPT_DAQmx_ErrChk (DAQmxBaseStartTask(taskHandle));
+			MRPT_DAQmx_ErrChk (MRPT_DAQmxStartTask(taskHandle));
 
 			ipt.hThread = mrpt::system::createThreadFromObjectMethodRef<CNationalInstrumentsDAQ,TInfoPerTask>(this, &CNationalInstrumentsDAQ::grabbing_thread, ipt);
 
@@ -425,8 +477,8 @@ void  CNationalInstrumentsDAQ::initialize()
 			if( ipt.taskHandle!=NULL )
 			{
 				TaskHandle  &taskHandle= *reinterpret_cast<TaskHandle*>(&ipt.taskHandle);
-				DAQmxBaseStopTask(taskHandle);
-				DAQmxBaseClearTask(taskHandle);
+				MRPT_DAQmxStopTask(taskHandle);
+				MRPT_DAQmxClearTask(taskHandle);
 			}
 
 			// Stop thread:
@@ -474,13 +526,13 @@ void CNationalInstrumentsDAQ::stop()
 	if (m_verbose) cout << "[CNationalInstrumentsDAQ::stop] All threads ended.\n";
 
 	// Stop all NI tasks:
-#if MRPT_HAS_NIDAQMXBASE
+#if MRPT_HAS_SOME_NIDAQMX
 	for (list<TInfoPerTask>::iterator it=m_running_tasks.begin();it!=m_running_tasks.end();++it)
 	{
 		TaskHandle  &taskHandle= *reinterpret_cast<TaskHandle*>(&it->taskHandle);
 
-		DAQmxBaseStopTask(taskHandle);
-		DAQmxBaseClearTask(taskHandle);
+		MRPT_DAQmxStopTask(taskHandle);
+		MRPT_DAQmxClearTask(taskHandle);
 		taskHandle=NULL;
 	}
 #endif
@@ -560,7 +612,7 @@ void  CNationalInstrumentsDAQ::doProcess()
 ----------------------------------------------------- */
 void CNationalInstrumentsDAQ::grabbing_thread(TInfoPerTask &ipt)
 {
-#if MRPT_HAS_NIDAQMXBASE
+#if MRPT_HAS_SOME_NIDAQMX
 	try
 	{
 		TaskHandle  &taskHandle= *reinterpret_cast<TaskHandle*>(&ipt.taskHandle);
@@ -595,7 +647,7 @@ void CNationalInstrumentsDAQ::grabbing_thread(TInfoPerTask &ipt)
 				const uint32_t totalSamplesToRead = ipt.task.ai.physicalChannelCount * ipt.task.samplesPerChannelToRead;
 				dBuf.resize(totalSamplesToRead);
 				int32  pointsReadPerChan=-1;
-				if ((err = DAQmxBaseReadAnalogF64(
+				if ((err = MRPT_DAQmxReadAnalogF64(
 					taskHandle,
 					ipt.task.samplesPerChannelToRead,timeout, obs.AIN_interleaved ? DAQmx_Val_GroupByScanNumber : DAQmx_Val_GroupByChannel,
 					&dBuf[0],dBuf.size(),
@@ -615,7 +667,7 @@ void CNationalInstrumentsDAQ::grabbing_thread(TInfoPerTask &ipt)
 				const int32 totalSamplesToRead = ipt.task.samplesPerChannelToRead;
 				dBuf.resize(totalSamplesToRead);
 				int32  pointsReadPerChan=-1;
-				if ((err = DAQmxBaseReadCounterF64(
+				if ((err = MRPT_DAQmxReadCounterF64(
 					taskHandle,
 					totalSamplesToRead,timeout,
 					&dBuf[0],dBuf.size(),
@@ -643,7 +695,7 @@ void CNationalInstrumentsDAQ::grabbing_thread(TInfoPerTask &ipt)
 	{
 		std::cerr << "[CNationalInstrumentsDAQ::grabbing_thread] Exception:\n" << e.what() << std::endl;
 	}
-#endif //MRPT_HAS_NIDAQMXBASE
+#endif //MRPT_HAS_SOME_NIDAQMX
 
 	ipt.is_closed = true;
 }

@@ -60,7 +60,7 @@ void Test_NIDAQ()
 	task.has_ai = true;
 	task.ai.physicalChannel = "Dev1/ai0:7";
 	task.ai.physicalChannelCount = 8; // Must be the number of channels encoded in the "physicalChannel" string.
-	task.ai.terminalConfig  = "DAQmx_Val_NRSE";
+	task.ai.terminalConfig  = "DAQmx_Val_RSE";
 	task.ai.minVal = -10;
 	task.ai.maxVal =  10;
 
@@ -76,12 +76,12 @@ void Test_NIDAQ()
 
 	while (!mrpt::system::os::kbhit())
 	{
-		bool                thereIsObservation,hardError;
-		CObservationRawDAQ  obs;
+		std::vector<mrpt::slam::CObservationRawDAQPtr> readObs;
+		bool hardError;
 
 		try
 		{
-			daq.readFromDAQ( thereIsObservation, obs, hardError );
+			daq.readFromDAQ( readObs, hardError );
 		}
 		catch (std::exception &e)
 		{
@@ -92,16 +92,21 @@ void Test_NIDAQ()
 		if (hardError)
 			printf("[TEST] Hardware error=true!!\n");
 
-		if (thereIsObservation)
+		if (!readObs.empty())
 		{
-			size_t nSamplPerChan = obs.AIN_double.size() / obs.AIN_channel_count;
-			cout << "Read " << nSamplPerChan << " samples. a[0]=" << obs.AIN_double[0] << endl;
+			// Look for analog readings:
+			for (size_t i=0;i<readObs.size();i++)
+			{
+				if (readObs[i]->AIN_double.empty())
+					continue; // Skip
+
+				const size_t nSamplPerChan = readObs[i]->AIN_double.size() / readObs[i]->AIN_channel_count;
+				cout << "Read " << nSamplPerChan << " samples. a[0]=" << readObs[i]->AIN_double[0] << endl;
+			}
 		}
 
 		mrpt::system::sleep(1);
 	};
-
-
 }
 
 int main()

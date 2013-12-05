@@ -48,9 +48,10 @@ namespace mrpt
 
 	namespace hwdrivers
 	{
-		/** An interface to read from data acquisition boards compatible with National Instruments "DAQmx Base".
+		/** An interface to read from data acquisition boards compatible with National Instruments "DAQmx Base" or "DAQmx".
 		* Refer to DAQmx Base C API reference online to learn more on the concepts of "channels", "tasks" (which in this MRPT class 
 		*  are mapped to independent grabbing threads), etc. 
+		* If both DAQmx and DAQmxBase are installed in the system, DAQmx will be used. This class API isolate the user from the usage of one or another specific library.
 		*
 		*  This class can be used as a sensor from the application "rawlog-grabber", or directly as a C++ class from a user program.
 		*  Refer to the example:  [MRPT]/samples/NIDAQ_test
