@@ -411,6 +411,10 @@ void  CNationalInstrumentsDAQ::initialize()
 			// Create pipe:
 			mrpt::synch::CPipe::createPipe(ipt.read_pipe, ipt.write_pipe);
 
+			// Add a large timeout, just in case the writing thread dies unexpectedly so the reader doesn't hang on:
+			ipt.read_pipe->timeout_read_start_us   = 100000; // 100ms
+			ipt.read_pipe->timeout_read_between_us = 100000; // 100ms
+
 			MRPT_DAQmx_ErrChk (DAQmxBaseStartTask(taskHandle));
 
 			ipt.hThread = mrpt::system::createThreadFromObjectMethodRef<CNationalInstrumentsDAQ,TInfoPerTask>(this, &CNationalInstrumentsDAQ::grabbing_thread, ipt);
@@ -512,7 +516,6 @@ void  CNationalInstrumentsDAQ::readFromDAQ(
 
 	for (list<TInfoPerTask>::iterator it=m_running_tasks.begin();it!=m_running_tasks.end();++it)
 	{
-		MRPT_TODO("Timeout!")
 		it->read_pipe->ReadObject(&tmp_obs);
 
 		if (true) {
