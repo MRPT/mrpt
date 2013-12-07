@@ -417,7 +417,7 @@ void  CReactiveNavigationSystem3D::performNavigationStep()
 		{
 			m_robot.stop();
 			m_navigationState = IDLE;
-			printf_debug("Navigation target was reached!\n" );
+            if (m_enableConsoleOutput) printf_debug("Navigation target was reached!\n" );
 
 			if (!navigationEndEventSent)
 			{
@@ -582,26 +582,32 @@ void  CReactiveNavigationSystem3D::performNavigationStep()
 		timerForExecutionPeriod.Tic();
 
 
-		printf_debug("CMD:%.02lfm/s,%.02lfd/s \t",
+        if (m_enableConsoleOutput)
+        {
+            printf_debug("CMD:%.02lfm/s,%.02lfd/s \t",
 		           (double)new_cmd_v,
 		           (double)RAD2DEG( new_cmd_w ) );
 
-		printf_debug(" T=%.01lfms Exec:%.01lfms|%.01lfms \t",
+            printf_debug(" T=%.01lfms Exec:%.01lfms|%.01lfms \t",
 		           1000.0*meanExecutionPeriod,
 		           1000.0*meanExecutionTime,
 		           1000.0*meanTotalExecutionTime );
+        }
 
 		if (!skipNormalReactiveNavigation)
 		{
-			printf_debug("E=%.01lf ", (double)selectedHolonomicMovement.evaluation );
-			printf_debug("PTG#%i ", nSelectedPTG);
+            if (m_enableConsoleOutput)
+            {
+                printf_debug("E=%.01lf ", (double)selectedHolonomicMovement.evaluation );
+                printf_debug("PTG#%i ", nSelectedPTG);
+            }
 		}
 		else
 		{
 			nSelectedPTG = 0;
 		}
 
-		printf_debug("\n");
+        if (m_enableConsoleOutput) printf_debug("\n");
 
 
 		// ---------------------------------------
