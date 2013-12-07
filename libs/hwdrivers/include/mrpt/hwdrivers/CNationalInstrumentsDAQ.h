@@ -64,12 +64,15 @@ namespace mrpt
 		*
 		*   - A0[0] A1[0] A2[0] A3[0]  A0[1] A1[1] A2[1] A3[1]  A0[2] A1[2] A2[2] A3[2] ...
 		*
+        *  The sensor label (field "m_sensorLabel") of each grabbed observation will be the concatenation of this class sensor label,
+        *  a dot (".") and the task label (default="task###", with ### the task index).
+        *
 		*  \code
 		*  PARAMETERS IN THE ".INI"-LIKE CONFIGURATION STRINGS:
 		* -------------------------------------------------------
 		*   [supplied_section_name]
 		* ; Number of tasks (each will run in a thread). Task indices are 0-based.
-		* ; (Parameters below follow NI's DAQmx API notation)
+        * ; (Parameters below follow NIs DAQmx API notation)
 		* num_tasks  = 1
 		* 
 		* ; Channels, separated by commas if more than one.
@@ -83,6 +86,7 @@ namespace mrpt
 		* ;  - "co_pulses": Output digital pulses (WARNING: NI says "a task can include only one counter output channel")
 		* ;
 		* task0.channels = ai  //, ao, di, do, ci_ang_encoder
+        * ;task0.taskLabel= MY_LABEL     // Optional textual label to build the CObservation sensor label (default: task number)
 		* task0.samplesPerSecond = 1000 // Samples per second. Continuous (infinite) sampling is assumed.
 		* task0.samplesPerChannelToRead = 1000  // The number of samples to grab at once from each channel.
 		* ;task0.bufferSamplesPerChannel = 200000 // Increase if you have errors about " Onboard device memory overflow.(...)"
@@ -161,16 +165,19 @@ namespace mrpt
 		* See also: 
 		*  - [MRPT]/samples/NIDAQ_test 
 		*  - Sample .ini files for rawlog-grabber in [MRPT]/share/mrpt/config_files/rawlog-grabber/
-		*
+        *  - NI DAQmx C reference: http://others-help.mrpt.org/ni-daqmx_c_reference_help/
+        *  - NI DAQmx Base 3.x C reference: http://others-help.mrpt.org/ni-daqmx_base_3.x_c_function_reference/
+        *
 		* DAQmx Base Installation
 		* ------------------------
 		* Go to http://ni.com and download the "DAQmx Base" package for your OS. Install following NI's instructions. 
 		* As of 2013, the latest version is 3.7. 
 		*
-		* \note This class requires compiling MRPT with support for "NI DAQmx Base". While compiling MRPT, 
-		*        check the "MRPT_HAS_NI_DAQmxBASE" option and correctly set the "NI_DAQmxBASE_*" variables. 
+        * \note This class requires compiling MRPT with support for "NI DAQmx" or "NI DAQmx Base". While compiling MRPT,
+        *        check the "MRPT_HAS_NI_DAQmx"/"MRPT_HAS_NI_DAQmxBASE" option and correctly set the new variables to
+        *        the library include directory and library file.
 		*
-		* \note As of 2013, NI seems not to support compiling 64bit programs, so you can only compile MRPT in 32bits if you need this class.
+        * \note As of 2013, NI seems not to support compiling 64bit programs, so you can must build MRPT for 32bits if you need this class.
 		*
 		* \ingroup mrpt_hwdrivers_grp
 		*/
@@ -221,9 +228,9 @@ namespace mrpt
 
                 double   samplesPerSecond;   //!< Sample clock config: samples per second. Continuous (infinite) sampling is assumed.
                 std::string sampleClkSource; //!< Sample clock source: may be empty (default value) for some channels.
-
 				uint32_t bufferSamplesPerChannel; //!< (Default=0) From NI's docs: The number of samples the buffer can hold for each channel in the task. Zero indicates no buffer should be allocated. Use a buffer size of 0 to perform a hardware-timed operation without using a buffer.
 				uint32_t samplesPerChannelToRead; //!< (Default=1000) The number of samples to grab at once from each channel.
+                std::string taskLabel;            //!< (Default="task###")
 
 				struct HWDRIVERS_IMPEXP desc_ai_t
 				{

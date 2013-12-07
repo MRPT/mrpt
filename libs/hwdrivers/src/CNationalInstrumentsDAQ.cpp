@@ -193,6 +193,8 @@ void  CNationalInstrumentsDAQ::loadConfig_sensorSpecific(
 		MY_LOAD_HERE_CONFIG_VAR_NO_DEFAULT( sTask+string(".samplesPerChannelToRead"), double, t.samplesPerChannelToRead, cfg,sect)
         MY_LOAD_HERE_CONFIG_VAR( sTask+string(".sampleClkSource"), string, t.sampleClkSource, cfg,sect)
         MY_LOAD_HERE_CONFIG_VAR( sTask+string(".bufferSamplesPerChannel"), double, t.bufferSamplesPerChannel, cfg,sect)
+        MY_LOAD_HERE_CONFIG_VAR( sTask+string(".taskLabel"), string, sTask, cfg,sect)
+
 
 		for (size_t j=0;j<lstStrChanns.size();j++)
 		{
@@ -644,7 +646,7 @@ void CNationalInstrumentsDAQ::grabbing_thread(TInfoPerTask &ipt)
 			// Common stuff:
 			obs.timestamp = mrpt::system::now();
 			obs.sample_rate = ipt.task.samplesPerSecond;
-			obs.sensorLabel = m_sensorLabel;
+            obs.sensorLabel = m_sensorLabel+string(".")+ipt.task.taskLabel;
 
 			bool there_are_data = false; // At least one channel?
 
