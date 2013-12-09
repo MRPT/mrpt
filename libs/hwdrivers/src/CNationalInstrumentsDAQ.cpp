@@ -193,8 +193,7 @@ void  CNationalInstrumentsDAQ::loadConfig_sensorSpecific(
 		MY_LOAD_HERE_CONFIG_VAR_NO_DEFAULT( sTask+string(".samplesPerChannelToRead"), double, t.samplesPerChannelToRead, cfg,sect)
         MY_LOAD_HERE_CONFIG_VAR( sTask+string(".sampleClkSource"), string, t.sampleClkSource, cfg,sect)
         MY_LOAD_HERE_CONFIG_VAR( sTask+string(".bufferSamplesPerChannel"), double, t.bufferSamplesPerChannel, cfg,sect)
-        MY_LOAD_HERE_CONFIG_VAR( sTask+string(".taskLabel"), string, sTask, cfg,sect)
-
+		cfg.read_string(sect,sTask+string(".taskLabel"), sTask, false );
 
 		for (size_t j=0;j<lstStrChanns.size();j++)
 		{
