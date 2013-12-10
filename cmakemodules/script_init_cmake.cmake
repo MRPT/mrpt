@@ -1,8 +1,9 @@
-# --------------------------------------------------------------
-# Indicate CMake 2.7 and above that we don't want to mix relative
-#  and absolute paths in linker lib lists.
-# Run "cmake --help-policy CMP0003" for more information.
-# --------------------------------------------------------------
 if(COMMAND cmake_policy)
-      cmake_policy(SET CMP0003 NEW)
+	# We don't want to mix relative and absolute paths in linker lib lists.
+	cmake_policy(SET CMP0003 NEW) 
+	
+	# Allow using the LOCATION target property.
+	if(NOT "${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION}" LESS 3.0)
+		cmake_policy(SET CMP0026 OLD)
+	endif(NOT "${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION}" LESS 3.0)
 endif(COMMAND cmake_policy)
