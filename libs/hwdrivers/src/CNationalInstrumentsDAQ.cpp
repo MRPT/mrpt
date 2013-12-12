@@ -691,7 +691,7 @@ void CNationalInstrumentsDAQ::grabbing_thread(TInfoPerTask &ipt)
 					ASSERT_EQUAL_(totalSamplesToRead,pointsReadPerChan)
 					obs.CNTRIN_double = dBuf;
 					there_are_data = true;
-					if (m_verbose) cout << "[CNationalInstrumentsDAQ::grabbing_thread] " << pointsReadPerChan << " counter samples read.\n";
+					if (m_verbose && !obs.CNTRIN_double.empty()) cout << "[CNationalInstrumentsDAQ::grabbing_thread] " << pointsReadPerChan << " counter samples read ([0]="<< obs.CNTRIN_double[0] <<").\n";
 				}
 			} // end COUNTERS
 
