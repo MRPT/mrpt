@@ -23,6 +23,7 @@ ADD_EXECUTABLE(rawlog-edit
 	rawlog-edit_externalize.cpp
 	rawlog-edit_filters.cpp
 	rawlog-edit_cuts.cpp
+	rawlog-edit_rawdaq.cpp
 	rawlog-edit_sensor-poses.cpp
 	rawlog-edit_camera-params.cpp
 	rawlog-edit_list-images.cpp
