@@ -577,7 +577,7 @@ void  CNationalInstrumentsDAQ::readFromDAQ(
 			{
 				it->read_pipe->ReadObject(&tmp_obs);
 				it->new_data_available=false;  MRPT_TODO("Any better synch method?")
-				
+
 				// Yes, valid block of samples was adquired:
 				outObservations.push_back(CObservationRawDAQPtr(new CObservationRawDAQ(tmp_obs)));
 			}
@@ -700,6 +700,7 @@ void CNationalInstrumentsDAQ::grabbing_thread(TInfoPerTask &ipt)
 			{
 				ipt.new_data_available = true;
 				ipt.write_pipe->WriteObject(&obs);
+				mrpt::system::sleep(15); // This seems to be needed to allow all objs to be sent to the recv thread
 			}
 
 		} // end of main thread loop
