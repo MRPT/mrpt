@@ -85,6 +85,7 @@ namespace pbmap {
       polygonContourPtr(new pcl::PointCloud<pcl::PointXYZRGBA>),
       planePointCloudPtr(new pcl::PointCloud<pcl::PointXYZRGBA>)
     {
+//      vector< vector<int> > vec(4, vector<int>(4));
     }
 
     /*!
@@ -95,11 +96,14 @@ namespace pbmap {
     /**!
      * Calculate the plane's convex hull with the monotone chain algorithm.
     */
+//    void calcConvexHull(pcl::PointCloud<pcl::PointXYZRGBA>::Ptr &pointCloud );
     void calcConvexHull(pcl::PointCloud<pcl::PointXYZRGBA>::Ptr &pointCloud, std::vector<size_t> &indices = DEFAULT_VECTOR );
 
+    void calcConvexHullandParams(pcl::PointCloud<pcl::PointXYZRGBA>::Ptr &pointCloud, std::vector<size_t> &indices = DEFAULT_VECTOR );
+
     /** \brief Compute the area of a 2D planar polygon patch - using a given normal
-      * \param polygonContourPtr the point cloud (planar)
-      * \param normal the plane normal
+//      * \param polygonContourPtr the point cloud (planar)
+//      * \param normal the plane normal
       */
     float compute2DPolygonalArea (/*pcl::PointCloud<pcl::PointXYZRGBA>::Ptr &polygonContourPtr, Vector<3> &normal*/);
 
@@ -120,10 +124,17 @@ namespace pbmap {
      * If the planes are the same they are merged in this and the function returns true. Otherwise it returns false.*/
     bool isSamePlane(Plane &plane, const float &cosAngleThreshold, const float &distThreshold, const float &proxThreshold);
 
+    bool isSamePlane(Eigen::Matrix4f &Rt, Plane &plane_, const float &cosAngleThreshold, const float &distThreshold, const float &proxThreshold);
+
+    bool hasSimilarDominantColor(Plane &plane, const float colorThreshold);
+
     /*! Merge the two input patches into "updatePlane".
      *  Recalculate center, normal vector, area, inlier points (filtered), convex hull, etc.
      */
     void mergePlane(Plane &plane);
+    void mergePlane2(Plane &plane);// Adaptation for RGBD360
+
+    void transform(Eigen::Matrix4f &Rt);
 
 
     /**!
@@ -134,13 +145,19 @@ namespace pbmap {
     unsigned semanticGroup;
     std::set<unsigned> nearbyPlanes;
     std::map<unsigned,unsigned> neighborPlanes;
+
+    /*!Labels to store semantic attributes*/
     std::string label;
+    std::string label_object;
+    std::string label_context;
 
     /**!
      *  Geometric description
     */
     Eigen::Vector3f v3center;
     Eigen::Vector3f v3normal;
+    float d;
+    float curvature;
     Eigen::Vector3f v3PpalDir;
     float elongation; // This is the reatio between the lengths of the plane in the two principal directions
     float areaVoxels;
@@ -153,12 +170,25 @@ namespace pbmap {
      *  Radiometric description
     */
     Eigen::Vector3f v3colorNrgb;
+    float dominantIntensity;
+    bool bDominantColor;
     Eigen::Vector3f v3colorNrgbDev;
+
+    Eigen::Vector3f v3colorC1C2C3; // Color paper
+    std::vector<float> hist_H; // Normalized, Saturated Hue histogram (including 2 bins for black and white)
+
+    std::vector<double> prog_area;
+    std::vector<double> prog_elongation; // This is the reatio between the lengths of the plane in the two principal directions
+    std::vector<Eigen::Vector3f> prog_C1C2C3;
+    std::vector<Eigen::Vector3f> prog_Nrgb;
+    std::vector<float> prog_intensity;
+    std::vector<std::vector<float> > prog_hist_H;
 
     /**!
      *  Convex Hull
     */
 //    pcl::PointCloud<pcl::PointXYZRGBA>::Ptr contourPtr;
+    std::vector<int32_t> inliers;
     pcl::PointCloud<pcl::PointXYZRGBA>::Ptr polygonContourPtr;
     pcl::PointCloud<pcl::PointXYZRGBA>::Ptr outerPolygonPtr; // This is going to be deprecated
     pcl::PointCloud<pcl::PointXYZRGBA>::Ptr planePointCloudPtr; // This is going to be deprecated
@@ -167,17 +197,34 @@ namespace pbmap {
      * Calculate plane's main color using "MeanShift" method
      */
     void calcMainColor();
-
+    void calcMainColor2();
+    void calcPlaneHistH();
 
    private:
     /*!
-     * Calculate plane's main color in C1C2C3 representation
+     * Calculate plane's main color in normalized rgb space
      */
     void getPlaneNrgb();
-
     std::vector<float> r;
     std::vector<float> g;
     std::vector<float> b;
+    std::vector<float> intensity;
+
+    // Color paper
+    /*!
+     * Calculate plane's main color in C1C2C3 representation
+     */
+    std::vector<float> c1;
+    std::vector<float> c2;
+    std::vector<float> c3;
+    void getPlaneC1C2C3();
+
+    /*!
+     * Calculate plane's main color in HSV representation
+     */
+//    vector<float> H;
+//    vector<float> S;
+//    vector<vector<float> > HSV;
 
   };
 

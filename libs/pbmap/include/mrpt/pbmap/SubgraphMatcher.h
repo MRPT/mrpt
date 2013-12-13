@@ -68,16 +68,21 @@ namespace pbmap {
 
     /*!Check if the two input planes fulfill a set of geometric constraints, and so, if they are candidates to be the same plane.*/
     bool evalUnaryConstraints(Plane &plane1, Plane &plane2, PbMap &trgPbMap, bool useStructure = false);
+    bool evalUnaryConstraints2D(Plane &plane1, Plane &plane2, PbMap &trgPbMap, bool useStructure = false);
+    bool evalUnaryConstraintsOdometry(Plane &plane1, Plane &plane2, PbMap &trgPbMap, bool useStructure = false);
+    bool evalUnaryConstraintsOdometry2D(Plane &plane1, Plane &plane2, PbMap &trgPbMap, bool useStructure = false);
 
     /*!Check if the two pair of planes plane1-plane2 ans planeA-planeB fulfill the same geometric relationship, and so,
     if they are candidates to be the same planes.*/
     bool evalBinaryConstraints(Plane &plane1, Plane &plane2, Plane &planeA, Plane &planeB);
+    bool evalBinaryConstraintsOdometry(Plane &plane1, Plane &plane2, Plane &planeA, Plane &planeB);
 
     /*!List of combinations that have been explored in the interpretation tree.*/  // Cambiar nombre
     std::vector<std::map<unsigned,unsigned> > alreadyExplored;
 
     /*!Find the best combination of planes correspondences given two subgraphs represeting local neighborhoods of planes.*/  // Cambiar nombre o Quitar!
     void exploreSubgraphTreeR(std::set<unsigned> &evalRef, std::set<unsigned> &evalCheck, std::map<unsigned, unsigned> &matched);
+    void exploreSubgraphTreeR_Area(std::set<unsigned> &evalRef, std::set<unsigned> &evalCheck, std::map<unsigned, unsigned> &matched);
 
     /*!Set source (current) subgraph.*/
     void inline setSourceSubgraph(Subgraph &subgSrc){subgraphSrc = &subgSrc;}
@@ -86,7 +91,8 @@ namespace pbmap {
     void inline setTargetSubgraph(Subgraph &subgTrg){subgraphTrg = &subgTrg;}
 
     /*!Returns a list with plane matches from subgraphSrc to subgraphTrg.*/
-    std::map<unsigned,unsigned> compareSubgraphs(Subgraph &subgraphSource, Subgraph &subgraphTarget);
+//    std::map<unsigned,unsigned> compareSubgraphs(Subgraph &subgraphSource, Subgraph &subgraphTarget);
+    std::map<unsigned,unsigned> compareSubgraphs(Subgraph &subgraphSource, Subgraph &subgraphTarget, const int option=0); // Options are
 
     /*!One subgraph to be matched.*/
     Subgraph *subgraphSrc;
@@ -95,10 +101,27 @@ namespace pbmap {
     Subgraph *subgraphTrg;
 
     int nCheckConditions;
+
+    int totalUnary;
+    int semanticPair;
+    int rejectSemantic;
+
+    /*!Return the total area of the matched planes in the frame source.*/
+    float calcAreaMatched(std::map<unsigned,unsigned> &matched_planes);
+
+//    /*!Set of thresholds for PbMap matching.*/
+//    config_heuristics configLocaliser;
+
    private:
 
     /*!List of planes correspondences.*/
     std::map<unsigned, unsigned> winnerMatch;
+    float areaWinnerMatch;
+
+    /*!Hash table for unary constraints.*/
+    std::vector<std::vector<int8_t> > hashUnaryConstraints;
+
+    float calcAreaUnmatched(std::set<unsigned> &unmatched_planes);
 
   };
 

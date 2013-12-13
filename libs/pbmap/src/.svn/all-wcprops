@@ -1,0 +1,65 @@
+K 25
+svn:wc:ra_dav:version-url
+V 39
+/svn/!svn/ver/3391/trunk/libs/pbmap/src
+END
+PbMapLocaliser.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 58
+/svn/!svn/ver/3391/trunk/libs/pbmap/src/PbMapLocaliser.cpp
+END
+Plane.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 49
+/svn/!svn/ver/3394/trunk/libs/pbmap/src/Plane.cpp
+END
+PbMapMaker.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 54
+/svn/!svn/ver/3394/trunk/libs/pbmap/src/PbMapMaker.cpp
+END
+PbMap.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 49
+/svn/!svn/ver/3391/trunk/libs/pbmap/src/PbMap.cpp
+END
+SubgraphMatcher.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 59
+/svn/!svn/ver/3391/trunk/libs/pbmap/src/SubgraphMatcher.cpp
+END
+ConsistencyTest.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 59
+/svn/!svn/ver/3391/trunk/libs/pbmap/src/ConsistencyTest.cpp
+END
+precomp_hdr.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 55
+/svn/!svn/ver/3230/trunk/libs/pbmap/src/precomp_hdr.cpp
+END
+Miscellaneous.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/svn/!svn/ver/3262/trunk/libs/pbmap/src/Miscellaneous.cpp
+END
+PlaneInferredInfo.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 61
+/svn/!svn/ver/3391/trunk/libs/pbmap/src/PlaneInferredInfo.cpp
+END
+registerAllClasses.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 62
+/svn/!svn/ver/3233/trunk/libs/pbmap/src/registerAllClasses.cpp
+END

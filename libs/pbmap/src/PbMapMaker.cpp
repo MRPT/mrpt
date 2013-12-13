@@ -60,13 +60,30 @@
 
 #include <iostream>
 
-//#define _VERBOSE 1
+//#define _VERBOSE 0
+#define WATCH_UNARY 0
+#define WATCH_BINARY 0
+#define WATCH_COLOR 1
 
 using namespace std;
 using namespace Eigen;
 using namespace mrpt::pbmap;
 
 mrpt::synch::CCriticalSection CS_visualize;
+
+// Bhattacharyya histogram distance function
+double BhattacharyyaDist(std::vector<float> &hist1, std::vector<float> &hist2)
+{
+assert(hist1.size() == hist2.size());
+double BhattachDist;
+double BhattachDist_aux = 0.0;
+for(unsigned i=0; i < hist1.size(); i++)
+  BhattachDist_aux += sqrt(hist1[i]*hist2[i]);
+
+BhattachDist = sqrt(1 - BhattachDist_aux);
+
+return BhattachDist;
+}
 
 /*!Some parameters to specify input/output and some thresholds.*/
 struct config_pbmap
@@ -76,6 +93,8 @@ struct config_pbmap
   std::string rawlog_path;
   bool record_rawlog;
   float color_threshold;
+  float intensity_threshold;
+  float hue_threshold;
 
   // [plane_segmentation]
   float dist_threshold; // Maximum distance to the plane between neighbor 3D-points
@@ -117,15 +136,18 @@ void readConfigFile(const string &config_file_name)
 
   // map_construction
   configPbMap.use_color = config_file.read_bool("map_construction","use_color",false);
+  configPbMap.color_threshold = config_file.read_float("map_construction","color_threshold",0.09);
+  configPbMap.intensity_threshold = config_file.read_float("map_construction","intensity_threshold",255.0);
+  configPbMap.hue_threshold = config_file.read_float("unary","hue_threshold",0.25);
   configPbMap.proximity_neighbor_planes = config_file.read_float("map_construction","proximity_neighbor_planes",1.0);
-  configPbMap.graph_mode = config_file.read_int("map_construction","graph_mode",0);
+  configPbMap.graph_mode = config_file.read_int("map_construction","graph_mode",1);
   configPbMap.max_cos_normal = config_file.read_float("map_construction","max_cos_normal",0.9848,true);
   configPbMap.max_dist_center_plane = config_file.read_float("map_construction","max_dist_center_plane",0.1,true);
   configPbMap.proximity_threshold = config_file.read_float("map_construction","proximity_threshold",0.15);
 
   // [semantics]
   configPbMap.inferStructure = config_file.read_bool("semantics","inferStructure",true);
-  configPbMap.makeClusters = config_file.read_bool("semantics","makeClusters",true);
+  configPbMap.makeClusters = config_file.read_bool("semantics","makeCovisibilityClusters",false);
 //  configPbMap.path_prev_pbmap = config_file.read_string("localisation","path_prev_pbmap","",true);
 
   // [localisation]
@@ -150,8 +172,6 @@ PbMapMaker::PbMapMaker(const string &config_file) :
     m_pbmaker_must_stop(false),
     m_pbmaker_finished(false)
 {
-//  GVars3::GUI.RegisterCommand("SavePbMap", GUICommandCallBack, this);
-
   // Load parameters
   ASSERT_FILE_EXISTS_(config_file)
   readConfigFile(config_file);
@@ -165,6 +185,16 @@ PbMapMaker::PbMapMaker(const string &config_file) :
     clusterize = new SemanticClustering(mPbMap);
 
   pbmaker_hd = mrpt::system::createThreadFromObjectMethod(this,&PbMapMaker::run);
+
+
+  // Unary
+  rejectAreaF = 0, acceptAreaF = 0, rejectAreaT = 0, acceptAreaT = 0;
+  rejectElongF = 0, acceptElongF = 0, rejectElongT = 0, acceptElongT = 0;
+  rejectC1C2C3_F = 0, acceptC1C2C3_F = 0, rejectC1C2C3_T = 0, acceptC1C2C3_T = 0;
+  rejectNrgb_F = 0, acceptNrgb_F = 0, rejectNrgb_T = 0, acceptNrgb_T = 0;
+  rejectIntensity_F = 0, acceptIntensity_F = 0, rejectIntensity_T = 0, acceptIntensity_T = 0;
+  rejectColor_F = 0, acceptColor_F = 0, rejectColor_T = 0, acceptColor_T = 0;
+  rejectHistH_F = 0, acceptHistH_F = 0, rejectHistH_T = 0, acceptHistH_T = 0;
 }
 
 
@@ -251,11 +281,256 @@ void PbMapMaker::checkProximity(Plane &plane, float proximity)
   }
 }
 
+////  double area_THRESHOLD=10.0;
+//  double area_THRESHOLD_inv=1/configPbMap.area_THRESHOLD;
+////  double elongation_THRESHOLD=1.15;
+//  double elongation_THRESHOLD_inv=1/configPbMap.elongation_THRESHOLD;
+////  double color_threshold=0.3;
+//double colorDev_THRESHOLD;
+//  double dist_THRESHOLD = 1.6;      double dist_THRESHOLD_inv = 1/dist_THRESHOLD;
+////  double dist_THRESHOLDFull = 1.2;  double dist_THRESHOLDFull_inv = 1/dist_THRESHOLDFull;
+//  double height_THRESHOLD=0.5;
+//  double height_THRESHOLD_parallel=0.03;
+//  double normal_THRESHOLD=1.0;
+//  double ppaldir_normal_THRESHOLD=8;
+//
+//  double singleC_THRESHOLD = 0.2;
+//  double elong_rely_ppal_THRESHOLD=1.5;
+//  double elong_rely_ppal_THRESHOLD_tight=1.3;
+
+void PbMapMaker::watchProperties(set<unsigned> &observedPlanes, Plane &observedPlane)
+{
+cout << "PbMapMaker::watchProperties..." << configPbMap.color_threshold << " " << configPbMap.intensity_threshold << " " << configPbMap.hue_threshold << "\n";
+  // Watch properties
+//  double tCondition;
+//  mrpt::utils::CTicTac clock;
+//  colorDev_THRESHOLD=configPbMap.color_threshold/10;
+
+  if(observedPlane.numObservations > 2)
+  {
+    // Previous instanes of same plane
+    for(size_t i = 0; i < observedPlane.prog_Nrgb.size(); i++)
+    {
+    #if WATCH_UNARY
+//    tCondition = pcl::getTime();
+//    clock.Tic();
+      // Check area unary
+      double rel_areas = observedPlane.area / observedPlane.prog_area[i];
+      if( rel_areas < area_THRESHOLD_inv || rel_areas > configPbMap.area_THRESHOLD )
+        rejectAreaT++;
+      else
+        acceptAreaT++;
+//    timeCompareArea.push_back( (pcl::getTime() - tCondition)*1e6 );
+//    timeCompareArea.push_back( clock.Tac()*1e6 );
+
+//    tCondition = pcl::getTime();
+      // Check ratio unary
+      double rel_ratios = observedPlane.elongation / observedPlane.prog_elongation[i];
+      if( rel_ratios < elongation_THRESHOLD_inv || rel_ratios > configPbMap.elongation_THRESHOLD )
+        rejectElongT++;
+      else
+        acceptElongT++;
+//    timeCompareElong.push_back( (pcl::getTime() - tCondition)*1e6 );
+    #endif
+
+    #if WATCH_COLOR
+//    tCondition = pcl::getTime();
+      // Check colorC1C2C3 unary
+      double dif_C1C2C3 = norm(observedPlane.v3colorC1C2C3 - observedPlane.prog_C1C2C3[i]);
+  //    cout << "color1 " << observedPlane.v3colorC1C2C3 << " color2 " << prevPlane.v3colorC1C2C3 << endl;
+      if( dif_C1C2C3 > configPbMap.color_threshold )
+        rejectC1C2C3_T++;
+      else
+        acceptC1C2C3_T++;
+//    timeCompareC1C2C3.push_back( (pcl::getTime() - tCondition)*1e6 );
+
+      double dif_Nrgb = norm(observedPlane.v3colorNrgb - observedPlane.prog_Nrgb[i]);
+  //    cout << "color1 " << observedPlane.v3colorNrgb << " color2 " << prevPlane.v3colorNrgb << endl;
+//      if( dif_Nrgb > configPbMap.color_threshold || fabs(observedPlane.dominantIntensity - observedPlane.prog_intensity[i]) > 255)
+      if( dif_Nrgb > configPbMap.color_threshold)
+        rejectNrgb_T++;
+      else
+        acceptNrgb_T++;
+//    timeCompareNrgb.push_back( (pcl::getTime() - tCondition)*1e6 );
+
+      if( fabs(observedPlane.dominantIntensity - observedPlane.prog_intensity[i]) > configPbMap.intensity_threshold)
+        rejectIntensity_T++;
+      else
+        acceptIntensity_T++;
+
+      if( fabs(observedPlane.dominantIntensity - observedPlane.prog_intensity[i]) > configPbMap.intensity_threshold ||
+          dif_Nrgb > configPbMap.color_threshold)
+        rejectColor_T++;
+      else
+        acceptColor_T++;
+
+      // Hue histogram
+      double hist_dist = BhattacharyyaDist(observedPlane.hist_H, observedPlane.prog_hist_H[i]);
+      if( hist_dist > configPbMap.hue_threshold )
+        rejectHistH_T++;
+      else
+        acceptHistH_T++;
+    #endif
+    }
+
+//cout << "Watch rejection. Planes " << mPbMap.vPlanes.size() << "\n";
+    // Get unary rejection rate
+    for(size_t i = 0; i < mPbMap.vPlanes.size(); i++)
+    {
+      if(i == observedPlane.id)
+        continue;
+
+      Plane &prevPlane = mPbMap.vPlanes[i];
+//    cout << "color prev plane " << prevPlane.v3colorNrgb.transpose() << " " << prevPlane.dominantIntensity << " " << prevPlane.bDominantColor << endl;
+
+    #if WATCH_UNARY
+//    tCondition = pcl::getTime();
+//    clock.Tic();
+      double rel_areas = observedPlane.area / prevPlane.area;
+      if( rel_areas < area_THRESHOLD_inv || rel_areas > configPbMap.area_THRESHOLD )
+        rejectAreaF++;
+      else
+        acceptAreaF++;
+//    timeCompareArea.push_back( (pcl::getTime() - tCondition)*1e6 );
+//    timeCompareArea.push_back( clock.Tac()*1e6 );
+
+//    tCondition = pcl::getTime();
+      double rel_ratios = observedPlane.elongation / prevPlane.elongation;
+      if( rel_ratios < elongation_THRESHOLD_inv || rel_ratios > configPbMap.elongation_THRESHOLD )
+        rejectElongF++;
+      else
+        acceptElongF++;
+//    timeCompareElong.push_back( (pcl::getTime() - tCondition)*1e6 );
+    #endif
+
+    #if WATCH_COLOR
+//    tCondition = pcl::getTime();
+      double dif_C1C2C3 = norm(observedPlane.v3colorC1C2C3 - prevPlane.v3colorC1C2C3);
+//          cout << "color1 " << observedPlane.v3colorC1C2C3 << " color2 " << prevPlane.v3colorC1C2C3 << endl;
+      if( dif_C1C2C3 > configPbMap.color_threshold )
+        rejectC1C2C3_F++;
+      else
+        acceptC1C2C3_F++;
+//    timeCompareC1C2C3.push_back( (pcl::getTime() - tCondition)*1e6 );
+
+//      // Nrgb
+      double dif_Nrgb = norm(observedPlane.v3colorNrgb - prevPlane.v3colorNrgb);
+//          cout << "color1 " << observedPlane.v3colorNrgb << " color2 " << prevPlane.v3colorNrgb << endl;
+//      if( dif_Nrgb > configPbMap.color_threshold || fabs(observedPlane.dominantIntensity - prevPlane.dominantIntensity) > 255)
+      if( dif_Nrgb > configPbMap.color_threshold)
+        rejectNrgb_F++;
+      else
+        acceptNrgb_F++;
+//    timeCompareNrgb.push_back( (pcl::getTime() - tCondition)*1e6 );
+
+//cout << "intensity conditions\n";
+//cout << "   elements " << observedPlane.dominantIntensity <<" " << prevPlane.dominantIntensity << " " << configPbMap.intensity_threshold;
+//cout << " " << rejectIntensity_F << " " << acceptIntensity_F << endl;
+
+      if( fabs(observedPlane.dominantIntensity - prevPlane.dominantIntensity) > configPbMap.intensity_threshold)
+        rejectIntensity_F++;
+      else
+        acceptIntensity_F++;
+
+      if( fabs(observedPlane.dominantIntensity - prevPlane.dominantIntensity) > configPbMap.intensity_threshold ||
+          dif_Nrgb > configPbMap.color_threshold)
+        rejectColor_F++;
+      else
+        acceptColor_F++;
+//cout << "rejectColor_F " << rejectColor_F << "acceptColor_F " << acceptColor_F << endl;
+
+      // Hue histogram
+      double hist_dist = BhattacharyyaDist(observedPlane.hist_H, prevPlane.hist_H);
+      if( hist_dist > configPbMap.hue_threshold )
+        rejectHistH_F++;
+      else
+        acceptHistH_F++;
+//cout << "finish reject conditions\n";
+
+    #endif
+    }
+
+  #if WATCH_UNARY
+    observedPlane.prog_area.push_back(observedPlane.area);
+//    observedPlane.prog_v3center.push_back(observedPlane.v3center);
+//    observedPlane.prog_v3normal.push_back(observedPlane.v3normal);
+    observedPlane.prog_elongation.push_back(observedPlane.elongation);
+//    observedPlane.prog_v3PpalDir.push_back(observedPlane.v3PpalDir);
+  #endif
+
+//cout << "Update progression\n";
+
+  #if WATCH_COLOR
+    observedPlane.prog_C1C2C3.push_back(observedPlane.v3colorC1C2C3);
+    observedPlane.prog_Nrgb.push_back(observedPlane.v3colorNrgb);
+    observedPlane.prog_intensity.push_back(observedPlane.dominantIntensity);
+    observedPlane.prog_hist_H.push_back(observedPlane.hist_H);
+  #endif
+  }
+cout << "  ...Watching finished\n";
+}
+
+void PbMapMaker::saveInfoFiles()
+{
+cout << "PbMapMaker::saveInfoFiles(...)\n";
+
+//  cout << "DiscAreaF rate " << rejectAreaF/(rejectAreaF+acceptAreaF) << " meas " << rejectAreaF+acceptAreaF << endl;
+//  cout << "DiscElongF rate " << rejectElongF/(rejectElongF+acceptElongF) << " meas " << rejectElongF+acceptElongF << endl;
+//  cout << "DiscC1C2C3_F rate " << rejectC1C2C3_F/(rejectC1C2C3_F+acceptC1C2C3_F) << " meas " << rejectC1C2C3_F+acceptC1C2C3_F << endl;
+//
+//  cout << "DiscAreaT rate " << rejectAreaT/(rejectAreaT+acceptAreaT) << " meas " << rejectAreaT+acceptAreaT << endl;
+//  cout << "DiscElongT rate " << rejectElongT/(rejectElongT+acceptElongT) << " meas " << rejectElongT+acceptElongT << endl;
+//  cout << "DiscC1C2C3_T rate " << rejectC1C2C3_T/(rejectC1C2C3_T+acceptC1C2C3_T) << " meas " << rejectC1C2C3_T+acceptC1C2C3_T << endl;
+
+  string results_file;
+  ofstream file;
+
+#if WATCH_UNARY
+  results_file = "results/areaRestriction.txt";
+  file.open(results_file.c_str(), ios::app);
+    file << configPbMap.area_THRESHOLD << " " << rejectAreaT << " " << acceptAreaT << " " << rejectAreaF << " " << acceptAreaF << endl;
+  file.close();
+
+  results_file = "results/elongRestriction.txt";
+  file.open(results_file.c_str(), ios::app);
+    file << configPbMap.elongation_THRESHOLD << " " << rejectElongT << " " << acceptElongT << " " << rejectElongF << " " << acceptElongF << endl;
+  file.close();
+#endif
+
+#if WATCH_COLOR
+  results_file = "results/c1c2c3Restriction.txt";
+  file.open(results_file.c_str(), ios::app);
+    file << configPbMap.color_threshold << " " << rejectC1C2C3_T << " " << acceptC1C2C3_T << " " << rejectC1C2C3_F << " " << acceptC1C2C3_F << endl;
+  file.close();
+
+  results_file = "results/NrgbRestriction.txt";
+  file.open(results_file.c_str(), ios::app);
+    file << configPbMap.color_threshold << " " << rejectNrgb_T << " " << acceptNrgb_T << " " << rejectNrgb_F << " " << acceptNrgb_F << endl;
+  file.close();
+
+  results_file = "results/IntensityRestriction.txt";
+  file.open(results_file.c_str(), ios::app);
+    file << configPbMap.intensity_threshold << " " << rejectIntensity_T << " " << acceptIntensity_T << " " << rejectIntensity_F << " " << acceptIntensity_F << endl;
+  file.close();
+
+  results_file = "results/ColorRestriction.txt";
+  file.open(results_file.c_str(), ios::app);
+    file << configPbMap.intensity_threshold << " " << rejectColor_T << " " << acceptColor_T << " " << rejectColor_F << " " << acceptColor_F << endl;
+  file.close();
+
+  results_file = "results/HueRestriction.txt";
+  file.open(results_file.c_str(), ios::app);
+    file << configPbMap.hue_threshold << " " << rejectHistH_T << " " << acceptHistH_T << " " << rejectHistH_F << " " << acceptHistH_F << endl;
+  file.close();
+#endif
+}
 
 void PbMapMaker::detectPlanesCloud( pcl::PointCloud<PointT>::Ptr &pointCloudPtr_arg,
                                     Eigen::Matrix4f &poseKF,
                                     double distThreshold, double angleThreshold, double minInliersF)
 {
+  boost::mutex::scoped_lock updateLock(mtx_pbmap_busy);
+
   unsigned minInliers = minInliersF * pointCloudPtr_arg->size();
 
   #ifdef _VERBOSE
@@ -270,25 +545,24 @@ void PbMapMaker::detectPlanesCloud( pcl::PointCloud<PointT>::Ptr &pointCloudPtr_
 
   { mrpt::synch::CCriticalSectionLocker csl(&CS_visualize);
     *mPbMap.globalMapPtr += *alignedCloudPtr;
+    // Downsample voxel map's point cloud
+    static pcl::VoxelGrid<pcl::PointXYZRGBA> grid;
+    grid.setLeafSize(0.02,0.02,0.02);
+    pcl::PointCloud<pcl::PointXYZRGBA> globalMap;
+    grid.setInputCloud (mPbMap.globalMapPtr);
+    grid.filter (globalMap);
+    mPbMap.globalMapPtr->clear();
+    *mPbMap.globalMapPtr = globalMap;
   } // End CS
-
-  // Downsample voxel map's point cloud
-  static pcl::VoxelGrid<pcl::PointXYZRGBA> grid;
-  grid.setLeafSize(0.02,0.02,0.02);
-  pcl::PointCloud<pcl::PointXYZRGBA> globalMap;
-  grid.setInputCloud (mPbMap.globalMapPtr);
-  grid.filter (globalMap);
-  mPbMap.globalMapPtr->clear();
-  *mPbMap.globalMapPtr = globalMap;
 
   pcl::IntegralImageNormalEstimation<PointT, pcl::Normal> ne;
   ne.setNormalEstimationMethod (ne.COVARIANCE_MATRIX);
   ne.setMaxDepthChangeFactor (0.02f); // For VGA: 0.02f, 10.0f
-  ne.setNormalSmoothingSize (5.0f);
+  ne.setNormalSmoothingSize (10.0f);
   ne.setDepthDependentSmoothing (true);
 
   pcl::OrganizedMultiPlaneSegmentation<PointT, pcl::Normal, pcl::Label> mps;
-  mps.setMinInliers (minInliers);
+  mps.setMinInliers (minInliers); cout << "Params " << minInliers << " " << angleThreshold << " " << distThreshold << endl;
   mps.setAngularThreshold (angleThreshold); // (0.017453 * 2.0) // 3 degrees
   mps.setDistanceThreshold (distThreshold); //2cm
 
@@ -327,6 +601,7 @@ void PbMapMaker::detectPlanesCloud( pcl::PointCloud<PointT>::Ptr &pointCloudPtr_
     Vector3f centroid = regions[i].getCentroid ();
     plane.v3center = compose(poseKF, centroid);
     plane.v3normal = poseKF.block(0,0,3,3) * Vector3f(model_coefficients[i].values[0], model_coefficients[i].values[1], model_coefficients[i].values[2]);
+    plane.curvature = regions[i].getCurvature();
 //  assert(plane.v3normal*plane.v3center.transpose() <= 0);
 //    if(plane.v3normal*plane.v3center.transpose() <= 0)
 //      plane.v3normal *= -1;
@@ -348,13 +623,12 @@ void PbMapMaker::detectPlanesCloud( pcl::PointCloud<PointT>::Ptr &pointCloudPtr_
 
     pcl::PointCloud<pcl::PointXYZRGBA>::Ptr contourPtr(new pcl::PointCloud<pcl::PointXYZRGBA>);
     contourPtr->points = regions[i].getContour();
+    plane_grid.setLeafSize(0.1,0.1,0.1);
+    plane_grid.setInputCloud (contourPtr);
+    plane_grid.filter (*plane.polygonContourPtr);
 //    plane.contourPtr->points = regions[i].getContour();
 //    pcl::transformPointCloud(*plane.contourPtr,*plane.polygonContourPtr,poseKF);
-    pcl::transformPointCloud(*contourPtr,*plane.polygonContourPtr,poseKF);
-    plane_grid.setInputCloud (plane.polygonContourPtr);
-//    plane_grid.filter (*plane.contourPtr);
-//    plane.calcConvexHull(plane.contourPtr);
-    plane_grid.filter (*contourPtr);
+    pcl::transformPointCloud(*plane.polygonContourPtr,*contourPtr,poseKF);
     plane.calcConvexHull(contourPtr);
     plane.computeMassCenterAndArea();
     plane.areaVoxels= plane.planePointCloudPtr->size() * 0.0025;
@@ -390,6 +664,7 @@ void PbMapMaker::detectPlanesCloud( pcl::PointCloud<PointT>::Ptr &pointCloudPtr_
   size_t numPrevPlanes = mPbMap.vPlanes.size();
 //  set<unsigned> observedPlanes;
   observedPlanes.clear();
+ { mrpt::synch::CCriticalSectionLocker csl(&CS_visualize);
   for (size_t i = 0; i < detectedPlanes.size (); i++)
   {
     // Check similarity with previous planes detected
@@ -533,6 +808,7 @@ void PbMapMaker::detectPlanesCloud( pcl::PointCloud<PointT>::Ptr &pointCloudPtr_
       detectedPlanes[i].numObservations = 1;
       detectedPlanes[i].bFullExtent = false;
       detectedPlanes[i].nFramesAreaIsStable = 0;
+//      detectedPlanes[i].calcMainColor(calcMainColor();
       if(configPbMap.makeClusters)
       {
         detectedPlanes[i].semanticGroup = clusterize->currentSemanticGroup;
@@ -558,9 +834,10 @@ void PbMapMaker::detectPlanesCloud( pcl::PointCloud<PointT>::Ptr &pointCloudPtr_
       mPbMap.vPlanes.push_back(detectedPlanes[i]);
     }
   }
+ }
 
-  if(frameQueue.size() == 12)
-   cout << "Same plane? " << areSamePlane(mPbMap.vPlanes[2], mPbMap.vPlanes[9], configPbMap.max_cos_normal, configPbMap.max_dist_center_plane, configPbMap.proximity_threshold) << endl;
+//  if(frameQueue.size() == 12)
+//   cout << "Same plane? " << areSamePlane(mPbMap.vPlanes[2], mPbMap.vPlanes[9], configPbMap.max_cos_normal, configPbMap.max_dist_center_plane, configPbMap.proximity_threshold) << endl;
 
   #ifdef _VERBOSE
     cout << "\n\tobservedPlanes: ";
@@ -578,15 +855,25 @@ void PbMapMaker::detectPlanesCloud( pcl::PointCloud<PointT>::Ptr &pointCloudPtr_
       // Calculate principal direction
       observedPlane.calcElongationAndPpalDir();
 
+////cout << "Update color\n";
       // Update color
       observedPlane.calcMainColor();
-//    cout << "Plane " << observedPlane.id << " color\n" << observedPlane.v3colorNrgb << endl;
+
+    #ifdef _VERBOSE
+      cout << "Plane " << observedPlane.id << " color\n" << observedPlane.v3colorNrgb << endl;
+    #endif
 
       // Infer knowledge from the planes (e.g. do these planes represent the floor, walls, etc.)
       if(configPbMap.inferStructure)
         mpPlaneInferInfo->searchTheFloor(poseKF, observedPlane);
-
     } // End for obsevedPlanes
+//cout << "Updated planes\n";
+
+//    for(set<unsigned>::iterator it = observedPlanes.begin(); it != observedPlanes.end(); it++)
+//    {
+//      Plane &observedPlane = mPbMap.vPlanes[*it];
+//      watchProperties(observedPlanes, observedPlane); // Color paper
+//    }
 
     // Search the floor plane
     if(mPbMap.FloorPlane != -1) // Verify that the observed planes centers are above the floor
@@ -621,6 +908,7 @@ void PbMapMaker::detectPlanesCloud( pcl::PointCloud<PointT>::Ptr &pointCloudPtr_
   if(configPbMap.detect_loopClosure)
     for(set<unsigned>::iterator it = observedPlanes.begin(); it != observedPlanes.end(); it++)
     {
+//    cout << "insert planes\n";
       if(mpPbMapLocaliser->vQueueObservedPlanes.size() < 10)
         mpPbMapLocaliser->vQueueObservedPlanes.push_back(*it);
     }
@@ -628,6 +916,8 @@ void PbMapMaker::detectPlanesCloud( pcl::PointCloud<PointT>::Ptr &pointCloudPtr_
     #ifdef _VERBOSE
       cout << "DetectedPlanesCloud finished\n";
     #endif
+
+  updateLock.unlock();
 }
 
 
@@ -690,7 +980,7 @@ void PbMapMaker::mergePlanes(Plane &updatePlane, Plane &discardPlane)
 //  if(configPbMap.use_color)
 //    updatePlane.calcMainColor();
 
-  *discardPlane.polygonContourPtr += *updatePlane.planePointCloudPtr;
+  *discardPlane.polygonContourPtr += *updatePlane.polygonContourPtr;
   updatePlane.calcConvexHull(discardPlane.polygonContourPtr);
   updatePlane.computeMassCenterAndArea();
 
@@ -731,58 +1021,63 @@ void PbMapMaker::viz_cb (pcl::visualization::PCLVisualizer& viz)
 
       char name[1024];
 
-      if(graphRepresentation)
-      {
-        for(size_t i=0; i<mPbMap.vPlanes.size(); i++)
-        {
-          pcl::PointXYZ center(2*mPbMap.vPlanes[i].v3center[0], 2*mPbMap.vPlanes[i].v3center[1], 2*mPbMap.vPlanes[i].v3center[2]);
-          double radius = 0.1 * sqrt(mPbMap.vPlanes[i].areaVoxels);
-          sprintf (name, "sphere%u", static_cast<unsigned>(i));
-          viz.addSphere (center, radius, ared[i%10], agrn[i%10], ablu[i%10], name);
-
-          if( !mPbMap.vPlanes[i].label.empty() )
-              viz.addText3D (mPbMap.vPlanes[i].label, center, 0.1, ared[i%10], agrn[i%10], ablu[i%10], mPbMap.vPlanes[i].label);
-          else
-          {
-            sprintf (name, "P%u", static_cast<unsigned>(i));
-            viz.addText3D (name, center, 0.1, ared[i%10], agrn[i%10], ablu[i%10], name);
-          }
-
-          // Draw edges
-          if(!configPbMap.graph_mode) // Nearby neighbors
-            for(set<unsigned>::iterator it = mPbMap.vPlanes[i].nearbyPlanes.begin(); it != mPbMap.vPlanes[i].nearbyPlanes.end(); it++)
-            {
-              if(*it > mPbMap.vPlanes[i].id)
-                break;
-
-              sprintf (name, "commonObs%u_%u", static_cast<unsigned>(i), static_cast<unsigned>(*it));
-              pcl::PointXYZ center_it(2*mPbMap.vPlanes[*it].v3center[0], 2*mPbMap.vPlanes[*it].v3center[1], 2*mPbMap.vPlanes[*it].v3center[2]);
-              viz.addLine (center, center_it, ared[i%10], agrn[i%10], ablu[i%10], name);
-            }
-          else
-            for(map<unsigned,unsigned>::iterator it = mPbMap.vPlanes[i].neighborPlanes.begin(); it != mPbMap.vPlanes[i].neighborPlanes.end(); it++)
-            {
-              if(it->first > mPbMap.vPlanes[i].id)
-                break;
-
-              sprintf (name, "commonObs%u_%u", static_cast<unsigned>(i), static_cast<unsigned>(it->first));
-              pcl::PointXYZ center_it(2*mPbMap.vPlanes[it->first].v3center[0], 2*mPbMap.vPlanes[it->first].v3center[1], 2*mPbMap.vPlanes[it->first].v3center[2]);
-              viz.addLine (center, center_it, ared[i%10], agrn[i%10], ablu[i%10], name);
-
-              sprintf (name, "edge%u_%u", static_cast<unsigned>(i), static_cast<unsigned>(it->first));
-              char commonObs[8];
-              sprintf (commonObs, "%u", it->second);
-              pcl::PointXYZ half_edge( (center_it.x+center.x)/2, (center_it.y+center.y)/2, (center_it.z+center.z)/2 );
-              viz.addText3D (commonObs, half_edge, 0.05, 1.0, 1.0, 1.0, name);
-            }
-
-        }
-      }
-      else
+//      if(graphRepresentation)
+//      {
+//        for(size_t i=0; i<mPbMap.vPlanes.size(); i++)
+//        {
+//          pcl::PointXYZ center(2*mPbMap.vPlanes[i].v3center[0], 2*mPbMap.vPlanes[i].v3center[1], 2*mPbMap.vPlanes[i].v3center[2]);
+//          double radius = 0.1 * sqrt(mPbMap.vPlanes[i].areaVoxels);
+//          sprintf (name, "sphere%u", static_cast<unsigned>(i));
+//          viz.addSphere (center, radius, ared[i%10], agrn[i%10], ablu[i%10], name);
+//
+//          if( !mPbMap.vPlanes[i].label.empty() )
+//              viz.addText3D (mPbMap.vPlanes[i].label, center, 0.1, ared[i%10], agrn[i%10], ablu[i%10], mPbMap.vPlanes[i].label);
+//          else
+//          {
+//            sprintf (name, "P%u", static_cast<unsigned>(i));
+//            viz.addText3D (name, center, 0.1, ared[i%10], agrn[i%10], ablu[i%10], name);
+//          }
+//
+//          // Draw edges
+//          if(!configPbMap.graph_mode) // Nearby neighbors
+//            for(set<unsigned>::iterator it = mPbMap.vPlanes[i].nearbyPlanes.begin(); it != mPbMap.vPlanes[i].nearbyPlanes.end(); it++)
+//            {
+//              if(*it > mPbMap.vPlanes[i].id)
+//                break;
+//
+//              sprintf (name, "commonObs%u_%u", static_cast<unsigned>(i), static_cast<unsigned>(*it));
+//              pcl::PointXYZ center_it(2*mPbMap.vPlanes[*it].v3center[0], 2*mPbMap.vPlanes[*it].v3center[1], 2*mPbMap.vPlanes[*it].v3center[2]);
+//              viz.addLine (center, center_it, ared[i%10], agrn[i%10], ablu[i%10], name);
+//            }
+//          else
+//            for(map<unsigned,unsigned>::iterator it = mPbMap.vPlanes[i].neighborPlanes.begin(); it != mPbMap.vPlanes[i].neighborPlanes.end(); it++)
+//            {
+//              if(it->first > mPbMap.vPlanes[i].id)
+//                break;
+//
+//              sprintf (name, "commonObs%u_%u", static_cast<unsigned>(i), static_cast<unsigned>(it->first));
+//              pcl::PointXYZ center_it(2*mPbMap.vPlanes[it->first].v3center[0], 2*mPbMap.vPlanes[it->first].v3center[1], 2*mPbMap.vPlanes[it->first].v3center[2]);
+//              viz.addLine (center, center_it, ared[i%10], agrn[i%10], ablu[i%10], name);
+//
+//              sprintf (name, "edge%u_%u", static_cast<unsigned>(i), static_cast<unsigned>(it->first));
+//              char commonObs[8];
+//              sprintf (commonObs, "%u", it->second);
+//              pcl::PointXYZ half_edge( (center_it.x+center.x)/2, (center_it.y+center.y)/2, (center_it.z+center.z)/2 );
+//              viz.addText3D (commonObs, half_edge, 0.05, 1.0, 1.0, 1.0, name);
+//            }
+//
+//        }
+//      }
+//      else
       { // Regular representation
 
+      if(graphRepresentation)
+      {
         if (!viz.updatePointCloud (mPbMap.globalMapPtr, "cloud"))
           viz.addPointCloud (mPbMap.globalMapPtr, "cloud");
+        return;
+      }
+
 
         if(mpPbMapLocaliser != NULL)
           if(mpPbMapLocaliser->alignedModelPtr){
@@ -791,6 +1086,13 @@ void PbMapMaker::viz_cb (pcl::visualization::PCLVisualizer& viz)
 
         sprintf (name, "PointCloud size %u", static_cast<unsigned>( mPbMap.globalMapPtr->size() ) );
         viz.addText(name, 10, 20);
+
+//pcl::ModelCoefficients plane_coefs;
+//plane_coefs.values[0] = mPbMap.vPlanes[0].v3normal[0];
+//plane_coefs.values[1] = mPbMap.vPlanes[0].v3normal[1];
+//plane_coefs.values[2] = mPbMap.vPlanes[0].v3normal[2];
+//plane_coefs.values[3] = -(mPbMap.vPlanes[0].v3normal .dot (mPbMap.vPlanes[0].v3center) );
+//viz.addPlane (plane_coefs);
 
         for(size_t i=0; i<mPbMap.vPlanes.size(); i++)
         {
@@ -827,7 +1129,9 @@ void PbMapMaker::viz_cb (pcl::visualization::PCLVisualizer& viz)
 
 //          if(!configPbMap.makeClusters)
 //          {
-//          sprintf (name, "plane_%02u", static_cast<unsigned>(i));
+          sprintf (name, "plane_%02u", static_cast<unsigned>(i));
+//          if(plane_i.bDominantColor)
+          {
 //          pcl::visualization::PointCloudColorHandlerCustom <PointT> color (plane_i.planePointCloudPtr, red[i%10], grn[i%10], blu[i%10]);
 ////          pcl::visualization::PointCloudColorHandlerCustom <PointT> color (plane_i.planePointCloudPtr, red[plane_i.semanticGroup%10], grn[plane_i.semanticGroup%10], blu[plane_i.semanticGroup%10]);
 //          viz.addPointCloud (plane_i.planePointCloudPtr, color, name);
@@ -837,9 +1141,25 @@ void PbMapMaker::viz_cb (pcl::visualization::PCLVisualizer& viz)
 //          {
 //            sprintf (name, "plane_%02u", static_cast<unsigned>(i));
 //            pcl::visualization::PointCloudColorHandlerCustom <PointT> color (plane_i.planePointCloudPtr, red[plane_i.semanticGroup%10], grn[plane_i.semanticGroup%10], blu[plane_i.semanticGroup%10]);
-//            viz.addPointCloud (plane_i.planePointCloudPtr, color, name);
-//            viz.setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 4, name);
+
+            double illum = 0;
+            if(fabs(plane_i.v3colorNrgb[0]-0.33) < 0.03 && fabs(plane_i.v3colorNrgb[1]-0.33) < 0.03 && fabs(plane_i.v3colorNrgb[2]-0.33) < 0.03 && plane_i.dominantIntensity > 400)
+              illum = 0.5;
+
+            pcl::visualization::PointCloudColorHandlerCustom <PointT> color (plane_i.planePointCloudPtr,
+                                                                              plane_i.v3colorNrgb[0] * (plane_i.dominantIntensity+(755-plane_i.dominantIntensity)*illum),
+                                                                              plane_i.v3colorNrgb[1] * (plane_i.dominantIntensity+(755-plane_i.dominantIntensity)*illum),
+                                                                              plane_i.v3colorNrgb[2] * (plane_i.dominantIntensity+(755-plane_i.dominantIntensity)*illum));
+//            pcl::visualization::PointCloudColorHandlerCustom <PointT> color (plane_i.planePointCloudPtr,
+//                                                                              plane_i.v3colorNrgb[0] * plane_i.dominantIntensity,
+//                                                                              plane_i.v3colorNrgb[1] * plane_i.dominantIntensity,
+//                                                                              plane_i.v3colorNrgb[2] * plane_i.dominantIntensity);
+            viz.addPointCloud (plane_i.planePointCloudPtr, color, name);
+            viz.setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 10, name);
 //          }
+          }
+//          else
+//            viz.addPointCloud (plane_i.planePointCloudPtr, name);// contourPtr, planePointCloudPtr, polygonContourPtr
 
 //          sprintf (name, "planeBorder_%02u", static_cast<unsigned>(i));
 //          pcl::visualization::PointCloudColorHandlerCustom <PointT> color2 (plane_i.contourPtr, 255, 255, 255);
@@ -916,7 +1236,19 @@ void PbMapMaker::run()
       ++numPrevKFs;
     }
   }
+
+//  saveInfoFiles(); // save watch statistics
+
   m_pbmaker_finished = true;
+}
+
+void PbMapMaker::serializePbMap(string path)
+{
+  boost::mutex::scoped_lock updateLock(mtx_pbmap_busy);
+
+  mPbMap.savePbMap(path);
+
+  updateLock.unlock();
 }
 
 bool PbMapMaker::stop_pbMapMaker()
@@ -934,6 +1266,9 @@ bool PbMapMaker::stop_pbMapMaker()
 
 PbMapMaker::~PbMapMaker()
 {
+  cout << "\n\n\nPbMapMaker destructor called -> Save color information to file\n";
+  saveInfoFiles();
+
   delete mpPlaneInferInfo;
   delete mpPbMapLocaliser;
 
