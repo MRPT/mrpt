@@ -76,7 +76,7 @@ namespace mrpt
 		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE( CImage, mrpt::utils::CSerializable )
 
 		/** A class for storing images as grayscale or RGB bitmaps.
-		 *  File I/O is supported in two different ways:
+		 *  File I/O is supported as:
 		 *		- Binary dump using the CSerializable interface(<< and >> operators), just as most objects
 		 *          in the MRPT library. This format is not compatible with any standarized image format.
 		 *		- Saving/loading from files of different formats (bmp,jpg,png,...) using the methods CImage::loadFromFile and CImage::saveToFile.
