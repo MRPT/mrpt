@@ -193,7 +193,7 @@ void  CNationalInstrumentsDAQ::loadConfig_sensorSpecific(
 		MY_LOAD_HERE_CONFIG_VAR_NO_DEFAULT( sTask+string(".samplesPerChannelToRead"), double, t.samplesPerChannelToRead, cfg,sect)
         MY_LOAD_HERE_CONFIG_VAR( sTask+string(".sampleClkSource"), string, t.sampleClkSource, cfg,sect)
         MY_LOAD_HERE_CONFIG_VAR( sTask+string(".bufferSamplesPerChannel"), double, t.bufferSamplesPerChannel, cfg,sect)
-		cfg.read_string(sect,sTask+string(".taskLabel"), sTask, false );
+		t.taskLabel = cfg.read_string(sect,sTask+string(".taskLabel"), sTask, false );
 
 		for (size_t j=0;j<lstStrChanns.size();j++)
 		{
@@ -577,7 +577,7 @@ void  CNationalInstrumentsDAQ::readFromDAQ(
 			{
 				it->read_pipe->ReadObject(&tmp_obs);
 				it->new_data_available=false;  MRPT_TODO("Any better synch method?")
-				
+
 				// Yes, valid block of samples was adquired:
 				outObservations.push_back(CObservationRawDAQPtr(new CObservationRawDAQ(tmp_obs)));
 			}
@@ -691,7 +691,7 @@ void CNationalInstrumentsDAQ::grabbing_thread(TInfoPerTask &ipt)
 					ASSERT_EQUAL_(totalSamplesToRead,pointsReadPerChan)
 					obs.CNTRIN_double = dBuf;
 					there_are_data = true;
-					if (m_verbose) cout << "[CNationalInstrumentsDAQ::grabbing_thread] " << pointsReadPerChan << " counter samples read.\n";
+					if (m_verbose && !obs.CNTRIN_double.empty()) cout << "[CNationalInstrumentsDAQ::grabbing_thread] " << pointsReadPerChan << " counter samples read ([0]="<< obs.CNTRIN_double[0] <<").\n";
 				}
 			} // end COUNTERS
 
@@ -700,6 +700,7 @@ void CNationalInstrumentsDAQ::grabbing_thread(TInfoPerTask &ipt)
 			{
 				ipt.new_data_available = true;
 				ipt.write_pipe->WriteObject(&obs);
+				mrpt::system::sleep(15); // This seems to be needed to allow all objs to be sent to the recv thread
 			}
 
 		} // end of main thread loop

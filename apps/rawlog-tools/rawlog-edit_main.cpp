@@ -74,6 +74,7 @@ DECLARE_OP_FUNCTION(op_cut);
 DECLARE_OP_FUNCTION(op_export_gps_kml);
 DECLARE_OP_FUNCTION(op_export_gps_txt);
 DECLARE_OP_FUNCTION(op_export_imu_txt);
+DECLARE_OP_FUNCTION(op_export_rawdaq_txt);
 DECLARE_OP_FUNCTION(op_export_2d_scans_txt);
 DECLARE_OP_FUNCTION(op_sensors_pose);
 DECLARE_OP_FUNCTION(op_camera_params);
@@ -192,6 +193,13 @@ int main(int argc, char **argv)
 			,cmd,false) );
 		ops_functors["export-imu-txt"] = &op_export_imu_txt;
 
+		arg_ops.push_back(new TCLAP::SwitchArg("","export-rawdaq-txt",
+			"Op: Export raw DAQ readings to TXT files.\n"
+			"Generates one .txt file for each different sensor label + DAQ task. "
+			"The generated .txt files will be saved in the same path than the input rawlog."
+			,cmd,false) );
+		ops_functors["export-rawdaq-txt"] = &op_export_rawdaq_txt;
+	
 		arg_ops.push_back(new TCLAP::SwitchArg("","export-2d-scans-txt",
 			"Op: Export 2D scans to TXT files.\n"
 			"Generates two .txt files for each different sensor label of 2D scan observations, one with "

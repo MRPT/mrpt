@@ -76,8 +76,8 @@ using namespace std;
 
 #define WRITE_OTHER_SAMPLES(_VECTOR_NAME, _FRMT, _TYPECAST) \
     if (!obs->_VECTOR_NAME.empty()) { \
-        ::fprintf(f_this,"%14.4f ", tim); \
         for (i=0,tim=tim0;i<obs->_VECTOR_NAME.size();i++,tim+=At) { \
+			::fprintf(f_this,"%14.4f ", tim); \
             ::fprintf(f_this,_FRMT " ", (_TYPECAST)obs->_VECTOR_NAME[i]); \
             m_entriesSaved++; \
         } \
