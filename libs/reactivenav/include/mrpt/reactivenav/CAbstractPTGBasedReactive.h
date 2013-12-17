@@ -118,6 +118,9 @@ namespace mrpt
 		/** Returns the number of different PTGs that have been setup */
 		virtual size_t getPTG_count() const = 0; 
 
+		/** Gets the i'th PTG */
+		virtual CParameterizedTrajectoryGenerator* getPTG(size_t i) = 0; 
+
 	protected:
 		// ------------------------------------------------------
 		//					INTERNAL DEFINITIONS
@@ -185,7 +188,7 @@ namespace mrpt
 		/** Return false on any fatal error */
 		virtual bool STEP2_SenseObstacles() = 0;
 
-		virtual void STEP3_WSpaceToTPSpace(const mrpt::poses::CPose2D &relTarget) = 0;
+		virtual void STEP3_WSpaceToTPSpace(const mrpt::poses::CPose2D &relTarget,vector_double &out_TPObstacles) = 0;
 
 		virtual void STEP4_HolonomicMethod(std::vector<CHolonomicLogFileRecordPtr> &out_HLFRs) = 0;
 
@@ -210,6 +213,17 @@ namespace mrpt
 
 	private:
 		bool m_closing_navigator; //!< Signal that the destructor has been called, so no more calls are accepted from other threads
+
+		struct TInfoPerPTG
+		{
+			bool                 valid_TP;   //!< For each PTG, whether the target falls into the PTG domain.
+			mrpt::math::TPoint2D TP_Target; //!< The Target, in TP-Space (x,y)
+			float                target_alpha,target_dist;  //!< TP-Target 
+			int                  target_k;
+		};
+
+		std::vector<TInfoPerPTG> m_infoPerPTG; //!< Temporary buffers for working with each PTG during a navigationStep()
+
 
 		void deleteHolonomicObjects(); //!< Delete m_holonomicMethod
 

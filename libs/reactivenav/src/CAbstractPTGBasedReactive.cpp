@@ -348,20 +348,50 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 		// Start timer
 		executionTime.Tic();
 
-
-		// Clip obstacles out of the reactive method range:
-		//CPoint2D    dumm(0,0);
-		//WS_Obstacles.clipOutOfRange( dumm, refDistance+1.5f );
-		XXX
-
-		//  STEP3: Build TP-Obstacles and transform target location into TP-Space
+		//  STEP3(a): Transform target location into TP-Space for each PTG
 		// -----------------------------------------------------------------------------
-		STEP3_WSpaceToTPSpace(relTarget);
+		m_infoPerPTG.resize(nPTGs);
 
+		for (size_t indexPTG=0;indexPTG<nPTGs;indexPTG++)
+		{
+			CParameterizedTrajectoryGenerator * ptg = getPTG(indexPTG);
+			ASSERT_(ptg)
+			TInfoPerPTG &ipf = m_infoPerPTG[indexPTG];
+
+			// Firstly, check if target falls into the PTG domain:
+			ipf.valid_TP = ptg->PTG_IsIntoDomain( relTarget.x,relTarget.y );
+
+			if (ipf.valid_TP)
+			{
+				ptg->lambdaFunction(relTarget.x(),relTarget.y(),ipf.target_k,ipf.target_dist);
+
+				ipf.target_alpha = ptg->index2alpha(k);
+				ipf.TP_Target.x = cos(ipf.target_alpha) * ipf.target_dist;
+				ipf.TP_Target.y = sin(ipf.target_alpha) * ipf.target_dist;
+			}
+		}
+
+		//  STEP3: Build TP-Obstacles
+		// -----------------------------------------------------------------------------
+		{
+			CTimeLoggerEntry tle(m_timelogger,"navigationStep.STEP3_WSpaceToTPSpace");
+			
+			for (size_t indexPTG=0;indexPTG<nPTGs;indexPTG++)
+			{
+				// 
+				XXXX TP_Obstacles for each PTG!!!
+
+				STEP3_WSpaceToTPSpace(relTarget);
+			}
+		}
 
 		//  STEP4: Holonomic navigation method
 		// -----------------------------------------------------------------------------
-		STEP4_HolonomicMethod(HLFRs);
+		{
+			CTimeLoggerEntry tle(m_timelogger,"navigationStep.STEP4_HolonomicMethod");
+			
+			STEP4_HolonomicMethod(HLFRs);
+		}
 
 
 		// STEP5: Evaluate each movement to assign them a "evaluation" value.

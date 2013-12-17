@@ -56,7 +56,9 @@ CReactiveNavigationSystem::CReactiveNavigationSystem(
 	:
 	CAbstractPTGBasedReactive(react_iterf_impl),
 	nLastSelectedPTG             (-1),
-	m_decimateHeadingEstimate    (0)
+	m_decimateHeadingEstimate    (0),
+	minObstaclesHeight           (-1.0),
+	maxObstaclesHeight           (1e9)
 {
 }
 
@@ -205,7 +207,7 @@ void CReactiveNavigationSystem::loadConfigFile(const mrpt::utils::CConfigFileBas
   ---------------------------------------------------------------*/
 void  CReactiveNavigationSystem::performNavigationStep()
 {
-	mrpt::slam::CSimplePointsMap			WS_Obstacles;
+	
 	CLogFileRecord							newLogRec;
 	float										targetDist;
 	poses::CPoint2D								relTarget;		// The target point, relative to current robot pose.
@@ -307,14 +309,6 @@ void  CReactiveNavigationSystem::performNavigationStep()
 
 		// STEP2: Sense obstacles.
 		// -----------------------------------------------------------------------------
-		if (! STEP2_Sense( WS_Obstacles ) )
-		{
-			printf_debug("Warning: Error while sensing obstacles. Robot will be stopped.\n");
-			m_robot.stop();
-			m_navigationState = NAV_ERROR;
-			m_timelogger.leave("navigationStep");
-			return;
-		}
 
 		// Start timer
 		executionTime.Tic();
@@ -326,12 +320,6 @@ void  CReactiveNavigationSystem::performNavigationStep()
 
 		if (! skipNormalReactiveNavigation )
 		{
-			// Clip obstacles by "z" axis coordinates:
-			WS_Obstacles.clipOutOfRangeInZ( minObstaclesHeight, maxObstaclesHeight );
-
-			// Clip obstacles out of the reactive method range:
-			CPoint2D    dumm(0,0);
-			WS_Obstacles.clipOutOfRange( dumm, refDistance+1.5f );
 
 			//  STEP3: Build TP-Obstacles and transform target location into TP-Space
 			// -----------------------------------------------------------------------------
@@ -348,41 +336,41 @@ void  CReactiveNavigationSystem::performNavigationStep()
 			if (n != times_HoloNav.size() )				times_HoloNav.resize( n );
 			newLogRec.infoPerPTG.resize( n );
 
-			// For each PTG:
-			for (size_t indexPTG=0;indexPTG<PTGs.size();indexPTG++)
-			{
-				// Target location:
-				float	alpha,dist;
-				int		k;
+			//// For each PTG:
+			//for (size_t indexPTG=0;indexPTG<PTGs.size();indexPTG++)
+			//{
+			//	// Target location:
+			//	float	alpha,dist;
+			//	int		k;
 
-				// Firstly, check if target falls into the PTG domain!!
-				valid_TP[indexPTG] = true;
-				//valid_TP[i] = PTGs[i]->PTG_IsIntoDomain( relTarget.x,relTarget.y );
+			//	// Firstly, check if target falls into the PTG domain!!
+			//	valid_TP[indexPTG] = true;
+			//	//valid_TP[i] = PTGs[i]->PTG_IsIntoDomain( relTarget.x,relTarget.y );
 
-				if (valid_TP[indexPTG])
-				{
-					PTGs[indexPTG]->lambdaFunction(
-					    relTarget.x(),
-					    relTarget.y(),
-					    k,
-					    dist );
+			//	if (valid_TP[indexPTG])
+			//	{
+			//		PTGs[indexPTG]->lambdaFunction(
+			//		    relTarget.x(),
+			//		    relTarget.y(),
+			//		    k,
+			//		    dist );
 
-					alpha = PTGs[indexPTG]->index2alpha(k);
-					TP_Targets[indexPTG].x( cos(alpha) * dist );
-					TP_Targets[indexPTG].y( sin(alpha) * dist );
-				}
+			//		alpha = PTGs[indexPTG]->index2alpha(k);
+			//		TP_Targets[indexPTG].x( cos(alpha) * dist );
+			//		TP_Targets[indexPTG].y( sin(alpha) * dist );
+			//	}
 
-				// And for each security distance:
-				tictac.Tic();
+			//	// And for each security distance:
+			//	tictac.Tic();
 
-				// TP-Obstacles
-				STEP3_SpaceTransformer(	WS_Obstacles,
-				                        PTGs[indexPTG],
-				                        TP_Obstacles[indexPTG] );
+			//	// TP-Obstacles
+			//	STEP3_SpaceTransformer(	WS_Obstacles,
+			//	                        PTGs[indexPTG],
+			//	                        TP_Obstacles[indexPTG] );
 
-				times_TP_transformations[indexPTG] = tictac.Tac();
+			//	times_TP_transformations[indexPTG] = tictac.Tac();
 
-			} // indexPTG
+			//} // indexPTG
 
 			//  STEP4: Holonomic navigation method
 			// -----------------------------------------------------------------------------
@@ -647,20 +635,22 @@ void CReactiveNavigationSystem::STEP1_CollisionGridsBuilder()
 }
 
 /*************************************************************************
-
-                              STEP2_Sense
-
-     Sensors adquisition and obstacle points fusion
-
+		STEP2_SenseObstacles
 *************************************************************************/
-bool CReactiveNavigationSystem::STEP2_Sense(
-	mrpt::slam::CSimplePointsMap				&out_obstacles)
+bool CReactiveNavigationSystem::STEP2_SenseObstacles()
 {
 	try
 	{
 		m_timelogger.enter("navigationStep.STEP2_Sense");
 
-		const bool ret = m_robot.senseObstacles( out_obstacles );
+		const bool ret = m_robot.senseObstacles( m_WS_Obstacles );
+
+		// Clip obstacles by "z" axis coordinates:
+		m_WS_Obstacles.clipOutOfRangeInZ( minObstaclesHeight, maxObstaclesHeight );
+
+		// Clip obstacles out of the reactive method range:
+		CPoint2D    dumm(0,0);
+		m_WS_Obstacles.clipOutOfRange( dumm, refDistance+1.5f );
 
 		m_timelogger.leave("navigationStep.STEP2_Sense");
 
@@ -681,21 +671,24 @@ bool CReactiveNavigationSystem::STEP2_Sense(
 }
 
 /*************************************************************************
-
-                              STEP3_SpaceTransformer
-
-     Transformador del espacio de obstaculos segun un PT determinado
-
+				STEP3_WSpaceToTPSpace
 *************************************************************************/
-void CReactiveNavigationSystem::STEP3_SpaceTransformer(
-    mrpt::poses::CPointsMap					&in_obstacles,
-    CParameterizedTrajectoryGenerator	*in_PTG,
-    vector_double						&out_TPObstacles
+void CReactiveNavigationSystem::STEP3_WSpaceToTPSpace(const mrpt::poses::CPose2D &relTarget)
+//void STEP3_SpaceTransformer(
+//    mrpt::poses::CPointsMap					&in_obstacles,
+//    CParameterizedTrajectoryGenerator	*in_PTG,
+//    vector_double						&out_TPObstacles
 )
 {
-	try
+	// For each PTG:
+	for (size_t indexPTG=0;indexPTG<PTGs.size();indexPTG++)
 	{
-		m_timelogger.enter("navigationStep.STEP3_SpaceTransformer");
+		//// TP-Obstacles
+		//STEP3_SpaceTransformer(	WS_Obstacles,
+		//	                    PTGs[indexPTG],
+		//	                    TP_Obstacles[indexPTG] );
+
+		CParameterizedTrajectoryGenerator	*in_PTG = this->PTGs[indexPTG];
 
 		const size_t Ki = in_PTG->getAlfaValuesCount();
 
@@ -737,24 +730,7 @@ void CReactiveNavigationSystem::STEP3_SpaceTransformer(
 		for (size_t i=0;i<Ki;i++)
 			out_TPObstacles[i] /= in_PTG->refDistance;
 
-		m_timelogger.leave("navigationStep.STEP3_SpaceTransformer");
-	}
-	catch (std::exception &e)
-	{
-		m_timelogger.leave("navigationStep.STEP3_SpaceTransformer");
-		printf_debug("[CReactiveNavigationSystem::STEP3_SpaceTransformer] Exception:");
-		printf_debug((char*)(e.what()));
-	}
-	catch (...)
-	{
-		m_timelogger.leave("navigationStep.STEP3_SpaceTransformer");
-		std::cout << "\n[CReactiveNavigationSystem::STEP3_SpaceTransformer] Unexpected exception!:\n";
-		std::cout << format("*in_PTG = %p\n", (void*)in_PTG );
-		if (in_PTG)
-			std::cout << format("PTG = %s\n",in_PTG->getDescription().c_str());
-		std::cout << std::endl;
-	}
-
+	} // end foreach indexPTG
 
 }
 

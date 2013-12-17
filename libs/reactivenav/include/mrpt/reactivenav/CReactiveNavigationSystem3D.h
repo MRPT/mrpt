@@ -106,6 +106,13 @@ namespace mrpt
 			/** Returns the number of different PTGs that have been setup */
 			virtual size_t getPTG_count() const { return m_ptgmultilevel.size(); } 
 
+			/** Gets the i'th PTG */
+			virtual CParameterizedTrajectoryGenerator* getPTG(size_t i) 
+			{
+				ASSERT_(i<m_ptgmultilevel.size() && !m_ptgmultilevel[i].PTGs.empty())
+				return m_ptgmultilevel[i].PTGs[0];  // Return the 0'th because the PTG itself is the same, what changes is the collision grid.
+			}
+
 		private:
 			// ------------------------------------------------------
 			//					PRIVATE DEFINITIONS

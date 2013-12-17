@@ -88,6 +88,13 @@ namespace mrpt
 			/** Returns the number of different PTGs that have been setup */
 			virtual size_t getPTG_count() const { return PTGs.size(); } 
 
+			/** Gets the i'th PTG */
+			virtual CParameterizedTrajectoryGenerator* getPTG(size_t i) 
+			{
+				ASSERT_(i<PTGs.size())
+				return PTGs[i];
+			}
+
 
 		private:
 			// ------------------------------------------------------
@@ -113,7 +120,6 @@ namespace mrpt
 			  */
 			std::vector<CParameterizedTrajectoryGenerator*>	PTGs;
 
-
 			// Steps for the reactive navigation sytem.
 			// ----------------------------------------------------------------------------
 			virtual void STEP1_CollisionGridsBuilder();
@@ -121,45 +127,12 @@ namespace mrpt
 			/** Return false on any fatal error */
 			virtual bool STEP2_SenseObstacles();
 
-			virtual void STEP3_WSpaceToTPSpace();
+			virtual void STEP3_WSpaceToTPSpace(const mrpt::poses::CPose2D &relTarget,vector_double &out_TPObstacles);
 
 			virtual void STEP4_HolonomicMethod();
 
-/*			void            STEP1_CollisionGridsBuilder();
+			mrpt::slam::CSimplePointsMap m_WS_Obstacles;
 
-			bool            STEP2_Sense(
-									mrpt::slam::CSimplePointsMap					&out_obstacles);
-
-			void            STEP3_SpaceTransformer(
-									poses::CPointsMap					&in_obstacles,
-									CParameterizedTrajectoryGenerator	*in_PTG,
-									vector_double						&out_TPObstacles);
-
-			void            STEP4_HolonomicMethod(
-									const vector_double         & in_Obstacles,
-									const mrpt::math::TPoint2D  & in_Target,
-									const float                   in_maxRobotSpeed,
-									THolonomicMovement          & out_selectedMovement,
-									CHolonomicLogFileRecordPtr  & in_HLFR );
-
-			void            STEP5_Evaluator(
-									THolonomicMovement					&in_holonomicMovement,
-									vector_double						&in_TPObstacles,
-									poses::CPoint2D						&WS_Target,
-									poses::CPoint2D						&TP_Target,
-									bool								wasSelectedInLast,
-									CLogFileRecord::TInfoPerPTG			&log );
-
-			void            STEP6_Selector(
-									std::vector<THolonomicMovement>		&in_holonomicMovements,
-									THolonomicMovement					&out_selectedHolonomicMovement,
-									int									&out_nSelectedPTG);
-
-			void			STEP7_NonHolonomicMovement(
-									THolonomicMovement					&in_movement,
-									float								&out_v,
-									float								&out_w);
-									*/
 		};
 	}
 }
