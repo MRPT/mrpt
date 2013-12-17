@@ -66,8 +66,8 @@ namespace mrpt
 		void REACTIVENAV_IMPEXP build_PTG_collision_grid3D(
 			CParameterizedTrajectoryGenerator*				ptg,
 			const mrpt::math::CPolygon						&robotShape,
-			const unsigned int								&level,
-			const unsigned int								&num_ptg,
+			const unsigned int								level,
+			const unsigned int								num_ptg,
 			bool											verbose = true
 			);
 

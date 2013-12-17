@@ -38,6 +38,26 @@
 using namespace mrpt::reactivenav;
 using namespace std;
 
+// Ctor: CAbstractReactiveNavigationSystem::TNavigationParams 
+CAbstractReactiveNavigationSystem::TNavigationParams::TNavigationParams() :
+	target(0,0), 
+	targetHeading(0),
+	targetAllowedDistance(0.5),
+	targetIsRelative(false)
+{
+}
+
+// Gets navigation params as a human-readable format:
+std::string CAbstractReactiveNavigationSystem::TNavigationParams::getAsText() const 
+{
+	string s;
+	s+= mrpt::format("navparams.target = (%.03f,%.03f)\n", target.x, target.y );
+	s+= mrpt::format("navparams.targetAllowedDistance = %.03f\n", targetAllowedDistance );
+	s+= mrpt::format("navparams.targetIsRelative = %s\n", targetIsRelative ? "YES":"NO");
+
+	return s;
+}
+
 
 /*---------------------------------------------------------------
 							Constructor
@@ -50,7 +70,7 @@ CAbstractReactiveNavigationSystem::CAbstractReactiveNavigationSystem(CReactiveIn
 }
 
 /*---------------------------------------------------------------
-							Cancel
+							cancel
   ---------------------------------------------------------------*/
 void CAbstractReactiveNavigationSystem::cancel()
 {
@@ -60,7 +80,7 @@ void CAbstractReactiveNavigationSystem::cancel()
 
 
 /*---------------------------------------------------------------
-							Continue
+							resume
   ---------------------------------------------------------------*/
 void CAbstractReactiveNavigationSystem::resume()
 {
@@ -71,7 +91,7 @@ void CAbstractReactiveNavigationSystem::resume()
 
 
 /*---------------------------------------------------------------
-							Suspend
+							suspend
   ---------------------------------------------------------------*/
 void  CAbstractReactiveNavigationSystem::suspend()
 {
@@ -81,48 +101,38 @@ void  CAbstractReactiveNavigationSystem::suspend()
 }
 
 /*---------------------------------------------------------------
-					NavigateStep
-
-	  Se debe llamar continuamente, cada pocos milisegundos. Internamente
-	   lleva el mismo el control del tiempo que pasa entre llamadas para
-	   tener el cuenta el tiempo real.
+					navigationStep
   ---------------------------------------------------------------*/
 void CAbstractReactiveNavigationSystem::navigationStep()
 {
-	TState	startingState = m_navigationState;
+	const TState prevState = m_navigationState;
 	switch ( m_navigationState )
 	{
-	//------------------------------------------------------
-	//					PARAR ROBOT
-	//------------------------------------------------------
 	case IDLE:
 	case SUSPENDED:
 		try
 		{
-			// Si acabamos de llegar a este estado, parar el robot:
+			// If we just arrived at this state, stop robot:
 			if ( m_lastNavigationState == NAVIGATING )
 			{
-				printf_debug("\n[CAbstractReactiveNavigationSystem::navigationStep()] Stoping Navigation\n");
+				printf_debug("\n[CAbstractReactiveNavigationSystem::navigationStep()] Navigation stopped\n");
 				m_robot.stop();
 				m_robot.stopWatchdog();
 			}
 		} catch (...) { }
 		break;
 
-	//------------------------------------------------------
-	//					FINALIZACION POR ERROR
-	//------------------------------------------------------
 	case NAV_ERROR:
 		try
 		{
-			// Enviar evento de final de navegacion??
+			// Send end-of-navigation event:
 			if ( m_lastNavigationState == NAVIGATING && m_navigationState == NAV_ERROR)
 				m_robot.sendNavigationEndDueToErrorEvent();
 
-			// Si acabamos de llegar a este estado, parar el robot:
+			// If we just arrived at this state, stop the robot:
 			if ( m_lastNavigationState == NAVIGATING )
 			{
-				printf_debug("\n[CAbstractReactiveNavigationSystem::navigationStep()] Stoping Navigation due to an error!!\n");
+				printf_debug("\n[CAbstractReactiveNavigationSystem::navigationStep()] Stoping Navigation due to a NAV_ERROR state!\n");
 				m_robot.stop();
 				m_robot.stopWatchdog();
 			}
@@ -135,12 +145,11 @@ void CAbstractReactiveNavigationSystem::navigationStep()
 	case NAVIGATING:
 		try
 		{
-			
-			// Si acabamos de llegar a este estado, parar el robot:
 			if ( m_lastNavigationState != NAVIGATING )
 			{
 				printf_debug("\n[CAbstractReactiveNavigationSystem::navigationStep()] Starting Navigation. Watchdog initiated...\n");
-				printf_debug(" TARGET = (%.03f,%.03f)\n", m_navigationParams.target.x, m_navigationParams.target.y );
+				printf_debug("[CAbstractReactiveNavigationSystem::navigationStep()] Navigation Params:\n%s\n", m_navigationParams.getAsText().c_str() );
+
 				m_robot.startWatchdog( 1000 );	// Watchdog = 1 seg
 			}
 
@@ -154,14 +163,13 @@ void CAbstractReactiveNavigationSystem::navigationStep()
 		}
 		catch (std::exception &e)
 		{
-			cerr << e.what() << endl;
-			printf("[CAbstractReactiveNavigationSystem::navigationStep] Exceptions!!\n");
+			cerr << "[CAbstractReactiveNavigationSystem::navigationStep] Exception:\n" << e.what() << endl;
 		}
 		catch (...)
 		{
-			printf("[CAbstractReactiveNavigationSystem::navigationStep] Unexpected exception!!\n");
+			cerr << "[CAbstractReactiveNavigationSystem::navigationStep] Unexpected exception.\n";
 		}
-		break;	// Fin de case NAVIGATING
+		break;	// End case NAVIGATING
 	};
-	m_lastNavigationState = startingState;
+	m_lastNavigationState = prevState;
 }

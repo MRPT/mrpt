@@ -46,6 +46,15 @@ namespace mrpt
 		using namespace mrpt::utils;
 		using namespace mrpt::poses;
 
+	/**  The implemented reactive navigation methods
+	*  \ingroup mrpt_reactivenav_grp
+	*/
+	enum THolonomicMethod
+	{
+		hmVIRTUAL_FORCE_FIELDS = 0,
+		hmSEARCH_FOR_BEST_GAP = 1
+	};
+
 	/** A base class for holonomic reactive navigation methods.
 	 *  \sa CHolonomicVFF,CHolonomicND, CReactiveNavigationSystem
 	 *  \ingroup mrpt_reactivenav_grp

@@ -54,37 +54,10 @@ CReactiveNavigationSystem::CReactiveNavigationSystem(
     bool					enableConsoleOutput,
     bool					enableLogToFile)
 	:
-	CAbstractReactiveNavigationSystem(react_iterf_impl),
-	last_cmd_v                   (0),
-	last_cmd_w                   (0),
-	navigationEndEventSent       (false),
-	holonomicMethod              (NULL),
-	logFile                      (NULL),
-	m_enableConsoleOutput        (enableConsoleOutput),
-	m_init_done                  (false),
-	nIteration                   (0),
-	meanExecutionPeriod          (0.1f),
-	m_timelogger                 (false), // default: disabled
-	meanExecutionTime            (0.1f),
-	meanTotalExecutionTime       (0.1f),
+	CAbstractPTGBasedReactive(react_iterf_impl),
 	nLastSelectedPTG             (-1),
-	m_decimateHeadingEstimate    (0),
-	m_closing_navigator          (false)
+	m_decimateHeadingEstimate    (0)
 {
-	last_cmd_v			= 0;
-	last_cmd_w			= 0;
-
-	PTGs.resize(0);
-	enableLogFile( enableLogToFile );
-}
-
-/*---------------------------------------------------------------
-						initialize
-  ---------------------------------------------------------------*/
-void CReactiveNavigationSystem::initialize()
-{
-	// Compute collision grids:
-	STEP1_CollisionGridsBuilder();
 }
 
 
@@ -99,17 +72,6 @@ void CReactiveNavigationSystem::changeRobotShape( const math::CPolygon &shape )
 		THROW_EXCEPTION("The robot shape has less than 3 vertices!!")
 
 	m_robotShape = shape;
-}
-
-/*---------------------------------------------------------------
-						getLastLogRecord
-	Provides a copy of the last log record with information
-		about execution.
-  ---------------------------------------------------------------*/
-void CReactiveNavigationSystem::getLastLogRecord( CLogFileRecord &o )
-{
-	mrpt::synch::CCriticalSectionLocker lock(&m_critZoneLastLog);
-	o = lastLogRecord;
 }
 
 
@@ -129,8 +91,7 @@ void CReactiveNavigationSystem::loadConfigFile(const mrpt::utils::CConfigFileBas
 	unsigned int PTG_COUNT = ini.read_int(robotName,"PTG_COUNT",0, true );
 
 	refDistance = ini.read_float(robotName,"MAX_REFERENCE_DISTANCE",5 );
-	colGridRes_x = ini.read_float(robotName,"RESOLUCION_REJILLA_X",0.02f );
-	colGridRes_y = ini.read_float(robotName,"RESOLUCION_REJILLA_Y",0.02f);
+	colGridRes = ini.read_float(robotName,"RESOLUCION_REJILLA_X",0.02f );
 
 	MRPT_LOAD_CONFIG_VAR_NO_DEFAULT(robotMax_V_mps,float,  ini,robotName);
 	MRPT_LOAD_CONFIG_VAR_NO_DEFAULT(robotMax_W_degps,float,  ini,robotName);
@@ -143,13 +104,6 @@ void CReactiveNavigationSystem::loadConfigFile(const mrpt::utils::CConfigFileBas
 	MRPT_LOAD_CONFIG_VAR_NO_DEFAULT(maxObstaclesHeight,float,  ini,robotName);
 
 	MRPT_LOAD_CONFIG_VAR_NO_DEFAULT(DIST_TO_TARGET_FOR_SENDING_EVENT,float,  ini,robotName);
-
-
-	int HoloMethod = ini.read_int("GLOBAL_CONFIG","HOLONOMIC_METHOD",1, true);
-
-	setHolonomicMethod( (THolonomicMethod) HoloMethod );
-
-	holonomicMethod->initialize( ini );
 
 
 	badNavAlarm_AlarmTimeout = ini.read_float("GLOBAL_CONFIG","ALARM_SEEMS_NOT_APPROACHING_TARGET_TIMEOUT", 10, true);
@@ -183,7 +137,7 @@ void CReactiveNavigationSystem::loadConfigFile(const mrpt::utils::CConfigFileBas
 
 		TParameters<double> params;
 		params["ref_distance"] = refDistance;
-		params["resolution"]   = colGridRes_x;
+		params["resolution"]   = colGridRes;
 
 		params["PTG_type"]	= ini.read_int(robotName,format("PTG%u_Type", n ),1, true );
 		params["v_max"]		= ini.read_float(robotName,format("PTG%u_v_max_mps", n ), 5, true);
@@ -212,37 +166,27 @@ void CReactiveNavigationSystem::loadConfigFile(const mrpt::utils::CConfigFileBas
 			);
 		m_timelogger.leave("PTG.simulateTrajectories");
 
-		// Solo para depurar, hacer graficas, etc...
-		PTGs[n]->debugDumpInFiles(n);
+		// Just for debugging, etc.
+		//PTGs[n]->debugDumpInFiles(n);
 
 		printf_debug("...OK!\n");
 	}
 	printf_debug("\n");
 
+	this->loadHolonomicMethodConfig(ini,"GLOBAL_CONFIG");
+
 	// Mostrar configuracion cargada de fichero:
 	// --------------------------------------------------------
 	printf_debug("\tLOADED CONFIGURATION:\n");
 	printf_debug("-------------------------------------------------------------\n");
-	printf_debug("  Holonomic method \t\t= ");
-	switch (  HoloMethod )
-	{
-	case hmVIRTUAL_FORCE_FIELDS:
-		printf_debug("VFF (Virtual Force Fields)");
-		break;
-	case hmSEARCH_FOR_BEST_GAP:
-		printf_debug("ND (Nearness Diagram)");
-		break;
-	default:
-		printf_debug("Unknown!! (Selecting default one)");
-		break;
-	};
 
-	printf_debug("\n");
-	printf_debug("  Robot name \t\t\t= ");
-	printf_debug(robotName.c_str());
+	printf_debug("  Robot name \t\t\t=%s\n",robotName.c_str());
+
+	ASSERT_(!m_holonomicMethod.empty())
+	printf_debug("  Holonomic method \t\t= %s\n",typeid(m_holonomicMethod[0]).name()); 
 	printf_debug("\n  GPT Count\t\t\t= %u\n", (int)PTG_COUNT );
 	printf_debug("  Max. ref. distance\t\t= %f\n", refDistance );
-	printf_debug("  Cells resolution (x,y) \t= (%.04f,%.04f)\n", colGridRes_x,colGridRes_y );
+	printf_debug("  Cells resolution \t= %.04f\n", colGridRes );
 	printf_debug("  Max. speed (v,w)\t\t= (%.04f m/sec, %.04f deg/sec)\n", robotMax_V_mps, robotMax_W_degps );
 	printf_debug("  Robot Shape Points Count \t= %u\n", m_robotShape.verticesCount() );
 	printf_debug("  Obstacles 'z' axis range \t= [%.03f,%.03f]\n", minObstaclesHeight, maxObstaclesHeight );
@@ -251,88 +195,6 @@ void CReactiveNavigationSystem::loadConfigFile(const mrpt::utils::CConfigFileBas
 	m_init_done = true;
 
 	MRPT_END
-}
-
-
-
-/*---------------------------------------------------------------
-						setHolonomicMethod
-  ---------------------------------------------------------------*/
-void CReactiveNavigationSystem::setHolonomicMethod(
-    mrpt::reactivenav::THolonomicMethod	method,
-    const char							*config_INIfile)
-{
-	// Delete current method:
-	if (holonomicMethod) delete holonomicMethod;
-
-	switch (method)
-	{
-	default:
-	case hmSEARCH_FOR_BEST_GAP:
-		holonomicMethod = new CHolonomicND();
-		break;
-
-	case hmVIRTUAL_FORCE_FIELDS:
-		holonomicMethod = new CHolonomicVFF();
-		break;
-	};
-
-
-}
-
-
-/*---------------------------------------------------------------
-						enableLogFile
-  ---------------------------------------------------------------*/
-void CReactiveNavigationSystem::enableLogFile(bool enable)
-{
-	try
-	{
-		// Disable:
-		// -------------------------------
-		if (!enable)
-		{
-			if (logFile)
-			{
-				printf_debug("[CReactiveNavigationSystem::enableLogFile] Stopping logging.\n");
-				// Close file:
-				delete logFile;
-				logFile = NULL;
-			}
-			else return;	// Already disabled.
-		}
-		else
-		{	// Enable
-			// -------------------------------
-			if (logFile) return; // Already enabled:
-
-			// Open file, find the first free file-name.
-			char	aux[100];
-			int     nFichero=0;
-			bool    nombre_libre= false;
-
-			system::createDirectory("./reactivenav.logs");
-
-			while (!nombre_libre)
-			{
-				nFichero++;
-				sprintf(aux, "./reactivenav.logs/log_%03u.reactivenavlog", nFichero );
-
-				nombre_libre = !system::fileExists(aux);
-			}
-
-			// Open log file:
-			logFile = new CFileOutputStream(aux);
-
-			printf_debug("[CReactiveNavigationSystem::enableLogFile] Logging to file:");
-			printf_debug(aux);
-			printf_debug("\n");
-
-		}
-	} catch (...) {
-		printf_debug("[CReactiveNavigationSystem::enableLogFile] Exception!!\n");
-	}
-
 }
 
 /*---------------------------------------------------------------
@@ -368,9 +230,6 @@ void  CReactiveNavigationSystem::performNavigationStep()
 	m_timelogger.enter("navigationStep");
 	try
 	{
-		// Iterations count:
-		nIteration++;
-
 		// Start timer
 		totalExecutionTime.Tic();
 
@@ -1217,58 +1076,5 @@ CReactiveNavigationSystem::~CReactiveNavigationSystem()
 	mrpt::utils::delete_safe(holonomicMethod);
 }
 
-
-/*************************************************************************
-			 Start navigation
-*************************************************************************/
-void  CReactiveNavigationSystem::navigate(const CReactiveNavigationSystem::TNavigationParams *params )
-{
-	navigationEndEventSent = false;
-
-	// Copiar datos:
-	m_navigationParams = *params;
-
-	// Si se piden coordenadas relativas, transformar a absolutas:
-	if ( m_navigationParams.targetIsRelative )
-	{
-		std::cout << format("TARGET COORDS. ARE RELATIVE!! -> Translating them...\n");
-		// Obtener posicion actual:
-		poses::CPose2D		currentPose;
-		float				velLineal_actual,velAngular_actual;
-
-		if ( !m_robot.getCurrentPoseAndSpeeds(currentPose, velLineal_actual,velAngular_actual) )
-		{
-			doEmergencyStop("\n[CReactiveNavigationSystem] Error querying current robot pose to resolve relative coordinates\n");
-			return;
-		}
-
-		poses::CPoint2D	absTarget;
-		absTarget = currentPose + m_navigationParams.target;
-		m_navigationParams.target = absTarget;
-		m_navigationParams.targetIsRelative=false;       // Ya no son relativas
-	}
-
-	// new state:
-	m_navigationState = NAVIGATING;
-
-	// Reset the bad navigation alarm:
-	badNavAlarm_minDistTarget = 1e10f;
-	badNavAlarm_lastMinDistTime = system::getCurrentTime();
-}
-
-/*************************************************************************
-                Para la silla y muestra un mensaje de error.
-*************************************************************************/
-void CReactiveNavigationSystem::doEmergencyStop( const char *msg )
-{
-	// Mostrar mensaje y parar navegacion si estamos moviendonos:
-	printf_debug( msg );
-	printf_debug( "\n");
-
-	m_robot.stop();
-
-	m_navigationState = NAV_ERROR;
-	return;
-}
 
 

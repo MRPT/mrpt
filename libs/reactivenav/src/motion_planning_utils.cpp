@@ -206,8 +206,8 @@ void mrpt::reactivenav::build_PTG_collision_grids(
 void mrpt::reactivenav::build_PTG_collision_grid3D(
 	CParameterizedTrajectoryGenerator*				ptg,
 	const mrpt::math::CPolygon						&robotShape,
-	const unsigned int								&level,
-	const unsigned int								&num_ptg,
+	const unsigned int								level,
+	const unsigned int								num_ptg,
 	bool											verbose
 	)
 {

@@ -35,19 +35,7 @@
 #ifndef CReactiveNavigationSystem_H
 #define CReactiveNavigationSystem_H
 
-#include <mrpt/maps.h>
-#include <mrpt/poses.h>
-#include <mrpt/math.h>
-#include <mrpt/synch.h>
-#include <mrpt/utils/CTimeLogger.h>
-#include <mrpt/reactivenav/link_pragmas.h>
-
-#include "CAbstractReactiveNavigationSystem.h"
-#include "CParameterizedTrajectoryGenerator.h"
-#include "CLogFileRecord.h"
-#include "CAbstractHolonomicReactiveMethod.h"
-#include "CHolonomicVFF.h"
-#include "CHolonomicND.h"
+#include "CAbstractPTGBasedReactive.h"
 
 namespace mrpt
 {
@@ -55,15 +43,6 @@ namespace mrpt
 	*/
   namespace reactivenav
   {
-	  /**  The implemented reactive navigation methods
-	    *  \ingroup mrpt_reactivenav_grp
-	    */
-	  enum THolonomicMethod
-	  {
-		  hmVIRTUAL_FORCE_FIELDS = 0,
-		  hmSEARCH_FOR_BEST_GAP = 1
-	  };
-
 		/** Implements a reactive navigation system based on TP-Space, with an arbitrary holonomic
 		*  reactive method running on it, and any desired number of PTG for transforming the navigation space.
 		*  Both, the holonomic method and the PTGs can be customized by the apropriate user derived classes.
@@ -77,29 +56,21 @@ namespace mrpt
 		* - 16/SEP/2004: Totally redesigned, according to document "MultiParametric Based Space Transformation for Reactive Navigation"
 		* - 29/SEP/2005: Totally rewritten again, for integration into MRPT library and according to the ICRA paper.
 		* - 17/OCT/2007: Whole code updated to accomodate to MRPT 0.5 and make it portable to Linux.
+		* - DEC/2013: Code refactoring between this class and CAbstractHolonomicReactiveMethod
 		*
 		*  \sa CAbstractReactiveNavigationSystem, CParameterizedTrajectoryGenerator, CAbstractHolonomicReactiveMethod
 		*  \ingroup mrpt_reactivenav_grp
 		*/
-		class REACTIVENAV_IMPEXP  CReactiveNavigationSystem : public CAbstractReactiveNavigationSystem
+		class REACTIVENAV_IMPEXP  CReactiveNavigationSystem : public CAbstractPTGBasedReactive
 		{
 		public:
 			EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 		public:
-			/** Constructor
-			 *  \param configINIFile The file to load the configuration from. See loadConfigFile
-			 *  \param robotConfigFile The file to load the robot specific configuration from.
-			 *	\param rmc A set of wrappers that must be filled in.
-			 *	\param sensors A set of wrappers that must be filled in.
-			 *	\param dbg A set of wrappers that must be filled in.
-			 *	\param evnts A set of wrappers that must be filled in.
-			 *  \param enableConsoleOutput Set to false if console output is not desired.
-			 *  \param enableLogFile Set to true to enable logging to file.
-			 */
+			/** See docs in ctor of base class */
 			CReactiveNavigationSystem(
-				CReactiveInterfaceImplementation   &react_iterf_impl,
-				bool					enableConsoleOutput = true,
-				bool					enableLogFile = false);
+				CReactiveInterfaceImplementation &react_iterf_impl,
+				bool enableConsoleOutput = true,
+				bool enableLogFile = false);
 
 			/** Destructor
 			 */
@@ -109,130 +80,31 @@ namespace mrpt
 			 */
 			void loadConfigFile(const mrpt::utils::CConfigFileBase &ini, const mrpt::utils::CConfigFileBase &robotIni);
 
-			/** Must be called for loading collision grids, or the first navigation
-			  *   command may last a long time to be executed.
-			  */
-			void initialize();
-
-			/** Start navigation:
-			  * \param[in] params Pointer to structure with navigation info (its contents will be copied, so the original can be freely destroyed upon return.)
-			  */
-			void  navigate( const TNavigationParams *params );
-
-			/** Selects which one from the set of available holonomic methods will be used
-			  *  into transformed TP-Space, and sets its configuration from a configuration file.
-			  */
-			void setHolonomicMethod(
-				THolonomicMethod	method,
-				const char			*config_INIfile = "./CONFIG_ReactiveNavigator.ini");
-
 			/** Change the robot shape, which is taken into account for collision
 			  *  grid building.
 			  */
 			void changeRobotShape( const math::CPolygon &shape );
 
-			/** Provides a copy of the last log record with information about execution. On any unexpected error "*o" will be NULL.
-			  * \param o An object where the log will be stored into.
-			  */
-			void getLastLogRecord( CLogFileRecord &o );
+			/** Returns the number of different PTGs that have been setup */
+			virtual size_t getPTG_count() const { return PTGs.size(); } 
 
-			/** Enables / disables the logging into a file.
-			  */
-			void enableLogFile(bool enable);
-
-			/** Enables/disables the detailed time logger (default:disabled upon construction)
-			  *  When enabled, a report will be dumped to std::cout upon destruction.
-			  * \sa getTimeLogger
-			  */
-			void enableTimeLog(bool enable=true) { m_timelogger.enable(true); }
-
-			/** Gives access to a const-ref to the internal time logger \sa enableTimeLog */
-			const mrpt::utils::CTimeLogger & getTimeLogger() const { return m_timelogger; }
 
 		private:
 			// ------------------------------------------------------
-			//					PRIVATE DEFINITIONS
-			// ------------------------------------------------------
-			/** The structure used for storing a movement generated by a holonomic-method .
-			  */
-			struct THolonomicMovement {
-					CParameterizedTrajectoryGenerator		*PTG;	/// The associated PTG
-					double	direction, speed;	/// The holonomic movement
-					double	evaluation;	/// An evaluation in the range [0,1] for the goodness of the movement.
-			};
-
-			/** The last log.
-			  */
-			CLogFileRecord		lastLogRecord;
-
-			/** For the histeresis: */
-			float		last_cmd_v,last_cmd_w;
-
-			/** Will be false until the navigation end is sent, and it is reset with each new command
-			  */
-			bool		navigationEndEventSent;
-
-			/** Critical zones: */
-            synch::CCriticalSection  m_critZoneLastLog,m_critZoneNavigating;
-
-			// ------------------------------------------------------
-			//					PRIVATE METHODS
-			// ------------------------------------------------------
-			/** The main method for the navigator */
-			void  performNavigationStep( );
-
-			// ------------------------------------------------------
 			//					PRIVATE	VARIABLES
 			// ------------------------------------------------------
-
-			CAbstractHolonomicReactiveMethod    *holonomicMethod;   //!< The holonomic navigation algorithm.
-			mrpt::utils::CStream                *logFile;           //!< The current log file stream, or NULL if not being used
-
-			bool  m_enableConsoleOutput;  //!< Enables / disables the console debug output.
-
-			bool  m_init_done;            //!< Whether \a loadConfigFile() has been called or not.
-
-			CTicTac	timerForExecutionPeriod;
-
-			// Loaded from INI file:
-			std::string robotName;				// El nombre del robot donde estamos
-			float   refDistance;				// "dmax" in papers.
-			float   colGridRes_x,colGridRes_y;  // Resolucion de la rejilla de distancias de choque precalculadas
-			float   robotMax_V_mps;				// Max. vel del robot en m/s
-			float   robotMax_W_degps;           // Max. vel del robot en grados/s
-			std::vector<float> weights; // length: 6 [0,5]
 			float	minObstaclesHeight, maxObstaclesHeight; // The range of "z" coordinates for obstacles to be considered
-			float	DIST_TO_TARGET_FOR_SENDING_EVENT;
 
-
-			unsigned long	nIteration;	//!< The iteration count.
-			float			meanExecutionPeriod;	//!< Runtime estimation of execution period of the method.
-			mrpt::utils::CTimeLogger  m_timelogger; //!< A complete time logger \sa enableTimeLog()
-
-
-			/** For sending an alarm (error event) when it seems that we are not approaching toward the target in a while...
-			  */
-			float			    badNavAlarm_minDistTarget;
-			mrpt::system::TTimeStamp	badNavAlarm_lastMinDistTime;
-			float			    badNavAlarm_AlarmTimeout;
-
-
-			/** The robot 2D shape model
-			  */
+			/** The robot 2D shape model */
 			math::CPolygon		m_robotShape;
-			bool				m_collisionGridsMustBeUpdated;
-
 
 			/** @name Variables for CReactiveNavigationSystem::performNavigationStep
 			    @{ */
-			mrpt::utils::CTicTac				totalExecutionTime, executionTime, tictac;
 			std::vector<vector_double>			TP_Obstacles;
-			std::vector<poses::CPoint2D,Eigen::aligned_allocator<poses::CPoint2D> >			TP_Targets;		// Target location (x,y) in TP-Space
+			std::vector<math::TPoint2D>			TP_Targets;		// Target location (x,y) in TP-Space
 			std::vector<THolonomicMovement>		holonomicMovements;
 			std::vector<float>					times_TP_transformations, times_HoloNav;
 			std::vector<bool>					valid_TP;
-			float								meanExecutionTime;
-			float								meanTotalExecutionTime;
 			int									nLastSelectedPTG;
 			int                                 m_decimateHeadingEstimate;
 			/** @} */
@@ -244,7 +116,16 @@ namespace mrpt
 
 			// Steps for the reactive navigation sytem.
 			// ----------------------------------------------------------------------------
-			void            STEP1_CollisionGridsBuilder();
+			virtual void STEP1_CollisionGridsBuilder();
+		
+			/** Return false on any fatal error */
+			virtual bool STEP2_SenseObstacles();
+
+			virtual void STEP3_WSpaceToTPSpace();
+
+			virtual void STEP4_HolonomicMethod();
+
+/*			void            STEP1_CollisionGridsBuilder();
 
 			bool            STEP2_Sense(
 									mrpt::slam::CSimplePointsMap					&out_obstacles);
@@ -278,13 +159,7 @@ namespace mrpt
 									THolonomicMovement					&in_movement,
 									float								&out_v,
 									float								&out_w);
-
-			//
-			bool			m_closing_navigator;
-
-			/** Stops the robot and set navigation state to error */
-			void			doEmergencyStop( const char *msg );
-
+									*/
 		};
 	}
 }
