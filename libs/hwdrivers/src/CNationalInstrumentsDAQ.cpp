@@ -632,6 +632,9 @@ void CNationalInstrumentsDAQ::grabbing_thread(TInfoPerTask &ipt)
 		TaskHandle  &taskHandle= *reinterpret_cast<TaskHandle*>(&ipt.taskHandle);
 		if (m_verbose) cout << "[CNationalInstrumentsDAQ::grabbing_thread] Starting thread for task " << ipt.taskHandle << "\n";
 
+		MRPT_TODO("Add write timeout")
+		//ipt.write_pipe->timeout_read_between_us
+
         const float timeout = 10*ipt.task.samplesPerChannelToRead/ipt.task.samplesPerSecond;
 
 		int err=0;
@@ -722,8 +725,8 @@ void CNationalInstrumentsDAQ::grabbing_thread(TInfoPerTask &ipt)
 			// Send the observation to the main thread:
 			if (there_are_data)
 			{
-				ipt.write_pipe->WriteObject(&obs);
 				++(ipt.new_obs_available);
+				ipt.write_pipe->WriteObject(&obs);
 				//mrpt::system::sleep(1); // This seems to be needed to allow all objs to be sent to the recv thread
 			}
 
