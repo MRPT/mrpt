@@ -2879,7 +2879,7 @@ bool CRandomFieldGridMap2D::exist_relation_between2cells(
 						for (int j=-1;j<=1;j++)
 						{
 							//check that neighbour is inside the map
-							if( (int(row)+j>=0) && (int(row)+j<=matExp.getRowCount()-1) && (int(col)+i>=0) && (int(col)+i<=matExp.getColCount()-1) )
+							if( (int(row)+j>=0) && (int(row)+j<=int(matExp.getRowCount()-1)) && (int(col)+i>=0) && (int(col)+i<=int(matExp.getColCount())-1) )
 							{
 								if( !( (i==0 && j==0) || !(matExp(row+j,col+i)==0) ))
 								{
