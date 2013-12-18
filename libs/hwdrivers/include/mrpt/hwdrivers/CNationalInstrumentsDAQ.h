@@ -358,7 +358,7 @@ namespace mrpt
 				std::auto_ptr<mrpt::synch::CPipeReadEndPoint> read_pipe;
 				std::auto_ptr<mrpt::synch::CPipeWriteEndPoint> write_pipe;
 				bool must_close, is_closed;
-				volatile bool new_data_available;
+				mrpt::synch::CAtomicCounter  new_obs_available;
 
 				TaskDescription task; //!< A copy of the original task description that generated this thread.
 			};

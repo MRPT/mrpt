@@ -72,6 +72,7 @@
 #	define MRPT_DAQmxClearTask DAQmxBaseClearTask
 #	define MRPT_DAQmxReadAnalogF64 DAQmxBaseReadAnalogF64
 #	define MRPT_DAQmxReadCounterF64 DAQmxBaseReadCounterF64
+#	define MRPT_DAQmxReadDigitalLines DAQmxBaseReadDigitalLines
 #else
 #	define MRPT_DAQmxGetExtendedErrorInfo DAQmxGetExtendedErrorInfo
 #	define MRPT_DAQmxCreateTask DAQmxCreateTask
@@ -92,6 +93,7 @@
 #	define MRPT_DAQmxClearTask DAQmxClearTask
 #	define MRPT_DAQmxReadAnalogF64 DAQmxReadAnalogF64
 #	define MRPT_DAQmxReadCounterF64 DAQmxReadCounterF64
+#	define MRPT_DAQmxReadDigitalLines DAQmxReadDigitalLines
 #endif
 
 // An auxiliary macro to check and report errors in the DAQmx library as exceptions with a well-explained message.
@@ -118,7 +120,7 @@ CNationalInstrumentsDAQ::TInfoPerTask::TInfoPerTask() :
 	taskHandle(0),
 	must_close(false),
 	is_closed(false),
-	new_data_available(false),
+	new_obs_available(0),
 	task()
 { }
 
@@ -130,7 +132,7 @@ CNationalInstrumentsDAQ::TInfoPerTask::TInfoPerTask(const TInfoPerTask &o) :
 	write_pipe(o.write_pipe.get()),
 	must_close(o.must_close),
 	is_closed(o.is_closed),
-	new_data_available(o.new_data_available),
+	new_obs_available(0),
 	task(o.task)
 {
 	const_cast<TInfoPerTask*>(&o)->read_pipe.release();
@@ -573,10 +575,10 @@ void  CNationalInstrumentsDAQ::readFromDAQ(
 		CObservationRawDAQ tmp_obs;
 		try
 		{
-			if (it->new_data_available) 
+			if (it->new_obs_available!=0) 
 			{
 				it->read_pipe->ReadObject(&tmp_obs);
-				it->new_data_available=false;  MRPT_TODO("Any better synch method?")
+				--(it->new_obs_available);
 
 				// Yes, valid block of samples was adquired:
 				outObservations.push_back(CObservationRawDAQPtr(new CObservationRawDAQ(tmp_obs)));
@@ -634,6 +636,7 @@ void CNationalInstrumentsDAQ::grabbing_thread(TInfoPerTask &ipt)
 
 		int err=0;
 		vector<double> dBuf;
+		vector<uint8_t> u8Buf;
 
 		const mrpt::slam::CObservationRawDAQ clean_obs;
 		mrpt::slam::CObservationRawDAQ obs;
@@ -674,6 +677,27 @@ void CNationalInstrumentsDAQ::grabbing_thread(TInfoPerTask &ipt)
 					if (m_verbose) cout << "[CNationalInstrumentsDAQ::grabbing_thread] " << pointsReadPerChan << " analog samples read.\n";
 				}
 			} // end AI
+			if (ipt.task.has_di) 
+			{
+				const uint32_t totalSamplesToRead = ceil(ipt.task.di.linesCount/8.0) * ipt.task.samplesPerChannelToRead;
+				u8Buf.resize(totalSamplesToRead);
+
+				int32  pointsReadPerChan=-1, numBytesPerSampl=-1;
+				if ((err = MRPT_DAQmxReadDigitalLines(
+					taskHandle,
+					ipt.task.samplesPerChannelToRead,timeout, DAQmx_Val_GroupByChannel,
+					&u8Buf[0],u8Buf.size(),
+					&pointsReadPerChan,&numBytesPerSampl,NULL))<0 && err!=DAQmxErrorSamplesNotYetAvailable) 
+				{
+					MRPT_DAQmx_ErrChk(err)
+				}
+				else if (pointsReadPerChan>0) {
+					ASSERT_EQUAL_(totalSamplesToRead,pointsReadPerChan*ipt.task.ai.physicalChannelCount)
+					obs.DIN = u8Buf;
+					there_are_data = true;
+					if (m_verbose) cout << "[CNationalInstrumentsDAQ::grabbing_thread] " << pointsReadPerChan << " digital samples read.\n";
+				}
+			} // end DI
 			if (ipt.task.has_ci_ang_encoder || ipt.task.has_ci_lin_encoder) 
 			{
 				const int32 totalSamplesToRead = ipt.task.samplesPerChannelToRead;
@@ -698,9 +722,9 @@ void CNationalInstrumentsDAQ::grabbing_thread(TInfoPerTask &ipt)
 			// Send the observation to the main thread:
 			if (there_are_data)
 			{
-				ipt.new_data_available = true;
 				ipt.write_pipe->WriteObject(&obs);
-				mrpt::system::sleep(15); // This seems to be needed to allow all objs to be sent to the recv thread
+				++(ipt.new_obs_available);
+				//mrpt::system::sleep(1); // This seems to be needed to allow all objs to be sent to the recv thread
 			}
 
 		} // end of main thread loop
