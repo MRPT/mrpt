@@ -52,7 +52,8 @@ CAbstractPTGBasedReactive::CAbstractPTGBasedReactive(CReactiveInterfaceImplement
 	new_cmd_w                    (0),
 	navigationEndEventSent       (false),
 	m_holonomicMethod            (),
-	logFile                      (NULL),
+	m_logFile                    (NULL),
+	m_enableKeepLogRecords       (false),
 	m_enableConsoleOutput        (enableConsoleOutput),
 	m_init_done                  (false),
 	meanExecutionPeriod          (0.1f),
@@ -76,7 +77,7 @@ void CAbstractPTGBasedReactive::preDestructor()
 	// Just in case.
 	m_robot.stop();
 
-	mrpt::utils::delete_safe(logFile);
+	mrpt::utils::delete_safe(m_logFile);
 
 	// Free holonomic method:
 	this->deleteHolonomicObjects();
@@ -105,19 +106,19 @@ void CAbstractPTGBasedReactive::enableLogFile(bool enable)
 		// -------------------------------
 		if (!enable)
 		{
-			if (logFile)
+			if (m_logFile)
 			{
 				printf_debug("[CAbstractPTGBasedReactive::enableLogFile] Stopping logging.\n");
 				// Close file:
-				delete logFile;
-				logFile = NULL;
+				delete m_logFile;
+				m_logFile = NULL;
 			}
 			else return;	// Already disabled.
 		}
 		else
 		{	// Enable
 			// -------------------------------
-			if (logFile) return; // Already enabled:
+			if (m_logFile) return; // Already enabled:
 
 			// Open file, find the first free file-name.
 			char	aux[100];
@@ -134,7 +135,7 @@ void CAbstractPTGBasedReactive::enableLogFile(bool enable)
 			}
 
 			// Open log file:
-			logFile = new CFileOutputStream(aux);
+			m_logFile = new CFileOutputStream(aux);
 
 			printf_debug("[CAbstractPTGBasedReactive::enableLogFile] Logging to file:");
 			printf_debug(aux);
@@ -237,7 +238,7 @@ void CAbstractPTGBasedReactive::setHolonomicMethod(
 }
 
 
-
+// The main method: executes one time-iteration of the reactive navigation algorithm.
 void CAbstractPTGBasedReactive::performNavigationStep()
 {
 	// Security tests:
@@ -246,12 +247,9 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 
 	const size_t nPTGs = this->getPTG_count();
 
-	std::vector<CHolonomicLogFileRecordPtr> HLFRs(nPTGs);
-	//int											nSelectedPTG;
-	//THolonomicMovement							selectedHolonomicMovement;
-
+	// Whether to worry about log files:
+	const bool fill_log_record = (m_logFile!=NULL || m_enableKeepLogRecords);
 	CLogFileRecord newLogRec;
-	newLogRec.infoPerPTG.resize(nPTGs);
 	
 	// Lock
 	mrpt::synch::CCriticalSectionLocker lock( &m_critZoneNavigating );
@@ -348,76 +346,134 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 		// Start timer
 		executionTime.Tic();
 
-		//  STEP3(a): Transform target location into TP-Space for each PTG
-		// -----------------------------------------------------------------------------
+		if (fill_log_record) {
+			newLogRec.infoPerPTG.resize(nPTGs);
+		}
+
 		m_infoPerPTG.resize(nPTGs);
+		vector<THolonomicMovement> holonomicMovements(nPTGs);
 
 		for (size_t indexPTG=0;indexPTG<nPTGs;indexPTG++)
 		{
+			CHolonomicLogFileRecordPtr HLFR;
+
+			//  STEP3(a): Transform target location into TP-Space for each PTG
+			// -----------------------------------------------------------------------------
 			CParameterizedTrajectoryGenerator * ptg = getPTG(indexPTG);
 			ASSERT_(ptg)
 			TInfoPerPTG &ipf = m_infoPerPTG[indexPTG];
 
+			// The picked movement in TP-Space (to be determined by holonomic method below)
+			THolonomicMovement &holonomicMovement = holonomicMovements[indexPTG];
+			holonomicMovement.PTG = ptg;
+
 			// Firstly, check if target falls into the PTG domain:
-			ipf.valid_TP = ptg->PTG_IsIntoDomain( relTarget.x,relTarget.y );
+			ipf.valid_TP = ptg->PTG_IsIntoDomain( relTarget.x(),relTarget.y() );
+
 
 			if (ipf.valid_TP)
 			{
 				ptg->lambdaFunction(relTarget.x(),relTarget.y(),ipf.target_k,ipf.target_dist);
 
-				ipf.target_alpha = ptg->index2alpha(k);
+				ipf.target_alpha = ptg->index2alpha(ipf.target_k);
 				ipf.TP_Target.x = cos(ipf.target_alpha) * ipf.target_dist;
 				ipf.TP_Target.y = sin(ipf.target_alpha) * ipf.target_dist;
-			}
-		}
 
-		//  STEP3: Build TP-Obstacles
-		// -----------------------------------------------------------------------------
-		{
-			CTimeLoggerEntry tle(m_timelogger,"navigationStep.STEP3_WSpaceToTPSpace");
+				//  STEP3(b): Build TP-Obstacles
+				// -----------------------------------------------------------------------------
+				{
+					CTimeLoggerEntry tle(m_timelogger,"navigationStep.STEP3_WSpaceToTPSpace");
 			
-			for (size_t indexPTG=0;indexPTG<nPTGs;indexPTG++)
+					// Initialize TP-Obstacles:
+					const size_t Ki = ptg->getAlfaValuesCount();
+					ipf.TP_Obstacles.resize( Ki );
+					for (size_t k=0;k<Ki;k++)
+					{
+						ipf.TP_Obstacles[k] = ptg->refDistance;
+						// if the robot ends the trajectory due to a >180deg turn, set that as the max. distance, not D_{max}:
+						float phi = ptg->GetCPathPoint_phi(k,ptg->getPointsCountInCPath_k(k)-1);
+						if (fabs(phi) >= M_PI* 0.95f )
+							ipf.TP_Obstacles[k]= ptg->GetCPathPoint_d(k,ptg->getPointsCountInCPath_k(k)-1);
+					}
+
+					// Implementation-dependent conversion:
+					STEP3_WSpaceToTPSpace(indexPTG,ipf.TP_Obstacles);
+
+					// Distances in TP-Space are normalized to [0,1]:
+					const double _refD = 1.0/ptg->refDistance; 
+					for (size_t i=0;i<Ki;i++) ipf.TP_Obstacles[i] *= _refD;
+				}
+
+				//  STEP4: Holonomic navigation method
+				// -----------------------------------------------------------------------------
+				{
+					CTimeLoggerEntry tle(m_timelogger,"navigationStep.STEP4_HolonomicMethod");
+
+					ASSERT_(m_holonomicMethod[indexPTG])
+					m_holonomicMethod[indexPTG]->navigate(
+						ipf.TP_Target,
+						ipf.TP_Obstacles,
+						ptg->getMax_V_inTPSpace(),
+						holonomicMovement.direction,
+						holonomicMovement.speed,
+						HLFR);
+				}
+
+				// STEP5: Evaluate each movement to assign them a "evaluation" value.
+				// ---------------------------------------------------------------------
+				{
+					CTimeLoggerEntry tle(m_timelogger,"navigationStep.STEP5_PTGEvaluator");
+
+					STEP5_PTGEvaluator(
+						holonomicMovement,
+						ipf.TP_Obstacles,
+						TPose2D(relTarget),
+						ipf.TP_Target,
+						newLogRec.infoPerPTG[indexPTG]);
+				}
+
+
+			} // end "valid_TP"
+			else
+			{   // Invalid PTG (target out of reachable space):
+				// - holonomicMovement= Leave default values
+				HLFR = CLogFileRecord_VFF::Create();
+			}
+
+			// Logging:
+			if (fill_log_record)
 			{
-				// 
-				XXXX TP_Obstacles for each PTG!!!
-
-				STEP3_WSpaceToTPSpace(relTarget);
+				newLogRec.infoPerPTG.resize(nPTGs);
+				metaprogramming::copy_container_typecasting(ipf.TP_Obstacles, newLogRec.infoPerPTG[indexPTG].TP_Obstacles);
+				newLogRec.infoPerPTG[indexPTG].PTG_desc  = ptg->getDescription();
+				newLogRec.infoPerPTG[indexPTG].TP_Target = CPoint2D(ipf.TP_Target);
+				newLogRec.infoPerPTG[indexPTG].HLFR	     = HLFR;
+				newLogRec.infoPerPTG[indexPTG].desiredDirection = holonomicMovement.direction;
+				newLogRec.infoPerPTG[indexPTG].desiredSpeed     = holonomicMovement.speed;
+				newLogRec.infoPerPTG[indexPTG].evaluation       = holonomicMovement.evaluation;
+				newLogRec.infoPerPTG[indexPTG].timeForTPObsTransformation = 0;  // XXX
+				newLogRec.infoPerPTG[indexPTG].timeForHolonomicMethod     = 0; // XXX
 			}
-		}
 
-		//  STEP4: Holonomic navigation method
-		// -----------------------------------------------------------------------------
-		{
-			CTimeLoggerEntry tle(m_timelogger,"navigationStep.STEP4_HolonomicMethod");
-			
-			STEP4_HolonomicMethod(HLFRs);
-		}
+		} // end for each PTG
 
 
-		// STEP5: Evaluate each movement to assign them a "evaluation" value.
+		// STEP6: After all PTGs have been evaluated, pick the best scored:
 		// ---------------------------------------------------------------------
-		// For each PTG:
-		for (unsigned int i=0; i<m_ptgmultilevel.size(); i++)
-		{
-			m_ptgmultilevel[i].holonomicmov.PTG = m_ptgmultilevel[i].PTGs[0];
-            CPoint2D TP_Target_i = CPoint2D(m_ptgmultilevel[i].TP_Target);
-			STEP5_PTGEvaluator(	m_ptgmultilevel[i].holonomicmov,
-								m_ptgmultilevel[i].TPObstacles,
-								relTarget,
-								TP_Target_i,
-								newLogRec.infoPerPTG[i]);
+		int nSelectedPTG = 0;
+		for (size_t indexPTG=0;indexPTG<nPTGs;indexPTG++) {
+			if ( holonomicMovements[indexPTG].evaluation > holonomicMovements[nSelectedPTG].evaluation )
+				nSelectedPTG = indexPTG;
 		}
-
-
-
-		// STEP6: Selects the best movement
-		// ---------------------------------------------------------------------
-		STEP6_Selector( selectedHolonomicMovement, nSelectedPTG );
+		const THolonomicMovement & selectedHolonomicMovement = holonomicMovements[nSelectedPTG];
 		
 
 		// STEP7: Get the non-holonomic movement command.
 		// ---------------------------------------------------------------------
-		STEP7_GenerateSpeedCommands( selectedHolonomicMovement );
+		{
+			CTimeLoggerEntry tle(m_timelogger,"navigationStep.STEP7_NonHolonomicMovement");
+			STEP7_GenerateSpeedCommands( selectedHolonomicMovement );
+		}
 
 		// ---------------------------------------------------------------------
 		//				SEND MOVEMENT COMMAND TO THE ROBOT
@@ -464,94 +520,43 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 				   );
 		}
 
-
 		// ---------------------------------------
 		// STEP8: Generate log record
 		// ---------------------------------------
-		m_timelogger.enter("navigationStep.populate_log_info");
-
-		CSimplePointsMap auxpointmap;
-
-		//Include the points of all levels (this could be improved depending on STEP2)
-		for (unsigned int i=0; i < WS_Obstacles_inlevels.size(); i++)
-			auxpointmap += *WS_Obstacles_inlevels[i].getAsSimplePointsMap();
-
-		newLogRec.WS_Obstacles				= auxpointmap;
-		newLogRec.robotOdometryPose			= curPose;
-		newLogRec.WS_target_relative		= relTarget;
-		newLogRec.v							= new_cmd_v;
-		newLogRec.w							= new_cmd_w;
-		newLogRec.nSelectedPTG				= nSelectedPTG;
-		newLogRec.executionTime				= executionTimeValue;
-		newLogRec.actual_v					= curVL;
-		newLogRec.actual_w					= curW;
-		newLogRec.estimatedExecutionPeriod	= meanExecutionPeriod;
-		newLogRec.timestamp					= tim_start_iteration;
-		newLogRec.nPTGs						= m_ptgmultilevel.size();
-		newLogRec.navigatorBehavior			= holonomicMethodSel;
-
-
-		//Polygons of each height level are drawn (but they are all shown connected...)
-		if (newLogRec.robotShape_x.size() == 0)
+		if (fill_log_record)
 		{
-			size_t nVerts = 0;
-			TPoint2D paux;
-			size_t cuenta = 0;
-			for (unsigned int i=0; i < m_robotShape.heights.size(); i++)
-				nVerts += m_robotShape.polygons[i].size() + 1;
-			if (size_t(newLogRec.robotShape_x.size()) != nVerts)
-			{
-				newLogRec.robotShape_x.resize(nVerts);
-				newLogRec.robotShape_y.resize(nVerts);
-			}
-			for (unsigned int i=0; i<m_robotShape.heights.size(); i++)
-			{
-				for (unsigned int j=0; j<m_robotShape.polygons[i].size(); j++)
-				{
-					paux = m_robotShape.polygons[i][j];
-					newLogRec.robotShape_x[cuenta]= paux.x;
-					newLogRec.robotShape_y[cuenta]= paux.y;
-					cuenta++;
-				}
-				paux = m_robotShape.polygons[i][0];
-				newLogRec.robotShape_x[cuenta]= paux.x;
-				newLogRec.robotShape_y[cuenta]= paux.y;
-				cuenta++;
-			}
-		}
+			m_timelogger.enter("navigationStep.populate_log_info");
 
+			this->loggingGetWSObstaclesAndShape(newLogRec);
 
-		// For each PTG:
-		for (size_t i = 0; i< m_ptgmultilevel.size(); i++)
-		{
-			//sizeobs = m_ptgmultilevel[i].TPObstacles.size();
-			metaprogramming::copy_container_typecasting(m_ptgmultilevel[i].TPObstacles, newLogRec.infoPerPTG[i].TP_Obstacles);
-			newLogRec.infoPerPTG[i].PTG_desc					= m_ptgmultilevel[i].PTGs[0]->getDescription();
-			newLogRec.infoPerPTG[i].TP_Target					= m_ptgmultilevel[i].TP_Target;
-			newLogRec.infoPerPTG[i].timeForTPObsTransformation	= 0;
-			newLogRec.infoPerPTG[i].timeForHolonomicMethod		= 0;
-			newLogRec.infoPerPTG[i].HLFR						= HLFRs[i];
-			newLogRec.infoPerPTG[i].desiredDirection			= m_ptgmultilevel[i].holonomicmov.direction;
-			newLogRec.infoPerPTG[i].desiredSpeed				= m_ptgmultilevel[i].holonomicmov.speed;
-			newLogRec.infoPerPTG[i].evaluation					= m_ptgmultilevel[i].holonomicmov.evaluation;
-		}
+			newLogRec.robotOdometryPose			= curPose;
+			newLogRec.WS_target_relative		= CPoint2D(relTarget.x(), relTarget.y());
+			newLogRec.v							= new_cmd_v;
+			newLogRec.w							= new_cmd_w;
+			newLogRec.nSelectedPTG				= nSelectedPTG;
+			newLogRec.executionTime				= executionTimeValue;
+			newLogRec.actual_v					= curVL;
+			newLogRec.actual_w					= curW;
+			newLogRec.estimatedExecutionPeriod	= meanExecutionPeriod;
+			newLogRec.timestamp					= tim_start_iteration;
+			newLogRec.nPTGs						= nPTGs;
+			newLogRec.navigatorBehavior			= nSelectedPTG;
 
-		m_timelogger.leave("navigationStep.populate_log_info");
-
-
-		// --------------------------------------
-		//  Save to log file:
-		// --------------------------------------
-		m_timelogger.enter("navigationStep.write_log_file");
-		if (logFile) (*logFile) << newLogRec;
-		m_timelogger.leave("navigationStep.write_log_file");
+			m_timelogger.leave("navigationStep.populate_log_info");
 		
-		// Set as last log record
-		{   // Lock
-			mrpt::synch::CCriticalSectionLocker lock_log(&m_critZoneLastLog);
-			// COPY
-			lastLogRecord = newLogRec;
-		}
+			//  Save to log file:
+			// --------------------------------------
+			m_timelogger.enter("navigationStep.write_log_file");
+			if (m_logFile) (*m_logFile) << newLogRec;
+			m_timelogger.leave("navigationStep.write_log_file");
+		
+			// Set as last log record
+			{
+				mrpt::synch::CCriticalSectionLocker lock_log(&m_critZoneLastLog);    // Lock
+				lastLogRecord = newLogRec; // COPY
+			}
+		} // if (fill_log_record)
+		
 	}
 	catch (std::exception &e)
 	{
@@ -561,5 +566,193 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 	catch (...)
 	{
 		std::cout << "[CAbstractPTGBasedReactive::performNavigationStep] Unexpected exception!!:\n";
+	}
+}
+
+void CAbstractPTGBasedReactive::STEP5_PTGEvaluator(
+	THolonomicMovement         & holonomicMovement,
+	const vector_double        & in_TPObstacles,
+	const mrpt::math::TPose2D  & WS_Target,
+	const mrpt::math::TPoint2D & TP_Target,
+	CLogFileRecord::TInfoPerPTG & log )
+{
+	const double   refDist	    = holonomicMovement.PTG->refDistance;
+	const double   TargetDir    = (TP_Target.x!=0 || TP_Target.y!=0) ? atan2( TP_Target.y, TP_Target.x) : 0.0;
+	const int      TargetSector = static_cast<int>( holonomicMovement.PTG->alpha2index( TargetDir ) );
+	const double   TargetDist   = TP_Target.norm();
+	// Picked movement direction:
+	const int      kDirection   = static_cast<int>( holonomicMovement.PTG->alpha2index( holonomicMovement.direction ) );
+
+	// Coordinates of the trajectory end for the given PTG and "alpha":
+	float	x,y,phi,t,d;
+	d = min( in_TPObstacles[ kDirection ], 0.90f*TargetDist);
+	holonomicMovement.PTG->getCPointWhen_d_Is( d, kDirection,x,y,phi,t );
+
+	// Factor 1: Free distance for the chosen PTG and "alpha" in the TP-Space:
+	// ----------------------------------------------------------------------
+	const double factor1 = in_TPObstacles[kDirection];
+
+
+	// Factor 2: Distance in sectors:
+	// -------------------------------------------
+	double dif = std::abs(((double)( TargetSector - kDirection )));
+	const double nSectors = (float)in_TPObstacles.size();
+	if ( dif > (0.5*nSectors)) dif = nSectors - dif;
+	const double factor2 = exp(-square( dif / (in_TPObstacles.size()/3.0f))) ;
+
+	// Factor 3: Angle between the robot at the end of the chosen trajectory and the target
+	// -------------------------------------------------------------------------------------
+	double t_ang = atan2( WS_Target.y - y, WS_Target.x - x );
+	t_ang -= phi;
+	mrpt::math::wrapToPiInPlace(t_ang);
+
+	const double factor3 = exp(-square( t_ang / (float)(0.5f*M_PI)) );
+
+	// Factor4:		Decrease in euclidean distance between (x,y) and the target:
+	//  Moving away of the target is negatively valued
+	// ---------------------------------------------------------------------------
+	const double dist_eucl_final = std::sqrt(square(WS_Target.x-x)+square(WS_Target.y-y));
+	const double dist_eucl_now   = std::sqrt(square(WS_Target.x)+square(WS_Target.y));
+
+	const double factor4 = min(2.0*refDist,max(0.0,((dist_eucl_now - dist_eucl_final)+refDist)))/(2*refDist);
+
+	// ---------
+	//	float decrementDistanc = dist_eucl_now - dist_eucl_final;
+	//	if (dist_eucl_now>0)
+	//			factor4 = min(1.0,min(refDist*2,max(0,decrementDistanc + refDist)) / dist_eucl_now);
+	//	else	factor4 = 0;
+	// ---------
+	//	factor4 = min(2*refDist2,max(0,decrementDistanc + refDist2)) / (2*refDist2);
+	//  factor4=  (refDist2 - min( refDist2, dist_eucl ) ) / refDist2;
+
+	// Factor5: Hysteresis:
+	// -----------------------------------------------------
+	float	want_v,want_w;
+	holonomicMovement.PTG->directionToMotionCommand( kDirection, want_v,want_w);
+
+	float	likely_v = exp( -fabs(want_v-last_cmd_v)/0.10f );
+	float	likely_w = exp( -fabs(want_w-last_cmd_w)/0.40f );
+
+	const double factor5 = min( likely_v,likely_w );
+
+
+	// Factor6: Fast when free space
+	// -----------------------------------------------------
+	float aver_obs = 0;
+	for (int i=0; i<in_TPObstacles.size(); i++)
+		aver_obs += in_TPObstacles[i];
+
+	aver_obs = aver_obs/in_TPObstacles.size();
+
+	const double factor6 = aver_obs*want_v;
+
+	//  SAVE LOG
+	log.evalFactors.resize(6);
+	log.evalFactors[0] = factor1;
+	log.evalFactors[1] = factor2;
+	log.evalFactors[2] = factor3;
+	log.evalFactors[3] = factor4;
+	log.evalFactors[4] = factor5;
+	log.evalFactors[5] = factor6;
+
+	if (holonomicMovement.speed == 0)
+	{
+		// If no movement has been found -> the worst evaluation:
+		holonomicMovement.evaluation = 0;
+	}
+	else
+	{
+		MRPT_TODO("Check if this was worth!!")
+#if 0
+		// Sum: two cases: *************************************I'm not sure about this...
+		if (dif<2	&&											// Heading the target
+			    in_TPObstacles[kDirection]*0.95f>TargetDist 	// and free space towards the target
+			)
+		{
+			//	Direct path to target:
+			//	holonomicMovement.evaluation = 1.0f + (1 - TargetDist) + factor5 * weight5 + factor6*weight6;
+			holonomicMovement.evaluation = 1.0f + (1 - t/15.0f) + factor5 * weights[4] + factor6*weights[5];
+		}
+		else
+		{
+#endif
+		// General case:
+		holonomicMovement.evaluation = (
+			factor1 * weights[0] +
+			factor2 * weights[1] +
+			factor3 * weights[2] +
+			factor4 * weights[3] +
+			factor5 * weights[4] +
+			factor6 * weights[5]
+			) / ( math::sum(weights));
+	}
+}
+
+void CAbstractPTGBasedReactive::STEP7_GenerateSpeedCommands( const THolonomicMovement &in_movement)
+{
+	try
+	{
+
+		last_cmd_v = new_cmd_v;
+		last_cmd_w = new_cmd_w;
+
+		if (in_movement.speed == 0)
+		{
+			// The robot will stop:
+			new_cmd_v = new_cmd_w = 0;
+		}
+		else
+		{
+			// Take the normalized movement command:
+			in_movement.PTG->directionToMotionCommand(
+			    in_movement.PTG->alpha2index( in_movement.direction ),
+			    new_cmd_v,
+			    new_cmd_w );
+
+			// Scale holonomic speeds to real-world one:
+			//const double reduction = min(1.0, in_movement.speed / sqrt( square(new_cmd_v) + square(r*new_cmd_w)));
+			double reduction = in_movement.speed;
+			if (reduction < 0.5)
+				reduction = 0.5;
+
+			// To scale:
+			new_cmd_v*=reduction;
+			new_cmd_w*=reduction;
+
+			// Assure maximum speeds:
+			if (fabs(new_cmd_v) > robotMax_V_mps)
+			{
+				// Scale:
+				float F = fabs(robotMax_V_mps / new_cmd_v);
+				new_cmd_v *= F;
+				new_cmd_w *= F;
+			}
+
+			if (fabs(new_cmd_w) > DEG2RAD(robotMax_W_degps))
+			{
+				// Scale:
+				float F = fabs((float)DEG2RAD(robotMax_W_degps) / new_cmd_w);
+				new_cmd_v *= F;
+				new_cmd_w *= F;
+			}
+
+			//First order low-pass filter
+			float alfa = meanExecutionPeriod/( meanExecutionPeriod + SPEEDFILTER_TAU);
+			new_cmd_v = alfa*new_cmd_v + (1-alfa)*last_cmd_v;
+			new_cmd_w = alfa*new_cmd_w + (1-alfa)*last_cmd_w;
+
+		}
+		m_timelogger.leave("navigationStep.STEP7_NonHolonomicMovement");
+	}
+	catch (std::exception &e)
+	{
+		m_timelogger.leave("navigationStep.STEP7_NonHolonomicMovement");
+		printf_debug("[CReactiveNavigationSystem::STEP7_NonHolonomicMovement] Exception:");
+		printf_debug((char*)(e.what()));
+	}
+	catch (...)
+	{
+		m_timelogger.leave("navigationStep.STEP7_NonHolonomicMovement");
+		printf_debug("[CReactiveNavigationSystem::STEP7_NonHolonomicMovement] Unexpected exception!\n");
 	}
 }

@@ -105,17 +105,6 @@ namespace mrpt
 			/** The robot 2D shape model */
 			math::CPolygon		m_robotShape;
 
-			/** @name Variables for CReactiveNavigationSystem::performNavigationStep
-			    @{ */
-			std::vector<vector_double>			TP_Obstacles;
-			std::vector<math::TPoint2D>			TP_Targets;		// Target location (x,y) in TP-Space
-			std::vector<THolonomicMovement>		holonomicMovements;
-			std::vector<float>					times_TP_transformations, times_HoloNav;
-			std::vector<bool>					valid_TP;
-			int									nLastSelectedPTG;
-			int                                 m_decimateHeadingEstimate;
-			/** @} */
-
 			/** The set of transformations to be used:
 			  */
 			std::vector<CParameterizedTrajectoryGenerator*>	PTGs;
@@ -123,17 +112,20 @@ namespace mrpt
 			// Steps for the reactive navigation sytem.
 			// ----------------------------------------------------------------------------
 			virtual void STEP1_CollisionGridsBuilder();
-		
-			/** Return false on any fatal error */
+			
+			// See docs in parent class
 			virtual bool STEP2_SenseObstacles();
 
-			virtual void STEP3_WSpaceToTPSpace(const mrpt::poses::CPose2D &relTarget,vector_double &out_TPObstacles);
+			// See docs in parent class
+			virtual void STEP3_WSpaceToTPSpace(const size_t ptg_idx,mrpt::vector_double &out_TPObstacles);
 
-			virtual void STEP4_HolonomicMethod();
+			/** Generates a pointcloud of obstacles, and the robot shape, to be saved in the logging record for the current timestep */
+			virtual void loggingGetWSObstaclesAndShape(CLogFileRecord &out_log);
 
-			mrpt::slam::CSimplePointsMap m_WS_Obstacles;
 
-		};
+			mrpt::slam::CSimplePointsMap m_WS_Obstacles;  //!< The obstacle points, as seen from the local robot frame.
+
+		}; // end class
 	}
 }
 

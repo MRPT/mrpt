@@ -92,7 +92,7 @@ namespace mrpt
 		 */
 		virtual bool stopWatchdog() { return true; }
 
-		/** Return the current set of obstacle points.
+		/** Return the current set of obstacle points, as seen from the local coordinate frame of the robot.
 		  * \return false on any error.
 		  */
 		virtual bool senseObstacles( mrpt::slam::CSimplePointsMap 		&obstacles ) = 0;

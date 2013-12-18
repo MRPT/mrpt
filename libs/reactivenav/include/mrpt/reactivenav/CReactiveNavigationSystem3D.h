@@ -46,13 +46,13 @@
 
 namespace mrpt
 {
-	/** This namespace contains classes for building a 3D TP-Space Reactive Navigation System.
-	*/
   namespace reactivenav
   {
-	  /**  The implemented reactive navigation methods
-	    *  \ingroup mrpt_reactivenav_grp
-	    */
+		/** A 3D robot shape stored as a "sliced" stack of 2D polygons, used for CReactiveNavigationSystem3D */
+		struct TRobotShape {
+				std::vector<math::CPolygon>	polygons;		// The polygonal bases
+				std::vector<float>			heights;		// Heights of the prisms
+		};
 
 		/** Implements a 3D reactive navigation system based on TP-Space, with an arbitrary holonomic
 		*  reactive method running on it, and any desired number of PTG for transforming the navigation space.
@@ -70,15 +70,6 @@ namespace mrpt
 		*  \sa CAbstractReactiveNavigationSystem, CParameterizedTrajectoryGenerator, CAbstractHolonomicReactiveMethod
 		*  \ingroup mrpt_reactivenav_grp
 		*/
-
-		/**Struct used to store the 3D robot shape
-		  */
-		struct TRobotShape {
-				std::vector<math::CPolygon>	polygons;		// The polygonal bases
-				std::vector<float>			heights;		// Heights of the prisms
-		};
-
-
 		class REACTIVENAV_IMPEXP CReactiveNavigationSystem3D : public CAbstractPTGBasedReactive
 		{
 		public:
@@ -90,17 +81,13 @@ namespace mrpt
 				bool enableConsoleOutput = true,
 				bool enableLogFile = false);
 
-			/** Destructor
-			 */
+			/** Destructor */
 			virtual ~CReactiveNavigationSystem3D();
 
-			/** Reload the configuration from a file
-			 */
+			/** Reload the configuration from a file */
 			void loadConfigFile(const mrpt::utils::CConfigFileBase &ini);
 
-			/** Change the robot shape, which is taken into account for collision
-			  *  grid building.
-			  */
+			/** Change the robot shape, which is taken into account for collision grid building. */
 			void changeRobotShape( TRobotShape robotShape );
 
 			/** Returns the number of different PTGs that have been setup */
@@ -133,97 +120,33 @@ namespace mrpt
 			// ------------------------------------------------------
 			//					PRIVATE	VARIABLES
 			// ------------------------------------------------------
-
-			/** The unsorted set of obstacles
-			  */
-			mrpt::slam::CSimplePointsMapPtr		WS_Obstacles_unsorted;
-
-			vector <CAbstractHolonomicReactiveMethod*>  holonomicMethod;   //!< The holonomic navigation algorithm.
-			mrpt::utils::CStream						*logFile;           //!< The current log file stream, or NULL if not being used
-			unsigned int								holonomicMethodSel; //(0 - VFF, 1 - ND)
-
-			bool  m_enableConsoleOutput;  //!< Enables / disables the console debug output.
-
-			bool  m_init_done;            //!< Whether \a loadConfigFile() has been called or not.
-
-			CTicTac	timerForExecutionPeriod;
-
-			// PTG params loaded from INI file:
-			std::string robotName;						// Robot name
-			float		refDistance;					// "dmax" in papers.
-			float		colGridRes;						// CollisionGrid resolution
-			float		robotMax_V_mps;					// Max. linear speed (m/s)
-			float		robotMax_W_degps;				// Max. angular speed (deg/s)
-			float		SPEEDFILTER_TAU;				// Time constant for the low-pass filter applied to the speed commands
-			std::vector<float> weights;					// length: 6 [0,5]
-			float		DIST_TO_TARGET_FOR_SENDING_EVENT;
+			mrpt::slam::CSimplePointsMap              m_WS_Obstacles_unsorted;  //!< The unsorted set of obstacles from the sensors
+			std::vector<mrpt::slam::CSimplePointsMap> m_WS_Obstacles_inlevels; //!< One point cloud per 2.5D robot-shape-slice
 
 
-			float						meanExecutionPeriod;	//!< Runtime estimation of execution period of the method.
-			mrpt::utils::CTimeLogger	m_timelogger;			//!< A complete time logger \sa enableTimeLog()
-
-
-			/** For sending an alarm (error event) when it seems that we are not approaching toward the target in a while...
-			  */
-			float						badNavAlarm_minDistTarget;
-			mrpt::system::TTimeStamp	badNavAlarm_lastMinDistTime;
-			float						badNavAlarm_AlarmTimeout;
-
-
-			/** The robot 3D shape model
-			  */
+			/** The robot 3D shape model */
 			TRobotShape		m_robotShape;
 
-
-			bool			m_collisionGridsMustBeUpdated;
-
-
-			/** @name Variables for CReactiveNavigationSystem::performNavigationStep
-			    @{ */
-			mrpt::utils::CTicTac				totalExecutionTime, executionTime, tictac;
-			//std::vector<float>				times_TP_transformations, times_HoloNav;
-			float								meanExecutionTime;
-			float								meanTotalExecutionTime;
-			int                                 m_decimateHeadingEstimate;
-			/** @} */
-
-			/** The set of PTG-transformations to be used:
-			  */
+			/** The set of PTG-transformations to be used: */
 			std::vector <TPTGmultilevel>	m_ptgmultilevel;
 
 
 			// Steps for the reactive navigation sytem.
 			// ----------------------------------------------------------------------------
 			virtual void STEP1_CollisionGridsBuilder();
+			
+			// See docs in parent class
+			virtual bool STEP2_SenseObstacles();
 
-			bool            STEP2_LoadAndSortObstacles(vector <mrpt::slam::CSimplePointsMap>	&out_obstacles);
+			// See docs in parent class
+			virtual void STEP3_WSpaceToTPSpace(const size_t ptg_idx,mrpt::vector_double &out_TPObstacles);
 
-			void            STEP3_WSpaceToTPSpace(
-									vector <mrpt::slam::CSimplePointsMap>	&in_obstacles,
-									CPoint2D								&relTarget);
-
-			void            STEP4_HolonomicMethod(vector <CHolonomicLogFileRecordPtr>  &in_HLFR );
-
-			void            STEP5_PTGEvaluator(
-									THolonomicMovement					&in_holonomicMovement,
-									vector_double						&in_TPObstacles,
-									poses::CPoint2D						&WS_Target,
-									poses::CPoint2D						&TP_Target,
-									CLogFileRecord::TInfoPerPTG			&log );
-
-			void            STEP6_Selector(
-									THolonomicMovement					&out_selectedHolonomicMovement,
-									int									&out_nSelectedPTG);
-
-			void			STEP7_GenerateSpeedCommands(THolonomicMovement	&in_movement);
+			/** Generates a pointcloud of obstacles, and the robot shape, to be saved in the logging record for the current timestep */
+			virtual void loggingGetWSObstaclesAndShape(CLogFileRecord &out_log);
+				
 
 
-			bool			m_closing_navigator;
-
-			/** Stops the robot and set navigation state to error */
-			void			doEmergencyStop( const char *msg );
-
-		};
+		}; // end class
 	}
 }
 
