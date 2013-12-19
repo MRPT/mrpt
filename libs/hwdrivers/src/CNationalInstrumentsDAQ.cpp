@@ -279,6 +279,8 @@ void  CNationalInstrumentsDAQ::loadConfig_sensorSpecific(
 				MY_LOAD_HERE_CONFIG_VAR_NO_DEFAULT( sTask+string(".ci_ang_encoder.units"), string, t.ci_ang_encoder.units, cfg,sect)
 				MY_LOAD_HERE_CONFIG_VAR_NO_DEFAULT( sTask+string(".ci_ang_encoder.pulsesPerRev"), int, t.ci_ang_encoder.pulsesPerRev, cfg,sect)
 				MY_LOAD_HERE_CONFIG_VAR_NO_DEFAULT( sTask+string(".ci_ang_encoder.initialAngle"), double, t.ci_ang_encoder.initialAngle, cfg,sect)
+				MY_LOAD_HERE_CONFIG_VAR( sTask+string(".ci_ang_encoder.decimate"), int, t.ci_ang_encoder.decimate, cfg,sect)
+
 			}
 			else if (strCmpI(lstStrChanns[j],"co_pulses"))
 			{
@@ -716,14 +718,21 @@ void CNationalInstrumentsDAQ::grabbing_thread(TInfoPerTask &ipt)
 				}
 				else if (pointsReadPerChan>0) {
 					ASSERT_EQUAL_(totalSamplesToRead,pointsReadPerChan)
-					obs.CNTRIN_double = dBuf;
-					there_are_data = true;
-					if (m_verbose && !obs.CNTRIN_double.empty()) 
+
+					// Decimate?
+					if (++ipt.task.ci_ang_encoder.decimate_cnt>=ipt.task.ci_ang_encoder.decimate)
 					{
-						static int decim=0;
-						if (!decim)
-							cout << "[CNationalInstrumentsDAQ::grabbing_thread] " << pointsReadPerChan << " counter samples read ([0]="<< obs.CNTRIN_double[0] <<").\n";
-						if (++decim>100) decim=0;
+						ipt.task.ci_ang_encoder.decimate_cnt=0;
+
+						obs.CNTRIN_double = dBuf;
+						there_are_data = true;
+						if (m_verbose && !obs.CNTRIN_double.empty()) 
+						{
+							static int decim=0;
+							if (!decim)
+								cout << "[CNationalInstrumentsDAQ::grabbing_thread] " << pointsReadPerChan << " counter samples read ([0]="<< obs.CNTRIN_double[0] <<").\n";
+							if (++decim>100) decim=0;
+						}
 					}
 				}
 			} // end COUNTERS

@@ -153,6 +153,7 @@ namespace mrpt
 		* task0.ci_ang_encoder.units        = DAQmx_Val_Degrees | DAQmx_Val_Radians | DAQmx_Val_Ticks  // One of these strings
 		* task0.ci_ang_encoder.pulsesPerRev = 512  // The number of pulses the encoder generates per revolution. 
 		* task0.ci_ang_encoder.initialAngle = 0.0 // The position of the encoder when the measurement begins. This value is in units.
+		* task0.ci_ang_encoder.decimate     = 1   // Grab 1 out of N readings
 		*
 		* ; Output digital pulses:
 		* task0.co_pulses.counter           = Dev1/ctr1
@@ -313,13 +314,14 @@ namespace mrpt
 
 				struct HWDRIVERS_IMPEXP desc_ci_ang_encoder_t
 				{
-					desc_ci_ang_encoder_t() : ZidxEnable(false),ZidxVal(0),pulsesPerRev(512),initialAngle(0) { }
+					desc_ci_ang_encoder_t() : ZidxEnable(false),ZidxVal(0),pulsesPerRev(512),initialAngle(0),decimate(1),decimate_cnt(0) { }
 
 					std::string counter, decodingType, ZidxPhase,units;
 					bool        ZidxEnable;
 					double      ZidxVal;
 					int         pulsesPerRev;
 					double      initialAngle;
+					int         decimate, decimate_cnt; 
 				} 
 				ci_ang_encoder; //!< Counter: uses an angular encoder to measure angular position
 
