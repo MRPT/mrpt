@@ -172,6 +172,7 @@ include(cmakemodules/script_ftdi.cmake REQUIRED)        # Check for the FTDI hea
 include(cmakemodules/script_inotify.cmake REQUIRED)     # Check for the sys/inotify headers (Linux only, in win32 we use the equivalent API for file system monitoring):
 include(cmakemodules/script_gl_glut.cmake REQUIRED)     # Check for the GL,GLUT libraries 
 include(cmakemodules/script_opencv.cmake REQUIRED)      # Check for the OpenCV libraries (via pkg-config, CMake, with different options)
+include(cmakemodules/script_openni2.cmake REQUIRED)     # Check for the OpenNI2 library
 include(cmakemodules/script_ffmpeg.cmake REQUIRED)      # Check for ffmpeg C libraries: libavcodec, libavutil, libavformat, libswscale
 include(cmakemodules/script_wxwidgets.cmake REQUIRED)   # Check for wxWidgets + GL
 include(cmakemodules/script_libdc1394.cmake REQUIRED)   # Check for libdc1394-2

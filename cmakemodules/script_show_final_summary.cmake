@@ -124,6 +124,7 @@ SHOW_CONFIG_LINE_SYSTEM("Has OpenCV (Image manipulation)         " CMAKE_MRPT_HA
 SHOW_CONFIG_LINE_SYSTEM("Has OpenGL                              " CMAKE_MRPT_HAS_OPENGL_GLUT)
 SHOW_CONFIG_LINE_SYSTEM("Has GLUT                                " CMAKE_MRPT_HAS_GLUT)
 SHOW_CONFIG_LINE_SYSTEM("Has OpenKinect libfreenect              " CMAKE_MRPT_HAS_FREENECT)
+SHOW_CONFIG_LINE_SYSTEM("Has OpenNI2                             " CMAKE_MRPT_HAS_OPENNI2)
 SHOW_CONFIG_LINE_SYSTEM("Has PCL (Pointscloud library)           " CMAKE_MRPT_HAS_PCL  "[Version: ${PCL_VERSION}]")
 IF(NOT UNIX)	# In fact, it's not "support for Bumblebee" but for it thru PGR vendor libraries.
 SHOW_CONFIG_LINE("Has PGR Digiclops/Triclops              " CMAKE_MRPT_HAS_BUMBLEBEE)
