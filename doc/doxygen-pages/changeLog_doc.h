@@ -56,7 +56,7 @@
 			- mrpt::opengl::CMeshFast, an open gl object that draws a "mesh" as a structured point cloud which is faster to render (by Mariano Jaimez Tarifa). -<a href="https://github.com/jlblancoc/mrpt/commit/9306bb4a585387d4c85b3f6e41dd2cbe5a354e80" >r9306bb4a58</a>
 			- mrpt::opengl::CVectorField2D, an opengl object that shows a 2D Vector Field (by Mariano Jaimez Tarifa). - <a href="http://code.google.com/p/mrpt/source/detail?r=3461" >r3461</a>
 		- [mrpt-reactivenav]
-			- mrpt::reactivenav::CAbstractPTGBasedReactive, as part of a large code refactoring of these classes: <a href="">commit</a>
+			- mrpt::reactivenav::CAbstractPTGBasedReactive, as part of a large code refactoring of these classes: <a href="https://github.com/jlblancoc/mrpt/pull/4" >commit</a>
 				- mrpt::reactivenav::CReactiveNavigationSystem
 				- mrpt::reactivenav::CReactiveNavigationSystem3D
 	- Changes in classes:
