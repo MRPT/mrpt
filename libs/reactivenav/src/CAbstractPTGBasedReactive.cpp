@@ -58,6 +58,13 @@ CAbstractPTGBasedReactive::CAbstractPTGBasedReactive(CReactiveInterfaceImplement
 	m_init_done                  (false),
 	meanExecutionPeriod          (0.1f),
 	m_timelogger                 (false), // default: disabled
+	refDistance                  (4.0f),
+	colGridRes                   (0.10f),
+	robotMax_V_mps               (1.0f),
+	robotMax_W_degps             (50.0f),
+	SPEEDFILTER_TAU              (0.0f),
+	DIST_TO_TARGET_FOR_SENDING_EVENT(0.4f),
+	badNavAlarm_AlarmTimeout     (30.0f),
 	m_collisionGridsMustBeUpdated(true),
 	meanExecutionTime            (0.1f),
 	meanTotalExecutionTime       (0.1f),

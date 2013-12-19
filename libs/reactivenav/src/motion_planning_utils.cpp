@@ -113,6 +113,10 @@ void mrpt::reactivenav::build_PTG_collision_grids(
 		}
 		else
 		{
+			// BUGFIX: In case we start reading the file and in the end detected an error, 
+			//         we must make sure that there's space enough for the grid:
+			PT->m_collisionGrid.setSize( -PT->refDistance,PT->refDistance,-PT->refDistance,PT->refDistance,PT->m_collisionGrid.getResolution());
+
 			// RECOMPUTE THE COLLISION GRIDS:
 			// ---------------------------------------
 			for (size_t k=0;k<Ki;k++)

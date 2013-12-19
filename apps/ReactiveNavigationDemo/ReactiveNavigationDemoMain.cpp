@@ -586,6 +586,8 @@ void ReactiveNavigationDemoFrame::tryConstructReactiveNavigator()
 		// load robot shape:
 		reloadRobotShape();
 
+		reacNavObj->initialize();
+
 	}
 	catch(std::exception &e)
 	{

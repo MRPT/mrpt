@@ -136,12 +136,12 @@ void CReactiveNavigationSystem3D::loadConfigFile(const mrpt::utils::CConfigFileB
 	robotMax_W_degps = ini.read_float("NAVIGATION_CONFIG","WMAX_DEGPS", 60, true);
 	SPEEDFILTER_TAU =  ini.read_float("NAVIGATION_CONFIG","SPEEDFILTER_TAU", 0, true);
 
-	DIST_TO_TARGET_FOR_SENDING_EVENT = ini.read_float("NAVIGATION_CONFIG", "DIST_TO_TARGET_FOR_SENDING_EVENT", 0.4, false);
+	DIST_TO_TARGET_FOR_SENDING_EVENT = ini.read_float("NAVIGATION_CONFIG", "DIST_TO_TARGET_FOR_SENDING_EVENT", DIST_TO_TARGET_FOR_SENDING_EVENT, false);
 
 	ini.read_vector("NAVIGATION_CONFIG", "weights", vector<float> (0), weights, 1);
 	ASSERT_(weights.size()==6);
 
-	badNavAlarm_AlarmTimeout = ini.read_float("NAVIGATION_CONFIG","ALARM_SEEMS_NOT_APPROACHING_TARGET_TIMEOUT", 30, false);
+	badNavAlarm_AlarmTimeout = ini.read_float("NAVIGATION_CONFIG","ALARM_SEEMS_NOT_APPROACHING_TARGET_TIMEOUT", badNavAlarm_AlarmTimeout, false);
 
 	//m_reactiveparam.m_reload_ptgfiles = ini.read_bool("NAVIGATION_CONFIG","RELOAD_PTGFILES", 1, true);
 
@@ -266,18 +266,23 @@ bool CReactiveNavigationSystem3D::STEP2_SenseObstacles()
 
 	m_robot.senseObstacles( m_WS_Obstacles_unsorted );
 
-	m_WS_Obstacles_inlevels.resize(m_robotShape.heights.size());
+	// Empty slice maps:
+	const size_t nSlices = m_robotShape.heights.size();
+	m_WS_Obstacles_inlevels.resize(nSlices);
+	for (size_t i=0;i<nSlices;i++)
+		m_WS_Obstacles_inlevels[i].clear();
 
-	const float OBS_MAX_XY = this->refDistance*1.1f;
 
+	// Sort obstacles in "slices":
 	size_t nPts;
 	const float *xs,*ys,*zs;
 	m_WS_Obstacles_unsorted.getPointsBuffer(nPts,xs,ys,zs);
+	const float OBS_MAX_XY = this->refDistance*1.1f;
 
 	for (size_t j=0; j<nPts; j++)
 	{
 		float h = 0;
-		for (size_t idxH=0;idxH<m_robotShape.heights.size();++idxH)
+		for (size_t idxH=0;idxH<nSlices;++idxH)
 		{
 			if (zs[j] < 0.01)
 				break; // skip this points
@@ -336,45 +341,39 @@ void CReactiveNavigationSystem3D::STEP3_WSpaceToTPSpace(
 /** Generates a pointcloud of obstacles to be saved in the logging record for the current timestep */
 void CReactiveNavigationSystem3D::loggingGetWSObstaclesAndShape(CLogFileRecord &out_log)
 {
-	MRPT_TODO("finish")
-#if 0
-	XXX
-	CSimplePointsMap auxpointmap;
 
+	out_log.WS_Obstacles.clear();
 	//Include the points of all levels (this could be improved depending on STEP2)
-	for (unsigned int i=0; i < WS_Obstacles_inlevels.size(); i++)
-	auxpointmap += *WS_Obstacles_inlevels[i].getAsSimplePointsMap();
+	for (unsigned int i=0; i < m_WS_Obstacles_inlevels.size(); i++)
+		out_log.WS_Obstacles.insertAnotherMap( &m_WS_Obstacles_inlevels[i], CPose3D(0,0,0));
 
-	newLogRec.WS_Obstacles				= auxpointmap;
-
-		//Polygons of each height level are drawn (but they are all shown connected...)
-		if (newLogRec.robotShape_x.size() == 0)
+	//Polygons of each height level are drawn (but they are all shown connected...)
+	if (out_log.robotShape_x.size() == 0)
+	{
+		size_t nVerts = 0;
+		TPoint2D paux;
+		size_t cuenta = 0;
+		for (unsigned int i=0; i < m_robotShape.heights.size(); i++)
+			nVerts += m_robotShape.polygons[i].size() + 1;
+		if (size_t(out_log.robotShape_x.size()) != nVerts)
 		{
-			size_t nVerts = 0;
-			TPoint2D paux;
-			size_t cuenta = 0;
-			for (unsigned int i=0; i < m_robotShape.heights.size(); i++)
-				nVerts += m_robotShape.polygons[i].size() + 1;
-			if (size_t(newLogRec.robotShape_x.size()) != nVerts)
+			out_log.robotShape_x.resize(nVerts);
+			out_log.robotShape_y.resize(nVerts);
+		}
+		for (unsigned int i=0; i<m_robotShape.heights.size(); i++)
+		{
+			for (unsigned int j=0; j<m_robotShape.polygons[i].size(); j++)
 			{
-				newLogRec.robotShape_x.resize(nVerts);
-				newLogRec.robotShape_y.resize(nVerts);
-			}
-			for (unsigned int i=0; i<m_robotShape.heights.size(); i++)
-			{
-				for (unsigned int j=0; j<m_robotShape.polygons[i].size(); j++)
-				{
-					paux = m_robotShape.polygons[i][j];
-					newLogRec.robotShape_x[cuenta]= paux.x;
-					newLogRec.robotShape_y[cuenta]= paux.y;
-					cuenta++;
-				}
-				paux = m_robotShape.polygons[i][0];
-				newLogRec.robotShape_x[cuenta]= paux.x;
-				newLogRec.robotShape_y[cuenta]= paux.y;
+				paux = m_robotShape.polygons[i][j];
+				out_log.robotShape_x[cuenta]= paux.x;
+				out_log.robotShape_y[cuenta]= paux.y;
 				cuenta++;
 			}
+			paux = m_robotShape.polygons[i][0];
+			out_log.robotShape_x[cuenta]= paux.x;
+			out_log.robotShape_y[cuenta]= paux.y;
+			cuenta++;
 		}
-#endif
+	}
 }
 

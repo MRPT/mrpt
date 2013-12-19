@@ -68,6 +68,7 @@ CParameterizedTrajectoryGenerator::CParameterizedTrajectoryGenerator(const TPara
 	nVertices = 0;
 	turningRadiusReference = 0.10f;
 
+	// This does not need to be done here: it can be done in mrpt::reactivenav::build_PTG_collision_grids()
 	initializeCollisionsGrid( refDistance, params["resolution"] );
 }
 
@@ -612,6 +613,11 @@ bool CParameterizedTrajectoryGenerator::CColisionGrid::loadFromFile( CStream *f,
 		// OK, all parameters seem to be exactly the same than when we precomputed the table: load it.
 		*f >> m_map;
 		return true;
+	}
+	catch(std::exception &e)
+	{
+		std::cerr << "[CColisionGrid::loadFromFile] " << e.what();
+		return false;
 	}
 	catch(...)
 	{
