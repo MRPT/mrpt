@@ -46,24 +46,24 @@ using namespace std;
 
 CAbstractPTGBasedReactive::CAbstractPTGBasedReactive(CReactiveInterfaceImplementation &react_iterf_impl, bool enableConsoleOutput, bool enableLogFile):
 	CAbstractReactiveNavigationSystem(react_iterf_impl),
+	m_holonomicMethod            (),
+	m_logFile                    (NULL),
+	m_enableKeepLogRecords       (false),
 	last_cmd_v                   (0),
 	last_cmd_w                   (0),
 	new_cmd_v                    (0),
 	new_cmd_w                    (0),
 	navigationEndEventSent       (false),
-	m_holonomicMethod            (),
-	m_logFile                    (NULL),
-	m_enableKeepLogRecords       (false),
 	m_enableConsoleOutput        (enableConsoleOutput),
 	m_init_done                  (false),
-	meanExecutionPeriod          (0.1f),
-	m_timelogger                 (false), // default: disabled
 	refDistance                  (4.0f),
 	colGridRes                   (0.10f),
 	robotMax_V_mps               (1.0f),
 	robotMax_W_degps             (50.0f),
 	SPEEDFILTER_TAU              (0.0f),
 	DIST_TO_TARGET_FOR_SENDING_EVENT(0.4f),
+	meanExecutionPeriod          (0.1f),
+	m_timelogger                 (false), // default: disabled
 	badNavAlarm_AlarmTimeout     (30.0f),
 	m_collisionGridsMustBeUpdated(true),
 	meanExecutionTime            (0.1f),
@@ -217,7 +217,7 @@ void CAbstractPTGBasedReactive::loadHolonomicMethodConfig(
 
 void CAbstractPTGBasedReactive::deleteHolonomicObjects()
 {
-	for (size_t i=0;i<m_holonomicMethod.size();i++) 
+	for (size_t i=0;i<m_holonomicMethod.size();i++)
 		delete m_holonomicMethod[i];
 	m_holonomicMethod.clear();
 }
@@ -258,7 +258,7 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 	const bool fill_log_record = (m_logFile!=NULL || m_enableKeepLogRecords);
 	CLogFileRecord newLogRec;
 	newLogRec.infoPerPTG.resize(nPTGs);
-	
+
 	// Lock
 	mrpt::synch::CCriticalSectionLocker lock( &m_critZoneNavigating );
 
@@ -388,7 +388,7 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 				// -----------------------------------------------------------------------------
 				{
 					CTimeLoggerEntry tle(m_timelogger,"navigationStep.STEP3_WSpaceToTPSpace");
-			
+
 					// Initialize TP-Obstacles:
 					const size_t Ki = ptg->getAlfaValuesCount();
 					ipf.TP_Obstacles.resize( Ki );
@@ -405,7 +405,7 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 					STEP3_WSpaceToTPSpace(indexPTG,ipf.TP_Obstacles);
 
 					// Distances in TP-Space are normalized to [0,1]:
-					const double _refD = 1.0/ptg->refDistance; 
+					const double _refD = 1.0/ptg->refDistance;
 					for (size_t i=0;i<Ki;i++) ipf.TP_Obstacles[i] *= _refD;
 				}
 
@@ -471,7 +471,7 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 				nSelectedPTG = indexPTG;
 		}
 		const THolonomicMovement & selectedHolonomicMovement = holonomicMovements[nSelectedPTG];
-		
+
 
 		// STEP7: Get the non-holonomic movement command.
 		// ---------------------------------------------------------------------
@@ -505,7 +505,7 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 		                         0.7f * ((float)totalExecutionTime.Tac() );
 		meanExecutionPeriod = 0.3f * meanExecutionPeriod +
 		                      0.7f * min(1.0f, (float)timerForExecutionPeriod.Tac());
-		
+
 
 		timerForExecutionPeriod.Tic();
 
@@ -520,7 +520,7 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 		           1000.0*meanExecutionPeriod,
 		           1000.0*meanExecutionTime,
 		           1000.0*meanTotalExecutionTime,
-				   (double)selectedHolonomicMovement.evaluation, 
+				   (double)selectedHolonomicMovement.evaluation,
 				   nSelectedPTG
 				   );
 		}
@@ -548,20 +548,20 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 			newLogRec.navigatorBehavior			= nSelectedPTG;
 
 			m_timelogger.leave("navigationStep.populate_log_info");
-		
+
 			//  Save to log file:
 			// --------------------------------------
 			m_timelogger.enter("navigationStep.write_log_file");
 			if (m_logFile) (*m_logFile) << newLogRec;
 			m_timelogger.leave("navigationStep.write_log_file");
-		
+
 			// Set as last log record
 			{
 				mrpt::synch::CCriticalSectionLocker lock_log(&m_critZoneLastLog);    // Lock
 				lastLogRecord = newLogRec; // COPY
 			}
 		} // if (fill_log_record)
-		
+
 	}
 	catch (std::exception &e)
 	{
