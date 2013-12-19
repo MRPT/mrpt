@@ -195,7 +195,8 @@ namespace mrpt
 		  *  - map key   (uint16_t) -> alpha value (k)
 		  *	 - map value (float)    -> the MINIMUM distance (d), in meters, associated with that "k".
 		  */
-		typedef std::map<uint16_t,float> TCollisionCell;
+		//typedef std::map<uint16_t,float> TCollisionCell;
+		typedef std::vector<std::pair<uint16_t,float> > TCollisionCell;
 
 		/** An internal class for storing the collision grid  */
 		class REACTIVENAV_IMPEXP CColisionGrid : public mrpt::utils::CDynamicGrid<TCollisionCell>

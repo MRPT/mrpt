@@ -123,7 +123,7 @@ namespace mrpt
 					K 	key_obj; \
 					in >> key_obj; \
 					/* Create an pair (Key, empty), then read directly into the ".second": */ \
-					typename CONTAINER<K,V,_Pr,_Alloc>::iterator it_new = obj.insert(obj.begin(), std::make_pair(key_obj, V()) ); \
+					typename CONTAINER<K,V,_Pr,_Alloc>::iterator it_new = obj.insert(obj.end(), std::make_pair(key_obj, V()) ); \
 					in >> it_new->second; \
 				} \
 				return in; \
