@@ -141,7 +141,7 @@ void CReactiveNavigationSystem3D::loadConfigFile(const mrpt::utils::CConfigFileB
 	ini.read_vector("NAVIGATION_CONFIG", "weights", vector<float> (0), weights, 1);
 	ASSERT_(weights.size()==6);
 
-	badNavAlarm_AlarmTimeout = ini.read_float("NAVIGATION_CONFIG","ALARM_SEEMS_NOT_APPROACHING_TARGET_TIMEOUT", 10, false);
+	badNavAlarm_AlarmTimeout = ini.read_float("NAVIGATION_CONFIG","ALARM_SEEMS_NOT_APPROACHING_TARGET_TIMEOUT", 30, false);
 
 	//m_reactiveparam.m_reload_ptgfiles = ini.read_bool("NAVIGATION_CONFIG","RELOAD_PTGFILES", 1, true);
 
@@ -255,154 +255,89 @@ void CReactiveNavigationSystem3D::STEP1_CollisionGridsBuilder()
 *************************************************************************/
 bool CReactiveNavigationSystem3D::STEP2_SenseObstacles()
 {
-	try
+	//-------------------------------------------------------------------
+	// The user must implement its own method to load the obstacles from
+	// either sensor measurements or simulators (m_robot.senseObstacles(...))
+	// Data have to be subsequently sorted in height bands according to the
+	// height sections of the robot.
+	//-------------------------------------------------------------------
+
+	m_timelogger.enter("navigationStep.STEP2_LoadAndSortObstacle");
+
+	m_robot.senseObstacles( m_WS_Obstacles_unsorted );
+
+	m_WS_Obstacles_inlevels.resize(m_robotShape.heights.size());
+
+	const float OBS_MAX_XY = this->refDistance*1.1f;
+
+	size_t nPts;
+	const float *xs,*ys,*zs;
+	m_WS_Obstacles_unsorted.getPointsBuffer(nPts,xs,ys,zs);
+
+	for (size_t j=0; j<nPts; j++)
 	{
-		//-------------------------------------------------------------------
-		// The user must implement its own method to load the obstacles from
-		// either sensor measurements or simulators (m_robot.senseObstacles(...))
-		// Data have to be subsequently sorted in height bands according to the
-		// height sections of the robot.
-		//-------------------------------------------------------------------
-
-		m_timelogger.enter("navigationStep.STEP2_LoadAndSortObstacle");
-
-		m_robot.senseObstacles( m_WS_Obstacles_unsorted );
-
-		m_WS_Obstacles_inlevels.resize(m_robotShape.heights.size());
-
-		size_t nPts;
-		const float *xs,*ys,*zs;
-		m_WS_Obstacles_unsorted.getPointsBuffer(nPts,xs,ys,zs);
-
-		for (size_t j=0; j<nPts; j++)
+		float h = 0;
+		for (size_t idxH=0;idxH<m_robotShape.heights.size();++idxH)
 		{
-			float h = 0;
-			for (size_t idxH=0;idxH<m_robotShape.heights.size();++idxH)
-			{
-				if (zs[j] < 0.01)
-					break; // skip this points
+			if (zs[j] < 0.01)
+				break; // skip this points
 
-				h += m_robotShape.heights[idxH];
-				if (zs[j] < h)
-				{
+			h += m_robotShape.heights[idxH];
+			if (zs[j] < h)
+			{
+				// Speed-up: If the obstacle is, for sure, out of the collision grid, 
+				// just don't account for it, because we don't know its mapping into TP-Obstacles anyway...
+				if (xs[j]>-OBS_MAX_XY && xs[j]<OBS_MAX_XY && ys[j]>-OBS_MAX_XY && ys[j]<OBS_MAX_XY)
 					m_WS_Obstacles_inlevels[idxH].insertPoint(xs[j],ys[j],zs[j]);
-					break;
-				}
+
+				break; // stop searching for height slots.
 			}
 		}
-
-		m_timelogger.leave("navigationStep.STEP2_LoadAndSortObstacle");
-
-		return true;
-	}
-	catch (std::exception &e)
-	{
-		printf_debug("[CReactiveNavigationSystem::STEP2_Load_Obstacles] Exception:");
-		printf_debug((char*)(e.what()));
-		return false;
-	}
-	catch (...)
-	{
-		printf_debug("[CReactiveNavigationSystem::STEP2_Load_Obstacles] Unexpected exception!\n");
-		return false;
 	}
 
+	m_timelogger.leave("navigationStep.STEP2_LoadAndSortObstacle");
+
+	return true;
 }
 
 /*************************************************************************
-
-                      STEP3_ObstacleToTPObstacle
-
 		Transform the obstacle into TP-Obstacles in TP-Spaces
-
 *************************************************************************/
 void CReactiveNavigationSystem3D::STEP3_WSpaceToTPSpace(
-				vector <mrpt::slam::CSimplePointsMap>	&in_obstacles,
-				CPoint2D								&relTarget)
+	const size_t ptg_idx, 
+	mrpt::vector_double &out_TPObstacles )
 {
-	try
+	ASSERT_EQUAL_(m_WS_Obstacles_inlevels.size(),m_robotShape.heights.size())
+
+	for (size_t j=0;j<m_robotShape.heights.size();j++)
 	{
-		m_timelogger.enter("navigationStep.STEP3_WSpaceToTPSpace");
+		size_t nObs;
+		const float *xs,*ys,*zs;
+		m_WS_Obstacles_inlevels[j].getPointsBuffer(nObs,xs,ys,zs);
 
-		size_t Ki,nObs;
-		float invoperation;
-
-		for (unsigned int a=0; a<m_ptgmultilevel.size(); a++)
+		for (size_t obs=0;obs<nObs;obs++)
 		{
-			//				Transform the obstacles
-			//========================================================
+			const float ox = xs[obs], oy = ys[obs];
+			// Get TP-Obstacles:
+			const CParameterizedTrajectoryGenerator::TCollisionCell &cell = m_ptgmultilevel[ptg_idx].PTGs[j]->m_collisionGrid.getTPObstacle(ox,oy);
 
-			Ki = m_ptgmultilevel[a].PTGs[0]->getAlfaValuesCount();
-
-			if ( static_cast<size_t>(m_ptgmultilevel[a].TPObstacles.size()) != Ki )
-				m_ptgmultilevel[a].TPObstacles.resize(Ki);
-
-
-			for (unsigned int k=0; k<Ki; k++)
-			{
-				// Initialized at max. distance
-				m_ptgmultilevel[a].TPObstacles[k] = m_ptgmultilevel[a].PTGs[0]->refDistance;
-
-				// If it turns more than 180deg, stop it.  (Better without this)
-				//float phi = m_ptgmultilevel[a].PTGs[0]->GetCPathPoint_phi(k,m_ptgmultilevel[a].PTGs[0]->getPointsCountInCPath_k(k)-1);  //Last point orientation
-				//if (fabs(phi) >= M_PI* 0.95 )
-				//	m_ptgmultilevel[a].TPObstacles[k]= m_ptgmultilevel[a].PTGs[0]->GetCPathPoint_d(k,m_ptgmultilevel[a].PTGs[0]->getPointsCountInCPath_k(k)-1);
-			}
-
-			for (unsigned int j=0;j<m_robotShape.heights.size();j++)
-			{
-				nObs = in_obstacles[j].getPointsCount();
-
-				for (unsigned int obs=0;obs<nObs;obs++)
-				{
-					float ox,oy;
-					in_obstacles[j].getPoint(obs,ox,oy);
-
-					const CParameterizedTrajectoryGenerator::TCollisionCell &cell = m_ptgmultilevel[a].PTGs[j]->m_collisionGrid.getTPObstacle(ox,oy);
-
-					// Keep the minimum distance:
-					for (CParameterizedTrajectoryGenerator::TCollisionCell::const_iterator i=cell.begin();i!=cell.end();i++)
-						if ( i->second < m_ptgmultilevel[a].TPObstacles[i->first] )
-							m_ptgmultilevel[a].TPObstacles[i->first] = i->second;
-				}
-			}
-
-			// Distances in TP-Space are normalized to [0,1]
-			invoperation = 1.0f/m_ptgmultilevel[a].PTGs[0]->refDistance;
-			for (unsigned int k=0; k<Ki; k++)
-				m_ptgmultilevel[a].TPObstacles[k] *= invoperation;
-
-			//				Transform the target
-			//========================================================
-
-			int k;
-			float d, alfa;
-			for (unsigned int i=0; i<m_ptgmultilevel.size(); i++)
-			{
-				m_ptgmultilevel[i].PTGs[0]->lambdaFunction(relTarget[0], relTarget[1], k, d);
-				alfa = m_ptgmultilevel[i].PTGs[0]->index2alpha(k);
-				m_ptgmultilevel[i].TP_Target[0] = cos(alfa)*d;
-				m_ptgmultilevel[i].TP_Target[1] = sin(alfa)*d;
-			}
-
-			m_timelogger.leave("navigationStep.STEP3_WSpaceToTPSpace");
+			// Keep the minimum distance:
+			for (CParameterizedTrajectoryGenerator::TCollisionCell::const_iterator i=cell.begin();i!=cell.end();i++)
+				if ( i->second < out_TPObstacles[i->first] )
+					out_TPObstacles[i->first] = i->second;
 		}
 	}
-	catch (std::exception &e)
-	{
-		printf("[CReactiveNavigationSystem::STEP3_ObstaclesToTPObstacles] Exception:");
-		printf("%s", e.what());
-	}
-	catch (...)
-	{
-		cout << "\n[CReactiveNavigationSystem::STEP3_ObstaclesToTPObstacles] Unexpected exception!:\n" << endl;
-	}
+
+	// Distances in TP-Space are normalized to [0,1]
+	// They'll be normalized in the base abstract class:
 }
 
 
 /** Generates a pointcloud of obstacles to be saved in the logging record for the current timestep */
 void CReactiveNavigationSystem3D::loggingGetWSObstaclesAndShape(CLogFileRecord &out_log)
 {
+	MRPT_TODO("finish")
+#if 0
 	XXX
 	CSimplePointsMap auxpointmap;
 
@@ -440,6 +375,6 @@ void CReactiveNavigationSystem3D::loggingGetWSObstaclesAndShape(CLogFileRecord &
 				cuenta++;
 			}
 		}
-
+#endif
 }
 

@@ -204,7 +204,7 @@ void CAbstractPTGBasedReactive::loadHolonomicMethodConfig(
 	const mrpt::utils::CConfigFileBase &ini,
 	const std::string &section )
 {
-	THolonomicMethod holoMethod = ini.read_enum<THolonomicMethod>("GLOBAL_CONFIG","HOLONOMIC_METHOD",hmVIRTUAL_FORCE_FIELDS, true);
+	THolonomicMethod holoMethod = ini.read_enum<THolonomicMethod>(section,"HOLONOMIC_METHOD",hmVIRTUAL_FORCE_FIELDS, true);
 	this->setHolonomicMethod( holoMethod, ini );
 }
 
@@ -250,6 +250,7 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 	// Whether to worry about log files:
 	const bool fill_log_record = (m_logFile!=NULL || m_enableKeepLogRecords);
 	CLogFileRecord newLogRec;
+	newLogRec.infoPerPTG.resize(nPTGs);
 	
 	// Lock
 	mrpt::synch::CCriticalSectionLocker lock( &m_critZoneNavigating );
@@ -346,9 +347,6 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 		// Start timer
 		executionTime.Tic();
 
-		if (fill_log_record) {
-			newLogRec.infoPerPTG.resize(nPTGs);
-		}
 
 		m_infoPerPTG.resize(nPTGs);
 		vector<THolonomicMovement> holonomicMovements(nPTGs);
@@ -662,8 +660,6 @@ void CAbstractPTGBasedReactive::STEP5_PTGEvaluator(
 	}
 	else
 	{
-		MRPT_TODO("Check if this was worth!!")
-#if 0
 		// Sum: two cases: *************************************I'm not sure about this...
 		if (dif<2	&&											// Heading the target
 			    in_TPObstacles[kDirection]*0.95f>TargetDist 	// and free space towards the target
@@ -675,7 +671,6 @@ void CAbstractPTGBasedReactive::STEP5_PTGEvaluator(
 		}
 		else
 		{
-#endif
 		// General case:
 		holonomicMovement.evaluation = (
 			factor1 * weights[0] +
@@ -685,6 +680,7 @@ void CAbstractPTGBasedReactive::STEP5_PTGEvaluator(
 			factor5 * weights[4] +
 			factor6 * weights[5]
 			) / ( math::sum(weights));
+		}
 	}
 }
 

@@ -116,7 +116,7 @@ void CReactiveNavigationSystem::loadConfigFile(const mrpt::utils::CConfigFileBas
 	MRPT_LOAD_CONFIG_VAR_NO_DEFAULT(DIST_TO_TARGET_FOR_SENDING_EVENT,float,  ini,robotName);
 
 
-	badNavAlarm_AlarmTimeout = ini.read_float("GLOBAL_CONFIG","ALARM_SEEMS_NOT_APPROACHING_TARGET_TIMEOUT", 10, true);
+	badNavAlarm_AlarmTimeout = ini.read_float("GLOBAL_CONFIG","ALARM_SEEMS_NOT_APPROACHING_TARGET_TIMEOUT", 30, true);
 
 	// Load robot shape:
 	// ---------------------------------------------
@@ -241,22 +241,11 @@ bool CReactiveNavigationSystem::STEP2_SenseObstacles()
 {
 	try
 	{
-		m_timelogger.enter("navigationStep.STEP2_Sense");
+		CTimeLoggerEntry tle(m_timelogger,"navigationStep.STEP2_Sense");
 
 		// Return true on success:
-		const bool ret = m_robot.senseObstacles( m_WS_Obstacles );
-		if (ret)
-		{
-			// Clip obstacles by "z" axis coordinates:
-			m_WS_Obstacles.clipOutOfRangeInZ( minObstaclesHeight, maxObstaclesHeight );
-
-			// Clip obstacles out of the reactive method range:
-			m_WS_Obstacles.clipOutOfRange( CPoint2D(0,0), refDistance+1.5f );
-		}
-
-		m_timelogger.leave("navigationStep.STEP2_Sense");
-
-		return ret;
+		return m_robot.senseObstacles( m_WS_Obstacles );
+		// Note: Clip obstacles by "z" axis coordinates is more efficiently done in STEP3_WSpaceToTPSpace()
 	}
 	catch (std::exception &e)
 	{
@@ -279,8 +268,7 @@ void CReactiveNavigationSystem::STEP3_WSpaceToTPSpace(const size_t ptg_idx,mrpt:
 {
 	CParameterizedTrajectoryGenerator	*ptg = this->PTGs[ptg_idx];
 
-	// Number of "alpha" (discretized trajectory parameter) values:
-	const size_t Ki = ptg->getAlfaValuesCount();
+	const float OBS_MAX_XY = this->refDistance*1.1f;
 		
 	// Merge all the (k,d) for which the robot collides with each obstacle point:
 	size_t nObs;
@@ -289,13 +277,19 @@ void CReactiveNavigationSystem::STEP3_WSpaceToTPSpace(const size_t ptg_idx,mrpt:
 
 	for (size_t obs=0;obs<nObs;obs++)
 	{
-		const float ox=xs[obs], oy = ys[obs];
-		const CParameterizedTrajectoryGenerator::TCollisionCell & cell = ptg->m_collisionGrid.getTPObstacle(ox,oy);
+		const float ox=xs[obs], oy = ys[obs], oz=zs[obs];
 
-		// Keep the minimum distance:
-		for (CParameterizedTrajectoryGenerator::TCollisionCell::const_iterator i=cell.begin();i!=cell.end();++i)
-			if ( i->second < out_TPObstacles[ i->first ] )
-				out_TPObstacles[i->first] = i->second;
+		if (ox>-OBS_MAX_XY && ox<OBS_MAX_XY && 
+			oy>-OBS_MAX_XY && oy<OBS_MAX_XY && 
+			oz>=minObstaclesHeight && oz<=maxObstaclesHeight)
+		{
+			const CParameterizedTrajectoryGenerator::TCollisionCell & cell = ptg->m_collisionGrid.getTPObstacle(ox,oy);
+
+			// Keep the minimum distance:
+			for (CParameterizedTrajectoryGenerator::TCollisionCell::const_iterator i=cell.begin();i!=cell.end();++i)
+				if ( i->second < out_TPObstacles[ i->first ] )
+					out_TPObstacles[i->first] = i->second;
+		}
 	}
 }
 
@@ -305,5 +299,13 @@ void CReactiveNavigationSystem::loggingGetWSObstaclesAndShape(CLogFileRecord &ou
 {
 	out_log.WS_Obstacles = m_WS_Obstacles;
 
-	MRPT_TODO("Save shape")
+	const size_t nVerts = m_robotShape.size();
+    out_log.robotShape_x.resize(nVerts);
+    out_log.robotShape_y.resize(nVerts);
+
+    for (size_t i=0;i<nVerts;i++)
+    {
+		out_log.robotShape_x[i]= m_robotShape.GetVertex_x(i);
+		out_log.robotShape_y[i]= m_robotShape.GetVertex_y(i);
+    }
 }

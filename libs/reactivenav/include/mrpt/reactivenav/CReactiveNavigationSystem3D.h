@@ -109,7 +109,6 @@ namespace mrpt
 			struct REACTIVENAV_IMPEXP TPTGmultilevel
 			{
 				std::vector <CParameterizedTrajectoryGenerator*> PTGs;
-				mrpt::vector_double		TPObstacles;
 				TPoint2D				TP_Target;
 				THolonomicMovement		holonomicmov;
 
@@ -121,7 +120,7 @@ namespace mrpt
 			//					PRIVATE	VARIABLES
 			// ------------------------------------------------------
 			mrpt::slam::CSimplePointsMap              m_WS_Obstacles_unsorted;  //!< The unsorted set of obstacles from the sensors
-			std::vector<mrpt::slam::CSimplePointsMap> m_WS_Obstacles_inlevels; //!< One point cloud per 2.5D robot-shape-slice
+			std::vector<mrpt::slam::CSimplePointsMap> m_WS_Obstacles_inlevels; //!< One point cloud per 2.5D robot-shape-slice, coordinates relative to the robot local frame
 
 
 			/** The robot 3D shape model */

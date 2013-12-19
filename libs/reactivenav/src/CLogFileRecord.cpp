@@ -158,8 +158,10 @@ void  CLogFileRecord::writeToStream(CStream &out,int *version) const
 
 		n = robotShape_x.size();
 		out << n;
-		out.WriteBuffer((const void*)&(*robotShape_x.begin()), n*sizeof(robotShape_x[0]));
-		out.WriteBuffer((const void*)&(*robotShape_y.begin()), n*sizeof(robotShape_y[0]));
+		if (n) {
+			out.WriteBuffer((const void*)&(*robotShape_x.begin()), n*sizeof(robotShape_x[0]));
+			out.WriteBuffer((const void*)&(*robotShape_y.begin()), n*sizeof(robotShape_y[0]));
+		}
 
 		// Version 1 ---------
 		out << actual_v << actual_w;
