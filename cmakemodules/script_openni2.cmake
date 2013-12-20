@@ -17,7 +17,24 @@ IF (PKG_CONFIG_FOUND)
 	endif(${CMAKE_VERSION} VERSION_LESS 2.8.2)
 ENDIF (PKG_CONFIG_FOUND)
 
-OPTION(MRPT_HAS_OPENNI2 "Support for the OpenNI2 library" "${PC_OPENNI_FOUND}")
+# Build the expected names of the environment variables (Windows only) where OpenNI2 can be found:
+IF (CMAKE_MRPT_WORD_SIZE EQUAL 64)
+	SET(ENV_OPNI2_INCLUDE "OPENNI2_INCLUDE64")
+	SET(ENV_OPNI2_LIB     "OPENNI2_LIB64")
+	SET(ENV_OPNI2_REDIST  "OPENNI2_REDIST64")
+ELSE (CMAKE_MRPT_WORD_SIZE EQUAL 64)
+	SET(ENV_OPNI2_INCLUDE "OPENNI2_INCLUDE")
+	SET(ENV_OPNI2_LIB     "OPENNI2_LIB")
+	SET(ENV_OPNI2_REDIST  "OPENNI2_REDIST")
+ENDIF (CMAKE_MRPT_WORD_SIZE EQUAL 64)
+
+# Create option for OpenNI2 and guess its default value: 
+SET(DEFAULT_MRPT_HAS_OPENNI2 0)
+IF(PC_OPENNI_FOUND OR NOT "$ENV{${ENV_OPNI2_INCLUDE}}" STREQUAL "")
+	SET(DEFAULT_MRPT_HAS_OPENNI2 1)
+ENDIF(PC_OPENNI_FOUND OR NOT "$ENV{${ENV_OPNI2_INCLUDE}}" STREQUAL "")
+
+OPTION(MRPT_HAS_OPENNI2 "Support for the OpenNI2 library" ${DEFAULT_MRPT_HAS_OPENNI2})
 
 IF(MRPT_HAS_OPENNI2)
 	#set(OPENNI2_DEFINITIONS ${PC_OPENNI_CFLAGS_OTHER}) #JL: Remove?
@@ -25,14 +42,14 @@ IF(MRPT_HAS_OPENNI2)
 	#add a hint so that it can find it without the pkg-config
 	find_path(OPENNI2_INCLUDE_DIR OpenNI.h
 			  HINTS ${PC_OPENNI_INCLUDEDIR} ${PC_OPENNI_INCLUDE_DIRS} /usr/include/openni2 /usr/include/ni2
-			  PATHS "$ENV{PROGRAMFILES}/OpenNI2/Include" "$ENV{PROGRAMW6432}/OpenNI2/Include"
+			  PATHS "$ENV{PROGRAMFILES}/OpenNI2/Include" "$ENV{PROGRAMW6432}/OpenNI2/Include" "$ENV{${ENV_OPNI2_INCLUDE}}"
 			  PATH_SUFFIXES openni ni
 			  DOC "Path to the include directory containing OpenNI.h,etc.")
 	#add a hint so that it can find it without the pkg-config
 	find_library(OPENNI2_LIBRARY
 				 NAMES OpenNI2
 				 HINTS ${PC_OPENNI_LIBDIR} ${PC_OPENNI_LIBRARY_DIRS} /usr/lib
-				 PATHS "$ENV{PROGRAMFILES}/OpenNI2/Redist" "$ENV{PROGRAMW6432}/OpenNI2/Redist" "$ENV{PROGRAMW6432}/OpenNI2"
+				 PATHS "$ENV{PROGRAMFILES}/OpenNI2/Redist" "$ENV{PROGRAMW6432}/OpenNI2/Redist" "$ENV{PROGRAMW6432}/OpenNI2" "$ENV{${ENV_OPNI2_LIB}}"
 				 PATH_SUFFIXES lib lib64
 				 DOC "The OpenNI2.lib file path")
 
