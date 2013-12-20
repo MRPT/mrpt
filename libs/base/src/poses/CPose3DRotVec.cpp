@@ -411,10 +411,9 @@ void CPose3DRotVec::composeFrom(const CPose3DRotVec& A,
         return;
     }
 
-    CMatrixDouble33 RA,RB,RC;
+    CMatrixDouble33 RA,RB;
     A.getRotationMatrix(RA);
     B.getRotationMatrix(RB);
-    RC = RA*RB;
 
     // Translation part
     CArrayDouble<3> coords = RA*B.m_coords + A.m_coords;
@@ -466,15 +465,8 @@ void CPose3DRotVec::composeFrom(const CPose3DRotVec& A,
     /* */
 
     // Rotation part
-    CArrayDouble<12> aux_vals(0);
-    aux_vals[0] = RC(0,0); aux_vals[1] = RC(1,0); aux_vals[2] = RC(2,0);
-    aux_vals[3] = RC(0,1); aux_vals[4] = RC(1,1); aux_vals[5] = RC(2,1);
-    aux_vals[6] = RC(0,2); aux_vals[7] = RC(1,2); aux_vals[8] = RC(2,2);
-    // XYZ coords (ignored anyway, put to 0 to avoid compiler warnings on uninitialized values):
-    aux_vals[9] = aux_vals[10] = aux_vals[11] = 0;
-
-    CPose3D aux;
-    aux.setFrom12Vector(aux_vals);
+    CPose3D aux(UNINITIALIZED_POSE);
+	aux.setRotationMatrix( RA*RB );
     this->m_rotvec = aux.ln_rotation();
 
 //    cout << "WO Approx: " << *this << endl;
