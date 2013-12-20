@@ -164,3 +164,56 @@ TEST(SerializeTestBase, CArray)
 
 }
 
+// Serialize and deserialize complex STL types
+TEST(SerializeTestBase, STL_serialization)
+{
+	try
+	{
+		// std::vector<>
+		{
+			CMemoryStream  buf;
+
+			std::vector<double> a,b;
+			a.resize(30);
+			for (size_t i=0;i<a.size();i++) a[i]=50-i;
+
+			buf << a; buf.Seek(0); buf >> b;
+			EXPECT_TRUE(a==b);
+		}
+
+		// std::list<...>
+		{
+			CMemoryStream  buf;
+
+			std::list<std::map<double,std::set<std::string> > >  a,b;
+
+			// Fill with random:
+			mrpt::random::CRandomGenerator rng;
+			const size_t N = rng.drawUniform(10,30);
+			for (size_t i=0;i<N;i++)
+			{
+				std::map<double,std::set<std::string> > d;
+				const size_t M = rng.drawUniform(4,9);
+				for (size_t j=0;j<M;j++)
+				{
+					std::set<std::string> & dd = d[ rng.drawGaussian1D_normalized() ];
+					const size_t L = rng.drawUniform(2,15);
+					for (size_t k=0;k<L;k++)
+						dd.insert(mrpt::format("%f", rng.drawGaussian1D_normalized() ));
+				}
+				a.push_back(d);
+			}
+
+
+			buf << a; buf.Seek(0); buf >> b;
+			EXPECT_TRUE(a==b);
+		}
+	}
+	catch(std::exception &e)
+	{
+		GTEST_FAIL() <<
+			"Exception:\n" << e.what() << endl;
+	}
+
+}
+
