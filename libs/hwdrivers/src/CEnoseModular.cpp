@@ -241,15 +241,19 @@ bool CEnoseModular::getObservation( mrpt::slam::CObservationGasSensors &obs )
 			else
 				newRead.eNosePoseOnTheRobot = CPose3D(0,0,0);
 
-			// Get Temperature
-			newRead.temperature = msg.content[0] / 32.0f;
+			// Get Temperature (ºC)
+			newRead.temperature = msg.content[0]*1.65214 - 277.74648;
 
 			//process all sensors
 			for (size_t idx=0 ; idx<numSensors ; idx++)
 			{
 				// Copy ID (2 BYTES) To integer
-				int sensorType;
-				memcpy( &sensorType, &msg.content[idx*3+1], 2*sizeof(msg.content[0]) );
+				uint16_t sensorType;
+				uint8_t sensorTypeH, sensorTypeL;
+				memcpy( &sensorTypeH, &msg.content[idx*3+1], sizeof(msg.content[0]) );				
+				memcpy( &sensorTypeL, &msg.content[idx*3+2], sizeof(msg.content[0]) );
+				sensorType = sensorTypeH;
+				sensorType = (sensorType<<8) + sensorTypeL;
 
 				//Add sensor Type (ID)
 				newRead.sensorTypes.push_back(sensorType);
