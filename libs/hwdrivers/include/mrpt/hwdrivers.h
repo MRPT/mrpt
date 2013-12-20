@@ -82,9 +82,9 @@
 #include <mrpt/hwdrivers/CStereoGrabber_Bumblebee.h>
 #include <mrpt/hwdrivers/CStereoGrabber_SVS.h>
 #include <mrpt/hwdrivers/CPhidgetInterfaceKitProximitySensors.h>
-#include <mrpt/hwdrivers/CInterfaceNI845x.h>
 #include <mrpt/hwdrivers/CKinect.h>
 
 #include <mrpt/hwdrivers/CCANBusReader.h>
+#include <mrpt/hwdrivers/CNationalInstrumentsDAQ.h>
 
 #endif

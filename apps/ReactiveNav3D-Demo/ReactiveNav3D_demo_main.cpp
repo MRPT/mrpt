@@ -314,6 +314,7 @@ int main(int num_arg, char *argv[])
 
 		CMyReactInterface ReactInterface;
 		CReactiveNavigationSystem3D rn3d (ReactInterface, true, enable_logfile);
+		rn3d.enableTimeLog(true);
 
 		if (use_config_file == 0)
 		{

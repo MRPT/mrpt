@@ -42,7 +42,7 @@ namespace mrpt
   namespace reactivenav
   {
 
-	/** A PTG for circular paths. The parameter K is related with the transformation between alpha values
+	/** A PTG for circular paths ("C" type PTG in papers). The parameter K is related with the transformation between alpha values
 			and curvature of the arcs. Let R be the radius of the circular path (the inverse of the curvature).
 			Then: <br> <center><code> R = K / (v<sub>MAX</sub> tan &alpha;) </code></center>
 	 *  \ingroup mrpt_reactivenav_grp

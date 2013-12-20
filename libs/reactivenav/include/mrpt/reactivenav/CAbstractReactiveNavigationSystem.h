@@ -40,9 +40,6 @@
 
 #include <mrpt/reactivenav/link_pragmas.h>
 
-
-#include <cstdarg>
-
 namespace mrpt
 {
   namespace reactivenav
@@ -95,21 +92,16 @@ namespace mrpt
 		 */
 		virtual bool stopWatchdog() { return true; }
 
-		/** Return the current set of obstacle points.
+		/** Return the current set of obstacle points, as seen from the local coordinate frame of the robot.
 		  * \return false on any error.
 		  */
 		virtual bool senseObstacles( mrpt::slam::CSimplePointsMap 		&obstacles ) = 0;
 
 		virtual void sendNavigationStartEvent () { std::cout << "[sendNavigationStartEvent] Not implemented by the user." << std::endl; }
-
 		virtual void sendNavigationEndEvent() {	std::cout << "[sendNavigationEndEvent] Not implemented by the user." << std::endl; }
-
 		virtual void sendNavigationEndDueToErrorEvent() { std::cout << "[sendNavigationEndDueToErrorEvent] Not implemented by the user." << std::endl; }
-
 		virtual void sendWaySeemsBlockedEvent() { std::cout << "[sendWaySeemsBlockedEvent] Not implemented by the user." << std::endl; }
-
 		virtual void notifyHeadingDirection(const double heading_dir_angle) { }
-
 	};
 
 
@@ -122,6 +114,7 @@ namespace mrpt
      *		- 16/SEP/2004: Totally redesigned.
 	 *		- 15/SEP/2005: Totally rewritten again, for integration into MRPT Applications Repository.
 	 *		-  3/NOV/2009: All functors are finally replaced by the new virtual class CReactiveInterfaceImplementation
+	 *		- 16/DEC/2013: Refactoring of code in 2D & 2.5D navigators.
 	 *
 	 *   How to use:
 	 *      - A class with callbacks must be defined by the user and provided to the constructor.
@@ -132,29 +125,33 @@ namespace mrpt
 	class REACTIVENAV_IMPEXP CAbstractReactiveNavigationSystem : public mrpt::utils::CDebugOutputCapable
 	{
 	public:
-		struct TNavigationParams;
+		/** The struct for configuring navigation requests. */
+		struct REACTIVENAV_IMPEXP TNavigationParams
+		{
+			mrpt::poses::TPoint2D  target;  //!< Coordinates of desired target location.
+			double                 targetHeading; //!< Target location (heading, in radians)
 
-		/** Constructor
-		  */
+			float                  targetAllowedDistance;    //!< Allowed distance to target in order to end the navigation.
+			bool                   targetIsRelative;  //!< (Default=false) Whether the \a target coordinates are in global coordinates (false) or are relative to the current robot pose (true).
+
+			TNavigationParams(); //!< Ctor with default values
+			std::string getAsText() const; //!< Gets navigation params as a human-readable format
+		};
+
+
+		/** Constructor */
 		CAbstractReactiveNavigationSystem( CReactiveInterfaceImplementation &react_iterf_impl );
 
-        /** Destructor
-          */
-        virtual ~CAbstractReactiveNavigationSystem()
-		{
-		}
+        /** Destructor */
+        virtual ~CAbstractReactiveNavigationSystem() { }
 
-		/** Cancel current navegacion.
-		 */
+		/** Cancel current navegacion. */
 		void cancel();
 
-		/** Continues with suspended navigation.
-		 * \sa suspend
-		 */
+		/** Continues with suspended navigation. \sa suspend */
 		void resume();
 
-		/** This method must be called periodically in order to effectively run the navigation.
-		 */
+		/** This method must be called periodically in order to effectively run the navigation. */
 		void navigationStep();
 
 		/** Navigation request. It starts a new navigation.
@@ -162,30 +159,10 @@ namespace mrpt
 		 */
 		virtual void  navigate( const TNavigationParams *params )=0;
 
-		/** Suspend current navegation
-		 * \sa resume
-		 */
+		/** Suspend current navegation. \sa resume */
 		virtual void  suspend();
 
-		/** The struct for configuring the navigation request.
-		 */
-		struct TNavigationParams
-		{
-			/** Coordinates of desired target location.
-			 */
-			mrpt::poses::TPoint2D		target;
-
-			/** The allowed distance from target in order to end the navigation.
-			 */
-			float           targetAllowedDistance;
-
-			/** Whether the \a target coordinates are in global coordinates (false) or are relative to the current robot pose (true).
-			 */
-			bool            targetIsRelative;
-		};
-
-		/** The different states for the navigation system.
-		 */
+		/** The different states for the navigation system. */
 		enum TState
 		{
 			IDLE=0,
@@ -194,27 +171,18 @@ namespace mrpt
 			NAV_ERROR
 		};
 
-		/** Returns the current navigator state.
-		 */
-		TState getCurrentState() const { return m_navigationState; }
+		/** Returns the current navigator state. */
+		inline TState getCurrentState() const { return m_navigationState; }
 
 	private:
-		/** Last internal state of navigator:
-		 */
-		TState		m_lastNavigationState;
+		TState  m_lastNavigationState; //!< Last internal state of navigator:
 
 	protected:
-		/** To be implemented in derived classes
-		  */
+		/** To be implemented in derived classes */
 		virtual void  performNavigationStep( )=0;
 
-		/** Current internal state of navigator:
-		 */
-		TState		m_navigationState;
-
-		/** Current navigation parameters:
-		 */
-		TNavigationParams	m_navigationParams;
+		TState             m_navigationState;  //!< Current internal state of navigator:
+		TNavigationParams  m_navigationParams;  //!< Current navigation parameters
 
 
 		CReactiveInterfaceImplementation   &m_robot; //!< The navigator-robot interface.

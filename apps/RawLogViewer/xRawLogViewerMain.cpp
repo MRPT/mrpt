@@ -2685,6 +2685,47 @@ void xRawLogViewerFrame::SelectObjectInTreeView( const CSerializablePtr & sel_ob
 
                                                     }
                                                     else
+                                                    if ( classID  == CLASS_ID(CObservationRawDAQ ) )
+                                                    {
+                                                         // ----------------------------------------------------------------------
+                                                         //              CObservationRawDAQ
+                                                         // ----------------------------------------------------------------------
+                                                         Notebook1->ChangeSelection( 0 );
+                                                         CObservationRawDAQPtr obs = CObservationRawDAQPtr( sel_obj );
+                                                         curSelectedObservation = CObservationPtr( sel_obj );
+
+                                                         cout << "Sample rate             : " << obs->sample_rate << " Hz" << endl;
+                                                         cout << "Analog IN Channel count : " << obs->AIN_channel_count << endl;
+                                                         cout << "Analog IN interleaved?  : " << (obs->AIN_interleaved ? "yes":"no")<< endl;
+
+#define RAWDAQ_SHOW_FIRSTS(_VEC) \
+    cout << "Raw data in " #_VEC " ("<< obs->_VEC.size() <<" entries): First values ["; \
+    if (!obs->_VEC.empty()) { \
+        for (size_t i=1;i<=std::min(obs->_VEC.size(),static_cast<size_t>(10));i++) \
+            cout << obs->_VEC[i-1] << " "; \
+        cout << " ... "; \
+        } \
+    cout << "]\n";
+
+
+                                                        RAWDAQ_SHOW_FIRSTS(AIN_8bits)
+                                                        RAWDAQ_SHOW_FIRSTS(AIN_16bits)
+                                                        RAWDAQ_SHOW_FIRSTS(AIN_32bits)
+                                                        RAWDAQ_SHOW_FIRSTS(AIN_float)
+                                                        RAWDAQ_SHOW_FIRSTS(AIN_double)
+                                                        RAWDAQ_SHOW_FIRSTS(AOUT_8bits)
+                                                        RAWDAQ_SHOW_FIRSTS(AOUT_16bits)
+                                                        RAWDAQ_SHOW_FIRSTS(AOUT_float)
+                                                        RAWDAQ_SHOW_FIRSTS(AOUT_double)
+                                                        RAWDAQ_SHOW_FIRSTS(DIN)
+                                                        RAWDAQ_SHOW_FIRSTS(DOUT)
+                                                        RAWDAQ_SHOW_FIRSTS(CNTRIN_32bits)
+                                                        RAWDAQ_SHOW_FIRSTS(CNTRIN_double)
+
+                                                        cout << endl;
+
+                                                    }
+                                                    else
 													{
 														// Other selections:
 														Notebook1->ChangeSelection( 0 );

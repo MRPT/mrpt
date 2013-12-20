@@ -68,6 +68,7 @@ CParameterizedTrajectoryGenerator::CParameterizedTrajectoryGenerator(const TPara
 	nVertices = 0;
 	turningRadiusReference = 0.10f;
 
+	// This does not need to be done here: it can be done in mrpt::reactivenav::build_PTG_collision_grids()
 	initializeCollisionsGrid( refDistance, params["resolution"] );
 }
 
@@ -452,11 +453,18 @@ void CParameterizedTrajectoryGenerator::CColisionGrid::updateCellInfo(
 	TCollisionCell *cell = cellByIndex(icx,icy);
 	if (!cell) return;
 
-	TCollisionCell::iterator itK = cell->find(k);
+	// For such a small number of elements, brute-force search is not such a bad idea:
+	TCollisionCell::iterator itK = cell->end();
+	for (TCollisionCell::iterator it=cell->begin();it!=cell->end();++it)
+		if (it->first==k)
+		{
+			itK = it;
+			break;
+		}
 
 	if (itK==cell->end())
 	{	// New entry:
-		(*cell)[k] = dist;
+		cell->push_back(std::make_pair(k,dist) );
 	}
 	else
 	{	// Only update that "k" if the distance is shorter now:
@@ -520,7 +528,7 @@ bool CParameterizedTrajectoryGenerator::CColisionGrid::saveToFile( CStream *f, c
 	{
 		if (!f) return false;
 
-		const uint8_t serialize_version = 1; // v1: As of jun 2012
+		const uint8_t serialize_version = 2; // v1: As of jun 2012, v2: As of dec-2013
 
 		// Save magic signature && serialization version:
 		*f << COLGRID_FILE_MAGIC << serialize_version;
@@ -536,7 +544,18 @@ bool CParameterizedTrajectoryGenerator::CColisionGrid::saveToFile( CStream *f, c
 
 		*f << m_x_min << m_x_max << m_y_min << m_y_max;
 		*f << m_resolution;
-		*f << m_map;
+
+		//v1 was:  *f << m_map;
+		uint32_t N = m_map.size();
+		*f << N;
+		for (uint32_t i=0;i<N;i++)
+		{
+			uint32_t M = m_map[i].size();
+			*f << M;
+			for (uint32_t k=0;k<M;k++)
+				*f << m_map[i][k].first << m_map[i][k].second;
+		}
+
 		return true;
 	}
 	catch(...)
@@ -571,7 +590,7 @@ bool CParameterizedTrajectoryGenerator::CColisionGrid::loadFromFile( CStream *f,
 
 		switch (serialized_version)
 		{
-		case 1:
+		case 2:
 			{
 				mrpt::math::CPolygon stored_shape;
 				*f >> stored_shape;
@@ -584,8 +603,9 @@ bool CParameterizedTrajectoryGenerator::CColisionGrid::loadFromFile( CStream *f,
 			}
 			break;
 
+		case 1:
 		default:
-			// Unknown version: Maybe we are loading a file from a more recent version of MRPT? Whatever, we can't read it:
+			// Unknown version: Maybe we are loading a file from a more recent version of MRPT? Whatever, we can't read it: It's safer just to re-generate the PTG data
 			return false;
 		};
 
@@ -610,15 +630,31 @@ bool CParameterizedTrajectoryGenerator::CColisionGrid::loadFromFile( CStream *f,
 		*f >> ff; if(ff!=m_resolution) return false;
 
 		// OK, all parameters seem to be exactly the same than when we precomputed the table: load it.
-		*f >> m_map;
+		//v1 was:  *f >> m_map;
+		uint32_t N;
+		*f >> N;
+		 m_map.resize(N);
+		for (uint32_t i=0;i<N;i++)
+		{
+			uint32_t M;
+			*f >> M;
+			 m_map[i].resize(M);
+			for (uint32_t k=0;k<M;k++)
+				*f >> m_map[i][k].first >> m_map[i][k].second;
+		}
+
 		return true;
+	}
+	catch(std::exception &e)
+	{
+		std::cerr << "[CColisionGrid::loadFromFile] " << e.what();
+		return false;
 	}
 	catch(...)
 	{
 		return false;
 	}
 }
-
 
 /*---------------------------------------------------------------
 				lambdaFunction

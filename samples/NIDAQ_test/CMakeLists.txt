@@ -1,10 +1,10 @@
 #-----------------------------------------------------------------------------------------------
-# CMake file for the MRPT example:  /ni845x_basic_io
+# CMake file for the MRPT example:  /NIDAQ_test
 #
 #  Run with "ccmake ." at the root directory, or use it as a template for 
 #   starting your own programs
 #-----------------------------------------------------------------------------------------------
-SET(sampleName ni845x_basic_io)
+SET(sampleName NIDAQ_test)
 SET(PRJ_NAME "EXAMPLE_${sampleName}")
 
 # ---------------------------------------

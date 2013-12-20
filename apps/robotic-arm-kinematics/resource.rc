@@ -59,7 +59,6 @@ WXCURSOR_PBRUSH         CURSOR                  "wx/msw/pbrush.cur"
 WXCURSOR_PLEFT          CURSOR                  "wx/msw/pntleft.cur"
 WXCURSOR_PRIGHT         CURSOR                  "wx/msw/pntright.cur"
 WXCURSOR_BLANK          CURSOR                  "wx/msw/blank.cur"
-WXCURSOR_RIGHT_ARROW    CURSOR                  "wx/msw/rightarr.cur"
 WXCURSOR_CROSS          CURSOR                  "wx/msw/cross.cur"
 
 /////////////////////////////////////////////////////////////////////////////

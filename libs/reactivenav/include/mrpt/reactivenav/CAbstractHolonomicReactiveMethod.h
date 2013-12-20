@@ -46,6 +46,15 @@ namespace mrpt
 		using namespace mrpt::utils;
 		using namespace mrpt::poses;
 
+	/**  The implemented reactive navigation methods. This enum works with mrpt::utils::TEnumType
+	*  \ingroup mrpt_reactivenav_grp
+	*/
+	enum THolonomicMethod
+	{
+		hmVIRTUAL_FORCE_FIELDS = 0,
+		hmSEARCH_FOR_BEST_GAP = 1
+	};
+
 	/** A base class for holonomic reactive navigation methods.
 	 *  \sa CHolonomicVFF,CHolonomicND, CReactiveNavigationSystem
 	 *  \ingroup mrpt_reactivenav_grp
@@ -81,6 +90,20 @@ namespace mrpt
 
 	};
   }
+	// Specializations MUST occur at the same namespace:
+	namespace utils
+	{
+		template <>
+		struct TEnumTypeFiller<reactivenav::THolonomicMethod>
+		{
+			typedef reactivenav::THolonomicMethod enum_t;
+			static void fill(bimap<enum_t,std::string>  &m_map)
+			{
+				m_map.insert(reactivenav::hmVIRTUAL_FORCE_FIELDS, "hmVIRTUAL_FORCE_FIELDS");
+				m_map.insert(reactivenav::hmSEARCH_FOR_BEST_GAP, "hmSEARCH_FOR_BEST_GAP");
+			}
+		};
+	} // End of namespace
 }
 
 

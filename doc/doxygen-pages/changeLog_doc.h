@@ -45,6 +45,7 @@
 			- mrpt::synch::CPipe: OS-independent pipe support.
 		- [mrpt-hwdrivers]
 			- mrpt::hwdrivers::CIMUXSens_MT4 : Support for 4th generation xSens MT IMU devices.
+			- mrpt::hwdrivers::CNationalInstrumentsDAQ: Support for acquisition boards compatible with National Instruments DAQmx Base - <a href="https://github.com/jlblancoc/mrpt/commit/a82a7e37997cfb77e7ee9e903bdb2a55e3040b35">a82a7e3799</a>.
 		- [mrpt-maps]
 			- There are now two versions of octomaps (by Mariano Jaimez Tarifa/Jose Luis Blanco) - <a href="http://code.google.com/p/mrpt/source/detail?r=3443" >r3443</a>
 				- mrpt::slam::COctoMap (only occupancy)
@@ -54,6 +55,10 @@
 		- [mrpt-opengl]
 			- mrpt::opengl::CMeshFast, an open gl object that draws a "mesh" as a structured point cloud which is faster to render (by Mariano Jaimez Tarifa). -<a href="https://github.com/jlblancoc/mrpt/commit/9306bb4a585387d4c85b3f6e41dd2cbe5a354e80" >r9306bb4a58</a>
 			- mrpt::opengl::CVectorField2D, an opengl object that shows a 2D Vector Field (by Mariano Jaimez Tarifa). - <a href="http://code.google.com/p/mrpt/source/detail?r=3461" >r3461</a>
+		- [mrpt-reactivenav]
+			- mrpt::reactivenav::CAbstractPTGBasedReactive, as part of a large code refactoring of these classes: <a href="https://github.com/jlblancoc/mrpt/pull/4" >commit</a>
+				- mrpt::reactivenav::CReactiveNavigationSystem
+				- mrpt::reactivenav::CReactiveNavigationSystem3D
 	- Changes in classes:
 		- Clean up and slight optimization of metric map matching API: - <a href="http://code.google.com/p/mrpt/source/detail?r=3446" >r3446</a>
 			- <b>Methods marked as deprecated: </b>
@@ -66,6 +71,10 @@
 		- Method renamed mrpt::utils::CEnhancedMetaFile::selectVectorTextFont() to avoid shadowing mrpt::utils::CCanvas::selectTextFont()
 	- Deleted classes:
 		- mrpt::utils::CEvent, which was actually unimplemented (!)
+		- mrpt::hwdrivers::CInterfaceNI845x has been deleted. It didn't offer features enough to justify a class.
+	- New examples:
+		- [MRPT]/samples/threadsPipe
+		- [MRPT]/samples/NIDAQ_test
 	- Build system:
 		- Fixed compilation with clang.
 		- Fixed building against OpenCV 3.0.0 (GIT head)
@@ -79,6 +88,7 @@
 		- Fixed potential mem alignment errors (Eigen's UnalignedArrayAssert) in SRBA for 32bit builds. <a href="http://code.google.com/p/mrpt/source/detail?r=3457" >r3457</a>
 		- mrpt::topography::geodeticToENU_WGS84() and related functions used a local +Z axis aligned to the line towards the Earth center; now the Z axis points normally to the ellipsoid surface. The difference with the previous behavior is small but may be of a few millimeters for each meter from the reference point. <a href="http://code.google.com/p/mrpt/source/detail?r=3473" >r3473</a>
 		- Potential crash when setting mpPolygon::setPoints() with empty vectors - <a href="http://code.google.com/p/mrpt/source/detail?r=3478" >r3478</a>
+        - mrpt::reactivenav::CReactiveNavigationSystem and mrpt::reactivenav::CReactiveNavigationSystem3D didn't obey the "enableConsoleOutput" constructor flag - <a href="https://github.com/jlblancoc/mrpt/commit/db7b0e76506af2c24f119a28443a1e8f1a217861">db7b0e76</a>.
 
 
  <hr>

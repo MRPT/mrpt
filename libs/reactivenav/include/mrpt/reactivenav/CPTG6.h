@@ -41,14 +41,13 @@ namespace mrpt
 {
   namespace reactivenav
   {
-	/** A PTG for circular paths.
+	/** A variation of the alpha-PTG (with fixed parameters, for now)
 	  *  \ingroup mrpt_reactivenav_grp
 	 */
 	class REACTIVENAV_IMPEXP  CPTG6 : public CParameterizedTrajectoryGenerator
 	{
 	 public:
-			/** Constructor: possible values in "params", those of CParameterizedTrajectoryGenerator plus:
-			 *   - cte_a0v, cte_a0w: Parameters of this PTG
+			/** Constructor (this PTG has no parameters) 
 			 */
 			CPTG6(const TParameters<double> &params );
 
@@ -64,9 +63,6 @@ namespace mrpt
 
 			void PTG_Generator( float alpha, float t,float x, float y, float phi, float &v, float &w );
 	 protected:
-			float	cte_a0v;
-			float	cte_a0w;
-
 
 	};
   }
