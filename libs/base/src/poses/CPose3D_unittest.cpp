@@ -268,7 +268,7 @@ protected:
 		const CPose3D p1(x1,y1,z1,yaw1,pitch1,roll1);
 
 		const CPose3D p2 = CPose3D::exp( p1.ln() );
-		EXPECT_NEAR((p1.getAsVectorVal()-p2.getAsVectorVal()).Abs().sumAll(),0, 1e-6 ) << "p1: " << p1 <<endl;
+		EXPECT_NEAR((p1.getAsVectorVal()-p2.getAsVectorVal()).Abs().sumAll(),0, 1e-5 ) << "p1: " << p1 <<endl;
 	}
 
 
@@ -456,7 +456,7 @@ protected:
 		};
 		CMatrixFixedNumeric<double,12,6>  M(vals);
 
-		EXPECT_NEAR( (numJacobs-M).Abs().sumAll(), 0, 1e-9);
+		EXPECT_NEAR( (numJacobs-M).Abs().maxCoeff(), 0, 1e-5) << "M:\n" << M << "numJacobs:\n" << numJacobs << "\n";
 	}
 
 	static void func_jacob_LnT_T(
