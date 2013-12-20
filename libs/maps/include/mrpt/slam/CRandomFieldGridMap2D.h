@@ -414,6 +414,9 @@ namespace slam
 		/** solves the minimum quadratic system to determine the new concentration of each cell */
 		void  updateMapEstimation_GMRF();		
 
+		/** Computes the confidence of the cell concentration (alpha) */
+		double computeConfidenceCellValue_DM_DMV (const TRandomFieldCell *cell ) const;
+
 		/** Computes the average cell concentration, or the overall average value if it has never been observed  */
 		double computeMeanCellValue_DM_DMV (const TRandomFieldCell *cell ) const;
 
