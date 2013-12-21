@@ -193,6 +193,25 @@ namespace mrpt
 		float  SPEEDFILTER_TAU;     //!< Time constant for the low-pass filter applied to the speed commands
 		std::vector<float> weights;  //!< length: 6 [0,5]
 
+		/** In normalized distances, the start and end of a ramp function that scales the velocity 
+		  *  output from the holonomic navigator: 
+		  *
+		  * \code
+		  *  velocity scale
+		  *   ^
+		  *   |           _____________
+		  *   |          /
+		  * 1 |         /
+		  *   |        /
+		  * 0 +-------+---|----------------> normalized distance
+		  *         Start
+		  *              End
+		  * \endcode
+		  * 
+		  */
+		float secureDistanceStart,secureDistanceEnd; 
+
+
 		float  DIST_TO_TARGET_FOR_SENDING_EVENT;
 		float  meanExecutionPeriod;	//!< Runtime estimation of execution period of the method.
 		mrpt::utils::CTimeLogger m_timelogger;			//!< A complete time logger \sa enableTimeLog()

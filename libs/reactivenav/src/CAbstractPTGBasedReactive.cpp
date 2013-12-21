@@ -73,6 +73,8 @@ CAbstractPTGBasedReactive::CAbstractPTGBasedReactive(CReactiveInterfaceImplement
 	robotMax_V_mps               (1.0f),
 	robotMax_W_degps             (50.0f),
 	SPEEDFILTER_TAU              (0.0f),
+	secureDistanceStart          (0.05f),
+	secureDistanceEnd            (0.20f),
 	DIST_TO_TARGET_FOR_SENDING_EVENT(0.4f),
 	meanExecutionPeriod          (0.1f),
 	m_timelogger                 (false), // default: disabled
@@ -449,6 +451,22 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 						holonomicMovement.direction,
 						holonomicMovement.speed,
 						HLFR);
+
+					// Security: Scale down the velocity when heading towards obstacles, 
+					//  such that it's assured that we never go thru an obstacle!
+					const int kDirection = static_cast<int>( holonomicMovement.PTG->alpha2index( holonomicMovement.direction ) );
+					const double obsFreeNormalizedDistance = ipf.TP_Obstacles[kDirection];
+					double velScale = 1.0;
+					ASSERT_(secureDistanceEnd>secureDistanceStart);
+					if (obsFreeNormalizedDistance<secureDistanceEnd)
+					{
+						if (obsFreeNormalizedDistance<=secureDistanceStart)
+							 velScale = 0.0; // security stop
+						else velScale = (obsFreeNormalizedDistance-secureDistanceStart)/(secureDistanceEnd-secureDistanceStart);
+					}
+
+					// Scale: 
+					holonomicMovement.speed *= velScale;
 				}
 
 				// STEP5: Evaluate each movement to assign them a "evaluation" value.
