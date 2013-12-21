@@ -39,8 +39,6 @@ using namespace mrpt;
 using namespace mrpt::reactivenav;
 using namespace mrpt::system;
 
-#define CTE_DIV_ALFA 2
-
 /*---------------------------------------------------------------
 						Constructor
   ---------------------------------------------------------------*/
@@ -66,7 +64,8 @@ void CPTG1::PTG_Generator( float alpha, float t,float x, float y, float phi, flo
 {
     // (v,w)
     v = V_MAX * sign(K);
-    w = tan( alpha/CTE_DIV_ALFA ) * W_MAX * sign(K);
+	// Use a linear mapping:  (Old was: w = tan( alpha/2 ) * W_MAX * sign(K))
+    w = (alpha/M_PI) * W_MAX * sign(K); 
 }
 
 /*---------------------------------------------------------------
@@ -82,12 +81,11 @@ bool CPTG1::PTG_IsIntoDomain( float x, float y )
   ---------------------------------------------------------------*/
 void CPTG1::lambdaFunction( float x, float y, int &k_out, float &d_out )
 {
-	double		R,a;
-
 	if (y!=0)
 	{
-		R = (x*x+y*y)/(2*y);
-		a = sign(K)*2*atan( V_MAX / (W_MAX*R) );
+		const double R = (x*x+y*y)/(2*y);
+		//Was: a = 2*atan( V_MAX / (W_MAX*R) );
+		const double a = M_PI* V_MAX / (W_MAX*R);
 		k_out = alpha2index( (float)a );
 
 		double theta;
@@ -105,8 +103,10 @@ void CPTG1::lambdaFunction( float x, float y, int &k_out, float &d_out )
 			else	theta = atan2( -(double)x,y+fabs(R) );
 		}
 
-		if (theta<0) theta += (float)M_2PI;
+		// Arc length must be possitive [0,2*pi]
+		mrpt::math::wrapTo2PiInPlace(theta);
 
+		// Distance thru arc:
 		d_out = (float)(theta * (fabs(R)+turningRadiusReference));
 	}
 	else

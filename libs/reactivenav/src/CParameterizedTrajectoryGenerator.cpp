@@ -516,8 +516,7 @@ bool CParameterizedTrajectoryGenerator::LoadColGridsFromFile( const std::string 
 	}
 }
 
-const uint32_t OLD_COLGRID_FILE_MAGIC = 0xC0C0C0C0;
-const uint32_t COLGRID_FILE_MAGIC     = 0xC0C0C0C1;
+const uint32_t COLGRID_FILE_MAGIC     = 0xC0C0C0C2;
 
 /*---------------------------------------------------------------
 					Save to file
@@ -577,13 +576,9 @@ bool CParameterizedTrajectoryGenerator::CColisionGrid::loadFromFile( CStream *f,
 		uint32_t file_magic;
 		*f >> file_magic;
 
+		// It doesn't seem to be a valid file or was in an old format, just recompute the grid:
 		if (COLGRID_FILE_MAGIC!=file_magic)
-		{
-			// May it be a file in the old format?
-			if (OLD_COLGRID_FILE_MAGIC==file_magic)
-					return false;  // We can't be sure of the robot shape: return false and recompute the grid.
-			else	return false;  // It doesn't seem to be a valid file: recompute the grid.
-		}
+			return false;
 
 		uint8_t serialized_version;
 		*f >> serialized_version;
