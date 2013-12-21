@@ -145,7 +145,7 @@ void  CLogFileRecord::writeToStream(CStream &out,int *version) const
 
 			uint32_t m = infoPerPTG[i].TP_Obstacles.size();
 			out << m;
-			out.WriteBuffer((const void*)&(*infoPerPTG[i].TP_Obstacles.begin()), m * sizeof(infoPerPTG[i].TP_Obstacles[0]));
+			if (m) out.WriteBuffer((const void*)&(*infoPerPTG[i].TP_Obstacles.begin()), m * sizeof(infoPerPTG[i].TP_Obstacles[0]));
 
 			out << infoPerPTG[i].TP_Target << infoPerPTG[i].timeForTPObsTransformation << infoPerPTG[i].timeForHolonomicMethod;
 			out << infoPerPTG[i].desiredDirection << infoPerPTG[i].desiredSpeed << infoPerPTG[i].evaluation;
@@ -227,7 +227,7 @@ void  CLogFileRecord::readFromStream(CStream &in,int version)
 				int32_t m;
 				in >> m;
 				infoPerPTG[i].TP_Obstacles.resize(m);
-				in.ReadBuffer((void*)&(*infoPerPTG[i].TP_Obstacles.begin()), m * sizeof(infoPerPTG[i].TP_Obstacles[0]));
+				if (m) in.ReadBuffer((void*)&(*infoPerPTG[i].TP_Obstacles.begin()), m * sizeof(infoPerPTG[i].TP_Obstacles[0]));
 
 				in >> infoPerPTG[i].TP_Target >> infoPerPTG[i].timeForTPObsTransformation >> infoPerPTG[i].timeForHolonomicMethod;
 				in >> infoPerPTG[i].desiredDirection >> infoPerPTG[i].desiredSpeed >> infoPerPTG[i].evaluation;
@@ -244,22 +244,24 @@ void  CLogFileRecord::readFromStream(CStream &in,int version)
 				// Previous values: (Removed in version 6)
 				in >> n;
 				prevV.resize(n);
-				in.ReadBuffer((void*)&(*prevV.begin()),n*sizeof(prevV[0]));
+				if (n) in.ReadBuffer((void*)&(*prevV.begin()),n*sizeof(prevV[0]));
 
 				in >> n;
 				prevW.resize(n);
-				in.ReadBuffer((void*)&(*prevW.begin()),n*sizeof(prevW[0]));
+				if (n) in.ReadBuffer((void*)&(*prevW.begin()),n*sizeof(prevW[0]));
 
 				in >> n;
 				prevSelPTG.resize(n);
-				in.ReadBuffer((void*)&(*prevSelPTG.begin()),n*sizeof(prevSelPTG[0]));
+				if (n) in.ReadBuffer((void*)&(*prevSelPTG.begin()),n*sizeof(prevSelPTG[0]));
 			}
 
 			in >> n;
 			robotShape_x.resize(n);
 			robotShape_y.resize(n);
-			in.ReadBuffer((void*)&(*robotShape_x.begin()), n*sizeof(robotShape_x[0]));
-			in.ReadBuffer((void*)&(*robotShape_y.begin()), n*sizeof(robotShape_y[0]));
+			if (n) {
+				in.ReadBuffer((void*)&(*robotShape_x.begin()), n*sizeof(robotShape_x[0]));
+				in.ReadBuffer((void*)&(*robotShape_y.begin()), n*sizeof(robotShape_y[0]));
+			}
 
 			if (version > 0)
 			{	// Version 1 --------------
