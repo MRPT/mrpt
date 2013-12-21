@@ -73,7 +73,21 @@ namespace mrpt
 	class REACTIVENAV_IMPEXP CAbstractPTGBasedReactive: public CAbstractReactiveNavigationSystem
 	{
 	public:
-		EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+		EIGEN_MAKE_ALIGNED_OPERATOR_NEW;
+
+		/** The struct for configuring navigation requests to CAbstractPTGBasedReactive and derived classes. */
+		struct REACTIVENAV_IMPEXP TNavigationParamsPTG : public CAbstractReactiveNavigationSystem::TNavigationParams
+		{
+			/** (Default=empty) Optionally, a list of PTG indices can be sent such that 
+			 *  the navigator will restrict itself to only employ those PTGs. */
+			std::vector<size_t>    restrict_PTG_indices; 
+
+			TNavigationParamsPTG() { }
+			virtual ~TNavigationParamsPTG() { }
+			virtual std::string getAsText() const;
+			virtual TNavigationParams* clone() const { return new TNavigationParamsPTG(*this); }
+		};
+
 
 		/** Constructor. 
 		  * \param[in] react_iterf_impl An instance of an object that implement all the required interfaces to read from and control a robot.
@@ -104,14 +118,10 @@ namespace mrpt
 			const std::string &section );
 
 
-		/** Start navigation with the given parameters. The method returns immediately, and next calls to navigationStep() will effectivaly start the actual navigation. */
-		void  navigate( const TNavigationParams &params );
-
-		/** (*DEPRECATED method signature, use version with argument passed by reference*) 
-		    *Start navigation:
+		/** Start navigation:
 			* \param[in] params Pointer to structure with navigation info (its contents will be copied, so the original can be freely destroyed upon return.)
 			*/
-		void  navigate( const TNavigationParams *params ) { ASSERT_(params!=NULL); this->navigate(*params); }
+		virtual void navigate( const TNavigationParams *params );
 
 		/** Provides a copy of the last log record with information about execution.
 			* \param o An object where the log will be stored into.

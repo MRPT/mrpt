@@ -485,7 +485,7 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 		vector<float> xs,ys;
 
 		const size_t nAlphas = pI.TP_Obstacles.size();
-		ASSERT_(nAlphas>0)
+		//ASSERT_(nAlphas>0)  // In case of "invalid" PTGs during navigation, TP_Obstacles may be left uncomputed.
 
 		// Chosen direction:
 		xs.resize(2);

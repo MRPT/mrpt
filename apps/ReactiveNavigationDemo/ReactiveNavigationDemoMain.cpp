@@ -444,7 +444,8 @@ ReactiveNavigationDemoFrame::ReactiveNavigationDemoFrame(wxWindow* parent,wxWind
 
 	// VC2003 complains about the too big string:
 	wxString	auxStr = wxT("; ---------------------------------------------------------------\n; FILE: CONFIG_ReactiveNavigator.ini\n;\n;  In this file there are parameters to the reactive navigation\n;   module.\n;\n;  JLBC @ OCT-2005\n; ---------------------------------------------------------------\n\n\n[GLOBAL_CONFIG]\n; 0: VFF,  1: ND\nHOLONOMIC_METHOD=0\nALARM_SEEMS_NOT_APPROACHING_TARGET_TIMEOUT=100\n\n; ----------------------------------------------------\n;\tParameters for the \"Nearness diagram\" Holonomic method\n; ----------------------------------------------------\n[ND_CONFIG]\nfactorWeights=1.0 0.5 2.0 0.4\n; 1: Free space\n; 2: Dist. in sectors\n; 3: Closer to target (euclidean)\n; 4: Hysteresis\nWIDE_GAP_SIZE_PERCENT=0.50\nMAX_SECTOR_DIST_FOR_D2_PERCENT=0.25\n");
-	auxStr << wxT("RISK_EVALUATION_SECTORS_PERCENT=0.25\nRISK_EVALUATION_DISTANCE=0.15\t\t; In normalized ps-meters [0,1]\nTARGET_SLOW_APPROACHING_DISTANCE=1.00\t; For stop gradually\nTOO_CLOSE_OBSTACLE=0.02\t\t\t; In normalized ps-meters\n\n\n; ----------------------------------------------------\n;\tParameters for the navigation on ROBOT: \"SYM_CAR\"\n; ----------------------------------------------------\n[SYMCAR]\nweights=0.5 0.05 0.5 2.0 0.5 0.1\n; 1: Free space\n; 2: Dist. in sectors\t\t\t\n; 3: Heading toward target\n; 4: Closer to target (euclidean)\n; 5: Hysteresis\n; 6: Security Distance\n\nDIST_TO_TARGET_FOR_SENDING_EVENT=1.25\t; Minimum. distance to target for sending the end event. Set to 0 to send it just on navigation end\n\nMinObstaclesHeight=0.0 \t\t; Minimum coordinate in the \"z\" axis for an obstacle to be taken into account.\nMaxObstaclesHeight=1.40 \t\t; Maximum coordinate in the \"z\" axis for an obstacle to be taken into account.\n\nrobotMax_V_mps=0.70\t\t\t; Speed limits\nrobotMax_W_degps=50\n\nMAX_REFERENCE_DISTANCE=3.50\nWIDE_GAP_SIZE_PERCENT=0.40\nRISK_EVALUATION_DISTANCE=0.5\nRISK_EVALUATION_SECTORS_PERCENT=0.20\nMAX_SECTOR_DIST_FOR_D2_PERCENT=0.25\nRESOLUCION_REJILLA_X=0.03\nRESOLUCION_REJILLA_Y=0.03\n\nPTG_COUNT=4\n\n; \t\tC-PTGs:\n; ------------------------------------\nPTG0_Type=1\nPTG0_nAlfas=300\nPTG0_v_max_mps=0.7\nPTG0_w_max_gps=50\nPTG0_K=1.0\n\nPTG1_Type=1\nPTG1_nAlfas=300\nPTG1_v_max_mps=0.7\nPTG1_w_max_gps=20\nPTG1_K=1.0\n\nPTG3_Type=1\nPTG3_nAlfas=300\nPTG3_v_max_mps=0.7\nPTG3_w_max_gps=40\nPTG3_K=-1.0\n\n\n; \t     a-A type PTGs:\n; ------------------------------------\nPTG2_Type=2\nPTG2_nAlfas=300\nPTG2_v_max_mps=0.7\nPTG2_w_max_gps=50\nPTG2_cte_a0v_deg=10\nPTG2_cte_a0w_deg=40\n\n\nRobotModel_shape2D_xs=-0.2 0.5 0.5 -0.2\nRobotModel_shape2D_ys=0.3 0.3 -0.3 -0.3\n");
+	auxStr << wxT("RISK_EVALUATION_SECTORS_PERCENT=0.25\nRISK_EVALUATION_DISTANCE=0.15\t\t; In normalized ps-meters [0,1]\nTARGET_SLOW_APPROACHING_DISTANCE=1.00\t; For stop gradually\nTOO_CLOSE_OBSTACLE=0.02\t\t\t; In normalized ps-meters\n\n\n; ----------------------------------------------------\n;\tParameters for the navigation on ROBOT: \"SYM_CAR\"\n; ----------------------------------------------------\n[SYMCAR]\nweights=0.5 0.05 0.5 2.0 0.5 0.1\n; 1: Free space\n; 2: Dist. in sectors\t\t\t\n; 3: Heading toward target\n; 4: Closer to target (euclidean)\n; 5: Hysteresis\n; 6: Security Distance\n\nDIST_TO_TARGET_FOR_SENDING_EVENT=1.25\t; Minimum. distance to target for sending the end event. Set to 0 to send it just on navigation end\n\nMinObstaclesHeight=0.0 \t\t; Minimum coordinate in the \"z\" axis for an obstacle to be taken into account.\nMaxObstaclesHeight=1.40 \t\t; Maximum coordinate in the \"z\" axis for an obstacle to be taken into account.\n\nrobotMax_V_mps=2.00\t\t\t; Speed limits\nrobotMax_W_degps=80\n\nMAX_REFERENCE_DISTANCE=3.50\nWIDE_GAP_SIZE_PERCENT=0.40\nRISK_EVALUATION_DISTANCE=0.5\nRISK_EVALUATION_SECTORS_PERCENT=0.20\nMAX_SECTOR_DIST_FOR_D2_PERCENT=0.25\nRESOLUCION_REJILLA_X=0.03\nRESOLUCION_REJILLA_Y=0.03\n\nPTG_COUNT=3\n\n; \t\tC-PTGs:\n; ------------------------------------\nPTG0_Type=1\nPTG0_nAlfas=300\nPTG0_v_max_mps=2.0\nPTG0_w_max_gps=80\nPTG0_K=1.0\n\nPTG1_Type=1\nPTG1_nAlfas=300\nPTG1_v_max_mps=2.0\nPTG1_w_max_gps=80\nPTG1_K=-1.0\n\n\n; \t     a-A type PTGs:\n; ------------------------------------\nPTG2_Type=2\nPTG2_nAlfas=300\nPTG2_v_max_mps=2.0\nPTG2_w_max_gps=80\nPTG2_cte_a0v_deg=40\nPTG2_cte_a0w_deg=50\n\n\nRobotModel_shape2D_xs=-0.2 0.5 0.5 -0.2\nRobotModel_shape2D_ys=0.3 0.3 -0.3 -0.3\n");
+
 	iniEditoreactivenav->edText->SetValue( auxStr );
 
 	EDIT_internalCfgRobot = string( iniEditorRobot->edText->GetValue().mb_str() );
@@ -624,11 +625,15 @@ void ReactiveNavigationDemoFrame::OnbtnNavigateClick(wxCommandEvent& event)
 
 	if (reacNavObj)
 	{
-		CAbstractReactiveNavigationSystem::TNavigationParams   navParams;
+		//CAbstractReactiveNavigationSystem::TNavigationParams   navParams;
+		CAbstractPTGBasedReactive::TNavigationParamsPTG   navParams;
 		navParams.target.x = x ;
 		navParams.target.y = y ;
 		navParams.targetAllowedDistance = 0.40f;
 		navParams.targetIsRelative = false;
+
+		// Optional: restrict the PTGs to use
+		//navParams.restrict_PTG_indices.push_back(1);
 
 		reacNavObj->navigate( &navParams );
 	}

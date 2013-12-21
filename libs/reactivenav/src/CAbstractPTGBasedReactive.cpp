@@ -44,6 +44,18 @@ using namespace mrpt::utils;
 using namespace mrpt::reactivenav;
 using namespace std;
 
+// ------ CAbstractPTGBasedReactive::TNavigationParamsPTG -----
+std::string CAbstractPTGBasedReactive::TNavigationParamsPTG::getAsText() const
+{
+	
+	std::string s = TNavigationParams::getAsText();
+	s += "restrict_PTG_indices: ";
+	s += mrpt::utils::sprintf_vector("%u ",this->restrict_PTG_indices);
+	s += "\n";
+	return s;
+}
+
+// Ctor:
 CAbstractPTGBasedReactive::CAbstractPTGBasedReactive(CReactiveInterfaceImplementation &react_iterf_impl, bool enableConsoleOutput, bool enableLogFile):
 	CAbstractReactiveNavigationSystem(react_iterf_impl),
 	m_holonomicMethod            (),
@@ -161,15 +173,16 @@ void CAbstractPTGBasedReactive::getLastLogRecord( CLogFileRecord &o )
 	o = lastLogRecord;
 }
 
-void CAbstractPTGBasedReactive::navigate(const CReactiveNavigationSystem3D::TNavigationParams &params )
+void CAbstractPTGBasedReactive::navigate(const CReactiveNavigationSystem3D::TNavigationParams *params )
 {
 	navigationEndEventSent = false;
 
 	// Copy data:
-	m_navigationParams = params;
+	mrpt::utils::delete_safe(m_navigationParams);
+	m_navigationParams = params->clone();
 
 	// Transform: relative -> absolute, if needed.
-	if ( m_navigationParams.targetIsRelative )
+	if ( m_navigationParams->targetIsRelative )
 	{
 		poses::CPose2D currentPose;
 		float velLineal_actual,velAngular_actual;
@@ -180,14 +193,14 @@ void CAbstractPTGBasedReactive::navigate(const CReactiveNavigationSystem3D::TNav
 			return;
 		}
 
-		const poses::CPose2D relTarget(m_navigationParams.target.x,m_navigationParams.target.y,m_navigationParams.targetHeading);
+		const poses::CPose2D relTarget(m_navigationParams->target.x,m_navigationParams->target.y,m_navigationParams->targetHeading);
 		poses::CPose2D absTarget;
 		absTarget.composeFrom(currentPose, relTarget);
 
-		m_navigationParams.target = mrpt::math::TPoint2D(absTarget.x(),absTarget.y());
-		m_navigationParams.targetHeading = absTarget.phi();
+		m_navigationParams->target = mrpt::math::TPoint2D(absTarget.x(),absTarget.y());
+		m_navigationParams->targetHeading = absTarget.phi();
 
-		m_navigationParams.targetIsRelative = false; // Now it's not relative
+		m_navigationParams->targetIsRelative = false; // Now it's not relative
 	}
 
 	// new state:
@@ -289,7 +302,7 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 		/* ----------------------------------------------------------------
 		 	  Have we reached the target location?
 		   ---------------------------------------------------------------- */
-		const double targetDist = curPose.distance2DTo( m_navigationParams.target.x, m_navigationParams.target.y );
+		const double targetDist = curPose.distance2DTo( m_navigationParams->target.x, m_navigationParams->target.y );
 
 		// Should "End of navigation" event be sent??
 		if (!navigationEndEventSent && targetDist < DIST_TO_TARGET_FOR_SENDING_EVENT)
@@ -299,11 +312,11 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 		}
 
 		// Have we really reached the target?
-		if ( targetDist < m_navigationParams.targetAllowedDistance )
+		if ( targetDist < m_navigationParams->targetAllowedDistance )
 		{
 			m_robot.stop();
 			m_navigationState = IDLE;
-			if (m_enableConsoleOutput) printf_debug("Navigation target (%.03f,%.03f) was reached\n", m_navigationParams.target.x,m_navigationParams.target.y);
+			if (m_enableConsoleOutput) printf_debug("Navigation target (%.03f,%.03f) was reached\n", m_navigationParams->target.x,m_navigationParams->target.y);
 
 			if (!navigationEndEventSent)
 			{
@@ -335,7 +348,7 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 
 		// Compute target location relative to current robot pose:
 		// ---------------------------------------------------------------------
-		const CPose2D relTarget = CPose2D(m_navigationParams.target.x,m_navigationParams.target.y,m_navigationParams.targetHeading) - curPose;
+		const CPose2D relTarget = CPose2D(m_navigationParams->target.x,m_navigationParams->target.y,m_navigationParams->targetHeading) - curPose;
 
 		// STEP1: Collision Grids Builder.
 		// -----------------------------------------------------------------------------
@@ -372,9 +385,23 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 			THolonomicMovement &holonomicMovement = holonomicMovements[indexPTG];
 			holonomicMovement.PTG = ptg;
 
-			// Firstly, check if target falls into the PTG domain:
-			ipf.valid_TP = ptg->PTG_IsIntoDomain( relTarget.x(),relTarget.y() );
+			// If the user doesn't want to use this PTG, just mark it as invalid:
+			ipf.valid_TP = true;
+			{
+				const TNavigationParamsPTG * navp = dynamic_cast<const TNavigationParamsPTG*>(m_navigationParams);
+				if (navp && !navp->restrict_PTG_indices.empty())
+				{
+					bool use_this_ptg = false;
+					for (size_t i=0;i<navp->restrict_PTG_indices.size() && !use_this_ptg;i++) {
+						if (navp->restrict_PTG_indices[i]==indexPTG)
+							use_this_ptg = true;
+					}
+					ipf.valid_TP = use_this_ptg;
+				}
+			}
 
+			// Normal PTG validity filter: check if target falls into the PTG domain:
+			ipf.valid_TP = ipf.valid_TP && ptg->PTG_IsIntoDomain( relTarget.x(),relTarget.y() );
 
 			if (ipf.valid_TP)
 			{
@@ -448,7 +475,6 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 			// Logging:
 			if (fill_log_record)
 			{
-				newLogRec.infoPerPTG.resize(nPTGs);
 				metaprogramming::copy_container_typecasting(ipf.TP_Obstacles, newLogRec.infoPerPTG[indexPTG].TP_Obstacles);
 				newLogRec.infoPerPTG[indexPTG].PTG_desc  = ptg->getDescription();
 				newLogRec.infoPerPTG[indexPTG].TP_Target = CPoint2D(ipf.TP_Target);

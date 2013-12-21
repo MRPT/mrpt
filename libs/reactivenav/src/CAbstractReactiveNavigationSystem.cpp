@@ -63,10 +63,17 @@ std::string CAbstractReactiveNavigationSystem::TNavigationParams::getAsText() co
 							Constructor
   ---------------------------------------------------------------*/
 CAbstractReactiveNavigationSystem::CAbstractReactiveNavigationSystem(CReactiveInterfaceImplementation &react_iterf_impl) :
-	m_robot(react_iterf_impl)
+	m_robot               ( react_iterf_impl ),
+	m_lastNavigationState ( IDLE ),
+	m_navigationState     ( IDLE ),
+	m_navigationParams    ( NULL )
 {
-	m_navigationState =
-	m_lastNavigationState = IDLE;
+}
+
+// Dtor:
+CAbstractReactiveNavigationSystem::~CAbstractReactiveNavigationSystem()
+{
+	mrpt::utils::delete_safe( m_navigationParams );
 }
 
 /*---------------------------------------------------------------
@@ -148,7 +155,8 @@ void CAbstractReactiveNavigationSystem::navigationStep()
 			if ( m_lastNavigationState != NAVIGATING )
 			{
 				printf_debug("\n[CAbstractReactiveNavigationSystem::navigationStep()] Starting Navigation. Watchdog initiated...\n");
-				printf_debug("[CAbstractReactiveNavigationSystem::navigationStep()] Navigation Params:\n%s\n", m_navigationParams.getAsText().c_str() );
+				if (m_navigationParams)
+					printf_debug("[CAbstractReactiveNavigationSystem::navigationStep()] Navigation Params:\n%s\n", m_navigationParams->getAsText().c_str() );
 
 				m_robot.startWatchdog( 1000 );	// Watchdog = 1 seg
 			}

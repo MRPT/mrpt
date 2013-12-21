@@ -125,17 +125,19 @@ namespace mrpt
 	class REACTIVENAV_IMPEXP CAbstractReactiveNavigationSystem : public mrpt::utils::CDebugOutputCapable
 	{
 	public:
-		/** The struct for configuring navigation requests. */
+		/** The struct for configuring navigation requests. See also: CAbstractPTGBasedReactive::TNavigationParamsPTG */
 		struct REACTIVENAV_IMPEXP TNavigationParams
 		{
 			mrpt::poses::TPoint2D  target;  //!< Coordinates of desired target location.
-			double                 targetHeading; //!< Target location (heading, in radians)
+			double                 targetHeading; //!< Target location (heading, in radians).
 
 			float                  targetAllowedDistance;    //!< Allowed distance to target in order to end the navigation.
 			bool                   targetIsRelative;  //!< (Default=false) Whether the \a target coordinates are in global coordinates (false) or are relative to the current robot pose (true).
 
 			TNavigationParams(); //!< Ctor with default values
-			std::string getAsText() const; //!< Gets navigation params as a human-readable format
+			virtual ~TNavigationParams() {}
+			virtual std::string getAsText() const; //!< Gets navigation params as a human-readable format
+			virtual TNavigationParams* clone() const { return new TNavigationParams(*this); }
 		};
 
 
@@ -143,7 +145,7 @@ namespace mrpt
 		CAbstractReactiveNavigationSystem( CReactiveInterfaceImplementation &react_iterf_impl );
 
         /** Destructor */
-        virtual ~CAbstractReactiveNavigationSystem() { }
+        virtual ~CAbstractReactiveNavigationSystem();
 
 		/** Cancel current navegacion. */
 		void cancel();
@@ -182,7 +184,7 @@ namespace mrpt
 		virtual void  performNavigationStep( )=0;
 
 		TState             m_navigationState;  //!< Current internal state of navigator:
-		TNavigationParams  m_navigationParams;  //!< Current navigation parameters
+		TNavigationParams  *m_navigationParams;  //!< Current navigation parameters
 
 
 		CReactiveInterfaceImplementation   &m_robot; //!< The navigator-robot interface.
