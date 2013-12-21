@@ -50,7 +50,22 @@ namespace mrpt
 	using namespace mrpt::slam;
 	using namespace mrpt::poses;
 
-	/** Shared implementation of reactive navigators. See children classes.
+	/** Base class for reactive navigator systems based on TP-Space, with an arbitrary holonomic
+	  * reactive method running on it and any number of PTGs for transforming the navigation space.
+	  * Both, the holonomic method and the PTGs can be customized by the apropriate user derived classes.
+	  *
+	  * How to use:
+	  *  - Instantiate a reactive navigation object (one of the derived classes of this virtual class).
+	  *  - A class with callbacks must be defined by the user and provided to the constructor (derived from CReactiveInterfaceImplementation)
+	  *  - loadConfigFile() must be called to set up the bunch of parameters from a config file (could be a memory-based virtual config file).
+	  *  - navigationStep() must be called periodically in order to effectively run the navigation. This method will internally call the callbacks to gather sensor data and robot positioning data.	
+	  *
+	  * For working examples, refer to the source code of the apps: 
+	  *  - [ReactiveNavigationDemo](http://www.mrpt.org/list-of-mrpt-apps/application-reactivenavigationdemo/)
+	  *  - [ReactiveNav3D-Demo](http://www.mrpt.org/list-of-mrpt-apps/application-reactivenav3d-demo/)
+	  *
+	  * Publications:
+	  *  - See derived classes for papers on each specific method.
 	  *
 	  * \sa CReactiveNavigationSystem, CReactiveNavigationSystem3D
 	  *  \ingroup mrpt_reactivenav_grp

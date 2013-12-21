@@ -54,15 +54,13 @@ namespace mrpt
 				std::vector<float>			heights;		// Heights of the prisms
 		};
 
-		/** Implements a 3D reactive navigation system based on TP-Space, with an arbitrary holonomic
-		*  reactive method running on it, and any desired number of PTG for transforming the navigation space.
-		*  Both, the holonomic method and the PTGs can be customized by the apropriate user derived classes.
+		/** See base class CAbstractPTGBasedReactive for a description and instructions of use.
+		* This particular implementation assumes a 3D (or "2.5D") robot shape model, build as a vertical stack of "2D slices".
+		* 
+		* Publications:
+		*  - "Reactive Navigation of a 3D-shape Robot in a 3D World" (Submitted)
 		*
-		*   How to use:
-		*      - A class with callbacks must be defined by the user and provided to the constructor.
-		*      - loadConfigFile() must be called to set up the bunch of parameters from a config file (could be a memory-based virtual config file).
-		*      - navigationStep() must be called periodically in order to effectively run the navigation. This method will internally call the callbacks to gather sensor data and robot positioning data.
-		*
+		* Class history:
 		* - SEP/2012: First design.
 		* - JUL/2013: Integrated into MRPT library.
 		* - DEC/2013: Code refactoring between this class and CAbstractHolonomicReactiveMethod

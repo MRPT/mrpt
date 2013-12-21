@@ -43,15 +43,13 @@ namespace mrpt
 	*/
   namespace reactivenav
   {
-		/** Implements a reactive navigation system based on TP-Space, with an arbitrary holonomic
-		*  reactive method running on it, and any desired number of PTG for transforming the navigation space.
-		*  Both, the holonomic method and the PTGs can be customized by the apropriate user derived classes.
+		/** See base class CAbstractPTGBasedReactive for a description and instructions of use.
+		* This particular implementation assumes a 2D robot shape.
+		* 
+		* Publications:
+		*  - Blanco, Jose-Luis, Javier Gonzalez, and Juan-Antonio Fernandez-Madrigal. "[Extending obstacle avoidance methods through multiple parameter-space transformations](http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.190.4672&rep=rep1&type=pdf)." Autonomous Robots 24.1 (2008): 29-48.
 		*
-		*   How to use:
-		*      - A class with callbacks must be defined by the user and provided to the constructor.
-		*      - loadConfigFile() must be called to set up the bunch of parameters from a config file (could be a memory-based virtual config file).
-		*      - navigationStep() must be called periodically in order to effectively run the navigation. This method will internally call the callbacks to gather sensor data and robot positioning data.
-		*
+		* Class history:
 		* - 17/JUN/2004: First design.
 		* - 16/SEP/2004: Totally redesigned, according to document "MultiParametric Based Space Transformation for Reactive Navigation"
 		* - 29/SEP/2005: Totally rewritten again, for integration into MRPT library and according to the ICRA paper.
