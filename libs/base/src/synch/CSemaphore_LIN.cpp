@@ -163,17 +163,22 @@ bool CSemaphore::waitForSignal( unsigned int timelimit )
 	}
 
 #else
-	rc = timelimit==0 ?
+	if (timelimit==0)
+	{
 		// No timeout
-		sem_wait( token->semid )
-		:
+		rc = sem_wait( token->semid );
+	}
+	else
+	{
 		// We have a timeout:
-		sem_timedwait( token->semid, &tm );
-#endif
-	
+		while ((rc = sem_timedwait( token->semid, &tm )) == -1 && errno == EINTR)
+			continue; // Restart if interrupted by handler
+	}
+
 	// If there's an error != than a timeout, dump to stderr:
 	if (rc!=0 && errno!=ETIMEDOUT)
 		std::cerr << format("[CSemaphore::waitForSignal] In semaphore named '%s', error: %s\n", m_name.c_str(),strerror(errno) );
+#endif
 
 	return rc==0; // true: all ok.
 
