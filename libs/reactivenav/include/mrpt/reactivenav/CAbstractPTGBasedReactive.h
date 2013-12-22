@@ -73,7 +73,7 @@ namespace mrpt
 	class REACTIVENAV_IMPEXP CAbstractPTGBasedReactive: public CAbstractReactiveNavigationSystem
 	{
 	public:
-		EIGEN_MAKE_ALIGNED_OPERATOR_NEW;
+		EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
 		/** The struct for configuring navigation requests to CAbstractPTGBasedReactive and derived classes. */
 		struct REACTIVENAV_IMPEXP TNavigationParamsPTG : public CAbstractReactiveNavigationSystem::TNavigationParams

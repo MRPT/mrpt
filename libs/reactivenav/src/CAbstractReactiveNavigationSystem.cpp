@@ -63,10 +63,10 @@ std::string CAbstractReactiveNavigationSystem::TNavigationParams::getAsText() co
 							Constructor
   ---------------------------------------------------------------*/
 CAbstractReactiveNavigationSystem::CAbstractReactiveNavigationSystem(CReactiveInterfaceImplementation &react_iterf_impl) :
-	m_robot               ( react_iterf_impl ),
 	m_lastNavigationState ( IDLE ),
 	m_navigationState     ( IDLE ),
-	m_navigationParams    ( NULL )
+    m_navigationParams    ( NULL ),
+    m_robot               ( react_iterf_impl )
 {
 }
 
