@@ -81,12 +81,12 @@ bool CPTG1::PTG_IsIntoDomain( float x, float y )
   ---------------------------------------------------------------*/
 void CPTG1::lambdaFunction( float x, float y, int &k_out, float &d_out )
 {
+	MRPT_TODO("Update API to return a bool for approximate results!")
+
 	if (y!=0)
 	{
-		const double R = (x*x+y*y)/(2*y);
-		//Was: a = 2*atan( V_MAX / (W_MAX*R) );
-		const double a = M_PI* V_MAX / (W_MAX*R);
-		k_out = alpha2index( (float)a );
+		double R = (x*x+y*y)/(2*y);
+		const double Rmin = std::abs(V_MAX/W_MAX);
 
 		double theta;
 
@@ -108,6 +108,18 @@ void CPTG1::lambdaFunction( float x, float y, int &k_out, float &d_out )
 
 		// Distance thru arc:
 		d_out = (float)(theta * (fabs(R)+turningRadiusReference));
+
+		bool is_approx = false;
+		if (std::abs(R)<Rmin)
+		{
+			is_approx=true;
+			R=Rmin*mrpt::utils::sign(R);
+		}
+		
+		//Was: a = 2*atan( V_MAX / (W_MAX*R) );
+		const double a = M_PI* V_MAX / (W_MAX*R);
+		k_out = alpha2index( (float)a );
+
 	}
 	else
 	{
@@ -126,4 +138,6 @@ void CPTG1::lambdaFunction( float x, float y, int &k_out, float &d_out )
 	// Normalize:
 	d_out = d_out / refDistance;
 
+	ASSERT_ABOVEEQ_(k_out,0)
+	ASSERT_BELOW_(k_out,this->m_alphaValuesCount)
 }
