@@ -8,7 +8,7 @@
 #  For compiling instructions for all compilers and platforms, see
 #   http://www.mrpt.org/Building_and_Installing_Instructions
 #
-#  2007-2012, Jose Luis Blanco <jlblanco@ctima.uma.es>
+#  2007-2014, Jose Luis Blanco <jlblanco@ual.es>
 #
 #  NOTE: CMake can be obtained at http://www.cmake.org/
 # ----------------------------------------------------------------------------
@@ -17,7 +17,7 @@ PROJECT(MRPT)
 
 CMAKE_MINIMUM_REQUIRED(VERSION 2.6.4)
 include(cmakemodules/script_init_cmake.cmake REQUIRED)		# CMake tweaks
-include(cmakemodules/script_version_number.cmake REQUIRED)	#  Loads the MRPT version number
+include(cmakemodules/script_version_number.cmake REQUIRED)	#  Loads MRPT version number
 
 LIST(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmakemodules") # Directory for CMake scripts
 
@@ -155,6 +155,9 @@ SET(MRPT_ENABLE_EMBEDDED_GLOBAL_PROFILER OFF CACHE BOOL "Enable MRPT embedded pr
 # ===================================================
 SET(MRPT_HAS_ASSERT ON CACHE BOOL "Enable ASSERT_ statements (disable it for speed up).")
 
+#   "Clasic" function & headers detection:
+include(cmakemodules/script_detect_functions_headers.cmake REQUIRED)
+
 # MSVC only: 
 # ===================================================
 IF(MSVC)
@@ -250,9 +253,6 @@ ENDIF(CMAKE_BUILD_TYPE STREQUAL "Debug")
 # Include Asian fonts in utils::CMRPTCanvas ?
 SET( MRPT_HAS_ASIAN_FONTS ON CACHE BOOL "Enable Asian fonts in utils::CMRPTCanvas (increases library size).")
 
-
-#   "Clasic" function & headers detection:
-include(cmakemodules/script_detect_functions_headers.cmake REQUIRED)
 
 
 include(cmakemodules/script_declare_defines.cmake REQUIRED)  # Transform the variables MRPT_XXX="ON/OFF" to CMAKE_MRPT_XXX="1/0"
