@@ -1,24 +1,11 @@
-/*! \file
-
-	For information about objects in this file, see the appropriate header:
-	\ref xsens_list.h
-
-	\section FileCopyright Copyright Notice 
-	Copyright (C) Xsens Technologies B.V., 2006.  All rights reserved.
-	
-	This source code is intended for use only by Xsens Technologies BV and
-	those that have explicit written permission to use it from
-	Xsens Technologies BV.
-	
-	THIS CODE AND INFORMATION IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY
-	KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
-	IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
-	PARTICULAR PURPOSE.
-	
-	\section FileSwitches Switches
-	\li	\c _XSENS_LIST_WITH_MATH	Check whether to include math files when set to 1.
-	\li	\c _XSENS_LIST_IO	Include code for string and file I/O when set to 1.
-*/
+/* +---------------------------------------------------------------------------+
+   |                     Mobile Robot Programming Toolkit (MRPT)               |
+   |                          http://www.mrpt.org/                             |
+   |                                                                           |
+   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | See: http://www.mrpt.org/Authors - All rights reserved.                   |
+   | Released under BSD License. See details in http://www.mrpt.org/License    |
+   +---------------------------------------------------------------------------+ */
 
 #ifndef _XSENS_LIST_HPP_2006_06_08
 #define _XSENS_LIST_HPP_2006_06_08

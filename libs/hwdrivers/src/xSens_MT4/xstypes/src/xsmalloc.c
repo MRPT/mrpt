@@ -1,6 +1,11 @@
-/*! \file
-	This file contains platform-specific memory allocation routines
-*/
+/* +---------------------------------------------------------------------------+
+   |                     Mobile Robot Programming Toolkit (MRPT)               |
+   |                          http://www.mrpt.org/                             |
+   |                                                                           |
+   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | See: http://www.mrpt.org/Authors - All rights reserved.                   |
+   | Released under BSD License. See details in http://www.mrpt.org/License    |
+   +---------------------------------------------------------------------------+ */
 
 #include "xsmalloc.h"
 #if !(defined __ICCARM__) && !(defined _ADI_COMPILER) && !defined(__APPLE__) && !defined(__CRCC__)

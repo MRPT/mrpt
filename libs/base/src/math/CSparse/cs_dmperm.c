@@ -1,3 +1,11 @@
+/* +---------------------------------------------------------------------------+
+   |                     Mobile Robot Programming Toolkit (MRPT)               |
+   |                          http://www.mrpt.org/                             |
+   |                                                                           |
+   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | See: http://www.mrpt.org/Authors - All rights reserved.                   |
+   | Released under BSD License. See details in http://www.mrpt.org/License    |
+   +---------------------------------------------------------------------------+ */
 #include "cs.h"
 /* breadth-first search for coarse decomposition (C0,C1,R1 or R0,R3,C3) */
 static int cs_bfs (const cs *A, int n, int *wi, int *wj, int *queue,
