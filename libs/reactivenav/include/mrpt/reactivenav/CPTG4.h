@@ -27,10 +27,6 @@ namespace mrpt
 			 */
 			CPTG4(const TParameters<double> &params );
 
-			/** The lambda function.
-			  */
-			void lambdaFunction( float x, float y, int &out_k, float &out_d );
-
 			/** Gets a short textual description of the PTG and its parameters.
 			*/
 			std::string getDescription() const;

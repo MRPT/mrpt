@@ -48,8 +48,7 @@ namespace mrpt
 			 */
 			CPTG1(const TParameters<double> &params );
 
-			/** The lambda function. */
-			void lambdaFunction( float x, float y, int &out_k, float &out_d );
+			virtual bool inverseMap_WS2TP(float x, float y, int &out_k, float &out_d, float tolerance_dist = 0.10f) const;
 
 			/** Gets a short textual description of the PTG and its parameters. */
 			std::string getDescription() const;

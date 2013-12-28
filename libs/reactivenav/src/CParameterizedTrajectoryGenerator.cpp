@@ -624,10 +624,13 @@ bool CParameterizedTrajectoryGenerator::CColisionGrid::loadFromFile( CStream *f,
 	}
 }
 
-/*---------------------------------------------------------------
-				lambdaFunction
-  ---------------------------------------------------------------*/
-void CParameterizedTrajectoryGenerator::lambdaFunction( float x, float y, int &k_out, float &d_out )
+// Deprecated:         
+void CParameterizedTrajectoryGenerator::lambdaFunction( float x, float y, int &out_k, float &out_d )
+{
+	this->inverseMap_WS2TP(x,y,out_k,out_d);
+}
+
+bool CParameterizedTrajectoryGenerator::inverseMap_WS2TP( float x, float y, int &k_out, float &d_out, float tolerance_dist ) const
 {
     ASSERTMSG_(m_alphaValuesCount>0, "Have you called simulateTrajectories() first?")
 
@@ -650,7 +653,7 @@ void CParameterizedTrajectoryGenerator::lambdaFunction( float x, float y, int &k
 	{
 		for (int cy=cy0-1;cy<=cy0+1;cy++)
 		{
-			TCellForLambdaFunction	*cell = m_lambdaFunctionOptimizer.cellByIndex(cx,cy);
+			const TCellForLambdaFunction	*cell = m_lambdaFunctionOptimizer.cellByIndex(cx,cy);
 			if (cell && !cell->isEmpty())
 			{
 				if (!at_least_one)
@@ -702,7 +705,7 @@ void CParameterizedTrajectoryGenerator::lambdaFunction( float x, float y, int &k
 	{
 		k_out = selected_k;
 		d_out = selected_d / refDistance;
-		return;
+		return (selected_dist <= square(tolerance_dist));
 	}
 
 	// If not found, compute an extrapolation:
@@ -730,6 +733,7 @@ void CParameterizedTrajectoryGenerator::lambdaFunction( float x, float y, int &k
 
 	k_out = selected_k;
 	d_out = selected_d / refDistance;
+	return false;
 }
 
 

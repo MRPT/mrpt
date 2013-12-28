@@ -50,13 +50,9 @@ bool CPTG1::PTG_IsIntoDomain( float x, float y )
 	return true;
 }
 
-/*---------------------------------------------------------------
-                lambdaFunction
-  ---------------------------------------------------------------*/
-void CPTG1::lambdaFunction( float x, float y, int &k_out, float &d_out )
+bool CPTG1::inverseMap_WS2TP(float x, float y, int &k_out, float &d_out, float tolerance_dist) const
 {
-	MRPT_TODO("Update API to return a bool for approximate results!")
-
+	bool is_exact = true;
 	if (y!=0)
 	{
 		double R = (x*x+y*y)/(2*y);
@@ -83,10 +79,9 @@ void CPTG1::lambdaFunction( float x, float y, int &k_out, float &d_out )
 		// Distance thru arc:
 		d_out = (float)(theta * (fabs(R)+turningRadiusReference));
 
-		bool is_approx = false;
 		if (std::abs(R)<Rmin)
 		{
-			is_approx=true;
+			is_exact=false;
 			R=Rmin*mrpt::utils::sign(R);
 		}
 		
@@ -101,11 +96,13 @@ void CPTG1::lambdaFunction( float x, float y, int &k_out, float &d_out )
 		{
 			k_out = alpha2index(0);
 			d_out = x;
+			is_exact=true;
 		}
 		else
 		{
 			k_out = alpha2index((float)M_PI);
 			d_out = 1e+3;
+			is_exact=false;
 		}
 	}
 
@@ -114,4 +111,6 @@ void CPTG1::lambdaFunction( float x, float y, int &k_out, float &d_out )
 
 	ASSERT_ABOVEEQ_(k_out,0)
 	ASSERT_BELOW_(k_out,this->m_alphaValuesCount)
+
+	return is_exact;
 }

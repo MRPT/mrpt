@@ -52,10 +52,3 @@ bool CPTG7::PTG_IsIntoDomain( float x, float y )
 	return !( (fabs(y)>M_PI*V_MAX) || (x<M_PI*V_MAX) );
 }
 
-/*---------------------------------------------------------------
-					lambdaFunction
-  ---------------------------------------------------------------*/
-void CPTG7::lambdaFunction( float x, float y, int &out_k, float &out_d )
-{
-	CParameterizedTrajectoryGenerator::lambdaFunction(x,y,out_k,out_d);
-}

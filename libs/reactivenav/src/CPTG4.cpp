@@ -80,10 +80,3 @@ bool CPTG4::PTG_IsIntoDomain( float x, float y )
 }
 
 
-/*---------------------------------------------------------------
-					lambdaFunction
-  ---------------------------------------------------------------*/
-void CPTG4::lambdaFunction( float x, float y, int &out_k, float &out_d )
-{
-	CParameterizedTrajectoryGenerator::lambdaFunction(x,y,out_k,out_d);
-}

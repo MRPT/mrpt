@@ -20,8 +20,11 @@ namespace mrpt
   {
 	  using namespace mrpt::utils;
 
-	/** This is the base class for any user defined PTG.
+	/** This is the base class for any user-defined PTG.
 	 *   The class factory interface in CParameterizedTrajectoryGenerator::CreatePTG.
+	 *
+	 * Papers: 
+	 *  - J.L. Blanco, J. Gonzalez-Jimenez, J.A. Fernandez-Madrigal, "Extending Obstacle Avoidance Methods through Multiple Parameter-Space Transformations", Autonomous Robots, vol. 24, no. 1, 2008. http://ingmec.ual.es/~jlblanco/papers/blanco2008eoa_DRAFT.pdf
 	 *
 	 * Changes history:
 	 *		- 30/JUN/2004: Creation (JLBC)
@@ -39,6 +42,8 @@ namespace mrpt
 		 *   - ref_distance: The maximum distance in PTGs
 		 *   - resolution: The cell size
 		 *   - v_max, w_max: Maximum robot speeds.
+		 *
+		 * See docs of derived classes for additional parameters:
 		 */
         CParameterizedTrajectoryGenerator(const TParameters<double> &params);
 
@@ -75,9 +80,22 @@ namespace mrpt
 				float			*out_max_acc_v = NULL,
 				float			*out_max_acc_w = NULL);
 
-        /** The "lambda" function, see paper for info. It takes the (a,d) pair that is closest to a given location.
-		 */
-        virtual void lambdaFunction( float x, float y, int &out_k, float &out_d );
+
+		/** Computes the closest (alpha,d) TP coordinates of the trajectory point closest to the Workspace (WS) Cartesian coordinates (x,y).
+		  * \param[in] x X coordinate of the query point.
+		  * \param[in] y Y coordinate of the query point.
+		  * \param[out] out_k Trajectory parameter index (discretized alpha value, 0-based index).
+		  * \param[out] out_d Trajectory distance, normalized such that D_max becomes 1.
+		  *
+		  * \return true if the distance between (x,y) and the actual trajectory point is below the given tolerance (in meters).
+		  * \note The default implementation in CParameterizedTrajectoryGenerator relies on a look-up-table. Derived classes may redefine this to closed-form expressions, when they exist.
+		  */
+		virtual bool inverseMap_WS2TP(float x, float y, int &out_k, float &out_d, float tolerance_dist = 0.10f) const;
+
+        /** The "lambda" function, see paper for info. It takes the (a,d) pair that is closest to a given location. */
+		MRPT_DEPRECATED_PRE("Use inverseMap_WS2TP() instead")
+        void lambdaFunction( float x, float y, int &out_k, float &out_d );
+		MRPT_DEPRECATED_POST("Use inverseMap_WS2TP() instead");
 
         /** Converts an "alpha" value (into the discrete set) into a feasible motion command.
 		 */
