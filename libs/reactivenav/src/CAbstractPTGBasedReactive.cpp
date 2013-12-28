@@ -149,7 +149,7 @@ void CAbstractPTGBasedReactive::getLastLogRecord( CLogFileRecord &o )
 	o = lastLogRecord;
 }
 
-void CAbstractPTGBasedReactive::navigate(const CReactiveNavigationSystem3D::TNavigationParams *params )
+void CAbstractPTGBasedReactive::navigate(const CAbstractReactiveNavigationSystem::TNavigationParams *params )
 {
 	navigationEndEventSent = false;
 
@@ -381,7 +381,7 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 
 			if (ipf.valid_TP)
 			{
-				ptg->lambdaFunction(relTarget.x(),relTarget.y(),ipf.target_k,ipf.target_dist);
+				ptg->inverseMap_WS2TP(relTarget.x(),relTarget.y(),ipf.target_k,ipf.target_dist);
 
 				ipf.target_alpha = ptg->index2alpha(ipf.target_k);
 				ipf.TP_Target.x = cos(ipf.target_alpha) * ipf.target_dist;

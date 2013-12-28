@@ -39,7 +39,7 @@ CReactiveNavigationSystem3D::CReactiveNavigationSystem3D(
     bool					enableConsoleOutput,
     bool					enableLogToFile)
 	:
-	CAbstractPTGBasedReactive(react_iterf_impl)
+	CAbstractPTGBasedReactive(react_iterf_impl,enableConsoleOutput,enableLogToFile)
 {
 }
 

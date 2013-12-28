@@ -28,7 +28,7 @@ CReactiveNavigationSystem::CReactiveNavigationSystem(
     bool					enableConsoleOutput,
     bool					enableLogToFile)
 	:
-	CAbstractPTGBasedReactive(react_iterf_impl),
+	CAbstractPTGBasedReactive(react_iterf_impl,enableConsoleOutput,enableLogToFile),
 	minObstaclesHeight           (-1.0),
 	maxObstaclesHeight           (1e9)
 {
