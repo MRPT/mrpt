@@ -16,9 +16,28 @@ namespace mrpt
   namespace reactivenav
   {
 
-	/** A PTG for circular paths ("C" type PTG in papers). The parameter K is related with the transformation between alpha values
-			and curvature of the arcs. Let R be the radius of the circular path (the inverse of the curvature).
-			Then: <br> <center><code> R = K / (v<sub>MAX</sub> tan &alpha;) </code></center>
+	/** A PTG for circular paths ("C" type PTG in papers). 
+	 * 
+	 * Accepted parameters in the constructor:
+	 * - params["ref_distance"]: Maximum trayectory distance (meters).
+	 * - params["v_max"]: Maximum linear velocity (m/s)
+	 * - params["w_max"]: Maximum angular velocity (rad/s)
+	 * - params["K"]: Can be "+1" for forward paths, or "-1" for backward paths.
+	 * 
+	 * This PT generator functions are: 
+	 *
+	 * \f[ v(\alpha) = V_MAX \sign(K) \f]
+	 * \f[ \omega(\alpha) = \dfrac{\alpha}{\pi} W_MAX \sign(K) \f]
+	 *
+	 * So, the radius of curvature of each trajectory is constant for each "alpha" value (the trajectory parameter):
+	 *
+	 *  \f[ R(\alpha) = \dfrac{v}{\omega} = \dfrac{V_MAX}{W_MAX} \dfrac{\pi}{\alpha} \f]
+	 *
+	 * from which a minimum radius of curvature can be set by selecting the appropriate values of V_MAX and W_MAX, 
+	 * knowning that \f$ \alpha \in (-\pi,\pi) \f$.
+	 *
+	 *  ![C-PTG path examples](PTG1_paths.png)
+	 *
 	 *  \ingroup mrpt_reactivenav_grp
 	 */
 	class REACTIVENAV_IMPEXP CPTG1 : public CParameterizedTrajectoryGenerator

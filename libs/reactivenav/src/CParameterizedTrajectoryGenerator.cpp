@@ -42,7 +42,6 @@ CParameterizedTrajectoryGenerator::CParameterizedTrajectoryGenerator(const TPara
 	nVertices = 0;
 	turningRadiusReference = 0.10f;
 
-	// This does not need to be done here: it can be done in mrpt::reactivenav::build_PTG_collision_grids()
 	initializeCollisionsGrid( refDistance, params["resolution"] );
 }
 

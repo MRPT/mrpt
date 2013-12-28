@@ -165,6 +165,9 @@ void CReactiveNavigationSystem3D::loadConfigFile(const mrpt::utils::CConfigFileB
 			//Arguments -> n_alfas, max.tim, max.dist (ref_distance), max.n, diferencial_t, min_dist
 			m_timelogger.leave("PTG.simulateTrajectories");
 
+			// Just for debugging, etc.
+			//m_ptgmultilevel[j-1].PTGs[i-1]->debugDumpInFiles(j);
+
 			printf_debug("...OK!\n");
 
 		}
