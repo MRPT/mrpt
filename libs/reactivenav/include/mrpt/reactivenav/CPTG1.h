@@ -26,8 +26,8 @@ namespace mrpt
 	 * 
 	 * This PT generator functions are: 
 	 *
-	 * \f[ v(\alpha) = V_MAX \sign(K) \f]
-	 * \f[ \omega(\alpha) = \dfrac{\alpha}{\pi} W_MAX \sign(K) \f]
+	 * \f[ v(\alpha) = V_MAX sign(K) \f]
+	 * \f[ \omega(\alpha) = \dfrac{\alpha}{\pi} W_MAX sign(K) \f]
 	 *
 	 * So, the radius of curvature of each trajectory is constant for each "alpha" value (the trajectory parameter):
 	 *
