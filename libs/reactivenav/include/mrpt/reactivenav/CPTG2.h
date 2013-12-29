@@ -28,8 +28,8 @@ namespace mrpt
 	 * 
 	 * This PT generator functions are: 
 	 *
-	 * \f[ v(\alpha) = V_MAX e^{ -\left( \dfrac{\alpha-\phi}{cte_a0v} \right)^2} \f]
-	 * \f[ \omega(\alpha) = W_MAX \left( -\dfrac{1}{2} +\dfrac{1}{1+ e^{ - \dfrac{\alpha-\phi}{cte_a0w} } } \right) \f]
+	 * \f[ v(\alpha) = V_{MAX} e^{ -\left( \dfrac{\alpha-\phi}{cte_{a0v}} \right)^2} \f]
+	 * \f[ \omega(\alpha) = W_{MAX} \left( -\dfrac{1}{2} +\dfrac{1}{1+ e^{ - \dfrac{\alpha-\phi}{cte_{a0w}} } } \right) \f]
 	 *
 	 * So, the radius of curvature of each trajectory is NOT constant for each "alpha" value in this PTG:
 	 *
