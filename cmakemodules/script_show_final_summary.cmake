@@ -86,7 +86,7 @@ IF($ENV{VERBOSE})
 ENDIF($ENV{VERBOSE})
 MESSAGE(STATUS " Install prefix                    : ${CMAKE_INSTALL_PREFIX}")
 MESSAGE(STATUS " C++ config header                 : ${MRPT_CONFIG_FILE_INCLUDE_DIR}")
-MESSAGE(STATUS  "")
+MESSAGE(STATUS "")
 
 IF($ENV{VERBOSE})
 	MESSAGE(STATUS " _________________________ COMPILER OPTIONS _____________________")
@@ -128,6 +128,7 @@ SHOW_CONFIG_LINE_SYSTEM("Has PCL (Pointscloud library)           " CMAKE_MRPT_HA
 IF(NOT UNIX)	# In fact, it's not "support for Bumblebee" but for it thru PGR vendor libraries.
 SHOW_CONFIG_LINE("Has PGR Digiclops/Triclops              " CMAKE_MRPT_HAS_BUMBLEBEE)
 ENDIF(NOT UNIX)
+SHOW_CONFIG_LINE("Has PGR FlyCapture2                     " CMAKE_MRPT_HAS_FLYCAPTURE2)
 SHOW_CONFIG_LINE_SYSTEM("Has SuiteSparse/CHOLMOD                 " CMAKE_MRPT_HAS_CHOLMOD)
 SHOW_CONFIG_LINE_SYSTEM("Has SuiteSparse/CSparse                 " CMAKE_MRPT_HAS_CSPARSE)
 SHOW_CONFIG_LINE_SYSTEM("Has SuiteSparse/SPQR                    " CMAKE_MRPT_HAS_SPQR)

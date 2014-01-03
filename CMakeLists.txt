@@ -92,6 +92,11 @@ INCLUDE(FindPkgConfig OPTIONAL)
 IF(PKG_CONFIG_FOUND)
 	INCLUDE(FindPkgConfig)
 ENDIF(PKG_CONFIG_FOUND)
+# "QUIET" was introduced in 2.8.2 for PKG_CHECK_MODULES
+if ("${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION}.${CMAKE_PATCH_VERSION}" VERSION_GREATER "2.8.1")
+   set(_QUIET QUIET)
+endif ("${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION}.${CMAKE_PATCH_VERSION}" VERSION_GREATER "2.8.1")
+
 
 # Group projects in "folders"
 # ===================================================
@@ -190,6 +195,7 @@ include(cmakemodules/script_clang.cmake REQUIRED)       # clang library (For UTF
 include(cmakemodules/script_national_instruments.cmake REQUIRED)  # NI C library
 include(cmakemodules/script_sift_hess.cmake REQUIRED)  # SIFT Hess implementation 
 include(cmakemodules/script_xsens.cmake REQUIRED)      # XSens Motion trackers / IMU drivers
+include(cmakemodules/script_flycapture2.cmake REQUIRED)# Check for PointGreyResearch (PGR) FlyCapture2 library
 
 # ---------------------------------------------------------------------------
 #			OPTIONS
