@@ -38,6 +38,8 @@ using namespace mrpt::slam;
 using namespace mrpt::system;
 using namespace std;
 
+MRPT_TODO("Integrate CImageGrabber_FlyCapture2")
+
 IMPLEMENTS_GENERIC_SENSOR(CCameraSensor,mrpt::hwdrivers)
 
 /* -----------------------------------------------------
