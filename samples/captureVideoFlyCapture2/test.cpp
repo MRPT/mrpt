@@ -28,6 +28,10 @@ void TestCapture_FlyCapture2()
 
 	// Open camera:
 	TCaptureOptions_FlyCapture2 cam_options;
+
+	//cam_options.videomode="VIDEOMODE_1024x768Y8";
+	//cam_options.framerate="FRAMERATE_15";
+
 	capture.open(cam_options);
 
 
@@ -39,6 +43,8 @@ void TestCapture_FlyCapture2()
 	CDisplayWindow win("Capturing...");
 
 	int cnt = 0;
+
+	CObservationImagePtr obs= CObservationImage::Create();  // Memory will be freed by SF destructor in each loop.
 
 	while (!mrpt::system::os::kbhit())
 	{
@@ -53,12 +59,11 @@ void TestCapture_FlyCapture2()
 			tictac.Tic();
 		}
 
-		CObservationImagePtr obs= CObservationImage::Create();  // Memory will be freed by SF destructor in each loop.
-		//if (!capture.getObservation( *obs ))
-		//{
-		//	cerr << "Error retrieving images!" << endl;
-		//	break;
-		//}
+		if (!capture.getObservation( *obs ))
+		{
+			cerr << "Error retrieving images!" << endl;
+			break;
+		}
 
 		fil << obs;
 
