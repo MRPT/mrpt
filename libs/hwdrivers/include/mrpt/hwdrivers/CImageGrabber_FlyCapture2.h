@@ -49,6 +49,7 @@ namespace mrpt
 		protected:
 			void *m_camera;      //!< Opaque pointer to the FlyCapture2::Camera object. NULL if no camera is grabbing.
 			void *m_camera_info; //!< Opaque pointer to the FlyCapture2::CameraInfo object. NULL if no camera is grabbing.
+			void *m_img_buffer;  //!< Opaque pointer to the FlyCapture2::Image, used as a temporary buffer and to avoid mem alloc/reallocs.
 
 			TCaptureOptions_FlyCapture2	 m_options;			//!< Camera options
 

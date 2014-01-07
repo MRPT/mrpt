@@ -17,6 +17,7 @@
 #define CHECK_FC2_ERROR(_err) { if (_err != PGRERROR_OK) { THROW_EXCEPTION_CUSTOM_MSG1("FlyCapture2 error:\n%s",_err.GetDescription()) } }
 #define FC2_CAM  reinterpret_cast<FlyCapture2::Camera*>(m_camera)
 #define FC2_CAM_INFO  reinterpret_cast<FlyCapture2::CameraInfo*>(m_camera_info)
+#define FC2_BUF_IMG   reinterpret_cast<FlyCapture2::Image*>(m_img_buffer)
 
 using namespace mrpt::hwdrivers;
 
@@ -96,15 +97,23 @@ TCaptureOptions_FlyCapture2::TCaptureOptions_FlyCapture2() :
 /** Default constructor */
 CImageGrabber_FlyCapture2::CImageGrabber_FlyCapture2() : 
 	m_camera(NULL),
-	m_camera_info(NULL)
+	m_camera_info(NULL),
+	m_img_buffer(NULL)
 {
+#if MRPT_HAS_FLYCAPTURE2
+	m_img_buffer = new FlyCapture2::Image();
+#endif
 }
 
 /** Constructor + open */
 CImageGrabber_FlyCapture2::CImageGrabber_FlyCapture2( const TCaptureOptions_FlyCapture2 &options ) : 
 	m_camera(NULL),
-	m_camera_info(NULL)
+	m_camera_info(NULL),
+	m_img_buffer(NULL)
 {
+#if MRPT_HAS_FLYCAPTURE2
+	m_img_buffer = new FlyCapture2::Image();
+#endif
 	this->open(options);
 }
 
@@ -112,6 +121,9 @@ CImageGrabber_FlyCapture2::CImageGrabber_FlyCapture2( const TCaptureOptions_FlyC
 CImageGrabber_FlyCapture2::~CImageGrabber_FlyCapture2()
 {
 	this->close();
+#if MRPT_HAS_FLYCAPTURE2
+	delete FC2_BUF_IMG; m_img_buffer = NULL;
+#endif
 }
 
 
@@ -213,8 +225,11 @@ void CImageGrabber_FlyCapture2::open( const TCaptureOptions_FlyCapture2 &options
 	// Set trigger:
 	MRPT_TODO("Trigger mode")
 	FlyCapture2::TriggerMode trig;
-//	error = FC2_CAM->SetTriggerMode(&trig);
-//	CHECK_FC2_ERROR(error)
+	error = FC2_CAM->GetTriggerMode(&trig);
+	CHECK_FC2_ERROR(error)
+
+	error = FC2_CAM->SetTriggerMode(&trig);
+	CHECK_FC2_ERROR(error)
 
 	// Set configs:
 	FlyCapture2::FC2Config fc2conf;
@@ -232,6 +247,7 @@ void CImageGrabber_FlyCapture2::open( const TCaptureOptions_FlyCapture2 &options
     {
 		FlyCapture2::Property p;
 		p.type = FlyCapture2::AUTO_EXPOSURE;
+		p.autoManualMode = true; // true=auto
 		p.onOff = true;
 		error = FC2_CAM->SetProperty (&p);
 	}
@@ -402,16 +418,24 @@ bool CImageGrabber_FlyCapture2::getObservation( mrpt::slam::CObservationImage &o
 		// White balance, etc.
 		FlyCapture2::ImageMetadata imd = image.GetMetadata();
 
+		// Determine if it's B/W or color:
 		FlyCapture2::PixelFormat pf = image.GetPixelFormat();
 
-		FlyCapture2::Image image_converted;
-		//error = image.Convert(PIXEL_FORMAT_MONO8,&image_converted);
-		error = image.Convert(PIXEL_FORMAT_RGB8,&image_converted);
+		const bool is_color = 
+			pf==PIXEL_FORMAT_RGB8 || pf==PIXEL_FORMAT_RGB16 || pf==PIXEL_FORMAT_S_RGB16 || 
+			pf==PIXEL_FORMAT_RAW8 || pf==PIXEL_FORMAT_RAW16 || pf==PIXEL_FORMAT_RAW12 || 
+			pf==PIXEL_FORMAT_BGR || pf==PIXEL_FORMAT_BGRU || pf==PIXEL_FORMAT_RGBU || 
+			pf==PIXEL_FORMAT_BGR16 || pf==PIXEL_FORMAT_BGRU16 || pf==PIXEL_FORMAT_422YUV8_JPEG;
+		
+		// Decode image:
+		error = image.Convert(is_color ? PIXEL_FORMAT_BGR : PIXEL_FORMAT_MONO8, FC2_BUF_IMG);
 		CHECK_FC2_ERROR(error)
 
-		MRPT_TODO("proper convert")
-		image_converted.Save("prueba.tif");
-		out_observation.image.loadFromFile("prueba.tif");
+		// Convert PGR FlyCapture2 image ==> OpenCV format:
+		unsigned int img_rows, img_cols, img_stride;
+		FC2_BUF_IMG->GetDimensions( &img_rows, &img_cols, &img_stride);
+
+		out_observation.image.loadFromMemoryBuffer(img_cols,img_rows, is_color, FC2_BUF_IMG->GetData() );
 
 		return true;
 	}

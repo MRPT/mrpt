@@ -29,8 +29,9 @@ void TestCapture_FlyCapture2()
 	// Open camera:
 	TCaptureOptions_FlyCapture2 cam_options;
 
-	//cam_options.videomode="VIDEOMODE_1024x768Y8";
-	//cam_options.framerate="FRAMERATE_15";
+	cam_options.framerate="FRAMERATE_30";
+	cam_options.videomode="VIDEOMODE_1280x960RGB";
+	//cam_options.videomode="VIDEOMODE_1280x960Y8";
 
 	capture.open(cam_options);
 
@@ -38,7 +39,7 @@ void TestCapture_FlyCapture2()
 	CTicTac tictac;
 	cout << "Press any key to stop capture to 'capture.rawlog'..." << endl;
 
-	CFileGZOutputStream fil("./capture.rawlog");
+	//CFileGZOutputStream fil("./capture.rawlog");
 
 	CDisplayWindow win("Capturing...");
 
@@ -65,7 +66,7 @@ void TestCapture_FlyCapture2()
 			break;
 		}
 
-		fil << obs;
+		//fil << obs;
 
 		cout << "."; cout.flush();
 		if (win.isOpen())
