@@ -15,8 +15,6 @@ namespace mrpt
 {
   namespace reactivenav
   {
-	/** 
-	 * 
 	/** The "alpha-PTG", as named in PTG papers.
 	 * 
 	 * Accepted parameters in the constructor:

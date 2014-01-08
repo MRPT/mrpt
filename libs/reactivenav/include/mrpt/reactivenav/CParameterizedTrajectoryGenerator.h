@@ -94,7 +94,7 @@ namespace mrpt
 
         /** The "lambda" function, see paper for info. It takes the (a,d) pair that is closest to a given location. */
 		MRPT_DEPRECATED_PRE("Use inverseMap_WS2TP() instead")
-        void lambdaFunction( float x, float y, int &out_k, float &out_d );
+        void lambdaFunction( float x, float y, int &out_k, float &out_d )
 		MRPT_DEPRECATED_POST("Use inverseMap_WS2TP() instead");
 
         /** Converts an "alpha" value (into the discrete set) into a feasible motion command.
