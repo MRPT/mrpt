@@ -88,7 +88,16 @@ TCaptureOptions_FlyCapture2::TCaptureOptions_FlyCapture2() :
 	videomode(), //("VIDEOMODE_640x480Y8"),
 	framerate(), // ("FRAMERATE_30"),
 	grabmode("BUFFER_FRAMES"),
-	grabTimeout(-1)
+	grabTimeout(-1),
+	trigger_enabled(false), 
+	trigger_polarity(0),
+	trigger_source(0),
+	trigger_mode(0),
+	strobe_enabled(false),
+	strobe_source(0),
+	strobe_polarity(0),
+	strobe_delay(0.0f),
+	strobe_duration(1.0f)
 {
 	memset(camera_guid,0,4*sizeof(camera_guid[0]));
 }
@@ -223,13 +232,37 @@ void CImageGrabber_FlyCapture2::open( const TCaptureOptions_FlyCapture2 &options
 
 
 	// Set trigger:
-	MRPT_TODO("Trigger mode")
-	FlyCapture2::TriggerMode trig;
-	error = FC2_CAM->GetTriggerMode(&trig);
-	CHECK_FC2_ERROR(error)
+	if ( m_options.trigger_enabled )
+	{
+		FlyCapture2::TriggerMode trig;
+		error = FC2_CAM->GetTriggerMode(&trig);
+		CHECK_FC2_ERROR(error)
 
-	error = FC2_CAM->SetTriggerMode(&trig);
-	CHECK_FC2_ERROR(error)
+		trig.onOff = m_options.trigger_enabled;
+		trig.mode  = m_options.trigger_mode;
+		trig.polarity = m_options.trigger_polarity;
+		trig.source   = m_options.trigger_source;
+
+		error = FC2_CAM->SetTriggerMode(&trig);
+		CHECK_FC2_ERROR(error)
+	}
+
+	// Strobe:
+	if (m_options.strobe_enabled)
+	{
+		FlyCapture2::StrobeControl strobe;
+		error = FC2_CAM->GetStrobe(&strobe);
+		CHECK_FC2_ERROR(error)
+
+		strobe.onOff = m_options.strobe_enabled;
+		strobe.delay = m_options.strobe_delay;
+		strobe.duration = m_options.strobe_duration;
+		strobe.polarity = m_options.strobe_polarity;
+		strobe.source = m_options.strobe_source;
+
+		error = FC2_CAM->SetStrobe(&strobe);
+		CHECK_FC2_ERROR(error)
+	}
 
 	// Set configs:
 	FlyCapture2::FC2Config fc2conf;

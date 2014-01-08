@@ -39,7 +39,7 @@ void TestCapture_FlyCapture2()
 	CTicTac tictac;
 	cout << "Press any key to stop capture to 'capture.rawlog'..." << endl;
 
-	//CFileGZOutputStream fil("./capture.rawlog");
+	CFileGZOutputStream fil("./capture.rawlog");
 
 	CDisplayWindow win("Capturing...");
 
@@ -66,11 +66,11 @@ void TestCapture_FlyCapture2()
 			break;
 		}
 
-		//fil << obs;
-
 		cout << "."; cout.flush();
 		if (win.isOpen())
 			win.showImage( obs->image );
+
+		fil << obs;
 	}
 
 }

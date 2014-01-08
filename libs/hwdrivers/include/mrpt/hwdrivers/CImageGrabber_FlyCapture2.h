@@ -34,6 +34,19 @@ namespace mrpt
 			std::string   framerate;  //!< (Default="", which means default) A string with a framerate, from the list available in [FlyCapture2::FrameRate](http://www.ptgrey.com/support/downloads/documents/flycapture/Doxygen/html/), eg. "FRAMERATE_30", etc.
 			std::string   grabmode;   //!< (Default="BUFFER_FRAMES") A string with a grab mode, from the list available in [FlyCapture2::GrabMode](http://www.ptgrey.com/support/downloads/documents/flycapture/Doxygen/html/)
 			int           grabTimeout; //!< (Default=5000) Time in milliseconds that RetrieveBuffer() and WaitForBufferEvent() will wait for an image before timing out and returning. 
+
+			bool         trigger_enabled;   //!< (default=false) Enable non-free-running mode, only capturing when a given input trigger signal is detected. Refer to PGR docs.
+			unsigned int trigger_polarity;  //!< (default=0) Refer to PGR docs.
+			unsigned int trigger_source;    //!< (default=0) Refer to PGR docs.
+			unsigned int trigger_mode;      //!< (default=0) Refer to PGR docs.
+
+			bool         strobe_enabled;    //!< (default=false) Enable the generation of a strobe signal in GPIO. Refer to PGR docs.
+			unsigned int strobe_source;     //!< (default=0)  Refer to PGR docs.
+			unsigned int strobe_polarity;   //!< (default=0)  Refer to PGR docs.
+			float        strobe_delay;      //!< (default=0.0) Delay in ms. Refer to PGR docs.
+			float        strobe_duration;   //!< (default=1.0) Pulse durationin ms. Refer to PGR docs.
+
+
 			/** @} */
 
 		};
