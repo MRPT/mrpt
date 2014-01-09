@@ -175,7 +175,7 @@ void CImageGrabber_FlyCapture2::open( const TCaptureOptions_FlyCapture2 &options
 	m_camera = new FlyCapture2::Camera();
 	m_camera_info = new FlyCapture2::CameraInfo();
 
-	cout << mrpt::format("[CImageGrabber_FlyCapture2::open] Opening camera with GUID= %04X%04X%04X%04X...\n", guid.value[0],guid.value[1],guid.value[2],guid.value[3]);
+	cout << mrpt::format("[CImageGrabber_FlyCapture2::open] Opening camera with GUID= %08X-%08X-%08X-%08X...\n", guid.value[0],guid.value[1],guid.value[2],guid.value[3]);
     error = FC2_CAM->Connect(&guid);
 	CHECK_FC2_ERROR(error)
 	error=FC2_CAM->GetCameraInfo(FC2_CAM_INFO);
@@ -251,9 +251,6 @@ void CImageGrabber_FlyCapture2::open( const TCaptureOptions_FlyCapture2 &options
 	// Strobe:
 	if (m_options.strobe_enabled)
 	{
-		FlyCapture2::StrobeInfo strobeInfo;
-		FC2_CAM->GetStrobeInfo(&strobeInfo);
-
 		FlyCapture2::StrobeControl strobe;
 
 		strobe.onOff = m_options.strobe_enabled;

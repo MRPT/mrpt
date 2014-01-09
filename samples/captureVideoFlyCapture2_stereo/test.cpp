@@ -30,9 +30,15 @@ void TestCapture_FlyCapture2_stereo()
 
 	cam_options_left.framerate="FRAMERATE_30";
 	cam_options_left.videomode="VIDEOMODE_1280x960RGB";
-	cam_options_left.camera_index = 0;
 
+	cam_options_left.open_by_guid = true;
+	cam_options_left.camera_guid[0] = 0x63A8D3CE; 
+	cam_options_left.camera_guid[1] = 0xB49580D6; 
+	cam_options_left.camera_guid[2] = 0x004AED1C;
+	cam_options_left.camera_guid[3] = 0xDDE4EF14;
+	 
 	cam_options_left.strobe_enabled = true;
+	cam_options_left.strobe_source = 1;  // GPIO pin #
 	cam_options_left.strobe_duration = 1.0; // ms
 	
 	capture_left.open(cam_options_left,false /*only open, don't start grabbing*/);
@@ -44,24 +50,33 @@ void TestCapture_FlyCapture2_stereo()
 
 	cam_options_right.framerate = cam_options_left.framerate;
 	cam_options_right.videomode = cam_options_left.videomode;
-	cam_options_right.camera_index = 0;
+	
+	cam_options_right.open_by_guid = true;
+	cam_options_right.camera_guid[0] = 0xB9862FD2; 
+	cam_options_right.camera_guid[1] = 0x7AE0E03A; 
+	cam_options_right.camera_guid[2] = 0xA6BC0321;
+	cam_options_right.camera_guid[3] = 0x16654DC9;
 
 	cam_options_right.trigger_enabled = true;
+	cam_options_right.trigger_source = 0;  // GPIO pin #
 
 	capture_right.open(cam_options_right,false /*only open, don't start grabbing*/);
 
 	// Open both cameras simultaneously:
+#if 0
 	const CImageGrabber_FlyCapture2 *cameras[2] = { &capture_left, &capture_right };
-
 	CImageGrabber_FlyCapture2::startSyncCapture(2 /*numCameras*/, cameras);
-
+#else
+	capture_right.startCapture(); // Will not start until a strobe is got from the "master" camera:
+	capture_left.startCapture();
+#endif
 
 	CTicTac tictac;
 	cout << "Press any key to stop capture to 'capture.rawlog'..." << endl;
 
 	CFileGZOutputStream fil("./capture.rawlog");
 
-	CDisplayWindow3D winL("Left"), winR("Right");
+	CDisplayWindow winL("Left"), winR("Right");
 
 	int cnt = 0;
 
@@ -84,16 +99,17 @@ void TestCapture_FlyCapture2_stereo()
 			tictac.Tic();
 		}
 
-		if (!capture_left.getObservation( *obsL ) || 
-			!capture_right.getObservation( *obsR ) )
+		const bool ok1 = capture_left.getObservation( *obsL ); 
+		const bool ok2 = capture_right.getObservation( *obsR );
+		if (!ok1 || !ok2)
 		{
 			cerr << "Error retrieving images!" << endl;
 			break;
 		}
 
 		cout << "."; cout.flush();
-		if (winL.isOpen()) winL.setImageView( obsL->image );
-		if (winR.isOpen()) winR.setImageView( obsL->image );
+		if (winL.isOpen()) winL.showImage( obsL->image );
+		if (winR.isOpen()) winR.showImage( obsR->image );
 
 		fil << obsL << obsR;
 	}
