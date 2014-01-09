@@ -234,9 +234,10 @@ void CImageGrabber_FlyCapture2::open( const TCaptureOptions_FlyCapture2 &options
 	// Set trigger:
 	if ( m_options.trigger_enabled )
 	{
+		FlyCapture2::TriggerModeInfo trigInfo;
+		FC2_CAM->GetTriggerModeInfo(&trigInfo);
+
 		FlyCapture2::TriggerMode trig;
-		error = FC2_CAM->GetTriggerMode(&trig);
-		CHECK_FC2_ERROR(error)
 
 		trig.onOff = m_options.trigger_enabled;
 		trig.mode  = m_options.trigger_mode;
@@ -250,9 +251,10 @@ void CImageGrabber_FlyCapture2::open( const TCaptureOptions_FlyCapture2 &options
 	// Strobe:
 	if (m_options.strobe_enabled)
 	{
+		FlyCapture2::StrobeInfo strobeInfo;
+		FC2_CAM->GetStrobeInfo(&strobeInfo);
+
 		FlyCapture2::StrobeControl strobe;
-		error = FC2_CAM->GetStrobe(&strobe);
-		CHECK_FC2_ERROR(error)
 
 		strobe.onOff = m_options.strobe_enabled;
 		strobe.delay = m_options.strobe_delay;
@@ -356,8 +358,23 @@ void CImageGrabber_FlyCapture2::startCapture()
 void CImageGrabber_FlyCapture2::startSyncCapture( int numCameras, const CImageGrabber_FlyCapture2 **cameras_array )
 {
 #if MRPT_HAS_FLYCAPTURE2
-	MRPT_TODO("Impl.")
-	//StartSyncCapture()
+
+	std::vector<const FlyCapture2::Camera*> cam_ptrs(numCameras);
+
+	for (int i=0;i<numCameras;i++)
+	{
+		const CImageGrabber_FlyCapture2 *obj = cameras_array[i];
+		if (!obj->m_camera) { THROW_EXCEPTION_CUSTOM_MSG1("Camera #%i in list is not opened. Call open() first.",i) }
+		
+		FlyCapture2::Camera *cam = reinterpret_cast<FlyCapture2::Camera*>(obj->m_camera);
+		cam_ptrs[i] = cam;
+	}
+	
+	if (!cam_ptrs.empty())
+	{
+		FlyCapture2::Error error = FlyCapture2::Camera::StartSyncCapture(cam_ptrs.size(), &cam_ptrs[0]);
+		CHECK_FC2_ERROR(error)
+	}
 #else
 	THROW_EXCEPTION("MRPT compiled without support for FlyCapture2")
 #endif
