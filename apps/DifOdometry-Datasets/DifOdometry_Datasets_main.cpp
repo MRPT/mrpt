@@ -55,7 +55,7 @@ const char *default_cfg_txt =
 	"cols = 80 \n\n"
 
 	";Absolute path of the rawlog file \n"
-	"filename = C:/Users/Mariano/Desktop/rawlog_rgbd_dataset_freiburg1_desk/rgbd_dataset_freiburg1_desk.rawlog\n";
+	"filename = C:/.../rgbd_dataset_freiburg1_desk.rawlog\n";
 
 
 // ------------------------------------------------------
