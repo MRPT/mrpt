@@ -33,42 +33,77 @@
    | POSSIBILITY OF SUCH DAMAGE.                                               |
    +---------------------------------------------------------------------------+ */
 
-#ifndef __mrpt_vision_H
-#define __mrpt_vision_H
 
-#include <mrpt/config.h>
+#include <mrpt/vision.h>
+#include <mrpt/utils/CConfigFileBase.h>
+#include <mrpt/utils/CImage.h>
+#include <mrpt/slam/CRawlog.h>
+#include <mrpt/slam/CObservation3DRangeScan.h>
+#include <mrpt/opengl.h>
+#include <mrpt/gui/CDisplayWindow3D.h>
+#include <iostream>
+#include <OpenNI.h>
+#include "legend.xpm"
 
-// Only really include all headers if we come from a user program (anything
-//  not defining mrpt_*_EXPORTS) or MRPT is being built with precompiled headers.
-#if !defined(mrpt_vision_EXPORTS) || MRPT_ENABLE_PRECOMPILED_HDRS || defined(MRPT_ALWAYS_INCLUDE_ALL_HEADERS)
 
-#include <mrpt/vision/utils.h>
-#include <mrpt/vision/TSimpleFeature.h>
-#include <mrpt/vision/multiDesc_utils.h>
-#include <mrpt/vision/chessboard_camera_calib.h>
-#include <mrpt/vision/chessboard_stereo_camera_calib.h>
-#include <mrpt/vision/chessboard_find_corners.h>
-#include <mrpt/vision/pinhole.h>
-#include <mrpt/vision/CCamModel.h>
-#include <mrpt/vision/CFeatureExtraction.h>
-#include <mrpt/vision/CVideoFileWriter.h>
-#include <mrpt/vision/tracking.h>
-#include <mrpt/vision/descriptor_kdtrees.h>
-#include <mrpt/vision/descriptor_pairing.h>
-#include <mrpt/vision/bundle_adjustment.h>
-#include <mrpt/vision/CUndistortMap.h>
-#include <mrpt/vision/CStereoRectifyMap.h>
-#include <mrpt/vision/CImagePyramid.h>
-#include <mrpt/vision/robust_kernels.h>
-#include <mrpt/vision/CDifodo.h>
 
-// Maps:
-#include <mrpt/slam/CLandmark.h>
-#include <mrpt/slam/CLandmarksMap.h>
+class CDifodoCamera : public mrpt::vision::CDifodo {
+public:
 
-// Obs:
-#include <mrpt/slam/CObservationVisualLandmarks.h>
+	mrpt::gui::CDisplayWindow3D	window;			
+	std::ofstream		f_res;
 
-#endif // end precomp.headers
+	bool save_results;
 
-#endif
+	/** Constructor. */
+	CDifodoCamera() : mrpt::vision::CDifodo() 
+	{ 
+		save_results = 0;
+	}
+
+	/** Initializes the visual odometry method and loads the rawlog file */
+	void loadConfiguration( const mrpt::utils::CConfigFileBase &ini );
+
+	/** Open camera */
+	bool openCamera();
+
+	/** Close camera */
+	void closeCamera();
+
+	/** Capture a new depth frame */
+	void loadFrame();
+
+	/** Creates a file to save some results */
+	void CreateResultsFile();
+
+	/** Initializes opengl scene */
+	void initializeScene();
+
+	/** Updates the opengl scene */
+	void updateScene();
+
+	/** Obtains the filtered speed, updates the pose and saves some statistics */
+	void filterSpeedAndPoseUpdate();
+
+	/** A pre-step that should be performed before starting to estimate the camera speed,
+	  * and can also be called to reset the estimated trajectory and pose */
+	void reset();
+
+private:
+
+	mrpt::opengl::COpenGLScenePtr	scene;	//!< Opengl scene
+
+	// OpenNI variables to manage the camera
+	openni::Status		rc;
+	openni::Device		device;
+	openni::VideoMode	video_options;
+	openni::VideoStream depth_ch;
+
+	/** Clock used to save the timestamp */
+	mrpt::utils::CTicTac clock;
+
+	/** Saves the following data for each observation (distance in meters and angles in radians):
+	  * timestamp(s) - x - y - z - yaw - pitch - roll */
+	void writeToLogFile();
+
+};
