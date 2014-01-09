@@ -69,8 +69,9 @@
 				- mrpt::slam::TMatchingExtraResults
 		- mrpt::slam::CObservationIMU now includes data fields for 3D magnetometers and altimeters. - [(commit)](http://code.google.com/p/mrpt/source/detail?r=3451)
 		- Method renamed mrpt::utils::CEnhancedMetaFile::selectVectorTextFont() to avoid shadowing mrpt::utils::CCanvas::selectTextFont()
-		- mrpt::reactivenav::CParameterizedTrajectoryGenerator: New method for inverse look-up of WS to TP space - [(commit)](https://github.com/jlblancoc/mrpt/commit/4d04ef50e3dea581bed6287d4ea6593034c47da3)
-			- mrpt::reactivenav::CParameterizedTrajectoryGenerator::inverseMap_WS2TP()
+		- mrpt::reactivenav::CParameterizedTrajectoryGenerator: New methods:  
+			- mrpt::reactivenav::CParameterizedTrajectoryGenerator::inverseMap_WS2TP() for inverse look-up of WS to TP space - [(commit)](https://github.com/jlblancoc/mrpt/commit/4d04ef50e3dea581bed6287d4ea6593034c47da3)
+			- mrpt::reactivenav::CParameterizedTrajectoryGenerator::renderPathAsSimpleLine() - [(commit)]()
 	- Deleted classes:
 		- mrpt::utils::CEvent, which was actually unimplemented (!)
 		- mrpt::hwdrivers::CInterfaceNI845x has been deleted. It didn't offer features enough to justify a class.

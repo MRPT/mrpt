@@ -737,3 +737,34 @@ bool CParameterizedTrajectoryGenerator::inverseMap_WS2TP( float x, float y, int 
 }
 
 
+void CParameterizedTrajectoryGenerator::renderPathAsSimpleLine(
+	const uint16_t k, 
+	mrpt::opengl::CSetOfLines &gl_obj, 
+	const float decimate_distance, 
+	const float max_path_distance) const
+{
+	const size_t nPointsInPath = getPointsCountInCPath_k(k);
+
+	// Decimate trajectories: we don't need centimeter resolution!
+	float last_added_dist = 0.0f;
+	for (size_t n=0;n<nPointsInPath;n++)
+	{
+		const float d = GetCPathPoint_d(k, n); // distance thru path "k" until timestep "n"
+
+		if (d<last_added_dist+decimate_distance && n!=0)
+			continue; // skip: decimation
+
+		last_added_dist = d;
+
+		const float x = GetCPathPoint_x(k, n);
+		const float y = GetCPathPoint_y(k, n);
+
+		if (gl_obj.empty())
+		     gl_obj.appendLine(0,0,0, x,y,0);
+		else gl_obj.appendLineStrip(x,y,0);
+
+		// Draw the TP only until we reach the target of the "motion" segment:
+		if (max_path_distance!=0.0f && d>=max_path_distance) break;
+	}
+}
+

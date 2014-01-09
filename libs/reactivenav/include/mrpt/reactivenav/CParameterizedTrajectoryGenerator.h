@@ -16,6 +16,8 @@
 
 namespace mrpt
 {
+  namespace opengl { class CSetOfLines; }
+
   namespace reactivenav
   {
 	  using namespace mrpt::utils;
@@ -182,6 +184,19 @@ namespace mrpt
 		  * \return false on any error writing to disk.
 		  */
         bool debugDumpInFiles(const int nPT);
+
+		/** Returns the representation of one trajectory of this PTG as a 3D OpenGL object (a simple curved line).
+		  * \param[in] k The 0-based index of the selected trajectory (discrete "alpha" parameter).
+		  * \param[out] gl_obj Output object.
+		  * \param[in] decimate_distance Minimum distance between path points (in meters).
+		  * \param[in] max_path_distance If >0, cut the path at this distance (in meters).
+		  */
+		void renderPathAsSimpleLine(
+			const uint16_t k, 
+			mrpt::opengl::CSetOfLines &gl_obj, 
+			const float decimate_distance = 0.1f, 
+			const float max_path_distance = 0.0f) const;
+
 
 		/**  A list of all the pairs (alpha,distance) such as the robot collides at that cell.
 		  *  - map key   (uint16_t) -> alpha value (k)
