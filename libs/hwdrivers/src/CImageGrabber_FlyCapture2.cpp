@@ -102,6 +102,43 @@ TCaptureOptions_FlyCapture2::TCaptureOptions_FlyCapture2() :
 	memset(camera_guid,0,4*sizeof(camera_guid[0]));
 }
 
+void TCaptureOptions_FlyCapture2::loadOptionsFrom(
+	const mrpt::utils::CConfigFileBase & cfg,
+	const std::string & sect,
+	const std::string & prefix )
+{
+	camera_index = cfg.read_int(sect, prefix+string("camera_index"), camera_index);
+	open_by_guid = cfg.read_bool(sect, prefix+string("open_by_guid"), open_by_guid);
+	
+	if (open_by_guid)
+	{
+		string sGUID = cfg.read_string(sect, prefix+string("camera_guid"), "",  true );
+		vector<string> sGUIDparts;
+		mrpt::utils::tokenize(sGUID,"- \t\r\n",sGUIDparts);
+		ASSERTMSG_(sGUIDparts.size()==4, "GUID format error: must have four blocks like XXX-XXX-XXX-XXX")
+
+		for (int i=0;i<4;i++)
+			sscanf(sGUIDparts[i].c_str(),"%X", &camera_guid[i]);
+	}
+
+	videomode = cfg.read_string(sect, prefix+string("videomode"), videomode);
+	framerate = cfg.read_string(sect, prefix+string("framerate"), framerate);
+	grabmode = cfg.read_string(sect, prefix+string("grabmode"), grabmode);
+	grabTimeout = cfg.read_int(sect, prefix+string("grabTimeout"), grabTimeout);
+
+	trigger_enabled = cfg.read_bool(sect, prefix+string("trigger_enabled"), trigger_enabled);
+	trigger_polarity = cfg.read_int(sect, prefix+string("trigger_polarity"), trigger_polarity);
+	trigger_source = cfg.read_int(sect, prefix+string("trigger_source"), trigger_source);
+	trigger_mode = cfg.read_int(sect, prefix+string("trigger_mode"), trigger_mode);
+
+	strobe_enabled = cfg.read_bool(sect, prefix+string("strobe_enabled"), strobe_enabled);
+	strobe_source = cfg.read_int(sect, prefix+string("strobe_source"), strobe_source);
+	strobe_polarity = cfg.read_int(sect, prefix+string("strobe_polarity"), strobe_polarity);
+	strobe_delay = cfg.read_float(sect, prefix+string("strobe_delay"), strobe_delay);
+	strobe_duration = cfg.read_float(sect, prefix+string("strobe_duration"), strobe_duration);
+}
+
+
 // ---------------------------------------------------------------
 /** Default constructor */
 CImageGrabber_FlyCapture2::CImageGrabber_FlyCapture2() : 

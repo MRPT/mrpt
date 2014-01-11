@@ -20,7 +20,7 @@ namespace mrpt
 		struct HWDRIVERS_IMPEXP TCaptureOptions_FlyCapture2
 		{
 			TCaptureOptions_FlyCapture2();
-
+			
 			/** @name Camera to open 
 			  * @{ */
 			unsigned int camera_index;   //!< (Default=0) If open_by_guid==false, will open the i'th camera based on this 0-based index.
@@ -45,16 +45,51 @@ namespace mrpt
 			unsigned int strobe_polarity;   //!< (default=0)  Refer to PGR docs.
 			float        strobe_delay;      //!< (default=0.0) Delay in ms. Refer to PGR docs.
 			float        strobe_duration;   //!< (default=1.0) Pulse durationin ms. Refer to PGR docs.
-
-
 			/** @} */
+
+			/** Loads all the options from a config file. 
+			  * Expected format: 
+			  *
+			  * \code
+			  * [sectionName]
+			  * # Camera selection:
+			  * camera_index = 0      // (Default=0) If open_by_guid==false, will open the i'th camera based on this 0-based index.
+			  * open_by_guid = false  // (Default=false) Set to true to force opening a camera by its GUID, in \a camera_guid
+			  * camera_guid  = 11223344-55667788-99AABBCC-DDEEFF00  // GUID of the camera to open, only when open_by_guid==true. Hexadecimal blocks separated by dashes ("-")
+			  * 
+			  * # Camera settings:
+			  * videomode   = VIDEOMODE_640x480Y8 // (Default="", which means default) A string with a video mode, from the list available in [FlyCapture2::VideoMode](http://www.ptgrey.com/support/downloads/documents/flycapture/Doxygen/html/), eg. "VIDEOMODE_640x480Y8", etc.
+			  * framerate   = FRAMERATE_30        // (Default="", which means default) A string with a framerate, from the list available in [FlyCapture2::FrameRate](http://www.ptgrey.com/support/downloads/documents/flycapture/Doxygen/html/), eg. "FRAMERATE_30", etc.
+			  * grabmode    = BUFFER_FRAMES       // (Default="BUFFER_FRAMES") A string with a grab mode, from the list available in [FlyCapture2::GrabMode](http://www.ptgrey.com/support/downloads/documents/flycapture/Doxygen/html/)
+			  * grabTimeout = 5000                // (Default=5000) Time in milliseconds that RetrieveBuffer() and WaitForBufferEvent() will wait for an image before timing out and returning. 
+			  * 
+			  * trigger_enabled = false // (default=false) Enable non-free-running mode, only capturing when a given input trigger signal is detected. Refer to PGR docs.
+			  * #trigger_polarity = 0      // (default=0) Refer to PGR docs.
+			  * #trigger_source   = 0      // (default=0) Refer to PGR docs.
+			  * #trigger_mode     = 0      // (default=0) Refer to PGR docs.
+			  * 
+			  * strobe_enabled   = false // (default=false) Enable the generation of a strobe signal in GPIO. Refer to PGR docs.
+			  * #strobe_source    = 1     // (default=0)  Refer to PGR docs.
+			  * #strobe_polarity  = 0     // (default=0)  Refer to PGR docs.
+			  * #strobe_delay     = 0.0   // (default=0.0) Delay in ms. Refer to PGR docs.
+			  * #strobe_duration  = 1.0   // (default=1.0) Pulse durationin ms. Refer to PGR docs.
+			  * 
+			  * \endcode
+			  * \note All parameter names may have an optional prefix, set with the "prefix" parameter. 
+			  *  For example, if prefix="LEFT_", the expected variable name "camera_index" in the config section will be "LEFT_camera_index", and so on.
+			  */
+			void  loadOptionsFrom(
+				const mrpt::utils::CConfigFileBase & configSource,
+				const std::string & sectionName,
+				const std::string & prefix = std::string() );
 
 		};
 
-		/** A wrapper for Point Gray Research (PGR) FlyCapture2 API for capturing images from a USB3 and other cameras.
+		/** A wrapper for Point Gray Research (PGR) FlyCapture2 API for capturing images from Firewire, USB3 or GigaE cameras.
 		  *  This class is only available when compiling MRPT with "MRPT_HAS_PGR_FLYCAPTURE2".
 		  *
 		  * \sa See the most generic camera grabber in MRPT: mrpt::hwdrivers::CCameraSensor
+		  * \sa See example code in [samples]/captureVideoFlyCapture2 and [samples]/captureVideoFlyCapture2_stereo.
 		  * \ingroup mrpt_hwdrivers_grp
 		  */
 		class HWDRIVERS_IMPEXP  CImageGrabber_FlyCapture2 : public mrpt::utils::CUncopiable
@@ -91,6 +126,7 @@ namespace mrpt
 			void startCapture();
 
 			/** Starts a synchronous capture of several cameras, which must have been already opened.
+			  * NOTE: This method only works with Firewire cameras, not with USB3 or GigaE ones (as confirmed by PGR support service).
 			  * \sa startCapture
 			  */
 			static void startSyncCapture( int numCameras, const CImageGrabber_FlyCapture2 **cameras_array );
