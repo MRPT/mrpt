@@ -426,10 +426,6 @@ void CImageGrabber_FlyCapture2::stopCapture()
 		error = FC2_CAM->StopCapture();
 		CHECK_FC2_ERROR(error)
 	}
-	else
-	{
-		std::cerr << "[CImageGrabber_FlyCapture2::stopCapture] Warning: called on an non-opened camera.\n";
-	}
 #else
 	THROW_EXCEPTION("MRPT compiled without support for FlyCapture2")
 #endif
@@ -500,7 +496,7 @@ bool CImageGrabber_FlyCapture2::getObservation( mrpt::slam::CObservationImage &o
 		out_observation.timestamp = mrpt::utils::time_tToTimestamp( timestamp.seconds + 1e-6*timestamp.microSeconds );
 
 		// White balance, etc.
-		FlyCapture2::ImageMetadata imd = image.GetMetadata();
+		//FlyCapture2::ImageMetadata imd = image.GetMetadata();
 
 		// Determine if it's B/W or color:
 		FlyCapture2::PixelFormat pf = image.GetPixelFormat();
