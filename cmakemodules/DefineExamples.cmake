@@ -226,6 +226,8 @@ IF(BUILD_EXAMPLES)
 	                opengl_video_viewport_demo
 			captureVideoOpenCV
 			captureVideoDC1394
+			captureVideoFlyCapture2
+			captureVideoFlyCapture2_stereo
 			enumerateCameras1394
 			GPS_test
 			sonar_SRF10_test
