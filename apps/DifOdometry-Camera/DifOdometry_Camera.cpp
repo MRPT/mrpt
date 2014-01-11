@@ -1,36 +1,10 @@
 /* +---------------------------------------------------------------------------+
-   |                 The Mobile Robot Programming Toolkit (MRPT)               |
-   |                                                                           |
+   |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2013, Individual contributors, see AUTHORS file        |
-   | Copyright (c) 2005-2013, MAPIR group, University of Malaga                |
-   | Copyright (c) 2012-2013, University of Almeria                            |
-   | All rights reserved.                                                      |
-   |                                                                           |
-   | Redistribution and use in source and binary forms, with or without        |
-   | modification, are permitted provided that the following conditions are    |
-   | met:                                                                      |
-   |    * Redistributions of source code must retain the above copyright       |
-   |      notice, this list of conditions and the following disclaimer.        |
-   |    * Redistributions in binary form must reproduce the above copyright    |
-   |      notice, this list of conditions and the following disclaimer in the  |
-   |      documentation and/or other materials provided with the distribution. |
-   |    * Neither the name of the copyright holders nor the                    |
-   |      names of its contributors may be used to endorse or promote products |
-   |      derived from this software without specific prior written permission.|
-   |                                                                           |
-   | THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS       |
-   | 'AS IS' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED |
-   | TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR|
-   | PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDERS BE LIABLE |
-   | FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL|
-   | DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR|
-   |  SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)       |
-   | HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,       |
-   | STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN  |
-   | ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE           |
-   | POSSIBILITY OF SUCH DAMAGE.                                               |
+   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | See: http://www.mrpt.org/Authors - All rights reserved.                   |
+   | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
 #include "DifOdometry_Camera.h"
@@ -86,11 +60,11 @@ void CDifodoCamera::loadConfiguration(const utils::CConfigFileBase &ini )
 	const int dz = floor(float(resv)/float(rows));
 	const int dy = floor(float(resh)/float(cols));
 
-	duv_threshold = 0.001*(dz + dy)*(cam_mode*downsample);		//Faster with cam_mode=4, the filter should be adjusted if it changes	
-	dt_threshold = 0.2*fps;	
-	dif_threshold = 0.001*(dz + dy)*(cam_mode*downsample);				
-	difuv_surroundings = 0.005*(dz + dy)*(cam_mode*downsample);	
-	dift_surroundings = 0.01*fps*(dz + dy)*(cam_mode*downsample);	
+	duv_threshold = 0.001*(dz + dy)*(cam_mode*downsample);		//Faster with cam_mode=4, the filter should be adjusted if it changes
+	dt_threshold = 0.2*fps;
+	dif_threshold = 0.001*(dz + dy)*(cam_mode*downsample);
+	difuv_surroundings = 0.005*(dz + dy)*(cam_mode*downsample);
+	dift_surroundings = 0.01*fps*(dz + dy)*(cam_mode*downsample);
 }
 
 
@@ -101,7 +75,7 @@ bool CDifodoCamera::openCamera()
 	rc = openni::OpenNI::initialize();
 
 	printf("After initialization:\n %s\n", openni::OpenNI::getExtendedError());
-	rc = device.open(deviceURI);	
+	rc = device.open(deviceURI);
 	if (rc != openni::STATUS_OK)
 	{
 		printf("SimpleViewer: Device open failed:\n%s\n", openni::OpenNI::getExtendedError());
@@ -174,7 +148,7 @@ void CDifodoCamera::loadFrame()
 
 	//float x, y, z;
 	const float inv_f = float(640/width)/525.0f;
-		
+
 	for (int yc = height-1; yc >= 0; --yc)
 	{
 		const openni::DepthPixel* pDepth = pDepthRow;
@@ -210,11 +184,11 @@ void CDifodoCamera::CreateResultsFile()
 		clock.Tic();
 
 		printf(" Saving results to file: %s \n", aux);
-	} 
+	}
 	catch (...)
 	{
 		printf("Exception found trying to create the 'results file' !!\n");
-	}	
+	}
 }
 
 
@@ -283,7 +257,7 @@ void CDifodoCamera::initializeScene()
 
 	//					Trajectories and covarianze
 	//-------------------------------------------------------------
-	
+
 	//Dif Odometry
 	CSetOfLinesPtr traj_lines_odo = CSetOfLines::Create();
 	traj_lines_odo->setLocation(0,0,0);
@@ -323,7 +297,7 @@ void CDifodoCamera::updateScene()
 {
 	scene = window.get3DSceneAndLock();
 
-	//Reference gt	
+	//Reference gt
 	CSetOfObjectsPtr reference_gt = scene->getByClass<CSetOfObjects>(1);
 	reference_gt->setPose(cam_pose);
 
@@ -338,7 +312,7 @@ void CDifodoCamera::updateScene()
 		}
 
 	//Border points
-	CPointCloudPtr border_points = scene->getByClass<CPointCloud>(1);	
+	CPointCloudPtr border_points = scene->getByClass<CPointCloud>(1);
 	border_points->clear();
 	border_points->setPose(cam_pose);
 	for (unsigned int y=0; y<cols; y++)
@@ -367,7 +341,7 @@ void CDifodoCamera::updateScene()
 	CEllipsoidPtr ellip = scene->getByClass<CEllipsoid>(0);
 	ellip->setCovMatrix(cov3d);
 	ellip->setPose(cam_pose);
-			
+
 	window.unlockAccess3DScene();
 	window.repaint();
 }
@@ -389,7 +363,7 @@ void CDifodoCamera::reset()
 	calculateDepthDerivatives();
 	findNullPoints();
 	findBorders();
-	findValidPoints();	
+	findValidPoints();
 
 	cam_pose.setFromValues(0,0,1.5,0,0,0);
 	cam_oldpose = cam_pose;
@@ -410,15 +384,15 @@ void CDifodoCamera::filterSpeedAndPoseUpdate()
 {
 	//-------------------------------------------------------------------------
 	//								Filter speed
-	//-------------------------------------------------------------------------	
-	
-	//Una matriz de covarianzas es siempre diagonalizable porque es simétrica y sus elementos son reales.
+	//-------------------------------------------------------------------------
+
+	//Una matriz de covarianzas es siempre diagonalizable porque es simÃ©trica y sus elementos son reales.
 
 	//		Calculate Eigenvalues and Eigenvectors
 	//----------------------------------------------------------
 	Eigen::SelfAdjointEigenSolver<MatrixXf> eigensolver(est_cov);
-	if (eigensolver.info() != Eigen::Success) 
-	{ 
+	if (eigensolver.info() != Eigen::Success)
+	{
 		printf("Eigensolver couldn't find a solution. Pose is not updated");
 		return;
 	}
@@ -443,7 +417,7 @@ void CDifodoCamera::filterSpeedAndPoseUpdate()
 
 	//Then transform that local representation to the "eigenvector" basis
 	MatrixXf kai_b_old;
-	kai_b_old.setSize(6,1); 
+	kai_b_old.setSize(6,1);
 	math::CMatrixFloat61 kai_loc_old;
 	kai_loc_old.topRows<3>() = v_loc_old;
 	kai_loc_old.bottomRows<3>() = w_loc_old;
@@ -456,7 +430,7 @@ void CDifodoCamera::filterSpeedAndPoseUpdate()
 	kai_b_fil.setSize(6,1);
 	for (unsigned int i=0; i<6; i++)
 	{
-		kai_b_fil(i,0) = (kai_b(i,0) + (c*eigensolver.eigenvalues()(i,0) + 0.2)*kai_b_old(i,0))/(1.0 + c*eigensolver.eigenvalues()(i,0) + 0.2);		
+		kai_b_fil(i,0) = (kai_b(i,0) + (c*eigensolver.eigenvalues()(i,0) + 0.2)*kai_b_old(i,0))/(1.0 + c*eigensolver.eigenvalues()(i,0) + 0.2);
 		//kai_b_fil_d(i,0) = (kai_b_d(i,0) + 0.2*kai_b_old_d(i,0))/(1.0 + 0.2);
 	}
 
@@ -464,7 +438,7 @@ void CDifodoCamera::filterSpeedAndPoseUpdate()
 	MatrixXf kai_loc_fil;
 	math::CMatrixFloat31 v_abs_fil, w_abs_fil;
 	kai_loc_fil.setSize(6,1);
-	kai_loc_fil = Bii.inverse().colPivHouseholderQr().solve(kai_b_fil);	
+	kai_loc_fil = Bii.inverse().colPivHouseholderQr().solve(kai_b_fil);
 
 	cam_pose.getRotationMatrix(inv_trans);
 	v_abs_fil = inv_trans.cast<float>()*kai_loc_fil.topRows(3);
@@ -473,7 +447,7 @@ void CDifodoCamera::filterSpeedAndPoseUpdate()
 	kai_abs.topRows<3>() = v_abs_fil;
 	kai_abs.bottomRows<3>() = w_abs_fil;
 
-	
+
 	//-------------------------------------------------------------------------
 	//							Update pose (DIFODO)
 	//-------------------------------------------------------------------------

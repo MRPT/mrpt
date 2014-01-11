@@ -1,36 +1,10 @@
 /* +---------------------------------------------------------------------------+
-   |                 The Mobile Robot Programming Toolkit (MRPT)               |
-   |                                                                           |
+   |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2013, Individual contributors, see AUTHORS file        |
-   | Copyright (c) 2005-2013, MAPIR group, University of Malaga                |
-   | Copyright (c) 2012-2013, University of Almeria                            |
-   | All rights reserved.                                                      |
-   |                                                                           |
-   | Redistribution and use in source and binary forms, with or without        |
-   | modification, are permitted provided that the following conditions are    |
-   | met:                                                                      |
-   |    * Redistributions of source code must retain the above copyright       |
-   |      notice, this list of conditions and the following disclaimer.        |
-   |    * Redistributions in binary form must reproduce the above copyright    |
-   |      notice, this list of conditions and the following disclaimer in the  |
-   |      documentation and/or other materials provided with the distribution. |
-   |    * Neither the name of the copyright holders nor the                    |
-   |      names of its contributors may be used to endorse or promote products |
-   |      derived from this software without specific prior written permission.|
-   |                                                                           |
-   | THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS       |
-   | 'AS IS' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED |
-   | TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR|
-   | PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDERS BE LIABLE |
-   | FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL|
-   | DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR|
-   |  SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)       |
-   | HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,       |
-   | STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN  |
-   | ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE           |
-   | POSSIBILITY OF SUCH DAMAGE.                                               |
+   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | See: http://www.mrpt.org/Authors - All rights reserved.                   |
+   | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
 #include "DifOdometry_Datasets.h"
@@ -48,12 +22,12 @@ void CDifodoDatasets::loadConfiguration(const utils::CConfigFileBase &ini )
 	downsample = ini.read_int("DIFODO_CONFIG", "downsample", 4, true);
 	rows = ini.read_int("DIFODO_CONFIG", "rows", 50, true);
 	cols = ini.read_int("DIFODO_CONFIG", "cols", 60, true);
-	
+
 	string filename = ini.read_string("DIFODO_CONFIG", "filename", "no file", true);
 
 
 	//						Open Rawlog File
-	//==================================================================	
+	//==================================================================
 
 	if (!dataset.loadFromRawLogFile(filename))
 		throw std::runtime_error("Couldn't open rawlog dataset file for input...");
@@ -61,13 +35,13 @@ void CDifodoDatasets::loadConfiguration(const utils::CConfigFileBase &ini )
 	rawlog_count = 0;
 
 	filename.replace(filename.find(".rawlog"),7,"_Images\\");
-	
+
 	// Set external images directory:
 	CImage::IMAGES_PATH_BASE = filename;
 
 	//					Load ground_truth
 	//=========================================================
-	
+
 	if (filename.find("\\rgbd_dataset") != string::npos)
 		filename.erase(filename.begin()+filename.find("\\rgbd_dataset"), filename.end());
 
@@ -80,7 +54,7 @@ void CDifodoDatasets::loadConfiguration(const utils::CConfigFileBase &ini )
 	filename.append("\\groundtruth.txt");
 
 	f_gt.open(filename);
-	
+
 	char aux[100];
 	f_gt.getline(aux, 100);
 	f_gt.getline(aux, 100);
@@ -92,7 +66,7 @@ void CDifodoDatasets::loadConfiguration(const utils::CConfigFileBase &ini )
 	//=========================================================
 	const unsigned int resh = 640/(cam_mode*downsample);
 	const unsigned int resv = 480/(cam_mode*downsample);
-	
+
 	depth.setSize(rows,cols);
 	depth_old.setSize(rows,cols);
 	depth_inter.setSize(rows,cols);
@@ -122,11 +96,11 @@ void CDifodoDatasets::loadConfiguration(const utils::CConfigFileBase &ini )
 	const int dz = floor(float(resv)/float(rows));
 	const int dy = floor(float(resh)/float(cols));
 
-	duv_threshold = 0.001*(dz + dy)*(cam_mode*downsample);		//Faster with cam_mode=4, the filter should be adjusted if it changes	
-	dt_threshold = 0.2*fps;	
-	dif_threshold = 0.001*(dz + dy)*(cam_mode*downsample);				
-	difuv_surroundings = 0.005*(dz + dy)*(cam_mode*downsample);	
-	dift_surroundings = 0.01*fps*(dz + dy)*(cam_mode*downsample);	
+	duv_threshold = 0.001*(dz + dy)*(cam_mode*downsample);		//Faster with cam_mode=4, the filter should be adjusted if it changes
+	dt_threshold = 0.2*fps;
+	dif_threshold = 0.001*(dz + dy)*(cam_mode*downsample);
+	difuv_surroundings = 0.005*(dz + dy)*(cam_mode*downsample);
+	dift_surroundings = 0.01*fps*(dz + dy)*(cam_mode*downsample);
 
 }
 
@@ -154,11 +128,11 @@ void CDifodoDatasets::CreateResultsFile()
 		printf(" Saving results to file: %s \n", aux);
 		//printf(aux);
 		//printf("\n");
-	} 
+	}
 	catch (...)
 	{
 		printf("Exception found trying to create the 'results file' !!\n");
-	}	
+	}
 }
 
 void CDifodoDatasets::initializeScene()
@@ -232,7 +206,7 @@ void CDifodoDatasets::initializeScene()
 
 	//					Trajectories and covarianze
 	//-------------------------------------------------------------
-	
+
 	//Dif Odometry
 	CSetOfLinesPtr traj_lines_odo = CSetOfLines::Create();
 	traj_lines_odo->setLocation(0,0,0);
@@ -283,7 +257,7 @@ void CDifodoDatasets::updateScene()
 {
 	scene = window.get3DSceneAndLock();
 
-	//Reference gt	
+	//Reference gt
 	CSetOfObjectsPtr reference_gt = scene->getByClass<CSetOfObjects>(1);
 	reference_gt->setPose(gt_pose);
 
@@ -298,7 +272,7 @@ void CDifodoDatasets::updateScene()
 		}
 
 	//Border points
-	CPointCloudPtr border_points = scene->getByClass<CPointCloud>(1);	
+	CPointCloudPtr border_points = scene->getByClass<CPointCloud>(1);
 	border_points->clear();
 	border_points->setPose(gt_pose);
 	for (unsigned int y=0; y<cols; y++)
@@ -342,7 +316,7 @@ void CDifodoDatasets::updateScene()
 	CEllipsoidPtr ellip = scene->getByClass<CEllipsoid>(0);
 	ellip->setCovMatrix(cov3d);
 	ellip->setPose(cam_pose);
-			
+
 	window.unlockAccess3DScene();
 	window.repaint();
 }
@@ -361,8 +335,8 @@ void CDifodoDatasets::loadFrame()
 
 	CObservation3DRangeScanPtr obs3D = CObservation3DRangeScanPtr(alfa);
 	obs3D->load();
-	
-	const unsigned int height = obs3D->rangeImage.getRowCount(); 
+
+	const unsigned int height = obs3D->rangeImage.getRowCount();
 	const unsigned int width = obs3D->rangeImage.getColCount();
 	const unsigned int index_incr = downsample;
 
@@ -383,7 +357,7 @@ void CDifodoDatasets::loadFrame()
 		f_gt >> timestamp_gt;
 		last_groundtruth = timestamp_gt;
 	}
-	
+
 	//Read the inmediatly previous groundtruth
 	double x0,y0,z0,qx0,qy0,qz0,w0,t0;
 	f_gt >> x0; f_gt >> y0; f_gt >> z0;
@@ -402,7 +376,7 @@ void CDifodoDatasets::loadFrame()
 	else
 	{
 		gt_oldpose = gt_pose;
-		
+
 		//Update pose
 		double x1,y1,z1,qx1,qy1,qz1,w1,t1;
 		f_gt >> x1; f_gt >> y1; f_gt >> z1;
@@ -418,16 +392,16 @@ void CDifodoDatasets::loadFrame()
 		{
 			qx0 = -qx0; qy0 = -qy0; qz0 = -qz0; w0 = -w0;
 		}
-		
+
 		double x,y,z,qx,qy,qz,w;
 		x = (incr_t0*x1 + incr_t1*x0)/(incr_t);
 		y = (incr_t0*y1 + incr_t1*y0)/(incr_t);
 		z = (incr_t0*z1 + incr_t1*z0)/(incr_t);
 		qx = (incr_t0*qx1 + incr_t1*qx0)/(incr_t);
-		qy = (incr_t0*qy1 + incr_t1*qy0)/(incr_t);	
+		qy = (incr_t0*qy1 + incr_t1*qy0)/(incr_t);
 		qz = (incr_t0*qz1 + incr_t1*qz0)/(incr_t);
 		w = (incr_t0*w1 + incr_t1*w0)/(incr_t);
-		
+
 
 		CMatrixDouble33 mat;
 		mat(0,0) = 1- 2*qy*qy - 2*qz*qz;
@@ -478,7 +452,7 @@ void CDifodoDatasets::reset()
 	calculateDepthDerivatives();
 	findNullPoints();
 	findBorders();
-	findValidPoints();	
+	findValidPoints();
 
 	cam_oldpose = cam_pose;
 	gt_oldpose = gt_pose;
@@ -489,15 +463,15 @@ void CDifodoDatasets::filterSpeedAndPoseUpdate()
 {
 	//-------------------------------------------------------------------------
 	//								Filter speed
-	//-------------------------------------------------------------------------	
-	
-	//Una matriz de covarianzas es siempre diagonalizable porque es simétrica y sus elementos son reales.
+	//-------------------------------------------------------------------------
+
+	//Una matriz de covarianzas es siempre diagonalizable porque es simÃ©trica y sus elementos son reales.
 
 	//		Calculate Eigenvalues and Eigenvectors
 	//----------------------------------------------------------
 	Eigen::SelfAdjointEigenSolver<MatrixXf> eigensolver(est_cov);
-	if (eigensolver.info() != Eigen::Success) 
-	{ 
+	if (eigensolver.info() != Eigen::Success)
+	{
 		printf("Eigensolver couldn't find a solution. Pose is not updated");
 		return;
 	}
@@ -522,7 +496,7 @@ void CDifodoDatasets::filterSpeedAndPoseUpdate()
 
 	//Then transform that local representation to the "eigenvector" basis
 	MatrixXf kai_b_old;
-	kai_b_old.setSize(6,1); 
+	kai_b_old.setSize(6,1);
 	math::CMatrixFloat61 kai_loc_old;
 	kai_loc_old.topRows<3>() = v_loc_old;
 	kai_loc_old.bottomRows<3>() = w_loc_old;
@@ -535,7 +509,7 @@ void CDifodoDatasets::filterSpeedAndPoseUpdate()
 	kai_b_fil.setSize(6,1);
 	for (unsigned int i=0; i<6; i++)
 	{
-		kai_b_fil(i,0) = (kai_b(i,0) + (c*eigensolver.eigenvalues()(i,0) + 0.2)*kai_b_old(i,0))/(1.0 + c*eigensolver.eigenvalues()(i,0) + 0.2);		
+		kai_b_fil(i,0) = (kai_b(i,0) + (c*eigensolver.eigenvalues()(i,0) + 0.2)*kai_b_old(i,0))/(1.0 + c*eigensolver.eigenvalues()(i,0) + 0.2);
 		//kai_b_fil_d(i,0) = (kai_b_d(i,0) + 0.2*kai_b_old_d(i,0))/(1.0 + 0.2);
 	}
 
@@ -543,7 +517,7 @@ void CDifodoDatasets::filterSpeedAndPoseUpdate()
 	MatrixXf kai_loc_fil;
 	math::CMatrixFloat31 v_abs_fil, w_abs_fil;
 	kai_loc_fil.setSize(6,1);
-	kai_loc_fil = Bii.inverse().colPivHouseholderQr().solve(kai_b_fil);	
+	kai_loc_fil = Bii.inverse().colPivHouseholderQr().solve(kai_b_fil);
 
 	cam_pose.getRotationMatrix(inv_trans);
 	v_abs_fil = inv_trans.cast<float>()*kai_loc_fil.topRows(3);
@@ -552,7 +526,7 @@ void CDifodoDatasets::filterSpeedAndPoseUpdate()
 	kai_abs.topRows<3>() = v_abs_fil;
 	kai_abs.bottomRows<3>() = w_abs_fil;
 
-	
+
 	//-------------------------------------------------------------------------
 	//							Update pose (DIFODO)
 	//-------------------------------------------------------------------------
@@ -577,7 +551,7 @@ void CDifodoDatasets::filterSpeedAndPoseUpdate()
 	//==================================================================================
 	//									Statistics
 	//==================================================================================
-	
+
 	if ((groundtruth_ok)&&(last_groundtruth_ok))
 	{
 		CPose3D gt_pose_incr = gt_pose - gt_oldpose;
@@ -587,9 +561,9 @@ void CDifodoDatasets::filterSpeedAndPoseUpdate()
 		//cout << endl << "GT: " << gt_pose_incr;
 		//cout << endl << "OD: " << cam_pose_incr;
 		//cout << endl << "AE: " << abs_pose_error;
-	
+
 		//-------------------------------------------------------------------------
-		//									DIF ODO 
+		//									DIF ODO
 		//-------------------------------------------------------------------------
 
 		//Relative errors in displacement
@@ -610,7 +584,7 @@ void CDifodoDatasets::filterSpeedAndPoseUpdate()
 
 
 		sum_exec_time += execution_time;
-		
+
 		//Don't take into account those iterations with the same depth images
 		if (dt.sumAll() == 0)
 			dtzero_before = 1;
@@ -631,15 +605,15 @@ void CDifodoDatasets::writeToLogFile()
 {
 	char aux[24];
 	sprintf(aux,"%.04f", last_groundtruth);
-	f_res << aux << " ";	
-	
+	f_res << aux << " ";
+
 	f_res << rel_error[0] << " ";
 	f_res << rel_error[1] << " ";
 	f_res << rel_error[2] << " ";
 	f_res << rel_error[3] << " ";
 	f_res << rel_error[4] << " ";
 	f_res << rel_error[5] << " ";
-	
+
 	f_res << abs_error_tras << " ";
 	f_res << abs_error_rot << " ";
 
