@@ -33,6 +33,7 @@ namespace mrpt
 			std::string   videomode;  //!< (Default="", which means default) A string with a video mode, from the list available in [FlyCapture2::VideoMode](http://www.ptgrey.com/support/downloads/documents/flycapture/Doxygen/html/), eg. "VIDEOMODE_640x480Y8", etc.
 			std::string   framerate;  //!< (Default="", which means default) A string with a framerate, from the list available in [FlyCapture2::FrameRate](http://www.ptgrey.com/support/downloads/documents/flycapture/Doxygen/html/), eg. "FRAMERATE_30", etc.
 			std::string   grabmode;   //!< (Default="BUFFER_FRAMES") A string with a grab mode, from the list available in [FlyCapture2::GrabMode](http://www.ptgrey.com/support/downloads/documents/flycapture/Doxygen/html/)
+			unsigned int  numBuffers; //!< (Default=30) Number of images that can be stored in the buffer, if enabled with grabMode.
 			int           grabTimeout; //!< (Default=5000) Time in milliseconds that RetrieveBuffer() and WaitForBufferEvent() will wait for an image before timing out and returning. 
 
 			bool         trigger_enabled;   //!< (default=false) Enable non-free-running mode, only capturing when a given input trigger signal is detected. Refer to PGR docs.
@@ -61,6 +62,7 @@ namespace mrpt
 			  * videomode   = VIDEOMODE_640x480Y8 // (Default="", which means default) A string with a video mode, from the list available in [FlyCapture2::VideoMode](http://www.ptgrey.com/support/downloads/documents/flycapture/Doxygen/html/), eg. "VIDEOMODE_640x480Y8", etc.
 			  * framerate   = FRAMERATE_30        // (Default="", which means default) A string with a framerate, from the list available in [FlyCapture2::FrameRate](http://www.ptgrey.com/support/downloads/documents/flycapture/Doxygen/html/), eg. "FRAMERATE_30", etc.
 			  * grabmode    = BUFFER_FRAMES       // (Default="BUFFER_FRAMES") A string with a grab mode, from the list available in [FlyCapture2::GrabMode](http://www.ptgrey.com/support/downloads/documents/flycapture/Doxygen/html/)
+			  * numBuffers  = 30                  // (Default=30) Number of images that can be stored in the buffer, if enabled with grabMode.
 			  * grabTimeout = 5000                // (Default=5000) Time in milliseconds that RetrieveBuffer() and WaitForBufferEvent() will wait for an image before timing out and returning. 
 			  * 
 			  * trigger_enabled = false // (default=false) Enable non-free-running mode, only capturing when a given input trigger signal is detected. Refer to PGR docs.

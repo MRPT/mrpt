@@ -88,6 +88,7 @@ TCaptureOptions_FlyCapture2::TCaptureOptions_FlyCapture2() :
 	videomode(), //("VIDEOMODE_640x480Y8"),
 	framerate(), // ("FRAMERATE_30"),
 	grabmode("BUFFER_FRAMES"),
+	numBuffers(30),
 	grabTimeout(-1),
 	trigger_enabled(false), 
 	trigger_polarity(0),
@@ -124,6 +125,7 @@ void TCaptureOptions_FlyCapture2::loadOptionsFrom(
 	videomode = cfg.read_string(sect, prefix+string("videomode"), videomode);
 	framerate = cfg.read_string(sect, prefix+string("framerate"), framerate);
 	grabmode = cfg.read_string(sect, prefix+string("grabmode"), grabmode);
+	numBuffers = cfg.read_uint64_t(sect, prefix+string("numBuffers"), numBuffers);
 	grabTimeout = cfg.read_int(sect, prefix+string("grabTimeout"), grabTimeout);
 
 	trigger_enabled = cfg.read_bool(sect, prefix+string("trigger_enabled"), trigger_enabled);
@@ -308,6 +310,8 @@ void CImageGrabber_FlyCapture2::open( const TCaptureOptions_FlyCapture2 &options
 	fc2conf.grabMode = fc2_defstr2num<FlyCapture2::GrabMode>(m_options.grabmode);
 	if (m_options.grabTimeout>=0)
 		fc2conf.grabTimeout = m_options.grabTimeout;
+
+	fc2conf.numBuffers = m_options.numBuffers;
 
 	error = FC2_CAM->SetConfiguration( &fc2conf);
 	CHECK_FC2_ERROR(error)
