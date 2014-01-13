@@ -728,35 +728,61 @@ struct compute_jacobian_dAepsDx_deps<jacob_relpose_landmark /* Jacobian family: 
 		const OBS_VECTOR  & all_obs
 		)
 	{
-		MRPT_TODO("finish!")
-		double Xd,Yd,PHIa;
-		mrpt::poses::CPose3D  base_wrt_obs(mrpt::poses::UNINITIALIZED_POSE); // A(+)D
-
+		MRPT_TODO("FINISH")
+		// See section 10.3.7 of technical report on SE(3) poses [http://mapir.isa.uma.es/~jlblanco/papers/jlblanco2010geometry3D_techrep.pdf]
 		if (!is_inverse_edge_jacobian)
 		{	// Normal formulation: unknown is pose "d+1 -> d"
 
-			Xd=pose_base_wrt_d1.pose.x();
-			Yd=pose_base_wrt_d1.pose.y();
+			// This is "D" in my handwritten notes:
+			// pose_i_wrt_dplus1  -> pose_base_wrt_d1
 
-			// We need to handle the special case where "d+1"=="l", so A=Pose(0,0,0):
-			PHIa=0; // Xa, Ya: Are not really needed, since they don't appear in the Jacobian.
+			const mrpt::math::CMatrixDouble33 & ROTD = pose_base_wrt_d1.pose.getRotationMatrix();
+
+			// We need to handle the special case where "d+1"=="l", so A=Pose(0,0,0,0,0,0):
+			Eigen::Matrix<double,RBA_ENGINE_T::OBS_DIMS,3> H_ROTA;
 			if (pose_d1_wrt_obs!=NULL)
 			{
 				// pose_d_plus_1_wrt_l  -> pose_d1_wrt_obs
-				PHIa = pose_d1_wrt_obs->pose.phi();
-				base_wrt_obs.composeFrom(pose_d1_wrt_obs->pose, pose_base_wrt_d1.pose);  // A (+) D
+
+				// 3x3 term: H*R(A)
+				H_ROTA = dh_dx * pose_d1_wrt_obs->pose.getRotationMatrix();
 			}
 			else
 			{
-				base_wrt_obs = pose_base_wrt_d1.pose;  // A (+) D
+				// 3x3 term: H*R(A)
+				H_ROTA = dh_dx;
 			}
+
+			// First 2x3 block:
+			jacob.block(0,0,RBA_ENGINE_T::OBS_DIMS,3).noalias() = H_ROTA;
+
+			// Second 2x3 block:
+			// compute aux vector "v":
+			Eigen::Matrix<double,3,1> v;
+			v[0] =  -pose_base_wrt_d1.pose.x()  - xji_i[0]*ROTD.coeff(0,0) - xji_i[1]*ROTD.coeff(0,1) - xji_i[2]*ROTD.coeff(0,2);
+			v[1] =  -pose_base_wrt_d1.pose.y()  - xji_i[0]*ROTD.coeff(1,0) - xji_i[1]*ROTD.coeff(1,1) - xji_i[2]*ROTD.coeff(1,2);
+			v[2] =  -pose_base_wrt_d1.pose.z()  - xji_i[0]*ROTD.coeff(2,0) - xji_i[1]*ROTD.coeff(2,1) - xji_i[2]*ROTD.coeff(2,2);
+
+			Eigen::Matrix<double,3,3> aux;
+
+			aux.coeffRef(0,0)=0;
+			aux.coeffRef(1,1)=0;
+			aux.coeffRef(2,2)=0;
+
+			aux.coeffRef(1,2)=-v[0];
+			aux.coeffRef(2,1)= v[0];
+			aux.coeffRef(2,0)=-v[1];
+			aux.coeffRef(0,2)= v[1];
+			aux.coeffRef(0,1)=-v[2];
+			aux.coeffRef(1,0)= v[2];
+
+			jacob.block(0,3,RBA_ENGINE_T::OBS_DIMS,3).noalias() = H_ROTA * aux;
 		}
 		else
 		{	// Inverse formulation: unknown is pose "d -> d+1"
 
 			// Changes due to the inverse pose:
 			// D becomes D' = p_d^{d+1} (+) D
-			// and A (which is "pose_d1_wrt_obs") becomes A' = A (+) (p_d_d1)^-1
 
 			ASSERT_(jacob_sym.k2k_edge_id<k2k_edges.size())
 			const typename RBA_ENGINE_T::pose_t & p_d_d1 = k2k_edges[jacob_sym.k2k_edge_id]
@@ -770,61 +796,58 @@ struct compute_jacobian_dAepsDx_deps<jacob_relpose_landmark /* Jacobian family: 
 			typename RBA_ENGINE_T::pose_t pose_base_wrt_d1_prime(mrpt::poses::UNINITIALIZED_POSE);
 			pose_base_wrt_d1_prime.composeFrom( p_d_d1 , pose_base_wrt_d1.pose );
 
-			// We need to handle the special case where "d+1"=="l", so A=Pose(0,0,0):
-			const typename RBA_ENGINE_T::pose_t p_d_d1_inv = -p_d_d1;
+			const mrpt::math::CMatrixDouble33 & ROTD = pose_base_wrt_d1_prime.getRotationMatrix();
 
-			typename RBA_ENGINE_T::pose_t A_prime = (pose_d1_wrt_obs!=NULL) ?
-				(pose_d1_wrt_obs->pose + p_d_d1_inv)
-				:
-				p_d_d1_inv;
+			// We need to handle the special case where "d+1"=="l", so A=Pose(0,0,0,0,0,0):
+			Eigen::Matrix<double,RBA_ENGINE_T::OBS_DIMS,3> H_ROTA;
+			if (pose_d1_wrt_obs!=NULL)
+			{
+				// pose_d_plus_1_wrt_l  -> pose_d1_wrt_obs
 
-			Xd=pose_base_wrt_d1_prime.x();
-			Yd=pose_base_wrt_d1_prime.y();
+				// In inverse edges, A (which is "pose_d1_wrt_obs") becomes A * (p_d_d1)^-1 =>
+				//   So: ROT_A' = ROT_A * ROT_d_d1^t
 
-			// We need to handle the special case where "d+1"=="l", so A=Pose(0,0,0):
-			PHIa=A_prime.phi();
+				// 3x3 term: H*R(A')
+				H_ROTA = dh_dx * pose_d1_wrt_obs->pose.getRotationMatrix() * p_d_d1.getRotationMatrix().transpose();
+			}
+			else
+			{
+				// Was in the normal edge: H_ROTA = dh_dx;
 
-			base_wrt_obs.composeFrom(A_prime, pose_base_wrt_d1_prime);  // A (+) D
-		}
+				// 3x3 term: H*R(A')
+				H_ROTA = dh_dx * p_d_d1.getRotationMatrix().transpose();
+			}
 
-		//const mrpt::poses::CPose2D base_wrt_obs_inv = -base_wrt_obs;
-		const double PHIad = base_wrt_obs.phi();
+			// First 2x3 block:
+			jacob.block(0,0,RBA_ENGINE_T::OBS_DIMS,3).noalias() = H_ROTA;
 
-		//const mrpt::poses::CPose2D p_obs(0,0,0);
-			//all_obs[jacob_sym.obs_idx].obs.obs.obs_data.x,
-			//all_obs[jacob_sym.obs_idx].obs.obs.obs_data.y,
-			//all_obs[jacob_sym.obs_idx].obs.obs.obs_data.yaw);
+			// Second 2x3 block:
+			// compute aux vector "v":
+			Eigen::Matrix<double,3,1> v;
+			v[0] =  -pose_base_wrt_d1_prime.x()  - xji_i[0]*ROTD.coeff(0,0) - xji_i[1]*ROTD.coeff(0,1) - xji_i[2]*ROTD.coeff(0,2);
+			v[1] =  -pose_base_wrt_d1_prime.y()  - xji_i[0]*ROTD.coeff(1,0) - xji_i[1]*ROTD.coeff(1,1) - xji_i[2]*ROTD.coeff(1,2);
+			v[2] =  -pose_base_wrt_d1_prime.z()  - xji_i[0]*ROTD.coeff(2,0) - xji_i[1]*ROTD.coeff(2,1) - xji_i[2]*ROTD.coeff(2,2);
 
-		const double ccos_ad = cos(PHIad), ssin_ad=sin(PHIad);
-		const double ccos_a = cos(PHIa), ssin_a=sin(PHIa);
-		//const double ccos_obs = cos(p_obs.phi()), ssin_obs=sin(p_obs.phi());
+			Eigen::Matrix<double,3,3> aux;
 
-		//const double Ax = base_wrt_obs.x()-p_obs.x();
-		//const double Ay = base_wrt_obs.y()-p_obs.y();
+			aux.coeffRef(0,0)=0;
+			aux.coeffRef(1,1)=0;
+			aux.coeffRef(2,2)=0;
 
-		Eigen::Matrix<double,3,3> J0; // -d(\ominus p)_dp, with p=A*D
-		J0(0,0)= ccos_ad; J0(0,1)= ssin_ad; J0(0,2)= 0;
-		J0(1,0)=-ssin_ad; J0(1,1)= ccos_ad; J0(1,2)= 0;
-		J0(2,0)=0;        J0(2,1)=0;        J0(2,2)= 1;
+			aux.coeffRef(1,2)=-v[0];
+			aux.coeffRef(2,1)= v[0];
+			aux.coeffRef(2,0)=-v[1];
+			aux.coeffRef(0,2)= v[1];
+			aux.coeffRef(0,1)=-v[2];
+			aux.coeffRef(1,0)= v[2];
 
-		Eigen::Matrix<double,3,3> J1; // dAD_dA;
-		J1(0,0)=1; J1(0,1)=0; J1(0,2)= -Xd*ssin_a-Yd*ccos_a;
-		J1(1,0)=0; J1(1,1)=1; J1(1,2)=  Xd*ccos_a-Yd*ssin_a;
-		J1(2,0)=0; J1(2,1)=0; J1(2,2)= 1;
+			jacob.block(0,3,RBA_ENGINE_T::OBS_DIMS,3).noalias() = H_ROTA * aux;
 
-		Eigen::Matrix<double,3,3> J2; // dAe_de
-		J2(0,0)=ccos_a;  J2(0,1)=-ssin_a;  J2(0,2)=0;
-		J2(1,0)=ssin_a;  J2(1,1)= ccos_a;  J2(1,2)=0;
-		J2(2,0)=0;       J2(2,1)=0;        J2(2,2)=1;
-
-		// Chain rule:
-		jacob.noalias() = dh_dx * J0* J1 * J2;
-
-		if (is_inverse_edge_jacobian)
-		{
 			// And this comes from: d exp(-epsilon)/d epsilon = - d exp(epsilon)/d epsilon
 			jacob = -jacob;
-		}
+
+		} // end inverse edge case
+
 	}
 }; // end of "compute_jacobian_dAepsDx_deps", Case: SE(3) relative-poses, SE(3) poses:
 
