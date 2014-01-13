@@ -725,11 +725,11 @@ namespace mrpt { namespace srba {
 			out_lm_pos[1] = obs.range * shn_y;
 		}
 
-	};  // end of struct sensor_model<landmarks::Euclidean2D,observations::RangeBearing_2D>
+	}; // end of sensor_model<landmarks::Euclidean2D,observations::RangeBearing_2D>
 
 	// -------------------------------------------------------------------------------------------------------------
 
-	/** Sensor model: 2D landmarks in Euclidean coordinates + 2D Range-Bearing observations */
+	/** Sensor model: 2D relative poses landmarks and observations (relative 2D-graph SLAM) */
 	template <>
 	struct sensor_model<landmarks::RelativePoses2D,observations::RelativePoses_2D>
 	{
@@ -820,7 +820,106 @@ namespace mrpt { namespace srba {
 			out_lm_pos[2] = obs.yaw;
 		}
 
-	};  // end of struct sensor_model<landmarks::Euclidean2D,observations::RangeBearing_2D>
+	}; // end of sensor_model<landmarks::RelativePoses2D,observations::RelativePoses_2D>
+
+	// -------------------------------------------------------------------------------------------------------------
+
+	/** Sensor model: 3D relative poses landmarks and observations (relative 3D-graph SLAM) */
+	template <>
+	struct sensor_model<landmarks::RelativePoses3D,observations::RelativePoses_3D>
+	{
+		// --------------------------------------------------------------------------------
+		// Typedefs for the sake of generality in the signature of methods below:
+		//   *DONT FORGET* to change these when writing new sensor models.
+		// --------------------------------------------------------------------------------
+		typedef observations::RelativePoses_3D  OBS_T;  
+		typedef landmarks::RelativePoses3D      LANDMARK_T;
+		// --------------------------------------------------------------------------------
+
+		static const size_t OBS_DIMS = OBS_T::OBS_DIMS;
+		static const size_t LM_DIMS  = LANDMARK_T::LM_DIMS;
+		
+		typedef Eigen::Matrix<double,OBS_DIMS,LM_DIMS>  TJacobian_dh_dx;     //!< A Jacobian of the correct size for each dh_dx
+		typedef landmark_traits<LANDMARK_T>::array_landmark_t    array_landmark_t;             //!< a 2D or 3D point
+		typedef OBS_T::TObservationParams               TObservationParams;
+
+
+		/** Executes the (negative) observation-error model: "-( h(lm_pos,pose) - z_obs)" 
+		  * \param[out] out_obs_err The output of the predicted sensor value
+		  * \param[in] z_obs The real observation, to be contrasted to the prediction of this sensor model
+		  * \param[in] base_pose_wrt_observer The relative pose of the observed landmark's base KF, wrt to the current sensor pose (which may be different than the observer KF pose if the sensor is not at the "robot origin").
+		  * \param[in] lm_pos The relative landmark position wrt its base KF.
+		  * \param[in] params The sensor-specific parameters.
+		  */
+		template <class POSE_T>
+		static void observe_error(
+			observation_traits<OBS_T>::array_obs_t              & out_obs_err, 
+			const observation_traits<OBS_T>::array_obs_t        & z_obs, 
+			const POSE_T                                        & base_pose_wrt_observer,
+			const landmark_traits<LANDMARK_T>::array_landmark_t & lm_pos,
+			const OBS_T::TObservationParams                     & params)
+		{
+			// Relative pose observation: 
+			//  OUT_OBS_ERR = - pseudo-log( PREDICTED_REL_POSE \ominus Z_OBS )
+			const POSE_T h = POSE_T(z_obs[0],z_obs[1],z_obs[2],z_obs[3],z_obs[4],z_obs[5]) - base_pose_wrt_observer;
+
+			mrpt::poses::SE_traits<3>::pseudo_ln(h,out_obs_err);
+		}
+
+		/** Evaluates the partial Jacobian dh_dx:
+		  * \code
+		  *            d h(x')
+		  * dh_dx = -------------
+		  *             d x' 
+		  *
+		  * \endcode
+		  *  With: 
+		  *    - x' = x^{j,i}_l  The relative location of the observed landmark wrt to the robot/camera at the instant of observation. (See notation on papers)
+		  *    - h(x): Observation model: h(): landmark location --> observation
+		  * 
+		  * \param[out] dh_dx The output matrix Jacobian. Values at input are undefined (i.e. they cannot be asssumed to be zeros by default).
+		  * \param[in]  xji_l The relative location of the observed landmark wrt to the robot/camera at the instant of observation.
+		  * \param[in] sensor_params Sensor-specific parameters, as set by the user.
+		  *
+		  * \return true if the Jacobian is well-defined, false to mark it as ill-defined and ignore it during this step of the optimization
+		  */
+		static bool eval_jacob_dh_dx(
+			TJacobian_dh_dx          & dh_dx,
+			const array_landmark_t   & xji_l, 
+			const TObservationParams & sensor_params)
+		{
+			// h(z_obs \ominus p) = pseudo-log(z_obs \ominus  p)
+			// with p: relative pose in SE(3)
+			// See derivation in papers/reports:
+			const mrpt::poses::CPose3D p(xji_l[0],xji_l[1],xji_l[2],xji_l[3],xji_l[4],xji_l[5]);
+			mrpt::math::CMatrixFixedNumeric<double,3,9> dhrot_dprot;
+			mrpt::poses::CPose3D::ln_rot_jacob(p.getRotationMatrix(), dhrot_dprot);
+			
+			dh_dx.setZero();
+			dh_dx.block<3,3>(0,9).setIdentity();  // dhxyz_dpxyz;
+			dh_dx.block<3,9>(3,0) = dhrot_dprot;
+			return true;
+		}
+
+		/** Inverse observation model for first-seen landmarks. Needed to avoid having landmarks at (0,0,0) which 
+		  *  leads to undefined Jacobians. This is invoked only when both "unknown_relative_position_init_val" and "is_fixed" are "false" 
+		  *  in an observation. 
+		  * The LM location must not be exact at all, just make sure it doesn't have an undefined Jacobian.
+		  *
+		  * \param[out] out_lm_pos The relative landmark position wrt the current observing KF.
+		  * \param[in]  obs The observation itself.
+		  * \param[in]   params The sensor-specific parameters.
+		  */
+		static void inverse_sensor_model(
+			landmark_traits<LANDMARK_T>::array_landmark_t & out_lm_pos,
+			const observation_traits<OBS_T>::obs_data_t   & obs, 
+			const OBS_T::TObservationParams               & params)
+		{
+			out_lm_pos[0] = obs.x;   out_lm_pos[1] = obs.y;     out_lm_pos[2] = obs.z;
+			out_lm_pos[3] = obs.yaw; out_lm_pos[4] = obs.pitch; out_lm_pos[5] = obs.roll; 
+		}
+
+	};  // end of struct sensor_model<landmarks::RelativePoses3D,observations::RelativePoses_3D>
 
 	// -------------------------------------------------------------------------------------------------------------
 

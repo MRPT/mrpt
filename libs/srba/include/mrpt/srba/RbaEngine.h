@@ -19,6 +19,7 @@
 
 #include "srba_types.h"
 #include "srba_options.h"
+#include "landmark_jacob_families.h"
 
 #define VERBOSE_LEVEL(_LEVEL) if (m_verbose_level>=_LEVEL) std::cout
 
@@ -585,6 +586,32 @@ namespace srba
 			std::vector<typename TSparseBlocksJacobians_dh_dAp::col_t*> &lst_JacobCols_dAp,
 			std::vector<typename TSparseBlocksJacobians_dh_df::col_t*>  &lst_JacobCols_df,
 			std::vector<const pose_flag_t*>    * out_list_of_required_num_poses = NULL );
+
+	protected:
+		/** Auxiliary template for evaluating the dh_df part in \a recompute_all_Jacobians() */
+		template <landmark_jacob_family_t LM_JACOB_FAMILY>
+		struct recompute_all_Jacobians_dh_df;
+
+		// Specialization for "normal SLAM" (SLAM with real landmarks)
+		template <> struct recompute_all_Jacobians_dh_df<jacob_point_landmark> {
+			static size_t eval(
+				std::vector<typename TSparseBlocksJacobians_dh_df::col_t*>  &lst_JacobCols_df,
+				std::vector<const typename kf2kf_pose_traits<KF2KF_POSE_TYPE>::pose_flag_t*>    * out_list_of_required_num_poses );
+		};
+
+		// Specialization for relative graph-SLAM (no real landmarks)
+		template <> struct recompute_all_Jacobians_dh_df<jacob_relpose_landmark> {
+			static size_t eval(
+				std::vector<typename TSparseBlocksJacobians_dh_df::col_t*>  &lst_JacobCols_df,
+				std::vector<const typename kf2kf_pose_traits<KF2KF_POSE_TYPE>::pose_flag_t*>    * out_list_of_required_num_poses ) 
+			{
+				// Nothing to do: this will never be actually called.
+				return 0;
+			}
+		};
+
+
+	public:
 
 		/** Private aux structure for BFS searches. */
 		struct TBFSEntryEdges
