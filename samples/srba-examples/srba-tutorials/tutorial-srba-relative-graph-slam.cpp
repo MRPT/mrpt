@@ -7,8 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#define SRBA_SOLVE_USING_SCHUR_COMPLEMENT 1
-#define SRBA_USE_DENSE_CHOLESKY 0
+//#define SRBA_DETAILED_TIME_PROFILING   1
 
 #include <mrpt/srba.h>
 #include <mrpt/random.h>
