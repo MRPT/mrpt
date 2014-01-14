@@ -98,7 +98,9 @@ TCaptureOptions_FlyCapture2::TCaptureOptions_FlyCapture2() :
 	strobe_source(0),
 	strobe_polarity(0),
 	strobe_delay(0.0f),
-	strobe_duration(1.0f)
+	strobe_duration(1.0f),
+	shutter_auto(true),
+	shutter_time_ms(4.0f)
 {
 	memset(camera_guid,0,4*sizeof(camera_guid[0]));
 }
@@ -138,6 +140,9 @@ void TCaptureOptions_FlyCapture2::loadOptionsFrom(
 	strobe_polarity = cfg.read_int(sect, prefix+string("strobe_polarity"), strobe_polarity);
 	strobe_delay = cfg.read_float(sect, prefix+string("strobe_delay"), strobe_delay);
 	strobe_duration = cfg.read_float(sect, prefix+string("strobe_duration"), strobe_duration);
+
+	shutter_auto = cfg.read_bool(sect, prefix+string("shutter_auto"), shutter_auto);
+	shutter_time_ms = cfg.read_float(sect, prefix+string("shutter_time_ms"), shutter_time_ms);
 }
 
 
@@ -151,7 +156,6 @@ CImageGrabber_FlyCapture2::CImageGrabber_FlyCapture2() :
 #if MRPT_HAS_FLYCAPTURE2
 	m_img_buffer = new FlyCapture2::Image();
 #endif
-	m_last_img.timestamp = INVALID_TIMESTAMP;
 }
 
 /** Constructor + open */
@@ -163,7 +167,6 @@ CImageGrabber_FlyCapture2::CImageGrabber_FlyCapture2( const TCaptureOptions_FlyC
 #if MRPT_HAS_FLYCAPTURE2
 	m_img_buffer = new FlyCapture2::Image();
 #endif
-	m_last_img.timestamp = INVALID_TIMESTAMP;
 	this->open(options);
 }
 
@@ -340,11 +343,12 @@ void CImageGrabber_FlyCapture2::open( const TCaptureOptions_FlyCapture2 &options
     {
 		FlyCapture2::Property p;
 		p.type = FlyCapture2::SHUTTER;
-		p.autoManualMode = true; // true=auto
-	    //p.absControl = true;
-	    //p.absValue = Shutter;
+		p.autoManualMode = m_options.shutter_auto; // true=auto
+	    p.absControl = true;
+		p.absValue = m_options.shutter_time_ms;
 	    //p.onOff = false;
 		error = FC2_CAM->SetProperty (&p);
+		CHECK_FC2_ERROR(error)
 	}
 
     {
@@ -380,23 +384,13 @@ void CImageGrabber_FlyCapture2::open( const TCaptureOptions_FlyCapture2 &options
 #endif
 }
 
-#if MRPT_HAS_FLYCAPTURE2
-void my_img_callback( Image* pImage, const void* pCallbackData )
-{
-	CImageGrabber_FlyCapture2 *obj = (CImageGrabber_FlyCapture2*)pCallbackData;
-	obj->internal_setNewImage(pImage);
-}
-
-
-#endif
-
 /** Start the actual image capture of the camera. Must be called after open(), only when "startCapture" was set to false. */
 void CImageGrabber_FlyCapture2::startCapture()
 {
 #if MRPT_HAS_FLYCAPTURE2
 	if (!m_camera) { THROW_EXCEPTION("Camera is not opened. Call open() first.") }
 	
-	FlyCapture2::Error error = FC2_CAM->StartCapture( my_img_callback, this);
+	FlyCapture2::Error error = FC2_CAM->StartCapture(); 
 	CHECK_FC2_ERROR(error)
 
 #else
@@ -469,7 +463,6 @@ void CImageGrabber_FlyCapture2::close()
 
 	m_camera=NULL;
 	m_camera_info=NULL;
-	m_last_img.timestamp = INVALID_TIMESTAMP;
 
 #else
 	THROW_EXCEPTION("MRPT compiled without support for FlyCapture2")
@@ -502,24 +495,34 @@ bool CImageGrabber_FlyCapture2::getObservation( mrpt::slam::CObservationImage &o
 
 	try
 	{
-		//FlyCapture2::Error error;
-		//FlyCapture2::Image image;
-		//error = FC2_CAM->RetrieveBuffer( &image );
-		//CHECK_FC2_ERROR(error)
+		FlyCapture2::Error error;
+		FlyCapture2::Image image;
+		error = FC2_CAM->RetrieveBuffer( &image );
+		CHECK_FC2_ERROR(error)
 
-		MRPT_TODO("Timeout")
+		FlyCapture2::TimeStamp timestamp = image.GetTimeStamp();
 
-		while (1)
-		{
-			if (m_last_img.timestamp != INVALID_TIMESTAMP)
-			{
-				out_observation.image.copyFastFrom(m_last_img.image);
-				out_observation.timestamp = m_last_img.timestamp;
-				m_last_img.timestamp = INVALID_TIMESTAMP;
-				break;
-			}
-			else mrpt::system::sleep(1);
-		}
+		// White balance, etc.
+		//FlyCapture2::ImageMetadata imd = image.GetMetadata();
+
+		// Determine if it's B/W or color:
+		FlyCapture2::PixelFormat pf = image.GetPixelFormat();
+		const bool is_color = 
+			pf==PIXEL_FORMAT_RGB8 || pf==PIXEL_FORMAT_RGB16 || pf==PIXEL_FORMAT_S_RGB16 || 
+			pf==PIXEL_FORMAT_RAW8 || pf==PIXEL_FORMAT_RAW16 || pf==PIXEL_FORMAT_RAW12 || 
+			pf==PIXEL_FORMAT_BGR || pf==PIXEL_FORMAT_BGRU || pf==PIXEL_FORMAT_RGBU || 
+			pf==PIXEL_FORMAT_BGR16 || pf==PIXEL_FORMAT_BGRU16 || pf==PIXEL_FORMAT_422YUV8_JPEG;
+		
+		// Decode image:
+		error = image.Convert(is_color ? PIXEL_FORMAT_BGR : PIXEL_FORMAT_MONO8, FC2_BUF_IMG);
+		CHECK_FC2_ERROR(error)
+
+		// Convert PGR FlyCapture2 image ==> OpenCV format:
+		unsigned int img_rows, img_cols, img_stride;
+		FC2_BUF_IMG->GetDimensions( &img_rows, &img_cols, &img_stride);
+
+		out_observation.image.loadFromMemoryBuffer(img_cols,img_rows, is_color, FC2_BUF_IMG->GetData() );
+		out_observation.timestamp = mrpt::utils::time_tToTimestamp( timestamp.seconds + 1e-6*timestamp.microSeconds );
 
 		return true;
 	}
@@ -533,40 +536,3 @@ bool CImageGrabber_FlyCapture2::getObservation( mrpt::slam::CObservationImage &o
 #endif
 }
 
-
-void CImageGrabber_FlyCapture2::internal_setNewImage(void*img) // img is an opaque pointer to "FlyCapture::Image"
-{
-#if MRPT_HAS_FLYCAPTURE2
-	const FlyCapture2::Image &image = *reinterpret_cast<FlyCapture2::Image*>(img);
-
-	FlyCapture2::TimeStamp timestamp = image.GetTimeStamp();
-
-	// White balance, etc.
-	//FlyCapture2::ImageMetadata imd = image.GetMetadata();
-
-	// Determine if it's B/W or color:
-	FlyCapture2::PixelFormat pf = image.GetPixelFormat();
-
-	const bool is_color = 
-		pf==PIXEL_FORMAT_RGB8 || pf==PIXEL_FORMAT_RGB16 || pf==PIXEL_FORMAT_S_RGB16 || 
-		pf==PIXEL_FORMAT_RAW8 || pf==PIXEL_FORMAT_RAW16 || pf==PIXEL_FORMAT_RAW12 || 
-		pf==PIXEL_FORMAT_BGR || pf==PIXEL_FORMAT_BGRU || pf==PIXEL_FORMAT_RGBU || 
-		pf==PIXEL_FORMAT_BGR16 || pf==PIXEL_FORMAT_BGRU16 || pf==PIXEL_FORMAT_422YUV8_JPEG;
-		
-	// Decode image:
-	FlyCapture2::Error error = image.Convert(is_color ? PIXEL_FORMAT_BGR : PIXEL_FORMAT_MONO8, FC2_BUF_IMG);
-	CHECK_FC2_ERROR(error)
-
-	// Convert PGR FlyCapture2 image ==> OpenCV format:
-	unsigned int img_rows, img_cols, img_stride;
-	FC2_BUF_IMG->GetDimensions( &img_rows, &img_cols, &img_stride);
-
-	{
-		mrpt::synch::CCriticalSectionLocker csl(&m_last_img_cs);
-
-		m_last_img.image.loadFromMemoryBuffer(img_cols,img_rows, is_color, FC2_BUF_IMG->GetData() );
-		m_last_img.timestamp = mrpt::utils::time_tToTimestamp( timestamp.seconds + 1e-6*timestamp.microSeconds );
-	}
-
-#endif
-}

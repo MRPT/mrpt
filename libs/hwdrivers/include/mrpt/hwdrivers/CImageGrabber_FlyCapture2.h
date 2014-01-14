@@ -46,6 +46,9 @@ namespace mrpt
 			unsigned int strobe_polarity;   //!< (default=0)  Refer to PGR docs.
 			float        strobe_delay;      //!< (default=0.0) Delay in ms. Refer to PGR docs.
 			float        strobe_duration;   //!< (default=1.0) Pulse durationin ms. Refer to PGR docs.
+
+			bool         shutter_auto;      //!< (default=true)
+			float        shutter_time_ms;   //!< (default=4.0) Shutter time, if shutter_auto=false
 			/** @} */
 
 			/** Loads all the options from a config file. 
@@ -75,7 +78,11 @@ namespace mrpt
 			  * #strobe_polarity  = 0     // (default=0)  Refer to PGR docs.
 			  * #strobe_delay     = 0.0   // (default=0.0) Delay in ms. Refer to PGR docs.
 			  * #strobe_duration  = 1.0   // (default=1.0) Pulse durationin ms. Refer to PGR docs.
-			  * 
+			  *
+			  *
+			  * #shutter_auto     = false   // (default=true)
+			  * #shutter_time_ms  = 4.0     // (default=4.0) Shutter time, if shutter_auto=false
+			  *
 			  * \endcode
 			  * \note All parameter names may have an optional prefix, set with the "prefix" parameter. 
 			  *  For example, if prefix="LEFT_", the expected variable name "camera_index" in the config section will be "LEFT_camera_index", and so on.
@@ -145,14 +152,6 @@ namespace mrpt
 			/** Grab image from the camera. This method blocks until the next frame is captured.
 			 * \return false on any error. */
 			bool  getObservation( mrpt::slam::CObservationImage &out_observation );
-
-
-			void internal_setNewImage(void*img); // img is an opaque pointer to "FlyCapture::Image"
-		private:
-			mrpt::slam::CObservationImage m_last_img; //!< The timestamp will be INVALID_TIMESTAMP to signal an invalid img
-			mrpt::synch::CCriticalSection m_last_img_cs;
-
-
 
 		};	// End of class
 
