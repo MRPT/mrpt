@@ -151,6 +151,7 @@ CImageGrabber_FlyCapture2::CImageGrabber_FlyCapture2() :
 #if MRPT_HAS_FLYCAPTURE2
 	m_img_buffer = new FlyCapture2::Image();
 #endif
+	m_last_img.timestamp = INVALID_TIMESTAMP;
 }
 
 /** Constructor + open */
@@ -162,6 +163,7 @@ CImageGrabber_FlyCapture2::CImageGrabber_FlyCapture2( const TCaptureOptions_FlyC
 #if MRPT_HAS_FLYCAPTURE2
 	m_img_buffer = new FlyCapture2::Image();
 #endif
+	m_last_img.timestamp = INVALID_TIMESTAMP;
 	this->open(options);
 }
 
@@ -378,13 +380,23 @@ void CImageGrabber_FlyCapture2::open( const TCaptureOptions_FlyCapture2 &options
 #endif
 }
 
+#if MRPT_HAS_FLYCAPTURE2
+void my_img_callback( Image* pImage, const void* pCallbackData )
+{
+	CImageGrabber_FlyCapture2 *obj = (CImageGrabber_FlyCapture2*)pCallbackData;
+	obj->internal_setNewImage(pImage);
+}
+
+
+#endif
+
 /** Start the actual image capture of the camera. Must be called after open(), only when "startCapture" was set to false. */
 void CImageGrabber_FlyCapture2::startCapture()
 {
 #if MRPT_HAS_FLYCAPTURE2
 	if (!m_camera) { THROW_EXCEPTION("Camera is not opened. Call open() first.") }
 	
-	FlyCapture2::Error error = FC2_CAM->StartCapture();
+	FlyCapture2::Error error = FC2_CAM->StartCapture( my_img_callback, this);
 	CHECK_FC2_ERROR(error)
 
 #else
@@ -457,6 +469,7 @@ void CImageGrabber_FlyCapture2::close()
 
 	m_camera=NULL;
 	m_camera_info=NULL;
+	m_last_img.timestamp = INVALID_TIMESTAMP;
 
 #else
 	THROW_EXCEPTION("MRPT compiled without support for FlyCapture2")
@@ -489,37 +502,24 @@ bool CImageGrabber_FlyCapture2::getObservation( mrpt::slam::CObservationImage &o
 
 	try
 	{
-		FlyCapture2::Error error;
-		FlyCapture2::Image image;
-	
+		//FlyCapture2::Error error;
+		//FlyCapture2::Image image;
+		//error = FC2_CAM->RetrieveBuffer( &image );
+		//CHECK_FC2_ERROR(error)
 
-		error = FC2_CAM->RetrieveBuffer( &image );
-		CHECK_FC2_ERROR(error)
+		MRPT_TODO("Timeout")
 
-		FlyCapture2::TimeStamp timestamp = image.GetTimeStamp();
-		out_observation.timestamp = mrpt::utils::time_tToTimestamp( timestamp.seconds + 1e-6*timestamp.microSeconds );
-
-		// White balance, etc.
-		//FlyCapture2::ImageMetadata imd = image.GetMetadata();
-
-		// Determine if it's B/W or color:
-		FlyCapture2::PixelFormat pf = image.GetPixelFormat();
-
-		const bool is_color = 
-			pf==PIXEL_FORMAT_RGB8 || pf==PIXEL_FORMAT_RGB16 || pf==PIXEL_FORMAT_S_RGB16 || 
-			pf==PIXEL_FORMAT_RAW8 || pf==PIXEL_FORMAT_RAW16 || pf==PIXEL_FORMAT_RAW12 || 
-			pf==PIXEL_FORMAT_BGR || pf==PIXEL_FORMAT_BGRU || pf==PIXEL_FORMAT_RGBU || 
-			pf==PIXEL_FORMAT_BGR16 || pf==PIXEL_FORMAT_BGRU16 || pf==PIXEL_FORMAT_422YUV8_JPEG;
-		
-		// Decode image:
-		error = image.Convert(is_color ? PIXEL_FORMAT_BGR : PIXEL_FORMAT_MONO8, FC2_BUF_IMG);
-		CHECK_FC2_ERROR(error)
-
-		// Convert PGR FlyCapture2 image ==> OpenCV format:
-		unsigned int img_rows, img_cols, img_stride;
-		FC2_BUF_IMG->GetDimensions( &img_rows, &img_cols, &img_stride);
-
-		out_observation.image.loadFromMemoryBuffer(img_cols,img_rows, is_color, FC2_BUF_IMG->GetData() );
+		while (1)
+		{
+			if (m_last_img.timestamp != INVALID_TIMESTAMP)
+			{
+				out_observation.image.copyFastFrom(m_last_img.image);
+				out_observation.timestamp = m_last_img.timestamp;
+				m_last_img.timestamp = INVALID_TIMESTAMP;
+				break;
+			}
+			else mrpt::system::sleep(1);
+		}
 
 		return true;
 	}
@@ -534,4 +534,39 @@ bool CImageGrabber_FlyCapture2::getObservation( mrpt::slam::CObservationImage &o
 }
 
 
+void CImageGrabber_FlyCapture2::internal_setNewImage(void*img) // img is an opaque pointer to "FlyCapture::Image"
+{
+#if MRPT_HAS_FLYCAPTURE2
+	const FlyCapture2::Image &image = *reinterpret_cast<FlyCapture2::Image*>(img);
 
+	FlyCapture2::TimeStamp timestamp = image.GetTimeStamp();
+
+	// White balance, etc.
+	//FlyCapture2::ImageMetadata imd = image.GetMetadata();
+
+	// Determine if it's B/W or color:
+	FlyCapture2::PixelFormat pf = image.GetPixelFormat();
+
+	const bool is_color = 
+		pf==PIXEL_FORMAT_RGB8 || pf==PIXEL_FORMAT_RGB16 || pf==PIXEL_FORMAT_S_RGB16 || 
+		pf==PIXEL_FORMAT_RAW8 || pf==PIXEL_FORMAT_RAW16 || pf==PIXEL_FORMAT_RAW12 || 
+		pf==PIXEL_FORMAT_BGR || pf==PIXEL_FORMAT_BGRU || pf==PIXEL_FORMAT_RGBU || 
+		pf==PIXEL_FORMAT_BGR16 || pf==PIXEL_FORMAT_BGRU16 || pf==PIXEL_FORMAT_422YUV8_JPEG;
+		
+	// Decode image:
+	FlyCapture2::Error error = image.Convert(is_color ? PIXEL_FORMAT_BGR : PIXEL_FORMAT_MONO8, FC2_BUF_IMG);
+	CHECK_FC2_ERROR(error)
+
+	// Convert PGR FlyCapture2 image ==> OpenCV format:
+	unsigned int img_rows, img_cols, img_stride;
+	FC2_BUF_IMG->GetDimensions( &img_rows, &img_cols, &img_stride);
+
+	{
+		mrpt::synch::CCriticalSectionLocker csl(&m_last_img_cs);
+
+		m_last_img.image.loadFromMemoryBuffer(img_cols,img_rows, is_color, FC2_BUF_IMG->GetData() );
+		m_last_img.timestamp = mrpt::utils::time_tToTimestamp( timestamp.seconds + 1e-6*timestamp.microSeconds );
+	}
+
+#endif
+}

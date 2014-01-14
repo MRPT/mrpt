@@ -147,6 +147,13 @@ namespace mrpt
 			bool  getObservation( mrpt::slam::CObservationImage &out_observation );
 
 
+			void internal_setNewImage(void*img); // img is an opaque pointer to "FlyCapture::Image"
+		private:
+			mrpt::slam::CObservationImage m_last_img; //!< The timestamp will be INVALID_TIMESTAMP to signal an invalid img
+			mrpt::synch::CCriticalSection m_last_img_cs;
+
+
+
 		};	// End of class
 
 	} // End of NS

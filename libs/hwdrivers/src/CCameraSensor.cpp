@@ -742,9 +742,9 @@ CObservationPtr CCameraSensor::getNextFrame()
 
 		bool ok1 = false, ok2=false; 
 		
-		ok1 = m_cap_flycap_stereo_l->getObservation(obsL);
+		ok1 = m_cap_flycap_stereo_r->getObservation(obsL);
 		if (ok1) 
-			ok2 = m_cap_flycap_stereo_r->getObservation(obsR);
+			ok2 = m_cap_flycap_stereo_l->getObservation(obsR);
 
 		if (!ok1 || !ok2)
 		{
@@ -755,6 +755,11 @@ CObservationPtr CCameraSensor::getNextFrame()
 		else
 		{
 			// Joint the two images as one stereo:
+			const double At = mrpt::system::timeDifference(obsL.timestamp,obsR.timestamp);
+			if (std::abs(At)>0.1) {
+				cout << "[CCamera, flycap_stereo] Warning: Too large delay between left & right images: " << At << " sec.\n";
+			}
+
 			stObs->timestamp = obsL.timestamp;
 			stObs->imageLeft.copyFastFrom(obsL.image);
 			stObs->imageRight.copyFastFrom(obsR.image);
@@ -788,7 +793,7 @@ CObservationPtr CCameraSensor::getNextFrame()
 		stObs->sensorLabel = m_sensorLabel;
 		stObs->setSensorPose( m_sensorPose );
 	}
-	else {
+	else { 
 		obs3D->sensorLabel = m_sensorLabel;
 		obs3D->setSensorPose( m_sensorPose );
 	}
