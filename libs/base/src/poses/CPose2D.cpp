@@ -374,6 +374,5 @@ void CPose2D::fromString(const std::string &s)
 
 double CPose2D::distance2DFrobeniusTo( const CPose2D & p) const
 {
-     return std::sqrt(square(p.x()-(*this).x())+square(p.y()-(*this).y())+4*(1-cos(p.phi()-(*this).phi())));
-}  //aphi or phi should be wrap2pi?
-
+     return std::sqrt(square(p.x()-x())+square(p.y()-y())+4*(1-cos(p.phi()-phi())));
+}
