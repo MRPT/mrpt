@@ -371,3 +371,9 @@ void CPose2D::fromString(const std::string &s)
 	y( m.get_unsafe(0,1) );
 	phi( DEG2RAD(m.get_unsafe(0,2)) );
 }
+
+double CPose2D::distance2DFrobeniusTo( const CPose2D & p) const
+{
+     return std::sqrt(square(p.x()-(*this).x())+square(p.y()-(*this).y())+4*(1-cos(p.phi()-(*this).phi())));
+}  //aphi or phi should be wrap2pi?
+

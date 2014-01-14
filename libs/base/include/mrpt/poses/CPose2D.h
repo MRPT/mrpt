@@ -211,6 +211,9 @@ namespace poses
 		/** makes: this = p (+) this */
 		inline void  changeCoordinatesReference( const CPose2D & p ) { composeFrom(p,CPose2D(*this)); }
 
+		/** Returns the 2D distance from this pose/point to a 2D pose using the Frobenius distance. */
+		double distance2DFrobeniusTo( const CPose2D & p) const;
+
 		typedef CPose2D  type_value; //!< Used to emulate CPosePDF types, for example, in mrpt::graphs::CNetworkOfPoses
 		enum { is_3D_val = 0 };
 		static inline bool is_3D() { return is_3D_val!=0; }
