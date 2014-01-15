@@ -60,6 +60,8 @@ void CDifodoDatasets::loadConfiguration(const utils::CConfigFileBase &ini )
 	f_gt.getline(aux, 100);
 	f_gt.getline(aux, 100);
 	f_gt >> last_groundtruth;
+	f_gt >> last_gt_data[0]; f_gt >> last_gt_data[1]; f_gt >> last_gt_data[2];
+	f_gt >> last_gt_data[3]; f_gt >> last_gt_data[4]; f_gt >> last_gt_data[5]; f_gt >> last_gt_data[6];
 	last_groundtruth_ok = 1;
 
 	//			Resize Matrices and adjust parameters
