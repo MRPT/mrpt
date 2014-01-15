@@ -11,6 +11,7 @@
 
 #include <mrpt/utils.h>
 #include <mrpt/system/filesystem.h>
+#include <typeinfo>  // For typeid()
 
 using namespace mrpt;
 using namespace mrpt::poses;

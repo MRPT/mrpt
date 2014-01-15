@@ -8,7 +8,7 @@
    +---------------------------------------------------------------------------+ */
 
 #include <mrpt/reactivenav.h>  // Precomp header
-
+#include <typeinfo>  // For typeid()
 
 using namespace mrpt;
 using namespace mrpt::poses;
