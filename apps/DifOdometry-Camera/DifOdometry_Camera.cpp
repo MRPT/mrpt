@@ -74,7 +74,7 @@ bool CDifodoCamera::openCamera()
 
 	rc = openni::OpenNI::initialize();
 
-	printf("After initialization:\n %s\n", openni::OpenNI::getExtendedError());
+	printf("Initialization:\n %s\n", openni::OpenNI::getExtendedError());
 	rc = device.open(deviceURI);
 	if (rc != openni::STATUS_OK)
 	{
@@ -111,6 +111,7 @@ bool CDifodoCamera::openCamera()
 
 	//Display video modes
 	openni::VideoMode vm;
+	printf("Camera depth modes are listed:\n");
 	for(int i=0; i<depth_ch.getSensorInfo().getSupportedVideoModes().getSize(); i++)
 	{
 		vm = depth_ch.getSensorInfo().getSupportedVideoModes()[i];

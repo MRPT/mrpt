@@ -29,7 +29,7 @@ const char *default_cfg_txt =
 	"cols = 80 \n\n"
 
 	";Absolute path of the rawlog file \n"
-	"filename = C:/.../rgbd_dataset_freiburg1_desk.rawlog\n";
+	"filename = C:/.../file.rawlog \n";
 
 
 // ------------------------------------------------------
@@ -148,14 +148,14 @@ int main(int num_arg, char *argv[])
 				break;
 			
 			//Close the program
-			case 'p':
+			case 'e':
 				stop = 1;
 				if (odo.f_res.is_open())
 					odo.f_res.close();
 				break;
 
 			//Show statistics
-			case 'e':
+			case 't':
 				odo.showStatistics();
 				break;
 

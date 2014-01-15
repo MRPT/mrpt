@@ -349,25 +349,49 @@ void CDifodoDatasets::loadFrame()
 	double timestamp_gt;
 	double timestamp_obs = timestampTotime_t(obs3D->timestamp);
 
+	//Exit if there is no ground truth at this time
+	if (last_groundtruth > timestamp_obs)
+	{
+		groundtruth_ok = 0;
+		obs3D->unload();
+		rawlog_count++; 
+		return;
+	}
+
 	//Search the corresponding groundtruth data and interpolate
+	bool new_data = 0;
 	last_groundtruth_ok = groundtruth_ok;
 	while (last_groundtruth < timestamp_obs - 0.01)
 	{
 		f_gt.ignore(100,'\n');
 		f_gt >> timestamp_gt;
 		last_groundtruth = timestamp_gt;
+		new_data = 1;
 	}
 
 	//Read the inmediatly previous groundtruth
 	double x0,y0,z0,qx0,qy0,qz0,w0,t0;
-	f_gt >> x0; f_gt >> y0; f_gt >> z0;
-	f_gt >> qx0; f_gt >> qy0; f_gt >> qz0; f_gt >> w0;
+	if (new_data == 1)
+	{
+		f_gt >> x0; f_gt >> y0; f_gt >> z0;
+		f_gt >> qx0; f_gt >> qy0; f_gt >> qz0; f_gt >> w0;
+	}
+	else
+	{
+		x0 = last_gt_data[0]; y0 = last_gt_data[1]; z0 = last_gt_data[2];
+		qx0 = last_gt_data[3]; qy0 = last_gt_data[4]; qz0 = last_gt_data[5]; w0 = last_gt_data[6];
+	}
+
 	t0 = last_groundtruth;
 
 	//Read the inmediatly posterior groundtruth
-	f_gt.ignore(2,'\n');
+	f_gt.ignore(10,'\n');
 	f_gt >> timestamp_gt;
 	last_groundtruth = timestamp_gt;
+
+	//last_gt_data = [x y z qx qy qz w]
+	f_gt >> last_gt_data[0]; f_gt >> last_gt_data[1]; f_gt >> last_gt_data[2];
+	f_gt >> last_gt_data[3]; f_gt >> last_gt_data[4]; f_gt >> last_gt_data[5]; f_gt >> last_gt_data[6];
 
 	if (last_groundtruth - timestamp_obs > 0.01)
 	{
@@ -378,29 +402,24 @@ void CDifodoDatasets::loadFrame()
 		gt_oldpose = gt_pose;
 
 		//Update pose
-		double x1,y1,z1,qx1,qy1,qz1,w1,t1;
-		f_gt >> x1; f_gt >> y1; f_gt >> z1;
-		f_gt >> qx1; f_gt >> qy1; f_gt >> qz1; f_gt >> w1;
-		t1 = last_groundtruth;
-
 		const float incr_t0 = timestamp_obs - t0;
-		const float incr_t1 = t1 - timestamp_obs;
+		const float incr_t1 = last_groundtruth - timestamp_obs;
 		const float incr_t = incr_t0 + incr_t1;
 
 		//Sometimes the quaternion sign changes in the groundtruth
-		if (abs(qx0 + qx1) + abs(qy0 + qy1) + abs(qz0 + qz1) + abs(w0 + w1) < 0.05)
+		if (abs(qx0 + last_gt_data[3]) + abs(qy0 + last_gt_data[4]) + abs(qz0 + last_gt_data[5]) + abs(w0 + last_gt_data[6]) < 0.05)
 		{
 			qx0 = -qx0; qy0 = -qy0; qz0 = -qz0; w0 = -w0;
 		}
 
 		double x,y,z,qx,qy,qz,w;
-		x = (incr_t0*x1 + incr_t1*x0)/(incr_t);
-		y = (incr_t0*y1 + incr_t1*y0)/(incr_t);
-		z = (incr_t0*z1 + incr_t1*z0)/(incr_t);
-		qx = (incr_t0*qx1 + incr_t1*qx0)/(incr_t);
-		qy = (incr_t0*qy1 + incr_t1*qy0)/(incr_t);
-		qz = (incr_t0*qz1 + incr_t1*qz0)/(incr_t);
-		w = (incr_t0*w1 + incr_t1*w0)/(incr_t);
+		x = (incr_t0*last_gt_data[0] + incr_t1*x0)/(incr_t);
+		y = (incr_t0*last_gt_data[1] + incr_t1*y0)/(incr_t);
+		z = (incr_t0*last_gt_data[2] + incr_t1*z0)/(incr_t);
+		qx = (incr_t0*last_gt_data[3] + incr_t1*qx0)/(incr_t);
+		qy = (incr_t0*last_gt_data[4] + incr_t1*qy0)/(incr_t);	
+		qz = (incr_t0*last_gt_data[5] + incr_t1*qz0)/(incr_t);
+		w = (incr_t0*last_gt_data[6] + incr_t1*w0)/(incr_t);
 
 
 		CMatrixDouble33 mat;

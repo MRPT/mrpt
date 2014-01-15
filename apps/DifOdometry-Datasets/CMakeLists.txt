@@ -17,7 +17,7 @@ PROJECT(DifOdometry-Datasets)
 # Define the executable target:
 ADD_EXECUTABLE(DifOdometry-Datasets
                DifOdometry_Datasets_main.cpp
-			   Difodometry_Datasets.cpp
+			   DifOdometry_Datasets.cpp
 			   DifOdometry_Datasets.h)
 
 SET(TMP_TARGET_NAME "DifOdometry-Datasets")

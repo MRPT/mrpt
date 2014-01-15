@@ -17,7 +17,7 @@ PROJECT(DifOdometry-Camera)
 # Define the executable target:
 ADD_EXECUTABLE(DifOdometry-Camera
                DifOdometry_Camera_main.cpp
-			   Difodometry_Camera.cpp
+			   DifOdometry_Camera.cpp
 			   DifOdometry_Camera.h)
 
 SET(TMP_TARGET_NAME "DifOdometry-Camera")

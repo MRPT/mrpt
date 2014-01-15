@@ -90,6 +90,7 @@ private:
 
 	unsigned int num_iter;		//!< Iteration count		
 	double last_groundtruth;	//!< Timestamp of the last groundtruth read
+	double last_gt_data[7];		//!< Last ground truth read (x y z qx qy qz w)
 
 	/** Saves the following data for each observation (distance in meters and angles in radians):
 	  * timestamp of the groundtruth(s) - relative error (vx vy vz local_yaw local_pitch local_roll) - ...
