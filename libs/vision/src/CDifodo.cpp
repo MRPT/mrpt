@@ -407,7 +407,6 @@ void CDifodo::OdometryCalculation()
 	else						{kai_solver.assign(0);}
 
 	execution_time = 1000*clock.Tac();
-	cout << endl << "Difodo execution time(ms): " << execution_time;
 }
 
 
@@ -416,6 +415,9 @@ void CDifodo::filterSpeedAndPoseUpdate()
 	//-------------------------------------------------------------------------
 	//								Filter speed
 	//-------------------------------------------------------------------------	
+
+	utils::CTicTac clock;
+	clock.Tic();
 
 	//				Calculate Eigenvalues and Eigenvectors
 	//----------------------------------------------------------------------------
@@ -494,6 +496,8 @@ void CDifodo::filterSpeedAndPoseUpdate()
 	cam_pose.y_incr(v_abs_fil(1,0)/fps);
 	cam_pose.y_incr(v_abs_fil(2,0)/fps);
 	cam_pose.setYawPitchRoll(yaw + w_euler_d(0,0)/fps, pitch + w_euler_d(1,0)/fps, roll + w_euler_d(2,0)/fps);
+
+	execution_time += 1000*clock.Tac();
 }
 
 

@@ -387,7 +387,8 @@ void CDifodoCamera::filterSpeedAndPoseUpdate()
 	//								Filter speed
 	//-------------------------------------------------------------------------
 
-	//Una matriz de covarianzas es siempre diagonalizable porque es simétrica y sus elementos son reales.
+	utils::CTicTac clock;
+	clock.Tic();
 
 	//		Calculate Eigenvalues and Eigenvectors
 	//----------------------------------------------------------
@@ -469,6 +470,8 @@ void CDifodoCamera::filterSpeedAndPoseUpdate()
 	cam_pose.y_incr(v_abs_fil(1,0)/fps);
 	cam_pose.z_incr(v_abs_fil(2,0)/fps);
 	cam_pose.setYawPitchRoll(yaw + w_euler_d(0,0)/fps, pitch + w_euler_d(1,0)/fps, roll + w_euler_d(2,0)/fps);
+
+	execution_time += 1000*clock.Tac();
 
 	if (save_results == 1)
 		writeToLogFile();

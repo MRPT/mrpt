@@ -135,6 +135,7 @@ int main(int num_arg, char *argv[])
 				odo.loadFrame();
 				odo.OdometryCalculation();
 				odo.filterSpeedAndPoseUpdate();
+				cout << endl << "Difodo execution time(ms): " << odo.execution_time;
 				odo.updateScene();
 
 				break;
@@ -169,6 +170,7 @@ int main(int num_arg, char *argv[])
 				odo.loadFrame();
 				odo.OdometryCalculation();
 				odo.filterSpeedAndPoseUpdate();
+				cout << endl << "Difodo execution time(ms): " << odo.execution_time;
 				odo.updateScene();
 			}
 		}
