@@ -336,7 +336,7 @@ namespace detail
 			float  minDistSqrBetweenLaserPoints = square( obj.insertionOptions.minDistBetweenLaserPoints );
 
 			// If the user doesn't want a minimum distance:
-			if (obj.insertionOptions.minDistBetweenLaserPoints<0)
+			if (obj.insertionOptions.minDistBetweenLaserPoints<=0)
 				minDistSqrBetweenLaserPoints = -1;
 
 			// ----------------------------------------------------------------
