@@ -352,7 +352,7 @@ namespace detail
 			for (size_t i=0;i<sizeRangeScan;i++)
 			{
 				// Valid point?
-				if ( rangeScan.points3D_x[i]!=0 || rangeScan.points3D_y[i]!=0 || rangeScan.points3D_z[i]!=0 )
+				if ( rangeScan.points3D_x[i]!=0 || rangeScan.points3D_y[i]!=0 || rangeScan.points3D_z[i]!=0 || obj.insertionOptions.noInvalidPoints)
 				{
 					lric.scan_x = rangeScan.points3D_x[i];
 					lric.scan_y = rangeScan.points3D_y[i];
