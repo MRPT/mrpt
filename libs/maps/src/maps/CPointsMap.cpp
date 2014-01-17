@@ -612,7 +612,8 @@ CPointsMap::TInsertionOptions::TInsertionOptions() :
 	fuseWithExisting			( false),
 	isPlanarMap					( false),
 	horizontalTolerance			( DEG2RAD(0.05) ),
-	maxDistForInterpolatePoints	( 2.0f )
+	maxDistForInterpolatePoints	( 2.0f ),
+	insertInvalidPoints				( false)
 {
 }
 
@@ -664,6 +665,8 @@ void  CPointsMap::TInsertionOptions::dumpToTextStream(CStream	&out) const
 	LOADABLEOPTS_DUMP_VAR(fuseWithExisting,bool);
 	LOADABLEOPTS_DUMP_VAR(isPlanarMap,bool);
 
+	LOADABLEOPTS_DUMP_VAR(insertInvalidPoints,bool);
+
 	out.printf("\n");
 }
 
@@ -693,6 +696,8 @@ void  CPointsMap::TInsertionOptions::loadFromConfigFile(
 	MRPT_LOAD_CONFIG_VAR(isPlanarMap,			bool,  iniFile,section);
 
 	MRPT_LOAD_CONFIG_VAR(maxDistForInterpolatePoints,	float, iniFile,section);
+
+	MRPT_LOAD_CONFIG_VAR(insertInvalidPoints,bool, iniFile,section);
 }
 
 void  CPointsMap::TLikelihoodOptions::loadFromConfigFile(
