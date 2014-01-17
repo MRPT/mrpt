@@ -121,7 +121,7 @@ void  CSimplePointsMap::writeToStream(CStream &out, int *version) const
 		likelihoodOptions.writeToStream(out);
 
 		// Added in version 8:
-		out << insertionOptions.horizontalTolerance;
+		out << insertionOptions.noInvalidPoints;
 	}
 }
 
