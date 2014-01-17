@@ -42,6 +42,7 @@
 			- New structures:
 				- mrpt::slam::TMatchingParams
 				- mrpt::slam::TMatchingExtraResults
+		- New options in point maps: mrpt::slam::CPointsMap::TInsertionOptions::insertInvalidPoints - [(commit)](https://github.com/jlblancoc/mrpt/pull/8)
 		- mrpt::slam::CObservationIMU now includes data fields for 3D magnetometers and altimeters. - [(commit)](http://code.google.com/p/mrpt/source/detail?r=3451)
 		- Method renamed mrpt::utils::CEnhancedMetaFile::selectVectorTextFont() to avoid shadowing mrpt::utils::CCanvas::selectTextFont()
 		- mrpt::reactivenav::CParameterizedTrajectoryGenerator: New methods:  
