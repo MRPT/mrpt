@@ -11,8 +11,6 @@
 #include <mrpt/vision.h>
 #include <mrpt/utils/CConfigFileBase.h>
 #include <mrpt/utils/CImage.h>
-#include <mrpt/slam/CRawlog.h>
-#include <mrpt/slam/CObservation3DRangeScan.h>
 #include <mrpt/opengl.h>
 #include <mrpt/gui/CDisplayWindow3D.h>
 #include <iostream>

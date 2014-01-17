@@ -55,6 +55,8 @@
 		- [mrpt-opengl]
 			- mrpt::opengl::CMeshFast, an open gl object that draws a "mesh" as a structured point cloud which is faster to render (by Mariano Jaimez Tarifa). -<a href="https://github.com/jlblancoc/mrpt/commit/9306bb4a585387d4c85b3f6e41dd2cbe5a354e80" >r9306bb4a58</a>
 			- mrpt::opengl::CVectorField2D, an opengl object that shows a 2D Vector Field (by Mariano Jaimez Tarifa). - <a href="http://code.google.com/p/mrpt/source/detail?r=3461" >r3461</a>
+		- [mrpt-vision]
+			- mrpt::vision::CDifodo, a class which implements visual odometry based on depth images and the "range flow constraint equation". (by Mariano Jaimez Tarifa)
 	- Changes in classes:
 		- Clean up and slight optimization of metric map matching API: - <a href="http://code.google.com/p/mrpt/source/detail?r=3446" >r3446</a>
 			- <b>Methods marked as deprecated: </b>
@@ -68,9 +70,14 @@
 	- Deleted classes:
 		- mrpt::utils::CEvent, which was actually unimplemented (!)
 		- mrpt::hwdrivers::CInterfaceNI845x has been deleted. It didn't offer features enough to justify a class.
+	- New apps:
+		- <a href="http://www.mrpt.org/application-difodometry-camera/" > DifOdometry-Camera</a> (By Mariano Jaimez Tarifa)
+		- <a href="http://www.mrpt.org/application-difodometry-datasets/" >DifOdometry-Datasets</a> (By Mariano Jaimez Tarifa)
 	- New examples:
 		- [MRPT]/samples/threadsPipe
 		- [MRPT]/samples/NIDAQ_test
+		- [MRPT]/openNI2_RGBD_demo (by Mariano Jaimez Tarifa)
+		- [MRPT]/openNI2_proximity_demo (by Mariano Jaimez Tarifa)
 	- Build system:
 		- Fixed compilation with clang.
 		- Fixed building against OpenCV 3.0.0 (GIT head)
