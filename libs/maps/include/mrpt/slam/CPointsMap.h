@@ -181,7 +181,7 @@ namespace slam
 			bool    isPlanarMap;                 //!< If set to true, only HORIZONTAL (in the XY plane) measurements will be inserted in the map (Default value is false, thus 3D maps are generated). \sa	horizontalTolerance
 			float   horizontalTolerance;	     //!< The tolerance in rads in pitch & roll for a laser scan to be considered horizontal, considered only when isPlanarMap=true (default=0).
 			float   maxDistForInterpolatePoints; //!< The maximum distance between two points to interpolate between them (ONLY when also_interpolate=true)
-			bool    noInvalidPoints;             //!< Points with x,y,z coordinates set to zero will also be inserted
+			bool    insertInvalidPoints;             //!< Points with x,y,z coordinates set to zero will also be inserted
 
 		 };
 

@@ -121,7 +121,7 @@ void  CSimplePointsMap::writeToStream(CStream &out, int *version) const
 		likelihoodOptions.writeToStream(out);
 
 		// Added in version 8:
-		out << insertionOptions.noInvalidPoints;
+		out << insertionOptions.insertInvalidPoints;
 	}
 }
 
@@ -214,8 +214,8 @@ void  CSimplePointsMap::readFromStream(CStream &in, int version)
 			if (version>=5) // version 5: added likelihoodOptions
 				likelihoodOptions.readFromStream(in);
 
-			if (version>=8) // version 8: added noInvalidPoints
-				in >> insertionOptions.noInvalidPoints;
+			if (version>=8) // version 8: added insertInvalidPoints
+				in >> insertionOptions.insertInvalidPoints;
 
 		} break;
 	default:
