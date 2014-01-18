@@ -98,30 +98,11 @@ void  CSimplePointsMap::writeToStream(CStream &out, int *version) const
 			out.WriteBufferFixEndianness(&x[0],n);
 			out.WriteBufferFixEndianness(&y[0],n);
 			out.WriteBufferFixEndianness(&z[0],n);
-			// This was removed in v7: WriteBufferFixEndianness(&pointWeight[0],n);
 		}
-
-		// version 2: options saved too
-		out	<< insertionOptions.minDistBetweenLaserPoints
-			<< insertionOptions.addToExistingPointsMap
-			<< insertionOptions.also_interpolate
-			<< insertionOptions.disableDeletion
-			<< insertionOptions.fuseWithExisting
-			<< insertionOptions.isPlanarMap
-			// << insertionOptions.matchStaticPointsOnly  // Removed in v6
-			<< insertionOptions.maxDistForInterpolatePoints;
-
-		// Insertion as 3D:
-		out << m_disableSaveAs3DObject;
-
-		// Added in version 3:
-		out << insertionOptions.horizontalTolerance;
-
-		// Added in version 5:
-		likelihoodOptions.writeToStream(out);
-
-		// Added in version 8:
-		out << insertionOptions.insertInvalidPoints;
+		out << m_disableSaveAs3DObject;  // Insertion as 3D:
+		
+		insertionOptions.writeToStream(out); // version 9: insert options are saved with its own method:
+		likelihoodOptions.writeToStream(out); // Added in version 5:
 	}
 }
 
@@ -134,6 +115,28 @@ void  CSimplePointsMap::readFromStream(CStream &in, int version)
 {
 	switch(version)
 	{
+	case 8:
+		{
+			mark_as_modified();
+
+			// Read the number of points:
+			uint32_t n;
+			in >> n;
+
+			x.resize(n); y.resize(n); z.resize(n);
+
+			if (n>0)
+			{
+				in.ReadBufferFixEndianness(&x[0],n);
+				in.ReadBufferFixEndianness(&y[0],n);
+				in.ReadBufferFixEndianness(&z[0],n);
+			}
+			in >> m_disableSaveAs3DObject;
+
+			insertionOptions.readFromStream(in);
+			likelihoodOptions.readFromStream(in);
+		} break;
+
 	case 0:
 	case 1:
 	case 2:

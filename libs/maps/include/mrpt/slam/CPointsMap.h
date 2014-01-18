@@ -183,6 +183,8 @@ namespace slam
 			float   maxDistForInterpolatePoints; //!< The maximum distance between two points to interpolate between them (ONLY when also_interpolate=true)
 			bool    insertInvalidPoints;             //!< Points with x,y,z coordinates set to zero will also be inserted
 
+			void writeToStream(CStream &out) const;		//!< Binary dump to stream - for usage in derived classes' serialization
+			void readFromStream(CStream &in);			//!< Binary dump to stream - for usage in derived classes' serialization
 		 };
 
 		TInsertionOptions insertionOptions; //!< The options used when inserting observations in the map

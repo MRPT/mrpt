@@ -126,7 +126,7 @@ void  CWeightedPointsMap::addFrom_classSpecific(const CPointsMap &anotherMap, co
 void  CWeightedPointsMap::writeToStream(CStream &out, int *version) const
 {
 	if (version)
-		*version = 0;
+		*version = 1;
 	else
 	{
 		uint32_t n = x.size();
@@ -142,20 +142,9 @@ void  CWeightedPointsMap::writeToStream(CStream &out, int *version) const
 			out.WriteBufferFixEndianness(&pointWeight[0],n);
 		}
 
-		// options saved too
-		out	<< insertionOptions.minDistBetweenLaserPoints
-			<< insertionOptions.addToExistingPointsMap
-			<< insertionOptions.also_interpolate
-			<< insertionOptions.disableDeletion
-			<< insertionOptions.fuseWithExisting
-			<< insertionOptions.isPlanarMap
-			<< insertionOptions.maxDistForInterpolatePoints;
-
-		// Insertion as 3D:
-		out << m_disableSaveAs3DObject;
-		out << insertionOptions.horizontalTolerance;
-
-		likelihoodOptions.writeToStream(out);
+		out << m_disableSaveAs3DObject; // Insertion as 3D
+		insertionOptions.writeToStream(out); // version 9: insert options are saved with its own method
+		likelihoodOptions.writeToStream(out); // Added in version 5
 	}
 }
 
@@ -169,6 +158,7 @@ void  CWeightedPointsMap::readFromStream(CStream &in, int version)
 	switch(version)
 	{
 	case 0:
+	case 1:
 		{
 			mark_as_modified();
 
@@ -190,18 +180,26 @@ void  CWeightedPointsMap::readFromStream(CStream &in, int version)
 				in.ReadBufferFixEndianness(&pointWeight[0],n);
 			}
 
-			in 	>> insertionOptions.minDistBetweenLaserPoints
-				>> insertionOptions.addToExistingPointsMap
-				>> insertionOptions.also_interpolate
-				>> insertionOptions.disableDeletion
-				>> insertionOptions.fuseWithExisting
-				>> insertionOptions.isPlanarMap
-				>> insertionOptions.maxDistForInterpolatePoints
-				>> m_disableSaveAs3DObject;
+			if (version>=1)
+			{
+				in >> m_disableSaveAs3DObject; // Insertion as 3D
+				insertionOptions.readFromStream(in); // version 9: insert options are saved with its own method
+			}
+			else
+			{
+				insertionOptions = TInsertionOptions();
+				in 	>> insertionOptions.minDistBetweenLaserPoints
+					>> insertionOptions.addToExistingPointsMap
+					>> insertionOptions.also_interpolate
+					>> insertionOptions.disableDeletion
+					>> insertionOptions.fuseWithExisting
+					>> insertionOptions.isPlanarMap
+					>> insertionOptions.maxDistForInterpolatePoints
+					>> m_disableSaveAs3DObject
+					>> insertionOptions.horizontalTolerance;
+			}
 
-			in >> insertionOptions.horizontalTolerance;
-
-			likelihoodOptions.readFromStream(in);
+			likelihoodOptions.readFromStream(in); // Added in version 5
 
 		} break;
 	default:

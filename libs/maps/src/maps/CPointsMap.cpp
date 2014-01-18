@@ -605,22 +605,53 @@ bool  CPointsMap::isEmpty() const
 				TInsertionOptions
  ---------------------------------------------------------------*/
 CPointsMap::TInsertionOptions::TInsertionOptions() :
-	minDistBetweenLaserPoints	( 0.02f),
-	addToExistingPointsMap		( true),
-	also_interpolate			( false),
-	disableDeletion				( true),
-	fuseWithExisting			( false),
-	isPlanarMap					( false),
-	horizontalTolerance			( DEG2RAD(0.05) ),
-	maxDistForInterpolatePoints	( 2.0f ),
-	insertInvalidPoints				( false)
+	minDistBetweenLaserPoints   ( 0.02f),
+	addToExistingPointsMap      ( true),
+	also_interpolate            ( false),
+	disableDeletion             ( true),
+	fuseWithExisting            ( false),
+	isPlanarMap                 ( false),
+	horizontalTolerance         ( DEG2RAD(0.05) ),
+	maxDistForInterpolatePoints ( 2.0f ),
+	insertInvalidPoints         ( false)
 {
 }
 
+// Binary dump to/read from stream - for usage in derived classes' serialization
+void CPointsMap::TInsertionOptions::writeToStream(CStream &out) const
+{
+	const int8_t version = 0;
+	out << version;
+
+	out 
+	<< minDistBetweenLaserPoints << addToExistingPointsMap << also_interpolate
+	<< disableDeletion << fuseWithExisting << isPlanarMap << horizontalTolerance
+	<< maxDistForInterpolatePoints << insertInvalidPoints; // v0
+}
+
+void CPointsMap::TInsertionOptions::readFromStream(CStream &in)
+{
+	int8_t version;
+	in >> version;
+	switch(version)
+	{
+		case 0:
+		{
+			in 
+			>> minDistBetweenLaserPoints >> addToExistingPointsMap >> also_interpolate
+			>> disableDeletion >> fuseWithExisting >> isPlanarMap >> horizontalTolerance
+			>> maxDistForInterpolatePoints >> insertInvalidPoints; // v0
+		}
+		break;
+		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
+	}
+}
+
+
 CPointsMap::TLikelihoodOptions::TLikelihoodOptions() :
-	sigma_dist			( 0.05 ),
-	max_corr_distance	( 1.0 ),
-	decimation			( 10 )
+	sigma_dist          ( 0.05 ),
+	max_corr_distance   ( 1.0 ),
+	decimation          ( 10 )
 {
 
 }
