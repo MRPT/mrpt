@@ -62,7 +62,7 @@ int main(int num_arg, char *argv[])
 		else if ( string(argv[1]) == "--create-config")
 		{
 			filename = argv[2];
-			cout << endl << "Desired config filename [e.g. 'cfg.ini']: " << filename;
+			cout << endl << "Config_file name: " << filename;
 			ofstream new_file(filename.c_str());
 			new_file << string(default_cfg_txt);
 			new_file.close();
@@ -128,7 +128,7 @@ int main(int num_arg, char *argv[])
 				if (odo.dataset.size() <= odo.rawlog_count)
 				{
 					working = 0;
-					cout << endl << "Fin de archivo.";
+					cout << endl << "End of dataset.";
 				}
 				else
 				{
@@ -165,7 +165,7 @@ int main(int num_arg, char *argv[])
 				if (odo.dataset.size() <= odo.rawlog_count)
 				{
 					working = 0;
-					cout << endl << "Fin de archivo.";
+					cout << endl << "End of dataset.";
 					if (odo.f_res.is_open())
 						odo.f_res.close();
 				}

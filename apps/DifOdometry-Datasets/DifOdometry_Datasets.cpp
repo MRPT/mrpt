@@ -30,7 +30,7 @@ void CDifodoDatasets::loadConfiguration(const utils::CConfigFileBase &ini )
 	//==================================================================
 
 	if (!dataset.loadFromRawLogFile(filename))
-		throw std::runtime_error("Couldn't open rawlog dataset file for input...");
+		throw std::runtime_error("\nCouldn't open rawlog dataset file for input...");
 
 	rawlog_count = 0;
 
@@ -43,18 +43,13 @@ void CDifodoDatasets::loadConfiguration(const utils::CConfigFileBase &ini )
 	//					Load ground_truth
 	//=========================================================
 
-	if (filename.find("\\rgbd_dataset") != string::npos)
-		filename.erase(filename.begin()+filename.find("\\rgbd_dataset"), filename.end());
-
-	else if (filename.find("/rgbd_dataset") != string::npos)
-		filename.erase(filename.begin()+filename.find("/rgbd_dataset"), filename.end());
-
-	else
-		cout << endl << "Error finding dataset files: datasets must be contained in a folder whose name must start like 'rgbd_dataset_...'";
-
+	filename = system::extractFileDirectory(filename);
 	filename.append("\\groundtruth.txt");
-
 	f_gt.open(filename);
+
+	if (f_gt.fail())
+		throw std::runtime_error("\nError finding the groundtruth file: it should be contained in the same folder than the rawlog file");
+
 
 	char aux[100];
 	f_gt.getline(aux, 100);
@@ -129,8 +124,7 @@ void CDifodoDatasets::CreateResultsFile()
 		f_res.open(aux);
 
 		printf(" Saving results to file: %s \n", aux);
-		//printf(aux);
-		//printf("\n");
+
 	}
 	catch (...)
 	{

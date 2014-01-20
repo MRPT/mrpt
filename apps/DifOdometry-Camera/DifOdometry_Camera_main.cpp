@@ -66,7 +66,7 @@ int main(int num_arg, char *argv[])
 		else if ( string(argv[1]) == "--create-config")
 		{
 			filename = argv[2];
-			cout << endl << "Nombre del archivo: " << filename;
+			cout << endl << "Config_file name: " << filename;
 			ofstream new_file(filename.c_str());
 			new_file << string(default_cfg_txt);
 			new_file.close();
@@ -163,7 +163,7 @@ int main(int num_arg, char *argv[])
 			{
 				while(main_clock.Tac() < 1.0/odo.fps);
 				if (main_clock.Tac() > 1.1/odo.fps)
-					cout << endl << "I don't have enough time to compute everything!!!";
+					cout << endl << "Not enough time to compute everything!!!";
 
 				main_clock.Tic();
 

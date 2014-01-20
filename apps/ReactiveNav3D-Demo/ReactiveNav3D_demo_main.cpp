@@ -285,7 +285,7 @@ int main(int num_arg, char *argv[])
 		else if ( string(argv[1]) == "--create-config")
 		{
 			filename = argv[2];
-			cout << endl << "Nombre del archivo: " << filename;
+			cout << endl << "Config_file name: " << filename;
 			ofstream new_file(filename.c_str());
 			new_file << string(default_cfg_txt);
 			new_file.close();
