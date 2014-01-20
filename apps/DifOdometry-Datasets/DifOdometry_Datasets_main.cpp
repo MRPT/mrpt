@@ -43,12 +43,11 @@ int main(int num_arg, char *argv[])
 	{
 		//						Read function arguments
 		//----------------------------------------------------------------------
-		bool use_config_file = 0;
+		bool use_config_file = false;
 		string filename;
 		CDifodoDatasets odo;
 
-		if (num_arg < 2);
-		else if ( string(argv[1]) == "--help")
+		if (num_arg < 2 || string(argv[1]) == "--help")
 		{
 			printf("\n\t       Arguments of the function 'main' \n");
 			printf("==============================================================\n\n");
@@ -63,7 +62,7 @@ int main(int num_arg, char *argv[])
 		else if ( string(argv[1]) == "--create-config")
 		{
 			filename = argv[2];
-			cout << endl << "Nombre del archivo: " << filename;
+			cout << endl << "Desired config filename [e.g. 'cfg.ini']: " << filename;
 			ofstream new_file(filename.c_str());
 			new_file << string(default_cfg_txt);
 			new_file.close();
@@ -77,13 +76,13 @@ int main(int num_arg, char *argv[])
 			{
 				if ( string(argv[i]) == "--save-logfile")
 				{
-					odo.save_results = 1;
+					odo.save_results = true;
 					odo.CreateResultsFile();
 				}
 
 				if ( string(argv[i]) == "--config")
 				{
-					use_config_file = 1;
+					use_config_file = true;
 					filename = argv[i+1];
 				}
 			}
@@ -92,7 +91,7 @@ int main(int num_arg, char *argv[])
 		//Initial steps. Load configuration from file or default
 		//------------------------------------------------------
 
-		if (use_config_file == 0)
+		if (!use_config_file)
 		{
 			utils::CConfigFileMemory configDifodo(default_cfg_txt);
 			odo.loadConfiguration( configDifodo );
@@ -115,7 +114,7 @@ int main(int num_arg, char *argv[])
 		odo.reset();
 
 		while (!stop)
-		{	
+		{
 
 			if (odo.window.keyHit())
 				pushed_key = odo.window.getPushedKey();
@@ -123,7 +122,7 @@ int main(int num_arg, char *argv[])
 				pushed_key = 0;
 
 			switch (pushed_key) {
-			
+
 			//Capture 1 new frame and calculate odometry
 			case  'n':
 				if (odo.dataset.size() <= odo.rawlog_count)
@@ -146,7 +145,7 @@ int main(int num_arg, char *argv[])
 			case 's':
 				working = !working;
 				break;
-			
+
 			//Close the program
 			case 'e':
 				stop = 1;
@@ -160,7 +159,7 @@ int main(int num_arg, char *argv[])
 				break;
 
 			}
-	
+
 			if (working == 1)
 			{
 				if (odo.dataset.size() <= odo.rawlog_count)

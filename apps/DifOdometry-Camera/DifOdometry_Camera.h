@@ -14,7 +14,12 @@
 #include <mrpt/opengl.h>
 #include <mrpt/gui/CDisplayWindow3D.h>
 #include <iostream>
+
+#if defined(MRPT_OS_LINUX) && !defined(linux)
+#   define linux 1   // Seems to be required by OpenNI.h
+#endif
 #include <OpenNI.h>
+
 #include "legend.xpm"
 
 
@@ -22,14 +27,14 @@
 class CDifodoCamera : public mrpt::vision::CDifodo {
 public:
 
-	mrpt::gui::CDisplayWindow3D	window;			
+	mrpt::gui::CDisplayWindow3D	window;
 	std::ofstream		f_res;
 
 	bool save_results;
 
 	/** Constructor. */
-	CDifodoCamera() : mrpt::vision::CDifodo() 
-	{ 
+	CDifodoCamera() : mrpt::vision::CDifodo()
+	{
 		save_results = 0;
 	}
 

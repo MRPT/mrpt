@@ -25,25 +25,27 @@ namespace mrpt
 		using Eigen::MatrixXf;
 		using Eigen::MatrixXi;
 
-		/** This abstract class implements a method called "Difodo" to perform Visual odometry with range cameras. 
+		/** This abstract class implements a method called "Difodo" to perform Visual odometry with range cameras.
 		*	It is based on the range flow equation and assumes that the scene is rigid.
 		*	It can work with different image resolutions (640 x 480, 320 x 240 or 160 x 120).
 		*	Independently of the initial resolution chosen, the method normally makes use of a smaller amount of points
 		*	which can be adjusted with the member variables (rows,cols).
 		*
 		*   How to use:
-		*		- A derived class must be created which defines the method "loadFrame(...)" according to the user application. 
+		*		- A derived class must be created which defines the method "loadFrame(...)" according to the user application.
 		*		  This method has to load the depth image into the variable "depth_wf".
 		*		- Call loadFrame();
 		*		- Call OdometryCalculation();
 		*		- Call filterSpeedAndPoseUpdate();
 		*
-		*	Have a look at the apps "Difodometry-Camera" and "Difodometry-Datasets" for further information.
-		*   
+		*	For further information have a look at the apps:
+		*    - [Difodometry-Camera](http://www.mrpt.org/list-of-mrpt-apps/application-difodometry-camera/)
+		*    - [Difodometry-Datasets](http://www.mrpt.org/list-of-mrpt-apps/application-difodometry-datasets/)
+		*
 		*	Please refer to the respective publication when using this method: *************************
 		*
-		* - JUIN/2013: First design.
-		* - JANUARY/2014: Integrated into MRPT library.
+		* - JUN/2013: First design.
+		* - JAN/2014: Integrated into MRPT library.
 		*
 		*  \sa *********************
 		*  \ingroup mrpt_vision_grp
@@ -51,8 +53,8 @@ namespace mrpt
 
 		class VISION_IMPEXP CDifodo {
 
-		protected:	
-	
+		protected:
+
 			/** Matrices that store the original and filtered depth frames with the image resolution */
 			MatrixXf depth_ft;
 			MatrixXf depth_wf;
@@ -81,7 +83,7 @@ namespace mrpt
 
 			/** Least squares covariance matrix */
 			math::CMatrixFloat66 est_cov;
-	
+
 			/** Camera properties: */
 			float f_dist;		//!<Focal lenght (meters)
 			float x_incr;		//!<Separation between pixels (cols) in the sensor array (meters)
@@ -128,7 +130,7 @@ namespace mrpt
 			/** This method discards the pixels found by 'findNullPoints()' and 'findBorders()' */
 			void findValidPoints();
 
-			/** The Solver. It buils the overdetermined system and gets the least-square solution. 
+			/** The Solver. It buils the overdetermined system and gets the least-square solution.
 			  * It also calculates the least-square covariance matrix */
 			void solveDepthSystem();
 
@@ -140,8 +142,8 @@ namespace mrpt
 			/** Camera properties */
 			float lens_disp;	//Lateral displacement of the lens with respect to the center of the camera (meters)
 
-			/** Frames per second (Hz) */ 
-			float fps;	
+			/** Frames per second (Hz) */
+			float fps;
 
 			/** Resolution of the images taken by the range camera */
 			unsigned int cam_mode;	// (1 - 640 x 480, 2 - 320 x 240, 4 - 160 x 120)
@@ -150,7 +152,7 @@ namespace mrpt
 			  * as this downsampling is applied before the gaussian filter */
 			unsigned int downsample; // (1 - original size, 2 - res/2, 4 - res/4)
 
-			/** Num of valid points after removing null pixels and borders */ 
+			/** Num of valid points after removing null pixels and borders */
 			unsigned int num_valid_points;
 
 			/** Thresholds used to remove borders and noisy points */
@@ -194,7 +196,7 @@ namespace mrpt
 			/** It gets the weight that ponders the product of the corresponding eigenvalue and the previous speed in order to calculate the filtered speed */
 			inline float getSpeedFilterEigWeight() const {return previous_speed_eig_weight;}
 
-			/** It sets the weight that ponders the previous speed in order to calculate the filtered speed. */			
+			/** It sets the weight that ponders the previous speed in order to calculate the filtered speed. */
 			inline void setSpeedFilterConstWeight(float new_cweight) { previous_speed_const_weight = new_cweight;}
 
 			/** It sets the weight that ponders the product of the corresponding eigenvalue and the previous speed in order to calculate the filtered speed */

@@ -11,9 +11,9 @@ IF (NOT DISABLE_OPENNI2) # Allow the user to force not using this lib
 
 IF (PKG_CONFIG_FOUND)
 	if(${CMAKE_VERSION} VERSION_LESS 2.8.2)
-		pkg_check_modules(PC_OPENNI openni2-dev)
+		pkg_check_modules(PC_OPENNI libopenni2)
 	else(${CMAKE_VERSION} VERSION_LESS 2.8.2)
-		pkg_check_modules(PC_OPENNI QUIET openni2-dev)
+		pkg_check_modules(PC_OPENNI QUIET libopenni2)
 	endif(${CMAKE_VERSION} VERSION_LESS 2.8.2)
 ENDIF (PKG_CONFIG_FOUND)
 

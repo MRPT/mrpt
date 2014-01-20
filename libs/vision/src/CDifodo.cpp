@@ -8,6 +8,7 @@
    +---------------------------------------------------------------------------+ */
 
 #include <mrpt/vision.h>		 // Precompiled headers
+#include <mrpt/vision/CDifodo.h>
 
 using namespace mrpt;
 using namespace mrpt::vision;
@@ -26,7 +27,7 @@ CDifodo::CDifodo()
 	gaussian_mask_size = 7;
 	const unsigned int resh = 640/(cam_mode*downsample);
 	const unsigned int resv = 480/(cam_mode*downsample);
-	
+
 	depth.setSize(rows,cols);
 	depth_old.setSize(rows,cols);
 	depth_inter.setSize(rows,cols);
@@ -58,10 +59,10 @@ CDifodo::CDifodo()
 	const int dy = floor(float(resv)/float(rows));
 	const int dx = floor(float(resh)/float(cols));
 
-	duv_threshold = 0.001*(dx + dy)*(cam_mode*downsample);			
-	dt_threshold = 0.2*fps;	
-	dif_threshold = 0.001*(dx + dy)*(cam_mode*downsample);				
-	difuv_surroundings = 0.005*(dx + dy)*(cam_mode*downsample);	
+	duv_threshold = 0.001*(dx + dy)*(cam_mode*downsample);
+	dt_threshold = 0.2*fps;
+	dif_threshold = 0.001*(dx + dy)*(cam_mode*downsample);
+	difuv_surroundings = 0.005*(dx + dy)*(cam_mode*downsample);
 	dift_surroundings = 0.01*fps*(dx + dy)*(cam_mode*downsample);
 
 	previous_speed_const_weight = 0.2;
@@ -98,7 +99,7 @@ void CDifodo::calculateDepthDerivatives()
 		{
 			du(y,x) = 0.5*(depth_inter(y,x+1) - depth_inter(y,x-1));
 			dv(y,x) = 0.5*(depth_inter(y+1,x) - depth_inter(y-1,x));
-			dt(y,x) = fps*(depth(y,x) - depth_old(y,x));	
+			dt(y,x) = fps*(depth(y,x) - depth_old(y,x));
 		}
 }
 
@@ -107,7 +108,7 @@ void CDifodo::filterAndDownsample()
 {
 	//CTicTac clock;
 	//clock.Tic();
-	
+
 	//Push the frames back
 	depth_old = depth;
 	xx_old = xx;
@@ -120,7 +121,7 @@ void CDifodo::filterAndDownsample()
     const float sigma = 0.2f*gaussian_mask_size;
     float r, s = 2.0f * sigma * sigma;
     float ksum = 0.0f;
- 
+
     // Generate kernel
 	if ((gaussian_mask_size%2 == 0)||(gaussian_mask_size<3))
 	{
@@ -136,7 +137,7 @@ void CDifodo::filterAndDownsample()
 		kernel(x + lim_mask, 0) = (exp(-(r*r)/s))/(M_PI * s);
 		ksum += kernel(x + lim_mask, 0);
 	}
- 
+
 	// normalize the Kernel
 	for (int x = -lim_mask; x <= lim_mask; x++)
 	{
@@ -153,7 +154,7 @@ void CDifodo::filterAndDownsample()
 	//rows
 	for ( int i=0; i<height; i++)
 		for ( int j=0; j<width; j++)
-		{	
+		{
 			if ((j>=lim_mask)&&(j<width-lim_mask))
 			{
 				float sum = 0.0f;
@@ -185,7 +186,7 @@ void CDifodo::filterAndDownsample()
 			if ((i>=lim_mask)&&(i<height-lim_mask))
 			{
 				float sum = 0.0f;
-				float ponder = 1.0f;				
+				float ponder = 1.0f;
 
 				for (int k=-lim_mask; k<=lim_mask; k++)
 				{
@@ -223,7 +224,7 @@ void CDifodo::filterAndDownsample()
 		{
 			depth(y,x) = depth_wf(iniy+y*dy,inix+x*dx);
 			xx(y,x) = (inix+x*dx - disp_x)*depth_wf(iniy+y*dy,inix+x*dx)*inv_f + lens_disp;
-			yy(y,x) = (iniy+y*dy - disp_y)*depth_wf(iniy+y*dy,inix+x*dx)*inv_f;	
+			yy(y,x) = (iniy+y*dy - disp_y)*depth_wf(iniy+y*dy,inix+x*dx)*inv_f;
 		}
 
 	//cout << endl << "Tiempo del filtro + downsample (ms): " << 1000*clock.Tac();
@@ -232,7 +233,7 @@ void CDifodo::filterAndDownsample()
 void CDifodo::findBorders()
 {
 	border.assign(0);
-	
+
 	//Detect borders
 	for (unsigned int x = 1; x < cols-1; x++)
 		for (unsigned int y = 1; y < rows-1; y++)
@@ -244,19 +245,19 @@ void CDifodo::findBorders()
 				const float ini_dy = 0.5*(depth_old(y+1,x) - depth_old(y-1,x));
 				const float final_dx = 0.5*(depth(y,x+1) - depth(y,x-1));
 				const float final_dy = 0.5*(depth(y+1,x) - depth(y-1,x));
-			
+
 
 				//Derivative too high (the average derivative)
 				if (aver_duv > duv_threshold)
 					border(y,x) = 1;
-								
+
 				else if (abs(dt(y,x)) > dt_threshold)
 					border(y,x) = 1;
-				
+
 				//Big difference between initial and final derivatives
 				else if (abs(final_dx-ini_dx) + abs(final_dy-ini_dy) > dif_threshold)
 					border(y,x) = 1;
-				
+
 				//Difference between derivatives in the surroundings
 				else
 				{
@@ -273,7 +274,7 @@ void CDifodo::findBorders()
 
 					if (sum_dift > depth_inter(y,x)*dift_surroundings)
 						border(y,x) = 1;
-					
+
 					else if (sum_duv > (4.0*sum_difdepth + depth_inter(y,x))*difuv_surroundings)
 						border(y,x) = 1;
 
@@ -330,7 +331,7 @@ void CDifodo::solveDepthSystem()
 	vector <Triplet<float>> coord;
 	SparseMatrix<float> A;
 	MatrixXf Var;
-	MatrixXf B;	
+	MatrixXf B;
 	A.resize(num_valid_points,6);
 	B.setSize(num_valid_points,1);
 	Var.setSize(6,1);
@@ -351,7 +352,7 @@ void CDifodo::solveDepthSystem()
 				const float inv_d = 1.0f/depth_inter(y,x);
 				const float dxcomp = du(y,x)*f_inv_x*inv_d;
 				const float dycomp = dv(y,x)*f_inv_y*inv_d;
-				
+
 				coord.push_back(Triplet<float>(cont, 0, inv_d*(1.0f + dxcomp*xx_inter(y,x)*inv_d + dycomp*yy_inter(y,x)*inv_d)));
 				coord.push_back(Triplet<float>(cont, 1, inv_d*(-dxcomp)));
 				coord.push_back(Triplet<float>(cont, 2, inv_d*(-dycomp)));
@@ -366,7 +367,7 @@ void CDifodo::solveDepthSystem()
 
 
 	A.setFromTriplets(coord.begin(), coord.end());
-	
+
 	//Solve the linear system of equations using a minimum least squares method
 	const SparseMatrix<float> atrans = A.transpose();
 	const SparseMatrix<float> aux = atrans*A;
@@ -402,7 +403,7 @@ void CDifodo::OdometryCalculation()
 	findNullPoints();
 	findBorders();
 	findValidPoints();
-	
+
 	if (num_valid_points > 6)	{solveDepthSystem();}
 	else						{kai_solver.assign(0);}
 
@@ -414,7 +415,7 @@ void CDifodo::filterSpeedAndPoseUpdate()
 {
 	//-------------------------------------------------------------------------
 	//								Filter speed
-	//-------------------------------------------------------------------------	
+	//-------------------------------------------------------------------------
 
 	utils::CTicTac clock;
 	clock.Tic();
@@ -422,8 +423,8 @@ void CDifodo::filterSpeedAndPoseUpdate()
 	//				Calculate Eigenvalues and Eigenvectors
 	//----------------------------------------------------------------------------
 	SelfAdjointEigenSolver<MatrixXf> eigensolver(est_cov);
-	if (eigensolver.info() != Success) 
-	{ 
+	if (eigensolver.info() != Success)
+	{
 		printf("Eigensolver couldn't find a solution. Pose is not updated");
 		return;
 	}
@@ -448,7 +449,7 @@ void CDifodo::filterSpeedAndPoseUpdate()
 
 	//Then transform that local representation to the "eigenvector" basis
 	MatrixXf kai_b_old;
-	kai_b_old.setSize(6,1); 
+	kai_b_old.setSize(6,1);
 	math::CMatrixFloat61 kai_loc_old;
 	kai_loc_old.topRows<3>() = v_loc_old;
 	kai_loc_old.bottomRows<3>() = w_loc_old;
@@ -460,14 +461,14 @@ void CDifodo::filterSpeedAndPoseUpdate()
 	kai_b_fil.setSize(6,1);
 	for (unsigned int i=0; i<6; i++)
 	{
-		kai_b_fil(i,0) = (kai_b(i,0) + (previous_speed_eig_weight*eigensolver.eigenvalues()(i,0) + previous_speed_const_weight)*kai_b_old(i,0))/(1.0 + previous_speed_eig_weight*eigensolver.eigenvalues()(i,0) + previous_speed_const_weight);		
+		kai_b_fil(i,0) = (kai_b(i,0) + (previous_speed_eig_weight*eigensolver.eigenvalues()(i,0) + previous_speed_const_weight)*kai_b_old(i,0))/(1.0 + previous_speed_eig_weight*eigensolver.eigenvalues()(i,0) + previous_speed_const_weight);
 	}
 
 	//Transform filtered speed to local and then absolute reference systems
 	MatrixXf kai_loc_fil;
 	math::CMatrixFloat31 v_abs_fil, w_abs_fil;
 	kai_loc_fil.setSize(6,1);
-	kai_loc_fil = Bii.inverse().colPivHouseholderQr().solve(kai_b_fil);	
+	kai_loc_fil = Bii.inverse().colPivHouseholderQr().solve(kai_b_fil);
 
 	cam_pose.getRotationMatrix(inv_trans);
 	v_abs_fil = inv_trans.cast<float>()*kai_loc_fil.topRows(3);
@@ -476,7 +477,7 @@ void CDifodo::filterSpeedAndPoseUpdate()
 	kai_abs.topRows<3>() = v_abs_fil;
 	kai_abs.bottomRows<3>() = w_abs_fil;
 
-	
+
 	//-------------------------------------------------------------------------
 	//							Update pose (DIFODO)
 	//-------------------------------------------------------------------------
@@ -505,7 +506,7 @@ void CDifodo::setCameraFocalLenght(float new_f)
 {
 	const unsigned int resh = 640/(cam_mode*downsample);
 	const unsigned int resv = 480/(cam_mode*downsample);
-	
+
 	f_dist = new_f;
 	x_incr = 2.0*f_dist*(floor(float(resh)/float(cols))*cols/float(resh))*tan(0.5*fovh)/(cols-1);
 	y_incr = 2.0*f_dist*(floor(float(resv)/float(rows))*rows/float(resv))*tan(0.5*fovv)/(rows-1);
@@ -519,7 +520,7 @@ void CDifodo::setRowsAndCols(unsigned int num_rows, unsigned int num_cols)
 
 	const unsigned int resh = 640/(cam_mode*downsample);
 	const unsigned int resv = 480/(cam_mode*downsample);
-	
+
 	depth.setSize(rows,cols);
 	depth_old.setSize(rows,cols);
 	depth_inter.setSize(rows,cols);
@@ -546,10 +547,10 @@ void CDifodo::setRowsAndCols(unsigned int num_rows, unsigned int num_cols)
 	const int dy = floor(float(resv)/float(rows));
 	const int dx = floor(float(resh)/float(cols));
 
-	duv_threshold = 0.001*(dx + dy)*(cam_mode*downsample);			
-	dt_threshold = 0.2*fps;	
-	dif_threshold = 0.001*(dx + dy)*(cam_mode*downsample);				
-	difuv_surroundings = 0.005*(dx + dy)*(cam_mode*downsample);	
+	duv_threshold = 0.001*(dx + dy)*(cam_mode*downsample);
+	dt_threshold = 0.2*fps;
+	dif_threshold = 0.001*(dx + dy)*(cam_mode*downsample);
+	difuv_surroundings = 0.005*(dx + dy)*(cam_mode*downsample);
 	dift_surroundings = 0.01*fps*(dx + dy)*(cam_mode*downsample);
 }
 
@@ -595,10 +596,10 @@ void CDifodo::bordersThresholdToDefault()
 	const int dy = floor(float(480/(cam_mode*downsample))/float(rows));
 	const int dx = floor(float(640/(cam_mode*downsample))/float(cols));
 
-	duv_threshold = 0.001*(dx + dy)*(cam_mode*downsample);		
-	dt_threshold = 0.2*fps;	
-	dif_threshold = 0.001*(dx + dy)*(cam_mode*downsample);				
-	difuv_surroundings = 0.005*(dx + dy)*(cam_mode*downsample);	
-	dift_surroundings = 0.01*fps*(dx + dy)*(cam_mode*downsample);	
+	duv_threshold = 0.001*(dx + dy)*(cam_mode*downsample);
+	dt_threshold = 0.2*fps;
+	dif_threshold = 0.001*(dx + dy)*(cam_mode*downsample);
+	difuv_surroundings = 0.005*(dx + dy)*(cam_mode*downsample);
+	dift_surroundings = 0.01*fps*(dx + dy)*(cam_mode*downsample);
 }
 

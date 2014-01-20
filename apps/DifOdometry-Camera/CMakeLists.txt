@@ -1,5 +1,7 @@
 INCLUDE(../../cmakemodules/AssureCMakeRootFile.cmake) # Avoid user mistake in CMake source directory
 
+if (CMAKE_MRPT_HAS_OPENNI2) # This project can't be built without OpenNI2
+
 #-----------------------------------------------------------------
 # CMake file for the MRPT application:  ReactiveNav3D-Demo
 #
@@ -34,4 +36,5 @@ DeclareAppDependencies(${TMP_TARGET_NAME} mrpt-gui mrpt-opengl mrpt-vision)
 
 DeclareAppForInstall(${TMP_TARGET_NAME})
 
+endif (CMAKE_MRPT_HAS_OPENNI2) # This project can't be built without OpenNI2
 

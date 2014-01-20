@@ -34,10 +34,11 @@ void CDifodoDatasets::loadConfiguration(const utils::CConfigFileBase &ini )
 
 	rawlog_count = 0;
 
-	filename.replace(filename.find(".rawlog"),7,"_Images\\");
+	//filename.replace(filename.find(".rawlog"),7,"_Images\\");
+	const string imgsPath = CRawlog::detectImagesDirectory(filename);
 
 	// Set external images directory:
-	CImage::IMAGES_PATH_BASE = filename;
+	CImage::IMAGES_PATH_BASE = imgsPath;
 
 	//					Load ground_truth
 	//=========================================================
@@ -356,7 +357,7 @@ void CDifodoDatasets::loadFrame()
 	{
 		groundtruth_ok = 0;
 		obs3D->unload();
-		rawlog_count++; 
+		rawlog_count++;
 		return;
 	}
 
@@ -419,7 +420,7 @@ void CDifodoDatasets::loadFrame()
 		y = (incr_t0*last_gt_data[1] + incr_t1*y0)/(incr_t);
 		z = (incr_t0*last_gt_data[2] + incr_t1*z0)/(incr_t);
 		qx = (incr_t0*last_gt_data[3] + incr_t1*qx0)/(incr_t);
-		qy = (incr_t0*last_gt_data[4] + incr_t1*qy0)/(incr_t);	
+		qy = (incr_t0*last_gt_data[4] + incr_t1*qy0)/(incr_t);
 		qz = (incr_t0*last_gt_data[5] + incr_t1*qz0)/(incr_t);
 		w = (incr_t0*last_gt_data[6] + incr_t1*w0)/(incr_t);
 
