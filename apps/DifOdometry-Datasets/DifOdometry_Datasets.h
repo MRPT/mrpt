@@ -14,7 +14,7 @@
 #include <mrpt/slam/CRawlog.h>
 #include <mrpt/slam/CObservation3DRangeScan.h>
 #include <mrpt/opengl.h>
-#include <mrpt/gui/CDisplayWindow3D.h>
+#include <mrpt/gui.h>
 #include <iostream>
 #include "legend.xpm"
 

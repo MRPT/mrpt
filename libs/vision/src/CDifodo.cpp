@@ -227,7 +227,7 @@ void CDifodo::filterAndDownsample()
 			yy(y,x) = (iniy+y*dy - disp_y)*depth_wf(iniy+y*dy,inix+x*dx)*inv_f;
 		}
 
-	//cout << endl << "Tiempo del filtro + downsample (ms): " << 1000*clock.Tac();
+	//cout << endl << "Execution time - filter + downsample (ms): " << 1000*clock.Tac();
 }
 
 void CDifodo::findBorders()
@@ -323,6 +323,7 @@ void CDifodo::findValidPoints()
 			if ((border(y,x) == 0)&&(null(y,x) == 0))
 				num_valid_points++;
 }
+
 
 void CDifodo::solveDepthSystem()
 {

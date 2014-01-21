@@ -147,9 +147,6 @@ void CDifodoCamera::loadFrame()
 	const openni::DepthPixel* pDepthRow = (const openni::DepthPixel*)framed.getData();
 	int rowSize = framed.getStrideInBytes() / sizeof(openni::DepthPixel);
 
-	//float x, y, z;
-	//const float inv_f = float(640/width)/525.0f; //********************mirar esto**********************
-
 	for (int yc = height-1; yc >= 0; --yc)
 	{
 		const openni::DepthPixel* pDepth = pDepthRow;
@@ -284,7 +281,6 @@ void CDifodoCamera::initializeScene()
 	//User-interface information
 	utils::CImage img_legend;
 	img_legend.loadFromXPM(legend_xpm);
-	//img_legend.loadFromFile("C:/Users/Mariano/Desktop/legend.jpg");
 	COpenGLViewportPtr legend = scene->createViewport("legend");
 	legend->setViewportPosition(20, 20, 348, 200);
 	legend->setImageView(img_legend);

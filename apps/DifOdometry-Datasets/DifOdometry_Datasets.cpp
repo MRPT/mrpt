@@ -8,8 +8,6 @@
    +---------------------------------------------------------------------------+ */
 
 #include "DifOdometry_Datasets.h"
-#include <mrpt/opengl.h>
-#include <mrpt/gui.h>
 
 using namespace mrpt;
 using namespace mrpt::opengl;
@@ -49,7 +47,6 @@ void CDifodoDatasets::loadConfiguration(const utils::CConfigFileBase &ini )
 
 	if (f_gt.fail())
 		throw std::runtime_error("\nError finding the groundtruth file: it should be contained in the same folder than the rawlog file");
-
 
 	char aux[100];
 	f_gt.getline(aux, 100);
@@ -94,7 +91,7 @@ void CDifodoDatasets::loadConfiguration(const utils::CConfigFileBase &ini )
 	const int dz = floor(float(resv)/float(rows));
 	const int dy = floor(float(resh)/float(cols));
 
-	duv_threshold = 0.001*(dz + dy)*(cam_mode*downsample);		//Faster with cam_mode=4, the filter should be adjusted if it changes
+	duv_threshold = 0.001*(dz + dy)*(cam_mode*downsample);	
 	dt_threshold = 0.2*fps;
 	dif_threshold = 0.001*(dz + dy)*(cam_mode*downsample);
 	difuv_surroundings = 0.005*(dz + dy)*(cam_mode*downsample);
@@ -241,7 +238,6 @@ void CDifodoDatasets::initializeScene()
 	//User-interface information
 	utils::CImage img_legend;
 	img_legend.loadFromXPM(legend_xpm);
-	//img_legend.loadFromFile("C:/Users/Mariano/Desktop/legend.jpg");
 	COpenGLViewportPtr legend = scene->createViewport("legend");
 	legend->setViewportPosition(20, 20, 348, 200);
 	legend->setImageView(img_legend);
@@ -635,11 +631,8 @@ void CDifodoDatasets::writeToLogFile()
 
 	f_res << abs_error_tras << " ";
 	f_res << abs_error_rot << " ";
-
 	f_res << execution_time << " ";
-
 	f_res << num_valid_points << " ";
-
 	f_res << "\n";
 }
 

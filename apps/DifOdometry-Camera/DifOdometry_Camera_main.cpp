@@ -137,7 +137,6 @@ int main(int num_arg, char *argv[])
 				odo.filterSpeedAndPoseUpdate();
 				cout << endl << "Difodo execution time(ms): " << odo.execution_time;
 				odo.updateScene();
-
 				break;
 
 			//Start and stop continous odometry
