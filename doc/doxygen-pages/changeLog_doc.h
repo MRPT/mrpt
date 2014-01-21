@@ -35,7 +35,7 @@
 				- mrpt::reactivenav::CReactiveNavigationSystem
 				- mrpt::reactivenav::CReactiveNavigationSystem3D
 		- [mrpt-vision]
-			- mrpt::vision::CDifodo, a class which implements visual odometry based on depth images and the "range flow constraint equation". (by Mariano Jaimez Tarifa) - [(commit)]()
+			- mrpt::vision::CDifodo, a class which implements visual odometry based on depth images and the "range flow constraint equation". (by Mariano Jaimez Tarifa) - [(commit)](https://github.com/jlblancoc/mrpt/commit/e6ab5595f70cb889d07658c0b540c27e495a1cfb)
 	- Changes in classes:
 		- Clean up and slight optimization of metric map matching API: - [(commit)](http://code.google.com/p/mrpt/source/detail?r=3446)
 			- <b>Methods marked as deprecated: </b>
