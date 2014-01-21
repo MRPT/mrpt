@@ -34,6 +34,8 @@
 			- mrpt::reactivenav::CAbstractPTGBasedReactive, as part of a large code refactoring of these classes: [(commit)](https://github.com/jlblancoc/mrpt/pull/4)
 				- mrpt::reactivenav::CReactiveNavigationSystem
 				- mrpt::reactivenav::CReactiveNavigationSystem3D
+		- [mrpt-vision]
+			- mrpt::vision::CDifodo, a class which implements visual odometry based on depth images and the "range flow constraint equation". (by Mariano Jaimez Tarifa) - [(commit)]()
 	- Changes in classes:
 		- Clean up and slight optimization of metric map matching API: - [(commit)](http://code.google.com/p/mrpt/source/detail?r=3446)
 			- <b>Methods marked as deprecated: </b>
@@ -52,9 +54,14 @@
 	- Deleted classes:
 		- mrpt::utils::CEvent, which was actually unimplemented (!)
 		- mrpt::hwdrivers::CInterfaceNI845x has been deleted. It didn't offer features enough to justify a class.
+	- New apps:
+		- <a href="http://www.mrpt.org/application-difodometry-camera/" > DifOdometry-Camera</a> (By Mariano Jaimez Tarifa)
+		- <a href="http://www.mrpt.org/application-difodometry-datasets/" >DifOdometry-Datasets</a> (By Mariano Jaimez Tarifa)
 	- New examples:
 		- [MRPT]/samples/threadsPipe
 		- [MRPT]/samples/NIDAQ_test
+		- [MRPT]/openNI2_RGBD_demo (by Mariano Jaimez Tarifa)
+		- [MRPT]/openNI2_proximity_demo (by Mariano Jaimez Tarifa)
 	- Build system:
 		- Fixed compilation with clang.
 		- Fixed building against OpenCV 3.0.0 (GIT head)
