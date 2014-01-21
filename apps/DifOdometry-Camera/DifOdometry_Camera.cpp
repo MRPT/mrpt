@@ -60,10 +60,10 @@ void CDifodoCamera::loadConfiguration(const utils::CConfigFileBase &ini )
 	const int dz = floor(float(resv)/float(rows));
 	const int dy = floor(float(resh)/float(cols));
 
-	duv_threshold = 0.001*(dz + dy)*(cam_mode*downsample);		//Faster with cam_mode=4, the filter should be adjusted if it changes
+	duv_threshold = 0.001*(dz + dy)*(cam_mode*downsample);	
 	dt_threshold = 0.2*fps;
 	dif_threshold = 0.001*(dz + dy)*(cam_mode*downsample);
-	difuv_surroundings = 0.005*(dz + dy)*(cam_mode*downsample);
+	difuv_surroundings = 0.0022*(dz + dy)*(cam_mode*downsample);
 	dift_surroundings = 0.01*fps*(dz + dy)*(cam_mode*downsample);
 }
 
@@ -148,7 +148,7 @@ void CDifodoCamera::loadFrame()
 	int rowSize = framed.getStrideInBytes() / sizeof(openni::DepthPixel);
 
 	//float x, y, z;
-	const float inv_f = float(640/width)/525.0f;
+	//const float inv_f = float(640/width)/525.0f; //********************mirar esto**********************
 
 	for (int yc = height-1; yc >= 0; --yc)
 	{
