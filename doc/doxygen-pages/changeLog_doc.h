@@ -14,6 +14,9 @@
 
  <a name="1.0.3">
   <h2>Version 1.0.3: (Under development)  </h2></a>
+	- New apps:
+		- [DifOdometry-Camera](http://www.mrpt.org/list-of-mrpt-apps/application-difodometry-camera).  (By Mariano Jaimez Tarifa)
+		- [DifOdometry-Datasets](http://www.mrpt.org/list-of-mrpt-apps/application-difodometry-datasets). (By Mariano Jaimez Tarifa)
 	- New classes:
 		- [mrpt-base]
 			- mrpt::synch::CPipe: OS-independent pipe support.
@@ -29,7 +32,7 @@
 			- mrpt::slam::CObservationRawDAQ, a placeholder for raw and generic measurements from data acquisition devices. - [(commit)](http://code.google.com/p/mrpt/source/detail?r=3459)
 		- [mrpt-opengl]
 			- mrpt::opengl::CMeshFast, an open gl object that draws a "mesh" as a structured point cloud which is faster to render (by Mariano Jaimez Tarifa). -[(commit)](https://github.com/jlblancoc/mrpt/commit/9306bb4a585387d4c85b3f6e41dd2cbe5a354e80)
-			- mrpt::opengl::CVectorField2D, an opengl object that shows a 2D Vector Field (by Mariano Jaimez Tarifa). - [(commit)](http://code.google.com/p/mrpt/source/detail?r=3461[(commit)](
+			- mrpt::opengl::CVectorField2D, an opengl object that shows a 2D Vector Field (by Mariano Jaimez Tarifa). - [(commit)](http://code.google.com/p/mrpt/source/detail?r=3461)
 		- [mrpt-reactivenav]
 			- mrpt::reactivenav::CAbstractPTGBasedReactive, as part of a large code refactoring of these classes: [(commit)](https://github.com/jlblancoc/mrpt/pull/4)
 				- mrpt::reactivenav::CReactiveNavigationSystem
@@ -54,9 +57,6 @@
 	- Deleted classes:
 		- mrpt::utils::CEvent, which was actually unimplemented (!)
 		- mrpt::hwdrivers::CInterfaceNI845x has been deleted. It didn't offer features enough to justify a class.
-	- New apps:
-		- <a href="http://www.mrpt.org/application-difodometry-camera/" > DifOdometry-Camera</a> (By Mariano Jaimez Tarifa)
-		- <a href="http://www.mrpt.org/application-difodometry-datasets/" >DifOdometry-Datasets</a> (By Mariano Jaimez Tarifa)
 	- New examples:
 		- [MRPT]/samples/threadsPipe
 		- [MRPT]/samples/NIDAQ_test
