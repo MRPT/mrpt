@@ -1,36 +1,10 @@
 /* +---------------------------------------------------------------------------+
-   |                 The Mobile Robot Programming Toolkit (MRPT)               |
-   |                                                                           |
+   |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2013, Individual contributors, see AUTHORS file        |
-   | Copyright (c) 2005-2013, MAPIR group, University of Malaga                |
-   | Copyright (c) 2012-2013, University of Almeria                            |
-   | All rights reserved.                                                      |
-   |                                                                           |
-   | Redistribution and use in source and binary forms, with or without        |
-   | modification, are permitted provided that the following conditions are    |
-   | met:                                                                      |
-   |    * Redistributions of source code must retain the above copyright       |
-   |      notice, this list of conditions and the following disclaimer.        |
-   |    * Redistributions in binary form must reproduce the above copyright    |
-   |      notice, this list of conditions and the following disclaimer in the  |
-   |      documentation and/or other materials provided with the distribution. |
-   |    * Neither the name of the copyright holders nor the                    |
-   |      names of its contributors may be used to endorse or promote products |
-   |      derived from this software without specific prior written permission.|
-   |                                                                           |
-   | THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS       |
-   | 'AS IS' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED |
-   | TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR|
-   | PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDERS BE LIABLE |
-   | FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL|
-   | DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR|
-   |  SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)       |
-   | HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,       |
-   | STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN  |
-   | ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE           |
-   | POSSIBILITY OF SUCH DAMAGE.                                               |
+   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | See: http://www.mrpt.org/Authors - All rights reserved.                   |
+   | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 #ifndef CParameterizedTrajectoryGenerator_H
 #define CParameterizedTrajectoryGenerator_H
@@ -42,12 +16,17 @@
 
 namespace mrpt
 {
+  namespace opengl { class CSetOfLines; }
+
   namespace reactivenav
   {
 	  using namespace mrpt::utils;
 
-	/** This is the base class for any user defined PTG.
+	/** This is the base class for any user-defined PTG.
 	 *   The class factory interface in CParameterizedTrajectoryGenerator::CreatePTG.
+	 *
+	 * Papers: 
+	 *  - J.L. Blanco, J. Gonzalez-Jimenez, J.A. Fernandez-Madrigal, "Extending Obstacle Avoidance Methods through Multiple Parameter-Space Transformations", Autonomous Robots, vol. 24, no. 1, 2008. http://ingmec.ual.es/~jlblanco/papers/blanco2008eoa_DRAFT.pdf
 	 *
 	 * Changes history:
 	 *		- 30/JUN/2004: Creation (JLBC)
@@ -65,6 +44,8 @@ namespace mrpt
 		 *   - ref_distance: The maximum distance in PTGs
 		 *   - resolution: The cell size
 		 *   - v_max, w_max: Maximum robot speeds.
+		 *
+		 * See docs of derived classes for additional parameters:
 		 */
         CParameterizedTrajectoryGenerator(const TParameters<double> &params);
 
@@ -101,9 +82,22 @@ namespace mrpt
 				float			*out_max_acc_v = NULL,
 				float			*out_max_acc_w = NULL);
 
-        /** The "lambda" function, see paper for info. It takes the (a,d) pair that is closest to a given location.
-		 */
-        virtual void lambdaFunction( float x, float y, int &out_k, float &out_d );
+
+		/** Computes the closest (alpha,d) TP coordinates of the trajectory point closest to the Workspace (WS) Cartesian coordinates (x,y).
+		  * \param[in] x X coordinate of the query point.
+		  * \param[in] y Y coordinate of the query point.
+		  * \param[out] out_k Trajectory parameter index (discretized alpha value, 0-based index).
+		  * \param[out] out_d Trajectory distance, normalized such that D_max becomes 1.
+		  *
+		  * \return true if the distance between (x,y) and the actual trajectory point is below the given tolerance (in meters).
+		  * \note The default implementation in CParameterizedTrajectoryGenerator relies on a look-up-table. Derived classes may redefine this to closed-form expressions, when they exist.
+		  */
+		virtual bool inverseMap_WS2TP(float x, float y, int &out_k, float &out_d, float tolerance_dist = 0.10f) const;
+
+        /** The "lambda" function, see paper for info. It takes the (a,d) pair that is closest to a given location. */
+		MRPT_DEPRECATED_PRE("Use inverseMap_WS2TP() instead")
+        void lambdaFunction( float x, float y, int &out_k, float &out_d )
+		MRPT_DEPRECATED_POST("Use inverseMap_WS2TP() instead");
 
         /** Converts an "alpha" value (into the discrete set) into a feasible motion command.
 		 */
@@ -190,6 +184,19 @@ namespace mrpt
 		  * \return false on any error writing to disk.
 		  */
         bool debugDumpInFiles(const int nPT);
+
+		/** Returns the representation of one trajectory of this PTG as a 3D OpenGL object (a simple curved line).
+		  * \param[in] k The 0-based index of the selected trajectory (discrete "alpha" parameter).
+		  * \param[out] gl_obj Output object.
+		  * \param[in] decimate_distance Minimum distance between path points (in meters).
+		  * \param[in] max_path_distance If >0, cut the path at this distance (in meters).
+		  */
+		void renderPathAsSimpleLine(
+			const uint16_t k, 
+			mrpt::opengl::CSetOfLines &gl_obj, 
+			const float decimate_distance = 0.1f, 
+			const float max_path_distance = 0.0f) const;
+
 
 		/**  A list of all the pairs (alpha,distance) such as the robot collides at that cell.
 		  *  - map key   (uint16_t) -> alpha value (k)

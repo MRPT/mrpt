@@ -1,3 +1,11 @@
+/* +---------------------------------------------------------------------------+
+   |                     Mobile Robot Programming Toolkit (MRPT)               |
+   |                          http://www.mrpt.org/                             |
+   |                                                                           |
+   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | See: http://www.mrpt.org/Authors - All rights reserved.                   |
+   | Released under BSD License. See details in http://www.mrpt.org/License    |
+   +---------------------------------------------------------------------------+ */
 /////////////////////////////////////////////////////////////////////////////
 // Name:            mathplot.cpp
 // Purpose:         Framework for plotting in wxWindows
@@ -21,6 +29,8 @@
 // Comment out for release operation:
 // (Added by J.L.Blanco, Aug 2007)
 // #define MATHPLOT_DO_LOGGING
+
+const int INVALID_CLICK_COORDS = -99999;
 
 #ifdef __BORLANDC__
 #pragma hdrstop
@@ -1206,6 +1216,9 @@ mpWindow::mpWindow( wxWindow *parent, wxWindowID id, const wxPoint &pos, const w
     m_enableScrollBars = false;
     SetSizeHints(128, 128);
 
+	m_mouseLClick_X = INVALID_CLICK_COORDS;
+	m_mouseLClick_Y = INVALID_CLICK_COORDS;
+
     // J.L.Blanco: Eliminates the "flick" with the double buffer.
     SetBackgroundStyle( wxBG_STYLE_CUSTOM );
 
@@ -1373,6 +1386,8 @@ void mpWindow::OnMouseLeftDown (wxMouseEvent &event)
 
 void mpWindow::OnMouseLeftRelease (wxMouseEvent &event)
 {
+	if (m_mouseLClick_X!=INVALID_CLICK_COORDS) // Don't get events that don't started in this window:
+	{
     wxPoint release(event.GetX(), event.GetY());
     wxPoint press(m_mouseLClick_X, m_mouseLClick_Y);
     if (m_movingInfoLayer != NULL) {
@@ -1389,6 +1404,8 @@ void mpWindow::OnMouseLeftRelease (wxMouseEvent &event)
             }
         } */
     }
+	m_mouseLClick_X=INVALID_CLICK_COORDS;
+	}
     event.Skip();
 }
 

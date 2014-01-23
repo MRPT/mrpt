@@ -226,6 +226,8 @@ IF(BUILD_EXAMPLES)
 	                opengl_video_viewport_demo
 			captureVideoOpenCV
 			captureVideoDC1394
+			captureVideoFlyCapture2
+			captureVideoFlyCapture2_stereo
 			enumerateCameras1394
 			GPS_test
 			sonar_SRF10_test
@@ -293,7 +295,18 @@ IF(BUILD_EXAMPLES)
 
 
 	ENDIF(BUILD_HWDRIVERS)
-
+	
+	# === OPENNI2 examples ===
+	IF (MRPT_HAS_OPENNI2)
+		SET(LIST_EXAMPLES_IN_THIS_DIR
+			openNI2_RGBD_demo
+			openNI2_proximity_demo)
+			
+		SET(CMAKE_EXAMPLE_DEPS mrpt-base mrpt-gui mrpt-opengl mrpt-maps)
+		SET(CMAKE_EXAMPLE_LINK_LIBS ${MRPT_LINKER_LIBS} ${OPENNI2_LIBRARIES})
+		GENERATE_CMAKE_FILES_SAMPLES_DIRECTORY()
+	ENDIF(MRPT_HAS_OPENNI2)
+	
 	# === SRBA examples ===
 	ADD_SAMPLES_DIRECTORY(srba-examples)
 

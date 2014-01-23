@@ -56,6 +56,9 @@ CHECK_INCLUDE_FILE("stdint.h" HAVE_STDINT_H)
 CHECK_INCLUDE_FILE("inttypes.h" HAVE_INTTYPES_H)
 CHECK_INCLUDE_FILE("winsock2.h" HAVE_WINSOCK2_H)
 
+# Yes: This is god damn of a hack, but seems to be the only way to properly detect winusb.h (Windows SDK) from CMake:
+CHECK_INCLUDE_FILE("windows.h>\n#include <winusb.h" HAVE_WINUSB_H)
+
 # If we want SSE2, check for the expected headers:
 IF (CMAKE_MRPT_HAS_SSE2)
 	CHECK_INCLUDE_FILE("emmintrin.h" HAVE_EMMINTRIN_H)

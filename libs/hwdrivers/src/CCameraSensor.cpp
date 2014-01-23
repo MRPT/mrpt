@@ -1,36 +1,10 @@
 /* +---------------------------------------------------------------------------+
-   |                 The Mobile Robot Programming Toolkit (MRPT)               |
-   |                                                                           |
+   |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2013, Individual contributors, see AUTHORS file        |
-   | Copyright (c) 2005-2013, MAPIR group, University of Malaga                |
-   | Copyright (c) 2012-2013, University of Almeria                            |
-   | All rights reserved.                                                      |
-   |                                                                           |
-   | Redistribution and use in source and binary forms, with or without        |
-   | modification, are permitted provided that the following conditions are    |
-   | met:                                                                      |
-   |    * Redistributions of source code must retain the above copyright       |
-   |      notice, this list of conditions and the following disclaimer.        |
-   |    * Redistributions in binary form must reproduce the above copyright    |
-   |      notice, this list of conditions and the following disclaimer in the  |
-   |      documentation and/or other materials provided with the distribution. |
-   |    * Neither the name of the copyright holders nor the                    |
-   |      names of its contributors may be used to endorse or promote products |
-   |      derived from this software without specific prior written permission.|
-   |                                                                           |
-   | THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS       |
-   | 'AS IS' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED |
-   | TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR|
-   | PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDERS BE LIABLE |
-   | FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL|
-   | DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR|
-   |  SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)       |
-   | HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,       |
-   | STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN  |
-   | ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE           |
-   | POSSIBILITY OF SUCH DAMAGE.                                               |
+   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | See: http://www.mrpt.org/Authors - All rights reserved.                   |
+   | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
 #include <mrpt/hwdrivers.h> // Precompiled headers
@@ -97,15 +71,20 @@ CCameraSensor::CCameraSensor() :
 	m_kinect_save_intensity_img(true),
 	m_kinect_video_rgb		(true),
 
+	m_fcs_start_synch_capture(false),
+
 	m_external_images_own_thread(false),
-	m_cap_cv			(NULL),
-	m_cap_dc1394		(NULL),
-	m_cap_bumblebee		(NULL),
-	m_cap_svs           (NULL),
-	m_cap_ffmpeg		(NULL),
-	m_cap_rawlog		(NULL),
-	m_cap_swissranger	(NULL),
-	m_cap_kinect        (NULL),
+	m_cap_cv             (NULL),
+	m_cap_dc1394         (NULL),
+	m_cap_flycap         (NULL),
+	m_cap_flycap_stereo_l(NULL),
+	m_cap_flycap_stereo_r(NULL),
+	m_cap_bumblebee      (NULL),
+	m_cap_svs            (NULL),
+	m_cap_ffmpeg         (NULL),
+	m_cap_rawlog         (NULL),
+	m_cap_swissranger    (NULL),
+	m_cap_kinect         (NULL),
 	m_camera_grab_decimator (0),
 	m_camera_grab_decimator_counter(0),
 	m_preview_counter	(0),
@@ -251,6 +230,55 @@ void CCameraSensor::initialize()
 		// Localize the external images directory of this rawlog, if it exists:
 		m_rawlog_detected_images_dir = CRawlog::detectImagesDirectory(m_rawlog_file);
 	}
+	else if (m_grabber_type=="flycap")
+	{
+		cout << "[CCameraSensor::initialize] PGR FlyCapture2 camera...\n";
+		try
+		{
+			// Open camera and start capture:
+			m_cap_flycap = new CImageGrabber_FlyCapture2( m_flycap_options );
+		} catch (std::exception &e)
+		{
+			m_state = CGenericSensor::ssError;
+			throw e;
+		}
+	}
+	else if (m_grabber_type=="flycap_stereo")
+	{
+		cout << "[CCameraSensor::initialize] PGR FlyCapture2 stereo camera...\n";
+		try
+		{
+			// Open camera and start capture:
+			m_cap_flycap_stereo_l = new CImageGrabber_FlyCapture2(); 
+			m_cap_flycap_stereo_r = new CImageGrabber_FlyCapture2(); 
+
+			cout << "[CCameraSensor::initialize] PGR FlyCapture2 stereo camera: Openning LEFT camera...\n";
+			m_cap_flycap_stereo_l->open(m_flycap_stereo_options[0], false /* don't start grabbing */ );
+
+			cout << "[CCameraSensor::initialize] PGR FlyCapture2 stereo camera: Openning RIGHT camera...\n";
+			m_cap_flycap_stereo_r->open(m_flycap_stereo_options[1], false /* don't start grabbing */ );
+			
+			// Now, start grabbing "simultaneously":
+			if (m_fcs_start_synch_capture)
+			{
+				const CImageGrabber_FlyCapture2 *cams[2];
+				cams[0] = m_cap_flycap_stereo_l; 
+				cams[1] = m_cap_flycap_stereo_r;
+				CImageGrabber_FlyCapture2::startSyncCapture(2,cams);
+			}
+			else
+			{
+				m_cap_flycap_stereo_l->startCapture();
+				m_cap_flycap_stereo_r->startCapture();
+			}
+
+
+		} catch (std::exception &e)
+		{
+			m_state = CGenericSensor::ssError;
+			throw e;
+		}
+	}
 	else
 		THROW_EXCEPTION_CUSTOM_MSG1("Unknown 'grabber_type' found: %s", m_grabber_type.c_str() )
 
@@ -284,6 +312,9 @@ void CCameraSensor::close()
 {
 	delete_safe(m_cap_cv);
 	delete_safe(m_cap_dc1394);
+	delete_safe(m_cap_flycap);
+	delete_safe(m_cap_flycap_stereo_l);
+	delete_safe(m_cap_flycap_stereo_r);
 	delete_safe(m_cap_bumblebee);
 	delete_safe(m_cap_ffmpeg);
 	delete_safe(m_cap_rawlog);
@@ -377,8 +408,8 @@ void  CCameraSensor::loadConfig_sensorSpecific(
 	m_svs_options.m_Unique                          = configSource.read_int( iniSection, "svs_Unique", m_svs_options.m_Unique );
 	m_svs_options.m_Horopter                        = configSource.read_int( iniSection, "svs_Horopter", m_svs_options.m_Horopter );
 	m_svs_options.m_SpeckleSize                     = configSource.read_int( iniSection, "svs_SpeckleSize", m_svs_options.m_SpeckleSize );
-        m_svs_options.m_procesOnChip                    = configSource.read_bool( iniSection, "svs_procesOnChip",m_svs_options.m_procesOnChip);
-        m_svs_options.m_calDisparity                    = configSource.read_bool( iniSection, "svs_calDisparity",m_svs_options.m_calDisparity);
+	m_svs_options.m_procesOnChip                    = configSource.read_bool( iniSection, "svs_procesOnChip",m_svs_options.m_procesOnChip);
+	m_svs_options.m_calDisparity                    = configSource.read_bool( iniSection, "svs_calDisparity",m_svs_options.m_calDisparity);
 
 	// FFmpeg options:
 	m_ffmpeg_url  = mrpt::system::trim( configSource.read_string( iniSection, "ffmpeg_url", m_ffmpeg_url ) );
@@ -401,6 +432,13 @@ void  CCameraSensor::loadConfig_sensorSpecific(
 	m_kinect_save_range_img = configSource.read_bool( iniSection, "kinect_grab_range", m_kinect_save_range_img );
 	m_kinect_video_rgb = configSource.read_bool( iniSection, "kinect_video_rgb", m_kinect_video_rgb);
 
+	// FlyCap:
+	m_flycap_options.loadOptionsFrom(configSource,iniSection, "flycap_");
+
+	// FlyCap stereo
+	m_fcs_start_synch_capture = configSource.read_bool( iniSection, "fcs_start_synch_capture", m_fcs_start_synch_capture );
+	m_flycap_stereo_options[0].loadOptionsFrom(configSource,iniSection, "fcs_LEFT_");
+	m_flycap_stereo_options[1].loadOptionsFrom(configSource,iniSection, "fcs_RIGHT_");
 
 	// Special stuff: FPS
 	map<double,grabber_dc1394_framerate_t>	map_fps;
@@ -685,6 +723,49 @@ CObservationPtr CCameraSensor::getNextFrame()
 		}
 		capture_ok = true;
 	}
+	else if (m_cap_flycap)
+	{
+		obs = CObservationImage::Create();
+
+		if (!m_cap_flycap->getObservation(*obs))
+		{	// Error
+			m_state = CGenericSensor::ssError;
+			THROW_EXCEPTION("Error grabbing image");
+		}
+		else capture_ok = true;
+	}
+	else if (m_cap_flycap_stereo_l && m_cap_flycap_stereo_r)
+	{
+		stObs = CObservationStereoImages::Create();
+		
+		CObservationImage obsL,obsR;
+
+		bool ok1 = false, ok2=false; 
+		
+		ok1 = m_cap_flycap_stereo_r->getObservation(obsL);
+		if (ok1) 
+			ok2 = m_cap_flycap_stereo_l->getObservation(obsR);
+
+		if (!ok1 || !ok2)
+		{
+			// Error
+			m_state = CGenericSensor::ssError;
+			THROW_EXCEPTION("Error grabbing disparity images");
+		}
+		else
+		{
+			// Joint the two images as one stereo:
+			const double At = mrpt::system::timeDifference(obsL.timestamp,obsR.timestamp);
+			if (std::abs(At)>0.1) {
+				cout << "[CCamera, flycap_stereo] Warning: Too large delay between left & right images: " << At << " sec.\n";
+			}
+
+			stObs->timestamp = obsL.timestamp;
+			stObs->imageLeft.copyFastFrom(obsL.image);
+			stObs->imageRight.copyFastFrom(obsR.image);
+			capture_ok = true;
+		}
+	}
 	else
 	{
 		THROW_EXCEPTION("There is no initialized camera driver: has 'initialize()' been called?")
@@ -712,7 +793,7 @@ CObservationPtr CCameraSensor::getNextFrame()
 		stObs->sensorLabel = m_sensorLabel;
 		stObs->setSensorPose( m_sensorPose );
 	}
-	else {
+	else { 
 		obs3D->sensorLabel = m_sensorLabel;
 		obs3D->setSensorPose( m_sensorPose );
 	}
@@ -990,6 +1071,7 @@ CCameraSensorPtr mrpt::hwdrivers::prepareVideoSourceFromUserSelection()
 /* ------------------------------------------------------------------------
 						prepareVideoSourceFromPanel
    ------------------------------------------------------------------------ */
+MRPT_TODO("Add flycap")
 CCameraSensorPtr mrpt::hwdrivers::prepareVideoSourceFromPanel(void *_panel)
 {
 #if MRPT_HAS_WXWIDGETS

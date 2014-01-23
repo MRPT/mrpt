@@ -1,36 +1,10 @@
 /* +---------------------------------------------------------------------------+
-   |                 The Mobile Robot Programming Toolkit (MRPT)               |
-   |                                                                           |
+   |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2013, Individual contributors, see AUTHORS file        |
-   | Copyright (c) 2005-2013, MAPIR group, University of Malaga                |
-   | Copyright (c) 2012-2013, University of Almeria                            |
-   | All rights reserved.                                                      |
-   |                                                                           |
-   | Redistribution and use in source and binary forms, with or without        |
-   | modification, are permitted provided that the following conditions are    |
-   | met:                                                                      |
-   |    * Redistributions of source code must retain the above copyright       |
-   |      notice, this list of conditions and the following disclaimer.        |
-   |    * Redistributions in binary form must reproduce the above copyright    |
-   |      notice, this list of conditions and the following disclaimer in the  |
-   |      documentation and/or other materials provided with the distribution. |
-   |    * Neither the name of the copyright holders nor the                    |
-   |      names of its contributors may be used to endorse or promote products |
-   |      derived from this software without specific prior written permission.|
-   |                                                                           |
-   | THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS       |
-   | 'AS IS' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED |
-   | TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR|
-   | PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDERS BE LIABLE |
-   | FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL|
-   | DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR|
-   |  SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)       |
-   | HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,       |
-   | STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN  |
-   | ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE           |
-   | POSSIBILITY OF SUCH DAMAGE.                                               |
+   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | See: http://www.mrpt.org/Authors - All rights reserved.                   |
+   | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
 #ifndef CCameraSensor_H
@@ -45,6 +19,7 @@
 #include <mrpt/hwdrivers/CFFMPEG_InputStream.h>
 #include <mrpt/hwdrivers/CImageGrabber_OpenCV.h>
 #include <mrpt/hwdrivers/CImageGrabber_dc1394.h>
+#include <mrpt/hwdrivers/CImageGrabber_FlyCapture2.h>
 #include <mrpt/hwdrivers/CStereoGrabber_Bumblebee.h>
 #include <mrpt/hwdrivers/CSwissRanger3DCamera.h>
 #include <mrpt/hwdrivers/CKinect.h>
@@ -92,28 +67,28 @@ namespace mrpt
 		  *  PARAMETERS IN THE ".INI"-LIKE CONFIGURATION STRINGS:
 		  * -------------------------------------------------------
 		  *   [supplied_section_name]
-		  *    // Select one of the grabber implementations -----------------------
-		  *    grabber_type       = opencv | dc1394 | bumblebee | ffmpeg | rawlog | swissranger | kinect
+		  *    # Select one of the grabber implementations -----------------------
+		  *    grabber_type       = opencv | dc1394 | bumblebee | ffmpeg | rawlog | swissranger | svs | kinect | flycap | flycap_stereo
 		  *
-		  *    // Options for any grabber_type ------------------------------------
+		  *    #  Options for any grabber_type ------------------------------------
 		  *    preview_decimation = 0     // N<=0 (or not present): No preview; N>0, display 1 out of N captured frames.
 		  *    preview_reduction  = 0     // 0 or 1 (or not present): The preview shows the actual image. For 2,3,..., reduces the size of the image by that factor, only for the preview window.
 		  *    capture_grayscale  = 0     // 1:capture in grayscale, whenever the driver allows it. Default=0
-		  *    // For externaly stored images, the format of image files (default=jpg)
-		  *    //external_images_format  = jpg
+		  *    #  For externaly stored images, the format of image files (default=jpg)
+		  *    #external_images_format  = jpg
 		  *
-		  *    // For externaly stored images: whether to spawn independent threads to save the image files.
-		  *    //external_images_own_thread  = 1   // 0 or 1
+		  *    #  For externaly stored images: whether to spawn independent threads to save the image files.
+		  *    #external_images_own_thread  = 1   // 0 or 1
 		  *
-		  *    // If external_images_own_thread=1, this changes the number of threads to launch
-		  *    //  to save image files. The default is determined from mrpt::system::getNumberOfProcessors()
-		  *    //  and should be OK unless you want to save processor time for other things.
-		  *    //external_images_own_thread_count = 2    // >=1
+		  *    # If external_images_own_thread=1, this changes the number of threads to launch
+		  *    #  to save image files. The default is determined from mrpt::system::getNumberOfProcessors()
+		  *    #  and should be OK unless you want to save processor time for other things.
+		  *    #external_images_own_thread_count = 2    // >=1
 		  *
-		  *    // (Only when external_images_format=jpg): Optional parameter to set the JPEG compression quality:
-		  *    //external_images_jpeg_quality = 95    // [1-100]. Default: 95
+		  *    # (Only when external_images_format=jpg): Optional parameter to set the JPEG compression quality:
+		  *    #external_images_jpeg_quality = 95    // [1-100]. Default: 95
 		  *
-		  *    // Pose of the sensor on the robot:
+		  *    # Pose of the sensor on the robot:
 		  *    pose_x=0		; (meters)
 		  *    pose_y=0
 		  *    pose_z=0
@@ -121,7 +96,7 @@ namespace mrpt
 		  *    pose_pitch=0
 		  *    pose_roll=0
 		  *
-		  *    // Options for grabber_type= opencv  ------------------------------------
+		  *    # Options for grabber_type= opencv  ------------------------------------
 		  *    cv_camera_index  = 0       // [opencv] Number of camera to open
 		  *    cv_camera_type   = CAMERA_CV_AUTODETECT
 		  *    cv_frame_width   = 640     // [opencv] Capture width (not present or set to 0 for default)
@@ -129,7 +104,7 @@ namespace mrpt
 		  *    cv_fps           = 15      // [opencv] IEEE1394 cams only: Capture FPS (not present or 0 for default)
 		  *    cv_gain          = 0       // [opencv] Camera gain, if available (nor present or set to 0 for default).
 		  *
-		  *    // Options for grabber_type= dc1394 -------------------------------------
+		  *    # Options for grabber_type= dc1394 -------------------------------------
 		  *    dc1394_camera_guid   = 0 | 0x11223344    // 0 (or not present): the first camera; A hexadecimal number: The GUID of the camera to open
 		  *    dc1394_camera_unit   = 0     			// 0 (or not present): the first camera; 0,1,2,...: The unit number (within the given GUID) of the camera to open (Stereo cameras: 0 or 1)
 		  *    dc1394_frame_width	= 640
@@ -145,7 +120,7 @@ namespace mrpt
 		  *    dc1394_sharpness		= -1	// A value, or -1 (or not present) for not to change this parameter in the camera
 		  *    dc1394_white_balance	= -1	// A value, or -1 (or not present) for not to change this parameter in the camera
 		  *
-		  *    // Options for grabber_type= bumblebee ----------------------------------
+		  *    # Options for grabber_type= bumblebee ----------------------------------
 		  *    bumblebee_camera_index  = 0       // [bumblebee] Number of camera within the firewire bus to open (typically = 0)
 		  *    bumblebee_frame_width   = 640     // [bumblebee] Capture width (not present or set to 0 for default)
 		  *    bumblebee_frame_height  = 480     // [bumblebee] Capture height (not present or set to 0 for default)
@@ -153,14 +128,29 @@ namespace mrpt
 		  *    bumblebee_mono          = 0|1     // [bumblebee] OPTIONAL: If this parameter is present, monocular (0:left, 1:right) images will be grabbed instead of stereo pairs.
 		  *    bumblebee_get_rectified = 0|1     // [bumblebee] Determines if the camera should grab rectified or raw images (1 is the default)
 		  *
-		  *    // Options for grabber_type= ffmpeg -------------------------------------
+		  *    # Options for grabber_type= ffmpeg -------------------------------------
 		  *    ffmpeg_url             = rtsp://127.0.0.1      // [ffmpeg] The video file or IP camera to open
 		  *
-		  *    // Options for grabber_type= rawlog -------------------------------------
+		  *    # Options for grabber_type= rawlog -------------------------------------
 		  *    rawlog_file            = mylog.rawlog          // [rawlog] This can be used to simulate the capture of images already grabbed in the past in the form of a MRPT rawlog.
 		  *    rawlog_camera_sensor_label  = CAMERA1          // [rawlog] If this field is not present, all images found in the rawlog will be retrieved. Otherwise, only those observations with a matching sensor label.
 		  *
-		  *    // Options for grabber_type= swissranger -------------------------------------
+		  *    # Options for grabber_type= svs -------------------------------------
+		  *    svs_camera_index = 0  
+		  *    svs_frame_width = 800 
+		  *    svs_frame_height = 600 
+		  *    svs_framerate = 25.0
+		  *    svs_NDisp = ...
+		  *    svs_Corrsize = ...
+		  *    svs_LR = ...
+		  *    svs_Thresh = ...
+		  *    svs_Unique = ...
+		  *    svs_Horopter = ...
+		  *    svs_SpeckleSize = ...
+		  *    svs_procesOnChip = false
+		  *    svs_calDisparity = true
+		  *    
+		  *    # Options for grabber_type= swissranger -------------------------------------
 		  *    sr_use_usb         = true	        // True: use USB, false: use ethernet
 		  *    sr_IP              = 192.168.2.14    // If sr_use_usb=false, the camera IP
 		  *    sr_grab_grayscale  = true            // whether to save the intensity channel
@@ -168,12 +158,23 @@ namespace mrpt
 		  *    sr_grab_range      = true            // whether to save the range image
 		  *    sr_grab_confidence = true            // whether to save the confidence image
 		  *
-		  *    // Options for grabber_type= kinect -------------------------------------
+		  *    # Options for grabber_type= XBox kinect -------------------------------------
 		  *    kinect_grab_intensity  = true            // whether to save the intensity (RGB) channel
 		  *    kinect_grab_3d         = true            // whether to save the 3D points
 		  *    kinect_grab_range      = true            // whether to save the depth image
+		  *    #kinect_video_rgb       = true            // Optional. If set to "false", the IR intensity channel will be grabbed instead of the color RGB channel.
 		  *
-		  *    kinect_video_rgb       = true            // Optional. If set to "false", the IR intensity channel will be grabbed instead of the color RGB channel.
+		  *    # Options for grabber_type= flycap (Point Grey Research's FlyCapture 2) --------
+		  *    flycap_camera_index           = 0   
+		  *    #... (all the parameters enumerated in mrpt::hwdrivers::TCaptureOptions_FlyCapture2 with the prefix "flycap_")
+		  *
+		  *    # Options for grabber_type= flycap_stereo (Point Grey Research's FlyCapture 2, two cameras setup as a stereo pair) ------
+		  *    # fcs_start_synch_capture   = false  // *Important*: Only set to true if using Firewire cameras: the "startSyncCapture()" command is unsupported in USB3 and GigaE cameras.
+		  *
+		  *    fcs_LEFT_camera_index           = 0   
+		  *    #... (all the parameters enumerated in mrpt::hwdrivers::TCaptureOptions_FlyCapture2 with the prefix "fcs_LEFT_")
+		  *    fcs_RIGHT_camera_index          = 0   
+		  *    #... (all the parameters enumerated in mrpt::hwdrivers::TCaptureOptions_FlyCapture2 with the prefix "fcs_RIGHT_")
 		  *
 		  *  \endcode
 		  *
@@ -224,33 +225,42 @@ namespace mrpt
 			void enableLaunchOwnThreadForSavingImages(bool enable=true) { m_external_images_own_thread = enable; };
 
 		protected:
-			poses::CPose3D		m_sensorPose;
+			// Options for any grabber_type ------------------------------------
+			poses::CPose3D m_sensorPose;
 
-			std::string								m_grabber_type; //!< Can be "opencv",...
+			std::string                m_grabber_type; //!< Can be "opencv",...
 			bool									m_capture_grayscale;
+
+			// Options for grabber_type= opencv  ------------------------------------
 			int										m_cv_camera_index;
 			std::string								m_cv_camera_type;
-			mrpt::hwdrivers::TCaptureCVOptions			m_cv_options;
+			TCaptureCVOptions			m_cv_options;
 
+			// Options for grabber_type= dc1394 -------------------------------------
 			uint64_t								m_dc1394_camera_guid;
 			int										m_dc1394_camera_unit;
-			mrpt::hwdrivers::TCaptureOptions_dc1394	m_dc1394_options;
+			TCaptureOptions_dc1394	m_dc1394_options;
 			int										m_preview_decimation;
 			int										m_preview_reduction;
 
+			// Options for grabber_type= bumblebee ----------------------------------
 			int										m_bumblebee_camera_index;
-			mrpt::hwdrivers::TCaptureOptions_bumblebee	m_bumblebee_options;
+			TCaptureOptions_bumblebee	m_bumblebee_options;
 			int										m_bumblebee_monocam; // 0:Left, 1: Right, <0,>1 -> Stereo
 
+			// Options for grabber type= svs -----------------------------------------
 			int										m_svs_camera_index;
-			mrpt::hwdrivers::TCaptureOptions_SVS    m_svs_options;
+			TCaptureOptions_SVS    m_svs_options;
 
+			// Options for grabber_type= ffmpeg -------------------------------------
 			std::string								m_ffmpeg_url;
 
+			// Options for grabber_type= rawlog -------------------------------------
 			std::string								m_rawlog_file;
 			std::string								m_rawlog_camera_sensor_label;
 			std::string								m_rawlog_detected_images_dir;
 
+			// Options for grabber_type= swissranger -------------------------------------
 			bool 			m_sr_open_from_usb; //!< true: USB, false: ETH
 			std::string  	m_sr_ip_address;
 			bool 			m_sr_save_3d;			//!< Save the 3D point cloud (default: true)
@@ -258,11 +268,20 @@ namespace mrpt
 			bool 			m_sr_save_intensity_img; //!< Save the 2D intensity image (default: true)
 			bool 			m_sr_save_confidence;	//!< Save the estimated confidence 2D image (default: false)
 
+			// Options for grabber_type= XBox kinect -------------------------------------
 			bool 			m_kinect_save_3d;			//!< Save the 3D point cloud (default: true)
 			bool 			m_kinect_save_range_img;	//!< Save the 2D range image (default: true)
 			bool 			m_kinect_save_intensity_img; //!< Save the 2D intensity image (default: true)
 			bool			m_kinect_video_rgb;			//!< Save RGB or IR channels (default:true)
 
+			// Options for grabber type= flycap -----------------------------------------
+			TCaptureOptions_FlyCapture2   m_flycap_options;
+
+			// Options for grabber type= flycap_stereo -----------------------------------------
+			bool            m_fcs_start_synch_capture;
+			TCaptureOptions_FlyCapture2   m_flycap_stereo_options[2]; // [0]:left, [1]:right
+
+			// Other options:
 			bool				m_external_images_own_thread; //!< Whether to launch independent thread
 
 			/** See the class documentation at the top for expected parameters */
@@ -272,14 +291,16 @@ namespace mrpt
 
 		private:
 			// Only one of these will be !=NULL at a time ===========
-			CImageGrabber_OpenCV 				*m_cap_cv;		//!< The OpenCV capture object.
-			CImageGrabber_dc1394 				*m_cap_dc1394;	//!< The dc1394 capture object.
-			CStereoGrabber_Bumblebee 			*m_cap_bumblebee;	//!< The bumblebee capture object.
-			mrpt::hwdrivers::CStereoGrabber_SVS        *m_cap_svs;	//!< The svs capture object.
-			CFFMPEG_InputStream					*m_cap_ffmpeg;	//!< The FFMPEG capture object
-			mrpt::utils::CFileGZInputStream		*m_cap_rawlog;	//!< The input file for rawlogs
-			CSwissRanger3DCamera				*m_cap_swissranger; //!< SR 3D camera object.
-			CKinect                             *m_cap_kinect;    //!< Kinect camera object.
+			CImageGrabber_OpenCV      * m_cap_cv;		//!< The OpenCV capture object.
+			CImageGrabber_dc1394      * m_cap_dc1394;	//!< The dc1394 capture object.
+			CImageGrabber_FlyCapture2 * m_cap_flycap;     //!< The FlyCapture2 object
+			CImageGrabber_FlyCapture2 * m_cap_flycap_stereo_l, *m_cap_flycap_stereo_r;     //!< The FlyCapture2 object for stereo pairs
+			CStereoGrabber_Bumblebee  * m_cap_bumblebee;	//!< The bumblebee capture object.
+			CStereoGrabber_SVS        * m_cap_svs;	//!< The svs capture object.
+			CFFMPEG_InputStream       * m_cap_ffmpeg;	//!< The FFMPEG capture object
+			mrpt::utils::CFileGZInputStream * m_cap_rawlog;	//!< The input file for rawlogs
+			CSwissRanger3DCamera      * m_cap_swissranger; //!< SR 3D camera object.
+			CKinect                   * m_cap_kinect;    //!< Kinect camera object.
 			// =========================
 
 			int			m_camera_grab_decimator;

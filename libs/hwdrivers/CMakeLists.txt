@@ -148,6 +148,13 @@ IF(BUILD_mrpt-hwdrivers)
 		TARGET_LINK_LIBRARIES(mrpt-hwdrivers ${NI_DAQmx_LIB_FILE})
 	ENDIF(MRPT_HAS_NI_DAQmx)
 
+	# Link to PGR FlyCapture2 libraries:
+	IF(CMAKE_MRPT_HAS_FLYCAPTURE2)
+		# link_directories() was added in the configuration script under /cmakemodules/*_ni.cmake
+		INCLUDE_DIRECTORIES(${PGR_FLYCAPTURE2_INCLUDE_DIR})
+		TARGET_LINK_LIBRARIES(mrpt-hwdrivers ${PGR_FLYCAPTURE2_LIB_FILE_RELEASE})
+	ENDIF(CMAKE_MRPT_HAS_FLYCAPTURE2)
+
 	# Build with link on SVS lib
 	IF(CMAKE_MRPT_HAS_SVS)
 		TARGET_LINK_LIBRARIES(mrpt-hwdrivers dcap)

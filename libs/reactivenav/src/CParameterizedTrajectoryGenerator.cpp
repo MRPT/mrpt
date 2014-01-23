@@ -1,36 +1,10 @@
 /* +---------------------------------------------------------------------------+
-   |                 The Mobile Robot Programming Toolkit (MRPT)               |
-   |                                                                           |
+   |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2013, Individual contributors, see AUTHORS file        |
-   | Copyright (c) 2005-2013, MAPIR group, University of Malaga                |
-   | Copyright (c) 2012-2013, University of Almeria                            |
-   | All rights reserved.                                                      |
-   |                                                                           |
-   | Redistribution and use in source and binary forms, with or without        |
-   | modification, are permitted provided that the following conditions are    |
-   | met:                                                                      |
-   |    * Redistributions of source code must retain the above copyright       |
-   |      notice, this list of conditions and the following disclaimer.        |
-   |    * Redistributions in binary form must reproduce the above copyright    |
-   |      notice, this list of conditions and the following disclaimer in the  |
-   |      documentation and/or other materials provided with the distribution. |
-   |    * Neither the name of the copyright holders nor the                    |
-   |      names of its contributors may be used to endorse or promote products |
-   |      derived from this software without specific prior written permission.|
-   |                                                                           |
-   | THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS       |
-   | 'AS IS' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED |
-   | TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR|
-   | PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDERS BE LIABLE |
-   | FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL|
-   | DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR|
-   |  SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)       |
-   | HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,       |
-   | STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN  |
-   | ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE           |
-   | POSSIBILITY OF SUCH DAMAGE.                                               |
+   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | See: http://www.mrpt.org/Authors - All rights reserved.                   |
+   | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
 
@@ -68,7 +42,6 @@ CParameterizedTrajectoryGenerator::CParameterizedTrajectoryGenerator(const TPara
 	nVertices = 0;
 	turningRadiusReference = 0.10f;
 
-	// This does not need to be done here: it can be done in mrpt::reactivenav::build_PTG_collision_grids()
 	initializeCollisionsGrid( refDistance, params["resolution"] );
 }
 
@@ -516,8 +489,7 @@ bool CParameterizedTrajectoryGenerator::LoadColGridsFromFile( const std::string 
 	}
 }
 
-const uint32_t OLD_COLGRID_FILE_MAGIC = 0xC0C0C0C0;
-const uint32_t COLGRID_FILE_MAGIC     = 0xC0C0C0C1;
+const uint32_t COLGRID_FILE_MAGIC     = 0xC0C0C0C2;
 
 /*---------------------------------------------------------------
 					Save to file
@@ -577,13 +549,9 @@ bool CParameterizedTrajectoryGenerator::CColisionGrid::loadFromFile( CStream *f,
 		uint32_t file_magic;
 		*f >> file_magic;
 
+		// It doesn't seem to be a valid file or was in an old format, just recompute the grid:
 		if (COLGRID_FILE_MAGIC!=file_magic)
-		{
-			// May it be a file in the old format?
-			if (OLD_COLGRID_FILE_MAGIC==file_magic)
-					return false;  // We can't be sure of the robot shape: return false and recompute the grid.
-			else	return false;  // It doesn't seem to be a valid file: recompute the grid.
-		}
+			return false;
 
 		uint8_t serialized_version;
 		*f >> serialized_version;
@@ -656,10 +624,13 @@ bool CParameterizedTrajectoryGenerator::CColisionGrid::loadFromFile( CStream *f,
 	}
 }
 
-/*---------------------------------------------------------------
-				lambdaFunction
-  ---------------------------------------------------------------*/
-void CParameterizedTrajectoryGenerator::lambdaFunction( float x, float y, int &k_out, float &d_out )
+// Deprecated:         
+void CParameterizedTrajectoryGenerator::lambdaFunction( float x, float y, int &out_k, float &out_d )
+{
+	this->inverseMap_WS2TP(x,y,out_k,out_d);
+}
+
+bool CParameterizedTrajectoryGenerator::inverseMap_WS2TP( float x, float y, int &k_out, float &d_out, float tolerance_dist ) const
 {
     ASSERTMSG_(m_alphaValuesCount>0, "Have you called simulateTrajectories() first?")
 
@@ -682,7 +653,7 @@ void CParameterizedTrajectoryGenerator::lambdaFunction( float x, float y, int &k
 	{
 		for (int cy=cy0-1;cy<=cy0+1;cy++)
 		{
-			TCellForLambdaFunction	*cell = m_lambdaFunctionOptimizer.cellByIndex(cx,cy);
+			const TCellForLambdaFunction	*cell = m_lambdaFunctionOptimizer.cellByIndex(cx,cy);
 			if (cell && !cell->isEmpty())
 			{
 				if (!at_least_one)
@@ -734,7 +705,7 @@ void CParameterizedTrajectoryGenerator::lambdaFunction( float x, float y, int &k
 	{
 		k_out = selected_k;
 		d_out = selected_d / refDistance;
-		return;
+		return (selected_dist <= square(tolerance_dist));
 	}
 
 	// If not found, compute an extrapolation:
@@ -762,6 +733,38 @@ void CParameterizedTrajectoryGenerator::lambdaFunction( float x, float y, int &k
 
 	k_out = selected_k;
 	d_out = selected_d / refDistance;
+	return false;
 }
 
+
+void CParameterizedTrajectoryGenerator::renderPathAsSimpleLine(
+	const uint16_t k, 
+	mrpt::opengl::CSetOfLines &gl_obj, 
+	const float decimate_distance, 
+	const float max_path_distance) const
+{
+	const size_t nPointsInPath = getPointsCountInCPath_k(k);
+
+	// Decimate trajectories: we don't need centimeter resolution!
+	float last_added_dist = 0.0f;
+	for (size_t n=0;n<nPointsInPath;n++)
+	{
+		const float d = GetCPathPoint_d(k, n); // distance thru path "k" until timestep "n"
+
+		if (d<last_added_dist+decimate_distance && n!=0)
+			continue; // skip: decimation
+
+		last_added_dist = d;
+
+		const float x = GetCPathPoint_x(k, n);
+		const float y = GetCPathPoint_y(k, n);
+
+		if (gl_obj.empty())
+		     gl_obj.appendLine(0,0,0, x,y,0);
+		else gl_obj.appendLineStrip(x,y,0);
+
+		// Draw the TP only until we reach the target of the "motion" segment:
+		if (max_path_distance!=0.0f && d>=max_path_distance) break;
+	}
+}
 

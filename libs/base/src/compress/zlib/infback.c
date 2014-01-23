@@ -1,7 +1,11 @@
-/* infback.c -- inflate using a call-back interface
- * Copyright (C) 1995-2005 Mark Adler
- * For conditions of distribution and use, see copyright notice in zlib.h
- */
+/* +---------------------------------------------------------------------------+
+   |                     Mobile Robot Programming Toolkit (MRPT)               |
+   |                          http://www.mrpt.org/                             |
+   |                                                                           |
+   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | See: http://www.mrpt.org/Authors - All rights reserved.                   |
+   | Released under BSD License. See details in http://www.mrpt.org/License    |
+   +---------------------------------------------------------------------------+ */
 
 /*
    This code is largely copied from inflate.c.  Normally either infback.o or

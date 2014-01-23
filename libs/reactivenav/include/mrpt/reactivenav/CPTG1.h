@@ -1,36 +1,10 @@
 /* +---------------------------------------------------------------------------+
-   |                 The Mobile Robot Programming Toolkit (MRPT)               |
-   |                                                                           |
+   |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2013, Individual contributors, see AUTHORS file        |
-   | Copyright (c) 2005-2013, MAPIR group, University of Malaga                |
-   | Copyright (c) 2012-2013, University of Almeria                            |
-   | All rights reserved.                                                      |
-   |                                                                           |
-   | Redistribution and use in source and binary forms, with or without        |
-   | modification, are permitted provided that the following conditions are    |
-   | met:                                                                      |
-   |    * Redistributions of source code must retain the above copyright       |
-   |      notice, this list of conditions and the following disclaimer.        |
-   |    * Redistributions in binary form must reproduce the above copyright    |
-   |      notice, this list of conditions and the following disclaimer in the  |
-   |      documentation and/or other materials provided with the distribution. |
-   |    * Neither the name of the copyright holders nor the                    |
-   |      names of its contributors may be used to endorse or promote products |
-   |      derived from this software without specific prior written permission.|
-   |                                                                           |
-   | THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS       |
-   | 'AS IS' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED |
-   | TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR|
-   | PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDERS BE LIABLE |
-   | FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL|
-   | DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR|
-   |  SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)       |
-   | HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,       |
-   | STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN  |
-   | ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE           |
-   | POSSIBILITY OF SUCH DAMAGE.                                               |
+   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | See: http://www.mrpt.org/Authors - All rights reserved.                   |
+   | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 #ifndef CPTG1_H
 #define CPTG1_H
@@ -42,9 +16,28 @@ namespace mrpt
   namespace reactivenav
   {
 
-	/** A PTG for circular paths ("C" type PTG in papers). The parameter K is related with the transformation between alpha values
-			and curvature of the arcs. Let R be the radius of the circular path (the inverse of the curvature).
-			Then: <br> <center><code> R = K / (v<sub>MAX</sub> tan &alpha;) </code></center>
+	/** A PTG for circular paths ("C" type PTG in papers). 
+	 * 
+	 * Accepted parameters in the constructor:
+	 * - params["ref_distance"]: Maximum trayectory distance (meters).
+	 * - params["v_max"]: Maximum linear velocity (m/s)
+	 * - params["w_max"]: Maximum angular velocity (rad/s)
+	 * - params["K"]: Can be "+1" for forward paths, or "-1" for backward paths.
+	 * 
+	 * This PT generator functions are: 
+	 *
+	 * \f[ v(\alpha) = V_{MAX} sign(K) \f]
+	 * \f[ \omega(\alpha) = \dfrac{\alpha}{\pi} W_{MAX} sign(K) \f]
+	 *
+	 * So, the radius of curvature of each trajectory is constant for each "alpha" value (the trajectory parameter):
+	 *
+	 *  \f[ R(\alpha) = \dfrac{v}{\omega} = \dfrac{V_{MAX}}{W_{MAX}} \dfrac{\pi}{\alpha} \f]
+	 *
+	 * from which a minimum radius of curvature can be set by selecting the appropriate values of V_MAX and W_MAX, 
+	 * knowning that \f$ \alpha \in (-\pi,\pi) \f$.
+	 *
+	 *  ![C-PTG path examples](PTG1_paths.png)
+	 *
 	 *  \ingroup mrpt_reactivenav_grp
 	 */
 	class REACTIVENAV_IMPEXP CPTG1 : public CParameterizedTrajectoryGenerator
@@ -55,8 +48,7 @@ namespace mrpt
 			 */
 			CPTG1(const TParameters<double> &params );
 
-			/** The lambda function. */
-			void lambdaFunction( float x, float y, int &out_k, float &out_d );
+			virtual bool inverseMap_WS2TP(float x, float y, int &out_k, float &out_d, float tolerance_dist = 0.10f) const;
 
 			/** Gets a short textual description of the PTG and its parameters. */
 			std::string getDescription() const;

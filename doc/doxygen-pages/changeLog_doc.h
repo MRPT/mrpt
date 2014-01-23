@@ -1,103 +1,90 @@
 /* +---------------------------------------------------------------------------+
-   |                 The Mobile Robot Programming Toolkit (MRPT)               |
-   |                                                                           |
+   |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2013, Individual contributors, see AUTHORS file        |
-   | Copyright (c) 2005-2013, MAPIR group, University of Malaga                |
-   | Copyright (c) 2012-2013, University of Almeria                            |
-   | All rights reserved.                                                      |
-   |                                                                           |
-   | Redistribution and use in source and binary forms, with or without        |
-   | modification, are permitted provided that the following conditions are    |
-   | met:                                                                      |
-   |    * Redistributions of source code must retain the above copyright       |
-   |      notice, this list of conditions and the following disclaimer.        |
-   |    * Redistributions in binary form must reproduce the above copyright    |
-   |      notice, this list of conditions and the following disclaimer in the  |
-   |      documentation and/or other materials provided with the distribution. |
-   |    * Neither the name of the copyright holders nor the                    |
-   |      names of its contributors may be used to endorse or promote products |
-   |      derived from this software without specific prior written permission.|
-   |                                                                           |
-   | THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS       |
-   | 'AS IS' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED |
-   | TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR|
-   | PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDERS BE LIABLE |
-   | FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL|
-   | DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR|
-   |  SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)       |
-   | HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,       |
-   | STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN  |
-   | ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE           |
-   | POSSIBILITY OF SUCH DAMAGE.                                               |
+   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | See: http://www.mrpt.org/Authors - All rights reserved.                   |
+   | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
-
+   
 /** \page changelog Change Log
  *
 
-<p> <b>Note:</b> <i>If you are displaying a local version of this page and you have not built the whole HTML documentation, the links above will be broken. Either build the documentation invoking <code>make documentation_html</code> or browse it on-line <a href="http://www.mrpt.org/" target="_blank">here</a>.</i></p>
+<p> <b>Note:</b> <i>If you are displaying a local version of this page and you have not built the whole HTML documentation, the links above will be broken. Either build the documentation invoking <code>make documentation_html</code> or [browse it on-line](http://www.mrpt.org/).</i></p>
 
  <a name="1.0.3">
   <h2>Version 1.0.3: (Under development)  </h2></a>
+	- New apps:
+		- [DifOdometry-Camera](http://www.mrpt.org/list-of-mrpt-apps/application-difodometry-camera).  (By Mariano Jaimez Tarifa)
+		- [DifOdometry-Datasets](http://www.mrpt.org/list-of-mrpt-apps/application-difodometry-datasets). (By Mariano Jaimez Tarifa)
 	- New classes:
 		- [mrpt-base]
 			- mrpt::synch::CPipe: OS-independent pipe support.
 		- [mrpt-hwdrivers]
 			- mrpt::hwdrivers::CIMUXSens_MT4 : Support for 4th generation xSens MT IMU devices.
-			- mrpt::hwdrivers::CNationalInstrumentsDAQ: Support for acquisition boards compatible with National Instruments DAQmx Base - <a href="https://github.com/jlblancoc/mrpt/commit/a82a7e37997cfb77e7ee9e903bdb2a55e3040b35">a82a7e3799</a>.
+			- mrpt::hwdrivers::CNationalInstrumentsDAQ: Support for acquisition boards compatible with National Instruments DAQmx Base - [(commit)](https://github.com/jlblancoc/mrpt/commit/a82a7e37997cfb77e7ee9e903bdb2a55e3040b35).
+			- mrpt::hwdrivers::CImageGrabber_FlyCapture2: Support for Point Grey Research's cameras via the FlyCapture2 libray - [(commits)](https://github.com/jlblancoc/mrpt/pull/5/commits).
 		- [mrpt-maps]
-			- There are now two versions of octomaps (by Mariano Jaimez Tarifa/Jose Luis Blanco) - <a href="http://code.google.com/p/mrpt/source/detail?r=3443" >r3443</a>
+			- There are now two versions of octomaps (by Mariano Jaimez Tarifa/Jose Luis Blanco) - [(commit)](http://code.google.com/p/mrpt/source/detail?r=3443)
 				- mrpt::slam::COctoMap (only occupancy)
 				- mrpt::slam::CColouredOctoMap (occupancy + RGB color)
 		- [mrpt-obs]
-			- mrpt::slam::CObservationRawDAQ, a placeholder for raw and generic measurements from data acquisition devices. - <a href="http://code.google.com/p/mrpt/source/detail?r=3459" >r3459</a>
+			- mrpt::slam::CObservationRawDAQ, a placeholder for raw and generic measurements from data acquisition devices. - [(commit)](http://code.google.com/p/mrpt/source/detail?r=3459)
 		- [mrpt-opengl]
-			- mrpt::opengl::CMeshFast, an open gl object that draws a "mesh" as a structured point cloud which is faster to render (by Mariano Jaimez Tarifa). -<a href="https://github.com/jlblancoc/mrpt/commit/9306bb4a585387d4c85b3f6e41dd2cbe5a354e80" >r9306bb4a58</a>
-			- mrpt::opengl::CVectorField2D, an opengl object that shows a 2D Vector Field (by Mariano Jaimez Tarifa). - <a href="http://code.google.com/p/mrpt/source/detail?r=3461" >r3461</a>
+			- mrpt::opengl::CMeshFast, an open gl object that draws a "mesh" as a structured point cloud which is faster to render (by Mariano Jaimez Tarifa). -[(commit)](https://github.com/jlblancoc/mrpt/commit/9306bb4a585387d4c85b3f6e41dd2cbe5a354e80)
+			- mrpt::opengl::CVectorField2D, an opengl object that shows a 2D Vector Field (by Mariano Jaimez Tarifa). - [(commit)](http://code.google.com/p/mrpt/source/detail?r=3461)
 		- [mrpt-reactivenav]
-			- mrpt::reactivenav::CAbstractPTGBasedReactive, as part of a large code refactoring of these classes: <a href="https://github.com/jlblancoc/mrpt/pull/4" >commit</a>
+			- mrpt::reactivenav::CAbstractPTGBasedReactive, as part of a large code refactoring of these classes: [(commit)](https://github.com/jlblancoc/mrpt/pull/4)
 				- mrpt::reactivenav::CReactiveNavigationSystem
 				- mrpt::reactivenav::CReactiveNavigationSystem3D
+		- [mrpt-vision]
+			- mrpt::vision::CDifodo, a class which implements visual odometry based on depth images and the "range flow constraint equation". (by Mariano Jaimez Tarifa) - [(commit)](https://github.com/jlblancoc/mrpt/commit/e6ab5595f70cb889d07658c0b540c27e495a1cfb)
 	- Changes in classes:
-		- Clean up and slight optimization of metric map matching API: - <a href="http://code.google.com/p/mrpt/source/detail?r=3446" >r3446</a>
+		- Clean up and slight optimization of metric map matching API: - [(commit)](http://code.google.com/p/mrpt/source/detail?r=3446)
 			- <b>Methods marked as deprecated: </b>
 				- mrpt::slam::CMetricMap::computeMatchingWith2D() --> mrpt::slam::CMetricMap::determineMatching2D()
 				- mrpt::slam::CMetricMap::computeMatchingWith3D() --> mrpt::slam::CMetricMap::determineMatching3D()
 			- New structures:
 				- mrpt::slam::TMatchingParams
 				- mrpt::slam::TMatchingExtraResults
-		- mrpt::slam::CObservationIMU now includes data fields for 3D magnetometers and altimeters. - <a href="http://code.google.com/p/mrpt/source/detail?r=3451" >r3451</a>
+		- mrpt::slam::CPointsMap::TInsertionOptions now have methods to save/load from binary streams, making more maintainable the serialization of point maps - [(commit)](https://github.com/jlblancoc/mrpt/commit/544d439c3462228b07344142de68e5bc10c1a2e3)
+		- New options in point maps: mrpt::slam::CPointsMap::TInsertionOptions::insertInvalidPoints - [(commit)](https://github.com/jlblancoc/mrpt/pull/8)
+		- mrpt::slam::CObservationIMU now includes data fields for 3D magnetometers and altimeters. - [(commit)](http://code.google.com/p/mrpt/source/detail?r=3451)
 		- Method renamed mrpt::utils::CEnhancedMetaFile::selectVectorTextFont() to avoid shadowing mrpt::utils::CCanvas::selectTextFont()
+		- mrpt::reactivenav::CParameterizedTrajectoryGenerator: New methods:  
+			- mrpt::reactivenav::CParameterizedTrajectoryGenerator::inverseMap_WS2TP() for inverse look-up of WS to TP space - [(commit)](https://github.com/jlblancoc/mrpt/commit/4d04ef50e3dea581bed6287d4ea6593034c47da3)
+			- mrpt::reactivenav::CParameterizedTrajectoryGenerator::renderPathAsSimpleLine() - [(commit)](https://github.com/jlblancoc/mrpt/commit/a224fc2489ad00b3ab116c84e8d4a48532a005df)
 	- Deleted classes:
 		- mrpt::utils::CEvent, which was actually unimplemented (!)
 		- mrpt::hwdrivers::CInterfaceNI845x has been deleted. It didn't offer features enough to justify a class.
 	- New examples:
 		- [MRPT]/samples/threadsPipe
 		- [MRPT]/samples/NIDAQ_test
+		- [MRPT]/openNI2_RGBD_demo (by Mariano Jaimez Tarifa)
+		- [MRPT]/openNI2_proximity_demo (by Mariano Jaimez Tarifa)
 	- Build system:
 		- Fixed compilation with clang.
 		- Fixed building against OpenCV 3.0.0 (GIT head)
 		- Updated to the latest nanoflann 1.1.7.
-		- Updated to Eigen 3.2.0 - <a href="http://code.google.com/p/mrpt/source/detail?r=3455" >r3455</a>
+		- Updated to Eigen 3.2.0 - [(commit)](http://code.google.com/p/mrpt/source/detail?r=3455)
 		- Binary packages for Windows now include .pdb files to help debugging with Visual Studio.
 	- BUG FIXES:
 		- Fixed potential infinity loop in mrpt::math::make_vector<1,T>()
-		- Fixed build error with GCC when experimental parallelization is enabled. <a href="http://code.google.com/p/mrpt/source/detail?r=3441" >r3441</a>
-		- mrpt::reactivenav::CReactiveNavigationSystem complained about missing config variables ROBOTMODEL_TAU & ROBOTMODEL_DELAY, which were removed in MRPT 1.0.2 - <a href="http://code.google.com/p/mrpt/source/detail?r=3452" >r3452</a>
-		- Fixed potential mem alignment errors (Eigen's UnalignedArrayAssert) in SRBA for 32bit builds. <a href="http://code.google.com/p/mrpt/source/detail?r=3457" >r3457</a>
-		- mrpt::topography::geodeticToENU_WGS84() and related functions used a local +Z axis aligned to the line towards the Earth center; now the Z axis points normally to the ellipsoid surface. The difference with the previous behavior is small but may be of a few millimeters for each meter from the reference point. <a href="http://code.google.com/p/mrpt/source/detail?r=3473" >r3473</a>
-		- Potential crash when setting mpPolygon::setPoints() with empty vectors - <a href="http://code.google.com/p/mrpt/source/detail?r=3478" >r3478</a>
-        - mrpt::reactivenav::CReactiveNavigationSystem and mrpt::reactivenav::CReactiveNavigationSystem3D didn't obey the "enableConsoleOutput" constructor flag - <a href="https://github.com/jlblancoc/mrpt/commit/db7b0e76506af2c24f119a28443a1e8f1a217861">db7b0e76</a>.
-
+		- Fixed build error with GCC when experimental parallelization is enabled. [(commit)](http://code.google.com/p/mrpt/source/detail?r=3441)
+		- mrpt::reactivenav::CReactiveNavigationSystem complained about missing config variables ROBOTMODEL_TAU & ROBOTMODEL_DELAY, which were removed in MRPT 1.0.2 - [(commit)](http://code.google.com/p/mrpt/source/detail?r=3452)
+		- Fixed potential mem alignment errors (Eigen's UnalignedArrayAssert) in SRBA for 32bit builds. [(commit)](http://code.google.com/p/mrpt/source/detail?r=3457)
+		- mrpt::topography::geodeticToENU_WGS84() and related functions used a local +Z axis aligned to the line towards the Earth center; now the Z axis points normally to the ellipsoid surface. The difference with the previous behavior is small but may be of a few millimeters for each meter from the reference point. [(commit)](http://code.google.com/p/mrpt/source/detail?r=3473)
+		- Potential crash when setting mpPolygon::setPoints() with empty vectors - [(commit)](http://code.google.com/p/mrpt/source/detail?r=3478)
+		- mrpt::reactivenav::CReactiveNavigationSystem and mrpt::reactivenav::CReactiveNavigationSystem3D didn't obey the "enableConsoleOutput" constructor flag - [(commit)](https://github.com/jlblancoc/mrpt/commit/db7b0e76506af2c24f119a28443a1e8f1a217861)
+		- mrpt::synch::CSemaphore::waitForSignal() : Fixed error when thread got an external signal [(commit)](https://github.com/jlblancoc/mrpt/commit/511e95f03480537ff18ad2cad178c504b1cfbb53)
 
  <hr>
  <a name="1.0.2">
   <h2>Version 1.0.2: Released 2-AUG-2013 (SVN 3435)  </h2></a>
 	- New apps:
-		- <a href="http://www.mrpt.org/Application%3AReactiveNav3D-Demo" >ReactiveNav3D-Demo</a> (By Mariano Jaimez Tarifa)
+		- [ReactiveNav3D-Demo](http://www.mrpt.org/Application%3AReactiveNav3D-Demo) (By Mariano Jaimez Tarifa)
 	- Changes in apps:
-		- <a href="http://www.mrpt.org/Application%3Arawlog-edit" >rawlog-edit</a>:
+		- [rawlog-edit](http://www.mrpt.org/Application%3Arawlog-edit):
 			- New operations: --list-timestamps, --remap-timestamps, --export-2d-scans-txt, --export-imu-txt
 	- New classes:
 		- [mrpt-base]

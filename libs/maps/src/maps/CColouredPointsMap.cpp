@@ -1,36 +1,10 @@
 /* +---------------------------------------------------------------------------+
-   |                 The Mobile Robot Programming Toolkit (MRPT)               |
-   |                                                                           |
+   |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2013, Individual contributors, see AUTHORS file        |
-   | Copyright (c) 2005-2013, MAPIR group, University of Malaga                |
-   | Copyright (c) 2012-2013, University of Almeria                            |
-   | All rights reserved.                                                      |
-   |                                                                           |
-   | Redistribution and use in source and binary forms, with or without        |
-   | modification, are permitted provided that the following conditions are    |
-   | met:                                                                      |
-   |    * Redistributions of source code must retain the above copyright       |
-   |      notice, this list of conditions and the following disclaimer.        |
-   |    * Redistributions in binary form must reproduce the above copyright    |
-   |      notice, this list of conditions and the following disclaimer in the  |
-   |      documentation and/or other materials provided with the distribution. |
-   |    * Neither the name of the copyright holders nor the                    |
-   |      names of its contributors may be used to endorse or promote products |
-   |      derived from this software without specific prior written permission.|
-   |                                                                           |
-   | THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS       |
-   | 'AS IS' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED |
-   | TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR|
-   | PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDERS BE LIABLE |
-   | FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL|
-   | DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR|
-   |  SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)       |
-   | HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,       |
-   | STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN  |
-   | ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE           |
-   | POSSIBILITY OF SUCH DAMAGE.                                               |
+   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | See: http://www.mrpt.org/Authors - All rights reserved.                   |
+   | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
 #include <mrpt/maps.h>  // Precompiled header
@@ -145,7 +119,7 @@ void  CColouredPointsMap::copyFrom(const CPointsMap &obj)
 void  CColouredPointsMap::writeToStream(CStream &out, int *version) const
 {
 	if (version)
-		*version = 7;
+		*version = 8;
 	else
 	{
 		uint32_t n = x.size();
@@ -158,30 +132,12 @@ void  CColouredPointsMap::writeToStream(CStream &out, int *version) const
 			out.WriteBufferFixEndianness(&x[0],n);
 			out.WriteBufferFixEndianness(&y[0],n);
 			out.WriteBufferFixEndianness(&z[0],n);
-			// v7 removed: WriteBufferFixEndianness(&pointWeight[0],n);
 		}
+		out << m_color_R << m_color_G << m_color_B; // added in v4
 
-		// version 2: options saved too
-		out	<< insertionOptions.minDistBetweenLaserPoints
-			<< insertionOptions.addToExistingPointsMap
-			<< insertionOptions.also_interpolate
-			<< insertionOptions.disableDeletion
-			<< insertionOptions.fuseWithExisting
-			<< insertionOptions.isPlanarMap
-			//  << insertionOptions.matchStaticPointsOnly  // Removed in version 6
-			<< insertionOptions.maxDistForInterpolatePoints;
-
-		// Insertion as 3D:
-		out << m_disableSaveAs3DObject;
-
-		// Added in version 3:
-		out << insertionOptions.horizontalTolerance;
-
-		// V4:
-		out << m_color_R << m_color_G << m_color_B; // Removed in v7: << m_min_dist;
-
-		// V5:
-		likelihoodOptions.writeToStream(out);
+		out << m_disableSaveAs3DObject; // Insertion as 3D
+		insertionOptions.writeToStream(out); // version 9: insert options are saved with its own method
+		likelihoodOptions.writeToStream(out); // Added in version 5
 	}
 }
 
@@ -194,6 +150,29 @@ void  CColouredPointsMap::readFromStream(CStream &in, int version)
 {
 	switch(version)
 	{
+	case 8:
+		{
+			mark_as_modified();
+
+			// Read the number of points:
+			uint32_t n;
+			in >> n;
+
+			x.resize(n); y.resize(n); z.resize(n);
+
+			if (n>0)
+			{
+				in.ReadBufferFixEndianness(&x[0],n);
+				in.ReadBufferFixEndianness(&y[0],n);
+				in.ReadBufferFixEndianness(&z[0],n);
+			}
+			in >> m_color_R >> m_color_G >> m_color_B;
+
+			in >> m_disableSaveAs3DObject;
+			insertionOptions.readFromStream(in);
+			likelihoodOptions.readFromStream(in);
+		} break;
+
 	case 0:
 	case 1:
 	case 2:
@@ -295,6 +274,9 @@ void  CColouredPointsMap::readFromStream(CStream &in, int version)
 
 			if (version>=5) // version 5: added likelihoodOptions
 				likelihoodOptions.readFromStream(in);
+
+			if (version>=8) // version 8: added insertInvalidPoints
+				in >> insertionOptions.insertInvalidPoints;
 
 		} break;
 	default:

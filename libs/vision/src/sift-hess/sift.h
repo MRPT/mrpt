@@ -1,20 +1,11 @@
-/**@file
-Functions for detecting SIFT image features.
-
-For more information, refer to:
-
-Lowe, D.  Distinctive image features from scale-invariant keypoints.
-<EM>International Journal of Computer Vision, 60</EM>, 2 (2004),
-pp.91--110.
-
-Copyright (C) 2006  Rob Hess <hess@eecs.oregonstate.edu>
-Note: The SIFT algorithm is patented in the United States and cannot be
-used in commercial products without a license from the University of
-British Columbia.  For more information, refer to the file LICENSE.ubc
-that accompanied this distribution.
-
-@version 1.1.1-20070913
-*/
+/* +---------------------------------------------------------------------------+
+   |                     Mobile Robot Programming Toolkit (MRPT)               |
+   |                          http://www.mrpt.org/                             |
+   |                                                                           |
+   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | See: http://www.mrpt.org/Authors - All rights reserved.                   |
+   | Released under BSD License. See details in http://www.mrpt.org/License    |
+   +---------------------------------------------------------------------------+ */
 
 #ifndef SIFT_H
 #define SIFT_H

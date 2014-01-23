@@ -1,18 +1,11 @@
-/**@file
-Functions and structures for maintaining a k-d tree database of image
-features.
-
-For more information, refer to:
-
-Beis, J. S. and Lowe, D. G.  Shape indexing using approximate
-nearest-neighbor search in high-dimensional spaces.  In <EM>Conference
-on Computer Vision and Pattern Recognition (CVPR)</EM> (2003),
-pp. 1000--1006.
-
-Copyright (C) 2006  Rob Hess <hess@eecs.oregonstate.edu>
-
-@version 1.1.1-20070913
-*/
+/* +---------------------------------------------------------------------------+
+   |                     Mobile Robot Programming Toolkit (MRPT)               |
+   |                          http://www.mrpt.org/                             |
+   |                                                                           |
+   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | See: http://www.mrpt.org/Authors - All rights reserved.                   |
+   | Released under BSD License. See details in http://www.mrpt.org/License    |
+   +---------------------------------------------------------------------------+ */
 
 
 #ifndef KDTREE_H

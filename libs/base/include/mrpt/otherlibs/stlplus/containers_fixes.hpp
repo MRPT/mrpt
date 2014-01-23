@@ -1,48 +1,11 @@
-/*
-    The STL+ C++ Library Collection
-
-    Website <http://stlplus.sourceforge.net/> Collection <index.html>
-
-
-      License Agreement
-
-    <http://www.opensource.org/>
-
-        * License for using the STLplus Library Collection <#license>
-        * The Intent of this License <#intent>
-        * How to Comply with this License <#compliance>
-        * Historical Note <#history>
-
-
-        License for using the STLplus Library Collection
-
-    *© 1999-2008 Andy Rushton. All rights reserved.*
-
-    Redistribution and use in source and binary forms, with or without
-    modification, are permitted provided that the following conditions are met:
-
-        * Redistributions of source code must retain the above Copyright
-          notice, this list of conditions and the following disclaimer.
-        * Redistributions in binary form must reproduce the above Copyright
-          notice, this list of conditions and the following disclaimer in
-          the documentation and/or other materials provided with the
-          distribution.
-        * Neither the name of the STLplus library nor the names of its
-          contributors may be used to endorse or promote products derived
-          from this software without specific prior written permission.
-
-    This software is provided by the Copyright holders and contributors "as
-    is" and any express or implied warranties, including, but not limited
-    to, the implied warranties of merchantability and fitness for a
-    particular purpose are disclaimed. In no event shall the Copyright owner
-    or contributors be liable for any direct, indirect, incidental, special,
-    exemplary, or consequential damages (including, but not limited to,
-    procurement of substitute goods or services; loss of use, data, or
-    profits; or business interruption) however caused and on any theory of
-    liability, whether in contract, strict liability, or tort (including
-    negligence or otherwise) arising in any way out of the use of this
-    software, even if advised of the possibility of such damage.
-*/
+/* +---------------------------------------------------------------------------+
+   |                     Mobile Robot Programming Toolkit (MRPT)               |
+   |                          http://www.mrpt.org/                             |
+   |                                                                           |
+   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | See: http://www.mrpt.org/Authors - All rights reserved.                   |
+   | Released under BSD License. See details in http://www.mrpt.org/License    |
+   +---------------------------------------------------------------------------+ */
 
 #ifndef STLPLUS_CONTAINERS_FIXES
 #define STLPLUS_CONTAINERS_FIXES

@@ -1,36 +1,10 @@
 /* +---------------------------------------------------------------------------+
-   |                 The Mobile Robot Programming Toolkit (MRPT)               |
-   |                                                                           |
+   |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2013, Individual contributors, see AUTHORS file        |
-   | Copyright (c) 2005-2013, MAPIR group, University of Malaga                |
-   | Copyright (c) 2012-2013, University of Almeria                            |
-   | All rights reserved.                                                      |
-   |                                                                           |
-   | Redistribution and use in source and binary forms, with or without        |
-   | modification, are permitted provided that the following conditions are    |
-   | met:                                                                      |
-   |    * Redistributions of source code must retain the above copyright       |
-   |      notice, this list of conditions and the following disclaimer.        |
-   |    * Redistributions in binary form must reproduce the above copyright    |
-   |      notice, this list of conditions and the following disclaimer in the  |
-   |      documentation and/or other materials provided with the distribution. |
-   |    * Neither the name of the copyright holders nor the                    |
-   |      names of its contributors may be used to endorse or promote products |
-   |      derived from this software without specific prior written permission.|
-   |                                                                           |
-   | THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS       |
-   | 'AS IS' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED |
-   | TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR|
-   | PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDERS BE LIABLE |
-   | FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL|
-   | DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR|
-   |  SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)       |
-   | HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,       |
-   | STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN  |
-   | ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE           |
-   | POSSIBILITY OF SUCH DAMAGE.                                               |
+   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | See: http://www.mrpt.org/Authors - All rights reserved.                   |
+   | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
 
@@ -155,6 +129,59 @@ TEST(SerializeTestBase, CArray)
 		buf >> b;
 
 		EXPECT_TRUE(a==b);
+	}
+	catch(std::exception &e)
+	{
+		GTEST_FAIL() <<
+			"Exception:\n" << e.what() << endl;
+	}
+
+}
+
+// Serialize and deserialize complex STL types
+TEST(SerializeTestBase, STL_serialization)
+{
+	try
+	{
+		// std::vector<>
+		{
+			CMemoryStream  buf;
+
+			std::vector<double> a,b;
+			a.resize(30);
+			for (size_t i=0;i<a.size();i++) a[i]=50-i;
+
+			buf << a; buf.Seek(0); buf >> b;
+			EXPECT_TRUE(a==b);
+		}
+
+		// std::list<...>
+		{
+			CMemoryStream  buf;
+
+			std::list<std::map<double,std::set<std::string> > >  a,b;
+
+			// Fill with random:
+			mrpt::random::CRandomGenerator rng;
+			const size_t N = rng.drawUniform(10,30);
+			for (size_t i=0;i<N;i++)
+			{
+				std::map<double,std::set<std::string> > d;
+				const size_t M = rng.drawUniform(4,9);
+				for (size_t j=0;j<M;j++)
+				{
+					std::set<std::string> & dd = d[ rng.drawGaussian1D_normalized() ];
+					const size_t L = rng.drawUniform(2,15);
+					for (size_t k=0;k<L;k++)
+						dd.insert(mrpt::format("%f", rng.drawGaussian1D_normalized() ));
+				}
+				a.push_back(d);
+			}
+
+
+			buf << a; buf.Seek(0); buf >> b;
+			EXPECT_TRUE(a==b);
+		}
 	}
 	catch(std::exception &e)
 	{

@@ -4,7 +4,10 @@ SET(BUILD_XSENS_MT3 ON CACHE BOOL "Build xSens 3rd generation libraries (interfa
 
 # Default build MT4 only if we have libusb-1.0:
 IF (WIN32)
-	SET(DEFAULT_BUILD_MT4 "ON")
+	SET(DEFAULT_BUILD_MT4 "OFF")
+	IF (HAVE_WINUSB_H)
+		SET(DEFAULT_BUILD_MT4 "ON")
+	ENDIF (HAVE_WINUSB_H)	
 ELSE(WIN32)
 	SET(DEFAULT_BUILD_MT4 "OFF")
 	IF (PKG_CONFIG_FOUND)
@@ -28,7 +31,10 @@ ENDIF(BUILD_XSENS_MT3)
 IF (BUILD_XSENS_MT4)
 	IF (WIN32)
 		# In Windows: Library WinUsb
-		# Assume we have it, since it comes by default with Windows XP SP2 and newer.
+		# It's supposed to come by default with Windows XP SP2 and newer, but some have reported problems, so:
+		IF (NOT HAVE_WINUSB_H)
+			MESSAGE(SEND_ERROR "BUILD_XSENS_MT4 requires <winusb.h>. Fix the missing header, or disable BUILD_XSENS_MT4")
+		ENDIF (NOT HAVE_WINUSB_H)	
 	ELSE(WIN32)
 		# In Linux: libusb-1.0
 		IF(PKG_LIBUSB10_FOUND)

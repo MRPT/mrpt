@@ -1,36 +1,10 @@
 /* +---------------------------------------------------------------------------+
-   |                 The Mobile Robot Programming Toolkit (MRPT)               |
-   |                                                                           |
+   |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2013, Individual contributors, see AUTHORS file        |
-   | Copyright (c) 2005-2013, MAPIR group, University of Malaga                |
-   | Copyright (c) 2012-2013, University of Almeria                            |
-   | All rights reserved.                                                      |
-   |                                                                           |
-   | Redistribution and use in source and binary forms, with or without        |
-   | modification, are permitted provided that the following conditions are    |
-   | met:                                                                      |
-   |    * Redistributions of source code must retain the above copyright       |
-   |      notice, this list of conditions and the following disclaimer.        |
-   |    * Redistributions in binary form must reproduce the above copyright    |
-   |      notice, this list of conditions and the following disclaimer in the  |
-   |      documentation and/or other materials provided with the distribution. |
-   |    * Neither the name of the copyright holders nor the                    |
-   |      names of its contributors may be used to endorse or promote products |
-   |      derived from this software without specific prior written permission.|
-   |                                                                           |
-   | THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS       |
-   | 'AS IS' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED |
-   | TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR|
-   | PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDERS BE LIABLE |
-   | FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL|
-   | DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR|
-   |  SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)       |
-   | HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,       |
-   | STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN  |
-   | ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE           |
-   | POSSIBILITY OF SUCH DAMAGE.                                               |
+   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | See: http://www.mrpt.org/Authors - All rights reserved.                   |
+   | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 #ifndef CAbstractPTGBasedReactive_H
 #define CAbstractPTGBasedReactive_H
@@ -50,7 +24,22 @@ namespace mrpt
 	using namespace mrpt::slam;
 	using namespace mrpt::poses;
 
-	/** Shared implementation of reactive navigators. See children classes.
+	/** Base class for reactive navigator systems based on TP-Space, with an arbitrary holonomic
+	  * reactive method running on it and any number of PTGs for transforming the navigation space.
+	  * Both, the holonomic method and the PTGs can be customized by the apropriate user derived classes.
+	  *
+	  * How to use:
+	  *  - Instantiate a reactive navigation object (one of the derived classes of this virtual class).
+	  *  - A class with callbacks must be defined by the user and provided to the constructor (derived from CReactiveInterfaceImplementation)
+	  *  - loadConfigFile() must be called to set up the bunch of parameters from a config file (could be a memory-based virtual config file).
+	  *  - navigationStep() must be called periodically in order to effectively run the navigation. This method will internally call the callbacks to gather sensor data and robot positioning data.	
+	  *
+	  * For working examples, refer to the source code of the apps: 
+	  *  - [ReactiveNavigationDemo](http://www.mrpt.org/list-of-mrpt-apps/application-reactivenavigationdemo/)
+	  *  - [ReactiveNav3D-Demo](http://www.mrpt.org/list-of-mrpt-apps/application-reactivenav3d-demo/)
+	  *
+	  * Publications:
+	  *  - See derived classes for papers on each specific method.
 	  *
 	  * \sa CReactiveNavigationSystem, CReactiveNavigationSystem3D
 	  *  \ingroup mrpt_reactivenav_grp
@@ -59,6 +48,20 @@ namespace mrpt
 	{
 	public:
 		EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+
+		/** The struct for configuring navigation requests to CAbstractPTGBasedReactive and derived classes. */
+		struct REACTIVENAV_IMPEXP TNavigationParamsPTG : public CAbstractReactiveNavigationSystem::TNavigationParams
+		{
+			/** (Default=empty) Optionally, a list of PTG indices can be sent such that 
+			 *  the navigator will restrict itself to only employ those PTGs. */
+			std::vector<size_t>    restrict_PTG_indices; 
+
+			TNavigationParamsPTG() { }
+			virtual ~TNavigationParamsPTG() { }
+			virtual std::string getAsText() const;
+			virtual TNavigationParams* clone() const { return new TNavigationParamsPTG(*this); }
+		};
+
 
 		/** Constructor. 
 		  * \param[in] react_iterf_impl An instance of an object that implement all the required interfaces to read from and control a robot.
@@ -89,14 +92,10 @@ namespace mrpt
 			const std::string &section );
 
 
-		/** Start navigation with the given parameters. The method returns immediately, and next calls to navigationStep() will effectivaly start the actual navigation. */
-		void  navigate( const TNavigationParams &params );
-
-		/** (*DEPRECATED method signature, use version with argument passed by reference*) 
-		    *Start navigation:
+		/** Start navigation:
 			* \param[in] params Pointer to structure with navigation info (its contents will be copied, so the original can be freely destroyed upon return.)
 			*/
-		void  navigate( const TNavigationParams *params ) { ASSERT_(params!=NULL); this->navigate(*params); }
+		virtual void navigate( const TNavigationParams *params );
 
 		/** Provides a copy of the last log record with information about execution.
 			* \param o An object where the log will be stored into.
@@ -167,6 +166,25 @@ namespace mrpt
 		float  robotMax_W_degps;     //!< Max. angular speed (deg/s)
 		float  SPEEDFILTER_TAU;     //!< Time constant for the low-pass filter applied to the speed commands
 		std::vector<float> weights;  //!< length: 6 [0,5]
+
+		/** In normalized distances, the start and end of a ramp function that scales the velocity 
+		  *  output from the holonomic navigator: 
+		  *
+		  * \code
+		  *  velocity scale
+		  *   ^
+		  *   |           _____________
+		  *   |          /
+		  * 1 |         /
+		  *   |        /
+		  * 0 +-------+---|----------------> normalized distance
+		  *         Start
+		  *              End
+		  * \endcode
+		  * 
+		  */
+		float secureDistanceStart,secureDistanceEnd; 
+
 
 		float  DIST_TO_TARGET_FOR_SENDING_EVENT;
 		float  meanExecutionPeriod;	//!< Runtime estimation of execution period of the method.
