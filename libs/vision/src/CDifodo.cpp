@@ -329,7 +329,7 @@ void CDifodo::solveDepthSystem()
 {
 	utils::CTicTac	clock;
 	unsigned int cont = 0;
-	vector <Triplet<float>> coord;
+	vector <Triplet<float> > coord;
 	SparseMatrix<float> A;
 	MatrixXf Var;
 	MatrixXf B;
@@ -372,7 +372,7 @@ void CDifodo::solveDepthSystem()
 	//Solve the linear system of equations using a minimum least squares method
 	const SparseMatrix<float> atrans = A.transpose();
 	const SparseMatrix<float> aux = atrans*A;
-	SimplicialLDLT<SparseMatrix<float>>	SparseCholesky;
+	SimplicialLDLT<SparseMatrix<float> >	SparseCholesky;
 	SparseCholesky.compute(aux);
 
 	if(SparseCholesky.info()!= Eigen::Success ) {	cout << endl << "Cholesky decomposition failed "; }
