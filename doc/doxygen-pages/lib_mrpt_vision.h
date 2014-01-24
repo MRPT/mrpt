@@ -69,6 +69,8 @@ patch, with or without a set of descriptors.
 - Notice that sets of parameters for monocular and stereo cameras are defined in [mrpt-base] for convenience, in the classes:
 	- mrpt::utils::TCamera
 	- mrpt::utils::TStereoCamera
+	
+- mrpt::vision::CDifodo: A class which implements a Visual Odometry algorithm based on depth images and the "range flow constraint equation".
 
 See all the classes in mrpt::vision
 

@@ -104,6 +104,8 @@ the University of Malaga.
   - Several improvements and bug fixes in the mrpt-reactivenav library.
   - Developemnt in octomap classes.
   - Some improvements and bug fixes in the mrpt-opengl library.
+  - Visual Odometry based on depth images (mrpt::vision::CDifodo) and 2 applications to use it: DifOdometry-Camera and DifOdometry-Datasets
+  - Examples to manage an RGB-D camera with openNI2
 
 * Robert Schattschneider, University of Canterbury (2012)
   - Patches for bug fixes, serialization of templates.
