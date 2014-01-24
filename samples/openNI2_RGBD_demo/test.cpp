@@ -45,7 +45,7 @@ int main ( int argc, char** argv )
 
 	if (rc != openni::STATUS_OK)
 	{
-		printf("SimpleViewer: Device open failed:\n%s\n", openni::OpenNI::getExtendedError());
+		printf("Device open failed:\n%s\n", openni::OpenNI::getExtendedError());
 		openni::OpenNI::shutdown();
 		return 1;
 	}
@@ -58,13 +58,13 @@ int main ( int argc, char** argv )
 		rc = depth.start();
 		if (rc != openni::STATUS_OK)
 		{
-			printf("SimpleViewer: Couldn't start depth stream:\n%s\n", openni::OpenNI::getExtendedError());
+			printf("Couldn't start depth stream:\n%s\n", openni::OpenNI::getExtendedError());
 			depth.destroy();
 		}
 	}
 	else
 	{
-		printf("SimpleViewer: Couldn't find depth stream:\n%s\n", openni::OpenNI::getExtendedError());
+		printf("Couldn't find depth stream:\n%s\n", openni::OpenNI::getExtendedError());
 	}
 
 
@@ -74,18 +74,18 @@ int main ( int argc, char** argv )
 		rc = rgb.start();
 		if (rc != openni::STATUS_OK)
 		{
-			printf("SimpleViewer: Couldn't start infrared stream:\n%s\n", openni::OpenNI::getExtendedError());
+			printf("Couldn't start infrared stream:\n%s\n", openni::OpenNI::getExtendedError());
 			rgb.destroy();
 		}
 	}
 	else
 	{
-		printf("SimpleViewer: Couldn't find infrared stream:\n%s\n", openni::OpenNI::getExtendedError());
+		printf("Couldn't find infrared stream:\n%s\n", openni::OpenNI::getExtendedError());
 	}
 
 	if (!depth.isValid() || !rgb.isValid())
 	{
-		printf("SimpleViewer: No valid streams. Exiting\n");
+		printf("No valid streams. Exiting\n");
 		openni::OpenNI::shutdown();
 		return 2;
 	}
@@ -132,7 +132,7 @@ int main ( int argc, char** argv )
 	gui::CDisplayWindow3D window;
 	opengl::COpenGLScenePtr	scene;
 	gui::global_settings::OCTREE_RENDER_MAX_POINTS_PER_NODE = 1000000;
-	window.setWindowTitle("Kinect frame");
+	window.setWindowTitle("RGB-D camera frame");
 	window.resize(800,600);
 	window.setPos(500,50);
 	window.setCameraZoom(5);
