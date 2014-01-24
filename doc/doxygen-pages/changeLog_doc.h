@@ -13,7 +13,7 @@
 <p> <b>Note:</b> <i>If you are displaying a local version of this page and you have not built the whole HTML documentation, the links above will be broken. Either build the documentation invoking <code>make documentation_html</code> or [browse it on-line](http://www.mrpt.org/).</i></p>
 
  <a name="1.0.3">
-  <h2>Version 1.0.3: (Under development)  </h2></a>
+  <h2>Version 1.0.3:  Released 27-JAN-2014   </h2></a>
 	- New apps:
 		- [DifOdometry-Camera](http://www.mrpt.org/list-of-mrpt-apps/application-difodometry-camera).  (By Mariano Jaimez Tarifa)
 		- [DifOdometry-Datasets](http://www.mrpt.org/list-of-mrpt-apps/application-difodometry-datasets). (By Mariano Jaimez Tarifa)
