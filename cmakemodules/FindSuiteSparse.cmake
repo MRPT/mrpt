@@ -157,25 +157,54 @@ macro(SuiteSparse_FIND_COMPONENTS )
 		endif()
 
 		## try to find filepath lib name (looking for very important lib file)
-		find_library(SuiteSparse_${suitesparseCompUC}_LIBRARY 
-			NAMES 			${suitesparseComp} ${suitesparseCompLC} ${suitesparseCompUC}
+		find_library(SuiteSparse_${suitesparseCompUC}_LIBRARY_RELEASE 
+			NAMES 			lib${suitesparseComp} 	lib${suitesparseCompLC} lib${suitesparseCompUC}
+							${suitesparseComp} 		${suitesparseCompLC} 	${suitesparseCompUC}
 			PATHS 			/opt/local/lib${SuiteSparse_SEARCH_LIB_POSTFIX} 		
 							/usr/lib${SuiteSparse_SEARCH_LIB_POSTFIX}
 							/usr/local/lib${SuiteSparse_SEARCH_LIB_POSTFIX}
 							${SuiteSparse_DIR}/lib${SuiteSparse_SEARCH_LIB_POSTFIX}
 							${${suitesparseCompUC}_DIR}/lib${SuiteSparse_SEARCH_LIB_POSTFIX}
 							${${suitesparseCompUC}_DIR}
-			PATH_SUFFIXES	Release Debug
+			PATH_SUFFIXES	Release
 		)
-		## check if found
-		if(NOT SuiteSparse_${suitesparseCompUC}_LIBRARY)
-			message(WARNING "   Failed to find ${suitesparseComp} :\nSuiteSparse_${suitesparseCompUC}_LIBRARY not found.\nCheck you write correctly the component name (case sensitive),\nor set the SuiteSparse_${suitesparseCompUC}_DIR to look inside")
+		find_library(SuiteSparse_${suitesparseCompUC}_LIBRARY_DEBUG 
+			NAMES 			${suitesparseComp}d		${suitesparseCompLC}d 		${suitesparseCompUC}d
+							lib${suitesparseComp}d 	lib${suitesparseCompLC}d 	lib${suitesparseCompUC}d
+			PATHS 			/opt/local/lib${SuiteSparse_SEARCH_LIB_POSTFIX} 		
+							/usr/lib${SuiteSparse_SEARCH_LIB_POSTFIX}
+							/usr/local/lib${SuiteSparse_SEARCH_LIB_POSTFIX}
+							${SuiteSparse_DIR}/lib${SuiteSparse_SEARCH_LIB_POSTFIX}
+							${${suitesparseCompUC}_DIR}/lib${SuiteSparse_SEARCH_LIB_POSTFIX}
+							${${suitesparseCompUC}_DIR}
+			PATH_SUFFIXES	Debug
+		)
+		
+		## check and auto complete release with debug if release missing and vice versa
+		if(SuiteSparse_${suitesparseCompUC}_LIBRARY_RELEASE)
+			if(NOT SuiteSparse_${suitesparseCompUC}_LIBRARY_DEBUG)
+				set(SuiteSparse_${suitesparseCompUC}_LIBRARY_DEBUG ${SuiteSparse_${suitesparseCompUC}_LIBRARY_RELEASE} CACHE PATH "Path to a library." FORCE)
+			endif()
+		endif()
+		if(SuiteSparse_${suitesparseCompUC}_LIBRARY_DEBUG)
+			if(NOT SuiteSparse_${suitesparseCompUC}_LIBRARY_RELEASE)
+				set(SuiteSparse_${suitesparseCompUC}_LIBRARY_RELEASE ${SuiteSparse_${suitesparseCompUC}_LIBRARY_DEBUG} CACHE PATH "Path to a library." FORCE)
+			endif()
+		endif()
+		
+		## check and append the and SuiteSparse_LIBRARIES list, and warn if not found (release and debug) otherwise
+		if(NOT SuiteSparse_${suitesparseCompUC}_LIBRARY_RELEASE AND NOT SuiteSparse_${suitesparseCompUC}_LIBRARY_DEBUG)
+			message(WARNING "   Failed to find ${suitesparseComp} :
+			Check you write correctly the component name (case sensitive),
+			or set the SuiteSparse_${suitesparseCompUC}_DIR to look inside,
+			or set directly SuiteSparse_${suitesparseCompUC}_LIBRARY_DEBUG and SuiteSparse_${suitesparseCompUC}_LIBRARY_RELEASE
+			")
 		else()
-			list(APPEND SuiteSparse_LIBRARIES	${SuiteSparse_${suitesparseCompUC}_LIBRARY})
+			list(APPEND SuiteSparse_LIBRARIES	optimized "${SuiteSparse_${suitesparseCompUC}_LIBRARY_RELEASE}" debug "${SuiteSparse_${suitesparseCompUC}_LIBRARY_DEBUG}")
 		endif()
 		
 		## here we allow to find at least the include OR the lib dir and just warn if one of both missing
-		if(NOT SuiteSparse_${suitesparseCompUC}_INCLUDE_DIR AND NOT SuiteSparse_${suitesparseCompUC}_LIBRARY)
+		if(NOT SuiteSparse_${suitesparseCompUC}_INCLUDE_DIR AND NOT SuiteSparse_${suitesparseCompUC}_LIBRARY_RELEASE)
 			set(SuiteSparse_${suitesparseCompUC}_FOUND OFF)
 		else()
 			set(SuiteSparse_${suitesparseCompUC}_FOUND ON)
@@ -186,7 +215,8 @@ macro(SuiteSparse_FIND_COMPONENTS )
 			set(SuiteSparse_${suitesparseCompUC}_DIR "$ENV{SuiteSparse_${suitesparseCompUC}_DIR}" CACHE PATH "${suitesparseComp} root directory")
 		else()
 			mark_as_advanced(SuiteSparse_${suitesparseCompUC}_INCLUDE_DIR)
-			mark_as_advanced(SuiteSparse_${suitesparseCompUC}_LIBRARY)
+			mark_as_advanced(SuiteSparse_${suitesparseCompUC}_LIBRARY_RELEASE)
+			mark_as_advanced(SuiteSparse_${suitesparseCompUC}_LIBRARY_DEBUG)
 			if(DEFINED SuiteSparse_${suitesparseCompUC}_DIR)
 				mark_as_advanced(SuiteSparse_${suitesparseCompUC}_DIR)
 			endif()
@@ -195,7 +225,8 @@ macro(SuiteSparse_FIND_COMPONENTS )
 		if(SuiteSparse_VERBOSE)
 			message(STATUS "   SuiteSparse_${suitesparseCompUC}_FOUND = ${SuiteSparse_${suitesparseCompUC}_FOUND} : ")
 			message(STATUS "      * SuiteSparse_${suitesparseCompUC}_INCLUDE_DIR = ${SuiteSparse_${suitesparseCompUC}_INCLUDE_DIR}")
-			message(STATUS "      * SuiteSparse_${suitesparseCompUC}_LIBRARY = ${SuiteSparse_${suitesparseCompUC}_LIBRARY}")
+			message(STATUS "      * SuiteSparse_${suitesparseCompUC}_LIBRARY_DEBUG = ${SuiteSparse_${suitesparseCompUC}_LIBRARY_DEBUG}")
+			message(STATUS "      * SuiteSparse_${suitesparseCompUC}_LIBRARY_RELEASE = ${SuiteSparse_${suitesparseCompUC}_LIBRARY_RELEASE}")
 		endif()
 		
 		list(APPEND SuiteSparse_FOUND_LIST SuiteSparse_${suitesparseCompUC}_FOUND)
@@ -224,7 +255,7 @@ endmacro()
 
 ## Default behavior if user don't use the COMPONENTS flag in find_package(SuiteSparse ...) command
 if(NOT SuiteSparse_FIND_COMPONENTS)
-	list(APPEND SuiteSparse_FIND_COMPONENTS AMD CAMD CCOLAMD COLAMD CHOLMOD SPQR LDL)  ## suitesparse and metis are not searched by default (special case)
+	list(APPEND SuiteSparse_FIND_COMPONENTS AMD CAMD CCOLAMD COLAMD CHOLMOD SPQR LDL BTF KLU)  ## suitesparse and metis are not searched by default (special case)
 endif()
 
 SuiteSparse_FIND_COMPONENTS()
