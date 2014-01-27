@@ -53,7 +53,7 @@ ENDIF(MY_DEFS)
 # Add the required libraries for linking:
 TARGET_LINK_LIBRARIES(${sampleName} 
 	${MRPT_LIBS}  # This is filled by FIND_PACKAGE(MRPT ...)
-	"C:/Users/Mariano/Programas/OpenNI2_32/Lib/OpenNI2.lib"  # Optional extra libs...
+	"${OPENNI2_LIBRARIES}"  # Optional extra libs...
 	)
 
 # Set optimized building:
