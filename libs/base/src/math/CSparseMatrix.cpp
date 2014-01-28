@@ -11,17 +11,6 @@
 
 #include <mrpt/math/CSparseMatrix.h>
 
-// Read the note in the .h: Use embedded headers even for compiling against
-//  a system library.
-//#ifdef MRPT_HAS_CSPARSE_SYSTEM
-//#	include <cs.h>
-//#else
-extern "C"{
-#include <mrpt/otherlibs/CSparse/cs.h>
-}
-//#endif
-
-
 using std::string;
 using std::cout;
 using std::endl;

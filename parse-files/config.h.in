@@ -219,11 +219,7 @@ ${CMAKE_MRPT_BUILD_SHARED_LIB}
 /** Use MRPT global profiler? */
 #define MRPT_ENABLE_EMBEDDED_GLOBAL_PROFILER ${CMAKE_MRPT_ENABLE_EMBEDDED_GLOBAL_PROFILER}
 
-/** Has CSparse library? (From SuiteSparse or embedded) */
-#define MRPT_HAS_CSPARSE ${CMAKE_MRPT_HAS_CSPARSE}
-#define MRPT_HAS_CSPARSE_SYSTEM ${CMAKE_MRPT_HAS_CSPARSE_SYSTEM}
-
-/** Has the rest of SuiteSparse sublibs? */
+/** Has SuiteSparse sublibs? */
 #define MRPT_HAS_SUITESPARSE ${CMAKE_MRPT_HAS_SUITESPARSE}
 
 /** Has NationalInstruments headers/libraries? */

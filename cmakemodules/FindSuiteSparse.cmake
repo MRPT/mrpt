@@ -129,9 +129,15 @@ macro(SuiteSparse_FIND_COMPONENTS )
 		string(TOUPPER ${suitesparseComp} suitesparseCompUC)
 		string(TOLOWER ${suitesparseComp} suitesparseCompLC)
 
+		## Special case: CXSparse library is named "libcxsparse.*" but headers are "cs.h":
+		SET(suitesparseComp_ALT "${suitesparseComp}") # Alternative names
+		if("${suitesparseComp}" STREQUAL "CXSPARSE")
+			SET(suitesparseComp_ALT "cs") # Alternative name of CXSparse
+		endif()
+
 		## try to find include dir (looking for very important header file)
 		find_path(SuiteSparse_${suitesparseCompUC}_INCLUDE_DIR	
-			NAMES 			${suitesparseComp}.h ${suitesparseCompLC}.h ${suitesparseCompUC}.h
+			NAMES 			${suitesparseComp}.h ${suitesparseCompLC}.h ${suitesparseCompUC}.h ${suitesparseComp_ALT}.h
 						${suitesparseComp}.hpp ${suitesparseCompLC}.hpp ${suitesparseCompUC}.hpp
 			PATHS			/opt/local/include
 						/usr/include
@@ -255,7 +261,7 @@ endmacro()
 
 ## Default behavior if user don't use the COMPONENTS flag in find_package(SuiteSparse ...) command
 if(NOT SuiteSparse_FIND_COMPONENTS)
-	list(APPEND SuiteSparse_FIND_COMPONENTS AMD CAMD CCOLAMD COLAMD CHOLMOD SPQR LDL BTF KLU)  ## suitesparse and metis are not searched by default (special case)
+	list(APPEND SuiteSparse_FIND_COMPONENTS AMD CAMD CCOLAMD COLAMD CHOLMOD SPQR LDL BTF KLU CXSPARSE)  ## suitesparse and metis are not searched by default (special case)
 endif()
 
 SuiteSparse_FIND_COMPONENTS()

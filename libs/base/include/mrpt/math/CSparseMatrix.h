@@ -18,12 +18,13 @@
 #include <mrpt/math/CMatrixTemplateNumeric.h>
 #include <mrpt/math/CMatrixFixedNumeric.h>
 
-// I don't like this solution, since can cause problems if CSparse structs
-//  change in the future (unlikely): even if we are linking against the CSparse
-//  embedded lib or a system lib, use the embedded headers. The reason: don't
-//  force MRPT users to install CSparse headers.
+// Include CSparse lib headers, either from the system or embedded:
 extern "C"{
-#include <mrpt/otherlibs/CSparse/cs.h>
+#if MRPT_HAS_SUITESPARSE
+#	include "cs.h"
+#else
+#	include <mrpt/otherlibs/CSparse/cs.h>
+#endif
 }
 
 namespace mrpt
