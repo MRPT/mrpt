@@ -223,11 +223,8 @@ ${CMAKE_MRPT_BUILD_SHARED_LIB}
 #define MRPT_HAS_CSPARSE ${CMAKE_MRPT_HAS_CSPARSE}
 #define MRPT_HAS_CSPARSE_SYSTEM ${CMAKE_MRPT_HAS_CSPARSE_SYSTEM}
 
-/** Has CHOLDMOD library? (From SuiteSparse) */
-#define MRPT_HAS_CHOLMOD ${CMAKE_MRPT_HAS_CHOLMOD}
-
-/** Has SPQR library? (From SuiteSparse) */
-#define MRPT_HAS_SPQR ${CMAKE_MRPT_HAS_SPQR}
+/** Has the rest of SuiteSparse sublibs? */
+#define MRPT_HAS_SUITESPARSE ${CMAKE_MRPT_HAS_SUITESPARSE}
 
 /** Has NationalInstruments headers/libraries? */
 #define MRPT_HAS_NIDAQMXBASE ${CMAKE_MRPT_HAS_NIDAQMXBASE}
