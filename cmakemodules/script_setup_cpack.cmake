@@ -42,8 +42,8 @@ IF(WIN32)
 
 	SET(CPACK_NSIS_INSTALLED_ICON_NAME "${CMAKE_CURRENT_SOURCE_DIR}/share/pixmaps\\\\mrpt_icon.ico")
 
-	SET(CPACK_NSIS_HELP_LINK "http:\\\\\\\\mrpt.sourceforge.net")
-	SET(CPACK_NSIS_URL_INFO_ABOUT "http:\\\\\\\\www.isa.uma.es\\\\jlblanco")
+	SET(CPACK_NSIS_HELP_LINK "http:\\\\\\\\www.mrpt.org")
+	SET(CPACK_NSIS_URL_INFO_ABOUT "http:\\\\\\\\www.mrpt.org")
 	SET(CPACK_NSIS_CONTACT "joseluisblancoc@gmail.com")
 
 	# Add mrpt/bin dir to system PATH
@@ -80,11 +80,10 @@ IF(WIN32)
 	SET(CPACK_NSIS_MENU_LINKS
 	    "doc;Documentation directory;bin;Directory of executables (bin);doc/chm/libMRPT-@CMAKE_MRPT_VERSION_NUMBER_MAJOR@.@CMAKE_MRPT_VERSION_NUMBER_MINOR@.@CMAKE_MRPT_VERSION_NUMBER_PATCH@.chm;MRPT libraries reference (CHM);http://www.mrpt.org/;Online help;doc/mrpt-book.pdf;The MRPT book (PDF);doc/srba-guide.pdf;The SRBA programming guide (PDF)")
 
+	# Force usage of our custom NSIS template:
+	SET(CPACK_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/parse-files/")
+	
 	# File types association:
-	SET(CPACK_NSIS_DEFINES "
-		!include registerExtension.nsh
-		")
-
 	SET(CPACK_NSIS_EXTRA_INSTALL_COMMANDS "
 		\\\${registerExtension} \\\"$INSTDIR\\\\bin\\\\RawLogViewer.exe\\\" \\\".rawlog\\\" \\\"Robotic Dataset File\\\"
 		\\\${registerExtension} \\\"$INSTDIR\\\\bin\\\\SceneViewer3D.exe\\\" \\\".3Dscene\\\" \\\"Robotic 3D scene\\\"
