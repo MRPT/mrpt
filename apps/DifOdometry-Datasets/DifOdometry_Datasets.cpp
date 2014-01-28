@@ -43,7 +43,7 @@ void CDifodoDatasets::loadConfiguration(const utils::CConfigFileBase &ini )
 
 	filename = system::extractFileDirectory(filename);
 	filename.append("\\groundtruth.txt");
-	f_gt.open(filename);
+	f_gt.open(filename.c_str());
 
 	if (f_gt.fail())
 		throw std::runtime_error("\nError finding the groundtruth file: it should be contained in the same folder than the rawlog file");
