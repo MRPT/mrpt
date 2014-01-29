@@ -1,36 +1,10 @@
 /* +---------------------------------------------------------------------------+
-   |                 The Mobile Robot Programming Toolkit (MRPT)               |
-   |                                                                           |
+   |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2013, Individual contributors, see AUTHORS file        |
-   | Copyright (c) 2005-2013, MAPIR group, University of Malaga                |
-   | Copyright (c) 2012-2013, University of Almeria                            |
-   | All rights reserved.                                                      |
-   |                                                                           |
-   | Redistribution and use in source and binary forms, with or without        |
-   | modification, are permitted provided that the following conditions are    |
-   | met:                                                                      |
-   |    * Redistributions of source code must retain the above copyright       |
-   |      notice, this list of conditions and the following disclaimer.        |
-   |    * Redistributions in binary form must reproduce the above copyright    |
-   |      notice, this list of conditions and the following disclaimer in the  |
-   |      documentation and/or other materials provided with the distribution. |
-   |    * Neither the name of the copyright holders nor the                    |
-   |      names of its contributors may be used to endorse or promote products |
-   |      derived from this software without specific prior written permission.|
-   |                                                                           |
-   | THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS       |
-   | 'AS IS' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED |
-   | TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR|
-   | PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDERS BE LIABLE |
-   | FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL|
-   | DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR|
-   |  SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)       |
-   | HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,       |
-   | STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN  |
-   | ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE           |
-   | POSSIBILITY OF SUCH DAMAGE.                                               |
+   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | See: http://www.mrpt.org/Authors - All rights reserved.                   |
+   | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
 #include <mrpt/maps.h>  // Precompiled header
@@ -631,21 +605,53 @@ bool  CPointsMap::isEmpty() const
 				TInsertionOptions
  ---------------------------------------------------------------*/
 CPointsMap::TInsertionOptions::TInsertionOptions() :
-	minDistBetweenLaserPoints	( 0.02f),
-	addToExistingPointsMap		( true),
-	also_interpolate			( false),
-	disableDeletion				( true),
-	fuseWithExisting			( false),
-	isPlanarMap					( false),
-	horizontalTolerance			( DEG2RAD(0.05) ),
-	maxDistForInterpolatePoints	( 2.0f )
+	minDistBetweenLaserPoints   ( 0.02f),
+	addToExistingPointsMap      ( true),
+	also_interpolate            ( false),
+	disableDeletion             ( true),
+	fuseWithExisting            ( false),
+	isPlanarMap                 ( false),
+	horizontalTolerance         ( DEG2RAD(0.05) ),
+	maxDistForInterpolatePoints ( 2.0f ),
+	insertInvalidPoints         ( false)
 {
 }
 
+// Binary dump to/read from stream - for usage in derived classes' serialization
+void CPointsMap::TInsertionOptions::writeToStream(CStream &out) const
+{
+	const int8_t version = 0;
+	out << version;
+
+	out 
+	<< minDistBetweenLaserPoints << addToExistingPointsMap << also_interpolate
+	<< disableDeletion << fuseWithExisting << isPlanarMap << horizontalTolerance
+	<< maxDistForInterpolatePoints << insertInvalidPoints; // v0
+}
+
+void CPointsMap::TInsertionOptions::readFromStream(CStream &in)
+{
+	int8_t version;
+	in >> version;
+	switch(version)
+	{
+		case 0:
+		{
+			in 
+			>> minDistBetweenLaserPoints >> addToExistingPointsMap >> also_interpolate
+			>> disableDeletion >> fuseWithExisting >> isPlanarMap >> horizontalTolerance
+			>> maxDistForInterpolatePoints >> insertInvalidPoints; // v0
+		}
+		break;
+		default: MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
+	}
+}
+
+
 CPointsMap::TLikelihoodOptions::TLikelihoodOptions() :
-	sigma_dist			( 0.05 ),
-	max_corr_distance	( 1.0 ),
-	decimation			( 10 )
+	sigma_dist          ( 0.05 ),
+	max_corr_distance   ( 1.0 ),
+	decimation          ( 10 )
 {
 
 }
@@ -690,6 +696,8 @@ void  CPointsMap::TInsertionOptions::dumpToTextStream(CStream	&out) const
 	LOADABLEOPTS_DUMP_VAR(fuseWithExisting,bool);
 	LOADABLEOPTS_DUMP_VAR(isPlanarMap,bool);
 
+	LOADABLEOPTS_DUMP_VAR(insertInvalidPoints,bool);
+
 	out.printf("\n");
 }
 
@@ -719,6 +727,8 @@ void  CPointsMap::TInsertionOptions::loadFromConfigFile(
 	MRPT_LOAD_CONFIG_VAR(isPlanarMap,			bool,  iniFile,section);
 
 	MRPT_LOAD_CONFIG_VAR(maxDistForInterpolatePoints,	float, iniFile,section);
+
+	MRPT_LOAD_CONFIG_VAR(insertInvalidPoints,bool, iniFile,section);
 }
 
 void  CPointsMap::TLikelihoodOptions::loadFromConfigFile(

@@ -1,36 +1,10 @@
 /* +---------------------------------------------------------------------------+
-   |                 The Mobile Robot Programming Toolkit (MRPT)               |
-   |                                                                           |
+   |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2013, Individual contributors, see AUTHORS file        |
-   | Copyright (c) 2005-2013, MAPIR group, University of Malaga                |
-   | Copyright (c) 2012-2013, University of Almeria                            |
-   | All rights reserved.                                                      |
-   |                                                                           |
-   | Redistribution and use in source and binary forms, with or without        |
-   | modification, are permitted provided that the following conditions are    |
-   | met:                                                                      |
-   |    * Redistributions of source code must retain the above copyright       |
-   |      notice, this list of conditions and the following disclaimer.        |
-   |    * Redistributions in binary form must reproduce the above copyright    |
-   |      notice, this list of conditions and the following disclaimer in the  |
-   |      documentation and/or other materials provided with the distribution. |
-   |    * Neither the name of the copyright holders nor the                    |
-   |      names of its contributors may be used to endorse or promote products |
-   |      derived from this software without specific prior written permission.|
-   |                                                                           |
-   | THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS       |
-   | 'AS IS' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED |
-   | TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR|
-   | PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDERS BE LIABLE |
-   | FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL|
-   | DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR|
-   |  SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)       |
-   | HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,       |
-   | STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN  |
-   | ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE           |
-   | POSSIBILITY OF SUCH DAMAGE.                                               |
+   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | See: http://www.mrpt.org/Authors - All rights reserved.                   |
+   | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
 #ifndef CNationalInstrumentsDAQ_H
@@ -64,15 +38,15 @@ namespace mrpt
 		*
 		*   - A0[0] A1[0] A2[0] A3[0]  A0[1] A1[1] A2[1] A3[1]  A0[2] A1[2] A2[2] A3[2] ...
 		*
-        *  The sensor label (field "m_sensorLabel") of each grabbed observation will be the concatenation of this class sensor label,
-        *  a dot (".") and the task label (default="task###", with ### the task index).
-        *
+		*  The sensor label (field "m_sensorLabel") of each grabbed observation will be the concatenation of this class sensor label,
+		*  a dot (".") and the task label (default="task###", with ### the task index).
+		*
 		*  \code
 		*  PARAMETERS IN THE ".INI"-LIKE CONFIGURATION STRINGS:
 		* -------------------------------------------------------
 		*   [supplied_section_name]
 		* ; Number of tasks (each will run in a thread). Task indices are 0-based.
-        * ; (Parameters below follow NIs DAQmx API notation)
+		* ; (Parameters below follow NIs DAQmx API notation)
 		* num_tasks  = 1
 		* 
 		* ; Channels, separated by commas if more than one.
@@ -86,7 +60,7 @@ namespace mrpt
 		* ;  - "co_pulses": Output digital pulses (WARNING: NI says "a task can include only one counter output channel")
 		* ;
 		* task0.channels = ai  //, ao, di, do, ci_ang_encoder
-        * ;task0.taskLabel= MY_LABEL     // Optional textual label to build the CObservation sensor label (default: task number)
+		* ;task0.taskLabel= MY_LABEL     // Optional textual label to build the CObservation sensor label (default: task number)
 		* task0.samplesPerSecond = 1000 // Samples per second. Continuous (infinite) sampling is assumed.
 		* task0.samplesPerChannelToRead = 1000  // The number of samples to grab at once from each channel.
 		* ;task0.bufferSamplesPerChannel = 200000 // Increase if you have errors about " Onboard device memory overflow.(...)"
@@ -153,6 +127,7 @@ namespace mrpt
 		* task0.ci_ang_encoder.units        = DAQmx_Val_Degrees | DAQmx_Val_Radians | DAQmx_Val_Ticks  // One of these strings
 		* task0.ci_ang_encoder.pulsesPerRev = 512  // The number of pulses the encoder generates per revolution. 
 		* task0.ci_ang_encoder.initialAngle = 0.0 // The position of the encoder when the measurement begins. This value is in units.
+		* task0.ci_ang_encoder.decimate     = 1   // Grab 1 out of N readings
 		*
 		* ; Output digital pulses:
 		* task0.co_pulses.counter           = Dev1/ctr1
@@ -165,19 +140,19 @@ namespace mrpt
 		* See also: 
 		*  - [MRPT]/samples/NIDAQ_test 
 		*  - Sample .ini files for rawlog-grabber in [MRPT]/share/mrpt/config_files/rawlog-grabber/
-        *  - NI DAQmx C reference: http://others-help.mrpt.org/ni-daqmx_c_reference_help/
-        *  - NI DAQmx Base 3.x C reference: http://others-help.mrpt.org/ni-daqmx_base_3.x_c_function_reference/
-        *
+		*  - NI DAQmx C reference: http://others-help.mrpt.org/ni-daqmx_c_reference_help/
+		*  - NI DAQmx Base 3.x C reference: http://others-help.mrpt.org/ni-daqmx_base_3.x_c_function_reference/
+		*
 		* DAQmx Base Installation
 		* ------------------------
 		* Go to http://ni.com and download the "DAQmx Base" package for your OS. Install following NI's instructions. 
 		* As of 2013, the latest version is 3.7. 
 		*
-        * \note This class requires compiling MRPT with support for "NI DAQmx" or "NI DAQmx Base". While compiling MRPT,
-        *        check the "MRPT_HAS_NI_DAQmx"/"MRPT_HAS_NI_DAQmxBASE" option and correctly set the new variables to
-        *        the library include directory and library file.
+		* \note This class requires compiling MRPT with support for "NI DAQmx" or "NI DAQmx Base". While compiling MRPT,
+		*        check the "MRPT_HAS_NI_DAQmx"/"MRPT_HAS_NI_DAQmxBASE" option and correctly set the new variables to
+		*        the library include directory and library file.
 		*
-        * \note As of 2013, NI seems not to support compiling 64bit programs, so you can must build MRPT for 32bits if you need this class.
+		* \note As of 2013, NI seems not to support compiling 64bit programs, so you can must build MRPT for 32bits if you need this class.
 		*
 		* \ingroup mrpt_hwdrivers_grp
 		*/
@@ -313,13 +288,14 @@ namespace mrpt
 
 				struct HWDRIVERS_IMPEXP desc_ci_ang_encoder_t
 				{
-					desc_ci_ang_encoder_t() : ZidxEnable(false),ZidxVal(0),pulsesPerRev(512),initialAngle(0) { }
+					desc_ci_ang_encoder_t() : ZidxEnable(false),ZidxVal(0),pulsesPerRev(512),initialAngle(0),decimate(1),decimate_cnt(0) { }
 
 					std::string counter, decodingType, ZidxPhase,units;
 					bool        ZidxEnable;
 					double      ZidxVal;
 					int         pulsesPerRev;
 					double      initialAngle;
+					int         decimate, decimate_cnt; 
 				} 
 				ci_ang_encoder; //!< Counter: uses an angular encoder to measure angular position
 
@@ -358,7 +334,7 @@ namespace mrpt
 				std::auto_ptr<mrpt::synch::CPipeReadEndPoint> read_pipe;
 				std::auto_ptr<mrpt::synch::CPipeWriteEndPoint> write_pipe;
 				bool must_close, is_closed;
-				volatile bool new_data_available;
+				mrpt::synch::CAtomicCounter  new_obs_available;
 
 				TaskDescription task; //!< A copy of the original task description that generated this thread.
 			};

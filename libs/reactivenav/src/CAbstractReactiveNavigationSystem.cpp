@@ -1,36 +1,10 @@
 /* +---------------------------------------------------------------------------+
-   |                 The Mobile Robot Programming Toolkit (MRPT)               |
-   |                                                                           |
+   |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2013, Individual contributors, see AUTHORS file        |
-   | Copyright (c) 2005-2013, MAPIR group, University of Malaga                |
-   | Copyright (c) 2012-2013, University of Almeria                            |
-   | All rights reserved.                                                      |
-   |                                                                           |
-   | Redistribution and use in source and binary forms, with or without        |
-   | modification, are permitted provided that the following conditions are    |
-   | met:                                                                      |
-   |    * Redistributions of source code must retain the above copyright       |
-   |      notice, this list of conditions and the following disclaimer.        |
-   |    * Redistributions in binary form must reproduce the above copyright    |
-   |      notice, this list of conditions and the following disclaimer in the  |
-   |      documentation and/or other materials provided with the distribution. |
-   |    * Neither the name of the copyright holders nor the                    |
-   |      names of its contributors may be used to endorse or promote products |
-   |      derived from this software without specific prior written permission.|
-   |                                                                           |
-   | THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS       |
-   | 'AS IS' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED |
-   | TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR|
-   | PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDERS BE LIABLE |
-   | FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL|
-   | DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR|
-   |  SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)       |
-   | HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,       |
-   | STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN  |
-   | ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE           |
-   | POSSIBILITY OF SUCH DAMAGE.                                               |
+   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | See: http://www.mrpt.org/Authors - All rights reserved.                   |
+   | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
 #include <mrpt/reactivenav.h>  // Precomp header
@@ -38,19 +12,46 @@
 using namespace mrpt::reactivenav;
 using namespace std;
 
+// Ctor: CAbstractReactiveNavigationSystem::TNavigationParams 
+CAbstractReactiveNavigationSystem::TNavigationParams::TNavigationParams() :
+	target(0,0), 
+	targetHeading(0),
+	targetAllowedDistance(0.5),
+	targetIsRelative(false)
+{
+}
+
+// Gets navigation params as a human-readable format:
+std::string CAbstractReactiveNavigationSystem::TNavigationParams::getAsText() const 
+{
+	string s;
+	s+= mrpt::format("navparams.target = (%.03f,%.03f)\n", target.x, target.y );
+	s+= mrpt::format("navparams.targetAllowedDistance = %.03f\n", targetAllowedDistance );
+	s+= mrpt::format("navparams.targetIsRelative = %s\n", targetIsRelative ? "YES":"NO");
+
+	return s;
+}
+
 
 /*---------------------------------------------------------------
 							Constructor
   ---------------------------------------------------------------*/
 CAbstractReactiveNavigationSystem::CAbstractReactiveNavigationSystem(CReactiveInterfaceImplementation &react_iterf_impl) :
-	m_robot(react_iterf_impl)
+	m_lastNavigationState ( IDLE ),
+	m_navigationState     ( IDLE ),
+    m_navigationParams    ( NULL ),
+    m_robot               ( react_iterf_impl )
 {
-	m_navigationState =
-	m_lastNavigationState = IDLE;
+}
+
+// Dtor:
+CAbstractReactiveNavigationSystem::~CAbstractReactiveNavigationSystem()
+{
+	mrpt::utils::delete_safe( m_navigationParams );
 }
 
 /*---------------------------------------------------------------
-							Cancel
+							cancel
   ---------------------------------------------------------------*/
 void CAbstractReactiveNavigationSystem::cancel()
 {
@@ -60,7 +61,7 @@ void CAbstractReactiveNavigationSystem::cancel()
 
 
 /*---------------------------------------------------------------
-							Continue
+							resume
   ---------------------------------------------------------------*/
 void CAbstractReactiveNavigationSystem::resume()
 {
@@ -71,7 +72,7 @@ void CAbstractReactiveNavigationSystem::resume()
 
 
 /*---------------------------------------------------------------
-							Suspend
+							suspend
   ---------------------------------------------------------------*/
 void  CAbstractReactiveNavigationSystem::suspend()
 {
@@ -81,48 +82,38 @@ void  CAbstractReactiveNavigationSystem::suspend()
 }
 
 /*---------------------------------------------------------------
-					NavigateStep
-
-	  Se debe llamar continuamente, cada pocos milisegundos. Internamente
-	   lleva el mismo el control del tiempo que pasa entre llamadas para
-	   tener el cuenta el tiempo real.
+					navigationStep
   ---------------------------------------------------------------*/
 void CAbstractReactiveNavigationSystem::navigationStep()
 {
-	TState	startingState = m_navigationState;
+	const TState prevState = m_navigationState;
 	switch ( m_navigationState )
 	{
-	//------------------------------------------------------
-	//					PARAR ROBOT
-	//------------------------------------------------------
 	case IDLE:
 	case SUSPENDED:
 		try
 		{
-			// Si acabamos de llegar a este estado, parar el robot:
+			// If we just arrived at this state, stop robot:
 			if ( m_lastNavigationState == NAVIGATING )
 			{
-				printf_debug("\n[CAbstractReactiveNavigationSystem::navigationStep()] Stoping Navigation\n");
+				printf_debug("\n[CAbstractReactiveNavigationSystem::navigationStep()] Navigation stopped\n");
 				m_robot.stop();
 				m_robot.stopWatchdog();
 			}
 		} catch (...) { }
 		break;
 
-	//------------------------------------------------------
-	//					FINALIZACION POR ERROR
-	//------------------------------------------------------
 	case NAV_ERROR:
 		try
 		{
-			// Enviar evento de final de navegacion??
+			// Send end-of-navigation event:
 			if ( m_lastNavigationState == NAVIGATING && m_navigationState == NAV_ERROR)
 				m_robot.sendNavigationEndDueToErrorEvent();
 
-			// Si acabamos de llegar a este estado, parar el robot:
+			// If we just arrived at this state, stop the robot:
 			if ( m_lastNavigationState == NAVIGATING )
 			{
-				printf_debug("\n[CAbstractReactiveNavigationSystem::navigationStep()] Stoping Navigation due to an error!!\n");
+				printf_debug("\n[CAbstractReactiveNavigationSystem::navigationStep()] Stoping Navigation due to a NAV_ERROR state!\n");
 				m_robot.stop();
 				m_robot.stopWatchdog();
 			}
@@ -135,12 +126,12 @@ void CAbstractReactiveNavigationSystem::navigationStep()
 	case NAVIGATING:
 		try
 		{
-			
-			// Si acabamos de llegar a este estado, parar el robot:
 			if ( m_lastNavigationState != NAVIGATING )
 			{
 				printf_debug("\n[CAbstractReactiveNavigationSystem::navigationStep()] Starting Navigation. Watchdog initiated...\n");
-				printf_debug(" TARGET = (%.03f,%.03f)\n", m_navigationParams.target.x, m_navigationParams.target.y );
+				if (m_navigationParams)
+					printf_debug("[CAbstractReactiveNavigationSystem::navigationStep()] Navigation Params:\n%s\n", m_navigationParams->getAsText().c_str() );
+
 				m_robot.startWatchdog( 1000 );	// Watchdog = 1 seg
 			}
 
@@ -154,14 +145,13 @@ void CAbstractReactiveNavigationSystem::navigationStep()
 		}
 		catch (std::exception &e)
 		{
-			cerr << e.what() << endl;
-			printf("[CAbstractReactiveNavigationSystem::navigationStep] Exceptions!!\n");
+			cerr << "[CAbstractReactiveNavigationSystem::navigationStep] Exception:\n" << e.what() << endl;
 		}
 		catch (...)
 		{
-			printf("[CAbstractReactiveNavigationSystem::navigationStep] Unexpected exception!!\n");
+			cerr << "[CAbstractReactiveNavigationSystem::navigationStep] Unexpected exception.\n";
 		}
-		break;	// Fin de case NAVIGATING
+		break;	// End case NAVIGATING
 	};
-	m_lastNavigationState = startingState;
+	m_lastNavigationState = prevState;
 }

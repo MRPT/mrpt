@@ -1,3 +1,11 @@
+/* +---------------------------------------------------------------------------+
+   |                     Mobile Robot Programming Toolkit (MRPT)               |
+   |                          http://www.mrpt.org/                             |
+   |                                                                           |
+   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | See: http://www.mrpt.org/Authors - All rights reserved.                   |
+   | Released under BSD License. See details in http://www.mrpt.org/License    |
+   +---------------------------------------------------------------------------+ */
 #include "cs.h"
 /* depth-first-search of the graph of a matrix, starting at node j */
 int cs_dfs (int j, cs *G, int top, int *xi, int *pstack, const int *pinv)

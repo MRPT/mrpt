@@ -1,3 +1,11 @@
+/* +---------------------------------------------------------------------------+
+   |                     Mobile Robot Programming Toolkit (MRPT)               |
+   |                          http://www.mrpt.org/                             |
+   |                                                                           |
+   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | See: http://www.mrpt.org/Authors - All rights reserved.                   |
+   | Released under BSD License. See details in http://www.mrpt.org/License    |
+   +---------------------------------------------------------------------------+ */
 #include "cs.h"
 /* p [0..n] = cumulative sum of c [0..n-1], and then copy p [0..n-1] into c */
 double cs_cumsum (int *p, int *c, int n)

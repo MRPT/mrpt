@@ -1,36 +1,10 @@
 /* +---------------------------------------------------------------------------+
-   |                 The Mobile Robot Programming Toolkit (MRPT)               |
-   |                                                                           |
+   |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2013, Individual contributors, see AUTHORS file        |
-   | Copyright (c) 2005-2013, MAPIR group, University of Malaga                |
-   | Copyright (c) 2012-2013, University of Almeria                            |
-   | All rights reserved.                                                      |
-   |                                                                           |
-   | Redistribution and use in source and binary forms, with or without        |
-   | modification, are permitted provided that the following conditions are    |
-   | met:                                                                      |
-   |    * Redistributions of source code must retain the above copyright       |
-   |      notice, this list of conditions and the following disclaimer.        |
-   |    * Redistributions in binary form must reproduce the above copyright    |
-   |      notice, this list of conditions and the following disclaimer in the  |
-   |      documentation and/or other materials provided with the distribution. |
-   |    * Neither the name of the copyright holders nor the                    |
-   |      names of its contributors may be used to endorse or promote products |
-   |      derived from this software without specific prior written permission.|
-   |                                                                           |
-   | THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS       |
-   | 'AS IS' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED |
-   | TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR|
-   | PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDERS BE LIABLE |
-   | FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL|
-   | DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR|
-   |  SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)       |
-   | HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,       |
-   | STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN  |
-   | ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE           |
-   | POSSIBILITY OF SUCH DAMAGE.                                               |
+   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | See: http://www.mrpt.org/Authors - All rights reserved.                   |
+   | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 #ifndef CPTG2_H
 #define CPTG2_H
@@ -42,6 +16,23 @@ namespace mrpt
   namespace reactivenav
   {
 	/** The "alpha-PTG", as named in PTG papers.
+	 * 
+	 * Accepted parameters in the constructor:
+	 * - params["ref_distance"]: Maximum trayectory distance (meters).
+	 * - params["v_max"]: Maximum linear velocity (m/s)
+	 * - params["w_max"]: Maximum angular velocity (rad/s)
+	 * - params["cte_a0v"]: Constant related to the generation of linear velocities, read below (in radians).
+	 * - params["cte_a0w"]: Constant related to the generation of angular velocities, read below  (in radians).
+	 * 
+	 * This PT generator functions are: 
+	 *
+	 * \f[ v(\alpha) = V_{MAX} e^{ -\left( \dfrac{\alpha-\phi}{cte_{a0v}} \right)^2} \f]
+	 * \f[ \omega(\alpha) = W_{MAX} \left( -\dfrac{1}{2} +\dfrac{1}{1+ e^{ - \dfrac{\alpha-\phi}{cte_{a0w}} } } \right) \f]
+	 *
+	 * So, the radius of curvature of each trajectory is NOT constant for each "alpha" value in this PTG:
+	 *
+	 *  ![C-PTG path examples](PTG2_paths.png)
+	 *
 	 *  \ingroup mrpt_reactivenav_grp
 	 */
 	class REACTIVENAV_IMPEXP  CPTG2 : public CParameterizedTrajectoryGenerator
@@ -51,10 +42,6 @@ namespace mrpt
 			 *   - cte_a0v, cte_a0w: Parameters of this PTG (both are angles in radians).
 			 */
 			CPTG2(const TParameters<double> &params );
-
-			/** The lambda function.
-			  */
-			void lambdaFunction( float x, float y, int &out_k, float &out_d );
 
 			/** Gets a short textual description of the PTG and its parameters.
 			*/

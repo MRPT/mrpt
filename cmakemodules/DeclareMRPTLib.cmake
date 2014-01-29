@@ -155,14 +155,16 @@ macro(internal_define_mrpt_lib name headers_only)
 				# Include dir:
 				INCLUDE_DIRECTORIES("${MRPT_SOURCE_DIR}/libs/${DEP_MRPT_NAME}/include")
 				
-				# Link "-lmrpt-name", only for GCC and if both THIS and the dependence are non-header-only:
-				IF(CMAKE_COMPILER_IS_GNUCXX AND NOT ${headers_only})
-					get_property(_LIB_HDRONLY GLOBAL PROPERTY "${DEP}_LIB_IS_HEADERS_ONLY")
-					IF(NOT _LIB_HDRONLY)
-						#MESSAGE(STATUS "adding link dep: mrpt-${name} -> ${DEP}")
-						LIST(APPEND AUX_EXTRA_LINK_LIBS ${DEP}${MRPT_LINKER_LIBS_POSTFIX})
-					ENDIF(NOT _LIB_HDRONLY)
-				ENDIF(CMAKE_COMPILER_IS_GNUCXX AND NOT ${headers_only})
+				# Link "-lmrpt-name", only for GCC/CLang and if both THIS and the dependence are non-header-only:
+				IF(NOT ${headers_only})
+					IF("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang" OR CMAKE_COMPILER_IS_GNUCXX)
+						get_property(_LIB_HDRONLY GLOBAL PROPERTY "${DEP}_LIB_IS_HEADERS_ONLY")
+						IF(NOT _LIB_HDRONLY)
+							#MESSAGE(STATUS "adding link dep: mrpt-${name} -> ${DEP}")
+							LIST(APPEND AUX_EXTRA_LINK_LIBS ${DEP}${MRPT_LINKER_LIBS_POSTFIX})
+						ENDIF(NOT _LIB_HDRONLY)
+					ENDIF("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang" OR CMAKE_COMPILER_IS_GNUCXX)
+				ENDIF(NOT ${headers_only})
 				
 				# Append to list of mrpt-* lib dependences:
 				LIST(APPEND AUX_DEPS_LIST ${DEP})

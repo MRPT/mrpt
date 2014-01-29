@@ -113,47 +113,21 @@ int main(int argc, char **argv)
 			// Insert comment block:
 			if (insertMyHeading)
 			{
-				of << "/* +---------------------------------------------------------------------------+\r\n";
-				of << "   |                 The Mobile Robot Programming Toolkit (MRPT)               |\r\n";
-				of << "   |                                                                           |\r\n";
-				of << "   |                          http://www.mrpt.org/                             |\r\n";
-				of << "   |                                                                           |\r\n";
-				of << "   | Copyright (c) 2005-2013, Individual contributors, see AUTHORS file        |
-   | Copyright (c) 2005-2013, MAPIR group, University of Malaga                |
-   | Copyright (c) 2012-2013, University of Almeria                            |\r\n";
-				of << "   | All rights reserved.                                                      |\r\n";
-				of << "   |                                                                           |\r\n";
-				of << "   | Redistribution and use in source and binary forms, with or without        |\r\n";
-				of << "   | modification, are permitted provided that the following conditions are    |\r\n";
-				of << "   | met:                                                                      |\r\n";
-				of << "   |    * Redistributions of source code must retain the above copyright       |\r\n";
-				of << "   |      notice, this list of conditions and the following disclaimer.        |\r\n";
-				of << "   |    * Redistributions in binary form must reproduce the above copyright    |\r\n";
-				of << "   |      notice, this list of conditions and the following disclaimer in the  |\r\n";
-				of << "   |      documentation and/or other materials provided with the distribution. |\r\n";
-				of << "   |    * Neither the name of the copyright holders nor the                    |\r\n";
-				of << "   |      names of its contributors may be used to endorse or promote products |\r\n";
-				of << "   |      derived from this software without specific prior written permission.|\r\n";
-				of << "   |                                                                           |\r\n"; 
-				of << "   | THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS       |\r\n";  
-				of << "   | 'AS IS' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED |\r\n"; 
-				of << "   | TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR|\r\n"; 
-				of << "   | PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDERS BE LIABLE |\r\n"; 
-				of << "   | FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL|\r\n"; 
-				of << "   | DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR|\r\n"; 
-				of << "   |  SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)       |\r\n";
-				of << "   | HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,       |\r\n";
-				of << "   | STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN  |\r\n";
-				of << "   | ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE           |\r\n";
-				of << "   | POSSIBILITY OF SUCH DAMAGE.                                               |\r\n";
-				of << "   +---------------------------------------------------------------------------+ */\r\n";
+				of << "/* +---------------------------------------------------------------------------+\n";
+				of << "   |                     Mobile Robot Programming Toolkit (MRPT)               |\n";
+				of << "   |                          http://www.mrpt.org/                             |\n";
+				of << "   |                                                                           |\n";
+				of << "   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |\n";
+				of << "   | See: http://www.mrpt.org/Authors - All rights reserved.                   |\n";
+				of << "   | Released under BSD License. See details in http://www.mrpt.org/License    |\n";
+				of << "   +---------------------------------------------------------------------------+ */\n";
 
 			}
 
 			// Normal copy:
 			if (copyThisLine)
 			{
-				of << inLine << "\r\n";				
+				of << inLine << "\n";				
 			}		
 
 		}

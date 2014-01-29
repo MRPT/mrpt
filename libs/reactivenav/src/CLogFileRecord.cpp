@@ -1,36 +1,10 @@
 /* +---------------------------------------------------------------------------+
-   |                 The Mobile Robot Programming Toolkit (MRPT)               |
-   |                                                                           |
+   |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2013, Individual contributors, see AUTHORS file        |
-   | Copyright (c) 2005-2013, MAPIR group, University of Malaga                |
-   | Copyright (c) 2012-2013, University of Almeria                            |
-   | All rights reserved.                                                      |
-   |                                                                           |
-   | Redistribution and use in source and binary forms, with or without        |
-   | modification, are permitted provided that the following conditions are    |
-   | met:                                                                      |
-   |    * Redistributions of source code must retain the above copyright       |
-   |      notice, this list of conditions and the following disclaimer.        |
-   |    * Redistributions in binary form must reproduce the above copyright    |
-   |      notice, this list of conditions and the following disclaimer in the  |
-   |      documentation and/or other materials provided with the distribution. |
-   |    * Neither the name of the copyright holders nor the                    |
-   |      names of its contributors may be used to endorse or promote products |
-   |      derived from this software without specific prior written permission.|
-   |                                                                           |
-   | THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS       |
-   | 'AS IS' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED |
-   | TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR|
-   | PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDERS BE LIABLE |
-   | FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL|
-   | DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR|
-   |  SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)       |
-   | HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,       |
-   | STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN  |
-   | ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE           |
-   | POSSIBILITY OF SUCH DAMAGE.                                               |
+   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | See: http://www.mrpt.org/Authors - All rights reserved.                   |
+   | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
 #include <mrpt/reactivenav.h>  // Precomp header
@@ -145,7 +119,7 @@ void  CLogFileRecord::writeToStream(CStream &out,int *version) const
 
 			uint32_t m = infoPerPTG[i].TP_Obstacles.size();
 			out << m;
-			out.WriteBuffer((const void*)&(*infoPerPTG[i].TP_Obstacles.begin()), m * sizeof(infoPerPTG[i].TP_Obstacles[0]));
+			if (m) out.WriteBuffer((const void*)&(*infoPerPTG[i].TP_Obstacles.begin()), m * sizeof(infoPerPTG[i].TP_Obstacles[0]));
 
 			out << infoPerPTG[i].TP_Target << infoPerPTG[i].timeForTPObsTransformation << infoPerPTG[i].timeForHolonomicMethod;
 			out << infoPerPTG[i].desiredDirection << infoPerPTG[i].desiredSpeed << infoPerPTG[i].evaluation;
@@ -158,8 +132,10 @@ void  CLogFileRecord::writeToStream(CStream &out,int *version) const
 
 		n = robotShape_x.size();
 		out << n;
-		out.WriteBuffer((const void*)&(*robotShape_x.begin()), n*sizeof(robotShape_x[0]));
-		out.WriteBuffer((const void*)&(*robotShape_y.begin()), n*sizeof(robotShape_y[0]));
+		if (n) {
+			out.WriteBuffer((const void*)&(*robotShape_x.begin()), n*sizeof(robotShape_x[0]));
+			out.WriteBuffer((const void*)&(*robotShape_y.begin()), n*sizeof(robotShape_y[0]));
+		}
 
 		// Version 1 ---------
 		out << actual_v << actual_w;
@@ -225,7 +201,7 @@ void  CLogFileRecord::readFromStream(CStream &in,int version)
 				int32_t m;
 				in >> m;
 				infoPerPTG[i].TP_Obstacles.resize(m);
-				in.ReadBuffer((void*)&(*infoPerPTG[i].TP_Obstacles.begin()), m * sizeof(infoPerPTG[i].TP_Obstacles[0]));
+				if (m) in.ReadBuffer((void*)&(*infoPerPTG[i].TP_Obstacles.begin()), m * sizeof(infoPerPTG[i].TP_Obstacles[0]));
 
 				in >> infoPerPTG[i].TP_Target >> infoPerPTG[i].timeForTPObsTransformation >> infoPerPTG[i].timeForHolonomicMethod;
 				in >> infoPerPTG[i].desiredDirection >> infoPerPTG[i].desiredSpeed >> infoPerPTG[i].evaluation;
@@ -242,22 +218,24 @@ void  CLogFileRecord::readFromStream(CStream &in,int version)
 				// Previous values: (Removed in version 6)
 				in >> n;
 				prevV.resize(n);
-				in.ReadBuffer((void*)&(*prevV.begin()),n*sizeof(prevV[0]));
+				if (n) in.ReadBuffer((void*)&(*prevV.begin()),n*sizeof(prevV[0]));
 
 				in >> n;
 				prevW.resize(n);
-				in.ReadBuffer((void*)&(*prevW.begin()),n*sizeof(prevW[0]));
+				if (n) in.ReadBuffer((void*)&(*prevW.begin()),n*sizeof(prevW[0]));
 
 				in >> n;
 				prevSelPTG.resize(n);
-				in.ReadBuffer((void*)&(*prevSelPTG.begin()),n*sizeof(prevSelPTG[0]));
+				if (n) in.ReadBuffer((void*)&(*prevSelPTG.begin()),n*sizeof(prevSelPTG[0]));
 			}
 
 			in >> n;
 			robotShape_x.resize(n);
 			robotShape_y.resize(n);
-			in.ReadBuffer((void*)&(*robotShape_x.begin()), n*sizeof(robotShape_x[0]));
-			in.ReadBuffer((void*)&(*robotShape_y.begin()), n*sizeof(robotShape_y[0]));
+			if (n) {
+				in.ReadBuffer((void*)&(*robotShape_x.begin()), n*sizeof(robotShape_x[0]));
+				in.ReadBuffer((void*)&(*robotShape_y.begin()), n*sizeof(robotShape_y[0]));
+			}
 
 			if (version > 0)
 			{	// Version 1 --------------

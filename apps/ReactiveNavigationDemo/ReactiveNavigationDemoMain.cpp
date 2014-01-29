@@ -1,36 +1,10 @@
 /* +---------------------------------------------------------------------------+
-   |                 The Mobile Robot Programming Toolkit (MRPT)               |
-   |                                                                           |
+   |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2013, Individual contributors, see AUTHORS file        |
-   | Copyright (c) 2005-2013, MAPIR group, University of Malaga                |
-   | Copyright (c) 2012-2013, University of Almeria                            |
-   | All rights reserved.                                                      |
-   |                                                                           |
-   | Redistribution and use in source and binary forms, with or without        |
-   | modification, are permitted provided that the following conditions are    |
-   | met:                                                                      |
-   |    * Redistributions of source code must retain the above copyright       |
-   |      notice, this list of conditions and the following disclaimer.        |
-   |    * Redistributions in binary form must reproduce the above copyright    |
-   |      notice, this list of conditions and the following disclaimer in the  |
-   |      documentation and/or other materials provided with the distribution. |
-   |    * Neither the name of the copyright holders nor the                    |
-   |      names of its contributors may be used to endorse or promote products |
-   |      derived from this software without specific prior written permission.|
-   |                                                                           |
-   | THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS       |
-   | 'AS IS' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED |
-   | TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR|
-   | PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDERS BE LIABLE |
-   | FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL|
-   | DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR|
-   |  SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)       |
-   | HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,       |
-   | STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN  |
-   | ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE           |
-   | POSSIBILITY OF SUCH DAMAGE.                                               |
+   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | See: http://www.mrpt.org/Authors - All rights reserved.                   |
+   | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
 #include "ReactiveNavigationDemoMain.h"
@@ -165,7 +139,7 @@ public:
 			robotPose,
 			0.5f, // grid cell threshold
 			361,  // Number of rays
-			0     // Noise std
+			0.001     // Noise std
 			);
 
 		// Build the points map:
@@ -443,8 +417,9 @@ ReactiveNavigationDemoFrame::ReactiveNavigationDemoFrame(wxWindow* parent,wxWind
 	iniEditorRobot->edText->SetValue( wxT("; ---------------------------------------------------------------\n; FILE: CONFIG_RobotDescription.ini\n;\n;  All robot dependent modules should look here to determine\n;   the actual running platform. The posibilities are:\n;\t-> \"Sancho\"\n;\t-> \"Sena\"\n;  Some physical description parameters are stored for each \n;    robot.\n;\n;  JLBC @ OCT-2005\n; ---------------------------------------------------------------\n[ROBOT_NAME]\nName=SYMCAR\n\n; -------------------------------\n;\t       SYMCAR\n; -------------------------------\n[SYMCAR]\nPLS_Pose_x=0 ; Laser range scaner 3D position in the robot\nPLS_Pose_y=0\nPLS_Pose_z=0.31\nPLS_Pose_yaw=0\t\t; Angles in degrees\nPLS_Pose_pitch=0\nPLS_Pose_roll=0\n\n") );
 
 	// VC2003 complains about the too big string:
-	wxString	auxStr = wxT("; ---------------------------------------------------------------\n; FILE: CONFIG_ReactiveNavigator.ini\n;\n;  In this file there are parameters to the reactive navigation\n;   module.\n;\n;  JLBC @ OCT-2005\n; ---------------------------------------------------------------\n\n\n[GLOBAL_CONFIG]\n; 0: VFF,  1: ND\nHOLONOMIC_METHOD=0\nALARM_SEEMS_NOT_APPROACHING_TARGET_TIMEOUT=100\n\n; ----------------------------------------------------\n;\tParameters for the \"Nearness diagram\" Holonomic method\n; ----------------------------------------------------\n[ND_CONFIG]\nfactorWeights=1.0 0.5 2.0 0.4\n; 1: Free space\n; 2: Dist. in sectors\n; 3: Closer to target (euclidean)\n; 4: Hysteresis\nWIDE_GAP_SIZE_PERCENT=0.50\nMAX_SECTOR_DIST_FOR_D2_PERCENT=0.25\n");
-	auxStr << wxT("RISK_EVALUATION_SECTORS_PERCENT=0.25\nRISK_EVALUATION_DISTANCE=0.15\t\t; In normalized ps-meters [0,1]\nTARGET_SLOW_APPROACHING_DISTANCE=1.00\t; For stop gradually\nTOO_CLOSE_OBSTACLE=0.02\t\t\t; In normalized ps-meters\n\n\n; ----------------------------------------------------\n;\tParameters for the navigation on ROBOT: \"SYM_CAR\"\n; ----------------------------------------------------\n[SYMCAR]\nweights=0.5 0.05 0.5 2.0 0.5 0.1\n; 1: Free space\n; 2: Dist. in sectors\t\t\t\n; 3: Heading toward target\n; 4: Closer to target (euclidean)\n; 5: Hysteresis\n; 6: Security Distance\n\nDIST_TO_TARGET_FOR_SENDING_EVENT=1.25\t; Minimum. distance to target for sending the end event. Set to 0 to send it just on navigation end\n\nMinObstaclesHeight=0.0 \t\t; Minimum coordinate in the \"z\" axis for an obstacle to be taken into account.\nMaxObstaclesHeight=1.40 \t\t; Maximum coordinate in the \"z\" axis for an obstacle to be taken into account.\n\nrobotMax_V_mps=0.70\t\t\t; Speed limits\nrobotMax_W_degps=50\n\nMAX_REFERENCE_DISTANCE=3.50\nWIDE_GAP_SIZE_PERCENT=0.40\nRISK_EVALUATION_DISTANCE=0.5\nRISK_EVALUATION_SECTORS_PERCENT=0.20\nMAX_SECTOR_DIST_FOR_D2_PERCENT=0.25\nRESOLUCION_REJILLA_X=0.03\nRESOLUCION_REJILLA_Y=0.03\n\nPTG_COUNT=4\n\n; \t\tC-PTGs:\n; ------------------------------------\nPTG0_Type=1\nPTG0_nAlfas=300\nPTG0_v_max_mps=0.7\nPTG0_w_max_gps=50\nPTG0_K=1.0\n\nPTG1_Type=1\nPTG1_nAlfas=300\nPTG1_v_max_mps=0.7\nPTG1_w_max_gps=20\nPTG1_K=1.0\n\nPTG3_Type=1\nPTG3_nAlfas=300\nPTG3_v_max_mps=0.7\nPTG3_w_max_gps=40\nPTG3_K=-1.0\n\n\n; \t     a-A type PTGs:\n; ------------------------------------\nPTG2_Type=2\nPTG2_nAlfas=300\nPTG2_v_max_mps=0.7\nPTG2_w_max_gps=50\nPTG2_cte_a0v_deg=10\nPTG2_cte_a0w_deg=40\n\n\nRobotModel_shape2D_xs=-0.2 0.5 0.5 -0.2\nRobotModel_shape2D_ys=0.3 0.3 -0.3 -0.3\n");
+	wxString	auxStr = wxT("; ---------------------------------------------------------------\n; FILE: CONFIG_ReactiveNavigator.ini\n;\n;  In this file there are parameters to the reactive navigation\n;   module.\n;\n;  JLBC @ OCT-2005\n; ---------------------------------------------------------------\n\n\n[GLOBAL_CONFIG]\n; 0: VFF,  1: ND\nHOLONOMIC_METHOD=1\nALARM_SEEMS_NOT_APPROACHING_TARGET_TIMEOUT=100\n\n; ----------------------------------------------------\n;\tParameters for the \"Nearness diagram\" Holonomic method\n; ----------------------------------------------------\n[ND_CONFIG]\nfactorWeights=1.0 0.5 2.0 0.4\n; 1: Free space\n; 2: Dist. in sectors\n; 3: Closer to target (euclidean)\n; 4: Hysteresis\nWIDE_GAP_SIZE_PERCENT=0.50\nMAX_SECTOR_DIST_FOR_D2_PERCENT=0.25\n");
+	auxStr << wxT("RISK_EVALUATION_SECTORS_PERCENT=0.25\nRISK_EVALUATION_DISTANCE=0.15\t\t; In normalized ps-meters [0,1]\nTARGET_SLOW_APPROACHING_DISTANCE=1.00\t; For stop gradually\nTOO_CLOSE_OBSTACLE=0.02\t\t\t; In normalized ps-meters\n\n\n; ----------------------------------------------------\n;\tParameters for the navigation on ROBOT: \"SYM_CAR\"\n; ----------------------------------------------------\n[SYMCAR]\nweights=0.5 0.05 0.5 2.0 0.5 0.1\n; 1: Free space\n; 2: Dist. in sectors\t\t\t\n; 3: Heading toward target\n; 4: Closer to target (euclidean)\n; 5: Hysteresis\n; 6: Security Distance\n\nDIST_TO_TARGET_FOR_SENDING_EVENT=1.25\t; Minimum. distance to target for sending the end event. Set to 0 to send it just on navigation end\n\nMinObstaclesHeight=0.0 \t\t; Minimum coordinate in the \"z\" axis for an obstacle to be taken into account.\nMaxObstaclesHeight=1.40 \t\t; Maximum coordinate in the \"z\" axis for an obstacle to be taken into account.\n\nrobotMax_V_mps=2.00\t\t\t; Speed limits\nrobotMax_W_degps=120\n\nMAX_REFERENCE_DISTANCE=3.50\nWIDE_GAP_SIZE_PERCENT=0.40\nRISK_EVALUATION_DISTANCE=0.5\nRISK_EVALUATION_SECTORS_PERCENT=0.20\nMAX_SECTOR_DIST_FOR_D2_PERCENT=0.25\nRESOLUCION_REJILLA_X=0.03\nRESOLUCION_REJILLA_Y=0.03\n\nPTG_COUNT=3\n\n; \t\tC-PTGs:\n; ------------------------------------\nPTG0_Type=1\nPTG0_nAlfas=300\nPTG0_v_max_mps=2.0\nPTG0_w_max_gps=120\nPTG0_K=1.0\n\nPTG1_Type=1\nPTG1_nAlfas=300\nPTG1_v_max_mps=2.0\nPTG1_w_max_gps=120\nPTG1_K=-1.0\n\n\n; \t     a-A type PTGs:\n; ------------------------------------\nPTG2_Type=2\nPTG2_nAlfas=300\nPTG2_v_max_mps=2.0\nPTG2_w_max_gps=120\nPTG2_cte_a0v_deg=40\nPTG2_cte_a0w_deg=50\n\n\nRobotModel_shape2D_xs=-0.2 0.5 0.5 -0.2\nRobotModel_shape2D_ys=0.3 0.3 -0.3 -0.3\n");
+
 	iniEditoreactivenav->edText->SetValue( auxStr );
 
 	EDIT_internalCfgRobot = string( iniEditorRobot->edText->GetValue().mb_str() );
@@ -586,6 +561,8 @@ void ReactiveNavigationDemoFrame::tryConstructReactiveNavigator()
 		// load robot shape:
 		reloadRobotShape();
 
+		reacNavObj->initialize();
+
 	}
 	catch(std::exception &e)
 	{
@@ -622,11 +599,15 @@ void ReactiveNavigationDemoFrame::OnbtnNavigateClick(wxCommandEvent& event)
 
 	if (reacNavObj)
 	{
-		CAbstractReactiveNavigationSystem::TNavigationParams   navParams;
+		//CAbstractReactiveNavigationSystem::TNavigationParams   navParams;
+		CAbstractPTGBasedReactive::TNavigationParamsPTG   navParams;
 		navParams.target.x = x ;
 		navParams.target.y = y ;
 		navParams.targetAllowedDistance = 0.40f;
 		navParams.targetIsRelative = false;
+
+		// Optional: restrict the PTGs to use
+		//navParams.restrict_PTG_indices.push_back(1);
 
 		reacNavObj->navigate( &navParams );
 	}

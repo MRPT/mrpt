@@ -1,7 +1,11 @@
-/* zconf.h -- configuration of the zlib compression library
- * Copyright (C) 1995-2005 Jean-loup Gailly.
- * For conditions of distribution and use, see copyright notice in zlib.h
- */
+/* +---------------------------------------------------------------------------+
+   |                     Mobile Robot Programming Toolkit (MRPT)               |
+   |                          http://www.mrpt.org/                             |
+   |                                                                           |
+   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | See: http://www.mrpt.org/Authors - All rights reserved.                   |
+   | Released under BSD License. See details in http://www.mrpt.org/License    |
+   +---------------------------------------------------------------------------+ */
 
 /* @(#) $Id: zconf.h 35458 2005-09-10 21:15:17Z MW $ */
 

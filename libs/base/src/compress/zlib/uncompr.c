@@ -1,7 +1,11 @@
-/* uncompr.c -- decompress a memory buffer
- * Copyright (C) 1995-2003 Jean-loup Gailly.
- * For conditions of distribution and use, see copyright notice in zlib.h
- */
+/* +---------------------------------------------------------------------------+
+   |                     Mobile Robot Programming Toolkit (MRPT)               |
+   |                          http://www.mrpt.org/                             |
+   |                                                                           |
+   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | See: http://www.mrpt.org/Authors - All rights reserved.                   |
+   | Released under BSD License. See details in http://www.mrpt.org/License    |
+   +---------------------------------------------------------------------------+ */
 
 /* @(#) $Id: uncompr.c 26956 2004-04-25 08:48:21Z VS $ */
 

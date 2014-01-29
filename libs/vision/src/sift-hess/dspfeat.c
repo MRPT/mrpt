@@ -1,10 +1,11 @@
-/*
-Displays image features from a file on an image
-
-Copyright (C) 2006  Rob Hess <hess@eecs.oregonstate.edu>
-
-@version 1.1.1-20070913
-*/
+/* +---------------------------------------------------------------------------+
+   |                     Mobile Robot Programming Toolkit (MRPT)               |
+   |                          http://www.mrpt.org/                             |
+   |                                                                           |
+   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | See: http://www.mrpt.org/Authors - All rights reserved.                   |
+   | Released under BSD License. See details in http://www.mrpt.org/License    |
+   +---------------------------------------------------------------------------+ */
 
 #include "imgfeatures.h"
 #include "utils.h"
