@@ -157,7 +157,9 @@ macro(SuiteSparse_FIND_COMPONENTS )
 		)
 		## check if found
 		if(NOT SuiteSparse_${suitesparseCompUC}_INCLUDE_DIR)
-			message(WARNING "   Failed to find ${suitesparseComp} :\nSuiteSparse_${suitesparseCompUC}_INCLUDE_DIR not found.\nCheck you write correctly the component name (case sensitive),\nor set the SuiteSparse_${suitesparseCompUC}_DIR to look inside")
+			if (SuiteSparse_VERBOSE)
+				message(WARNING "   Failed to find ${suitesparseComp} :\nSuiteSparse_${suitesparseCompUC}_INCLUDE_DIR not found.\nCheck you write correctly the component name (case sensitive),\nor set the SuiteSparse_${suitesparseCompUC}_DIR to look inside")
+			endif()
 		else()
 			list(APPEND SuiteSparse_INCLUDE_DIRS	${SuiteSparse_${suitesparseCompUC}_INCLUDE_DIR})
 		endif()
@@ -200,11 +202,13 @@ macro(SuiteSparse_FIND_COMPONENTS )
 		
 		## check and append the and SuiteSparse_LIBRARIES list, and warn if not found (release and debug) otherwise
 		if(NOT SuiteSparse_${suitesparseCompUC}_LIBRARY_RELEASE AND NOT SuiteSparse_${suitesparseCompUC}_LIBRARY_DEBUG)
+			if (SuiteSparse_VERBOSE)
 			message(WARNING "   Failed to find ${suitesparseComp} :
 			Check you write correctly the component name (case sensitive),
 			or set the SuiteSparse_${suitesparseCompUC}_DIR to look inside,
 			or set directly SuiteSparse_${suitesparseCompUC}_LIBRARY_DEBUG and SuiteSparse_${suitesparseCompUC}_LIBRARY_RELEASE
 			")
+			endif ()
 		else()
 			list(APPEND SuiteSparse_LIBRARIES	optimized "${SuiteSparse_${suitesparseCompUC}_LIBRARY_RELEASE}" debug "${SuiteSparse_${suitesparseCompUC}_LIBRARY_DEBUG}")
 		endif()

@@ -18,7 +18,7 @@ if(NOT SuiteSparse_FOUND)
 	
 	IF(SUITESPARSE_USE_FIND_MODULE)
         set(SuiteSparse_VERBOSE OFF)
-        find_package(SuiteSparse REQUIRED) # 2nd: Use FindSuiteSparse.cmake module
+        find_package(SuiteSparse QUIET) # 2nd: Use FindSuiteSparse.cmake module
         include_directories(${SuiteSparse_INCLUDE_DIRS})
 	ENDIF(SUITESPARSE_USE_FIND_MODULE)
 else(NOT SuiteSparse_FOUND)
