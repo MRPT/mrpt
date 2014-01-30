@@ -489,7 +489,7 @@ bool CParameterizedTrajectoryGenerator::LoadColGridsFromFile( const std::string 
 	}
 }
 
-const uint32_t COLGRID_FILE_MAGIC     = 0xC0C0C0C2;
+const uint32_t COLGRID_FILE_MAGIC     = 0xC0C0C0C3;
 
 /*---------------------------------------------------------------
 					Save to file

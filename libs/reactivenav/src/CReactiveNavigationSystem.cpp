@@ -116,6 +116,8 @@ void CReactiveNavigationSystem::loadConfigFile(const mrpt::utils::CConfigFileBas
 
 	printf_debug("\n");
 
+	MRPT_TODO("Refactor loading params & simulating trajectories?")
+
 	for ( unsigned int n=0;n<PTG_COUNT;n++ )
 	{
 		// load params of this PTG:
@@ -146,7 +148,7 @@ void CReactiveNavigationSystem::loadConfigFile(const mrpt::utils::CConfigFileBas
 		    75,						// max.tim,
 		    refDistance,			// max.dist,
 		    600,					// max.n,
-		    0.010f,					// diferencial_t
+		    0.0005f,				// diferencial_t
 		    0.015f					// min_dist
 			);
 		m_timelogger.leave("PTG.simulateTrajectories");
