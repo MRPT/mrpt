@@ -142,14 +142,15 @@ void CReactiveNavigationSystem::loadConfigFile(const mrpt::utils::CConfigFileBas
 
 		printf_debug(PTGs[n]->getDescription().c_str());
 
+		const float min_dist = 0.015f;
 		m_timelogger.enter("PTG.simulateTrajectories");
 		PTGs[n]->simulateTrajectories(
 		    nAlfas,					// alphas,
 		    75,						// max.tim,
 		    refDistance,			// max.dist,
-		    600,					// max.n,
+		    10*refDistance/min_dist,	// max.n,
 		    0.0005f,				// diferencial_t
-		    0.015f					// min_dist
+		    min_dist					// min_dist
 			);
 		m_timelogger.leave("PTG.simulateTrajectories");
 
