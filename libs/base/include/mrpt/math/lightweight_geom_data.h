@@ -254,6 +254,8 @@ namespace math	{
 		 static size_t size() { return 3; }
 	};
 
+#pragma pack(pop) // NOTE: Don't force TPoint3Df to be mem aligned (may break CPU mem access alignment in ARM)
+
 	/** Lightweight 3D point (float version).
 	  * \sa mrpt::poses::CPoint3D, mrpt::math::TPoint3D
 	  */
@@ -269,6 +271,7 @@ namespace math	{
 		inline TPoint3Df   operator *(const float s) { return TPoint3Df(x*s,y*s,z*s); }
 	};
 
+#pragma pack(push,1)  //Pragma defined to ensure no structure packing
 	/**
 	  * Lightweight 3D point. Allows coordinate access using [] operator.
 	  * \sa mrpt::poses::CPoint3D, mrpt::math::TPoint3Df
