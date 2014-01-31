@@ -302,16 +302,19 @@ void CParameterizedTrajectoryGenerator::getCPointWhen_d_Is (
 				float *v,
 				float *w)
 {
-		unsigned int     n=0;
-
 		if (k>=m_alphaValuesCount)
 		{
 			x=y=phi=0;
 			return;  // Por si acaso
 		}
 
-		while ( n < (CPoints[k].size()-1) && CPoints[k][n].dist<d )
-				n++;
+		unsigned int n=0;
+		const unsigned int numPoints = CPoints[k].size();
+		for ( ; (n+1) < numPoints ; n++)
+		{
+			if (CPoints[k][n+1].dist>=d)
+				break;
+		}
 
 		x=CPoints[k][n].x;
 		y=CPoints[k][n].y;
