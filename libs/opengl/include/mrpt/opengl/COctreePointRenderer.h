@@ -126,7 +126,7 @@ namespace mrpt
 				mrpt::math::TPoint3Df  bb_min, bb_max;
 
 				// Fields used if is_leaf=true
-				std::vector<size_t>   pts;         //!< Point indices in the derived class that fall into this node.
+				mrpt::aligned_containers<size_t>::vector_t   pts;         //!< Point indices in the derived class that fall into this node.
 				bool                  all;         //!< true: All elements in the reference object; false: only those in \a pts
 
 				// Fields used if is_leaf=false
@@ -190,6 +190,9 @@ namespace mrpt
 					default: throw std::runtime_error("my_child_index!=[0,7]");
 					}
 				}
+
+            public:
+				EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 			};
 
 			struct OPENGL_IMPEXP TRenderQueueElement
@@ -203,7 +206,7 @@ namespace mrpt
 
 
 			bool  m_octree_has_to_rebuild_all;
-			std::deque<TNode>  m_octree_nodes; //!< First one [0] is always the root node
+			typename mrpt::aligned_containers<TNode>::deque_t  m_octree_nodes; //!< First one [0] is always the root node
 
 			// Counters of visible octrees for each render:
 			volatile mutable size_t m_visible_octree_nodes, m_visible_octree_nodes_ongoing;
