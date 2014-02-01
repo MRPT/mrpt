@@ -126,7 +126,7 @@ namespace mrpt
 				mrpt::math::TPoint3Df  bb_min, bb_max;
 
 				// Fields used if is_leaf=true
-				mrpt::aligned_containers<size_t>::vector_t   pts;         //!< Point indices in the derived class that fall into this node.
+				std::vector<size_t>   pts;         //!< Point indices in the derived class that fall into this node.
 				bool                  all;         //!< true: All elements in the reference object; false: only those in \a pts
 
 				// Fields used if is_leaf=false
