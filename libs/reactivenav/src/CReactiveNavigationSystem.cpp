@@ -202,11 +202,15 @@ void CReactiveNavigationSystem::STEP1_CollisionGridsBuilder()
 
 		m_timelogger.enter("build_PTG_collision_grids");
 
-		mrpt::reactivenav::build_PTG_collision_grids(
-			PTGs,
-			m_robotShape,
-			format("ReacNavGrid_%s",robotName.c_str())
-			);
+		for (unsigned int i=0;i<PTGs.size();i++)
+		{
+			mrpt::reactivenav::build_PTG_collision_grids(
+				PTGs[i],
+				m_robotShape,
+				format("ReacNavGrid_%s_%03u.dat.gz",robotName.c_str(),i),
+				m_enableConsoleOutput /*verbose*/ 
+				);
+		}
 
 		m_timelogger.leave("build_PTG_collision_grids");
 	}

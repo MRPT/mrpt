@@ -215,7 +215,12 @@ void CReactiveNavigationSystem3D::STEP1_CollisionGridsBuilder()
 		{
 			for (unsigned int i=0; i<m_robotShape.heights.size(); i++)
 			{
-				build_PTG_collision_grid3D(m_ptgmultilevel[j].PTGs[i], m_robotShape.polygons[i], i+1, j+1, m_enableConsoleOutput /*VERBOSE*/ );
+				mrpt::reactivenav::build_PTG_collision_grids(
+					m_ptgmultilevel[j].PTGs[i], 
+					m_robotShape.polygons[i], 
+					format("ReacNavGrid_%s_%03u_L%02u.dat.gz",robotName.c_str(),i,j), 
+					m_enableConsoleOutput /*VERBOSE*/ 
+					);
 			}
 		}
 
