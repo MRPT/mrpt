@@ -529,27 +529,6 @@ bool TPolygon2D::contains(const TPoint2D &point) const	{
 		else if (sign(val)!=sign(l.evaluatePoint(cntr))) return false;
 	}
 	return true;
-
-	//Alternate method (currently not executed because of the previous return statement).
-	//If point is inside any polygon's segment, return true automatically.
-	size_t N=size();
-	for (size_t i=0;i<N-1;i++) if (TSegment2D(operator[](i),operator[](i+1)).contains(point)) return true;
-	if (TSegment2D(operator[](N-1),operator[](0)).contains(point)) return true;
-
-	//Compute atan2 of distance between the argument and each polygon's point.
-	vector<double> angs(N);
-	for (size_t i=0;i<N;i++)	{
-		const TPoint2D &p=operator[](i);
-		angs[i]=atan2(p.y-point.y,p.x-point.x);
-	}
-	vector<double> diffs(N);
-	for (size_t i=0;i<N-1;i++) diffs[i]= mrpt::math::wrapTo2Pi(angs[i+1]-angs[i]);
-	diffs[N-1]=mrpt::math::wrapTo2Pi(angs[0]-angs[N-1]);
-
-	//If difference between angles is greater than pi, return false. A boolean variable is used to store the sign.
-	bool gt=diffs[0]>M_PI;
-	for (size_t i=1;i<N;i++) if ((diffs[i]>M_PI)!=gt) return false;
-	return true;
 }
 void TPolygon2D::getAsSegmentList(vector<TSegment2D> &v) const	{
 	size_t N=size();
