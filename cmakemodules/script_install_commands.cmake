@@ -12,9 +12,11 @@ ENDIF(EXISTS "${MRPT_BINARY_DIR}/pkgconfig/mrpt-base.pc" AND NOT IS_DEBIAN_DBG_P
 # CMake will look for MRPTConfig.cmake at: /usr/share|lib/mrpt
 IF(WIN32)
 	INSTALL(FILES "${MRPT_BINARY_DIR}/unix-install/MRPTConfig.cmake" DESTINATION ./ )
+	INSTALL(FILES "${MRPT_BINARY_DIR}/unix-install/MRPTConfig-version.cmake" DESTINATION ./ )
 ELSE(WIN32)
 	IF (NOT IS_DEBIAN_DBG_PKG)
 		INSTALL(FILES "${MRPT_BINARY_DIR}/unix-install/MRPTConfig.cmake" DESTINATION ${libmrpt_dev_INSTALL_PREFIX}share/mrpt )
+		INSTALL(FILES "${MRPT_BINARY_DIR}/unix-install/MRPTConfig-version.cmake" DESTINATION ${libmrpt_dev_INSTALL_PREFIX}share/mrpt )
 	ENDIF(NOT IS_DEBIAN_DBG_PKG)
 ENDIF(WIN32)
 
