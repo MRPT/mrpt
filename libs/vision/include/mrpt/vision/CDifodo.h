@@ -12,7 +12,6 @@
 
 #include <mrpt/base.h>
 #include <Eigen/Dense>
-#include <Eigen/Sparse>
 #include <mrpt/vision/link_pragmas.h>
 
 

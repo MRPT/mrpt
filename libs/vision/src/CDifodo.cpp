@@ -329,8 +329,7 @@ void CDifodo::solveDepthSystem()
 {
 	utils::CTicTac	clock;
 	unsigned int cont = 0;
-	vector <Triplet<float> > coord;
-	SparseMatrix<float> A;
+	MatrixXf A;
 	MatrixXf Var;
 	MatrixXf B;
 	A.resize(num_valid_points,6);
@@ -354,42 +353,28 @@ void CDifodo::solveDepthSystem()
 				const float dxcomp = du(y,x)*f_inv_x*inv_d;
 				const float dycomp = dv(y,x)*f_inv_y*inv_d;
 
-				coord.push_back(Triplet<float>(cont, 0, inv_d*(1.0f + dxcomp*xx_inter(y,x)*inv_d + dycomp*yy_inter(y,x)*inv_d)));
-				coord.push_back(Triplet<float>(cont, 1, inv_d*(-dxcomp)));
-				coord.push_back(Triplet<float>(cont, 2, inv_d*(-dycomp)));
-				coord.push_back(Triplet<float>(cont, 3, inv_d*(dxcomp*yy_inter(y,x) - dycomp*xx_inter(y,x))));
-				coord.push_back(Triplet<float>(cont, 4, inv_d*(yy_inter(y,x) + dxcomp*inv_d*yy_inter(y,x)*xx_inter(y,x) + dycomp*(yy_inter(y,x)*yy_inter(y,x)*inv_d + depth_inter(y,x)))));
-				coord.push_back(Triplet<float>(cont, 5, inv_d*(-xx_inter(y,x) - dxcomp*(xx_inter(y,x)*xx_inter(y,x)*inv_d + depth_inter(y,x)) - dycomp*inv_d*yy_inter(y,x)*xx_inter(y,x))));
+				A(cont,0) = inv_d*(1.0f + dxcomp*xx_inter(y,x)*inv_d + dycomp*yy_inter(y,x)*inv_d);
+				A(cont,1) = inv_d*(-dxcomp);
+				A(cont,2) = inv_d*(-dycomp);
+				A(cont,3) = inv_d*(dxcomp*yy_inter(y,x) - dycomp*xx_inter(y,x));
+				A(cont,4) = inv_d*(yy_inter(y,x) + dxcomp*inv_d*yy_inter(y,x)*xx_inter(y,x) + dycomp*(yy_inter(y,x)*yy_inter(y,x)*inv_d + depth_inter(y,x)));
+				A(cont,5) = inv_d*(-xx_inter(y,x) - dxcomp*(xx_inter(y,x)*xx_inter(y,x)*inv_d + depth_inter(y,x)) - dycomp*inv_d*yy_inter(y,x)*xx_inter(y,x));
 
 				B(cont,0) = inv_d*(-dt(y,x));
 
 				cont++;
 			}
 
-
-	A.setFromTriplets(coord.begin(), coord.end());
-
 	//Solve the linear system of equations using a minimum least squares method
-	const SparseMatrix<float> atrans = A.transpose();
-	const SparseMatrix<float> aux = atrans*A;
-	SimplicialLDLT<SparseMatrix<float> >	SparseCholesky;
-	SparseCholesky.compute(aux);
-
-	if(SparseCholesky.info()!= Eigen::Success ) {	cout << endl << "Cholesky decomposition failed "; }
-
-	Var = SparseCholesky.solve(atrans*B);
+	MatrixXf atrans = A.transpose();
+	MatrixXf a_ls = atrans*A;
+	Var = a_ls.ldlt().solve(atrans*B);
 	kai_solver = Var;
 
-	if(SparseCholesky.info()!= Eigen::Success )	{ 	cout << endl << "Cholesty solver failed"; }
-
-
 	//Covariance matrix calculation
-	MatrixXf aux_normal;
 	MatrixXf residuals(num_valid_points,1);
-	aux_normal = aux.toDense();
 	residuals = A*Var - B;
-	est_cov = (1.0f/float(num_valid_points-6))*aux_normal.inverse()*residuals.squaredNorm();
-	//cout << endl << "Covariance matrix: " << endl << 50*est_cov;
+	est_cov = (1.0f/float(num_valid_points-6))*a_ls.inverse()*residuals.squaredNorm();
 
 }
 
