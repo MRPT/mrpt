@@ -74,6 +74,9 @@ namespace mrpt
 			MatrixXf dv;
 			MatrixXf dt;
 
+			/** Weights used to ponder equations in the least square solution */
+			MatrixXf weights;
+
 			/** Matrix which indicates wheter the depth of a pixel is zero (null = 1) or not (null = 00). and border and noisy points */
 			MatrixXi null;
 
@@ -103,7 +106,7 @@ namespace mrpt
 			  * Previous_speed_const_weight directly ponders the previous speed in order to calculate the filtered speed. Recommended range - (0, 0.5)
 			  * Previous_speed_eig_weight ponders the product of the corresponding eigenvalue and the previous speed in order to calculate the filtered speed*/
 			float previous_speed_const_weight;	//!<Default 0.2
-			float previous_speed_eig_weight;	//!<Default 400
+			float previous_speed_eig_weight;	//!<Default 300
 
 			/** Solution from the solver: kai before applying the filter in local coordinates */
 			math::CMatrixFloat61 kai_solver;
@@ -177,8 +180,8 @@ namespace mrpt
 			/** It gets the camera focal lenght */
 			inline float getCameraFocalLenght() const {return f_dist;}
 
-			/** It sets the rows and cols of the depth image that will be considered by the visual odometry method. */
-			inline void setRowsAndCols(unsigned int num_rows, unsigned int num_cols);
+			/** It sets the number of rows and cols of the depth image that will be considered by the visual odometry method. */
+			inline void setNumberOfRowsAndCols(unsigned int num_rows, unsigned int num_cols);
 
 			/** It gets the rows and cols of the depth image that are considered by the visual odometry method. */
 			inline void getRowsAndCols(unsigned int &num_rows, unsigned int &num_cols) const {num_rows = rows; num_cols = cols;}
@@ -215,6 +218,9 @@ namespace mrpt
 
 			/** It gets the least-square covariance matrix */
 			inline mrpt::math::CMatrixFloat66 getCovariance() const {return est_cov;}
+
+			/** It gets the matrix of weights */
+			inline void getWeights(MatrixXf &we);
 
 			/** It resets the border thresholds to their default values */
 			void bordersThresholdToDefault();

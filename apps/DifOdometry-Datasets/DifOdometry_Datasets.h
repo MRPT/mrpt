@@ -31,6 +31,7 @@ public:
 	std::ofstream		f_res;
 
 	unsigned int rawlog_count;
+	bool first_pose;
 	bool save_results;
 
 	/** Constructor. */
@@ -41,6 +42,7 @@ public:
 		acu_rel_error_tras = 0;
 		acu_rel_error_rot = 0;
 		num_iter = 0;
+		first_pose = false;
 	}
 
 	/** Initializes the visual odometry method and loads the rawlog file */
