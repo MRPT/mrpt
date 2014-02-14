@@ -329,6 +329,8 @@ void CDifodo::findValidPoints()
 
 void CDifodo::solveDepthSystem()
 {
+	using mrpt::utils::square;
+
 	utils::CTicTac	clock;
 	unsigned int cont = 0;
 	MatrixXf A;
