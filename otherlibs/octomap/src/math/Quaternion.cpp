@@ -43,6 +43,7 @@
 
 #include <cassert>
 #include <math.h>
+#include <algorithm> // For std::max()
 
 
 // used from Vector: norm2, unit, *
