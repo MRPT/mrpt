@@ -1,10 +1,36 @@
 /* +---------------------------------------------------------------------------+
-   |                     Mobile Robot Programming Toolkit (MRPT)               |
+   |                 The Mobile Robot Programming Toolkit (MRPT)               |
+   |                                                                           |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
-   | See: http://www.mrpt.org/Authors - All rights reserved.                   |
-   | Released under BSD License. See details in http://www.mrpt.org/License    |
+   | Copyright (c) 2005-2013, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2013, MAPIR group, University of Malaga                |
+   | Copyright (c) 2012-2013, University of Almeria                            |
+   | All rights reserved.                                                      |
+   |                                                                           |
+   | Redistribution and use in source and binary forms, with or without        |
+   | modification, are permitted provided that the following conditions are    |
+   | met:                                                                      |
+   |    * Redistributions of source code must retain the above copyright       |
+   |      notice, this list of conditions and the following disclaimer.        |
+   |    * Redistributions in binary form must reproduce the above copyright    |
+   |      notice, this list of conditions and the following disclaimer in the  |
+   |      documentation and/or other materials provided with the distribution. |
+   |    * Neither the name of the copyright holders nor the                    |
+   |      names of its contributors may be used to endorse or promote products |
+   |      derived from this software without specific prior written permission.|
+   |                                                                           |
+   | THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS       |
+   | 'AS IS' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED |
+   | TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR|
+   | PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDERS BE LIABLE |
+   | FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL|
+   | DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR|
+   |  SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)       |
+   | HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,       |
+   | STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN  |
+   | ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE           |
+   | POSSIBILITY OF SUCH DAMAGE.                                               |
    +---------------------------------------------------------------------------+ */
 
 #pragma once
@@ -445,8 +471,18 @@ namespace srba
 
 
 	protected:
+		int m_verbose_level; //!< 0: None (only critical msgs), 1: verbose, 2:even more verbose, 3: even more
+
+		typedef std::multimap<size_t,TKeyFrameID,std::greater<size_t> > base_sorted_lst_t;
+
 		/** @name (Protected) Sub-algorithms
 		    @{ */
+
+		/** Make a list of base KFs of my new observations, ordered in descending order by # of shared observations: */
+		void make_ordered_list_base_kfs(
+			const typename traits_t::new_kf_observations_t & obs,
+			base_sorted_lst_t            & obs_for_each_base_sorted,
+			map<TKeyFrameID,size_t>       *out_obs_for_each_base =NULL ) const;
 
 		/** This method will call edge_creation_policy(), which has predefined algorithms but could be re-defined by the user in a derived class */
 		void determine_kf2kf_edges_to_create(
@@ -545,8 +581,6 @@ namespace srba
 		  *  Enabled by default, can be disabled with \a enable_time_profiler(false)
 		  */
 		mutable mrpt::utils::CTimeLogger  m_profiler;
-
-		int m_verbose_level; //!< 0: None (only critical msgs), 1: verbose, 2:even more verbose, 3: even more
 
 		/** Creates a new known/unknown position landmark (upon first LM observation ), and expands Jacobians with new observation
 		  * \param[in] new_obs The basic data on the observed landmark: landmark ID, keyframe from which it's observed and parameters ("z" vector) of the observation itself (e.g. pixel coordinates).
@@ -700,14 +734,6 @@ namespace srba
 			lst.insert(i);
 			lst.insert(j);
 		}
-
-		typedef std::multimap<size_t,TKeyFrameID,std::greater<size_t> > base_sorted_lst_t;
-
-		/** Make a list of base KFs of my new observations, ordered in descending order by # of shared observations: */
-		void make_ordered_list_base_kfs(
-			const typename traits_t::new_kf_observations_t & obs,
-			base_sorted_lst_t            & obs_for_each_base_sorted,
-			map<TKeyFrameID,size_t>       *out_obs_for_each_base =NULL ) const;
 
 		void compute_minus_gradient(
 			mrpt::vector_double & minus_grad,
