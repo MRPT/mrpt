@@ -71,7 +71,7 @@ void CImpinjRFID::startDriver()
 
 	const int ret = ::system(cmdline.str().c_str());
 	if (0!=ret)
-		std::cerr << "[CImpinjRFID::startDriver] Error ("<< ret << ") invoking command:\n" << cmdline << std::endl;
+		std::cerr << "[CImpinjRFID::startDriver] Error ("<< ret << ") invoking command:\n" << cmdline.str() << std::endl;
 
 	system::exitThread();  // JL->Emil: Really needed? If not, just remove...
 }
