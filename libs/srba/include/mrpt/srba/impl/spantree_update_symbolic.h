@@ -114,7 +114,7 @@ cout << "ST: Shorter path ST["<<s<<"]["<<r<<"].N was "<<st_s[r].next << " => "<<
 						TSpanTreeEntry &ste_r_inSTs = st_s[r];
 						ste_r_inSTs.distance = new_dist;
 						ste_r_inSTs.next     = ste_s2ik ? ste_s2ik->next : new_node_id; // Next node in the direction towards "ik" or to "n" if this is "ik"
-						ASSERT_NOT_EQUAL_(static_cast<size_t>(s), static_cast<size_t>(ste_r_inSTs.next)) // no self-loops!
+						ASSERT_NOT_EQUAL_(s,ste_r_inSTs.next) // no self-loops!
 
 						// Mark nodes with their "next_node" modified:
 						kfs_with_modified_next_edge.insert( make_pair(s,r) );
@@ -143,7 +143,7 @@ cout << "ST: New path ST["<<s<<"]["<<r<<"].N ="<<(ste_s2ik ? ste_s2ik->next : ne
 						TSpanTreeEntry &ste_r_inSTs = st_s[r]; // O(log N)
 						ste_r_inSTs.distance = new_dist;
 						ste_r_inSTs.next     = ste_s2ik ? ste_s2ik->next : new_node_id; // Next node in the direction towards "ik"
-						ASSERT_NOT_EQUAL_(static_cast<size_t>(s), static_cast<size_t>(ste_r_inSTs.next)) // no self-loops!
+						ASSERT_NOT_EQUAL_(s, ste_r_inSTs.next) // no self-loops!
 
 						// Mark nodes with their "next_node" modified:
 						kfs_with_modified_next_edge.insert(make_pair(r,s));
