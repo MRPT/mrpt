@@ -218,7 +218,8 @@ namespace srba
 				span_tree_max_depth(static_cast<size_t>(-1)),
 				draw_unknown_feats(true),
 				draw_unknown_feats_ellipses(true),
-				draw_unknown_feats_ellipses_quantiles(1)
+				draw_unknown_feats_ellipses_quantiles(1),
+				show_unknown_feats_ids(true)
 			{
 			}
 
@@ -226,6 +227,7 @@ namespace srba
 			bool   draw_unknown_feats;  //!< Draw features with non-fixed rel.pos as well?
 			bool   draw_unknown_feats_ellipses;
 			double draw_unknown_feats_ellipses_quantiles;
+			bool   show_unknown_feats_ids;
 		};
 
 		/** Build an opengl representation of the current state of this RBA problem

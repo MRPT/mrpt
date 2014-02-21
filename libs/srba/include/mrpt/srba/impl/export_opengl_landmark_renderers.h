@@ -97,16 +97,19 @@ template <> struct LandmarkRendererBase<landmark_rendering_as_point>
 			base_pose.composePoint(p_wrt_base,p_global);
 
 			gl_lms->insertPoint(p_global.x,p_global.y,p_global.z);
+			
+			if( options.show_unknown_feats_ids )
+			{
+				// Add text label:
+				mrpt::opengl::CText3DPtr  gl_txt = mrpt::opengl::CText3D::Create(
+					mrpt::format("%u",static_cast<unsigned int>( itLM->first)),
+					"mono", 0.15,
+					mrpt::opengl::NICE );
+				gl_txt->setPose(CPose3D(p_global.x,p_global.y,p_global.z,DEG2RAD(-90),DEG2RAD(0),DEG2RAD(90)));
+				gl_txt->setColor( is_known ? col_known_lms : col_unknown_lms );
 
-			// Add text label:
-			mrpt::opengl::CText3DPtr  gl_txt = mrpt::opengl::CText3D::Create(
-				mrpt::format("%u",static_cast<unsigned int>( itLM->first)),
-				"mono", 0.15,
-				mrpt::opengl::NICE );
-			gl_txt->setPose(CPose3D(p_global.x,p_global.y,p_global.z,DEG2RAD(-90),DEG2RAD(0),DEG2RAD(90)));
-			gl_txt->setColor( is_known ? col_known_lms : col_unknown_lms );
-
-			scene.insert(gl_txt);
+				scene.insert(gl_txt);
+			}
 
 			// Uncertainty ellipse?
 			if (options.draw_unknown_feats_ellipses && lms_to_draw_inf_covs[i] )

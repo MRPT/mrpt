@@ -51,7 +51,8 @@ void RbaEngine<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::build_opengl_repre
 
 				mrpt::opengl::CSetOfObjectsPtr o = mrpt::opengl::stock_objects::CornerXYZSimple(0.75,2.0);
 				o->setPose(p);
-				o->setName( mrpt::format("%d",itP->first).c_str() );
+				o->setName( mrpt::format("%d",int(itP->first)).c_str() );
+				o->enableShowName();
 				out_scene->insert(o);
 			}
 			// And a bigger one for the root:
@@ -63,6 +64,7 @@ void RbaEngine<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::build_opengl_repre
 
 			// Draw all edges between frames:
 			mrpt::opengl::CSetOfLinesPtr gl_edges = mrpt::opengl::CSetOfLines::Create();
+			gl_edges->setColor(1,0,1); // Magenta, in order to not confuse them with the standard lines of a grid plane
 #ifdef SRBA_WORKAROUND_MSVC9_DEQUE_BUG
 			for (typename rba_problem_state_t::k2k_edges_deque_t::const_iterator itEdge2 = rba_state.k2k_edges.begin();itEdge2!=rba_state.k2k_edges.end();++itEdge2)
 			{
