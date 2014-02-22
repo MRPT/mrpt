@@ -7,5 +7,5 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/new-nav-lib.h>  // Precompiled headers
+#include <mrpt/hybridnav.h>  // Precompiled headers
 

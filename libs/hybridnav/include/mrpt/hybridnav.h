@@ -7,9 +7,11 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#ifndef _mrpt_new-nav-lib_H
-#define _mrpt_new-nav-lib_H
+#ifndef _mrpt_hybridnav_H
+#define _mrpt_hybridnav_H
 
-// #include <mrpt/new-nav-lib/.... .h>
+#include <mrpt/hybridnav/TPath.h>
+#include <mrpt/hybridnav/TPSpaceRRT.h>
+#include <mrpt/hybridnav/TPSpaceHybridNavigationSystem.h>
 
 #endif

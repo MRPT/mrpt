@@ -7,24 +7,41 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/new-nav-lib.h>
+#ifndef TPSpaceRRT_H
+#define TPSpaceRRT_H
 
 #include <mrpt/utils.h>
 
-
-using namespace mrpt::new-nav-lib;
-using namespace mrpt::utils;
-
-void registerAllClasses_mrpt_new-nav-lib();
-
-CStartUpClassesRegister  mrpt_new-nav-lib_class_reg(&registerAllClasses_mrpt_new-nav-lib);
-
-/*---------------------------------------------------------------
-					registerAllClasses_mrpt_new-nav-lib
-  ---------------------------------------------------------------*/
-void registerAllClasses_mrpt_new-nav-lib()
+namespace mrpt
 {
-//	registerClass( CLASS_ID( XXXX ) );
+  namespace hybridnav
+  {
 
+        /** This class contains methods for TP-Space RRT planner algorithm
+         *
+         *  <b>Usage:</b><br>
+         *		- write me
+         *
+         *
+         *  <b>About the algorithm:</b><br>
+         *
+         *
+         * <b>Changes history</b>
+         *      - 21/FEB/2014: Creation (MB)
+         *  \ingroup mrpt_hybrid_grp
+         */
+        class TPSpaceRRT //: public PTRRT_Navigator
+        {
+            public:
+                TPSpaceRRT();
+                virtual ~TPSpaceRRT();
+
+
+            protected:
+
+            private:
+        };
+
+  }
 }
-
+#endif // TPATH_H
