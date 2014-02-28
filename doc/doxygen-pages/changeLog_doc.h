@@ -14,7 +14,8 @@
 
  <a name="1.1.1">
   <h2>Version 1.1.1: (Under development) </h2></a>
-  	- (...)
+  	- BUG FIXES:
+		- mrpt::opengl::CArrow was always drawn of normalized length.
 
 <hr>
  <a name="1.1.0">
