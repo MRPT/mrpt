@@ -100,9 +100,13 @@ using namespace std;
     #include <windows.h>
 #endif
 
-#include <GL/gl.h>
-#include <GL/glu.h>
-
+#ifdef MRPT_OS_APPLE
+  #include <OpenGL/gl.h>
+  #include <OpenGL/glu.h>
+#else
+  #include <GL/gl.h>
+  #include <GL/glu.h>
+#endif
 
 // Critical section for updating the scene:
 synch::CCriticalSection	critSec_UpdateScene;

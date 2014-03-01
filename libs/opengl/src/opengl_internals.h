@@ -51,14 +51,15 @@
 	 * under osx
 	 */
 	#ifdef __APPLE__
-		#include <otherlibs/freeglut/GL/freeglut_std.h>
+		//#include <otherlibs/freeglut/GL/freeglut_std.h>
+		#ifndef GLUT_INIT_STATE
+			#define GLUT_INIT_STATE 0x007C
+		#endif
+	#else
+		#ifdef HAVE_FREEGLUT_EXT_H
+			#include <GL/freeglut_ext.h>
+		#endif
 	#endif
-
-	#ifdef HAVE_FREEGLUT_EXT_H
-		#include <GL/freeglut_ext.h>
-	#endif
-
-
 
 #endif // MRPT_HAS_OPENGL_GLUT
 

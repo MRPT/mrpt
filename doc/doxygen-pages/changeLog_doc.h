@@ -14,6 +14,8 @@
 
  <a name="1.1.1">
   <h2>Version 1.1.1: (Under development) </h2></a>
+	- Build system:
+		- Fixes to build in OS X - [Patch](https://gist.github.com/randvoorhies/9283072) by Randolph Voorhies.
   	- BUG FIXES:
 		- mrpt::opengl::CArrow was always drawn of normalized length.
 
