@@ -49,9 +49,10 @@
  */
 
 #include <assert.h>
-#ifdef __GNUC__
+#if defined( __GNUC__ ) && !(defined( __clang__ ) && defined( __APPLE__ ) )
   #include <tr1/unordered_set>
   #include <tr1/unordered_map>
+  #define OCTREE_KEY_USES_TR1
 #else
   #include <unordered_set>
   #include <unordered_map>
@@ -108,14 +109,22 @@ namespace octomap {
    * @note you need to use boost::unordered_set instead if your compiler does not
    * yet support tr1!
    */
+#ifdef OCTREE_KEY_USES_TR1
   typedef std::tr1::unordered_set<OcTreeKey, OcTreeKey::KeyHash> KeySet;
+#else
+  typedef std::unordered_set<OcTreeKey, OcTreeKey::KeyHash> KeySet;
+#endif
 
   /**
    * Data structrure to efficiently track changed nodes as a combination of
    * OcTreeKeys and a bool flag (to denote newly created nodes)
    *
    */
+#ifdef OCTREE_KEY_USES_TR1
   typedef std::tr1::unordered_map<OcTreeKey, bool, OcTreeKey::KeyHash> KeyBoolMap;
+#else
+  typedef std::unordered_map<OcTreeKey, bool, OcTreeKey::KeyHash> KeyBoolMap;
+#endif
 
 
   class KeyRay {
