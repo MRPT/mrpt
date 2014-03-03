@@ -9,10 +9,10 @@
 #ifndef CONSTRAINED_POSE_NETWORK_H
 #define CONSTRAINED_POSE_NETWORK_H
 
-#include <mrpt/poses/CPosePDFGaussian.h>
-#include <mrpt/poses/CPose3DPDFGaussian.h>
-#include <mrpt/poses/CPosePDFGaussianInf.h>
-#include <mrpt/poses/CPose3DPDFGaussianInf.h>
+/** \file The main class in this file is mrpt::poses::CNetworkOfPoses<>, a generic 
+           basic template for predefined 2D/3D graphs of pose contraints. 
+*/
+
 #include <mrpt/graphs/CDirectedGraph.h>
 #include <mrpt/graphs/CDirectedTree.h>
 
@@ -23,10 +23,15 @@
 #include <mrpt/utils/traits_map.h>
 #include <mrpt/utils/stl_extensions.h>
 
-// The main class in this file is CNetworkOfPoses, a generic basic template for
-//  predefined 2D/3D graphs of pose contraints.
 namespace mrpt
 {
+	// Fwd decls:
+	namespace poses {
+		class CPose2D; class CPose3D;
+		class CPosePDFGaussian;  class CPose3DPDFGaussian;
+		class CPosePDFGaussianInf; class CPose3DPDFGaussianInf;
+	}
+
 	namespace graphs
 	{
 		using mrpt::utils::TNodeID;
@@ -249,12 +254,12 @@ namespace mrpt
 		/** \addtogroup mrpt_graphs_grp
 		    @{ */
 
-		typedef CNetworkOfPoses<CPose2D,map_traits_stdmap>               CNetworkOfPoses2D;     //!< The specialization of CNetworkOfPoses for poses of type CPose2D (not a PDF!), also implementing serialization.
-		typedef CNetworkOfPoses<CPose3D,map_traits_stdmap>               CNetworkOfPoses3D;     //!< The specialization of CNetworkOfPoses for poses of type CPose3D (not a PDF!), also implementing serialization.
-		typedef CNetworkOfPoses<CPosePDFGaussian,map_traits_stdmap>      CNetworkOfPoses2DCov;  //!< The specialization of CNetworkOfPoses for poses of type CPosePDFGaussian, also implementing serialization.
-		typedef CNetworkOfPoses<CPose3DPDFGaussian,map_traits_stdmap>    CNetworkOfPoses3DCov;  //!< The specialization of CNetworkOfPoses for poses of type CPose3DPDFGaussian, also implementing serialization.
-		typedef CNetworkOfPoses<CPosePDFGaussianInf,map_traits_stdmap>   CNetworkOfPoses2DInf;  //!< The specialization of CNetworkOfPoses for poses of type CPosePDFGaussianInf, also implementing serialization.
-		typedef CNetworkOfPoses<CPose3DPDFGaussianInf,map_traits_stdmap> CNetworkOfPoses3DInf;  //!< The specialization of CNetworkOfPoses for poses of type CPose3DPDFGaussianInf, also implementing serialization.
+		typedef CNetworkOfPoses<mrpt::poses::CPose2D,map_traits_stdmap>               CNetworkOfPoses2D;     //!< The specialization of CNetworkOfPoses for poses of type CPose2D (not a PDF!), also implementing serialization.
+		typedef CNetworkOfPoses<mrpt::poses::CPose3D,map_traits_stdmap>               CNetworkOfPoses3D;     //!< The specialization of CNetworkOfPoses for poses of type CPose3D (not a PDF!), also implementing serialization.
+		typedef CNetworkOfPoses<mrpt::poses::CPosePDFGaussian,map_traits_stdmap>      CNetworkOfPoses2DCov;  //!< The specialization of CNetworkOfPoses for poses of type CPosePDFGaussian, also implementing serialization.
+		typedef CNetworkOfPoses<mrpt::poses::CPose3DPDFGaussian,map_traits_stdmap>    CNetworkOfPoses3DCov;  //!< The specialization of CNetworkOfPoses for poses of type CPose3DPDFGaussian, also implementing serialization.
+		typedef CNetworkOfPoses<mrpt::poses::CPosePDFGaussianInf,map_traits_stdmap>   CNetworkOfPoses2DInf;  //!< The specialization of CNetworkOfPoses for poses of type CPosePDFGaussianInf, also implementing serialization.
+		typedef CNetworkOfPoses<mrpt::poses::CPose3DPDFGaussianInf,map_traits_stdmap> CNetworkOfPoses3DInf;  //!< The specialization of CNetworkOfPoses for poses of type CPose3DPDFGaussianInf, also implementing serialization.
 
 		/** @} */  // end of grouping
 

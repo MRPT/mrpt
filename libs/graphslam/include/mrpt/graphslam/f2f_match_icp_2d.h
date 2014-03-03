@@ -6,20 +6,24 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
+#ifndef GRAPH_SLAM_F2FMATCH_ICP2D_H
+#define GRAPH_SLAM_F2FMATCH_ICP2D_H
 
-#ifndef _mrpt_graphslam_H
-#define _mrpt_graphslam_H
-
-// Graph SLAM: Common headers
 #include <mrpt/graphslam/types.h>
 
-// Graph SLAM: Batch solvers
-#include <mrpt/graphslam/levmarq.h>
+namespace mrpt { namespace graphslam { namespace f2f_match {
 
-// Graph SLAM: Online solvers
-#include <mrpt/graphslam/GraphSlamEngine.h>
+	/** GraphSLAM Frame-to-frame match finder. See mrpt::graphslam::GraphSlamEngine<> */
+	struct GS_F2F_ICP_2D
+	{
+		GS_F2F_ICP_2D()
+		{
+		}
 
-// Implementations of GraphSlamEngine<...,F2F_MATCH,...>
-#include <mrpt/graphslam/f2f_match_icp_2d.h> 
+
+	}; // end GS_F2F_ICP_2D
+
+}}} // end namespaces
+
 
 #endif

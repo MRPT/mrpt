@@ -6,20 +6,28 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
+#ifndef GRAPH_SLAM_SOLVERS_H
+#define GRAPH_SLAM_SOLVERS_H
 
-#ifndef _mrpt_graphslam_H
-#define _mrpt_graphslam_H
-
-// Graph SLAM: Common headers
 #include <mrpt/graphslam/types.h>
 
-// Graph SLAM: Batch solvers
-#include <mrpt/graphslam/levmarq.h>
+namespace mrpt { namespace graphslam { namespace solvers {
 
-// Graph SLAM: Online solvers
-#include <mrpt/graphslam/GraphSlamEngine.h>
+	/** Batch GraphSLAM Levenberg-Marquartd solver: wrapper for mrpt::graphslam::GraphSlamEngine<>
+	  */
+	template <class GRAPH_T>
+	struct GS_SolverLevMarq
+	{
+		GS_SolverLevMarq() : graph(NULL)
+		{
+		}
 
-// Implementations of GraphSlamEngine<...,F2F_MATCH,...>
-#include <mrpt/graphslam/f2f_match_icp_2d.h> 
+		GRAPH_T  *graph;
+
+	};
+
+
+}}} // end namespaces
+
 
 #endif

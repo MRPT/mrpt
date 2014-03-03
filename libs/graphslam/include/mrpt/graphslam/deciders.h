@@ -6,20 +6,24 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
+#ifndef GRAPH_SLAM_DECIDERS_H
+#define GRAPH_SLAM_DECIDERS_H
 
-#ifndef _mrpt_graphslam_H
-#define _mrpt_graphslam_H
-
-// Graph SLAM: Common headers
 #include <mrpt/graphslam/types.h>
 
-// Graph SLAM: Batch solvers
-#include <mrpt/graphslam/levmarq.h>
+namespace mrpt { namespace graphslam { namespace deciders {
 
-// Graph SLAM: Online solvers
-#include <mrpt/graphslam/GraphSlamEngine.h>
+	/** Generic GraphSLAM update decider. See mrpt::graphslam::GraphSlamEngine<> */
+	struct GS_GenericDecider
+	{
+		GS_GenericDecider()
+		{
+		}
 
-// Implementations of GraphSlamEngine<...,F2F_MATCH,...>
-#include <mrpt/graphslam/f2f_match_icp_2d.h> 
+
+	}; 
+
+}}} // end namespaces
+
 
 #endif

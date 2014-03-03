@@ -6,20 +6,21 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
+#ifndef GRAPH_SLAM_ENGINE_IMPL_H
+#define GRAPH_SLAM_ENGINE_IMPL_H
+// Only to be included from within <mrpt/graphslam/GraphSlamEngine.h>
 
-#ifndef _mrpt_graphslam_H
-#define _mrpt_graphslam_H
+namespace mrpt { namespace graphslam {
 
-// Graph SLAM: Common headers
-#include <mrpt/graphslam/types.h>
+	// Default ctor:
+	template <class GRAPH_T,class F2F_MATCH,class UPDATE_DECIDER,class MAPS_IMPLEMENTATION,class GRAPHSLAM_SOLVER>
+	GraphSlamEngine<GRAPH_T,F2F_MATCH,UPDATE_DECIDER,MAPS_IMPLEMENTATION,GRAPHSLAM_SOLVER>::GraphSlamEngine()
+	{
+		m_solver.graph = &m_graph; // Attach the map to the solver.
+	}
 
-// Graph SLAM: Batch solvers
-#include <mrpt/graphslam/levmarq.h>
 
-// Graph SLAM: Online solvers
-#include <mrpt/graphslam/GraphSlamEngine.h>
 
-// Implementations of GraphSlamEngine<...,F2F_MATCH,...>
-#include <mrpt/graphslam/f2f_match_icp_2d.h> 
+} } // End of namespaces
 
 #endif

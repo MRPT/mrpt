@@ -11,7 +11,10 @@
 
 #include <mrpt/graphs/dijkstra.h>
 #include <mrpt/utils/CTextFileLinesParser.h>
-
+#include <mrpt/poses/CPosePDFGaussian.h>
+#include <mrpt/poses/CPose3DPDFGaussian.h>
+#include <mrpt/poses/CPosePDFGaussianInf.h>
+#include <mrpt/poses/CPose3DPDFGaussianInf.h>
 
 namespace mrpt
 {
