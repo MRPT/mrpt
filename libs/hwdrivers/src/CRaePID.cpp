@@ -117,14 +117,14 @@ void CRaePID::doProcess()
 		power_reading = COM.ReadString(500,&time_out);
 		if (time_out)
 		{
-			cout << "[CRaePID] " << com_port << " @ " <<com_bauds << " - measurement Timed-Out" << endl;
+			//cout << "[CRaePID] " << com_port << " @ " <<com_bauds << " - measurement Timed-Out" << endl;
 			sleep(10);
 		}
 		else
 			have_reading = true;
 	}
 	
-	cout << "[CRaePID] " << com_port << " @ " <<com_bauds << " - measurement -> " << power_reading << endl;
+	//cout << "[CRaePID] " << com_port << " @ " <<com_bauds << " - measurement -> " << power_reading << endl;
 
 	// Convert the text to a number (ppm)
 	const float readnum = atof(power_reading.c_str());
