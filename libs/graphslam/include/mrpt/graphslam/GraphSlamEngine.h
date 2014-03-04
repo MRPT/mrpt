@@ -12,6 +12,7 @@
 #include <mrpt/graphslam/types.h>
 #include <mrpt/graphs/CNetworkOfPoses.h>
 #include <mrpt/utils/traits_map.h>
+#include <mrpt/slam/CActionCollection.h>
 
 #include <mrpt/graphslam/solvers.h>  // Implementations of GraphSlamEngine<...,GRAPHSLAM_SOLVER,...>
 #include <mrpt/graphslam/deciders.h>  // Implementations of GraphSlamEngine<...,UPDATE_DECIDER,...>
@@ -61,8 +62,24 @@ namespace mrpt
 				MAPS_IMPLEMENTATION, // Use std::map<> vs. std::vector<>
 				internal::TNodeAnnotations>	graph_t;
 
+			// --------------------------------------------------
+			/** \name Public API for Online Graph-SLAM Engine
+			  * @{ */ 
+
+			/** Default constructor */
+			GraphSlamEngine(); 
+
 			/** Returns a const ref to the "SLAM map" (not threadsafe: use critical sections and make a copy of this as needed in your code) */
 			const graph_t & getGraph() const { return m_graph; }
+
+			/** Main entry point (alternative 1): Process a pair "action"+"sensory observations" to update the map. */
+			void 	processActionObservation (const mrpt::slam::CActionCollection &action, const mrpt::slam::CSensoryFrame &in_SF);
+
+			/** Main entry point (alternative 2): Process one odometry OR sensor observation. */
+			void 	processObservation (const mrpt::slam::CObservationPtr &obs);
+
+			/** @} */ // --------------------------------------------------
+
 
 			struct TTimestampedNode
 			{
@@ -72,8 +89,6 @@ namespace mrpt
 				inline TTimestampedNode() : nodeID(INVALID_NODEID), timestamp(INVALID_TIMESTAMP) {}
 			};
 
-			/** Default constructor */
-			GraphSlamEngine(); 
 
 		protected:
 			graph_t            m_graph;   //!< The "SLAM map", the graph of poses and pose constraints
@@ -82,6 +97,9 @@ namespace mrpt
 			UPDATE_DECIDER     m_update_decider; 
 			GRAPHSLAM_SOLVER   m_solver; 
 
+
+			mrpt::poses::CPose3D  m_auxAccumOdometry; //!< Aux for simulating odometry in obs-only datasets
+			
 		}; // end class GraphSlamEngine<>
 
 	/**  @} */  // end of grouping

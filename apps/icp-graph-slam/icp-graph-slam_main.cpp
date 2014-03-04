@@ -10,6 +10,7 @@
 /*---------------------------------------------------------------
 	APPLICATION: ICP-based Graph SLAM
 	AUTHOR: Jose Luis Blanco Claraco <jlblanco@ctima.uma.es>
+	See: http://www.mrpt.org/list-of-mrpt-apps/application-icp-graph-slam/
   ---------------------------------------------------------------*/
 
 #include <mrpt/graphslam.h>
@@ -34,99 +35,64 @@ using namespace mrpt::graphs;
 using namespace mrpt::graphslam;
 using namespace std;
 
-// The 2D-ICP graph-slam engine class: 
-typedef GraphSlamEngine< 
-	CNetworkOfPoses2D, // Graph type
-	f2f_match::GS_F2F_ICP_2D  // Match finder 
-	> 
-	my_graphslam_engine_t;
-
-// Instance of the GS Engine:
-my_graphslam_engine_t  graphslam_engine;
-
-
 // ------------------------------------------------------
 //				icp_graphslam_2D
-//  override_rawlog_file: If not empty, use that rawlog
+//  rawlogFilename: If not empty, use that rawlog
 //  instead of that in the config file.
 // ------------------------------------------------------
-void icp_graphslam_2D(const string &INI_FILENAME, const string &override_rawlog_file)
+void icp_graphslam_2D(const string & cfgFilename, const string & rawlogFilename)
 {
 	MRPT_START
 
-	CConfigFile				iniFile(INI_FILENAME);
+	CConfigFile cfgFile(cfgFilename);
 
 	// ------------------------------------------
 	//			Load config from file:
 	// ------------------------------------------
-	const string RAWLOG_FILE			 = !override_rawlog_file.empty() ? override_rawlog_file : iniFile.read_string("MappingApplication","rawlog_file","",  /*Force existence:*/ true);
-	const unsigned int rawlog_offset		 = iniFile.read_int("MappingApplication","rawlog_offset",0,  /*Force existence:*/ true);
-	const string OUT_DIR_STD			 = iniFile.read_string("MappingApplication","logOutput_dir","log_out",  /*Force existence:*/ true);
-	const int LOG_FREQUENCY		 = iniFile.read_int("MappingApplication","LOG_FREQUENCY",5,  /*Force existence:*/ true);
-	const bool  SAVE_POSE_LOG		 = iniFile.read_bool("MappingApplication","SAVE_POSE_LOG", false,  /*Force existence:*/ true);
-	const bool  SAVE_3D_SCENE        = iniFile.read_bool("MappingApplication","SAVE_3D_SCENE", false,  /*Force existence:*/ true);
-	const bool  CAMERA_3DSCENE_FOLLOWS_ROBOT = iniFile.read_bool("MappingApplication","CAMERA_3DSCENE_FOLLOWS_ROBOT", true,  /*Force existence:*/ true);
+	const unsigned int rawlog_offset = cfgFile.read_int("icp_graphslam","rawlog_offset",0,  /*mandatory?*/ false);
+	const string OUT_DIR             = cfgFile.read_string("icp_graphslam","logOutput_dir","icpgraphslam-log",  /*mandatory?*/ false);
+	const int LOG_FREQUENCY          = cfgFile.read_int("icp_graphslam","LOG_FREQUENCY",5,  /*mandatory?*/ true);
+	const bool  SAVE_POSE_LOG        = cfgFile.read_bool("icp_graphslam","SAVE_POSE_LOG", false,  /*mandatory?*/ true);
+	const bool  SAVE_3D_SCENE        = cfgFile.read_bool("icp_graphslam","SAVE_3D_SCENE", false,  /*mandatory?*/ true);
+	const bool  CAMERA_3DSCENE_FOLLOWS_ROBOT = cfgFile.read_bool("icp_graphslam","CAMERA_3DSCENE_FOLLOWS_ROBOT", true,  /*mandatory?*/ true);
 
 	bool 	SHOW_PROGRESS_3D_REAL_TIME = false;
 	int		SHOW_PROGRESS_3D_REAL_TIME_DELAY_MS = 0;
 	bool 	SHOW_LASER_SCANS_3D = true;
 
-	MRPT_LOAD_CONFIG_VAR( SHOW_PROGRESS_3D_REAL_TIME, bool,  iniFile, "MappingApplication");
-	MRPT_LOAD_CONFIG_VAR( SHOW_LASER_SCANS_3D , bool,  iniFile, "MappingApplication");
-	MRPT_LOAD_CONFIG_VAR( SHOW_PROGRESS_3D_REAL_TIME_DELAY_MS, int, iniFile, "MappingApplication");
-
-	const char* OUT_DIR = OUT_DIR_STD.c_str();
+	MRPT_LOAD_CONFIG_VAR( SHOW_PROGRESS_3D_REAL_TIME, bool,  cfgFile, "icp_graphslam");
+	MRPT_LOAD_CONFIG_VAR( SHOW_LASER_SCANS_3D , bool,  cfgFile, "icp_graphslam");
+	MRPT_LOAD_CONFIG_VAR( SHOW_PROGRESS_3D_REAL_TIME_DELAY_MS, int, cfgFile, "icp_graphslam");
 
 	// ------------------------------------
-	//		Constructor of ICP-SLAM object
+	//		Constructor of SLAM object
 	// ------------------------------------
-//	CMetricMapBuilderICP mapBuilder;
+	// The 2D-ICP graph-slam engine class: 
+	typedef GraphSlamEngine< 
+		CNetworkOfPoses2D, // Graph type
+		f2f_match::GS_F2F_ICP_2D  // Match finder 
+		> 
+		my_graphslam_engine_t;
 
-//	mapBuilder.ICP_options.loadFromConfigFile( iniFile, "MappingApplication");
-//	mapBuilder.ICP_params.loadFromConfigFile ( iniFile, "ICP");
-	//mapBuilder.ICP_params.dumpToConsole();
-	//mapBuilder.ICP_options.dumpToConsole();
+	// Instance of the GS Engine:
+	my_graphslam_engine_t  graphslam_engine;
 
-	// Construct the maps with the loaded configuration.
-//	mapBuilder.initialize();
+	MRPT_TODO("Load each module options")
 
-	// ---------------------------------
-	//   CMetricMapBuilder::TOptions
-	// ---------------------------------
-//	mapBuilder.options.verbose = true;
-    
-
-	// Checks:
-	ASSERT_(!RAWLOG_FILE.empty())
-	ASSERT_FILE_EXISTS_(RAWLOG_FILE)
-
-	CTicTac								tictac,tictacGlobal,tictac_JH;
-	int									step = 0;
-	float								t_exec;
-
-
-	size_t						rawlogEntry = 0;
-	CFileGZInputStream					rawlogFile( RAWLOG_FILE.c_str() );
-
+//	mapBuilder.ICP_options.loadFromConfigFile( cfgFile, "icp_graphslam");
+//	mapBuilder.ICP_options.dumpToConsole();
 
 	// Prepare output directory:
 	// --------------------------------
 	mrpt::system::deleteFilesInDirectory(OUT_DIR);
 	mrpt::system::createDirectory(OUT_DIR);
 
-	// Open log files:
-	// ----------------------------------
-	CFileOutputStream  f_log(format("%s/log_times.txt",OUT_DIR));
-	CFileOutputStream  f_path(format("%s/log_estimated_path.txt",OUT_DIR));
-	CFileOutputStream  f_pathOdo(format("%s/log_odometry_path.txt",OUT_DIR));
-
-
 	// Create 3D window if requested:
 	CDisplayWindow3DPtr	win3D;
 #if MRPT_HAS_WXWIDGETS
 	if (SHOW_PROGRESS_3D_REAL_TIME)
 	{
-		win3D = CDisplayWindow3D::Create("ICP-SLAM @ MRPT C++ Library", 600, 500);
+		win3D = CDisplayWindow3D::Create("ICP-GRAPH-SLAM @ The MRPT project", 600, 500);
 		win3D->setCameraZoom(20);
 		win3D->setCameraAzimuthDeg(-45);
 	}
@@ -135,15 +101,16 @@ void icp_graphslam_2D(const string &INI_FILENAME, const string &override_rawlog_
 	// ----------------------------------------------------------
 	//						Map Building
 	// ----------------------------------------------------------
-	CPose2D					odoPose(0,0,0);
+	CPose2D odoPose(0,0,0);
+	mrpt::utils::CTimeLogger timelog;
 
-	tictacGlobal.Tic();
+	CFileGZInputStream rawlogFile( rawlogFilename.c_str() );
+	size_t rawlogEntry = 0;
+	int    step = 0;
+
 	for (;;)
 	{
-		CActionCollectionPtr	action;
-		CSensoryFramePtr		observations;
-		CObservationPtr			observation;
-
+		// Exit? 
 		if (os::kbhit())
 		{
 			char c = os::getch();
@@ -153,8 +120,16 @@ void icp_graphslam_2D(const string &INI_FILENAME, const string &override_rawlog_
 
 		// Load action/observation pair from the rawlog:
 		// --------------------------------------------------
-		if (! CRawlog::getActionObservationPairOrObservation( rawlogFile, action, observations, observation, rawlogEntry) )
-			break; // file EOF
+		CActionCollectionPtr	action;
+		CSensoryFramePtr		observations;
+		CObservationPtr			observation;
+
+		{
+			mrpt::utils::CTimeLoggerEntry tle(timelog, "load_from_rawlog");
+		
+			if (! CRawlog::getActionObservationPairOrObservation( rawlogFile, action, observations, observation, rawlogEntry) )
+				break; // file EOF
+		}
 
 		const bool isObsBasedRawlog = observation.present();
 		std::vector<mrpt::slam::CObservation2DRangeScanPtr> lst_current_laser_scans;   // Just for drawing in 3D views
@@ -210,20 +185,21 @@ void icp_graphslam_2D(const string &INI_FILENAME, const string &override_rawlog_
 
 			// Execute:
 			// ----------------------------------------
-			tictac.Tic();
-			//if (isObsBasedRawlog)
-			//		mapBuilder.processObservation( observation );
-			//else	mapBuilder.processActionObservation( *action, *observations );
-			t_exec = tictac.Tac();
-			printf("Map building executed in %.03fms\n", 1000.0f*t_exec );
+			{
+				mrpt::utils::CTimeLoggerEntry tle(timelog, "run_graphslam");
+				if (isObsBasedRawlog)
+						graphslam_engine.processObservation( observation );
+				else	graphslam_engine.processActionObservation( *action, *observations );
+			}
 
 			// Get current robot pose:
             CPose3D robotPose;
 			//mapBuilder.getCurrentPoseEstimation()->getMean(robotPose);
 
 			// Save a 3D scene view of the mapping process:
-			if (0==(step % LOG_FREQUENCY) || (SAVE_3D_SCENE || win3D.present()))
+			if (0==(step % LOG_FREQUENCY) || SAVE_3D_SCENE || win3D.present())
 			{
+				mrpt::utils::CTimeLoggerEntry tle(timelog, "create_3d_views");
 
 				COpenGLScenePtr		scene = COpenGLScene::Create();
 
@@ -309,7 +285,7 @@ void icp_graphslam_2D(const string &INI_FILENAME, const string &override_rawlog_
 				// Save as file:
 				if (0==(step % LOG_FREQUENCY) && SAVE_3D_SCENE)
 				{
-					CFileGZOutputStream	f( format( "%s/buildingmap_%05u.3Dscene",OUT_DIR,step ));
+					CFileGZOutputStream	f( format( "%s/buildingmap_%05u.3Dscene",OUT_DIR.c_str(),step ));
 					f << *scene;
 				}
 
@@ -347,18 +323,16 @@ void icp_graphslam_2D(const string &INI_FILENAME, const string &override_rawlog_
 		printf("\n---------------- STEP %u | RAWLOG ENTRY %u ----------------\n",step, (unsigned)rawlogEntry);
 	};
 
-	printf("\n---------------- END!! (total time: %.03f sec) ----------------\n",tictacGlobal.Tac());
-
 	// Save map:
 	//CSimpleMap finalMap;
 	//mapBuilder.getCurrentlyBuiltMap(finalMap);
 
-	//str = format("%s/_finalmap_.simplemap",OUT_DIR);
+	//str = format("%s/_finalmap_.simplemap",OUT_DIR.c_str());
 	//printf("Dumping final map in binary format to: %s\n", str.c_str() );
 	//mapBuilder.saveCurrentMapToFile(str);
 
 	//CMultiMetricMap  *finalPointsMap = mapBuilder.getCurrentlyBuiltMetricMap();
-	//str = format("%s/_finalmaps_.txt",OUT_DIR);
+	//str = format("%s/_finalmaps_.txt",OUT_DIR.c_str());
 	//printf("Dumping final metric maps to %s_XXX\n", str.c_str() );
 	//finalPointsMap->saveMetricMapRepresentationToFile( str );
 
@@ -388,9 +362,9 @@ int main(int argc, char **argv)
 		printf("-------------------------------------------------------------------\n");
 
 		// Process arguments:
-		if (argc<2 || showHelp )
+		if (argc<3 || showHelp )
 		{
-			printf("Usage: %s <config_file.ini> [<dataset.rawlog>]\n\n",argv[0]);
+			printf("Usage: %s <config_file.ini> <dataset.rawlog>\n\n",argv[0]);
 			if (!showHelp)
 			{
 				mrpt::system::pause();
@@ -399,15 +373,14 @@ int main(int argc, char **argv)
 			else	return 0;
 		}
 
-		const string INI_FILENAME = string( argv[1] );
-		ASSERT_FILE_EXISTS_(INI_FILENAME)
+		const string cfgFilename = string( argv[1] );
+		ASSERT_FILE_EXISTS_(cfgFilename)
 
-		string override_rawlog_file;
-		if (argc>=3)
-			override_rawlog_file = string(argv[2]);
+		string rawlogFilename = string(argv[2]);
+		ASSERT_FILE_EXISTS_(rawlogFilename)
 
 		// Run:
-		icp_graphslam_2D(INI_FILENAME,override_rawlog_file);
+		icp_graphslam_2D(cfgFilename,rawlogFilename);
 
 		//pause();
 		return 0;
