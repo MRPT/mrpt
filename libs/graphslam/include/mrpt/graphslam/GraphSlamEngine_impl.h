@@ -78,6 +78,7 @@ namespace mrpt { namespace graphslam {
 	{
 		using namespace mrpt::utils;
 		using namespace mrpt::poses;
+		using namespace mrpt::slam;
 
 		ASSERT_(obs.present())
 		ASSERT_(obs->timestamp!=INVALID_TIMESTAMP)
@@ -172,6 +173,7 @@ namespace mrpt { namespace graphslam {
 					// Create new frame ID and set as current:
 					const TNodeID newNodeID = m_graph.nodes.size();
 					m_current_frame = TTimestampedNode(newNodeID, obs->timestamp);
+					m_keyframes_kdtree.markAsOutdated();
 				}
 
 				// Update observations for the current node: 
@@ -193,16 +195,82 @@ namespace mrpt { namespace graphslam {
 		{
 			// STAGE 2: Look for neighbors, candidate to create new edges:
 			// ------------------------------------------------------------
-			std::set<mrpt::utils::TNodeID> covisible_KFs;
+			std::set<TNodeID> covisible_KFs;
 			m_f2f_match.getCovisibleKeyframes(*this, m_current_frame.nodeID, covisible_KFs);
 	
 			// STAGE 3: Match neighboring KeyFrames and establish (or refine) edges among them:
 			// ------------------------------------------------------------------------------
-			// Skip odo edges!
-			// Skip m_current_frame.nodeID
+			bool some_edge_modified = false;
+			{
+				// Observations in "current":
+				const CSensoryFrame &cur_sf = m_graph.nodes[m_current_frame.nodeID].nodeAnnotation_observations;
+				typename graph_t::global_pose_t & curNode = m_graph.nodes[m_current_frame.nodeID];
+				typename graph_t::constraint_no_pdf_t &curPose = *static_cast<typename graph_t::constraint_no_pdf_t *>(&curNode);
+				
+				for (std::set<TNodeID>::const_iterator itKF=covisible_KFs.begin();itKF!=covisible_KFs.end();++itKF)
+				{
+					// Observations in "other":
+					const CSensoryFrame &other_sf = m_graph.nodes[*itKF].nodeAnnotation_observations;
+
+					// Estimate the current relative pose (an initial estimate for the registration method)
+					typename graph_t::global_pose_t & otherNode = m_graph.nodes[*itKF];
+					typename graph_t::constraint_no_pdf_t &otherPose = *static_cast<typename graph_t::constraint_no_pdf_t *>(&otherNode);
+
+					typename graph_t::constraint_no_pdf_t init_otherFromCur;
+					init_otherFromCur.inverseComposeFrom( otherPose, curPose );
+
+					constraint_t poseOtherFromCur;
+					//bool valid = m_f2f_match.matchTwoKeyframes(*this, m_current_frame.nodeID,*itKF,cur_sf,other_sf, poseOtherFromCur);
+					bool valid = m_f2f_match.matchTwoKeyframes(m_current_frame.nodeID,*itKF,cur_sf,other_sf, init_otherFromCur, poseOtherFromCur);
+					if (valid)
+					{
+						// Overwrite or create the edge cur -> other (apart from odometry edges!)
+						// Look for edges in both directions: cur->other, other->cur
+						// The idea: odometry and the user may add additinal edges from those arising from sensor KF-to-KF matching, and we must respect them.
+						const TPairNodeIDs edge_ids_direct(*itKF,m_current_frame.nodeID), edge_ids_reverse(m_current_frame.nodeID,*itKF);
+						std::pair<typename graph_t::edges_map_t::iterator,typename graph_t::edges_map_t::iterator> its_direct  = m_graph.edges.equal_range( edge_ids_direct );
+						std::pair<typename graph_t::edges_map_t::iterator,typename graph_t::edges_map_t::iterator> its_reverse = m_graph.edges.equal_range( edge_ids_direct );
+						typename graph_t::edges_map_t::iterator it_the_edge = m_graph.edges.end();  // The kf-to-kf sensor-based constraint we are looking for, or we have created (below)
+						bool the_edge_is_reverse = false;
+						// Look in direct edges:
+						for (typename graph_t::edges_map_t::iterator it=its_direct.first;it!=its_direct.second;++it) {
+							if (it->second.is_kf2kf_sensor_constraint) {
+								it_the_edge = it;
+								break;
+							}
+						}
+						// Look in reverse edges:
+						for (typename graph_t::edges_map_t::iterator it=its_reverse.first;it!=its_reverse.second && it_the_edge!=m_graph.edges.end();++it)
+						{
+							if (it->second.is_kf2kf_sensor_constraint) {
+								it_the_edge = it;
+								the_edge_is_reverse = true;
+								break;
+							}
+						}
+						// If not found yet: create new fresh edge!
+						if (it_the_edge==m_graph.edges.end())
+						{
+							it_the_edge = m_graph.edges.insert(std::pair<TPairNodeIDs,typename graph_t::edge_t>(edge_ids_direct,typename graph_t::edge_t()));
+							it_the_edge->second.is_kf2kf_sensor_constraint = true;
+							the_edge_is_reverse=false;
+						}
+						// Store the constraint in the edge:
+						constraint_t & newEdgeRelativePose = *static_cast<constraint_t*>(&it_the_edge->second);
+						newEdgeRelativePose = the_edge_is_reverse ? (poseOtherFromCur) : (-poseOtherFromCur);
+						some_edge_modified=true;
+
+					} // end valid "match" found.
+				} // end for each covisible KF
+			}
 
 			// STAGE 4: Optimize the global pose of the current keyframe only:
 			// ------------------------------------------------------------------------------
+			if (some_edge_modified) 
+			{
+				m_solver.optimizeSingle(m_graph, m_current_frame.nodeID);
+				// NOTE: Don't need to call "m_keyframes_kdtree.markAsOutdated();" if we only modify the last (current) KeyFrame.
+			}
 
 		} // end if map not empty
 

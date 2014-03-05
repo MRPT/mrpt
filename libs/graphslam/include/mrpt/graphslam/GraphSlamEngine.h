@@ -74,7 +74,8 @@ namespace mrpt
 			struct TEdgeAnnotations
 			{
 				bool is_odometry_edge; //!< True only in odometry edges. The difference is that odometry edges are the only ones updated incrementally.
-				inline TEdgeAnnotations() : is_odometry_edge(false) { }
+				bool is_kf2kf_sensor_constraint; //!< True if the edge has been created by this GraphSLAM engine's "k2k_match" class.
+				inline TEdgeAnnotations() : is_odometry_edge(false),is_kf2kf_sensor_constraint(false) { }
 			};
 
 			struct KeyFramesKDTree;

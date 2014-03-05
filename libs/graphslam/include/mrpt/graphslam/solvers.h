@@ -10,10 +10,12 @@
 #define GRAPH_SLAM_SOLVERS_H
 
 #include <mrpt/graphslam/types.h>
+#include <mrpt/graphslam/levmarq.h>
 
 namespace mrpt { namespace graphslam { namespace solvers {
+	using mrpt::utils::TNodeID; 
 
-	/** Batch GraphSLAM Levenberg-Marquartd solver: wrapper for mrpt::graphslam::GraphSlamEngine<>
+	/** Batch GraphSLAM Levenberg-Marquardt solver: wrapper for mrpt::graphslam::GraphSlamEngine<>
 	  */
 	struct GS_SolverLevMarq
 	{
@@ -22,10 +24,25 @@ namespace mrpt { namespace graphslam { namespace solvers {
 		}
 
 		template <class GRAPH_T>
-		void solve(GRAPH_T &graph)
+		void optimizeSingle(GRAPH_T &graph, const TNodeID curNodeID)
 		{
-			MRPT_TODO("TODO")
-			THROW_EXCEPTION("TODO")
+			TResultInfoSpaLevMarq solver_results;
+			std::set<TNodeID> nodes_to_optimize;
+			nodes_to_optimize.insert(curNodeID);
+
+			mrpt::utils::TParametersDouble extra_params;
+			extra_params["verbose"]=1;
+
+			try {
+				mrpt::graphslam::optimize_graph_spa_levmarq(graph, solver_results, &nodes_to_optimize, extra_params);
+				std::cout << "[optimizeSingle] Solved in " << solver_results.num_iters << " iters, final_total_sq_error=" << solver_results.final_total_sq_error << std::endl;
+				//static int i=0; graph.saveToTextFile(mrpt::format("__graph%06i.txt",i++));
+			} catch (std::exception &e)
+			{
+				// No observations yet, etc.
+				std::cout << "[optimizeSingle] Skipped for: " << e.what() << std::endl;
+			}
+
 		}
 
 

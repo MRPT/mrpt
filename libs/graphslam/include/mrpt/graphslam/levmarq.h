@@ -18,7 +18,7 @@ namespace mrpt
 {
 	namespace graphslam
 	{
-		/** Optimize a graph of pose constraints using the Sparse Pose Adjustment (SPA) sparse representation and a Levenberg-Marquartd optimizer.
+		/** Optimize a graph of pose constraints using the Sparse Pose Adjustment (SPA) sparse representation and a Levenberg-Marquardt optimizer.
 		  *  This method works for all types of graphs derived from \a CNetworkOfPoses (see its reference mrpt::graphs::CNetworkOfPoses for the list).
 		  *  The input data are all the pose constraints in \a graph (graph.edges), and the gross first estimations of the "global" pose coordinates (in graph.nodes).
 		  *

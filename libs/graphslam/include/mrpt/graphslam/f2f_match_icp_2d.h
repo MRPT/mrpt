@@ -14,6 +14,7 @@
 #include <mrpt/graphslam/link_pragmas.h>
 
 namespace mrpt { namespace graphslam { namespace f2f_match {
+	using mrpt::utils::TNodeID; 
 
 	/** GraphSLAM Frame-to-frame match finder. See mrpt::graphslam::GraphSlamEngine<> */
 	struct GRAPHSLAM_IMPEXP GS_F2F_ICP_2D
@@ -22,8 +23,8 @@ namespace mrpt { namespace graphslam { namespace f2f_match {
 		template <class GRAPHSLAMENGINE>
 		void getCovisibleKeyframes(
 			const GRAPHSLAMENGINE &gse, 
-			const mrpt::utils::TNodeID curKeyFrameID, 
-			std::set<mrpt::utils::TNodeID> &out_covis_KFs)
+			const TNodeID curKeyFrameID, 
+			std::set<TNodeID> &out_covis_KFs)
 		{
 			out_covis_KFs.clear();
 
@@ -42,9 +43,21 @@ namespace mrpt { namespace graphslam { namespace f2f_match {
 
 			MRPT_TODO("Also check orientations?")
 			for (size_t i=0;i<nearbyKFs.size();i++) 
-				out_covis_KFs.insert( nearbyKFs[i].first );
+				if (nearbyKFs[i].first!=curKeyFrameID)
+					out_covis_KFs.insert( nearbyKFs[i].first );
 
 		} // end of getCovisibleKeyframes
+
+
+		/** Keyframe-to-keyframe match method.
+		  * \return true if a valid registration was found.
+		  */
+		bool matchTwoKeyframes(
+			const TNodeID id_a, const TNodeID id_b, 
+			const CSensoryFrame &obs_a, const CSensoryFrame &obs_b,
+			const mrpt::poses::CPose2D &approx_pose_b_from_a,
+			mrpt::poses::CPose2D &out_pose_b_from_a );
+
 
 		struct GRAPHSLAM_IMPEXP TParams : public mrpt::utils::CLoadableOptions
 		{
