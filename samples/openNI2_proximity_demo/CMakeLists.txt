@@ -53,12 +53,12 @@ ENDIF(MY_DEFS)
 # Add the required libraries for linking:
 TARGET_LINK_LIBRARIES(${sampleName} 
 	${MRPT_LIBS}  # This is filled by FIND_PACKAGE(MRPT ...)
-	"C:/Users/Mariano/Programas/OpenNI2_32/Lib/OpenNI2.lib"  # Optional extra libs...
+	"${OPENNI2_LIBRARIES}"  # Optional extra libs...
 	)
 
 # Set optimized building:
 IF(CMAKE_COMPILER_IS_GNUCXX AND NOT CMAKE_BUILD_TYPE MATCHES "Debug")
-	SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -mtune=native")
+	SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3")
 ENDIF(CMAKE_COMPILER_IS_GNUCXX AND NOT CMAKE_BUILD_TYPE MATCHES "Debug")
 
 

@@ -53,9 +53,9 @@ void CPipe::createPipe(std::auto_ptr<CPipeReadEndPoint>& outReadPipe,std::auto_p
 
 // ------------------  CPipeBaseEndPoint ------------------
 CPipeBaseEndPoint::CPipeBaseEndPoint() :
-	m_pipe_file(0),
 	timeout_read_start_us(0), 
-	timeout_read_between_us(0)
+	timeout_read_between_us(0),
+	m_pipe_file(0)
 {
 }
 

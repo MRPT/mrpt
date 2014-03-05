@@ -76,3 +76,39 @@ TEST(Geometry, Segment2DIntersect)
 		EXPECT_TRUE(do_inter && inter.getType()==GEOMETRIC_TYPE_SEGMENT);
 	}
 }
+
+void myTestPolygonContainsPoint(std::vector<TPoint2D> &vs)
+{
+	const mrpt::math::TPolygon2D poly(vs);
+
+	EXPECT_TRUE( poly.contains( TPoint2D(0.0, 0.0) ) );
+	EXPECT_TRUE( poly.contains( TPoint2D(0.0, 0.9) ) );
+	EXPECT_TRUE( poly.contains( TPoint2D(-0.9, -0.9) ) );
+	EXPECT_TRUE( poly.contains( TPoint2D(0.9, -0.9) ) );
+
+	EXPECT_FALSE( poly.contains( TPoint2D(-1.1, -1.1) ) );
+	EXPECT_FALSE( poly.contains( TPoint2D( 1.1, -1.1) ) );
+	EXPECT_FALSE( poly.contains( TPoint2D( 0, 1.1) ) );
+	EXPECT_FALSE( poly.contains( TPoint2D( 0, -1.1) ) );
+}
+
+TEST(Geometry, PolygonContainsPoint)
+{
+	// Test with a polygon in one winding order:
+	{
+		std::vector<TPoint2D> vs;
+		vs.push_back(TPoint2D(-1.0, -1.0));
+		vs.push_back(TPoint2D( 0.0,  1.0));
+		vs.push_back(TPoint2D( 1.0, -1.0));
+		myTestPolygonContainsPoint(vs);
+	}
+	// and the other:
+	{
+		std::vector<TPoint2D> vs;
+		vs.push_back(TPoint2D( 1.0, -1.0));
+		vs.push_back(TPoint2D( 0.0,  1.0));
+		vs.push_back(TPoint2D(-1.0, -1.0));
+		myTestPolygonContainsPoint(vs);
+	}
+}
+

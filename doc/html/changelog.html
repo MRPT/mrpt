@@ -40,7 +40,114 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <div class="title">Change Log </div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><p><b>Note:</b> <em>If you are displaying a local version of this page and you have not built the whole HTML documentation, the links above will be broken. Either build the documentation invoking <code>make documentation_html</code> or browse it on-line <a href="http://www.mrpt.org/" target="_blank">here</a>.</em></p>
+<div class="textblock"><p><b>Note:</b> <em>If you are displaying a local version of this page and you have not built the whole HTML documentation, the links above will be broken. Either build the documentation invoking <code>make documentation_html</code> or <a href="http://www.mrpt.org/">browse it on-line</a>.</em></p>
+<p><a class="anchor" id="1.0.3"></a> </p>
+<h2>Version 1.0.3: Released 27-JAN-2014 </h2>
+<ul>
+<li>New apps:<ul>
+<li><a href="http://www.mrpt.org/list-of-mrpt-apps/application-difodometry-camera">DifOdometry-Camera</a>. (By Mariano Jaimez Tarifa)</li>
+<li><a href="http://www.mrpt.org/list-of-mrpt-apps/application-difodometry-datasets">DifOdometry-Datasets</a>. (By Mariano Jaimez Tarifa)</li>
+</ul>
+</li>
+<li>New classes:<ul>
+<li>[mrpt-base]<ul>
+<li><a class="el" href="classmrpt_1_1synch_1_1_c_pipe.html" title="A pipe, portable across different OS.">mrpt::synch::CPipe</a>: OS-independent pipe support.</li>
+</ul>
+</li>
+<li>[mrpt-hwdrivers]<ul>
+<li><a class="el" href="classmrpt_1_1hwdrivers_1_1_c_i_m_u_x_sens___m_t4.html" title="A class for interfacing XSens 4th generation Inertial Measuring Units (IMUs): MTi 10-series...">mrpt::hwdrivers::CIMUXSens_MT4</a> : Support for 4th generation xSens MT IMU devices.</li>
+<li><a class="el" href="classmrpt_1_1hwdrivers_1_1_c_national_instruments_d_a_q.html" title="An interface to read from data acquisition boards compatible with National Instruments &quot;DAQmx Base&quot; o...">mrpt::hwdrivers::CNationalInstrumentsDAQ</a>: Support for acquisition boards compatible with National Instruments DAQmx Base - <a href="https://github.com/jlblancoc/mrpt/commit/a82a7e37997cfb77e7ee9e903bdb2a55e3040b35">(commit)</a>.</li>
+<li><a class="el" href="classmrpt_1_1hwdrivers_1_1_c_image_grabber___fly_capture2.html" title="A wrapper for Point Gray Research (PGR) FlyCapture2 API for capturing images from Firewire...">mrpt::hwdrivers::CImageGrabber_FlyCapture2</a>: Support for Point Grey Research's cameras via the FlyCapture2 libray - <a href="https://github.com/jlblancoc/mrpt/pull/5/commits">(commits)</a>.</li>
+</ul>
+</li>
+<li>[mrpt-maps]<ul>
+<li>There are now two versions of octomaps (by Mariano Jaimez Tarifa/Jose Luis Blanco) - <a href="http://code.google.com/p/mrpt/source/detail?r=3443">(commit)</a><ul>
+<li><a class="el" href="classmrpt_1_1slam_1_1_c_octo_map.html" title="A three-dimensional probabilistic occupancy grid, implemented as an octo-tree with the &quot;octomap&quot; C++ ...">mrpt::slam::COctoMap</a> (only occupancy)</li>
+<li><a class="el" href="classmrpt_1_1slam_1_1_c_coloured_octo_map.html" title="A three-dimensional probabilistic occupancy grid, implemented as an octo-tree with the &quot;octomap&quot; C++ ...">mrpt::slam::CColouredOctoMap</a> (occupancy + RGB color)</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>[mrpt-obs]<ul>
+<li><a class="el" href="classmrpt_1_1slam_1_1_c_observation_raw_d_a_q.html" title="Store raw data from a Data Acquisition (DAQ) device, such that input or output analog and digital cha...">mrpt::slam::CObservationRawDAQ</a>, a placeholder for raw and generic measurements from data acquisition devices. - <a href="http://code.google.com/p/mrpt/source/detail?r=3459">(commit)</a></li>
+</ul>
+</li>
+<li>[mrpt-opengl]<ul>
+<li><a class="el" href="classmrpt_1_1opengl_1_1_c_mesh_fast.html" title="A planar (XY) grid where each cell has an associated height and, optionally, a texture map...">mrpt::opengl::CMeshFast</a>, an open gl object that draws a "mesh" as a structured point cloud which is faster to render (by Mariano Jaimez Tarifa). -<a href="https://github.com/jlblancoc/mrpt/commit/9306bb4a585387d4c85b3f6e41dd2cbe5a354e80">(commit)</a></li>
+<li><a class="el" href="classmrpt_1_1opengl_1_1_c_vector_field2_d.html" title="A 2D vector field representation, consisting of points and arrows drawn on a plane (invisible grid)...">mrpt::opengl::CVectorField2D</a>, an opengl object that shows a 2D Vector Field (by Mariano Jaimez Tarifa). - <a href="http://code.google.com/p/mrpt/source/detail?r=3461">(commit)</a></li>
+</ul>
+</li>
+<li>[mrpt-reactivenav]<ul>
+<li><a class="el" href="classmrpt_1_1reactivenav_1_1_c_abstract_p_t_g_based_reactive.html" title="Base class for reactive navigator systems based on TP-Space, with an arbitrary holonomic reactive met...">mrpt::reactivenav::CAbstractPTGBasedReactive</a>, as part of a large code refactoring of these classes: <a href="https://github.com/jlblancoc/mrpt/pull/4">(commit)</a><ul>
+<li><a class="el" href="classmrpt_1_1reactivenav_1_1_c_reactive_navigation_system.html" title="See base class CAbstractPTGBasedReactive for a description and instructions of use.">mrpt::reactivenav::CReactiveNavigationSystem</a></li>
+<li><a class="el" href="classmrpt_1_1reactivenav_1_1_c_reactive_navigation_system3_d.html" title="See base class CAbstractPTGBasedReactive for a description and instructions of use.">mrpt::reactivenav::CReactiveNavigationSystem3D</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li>[mrpt-vision]<ul>
+<li><a class="el" href="classmrpt_1_1vision_1_1_c_difodo.html" title="This abstract class implements a method called &quot;Difodo&quot; to perform Visual odometry with range cameras...">mrpt::vision::CDifodo</a>, a class which implements visual odometry based on depth images and the "range flow constraint equation". (by Mariano Jaimez Tarifa) - <a href="https://github.com/jlblancoc/mrpt/commit/e6ab5595f70cb889d07658c0b540c27e495a1cfb">(commit)</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li>Changes in classes:<ul>
+<li>Clean up and slight optimization of metric map matching API: - <a href="http://code.google.com/p/mrpt/source/detail?r=3446">(commit)</a><ul>
+<li><b>Methods marked as deprecated: </b><ul>
+<li><a class="el" href="classmrpt_1_1slam_1_1_c_metric_map.html#a2d9dec6ba54b8284385d43793a5eb7d4" title="DEPRECATED: Use alternative version determineMatching2D with struct parameters instead.">mrpt::slam::CMetricMap::computeMatchingWith2D()</a> &ndash;&gt; <a class="el" href="classmrpt_1_1slam_1_1_c_metric_map.html#abe6253c8568c02edcd68e48b8144aa32" title="Computes the matching between this and another 2D point map, which includes finding:">mrpt::slam::CMetricMap::determineMatching2D()</a></li>
+<li><a class="el" href="classmrpt_1_1slam_1_1_c_metric_map.html#a1d13da5a0314452e22d6db13124bf0c0" title="DEPRECATED: Use alternative version determineMatching3D with struct parameters instead.">mrpt::slam::CMetricMap::computeMatchingWith3D()</a> &ndash;&gt; <a class="el" href="classmrpt_1_1slam_1_1_c_metric_map.html#a286fa2d73334949a70982631343a8f7d" title="Computes the matchings between this and another 3D points map - method used in 3D-ICP.">mrpt::slam::CMetricMap::determineMatching3D()</a></li>
+</ul>
+</li>
+<li>New structures:<ul>
+<li><a class="el" href="structmrpt_1_1slam_1_1_t_matching_params.html" title="Parameters for the determination of matchings between point clouds, etc.">mrpt::slam::TMatchingParams</a></li>
+<li><a class="el" href="structmrpt_1_1slam_1_1_t_matching_extra_results.html" title="Additional results from the determination of matchings between point clouds, etc., apart from the pairings themselves.">mrpt::slam::TMatchingExtraResults</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="el" href="structmrpt_1_1slam_1_1_c_points_map_1_1_t_insertion_options.html" title="With this struct options are provided to the observation insertion process.">mrpt::slam::CPointsMap::TInsertionOptions</a> now have methods to save/load from binary streams, making more maintainable the serialization of point maps - <a href="https://github.com/jlblancoc/mrpt/commit/544d439c3462228b07344142de68e5bc10c1a2e3">(commit)</a></li>
+<li>New options in point maps: <a class="el" href="structmrpt_1_1slam_1_1_c_points_map_1_1_t_insertion_options.html#af735b819dc999f4f4faddd2654b94541" title="Points with x,y,z coordinates set to zero will also be inserted.">mrpt::slam::CPointsMap::TInsertionOptions::insertInvalidPoints</a> - <a href="https://github.com/jlblancoc/mrpt/pull/8">(commit)</a></li>
+<li><a class="el" href="classmrpt_1_1slam_1_1_c_observation_i_m_u.html" title="This class stores measurements from an Inertial Measurement Unit (IMU) (attitude estimation, raw gyroscope and accelerometer values), altimeters or magnetometers.">mrpt::slam::CObservationIMU</a> now includes data fields for 3D magnetometers and altimeters. - <a href="http://code.google.com/p/mrpt/source/detail?r=3451">(commit)</a></li>
+<li>Method renamed <a class="el" href="classmrpt_1_1utils_1_1_c_enhanced_meta_file.html#a1eb0660efd8c43d915b6935295d77c58" title="Select the current font used when drawing text.">mrpt::utils::CEnhancedMetaFile::selectVectorTextFont()</a> to avoid shadowing <a class="el" href="classmrpt_1_1utils_1_1_c_canvas.html#a2928fa64fc68c1f74cbe9c2e4aed8285" title="Select the current font used when drawing text.">mrpt::utils::CCanvas::selectTextFont()</a></li>
+<li><a class="el" href="classmrpt_1_1reactivenav_1_1_c_parameterized_trajectory_generator.html" title="This is the base class for any user-defined PTG.">mrpt::reactivenav::CParameterizedTrajectoryGenerator</a>: New methods:<ul>
+<li><a class="el" href="classmrpt_1_1reactivenav_1_1_c_parameterized_trajectory_generator.html#a4ff19c5d57dd2b5e3272996d56ec154d" title="Computes the closest (alpha,d) TP coordinates of the trajectory point closest to the Workspace (WS) C...">mrpt::reactivenav::CParameterizedTrajectoryGenerator::inverseMap_WS2TP()</a> for inverse look-up of WS to TP space - <a href="https://github.com/jlblancoc/mrpt/commit/4d04ef50e3dea581bed6287d4ea6593034c47da3">(commit)</a></li>
+<li><a class="el" href="classmrpt_1_1reactivenav_1_1_c_parameterized_trajectory_generator.html#acb68181ac730bdb145ea6f4e1d07553c" title="Returns the representation of one trajectory of this PTG as a 3D OpenGL object (a simple curved line)...">mrpt::reactivenav::CParameterizedTrajectoryGenerator::renderPathAsSimpleLine()</a> - <a href="https://github.com/jlblancoc/mrpt/commit/a224fc2489ad00b3ab116c84e8d4a48532a005df">(commit)</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li>Deleted classes:<ul>
+<li>mrpt::utils::CEvent, which was actually unimplemented (!)</li>
+<li>mrpt::hwdrivers::CInterfaceNI845x has been deleted. It didn't offer features enough to justify a class.</li>
+</ul>
+</li>
+<li>New examples:<ul>
+<li>[MRPT]/samples/threadsPipe</li>
+<li>[MRPT]/samples/NIDAQ_test</li>
+<li>[MRPT]/openNI2_RGBD_demo (by Mariano Jaimez Tarifa)</li>
+<li>[MRPT]/openNI2_proximity_demo (by Mariano Jaimez Tarifa)</li>
+</ul>
+</li>
+<li>Build system:<ul>
+<li>Fixed compilation with clang.</li>
+<li>Fixed building against OpenCV 3.0.0 (GIT head)</li>
+<li>Updated to the latest nanoflann 1.1.7.</li>
+<li>Updated to <a class="el" href="namespace_eigen.html" title="Namespace containing all symbols from the Eigen library.">Eigen</a> 3.2.0 - <a href="http://code.google.com/p/mrpt/source/detail?r=3455">(commit)</a></li>
+<li>Binary packages for Windows now include .pdb files to help debugging with Visual Studio.</li>
+</ul>
+</li>
+<li>BUG FIXES:<ul>
+<li>Fixed potential infinity loop in <a class="el" href="group__container__ops__grp.html#gae0851fd327043ae2a7054c33a3bbfcde" title="A versatile template to build vectors on-the-fly in a style close to MATLAB&#39;s v=[a b c d ...">mrpt::math::make_vector&lt;1,T&gt;()</a></li>
+<li>Fixed build error with GCC when experimental parallelization is enabled. <a href="http://code.google.com/p/mrpt/source/detail?r=3441">(commit)</a></li>
+<li><a class="el" href="classmrpt_1_1reactivenav_1_1_c_reactive_navigation_system.html" title="See base class CAbstractPTGBasedReactive for a description and instructions of use.">mrpt::reactivenav::CReactiveNavigationSystem</a> complained about missing config variables ROBOTMODEL_TAU &amp; ROBOTMODEL_DELAY, which were removed in MRPT 1.0.2 - <a href="http://code.google.com/p/mrpt/source/detail?r=3452">(commit)</a></li>
+<li>Fixed potential mem alignment errors (<a class="el" href="namespace_eigen.html" title="Namespace containing all symbols from the Eigen library.">Eigen</a>'s UnalignedArrayAssert) in SRBA for 32bit builds. <a href="http://code.google.com/p/mrpt/source/detail?r=3457">(commit)</a></li>
+<li><a class="el" href="group__mrpt__topography__grp.html#ga658ce589d36752f4a08060a8aca54460" title="Coordinates transformation from longitude/latitude/height to ENU (East-North-Up) X/Y/Z coordinates Th...">mrpt::topography::geodeticToENU_WGS84()</a> and related functions used a local +Z axis aligned to the line towards the Earth center; now the Z axis points normally to the ellipsoid surface. The difference with the previous behavior is small but may be of a few millimeters for each meter from the reference point. <a href="http://code.google.com/p/mrpt/source/detail?r=3473">(commit)</a></li>
+<li>Potential crash when setting <a class="el" href="classmp_polygon.html#a38ee78ba84193f9d6911e89ec345e829" title="Set the points in the polygon.">mpPolygon::setPoints()</a> with empty vectors - <a href="http://code.google.com/p/mrpt/source/detail?r=3478">(commit)</a></li>
+<li><a class="el" href="classmrpt_1_1reactivenav_1_1_c_reactive_navigation_system.html" title="See base class CAbstractPTGBasedReactive for a description and instructions of use.">mrpt::reactivenav::CReactiveNavigationSystem</a> and <a class="el" href="classmrpt_1_1reactivenav_1_1_c_reactive_navigation_system3_d.html" title="See base class CAbstractPTGBasedReactive for a description and instructions of use.">mrpt::reactivenav::CReactiveNavigationSystem3D</a> didn't obey the "enableConsoleOutput" constructor flag - <a href="https://github.com/jlblancoc/mrpt/commit/db7b0e76506af2c24f119a28443a1e8f1a217861">(commit)</a></li>
+<li><a class="el" href="classmrpt_1_1synch_1_1_c_semaphore.html#ac7df910d79e935db246381e1d2361a52" title="Blocks until the count of the semaphore to be non-zero.">mrpt::synch::CSemaphore::waitForSignal()</a> : Fixed error when thread got an external signal <a href="https://github.com/jlblancoc/mrpt/commit/511e95f03480537ff18ad2cad178c504b1cfbb53">(commit)</a></li>
+</ul>
+</li>
+</ul>
 <hr/>
 <p> <a class="anchor" id="1.0.2"></a> </p>
 <h2>Version 1.0.2: Released 2-AUG-2013 (SVN 3435) </h2>
@@ -66,7 +173,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </ul>
 </li>
 <li>[mrpt-reactivenav]<ul>
-<li><a class="el" href="classmrpt_1_1reactivenav_1_1_c_reactive_navigation_system3_d.html">mrpt::reactivenav::CReactiveNavigationSystem3D</a> - By Mariano Jaimez Tarifa - <a href="http://code.google.com/p/mrpt/source/detail?r=3389">r3389</a></li>
+<li><a class="el" href="classmrpt_1_1reactivenav_1_1_c_reactive_navigation_system3_d.html" title="See base class CAbstractPTGBasedReactive for a description and instructions of use.">mrpt::reactivenav::CReactiveNavigationSystem3D</a> - By Mariano Jaimez Tarifa - <a href="http://code.google.com/p/mrpt/source/detail?r=3389">r3389</a></li>
 </ul>
 </li>
 </ul>
@@ -104,10 +211,10 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </ul>
 </li>
 <li>[mrpt-reactivenav]<ul>
-<li><a class="el" href="classmrpt_1_1reactivenav_1_1_c_parameterized_trajectory_generator.html" title="This is the base class for any user defined PTG.">mrpt::reactivenav::CParameterizedTrajectoryGenerator</a>: The "low pass filter" has been removed since it wasn't practical and was never used; thus, parameters "TAU" and "DELAY" has been removed. - <a href="http://code.google.com/p/mrpt/source/detail?r=3395">r3395</a></li>
+<li><a class="el" href="classmrpt_1_1reactivenav_1_1_c_parameterized_trajectory_generator.html" title="This is the base class for any user-defined PTG.">mrpt::reactivenav::CParameterizedTrajectoryGenerator</a>: The "low pass filter" has been removed since it wasn't practical and was never used; thus, parameters "TAU" and "DELAY" has been removed. - <a href="http://code.google.com/p/mrpt/source/detail?r=3395">r3395</a></li>
 <li>Methods removed since they weren't implemented in any derived class and there are no plans for doing it.<ul>
-<li><a class="el" href="classmrpt_1_1reactivenav_1_1_c_reactive_navigation_system.html" title="Implements a reactive navigation system based on TP-Space, with an arbitrary holonomic reactive metho...">mrpt::reactivenav::CReactiveNavigationSystem</a> ::evaluate()</li>
-<li><a class="el" href="classmrpt_1_1reactivenav_1_1_c_reactive_navigation_system.html" title="Implements a reactive navigation system based on TP-Space, with an arbitrary holonomic reactive metho...">mrpt::reactivenav::CReactiveNavigationSystem</a> ::setParams()</li>
+<li><a class="el" href="classmrpt_1_1reactivenav_1_1_c_reactive_navigation_system.html" title="See base class CAbstractPTGBasedReactive for a description and instructions of use.">mrpt::reactivenav::CReactiveNavigationSystem</a> ::evaluate()</li>
+<li><a class="el" href="classmrpt_1_1reactivenav_1_1_c_reactive_navigation_system.html" title="See base class CAbstractPTGBasedReactive for a description and instructions of use.">mrpt::reactivenav::CReactiveNavigationSystem</a> ::setParams()</li>
 </ul>
 </li>
 </ul>
@@ -147,7 +254,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </li>
 <li>New classes:<ul>
 <li>[mrpt-hwdrivers]<ul>
-<li><a class="el" href="classmrpt_1_1hwdrivers_1_1_c_interface_n_i845x.html" title="A generic C++ wrapper for the specific API of the SPI/I2C board &quot;National Instruments USB 8451/8452&quot;...">mrpt::hwdrivers::CInterfaceNI845x</a>: An interface for this USB SPI/I2C data acquisition board.</li>
+<li>mrpt::hwdrivers::CInterfaceNI845x: An interface for this USB SPI/I2C data acquisition board.</li>
 <li><a class="el" href="classmrpt_1_1hwdrivers_1_1_c_c_a_n_bus_reader.html" title="This &quot;software driver&quot; implements the communication protocol for interfacing a SICK LMS 2XX laser sca...">mrpt::hwdrivers::CCANBusReader</a>: A class to record CAN bus frames with a CAN232 converter.</li>
 </ul>
 </li>
@@ -381,7 +488,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <li><a class="el" href="classmrpt_1_1reactivenav_1_1_c_parameterized_trajectory_generator.html#ac21f7bc6540593973176d5d213aa5151" title="Dump PTG trajectories in a binary file &quot;./reactivenav.logs/PTGs/PTG%i.dat&quot;, with &quot;%i&quot; being the user-...">mrpt::reactivenav::CParameterizedTrajectoryGenerator::debugDumpInFiles()</a> now also saves text files which can be used to visualize PTGs from MATLAB (see scripts/viewPTG.m) - <a href="http://code.google.com/p/mrpt/source/detail?r=3009">r3009</a></li>
 <li><a class="el" href="classmrpt_1_1reactivenav_1_1_c_holonomic_v_f_f.html" title="A holonomic reactive navigation method, based on Virtual Force Fields (VFF).">mrpt::reactivenav::CHolonomicVFF</a> and <a class="el" href="classmrpt_1_1reactivenav_1_1_c_holonomic_n_d.html" title="An implementation of the holonomic reactive navigation method &quot;Nearness-Diagram&quot;.">mrpt::reactivenav::CHolonomicND</a> now have more configurable parameters, loadable from config files. See their documentation.</li>
 <li>Repulsive forces from obstacles in <a class="el" href="classmrpt_1_1reactivenav_1_1_c_holonomic_v_f_f.html" title="A holonomic reactive navigation method, based on Virtual Force Fields (VFF).">mrpt::reactivenav::CHolonomicVFF</a> are now automatically normalized wrt the density of the 360deg view of obstacles and forces follow a "1/range" law instead of the old "exp(-range)".</li>
-<li>Solved a stability issue in C-S paths, in <a class="el" href="classmrpt_1_1reactivenav_1_1_c_p_t_g5.html" title="A PTG for optimal paths of type &quot;C|C,S&quot;.">mrpt::reactivenav::CPTG5</a> (By Mariano Jaimez Tarifa) - <a href="http://code.google.com/p/mrpt/source/detail?r=3085">r3085</a></li>
+<li>Solved a stability issue in C-S paths, in <a class="el" href="classmrpt_1_1reactivenav_1_1_c_p_t_g5.html" title="A PTG for optimal paths of type &quot;CS&quot;, as named in PTG papers.">mrpt::reactivenav::CPTG5</a> (By Mariano Jaimez Tarifa) - <a href="http://code.google.com/p/mrpt/source/detail?r=3085">r3085</a></li>
 </ul>
 </li>
 <li>[mrpt-scanmatching]<ul>
@@ -455,7 +562,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <li>[mrpt-opengl] Fixed a potential bug: after deserializing an object based on a display-list (most of them), it won't update in the opengl view.</li>
 <li>[mrpt-reactivenav] Class <a class="el" href="classmrpt_1_1reactivenav_1_1_c_holonomic_v_f_f.html" title="A holonomic reactive navigation method, based on Virtual Force Fields (VFF).">mrpt::reactivenav::CHolonomicVFF</a> was not exported in Windows DLL's (Thanks Mariano for noticing!).</li>
 <li>[mrpt-reactivenav] Fixed wrong computation of obstacles force fields in <a class="el" href="classmrpt_1_1reactivenav_1_1_c_holonomic_v_f_f.html" title="A holonomic reactive navigation method, based on Virtual Force Fields (VFF).">mrpt::reactivenav::CHolonomicVFF</a> (Thanks Mariano for noticing!) - <a href="http://code.google.com/p/mrpt/source/detail?r=2953">r2953</a></li>
-<li>[mrpt-reactivenav] Precomputed collision grids could be loaded in <a class="el" href="classmrpt_1_1reactivenav_1_1_c_parameterized_trajectory_generator.html" title="This is the base class for any user defined PTG.">mrpt::reactivenav::CParameterizedTrajectoryGenerator</a> even for different robot parameters/shape: now it correctly detects such situations and recompute when needed - <a href="http://code.google.com/p/mrpt/source/detail?r=2939">r2939</a> - Closes <a href="http://code.google.com/p/mrpt/issues/detail?id=33">#33</a></li>
+<li>[mrpt-reactivenav] Precomputed collision grids could be loaded in <a class="el" href="classmrpt_1_1reactivenav_1_1_c_parameterized_trajectory_generator.html" title="This is the base class for any user-defined PTG.">mrpt::reactivenav::CParameterizedTrajectoryGenerator</a> even for different robot parameters/shape: now it correctly detects such situations and recompute when needed - <a href="http://code.google.com/p/mrpt/source/detail?r=2939">r2939</a> - Closes <a href="http://code.google.com/p/mrpt/issues/detail?id=33">#33</a></li>
 <li>[mrpt-reactivenav] ND algorithm: Fixed bugs of "last gap is never evaluated" and wrong composition of representative direction for some gaps (By Mariano) - <a href="http://code.google.com/p/mrpt/source/detail?r=3056">r3056</a></li>
 </ul>
 </li>
@@ -855,7 +962,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </li>
 <li>BUG FIXES:<ul>
 <li>[mrpt-obs] Wrong usage of focal distances "fx"&lt;-&gt;"fy" when generating the 3D point clouds from Kinect observations with the method <a class="el" href="classmrpt_1_1slam_1_1_c_observation3_d_range_scan.html#a0b06693a67ecd4044917ed914aad7195" title="This method is equivalent to project3DPointsFromDepthImageInto() storing the projected 3D points (wit...">mrpt::slam::CObservation3DRangeScan::project3DPointsFromDepthImage()</a> - <a href="http://code.google.com/p/mrpt/source/detail?r=2578">r2578</a>.</li>
-<li>[mrpt-hwdrivers], [mrpt-obs] Gyroscopic rotation rates in yaw and roll were stored in the wrong order in <a class="el" href="classmrpt_1_1hwdrivers_1_1_c_i_m_u_x_sens.html" title="A class for interfacing Inertial Measuring Units (IMUs) of the type &quot;XSens MTi&quot; It uses a serial port...">mrpt::hwdrivers::CIMUXSens</a> and <a class="el" href="classmrpt_1_1slam_1_1_c_observation_i_m_u.html" title="This class stores measurements from an Inertial Measurement Unit (IMU), and/or its attitude estimatio...">mrpt::slam::CObservationIMU</a>. It has been fixed so new grabbed data is saved correctly but also such as old datasets are automatically fixed when loading them. Thanks Lianfen for noticing! - <a href="http://code.google.com/p/mrpt/source/detail?r=2622">r2622</a>.</li>
+<li>[mrpt-hwdrivers], [mrpt-obs] Gyroscopic rotation rates in yaw and roll were stored in the wrong order in <a class="el" href="classmrpt_1_1hwdrivers_1_1_c_i_m_u_x_sens.html" title="A class for interfacing XSens 3rd generation Inertial Measuring Units (IMUs), the &quot;XSens MTi&quot; model...">mrpt::hwdrivers::CIMUXSens</a> and <a class="el" href="classmrpt_1_1slam_1_1_c_observation_i_m_u.html" title="This class stores measurements from an Inertial Measurement Unit (IMU) (attitude estimation, raw gyroscope and accelerometer values), altimeters or magnetometers.">mrpt::slam::CObservationIMU</a>. It has been fixed so new grabbed data is saved correctly but also such as old datasets are automatically fixed when loading them. Thanks Lianfen for noticing! - <a href="http://code.google.com/p/mrpt/source/detail?r=2622">r2622</a>.</li>
 <li>[mrpt-topography] Fixed an old bug in <a class="el" href="group__mrpt__topography__grp.html#ga9c017d0f875ed7f8cd455ec0c5d7fe56" title="Reconstruct the path of a vehicle equipped with 3 RTK GPSs.">mrpt::topography::path_from_rtk_gps()</a> (and added new unit tests to avoid the same happening in the future) - <a href="http://code.google.com/p/mrpt/source/detail?r=2637">r2637</a></li>
 <li>Example: samples/bayesianTracking: Fixed an incorrect reset of all particles weight at each iteration (Thanks "parnurzeal" for noticing!)</li>
 <li>Fixed memory leak when using SURF descriptors. Thanks "hochdorfer" for detecting and reporting the solution. - <a href="http://code.google.com/p/mrpt/source/detail?r=2647">r2647</a></li>
@@ -970,7 +1077,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </li>
 <li>BUG FIXES:<ul>
 <li>[mrpt-opengl] Fixed wrong normalization of proyected coordinates in mrpt::opengl::CRenderizable::TRenderInfo::projectPoint()</li>
-<li>[mrpt-reactivenav] Fixed an ancient bug in <a class="el" href="classmrpt_1_1reactivenav_1_1_c_parameterized_trajectory_generator.html#a0b5412b363f6c18387426ba4099d4891" title="The &quot;lambda&quot; function, see paper for info.">mrpt::reactivenav::CParameterizedTrajectoryGenerator::lambdaFunction()</a> that degraded the use of some PTGs.</li>
+<li>[mrpt-reactivenav] Fixed an ancient bug in <a class="el" href="classmrpt_1_1reactivenav_1_1_c_parameterized_trajectory_generator.html#a6c5320767a7a8d91f5a3a405c8b544d3" title="The &quot;lambda&quot; function, see paper for info.">mrpt::reactivenav::CParameterizedTrajectoryGenerator::lambdaFunction()</a> that degraded the use of some PTGs.</li>
 <li>[mrpt-gui] Fixed an old bug that lead to SEGFAULTs in the wxWidgets thread if an exception suddenly closed the program without that thread having time to clean exit.</li>
 <li>Fixed behavior of <a class="el" href="group__mrpt__system__os.html#ga49ca087d2e21e81adb051d856f1827c4" title="An OS-independent version of kbhit, which returns true if a key has been pushed.">mrpt::system::os::kbhit()</a> in Linux.</li>
 <li>Fixed a kind of memory-leak in OpenGL due to the particular way of reserving texture names (seem to only affect some OpenGL implementations, but it's fixed now).</li>
@@ -1310,7 +1417,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </ul>
 </li>
 <li>Many classes: UNINITIALIZED_* which were #defines have been transformed into enums to keep all that stuff into MRPT namespaces.</li>
-<li><a class="el" href="classmrpt_1_1reactivenav_1_1_c_reactive_navigation_system.html" title="Implements a reactive navigation system based on TP-Space, with an arbitrary holonomic reactive metho...">mrpt::reactivenav::CReactiveNavigationSystem</a> does not have any longer the "debugWindows" option. This is done to remove the dependecy of mrpt-reactivenav on mrpt-gui.</li>
+<li><a class="el" href="classmrpt_1_1reactivenav_1_1_c_reactive_navigation_system.html" title="See base class CAbstractPTGBasedReactive for a description and instructions of use.">mrpt::reactivenav::CReactiveNavigationSystem</a> does not have any longer the "debugWindows" option. This is done to remove the dependecy of mrpt-reactivenav on mrpt-gui.</li>
 <li><a class="el" href="classmrpt_1_1vision_1_1_c_feature_extraction.html" title="The central class from which images can be analyzed in search of different kinds of interest points a...">mrpt::vision::CFeatureExtraction</a> has a new option FASTOptions.use_KLT_response.</li>
 <li><a class="el" href="classmrpt_1_1slam_1_1_c_observation.html" title="Declares a class that represents any robot&#39;s observation.">mrpt::slam::CObservation</a> now has virtual load() and unload() method to manually invoke delayed-load (actually only needed by 3D camera observations).</li>
 <li><a class="el" href="classstlplus_1_1smart__ptr.html">stlplus::smart_ptr</a> templates now have an extra template argument "COUNTER" which defaults to an thread-safe atomic counter but can be set to a plain "unsigned int" in time-critical apps which are known to work in a single thread.</li>
@@ -1997,7 +2104,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <li>New class for 2D range-bearing SLAM. See <a class="el" href="classmrpt_1_1slam_1_1_c_range_bearing_k_f_s_l_a_m2_d.html" title="An implementation of EKF-based SLAM with range-bearing sensors, odometry, and a 2D (+heading) robot p...">mrpt::slam::CRangeBearingKFSLAM2D</a></li>
 <li>CGeneralizedCylinder now works internally using CPose3D instead of TPoint3D.</li>
 <li>Fixed a bug in the calculation of the distance between TPoints3D.</li>
-<li>XSens Technology has granted us permission to ship the Xsens CMT library along MRPT, thus MRPT now has out-of-the-box support for XSENS MTi devices. See rawlog-grabber and <a class="el" href="classmrpt_1_1hwdrivers_1_1_c_i_m_u_x_sens.html" title="A class for interfacing Inertial Measuring Units (IMUs) of the type &quot;XSens MTi&quot; It uses a serial port...">mrpt::hwdrivers::CIMUXSens</a></li>
+<li>XSens Technology has granted us permission to ship the Xsens CMT library along MRPT, thus MRPT now has out-of-the-box support for XSENS MTi devices. See rawlog-grabber and <a class="el" href="classmrpt_1_1hwdrivers_1_1_c_i_m_u_x_sens.html" title="A class for interfacing XSens 3rd generation Inertial Measuring Units (IMUs), the &quot;XSens MTi&quot; model...">mrpt::hwdrivers::CIMUXSens</a></li>
 <li>rawlog-grabber can now save odometry and sonar data from an ARIA-compatible robot (Pioneers 3-DX, AT, etc...). See the new configuration file "share/config_files/rawlog-grabber/activmedia_robot.ini".</li>
 <li>rawlog-grabber can record video from IP-cameras thru FFMpeg via the common camera class <a class="el" href="classmrpt_1_1hwdrivers_1_1_c_camera_sensor.html" title="The central class for camera grabbers in MRPT, implementing the &quot;generic sensor&quot; interface.">mrpt::hwdrivers::CCameraSensor</a>.</li>
 <li>(paco) Bumblebee stereo camera interface mrpt::vision::CStereoGrabber_Bumblebee updates to the lattest vendor's API for Win32 (Francisco Angel Moreno).</li>
@@ -2264,7 +2371,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <li>Serialization is now compatible between systems with different endianness.</li>
 <li>Fail to compile with GCC 4.4, Debian bug <a href="http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=505668">#505668 </a>. Thanks to Martin Michlmayr.</li>
 <li>Hopefuly fixed all wrong calculations of very precise (x,y,z) coordinates from latitude, longitude and height, in <a class="el" href="classmrpt_1_1slam_1_1_c_observation_g_p_s.html" title="Declares a class derived from &quot;CObservation&quot; that represents a Global Positioning System (GPS) readin...">mrpt::slam::CObservationGPS</a>.</li>
-<li>Wrong data grabbed from xSens IMU: Gyroscope data saved as XYZ velocities. In <a class="el" href="classmrpt_1_1hwdrivers_1_1_c_i_m_u_x_sens.html" title="A class for interfacing Inertial Measuring Units (IMUs) of the type &quot;XSens MTi&quot; It uses a serial port...">mrpt::hwdrivers::CIMUXSens</a></li>
+<li>Wrong data grabbed from xSens IMU: Gyroscope data saved as XYZ velocities. In <a class="el" href="classmrpt_1_1hwdrivers_1_1_c_i_m_u_x_sens.html" title="A class for interfacing XSens 3rd generation Inertial Measuring Units (IMUs), the &quot;XSens MTi&quot; model...">mrpt::hwdrivers::CIMUXSens</a></li>
 <li>Possible lock when reading from a serial port from two different objects <a class="el" href="classmrpt_1_1hwdrivers_1_1_c_serial_port.html" title="A communications serial port built as an implementation of a utils::CStream.">mrpt::hwdrivers::CSerialPort</a></li>
 <li><a class="el" href="group__mrpt__system__os.html#ga819ac14dfaf6d9b5f25c14196fb120eb" title="An OS-independent version of getch, which waits until a key is pushed.">mrpt::system::os::getch</a>: Now really does NOT wait for an enter, but just one keystroke in Linux.</li>
 <li><a class="el" href="group__filesystem.html#ga89b806814023cd0411a99d6cb4d54ea9" title="Extract just the name (without extension) of a filename from a complete path plus name plus extension...">mrpt::system::extractFileName</a> didn't work for filenames already without an extension.</li>
@@ -2311,7 +2418,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <li>Added new macros for easier RTTI: IS_CLASS and IS_DERIVED.</li>
 <li>New sensor class compatible with rawlog-grabber: A camera image grabber. See <a class="el" href="classmrpt_1_1hwdrivers_1_1_c_camera_sensor.html" title="The central class for camera grabbers in MRPT, implementing the &quot;generic sensor&quot; interface.">mrpt::hwdrivers::CCameraSensor</a>.</li>
 <li>xSens IMU MTi now works on both Windows &amp; Linux with the new xSens software sources.</li>
-<li><a class="el" href="classmrpt_1_1hwdrivers_1_1_c_i_m_u_x_sens.html" title="A class for interfacing Inertial Measuring Units (IMUs) of the type &quot;XSens MTi&quot; It uses a serial port...">mrpt::hwdrivers::CIMUXSens</a> now asks the IMU for calibrated acc. &amp; gyr. data as well.</li>
+<li><a class="el" href="classmrpt_1_1hwdrivers_1_1_c_i_m_u_x_sens.html" title="A class for interfacing XSens 3rd generation Inertial Measuring Units (IMUs), the &quot;XSens MTi&quot; model...">mrpt::hwdrivers::CIMUXSens</a> now asks the IMU for calibrated acc. &amp; gyr. data as well.</li>
 <li>New methods in <a class="el" href="namespacemrpt_1_1math.html" title="This base provides a set of functions for maths stuff.">mrpt::math</a>.</li>
 <li>Linux &amp; gcc only: Use &ndash;as-needed to avoid executables depending on useless .so libraries.</li>
 <li><a class="el" href="classmrpt_1_1gui_1_1_c_display_window3_d.html" title="A graphical user interface (GUI) for efficiently rendering 3D scenes in real-time.">mrpt::gui::CDisplayWindow3D</a> now can save the render canvas directy as a sequence of images, which helps to create videos from real-time animations.</li>
@@ -2930,4 +3037,4 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
           - Bitmap classes (utils::CBitmap) totally rewritten for a sensible use of classes inheritance.
   - JUN-2005:
           - First version of the library! there are a few classes for matrix manipulation, 2D point map management, and an implementation of the ICP algorithm.</pre> </div></div><!-- contents -->
-<br><hr><br> <table border="0" width="100%"> <tr> <td> Page generated by <a href="http://www.doxygen.org" target="_blank">Doxygen 1.8.3.1</a> for MRPT 1.0.2 SVN:3434M at Fri Aug  2 14:38:14 CEST 2013</td><td></td> <td width="150">  </td></tr> </table>  </body></html>
+<br><hr><br> <table border="0" width="100%"> <tr> <td> Page generated by <a href="http://www.doxygen.org" target="_blank">Doxygen 1.8.3.1</a> for MRPT 1.0.3 SVN:Unversioned directory at Fri Jan 24 13:32:22 CET 2014</td><td></td> <td width="150">  </td></tr> </table>  </body></html>

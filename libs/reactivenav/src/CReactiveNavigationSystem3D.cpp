@@ -160,8 +160,9 @@ void CReactiveNavigationSystem3D::loadConfigFile(const mrpt::utils::CConfigFileB
 			m_ptgmultilevel[j-1].PTGs.push_back(ptgaux);
 
 
+			const float min_dist = 0.015f;
 			m_timelogger.enter("PTG.simulateTrajectories");
-			m_ptgmultilevel[j-1].PTGs[i-1]->simulateTrajectories(num_alfas,75, refDistance, 600, 0.01f, 0.015f);
+			m_ptgmultilevel[j-1].PTGs[i-1]->simulateTrajectories(num_alfas,75, refDistance, 10*refDistance/min_dist, 0.0005f, min_dist);
 			//Arguments -> n_alfas, max.tim, max.dist (ref_distance), max.n, diferencial_t, min_dist
 			m_timelogger.leave("PTG.simulateTrajectories");
 
@@ -214,7 +215,12 @@ void CReactiveNavigationSystem3D::STEP1_CollisionGridsBuilder()
 		{
 			for (unsigned int i=0; i<m_robotShape.heights.size(); i++)
 			{
-				build_PTG_collision_grid3D(m_ptgmultilevel[j].PTGs[i], m_robotShape.polygons[i], i+1, j+1, m_enableConsoleOutput /*VERBOSE*/ );
+				mrpt::reactivenav::build_PTG_collision_grids(
+					m_ptgmultilevel[j].PTGs[i], 
+					m_robotShape.polygons[i], 
+					format("ReacNavGrid_%s_%03u_L%02u.dat.gz",robotName.c_str(),i,j), 
+					m_enableConsoleOutput /*VERBOSE*/ 
+					);
 			}
 		}
 

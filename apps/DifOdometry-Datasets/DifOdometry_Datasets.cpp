@@ -42,8 +42,8 @@ void CDifodoDatasets::loadConfiguration(const utils::CConfigFileBase &ini )
 	//=========================================================
 
 	filename = system::extractFileDirectory(filename);
-	filename.append("\\groundtruth.txt");
-	f_gt.open(filename);
+	filename.append("/groundtruth.txt");
+	f_gt.open(filename.c_str());
 
 	if (f_gt.fail())
 		throw std::runtime_error("\nError finding the groundtruth file: it should be contained in the same folder than the rawlog file");
@@ -82,6 +82,8 @@ void CDifodoDatasets::loadConfiguration(const utils::CConfigFileBase &ini )
 	border.assign(0);
 	null.setSize(rows,cols);
 	null.assign(0);
+	weights.setSize(rows,cols);
+	weights.assign(0);
 	est_cov.assign(0);
 
 	x_incr = 2.0*f_dist*(floor(float(resh)/float(cols))*cols/float(resh))*tan(0.5*fovh)/(cols-1);	//In meters
@@ -285,7 +287,7 @@ void CDifodoDatasets::updateScene()
 	CFrustumPtr FOV = scene->getByClass<CFrustum>(0);
 	FOV->setPose(gt_pose);
 
-	if (rawlog_count > 1)
+	if ((first_pose == true)&&((gt_pose-gt_oldpose).norm() < 0.5))
 	{
 		//Difodo traj lines
 		CSetOfLinesPtr traj_lines_odo = scene->getByClass<CSetOfLines>(0);
@@ -439,8 +441,11 @@ void CDifodoDatasets::loadFrame()
 		transf.setFromValues(0,0,0,0.5*M_PI, -0.5*M_PI, 0);
 
 		//Set the initial pose (if appropiate)
-		if (rawlog_count == 0)
+		if (first_pose == false)
+		{
 			cam_pose = gt + transf;
+			first_pose = true;
+		}
 
 		gt_pose = gt + transf;
 		groundtruth_ok = 1;

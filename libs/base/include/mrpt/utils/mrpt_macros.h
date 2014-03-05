@@ -266,12 +266,12 @@
 #endif
 
 	/** Assert comparing two values, reporting their actual values upon failure */
-	#define ASSERT_EQUAL_( __A, __B)      { if (__A!=__B) { std::ostringstream s;s<<"ASSERT_EQUAL_("<<#__A<<","<<#__B<<") failed with\n"<<#__A<<"=" <<__A <<"\n"<<#__B<<"="<<__B; THROW_EXCEPTION(s.str()) } }
-	#define ASSERT_NOT_EQUAL_( __A, __B)  { if (__A==__B) { std::ostringstream s;s<<"ASSERT_NOT_EQUAL_("<<#__A<<","<<#__B<<") failed with\n"<<#__A<<"=" <<__A <<"\n"<<#__B<<"="<<__B; THROW_EXCEPTION(s.str()) } }
-	#define ASSERT_BELOW_( __A, __B)  { if (__A>=__B) { std::ostringstream s;s<<"ASSERT_BELOW_("<<#__A<<","<<#__B<<") failed with\n"<<#__A<<"=" <<__A <<"\n"<<#__B<<"="<<__B; THROW_EXCEPTION(s.str()) } }
-	#define ASSERT_ABOVE_( __A, __B)  { if (__A<=__B) { std::ostringstream s;s<<"ASSERT_ABOVE_("<<#__A<<","<<#__B<<") failed with\n"<<#__A<<"=" <<__A <<"\n"<<#__B<<"="<<__B; THROW_EXCEPTION(s.str()) } }
-	#define ASSERT_BELOWEQ_( __A, __B)  { if (__A>__B) { std::ostringstream s;s<<"ASSERT_BELOWEQ_("<<#__A<<","<<#__B<<") failed with\n"<<#__A<<"=" <<__A <<"\n"<<#__B<<"="<<__B; THROW_EXCEPTION(s.str()) } }
-	#define ASSERT_ABOVEEQ_( __A, __B)  { if (__A<__B) { std::ostringstream s;s<<"ASSERT_ABOVEEQ_("<<#__A<<","<<#__B<<") failed with\n"<<#__A<<"=" <<__A <<"\n"<<#__B<<"="<<__B; THROW_EXCEPTION(s.str()) } }
+	#define ASSERT_EQUAL_( __A, __B)      { if (__A!=__B) { std::ostringstream __s__;__s__<<"ASSERT_EQUAL_("<<#__A<<","<<#__B<<") failed with\n"<<#__A<<"=" <<__A <<"\n"<<#__B<<"="<<__B; THROW_EXCEPTION(__s__.str()) } }
+	#define ASSERT_NOT_EQUAL_( __A, __B)  { if (__A==__B) { std::ostringstream __s__;__s__<<"ASSERT_NOT_EQUAL_("<<#__A<<","<<#__B<<") failed with\n"<<#__A<<"=" <<__A <<"\n"<<#__B<<"="<<__B; THROW_EXCEPTION(__s__.str()) } }
+	#define ASSERT_BELOW_( __A, __B)  { if (__A>=__B) { std::ostringstream __s__;__s__<<"ASSERT_BELOW_("<<#__A<<","<<#__B<<") failed with\n"<<#__A<<"=" <<__A <<"\n"<<#__B<<"="<<__B; THROW_EXCEPTION(__s__.str()) } }
+	#define ASSERT_ABOVE_( __A, __B)  { if (__A<=__B) { std::ostringstream __s__;__s__<<"ASSERT_ABOVE_("<<#__A<<","<<#__B<<") failed with\n"<<#__A<<"=" <<__A <<"\n"<<#__B<<"="<<__B; THROW_EXCEPTION(__s__.str()) } }
+	#define ASSERT_BELOWEQ_( __A, __B)  { if (__A>__B) { std::ostringstream __s__;__s__<<"ASSERT_BELOWEQ_("<<#__A<<","<<#__B<<") failed with\n"<<#__A<<"=" <<__A <<"\n"<<#__B<<"="<<__B; THROW_EXCEPTION(__s__.str()) } }
+	#define ASSERT_ABOVEEQ_( __A, __B)  { if (__A<__B) { std::ostringstream __s__;__s__<<"ASSERT_ABOVEEQ_("<<#__A<<","<<#__B<<") failed with\n"<<#__A<<"=" <<__A <<"\n"<<#__B<<"="<<__B; THROW_EXCEPTION(__s__.str()) } }
 
 	#define ASSERT_FILE_EXISTS_(FIL)      ASSERTMSG_( mrpt::system::fileExists(FIL), std::string("Assert file existence failed: ") + ::std::string(FIL) )
 	#define ASSERT_DIRECTORY_EXISTS_(DIR) ASSERTMSG_( mrpt::system::directoryExists(DIR), std::string("Assert directory existence failed: ") + ::std::string(DIR) )
