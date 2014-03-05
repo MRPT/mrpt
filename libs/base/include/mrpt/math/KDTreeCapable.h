@@ -578,16 +578,16 @@ namespace mrpt
 			  *  \sa kdTreeRadiusSearch2D, kdTreeNClosestPoint3DIdx
 			  */
 			inline size_t kdTreeRadiusSearch3D(
-				const float x0, const float y0, const float z0,
-				const float maxRadius,
-				std::vector<std::pair<size_t,float> >& out_indices_dist ) const
+				const num_t x0, const num_t y0, const num_t z0,
+				const num_t maxRadius,
+				std::vector<std::pair<size_t,num_t> >& out_indices_dist ) const
 			{
 				MRPT_START
 				rebuild_kdTree_3D(); // First: Create the 3D KD-Tree if required
 				out_indices_dist.clear();
 				if ( m_kdtree3d_data.m_num_points!=0 )
 				{
-					const float xyz[3] = {x0,y0,z0};
+					const num_t xyz[3] = {x0,y0,z0};
 					m_kdtree3d_data.index->radiusSearch(&xyz[0], maxRadius, out_indices_dist, nanoflann::SearchParams(kdtree_search_params.nChecks) );
 				}
 				return out_indices_dist.size();
@@ -609,16 +609,16 @@ namespace mrpt
 			  *  \sa kdTreeRadiusSearch3D, kdTreeNClosestPoint2DIdx
 			  */
 			inline size_t kdTreeRadiusSearch2D(
-				const float x0, const float y0,
-				const float maxRadius,
-				std::vector<std::pair<size_t,float> >& out_indices_dist ) const
+				const num_t x0, const num_t y0,
+				const num_t maxRadius,
+				std::vector<std::pair<size_t,num_t> >& out_indices_dist ) const
 			{
 				MRPT_START
 				rebuild_kdTree_2D(); // First: Create the 2D KD-Tree if required
 				out_indices_dist.clear();
 				if ( m_kdtree2d_data.m_num_points!=0 )
 				{
-					const float xyz[2] = {x0,y0};
+					const num_t xyz[2] = {x0,y0};
 					m_kdtree2d_data.index->radiusSearch(&xyz[0], maxRadius, out_indices_dist, nanoflann::SearchParams(kdtree_search_params.nChecks) );
 				}
 				return out_indices_dist.size();
