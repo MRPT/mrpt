@@ -6,33 +6,32 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
-#ifndef GRAPH_SLAM_SOLVERS_H
-#define GRAPH_SLAM_SOLVERS_H
 
-#include <mrpt/graphslam/types.h>
+#include <mrpt/graphslam.h>
 
-namespace mrpt { namespace graphslam { namespace solvers {
+using namespace mrpt::graphslam;
+using namespace mrpt::graphslam::deciders;
 
-	/** Batch GraphSLAM Levenberg-Marquartd solver: wrapper for mrpt::graphslam::GraphSlamEngine<>
-	  */
-	struct GS_SolverLevMarq
-	{
-		GS_SolverLevMarq()
-		{
-		}
+// Default ctor
+GS_GenericDecider::GS_GenericDecider()
+{
+}
 
-		template <class GRAPH_T>
-		void solve(GRAPH_T &graph)
-		{
-			MRPT_TODO("TODO")
-			THROW_EXCEPTION("TODO")
-		}
+// TParams:
+GS_GenericDecider::TParams::TParams() :
+	new_kf_min_distance_xy (1.0),
+	new_kf_min_angle (DEG2RAD(30.0))
+{
+}
 
+void GS_GenericDecider::TParams::loadFromConfigFile(
+	const mrpt::utils::CConfigFileBase	&source,
+	const std::string &section)
+{
+}
 
-	};
+void GS_GenericDecider::TParams::dumpToTextStream(mrpt::utils::CStream &out) const
+{
+}
 
-
-}}} // end namespaces
-
-
-#endif
+		

@@ -193,8 +193,11 @@ void icp_graphslam_2D(const string & cfgFilename, const string & rawlogFilename)
 			}
 
 			// Get current robot pose:
-            CPose3D robotPose;
-			//mapBuilder.getCurrentPoseEstimation()->getMean(robotPose);
+            CPose2D robotPose;
+			graphslam_engine.getCurrentPose(robotPose);
+			cout << "Current global pose: " << robotPose << endl;
+
+			const CPose3D curRobotPose = CPose3D(robotPose);
 
 			// Save a 3D scene view of the mapping process:
 			if (0==(step % LOG_FREQUENCY) || SAVE_3D_SCENE || win3D.present())
@@ -220,12 +223,6 @@ void icp_graphslam_2D(const string & cfgFilename, const string & rawlogFilename)
 					cam.setOrthogonal();
 				}
 
-				// The ground:
-				mrpt::opengl::CGridPlaneXYPtr groundPlane = mrpt::opengl::CGridPlaneXY::Create(-200,200,-200,200,0,5);
-				groundPlane->setColor(0.4,0.4,0.4);
-				view->insert( groundPlane );
-				view_map->insert( CRenderizablePtr( groundPlane) ); // A copy
-
 				// The camera pointing to the current robot pose:
 				if (CAMERA_3DSCENE_FOLLOWS_ROBOT)
 				{
@@ -237,24 +234,21 @@ void icp_graphslam_2D(const string & cfgFilename, const string & rawlogFilename)
 					cam.setPointingAt(robotPose);
 				}
 
-				// The maps:
+				// The topology of the graph:
 				{
-					//opengl::CSetOfObjectsPtr obj = opengl::CSetOfObjects::Create();
-					//mostLikMap->getAs3DObject( obj );
-					//view->insert(obj);
+					TParametersDouble graphRenderParams;
 
-					//// Only the point map:
-					//opengl::CSetOfObjectsPtr ptsMap = opengl::CSetOfObjects::Create();
-					//if (mostLikMap->m_pointsMaps.size())
-					//{
-     //                   mostLikMap->m_pointsMaps[0]->getAs3DObject(ptsMap);
-     //                   view_map->insert( ptsMap );
-					//}
+					// Docs on these params: http://reference.mrpt.org/svn/group__mrpt__opengl__grp.html#ga30efc9f6fcb49801e989d174e0f65a61
+					graphRenderParams["show_ID_labels"] = 1;
+					graphRenderParams["show_ground_grid"] = 1;
+					graphRenderParams["show_edges"] = 1;
+
+					opengl::CSetOfObjectsPtr gl_graph = mrpt::opengl::graph_tools::graph_visualize( graphslam_engine.getGraph(), graphRenderParams);
+					view->insert(gl_graph);
 				}
 
 				// Draw the robot path:
 				//CPose3DPDFPtr posePDF =  mapBuilder.getCurrentPoseEstimation();
-				CPose3D  curRobotPose;
 				//posePDF->getMean(curRobotPose);
 				//{
 				//	opengl::CSetOfObjectsPtr obj = opengl::stock_objects::RobotPioneer();
@@ -320,7 +314,10 @@ void icp_graphslam_2D(const string & cfgFilename, const string & rawlogFilename)
 		} // end of if "rawlog_offset"...
 
 		step++;
-		printf("\n---------------- STEP %u | RAWLOG ENTRY %u ----------------\n",step, (unsigned)rawlogEntry);
+		printf("\n--- Step: %u | Rawlog entry: %u | Map nodes: %u, edges: %u --------\n",
+			step, static_cast<unsigned int>(rawlogEntry), 
+			static_cast<unsigned int>(graphslam_engine.getGraph().nodeCount()), 
+			static_cast<unsigned int>(graphslam_engine.getGraph().edgeCount()) );
 	};
 
 	// Save map:
