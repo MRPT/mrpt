@@ -53,49 +53,15 @@ void  CEnoseModular::loadConfig_sensorSpecific(
 	m_usbSerialNumber = configSource.read_string(iniSection, "USB_serialname","",false);
 
 #ifdef MRPT_OS_WINDOWS
-	m_COM_port = configSource.read_string(iniSection, "COM_port_WIN",m_COM_port);
+	m_COM_port = configSource.read_string(iniSection, "COM_port_WIN","COM1");
 #else
 	m_COM_port = configSource.read_string(iniSection, "COM_port_LIN",m_COM_port);
 #endif
 	m_COM_baud = configSource.read_uint64_t(iniSection, "COM_baudRate",m_COM_baud);
 
-	
+
 	MRPT_END
 
-}
-
-/*-------------------------------------------------------------
-					queryFirmwareVersion
--------------------------------------------------------------*/
-bool CEnoseModular::queryFirmwareVersion( string &out_firmwareVersion )
-{
-	try
-	{
-		utils::CMessage		msg,msgRx;
-
-		// Try to connect to the device:
-		CStream *comms = checkConnectionAndConnect();
-		if (!comms)
-			return false;
-
-		msg.type = 0x10;
-		comms->sendMessage(msg);
-
-		if (comms->receiveMessage(msgRx) )
-		{
-			msgRx.getContentAsString( out_firmwareVersion );
-			return true;
-		}
-		else
-			return false;
-	}
-	catch(...)
-	{
-		// Close everything and start again:
-		delete_safe(m_stream_SERIAL);
-		delete_safe(m_stream_FTDI);
-		return false;
-	}
 }
 
 
@@ -141,12 +107,12 @@ CStream *CEnoseModular::checkConnectionAndConnect()
 		try
 		{
 			m_stream_SERIAL->open(m_COM_port);
-			m_stream_SERIAL->setConfig(m_COM_baud);
+			m_stream_SERIAL->setConfig(m_COM_baud);			
+			//m_stream_SERIAL->setTimeouts(25,1,100, 1,20);
+			m_stream_SERIAL->setTimeouts(50,1,100, 1,20);
 			mrpt::system::sleep(10);
 			m_stream_SERIAL->purgeBuffers();
 			mrpt::system::sleep(10);
-			//m_stream_SERIAL->setTimeouts(25,1,100, 1,20);
-			m_stream_SERIAL->setTimeouts(50,1,100, 1,20);
 			return m_stream_SERIAL;
 		}
 		catch(...)
@@ -170,31 +136,42 @@ bool CEnoseModular::getObservation( mrpt::slam::CObservationGasSensors &obs )
 
 		if (!comms)
 		{
-			cout << "Problem connecting to Device." << endl;
+			cout << "ERORR: Problem connecting to Device." << endl;
 			return false;
 		}
 
-		utils::CMessage		msg;
+		
 		CObservationGasSensors::TObservationENose	newRead;
-
 		obs.m_readings.clear();
 
 		//---------------------------- Enose Modular FRAME --------------------------------------------------
 		// Wait for e-nose frame:	<0x69><0x91><lenght><body><0x96> "Bytes"
 		// Where <body> = <temp>[<SensorID_H><SensorID_L><Sensor_Value>] x N_senosrs
 		// Modular-nose provides a 4B+body frame lenght 
+
+		utils::CMessage		msg;
+		bool time_out = false;
+		mrpt::system::TTimeStamp t1 = mrpt::system::getCurrentLocalTime();
+		double time_out_val = 1;	//seconds
 		
-		if (!comms->receiveMessage( msg ))
+		while (!comms->receiveMessage( msg ) && !time_out)
 		{
-			cout << "Problem receiving Message." << endl;
+			if (mrpt::system::timeDifference(t1,mrpt::system::getCurrentLocalTime()) > time_out_val )
+				time_out = true;
+		}
+
+		if (time_out)
+		{
+			cout << "[CEnoseModular - getObservation] measurement Timed-Out" << endl;
 			return false;
 		}
 
 		if (msg.content.size()>0)
 		{
 			// Each sensor reading is composed of 3 Bytes [<SensorID_H><SensorID_L><Sensor_Value>]
+			ASSERT_( (msg.content.size()-1)%3 == 0 )
 			size_t numSensors = (msg.content.size()-1)/3;
-			
+
 			// Prepare the Enose observation
 			newRead.sensorTypes.clear();
 			newRead.readingsVoltage.clear();
@@ -222,13 +199,12 @@ bool CEnoseModular::getObservation( mrpt::slam::CObservationGasSensors &obs )
 			for (size_t idx=0 ; idx<numSensors ; idx++)
 			{
 				// Copy ID (2 BYTES) To integer
-				uint16_t sensorType;
-				uint8_t sensorTypeH, sensorTypeL;
-				memcpy( &sensorTypeH, &msg.content[idx*3+1], sizeof(msg.content[0]) );				
-				memcpy( &sensorTypeL, &msg.content[idx*3+2], sizeof(msg.content[0]) );
-				sensorType = sensorTypeH;
-				sensorType = (sensorType<<8) + sensorTypeL;
-
+				int sensorType_temp = 0;
+				//memcpy( &sensorType, &msg.content[idx*3+1], 2*sizeof(msg.content[0]) );
+				memcpy( &sensorType_temp, &msg.content[idx*3+1], sizeof(msg.content[0]) );
+				int sensorType = sensorType_temp << (8) ;
+				memcpy( &sensorType, &msg.content[idx*3+2], sizeof(msg.content[0]) );				
+								
 				//Add sensor Type (ID)
 				newRead.sensorTypes.push_back(sensorType);
 
@@ -286,21 +262,4 @@ void  CEnoseModular::doProcess()
 		cout << "No observation received from the USB board!" << endl;
 	   // THROW_EXCEPTION("No observation received from the USB board!");
 	}
-}
-
-
-/*-------------------------------------------------------------
-					initialize
--------------------------------------------------------------*/
-/** Tries to open the camera, after setting all the parameters with a call to loadConfig.
-  *  \exception This method must throw an exception with a descriptive message if some critical error is found.
-  */
-void CEnoseModular::initialize()
-{
-	// We'll rather try it in doProcess() since it's quite usual that it fails
-	//  on a first try, then works on the next ones.
-	/*
-	if (!checkConnectionAndConnect())
-		THROW_EXCEPTION("Couldn't connect to the eNose board");
-	*/
 }
