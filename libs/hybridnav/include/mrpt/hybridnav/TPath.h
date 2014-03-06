@@ -33,13 +33,13 @@ namespace mrpt
          * <b>Changes history</b>
          *		- 12/DEC/2013: Creation (MB).
          *      - 21/FEB/2014: Refactoring (MB)
-         *  \ingroup mrpt_hybrid_grp
+         *  \ingroup mrpt_hybridnav_grp
          */
         class TPath //: public PTRRT_Navigator
         {
             public:
                 TPath();
-                virtual ~TPath();
+                ~TPath();
 
 
             /** @name TPath data structures */
