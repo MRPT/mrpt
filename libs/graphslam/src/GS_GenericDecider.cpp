@@ -28,10 +28,15 @@ void GS_GenericDecider::TParams::loadFromConfigFile(
 	const mrpt::utils::CConfigFileBase	&source,
 	const std::string &section)
 {
+	MRPT_LOAD_CONFIG_VAR(new_kf_min_distance_xy, double, source,section)
+	MRPT_LOAD_CONFIG_VAR_DEGREES(new_kf_min_angle, source,section)
+
 }
 
 void GS_GenericDecider::TParams::dumpToTextStream(mrpt::utils::CStream &out) const
 {
+	LOADABLEOPTS_DUMP_VAR(new_kf_min_distance_xy, double)
+	LOADABLEOPTS_DUMP_VAR_DEG(new_kf_min_angle)
 }
 
 		

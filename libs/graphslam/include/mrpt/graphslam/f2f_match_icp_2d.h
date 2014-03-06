@@ -11,6 +11,7 @@
 
 #include <mrpt/graphslam/types.h>
 #include <mrpt/utils/CLoadableOptions.h>
+#include <mrpt/slam/CICP.h>
 #include <mrpt/graphslam/link_pragmas.h>
 
 namespace mrpt { namespace graphslam { namespace f2f_match {
@@ -33,7 +34,7 @@ namespace mrpt { namespace graphslam { namespace f2f_match {
 			gse.getCurrentPose(cur_pose);
 
 			// Get KD-tree to search for neaby keyframes close to the current pose:
-			const double maxRadiusSqr = mrpt::utils::square( gse.m_f2f_match_params.kf2kf_max_search_radius );
+			const double maxRadiusSqr = mrpt::utils::square( params.kf2kf_max_search_radius );
 			std::vector<std::pair<size_t,double> > nearbyKFs;
 
 			const typename GRAPHSLAMENGINE::KeyFramesKDTree &kdtree = gse.getKeyFrameKDTree();
@@ -64,11 +65,15 @@ namespace mrpt { namespace graphslam { namespace f2f_match {
 			// ...
 			double kf2kf_max_search_radius; //!< Maximum radius for search of candidate KFs to loop closure / edge creation (meters).
 
+			mrpt::slam::CICP::TConfigParams icp_params; //!< All the parameters of the ICP algorithm
+
 			TParams(); 
 			virtual void loadFromConfigFile(const mrpt::utils::CConfigFileBase	&source,const std::string &section);
 			virtual void dumpToTextStream(mrpt::utils::CStream &out) const;
 		};
-		
+
+		TParams params;
+
 		GS_F2F_ICP_2D();  //!< Default ctor
 		
 

@@ -107,9 +107,14 @@ namespace mrpt
 
 			/** @} */ // --------------------------------------------------
 
-			typename F2F_MATCH::TParams        m_f2f_match_params;
-			typename UPDATE_DECIDER::TParams   m_update_decider_params; 
-			//typename GRAPHSLAM_SOLVER::TParams m_solver_params; 
+			const typename F2F_MATCH::TParams & get_f2f_match_params() const { return m_f2f_match.params; }
+			      typename F2F_MATCH::TParams & get_f2f_match_params()       { return m_f2f_match.params; }
+
+			const typename UPDATE_DECIDER::TParams & get_update_decider_params() const { return m_update_decider.params; }
+			      typename UPDATE_DECIDER::TParams & get_update_decider_params()       { return m_update_decider.params; }
+
+			const typename GRAPHSLAM_SOLVER::TParams & get_solver_params() const { return m_solver.params; }
+			      typename GRAPHSLAM_SOLVER::TParams & get_solver_params()       { return m_solver.params; }
 
 			struct TTimestampedNode
 			{

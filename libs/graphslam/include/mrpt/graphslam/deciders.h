@@ -32,7 +32,7 @@ namespace mrpt { namespace graphslam { namespace deciders {
 			gse.getCurrentPose(cur_pose);
 
 			// Get KD-tree to search for neaby keyframes close to the current pose:
-			const double maxRadiusSqr = mrpt::utils::square(1.01* gse.m_update_decider_params.new_kf_min_distance_xy);
+			const double maxRadiusSqr = mrpt::utils::square(1.01* params.new_kf_min_distance_xy);
 			std::vector<std::pair<size_t,double> > nearbyKFs;
 
 			const typename GRAPHSLAMENGINE::KeyFramesKDTree &kdtree = gse.getKeyFrameKDTree();
@@ -62,6 +62,8 @@ namespace mrpt { namespace graphslam { namespace deciders {
 		};
 		
 		GS_GenericDecider();  //!< Default ctor
+
+		TParams params;
 	}; 
 
 }}} // end namespaces

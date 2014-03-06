@@ -31,7 +31,7 @@ bool GS_F2F_ICP_2D::matchTwoKeyframes(
 {
 	CICP	ICP;
 
-	//ICP.options = ICP_params;
+	ICP.options = params.icp_params;
 
 	const mrpt::slam::CPointsMap *map_a = obs_a.buildAuxPointsMap<mrpt::slam::CPointsMap>();
 	const mrpt::slam::CPointsMap *map_b = obs_b.buildAuxPointsMap<mrpt::slam::CPointsMap>();
@@ -75,10 +75,16 @@ void GS_F2F_ICP_2D::TParams::loadFromConfigFile(
 	const mrpt::utils::CConfigFileBase	&source,
 	const std::string &section)
 {
+	MRPT_LOAD_CONFIG_VAR(kf2kf_max_search_radius, double, source,section)
+
+	icp_params.loadFromConfigFile(source,section);
 }
 
 void GS_F2F_ICP_2D::TParams::dumpToTextStream(mrpt::utils::CStream &out) const
 {
+	LOADABLEOPTS_DUMP_VAR(kf2kf_max_search_radius, double)
+
+	icp_params.dumpToTextStream(out);
 }
 
 		

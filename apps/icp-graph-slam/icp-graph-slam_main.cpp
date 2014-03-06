@@ -77,10 +77,13 @@ void icp_graphslam_2D(const string & cfgFilename, const string & rawlogFilename)
 	// Instance of the GS Engine:
 	my_graphslam_engine_t  graphslam_engine;
 
-	MRPT_TODO("Load each module options")
+	graphslam_engine.get_f2f_match_params().loadFromConfigFile( cfgFile, "icp_graphslam_f2f_match");
+	graphslam_engine.get_f2f_match_params().dumpToConsole();
 
-//	mapBuilder.ICP_options.loadFromConfigFile( cfgFile, "icp_graphslam");
-//	mapBuilder.ICP_options.dumpToConsole();
+	graphslam_engine.get_update_decider_params().loadFromConfigFile( cfgFile, "icp_graphslam_update_decider");
+	graphslam_engine.get_update_decider_params().dumpToConsole();
+
+	MRPT_TODO("Load solver options")
 
 	// Prepare output directory:
 	// --------------------------------

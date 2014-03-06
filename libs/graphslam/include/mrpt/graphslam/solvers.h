@@ -31,7 +31,7 @@ namespace mrpt { namespace graphslam { namespace solvers {
 			nodes_to_optimize.insert(curNodeID);
 
 			mrpt::utils::TParametersDouble extra_params;
-			extra_params["verbose"]=1;
+			extra_params["verbose"]= params.verbose ? 1:0;
 
 			try {
 				mrpt::graphslam::optimize_graph_spa_levmarq(graph, solver_results, &nodes_to_optimize, extra_params);
@@ -45,7 +45,14 @@ namespace mrpt { namespace graphslam { namespace solvers {
 
 		}
 
+		struct TParams
+		{
+			bool verbose; //!< Verbose output (default:false)
 
+			TParams() : verbose(false) { }
+		};
+		
+		TParams params;
 	};
 
 
