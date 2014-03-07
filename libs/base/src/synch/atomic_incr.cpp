@@ -15,6 +15,8 @@ using namespace mrpt::synch;
 
 #ifdef MRPT_OS_WINDOWS
 	#include <windows.h>
+#elif defined( __clang__ ) && defined( MRPT_OS_APPLE )
+	//no include
 #elif defined( __GNUC__ )
 	#if ( __GNUC__ * 100 + __GNUC_MINOR__ >= 402 )
 	#  include <ext/atomicity.h>
