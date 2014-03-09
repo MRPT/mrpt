@@ -82,6 +82,7 @@ void GS_F2F_ICP_2D::TParams::loadFromConfigFile(
 
 void GS_F2F_ICP_2D::TParams::dumpToTextStream(mrpt::utils::CStream &out) const
 {
+	out.printf("\n----------- [GS_F2F_ICP_2D::TParams] ------------ \n\n");
 	LOADABLEOPTS_DUMP_VAR(kf2kf_max_search_radius, double)
 
 	icp_params.dumpToTextStream(out);

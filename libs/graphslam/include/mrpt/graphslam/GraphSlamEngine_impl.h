@@ -144,6 +144,9 @@ namespace mrpt { namespace graphslam {
 				{
 					typename graph_t::edge_t & odoEdge = *curNode.nodeAnnotation_odometryEdge;
 					odoEdge+= odo_increment; // Pose composition
+#ifdef _DEBUG
+					std::cout << "[GSE] Updating odo constraint edge of node " << m_current_frame.nodeID << " to " << odoEdge << std::endl;
+#endif
 				}
 			} // end it's not an empty map
 		} // end it's odometry
@@ -220,7 +223,6 @@ namespace mrpt { namespace graphslam {
 					init_otherFromCur.inverseComposeFrom( otherPose, curPose );
 
 					constraint_t poseOtherFromCur;
-					//bool valid = m_f2f_match.matchTwoKeyframes(*this, m_current_frame.nodeID,*itKF,cur_sf,other_sf, poseOtherFromCur);
 					bool valid = m_f2f_match.matchTwoKeyframes(m_current_frame.nodeID,*itKF,cur_sf,other_sf, init_otherFromCur, poseOtherFromCur);
 					if (valid)
 					{
@@ -257,7 +259,10 @@ namespace mrpt { namespace graphslam {
 						}
 						// Store the constraint in the edge:
 						constraint_t & newEdgeRelativePose = *static_cast<constraint_t*>(&it_the_edge->second);
-						newEdgeRelativePose = the_edge_is_reverse ? (poseOtherFromCur) : (-poseOtherFromCur);
+						newEdgeRelativePose = the_edge_is_reverse ? (-poseOtherFromCur) : (poseOtherFromCur);
+#ifdef _DEBUG
+						std::cout << "[GSE] Updating obs constraint edge " << edge_ids_direct.first << "=>" << edge_ids_direct.second << " to " << newEdgeRelativePose << std::endl;
+#endif
 						some_edge_modified=true;
 
 					} // end valid "match" found.
@@ -270,6 +275,15 @@ namespace mrpt { namespace graphslam {
 			{
 				m_solver.optimizeSingle(m_graph, m_current_frame.nodeID);
 				// NOTE: Don't need to call "m_keyframes_kdtree.markAsOutdated();" if we only modify the last (current) KeyFrame.
+
+				MRPT_TODO("Add proper param!")
+				static int cnt = 0;
+				if (++cnt>10)
+				{
+					cnt=0;
+					m_solver.optimizeFull(m_graph);
+				}
+
 			}
 
 		} // end if map not empty

@@ -35,6 +35,7 @@ void GS_GenericDecider::TParams::loadFromConfigFile(
 
 void GS_GenericDecider::TParams::dumpToTextStream(mrpt::utils::CStream &out) const
 {
+	out.printf("\n----------- [GS_GenericDecider::TParams] ------------ \n\n");
 	LOADABLEOPTS_DUMP_VAR(new_kf_min_distance_xy, double)
 	LOADABLEOPTS_DUMP_VAR_DEG(new_kf_min_angle)
 }

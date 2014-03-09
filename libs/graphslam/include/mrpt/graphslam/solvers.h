@@ -32,6 +32,7 @@ namespace mrpt { namespace graphslam { namespace solvers {
 
 			mrpt::utils::TParametersDouble extra_params;
 			extra_params["verbose"]= params.verbose ? 1:0;
+			extra_params["max_iterations"] = params.single_max_iters;
 
 			try {
 				mrpt::graphslam::optimize_graph_spa_levmarq(graph, solver_results, &nodes_to_optimize, extra_params);
@@ -42,14 +43,35 @@ namespace mrpt { namespace graphslam { namespace solvers {
 				// No observations yet, etc.
 				std::cout << "[optimizeSingle] Skipped for: " << e.what() << std::endl;
 			}
+		}
 
+		template <class GRAPH_T>
+		void optimizeFull(GRAPH_T &graph)
+		{
+			TResultInfoSpaLevMarq solver_results;
+
+			mrpt::utils::TParametersDouble extra_params;
+			extra_params["verbose"]= params.verbose ? 1:0;
+			extra_params["max_iterations"] = params.full_max_iters;
+
+			try {
+				mrpt::graphslam::optimize_graph_spa_levmarq(graph, solver_results, NULL /*optimize all keyframes*/, extra_params);
+				std::cout << "[optimizeFull] Solved in " << solver_results.num_iters << " iters, final_total_sq_error=" << solver_results.final_total_sq_error << std::endl;
+				//static int i=0; graph.saveToTextFile(mrpt::format("__graph%06i.txt",i++));
+			} catch (std::exception &e)
+			{
+				// No observations yet, etc.
+				std::cout << "[optimizeFull] Skipped for: " << e.what() << std::endl;
+			}
 		}
 
 		struct TParams
 		{
 			bool verbose; //!< Verbose output (default:false)
+			unsigned int single_max_iters; //!< Max iterations for single node optimizations (default: 5)
+			unsigned int full_max_iters;  //!< Max iterations for full map optimization (default: 100)
 
-			TParams() : verbose(false) { }
+			TParams() : verbose(false),single_max_iters(5),full_max_iters(100) { }
 		};
 		
 		TParams params;

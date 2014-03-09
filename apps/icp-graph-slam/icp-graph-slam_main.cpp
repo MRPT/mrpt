@@ -82,6 +82,8 @@ void icp_graphslam_2D(const string & cfgFilename, const string & rawlogFilename)
 
 	graphslam_engine.get_update_decider_params().loadFromConfigFile( cfgFile, "icp_graphslam_update_decider");
 	graphslam_engine.get_update_decider_params().dumpToConsole();
+	
+	//graphslam_engine.get_solver_params().verbose = true;
 
 	MRPT_TODO("Load solver options")
 
