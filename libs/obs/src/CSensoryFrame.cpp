@@ -52,20 +52,9 @@ CSensoryFrame & CSensoryFrame::operator =( const CSensoryFrame &o)
 
 	if (this == &o) return *this;		// It may be used sometimes
 
-	// JL: Why make a copy? Just copy the smart pointers:
-//	size_t i,n;
-//	n = o.m_observations.size();
-//	m_observations.resize( n );
-//	for (i=0;i<n;i++)
-//	{
-//		m_observations[i] = o.m_observations[i]; //static_cast<CObservation*>( o.m_observations[i]->duplicate() );
-//		m_observations[i].make_unique();
-//	}
-
 	m_observations = o.m_observations;
 
-
-	m_cachedMap.clear();
+	m_cachedMap.clear(); 
 
 	return *this;
 
@@ -88,6 +77,7 @@ CSensoryFrame::~CSensoryFrame()
 void  CSensoryFrame::clear()
 {
 	m_observations.clear();
+	m_cachedMap.clear();
 }
 
 /*---------------------------------------------------------------
@@ -159,6 +149,7 @@ void  CSensoryFrame::readFromStream(CStream &in,int version)
   ---------------------------------------------------------------*/
 void CSensoryFrame::operator += (const CSensoryFrame &sf)
 {
+	m_cachedMap.clear();
 	for (const_iterator it = begin();it!=end();++it)
 	{
 		CObservationPtr newObs = *it;
@@ -172,6 +163,7 @@ void CSensoryFrame::operator += (const CSensoryFrame &sf)
   ---------------------------------------------------------------*/
 void CSensoryFrame::operator += (const CObservationPtr &obs)
 {
+	m_cachedMap.clear();
 	m_observations.push_back( obs );
 }
 
@@ -180,6 +172,7 @@ void CSensoryFrame::operator += (const CObservationPtr &obs)
   ---------------------------------------------------------------*/
 void CSensoryFrame::push_back(const CObservationPtr &obs)
 {
+	m_cachedMap.clear();
 	m_observations.push_back( obs );
 }
 
@@ -188,6 +181,7 @@ void CSensoryFrame::push_back(const CObservationPtr &obs)
   ---------------------------------------------------------------*/
 void CSensoryFrame::insert(const CObservationPtr &obs)
 {
+	m_cachedMap.clear();
 	m_observations.push_back( obs );
 }
 
@@ -199,6 +193,7 @@ void CSensoryFrame::eraseByIndex(const size_t &idx)
 	MRPT_START
 	if (idx>=size()) THROW_EXCEPTION_CUSTOM_MSG1("Index %u out of range.", static_cast<unsigned>(idx) );
 
+	m_cachedMap.clear();
 	iterator it = begin()+idx;
 	ASSERT_(it->present());
 	//delete (*it);
@@ -227,10 +222,9 @@ CObservationPtr CSensoryFrame::getObservationByIndex( const size_t &idx ) const
 CSensoryFrame::iterator CSensoryFrame::erase( const iterator &it)
 {
 	MRPT_START
-	ASSERT_(it!=end());
+	ASSERT_(it!=end())
 
-	//CObservationPtr *obs = *it;
-	//delete obs;
+	m_cachedMap.clear();
 
 	return m_observations.erase(it);
 	MRPT_END
@@ -263,6 +257,7 @@ void CSensoryFrame::moveFrom( CSensoryFrame &sf )
 {
 	copy(sf.m_observations.begin(),sf.m_observations.end(), back_inserter(m_observations) );
 	sf.m_observations.clear();
+	m_cachedMap.clear();
 }
 
 /*---------------------------------------------------------------
@@ -271,6 +266,7 @@ void CSensoryFrame::moveFrom( CSensoryFrame &sf )
 void CSensoryFrame::swap( CSensoryFrame &sf )
 {
 	m_observations.swap(sf.m_observations);
+	std::swap(m_cachedMap, sf.m_cachedMap);
 }
 
 /*---------------------------------------------------------------
@@ -286,6 +282,7 @@ void CSensoryFrame::eraseByLabel(const std::string &label)
 		}
 		else it++;
 	}
+	m_cachedMap.clear();
 }
 
 namespace mrpt
