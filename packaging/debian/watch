@@ -1,2 +1,3 @@
 version=3
-http://archive.mrpt.org/debian-packages/mrpt-(.+)\.tar\.gz
+opts=filenamemangle=s/.+\/v?(\d\S*)\.tar\.gz/<project>-$1\.tar\.gz/ \
+  https://github.com/jlblancoc/mrpt/tags .*/v?(\d\S*)\.tar\.gz
