@@ -207,7 +207,7 @@ namespace octomap {
   void Pointcloud::subSampleRandom(unsigned int num_samples, Pointcloud& sample_cloud) {
     point3d_collection samples;
     // visual studio does not support random_sample_n
-  #if defined( _MSC_VER ) | (defined( __clang__ ) && defined( MRPT_OS_APPLE ))
+  #if defined( _MSC_VER ) || (defined( __clang__ ) && defined( __APPLE__ ))
     samples.reserve(this->size());
     samples.insert(samples.end(), this->begin(), this->end());
     std::random_shuffle(samples.begin(), samples.end());
