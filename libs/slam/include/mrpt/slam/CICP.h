@@ -11,6 +11,7 @@
 
 #include <mrpt/slam/CMetricMapsAlignmentAlgorithm.h>
 #include <mrpt/utils/CLoadableOptions.h>
+#include <mrpt/utils/TEnumType.h>
 
 namespace mrpt
 {
@@ -279,6 +280,23 @@ namespace mrpt
 		};
 
 	} // End of namespace
+
+	// Specializations MUST occur at the same namespace:
+	namespace utils
+	{
+		template <>
+		struct TEnumTypeFiller<slam::TICPAlgorithm>
+		{
+			typedef slam::TICPAlgorithm enum_t;
+			static void fill(bimap<enum_t,std::string>  &m_map)
+			{
+				m_map.insert(slam::icpClassic, "icpClassic");
+				m_map.insert(slam::icpLevenbergMarquardt, "icpLevenbergMarquardt");
+				m_map.insert(slam::icpIKF, "icpIKF");
+			}
+		};
+	} // End of namespace
+
 } // End of namespace
 
 #endif
