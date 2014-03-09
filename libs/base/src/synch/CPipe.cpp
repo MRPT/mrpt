@@ -114,7 +114,7 @@ std::string CPipeBaseEndPoint::serialize()
 	std::string ret;
 #ifdef MRPT_OS_WINDOWS
 	// Win32 pipes
-	ret = mrpt::format("%"PRIu64 ,reinterpret_cast<uint64_t>(m_pipe_file) );
+	ret = mrpt::format("%" PRIu64 ,reinterpret_cast<uint64_t>(m_pipe_file) );
 #else
 	// UNIX pipes
 	ret= mrpt::format("%i",m_pipe_file);
@@ -193,7 +193,7 @@ size_t  CPipeBaseEndPoint::Read(void *Buffer, size_t Count)
 				// Receive bytes:
 				const size_t readNow = ::read(m_pipe_file,((char*)Buffer) + alreadyRead, (int)remainToRead);
 
-				if (readNow != -1)
+				if (readNow != static_cast<size_t>(-1))
 				{
 					// Accumulate the received length:
 					alreadyRead += readNow;
