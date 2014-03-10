@@ -231,7 +231,7 @@ namespace mrpt { namespace graphslam {
 						// The idea: odometry and the user may add additinal edges from those arising from sensor KF-to-KF matching, and we must respect them.
 						const TPairNodeIDs edge_ids_direct(*itKF,m_current_frame.nodeID), edge_ids_reverse(m_current_frame.nodeID,*itKF);
 						std::pair<typename graph_t::edges_map_t::iterator,typename graph_t::edges_map_t::iterator> its_direct  = m_graph.edges.equal_range( edge_ids_direct );
-						std::pair<typename graph_t::edges_map_t::iterator,typename graph_t::edges_map_t::iterator> its_reverse = m_graph.edges.equal_range( edge_ids_direct );
+						std::pair<typename graph_t::edges_map_t::iterator,typename graph_t::edges_map_t::iterator> its_reverse = m_graph.edges.equal_range( edge_ids_reverse );
 						typename graph_t::edges_map_t::iterator it_the_edge = m_graph.edges.end();  // The kf-to-kf sensor-based constraint we are looking for, or we have created (below)
 						bool the_edge_is_reverse = false;
 						// Look in direct edges:
@@ -259,9 +259,9 @@ namespace mrpt { namespace graphslam {
 						}
 						// Store the constraint in the edge:
 						constraint_t & newEdgeRelativePose = *static_cast<constraint_t*>(&it_the_edge->second);
-						newEdgeRelativePose = the_edge_is_reverse ? (-poseOtherFromCur) : (poseOtherFromCur);
+						newEdgeRelativePose = the_edge_is_reverse ? (poseOtherFromCur) : (-poseOtherFromCur);
 #ifdef _DEBUG
-						std::cout << "[GSE] Updating obs constraint edge " << edge_ids_direct.first << "=>" << edge_ids_direct.second << " to " << newEdgeRelativePose << std::endl;
+						std::cout << "[GSE] Updating obs constraint edge " << edge_ids_direct.first << "=>" << edge_ids_direct.second << " to " << newEdgeRelativePose << " (Reverse:" << (the_edge_is_reverse ? "YES":"NO") <<  std::endl;
 #endif
 						some_edge_modified=true;
 

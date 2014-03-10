@@ -56,12 +56,14 @@ void icp_graphslam_2D(const string & cfgFilename, const string & rawlogFilename)
 	const bool  SAVE_3D_SCENE        = cfgFile.read_bool("icp_graphslam","SAVE_3D_SCENE", false,  /*mandatory?*/ true);
 	const bool  CAMERA_3DSCENE_FOLLOWS_ROBOT = cfgFile.read_bool("icp_graphslam","CAMERA_3DSCENE_FOLLOWS_ROBOT", true,  /*mandatory?*/ true);
 
-	bool 	SHOW_PROGRESS_3D_REAL_TIME = false;
-	int		SHOW_PROGRESS_3D_REAL_TIME_DELAY_MS = 0;
-	bool 	SHOW_LASER_SCANS_3D = true;
+	bool  SHOW_PROGRESS_3D_REAL_TIME = false;
+	int	  SHOW_PROGRESS_3D_REAL_TIME_DELAY_MS = 0;
+	bool  SHOW_LASER_SCANS_3D = true;
+	bool  SHOW_POINTMAPS_FOR_EACH_KEYFRAME = true;
 
 	MRPT_LOAD_CONFIG_VAR( SHOW_PROGRESS_3D_REAL_TIME, bool,  cfgFile, "icp_graphslam");
 	MRPT_LOAD_CONFIG_VAR( SHOW_LASER_SCANS_3D , bool,  cfgFile, "icp_graphslam");
+	MRPT_LOAD_CONFIG_VAR( SHOW_POINTMAPS_FOR_EACH_KEYFRAME, bool,  cfgFile, "icp_graphslam");
 	MRPT_LOAD_CONFIG_VAR( SHOW_PROGRESS_3D_REAL_TIME_DELAY_MS, int, cfgFile, "icp_graphslam");
 
 	// ------------------------------------
@@ -214,29 +216,10 @@ void icp_graphslam_2D(const string & cfgFilename, const string & rawlogFilename)
                 COpenGLViewportPtr view=scene->getViewport("main");
                 ASSERT_(view);
 
-                COpenGLViewportPtr view_map = scene->createViewport("mini-map");
-                view_map->setBorderSize(2);
-                view_map->setViewportPosition(0.01,0.01,0.35,0.35);
-                view_map->setTransparent(false);
-
-				{
-					mrpt::opengl::CCamera &cam = view_map->getCamera();
-					cam.setAzimuthDegrees(-90);
-					cam.setElevationDegrees(90);
-					cam.setPointingAt(robotPose);
-					cam.setZoomDistance(20);
-					cam.setOrthogonal();
-				}
-
 				// The camera pointing to the current robot pose:
 				if (CAMERA_3DSCENE_FOLLOWS_ROBOT)
 				{
 				    scene->enableFollowCamera(true);
-
-					mrpt::opengl::CCamera &cam = view_map->getCamera();
-					cam.setAzimuthDegrees(-45);
-					cam.setElevationDegrees(45);
-					cam.setPointingAt(robotPose);
 				}
 
 				// The topology of the graph:
@@ -248,23 +231,30 @@ void icp_graphslam_2D(const string & cfgFilename, const string & rawlogFilename)
 					graphRenderParams["show_ground_grid"] = 1;
 					graphRenderParams["show_edges"] = 1;
 
+					graphRenderParams["show_edge_rel_poses"] = 1;
+
 					opengl::CSetOfObjectsPtr gl_graph = mrpt::opengl::graph_tools::graph_visualize( graphslam_engine.getGraph(), graphRenderParams);
 					view->insert(gl_graph);
 				}
 
-				// Draw the robot path:
-				//CPose3DPDFPtr posePDF =  mapBuilder.getCurrentPoseEstimation();
-				//posePDF->getMean(curRobotPose);
-				//{
-				//	opengl::CSetOfObjectsPtr obj = opengl::stock_objects::RobotPioneer();
-				//	obj->setPose( curRobotPose );
-				//	view->insert(obj);
-				//}
-				//{
-				//	opengl::CSetOfObjectsPtr obj = opengl::stock_objects::RobotPioneer();
-				//	obj->setPose( curRobotPose );
-				//	view_map->insert( obj );
-				//}
+				// Draw local pointmaps at each KeyFrame:
+				if (SHOW_POINTMAPS_FOR_EACH_KEYFRAME)
+				{
+					const my_graphslam_engine_t::graph_t & theGraph = graphslam_engine.getGraph();
+					for (my_graphslam_engine_t::graph_t::global_poses_t::const_iterator itNode = theGraph.nodes.begin();itNode!=theGraph.nodes.end();++itNode)
+					{
+						const CPose3D kf_pose = CPose3D(itNode->second);
+						const mrpt::slam::CPointsMap *pntsMap = itNode->second.nodeAnnotation_observations.getAuxPointsMap<mrpt::slam::CPointsMap>();
+						if (!pntsMap) pntsMap = itNode->second.nodeAnnotation_observations.buildAuxPointsMap<mrpt::slam::CPointsMap>();
+						
+						mrpt::opengl::CPointCloudPtr gl_pnts = mrpt::opengl::CPointCloud::Create();
+						gl_pnts->loadFromPointsMap(pntsMap);
+						gl_pnts->setPose(kf_pose);							 
+						gl_pnts->setColor(0,0,1);
+						gl_pnts->setPointSize(2);
+						view->insert(gl_pnts);
+					}
+				}
 
 				// Draw laser scanners in 3D:
 				if (SHOW_LASER_SCANS_3D)

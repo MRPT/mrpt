@@ -48,7 +48,7 @@ bool GS_F2F_ICP_2D::matchTwoKeyframes(
 		&icpReturn // Returned information
 		);
 
-	const double minICPgoodnessToAccept = 0.75;
+	const double minICPgoodnessToAccept = 0.45;
 
 	if (icpReturn.goodness> minICPgoodnessToAccept)
 	{
