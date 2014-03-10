@@ -51,19 +51,22 @@ namespace mrpt { namespace graphslam { namespace f2f_match {
 
 
 		/** Keyframe-to-keyframe match method.
-		  * \return true if a valid registration was found.
-		  */
+		  * \return true if a valid registration was found. */
 		bool matchTwoKeyframes(
-			const TNodeID id_a, const TNodeID id_b, 
-			const CSensoryFrame &obs_a, const CSensoryFrame &obs_b,
-			const mrpt::poses::CPose2D &approx_pose_b_from_a,
-			mrpt::poses::CPose2D &out_pose_b_from_a );
+			const TNodeID id_a, const TNodeID id_b, const CSensoryFrame &obs_a, const CSensoryFrame &obs_b,
+			const mrpt::poses::CPose2D &approx_pose_b_from_a, mrpt::poses::CPosePDFGaussianInf &out_pose_b_from_a );
+
+		/** \overload */
+		bool matchTwoKeyframes(
+			const TNodeID id_a, const TNodeID id_b, const CSensoryFrame &obs_a, const CSensoryFrame &obs_b,
+			const mrpt::poses::CPose2D &approx_pose_b_from_a, mrpt::poses::CPose2D &out_pose_b_from_a );
 
 
 		struct GRAPHSLAM_IMPEXP TParams : public mrpt::utils::CLoadableOptions
 		{
 			// ...
 			double kf2kf_max_search_radius; //!< Maximum radius for search of candidate KFs to loop closure / edge creation (meters).
+			double minICP_goodness_to_accept; //!< in [0,1]: Minimum ICP scan matching overlap to accept a registration as valid.
 
 			mrpt::slam::CICP::TConfigParams icp_params; //!< All the parameters of the ICP algorithm
 

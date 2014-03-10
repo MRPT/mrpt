@@ -72,6 +72,7 @@ void icp_graphslam_2D(const string & cfgFilename, const string & rawlogFilename)
 	// The 2D-ICP graph-slam engine class: 
 	typedef GraphSlamEngine< 
 		CNetworkOfPoses2D, // Graph type
+		//CNetworkOfPoses2DInf, // Graph type
 		f2f_match::GS_F2F_ICP_2D  // Match finder 
 		> 
 		my_graphslam_engine_t;
@@ -231,7 +232,7 @@ void icp_graphslam_2D(const string & cfgFilename, const string & rawlogFilename)
 					graphRenderParams["show_ground_grid"] = 1;
 					graphRenderParams["show_edges"] = 1;
 
-					graphRenderParams["show_edge_rel_poses"] = 1;
+					//graphRenderParams["show_edge_rel_poses"] = 1;
 
 					opengl::CSetOfObjectsPtr gl_graph = mrpt::opengl::graph_tools::graph_visualize( graphslam_engine.getGraph(), graphRenderParams);
 					view->insert(gl_graph);

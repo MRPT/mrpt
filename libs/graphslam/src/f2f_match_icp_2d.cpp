@@ -27,7 +27,7 @@ bool GS_F2F_ICP_2D::matchTwoKeyframes(
 	const TNodeID id_a, const TNodeID id_b, 
 	const CSensoryFrame &obs_a, const CSensoryFrame &obs_b,
 	const mrpt::poses::CPose2D &approx_pose_b_from_a,
-	mrpt::poses::CPose2D &out_pose_b_from_a )
+	mrpt::poses::CPosePDFGaussianInf & out_pose_b_from_a)
 {
 	CICP	ICP;
 
@@ -48,26 +48,41 @@ bool GS_F2F_ICP_2D::matchTwoKeyframes(
 		&icpReturn // Returned information
 		);
 
-	const double minICPgoodnessToAccept = 0.45;
+	
 
-	if (icpReturn.goodness> minICPgoodnessToAccept)
+	if (icpReturn.goodness> params.minICP_goodness_to_accept)
 	{
 		// save estimation:
-		CPosePDFGaussian  pEst2D;
-		pEst2D.copyFrom( *pestPose );
-
-		pEst2D.getMean( out_pose_b_from_a );
+		out_pose_b_from_a.copyFrom( *pestPose );
+#ifdef _DEBUG
+		std::cout << "[GS_F2F_ICP_2D] Match FOUND " << id_a << "-" << id_b << ": goodness=" << icpReturn.goodness << " rel.pose=" << out_pose_b_from_a << std::endl;
+#endif
 		return true;
 	}
 	else
 	{
+#ifdef _DEBUG
+		std::cout << "[GS_F2F_ICP_2D] NO Match " << id_a << "-" << id_b << ": goodness=" << icpReturn.goodness << std::endl;
+#endif
 		return false;
 	}
 }
 
+bool GS_F2F_ICP_2D::matchTwoKeyframes(
+	const TNodeID id_a, const TNodeID id_b, const CSensoryFrame &obs_a, const CSensoryFrame &obs_b,
+	const mrpt::poses::CPose2D &approx_pose_b_from_a, mrpt::poses::CPose2D &out_pose_b_from_a )
+{
+	mrpt::poses::CPosePDFGaussianInf out_pose_b_from_a_;
+	bool valid = this->matchTwoKeyframes(id_a,id_b,obs_a,obs_b,approx_pose_b_from_a,out_pose_b_from_a_);
+	out_pose_b_from_a = out_pose_b_from_a_.mean;
+	return valid;
+}
+
+
 // TParams:
 GS_F2F_ICP_2D::TParams::TParams() :
-	kf2kf_max_search_radius (6.0)
+	kf2kf_max_search_radius (6.0),
+	minICP_goodness_to_accept (0.50)
 {
 }
 
@@ -76,6 +91,7 @@ void GS_F2F_ICP_2D::TParams::loadFromConfigFile(
 	const std::string &section)
 {
 	MRPT_LOAD_CONFIG_VAR(kf2kf_max_search_radius, double, source,section)
+	MRPT_LOAD_CONFIG_VAR(minICP_goodness_to_accept, double, source,section)
 
 	icp_params.loadFromConfigFile(source,section);
 }
@@ -84,6 +100,7 @@ void GS_F2F_ICP_2D::TParams::dumpToTextStream(mrpt::utils::CStream &out) const
 {
 	out.printf("\n----------- [GS_F2F_ICP_2D::TParams] ------------ \n\n");
 	LOADABLEOPTS_DUMP_VAR(kf2kf_max_search_radius, double)
+	LOADABLEOPTS_DUMP_VAR(minICP_goodness_to_accept, double)
 
 	icp_params.dumpToTextStream(out);
 }
