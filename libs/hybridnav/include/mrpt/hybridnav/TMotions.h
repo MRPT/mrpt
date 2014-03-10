@@ -32,29 +32,27 @@ namespace mrpt
          *      - 06/MAR/2014: Creation (MB)
          *  \ingroup mrpt_hybridnav_grp
          */
-		template<typename T>
-		struct TMotionTree : public mrpt::graphs::CDirectedTree< TMotions >
-          {
+
+		template<class TMotions>
+        //TMotionTree is base that derive TMotions
+        class TMotionTree : public mrpt::graphs::CDirectedTree< TMotions >
+            {
             public:
-                TMotionTree();  //constr
-                ~TMotionTree(); //destr
+
                 //methods we need here are:
-                void add_element();  //and just refer to list<> or vector<> class method in 				 CDirectedTree
+                void add_element();  //and just refer to list<> or vector<> class method in CDirectedTree
                 void get_element();  //I imagine that we will need it for the nn_search
                 mrpt::hybridnav::TPath::TPlannedPath get_sh(); // &path
                 //for our case the right methohortest_patd should be 				     	“visitBreadthFirst”, how this works in the
                 //mrpt::graphs::CDirectedTree class, should we redefine it?
                 void erase();
+            };/**/
 
 
-		  };
-		  //typedef TMotionTree<TMotions> TMotionTree;
-
-		class TMotions // no inheritances for now
+        class TMotions : public TMotionTree <TMotions> // this is derived
         {
             public:
-                TMotions();
-                ~TMotions();
+
 
 			 /** @name TMotionSE2 data structure */
 				struct  TMotionSE2 {
@@ -98,9 +96,7 @@ namespace mrpt
 						double cost;
 				};
 
-			//is it possible to create a motion using something like ?
-			//mrpt::hybridnav::TMotions::TMotionSE2 my_se2_motion;
-
+            typedef TMotionTree<TMotions> TMotionTree;
 
             protected:
 

@@ -7,6 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
+#include <mrpt/hybridnav.h>    //precomp header
 #include <mrpt/hybridnav/TPath.h>
 
 using namespace mrpt::hybridnav;
