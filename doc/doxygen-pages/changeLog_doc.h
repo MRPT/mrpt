@@ -15,6 +15,7 @@
  <a name="1.1.1">
   <h2>Version 1.1.1: (Under development) </h2></a>
   	- BUG FIXES:
+		- RawlogViewer app: Fixed abort while converting SF->obs.only datasets when there is no odometry.
 		- mrpt::slam::CSensoryFrame: The cached point map is now invalidated with any change to the list of observations so it's rebuild upon next call.
 
 <hr>

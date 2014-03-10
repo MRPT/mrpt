@@ -712,16 +712,18 @@ void xRawLogViewerFrame::OnMenuConvertObservationOnly(wxCommandEvent& event)
 					CActionCollectionPtr	acts = CActionCollectionPtr( newObj );
 					// Get odometry:
 					CActionRobotMovement2DPtr actOdom = acts->getBestMovementEstimation();
-					ASSERT_(actOdom);
-					odometry_accum = odometry_accum + actOdom->poseChange->getMeanVal();
+					if (actOdom)
+					{
+						odometry_accum = odometry_accum + actOdom->poseChange->getMeanVal();
 
-					// Generate "odometry obs":
-					CObservationOdometryPtr  newO = CObservationOdometry::Create();
-					newO->sensorLabel = "odometry";
-					newO->timestamp   = actOdom->timestamp!=INVALID_TIMESTAMP ?  actOdom->timestamp : lastValidObsTime;
-					newO->odometry    = odometry_accum;
+						// Generate "odometry obs":
+						CObservationOdometryPtr  newO = CObservationOdometry::Create();
+						newO->sensorLabel = "odometry";
+						newO->timestamp   = actOdom->timestamp!=INVALID_TIMESTAMP ?  actOdom->timestamp : lastValidObsTime;
+						newO->odometry    = odometry_accum;
 
-					time_ordered_list_observation.insert( TTimeObservationPair( newO->timestamp, newO ));
+						time_ordered_list_observation.insert( TTimeObservationPair( newO->timestamp, newO ));
+					}
 				}
 				else
 				if ( newObj->GetRuntimeClass()->derivedFrom( CLASS_ID(CObservation) ) )

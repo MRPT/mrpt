@@ -3688,7 +3688,7 @@ void xRawLogViewerFrame::OnDecimateRecords(wxCommandEvent& event)
 	//  To free the memory of the current rawlog entries as we create the new one,
 	//  then call "clearWithoutDelete" at the end.
 	// ------------------------------------------------------------------------------
-	CSensoryFramePtr last_sf ( CSerializablePtr( static_cast<CSerializable*>(NULL)) );
+	CSensoryFramePtr last_sf; // empty ptr
 	CActionRobotMovement2D::TMotionModelOptions	odometryOptions;
 	bool					cummMovementInit = false;
 	long 					SF_counter = 0;
