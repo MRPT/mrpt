@@ -5,7 +5,7 @@ define_mrpt_lib(
 	# Lib name
 	hybridnav
 	# Dependencies
-	mrpt-maps
+	mrpt-maps        #just for now to have fast compiling 
 	mrpt-graphs
 	# Dependencies of deps
 	mrpt-obs

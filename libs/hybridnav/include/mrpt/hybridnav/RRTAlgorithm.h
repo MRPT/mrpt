@@ -30,17 +30,20 @@ namespace mrpt
          *      - 06/MAR/2014: Creation (MB)
          *  \ingroup mrpt_hybridnav_grp
          */
-		
+
 		template <class  POSE, class MOTIONS>   //this is to be used for any pose and any motion
-		Struct Algorithm_RRT
-		{	
-			void plan(const POSE &start_pose, const POSE &goal_pose, etc.) 
+		struct Algorithm_RRT
+		{
+			void plan(const POSE &start_pose, const POSE &goal_pose)
 			{
-			// Like in the RRT pseudocode, 
-			// try  to be as generic as posible, assuming the existence of methods to be implemented by the “user” in derived classes 
+			// Like in the RRT pseudocode,
+			// try  to be as generic as posible, assuming the existence of methods to be implemented by the “user” in derived classes
 			// e.g.:
-			this->addEdge(pose_from, pose_to);
+			this->addEdge(start_pose, start_pose);
 			};
+
+			mrpt::poses::CPose2D start_pose;
+			mrpt::poses::CPose2D goal_pose;
 		};
   }
 }

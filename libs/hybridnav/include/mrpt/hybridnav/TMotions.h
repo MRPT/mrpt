@@ -19,7 +19,7 @@ namespace mrpt
   namespace hybridnav
   {
 
-        /** This class contains motions and motions tree structures for the hybrid navigation algorithm 
+        /** This class contains motions and motions tree structures for the hybrid navigation algorithm
          *
          *  <b>Usage:</b><br>
          *		- write me
@@ -32,7 +32,25 @@ namespace mrpt
          *      - 06/MAR/2014: Creation (MB)
          *  \ingroup mrpt_hybridnav_grp
          */
-		class TMotions // no inheritances for now 
+		template<typename T>
+		struct TMotionTree : public mrpt::graphs::CDirectedTree< TMotions >
+          {
+            public:
+                TMotionTree();  //constr
+                ~TMotionTree(); //destr
+                //methods we need here are:
+                void add_element();  //and just refer to list<> or vector<> class method in 				 CDirectedTree
+                void get_element();  //I imagine that we will need it for the nn_search
+                mrpt::hybridnav::TPath::TPlannedPath get_sh(); // &path
+                //for our case the right methohortest_patd should be 				     	“visitBreadthFirst”, how this works in the
+                //mrpt::graphs::CDirectedTree class, should we redefine it?
+                void erase();
+
+
+		  };
+		  //typedef TMotionTree<TMotions> TMotionTree;
+
+		class TMotions // no inheritances for now
         {
             public:
                 TMotions();
@@ -42,19 +60,19 @@ namespace mrpt
 				struct  TMotionSE2 {
 						TMotionSE2 () :
 							state( ), //parent(),  //this is still a missing part and we should implement with the tree structure
-							cost( ) 
+							cost( )
 						{}
-				mrpt::poses::TPose2D state; 
+				mrpt::poses::TPose2D state;
 				double cost;
 				};
-  
+
 				/** @name TMotionSE2_TPS data structure for planning in SE2 and TP-Space */
-				struct  TMotionSE2_TPS {				
+				struct  TMotionSE2_TPS {
 						TMotionSE2_TPS () :
-								state( ), //parent(),  
+								state( ), //parent(),
 								cost( ) //, PTG_infos()
 						{}
-						mrpt::poses::TPose2D state; 
+						mrpt::poses::TPose2D state;
 						// PTG_infos()   //define what we need here !!
 						double cost;
 				};
@@ -62,20 +80,20 @@ namespace mrpt
 				/** @name TMotionSE3 data structure */
 				struct  TMotionSE3 {
 						TMotionSE3 () :
-							state( ), //parent(),  
-							cost( ) 
+							state( ), //parent(),
+							cost( )
 						{}
-				mrpt::poses::TPose3D state; 
+				mrpt::poses::TPose3D state;
 				double cost;
 				};
 
 				/** @name TMotionSE3_TPS data structure for planning in SE3 and TP-Space */
-				struct  TMotionSE3_TPS {				
+				struct  TMotionSE3_TPS {
 						TMotionSE3_TPS () :
-								state( ), //parent(),  
+								state( ), //parent(),
 								cost( ) //, PTG_infos()
 						{}
-						mrpt::poses::TPose3D state; 
+						mrpt::poses::TPose3D state;
 						// PTG_infos()   //define what we need here !!
 						double cost;
 				};
@@ -88,20 +106,6 @@ namespace mrpt
 
             private:
         };
-
-
-		template<typename T> class TMotionTree : public mrpt::graphs::CDirectedTree< TMotions >
-          {
-			//methods we need here are:
-			void add_element();  //and just refer to list<> or vector<> class method in 				 CDirectedTree
-			void get_element();  //I imagine that we will need it for the nn_search 
-			mrpt::hybridnav::TPath::TPlannedPath get_sh(); // &path  
-			//for our case the right methohortest_patd should be 				     	“visitBreadthFirst”, how this works in the 
-			 //mrpt::graphs::CDirectedTree class, should we redefine it? 
-			void erase();
-			
-			typedef TMotionTree<TMotions> TMotionTree;
-		};
 
   }
 }

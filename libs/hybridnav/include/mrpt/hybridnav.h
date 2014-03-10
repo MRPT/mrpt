@@ -13,7 +13,7 @@
 #include <mrpt/hybridnav/TPath.h>
 #include <mrpt/hybridnav/TPSpaceRRT.h>
 #include <mrpt/hybridnav/TPSpaceHybridNavigationSystem.h>
-#include <mrpt/hybridnav/TMotion.h>
+#include <mrpt/hybridnav/TMotions.h>
 #include <mrpt/hybridnav/RRTAlgorithm.h>
 
 #endif

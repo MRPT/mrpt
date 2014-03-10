@@ -53,7 +53,7 @@ ENDIF(MY_DEFS)
 # Add the required libraries for linking:
 TARGET_LINK_LIBRARIES(${sampleName} 
 	${MRPT_LIBS}  # This is filled by FIND_PACKAGE(MRPT ...)
-	""  # Optional extra libs...
+	"general;ftdi;usb;general;/usr/lib/x86_64-linux-gnu/libGL.so;/usr/lib/x86_64-linux-gnu/libGLU.so;/usr/lib/x86_64-linux-gnu/libglut.so;general;opencv_gpu;opencv_contrib;opencv_legacy;opencv_objdetect;opencv_calib3d;opencv_features2d;opencv_video;opencv_highgui;opencv_ml;opencv_imgproc;opencv_flann;opencv_core;general;-L/usr/lib/x86_64-linux-gnu;-pthread;-Wl,-Bsymbolic-functions;-Wl,-z,relro;-L/usr/lib/x86_64-linux-gnu;-lwx_baseu-2.8;-lwx_gtk2u_core-2.8;-lwx_gtk2u_gl-2.8;-lwx_gtk2u_adv-2.8;-lwx_gtk2u_aui-2.8;-lwx_gtk2u_html-2.8;general;dc1394;general;3ds;general;z;general;jpeg;general;rt;optimized;/usr/lib/libamd.so;debug;/usr/lib/libcamd.so;/usr/lib/libccolamd.so;/usr/lib/libcolamd.so;/usr/lib/libcholmod.so;/usr/lib/libspqr.a;/usr/lib/libldl.so;/usr/lib/libbtf.so;/usr/lib/libklu.so;/usr/lib/libcxsparse.so;/usr/lib/libblas.so;/usr/lib/liblapack.so"  # Optional extra libs...
 	)
 
 # Set optimized building:
