@@ -61,8 +61,8 @@
 	#define MRPT_MSG_PRAGMA(_msg)
 #endif
 
-#define MRPT_WARNING(x) MRPT_MSG_PRAGMA("Warning: " #x)
-#define MRPT_TODO(x)	MRPT_MSG_PRAGMA("TODO: " #x)
+#define MRPT_WARNING(x) MRPT_MSG_PRAGMA("Warning: " x)
+#define MRPT_TODO(x)	MRPT_MSG_PRAGMA("TODO: " x)
 
 // Define a decl. modifier for printf-like format checks at compile time:
 #ifdef __GNUC__

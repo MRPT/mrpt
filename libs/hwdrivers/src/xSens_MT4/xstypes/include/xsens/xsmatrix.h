@@ -143,7 +143,7 @@ public:
 	{
 		XsMatrix_setZero(this);
 	}
-	
+
 	//! \copydoc XsMatrix_offset */
 	inline XsSize offset(XsSize row, XsSize column) const
 	{
@@ -239,7 +239,7 @@ public:
 	{
 		if (this == &other)
 			return true;
-		if (m_rows != other.m_rows || m_cols != m_cols)
+		if (m_rows != other.m_rows || m_cols != other.m_cols)
 			return false;
 		for (XsSize r = 0; r < m_rows; ++r)
 			for (XsSize c = 0; c < m_cols; ++c)
