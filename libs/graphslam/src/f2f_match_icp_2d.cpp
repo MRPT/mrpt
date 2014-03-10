@@ -54,16 +54,14 @@ bool GS_F2F_ICP_2D::matchTwoKeyframes(
 	{
 		// save estimation:
 		out_pose_b_from_a.copyFrom( *pestPose );
-#ifdef _DEBUG
-		std::cout << "[GS_F2F_ICP_2D] Match FOUND " << id_a << "-" << id_b << ": goodness=" << icpReturn.goodness << " rel.pose=" << out_pose_b_from_a << std::endl;
-#endif
+		if (params.verbose)
+			std::cout << "[GS_F2F_ICP_2D] Match FOUND " << id_a << "-" << id_b << ": goodness=" << icpReturn.goodness << " rel.pose=" << out_pose_b_from_a.mean << std::endl;
 		return true;
 	}
 	else
 	{
-#ifdef _DEBUG
-		std::cout << "[GS_F2F_ICP_2D] NO Match " << id_a << "-" << id_b << ": goodness=" << icpReturn.goodness << std::endl;
-#endif
+		if (params.verbose)
+			std::cout << "[GS_F2F_ICP_2D] NO Match " << id_a << "-" << id_b << ": goodness=" << icpReturn.goodness << std::endl;
 		return false;
 	}
 }
@@ -82,7 +80,8 @@ bool GS_F2F_ICP_2D::matchTwoKeyframes(
 // TParams:
 GS_F2F_ICP_2D::TParams::TParams() :
 	kf2kf_max_search_radius (6.0),
-	minICP_goodness_to_accept (0.50)
+	minICP_goodness_to_accept (0.50),
+	verbose(false)
 {
 }
 
@@ -92,6 +91,7 @@ void GS_F2F_ICP_2D::TParams::loadFromConfigFile(
 {
 	MRPT_LOAD_CONFIG_VAR(kf2kf_max_search_radius, double, source,section)
 	MRPT_LOAD_CONFIG_VAR(minICP_goodness_to_accept, double, source,section)
+	MRPT_LOAD_CONFIG_VAR(verbose, bool, source,section)
 
 	icp_params.loadFromConfigFile(source,section);
 }
@@ -101,6 +101,7 @@ void GS_F2F_ICP_2D::TParams::dumpToTextStream(mrpt::utils::CStream &out) const
 	out.printf("\n----------- [GS_F2F_ICP_2D::TParams] ------------ \n\n");
 	LOADABLEOPTS_DUMP_VAR(kf2kf_max_search_radius, double)
 	LOADABLEOPTS_DUMP_VAR(minICP_goodness_to_accept, double)
+	LOADABLEOPTS_DUMP_VAR(verbose, double)
 
 	icp_params.dumpToTextStream(out);
 }

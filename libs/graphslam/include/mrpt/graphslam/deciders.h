@@ -55,6 +55,7 @@ namespace mrpt { namespace graphslam { namespace deciders {
 			// ...
 			double new_kf_min_distance_xy;  //!< Minimum distance (X,Y) between KeyFrames (in meters)
 			double new_kf_min_angle;        //!< Minimum angle between KeyFrames (in radians)
+			bool   verbose;
 
 			TParams(); 
 			virtual void loadFromConfigFile(const mrpt::utils::CConfigFileBase	&source,const std::string &section);
