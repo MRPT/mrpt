@@ -193,16 +193,29 @@ int main ( int argc, char** argv )
 	// Kinect style: ranges are actually depth values, not Euclidean distances.
 	obs.range_is_depth = true;
 	
-	// Camera parameters (kinect)
-	// TODO can't we get this info from openNI so it can generalize to any compatible rgbd openni camera?
-	const double FOCAL = 525.0;
+	// Calculate depth camera parameters (from pcl WIP)
+	float hFov = depth.getHorizontalFieldOfView();
+	float fx = width / (2.0f * tan (hFov / 2.0f));
+	float vFov = depth.getVerticalFieldOfView();
+	float fy = height / (2.0f * tan (vFov / 2.0f));	
+
+	printf("Got Fov from the device, calculated fx and fy:\n"
+		   "hFov:%f\n"
+		   "vFov:%f\n"
+		   "fx:%f\n"
+		   "fy:%f\n",
+		   hFov,
+		   vFov,
+		   fx,
+		   fy);
+	
 	obs.cameraParams.nrows = width;
 	obs.cameraParams.ncols = height;
-	obs.cameraParams.fx(FOCAL);
-	obs.cameraParams.fy(FOCAL);
+	obs.cameraParams.fx(fx);
+	obs.cameraParams.fy(fy);
 	obs.cameraParams.cx(( width-1)*0.5);
 	obs.cameraParams.cy((height-1)*0.5);
-	obs.cameraParamsIntensity =   obs.cameraParams;
+	obs.cameraParamsIntensity = obs.cameraParams;
 	
 	// Images are already registered from OpenNI2
 	obs.relativePoseIntensityWRTDepth = mrpt::poses::CPose3D(0,0,0,0,0,0);
