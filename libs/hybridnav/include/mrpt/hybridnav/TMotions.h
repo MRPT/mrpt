@@ -34,7 +34,6 @@ namespace mrpt
          */
 
 		template<class TMotions>
-        //TMotionTree is base that derive TMotions
         class TMotionTree : public mrpt::graphs::CDirectedTree< TMotions >
             {
             public:
@@ -47,61 +46,46 @@ namespace mrpt
                 //mrpt::graphs::CDirectedTree class, should we redefine it?
                 void erase();
             };/**/
-
-
-        class TMotions : public TMotionTree <TMotions> // this is derived
-        {
-            public:
-
-
-			 /** @name TMotionSE2 data structure */
-				struct  TMotionSE2 {
-						TMotionSE2 () :
-							state( ), //parent(),  //this is still a missing part and we should implement with the tree structure
+		
+		/** @name TMotionSE2 class for planning in SE2 */
+		class TMotionsSE2 
+		{
+		   public:
+			   TMotionsSE2 () : 
+							state( ), 
+							parent(),  //this is still a missing part and we should implement with the tree structure
 							cost( )
-						{}
-				mrpt::poses::TPose2D state;
+							{}
+
+			   ~TMotionsSE2();
+
+				mrpt::poses::TPose2D state;   //maybe this should be a pointer too
+				TMotionsSE2 *parent;   // this will be a pointer to the parent motion in the exploration tree
 				double cost;
-				};
+			
+				typedef TMotionTree<TMotionsSE2> TMotionTree;
+		};
 
-				/** @name TMotionSE2_TPS data structure for planning in SE2 and TP-Space */
-				struct  TMotionSE2_TPS {
-						TMotionSE2_TPS () :
-								state( ), //parent(),
-								cost( ) //, PTG_infos()
-						{}
-						mrpt::poses::TPose2D state;
-						// PTG_infos()   //define what we need here !!
-						double cost;
-				};
-
-				/** @name TMotionSE3 data structure */
-				struct  TMotionSE3 {
-						TMotionSE3 () :
-							state( ), //parent(),
+		/** @name TMotionSE2 class for planning in SE3 */
+		class TMotionsSE3 
+		{
+		   public:
+			   TMotionsSE3() : 
+							state( ), 
+							parent(),  //this is still a missing part and we should implement with the tree structure
 							cost( )
-						{}
-				mrpt::poses::TPose3D state;
+							{}
+
+			   ~TMotionsSE3();
+
+				mrpt::poses::TPose3D state;   //maybe this should be a pointer too
+				TMotionsSE2 *parent;   // this will be a pointer to the parent motion in the exploration tree
 				double cost;
-				};
+		
+				typedef TMotionTree<TMotionsSE3> TMotionTree;
+		};
 
-				/** @name TMotionSE3_TPS data structure for planning in SE3 and TP-Space */
-				struct  TMotionSE3_TPS {
-						TMotionSE3_TPS () :
-								state( ), //parent(),
-								cost( ) //, PTG_infos()
-						{}
-						mrpt::poses::TPose3D state;
-						// PTG_infos()   //define what we need here !!
-						double cost;
-				};
 
-            typedef TMotionTree<TMotions> TMotionTree;
-
-            protected:
-
-            private:
-        };
 
   }
 }
