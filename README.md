@@ -1,5 +1,6 @@
 The MRPT project 
 ====================================================
+[![Build Status](https://travis-ci.org/jlblancoc/mrpt.png?branch=master)](https://travis-ci.org/jlblancoc/mrpt)
 
 1. Introduction
 ------------------------------------------------------------------------------
