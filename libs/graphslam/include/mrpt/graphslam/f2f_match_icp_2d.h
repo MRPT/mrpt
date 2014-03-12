@@ -67,6 +67,7 @@ namespace mrpt { namespace graphslam { namespace f2f_match {
 			// ...
 			double kf2kf_max_search_radius; //!< Maximum radius for search of candidate KFs to loop closure / edge creation (meters).
 			double minICP_goodness_to_accept; //!< in [0,1]: Minimum ICP scan matching overlap to accept a registration as valid.
+			double consistency_max_delta_norm; //!< Maximum delta from expected-to-registered to accept edge as valid.
 			bool   verbose;
 
 			mrpt::slam::CICP::TConfigParams icp_params; //!< All the parameters of the ICP algorithm

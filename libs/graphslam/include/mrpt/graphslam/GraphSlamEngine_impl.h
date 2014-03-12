@@ -224,32 +224,34 @@ namespace mrpt { namespace graphslam {
 
 					constraint_t poseOtherFromCur;
 					bool valid = m_f2f_match.matchTwoKeyframes(m_current_frame.nodeID,*itKF,cur_sf,other_sf, init_otherFromCur, poseOtherFromCur);
+
+					// Look for edges in both directions: cur->other, other->cur
+					// The idea: odometry and the user may add additinal edges from those arising from sensor KF-to-KF matching, and we must respect them.
+					const TPairNodeIDs edge_ids_direct(*itKF,m_current_frame.nodeID), edge_ids_reverse(m_current_frame.nodeID,*itKF);
+					std::pair<typename graph_t::edges_map_t::iterator,typename graph_t::edges_map_t::iterator> its_direct  = m_graph.edges.equal_range( edge_ids_direct );
+					std::pair<typename graph_t::edges_map_t::iterator,typename graph_t::edges_map_t::iterator> its_reverse = m_graph.edges.equal_range( edge_ids_reverse );
+					typename graph_t::edges_map_t::iterator it_the_edge = m_graph.edges.end();  // The kf-to-kf sensor-based constraint we are looking for, or we have created (below)
+					bool the_edge_is_reverse = false;
+					// Look in direct edges:
+					for (typename graph_t::edges_map_t::iterator it=its_direct.first;it!=its_direct.second;++it) {
+						if (it->second.is_kf2kf_sensor_constraint) {
+							it_the_edge = it;
+							break;
+						}
+					}
+					// Look in reverse edges:
+					for (typename graph_t::edges_map_t::iterator it=its_reverse.first;it!=its_reverse.second && it_the_edge!=m_graph.edges.end();++it)
+					{
+						if (it->second.is_kf2kf_sensor_constraint) {
+							it_the_edge = it;
+							the_edge_is_reverse = true;
+							break;
+						}
+					}
+
 					if (valid)
 					{
 						// Overwrite or create the edge cur -> other (apart from odometry edges!)
-						// Look for edges in both directions: cur->other, other->cur
-						// The idea: odometry and the user may add additinal edges from those arising from sensor KF-to-KF matching, and we must respect them.
-						const TPairNodeIDs edge_ids_direct(*itKF,m_current_frame.nodeID), edge_ids_reverse(m_current_frame.nodeID,*itKF);
-						std::pair<typename graph_t::edges_map_t::iterator,typename graph_t::edges_map_t::iterator> its_direct  = m_graph.edges.equal_range( edge_ids_direct );
-						std::pair<typename graph_t::edges_map_t::iterator,typename graph_t::edges_map_t::iterator> its_reverse = m_graph.edges.equal_range( edge_ids_reverse );
-						typename graph_t::edges_map_t::iterator it_the_edge = m_graph.edges.end();  // The kf-to-kf sensor-based constraint we are looking for, or we have created (below)
-						bool the_edge_is_reverse = false;
-						// Look in direct edges:
-						for (typename graph_t::edges_map_t::iterator it=its_direct.first;it!=its_direct.second;++it) {
-							if (it->second.is_kf2kf_sensor_constraint) {
-								it_the_edge = it;
-								break;
-							}
-						}
-						// Look in reverse edges:
-						for (typename graph_t::edges_map_t::iterator it=its_reverse.first;it!=its_reverse.second && it_the_edge!=m_graph.edges.end();++it)
-						{
-							if (it->second.is_kf2kf_sensor_constraint) {
-								it_the_edge = it;
-								the_edge_is_reverse = true;
-								break;
-							}
-						}
 						// If not found yet: create new fresh edge!
 						if (it_the_edge==m_graph.edges.end())
 						{
@@ -266,6 +268,16 @@ namespace mrpt { namespace graphslam {
 						some_edge_modified=true;
 
 					} // end valid "match" found.
+					else
+					{
+						// We had an edge OLD_NODE ==> CURRENT_NODE but now the registration seems invalid: 
+						// The edge must be deleted, since it no longer reflects accurate localization data 
+						// for the current (MOVING) keyframe:
+						if (it_the_edge!=m_graph.edges.end())
+						{
+							m_graph.edges.erase( it_the_edge );
+						}
+					}
 				} // end for each covisible KF
 			}
 

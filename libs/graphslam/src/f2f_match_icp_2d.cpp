@@ -49,19 +49,24 @@ bool GS_F2F_ICP_2D::matchTwoKeyframes(
 		);
 
 	
+	// save tentative estimation:
+	out_pose_b_from_a.copyFrom( *pestPose );
 
-	if (icpReturn.goodness> params.minICP_goodness_to_accept)
+	// Consistency test:
+	CArrayDouble<3> delta_ln;
+	SE_traits<2>::ln( approx_pose_b_from_a-out_pose_b_from_a.mean, delta_ln);
+	const double delta_norm = delta_ln.norm();
+
+	if (icpReturn.goodness> params.minICP_goodness_to_accept && delta_norm < 2.0 )
 	{
-		// save estimation:
-		out_pose_b_from_a.copyFrom( *pestPose );
 		if (params.verbose)
-			std::cout << "[GS_F2F_ICP_2D] Match FOUND " << id_a << "-" << id_b << ": goodness=" << icpReturn.goodness << " rel.pose=" << out_pose_b_from_a.mean << std::endl;
+			std::cout << "[GS_F2F_ICP_2D] Match FOUND " << id_a << "-" << id_b << ": goodness=" << icpReturn.goodness << " rel.pose=" << out_pose_b_from_a.mean << "|Delta|=" << delta_norm << std::endl;
 		return true;
 	}
 	else
 	{
 		if (params.verbose)
-			std::cout << "[GS_F2F_ICP_2D] NO Match " << id_a << "-" << id_b << ": goodness=" << icpReturn.goodness << std::endl;
+			std::cout << "[GS_F2F_ICP_2D] NO Match " << id_a << "-" << id_b << ": goodness=" << icpReturn.goodness <<  "|Delta|=" << delta_norm << std::endl;
 		return false;
 	}
 }
@@ -81,6 +86,7 @@ bool GS_F2F_ICP_2D::matchTwoKeyframes(
 GS_F2F_ICP_2D::TParams::TParams() :
 	kf2kf_max_search_radius (6.0),
 	minICP_goodness_to_accept (0.50),
+	consistency_max_delta_norm (3.0),
 	verbose(false)
 {
 }
@@ -91,6 +97,7 @@ void GS_F2F_ICP_2D::TParams::loadFromConfigFile(
 {
 	MRPT_LOAD_CONFIG_VAR(kf2kf_max_search_radius, double, source,section)
 	MRPT_LOAD_CONFIG_VAR(minICP_goodness_to_accept, double, source,section)
+	MRPT_LOAD_CONFIG_VAR(consistency_max_delta_norm, double, source,section)
 	MRPT_LOAD_CONFIG_VAR(verbose, bool, source,section)
 
 	icp_params.loadFromConfigFile(source,section);
@@ -101,6 +108,7 @@ void GS_F2F_ICP_2D::TParams::dumpToTextStream(mrpt::utils::CStream &out) const
 	out.printf("\n----------- [GS_F2F_ICP_2D::TParams] ------------ \n\n");
 	LOADABLEOPTS_DUMP_VAR(kf2kf_max_search_radius, double)
 	LOADABLEOPTS_DUMP_VAR(minICP_goodness_to_accept, double)
+	LOADABLEOPTS_DUMP_VAR(consistency_max_delta_norm, double)
 	LOADABLEOPTS_DUMP_VAR(verbose, double)
 
 	icp_params.dumpToTextStream(out);
