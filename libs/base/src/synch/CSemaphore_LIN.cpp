@@ -11,7 +11,7 @@
 
 
 #include <mrpt/config.h>
-#if defined(MRPT_OS_LINUX) || defined(MRPT_OS_APPLE)
+#if defined(MRPT_OS_LINUX)
 
 #include <mrpt/synch/CSemaphore.h>
 #include <mrpt/utils/CStdOutStream.h>
