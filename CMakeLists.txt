@@ -355,6 +355,9 @@ IF(CMAKE_COMPILER_IS_GNUCXX)
 		SET(MRPT_BUILD_GCC_PEDANTIC_DEFAULT "OFF")
 	ELSE(APPLE)
 		SET(MRPT_BUILD_GCC_PEDANTIC_DEFAULT "ON")
+
+
+    
 	ENDIF(APPLE)
 
 	SET( MRPT_BUILD_GCC_PEDANTIC ${MRPT_BUILD_GCC_PEDANTIC_DEFAULT} CACHE BOOL "Enable pedantic error detection (with GCC only)")
@@ -363,7 +366,11 @@ IF(CMAKE_COMPILER_IS_GNUCXX)
 	# High level of warnings.
 	# The -Wno-long-long is required in 64bit systems when including sytem headers.
 	# The -Wno-variadic-macros was needed for Eigen3, StdVector.h
- 	SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CMAKE_CONFIGURE_CFLAGS} -Wall -Wno-long-long -Wno-write-strings -Wno-variadic-macros")
+ 	SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CMAKE_CONFIGURE_CFLAGS} -Wall -Wno-long-long -Wno-variadic-macros")
+  IF(NOT APPLE)
+    # This causes the option "-Wnorite-strings" to be set on gcc-4.9 on OS X
+    SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-write-strings")
+  ENDIF(NOT APPLE)
  	SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${CMAKE_CONFIGURE_CFLAGS}")
 
 	# Use "modern" C99 ! ;-)
