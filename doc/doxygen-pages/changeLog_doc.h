@@ -17,6 +17,7 @@
 	- Build system:
 		- Fixes to build in OS X - [Patch](https://gist.github.com/randvoorhies/9283072) by Randolph Voorhies.
   	- BUG FIXES:
+		- New implementation of mrpt::synch::CSemaphore avoids crashes in OS X - by Randolph Voorhies.
 		- mrpt::opengl::CArrow was always drawn of normalized length.
 
 <hr>
