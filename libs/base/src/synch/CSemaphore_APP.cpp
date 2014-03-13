@@ -34,7 +34,7 @@ using namespace mrpt::synch;
 
 typedef struct
 {
-	sem_t * semid;
+  sem_t * semid;
 } sem_private_struct, *sem_private;
 
 // ######################################################################
@@ -45,15 +45,15 @@ CSemaphore::CSemaphore(
     :
     m_name(name)
 {
-	MRPT_START
+  MRPT_START
 
   if (isNamed())
   {
     m_data.resize( sizeof(sem_private_struct) );
     sem_private token = m_data.getAs<sem_private>();
 
-		// Open it or create if not existing:
-		token->semid = sem_open(m_name.c_str(), O_CREAT, 644 /* permisions */, initialCount );
+    // Open it or create if not existing:
+    token->semid = sem_open(m_name.c_str(), O_CREAT, 644 /* permisions */, initialCount );
 
     if (token->semid==SEM_FAILED)
       THROW_EXCEPTION( format("Creating semaphore (name='%s') raised error: %s",m_name.c_str(),strerror(errno) ) )
@@ -96,7 +96,7 @@ CSemaphore::~CSemaphore()
 // ######################################################################
 bool CSemaphore::waitForSignal( unsigned int timelimit )
 {
-	MRPT_START
+  MRPT_START
 
   if(isNamed())
   {
@@ -157,15 +157,15 @@ bool CSemaphore::waitForSignal( unsigned int timelimit )
 // ######################################################################
 void CSemaphore::release(unsigned int increaseCount )
 {
-	MRPT_START
+  MRPT_START
 
   if(isNamed())
   {
     sem_private token = m_data.getAs<sem_private>();
 
     for (unsigned int i=0;i<increaseCount;i++)
-    	if (sem_post(token->semid))
-			THROW_EXCEPTION( format("Increasing count of semaphore (name='%s') raised error: %s",m_name.c_str(),strerror(errno) ) )
+      if (sem_post(token->semid))
+      THROW_EXCEPTION( format("Increasing count of semaphore (name='%s') raised error: %s",m_name.c_str(),strerror(errno) ) )
   }
   else
   {
