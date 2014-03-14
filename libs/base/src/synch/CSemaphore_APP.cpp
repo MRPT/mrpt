@@ -53,7 +53,7 @@ CSemaphore::CSemaphore(
     sem_private token = m_data.getAs<sem_private>();
 
     // Open it or create if not existing:
-    token->semid = sem_open(m_name.c_str(), O_CREAT, 644 /* permisions */, initialCount );
+    token->semid = sem_open(m_name.c_str(), O_CREAT, 0644 /* permisions */, initialCount );
 
     if (token->semid==SEM_FAILED)
       THROW_EXCEPTION( format("Creating semaphore (name='%s') raised error: %s",m_name.c_str(),strerror(errno) ) )
