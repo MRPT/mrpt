@@ -11,6 +11,10 @@
 
 #include <mrpt/system/memory.h>
 
+#ifdef MRPT_OS_APPLE
+#include <mach/mach_init.h>
+#include <mach/task.h>
+#endif
 
 using namespace mrpt;
 using namespace mrpt::utils;
@@ -208,8 +212,12 @@ unsigned long  mrpt::system::getMemoryUsage()
 #endif
 
 #ifdef MRPT_OS_APPLE
-	//TODO: Not implemented for Apple.
-	MEM = 0;
+	mach_task_basic_info info;
+	mach_msg_type_number_t count = MACH_TASK_BASIC_INFO_COUNT;
+	if(task_info(mach_task_self(), MACH_TASK_BASIC_INFO, (task_info_t)&info, &count)==0)
+	{
+		MEM=info.virtual_size;
+	}
 #endif
 
 	return MEM;
