@@ -81,7 +81,7 @@ CSemaphore::~CSemaphore()
     if(isNamed())
     {
       sem_private token = m_data.getAs<sem_private>();
-      sem_destroy(token->semid);
+      sem_close(token->semid);
     }
     else
     {
