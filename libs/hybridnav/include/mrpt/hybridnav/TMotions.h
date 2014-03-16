@@ -46,13 +46,13 @@ namespace mrpt
                 //mrpt::graphs::CDirectedTree class, should we redefine it?
                 void erase();
             };/**/
-		
+
 		/** @name TMotionSE2 class for planning in SE2 */
-		class TMotionsSE2 
+		class TMotionsSE2
 		{
 		   public:
-			   TMotionsSE2 () : 
-							state( ), 
+			   TMotionsSE2 () :
+							state( ),
 							parent(),  //this is still a missing part and we should implement with the tree structure
 							cost( )
 							{}
@@ -62,16 +62,18 @@ namespace mrpt
 				mrpt::poses::TPose2D state;   //maybe this should be a pointer too
 				TMotionsSE2 *parent;   // this will be a pointer to the parent motion in the exploration tree
 				double cost;
-			
-				typedef TMotionTree<TMotionsSE2> TMotionTree;
+
+				//typedef TMotionTree<TMotionsSE2> TMotionTree;
 		};
 
+        typedef TMotionTree<TMotionsSE2> TMotionTreeSE2;
+
 		/** @name TMotionSE2 class for planning in SE3 */
-		class TMotionsSE3 
+		class TMotionsSE3
 		{
 		   public:
-			   TMotionsSE3() : 
-							state( ), 
+			   TMotionsSE3() :
+							state( ),
 							parent(),  //this is still a missing part and we should implement with the tree structure
 							cost( )
 							{}
@@ -81,10 +83,11 @@ namespace mrpt
 				mrpt::poses::TPose3D state;   //maybe this should be a pointer too
 				TMotionsSE2 *parent;   // this will be a pointer to the parent motion in the exploration tree
 				double cost;
-		
-				typedef TMotionTree<TMotionsSE3> TMotionTree;
+
+				//typedef TMotionTree<TMotionsSE3> TMotionTree;
 		};
 
+        typedef TMotionTree<TMotionsSE3> TMotionTreeSE3;
 
 
   }
