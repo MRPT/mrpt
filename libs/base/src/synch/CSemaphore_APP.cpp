@@ -81,7 +81,7 @@ CSemaphore::~CSemaphore()
     if(isNamed())
     {
       sem_private token = m_data.getAs<sem_private>();
-      sem_destroy(token->semid);
+      sem_close(token->semid);
     }
     else
     {
@@ -116,16 +116,23 @@ bool CSemaphore::waitForSignal( unsigned int timelimit )
     sem_private token = m_data.getAs<sem_private>();
 
     struct timeb nowtime;
-    ftime( &endtime );
+    ftime( &nowtime );
     int rc;
     // Mac version: we don't have sem_timedwait()
+    if(timelimit==0)
+    {
+      // No timeout
+      rc = sem_wait(token->semid);
+      return (rc == 0); // true: all ok.
+    }
+
     do
     {
       rc = sem_trywait(token->semid);
       mrpt::system::sleep(1);
-      ftime( &endtime );
+      ftime( &nowtime );
     }
-    while(rc != 0 || (endtime.time > nowtime.time && endtime.millitm > nowtime.millitm));
+    while(rc != 0 && (endtime.time > nowtime.time && endtime.millitm > nowtime.millitm));
 
     return (rc == 0); // true: all ok.
   }
