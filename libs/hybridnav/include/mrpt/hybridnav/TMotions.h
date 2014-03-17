@@ -81,7 +81,6 @@ namespace mrpt
 							ptg_index ( ), ptg_K ( ), ptg_dist ( )
 							{}
 				mrpt::poses::TPose2D state;  //!< state in SE2 as 2D pose (x, y, phi)
-				mrpt::reactivenav::TListPTGs *ptg_infos;  //!< PTG information pointer, the user should define the PTG parameters before calling this
 				double cost;                //!< cost associated to each motion, this should be defined by the user according to a spefic cost function
 				int ptg_index;          //!< indicate the type of trajectory used for this motion
 				int ptg_K;              //!< identify the trajectory number K of the type ptg_index
@@ -94,8 +93,8 @@ namespace mrpt
 		   public:
 			   TMotionsSE3_TP () :
 							state( ),
-							ptg_infos ( ),
-							cost( )
+							cost( ),
+							ptg_index ( ), ptg_K ( ), ptg_dist ( )
 							{}
 				mrpt::poses::TPose3D state;  //!< state in SE2 as 2D pose (x, y, phi)
 				double cost;                //!< cost associated to each motion, this should be defined by the user according to a spefic cost function
