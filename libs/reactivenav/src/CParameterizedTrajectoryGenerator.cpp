@@ -39,7 +39,6 @@ CParameterizedTrajectoryGenerator::CParameterizedTrajectoryGenerator(const TPara
 	this->W_MAX			= params["w_max"];
 
 	m_alphaValuesCount=0;
-	nVertices = 0;
 	turningRadiusReference = 0.10f;
 
 	initializeCollisionsGrid( refDistance, params["resolution"] );
@@ -85,32 +84,9 @@ void CParameterizedTrajectoryGenerator::FreeMemory()
 		// Free trajectories:
 		CPoints.clear();
 
-		// And the shape of the robot along them:
-		vertexPoints_x.clear();
-		vertexPoints_y.clear();
-
 		// Signal an empty PTG:
 		m_alphaValuesCount = 0;
 	}
-}
-
-/*---------------------------------------------------------------
-					allocMemFoVerticesData
-  ---------------------------------------------------------------*/
-void CParameterizedTrajectoryGenerator::allocMemForVerticesData( int nVertices )
-{
-		vertexPoints_x.resize(m_alphaValuesCount);
-		vertexPoints_y.resize(m_alphaValuesCount);
-
-		// Alloc the exact number of items, all of them set to 0:
-		for (unsigned int i=0;i<m_alphaValuesCount;i++)
-		{
-			vertexPoints_x[i].resize( nVertices * getPointsCountInCPath_k(i), 0 );
-			vertexPoints_y[i].resize( nVertices * getPointsCountInCPath_k(i), 0 );
-		}
-
-		// Save it:
-		this->nVertices= nVertices;
 }
 
 /*---------------------------------------------------------------
@@ -302,16 +278,19 @@ void CParameterizedTrajectoryGenerator::getCPointWhen_d_Is (
 				float *v,
 				float *w)
 {
-		unsigned int     n=0;
-
 		if (k>=m_alphaValuesCount)
 		{
 			x=y=phi=0;
 			return;  // Por si acaso
 		}
 
-		while ( n < (CPoints[k].size()-1) && CPoints[k][n].dist<d )
-				n++;
+		unsigned int n=0;
+		const unsigned int numPoints = CPoints[k].size();
+		for ( ; (n+1) < numPoints ; n++)
+		{
+			if (CPoints[k][n+1].dist>=d)
+				break;
+		}
 
 		x=CPoints[k][n].x;
 		y=CPoints[k][n].y;
@@ -489,7 +468,7 @@ bool CParameterizedTrajectoryGenerator::LoadColGridsFromFile( const std::string 
 	}
 }
 
-const uint32_t COLGRID_FILE_MAGIC     = 0xC0C0C0C2;
+const uint32_t COLGRID_FILE_MAGIC     = 0xC0C0C0C3;
 
 /*---------------------------------------------------------------
 					Save to file

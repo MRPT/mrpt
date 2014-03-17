@@ -116,42 +116,6 @@ namespace mrpt
         float  GetCPathPoint_v( uint16_t k, int n ) const { return CPoints[k][n].v; }
         float  GetCPathPoint_w( uint16_t k, int n ) const { return CPoints[k][n].w; }
 
-        void    allocMemForVerticesData( int nVertices );
-
-        void    setVertex_xy( uint16_t k, int n, int m, float x, float y )
-        {
-			vertexPoints_x[k][ n*nVertices + m ] = x;
-            vertexPoints_y[k][ n*nVertices + m ] = y;
-        }
-
-        float  getVertex_x( uint16_t k, int n, int m ) const
-        {
-                int idx = n*nVertices + m;
-//                assert( idx>=0);assert(idx<nVertices * nPointsInEachPath[k] );
-				return vertexPoints_x[k][idx];
-        }
-
-        float  getVertex_y( uint16_t k, int n, int m ) const
-        {
-                int idx = n*nVertices + m;
-//                assert( idx>=0);assert(idx<nVertices * nPointsInEachPath[k] );
-				return vertexPoints_y[k][idx];
-        }
-
-		float*  getVertixesArray_x( uint16_t k, int n )
-		{
-                int idx = n*nVertices;
-				return &vertexPoints_x[k][idx];
-		}
-
-		float*  getVertixesArray_y( uint16_t k, int n )
-		{
-                int idx = n*nVertices;
-				return &vertexPoints_y[k][idx];
-		}
-
-		unsigned int getVertixesCount() const { return nVertices; }
-
         float   getMax_V() const { return V_MAX; }
         float   getMax_W() const { return W_MAX; }
         float   getMax_V_inTPSpace() const { return maxV_inTPSpace; }
@@ -300,11 +264,6 @@ protected:
         };
 		typedef std::vector<TCPoint> TCPointVector;
 		std::vector<TCPointVector>	CPoints;
-
-		/** The shape of the robot along the trajectories:
-		  */
-		std::vector<vector_float> vertexPoints_x,vertexPoints_y;
-        int     nVertices;
 
 		/** Free all the memory buffers */
         void    FreeMemory();

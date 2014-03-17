@@ -68,9 +68,12 @@ if(SuiteSparse_DIR)
 endif()
 
 ## set default verbosity
-if(NOT SuiteSparse_VERBOSE)
+## Process the CMake automatically-generated var: SuiteSparse_FIND_QUIETLY: supersedes *_VERBOSE.
+if(NOT SuiteSparse_VERBOSE OR SuiteSparse_FIND_QUIETLY)
 	set(SuiteSparse_VERBOSE OFF)
-else()
+endif()
+
+if(SuiteSparse_VERBOSE)
 	message(STATUS "Start to FindSuiteSparse.cmake :")
 endif()
 
@@ -157,7 +160,9 @@ macro(SuiteSparse_FIND_COMPONENTS )
 		)
 		## check if found
 		if(NOT SuiteSparse_${suitesparseCompUC}_INCLUDE_DIR)
-			message(WARNING "   Failed to find ${suitesparseComp} :\nSuiteSparse_${suitesparseCompUC}_INCLUDE_DIR not found.\nCheck you write correctly the component name (case sensitive),\nor set the SuiteSparse_${suitesparseCompUC}_DIR to look inside")
+			if (SuiteSparse_VERBOSE)
+				message(WARNING "   Failed to find ${suitesparseComp} :\nSuiteSparse_${suitesparseCompUC}_INCLUDE_DIR not found.\nCheck you write correctly the component name (case sensitive),\nor set the SuiteSparse_${suitesparseCompUC}_DIR to look inside")
+			endif()
 		else()
 			list(APPEND SuiteSparse_INCLUDE_DIRS	${SuiteSparse_${suitesparseCompUC}_INCLUDE_DIR})
 		endif()
@@ -200,11 +205,13 @@ macro(SuiteSparse_FIND_COMPONENTS )
 		
 		## check and append the and SuiteSparse_LIBRARIES list, and warn if not found (release and debug) otherwise
 		if(NOT SuiteSparse_${suitesparseCompUC}_LIBRARY_RELEASE AND NOT SuiteSparse_${suitesparseCompUC}_LIBRARY_DEBUG)
+			if (SuiteSparse_VERBOSE)
 			message(WARNING "   Failed to find ${suitesparseComp} :
 			Check you write correctly the component name (case sensitive),
 			or set the SuiteSparse_${suitesparseCompUC}_DIR to look inside,
 			or set directly SuiteSparse_${suitesparseCompUC}_LIBRARY_DEBUG and SuiteSparse_${suitesparseCompUC}_LIBRARY_RELEASE
 			")
+			endif ()
 		else()
 			list(APPEND SuiteSparse_LIBRARIES	optimized "${SuiteSparse_${suitesparseCompUC}_LIBRARY_RELEASE}" debug "${SuiteSparse_${suitesparseCompUC}_LIBRARY_DEBUG}")
 		endif()
@@ -252,6 +259,7 @@ macro(SuiteSparse_FIND_COMPONENTS )
 	## set the final SuiteSparse_FOUND based on all previous components found (status)
 	foreach(componentToCheck ${SuiteSparse_FOUND_LIST})
 		set(SuiteSparse_FOUND ON)
+		MESSAGE(STATUS "final check: ${componentToCheck}")
 		if(NOT ${componentToCheck})
 			set(SuiteSparse_FOUND OFF)
 			break() ## one component not found is enought to failed
@@ -295,8 +303,11 @@ if(SuiteSparse_USE_LAPACK_BLAS)
 		PATH_SUFFIXES	Release Debug
 	)
 	if(NOT SuiteSparse_BLAS_LIBRARY)
-		message(SEND_ERROR "   Failed to find SuiteSparse_BLAS_LIBRARY.Set it manually or set the SuiteSparse_BLAS_DIR to looking for it inside.")
-		set(SuiteSparse_BLAS_DIR "$ENV{SuiteSparse_BLAS_DIR}" CACHE PATH "blas root directory")
+		if (SuiteSparse_VERBOSE)
+			# Send all msgs as "STATUS": We'll send an error at the bottom, only if "REQUIRED" is set.
+			message(STATUS "   Failed to find SuiteSparse_BLAS_LIBRARY.Set it manually or set the SuiteSparse_BLAS_DIR to looking for it inside.")
+		endif()
+			set(SuiteSparse_BLAS_DIR "$ENV{SuiteSparse_BLAS_DIR}" CACHE PATH "blas root directory")
 	else()
 		if(DEFINED SuiteSparse_BLAS_DIR)
 			mark_as_advanced(SuiteSparse_BLAS_DIR)
@@ -316,7 +327,10 @@ if(SuiteSparse_USE_LAPACK_BLAS)
 		PATH_SUFFIXES	Release Debug
 	)
 	if(NOT SuiteSparse_LAPACK_LIBRARY)
-		message(SEND_ERROR "   Failed to find SuiteSparse_LAPACK_LIBRARY.Set it manually or set the SuiteSparse_LAPACK_DIR to looking for it inside.")
+		if (SuiteSparse_VERBOSE)
+			# Send all msgs as "STATUS": We'll send an error at the bottom, only if "REQUIRED" is set.
+			message(STATUS "   Failed to find SuiteSparse_LAPACK_LIBRARY.Set it manually or set the SuiteSparse_LAPACK_DIR to looking for it inside.")
+		endif()
 		set(SuiteSparse_LAPACK_DIR "$ENV{SuiteSparse_LAPACK_DIR}" CACHE PATH "lapack root directory")
 	else()
 		if(DEFINED SuiteSparse_LAPACK_DIR)
@@ -407,3 +421,16 @@ endif()
 if(SuiteSparse_VERBOSE)
 	message(STATUS "Finish to FindSuiteSparse.cmake => SuiteSparse_FOUND=${SuiteSparse_FOUND}")
 endif()
+
+## Show error if not found and _REQUIRED
+IF(NOT SuiteSparse_FOUND)
+  # make FIND_PACKAGE friendly
+  IF(NOT SuiteSparse_FIND_QUIETLY)
+    IF(SuiteSparse_FIND_REQUIRED)
+      MESSAGE(FATAL_ERROR
+        "SuiteSparse required but some headers or libs not found.")
+    ELSE()
+      MESSAGE(STATUS "ERROR: SuiteSparse was not found.")
+    ENDIF()
+  ENDIF()
+ENDIF()

@@ -355,6 +355,9 @@ IF(CMAKE_COMPILER_IS_GNUCXX)
 		SET(MRPT_BUILD_GCC_PEDANTIC_DEFAULT "OFF")
 	ELSE(APPLE)
 		SET(MRPT_BUILD_GCC_PEDANTIC_DEFAULT "ON")
+
+
+    
 	ENDIF(APPLE)
 
 	SET( MRPT_BUILD_GCC_PEDANTIC ${MRPT_BUILD_GCC_PEDANTIC_DEFAULT} CACHE BOOL "Enable pedantic error detection (with GCC only)")
@@ -363,7 +366,11 @@ IF(CMAKE_COMPILER_IS_GNUCXX)
 	# High level of warnings.
 	# The -Wno-long-long is required in 64bit systems when including sytem headers.
 	# The -Wno-variadic-macros was needed for Eigen3, StdVector.h
- 	SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CMAKE_CONFIGURE_CFLAGS} -Wall -Wno-long-long -Wno-write-strings -Wno-variadic-macros")
+ 	SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CMAKE_CONFIGURE_CFLAGS} -Wall -Wno-long-long -Wno-variadic-macros")
+  IF(NOT APPLE)
+    # This causes the option "-Wnorite-strings" to be set on gcc-4.9 on OS X
+    SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-write-strings")
+  ENDIF(NOT APPLE)
  	SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${CMAKE_CONFIGURE_CFLAGS}")
 
 	# Use "modern" C99 ! ;-)
@@ -402,12 +409,12 @@ if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
 	# Use modern C++11
 # 	SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
-#	IF(APPLE) # any reason for not using it in all platforms?
+	IF(NOT APPLE) # any reason for not using it in all platforms?
 	# Use the libstdc++ lib vs. libc++, to avoid some build errors in MacOS
-	SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libstdc++")
-	SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -stdlib=libstdc++")
-	SET(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -stdlib=libstdc++")
-#	ENDIF(APPLE)
+		SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libstdc++")
+		SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -stdlib=libstdc++")
+		SET(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -stdlib=libstdc++")
+	ENDIF(NOT APPLE)
 
 	# This is to fix the compilation of C++ templates
 	SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fdelayed-template-parsing")
@@ -600,6 +607,9 @@ IF( BUILD_TESTING)
 	# Try using libgtest (Google testing library) from the system, if available
 	# Note: In gtest 1.6.0 things changed and there's no prebuilt system lib anymore.
 	# TODO: Is it possible to compile here the /usr/src/gtest/ sources??
+	IF("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang" AND APPLE)
+		add_definitions(-DGTEST_USE_OWN_TR1_TUPLE=1)
+	ENDIF("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang" AND APPLE)
 	add_subdirectory(${CMAKE_MRPT_GTEST_SRC_DIR})  # Build gtest from sources
 	add_subdirectory(tests)  # Build my tests
 ENDIF( BUILD_TESTING)

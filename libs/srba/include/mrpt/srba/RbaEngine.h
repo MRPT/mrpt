@@ -218,7 +218,8 @@ namespace srba
 				span_tree_max_depth(static_cast<size_t>(-1)),
 				draw_unknown_feats(true),
 				draw_unknown_feats_ellipses(true),
-				draw_unknown_feats_ellipses_quantiles(1)
+				draw_unknown_feats_ellipses_quantiles(1),
+				show_unknown_feats_ids(true)
 			{
 			}
 
@@ -226,6 +227,7 @@ namespace srba
 			bool   draw_unknown_feats;  //!< Draw features with non-fixed rel.pos as well?
 			bool   draw_unknown_feats_ellipses;
 			double draw_unknown_feats_ellipses_quantiles;
+			bool   show_unknown_feats_ids;
 		};
 
 		/** Build an opengl representation of the current state of this RBA problem
@@ -445,8 +447,18 @@ namespace srba
 
 
 	protected:
+		int m_verbose_level; //!< 0: None (only critical msgs), 1: verbose, 2:even more verbose, 3: even more
+
+		typedef std::multimap<size_t,TKeyFrameID,std::greater<size_t> > base_sorted_lst_t;
+
 		/** @name (Protected) Sub-algorithms
 		    @{ */
+
+		/** Make a list of base KFs of my new observations, ordered in descending order by # of shared observations: */
+		void make_ordered_list_base_kfs(
+			const typename traits_t::new_kf_observations_t & obs,
+			base_sorted_lst_t            & obs_for_each_base_sorted,
+			map<TKeyFrameID,size_t>       *out_obs_for_each_base =NULL ) const;
 
 		/** This method will call edge_creation_policy(), which has predefined algorithms but could be re-defined by the user in a derived class */
 		void determine_kf2kf_edges_to_create(
@@ -545,8 +557,6 @@ namespace srba
 		  *  Enabled by default, can be disabled with \a enable_time_profiler(false)
 		  */
 		mutable mrpt::utils::CTimeLogger  m_profiler;
-
-		int m_verbose_level; //!< 0: None (only critical msgs), 1: verbose, 2:even more verbose, 3: even more
 
 		/** Creates a new known/unknown position landmark (upon first LM observation ), and expands Jacobians with new observation
 		  * \param[in] new_obs The basic data on the observed landmark: landmark ID, keyframe from which it's observed and parameters ("z" vector) of the observation itself (e.g. pixel coordinates).
@@ -700,14 +710,6 @@ namespace srba
 			lst.insert(i);
 			lst.insert(j);
 		}
-
-		typedef std::multimap<size_t,TKeyFrameID,std::greater<size_t> > base_sorted_lst_t;
-
-		/** Make a list of base KFs of my new observations, ordered in descending order by # of shared observations: */
-		void make_ordered_list_base_kfs(
-			const typename traits_t::new_kf_observations_t & obs,
-			base_sorted_lst_t            & obs_for_each_base_sorted,
-			map<TKeyFrameID,size_t>       *out_obs_for_each_base =NULL ) const;
 
 		void compute_minus_gradient(
 			mrpt::vector_double & minus_grad,

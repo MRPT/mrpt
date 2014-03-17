@@ -1,0 +1,23 @@
+language: cpp
+
+compiler: 
+  - gcc
+  - clang  
+
+before_install:
+  - sudo apt-get update -d
+
+install:
+  - sudo apt-get install build-essential pkg-config cmake libwxgtk2.8-dev libftdi-dev freeglut3-dev zlib1g-dev libusb-1.0-0-dev  libdc1394-22-dev libavformat-dev libswscale-dev lib3ds-dev libjpeg-dev libopencv-dev libgtest-dev libeigen3-dev libsuitesparse-dev
+
+script:
+  - bash .travis.sh
+
+env:
+  - TASK="build"
+  - TASK="test"
+  - TASK="testhwdrivers"  
+
+matrix:
+      allow_failures:
+              - env: TASK="testhwdrivers"  

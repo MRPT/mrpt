@@ -92,7 +92,7 @@ void thread_example2(int id)
 	{
 		printf("[thread_example2 %i, ID:%lu] Started, trying to get into semaphore...\n", id, getCurrentThreadId());
 
-		CSemaphore  sem(0,0,"mrpt-demo-sem1");
+		CSemaphore  sem(0,1,"mrpt-demo-sem1");
 
 		sem.waitForSignal();
 

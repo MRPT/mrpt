@@ -1354,6 +1354,7 @@ void  CRandomFieldGridMap2D::saveMetricMapRepresentationToFile(
 	{
 		CMatrix  all_means(m_size_y,m_size_x);
 		CMatrix  all_vars(m_size_y,m_size_x);
+		CMatrix  all_confs(m_size_y,m_size_x);
 
 		for (size_t y=0;y<m_size_y;y++)
 			for (size_t x=0;x<m_size_x;x++)
@@ -1361,11 +1362,15 @@ void  CRandomFieldGridMap2D::saveMetricMapRepresentationToFile(
 				const TRandomFieldCell * cell =cellByIndex(x,y);
 				all_means(y,x) = computeMeanCellValue_DM_DMV(cell);
 				all_vars(y,x)  = computeVarCellValue_DM_DMV(cell);
+				all_confs(y,x) = computeConfidenceCellValue_DM_DMV(cell);
 			}
 
 		all_means.saveToTextFile( filNamePrefix + std::string("_mean.txt"), MATRIX_FORMAT_FIXED );
 		if (m_mapType == mrKernelDMV)
+		{
 			all_vars.saveToTextFile( filNamePrefix + std::string("_var.txt"), MATRIX_FORMAT_FIXED );
+			all_confs.saveToTextFile( filNamePrefix + std::string("_confidence.txt"), MATRIX_FORMAT_FIXED );
+		}
 	}
 
 
@@ -2044,6 +2049,17 @@ void  CRandomFieldGridMap2D::getAs3DObject( mrpt::opengl::CSetOfObjectsPtr	&mean
 		}
 		break; // end Kernel models
 	}; // end switch maptype
+}
+
+
+
+/*---------------------------------------------------------------
+					computeConfidenceCellValue_DM_DMV
+ ---------------------------------------------------------------*/
+double  CRandomFieldGridMap2D::computeConfidenceCellValue_DM_DMV (const TRandomFieldCell *cell ) const
+{
+	// A confidence measure:
+	return 1.0 - std::exp(-square(cell->dm_mean_w/m_insertOptions_common->dm_sigma_omega));
 }
 
 /*---------------------------------------------------------------

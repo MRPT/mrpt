@@ -48,6 +48,8 @@ CDifodo::CDifodo()
 	border.assign(0);
 	null.setSize(rows,cols);
 	null.assign(0);
+	weights.setSize(rows,cols);
+	weights.assign(0);
 	est_cov.assign(0);
 
 	f_dist = 1.0/525.0;																				//In meters
@@ -66,7 +68,7 @@ CDifodo::CDifodo()
 	dift_surroundings = 0.01*fps*(dx + dy)*(cam_mode*downsample);
 
 	previous_speed_const_weight = 0.2;
-	previous_speed_eig_weight = 400.0;
+	previous_speed_eig_weight = 300.0;
 
 	num_valid_points = 0;
 }
@@ -327,10 +329,11 @@ void CDifodo::findValidPoints()
 
 void CDifodo::solveDepthSystem()
 {
+	using mrpt::utils::square;
+
 	utils::CTicTac	clock;
 	unsigned int cont = 0;
-	vector <Triplet<float> > coord;
-	SparseMatrix<float> A;
+	MatrixXf A;
 	MatrixXf Var;
 	MatrixXf B;
 	A.resize(num_valid_points,6);
@@ -340,56 +343,84 @@ void CDifodo::solveDepthSystem()
 	//clock.Tic();
 
 	//Fill the matrix A and the vector B
-	//The order of the variables will be (vx, vy, vz, wx, wy, wz)
+	//The order of the variables will be (vz, vx, vy, wz, wx, wy)
 	//The points order will be (1,1), (1,2)...(1,cols-1), (2,1), (2,2)...(row-1,cols-1). Points at the borders are not included
 
 	const float f_inv_x = f_dist/x_incr;
 	const float f_inv_y = f_dist/y_incr;
+	const float kz2 = square(1.425e-5/gaussian_mask_size); 
 
+	//We need to express the last camera velocity respect to the current camera reference frame
+	math::CMatrixFloat61 kai_abs;
+	math::CMatrixDouble33 inv_trans;
+	math::CMatrixFloat31 v_old, w_old;
+	cam_pose.getRotationMatrix(inv_trans);
+	v_old = inv_trans.inverse().cast<float>()*kai_abs.topRows(3);
+	w_old = inv_trans.inverse().cast<float>()*kai_abs.bottomRows(3);
+
+	//Create the weighted least squares system
 	for (unsigned int y = 1; y < rows-1; y++)
 		for (unsigned int x = 1; x < cols-1; x++)
 			if ((border(y,x) == 0)&&(null(y,x) == 0))
 			{
+				//Precomputed expressions
 				const float inv_d = 1.0f/depth_inter(y,x);
 				const float dxcomp = du(y,x)*f_inv_x*inv_d;
 				const float dycomp = dv(y,x)*f_inv_y*inv_d;
+				const float z2 = square(depth_inter(y,x));
+				const float z4 = z2*z2;
 
-				coord.push_back(Triplet<float>(cont, 0, inv_d*(1.0f + dxcomp*xx_inter(y,x)*inv_d + dycomp*yy_inter(y,x)*inv_d)));
-				coord.push_back(Triplet<float>(cont, 1, inv_d*(-dxcomp)));
-				coord.push_back(Triplet<float>(cont, 2, inv_d*(-dycomp)));
-				coord.push_back(Triplet<float>(cont, 3, inv_d*(dxcomp*yy_inter(y,x) - dycomp*xx_inter(y,x))));
-				coord.push_back(Triplet<float>(cont, 4, inv_d*(yy_inter(y,x) + dxcomp*inv_d*yy_inter(y,x)*xx_inter(y,x) + dycomp*(yy_inter(y,x)*yy_inter(y,x)*inv_d + depth_inter(y,x)))));
-				coord.push_back(Triplet<float>(cont, 5, inv_d*(-xx_inter(y,x) - dxcomp*(xx_inter(y,x)*xx_inter(y,x)*inv_d + depth_inter(y,x)) - dycomp*inv_d*yy_inter(y,x)*xx_inter(y,x))));
+				//Weights calculation
+				const float var11 = kz2*z4;
+				const float var12 = kz2*xx_inter(y,x)*z2*depth_inter(y,x);
+				const float var13 = kz2*yy_inter(y,x)*z2*depth_inter(y,x);
+				const float var22 = kz2*square(xx_inter(y,x))*z2;
+				const float var23 = kz2*xx_inter(y,x)*yy_inter(y,x)*z2;
+				const float var33 = kz2*square(yy_inter(y,x))*z2;
+				const float var44 = kz2*z4*fps*fps;
+				const float var55 = kz2*z4*0.25;
+				const float var66 = kz2*z4*0.25;
 
-				B(cont,0) = inv_d*(-dt(y,x));
+				const float j1 = -2.0*inv_d*inv_d*(xx_inter(y,x)*dxcomp + yy_inter(y,x)*dycomp)*(v_old[0] + yy_inter(y,x)*w_old[1] - xx_inter(y,x)*w_old[2])
+								+ inv_d*dxcomp*(v_old[1] - yy_inter(y,x)*w_old[0]) + inv_d*dycomp*(v_old[2] + xx_inter(y,x)*w_old[0]);
+
+				const float j2 = inv_d*dxcomp*(v_old[0] + yy_inter(y,x)*w_old[1] - 2.0*xx_inter(y,x)*w_old[2]) - dycomp*w_old[0];
+
+				const float j3 = inv_d*dycomp*(v_old[0] + 2*yy_inter(y,x)*w_old[1] - xx_inter(y,x)*w_old[2]) + dxcomp*w_old[0];
+
+				const float j4 = 1;
+
+				const float j5 =  xx_inter(y,x)*inv_d*inv_d*f_inv_y*(v_old[0] + yy_inter(y,x)*w_old[1] - xx_inter(y,x)*w_old[2]) 
+							   + inv_d*f_inv_x*(-v_old[1] - depth_inter(y,x)*w_old[2] + yy_inter(y,x)*w_old[0]);
+
+				const float j6 = yy_inter(y,x)*inv_d*inv_d*f_inv_y*(v_old[0] + yy_inter(y,x)*w_old[1] - xx_inter(y,x)*w_old[2])
+							   + inv_d*f_inv_y*(-v_old[2] + depth_inter(y,x)*w_old[1] - xx_inter(y,x)*w_old[0]);
+
+				weights(y,x) = sqrt(1.0/(j1*(j1*var11+j2*var12+j3*var13) + j2*(j1*var12+j2*var22+j3*var23)
+										+j3*(j1*var13+j2*var23+j3*var33) + j4*j4*var44 + j5*j5*var55 + j6*j6*var66));
+
+				A(cont,0) = weights(y,x)*(1.0f + dxcomp*xx_inter(y,x)*inv_d + dycomp*yy_inter(y,x)*inv_d);
+				A(cont,1) = weights(y,x)*(-dxcomp);
+				A(cont,2) = weights(y,x)*(-dycomp);
+				A(cont,3) = weights(y,x)*(dxcomp*yy_inter(y,x) - dycomp*xx_inter(y,x));
+				A(cont,4) = weights(y,x)*(yy_inter(y,x) + dxcomp*inv_d*yy_inter(y,x)*xx_inter(y,x) + dycomp*(yy_inter(y,x)*yy_inter(y,x)*inv_d + depth_inter(y,x)));
+				A(cont,5) = weights(y,x)*(-xx_inter(y,x) - dxcomp*(xx_inter(y,x)*xx_inter(y,x)*inv_d + depth_inter(y,x)) - dycomp*inv_d*yy_inter(y,x)*xx_inter(y,x));
+
+				B(cont,0) = weights(y,x)*(-dt(y,x));
 
 				cont++;
 			}
 
-
-	A.setFromTriplets(coord.begin(), coord.end());
-
 	//Solve the linear system of equations using a minimum least squares method
-	const SparseMatrix<float> atrans = A.transpose();
-	const SparseMatrix<float> aux = atrans*A;
-	SimplicialLDLT<SparseMatrix<float> >	SparseCholesky;
-	SparseCholesky.compute(aux);
-
-	if(SparseCholesky.info()!= Eigen::Success ) {	cout << endl << "Cholesky decomposition failed "; }
-
-	Var = SparseCholesky.solve(atrans*B);
+	MatrixXf atrans = A.transpose();
+	MatrixXf a_ls = atrans*A;
+	Var = a_ls.ldlt().solve(atrans*B);
 	kai_solver = Var;
 
-	if(SparseCholesky.info()!= Eigen::Success )	{ 	cout << endl << "Cholesty solver failed"; }
-
-
 	//Covariance matrix calculation
-	MatrixXf aux_normal;
 	MatrixXf residuals(num_valid_points,1);
-	aux_normal = aux.toDense();
 	residuals = A*Var - B;
-	est_cov = (1.0f/float(num_valid_points-6))*aux_normal.inverse()*residuals.squaredNorm();
-	//cout << endl << "Covariance matrix: " << endl << 50*est_cov;
+	est_cov = (1.0f/float(num_valid_points-6))*a_ls.inverse()*residuals.squaredNorm();
 
 }
 
@@ -514,7 +545,7 @@ void CDifodo::setCameraFocalLenght(float new_f)
 }
 
 
-void CDifodo::setRowsAndCols(unsigned int num_rows, unsigned int num_cols)
+void CDifodo::setNumberOfRowsAndCols(unsigned int num_rows, unsigned int num_cols)
 {
 	rows = num_rows;
 	cols = num_cols;
@@ -589,6 +620,13 @@ void CDifodo::getDepthDerivatives(MatrixXf &cur_du, MatrixXf &cur_dv, MatrixXf &
 	cur_du = du;
 	cur_dv = dv;
 	cur_dt = dt;
+}
+
+
+void CDifodo::getWeights(MatrixXf &w)
+{
+	w.resize(rows,cols);
+	w = weights;
 }
 
 

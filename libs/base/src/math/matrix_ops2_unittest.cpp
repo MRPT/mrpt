@@ -22,10 +22,6 @@ using namespace mrpt::utils::metaprogramming;
 using namespace std;
 
 
-const double   dat_A[] = { 4, 5, 8, -2, 1, 3 };
-const double   dat_B[] = { 2, 6, 9, 8 };
-const double   dat_Cok[] = {53,64, -2,32, 29,30  };
-
 
 #define CHECK_AND_RET_ERROR(_COND_,_MSG_)    EXPECT_FALSE(_COND_) << _MSG_;
 

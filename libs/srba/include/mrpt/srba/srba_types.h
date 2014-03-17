@@ -148,6 +148,8 @@ namespace srba
 			typename OBS_TRAITS::obs_data_t  obs_data; //!< Observed data
 		};
 
+		EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+
 	}; // end of "observation_traits"
 
 	/** @} */

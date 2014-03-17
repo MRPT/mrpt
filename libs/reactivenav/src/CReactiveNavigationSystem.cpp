@@ -116,6 +116,8 @@ void CReactiveNavigationSystem::loadConfigFile(const mrpt::utils::CConfigFileBas
 
 	printf_debug("\n");
 
+	MRPT_TODO("Refactor loading params & simulating trajectories?")
+
 	for ( unsigned int n=0;n<PTG_COUNT;n++ )
 	{
 		// load params of this PTG:
@@ -140,14 +142,15 @@ void CReactiveNavigationSystem::loadConfigFile(const mrpt::utils::CConfigFileBas
 
 		printf_debug(PTGs[n]->getDescription().c_str());
 
+		const float min_dist = 0.015f;
 		m_timelogger.enter("PTG.simulateTrajectories");
 		PTGs[n]->simulateTrajectories(
 		    nAlfas,					// alphas,
 		    75,						// max.tim,
 		    refDistance,			// max.dist,
-		    600,					// max.n,
-		    0.010f,					// diferencial_t
-		    0.015f					// min_dist
+		    10*refDistance/min_dist,	// max.n,
+		    0.0005f,				// diferencial_t
+		    min_dist					// min_dist
 			);
 		m_timelogger.leave("PTG.simulateTrajectories");
 
@@ -199,11 +202,15 @@ void CReactiveNavigationSystem::STEP1_CollisionGridsBuilder()
 
 		m_timelogger.enter("build_PTG_collision_grids");
 
-		mrpt::reactivenav::build_PTG_collision_grids(
-			PTGs,
-			m_robotShape,
-			format("ReacNavGrid_%s",robotName.c_str())
-			);
+		for (unsigned int i=0;i<PTGs.size();i++)
+		{
+			mrpt::reactivenav::build_PTG_collision_grids(
+				PTGs[i],
+				m_robotShape,
+				format("ReacNavGrid_%s_%03u.dat.gz",robotName.c_str(),i),
+				m_enableConsoleOutput /*verbose*/ 
+				);
+		}
 
 		m_timelogger.leave("build_PTG_collision_grids");
 	}

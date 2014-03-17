@@ -38,11 +38,11 @@ float  CMyGLCanvasBase::SENSIBILITY_DEG_PER_PIXEL = 0.1f;
 		#include <GL/gl.h>
 		#include <GL/glu.h>
 		#include <GL/glut.h>
+		#ifdef HAVE_FREEGLUT_EXT_H
+			#include <GL/freeglut_ext.h>
+		#endif
 	#endif
 
-#ifdef HAVE_FREEGLUT_EXT_H
-		#include <GL/freeglut_ext.h>
-	#endif
 #endif
 
 #if !wxUSE_GLCANVAS

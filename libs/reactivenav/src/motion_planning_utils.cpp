@@ -23,309 +23,118 @@ using namespace mrpt::system;
 					build_PTG_collision_grids
   ---------------------------------------------------------------*/
 void mrpt::reactivenav::build_PTG_collision_grids(
-	std::vector<CParameterizedTrajectoryGenerator*>	PTGs,
-	const mrpt::math::CPolygon						&robotShape,
-	const std::string								&cacheFilesPrefix,
-	bool											verbose
+	CParameterizedTrajectoryGenerator * PT,
+	const mrpt::math::CPolygon        & robotShape,
+	const std::string                 & cacheFilename,
+	const bool                          verbose
 	)
 {
 	MRPT_START
-
-	const size_t nVerts = robotShape.verticesCount();
 
 	if (verbose) 
 		cout << endl << "[build_PTG_collision_grids] Starting... *** THIS MAY TAKE A WHILE, BUT MUST BE COMPUTED ONLY ONCE!! **" << endl;
 
-	for (size_t nPT=0;nPT<PTGs.size();nPT++)
-	{
-		utils::CTicTac		tictac;
-
-		if (verbose)
-			cout << "Computing collision cells for PTG[" << nPT << "]...";
-
-		ASSERT_(PTGs[nPT])
-		CParameterizedTrajectoryGenerator  *PT = PTGs[nPT];
-
-		tictac.Tic();
-
-		// Reservar memoria para todos los puntos:
-		PT->allocMemForVerticesData( nVerts );
-
-		const size_t nPaths = PT->getAlfaValuesCount();
-
-		for (size_t k=0;k<nPaths;k++)
-		{
-			const size_t nPointsInPath = PT->getPointsCountInCPath_k( k );
-
-			for (size_t n=0;n<nPointsInPath;n++)
-			{
-				float x   = PT->GetCPathPoint_x( k,n );
-				float y   = PT->GetCPathPoint_y( k,n );
-				float phi = PT->GetCPathPoint_phi( k,n );
-
-				for (size_t m = 0;m<nVerts;m++)
-				{
-					float vx = x + cos(phi)*robotShape.GetVertex_x(m)-sin(phi)*robotShape.GetVertex_y(m);
-					float vy = y + sin(phi)*robotShape.GetVertex_x(m)+cos(phi)*robotShape.GetVertex_y(m);
-					PT->setVertex_xy(k,n,m, vx, vy );
-				}       // for v
-			}       // for n
-		} // for k
-
-
-		// Check for collisions between the robot shape and the grid cells:
-		// ----------------------------------------------------------------------------
-		const size_t Ki = PT->getAlfaValuesCount();
-
-		std::string auxStr = format( "%s_PTG%03u.dat.gz",cacheFilesPrefix.c_str(),static_cast<unsigned int>(nPT));
-
-		// Load the cached version, if possible
-		if ( PT->LoadColGridsFromFile( auxStr, robotShape ) )
-		{
-			if (verbose)
-				cout << "loaded from file OK" << endl;
-		}
-		else
-		{
-			// BUGFIX: In case we start reading the file and in the end detected an error, 
-			//         we must make sure that there's space enough for the grid:
-			PT->m_collisionGrid.setSize( -PT->refDistance,PT->refDistance,-PT->refDistance,PT->refDistance,PT->m_collisionGrid.getResolution());
-
-			// RECOMPUTE THE COLLISION GRIDS:
-			// ---------------------------------------
-			for (size_t k=0;k<Ki;k++)
-			{
-				const size_t nPoints = PT->getPointsCountInCPath_k(k);
-				ASSERT_(nPoints>1)
-
-				for (size_t n=0;n<(nPoints-1);n++)
-				{
-					// Check for collisions between an obstacle in a grid cell and 
-					//  the segment "s" between time steps "n" and "n+1"
-					for (size_t m=0;m<nVerts;m++)
-					{
-						float          v1n_x,  v1n_y;
-						float          v2n_x,  v2n_y;
-						float          v1n1_x, v1n1_y;
-						float          v2n1_x, v2n1_y;
-
-						float          minx,maxx,miny,maxy;
-
-						v1n_x = PT->getVertex_x(k,n,m);
-						v1n_y = PT->getVertex_y(k,n,m);
-
-						v1n1_x = PT->getVertex_x(k,n+1,m);
-						v1n1_y = PT->getVertex_y(k,n+1,m);
-
-						v2n_x = PT->getVertex_x(k,n,(m+1) % nVerts);
-						v2n_y = PT->getVertex_y(k,n,(m+1) % nVerts);
-
-						v2n1_x = PT->getVertex_x(k,n+1,(m+1) % nVerts);
-						v2n1_y = PT->getVertex_y(k,n+1,(m+1) % nVerts);
-
-						minx=min( v1n_x, min( v2n_x, min( v1n1_x, v2n1_x ) ) );
-						maxx=max( v1n_x, max( v2n_x, max( v1n1_x, v2n1_x ) ) );
-						miny=min( v1n_y, min( v2n_y, min( v1n1_y, v2n1_y ) ) );
-						maxy=max( v1n_y, max( v2n_y, max( v1n1_y, v2n1_y ) ) );
-
-						// Get the range of the cell grid that is affected by the movement
-						//  of this segment of the robot, and just check collisions at that area:
-						const int ix_min = PT->m_collisionGrid.x2idx(minx);
-						const int iy_min = PT->m_collisionGrid.y2idx(miny);
-						const int ix_max = PT->m_collisionGrid.x2idx(maxx);
-						const int iy_max = PT->m_collisionGrid.y2idx(maxy);
-
-						const float res_mid = .5f * PT->m_collisionGrid.getResolution();
-
-						for (int ix=ix_min;ix<ix_max;ix++)
-						{
-							const float cx_mid = res_mid + PT->m_collisionGrid.idx2x(ix);
-							
-							for (int iy=iy_min;iy<iy_max;iy++)
-							{
-								const float cy_mid = res_mid + PT->m_collisionGrid.idx2y(iy);
-
-								if ( mrpt::math::pointIntoQuadrangle( 
-									cx_mid,cy_mid, 
-									v1n_x, v1n_y, v2n_x, v2n_y, v2n1_x, v2n1_y, v1n1_x, v1n1_y ) )
-								{
-									// Colision!! Update cell info:
-									PT->m_collisionGrid.updateCellInfo(
-										ix,iy,
-									    k,							// The path (Alfa value)
-									    PT->GetCPathPoint_d(k, n+1) // The collision distance
-									);
-
-								}
-							}	// for iy
-						}	// for ix
-					}	// for m
-				} // n
-				
-				if (verbose) 
-					cout << k << "/" << Ki << ",";
-			} // k
-
-			if (verbose) 
-				cout << format("Done! [%.03f sec]\n",tictac.Tac() );
-
-			// save it to the cache file for the next run:
-			PT->SaveColGridsToFile( auxStr, robotShape );
-
-		}	// "else" recompute all PTG
-	}	// for nPT
-
-	MRPT_END
-}
-
-/*---------------------------------------------------------------
-			build_PTG_collision_grids for 3D reactive nav.
-  ---------------------------------------------------------------*/
-void mrpt::reactivenav::build_PTG_collision_grid3D(
-	CParameterizedTrajectoryGenerator*				ptg,
-	const mrpt::math::CPolygon						&robotShape,
-	const unsigned int								level,
-	const unsigned int								num_ptg,
-	bool											verbose
-	)
-{
-	MRPT_START
-
-	const size_t nVerts = robotShape.verticesCount();
+	utils::CTicTac		tictac;
 
 	if (verbose)
-	{
-		cout << endl << "[build_PTG_collision_grids] Starting...  THIS MAY TAKE A WHILE, BUT MUST BE COMPUTED ONLY ONCE!! ";
-		cout << endl << "Computing collision cells for PTG[" << num_ptg << "] at level " << level << "...";
-	}
+		cout << "Computing collision cells for PTG '" << cacheFilename << "'...";
 
-	utils::CTicTac		tictac;	
+	ASSERT_(PT)
+
 	tictac.Tic();
 
-	// Allocate memory for the points:
-	ptg->allocMemForVerticesData( nVerts );
-
-	const size_t nPaths = ptg->getAlfaValuesCount();
-
-	for (size_t k=0;k<nPaths;k++)
-	{
-		const size_t nPointsInPath = ptg->getPointsCountInCPath_k( k );
-
-		for (size_t n=0;n<nPointsInPath;n++)
-		{
-			float x   = ptg->GetCPathPoint_x( k,n );
-			float y   = ptg->GetCPathPoint_y( k,n );
-			float phi = ptg->GetCPathPoint_phi( k,n );
-
-			for (size_t m = 0;m<nVerts;m++)
-			{
-				float vx = x + cos(phi)*robotShape.GetVertex_x(m)-sin(phi)*robotShape.GetVertex_y(m);
-				float vy = y + sin(phi)*robotShape.GetVertex_x(m)+cos(phi)*robotShape.GetVertex_y(m);
-				ptg->setVertex_xy(k,n,m, vx, vy );
-			}       // for v
-		}      // for n
-	} // for k
-
+	//const size_t nPaths = PT->getAlfaValuesCount();
 
 	// Check for collisions between the robot shape and the grid cells:
 	// ----------------------------------------------------------------------------
-	const size_t Ki = ptg->getAlfaValuesCount();
-
-	std::string auxStr = format( "CollisionGridPTG%02u_LEVEL%02u.dat.gz", num_ptg, level);
+	const size_t Ki = PT->getAlfaValuesCount();
 
 	// Load the cached version, if possible
-	if ( ptg->LoadColGridsFromFile( auxStr, robotShape ) )
+	if ( PT->LoadColGridsFromFile( cacheFilename, robotShape ) )
 	{
 		if (verbose)
 			cout << "loaded from file OK" << endl;
 	}
 	else
 	{
+		// BUGFIX: In case we start reading the file and in the end detected an error, 
+		//         we must make sure that there's space enough for the grid:
+		PT->m_collisionGrid.setSize( -PT->refDistance,PT->refDistance,-PT->refDistance,PT->refDistance,PT->m_collisionGrid.getResolution());
+
+		const int grid_cx_max = PT->m_collisionGrid.getSizeX()-1;
+		const int grid_cy_max = PT->m_collisionGrid.getSizeY()-1;
+
+		const size_t nVerts = robotShape.verticesCount();
+		std::vector<mrpt::math::TPoint2D> transf_shape(nVerts); // The robot shape at each location
+
 		// RECOMPUTE THE COLLISION GRIDS:
 		// ---------------------------------------
 		for (size_t k=0;k<Ki;k++)
 		{
-			const size_t nPoints = ptg->getPointsCountInCPath_k(k);
+			const size_t nPoints = PT->getPointsCountInCPath_k(k);
 			ASSERT_(nPoints>1)
 
 			for (size_t n=0;n<(nPoints-1);n++)
 			{
-				// Check for collisions between an obstacle in a grid cell and
-				//  the segment "s" between time steps "n" and "n+1"
-				for (size_t m=0;m<nVerts;m++)
+				// Translate and rotate the robot shape at this C-Space pose:
+				const double x   = PT->GetCPathPoint_x( k,n );
+				const double y   = PT->GetCPathPoint_y( k,n );
+				const double phi = PT->GetCPathPoint_phi( k,n );
+
+				mrpt::math::TPoint2D bb_min(std::numeric_limits<double>::max(),std::numeric_limits<double>::max());
+				mrpt::math::TPoint2D bb_max(-std::numeric_limits<double>::max(),-std::numeric_limits<double>::max());
+
+				for (size_t m = 0;m<nVerts;m++)
 				{
-					float   v1n_x,  v1n_y;
-					float   v2n_x,  v2n_y;
-					float   v1n1_x, v1n1_y;
-					float   v2n1_x, v2n1_y;
+					transf_shape[m].x = x + cos(phi)*robotShape.GetVertex_x(m)-sin(phi)*robotShape.GetVertex_y(m);
+					transf_shape[m].y = y + sin(phi)*robotShape.GetVertex_x(m)+cos(phi)*robotShape.GetVertex_y(m);
+					mrpt::utils::keep_max( bb_max.x, transf_shape[m].x); mrpt::utils::keep_max( bb_max.y, transf_shape[m].y);
+					mrpt::utils::keep_min( bb_min.x, transf_shape[m].x); mrpt::utils::keep_min( bb_min.y, transf_shape[m].y);
+				}
 
-					float   minx,maxx,miny,maxy;
+				// Robot shape polygon:
+				const mrpt::math::TPolygon2D poly(transf_shape);
 
-					v1n_x = ptg->getVertex_x(k,n,m);
-					v1n_y = ptg->getVertex_y(k,n,m);
+				// Get the range of cells that may collide with this shape:
+				const int ix_min = std::max(0,PT->m_collisionGrid.x2idx(bb_min.x)-1);
+				const int iy_min = std::max(0,PT->m_collisionGrid.y2idx(bb_min.y)-1);
+				const int ix_max = std::min(PT->m_collisionGrid.x2idx(bb_max.x)+1,grid_cx_max);
+				const int iy_max = std::min(PT->m_collisionGrid.y2idx(bb_max.y)+1,grid_cy_max);
 
-					v1n1_x = ptg->getVertex_x(k,n+1,m);
-					v1n1_y = ptg->getVertex_y(k,n+1,m);
-
-					v2n_x = ptg->getVertex_x(k,n,(m+1) % nVerts);
-					v2n_y = ptg->getVertex_y(k,n,(m+1) % nVerts);
-
-					v2n1_x = ptg->getVertex_x(k,n+1,(m+1) % nVerts);
-					v2n1_y = ptg->getVertex_y(k,n+1,(m+1) % nVerts);
-
-					minx=min( v1n_x, min( v2n_x, min( v1n1_x, v2n1_x ) ) );
-					maxx=max( v1n_x, max( v2n_x, max( v1n1_x, v2n1_x ) ) );
-					miny=min( v1n_y, min( v2n_y, min( v1n1_y, v2n1_y ) ) );
-					maxy=max( v1n_y, max( v2n_y, max( v1n1_y, v2n1_y ) ) );
-
-					// Get the range of the cell grid that is affected by the movement
-					// of this segment of the robot, and just check collisions at that area:
-					const int ix_min = ptg->m_collisionGrid.x2idx(minx);
-					const int iy_min = ptg->m_collisionGrid.y2idx(miny);
-					const int ix_max = ptg->m_collisionGrid.x2idx(maxx);
-					const int iy_max = ptg->m_collisionGrid.y2idx(maxy);
-
-					const float res_mid = .5f * ptg->m_collisionGrid.getResolution();
-
-					for (int ix=ix_min;ix<ix_max;ix++)
+				for (int ix=ix_min;ix<ix_max;ix++)
+				{
+					const float cx = PT->m_collisionGrid.idx2x(ix);
+							
+					for (int iy=iy_min;iy<iy_max;iy++)
 					{
-						const float cx_mid = res_mid + ptg->m_collisionGrid.idx2x(ix);
+						const float cy = PT->m_collisionGrid.idx2y(iy);
 
-						for (int iy=iy_min;iy<iy_max;iy++)
-						{
-							const float cy_mid = res_mid + ptg->m_collisionGrid.idx2y(iy);
+						if ( poly.contains( TPoint2D(cx,cy) ) )
+						{ 
+							// Colision!! Update cell info:
+							const float d = PT->GetCPathPoint_d(k,n);								
+							PT->m_collisionGrid.updateCellInfo(ix  ,iy  ,  k,d);
+							PT->m_collisionGrid.updateCellInfo(ix-1,iy  ,  k,d);
+							PT->m_collisionGrid.updateCellInfo(ix  ,iy-1,  k,d);
+							PT->m_collisionGrid.updateCellInfo(ix-1,iy-1,  k,d);
+						}
+					}	// for iy
+				}	// for ix
 
-							if ( mrpt::math::pointIntoQuadrangle(
-								cx_mid,cy_mid,
-								v1n_x, v1n_y, v2n_x, v2n_y, v2n1_x, v2n1_y, v1n1_x, v1n1_y ) )
-							{
-								// Colision!! Update cell info:
-								ptg->m_collisionGrid.updateCellInfo(
-									ix,iy,
-									k,							// The path (Alfa value)
-									ptg->GetCPathPoint_d(k, n+1) // The collision distance
-								);
-
-							}
-						}	// for iy
-					}	// for ix
-				}	// for m
 			} // n
-
-			if (verbose)
+				
+			if (verbose) 
 				cout << k << "/" << Ki << ",";
 		} // k
 
-		if (verbose)
+		if (verbose) 
 			cout << format("Done! [%.03f sec]\n",tictac.Tac() );
 
 		// save it to the cache file for the next run:
-		ptg->SaveColGridsToFile( auxStr, robotShape );
+		PT->SaveColGridsToFile( cacheFilename, robotShape );
 
 	}	// "else" recompute all PTG
 
 	MRPT_END
 }
-
-
 
