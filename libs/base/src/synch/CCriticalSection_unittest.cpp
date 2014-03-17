@@ -20,25 +20,26 @@ using namespace mrpt::random;
 using namespace std;
 
 
+struct TAux
+{
+	bool terminated;
+
+	void (*m_func)(void);
+
+	void run(int ) 
+	{
+		if (m_func) (*m_func)(); else throw std::runtime_error("functor is NULL!!");
+		terminated = true;
+	}
+
+	TAux( void (*func)(void) ) : terminated(false),m_func(func) {}
+};
+
 void launchTestWithTimeout(void (*func)(void), double timeout_secs, const std::string &fail_msg )
 {
-	struct TAux
-	{
-		bool terminated;
-
-		void (*m_func)(void);
-
-		void run(int ) 
-		{
-			if (m_func) (*m_func)(); else throw std::runtime_error("functor is NULL!!");
-			terminated = true;
-		}
-
-		TAux( void (*func)(void) ) : terminated(false),m_func(func) {}
-	};
-
 	TAux obj(func);
-	mrpt::system::TThreadHandle th = mrpt::system::createThreadFromObjectMethod<TAux>( &obj, &TAux::run, 0 );
+	//mrpt::system::TThreadHandle th = 
+	mrpt::system::createThreadFromObjectMethod<TAux>( &obj, &TAux::run, 0 );
 
 	mrpt::utils::CTicTac tim;
 	tim.Tic();
