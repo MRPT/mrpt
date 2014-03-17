@@ -52,42 +52,62 @@ namespace mrpt
 		{
 		   public:
 			   TMotionsSE2 () :
-							state( ),
-							parent(),  //this is still a missing part and we should implement with the tree structure
-							cost( )
+							state( ),    //should the state be initialized as NULL?
+							cost( 0.0 )  //should the cost be initialized as 0.0 to avoid possible memory errors?
 							{}
-
-			   ~TMotionsSE2();
-
-				mrpt::poses::TPose2D state;   //maybe this should be a pointer too
-				TMotionsSE2 *parent;   // this will be a pointer to the parent motion in the exploration tree
-				double cost;
-
-				//typedef TMotionTree<TMotionsSE2> TMotionTree;
+				mrpt::poses::TPose2D state;  //!< state in SE2 as 2D pose (x, y, phi)
+				double cost;                //!< cost associated to each motion, this should be defined by the user according to a spefic cost function
 		};
 
-        typedef TMotionTree<TMotionsSE2> TMotionTreeSE2;
-
-		/** @name TMotionSE2 class for planning in SE3 */
+		/** @name TMotionSE3 class for planning in SE3 */
 		class TMotionsSE3
 		{
 		   public:
 			   TMotionsSE3() :
 							state( ),
-							parent(),  //this is still a missing part and we should implement with the tree structure
 							cost( )
 							{}
-
-			   ~TMotionsSE3();
-
-				mrpt::poses::TPose3D state;   //maybe this should be a pointer too
-				TMotionsSE2 *parent;   // this will be a pointer to the parent motion in the exploration tree
-				double cost;
-
-				//typedef TMotionTree<TMotionsSE3> TMotionTree;
+				mrpt::poses::TPose3D state;  //!< state in SE2 as 3D pose (x, y, z, yaw, pitch, roll)
+				double cost;                //!< cost associated to each motion, this should be defined by the user according to a spefic cost function
 		};
 
-        typedef TMotionTree<TMotionsSE3> TMotionTreeSE3;
+        /** @name TMotionSE2_TP class for planning in SE2 and TP-space */
+		class TMotionsSE2_TP
+		{
+		   public:
+			   TMotionsSE2_TP () :
+							state( ),
+							cost( ),
+							ptg_index ( ), ptg_K ( ), ptg_dist ( )
+							{}
+				mrpt::poses::TPose2D state;  //!< state in SE2 as 2D pose (x, y, phi)
+				mrpt::reactivenav::TListPTGs *ptg_infos;  //!< PTG information pointer, the user should define the PTG parameters before calling this
+				double cost;                //!< cost associated to each motion, this should be defined by the user according to a spefic cost function
+				int ptg_index;          //!< indicate the type of trajectory used for this motion
+				int ptg_K;              //!< identify the trajectory number K of the type ptg_index
+				double ptg_dist;        //!< identify the lenght of the trajectory for this motion
+		};
+
+        /** @name TMotionSE3_TP class for planning in SE3 and TP-space */
+		class TMotionsSE3_TP
+		{
+		   public:
+			   TMotionsSE3_TP () :
+							state( ),
+							ptg_infos ( ),
+							cost( )
+							{}
+				mrpt::poses::TPose3D state;  //!< state in SE2 as 2D pose (x, y, phi)
+				double cost;                //!< cost associated to each motion, this should be defined by the user according to a spefic cost function
+                int ptg_index;          //!< indicate the type of trajectory used for this motion
+				int ptg_K;              //!< identify the trajectory number K of the type ptg_index
+				double ptg_dist;        //!< identify the lenght of the trajectory for this motion
+		};
+
+        typedef TMotionTree<TMotionsSE2> TMotionTreeSE2;        //!< tree datastructure for planning RRT in SE2
+        typedef TMotionTree<TMotionsSE3> TMotionTreeSE3;        //!< tree datastructure for planning RRT in SE3
+        typedef TMotionTree<TMotionsSE2_TP> TMotionTreeSE2_TP;  //!< tree datastructure for planning RRT in SE2 amd TP-space
+        typedef TMotionTree<TMotionsSE3_TP> TMotionTreeSE3_TP;  //!< tree datastructure for planning RRT in SE3 amd TP-space
 
 
   }
