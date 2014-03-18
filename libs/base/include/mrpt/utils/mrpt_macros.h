@@ -98,9 +98,6 @@
 		#define	__CURRENT_FUNCTION_NAME__	__FUNC__
 #elif defined(_MSC_VER) && (_MSC_VER>=1300)
 		#define	__CURRENT_FUNCTION_NAME__	__FUNCTION__
-#elif defined(_MSC_VER) && (_MSC_VER<1300)
-		// Visual C++ 6 HAS NOT A __FUNCTION__ equivalent.
-#define	__CURRENT_FUNCTION_NAME__	::system::extractFileName(__FILE__).c_str()
 #else
 		#define	__CURRENT_FUNCTION_NAME__	__PRETTY_FUNCTION__
 #endif

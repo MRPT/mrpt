@@ -10,16 +10,17 @@
 #ifndef mrpt_utils_types_H
 #define mrpt_utils_types_H
 
-#include <vector>
-#include <map>
-#include <list>
+#include <vector>  // For <Eigen/StdVector>
+#include <deque>   // For <Eigen/StdDeque>
+//#include <map>
+//#include <list>
 #include <string>
 #include <stdexcept>
-#include <cstdarg>
-#include <ctime>
+//#include <cstdarg>
+//#include <ctime>
 
 #include <mrpt/utils/mrpt_stdint.h>    // compiler-independent version of "stdint.h"
-#include <mrpt/utils/mrpt_inttypes.h>  // compiler-independent version of "inttypes.h"
+//#include <mrpt/utils/mrpt_inttypes.h>  // compiler-independent version of "inttypes.h"
 
 // needed here for a few basic types used in Eigen MRPT's plugin:
 #include <mrpt/math/math_frwds.h>
@@ -28,16 +29,16 @@
 // Include the Eigen3 library headers, including
 //  MRPT's extensions:
 // --------------------------------------------------
-#include <iostream> // These headers are assumed by <mrpt/math/eigen_plugins.h>:
-#include <fstream>
-#include <sstream>
+#include <iosfwd> // <iostream> // These headers are assumed by <mrpt/math/eigen_plugins.h>:
+//#include <fstream>
+//#include <sstream>
 #ifdef EIGEN_MAJOR_VERSION
 #	error **FATAL ERROR**: MRPT headers must be included before Eigen headers.
 #endif
 #ifndef EIGEN_USE_NEW_STDVECTOR
 #  define EIGEN_USE_NEW_STDVECTOR
 #endif
-#include <Eigen/Dense>
+#include <Eigen/Core>  // Was: <Eigen/Dense>
 #include <Eigen/StdVector>
 #include <Eigen/StdDeque>
 
@@ -111,18 +112,6 @@ namespace mrpt
 	typedef std::vector<uint32_t>	 vector_uint;
 	typedef std::vector<bool>        vector_bool;	//!<  A type for passing a vector of bools.
 	typedef std::vector<std::string> vector_string;	//!<  A type for passing a vector of strings.
-
-	/** Helper types for STL containers with Eigen memory allocators. */
-	template <class TYPE1,class TYPE2=TYPE1>
-	struct aligned_containers
-	{
-		typedef std::pair<TYPE1,TYPE2> pair_t;
-		typedef std::vector<TYPE1, Eigen::aligned_allocator<TYPE1> > vector_t;
-		typedef std::deque<TYPE1, Eigen::aligned_allocator<TYPE1> > deque_t;
-		typedef std::list<TYPE1, Eigen::aligned_allocator<TYPE1> > list_t;
-		typedef std::map<TYPE1,TYPE2,std::less<TYPE1>,Eigen::aligned_allocator<std::pair<const TYPE1,TYPE2> > > map_t;
-		typedef std::multimap<TYPE1,TYPE2,std::less<TYPE1>,Eigen::aligned_allocator<std::pair<const TYPE1,TYPE2> > > multimap_t;
-	};
 
 	namespace utils
 	{

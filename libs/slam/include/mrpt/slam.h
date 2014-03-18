@@ -15,11 +15,6 @@
 //  not defining mrpt_*_EXPORTS) or MRPT is being built with precompiled headers.
 #if !defined(mrpt_slam_EXPORTS) || MRPT_ENABLE_PRECOMPILED_HDRS || defined(MRPT_ALWAYS_INCLUDE_ALL_HEADERS)
 
-// This is to try to avoid an internal compiler error in MSVC 2008... :-(
-#if defined(mrpt_slam_EXPORTS) && MRPT_ENABLE_PRECOMPILED_HDRS
-	#include <mrpt/base.h>
-#endif
-
 // Maps:
 #include <mrpt/slam/CMetricMap.h>
 #include <mrpt/slam/CPointsMap.h>

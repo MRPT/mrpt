@@ -10,6 +10,10 @@
 #ifndef __mrpt_reactivenav_H
 #define __mrpt_reactivenav_H
 
+// Only really include all headers if we come from a user program (anything
+//  not defining mrpt_*_EXPORTS) or MRPT is being built with precompiled headers.
+#if !defined(mrpt_reactivenav_EXPORTS) || MRPT_ENABLE_PRECOMPILED_HDRS || defined(MRPT_ALWAYS_INCLUDE_ALL_HEADERS)
+
 #include <mrpt/reactivenav/CReactiveNavigationSystem.h>
 #include <mrpt/reactivenav/CReactiveNavigationSystem3D.h>
 #include <mrpt/reactivenav/CAbstractReactiveNavigationSystem.h>
@@ -22,5 +26,7 @@
 #include <mrpt/reactivenav/CPTG5.h>
 #include <mrpt/reactivenav/CPTG6.h>
 #include <mrpt/reactivenav/CPTG7.h>
+
+#endif // end precomp.headers
 
 #endif

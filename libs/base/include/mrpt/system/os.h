@@ -11,11 +11,11 @@
 
 #include <mrpt/config.h>
 
-#include <cstdarg>
+//#include <cstdarg>
 #include <cstdlib>
 #include <cstring>
-#include <deque>
-#include <vector>
+//#include <deque>
+//#include <vector>
 
 // Duplicated here since <mrpt/system/os.h> is the only header that cannot include "utils_defs.h"
 #include <mrpt/base/link_pragmas.h>  // DLL import/export definitions

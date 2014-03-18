@@ -76,49 +76,6 @@ namespace mrpt
 		MRPT_DECLARE_TTYPENAME(uint8_t)
 		MRPT_DECLARE_TTYPENAME(int8_t)
 
-		MRPT_DECLARE_TTYPENAME(std::string)
-
-
-		#define MRPT_DECLARE_TTYPENAME_CONTAINER(_CONTAINER) \
-			template< typename V > \
-			struct TTypeName <_CONTAINER<V> > { \
-				static std::string get() { \
-					return std::string( #_CONTAINER )+std::string("<")+std::string( TTypeName<V>::get() ) + std::string(">"); \
-				} \
-			};
-
-		MRPT_DECLARE_TTYPENAME_CONTAINER( std::vector )
-		MRPT_DECLARE_TTYPENAME_CONTAINER( std::deque )
-		MRPT_DECLARE_TTYPENAME_CONTAINER( std::list )
-		MRPT_DECLARE_TTYPENAME_CONTAINER( std::set )
-
-		// These ones act as a "translation" between vector_XXX types and their base classes:
-		#define MRPT_DECLARE_TTYPENAME_MAP_FOR_VECTOR(_CONT) \
-			template<> struct TTypeName <_CONT> : TTypeName<std::vector<_CONT::Scalar> > { };
-
-		MRPT_DECLARE_TTYPENAME_MAP_FOR_VECTOR(vector_float)
-		MRPT_DECLARE_TTYPENAME_MAP_FOR_VECTOR(vector_double)
-
-
-		#define MRPT_DECLARE_TTYPENAME_CONTAINER_ASSOC(_CONTAINER) \
-			template< typename K, typename V > \
-			struct TTypeName <_CONTAINER<K,V> > { \
-				static std::string get() { \
-					return std::string( #_CONTAINER )+std::string("<")+std::string( TTypeName<K>::get() )+ std::string(",")+std::string( TTypeName<V>::get() )+std::string(">"); \
-				} \
-			};
-
-		MRPT_DECLARE_TTYPENAME_CONTAINER_ASSOC( std::map )
-		MRPT_DECLARE_TTYPENAME_CONTAINER_ASSOC( std::multimap )
-
-
-		template< typename T1, typename T2 >
-		struct TTypeName <std::pair<T1,T2> >	{
-			static std::string get() {
-				return std::string("std::pair<")+std::string( TTypeName<T1>::get() )+ std::string(",")+std::string( TTypeName<T2>::get() )+std::string(">");
-			}
-		};
-
 		/** @} */
 
 	} // End of namespace

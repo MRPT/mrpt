@@ -11,6 +11,7 @@
 
 // Note: This file is included from "stl_extensions.h"
 #include <mrpt/utils/utils_defs.h>
+#include <mrpt/utils/aligned_containers.h>
 #include <map>
 #include <vector>
 

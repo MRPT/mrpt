@@ -11,10 +11,10 @@
 
 #include <mrpt/config.h>
 #include <mrpt/base/link_pragmas.h>
-#include <cmath>
-#include <cstdlib>
-#include <algorithm>
-#include <string>
+//#include <cmath>
+//#include <cstdlib>
+//#include <algorithm>
+//#include <string>
 
 /*! \file math_frwds.h
   * Forward declarations of all mrpt::math classes related to vectors, arrays and matrices.

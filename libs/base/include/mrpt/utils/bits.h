@@ -24,13 +24,6 @@ namespace mrpt
 	  */
 	std::string BASE_IMPEXP format(const char *fmt, ...) MRPT_printf_format_check(1,2);
 
-	namespace system
-	{
-		// Forward definition: (Required for Visual C++ 6 implementation of THROW_EXCEPTION...)
-		std::string BASE_IMPEXP extractFileName(const std::string &filePath);
-		std::string BASE_IMPEXP stack_trace(bool calling_from_exception);
-	}
-
 	namespace math
 	{
 		bool BASE_IMPEXP isNaN(float v) MRPT_NO_THROWS;
