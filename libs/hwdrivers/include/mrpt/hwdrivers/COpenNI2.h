@@ -11,7 +11,7 @@
 
 #if MRPT_HAS_OPENNI2
 
-#include <OpenNI.h>
+#include <OpenNI.h> //
 //#include <PS1080.h>
 
 //#include <mrpt/hwdrivers/CGenericSensor.h>
