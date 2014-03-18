@@ -760,7 +760,8 @@ CObservationPtr CCameraSensor::getNextFrame()
 				cout << "[CCamera, flycap_stereo] Warning: Too large delay between left & right images: " << At << " sec.\n";
 			}
 
-			stObs->timestamp = obsL.timestamp;
+			// It seems that the timestamp is not always filled in from FlyCap driver?
+			stObs->timestamp = (obsL.timestamp!=0) ? obsL.timestamp : mrpt::system::now();
 			stObs->imageLeft.copyFastFrom(obsL.image);
 			stObs->imageRight.copyFastFrom(obsR.image);
 			capture_ok = true;
