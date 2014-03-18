@@ -131,6 +131,7 @@ namespace pbmap {
     Eigen::Vector3f v3center;
     Eigen::Vector3f v3normal;
     float d;
+    Eigen::Matrix4f information; // Fisher information matrix (the inverse of the plane covariance)
     float curvature;
     Eigen::Vector3f v3PpalDir;
     float elongation; // This is the reatio between the lengths of the plane in the two principal directions

@@ -118,6 +118,24 @@ namespace pbmap {
     return (dataType)mode/normalizeConst;
   }
 
+//  Eigen::Matrix4f& getMoorePenroseInverse(Eigen::Matrix4f &input)
+//  {
+////    Eigen::Matrix4f generalizedInverse;
+////    Eigen::JacobiSVD<Eigen::Matrix3f> svd(input);
+////    stdDevHist = svd.singularValues().maxCoeff() / sqrt(size);
+//   void pinv( MatrixType& pinvmat) const
+//   {
+////     eigen_assert(m_isInitialized && "SVD is not initialized.");
+//     double pinvtoler=1.e-6; // choose your tolerance wisely!
+//     Eigen::SingularValuesType singularValues_inv = m_singularValues;
+//     for ( long i=0; i<m_workMatrix.cols(); ++i) {
+//        if ( m_singularValues(i) > pinvtoler )
+//           singularValues_inv(i)=1.0/m_singularValues(i);
+//       else singularValues_inv(i)=0;
+//     }
+//     pinvmat= (m_matrixV*singularValues_inv.asDiagonal()*m_matrixU.transpose());
+//   }
+
   // Gets the center of a single-mode distribution, it performs variable mean shift
   template<typename dataType>
   Eigen::Vector4f getMultiDimMeanShift_color(std::vector<Eigen::Vector4f> &data, dataType &stdDevHist, dataType &concentration)
