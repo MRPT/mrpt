@@ -54,6 +54,7 @@ IMPLEMENTS_GENERIC_SENSOR(CKinect,mrpt::hwdrivers)
 #ifdef KINECT_PROFILE_MEM_ALLOC
 mrpt::utils::CTimeLogger alloc_tim;
 #endif
+//int int a;
 
 void CKinect::calculate_range2meters()
 {

@@ -196,7 +196,7 @@ void CCameraSensor::initialize()
 	{
 		cout << "[CCameraSensor::initialize] Kinect camera...\n";
 		m_cap_kinect = new CKinect();
-
+    m_openni2 = new COpenNI2();
 		m_cap_kinect->enableGrab3DPoints( m_kinect_save_3d );
 		m_cap_kinect->enableGrabDepth ( m_kinect_save_range_img );
 		m_cap_kinect->enableGrabRGB( m_kinect_save_intensity_img );
@@ -249,20 +249,20 @@ void CCameraSensor::initialize()
 		try
 		{
 			// Open camera and start capture:
-			m_cap_flycap_stereo_l = new CImageGrabber_FlyCapture2(); 
-			m_cap_flycap_stereo_r = new CImageGrabber_FlyCapture2(); 
+			m_cap_flycap_stereo_l = new CImageGrabber_FlyCapture2();
+			m_cap_flycap_stereo_r = new CImageGrabber_FlyCapture2();
 
 			cout << "[CCameraSensor::initialize] PGR FlyCapture2 stereo camera: Openning LEFT camera...\n";
 			m_cap_flycap_stereo_l->open(m_flycap_stereo_options[0], false /* don't start grabbing */ );
 
 			cout << "[CCameraSensor::initialize] PGR FlyCapture2 stereo camera: Openning RIGHT camera...\n";
 			m_cap_flycap_stereo_r->open(m_flycap_stereo_options[1], false /* don't start grabbing */ );
-			
+
 			// Now, start grabbing "simultaneously":
 			if (m_fcs_start_synch_capture)
 			{
 				const CImageGrabber_FlyCapture2 *cams[2];
-				cams[0] = m_cap_flycap_stereo_l; 
+				cams[0] = m_cap_flycap_stereo_l;
 				cams[1] = m_cap_flycap_stereo_r;
 				CImageGrabber_FlyCapture2::startSyncCapture(2,cams);
 			}
@@ -737,13 +737,13 @@ CObservationPtr CCameraSensor::getNextFrame()
 	else if (m_cap_flycap_stereo_l && m_cap_flycap_stereo_r)
 	{
 		stObs = CObservationStereoImages::Create();
-		
+
 		CObservationImage obsL,obsR;
 
-		bool ok1 = false, ok2=false; 
-		
+		bool ok1 = false, ok2=false;
+
 		ok1 = m_cap_flycap_stereo_r->getObservation(obsL);
-		if (ok1) 
+		if (ok1)
 			ok2 = m_cap_flycap_stereo_l->getObservation(obsR);
 
 		if (!ok1 || !ok2)
@@ -793,7 +793,7 @@ CObservationPtr CCameraSensor::getNextFrame()
 		stObs->sensorLabel = m_sensorLabel;
 		stObs->setSensorPose( m_sensorPose );
 	}
-	else { 
+	else {
 		obs3D->sensorLabel = m_sensorLabel;
 		obs3D->setSensorPose( m_sensorPose );
 	}
