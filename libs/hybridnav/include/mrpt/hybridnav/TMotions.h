@@ -33,27 +33,49 @@ namespace mrpt
          *  \ingroup mrpt_hybridnav_grp
          */
 
+
+
+
 		template<class TMotions>
-        class TMotionTree : public mrpt::graphs::CDirectedTree< TMotions >
+        class TMotionsTree : public mrpt::graphs::CDirectedTree< TMotions >
             {
             public:
 
                 //methods we need here are:
-                void add_element();  //and just refer to list<> or vector<> class method in CDirectedTree
-                void get_element();  //I imagine that we will need it for the nn_search
-                mrpt::hybridnav::TPath::TPlannedPath get_sh(); // &path
-                //for our case the right methohortest_patd should be 				     	“visitBreadthFirst”, how this works in the
+
+                //---->verify this !!!!!!!!
+                //I want to hide the tree structure to the user that only should add the node by a addNode function, so i defined:
+                void addNode( TMotions TMotions_) {  this->TListEdges.push( TMotions_ );   }
+                // in the CDirectedTree the edges are std::list < > this use is correct when we add a new node
+                // but maybe would be not efficient when we need to get a new element for the tree since the list
+                // are defined as LIFO/FIFO structures, how you plan to address the nearest neighbor search?
+                void getNode( int node_index) { this->TListEdges.push_back( node_index ); }
+                //I imagine that we will need it for the nn_search where the node_index will came from a search function
+
+                //!<  I saw a virtual class Visitors that should be redefined
+                //!<  but from the comments I do not understant how it works
+                //!<  of course it's my bad and my bad c++ code understanding level .... :-(
+
+
+                //mrpt::hybridnav::TPath::TPlannedPath get_sh(); // &path
+                //for our case the right methohortest_patd should be “visitBreadthFirst”, how this works in the
                 //mrpt::graphs::CDirectedTree class, should we redefine it?
-                void erase();
-            };/**/
+
+//!<            void erase();  //this is not necessary because it should be hereditated from CDirectedTree in clear();
+//!<            why it not work when I define the TMotionTree im the test code???
+//!<            should I redefine it here?
+            };
 
 		/** @name TMotionSE2 class for planning in SE2 */
 		class TMotionsSE2
 		{
 		   public:
 			   TMotionsSE2 () :
-							state( ),    //should the state be initialized as NULL?
-							cost( 0.0 )  //should the cost be initialized as 0.0 to avoid possible memory errors?
+							state( ),    //!< should the state be initialized as NULL or something else?
+							// like add in the namespace a #define INVALID_STATE  mrpt::poses::TPose2D( )
+							// Is this already defined somewhere in MRPT (example in mrpt::utils:: blablabla
+                            // check this please!!!
+							cost( 0.0 )
 							{}
 				mrpt::poses::TPose2D state;  //!< state in SE2 as 2D pose (x, y, phi)
 				double cost;                //!< cost associated to each motion, this should be defined by the user according to a spefic cost function
@@ -64,8 +86,8 @@ namespace mrpt
 		{
 		   public:
 			   TMotionsSE3() :
-							state( ),
-							cost( )
+							state( ),   //As before
+							cost( 0.0 )
 							{}
 				mrpt::poses::TPose3D state;  //!< state in SE2 as 3D pose (x, y, z, yaw, pitch, roll)
 				double cost;                //!< cost associated to each motion, this should be defined by the user according to a spefic cost function
@@ -76,9 +98,9 @@ namespace mrpt
 		{
 		   public:
 			   TMotionsSE2_TP () :
-							state( ),
-							cost( ),
-							ptg_index ( ), ptg_K ( ), ptg_dist ( )
+							state( ),   //As before
+							cost( 0.0 ),
+							ptg_index ( 0 ), ptg_K ( 0 ), ptg_dist ( 0.0 )   //these are all PTGs parameters, do we need more?
 							{}
 				mrpt::poses::TPose2D state;  //!< state in SE2 as 2D pose (x, y, phi)
 				double cost;                //!< cost associated to each motion, this should be defined by the user according to a spefic cost function
@@ -92,9 +114,9 @@ namespace mrpt
 		{
 		   public:
 			   TMotionsSE3_TP () :
-							state( ),
-							cost( ),
-							ptg_index ( ), ptg_K ( ), ptg_dist ( )
+							state( ), //As before
+							cost( 0.0 ),
+							ptg_index ( 0 ), ptg_K ( 0 ), ptg_dist ( 0.0 )   //these are all PTGs parameters, do we need more?
 							{}
 				mrpt::poses::TPose3D state;  //!< state in SE2 as 2D pose (x, y, phi)
 				double cost;                //!< cost associated to each motion, this should be defined by the user according to a spefic cost function
@@ -103,11 +125,10 @@ namespace mrpt
 				double ptg_dist;        //!< identify the lenght of the trajectory for this motion
 		};
 
-        typedef TMotionTree<TMotionsSE2> TMotionTreeSE2;        //!< tree datastructure for planning RRT in SE2
-        typedef TMotionTree<TMotionsSE3> TMotionTreeSE3;        //!< tree datastructure for planning RRT in SE3
-        typedef TMotionTree<TMotionsSE2_TP> TMotionTreeSE2_TP;  //!< tree datastructure for planning RRT in SE2 amd TP-space
-        typedef TMotionTree<TMotionsSE3_TP> TMotionTreeSE3_TP;  //!< tree datastructure for planning RRT in SE3 amd TP-space
-
+        typedef TMotionsTree<TMotionsSE2> TMotionsTreeSE2;        //!< tree datastructure for planning RRT in SE2
+        typedef TMotionsTree<TMotionsSE3> TMotionsTreeSE3;        //!< tree datastructure for planning RRT in SE3
+        typedef TMotionsTree<TMotionsSE2_TP> TMotionsTreeSE2_TP;  //!< tree datastructure for planning RRT in SE2 amd TP-space
+        typedef TMotionsTree<TMotionsSE3_TP> TMotionsTreeSE3_TP;  //!< tree datastructure for planning RRT in SE3 amd TP-space
 
   }
 }
