@@ -64,14 +64,14 @@ void  CPose3DPDFParticles::copyFrom(const CPose3DPDF &o)
 		}
 		else
 		{
-			for ( itDest = m_particles.begin();itDest!=m_particles.end();itDest++ )
+			for ( itDest = m_particles.begin();itDest!=m_particles.end();++itDest )
 				delete itDest->d;
 
 			m_particles.resize( pdf->m_particles.size() );
 
 			for ( itSrc=pdf->m_particles.begin(), itDest = m_particles.begin();
 				   itSrc!=pdf->m_particles.end();
-			      itSrc++, itDest++ )
+			      ++itSrc, ++itDest )
 			{
 				itDest->d = new CPose3D( *itSrc->d );
 				itDest->log_w = itSrc->log_w;
@@ -127,7 +127,7 @@ void CPose3DPDFParticles::getMean(CPose3D &p) const
 	MRPT_START
 
 	double			X=0,Y=0,Z=0,YAW=0,PITCH=0,ROLL=0;
-	double			ang,w,W=0;
+	double			W=0;
 
 	double			W_yaw_R=0,W_yaw_L=0;
 	double			yaw_R=0,yaw_L=0;
@@ -138,7 +138,7 @@ void CPose3DPDFParticles::getMean(CPose3D &p) const
 	// -----------------------------------
 	for (CPose3DPDFParticles::CParticleList::const_iterator it=m_particles.begin();it!=m_particles.end();++it)
 	{
-		w  = exp(it->log_w);
+		const double w  = exp(it->log_w);
 		W += w;
 
 		X		+= w * it->d->x();
@@ -147,7 +147,7 @@ void CPose3DPDFParticles::getMean(CPose3D &p) const
 		PITCH	+= w * it->d->pitch();
 
 		// Angles Yaw and Roll are especial!:
-		ang = it->d->yaw();
+		double ang = it->d->yaw();
 		if (fabs( ang )>0.5*M_PI)
 		{
 			// LEFT HALF: 0,2pi
@@ -248,13 +248,13 @@ void CPose3DPDFParticles::getCovarianceAndMean(CMatrixDouble66 &cov,CPose3D &mea
 
 	// Sum all weight values:
 	double		W = 0;
-	for (it=m_particles.begin();it!=m_particles.end();it++)
+	for (it=m_particles.begin();it!=m_particles.end();++it)
 		W += exp(it->log_w);
 
 	ASSERT_(W>0);
 
 	// Compute covariance:
-	for (it=m_particles.begin();it!=m_particles.end();it++)
+	for (it=m_particles.begin();it!=m_particles.end();++it)
 	{
 		double w = exp( it->log_w ) / W;
 

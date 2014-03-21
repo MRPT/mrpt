@@ -774,7 +774,7 @@ namespace math	{
 	}
 
 	inline bool operator!=(const TSegment2D &s1,const TSegment2D &s2)	{
-		return (s1.point1!=s1.point1)||(s1.point2!=s2.point2);
+		return (s1.point1!=s2.point1)||(s1.point2!=s2.point2);
 	}
 
 	inline bool operator==(const TSegment3D &s1,const TSegment3D &s2)	{
@@ -782,7 +782,7 @@ namespace math	{
 	}
 
 	inline bool operator!=(const TSegment3D &s1,const TSegment3D &s2)	{
-		return (s1.point1!=s1.point1)||(s1.point2!=s2.point2);
+		return (s1.point1!=s2.point1)||(s1.point2!=s2.point2);
 	}
 
 	/**

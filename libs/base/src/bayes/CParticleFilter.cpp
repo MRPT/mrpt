@@ -59,8 +59,7 @@ void  CParticleFilter::executeOn(
 	// ---------------------------------------------------
 	if (stats)
 	{
-		size_t i,M = obj.particlesCount();
-		double	weightsMean = 0, var = 0;
+		const size_t M = obj.particlesCount();
 
 		// ESS:
 		stats->ESS_beforeResample = obj.ESS();
@@ -68,9 +67,10 @@ void  CParticleFilter::executeOn(
 		// Variance:
 		if (M>1)
 		{
-			for (i=0;i<M;i++) weightsMean+=exp(obj.getW(i));
+            double	weightsMean = 0, var = 0;
+			for (size_t i=0;i<M;i++) weightsMean+=exp(obj.getW(i));
 			weightsMean /= M;
-			for (i=0;i<M;i++) var+=square(exp(obj.getW(i))-weightsMean);
+			for (size_t i=0;i<M;i++) var+=square(exp(obj.getW(i))-weightsMean);
 
 			var/= (M-1);
 			stats->weightsVariance_beforeResample = var;

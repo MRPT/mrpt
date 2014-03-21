@@ -69,8 +69,8 @@ double & CSplineInterpolator1D::query( double x, double &y, bool &out_valid ) co
 	}
 	p4 = *it_ge1;		// Fourth pair
 
-	it_ge1--;
-	it_ge1--;
+	--it_ge1;
+	--it_ge1;
 	p2 = *it_ge1;	// Second pair
 
 	if( it_ge1 == m_x2y.begin() )

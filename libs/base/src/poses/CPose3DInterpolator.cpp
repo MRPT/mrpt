@@ -132,7 +132,7 @@ CPose3D & CPose3DInterpolator::interpolate( mrpt::system::TTimeStamp t, CPose3D 
 	}
 	p4 = *(it_ge1);		// Fourth pair
 
-	it_ge1--;
+	--it_ge1;
 	p2 = *(--it_ge1);	// Second pair
 
 	if( it_ge1 == m_path.begin() )
@@ -318,7 +318,7 @@ bool CPose3DInterpolator::getPreviousPoseWithMinDistance(  const mrpt::system::T
 	double d = 0.0;
 	do
 	{
-		it--;
+		--it;
 		d = myPose.distance2DTo( it->second.x(), it->second.y());
 	} while( d < distance && it != m_path.begin() );
 
@@ -521,7 +521,7 @@ void CPose3DInterpolator::filter( unsigned int component, unsigned int samples )
 	CPose3DInterpolator::iterator it1, it2, it3;
 
 	//int asamples;
-	for( it1 = m_path.begin(); it1 != m_path.end(); it1++, k++ )
+	for( it1 = m_path.begin(); it1 != m_path.end(); ++it1, ++k )
 	{
 		//asamples = samples;
 

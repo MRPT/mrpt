@@ -183,9 +183,7 @@ namespace poses
 		  */
 		const T*  getByIndex( size_t x,size_t y, size_t phi )  const
 		{
-			ASSERT_(x>=0 && x<m_sizeX);
-			ASSERT_(y>=0 && y<m_sizeY);
-			ASSERT_(phi>=0 && phi<m_sizePhi);
+			ASSERT_(x<m_sizeX && y<m_sizeY && phi<m_sizePhi)
 			return &m_data[ phi*m_sizeXY + y*m_sizeX + x ];
 		}
 
@@ -193,9 +191,7 @@ namespace poses
 		  */
 		T*  getByIndex( size_t x,size_t y, size_t phi )
 		{
-			ASSERT_(x>=0 && x<m_sizeX);
-			ASSERT_(y>=0 && y<m_sizeY);
-			ASSERT_(phi>=0 && phi<m_sizePhi);
+			ASSERT_(x<m_sizeX && y<m_sizeY && phi<m_sizePhi)
 			return &m_data[ phi*m_sizeXY + y*m_sizeX + x ];
 		}
 

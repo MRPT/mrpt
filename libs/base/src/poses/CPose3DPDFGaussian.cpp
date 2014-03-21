@@ -648,5 +648,5 @@ void CPose3DPDFGaussian::getCovSubmatrix2D( CMatrixDouble &out_cov ) const
 
 bool mrpt::poses::operator==(const CPose3DPDFGaussian &p1,const CPose3DPDFGaussian &p2)
 {
-	return p1.mean==p1.mean && p1.cov==p2.cov;
+	return p1.mean==p2.mean && p1.cov==p2.cov;
 }

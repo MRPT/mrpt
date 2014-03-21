@@ -392,29 +392,29 @@ namespace mrpt
 			  */
 			void extractSubmatrix(const size_t row1,const size_t row2,const size_t col1,const size_t col2,CMatrixTemplate<T> &out) const
 			{
-				size_t nrows=row2-row1+1;
-				size_t ncols=col2-col1+1;
+				int nrows=int(row2)-int(row1)+1;
+				int ncols=int(col2)-int(col1)+1;
 				if (nrows<=0||ncols<=0)	{
 					out.realloc(0,0);
 					return;
 				}
-				if (row1<0||row2>=m_Rows||col1<0||col2>=m_Cols) THROW_EXCEPTION("Indices out of range!");
+				if (row2>=m_Rows||col2>=m_Cols) THROW_EXCEPTION("Indices out of range!");
 				out.realloc(nrows,ncols);
-				for (size_t i=0;i<nrows;i++) for (size_t j=0;j<ncols;j++) out.m_Val[i][j]=m_Val[i+row1][j+col1];
+				for (int i=0;i<nrows;i++) for (int j=0;j<ncols;j++) out.m_Val[i][j]=m_Val[i+row1][j+col1];
 			}
 			/// @overload
 			template <class Derived>
 			void extractSubmatrix(const size_t row1,const size_t row2,const size_t col1,const size_t col2,Eigen::MatrixBase<Derived> &out) const
 			{
-				size_t nrows=row2-row1+1;
-				size_t ncols=col2-col1+1;
+				int nrows=int(row2)-int(row1)+1;
+				int ncols=int(col2)-int(col1)+1;
 				if (nrows<=0||ncols<=0)	{
 					out = typename Eigen::MatrixBase<Derived>::PlainObject();
 					return;
 				}
-				if (row1<0||row2>=m_Rows||col1<0||col2>=m_Cols) THROW_EXCEPTION("Indices out of range!");
+				if (row2>=m_Rows||col2>=m_Cols) THROW_EXCEPTION("Indices out of range!");
 				out.resize(nrows,ncols);
-				for (size_t i=0;i<nrows;i++) for (size_t j=0;j<ncols;j++) out.coeffRef(i,j)=m_Val[i+row1][j+col1];
+				for (int i=0;i<nrows;i++) for (int j=0;j<ncols;j++) out.coeffRef(i,j)=m_Val[i+row1][j+col1];
 			}
 
 

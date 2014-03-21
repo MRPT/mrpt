@@ -761,31 +761,6 @@ namespace mrpt
 				}
 			}
 
-			/// Rebuild, if needed the KD-tree for 2D (nDims=2), 3D (nDims=3), ... asking the child class for the data points.
-			void rebuild_kdTree_Nd(const size_t nDims) const
-			{
-				typedef typename TKDTreeDataHolder<>::kdtree_index_t   treeNd_t;
-
-				if (!m_kdtree_is_uptodate) { m_kdtree2d_data.clear(); m_kdtree3d_data.clear(); m_kdtreeNd_data.clear(); }
-
-				if (!m_kdtreeNd_data.index || m_kdtreeNd_data.m_dim!=nDims )
-				{
-					// Erase previous tree:
-					m_kdtreeNd_data.clear();
-					// And build new index:
-					const size_t N = derived().kdtree_get_point_count();
-					m_kdtreeNd_data.m_num_points = N;
-					m_kdtreeNd_data.m_dim        = nDims;
-					m_kdtreeNd_data.query_point.resize(nDims);
-					if (N)
-					{
-						m_kdtreeNd_data.index = new treeNd_t(nDims, derived(),  nanoflann::KDTreeSingleIndexAdaptorParams(kdtree_search_params.leaf_max_size, nDims ) );
-						m_kdtreeNd_data.index->buildIndex();
-					}
-					m_kdtree_is_uptodate = true;
-				}
-			} // end of rebuild_kdTree
-
 		};  // end of KDTreeCapable
 
 		/**  @} */  // end of grouping

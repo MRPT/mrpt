@@ -103,7 +103,6 @@ namespace bayes
 			std::vector<bool>  oldParticlesReused(M_old,false);
 			std::vector<bool>::const_iterator  oldPartIt;
 			std::vector<size_t>           sorted_indx(indx);
-			std::vector<size_t>::iterator sort_idx_it;
 
 			/* Assure the input index is sorted: */
 			std::sort( sorted_indx.begin(), sorted_indx.end() );
@@ -249,7 +248,7 @@ namespace bayes
 			out_logWeights.resize(m_particles.size());
 			vector_double::iterator	it;
 			typename CParticleList::const_iterator	it2;
-			for (it=out_logWeights.begin(),it2=m_particles.begin();it2!=m_particles.end();it++,it2++)
+			for (it=out_logWeights.begin(),it2=m_particles.begin();it2!=m_particles.end();++it,++it2)
 				*it = it2->log_w;
 			MRPT_END
 		}

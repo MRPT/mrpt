@@ -41,7 +41,7 @@ namespace mrpt
 		//be an integer power of 2 (this is not checked for!).
 		void four1(float data[], unsigned long nn, int isign)
 		{
-			unsigned long	n,mmax,m,j,istep,i;
+			unsigned long	n,mmax,m,j,i;
 			double			wtemp,wr,wpr,wpi,wi,theta; // Double precision for the trigonometric recurrences.
 			float			tempr,tempi;
 
@@ -67,7 +67,7 @@ namespace mrpt
 			mmax=2;
 			while (n > mmax) // Outer loop executed log2 nn times.
 			{
-				istep=mmax << 1;
+				unsigned long istep=mmax << 1;
 				theta=isign*(6.28318530717959/mmax);	// Initialize the trigonometric recurrence.
 				wtemp=sin(0.5*theta);
 				wpr = -2.0*wtemp*wtemp;
@@ -2039,7 +2039,7 @@ string math::MATLAB_plotCovariance2D(
 	SIN.resize(nEllipsePoints);
 
 	// Fill the angles:
-	for (Cos=COS.begin(),Sin=SIN.begin(),ang=0;Cos!=COS.end();Cos++,Sin++, ang+= (M_2PI/(nEllipsePoints-1)) )
+	for (Cos=COS.begin(),Sin=SIN.begin(),ang=0;Cos!=COS.end();++Cos,++Sin, ang+= (M_2PI/(nEllipsePoints-1)) )
 	{
 		*Cos = (float)cos(ang);
 		*Sin = (float)sin(ang);
@@ -2060,13 +2060,13 @@ string math::MATLAB_plotCovariance2D(
 	// Save the code to plot the ellipsoid:
 	// ----------------------------------------------
 	str += string("plot([ ");
-	for (x=X.begin();x!=X.end();x++)
+	for (x=X.begin();x!=X.end();++x)
 	{
 		str += format("%.4f",*x);
 		if (x!=(X.end()-1))	str += format(",");
 	}
 	str += string("],[ ");
-	for (y=Y.begin();y!=Y.end();y++)
+	for (y=Y.begin();y!=Y.end();++y)
 	{
 		str += format("%.4f",*y);
 		if (y!=(Y.end()-1))	str += format(",");
@@ -2198,7 +2198,7 @@ void mrpt::math::medianFilter( const std::vector<double> &inV, std::vector<doubl
 
         size_t  auxSz       = aux.size();
         int     auxMPoint   = auxSz*0.5;
-        outV[k] = auxSz%2 ? aux[auxMPoint] : 0.5*(aux[auxMPoint-1]+aux[auxMPoint]);     // If the window is even, take the mean value of the middle points
+        outV[k] = (auxSz%2) ? (aux[auxMPoint]) : (0.5*(aux[auxMPoint-1]+aux[auxMPoint]));     // If the window is even, take the mean value of the middle points
     } // end-for
 } // end medianFilter
 

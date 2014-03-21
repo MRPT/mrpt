@@ -400,10 +400,10 @@ void  CParticleFilterCapable::prepareFastDrawSample(
 		m_fastDrawAuxiliary.CDF[PARTICLE_FILTER_CAPABLE_FAST_DRAW_BINS] = 1.0;
 
 		// Compute the CDF and save threshold indexes:
-		double	CDF = 0,CDF_next; // Cumulative density func.
+		double	CDF = 0; // Cumulative density func.
 		for (i=0,j=0;i<M && j<PARTICLE_FILTER_CAPABLE_FAST_DRAW_BINS;i++)
 		{
-			CDF_next = CDF + m_fastDrawAuxiliary.PDF[i];
+			double CDF_next = CDF + m_fastDrawAuxiliary.PDF[i];
 			if (i==(M-1)) CDF_next = 1.0;	// rounds fix...
 			if (CDF_next>1.0) CDF_next = 1.0;
 
@@ -447,7 +447,7 @@ void  CParticleFilterCapable::prepareFastDrawSample(
 		std::vector<size_t>::iterator	it;
 		vector_uint::iterator			it2;
 		m_fastDrawAuxiliary.alreadyDrawnIndexes.resize( idxs.size() );
-		for ( it=idxs.begin(),it2=m_fastDrawAuxiliary.alreadyDrawnIndexes.begin();it!=idxs.end(); it++, it2++)
+		for ( it=idxs.begin(),it2=m_fastDrawAuxiliary.alreadyDrawnIndexes.begin();it!=idxs.end(); ++it, ++it2)
 			*it2 = (unsigned int)(*it);
 
 		m_fastDrawAuxiliary.alreadyDrawnNextOne = 0;
@@ -472,16 +472,15 @@ size_t  CParticleFilterCapable::fastDrawSample( const bayes::CParticleFilter::TP
 		if (PF_options.resamplingMethod!=CParticleFilter::prMultinomial)
 			THROW_EXCEPTION("resamplingMethod must be 'prMultinomial' for a dynamic number of particles!");
 
-		size_t			i,j;
 		double			draw = randomGenerator.drawUniform(0,0.999999);
-		double			CDF_next=-1, CDF=-1;
+		double			CDF_next=-1;
 
 		MRPT_START
 
 		// Use the look-up table to see the starting index we must start looking from:
-		j = (size_t)floor( draw * ((double)PARTICLE_FILTER_CAPABLE_FAST_DRAW_BINS-0.05) );
-		CDF = m_fastDrawAuxiliary.CDF[j];
-		i = m_fastDrawAuxiliary.CDF_indexes[j];
+		size_t j = (size_t)floor( draw * ((double)PARTICLE_FILTER_CAPABLE_FAST_DRAW_BINS-0.05) );
+		double CDF = m_fastDrawAuxiliary.CDF[j];
+		size_t i = m_fastDrawAuxiliary.CDF_indexes[j];
 
 		// Find the drawn particle!
 		while ( draw > (CDF_next = CDF+m_fastDrawAuxiliary.PDF[i]) )

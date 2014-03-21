@@ -61,7 +61,7 @@ CPose3DPDF* CPose3DPDF::createFrom2D(const CPosePDF &o)
 
 			CPosePDFParticles::CParticleList::const_iterator  it1;
 			CPose3DPDFParticles::CParticleList::iterator      it2;
-			for (it1=obj->m_particles.begin(),it2=newObj->m_particles.begin();it1!=obj->m_particles.end();it1++,it2++)
+			for (it1=obj->m_particles.begin(),it2=newObj->m_particles.begin();it1!=obj->m_particles.end();++it1,++it2)
 			{
 				it2->log_w = it1->log_w;
 				(*it2->d) = (*it1->d);
@@ -78,7 +78,7 @@ CPose3DPDF* CPose3DPDF::createFrom2D(const CPosePDF &o)
 				CPosePDFSOG::const_iterator it1;
 				CPose3DPDFSOG::iterator     it2;
 
-				for (it1=obj->begin(),it2=newObj->begin();it1!=obj->end();it1++,it2++)
+				for (it1=obj->begin(),it2=newObj->begin();it1!=obj->end();++it1,++it2)
 				{
 					it2->log_w = it1->log_w;
 					it2->val.mean.setFromValues( it1->mean.x(),it1->mean.y(),0, it1->mean.phi(),0,0 );

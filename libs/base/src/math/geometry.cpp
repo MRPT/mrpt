@@ -77,8 +77,6 @@ void math::closestFromPointToSegment(
 		double	&out_x,
 		double	&out_y)
 {
-	double	Ratio, Dx, Dy;
-
 	if (x1==x2 && y1==y2)
 	{
 		out_x = x1;
@@ -86,9 +84,9 @@ void math::closestFromPointToSegment(
 	}
 	else
 	{
-		Dx    = x2 - x1;
-		Dy    = y2 - y1;
-		Ratio = ((Px - x1) * Dx + (Py - y1) * Dy) / (Dx * Dx + Dy * Dy);
+		double Dx    = x2 - x1;
+		double Dy    = y2 - y1;
+		double Ratio = ((Px - x1) * Dx + (Py - y1) * Dy) / (Dx * Dx + Dy * Dy);
 		if (Ratio<0)
 		{
 		 out_x = x1;
@@ -123,8 +121,6 @@ void math::closestFromPointToLine(
 		double	&out_x,
 		double	&out_y)
 {
-	double	Ratio, Dx, Dy;
-
 	if (x1==x2 && y1==y2)
 	{
 		out_x = x1;
@@ -132,9 +128,9 @@ void math::closestFromPointToLine(
 	}
 	else
 	{
-		Dx    = x2 - x1;
-		Dy    = y2 - y1;
-		Ratio = ((Px - x1) * Dx + (Py - y1) * Dy) / (Dx * Dx + Dy * Dy);
+		double Dx    = x2 - x1;
+		double Dy    = y2 - y1;
+		double Ratio = ((Px - x1) * Dx + (Py - y1) * Dy) / (Dx * Dx + Dy * Dy);
 
 		out_x = x1 + (Ratio * Dx);
 		out_y = y1 + (Ratio * Dy);
@@ -152,17 +148,15 @@ double math::closestSquareDistanceFromPointToLine(
 		const double &	x2,
 		const double &	y2 )
 {
-	double	Ratio, Dx, Dy;
-
 	if (x1==x2 && y1==y2)
 	{
 		return square( Px-x1 ) + square( Py-y1 );
 	}
 	else
 	{
-		Dx    = x2 - x1;
-		Dy    = y2 - y1;
-		Ratio = ((Px - x1) * Dx + (Py - y1) * Dy) / (Dx * Dx + Dy * Dy);
+		double Dx    = x2 - x1;
+		double Dy    = y2 - y1;
+		double Ratio = ((Px - x1) * Dx + (Py - y1) * Dy) / (Dx * Dx + Dy * Dy);
 
 		return square( x1 + (Ratio * Dx) - Px ) + square( y1 + (Ratio * Dy) - Py );
 	}
@@ -906,7 +900,7 @@ bool math::areAligned(const std::vector<TPoint2D> &points,TLine2D &r)	{
 	for (size_t i=1;;i++) try	{
 		r=TLine2D(p0,points[i]);
 		return true;
-	}	catch (logic_error l)	{}
+	}	catch (logic_error &l)	{}
 }
 
 bool math::areAligned(const std::vector<TPoint3D> &points)	{
@@ -929,7 +923,7 @@ bool math::areAligned(const std::vector<TPoint3D> &points,TLine3D &r)	{
 	for (size_t i=1;;i++) try	{
 		r=TLine3D(p0,points[i]);
 		return true;
-	}	catch (logic_error l)	{}
+	}	catch (logic_error &l)	{}
 }
 
 void math::project3D(const TLine3D &line,const CPose3D &newXYpose,TLine3D &newLine)	{
@@ -1158,7 +1152,7 @@ struct TCommonRegion	{
 	~TCommonRegion()	{
 		destroy();
 	}
-	void operator=(const TCommonRegion &r)	{
+	TCommonRegion & operator=(const TCommonRegion &r)	{
 		destroy();
 		switch (type=r.type)	{
 			case 0:
@@ -1168,6 +1162,7 @@ struct TCommonRegion	{
 				data.segment=new TSegment2D(*(r.data.segment));
 				break;
 		}
+		return *this;
 	}
 	TCommonRegion(const TCommonRegion &r):type(0)	{
 		operator=(r);
@@ -1199,7 +1194,7 @@ struct TTempIntersection	{
 	~TTempIntersection()	{
 		destroy();
 	}
-	void operator=(const TTempIntersection &t)	{
+	TTempIntersection & operator=(const TTempIntersection &t)	{
 		destroy();
 		switch (type=t.type)	{
 			case 0:
@@ -1209,6 +1204,7 @@ struct TTempIntersection	{
 				data.common=new TCommonRegion(*(t.data.common));
 				break;
 		}
+		return *this;
 	}
 	TTempIntersection(const TTempIntersection &t):type(0)	{
 		operator=(t);
@@ -1437,7 +1433,7 @@ size_t math::intersect(const std::vector<TPolygon3D> &v1,const std::vector<TPoly
 		const TPoint3D &min1=*itMin1,max1=*itMax1;
 		std::vector<TPoint3D>::const_iterator itMin2=minBounds2.begin();
 		std::vector<TPoint3D>::const_iterator itMax2=maxBounds2.begin();
-		for (std::vector<TPolygon3D>::const_iterator it2=v2.begin();it2!=v2.end();it2++,itP2++,itMin2++,itMax2++) if (!compatibleBounds(min1,max1,*itMin2,*itMax2)) continue;
+		for (std::vector<TPolygon3D>::const_iterator it2=v2.begin();it2!=v2.end();++it2,++itP2,++itMin2,++itMax2) if (!compatibleBounds(min1,max1,*itMin2,*itMax2)) continue;
 		else if (intersectAux(poly1,plane1,*it2,*itP2,obj)) objs.push_back(obj);
 	}
 	return objs.size();
@@ -1815,7 +1811,6 @@ void math::assemblePolygons(const std::vector<TSegment3D> &segms,std::vector<TPo
 	else remainder.push_back(*it);
 	size_t N=tmp.size();
 	CSparseMatrixTemplate<unsigned char> matches(N,N);
-	std::vector<size_t> reps;
 	for (size_t i=0;i<N-1;i++) for (size_t j=i+1;j<N;j++)	{
 		if (distance(tmp[i].point1,tmp[j].point1)<geometryEpsilon)	{
 			matches(i,j)|=1;
