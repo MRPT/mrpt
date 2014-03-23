@@ -14,6 +14,9 @@
 
  <a name="1.1.1">
   <h2>Version 1.1.1: (Under development) </h2></a>
+	- Changes in classes: 
+		- [mrpt-base] 
+			- Robust kernel templates moved from mrpt::vision to mrpt::math. See mrpt::math::RobustKernel<>. Added unit tests for robust kernels.
 	- Build system:
 		- Fixes to build in OS X - [Patch](https://gist.github.com/randvoorhies/9283072) by Randolph Voorhies.
   	- BUG FIXES:
