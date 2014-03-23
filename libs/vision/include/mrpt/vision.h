@@ -33,7 +33,6 @@
 #include <mrpt/vision/CUndistortMap.h>
 #include <mrpt/vision/CStereoRectifyMap.h>
 #include <mrpt/vision/CImagePyramid.h>
-#include <mrpt/vision/robust_kernels.h>
 #include <mrpt/vision/CDifodo.h>
 
 // Maps:
