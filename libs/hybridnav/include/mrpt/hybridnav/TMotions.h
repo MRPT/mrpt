@@ -39,17 +39,28 @@ namespace mrpt
 		template<class TMotions>
         class TMotionsTree : public mrpt::graphs::CDirectedTree< TMotions >
             {
+
             public:
+
+//                    //!> general definitions for node ID, root, from, to
+//                    const mrpt::utils::TNodeID   my_root_node_ID;
+//                    const mrpt::utils::TNodeID   my_from_node_ID;
+//                    const mrpt::utils::TNodeID   my_to_node_ID;
 
                 //methods we need here are:
 
                 //---->verify this !!!!!!!!
                 //I want to hide the tree structure to the user that only should add the node by a addNode function, so i defined:
-                void addNode( TMotions TMotions_) {  this->TListEdges.push( TMotions_ );   }
+                void addNode( TMotions TMotions_)
+                {
+                    //mrpt::graphs::CDirectedTree::TEdgeInfo TEdgeInfo_;
+                    this->TEdgeInfo.data = TMotions_;
+                    this->TListEdges.push_back( this->TEdgeInfo );
+                }
                 // in the CDirectedTree the edges are std::list < > this use is correct when we add a new node
                 // but maybe would be not efficient when we need to get a new element for the tree since the list
                 // are defined as LIFO/FIFO structures, how you plan to address the nearest neighbor search?
-                void getNode( int node_index) { this->TListEdges.push_back( node_index ); }
+                void getNode( int node_index) { this->TListEdges.push_back( node_index ); } //!-> this will not work!!!
                 //I imagine that we will need it for the nn_search where the node_index will came from a search function
 
                 //!<  I saw a virtual class Visitors that should be redefined
@@ -61,10 +72,8 @@ namespace mrpt
                 //for our case the right methohortest_patd should be “visitBreadthFirst”, how this works in the
                 //mrpt::graphs::CDirectedTree class, should we redefine it?
 
-//!<            void erase();  //this is not necessary because it should be hereditated from CDirectedTree in clear();
-//!<            why it not work when I define the TMotionTree im the test code???
-//!<            should I redefine it here?
             };
+#define INVALID_2DSTATE static_cast<mrpt::poses::TPose2D>(-1)
 
 		/** @name TMotionSE2 class for planning in SE2 */
 		class TMotionsSE2
