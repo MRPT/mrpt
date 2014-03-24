@@ -126,7 +126,7 @@ bool CRejectionSamplingRangeOnlyLocalization::setParams(
 	size_t																i;
 
 	// For each observation:
-	for (i=0,it=observation.sensedData.begin();it!=observation.sensedData.end();it++,i++)
+	for (i=0,it=observation.sensedData.begin();it!=observation.sensedData.end();++it,++i)
 	{
 		// Is in the map?
 		const CLandmark	*lm = beaconsMap.landmarks.getByBeaconID( it->beaconID );

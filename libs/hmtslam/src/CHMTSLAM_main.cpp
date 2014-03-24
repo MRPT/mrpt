@@ -163,8 +163,6 @@ CHMTSLAM::~CHMTSLAM()
   ---------------------------------------------------------------*/
 void  CHMTSLAM::clearInputQueue()
 {
-	std::deque<CSerializable*>::iterator	it;
-
 	// Wait for critical section
 	{
 		CCriticalSectionLocker  locker( &m_inputQueue_cs);

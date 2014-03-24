@@ -162,7 +162,7 @@ CSetOfObjectsPtr stock_objects::RobotRhodon()
 {
 	CSetOfObjectsPtr ret = CSetOfObjects::Create();
 	float height = 0;
-	
+
 	vector<TPoint2D> level1;
 	level1.push_back(TPoint2D(0.31, 0));
 	level1.push_back(TPoint2D(0.22, 0.24));
@@ -199,11 +199,11 @@ CSetOfObjectsPtr stock_objects::RobotRhodon()
 
 	CPolyhedronPtr obj3 = opengl::CPolyhedron::CreateCustomPrism(level3, 1);
 	obj3->setLocation(0,0,height);
-	height+=1;
+	//height+=1;
 	obj3->setColor(0.6,0.6,0.6);
 	ret->insert( obj3 );
 
-	
+
 	opengl::CCylinderPtr obj4 = opengl::CCylinder::Create(0.05, 0.05, 0.4, 20, 20);
 	obj4->setLocation(0,0,0.73);
 	obj4->setColor(0,0,0.9);

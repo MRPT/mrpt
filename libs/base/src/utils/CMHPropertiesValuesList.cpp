@@ -129,11 +129,11 @@ CSerializablePtr  CMHPropertiesValuesList::get(
 	const int64_t &hypothesis_ID) const
 {
 	std::vector<TPropertyValueIDTriplet>::const_iterator it;
-	for (it=m_properties.begin();it!=m_properties.end();it++)
+	for (it=m_properties.begin();it!=m_properties.end();++it)
 		if (!os::_strcmpi(propertyName,it->name.c_str()) && it->ID == hypothesis_ID )
 			return it->value;
 
-	for (it=m_properties.begin();it!=m_properties.end();it++)
+	for (it=m_properties.begin();it!=m_properties.end();++it)
 		if (!os::_strcmpi(propertyName,it->name.c_str()) && it->ID == 0 )
 			return it->value;
 
@@ -261,7 +261,7 @@ void  CMHPropertiesValuesList::remove(
 	for (std::vector<TPropertyValueIDTriplet>::iterator it=m_properties.begin();it!=m_properties.end(); )
 		if (!os::_strcmpi(propertyName,it->name.c_str()) && it->ID == hypothesis_ID )
 				it = m_properties.erase(it);
-		else	it++;
+		else	++it;
 }
 
 /*---------------------------------------------------------------
@@ -272,7 +272,7 @@ void  CMHPropertiesValuesList::removeAll( const int64_t & hypothesis_ID)
 	for (std::vector<TPropertyValueIDTriplet>::iterator it=m_properties.begin();it!=m_properties.end();)
 		if (it->ID == hypothesis_ID )
 				it = m_properties.erase(it);
-		else	it++;
+		else	++it;
 }
 
 

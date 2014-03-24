@@ -115,7 +115,6 @@ bool CLMS100Eth::turnOn()
      * * SMN mEEwriteall   Je ne le fais pas, car ca écrit en mémoire non volatile...
      * * Request scan : sRN LMDscandata OR sEN LMDscandata
      */
-    size_t read;
     if(checkIsConnected())
     {
         try{
@@ -124,12 +123,12 @@ bool CLMS100Eth::turnOn()
                 char msgIn[100];
                 sendCommand(msg);
 
-                read = m_client.readAsync(msgIn, 100, 1000, 1000);  //18
-                
+                size_t read = m_client.readAsync(msgIn, 100, 1000, 1000);  //18
+
                 msgIn[read-1] = 0;
                 printf_debug("read : %d\n",read);
                 printf_debug("message : %s\n",string(&msgIn[1]).c_str());
-                
+
                 if(!read) return false;
             }
             {
@@ -163,7 +162,7 @@ bool CLMS100Eth::turnOn()
                 char msgIn[100];
                 sendCommand(msg);
                 read = m_client.readAsync(msgIn, 100, 1000, 1000);
-                
+
                 msgIn[read-1] = 0;
                 printf_debug("message : %s\n",string(&msgIn[1]).c_str());
                 if(!read) return false;
@@ -175,7 +174,7 @@ bool CLMS100Eth::turnOn()
                     sendCommand(msg);
                     read = m_client.readAsync(msgIn, 100, 1000, 1000);
                     sleep(10000);
-                    
+
                     msgIn[read-1] = 0;
                     printf_debug("message : %s\n",&msgIn[1]);
                     printf_debug("%c\n", msgIn[11]);
@@ -243,7 +242,7 @@ bool CLMS100Eth::decodeScan(char* buff, CObservation2DRangeScan& outObservation)
                 THROW_EXCEPTION("STATUS error on LMS100");
                 return false;
             }
-			else 
+			else
 			if(!strcmp(next, "4"))
 			{
 				THROW_EXCEPTION("Contamination error on LMS100");
@@ -307,7 +306,7 @@ void CLMS100Eth::doProcessSimple(bool &outThereIsObservation, CObservation2DRang
     //size_t read = m_client.readAsync(buffIn, sizeof(buffIn), 100, 100);
     //cout << "read :" << read << endl;
     //while(m_client.readAsync(buffIn, sizeof(buffIn), 100, 100)) cout << "Lit dans le vent" << endl;
-    
+
     m_client.readAsync(buffIn, sizeof(buffIn), 40, 40);
 
     if(decodeScan(buffIn, outObservation))
@@ -329,9 +328,9 @@ void CLMS100Eth::doProcessSimple(bool &outThereIsObservation, CObservation2DRang
 void CLMS100Eth::doProcess( )
 {
 	CObservation2DRangeScanPtr obs= CObservation2DRangeScan::Create();
-	bool isThereObservation, hwError;
 	try
 	{
+        bool isThereObservation, hwError;
 		doProcessSimple(isThereObservation, *obs, hwError);
 		if(hwError) m_state = ssError;
 		else m_state = ssWorking;

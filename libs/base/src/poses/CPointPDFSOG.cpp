@@ -264,7 +264,7 @@ void CPointPDFSOG::drawSingleSample(CPoint3D  &outSample) const
 	vector<size_t>				outIdxs;
 	vector_double::iterator 	itW;
 	CListGaussianModes::const_iterator it;
-	for (it=m_modes.begin(),itW=logWeights.begin();it!=m_modes.end();it++,itW++)
+	for (it=m_modes.begin(),itW=logWeights.begin();it!=m_modes.end();++it,++itW)
 		*itW = it->log_w;
 
 	CParticleFilterCapable::computeResampling(
@@ -491,19 +491,16 @@ void  CPointPDFSOG::evaluatePDFInArea(
 	ASSERT_(y_max>y_min);
 	ASSERT_(resolutionXY>0);
 
-	size_t		Nx = (size_t)ceil((x_max-x_min)/resolutionXY);
-	size_t		Ny = (size_t)ceil((y_max-y_min)/resolutionXY);
-	size_t		i,j;
-	float		x,y;
-
+	const size_t Nx = (size_t)ceil((x_max-x_min)/resolutionXY);
+	const size_t Ny = (size_t)ceil((y_max-y_min)/resolutionXY);
 	outMatrix.setSize(Ny,Nx);
 
-	for (i=0;i<Ny;i++)
+	for (size_t i=0;i<Ny;i++)
 	{
-		y = y_min + i*resolutionXY;
-		for (j=0;j<Nx;j++)
+		const float y = y_min + i*resolutionXY;
+		for (size_t j=0;j<Nx;j++)
 		{
-			x = x_min + j*resolutionXY;
+			float x = x_min + j*resolutionXY;
 			outMatrix(i,j) = evaluatePDF(CPoint3D(x,y,z),sumOverAllZs);
 		}
 	}

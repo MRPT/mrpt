@@ -433,7 +433,7 @@ namespace mrpt
 			 */
 
 		public:
-			CKalmanFilterCapable() {} //!< Default constructor
+			CKalmanFilterCapable() : m_user_didnt_implement_jacobian(true) {} //!< Default constructor
 			virtual ~CKalmanFilterCapable() {}  //!< Destructor
 
 			mrpt::utils::CTimeLogger &getProfiler() { return m_timLogger; }

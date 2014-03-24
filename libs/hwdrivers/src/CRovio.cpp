@@ -376,7 +376,7 @@ bool CRovio::captureImageAsync( CImage & picture, bool rectified)
 bool CRovio::getRovioState(CRovio::TRovioState &status)
 {
 	size_t x_pos, /*y_pos, theta_pos,*/ lenght;
-	string x_value, y_value, theta_value, MF, response, errormsg;
+	string x_value, theta_value, MF, response, errormsg;
 	mrpt::math::TPose2D pose;
 	general_command(1, response, errormsg);		//Get report from Rovio to response
 
@@ -411,14 +411,14 @@ bool CRovio::getEncoders(CRovio::TEncoders &encoders)//Revisar esto
 {
 	string resp, error, field;
 	//string field_name[12]={"Packet length","Not Used","Left Wheel:Dir Rotation","Left Wheel:Ticks","Right Wheel:Dir Rotation","Right Wheel:Ticks","Rear Wheel:Dir Rotation","Rear Wheel:Ticks","Not used","Head Position","Batery","Config Status"};
-	size_t pos, length;
+	size_t length;
 	int *a_enc = new int[11];	//12 encoder's fields
 	long l_value;
 
 	general_command(20, resp, error);	//get Encoders string to resp
 	if(error.empty())
 	{
-		pos=(resp.find("responses =")+12);
+		size_t pos=(resp.find("responses =")+12);
 		for(int i=0;i<=11;i++)
 		{
 			if ( (i==3)||(i==5)||(i==7) )

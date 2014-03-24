@@ -265,7 +265,7 @@ double CPointPDFParticles::computeKurtosis()
 	var[2]=square(var[2]);
 
 	// Moment:
-	for (it=m_particles.begin();it!=m_particles.end();it++)
+	for (it=m_particles.begin();it!=m_particles.end();++it)
 	{
 		mu4[0]+=pow(it->d->x-m[0],4.0);
 		mu4[1]+=pow(it->d->y-m[1],4.0);

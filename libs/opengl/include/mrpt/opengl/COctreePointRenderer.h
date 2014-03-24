@@ -55,7 +55,9 @@ namespace mrpt
 
 			/** Copy ctor */
 			COctreePointRenderer(const COctreePointRenderer &) :
-				m_octree_has_to_rebuild_all(true)
+				m_octree_has_to_rebuild_all(true),
+				m_visible_octree_nodes(0),
+				m_visible_octree_nodes_ongoing(0)
 			{ }
 
 

@@ -383,7 +383,7 @@ CPose3D	 CPose3DPDFParticles::getParticlePose(int i) const
  ---------------------------------------------------------------*/
 void  CPose3DPDFParticles::changeCoordinatesReference( const CPose3D &newReferenceBase )
 {
-	for (CParticleList::iterator it=m_particles.begin();it!=m_particles.end();it++)
+	for (CParticleList::iterator it=m_particles.begin();it!=m_particles.end();++it)
 		it->d->composeFrom(newReferenceBase, *it->d);
 }
 
@@ -439,7 +439,7 @@ void CPose3DPDFParticles::inverse(CPose3DPDF  &o) const
 	CPose3DPDFParticles::CParticleList::iterator it;
 	CPose3D   zero(0,0,0);
 
-	for (it=out->m_particles.begin();it!=out->m_particles.end();it++)
+	for (it=out->m_particles.begin();it!=out->m_particles.end();++it)
 		*it->d = zero - *it->d;
 
 	MRPT_END
@@ -453,7 +453,7 @@ CPose3D	 CPose3DPDFParticles::getMostLikelyParticle() const
 	CPose3DPDFParticles::CParticleList::const_iterator	it, itMax=m_particles.begin();
 	double		max_w = -1e300;
 
-	for (it=m_particles.begin();it!=m_particles.end();it++)
+	for (it=m_particles.begin();it!=m_particles.end();++it)
 	{
 		if (it->log_w > max_w)
 		{
@@ -488,11 +488,11 @@ void  CPose3DPDFParticles::resetDeterministic( const CPose3D &location,
 	{
 		clearParticles();
 		m_particles.resize(particlesCount);
-		for (it=m_particles.begin();it!=m_particles.end();it++)
+		for (it=m_particles.begin();it!=m_particles.end();++it)
 			it->d = new CPose3D();
 	}
 
-	for (it=m_particles.begin();it!=m_particles.end();it++)
+	for (it=m_particles.begin();it!=m_particles.end();++it)
 	{
 		*it->d	= location;
 		it->log_w	= 0;

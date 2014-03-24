@@ -73,7 +73,7 @@ bool CPRRTNavigator::initialize()
 		// Initialize PTG tables:
 		// ==========================
 		// Clear previous contents:
-		for (TListPTGs::iterator i = m_PTGs.begin();i!=m_PTGs.end();i++) delete *i;
+		for (TListPTGs::iterator i = m_PTGs.begin();i!=m_PTGs.end();++i) delete *i;
 		m_PTGs.clear();
 
         TParameters<double> p;

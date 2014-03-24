@@ -118,7 +118,6 @@ bool  CStringList::find(
 				return true;
 	}
 	else
-	if (caseSensitive)
 	{
 		for (deque<string>::const_iterator it=m_strings.begin();it!=m_strings.end();++it,foundIndex++)
 			if (!os::_strcmpi(compareText.c_str(),it->c_str()))
@@ -205,7 +204,7 @@ void  CStringList::saveToFile(const string &fileName) const
 	CFileOutputStream	fil(fileName.c_str());
 	deque<string>::const_iterator	it;
 
-	for (it=m_strings.begin();it!=m_strings.end();it++)
+	for (it=m_strings.begin();it!=m_strings.end();++it)
 	{
 		fil.WriteBuffer( it->c_str(), it->size() );
 		fil.WriteBuffer( "\r\n",2 );

@@ -105,7 +105,7 @@ CObject* TRuntimeClassId::createObject() const
 	}
 	catch (std::bad_alloc &e)
 	{
-		throw e;
+		throw;
 	}
 }
 

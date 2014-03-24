@@ -299,7 +299,7 @@ CPosePDFPtr CGridMapAligner::AlignPDF_robustMatch(
 		// Create the list of correspondences from the lists: idxs1 & idxs2
 		// ------------------------------------------------------------------
 		correspondences.clear();
-		for (it1=idxs1.begin(),it2=idxs2.begin();it1!=idxs1.end();it1++,it2++)
+		for (it1=idxs1.begin(),it2=idxs2.begin();it1!=idxs1.end();++it1,++it2)
 		{
 			mrpt::utils::TMatchingPair	mp;
 			mp.this_idx = *it1;
@@ -920,9 +920,6 @@ CPosePDFPtr CGridMapAligner::AlignPDF_correlation(
 	float		phiResolution = DEG2RAD( 0.2f );
 	float		phiMin = -M_PIf+0.5f*phiResolution;
 	float		phiMax = M_PIf;
-
-	phiMax = DEG2RAD(55);
-	phiMin = DEG2RAD(45);
 
 	// Compute the difference between maps for each (u,v) pair!
 	// --------------------------------------------------------------

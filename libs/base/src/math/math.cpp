@@ -2051,7 +2051,7 @@ string math::MATLAB_plotCovariance2D(
 
 	// Compute the points of the ellipsoid:
 	// ----------------------------------------------
-	for (x=X.begin(), y=Y.begin(), Cos=COS.begin(),Sin=SIN.begin(); x!=X.end(); x++,y++,Cos++,Sin++)
+	for (x=X.begin(), y=Y.begin(), Cos=COS.begin(),Sin=SIN.begin(); x!=X.end(); ++x,++y,++Cos,++Sin)
 	{
 		*x = (float)( mean[0] + stdCount * (*Cos * M(0,0) + *Sin * M(1,0)) );
 		*y = (float)( mean[1] + stdCount * (*Cos * M(0,1) + *Sin * M(1,1)) );

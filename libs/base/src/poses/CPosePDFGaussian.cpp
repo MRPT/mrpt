@@ -556,7 +556,7 @@ void CPosePDFGaussian::composePoint(const mrpt::math::TPoint2D &l, CPoint2DPDFGa
 		this->mean,  // x
 		this->mean,  // u
 		df_dx,
-		df_du, 
+		df_du,
 		true,   // Eval df_dx
 		false   // Eval df_du (not needed)
 		);
@@ -568,18 +568,18 @@ void CPosePDFGaussian::composePoint(const mrpt::math::TPoint2D &l, CPoint2DPDFGa
 
 bool mrpt::poses::operator==(const CPosePDFGaussian &p1,const CPosePDFGaussian &p2)
 {
-	return p1.mean==p1.mean && p1.cov==p2.cov;
+	return p1.mean==p2.mean && p1.cov==p2.cov;
 }
 
 
-CPosePDFGaussian mrpt::poses::operator +( const CPosePDFGaussian &a, const CPosePDFGaussian &b  ) 
+CPosePDFGaussian mrpt::poses::operator +( const CPosePDFGaussian &a, const CPosePDFGaussian &b  )
 {
 	CPosePDFGaussian res(a);
 	res+=b;
 	return res;
 }
 
-CPosePDFGaussian mrpt::poses::operator -( const CPosePDFGaussian &a, const CPosePDFGaussian &b  ) 
+CPosePDFGaussian mrpt::poses::operator -( const CPosePDFGaussian &a, const CPosePDFGaussian &b  )
 {
 	CPosePDFGaussian res;
 	res.inverseComposition(a,b);

@@ -336,5 +336,5 @@ ostream &   mrpt::poses::operator << (
 
 bool mrpt::poses::operator==(const CPose3DQuatPDFGaussianInf &p1,const CPose3DQuatPDFGaussianInf &p2)
 {
-	return p1.mean==p1.mean && p1.cov_inv==p2.cov_inv;
+	return p1.mean==p2.mean && p1.cov_inv==p2.cov_inv;
 }

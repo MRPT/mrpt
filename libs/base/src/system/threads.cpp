@@ -79,11 +79,11 @@ namespace mrpt
 		struct TAuxThreadLaucher
 		{
 	#ifdef MRPT_OS_WINDOWS
-			TAuxThreadLaucher() : win_sem(0,10)
+			TAuxThreadLaucher() : ptrFunc(NULL),param(NULL),win_sem(0,10)
 			{
 			}
 	#else
-			TAuxThreadLaucher() { };
+			TAuxThreadLaucher() : ptrFunc(NULL),param(NULL) { };
 	#endif
 			void    (*ptrFunc) (void *);
 			void    *param;
@@ -99,7 +99,7 @@ namespace mrpt
 		{
 			try
 			{
-			TAuxThreadLaucher   *d = (TAuxThreadLaucher*) param;
+			TAuxThreadLaucher   *d = reinterpret_cast<TAuxThreadLaucher*>(param);
 
 			TAuxThreadLaucher	localCopy = *d;
 

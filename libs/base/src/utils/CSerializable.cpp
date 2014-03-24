@@ -31,22 +31,20 @@ IMPLEMENTS_VIRTUAL_MRPT_OBJECT(CSerializable, CObject, mrpt::utils)
 std::string utils::ObjectToString(const CSerializable *o)
 {
 	CMemoryStream				tmp,tmpCoded;
-	size_t						n;
 	std::string					str;
 
 	try
 	{
 		tmp.WriteObject(o);
-		n = tmp.getTotalBytesCount();
+		size_t n = tmp.getTotalBytesCount();
 
 		// Scan the string to code it:
 		// ----------------------------------
 		int				lastIdx = 0;
 		unsigned char	*data = (unsigned char*)tmp.getRawBufferData();
-		unsigned char	c;
 		for (size_t i=0;i<n;i++)
 		{
-			c = data[i];
+			unsigned char c = data[i];
 			// Search for first "0x00" byte:
 			if ( c == 0x01 || !c )
 			{
@@ -80,7 +78,7 @@ std::string utils::ObjectToString(const CSerializable *o)
 	}
 	catch (std::bad_alloc &e)
 	{
-		throw e;
+		throw;
 	}
 	catch(std::exception &e)
 	{
@@ -173,7 +171,7 @@ void utils::ObjectToOctetVector(const CSerializable *o, vector_byte & out_vector
 	}
 	catch (std::bad_alloc &e)
 	{
-		throw e;
+		throw;
 	}
 	catch(std::exception &e)
 	{
@@ -201,7 +199,7 @@ void utils::OctetVectorToObject(const vector_byte & in_data, CSerializablePtr &o
 	}
 	catch (std::bad_alloc &e)
 	{
-		throw e;
+		throw;
 	}
 	catch(std::exception &e)
 	{
@@ -232,7 +230,7 @@ void utils::ObjectToRawString(const CSerializable *o, std::string & out_vector)
 	}
 	catch (std::bad_alloc &e)
 	{
-		throw e;
+		throw;
 	}
 	catch(std::exception &e)
 	{
@@ -260,7 +258,7 @@ void utils::RawStringToObject(const std::string & in_data, CSerializablePtr &obj
 	}
 	catch (std::bad_alloc &e)
 	{
-		throw e;
+		throw;
 	}
 	catch(std::exception &e)
 	{

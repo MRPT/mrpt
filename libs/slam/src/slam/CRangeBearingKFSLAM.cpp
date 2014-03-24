@@ -562,7 +562,7 @@ void CRangeBearingKFSLAM::OnGetObservationsAndDataAssociation(
 	Z.resize(N);
 
 	size_t row;
-	for (row=0,itObs = obs->sensedData.begin();itObs!=obs->sensedData.end();itObs++,row++)
+	for (row=0,itObs = obs->sensedData.begin();itObs!=obs->sensedData.end();++itObs,++row)
 	{
 		// Fill one row in Z:
 		Z[row][0] =itObs->range;
@@ -582,7 +582,7 @@ void CRangeBearingKFSLAM::OnGetObservationsAndDataAssociation(
 		vector_int::iterator itDA;
 		CObservationBearingRange::TMeasurementList::const_iterator itObs;
 		size_t row;
-		for (row=0,itObs = obs->sensedData.begin(),itDA=data_association.begin();itObs!=obs->sensedData.end();itObs++,itDA++,row++)
+		for (row=0,itObs = obs->sensedData.begin(),itDA=data_association.begin();itObs!=obs->sensedData.end();++itObs,++itDA,++row)
 		{
     		// Fill data asociation: Using IDs!
 			if (itObs->landmarkID<0)
@@ -666,7 +666,7 @@ void CRangeBearingKFSLAM::OnGetObservationsAndDataAssociation(
 				);
 
 			// Return pairings to the main KF algorithm:
-			for (map<size_t,size_t>::const_iterator it= m_last_data_association.results.associations.begin();it!=m_last_data_association.results.associations.end();it++)
+			for (map<size_t,size_t>::const_iterator it= m_last_data_association.results.associations.begin();it!=m_last_data_association.results.associations.end();++it)
 				data_association[ it->first ] = it->second;
 		}
 	}

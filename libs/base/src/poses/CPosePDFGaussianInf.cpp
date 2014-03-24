@@ -521,5 +521,5 @@ void  CPosePDFGaussianInf::operator += ( const CPosePDFGaussianInf &Ap)
 
 bool mrpt::poses::operator==(const CPosePDFGaussianInf &p1,const CPosePDFGaussianInf &p2)
 {
-	return p1.mean==p1.mean && p1.cov_inv==p2.cov_inv;
+	return p1.mean==p2.mean && p1.cov_inv==p2.cov_inv;
 }

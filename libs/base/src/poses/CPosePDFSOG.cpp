@@ -66,7 +66,7 @@ void CPosePDFSOG::getMean(CPose2D &p) const
 		CPosePDFParticles::CParticleList::iterator	itPart;
 		const_iterator				it;
 
-		for (it=m_modes.begin(),itPart=auxParts.m_particles.begin();it!=m_modes.end();it++,itPart++)
+		for (it=m_modes.begin(),itPart=auxParts.m_particles.begin();it!=m_modes.end();++it,++itPart)
 		{
 			itPart->log_w = (it)->log_w;
 			*itPart->d = (it)->mean;
@@ -97,15 +97,14 @@ void CPosePDFSOG::getCovarianceAndMean(CMatrixDouble33 &estCov, CPose2D &estMean
 	if (N)
 	{
 		// 1) Get the mean:
-		double		w,sumW = 0;
+		double sumW = 0;
 		CMatrixDouble31	estMeanMat = CMatrixDouble31(estMean2D);
-		const_iterator	it;
-
 		CMatrixDouble33 temp;
 		CMatrixDouble31 estMean_i;
 
-		for (it=m_modes.begin();it!=m_modes.end();it++)
+		for (const_iterator it=m_modes.begin();it!=m_modes.end();++it)
 		{
+		    double w;
 			sumW += w = exp((it)->log_w);
 
 			estMean_i = CMatrixDouble31( (it)->mean );
@@ -413,7 +412,7 @@ void	 CPosePDFSOG::inverse(CPosePDF &o)  const
 
 	out->m_modes.resize(m_modes.size());
 
-	for (itSrc=m_modes.begin(),itDest=out->m_modes.begin();itSrc!=m_modes.end();itSrc++,itDest++)
+	for (itSrc=m_modes.begin(),itDest=out->m_modes.begin();itSrc!=m_modes.end();++itSrc,++itDest)
 	{
 		// The mean:
 		(itDest)->mean = -(itSrc)->mean;
@@ -524,12 +523,11 @@ void  CPosePDFSOG::normalizeWeights()
 
 	if (!m_modes.size()) return;
 
-	iterator		it;
-	double		maxW = m_modes[0].log_w;
-	for (it=m_modes.begin();it!=m_modes.end();it++)
+	double maxW = m_modes[0].log_w;
+	for (iterator it=m_modes.begin();it!=m_modes.end();++it)
 		maxW = max(maxW,(it)->log_w);
 
-	for (it=m_modes.begin();it!=m_modes.end();it++)
+	for (iterator it=m_modes.begin();it!=m_modes.end();++it)
 		(it)->log_w -= maxW;
 
 	MRPT_END
@@ -554,19 +552,17 @@ void  CPosePDFSOG::evaluatePDFInArea(
 	ASSERT_(y_max>y_min);
 	ASSERT_(resolutionXY>0);
 
-	size_t		Nx = (size_t)ceil((x_max-x_min)/resolutionXY);
-	size_t		Ny = (size_t)ceil((y_max-y_min)/resolutionXY);
-	size_t		i,j;
-	double		x,y;
+	const size_t		Nx = (size_t)ceil((x_max-x_min)/resolutionXY);
+	const size_t		Ny = (size_t)ceil((y_max-y_min)/resolutionXY);
 
 	outMatrix.setSize(Ny,Nx);
 
-	for (i=0;i<Ny;i++)
+	for (size_t i=0;i<Ny;i++)
 	{
-		y = y_min + i*resolutionXY;
-		for (j=0;j<Nx;j++)
+		double y = y_min + i*resolutionXY;
+		for (size_t j=0;j<Nx;j++)
 		{
-			x = x_min + j*resolutionXY;
+			double x = x_min + j*resolutionXY;
 			outMatrix(i,j) = evaluatePDF(CPose2D(x,y,phi),sumOverAllPhis);
 		}
 	}

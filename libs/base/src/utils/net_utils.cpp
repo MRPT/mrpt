@@ -162,7 +162,7 @@ mrpt::utils::net::http_get(
 		  get_object.c_str(),server_addr.c_str());
 
 		// Other headers:
-		for (TParameters<string>::const_iterator i=headers_to_send.begin();i!=headers_to_send.end();i++)
+		for (TParameters<string>::const_iterator i=headers_to_send.begin();i!=headers_to_send.end();++i)
 		{
 			req+=i->first;
 			req+=": ";
@@ -287,7 +287,7 @@ mrpt::utils::net::http_get(
 
 						mrpt::system::tokenize(aux_all_headers,"\r\n",lstLines);
 
-						for (deque<string>::const_iterator i=lstLines.begin();i!=lstLines.end();i++)
+						for (deque<string>::const_iterator i=lstLines.begin();i!=lstLines.end();++i)
 						{
 							const size_t p = i->find(":");
 							if (p==string::npos) continue;

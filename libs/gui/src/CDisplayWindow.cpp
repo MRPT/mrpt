@@ -446,7 +446,7 @@ void  CDisplayWindow::plot( const vector_float &x, const vector_float &y )
 
 	float tpxA=0, tpyA=0;
 
-	for( itx = x.begin(), ity = y.begin(); itx != x.end(); itx++, ity++ )
+	for( itx = x.begin(), ity = y.begin(); itx != x.end(); ++itx, ++ity )
 	{
 		float tpx = (*itx-x[0])/px + ox;
 		float tpy = (*ity-*itymn)/py + oy;

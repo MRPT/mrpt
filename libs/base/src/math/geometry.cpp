@@ -1153,6 +1153,7 @@ struct TCommonRegion	{
 		destroy();
 	}
 	TCommonRegion & operator=(const TCommonRegion &r)	{
+	    if (&r==this) return *this;
 		destroy();
 		switch (type=r.type)	{
 			case 0:
@@ -1195,6 +1196,7 @@ struct TTempIntersection	{
 		destroy();
 	}
 	TTempIntersection & operator=(const TTempIntersection &t)	{
+	    if (&t==this) return *this;
 		destroy();
 		switch (type=t.type)	{
 			case 0:
@@ -1426,7 +1428,7 @@ size_t math::intersect(const std::vector<TPolygon3D> &v1,const std::vector<TPoly
 	std::vector<TPlane>::const_iterator itP1=w1.begin();
 	std::vector<TPoint3D>::const_iterator itMin1=minBounds1.begin();
 	std::vector<TPoint3D>::const_iterator itMax1=maxBounds1.begin();
-	for (std::vector<TPolygon3D>::const_iterator it1=v1.begin();it1!=v1.end();it1++,itP1++,itMin1++,itMax1++)	{
+	for (std::vector<TPolygon3D>::const_iterator it1=v1.begin();it1!=v1.end();++it1,++itP1,++itMin1,++itMax1)	{
 		const TPolygon3D &poly1=*it1;
 		const TPlane &plane1=*itP1;
 		std::vector<TPlane>::const_iterator itP2=w2.begin();

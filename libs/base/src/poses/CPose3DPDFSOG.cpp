@@ -54,19 +54,16 @@ void CPose3DPDFSOG::getMean(CPose3D &p) const
 	if (N)
 	{
 		double			X=0,Y=0,Z=0,YAW=0,PITCH=0,ROLL=0;
-		double			ang,sumW=0;
+		double			sumW=0;
 
 		double			W_yaw_R=0,W_yaw_L=0;
 		double			yaw_R=0,yaw_L=0;
 		double			W_roll_R=0,W_roll_L=0;
 		double			roll_R=0,roll_L=0;
 
-
-		const_iterator	it;
-		double w;
-
-		for (it=m_modes.begin();it!=m_modes.end();it++)
+		for (const_iterator	it=m_modes.begin();it!=m_modes.end();++it)
 		{
+		    double w;
 			sumW += w = exp((it)->log_w);
 
 			X += (it)->val.mean.x() * w;
@@ -75,7 +72,7 @@ void CPose3DPDFSOG::getMean(CPose3D &p) const
 			PITCH	+= w * (it)->val.mean.pitch();
 
 			// Angles Yaw and Roll are especials!:
-			ang = (it)->val.mean.yaw();
+			double ang = (it)->val.mean.yaw();
 			if (fabs( ang )>1.5707963267948966192313216916398f)
 			{
 				// LEFT HALF: 0,2pi
@@ -157,15 +154,14 @@ void CPose3DPDFSOG::getCovarianceAndMean(CMatrixDouble66 &estCovOut,CPose3D &mea
 	if (N)
 	{
 		// 1) Get the mean:
-		double		w,sumW = 0;
+		double		sumW = 0;
 		CMatrixDouble estMean( mean );
-
-		const_iterator	it;
 
 		CMatrixDouble66		MMt;
 		CMatrixDouble61 estMean_i;
-		for (it=m_modes.begin();it!=m_modes.end();it++)
+		for (const_iterator	it=m_modes.begin();it!=m_modes.end();++it)
 		{
+		    double w;
 			sumW += w = exp((it)->log_w);
 			estMean_i = CMatrixDouble61((it)->val.mean);
 			MMt.multiply_AAt(estMean_i);
@@ -191,11 +187,8 @@ void  CPose3DPDFSOG::writeToStream(CStream &out,int *version) const
 	else
 	{
 		uint32_t	N = m_modes.size();
-		const_iterator		it;
-
 		out << N;
-
-		for (it=m_modes.begin();it!=m_modes.end();it++)
+		for (const_iterator it=m_modes.begin();it!=m_modes.end();++it)
 		{
 			out << (it)->log_w;
 			out << (it)->val.mean;
@@ -216,13 +209,10 @@ void  CPose3DPDFSOG::readFromStream(CStream &in,int version)
 	case 2:
 		{
 			uint32_t		N;
-			iterator		it;
-
 			in >> N;
-
 			this->resize(N);
 
-			for (it=m_modes.begin();it!=m_modes.end();it++)
+			for (iterator it=m_modes.begin();it!=m_modes.end();++it)
 			{
 				in >> (it)->log_w;
 

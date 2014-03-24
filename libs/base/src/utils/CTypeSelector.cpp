@@ -36,7 +36,7 @@ void  CTypeSelector::writeToStream(CStream &out, int *out_Version) const
 
 		out << n;
 
-		for (it=possibleTypes.begin();it<possibleTypes.end();it++)
+		for (it=possibleTypes.begin();it<possibleTypes.end();++it)
 			out << *it;
 
 		// Selection:
@@ -87,7 +87,6 @@ CTypeSelector::CTypeSelector(	std::string		posibilitiesList,
 	possibleTypes.clear();
 
 	// Extract tokens from the string:
-	vector<string> tokens;
 	mrpt::system::tokenize(posibilitiesList,",",possibleTypes);
 
 	// Select default type:

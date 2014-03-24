@@ -28,7 +28,7 @@ void  TMatchingPairList::dumpToFile(const std::string &fileName)
 	CFileOutputStream  f(fileName);
 	ASSERT_(f.fileOpenCorrectly())
 
-	for (iterator it=begin();it!=end();it++)
+	for (iterator it=begin();it!=end();++it)
 	{
 		f.printf("%u %u %f %f %f %f %f %f %f\n",
 				it->this_idx,
@@ -60,7 +60,7 @@ void TMatchingPairList::saveAsMATLABScript( const std::string &filName )
 
 	fprintf(f,"axis equal; hold on;\n");
 	iterator	it;
-	for (it=begin();it!=end();it++)
+	for (it=begin();it!=end();++it)
 	{
 		fprintf(f,"line([%f %f],[%f %f],'Color',colorLines);\n",
 				it->this_x,
@@ -84,7 +84,7 @@ bool  TMatchingPairList::indexOtherMapHasCorrespondence(unsigned int idx)
 	iterator	it;
 	bool		has = false;
 
-	for (it=begin();it!=end() && !has;it++)
+	for (it=begin();it!=end() && !has;++it)
 	{
 		has = it->other_idx == idx;
 	}
@@ -109,7 +109,7 @@ bool mrpt::utils::operator == (const TMatchingPairList& a,const TMatchingPairLis
 {
 	if (a.size()!=b.size())
 		return false;
-	for (TMatchingPairList::const_iterator it1=a.begin(),it2=b.begin();it1!=a.end();it1++,it2++)
+	for (TMatchingPairList::const_iterator it1=a.begin(),it2=b.begin();it1!=a.end();++it1,++it2)
 		if (!  ( (*it1)==(*it2)))
 			return false;
 	return true;
@@ -162,14 +162,13 @@ void  TMatchingPairList::squareErrorVector(const CPose2D &q, vector_float &out_s
 	const float csin = sin(q.phi());
 	const float qx   = q.x();
 	const float qy   = q.y();
-	float  xx, yy;		// Transformed points
 
 	const_iterator 			corresp;
 	vector_float::iterator	e_i;
-	for (corresp=begin(), e_i = out_sqErrs.begin();corresp!=end();corresp++, e_i++)
+	for (corresp=begin(), e_i = out_sqErrs.begin();corresp!=end();++corresp, ++e_i)
 	{
-		xx = qx + ccos * corresp->other_x - csin * corresp->other_y;
-		yy = qy + csin * corresp->other_x + ccos * corresp->other_y;
+		float xx = qx + ccos * corresp->other_x - csin * corresp->other_y;
+		float yy = qy + csin * corresp->other_x + ccos * corresp->other_y;
 		*e_i = square( corresp->this_x - xx ) + square( corresp->this_y - yy );
 	}
 }
@@ -196,7 +195,7 @@ void  TMatchingPairList::squareErrorVector(
 
 	const_iterator 			corresp;
 	vector_float::iterator	e_i, xx, yy;
-	for (corresp=begin(), e_i = out_sqErrs.begin(), xx = xs.begin(), yy = ys.begin();corresp!=end();corresp++, e_i++, xx++,yy++)
+	for (corresp=begin(), e_i = out_sqErrs.begin(), xx = xs.begin(), yy = ys.begin();corresp!=end();++corresp, ++e_i, ++xx,++yy)
 	{
 		*xx = qx + ccos * corresp->other_x - csin * corresp->other_y;
 		*yy = qy + csin * corresp->other_x + ccos * corresp->other_y;

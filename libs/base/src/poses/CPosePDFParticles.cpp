@@ -61,7 +61,7 @@ void  CPosePDFParticles::copyFrom(const CPosePDF &o)
 		{
 			for ( itSrc=pdf->m_particles.begin(), itDest = m_particles.begin();
 				   itSrc!=pdf->m_particles.end();
-			      itSrc++, itDest++ )
+			      ++itSrc, ++itDest )
 			{
 				(*itDest->d) = (*itSrc->d);
 				itDest->log_w = itSrc->log_w;
@@ -69,14 +69,14 @@ void  CPosePDFParticles::copyFrom(const CPosePDF &o)
 		}
 		else
 		{
-			for ( itDest = m_particles.begin();itDest!=m_particles.end();itDest++ )
+			for ( itDest = m_particles.begin();itDest!=m_particles.end();++itDest )
 				delete itDest->d;
 
 			m_particles.resize( pdf->m_particles.size() );
 
 			for ( itSrc=pdf->m_particles.begin(), itDest = m_particles.begin();
 				   itSrc!=pdf->m_particles.end();
-			      itSrc++, itDest++ )
+			      ++itSrc, ++itDest )
 			{
 				itDest->d = new CPose2D( *itSrc->d );
 				itDest->log_w = itSrc->log_w;
@@ -96,7 +96,7 @@ void  CPosePDFParticles::copyFrom(const CPosePDF &o)
 		clearParticles();
 		m_particles.resize(M);
 
-		for ( itDest = m_particles.begin(),partsIt=parts.begin();itDest!=m_particles.end();itDest++,partsIt++ )
+		for ( itDest = m_particles.begin(),partsIt=parts.begin();itDest!=m_particles.end();++itDest,++partsIt )
 		{
 			itDest->log_w = 0;
             itDest->d = new CPose2D( ( pdf->mean.x() + (*partsIt)[0] ),
@@ -135,9 +135,8 @@ void CPosePDFParticles::getMean(CPose2D &est_) const
 {
 	TPose2D est(0,0,0);
 
-	CPose2D			p;
-	size_t			i,n = m_particles.size();
-	double			phi,w,W=0;
+	const size_t n = m_particles.size();
+	double			W=0;
 	double			W_phi_R=0,W_phi_L=0;
 	double			phi_R=0,phi_L=0;
 
@@ -145,17 +144,17 @@ void CPosePDFParticles::getMean(CPose2D &est_) const
 
 	// First: XY
 	// -----------------------------------
-	for (i=0;i<n;i++)
+	for (size_t i=0;i<n;i++)
 	{
-		p  = *m_particles[i].d;
-		w  = exp(m_particles[i].log_w);
+		const CPose2D &p  = *m_particles[i].d;
+		double w  = exp(m_particles[i].log_w);
 		W += w;
 
 		est.x+= p.x() * w;
 		est.y+= p.y() * w;
 
 		// PHI is special:
-		phi = p.phi();
+		double phi = p.phi();
 		if (fabs(phi)>1.5707963267948966192313216916398f)
 		{
 			// LEFT HALF: 0,2pi
@@ -288,11 +287,11 @@ void  CPosePDFParticles::resetDeterministic( const CPose2D &location,
 	{
 		clear();
 		m_particles.resize(particlesCount);
-		for (it=m_particles.begin();it!=m_particles.end();it++)
+		for (it=m_particles.begin();it!=m_particles.end();++it)
 			it->d = new CPose2D();
 	}
 
-	for (it=m_particles.begin();it!=m_particles.end();it++)
+	for (it=m_particles.begin();it!=m_particles.end();++it)
 	{
 		*it->d	= location;
 		it->log_w	= 0;
@@ -368,7 +367,7 @@ void  CPosePDFParticles::changeCoordinatesReference(const CPose3D &newReferenceB
 {
 	const CPose2D newReferenceBase = CPose2D(newReferenceBase_);
 
-	for (CParticleList::iterator it=m_particles.begin();it!=m_particles.end();it++)
+	for (CParticleList::iterator it=m_particles.begin();it!=m_particles.end();++it)
 		it->d->composeFrom(newReferenceBase, *it->d);
 }
 
@@ -377,10 +376,10 @@ void  CPosePDFParticles::changeCoordinatesReference(const CPose3D &newReferenceB
  ---------------------------------------------------------------*/
 void  CPosePDFParticles::drawSingleSample( CPose2D &outPart ) const
 {
-	const double uni = randomGenerator.drawUniform(0.0f,0.9999f);
+	const double uni = randomGenerator.drawUniform(0.0,0.9999);
 	double cum = 0;
 
-	for (CParticleList::const_iterator it=m_particles.begin();it!=m_particles.end();it++)
+	for (CParticleList::const_iterator it=m_particles.begin();it!=m_particles.end();++it)
 	{
 		cum+= exp(it->log_w);
 		if ( uni<= cum )
@@ -399,7 +398,7 @@ void  CPosePDFParticles::drawSingleSample( CPose2D &outPart ) const
  ---------------------------------------------------------------*/
 void  CPosePDFParticles::operator += ( const CPose2D &Ap)
 {
-	for (CParticleList::iterator it=m_particles.begin();it!=m_particles.end();it++)
+	for (CParticleList::iterator it=m_particles.begin();it!=m_particles.end();++it)
 		it->d->composeFrom(*it->d, Ap);
 }
 
@@ -447,7 +446,7 @@ CPose2D	 CPosePDFParticles::getMostLikelyParticle() const
 	double		max_w = -1e300;
 
 
-	for (it=m_particles.begin();it!=m_particles.end();it++)
+	for (it=m_particles.begin();it!=m_particles.end();++it)
 	{
 		if (it->log_w > max_w)
 		{
@@ -479,11 +478,11 @@ double  CPosePDFParticles::evaluatePDF_parzen(
 	const double &	stdXY,
 	const double &	stdPhi ) const
 {
-	double	difPhi, ret = 0;
+	double	ret = 0;
 
 	for (CParticleList::const_iterator	it=m_particles.begin();it!=m_particles.end();++it)
 	{
-		difPhi = math::wrapToPi( phi - it->d->phi() );
+		double difPhi = math::wrapToPi( phi - it->d->phi() );
 
 		ret += exp(it->log_w) *
 			   math::normalPDF( it->d->distance2DTo(x,y), 0, stdXY ) *

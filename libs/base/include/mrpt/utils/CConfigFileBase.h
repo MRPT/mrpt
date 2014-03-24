@@ -57,7 +57,7 @@ namespace utils
 
 		/** Returs a list with all the keys into a section.
 		  */
-		virtual void getAllKeys( const std::string section, vector_string	&keys ) const = 0;
+		virtual void getAllKeys( const std::string &section, vector_string	&keys ) const = 0;
 
 		/** Checks if a given section exists (name is case insensitive) */
 		bool sectionExists( const std::string &section_name) const;

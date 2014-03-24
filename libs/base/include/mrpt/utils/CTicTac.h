@@ -10,6 +10,7 @@
 #define  CTICTAC_H
 
 #include <mrpt/utils/utils_defs.h>
+#include <mrpt/utils/CUncopiable.h>
 
 namespace mrpt
 {
@@ -20,28 +21,17 @@ namespace utils
 	 *  \note The class is named after the Spanish equivalent of "Tic-Toc" ;-)
 		 * \ingroup mrpt_base_grp
 	 */
-	class BASE_IMPEXP CTicTac
+	class BASE_IMPEXP CTicTac : public mrpt::utils::CUncopiable
 	{
 	private:
 		uint8_t		largeInts[64];
 	public:
-		/** Default constructor.
-		 */
+		/** Default constructor. */
 		CTicTac();
 
 		/** Destructor.
 		 */
 		virtual ~CTicTac();
-
-		CTicTac(const CTicTac& o)
-		{
-			THROW_EXCEPTION("CTicTac objects cannot be copied.");
-		}
-
-		CTicTac & operator =(const CTicTac& o)
-		{
-			THROW_EXCEPTION("CTicTac objects cannot be copied.");
-		}
 
 		/** Starts the stopwatch
 		 * \sa Tac

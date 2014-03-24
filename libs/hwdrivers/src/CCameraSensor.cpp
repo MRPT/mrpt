@@ -189,7 +189,7 @@ void CCameraSensor::initialize()
 		} catch (std::exception &e)
 		{
 			m_state = CGenericSensor::ssError;
-			throw e;
+			throw;
 		}
 	}
 	else if (m_grabber_type=="kinect")
@@ -212,7 +212,7 @@ void CCameraSensor::initialize()
 		} catch (std::exception &e)
 		{
 			m_state = CGenericSensor::ssError;
-			throw e;
+			throw;
 		}
 	}
 	else if (m_grabber_type=="rawlog")
@@ -240,7 +240,7 @@ void CCameraSensor::initialize()
 		} catch (std::exception &e)
 		{
 			m_state = CGenericSensor::ssError;
-			throw e;
+			throw;
 		}
 	}
 	else if (m_grabber_type=="flycap_stereo")
@@ -249,20 +249,20 @@ void CCameraSensor::initialize()
 		try
 		{
 			// Open camera and start capture:
-			m_cap_flycap_stereo_l = new CImageGrabber_FlyCapture2(); 
-			m_cap_flycap_stereo_r = new CImageGrabber_FlyCapture2(); 
+			m_cap_flycap_stereo_l = new CImageGrabber_FlyCapture2();
+			m_cap_flycap_stereo_r = new CImageGrabber_FlyCapture2();
 
 			cout << "[CCameraSensor::initialize] PGR FlyCapture2 stereo camera: Openning LEFT camera...\n";
 			m_cap_flycap_stereo_l->open(m_flycap_stereo_options[0], false /* don't start grabbing */ );
 
 			cout << "[CCameraSensor::initialize] PGR FlyCapture2 stereo camera: Openning RIGHT camera...\n";
 			m_cap_flycap_stereo_r->open(m_flycap_stereo_options[1], false /* don't start grabbing */ );
-			
+
 			// Now, start grabbing "simultaneously":
 			if (m_fcs_start_synch_capture)
 			{
 				const CImageGrabber_FlyCapture2 *cams[2];
-				cams[0] = m_cap_flycap_stereo_l; 
+				cams[0] = m_cap_flycap_stereo_l;
 				cams[1] = m_cap_flycap_stereo_r;
 				CImageGrabber_FlyCapture2::startSyncCapture(2,cams);
 			}
@@ -276,7 +276,7 @@ void CCameraSensor::initialize()
 		} catch (std::exception &e)
 		{
 			m_state = CGenericSensor::ssError;
-			throw e;
+			throw;
 		}
 	}
 	else
@@ -737,13 +737,13 @@ CObservationPtr CCameraSensor::getNextFrame()
 	else if (m_cap_flycap_stereo_l && m_cap_flycap_stereo_r)
 	{
 		stObs = CObservationStereoImages::Create();
-		
+
 		CObservationImage obsL,obsR;
 
-		bool ok1 = false, ok2=false; 
-		
+		bool ok1, ok2=false;
+
 		ok1 = m_cap_flycap_stereo_r->getObservation(obsL);
-		if (ok1) 
+		if (ok1)
 			ok2 = m_cap_flycap_stereo_l->getObservation(obsR);
 
 		if (!ok1 || !ok2)
@@ -793,7 +793,7 @@ CObservationPtr CCameraSensor::getNextFrame()
 		stObs->sensorLabel = m_sensorLabel;
 		stObs->setSensorPose( m_sensorPose );
 	}
-	else { 
+	else {
 		obs3D->sensorLabel = m_sensorLabel;
 		obs3D->setSensorPose( m_sensorPose );
 	}
@@ -1162,7 +1162,7 @@ void CCameraSensor::thread_save_images(unsigned int my_working_thread_index)
 		m_toSaveList[my_working_thread_index].swap(newObs);
 		m_csToSaveList.leave();
 
-		for (TListObservations::const_iterator i=newObs.begin();i!=newObs.end();i++)
+		for (TListObservations::const_iterator i=newObs.begin();i!=newObs.end();++i)
 		{
 			if (IS_CLASS(i->second, CObservationImage))
 			{

@@ -21,7 +21,7 @@ using namespace std;
 // ------ CAbstractPTGBasedReactive::TNavigationParamsPTG -----
 std::string CAbstractPTGBasedReactive::TNavigationParamsPTG::getAsText() const
 {
-	
+
 	std::string s = TNavigationParams::getAsText();
 	s += "restrict_PTG_indices: ";
 	s += mrpt::utils::sprintf_vector("%u ",this->restrict_PTG_indices);
@@ -117,7 +117,7 @@ void CAbstractPTGBasedReactive::enableLogFile(bool enable)
 
 			// Open file, find the first free file-name.
 			char	aux[100];
-			int     nFile = 0;
+			unsigned int nFile = 0;
 			bool    free_name = false;
 
 			system::createDirectory("./reactivenav.logs");
@@ -426,7 +426,7 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 						holonomicMovement.speed,
 						HLFR);
 
-					// Security: Scale down the velocity when heading towards obstacles, 
+					// Security: Scale down the velocity when heading towards obstacles,
 					//  such that it's assured that we never go thru an obstacle!
 					const int kDirection = static_cast<int>( holonomicMovement.PTG->alpha2index( holonomicMovement.direction ) );
 					const double obsFreeNormalizedDistance = ipf.TP_Obstacles[kDirection];
@@ -439,7 +439,7 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 						else velScale = (obsFreeNormalizedDistance-secureDistanceStart)/(secureDistanceEnd-secureDistanceStart);
 					}
 
-					// Scale: 
+					// Scale:
 					holonomicMovement.speed *= velScale;
 				}
 

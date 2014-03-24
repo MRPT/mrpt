@@ -1797,11 +1797,13 @@ namespace math	{
 		/**
 		  * Union type storing pointers to every allowed type.
 		  */
-		struct	{
+		struct tobject2d_data_t	{
 			TPoint2D point;
 			TSegment2D segment;
 			TLine2D line;
 			TPolygon2D *polygon;
+
+			tobject2d_data_t() : polygon(NULL) { }
 		}	data;
 		/**
 		  * Destroys the object, releasing the pointer to the content (if any).
@@ -1914,8 +1916,8 @@ namespace math	{
 		/**
 		  * Assign another TObject2D. Pointers are not shared.
 		  */
-		void operator=(const TObject2D &obj)	{
-			if (this==&obj) return;
+		TObject2D & operator=(const TObject2D &obj)	{
+			if (this==&obj) return *this;
 			destroy();
 			switch (type=obj.type)	{
 				case GEOMETRIC_TYPE_POINT:
@@ -1931,6 +1933,7 @@ namespace math	{
 					data.polygon=new TPolygon2D(*(obj.data.polygon));
 					break;
 			}
+			return *this;
 		}
 		/**
 		  * Assign a point to this object.
@@ -2020,12 +2023,14 @@ namespace math	{
 		/**
 		  * Union containing pointer to actual data.
 		  */
-		struct	{
+		struct tobject3d_data_t {
 			TPoint3D point;
 			TSegment3D segment;
 			TLine3D line;
 			TPolygon3D *polygon;
 			TPlane plane;
+
+			tobject3d_data_t() : polygon(NULL) { }
 		}	data;
 		/**
 		  * Destroys the object and releases the pointer, if any.
@@ -2159,8 +2164,8 @@ namespace math	{
 		/**
 		  * Assigns another object, creating a new pointer if needed.
 		  */
-		void operator=(const TObject3D &obj)	{
-			if (this==&obj) return;
+		TObject3D & operator=(const TObject3D &obj)	{
+			if (this==&obj) return *this;
 			destroy();
 			switch (type=obj.type)	{
 				case GEOMETRIC_TYPE_POINT:
@@ -2183,6 +2188,7 @@ namespace math	{
 				default:
 					THROW_EXCEPTION("Invalid TObject3D object");
 			}
+			return *this;
 		}
 		/**
 		  * Assigns a point to this object.

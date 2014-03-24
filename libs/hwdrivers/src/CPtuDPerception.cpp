@@ -353,7 +353,7 @@ bool CPtuDPerception::powerMode(bool transit,char mode){
 							init
 -------------------------------------------------------------*/
 
-bool CPtuDPerception::init(const string port){
+bool CPtuDPerception::init(const string &port){
 
 	try{
 

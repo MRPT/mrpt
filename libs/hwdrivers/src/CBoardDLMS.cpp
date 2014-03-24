@@ -200,7 +200,7 @@ void CBoardDLMS::doProcess()
 
 					for(itScan = myObs->scan.begin(), itCont = inMsg.content.begin()+7, itValid = myObs->validRange.begin();
 						itScan != myObs->scan.end();
-						itScan++, itValid++)
+						++itScan, ++itValid)
 					{
 						unsigned char lowByte = *itCont;
 						unsigned char highByte = (*(itCont+1)) & 0x7F;			// Mask MSB FOR 15 bits data!
@@ -233,7 +233,7 @@ void CBoardDLMS::doProcess()
 	{
 		cerr << "[CBoardDLMS - doProces] Exception while gathering data: " << e.what() << endl;
 		m_state = ssError;
-		throw e;
+		throw;
 	}
 }
 

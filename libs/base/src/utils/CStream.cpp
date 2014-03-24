@@ -145,7 +145,7 @@ CStream& utils::operator << (CStream&out,const  vector_bool &a)
 		vector_byte		b(n);
 		vector_bool::const_iterator it;
 		vector_byte::iterator it2;
-		for (it=a.begin(),it2=b.begin();it!=a.end();it++,it2++)	*it2 = *it ? 1:0;
+		for (it=a.begin(),it2=b.begin();it!=a.end();++it,++it2)	*it2 = *it ? 1:0;
 		out.WriteBuffer( (void*)&b[0], (int)(sizeof(b[0])*n) );
 	}
 	return out;
@@ -290,7 +290,7 @@ CStream& utils::operator>>(CStream&in, vector_bool &a)
 		in.ReadBuffer( (void*)&b[0], sizeof(b[0])*n);
 		vector_byte::iterator it2;
 		vector_bool::iterator it;
-		for (it=a.begin(),it2=b.begin();it!=a.end();it++,it2++) *it = (*it2!=0);
+		for (it=a.begin(),it2=b.begin();it!=a.end();++it,++it2) *it = (*it2!=0);
 	}
 	return in;
 }
@@ -425,7 +425,7 @@ CSerializablePtr CStream::ReadObject()
 	}
 	catch (std::bad_alloc &e)
 	{
-		throw e;
+		throw;
 	}
 	catch(std::exception &e)
 	{
@@ -543,7 +543,7 @@ void CStream::ReadObject(CSerializable *existingObj)
 	}
 	catch (std::bad_alloc &e)
 	{
-		throw e;
+		throw;
 	}
 	catch(std::exception &e)
 	{
@@ -647,7 +647,7 @@ bool  CStream::receiveMessage( utils::CMessage &msg )
 	MRPT_START
 	unsigned char		buf[66000];
 	unsigned int		nBytesInFrame=0;
-	unsigned long		nBytesToRx=0, nBytesRx;
+	unsigned long		nBytesToRx=0;
 	unsigned char		tries = 2;
 	unsigned int		nB = 0;
 
@@ -671,7 +671,7 @@ bool  CStream::receiveMessage( utils::CMessage &msg )
 			} // end else
 		} // end else
 
-		nBytesRx = ReadBufferImmediate(buf+nBytesInFrame, nBytesToRx);
+		unsigned long nBytesRx = ReadBufferImmediate(buf+nBytesInFrame, nBytesToRx);
 
 		// No more data! (read timeout is already included in the call to "Read")
 		if (!nBytesRx)

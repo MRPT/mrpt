@@ -156,7 +156,7 @@ void CConfigFile::getAllSections( vector_string	&sections ) const
 	CSimpleIniA::TNamesDepend::iterator		n;
 	vector_string::iterator		s;
 	sections.resize(names.size());
-	for (n=names.begin(),s=sections.begin(); n!=names.end();n++,s++)
+	for (n=names.begin(),s=sections.begin(); n!=names.end();++n,++s)
 		*s = n->pItem;
 }
 
@@ -164,7 +164,7 @@ void CConfigFile::getAllSections( vector_string	&sections ) const
 /*---------------------------------------------------------------
 					  getAllKeys
  ---------------------------------------------------------------*/
-void CConfigFile::getAllKeys( const string section, vector_string	&keys ) const
+void CConfigFile::getAllKeys( const string &section, vector_string	&keys ) const
 {
 	CSimpleIniA::TNamesDepend	names;
 	static_cast<const CSimpleIniA*>(m_ini.get())->GetAllKeys(section.c_str(), names);
@@ -172,6 +172,6 @@ void CConfigFile::getAllKeys( const string section, vector_string	&keys ) const
 	CSimpleIniA::TNamesDepend::iterator		n;
 	vector_string::iterator		s;
 	keys.resize(names.size());
-	for ( n = names.begin(), s = keys.begin(); n!=names.end();n++,s++)
+	for ( n = names.begin(), s = keys.begin(); n!=names.end();++n,++s)
 		*s = n->pItem;
 }

@@ -47,7 +47,6 @@ void  CBoardIR::loadConfig_sensorSpecific(
 
 	m_COMbauds		= configSource.read_int( iniSection, "baudRate",m_COMbauds, true );
 
-	std::vector<int32_t>::iterator itIR;
 	std::vector<double> aux;				// Auxiliar vector
 	for( unsigned int i = 0; i < 6; i++ )
 	{

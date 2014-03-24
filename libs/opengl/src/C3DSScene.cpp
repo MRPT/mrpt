@@ -517,8 +517,8 @@ void  C3DSScene::initializeAllTextures()
 #endif
 }
 
-C3DSScene::C3DSScene() : 
-	m_bbox_min(0,0,0), 
+C3DSScene::C3DSScene() :
+	m_bbox_min(0,0,0),
 	m_bbox_max(0,0,0),
 	m_enable_extra_lighting(false)
 {
@@ -579,12 +579,9 @@ void C3DSScene::loadFrom3DSFile( const std::string &filepath )
   /* No nodes?  Fabricate nodes to display all the meshes. */
   if( !file->nodes )
   {
-    Lib3dsMesh *mesh;
-    Lib3dsNode *node;
-
-    for(mesh = file->meshes; mesh != NULL; mesh = mesh->next)
+    for(Lib3dsMesh *mesh = file->meshes; mesh != NULL; mesh = mesh->next)
     {
-      node = lib3ds_node_new_object();
+      Lib3dsNode *node = lib3ds_node_new_object();
       strcpy(node->name, mesh->name);
       node->parent_id = LIB3DS_NO_PARENT;
       lib3ds_file_insert_node(file, node);

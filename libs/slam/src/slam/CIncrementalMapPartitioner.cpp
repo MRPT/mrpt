@@ -572,7 +572,7 @@ void  CIncrementalMapPartitioner::removeSetOfNodes(vector_uint	indexesToRemove, 
 	// The new sequence of maps:
 	// --------------------------------------------------
 	vector_uint::reverse_iterator it;
-	for (it= indexesToRemove.rbegin(); it!=indexesToRemove.rend(); it++)
+	for (it= indexesToRemove.rbegin(); it!=indexesToRemove.rend(); ++it)
 	{
 		deque<mrpt::slam::CMultiMetricMap>::iterator  itM = m_individualMaps.begin() + *it;
 		// delete *itM; // Delete map
@@ -581,7 +581,7 @@ void  CIncrementalMapPartitioner::removeSetOfNodes(vector_uint	indexesToRemove, 
 
 	// The new sequence of localized SFs:
 	// --------------------------------------------------
-	for (it = indexesToRemove.rbegin(); it!=indexesToRemove.rend(); it++)
+	for (it = indexesToRemove.rbegin(); it!=indexesToRemove.rend(); ++it)
 		m_individualFrames.remove( *it );
 
 	// Change coordinates reference of frames:

@@ -298,7 +298,6 @@ size_t  CClientTCPSocket::readAsync(
 	size_t			remainToRead, alreadyRead = 0;
 	int				readNow;
 	bool			timeoutExpired = false;
-	int				curTimeout;
 
 	struct timeval	timeoutSelect;
 	struct timeval	*ptrTimeout;
@@ -312,7 +311,7 @@ size_t  CClientTCPSocket::readAsync(
 	while ( alreadyRead<Count && !timeoutExpired )
 	{
 		// Use the "first" or "between" timeouts:
-		curTimeout = alreadyRead==0 ? timeoutStart_ms : timeoutBetween_ms;
+		int curTimeout = alreadyRead==0 ? timeoutStart_ms : timeoutBetween_ms;
 
 		if (curTimeout<0)
 			ptrTimeout = NULL;
