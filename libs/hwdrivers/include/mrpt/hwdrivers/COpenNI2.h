@@ -141,10 +141,6 @@ namespace mrpt
 		  *    pose_pitch=0
 		  *    pose_roll=0
 		  *
-		  *    // Optional: Set the initial tilt angle of Kinect: upon initialization, the motor is sent a command to
-		  *    //            rotate to this angle (in degrees). Note: You must be aware of the tilt when interpreting the sensor readings.
-		  *    //           If not present or set to "360", no motor command will be sent at start up.
-		  *    initial_tilt_angle = 0
 		  *
 		  *    // Kinect sensor calibration:
 		  *    // See http://www.mrpt.org/Kinect_and_MRPT
@@ -216,6 +212,8 @@ namespace mrpt
 			  */
 			virtual void doProcess();
 
+//      void getDepthFrame(void *v_depth, uint32_t timestamp)
+
 			/** The main data retrieving function, to be called after calling loadConfig() and initialize().
 			  *  \param out_obs The output retrieved observation (only if there_is_obs=true).
 			  *  \param there_is_obs If set to false, there was no new observation.
@@ -259,10 +257,6 @@ namespace mrpt
 //			/** Set the sensor index to open (if there're several sensors attached to the computer); default=0 -> the first one. */
 //			inline void setDeviceIndexToOpen(int index) { m_user_device_number=index; }
 //			inline int getDeviceIndexToOpen() const { return m_user_device_number; }
-//
-//			/** Change tilt angle \note Sensor must be open first. */
-//			void setTiltAngleDegrees(double angle);
-//			double getTiltAngleDegrees();
 //
 //			/** Default: disabled */
 //			inline void enablePreviewRGB(bool enable=true) { m_preview_window = enable; }
@@ -319,8 +313,12 @@ namespace mrpt
 //			void* deviceListPtr;  // Opaque pointer to "openni::Array<openni::DeviceInfo>"
 //      openni::Array<openni::DeviceInfo> deviceList;
 
+      std::vector<void*>	vp_devices; // Opaque pointer to "openni::Device"
 //      void* p_deviceOptions; // Opaque pointer to "openni::VideoMode	options"
       void *p_depth_stream, *p_rgb_stream; // Opaque pointer to "openni::VideoStream"
+
+			/** Frame output structures */
+      void *framed, *framergb;	// Opaque pointers to "openni::VideoFrameRef"
       int width, height;
       float fps;
 
@@ -339,13 +337,11 @@ namespace mrpt
 			mrpt::utils::TCamera  	m_cameraParamsDepth;  //!< Params for the Depth camera
 			mrpt::poses::CPose3D    m_relativePoseIntensityWRTDepth; //!< See mrpt::slam::CObservation3DRangeScan for a diagram of this pose
 
-			int					m_initial_tilt_angle; //!< Set Kinect tilt to an initial deegre (it should be take in account in the sensor pose by the user)
-
 			double  m_maxRange; //!< Sensor max range (meters)
 
 			int  m_user_device_number; //!< Number of device to open (0:first,...)
 
-			bool  m_grab_image, m_grab_depth, m_grab_3D_points, m_grab_IMU ; //!< Default: all true
+			bool  m_grab_image, m_grab_depth, m_grab_3D_points ; //!< Default: all true
 
 //			TVideoChannel  m_video_channel; //!< The video channel to open: RGB or IR
 

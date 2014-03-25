@@ -31,8 +31,11 @@ IMPLEMENTS_GENERIC_SENSOR(COpenNI2,mrpt::hwdrivers)
 mrpt::utils::CTimeLogger alloc_tim;
 #endif
 
+#define DEVICE_ID_PTR (reinterpret_cast<openni::Device*>(vp_devices[sensor_id]))
 #define DEPTH_STREAM_PTR (reinterpret_cast<openni::VideoStream*>(p_depth_stream))
 #define RGB_STREAM_PTR (reinterpret_cast<openni::VideoStream*>(p_rgb_stream))
+#define DEPTH_FRAME_PTR (reinterpret_cast<openni::VideoFrameRef*>(framed))
+#define RGB_FRAME_PTR (reinterpret_cast<openni::VideoFrameRef*>(framergb))
 
 //int int a; // Check compilation
 
@@ -50,8 +53,7 @@ COpenNI2::COpenNI2() :
   height(240),
   fps(30),
 
-	m_relativePoseIntensityWRTDepth(0,-0.02,0, DEG2RAD(-90),DEG2RAD(0),DEG2RAD(-90)),
-	m_initial_tilt_angle(360),
+	m_relativePoseIntensityWRTDepth(0,0,0, DEG2RAD(0),DEG2RAD(0),DEG2RAD(0)),
 	m_user_device_number(0),
 	m_grab_image(true),
 	m_grab_depth(true),
@@ -110,10 +112,12 @@ void COpenNI2::initialize()
   openni::Array<openni::DeviceInfo> deviceList;
   openni::OpenNI::enumerateDevices(&deviceList);
   printf("Get device list. %d devices connected\n", deviceList.getSize() );
-  for (unsigned i=0; i < deviceList.getSize(); i++)
+  vp_devices.resize(deviceList.getSize());
+  for(unsigned i=0; i < deviceList.getSize(); i++)
   {
     int product_id = deviceList[i].getUsbProductId();
     printf("Device %u: name=%s uri=%s vendor=%s product=%i \n", i+1 , deviceList[i].getName(), deviceList[i].getUri(), deviceList[i].getVendor(), product_id);
+    vp_devices[i] = new openni::Device;
   }
   if(deviceList.getSize() == 0)
   {
@@ -207,7 +211,6 @@ std::cout << "width " << width << " height " << height << " fps " << fps << endl
 			m_relativePoseIntensityWRTDepth.fromString(s);
 	}
 
-	m_initial_tilt_angle = configSource.read_int(iniSection,"initial_tilt_angle",m_initial_tilt_angle);
 }
 
 bool COpenNI2::isOpen() const
@@ -215,121 +218,16 @@ bool COpenNI2::isOpen() const
 
 }
 
+//void getDepthFrame(void *v_depth, uint32_t timestamp)
+//{
 //
-////#if MRPT_HAS_KINECT_FREENECT
-////// ========  GLOBAL CALLBACK FUNCTIONS ========
-////void depth_cb(freenect_device *dev, void *v_depth, uint32_t timestamp)
-////{
-////	const freenect_frame_mode frMode = freenect_get_current_video_mode(dev);
-////
-////	uint16_t *depth = reinterpret_cast<uint16_t *>(v_depth);
-////
-////	COpenNI2 *obj = reinterpret_cast<COpenNI2*>(freenect_get_user(dev));
-////
-////	// Update of the timestamps at the end:
-////	CObservation3DRangeScan &obs = obj->internal_latest_obs();
-////	mrpt::synch::CCriticalSectionLocker lock( &obj->internal_latest_obs_cs() );
-////
-////	obs.hasRangeImage  = true;
-////	obs.range_is_depth = true;
-////
-////#ifdef KINECT_PROFILE_MEM_ALLOC
-////	alloc_tim.enter("depth_cb alloc");
-////#endif
-////
-////	// This method will try to exploit memory pooling if possible:
-////	obs.rangeImage_setSize(frMode.height,frMode.width);
-////
-////#ifdef KINECT_PROFILE_MEM_ALLOC
-////	alloc_tim.leave("depth_cb alloc");
-////#endif
-////
-////	const COpenNI2::TDepth2RangeArray &r2m = obj->getRawDepth2RangeConversion();
-////	for (int r=0;r<frMode.height;r++)
-////		for (int c=0;c<frMode.width;c++)
-////		{
-////			// For now, quickly save the depth as it comes from the sensor, it'll
-////			//  transformed later on in getNextObservation()
-////			const uint16_t v = *depth++;
-////			obs.rangeImage.coeffRef(r,c) = r2m[v & KINECT_RANGES_TABLE_MASK];
-////		}
-////	obj->internal_tim_latest_depth() = timestamp;
-////}
-////
-////void rgb_cb(freenect_device *dev, void *img_data, uint32_t timestamp)
-////{
-////	COpenNI2 *obj = reinterpret_cast<COpenNI2*>(freenect_get_user(dev));
-////	const freenect_frame_mode frMode = freenect_get_current_video_mode(dev);
-////
-////	// Update of the timestamps at the end:
-////	CObservation3DRangeScan &obs = obj->internal_latest_obs();
-////	mrpt::synch::CCriticalSectionLocker lock( &obj->internal_latest_obs_cs() );
-////
-////#ifdef KINECT_PROFILE_MEM_ALLOC
-////	alloc_tim.enter("depth_rgb loadFromMemoryBuffer");
-////#endif
-////
-////	obs.hasIntensityImage = true;
-////	if (obj->getVideoChannel()==COpenNI2::VIDEO_CHANNEL_RGB)
-////	{
-////	     // Color image: We asked for Bayer data, so we can decode it outselves here
-////	     //  and avoid having to reorder Green<->Red channels, as would be needed with
-////	     //  the RGB image from freenect.
-////          obs.intensityImageChannel = mrpt::slam::CObservation3DRangeScan::CH_VISIBLE;
-////          obs.intensityImage.resize(frMode.width, frMode.height, CH_RGB, true /* origin=top-left */ );
-////
-////#if MRPT_HAS_OPENCV
-////#	if MRPT_OPENCV_VERSION_NUM<0x200
-////		  // Version for VERY OLD OpenCV versions:
-////		  IplImage *src_img_bayer = cvCreateImageHeader(cvSize(frMode.width,frMode.height),8,1);
-////		  src_img_bayer->imageDataOrigin = reinterpret_cast<char*>(img_data);
-////		  src_img_bayer->imageData = src_img_bayer->imageDataOrigin;
-////		  src_img_bayer->widthStep = frMode.width;
-////
-////		  IplImage *dst_img_RGB = obs.intensityImage.getAs<IplImage>();
-////
-////          // Decode Bayer image:
-////		  cvCvtColor(src_img_bayer, dst_img_RGB, CV_BayerGB2BGR);
-////
-////#	else
-////		  // Version for modern OpenCV:
-////          const cv::Mat  src_img_bayer( frMode.height, frMode.width, CV_8UC1, img_data, frMode.width );
-////
-////          cv::Mat        dst_img_RGB= cv::cvarrToMat( obs.intensityImage.getAs<IplImage>(), false /* dont copy buffers */ );
-////
-////          // Decode Bayer image:
-////          cv::cvtColor(src_img_bayer, dst_img_RGB, CV_BayerGB2BGR);
-////#	endif
-////#else
-////     THROW_EXCEPTION("Need building with OpenCV!")
-////#endif
-////
-////	}
-////	else
-////	{
-////	     // IR data: grayscale 8bit
-////          obs.intensityImageChannel = mrpt::slam::CObservation3DRangeScan::CH_IR;
-////          obs.intensityImage.loadFromMemoryBuffer(
-////               frMode.width,
-////               frMode.height,
-////               false, // Color image?
-////               reinterpret_cast<unsigned char*>(img_data)
-////               );
-////
-////	}
-////
-////	//obs.intensityImage.setChannelsOrder_RGB();
-////
-////#ifdef KINECT_PROFILE_MEM_ALLOC
-////	alloc_tim.leave("depth_rgb loadFromMemoryBuffer");
-////#endif
-////
-////	obj->internal_tim_latest_rgb() = timestamp;
-////}
-////// ========  END OF GLOBAL CALLBACK FUNCTIONS ========
-////#endif // MRPT_HAS_KINECT_FREENECT
-////
+//}
 //
+//void getRGBFrame(void *v_depth, uint32_t timestamp)
+//{
+//
+//}
+
 void COpenNI2::open()
 {
 //	if(isOpen())
@@ -348,24 +246,25 @@ void COpenNI2::open()
 		THROW_EXCEPTION("No Kinect devices found.")
 
 	// Open the given device number:
-	openni::Device		device;
+  int sensor_id = 0;
 	const char* deviceURI = openni::ANY_DEVICE;
-	int rc = device.open(deviceURI);
+//	int rc = reinterpret_cast<openni::Device*>(vp_devices[sensor_id])->open(deviceURI);
+	int rc = DEVICE_ID_PTR->open(deviceURI);
 	if(rc != openni::STATUS_OK)
 	{
     THROW_EXCEPTION_CUSTOM_MSG1("Device open failed:\n%s\n", openni::OpenNI::getExtendedError());
 //		printf("Device open failed:\n%s\n", openni::OpenNI::getExtendedError());
 		openni::OpenNI::shutdown();
 	}
-	//cout << endl << "Do we have IR sensor? " << device.hasSensor(openni::SENSOR_IR);
-	//cout << endl << "Do we have RGB sensor? " << device.hasSensor(openni::SENSOR_COLOR);
-	//cout << endl << "Do we have Depth sensor? " << device.hasSensor(openni::SENSOR_DEPTH);
+	//cout << endl << "Do we have IR sensor? " << DEVICE_ID_PTR->hasSensor(openni::SENSOR_IR);
+	//cout << endl << "Do we have RGB sensor? " << DEVICE_ID_PTR->hasSensor(openni::SENSOR_COLOR);
+	//cout << endl << "Do we have Depth sensor? " << DEVICE_ID_PTR->hasSensor(openni::SENSOR_DEPTH);
 
 	//								Create RGB and Depth channels
 	//========================================================================================
 	p_depth_stream = new openni::VideoStream;
 	p_rgb_stream = new openni::VideoStream;
-	rc = DEPTH_STREAM_PTR->create(device, openni::SENSOR_DEPTH);
+	rc = DEPTH_STREAM_PTR->create(*DEVICE_ID_PTR, openni::SENSOR_DEPTH);
 	if (rc == openni::STATUS_OK)
 	{
 		rc = DEPTH_STREAM_PTR->start();
@@ -381,7 +280,7 @@ void COpenNI2::open()
 		printf("Couldn't find depth stream:\n%s\n", openni::OpenNI::getExtendedError());
 	}
 
-	rc = RGB_STREAM_PTR->create(device, openni::SENSOR_COLOR);
+	rc = RGB_STREAM_PTR->create(*DEVICE_ID_PTR, openni::SENSOR_COLOR);
 	if (rc == openni::STATUS_OK)
 	{
 		rc = RGB_STREAM_PTR->start();
@@ -413,17 +312,17 @@ void COpenNI2::open()
 	//						Configure some properties (resolution)
 	//========================================================================================
 	openni::VideoMode	options;
-	if (device.isImageRegistrationModeSupported(openni::IMAGE_REGISTRATION_DEPTH_TO_COLOR))
-		rc = device.setImageRegistrationMode(openni::IMAGE_REGISTRATION_DEPTH_TO_COLOR);
+	if (DEVICE_ID_PTR->isImageRegistrationModeSupported(openni::IMAGE_REGISTRATION_DEPTH_TO_COLOR))
+		rc = DEVICE_ID_PTR->setImageRegistrationMode(openni::IMAGE_REGISTRATION_DEPTH_TO_COLOR);
 	else
 		cout << "Device doesn't do image registration!" << endl;
 
-  if (device.setDepthColorSyncEnabled(true) == openni::STATUS_OK)
+  if (DEVICE_ID_PTR->setDepthColorSyncEnabled(true) == openni::STATUS_OK)
     cout << "setDepthColorSyncEnabled" << endl;
   else
     cout << "setDepthColorSyncEnabled failed!" << endl;
 
-	//rc = device.setImageRegistrationMode(openni::IMAGE_REGISTRATION_OFF);
+	//rc = DEVICE_ID_PTR->setImageRegistrationMode(openni::IMAGE_REGISTRATION_OFF);
 
 	options = RGB_STREAM_PTR->getVideoMode();
 	printf("\nInitial resolution RGB (%d, %d)", options.getResolutionX(), options.getResolutionY());
@@ -461,7 +360,6 @@ void COpenNI2::open()
 	//printf("\nClose range: %s", CloseRange?"On":"Off");
 
 
-
 //	// Setup:
 //	if(m_initial_tilt_angle!=360) // 360 means no motor command.
 //    setTiltAngleDegrees(m_initial_tilt_angle);
@@ -478,11 +376,7 @@ void COpenNI2::open()
 //	// Switch to that video mode:
 //	if (freenect_set_video_mode(f_dev, desiredFrMode)<0)
 //		THROW_EXCEPTION("Error setting Kinect video mode.")
-//
-//
-//	// Get video mode:
-//	const freenect_frame_mode frMode = freenect_get_current_video_mode(f_dev);
-//
+
 	// Realloc mem:
 	m_buf_depth.resize(width*height*3);
 	m_buf_rgb.resize(width*height*3);
@@ -493,27 +387,25 @@ void COpenNI2::open()
 
 	m_cameraParamsDepth.ncols = width;
 	m_cameraParamsDepth.nrows = height;
-//
-//	freenect_set_video_buffer(f_dev, &m_buf_rgb[0]);
-//	freenect_set_depth_buffer(f_dev, &m_buf_depth[0]);
-//
-//	freenect_set_depth_mode(f_dev, freenect_find_depth_mode(FREENECT_RESOLUTION_MEDIUM, FREENECT_DEPTH_10BIT));
-//
-//	// Set user data = pointer to "this":
-//	freenect_set_user(f_dev, this);
-//
-//	if (freenect_start_depth(f_dev)<0)
-//		THROW_EXCEPTION("Error starting depth streaming.")
-//
-//	if (freenect_start_video(f_dev)<0)
-//		THROW_EXCEPTION("Error starting video streaming.")
 
+	framed = new openni::VideoFrameRef;
+	framergb = new openni::VideoFrameRef;
 }
 
 void COpenNI2::close()
 {
+	DEPTH_STREAM_PTR->destroy();
+	RGB_STREAM_PTR->destroy();
+
+  delete DEPTH_FRAME_PTR;
+  delete RGB_FRAME_PTR;
+
   delete DEPTH_STREAM_PTR;
   delete RGB_STREAM_PTR;
+
+  for(unsigned i=0; i < vp_devices.size(); i++)
+    delete vp_devices[i];
+
 	openni::OpenNI::shutdown();
 }
 
@@ -568,178 +460,127 @@ void COpenNI2::getNextObservation(
 	bool &there_is_obs,
 	bool &hardware_error )
 {
-//	there_is_obs=false;
-//	hardware_error = false;
-//
-//#if MRPT_HAS_KINECT_FREENECT
-//
-//	static const double max_wait_seconds = 1./25.;
-//	static const TTimeStamp max_wait = mrpt::system::secondsToTimestamp(max_wait_seconds);
-//
-//	// Mark previous observation's timestamp as out-dated:
-//	m_latest_obs.hasPoints3D        = false;
-//	m_latest_obs.hasRangeImage      = false;
-//	m_latest_obs.hasIntensityImage  = false;
-//	m_latest_obs.hasConfidenceImage = false;
-//
-//	const TTimeStamp tim0 = mrpt::system::now();
-//
-//	// Reset these timestamp flags so if they are !=0 in the next call we're sure they're new frames.
-//	m_latest_obs_cs.enter();
-//	m_tim_latest_rgb   = 0;
-//	m_tim_latest_depth = 0;
-//	m_latest_obs_cs.leave();
-//
-//	while (freenect_process_events(f_ctx)>=0 && mrpt::system::now()<(tim0+max_wait) )
-//	{
-//		// Got a new frame?
-//		if ( (!m_grab_image || m_tim_latest_rgb!=0) &&   // If we are NOT grabbing RGB or we are and there's a new frame...
-//			 (!m_grab_depth || m_tim_latest_depth!=0)    // If we are NOT grabbing Depth or we are and there's a new frame...
-//		   )
-//		{
-//			// Approx: 0.5ms delay between depth frame (first) and RGB frame (second).
-//			//cout << "m_tim_latest_rgb: " << m_tim_latest_rgb << " m_tim_latest_depth: "<< m_tim_latest_depth <<endl;
-//			there_is_obs=true;
-//			break;
-//		}
-//	}
-//
-//	// Handle the case when there is NOT depth frames (if there's something very close blocking the IR sensor) but we have RGB:
-//	if ( (m_grab_image && m_tim_latest_rgb!=0) &&
-//		 (m_grab_depth && m_tim_latest_depth==0) )
-//	{
-//		// Mark the entire range data as invalid:
-//		m_latest_obs.hasRangeImage = true;
-//		m_latest_obs.range_is_depth = true;
-//
-//		m_latest_obs_cs.enter(); // Important: if system is running slow, etc. we cannot tell for sure that the depth buffer is not beeing filled right now:
-//		m_latest_obs.rangeImage.setSize(m_cameraParamsDepth.nrows,m_cameraParamsDepth.ncols);
-//		m_latest_obs.rangeImage.setConstant(0); // "0" means: error in range
-//		m_latest_obs_cs.leave();
-//		there_is_obs=true;
-//	}
-//
-//
-//	if (!there_is_obs)
-//		return;
-//
-//
-//	// We DO have a fresh new observation:
-//
-//	// Quick save the observation to the user's object:
-//	m_latest_obs_cs.enter();
-//		_out_obs.swap(m_latest_obs);
-//	m_latest_obs_cs.leave();
-//
-//#elif MRPT_HAS_KINECT_CL_NUI
-//
-//	const int waitTimeout = 200;
-//	const bool there_is_rgb   = GetNUICameraColorFrameRGB24(m_clnui_cam, &m_buf_rgb[0],waitTimeout);
-//	const bool there_is_depth = GetNUICameraDepthFrameRAW(m_clnui_cam, (PUSHORT)&m_buf_depth[0],waitTimeout);
-//
-//	there_is_obs = (!m_grab_image  || there_is_rgb) &&
-//	               (!m_grab_depth  || there_is_depth);
-//
-//	if (!there_is_obs)
-//		return;
-//
-//	// We DO have a fresh new observation:
-//	{
-//		CObservation3DRangeScan  newObs;
-//
-//		newObs.hasConfidenceImage = false;
-//
-//		// Set intensity image ----------------------
-//		if (m_grab_image)
-//		{
-//			newObs.hasIntensityImage  = true;
-//			newObs.intensityImageChannel = mrpt::slam::CObservation3DRangeScan::CH_VISIBLE;
-//			newObs.intensityImage.loadFromMemoryBuffer(KINECT_W,KINECT_H,true,&m_buf_rgb[0]);
-//		}
-//
-//		// Set range image --------------------------
-//		if (m_grab_depth || m_grab_3D_points)
-//		{
-//			newObs.hasRangeImage = true;
-//			newObs.range_is_depth = true;
-//			newObs.rangeImage.setSize(KINECT_H,KINECT_W);
-//			PUSHORT depthPtr = (PUSHORT)&m_buf_depth[0];
-//			for (int r=0;r<KINECT_H;r++)
-//				for (int c=0;c<KINECT_W;c++)
-//				{
-//					const uint16_t v = (*depthPtr++);
-//					newObs.rangeImage.coeffRef(r,c) = m_range2meters[v & KINECT_RANGES_TABLE_MASK];
-//				}
-//		}
-//
-//		// Save 3D point cloud ---------------------
-//		// 3d points are generated above, in the code common to libfreenect & CL NUI.
-//
-//
-//		// Save the observation to the user's object:
-//		_out_obs.swap(newObs);
-//	}
-//
-//#endif  // end MRPT_HAS_KINECT_CL_NUI
-//
-//	// Set common data into observation:
-//	// --------------------------------------
-//	_out_obs.sensorLabel = m_sensorLabel;
-//	_out_obs.timestamp = mrpt::system::now();
-//	_out_obs.sensorPose = m_sensorPoseOnRobot;
-//	_out_obs.relativePoseIntensityWRTDepth = m_relativePoseIntensityWRTDepth;
-//
-//	_out_obs.cameraParams          = m_cameraParamsDepth;
-//	_out_obs.cameraParamsIntensity = m_cameraParamsRGB;
-//
-//	// 3D point cloud:
-//	if ( _out_obs.hasRangeImage && m_grab_3D_points )
-//	{
-//		_out_obs.project3DPointsFromDepthImage();
-//
-//		if ( !m_grab_depth )
-//		{
-//			_out_obs.hasRangeImage = false;
-//			_out_obs.rangeImage.resize(0,0);
-//		}
-//
-//	}
-//
-//	// preview in real-time?
-//	if (m_preview_window)
-//	{
-//		if ( _out_obs.hasRangeImage )
-//		{
-//			if (++m_preview_decim_counter_range>m_preview_window_decimation)
-//			{
-//				m_preview_decim_counter_range=0;
-//				if (!m_win_range)	{ m_win_range = mrpt::gui::CDisplayWindow::Create("Preview RANGE"); m_win_range->setPos(5,5); }
-//
-//				// Normalize the image
-//				mrpt::utils::CImage  img;
-//				img.setFromMatrix(_out_obs.rangeImage);
-//				CMatrixFloat r = _out_obs.rangeImage * float(1.0/this->m_maxRange);
-//				m_win_range->showImage(img);
-//			}
-//		}
-//		if ( _out_obs.hasIntensityImage )
-//		{
-//			if (++m_preview_decim_counter_rgb>m_preview_window_decimation)
-//			{
-//				m_preview_decim_counter_rgb=0;
-//				if (!m_win_int)		{ m_win_int = mrpt::gui::CDisplayWindow::Create("Preview INTENSITY"); m_win_int->setPos(300,5); }
-//				m_win_int->showImage(_out_obs.intensityImage );
-//			}
-//		}
-//	}
-//	else
-//	{
-//		if (m_win_range) m_win_range.clear();
-//		if (m_win_int) m_win_int.clear();
-//	}
+cout << "COpenNI2::getNextObservation \n";
+	there_is_obs=false;
+	hardware_error = false;
+
+  // Read a frame (depth + rgb)
+  DEPTH_STREAM_PTR->readFrame(DEPTH_FRAME_PTR);
+cout << "COpenNI2::getNextObservation2 \n";
+
+  RGB_STREAM_PTR->readFrame(RGB_FRAME_PTR);
+
+  if ((DEPTH_FRAME_PTR->getWidth() != RGB_FRAME_PTR->getWidth()) || (DEPTH_FRAME_PTR->getHeight() != RGB_FRAME_PTR->getHeight()))
+  {
+    cout << "\nBoth frames don't have the same size.";
+  }
+  else
+  {
+		there_is_obs=true;
+
+		CObservation3DRangeScan  newObs;
+		newObs.hasConfidenceImage = false;
+
+		// Set intensity image ----------------------
+		if (m_grab_image)
+		{
+			newObs.hasIntensityImage  = true;
+		}
+
+		// Set range image --------------------------
+		if (m_grab_depth || m_grab_3D_points)
+		{
+			newObs.hasRangeImage = true;
+			newObs.range_is_depth = true;
+		}
+
+    newObs.timestamp = mrpt::system::getCurrentTime();
+    newObs.rangeImage_setSize(height,width);
+
+    // Read one frame
+    const openni::DepthPixel* pDepthRow = (const openni::DepthPixel*)DEPTH_FRAME_PTR->getData();
+    const openni::RGB888Pixel* pRgbRow = (const openni::RGB888Pixel*)RGB_FRAME_PTR->getData();
+    int rowSize = DEPTH_FRAME_PTR->getStrideInBytes() / sizeof(openni::DepthPixel);
+
+    utils::CImage iimage(width,height,CH_RGB);
+    for (int yc = 0; yc < DEPTH_FRAME_PTR->getHeight(); ++yc)
+    {
+      const openni::DepthPixel* pDepth = pDepthRow;
+      const openni::RGB888Pixel* pRgb = pRgbRow;
+      for (int xc = 0; xc < DEPTH_FRAME_PTR->getWidth(); ++xc, ++pDepth, ++pRgb)
+      {
+        newObs.rangeImage(yc,xc) = (*pDepth)*1.0/1000;
+        iimage.setPixel(xc,yc,(pRgb->r<<16)+(pRgb->g<<8)+pRgb->b);
+
+        //newObs.intensityImage.setPixel(xc,yc,(*pRgb));
+      }
+
+      pDepthRow += rowSize;
+      pRgbRow += rowSize;
+    }
+    newObs.intensityImage = iimage;
+
+		// Save the observation to the user's object:
+		_out_obs.swap(newObs);
+
+    // Set common data into observation:
+    // --------------------------------------
+    _out_obs.sensorLabel = m_sensorLabel;
+    _out_obs.timestamp = mrpt::system::now();
+    _out_obs.sensorPose = m_sensorPoseOnRobot;
+  //	_out_obs.relativePoseIntensityWRTDepth = m_relativePoseIntensityWRTDepth;
+
+    _out_obs.cameraParams          = m_cameraParamsDepth;
+    _out_obs.cameraParamsIntensity = m_cameraParamsRGB;
+
+    // 3D point cloud:
+    if ( _out_obs.hasRangeImage && m_grab_3D_points )
+    {
+      _out_obs.project3DPointsFromDepthImage();
+
+      if ( !m_grab_depth )
+      {
+        _out_obs.hasRangeImage = false;
+        _out_obs.rangeImage.resize(0,0);
+      }
+
+    }
+
+    // preview in real-time?
+    if (m_preview_window)
+    {
+      if ( _out_obs.hasRangeImage )
+      {
+        if (++m_preview_decim_counter_range>m_preview_window_decimation)
+        {
+          m_preview_decim_counter_range=0;
+          if (!m_win_range)	{ m_win_range = mrpt::gui::CDisplayWindow::Create("Preview RANGE"); m_win_range->setPos(5,5); }
+
+          // Normalize the image
+          mrpt::utils::CImage  img;
+          img.setFromMatrix(_out_obs.rangeImage);
+          CMatrixFloat r = _out_obs.rangeImage * float(1.0/this->m_maxRange);
+          m_win_range->showImage(img);
+        }
+      }
+      if ( _out_obs.hasIntensityImage )
+      {
+        if (++m_preview_decim_counter_rgb>m_preview_window_decimation)
+        {
+          m_preview_decim_counter_rgb=0;
+          if (!m_win_int)		{ m_win_int = mrpt::gui::CDisplayWindow::Create("Preview INTENSITY"); m_win_int->setPos(300,5); }
+          m_win_int->showImage(_out_obs.intensityImage );
+        }
+      }
+    }
+    else
+    {
+      if (m_win_range) m_win_range.clear();
+      if (m_win_int) m_win_int.clear();
+    }
+	}
 }
-//
-//
+
 
 /* -----------------------------------------------------
 				setPathForExternalImages
@@ -756,38 +597,3 @@ void COpenNI2::setPathForExternalImages( const std::string &directory )
 //	}
 //	m_path_for_external_images = directory;
 }
-
-////
-/////** Change tilt angle \note Sensor must be open first. */
-////void COpenNI2::setTiltAngleDegrees(double angle)
-////{
-////	ASSERTMSG_(isOpen(),"Sensor must be open first")
-////
-////#if MRPT_HAS_KINECT_FREENECT
-////	freenect_set_tilt_degs(f_dev,angle);
-////#elif MRPT_HAS_KINECT_CL_NUI
-////	// JL: I deduced this formula empirically, since CLNUI seems not to have documented this API!!
-////	const short int send_angle =  ( (angle<-31) ? -31 : ((angle>31) ? 31 : angle) ) * (0x4000)/31.0;
-////	SetNUIMotorPosition(clnui_motor, send_angle);
-////#endif
-////
-////}
-////
-////double COpenNI2::getTiltAngleDegrees()
-////{
-////	ASSERTMSG_(isOpen(),"Sensor must be open first")
-////
-////#if MRPT_KINECT_WITH_FREENECT
-////	freenect_update_tilt_state(f_dev);
-////	freenect_raw_tilt_state *ts=freenect_get_tilt_state(f_dev);
-////	return freenect_get_tilt_degs(ts);
-////
-////#elif MRPT_HAS_KINECT_CL_NUI
-////	// TODO: Does CL NUI provides this??
-////	return 0;
-////#else
-////	return 0;
-////#endif
-////}
-//
-////#endif
