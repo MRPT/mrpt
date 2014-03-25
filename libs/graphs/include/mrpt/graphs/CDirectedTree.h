@@ -26,6 +26,10 @@ namespace mrpt
 		  *		- \a root: The ID of the root node.
 		  *		- \a edges_to_children: A map from node ID to all the edges to its children.
 		  *
+		  *  Note that nodes are *not* explicitly listed anywhere: their existence is only inferred from their ID numbers in the list 
+		  *  of edges in the \a edges_to_children data structure. If you want to include information for each node, derive from this class
+		  *  and create a separte container for that data.
+		  *
 		  *  This class is less general than CDirectedGraph but more efficient to traverse (see \a visitDepthFirst and \a visitBreadthFirst).
 		  *
 		  *  If annotations in edges are not required, you can leave TYPE_EDGES to its default type "uint8_t".
