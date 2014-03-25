@@ -33,7 +33,18 @@ namespace mrpt
 		  *  This class is less general than CDirectedGraph but more efficient to traverse (see \a visitDepthFirst and \a visitBreadthFirst).
 		  *
 		  *  If annotations in edges are not required, you can leave TYPE_EDGES to its default type "uint8_t".
-		  *  \sa CDirectedGraph, CDijkstra, mrpt::graphs::CNetworkOfPoses,
+		  *
+		  *  Example of insertion of a new edge:
+		  *  \code
+		  *  typedef CDirectedTree<edge_t>  my_tree_t;
+		  *  my_tree_t  tree;
+		  *  TNodeID id_root = XXX;
+		  *  TNodeID id_child = XXX;
+		  *  my_tree_t::TListEdges & edges_of_root = tree.edges_to_children[id_root];
+		  *  edges_of_root.push_back( my_tree_t::TEdgeInfo(id_child,false /* edge direction  * /, edge_t(...) ) );
+		  *  \endcode
+		  *
+		  *  \sa CDirectedGraph, CDijkstra, mrpt::graphs::CNetworkOfPoses
 		 * \ingroup mrpt_graphs_grp
 		  */
 		template <class TYPE_EDGES = uint8_t>
@@ -45,7 +56,11 @@ namespace mrpt
 				TNodeID    id;      //!< The ID of the child node.
 				bool       reverse; //!< True if edge direction is child->parent, false if it's parent->child.
 				TYPE_EDGES data;    //!< User data for this edge.
+
+				/** Edge constructor from data */
+				TEdgeInfo(TNodeID child_id_, bool direction_child_to_parent=false, const TYPE_EDGES & edge_data = TYPE_EDGES() ) : id(child_id_), reverse(direction_child_to_parent), data(edge_data) { }
 			};
+
 			typedef std::list<TEdgeInfo>          TListEdges;
 			typedef std::map<TNodeID,TListEdges>  TMapNode2ListEdges;
 
