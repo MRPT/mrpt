@@ -142,7 +142,7 @@ void  CSerialPort::open( )
 /* -----------------------------------------------------
                 isOpen
    ----------------------------------------------------- */
-bool  CSerialPort::isOpen()
+bool  CSerialPort::isOpen() const 
 {
     return hCOM != -1;
 }
