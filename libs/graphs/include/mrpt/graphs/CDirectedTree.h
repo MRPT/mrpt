@@ -57,6 +57,8 @@ namespace mrpt
 				bool       reverse; //!< True if edge direction is child->parent, false if it's parent->child.
 				TYPE_EDGES data;    //!< User data for this edge.
 
+                TEdgeInfo();   //just for *now* to avoid conflict in CHierarchicalMapMHPartition.cpp
+                MRPT_TODO ("check this constructor")
 				/** Edge constructor from data */
 				TEdgeInfo(TNodeID child_id_, bool direction_child_to_parent=false, const TYPE_EDGES & edge_data = TYPE_EDGES() ) : id(child_id_), reverse(direction_child_to_parent), data(edge_data) { }
 			};
