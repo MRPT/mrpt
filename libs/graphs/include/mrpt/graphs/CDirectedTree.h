@@ -26,7 +26,7 @@ namespace mrpt
 		  *		- \a root: The ID of the root node.
 		  *		- \a edges_to_children: A map from node ID to all the edges to its children.
 		  *
-		  *  Note that nodes are *not* explicitly listed anywhere: their existence is only inferred from their ID numbers in the list 
+		  *  Note that nodes are *not* explicitly listed anywhere: their existence is only inferred from their ID numbers in the list
 		  *  of edges in the \a edges_to_children data structure. If you want to include information for each node, derive from this class
 		  *  and create a separte container for that data.
 		  *
@@ -41,7 +41,7 @@ namespace mrpt
 		  *  TNodeID id_root = XXX;
 		  *  TNodeID id_child = XXX;
 		  *  my_tree_t::TListEdges & edges_of_root = tree.edges_to_children[id_root];
-		  *  edges_of_root.push_back( my_tree_t::TEdgeInfo(id_child,false /* edge direction  * /, edge_t(...) ) );
+		  *  edges_of_root.push_back( my_tree_t::TEdgeInfo(id_child,false, edge_t(...) ) );
 		  *  \endcode
 		  *
 		  *  \sa CDirectedGraph, CDijkstra, mrpt::graphs::CNetworkOfPoses

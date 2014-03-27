@@ -73,7 +73,7 @@ namespace mrpt
             *      7.          V <-- V U {x_new};   E <--E U {(x_nearest, x_new)}
             *      8.  return (G= (V,E)
             **/  //TODO implement this into the cpp file
-			void plan(const POSE &start_pose, const POSE &goal_pose);
+			void plan();//just for know (const POSE &start_pose, const POSE &goal_pose);
 //			{
 			// Like in the RRT pseudocode,
 			// try  to be as generic as possible,
