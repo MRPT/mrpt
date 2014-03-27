@@ -22,8 +22,11 @@ namespace mrpt
         /** This class contains motions and motions tree structures for the hybrid navigation algorithm
          *
          *  <b>Usage:</b><br>
-         *		- write me
+         *      \note: this class inheredit mrpt::graphs::CDirectedTree, please refer to inheritance for detail about generic tree methods
          *
+         *      - initialize a motions tree using .initializeMotionsTree()
+         *      - addEdge (from, to)
+         *      - add here more instructions
          *
          *  <b>About the algorithm:</b><br>
          *
@@ -44,19 +47,21 @@ namespace mrpt
                 // This is how to insert an edge from ROOT to CHILDREN:
                 const static mrpt::utils::TNodeID id_root = 0;    //!< set ID of the root node always 0
                 mrpt::utils::TNodeID id_child;          //!< child id will change according to the parent level
-                bool reverse_;
-                bool treeInitialized;
-                typename TMotionsTree::TListEdges my_list_of_edges;// = this->edges_to_children[id_root];;
+                bool reverse_;              //!< flag for forward of backward tree exploration - default = false i.e. forward
+                bool treeInitialized;               //!< flag for checking if the tree is correctly initialized
+                typename TMotionsTree::TListEdges my_list_of_edges;   //!< structure for the list of edges
 
-
-                // (0, false, TMotions () );
                 //methods we need here are:
 
-
+                /**  Initialize variables and the list of edges for the tree*/
                 bool initializeMotionsTree ()
                 {
-                    my_list_of_edges = this->edges_to_children[0]; //0 is id_root
-                    id_child = 1;
+                    my_list_of_edges = this->edges_to_children[0]; //0 is id_root but it
+                                                                    /**DOESN'T COMPILE with [id_root], why? */
+                    // the error during test.cpp linking after compilation is:
+                    // undefined reference to `mrpt::hybridnav::TMotionsTree<mrpt::hybridnav::TMotionsSE2>::id_root'
+
+                    id_child = 1;               //!< just initialize the id_child as the first after the root
                     reverse_ = false;
 
                     treeInitialized = true;
@@ -67,22 +72,26 @@ namespace mrpt
                 /**  this allow the user to set the reverse mode in the tree - false as default*/
                 inline void setReverse (bool _reverse) { reverse_=_reverse; }
 
-                //---->verify this !!!!!!!!
+                //----> VERIFY THIS !!!!!!!!
                 //I want to hide the tree structure to the user that only should add the node by a addNode function, so i defined:
-                /** addNode have to be implemented in the following way:
-                *  IN-> TMotions new_motion and TMotions parent
+                /** addEdge (from, to) have to be implemented in the following way:
+                *  IN-> from TMotions parent_ to TMotions new_motion
                 *
                 *  inside this method a search method have to be called to find the TNodeID of parent_ (tree_depth_level)
                 *  then new_motion will be added at the next level of parent_
+                *
+                *  \note please call initializeMotionsTree first
                 */
-                void addNode( TMotions new_motion, TMotions parent_)
+                void addEdge ( TMotions parent_, TMotions new_motion )
                 {
                     ASSERTMSG_(treeInitialized == true, "The tree is not initialized!")
 
                     id_child = searchIDinTree(parent_);
                     typename TMotionsTree::TEdgeInfo my_edge (id_child, reverse_, new_motion );
                     my_list_of_edges.push_back(my_edge);
-
+                    // something is still missing with id_child I can know what level in the tree
+                    // but maybe more edges at the same level exist and they may came from different directions
+                    // I still have doubts about how adjiacencies are implemented
                 }
 
                 /** return the Node_ID of a specific motion.
@@ -90,27 +99,22 @@ namespace mrpt
                 */
                 TNodeID searchIDinTree (TMotions TMotions_)  //TMotions_ is parent
                 {
-
                     id_child = 1;   // This have to be always >=1
                                     // it will calculated by a search function
                     //write me!!
                     MRPT_TODO ("WRITE searchIDinTree function, here of in CDirectedTree.h?")
                     return id_child;
                 }
-                // in the CDirectedTree the edges are std::list < > this use is correct when we add a new node
-                // but maybe would be not efficient when we need to get a new element for the tree since the list
-                // are defined as LIFO/FIFO structures, how you plan to address the nearest neighbor search?
-                //void getNode( int node_index) { my_list_of_edges.push_back( node_index ); } //!-> this will not work!!!
-                //I imagine that we will need it for the nn_search where the node_index will came from a search function
 
-                //!<  I saw a virtual class Visitors that should be redefined
-                //!<  but from the comments I do not understant how it works
-                //!<  of course it's my bad and my bad c++ code understanding level .... :-(
-
-
-                //mrpt::hybridnav::TPath::TPlannedPath get_sh(); // &path
-                //for our case the right methohortest_patd should be “visitBreadthFirst”, how this works in the
-                //mrpt::graphs::CDirectedTree class, should we redefine it?
+                /** return the TEdgeInfo of the nearest neighbor to a specific motion.
+                * \note: is this better to go into CDirectedTree.h ?
+                */
+                TNodeID getNearestMotion (TMotions TMotions_)   //think about what to return here
+                {
+                    //write me !!!
+                    MRPT_TODO ("WRITE getNearestMotion function, here of in CDirectedTree.h?")
+                    return 0;
+                }
 
             };
 
@@ -120,9 +124,6 @@ namespace mrpt
 		   public:
 			   TMotionsSE2 ( mrpt::poses::TPose2D POSE_) :
 							state( POSE_ ),    //!< should the state be initialized as NULL or something else?
-							// like add in the namespace a #define INVALID_STATE  mrpt::poses::TPose2D( )
-							// Is this already defined somewhere in MRPT (example in mrpt::utils:: blablabla
-                            // check this please!!!
 							cost( 0.0 )
 							{}
 				mrpt::poses::TPose2D state;  //!< state in SE2 as 2D pose (x, y, phi) - \note: it is not possible to initialize a motion without a state
