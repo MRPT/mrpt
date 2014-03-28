@@ -728,8 +728,8 @@ struct compute_jacobian_dAepsDx_deps<jacob_relpose_landmark /* Jacobian family: 
 		//                              ^: (1)              ^: (2)
 		// See section 10.3.7 of technical report on SE(3) poses [http://mapir.isa.uma.es/~jlblanco/papers/jlblanco2010geometry3D_techrep.pdf]
 		mrpt::math::CMatrixDouble33 ROTA;  // A.rotationMatrix
-		mrpt::poses::CPose3D  D(mrpt::poses::UNINITIALIZED_POSE); 
-		mrpt::poses::CPose3D  base_wrt_obs(mrpt::poses::UNINITIALIZED_POSE); // A(+)D
+		typename RBA_ENGINE_T::pose_t  D(mrpt::poses::UNINITIALIZED_POSE); 
+		typename RBA_ENGINE_T::pose_t  base_wrt_obs(mrpt::poses::UNINITIALIZED_POSE); // A(+)D
 
 		if (!is_inverse_edge_jacobian)
 		{	// Normal formulation: unknown is pose "d+1 -> d"
@@ -749,9 +749,37 @@ struct compute_jacobian_dAepsDx_deps<jacob_relpose_landmark /* Jacobian family: 
 			}
 		}
 		else
-		{
-			MRPT_TODO("FINISH")
-			THROW_EXCEPTION("TODO")
+		{	// Inverse formulation: unknown is pose "d -> d+1"
+
+			// Changes due to the inverse pose:
+			// D becomes D' = p_d^{d+1} (+) D
+			// and A (which is "pose_d1_wrt_obs") becomes A' = A (+) (p_d_d1)^-1
+
+			ASSERT_(jacob_sym.k2k_edge_id<k2k_edges.size())
+			const typename RBA_ENGINE_T::pose_t & p_d_d1 = k2k_edges[jacob_sym.k2k_edge_id]
+#ifdef SRBA_WORKAROUND_MSVC9_DEQUE_BUG
+			->
+#else
+			.
+#endif
+			inv_pose;				
+
+			typename RBA_ENGINE_T::pose_t pose_base_wrt_d1_prime(mrpt::poses::UNINITIALIZED_POSE);
+			pose_base_wrt_d1_prime.composeFrom( p_d_d1 , pose_base_wrt_d1.pose );
+
+			// We need to handle the special case where "d+1"=="l", so A=Pose(0,0,0):
+			const typename RBA_ENGINE_T::pose_t p_d_d1_inv = -p_d_d1;
+
+			typename RBA_ENGINE_T::pose_t A_prime = (pose_d1_wrt_obs!=NULL) ?
+				(pose_d1_wrt_obs->pose + p_d_d1_inv)
+				:
+				p_d_d1_inv;
+
+			ROTA=A_prime.getRotationMatrix();
+
+			D=pose_base_wrt_d1_prime;
+
+			base_wrt_obs.composeFrom(A_prime, pose_base_wrt_d1_prime);  // A (+) D
 		}
 
 		const mrpt::math::CMatrixDouble44 & HM_D = D.getHomogeneousMatrixVal(); // [ROT(D) | Trans(D) ]
@@ -795,6 +823,12 @@ struct compute_jacobian_dAepsDx_deps<jacob_relpose_landmark /* Jacobian family: 
 		// (3): Apply chain rule:
 		// 
 		jacob.noalias() = dLnRelPose_deps * dAeD_de;
+
+		if (is_inverse_edge_jacobian)
+		{
+			// And this comes from: d exp(-epsilon)/d epsilon = - d exp(epsilon)/d epsilon
+			jacob = -jacob;
+		}
 	}
 }; // end of "compute_jacobian_dAepsDx_deps", Case: SE(3) relative-poses, SE(3) poses:
 
