@@ -15,8 +15,12 @@
 
 namespace mrpt { namespace srba {
 
-#define SRBA_USE_NUMERIC_JACOBIANS             0
-#define SRBA_VERIFY_AGAINST_NUMERIC_JACOBIANS  0
+#ifndef SRBA_USE_NUMERIC_JACOBIANS
+#  define SRBA_USE_NUMERIC_JACOBIANS             0
+#endif
+#ifndef SRBA_VERIFY_AGAINST_NUMERIC_JACOBIANS
+#  define SRBA_VERIFY_AGAINST_NUMERIC_JACOBIANS  0
+#endif
 
 #define SRBA_COMPUTE_NUMERIC_JACOBIANS   (SRBA_VERIFY_AGAINST_NUMERIC_JACOBIANS || SRBA_USE_NUMERIC_JACOBIANS)
 #define SRBA_COMPUTE_ANALYTIC_JACOBIANS  (SRBA_VERIFY_AGAINST_NUMERIC_JACOBIANS || !SRBA_USE_NUMERIC_JACOBIANS)
@@ -808,12 +812,15 @@ struct compute_jacobian_dAepsDx_deps<jacob_relpose_landmark /* Jacobian family: 
 		// Blocks: (1-3,1)
 		dAeD_de.block<9,3>(0,0).setZero();
 		// Block (4,1)
-		dAeD_de.block<3,3>(9,0) = ROTA;
+		dAeD_de.block<3,3>(9,0) = (ROTA * HM_D.block<3,3>(0,0)).transpose();
+
+		//cout << "========= ROTA ========= :\n" << ROTA << endl;
+		//cout << "========= HM_D ========= :\n" << HM_D << endl;
 		
 		// Blocks (1-4,2)
 		for (int i=0;i<4;i++)
 		{
-			const double aux_vals[] = {
+			EIGEN_ALIGN16 const double aux_vals[] = {
 				        .0, -HM_D(2,i),  HM_D(1,i), 
 				 HM_D(2,i),         .0, -HM_D(0,i), 
 				-HM_D(1,i),  HM_D(0,i),         .0  };

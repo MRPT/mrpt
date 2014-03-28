@@ -888,15 +888,7 @@ namespace mrpt { namespace srba {
 			const array_landmark_t   & xji_l, 
 			const TObservationParams & sensor_params)
 		{
-			// h(z_obs \ominus p) = pseudo-log(z_obs \ominus  p)
-			// with p: relative pose in SE(3)
-			// See derivation in papers/reports:
-			//const mrpt::poses::CPose3D p(xji_l[0],xji_l[1],xji_l[2],xji_l[3],xji_l[4],xji_l[5]);
-			//mrpt::math::CMatrixFixedNumeric<double,3,9> dhrot_dprot;
-			//mrpt::poses::CPose3D::ln_rot_jacob(p.getRotationMatrix(), dhrot_dprot);
-			//dh_dx.setZero();
-			//dh_dx.block<3,3>(0,9).setIdentity();  // dhxyz_dpxyz;
-			//dh_dx.block<3,9>(3,0) = dhrot_dprot;
+			// h(z_obs \ominus p) = xji_l (the relative pose in SE(3)) 
 			dh_dx.setIdentity();
 			return true;
 		}
