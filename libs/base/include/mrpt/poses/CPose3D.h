@@ -489,6 +489,14 @@ namespace poses
 		  * \note Method from TooN (C) Tom Drummond (GNU GPL) */
 		CArrayDouble<3> ln_rotation() const;
 
+		/** The Jacobian d (e^eps * D) / d eps , with eps=increment in Lie Algebra.
+		  * \note Eq. 10.3.5 in tech report http://ingmec.ual.es/~jlblanco/papers/jlblanco2010geometry3D_techrep.pdf */
+		static void jacob_dexpeD_de(const CPose3D &D, Eigen::Matrix<double,12,6> & jacob);
+
+		/** The Jacobian d (A * e^eps * D) / d eps , with eps=increment in Lie Algebra.
+		  * \note Eq. 10.3.7 in tech report http://ingmec.ual.es/~jlblanco/papers/jlblanco2010geometry3D_techrep.pdf */
+		static void jacob_dAexpeD_de(const CPose3D &A, const CPose3D &D, Eigen::Matrix<double,12,6> & jacob);
+
 		/** @} */
 
 		typedef CPose3D  type_value; //!< Used to emulate CPosePDF types, for example, in mrpt::graphs::CNetworkOfPoses

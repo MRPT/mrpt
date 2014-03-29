@@ -469,6 +469,97 @@ protected:
 			<< "ERR:\n" << theor_jacob-numJacobs << endl;
 	}
 
+	// tech report: 
+	// 
+	static void func_jacob_expe_D(
+		const CArrayDouble<6> &eps,
+		const CPose3D &D, CArrayDouble<12> &Y)
+	{
+		CPose3D incr;
+		CPose3D::exp(eps,incr);
+		const CPose3D expe_D = incr + D;
+		expe_D.getAs12Vector(Y);
+	}
+
+
+	// Test Jacobian: d exp(e)*D / d e 
+	// 10.3.3 in tech report
+	void test_Jacob_dexpeD_de(double x1,double y1,double z1, double yaw1,double pitch1,double roll1)
+	{
+		const CPose3D p(x1,y1,z1,yaw1,pitch1,roll1);
+
+		Eigen::Matrix<double,12,6> theor_jacob;
+		CPose3D::jacob_dexpeD_de(p,theor_jacob);
+
+		CMatrixDouble numJacobs;
+		{
+			CArrayDouble<6> x_mean;
+			x_mean.setZero();
+
+			CArrayDouble<6> x_incrs;
+			x_incrs.assign(1e-6);
+			mrpt::math::jacobians::jacob_numeric_estimate(x_mean,func_jacob_expe_D,x_incrs,p, numJacobs );
+		}
+
+		EXPECT_NEAR( (numJacobs-theor_jacob).Abs().maxCoeff(), 0, 1e-3)
+			<< "Pose: " << p << endl
+			<< "Pose matrix:\n" << p.getHomogeneousMatrixVal()
+			<< "Num. Jacob:\n" << numJacobs << endl
+			<< "Theor. Jacob:\n" << theor_jacob << endl
+			<< "ERR:\n" << theor_jacob-numJacobs << endl;
+	}
+
+	
+
+	struct TParams_func_jacob_Aexpe_D
+	{
+		CPose3D A,D;
+	};
+
+	static void func_jacob_Aexpe_D(
+		const CArrayDouble<6> &eps,
+		const TParams_func_jacob_Aexpe_D &params, CArrayDouble<12> &Y)
+	{
+		CPose3D incr;
+		CPose3D::exp(eps,incr);
+		const CPose3D res = params.A + incr + params.D;
+		res.getAs12Vector(Y);
+	}
+
+
+	// Test Jacobian: d A*exp(e)*D / d e 
+	// 10.3.7 in tech report http://ingmec.ual.es/~jlblanco/papers/jlblanco2010geometry3D_techrep.pdf
+	void test_Jacob_dAexpeD_de(
+		double x1,double y1,double z1, double yaw1,double pitch1,double roll1,
+		double x2,double y2,double z2, double yaw2,double pitch2,double roll2)
+	{
+		const CPose3D A(x1,y1,z1,yaw1,pitch1,roll1);
+		const CPose3D D(x2,y2,z2,yaw2,pitch2,roll2);
+
+		Eigen::Matrix<double,12,6> theor_jacob;
+		CPose3D::jacob_dAexpeD_de(A,D,theor_jacob);
+
+		CMatrixDouble numJacobs;
+		{
+			CArrayDouble<6> x_mean;
+			x_mean.setZero();
+
+			TParams_func_jacob_Aexpe_D params;
+			params.A=A;
+			params.D=D;
+			CArrayDouble<6> x_incrs;
+			x_incrs.assign(1e-6);
+			mrpt::math::jacobians::jacob_numeric_estimate(x_mean,func_jacob_Aexpe_D,x_incrs,params, numJacobs );
+		}
+
+		EXPECT_NEAR( (numJacobs-theor_jacob).Abs().maxCoeff(), 0, 1e-3)
+			<< "Pose A: " << A << endl
+			<< "Pose D: " << D << endl
+			<< "Num. Jacob:\n" << numJacobs << endl
+			<< "Theor. Jacob:\n" << theor_jacob << endl
+			<< "ERR:\n" << theor_jacob-numJacobs << endl;
+	}
+
 
 };
 
@@ -519,85 +610,78 @@ TEST_F(Pose3DTests,OperatorBracket)
 	EXPECT_NEAR(p[5],0.4,  1e-7);
 }
 
+
+// List of "random" poses to test with (x,y,z,yaw,pitch,roll) (angles in degrees)
+const double ptc[][6] = {   // ptc = poses_test_cases
+	{  .0,   .0,   .0,   .0,   .0,   .0 },
+	{ 1.0,  2.0,  3.0,   .0,   .0,   .0 },
+	{ 1.0,  2.0,  3.0, 10.0,   .0,   .0 },
+	{ 1.0,  2.0,  3.0,   .0,  1.0,   .0 },
+	{ 1.0,  2.0,  3.0,   .0,   .0,  1.0 },
+	{ 1.0,  2.0,  3.0, 80.0,  5.0,  5.0 },
+	{ 1.0,  2.0,  3.0,-20.0,-30.0,-40.0 },
+	{ 1.0,  2.0,  3.0,-45.0, 10.0, 70.0 },
+	{ 1.0,  2.0,  3.0, 40.0, -5.0, 25.0 },
+	{ 1.0,  2.0,  3.0, 40.0, 20.0,-15.0 },
+	{-6.0,  2.0,  3.0, 40.0, 20.0, 15.0 },
+	{ 6.0, -5.0,  3.0, 40.0, 20.0, 15.0 },
+	{ 6.0,  2.0, -9.0, 40.0, 20.0, 15.0 },
+	{ 0.0,  8.0,  5.0,-45.0, 10.0, 70.0 },
+	{ 1.0,  0.0,  5.0,-45.0, 10.0, 70.0 },
+	{ 1.0,  8.0,  0.0,-45.0, 10.0, 70.0 }
+};
+const size_t num_ptc = sizeof(ptc)/sizeof(ptc[0]);
+
+
 // More complex tests:
 TEST_F(Pose3DTests,InverseHM)
 {
-	test_inverse(0,0,0, DEG2RAD(0),DEG2RAD(0),DEG2RAD(0) );
-	test_inverse(1.0,2.0,3.0, DEG2RAD(0),DEG2RAD(0),DEG2RAD(0) );
-	test_inverse(1.0,2.0,3.0, DEG2RAD(-30),DEG2RAD(10),DEG2RAD(60) );
-	test_inverse(2.0,-5.0,8.0, DEG2RAD(40),DEG2RAD(-5),DEG2RAD(25) );
+	for (size_t i=0;i<num_ptc;i++)
+		test_inverse(ptc[i][0],ptc[i][1],ptc[i][2], DEG2RAD(ptc[i][3]),DEG2RAD(ptc[i][4]),DEG2RAD(ptc[i][5]) );
 }
 
 TEST_F(Pose3DTests,Compose)
 {
-	test_compose(1.0,2.0,3.0, DEG2RAD(0),DEG2RAD(0),DEG2RAD(0),
-	             0,0,0, DEG2RAD(0),DEG2RAD(0),DEG2RAD(0));
-	test_compose(1.0,2.0,3.0, DEG2RAD(0),DEG2RAD(0),DEG2RAD(0),
-	             4.0,5.0,6.0, DEG2RAD(0),DEG2RAD(0),DEG2RAD(0));
-
-	test_compose(1.0,2.0,3.0, DEG2RAD(-30),DEG2RAD(10),DEG2RAD(60),
-	             2.0,-5.0,8.0, DEG2RAD(40),DEG2RAD(-5),DEG2RAD(25));
-
-	test_compose(25.0,2.0,3.0, DEG2RAD(-30),DEG2RAD(89),DEG2RAD(0),
-	             -10.0,4.0,-8.0, DEG2RAD(20),DEG2RAD(9),DEG2RAD(0));
+	for (size_t i=0;i<num_ptc;i++)
+		for (size_t j=0;j<num_ptc;j++)
+			test_compose(
+				ptc[i][0],ptc[i][1],ptc[i][2], DEG2RAD(ptc[i][3]),DEG2RAD(ptc[i][4]),DEG2RAD(ptc[i][5]),
+				ptc[j][0],ptc[j][1],ptc[j][2], DEG2RAD(ptc[j][3]),DEG2RAD(ptc[j][4]),DEG2RAD(ptc[j][5]) );
 }
 
 TEST_F(Pose3DTests,composeFrom)
 {
-	test_composeFrom(1.0,2.0,3.0, DEG2RAD(0),DEG2RAD(0),DEG2RAD(0),
-	             0,0,0, DEG2RAD(0),DEG2RAD(0),DEG2RAD(0));
-	test_composeFrom(1.0,2.0,3.0, DEG2RAD(0),DEG2RAD(0),DEG2RAD(0),
-	             4.0,5.0,6.0, DEG2RAD(0),DEG2RAD(0),DEG2RAD(0));
-
-	test_composeFrom(1.0,2.0,3.0, DEG2RAD(-30),DEG2RAD(10),DEG2RAD(60),
-	             2.0,-5.0,8.0, DEG2RAD(40),DEG2RAD(-5),DEG2RAD(25));
-
-	test_composeFrom(25.0,2.0,3.0, DEG2RAD(-30),DEG2RAD(89),DEG2RAD(0),
-	             -10.0,4.0,-8.0, DEG2RAD(20),DEG2RAD(9),DEG2RAD(0));
+	for (size_t i=0;i<num_ptc;i++)
+		for (size_t j=0;j<num_ptc;j++)
+			test_composeFrom(
+				ptc[i][0],ptc[i][1],ptc[i][2], DEG2RAD(ptc[i][3]),DEG2RAD(ptc[i][4]),DEG2RAD(ptc[i][5]),
+				ptc[j][0],ptc[j][1],ptc[j][2], DEG2RAD(ptc[j][3]),DEG2RAD(ptc[j][4]),DEG2RAD(ptc[j][5]) );
 }
 
 TEST_F(Pose3DTests,ToFromCPose2D)
 {
-	test_to_from_2d(0,0,0);
-	test_to_from_2d(1,2,0);
-
-	test_to_from_2d( 1, 2, 3);
-	test_to_from_2d(-1, 2, 3);
-	test_to_from_2d(-1,-2, 3);
-	test_to_from_2d( 1,-2, 3);
-	test_to_from_2d( 1, 2,-3);
-	test_to_from_2d(-1, 2,-3);
-	test_to_from_2d(-1,-2,-3);
-	test_to_from_2d( 1,-2,-3);
-
-	test_to_from_2d( 1, 2, .4);
-	test_to_from_2d(-1, 2, .4);
-	test_to_from_2d(-1,-2, .4);
-	test_to_from_2d( 1,-2, .4);
-	test_to_from_2d( 1, 2,-.4);
-	test_to_from_2d(-1, 2,-.4);
-	test_to_from_2d(-1,-2,-.4);
-	test_to_from_2d( 1,-2,-.4);
+	for (size_t i=0;i<num_ptc;i++)
+		test_to_from_2d( ptc[i][0],ptc[i][1], DEG2RAD(ptc[i][3]));
 }
 
 TEST_F(Pose3DTests,ComposeAndInvComposeWithPoint)
 {
-	test_composePoint(1.0,2.0,3.0, DEG2RAD(0),DEG2RAD(0),DEG2RAD(0),   10,11,12 );
-	test_composePoint(1.0,2.0,3.0, DEG2RAD(10),DEG2RAD(0),DEG2RAD(0),   10,11,12 );
-	test_composePoint(1.0,2.0,3.0, DEG2RAD(0),DEG2RAD(10),DEG2RAD(0),   10,11,12 );
-	test_composePoint(1.0,2.0,3.0, DEG2RAD(0),DEG2RAD(0),DEG2RAD(10),   10,11,12 );
-	test_composePoint(1.0,2.0,3.0, DEG2RAD(-30),DEG2RAD(10),DEG2RAD(60),   10.0, 20.0, 30.0 );
-	test_composePoint(1.0,2.0,3.0, DEG2RAD(10),DEG2RAD(-50),DEG2RAD(-40),  -5.0, -15.0, 8.0 );
+	for (size_t i=0;i<num_ptc;i++)
+	{
+		test_composePoint(ptc[i][0],ptc[i][1],ptc[i][2], DEG2RAD(ptc[i][3]),DEG2RAD(ptc[i][4]),DEG2RAD(ptc[i][5]),   10,11,12);
+		test_composePoint(ptc[i][0],ptc[i][1],ptc[i][2], DEG2RAD(ptc[i][3]),DEG2RAD(ptc[i][4]),DEG2RAD(ptc[i][5]),   -5, 1, 2);
+		test_composePoint(ptc[i][0],ptc[i][1],ptc[i][2], DEG2RAD(ptc[i][3]),DEG2RAD(ptc[i][4]),DEG2RAD(ptc[i][5]),    5,-1, 2);
+		test_composePoint(ptc[i][0],ptc[i][1],ptc[i][2], DEG2RAD(ptc[i][3]),DEG2RAD(ptc[i][4]),DEG2RAD(ptc[i][5]),    5, 1,-2);
+	}
 }
 
 TEST_F(Pose3DTests,ComposePointJacob)
 {
-	test_composePointJacob(1.0,2.0,3.0, DEG2RAD(0),DEG2RAD(0),DEG2RAD(0),   10,11,12 );
-	test_composePointJacob(1.0,2.0,3.0, DEG2RAD(10),DEG2RAD(0),DEG2RAD(0),   10,11,12 );
-	test_composePointJacob(1.0,2.0,3.0, DEG2RAD(0),DEG2RAD(10),DEG2RAD(0),   10,11,12 );
-	test_composePointJacob(1.0,2.0,3.0, DEG2RAD(0),DEG2RAD(0),DEG2RAD(10),   10,11,12 );
-	test_composePointJacob(1.0,2.0,3.0, DEG2RAD(-30),DEG2RAD(10),DEG2RAD(60),   10.0, 20.0, 30.0 );
-	test_composePointJacob(1.0,2.0,3.0, DEG2RAD(10),DEG2RAD(-50),DEG2RAD(-40),  -5.0, -15.0, 8.0 );
+	for (size_t i=0;i<num_ptc;i++)
+	{
+		test_composePointJacob(ptc[i][0],ptc[i][1],ptc[i][2], DEG2RAD(ptc[i][3]),DEG2RAD(ptc[i][4]),DEG2RAD(ptc[i][5]),   10,11,12);
+		test_composePointJacob(ptc[i][0],ptc[i][1],ptc[i][2], DEG2RAD(ptc[i][3]),DEG2RAD(ptc[i][4]),DEG2RAD(ptc[i][5]),   -5, 1, 2);
+	}
 }
 
 TEST_F(Pose3DTests,ComposePointJacobApprox)
@@ -610,45 +694,38 @@ TEST_F(Pose3DTests,ComposePointJacobApprox)
 
 TEST_F(Pose3DTests,InvComposePointJacob)
 {
-	test_invComposePointJacob(0,0,0, DEG2RAD(0),DEG2RAD(0),DEG2RAD(0),   0,0,0 );
-	test_invComposePointJacob(0,0,0, DEG2RAD(0),DEG2RAD(0),DEG2RAD(0),   10,11,12 );
-	test_invComposePointJacob(1.0,2.0,3.0, DEG2RAD(0),DEG2RAD(0),DEG2RAD(0),   10,11,12 );
-	test_invComposePointJacob(1.0,2.0,3.0, DEG2RAD(10),DEG2RAD(0),DEG2RAD(0),   10,11,12 );
-	test_invComposePointJacob(1.0,2.0,3.0, DEG2RAD(0),DEG2RAD(10),DEG2RAD(0),   10,11,12 );
-	test_invComposePointJacob(1.0,2.0,3.0, DEG2RAD(0),DEG2RAD(0),DEG2RAD(10),   10,11,12 );
-	test_invComposePointJacob(1.0,2.0,3.0, DEG2RAD(-30),DEG2RAD(10),DEG2RAD(60),   10.0, 20.0, 30.0 );
-	test_invComposePointJacob(1.0,2.0,3.0, DEG2RAD(10),DEG2RAD(-50),DEG2RAD(-40),  -5.0, -15.0, 8.0 );
+	for (size_t i=0;i<num_ptc;i++)
+	{
+		test_invComposePointJacob(ptc[i][0],ptc[i][1],ptc[i][2], DEG2RAD(ptc[i][3]),DEG2RAD(ptc[i][4]),DEG2RAD(ptc[i][5]),   10,11,12);
+		test_invComposePointJacob(ptc[i][0],ptc[i][1],ptc[i][2], DEG2RAD(ptc[i][3]),DEG2RAD(ptc[i][4]),DEG2RAD(ptc[i][5]),   -5, 1, 2);
+		test_invComposePointJacob(ptc[i][0],ptc[i][1],ptc[i][2], DEG2RAD(ptc[i][3]),DEG2RAD(ptc[i][4]),DEG2RAD(ptc[i][5]),    5, -1, 2);
+		test_invComposePointJacob(ptc[i][0],ptc[i][1],ptc[i][2], DEG2RAD(ptc[i][3]),DEG2RAD(ptc[i][4]),DEG2RAD(ptc[i][5]),    5, 1, -2);
+	}
 }
 
 TEST_F(Pose3DTests,ComposePointJacob_se3)
 {
-	test_composePointJacob_se3(CPose3D(1.0,2.0,3.0, DEG2RAD(0),DEG2RAD(0),DEG2RAD(0)),   TPoint3D(10,11,12 ) );
-	test_composePointJacob_se3(CPose3D(1.0,2.0,3.0, DEG2RAD(10),DEG2RAD(0),DEG2RAD(0)),  TPoint3D( 10,11,12 ) );
-	test_composePointJacob_se3(CPose3D(1.0,2.0,3.0, DEG2RAD(0),DEG2RAD(10),DEG2RAD(0)),  TPoint3D( 10,11,12 ) );
-	test_composePointJacob_se3(CPose3D(1.0,2.0,3.0, DEG2RAD(0),DEG2RAD(0),DEG2RAD(10)),  TPoint3D( 10,11,12 ) );
-	test_composePointJacob_se3(CPose3D(1.0,2.0,3.0, DEG2RAD(-30),DEG2RAD(10),DEG2RAD(60)),  TPoint3D( 10.0, 20.0, 30.0 ) );
-	test_composePointJacob_se3(CPose3D(1.0,2.0,3.0, DEG2RAD(10),DEG2RAD(-50),DEG2RAD(-40)), TPoint3D( -5.0, -15.0, 8.0 ) );
+	for (size_t i=0;i<num_ptc;i++)
+	{
+		test_composePointJacob_se3(CPose3D(ptc[i][0],ptc[i][1],ptc[i][2], DEG2RAD(ptc[i][3]),DEG2RAD(ptc[i][4]),DEG2RAD(ptc[i][5])), TPoint3D(0,0,0 ) );
+		test_composePointJacob_se3(CPose3D(ptc[i][0],ptc[i][1],ptc[i][2], DEG2RAD(ptc[i][3]),DEG2RAD(ptc[i][4]),DEG2RAD(ptc[i][5])), TPoint3D(10,11,12 ) );
+		test_composePointJacob_se3(CPose3D(ptc[i][0],ptc[i][1],ptc[i][2], DEG2RAD(ptc[i][3]),DEG2RAD(ptc[i][4]),DEG2RAD(ptc[i][5])), TPoint3D(-5.0, -15.0, 8.0 ) );
+	}
 }
 TEST_F(Pose3DTests,InvComposePointJacob_se3)
 {
-	test_invComposePointJacob_se3(CPose3D(0,0,0, DEG2RAD(0),DEG2RAD(0),DEG2RAD(0)),   TPoint3D( 0,0,0  ));
-	test_invComposePointJacob_se3(CPose3D(0,0,0, DEG2RAD(0),DEG2RAD(0),DEG2RAD(0)),   TPoint3D( 10,11,12 ) );
-	test_invComposePointJacob_se3(CPose3D(1.0,2.0,3.0, DEG2RAD(0),DEG2RAD(0),DEG2RAD(0)),   TPoint3D( 10,11,12  ));
-	test_invComposePointJacob_se3(CPose3D(1.0,2.0,3.0, DEG2RAD(10),DEG2RAD(0),DEG2RAD(0)),   TPoint3D( 10,11,12 ) );
-	test_invComposePointJacob_se3(CPose3D(1.0,2.0,3.0, DEG2RAD(0),DEG2RAD(10),DEG2RAD(0)),   TPoint3D( 10,11,12 ) );
-	test_invComposePointJacob_se3(CPose3D(1.0,2.0,3.0, DEG2RAD(0),DEG2RAD(0),DEG2RAD(10)),   TPoint3D( 10,11,12 ) );
-	test_invComposePointJacob_se3(CPose3D(1.0,2.0,3.0, DEG2RAD(-30),DEG2RAD(10),DEG2RAD(60)),   TPoint3D( 10.0, 20.0, 30.0 ) );
-	test_invComposePointJacob_se3(CPose3D(1.0,2.0,3.0, DEG2RAD(10),DEG2RAD(-50),DEG2RAD(-40)),  TPoint3D( -5.0, -15.0, 8.0 ) );
+	for (size_t i=0;i<num_ptc;i++)
+	{
+		test_invComposePointJacob_se3(CPose3D(ptc[i][0],ptc[i][1],ptc[i][2], DEG2RAD(ptc[i][3]),DEG2RAD(ptc[i][4]),DEG2RAD(ptc[i][5])), TPoint3D(0,0,0 ) );
+		test_invComposePointJacob_se3(CPose3D(ptc[i][0],ptc[i][1],ptc[i][2], DEG2RAD(ptc[i][3]),DEG2RAD(ptc[i][4]),DEG2RAD(ptc[i][5])), TPoint3D(10,11,12 ) );
+		test_invComposePointJacob_se3(CPose3D(ptc[i][0],ptc[i][1],ptc[i][2], DEG2RAD(ptc[i][3]),DEG2RAD(ptc[i][4]),DEG2RAD(ptc[i][5])), TPoint3D(-5.0, -15.0, 8.0 ) );
+	}
 }
 
 TEST_F(Pose3DTests,ExpLnEqual)
 {
-	test_ExpLnEqual(1.0,2.0,3.0, DEG2RAD(0),DEG2RAD(0),DEG2RAD(0) );
-	test_ExpLnEqual(1.0,2.0,3.0, DEG2RAD(10),DEG2RAD(0),DEG2RAD(0) );
-	test_ExpLnEqual(1.0,2.0,3.0, DEG2RAD(0),DEG2RAD(10),DEG2RAD(0) );
-	test_ExpLnEqual(1.0,2.0,3.0, DEG2RAD(0),DEG2RAD(0),DEG2RAD(10) );
-	test_ExpLnEqual(1.0,2.0,3.0, DEG2RAD(80),DEG2RAD(5),DEG2RAD(5) );
-	test_ExpLnEqual(1.0,2.0,3.0, DEG2RAD(-20),DEG2RAD(-30),DEG2RAD(-40) );
+	for (size_t i=0;i<num_ptc;i++)
+		test_ExpLnEqual(ptc[i][0],ptc[i][1],ptc[i][2], DEG2RAD(ptc[i][3]),DEG2RAD(ptc[i][4]),DEG2RAD(ptc[i][5]));
 }
 
 TEST_F(Pose3DTests,Jacob_dExpe_de_at_0)
@@ -663,9 +740,21 @@ TEST_F(Pose3DTests,Jacob_dLnT_dT)
 	//  This function cannot be properly tested numerically, since the logm() implementation
 	//  is not generic and does NOT depends on all matrix entries, thus the numerical Jacobian
 	//  contains entire columns of zeros, even if the theorethical doesn't.
-//	check_jacob_LnT_T(1.0,0,0, DEG2RAD(0),DEG2RAD(0),DEG2RAD(0) );
-//	check_jacob_LnT_T(1,2,3, DEG2RAD(0),DEG2RAD(0),DEG2RAD(0) );
-//	check_jacob_LnT_T(1.0,2.0,3.0, DEG2RAD(0),DEG2RAD(0),DEG2RAD(0) );
-//	check_jacob_LnT_T(1.0,2.0,3.0, DEG2RAD(10),DEG2RAD(20),DEG2RAD(30) );
+//	check_jacob_LnT_T(1.0,0,0, DEG2RAD(0),DEG2RAD(0),DEG2RAD(0) ); ...
+}
+
+TEST_F(Pose3DTests,Jacob_dexpeD_de)
+{
+	for (size_t i=0;i<num_ptc;i++)
+		test_Jacob_dexpeD_de(ptc[i][0],ptc[i][1],ptc[i][2], DEG2RAD(ptc[i][3]),DEG2RAD(ptc[i][4]),DEG2RAD(ptc[i][5]));
+}
+
+TEST_F(Pose3DTests,Jacob_dAexpeD_de)
+{
+	for (size_t i=0;i<num_ptc;i++)
+		for (size_t j=0;j<num_ptc;j++)
+			test_Jacob_dAexpeD_de(
+				ptc[i][0],ptc[i][1],ptc[i][2], DEG2RAD(ptc[i][3]),DEG2RAD(ptc[i][4]),DEG2RAD(ptc[i][5]),
+				ptc[j][0],ptc[j][1],ptc[j][2], DEG2RAD(ptc[j][3]),DEG2RAD(ptc[j][4]),DEG2RAD(ptc[j][5]) );
 }
 
