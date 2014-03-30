@@ -17,6 +17,9 @@
 	- Changes in classes: 
 		- [mrpt-base] 
 			- Robust kernel templates moved from mrpt::vision to mrpt::math. See mrpt::math::RobustKernel<>. Added unit tests for robust kernels.
+			- CPose3D has new SE(3) methods: mrpt::poses::CPose3D::jacob_dexpeD_de(), mrpt::poses::CPose3D::jacob_dAexpeD_de()
+		- [mrpt-srba]
+			- Now also implements SE(3) relative graph-slam.
 	- Build system:
 		- Fixes to build in OS X - [Patch](https://gist.github.com/randvoorhies/9283072) by Randolph Voorhies.
   	- BUG FIXES:

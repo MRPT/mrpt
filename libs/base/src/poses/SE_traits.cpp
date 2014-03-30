@@ -78,7 +78,6 @@ void SE_traits<3>::jacobian_dP1DP2inv_depsilon(
 
 		// right-bottom part = dLnRot_dRot * aux
 		J1.block(3,3,3,3) = (dLnRot_dRot * aux).eval();
-		//CSubmatrixView<matrix_VxV_t,3,3>(J1,3,3).multiply_AB(dLnRot_dRot, aux);
 	}
 	if (df_de2)
 	{
@@ -110,7 +109,6 @@ void SE_traits<3>::jacobian_dP1DP2inv_depsilon(
 		const CMatrixFixedNumeric<double,9,3> aux(aux_vals);
 
 		// right-bottom part = dLnRot_dRot * aux
-		//CSubmatrixView<matrix_VxV_t,3,3>(J2,3,3).multiply_AB(dLnRot_dRot, aux);
 		J2.block(3,3,3,3) = (dLnRot_dRot * aux).eval();
 	}
 }
