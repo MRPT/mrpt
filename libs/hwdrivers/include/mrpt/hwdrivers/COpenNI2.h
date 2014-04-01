@@ -6,11 +6,12 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
-#ifndef mrpt_COpenNI2_H
-#define mrpt_COpenNI2_H
+#ifndef mrpt_COpenNI2Sensor_H
+#define mrpt_COpenNI2Sensor_H
 
 #if MRPT_HAS_OPENNI2
 
+#include <mrpt/hwdrivers/COpenNI2Generic.h>
 #include <mrpt/hwdrivers/CGenericSensor.h>
 #include <mrpt/slam/CObservation3DRangeScan.h>
 #include <mrpt/utils/TEnumType.h>
@@ -24,6 +25,7 @@ namespace mrpt
 	namespace hwdrivers
 	{
 		/** A class for grabing "range images", intensity images (either RGB or IR) and other information from an OpenNI2 sensor.
+		  * This class permits to access several sensors simultaneously. The same options (resolution, fps, etc.) are used for every sensor.
 		  *
 		  *  <h2>Configuration and usage:</h2> <hr>
 		  * Data is returned as observations of type mrpt::slam::CObservation3DRangeScan.
@@ -179,22 +181,14 @@ namespace mrpt
 		  *  \endcode
 		  *
 		  *  More references to read:
-		  *		- http://openkinect.org/wiki/Imaging_Information
-		  *		- http://nicolas.burrus.name/index.php/Research/KinectCalibration
+		  *		- http://http://www.openni.org/
 		  * \ingroup mrpt_hwdrivers_grp
 		  */
-		class HWDRIVERS_IMPEXP  COpenNI2 : public mrpt::hwdrivers::CGenericSensor
+		class HWDRIVERS_IMPEXP  COpenNI2 : public mrpt::hwdrivers::CGenericSensor, public mrpt::hwdrivers::COpenNI2Generic
 		{
 			DEFINE_GENERIC_SENSOR(COpenNI2)
 
 		public:
-//			typedef float TDepth2RangeArray[KINECT_RANGES_TABLE_LEN]; //!< A typedef for an array that converts raw depth to ranges in meters.
-
-//			/** RGB or IR video channel identifiers \sa setVideoChannel */
-//			enum TVideoChannel {
-//				VIDEO_CHANNEL_RGB=0,
-//				VIDEO_CHANNEL_IR
-//			};
 
 			COpenNI2();	 //!< Default ctor
 			~COpenNI2();	 //!< Default ctor
@@ -212,8 +206,6 @@ namespace mrpt
 			  */
 			virtual void doProcess();
 
-//      void getDepthFrame(void *v_depth, uint32_t timestamp)
-
 			/** The main data retrieving function, to be called after calling loadConfig() and initialize().
 			  *  \param out_obs The output retrieved observation (only if there_is_obs=true).
 			  *  \param there_is_obs If set to false, there was no new observation.
@@ -224,7 +216,8 @@ namespace mrpt
 			void getNextObservation(
 				mrpt::slam::CObservation3DRangeScan &out_obs,
 				bool &there_is_obs,
-				bool &hardware_error );
+				bool &hardware_error ,
+        unsigned sensor_id = 0);
 
 			/**  Set the path where to save off-rawlog image files (this class DOES take into account this path).
 			  *  An  empty string (the default value at construction) means to save images embedded in the rawlog, instead of on separate files.
@@ -236,36 +229,17 @@ namespace mrpt
 			/** @name Sensor parameters (alternative to \a loadConfig ) and manual control
 			    @{ */
 
-			/** Try to open the camera (set all the parameters before calling this) - users may also call initialize(), which in turn calls this method.
-			  *  Raises an exception upon error.
-			  * \exception std::exception A textual description of the error.
-			  */
-			void open();
-
-			bool isOpen() const; //!< Whether there is a working connection to the sensor
-
-			/** Close the conection to the sensor (not need to call it manually unless desired for some reason,
-			  * since it's called at destructor) */
-			void close();
-
-//			/** Changes the video channel to open (RGB or IR) - you can call this method before start grabbing or in the middle of streaming and the video source will change on the fly.
-//			    Default is RGB channel. */
-//			void          setVideoChannel(const TVideoChannel vch);
-//			/** Return the current video channel (RGB or IR) \sa setVideoChannel */
-//			inline TVideoChannel getVideoChannel() const { return m_video_channel; }
+//			/** Try to open the camera (set all the parameters before calling this) - users may also call initialize(), which in turn calls this method.
+//			  *  Raises an exception upon error.
+//			  * \exception std::exception A textual description of the error.
+//			  */
+//			void open(unsigned sensor_id = 0);
 //
-//			/** Set the sensor index to open (if there're several sensors attached to the computer); default=0 -> the first one. */
-//			inline void setDeviceIndexToOpen(int index) { m_user_device_number=index; }
-//			inline int getDeviceIndexToOpen() const { return m_user_device_number; }
+//			bool isOpen(const unsigned sensor_id) const; //!< Whether there is a working connection to the sensor
 //
-//			/** Default: disabled */
-//			inline void enablePreviewRGB(bool enable=true) { m_preview_window = enable; }
-//			inline void disablePreviewRGB() { m_preview_window = false; }
-//			inline bool isPreviewRGBEnabled() const { return m_preview_window; }
-//
-//			/** If preview is enabled, show only one image out of N (default: 1=show all) */
-//			inline void setPreviewDecimation(size_t decimation_factor ) { m_preview_window_decimation = decimation_factor; }
-//			inline size_t getPreviewDecimation() const { return m_preview_window_decimation; }
+//			/** Close the conection to the sensor (not need to call it manually unless desired for some reason,
+//			  * since it's called at destructor) */
+//			void close(unsigned sensor_id = 0);
 
 			/** Get the maximum range (meters) that can be read in the observation field "rangeImage" */
 			inline double getMaxRange() const { return m_maxRange; }
@@ -287,12 +261,6 @@ namespace mrpt
 			inline void setRelativePoseIntensityWrtDepth(const mrpt::poses::CPose3D &p) { m_relativePoseIntensityWRTDepth=p; }
 			inline const mrpt::poses::CPose3D &getRelativePoseIntensityWrtDepth() const { return m_relativePoseIntensityWRTDepth; }
 
-//			/** Get a reference to the array that convert raw depth values (10 or 11 bit) into ranges in meters, so it can be read or replaced by the user.
-//			  *  If you replace it, remember to set the first and last entries (index 0 and KINECT_RANGES_TABLE_LEN-1) to zero, to indicate that those are invalid ranges.
-//			  */
-//			inline       TDepth2RangeArray & getRawDepth2RangeConversion()       { return m_range2meters; }
-//			inline const TDepth2RangeArray & getRawDepth2RangeConversion() const { return m_range2meters; }
-
 			/** Enable/disable the grabbing of the RGB channel */
 			inline void enableGrabRGB(bool enable=true) { m_grab_image=enable; }
 			inline bool isGrabRGBEnabled() const { return m_grab_image; }
@@ -305,20 +273,33 @@ namespace mrpt
 			inline void enableGrab3DPoints(bool enable=true) { m_grab_3D_points=enable; }
 			inline bool isGrab3DPointsEnabled() const { return m_grab_3D_points; }
 
+			/** The amount of available devices at initialization */
+      unsigned numDevices;
+
+			/** The index of the chosen devices */
+      std::vector<unsigned> vOpenDevices;
+
 			/** @} */
 
 		protected:
 
-			/** Get the number of devices connected */
-//			void* deviceListPtr;  // Opaque pointer to "openni::Array<openni::DeviceInfo>"
-//      openni::Array<openni::DeviceInfo> deviceList;
+			/** List the number of devices connected */
+			void* deviceListPtr;  // Opaque pointer to "openni::Array<openni::DeviceInfo>"
 
+			/** A vector with pointers to the available devices */
       std::vector<void*>	vp_devices; // Opaque pointer to "openni::Device"
 //      void* p_deviceOptions; // Opaque pointer to "openni::VideoMode	options"
-      void *p_depth_stream, *p_rgb_stream; // Opaque pointer to "openni::VideoStream"
 
-			/** Frame output structures */
-      void *framed, *framergb;	// Opaque pointers to "openni::VideoFrameRef"
+			/** A vector with pointers to the rgb streams of the available devices */
+      std::vector<void*> vp_depth_stream;
+      std::vector<void*> vp_rgb_stream; // Opaque pointer to "openni::VideoStream"
+//      void *p_depth_stream;
+//      void *p_rgb_stream; // Opaque pointer to "openni::VideoStream"
+
+			/** A vector with pointers to the frame output structures */
+      std::vector<void*> vp_frame_depth, vp_frame_rgb;	// Opaque pointers to "openni::VideoFrameRef"
+
+			/** The same options (width, height and fps) are set for all the sensors. (This could be changed if necessary) */
       int width, height;
       float fps;
 
@@ -343,29 +324,8 @@ namespace mrpt
 
 			bool  m_grab_image, m_grab_depth, m_grab_3D_points ; //!< Default: all true
 
-//			TVideoChannel  m_video_channel; //!< The video channel to open: RGB or IR
-
-		private:
-			std::vector<uint8_t> m_buf_depth, m_buf_rgb; //!< Temporary buffers for image grabbing.
-//			TDepth2RangeArray m_range2meters; //!< The table raw depth -> range in meters
-
 		};	// End of class
 	} // End of NS
-
-//	// Specializations MUST occur at the same namespace:
-//	namespace utils
-//	{
-//		template <>
-//		struct TEnumTypeFiller<hwdrivers::COpenNI2::TVideoChannel>
-//		{
-//			typedef hwdrivers::COpenNI2::TVideoChannel enum_t;
-//			static void fill(bimap<enum_t,std::string>  &m_map)
-//			{
-//				m_map.insert(hwdrivers::COpenNI2::VIDEO_CHANNEL_RGB, "VIDEO_CHANNEL_RGB");
-//				m_map.insert(hwdrivers::COpenNI2::VIDEO_CHANNEL_IR,  "VIDEO_CHANNEL_IR");
-//			}
-//		};
-//	} // End of namespace
 
 } // End of NS
 
