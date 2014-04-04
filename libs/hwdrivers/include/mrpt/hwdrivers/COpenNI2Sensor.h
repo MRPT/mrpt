@@ -11,7 +11,7 @@
 
 #if MRPT_HAS_OPENNI2
 
-#include <mrpt/hwdrivers/COpenNI2Generic.h>
+//#include <mrpt/hwdrivers/COpenNI2Generic.h>
 #include <mrpt/hwdrivers/CGenericSensor.h>
 #include <mrpt/slam/CObservation3DRangeScan.h>
 #include <mrpt/utils/TEnumType.h>
@@ -33,16 +33,16 @@ namespace mrpt
 		  *
 		  * As with any other CGenericSensor class, the normal sequence of methods to be called is:
 		  *   - CGenericSensor::loadConfig() - Or calls to the individual setXXX() to configure the sensor parameters.
-		  *   - COpenNI2::initialize() - to start the communication with the sensor.
-		  *   - call COpenNI2::getNextObservation() for getting the data.
+		  *   - COpenNI2Sensor::initialize() - to start the communication with the sensor.
+		  *   - call COpenNI2Sensor::getNextObservation() for getting the data.
 		  *
 		  * <h2>Calibration parameters</h2><hr>
 		  *  In this class we employ the OpenNI2 method to return depth images refered to the RGB camera. Otherwise we could specify
 		  *   an accurate transformation of depth images to 3D points, you'll have to calibrate your RGBD sensor for that, and supply
 		  *   the following <b>threee pieces of information</b> (default calibration data will be used otherwise, but they'll be not optimal for all sensors!):
-		  *    - Camera parameters for the RGB camera. See COpenNI2::setCameraParamsIntensity()
-		  *    - Camera parameters for the depth camera. See COpenNI2::setCameraParamsDepth()
-		  *    - The 3D relative pose of the two cameras. See COpenNI2::setRelativePoseIntensityWrtDepth()
+		  *    - Camera parameters for the RGB camera. See COpenNI2Sensor::setCameraParamsIntensity()
+		  *    - Camera parameters for the depth camera. See COpenNI2Sensor::setCameraParamsDepth()
+		  *    - The 3D relative pose of the two cameras. See COpenNI2Sensor::setRelativePoseIntensityWrtDepth()
 		  *
 		  *   See http://www.mrpt.org/Kinect_calibration for a procedure to calibrate RGBD sensors with an interactive GUI program.
 		  *
@@ -65,7 +65,7 @@ namespace mrpt
 		  *
 		  *
 		  * <h2>Some general comments</h2><hr>
-		  *		- Depth is grabbed in 10bit depth, and a range N it's converted to meters as: range(m) = 0.1236 * tan(N/2842.5 + 1.1863)
+		  *		- Depth is grabbed in millimeters
 		  *		- This sensor can be also used from within rawlog-grabber to grab datasets within a robot with more sensors.
 		  *		- There is no built-in threading support, so if you use this class manually (not with-in rawlog-grabber),
 		  *			the ideal would be to create a thread and continuously request data from that thread (see mrpt::system::createThread ).
@@ -90,24 +90,6 @@ namespace mrpt
 		  *    mrpt::opengl::CPointCloudColouredPtr gl_points = mrpt::opengl::CPointCloudColoured::Create();
 		  *    gl_points->loadFromPointsMap(&pntsMap);
 		  *  \endcode
-		  *
-		  *
-		  * <h2>Raw depth to range conversion</h2><hr>
-		  *  At construction, this class builds an internal array for converting raw 10 or 11bit depths into ranges in meters.
-		  *   Users can read that array or modify it (if you have a better calibration, for example) by calling COpenNI2::getRawDepth2RangeConversion().
-		  *   If you replace it, remember to set the first and last entries (index 0 and KINECT_RANGES_TABLE_LEN-1) to zero, to indicate that those are invalid ranges.
-		  *
-		  *  <table width="100%" >
-		  *  <tr>
-		  *  <td align="center" >
-		  *   <img src="kinect_depth2range_10bit.png" > <br>
-		  *    R(d) = k3 * tan(d/k2 + k1); <br>
-		  *    k1 = 1.1863,  k2 = 2842.5, k3 = 0.1236 <br>
-		  *  </td>
-		  *  <td align="center" >
-		  *  </td>
-		  *  </tr>
-		  *  </table>
 		  *
 		  *
 		  * <h2>Platform-specific comments</h2><hr>
@@ -180,23 +162,57 @@ namespace mrpt
 		  *
 		  *  \endcode
 		  *
-		  *  More references to read:
+		  *  More references to read:IMPEXP mrpt
 		  *		- http://http://www.openni.org/
 		  * \ingroup mrpt_hwdrivers_grp
 		  */
-		class HWDRIVERS_IMPEXP  COpenNI2 : public mrpt::hwdrivers::CGenericSensor, public mrpt::hwdrivers::COpenNI2Generic
+		class HWDRIVERS_IMPEXP  COpenNI2Sensor : public mrpt::hwdrivers::CGenericSensor//, public mrpt::hwdrivers::COpenNI2Generic
 		{
-			DEFINE_GENERIC_SENSOR(COpenNI2)
+			DEFINE_GENERIC_SENSOR(COpenNI2Sensor)
 
-		public:
+//     private:
+//
+//			/** For being thread-safe.
+//			  */
+//			synch::CCriticalSection	m_csChangeStream, m_csLastObservation;
+//
+//			/** Switchs the laser on.
+//			  * \return false on any error
+//			  */
+//			bool  switchSensorOn();
+//
+//			/** Switchs the laser off
+//			  * \return false on any error
+//			  */
+//			bool  switchSensorOff();
 
-			COpenNI2();	 //!< Default ctor
-			~COpenNI2();	 //!< Default ctor
+		 public:
+
+			COpenNI2Sensor();	 //!< Default ctor
+			~COpenNI2Sensor();	 //!< Default ctor
 
 			/** Initializes the 3D camera - should be invoked after calling loadConfig() or setting the different parameters with the set*() methods.
 			  *  \exception This method must throw an exception with a descriptive message if some critical error is found.
 			  */
 			virtual void initialize();
+
+
+//			/** Binds the object to a given I/O channel.
+//			  *  The stream object must not be deleted before the destruction of this class.
+//			  * \sa hwdrivers::CSerialPort
+//			  */
+//			void  bindIO( CStream	*streamIO );
+//
+//			/** Enables the scanning mode (which may depend on the specific sensor device); this must be called before asking for observations to assure that the protocol has been initializated.
+//			  * \return If everything works "true", or "false" if there is any error.
+//			  */
+//			bool turnOn() = 0;
+//
+//			/** Disables the scanning mode (this can be used to turn the device in low energy mode, if available)
+//			  * \return If everything works "true", or "false" if there is any error.
+//			  */
+//			bool turnOff() = 0;
+
 
 			/** To be called  at a high rate (>XX Hz), this method populates the internal buffer of received observations.
 			  *  This method is mainly intended for usage within rawlog-grabber or similar programs.
@@ -229,17 +245,17 @@ namespace mrpt
 			/** @name Sensor parameters (alternative to \a loadConfig ) and manual control
 			    @{ */
 
-//			/** Try to open the camera (set all the parameters before calling this) - users may also call initialize(), which in turn calls this method.
-//			  *  Raises an exception upon error.
-//			  * \exception std::exception A textual description of the error.
-//			  */
-//			void open(unsigned sensor_id = 0);
-//
-//			bool isOpen(const unsigned sensor_id) const; //!< Whether there is a working connection to the sensor
-//
-//			/** Close the conection to the sensor (not need to call it manually unless desired for some reason,
-//			  * since it's called at destructor) */
-//			void close(unsigned sensor_id = 0);
+			/** Try to open the camera (set all the parameters before calling this) - users may also call initialize(), which in turn calls this method.
+			  *  Raises an exception upon error.
+			  * \exception std::exception A textual description of the error.
+			  */
+			void open(unsigned sensor_id = 0);
+
+			bool isOpen(const unsigned sensor_id) const; //!< Whether there is a working connection to the sensor
+
+			/** Close the conection to the sensor (not need to call it manually unless desired for some reason,
+			  * since it's called at destructor) */
+			void close(unsigned sensor_id = 0);
 
 			/** Get the maximum range (meters) that can be read in the observation field "rangeImage" */
 			inline double getMaxRange() const { return m_maxRange; }
@@ -279,12 +295,31 @@ namespace mrpt
 			/** The index of the chosen devices */
       std::vector<unsigned> vOpenDevices;
 
+//  /** Enables the scanning mode (which may depend on the specific laser device); this must be called before asking for observations to assure that the protocol has been initializated.
+//    * \return If everything works "true", or "false" if there is any error.
+//    */
+//  bool  turnOn();
+//
+//  /** Disables the scanning mode (this can be used to turn the device in low energy mode, if available)
+//    * \return If everything works "true", or "false" if there is any error.
+//    */
+//  bool  turnOff();
+
 			/** @} */
 
 		protected:
 
 			/** List the number of devices connected */
 			void* deviceListPtr;  // Opaque pointer to "openni::Array<openni::DeviceInfo>"
+
+//  /** Returns true if there is a valid stream bound to the laser scanner, otherwise it first try to open the serial port "m_com_port"
+//    */
+//  bool  checkCOMisOpen();
+//
+//  /** The I/O channel (will be NULL if not bound)*/
+//  utils::CStream					*m_stream;
+//
+//			std::string	m_com_port;		//!< If set to non-empty, the serial port will be attempted to be opened automatically when this class is first used to request data from the sensor.
 
 			/** A vector with pointers to the available devices */
       std::vector<void*>	vp_devices; // Opaque pointer to "openni::Device"

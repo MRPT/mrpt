@@ -58,7 +58,8 @@
 #include <mrpt/hwdrivers/CStereoGrabber_SVS.h>
 #include <mrpt/hwdrivers/CPhidgetInterfaceKitProximitySensors.h>
 #include <mrpt/hwdrivers/CKinect.h>
-#include <mrpt/hwdrivers/COpenNI2.h>
+#include <mrpt/hwdrivers/COpenNI2Sensor.h>
+#include <mrpt/hwdrivers/COpenNI2_RGBD360.h>
 
 #include <mrpt/hwdrivers/CCANBusReader.h>
 #include <mrpt/hwdrivers/CNationalInstrumentsDAQ.h>
