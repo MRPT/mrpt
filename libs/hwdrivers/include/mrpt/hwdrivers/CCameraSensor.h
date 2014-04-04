@@ -302,7 +302,7 @@ namespace mrpt
 			mrpt::utils::CFileGZInputStream * m_cap_rawlog;	//!< The input file for rawlogs
 			CSwissRanger3DCamera      * m_cap_swissranger; //!< SR 3D camera object.
 			CKinect                   * m_cap_kinect;    //!< Kinect camera object.
-			COpenNI2Sensor 		  * m_cap_openni2;  //!< OpenNI2 object.
+			COpenNI2Sensor 		        * m_cap_openni2;  //!< OpenNI2 object.
 			// =========================
 
 			int			m_camera_grab_decimator;
