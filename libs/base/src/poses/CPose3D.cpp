@@ -1159,3 +1159,32 @@ void CPose3D::ln_rot_jacob(const CMatrixDouble33 &R, CMatrixFixedNumeric<double,
 	}
 	M3x9(a,B, M);
 }
+
+// Eq. 10.3.5 in tech report http://ingmec.ual.es/~jlblanco/papers/jlblanco2010geometry3D_techrep.pdf
+void CPose3D::jacob_dexpeD_de(const CPose3D &D, Eigen::Matrix<double,12,6> & jacob)
+{
+	jacob.block<9,3>(0,0).setZero();
+	jacob.block<3,3>(9,0).setIdentity();
+	for (int i=0;i<3;i++) {
+		Eigen::Block< Eigen::Matrix<double,12,6>,3,3,false> trg_blc = jacob.block<3,3>(3*i,3);
+		mrpt::math::skew_symmetric3_neg( D.m_ROT.block<3,1>(0,i), trg_blc );
+	}
+	{
+		Eigen::Block< Eigen::Matrix<double,12,6>,3,3,false> trg_blc = jacob.block<3,3>(9,3);
+		mrpt::math::skew_symmetric3_neg( D.m_coords, trg_blc );
+	}
+}
+
+// Eq. 10.3.7 in tech report http://ingmec.ual.es/~jlblanco/papers/jlblanco2010geometry3D_techrep.pdf
+void CPose3D::jacob_dAexpeD_de(const CPose3D &A, const CPose3D &D, Eigen::Matrix<double,12,6> & jacob)
+{
+	jacob.block<9,3>(0,0).setZero();
+	jacob.block<3,3>(9,0) = A.getRotationMatrix();
+	Eigen::Matrix<double,3,3> aux;
+	for (int i=0;i<3;i++) {
+		mrpt::math::skew_symmetric3_neg( D.getRotationMatrix().block<3,1>(0,i),aux );
+		jacob.block<3,3>(3*i,3) = A.m_ROT * aux;
+	}
+	mrpt::math::skew_symmetric3_neg( D.m_coords, aux );
+	jacob.block<3,3>(9,3) = A.m_ROT * aux;
+}

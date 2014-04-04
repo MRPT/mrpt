@@ -97,7 +97,7 @@ namespace mrpt
 
 			/** Returns if port has been correctly open.
 			*/
-			bool  isOpen();
+			bool  isOpen() const;
 
 			/** Purge tx and rx buffers.
 			   * \exception std::exception On communication errors

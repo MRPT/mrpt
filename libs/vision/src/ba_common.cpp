@@ -11,7 +11,7 @@
 
 #include <mrpt/vision/bundle_adjustment.h>
 #include <mrpt/vision/pinhole.h>
-#include <mrpt/vision/robust_kernels.h>
+#include <mrpt/math/robust_kernels.h>
 #include "ba_internals.h"
 
 using namespace std;
@@ -115,14 +115,12 @@ inline void reprojectionResidualsElement(
 
 	if (use_robust_kernel)
 	{
-#if 1
 		RobustKernel<rkPseudoHuber> kernel;
-		kernel.b_sq = square(kernel_param);
-#else
-		RobustKernel<rkLeastSquares> kernel;
-#endif
+		kernel.param_sq = square(kernel_param);
+		double kernel_1st_deriv, kernel_2nd_deriv;
 
-		sum += kernel.eval(std::sqrt(sum_2), out_kernel_1st_deriv);
+		sum += kernel.eval(sum_2, kernel_1st_deriv,kernel_2nd_deriv);
+		if (out_kernel_1st_deriv) *out_kernel_1st_deriv = kernel_1st_deriv;
 	}
 	else
 	{

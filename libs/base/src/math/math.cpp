@@ -1072,8 +1072,8 @@ double  math::normalQuantile(double p)
 		2.445134137142996e+00,  3.754408661907416e+00
 		};
 
-	ASSERT_(!isNaN(p));
-	ASSERT_(p < 1.0 || p > 0.0);
+	ASSERT_(!isNaN(p))
+	ASSERT_(p < 1.0 && p > 0.0)
 
 	q = min(p,1-p);
 

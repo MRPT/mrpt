@@ -15,7 +15,7 @@
 #include <mrpt/vision/chessboard_find_corners.h>
 #include <mrpt/vision/chessboard_stereo_camera_calib.h>
 #include <mrpt/vision/pinhole.h>
-#include <mrpt/vision/robust_kernels.h>
+#include <mrpt/math/robust_kernels.h>
 
 #include "chessboard_stereo_camera_calib_internal.h"
 
@@ -937,10 +937,10 @@ double mrpt::vision::recompute_errors_and_Jacobians(
 			if (use_robust_kernel)
 			{
 				RobustKernel<rkPseudoHuber>  rk;
-				rk.b_sq = kernel_param;
+				rk.param_sq = kernel_param;
 
-				double kernel_1st_deriv;
-				const double scaled_err = rk.eval( std::sqrt(err_sqr_norm ), &kernel_1st_deriv );
+				double kernel_1st_deriv,kernel_2nd_deriv;
+				const double scaled_err = rk.eval(err_sqr_norm, kernel_1st_deriv,kernel_2nd_deriv );
 
 				rje.residual *= kernel_1st_deriv;
 				total_err += scaled_err;

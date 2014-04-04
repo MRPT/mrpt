@@ -522,7 +522,11 @@ bool CImageGrabber_FlyCapture2::getObservation( mrpt::slam::CObservationImage &o
 		FC2_BUF_IMG->GetDimensions( &img_rows, &img_cols, &img_stride);
 
 		out_observation.image.loadFromMemoryBuffer(img_cols,img_rows, is_color, FC2_BUF_IMG->GetData() );
-		out_observation.timestamp = mrpt::utils::time_tToTimestamp( timestamp.seconds + 1e-6*timestamp.microSeconds );
+
+		// It seems timestamp is not always correctly filled in the incoming imgs:
+		if (timestamp.seconds!=0)
+		     out_observation.timestamp = mrpt::utils::time_tToTimestamp( timestamp.seconds + 1e-6*timestamp.microSeconds );
+		else out_observation.timestamp = mrpt::system::now();
 
 		return true;
 	}
