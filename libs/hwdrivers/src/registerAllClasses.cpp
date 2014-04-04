@@ -47,7 +47,8 @@ void registerAllClasses_mrpt_hwdrivers()
 	CPhidgetInterfaceKitProximitySensors::doRegister();
 	CGyroKVHDSP3000::doRegister();
 	CKinect::doRegister();
-	COpenNI2::doRegister();
+	COpenNI2Sensor::doRegister();
+	COpenNI2_RGBD360::doRegister();
 	CCANBusReader::doRegister();
 	CNationalInstrumentsDAQ::doRegister();
 }

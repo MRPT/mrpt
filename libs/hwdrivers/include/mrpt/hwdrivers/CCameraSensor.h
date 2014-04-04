@@ -23,7 +23,7 @@
 #include <mrpt/hwdrivers/CStereoGrabber_Bumblebee.h>
 #include <mrpt/hwdrivers/CSwissRanger3DCamera.h>
 #include <mrpt/hwdrivers/CKinect.h>
-#include <mrpt/hwdrivers/COpenNI2.h>
+#include <mrpt/hwdrivers/COpenNI2Sensor.h>
 
 #include <mrpt/utils/CFileGZInputStream.h>
 #include <mrpt/hwdrivers/CStereoGrabber_SVS.h>
@@ -302,7 +302,7 @@ namespace mrpt
 			mrpt::utils::CFileGZInputStream * m_cap_rawlog;	//!< The input file for rawlogs
 			CSwissRanger3DCamera      * m_cap_swissranger; //!< SR 3D camera object.
 			CKinect                   * m_cap_kinect;    //!< Kinect camera object.
-      COpenNI2			*m_openni2;
+			COpenNI2Sensor 		  * m_cap_openni2;  //!< OpenNI2 object.
 			// =========================
 
 			int			m_camera_grab_decimator;

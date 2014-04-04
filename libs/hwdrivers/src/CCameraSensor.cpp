@@ -66,7 +66,7 @@ CCameraSensor::CCameraSensor() :
 	m_sr_save_intensity_img	(true),
 	m_sr_save_confidence	(true),
 
-	m_kinect_save_3d		(true),
+	m_kinect_save_3d		(true), // These options are also used for OpenNI2 grabber
 	m_kinect_save_range_img (true),
 	m_kinect_save_intensity_img(true),
 	m_kinect_video_rgb		(true),
@@ -85,6 +85,7 @@ CCameraSensor::CCameraSensor() :
 	m_cap_rawlog         (NULL),
 	m_cap_swissranger    (NULL),
 	m_cap_kinect         (NULL),
+	m_cap_openni2        (NULL),
 	m_camera_grab_decimator (0),
 	m_camera_grab_decimator_counter(0),
 	m_preview_counter	(0),
@@ -196,7 +197,6 @@ void CCameraSensor::initialize()
 	{
 		cout << "[CCameraSensor::initialize] Kinect camera...\n";
 		m_cap_kinect = new CKinect();
-    m_openni2 = new COpenNI2();
 		m_cap_kinect->enableGrab3DPoints( m_kinect_save_3d );
 		m_cap_kinect->enableGrabDepth ( m_kinect_save_range_img );
 		m_cap_kinect->enableGrabRGB( m_kinect_save_intensity_img );
@@ -209,6 +209,27 @@ void CCameraSensor::initialize()
 		try
 		{
 			m_cap_kinect->initialize(); // This will launch an exception if needed.
+		} catch (std::exception &e)
+		{
+			m_state = CGenericSensor::ssError;
+			throw e;
+		}
+	}
+	else if (m_grabber_type=="openni2")
+	{
+		cout << "[CCameraSensor::initialize] OpenNI2 sensor...\n";
+    m_cap_openni2 = new COpenNI2Sensor();
+		m_cap_openni2->enableGrab3DPoints( m_kinect_save_3d ); // It uses the same options as the Kinect grabber
+		m_cap_openni2->enableGrabDepth ( m_kinect_save_range_img );
+		m_cap_openni2->enableGrabRGB( m_kinect_save_intensity_img );
+
+		if (!m_path_for_external_images.empty())
+			m_cap_openni2->setPathForExternalImages( m_path_for_external_images );
+
+		// Open it:
+		try
+		{
+			m_cap_openni2->initialize(); // This will launch an exception if needed.
 		} catch (std::exception &e)
 		{
 			m_state = CGenericSensor::ssError;
