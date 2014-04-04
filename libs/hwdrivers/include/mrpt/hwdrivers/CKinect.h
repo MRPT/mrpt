@@ -40,6 +40,7 @@ namespace mrpt
 	namespace hwdrivers
 	{
 		/** A class for grabing "range images", intensity images (either RGB or IR) and other information from an Xbox Kinect sensor.
+		  * To use Kinect for Windows or ASUS/Primesense RGBD cameras, use the class COpenNI2.
 		  *
 		  *  <h2>Configuration and usage:</h2> <hr>
 		  * Data is returned as observations of type mrpt::slam::CObservation3DRangeScan (and mrpt::slam::CObservationIMU for accelerometers data).

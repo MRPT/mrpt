@@ -70,6 +70,9 @@ namespace pbmap {
 
    private:
 
+//    /*!Set of thresholds for PbMap matching.*/
+//    config_heuristics configLocaliser;
+
     /*!The current PbMap.*/
     PbMap &mPbMap;
 

@@ -19,6 +19,7 @@
 #include <mrpt/slam/CObservation.h>
 #include <mrpt/slam/CObservation2DRangeScan.h>
 #include <mrpt/slam/CObservation3DRangeScan.h>
+#include <mrpt/slam/CObservationRGBD360.h>
 #include <mrpt/slam/CObservationRange.h>
 #include <mrpt/slam/CObservationImage.h>
 // #include <mrpt/slam/CObservationVisualLandmarks.h>  // This one is in mrpt-core

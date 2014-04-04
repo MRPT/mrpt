@@ -39,16 +39,22 @@ PbMap::PbMap() :
  ---------------------------------------------------------------*/
 void  PbMap::writeToStream(CStream &out, int *out_Version) const
 {
-	if (out_Version)
-		*out_Version = 0;
+//cout << "Write PbMap. Version " << *out_Version << endl;
+	if (out_Version){//cout << "There is version\n";
+		*out_Version = 0;}
 	else
 	{
+    // Write label
+    out << label;
+
 		// The data
 		uint32_t n = uint32_t( vPlanes.size() );
 		out << n;
+//  cout << "Write " << n << " planes\n";
 		for (uint32_t i=0; i < n; i++)
 			out << vPlanes[i];
 	}
+//cout << "Exit Write PbMap. " << endl;
 }
 
 /*---------------------------------------------------------------
@@ -60,6 +66,12 @@ void  PbMap::readFromStream(CStream &in, int version)
 	{
 	case 0:
     {
+//      cout << "Read planes\n";
+
+        // Read label
+        in >> label;
+//      cout << "PbMap label " << label << endl;
+
         // Delete previous content:
         vPlanes.clear();
 
@@ -70,11 +82,14 @@ void  PbMap::readFromStream(CStream &in, int version)
         vPlanes.resize(n);
           for (uint32_t i=0; i < n; i++)
           {
+//      cout << "plane\n";
+
             Plane pl;
             pl.id = i;
             in >> pl;
             vPlanes[i] = pl;
           }
+//        cout << "Finish reading planes\n";
     } break;
 	default:
 		MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
@@ -83,22 +98,50 @@ void  PbMap::readFromStream(CStream &in, int version)
 
 void PbMap::savePbMap(string filePath)
 {
+//  boost::mutex::scoped_lock lock (mtx_pbmap_busy);
+
+//cout << "PbMap::savePbMap\n";
   // Serialize PbMap
   mrpt::utils::CFileGZOutputStream serialize_pbmap(filePath + "/planes.pbmap");
   serialize_pbmap << *this;
   serialize_pbmap.close();
 
+//cout << "PbMap::save cloud\n";
   // Save reconstructed point cloud
   pcl::io::savePCDFile(filePath + "/cloud.pcd", *this->globalMapPtr);
 }
 
-// Merge two pbmaps
+void PbMap::loadPbMap(std::string filePath)
+{
+  // Read in the cloud data
+  pcl::PCDReader reader;
+  string PbMapFile = filePath;
+  reader.read (PbMapFile.append("/cloud.pcd"), *(this->globalMapPtr));
+//  cout << "Size " << globalMapPtr->size() << " " << globalMapPtr->empty() << endl;
+
+  // Load Previous Map
+  PbMapFile = filePath;
+  mrpt::utils::CFileGZInputStream serialized_pbmap;
+  if (serialized_pbmap.open(PbMapFile.append("/planes.pbmap")))
+  {
+    serialized_pbmap >> *this;
+  }
+  else
+    cout << "Error: cannot open " << PbMapFile << "\n";
+  serialized_pbmap.close();
+
+//  std::cout << "Load PbMap from " << filePath << "\n";
+}
+
+
+// Merge two pbmaps.
 void PbMap::MergeWith(PbMap &pbm, Eigen::Matrix4f &T)
 {
   // Rotate and translate PbMap
   for(size_t i = 0; i < pbm.vPlanes.size(); i++)
   {
-    Plane &plane = pbm.vPlanes[i];
+    Plane plane = pbm.vPlanes[i];
+//    Plane plane = &pbm.vPlanes[i]; //Warning: It modifies the source!!!
 
     // Transform normal and ppal direction
     plane.v3normal = T.block(0,0,3,3) * plane.v3normal;
@@ -109,6 +152,10 @@ void PbMap::MergeWith(PbMap &pbm, Eigen::Matrix4f &T)
 
     // Transform convex hull points
     pcl::transformPointCloud(*plane.polygonContourPtr, *plane.polygonContourPtr, T);
+
+    pcl::transformPointCloud(*plane.planePointCloudPtr, *plane.planePointCloudPtr, T);
+
+    plane.id = vPlanes.size();
 
     vPlanes.push_back(plane);
   }

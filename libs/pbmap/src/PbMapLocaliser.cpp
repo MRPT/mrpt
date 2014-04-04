@@ -28,15 +28,63 @@ using namespace mrpt::pbmap;
 
 config_heuristics configLocaliser;
 
+double time1, time2;
+
 PbMapLocaliser::PbMapLocaliser(PbMap &mPbM, const string &config_file) :
     mPbMap(mPbM),
     m_pbMapLocaliser_must_stop(false),
     m_pbMapLocaliser_finished(false)
 {
   configLocaliser.load_params(config_file);
-std::cout << "PbMapLocaliser::PbMapLocaliser min_planes_recognition " << configLocaliser.min_planes_recognition << endl;
+std::cout << "PbMapLocaliser::PbMapLocaliser min_planes_recognition " << configLocaliser.min_planes_recognition << " color thresholds " << configLocaliser.color_threshold << " " << configLocaliser.intensity_threshold << " " << configLocaliser.hue_threshold << endl;
+
+  LoadPreviousPbMaps("/home/edu/newPbMaps/PbMaps.txt");
 
   pbMapLocaliser_hd = mrpt::system::createThreadFromObjectMethod(this, &PbMapLocaliser::run);
+}
+
+
+// Load Previous PbMaps
+void PbMapLocaliser::LoadPreviousPbMaps(std::string fileMaps)
+{
+cout << "PbMapLocaliser::LoadPreviousPbMaps(...)\n";
+  std::ifstream configFile;
+  configFile.open(fileMaps.c_str());
+
+
+  string mapFile, filepath = "/home/edu/newPbMaps/";
+  totalPrevPlanes = 0;
+  while( !configFile.eof() )
+  {
+//      floorPlane = -1;
+    getline(configFile, mapFile);
+    if(mapFile == "")
+      break;
+
+    if(mapFile.at(0) == '%')
+      continue;
+  cout << "Load map: " << filepath << mapFile << endl;
+
+    PbMap previousPbMap;
+    previousPbMap.loadPbMap(filepath + mapFile);
+
+    previousPbMapNames.push_back(mapFile);
+    previousPbMaps.push_back(previousPbMap);
+
+//      prevPbMap.vPlaness.push_back(vPlanesTemp);
+//      previousPbMapNames.push_back(mapFile);
+//      vFloors.push_back(floorPlane);
+    totalPrevPlanes += previousPbMap.vPlanes.size();
+//  cout << "PbMap loaded has " << previousPbMap.vPlanes.size() << " planes" << endl;
+  }
+//cout << "Size: " << totalPrevPlanes << " " << vFloors.size() << endl;
+//cout << "Floors: ";
+//for(unsigned i=0; i< vFloors.size(); i++)
+//  cout << vFloors[i] << " ";
+//cout << endl;
+
+  configFile.close();
+cout << "PbMapLocaliser:: previous PbMaps loaded\n";
 }
 
 // Check 2nd order neighbors of the reference plane
@@ -133,12 +181,12 @@ bool PbMapLocaliser::searchPlaneContext(Plane &searchPlane)
       // Do not consider evaluating planes which do not have more than min_planes_recognition neighbor planes (too much uncertainty)
       if(configLocaliser.graph_mode == 0)
       {
-        if( targetPlane.neighborPlanes.size() < configLocaliser.min_planes_recognition ){
+        if( targetPlane.nearbyPlanes.size() < configLocaliser.min_planes_recognition ){
           continue;}
       }
       else // configLocaliser.graph_mode = 1
       {
-        if( targetPlane.nearbyPlanes.size() < configLocaliser.min_planes_recognition ){
+        if( targetPlane.neighborPlanes.size() < configLocaliser.min_planes_recognition ){
           continue;}
       }
 
@@ -146,7 +194,8 @@ bool PbMapLocaliser::searchPlaneContext(Plane &searchPlane)
       Subgraph targetSubgraph(&prevPbMap, targetPlane.id);
 //      matcher.setTargetSubgraph(targetSubgraph);
 
-//      cout << "\nsource size " << currentSubgraph.subgraphPlanesIdx.size() << endl;
+//  cout << "\nsource size " << currentSubgraph.subgraphPlanesIdx.size() << endl;
+//  cout << "target size " << targetSubgraph.subgraphPlanesIdx.size() << endl;
       std::map<unsigned, unsigned> resultingMatch = matcher.compareSubgraphs(currentSubgraph, targetSubgraph);
 
 //    cout << "ResultingMatch size " << resultingMatch.size() << endl;
@@ -268,10 +317,17 @@ bool PbMapLocaliser::searchPlaneContext(Plane &searchPlane)
 
 void PbMapLocaliser::run()
 {
+//cout << "run PbMapLocaliser\n";
   bool placeFound = false;
+
+  std::map<unsigned,vector<double> > timeLocalizer;
+  std::map<unsigned,vector<int> > nCheckLocalizer;
+  time1 = 0.0;
+  time2 = 0.0;
 
   while(!m_pbMapLocaliser_must_stop && !placeFound)
   {
+//    cout << "while...\n";
     if(vQueueObservedPlanes.empty()) //if(sQueueObservedPlanes.empty())
       mrpt::system::sleep(50);
 
@@ -283,6 +339,7 @@ void PbMapLocaliser::run()
         // Do not consider searching planes which do not have more than 2 neighbor planes (too much uncertainty)
         if(configLocaliser.graph_mode == 0) // Nearby neighbors
         {
+//        cout << "vecinos1 " << mPbMap.vPlanes[vQueueObservedPlanes[0]].nearbyPlanes.size() << endl;
           if(mPbMap.vPlanes[vQueueObservedPlanes[0]].nearbyPlanes.size() < configLocaliser.min_planes_recognition)
           {
             vQueueObservedPlanes.erase(vQueueObservedPlanes.begin());
@@ -290,27 +347,47 @@ void PbMapLocaliser::run()
           }
         }
         else //configLocaliser.graph_mode = 1
+        {
+//        cout << "vecinos2 " << mPbMap.vPlanes[vQueueObservedPlanes[0]].neighborPlanes.size() << endl;
           if(mPbMap.vPlanes[vQueueObservedPlanes[0]].neighborPlanes.size() < configLocaliser.min_planes_recognition)
           {
             vQueueObservedPlanes.erase(vQueueObservedPlanes.begin());
             continue;
           }
+        }
+
+//    cout << "Search context\n";
         matcher.nCheckConditions = 0;
-        #ifdef _VERBOSE
+//        #ifdef _VERBOSE
         double search_plane_start = pcl::getTime ();
-        #endif
+//        #endif
 
         if( searchPlaneContext(mPbMap.vPlanes[vQueueObservedPlanes[0]]) )
         {
           placeFound = true;
-          #ifdef _VERBOSE
+//          #ifdef _VERBOSE
             double search_plane_end = pcl::getTime ();
             std::cout << "PLACE FOUND. Search took " << double (search_plane_end - search_plane_start) << " s\n";
-          #endif
+//          #endif
           break;
         }
 
         vQueueObservedPlanes.erase(vQueueObservedPlanes.begin());
+
+//    cout << "nChecks " << matcher.nCheckConditions << endl;
+        double search_plane_end = pcl::getTime ();
+        if(timeLocalizer.count(mPbMap.vPlanes[vQueueObservedPlanes[0]].neighborPlanes.size()) == 0)
+        {
+          timeLocalizer[mPbMap.vPlanes[vQueueObservedPlanes[0]].neighborPlanes.size()].push_back( double(search_plane_end - search_plane_start) );
+          nCheckLocalizer[mPbMap.vPlanes[vQueueObservedPlanes[0]].neighborPlanes.size()].push_back(matcher.nCheckConditions);
+        }
+        else
+        {
+            vector<double> firstElement(1,double(search_plane_end - search_plane_start));
+            vector<int> firstElement_(1,matcher.nCheckConditions);
+            timeLocalizer[mPbMap.vPlanes[vQueueObservedPlanes[0]].neighborPlanes.size()] = firstElement;
+            nCheckLocalizer[mPbMap.vPlanes[vQueueObservedPlanes[0]].neighborPlanes.size()] = firstElement_;
+        }
 
         #ifdef _VERBOSE
           double search_plane_end = pcl::getTime ();
@@ -320,6 +397,25 @@ void PbMapLocaliser::run()
     }
   }
   m_pbMapLocaliser_finished = true;
+
+cout << "Print TIME PbLocalizer\n";
+  cout << "Tiempo1 " << time1 << " tiempo2 " << time2 << endl;;
+  std::map<unsigned,vector<int> >::iterator itChecks = nCheckLocalizer.begin();
+  for(std::map<unsigned,vector<double> >::iterator it=timeLocalizer.begin(); it != timeLocalizer.end(); it++)
+  {
+    double sum_times = 0;
+    double sum_nChecks = 0;
+    for(unsigned j=0; j < it->second.size(); j++)
+    {
+        sum_times += it->second[j];
+        sum_nChecks += itChecks->second[j];
+    }
+    itChecks++;
+
+    cout << "Size " << it->first << " time " << sum_times/it->second.size() << endl;
+    cout << "... nChecks " << sum_nChecks/it->second.size() << endl;
+  }
+
 }
 
 bool PbMapLocaliser::stop_pbMapLocaliser()
@@ -327,7 +423,7 @@ bool PbMapLocaliser::stop_pbMapLocaliser()
   m_pbMapLocaliser_must_stop = true;
   while(!m_pbMapLocaliser_finished)
     mrpt::system::sleep(1);
-  cout << "Waiting for PbMapMaker thread to die.." << endl;
+  cout << "Waiting for PbMapLocaliser thread to die.." << endl;
 
   mrpt::system::joinThread(pbMapLocaliser_hd);
 	pbMapLocaliser_hd.clear();

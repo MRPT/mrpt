@@ -23,6 +23,7 @@
 #include <mrpt/hwdrivers/CStereoGrabber_Bumblebee.h>
 #include <mrpt/hwdrivers/CSwissRanger3DCamera.h>
 #include <mrpt/hwdrivers/CKinect.h>
+#include <mrpt/hwdrivers/COpenNI2Sensor.h>
 
 #include <mrpt/utils/CFileGZInputStream.h>
 #include <mrpt/hwdrivers/CStereoGrabber_SVS.h>
@@ -136,9 +137,9 @@ namespace mrpt
 		  *    rawlog_camera_sensor_label  = CAMERA1          // [rawlog] If this field is not present, all images found in the rawlog will be retrieved. Otherwise, only those observations with a matching sensor label.
 		  *
 		  *    # Options for grabber_type= svs -------------------------------------
-		  *    svs_camera_index = 0  
-		  *    svs_frame_width = 800 
-		  *    svs_frame_height = 600 
+		  *    svs_camera_index = 0
+		  *    svs_frame_width = 800
+		  *    svs_frame_height = 600
 		  *    svs_framerate = 25.0
 		  *    svs_NDisp = ...
 		  *    svs_Corrsize = ...
@@ -149,7 +150,7 @@ namespace mrpt
 		  *    svs_SpeckleSize = ...
 		  *    svs_procesOnChip = false
 		  *    svs_calDisparity = true
-		  *    
+		  *
 		  *    # Options for grabber_type= swissranger -------------------------------------
 		  *    sr_use_usb         = true	        // True: use USB, false: use ethernet
 		  *    sr_IP              = 192.168.2.14    // If sr_use_usb=false, the camera IP
@@ -165,15 +166,15 @@ namespace mrpt
 		  *    #kinect_video_rgb       = true            // Optional. If set to "false", the IR intensity channel will be grabbed instead of the color RGB channel.
 		  *
 		  *    # Options for grabber_type= flycap (Point Grey Research's FlyCapture 2) --------
-		  *    flycap_camera_index           = 0   
+		  *    flycap_camera_index           = 0
 		  *    #... (all the parameters enumerated in mrpt::hwdrivers::TCaptureOptions_FlyCapture2 with the prefix "flycap_")
 		  *
 		  *    # Options for grabber_type= flycap_stereo (Point Grey Research's FlyCapture 2, two cameras setup as a stereo pair) ------
 		  *    # fcs_start_synch_capture   = false  // *Important*: Only set to true if using Firewire cameras: the "startSyncCapture()" command is unsupported in USB3 and GigaE cameras.
 		  *
-		  *    fcs_LEFT_camera_index           = 0   
+		  *    fcs_LEFT_camera_index           = 0
 		  *    #... (all the parameters enumerated in mrpt::hwdrivers::TCaptureOptions_FlyCapture2 with the prefix "fcs_LEFT_")
-		  *    fcs_RIGHT_camera_index          = 0   
+		  *    fcs_RIGHT_camera_index          = 0
 		  *    #... (all the parameters enumerated in mrpt::hwdrivers::TCaptureOptions_FlyCapture2 with the prefix "fcs_RIGHT_")
 		  *
 		  *  \endcode
@@ -190,7 +191,7 @@ namespace mrpt
 		public:
 			/** Constructor. The camera is not open until "initialize" is called. */
 			CCameraSensor();
-			
+
 			/** Destructor */
 			virtual ~CCameraSensor();
 
@@ -301,6 +302,7 @@ namespace mrpt
 			mrpt::utils::CFileGZInputStream * m_cap_rawlog;	//!< The input file for rawlogs
 			CSwissRanger3DCamera      * m_cap_swissranger; //!< SR 3D camera object.
 			CKinect                   * m_cap_kinect;    //!< Kinect camera object.
+			COpenNI2Sensor 		        * m_cap_openni2;  //!< OpenNI2 object.
 			// =========================
 
 			int			m_camera_grab_decimator;

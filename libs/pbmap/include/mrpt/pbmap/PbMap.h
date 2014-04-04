@@ -26,6 +26,7 @@
 #include <mrpt/pbmap/Plane.h>
 #include <mrpt/pbmap/Miscellaneous.h>  // For typedef PointT;
 
+//#include <boost/thread/thread.hpp>
 
 namespace mrpt {
 namespace pbmap {
@@ -55,6 +56,9 @@ namespace pbmap {
   /*!Vector to store the 3D-planes which are the basic characteristic of our map.*/
     std::vector<Plane> vPlanes;
 
+  /*!Label to store a semantic attribute*/
+    std::string label;
+
   /*!Floor plane id*/
     int FloorPlane;
 
@@ -68,11 +72,17 @@ namespace pbmap {
     /*!Save PbMap in the given filePath*/
     void savePbMap(std::string filePath);
 
+    /*!Load a PbMap from the given filePath*/
+    void loadPbMap(std::string PbMapFile);
+
     /*!Merge two pbmaps*/
     void MergeWith(PbMap &pbm, Eigen::Matrix4f &T);
 
     /*! Print PbMap content to a text file*/
     void printPbMap(std::string txtFilePbm);
+
+//    boost::mutex mtx_pbmap_busy;
+
   };
 
 } } // End of namespaces

@@ -301,9 +301,10 @@ IF(BUILD_EXAMPLES)
 		SET(LIST_EXAMPLES_IN_THIS_DIR
 			openNI2_RGBD_demo
 			openNI2_proximity_demo
+			openNI2_driver_demo
 			openNI2_to_rawlog)
 			
-		SET(CMAKE_EXAMPLE_DEPS mrpt-base mrpt-gui mrpt-opengl mrpt-maps)
+		SET(CMAKE_EXAMPLE_DEPS mrpt-base mrpt-hwdrivers mrpt-gui mrpt-opengl mrpt-maps)
 		SET(CMAKE_EXAMPLE_LINK_LIBS ${MRPT_LINKER_LIBS} "\${OPENNI2_LIBRARIES}")
 		GENERATE_CMAKE_FILES_SAMPLES_DIRECTORY()
 	ENDIF(MRPT_HAS_OPENNI2)

@@ -66,7 +66,7 @@ CCameraSensor::CCameraSensor() :
 	m_sr_save_intensity_img	(true),
 	m_sr_save_confidence	(true),
 
-	m_kinect_save_3d		(true),
+	m_kinect_save_3d		(true), // These options are also used for OpenNI2 grabber
 	m_kinect_save_range_img (true),
 	m_kinect_save_intensity_img(true),
 	m_kinect_video_rgb		(true),
@@ -85,6 +85,7 @@ CCameraSensor::CCameraSensor() :
 	m_cap_rawlog         (NULL),
 	m_cap_swissranger    (NULL),
 	m_cap_kinect         (NULL),
+	m_cap_openni2        (NULL),
 	m_camera_grab_decimator (0),
 	m_camera_grab_decimator_counter(0),
 	m_preview_counter	(0),
@@ -196,7 +197,6 @@ void CCameraSensor::initialize()
 	{
 		cout << "[CCameraSensor::initialize] Kinect camera...\n";
 		m_cap_kinect = new CKinect();
-
 		m_cap_kinect->enableGrab3DPoints( m_kinect_save_3d );
 		m_cap_kinect->enableGrabDepth ( m_kinect_save_range_img );
 		m_cap_kinect->enableGrabRGB( m_kinect_save_intensity_img );
@@ -209,6 +209,27 @@ void CCameraSensor::initialize()
 		try
 		{
 			m_cap_kinect->initialize(); // This will launch an exception if needed.
+		} catch (std::exception &e)
+		{
+			m_state = CGenericSensor::ssError;
+			throw e;
+		}
+	}
+	else if (m_grabber_type=="openni2")
+	{
+		cout << "[CCameraSensor::initialize] OpenNI2 sensor...\n";
+    m_cap_openni2 = new COpenNI2Sensor();
+		m_cap_openni2->enableGrab3DPoints( m_kinect_save_3d ); // It uses the same options as the Kinect grabber
+		m_cap_openni2->enableGrabDepth ( m_kinect_save_range_img );
+		m_cap_openni2->enableGrabRGB( m_kinect_save_intensity_img );
+
+		if (!m_path_for_external_images.empty())
+			m_cap_openni2->setPathForExternalImages( m_path_for_external_images );
+
+		// Open it:
+		try
+		{
+			m_cap_openni2->initialize(); // This will launch an exception if needed.
 		} catch (std::exception &e)
 		{
 			m_state = CGenericSensor::ssError;
@@ -249,20 +270,20 @@ void CCameraSensor::initialize()
 		try
 		{
 			// Open camera and start capture:
-			m_cap_flycap_stereo_l = new CImageGrabber_FlyCapture2(); 
-			m_cap_flycap_stereo_r = new CImageGrabber_FlyCapture2(); 
+			m_cap_flycap_stereo_l = new CImageGrabber_FlyCapture2();
+			m_cap_flycap_stereo_r = new CImageGrabber_FlyCapture2();
 
 			cout << "[CCameraSensor::initialize] PGR FlyCapture2 stereo camera: Openning LEFT camera...\n";
 			m_cap_flycap_stereo_l->open(m_flycap_stereo_options[0], false /* don't start grabbing */ );
 
 			cout << "[CCameraSensor::initialize] PGR FlyCapture2 stereo camera: Openning RIGHT camera...\n";
 			m_cap_flycap_stereo_r->open(m_flycap_stereo_options[1], false /* don't start grabbing */ );
-			
+
 			// Now, start grabbing "simultaneously":
 			if (m_fcs_start_synch_capture)
 			{
 				const CImageGrabber_FlyCapture2 *cams[2];
-				cams[0] = m_cap_flycap_stereo_l; 
+				cams[0] = m_cap_flycap_stereo_l;
 				cams[1] = m_cap_flycap_stereo_r;
 				CImageGrabber_FlyCapture2::startSyncCapture(2,cams);
 			}
@@ -737,13 +758,13 @@ CObservationPtr CCameraSensor::getNextFrame()
 	else if (m_cap_flycap_stereo_l && m_cap_flycap_stereo_r)
 	{
 		stObs = CObservationStereoImages::Create();
-		
+
 		CObservationImage obsL,obsR;
 
-		bool ok1 = false, ok2=false; 
-		
+		bool ok1 = false, ok2=false;
+
 		ok1 = m_cap_flycap_stereo_r->getObservation(obsL);
-		if (ok1) 
+		if (ok1)
 			ok2 = m_cap_flycap_stereo_l->getObservation(obsR);
 
 		if (!ok1 || !ok2)
@@ -794,7 +815,7 @@ CObservationPtr CCameraSensor::getNextFrame()
 		stObs->sensorLabel = m_sensorLabel;
 		stObs->setSensorPose( m_sensorPose );
 	}
-	else { 
+	else {
 		obs3D->sensorLabel = m_sensorLabel;
 		obs3D->setSensorPose( m_sensorPose );
 	}

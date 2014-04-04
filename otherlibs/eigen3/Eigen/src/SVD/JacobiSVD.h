@@ -10,7 +10,7 @@
 #ifndef EIGEN_JACOBISVD_H
 #define EIGEN_JACOBISVD_H
 
-namespace Eigen { 
+namespace Eigen {
 
 namespace internal {
 // forward declaration (needed by ICC)
@@ -666,6 +666,19 @@ template<typename _MatrixType, int QRPreconditioner> class JacobiSVD
     inline Index rows() const { return m_rows; }
     inline Index cols() const { return m_cols; }
 
+    void pinv( MatrixType& pinvmat) const // New method added from outside
+    {
+     eigen_assert(m_isInitialized && "SVD is not initialized.");
+     double  pinvtoler=1.e-6; // choose your tolerance wisely!
+     SingularValuesType singularValues_inv=m_singularValues;
+     for ( long i=0; i<m_workMatrix.cols(); ++i) {
+        if ( m_singularValues(i) > pinvtoler )
+           singularValues_inv(i)=1.0/m_singularValues(i);
+       else singularValues_inv(i)=0;
+     }
+     pinvmat= (m_matrixV*singularValues_inv.asDiagonal()*m_matrixU.transpose());
+    }
+
   private:
     void allocate(Index rows, Index cols, unsigned int computationOptions);
 
@@ -732,7 +745,7 @@ void JacobiSVD<MatrixType, QRPreconditioner>::allocate(Index rows, Index cols, u
                             : m_computeThinV ? m_diagSize
                             : 0);
   m_workMatrix.resize(m_diagSize, m_diagSize);
-  
+
   if(m_cols>m_rows) m_qr_precond_morecols.allocate(*this);
   if(m_rows>m_cols) m_qr_precond_morerows.allocate(*this);
 }
@@ -852,7 +865,7 @@ struct solve_retval<JacobiSVD<_MatrixType, QRPreconditioner>, Rhs>
 
     Matrix<Scalar, Dynamic, Rhs::ColsAtCompileTime, 0, _MatrixType::MaxRowsAtCompileTime, Rhs::MaxColsAtCompileTime> tmp;
     Index nonzeroSingVals = dec().nonzeroSingularValues();
-    
+
     tmp.noalias() = dec().matrixU().leftCols(nonzeroSingVals).adjoint() * rhs();
     tmp = dec().singularValues().head(nonzeroSingVals).asDiagonal().inverse() * tmp;
     dst = dec().matrixV().leftCols(nonzeroSingVals) * tmp;

@@ -19,7 +19,6 @@
 
 #if MRPT_HAS_PCL
 
-#include <mrpt/config.h>
 #include <mrpt/utils/utils_defs.h>
 #include <pcl/visualization/cloud_viewer.h>
 #include <pcl/visualization/pcl_visualizer.h>
@@ -29,6 +28,8 @@
 #include <mrpt/pbmap/PbMapLocaliser.h>
 #include <mrpt/pbmap/SemanticClustering.h>
 #include <mrpt/pbmap/link_pragmas.h>
+
+//#include <boost/thread/thread.hpp>
 
 typedef pcl::PointXYZRGBA PointT;
 
@@ -63,6 +64,9 @@ namespace pbmap {
 
   /*!Get the PbMap.*/
     PbMap getPbMap(){return mPbMap;};
+
+  /*!Serialize the PbMap.*/
+    void serializePbMap(std::string path);
 
   /*!frameQueue is a vector containing the frameRGBDandPose (range image + pose) to be processed.*/
     std::vector<frameRGBDandPose> frameQueue;
@@ -109,6 +113,8 @@ namespace pbmap {
     /*!Object to cluster set of planes according to their co-visibility.*/
     SemanticClustering *clusterize;
 
+    boost::mutex mtx_pbmap_busy;
+
    protected:
 
     /*!The current PbMap.*/
@@ -137,6 +143,18 @@ namespace pbmap {
 
     /*!PbMapMaker's stop var*/
     bool	m_pbmaker_finished;
+
+    // Color paper
+    void watchProperties(set<unsigned> &observedPlanes, Plane &observedPlane);
+    void saveInfoFiles();
+    // Unary
+    float rejectAreaF, acceptAreaF, rejectAreaT, acceptAreaT;
+    float rejectElongF, acceptElongF, rejectElongT, acceptElongT;
+    float rejectC1C2C3_F, acceptC1C2C3_F, rejectC1C2C3_T, acceptC1C2C3_T;
+    float rejectNrgb_F, acceptNrgb_F, rejectNrgb_T, acceptNrgb_T;
+    float rejectIntensity_F, acceptIntensity_F, rejectIntensity_T, acceptIntensity_T;
+    float rejectColor_F, acceptColor_F, rejectColor_T, acceptColor_T;
+    float rejectHistH_F, acceptHistH_F, rejectHistH_T, acceptHistH_T;
   };
 
 } } // End of namespaces
