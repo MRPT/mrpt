@@ -78,8 +78,6 @@ COpenNI2_RGBD360::~COpenNI2_RGBD360()
 		delete DEVICE_LIST_PTR; // Delete the pointer to the list of devices
 
 	openni::OpenNI::shutdown();
-#else 
-	THROW_EXCEPTION("MRPT was built without OpenNI2 support")
 #endif // MRPT_HAS_OPENNI2
 }
 
