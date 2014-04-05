@@ -9,8 +9,6 @@
 #ifndef mrpt_OPENNI2_RGBD360_H
 #define mrpt_OPENNI2_RGBD360_H
 
-#if MRPT_HAS_OPENNI2
-
 #include <mrpt/hwdrivers/CGenericSensor.h>
 #include <mrpt/slam/CObservation3DRangeScan.h>
 #include <mrpt/slam/CObservationRGBD360.h>
@@ -235,9 +233,6 @@ namespace mrpt
 			/** The amount of available devices at initialization */
       unsigned numDevices;
 
-//			/* /* The number of sensors demanded by the user */
-//      unsigned m_num_sensors;
-
 			/** The index of the chosen devices */
       std::vector<unsigned> vOpenDevices;
 
@@ -284,7 +279,5 @@ namespace mrpt
 
 } // End of NS
 
-
-#endif // #if MRPT_HAS_OPENNI2
 
 #endif

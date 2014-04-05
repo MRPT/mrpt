@@ -9,9 +9,6 @@
 #ifndef mrpt_COpenNI2Sensor_H
 #define mrpt_COpenNI2Sensor_H
 
-#if MRPT_HAS_OPENNI2
-
-//#include <mrpt/hwdrivers/COpenNI2Generic.h>
 #include <mrpt/hwdrivers/CGenericSensor.h>
 #include <mrpt/slam/CObservation3DRangeScan.h>
 #include <mrpt/utils/TEnumType.h>
@@ -170,22 +167,6 @@ namespace mrpt
 		{
 			DEFINE_GENERIC_SENSOR(COpenNI2Sensor)
 
-//     private:
-//
-//			/** For being thread-safe.
-//			  */
-//			synch::CCriticalSection	m_csChangeStream, m_csLastObservation;
-//
-//			/** Switchs the laser on.
-//			  * \return false on any error
-//			  */
-//			bool  switchSensorOn();
-//
-//			/** Switchs the laser off
-//			  * \return false on any error
-//			  */
-//			bool  switchSensorOff();
-
 		 public:
 
 			COpenNI2Sensor();	 //!< Default ctor
@@ -195,24 +176,6 @@ namespace mrpt
 			  *  \exception This method must throw an exception with a descriptive message if some critical error is found.
 			  */
 			virtual void initialize();
-
-
-//			/** Binds the object to a given I/O channel.
-//			  *  The stream object must not be deleted before the destruction of this class.
-//			  * \sa hwdrivers::CSerialPort
-//			  */
-//			void  bindIO( CStream	*streamIO );
-//
-//			/** Enables the scanning mode (which may depend on the specific sensor device); this must be called before asking for observations to assure that the protocol has been initializated.
-//			  * \return If everything works "true", or "false" if there is any error.
-//			  */
-//			bool turnOn() = 0;
-//
-//			/** Disables the scanning mode (this can be used to turn the device in low energy mode, if available)
-//			  * \return If everything works "true", or "false" if there is any error.
-//			  */
-//			bool turnOff() = 0;
-
 
 			/** To be called  at a high rate (>XX Hz), this method populates the internal buffer of received observations.
 			  *  This method is mainly intended for usage within rawlog-grabber or similar programs.
@@ -233,7 +196,7 @@ namespace mrpt
 				mrpt::slam::CObservation3DRangeScan &out_obs,
 				bool &there_is_obs,
 				bool &hardware_error ,
-        unsigned sensor_id = 0);
+				unsigned sensor_id = 0);
 
 			/**  Set the path where to save off-rawlog image files (this class DOES take into account this path).
 			  *  An  empty string (the default value at construction) means to save images embedded in the rawlog, instead of on separate files.
@@ -290,20 +253,10 @@ namespace mrpt
 			inline bool isGrab3DPointsEnabled() const { return m_grab_3D_points; }
 
 			/** The amount of available devices at initialization */
-      unsigned numDevices;
+			unsigned numDevices;
 
 			/** The index of the chosen devices */
-      std::vector<unsigned> vOpenDevices;
-
-//  /** Enables the scanning mode (which may depend on the specific laser device); this must be called before asking for observations to assure that the protocol has been initializated.
-//    * \return If everything works "true", or "false" if there is any error.
-//    */
-//  bool  turnOn();
-//
-//  /** Disables the scanning mode (this can be used to turn the device in low energy mode, if available)
-//    * \return If everything works "true", or "false" if there is any error.
-//    */
-//  bool  turnOff();
+			std::vector<unsigned> vOpenDevices;
 
 			/** @} */
 
@@ -312,31 +265,22 @@ namespace mrpt
 			/** List the number of devices connected */
 			void* deviceListPtr;  // Opaque pointer to "openni::Array<openni::DeviceInfo>"
 
-//  /** Returns true if there is a valid stream bound to the laser scanner, otherwise it first try to open the serial port "m_com_port"
-//    */
-//  bool  checkCOMisOpen();
-//
-//  /** The I/O channel (will be NULL if not bound)*/
-//  utils::CStream					*m_stream;
-//
-//			std::string	m_com_port;		//!< If set to non-empty, the serial port will be attempted to be opened automatically when this class is first used to request data from the sensor.
-
 			/** A vector with pointers to the available devices */
-      std::vector<void*>	vp_devices; // Opaque pointer to "openni::Device"
+			std::vector<void*>	vp_devices; // Opaque pointer to "openni::Device"
 //      void* p_deviceOptions; // Opaque pointer to "openni::VideoMode	options"
 
 			/** A vector with pointers to the rgb streams of the available devices */
-      std::vector<void*> vp_depth_stream;
-      std::vector<void*> vp_rgb_stream; // Opaque pointer to "openni::VideoStream"
+			std::vector<void*> vp_depth_stream;
+			std::vector<void*> vp_rgb_stream; // Opaque pointer to "openni::VideoStream"
 //      void *p_depth_stream;
 //      void *p_rgb_stream; // Opaque pointer to "openni::VideoStream"
 
 			/** A vector with pointers to the frame output structures */
-      std::vector<void*> vp_frame_depth, vp_frame_rgb;	// Opaque pointers to "openni::VideoFrameRef"
+			std::vector<void*> vp_frame_depth, vp_frame_rgb;	// Opaque pointers to "openni::VideoFrameRef"
 
 			/** The same options (width, height and fps) are set for all the sensors. (This could be changed if necessary) */
-      int width, height;
-      float fps;
+			int width, height;
+			float fps;
 
 			virtual void  loadConfig_sensorSpecific(
 				const mrpt::utils::CConfigFileBase &configSource,
@@ -365,6 +309,5 @@ namespace mrpt
 } // End of NS
 
 
-#endif // #if MRPT_HAS_OPENNI2
 
 #endif
