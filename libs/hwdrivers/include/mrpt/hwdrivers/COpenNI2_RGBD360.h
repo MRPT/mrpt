@@ -10,7 +10,8 @@
 #define mrpt_OPENNI2_RGBD360_H
 
 #include <mrpt/hwdrivers/CGenericSensor.h>
-#include <mrpt/slam/CObservation3DRangeScan.h>
+#include <mrpt/hwdrivers/COpenNI2Generic.h>
+//#include <mrpt/slam/CObservation3DRangeScan.h>
 #include <mrpt/slam/CObservationRGBD360.h>
 #include <mrpt/utils/TEnumType.h>
 #include <mrpt/gui/CDisplayWindow.h>
@@ -158,7 +159,7 @@ namespace mrpt
 		  *		- http://http://www.openni.org/
 		  * \ingroup mrpt_hwdrivers_grp
 		  */
-		class HWDRIVERS_IMPEXP  COpenNI2_RGBD360 : public mrpt::hwdrivers::CGenericSensor
+		class HWDRIVERS_IMPEXP  COpenNI2_RGBD360 : public mrpt::hwdrivers::CGenericSensor, public mrpt::hwdrivers::COpenNI2Generic
 		{
 			DEFINE_GENERIC_SENSOR(COpenNI2_RGBD360)
 
@@ -188,7 +189,6 @@ namespace mrpt
 			  * \sa doProcess
 			  */
 			void getNextObservation(
-//				std::vector<mrpt::slam::CObservation3DRangeScanPtr> out_obs,
 				mrpt::slam::CObservationRGBD360 &out_obs,
 				bool &there_is_obs,
 				bool &hardware_error );
@@ -202,18 +202,6 @@ namespace mrpt
 
 			/** @name Sensor parameters (alternative to \a loadConfig ) and manual control
 			    @{ */
-
-			/** Try to open the camera (set all the parameters before calling this) - users may also call initialize(), which in turn calls this method.
-			  *  Raises an exception upon error.
-			  * \exception std::exception A textual description of the error.
-			  */
-			void open(unsigned sensor_id = 0);
-
-			bool isOpen(const unsigned sensor_id) const; //!< Whether there is a working connection to the sensor
-
-			/** Close the conection to the sensor (not need to call it manually unless desired for some reason,
-			  * since it's called at destructor) */
-			void close(unsigned sensor_id = 0);
 
 			/** Get the maximum range (meters) that can be read in the observation field "rangeImage" */
 			inline double getMaxRange() const { return m_maxRange; }
@@ -230,32 +218,9 @@ namespace mrpt
 			inline void enableGrab3DPoints(bool enable=true) { m_grab_3D_points=enable; }
 			inline bool isGrab3DPointsEnabled() const { return m_grab_3D_points; }
 
-			/** The amount of available devices at initialization */
-      unsigned numDevices;
-
-			/** The index of the chosen devices */
-      std::vector<unsigned> vOpenDevices;
-
 			/** @} */
 
 		protected:
-
-			/** List the number of devices connected */
-			void* deviceListPtr;  // Opaque pointer to "openni::Array<openni::DeviceInfo>"
-
-			/** A vector with pointers to the available devices */
-      std::vector<void*>	vp_devices; // Opaque pointer to "openni::Device"
-
-			/** A vector with pointers to the rgb streams of the available devices */
-      std::vector<void*> vp_depth_stream;
-      std::vector<void*> vp_rgb_stream; // Opaque pointer to "openni::VideoStream"
-
-			/** A vector with pointers to the frame output structures */
-      std::vector<void*> vp_frame_depth, vp_frame_rgb;	// Opaque pointers to "openni::VideoFrameRef"
-
-			/** The same options (width, height and fps) are set for all the sensors. (This could be changed if necessary) */
-      int width, height;
-      float fps;
 
 			virtual void  loadConfig_sensorSpecific(
 				const mrpt::utils::CConfigFileBase &configSource,
@@ -269,8 +234,6 @@ namespace mrpt
 			mrpt::gui::CDisplayWindowPtr  m_win_range[NUM_SENSORS], m_win_int[NUM_SENSORS];
 
 			double  m_maxRange; //!< Sensor max range (meters)
-
-			int  m_user_device_number; //!< Number of device to open (0:first,...)
 
 			bool  m_grab_rgb, m_grab_depth, m_grab_3D_points ; //!< Default: all true
 
