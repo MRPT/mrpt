@@ -1088,44 +1088,10 @@ size_t RbaEngine<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::recompute_all_Ja
 
 	// k2f edges ------------------------------------------------------
 	// Only if we are in landmarks-based SLAM, not in graph-SLAM:
-	nJacobs += recompute_all_Jacobians_dh_df<LM_TYPE::jacob_family>::eval(lst_JacobCols_df,out_list_of_required_num_poses);
+	nJacobs += recompute_all_Jacobians_dh_df<LM_TYPE::jacob_family>::eval(*this, lst_JacobCols_df,out_list_of_required_num_poses);
 
 	return nJacobs;
 } // end of recompute_all_Jacobians()
-
-
-// The extra complexity of adding this auxiliary template with specializations is required to avoid 
-//  the compiler trying to evaluate the jacobians dh_df in relative SLAM problems, where the Jacobian does not exist.
-template <class KF2KF_POSE_TYPE,class LM_TYPE,class OBS_TYPE,class RBA_OPTIONS>
-template <landmark_jacob_family_t LM_JACOB_FAMILY>
-size_t RbaEngine<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::recompute_all_Jacobians_dh_df<jacob_point_landmark>::eval(
-		std::vector<typename TSparseBlocksJacobians_dh_df::col_t*>  &lst_JacobCols_df,
-		std::vector<const typename kf2kf_pose_traits<KF2KF_POSE_TYPE>::pose_flag_t*>    * out_list_of_required_num_poses )
-{
-	const size_t nUnknowns_k2f = lst_JacobCols_df.size();
-	size_t nJacobs = 0;
-	for (size_t i=0;i<nUnknowns_k2f;i++)
-	{
-		// For each column, process each nonzero block:
-		typename TSparseBlocksJacobians_dh_df::col_t *col = lst_JacobCols_df[i];
-
-		for (typename TSparseBlocksJacobians_dh_df::col_t::iterator it=col->begin();it!=col->end();++it)
-		{
-			const size_t obs_idx = it->first;
-			typename TSparseBlocksJacobians_dh_df::TEntry & jacob_entry = it->second;
-			compute_jacobian_dh_df(
-				jacob_entry,
-#ifdef SRBA_WORKAROUND_MSVC9_DEQUE_BUG
-				*rba_state.all_observations[obs_idx],
-#else
-				rba_state.all_observations[obs_idx],
-#endif
-				out_list_of_required_num_poses );
-			nJacobs++;
-		}
-	}
-	return nJacobs;
-}
 
 
 } } // end of namespace

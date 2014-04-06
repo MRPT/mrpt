@@ -598,20 +598,49 @@ namespace srba
 			std::vector<const pose_flag_t*>    * out_list_of_required_num_poses = NULL );
 
 	protected:
-		/** Auxiliary template for evaluating the dh_df part in \a recompute_all_Jacobians() */
+		/** Auxiliary template for evaluating the dh_df part in \a recompute_all_Jacobians().
+		// The extra complexity of adding this auxiliary template with specializations is required to avoid 
+		//  the compiler trying to evaluate the jacobians dh_df in relative SLAM problems, where the Jacobian does not exist. */
 		template <landmark_jacob_family_t LM_JACOB_FAMILY>
 		struct recompute_all_Jacobians_dh_df;
 
 		// Specialization for "normal SLAM" (SLAM with real landmarks)
 		template <> struct recompute_all_Jacobians_dh_df<jacob_point_landmark> {
 			static size_t eval(
+				rba_engine_t  &rba,
 				std::vector<typename TSparseBlocksJacobians_dh_df::col_t*>  &lst_JacobCols_df,
-				std::vector<const typename kf2kf_pose_traits<KF2KF_POSE_TYPE>::pose_flag_t*>    * out_list_of_required_num_poses );
+				std::vector<const typename kf2kf_pose_traits<KF2KF_POSE_TYPE>::pose_flag_t*>    * out_list_of_required_num_poses )
+			{
+				const size_t nUnknowns_k2f = lst_JacobCols_df.size();
+				size_t nJacobs = 0;
+				for (size_t i=0;i<nUnknowns_k2f;i++)
+				{
+					// For each column, process each nonzero block:
+					typename TSparseBlocksJacobians_dh_df::col_t *col = lst_JacobCols_df[i];
+
+					for (typename TSparseBlocksJacobians_dh_df::col_t::iterator it=col->begin();it!=col->end();++it)
+					{
+						const size_t obs_idx = it->first;
+						typename TSparseBlocksJacobians_dh_df::TEntry & jacob_entry = it->second;
+						rba.compute_jacobian_dh_df(
+							jacob_entry,
+			#ifdef SRBA_WORKAROUND_MSVC9_DEQUE_BUG
+							*
+			#endif
+							rba.get_rba_state().all_observations[obs_idx],
+							out_list_of_required_num_poses );
+						nJacobs++;
+					}
+				}
+				return nJacobs;
+			}
+
 		};
 
 		// Specialization for relative graph-SLAM (no real landmarks)
 		template <> struct recompute_all_Jacobians_dh_df<jacob_relpose_landmark> {
 			static size_t eval(
+				rba_engine_t  &rba,
 				std::vector<typename TSparseBlocksJacobians_dh_df::col_t*>  &lst_JacobCols_df,
 				std::vector<const typename kf2kf_pose_traits<KF2KF_POSE_TYPE>::pose_flag_t*>    * out_list_of_required_num_poses ) 
 			{
