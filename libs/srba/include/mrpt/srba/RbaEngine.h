@@ -106,6 +106,9 @@ namespace srba
 		typedef typename observation_traits_t::array_obs_t         array_obs_t;
 		typedef typename observation_traits_t::residual_t          residual_t;
 		typedef typename observation_traits_t::vector_residuals_t  vector_residuals_t;
+
+		typedef typename jacobian_traits<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE>::TSparseBlocksJacobians_dh_dAp TSparseBlocksJacobians_dh_dAp;
+		typedef typename jacobian_traits<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE>::TSparseBlocksJacobians_dh_df TSparseBlocksJacobians_dh_df;
 		/** @} */
 
 		/** Default constructor */
@@ -118,7 +121,7 @@ namespace srba
 			{
 				clear();
 			}
-			
+
 			size_t  num_observations;     //!< Number of individual feature observations taken into account in the optimization
 			size_t  num_jacobians;        //!< Number of Jacobian blocks which had been to be evaluated for each relinearization step.
 			size_t  num_kf2kf_edges_optimized; //!< Number of solved unknowns of type "kf-to-kf edge".
@@ -127,12 +130,12 @@ namespace srba
 			size_t  num_span_tree_numeric_updates; //!< Number of poses updated in the spanning tree numeric-update stage.
 			double  total_sqr_error_init, total_sqr_error_final; //!< Initial and final total squared error for all the observations
 			double  HAp_condition_number; //!< To be computed only if enabled in parameters.compute_condition_number
-			
+
 			std::vector<size_t> optimized_k2k_edge_indices; //!< The 0-based indices of all kf-to-kf edges which were considered in the optimization
 			std::vector<size_t> optimized_landmark_indices; //!< The 0-based indices of all landmarks whose relative positions were considered as unknowns in the optimization
 
 			/** Other solver-specific output information */
-			typename RBA_OPTIONS::solver_t::extra_results_t   extra_results; 
+			typename RBA_OPTIONS::solver_t::extra_results_t   extra_results;
 
 			void clear()
 			{
@@ -260,7 +263,7 @@ namespace srba
 		double eval_overall_squared_error() const;
 
 		/** @} */  // End of main API methods
-		
+
 
 		/** @name Extra API methods (for debugging, etc.)
 		    @{ */
@@ -581,9 +584,6 @@ namespace srba
 			const array_landmark_t * unknown_relative_position_init_val = NULL
 			);
 
-		typedef typename jacobian_traits<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE>::TSparseBlocksJacobians_dh_dAp TSparseBlocksJacobians_dh_dAp;
-		typedef typename jacobian_traits<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE>::TSparseBlocksJacobians_dh_df TSparseBlocksJacobians_dh_df;
-
 		/** Prepare the list of all required KF roots whose spanning trees need numeric updates with each optimization iteration */
 		void prepare_Jacobians_required_tree_roots(
 			std::set<TKeyFrameID>  & kfs_num_spantrees_to_update,
@@ -596,30 +596,6 @@ namespace srba
 			std::vector<typename TSparseBlocksJacobians_dh_dAp::col_t*> &lst_JacobCols_dAp,
 			std::vector<typename TSparseBlocksJacobians_dh_df::col_t*>  &lst_JacobCols_df,
 			std::vector<const pose_flag_t*>    * out_list_of_required_num_poses = NULL );
-
-	protected:
-		/** Auxiliary template for evaluating the dh_df part in \a recompute_all_Jacobians() */
-		template <landmark_jacob_family_t LM_JACOB_FAMILY>
-		struct recompute_all_Jacobians_dh_df;
-
-		// Specialization for "normal SLAM" (SLAM with real landmarks)
-		template <> struct recompute_all_Jacobians_dh_df<jacob_point_landmark> {
-			static size_t eval(
-				std::vector<typename TSparseBlocksJacobians_dh_df::col_t*>  &lst_JacobCols_df,
-				std::vector<const typename kf2kf_pose_traits<KF2KF_POSE_TYPE>::pose_flag_t*>    * out_list_of_required_num_poses );
-		};
-
-		// Specialization for relative graph-SLAM (no real landmarks)
-		template <> struct recompute_all_Jacobians_dh_df<jacob_relpose_landmark> {
-			static size_t eval(
-				std::vector<typename TSparseBlocksJacobians_dh_df::col_t*>  &lst_JacobCols_df,
-				std::vector<const typename kf2kf_pose_traits<KF2KF_POSE_TYPE>::pose_flag_t*>    * out_list_of_required_num_poses ) 
-			{
-				// Nothing to do: this will never be actually called.
-				return 0;
-			}
-		};
-
 
 	public:
 

@@ -37,8 +37,8 @@ typedef RbaEngine<
 // --------------------------------------------------------------------------------
 // A test dataset (generated with http://code.google.com/p/recursive-world-toolkit/ )
 // --------------------------------------------------------------------------------
-const double STD_NOISE_XYZ = 0.001;
-const double STD_NOISE_ANGLES = DEG2RAD(0.05);
+const double STD_NOISE_XYZ = 0.01;
+const double STD_NOISE_ANGLES = DEG2RAD(0.5);
 
 struct basic_graph_slam_dataset_entry_t
 {

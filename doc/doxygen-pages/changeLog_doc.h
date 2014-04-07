@@ -29,6 +29,7 @@
 		- New implementation of mrpt::synch::CSemaphore avoids crashes in OS X - by Randolph Voorhies.
 		- mrpt::opengl::CArrow was always drawn of normalized length.
 		- FlyCapture2 monocular & stereo cameras could return an incorrect timestamp (only in Linux?).
+		- mrpt::system::createDirectory() returned false (error) when the directory already existed.
 
 <hr>
  <a name="1.1.0">
