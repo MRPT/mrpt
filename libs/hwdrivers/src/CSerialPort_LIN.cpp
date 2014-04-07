@@ -142,7 +142,7 @@ void  CSerialPort::open( )
 /* -----------------------------------------------------
                 isOpen
    ----------------------------------------------------- */
-bool  CSerialPort::isOpen() const 
+bool  CSerialPort::isOpen() const
 {
     return hCOM != -1;
 }
@@ -161,6 +161,8 @@ void  CSerialPort::setConfig(
 
     // Port must be open!
     if (!isOpen()) THROW_EXCEPTION("The serial port is not open!");
+
+    ASSERT_(baudRate>0)
 
     //
     // Apply baud rate
@@ -331,7 +333,7 @@ void  CSerialPort::setConfig(
         // none
         port_settings.c_cflag &= ~(CRTSCTS) ;
     }
-    
+
     /* Write the new settings to the port.
      */
     if ( tcsetattr( hCOM,TCSANOW,&port_settings ) < 0 )
