@@ -27,8 +27,7 @@ namespace mrpt
 		std::string BASE_IMPEXP getcwd();
 
 		/** Creates a directory
-		  * \return Returns false on any error, true on everything OK.
-		  * \todo Seems to return false on Linux even after creating the directory OK.
+		  * \return Returns false on any error, true on directory created or already existed.
 		  */
 		bool  BASE_IMPEXP createDirectory( const std::string &dirName );
 

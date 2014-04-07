@@ -664,7 +664,7 @@ void  CImage::readFromStream(CStream &in, int version)
 
 	switch(version)
 	{
-	case -1: // Saved from an MRPT build without OpenCV:
+	case 100: // Saved from an MRPT build without OpenCV:
 		{
 			in >> m_imgIsExternalStorage;
 			if (m_imgIsExternalStorage)
