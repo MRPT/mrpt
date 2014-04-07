@@ -6,8 +6,8 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
-#ifndef mrpt_COpenNI2Sensor_H
-#define mrpt_COpenNI2Sensor_H
+#ifndef mrpt_COpenNI2Generic_H
+#define mrpt_COpenNI2Generic_H
 
 #include <mrpt/slam/CObservation3DRangeScan.h>
 
@@ -25,14 +25,13 @@ namespace mrpt
 		  *		- http://http://www.openni.org/
 		  * \ingroup mrpt_hwdrivers_grp
 		  */
-		class HWDRIVERS_IMPEXP  COpenNI2Sensor
+		class HWDRIVERS_IMPEXP  COpenNI2Generic
 		{
-			DEFINE_GENERIC_SENSOR(COpenNI2Sensor)
 
 		 public:
 
-			COpenNI2Sensor();	 //!< Default ctor
-			~COpenNI2Sensor();	 //!< Default ctor
+			COpenNI2Generic();	 //!< Default ctor
+			~COpenNI2Generic();	 //!< Default ctor
 
             /** Get a list of the connected OpenNI2 sensors.
             */
@@ -117,6 +116,10 @@ namespace mrpt
 
 			/** A vector with pointers to the available devices */
 			std::vector<void*>	vp_devices; // Opaque pointer to "openni::Device"
+
+			/** The same options (width, height and fps) are set for all the sensors. (This could be changed if necessary) */
+            int width, height;
+            float fps;
 
 			/** A vector with pointers to the rgb streams of the available devices */
 			std::vector<void*> vp_depth_stream; // Opaque pointer to "openni::VideoStream"

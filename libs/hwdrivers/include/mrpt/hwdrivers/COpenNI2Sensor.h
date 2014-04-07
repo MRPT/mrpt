@@ -9,8 +9,8 @@
 #ifndef mrpt_COpenNI2Sensor_H
 #define mrpt_COpenNI2Sensor_H
 
-#include <mrpt/hwdrivers/CGenericSensor.h>
 #include <mrpt/hwdrivers/COpenNI2Generic.h>
+#include <mrpt/hwdrivers/CGenericSensor.h>
 //#include <mrpt/slam/CObservation3DRangeScan.h>
 #include <mrpt/utils/TEnumType.h>
 #include <mrpt/gui/CDisplayWindow.h>
