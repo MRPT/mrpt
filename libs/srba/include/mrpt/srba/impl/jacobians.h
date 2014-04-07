@@ -28,6 +28,63 @@ namespace mrpt { namespace srba {
 #define DEBUG_JACOBIANS_SUPER_VERBOSE  0
 #define DEBUG_NOT_UPDATED_ENTRIES      0   // Extremely slow, just for debug during development! This checks that all the expected Jacobians are actually updated
 
+
+namespace internal {
+    /** Auxiliary template for evaluating the dh_df part in \a recompute_all_Jacobians().
+    // The extra complexity of adding this auxiliary template with specializations is required to avoid
+    //  the compiler trying to evaluate the jacobians dh_df in relative SLAM problems, where the Jacobian does not exist. */
+    template <landmark_jacob_family_t LM_JACOB_FAMILY>
+    struct recompute_all_Jacobians_dh_df;
+
+    // Specialization for "normal SLAM" (SLAM with real landmarks)
+    template <> struct recompute_all_Jacobians_dh_df<jacob_point_landmark> {
+        template <class RBAENGINE,class LSTJACOBCOLS,class LSTPOSES>
+        static size_t eval(
+            RBAENGINE &rba,
+            LSTJACOBCOLS  &lst_JacobCols_df,  // std::vector<typename RBAENGINE::TSparseBlocksJacobians_dh_df::col_t*>
+            LSTPOSES * out_list_of_required_num_poses ) // std::vector<const typename RBAENGINE::kf2kf_pose_traits<RBAENGINE::KF2KF_POSE_TYPE>::pose_flag_t*>
+        {
+            const size_t nUnknowns_k2f = lst_JacobCols_df.size();
+            size_t nJacobs = 0;
+            for (size_t i=0;i<nUnknowns_k2f;i++)
+            {
+                // For each column, process each nonzero block:
+                typename RBAENGINE::TSparseBlocksJacobians_dh_df::col_t *col = lst_JacobCols_df[i];
+
+                for (typename RBAENGINE::TSparseBlocksJacobians_dh_df::col_t::iterator it=col->begin();it!=col->end();++it)
+                {
+                    const size_t obs_idx = it->first;
+                    typename RBAENGINE::TSparseBlocksJacobians_dh_df::TEntry & jacob_entry = it->second;
+                    rba.compute_jacobian_dh_df(
+                        jacob_entry,
+        #ifdef SRBA_WORKAROUND_MSVC9_DEQUE_BUG
+                        *
+        #endif
+                        rba.get_rba_state().all_observations[obs_idx],
+                        out_list_of_required_num_poses );
+                    nJacobs++;
+                }
+            }
+            return nJacobs;
+        }
+
+    };
+
+    // Specialization for relative graph-SLAM (no real landmarks)
+    template <> struct recompute_all_Jacobians_dh_df<jacob_relpose_landmark> {
+        template <class RBAENGINE,class LSTJACOBCOLS,class LSTPOSES>
+        static size_t eval(
+            RBAENGINE &rba,
+            LSTJACOBCOLS  &lst_JacobCols_df,  // std::vector<typename RBAENGINE::TSparseBlocksJacobians_dh_df::col_t*>
+            LSTPOSES * out_list_of_required_num_poses ) // std::vector<const typename RBAENGINE::kf2kf_pose_traits<RBAENGINE::KF2KF_POSE_TYPE>::pose_flag_t*>
+        {
+            // Nothing to do: this will never be actually called.
+            return 0;
+        }
+    };
+} // end "internal" ns
+
+
 /** Numeric implementation of the partial Jacobian dh_dAp */
 template <class KF2KF_POSE_TYPE,class LM_TYPE,class OBS_TYPE,class RBA_OPTIONS>
 void RbaEngine<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::numeric_dh_dAp(const array_pose_t &x, const TNumeric_dh_dAp_params& params, array_obs_t &y)
@@ -54,7 +111,7 @@ void RbaEngine<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::numeric_dh_dAp(con
 #else
 		.
 #endif
-		inv_pose;				
+		inv_pose;
 
 		pose_t pose_base_wrt_d_prime(mrpt::poses::UNINITIALIZED_POSE);  // D' in papers
 		pose_base_wrt_d_prime.composeFrom( p_d_d1, params.pose_base_wrt_d1 );
@@ -387,7 +444,7 @@ struct compute_jacobian_dAepsDx_deps<jacob_point_landmark /* Jacobian family: th
 #else
 			.
 #endif
-			inv_pose;				
+			inv_pose;
 
 			typename RBA_ENGINE_T::pose_t pose_base_wrt_d1_prime(mrpt::poses::UNINITIALIZED_POSE);
 			pose_base_wrt_d1_prime.composeFrom( p_d_d1 , pose_base_wrt_d1.pose );
@@ -529,7 +586,7 @@ struct compute_jacobian_dAepsDx_deps_SE2
 #else
 			.
 #endif
-			inv_pose;				
+			inv_pose;
 
 			typename RBA_ENGINE_T::pose_t pose_base_wrt_d1_prime(mrpt::poses::UNINITIALIZED_POSE);
 			pose_base_wrt_d1_prime.composeFrom( p_d_d1 , pose_base_wrt_d1.pose );
@@ -652,7 +709,7 @@ struct compute_jacobian_dAepsDx_deps<jacob_relpose_landmark /* Jacobian family: 
 #else
 			.
 #endif
-			inv_pose;				
+			inv_pose;
 
 			typename RBA_ENGINE_T::pose_t pose_base_wrt_d1_prime(mrpt::poses::UNINITIALIZED_POSE);
 			pose_base_wrt_d1_prime.composeFrom( p_d_d1 , pose_base_wrt_d1.pose );
@@ -723,16 +780,16 @@ struct compute_jacobian_dAepsDx_deps<jacob_relpose_landmark /* Jacobian family: 
 		const OBS_VECTOR  & all_obs
 		)
 	{
-		// 
+		//
 		//  d ps-log(p^obs_base)      d ps-log(p)       d A*e^eps*D
 		// --------------------  =  --------------- * -----------------
-		//    d eps^d+1_d                d p             d eps     
+		//    d eps^d+1_d                d p             d eps
 		//                   6x6                 6x12                12x6
-		// 
+		//
 		//                              ^: (1)              ^: (2)
 		// See section 10.3.7 of technical report on SE(3) poses [http://mapir.isa.uma.es/~jlblanco/papers/jlblanco2010geometry3D_techrep.pdf]
 		mrpt::math::CMatrixDouble33 ROTA;  // A.rotationMatrix
-		typename RBA_ENGINE_T::pose_t  D(mrpt::poses::UNINITIALIZED_POSE); 
+		typename RBA_ENGINE_T::pose_t  D(mrpt::poses::UNINITIALIZED_POSE);
 		typename RBA_ENGINE_T::pose_t  base_wrt_obs(mrpt::poses::UNINITIALIZED_POSE); // A(+)D
 
 		if (!is_inverse_edge_jacobian)
@@ -766,7 +823,7 @@ struct compute_jacobian_dAepsDx_deps<jacob_relpose_landmark /* Jacobian family: 
 #else
 			.
 #endif
-			inv_pose;				
+			inv_pose;
 
 			typename RBA_ENGINE_T::pose_t pose_base_wrt_d1_prime(mrpt::poses::UNINITIALIZED_POSE);
 			pose_base_wrt_d1_prime.composeFrom( p_d_d1 , pose_base_wrt_d1.pose );
@@ -790,18 +847,18 @@ struct compute_jacobian_dAepsDx_deps<jacob_relpose_landmark /* Jacobian family: 
 
 
 		// (1): Common part: d_Ln(R)_dR:
-		// 
-		const CMatrixDouble33 & ROT_AplusB = base_wrt_obs.getRotationMatrix(); // The rotation matrix.
-		Eigen::Matrix<double,6,12>  dLnRelPose_deps;  
+		//
+		const mrpt::math::CMatrixDouble33 & ROT_AplusB = base_wrt_obs.getRotationMatrix(); // The rotation matrix.
+		Eigen::Matrix<double,6,12>  dLnRelPose_deps;
 		dLnRelPose_deps.setZero();
 		dLnRelPose_deps.block<3,3>(0,9).setIdentity();
 		{
-			CMatrixFixedNumeric<double,3,9> dLnRot_dRot(UNINITIALIZED_MATRIX);
-			CPose3D::ln_rot_jacob( ROT_AplusB, dLnRot_dRot);
+			mrpt::math::CMatrixFixedNumeric<double,3,9> dLnRot_dRot(mrpt::math::UNINITIALIZED_MATRIX);
+			mrpt::poses::CPose3D::ln_rot_jacob( ROT_AplusB, dLnRot_dRot);
 			dLnRelPose_deps.block<3,9>(3,0) = dLnRot_dRot;
-		}		
+		}
 
-		// (2): d A*e^eps*D / d eps = 
+		// (2): d A*e^eps*D / d eps =
 		//
 		//  [ 0_{3x3}  -R(A)*[dc1]_x ]
 		//  [ 0_{3x3}  -R(A)*[dc2]_x ]
@@ -816,19 +873,19 @@ struct compute_jacobian_dAepsDx_deps<jacob_relpose_landmark /* Jacobian family: 
 
 		//cout << "========= ROTA ========= :\n" << ROTA << endl;
 		//cout << "========= HM_D ========= :\n" << HM_D << endl;
-		
+
 		// Blocks (1-4,2)
 		for (int i=0;i<4;i++)
 		{
 			EIGEN_ALIGN16 const double aux_vals[] = {
-				        .0, -HM_D(2,i),  HM_D(1,i), 
-				 HM_D(2,i),         .0, -HM_D(0,i), 
+				        .0, -HM_D(2,i),  HM_D(1,i),
+				 HM_D(2,i),         .0, -HM_D(0,i),
 				-HM_D(1,i),  HM_D(0,i),         .0  };
-			dAeD_de.block<3,3>(i*3,3) = -ROTA * CMatrixDouble33(aux_vals);
+			dAeD_de.block<3,3>(i*3,3) = -ROTA * mrpt::math::CMatrixDouble33(aux_vals);
 		}
 
 		// (3): Apply chain rule:
-		// 
+		//
 		jacob.noalias() = dLnRelPose_deps * dAeD_de;
 
 		if (is_inverse_edge_jacobian)
@@ -1032,7 +1089,7 @@ void RbaEngine<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::prepare_Jacobians_
 			// For each dh_df block we need:
 			//  *  obs -> base
 			const size_t obs_idx = it->first;
-			const k2f_edge_t &k2f = 
+			const k2f_edge_t &k2f =
 #ifdef SRBA_WORKAROUND_MSVC9_DEQUE_BUG
 			*
 #endif
@@ -1088,7 +1145,7 @@ size_t RbaEngine<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::recompute_all_Ja
 
 	// k2f edges ------------------------------------------------------
 	// Only if we are in landmarks-based SLAM, not in graph-SLAM:
-	nJacobs += recompute_all_Jacobians_dh_df<LM_TYPE::jacob_family>::eval(*this, lst_JacobCols_df,out_list_of_required_num_poses);
+	nJacobs += internal::recompute_all_Jacobians_dh_df<LM_TYPE::jacob_family>::eval(*this, lst_JacobCols_df,out_list_of_required_num_poses);
 
 	return nJacobs;
 } // end of recompute_all_Jacobians()
