@@ -9,9 +9,8 @@
 #ifndef mrpt_OPENNI2_RGBD360_H
 #define mrpt_OPENNI2_RGBD360_H
 
-#include <mrpt/hwdrivers/CGenericSensor.h>
 #include <mrpt/hwdrivers/COpenNI2Generic.h>
-//#include <mrpt/slam/CObservation3DRangeScan.h>
+#include <mrpt/hwdrivers/CGenericSensor.h>
 #include <mrpt/slam/CObservationRGBD360.h>
 #include <mrpt/utils/TEnumType.h>
 #include <mrpt/gui/CDisplayWindow.h>

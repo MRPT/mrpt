@@ -131,6 +131,7 @@ namespace mrpt
 			bool  m_has_color;
 
 		};	// End of class
+
 	} // End of NS
 
 } // End of NS

@@ -73,9 +73,6 @@ dtor
 -------------------------------------------------------------*/
 COpenNI2Sensor::~COpenNI2Sensor()
 {
-//    for(unsigned i=0; i < vOpenDevices.size(); i++)
-//        if(this == vOpenDevices[i])
-//            this->close(i);
 }
 
 /** This method can or cannot be implemented in the derived class, depending on the need for it.
@@ -105,8 +102,8 @@ void COpenNI2Sensor::doProcess()
 
 	CObservation3DRangeScanPtr newObs = CObservation3DRangeScan::Create();
 
-	assert(!vOpenDevices.empty());
-	unsigned sensor_id = vOpenDevices.front();
+	assert(!COpenNI2Generic::vOpenDevices.empty());
+	unsigned sensor_id = COpenNI2Generic::vOpenDevices.front();
 	getNextObservation( *newObs, thereIs, hwError, sensor_id );
 
 	if (hwError)

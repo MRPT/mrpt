@@ -25,8 +25,6 @@ using namespace mrpt::system;
 using namespace mrpt::synch;
 using namespace std;
 
-IMPLEMENTS_GENERIC_SENSOR(COpenNI2Generic,mrpt::hwdrivers)
-
 #define DEVICE_LIST_PTR (reinterpret_cast< openni::Array<openni::DeviceInfo>* >(deviceListPtr))
 #define DEVICE_ID_PTR (reinterpret_cast<openni::Device*>(vp_devices[sensor_id]))
 #define DEPTH_STREAM_ID_PTR (reinterpret_cast<openni::VideoStream*>(vp_depth_stream[sensor_id]))
@@ -34,6 +32,8 @@ IMPLEMENTS_GENERIC_SENSOR(COpenNI2Generic,mrpt::hwdrivers)
 #define DEPTH_FRAME_ID_PTR (reinterpret_cast<openni::VideoFrameRef*>(vp_frame_depth[sensor_id]))
 #define RGB_FRAME_ID_PTR (reinterpret_cast<openni::VideoFrameRef*>(vp_frame_rgb[sensor_id]))
 
+
+std::vector<unsigned> COpenNI2Generic::vOpenDevices = std::vector<unsigned>();
 
 /*-------------------------------------------------------------
 ctor
@@ -53,15 +53,6 @@ dtor
 -------------------------------------------------------------*/
 COpenNI2Generic::~COpenNI2Generic()
 {
-	//cout << "Destroy COpenNI2Generic... \n";
-	//
-	//  for(unsigned i=0; vOpenDevices.size(); i++)
-	//    this->close(vOpenDevices[i]);
-	//
-	//  if(DEVICE_LIST_PTR)
-	//    delete DEVICE_LIST_PTR; // Delete the pointer to the list of devices
-	//
-	//	openni::OpenNI::shutdown();
 }
 
 /** This method can or cannot be implemented in the derived class, depending on the need for it.
@@ -104,22 +95,26 @@ void COpenNI2Generic::getConnectedDevices()
 #endif // MRPT_HAS_OPENNI2
 }
 
-COpenNI2Generic::kill()
+void COpenNI2Generic::kill()
 {
-    for(unsigned i=0; vOpenDevices.size(); i++)
-        this->close(vOpenDevices[i]);
+#if MRPT_HAS_OPENNI2
+    for(unsigned i=0; COpenNI2Generic::vOpenDevices.size(); i++)
+        this->close(COpenNI2Generic::vOpenDevices[i]);
 
     if(DEVICE_LIST_PTR)
         delete DEVICE_LIST_PTR; // Delete the pointer to the list of devices
 
     openni::OpenNI::shutdown();
+#else
+	THROW_EXCEPTION("MRPT was built without OpenNI2 support")
+#endif // MRPT_HAS_OPENNI2
 }
 
 
 bool COpenNI2Generic::isOpen(const unsigned sensor_id) const
 {
-	for(unsigned i=0; vOpenDevices.size(); i++)
-		if(sensor_id == vOpenDevices[i])
+	for(unsigned i=0; COpenNI2Generic::vOpenDevices.size(); i++)
+		if(sensor_id == COpenNI2Generic::vOpenDevices[i])
 			return true;
 
 	return false;
@@ -159,7 +154,7 @@ void COpenNI2Generic::open(unsigned sensor_id)
 		vp_frame_depth[sensor_id] = new openni::VideoFrameRef;
 		vp_frame_rgb[sensor_id] = new openni::VideoFrameRef;
 
-		vOpenDevices.push_back(sensor_id);
+		COpenNI2Generic::vOpenDevices.push_back(sensor_id);
 
 		rc = DEVICE_ID_PTR->open((*DEVICE_LIST_PTR)[sensor_id].getUri());
 
@@ -169,7 +164,7 @@ void COpenNI2Generic::open(unsigned sensor_id)
 		//      if(serial_num == static_cast<int>((*DEVICE_LIST_PTR)[sensor_id].getUsbProductId()) )
 		//      {
 		//        serial_found = true;
-		//        vOpenDevices.push_back(sensor_id);
+		//        COpenNI2Generic::vOpenDevices.push_back(sensor_id);
 		//        rc = DEVICE_ID_PTR->open((*DEVICE_LIST_PTR)[sensor_id].getUri());
 		//        break;
 		//      }
@@ -318,9 +313,9 @@ void COpenNI2Generic::close(unsigned sensor_id)
 	if(DEVICE_ID_PTR)
 		delete DEVICE_ID_PTR;
 
-	for(vector<unsigned>::iterator it=vOpenDevices.begin(); it != vOpenDevices.end(); it++)
+	for(vector<unsigned>::iterator it=COpenNI2Generic::vOpenDevices.begin(); it != COpenNI2Generic::vOpenDevices.end(); it++)
 		if(sensor_id == *it)
-			vOpenDevices.erase(it);
+			COpenNI2Generic::vOpenDevices.erase(it);
 #else
 	THROW_EXCEPTION("MRPT was built without OpenNI2 support")
 #endif // MRPT_HAS_OPENNI2

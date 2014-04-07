@@ -48,16 +48,7 @@ dtor
 COpenNI2_RGBD360::~COpenNI2_RGBD360()
 {
 #if MRPT_HAS_OPENNI2
-	cout << "Destroy COpenNI2_RGBD360... \n";
-
-	//	this->close();
-	for(unsigned i=0; i < vOpenDevices.size(); i++)
-		this->close(vOpenDevices[i]);
-
-	if(DEVICE_LIST_PTR)
-		delete DEVICE_LIST_PTR; // Delete the pointer to the list of devices
-
-	openni::OpenNI::shutdown();
+	kill();
 #endif // MRPT_HAS_OPENNI2
 }
 
@@ -90,6 +81,7 @@ void COpenNI2_RGBD360::initialize()
 */
 void COpenNI2_RGBD360::doProcess()
 {
+#if MRPT_HAS_OPENNI2
 	cout << "COpenNI2_RGBD360::doProcess...\n";
 
 	bool	thereIs, hwError;
@@ -97,8 +89,8 @@ void COpenNI2_RGBD360::doProcess()
 	CObservationRGBD360Ptr newObs = CObservationRGBD360::Create();
 	//	CObservation3DRangeScanPtr newObs = CObservation3DRangeScan::Create();
 
-	assert(!vOpenDevices.empty());
-	//  unsigned sensor_id = vOpenDevices.front();
+	assert(!COpenNI2Generic::vOpenDevices.empty());
+	//  unsigned sensor_id = COpenNI2Generic::vOpenDevices.front();
 	getNextObservation( *newObs, thereIs, hwError );
 
 	if (hwError)
@@ -116,6 +108,9 @@ void COpenNI2_RGBD360::doProcess()
 
 		appendObservations( objs );
 	}
+#else
+	THROW_EXCEPTION("MRPT was built without OpenNI2 support")
+#endif // MRPT_HAS_OPENNI2
 }
 
 /** Loads specific configuration for the device from a given source of configuration parameters, for example, an ".ini" file, loading from the section "[iniSection]" (see utils::CConfigFileBase and derived classes)
@@ -142,9 +137,6 @@ void  COpenNI2_RGBD360::loadConfig_sensorSpecific(
 	height = configSource.read_int(iniSection,"height",0);
 	fps = configSource.read_float(iniSection,"fps",0);
 	std::cout << "width " << width << " height " << height << " fps " << fps << endl;
-
-	// Id:
-	m_user_device_number = configSource.read_int(iniSection,"device_number",m_user_device_number );
 
 	m_grab_rgb = configSource.read_bool(iniSection,"grab_image",m_grab_rgb);
 	m_grab_depth = configSource.read_bool(iniSection,"grab_depth",m_grab_depth);
