@@ -196,7 +196,8 @@ void utils::OctetVectorToObject(const vector_byte & in_data, CSerializablePtr &o
 
 		if (in_data.empty()) return;
 
-		CMemoryStream	tmp( &in_data[0], in_data.size());
+		CMemoryStream	tmp;
+		tmp.assignMemoryNotOwn(&in_data[0], in_data.size());
 		obj = tmp.ReadObject();
 	}
 	catch (std::bad_alloc &e)
@@ -255,7 +256,8 @@ void utils::RawStringToObject(const std::string & in_data, CSerializablePtr &obj
 
 		if (in_data.empty()) return;
 
-		CMemoryStream	tmp( &in_data[0], in_data.size());
+		CMemoryStream	tmp;
+		tmp.assignMemoryNotOwn(&in_data[0], in_data.size());
 		obj = tmp.ReadObject();
 	}
 	catch (std::bad_alloc &e)
@@ -264,11 +266,11 @@ void utils::RawStringToObject(const std::string & in_data, CSerializablePtr &obj
 	}
 	catch(std::exception &e)
 	{
-		std::cerr << "[OctetVectorToObject] Exception: " << e.what() << std::endl;
+		std::cerr << "[RawStringToObject] Exception: " << e.what() << std::endl;
 	}
 	catch(...)
 	{
-		std::cerr << "[OctetVectorToObject] Unknown exception" << std::endl;
+		std::cerr << "[RawStringToObject] Unknown exception" << std::endl;
 	}
 }
 

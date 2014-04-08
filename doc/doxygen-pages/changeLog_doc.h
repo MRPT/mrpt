@@ -18,9 +18,10 @@
 		- [mrpt-hwdrivers]
 			- mrpt::hwdrivers::COpenNI2Sensor: Interface to OpenNI2 cameras, capable of reading from an array of OpenNI2 RGBD cameras (By Eduardo Fernandez)
 	- Changes in classes: 
-		- [mrpt-base] 
+		- [mrpt-base]
 			- Robust kernel templates moved from mrpt::vision to mrpt::math. See mrpt::math::RobustKernel<>. Added unit tests for robust kernels.
 			- CPose3D has new SE(3) methods: mrpt::poses::CPose3D::jacob_dexpeD_de(), mrpt::poses::CPose3D::jacob_dAexpeD_de()
+			- More efficient mrpt::utils::OctetVectorToObject() (avoid memory copy).
 		- [mrpt-srba]
 			- Now also implements SE(3) relative graph-slam.
 	- Build system:
