@@ -35,10 +35,7 @@ COpenNI2Sensor::COpenNI2Sensor() :
 	m_preview_decim_counter_rgb(0),
 
 	m_relativePoseIntensityWRTDepth(0,0,0, DEG2RAD(0),DEG2RAD(0),DEG2RAD(0)),
-	m_user_device_number(0),
-	m_grab_image(true),
-	m_grab_depth(true),
-	m_grab_3D_points(true)
+	m_user_device_number(0)
 {
 
 	// Default label:
@@ -96,15 +93,14 @@ void COpenNI2Sensor::initialize()
 void COpenNI2Sensor::doProcess()
 {
 #if MRPT_HAS_OPENNI2
-	cout << "COpenNI2Sensor::doProcess...\n";
+//	cout << "COpenNI2Sensor::doProcess...\n";
 
 	bool	thereIs, hwError;
 
 	CObservation3DRangeScanPtr newObs = CObservation3DRangeScan::Create();
 
 	assert(!COpenNI2Generic::vOpenDevices.empty());
-	unsigned sensor_id = COpenNI2Generic::vOpenDevices.front();
-	getNextObservation( *newObs, thereIs, hwError, sensor_id );
+	getNextObservation( *newObs, thereIs, hwError, m_user_device_number );
 
 	if (hwError)
 	{
@@ -198,10 +194,10 @@ void COpenNI2Sensor::getNextObservation(
 	unsigned sensor_id )
 {
 #if MRPT_HAS_OPENNI2
-	cout << "COpenNI2Sensor::getNextObservation \n";
+//	cout << "COpenNI2Sensor::getNextObservation \n";
 
-	// Read a frame (depth + rgb)
-    getNextObservation(out_obs, there_is_obs, hardware_error, sensor_id );
+    // Read a frame (depth + rgb)
+    getNextFrameRGBD(out_obs, there_is_obs, hardware_error, sensor_id );
 
 
     // Set common data into observation:
@@ -258,6 +254,8 @@ void COpenNI2Sensor::getNextObservation(
         if (m_win_range) m_win_range.clear();
         if (m_win_int) m_win_int.clear();
     }
+
+//	cout << "COpenNI2Sensor::getNextObservation finish\n";
 #else
 	THROW_EXCEPTION("MRPT was built without OpenNI2 support")
 #endif // MRPT_HAS_OPENNI2

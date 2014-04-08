@@ -263,8 +263,6 @@ namespace mrpt
 
 			int  m_user_device_number; //!< Number of device to open (0:first,...)
 
-			bool  m_grab_image, m_grab_depth, m_grab_3D_points ; //!< Default: all true
-
 		};	// End of class
 	} // End of NS
 

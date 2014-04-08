@@ -44,7 +44,10 @@ COpenNI2Generic::COpenNI2Generic() :
 	height(240),
 	//  width(640),
 	//  height(420),
-	fps(30)
+	fps(30),
+  m_grab_image(true),
+	m_grab_depth(true),
+	m_grab_3D_points(true)
 {
 }
 
@@ -65,8 +68,8 @@ void COpenNI2Generic::getConnectedDevices()
 	if(rc != openni::STATUS_OK)
 		THROW_EXCEPTION(mrpt::format("After initialization:\n %s\n", openni::OpenNI::getExtendedError()))
 
-    // Show devices list
-    deviceListPtr = new openni::Array<openni::DeviceInfo>;
+  // Show devices list
+  deviceListPtr = new openni::Array<openni::DeviceInfo>;
 	openni::OpenNI::enumerateDevices(DEVICE_LIST_PTR);
 	numDevices = (*DEVICE_LIST_PTR).getSize();
 
@@ -113,7 +116,7 @@ void COpenNI2Generic::kill()
 
 bool COpenNI2Generic::isOpen(const unsigned sensor_id) const
 {
-	for(unsigned i=0; COpenNI2Generic::vOpenDevices.size(); i++)
+	for(unsigned i=0; i < COpenNI2Generic::vOpenDevices.size(); i++)
 		if(sensor_id == COpenNI2Generic::vOpenDevices[i])
 			return true;
 
@@ -124,20 +127,25 @@ void COpenNI2Generic::open(unsigned sensor_id)
 {
 #if MRPT_HAS_OPENNI2
 	cout << "OpenNI2Sensor::open " << sensor_id << " ...\n";
+//	cout << "Already Open (" << COpenNI2Generic::vOpenDevices.size() << ") :\n";
+//	for(unsigned i=0; i < COpenNI2Generic::vOpenDevices.size(); i++)
+//    cout << COpenNI2Generic::vOpenDevices[i] << endl;
+//  cout << endl;
+
 	if(isOpen(sensor_id))
 	{
 		//		close(sensor_id);
-		cout << "The sensor " << sensor_id << "is already opened\n";
+		cout << "The sensor " << sensor_id << " is already opened\n";
 		return;
 	}
 
 	if (!numDevices)
 		THROW_EXCEPTION("No OpenNI2 devices found.")
 
-		if (sensor_id >= numDevices)
-			THROW_EXCEPTION("Sensor index is higher than the number of connected devices.")
+  if (sensor_id >= numDevices)
+    THROW_EXCEPTION("Sensor index is higher than the number of connected devices.")
 
-			int rc;
+  int rc;
 	//  unsigned sensor_id; // To use with serial_num
 
 	// Open the given device number:
@@ -315,7 +323,10 @@ void COpenNI2Generic::close(unsigned sensor_id)
 
 	for(vector<unsigned>::iterator it=COpenNI2Generic::vOpenDevices.begin(); it != COpenNI2Generic::vOpenDevices.end(); it++)
 		if(sensor_id == *it)
+		{
 			COpenNI2Generic::vOpenDevices.erase(it);
+		  break;
+		}
 #else
 	THROW_EXCEPTION("MRPT was built without OpenNI2 support")
 #endif // MRPT_HAS_OPENNI2
@@ -342,36 +353,32 @@ void COpenNI2Generic::getNextFrameRGB(
 	there_is_obs=false;
 	hardware_error = false;
 
-    if(!m_has_color)
-        THROW_EXCEPTION("This OpenNI2 device does not support color imaging")
+  if(!m_has_color)
+    THROW_EXCEPTION("This OpenNI2 device does not support color imaging")
 
-	// Read a frame (rgb)
-	RGB_STREAM_ID_PTR->readFrame(RGB_FRAME_ID_PTR);
+  // Read a frame (rgb)
+  RGB_STREAM_ID_PTR->readFrame(RGB_FRAME_ID_PTR);
 
-    there_is_obs=true;
+  there_is_obs=true;
 
-    timestamp = mrpt::system::getCurrentTime();
-    rgb_img.rangeImage_setSize(height,width);
+  timestamp = mrpt::system::getCurrentTime();
 
-    // Read one frame
-    const openni::RGB888Pixel* pRgbRow = (const openni::RGB888Pixel*)RGB_FRAME_ID_PTR->getData();
-    int rowSize = RGB_STREAM_ID_PTR->getStrideInBytes() / sizeof(openni::RGB888Pixel);
+  // Read one frame
+  const openni::RGB888Pixel* pRgbRow = (const openni::RGB888Pixel*)RGB_FRAME_ID_PTR->getData();
+  int rowSize = RGB_FRAME_ID_PTR->getStrideInBytes() / sizeof(openni::RGB888Pixel);
 
-    utils::CImage iimage(width,height,CH_RGB);
-    for (int yc = 0; yc < RGB_STREAM_ID_PTR->getHeight(); ++yc)
-    {
-        const openni::RGB888Pixel* pRgb = pRgbRow;
-        for (int xc = 0; xc < RGB_STREAM_ID_PTR->getWidth(); ++xc, ++pDepth, ++pRgb)
-        {
-            iimage.setPixel(xc,yc,(pRgb->r<<16)+(pRgb->g<<8)+pRgb->b);
-        }
+  utils::CImage iimage(width,height,CH_RGB);
+  for (int yc = 0; yc < RGB_FRAME_ID_PTR->getHeight(); ++yc)
+  {
+    const openni::RGB888Pixel* pRgb = pRgbRow;
+    for (int xc = 0; xc < RGB_FRAME_ID_PTR->getWidth(); ++xc, ++pRgb)
+      iimage.setPixel(xc,yc,(pRgb->r<<16)+(pRgb->g<<8)+pRgb->b);
 
-        pDepthRow += rowSize;
-        pRgbRow += rowSize;
-    }
+    pRgbRow += rowSize;
+  }
 
-    // Save the observation to the user's object:
-    rgb_img.swap(iimage);
+  // Save the observation to the user's object:
+  rgb_img.swap(iimage);
 
 #else
 	THROW_EXCEPTION("MRPT was built without OpenNI2 support")
@@ -399,8 +406,8 @@ void COpenNI2Generic::getNextFrameD(
 	there_is_obs = false;
 	hardware_error = false;
 
-	// Read a frame (depth)
-	DEPTH_STREAM_ID_PTR->readFrame(DEPTH_FRAME_ID_PTR);
+    // Read a frame (depth)
+    DEPTH_STREAM_ID_PTR->readFrame(DEPTH_FRAME_ID_PTR);
 
     there_is_obs=true;
 
@@ -414,14 +421,11 @@ void COpenNI2Generic::getNextFrameD(
     depth_img.resize(DEPTH_FRAME_ID_PTR->getHeight(), DEPTH_FRAME_ID_PTR->getWidth());
     for (int yc = 0; yc < DEPTH_FRAME_ID_PTR->getHeight(); ++yc)
     {
-        const openni::DepthPixel* pDepth = pDepthRow;
-        for (int xc = 0; xc < DEPTH_FRAME_ID_PTR->getWidth(); ++xc, ++pDepth, ++pRgb)
-        {
-            depth_img(yc,xc) = (*pDepth)*1.0/1000;
-        }
+      const openni::DepthPixel* pDepth = pDepthRow;
+      for (int xc = 0; xc < DEPTH_FRAME_ID_PTR->getWidth(); ++xc, ++pDepth)
+        depth_img(yc,xc) = (*pDepth)*1.0/1000;
 
-        pDepthRow += rowSize;
-        pRgbRow += rowSize;
+      pDepthRow += rowSize;
     }
 
 #else
@@ -443,13 +447,10 @@ void COpenNI2Generic::getNextFrameRGBD(
 	unsigned sensor_id )
 {
 #if MRPT_HAS_OPENNI2
-	cout << "COpenNI2Generic::getNextObservation \n";
+//	cout << "COpenNI2Generic::getNextFrameRGBD \n";
 
 	there_is_obs=false;
 	hardware_error = false;
-
-    if(!m_has_color)
-        THROW_EXCEPTION("This OpenNI2 device does not support color imaging")
 
 	// Read a frame (depth + rgb)
 	DEPTH_STREAM_ID_PTR->readFrame(DEPTH_FRAME_ID_PTR);
@@ -470,6 +471,8 @@ void COpenNI2Generic::getNextFrameRGBD(
 		// Set intensity image ----------------------
 		if (m_grab_image)
 		{
+      if(!m_has_color)
+        THROW_EXCEPTION("This OpenNI2 device does not support color imaging")
 			newObs.hasIntensityImage  = true;
 		}
 

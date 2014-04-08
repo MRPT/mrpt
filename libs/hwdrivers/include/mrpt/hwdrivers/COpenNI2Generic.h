@@ -33,13 +33,13 @@ namespace mrpt
 			COpenNI2Generic();	 //!< Default ctor
 			~COpenNI2Generic();	 //!< Default ctor
 
-            /** Get a list of the connected OpenNI2 sensors.
-            */
-            void getConnectedDevices();
+      /** Get a list of the connected OpenNI2 sensors.
+      */
+      void getConnectedDevices();
 
 			/** Kill the OpenNI2 driver
 			  */
-            void kill();
+      void kill();
 
 			/** The main data retrieving function, to be called after calling loadConfig() and initialize().
 			  *  \param out_img The output retrieved RGB image (only if there_is_obs=true).
@@ -51,7 +51,7 @@ namespace mrpt
 			  */
 			void getNextFrameRGB(
 				mrpt::utils::CImage &rgb_img,
-                uint64_t &timestamp,
+        uint64_t &timestamp,
 				bool &there_is_obs,
 				bool &hardware_error ,
 				unsigned sensor_id = 0);
@@ -66,7 +66,7 @@ namespace mrpt
 			  */
 			void getNextFrameD(
 				mrpt::math::CMatrix &depth_img,
-                uint64_t &timestamp,
+        uint64_t &timestamp,
 				bool &there_is_obs,
 				bool &hardware_error ,
 				unsigned sensor_id = 0);
@@ -128,7 +128,10 @@ namespace mrpt
 			/** A vector with pointers to the frame output structures */
 			std::vector<void*> vp_frame_depth, vp_frame_rgb;	// Opaque pointers to "openni::VideoFrameRef"
 
+			/** Check whether the OpenNI2 device has RGB camera or not */
 			bool  m_has_color;
+
+			bool  m_grab_image, m_grab_depth, m_grab_3D_points ; //!< Default: all true
 
 		};	// End of class
 

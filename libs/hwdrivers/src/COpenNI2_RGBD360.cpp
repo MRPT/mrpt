@@ -161,7 +161,7 @@ void COpenNI2_RGBD360::getNextObservation(
 #if MRPT_HAS_OPENNI2
 	CTicTac	tictac;
 	tictac.Tic();
-	cout << "COpenNI2_RGBD360::getNextObservation \n";
+//	cout << "COpenNI2_RGBD360::getNextObservation \n";
 
 	there_is_obs=false;
 	hardware_error = false;
@@ -178,11 +178,10 @@ void COpenNI2_RGBD360::getNextObservation(
 
 	for(unsigned sensor_id=0; sensor_id < NUM_SENSORS; sensor_id++)
 	{
-		cout << "Get sensor " << sensor_id << " \n";
-
-        bool there_is_obs, hardware_error;
-        getNextFrameRGB(newObs.intensityImages[sensor_id],newObs.timestamps[sensor_id], there_is_obs, hardware_error, sensor_id);
-        getNextFrameD(newObs.rangeImages[sensor_id],newObs.timestamps[sensor_id], there_is_obs, hardware_error, sensor_id);
+//		cout << "Get sensor " << sensor_id << " \n";
+    bool there_is_obs, hardware_error;
+    getNextFrameRGB(newObs.intensityImages[sensor_id],newObs.timestamps[sensor_id], there_is_obs, hardware_error, sensor_id);
+    getNextFrameD(newObs.rangeImages[sensor_id],newObs.timestamps[sensor_id], there_is_obs, hardware_error, sensor_id);
 	}
 
 

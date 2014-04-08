@@ -59,7 +59,7 @@ int main ( int argc, char** argv )
     // Open:
     cout << "Calling COpenNI2Sensor::initialize()...";
     rgbd_sensor.initialize();
-    rgbd_sensor.open(sensor_id);
+//    rgbd_sensor.open(sensor_id);
 //    mrpt::system::sleep(2000); // Sleep 2s
     cout << "OK " << rgbd_sensor.numDevices << " available devices."  << endl;
     cout << "\nUse device " << sensor_id << endl << endl;
@@ -196,6 +196,7 @@ int main ( int argc, char** argv )
     }
 
     rgbd_sensor.close();
+//    rgbd_sensor.kill();
 
     cout << "\nStopping...\n";
 
