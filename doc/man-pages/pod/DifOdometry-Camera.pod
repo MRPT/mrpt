@@ -1,0 +1,48 @@
+=head1 NAME
+
+DifOdometry-Camera - DIFODO (visual odometry method) live application
+
+=head1 SYNOPSIS
+
+DifOdometry-Camera  [-h] [-c] [-cc ] [-s] 
+
+=head1 DESCRIPTION
+
+This GUI application is designed to perform visual odometry with a handheld 
+RGB-D camera. The method implemented is called "DIFODO" and it is based only
+on geometric data (range images).
+
+A config file can be used to customize the most important parameters of 
+the method (there is an embedded config file that is loaded by default). 
+
+See more details online: 
+http://www.mrpt.org/list-of-mrpt-apps/application-difodometry-camera/
+
+This program requires OpenNI2.
+
+=head1 BUGS
+
+Please report bugs at http://www.mrpt.org/project/issues/MRPT
+
+=head1 SEE ALSO
+
+The application wiki page at http://www.mrpt.org/Applications
+
+=head1 AUTHORS
+
+B<DifOdometry-Datasets> is part of the Mobile Robot Programming Toolkit (MRPT),
+and was originally written by Mariano Jaimez Tarifa, from the 
+MAPIR laboratory (University of Malaga).
+
+This manual page was written by Jose Luis Blanco <joseluisblancoc@gmail.com>.
+
+=head1 COPYRIGHT
+
+This program is free software; you can redistribute it and/or modify it
+under the terms of the BSD License.
+
+On Debian GNU/Linux systems, the complete text of the BSD License can be 
+found in `/usr/share/common-licenses/BSD'.
+
+=cut
+
