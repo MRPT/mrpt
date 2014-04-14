@@ -17,8 +17,6 @@ namespace mrpt
 
 	namespace math
 	{
-		using namespace mrpt::poses;
-
 		/** \addtogroup geometry_grp
 		  *  @{ */
 

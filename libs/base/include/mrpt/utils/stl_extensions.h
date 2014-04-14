@@ -10,7 +10,6 @@
 #define  stl_extensions_H
 
 #include <mrpt/utils/CSerializable.h>
-#include <mrpt/utils/CStream.h>
 #include <mrpt/utils/metaprogramming.h>
 
 #include <set>
@@ -34,7 +33,6 @@ namespace mrpt
 		  * \ingroup mrpt_base_grp
 		  * @{ */
 
-		using namespace mrpt::utils::metaprogramming;
 		using std::for_each;
 		using std::string;
 

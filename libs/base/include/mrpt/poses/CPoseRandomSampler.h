@@ -17,8 +17,6 @@ namespace mrpt
 {
     namespace poses
     {
-        using namespace mrpt::math;
-
         /** An efficient generator of random samples drawn from a given 2D (CPosePDF) or 3D (CPose3DPDF) pose probability density function (pdf).
          * This class keeps an internal state which speeds up the sequential generation of samples. It can manage
          *  any kind of pose PDF.

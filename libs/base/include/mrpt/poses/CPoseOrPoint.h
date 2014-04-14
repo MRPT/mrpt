@@ -12,12 +12,16 @@
 #include <mrpt/math/CMatrixFixedNumeric.h>
 #include <mrpt/math/lightweight_geom_data.h>
 #include <mrpt/math/ops_matrices.h>  // Added here so many classes have access to these templates
-#include <mrpt/math/utils.h>		 // For homogeneousMatrixInverse
 
 #include <mrpt/poses/CPoseOrPoint_detail.h>
 
 namespace mrpt
 {
+	namespace math {
+		// Frd decl. (to avoid include <mrpt/math/utils.h> )
+		template <class MATRIXLIKE> inline void homogeneousMatrixInverse(MATRIXLIKE &M);
+	}
+
 	/** \defgroup poses_grp 2D/3D points and poses
 	  *  \ingroup mrpt_base_grp */
 
@@ -29,9 +33,6 @@ namespace mrpt
 	  */
 	namespace poses
 	{
-		using namespace mrpt::utils;  // For square
-		using namespace mrpt::math;  // For ligh. geom data
-
 		// For use in some constructors (eg. CPose3D)
 		enum TConstructorFlags_Poses
 		{
@@ -132,6 +133,8 @@ namespace mrpt
 			/** Returns the squared euclidean distance to another pose/point: */
 			template <class OTHERCLASS>	inline double sqrDistanceTo(const CPoseOrPoint<OTHERCLASS> &b) const
 			{
+				using mrpt::utils::square;
+
 				if (b.is3DPoseOrPoint())
 				{
 					if (is3DPoseOrPoint())
@@ -173,6 +176,7 @@ namespace mrpt
 			/** Returns the euclidean norm of vector: \f$ ||\mathbf{x}|| = \sqrt{x^2+y^2+z^2} \f$ */
 			inline double  norm() const
 			{
+				using mrpt::utils::square;
 				return std::sqrt( square(x())+square(y())+ (!is3DPoseOrPoint() ? 0 : square(static_cast<const DERIVEDCLASS*>(this)->m_coords[2]) ) );
 			}
 
@@ -187,9 +191,9 @@ namespace mrpt
 			/** Returns the corresponding 4x4 homogeneous transformation matrix for the point(translation) or pose (translation+orientation).
 			* \sa getInverseHomogeneousMatrix
 			*/
-			inline CMatrixDouble44 getHomogeneousMatrixVal() const
+			inline mrpt::math::CMatrixDouble44 getHomogeneousMatrixVal() const
 			{
-				CMatrixDouble44 m(UNINITIALIZED_MATRIX);
+				mrpt::math::CMatrixDouble44 m(UNINITIALIZED_MATRIX);
 				static_cast<const DERIVEDCLASS*>(this)->getHomogeneousMatrix(m);
 				return m;
 			}
@@ -197,7 +201,7 @@ namespace mrpt
 			/** Returns the corresponding 4x4 inverse homogeneous transformation matrix for this point or pose.
 			* \sa getHomogeneousMatrix
 			*/
-			inline void getInverseHomogeneousMatrix( math::CMatrixDouble44 &out_HM ) const
+			inline void getInverseHomogeneousMatrix( mrpt::math::CMatrixDouble44 &out_HM ) const
 			{	// Get current HM & inverse in-place:
 				static_cast<const DERIVEDCLASS*>(this)->getHomogeneousMatrix(out_HM);
 				mrpt::math::homogeneousMatrixInverse(out_HM);

@@ -18,8 +18,6 @@ namespace mrpt
 {
 namespace poses
 {
-	using namespace mrpt::math;
-
 	class CPosePDF;
 
 	DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE( CPose3DPDF, mrpt::utils::CSerializable )

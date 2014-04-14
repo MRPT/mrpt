@@ -45,7 +45,7 @@ WARRANTY OF MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE.
 
 */
 
-#include <mrpt/base.h>  // Precompiled headers
+#include "base-precomp.h"  // Precompiled headers
 
 #include <mrpt/utils/PLY_import_export.h>
 #include <mrpt/system/string_utils.h>

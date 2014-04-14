@@ -11,10 +11,6 @@
 
 #include <mrpt/config.h>
 
-// Only really include all headers if we come from a user program (anything
-//  not defining mrpt_*_EXPORTS) or MRPT is being built with precompiled headers.
-#if !defined(mrpt_slam_EXPORTS) || MRPT_ENABLE_PRECOMPILED_HDRS || defined(MRPT_ALWAYS_INCLUDE_ALL_HEADERS)
-
 // Maps:
 #include <mrpt/slam/CMetricMap.h>
 #include <mrpt/slam/CPointsMap.h>
@@ -88,7 +84,5 @@
 #include <mrpt/slam/CRawlog.h>
 
 #include <mrpt/slam/COccupancyGridMapFeatureExtractor.h>
-
-#endif // end precomp.headers
 
 #endif

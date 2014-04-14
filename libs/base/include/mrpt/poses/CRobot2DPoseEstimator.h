@@ -16,9 +16,6 @@ namespace mrpt
 {
 	namespace poses
 	{
-		using namespace mrpt::math;
-		using namespace mrpt::system;
-
 		/** A simple filter to estimate and extrapolate the robot 2D (x,y,phi) pose from asynchronous odometry and localization data.
 		  *  The implemented model is a state vector:
 		  *		- (x,y,phi,v,w)

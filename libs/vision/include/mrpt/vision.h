@@ -10,12 +10,6 @@
 #ifndef __mrpt_vision_H
 #define __mrpt_vision_H
 
-#include <mrpt/config.h>
-
-// Only really include all headers if we come from a user program (anything
-//  not defining mrpt_*_EXPORTS) or MRPT is being built with precompiled headers.
-#if !defined(mrpt_vision_EXPORTS) || MRPT_ENABLE_PRECOMPILED_HDRS || defined(MRPT_ALWAYS_INCLUDE_ALL_HEADERS)
-
 #include <mrpt/vision/utils.h>
 #include <mrpt/vision/TSimpleFeature.h>
 #include <mrpt/vision/multiDesc_utils.h>
@@ -42,7 +36,5 @@
 
 // Obs:
 #include <mrpt/slam/CObservationVisualLandmarks.h>
-
-#endif // end precomp.headers
 
 #endif

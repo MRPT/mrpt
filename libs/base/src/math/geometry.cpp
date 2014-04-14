@@ -7,16 +7,12 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/base.h>  // Precompiled headers
+#include "base-precomp.h"  // Precompiled headers
 
 #include <mrpt/math/geometry.h>
-#include <mrpt/math/utils.h>
 #include <mrpt/math/CPolygon.h>
 #include <mrpt/math/CSparseMatrixTemplate.h>
 #include <mrpt/math/CMatrixTemplateNumeric.h>
-#include <cmath>
-#include <algorithm>
-
 #include <mrpt/math/ops_matrices.h>
 
 using namespace mrpt;
@@ -900,7 +896,7 @@ bool math::areAligned(const std::vector<TPoint2D> &points,TLine2D &r)	{
 	for (size_t i=1;;i++) try	{
 		r=TLine2D(p0,points[i]);
 		return true;
-	}	catch (logic_error &l)	{}
+	}	catch (logic_error &)	{}
 }
 
 bool math::areAligned(const std::vector<TPoint3D> &points)	{
@@ -923,7 +919,7 @@ bool math::areAligned(const std::vector<TPoint3D> &points,TLine3D &r)	{
 	for (size_t i=1;;i++) try	{
 		r=TLine3D(p0,points[i]);
 		return true;
-	}	catch (logic_error &l)	{}
+	}	catch (logic_error &)	{}
 }
 
 void math::project3D(const TLine3D &line,const CPose3D &newXYpose,TLine3D &newLine)	{

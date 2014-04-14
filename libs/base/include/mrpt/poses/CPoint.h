@@ -59,7 +59,7 @@ namespace mrpt
 			/** Returns the corresponding 4x4 homogeneous transformation matrix for the point(translation) or pose (translation+orientation).
 			  * \sa getInverseHomogeneousMatrix
 			  */
-			void getHomogeneousMatrix(CMatrixDouble44 & out_HM ) const
+			void getHomogeneousMatrix(mrpt::math::CMatrixDouble44 & out_HM ) const
 			{
 				out_HM.unit(4,1.0);
 				out_HM.get_unsafe(0,3)= static_cast<const DERIVEDCLASS*>(this)->x();

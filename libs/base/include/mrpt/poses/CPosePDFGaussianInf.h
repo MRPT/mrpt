@@ -16,8 +16,6 @@ namespace mrpt
 {
 namespace poses
 {
-	using namespace mrpt::math;
-
 	class CPose3DPDF;
 
 	// This must be added to any CSerializable derived class:

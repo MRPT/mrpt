@@ -7,7 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/base.h>  // Precompiled headers
+#include "base-precomp.h"  // Precompiled headers
 
 #include <mrpt/math/lightweight_geom_data.h>
 #include <mrpt/poses.h>
@@ -124,7 +124,17 @@ std::ostream & operator << (std::ostream& o, const TPose2D & p)  { return (o << 
 std::ostream & operator << (std::ostream& o, const TPose3D & p)  { return (o << CPose3D(p)); }
 std::ostream & operator << (std::ostream& o, const TPose3DQuat & p) { return (o << CPose3DQuat(p)); }
 
+CStream &operator>>(CStream &in,mrpt::math::TSegment2D &s)	{ return in>>s.point1>>s.point2; }
+CStream &operator<<(CStream &out,const mrpt::math::TSegment2D &s)	{ return out<<s.point1<<s.point2; }
+CStream &operator>>(CStream &in,mrpt::math::TLine2D &l)	{ return in>>l.coefs[0]>>l.coefs[1]>>l.coefs[2]; }
+CStream &operator<<(CStream &out,const mrpt::math::TLine2D &l)	{ return out<<l.coefs[0]<<l.coefs[1]<<l.coefs[2]; }
 
+mrpt::utils::CStream &operator>>(mrpt::utils::CStream &in,mrpt::math::TSegment3D &s)	{ return in>>s.point1>>s.point2; }
+mrpt::utils::CStream &operator<<(mrpt::utils::CStream &out,const mrpt::math::TSegment3D &s)	{ return out<<s.point1<<s.point2; }
+mrpt::utils::CStream &operator>>(mrpt::utils::CStream &in,mrpt::math::TLine3D &l)	{ return in>>l.pBase>>l.director[0]>>l.director[1]>>l.director[2]; }
+mrpt::utils::CStream &operator<<(mrpt::utils::CStream &out,const mrpt::math::TLine3D &l)	{ return out<<l.pBase<<l.director[0]<<l.director[1]<<l.director[2]; }
+mrpt::utils::CStream &operator>>(mrpt::utils::CStream &in,mrpt::math::TPlane &p)	{ return in>>p.coefs[0]>>p.coefs[1]>>p.coefs[2]>>p.coefs[3]; }
+mrpt::utils::CStream &operator<<(mrpt::utils::CStream &out,const mrpt::math::TPlane &p)	{ return out<<p.coefs[0]<<p.coefs[1]<<p.coefs[2]<<p.coefs[3]; }
 
 double TSegment2D::length() const	{
 	return math::distance(point1,point2);

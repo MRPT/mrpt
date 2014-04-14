@@ -19,8 +19,6 @@ namespace mrpt
 {
 namespace poses
 {
-	using namespace mrpt::math;
-
 	class CPose3D;
 
 	DEFINE_SERIALIZABLE_PRE( CPose3DQuat )

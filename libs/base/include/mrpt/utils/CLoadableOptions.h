@@ -11,7 +11,6 @@
 
 #include <mrpt/utils/utils_defs.h>
 #include <mrpt/utils/CConfigFileBase.h>
-#include <mrpt/utils/CStream.h>
 #include <mrpt/system/os.h>
 
 /*---------------------------------------------------------------

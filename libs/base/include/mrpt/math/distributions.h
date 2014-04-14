@@ -22,8 +22,6 @@ namespace mrpt
 {
 	namespace math
 	{
-		using namespace mrpt::utils;
-
 		/** \addtogroup stats_grp Statistics functions, probability distributions
 		  *  \ingroup mrpt_base_grp
 		  * @{ */

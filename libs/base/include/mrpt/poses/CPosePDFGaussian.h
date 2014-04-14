@@ -16,8 +16,6 @@ namespace mrpt
 {
 namespace poses
 {
-	using namespace mrpt::math;
-
 	class CPose3DPDF;
 	class CPoint2DPDFGaussian;
 

@@ -10,12 +10,15 @@
 #define  CSERIALIZABLE_H
 
 #include <mrpt/utils/CObject.h>
-#include <mrpt/utils/CStream.h>
 #include <mrpt/utils/safe_pointers.h>
 #include <mrpt/utils/TTypeName.h>
 
 namespace mrpt
 {
+	namespace utils { 
+		class BASE_IMPEXP CStream; 
+	}
+
 	/** Classes for serialization, sockets, ini-file manipulation, streams, list of properties-values, timewatch, extensions to STL.
 	  * \ingroup mrpt_base_grp
 	  */

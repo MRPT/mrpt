@@ -7,7 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/base.h>  // Precompiled headers
+#include "base-precomp.h"  // Precompiled headers
 
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/poses/CPoint2D.h>
@@ -17,7 +17,7 @@
 #include <mrpt/poses/CPose3DQuat.h>
 #include <mrpt/poses/CPose3DRotVec.h>
 
-#include <mrpt/math/utils.h>
+//#include <mrpt/math/utils.h>
 #include <mrpt/math/geometry.h>
 #include <mrpt/math/CMatrix.h>
 

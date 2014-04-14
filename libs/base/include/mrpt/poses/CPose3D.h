@@ -17,8 +17,6 @@ namespace mrpt
 {
 namespace poses
 {
-	using namespace mrpt::math;
-
 	class BASE_IMPEXP CPose3DQuat;
 	class BASE_IMPEXP CPose3DRotVec;
 
@@ -528,20 +526,6 @@ namespace poses
 
 	bool BASE_IMPEXP operator==(const CPose3D &p1,const CPose3D &p2);
 	bool BASE_IMPEXP operator!=(const CPose3D &p1,const CPose3D &p2);
-
-
-	// This is a member of CPose<>, but has to be defined here since in its header CPose3D is not declared yet.
-	/** The operator \f$ a \ominus b \f$ is the pose inverse compounding operator. */
-	template <class DERIVEDCLASS> CPose3D CPose<DERIVEDCLASS>::operator -(const CPose3D& b) const
-	{
-		CMatrixDouble44 B_INV(UNINITIALIZED_MATRIX);
-		b.getInverseHomogeneousMatrix( B_INV );
-		CMatrixDouble44 HM(UNINITIALIZED_MATRIX);
-		static_cast<const DERIVEDCLASS*>(this)->getHomogeneousMatrix(HM);
-		CMatrixDouble44 RES(UNINITIALIZED_MATRIX);
-		RES.multiply(B_INV,HM);
-		return CPose3D( RES );
-	}
 
 
 	} // End of namespace

@@ -10,7 +10,6 @@
 #define  CDebugOutputCapable_H
 
 #include <mrpt/utils/utils_defs.h>
-#include <mrpt/utils/CStream.h>
 
 /*---------------------------------------------------------------
 	Class

@@ -18,8 +18,6 @@ namespace mrpt
 {
 	namespace poses
 	{
-		using namespace mrpt::math;
-
 		class CPosePDF;
 		class CPose3DPDF;
 

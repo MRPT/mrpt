@@ -16,8 +16,6 @@ namespace mrpt
 {
 namespace poses
 {
-	using namespace mrpt::math;
-
 	DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE( CPointPDFGaussian, CPointPDF )
 
 	/** A gaussian distribution for 3D points. Also a method for bayesian fusion is provided.

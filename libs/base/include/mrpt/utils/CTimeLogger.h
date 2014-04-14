@@ -18,8 +18,6 @@ namespace mrpt
 {
 	namespace utils
 	{
-		using namespace std;
-
 		/** A versatile "profiler" that logs the time spent within each pair of calls to enter(X)-leave(X), among other stats.
 		 *  The results can be dumped to cout or to Visual Studio's output panel.
 		 *  Recursive methods are supported with no problems, that is, calling "enter(X) enter(X) ... leave(X) leave(X)".

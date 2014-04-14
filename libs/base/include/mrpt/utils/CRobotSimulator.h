@@ -18,9 +18,6 @@ namespace mrpt
 {
 namespace utils
 {
-	using namespace mrpt::poses;
-	using namespace mrpt::math;
-
 	/** This class can be used to simulate the kinematics and dynamics of a differential driven planar mobile robot, including odometry errors and dynamics limitations.
 	 *  The main methods are:
 			- movementCommand: Call this for send a command to the robot. This comamnd will be

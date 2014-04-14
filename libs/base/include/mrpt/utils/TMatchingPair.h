@@ -13,9 +13,10 @@
 
 namespace mrpt
 {
+	namespace poses {  class CPose2D; }
+
 	namespace utils
 	{
-		using namespace mrpt::poses;
 
 	// Pragma defined to ensure no structure packing, so we can use SSE2 vectorization on parts of this struture
 #pragma pack(push,1)
@@ -78,7 +79,7 @@ namespace mrpt
 			  *  Where \f$ e_i \f$ are the elements of the square error vector as computed by computeSquareErrorVector
 			  * \sa squareErrorVector, overallSquareErrorAndPoints
 			  */
-			float overallSquareError( const CPose2D &q ) const;
+			float overallSquareError( const mrpt::poses::CPose2D &q ) const;
 
 			/** Computes the overall square error between the 2D points in the list of correspondences, given the 2D transformation "q", and return the transformed points as well.
 			  *    \f[ \sum\limits_i e_i  \f]
@@ -86,7 +87,7 @@ namespace mrpt
 			  * \sa squareErrorVector
 			  */
 			float overallSquareErrorAndPoints(
-				const CPose2D &q,
+				const mrpt::poses::CPose2D &q,
 				vector_float &xs,
 				vector_float &ys ) const;
 
@@ -96,7 +97,7 @@ namespace mrpt
 			  *    \f[ e_i = | x_{this} -  q \oplus x_{other}  |^2 \f]
 			  * \sa overallSquareError
 			  */
-			void  squareErrorVector(const CPose2D &q, vector_float &out_sqErrs ) const;
+			void  squareErrorVector(const mrpt::poses::CPose2D &q, vector_float &out_sqErrs ) const;
 
 			/**  Returns a vector with the square error between each pair of correspondences in the list and the transformed "other" (local) points, given the 2D transformation "q"
 			  *    Each element \f$ e_i \f$ is the square distance between the "this" (global) point and the "other" (local) point transformed through "q":
@@ -104,7 +105,7 @@ namespace mrpt
 			  * \sa overallSquareError
 			  */
 			void  squareErrorVector(
-				const CPose2D &q,
+				const mrpt::poses::CPose2D &q,
 				vector_float &out_sqErrs,
 				vector_float &xs,
 				vector_float &ys ) const;

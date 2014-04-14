@@ -18,8 +18,6 @@ namespace mrpt
 
 	namespace utils
 	{
-		using namespace mrpt::math;
-
 		/** A generic template for probability density distributions (PDFs).
 		  * This template is used as base for many classes in mrpt::poses
 		  *  Any derived class must implement \a getMean() and a getCovarianceAndMean().

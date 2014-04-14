@@ -13,7 +13,6 @@
 
 namespace mrpt	{
 namespace math	{
-    using namespace std;
 
     /** A sparse matrix container (with cells of any type), with iterators.
       *  This class stores only those elements created by assigning them a value, for example: "M(2,3)=8;".

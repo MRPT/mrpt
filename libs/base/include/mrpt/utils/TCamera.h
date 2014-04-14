@@ -20,9 +20,6 @@ namespace mrpt
 {
 	namespace utils
 	{
-		using namespace mrpt::math;
-		using namespace mrpt::poses;
-
 		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE( TCamera, mrpt::utils::CSerializable )
 
 		/** Structure to hold the parameters of a pinhole camera model.

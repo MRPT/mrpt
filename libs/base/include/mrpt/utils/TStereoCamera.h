@@ -15,9 +15,6 @@ namespace mrpt
 {
 	namespace utils
 	{
-		using namespace mrpt::math;
-		using namespace mrpt::poses;
-
 		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE( TStereoCamera, mrpt::utils::CSerializable )
 
 		/** Structure to hold the parameters of a pinhole stereo camera model.
@@ -30,7 +27,7 @@ namespace mrpt
             DEFINE_SERIALIZABLE( TStereoCamera )
         public:
 		    TCamera     leftCamera, rightCamera;  //!< Intrinsic and distortion parameters of the left and right cameras
-		    CPose3DQuat rightCameraPose;  //!< Pose of the right camera with respect to the coordinate origin of the left camera
+		    mrpt::poses::CPose3DQuat rightCameraPose;  //!< Pose of the right camera with respect to the coordinate origin of the left camera
 
             // Default constructor:
 		    TStereoCamera();

@@ -7,12 +7,12 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/base.h>
+#include "base-precomp.h"
 
 #ifndef MRPT_ENABLE_PRECOMPILED_HDRS
 #	define MRPT_ALWAYS_INCLUDE_ALL_HEADERS
 #	undef mrpt_base_H
-#	include <mrpt/base.h>
+#	include "base-precomp.h"
 #endif
 
 

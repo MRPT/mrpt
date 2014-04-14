@@ -17,7 +17,6 @@ namespace mrpt
 {
 	namespace utils
 	{
-		using namespace mrpt::utils::metaprogramming;
 		using std::for_each;
 		using std::string;
 

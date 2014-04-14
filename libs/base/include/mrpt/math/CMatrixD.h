@@ -11,7 +11,6 @@
 
 #include <mrpt/utils/CSerializable.h>
 #include <mrpt/math/CMatrixTemplateNumeric.h>
-#include <mrpt/utils/CStream.h>
 #include <mrpt/utils/utils_defs.h>
 
 
@@ -81,15 +80,14 @@ namespace mrpt
 			   */
 			explicit CMatrixD( const TPoint3D &p) : CMatrixDouble(p) {}
 
-
-			/** Assignment operator for float matrixes
-			*/
-			template <class OTHERMAT>
-			inline CMatrixD & operator = (const OTHERMAT& m)
+			/** Assignment from any Eigen matrix/vector */
+			template <typename Derived>
+			inline CMatrixD& operator =(const Eigen::MatrixBase<Derived>& m) const
 			{
 				CMatrixDouble::operator =(m);
 				return *this;
 			}
+
 
 		}; // end of class definition
 

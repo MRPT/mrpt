@@ -7,14 +7,15 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/base.h>  // Precompiled headers
+#include "base-precomp.h"  // Precompiled headers
 
 #include <mrpt/utils/TMatchingPair.h>
 #include <mrpt/utils/CFileOutputStream.h>
 #include <mrpt/utils/utils_defs.h>
-#include <mrpt/math/utils.h>
+//#include <mrpt/math/utils.h>
 #include <mrpt/poses/CPose2D.h>
 
+using namespace mrpt;
 using namespace mrpt::utils;
 using namespace mrpt::math;
 using namespace mrpt::system;

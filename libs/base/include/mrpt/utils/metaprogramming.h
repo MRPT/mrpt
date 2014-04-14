@@ -9,7 +9,7 @@
 #ifndef metaprogramming_H
 #define metaprogramming_H
 
-#include <mrpt/utils/CSerializable.h>
+#include <mrpt/utils/CObject.h>
 
 namespace mrpt
 {

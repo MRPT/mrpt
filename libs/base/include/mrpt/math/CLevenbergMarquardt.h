@@ -10,8 +10,8 @@
 #define  CLevenbergMarquardt_H
 
 #include <mrpt/utils/CDebugOutputCapable.h>
-#include <mrpt/math/CMatrixD.h>
-#include <mrpt/math/utils.h>
+#include <mrpt/math/CMatrixTemplateNumeric.h>
+//#include <mrpt/math/utils.h>
 
 /*---------------------------------------------------------------
 	Class

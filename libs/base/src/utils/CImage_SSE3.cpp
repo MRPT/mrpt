@@ -7,7 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/base.h>  // Precompiled headers
+#include "base-precomp.h"  // Precompiled headers
 
 // ---------------------------------------------------------------------------
 //   This file contains the SSE3/SSSE3 optimized functions for mrpt::utils::CImage

@@ -9,7 +9,6 @@
 #ifndef CMatrixFixedNumeric_H
 #define CMatrixFixedNumeric_H
 
-#include <mrpt/math/CArray.h>
 #include <mrpt/math/math_frwds.h>  // Fordward declarations
 #include <mrpt/utils/CSerializable.h>
 
@@ -17,9 +16,6 @@ namespace mrpt
 {
 	namespace math
 	{
-		using namespace mrpt::system;
-		using namespace mrpt::poses;
-
 		/**  A numeric matrix of compile-time fixed size.
 		 *   Basically, this class is a wrapper on Eigen::Matrix<T,NROWS,NCOLS>, but
 		 *   with a RowMajor element memory layout (except for column vectors).

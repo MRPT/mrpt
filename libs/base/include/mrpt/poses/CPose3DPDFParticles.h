@@ -18,9 +18,6 @@ namespace mrpt
 {
 	namespace poses
 	{
-		using namespace mrpt::bayes;
-		using namespace mrpt::utils;
-
 		// This must be added to any CSerializable derived class:
 		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE(CPose3DPDFParticles,CPose3DPDF)
 

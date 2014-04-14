@@ -7,7 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/base.h>  // Precompiled headers
+#include "base-precomp.h"  // Precompiled headers
 
 
 
@@ -15,7 +15,7 @@
 #include <mrpt/bayes/CParticleFilterCapable.h>
 #include <mrpt/system/os.h>
 #include <mrpt/random.h>
-#include <mrpt/math/utils.h>
+//#include <mrpt/math/utils.h>
 #include <mrpt/utils/utils_defs.h>
 #include <mrpt/math/ops_vectors.h>
 #include <mrpt/random.h>
@@ -472,14 +472,15 @@ size_t  CParticleFilterCapable::fastDrawSample( const bayes::CParticleFilter::TP
 		if (PF_options.resamplingMethod!=CParticleFilter::prMultinomial)
 			THROW_EXCEPTION("resamplingMethod must be 'prMultinomial' for a dynamic number of particles!");
 
-		double			draw = randomGenerator.drawUniform(0,0.999999);
-		double			CDF_next=-1;
+		double draw = randomGenerator.drawUniform(0,0.999999);
+		double CDF_next=-1.;
+		double CDF = -1.;
 
 		MRPT_START
 
 		// Use the look-up table to see the starting index we must start looking from:
 		size_t j = (size_t)floor( draw * ((double)PARTICLE_FILTER_CAPABLE_FAST_DRAW_BINS-0.05) );
-		double CDF = m_fastDrawAuxiliary.CDF[j];
+		CDF = m_fastDrawAuxiliary.CDF[j];
 		size_t i = m_fastDrawAuxiliary.CDF_indexes[j];
 
 		// Find the drawn particle!

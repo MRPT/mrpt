@@ -12,10 +12,6 @@
 
 #include <mrpt/config.h>
 
-// Only really include all headers if we come from a user program (anything
-//  not defining mrpt_*_EXPORTS) or MRPT is being built with precompiled headers.
-#if !defined(mrpt_maps_EXPORTS) || MRPT_ENABLE_PRECOMPILED_HDRS || defined(MRPT_ALWAYS_INCLUDE_ALL_HEADERS)
-
 #include <mrpt/slam/CBeacon.h>
 #include <mrpt/slam/CBeaconMap.h>
 #include <mrpt/slam/CColouredPointsMap.h>
@@ -35,7 +31,5 @@
 
 #include <mrpt/opengl/CAngularObservationMesh.h>
 #include <mrpt/opengl/CPlanarLaserScan.h>
-
-#endif // end precomp.headers
 
 #endif

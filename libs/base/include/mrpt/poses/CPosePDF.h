@@ -19,8 +19,6 @@ namespace mrpt
 {
 namespace poses
 {
-	using namespace mrpt::math;
-
 	class CPosePDFGaussian; // frd decl.
 
 	// This must be added to any CSerializable derived class:

@@ -7,7 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/base.h>  // Precompiled headers
+#include "base-precomp.h"  // Precompiled headers
 
 
 #include <mrpt/poses/CPointPDFSOG.h>
@@ -17,7 +17,7 @@
 #include <mrpt/bayes/CParticleFilterCapable.h>
 #include <mrpt/random.h>
 
-#include <mrpt/math/utils.h>
+//#include <mrpt/math/utils.h>
 #include <mrpt/math/distributions.h>
 
 using namespace mrpt::poses;

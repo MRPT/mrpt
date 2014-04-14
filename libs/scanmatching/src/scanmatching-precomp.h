@@ -7,6 +7,9 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/base.h> // Precomp header
+#ifndef _mrpt_scanmatching_H
+#define _mrpt_scanmatching_H
 
+#include <mrpt/scanmatching/scan_matching.h>
 
+#endif

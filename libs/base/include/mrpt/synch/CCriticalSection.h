@@ -10,7 +10,6 @@
 #define  mrpt_synch_criticalsection_H
 
 #include <mrpt/utils/utils_defs.h>
-#include <mrpt/utils/CStream.h>
 #include <mrpt/utils/CReferencedMemBlock.h>
 
 /*---------------------------------------------------------------
@@ -18,6 +17,8 @@
   ---------------------------------------------------------------*/
 namespace mrpt
 {
+	namespace utils { class CStream; }
+
 	/** @defgroup synch_grp Synchronization, multi-threading synch tools
 	  * \ingroup mrpt_base_grp */
 

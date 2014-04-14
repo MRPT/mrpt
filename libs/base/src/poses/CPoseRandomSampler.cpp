@@ -7,7 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/base.h>  // Precompiled headers
+#include "base-precomp.h"  // Precompiled headers
 
 
 #include <mrpt/poses/CPoseRandomSampler.h>
@@ -19,7 +19,7 @@
 #include <mrpt/poses/CPose3DPDFSOG.h>
 
 #include <mrpt/random.h>
-#include <mrpt/math/utils.h>
+//#include <mrpt/math/utils.h>
 
 using namespace mrpt;
 using namespace mrpt::poses;

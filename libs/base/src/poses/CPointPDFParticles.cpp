@@ -7,14 +7,14 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/base.h>  // Precompiled headers
+#include "base-precomp.h"  // Precompiled headers
 
 
 #include <mrpt/poses/CPointPDFParticles.h>
 #include <mrpt/poses/CPoint3D.h>
 #include <mrpt/poses/CPose3D.h>
 
-#include <mrpt/math/utils.h>
+//#include <mrpt/math/utils.h>
 #include <mrpt/math/ops_vectors.h>
 
 using namespace mrpt;

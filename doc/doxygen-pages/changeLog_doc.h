@@ -20,6 +20,9 @@
 		- New implementation of mrpt::synch::CSemaphore avoids crashes in OS X - by Randolph Voorhies.
 		- mrpt::opengl::CArrow was always drawn of normalized length.
 
+
+	- Removed all "using namespace" from public headers.
+
 <hr>
  <a name="1.1.0">
   <h2>Version 1.1.0: Released 22-FEB-2014  </h2></a>

@@ -12,7 +12,6 @@
 #include <mrpt/utils/CSerializable.h>
 #include <mrpt/math/CMatrixTemplateNumeric.h>
 #include <mrpt/math/CMatrixFixedNumeric.h>
-#include <mrpt/utils/CStream.h>
 
 namespace mrpt
 {

@@ -219,18 +219,19 @@ macro(internal_define_mrpt_lib name headers_only)
 				# The "use precomp.headr" for all the files...
 				set_target_properties(mrpt-${name}
 					PROPERTIES
-					COMPILE_FLAGS "/Yumrpt/${name}.h")
+					COMPILE_FLAGS "/Yu${name}-precomp.h")
 
 				# But for the file used to build the precomp. header:
-				set_source_files_properties("${CMAKE_SOURCE_DIR}/libs/${name}/src/precomp_hdr.cpp"
+				set_source_files_properties("${CMAKE_SOURCE_DIR}/libs/${name}/src/${name}-precomp.cpp"
 					PROPERTIES
-					COMPILE_FLAGS "/Ycmrpt/${name}.h")
+					COMPILE_FLAGS "/Yc${name}-precomp.h")
 			ENDIF (MSVC)
 		
-			SOURCE_GROUP("Precomp. header files" FILES 
-				"${CMAKE_SOURCE_DIR}/libs/${name}/src/precomp_hdr.cpp"
-				"${CMAKE_SOURCE_DIR}/libs/${name}/include/mrpt/${name}.h"
+			SOURCE_GROUP("Precompiled headers" FILES 
+				"${CMAKE_SOURCE_DIR}/libs/${name}/src/${name}-precomp.cpp"
+				"${CMAKE_SOURCE_DIR}/libs/${name}/src/${name}-precomp.h"
 				)	
+			INCLUDE_DIRECTORIES("${CMAKE_SOURCE_DIR}/libs/${name}/src/")
 		ENDIF(MRPT_ENABLE_PRECOMPILED_HDRS)
 
 		# Special directories when building a .deb package:

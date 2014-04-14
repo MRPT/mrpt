@@ -157,6 +157,10 @@ namespace poses
 			return ret;
 		}
 
+		/** The operator \f$ a \ominus b \f$ is the pose inverse compounding operator. */
+		CPose3D operator -(const CPose3D& b) const;
+
+
 		 /** Scalar sum of components: This is diferent from poses
 		  *    composition, which is implemented as "+" operators in "CPose" derived classes.
 		  */

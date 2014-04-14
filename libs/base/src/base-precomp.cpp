@@ -7,10 +7,5 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#ifndef __mrpt_scan_matching_H
-#define __mrpt_scan_matching_H
+#include "base-precomp.h" // Precomp header
 
-// Old include file. Just include the new one:
-#include "scanmatching.h"
-
-#endif

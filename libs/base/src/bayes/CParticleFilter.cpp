@@ -7,13 +7,12 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/base.h>  // Precompiled headers
-
-
+#include "base-precomp.h"  // Precompiled headers
 
 #include <mrpt/bayes/CParticleFilter.h>
 #include <mrpt/bayes/CParticleFilterCapable.h>
 #include <mrpt/bayes/CParticleFilterData.h>
+#include <mrpt/utils/CStream.h>
 
 //#include <mrpt/slam/CSensoryFrame.h>
 //#include <mrpt/slam/CActionCollection.h>

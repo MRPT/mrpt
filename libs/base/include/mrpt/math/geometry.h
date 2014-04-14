@@ -12,12 +12,11 @@
 #include <mrpt/utils/utils_defs.h>
 #include <mrpt/math/CMatrixTemplateNumeric.h>
 #include <mrpt/poses/CPoint2D.h>
-#include <mrpt/poses/CPoint3D.h>
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/math/lightweight_geom_data.h>
 #include <mrpt/math/CSparseMatrixTemplate.h>
-#include <mrpt/math/utils.h>
+//#include <mrpt/math/utils.h>
 
 /*---------------------------------------------------------------
 	Class
@@ -27,9 +26,6 @@ namespace mrpt
 	namespace math
 	{
 		using std::vector;
-		using namespace mrpt::utils;
-		using namespace mrpt::poses;
-
 
 		/** \addtogroup geometry_grp Geometry: lines, planes, intersections, SLERP, "lightweight" point & pose classes
 		  *  \ingroup mrpt_base_grp

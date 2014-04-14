@@ -17,8 +17,6 @@ namespace mrpt
 {
 namespace poses
 {
-	using namespace mrpt::math;
-
 	class CPose3D;
 	class CPose3DQuat;
 

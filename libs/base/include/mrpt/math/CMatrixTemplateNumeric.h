@@ -12,6 +12,9 @@
 #include <mrpt/math/CMatrixTemplate.h>
 #include <mrpt/utils/CSerializable.h>
 
+// MRPT only includes <Eigen/Core> in general, and adds "Dense" when really needed, as in this file:
+#include <Eigen/Dense>   
+
 #include <mrpt/system/os.h>
 #include <cmath>
 #include <limits>
@@ -28,8 +31,6 @@ namespace mrpt
 
 	namespace math
 	{
-		using namespace mrpt::system;
-
 		/**  A matrix of dynamic size.
 		  *   Basically, this class is a wrapper on Eigen::Matrix<T,Dynamic,Dynamic>, but
 		  *   with a RowMajor element memory layout (except for column vectors).
@@ -84,6 +85,15 @@ namespace mrpt
 						Base::coeffRef(i,j) = static_cast<T>(m.get_unsafe(i,j));
 				return *this;
 			}
+
+			/** Assignment from any Eigen matrix/vector */
+			template <typename Derived>
+			inline CMatrixTemplateNumeric<T>& operator =(const Eigen::MatrixBase<Derived>& m) const
+			{
+				Base::operator =(m);
+				return *this;
+			}
+
 
 			/** Constructor from a given size and a C array. The array length must match cols x row.
 			  * \code

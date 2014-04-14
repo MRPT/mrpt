@@ -7,11 +7,11 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/base.h>  // Precompiled headers
+#include "base-precomp.h"  // Precompiled headers
 
 
 
-#include <mrpt/math/utils.h>
+//#include <mrpt/math/utils.h>
 #include <mrpt/math/distributions.h>
 #include <mrpt/math/fourier.h>
 
@@ -2046,7 +2046,7 @@ string math::MATLAB_plotCovariance2D(
 	}
 
 	cov.eigenVectors(eigVec,eigVal);
-	eigVal.Sqrt();
+	eigVal = eigVal.array().sqrt().matrix();
 	M = eigVal * eigVec.adjoint();
 
 	// Compute the points of the ellipsoid:

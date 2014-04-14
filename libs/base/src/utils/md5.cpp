@@ -39,7 +39,7 @@ documentation and/or software.
 
 */
 
-#include <mrpt/base.h>  // Precompiled headers
+#include "base-precomp.h"  // Precompiled headers
 
 
 #include <mrpt/utils/md5.h>

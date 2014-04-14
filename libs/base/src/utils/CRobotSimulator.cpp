@@ -7,12 +7,12 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/base.h>  // Precompiled header
+#include "base-precomp.h"  // Precompiled header
 
 
 #include <mrpt/utils/CRobotSimulator.h>
 #include <mrpt/random.h>
-#include <mrpt/math/utils.h>
+//#include <mrpt/math/utils.h>
 
 using namespace mrpt::utils;
 using namespace mrpt::poses;

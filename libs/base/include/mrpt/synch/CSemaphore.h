@@ -10,7 +10,6 @@
 #define  mrpt_synch_semaphore_H
 
 #include <mrpt/utils/utils_defs.h>
-#include <mrpt/utils/CStream.h>
 #include <mrpt/utils/CReferencedMemBlock.h>
 
 /*---------------------------------------------------------------

@@ -10,10 +10,6 @@
 #ifndef _mrpt_gui_H
 #define _mrpt_gui_H
 
-// Only really include all headers if we come from a user program (anything
-//  not defining mrpt_*_EXPORTS) or MRPT is being built with precompiled headers.
-#if !defined(mrpt_gui_EXPORTS) || MRPT_ENABLE_PRECOMPILED_HDRS || defined(MRPT_ALWAYS_INCLUDE_ALL_HEADERS)
-
 #include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/gui/CDisplayWindow.h>
 #include <mrpt/gui/CDisplayWindowPlots.h>
@@ -22,7 +18,5 @@
 // #include "gui/WxSubsystem.h" 
 //#include "gui/WxUtils.h"
 //#include "gui/CMyGLCanvasBase.h"
-
-#endif // end precomp.headers
 
 #endif

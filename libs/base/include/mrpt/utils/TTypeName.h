@@ -60,6 +60,10 @@ namespace mrpt
 			template<> struct TTypeName <_TYPE > { \
 				static std::string get() { return std::string(#_TYPE); } };
 
+		#define MRPT_DECLARE_TTYPENAME_NAMESPACE(_TYPE,__NS) \
+			template<> struct TTypeName <__NS :: _TYPE > { \
+				static std::string get() { return std::string(#_TYPE); } };
+
 		#define MRPT_DECLARE_TTYPENAME_PTR(_TYPE) \
 			template<> struct TTypeName <_TYPE##Ptr> { \
 			static std::string get() { return TTypeName<_TYPE>::get(); }	};

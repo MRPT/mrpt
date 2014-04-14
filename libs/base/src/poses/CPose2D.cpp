@@ -7,7 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/base.h>  // Precompiled headers
+#include "base-precomp.h"  // Precompiled headers
 
 
 #include <mrpt/poses/CPose2D.h>
@@ -375,4 +375,15 @@ void CPose2D::fromString(const std::string &s)
 double CPose2D::distance2DFrobeniusTo( const CPose2D & p) const
 {
      return std::sqrt(square(p.x()-x())+square(p.y()-y())+4*(1-cos(p.phi()-phi())));
+}
+
+CPose3D CPose2D::operator -(const CPose3D& b) const
+{
+	CMatrixDouble44 B_INV(UNINITIALIZED_MATRIX);
+	b.getInverseHomogeneousMatrix( B_INV );
+	CMatrixDouble44 HM(UNINITIALIZED_MATRIX);
+	this->getHomogeneousMatrix(HM);
+	CMatrixDouble44 RES(UNINITIALIZED_MATRIX);
+	RES.multiply(B_INV,HM);
+	return CPose3D( RES );
 }
