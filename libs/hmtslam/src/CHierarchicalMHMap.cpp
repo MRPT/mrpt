@@ -266,7 +266,7 @@ void CHierarchicalMHMap::loadFromXMLfile(std::string fileName)
 
 			}
 
-			std::cout<<"Graph with ["<<numnodes<<"] nodes and ["<<numarcs<<"] arcs loaded succesfully."<<std::endl;
+			std::cout<<"Graph with ["<<numnodes<<"] nodes and ["<<numarcs<<"] arcs loaded successfully."<<std::endl;
 
 			table=db.getTable("annotations");
 			size_t numannot=table->getRecordCount();
