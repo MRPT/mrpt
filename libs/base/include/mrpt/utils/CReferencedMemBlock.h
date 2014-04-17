@@ -12,6 +12,9 @@
 #include <mrpt/utils/utils_defs.h>
 #include <utility>
 
+// STL+ library:
+#include <mrpt/otherlibs/stlplus/smart_ptr.hpp>
+
 namespace mrpt
 {
 	namespace utils

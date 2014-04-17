@@ -16,6 +16,10 @@
 // Universal include for all versions of OpenCV
 #include <mrpt/otherlibs/do_opencv_includes.h>
 
+#if HAVE_ALLOCA_H
+# include <alloca.h>
+#endif
+
 
 using namespace mrpt;
 using namespace mrpt::vision;

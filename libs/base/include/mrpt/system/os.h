@@ -11,21 +11,14 @@
 
 #include <mrpt/config.h>
 
-//#include <cstdarg>
 #include <cstdlib>
-#include <cstring>
-//#include <deque>
-//#include <vector>
+//#include <cstring>
 
 // Duplicated here since <mrpt/system/os.h> is the only header that cannot include "utils_defs.h"
 #include <mrpt/base/link_pragmas.h>  // DLL import/export definitions
 
-#include <mrpt/utils/types.h>  // This must be AFTER <utils_impexp.h>
-#include <mrpt/utils/mrpt_macros.h>  // This must be AFTER <utils_impexp.h>
-
-/** Represents an invalid timestamp, where applicable.
-  */
-#define INVALID_TIMESTAMP (0)
+#include <mrpt/utils/mrpt_stdint.h>
+#include <mrpt/utils/mrpt_macros.h>
 
 namespace mrpt
 {
@@ -166,8 +159,8 @@ namespace mrpt
 		//! \overload
 		bool  BASE_IMPEXP vectorToTextFile( const std::vector<size_t> &vec, const std::string &fileName, bool append = false, bool byRows=false );
 		//! \overload
-		template <class Derived>
-		bool vectorToTextFile( const Eigen::MatrixBase<Derived> &vec, const std::string &fileName ) {
+		template <class EIGEN_MATRIX>
+		bool vectorToTextFile( const EIGEN_MATRIX &vec, const std::string &fileName ) {
 			try {
 				vec.saveToTextFile(fileName);
 				return true;
@@ -206,12 +199,6 @@ namespace mrpt
 		/** Call this to register handlers for fatal erros (memory access,etc) that show useful debug information (It is called automatically normally, no need for the user to explicitly call this method.).
 		  */
 		void BASE_IMPEXP registerFatalExceptionHandlers();
-
-		/** Dumps the current program stack with detailed information of source files and lines.
-		  *  This function requires MRPT linked against wxWidgets. Otherwise, an empty string is returned.
-		  *  File names and lines won't be available in release builds.
-		  */
-		std::string BASE_IMPEXP stack_trace(bool calling_from_exception = false);
 
 		/** Only when built in debug (with _DEBUG), this function will be called just before raising any MRPT exception,
 		  *  so the user can conveniently put a breakpoint here to explore the call stack, etc.

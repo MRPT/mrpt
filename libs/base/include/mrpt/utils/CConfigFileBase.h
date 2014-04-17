@@ -10,8 +10,6 @@
 #define  CConfigFileBase_H
 
 #include <mrpt/utils/utils_defs.h>
-#include <mrpt/utils/TEnumType.h>
-#include <mrpt/math/CMatrixTemplate.h>
 #include <mrpt/system/string_utils.h>
 
 /*---------------------------------------------------------------
@@ -21,6 +19,9 @@ namespace mrpt
 {
 namespace utils
 {
+	// Frwd. decl:
+	template <typename ENUMTYPE> struct TEnumType;
+
 	/** This class allows loading and storing values and vectors of different types from a configuration text, which can be implemented as a ".ini" file, a memory-stored string, etc...
 	  *   This is a virtual class, use only as a pointer to an implementation of one of the derived classes.
 		 * \ingroup mrpt_base_grp
@@ -187,7 +188,7 @@ namespace utils
 		  *
 		  *  \note For an enum type to work with this template it is required that it defines a specialization of mrpt::utils::TEnumType
 		  */
-		template <typename ENUMTYPE>
+		template <typename ENUMTYPE, class TENUMTYPE = mrpt::utils::TEnumType<ENUMTYPE> >
 		ENUMTYPE read_enum(const std::string &section, const std::string &name, const ENUMTYPE &defaultValue, bool failIfNotFound = false) const
 		{
 			MRPT_START
@@ -201,7 +202,7 @@ namespace utils
 			else
 			{	// Name look-up:
 				try {
-				return mrpt::utils::TEnumType<ENUMTYPE>::name2value(sVal);
+				return TENUMTYPE::name2value(sVal);
 				} catch (std::exception &)
 				{
 					THROW_EXCEPTION(format("Invalid value '%s' for enum type while reading key='%s'.",sVal.c_str(),name.c_str()))

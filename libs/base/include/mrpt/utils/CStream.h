@@ -11,7 +11,6 @@
 
 #include <mrpt/utils/utils_defs.h>
 #include <mrpt/utils/CUncopiable.h>
-#include <mrpt/utils/CObject.h>
 #include <mrpt/utils/exceptions.h>
 
 namespace mrpt
@@ -66,8 +65,8 @@ namespace mrpt
 			/** Reads a block of bytes from the stream into Buffer
 			 *	\exception std::exception On any error, or if ZERO bytes are read.
 			 *  \return The amound of bytes actually read.
-			 * \note This method is endianness-dependent. 
-			 * \sa ReadBufferImmediate ; Important, see: ReadBufferFixEndianness, 
+			 * \note This method is endianness-dependent.
+			 * \sa ReadBufferImmediate ; Important, see: ReadBufferFixEndianness,
 			 */
 			size_t  ReadBuffer(void *Buffer, size_t Count);
 
@@ -80,7 +79,7 @@ namespace mrpt
 			 *   uint32_t  N;
 			 *   s >> N;
 			 *   vector<float>  vec(N);
-			 *   if (N) 
+			 *   if (N)
 			 *     s.ReadBufferFixEndianness<float>(&vec[0],N);
 			 *  \endcode
 			 *	\exception std::exception On any error, or if ZERO bytes are read.
@@ -110,7 +109,7 @@ namespace mrpt
 			/** Writes a block of bytes to the stream from Buffer.
 			 *	\exception std::exception On any error
 			 *  \sa Important, see: WriteBufferFixEndianness
-			 * \note This method is endianness-dependent. 
+			 * \note This method is endianness-dependent.
 			 */
 			void  WriteBuffer (const void *Buffer, size_t Count);
 
@@ -124,7 +123,7 @@ namespace mrpt
 			 *   vector<float>  vec = ...
 			 *   uint32_t N = vec.size();
 			 *   s << N
-			 *   if (N) 
+			 *   if (N)
 			 *     s.WriteBufferFixEndianness<float>(&vec[0],N);
 			 *  \endcode
 			 *  \exception std::exception On any error
@@ -283,9 +282,6 @@ namespace mrpt
 		CStream BASE_IMPEXP & operator << (CStream&s, const char *a);
 		CStream BASE_IMPEXP & operator << (CStream&s, const std::string &str);
 
-		CStream BASE_IMPEXP & operator << (CStream&s, const vector_float  &a);
-		CStream BASE_IMPEXP & operator << (CStream&s, const vector_double &a);
-
 		CStream BASE_IMPEXP & operator << (CStream&, const vector_int &a);
 		CStream BASE_IMPEXP & operator << (CStream&, const vector_uint &a);
 		CStream BASE_IMPEXP & operator << (CStream&, const vector_word &a);
@@ -304,9 +300,6 @@ namespace mrpt
 		// Read --------------------
 		CStream BASE_IMPEXP & operator>>(CStream&in, char *a);
 		CStream BASE_IMPEXP & operator>>(CStream&in, std::string &str);
-
-		CStream BASE_IMPEXP & operator>>(CStream&in, vector_double &a);
-		CStream BASE_IMPEXP & operator>>(CStream&in, vector_float &a);
 
 		CStream BASE_IMPEXP & operator>>(CStream&in, vector_int &a);
 		CStream BASE_IMPEXP & operator>>(CStream&in, vector_uint &a);

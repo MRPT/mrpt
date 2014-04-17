@@ -97,7 +97,7 @@ double joint_pdf_metric (
 	// Mean:
 	// The same for the vector of "errors" or "innovation" between predictions and observations:
 	// ----------------------------------------------------------------------
-	mrpt::dynamicsize_vector<T> innovations(N * info.length_O);
+	Eigen::Vector<T,Eigen::Dynamic,1>  innovations(N * info.length_O);
 	T *dst_ptr= &innovations[0];
 	for (map<size_t,size_t>::const_iterator it=info.currentAssociation.begin();it!=info.currentAssociation.end();++it)
 	{
@@ -344,7 +344,7 @@ void mrpt::slam::data_association_full_covariance(
 
 	CMatrixDouble pred_i_cov(length_O,length_O);
 
-	mrpt::dynamicsize_vector<CMatrixDouble::Scalar>  diff_means_i_j(length_O);
+	Eigen::VectorXd  diff_means_i_j(length_O);
 
 	for (size_t j=0;j<nObservations;++j)
 	{

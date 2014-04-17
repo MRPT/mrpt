@@ -13,9 +13,7 @@
 #include <mrpt/bayes/CParticleFilterCapable.h>
 #include <mrpt/bayes/CParticleFilterData.h>
 #include <mrpt/utils/CStream.h>
-
-//#include <mrpt/slam/CSensoryFrame.h>
-//#include <mrpt/slam/CActionCollection.h>
+#include <mrpt/utils/CConfigFileBase.h>  // For MRPT_LOAD_*
 
 using namespace mrpt::bayes;
 using namespace mrpt::utils;

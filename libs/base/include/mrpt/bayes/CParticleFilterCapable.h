@@ -165,7 +165,7 @@ namespace bayes
 		  */
 		static void computeResampling(
 			CParticleFilter::TParticleResamplingAlgorithm	method,
-			const vector_double	&in_logWeights,
+			const std::vector<double>	&in_logWeights,
 			std::vector<size_t>			&out_indexes,
 			size_t          out_particle_count = 0
 			);
@@ -174,8 +174,8 @@ namespace bayes
 		  * \sa performResampling
 		  */
 		static void log2linearWeights(
-			const vector_double	&in_logWeights,
-			vector_double		&out_linWeights );
+			const std::vector<double>	&in_logWeights,
+			std::vector<double>		&out_linWeights );
 
 
 	protected:
@@ -220,9 +220,9 @@ namespace bayes
 				alreadyDrawnNextOne(0)
 			{ }
 
-			vector_double	CDF;
+			std::vector<double>	CDF;
 			vector_uint		CDF_indexes;
-			vector_double	PDF;
+			std::vector<double>	PDF;
 
 			vector_uint		alreadyDrawnIndexes;
 			size_t			alreadyDrawnNextOne;

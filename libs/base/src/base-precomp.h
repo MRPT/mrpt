@@ -14,7 +14,7 @@
 #include <mrpt/version.h>
 
 #include <mrpt/utils/utils_defs.h>
-#include <mrpt/utils/CObject.h>
+//#include <mrpt/utils/CObject.h>
 
 #endif
 

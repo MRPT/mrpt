@@ -9,7 +9,8 @@
 #ifndef  TTYPENAME_H
 #define  TTYPENAME_H
 
-#include <mrpt/utils/utils_defs.h>
+#include <mrpt/utils/mrpt_stdint.h>    // compiler-independent version of "stdint.h"
+#include <string>
 
 namespace mrpt
 {

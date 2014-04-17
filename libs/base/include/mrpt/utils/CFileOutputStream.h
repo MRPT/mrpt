@@ -11,7 +11,7 @@
 
 #include <mrpt/utils/CStream.h>
 
-#include <iostream>
+#include <fstream>
 
 /*---------------------------------------------------------------
 	Class

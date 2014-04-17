@@ -188,24 +188,6 @@ extern "C" void MRPT_SIGNAL_HANDLER_SIG( int )
 #endif
 }
 
-/** Dumps the current program stack with detailed information of source files and lines.
-  *  This function requires MRPT linked against wxWidgets. Otherwise, an empty string is returned.
-  *  File names and lines won't be available in release builds.
-  */
-std::string mrpt::system::stack_trace(bool calling_from_exception )
-{
-#if MRPT_HAS_WXWIDGETS && wxUSE_STACKWALKER
-    CMRPTStackWalker    sw;
-	/*if (calling_from_exception)
-		 sw.WalkFromException();
-	else sw.Walk();*/
-    return sw.getAsString();
-#else
-	return std::string();
-#endif
-}
-
-
 /*---------------------------------------------------------------
             registerFatalExceptionHandlers
   ---------------------------------------------------------------*/

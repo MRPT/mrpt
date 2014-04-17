@@ -166,7 +166,7 @@ namespace mrpt
 			typedef CKalmanFilterCapable<VEH_SIZE,OBS_SIZE,FEAT_SIZE,ACT_SIZE,KFTYPE>  KFCLASS;  //!< My class, in a shorter name!
 
 			// ---------- Many useful typedefs to short the notation a bit... --------
-			typedef mrpt::dynamicsize_vector<KFTYPE> KFVector;
+			typedef Eigen::Matrix<KFTYPE,Eigen::Dynamic,1> KFVector;
 			typedef CMatrixTemplateNumeric<KFTYPE>   KFMatrix;
 
 			typedef CMatrixFixedNumeric<KFTYPE,VEH_SIZE,VEH_SIZE>   KFMatrix_VxV;
@@ -1325,7 +1325,7 @@ namespace mrpt
 									else
 									{
 										// IKF:
-										mrpt::dynamicsize_vector<KFTYPE> HAx(OBS_SIZE);
+										Eigen::Matrix<KFTYPE,Eigen::Dynamic,1> HAx(OBS_SIZE);
 										size_t o,q;
 										// HAx = H*(x0-xi)
 										for (o=0;o<OBS_SIZE;o++)

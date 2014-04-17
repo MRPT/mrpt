@@ -42,7 +42,7 @@ namespace mrpt
 				ASSERT_( X.size()==size(COV,1) && COV.isSquare() );
 			#endif
 			const size_t N = X.size();
-			mrpt::dynamicsize_vector<typename MAT::Scalar> X_MU(N);
+			Eigen::Matrix<typename MAT::Scalar,Eigen::Dynamic,1> X_MU(N);
 			for (size_t i=0;i<N;i++) X_MU[i]=X[i]-MU[i];
 			return multiply_HCHt_scalar(X_MU, COV.inv() );
 			MRPT_END

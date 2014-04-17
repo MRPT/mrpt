@@ -9,15 +9,10 @@
 #ifndef CMatrixTemplateNumeric_H
 #define CMatrixTemplateNumeric_H
 
-#include <mrpt/math/CMatrixTemplate.h>
-#include <mrpt/utils/CSerializable.h>
-
-// MRPT only includes <Eigen/Core> in general, and adds "Dense" when really needed, as in this file:
-#include <Eigen/Dense>   
-
-#include <mrpt/system/os.h>
-#include <cmath>
-#include <limits>
+#include <mrpt/utils/utils_defs.h>
+#include <mrpt/utils/types_math.h>
+#include <mrpt/utils/TTypeName.h>
+//#include <mrpt/math/CMatrixTemplate.h>
 
 namespace mrpt
 {
@@ -42,7 +37,7 @@ namespace mrpt
 		 * \ingroup mrpt_base_grp
 		  */
 		template <class T>
-		class CMatrixTemplateNumeric : 
+		class CMatrixTemplateNumeric :
 			public Eigen::Matrix<
 				T,
 				Eigen::Dynamic,
@@ -119,8 +114,8 @@ namespace mrpt
 			template <typename Derived>
 			inline bool operator ==(const Eigen::MatrixBase<Derived>& m2) const
 			{
-				return Base::cols()==m2.cols() && 
-					   Base::rows()==m2.rows() && 
+				return Base::cols()==m2.cols() &&
+					   Base::rows()==m2.rows() &&
 					   Base::cwiseEqual(m2).all();
 			}
 			/** != comparison of two matrices; it differs from default Eigen operator in that returns true if matrices are of different sizes instead of raising an assert. */
@@ -147,11 +142,6 @@ namespace mrpt
 		  */
 		typedef CMatrixTemplateNumeric<unsigned int> CMatrixUInt;
 
-		/** Declares a matrix of booleans (non serializable).
-		  *  \sa CMatrixDouble, CMatrixFloat, CMatrixB
-		  */
-		typedef CMatrixTemplate<bool> CMatrixBool;
-
 #ifdef HAVE_LONG_DOUBLE
 		/** Declares a matrix of "long doubles" (non serializable), or of "doubles" if the compiler does not support "long double".
 		  *  \sa CMatrixDouble, CMatrixFloat
@@ -165,7 +155,7 @@ namespace mrpt
 #endif
 
 
-		namespace detail	
+		namespace detail
 		{
 			/**
 			  * Vicinity traits class specialization for fixed size matrices.

@@ -552,6 +552,10 @@ namespace mrpt
 
 		}; // end of class CMatrixTemplate
 
+		/** Declares a matrix of booleans (non serializable).
+		  *  \sa CMatrixDouble, CMatrixFloat, CMatrixB
+		  */
+		typedef CMatrixTemplate<bool> CMatrixBool;
 
 	} // End of namespace
 } // End of namespace

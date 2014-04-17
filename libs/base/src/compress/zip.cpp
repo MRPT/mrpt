@@ -11,20 +11,16 @@
 
 #include "zlib.h"
 
-#include <mrpt/config.h>
-
 // For named pipes:
 #ifdef MRPT_OS_WINDOWS
 	#define WIN32_LEAN_AND_MEAN
 	#include <windows.h>
 #endif
 
-
 #include <mrpt/compress/zip.h>
-#include <mrpt/system/os.h>
 #include <mrpt/system/datetime.h>
 #include <mrpt/system/filesystem.h>
-#include <mrpt/utils/CStream.h>
+#include <mrpt/system/os.h>
 
 #include <mrpt/utils/CFileGZOutputStream.h>
 #include <mrpt/utils/CFileGZInputStream.h>

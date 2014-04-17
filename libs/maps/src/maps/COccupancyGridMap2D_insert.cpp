@@ -13,6 +13,10 @@
 #include <mrpt/slam/CObservation2DRangeScan.h>
 #include <mrpt/slam/CObservationRange.h>
 
+#if HAVE_ALLOCA_H
+# include <alloca.h>
+#endif
+
 using namespace mrpt;
 using namespace mrpt::slam;
 using namespace mrpt::utils;

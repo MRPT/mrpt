@@ -125,7 +125,6 @@
 		auxCompStr << "\n\n =============== MRPT EXCEPTION =============\n";\
 		auxCompStr << __CURRENT_FUNCTION_NAME__ << ", line " << __LINE__ << ":\n";\
 		auxCompStr << msg << std::endl; \
-		auxCompStr << mrpt::system::stack_trace(); \
 		MRPT_DEBUG_BREAKPOINT(msg) \
 		throw std::logic_error( auxCompStr.str() );\
 	}\
@@ -140,7 +139,6 @@
 		auxCompStr << "\n\n =============== MRPT EXCEPTION =============\n";\
 		auxCompStr << __CURRENT_FUNCTION_NAME__ << ", line " << __LINE__ << ":\n";\
 		auxCompStr << mrpt::format(msg,param1)<< std::endl; \
-		auxCompStr << mrpt::system::stack_trace(); \
 		throw std::logic_error( auxCompStr.str() );\
 	}\
 
@@ -155,7 +153,6 @@
 		auxCompStr << "\n\n =============== MRPT EXCEPTION =============\n";\
 		auxCompStr << __CURRENT_FUNCTION_NAME__ << ", line " << __LINE__ << ":\n";\
 		auxCompStr << msg << std::endl; \
-		auxCompStr << mrpt::system::stack_trace(); \
 		throw exceptionClass( auxCompStr.str() );\
 	}\
 
@@ -169,7 +166,6 @@
 		auxCompStr << "\n\n =============== MRPT EXCEPTION =============\n";\
 		auxCompStr << __CURRENT_FUNCTION_NAME__ << ", line " << __LINE__ << ":\n";\
 		auxCompStr << mrpt::format(msg,param1)<< std::endl; \
-		auxCompStr << mrpt::system::stack_trace(); \
 		throw exceptionClass( auxCompStr.str() );\
 	}\
 

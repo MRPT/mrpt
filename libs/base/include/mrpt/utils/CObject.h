@@ -10,7 +10,11 @@
 #define  MRPT_COBJECT_H
 
 #include <mrpt/utils/utils_defs.h>
+#include <mrpt/system/memory.h>
 #include <mrpt/utils/safe_pointers.h>
+
+// STL+ library:
+#include <mrpt/otherlibs/stlplus/smart_ptr.hpp>
 
 namespace mrpt
 {
@@ -157,7 +161,7 @@ namespace mrpt
 			_VIRTUAL_LINKAGE_ mrpt::utils::CObject *duplicate() const; \
 			/*! @} */ \
 		public: \
-			EIGEN_MAKE_ALIGNED_OPERATOR_NEW \
+			MRPT_MAKE_ALIGNED_OPERATOR_NEW \
 
 		/** This declaration must be inserted in all CObject classes definition, within the class declaration. */
 		#define DEFINE_MRPT_OBJECT(class_name) \

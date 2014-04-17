@@ -11,7 +11,7 @@
 
 #include <mrpt/utils/utils_defs.h>
 #include <mrpt/utils/CSerializable.h>
-#include <mrpt/utils/stl_extensions.h>
+//#include <mrpt/utils/stl_extensions.h>
 
 namespace mrpt
 {

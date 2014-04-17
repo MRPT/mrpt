@@ -10,6 +10,7 @@
 #define  MRPT_MEMORY_H
 
 #include <mrpt/utils/utils_defs.h>
+#include <cstring>
 
 namespace mrpt
 {
@@ -97,14 +98,30 @@ namespace mrpt
 			/** @} */
 		}	// end namespace "os"
 
-		/** \addtogroup mrpt_memory Memory utilities
-		  *  @{ */
-		// The following templates are taken from libcvd (LGPL). See http://mi.eng.cam.ac.uk/~er258/cvd/
-		// Check if the pointer is aligned to the specified byte granularity
-		template<int bytes> bool is_aligned(const void* ptr);
-		template<> inline bool is_aligned<8>(const void* ptr) {   return ((reinterpret_cast<size_t>(ptr)) & 0x7) == 0;   }
-		template<> inline bool is_aligned<16>(const void* ptr) {  return ((reinterpret_cast<size_t>(ptr)) & 0xF) == 0;   }
-		/** @} */
+	/** \addtogroup mrpt_memory Memory utilities
+	  *  @{ */
+	// The following templates are taken from libcvd (LGPL). See http://mi.eng.cam.ac.uk/~er258/cvd/
+	// Check if the pointer is aligned to the specified byte granularity
+	template<int bytes> bool is_aligned(const void* ptr);
+	template<> inline bool is_aligned<8>(const void* ptr) {   return ((reinterpret_cast<size_t>(ptr)) & 0x7) == 0;   }
+	template<> inline bool is_aligned<16>(const void* ptr) {  return ((reinterpret_cast<size_t>(ptr)) & 0xF) == 0;   }
+	/** @} */
+
+
+	// A version of EIGEN_MAKE_ALIGNED_OPERATOR_NEW that doesn't force including the entire Eigen lib:
+	#define MRPT_MAKE_ALIGNED_OPERATOR_NEW \
+		void *operator new(size_t size)  { return mrpt::system::os::aligned_malloc(size,16); } \
+		void *operator new[](size_t size){ return mrpt::system::os::aligned_malloc(size,16); } \
+		void operator delete(void * ptr) throw() { mrpt::system::os::aligned_free(ptr); } \
+		void operator delete[](void * ptr) throw() { mrpt::system::os::aligned_free(ptr); } \
+		/* in-place new and delete. since (at least afaik) there is no actual   */ \
+		/* memory allocated we can safely let the default implementation handle */ \
+		/* this particular case. */ \
+		static void *operator new(size_t size, void *ptr) { return ::operator new(size,ptr); } \
+		void operator delete(void * memory, void *ptr) throw() { return ::operator delete(memory,ptr); } \
+		/* nothrow-new (returns zero instead of std::bad_alloc) */ \
+		void* operator new(size_t size, const std::nothrow_t&) throw() { try { return mrpt::system::os::aligned_malloc(size,16); } catch (...) { return 0; } return 0; } \
+		void operator delete(void *ptr, const std::nothrow_t&) throw() { mrpt::system::os::aligned_free(ptr); }
 
 	} // End of namespace
 } // End of namespace

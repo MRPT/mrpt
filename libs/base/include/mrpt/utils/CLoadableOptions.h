@@ -10,8 +10,6 @@
 #define  CLoadableOptions_H
 
 #include <mrpt/utils/utils_defs.h>
-#include <mrpt/utils/CConfigFileBase.h>
-#include <mrpt/system/os.h>
 
 /*---------------------------------------------------------------
 	Class
@@ -20,6 +18,10 @@ namespace mrpt
 {
 namespace utils
 {
+	// Frwd. decls:
+	class CConfigFileBase;
+	class CStream;
+
 	/** This is a virtual base class for sets of options than can be loaded from and/or saved to configuration plain-text files.
 	  * \todo Automatize this class thru a proxy auxiliary class where variables are registered from pointers, etc...
 	 * \ingroup mrpt_base_grp

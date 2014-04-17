@@ -50,22 +50,31 @@ namespace mrpt
 		  *  If desired, out_bin_centers can be set to receive the bins centers.
 		  */
 		template<class CONTAINER>
-		vector_double histogram(
+		std::vector<double> histogram(
 			const CONTAINER &v,
 			double limit_min,
 			double limit_max,
 			size_t number_bins,
 			bool do_normalization = false,
-			vector_double *out_bin_centers = NULL)
+			std::vector<double> *out_bin_centers = NULL)
 		{
 			mrpt::math::CHistogram	H( limit_min, limit_max, number_bins );
-			vector_double ret(number_bins);
-			vector_double dummy_ret_bins;
+			std::vector<double> ret(number_bins);
+			std::vector<double> dummy_ret_bins;
 			H.add(v);
 			if (do_normalization)
 					H.getHistogramNormalized( out_bin_centers ? *out_bin_centers : dummy_ret_bins, ret );
 			else	H.getHistogram( out_bin_centers ? *out_bin_centers : dummy_ret_bins, ret );
 			return ret;
+		}
+
+		template <class EIGEN_CONTAINER>
+		void resizeLike(EIGEN_CONTAINER &trg, const EIGEN_CONTAINER&src) {
+			trg.resizeLike(src);
+		}
+		template <typename T>
+		void resizeLike(std::vector<T> &trg, const std::vector<T> &src) {
+			trg.resize(src.size());
 		}
 
 		/** Computes the cumulative sum of all the elements, saving the result in another container.
@@ -75,7 +84,7 @@ namespace mrpt
 		template <class CONTAINER1,class CONTAINER2, typename VALUE>
 		inline void cumsum_tmpl(const CONTAINER1 &in_data, CONTAINER2 &out_cumsum)
 		{
-			out_cumsum.resizeLike(in_data);
+			resizeLike(out_cumsum, in_data);
 			VALUE last=0;
 			const size_t N = in_data.size();
 			for (size_t i=0;i<N;i++)
@@ -155,7 +164,7 @@ namespace mrpt
 		  */
 
 		/** Accumulate the squared-norm of a vector/array/matrix into "total" (this function is compatible with std::accumulate). */
-		template <class CONTAINER, typename VALUE> 
+		template <class CONTAINER, typename VALUE>
 		VALUE squareNorm_accum(const VALUE total, const CONTAINER &v) {
 			return total+v.squaredNorm();
 		}

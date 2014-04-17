@@ -9,8 +9,6 @@
 
 #include "base-precomp.h"  // Precompiled headers
 
-
-
 #include <mrpt/utils/CReferencedMemBlock.h>
 
 using namespace mrpt::utils;
