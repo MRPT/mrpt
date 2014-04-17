@@ -10,6 +10,7 @@
 #define  stl_extensions_H
 
 #include <mrpt/utils/CSerializable.h>
+#include <mrpt/utils/TTypeName_impl.h> // TTypeName<> for STL templates, needed for serialization of STL templates
 #include <mrpt/utils/CStream.h>
 #include <mrpt/utils/metaprogramming.h>
 

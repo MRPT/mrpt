@@ -15,8 +15,8 @@
 
 namespace mrpt
 {
-	namespace utils { 
-		class BASE_IMPEXP CStream; 
+	namespace utils {
+		class BASE_IMPEXP CStream;
 	}
 
 	/** Classes for serialization, sockets, ini-file manipulation, streams, list of properties-values, timewatch, extensions to STL.

@@ -9,19 +9,16 @@
 #ifndef CPOSEORPOINT_H
 #define CPOSEORPOINT_H
 
+#include <mrpt/math/CMatrixTemplateNumeric.h>
 #include <mrpt/math/CMatrixFixedNumeric.h>
 #include <mrpt/math/lightweight_geom_data.h>
 #include <mrpt/math/ops_matrices.h>  // Added here so many classes have access to these templates
+#include <mrpt/math/homog_matrices.h>
 
 #include <mrpt/poses/CPoseOrPoint_detail.h>
 
 namespace mrpt
 {
-	namespace math {
-		// Frd decl. (to avoid include <mrpt/math/utils.h> )
-		template <class MATRIXLIKE> inline void homogeneousMatrixInverse(MATRIXLIKE &M);
-	}
-
 	/** \defgroup poses_grp 2D/3D points and poses
 	  *  \ingroup mrpt_base_grp */
 
@@ -161,7 +158,7 @@ namespace mrpt
 
 			/** Returns the squared 3D distance from this pose/point to a 3D point */
 			inline double distance3DToSquare( double ax, double ay, double az ) const {
-				using mrpt::utils::square; 
+				using mrpt::utils::square;
 				return square(ax-x())+square(ay-y())+square(az-(is3DPoseOrPoint() ? static_cast<const DERIVEDCLASS*>(this)->m_coords[2] : 0) );
 			}
 
