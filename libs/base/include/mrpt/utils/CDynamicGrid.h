@@ -56,10 +56,10 @@ namespace mrpt
             {
             }
 
-            /** Changes the size of the grid, ERASING all previous contents. 
-			  * If \a fill_value is left as NULL, the contents of cells may be undefined (some will remain with 
+            /** Changes the size of the grid, ERASING all previous contents.
+			  * If \a fill_value is left as NULL, the contents of cells may be undefined (some will remain with
 			  *  their old values, the new ones will have the default cell value, but the location of old values
-			  *  may change wrt their old places). 
+			  *  may change wrt their old places).
 			  * If \a fill_value is not NULL, it is assured that all cells will have a copy of that value after resizing.
               * \sa resize, fill
               */
@@ -85,7 +85,7 @@ namespace mrpt
                 m_size_y = round((m_y_max-m_y_min)/m_resolution);
 
                 // Cells memory:
-                if (fill_value) 
+                if (fill_value)
 				     m_map.assign(m_size_x*m_size_y, *fill_value);
 				else m_map.resize(m_size_x*m_size_y);
             }
@@ -272,6 +272,7 @@ namespace mrpt
 
             void  saveToTextFile(const std::string &fileName) const
             {
+                using namespace mrpt::system;
                 FILE	*f=os::fopen(fileName.c_str(),"wt");
                 if(!f) return;
                 for (unsigned int cy=0;cy<m_size_y;cy++)
@@ -306,7 +307,7 @@ namespace mrpt
             inline int   x2idx(float x,float x_min) const { return static_cast<int>((x-m_x_min)/m_resolution ); }
             inline int   y2idx(float y, float y_min) const { return static_cast<int>((y-m_y_min)/m_resolution ); }
 
-			/** Get the entire grid as a matrix. 
+			/** Get the entire grid as a matrix.
 			  *  \tparam MAT The type of the matrix, typically a CMatrixDouble.
 			  *  \param[out] m The output matrix; will be set automatically to the correct size.
 			  *  Entry (cy,cx) in the matrix contains the grid cell with indices (cx,cy).

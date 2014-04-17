@@ -70,7 +70,7 @@ namespace slam
 	protected:
 		/** Helper struct used for \a internal_loadFromRangeScan2D_prepareOneRange() */
 		struct MAPS_IMPEXP TLaserRange2DInsertContext {
-			TLaserRange2DInsertContext(const CObservation2DRangeScan  &_rangeScan) : HM(UNINITIALIZED_MATRIX), rangeScan(_rangeScan)
+			TLaserRange2DInsertContext(const CObservation2DRangeScan  &_rangeScan) : HM(mrpt::math::UNINITIALIZED_MATRIX), rangeScan(_rangeScan)
 			{ }
 			CMatrixDouble44	HM;  //!< Homog matrix of the local sensor pose within the robot
 			const CObservation2DRangeScan  &rangeScan;
@@ -81,7 +81,7 @@ namespace slam
 
 		/** Helper struct used for \a internal_loadFromRangeScan3D_prepareOneRange() */
 		struct MAPS_IMPEXP TLaserRange3DInsertContext {
-			TLaserRange3DInsertContext(const CObservation3DRangeScan  &_rangeScan) : HM(UNINITIALIZED_MATRIX), rangeScan(_rangeScan)
+			TLaserRange3DInsertContext(const CObservation3DRangeScan  &_rangeScan) : HM(mrpt::math::UNINITIALIZED_MATRIX), rangeScan(_rangeScan)
 			{ }
 			CMatrixDouble44	HM;  //!< Homog matrix of the local sensor pose within the robot
 			const CObservation3DRangeScan  &rangeScan;
@@ -533,7 +533,7 @@ namespace slam
 			const CPose2D         & otherMapPose,
 			TMatchingPairList     & correspondences,
 			const TMatchingParams & params,
-			TMatchingExtraResults & extraResults ) const; 
+			TMatchingExtraResults & extraResults ) const;
 
 		// See docs in base class
 		virtual void  determineMatching3D(
@@ -541,7 +541,7 @@ namespace slam
 			const CPose3D         & otherMapPose,
 			TMatchingPairList     & correspondences,
 			const TMatchingParams & params,
-			TMatchingExtraResults & extraResults ) const; 
+			TMatchingExtraResults & extraResults ) const;
 
 		// See docs in base class
 		float  compute3DMatchingRatio(

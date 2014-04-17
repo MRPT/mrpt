@@ -124,7 +124,7 @@ namespace mrpt
 		{
 			TPoint3D l; // Local point, wrt camera
 
-			CMatrixDouble33 dp_point(UNINITIALIZED_MATRIX);
+			CMatrixDouble33 dp_point(mrpt::math::UNINITIALIZED_MATRIX);
 
 			if (POSES_ARE_INVERSE)
 				cam_pose.composePoint(
@@ -196,7 +196,7 @@ namespace mrpt
 		}
 
 		/** Construct the BA linear system.
-		  *  Set kernel_1st_deriv!=NULL if using robust kernel. 
+		  *  Set kernel_1st_deriv!=NULL if using robust kernel.
 		  */
 		void ba_build_gradient_Hessians(
 			const TSequenceFeatureObservations          & observations,

@@ -10,6 +10,7 @@
 #define  stl_extensions_H
 
 #include <mrpt/utils/CSerializable.h>
+#include <mrpt/utils/CStream.h>
 #include <mrpt/utils/metaprogramming.h>
 
 #include <set>
@@ -42,7 +43,7 @@ namespace mrpt
 			template <class T,class _Ax> \
 			CStream& operator << (CStream& out, const CONTAINER<T,_Ax> &obj) \
 			{ \
-				out << string(#CONTAINER) << TTypeName<T>::get(); \
+				out << std::string(#CONTAINER) << mrpt::utils::TTypeName<T>::get(); \
 				out << static_cast<uint32_t>(obj.size()); \
 				for_each( obj.begin(), obj.end(), mrpt::utils::metaprogramming::ObjectWriteToStream(&out) ); \
 				return out; \
@@ -52,15 +53,15 @@ namespace mrpt
 			CStream& operator >> (CStream& in, CONTAINER<T,_Ax> &obj) \
 			{ \
 				obj.clear(); \
-				string pref,stored_T; \
+				std::string pref,stored_T; \
 				in >> pref; \
-				if (pref!=#CONTAINER) THROW_EXCEPTION(format("Error: serialized container %s<%s>'s preambles is wrong: '%s'",#CONTAINER,TTypeName<T>::get().c_str(),pref.c_str() )) \
+				if (pref!=#CONTAINER) THROW_EXCEPTION(mrpt::format("Error: serialized container %s<%s>'s preambles is wrong: '%s'",#CONTAINER,TTypeName<T>::get().c_str(),pref.c_str() )) \
 				in >> stored_T; \
-				if (stored_T != TTypeName<T>::get() ) THROW_EXCEPTION(format("Error: serialized container %s< %s != %s >",#CONTAINER,stored_T.c_str(),TTypeName<T>::get().c_str() )) \
+				if (stored_T != mrpt::utils::TTypeName<T>::get() ) THROW_EXCEPTION(mrpt::format("Error: serialized container %s< %s != %s >",#CONTAINER,stored_T.c_str(),TTypeName<T>::get().c_str() )) \
 				uint32_t n; \
 				in >> n; \
 				obj.resize(n); \
-				for_each( obj.begin(), obj.end(), mrpt::utils::metaprogramming::ObjectReadFromStream(&in) ); \
+				std::for_each( obj.begin(), obj.end(), mrpt::utils::metaprogramming::ObjectReadFromStream(&in) ); \
 				return in; \
 			}
 

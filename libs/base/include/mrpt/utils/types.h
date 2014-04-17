@@ -12,12 +12,8 @@
 
 #include <vector>  // For <Eigen/StdVector>
 #include <deque>   // For <Eigen/StdDeque>
-//#include <map>
-//#include <list>
 #include <string>
 #include <stdexcept>
-//#include <cstdarg>
-//#include <ctime>
 
 #include <mrpt/utils/mrpt_stdint.h>    // compiler-independent version of "stdint.h"
 //#include <mrpt/utils/mrpt_inttypes.h>  // compiler-independent version of "inttypes.h"
@@ -29,8 +25,8 @@
 // Include the Eigen3 library headers, including
 //  MRPT's extensions:
 // --------------------------------------------------
-#include <iosfwd> // <iostream> // These headers are assumed by <mrpt/math/eigen_plugins.h>:
-//#include <fstream>
+#include <iostream> // These headers are assumed by <mrpt/math/eigen_plugins.h>:
+#include <fstream>
 //#include <sstream>
 #ifdef EIGEN_MAJOR_VERSION
 #	error **FATAL ERROR**: MRPT headers must be included before Eigen headers.
@@ -39,6 +35,7 @@
 #  define EIGEN_USE_NEW_STDVECTOR
 #endif
 #include <Eigen/Core>  // Was: <Eigen/Dense>
+#include <Eigen/Eigenvalues>
 #include <Eigen/StdVector>
 #include <Eigen/StdDeque>
 

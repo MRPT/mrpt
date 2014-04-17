@@ -10,12 +10,8 @@
 #define  MRPT_MATH_FIT_INTERP_H
 
 #include <mrpt/utils/utils_defs.h>
-//#include <mrpt/math/CMatrixTemplateNumeric.h>
-//#include <mrpt/math/CMatrixFixedNumeric.h>
-//#include <mrpt/math/CHistogram.h>
-
-//#include <mrpt/math/ops_vectors.h>
-//#include <mrpt/math/ops_matrices.h>
+#include <mrpt/math/CMatrixTemplateNumeric.h>
+#include <mrpt/math/wrap2pi.h>
 
 namespace mrpt
 {
@@ -83,20 +79,20 @@ namespace mrpt
 
 			// X= [1 columns of ones, x' ]
 			const NUM x_min = x.minimum();
-			CMatrixTemplateNumeric<NUM> Xt(2,N);
+			mrpt::math::CMatrixTemplateNumeric<NUM> Xt(2,N);
 			for (size_t i=0;i<N;i++)
 			{
 				Xt.set_unsafe(0,i, 1);
 				Xt.set_unsafe(1,i, x[i]-x_min);
 			}
 
-			CMatrixTemplateNumeric<NUM> XtX;
+			mrpt::math::CMatrixTemplateNumeric<NUM> XtX;
 			XtX.multiply_AAt(Xt);
 
-			CMatrixTemplateNumeric<NUM> XtXinv;
+			mrpt::math::CMatrixTemplateNumeric<NUM> XtXinv;
 			XtX.inv_fast(XtXinv);
 
-			CMatrixTemplateNumeric<NUM> XtXinvXt;	// B = inv(X' * X)*X'  (pseudoinverse)
+			mrpt::math::CMatrixTemplateNumeric<NUM> XtXinvXt;	// B = inv(X' * X)*X'  (pseudoinverse)
 			XtXinvXt.multiply(XtXinv,Xt);
 
 			VECTORLIKE B;
@@ -137,20 +133,20 @@ namespace mrpt
 			// X= [1 columns of ones, x' ]
 			typedef typename VECTORLIKE3::Scalar NUM;
 			const NUM x_min = x.minimum();
-			CMatrixTemplateNumeric<NUM> Xt(2,N);
+			mrpt::math::CMatrixTemplateNumeric<NUM> Xt(2,N);
 			for (size_t i=0;i<N;i++)
 			{
 				Xt.set_unsafe(0,i, 1);
 				Xt.set_unsafe(1,i, x[i]-x_min);
 			}
 
-			CMatrixTemplateNumeric<NUM> XtX;
+			mrpt::math::CMatrixTemplateNumeric<NUM> XtX;
 			XtX.multiply_AAt(Xt);
 
-			CMatrixTemplateNumeric<NUM> XtXinv;
+			mrpt::math::CMatrixTemplateNumeric<NUM> XtXinv;
 			XtX.inv_fast(XtXinv);
 
-			CMatrixTemplateNumeric<NUM> XtXinvXt;	// B = inv(X' * X)*X' (pseudoinverse)
+			mrpt::math::CMatrixTemplateNumeric<NUM> XtXinvXt;	// B = inv(X' * X)*X' (pseudoinverse)
 			XtXinvXt.multiply(XtXinv,Xt);
 
 			VECTORLIKE3 B;

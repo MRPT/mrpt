@@ -330,21 +330,21 @@ namespace mrpt
 							// Is "i" a free (to be optimized) node? -> Ji^t * Inf *  Ji
 							if (is_i_free_node)
 							{
-								typename gst::matrix_VxV_t JtJ(UNINITIALIZED_MATRIX);
+								typename gst::matrix_VxV_t JtJ(mrpt::math::UNINITIALIZED_MATRIX);
 								detail::AuxErrorEval<typename gst::edge_t,gst>::multiplyJtLambdaJ(J1,JtJ,lstObservationData[idxObs].edge);
 								H_map[idx_i][idx_i] += JtJ;
 							}
 							// Is "j" a free (to be optimized) node? -> Jj^t * Inf *  Jj
 							if (is_j_free_node)
 							{
-								typename gst::matrix_VxV_t JtJ(UNINITIALIZED_MATRIX);
+								typename gst::matrix_VxV_t JtJ(mrpt::math::UNINITIALIZED_MATRIX);
 								detail::AuxErrorEval<typename gst::edge_t,gst>::multiplyJtLambdaJ(J2,JtJ,lstObservationData[idxObs].edge);
 								H_map[idx_j][idx_j] += JtJ;
 							}
 							// Are both "i" and "j" free nodes? -> Ji^t * Inf *  Jj
 							if (is_i_free_node && is_j_free_node)
 							{
-								typename gst::matrix_VxV_t JtJ(UNINITIALIZED_MATRIX);
+								typename gst::matrix_VxV_t JtJ(mrpt::math::UNINITIALIZED_MATRIX);
 								detail::AuxErrorEval<typename gst::edge_t,gst>::multiplyJ1tLambdaJ2(J1,J2,JtJ,lstObservationData[idxObs].edge);
 								H_map[idx_j][idx_i] += JtJ;
 							}

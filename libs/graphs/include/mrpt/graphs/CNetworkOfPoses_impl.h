@@ -529,7 +529,7 @@ namespace mrpt
 				}
 				template <class VEC> static inline double auxMaha2Dist(VEC &err,const CPosePDFGaussian &p) {
 					math::wrapToPiInPlace(err[2]);
-					CMatrixDouble33  COV_INV(UNINITIALIZED_MATRIX);
+					CMatrixDouble33  COV_INV(mrpt::math::UNINITIALIZED_MATRIX);
 					p.cov.inv(COV_INV);
 					return mrpt::math::multiply_HCHt_scalar(err,COV_INV); // err^t*cov_inv*err
 				}
@@ -537,7 +537,7 @@ namespace mrpt
 					math::wrapToPiInPlace(err[3]);
 					math::wrapToPiInPlace(err[4]);
 					math::wrapToPiInPlace(err[5]);
-					CMatrixDouble66 COV_INV(UNINITIALIZED_MATRIX);
+					CMatrixDouble66 COV_INV(mrpt::math::UNINITIALIZED_MATRIX);
 					p.cov.inv(COV_INV);
 					return mrpt::math::multiply_HCHt_scalar(err,COV_INV); // err^t*cov_inv*err
 				}

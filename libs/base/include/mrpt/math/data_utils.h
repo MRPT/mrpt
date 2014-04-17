@@ -163,7 +163,7 @@ namespace mrpt
 			CMatrixFixedNumeric<T,DIM,DIM> C = COV1;
 			C+= COV2;	// Sum of covs:
 			const T cov_det = C.det();
-			CMatrixFixedNumeric<T,DIM,DIM> C_inv(UNINITIALIZED_MATRIX);
+			CMatrixFixedNumeric<T,DIM,DIM> C_inv(mrpt::math::UNINITIALIZED_MATRIX);
 			C.inv_fast(C_inv);
 
 			return std::pow( M_2PI, -0.5*DIM ) * (1.0/std::sqrt( cov_det ))

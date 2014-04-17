@@ -15,6 +15,7 @@
 #include <mrpt/math/CSparseMatrixTemplate.h>
 
 #include <mrpt/math/math_frwds.h>  // Fordward declarations
+#include <mrpt/math/wrap2pi.h>
 
 /*---------------------------------------------------------------
 	Class
@@ -88,7 +89,7 @@ namespace mrpt
 		  * \sa TObject3D
 		  */
 		bool BASE_IMPEXP intersect(const TSegment3D &s1,const TSegment3D &s2,TObject3D &obj);
-		
+
 		/** Gets the intersection between a 3D segment and a plane. Possible outcomes:
 		  *		- Don't intersect: Return=false
 		  *		- s1 is within the plane: Return=true, obj.getType()=GEOMETRIC_TYPE_SEGMENT
@@ -96,7 +97,7 @@ namespace mrpt
 		  * \sa TObject3D
 		  */
 		bool BASE_IMPEXP intersect(const TSegment3D &s1,const TPlane &p2,TObject3D &obj);
-		
+
 		/** Gets the intersection between a 3D segment and a 3D line. Possible outcomes:
 		  *		- They don't intersect : Return=false
 		  *		- s1 lies within the line: Return=true, obj.getType()=GEOMETRIC_TYPE_SEGMENT
@@ -104,7 +105,7 @@ namespace mrpt
 		  * \sa TObject3D
 		  */
 		bool BASE_IMPEXP intersect(const TSegment3D &s1,const TLine3D &r2,TObject3D &obj);
-		
+
 		/** Gets the intersection between a plane and a 3D segment. Possible outcomes:
 		  *		- Don't intersect: Return=false
 		  *		- s2 is within the plane: Return=true, obj.getType()=GEOMETRIC_TYPE_SEGMENT
@@ -114,14 +115,14 @@ namespace mrpt
 		inline bool intersect(const TPlane &p1,const TSegment3D &s2,TObject3D &obj)	{
 			return intersect(s2,p1,obj);
 		}
-		
+
 		/** Gets the intersection between two planes. Possible outcomes:
 		  *		- Planes are parallel: Return=false
 		  *		- Planes intersect into a line: Return=true, obj.getType()=GEOMETRIC_TYPE_LINE
 		  * \sa TObject3D
 		  */
 		bool BASE_IMPEXP intersect(const TPlane &p1,const TPlane &p2,TObject3D &obj);
-		
+
 		/** Gets the intersection between a plane and a 3D line. Possible outcomes:
 		  *		- Line is parallel to plane but not within it: Return=false
 		  *		- Line is contained in the plane: Return=true, obj.getType()=GEOMETRIC_TYPE_LINE
@@ -129,7 +130,7 @@ namespace mrpt
 		  * \sa TObject3D
 		  */
 		bool BASE_IMPEXP intersect(const TPlane &p1,const TLine3D &p2,TObject3D &obj);
-		
+
 		/** Gets the intersection between a 3D line and a 3D segment. Possible outcomes:
 		  *		- They don't intersect : Return=false
 		  *		- s2 lies within the line: Return=true, obj.getType()=GEOMETRIC_TYPE_SEGMENT
@@ -139,7 +140,7 @@ namespace mrpt
 		inline bool intersect(const TLine3D &r1,const TSegment3D &s2,TObject3D &obj)	{
 			return intersect(s2,r1,obj);
 		}
-		
+
 		/** Gets the intersection between a 3D line and a plane. Possible outcomes:
 		  *		- Line is parallel to plane but not within it: Return=false
 		  *		- Line is contained in the plane: Return=true, obj.getType()=GEOMETRIC_TYPE_LINE
@@ -149,7 +150,7 @@ namespace mrpt
 		inline bool intersect(const TLine3D &r1,const TPlane &p2,TObject3D &obj)	{
 			return intersect(p2,r1,obj);
 		}
-		
+
 		/** Gets the intersection between two 3D lines. Possible outcomes:
 		  *		- Lines do not intersect: Return=false
 		  *		- Lines are parallel and do not coincide: Return=false
@@ -158,7 +159,7 @@ namespace mrpt
 		  * \sa TObject3D
 		  */
 		bool BASE_IMPEXP intersect(const TLine3D &r1,const TLine3D &r2,TObject3D &obj);
-		
+
 		/** Gets the intersection between two 2D lines. Possible outcomes:
 		  *		- Lines do not intersect: Return=false
 		  *		- Lines are parallel and do not coincide: Return=false
@@ -167,7 +168,7 @@ namespace mrpt
 		  * \sa TObject2D
 		  */
 		bool BASE_IMPEXP intersect(const TLine2D &r1,const TLine2D &r2,TObject2D &obj);
-		
+
 		/** Gets the intersection between a 2D line and a 2D segment. Possible outcomes:
 		  *		- They don't intersect: Return=false
 		  *		- s2 lies within the line: Return=true, obj.getType()=GEOMETRIC_TYPE_SEGMENT
@@ -175,7 +176,7 @@ namespace mrpt
 		  * \sa TObject2D
 		  */
 		bool BASE_IMPEXP intersect(const TLine2D &r1,const TSegment2D &s2,TObject2D &obj);
-		
+
 		/** Gets the intersection between a 2D line and a 2D segment. Possible outcomes:
 		  *		- They don't intersect: Return=false
 		  *		- s1 lies within the line: Return=true, obj.getType()=GEOMETRIC_TYPE_SEGMENT
@@ -185,7 +186,7 @@ namespace mrpt
 		inline bool intersect(const TSegment2D &s1,const TLine2D &r2,TObject2D &obj)	{
 			return intersect(r2,s1,obj);
 		}
-		
+
 		/** Gets the intersection between two 2D segments. Possible outcomes:
 		  *		- Segments intersect: Return=true, obj.getType()=GEOMETRIC_TYPE_POINT
 		  *		- Segments don't intersect & are parallel: Return=true, obj.getType()=GEOMETRIC_TYPE_SEGMENT, obj is the segment "in between" both segments.
@@ -193,7 +194,7 @@ namespace mrpt
 		  * \sa TObject2D
 		  */
 		bool BASE_IMPEXP intersect(const TSegment2D &s1,const TSegment2D &s2,TObject2D &obj);
-		
+
 		/** @}
 		 */
 
@@ -839,7 +840,7 @@ namespace mrpt
 		//! \overload
 		template<class VECTOR>
 		inline mrpt::math::CMatrixDouble33 skew_symmetric3(const VECTOR &v)	{
-			mrpt::math::CMatrixDouble33 M(UNINITIALIZED_MATRIX);
+			mrpt::math::CMatrixDouble33 M(mrpt::math::UNINITIALIZED_MATRIX);
 			skew_symmetric3(v,M);
 			return M;
 		}
@@ -864,7 +865,7 @@ namespace mrpt
 		//! \overload
 		template<class VECTOR>
 		inline mrpt::math::CMatrixDouble33 skew_symmetric3_neg(const VECTOR &v)	{
-			mrpt::math::CMatrixDouble33 M(UNINITIALIZED_MATRIX);
+			mrpt::math::CMatrixDouble33 M(mrpt::math::UNINITIALIZED_MATRIX);
 			skew_symmetric3_neg(v,M);
 			return M;
 		}

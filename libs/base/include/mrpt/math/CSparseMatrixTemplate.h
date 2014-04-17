@@ -69,7 +69,7 @@ namespace math	{
 		  * Element access operator. Doesn't check bounds.
 		  */
 		inline T operator()(size_t r,size_t c) const	{
-			const_iterator it=objectList.find(make_pair(r,c));
+			const_iterator it=objectList.find(std::make_pair(r,c));
 			if (it==objectList.end()) return T();
 			else return it->second;
 		}
@@ -80,7 +80,7 @@ namespace math	{
 #if defined(_DEBUG) || (MRPT_ALWAYS_CHECKS_DEBUG_MATRICES)
 			if (r>=mRows||c>=mColumns) throw std::logic_error("Out of range");
 #endif
-			return (objectList.find(make_pair(r,c)) != objectList.end());
+			return (objectList.find(std::make_pair(r,c)) != objectList.end());
 		}
 
 		/**
@@ -90,7 +90,7 @@ namespace math	{
 #if defined(_DEBUG) || (MRPT_ALWAYS_CHECKS_DEBUG_MATRICES)
 			if (r>=mRows||c>=mColumns) throw std::logic_error("Out of range");
 #endif
-			return objectList[make_pair(r,c)];
+			return objectList[std::make_pair(r,c)];
 		}
 		/**
 		  * Returns the amount of rows in this matrix.
@@ -118,7 +118,7 @@ namespace math	{
 			vec.resize(mColumns);
 			size_t nextIndex=0;
 			for (typename SparseMatrixMap::const_iterator it=objectList.begin();it!=objectList.end();++it)	{
-				const pair<size_t,size_t> &index=it->first;
+				const std::pair<size_t,size_t> &index=it->first;
 				if (index.first<nRow) continue;
 				else if (index.first==nRow)	{
 					for (size_t i=nextIndex;i<index.second;i++) vec[i]=T();
@@ -142,7 +142,7 @@ namespace math	{
 			vec.resize(mRows);
 			size_t nextIndex=0;
 			for (typename SparseMatrixMap::const_iterator it=objectList.begin();it!=objectList.end();++it)	{
-				const pair<size_t,size_t> &index=it->first;
+				const std::pair<size_t,size_t> &index=it->first;
 				if (index.second==nCol)	{
 					for (size_t i=nextIndex;i<index.first;i++) vec[i]=T();
 					vec[index.first]=it->second;
@@ -210,7 +210,7 @@ namespace math	{
 			if (N!=mColumns) throw std::logic_error("Wrong-sized vector");
 			for (size_t i=0;i<N;i++)	{
 				const T &obj=vec[i];
-				pair<size_t,size_t> index=make_pair(nRow,i);
+				std::pair<size_t,size_t> index=std::make_pair(nRow,i);
 				if (obj==nullObject) objectList.erase(index);
 				else objectList[index]=obj;
 			}
@@ -228,7 +228,7 @@ namespace math	{
 			if (N!=mRows) throw std::logic_error("Wrong-sized vector");
 			for (size_t i=0;i<N;i++)	{
 				const T &obj=vec[i];
-				pair<size_t,size_t> index=make_pair(i,nCol);
+				std::pair<size_t,size_t> index=std::make_pair(i,nCol);
 				if (obj==nullObject) objectList.erase(index);
 				else objectList[index]=obj;
 			}
@@ -241,12 +241,12 @@ namespace math	{
 			if (mRows==nRows && mColumns==nCols) return;
 			mRows=nRows;
 			mColumns=nCols;
-			std::vector<pair<size_t,size_t> > toErase;
+			std::vector<std::pair<size_t,size_t> > toErase;
 			for (const_iterator it=objectList.begin();it!=objectList.end();++it)	{
-				const pair<size_t,size_t> &i=it->first;
+				const std::pair<size_t,size_t> &i=it->first;
 				if (i.first>=nRows||i.second>=nCols) toErase.push_back(it->first);
 			}
-			for (std::vector<pair<size_t,size_t> >::const_iterator it=toErase.begin();it!=toErase.end();++it) objectList.erase(*it);
+			for (std::vector<std::pair<size_t,size_t> >::const_iterator it=toErase.begin();it!=toErase.end();++it) objectList.erase(*it);
 		}
 		/**
 		  * Extracts a submatrix form the matrix.
@@ -260,7 +260,7 @@ namespace math	{
 #endif
 			CSparseMatrixTemplate<T> res=CSparseMatrixTemplate<T>(lastRow+1-firstRow,lastColumn+1-firstColumn);
 			for (typename SparseMatrixMap::const_iterator it=begin();it!=end();++it)	{
-				const pair<size_t,size_t> &i=it->first;
+				const std::pair<size_t,size_t> &i=it->first;
 				if (i.first>=firstRow&&i.first<=lastRow&&i.second>=firstColumn&&i.second<=lastColumn) res(i.first-firstRow,i.second-firstColumn)=it->second;
 			}
 			return res;
@@ -300,7 +300,7 @@ namespace math	{
 		  */
 		inline bool isNull(size_t nRow,size_t nCol) const	{
 			if (nRow>=mRows||nCol>=mColumns) throw std::logic_error("Out of range");
-			return objectList.count(make_pair(nRow,nCol))==0;
+			return objectList.count(std::make_pair(nRow,nCol))==0;
 		}
 		/**
 		  * Checks whether an element of the matrix is not the default object.
@@ -308,7 +308,7 @@ namespace math	{
 		  */
 		inline bool isNotNull(size_t nRow,size_t nCol) const	{
 			if (nRow>=mRows||nCol>=mColumns) throw std::logic_error("Out of range");
-			return objectList.count(make_pair(nRow,nCol))>0;
+			return objectList.count(std::make_pair(nRow,nCol))>0;
 		}
 		/**
 		  * Completely removes all elements, although maintaining the matrix's size.
@@ -345,14 +345,14 @@ namespace math	{
 
 		inline T operator()(size_t r,size_t c) const	{
 			if (c<r) std::swap(r,c); // Symmetrical matrix
-			typename CSparseMatrixTemplate<T>::const_iterator it=CSparseMatrixTemplate<T>::objectList.find(make_pair(r,c));
+			typename CSparseMatrixTemplate<T>::const_iterator it=CSparseMatrixTemplate<T>::objectList.find(std::make_pair(r,c));
 			if (it==CSparseMatrixTemplate<T>::objectList.end()) return T();
 			else return it->second;
 		}
 		inline T& operator()(size_t r,size_t c)	{
 			if (c<r) std::swap(r,c); // Symmetrical matrix
 			if (r>=CSparseMatrixTemplate<T>::mRows||c>=CSparseMatrixTemplate<T>::mColumns) throw std::logic_error("Out of range");
-			return CSparseMatrixTemplate<T>::objectList[make_pair(r,c)];
+			return CSparseMatrixTemplate<T>::objectList[std::make_pair(r,c)];
 		}
 
 	}; // end of CSparseSymmetricalMatrix

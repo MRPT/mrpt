@@ -103,7 +103,7 @@ namespace poses
 
 		/** Constructor from a 3x3 rotation matrix and a the translation given as a 3-vector, a 3-array, a CPoint3D or a TPoint3D */
 		template <class MATRIX33,class VECTOR3>
-		inline CPose3D(const MATRIX33 &rot, const VECTOR3& xyz) : m_ROT(UNINITIALIZED_MATRIX), m_ypr_uptodate(false)
+		inline CPose3D(const MATRIX33 &rot, const VECTOR3& xyz) : m_ROT(mrpt::math::UNINITIALIZED_MATRIX), m_ypr_uptodate(false)
 		{
 			ASSERT_EQUAL_(mrpt::math::size(rot,1),3); ASSERT_EQUAL_(mrpt::math::size(rot,2),3);ASSERT_EQUAL_(xyz.size(),3)
 			for (int r=0;r<3;r++)

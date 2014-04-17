@@ -528,7 +528,7 @@ namespace mrpt
 
 						if (KF_options.debug_verify_analytic_jacobians)
 						{
-							KFMatrix_VxV dfv_dxv_gt(UNINITIALIZED_MATRIX);
+							KFMatrix_VxV dfv_dxv_gt(mrpt::math::UNINITIALIZED_MATRIX);
 							OnTransitionJacobian(dfv_dxv_gt);
 							if ((dfv_dxv-dfv_dxv_gt).array().abs().sum()>KF_options.debug_verify_analytic_jacobians_threshold)
 							{
@@ -706,8 +706,8 @@ namespace mrpt
 
 							if (KF_options.debug_verify_analytic_jacobians)
 							{
-								KFMatrix_OxV Hx_gt(UNINITIALIZED_MATRIX);
-								KFMatrix_OxF Hy_gt(UNINITIALIZED_MATRIX);
+								KFMatrix_OxV Hx_gt(mrpt::math::UNINITIALIZED_MATRIX);
+								KFMatrix_OxF Hy_gt(mrpt::math::UNINITIALIZED_MATRIX);
 								OnObservationJacobians(lm_idx,Hx_gt,Hy_gt);
 								if ((Hx-Hx_gt).array().abs().sum()>KF_options.debug_verify_analytic_jacobians_threshold) {
 									std::cerr << "[KalmanFilter] ERROR: User analytical observation Hx Jacobians are wrong: \n"
@@ -1587,10 +1587,10 @@ namespace mrpt
 							const size_t nLMs = (idx-VEH_SIZE)/FEAT_SIZE; // Number of previous landmarks:
 							for (q=0;q<nLMs;q++)
 							{
-								typename KF::KFMatrix_VxF  P_x_yq(UNINITIALIZED_MATRIX);
+								typename KF::KFMatrix_VxF  P_x_yq(mrpt::math::UNINITIALIZED_MATRIX);
 								obj.m_pkk.extractMatrix(0,VEH_SIZE+q*FEAT_SIZE,P_x_yq) ;
 
-								typename KF::KFMatrix_FxF P_cross(UNINITIALIZED_MATRIX);
+								typename KF::KFMatrix_FxF P_cross(mrpt::math::UNINITIALIZED_MATRIX);
 								P_cross.multiply(dyn_dxv, P_x_yq );
 
 								obj.m_pkk.insertMatrix(idx,VEH_SIZE+q*FEAT_SIZE, P_cross );
@@ -1600,7 +1600,7 @@ namespace mrpt
 							// Fill the Pynyn term:
 							//  P_yn_yn =  (dyn_dxv * Pxx * ~dyn_dxv) + (dyn_dhn * R * ~dyn_dhn);
 							// --------------------
-							typename KF::KFMatrix_FxF P_yn_yn(UNINITIALIZED_MATRIX);
+							typename KF::KFMatrix_FxF P_yn_yn(mrpt::math::UNINITIALIZED_MATRIX);
 							dyn_dxv.multiply_HCHt(Pxx,  P_yn_yn);
 							if (use_dyn_dhn_jacobian)
 									dyn_dhn.multiply_HCHt(R, P_yn_yn, true); // Accumulate in P_yn_yn

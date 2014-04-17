@@ -210,6 +210,7 @@ macro(internal_define_mrpt_lib name headers_only)
 		KEEP_MATCHING_FILES_FROM_LIST("^.*h$" AUX_LIST_TO_IGNORE)
 		set_source_files_properties(${AUX_LIST_TO_IGNORE} PROPERTIES HEADER_FILE_ONLY true)
 	
+		INCLUDE_DIRECTORIES("${CMAKE_SOURCE_DIR}/libs/${name}/src/") # For include "${name}-precomp.h"
 		IF(MRPT_ENABLE_PRECOMPILED_HDRS)
 			IF (MSVC)
 				# Precompiled hdrs for MSVC:
@@ -231,7 +232,6 @@ macro(internal_define_mrpt_lib name headers_only)
 				"${CMAKE_SOURCE_DIR}/libs/${name}/src/${name}-precomp.cpp"
 				"${CMAKE_SOURCE_DIR}/libs/${name}/src/${name}-precomp.h"
 				)	
-			INCLUDE_DIRECTORIES("${CMAKE_SOURCE_DIR}/libs/${name}/src/")
 		ENDIF(MRPT_ENABLE_PRECOMPILED_HDRS)
 
 		# Special directories when building a .deb package:

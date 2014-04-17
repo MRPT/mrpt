@@ -28,14 +28,14 @@ namespace mrpt
 		 * \ingroup mrpt_base_grp
 		 */
 		template <typename T,size_t NROWS,size_t NCOLS>
-		class CMatrixFixedNumeric  : 
+		class CMatrixFixedNumeric  :
 			public Eigen::Matrix<
 				T,
 				NROWS,
 				NCOLS,
 				// Use row major storage for backward compatibility with MRPT matrices in all cases, except in column vectors:
 				Eigen::AutoAlign |
-				( (NCOLS==1 && NROWS!=1) ? Eigen::ColMajor : Eigen::RowMajor ) 
+				( (NCOLS==1 && NROWS!=1) ? Eigen::ColMajor : Eigen::RowMajor )
 				>
 		{
 		public:
@@ -52,7 +52,7 @@ namespace mrpt
 			inline CMatrixFixedNumeric(const T * vals) : Base(vals) { }
 
 			/** Constructor which leaves the matrix uninitialized.
-			  *  Example of usage: CMatrixFixedNumeric<double,3,2> M(UNINITIALIZED_MATRIX);
+			  *  Example of usage: CMatrixFixedNumeric<double,3,2> M(mrpt::math::UNINITIALIZED_MATRIX);
 			  */
 			inline CMatrixFixedNumeric(TConstructorFlags_Matrices constructor_flag) : Base() { }
 
@@ -60,7 +60,7 @@ namespace mrpt
 				return detail::getVicinity<CMatrixFixedNumeric<T,NROWS,NCOLS>,T,ReturnType,N>::get(c,r,*this);
 			}
 
-			inline void loadFromArray(const T* vals) 
+			inline void loadFromArray(const T* vals)
 			{
 				Base b(vals);
 				*this = b;
@@ -70,8 +70,8 @@ namespace mrpt
 			template <typename Derived>
 			inline bool operator ==(const Eigen::MatrixBase<Derived>& m2) const
 			{
-				return Base::cols()==m2.cols() && 
-					   Base::rows()==m2.rows() && 
+				return Base::cols()==m2.cols() &&
+					   Base::rows()==m2.rows() &&
 					   Base::cwiseEqual(m2).all();
 			}
 			/** != comparison of two matrices; it differs from default Eigen operator in that returns true if matrices are of different sizes instead of raising an assert. */
@@ -122,7 +122,7 @@ namespace mrpt
 		/**  @} */
 
 
-		namespace detail	
+		namespace detail
 		{
 			/**
 			  * Vicinity traits class specialization for fixed size matrices.

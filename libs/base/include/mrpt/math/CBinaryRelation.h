@@ -273,7 +273,7 @@ namespace mrpt	{	namespace math	{
 			typename std::set<T>::const_iterator it=elements.begin();
 			std::advance(it,i);
 			elements.erase(i);
-			set<size_t> ii;
+			std::set<size_t> ii;
 			ii.insert(i);
 			relation.removeRowsAndCols(ii,ii);
 		}
