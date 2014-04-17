@@ -530,7 +530,7 @@ namespace mrpt
 						{
 							KFMatrix_VxV dfv_dxv_gt(UNINITIALIZED_MATRIX);
 							OnTransitionJacobian(dfv_dxv_gt);
-							if ((dfv_dxv-dfv_dxv_gt).Abs().sumAll()>KF_options.debug_verify_analytic_jacobians_threshold)
+							if ((dfv_dxv-dfv_dxv_gt).array().abs().sum()>KF_options.debug_verify_analytic_jacobians_threshold)
 							{
 								std::cerr << "[KalmanFilter] ERROR: User analytical transition Jacobians are wrong: \n"
 									<< " Real dfv_dxv: \n" << dfv_dxv << "\n Analytical dfv_dxv:\n" << dfv_dxv_gt << "Diff:\n" << (dfv_dxv-dfv_dxv_gt) << "\n";
@@ -709,12 +709,12 @@ namespace mrpt
 								KFMatrix_OxV Hx_gt(UNINITIALIZED_MATRIX);
 								KFMatrix_OxF Hy_gt(UNINITIALIZED_MATRIX);
 								OnObservationJacobians(lm_idx,Hx_gt,Hy_gt);
-								if ((Hx-Hx_gt).Abs().sumAll()>KF_options.debug_verify_analytic_jacobians_threshold) {
+								if ((Hx-Hx_gt).array().abs().sum()>KF_options.debug_verify_analytic_jacobians_threshold) {
 									std::cerr << "[KalmanFilter] ERROR: User analytical observation Hx Jacobians are wrong: \n"
 										<< " Real Hx: \n" << Hx << "\n Analytical Hx:\n" << Hx_gt << "Diff:\n" << Hx-Hx_gt << "\n";
 									THROW_EXCEPTION("ERROR: User analytical observation Hx Jacobians are wrong (More details dumped to cerr)")
 								}
-								if ((Hy-Hy_gt).Abs().sumAll()>KF_options.debug_verify_analytic_jacobians_threshold) {
+								if ((Hy-Hy_gt).array().abs().sum()>KF_options.debug_verify_analytic_jacobians_threshold) {
 									std::cerr << "[KalmanFilter] ERROR: User analytical observation Hy Jacobians are wrong: \n"
 										<< " Real Hy: \n" << Hy << "\n Analytical Hx:\n" << Hy_gt << "Diff:\n" << Hy-Hy_gt << "\n";
 									THROW_EXCEPTION("ERROR: User analytical observation Hy Jacobians are wrong (More details dumped to cerr)")

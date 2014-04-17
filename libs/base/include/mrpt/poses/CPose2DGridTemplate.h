@@ -46,7 +46,7 @@ namespace poses
 		  */
 		size_t  x2idx(double x) const
 		{
-			int idx = round( (x-m_xMin) / m_resolutionXY );
+			int idx = mrpt::utils::round( (x-m_xMin) / m_resolutionXY );
 			ASSERT_(idx>=0 && idx< static_cast<int>(m_sizeX));
 			return idx;
 		}
@@ -55,7 +55,7 @@ namespace poses
 		  */
 		size_t  y2idx(double y) const
 		{
-			int idx = round( (y-m_yMin) / m_resolutionXY );
+			int idx = mrpt::utils::round( (y-m_yMin) / m_resolutionXY );
 			ASSERT_(idx>=0 && idx< static_cast<int>(m_sizeY));
 			return idx;
 		}
@@ -64,7 +64,7 @@ namespace poses
 		  */
 		size_t  phi2idx(double phi) const
 		{
-			int idx = round( (phi-m_phiMin) / m_resolutionPhi );
+			int idx = mrpt::utils::round( (phi-m_phiMin) / m_resolutionPhi );
 			ASSERT_(idx>=0 && idx< static_cast<int>(m_sizePhi) );
 			return idx;
 		}
@@ -101,7 +101,7 @@ namespace poses
 			double		yMin = -1.0f,
 			double		yMax = 1.0f,
 			double		resolutionXY = 0.5f,
-			double		resolutionPhi = DEG2RAD(180),
+			double		resolutionPhi = mrpt::utils::DEG2RAD(180),
 			double		phiMin = -M_PIf,
 			double		phiMax = M_PIf
 			) :
@@ -147,14 +147,14 @@ namespace poses
 			m_resolutionPhi = resolutionPhi;
 
 			// Compute the indexes of the starting borders:
-			m_idxLeftX = round( xMin/resolutionXY ) ;
-			m_idxLeftY = round( yMin/resolutionXY ) ;
-			m_idxLeftPhi = round( phiMin/resolutionPhi ) ;
+			m_idxLeftX = mrpt::utils::round( xMin/resolutionXY ) ;
+			m_idxLeftY = mrpt::utils::round( yMin/resolutionXY ) ;
+			m_idxLeftPhi = mrpt::utils::round( phiMin/resolutionPhi ) ;
 
 			// Compute new required space:
-			m_sizeX = round( xMax/resolutionXY ) - m_idxLeftX + 1;
-			m_sizeY = round( yMax/resolutionXY ) - m_idxLeftY + 1;
-			m_sizePhi = round( phiMax/resolutionPhi ) - m_idxLeftPhi + 1;
+			m_sizeX = mrpt::utils::round( xMax/resolutionXY ) - m_idxLeftX + 1;
+			m_sizeY = mrpt::utils::round( yMax/resolutionXY ) - m_idxLeftY + 1;
+			m_sizePhi = mrpt::utils::round( phiMax/resolutionPhi ) - m_idxLeftPhi + 1;
 			m_sizeXY = m_sizeX * m_sizeY;
 
 			// Resize "m_data":
@@ -194,7 +194,7 @@ namespace poses
 
 		/** Returns the whole grid as a matrix, for a given constant "phi" and where each row contains values for a fixed "y".
 		  */
-		void getAsMatrix( const double &phi, CMatrixTemplate<T> &outMat )
+		void getAsMatrix( const double &phi, mrpt::math::CMatrixTemplate<T> &outMat )
 		{
 			MRPT_START
 			outMat.setSize( m_sizeY, m_sizeX );

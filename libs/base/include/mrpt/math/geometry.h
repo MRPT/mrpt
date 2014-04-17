@@ -11,12 +11,10 @@
 
 #include <mrpt/utils/utils_defs.h>
 #include <mrpt/math/CMatrixTemplateNumeric.h>
-#include <mrpt/poses/CPoint2D.h>
-#include <mrpt/poses/CPose2D.h>
 #include <mrpt/poses/CPose3D.h>
-#include <mrpt/math/lightweight_geom_data.h>
 #include <mrpt/math/CSparseMatrixTemplate.h>
-//#include <mrpt/math/utils.h>
+
+#include <mrpt/math/math_frwds.h>  // Fordward declarations
 
 /*---------------------------------------------------------------
 	Class
@@ -234,22 +232,22 @@ namespace mrpt
 		  * Gets a 3D line corresponding to the X axis in a given pose. An implicit constructor is used if a TPose3D is given.
 		  * \sa createFromPoseY,createFromPoseZ,createFromPoseAndVector
 		  */
-		void BASE_IMPEXP createFromPoseX(const CPose3D &p,TLine3D &r);
+		void BASE_IMPEXP createFromPoseX(const mrpt::poses::CPose3D &p,TLine3D &r);
 		/**
 		  * Gets a 3D line corresponding to the Y axis in a given pose. An implicit constructor is used if a TPose3D is given.
 		  * \sa createFromPoseX,createFromPoseZ,createFromPoseAndVector
 		  */
-		void BASE_IMPEXP createFromPoseY(const CPose3D &p,TLine3D &r);
+		void BASE_IMPEXP createFromPoseY(const mrpt::poses::CPose3D &p,TLine3D &r);
 		/**
 		  * Gets a 3D line corresponding to the Z axis in a given pose. An implicit constructor is used if a TPose3D is given.
 		  * \sa createFromPoseX,createFromPoseY,createFromPoseAndVector
 		  */
-		void BASE_IMPEXP createFromPoseZ(const CPose3D &p,TLine3D &r);
+		void BASE_IMPEXP createFromPoseZ(const mrpt::poses::CPose3D &p,TLine3D &r);
 		/**
 		  * Gets a 3D line corresponding to any arbitrary vector, in the base given by the pose. An implicit constructor is used if a TPose3D is given.
 		  * \sa createFromPoseX,createFromPoseY,createFromPoseZ
 		  */
-		void BASE_IMPEXP createFromPoseAndVector(const CPose3D &p,const double (&vector)[3],TLine3D &r);
+		void BASE_IMPEXP createFromPoseAndVector(const mrpt::poses::CPose3D &p,const double (&vector)[3],TLine3D &r);
 		/**
 		  * Gets a 2D line corresponding to the X axis in a given pose. An implicit constructor is used if a CPose2D is given.
 		  * \sa createFromPoseY,createFromPoseAndVector
@@ -309,38 +307,38 @@ namespace mrpt
 		/**
 		  * Uses the given pose 3D to project a point into a new base.
 		  */
-		inline void project3D(const TPoint3D &point, const CPose3D &newXYpose,TPoint3D &newPoint)	{
+		inline void project3D(const TPoint3D &point, const mrpt::poses::CPose3D &newXYpose,TPoint3D &newPoint)	{
 			newXYpose.composePoint(point.x,point.y,point.z,newPoint.x,newPoint.y,newPoint.z);
 		}
 		/**
 		  * Uses the given pose 3D to project a segment into a new base.
 		  */
-		inline void project3D(const TSegment3D &segment,const CPose3D &newXYpose,TSegment3D &newSegment)	{
+		inline void project3D(const TSegment3D &segment,const mrpt::poses::CPose3D &newXYpose,TSegment3D &newSegment)	{
 			project3D(segment.point1,newXYpose,newSegment.point1);
 			project3D(segment.point2,newXYpose,newSegment.point2);
 		}
 		/**
 		  * Uses the given pose 3D to project a line into a new base.
 		  */
-		void BASE_IMPEXP project3D(const TLine3D &line,const CPose3D &newXYpose,TLine3D &newLine);
+		void BASE_IMPEXP project3D(const TLine3D &line,const mrpt::poses::CPose3D &newXYpose,TLine3D &newLine);
 		/**
 		  * Uses the given pose 3D to project a plane into a new base.
 		  */
-		void BASE_IMPEXP project3D(const TPlane &plane,const CPose3D &newXYpose,TPlane &newPlane);
+		void BASE_IMPEXP project3D(const TPlane &plane,const mrpt::poses::CPose3D &newXYpose,TPlane &newPlane);
 		/**
 		  * Uses the given pose 3D to project a polygon into a new base.
 		  */
-		void BASE_IMPEXP project3D(const TPolygon3D &polygon,const CPose3D &newXYpose,TPolygon3D &newPolygon);
+		void BASE_IMPEXP project3D(const TPolygon3D &polygon,const mrpt::poses::CPose3D &newXYpose,TPolygon3D &newPolygon);
 		/**
 		  * Uses the given pose 3D to project any 3D object into a new base.
 		  */
-		void BASE_IMPEXP project3D(const TObject3D &object,const CPose3D &newXYPose,TObject3D &newObject);
+		void BASE_IMPEXP project3D(const TObject3D &object,const mrpt::poses::CPose3D &newXYPose,TObject3D &newObject);
 
 		/**
 		  * Projects any 3D object into the plane's base, using its inverse pose. If the object is exactly inside the plane, this projection will zero its Z coordinates.
 		  */
 		template<class T> void project3D(const T &obj,const TPlane &newXYPlane,T &newObj)	{
-			CPose3D pose;
+			mrpt::poses::CPose3D pose;
 			TPlane(newXYPlane).getAsPose3D(pose);
 			project3D(obj,-pose,newObj);
 		}
@@ -349,7 +347,7 @@ namespace mrpt
 		  * Projects any 3D object into the plane's base, using its inverse pose and forcing the position of the new coordinates origin. If the object is exactly inside the plane, this projection will zero its Z coordinates.
 		  */
 		template<class T> void project3D(const T &obj,const TPlane &newXYPlane,const TPoint3D &newOrigin,T &newObj)	{
-			CPose3D pose;
+			mrpt::poses::CPose3D pose;
 			//TPlane(newXYPlane).getAsPose3DForcingOrigin(newOrigin,pose);
 			TPlane(newXYPlane).getAsPose3D(pose);
 			project3D(obj,-pose,newObj);
@@ -358,7 +356,7 @@ namespace mrpt
 		/**
 		  * Projects a set of 3D objects into the plane's base.
 		  */
-		template<class T> void project3D(const std::vector<T> &objs,const CPose3D &newXYpose,std::vector<T> &newObjs)	{
+		template<class T> void project3D(const std::vector<T> &objs,const mrpt::poses::CPose3D &newXYpose,std::vector<T> &newObjs)	{
 			size_t N=objs.size();
 			newObjs.resize(N);
 			for (size_t i=0;i<N;i++) project3D(objs[i],newXYpose,newObjs[i]);
@@ -367,13 +365,12 @@ namespace mrpt
 		/**
 		  * Uses the given pose 2D to project a point into a new base.
 		  */
-		inline void project2D(const TPoint2D &point,const CPose2D &newXpose,TPoint2D &newPoint)	{
-			newPoint=newXpose+CPoint2D(point);
-		}
+		void BASE_IMPEXP project2D(const TPoint2D &point,const mrpt::poses::CPose2D &newXpose,TPoint2D &newPoint);
+
 		/**
 		  * Uses the given pose 2D to project a segment into a new base.
 		  */
-		inline void project2D(const TSegment2D &segment,const CPose2D &newXpose,TSegment2D &newSegment)	{
+		inline void project2D(const TSegment2D &segment,const mrpt::poses::CPose2D &newXpose,TSegment2D &newSegment)	{
 			project2D(segment.point1,newXpose,newSegment.point1);
 			project2D(segment.point2,newXpose,newSegment.point2);
 		}
@@ -381,38 +378,40 @@ namespace mrpt
 		/**
 		  * Uses the given pose 2D to project a line into a new base.
 		  */
-		void BASE_IMPEXP project2D(const TLine2D &line,const CPose2D &newXpose,TLine2D &newLine);
+		void BASE_IMPEXP project2D(const TLine2D &line,const mrpt::poses::CPose2D &newXpose,TLine2D &newLine);
 		/**
 		  * Uses the given pose 2D to project a polygon into a new base.
 		  */
-		void BASE_IMPEXP project2D(const TPolygon2D &polygon,const CPose2D &newXpose,TPolygon2D &newPolygon);
+		void BASE_IMPEXP project2D(const TPolygon2D &polygon,const mrpt::poses::CPose2D &newXpose,TPolygon2D &newPolygon);
 		/**
 		  * Uses the given pose 2D to project any 2D object into a new base.
 		  */
-		void BASE_IMPEXP project2D(const TObject2D &object,const CPose2D &newXpose,TObject2D &newObject);
+		void BASE_IMPEXP project2D(const TObject2D &object,const mrpt::poses::CPose2D &newXpose,TObject2D &newObject);
 
 		/**
 		  * Projects any 2D object into the line's base, using its inverse pose. If the object is exactly inside the line, this projection will zero its Y coordinate.
+		  * \tparam CPOSE2D set to mrpt::poses::CPose2D
 		  */
-		template<class T> void project2D(const T &obj,const TLine2D &newXLine,T &newObj)	{
-			CPose2D pose;
+		template<class T,class CPOSE2D> void project2D(const T &obj,const TLine2D &newXLine,T &newObj)	{
+			CPOSE2D pose;
 			newXLine.getAsPose2D(pose);
-			project2D(obj,CPose2D(0,0,0)-pose,newObj);
+			project2D(obj,CPOSE2D(0,0,0)-pose,newObj);
 		}
 
 		/**
 		  * Projects any 2D object into the line's base, using its inverse pose and forcing the position of the new coordinate origin. If the object is exactly inside the line, this projection will zero its Y coordinate.
+		  * \tparam CPOSE2D set to mrpt::poses::CPose2D
 		  */
-		template<class T> void project2D(const T &obj,const TLine2D &newXLine,const TPoint2D &newOrigin,T &newObj)	{
-			CPose2D pose;
+		template<class T,class CPOSE2D> void project2D(const T &obj,const TLine2D &newXLine,const TPoint2D &newOrigin,T &newObj)	{
+			CPOSE2D pose;
 			newXLine.getAsPose2DForcingOrigin(newOrigin,pose);
-			project2D(obj,CPose2D(0,0,0)-pose,newObj);
+			project2D(obj,CPOSE2D(0,0,0)-pose,newObj);
 		}
 
 		/**
 		  * Projects a set of 2D objects into the line's base.
 		  */
-		template<class T> void project2D(const std::vector<T> &objs,const CPose2D &newXpose,std::vector<T> &newObjs)	{
+		template<class T> void project2D(const std::vector<T> &objs,const mrpt::poses::CPose2D &newXpose,std::vector<T> &newObjs)	{
 			size_t N=objs.size();
 			newObjs.resize(N);
 			for (size_t i=0;i<N;i++) project2D(objs[i],newXpose,newObjs[i]);
@@ -651,22 +650,22 @@ namespace mrpt
 		  * Given a pose, creates a plane orthogonal to its Z vector.
 		  * \sa createPlaneFromPoseXZ,createPlaneFromPoseYZ,createPlaneFromPoseAndNormal
 		  */
-		void BASE_IMPEXP createPlaneFromPoseXY(const CPose3D &pose,TPlane &plane);
+		void BASE_IMPEXP createPlaneFromPoseXY(const mrpt::poses::CPose3D &pose,TPlane &plane);
 		/**
 		  * Given a pose, creates a plane orthogonal to its Y vector.
 		  * \sa createPlaneFromPoseXY,createPlaneFromPoseYZ,createPlaneFromPoseAndNormal
 		  */
-		void BASE_IMPEXP createPlaneFromPoseXZ(const CPose3D &pose,TPlane &plane);
+		void BASE_IMPEXP createPlaneFromPoseXZ(const mrpt::poses::CPose3D &pose,TPlane &plane);
 		/**
 		  * Given a pose, creates a plane orthogonal to its X vector.
 		  * \sa createPlaneFromPoseXY,createPlaneFromPoseXZ,createPlaneFromPoseAndNormal
 		  */
-		void BASE_IMPEXP createPlaneFromPoseYZ(const CPose3D &pose,TPlane &plane);
+		void BASE_IMPEXP createPlaneFromPoseYZ(const mrpt::poses::CPose3D &pose,TPlane &plane);
 		/**
 		  * Given a pose and any vector, creates a plane orthogonal to that vector in the pose's coordinates.
 		  * \sa createPlaneFromPoseXY,createPlaneFromPoseXZ,createPlaneFromPoseYZ
 		  */
-		void BASE_IMPEXP createPlaneFromPoseAndNormal(const CPose3D &pose,const double (&normal)[3],TPlane &plane);
+		void BASE_IMPEXP createPlaneFromPoseAndNormal(const mrpt::poses::CPose3D &pose,const double (&normal)[3],TPlane &plane);
 		/**
 		  * Creates a rotation matrix so that the coordinate given (0 for x, 1 for y, 2 for z) corresponds to the vector.
 		  */
@@ -772,7 +771,7 @@ namespace mrpt
 		  * \sa CRenderizable::rayTrace
 		  */
 		inline bool traceRay(const vector<TPolygon3D> &vec,const mrpt::poses::CPose3D &pose,double &dist)	{
-			vector<TPolygonWithPlane> pwp;
+			std::vector<TPolygonWithPlane> pwp;
 			TPolygonWithPlane::getPlanes(vec,pwp);
 			return traceRay(pwp,pose,dist);
 		}

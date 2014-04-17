@@ -173,24 +173,24 @@ namespace utils
 			/** Reads the simulated robot odometry (this is NOT equal to the actual error-free robot coordinates).
 			  * \sa getRealPose
 			  */
-			void    getOdometry ( CPose2D &pose ) const {
+			void    getOdometry ( mrpt::poses::CPose2D &pose ) const {
 				pose = m_odometry;
 			}
 
 			/** Reads the simulated robot odometry (this is NOT equal to the actual error-free robot coordinates).
 			  * \sa getRealPose
 			  */
-			void    getOdometry ( TPose2D &pose ) const {
+			void    getOdometry ( mrpt::math::TPose2D &pose ) const {
 				pose = m_odometry;
 			}
 
 			/** Reads the real robot pose. \sa getOdometry  */
-			void    getRealPose ( CPose2D &pose ) const {
+			void    getRealPose ( mrpt::poses::CPose2D &pose ) const {
 				pose = m_pose;
 			}
 
 			/** Reads the real robot pose. \sa getOdometry  */
-			void    getRealPose ( TPose2D &pose ) const {
+			void    getRealPose ( mrpt::math::TPose2D &pose ) const {
 				pose = m_pose;
 			}
 	};

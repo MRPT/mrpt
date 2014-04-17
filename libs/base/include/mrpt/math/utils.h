@@ -10,12 +10,9 @@
 #define  MRPT_MATH_H
 
 #include <mrpt/utils/utils_defs.h>
-//#include <mrpt/math/CMatrixTemplateNumeric.h>
-//#include <mrpt/math/CMatrixFixedNumeric.h>
-//#include <mrpt/math/CHistogram.h>
+#include <mrpt/math/CMatrixTemplateNumeric.h>
 
-//#include <mrpt/math/ops_vectors.h>
-//#include <mrpt/math/ops_matrices.h>
+#include <cstdarg>
 
 namespace mrpt
 {
@@ -128,51 +125,6 @@ namespace mrpt
 			v.setZero();
 			return v;
 		}
-
-
-		/** Modifies the given angle to translate it into the [0,2pi[ range.
-		  * \note Take care of not instancing this template for integer numbers, since it only works for float, double and long double.
-		  * \sa wrapToPi, wrapTo2Pi, unwrap2PiSequence
-		  */
-		template <class T>
-		inline void wrapTo2PiInPlace(T &a)
-		{
-			bool was_neg = a<0;
-			a = fmod(a, static_cast<T>(M_2PI) );
-			if (was_neg) a+=static_cast<T>(M_2PI);
-		}
-
-		/** Modifies the given angle to translate it into the [0,2pi[ range.
-		  * \note Take care of not instancing this template for integer numbers, since it only works for float, double and long double.
-		  * \sa wrapToPi, wrapTo2Pi, unwrap2PiSequence
-		  */
-		template <class T>
-		inline T wrapTo2Pi(T a)
-		{
-			wrapTo2PiInPlace(a);
-			return a;
-		}
-
-		/** Modifies the given angle to translate it into the ]-pi,pi] range.
-		  * \note Take care of not instancing this template for integer numbers, since it only works for float, double and long double.
-		  * \sa wrapTo2Pi, wrapToPiInPlace, unwrap2PiSequence
-		  */
-		template <class T>
-		inline T wrapToPi(T a)
-		{
-			return wrapTo2Pi( a + static_cast<T>(M_PI) )-static_cast<T>(M_PI);
-		}
-
-		/** Modifies the given angle to translate it into the ]-pi,pi] range.
-		  * \note Take care of not instancing this template for integer numbers, since it only works for float, double and long double.
-		  * \sa wrapToPi,wrapTo2Pi, unwrap2PiSequence
-		  */
-		template <class T>
-		inline void wrapToPiInPlace(T &a)
-		{
-			a = wrapToPi(a);
-		}
-
 
 		/** Normalize a vector, such as its norm is the unity.
 		  *  If the vector has a null norm, the output is a null vector.
@@ -401,11 +353,6 @@ namespace mrpt
 				(v.derived())[i] = static_cast<typename Derived::Scalar>(theArray[i]);
 			return v;
 		}
-
-		/** Modify a sequence of angle values such as no consecutive values have a jump larger than PI in absolute value.
-		  * \sa wrapToPi
-		  */
-		void unwrap2PiSequence(vector_double &x);
 
 		/** A versatile template to build vectors on-the-fly in a style close to MATLAB's  v=[a b c d ...]
 		  *  The first argument of the template is the vector length, and the second the type of the numbers.

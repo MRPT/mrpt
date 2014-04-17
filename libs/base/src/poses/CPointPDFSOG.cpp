@@ -16,8 +16,6 @@
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/bayes/CParticleFilterCapable.h>
 #include <mrpt/random.h>
-
-//#include <mrpt/math/utils.h>
 #include <mrpt/math/distributions.h>
 
 using namespace mrpt::poses;
@@ -25,6 +23,7 @@ using namespace mrpt::math;
 using namespace mrpt::utils;
 using namespace mrpt::bayes;
 using namespace mrpt::random;
+using namespace mrpt::system;
 using namespace std;
 
 IMPLEMENTS_SERIALIZABLE( CPointPDFSOG, CPosePDF, mrpt::poses )

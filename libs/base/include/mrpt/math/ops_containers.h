@@ -97,7 +97,7 @@ namespace mrpt
 
 		template <class CONTAINER> inline typename CONTAINER::Scalar norm_inf(const CONTAINER &v) { return v.norm_inf(); }
 		template <class CONTAINER> inline typename CONTAINER::Scalar norm(const CONTAINER &v) { return v.norm(); }
-		template <class CONTAINER> inline typename CONTAINER::Scalar maximum(const CONTAINER &v) { return v.maximum(); }
+		template <class CONTAINER> inline typename CONTAINER::Scalar maximum(const CONTAINER &v) { return v.maxCoeff(); }
 		template <class CONTAINER> inline typename CONTAINER::Scalar minimum(const CONTAINER &v) { return v.minimum(); }
 
 		template <typename T> inline T maximum(const std::vector<T> &v)

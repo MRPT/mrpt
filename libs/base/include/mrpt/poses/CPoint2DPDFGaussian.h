@@ -37,7 +37,7 @@ namespace poses
 
 		/** Constructor
 		  */
-		CPoint2DPDFGaussian( const CPoint2D &init_Mean, const CMatrixDouble22 &init_Cov );
+		CPoint2DPDFGaussian( const CPoint2D &init_Mean, const mrpt::math::CMatrixDouble22 &init_Cov );
 
 		/** The mean value
 		 */
@@ -45,7 +45,7 @@ namespace poses
 
 		/** The 2x2 covariance matrix
 		 */
-		CMatrixDouble22		cov;
+		mrpt::math::CMatrixDouble22		cov;
 
 		 /** Returns an estimate of the point, (the mean, or mathematical expectation of the PDF)
 		  */
@@ -56,7 +56,7 @@ namespace poses
 		/** Returns an estimate of the point covariance matrix (2x2 cov matrix) and the mean, both at once.
 		  * \sa getMean
 		  */
-		void getCovarianceAndMean(CMatrixDouble22 &cov,CPoint2D &mean_point) const {
+		void getCovarianceAndMean(mrpt::math::CMatrixDouble22 &cov,CPoint2D &mean_point) const {
 			cov = this->cov;
 			mean_point = this->mean;
 		}

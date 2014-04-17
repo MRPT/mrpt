@@ -72,9 +72,9 @@ namespace poses
 		DEFINE_SERIALIZABLE( CPose3D )
 
 	public:
-		CArrayDouble<3>   m_coords; //!< The translation vector [x,y,z] access directly or with x(), y(), z() setter/getter methods.
+		mrpt::math::CArrayDouble<3>   m_coords; //!< The translation vector [x,y,z] access directly or with x(), y(), z() setter/getter methods.
 	protected:
-		CMatrixDouble33   m_ROT;    //!< The 3x3 rotation matrix, access with getRotationMatrix(), setRotationMatrix() (It's not safe to set this field as public)
+		mrpt::math::CMatrixDouble33   m_ROT;    //!< The 3x3 rotation matrix, access with getRotationMatrix(), setRotationMatrix() (It's not safe to set this field as public)
 
 		mutable bool 	m_ypr_uptodate;			//!< Whether yaw/pitch/roll members are up-to-date since the last rotation matrix update.
 		mutable double	m_yaw, m_pitch, m_roll;	//!< These variables are updated every time that the object rotation matrix is modified (construction, loading from values, pose composition, etc )
@@ -112,7 +112,7 @@ namespace poses
 			for (int r=0;r<3;r++) m_coords[r]=xyz[r];
 		}
 		//! \overload
-		inline CPose3D(const CMatrixDouble33 &rot, const CArrayDouble<3>& xyz) : m_coords(xyz),m_ROT(rot), m_ypr_uptodate(false)
+		inline CPose3D(const mrpt::math::CMatrixDouble33 &rot, const mrpt::math::CArrayDouble<3>& xyz) : m_coords(xyz),m_ROT(rot), m_ypr_uptodate(false)
 		{ }
 
 		/** Constructor from a CPose2D object.
@@ -137,13 +137,13 @@ namespace poses
 		CPose3D(const CPose3DRotVec &p );
 
 		/** Fast constructor that leaves all the data uninitialized - call with UNINITIALIZED_POSE as argument */
-		inline CPose3D(TConstructorFlags_Poses constructor_dummy_param) : m_ROT(UNINITIALIZED_MATRIX), m_ypr_uptodate(false) { }
+		inline CPose3D(TConstructorFlags_Poses constructor_dummy_param) : m_ROT(mrpt::math::UNINITIALIZED_MATRIX), m_ypr_uptodate(false) { }
 
 		/** Constructor from an array with these 12 elements: [r11 r21 r31 r12 r22 r32 r13 r23 r33 tx ty tz]
 		  *  where r{ij} are the entries of the 3x3 rotation matrix and t{x,y,z} are the 3D translation of the pose
 		  *  \sa setFrom12Vector, getAs12Vector
 		  */
-		inline explicit CPose3D(const CArrayDouble<12> &vec12) : m_ROT( UNINITIALIZED_MATRIX ), m_ypr_uptodate(false) {
+		inline explicit CPose3D(const mrpt::math::CArrayDouble<12> &vec12) : m_ROT( mrpt::math::UNINITIALIZED_MATRIX ), m_ypr_uptodate(false) {
 			setFrom12Vector(vec12);
 		}
 
@@ -157,14 +157,14 @@ namespace poses
 		/** Returns the corresponding 4x4 homogeneous transformation matrix for the point(translation) or pose (translation+orientation).
 		  * \sa getInverseHomogeneousMatrix, getRotationMatrix
 		  */
-		inline void  getHomogeneousMatrix(CMatrixDouble44 & out_HM ) const
+		inline void  getHomogeneousMatrix(mrpt::math::CMatrixDouble44 & out_HM ) const
 		{
 			out_HM.insertMatrix(0,0,m_ROT);
 			for (int i=0;i<3;i++) out_HM(i,3)=m_coords[i];
 			out_HM(3,0)=out_HM(3,1)=out_HM(3,2)=0.; out_HM(3,3)=1.;
 		}
 
-		inline CMatrixDouble44 getHomogeneousMatrixVal() const { CMatrixDouble44 M; getHomogeneousMatrix(M); return M;}
+		inline mrpt::math::CMatrixDouble44 getHomogeneousMatrixVal() const { mrpt::math::CMatrixDouble44 M; getHomogeneousMatrix(M); return M;}
 
 		/** Get the 3x3 rotation matrix \sa getHomogeneousMatrix  */
 		inline void getRotationMatrix( mrpt::math::CMatrixDouble33 & ROT ) const { ROT = m_ROT; }
@@ -196,7 +196,7 @@ namespace poses
 
         /** Computes the spherical coordinates of a 3D point as seen from the 6D pose specified by this object. For the coordinate system see the top of this page. */
         void sphericalCoordinates(
-            const TPoint3D &point,
+            const mrpt::math::TPoint3D &point,
             double &out_range,
             double &out_yaw,
             double &out_pitch ) const;
@@ -216,11 +216,11 @@ namespace poses
 		/** An alternative, slightly more efficient way of doing \f$ G = P \oplus L \f$ with G and L being 3D points and P this 6D pose.
 		  * \note local_point is passed by value to allow global and local point to be the same variable
 		  */
-		inline void composePoint(const TPoint3D local_point, TPoint3D &global_point) const {
+		inline void composePoint(const mrpt::math::TPoint3D local_point, mrpt::math::TPoint3D &global_point) const {
 			composePoint(local_point.x,local_point.y,local_point.z,  global_point.x,global_point.y,global_point.z );
 		}
 		/** This version of the method assumes that the resulting point has no Z component (use with caution!) */
-		inline void composePoint(const TPoint3D local_point, TPoint2D &global_point) const {
+		inline void composePoint(const mrpt::math::TPoint3D local_point, mrpt::math::TPoint2D &global_point) const {
 			double dummy_z;
 			composePoint(local_point.x,local_point.y,local_point.z,  global_point.x,global_point.y,dummy_z );
 		}
@@ -423,7 +423,7 @@ namespace poses
 		/** Returns a human-readable textual representation of the object (eg: "[x y z yaw pitch roll]", angles in degrees.)
 		  * \sa fromString
 		  */
-		void asString(std::string &s) const { updateYawPitchRoll(); s = mrpt::format("[%f %f %f %f %f %f]",m_coords[0],m_coords[1],m_coords[2],RAD2DEG(m_yaw),RAD2DEG(m_pitch),RAD2DEG(m_roll)); }
+		void asString(std::string &s) const { using mrpt::utils::RAD2DEG; updateYawPitchRoll(); s = mrpt::format("[%f %f %f %f %f %f]",m_coords[0],m_coords[1],m_coords[2],RAD2DEG(m_yaw),RAD2DEG(m_pitch),RAD2DEG(m_roll)); }
 		inline std::string asString() const { std::string s; asString(s); return s; }
 
 		/** Set the current object value from a string generated by 'asString' (eg: "[x y z yaw pitch roll]", angles in deg. )
@@ -431,7 +431,8 @@ namespace poses
 		  * \exception std::exception On invalid format
 		  */
 		void fromString(const std::string &s) {
-		 	CMatrixDouble  m;
+			using mrpt::utils::DEG2RAD;
+		 	mrpt::math::CMatrixDouble  m;
 		 	if (!m.fromMatlabStringFormat(s)) THROW_EXCEPTION("Malformed expression in ::fromString");
 			ASSERTMSG_(mrpt::math::size(m,1)==1 && mrpt::math::size(m,2)==6, "Wrong size of vector in ::fromString");
 		 	this->setFromValues(m.get_unsafe(0,0),m.get_unsafe(0,1),m.get_unsafe(0,2),DEG2RAD(m.get_unsafe(0,3)),DEG2RAD(m.get_unsafe(0,4)),DEG2RAD(m.get_unsafe(0,5)));
@@ -460,7 +461,7 @@ namespace poses
 
 		/** Exponentiate a vector in the Lie algebra to generate a new SO(3) (a 3x3 rotation matrix).
 		  * \note Method from TooN (C) Tom Drummond (GNU GPL) */
-		static CMatrixDouble33 exp_rotation(const mrpt::math::CArrayNumeric<double,3> & vect);
+		static mrpt::math::CMatrixDouble33 exp_rotation(const mrpt::math::CArrayNumeric<double,3> & vect);
 
 
 		/** Take the logarithm of the 3x4 matrix defined by this pose, generating the corresponding vector in the SE(3) Lie Algebra.
@@ -481,11 +482,11 @@ namespace poses
 		/** Static function to compute the Jacobian of the SO(3) Logarithm function, evaluated at a given 3x3 rotation matrix R.
 		  * \sa ln, ln_jacob
 		  */
-		static void ln_rot_jacob(const CMatrixDouble33 &R, CMatrixFixedNumeric<double,3,9> &M);
+		static void ln_rot_jacob(const mrpt::math::CMatrixDouble33 &R, mrpt::math::CMatrixFixedNumeric<double,3,9> &M);
 
 		/** Take the logarithm of the 3x3 rotation matrix, generating the corresponding vector in the Lie Algebra.
 		  * \note Method from TooN (C) Tom Drummond (GNU GPL) */
-		CArrayDouble<3> ln_rotation() const;
+		mrpt::math::CArrayDouble<3> ln_rotation() const;
 
 		/** @} */
 

@@ -53,6 +53,7 @@ WARRANTY OF MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE.
 using namespace std;
 using namespace mrpt;
 using namespace mrpt::utils;
+using namespace mrpt::math;
 
 
 #define PLY_ASCII      1        /* ascii PLY file */

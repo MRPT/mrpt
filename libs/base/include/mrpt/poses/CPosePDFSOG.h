@@ -50,7 +50,7 @@ namespace mrpt
 				{ }
 
 				CPose2D			mean;
-				CMatrixDouble33	cov;
+				mrpt::math::CMatrixDouble33	cov;
 
 				/** The log-weight
 				  */
@@ -136,12 +136,12 @@ namespace mrpt
 			/** Returns an estimate of the pose covariance matrix (3x3 cov matrix) and the mean, both at once.
 			  * \sa getMean
 			  */
-			void getCovarianceAndMean(CMatrixDouble33 &cov,CPose2D &mean_point) const;
+			void getCovarianceAndMean(mrpt::math::CMatrixDouble33 &cov,CPose2D &mean_point) const;
 
 			/** For the most likely Gaussian mode in the SOG, returns the pose covariance matrix (3x3 cov matrix) and the mean.
 			  * \sa getMean
 			  */
-			void getMostLikelyCovarianceAndMean(CMatrixDouble33 &cov,CPose2D &mean_point) const;
+			void getMostLikelyCovarianceAndMean(mrpt::math::CMatrixDouble33 &cov,CPose2D &mean_point) const;
 
 			/** Normalize the weights in m_modes such as the maximum log-weight is 0.
 			  */
@@ -209,7 +209,7 @@ namespace mrpt
 				const double &		y_max,
 				const double &		resolutionXY,
 				const double &		phi,
-				CMatrixD	&outMatrix,
+				mrpt::math::CMatrixD	&outMatrix,
 				bool		sumOverAllPhis = false );
 
 			/** Bayesian fusion of two pose distributions, then save the result in this object (WARNING: Currently p1 must be a mrpt::poses::CPosePDFSOG object and p2 a mrpt::poses::CPosePDFGaussian object)

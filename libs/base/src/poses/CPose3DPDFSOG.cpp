@@ -9,11 +9,12 @@
 
 #include "base-precomp.h"  // Precompiled headers
 
-
 #include <mrpt/poses/CPose3DPDFSOG.h>
 
+using namespace mrpt;
 using namespace mrpt::poses;
 using namespace mrpt::utils;
+using namespace mrpt::system;
 using namespace std;
 
 IMPLEMENTS_SERIALIZABLE( CPose3DPDFSOG, CPose3DPDF, mrpt::poses )
@@ -144,26 +145,26 @@ void CPose3DPDFSOG::getMean(CPose3D &p) const
 /*---------------------------------------------------------------
 						getCovarianceAndMean
  ---------------------------------------------------------------*/
-void CPose3DPDFSOG::getCovarianceAndMean(CMatrixDouble66 &estCovOut,CPose3D &mean) const
+void CPose3DPDFSOG::getCovarianceAndMean(mrpt::math::CMatrixDouble66 &estCovOut,CPose3D &mean) const
 {
 	size_t		N = m_modes.size();
 
 	getMean(mean);
-	CMatrixDouble66 estCov;
+	mrpt::math::CMatrixDouble66 estCov;
 
 	if (N)
 	{
 		// 1) Get the mean:
 		double		sumW = 0;
-		CMatrixDouble estMean( mean );
+		mrpt::math::CMatrixDouble estMean( mean );
 
-		CMatrixDouble66		MMt;
-		CMatrixDouble61 estMean_i;
+		mrpt::math::CMatrixDouble66		MMt;
+		mrpt::math::CMatrixDouble61 estMean_i;
 		for (const_iterator	it=m_modes.begin();it!=m_modes.end();++it)
 		{
 		    double w;
 			sumW += w = exp((it)->log_w);
-			estMean_i = CMatrixDouble61((it)->val.mean);
+			estMean_i = mrpt::math::CMatrixDouble61((it)->val.mean);
 			MMt.multiply_AAt(estMean_i);
 			MMt+=(it)->val.cov;
 			MMt*=w;
@@ -257,7 +258,7 @@ void  CPose3DPDFSOG::copyFrom(const CPose3DPDF &o)
 	{
 		this->resize(1);
 		m_modes[0].log_w = 0;
-		CMatrixDouble66 C;
+		mrpt::math::CMatrixDouble66 C;
 		o.getCovarianceAndMean( C, m_modes[0].val.mean );
 		m_modes[0].val.cov = C;
 	}

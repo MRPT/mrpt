@@ -8,6 +8,7 @@
    +---------------------------------------------------------------------------+ */
 
 #include "base-precomp.h"
+#include <mrpt/base.h>
 
 #ifndef MRPT_ENABLE_PRECOMPILED_HDRS
 #	define MRPT_ALWAYS_INCLUDE_ALL_HEADERS

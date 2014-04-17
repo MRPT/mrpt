@@ -42,11 +42,11 @@ namespace mrpt
 
 				size_t n_calls;
 				double min_t,max_t,mean_t;
-				stack<double,vector<double> >   open_calls;
+				std::stack<double,std::vector<double> >   open_calls;
 				bool has_time_units;
 			};
 
-			map<string,TCallData>  m_data;
+			std::map<std::string,TCallData>  m_data;
 
 			void do_enter( const char *func_name );
 			double do_leave( const char *func_name );

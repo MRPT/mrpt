@@ -15,6 +15,7 @@
 #include <mrpt/poses/CPose3DPDFGaussian.h>
 
 using namespace mrpt::poses;
+using namespace mrpt::math;
 using namespace std;
 
 IMPLEMENTS_VIRTUAL_SERIALIZABLE( CPose3DQuatPDF, CSerializable, mrpt::poses )

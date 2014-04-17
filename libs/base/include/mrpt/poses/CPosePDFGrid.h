@@ -43,7 +43,7 @@ namespace poses
 			double		yMin = -1.0f,
 			double		yMax = 1.0f,
 			double		resolutionXY = 0.5f,
-			double		resolutionPhi = DEG2RAD(180),
+			double		resolutionPhi = mrpt::utils::DEG2RAD(180),
 			double		phiMin = -M_PIf,
 			double		phiMax = M_PIf
 			);
@@ -72,7 +72,7 @@ namespace poses
 		/** Returns an estimate of the pose covariance matrix (3x3 cov matrix) and the mean, both at once.
 		  * \sa getMean
 		  */
-		void getCovarianceAndMean(CMatrixDouble33 &cov,CPose2D &mean_point) const;
+		void getCovarianceAndMean(mrpt::math::CMatrixDouble33 &cov,CPose2D &mean_point) const;
 
 		/** Save the contents of the 3D grid in one file, as a vertical concatenation of rectangular matrix for the different "PHI" discrete levels, and the size in X,Y,and PHI in another file named "<filename>_dims.txt"
 		 */

@@ -1120,7 +1120,7 @@ double CRangeBearingKFSLAM::computeOffDiagonalBlocksApproximationError(
         fullCov(i,i) = max(fullCov(i,i), 1e-6);
 
     CMatrixTemplateNumeric<kftype>		H( fullCov.inv() );
-    H.Abs();        // Replace by absolute values:
+    H.array().abs();        // Replace by absolute values:
 
     double sumOffBlocks = 0;
     unsigned int nLMs = landmarksMembership.size();

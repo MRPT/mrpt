@@ -45,11 +45,11 @@ protected:
 		CPose3D p_q1_c_q2 = CPose3D(q1_c_q2);
 		CPose3D p_q1_i_q2 = CPose3D(q1_i_q2);
 
-		EXPECT_NEAR(0, (p1_c_p2.getAsVectorVal()-p_q1_c_q2.getAsVectorVal()).Abs().sumAll(), 1e-5) <<
+		EXPECT_NEAR(0, (p1_c_p2.getAsVectorVal()-p_q1_c_q2.getAsVectorVal()).array().abs().sum(), 1e-5) <<
 			"p1_c_p2: " << p1_c_p2 << endl <<
 			"q1_c_p2: " << p_q1_c_q2 << endl;
 
-		EXPECT_NEAR(0, (p1_i_p2.getAsVectorVal()-p_q1_i_q2.getAsVectorVal()).Abs().sumAll(), 1e-5) <<
+		EXPECT_NEAR(0, (p1_i_p2.getAsVectorVal()-p_q1_i_q2.getAsVectorVal()).array().abs().sum(), 1e-5) <<
 			"p1_i_p2: " << p1_i_p2 << endl <<
 			"q1_i_p2: " << p_q1_i_q2 << endl;
 	}
@@ -64,7 +64,7 @@ protected:
 		CPoint3D  p1_plus_p = p1 + p;
 		CPoint3D  q1_plus_p = q1 + p;
 
-		EXPECT_NEAR(0, (p1_plus_p.getAsVectorVal()-q1_plus_p.getAsVectorVal()).Abs().sumAll(), 1e-5) <<
+		EXPECT_NEAR(0, (p1_plus_p.getAsVectorVal()-q1_plus_p.getAsVectorVal()).array().abs().sum(), 1e-5) <<
 			"p1: " << p1 << endl <<
 			"q1: " << q1 << endl <<
 			"p: " << p << endl <<
@@ -119,14 +119,14 @@ protected:
 
 
 		// Compare:
-		EXPECT_NEAR(0, (df_dpoint-num_df_dpoint).Abs().sumAll(), 3e-3 )
+		EXPECT_NEAR(0, (df_dpoint-num_df_dpoint).array().abs().sum(), 3e-3 )
 			<< "q1: " << q1 << endl
 			<< "p:  " << p << endl
 			<< "Numeric approximation of df_dpoint: " << endl << num_df_dpoint << endl
 			<< "Implemented method: " << endl << df_dpoint << endl
 			<< "Error: " << endl << df_dpoint-num_df_dpoint << endl;
 
-		EXPECT_NEAR(0, (df_dpose-num_df_dpose).Abs().sumAll(), 3e-3 )
+		EXPECT_NEAR(0, (df_dpose-num_df_dpose).array().abs().sum(), 3e-3 )
 			<< "q1: " << q1 << endl
 			<< "p:  " << p << endl
 			<< "Numeric approximation of df_dpose: " << endl << num_df_dpose << endl
@@ -148,11 +148,11 @@ protected:
 		CPoint3D  p_rec = q1 + p_minus_q1;
 
 
-		EXPECT_NEAR(0, (p_minus_p1.getAsVectorVal()-p_minus_q1.getAsVectorVal()).Abs().sumAll(), 1e-5) <<
+		EXPECT_NEAR(0, (p_minus_p1.getAsVectorVal()-p_minus_q1.getAsVectorVal()).array().abs().sum(), 1e-5) <<
 			"p_minus_p1: " << p_minus_p1 << endl <<
 			"p_minus_q1: " << p_minus_q1 << endl;
 
-		EXPECT_NEAR(0, (p_rec.getAsVectorVal()-p.getAsVectorVal()).Abs().sumAll(), 1e-5) <<
+		EXPECT_NEAR(0, (p_rec.getAsVectorVal()-p.getAsVectorVal()).array().abs().sum(), 1e-5) <<
 			"p_rec: " << p_rec << endl <<
 			"p: " << p << endl;
 	}
@@ -216,7 +216,7 @@ protected:
 		}
 
 		// Compare:
-		EXPECT_NEAR(0, (df_dpoint-num_df_dpoint).Abs().sumAll(), 3e-3 )
+		EXPECT_NEAR(0, (df_dpoint-num_df_dpoint).array().abs().sum(), 3e-3 )
 			<< "q1: " << q1 << endl
 			<< "from pose: " << CPose3D(x1,y1,z1,yaw1,pitch1,roll1) << endl
 			<< "p:  " << p << endl
@@ -225,7 +225,7 @@ protected:
 			<< "Implemented method: " << endl << df_dpoint << endl
 			<< "Error: " << endl << df_dpoint-num_df_dpoint << endl;
 
-		EXPECT_NEAR(0, (df_dpose-num_df_dpose).Abs().sumAll(), 3e-3 )
+		EXPECT_NEAR(0, (df_dpose-num_df_dpose).array().abs().sum(), 3e-3 )
 			<< "q1: " << q1 << endl
 			<< "from pose: " << CPose3D(x1,y1,z1,yaw1,pitch1,roll1) << endl
 			<< "p:  " << p << endl
@@ -242,11 +242,11 @@ protected:
 		const CPose3DQuat q1(p1);
 		const CPose3D p1r = q1;
 
-		EXPECT_NEAR(0, (p1.getHomogeneousMatrixVal()-q1.getHomogeneousMatrixVal()).Abs().sumAll(), 1e-5) <<
+		EXPECT_NEAR(0, (p1.getHomogeneousMatrixVal()-q1.getHomogeneousMatrixVal()).array().abs().sum(), 1e-5) <<
 			"p1.getHomogeneousMatrixVal():\n" << p1.getHomogeneousMatrixVal() << endl <<
 			"q1.getHomogeneousMatrixVal():\n" << q1.getHomogeneousMatrixVal() << endl;
 
-		EXPECT_NEAR(0, (p1.getAsVectorVal()-p1r.getAsVectorVal()).Abs().sumAll(), 1e-5) <<
+		EXPECT_NEAR(0, (p1.getAsVectorVal()-p1r.getAsVectorVal()).array().abs().sum(), 1e-5) <<
 			"p1: " << p1 << endl <<
 			"q1: " << q1 << endl <<
 			"p1r: " << p1r << endl;
@@ -260,7 +260,7 @@ protected:
 		const CPose3DQuat q1(p1);
 		const CPose3DQuat q1_inv = -q1;
 
-		EXPECT_NEAR(0, (p1_inv.getHomogeneousMatrixVal()-q1_inv.getHomogeneousMatrixVal()).Abs().sumAll(), 1e-5) <<
+		EXPECT_NEAR(0, (p1_inv.getHomogeneousMatrixVal()-q1_inv.getHomogeneousMatrixVal()).array().abs().sum(), 1e-5) <<
 			"p1_inv.getHomogeneousMatrixVal():\n" << p1_inv.getHomogeneousMatrixVal() << endl <<
 			"q1_inv.getHomogeneousMatrixVal():\n" << q1_inv.getHomogeneousMatrixVal() << endl;
 
@@ -273,7 +273,7 @@ protected:
 		const CPose3DQuat q1(p1);
 		const CPose3DQuat q2 = q1;
 
-		EXPECT_NEAR(0, (q1.getHomogeneousMatrixVal()-q2.getHomogeneousMatrixVal()).Abs().sumAll(), 1e-5) <<
+		EXPECT_NEAR(0, (q1.getHomogeneousMatrixVal()-q2.getHomogeneousMatrixVal()).array().abs().sum(), 1e-5) <<
 			"q1.getHomogeneousMatrixVal():\n" << q1.getHomogeneousMatrixVal() << endl <<
 			"q2.getHomogeneousMatrixVal():\n" << q2.getHomogeneousMatrixVal() << endl;
 
@@ -387,14 +387,14 @@ protected:
 
 
 		// Compare:
-		EXPECT_NEAR(0, (df_dpoint-num_df_dpoint).Abs().sumAll(), 3e-3 )
+		EXPECT_NEAR(0, (df_dpoint-num_df_dpoint).array().abs().sum(), 3e-3 )
 			<< "q1: " << q1 << endl
 			<< "p:  " << p << endl
 			<< "Numeric approximation of df_dpoint: " << endl << num_df_dpoint << endl
 			<< "Implemented method: " << endl << df_dpoint << endl
 			<< "Error: " << endl << df_dpoint-num_df_dpoint << endl;
 
-		EXPECT_NEAR(0, (df_dpose-num_df_dpose).Abs().sumAll(), 3e-3 )
+		EXPECT_NEAR(0, (df_dpose-num_df_dpose).array().abs().sum(), 3e-3 )
 			<< "q1: " << q1 << endl
 			<< "p:  " << p << endl
 			<< "Numeric approximation of df_dpose: " << endl << num_df_dpose << endl
@@ -439,7 +439,7 @@ protected:
 
 
 		// Compare:
-		EXPECT_NEAR(0, (df_dpose-num_df_dpose).Abs().sumAll(), 3e-3 )
+		EXPECT_NEAR(0, (df_dpose-num_df_dpose).array().abs().sum(), 3e-3 )
 			<< "q1: " << q1 << endl
 			<< "Numeric approximation of df_dpose: " << endl << num_df_dpose << endl
 			<< "Implemented method: " << endl << df_dpose << endl

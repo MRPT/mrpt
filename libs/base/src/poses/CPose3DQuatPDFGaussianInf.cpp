@@ -10,17 +10,14 @@
 #include "base-precomp.h"  // Precompiled headers
 
 #include <mrpt/poses/CPose3DQuatPDFGaussianInf.h>
-
-//#include <mrpt/math/utils.h>
-//#include <mrpt/math/jacobians.h>
 #include <mrpt/math/transform_gaussian.h>
 #include <mrpt/math/distributions.h>
-
 #include <mrpt/poses/CPose3DPDFGaussian.h>
 #include <mrpt/poses/CPosePDF.h>
 #include <mrpt/poses/CPosePDFGaussian.h>
 
-
+using namespace mrpt;
+using namespace mrpt::system;
 using namespace mrpt::poses;
 using namespace mrpt::math;
 using namespace mrpt::random;

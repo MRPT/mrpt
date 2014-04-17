@@ -593,8 +593,8 @@ float CFeature::internal_distanceBetweenPolarImages(
 //#define LM_CORR_METHOD_CORRELATION
 
 #if defined(LM_CORR_BIAS_MEAN) || defined(LM_CORR_METHOD_CORRELATION)
-	const float desc1_mean = desc1.sumAll() / static_cast<float>(width*height);
-	const float desc2_mean = desc2.sumAll() / static_cast<float>(width*height);
+	const float desc1_mean = desc1.sum() / static_cast<float>(width*height);
+	const float desc2_mean = desc2.sum() / static_cast<float>(width*height);
 #endif
 
 	vector_float distances(height,0);  // Distances for each shift

@@ -12,15 +12,14 @@
 
 #include <mrpt/poses/CPosePDFGrid.h>
 #include <mrpt/poses/CPosePDFParticles.h>
-
 #include <mrpt/random.h>
-//#include <mrpt/math/utils.h>
 
 using namespace std;
 using namespace mrpt;
 using namespace mrpt::utils;
 using namespace mrpt::math;
 using namespace mrpt::poses;
+using namespace mrpt::system;
 
 IMPLEMENTS_SERIALIZABLE( CPosePDFGrid, CPosePDF, mrpt::poses )
 

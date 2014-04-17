@@ -103,7 +103,7 @@ protected:
 
 		const double max_eror = 1e-3;
 
-		EXPECT_NEAR(0, (num_J1-J1).Abs().sumAll(), max_eror )
+		EXPECT_NEAR(0, (num_J1-J1).array().abs().sum(), max_eror )
 			<< "p1: " << P1 << endl
 			<< "d: "  << Pd << endl
 			<< "p2: " << P2 << endl
@@ -111,7 +111,7 @@ protected:
 			<< "Implemented J1:\n" << J1 << endl
 			<< "Error:\n" << J1-num_J1 << endl;
 
-		EXPECT_NEAR(0, (num_J2-J2).Abs().sumAll(), max_eror )
+		EXPECT_NEAR(0, (num_J2-J2).array().abs().sum(), max_eror )
 			<< "p1: " << P1 << endl
 			<< "d: "  << Pd << endl
 			<< "p2: " << P2 << endl

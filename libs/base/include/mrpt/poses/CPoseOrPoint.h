@@ -157,10 +157,11 @@ namespace mrpt
 			}
 
 			/** Returns the squared 2D distance from this pose/point to a 2D point (ignores Z, if it exists). */
-			inline double distance2DToSquare( double ax, double ay ) const { return  square(ax-x())+square(ay-y()); }
+			inline double distance2DToSquare( double ax, double ay ) const { using mrpt::utils::square; return square(ax-x())+square(ay-y()); }
 
 			/** Returns the squared 3D distance from this pose/point to a 3D point */
 			inline double distance3DToSquare( double ax, double ay, double az ) const {
+				using mrpt::utils::square; 
 				return square(ax-x())+square(ay-y())+square(az-(is3DPoseOrPoint() ? static_cast<const DERIVEDCLASS*>(this)->m_coords[2] : 0) );
 			}
 
@@ -193,7 +194,7 @@ namespace mrpt
 			*/
 			inline mrpt::math::CMatrixDouble44 getHomogeneousMatrixVal() const
 			{
-				mrpt::math::CMatrixDouble44 m(UNINITIALIZED_MATRIX);
+				mrpt::math::CMatrixDouble44 m(mrpt::math::UNINITIALIZED_MATRIX);
 				static_cast<const DERIVEDCLASS*>(this)->getHomogeneousMatrix(m);
 				return m;
 			}
@@ -210,7 +211,7 @@ namespace mrpt
 			//! \overload
 			inline mrpt::math::CMatrixDouble44 getInverseHomogeneousMatrix() const
 			{
-				mrpt::math::CMatrixDouble44 M(UNINITIALIZED_MATRIX);
+				mrpt::math::CMatrixDouble44 M(mrpt::math::UNINITIALIZED_MATRIX);
 				getInverseHomogeneousMatrix(M);
 				return M;
 			}

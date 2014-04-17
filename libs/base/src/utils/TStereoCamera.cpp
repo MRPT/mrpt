@@ -13,6 +13,7 @@
 #include <mrpt/utils/CConfigFileMemory.h>
 
 using namespace mrpt::utils;
+using namespace mrpt::poses;
 using namespace mrpt::math;
 using namespace std;
 

@@ -11,7 +11,6 @@
 
 #include <mrpt/utils/CDebugOutputCapable.h>
 #include <mrpt/math/CMatrixTemplateNumeric.h>
-//#include <mrpt/math/utils.h>
 
 /*---------------------------------------------------------------
 	Class

@@ -47,19 +47,19 @@ namespace poses
 		CPose3DQuatPDFGaussianInf();
 
 		/** Constructor which left all the member uninitialized, for using when speed is critical - as argument, use UNINITIALIZED_QUATERNION. */
-		CPose3DQuatPDFGaussianInf(TConstructorFlags_Quaternions constructor_dummy_param);
+		CPose3DQuatPDFGaussianInf(mrpt::math::TConstructorFlags_Quaternions constructor_dummy_param);
 
 		/** Constructor from a default mean value, information matrix equals to zero. */
 		explicit CPose3DQuatPDFGaussianInf( const CPose3DQuat &init_Mean );
 
 		/** Constructor with mean and inverse covariance (information matrix). */
-		CPose3DQuatPDFGaussianInf( const CPose3DQuat &init_Mean, const CMatrixDouble77 &init_CovInv );
+		CPose3DQuatPDFGaussianInf( const CPose3DQuat &init_Mean, const mrpt::math::CMatrixDouble77 &init_CovInv );
 
 		/** The mean value */
 		CPose3DQuat		mean;
 
 		/** The 7x7 information matrix (the inverse of the covariance) */
-		CMatrixDouble77		cov_inv;
+		mrpt::math::CMatrixDouble77		cov_inv;
 
 		inline const CPose3DQuat & getPoseMean() const { return mean; }
 		inline       CPose3DQuat & getPoseMean()       { return mean; }
@@ -72,13 +72,13 @@ namespace poses
 
 		/** Returns an estimate of the pose covariance matrix (7x7 cov matrix) and the mean, both at once.
 		  * \sa getMean */
-		void getCovarianceAndMean(CMatrixDouble77 &cov,CPose3DQuat &mean_point) const {
+		void getCovarianceAndMean(mrpt::math::CMatrixDouble77 &cov,CPose3DQuat &mean_point) const {
 			cov_inv.inv(cov);
 			mean_point = mean;
 		}
 
 		/** Returns the information (inverse covariance) matrix (a STATE_LEN x STATE_LEN matrix) \sa getMean, getCovarianceAndMean */
-		virtual void getInformationMatrix(CMatrixDouble77 &inf) const { inf=cov_inv; }
+		virtual void getInformationMatrix(mrpt::math::CMatrixDouble77 &inf) const { inf=cov_inv; }
 
 
 		/** Copy operator, translating if necesary (for example, between particles and gaussian representations) */
@@ -109,7 +109,7 @@ namespace poses
 		/** Unary - operator, returns the PDF of the inverse pose.  */
 		inline CPose3DQuatPDFGaussianInf operator -() const
 		{
-			CPose3DQuatPDFGaussianInf p(UNINITIALIZED_QUATERNION);
+			CPose3DQuatPDFGaussianInf p(mrpt::math::UNINITIALIZED_QUATERNION);
 			this->inverse(p);
 			return p;
 		}

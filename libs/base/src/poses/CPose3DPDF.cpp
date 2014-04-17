@@ -9,21 +9,17 @@
 
 #include "base-precomp.h"  // Precompiled headers
 
-
-
 #include <mrpt/poses/CPose3DPDF.h>
-
 #include <mrpt/poses/CPose3DPDFGaussian.h>
 #include <mrpt/poses/CPose3DPDFSOG.h>
 #include <mrpt/poses/CPose3DPDFParticles.h>
 #include <mrpt/poses/CPose3DQuatPDF.h>
-
 #include <mrpt/poses/CPosePDFGaussian.h>
 #include <mrpt/poses/CPosePDFSOG.h>
 #include <mrpt/poses/CPosePDFParticles.h>
 
-
 using namespace mrpt::poses;
+using namespace mrpt::math;
 using namespace std;
 
 IMPLEMENTS_VIRTUAL_SERIALIZABLE( CPose3DPDF, CSerializable, mrpt::poses )

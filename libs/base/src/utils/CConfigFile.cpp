@@ -9,13 +9,11 @@
 
 #include "base-precomp.h"  // Precompiled headers
 
-
-
 #include <mrpt/utils/CConfigFile.h>
-
 #include <mrpt/system/os.h>
 #include "simpleini/SimpleIni.h"
 
+using namespace mrpt;
 using namespace mrpt::utils;
 using namespace mrpt::utils::simpleini;
 using namespace std;

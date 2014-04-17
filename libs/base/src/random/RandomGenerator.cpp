@@ -234,7 +234,7 @@ void  CRandomGenerator::drawGaussianMultivariate(
 	cov.eigenVectors( Z, D );
 
 	// Scale eigenvectors with eigenvalues:
-	D.Sqrt();
+	D = D.array().sqrt().matrix();
 	Z.multiply(Z,D);
 
 	for (size_t i=0;i<dim;i++)

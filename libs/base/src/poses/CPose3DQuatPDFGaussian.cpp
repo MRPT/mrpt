@@ -10,21 +10,19 @@
 #include "base-precomp.h"  // Precompiled headers
 
 #include <mrpt/poses/CPose3DQuatPDFGaussian.h>
-
-//#include <mrpt/math/utils.h>
-//#include <mrpt/math/jacobians.h>
 #include <mrpt/math/transform_gaussian.h>
 #include <mrpt/math/distributions.h>
-
 #include <mrpt/poses/CPose3DPDFGaussian.h>
 #include <mrpt/poses/CPosePDF.h>
 #include <mrpt/poses/CPosePDFGaussian.h>
 
 
+using namespace mrpt;
 using namespace mrpt::poses;
 using namespace mrpt::math;
 using namespace mrpt::random;
 using namespace mrpt::utils;
+using namespace mrpt::system;
 using namespace std;
 
 bool mrpt::global_settings::USE_SUT_EULER2QUAT_CONVERSION = false;

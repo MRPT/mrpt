@@ -11,11 +11,10 @@
 
 #include <mrpt/math/CMatrixD.h>
 #include <mrpt/math/CMatrixFixedNumeric.h>
+#include <mrpt/math/math_frwds.h>
 
 namespace mrpt
 {
-	namespace poses { class CPose3D; }
-
 	namespace utils
 	{
 		/** A generic template for probability density distributions (PDFs).
@@ -40,14 +39,14 @@ namespace mrpt
 			/** Returns an estimate of the pose covariance matrix (STATE_LENxSTATE_LEN cov matrix) and the mean, both at once.
 			  * \sa getMean, getInformationMatrix
 			  */
-			virtual void getCovarianceAndMean(CMatrixFixedNumeric<double,STATE_LEN,STATE_LEN> &cov,TDATA  &mean_point) const = 0;
+			virtual void getCovarianceAndMean(mrpt::math::CMatrixFixedNumeric<double,STATE_LEN,STATE_LEN> &cov,TDATA  &mean_point) const = 0;
 
 			/** Returns an estimate of the pose covariance matrix (STATE_LENxSTATE_LEN cov matrix) and the mean, both at once.
 			  * \sa getMean, getInformationMatrix
 			  */
-			inline void getCovarianceDynAndMean(CMatrixDouble &cov,TDATA  &mean_point) const
+			inline void getCovarianceDynAndMean(mrpt::math::CMatrixDouble &cov,TDATA  &mean_point) const
 			{
-				CMatrixFixedNumeric<double,STATE_LEN,STATE_LEN> C(UNINITIALIZED_MATRIX);
+				mrpt::math::CMatrixFixedNumeric<double,STATE_LEN,STATE_LEN> C(mrpt::math::UNINITIALIZED_MATRIX);
 				this->getCovarianceAndMean(C,mean_point);
 				cov = C; // Convert to dynamic size matrix
 			}
@@ -65,7 +64,7 @@ namespace mrpt
 			/** Returns the estimate of the covariance matrix (STATE_LEN x STATE_LEN covariance matrix)
 			  * \sa getMean, getCovarianceAndMean, getInformationMatrix
 			  */
-			inline void getCovariance(CMatrixDouble &cov) const
+			inline void getCovariance(mrpt::math::CMatrixDouble &cov) const
 			{
 				TDATA p;
 				this->getCovarianceDynAndMean(cov,p);
@@ -74,7 +73,7 @@ namespace mrpt
 			/** Returns the estimate of the covariance matrix (STATE_LEN x STATE_LEN covariance matrix)
 			  * \sa getMean, getCovarianceAndMean, getInformationMatrix
 			  */
-			inline void getCovariance(CMatrixFixedNumeric<double,STATE_LEN,STATE_LEN> &cov) const
+			inline void getCovariance(mrpt::math::CMatrixFixedNumeric<double,STATE_LEN,STATE_LEN> &cov) const
 			{
 				TDATA p;
 				this->getCovarianceAndMean(cov,p);
@@ -83,9 +82,9 @@ namespace mrpt
 			/** Returns the estimate of the covariance matrix (STATE_LEN x STATE_LEN covariance matrix)
 			  * \sa getMean, getInformationMatrix
 			  */
-			inline CMatrixFixedNumeric<double,STATE_LEN,STATE_LEN> getCovariance() const
+			inline mrpt::math::CMatrixFixedNumeric<double,STATE_LEN,STATE_LEN> getCovariance() const
 			{
-				CMatrixFixedNumeric<double,STATE_LEN,STATE_LEN> cov(UNINITIALIZED_MATRIX);
+				mrpt::math::CMatrixFixedNumeric<double,STATE_LEN,STATE_LEN> cov(mrpt::math::UNINITIALIZED_MATRIX);
 				TDATA p;
 				this->getCovarianceAndMean(cov,p);
 				return cov;
@@ -96,9 +95,9 @@ namespace mrpt
 			  *  Unless reimplemented in derived classes, this method first reads the covariance, then invert it.
 			  * \sa getMean, getCovarianceAndMean
 			  */
-			virtual void getInformationMatrix(CMatrixFixedNumeric<double,STATE_LEN,STATE_LEN> &inf) const
+			virtual void getInformationMatrix(mrpt::math::CMatrixFixedNumeric<double,STATE_LEN,STATE_LEN> &inf) const
 			{
-				CMatrixFixedNumeric<double,STATE_LEN,STATE_LEN> cov(UNINITIALIZED_MATRIX);
+				mrpt::math::CMatrixFixedNumeric<double,STATE_LEN,STATE_LEN> cov(mrpt::math::UNINITIALIZED_MATRIX);
 				TDATA p;
 				this->getCovarianceAndMean(cov,p);
 				cov.inv_fast(inf); // Destroy source cov matrix, since we don't need it anymore.

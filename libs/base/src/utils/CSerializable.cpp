@@ -76,7 +76,7 @@ std::string utils::ObjectToString(const CSerializable *o)
 		memcpy(&str[0],tmpCoded.getRawBufferData(),n);
 		return str;
 	}
-	catch (std::bad_alloc &e)
+	catch (std::bad_alloc &)
 	{
 		throw;
 	}
@@ -169,7 +169,7 @@ void utils::ObjectToOctetVector(const CSerializable *o, vector_byte & out_vector
 			os::memcpy( &out_vector[0],N,tmp.getRawBufferData(), N );
 		}
 	}
-	catch (std::bad_alloc &e)
+	catch (std::bad_alloc &)
 	{
 		throw;
 	}
@@ -197,7 +197,7 @@ void utils::OctetVectorToObject(const vector_byte & in_data, CSerializablePtr &o
 		CMemoryStream	tmp( &in_data[0], in_data.size());
 		obj = tmp.ReadObject();
 	}
-	catch (std::bad_alloc &e)
+	catch (std::bad_alloc &)
 	{
 		throw;
 	}
@@ -228,7 +228,7 @@ void utils::ObjectToRawString(const CSerializable *o, std::string & out_vector)
 			os::memcpy( &out_vector[0],N,tmp.getRawBufferData(), N );
 		}
 	}
-	catch (std::bad_alloc &e)
+	catch (std::bad_alloc &)
 	{
 		throw;
 	}
@@ -256,7 +256,7 @@ void utils::RawStringToObject(const std::string & in_data, CSerializablePtr &obj
 		CMemoryStream	tmp( &in_data[0], in_data.size());
 		obj = tmp.ReadObject();
 	}
-	catch (std::bad_alloc &e)
+	catch (std::bad_alloc &)
 	{
 		throw;
 	}

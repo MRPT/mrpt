@@ -67,8 +67,8 @@ namespace mrpt
 			static void jacobiansPoseComposition(
 				const CPose3DQuat &x,
 				const CPose3DQuat &u,
-				CMatrixDouble77	  &df_dx,
-				CMatrixDouble77	  &df_du,
+				mrpt::math::CMatrixDouble77	  &df_dx,
+				mrpt::math::CMatrixDouble77	  &df_du,
 				CPose3DQuat       *out_x_oplus_u=NULL);
 
 

@@ -45,7 +45,7 @@ namespace poses
 		DEFINE_SERIALIZABLE( CPose3DQuat )
 
 	public:
-		CArrayDouble<3>                 m_coords; //!< The translation vector [x,y,z]
+		mrpt::math::CArrayDouble<3>     m_coords; //!< The translation vector [x,y,z]
 		mrpt::math::CQuaternionDouble   m_quat;   //!< The quaternion.
 
 	public:
@@ -64,9 +64,9 @@ namespace poses
 		inline CPose3DQuat() : m_quat() { m_coords[0]=m_coords[1]=m_coords[2]=0.; }
 
 		/** Constructor which left all the quaternion members un-initialized, for use when speed is critical; Use UNINITIALIZED_POSE as argument to this constructor. */
-		inline CPose3DQuat(TConstructorFlags_Quaternions constructor_dummy_param) : m_quat(UNINITIALIZED_QUATERNION) { }
+		inline CPose3DQuat(mrpt::math::TConstructorFlags_Quaternions constructor_dummy_param) : m_quat(mrpt::math::UNINITIALIZED_QUATERNION) { }
 		/** \overload */
-		inline CPose3DQuat(TConstructorFlags_Poses constructor_dummy_param)  : m_quat(UNINITIALIZED_QUATERNION) { }
+		inline CPose3DQuat(TConstructorFlags_Poses constructor_dummy_param)  : m_quat(mrpt::math::UNINITIALIZED_QUATERNION) { }
 
 		/** Constructor with initilization of the pose - the quaternion is normalized to make sure it's unitary */
 		inline CPose3DQuat(const double x,const double y,const double z,const mrpt::math::CQuaternionDouble &q ) : m_quat(q) { m_coords[0]=x; m_coords[1]=y; m_coords[2]=z; m_quat.normalize(); }
@@ -79,12 +79,12 @@ namespace poses
 
 		/** Constructor from a 4x4 homogeneous transformation matrix.
 		  */
-		explicit CPose3DQuat(const CMatrixDouble44 &M);
+		explicit CPose3DQuat(const mrpt::math::CMatrixDouble44 &M);
 
 		/** Returns the corresponding 4x4 homogeneous transformation matrix for the point(translation) or pose (translation+orientation).
 		  * \sa getInverseHomogeneousMatrix
 		  */
-		void  getHomogeneousMatrix(CMatrixDouble44 & out_HM ) const;
+		void  getHomogeneousMatrix(mrpt::math::CMatrixDouble44 & out_HM ) const;
 
 		/** Returns a 1x7 vector with [x y z qr qx qy qz] */
 		void getAsVector(vector_double &v) const;
@@ -132,13 +132,13 @@ namespace poses
 		inline CPoint3D operator +( const CPoint3D &L) const { CPoint3D G; composePoint(L[0],L[1],L[2], G[0],G[1],G[2]); return G; }
 
 		/**  Computes the 3D point G such as \f$ G = this \oplus L \f$.  \sa composePoint    */
-		inline TPoint3D operator +( const TPoint3D &L) const { TPoint3D G; composePoint(L[0],L[1],L[2], G[0],G[1],G[2]); return G; }
+		inline mrpt::math::TPoint3D operator +( const mrpt::math::TPoint3D &L) const { mrpt::math::TPoint3D G; composePoint(L[0],L[1],L[2], G[0],G[1],G[2]); return G; }
 
 		/**  Computes the 3D point L such as \f$ L = G \ominus this \f$.  \sa inverseComposePoint    */
 		inline CPoint3D operator -( const CPoint3D &G) const { CPoint3D L; inverseComposePoint(G[0],G[1],G[2], L[0],L[1],L[2]); return L; }
 
 		/**  Computes the 3D point L such as \f$ L = G \ominus this \f$.  \sa inverseComposePoint    */
-		inline TPoint3D operator -( const TPoint3D &G) const { TPoint3D L; inverseComposePoint(G[0],G[1],G[2], L[0],L[1],L[2]); return L; }
+		inline mrpt::math::TPoint3D operator -( const mrpt::math::TPoint3D &G) const { mrpt::math::TPoint3D L; inverseComposePoint(G[0],G[1],G[2], L[0],L[1],L[2]); return L; }
 
 		/** Scalar multiplication (all x y z qr qx qy qz elements are multiplied by the scalar).
 		  */
@@ -188,7 +188,7 @@ namespace poses
 		   * \exception std::exception On invalid format
 		   */
 		 void fromString(const std::string &s) {
-		 	CMatrixDouble  m;
+		 	mrpt::math::CMatrixDouble  m;
 		 	if (!m.fromMatlabStringFormat(s)) THROW_EXCEPTION("Malformed expression in ::fromString");
 			ASSERTMSG_(mrpt::math::size(m,1)==1 && mrpt::math::size(m,2)==7, "Wrong size of vector in ::fromString");
 			m_coords[0] = m.get_unsafe(0,0); m_coords[1] = m.get_unsafe(0,1); m_coords[2] = m.get_unsafe(0,2);
@@ -233,7 +233,7 @@ namespace poses
 		  *  If the matrix pointers are not NULL, the Jacobians will be also computed for the range-yaw-pitch variables wrt the passed 3D point and this 7D pose.
           */
         void sphericalCoordinates(
-            const TPoint3D &point,
+            const mrpt::math::TPoint3D &point,
             double &out_range,
             double &out_yaw,
             double &out_pitch,

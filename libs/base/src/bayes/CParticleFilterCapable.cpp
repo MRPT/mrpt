@@ -15,7 +15,6 @@
 #include <mrpt/bayes/CParticleFilterCapable.h>
 #include <mrpt/system/os.h>
 #include <mrpt/random.h>
-//#include <mrpt/math/utils.h>
 #include <mrpt/utils/utils_defs.h>
 #include <mrpt/math/ops_vectors.h>
 #include <mrpt/random.h>

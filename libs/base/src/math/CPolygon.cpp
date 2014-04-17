@@ -13,7 +13,6 @@
 
 #include <mrpt/math/CPolygon.h>
 #include <mrpt/utils/CStream.h>
-//#include <mrpt/math/utils.h>
 
 using namespace mrpt;
 using namespace mrpt::math;

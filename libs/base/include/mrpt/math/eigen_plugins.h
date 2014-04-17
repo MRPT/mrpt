@@ -346,7 +346,7 @@ public:
 	}
 
 	/** Finds the maximum value in the diagonal of the matrix. */
-	EIGEN_STRONG_INLINE Scalar maximumDiagonal() const { return diagonal().maximum(); }
+	EIGEN_STRONG_INLINE Scalar maximumDiagonal() const { return diagonal().maxCoeff(); }
 
 	/** Computes the mean of the entire matrix
 	  * \sa meanAndStdAll */

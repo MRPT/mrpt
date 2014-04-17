@@ -17,8 +17,8 @@
 #include <mrpt/utils/CFileOutputStream.h>
 #include <mrpt/utils/CMemoryStream.h>
 #include <mrpt/compress/zip.h>
-//#include <mrpt/math/utils.h>
 #include <mrpt/math/fourier.h>
+#include <mrpt/math/utils.h>
 #include <mrpt/utils/CTicTac.h>
 #include <mrpt/utils/CTimeLogger.h>
 #include <mrpt/system/memory.h>

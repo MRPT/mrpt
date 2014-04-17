@@ -15,33 +15,13 @@
 
 #include <mrpt/math/math_frwds.h>  // Fordward declarations
 
-
-
-namespace mrpt	{
-	namespace poses	{
-		template <class DERIVEDCLASS> class CPoseOrPoint;
-		class CPoint2D;
-		class CPoint3D;
-		class CPose2D;
-		class CPose3D;
-	}
-	namespace utils { class CStream; }
-}
-
 namespace mrpt	{
 namespace math	{
 	using mrpt::utils::square;
 	using mrpt::utils::RAD2DEG;
 
-	struct TPoint2D;
-	struct TPose2D;
-	struct TPoint3D;
-	struct TPose3D;
-	struct TPose3DQuat;
-
 	/** \addtogroup geometry_grp
 	  * @{ */
-
 
 	//Pragma defined to ensure no structure packing
 #pragma pack(push,1)

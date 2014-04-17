@@ -46,7 +46,7 @@ namespace poses
 			@{ */
 
 		CPose2D		mean;	//!< The mean value
-		CMatrixDouble33		cov_inv;	//!< The inverse of the 3x3 covariance matrix (the "information" matrix)
+		mrpt::math::CMatrixDouble33		cov_inv;	//!< The inverse of the 3x3 covariance matrix (the "information" matrix)
 
 		/** @} */
 
@@ -60,7 +60,7 @@ namespace poses
 		explicit CPosePDFGaussianInf( const CPose2D &init_Mean );
 
 		/** Constructor */
-		CPosePDFGaussianInf( const CPose2D &init_Mean, const CMatrixDouble33 &init_CovInv );
+		CPosePDFGaussianInf( const CPose2D &init_Mean, const mrpt::math::CMatrixDouble33 &init_CovInv );
 
 	    /** Copy constructor, including transformations between other PDFs */
 		explicit CPosePDFGaussianInf( const CPosePDF &o ) { copyFrom( o ); }
@@ -79,13 +79,13 @@ namespace poses
 		/** Returns an estimate of the pose covariance matrix (3x3 cov matrix) and the mean, both at once.
 		  * \sa getMean
 		  */
-		void getCovarianceAndMean(CMatrixDouble33 &cov,CPose2D &mean_point) const {
+		void getCovarianceAndMean(mrpt::math::CMatrixDouble33 &cov,CPose2D &mean_point) const {
 			mean_point = mean;
 			this->cov_inv.inv(cov);
 		}
 
 		/** Returns the information (inverse covariance) matrix (a STATE_LEN x STATE_LEN matrix) \sa getMean, getCovarianceAndMean */
-		virtual void getInformationMatrix(CMatrixDouble33 &inf) const { inf=cov_inv; }
+		virtual void getInformationMatrix(mrpt::math::CMatrixDouble33 &inf) const { inf=cov_inv; }
 
 		/** Copy operator, translating if necesary (for example, between particles and gaussian representations)
 		  */
@@ -122,7 +122,7 @@ namespace poses
 		void inverseComposition(
 			const CPosePDFGaussianInf &x1,
 			const CPosePDFGaussianInf &x0,
-			const CMatrixDouble33  &COV_01
+			const mrpt::math::CMatrixDouble33  &COV_01
 			);
 
 		/** Draws a single sample from the distribution

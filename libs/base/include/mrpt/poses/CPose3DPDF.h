@@ -84,8 +84,8 @@ namespace poses
 		static void jacobiansPoseComposition(
 			const CPose3D &x,
 			const CPose3D &u,
-			CMatrixDouble66  &df_dx,
-			CMatrixDouble66	 &df_du);
+			mrpt::math::CMatrixDouble66  &df_dx,
+			mrpt::math::CMatrixDouble66	 &df_du);
 
 
 		enum { is_3D_val = 1 };

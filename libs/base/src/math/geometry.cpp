@@ -13,12 +13,16 @@
 #include <mrpt/math/CPolygon.h>
 #include <mrpt/math/CSparseMatrixTemplate.h>
 #include <mrpt/math/CMatrixTemplateNumeric.h>
-#include <mrpt/math/ops_matrices.h>
+#include <mrpt/math/data_utils.h>
+#include <mrpt/poses/CPoint2D.h>
+#include <mrpt/poses/CPose2D.h>
+#include <mrpt/math/lightweight_geom_data.h>
 
 using namespace mrpt;
 using namespace mrpt::utils;
 using namespace std;
 using namespace mrpt::poses;
+using namespace mrpt::math;
 
 double mrpt::math::geometryEpsilon=1e-3;
 
@@ -467,7 +471,7 @@ bool  math::RectanglesIntersection(
 }
 
 //Auxiliary functions needed to avoid code repetition and unnecesary recalculations
-template<class T2D,class U2D,class T3D,class U3D> bool intersectInCommonPlane(const T3D &o1,const U3D &o2,const TPlane &p,TObject3D &obj)	{
+template<class T2D,class U2D,class T3D,class U3D> bool intersectInCommonPlane(const T3D &o1,const U3D &o2,const mrpt::math::TPlane &p,mrpt::math::TObject3D &obj)	{
 	T3D proj1;
 	U3D proj2;
 	//Project into 3D plane, ignoring Z coordinate.
@@ -490,7 +494,7 @@ template<class T2D,class U2D,class T3D,class U3D> bool intersectInCommonPlane(co
 		return true;
 	}	else return false;
 }
-bool intersectInCommonLine(const TSegment3D &s1,const TSegment3D &s2,const TLine3D &lin,TObject3D &obj)	{
+bool intersectInCommonLine(const mrpt::math::TSegment3D &s1,const mrpt::math::TSegment3D &s2,const mrpt::math::TLine3D &lin,mrpt::math::TObject3D &obj)	{
 	//Move in a free coordinate, searching for minima and maxima.
 	size_t i1=0;
 	while (abs(lin.director[i1])<geometryEpsilon) i1++;
@@ -996,6 +1000,10 @@ void math::project3D(const TObject3D &object,const CPose3D &newXYpose,TObject3D 
 		default:
 			newObject=TObject3D();
 	}
+}
+
+void math::project2D(const TPoint2D &point,const mrpt::poses::CPose2D &newXpose,TPoint2D &newPoint)	{
+	newPoint=newXpose+mrpt::poses::CPoint2D(point);
 }
 
 void math::project2D(const TLine2D &line,const CPose2D &newXpose,TLine2D &newLine)	{

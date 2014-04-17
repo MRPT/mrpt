@@ -85,7 +85,7 @@ namespace mrpt
 			*/
 			void fromString(const std::string &s)
 			{
-				CMatrixDouble  m;
+				mrpt::math::CMatrixDouble  m;
 				if (!m.fromMatlabStringFormat(s)) THROW_EXCEPTION("Malformed expression in ::fromString");
 				ASSERT_EQUAL_(mrpt::math::size(m,1),1)
 				ASSERT_EQUAL_(mrpt::math::size(m,2),DERIVEDCLASS::static_size)

@@ -44,7 +44,7 @@ namespace mrpt
 			{ \
 				out << string(#CONTAINER) << TTypeName<T>::get(); \
 				out << static_cast<uint32_t>(obj.size()); \
-				for_each( obj.begin(), obj.end(), ObjectWriteToStream(&out) ); \
+				for_each( obj.begin(), obj.end(), mrpt::utils::metaprogramming::ObjectWriteToStream(&out) ); \
 				return out; \
 			} \
 			/** Template method to deserialize a sequential STL container */ \
@@ -60,7 +60,7 @@ namespace mrpt
 				uint32_t n; \
 				in >> n; \
 				obj.resize(n); \
-				for_each( obj.begin(), obj.end(), ObjectReadFromStream(&in) ); \
+				for_each( obj.begin(), obj.end(), mrpt::utils::metaprogramming::ObjectReadFromStream(&in) ); \
 				return in; \
 			}
 

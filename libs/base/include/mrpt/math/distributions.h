@@ -201,7 +201,7 @@ namespace mrpt
 			const vector_double H = mrpt::math::histogram(data,x_min,x_max,histogramNumBins);
 			vector_double Hc;
 			cumsum(H,Hc); // CDF
-			Hc*=1.0/Hc.maximum();
+			Hc*=1.0/Hc.maxCoeff();
 
 			vector_double::iterator it_low  = std::lower_bound(Hc.begin(),Hc.end(),confidenceInterval);   ASSERT_(it_low!=Hc.end())
 			vector_double::iterator it_high = std::upper_bound(Hc.begin(),Hc.end(),1-confidenceInterval); ASSERT_(it_high!=Hc.end())

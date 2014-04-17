@@ -12,7 +12,10 @@
 // compiling in small systems.
 
 
-#include <mrpt/base.h>
+#include <mrpt/math/CMatrixFixedNumeric.h>
+#include <mrpt/utils/metaprogramming.h>
+#include <mrpt/utils/CMemoryStream.h>
+#include <mrpt/random.h>
 #include <gtest/gtest.h>
 
 using namespace mrpt;

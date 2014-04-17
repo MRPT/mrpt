@@ -17,9 +17,7 @@
 #include <mrpt/poses/CPose3DPDFGaussian.h>
 #include <mrpt/poses/CPose3DPDFParticles.h>
 #include <mrpt/poses/CPose3DPDFSOG.h>
-
 #include <mrpt/random.h>
-//#include <mrpt/math/utils.h>
 
 using namespace mrpt;
 using namespace mrpt::poses;
@@ -85,7 +83,7 @@ void CPoseRandomSampler::setPosePDF( const CPosePDF *pdf )
 		cov.eigenVectors( m_fastdraw_gauss_Z3, D );
 
 		// Scale eigenvectors with eigenvalues:
-		D.Sqrt();
+		D = D.array().sqrt().matrix();
 		m_fastdraw_gauss_Z3.multiply( m_fastdraw_gauss_Z3, D);
     }
     else
@@ -130,7 +128,7 @@ void CPoseRandomSampler::setPosePDF( const CPose3DPDF *pdf )
 		cov.eigenVectors( m_fastdraw_gauss_Z6, D );
 
 		// Scale eigenvectors with eigenvalues:
-		D.Sqrt();
+		D = D.array().sqrt().matrix();
 		m_fastdraw_gauss_Z6.multiply( m_fastdraw_gauss_Z6, D);
     }
     else

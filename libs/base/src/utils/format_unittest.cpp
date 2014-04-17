@@ -24,7 +24,7 @@ TEST(FormatTest, LargeStrings)
 	const size_t test_str_len = 30000;
 	test_str.assign(test_str_len,'A');
 
-	std::string s =	mrpt::utils::format("%u %s",static_cast<unsigned int>(10), test_str.c_str() );
+	std::string s =	mrpt::format("%u %s",static_cast<unsigned int>(10), test_str.c_str() );
 
 	const size_t out_str_len = s.size();
 

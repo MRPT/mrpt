@@ -10,7 +10,10 @@
 #include "base-precomp.h"  // Precompiled headers
 
 #include <mrpt/math/lightweight_geom_data.h>
-#include <mrpt/poses.h>
+#include <mrpt/poses/CPoint2D.h>
+#include <mrpt/poses/CPoint3D.h>
+#include <mrpt/poses/CPose2D.h>
+#include <mrpt/poses/CPose3DQuat.h>
 #include <mrpt/math/geometry.h>
 #include <mrpt/utils/CStream.h>
 
@@ -18,6 +21,7 @@ using namespace std; // For min/max, etc...
 
 namespace mrpt	{	namespace math	{
 	using namespace mrpt::poses; // For the +,- operators
+	using namespace mrpt::utils;
 
 
 	namespace detail

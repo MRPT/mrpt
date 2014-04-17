@@ -9,9 +9,10 @@
 
 #include "base-precomp.h"  // Precompiled headers
 
-
-
-//#include <mrpt/math/utils.h>
+#include <mrpt/math/utils.h>
+#include <mrpt/math/wrap2pi.h>
+#include <mrpt/math/interp_fit.h>
+#include <mrpt/math/data_utils.h>
 #include <mrpt/math/distributions.h>
 #include <mrpt/math/fourier.h>
 
@@ -2147,22 +2148,6 @@ double mrpt::math::interpolate2points(const double x, const double x0, const dou
 	else return mrpt::math::wrapToPi(r);
 
 	MRPT_END
-}
-
-
-/** Modify a sequence of angle values such as no consecutive values have a jump larger than PI in absolute value.
-  */
-void mrpt::math::unwrap2PiSequence(vector_double &x)
-{
-	for (vector_double::Index i=0;i<x.size();i++)
-	{
-		mrpt::math::wrapToPiInPlace(x[i]); // assure it's in the -pi,pi range.
-		if (!i) continue;
-
-		double Ap = x[i]-x[i-1];
-		if (Ap>M_PI)  x[i]-=M_2PI;
-		if (Ap<-M_PI) x[i]+=M_2PI;
-	}
 }
 
 /*---------------------------------------------------------------

@@ -15,10 +15,7 @@
 #include <mrpt/poses/CPoint2D.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/poses/CPoint3D.h>
-
 #include <mrpt/poses/CPose3DQuat.h>
-
-//#include <mrpt/math/utils.h>
 #include <mrpt/math/CMatrix.h>
 
 using namespace std;

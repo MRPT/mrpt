@@ -9,18 +9,16 @@
 
 #include "base-precomp.h"  // Precompiled headers
 
-
 #include <mrpt/poses/CPointPDFParticles.h>
 #include <mrpt/poses/CPoint3D.h>
 #include <mrpt/poses/CPose3D.h>
-
-//#include <mrpt/math/utils.h>
 #include <mrpt/math/ops_vectors.h>
 
 using namespace mrpt;
 using namespace mrpt::poses;
 using namespace mrpt::utils;
 using namespace mrpt::math;
+using namespace mrpt::system;
 
 IMPLEMENTS_SERIALIZABLE( CPointPDFParticles, CPointPDF, mrpt::poses )
 IMPLEMENTS_SERIALIZABLE( TSimple3DPoint, CSerializable, mrpt::poses )

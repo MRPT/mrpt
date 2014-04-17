@@ -11,8 +11,10 @@
 // building them with eigen3 eats a lot of RAM and may be a problem while 
 // compiling in small systems.
 
-
-#include <mrpt/base.h>
+#include <mrpt/math/CMatrixFixedNumeric.h>
+#include <mrpt/utils/metaprogramming.h>
+#include <mrpt/utils/CMemoryStream.h>
+#include <mrpt/random.h>
 #include <gtest/gtest.h>
 
 using namespace mrpt;
@@ -38,7 +40,7 @@ TEST(Matrices, A_times_B_dyn)
 	CMatrixDouble C = A*B;
 	CMatrixDouble	C_ok(3,2, dat_Cok);
 	CMatrixDouble	err = C - C_ok;
-	EXPECT_NEAR(0,fabs(err.sumAll()), 1e-5) <<
+	EXPECT_NEAR(0,fabs(err.sum()), 1e-5) <<
 		"A:   " << A <<
 		"B:   " << B <<
 		"A*B: " << C << endl;
@@ -54,7 +56,7 @@ TEST(Matrices,A_times_B_fix)
 	C = A * B;
 	Err = C - CMatrixFixedNumeric<double,3,2>(C_ok);
 
-	EXPECT_NEAR(0,fabs(Err.sumAll()), 1e-5) <<
+	EXPECT_NEAR(0,fabs(Err.sum()), 1e-5) <<
 		"A:   " << A <<
 		"B:   " << B <<
 		"A*B: " << C << endl;
@@ -72,7 +74,7 @@ TEST(Matrices,SerializeCMatrixD)
 	membuf.Seek(0);
 	membuf >> fA;
 
-	EXPECT_NEAR(0,fabs((CMatrixDouble(fA) - A).sumAll()), 1e-9);
+	EXPECT_NEAR(0,fabs((CMatrixDouble(fA) - A).sum()), 1e-9);
 
 	try
 	{
@@ -98,7 +100,7 @@ TEST(Matrices,EigenVal2x2dyn)
 	C1.eigenVectors(C1_V,C1_D);
 
 	CMatrixDouble  C1_RR = C1_V * C1_D * C1_V.transpose();
-	EXPECT_NEAR( (C1_RR-C1).Abs().sum(),0,1e-4);
+	EXPECT_NEAR( (C1_RR-C1).array().abs().sum(),0,1e-4);
 }
 
 TEST(Matrices,EigenVal3x3dyn)
@@ -110,7 +112,7 @@ TEST(Matrices,EigenVal3x3dyn)
 	C1.eigenVectors(C1_V,C1_D);
 
 	CMatrixDouble  C1_RR = C1_V*C1_D*C1_V.transpose();
-	EXPECT_NEAR( (C1_RR-C1).Abs().sum(),0,1e-4);
+	EXPECT_NEAR( (C1_RR-C1).array().abs().sum(),0,1e-4);
 }
 
 TEST(Matrices,EigenVal2x2fix)
@@ -122,7 +124,7 @@ TEST(Matrices,EigenVal2x2fix)
 	C1.eigenVectors(C1_V,C1_D);
 
 	CMatrixDouble22  C1_RR = C1_V*C1_D*(~C1_V);
-	EXPECT_NEAR( (C1_RR-C1).Abs().sum(),0,1e-4);
+	EXPECT_NEAR( (C1_RR-C1).array().abs().sum(),0,1e-4);
 }
 
 TEST(Matrices,EigenVal3x3fix)
@@ -134,7 +136,7 @@ TEST(Matrices,EigenVal3x3fix)
 	C1.eigenVectors(C1_V,C1_D);
 
 	CMatrixDouble33  C1_RR = C1_V*C1_D*(~C1_V);
-	EXPECT_NEAR( (C1_RR-C1).Abs().sum(),0,1e-4);
+	EXPECT_NEAR( (C1_RR-C1).array().abs().sum(),0,1e-4);
 }
 
 #if 0 // JL: Disabled since it fails in some PPA build servers. Reported to Eigen list for possible fixes...
@@ -158,7 +160,7 @@ TEST(Matrices,EigenVal4x4_sym_vs_generic)
 	eigvals_symM.setZero();eigvals_symM.diagonal() = eigvals_sym;
 	eigvals_genM.setZero();eigvals_genM.diagonal() = eigvals_gen;
 
-	EXPECT_NEAR( (C1-eigvecs_gen*eigvals_genM*(~eigvecs_gen)).Abs().sum(),0,1e-5)
+	EXPECT_NEAR( (C1-eigvecs_gen*eigvals_genM*(~eigvecs_gen)).array().abs().sum(),0,1e-5)
 		<< endl << endl
 		<< "eigvecs_gen*eigvals_gen*(~eigvecs_gen):\n" << eigvecs_gen*eigvals_genM*(~eigvecs_gen) << endl
 		<< "C1:\n" << C1 << endl
@@ -169,12 +171,12 @@ TEST(Matrices,EigenVal4x4_sym_vs_generic)
 		<< "eigvecs_gen:\n" << eigvecs_gen << endl
 		<< "eigvecs_sym:\n" << eigvecs_sym << endl<< endl;
 
-	EXPECT_NEAR( (C1-eigvecs_sym*eigvals_symM*(~eigvecs_sym)).Abs().sum(),0,1e-5)
+	EXPECT_NEAR( (C1-eigvecs_sym*eigvals_symM*(~eigvecs_sym)).array().abs().sum(),0,1e-5)
 		<< endl << endl
 		<< "eigvecs_sym*eigvals_sym*(~eigvecs_sym):\n" << eigvecs_sym*eigvals_symM*(~eigvecs_sym) << endl
 		<< "C1:\n" << C1 << endl;
 
-	EXPECT_NEAR( (eigvals_gen-eigvals_sym).Abs().sum(),0,1e-5)
+	EXPECT_NEAR( (eigvals_gen-eigvals_sym).array().abs().sum(),0,1e-5)
 		<< endl << endl
 		<< "eigvals_gen:\n" << eigvals_gen<< endl
 		<< "eigvals_sym:\n" << eigvals_sym << endl;

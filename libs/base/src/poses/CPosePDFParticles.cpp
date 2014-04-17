@@ -22,6 +22,7 @@ using namespace mrpt::poses;
 using namespace mrpt::math;
 using namespace mrpt::random;
 using namespace mrpt::utils;
+using namespace mrpt::system;
 using namespace std;
 
 IMPLEMENTS_SERIALIZABLE( CPosePDFParticles, CPosePDF, mrpt::poses )

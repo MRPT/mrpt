@@ -67,7 +67,7 @@ protected:
 			transform_gaussian_linear(x_mean,x_cov,func_inverse,DUMMY, y_mean,y_cov, x_incrs );
 		}
 		// Compare:
-		EXPECT_NEAR(0, (y_cov-pdf1_inv.cov).Abs().mean(), 1e-5 )
+		EXPECT_NEAR(0, (y_cov-pdf1_inv.cov).array().abs().mean(), 1e-5 )
 			<< "pdf1 mean: " << pdf1.mean << endl
 			<< "Numeric approximation of covariance: " << endl << y_cov << endl
 			<< "Returned covariance: " << endl << pdf1_inv.cov << endl;

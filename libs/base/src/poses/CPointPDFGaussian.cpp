@@ -18,6 +18,7 @@
 using namespace mrpt::poses;
 using namespace mrpt::utils;
 using namespace mrpt::random;
+using namespace mrpt::system;
 
 IMPLEMENTS_SERIALIZABLE( CPointPDFGaussian, CPointPDF, mrpt::poses )
 

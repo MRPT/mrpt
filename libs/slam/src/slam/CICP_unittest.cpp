@@ -237,7 +237,7 @@ TEST_F(ICPTests, RayTracingICP3D)
 	CPose3D  mean = pdf->getMeanVal();
 
 	// Checks:
-	EXPECT_NEAR(0, (mean.getAsVectorVal()-SCAN2_POSE_ERROR.getAsVectorVal()).Abs().mean(),  0.02)
+	EXPECT_NEAR(0, (mean.getAsVectorVal()-SCAN2_POSE_ERROR.getAsVectorVal()).array().abs().mean(),  0.02)
 		<< "ICP output: mean= " << mean << endl
 		<< "Real displacement: " << SCAN2_POSE_ERROR  << endl;
 

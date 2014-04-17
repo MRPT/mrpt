@@ -150,7 +150,7 @@ void do_matrix_op_test(
 	CMatrixDouble  RES;
 	(*op2)(D1,D2,RES);
 
-	const double err = (RES-Dres).Abs().maximum();
+	const double err = (RES-Dres).array().abs().maxCoeff();
 
 	EXPECT_TRUE(err<1e-10)
 		<< "M1:\n" << D1 
@@ -208,7 +208,7 @@ TEST(SparseMatrix, CholeskyDecomp)
 	CMatrixDouble Ud; // Upper triangle
 	D.chol(Ud);
 
-	const double err = ((Ud.transpose())-L).Abs().mean();
+	const double err = ((Ud.transpose())-L).array().abs().mean();
 	EXPECT_TRUE(err<1e-8);
 }
 

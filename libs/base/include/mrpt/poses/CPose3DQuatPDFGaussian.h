@@ -51,13 +51,13 @@ namespace poses
 		CPose3DQuatPDFGaussian();
 
 		/** Constructor which left all the member uninitialized, for using when speed is critical - as argument, use UNINITIALIZED_QUATERNION. */
-		CPose3DQuatPDFGaussian(TConstructorFlags_Quaternions constructor_dummy_param);
+		CPose3DQuatPDFGaussian(mrpt::math::TConstructorFlags_Quaternions constructor_dummy_param);
 
 		/** Constructor from a default mean value, covariance equals to zero. */
 		explicit CPose3DQuatPDFGaussian( const CPose3DQuat &init_Mean );
 
 		/** Constructor with mean and covariance. */
-		CPose3DQuatPDFGaussian( const CPose3DQuat &init_Mean, const CMatrixDouble77 &init_Cov );
+		CPose3DQuatPDFGaussian( const CPose3DQuat &init_Mean, const mrpt::math::CMatrixDouble77 &init_Cov );
 
 		/** Constructor from a Gaussian 2D pose PDF (sets to 0 the missing variables). */
 		explicit CPose3DQuatPDFGaussian( const CPosePDFGaussian &o );
@@ -69,7 +69,7 @@ namespace poses
 		CPose3DQuat		mean;
 
 		/** The 7x7 covariance matrix */
-		CMatrixDouble77		cov;
+		mrpt::math::CMatrixDouble77		cov;
 
 		inline const CPose3DQuat & getPoseMean() const { return mean; }
 		inline       CPose3DQuat & getPoseMean()       { return mean; }
@@ -82,7 +82,7 @@ namespace poses
 		/** Returns an estimate of the pose covariance matrix (7x7 cov matrix) and the mean, both at once.
 		  * \sa getMean
 		  */
-		void getCovarianceAndMean(CMatrixDouble77 &cov,CPose3DQuat &mean_point) const;
+		void getCovarianceAndMean(mrpt::math::CMatrixDouble77 &cov,CPose3DQuat &mean_point) const;
 
 		/** Copy operator, translating if necesary (for example, between particles and gaussian representations)
 		  */
@@ -125,7 +125,7 @@ namespace poses
 		/** Unary - operator, returns the PDF of the inverse pose.  */
 		inline CPose3DQuatPDFGaussian operator -() const
 		{
-			CPose3DQuatPDFGaussian p(UNINITIALIZED_QUATERNION);
+			CPose3DQuatPDFGaussian p(mrpt::math::UNINITIALIZED_QUATERNION);
 			this->inverse(p);
 			return p;
 		}

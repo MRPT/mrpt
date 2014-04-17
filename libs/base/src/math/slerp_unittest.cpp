@@ -27,19 +27,19 @@ TEST(SLERP_tests, correctShortestPath)
 			CPose3D pose_interp;
 			mrpt::math::slerp(pose_a,pose_b,0,pose_interp);
 			const CPose3D expected(0,0,0,0,0,0);
-			EXPECT_NEAR(0, (pose_interp.getHomogeneousMatrixVal()-expected.getHomogeneousMatrixVal()).Abs().sumAll(), 1e-4 ) << "pose_a: " << pose_a << "\npose_b: " << pose_b << "\ninterp: " << pose_interp << endl;
+			EXPECT_NEAR(0, (pose_interp.getHomogeneousMatrixVal()-expected.getHomogeneousMatrixVal()).array().abs().sum(), 1e-4 ) << "pose_a: " << pose_a << "\npose_b: " << pose_b << "\ninterp: " << pose_interp << endl;
 		}
 		{
 			CPose3D pose_interp;
 			mrpt::math::slerp(pose_a,pose_b,1,pose_interp);
 			const CPose3D expected(0,0,0,0,0,0);
-			EXPECT_NEAR(0, (pose_interp.getHomogeneousMatrixVal()-expected.getHomogeneousMatrixVal()).Abs().sumAll(), 1e-4 ) << "pose_a: " << pose_a << "\npose_b: " << pose_b << "\ninterp: " << pose_interp << endl;
+			EXPECT_NEAR(0, (pose_interp.getHomogeneousMatrixVal()-expected.getHomogeneousMatrixVal()).array().abs().sum(), 1e-4 ) << "pose_a: " << pose_a << "\npose_b: " << pose_b << "\ninterp: " << pose_interp << endl;
 		}
 		{
 			CPose3D pose_interp;
 			mrpt::math::slerp(pose_a,pose_b,0.5,pose_interp);
 			const CPose3D expected(0,0,0,0,0,0);
-			EXPECT_NEAR(0, (pose_interp.getHomogeneousMatrixVal()-expected.getHomogeneousMatrixVal()).Abs().sumAll(), 1e-4 ) << "pose_a: " << pose_a << "\npose_b: " << pose_b << "\ninterp: " << pose_interp << endl;
+			EXPECT_NEAR(0, (pose_interp.getHomogeneousMatrixVal()-expected.getHomogeneousMatrixVal()).array().abs().sum(), 1e-4 ) << "pose_a: " << pose_a << "\npose_b: " << pose_b << "\ninterp: " << pose_interp << endl;
 		}
 	}
 
@@ -49,7 +49,7 @@ TEST(SLERP_tests, correctShortestPath)
 		CPose3D pose_interp;
 		mrpt::math::slerp(pose_a,pose_b,0.5,pose_interp);
 		const CPose3D expected(0,0,0,DEG2RAD(-180),0,0);
-		EXPECT_NEAR(0, (pose_interp.getHomogeneousMatrixVal()-expected.getHomogeneousMatrixVal()).Abs().sumAll(), 1e-4 ) << "pose_a: " << pose_a << "\npose_b: " << pose_b << "\ninterp: " << pose_interp << endl;
+		EXPECT_NEAR(0, (pose_interp.getHomogeneousMatrixVal()-expected.getHomogeneousMatrixVal()).array().abs().sum(), 1e-4 ) << "pose_a: " << pose_a << "\npose_b: " << pose_b << "\ninterp: " << pose_interp << endl;
 	}
 	{	// Poses at yaw=-+179deg
 		const CPose3D  pose_a(0,0,0, DEG2RAD(-179),DEG2RAD(0),DEG2RAD(0));
@@ -57,7 +57,7 @@ TEST(SLERP_tests, correctShortestPath)
 		CPose3D pose_interp;
 		mrpt::math::slerp(pose_a,pose_b,0.5,pose_interp);
 		const CPose3D expected(0,0,0,DEG2RAD(-180),0,0);
-		EXPECT_NEAR(0, (pose_interp.getHomogeneousMatrixVal()-expected.getHomogeneousMatrixVal()).Abs().sumAll(), 1e-4 ) << "pose_a: " << pose_a << "\npose_b: " << pose_b << "\ninterp: " << pose_interp << endl;
+		EXPECT_NEAR(0, (pose_interp.getHomogeneousMatrixVal()-expected.getHomogeneousMatrixVal()).array().abs().sum(), 1e-4 ) << "pose_a: " << pose_a << "\npose_b: " << pose_b << "\ninterp: " << pose_interp << endl;
 	}
 
 	{	// Poses at yaw=+-40
@@ -66,7 +66,7 @@ TEST(SLERP_tests, correctShortestPath)
 		CPose3D pose_interp;
 		mrpt::math::slerp(pose_a,pose_b,0.5,pose_interp);
 		const CPose3D expected(0,0,0,DEG2RAD(0),0,0);
-		EXPECT_NEAR(0, (pose_interp.getHomogeneousMatrixVal()-expected.getHomogeneousMatrixVal()).Abs().sumAll(), 1e-4 ) << "pose_a: " << pose_a << "\npose_b: " << pose_b << "\ninterp: " << pose_interp << endl;
+		EXPECT_NEAR(0, (pose_interp.getHomogeneousMatrixVal()-expected.getHomogeneousMatrixVal()).array().abs().sum(), 1e-4 ) << "pose_a: " << pose_a << "\npose_b: " << pose_b << "\ninterp: " << pose_interp << endl;
 	}
 	{	// Poses at yaw=-+40
 		const CPose3D  pose_a(0,0,0, DEG2RAD(-40),DEG2RAD(0),DEG2RAD(0));
@@ -74,7 +74,7 @@ TEST(SLERP_tests, correctShortestPath)
 		CPose3D pose_interp;
 		mrpt::math::slerp(pose_a,pose_b,0.5,pose_interp);
 		const CPose3D expected(0,0,0,DEG2RAD(0),0,0);
-		EXPECT_NEAR(0, (pose_interp.getHomogeneousMatrixVal()-expected.getHomogeneousMatrixVal()).Abs().sumAll(), 1e-4 ) << "pose_a: " << pose_a << "\npose_b: " << pose_b << "\ninterp: " << pose_interp << endl;
+		EXPECT_NEAR(0, (pose_interp.getHomogeneousMatrixVal()-expected.getHomogeneousMatrixVal()).array().abs().sum(), 1e-4 ) << "pose_a: " << pose_a << "\npose_b: " << pose_b << "\ninterp: " << pose_interp << endl;
 	}
 
 	{	// Poses at pitch=+-40
@@ -83,7 +83,7 @@ TEST(SLERP_tests, correctShortestPath)
 		CPose3D pose_interp;
 		mrpt::math::slerp(pose_a,pose_b,0.5,pose_interp);
 		const CPose3D expected(0,0,0,DEG2RAD(0),0,0);
-		EXPECT_NEAR(0, (pose_interp.getHomogeneousMatrixVal()-expected.getHomogeneousMatrixVal()).Abs().sumAll(), 1e-4 ) << "pose_a: " << pose_a << "\npose_b: " << pose_b << "\ninterp: " << pose_interp << endl;
+		EXPECT_NEAR(0, (pose_interp.getHomogeneousMatrixVal()-expected.getHomogeneousMatrixVal()).array().abs().sum(), 1e-4 ) << "pose_a: " << pose_a << "\npose_b: " << pose_b << "\ninterp: " << pose_interp << endl;
 	}
 	{	// Poses at pitch=-+40
 		const CPose3D  pose_a(0,0,0, DEG2RAD(0),DEG2RAD(-40),DEG2RAD(0));
@@ -91,7 +91,7 @@ TEST(SLERP_tests, correctShortestPath)
 		CPose3D pose_interp;
 		mrpt::math::slerp(pose_a,pose_b,0.5,pose_interp);
 		const CPose3D expected(0,0,0,DEG2RAD(0),0,0);
-		EXPECT_NEAR(0, (pose_interp.getHomogeneousMatrixVal()-expected.getHomogeneousMatrixVal()).Abs().sumAll(), 1e-4 ) << "pose_a: " << pose_a << "\npose_b: " << pose_b << "\ninterp: " << pose_interp << endl;
+		EXPECT_NEAR(0, (pose_interp.getHomogeneousMatrixVal()-expected.getHomogeneousMatrixVal()).array().abs().sum(), 1e-4 ) << "pose_a: " << pose_a << "\npose_b: " << pose_b << "\ninterp: " << pose_interp << endl;
 	}
 
 	{	// Poses at roll=-+40
@@ -100,7 +100,7 @@ TEST(SLERP_tests, correctShortestPath)
 		CPose3D pose_interp;
 		mrpt::math::slerp(pose_a,pose_b,0.5,pose_interp);
 		const CPose3D expected(0,0,0,DEG2RAD(0),0,0);
-		EXPECT_NEAR(0, (pose_interp.getHomogeneousMatrixVal()-expected.getHomogeneousMatrixVal()).Abs().sumAll(), 1e-4 ) << "pose_a: " << pose_a << "\npose_b: " << pose_b << "\ninterp: " << pose_interp << endl;
+		EXPECT_NEAR(0, (pose_interp.getHomogeneousMatrixVal()-expected.getHomogeneousMatrixVal()).array().abs().sum(), 1e-4 ) << "pose_a: " << pose_a << "\npose_b: " << pose_b << "\ninterp: " << pose_interp << endl;
 	}
 	{	// Poses at roll=+-40
 		const CPose3D  pose_a(0,0,0, DEG2RAD(0),DEG2RAD(0),DEG2RAD( 40));
@@ -108,7 +108,7 @@ TEST(SLERP_tests, correctShortestPath)
 		CPose3D pose_interp;
 		mrpt::math::slerp(pose_a,pose_b,0.5,pose_interp);
 		const CPose3D expected(0,0,0,DEG2RAD(0),0,0);
-		EXPECT_NEAR(0, (pose_interp.getHomogeneousMatrixVal()-expected.getHomogeneousMatrixVal()).Abs().sumAll(), 1e-4 ) << "pose_a: " << pose_a << "\npose_b: " << pose_b << "\ninterp: " << pose_interp << endl;
+		EXPECT_NEAR(0, (pose_interp.getHomogeneousMatrixVal()-expected.getHomogeneousMatrixVal()).array().abs().sum(), 1e-4 ) << "pose_a: " << pose_a << "\npose_b: " << pose_b << "\ninterp: " << pose_interp << endl;
 	}
 
 

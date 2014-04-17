@@ -979,7 +979,7 @@ CPosePDFPtr CGridMapAligner::AlignPDF_correlation(
 			127				// Bias to be substracted
 			);
 
-		float	corrPeak = outCrossCorr.maximum();
+		float	corrPeak = outCrossCorr.maxCoeff();
 		printf("phi = %fdeg \tmax corr=%f\n", RAD2DEG(phi), corrPeak );
 
 		// Keep the maximum:

@@ -9,9 +9,8 @@
 
 #include "base-precomp.h"  // Precompiled headers
 
-
 #include <mrpt/utils/color_maps.h>
-//#include <mrpt/math/utils.h>
+#include <mrpt/math/interp_fit.h>
 
 using namespace mrpt;
 using namespace mrpt::utils;

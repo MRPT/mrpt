@@ -11,10 +11,12 @@
 
 #include <mrpt/poses/CPose3DPDFParticles.h>
 #include <mrpt/poses/CPose3DPDFGaussian.h>
-//#include <mrpt/math/utils.h>
+#include <mrpt/math/wrap2pi.h>
 
+using namespace mrpt;
 using namespace mrpt::poses;
 using namespace mrpt::math;
+using namespace mrpt::utils;
 
 IMPLEMENTS_SERIALIZABLE( CPose3DPDFParticles, CPose3DPDF, mrpt::poses )
 

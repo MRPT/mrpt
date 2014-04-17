@@ -598,7 +598,7 @@ void  CMultiMetricMapPDF::prediction_and_update_pfOptimalProposal(
 							{/*
 								CMatrixD  evalGrid;
 								fusedObsModels.evaluatePDFInArea(-3,3,-3,3,0.1,0,evalGrid, true);
-								evalGrid *= 1.0/evalGrid.maximum();
+								evalGrid *= 1.0/evalGrid.maxCoeff();
 								CImage imgF(evalGrid, true);
 								static int autoCount=0;
 								imgF.saveToFile(format("debug_%04i.png",autoCount++));*/
@@ -740,7 +740,7 @@ void  CMultiMetricMapPDF::prediction_and_update_pfOptimalProposal(
 							//pdfGrid->saveToTextFile("debug.txt");
 							CMatrixDouble outMat;
 							pdfGrid->getAsMatrix(0, outMat );
-							outMat *= 1.0f/outMat.maximum();
+							outMat *= 1.0f/outMat.maxCoeff();
 							CImage imgF(outMat, true);
 							static int autocount=0;
 							imgF.saveToFile(format("debug_grid_%f_%05i.png",grid_resXY,autocount++));

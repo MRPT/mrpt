@@ -10,7 +10,7 @@
 #include "base-precomp.h"  // Precompiled headers
 
 #include <mrpt/random.h>
-//#include <mrpt/math/utils.h>
+#include <mrpt/math/wrap2pi.h>
 #include <mrpt/math/transform_gaussian.h>
 
 #include <mrpt/poses/CPose3DPDFGaussianInf.h>
@@ -24,6 +24,7 @@ using namespace mrpt::poses;
 using namespace mrpt::math;
 using namespace mrpt::random;
 using namespace mrpt::utils;
+using namespace mrpt::system;
 using namespace std;
 
 

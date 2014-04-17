@@ -9,10 +9,8 @@
 
 #include "base-precomp.h"  // Precompiled header
 
-
 #include <mrpt/utils/CRobotSimulator.h>
 #include <mrpt/random.h>
-//#include <mrpt/math/utils.h>
 
 using namespace mrpt::utils;
 using namespace mrpt::poses;

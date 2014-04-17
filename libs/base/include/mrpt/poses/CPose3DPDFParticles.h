@@ -78,7 +78,7 @@ namespace mrpt
 			/** Returns an estimate of the pose covariance matrix (6x6 cov matrix) and the mean, both at once.
 			  * \sa getMean
 			  */
-			void getCovarianceAndMean(CMatrixDouble66 &cov,CPose3D &mean_point) const;
+			void getCovarianceAndMean(mrpt::math::CMatrixDouble66 &cov,CPose3D &mean_point) const;
 
 			/** Returns the pose of the i'th particle.
 			  */

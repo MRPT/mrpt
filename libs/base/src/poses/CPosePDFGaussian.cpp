@@ -14,9 +14,8 @@
 #include <mrpt/poses/CPoint2DPDFGaussian.h>
 #include <mrpt/poses/CPose3DPDF.h>
 #include <mrpt/math/CMatrix.h>
-
-//#include <mrpt/math/utils.h>
 #include <mrpt/math/distributions.h>
+#include <mrpt/math/wrap2pi.h>
 
 #include <mrpt/random.h>
 
@@ -25,6 +24,7 @@ using namespace mrpt::utils;
 using namespace mrpt::poses;
 using namespace mrpt::math;
 using namespace mrpt::random;
+using namespace mrpt::system;
 
 using namespace std;
 

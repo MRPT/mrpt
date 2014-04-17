@@ -82,17 +82,17 @@ namespace mrpt
 		  * \exception std::exception Only in Debug, if t is not in the valid range.
 		  */
 		void BASE_IMPEXP slerp(
-			const CPose3D  & q0,
-			const CPose3D  & q1,
+			const mrpt::poses::CPose3D  & q0,
+			const mrpt::poses::CPose3D  & q1,
 			const double     t,
-			CPose3D        & p);
+			mrpt::poses::CPose3D        & p);
 
 		//! \overload
 		void BASE_IMPEXP slerp(
-			const CPose3DQuat & q0,
-			const CPose3DQuat & q1,
+			const mrpt::poses::CPose3DQuat & q0,
+			const mrpt::poses::CPose3DQuat & q1,
 			const double        t,
-			CPose3DQuat       & p);
+			mrpt::poses::CPose3DQuat       & p);
 
 		/** @} */
 

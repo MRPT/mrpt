@@ -48,8 +48,8 @@ namespace mrpt
 			    @{ */
 
 			uint32_t			ncols,nrows;        //!< Camera resolution
-			CMatrixDouble33 	intrinsicParams;    //!< Matrix of intrinsic parameters (containing the focal length and principal point coordinates)
-			CArrayDouble<5> 	dist;               //!< [k1 k2 t1 t2 k3] -> k_i: parameters of radial distortion, t_i: parameters of tangential distortion (default=0)
+			mrpt::math::CMatrixDouble33 	intrinsicParams;    //!< Matrix of intrinsic parameters (containing the focal length and principal point coordinates)
+			mrpt::math::CArrayDouble<5> 	dist;               //!< [k1 k2 t1 t2 k3] -> k_i: parameters of radial distortion, t_i: parameters of tangential distortion (default=0)
 			double  			focalLengthMeters;  //!< The focal length of the camera, in meters (can be used among 'intrinsicParams' to determine the pixel size).
 
 			/** @} */
@@ -103,7 +103,7 @@ namespace mrpt
 			}
 
 			/** Get the vector of distortion params of the camera  */
-			inline void getDistortionParamsVector ( CMatrixDouble15 &distParVector ) const
+			inline void getDistortionParamsVector ( mrpt::math::CMatrixDouble15 &distParVector ) const
 			{
 				for (size_t i=0;i<5;i++)
 					distParVector.set_unsafe(0,i, dist[i]);
@@ -118,7 +118,7 @@ namespace mrpt
 			}
 
 			/** Set the whole vector of distortion params of the camera */
-			void setDistortionParamsVector( const CMatrixDouble15 &distParVector )
+			void setDistortionParamsVector( const mrpt::math::CMatrixDouble15 &distParVector )
 			{
 				for (size_t i=0;i<5;i++)
 					dist[i] = distParVector.get_unsafe(0,i);

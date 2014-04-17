@@ -52,7 +52,7 @@ protected:
 		// Convert back to a 6x6 representation:
 		CPose3DPDFGaussian  p2ypr = CPose3DPDFGaussian(p1quat);
 
-		EXPECT_NEAR(0,(p2ypr.cov - p1ypr.cov).Abs().mean(), 1e-2)
+		EXPECT_NEAR(0,(p2ypr.cov - p1ypr.cov).array().abs().mean(), 1e-2)
 			<< "p1ypr: " << endl << p1ypr << endl
 			<< "p1quat : " << endl << p1quat << endl
 			<< "p2ypr : " << endl << p2ypr << endl;
@@ -101,7 +101,7 @@ protected:
 
 		}
 		// Compare:
-		EXPECT_NEAR(0, (y_cov-p7_comp.cov).Abs().mean(), 1e-2 )
+		EXPECT_NEAR(0, (y_cov-p7_comp.cov).array().abs().mean(), 1e-2 )
 			<< "p1 mean: " << p7pdf1.mean << endl
 			<< "p2 mean: " << p7pdf2.mean << endl
 			<< "Numeric approximation of covariance: " << endl << y_cov << endl
@@ -149,14 +149,14 @@ protected:
 		}
 
 		// Compare:
-		EXPECT_NEAR(0, (df_dx-num_df_dx).Abs().sumAll(), 3e-3 )
+		EXPECT_NEAR(0, (df_dx-num_df_dx).array().abs().sum(), 3e-3 )
 			<< "q1: " << q1 << endl
 			<< "q2: " << q2 << endl
 			<< "Numeric approximation of df_dx: " << endl << num_df_dx << endl
 			<< "Implemented method: " << endl << df_dx << endl
 			<< "Error: " << endl << df_dx-num_df_dx << endl;
 
-		EXPECT_NEAR(0, (df_du-num_df_du).Abs().sumAll(), 3e-3 )
+		EXPECT_NEAR(0, (df_du-num_df_du).array().abs().sum(), 3e-3 )
 			<< "q1: " << q1 << endl
 			<< "q2: " << q2 << endl
 			<< "Numeric approximation of df_du: " << endl << num_df_du << endl
@@ -187,7 +187,7 @@ protected:
 		}
 
 		// Compare:
-		EXPECT_NEAR(0, (y_cov-p7_inv.cov).Abs().mean(), 1e-2 )
+		EXPECT_NEAR(0, (y_cov-p7_inv.cov).array().abs().mean(), 1e-2 )
 			<< "p1 mean: " << p7pdf1.mean << endl
 			<< "inv mean: " << p7_inv.mean << endl
 			<< "Numeric approximation of covariance: " << endl << y_cov << endl
@@ -224,7 +224,7 @@ protected:
 
 		}
 		// Compare:
-		EXPECT_NEAR(0, (y_cov-p7_comp.cov).Abs().mean(), 1e-2 )
+		EXPECT_NEAR(0, (y_cov-p7_comp.cov).array().abs().mean(), 1e-2 )
 			<< "p1 mean: " << p7pdf1.mean << endl
 			<< "p2 mean: " << p7pdf2.mean << endl
 			<< "Numeric approximation of covariance: " << endl << y_cov << endl
@@ -245,10 +245,10 @@ protected:
 		p7pdf1.changeCoordinatesReference(new_base);
 		
 		// Compare:
-		EXPECT_NEAR(0, (p7_new_base_pdf.cov - p7pdf1.cov).Abs().mean(), 1e-2 )
+		EXPECT_NEAR(0, (p7_new_base_pdf.cov - p7pdf1.cov).array().abs().mean(), 1e-2 )
 			<< "p1 mean: " << p7pdf1.mean << endl
 			<< "new_base: " << new_base << endl;
-		EXPECT_NEAR(0, (p7_new_base_pdf.mean.getAsVectorVal() - p7pdf1.mean.getAsVectorVal() ).Abs().mean(), 1e-2 )
+		EXPECT_NEAR(0, (p7_new_base_pdf.mean.getAsVectorVal() - p7pdf1.mean.getAsVectorVal() ).array().abs().mean(), 1e-2 )
 			<< "p1 mean: " << p7pdf1.mean << endl
 			<< "new_base: " << new_base << endl;
 	}
