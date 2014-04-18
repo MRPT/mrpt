@@ -11,6 +11,7 @@
 
 #include <mrpt/utils/CDebugOutputCapable.h>
 #include <mrpt/system/memory.h>
+#include <mrpt/system/os.h>
 
 #ifdef MRPT_OS_WINDOWS
 	#define WIN32_LEAN_AND_MEAN

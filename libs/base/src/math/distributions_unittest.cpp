@@ -8,8 +8,8 @@
    +---------------------------------------------------------------------------+ */
 
 
-#include <mrpt/base.h>
 #include <mrpt/math/distributions.h>
+#include <mrpt/random.h>
 #include <gtest/gtest.h>
 
 using namespace mrpt;

@@ -9,9 +9,9 @@
 
 #include "base-precomp.h"  // Precompiled headers
 
-
 #include <mrpt/utils/CSimpleDatabase.h>
 #include <mrpt/utils/CStream.h>
+#include <mrpt/system/os.h>
 
 using namespace mrpt::utils;
 using namespace mrpt::system;

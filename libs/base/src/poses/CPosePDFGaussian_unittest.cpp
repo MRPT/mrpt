@@ -7,7 +7,9 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/base.h>
+#include <mrpt/poses/CPosePDFGaussian.h>
+#include <mrpt/random.h>
+#include <mrpt/math/transform_gaussian.h>
 #include <gtest/gtest.h>
 
 using namespace mrpt;

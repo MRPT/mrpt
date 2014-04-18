@@ -9,16 +9,14 @@
 
 #include "base-precomp.h"  // Precompiled headers
 
-
 #include <mrpt/utils/CImage.h>
-#include <mrpt/math/CMatrix.h>
-#include <mrpt/math/CMatrixD.h>
 #include <mrpt/utils/CFileInputStream.h>
 #include <mrpt/utils/CFileOutputStream.h>
 #include <mrpt/utils/CMemoryStream.h>
 #include <mrpt/compress/zip.h>
 #include <mrpt/math/fourier.h>
-#include <mrpt/math/utils.h>
+#include <mrpt/math/utils.h>  // for roundup()
+#include <mrpt/utils/bits_SSE.h> // for round()
 #include <mrpt/utils/CTicTac.h>
 #include <mrpt/utils/CTimeLogger.h>
 #include <mrpt/system/memory.h>

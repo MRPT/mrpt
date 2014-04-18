@@ -13,6 +13,7 @@
 #include <mrpt/math/lightweight_geom_data.h>
 //#include <mrpt/math/ops_matrices.h>  // Added here so many classes have access to these templates
 #include <mrpt/math/homog_matrices.h>
+#include <mrpt/math/CArrayNumeric.h>
 
 #include <mrpt/poses/CPoseOrPoint_detail.h>
 

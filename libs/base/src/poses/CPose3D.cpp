@@ -16,10 +16,8 @@
 #include <mrpt/poses/CPose3DQuat.h>
 #include <mrpt/poses/CPose3DRotVec.h>
 #include <mrpt/math/geometry.h>
-#include <mrpt/math/CMatrix.h>
 #include <mrpt/math/wrap2pi.h>
-#include <mrpt/math/utils.h>
-
+#include <iomanip>
 
 #ifndef M_SQRT1_2
 #define M_SQRT1_2 0.70710678118654752440

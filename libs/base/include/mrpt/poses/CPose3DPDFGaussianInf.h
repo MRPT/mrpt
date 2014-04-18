@@ -9,6 +9,7 @@
 #ifndef CPose3DPDFGaussianInf_H
 #define CPose3DPDFGaussianInf_H
 
+#include <mrpt/poses/CPose3D.h>
 #include <mrpt/poses/CPose3DPDF.h>
 #include <mrpt/poses/CPosePDF.h>
 #include <mrpt/math/CMatrixD.h>

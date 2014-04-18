@@ -10,6 +10,7 @@
 #define CPoseRandomSampler_H
 
 #include <mrpt/poses/CPosePDF.h>
+#include <mrpt/poses/CPose3D.h>
 #include <mrpt/poses/CPose3DPDF.h>
 #include <mrpt/math/CMatrixTemplateNumeric.h>
 

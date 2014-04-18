@@ -10,6 +10,7 @@
 #define CSparseMatrixTemplate_H
 
 #include <mrpt/utils/utils_defs.h>
+#include <map>
 
 namespace mrpt	{
 namespace math	{

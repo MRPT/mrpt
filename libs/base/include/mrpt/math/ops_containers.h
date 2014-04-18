@@ -360,13 +360,14 @@ namespace mrpt
 		/** Computes the covariance matrix from a list of values given as a vector of vectors, where each row is a sample.
 		  * \param v The set of data, as a vector of N vectors of M elements.
 		  * \param out_cov The output MxM matrix for the estimated covariance matrix.
+		  * \tparam RETURN_MATRIX The type of the returned matrix, e.g. Eigen::MatrixXd
 		  * \sa math::mean,math::stddev, math::cov, meanAndCovVec
 		  */
-		template<class VECTOR_OF_VECTOR>
-		inline Eigen::MatrixXd covVector( const VECTOR_OF_VECTOR &v )
+		template<class VECTOR_OF_VECTOR, class RETURN_MATRIX>
+		inline RETURN_MATRIX covVector( const VECTOR_OF_VECTOR &v )
 		{
-			vector_double   m;
-			Eigen::MatrixXd C;
+			std::vector<double>   m;
+			RETURN_MATRIX C;
 			meanAndCovVec(v,m,C);
 			return C;
 		}

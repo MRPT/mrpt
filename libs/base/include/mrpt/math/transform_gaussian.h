@@ -56,7 +56,7 @@ namespace mrpt
 
 			// Generate weights:
 			const double Wi = 0.5/c;
-			vector_double  W_mean(1+2*Nx,Wi),W_cov(1+2*Nx,Wi);
+			std::vector<double>  W_mean(1+2*Nx,Wi),W_cov(1+2*Nx,Wi);
 			W_mean[0] = lambda/c;
 			W_cov[0]  = W_mean[0]+(1-alpha*alpha+beta);
 

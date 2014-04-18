@@ -9,8 +9,8 @@
 
 #include "base-precomp.h"  // Precompiled headers
 
-
 #include <mrpt/utils/CMappedImage.h>
+#include <mrpt/utils/bits_SSE.h>
 
 using namespace mrpt;
 using namespace mrpt::utils;

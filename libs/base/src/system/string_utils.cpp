@@ -10,7 +10,8 @@
 #include "base-precomp.h"  // Precompiled headers
 
 #include <mrpt/system/string_utils.h>
-#include <mrpt/synch.h>
+#include <mrpt/system/os.h>
+#include <mrpt/synch/CCriticalSection.h>
 
 using namespace mrpt;
 using namespace mrpt::utils;

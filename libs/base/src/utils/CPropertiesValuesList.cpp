@@ -12,6 +12,8 @@
 
 #include <mrpt/utils/CPropertiesValuesList.h>
 #include <mrpt/utils/CStream.h>
+#include <mrpt/system/os.h>
+
 using namespace mrpt::utils;
 using namespace mrpt::system;
 

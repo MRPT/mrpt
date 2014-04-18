@@ -15,6 +15,7 @@
 #include <mrpt/utils/CFileOutputStream.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/system/string_utils.h>
+#include <mrpt/system/os.h>
 
 using namespace mrpt::utils;
 using namespace mrpt::system;

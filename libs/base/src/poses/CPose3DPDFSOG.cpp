@@ -10,6 +10,7 @@
 #include "base-precomp.h"  // Precompiled headers
 
 #include <mrpt/poses/CPose3DPDFSOG.h>
+#include <mrpt/system/os.h>
 
 using namespace mrpt;
 using namespace mrpt::poses;

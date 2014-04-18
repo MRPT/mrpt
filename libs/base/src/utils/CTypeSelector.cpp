@@ -12,6 +12,7 @@
 #include <mrpt/utils/CTypeSelector.h>
 #include <mrpt/utils/CStream.h>
 #include <mrpt/system/string_utils.h>
+#include <mrpt/system/os.h>
 
 #include <iostream>
 

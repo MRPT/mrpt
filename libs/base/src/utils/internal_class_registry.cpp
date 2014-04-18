@@ -48,6 +48,8 @@ CThreadSafeQueue<TRegisterFunction>	 &mrpt::utils::pending_class_registers()
 
 namespace mrpt
 {
+	namespace system { void BASE_IMPEXP registerFatalExceptionHandlers(); } // Fwrd decl. 
+
 	namespace utils
 	{
 		typedef std::map<std::string,const TRuntimeClassId*> TClassnameToRuntimeId;

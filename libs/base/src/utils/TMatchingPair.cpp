@@ -13,6 +13,7 @@
 #include <mrpt/utils/CFileOutputStream.h>
 #include <mrpt/utils/utils_defs.h>
 #include <mrpt/poses/CPose2D.h>
+#include <mrpt/system/os.h>
 
 using namespace mrpt;
 using namespace mrpt::utils;

@@ -7,7 +7,8 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/base.h>
+#include <mrpt/poses/CPose3D.h>
+#include <mrpt/math/jacobians.h>
 #include <gtest/gtest.h>
 
 using namespace mrpt;
@@ -15,8 +16,6 @@ using namespace mrpt::poses;
 using namespace mrpt::utils;
 using namespace mrpt::math;
 using namespace std;
-
-
 
 class Pose3DTests : public ::testing::Test {
 protected:

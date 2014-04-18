@@ -13,8 +13,9 @@
 #include <mrpt/poses/CPosePDFSOG.h>
 #include <mrpt/poses/CPosePDFParticles.h>
 #include <mrpt/poses/CPosePDFGaussian.h>
-#include <mrpt/math/CMatrixD.h>
-#include <mrpt/math.h>
+#include <mrpt/system/os.h>
+#include <mrpt/math/distributions.h>
+#include <mrpt/math/wrap2pi.h>
 
 
 using namespace mrpt;

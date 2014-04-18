@@ -58,21 +58,6 @@ TEST(Matrices,HCHt_scalar_1x2_2x2_2x1)
 	CHECK_AND_RET_ERROR(fabs(r-r2)>1e-4,  "Error in HCHt_scalar: 1x2 * 2x2 * 2x1")
 }
 
-TEST(Matrices,multiply_Ab_2x2_2x1)
-{
-	const double   dat_A[] = {  0.8, -0.3, -0.7, 0.1 };
-	CMatrixDouble  A(2,2, dat_A);
-
-	const vector_double b = make_vector<2,double>(2.0, 3.0);
-
-	const vector_double real_res = make_vector<2,double>(0.7, -1.1);
-
-	vector_double res;
-	A.multiply_Ab(b,res);
-
-	CHECK_AND_RET_ERROR((res-real_res).array().abs().sum() >1e-4,  "Error in multiply_Ab: 2x2 * 2x1")
-}
-
 TEST(Matrices,det_2x2_dyn)
 {
 	const double   dat_A[] = {  0.8, -0.3, -0.7, 0.1 };

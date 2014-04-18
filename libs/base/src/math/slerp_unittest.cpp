@@ -8,7 +8,8 @@
    +---------------------------------------------------------------------------+ */
 
 
-#include <mrpt/base.h>
+#include <mrpt/math/slerp.h>
+#include <mrpt/poses/CPose3D.h>
 #include <gtest/gtest.h>
 
 using namespace mrpt;

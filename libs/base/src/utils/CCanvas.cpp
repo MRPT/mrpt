@@ -15,8 +15,8 @@
 #include <mrpt/utils/CImage.h>
 #include <mrpt/utils/CFileOutputStream.h>
 #include <mrpt/utils/CFileGZOutputStream.h>
-
 #include <mrpt/system/string_utils.h>
+#include <mrpt/utils/bits_SSE.h>
 
 #include <mrpt/compress/zip.h>
 

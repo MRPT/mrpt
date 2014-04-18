@@ -11,7 +11,8 @@
 
 #include <mrpt/poses/CPose3DPDF.h>
 #include <mrpt/poses/CPose3DPDFGaussian.h>
-#include <mrpt/math/CMatrix.h>
+//#include <mrpt/math/CMatrix.h>
+#include <mrpt/utils/aligned_containers.h>
 
 namespace mrpt
 {

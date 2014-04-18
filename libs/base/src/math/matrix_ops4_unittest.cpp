@@ -16,6 +16,7 @@
 #include <mrpt/utils/CMemoryStream.h>
 #include <mrpt/random.h>
 #include <gtest/gtest.h>
+#include <numeric> // std::accumulate()
 
 using namespace mrpt;
 using namespace mrpt::utils;

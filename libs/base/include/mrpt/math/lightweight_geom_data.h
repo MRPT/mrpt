@@ -12,6 +12,7 @@
 #include <mrpt/utils/utils_defs.h>
 //#include <mrpt/utils/stl_extensions.h>
 #include <mrpt/utils/TPixelCoord.h>
+#include <mrpt/utils/TTypeName.h>
 
 #include <mrpt/math/math_frwds.h>  // Fordward declarations
 
@@ -90,7 +91,7 @@ namespace math	{
 		/**
 		  * Transformation into vector.
 		  */
-		inline void getAsVector(vector_double &v) const	{
+		inline void getAsVector(std::vector<double> &v) const	{
 			v.resize(2);
 			v[0]=x; v[1]=y;
 		}
@@ -217,7 +218,7 @@ namespace math	{
 		/**
 		  * Transformation into vector.
 		  */
-		inline void getAsVector(vector_double &v) const	{
+		inline void getAsVector(std::vector<double> &v) const	{
 			v.resize(3);
 			v[0]=x; v[1]=y; v[2]=phi;
 		}
@@ -333,7 +334,8 @@ namespace math	{
 		/**
 		  * Transformation into vector.
 		  */
-		void getAsVector(vector_double &v) const {
+		template <class VECTORLIKE>
+		void getAsVector(VECTORLIKE &v) const {
 			v.resize(3);
 			v[0]=x; v[1]=y; v[2]=z;
 		}
@@ -470,7 +472,7 @@ namespace math	{
 		/**
 		  * Gets the pose as a vector of doubles.
 		  */
-		void getAsVector(vector_double &v) const {
+		void getAsVector(std::vector<double> &v) const {
 			v.resize(6);
 			v[0]=x; v[1]=y; v[2]=z; v[3]=yaw; v[4]=pitch; v[5]=roll;
 		}
@@ -520,7 +522,7 @@ namespace math	{
 			return sqrt(square(x)+square(y)+square(z));
 		}
 		/** Gets the pose as a vector of doubles. */
-		void getAsVector(vector_double &v) const {
+		void getAsVector(std::vector<double> &v) const {
 			v.resize(7);
 			for (size_t i=0;i<7;i++) v[i]=(*this)[i];
 		}

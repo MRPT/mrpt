@@ -9,7 +9,7 @@
 #ifndef CProbabilityDensityFunction_H
 #define CProbabilityDensityFunction_H
 
-#include <mrpt/math/CMatrixD.h>
+#include <mrpt/math/CMatrixTemplateNumeric.h>
 #include <mrpt/math/CMatrixFixedNumeric.h>
 #include <mrpt/math/math_frwds.h>
 

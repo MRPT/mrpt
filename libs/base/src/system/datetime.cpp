@@ -9,6 +9,7 @@
 
 #include "base-precomp.h"  // Precompiled headers
 
+#include <mrpt/system/os.h>
 #include <mrpt/system/datetime.h>
 
 #ifdef MRPT_OS_WINDOWS

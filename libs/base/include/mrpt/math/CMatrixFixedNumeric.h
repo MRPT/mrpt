@@ -10,6 +10,7 @@
 #define CMatrixFixedNumeric_H
 
 #include <mrpt/math/math_frwds.h>  // Fordward declarations
+#include <mrpt/utils/types_math.h>
 #include <mrpt/utils/CSerializable.h>
 
 namespace mrpt

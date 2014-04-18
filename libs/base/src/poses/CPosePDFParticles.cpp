@@ -12,9 +12,10 @@
 #include <mrpt/utils/CTicTac.h>
 #include <mrpt/poses/CPosePDFGaussian.h>
 #include <mrpt/poses/CPosePDFParticles.h>
-
+#include <mrpt/system/os.h>
 #include <mrpt/random.h>
-#include <mrpt/math.h>
+#include <mrpt/math/wrap2pi.h>
+#include <mrpt/math/distributions.h>
 
 using namespace mrpt;
 using namespace mrpt::bayes;

@@ -10,6 +10,7 @@
 #define CPose2DGridTemplate_H
 
 #include <mrpt/utils/CSerializable.h>
+#include <mrpt/utils/bits_SSE.h> // for round()
 
 namespace mrpt
 {
@@ -194,7 +195,8 @@ namespace poses
 
 		/** Returns the whole grid as a matrix, for a given constant "phi" and where each row contains values for a fixed "y".
 		  */
-		void getAsMatrix( const double &phi, mrpt::math::CMatrixTemplate<T> &outMat )
+		template <class MATRIXLIKE>
+		void getAsMatrix( const double &phi, MATRIXLIKE &outMat )
 		{
 			MRPT_START
 			outMat.setSize( m_sizeY, m_sizeX );

@@ -8,7 +8,8 @@
    +---------------------------------------------------------------------------+ */
 
 
-#include <mrpt/math.h>
+#include <mrpt/math/CSparseMatrix.h>
+#include <mrpt/random.h>
 #include <gtest/gtest.h>
 
 using namespace mrpt;

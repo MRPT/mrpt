@@ -17,6 +17,7 @@
 #include <mrpt/bayes/CParticleFilterCapable.h>
 #include <mrpt/random.h>
 #include <mrpt/math/distributions.h>
+#include <mrpt/system/os.h>
 
 using namespace mrpt::poses;
 using namespace mrpt::math;
@@ -259,9 +260,9 @@ void CPointPDFSOG::drawSingleSample(CPoint3D  &outSample) const
 
 
 	// 1st: Select a mode with a probability proportional to its weight:
-	vector_double				logWeights( m_modes.size() );
+	vector<double>				logWeights( m_modes.size() );
 	vector<size_t>				outIdxs;
-	vector_double::iterator 	itW;
+	vector<double>::iterator 	itW;
 	CListGaussianModes::const_iterator it;
 	for (it=m_modes.begin(),itW=logWeights.begin();it!=m_modes.end();++it,++itW)
 		*itW = it->log_w;

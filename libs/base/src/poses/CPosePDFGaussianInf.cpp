@@ -14,9 +14,11 @@
 #include <mrpt/poses/CPosePDFGaussian.h>
 #include <mrpt/poses/CPose3DPDF.h>
 #include <mrpt/poses/CPose3DPDFGaussianInf.h>
+#include <mrpt/poses/CPose3D.h>
 #include <mrpt/math/CMatrix.h>
 #include <mrpt/math/distributions.h>
 #include <mrpt/math/wrap2pi.h>
+#include <mrpt/system/os.h>
 
 #include <mrpt/random.h>
 

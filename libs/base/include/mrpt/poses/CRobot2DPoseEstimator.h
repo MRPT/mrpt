@@ -11,6 +11,7 @@
 
 #include <mrpt/synch/CCriticalSection.h>
 #include <mrpt/math/lightweight_geom_data.h>
+#include <mrpt/system/datetime.h>
 
 namespace mrpt
 {

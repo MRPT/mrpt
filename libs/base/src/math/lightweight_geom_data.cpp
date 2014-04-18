@@ -16,6 +16,7 @@
 #include <mrpt/poses/CPose3DQuat.h>
 #include <mrpt/math/geometry.h>
 #include <mrpt/utils/CStream.h>
+#include <mrpt/utils/stl_extensions.h>  // For serialization of std::vector<> types
 
 using namespace std; // For min/max, etc...
 
@@ -186,7 +187,7 @@ double TSegment3D::distance(const TPoint3D &point) const	{
 	return min(min(math::distance(point,point1),math::distance(point,point2)),TLine3D(*this).distance(point));
 }
 double TSegment3D::distance(const TSegment3D &segment) const	{
-    vector_double u, v, w;
+    Eigen::Vector3d u, v, w;
     TPoint3D diff_vect = point2 - point1;
     diff_vect.getAsVector(u);
     diff_vect = segment.point2 - segment.point1;
@@ -912,13 +913,6 @@ mrpt::utils::CStream& operator<<(mrpt::utils::CStream& out,const mrpt::math::TPo
 	out << o.x << o.y << o.z << o.yaw << o.pitch << o.roll;
 	return out;
 }
-
-/*mrpt::utils::CStream &operator>>(mrpt::utils::CStream &in,mrpt::math::TPolygon2D &p)	{
-	vector_serializable<TPoint2D> v;
-	in>>v;
-	p=v;
-	return in;
-}*/
 
 mrpt::utils::CStream &operator>>(mrpt::utils::CStream &in,mrpt::math::TObject2D &o)	{
 	uint16_t type;

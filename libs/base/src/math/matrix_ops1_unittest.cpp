@@ -12,6 +12,8 @@
 // compiling in small systems.
 
 #include <mrpt/math/CMatrixFixedNumeric.h>
+#include <mrpt/math/CMatrixD.h>
+#include <mrpt/math/ops_matrices.h>  // serialization of matrices
 #include <mrpt/utils/metaprogramming.h>
 #include <mrpt/utils/CMemoryStream.h>
 #include <mrpt/random.h>

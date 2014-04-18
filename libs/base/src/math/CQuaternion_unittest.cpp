@@ -7,8 +7,9 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-
-#include <mrpt/base.h>
+#include <mrpt/math/CQuaternion.h>
+#include <mrpt/poses/CPose3D.h>
+#include <mrpt/poses/CPose3DQuat.h>
 #include <gtest/gtest.h>
 
 using namespace mrpt;

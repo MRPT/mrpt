@@ -11,7 +11,7 @@
 #define CQuaternion_H
 
 #include <mrpt/math/CMatrixTemplateNumeric.h>
-#include <mrpt/math/CArray.h>
+#include <mrpt/math/CArrayNumeric.h>
 
 namespace mrpt
 {

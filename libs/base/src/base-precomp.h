@@ -18,6 +18,8 @@
 // Include only if really building precompiled hdrs:
 #if MRPT_ENABLE_PRECOMPILED_HDRS
 #include <mrpt/utils/CObject.h>
+#include <mrpt/math/ops_containers.h>
 #include <mrpt/math/ops_matrices.h>
+#include <mrpt/math/ops_vectors.h>
 
 #endif
