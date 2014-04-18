@@ -10,6 +10,7 @@
 #define CPOSE2D_H
 
 #include <mrpt/poses/CPose.h>
+#include <mrpt/utils/aligned_containers.h>
 
 namespace mrpt
 {

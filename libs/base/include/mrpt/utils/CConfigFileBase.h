@@ -188,7 +188,7 @@ namespace utils
 		  *
 		  *  \note For an enum type to work with this template it is required that it defines a specialization of mrpt::utils::TEnumType
 		  */
-		template <typename ENUMTYPE, class TENUMTYPE = mrpt::utils::TEnumType<ENUMTYPE> >
+		template <typename ENUMTYPE>
 		ENUMTYPE read_enum(const std::string &section, const std::string &name, const ENUMTYPE &defaultValue, bool failIfNotFound = false) const
 		{
 			MRPT_START
@@ -202,7 +202,7 @@ namespace utils
 			else
 			{	// Name look-up:
 				try {
-				return TENUMTYPE::name2value(sVal);
+				return mrpt::utils::TEnumType<ENUMTYPE>::name2value(sVal);
 				} catch (std::exception &)
 				{
 					THROW_EXCEPTION(format("Invalid value '%s' for enum type while reading key='%s'.",sVal.c_str(),name.c_str()))

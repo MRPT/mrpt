@@ -7,14 +7,17 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#ifndef _mrpt_precomp_base_H
-#define _mrpt_precomp_base_H
+#pragma once
 
 #include <mrpt/config.h>
 #include <mrpt/version.h>
 
+// Include always:
 #include <mrpt/utils/utils_defs.h>
-//#include <mrpt/utils/CObject.h>
+
+// Include only if really building precompiled hdrs:
+#if MRPT_ENABLE_PRECOMPILED_HDRS
+#include <mrpt/utils/CObject.h>
+#include <mrpt/math/ops_matrices.h>
 
 #endif
-

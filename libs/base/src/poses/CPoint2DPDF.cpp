@@ -9,8 +9,8 @@
 
 #include "base-precomp.h"  // Precompiled headers 
 
-
 #include <mrpt/poses/CPoint2DPDF.h>
+#include <mrpt/utils/CStream.h>
 using namespace mrpt::poses;
 
 IMPLEMENTS_VIRTUAL_SERIALIZABLE( CPoint2DPDF, CSerializable, mrpt::poses )

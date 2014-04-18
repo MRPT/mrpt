@@ -14,7 +14,10 @@
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/poses/CPoint3D.h>
 #include <mrpt/math/CMatrixD.h>
+#include <mrpt/math/ops_matrices.h>
+#include <mrpt/utils/CStream.h>
 #include <mrpt/random/RandomGenerators.h>
+#include <mrpt/system/os.h>
 
 using namespace mrpt::poses;
 using namespace mrpt::utils;

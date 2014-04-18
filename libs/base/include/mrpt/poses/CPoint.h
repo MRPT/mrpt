@@ -10,6 +10,7 @@
 #define CPOINT_H
 
 #include <mrpt/poses/CPoseOrPoint.h>
+#include <mrpt/math/CMatrixTemplateNumeric.h>
 
 namespace mrpt
 {
