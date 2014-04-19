@@ -14,6 +14,7 @@
 #include <mrpt/utils/utils_defs.h>
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/system/os.h>
+#include <mrpt/math/ops_containers.h>
 
 using namespace mrpt;
 using namespace mrpt::utils;
@@ -123,7 +124,7 @@ bool mrpt::utils::operator == (const TMatchingPairList& a,const TMatchingPairLis
   ---------------------------------------------------------------*/
 float TMatchingPairList::overallSquareError( const CPose2D &q ) const
 {
-	vector_float errs( size() );
+	vector<float> errs( size() );
 	squareErrorVector(q,errs);
 	return math::sum( errs );
 }
@@ -133,10 +134,10 @@ float TMatchingPairList::overallSquareError( const CPose2D &q ) const
   ---------------------------------------------------------------*/
 float TMatchingPairList::overallSquareErrorAndPoints(
 	const CPose2D &q,
-	vector_float &xs,
-	vector_float &ys ) const
+	vector<float> &xs,
+	vector<float> &ys ) const
 {
-	vector_float errs( size() );
+	vector<float> errs( size() );
 	squareErrorVector(q,errs,xs,ys);
 	return math::sum( errs );
 }
@@ -155,7 +156,7 @@ bool TMatchingPairList::contains (const TMatchingPair &p) const
 /*---------------------------------------------------------------
 						squareErrorVector
   ---------------------------------------------------------------*/
-void  TMatchingPairList::squareErrorVector(const CPose2D &q, vector_float &out_sqErrs ) const
+void  TMatchingPairList::squareErrorVector(const CPose2D &q, vector<float> &out_sqErrs ) const
 {
 	out_sqErrs.resize( size() );
 	// *    \f[ e_i = | x_{this} -  q \oplus x_{other}  |^2 \f]
@@ -166,7 +167,7 @@ void  TMatchingPairList::squareErrorVector(const CPose2D &q, vector_float &out_s
 	const float qy   = q.y();
 
 	const_iterator 			corresp;
-	vector_float::iterator	e_i;
+	vector<float>::iterator	e_i;
 	for (corresp=begin(), e_i = out_sqErrs.begin();corresp!=end();++corresp, ++e_i)
 	{
 		float xx = qx + ccos * corresp->other_x - csin * corresp->other_y;
@@ -180,9 +181,9 @@ void  TMatchingPairList::squareErrorVector(const CPose2D &q, vector_float &out_s
   ---------------------------------------------------------------*/
 void  TMatchingPairList::squareErrorVector(
 	const CPose2D &q,
-	vector_float &out_sqErrs,
-	vector_float &xs,
-	vector_float &ys ) const
+	vector<float> &out_sqErrs,
+	vector<float> &xs,
+	vector<float> &ys ) const
 {
 	out_sqErrs.resize( size() );
 	xs.resize( size() );
@@ -196,7 +197,7 @@ void  TMatchingPairList::squareErrorVector(
 	const float qy   = q.y();
 
 	const_iterator 			corresp;
-	vector_float::iterator	e_i, xx, yy;
+	vector<float>::iterator	e_i, xx, yy;
 	for (corresp=begin(), e_i = out_sqErrs.begin(), xx = xs.begin(), yy = ys.begin();corresp!=end();++corresp, ++e_i, ++xx,++yy)
 	{
 		*xx = qx + ccos * corresp->other_x - csin * corresp->other_y;

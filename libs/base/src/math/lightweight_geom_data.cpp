@@ -15,6 +15,7 @@
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/poses/CPose3DQuat.h>
 #include <mrpt/math/geometry.h>
+#include <mrpt/math/ops_containers.h>
 #include <mrpt/utils/CStream.h>
 #include <mrpt/utils/stl_extensions.h>  // For serialization of std::vector<> types
 

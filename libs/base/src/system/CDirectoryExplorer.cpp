@@ -9,8 +9,6 @@
 
 #include "base-precomp.h"  // Precompiled headers
 
-
-
 #include <mrpt/config.h>
 
 #ifdef MRPT_OS_WINDOWS
@@ -28,6 +26,7 @@
 	#include <utime.h>
 	#include <unistd.h>
 	#include <errno.h>
+	#include <cstring>
 #endif
 
 #include <queue>

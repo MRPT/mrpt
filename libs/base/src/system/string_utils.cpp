@@ -12,6 +12,7 @@
 #include <mrpt/system/string_utils.h>
 #include <mrpt/system/os.h>
 #include <mrpt/synch/CCriticalSection.h>
+#include <cstring>
 
 using namespace mrpt;
 using namespace mrpt::utils;

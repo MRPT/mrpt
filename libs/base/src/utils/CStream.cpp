@@ -248,11 +248,8 @@ namespace mrpt
 }
 
 // Write:
-CStream& utils::operator << (CStream&s, const vector_float  &a) { return detail::writeStdVectorToStream(s,a); }
-CStream& utils::operator << (CStream&s, const vector_double &a) { return detail::writeStdVectorToStream(s,a); }
 CStream& utils::operator << (CStream&s, const std::vector<float>  &a) { return detail::writeStdVectorToStream(s,a); }
 CStream& utils::operator << (CStream&s, const std::vector<double> &a) { return detail::writeStdVectorToStream(s,a); }
-
 CStream& utils::operator << (CStream&s, const vector_int &a) { return detail::writeStdVectorToStream(s,a); }
 CStream& utils::operator << (CStream&s, const vector_uint &a) { return detail::writeStdVectorToStream(s,a); }
 CStream& utils::operator << (CStream&s, const vector_word &a) { return detail::writeStdVectorToStream(s,a); }
@@ -264,8 +261,6 @@ CStream& utils::operator << (CStream&s, const vector_signed_byte  &a) { return d
 // Read:
 CStream& utils::operator >> (CStream&s, std::vector<float>  &a) { return detail::readStdVectorToStream(s,a); }
 CStream& utils::operator >> (CStream&s, std::vector<double> &a) { return detail::readStdVectorToStream(s,a); }
-CStream& utils::operator >> (CStream&s, vector_float &a) { return detail::readStdVectorToStream(s,a); }
-CStream& utils::operator >> (CStream&s, vector_double &a) { return detail::readStdVectorToStream(s,a); }
 CStream& utils::operator >> (CStream&s, vector_int &a) { return detail::readStdVectorToStream(s,a); }
 CStream& utils::operator >> (CStream&s, vector_uint &a) { return detail::readStdVectorToStream(s,a); }
 CStream& utils::operator >> (CStream&s, vector_word &a) { return detail::readStdVectorToStream(s,a); }

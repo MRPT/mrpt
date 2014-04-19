@@ -17,7 +17,7 @@
 #include <mrpt/math/slerp.h>
 #include <mrpt/math/wrap2pi.h>
 #include <mrpt/math/interp_fit.h>
-//#include <mrpt/math/CMatrixD.h>
+#include <mrpt/math/CMatrixD.h>
 
 using namespace mrpt;
 using namespace mrpt::math;

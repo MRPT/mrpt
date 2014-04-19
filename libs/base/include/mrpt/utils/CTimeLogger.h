@@ -13,6 +13,7 @@
 #include <mrpt/utils/CDebugOutputCapable.h>
 
 #include <stack>
+#include <map>
 
 namespace mrpt
 {
@@ -25,7 +26,7 @@ namespace mrpt
 		 *  This class can be also used to monitorize min/mean/max/total stats of any user-provided parameters via the method CTimeLogger::registerUserMeasure()
 		 *
 		 * \sa CTimeLoggerEntry
-		 * 
+		 *
 		 * \note The default behavior is dumping all the information at destruction.
 		 * \ingroup mrpt_base_grp
 		 */
@@ -84,9 +85,9 @@ namespace mrpt
 		}; // End of class def.
 
 
-		/** A safe way to call enter() and leave() of a mrpt::utils::CTimeLogger upon construction and destruction of 
+		/** A safe way to call enter() and leave() of a mrpt::utils::CTimeLogger upon construction and destruction of
 		 * this auxiliary object, making sure that leave() will be called upon exceptions, etc.
-		 * Usage: 
+		 * Usage:
 		 * \code
 		 *    CTimeLogger logger;
 		 *    // ...
@@ -95,7 +96,7 @@ namespace mrpt
 		 *
 		 *       // do whatever
 		 *
-		 *    } // End of scope 
+		 *    } // End of scope
 		 * \endcode
 		 * \ingroup mrpt_base_grp
 		 */

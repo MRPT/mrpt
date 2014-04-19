@@ -7,10 +7,11 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include "base-precomp.h"  // Precompiled headers 
-
+#include "base-precomp.h"  // Precompiled headers
 
 #include <mrpt/poses/CPointPDF.h>
+#include <mrpt/utils/CStream.h>
+
 using namespace mrpt::poses;
 
 IMPLEMENTS_VIRTUAL_SERIALIZABLE( CPointPDF, CSerializable, mrpt::poses )

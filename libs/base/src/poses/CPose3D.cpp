@@ -15,8 +15,11 @@
 #include <mrpt/poses/CPoint3D.h>
 #include <mrpt/poses/CPose3DQuat.h>
 #include <mrpt/poses/CPose3DRotVec.h>
+#include <mrpt/math/CMatrix.h>
 #include <mrpt/math/geometry.h>
 #include <mrpt/math/wrap2pi.h>
+#include <mrpt/math/ops_matrices.h>
+#include <mrpt/utils/CStream.h>
 #include <iomanip>
 
 #ifndef M_SQRT1_2

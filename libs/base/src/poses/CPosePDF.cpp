@@ -11,6 +11,7 @@
 
 #include <mrpt/poses/CPosePDF.h>
 #include <mrpt/poses/CPosePDFGaussian.h>
+#include <mrpt/utils/CStream.h>
 
 using namespace mrpt::poses;
 using namespace mrpt::math;
@@ -36,7 +37,7 @@ void CPosePDF::jacobiansPoseComposition(
 	const CPose2D &u,
 	CMatrixDouble33			 &df_dx,
 	CMatrixDouble33			 &df_du,
-	const bool compute_df_dx, 
+	const bool compute_df_dx,
 	const bool compute_df_du )
 
 {

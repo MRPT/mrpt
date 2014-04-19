@@ -13,8 +13,7 @@
 //#include <mrpt/system/memory.h>
 //#include <mrpt/system/datetime.h>
 
-//#include <mrpt/math/math_frwds.h>  // Fordward declarations
-//#include <mrpt/math/matrix_adaptors.h>
+#include <mrpt/math/math_frwds.h>  // Fordward declarations
 #include <mrpt/math/CArray.h>
 
 namespace mrpt
@@ -403,13 +402,13 @@ namespace mrpt
 				for (int i=0;i<nrows;i++) for (int j=0;j<ncols;j++) out.m_Val[i][j]=m_Val[i+row1][j+col1];
 			}
 			/// @overload
-			template <class Derived>
-			void extractSubmatrix(const size_t row1,const size_t row2,const size_t col1,const size_t col2,Eigen::MatrixBase<Derived> &out) const
+			template <class EIGEN_MATRIX>
+			void extractSubmatrix(const size_t row1,const size_t row2,const size_t col1,const size_t col2,EIGEN_MATRIX &out) const
 			{
 				int nrows=int(row2)-int(row1)+1;
 				int ncols=int(col2)-int(col1)+1;
 				if (nrows<=0||ncols<=0)	{
-					out = typename Eigen::MatrixBase<Derived>::PlainObject();
+					out = typename EIGEN_MATRIX::PlainObject();
 					return;
 				}
 				if (row2>=m_Rows||col2>=m_Cols) THROW_EXCEPTION("Indices out of range!");

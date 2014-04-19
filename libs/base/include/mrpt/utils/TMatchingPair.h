@@ -88,8 +88,8 @@ namespace mrpt
 			  */
 			float overallSquareErrorAndPoints(
 				const mrpt::poses::CPose2D &q,
-				vector_float &xs,
-				vector_float &ys ) const;
+				std::vector<float> &xs,
+				std::vector<float> &ys ) const;
 
 
 			/**  Returns a vector with the square error between each pair of correspondences in the list, given the 2D transformation "q"
@@ -97,7 +97,7 @@ namespace mrpt
 			  *    \f[ e_i = | x_{this} -  q \oplus x_{other}  |^2 \f]
 			  * \sa overallSquareError
 			  */
-			void  squareErrorVector(const mrpt::poses::CPose2D &q, vector_float &out_sqErrs ) const;
+			void  squareErrorVector(const mrpt::poses::CPose2D &q, std::vector<float> &out_sqErrs ) const;
 
 			/**  Returns a vector with the square error between each pair of correspondences in the list and the transformed "other" (local) points, given the 2D transformation "q"
 			  *    Each element \f$ e_i \f$ is the square distance between the "this" (global) point and the "other" (local) point transformed through "q":
@@ -106,9 +106,9 @@ namespace mrpt
 			  */
 			void  squareErrorVector(
 				const mrpt::poses::CPose2D &q,
-				vector_float &out_sqErrs,
-				vector_float &xs,
-				vector_float &ys ) const;
+				std::vector<float> &out_sqErrs,
+				std::vector<float> &xs,
+				std::vector<float> &ys ) const;
 
 			/** Test whether the given pair "p" is within the pairings */
 			bool contains (const TMatchingPair &p) const;

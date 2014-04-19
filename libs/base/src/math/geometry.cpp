@@ -14,10 +14,13 @@
 #include <mrpt/math/CSparseMatrixTemplate.h>
 #include <mrpt/math/CMatrixTemplateNumeric.h>
 #include <mrpt/math/data_utils.h>
+#include <mrpt/math/ops_containers.h>
 #include <mrpt/poses/CPoint2D.h>
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/math/lightweight_geom_data.h>
 #include <mrpt/utils/stl_extensions.h>  // For serialization of std::vector<> types
+
+
 
 using namespace mrpt;
 using namespace mrpt::utils;

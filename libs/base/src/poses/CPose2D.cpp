@@ -13,7 +13,7 @@
 #include <mrpt/poses/CPoint2D.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/poses/CPoint3D.h>
-//#include <mrpt/math/utils.h>
+#include <mrpt/utils/CStream.h>
 #include <mrpt/math/wrap2pi.h>
 
 using namespace mrpt;

@@ -17,6 +17,8 @@
 #include <mrpt/poses/CPoint3D.h>
 #include <mrpt/poses/CPose3DQuat.h>
 #include <mrpt/math/CMatrix.h>
+#include <mrpt/utils/CStream.h>
+#include <iomanip>
 
 using namespace std;
 using namespace mrpt;

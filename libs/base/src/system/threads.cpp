@@ -36,6 +36,7 @@
 	#include <signal.h>
 #endif
 
+#include <fstream>
 #include <sys/types.h>
 #include <sys/stat.h>
 #ifdef MRPT_OS_APPLE

@@ -10,6 +10,7 @@
 #define  mrpt_math_vector_ops_H
 
 #include <mrpt/utils/utils_defs.h>
+#include <mrpt/utils/CStream.h>
 #include <mrpt/math/CMatrixTemplateNumeric.h>
 #include <iomanip>  // for setprecision(), etc.
 #include <iterator> // std::ostream_iterator

@@ -19,6 +19,7 @@
 
 #include <cstdlib>
 #include <cstdarg>
+#include <cstring>
 #include <float.h>
 #include <iostream>
 #include <algorithm>

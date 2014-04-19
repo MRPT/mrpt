@@ -18,6 +18,7 @@
 #include <mrpt/poses/CPosePDFGaussian.h>
 #include <mrpt/poses/CPosePDFSOG.h>
 #include <mrpt/poses/CPosePDFParticles.h>
+#include <mrpt/utils/CStream.h>
 
 using namespace mrpt::poses;
 using namespace mrpt::math;

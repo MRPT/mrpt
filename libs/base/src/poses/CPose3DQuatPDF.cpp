@@ -9,6 +9,7 @@
 
 #include "base-precomp.h"  // Precompiled headers
 
+#include <mrpt/utils/CStream.h>
 #include <mrpt/poses/CPose3DQuatPDF.h>
 #include <mrpt/poses/CPose3DQuatPDFGaussian.h>
 #include <mrpt/poses/CPose3DPDF.h>

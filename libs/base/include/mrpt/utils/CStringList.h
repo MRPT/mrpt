@@ -11,6 +11,7 @@
 
 #include <mrpt/utils/utils_defs.h>
 #include <mrpt/utils/CSerializable.h>
+#include <deque>
 
 namespace mrpt
 {

@@ -13,6 +13,8 @@
 #include <mrpt/system/filesystem.h>
 #include <mrpt/system/CDirectoryExplorer.h>
 
+#include <cstring>
+
 #ifdef MRPT_OS_WINDOWS
     #include <conio.h>
 	#include <windows.h>

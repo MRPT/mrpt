@@ -13,6 +13,7 @@
 #include <mrpt/poses/CPosePDFGrid.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/poses/CPosePDFParticles.h>
+#include <mrpt/utils/CStream.h>
 #include <mrpt/random.h>
 #include <mrpt/system/os.h>
 

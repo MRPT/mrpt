@@ -48,6 +48,7 @@ using namespace mrpt::utils;
 using namespace std;
 
 #include <string>
+#include <cstring>
 #include <iostream>
 
 

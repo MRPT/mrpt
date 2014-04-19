@@ -11,6 +11,8 @@
 
 #include <mrpt/poses/CPose3DPDFSOG.h>
 #include <mrpt/system/os.h>
+#include <mrpt/utils/CStream.h>
+#include <mrpt/math/ops_matrices.h>
 
 using namespace mrpt;
 using namespace mrpt::poses;

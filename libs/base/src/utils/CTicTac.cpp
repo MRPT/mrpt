@@ -9,8 +9,6 @@
 
 #include "base-precomp.h"  // Precompiled headers
 
-
-
 #include <mrpt/config.h>
 
 #ifdef MRPT_OS_WINDOWS
@@ -20,6 +18,8 @@
 #endif
 
 #include <mrpt/utils/CTicTac.h>
+#include <cstring>
+
 using namespace mrpt::utils;
 
 

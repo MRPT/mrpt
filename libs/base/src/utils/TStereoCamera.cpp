@@ -11,6 +11,7 @@
 
 #include <mrpt/utils/TStereoCamera.h>
 #include <mrpt/utils/CConfigFileMemory.h>
+#include <mrpt/utils/CStream.h>
 
 using namespace mrpt::utils;
 using namespace mrpt::poses;
