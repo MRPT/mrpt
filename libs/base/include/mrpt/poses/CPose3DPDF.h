@@ -11,8 +11,6 @@
 
 #include <mrpt/utils/CSerializable.h>
 #include <mrpt/math/math_frwds.h>
-//#include <mrpt/poses/CPose3D.h>
-//#include <mrpt/math/CMatrixD.h>
 #include <mrpt/utils/CProbabilityDensityFunction.h>
 
 namespace mrpt

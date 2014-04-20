@@ -49,6 +49,7 @@ WARRANTY OF MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE.
 
 #include <mrpt/utils/PLY_import_export.h>
 #include <mrpt/system/string_utils.h>
+#include <stdio.h>
 
 using namespace std;
 using namespace mrpt;

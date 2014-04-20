@@ -26,6 +26,7 @@
 //	#include <time.h>
 	#include <unistd.h>
 	#include <errno.h>
+	#include <stdio.h>
 #endif
 
 #include <mrpt/system/CFileSystemWatcher.h>

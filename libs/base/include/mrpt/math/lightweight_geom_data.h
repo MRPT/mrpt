@@ -10,7 +10,6 @@
 #define LIGHTWEIGHT_GEOM_DATA_H
 
 #include <mrpt/utils/utils_defs.h>
-//#include <mrpt/utils/stl_extensions.h>
 #include <mrpt/utils/TPixelCoord.h>
 #include <mrpt/utils/TTypeName.h>
 
@@ -2334,7 +2333,7 @@ namespace math	{
 	BASE_IMPEXP mrpt::utils::CStream &operator>>(mrpt::utils::CStream &in,mrpt::math::TObject3D &o);
 	/** TObject3D binary output. */
 	BASE_IMPEXP mrpt::utils::CStream &operator<<(mrpt::utils::CStream &out,const mrpt::math::TObject3D &o);
-	
+
 	/** @} */ // end of grouping
 
 	}	//end of namespace math

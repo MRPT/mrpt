@@ -7,12 +7,10 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include "base-precomp.h"  // Precompiled headers 
-
+#include "base-precomp.h"  // Precompiled headers
 
 #include <mrpt/math/CMatrixD.h>
 #include <mrpt/utils/CStream.h>
-
 
 using namespace mrpt;
 using namespace mrpt::math;

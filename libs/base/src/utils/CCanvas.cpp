@@ -19,6 +19,7 @@
 #include <mrpt/utils/bits_SSE.h>
 
 #include <mrpt/compress/zip.h>
+#include <map>
 
 
 // Include the MRPT bitmap fonts:

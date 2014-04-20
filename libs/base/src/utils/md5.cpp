@@ -50,6 +50,7 @@ using namespace std;
 #include <string>
 #include <cstring>
 #include <iostream>
+#include <stdio.h>
 
 
 	// a small class for calculating MD5 hashes of strings or byte arrays

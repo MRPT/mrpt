@@ -12,7 +12,6 @@
 #include <mrpt/utils/utils_defs.h>
 #include <mrpt/utils/types_math.h>
 #include <mrpt/utils/TTypeName.h>
-//#include <mrpt/math/CMatrixTemplate.h>
 
 namespace mrpt
 {

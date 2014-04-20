@@ -10,8 +10,6 @@
 #define _MRPT_CArray_H
 
 #include <mrpt/utils/utils_defs.h>
-//#include <mrpt/math/math_frwds.h>
-//#include <mrpt/math/ops_containers.h>
 #include <mrpt/utils/TTypeName.h>
 
 namespace mrpt

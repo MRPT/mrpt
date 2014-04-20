@@ -11,6 +11,7 @@
 
 #include <mrpt/utils/utils_defs.h>
 #include <mrpt/utils/CSerializable.h>
+#include <map>
 
 namespace mrpt
 {
@@ -64,7 +65,7 @@ public:
 	  * \exception std::exception On field not found
 	  */
 	size_t fieldIndex(const char *fieldName) const;
-	
+
 	/** Get the index for a given field name
 	  * \exception std::exception On field not found
 	  */
@@ -150,7 +151,7 @@ public:
 	  */
 	void dropTable(const std::string &tableName);
 
-	/** Changes the name of a given table 
+	/** Changes the name of a given table
 	  * \exception std::exception On table not found or new name already existed.
 	  */
 	void renameTable(

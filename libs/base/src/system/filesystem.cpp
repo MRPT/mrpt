@@ -11,9 +11,11 @@
 
 #include <mrpt/system/datetime.h>
 #include <mrpt/system/filesystem.h>
+#include <mrpt/system/os.h>
 #include <mrpt/system/CDirectoryExplorer.h>
 
 #include <cstring>
+#include <stdio.h>
 
 #ifdef MRPT_OS_WINDOWS
     #include <conio.h>

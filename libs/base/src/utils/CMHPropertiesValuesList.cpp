@@ -11,6 +11,9 @@
 
 
 #include <mrpt/utils/CMHPropertiesValuesList.h>
+#include <mrpt/system/os.h>
+#include <stdio.h>
+
 using namespace mrpt::utils;
 using namespace mrpt::system;
 

@@ -10,6 +10,7 @@
 #include "base-precomp.h"  // Precompiled headers
 
 #include <mrpt/system/memory.h>
+#include <stdio.h>
 
 #ifdef MRPT_OS_APPLE
 #include <mach/mach_init.h>

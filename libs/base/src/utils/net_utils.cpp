@@ -15,6 +15,7 @@
 #include <mrpt/system/threads.h>
 #include <mrpt/synch.h>
 #include <cstring>
+#include <stdio.h>
 
 #if defined(MRPT_OS_LINUX) || defined(MRPT_OS_APPLE)
 	#define  INVALID_SOCKET		(-1)

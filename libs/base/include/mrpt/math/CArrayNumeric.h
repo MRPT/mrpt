@@ -11,9 +11,6 @@
 
 #include <mrpt/utils/utils_defs.h>
 #include <mrpt/utils/types_math.h>  // Eigen
-//#include <mrpt/math/math_frwds.h>
-//#include <mrpt/math/ops_containers.h>
-//#include <mrpt/utils/TTypeName.h>
 
 namespace mrpt
 {

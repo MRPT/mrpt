@@ -12,7 +12,6 @@
 #include <mrpt/config.h>
 
 #include <cstdlib>
-//#include <cstring>
 
 // Duplicated here since <mrpt/system/os.h> is the only header that cannot include "utils_defs.h"
 #include <mrpt/base/link_pragmas.h>  // DLL import/export definitions

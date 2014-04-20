@@ -16,7 +16,6 @@
 #include <algorithm>
 #include <stdexcept>
 #include <functional>
-//#include <mrpt/gui/CDisplayWindowPlots.h>
 #include <mrpt/random.h>
 #include <mrpt/utils/CTicTac.h>
 

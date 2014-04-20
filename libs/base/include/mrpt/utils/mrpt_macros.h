@@ -7,10 +7,6 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#ifndef UTILSDEFS_H
-#error "This file is intended for include from utils_defs.h only!"
-#endif
-
 #ifndef MRPT_MACROS_H
 #define MRPT_MACROS_H
 
