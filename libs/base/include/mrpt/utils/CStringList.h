@@ -9,7 +9,6 @@
 #ifndef CStringList_H
 #define CStringList_H
 
-#include <mrpt/utils/utils_defs.h>
 #include <mrpt/utils/CSerializable.h>
 #include <deque>
 

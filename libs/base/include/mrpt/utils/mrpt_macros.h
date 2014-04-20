@@ -10,6 +10,10 @@
 #ifndef MRPT_MACROS_H
 #define MRPT_MACROS_H
 
+#include <mrpt/base/link_pragmas.h>
+#include <sstream> // ostringstream
+#include <stdexcept> // logic_error
+
 /** Does the compiler support C++11? */
 #if (__cplusplus>199711L)
 #	define MRPT_HAS_CXX11  1
@@ -408,5 +412,12 @@
 #else
 #define MRPT_FORCE_INLINE inline
 #endif
+
+
+namespace mrpt
+{
+	// Redeclared here for convenience:
+	std::string BASE_IMPEXP format(const char *fmt, ...) MRPT_printf_format_check(1,2);
+}
 
 #endif

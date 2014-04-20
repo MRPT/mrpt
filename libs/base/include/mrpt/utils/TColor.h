@@ -11,7 +11,6 @@
 #define mrpt_utils_tcolor_H
 
 #include <mrpt/utils/mrpt_stdint.h>    // compiler-independent version of "stdint.h"
-#include <mrpt/utils/mrpt_inttypes.h>  // compiler-independent version of "inttypes.h"
 
 namespace mrpt
 {
@@ -19,7 +18,7 @@ namespace mrpt
 	{
 		class CStream;
 
-		/** A RGB color - 8bit 
+		/** A RGB color - 8bit
 		 * \ingroup mrpt_base_grp */
 		struct BASE_IMPEXP TColor
 		{
@@ -46,7 +45,7 @@ namespace mrpt
 		CStream BASE_IMPEXP & operator >> (CStream& i, TColor & c);
 
 
-		/** A RGB color - floats in the range [0,1] 
+		/** A RGB color - floats in the range [0,1]
 		 * \ingroup mrpt_base_grp */
 		struct BASE_IMPEXP TColorf
 		{

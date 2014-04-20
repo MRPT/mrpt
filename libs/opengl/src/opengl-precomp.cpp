@@ -7,6 +7,6 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/opengl.h> // Precomp header
+#include "opengl-precomp.h"  // Precompiled header
 
 

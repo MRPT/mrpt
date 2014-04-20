@@ -12,6 +12,7 @@
 
 #include <mrpt/opengl/CRenderizable.h>
 #include <mrpt/opengl/opengl_fonts.h>
+#include <map>
 
 namespace mrpt
 {

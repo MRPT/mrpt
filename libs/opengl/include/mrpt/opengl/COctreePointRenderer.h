@@ -37,6 +37,7 @@ namespace mrpt
 	namespace opengl
 	{
 		using namespace mrpt::utils;
+		using namespace mrpt::math;
 
 		/** Template class that implements the data structure and algorithms for Octree-based efficient rendering.
 		  *  \sa mrpt::opengl::CPointCloud, mrpt::opengl::CPointCloudColoured, http://www.mrpt.org/Efficiently_rendering_point_clouds_of_millions_of_points

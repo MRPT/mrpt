@@ -7,14 +7,13 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/opengl.h>  // Precompiled header
+#include "opengl-precomp.h"  // Precompiled header
 
 
 #include <mrpt/opengl/CSetOfObjects.h>
 #include <mrpt/opengl/CTexturedPlane.h>
-
 #include <mrpt/utils/CStringList.h>
-#include <mrpt/poses/CPose3D.h>
+#include <mrpt/utils/CStream.h>
 
 #include "opengl_internals.h"
 #include <algorithm>
@@ -258,7 +257,7 @@ void CSetOfObjects::getBoundingBox(mrpt::math::TPoint3D &bb_min, mrpt::math::TPo
 		TPoint3D child_bbmin( std::numeric_limits<double>::max(), std::numeric_limits<double>::max(), std::numeric_limits<double>::max() );
 		TPoint3D child_bbmax(-std::numeric_limits<double>::max(),-std::numeric_limits<double>::max(),-std::numeric_limits<double>::max() );
 		(*it)->getBoundingBox(child_bbmin, child_bbmax);
-		
+
 		keep_min(bb_min.x, child_bbmin.x);
 		keep_min(bb_min.y, child_bbmin.y);
 		keep_min(bb_min.z, child_bbmin.z);

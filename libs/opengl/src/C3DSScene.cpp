@@ -7,7 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/opengl.h>  // Precompiled header
+#include "opengl-precomp.h"  // Precompiled header
 
 // Include the lib3ds library:
 #include <lib3ds/file.h>
@@ -27,6 +27,7 @@
 #include <mrpt/system/filesystem.h>
 
 #include <mrpt/utils/CStringList.h>
+#include <mrpt/utils/CStream.h>
 #include <mrpt/utils/CFileOutputStream.h>
 #include <mrpt/utils/CFileInputStream.h>
 

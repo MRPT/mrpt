@@ -7,10 +7,10 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/opengl.h>  // Precompiled header
-
+#include "opengl-precomp.h"  // Precompiled header
 
 #include <mrpt/opengl/CSetOfLines.h>
+#include <mrpt/utils/CStream.h>
 #include "opengl_internals.h"
 
 
@@ -25,13 +25,13 @@ IMPLEMENTS_SERIALIZABLE( CSetOfLines, CRenderizableDisplayList, mrpt::opengl )
 
 /** Constructor */
 CSetOfLines::CSetOfLines()
-	: mSegments(),mLineWidth(1.0),m_antiAliasing(true)	
+	: mSegments(),mLineWidth(1.0),m_antiAliasing(true)
 {
 }
 
 /** Constructor with a initial set of lines. */
 CSetOfLines::CSetOfLines(const std::vector<TSegment3D> &sgms,bool antiAliasing)
-	: mSegments(sgms),mLineWidth(1.0),m_antiAliasing(antiAliasing)	
+	: mSegments(sgms),mLineWidth(1.0),m_antiAliasing(antiAliasing)
 {
 }
 
@@ -146,7 +146,7 @@ void CSetOfLines::getBoundingBox(mrpt::math::TPoint3D &bb_min, mrpt::math::TPoin
 	bb_min = mrpt::math::TPoint3D(std::numeric_limits<double>::max(),std::numeric_limits<double>::max(), std::numeric_limits<double>::max());
 	bb_max = mrpt::math::TPoint3D(-std::numeric_limits<double>::max(),-std::numeric_limits<double>::max(),-std::numeric_limits<double>::max());
 
-	for (size_t i=0;i<mSegments.size();i++) 
+	for (size_t i=0;i<mSegments.size();i++)
 	{
 		const TSegment3D &s=mSegments[i];
 		for (size_t p=0;p<2;p++)

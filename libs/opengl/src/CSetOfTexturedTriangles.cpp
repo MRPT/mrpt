@@ -7,10 +7,11 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/opengl.h>  // Precompiled header
+#include "opengl-precomp.h"  // Precompiled header
 
 #include <mrpt/opengl/CSetOfTexturedTriangles.h>
-#include <mrpt/math/utils.h>
+//#include <mrpt/math/utils.h>
+#include <mrpt/utils/CStream.h>
 
 #include "opengl_internals.h"
 
@@ -147,7 +148,7 @@ void CSetOfTexturedTriangles::getBoundingBox(mrpt::math::TPoint3D &bb_min, mrpt:
 	bb_min = mrpt::math::TPoint3D(std::numeric_limits<double>::max(),std::numeric_limits<double>::max(), std::numeric_limits<double>::max());
 	bb_max = mrpt::math::TPoint3D(-std::numeric_limits<double>::max(),-std::numeric_limits<double>::max(),-std::numeric_limits<double>::max());
 
-	for (size_t i=0;i<m_triangles.size();i++) 
+	for (size_t i=0;i<m_triangles.size();i++)
 	{
 		const TTriangle &t=m_triangles[i];
 

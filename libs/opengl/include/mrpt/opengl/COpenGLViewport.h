@@ -17,10 +17,11 @@
 #include <mrpt/opengl/CLight.h>
 #include <mrpt/math/lightweight_geom_data.h>
 #include <mrpt/utils/CObservable.h>
+#include <mrpt/utils/CStringList.h>
 
 namespace mrpt
 {
-	namespace utils { class CStringList; class CImage; }
+	namespace utils { class CImage; }
 
 	namespace opengl
 	{
@@ -47,7 +48,7 @@ namespace mrpt
 		  *   - mrpt::opengl::mrptEventGLPostRender
 		  *
 		  * Two directional light sources at infinity are created by default, with directions (-1,-1,-1) and (1,2,1), respectively.
-		  * All OpenGL properties of light sources are accesible via the methods: setNumberOfLights(), lightsClearAll(), addLight(), and getLight(). 
+		  * All OpenGL properties of light sources are accesible via the methods: setNumberOfLights(), lightsClearAll(), addLight(), and getLight().
 		  * Please, refer to mrpt::opengl::CLight and the standard OpenGL documentation for the meaning of all light properties.
 		  *
 		  *  Refer to mrpt::opengl::COpenGLScene for further details.
@@ -117,7 +118,7 @@ namespace mrpt
 
 			CLight & getLight(const size_t i) { ASSERT_BELOW_(i,m_lights.size()) return m_lights[i]; }
 			const CLight & getLight(const size_t i) const  { ASSERT_BELOW_(i,m_lights.size()) return m_lights[i]; }
-								
+
 			/** @} */ // end of OpenGL settings
 
 			// -------------------------------------------------------------------
@@ -183,9 +184,9 @@ namespace mrpt
 			inline void setTransparent( bool trans ) { m_isTransparent=trans; }
 
 			/** Set a background color different from that of the parent GUI window */
-			inline void setCustomBackgroundColor( const TColorf &color ) { m_custom_backgb_color = true; m_background_color = color; }
+			inline void setCustomBackgroundColor( const mrpt::utils::TColorf &color ) { m_custom_backgb_color = true; m_background_color = color; }
 
-			inline TColorf getCustomBackgroundColor() const { return m_background_color; }
+			inline mrpt::utils::TColorf getCustomBackgroundColor() const { return m_background_color; }
 
 			/** Compute the 3D ray corresponding to a given pixel; this can be used to allow the user to pick and select 3D objects by clicking onto the 2D image.
 			  *  \param x_coord Horizontal coordinate with the usual meaning (0:left of the viewport, W-1: right border).
@@ -296,7 +297,7 @@ namespace mrpt
 
 			/** Retrieves a list of all objects in text form.
 			  */
-			void dumpListOfObjects( utils::CStringList  &lst );
+			void dumpListOfObjects( mrpt::utils::CStringList  &lst );
 
 			/** Render the objects in this viewport (called from COpenGLScene only) */
 			void  render( const int render_width, const int render_height ) const;
@@ -313,7 +314,7 @@ namespace mrpt
 			double			m_view_x, m_view_y,m_view_width,m_view_height; //!< The viewport position [0,1]
 			double			m_clip_min,m_clip_max; //!< The min/max clip depth distances (default: 0.1 - 10000)
 			bool			m_custom_backgb_color;
-			TColorf			m_background_color;  //!< used only if m_custom_backgb_color
+			mrpt::utils::TColorf m_background_color;  //!< used only if m_custom_backgb_color
 			bool			m_isImageView; //!< Set by setImageView
 			//CRenderizablePtr m_imageview_quad ; //!< A mrpt::opengl::CTexturedPlane used after setImageView() is called
 			mrpt::utils::CImagePtr  m_imageview_img; //!< The image to display, after calling \a setImageView()
@@ -379,7 +380,7 @@ namespace mrpt
 		  *  IMPORTANTE NOTICE: Event handlers in your observer class will most likely be invoked from an internal GUI thread of MRPT,
 		  *    so all your code in the handler must be thread safe.
 		  */
-		class OPENGL_IMPEXP mrptEventGLPreRender : public mrptEvent
+		class OPENGL_IMPEXP mrptEventGLPreRender : public mrpt::utils::mrptEvent
 		{
 		protected:
 			virtual void do_nothing() { } //!< Just to allow this class to be polymorphic
@@ -396,7 +397,7 @@ namespace mrpt
 		  *  IMPORTANTE NOTICE: Event handlers in your observer class will most likely be invoked from an internal GUI thread of MRPT,
 		  *    so all your code in the handler must be thread safe.
 		  */
-		class OPENGL_IMPEXP mrptEventGLPostRender : public mrptEvent
+		class OPENGL_IMPEXP mrptEventGLPostRender : public mrpt::utils::mrptEvent
 		{
 		protected:
 			virtual void do_nothing() { } //!< Just to allow this class to be polymorphic

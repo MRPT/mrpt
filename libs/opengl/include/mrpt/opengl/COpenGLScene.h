@@ -11,6 +11,7 @@
 
 #include <mrpt/opengl/CRenderizable.h>
 #include <mrpt/opengl/COpenGLViewport.h>
+#include <mrpt/utils/CStringList.h>
 
 namespace mrpt
 {
@@ -152,7 +153,7 @@ namespace mrpt
 
 			/** Retrieves a list of all objects in text form.
 			  */
-			void dumpListOfObjects( utils::CStringList  &lst );
+			void dumpListOfObjects( mrpt::utils::CStringList  &lst );
 
 			/** Saves the scene to a 3Dscene file, loadable by the application SceneViewer3D
 			  * \sa loadFromFile

@@ -9,9 +9,9 @@
 #ifndef  MRPT_COBJECT_H
 #define  MRPT_COBJECT_H
 
-#include <mrpt/utils/utils_defs.h>
 #include <mrpt/system/memory.h>
 #include <mrpt/utils/safe_pointers.h>
+#include <vector>
 
 // STL+ library:
 #include <mrpt/otherlibs/stlplus/smart_ptr.hpp>

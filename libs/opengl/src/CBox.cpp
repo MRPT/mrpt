@@ -7,9 +7,10 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/opengl.h>  // Precompiled header
+#include "opengl-precomp.h"  // Precompiled header
 #include <mrpt/opengl/CBox.h>
 #include <mrpt/math/geometry.h>
+#include <mrpt/utils/CStream.h>
 
 #include "opengl_internals.h"
 
@@ -21,23 +22,23 @@ using namespace std;
 
 IMPLEMENTS_SERIALIZABLE(CBox,CRenderizableDisplayList,mrpt::opengl)
 
-CBox::CBox() : 
+CBox::CBox() :
 	m_corner_min(-1,-1,-1),
 	m_corner_max(1,1,1),
 	m_wireframe(false),
 	m_lineWidth(1),
 	m_draw_border(false),
-	m_solidborder_color(0,0,0) 
-{ 
+	m_solidborder_color(0,0,0)
+{
 }
 
 CBox::CBox(const mrpt::math::TPoint3D &corner1, const mrpt::math::TPoint3D &corner2, bool  is_wireframe, float lineWidth) :
-	m_wireframe(is_wireframe) , 
+	m_wireframe(is_wireframe) ,
 	m_lineWidth( lineWidth ),
 	m_draw_border(false),
-	m_solidborder_color(0,0,0) 
+	m_solidborder_color(0,0,0)
 {
-	setBoxCorners(corner1,corner2);			
+	setBoxCorners(corner1,corner2);
 }
 
 /*---------------------------------------------------------------
@@ -140,12 +141,12 @@ void CBox::render_dl() const	{
 
 		// wireframe:
 		glLineWidth(m_lineWidth); checkOpenGLError();
-			
+
 		mrpt::math::TPoint3D  	a = m_corner_min, b = m_corner_max;
 
 		if (m_wireframe)
 			glColor4ub(m_color.R,m_color.G,m_color.B,m_color.A);
-		else 
+		else
 		{
 			glColor4ub(m_solidborder_color.R,m_solidborder_color.G,m_solidborder_color.B,m_solidborder_color.A);
 
@@ -225,7 +226,7 @@ void CBox::readFromStream(CStream &in,int version)	{
 			m_corner_max.x >> m_corner_max.y >> m_corner_max.z >>
 			m_wireframe >> m_lineWidth;
 			// Version 1:
-			if (version>=1) 
+			if (version>=1)
 				in >> m_draw_border >> m_solidborder_color;
 			else
 			{

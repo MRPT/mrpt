@@ -9,12 +9,12 @@
 
 #include "base-precomp.h"  // Precompiled headers
 
-
 #include <mrpt/utils/CStream.h>
 #include <mrpt/system/os.h>
 #include <mrpt/system/os.h>
 #include <mrpt/utils/CSerializable.h>
 #include <mrpt/utils/CStartUpClassesRegister.h>
+#include <mrpt/utils/types_math.h> // vector_*
 #include <mrpt/synch.h>
 
 #include <map>
@@ -257,6 +257,18 @@ CStream& utils::operator << (CStream&s, const vector_signed_word &a) { return de
 CStream& utils::operator << (CStream&s, const vector_long &a) { return detail::writeStdVectorToStream(s,a); }
 CStream& utils::operator << (CStream&s, const vector_byte  &a) { return detail::writeStdVectorToStream(s,a); }
 CStream& utils::operator << (CStream&s, const vector_signed_byte  &a) { return detail::writeStdVectorToStream(s,a); }
+CStream& utils::operator << (CStream&s, const vector_float  &v)
+{
+	const uint32_t n = static_cast<uint32_t>(v.size());
+	s << n; if (n) s.WriteBufferFixEndianness( &v[0],n );
+	return s;
+}
+CStream& utils::operator << (CStream&s, const vector_double  &v)
+{
+	const uint32_t n = static_cast<uint32_t>(v.size());
+	s << n; if (n) s.WriteBufferFixEndianness( &v[0],n );
+	return s;
+}
 
 // Read:
 CStream& utils::operator >> (CStream&s, std::vector<float>  &a) { return detail::readStdVectorToStream(s,a); }
@@ -268,6 +280,20 @@ CStream& utils::operator >> (CStream&s, vector_signed_word &a) { return detail::
 CStream& utils::operator >> (CStream&s, vector_long &a) { return detail::readStdVectorToStream(s,a); }
 CStream& utils::operator >> (CStream&s, vector_byte &a) { return detail::readStdVectorToStream(s,a); }
 CStream& utils::operator >> (CStream&s, vector_signed_byte &a) { return detail::readStdVectorToStream(s,a); }
+CStream& utils::operator >> (CStream&s, vector_float &v)
+{
+	uint32_t n; s >> n;
+	v.resize(n);
+	if (n) s.ReadBufferFixEndianness( &v[0], n );
+	return s;
+}
+CStream& utils::operator >> (CStream&s, vector_double &v)
+{
+	uint32_t n; s >> n;
+	v.resize(n);
+	if (n) s.ReadBufferFixEndianness( &v[0], n );
+	return s;
+}
 
 #if MRPT_WORD_SIZE!=32  // If it's 32 bit, size_t <=> uint32_t
 CStream& utils::operator << (CStream&s, const std::vector<size_t> &a) { return detail::writeStdVectorToStream(s,a); }

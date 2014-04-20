@@ -9,12 +9,9 @@
 #ifndef  mrpt_synch_criticalsection_H
 #define  mrpt_synch_criticalsection_H
 
-#include <mrpt/utils/utils_defs.h>
 #include <mrpt/utils/CReferencedMemBlock.h>
+#include <string>
 
-/*---------------------------------------------------------------
-	Class
-  ---------------------------------------------------------------*/
 namespace mrpt
 {
 	namespace utils { class CStream; }
@@ -34,7 +31,7 @@ namespace mrpt
 		class BASE_IMPEXP CCriticalSection
 		{
 		private:
-			utils::CReferencedMemBlock		m_data;   //!< The OS-dependent descriptors
+			mrpt::utils::CReferencedMemBlock m_data;   //!< The OS-dependent descriptors
 
 			std::string		m_name;
 		public:

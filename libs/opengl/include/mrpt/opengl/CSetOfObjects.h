@@ -16,6 +16,7 @@
 #include <mrpt/poses/CPosePDF.h>
 #include <mrpt/poses/CPose3DPDF.h>
 #include <mrpt/poses/CPose3DQuatPDF.h>
+#include <mrpt/utils/CStringList.h>
 
 namespace mrpt
 {
@@ -129,7 +130,7 @@ namespace mrpt
 
 			/** Retrieves a list of all objects in text form.
 			  */
-			void dumpListOfObjects( utils::CStringList  &lst );
+			void dumpListOfObjects( mrpt::utils::CStringList  &lst );
 
 			/** Ray tracing
 			  */

@@ -7,11 +7,14 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/opengl.h>  // Precompiled header
+#include "opengl-precomp.h"  // Precompiled header
 
 
 #include <mrpt/opengl/CPointCloudColoured.h>
-#include <mrpt/math/utils.h>
+#include <mrpt/utils/bits_SSE.h> // round()
+#include <mrpt/utils/CStream.h>
+#include <mrpt/math/ops_containers.h>  // for << ops
+#include <mrpt/utils/stl_extensions.h> // for << ops
 
 #include "opengl_internals.h"
 

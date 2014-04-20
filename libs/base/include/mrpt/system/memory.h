@@ -9,7 +9,8 @@
 #ifndef  MRPT_MEMORY_H
 #define  MRPT_MEMORY_H
 
-#include <mrpt/utils/utils_defs.h>
+#include <mrpt/config.h>
+#include <mrpt/base/link_pragmas.h>
 #include <cstring>
 
 namespace mrpt

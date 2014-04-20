@@ -9,7 +9,8 @@
 #ifndef  CReferencedMemBlock_H
 #define  CReferencedMemBlock_H
 
-#include <mrpt/utils/utils_defs.h>
+#include <mrpt/base/link_pragmas.h>
+#include <vector>
 #include <utility>
 
 // STL+ library:
@@ -23,8 +24,9 @@ namespace mrpt
 		  *  It keeps the reference count and only when it comes to zero, the memory block is really freed.
 		 * \ingroup mrpt_base_grp
 		  */
-		class BASE_IMPEXP CReferencedMemBlock : public stlplus::smart_ptr< vector_byte >
+		class BASE_IMPEXP CReferencedMemBlock : public stlplus::smart_ptr< std::vector<char> >
 		{
+		typedef stlplus::smart_ptr< std::vector<char> > base_t;
 		public:
 			/** Constructor with an optional size of the memory block */
 			CReferencedMemBlock(size_t mem_block_size = 0 );
@@ -37,24 +39,24 @@ namespace mrpt
 
 			template <class T> T getAs()
 			{
-				if (!stlplus::smart_ptr< vector_byte >::present())
-					THROW_EXCEPTION("Trying to access to an uninitialized memory block");
+				if (!base_t::present())
+					throw std::runtime_error("Trying to access to an uninitialized memory block");
 
-				if( stlplus::smart_ptr< vector_byte >::operator ->()->empty() )
-					THROW_EXCEPTION("Trying to access to a memory block of size 0");
+				if( base_t::operator ->()->empty() )
+					throw std::runtime_error("Trying to access to a memory block of size 0");
 
-				return reinterpret_cast<T>( & stlplus::smart_ptr< vector_byte >::operator ->()->operator [](0) );
+				return reinterpret_cast<T>( & base_t::operator ->()->operator [](0) );
 			}
 
 			template <class T> T getAs() const
 			{
-				if (!stlplus::smart_ptr< vector_byte >::present())
-					THROW_EXCEPTION("Trying to access to an uninitialized memory block");
+				if (!base_t::present())
+					throw std::runtime_error("Trying to access to an uninitialized memory block");
 
-				if( stlplus::smart_ptr< vector_byte >::operator ->()->empty() )
-					THROW_EXCEPTION("Trying to access to a memory block of size 0");
+				if( base_t::operator ->()->empty() )
+					throw std::runtime_error("Trying to access to a memory block of size 0");
 
-				return reinterpret_cast<const T>( & stlplus::smart_ptr< vector_byte >::operator ->()->operator [](0) );
+				return reinterpret_cast<const T>( & base_t::operator ->()->operator [](0) );
 			}
 
 		}; // End of class

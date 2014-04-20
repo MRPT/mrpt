@@ -7,10 +7,10 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/opengl.h>  // Precompiled header
-
+#include "opengl-precomp.h"  // Precompiled header
 
 #include <mrpt/opengl/CText3D.h>
+#include <mrpt/utils/CStream.h>
 #include <mrpt/opengl/gl_utils.h>
 #include "opengl_internals.h"
 
@@ -120,7 +120,7 @@ void CText3D::getBoundingBox(mrpt::math::TPoint3D &bb_min, mrpt::math::TPoint3D 
 	bb_min.z = 0;
 
 	bb_max.x = m_str.size() * m_scale_x;
-	bb_max.y = 1; 
+	bb_max.y = 1;
 	bb_max.z = 0;
 
 	// Convert to coordinates of my parent:

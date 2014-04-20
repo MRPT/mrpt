@@ -7,7 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/opengl.h>  // Precompiled header
+#include "opengl-precomp.h"  // Precompiled header
 
 
 #include <mrpt/opengl/COpenGLViewport.h>
@@ -16,6 +16,8 @@
 #include <mrpt/opengl/CTexturedPlane.h>
 #include <mrpt/utils/CStringList.h>
 #include <mrpt/utils/CTimeLogger.h>
+#include <mrpt/utils/CStream.h>
+#include <mrpt/utils/stl_extensions.h>  // << ops for STL
 
 #include "opengl_internals.h"
 

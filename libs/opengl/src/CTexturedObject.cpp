@@ -7,7 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/opengl.h>  // Precompiled header
+#include "opengl-precomp.h"  // Precompiled header
 
 
 #include <mrpt/opengl/CTexturedObject.h>
@@ -47,7 +47,7 @@ IMPLEMENTS_VIRTUAL_SERIALIZABLE( CTexturedObject, CRenderizableDisplayList, mrpt
 		vector<unsigned char> data;
 	};
 
-	typedef CGenericMemoryPool<CTexturedObject_MemPoolParams,CTexturedObject_MemPoolData> TMyMemPool;
+	typedef mrpt::system::CGenericMemoryPool<CTexturedObject_MemPoolParams,CTexturedObject_MemPoolData> TMyMemPool;
 #endif
 
 

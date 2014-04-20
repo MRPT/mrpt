@@ -7,7 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/opengl.h>  // Precompiled header
+#include "opengl-precomp.h"  // Precompiled header
 
 #include <mrpt/opengl/CTextMessageCapable.h>
 
@@ -141,11 +141,11 @@ bool CTextMessageCapable::updateTextMessage(const size_t  unique_index, const st
 	std::map<size_t,mrpt::opengl::T2DTextData>::iterator it = m_2D_texts.find(unique_index);
 	if (it == m_2D_texts.end())
 		return false;
-	else 
+	else
 	{
 		it->second.text = text;
 		return true;
-	}	
+	}
 }
 
 

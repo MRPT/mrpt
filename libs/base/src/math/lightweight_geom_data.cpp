@@ -60,6 +60,9 @@ TPose2D::TPose2D(const TPoint2D &p):x(p.x),y(p.y),phi(0.0)	{}
 TPose2D::TPose2D(const TPoint3D &p):x(p.x),y(p.y),phi(0.0)	{}
 TPose2D::TPose2D(const TPose3D &p):x(p.x),y(p.y),phi(p.yaw)	{}
 TPose2D::TPose2D(const mrpt::poses::CPose2D &p):x(p.x()),y(p.y()),phi(p.phi())	{}
+void TPose2D::asString(std::string &s) const {
+	s = mrpt::format("[%f %f %f]",x,y,mrpt::utils::RAD2DEG(phi));
+}
 
 void TPose2D::fromString(const std::string &s)
 {
@@ -97,6 +100,9 @@ TPose3D::TPose3D(const TPoint2D &p):x(p.x),y(p.y),z(0.0),yaw(0.0),pitch(0.0),rol
 TPose3D::TPose3D(const TPose2D &p):x(p.x),y(p.y),z(0.0),yaw(p.phi),pitch(0.0),roll(0.0)	{}
 TPose3D::TPose3D(const TPoint3D &p):x(p.x),y(p.y),z(p.z),yaw(0.0),pitch(0.0),roll(0.0)	{}
 TPose3D::TPose3D(const mrpt::poses::CPose3D &p):x(p.x()),y(p.y()),z(p.z()),yaw(p.yaw()),pitch(p.pitch()),roll(p.roll())	{}
+void TPose3D::asString(std::string &s) const {
+	s = mrpt::format("[%f %f %f %f %f %f]",x,y,z,RAD2DEG(yaw),RAD2DEG(pitch),RAD2DEG(roll));
+}
 void TPose3D::fromString(const std::string &s)
 {
 	CMatrixDouble  m;

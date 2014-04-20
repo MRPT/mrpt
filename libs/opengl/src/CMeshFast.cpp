@@ -7,14 +7,14 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/opengl.h>  // Precompiled header
+#include "opengl-precomp.h"  // Precompiled header
 
 #include <mrpt/poses/CPose3D.h>
-
 #include <mrpt/opengl/CMeshFast.h>
 #include <mrpt/opengl/CSetOfTriangles.h>
-
 #include <mrpt/utils/color_maps.h>
+#include <mrpt/utils/CStream.h>
+
 #include "opengl_internals.h"
 
 using namespace mrpt;
@@ -76,7 +76,7 @@ void CMeshFast::render_dl() const	{
 
     if (m_pointSmooth)
 		glEnable ( GL_POINT_SMOOTH );
-	else 	
+	else
 		glDisable( GL_POINT_SMOOTH );
 
 	// Disable lighting for point clouds:
@@ -88,7 +88,7 @@ void CMeshFast::render_dl() const	{
 		{
 			if ( m_isImage && m_textureImage.isColor())
 				glColor4f(C_r(i,j), C_g(i,j), C_b(i,j), m_color.A/255.f);
-			
+
 			else if (m_isImage)
 				glColor4f(C(i,j), C(i,j), C(i,j), m_color.A/255.f);
 
@@ -141,7 +141,7 @@ void  CMeshFast::assignImage(
 	m_colorFromZ = false;
 	m_isImage = true;
 	pointsUpToDate=false;
-	
+
 
 	CRenderizableDisplayList::notifyChange();
 
@@ -158,7 +158,7 @@ void  CMeshFast::assignImageAndZ( const CImage& img, const mrpt::math::CMatrixTe
 	ASSERT_((img.getWidth() == static_cast<size_t>(in_Z.cols()))&&(img.getHeight() == static_cast<size_t>(in_Z.rows())))
 
 	Z = in_Z;
-		
+
 	// Make a copy:
 	m_textureImage = img;
 
@@ -168,7 +168,7 @@ void  CMeshFast::assignImageAndZ( const CImage& img, const mrpt::math::CMatrixTe
 	m_colorFromZ = false;
 	m_isImage = true;
 	pointsUpToDate = false;
-	
+
 
 	CRenderizableDisplayList::notifyChange();
 
@@ -195,7 +195,7 @@ void  CMeshFast::writeToStream(CStream &out,int *version) const
 		out << m_enableTransparency;
 		out << m_colorFromZ;
 		out << int16_t(m_colorMap);
-		out << m_pointSize; 
+		out << m_pointSize;
 		out << m_pointSmooth;
 	}
 }
@@ -234,7 +234,7 @@ void  CMeshFast::readFromStream(CStream &in,int version)
 
 			pointsUpToDate = false;
 			break;
-		
+
 		default:
 			MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
 
@@ -253,7 +253,7 @@ void CMeshFast::updateColorsMatrix() const
 	{
 		const size_t cols = m_textureImage.getWidth();
 		const size_t rows = m_textureImage.getHeight();
-		
+
 		if ((cols != Z.getColCount())||(rows != Z.getRowCount()))
 		{
 			printf("\nTexture Image and Z sizes have to be equal");

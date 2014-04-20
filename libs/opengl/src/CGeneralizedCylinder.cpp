@@ -7,10 +7,12 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/opengl.h>  // Precompiled header
+#include "opengl-precomp.h"  // Precompiled header
 #include <mrpt/opengl/CGeneralizedCylinder.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/math/geometry.h>
+#include <mrpt/math/ops_matrices.h>  // for extract*()
+#include <mrpt/utils/CStream.h>
 
 #include "opengl_internals.h"
 
@@ -118,39 +120,9 @@ void CGeneralizedCylinder::updateMesh() const	{
 	}
 	meshUpToDate=true;
 	polysUpToDate=false;
-/*	size_t A=axis.size();
-	vector<TPoint3D> genX=generatrix;
-	if (closed&&genX.size()>2) genX.push_back(genX[0]);
-	size_t G=genX.size();
-	mesh.clear();
-	if (A>1&&G>1)	{
-		pointsMesh=CMatrixTemplate<TPoint3D>(A,G);
-		yaws.clear();
-		yaws.reserve(A);
-		vector<TPoint3D>::const_iterator it1,it2;
-		it1=axis.begin();
-		for(;;)	{
-			if ((it2=it1+1)==axis.end()) break;
-			yaws.push_back(atan2(it2->y-it1->y,it2->x-it1->x));
-			it1=it2;
-		}
-		yaws.push_back(*yaws.rbegin());
-		for (size_t i=0;i<A;i++)	{
-			CPose3D base=CPose3D(axis[i].x,axis[i].y,axis[i].z,yaws[i],0,0);
-			for (size_t j=0;j<G;j++) base.composePoint(genX[j].x,genX[j].y,genX[j].z,pointsMesh(i,j).x,pointsMesh(i,j).y,pointsMesh(i,j).z);
-		}
-		createMesh(pointsMesh,A-1,G-1,mesh);
-	}
-	meshUpToDate=true;
-	polysUpToDate=false;*/
 }
 
 void CGeneralizedCylinder::writeToStream(CStream &out,int *version) const	{
-/*	if (version) *version=0;
-	else	{
-		writeToStreamRender(out);
-		out<<axis<<generatrix;
-	}*/
 	if (version) *version=1;
 	else	{
 		writeToStreamRender(out);

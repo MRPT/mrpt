@@ -7,13 +7,19 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/opengl.h>  // Precompiled header
+#include "opengl-precomp.h"  // Precompiled header
 
 #include <mrpt/opengl/gl_utils.h>		// Include these before windows.h!!
+#include <mrpt/system/os.h>
 #include "opengl_internals.h"
+
+#include <map>
 
 using namespace std;
 using namespace mrpt;
+using namespace mrpt::math;
+using namespace mrpt::poses;
+using namespace mrpt::system;
 using namespace mrpt::opengl;
 using namespace mrpt::utils;
 

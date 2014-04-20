@@ -10,8 +10,8 @@
 #define  CSERIALIZABLE_H
 
 #include <mrpt/utils/CObject.h>
-#include <mrpt/utils/safe_pointers.h>
 #include <mrpt/utils/TTypeName.h>
+#include <mrpt/utils/types_simple.h>
 
 namespace mrpt
 {
