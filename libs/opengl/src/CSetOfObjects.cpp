@@ -14,6 +14,7 @@
 #include <mrpt/opengl/CTexturedPlane.h>
 #include <mrpt/utils/CStringList.h>
 #include <mrpt/utils/CStream.h>
+#include <mrpt/opengl/gl_utils.h>
 
 #include "opengl_internals.h"
 #include <algorithm>

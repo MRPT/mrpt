@@ -10,6 +10,7 @@
 #include "opengl-precomp.h"  // Precompiled header
 #include <mrpt/opengl/CFrustum.h>
 #include <mrpt/utils/CStream.h>
+#include <mrpt/opengl/gl_utils.h>
 
 #include "opengl_internals.h"
 

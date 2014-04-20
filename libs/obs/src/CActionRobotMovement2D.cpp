@@ -7,15 +7,15 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/obs.h>   // Precompiled headers
-
-
+#include "obs-precomp.h"   // Precompiled headers
 
 #include <mrpt/slam/CActionRobotMovement2D.h>
+#include <mrpt/utils/CStream.h>
 #include <mrpt/poses/CPosePDFGaussian.h>
 #include <mrpt/poses/CPosePDFParticles.h>
 #include <mrpt/random.h>
-#include <mrpt/math/utils.h>
+//#include <mrpt/math/utils.h>
+#include <mrpt/math/wrap2pi.h>
 
 using namespace mrpt::slam;
 using namespace mrpt::utils;
@@ -614,7 +614,7 @@ void  CActionRobotMovement2D::prepareFastDrawSingleSample_modelGaussian() const
 	cov.eigenVectors( m_fastDrawGauss_Z, D );
 
 	// Scale eigenvectors with eigenvalues:
-	D.Sqrt();
+	D = D.array().sqrt().matrix();
 	m_fastDrawGauss_Z = m_fastDrawGauss_Z * D;
 
 	MRPT_END

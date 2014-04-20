@@ -9,8 +9,8 @@
 
 #include "opengl-precomp.h"  // Precompiled header
 
-
 #include <mrpt/opengl/CRenderizable.h>		// Include these before windows.h!!
+#include <mrpt/opengl/gl_utils.h>
 #include <mrpt/synch.h>
 #include <mrpt/utils/CStringList.h>
 #include <mrpt/math/utils.h>

@@ -18,6 +18,7 @@
 #include <mrpt/math/lightweight_geom_data.h>
 #include <mrpt/utils/CObservable.h>
 #include <mrpt/utils/CStringList.h>
+#include <mrpt/utils/mrptEvent.h>
 
 namespace mrpt
 {

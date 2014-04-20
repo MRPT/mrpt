@@ -9,7 +9,7 @@
 
 #include <mrpt/scanmatching.h>
 
-#include <mrpt/utils.h>
+#include <mrpt/utils/CStartUpClassesRegister.h>
 
 
 using namespace mrpt::scanmatching;

@@ -7,5 +7,5 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/scanmatching.h>  // Precompiled headers
+#include "scanmatching-precomp.h"  // Precompiled headers
 

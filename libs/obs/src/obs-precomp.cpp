@@ -7,5 +7,5 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/obs.h>   // Precompiled headers
+#include "obs-precomp.h"   // Precompiled headers
 

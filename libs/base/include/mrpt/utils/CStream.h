@@ -9,7 +9,15 @@
 #ifndef  CSTREAM_H
 #define  CSTREAM_H
 
-#include <mrpt/utils/utils_defs.h>
+//#include <mrpt/utils/utils_defs.h>
+#include <mrpt/config.h>
+#include <mrpt/utils/compiler_fixes.h>
+#include <mrpt/utils/boost_join.h>
+#include <mrpt/utils/mrpt_macros.h>
+#include <mrpt/base/link_pragmas.h>
+#include <vector>
+#include <mrpt/utils/types_simple.h>
+
 #include <mrpt/utils/CUncopiable.h>
 #include <mrpt/utils/exceptions.h>
 

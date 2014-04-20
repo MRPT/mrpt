@@ -10,30 +10,20 @@
 #define CMetricMap_H
 
 #include <mrpt/utils/CSerializable.h>
-#include <mrpt/opengl/CSetOfObjects.h>
-
-#include <mrpt/slam/CObservation.h>
 #include <mrpt/utils/TMatchingPair.h>
-
-#include <mrpt/poses/CPoint2D.h>
-#include <mrpt/poses/CPoint3D.h>
-#include <mrpt/poses/CPose2D.h>
-#include <mrpt/poses/CPose3D.h>
-
 #include <mrpt/utils/CObservable.h>
+#include <mrpt/math/math_frwds.h>
+#include <mrpt/math/lightweight_geom_data.h>
+#include <mrpt/opengl/opengl_frwds.h>
 #include <mrpt/slam/CMetricMapEvents.h>
+#include <mrpt/obs/obs_frwds.h>
+#include <deque>
 
 namespace mrpt
 {
 	namespace slam
 	{
 		using namespace mrpt::utils;
-
-		class CObservation;
-		class CPointsMap;
-		class CSimplePointsMap;
-		class CSimpleMap;
-		class CSensoryFrame;
 
 		/** Parameters for the determination of matchings between point clouds, etc. \sa CMetricMap::determineMatching2D, CMetricMap::determineMatching3D */
 		struct OBS_IMPEXP TMatchingParams
@@ -47,7 +37,7 @@ namespace mrpt
 			mrpt::math::TPoint3D angularDistPivotPoint; //!< The point used to calculate angular distances: e.g. the coordinates of the sensor for a 2D laser scanner.
 
 			/** Ctor: default values */
-			TMatchingParams() : 
+			TMatchingParams() :
 				maxDistForCorrespondence(0.50f),
 				maxAngularDistForCorrespondence(.0f),
 				onlyKeepTheClosest(true),
@@ -186,10 +176,7 @@ namespace mrpt
 			 *
 			 * \sa Used in particle filter algorithms, see: CMultiMetricMapPDF::update
 			 */
-			double	 computeObservationLikelihood( const CObservation *obs, const CPose2D &takenFrom )
-			{
-				return computeObservationLikelihood(obs,CPose3D(takenFrom));
-			}
+			double	 computeObservationLikelihood( const CObservation *obs, const CPose2D &takenFrom );
 
 			/** Returns true if this map is able to compute a sensible likelihood function for this observation (i.e. an occupancy grid map cannot with an image).
 			 * \param obs The observation.
@@ -248,7 +235,7 @@ namespace mrpt
 				const CPose2D         & otherMapPose,
 				TMatchingPairList     & correspondences,
 				const TMatchingParams & params,
-				TMatchingExtraResults & extraResults ) const 
+				TMatchingExtraResults & extraResults ) const
 			{
 				MRPT_START
 				THROW_EXCEPTION("Virtual method not implemented in derived class.")
@@ -278,7 +265,7 @@ namespace mrpt
 				const CPose3D         & otherMapPose,
 				TMatchingPairList     & correspondences,
 				const TMatchingParams & params,
-				TMatchingExtraResults & extraResults ) const 
+				TMatchingExtraResults & extraResults ) const
 			{
 				MRPT_START
 				THROW_EXCEPTION("Virtual method not implemented in derived class.")

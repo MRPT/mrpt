@@ -6,11 +6,15 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
-
 #pragma once
 
-#include <mrpt/gui/CDisplayWindow3D.h>
-#include <mrpt/gui/CDisplayWindow.h>
-#include <mrpt/gui/CDisplayWindowPlots.h>
+namespace mrpt
+{
+	namespace opengl
+	{
+		class CSetOfObjects; class CSetOfObjectsPtr;
 
 
+	} // end namespace
+
+} // End of namespace

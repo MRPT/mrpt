@@ -12,6 +12,7 @@
 #include <mrpt/opengl/CAxis.h>
 #include <mrpt/utils/CStream.h>
 #include <mrpt/system/os.h>
+#include <mrpt/opengl/gl_utils.h>
 
 #include "opengl_internals.h"
 

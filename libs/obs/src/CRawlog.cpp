@@ -7,13 +7,14 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/obs.h>   // Precompiled headers
+#include "obs-precomp.h"   // Precompiled headers
 
 #include <mrpt/system/filesystem.h>
 #include <mrpt/slam/CRawlog.h>
 #include <mrpt/utils/CFileInputStream.h>
 #include <mrpt/utils/CFileGZInputStream.h>
 #include <mrpt/utils/CFileGZOutputStream.h>
+#include <mrpt/utils/CStream.h>
 
 using namespace mrpt;
 using namespace mrpt::slam;

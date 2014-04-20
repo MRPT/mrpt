@@ -7,8 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/obs.h>   // Precompiled headers
-
+#include "obs-precomp.h"   // Precompiled headers
 
 #include <mrpt/slam/CMetricMap.h>
 #include <mrpt/poses/CPosePDF.h>
@@ -16,7 +15,7 @@
 #include <mrpt/slam/CSimpleMap.h>
 
 #include <mrpt/math/lightweight_geom_data.h>
-#include <mrpt/math/utils.h>
+//#include <mrpt/math/utils.h>
 
 using namespace mrpt::slam;
 using namespace mrpt::utils;
@@ -94,6 +93,11 @@ double CMetricMap::computeObservationsLikelihood(
 	return lik;
 }
 
+double CMetricMap::computeObservationLikelihood( const CObservation *obs, const CPose2D &takenFrom )
+{
+	return computeObservationLikelihood(obs,CPose3D(takenFrom));
+}
+
 /*---------------------------------------------------------------
 				canComputeObservationLikelihood
   ---------------------------------------------------------------*/
@@ -130,7 +134,7 @@ void CMetricMap::computeMatchingWith2D(
 	params.offset_other_map_points = offset_other_map_points;
 	params.onlyKeepTheClosest = onlyKeepTheClosest;
 	params.onlyUniqueRobust = onlyUniqueRobust;
-	
+
 	this->determineMatching2D(otherMap,otherMapPose,correspondences,params,extraResults);
 
 	correspondencesRatio = extraResults.correspondencesRatio;
@@ -162,7 +166,7 @@ void CMetricMap::computeMatchingWith3D(
 	params.offset_other_map_points = offset_other_map_points;
 	params.onlyKeepTheClosest = onlyKeepTheClosest;
 	params.onlyUniqueRobust = onlyUniqueRobust;
-	
+
 	this->determineMatching3D(otherMap,otherMapPose,correspondences,params,extraResults);
 
 	correspondencesRatio = extraResults.correspondencesRatio;

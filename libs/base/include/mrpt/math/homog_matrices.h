@@ -9,7 +9,11 @@
 #ifndef  MRPT_HOMOG_MATRICES_H
 #define  MRPT_HOMOG_MATRICES_H
 
-#include <mrpt/utils/utils_defs.h>
+//#include <mrpt/utils/utils_defs.h>
+#include <mrpt/config.h>
+#include <mrpt/utils/compiler_fixes.h>
+#include <mrpt/utils/boost_join.h>
+#include <mrpt/utils/mrpt_macros.h>
 
 namespace mrpt
 {
@@ -113,9 +117,10 @@ namespace mrpt
 			M(1,3) = tx*M(0,1)+ty*M(1,1)+tz*M(2,1);
 			M(2,3) = tx*M(0,2)+ty*M(1,2)+tz*M(2,2);
 			// 3x3 rotation part:
-			std::swap( M(1,0),M(0,1) );
-			std::swap( M(2,0),M(0,2) );
-			std::swap( M(1,2),M(2,1) );
+			double t; // avoid std::swap() to avoid <algorithm> only for that.
+			t=M(1,0); M(1,0) = M(0,1); M(0,1)=t;
+			t=M(2,0); M(2,0) = M(0,2); M(0,2)=t;
+			t=M(1,2); M(1,2) = M(2,1); M(2,1)=t;
 		}
 
 	}

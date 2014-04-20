@@ -9,11 +9,12 @@
 #ifndef ScanMatching_H
 #define ScanMatching_H
 
-#include <mrpt/math.h>   // These 2 headers, in this order, are needed to avoid
-#include <mrpt/poses.h>  //  undefined classes errors in inline constructors of mrpt::poses classes.
-
+#include <mrpt/utils/utils_defs.h>
+#include <mrpt/math/math_frwds.h>
+#include <mrpt/math/CMatrixFixedNumeric.h>
+//#include <mrpt/math.h>   // These 2 headers, in this order, are needed to avoid
+//#include <mrpt/poses.h>  //  undefined classes errors in inline constructors of mrpt::poses classes.
 #include <mrpt/utils/TMatchingPair.h>
-
 #include <mrpt/scanmatching/link_pragmas.h>
 
 namespace mrpt
@@ -49,13 +50,13 @@ namespace mrpt
 		  * \sa THornMethodOpts
 		  */
 		double SCANMATCHING_IMPEXP HornMethod(
-			const vector_double  &inPoints,
-			vector_double        &outQuat,
+			const std::vector<double>  &inPoints,
+			std::vector<double>        &outQuat,
 			bool                 forceScaleToUnity = false );
 
 		//! \overload
 		double SCANMATCHING_IMPEXP HornMethod(
-			const vector_double      &inPoints,
+			const std::vector<double>      &inPoints,
 			mrpt::poses::CPose3DQuat &outQuat,
 			bool                      forceScaleToUnity  = false);
 
@@ -147,7 +148,7 @@ namespace mrpt
 			CPosePDFGaussian				&out_transformation );
 
 		/** This method implements a RANSAC-based robust estimation of the rigid transformation between two planar frames of references, returning a probability distribution over all the posibilities as a Sum of Gaussians.
-		  * 
+		  *
 		  *  The technique was described in the paper:
 		  *		- J.L. Blanco, J. González-Jimenez and J.A. Fernandez-Madrigal. "A robust, multi-hypothesis approach to matching occupancy grid maps". Robotica, available on CJO2013. doi:10.1017/S0263574712000732. http://journals.cambridge.org/action/displayAbstract?aid=8815308
 		  *
@@ -173,7 +174,7 @@ namespace mrpt
 		  *  If ransac_fuseByCorrsMatch=true (the default), the weight of Gaussian modes will be increased when an exact match in the
 		  *   subset of correspondences for the modes is found. Otherwise, an approximate method is used as test by just looking at the
 		  *   resulting X,Y,PHI means (Threshold in this case are: ransac_fuseMaxDiffXY, ransac_fuseMaxDiffPhi).
-		  * 
+		  *
 		  * \param[in] max_rmse_to_end Stop searching for solutions when the RMSE of one solution is below this threshold. Special value "0" means "auto", which employs "2*normalizationStd".
 		  *
 		  * \exception Raises a std::exception if the list "in_correspondences" has not a minimum of two correspondences.
@@ -190,7 +191,7 @@ namespace mrpt
 			TMatchingPairList		*out_largestSubSet = NULL,
 			bool						ransac_fuseByCorrsMatch = true,
 			float						ransac_fuseMaxDiffXY = 0.01f,
-			float						ransac_fuseMaxDiffPhi = DEG2RAD(0.1f),
+			float						ransac_fuseMaxDiffPhi = mrpt::utils::DEG2RAD(0.1f),
 			bool						ransac_algorithmForLandmarks = true,
 			double 						probability_find_good_model = 0.999,
 			unsigned int				ransac_min_nSimulations = 1500,

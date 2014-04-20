@@ -7,11 +7,10 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/obs.h>   // Precompiled headers
-
-
+#include "obs-precomp.h"   // Precompiled headers
 
 #include <mrpt/slam/CObservationGasSensors.h>
+#include <mrpt/utils/CStream.h>
 
 using namespace mrpt::slam;
 using namespace mrpt::utils;
@@ -192,7 +191,7 @@ CObservationGasSensors::CMOSmodel::CMOSmodel():
 	a_rise(0),
 	b_rise(0),
 	a_decay(0),
-	b_decay(0),	
+	b_decay(0),
 	save_maplog(false),
 	last_Obs(),
 	temporal_Obs(),
@@ -254,7 +253,7 @@ void CObservationGasSensors::CMOSmodel::noise_filtering(const float &reading, co
 	try{
 		//Store values in the temporal Observation
 		temporal_Obs.reading = reading;
-		temporal_Obs.timestamp = timestamp;		
+		temporal_Obs.timestamp = timestamp;
 
 		// If first reading from E-nose
 		if ( m_antiNoise_window.empty() )
@@ -292,7 +291,7 @@ void CObservationGasSensors::CMOSmodel::noise_filtering(const float &reading, co
 void CObservationGasSensors::CMOSmodel::inverse_MOSmodeling ( const float &reading, const mrpt::system::TTimeStamp &timestamp)
 {
 	try{
-		
+
 		//Keep the minimum reading value as an approximation to the basline level
 		if (reading < min_reading)
 			min_reading = reading;
@@ -312,7 +311,7 @@ void CObservationGasSensors::CMOSmodel::inverse_MOSmodeling ( const float &readi
 						cout << "IncT is not constant by HW." << endl;
 			}
 			else
-			{				
+			{
 				if (incT > 0)
 					first_incT = false;
 			}
@@ -325,7 +324,7 @@ void CObservationGasSensors::CMOSmodel::inverse_MOSmodeling ( const float &readi
 			}
 			else //slope>=0 -->rise
 			{
-				last_Obs.tau = a_rise * abs(reading-min_reading) + b_rise;				
+				last_Obs.tau = a_rise * abs(reading-min_reading) + b_rise;
 			}//end-if
 
 			//New estimation values -- Ziegler-Nichols model --
@@ -338,13 +337,13 @@ void CObservationGasSensors::CMOSmodel::inverse_MOSmodeling ( const float &readi
 
 			//Prepare the New observation
 			last_Obs.timestamp = timestamp;
-			last_Obs.reading = reading;			
+			last_Obs.reading = reading;
 
 		}else{
 			// First filtered reading (use default values)
 			last_Obs.tau = b_rise;
 			last_Obs.reading = reading;
-			last_Obs.timestamp = timestamp;						
+			last_Obs.timestamp = timestamp;
 			last_Obs.estimation = reading;		//No estimation possible at this step
 			first_iteration = false;
 		}//end-if estimation values
@@ -380,7 +379,7 @@ void CObservationGasSensors::CMOSmodel::save_log_map(
 		*m_debug_dump << format("%f \t", time );
 		*m_debug_dump << format("%f \t", reading );
 		*m_debug_dump << format("%f \t", estimation );
-		*m_debug_dump << format("%f \t", tau );			
+		*m_debug_dump << format("%f \t", tau );
 		*m_debug_dump << "\n";
 	}
 	else cout << "Unable to open file";

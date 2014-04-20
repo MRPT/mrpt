@@ -61,7 +61,7 @@ namespace slam
 			int32_t	landmarkID;
 
 			/** The covariance matrix of the landmark, with variable indices [0,1,2] being [range,yaw,pitch]. */
-			CMatrixDouble33 covariance;
+			mrpt::math::CMatrixDouble33 covariance;
 		};
 
 		typedef std::vector<TMeasurement> TMeasurementList;

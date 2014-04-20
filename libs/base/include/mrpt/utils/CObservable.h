@@ -9,8 +9,9 @@
 #ifndef  CObservable_H
 #define  CObservable_H
 
-#include <mrpt/utils/utils_defs.h>
-#include <mrpt/utils/mrptEvent.h>
+//#include <mrpt/utils/utils_defs.h>
+#include <mrpt/config.h>
+#include <mrpt/base/link_pragmas.h>
 #include <set>
 
 namespace mrpt
@@ -18,6 +19,7 @@ namespace mrpt
 	namespace utils
 	{
 		class CObserver;
+		class mrptEvent;
 
 		/** Inherit from this class for those objects capable of being observed by a CObserver class.
 		  *

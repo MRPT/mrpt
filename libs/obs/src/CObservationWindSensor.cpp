@@ -7,9 +7,10 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/obs.h>   // Precompiled headers
+#include "obs-precomp.h"   // Precompiled headers
 
 #include <mrpt/slam/CObservationWindSensor.h>
+#include <mrpt/utils/CStream.h>
 
 using namespace mrpt::slam; using namespace mrpt::utils; using namespace mrpt::poses;
 
@@ -39,7 +40,7 @@ void  CObservationWindSensor::writeToStream(CStream &out, int *version) const
 			<< direction
 			<< sensorLabel
 			<< timestamp
-			<< sensorPoseOnRobot;			
+			<< sensorPoseOnRobot;
 	}
 }
 

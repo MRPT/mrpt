@@ -9,17 +9,13 @@
 #ifndef CSENSORYFRAME_H
 #define CSENSORYFRAME_H
 
-#include <mrpt/slam/CObservation.h>
 #include <mrpt/utils/CSerializable.h>
-#include <mrpt/slam/CObservation2DRangeScan.h>
-
+#include <mrpt/obs/obs_frwds.h>
 
 namespace mrpt
 {
 	namespace slam
 	{
-		class	CMetricMap;
-
 		// This must be added to any CSerializable derived class:
 		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CSensoryFrame, mrpt::utils::CSerializable, OBS_IMPEXP )
 

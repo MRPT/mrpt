@@ -7,10 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#ifndef _mrpt_pbmap_H
-#define _mrpt_pbmap_H
-
-#include <mrpt/config.h>
+#pragma once
 
 #include <mrpt/pbmap/ConsistencyTest.h>
 #include <mrpt/pbmap/heuristicParams.h>
@@ -23,6 +20,4 @@
 #include <mrpt/pbmap/SemanticClustering.h>
 #include <mrpt/pbmap/Subgraph.h>
 #include <mrpt/pbmap/SubgraphMatcher.h>
-
-#endif
 

@@ -7,13 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#ifndef _mrpt_detectors_H
-#define _mrpt_detectors_H
-
+#pragma once
 
 #include <mrpt/detectors/CDetectableObject.h>
-#include <mrpt/detectors/CObjectDetection.h>
-#include <mrpt/detectors/CCascadeClassifierDetection.h>
-#include <mrpt/detectors/CFaceDetection.h>
 
-#endif

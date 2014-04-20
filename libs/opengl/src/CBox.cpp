@@ -11,6 +11,7 @@
 #include <mrpt/opengl/CBox.h>
 #include <mrpt/math/geometry.h>
 #include <mrpt/utils/CStream.h>
+#include <mrpt/opengl/gl_utils.h>
 
 #include "opengl_internals.h"
 

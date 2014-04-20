@@ -7,9 +7,10 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/obs.h>   // Precompiled headers
+#include "obs-precomp.h"   // Precompiled headers
 
 #include <mrpt/slam/CObservationStereoImages.h>
+#include <mrpt/utils/CStream.h>
 
 using namespace mrpt::slam;
 using namespace mrpt::utils;
@@ -188,8 +189,8 @@ void CObservationStereoImages::setStereoCameraParams(const mrpt::utils::TStereoC
 	this->rightCameraPose = in_params.rightCameraPose;
 }
 
-/** This method only checks whether ALL the distortion parameters in \a leftCamera are set to zero, which is 
-  * the convention in MRPT to denote that this pair of stereo images has been rectified. 
+/** This method only checks whether ALL the distortion parameters in \a leftCamera are set to zero, which is
+  * the convention in MRPT to denote that this pair of stereo images has been rectified.
   */
 bool CObservationStereoImages::areImagesRectified() const
 {

@@ -213,7 +213,7 @@ namespace mrpt
 } // End of namespace
 
 // This header goes here so there we can use "CRenderizablePtr"
-#include <mrpt/opengl/gl_utils.h>
+//#include <mrpt/opengl/gl_utils.h>
 
 
 #endif

@@ -12,7 +12,7 @@
 #include <mrpt/opengl/CRenderizable.h>
 #include <mrpt/opengl/CSetOfObjects.h>
 #include <mrpt/opengl/CBox.h>
-
+#include <mrpt/opengl/gl_utils.h>
 
 namespace mrpt
 {

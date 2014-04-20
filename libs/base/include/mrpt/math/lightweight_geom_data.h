@@ -9,11 +9,12 @@
 #ifndef LIGHTWEIGHT_GEOM_DATA_H
 #define LIGHTWEIGHT_GEOM_DATA_H
 
-#include <mrpt/utils/utils_defs.h>
+#include <mrpt/config.h>
+#include <mrpt/base/link_pragmas.h>
 #include <mrpt/utils/TPixelCoord.h>
 #include <mrpt/utils/TTypeName.h>
-
 #include <mrpt/math/math_frwds.h>  // Fordward declarations
+#include <cmath>  // sqrt(),...
 
 namespace mrpt	{
 namespace math	{

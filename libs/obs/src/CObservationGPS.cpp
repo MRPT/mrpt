@@ -7,10 +7,11 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/obs.h>   // Precompiled headers
+#include "obs-precomp.h"   // Precompiled headers
 
 #include <mrpt/slam/CObservationGPS.h>
 #include <mrpt/utils/CStdOutStream.h>
+#include <mrpt/utils/CStream.h>
 
 using namespace std;
 using namespace mrpt;

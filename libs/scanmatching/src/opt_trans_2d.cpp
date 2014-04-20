@@ -7,15 +7,15 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/scanmatching.h>  // Precompiled headers
+#include "scanmatching-precomp.h"  // Precompiled headers
 
 
 #include <mrpt/scanmatching/scan_matching.h>
 #include <mrpt/poses/CPosePDFGaussian.h>
 #include <mrpt/poses/CPosePDFSOG.h>
 #include <mrpt/random.h>
-#include <mrpt/math/CMatrixD.h>
-#include <mrpt/math/utils.h>
+//#include <mrpt/math/CMatrixD.h>
+//#include <mrpt/math/utils.h>
 #include <mrpt/math/CQuaternion.h>
 
 #include <algorithm>

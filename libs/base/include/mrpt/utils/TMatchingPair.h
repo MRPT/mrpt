@@ -9,7 +9,9 @@
 #ifndef  TMatchingPair_H
 #define  TMatchingPair_H
 
-#include <mrpt/utils/utils_defs.h>
+//#include <mrpt/utils/utils_defs.h>
+#include <vector>
+#include <mrpt/base/link_pragmas.h>
 
 namespace mrpt
 {

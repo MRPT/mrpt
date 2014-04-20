@@ -18,6 +18,7 @@
 #include <mrpt/utils/CTimeLogger.h>
 #include <mrpt/utils/CStream.h>
 #include <mrpt/utils/stl_extensions.h>  // << ops for STL
+#include <mrpt/opengl/gl_utils.h>
 
 #include "opengl_internals.h"
 

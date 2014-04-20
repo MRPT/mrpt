@@ -7,10 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#ifndef _mrpt_graphslam_H
-#define _mrpt_graphslam_H
+#pragma once
 
 #include <mrpt/graphslam/types.h>
-#include <mrpt/graphslam/levmarq.h>
 
-#endif

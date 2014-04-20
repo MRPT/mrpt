@@ -50,6 +50,9 @@ namespace mrpt
 		struct TPose3D;
 		struct TPose3DQuat;
 
+		class CMatrix;  // mrpt-binary-serializable matrix
+		class CMatrixD; // mrpt-binary-serializable matrix
+
 		namespace detail
 		{
 			/** Internal resize which compiles to nothing on fixed-size matrices. */

@@ -7,8 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#ifndef _mrpt_hmtslam_H
-#define _mrpt_hmtslam_H
+#pragma once
 
 #include <mrpt/hmtslam/CHMTSLAM.h>
 #include <mrpt/hmtslam/CHierarchicalMapMHPartition.h>
@@ -18,6 +17,4 @@
 #include <mrpt/hmtslam/CRobotPosesGraph.h>
 #include <mrpt/hmtslam/CHMHMapNode.h>
 #include <mrpt/hmtslam/CHMHMapArc.h>
-#include <mrpt/opengl.h> // Needed by many classes (put here to avoid a MSVC9 internal compiler error...)
 
-#endif

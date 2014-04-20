@@ -153,4 +153,3 @@ namespace mrpt
 
 	} // End of namespace
 } // end of namespace
-

@@ -10,8 +10,8 @@
 #define CPosePDFSOG_H
 
 #include <mrpt/poses/CPosePDF.h>
-#include <mrpt/math/CMatrix.h>
-#include <mrpt/math/CMatrixD.h>
+#include <mrpt/math/CMatrixFixedNumeric.h>
+#include <mrpt/math/math_frwds.h>
 
 
 namespace mrpt

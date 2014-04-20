@@ -7,10 +7,10 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/obs.h>  // Only for precomp. headers, include all libmrpt-core headers.
-
+#include "obs-precomp.h"   // Precompiled headers
 
 #include <mrpt/slam/CSensoryFrame.h>
+#include <mrpt/utils/CStream.h>
 
 using namespace mrpt::slam;
 using namespace mrpt::poses;

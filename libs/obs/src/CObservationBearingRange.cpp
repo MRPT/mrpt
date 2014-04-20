@@ -7,12 +7,12 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/obs.h>   // Precompiled headers
+#include "obs-precomp.h"   // Precompiled headers
 
-
-
+#include <mrpt/utils/CStream.h>
 #include <mrpt/slam/CObservationBearingRange.h>
 #include <mrpt/system/os.h>
+#include <mrpt/math/ops_matrices.h> // for << ops
 
 using namespace mrpt::slam; using namespace mrpt::utils; using namespace mrpt::poses;
 
@@ -50,7 +50,7 @@ void  CObservationBearingRange::writeToStream(CStream &out, int *version) const
 		// The data
 		out << minSensorDistance
 		    << maxSensorDistance
-		    << fieldOfView_yaw 
+		    << fieldOfView_yaw
 			<< fieldOfView_pitch
 		    << sensorLocationOnRobot
 		    << timestamp;
@@ -114,8 +114,8 @@ void  CObservationBearingRange::readFromStream(CStream &in, int version)
 			{
 				float fieldOfView;
 				in >> fieldOfView;
-				
-				fieldOfView_yaw = 
+
+				fieldOfView_yaw =
 				fieldOfView_pitch = fieldOfView;
 			}
 
@@ -145,7 +145,7 @@ void  CObservationBearingRange::readFromStream(CStream &in, int version)
 				   >> sensedData[i].yaw
 				   >> sensedData[i].pitch
 				   >> sensedData[i].landmarkID;
-				
+
 				if (version>=3 && validCovariances)
 					in >> sensedData[i].covariance;
 

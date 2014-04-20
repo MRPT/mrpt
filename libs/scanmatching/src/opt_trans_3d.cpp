@@ -7,18 +7,15 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/scanmatching.h>  // Precompiled header
+#include "scanmatching-precomp.h"  // Precompiled headers
 
 
 #include <mrpt/scanmatching/scan_matching.h>
 #include <mrpt/poses/CPosePDFGaussian.h>
 #include <mrpt/poses/CPosePDFSOG.h>
+#include <mrpt/poses/CPose3DQuat.h>
 #include <mrpt/random.h>
 #include <mrpt/math/CMatrixD.h>
-#include <mrpt/math/utils.h>
-#include <mrpt/math/CQuaternion.h>
-
-#include <algorithm>
 
 using namespace mrpt;
 using namespace mrpt::scanmatching;
@@ -30,13 +27,13 @@ using namespace std;
 	HornMethod
   ---------------------------------------------------------------*/
 double scanmatching::HornMethod(
-	const vector_double		&inVector,
-	vector_double			&outVector,				// The output vector
+	const vector<double>		&inVector,
+	vector<double>			&outVector,				// The output vector
 	bool forceScaleToUnity )
 {
 	MRPT_START
 
-	vector_double input;
+	vector<double> input;
 	input.resize( inVector.size() );
 	input = inVector;
 	outVector.resize( 7 );
@@ -114,7 +111,7 @@ double scanmatching::HornMethod(
 
 	// q is the quaternion correspondent to the greatest eigenvector of the N matrix (last column in Z)
 	CMatrixDouble44 Z, D;
-	vector_double v;
+	vector<double> v;
 
 	N.eigenVectors( Z, D );
 	Z.extractCol( Z.getColCount()-1, v );
@@ -158,11 +155,11 @@ double scanmatching::HornMethod(
 
 //! \overload
 double scanmatching::HornMethod(
-	const vector_double      &inPoints,
+	const vector<double>      &inPoints,
 	mrpt::poses::CPose3DQuat &outQuat,
 	bool                      forceScaleToUnity )
 {
-	vector_double outV;
+	vector<double> outV;
 	const double s = HornMethod(inPoints,outV,forceScaleToUnity);
 	for (int i=0;i<7;i++)
 		outQuat[i]=outV[i];
@@ -207,7 +204,7 @@ bool  scanmatching::leastSquareErrorRigidTransformation6D(
 	CMatrixD S, N;
 	CMatrixD Z, D;
 
-	vector_double v;
+	vector<double> v;
 	const size_t nMatches = in_correspondences.size();
 	double s; // Scale
 
