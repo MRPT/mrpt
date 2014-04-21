@@ -114,7 +114,7 @@ namespace mrpt
 		/** Reverse the order of the bytes of a given type (useful for transforming btw little/big endian)  */
 		template <class T> inline void reverseBytesInPlace(T& v_in_out)
 		{
-			uint8_t *ptr = reinterpret_cast<uint8_t*>(&v_in_out);
+			unsigned char *ptr = reinterpret_cast<unsigned char*>(&v_in_out);
 			std::reverse(ptr,ptr+sizeof(T));
 		}
 
