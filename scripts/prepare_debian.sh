@@ -109,27 +109,16 @@ echo "Deleting Windows-only and not required files for Debian packages..."
 rm -fR lib
 rm -fR packaging
 
-rm -fR apps/HolonomicNavigatorTester
-rm -fR apps/PTG_Designer
-rm -fR apps/SimpleMapsViewer
+# Not stable...
 rm -fR apps/vOdometry
 rm -fR share/mrpt/config_files/vOdometry
 
-# Not stable yet...
 rm -fR apps/hmt-slam
-rm -fR apps/hmt-slam-gui
 rm -fR apps/hmtMapViewer
-
-
-rm -fr apps/*monoslam*
-rm -fr libs/*monoslam*
-rm -fr share/applications/monoslam.desktop
-
-rm -fr libs/stereoslam
 
 rm -fR scripts/Hha.dll scripts/hhc.exe scripts/prepare_*.sh scripts/recompile*
 
-rm -fR doc/papers
+find . -name '.gitignore' | xargs rm 
 
 if [ ${LEAVE_EMBEDDED_EIGEN} == "0" ];
 then

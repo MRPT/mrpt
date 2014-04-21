@@ -296,7 +296,7 @@ void COpenNI2Generic::open(unsigned sensor_id)
 	//    setTiltAngleDegrees(m_initial_tilt_angle);
 
 	mrpt::system::sleep(2000); // Sleep 2s
-	cout << "Device " << sensor_id << " opens succesfully.\n\n";
+	cout << "Device " << sensor_id << " open successfully.\n\n";
 #else
 	THROW_EXCEPTION("MRPT was built without OpenNI2 support")
 #endif // MRPT_HAS_OPENNI2

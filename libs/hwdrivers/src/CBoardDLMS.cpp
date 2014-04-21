@@ -294,7 +294,7 @@ bool CBoardDLMS::queryTimeStamp( mrpt::system::TTimeStamp &tstamp )
 		} while(msgRx.type != 0x90); // end do while
 
 		tstamp = (uint64_t)msgRx.content[0] + (((uint64_t)msgRx.content[1])<<8) + (((uint64_t)msgRx.content[2])<<16) + (((uint64_t)msgRx.content[3])<<24);
-		cout << "CBoardDLMS: USB Port open succesfully" << endl;
+		cout << "CBoardDLMS: USB Port open successfully" << endl;
 		cout << "Received Initial TimeStamp: " << tstamp << endl;
 
 		//cout << "TS  Received: [" << msgRx.content.size() << "]"<< endl;

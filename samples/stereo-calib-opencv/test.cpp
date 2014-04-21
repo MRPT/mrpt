@@ -117,7 +117,6 @@ void StereoCalib(
 	int nx, int ny,
 	int useUncalibrated,
 	const float squareSize,
-	const double alpha,
 	const bool flag_fix_aspect_ratio,
 	const bool flag_zero_tangent_dist,
 	const bool flag_same_focal_len
@@ -528,7 +527,6 @@ void StereoCalib(
 		"cheesboard_nx = %i\n"
 		"cheesboard_ny = %i\n"
 		"cheesboard_square_size = %f\n"
-		"alpha = %f // Parameter for zoom in/out\n"
 		"flag_fix_aspect_ratio = %s\n"
 		"flag_zero_tangent_dist = %s\n"
 		"flag_same_focal_len = %s\n\n"
@@ -537,7 +535,6 @@ void StereoCalib(
 		avgErr/(nframes*n),
 		nx,ny,
 		(double)squareSize,
-		alpha,
 		flag_fix_aspect_ratio ? "true":"false",
 		flag_zero_tangent_dist ? "true":"false",
 		flag_same_focal_len ? "true":"false"
@@ -640,7 +637,7 @@ void StereoCalib(
 
 #endif // MRPT_HAS_OPENCV
 
-int main(void)
+int main(int argc, char **argv)
 {
 #if MRPT_HAS_OPENCV && MRPT_OPENCV_VERSION_NUM>=0x100
 	//CvMat leftCamMat, rightCamMat;
@@ -652,9 +649,15 @@ int main(void)
 	string sInFile;
 	cout << "This program expects an input text file with the list of images, one image per line alternating left/right/left/right/...\n";
 	cout << "File with list of images [ENTER=stereo_calib.txt]: ";
-	std::getline(cin,sInFile);
-	if (sInFile.empty())
-		sInFile="stereo_calib.txt";
+
+	if (argc==2)
+		sInFile = std::string(argv[1]);
+	else 
+	{
+		std::getline(cin,sInFile);
+		if (sInFile.empty())
+			sInFile="stereo_calib.txt";
+	}
 
 	int nx = 6;
 	int ny = 9;
@@ -664,15 +667,6 @@ int main(void)
 
     float squareSize = 0.034f;
 	cout << "Length of squares (in meters, e.g. 0.034 = 3.4cm) : "; cin >> squareSize;
-
-	double alpha = -1;
-	cout <<
-		"Enter 'alpha' scaling parameter:\n"
-		" -1 => Auto\n"
-		" Range [0,1]: \n"
-		"   0 => the entire image is valid pixels (zoom in)\n"
-		"   1 => don't discard any original pixel (zoom out)\n";
-	cout << "Alpha : "; cin >> alpha;
 
 	const bool flag_fix_aspect_ratio  = askBooleanQuestion("Force fixed aspect ratio, that is, fx=fy? [NO/yes]: ", false);
 	const bool flag_zero_tangent_dist = askBooleanQuestion("Force zero tangent distortion? [no/YES]: ", true);
@@ -684,7 +678,7 @@ int main(void)
 	if (sOutFile .empty())
 		sOutFile = "stereo_calib_report.txt";
 
-	StereoCalib(sInFile.c_str(),sOutFile.c_str(), nx,ny, 0, squareSize, alpha, flag_fix_aspect_ratio, flag_zero_tangent_dist, flag_same_focal_len );
+	StereoCalib(sInFile.c_str(),sOutFile.c_str(), nx,ny, 0, squareSize, flag_fix_aspect_ratio, flag_zero_tangent_dist, flag_same_focal_len );
 #else
 	printf("OpenCV 1.1.0 or above required.\n");
 #endif

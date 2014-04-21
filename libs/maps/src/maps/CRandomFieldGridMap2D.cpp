@@ -635,7 +635,7 @@ void  CRandomFieldGridMap2D::internal_clear()
 		}//end case
 		break;
 	default:
-		cout << "MAP TYPE NOT RECOGNICED... QUITTING" << endl;
+		cout << "MAP TYPE NOT RECOGNIZED... QUITTING" << endl;
 		break;
 	} //end switch
 
