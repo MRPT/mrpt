@@ -213,7 +213,7 @@ TEST(Matrices,fromMatlabStringFormat)
 	}
 
 	// This one MUST BE detected as WRONG:
-	if ( M4.fromMatlabStringFormat(mat4, false /*dont dump errors to cerr*/) )
+	if ( M4.fromMatlabStringFormat(mat4, NULL /*dont dump errors to cerr*/) )
 		GTEST_FAIL() << mat4;
 
 	if (! M5.fromMatlabStringFormat(mat5) || size(M5,1)!=0 || size(M5,2)!=0 )

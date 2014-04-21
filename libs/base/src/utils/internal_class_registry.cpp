@@ -13,7 +13,6 @@
 #include <mrpt/utils/CObject.h>
 
 #include <map>
-#include <iostream>
 #include <cstdarg>
 
 #include "internal_class_registry.h"
@@ -48,7 +47,7 @@ CThreadSafeQueue<TRegisterFunction>	 &mrpt::utils::pending_class_registers()
 
 namespace mrpt
 {
-	namespace system { void BASE_IMPEXP registerFatalExceptionHandlers(); } // Fwrd decl. 
+	namespace system { void BASE_IMPEXP registerFatalExceptionHandlers(); } // Fwrd decl.
 
 	namespace utils
 	{

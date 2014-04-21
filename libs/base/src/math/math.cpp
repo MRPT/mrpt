@@ -18,8 +18,8 @@
 
 #include <mrpt/system/string_utils.h>
 #include <mrpt/utils/CFileStream.h>
-
 #include <mrpt/math/CMatrixD.h>
+#include <mrpt/utils/types_math.h>
 #include <mrpt/math/ops_matrices.h>
 
 #include <float.h>
@@ -29,7 +29,6 @@ using namespace mrpt;
 using namespace mrpt::utils;
 using namespace mrpt::math;
 using namespace std;
-
 
 // Next there are declared some auxiliary functions:
 namespace mrpt

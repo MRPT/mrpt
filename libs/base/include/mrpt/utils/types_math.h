@@ -19,11 +19,10 @@
 // Include the Eigen3 library headers, including
 //  MRPT's extensions:
 // --------------------------------------------------
-#include <iostream> // These headers are assumed by <mrpt/math/eigen_plugins.h>:
-#include <fstream>
+#include <fstream> // These headers are assumed by <mrpt/math/eigen_plugins.h>:
 #include <ctime>
-#ifdef EIGEN_MAJOR_VERSION
-#	error **FATAL ERROR**: MRPT headers must be included before Eigen headers.
+#ifdef EIGEN_MATRIXBASE_H
+#	error **FATAL ERROR**: MRPT headers must be included before <Eigen/Dense> headers.
 #endif
 #ifndef EIGEN_USE_NEW_STDVECTOR
 #  define EIGEN_USE_NEW_STDVECTOR

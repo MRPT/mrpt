@@ -14,7 +14,6 @@
 #define GLEW_STATIC
 
 #include <mrpt/config.h>
-//#include <mrpt/utils/utils_defs.h>
 
 #if MRPT_HAS_OPENGL_GLUT
 	#ifdef MRPT_OS_WINDOWS

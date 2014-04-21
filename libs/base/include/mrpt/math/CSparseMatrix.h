@@ -14,9 +14,11 @@
 #include <mrpt/utils/CUncopiable.h>
 
 #include <mrpt/math/math_frwds.h>
+#include <mrpt/utils/types_math.h>
 #include <mrpt/math/CSparseMatrixTemplate.h>
 #include <mrpt/math/CMatrixTemplateNumeric.h>
 #include <mrpt/math/CMatrixFixedNumeric.h>
+#include <cstring> // memcpy
 
 // Include CSparse lib headers, either from the system or embedded:
 extern "C"{

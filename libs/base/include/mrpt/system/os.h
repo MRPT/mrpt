@@ -18,6 +18,7 @@
 
 #include <mrpt/utils/mrpt_stdint.h>
 #include <mrpt/utils/mrpt_macros.h>
+//#include <vector>
 
 namespace mrpt
 {
@@ -146,43 +147,6 @@ namespace mrpt
 
 		/** Clears the console window */
 		void BASE_IMPEXP clearConsole();
-
-		/** A useful function for debuging, which saves a std::vector into a text file (compat. with MATLAB)
-		* \return Returns false on any error, true on everything OK.
-		*/
-		bool  BASE_IMPEXP vectorToTextFile( const std::vector<float> &vec, const std::string &fileName, bool append = false, bool byRows=false );
-		//! \overload
-		bool  BASE_IMPEXP vectorToTextFile( const std::vector<double> &vec, const std::string &fileName, bool append = false, bool byRows=false );
-		//! \overload
-		bool  BASE_IMPEXP vectorToTextFile( const std::vector<int> &vec, const std::string &fileName, bool append = false, bool byRows=false );
-		//! \overload
-		bool  BASE_IMPEXP vectorToTextFile( const std::vector<size_t> &vec, const std::string &fileName, bool append = false, bool byRows=false );
-		//! \overload
-		template <class EIGEN_MATRIX>
-		bool vectorToTextFile( const EIGEN_MATRIX &vec, const std::string &fileName ) {
-			try {
-				vec.saveToTextFile(fileName);
-				return true;
-			} catch(...) {return false;}
-		}
-
-		/** Load a std::vector from a text file (compat. with MATLAB)
-		* \return Returns false on any error, true on everything OK.
-		* \sa loadBinaryFile
-		*/
-		bool  BASE_IMPEXP vectorFromTextFile( std::vector<double> &vec, const std::string &fileName, const bool byRows=false );
-
-		/** Saves a vector directly as a binary dump to a file:
-		* \return Returns false on any error, true on everything OK.
-		* \sa loadBinaryFile
-		*/
-		bool BASE_IMPEXP vectorToBinaryFile( const vector_byte &vec, const std::string &fileName );
-
-		/** Loads a entire file as a vector of bytes.
-		* \return Returns false on any error, true on everything OK.
-		* \sa vectorToBinaryFile
-		*/
-		bool BASE_IMPEXP loadBinaryFile( vector_byte &out_data, const std::string &fileName );
 
 		/** Returns the MRPT compilation date
 		  */

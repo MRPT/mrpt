@@ -9,17 +9,12 @@
 
 #pragma once
 
-#include <mrpt/reactivenav/CReactiveNavigationSystem.h>
-#include <mrpt/reactivenav/CReactiveNavigationSystem3D.h>
+#include <mrpt/config.h>
+#if MRPT_ENABLE_PRECOMPILED_HDRS
+
 #include <mrpt/reactivenav/CAbstractReactiveNavigationSystem.h>
-#include <mrpt/reactivenav/CPRRTNavigator.h>
 #include <mrpt/reactivenav/motion_planning_utils.h>
-#include <mrpt/reactivenav/CPTG1.h>
-#include <mrpt/reactivenav/CPTG2.h>
-#include <mrpt/reactivenav/CPTG3.h>
-#include <mrpt/reactivenav/CPTG4.h>
-#include <mrpt/reactivenav/CPTG5.h>
-#include <mrpt/reactivenav/CPTG6.h>
-#include <mrpt/reactivenav/CPTG7.h>
+
+#endif
 
 

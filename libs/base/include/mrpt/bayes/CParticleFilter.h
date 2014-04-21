@@ -9,7 +9,7 @@
 #ifndef CPARTICLEFILTER_H
 #define CPARTICLEFILTER_H
 
-#include <mrpt/utils/utils_defs.h>
+#include <mrpt/utils/core_defs.h>
 #include <mrpt/utils/CDebugOutputCapable.h>
 #include <mrpt/utils/CLoadableOptions.h>
 

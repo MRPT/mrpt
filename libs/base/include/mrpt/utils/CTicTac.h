@@ -9,7 +9,7 @@
 #ifndef  CTICTAC_H
 #define  CTICTAC_H
 
-#include <mrpt/utils/utils_defs.h>
+#include <mrpt/base/link_pragmas.h>
 #include <mrpt/utils/CUncopiable.h>
 
 namespace mrpt
@@ -24,7 +24,7 @@ namespace utils
 	class BASE_IMPEXP CTicTac : public mrpt::utils::CUncopiable
 	{
 	private:
-		uint8_t		largeInts[64];
+		unsigned char largeInts[64];
 	public:
 		/** Default constructor. */
 		CTicTac();

@@ -14,8 +14,6 @@
 #include <mrpt/system/string_utils.h>
 #include <mrpt/system/os.h>
 
-#include <iostream>
-
 using namespace mrpt::utils;
 using namespace mrpt::system;
 using namespace std;

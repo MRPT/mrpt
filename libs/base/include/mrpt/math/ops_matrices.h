@@ -9,7 +9,7 @@
 #ifndef  mrpt_math_matrix_ops_H
 #define  mrpt_math_matrix_ops_H
 
-#include <mrpt/math/math_frwds.h>  // Fordward declarations
+#include <mrpt/math/math_frwds.h>  // forward declarations
 
 #include <mrpt/math/CMatrix.h>
 #include <mrpt/math/CMatrixD.h>

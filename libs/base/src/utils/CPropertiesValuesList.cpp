@@ -14,6 +14,7 @@
 #include <mrpt/utils/CStream.h>
 #include <mrpt/system/os.h>
 #include <stdio.h>
+#include <iostream>
 
 using namespace mrpt::utils;
 using namespace mrpt::system;

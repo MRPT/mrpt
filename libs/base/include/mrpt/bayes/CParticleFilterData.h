@@ -9,7 +9,7 @@
 #ifndef CParticleFilterData_H
 #define CParticleFilterData_H
 
-#include <mrpt/utils/utils_defs.h>
+#include <mrpt/utils/core_defs.h>
 #include <mrpt/bayes/CProbabilityParticle.h>
 
 #include <deque>

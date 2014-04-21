@@ -9,7 +9,6 @@
 #ifndef opengl_CRenderizable_H
 #define opengl_CRenderizable_H
 
-//#include <mrpt/utils/utils_defs.h>
 #include <mrpt/utils/CSerializable.h>
 #include <mrpt/utils/TColor.h>
 #include <mrpt/math/math_frwds.h>
@@ -18,8 +17,6 @@
 #include <mrpt/opengl/link_pragmas.h>
 #include <mrpt/math/lightweight_geom_data.h>
 #include <deque>
-//#include <mrpt/synch/CCriticalSection.h>
-
 
 namespace mrpt
 {

@@ -11,7 +11,6 @@
 
 #include <mrpt/config.h>
 #include <mrpt/base/link_pragmas.h>
-
 #include <string>
 
 /*! \file math_frwds.h

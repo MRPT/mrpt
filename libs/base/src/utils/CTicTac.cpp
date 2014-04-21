@@ -19,6 +19,7 @@
 
 #include <mrpt/utils/CTicTac.h>
 #include <cstring>
+#include <cassert>
 
 using namespace mrpt::utils;
 
@@ -42,7 +43,7 @@ CTicTac::CTicTac()
 	LARGE_INTEGER *l= LARGE_INTEGER_NUMS;
 	QueryPerformanceFrequency(&l[0]);
 #else
-	ASSERT_( sizeof( largeInts ) > 2*sizeof(struct timeval) );
+	assert( sizeof( largeInts ) > 2*sizeof(struct timeval) );
 #endif
 	Tic();
 }

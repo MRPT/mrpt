@@ -9,7 +9,8 @@
 #ifndef _MRPT_CArray_H
 #define _MRPT_CArray_H
 
-#include <mrpt/utils/utils_defs.h>
+#include <mrpt/utils/core_defs.h>
+#include <stdexcept>
 #include <mrpt/utils/TTypeName.h>
 
 namespace mrpt
@@ -148,13 +149,17 @@ namespace math
         // assign (compatible with std::vector's one) (by JLBC for MRPT)
         void assign (const size_t n, const T& value)
         {
-        	ASSERTDEB_(N==n);
+        #ifdef _DEBUG
+            if (N!=n) throw std::out_of_range("CArray<>: assign() of incorrect length");
+        #endif
 			for (size_t i=0;i<N;i++) elems[i]=value;
         }
 
 		//assign a range of values corresponding to a pair of iterators (by PMO for MRPT)
 		template<typename I> void assign(I b,const I &e)	{
-			ASSERTDEB_(std::distance(b,e)==N);
+        #ifdef _DEBUG
+            if (std::distance(b,e)!=N) throw std::out_of_range("CArray<>: assign() of incorrect length");
+        #endif
 			for (iterator i=begin();i<end();++i) *i=*(b++);
 		}
 

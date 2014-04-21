@@ -11,12 +11,9 @@
 
 #include <mrpt/config.h>
 #include <mrpt/version.h>
-
-// Include always:
-#include <mrpt/utils/utils_defs.h>
-
-// Include only if really building precompiled hdrs:
 #if MRPT_ENABLE_PRECOMPILED_HDRS
+
+#include <mrpt/utils/utils_defs.h>
 #include <mrpt/utils/CObject.h>
 #include <mrpt/math/ops_containers.h>
 #include <mrpt/math/ops_matrices.h>

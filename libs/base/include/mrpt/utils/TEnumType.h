@@ -9,7 +9,7 @@
 #ifndef  mrpt_TEnumType_H
 #define  mrpt_TEnumType_H
 
-#include <mrpt/utils/utils_defs.h>
+#include <mrpt/utils/core_defs.h>
 #include <mrpt/utils/stl_extensions.h>
 
 namespace mrpt

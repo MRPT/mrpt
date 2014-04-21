@@ -9,12 +9,10 @@
 
 #pragma once
 
+#include <mrpt/config.h>
+#if MRPT_ENABLE_PRECOMPILED_HDRS
+
 #include <mrpt/hmtslam/CHMTSLAM.h>
-#include <mrpt/hmtslam/CHierarchicalMapMHPartition.h>
-#include <mrpt/hmtslam/CHierarchicalMHMap.h>
-#include <mrpt/hmtslam/CLocalMetricHypothesis.h>
-#include <mrpt/hmtslam/CTopLCDetectorBase.h>
-#include <mrpt/hmtslam/CRobotPosesGraph.h>
-#include <mrpt/hmtslam/CHMHMapNode.h>
-#include <mrpt/hmtslam/CHMHMapArc.h>
+
+#endif
 

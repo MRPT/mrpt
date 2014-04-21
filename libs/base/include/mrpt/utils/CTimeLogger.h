@@ -11,7 +11,8 @@
 
 #include <mrpt/utils/CTicTac.h>
 #include <mrpt/utils/CDebugOutputCapable.h>
-
+#include <mrpt/utils/mrpt_macros.h>
+#include <vector>
 #include <stack>
 #include <map>
 

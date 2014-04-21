@@ -9,7 +9,11 @@
 #ifndef CMatrixTemplateNumeric_H
 #define CMatrixTemplateNumeric_H
 
-#include <mrpt/utils/utils_defs.h>
+//#include <mrpt/utils/utils_defs.h>
+#include <mrpt/config.h>
+#include <mrpt/utils/compiler_fixes.h>
+#include <mrpt/utils/boost_join.h>
+#include <mrpt/utils/mrpt_macros.h>
 #include <mrpt/utils/types_math.h>
 #include <mrpt/utils/TTypeName.h>
 

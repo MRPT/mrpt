@@ -14,7 +14,7 @@
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/math/CSparseMatrixTemplate.h>
 
-#include <mrpt/math/math_frwds.h>  // Fordward declarations
+#include <mrpt/math/math_frwds.h>  // forward declarations
 #include <mrpt/math/wrap2pi.h>
 
 /*---------------------------------------------------------------

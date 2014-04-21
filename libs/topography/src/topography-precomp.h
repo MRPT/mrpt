@@ -9,6 +9,12 @@
 
 #pragma once
 
+#include <mrpt/config.h>
+#if MRPT_ENABLE_PRECOMPILED_HDRS
+
 #include <mrpt/topography/conversions.h>
 #include <mrpt/topography/path_from_rtk_gps.h>
+
+
+#endif
 

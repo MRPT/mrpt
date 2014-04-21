@@ -11,8 +11,8 @@
 
 // Note: This file is included from "stl_extensions.h"
 
-#include <mrpt/utils/utils_defs.h>
 #include <vector>
+#include <stdexcept>
 
 namespace mrpt
 {

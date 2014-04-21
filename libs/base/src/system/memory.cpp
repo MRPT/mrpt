@@ -9,8 +9,10 @@
 
 #include "base-precomp.h"  // Precompiled headers
 
+#include <mrpt/utils/core_defs.h>
 #include <mrpt/system/memory.h>
 #include <stdio.h>
+//#include <iostream>
 
 #ifdef MRPT_OS_APPLE
 #include <mach/mach_init.h>
@@ -18,7 +20,6 @@
 #endif
 
 using namespace mrpt;
-using namespace mrpt::utils;
 using namespace mrpt::system;
 using namespace std;
 

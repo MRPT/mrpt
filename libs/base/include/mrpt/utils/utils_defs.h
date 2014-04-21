@@ -10,14 +10,7 @@
 #define UTILSDEFS_H
 
 // ====== This header will be included in ALL mrpt libs and programs ========
-
-#include <mrpt/config.h>
-#include <mrpt/utils/compiler_fixes.h>
-#include <mrpt/utils/boost_join.h>
-#include <mrpt/utils/mrpt_macros.h>
-
-// Linking pragmas for Win32
-#include <mrpt/base/link_pragmas.h>
+#include <mrpt/utils/core_defs.h>
 
 // Standard headers:
 #include <cstddef>

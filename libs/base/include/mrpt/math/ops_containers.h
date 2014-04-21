@@ -9,9 +9,9 @@
 #ifndef  mrpt_math_container_ops_H
 #define  mrpt_math_container_ops_H
 
-#include <mrpt/math/math_frwds.h>  // Fordward declarations
+#include <mrpt/math/math_frwds.h>  // forward declarations
 
-#include <mrpt/math/lightweight_geom_data.h>  // Fordward declarations
+#include <mrpt/math/lightweight_geom_data.h>  // forward declarations
 
 #include <functional>
 #include <algorithm>

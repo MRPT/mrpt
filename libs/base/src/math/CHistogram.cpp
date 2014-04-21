@@ -9,10 +9,8 @@
 
 #include "base-precomp.h"  // Precompiled headers
 
-
 #include <mrpt/math/CHistogram.h>
 #include <mrpt/math/utils.h>
-#include <mrpt/utils/metaprogramming.h>
 
 using namespace mrpt;
 using namespace mrpt::math;
@@ -78,7 +76,9 @@ double CHistogram::getBinRatio(const size_t index) const
 void CHistogram::getHistogram( std::vector<double> &x, std::vector<double> &hits ) const
 {
 	linspace(m_min,m_max,m_bins.size(), x);
-	metaprogramming::copy_container_typecasting(m_bins,hits);
+	const size_t N= m_bins.size();
+	hits.resize(N);
+	for (size_t i=0;i<N;i++) hits[i] = m_bins[i]; // metaprogramming::copy_container_typecasting(m_bins,);
 }
 
 

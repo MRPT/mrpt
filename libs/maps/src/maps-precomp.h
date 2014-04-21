@@ -9,6 +9,9 @@
 
 #pragma once
 
+#include <mrpt/config.h>
+#if MRPT_ENABLE_PRECOMPILED_HDRS
+
 #include <mrpt/slam/CBeacon.h>
 #include <mrpt/slam/CBeaconMap.h>
 #include <mrpt/slam/CColouredPointsMap.h>
@@ -24,4 +27,7 @@
 #include <mrpt/slam/CColouredOctoMap.h>
 #include <mrpt/opengl/CAngularObservationMesh.h>
 #include <mrpt/opengl/CPlanarLaserScan.h>
+
+
+#endif
 

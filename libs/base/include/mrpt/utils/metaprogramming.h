@@ -15,6 +15,8 @@ namespace mrpt
 {
 	namespace utils
 	{
+	    class CStream;
+
 		/** A set of utility objects for metaprogramming with STL algorithms.
 		  * \ingroup stlext_grp
 		  */

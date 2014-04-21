@@ -14,7 +14,7 @@
 #include <mrpt/math/CMatrix.h>
 #include <mrpt/utils/CCanvas.h>
 #include <mrpt/utils/TCamera.h>
-#include <mrpt/system/os.h>
+//#include <mrpt/system/os.h>
 #include <mrpt/utils/exceptions.h>
 
 namespace mrpt

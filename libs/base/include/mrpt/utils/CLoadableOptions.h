@@ -9,7 +9,9 @@
 #ifndef  CLoadableOptions_H
 #define  CLoadableOptions_H
 
-#include <mrpt/utils/utils_defs.h>
+#include <mrpt/utils/core_defs.h>
+#include <string>
+#include <stdexcept>
 
 /*---------------------------------------------------------------
 	Class
@@ -70,7 +72,7 @@ namespace utils
 			mrpt::utils::CConfigFileBase &target,
 			const std::string            &section) const
 			{
-				THROW_EXCEPTION("The child class does not implement this method.");
+			    throw std::logic_error("The child class does not implement this method.");
 			}
 
 		/** Behaves like saveToConfigFile, but you can pass directly a file name and a temporary CConfigFile object will be created automatically to save the file.

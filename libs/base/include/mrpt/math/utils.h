@@ -10,9 +10,8 @@
 #define  MRPT_MATH_H
 
 #include <mrpt/utils/utils_defs.h>
-#include <mrpt/math/CMatrixTemplateNumeric.h>
-
 #include <cstdarg>
+#include <mrpt/math/eigen_frwds.h>
 
 namespace mrpt
 {
@@ -78,27 +77,6 @@ namespace mrpt
 			}
 		}
 
-		/** Generates an equidistant sequence of numbers given the first one, the last one and the desired number of points.
-		  \sa sequence */
-		template<class T>
-		inline Eigen::Matrix<T,Eigen::Dynamic,1> linspace(T first,T last, size_t count)
-		{
-			Eigen::Matrix<T,Eigen::Dynamic,1> ret;
-			mrpt::math::linspace(first,last,count,ret);
-			return ret;
-		}
-
-		/** Generates a sequence of values [first,first+STEP,first+2*STEP,...]   \sa linspace, sequenceStdVec */
-		template<class T,T STEP>
-		inline Eigen::Matrix<T,Eigen::Dynamic,1> sequence(T first,size_t length)
-		{
-			Eigen::Matrix<T,Eigen::Dynamic,1> ret(length);
-			if (!length) return ret;
-			size_t i=0;
-			while (length--) { ret[i++]=first; first+=STEP; }
-			return ret;
-		}
-
 		/** Generates a sequence of values [first,first+STEP,first+2*STEP,...]   \sa linspace, sequence */
 		template<class T,T STEP>
 		inline std::vector<T> sequenceStdVec(T first,size_t length)
@@ -108,22 +86,6 @@ namespace mrpt
 			size_t i=0;
 			while (length--) { ret[i++]=first; first+=STEP; }
 			return ret;
-		}
-
-		/** Generates a vector of all ones of the given length. */
-		template<class T> inline Eigen::Matrix<T,Eigen::Dynamic,1> ones(size_t count)
-		{
-			Eigen::Matrix<T,Eigen::Dynamic,1> v(count);
-			v.setOnes();
-			return v;
-		}
-
-		/** Generates a vector of all zeros of the given length. */
-		template<class T> inline Eigen::Matrix<T,Eigen::Dynamic,1> zeros(size_t count)
-		{
-			Eigen::Matrix<T,Eigen::Dynamic,1> v(count);
-			v.setZero();
-			return v;
 		}
 
 		/** Normalize a vector, such as its norm is the unity.

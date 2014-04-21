@@ -9,5 +9,10 @@
 
 #pragma once
 
+#include <mrpt/config.h>
+#if MRPT_ENABLE_PRECOMPILED_HDRS
+
 #include <mrpt/detectors/CDetectableObject.h>
+
+#endif
 

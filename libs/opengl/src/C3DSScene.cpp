@@ -25,6 +25,7 @@
 
 #include <mrpt/compress/zip.h>
 #include <mrpt/system/filesystem.h>
+#include <mrpt/system/vector_loadsave.h>
 
 #include <mrpt/utils/CStringList.h>
 #include <mrpt/utils/CStream.h>

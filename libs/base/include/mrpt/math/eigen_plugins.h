@@ -123,7 +123,7 @@ public:
 	  * \return true on success. false if the string is malformed, and then the matrix will be resized to 0x0.
 	  * \sa inMatlabFormat, CConfigFile::read_matrix
 	  */
-	bool fromMatlabStringFormat(const std::string &s, bool dumpErrorMsgToStdErr = true);
+	bool fromMatlabStringFormat(const std::string &s, std::ostream *dump_errors_here = NULL);
 	// Method implemented in eigen_plugins_impl.h
 
 	/** Dump matrix in matlab format.

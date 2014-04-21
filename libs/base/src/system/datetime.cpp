@@ -9,8 +9,9 @@
 
 #include "base-precomp.h"  // Precompiled headers
 
-#include <mrpt/system/os.h>
+#include <mrpt/utils/utils_defs.h>
 #include <mrpt/system/datetime.h>
+#include <mrpt/system/os.h>
 
 #ifdef MRPT_OS_WINDOWS
 	#include <conio.h>
@@ -32,12 +33,13 @@
 	#include <signal.h>
 #endif
 
+//#include <iostream>
 #include <time.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 
 using namespace mrpt;
-using namespace mrpt::utils;
+//using namespace mrpt::utils;
 using namespace mrpt::system;
 using namespace std;
 

@@ -6,16 +6,12 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
-
 #pragma once
 
+// The set of very basic includes for mrpt-base
 #include <mrpt/config.h>
-#if MRPT_ENABLE_PRECOMPILED_HDRS
+#include <mrpt/utils/compiler_fixes.h>
+#include <mrpt/utils/boost_join.h>
+#include <mrpt/utils/mrpt_macros.h>
 
-#include <mrpt/gui/CDisplayWindow3D.h>
-#include <mrpt/gui/CDisplayWindow.h>
-#include <mrpt/gui/CDisplayWindowPlots.h>
-
-
-#endif
-
+#include <mrpt/base/link_pragmas.h>  // Linking pragmas for Win32

@@ -21,7 +21,7 @@ using namespace mrpt;
 using namespace mrpt::utils;
 using namespace mrpt::system;
 
-#include <iostream>
+#include <cstdio>
 
 extern CStartUpClassesRegister  mrpt_base_class_reg;
 const int dumm = mrpt_base_class_reg.do_nothing(); // Avoid compiler removing this class in static linking
@@ -94,7 +94,7 @@ CObject* TRuntimeClassId::createObject() const
 {
 	if (! ptrCreateObject )
 	{
-		std::cerr << "[TRuntimeClassId::createObject] Trying to create an object with not dynamic constructor" << std::endl;
+		perror("[TRuntimeClassId::createObject] Trying to create an object with not dynamic constructor\n");
 		return NULL;
 	}
 

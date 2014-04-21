@@ -18,7 +18,7 @@ using namespace mrpt;
 using namespace mrpt::utils;
 using namespace mrpt::system;
 
-#include <iostream>
+#include <cstdio>
 
 
 IMPLEMENTS_VIRTUAL_MRPT_OBJECT(CSerializable, CObject, mrpt::utils)
@@ -82,12 +82,12 @@ std::string utils::ObjectToString(const CSerializable *o)
 	}
 	catch(std::exception &e)
 	{
-		std::cerr << "[ObjectToString] Exception: " << e.what() << std::endl;
+	    fprintf(stderr, "[ObjectToString] Exception: %s\n", e.what());
 		return "";
 	}
 	catch(...)
 	{
-		std::cerr << "[ObjectToString] Unknown exception" << std::endl;
+	    fprintf(stderr, "[ObjectToString] Unknown exception\n");
 		return "";
 	}
 }
@@ -175,11 +175,11 @@ void utils::ObjectToOctetVector(const CSerializable *o, vector_byte & out_vector
 	}
 	catch(std::exception &e)
 	{
-		std::cerr << "[ObjectToOctetVector] Exception: " << e.what() << std::endl;
+	    fprintf(stderr, "[ObjectToOctetVector] Exception: %s\n",e.what());
 	}
 	catch(...)
 	{
-		std::cerr << "[ObjectToOctetVector] Unknown exception" << std::endl;
+		fprintf(stderr, "[ObjectToOctetVector] Unknown exception\n");
 	}
 }
 
@@ -203,11 +203,11 @@ void utils::OctetVectorToObject(const vector_byte & in_data, CSerializablePtr &o
 	}
 	catch(std::exception &e)
 	{
-		std::cerr << "[OctetVectorToObject] Exception: " << e.what() << std::endl;
+	    fprintf(stderr, "[OctetVectorToObject] Exception: %s\n",e.what());
 	}
 	catch(...)
 	{
-		std::cerr << "[OctetVectorToObject] Unknown exception" << std::endl;
+		fprintf(stderr, "[OctetVectorToObject] Unknown exception\n");
 	}
 }
 
@@ -234,11 +234,11 @@ void utils::ObjectToRawString(const CSerializable *o, std::string & out_vector)
 	}
 	catch(std::exception &e)
 	{
-		std::cerr << "[ObjectToOctetVector] Exception: " << e.what() << std::endl;
+	    fprintf(stderr, "[ObjectToRawString] Exception: %s\n",e.what());
 	}
 	catch(...)
 	{
-		std::cerr << "[ObjectToOctetVector] Unknown exception" << std::endl;
+		fprintf(stderr, "[ObjectToRawString] Unknown exception\n");
 	}
 }
 
@@ -262,11 +262,11 @@ void utils::RawStringToObject(const std::string & in_data, CSerializablePtr &obj
 	}
 	catch(std::exception &e)
 	{
-		std::cerr << "[OctetVectorToObject] Exception: " << e.what() << std::endl;
+	    fprintf(stderr, "[RawStringToObject] Exception: %s\n",e.what());
 	}
 	catch(...)
 	{
-		std::cerr << "[OctetVectorToObject] Unknown exception" << std::endl;
+		fprintf(stderr, "[RawStringToObject] Unknown exception\n");
 	}
 }
 

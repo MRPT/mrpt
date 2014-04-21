@@ -8,8 +8,13 @@
    +---------------------------------------------------------------------------+ */
 #pragma once
 
+#include <mrpt/config.h>
+#if MRPT_ENABLE_PRECOMPILED_HDRS
+
 // Maps:
 #include <mrpt/slam/CMetricMap.h>
 #include <mrpt/slam/CObservation.h>
 #include <mrpt/slam/CSensoryFrame.h>
+
+#endif
 

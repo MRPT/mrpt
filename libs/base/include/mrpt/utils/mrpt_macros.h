@@ -180,7 +180,6 @@
 		{ \
 			str+= __CURRENT_FUNCTION_NAME__;\
 			str+= mrpt::format(", line %i:\n", __LINE__ );\
-			if (str.size()>3000) { std::cerr << "TOO MANY STACKED EXCEPTIONS!: " << std::endl << str << std::endl; abort(); } \
 			throw std::logic_error( str );\
 		} \
 		else throw std::logic_error( e.what() );\

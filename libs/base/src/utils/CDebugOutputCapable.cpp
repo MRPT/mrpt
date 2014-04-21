@@ -18,7 +18,7 @@
 	#include <windows.h>
 #endif
 
-
+#include <vector>
 #include <cstdarg>
 #include <iostream>
 
