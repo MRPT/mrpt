@@ -23,7 +23,7 @@ using namespace std;
 using namespace mrpt::utils;
 using namespace mrpt::pbmap;
 
-extern config_heuristics configLocaliser;
+//extern config_heuristics configLocaliser;
 
 // Bhattacharyya histogram distance function
 double BhattacharyyaDist_(std::vector<float> &hist1, std::vector<float> &hist2)

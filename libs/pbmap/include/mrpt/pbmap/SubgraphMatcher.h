@@ -83,8 +83,8 @@ namespace pbmap {
     /*!Return the total area of the matched planes in the frame source.*/
     float calcAreaMatched(std::map<unsigned,unsigned> &matched_planes);
 
-//    /*!Set of thresholds for PbMap matching.*/
-//    config_heuristics configLocaliser;
+    /*!Set of thresholds for PbMap matching.*/
+    static config_heuristics configLocaliser;
 
    private:
 
