@@ -26,8 +26,6 @@
 using namespace std;
 using namespace mrpt::pbmap;
 
-//config_heuristics SubgraphMatcher::configLocaliser;
-
 double time1, time2;
 
 PbMapLocaliser::PbMapLocaliser(PbMap &mPbM, const string &config_file) :
@@ -35,8 +33,8 @@ PbMapLocaliser::PbMapLocaliser(PbMap &mPbM, const string &config_file) :
     m_pbMapLocaliser_must_stop(false),
     m_pbMapLocaliser_finished(false)
 {
-  SubgraphMatcher::configLocaliser.load_params(config_file);
-std::cout << "PbMapLocaliser::PbMapLocaliser min_planes_recognition " << SubgraphMatcher::configLocaliser.min_planes_recognition << " color thresholds " << SubgraphMatcher::configLocaliser.color_threshold << " " << SubgraphMatcher::configLocaliser.intensity_threshold << " " << SubgraphMatcher::configLocaliser.hue_threshold << endl;
+  matcher.configLocaliser.load_params(config_file);
+std::cout << "PbMapLocaliser::PbMapLocaliser min_planes_recognition " << matcher.configLocaliser.min_planes_recognition << " color thresholds " << matcher.configLocaliser.color_threshold << " " << matcher.configLocaliser.intensity_threshold << " " << matcher.configLocaliser.hue_threshold << endl;
 
   LoadPreviousPbMaps("/home/edu/newPbMaps/PbMaps.txt");
 
@@ -96,7 +94,7 @@ cout << "PbMapLocaliser::compareSubgraphNeighbors\n";
   for(map<unsigned, unsigned>::iterator it = bestMatch.begin(); it != bestMatch.end(); it++)
   {
   // TODO: use the graph to grow
-    if(SubgraphMatcher::configLocaliser.graph_mode == 0) // Nearby neighbors - Check the 2nd order neighbors of the matched planes
+    if(matcher.configLocaliser.graph_mode == 0) // Nearby neighbors - Check the 2nd order neighbors of the matched planes
       for(set<unsigned>::iterator it1 = mPbMap.vPlanes[it->first].nearbyPlanes.begin(); it1 != mPbMap.vPlanes[it->first].nearbyPlanes.end(); it1++)
       {
         if(matcher.subgraphSrc->subgraphPlanesIdx.count(*it1) )
@@ -117,7 +115,7 @@ cout << "PbMapLocaliser::compareSubgraphNeighbors\n";
           bestMatch[*it1] = *it2;
         }
       }
-    else //if(SubgraphMatcher::configLocaliser.graph_mode == 1)// Co-visible neighbors - Check the 2nd order neighbors of the matched planes
+    else //if(matcher.configLocaliser.graph_mode == 1)// Co-visible neighbors - Check the 2nd order neighbors of the matched planes
       for(map<unsigned, unsigned>::iterator it1 = mPbMap.vPlanes[it->first].neighborPlanes.begin(); it1 != mPbMap.vPlanes[it->first].neighborPlanes.end(); it1++)
       {
         if(matcher.subgraphSrc->subgraphPlanesIdx.count(it1->first) )
@@ -179,14 +177,14 @@ bool PbMapLocaliser::searchPlaneContext(Plane &searchPlane)
       Plane &targetPlane = prevPbMap.vPlanes[i];
 
       // Do not consider evaluating planes which do not have more than min_planes_recognition neighbor planes (too much uncertainty)
-      if(SubgraphMatcher::configLocaliser.graph_mode == 0)
+      if(matcher.configLocaliser.graph_mode == 0)
       {
-        if( targetPlane.nearbyPlanes.size() < SubgraphMatcher::configLocaliser.min_planes_recognition ){
+        if( targetPlane.nearbyPlanes.size() < matcher.configLocaliser.min_planes_recognition ){
           continue;}
       }
-      else // SubgraphMatcher::configLocaliser.graph_mode = 1
+      else // matcher.configLocaliser.graph_mode = 1
       {
-        if( targetPlane.neighborPlanes.size() < SubgraphMatcher::configLocaliser.min_planes_recognition ){
+        if( targetPlane.neighborPlanes.size() < matcher.configLocaliser.min_planes_recognition ){
           continue;}
       }
 
@@ -217,10 +215,10 @@ bool PbMapLocaliser::searchPlaneContext(Plane &searchPlane)
   }
 
   #ifdef _VERBOSE
-    cout << "bestMatch size " << bestMatch.size() << " min " << SubgraphMatcher::configLocaliser.min_planes_recognition << endl;
+    cout << "bestMatch size " << bestMatch.size() << " min " << matcher.configLocaliser.min_planes_recognition << endl;
   #endif
 
-  if( bestMatch.size() >= SubgraphMatcher::configLocaliser.min_planes_recognition ) // Assign label of previous map plane
+  if( bestMatch.size() >= matcher.configLocaliser.min_planes_recognition ) // Assign label of previous map plane
   {
     #ifdef _VERBOSE
       cout << "Context matched\n";
@@ -337,19 +335,19 @@ void PbMapLocaliser::run()
       while( !vQueueObservedPlanes.empty() )
       {
         // Do not consider searching planes which do not have more than 2 neighbor planes (too much uncertainty)
-        if(SubgraphMatcher::configLocaliser.graph_mode == 0) // Nearby neighbors
+        if(matcher.configLocaliser.graph_mode == 0) // Nearby neighbors
         {
 //        cout << "vecinos1 " << mPbMap.vPlanes[vQueueObservedPlanes[0]].nearbyPlanes.size() << endl;
-          if(mPbMap.vPlanes[vQueueObservedPlanes[0]].nearbyPlanes.size() < SubgraphMatcher::configLocaliser.min_planes_recognition)
+          if(mPbMap.vPlanes[vQueueObservedPlanes[0]].nearbyPlanes.size() < matcher.configLocaliser.min_planes_recognition)
           {
             vQueueObservedPlanes.erase(vQueueObservedPlanes.begin());
             continue;
           }
         }
-        else //SubgraphMatcher::configLocaliser.graph_mode = 1
+        else //matcher.configLocaliser.graph_mode = 1
         {
 //        cout << "vecinos2 " << mPbMap.vPlanes[vQueueObservedPlanes[0]].neighborPlanes.size() << endl;
-          if(mPbMap.vPlanes[vQueueObservedPlanes[0]].neighborPlanes.size() < SubgraphMatcher::configLocaliser.min_planes_recognition)
+          if(mPbMap.vPlanes[vQueueObservedPlanes[0]].neighborPlanes.size() < matcher.configLocaliser.min_planes_recognition)
           {
             vQueueObservedPlanes.erase(vQueueObservedPlanes.begin());
             continue;

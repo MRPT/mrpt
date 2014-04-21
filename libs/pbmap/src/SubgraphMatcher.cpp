@@ -23,20 +23,23 @@ using namespace std;
 using namespace mrpt::utils;
 using namespace mrpt::pbmap;
 
-//extern config_heuristics configLocaliser;
-
 // Bhattacharyya histogram distance function
 double BhattacharyyaDist_(std::vector<float> &hist1, std::vector<float> &hist2)
 {
-assert(hist1.size() == hist2.size());
-double BhattachDist;
-double BhattachDist_aux = 0.0;
-for(unsigned i=0; i < hist1.size(); i++)
-  BhattachDist_aux += sqrt(hist1[i]*hist2[i]);
+  assert(hist1.size() == hist2.size());
+  double BhattachDist;
+  double BhattachDist_aux = 0.0;
+  for(unsigned i=0; i < hist1.size(); i++)
+    BhattachDist_aux += sqrt(hist1[i]*hist2[i]);
 
-BhattachDist = sqrt(1 - BhattachDist_aux);
+  BhattachDist = sqrt(1 - BhattachDist_aux);
 
-return BhattachDist;
+  return BhattachDist;
+}
+
+SubgraphMatcher::SubgraphMatcher()
+{
+//  configLocaliser.load_params("/home/edu/Libraries/mrpt_edu/share/mrpt/config_files/pbmap/configPbMap.ini");
 }
 
 /**!

@@ -60,6 +60,7 @@ namespace pbmap {
     float height_threshold_parallel;    // Binary constraint: Height from one plane wrt a neighbor (in meters) for complete marked planes
     float cos_angle_parallel;
 
+
     /*! Load the PbMap registration thresholds from an .ini file */
     void load_params(const string &config_file_name)
     {

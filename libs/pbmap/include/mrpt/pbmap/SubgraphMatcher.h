@@ -38,7 +38,7 @@ namespace pbmap {
   {
    public:
 
-    SubgraphMatcher(){};
+    SubgraphMatcher();
 
     /*!Check if the two input planes fulfill a set of geometric constraints, and so, if they are candidates to be the same plane.*/
     bool evalUnaryConstraints(Plane &plane1, Plane &plane2, PbMap &trgPbMap, bool useStructure = false);
@@ -84,7 +84,7 @@ namespace pbmap {
     float calcAreaMatched(std::map<unsigned,unsigned> &matched_planes);
 
     /*!Set of thresholds for PbMap matching.*/
-    static config_heuristics configLocaliser;
+    config_heuristics configLocaliser;
 
    private:
 
