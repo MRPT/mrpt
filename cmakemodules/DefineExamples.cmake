@@ -310,17 +310,20 @@ IF(BUILD_EXAMPLES)
 	ENDIF(MRPT_HAS_OPENNI2)
 	
 	# === SRBA examples ===
-	ADD_SAMPLES_DIRECTORY(srba-examples)
+	IF(BUILD_mrpt-srba)
+		ADD_SAMPLES_DIRECTORY(srba-examples)
+	ENDIF(BUILD_mrpt-srba)
 
 	# === PbMap examples ===
 	IF(BUILD_mrpt-pbmap)
-		SET(LIST_EXAMPLES_IN_THIS_DIR
-			pbmap_example
-			pbmap_visualizer
-			)
-		SET(CMAKE_EXAMPLE_DEPS mrpt-pbmap mrpt-gui)
-		SET(CMAKE_EXAMPLE_LINK_LIBS ${MRPT_LINKER_LIBS})
-		GENERATE_CMAKE_FILES_SAMPLES_DIRECTORY()
+		ADD_SAMPLES_DIRECTORY(pbmap-examples)
+#		SET(LIST_EXAMPLES_IN_THIS_DIR
+#			pbmap_example
+#			pbmap_visualizer
+#			)
+#		SET(CMAKE_EXAMPLE_DEPS mrpt-pbmap mrpt-gui)
+#		SET(CMAKE_EXAMPLE_LINK_LIBS ${MRPT_LINKER_LIBS})
+#		GENERATE_CMAKE_FILES_SAMPLES_DIRECTORY()
 	ENDIF(BUILD_mrpt-pbmap)
 
 	# Generate the CMakeLists.txt in the "/samples" directory

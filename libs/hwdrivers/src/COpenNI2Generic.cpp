@@ -32,7 +32,7 @@ using namespace std;
 #define DEPTH_FRAME_ID_PTR (reinterpret_cast<openni::VideoFrameRef*>(vp_frame_depth[sensor_id]))
 #define RGB_FRAME_ID_PTR (reinterpret_cast<openni::VideoFrameRef*>(vp_frame_rgb[sensor_id]))
 
-
+// Initialize static member
 std::vector<unsigned> COpenNI2Generic::vOpenDevices = std::vector<unsigned>();
 
 /*-------------------------------------------------------------

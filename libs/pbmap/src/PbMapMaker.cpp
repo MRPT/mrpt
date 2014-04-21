@@ -575,7 +575,7 @@ void PbMapMaker::detectPlanesCloud( pcl::PointCloud<PointT>::Ptr &pointCloudPtr_
     Vector3f centroid = regions[i].getCentroid ();
     plane.v3center = compose(poseKF, centroid);
     plane.v3normal = poseKF.block(0,0,3,3) * Vector3f(model_coefficients[i].values[0], model_coefficients[i].values[1], model_coefficients[i].values[2]);
-    plane.curvature = regions[i].getCurvature();
+//    plane.curvature = regions[i].getCurvature();
 //  assert(plane.v3normal*plane.v3center.transpose() <= 0);
 //    if(plane.v3normal*plane.v3center.transpose() <= 0)
 //      plane.v3normal *= -1;

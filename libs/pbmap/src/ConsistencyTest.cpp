@@ -142,7 +142,6 @@ Eigen::Matrix4f ConsistencyTest::initPose( std::map<unsigned, unsigned> &matched
 // Transformation from Source to Target
 Eigen::Matrix4f ConsistencyTest::estimatePose( std::map<unsigned, unsigned> &matched_planes )
 {
-//  assert(matched_planes.size() >= 3);
   if(matched_planes.size() < 3)
   {
     cout << "Insuficient matched planes " << matched_planes.size() << endl;
@@ -191,11 +190,6 @@ Eigen::Matrix4f ConsistencyTest::estimatePose( std::map<unsigned, unsigned> &mat
     aux << 1, 0, 0, 0, 1, 0, 0, 0, det;
     Rotation = svd.matrixV() * aux * svd.matrixU().transpose();
   }
-//  if(Rotation.determinant() < 0)
-//    Rotation.row(2) *= -1;
-//  float det = Rotation.determinant();
-//cout << "Rotation det " << det << endl;
-
 //cout << "Rotation\n" << Rotation << endl;
 
 //  // Evaluate error of each match looking for outliers
@@ -256,12 +250,20 @@ bool ConsistencyTest::estimatePoseWithCovariance( std::map<unsigned, unsigned> &
                                                  Eigen::Matrix4f &rigidTransf,
                                                  Eigen::Matrix<float,6,6> &covarianceM)
 {
-//  assert(matched_planes.size() >= 3);
   if(matched_planes.size() < 3)
   {
     cout << "Insuficient matched planes " << matched_planes.size() << endl;
     return false;
   }
+
+  unsigned col = 0;
+  MatrixXf normalVectors(3,matched_planes.size());
+  for(map<unsigned, unsigned>::iterator it = matched_planes.begin(); it != matched_planes.end(); it++, col++)
+    normalVectors.col(col) = PBMTarget.vPlanes[it->first].v3normal;
+  JacobiSVD<MatrixXf> svd_cond(normalVectors, ComputeThinU | ComputeThinV);
+//  cout << "SV " << svd_cond.singularValues().transpose() << endl;
+  if(svd_cond.singularValues()[0] / svd_cond.singularValues()[1] > 10)
+    return false;
 
   //Calculate rotation
   Matrix3f normalCovariances = Matrix3f::Zero();
@@ -275,28 +277,8 @@ bool ConsistencyTest::estimatePoseWithCovariance( std::map<unsigned, unsigned> &
       normalCovariances(0,0) += fabs(normalCovariances(r,c));
 
   JacobiSVD<MatrixXf> svd(normalCovariances, ComputeThinU | ComputeThinV);
+
   Matrix3f Rotation = svd.matrixV() * svd.matrixU().transpose();
-
-  // Check consitioning. 3 non-parallel planes are required in 6DoF, and only two for planar movement (3DoF)
-  bool bPlanar_cond = false;
-  for(map<unsigned, unsigned>::iterator it1 = matched_planes.begin(); it1 != matched_planes.end() && !bPlanar_cond; it1++)
-  {
-    map<unsigned, unsigned>::iterator it2 = it1; it2++;
-    for(; it2 != matched_planes.end() && !bPlanar_cond; it2++)
-    {
-      Eigen::Vector3f planar_conditioning = PBMSource.vPlanes[it1->first].v3normal .cross (PBMSource.vPlanes[it2->first].v3normal);
-      if(fabs(planar_conditioning(0)) > 0.33)
-        bPlanar_cond = true;
-    }
-  }
-//  float conditioning = svd.singularValues().maxCoeff()/svd.singularValues().minCoeff();
-//  if(conditioning > 100) // ^Dof
-  if(!bPlanar_cond) // ^Dof
-  {
-//    cout << " ConsistencyTest::initPose -> Bad conditioning: " << conditioning << " -> Returning the identity\n";
-    return false;
-  }
-
   double det = Rotation.determinant();
   if(det != 1)
   {
@@ -309,7 +291,6 @@ bool ConsistencyTest::estimatePoseWithCovariance( std::map<unsigned, unsigned> &
   Vector3f translation;
   Matrix3f hessian = Matrix3f::Zero();
   Vector3f gradient = Vector3f::Zero();
-//  float accum_error2 = 0.0;
 //  hessian(0,0) = 1; // Limit movement on x (vertical) axis
   for(map<unsigned, unsigned>::iterator it = matched_planes.begin(); it != matched_planes.end(); it++)
   {
@@ -318,7 +299,7 @@ bool ConsistencyTest::estimatePoseWithCovariance( std::map<unsigned, unsigned> &
     gradient += (PBMSource.vPlanes[it->first].areaHull / PBMSource.vPlanes[it->first].d) * PBMSource.vPlanes[it->first].v3normal * trans_error;
   }
 
-  // Introduce the virtual matching of two vertical planes n=(1,0,0)
+  // Introduce the virtual matching of a vertical plane n=(1,0,0)
   for(unsigned r=0; r<3; r++)
     for(unsigned c=0; c<3; c++)
       hessian(0,0) += fabs(hessian(r,c));
