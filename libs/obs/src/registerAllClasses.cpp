@@ -7,8 +7,9 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/obs.h>
+#include "obs-precomp.h"   // Precompiled headers
 
+#include <mrpt/obs.h>
 
 #include <mrpt/utils/CSerializable.h>
 #include <mrpt/utils/CStartUpClassesRegister.h>

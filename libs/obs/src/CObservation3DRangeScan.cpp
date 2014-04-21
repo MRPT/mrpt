@@ -13,6 +13,7 @@
 #include <mrpt/poses/CPosePDF.h>
 #include <mrpt/utils/CStream.h>
 
+#include <mrpt/math/CMatrix.h>
 #include <mrpt/math/CLevenbergMarquardt.h>
 #include <mrpt/utils/CFileGZInputStream.h>
 #include <mrpt/utils/CFileGZOutputStream.h>
@@ -58,7 +59,7 @@ CObservation3DRangeScan::TCached3DProjTables CObservation3DRangeScan::m_3dproj_l
 	{
 		std::vector<float> pts_x,pts_y,pts_z;
 	};
-	typedef CGenericMemoryPool<CObservation3DRangeScan_Points_MemPoolParams,CObservation3DRangeScan_Points_MemPoolData> TMyPointsMemPool;
+	typedef mrpt::system::CGenericMemoryPool<CObservation3DRangeScan_Points_MemPoolParams,CObservation3DRangeScan_Points_MemPoolData> TMyPointsMemPool;
 
 	// Memory pool for the rangeImage matrix ----------------
 	struct CObservation3DRangeScan_Ranges_MemPoolParams
@@ -70,9 +71,9 @@ CObservation3DRangeScan::TCached3DProjTables CObservation3DRangeScan::m_3dproj_l
 	};
 	struct CObservation3DRangeScan_Ranges_MemPoolData
 	{
-		mrpt::utils::CMatrix rangeImage;
+		mrpt::math::CMatrix rangeImage;
 	};
-	typedef CGenericMemoryPool<CObservation3DRangeScan_Ranges_MemPoolParams,CObservation3DRangeScan_Ranges_MemPoolData> TMyRangesMemPool;
+	typedef mrpt::system::CGenericMemoryPool<CObservation3DRangeScan_Ranges_MemPoolParams,CObservation3DRangeScan_Ranges_MemPoolData> TMyRangesMemPool;
 
 	void mempool_donate_xyz_buffers(CObservation3DRangeScan &obs)
 	{

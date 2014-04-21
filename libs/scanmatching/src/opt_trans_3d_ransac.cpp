@@ -15,8 +15,8 @@
 #include <mrpt/poses/CPosePDFSOG.h>
 #include <mrpt/random.h>
 #include <mrpt/poses/CPose3D.h>
-//#include <mrpt/math/CMatrixD.h>
 #include <mrpt/math/utils.h>
+#include <mrpt/utils/bits_SSE.h>
 #include <mrpt/math/CQuaternion.h>
 
 #include <algorithm>

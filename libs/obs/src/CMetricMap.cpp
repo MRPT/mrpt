@@ -11,15 +11,17 @@
 
 #include <mrpt/slam/CMetricMap.h>
 #include <mrpt/poses/CPosePDF.h>
+#include <mrpt/poses/CPoint3D.h>
+#include <mrpt/poses/CPose3D.h>
 #include <mrpt/slam/CSensoryFrame.h>
 #include <mrpt/slam/CSimpleMap.h>
 
 #include <mrpt/math/lightweight_geom_data.h>
-//#include <mrpt/math/utils.h>
 
 using namespace mrpt::slam;
 using namespace mrpt::utils;
 using namespace mrpt::poses;
+using namespace mrpt::math;
 
 IMPLEMENTS_VIRTUAL_SERIALIZABLE(CMetricMap, CSerializable, mrpt::slam)
 

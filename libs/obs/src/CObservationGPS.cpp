@@ -12,6 +12,7 @@
 #include <mrpt/slam/CObservationGPS.h>
 #include <mrpt/utils/CStdOutStream.h>
 #include <mrpt/utils/CStream.h>
+#include <mrpt/math/ops_matrices.h> // for << of matrices
 
 using namespace std;
 using namespace mrpt;

@@ -11,6 +11,7 @@
 
 #include <mrpt/slam/CObservationGasSensors.h>
 #include <mrpt/utils/CStream.h>
+#include <mrpt/system/os.h>
 
 using namespace mrpt::slam;
 using namespace mrpt::utils;

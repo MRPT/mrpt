@@ -7,6 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
+#include "scanmatching-precomp.h"
 #include <mrpt/scanmatching.h>
 
 #include <mrpt/utils/CStartUpClassesRegister.h>

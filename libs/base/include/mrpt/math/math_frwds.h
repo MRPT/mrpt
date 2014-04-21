@@ -39,6 +39,8 @@ namespace mrpt
 		class CPose2D;
 		class CPose3D;
 		class CPose3DQuat;
+		class CPosePDF; struct CPosePDFPtr;
+		class CPose3DPDF; struct CPose3DPDFPtr;
 	}
 
 	namespace math

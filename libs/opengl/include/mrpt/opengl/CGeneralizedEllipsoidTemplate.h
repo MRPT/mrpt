@@ -11,8 +11,10 @@
 
 #include <mrpt/opengl/CRenderizableDisplayList.h>
 #include <mrpt/math/CMatrixFixedNumeric.h>
+#include <mrpt/utils/types_math.h>
 #include <mrpt/utils/CStream.h> // for >> ops
 #include <mrpt/math/ops_matrices.h> // for >> ops
+#include <mrpt/opengl/link_pragmas.h>
 
 namespace mrpt
 {
@@ -22,22 +24,22 @@ namespace mrpt
 		{
 			template <int DIM>
 			void OPENGL_IMPEXP renderGeneralizedEllipsoidTemplate(
-				const std::vector<Eigen::Matrix<float,DIM,1> > & pts,
+				const std::vector<mrpt::math::CMatrixFixedNumeric<float,DIM,1> > & pts,
 				const float    lineWidth,
 				const uint32_t slices,
 				const uint32_t stacks);
-			template <> void OPENGL_IMPEXP renderGeneralizedEllipsoidTemplate<2>(const std::vector<Eigen::Matrix<float,2,1> > & pts,const float    lineWidth,const uint32_t slices,const uint32_t stacks);
-			template <> void OPENGL_IMPEXP renderGeneralizedEllipsoidTemplate<3>(const std::vector<Eigen::Matrix<float,3,1> > & pts,const float    lineWidth,const uint32_t slices,const uint32_t stacks);
+			template <> void OPENGL_IMPEXP renderGeneralizedEllipsoidTemplate<2>(const std::vector<mrpt::math::CMatrixFixedNumeric<float,2,1> > & pts,const float    lineWidth,const uint32_t slices,const uint32_t stacks);
+			template <> void OPENGL_IMPEXP renderGeneralizedEllipsoidTemplate<3>(const std::vector<mrpt::math::CMatrixFixedNumeric<float,3,1> > & pts,const float    lineWidth,const uint32_t slices,const uint32_t stacks);
 
 			template <int DIM>
 			void OPENGL_IMPEXP generalizedEllipsoidPoints(
 				const mrpt::math::CMatrixFixedNumeric<double,DIM,DIM> & U,
 				const mrpt::math::CMatrixFixedNumeric<double,DIM,1>   & mean,
-				std::vector<Eigen::Matrix<float,DIM,1> >   &out_params_pts,
+				std::vector<mrpt::math::CMatrixFixedNumeric<float,DIM,1> >   &out_params_pts,
 				const uint32_t slices,
 				const uint32_t stacks);
-			template <> void OPENGL_IMPEXP generalizedEllipsoidPoints<2>(const mrpt::math::CMatrixFixedNumeric<double,2,2> & U,const mrpt::math::CMatrixFixedNumeric<double,2,1> & mean,std::vector<Eigen::Matrix<float,2,1> >   &out_params_pts,const uint32_t slices,const uint32_t stacks);
-			template <> void OPENGL_IMPEXP generalizedEllipsoidPoints<3>(const mrpt::math::CMatrixFixedNumeric<double,3,3> & U,const mrpt::math::CMatrixFixedNumeric<double,3,1> & mean,std::vector<Eigen::Matrix<float,3,1> >   &out_params_pts,const uint32_t slices,const uint32_t stacks);
+			template <> void OPENGL_IMPEXP generalizedEllipsoidPoints<2>(const mrpt::math::CMatrixFixedNumeric<double,2,2> & U,const mrpt::math::CMatrixFixedNumeric<double,2,1> & mean,std::vector<mrpt::math::CMatrixFixedNumeric<float,2,1> >   &out_params_pts,const uint32_t slices,const uint32_t stacks);
+			template <> void OPENGL_IMPEXP generalizedEllipsoidPoints<3>(const mrpt::math::CMatrixFixedNumeric<double,3,3> & U,const mrpt::math::CMatrixFixedNumeric<double,3,1> & mean,std::vector<mrpt::math::CMatrixFixedNumeric<float,3,1> >   &out_params_pts,const uint32_t slices,const uint32_t stacks);
 		}
 
 		/** A class that generalizes the concept of an ellipsoid to arbitrary parameterizations of
@@ -59,8 +61,8 @@ namespace mrpt
 			typedef mrpt::math::CMatrixFixedNumeric<double,DIM,DIM> cov_matrix_t;   //!< The type of fixed-size covariance matrices for this representation
 			typedef mrpt::math::CMatrixFixedNumeric<double,DIM,1> mean_vector_t;   //!< The type of fixed-size vector for this representation
 
-			typedef Eigen::Matrix<float,DIM,1> array_parameter_t;
-			typedef Eigen::Matrix<float,DIM,1> array_point_t;
+			typedef mrpt::math::CMatrixFixedNumeric<float,DIM,1> array_parameter_t;
+			typedef mrpt::math::CMatrixFixedNumeric<float,DIM,1> array_point_t;
 
 			/**  Set the NxN covariance matrix that will determine the aspect of the ellipsoid - Notice that the
 			  *  covariance determines the uncertainty in the parameter space, which would be transformed by derived function

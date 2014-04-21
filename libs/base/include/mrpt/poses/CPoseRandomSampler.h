@@ -9,10 +9,12 @@
 #ifndef CPoseRandomSampler_H
 #define CPoseRandomSampler_H
 
-#include <mrpt/poses/CPosePDF.h>
 #include <mrpt/poses/CPose3D.h>
-#include <mrpt/poses/CPose3DPDF.h>
+#include <mrpt/poses/CPose2D.h>
+//#include <mrpt/poses/CPosePDF.h>
+//#include <mrpt/poses/CPose3DPDF.h>
 #include <mrpt/math/CMatrixTemplateNumeric.h>
+#include <mrpt/math/math_frwds.h>
 
 namespace mrpt
 {
@@ -64,7 +66,7 @@ namespace mrpt
             /** This method must be called to select the PDF from which to draw samples.
               * \sa drawSample
               */
-            void setPosePDF( const CPosePDFPtr &pdf ) { setPosePDF(pdf.pointer()); }
+            void setPosePDF( const CPosePDFPtr &pdf );
 
             /** This method must be called to select the PDF from which to draw samples.
               * \sa drawSample
@@ -79,7 +81,7 @@ namespace mrpt
             /** This method must be called to select the PDF from which to draw samples.
               * \sa drawSample
               */
-            void setPosePDF( const CPose3DPDFPtr &pdf ) { setPosePDF(pdf.pointer()); }
+            void setPosePDF( const CPose3DPDFPtr &pdf );
 
             /** This method must be called to select the PDF from which to draw samples.
               * \sa drawSample

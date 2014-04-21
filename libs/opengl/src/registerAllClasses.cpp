@@ -7,6 +7,8 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
+#include "opengl-precomp.h"  // Precompiled header
+
 #include <mrpt/opengl.h>
 
 #ifndef MRPT_ENABLE_PRECOMPILED_HDRS

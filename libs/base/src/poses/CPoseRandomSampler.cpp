@@ -143,6 +143,13 @@ void CPoseRandomSampler::setPosePDF( const CPose3DPDF *pdf )
     MRPT_END
 }
 
+void CPoseRandomSampler::setPosePDF( const CPose3DPDFPtr &pdf ) { 
+	setPosePDF(pdf.pointer()); 
+}
+
+void CPoseRandomSampler::setPosePDF( const CPosePDFPtr &pdf ) { 
+	setPosePDF(pdf.pointer()); 
+}
 
 /*---------------------------------------------------------------
                     drawSample

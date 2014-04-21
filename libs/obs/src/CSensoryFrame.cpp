@@ -10,7 +10,9 @@
 #include "obs-precomp.h"   // Precompiled headers
 
 #include <mrpt/slam/CSensoryFrame.h>
+#include <mrpt/slam/CObservation2DRangeScan.h>
 #include <mrpt/utils/CStream.h>
+#include <mrpt/system/os.h>
 
 using namespace mrpt::slam;
 using namespace mrpt::poses;

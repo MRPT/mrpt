@@ -14,9 +14,9 @@ namespace mrpt
 {
 	namespace slam
 	{
-		class CObservation; class CObservationPtr;
-		class CSensoryFrame; class CSensoryFramePtr;
-		class CMetricMap; class CMetricMapPtr;
+		class CObservation; struct CObservationPtr;
+		class CSensoryFrame; struct CSensoryFramePtr;
+		class CMetricMap; struct CMetricMapPtr;
 		class CPointsMap;
 		class CSimplePointsMap;
 		class CSimpleMap;
@@ -25,6 +25,6 @@ namespace mrpt
 
 	namespace poses
 	{
-		class CPose3DPDF; class CPose3DPDFPtr;
+		class CPose3DPDF; struct CPose3DPDFPtr;
 	}
 }
