@@ -9,7 +9,7 @@
 
 
 #include <mrpt/obs.h>
-#include <mrpt/base.h>
+#include <mrpt/utils/CMemoryStream.h>
 #include <gtest/gtest.h>
 
 using namespace mrpt;

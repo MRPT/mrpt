@@ -26,8 +26,9 @@ CActionRobotMovement3D::CActionRobotMovement3D() :
 	poseChange(),
 	estimationMethod( emOdometry ),
 	hasVelocities(6,false),
-	velocities(6,0)
+	velocities(6)
 {
+	velocities.assign(.0);
 }
 
 /*---------------------------------------------------------------

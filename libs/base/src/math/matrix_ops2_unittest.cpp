@@ -186,8 +186,8 @@ TEST(Matrices,fromMatlabStringFormat)
 		GTEST_FAIL() << mat3;
 
 	{
-		vector_double m;
-		if (! m.fromMatlabStringFormat(mat3) || m.size()!=1 ) GTEST_FAIL() << "vector_double:" << mat3;
+		CVectorDouble m;
+		if (! m.fromMatlabStringFormat(mat3) || m.size()!=1 ) GTEST_FAIL() << "CVectorDouble:" << mat3;
 	}
 	{
 		CArrayDouble<1> m;
@@ -195,8 +195,8 @@ TEST(Matrices,fromMatlabStringFormat)
 	}
 
 	{
-		vector_double m;
-		if (! m.fromMatlabStringFormat(mat31) || m.size()!=3 ) GTEST_FAIL() << "vector_double:" << mat31;
+		CVectorDouble m;
+		if (! m.fromMatlabStringFormat(mat31) || m.size()!=3 ) GTEST_FAIL() << "CVectorDouble:" << mat31;
 	}
 	{
 		CArrayDouble<3> m;

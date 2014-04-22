@@ -144,7 +144,7 @@ TEST(Matrices,meanAndStd)
 	CMatrixFixedNumeric<double,10,10> A(dat_A);
 
 	// Compute mean & std of each column:
-	vector_double result_mean, result_std;
+	CVectorDouble result_mean, result_std;
 	A.meanAndStd(result_mean, result_std);
 
 	// Result from MATLAB:
