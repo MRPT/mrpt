@@ -7,7 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/maps.h>  // Precompiled header
+#include "maps-precomp.h" // Precomp header
 
 #include <mrpt/slam/CRandomFieldGridMap2D.h>
 #include <mrpt/system/os.h>
@@ -15,6 +15,7 @@
 #include <mrpt/utils/CTicTac.h>
 #include <mrpt/utils/CTimeLogger.h>
 #include <mrpt/utils/color_maps.h>
+#include <mrpt/utils/round.h>
 
 #include <mrpt/opengl.h>
 #include <numeric>
@@ -29,6 +30,7 @@ using namespace mrpt;
 using namespace mrpt::slam;
 using namespace mrpt::utils;
 using namespace mrpt::poses;
+using namespace mrpt::system;
 using namespace std;
 
 IMPLEMENTS_VIRTUAL_SERIALIZABLE(CRandomFieldGridMap2D, CMetricMap,mrpt::slam)

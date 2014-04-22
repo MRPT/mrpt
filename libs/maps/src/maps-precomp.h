@@ -12,21 +12,9 @@
 #include <mrpt/config.h>
 #if MRPT_ENABLE_PRECOMPILED_HDRS
 
-#include <mrpt/slam/CBeacon.h>
-#include <mrpt/slam/CBeaconMap.h>
-#include <mrpt/slam/CColouredPointsMap.h>
-#include <mrpt/slam/CGasConcentrationGridMap2D.h>
-#include <mrpt/slam/CWirelessPowerGridMap2D.h>
-#include <mrpt/slam/CHeightGridMap2D.h>
-#include <mrpt/slam/CReflectivityGridMap2D.h>
-#include <mrpt/slam/COccupancyGridMap2D.h>
-#include <mrpt/slam/CPointsMap.h>
-#include <mrpt/slam/CSimplePointsMap.h>
-#include <mrpt/slam/CWeightedPointsMap.h>
-#include <mrpt/slam/COctoMap.h>
-#include <mrpt/slam/CColouredOctoMap.h>
-#include <mrpt/opengl/CAngularObservationMesh.h>
-#include <mrpt/opengl/CPlanarLaserScan.h>
+#include <mrpt/slam/CMetricMap.h>
+#include <mrpt/utils/CSerializable.h>
+#include <mrpt/utils/CStream.h>   // For serializable maps
 
 
 #endif

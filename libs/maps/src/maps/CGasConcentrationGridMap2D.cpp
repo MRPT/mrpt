@@ -7,28 +7,25 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/maps.h>  // Precompiled header
-
-
+#include "maps-precomp.h" // Precomp header
 
 #include <mrpt/slam/CGasConcentrationGridMap2D.h>
 #include <mrpt/slam/CObservationGasSensors.h>
-#include <mrpt/system/os.h>
-#include <mrpt/math/utils.h>
+#include <mrpt/math/CMatrix.h>
+#include <mrpt/math/ops_containers.h>
 #include <mrpt/utils/CTicTac.h>
 #include <mrpt/utils/color_maps.h>
+#include <mrpt/utils/round.h>  // round()
 #include <mrpt/utils/CFileGZOutputStream.h>
 #include <mrpt/utils/CFileGZInputStream.h>
-#include <mrpt/system.h>
-#include <mrpt/base.h>
-#include <mrpt/opengl.h>
-#include <numeric>
-#include <ios>
-#include <sstream>
+#include <mrpt/system/datetime.h>
+#include <mrpt/system/filesystem.h>
+#include <mrpt/system/os.h>
+#include <mrpt/opengl/CArrow.h>
+#include <mrpt/opengl/CSetOfObjects.h>
 
 // Short-cut:
 #define LUT_TABLE (*(LUT.table))
-
 
 using namespace mrpt;
 using namespace mrpt::slam;
@@ -61,7 +58,7 @@ CGasConcentrationGridMap2D::CGasConcentrationGridMap2D(
 	windGrid_direction.setSize( x_min,x_max,y_min,y_max,resolution );
 
 	//initialize counter for advection simulation
-	timeLastSimulated = now();
+	timeLastSimulated = mrpt::system::now();
 }
 
 CGasConcentrationGridMap2D::~CGasConcentrationGridMap2D()
@@ -98,7 +95,7 @@ void  CGasConcentrationGridMap2D::internal_clear()
 		// Generate Look-Up Table of the Gaussian weights due to wind advection.
 		if( !build_Gaussian_Wind_Grid())
 		{
-			mrpt::system::pause();
+			//mrpt::system::pause();
 			THROW_EXCEPTION("Problem with LUT wind table");
 
 		}
@@ -565,7 +562,7 @@ void  CGasConcentrationGridMap2D::getWindAs3DObject( mrpt::opengl::CSetOfObjects
 	if( m_map.size() != wind_map_size )
 	{
 		cout << " GAS MAP DIMENSIONS DO NOT MATCH WIND MAP " << endl;
-		mrpt::system::pause();
+		//mrpt::system::pause();
 	}
 
 
@@ -591,7 +588,7 @@ void  CGasConcentrationGridMap2D::getWindAs3DObject( mrpt::opengl::CSetOfObjects
 			double mod_xy = *windGrid_module.cellByPos( xs[cx],ys[cy] );
 
 
-			mrpt::opengl::CArrowPtr obj = CArrow::Create(
+			mrpt::opengl::CArrowPtr obj = mrpt::opengl::CArrow::Create(
 				xs[cx],ys[cy],0,
 				xs[cx]+scale*cos(dir_xy),ys[cy]+scale*sin(dir_xy),0,
 				1.15f*scale,0.3f*scale,0.35f*scale);
@@ -676,7 +673,7 @@ bool CGasConcentrationGridMap2D::simulateAdvection( const double &STD_increase_v
 		if( N != wind_map_size )
 		{
 			cout << " GAS MAP DIMENSIONS DO NOT MATCH WIND INFORMATION " << endl;
-			mrpt::system::pause();
+			//mrpt::system::pause();
 		}
 
 		tictac.Tic();
@@ -727,7 +724,7 @@ bool CGasConcentrationGridMap2D::simulateAdvection( const double &STD_increase_v
 
 		cout << " - SA matrix computed in " << tictac.Tac() << "s" << endl << endl;
 	}
-	catch( mrpt::utils::exception e)
+	catch( std::exception &e)
 	{
 		cout << " #########  EXCEPTION computing Transition Matrix (A) ##########\n: " << e.what() << endl;
 		cout << "on cell i= " << i << "  c=" << c << endl << endl;
@@ -806,7 +803,7 @@ bool CGasConcentrationGridMap2D::simulateAdvection( const double &STD_increase_v
 		free(new_variances);
 	
 	}
-	catch( mrpt::utils::exception e)
+	catch( std::exception &e)
 				{
 		cout << " #########  EXCEPTION Updating Covariances ##########\n: " << e.what() << endl;
 		cout << "on row i= " << i << "  column c=" << c << endl << endl;

@@ -13,6 +13,7 @@
 #include <mrpt/opengl/CSetOfObjects.h>
 #include <mrpt/opengl/CBox.h>
 #include <mrpt/opengl/gl_utils.h>
+#include <mrpt/utils/aligned_containers.h>
 
 namespace mrpt
 {

@@ -21,11 +21,16 @@
 		- mrpt::opengl::CArrow was always drawn of normalized length.
 
 
+	- Other changes (to reorder!)
 	- Removed most "using namespace" from public headers.
-	- Deleted: 
+	- New important headers after refactoring: 
+		- <mrpt/utils/stl_serialization.h>
+	- Deleted methods and functions:  
 		- mrpt::system::breakpoint()
 		- *EXPLAIN*:  mrpt :: vector_float --> mrpt::math::CVectorFloat, etc.
 		- mrpt::CImage::rectifyImage() with parameters as separate vectors.
+		- Previous deprecated functions. 
+		- mrpt::slam::CPointsMap::getPoint() with mrpt::poses::CPoint3D arguments.
 
 
 <hr>

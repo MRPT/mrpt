@@ -7,12 +7,13 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/maps.h>  // Precompiled header
+#include "maps-precomp.h" // Precomp header
 
 #include <mrpt/utils/CConfigFile.h>
 #include <mrpt/utils/CTicTac.h>
 #include <mrpt/utils/CTimeLogger.h>
 #include <mrpt/utils/CStartUpClassesRegister.h>
+#include <mrpt/system/os.h>
 #include <mrpt/math/geometry.h>
 
 #include <mrpt/slam/CPointsMap.h>
@@ -39,6 +40,7 @@
 
 using namespace mrpt::poses;
 using namespace mrpt::slam;
+using namespace mrpt::system;
 using namespace std;
 
 

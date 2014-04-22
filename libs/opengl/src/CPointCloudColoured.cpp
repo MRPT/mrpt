@@ -11,10 +11,10 @@
 
 
 #include <mrpt/opengl/CPointCloudColoured.h>
-#include <mrpt/utils/bits_SSE.h> // round()
+#include <mrpt/utils/round.h> // round()
 #include <mrpt/utils/CStream.h>
 #include <mrpt/math/ops_containers.h>  // for << ops
-#include <mrpt/utils/stl_extensions.h> // for << ops
+#include <mrpt/utils/stl_serialization.h>
 
 #include "opengl_internals.h"
 

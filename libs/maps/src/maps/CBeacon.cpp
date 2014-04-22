@@ -7,9 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/maps.h>  // Precompiled header
-
-
+#include "maps-precomp.h" // Precomp header
 
 #include <mrpt/slam/CBeacon.h>
 #include <mrpt/slam/CBeaconMap.h>
@@ -17,10 +15,15 @@
 
 #include <mrpt/system/os.h>
 #include <mrpt/math/geometry.h>
-#include <mrpt/opengl.h>
+#include <mrpt/opengl/CPointCloud.h>
+#include <mrpt/opengl/CEllipsoid.h>
+#include <mrpt/opengl/CSetOfObjects.h>
+#include <mrpt/opengl/CText.h>
 
 using namespace mrpt;
-using namespace mrpt::slam; using namespace mrpt::utils; using namespace mrpt::poses;
+using namespace mrpt::slam;
+using namespace mrpt::system;
+using namespace mrpt::poses;
 using namespace mrpt::utils;
 using namespace std;
 

@@ -8,7 +8,9 @@
    +---------------------------------------------------------------------------+ */
 
 
-#include <mrpt/maps.h>
+#include <mrpt/slam/CSimplePointsMap.h>
+#include <mrpt/slam/CWeightedPointsMap.h>
+#include <mrpt/slam/CColouredPointsMap.h>
 #include <gtest/gtest.h>
 
 using namespace mrpt;

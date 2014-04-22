@@ -12,7 +12,9 @@
 #include <mrpt/opengl/CRenderizableDisplayList.h>
 #include <mrpt/math/geometry.h>
 
-#include <mrpt/utils/stl_extensions.h>
+//#include <mrpt/utils/stl_extensions.h>
+//#include <mrpt/utils/stl_serialization.h>
+
 
 namespace mrpt	{
 	namespace opengl	{

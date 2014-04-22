@@ -11,7 +11,7 @@
 
 #include <mrpt/utils/utils_defs.h>
 #include <mrpt/utils/CSerializable.h>
-#include <mrpt/math/CMatrix.h>
+#include <mrpt/math/eigen_frwds.h>
 #include <mrpt/utils/CCanvas.h>
 #include <mrpt/utils/TCamera.h>
 #include <mrpt/utils/exceptions.h>

@@ -20,7 +20,7 @@
 
 #include <mrpt/math/ops_containers.h>		// Many generic operations
 
-#include <mrpt/utils/metaprogramming.h>  // for copy_container_typecasting()
+//#include <mrpt/utils/metaprogramming.h>  // for copy_container_typecasting()
 
 
 /** \file ops_matrices.h

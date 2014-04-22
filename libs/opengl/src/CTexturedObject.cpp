@@ -9,9 +9,9 @@
 
 #include "opengl-precomp.h"  // Precompiled header
 
-
 #include <mrpt/opengl/CTexturedObject.h>
 #include <mrpt/utils/CTimeLogger.h>
+#include <mrpt/utils/CStream.h>
 #include "opengl_internals.h"
 
 using namespace mrpt;

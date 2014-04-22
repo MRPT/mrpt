@@ -7,12 +7,15 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/maps.h>  // Precompiled header
+#include "maps-precomp.h" // Precomp header
 
 #include <mrpt/slam/CReflectivityGridMap2D.h>
 #include <mrpt/slam/CObservationReflectivity.h>
-
+#include <mrpt/poses/CPose2D.h>
+#include <mrpt/utils/round.h> // round()
+#include <mrpt/system/os.h>
 #include <mrpt/opengl/CTexturedPlane.h>
+#include <mrpt/opengl/CSetOfObjects.h>
 
 
 using namespace mrpt;

@@ -12,7 +12,7 @@ namespace mrpt
 {
 	namespace opengl
 	{
-		class CSetOfObjects; class CSetOfObjectsPtr;
+		class CSetOfObjects; struct CSetOfObjectsPtr;
 
 
 	} // end namespace

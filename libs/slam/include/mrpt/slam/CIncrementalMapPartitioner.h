@@ -13,7 +13,7 @@
 #include <mrpt/utils/CDebugOutputCapable.h>
 #include <mrpt/utils/CLoadableOptions.h>
 
-#include <mrpt/utils/stl_extensions.h>
+//#include <mrpt/utils/stl_extensions.h>
 
 #include <mrpt/slam/CMultiMetricMap.h>
 #include <mrpt/slam/CSimplePointsMap.h>

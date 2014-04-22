@@ -12,7 +12,7 @@
 
 #include <mrpt/opengl/CRenderizableDisplayList.h>
 #include <mrpt/math/lightweight_geom_data.h>
-#include <mrpt/utils/stl_extensions.h>
+//#include <mrpt/utils/stl_extensions.h>
 
 namespace mrpt
 {

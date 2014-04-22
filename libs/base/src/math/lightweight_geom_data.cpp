@@ -17,7 +17,7 @@
 #include <mrpt/math/geometry.h>
 #include <mrpt/math/ops_containers.h>
 #include <mrpt/utils/CStream.h>
-#include <mrpt/utils/stl_extensions.h>  // For serialization of std::vector<> types
+#include <mrpt/utils/stl_serialization.h>
 
 using namespace std; // For min/max, etc...
 

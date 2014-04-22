@@ -13,8 +13,6 @@
 #include <mrpt/opengl/CSetOfTriangles.h>
 #include "opengl_internals.h"
 #include <mrpt/math/CMatrixTemplateNumeric.h>
-//#include <mrpt/poses/CPose3D.h>
-//#include <mrpt/poses/CPoint3D.h>
 #include <mrpt/utils/CStream.h>
 
 using namespace mrpt;

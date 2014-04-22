@@ -12,7 +12,10 @@
 #include <mrpt/slam/CObservationWindSensor.h>
 #include <mrpt/utils/CStream.h>
 
-using namespace mrpt::slam; using namespace mrpt::utils; using namespace mrpt::poses;
+using namespace mrpt::slam;
+using namespace mrpt::utils;
+using namespace mrpt::poses;
+
 
 // This must be added to any CSerializable class implementation file.
 IMPLEMENTS_SERIALIZABLE(CObservationWindSensor, CObservation,mrpt::slam)

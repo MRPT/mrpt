@@ -10,11 +10,14 @@
 #define CDynamicGrid_H
 
 #include <mrpt/utils/utils_defs.h>
+#include <mrpt/utils/round.h>
 
 namespace mrpt
 {
     namespace utils
     {
+		MRPT_TODO("Refactor into a non-template code and remove </round.h>")
+
         /** A 2D grid of dynamic size which stores any kind of data at each cell.
 	  * \tparam T The type of each cell in the 2D grid.
 	  * \ingroup mrpt_base_grp
@@ -269,7 +272,8 @@ namespace mrpt
             {
                 return 0;
             }
-
+			/** Saves a float representation of the grid (via "cell2float()") to a text file. 
+			  * Calling this file also requires #include <mrpt/system/os.h> */
             void  saveToTextFile(const std::string &fileName) const
             {
                 using namespace mrpt::system;

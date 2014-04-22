@@ -7,19 +7,15 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/maps.h>  // Precompiled header
-
-
+#include "maps-precomp.h" // Precomp header
 
 #include <mrpt/slam/CWirelessPowerGridMap2D.h>
 #include <mrpt/slam/CObservationWirelessPower.h>
 #include <mrpt/system/os.h>
-#include <mrpt/math/utils.h>
+#include <mrpt/utils/round.h>
 #include <mrpt/utils/CTicTac.h>
 #include <mrpt/utils/color_maps.h>
-
-#include <mrpt/opengl.h>
-#include <numeric>
+#include <mrpt/opengl/CSetOfObjects.h>
 
 using namespace mrpt;
 using namespace mrpt::slam;

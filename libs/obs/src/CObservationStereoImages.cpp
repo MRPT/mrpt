@@ -10,6 +10,7 @@
 #include "obs-precomp.h"   // Precompiled headers
 
 #include <mrpt/slam/CObservationStereoImages.h>
+#include <mrpt/math/CMatrix.h>
 #include <mrpt/utils/CStream.h>
 
 using namespace mrpt::slam;

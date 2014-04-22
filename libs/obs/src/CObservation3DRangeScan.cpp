@@ -15,6 +15,7 @@
 
 #include <mrpt/math/CMatrix.h>
 #include <mrpt/math/CLevenbergMarquardt.h>
+#include <mrpt/math/ops_containers.h> // norm(), etc.
 #include <mrpt/utils/CFileGZInputStream.h>
 #include <mrpt/utils/CFileGZOutputStream.h>
 #include <mrpt/utils/CTimeLogger.h>

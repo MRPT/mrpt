@@ -42,12 +42,11 @@ namespace mrpt
 		protected:
 			virtual void do_nothing() { } //!< Just to allow this class to be polymorphic
 		public:
-			inline mrptEventMetricMapInsert(const CMetricMap   *smap, const CObservation *obs,const CPose3D *robotPose ) : source_map(smap), inserted_obs(obs), inserted_robotPose(robotPose) { } 
+			inline mrptEventMetricMapInsert(const CMetricMap   *smap, const CObservation *obs,const mrpt::poses::CPose3D *robotPose ) : source_map(smap), inserted_obs(obs), inserted_robotPose(robotPose) { } 
 
 			const CMetricMap   *source_map;
 			const CObservation *inserted_obs;
-			const CPose3D      *inserted_robotPose;
-
+			const mrpt::poses::CPose3D *inserted_robotPose;
 		};
 
 	} // End of namespace

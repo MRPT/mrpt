@@ -10,7 +10,7 @@
 #ifndef PF_implementations_H
 #define PF_implementations_H
 
-#include <mrpt/utils/stl_extensions.h>
+//#include <mrpt/utils/stl_extensions.h>
 #include <mrpt/bayes/CParticleFilterCapable.h>
 #include <mrpt/bayes/CParticleFilterData.h>
 #include <mrpt/random.h>

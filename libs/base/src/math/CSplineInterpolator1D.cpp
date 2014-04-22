@@ -12,7 +12,7 @@
 #include <mrpt/math/CSplineInterpolator1D.h>
 #include <mrpt/utils/CStream.h>
 #include <mrpt/math/interp_fit.h>
-#include <mrpt/utils/stl_extensions.h>
+#include <mrpt/utils/stl_serialization.h>
 
 using namespace mrpt;
 using namespace mrpt::math;

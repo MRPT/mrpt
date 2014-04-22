@@ -10,7 +10,7 @@
 #include "base-precomp.h"  // Precompiled headers
 
 #include <mrpt/system/string_utils.h>
-#include <mrpt/utils/bits_SSE.h> // round()
+#include <mrpt/utils/round.h> // round()
 
 using namespace mrpt::system;
 using namespace mrpt::utils;

@@ -15,6 +15,7 @@
 #include <mrpt/utils/CSerializable.h>
 #include <mrpt/math/CMatrixD.h>
 #include <mrpt/utils/CLoadableOptions.h>
+#include <mrpt/utils/TEnumType.h>
 #include <mrpt/slam/CMetricMap.h>
 #include <mrpt/slam/COccupancyGridMap2D.h>
 
@@ -76,7 +77,7 @@ namespace slam
 
 		double dmv_var_mean;   //!< [Kernel DM-V only] The cumulative weighted variance of this cell
 
-		TTimeStamp last_updated;	//!< [Dynamic maps only] The timestamp of the last time the cell was updated
+		mrpt::system::TTimeStamp last_updated;	//!< [Dynamic maps only] The timestamp of the last time the cell was updated
 		double updated_std;			//!< [Dynamic maps only] The std cell value that was updated (to be used in the Forgetting_curve
 	};
 #pragma pack(pop)

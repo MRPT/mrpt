@@ -349,10 +349,6 @@ namespace slam
 		/// \overload
 		unsigned long  getPoint(size_t index,double &x,double &y) const;
 		/// \overload
-		inline unsigned long  getPoint(size_t index,CPoint2D &p) const { return getPoint(index,p.x(),p.y()); }
-		/// \overload
-		inline unsigned long  getPoint(size_t index,CPoint3D &p) const  { return getPoint(index,p.x(),p.y(),p.z()); }
-		/// \overload
 		inline unsigned long  getPoint(size_t index,mrpt::math::TPoint2D &p) const  { return getPoint(index,p.x,p.y); }
 		/// \overload
 		inline unsigned long  getPoint(size_t index,mrpt::math::TPoint3D &p) const  { return getPoint(index,p.x,p.y,p.z); }
@@ -383,9 +379,9 @@ namespace slam
 			mark_as_modified();
 		}
 		/// \overload
-		inline void  setPoint(size_t index,CPoint2D &p) {  setPoint(index,p.x(),p.y(),0); }
+		inline void  setPoint(size_t index,mrpt::math::TPoint2D &p) {  setPoint(index,p.x,p.y,0); }
 		/// \overload
-		inline void  setPoint(size_t index,CPoint3D &p)  { setPoint(index,p.x(),p.y(),p.z()); }
+		inline void  setPoint(size_t index,mrpt::math::TPoint3D &p)  { setPoint(index,p.x,p.y,p.z); }
 		/// \overload
 		inline void  setPoint(size_t index,float x, float y) { setPoint(index,x,y,0); }
 		/// \overload (RGB data is ignored in classes without color information)
@@ -464,8 +460,6 @@ namespace slam
 		  */
 		inline void  insertPoint( float x, float y, float z=0 ) { insertPointFast(x,y,z); mark_as_modified(); }
 		/// \overload of \a insertPoint()
-		inline void  insertPoint( const CPoint3D &p ) { insertPoint(p.x(),p.y(),p.z()); }
-		/// \overload
 		inline void  insertPoint( const mrpt::math::TPoint3D &p ) { insertPoint(p.x,p.y,p.z); }
 		/// \overload (RGB data is ignored in classes without color information)
 		virtual void  insertPoint( float x, float y, float z, float R, float G, float B ) { insertPoint(x,y,z); }

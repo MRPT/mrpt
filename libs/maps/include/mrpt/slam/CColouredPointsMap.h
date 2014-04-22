@@ -14,7 +14,6 @@
 #include <mrpt/slam/CObservationImage.h>
 #include <mrpt/utils/CSerializable.h>
 #include <mrpt/math/CMatrix.h>
-#include <mrpt/utils/stl_extensions.h>
 
 #include <mrpt/maps/link_pragmas.h>
 

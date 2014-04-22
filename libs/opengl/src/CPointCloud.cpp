@@ -13,7 +13,7 @@
 #include <mrpt/opengl/CPointCloud.h>
 #include <mrpt/math/ops_containers.h>
 #include <mrpt/utils/CStream.h>
-#include <mrpt/utils/bits_SSE.h> // round()
+#include <mrpt/utils/round.h> // round()
 
 #include "opengl_internals.h"
 

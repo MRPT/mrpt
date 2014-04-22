@@ -13,7 +13,6 @@
 #include <mrpt/opengl/CSetOfTriangles.h>
 #include <mrpt/math/CMatrixTemplate.h>
 #include <mrpt/math/CMatrixB.h>
-#include <mrpt/utils/stl_extensions.h>
 #include <mrpt/slam/CObservation2DRangeScan.h>
 #include <mrpt/slam/CPointsMap.h>
 #include <mrpt/opengl/CSetOfLines.h>

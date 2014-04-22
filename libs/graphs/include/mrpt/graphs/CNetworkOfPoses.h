@@ -21,7 +21,8 @@
 #include <mrpt/utils/CFileGZOutputStream.h>
 
 #include <mrpt/utils/traits_map.h>
-#include <mrpt/utils/stl_extensions.h>
+//#include <mrpt/utils/stl_extensions.h>
+#include <mrpt/utils/stl_serialization.h>
 
 // The main class in this file is CNetworkOfPoses, a generic basic template for
 //  predefined 2D/3D graphs of pose contraints.

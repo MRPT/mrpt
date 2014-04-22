@@ -10,6 +10,7 @@
 #define metaprogramming_H
 
 #include <mrpt/utils/CObject.h>
+#include <mrpt/utils/metaprogramming_serialization.h>
 
 namespace mrpt
 {
@@ -108,38 +109,6 @@ namespace mrpt
 				inline void operator()(mrpt::utils::CObjectPtr &ptr)
 				{
 					ptr.clear_unique();
-				}
-			};
-
-			/** An object for reading objects from a stream, intended for being used in STL algorithms. */
-			struct ObjectReadFromStream
-			{
-			private:
-				CStream		*m_stream;
-			public:
-				inline ObjectReadFromStream(CStream *stream) : m_stream(stream) {  }
-
-				// T can be CSerializablePtr, CSerializable, or any other class implementing ">>"
-				template <typename T>
-				inline void operator()(T &obj)
-				{
-					(*m_stream) >> obj;
-				}
-			};
-
-			/** An object for writing objects to a stream, intended for being used in STL algorithms. */
-			struct ObjectWriteToStream
-			{
-			private:
-				CStream		*m_stream;
-			public:
-				inline ObjectWriteToStream(CStream *stream) : m_stream(stream) {  }
-
-				// T can be CSerializablePtr, CSerializable, or any other class implementing "<<"
-				template <typename T>
-				inline void operator()(const T &ptr)
-				{
-					(*m_stream) << ptr;
 				}
 			};
 

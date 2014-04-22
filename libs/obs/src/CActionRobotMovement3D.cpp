@@ -14,7 +14,10 @@
 #include <mrpt/slam/CActionRobotMovement3D.h>
 
 using namespace mrpt;
-using namespace mrpt::slam; using namespace mrpt::utils; using namespace mrpt::poses;
+using namespace mrpt::slam;
+using namespace mrpt::utils;
+using namespace mrpt::poses;
+
 using namespace mrpt::utils;
 
 IMPLEMENTS_SERIALIZABLE(CActionRobotMovement3D, CAction, mrpt::slam)

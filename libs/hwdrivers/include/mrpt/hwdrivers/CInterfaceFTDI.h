@@ -12,7 +12,7 @@
 
 #include <mrpt/config.h>
 #include <mrpt/utils/CStream.h>
-#include <mrpt/utils/stl_extensions.h>
+//#include <mrpt/utils/stl_extensions.h>
 
 #include <mrpt/hwdrivers/link_pragmas.h>
 

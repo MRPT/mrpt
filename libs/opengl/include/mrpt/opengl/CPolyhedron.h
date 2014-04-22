@@ -10,7 +10,8 @@
 #define opengl_CPolyhedron_H
 
 #include <mrpt/opengl/CRenderizableDisplayList.h>
-#include <mrpt/utils/stl_extensions.h>
+//#include <mrpt/utils/stl_serialization.h>
+//#include <mrpt/utils/stl_extensions.h>
 #include <mrpt/math/geometry.h>
 
 namespace mrpt	{

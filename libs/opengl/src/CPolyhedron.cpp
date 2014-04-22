@@ -16,6 +16,7 @@
 #include <mrpt/math/ops_containers.h> // dotProduct()
 #include <mrpt/random.h>
 #include <mrpt/utils/CStream.h>
+#include <mrpt/utils/stl_serialization.h>
 
 #include "opengl_internals.h"
 

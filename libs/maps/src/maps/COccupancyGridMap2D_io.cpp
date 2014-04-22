@@ -7,11 +7,13 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/maps.h>  // Precompiled header
+#include "maps-precomp.h" // Precomp header
 
+#include <mrpt/system/os.h>
+#include <mrpt/math/CMatrix.h>
 #include <mrpt/utils/CEnhancedMetaFile.h>
+#include <mrpt/utils/round.h> // round()
 #include <mrpt/slam/COccupancyGridMap2D.h>
-
 #include <mrpt/random.h>
 
 using namespace mrpt;
@@ -19,6 +21,7 @@ using namespace mrpt::slam;
 using namespace mrpt::random;
 using namespace mrpt::utils;
 using namespace mrpt::poses;
+using namespace mrpt::system;
 using namespace std;
 
 

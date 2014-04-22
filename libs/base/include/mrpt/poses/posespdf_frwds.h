@@ -6,21 +6,15 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
+#pragma once
 
-#include <gtest/gtest.h>
-
-using namespace std;
-
-namespace mrpt { namespace utils {
-	std::string MRPT_GLOBAL_UNITTEST_SRC_DIR = ".";
-  }
-}
-
-int main(int argc, char **argv)
+namespace mrpt
 {
-	testing::InitGoogleTest(&argc, argv);
-
-	if (argc>1) mrpt::utils::MRPT_GLOBAL_UNITTEST_SRC_DIR=std::string(argv[1]);
-
-	return RUN_ALL_TESTS();
-}
+	namespace poses
+	{
+		class CPointPDF; struct CPointPDFPtr;
+		class CPosePDF;  struct CPosePDFPtr;
+		class CPose3DPDF; struct CPose3DPDFPtr;
+		class CPose3DQuatPDF; struct CPose3DQuatPDFPtr;
+	}
+} 

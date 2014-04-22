@@ -11,16 +11,10 @@
 
 #include <mrpt/utils/utils_defs.h>
 #include <mrpt/utils/TColor.h>
-#include <mrpt/math/CMatrixTemplateNumeric.h>
-#include <mrpt/math/ops_matrices.h>
+#include <mrpt/math/eigen_frwds.h>
 
 namespace mrpt
 {
-	namespace math
-	{
-		class CMatrix;
-		class CMatrixD;
-	}
 	namespace utils
 	{
 		class CImage;

@@ -11,8 +11,6 @@
 
 #include <mrpt/utils/CSerializable.h>
 #include <mrpt/math/CMatrix.h>
-#include <mrpt/system/os.h>
-#include <mrpt/utils/CStringList.h>
 #include <mrpt/poses/CPoint3D.h>
 #include <mrpt/poses/CPointPDFParticles.h>
 #include <mrpt/poses/CPointPDFGaussian.h>
@@ -25,6 +23,8 @@
 
 namespace mrpt
 {
+	namespace utils { class CStringList; }
+
 namespace slam
 {
 	using namespace mrpt::poses;
@@ -98,7 +98,7 @@ namespace slam
 		/** Returns an estimate of the point covariance matrix (3x3 cov matrix) and the mean, both at once.
 		  * \sa getMean
 		  */
-		void getCovarianceAndMean(CMatrixDouble33 &cov,CPoint3D &mean_point) const;
+		void getCovarianceAndMean(mrpt::math::CMatrixDouble33 &cov,CPoint3D &mean_point) const;
 
 		/** Copy operator, translating if necesary (for example, between particles and gaussian representations)
 		  */
@@ -161,7 +161,7 @@ namespace slam
 			CPointPDFSOG	&outPDF,
 			const CBeaconMap *myBeaconMap,
 			const CPoint3D	&sensorPnt,
-			const CMatrixDouble33   *covarianceCompositionToAdd = NULL,
+			const mrpt::math::CMatrixDouble33   *covarianceCompositionToAdd = NULL,
 			bool  clearPreviousContentsOutPDF = true,
 			const CPoint3D &centerPoint = CPoint3D(0,0,0),
 			const float &maxDistanceFromCenter = 0

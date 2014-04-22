@@ -14,7 +14,10 @@
 #include <mrpt/slam/CObservation.h>
 #include <mrpt/system/os.h>
 
-using namespace mrpt::slam; using namespace mrpt::utils; using namespace mrpt::poses;
+using namespace mrpt::slam;
+using namespace mrpt::utils;
+using namespace mrpt::poses;
+
 
 IMPLEMENTS_SERIALIZABLE(CLandmark, CSerializable,mrpt::slam)
 

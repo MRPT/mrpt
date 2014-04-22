@@ -18,7 +18,7 @@
 #include <mrpt/poses/CPoint2D.h>
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/math/lightweight_geom_data.h>
-#include <mrpt/utils/stl_extensions.h>  // For serialization of std::vector<> types
+#include <mrpt/utils/stl_serialization.h>
 
 
 

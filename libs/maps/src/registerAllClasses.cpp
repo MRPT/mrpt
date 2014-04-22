@@ -7,16 +7,9 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
+#include "maps-precomp.h"
 #include <mrpt/maps.h>
-
-#ifndef MRPT_ENABLE_PRECOMPILED_HDRS
-#	define MRPT_ALWAYS_INCLUDE_ALL_HEADERS
-#	undef _mrpt_maps_H
-#	include <mrpt/maps.h>
-#endif
-
 #include <mrpt/utils/CStartUpClassesRegister.h>
-
 
 using namespace mrpt::utils;
 using namespace mrpt::slam;

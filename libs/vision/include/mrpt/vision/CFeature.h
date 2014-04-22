@@ -10,9 +10,9 @@
 #define CFeature_H
 
 #include <mrpt/utils/CImage.h>
-#include <mrpt/utils/stl_extensions.h>
+//#include <mrpt/utils/stl_extensions.h>
 #include <mrpt/math/CMatrix.h>
-#include <mrpt/math/ops_matrices.h>
+//#include <mrpt/math/ops_matrices.h>
 #include <mrpt/math/KDTreeCapable.h>
 
 #include <mrpt/vision/types.h>

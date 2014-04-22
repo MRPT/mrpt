@@ -10,7 +10,7 @@
 #define  mrpt_TEnumType_H
 
 #include <mrpt/utils/core_defs.h>
-#include <mrpt/utils/stl_extensions.h>
+#include <mrpt/utils/bimap.h>
 
 namespace mrpt
 {
@@ -23,7 +23,7 @@ namespace mrpt
 		struct TEnumTypeFiller
 		{
 			typedef ENUMTYPE enum_t;
-			static void fill(bimap<enum_t,std::string>  &m_map);
+			static void fill(mrpt::utils::bimap<enum_t,std::string>  &m_map);
 		};
 
 

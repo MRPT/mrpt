@@ -14,8 +14,6 @@
 #include <mrpt/utils/CDynamicGrid.h>
 #include <mrpt/utils/CSerializable.h>
 #include <mrpt/utils/CLoadableOptions.h>
-#include <mrpt/utils/stl_extensions.h>
-
 #include <mrpt/slam/CMetricMap.h>
 #include <mrpt/slam/CLogOddsGridMap2D.h>
 
