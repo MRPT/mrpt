@@ -130,7 +130,7 @@ void  mrpt::utils::jet2rgb(
 	float	&b)
 {
 	static bool	jet_table_done = false;
-	static vector_float	jet_r,jet_g,jet_b;
+	static Eigen::VectorXf jet_r,jet_g,jet_b;
 
 
 	// Initialize tables

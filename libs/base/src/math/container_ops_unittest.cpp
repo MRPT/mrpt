@@ -21,32 +21,32 @@ using namespace std;
 TEST(vector_double,resize)
 {
 	{
-		mrpt::vector_double v;
+		mrpt::math::CVectorDouble v;
 		EXPECT_TRUE(v.size()==0);
 	}
 
 	for (int i=0;i<10;i++)
 	{
-		mrpt::vector_double v(i);
+		mrpt::math::CVectorDouble v(i);
 		EXPECT_TRUE(v.size()==i);
 	}
 
 	for (int i=0;i<10;i++)
 	{
-		mrpt::vector_double v;
+		mrpt::math::CVectorDouble v;
 		v.resize(i);
 		EXPECT_TRUE(v.size()==i);
 	}
 
 	for (int i=10;i>=0;i--)
 	{
-		mrpt::vector_double v;
+		mrpt::math::CVectorDouble v;
 		v.resize(i);
 		EXPECT_TRUE(v.size()==i);
 	}
 
 	{
-		mrpt::vector_double v;
+		mrpt::math::CVectorDouble v;
 		for (int i=0;i<10;i++)
 		{
 			v.push_back(double(i));

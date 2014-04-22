@@ -1125,7 +1125,7 @@ void  CRandomFieldGridMap2D::resize(
 			m_stackedCov.setSize( N,K );
 
 			// Prepare the template for new cells:
-			vector_double template_row(K);
+			CVectorDouble template_row(K);
 			{
 				const double	std0sqr	= square(  m_insertOptions_common->KF_initialCellStd );
 				double			*ptr	= &template_row[0];
@@ -1231,7 +1231,7 @@ void  CRandomFieldGridMap2D::insertObservation_KF(
 
 	// The kalman gain:
 //	CMatrixD		Kk;
-//	vector_double	Kk;
+//	CVectorDouble	Kk;
 //	m_cov.extractCol( cellIdx,Kk );
 //	Kk *= 1.0/sk;
 
@@ -2251,7 +2251,7 @@ void  CRandomFieldGridMap2D::insertObservation_KF2(
 
 	// We will fill this now, so we already have it for updating the
 	//  covariances next:
-	vector_double	cross_covs_c_i( W21sqr, 0); // Indexes are relative to the (2W+1)x(2W+1) window centered at "cellIdx".
+	CVectorDouble	cross_covs_c_i( W21sqr, 0); // Indexes are relative to the (2W+1)x(2W+1) window centered at "cellIdx".
 	vector_int		window_idxs   ( W21sqr, -1 ); // The real-map indexes for each element in the window, or -1 if there are out of the map (for cells close to the border)
 
 	// 1) First, the cells before "c":
@@ -2406,7 +2406,7 @@ void  CRandomFieldGridMap2D::recoverMeanAndCov() const
 /*---------------------------------------------------------------
 					getMeanAndCov
   ---------------------------------------------------------------*/
-void CRandomFieldGridMap2D::getMeanAndCov( vector_double &out_means, CMatrixDouble &out_cov) const
+void CRandomFieldGridMap2D::getMeanAndCov( CVectorDouble &out_means, CMatrixDouble &out_cov) const
 {
 	const size_t N = BASE::m_map.size();
 	out_means.resize(N);
@@ -2422,7 +2422,7 @@ void CRandomFieldGridMap2D::getMeanAndCov( vector_double &out_means, CMatrixDoub
 /*---------------------------------------------------------------
 					getMeanAndSTD
   ---------------------------------------------------------------*/
-void CRandomFieldGridMap2D::getMeanAndSTD( vector_double &out_means, vector_double &out_STD) const
+void CRandomFieldGridMap2D::getMeanAndSTD( CVectorDouble &out_means, CVectorDouble &out_STD) const
 {
 	const size_t N = BASE::m_map.size();
 	out_means.resize(N);
@@ -2439,7 +2439,7 @@ void CRandomFieldGridMap2D::getMeanAndSTD( vector_double &out_means, vector_doub
 /*---------------------------------------------------------------
 					setMeanAndSTD
   ---------------------------------------------------------------*/
-void CRandomFieldGridMap2D::setMeanAndSTD( vector_double &in_means, vector_double &in_std)
+void CRandomFieldGridMap2D::setMeanAndSTD( CVectorDouble &in_means, CVectorDouble &in_std)
 {
 	//Assure dimmensions match
 	const size_t N = BASE::m_map.size();

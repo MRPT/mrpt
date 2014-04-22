@@ -26,7 +26,7 @@ namespace slam
 	public:
 		/** A pair of vectors with the cos and sin values. */
 		struct TSinCosValues {
-			mrpt::vector_float ccos, csin;
+			mrpt::math::CVectorFloat ccos, csin;
 		};
 
 		/** Return two vectors with the cos and the sin of the angles for each of the

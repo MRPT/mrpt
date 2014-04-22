@@ -313,7 +313,7 @@ void  CPosePDFSOG::drawSingleSample( CPose2D &outPart ) const
  ---------------------------------------------------------------*/
 void  CPosePDFSOG::drawManySamples(
 	size_t						N,
-	std::vector<vector_double>	&outSamples )  const
+	std::vector<CVectorDouble>	&outSamples )  const
 {
 	MRPT_START
 	MRPT_UNUSED_PARAM(N);

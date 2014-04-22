@@ -176,7 +176,7 @@ CPosePDFPtr CGridMapAligner::AlignPDF_robustMatch(
 		// ---------------------------------------------
 		CMatrixFloat	CORR(lm1->size(),lm2->size()),auxCorr;
 		CImage		im1(1,1,1),im2(1,1,1);		// Grayscale
-		vector_float	corr;
+		CVectorFloat	corr;
 		unsigned int		corrsCount = 0;
 		std::vector<bool>	hasCorr(nLM1,false);
 
@@ -193,7 +193,7 @@ CPosePDFPtr CGridMapAligner::AlignPDF_robustMatch(
 
 		for (size_t idx1=0;idx1<nLM1;idx1++)
 		{
-			//vector_float  	corrs_indiv;
+			//CVectorFloat  	corrs_indiv;
 			vector<pair<size_t,float> >  corrs_indiv;  // (index, distance); Index is used to recover the original index after sorting.
 			vector<float> corrs_indiv_only;
 			corrs_indiv.reserve(nLM2);
@@ -237,7 +237,7 @@ CPosePDFPtr CGridMapAligner::AlignPDF_robustMatch(
 
 				auxWin->plot(corrs_indiv_only,".3","the_corr");
 
-				vector_float xs(2), ys(2);
+				CVectorFloat xs(2), ys(2);
 				xs[0]=0; xs[1]=corrs_indiv_only.size()+1;
 
 				ys[0]=ys[1] = corr_best+thres_delta;

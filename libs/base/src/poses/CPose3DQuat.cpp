@@ -63,7 +63,7 @@ void  CPose3DQuat::getHomogeneousMatrix(CMatrixDouble44 & out_HM ) const
 }
 
 /** Returns a 1x7 vector with [x y z qr qx qy qz] */
-void CPose3DQuat::getAsVector(vector_double &v) const
+void CPose3DQuat::getAsVector(CVectorDouble &v) const
 {
 	v.resize(7);
 	v[0] = m_coords[0];

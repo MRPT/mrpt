@@ -198,13 +198,13 @@ namespace mrpt
 
 			const typename CONTAINER::value_type binWidth = (x_max-x_min)/histogramNumBins;
 
-			const vector_double H = mrpt::math::histogram(data,x_min,x_max,histogramNumBins);
-			vector_double Hc;
+			const CVectorDouble H = mrpt::math::histogram(data,x_min,x_max,histogramNumBins);
+			CVectorDouble Hc;
 			cumsum(H,Hc); // CDF
 			Hc*=1.0/Hc.maxCoeff();
 
-			vector_double::iterator it_low  = std::lower_bound(Hc.begin(),Hc.end(),confidenceInterval);   ASSERT_(it_low!=Hc.end())
-			vector_double::iterator it_high = std::upper_bound(Hc.begin(),Hc.end(),1-confidenceInterval); ASSERT_(it_high!=Hc.end())
+			CVectorDouble::iterator it_low  = std::lower_bound(Hc.begin(),Hc.end(),confidenceInterval);   ASSERT_(it_low!=Hc.end())
+			CVectorDouble::iterator it_high = std::upper_bound(Hc.begin(),Hc.end(),1-confidenceInterval); ASSERT_(it_high!=Hc.end())
 			const size_t idx_low = std::distance(Hc.begin(),it_low);
 			const size_t idx_high = std::distance(Hc.begin(),it_high);
 			out_lower_conf_interval = x_min + idx_low * binWidth;

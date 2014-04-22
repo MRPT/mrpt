@@ -155,7 +155,7 @@ namespace mrpt
 		  */
 		void VISION_IMPEXP add_se3_deltas_to_frames(
 			const mrpt::vision::TFramePosesVec & frame_poses,
-			const mrpt::vector_double &delta,
+			const mrpt::math::CVectorDouble &delta,
 			const size_t         delta_first_idx,
 			const size_t         delta_num_vals,
 			mrpt::vision::TFramePosesVec       & new_frame_poses,
@@ -170,7 +170,7 @@ namespace mrpt
 		  */
 		void VISION_IMPEXP add_3d_deltas_to_points(
 			const mrpt::vision::TLandmarkLocationsVec & landmark_points,
-			const mrpt::vector_double       & delta,
+			const mrpt::math::CVectorDouble       & delta,
 			const size_t                delta_first_idx,
 			const size_t                delta_num_vals,
 			mrpt::vision::TLandmarkLocationsVec        & new_landmark_points,

@@ -16,7 +16,9 @@
 using namespace mrpt::slam;
 using namespace mrpt::utils;
 using namespace mrpt::poses;
+using namespace mrpt::math;
 using namespace std;
+
 
 // This must be added to any CSerializable class implementation file.
 IMPLEMENTS_SERIALIZABLE(CObservationGasSensors, CObservation,mrpt::slam)
@@ -115,7 +117,7 @@ void  CObservationGasSensors::readFromStream(CStream &in, int version)
 			m_readings.clear();
 
 			// There was a single set of 16 values from "Sancho" (DEC-2006)
-			vector_float		readings;
+			CVectorFloat		readings;
 			in >> readings;
 
 			ASSERT_(readings.size()==16);

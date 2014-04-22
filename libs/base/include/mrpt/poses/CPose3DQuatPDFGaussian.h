@@ -116,7 +116,7 @@ namespace poses
 
 		/** Draws a number of samples from the distribution, and saves as a list of 1x7 vectors, where each row contains a (x,y,z,qr,qx,qy,qz) datum.
 		  */
-		void  drawManySamples( size_t N, std::vector<vector_double> & outSamples ) const;
+		void  drawManySamples( size_t N, std::vector<CVectorDouble> & outSamples ) const;
 
 		/** Returns a new PDF such as: NEW_PDF = (0,0,0) - THIS_PDF
 		  */

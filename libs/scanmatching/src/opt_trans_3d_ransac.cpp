@@ -49,7 +49,7 @@ bool  scanmatching::leastSquareErrorRigidTransformation6DRANSAC(
 	// -------------------------------------------
 	// Thresholds
 	// -------------------------------------------
-	vector_float	th(7);
+	CVectorFloat	th(7);
 	th[0] = 0.05;			// X (meters)
 	th[1] = 0.05;			// Y (meters)
 	th[2] = 0.05;			// Z (meters)
@@ -93,7 +93,7 @@ bool  scanmatching::leastSquareErrorRigidTransformation6DRANSAC(
 
 		// Compute first inliers output
 		CPose3D							mbOut;
-		vector_float					mbOut_vec(7);
+		CVectorFloat					mbOut_vec(7);
 		TMatchingPairList	mbInliers;
 		mbInliers.resize( n );
 		for( unsigned int i = 0; i < n; i++ )

@@ -207,7 +207,7 @@ namespace mrpt
 			}
 
 			// other important vars for the main loop:
-			vector_double grad(nFreeNodes*DIMS_POSE);
+			CVectorDouble grad(nFreeNodes*DIMS_POSE);
 			typedef typename mrpt::aligned_containers<TNodeID,typename gst::matrix_VxV_t>::map_t  map_ID2matrix_VxV_t;
 			vector<map_ID2matrix_VxV_t>  H_map(nFreeNodes);
 
@@ -433,7 +433,7 @@ namespace mrpt
 				//   (H+\lambda*I) \delta = -J^t * (f(x)-z)
 				//          A         x   =  b         -->       x = A^{-1} * b
 				//
-				vector_double  delta; // The (minus) increment to be added to the current solution in this step
+				CVectorDouble  delta; // The (minus) increment to be added to the current solution in this step
 				try
 				{
 					profiler.enter("optimize_graph_spa_levmarq.sp_H:chol");

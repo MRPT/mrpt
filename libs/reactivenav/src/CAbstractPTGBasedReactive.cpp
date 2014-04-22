@@ -594,7 +594,7 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 
 void CAbstractPTGBasedReactive::STEP5_PTGEvaluator(
 	THolonomicMovement         & holonomicMovement,
-	const vector_double        & in_TPObstacles,
+	const CVectorDouble        & in_TPObstacles,
 	const mrpt::math::TPose2D  & WS_Target,
 	const mrpt::math::TPoint2D & TP_Target,
 	CLogFileRecord::TInfoPerPTG & log )

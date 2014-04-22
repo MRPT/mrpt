@@ -154,7 +154,7 @@ namespace detail
 				// The "+3" is to assure the buffer has room for the SSE2 method which works with 4-tuples of floats.
 				Eigen::Array<float,Eigen::Dynamic,1>  scan_x(sizeRangeScan+3), scan_y(sizeRangeScan+3);
 
-				mrpt::vector_float scan_vals( rangeScan.scan ); // Convert from the std::vector
+				mrpt::math::CVectorFloat scan_vals( rangeScan.scan ); // Convert from the std::vector
 
 				// Vectorized (optimized) scalar multiplications:
 				scan_x = scan_vals.array() * sincos_vals.ccos.array();

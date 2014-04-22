@@ -213,7 +213,7 @@ void  CLogFileRecord::readFromStream(CStream &in,int version)
 
 			if (version<6)
 			{
-				vector_float prevV,prevW,prevSelPTG;
+				CVectorFloat prevV,prevW,prevSelPTG;
 
 				// Previous values: (Removed in version 6)
 				in >> n;

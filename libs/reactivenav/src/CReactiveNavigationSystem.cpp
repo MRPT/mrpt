@@ -246,7 +246,7 @@ bool CReactiveNavigationSystem::STEP2_SenseObstacles()
 /*************************************************************************
 				STEP3_WSpaceToTPSpace
 *************************************************************************/
-void CReactiveNavigationSystem::STEP3_WSpaceToTPSpace(const size_t ptg_idx,mrpt::vector_double &out_TPObstacles)
+void CReactiveNavigationSystem::STEP3_WSpaceToTPSpace(const size_t ptg_idx,mrpt::math::CVectorDouble &out_TPObstacles)
 {
 	CParameterizedTrajectoryGenerator	*ptg = this->PTGs[ptg_idx];
 

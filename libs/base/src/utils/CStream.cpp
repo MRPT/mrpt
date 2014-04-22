@@ -14,7 +14,7 @@
 #include <mrpt/system/os.h>
 #include <mrpt/utils/CSerializable.h>
 #include <mrpt/utils/CStartUpClassesRegister.h>
-#include <mrpt/utils/types_math.h> // vector_*
+#include <mrpt/utils/types_math.h> // CVector* types
 #include <mrpt/synch.h>
 
 #include <map>
@@ -257,13 +257,13 @@ CStream& utils::operator << (CStream&s, const vector_signed_word &a) { return de
 CStream& utils::operator << (CStream&s, const vector_long &a) { return detail::writeStdVectorToStream(s,a); }
 CStream& utils::operator << (CStream&s, const vector_byte  &a) { return detail::writeStdVectorToStream(s,a); }
 CStream& utils::operator << (CStream&s, const vector_signed_byte  &a) { return detail::writeStdVectorToStream(s,a); }
-CStream& utils::operator << (CStream&s, const vector_float  &v)
+CStream& utils::operator << (CStream&s, const mrpt::math::CVectorFloat  &v)
 {
 	const uint32_t n = static_cast<uint32_t>(v.size());
 	s << n; if (n) s.WriteBufferFixEndianness( &v[0],n );
 	return s;
 }
-CStream& utils::operator << (CStream&s, const vector_double  &v)
+CStream& utils::operator << (CStream&s, const mrpt::math::CVectorDouble  &v)
 {
 	const uint32_t n = static_cast<uint32_t>(v.size());
 	s << n; if (n) s.WriteBufferFixEndianness( &v[0],n );
@@ -280,14 +280,14 @@ CStream& utils::operator >> (CStream&s, vector_signed_word &a) { return detail::
 CStream& utils::operator >> (CStream&s, vector_long &a) { return detail::readStdVectorToStream(s,a); }
 CStream& utils::operator >> (CStream&s, vector_byte &a) { return detail::readStdVectorToStream(s,a); }
 CStream& utils::operator >> (CStream&s, vector_signed_byte &a) { return detail::readStdVectorToStream(s,a); }
-CStream& utils::operator >> (CStream&s, vector_float &v)
+CStream& utils::operator >> (CStream&s, mrpt::math::CVectorFloat &v)
 {
 	uint32_t n; s >> n;
 	v.resize(n);
 	if (n) s.ReadBufferFixEndianness( &v[0], n );
 	return s;
 }
-CStream& utils::operator >> (CStream&s, vector_double &v)
+CStream& utils::operator >> (CStream&s, mrpt::math::CVectorDouble &v)
 {
 	uint32_t n; s >> n;
 	v.resize(n);

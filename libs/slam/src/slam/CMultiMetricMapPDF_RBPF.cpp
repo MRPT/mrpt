@@ -172,7 +172,7 @@ void  CMultiMetricMapPDF::prediction_and_update_pfOptimalProposal(
 	// ----------------------------------------------------------------------
 	//						PREDICTION STAGE
 	// ----------------------------------------------------------------------
-	vector_double				rndSamples;
+	CVectorDouble				rndSamples;
 	size_t						M = m_particles.size();
 	bool						updateStageAlreadyDone = false;
 	CPose3D						initialPose,incrPose, finalPose;

@@ -102,18 +102,6 @@
 		#define	__CURRENT_FUNCTION_NAME__	__PRETTY_FUNCTION__
 #endif
 
-
-/** \def MRPT_DEBUG_BREAKPOINT(_msg)
-  *  Only if compiled in debug (_DEBUG defined), calls mrpt::system::breakpoint() with the given message.
-  *  All MRPT exceptions use this macro, so mrpt::system::breakpoint() is the ideal point to set a breakpoint
-  *  and catch exception before they're actually raised.
-  */
-#ifdef _DEBUG
-#	define MRPT_DEBUG_BREAKPOINT(_msg)  { mrpt::system::breakpoint(std::string(_msg)); }
-#else
-#	define MRPT_DEBUG_BREAKPOINT(_msg)  { }
-#endif
-
 /** \def THROW_EXCEPTION(msg)
  * \param msg This can be a char*, a std::string, or a literal string.
  * Defines a unified way of reporting exceptions
@@ -125,7 +113,6 @@
 		auxCompStr << "\n\n =============== MRPT EXCEPTION =============\n";\
 		auxCompStr << __CURRENT_FUNCTION_NAME__ << ", line " << __LINE__ << ":\n";\
 		auxCompStr << msg << std::endl; \
-		MRPT_DEBUG_BREAKPOINT(msg) \
 		throw std::logic_error( auxCompStr.str() );\
 	}\
 

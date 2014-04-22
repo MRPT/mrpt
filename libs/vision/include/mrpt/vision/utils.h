@@ -180,8 +180,8 @@ namespace mrpt
 			  */
 			void VISION_IMPEXP getDispersion(
                                 const CFeatureList      & list,
-								vector_float            & std,
-								vector_float            & mean );
+								CVectorFloat            & std,
+								CVectorFloat            & mean );
 
 			/** Returns a new image where distortion has been removed.
 			  * \param A The 3x3 intrinsic parameters matrix
@@ -191,7 +191,7 @@ namespace mrpt
                                 const CImage	        & in_img,
                                 CImage			        & out_img,
                                 const CMatrixDouble33	& A,
-                                const vector_double     & dist_coeffs )
+                                const CVectorDouble     & dist_coeffs )
 			{
 				in_img.rectifyImage( out_img, A, dist_coeffs);
 			}

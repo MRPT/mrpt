@@ -38,7 +38,7 @@ CHolonomicND::CHolonomicND(const mrpt::utils::CConfigFileBase *INI_FILE ) :
   ---------------------------------------------------------------*/
 void  CHolonomicND::navigate(
 	const mrpt::math::TPoint2D &target,
-	const vector_double	&obstacles,
+	const CVectorDouble	&obstacles,
 	double			maxRobotSpeed,
 	double			&desiredDirection,
 	double			&desiredSpeed,
@@ -130,7 +130,7 @@ void  CHolonomicND::navigate(
 				Find gaps in the obtacles (Beta version)
   ---------------------------------------------------------------*/
 void  CHolonomicND::gapsEstimator(
-	const vector_double         & obstacles,
+	const CVectorDouble         & obstacles,
 	const mrpt::math::TPoint2D  & target,
 	TGapArray                   & gaps_out)
 {
@@ -291,7 +291,7 @@ void  CHolonomicND::gapsEstimator(
 						Search the best gap.
   ---------------------------------------------------------------*/
 void  CHolonomicND::searchBestGap(
-	const vector_double         & obstacles,
+	const CVectorDouble         & obstacles,
 	const double                  maxObsRange,
 	const TGapArray             & in_gaps,
 	const mrpt::math::TPoint2D  & target,
@@ -345,7 +345,7 @@ void  CHolonomicND::searchBestGap(
 	else
 	{
 		// Evaluate all gaps (if any):
-		vector_double  gaps_evaluation;
+		CVectorDouble  gaps_evaluation;
 		int            selected_gap			=-1;
 		double         selected_gap_eval	= -100;
 
@@ -447,7 +447,7 @@ void  CHolonomicND::searchBestGap(
 void  CHolonomicND::calcRepresentativeSectorForGap(
 	TGap                        & gap,
 	const mrpt::math::TPoint2D  & target,
-	const vector_double         & obstacles)
+	const CVectorDouble         & obstacles)
 {
 	int sector;
 	const unsigned int sectors_to_be_wide = round( options.WIDE_GAP_SIZE_PERCENT * obstacles.size());
@@ -500,12 +500,12 @@ void  CHolonomicND::calcRepresentativeSectorForGap(
 						Evaluate each gap
   ---------------------------------------------------------------*/
 void  CHolonomicND::evaluateGaps(
-	const vector_double	&obstacles,
+	const CVectorDouble	&obstacles,
 	const double		maxObsRange,
 	const TGapArray		&gaps,
 	const unsigned int	target_sector,
 	const double		target_dist,
-	vector_double		&out_gaps_evaluation )
+	CVectorDouble		&out_gaps_evaluation )
 {
 	out_gaps_evaluation.resize( gaps.size());
 
@@ -693,7 +693,7 @@ void CHolonomicND::TOptions::loadFromConfigFile(const mrpt::utils::CConfigFileBa
 	MRPT_LOAD_CONFIG_VAR(TOO_CLOSE_OBSTACLE,double,  source,section );
 	MRPT_LOAD_CONFIG_VAR(TARGET_SLOW_APPROACHING_DISTANCE,double,  source,section );
 
-	source.read_vector(section,"factorWeights", vector_double(0), factorWeights, true );
+	source.read_vector(section,"factorWeights", CVectorDouble(0), factorWeights, true );
 	ASSERT_(factorWeights.size()==4);
 
 	MRPT_END

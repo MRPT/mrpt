@@ -333,7 +333,7 @@ void vision::updateBaseList(
 
     size_t sz = idx.size();
 
-    vector_double dp(sz), my(sz);
+    CVectorDouble dp(sz), my(sz);
     int counter = 0;
     for( int k = 0; k < (int)sz; ++k )
     {

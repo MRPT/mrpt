@@ -1002,10 +1002,10 @@ double  math::factorial(unsigned int n)
 /*---------------------------------------------------------------
 						fft_real
  ---------------------------------------------------------------*/
-void  math::fft_real(	vector_float	&in_realData,
-						vector_float	&out_FFT_Re,
-						vector_float	&out_FFT_Im,
-						vector_float	&out_FFT_Mag )
+void  math::fft_real(	CVectorFloat	&in_realData,
+						CVectorFloat	&out_FFT_Re,
+						CVectorFloat	&out_FFT_Im,
+						CVectorFloat	&out_FFT_Mag )
 {
 	MRPT_START
 
@@ -1013,7 +1013,7 @@ void  math::fft_real(	vector_float	&in_realData,
 
 	// TODO: Test data lenght is 2^N...
 
-	vector_float		auxVect( n+1 );
+	CVectorFloat		auxVect( n+1 );
 
 	memcpy( &auxVect[1], &in_realData[0], n * sizeof(auxVect[0]));
 
@@ -1807,8 +1807,8 @@ bool math::loadVector( CFileStream &f, ::std::vector<double> &d)
 
 // See declaration for the documentation
 double math::averageLogLikelihood(
-	const vector_double &logWeights,
-	const vector_double &logLikelihoods )
+	const CVectorDouble &logWeights,
+	const CVectorDouble &logLikelihoods )
 {
 	MRPT_START
 
@@ -1819,7 +1819,7 @@ double math::averageLogLikelihood(
 	if ( !logWeights.size() )
 		THROW_EXCEPTION("ERROR: logWeights vector is empty!")
 
-	vector_double::const_iterator itLW,itLL;
+	CVectorDouble::const_iterator itLW,itLL;
 	double lw_max = math::maximum(logWeights);
 	double ll_max = math::maximum(logLikelihoods);
 	double SUM1=0, SUM2=0, tmpVal;
@@ -1838,7 +1838,7 @@ double math::averageLogLikelihood(
 }
 
 // Unweighted version:
-double math::averageLogLikelihood( const vector_double &logLikelihoods )
+double math::averageLogLikelihood( const CVectorDouble &logLikelihoods )
 {
 	MRPT_START
 
@@ -1862,7 +1862,7 @@ double math::averageLogLikelihood( const vector_double &logLikelihoods )
 }
 
 // Wrapped angles average:
-double math::averageWrap2Pi(const vector_double &angles )
+double math::averageWrap2Pi(const CVectorDouble &angles )
 {
 	if (angles.empty()) return 0;
 
@@ -1871,7 +1871,7 @@ double math::averageWrap2Pi(const vector_double &angles )
 
 	// First: XY
 	// -----------------------------------
-	for (vector_double::Index i=0;i<angles.size();i++)
+	for (CVectorDouble::Index i=0;i<angles.size();i++)
 	{
 		double phi = angles[i];
 		if (abs(phi)>1.5707963267948966192313216916398)
@@ -1904,7 +1904,7 @@ double math::averageWrap2Pi(const vector_double &angles )
 }
 
 // Spline
-double math::spline(const double t, const vector_double &x, const vector_double &y, bool wrap2pi)
+double math::spline(const double t, const CVectorDouble &x, const CVectorDouble &y, bool wrap2pi)
 {
 	// Check input data
 	ASSERT_( x.size() == 4 && y.size() == 4 );
@@ -1997,14 +1997,14 @@ double math::spline(const double t, const vector_double &x, const vector_double 
 
 string math::MATLAB_plotCovariance2D(
 	const CMatrixFloat  &cov,
-	const vector_float  &mean,
+	const CVectorFloat  &mean,
     const float         &stdCount,
 	const string        &style,
 	const size_t		&nEllipsePoints )
 {
 	MRPT_START
 	CMatrixD        cov2(cov);
-	vector_double   mean2(2);
+	CVectorDouble   mean2(2);
 	mean2[0]=mean[0];
 	mean2[1]=mean[1];
 
@@ -2015,7 +2015,7 @@ string math::MATLAB_plotCovariance2D(
 
 string math::MATLAB_plotCovariance2D(
 	const CMatrixDouble  &cov,
-	const vector_double  &mean,
+	const CVectorDouble  &mean,
     const float         &stdCount,
 	const string        &style,
 	const size_t		&nEllipsePoints )

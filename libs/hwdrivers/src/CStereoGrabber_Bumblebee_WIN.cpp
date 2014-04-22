@@ -1058,9 +1058,9 @@ void CStereoGrabber_Bumblebee::convertTriclopsImageTo8BitsIplImage( void *src, v
 //					getBothObservation
 // -------------------------------------------------------------*/
 //bool  CStereoGrabber_Bumblebee::getBothObservation(
-//			vector_float						&vX,
-//			vector_float						&vY,
-//			vector_float						&vZ,
+//			CVectorFloat						&vX,
+//			CVectorFloat						&vY,
+//			CVectorFloat						&vZ,
 //			mrpt::slam::CObservationStereoImages		&out_observationStereo )
 //{
 //#if MRPT_HAS_BUMBLEBEE

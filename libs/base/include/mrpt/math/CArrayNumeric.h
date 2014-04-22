@@ -9,8 +9,10 @@
 #ifndef _MRPT_CArrayNumeric_H
 #define _MRPT_CArrayNumeric_H
 
-#include <mrpt/utils/utils_defs.h>
+//#include <mrpt/utils/utils_defs.h>
+#include <mrpt/utils/core_defs.h>
 #include <mrpt/utils/types_math.h>  // Eigen
+#include <mrpt/math/point_poses2vectors.h> // MRPT_MATRIX_CONSTRUCTORS_FROM_POSES()
 
 namespace mrpt
 {

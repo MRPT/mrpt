@@ -65,7 +65,7 @@ namespace mrpt
 			const size_t           min_inliers_for_valid_plane
 			)
 		{
-			vector_float xs,ys,zs;
+			CVectorFloat xs,ys,zs;
 			points_map->getAllPoints(xs,ys,zs);
 			ransac_detect_3D_planes(xs,ys,zs,out_detected_planes,threshold,min_inliers_for_valid_plane);
 		}

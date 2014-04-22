@@ -9,6 +9,8 @@
 #ifndef CObservation3DRangeScan_project3D_impl_H
 #define CObservation3DRangeScan_project3D_impl_H
 
+#include <mrpt/utils/bits_SSE.h> // round()
+
 namespace mrpt {
 namespace slam {
 namespace detail {

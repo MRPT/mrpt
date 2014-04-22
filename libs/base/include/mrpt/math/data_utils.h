@@ -237,9 +237,9 @@ namespace mrpt
 
 
 		/** Computes covariances and mean of any vector of containers, given optional weights for the different samples.
-		  * \param elements Any kind of vector of vectors/arrays, eg. std::vector<vector_double>, with all the input samples, each sample in a "row".
+		  * \param elements Any kind of vector of vectors/arrays, eg. std::vector<CVectorDouble>, with all the input samples, each sample in a "row".
 		  * \param covariances Output estimated covariance; it can be a fixed/dynamic matrix or a matrixview.
-		  * \param means Output estimated mean; it can be vector_double/CArrayDouble, etc...
+		  * \param means Output estimated mean; it can be CVectorDouble/CArrayDouble, etc...
 		  * \param weights_mean If !=NULL, it must point to a vector of size()==number of elements, with normalized weights to take into account for the mean.
 		  * \param weights_cov If !=NULL, it must point to a vector of size()==number of elements, with normalized weights to take into account for the covariance.
 		  * \param elem_do_wrap2pi If !=NULL; it must point to an array of "bool" of size()==dimension of each element, stating if it's needed to do a wrap to [-pi,pi] to each dimension.
@@ -343,16 +343,16 @@ namespace mrpt
 		}
 
 		/** Computes covariances and mean of any vector of containers.
-		  * \param elements Any kind of vector of vectors/arrays, eg. std::vector<vector_double>, with all the input samples, each sample in a "row".
+		  * \param elements Any kind of vector of vectors/arrays, eg. std::vector<CVectorDouble>, with all the input samples, each sample in a "row".
 		  * \param covariances Output estimated covariance; it can be a fixed/dynamic matrix or a matrixview.
-		  * \param means Output estimated mean; it can be vector_double/CArrayDouble, etc...
+		  * \param means Output estimated mean; it can be CVectorDouble/CArrayDouble, etc...
 		  * \param elem_do_wrap2pi If !=NULL; it must point to an array of "bool" of size()==dimension of each element, stating if it's needed to do a wrap to [-pi,pi] to each dimension.
 		  * \ingroup stats_grp
 		  */
 		template<class VECTOR_OF_VECTORS, class MATRIXLIKE,class VECTORLIKE>
 		void covariancesAndMean(const VECTOR_OF_VECTORS &elements,MATRIXLIKE &covariances,VECTORLIKE &means, const bool *elem_do_wrap2pi = NULL)
 		{   // The function below is inline-expanded here:
-			covariancesAndMeanWeighted<VECTOR_OF_VECTORS,MATRIXLIKE,VECTORLIKE,vector_double,vector_double>(elements,covariances,means,NULL,NULL,elem_do_wrap2pi);
+			covariancesAndMeanWeighted<VECTOR_OF_VECTORS,MATRIXLIKE,VECTORLIKE,CVectorDouble,CVectorDouble>(elements,covariances,means,NULL,NULL,elem_do_wrap2pi);
 		}
 
 
@@ -473,12 +473,12 @@ namespace mrpt
 		  * See also the <a href="http://www.mrpt.org/Averaging_Log-Likelihood_Values:Numerical_Stability">tutorial page</a>.
 		  * \ingroup stats_grp
 		  */
-		double BASE_IMPEXP averageLogLikelihood( const vector_double &logLikelihoods );
+		double BASE_IMPEXP averageLogLikelihood( const CVectorDouble &logLikelihoods );
 
 		/** Computes the average of a sequence of angles in radians taking into account the correct wrapping in the range \f$ ]-\pi,\pi [ \f$, for example, the mean of (2,-2) is \f$ \pi \f$, not 0.
 		  * \ingroup stats_grp
 		  */
-		double BASE_IMPEXP averageWrap2Pi(const vector_double &angles );
+		double BASE_IMPEXP averageWrap2Pi(const CVectorDouble &angles );
 
 		/** A numerically-stable method to average likelihood values with strongly different ranges (weighted likelihoods).
 		  *  This method implements this equation:
@@ -489,8 +489,8 @@ namespace mrpt
 		  * \ingroup stats_grp
 		  */
 		double BASE_IMPEXP  averageLogLikelihood(
-			const vector_double &logWeights,
-			const vector_double &logLikelihoods );
+			const CVectorDouble &logWeights,
+			const CVectorDouble &logLikelihoods );
 
 		/**  @} */  // end of grouping container_ops_grp
 

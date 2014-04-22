@@ -215,7 +215,7 @@ void CMonteCarloLocalization2D::PF_SLAM_implementation_custom_update_particle_wi
 void CMonteCarloLocalization2D::PF_SLAM_implementation_replaceByNewParticleSet(
 	CParticleList	&old_particles,
 	const vector<TPose3D>	&newParticles,
-	const vector_double		&newParticlesWeight,
+	const CVectorDouble		&newParticlesWeight,
 	const vector<size_t>	&newParticlesDerivedFromIdx )  const
 {
 	ASSERT_EQUAL_(size_t(newParticlesWeight.size()),size_t(newParticles.size()))

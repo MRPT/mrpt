@@ -239,7 +239,7 @@ double CPointPDFParticles::computeKurtosis()
 	MRPT_START
 
 	// kurtosis = \mu^4 / (\sigma^2) -3
-	vector_double						kurts(3,0), mu4(3,0),m(3,0),var(3,0);
+	CVectorDouble						kurts(3,0), mu4(3,0),m(3,0),var(3,0);
 	CParticleList::iterator		it;
 
 	// Means:

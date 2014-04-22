@@ -257,7 +257,7 @@ void  CPosePDFGrid::drawSingleSample( CPose2D &outPart ) const
  ---------------------------------------------------------------*/
 void  CPosePDFGrid::drawManySamples(
 	size_t						N,
-	std::vector<vector_double>	&outSamples ) const
+	std::vector<CVectorDouble>	&outSamples ) const
 {
 	MRPT_UNUSED_PARAM(N); MRPT_UNUSED_PARAM(outSamples);
 

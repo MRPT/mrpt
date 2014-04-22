@@ -69,7 +69,7 @@ namespace mrpt
 			  *  Example of usage:
 			  *   \code
 			  *     vector_int      v1(10);  // Input
-			  *     vector_double   v2(10);  // Output
+			  *     CVectorDouble   v2(10);  // Output
 			  *     std::transform(v1.begin(),v1.end(), v2.begin(), ObjectConvert<double> );
 			  *   \endcode
 			  */

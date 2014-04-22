@@ -291,13 +291,13 @@ namespace slam
 			double			&out_predict_response_variance );
 
 		/** Return the mean and covariance vector of the full Kalman filter estimate (works for all KF-based methods). */
-		void getMeanAndCov( vector_double &out_means, CMatrixDouble &out_cov) const;
+		void getMeanAndCov( CVectorDouble &out_means, CMatrixDouble &out_cov) const;
 
 		/** Return the mean and STD vectors of the full Kalman filter estimate (works for all KF-based methods). */
-		void getMeanAndSTD( vector_double &out_means, vector_double &out_STD) const;
+		void getMeanAndSTD( CVectorDouble &out_means, CVectorDouble &out_STD) const;
 
 		/** Load the mean and STD vectors of the full Kalman filter estimate (works for all KF-based methods). */
-		void setMeanAndSTD( vector_double &out_means, vector_double &out_STD);
+		void setMeanAndSTD( CVectorDouble &out_means, CVectorDouble &out_STD);
 
 	protected:
 		/** Common options to all random-field grid maps: pointer that is set to the derived-class instance of "insertOptions" upon construction of this class. */

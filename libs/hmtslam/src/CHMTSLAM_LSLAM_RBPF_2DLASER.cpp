@@ -326,7 +326,7 @@ void  CLSLAM_RBPF_2DLASER::prediction_and_update_pfAuxiliaryPFOptimal(
 	//
 	//     max{ p( z^t | data^[i], x_(t-1)^[i], u_(t) ) }
 	//
-	//vector_double					maxLikelihood(M, -1 );
+	//CVectorDouble					maxLikelihood(M, -1 );
 
 	float							MIN_ACCEPT_UNIF_DISTRIB = 0.00f;
 
@@ -559,7 +559,7 @@ double  CLSLAM_RBPF_2DLASER::particlesEvaluator_AuxPFOptimal(
 
 	CPose2D			oldPose( * myObj->getCurrentPose(index) );
 //	CPose2D			drawnSample;
-	vector_double   vectLiks(N,0);		// The vector with the individual log-likelihoods.
+	CVectorDouble   vectLiks(N,0);		// The vector with the individual log-likelihoods.
 
 	for (size_t q=0;q<N;q++)
 	{

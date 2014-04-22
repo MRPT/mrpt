@@ -216,7 +216,7 @@ namespace mrpt
 		/** Builds TP-Obstacles from Workspace obstacles for the given PTG. 
 		  * "out_TPObstacles" is already initialized to the proper length and maximum collision-free distance for each "k" trajectory index.
 		  * Distances are in "pseudo-meters". They will be normalized automatically to [0,1] upon return. */
-		virtual void STEP3_WSpaceToTPSpace(const size_t ptg_idx,mrpt::vector_double &out_TPObstacles) = 0;
+		virtual void STEP3_WSpaceToTPSpace(const size_t ptg_idx,mrpt::math::CVectorDouble &out_TPObstacles) = 0;
 
 		/** Generates a pointcloud of obstacles, and the robot shape, to be saved in the logging record for the current timestep */
 		virtual void loggingGetWSObstaclesAndShape(CLogFileRecord &out_log) = 0;
@@ -225,7 +225,7 @@ namespace mrpt
 		/** Scores \a holonomicMovement */
 		void STEP5_PTGEvaluator(
 			THolonomicMovement         & holonomicMovement,
-			const vector_double        & in_TPObstacles,
+			const CVectorDouble        & in_TPObstacles,
 			const mrpt::math::TPose2D  & WS_Target,
 			const mrpt::math::TPoint2D & TP_Target,
 			CLogFileRecord::TInfoPerPTG & log );
@@ -246,7 +246,7 @@ namespace mrpt
 			float                target_alpha,target_dist;  //!< TP-Target 
 			int                  target_k;
 
-			vector_double        TP_Obstacles; //!< One distance per discretized alpha value, describing the "polar plot" of TP obstacles.
+			CVectorDouble        TP_Obstacles; //!< One distance per discretized alpha value, describing the "polar plot" of TP obstacles.
 		};
 
 		std::vector<TInfoPerPTG> m_infoPerPTG; //!< Temporary buffers for working with each PTG during a navigationStep()

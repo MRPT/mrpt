@@ -161,7 +161,7 @@ namespace mrpt
 
 				/** A 7-length vector with the std. deviation of the transition model in (x,y,z, qr,qx,qy,qz) used only when there is no odometry (if there is odo, its uncertainty values will be used instead); x y z: In meters.
 				  */
-				vector_float stds_Q_no_odo;
+				CVectorFloat stds_Q_no_odo;
 
 				/** The std. deviation of the sensor (for the matrix R in the kalman filters), in meters and radians.
 				  */

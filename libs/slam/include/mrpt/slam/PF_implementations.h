@@ -229,7 +229,7 @@ namespace mrpt
 
 					// The new particle set:
 					std::vector<TPose3D>  newParticles;
-					vector_double         newParticlesWeight;
+					CVectorDouble         newParticlesWeight;
 					std::vector<size_t>   newParticlesDerivedFromIdx;
 
 					CPose3D	 increment_i;
@@ -355,7 +355,7 @@ namespace mrpt
 			ASSERT_(N>1)
 
 			const CPose3D oldPose = *me->getLastPose(index);
-			vector_double   vectLiks(N,0);		// The vector with the individual log-likelihoods.
+			CVectorDouble   vectLiks(N,0);		// The vector with the individual log-likelihoods.
 			CPose3D			drawnSample;
 			for (size_t q=0;q<N;q++)
 			{
@@ -450,7 +450,7 @@ namespace mrpt
 				size_t  N = PF_options.pfAuxFilterOptimal_MaximumSearchSamples;
 				ASSERT_(N>1)
 
-				vector_double   vectLiks(N,0);		// The vector with the individual log-likelihoods.
+				CVectorDouble   vectLiks(N,0);		// The vector with the individual log-likelihoods.
 				CPose3D		drawnSample;
 				for (size_t q=0;q<N;q++)
 				{

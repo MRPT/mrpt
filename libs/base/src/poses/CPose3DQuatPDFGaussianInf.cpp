@@ -185,7 +185,7 @@ void  CPose3DQuatPDFGaussianInf::drawSingleSample( CPose3DQuat &outPart ) const
  ---------------------------------------------------------------*/
 void  CPose3DQuatPDFGaussianInf::drawManySamples(
 	size_t						N,
-	vector<vector_double>	&outSamples ) const
+	vector<CVectorDouble>	&outSamples ) const
 {
 	MRPT_START
 	CMatrixDouble77  COV(UNINITIALIZED_MATRIX);
@@ -193,7 +193,7 @@ void  CPose3DQuatPDFGaussianInf::drawManySamples(
 
 	randomGenerator.drawGaussianMultivariateMany(outSamples,N,COV);
 
-	for (vector<vector_double>::iterator it=outSamples.begin();it!=outSamples.end();++it)
+	for (vector<CVectorDouble>::iterator it=outSamples.begin();it!=outSamples.end();++it)
 		for (unsigned int k=0;k<7;k++)
 			(*it)[k] += mean[k];
 

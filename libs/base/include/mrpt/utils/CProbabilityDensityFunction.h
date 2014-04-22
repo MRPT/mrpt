@@ -114,7 +114,7 @@ namespace mrpt
 			/** Draws a number of samples from the distribution, and saves as a list of 1xSTATE_LEN vectors, where each row contains a (x,y,z,yaw,pitch,roll) datum.
 			  * This base method just call N times to drawSingleSample, but derived classes should implemented optimized method for each particular PDF.
 			  */
-			virtual void  drawManySamples( size_t N, std::vector<vector_double> & outSamples ) const
+			virtual void  drawManySamples( size_t N, std::vector<mrpt::math::CVectorDouble> & outSamples ) const
 			{
 				outSamples.resize(N);
 				TDATA	pnt;

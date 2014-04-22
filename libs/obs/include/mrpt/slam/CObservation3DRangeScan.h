@@ -317,7 +317,7 @@ namespace slam
 		/** Look-up-table struct for project3DPointsFromDepthImageInto() */
 		struct TCached3DProjTables
 		{
-			mrpt::vector_float Kzs,Kys;
+			mrpt::math::CVectorFloat Kzs,Kys;
 			TCamera  prev_camParams;
 		};
 		static TCached3DProjTables m_3dproj_lut; //!< 3D point cloud projection look-up-table \sa project3DPointsFromDepthImage

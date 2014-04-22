@@ -304,13 +304,13 @@ void  CPose3DQuatPDFGaussian::drawSingleSample( CPose3DQuat &outPart ) const
  ---------------------------------------------------------------*/
 void  CPose3DQuatPDFGaussian::drawManySamples(
 	size_t						N,
-	vector<vector_double>	&outSamples ) const
+	vector<CVectorDouble>	&outSamples ) const
 {
 	MRPT_START
 
 	randomGenerator.drawGaussianMultivariateMany(outSamples,N,cov);
 
-	for (vector<vector_double>::iterator it=outSamples.begin();it!=outSamples.end();++it)
+	for (vector<CVectorDouble>::iterator it=outSamples.begin();it!=outSamples.end();++it)
 		for (unsigned int k=0;k<7;k++)
 			(*it)[k] += mean[k];
 

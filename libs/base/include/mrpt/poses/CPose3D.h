@@ -387,7 +387,7 @@ namespace poses
 		inline double roll() const { updateYawPitchRoll(); return m_roll; }  //!< Get the ROLL angle (in radians) \sa setFromValues
 
 		/** Returns a 1x6 vector with [x y z yaw pitch roll] */
-		void getAsVector(vector_double &v) const;
+		void getAsVector(CVectorDouble &v) const;
 		/// \overload
 		void getAsVector(mrpt::math::CArrayDouble<6> &v) const;
 

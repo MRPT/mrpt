@@ -312,7 +312,7 @@ void mrpt::vision::ba_build_gradient_Hessians(
 
 void mrpt::vision::add_se3_deltas_to_frames(
     const TFramePosesVec  & frame_poses,
-    const vector_double &delta,
+    const CVectorDouble &delta,
     const size_t         delta_first_idx,
     const size_t         delta_num_vals,
     TFramePosesVec      & new_frame_poses,
@@ -352,7 +352,7 @@ void mrpt::vision::add_se3_deltas_to_frames(
 }
 void mrpt::vision::add_3d_deltas_to_points(
     const TLandmarkLocationsVec  & landmark_points,
-    const vector_double       & delta,
+    const CVectorDouble       & delta,
     const size_t                delta_first_idx,
     const size_t                delta_num_vals,
     TLandmarkLocationsVec     & new_landmark_points,

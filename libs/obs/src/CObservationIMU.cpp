@@ -59,7 +59,7 @@ void  CObservationIMU::readFromStream(CStream &in, int version)
 		// In version 0 it was a vector of floats:
 		if (version<1)
 		{
-			vector_float	tmp;
+			mrpt::math::CVectorFloat	tmp;
 			in >> tmp;
 			rawMeasurements.resize(tmp.size());
 			for (size_t i=0;i<rawMeasurements.size();i++)

@@ -885,13 +885,13 @@ void  CHierarchicalMapMHPartition::computeCoordinatesTransformationBetweenNodes(
 		CPose3DPDFGaussian pdf; // Convert to gaussian
 		pdf.copyFrom(*CPose3DPDFPtr(anotation));
 
-		vector<vector_double>  samples;
+		vector<CVectorDouble>  samples;
 
 		pdf.drawManySamples(lstIt->size(),samples);
 		ASSERT_( samples.size() == lstIt->size() );
 		ASSERT_( samples[0].size() == 6 );
 
-		vector<vector_double>::const_iterator  samplIt;
+		vector<CVectorDouble>::const_iterator  samplIt;
 		for (poseIt=lstIt->begin(),samplIt=samples.begin();poseIt!=lstIt->end();poseIt++,samplIt++)
 		{
 			// Minimum added noise:

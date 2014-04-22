@@ -87,7 +87,7 @@ namespace poses
 		void  getHomogeneousMatrix(mrpt::math::CMatrixDouble44 & out_HM ) const;
 
 		/** Returns a 1x7 vector with [x y z qr qx qy qz] */
-		void getAsVector(vector_double &v) const;
+		void getAsVector(CVectorDouble &v) const;
 		/// \overload
 		void getAsVector(mrpt::math::CArrayDouble<7> &v) const {
 			v[0] = m_coords[0]; v[1] = m_coords[1]; v[2] = m_coords[2];

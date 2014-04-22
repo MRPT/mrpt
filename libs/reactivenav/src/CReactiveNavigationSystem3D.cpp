@@ -293,7 +293,7 @@ bool CReactiveNavigationSystem3D::STEP2_SenseObstacles()
 *************************************************************************/
 void CReactiveNavigationSystem3D::STEP3_WSpaceToTPSpace(
 	const size_t ptg_idx,
-	mrpt::vector_double &out_TPObstacles )
+	mrpt::math::CVectorDouble &out_TPObstacles )
 {
 	ASSERT_EQUAL_(m_WS_Obstacles_inlevels.size(),m_robotShape.heights.size())
 

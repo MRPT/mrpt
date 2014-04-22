@@ -411,7 +411,7 @@ namespace slam
 		/** Returns a copy of the 2D/3D points as a std::vector of float coordinates.
 		  * If decimation is greater than 1, only 1 point out of that number will be saved in the output, effectively performing a subsampling of the points.
 		  * \sa getPointsBufferRef_x, getPointsBufferRef_y, getPointsBufferRef_z
-		  * \tparam VECTOR can be std::vector<float or double> or any row/column Eigen::Array or Eigen::Matrix (this includes mrpt::vector_float and mrpt::vector_double).
+		  * \tparam VECTOR can be std::vector<float or double> or any row/column Eigen::Array or Eigen::Matrix (this includes mrpt::math::CVectorFloat and mrpt::math::CVectorDouble).
 		  */
 		template <class VECTOR>
 		void  getAllPoints( VECTOR &xs, VECTOR &ys, VECTOR &zs, size_t decimation = 1 ) const
@@ -471,7 +471,7 @@ namespace slam
 		virtual void  insertPoint( float x, float y, float z, float R, float G, float B ) { insertPoint(x,y,z); }
 
 		/** Set all the points at once from vectors with X,Y and Z coordinates (if Z is not provided, it will be set to all zeros).
-		  * \tparam VECTOR can be mrpt::vector_float or std::vector<float> or any other column or row Eigen::Matrix.
+		  * \tparam VECTOR can be mrpt::math::CVectorFloat or std::vector<float> or any other column or row Eigen::Matrix.
 		  */
 		template <typename VECTOR>
 		inline void setAllPointsTemplate(const VECTOR &X,const VECTOR &Y,const VECTOR &Z = VECTOR())

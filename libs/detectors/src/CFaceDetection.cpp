@@ -406,7 +406,7 @@ bool CFaceDetection::checkIfFacePlaneCov( CObservation3DRangeScan* face )
 	// To obtain the covariance vector and eigenvalues
 	CMatrixDouble cov;
 	CMatrixDouble eVects, m_eVals;
-	vector_double eVals;
+	CVectorDouble eVals;
 
 	cov = covVector( pointsVector );
 
@@ -1394,7 +1394,7 @@ void CFaceDetection::experimental_viewFacePointsScanned( const vector<float> &xs
 //				experimental_viewFacePointsAndEigenVects
 //------------------------------------------------------------------------
 
-void CFaceDetection::experimental_viewFacePointsAndEigenVects(  const vector<CArrayDouble<3> > &pointsVector, const CMatrixDouble &eigenVect, const vector_double &eigenVal )
+void CFaceDetection::experimental_viewFacePointsAndEigenVects(  const vector<CArrayDouble<3> > &pointsVector, const CMatrixDouble &eigenVect, const CVectorDouble &eigenVal )
 {
 
 	vector<float> xs, ys, zs;

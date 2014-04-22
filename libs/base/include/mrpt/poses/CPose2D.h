@@ -96,7 +96,7 @@ namespace poses
 		 inline void phi_incr(const double Aphi) { m_phi+=Aphi; m_cossin_uptodate=false; }  //!< Increment the PHI angle (without checking the 2 PI range, call normalizePhi is needed)
 
 		/** Returns a 1x3 vector with [x y phi] */
-		void getAsVector(vector_double &v) const;
+		void getAsVector(CVectorDouble &v) const;
 		/// \overload
 		void getAsVector(mrpt::math::CArrayDouble<3> &v) const;
 

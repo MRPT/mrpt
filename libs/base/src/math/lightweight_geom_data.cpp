@@ -261,7 +261,7 @@ double TSegment3D::distance(const TSegment3D &segment) const	{
     tc = (fabs(tN) < 0.00000001 ? 0.0 : tN / tD);
 
     // get the difference of the two closest points
-    vector_double dP = w + (sc * u) - (tc * v);  // = S1(sc) - S2(tc)
+    CVectorDouble dP = w + (sc * u) - (tc * v);  // = S1(sc) - S2(tc)
 
     return dP.norm();   // return the closest distance
 }

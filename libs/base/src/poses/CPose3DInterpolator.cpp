@@ -165,14 +165,14 @@ CPose3D & CPose3DInterpolator::interpolate( mrpt::system::TTimeStamp t, CPose3D 
 	// Time where to interpolate:  t
 	double td     = mrpt::system::timestampTotime_t(t);
 
-	vector_double	ts;
+	CVectorDouble	ts;
 	ts.resize(4);
 	ts[0] = mrpt::system::timestampTotime_t(p1.first);
 	ts[1] = mrpt::system::timestampTotime_t(p2.first);
 	ts[2] = mrpt::system::timestampTotime_t(p3.first);
 	ts[3] = mrpt::system::timestampTotime_t(p4.first);
 
-	vector_double	X,Y,Z,yaw,pitch,roll;
+	CVectorDouble	X,Y,Z,yaw,pitch,roll;
 	X.resize(4);						Y.resize(4);							Z.resize(4);
 	X[0]	= p1.second.x();				Y[0]	= p1.second.y();					Z[0]	= p1.second.z();
 	X[1]	= p2.second.x();				Y[1]	= p2.second.y();					Z[1]	= p2.second.z();

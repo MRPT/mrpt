@@ -218,7 +218,7 @@ void  CPosePDFGaussian::drawSingleSample( CPose2D &outPart ) const
 {
 	MRPT_START
 
-	vector_double	v;
+	CVectorDouble	v;
 	randomGenerator.drawGaussianMultivariate(v,cov);
 
 	outPart.x(  mean.x() + v[0] );
@@ -238,11 +238,11 @@ void  CPosePDFGaussian::drawSingleSample( CPose2D &outPart ) const
  ---------------------------------------------------------------*/
 void  CPosePDFGaussian::drawManySamples(
 	size_t						N,
-	std::vector<vector_double>	&outSamples ) const
+	std::vector<CVectorDouble>	&outSamples ) const
 {
 	MRPT_START
 
-	std::vector<vector_double>	rndSamples;
+	std::vector<CVectorDouble>	rndSamples;
 
 	randomGenerator.drawGaussianMultivariateMany(rndSamples,N,cov);
 	outSamples.resize( N );

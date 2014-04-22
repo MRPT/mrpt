@@ -713,13 +713,13 @@ void CRawlog::setCommentText( const std::string &t)
   ---------------------------------------------------------------*/
 std::string CRawlog::detectImagesDirectory(const std::string &str)
 {
-	const string rawlog_path = extractFileDirectory(str);
-	string  temptative_img_path = rawlog_path + extractFileName(str) + string("_Images");
+	const std::string rawlog_path = extractFileDirectory(str);
+	std::string  temptative_img_path = rawlog_path + extractFileName(str) + std::string("_Images");
 	if ( mrpt::system::fileExists(temptative_img_path))
 		return temptative_img_path;
-	else if ( mrpt::system::fileExists( temptative_img_path = (rawlog_path + extractFileName(str) + string("_images") )))
+	else if ( mrpt::system::fileExists( temptative_img_path = (rawlog_path + extractFileName(str) + std::string("_images") )))
 		return  temptative_img_path;
-	else if ( mrpt::system::fileExists( temptative_img_path = (rawlog_path + extractFileName(str) + string("_IMAGES") )))
+	else if ( mrpt::system::fileExists( temptative_img_path = (rawlog_path + extractFileName(str) + std::string("_IMAGES") )))
 		return  temptative_img_path;
 	else
 		return  rawlog_path + "Images";

@@ -103,11 +103,11 @@ namespace mrpt
 			{	
 				bool			takeMeasures;
 
-				vector_double	lessEigenVals;
-				vector_double	errorEstimations;
-				vector_double	meanRegions;
+				CVectorDouble	lessEigenVals;
+				CVectorDouble	errorEstimations;
+				CVectorDouble	meanRegions;
 
-				vector_double	sumDistances;
+				CVectorDouble	sumDistances;
 
 				int				faceNum;
 				vector_uint		deletedRegions;
@@ -162,7 +162,7 @@ namespace mrpt
 			
 			void experimental_viewFacePointsScanned( const std::vector<TPoint3D> &points );
 
-			void experimental_viewFacePointsAndEigenVects(  const std::vector<CArrayDouble<3> > &pointsVector, const CMatrixDouble &eigenVect, const vector_double &eigenVal );
+			void experimental_viewFacePointsAndEigenVects(  const std::vector<CArrayDouble<3> > &pointsVector, const CMatrixDouble &eigenVect, const CVectorDouble &eigenVal );
 
 			void experimental_viewRegions( const std::vector<TPoint3D> regions[9], const TPoint3D meanPos[3][3] );		
 

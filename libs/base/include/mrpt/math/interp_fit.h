@@ -56,7 +56,7 @@ namespace mrpt
 		  *  If wrap2pi is true, output "y" values are wrapped to ]-pi,pi] (It is assumed that input "y" values already are in the correct range).
 		  * \sa leastSquareLinearFit
 		  */
-		double BASE_IMPEXP  spline(const double t, const vector_double &x, const vector_double &y, bool wrap2pi = false);
+		double BASE_IMPEXP  spline(const double t, const CVectorDouble &x, const CVectorDouble &y, bool wrap2pi = false);
 
 		/** Interpolates or extrapolates using a least-square linear fit of the set of values "x" and "y", evaluated at a single point "t".
 		  *  The vectors x and y must have size >=2, and all values of "x" must be different.

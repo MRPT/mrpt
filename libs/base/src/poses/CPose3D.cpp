@@ -484,7 +484,7 @@ void CPose3D::composePoint(double lx,double ly,double lz, double &gx, double &gy
 /*---------------------------------------------------------------
 		getAsVector
 ---------------------------------------------------------------*/
-void CPose3D::getAsVector(vector_double &r) const
+void CPose3D::getAsVector(CVectorDouble &r) const
 {
 	updateYawPitchRoll();
 	r.resize(6);

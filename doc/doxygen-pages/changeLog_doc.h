@@ -21,7 +21,12 @@
 		- mrpt::opengl::CArrow was always drawn of normalized length.
 
 
-	- Removed all "using namespace" from public headers.
+	- Removed most "using namespace" from public headers.
+	- Deleted: 
+		- mrpt::system::breakpoint()
+		- *EXPLAIN*:  mrpt :: vector_float --> mrpt::math::CVectorFloat, etc.
+		- mrpt::CImage::rectifyImage() with parameters as separate vectors.
+
 
 <hr>
  <a name="1.1.0">

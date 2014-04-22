@@ -322,8 +322,8 @@ void  vision::rowChecking(
 -------------------------------------------------------------*/
 void vision::getDispersion(
                     const CFeatureList      & list,
-                    vector_float            & std,
-                    vector_float            & mean )
+                    CVectorFloat            & std,
+                    CVectorFloat            & mean )
 {
 	std.assign(2,0);
 	mean.assign(2,0);
@@ -1119,8 +1119,8 @@ void  vision::projectMatchedFeatures(
 					B.resize( 2*Na + 1 );	// Set of output values
 					Pb.fill(0);				// Reset the output covariance
 
-					vector_float			vAux, myPoint;	// Auxiliar vectors
-					vector_float			meanA;			// Mean value of the A group
+					CVectorFloat			vAux, myPoint;	// Auxiliar vectors
+					CVectorFloat			meanA;			// Mean value of the A group
 
 					vAux.resize(3);			// Set the variables size
 					meanA.resize(3);
@@ -1228,8 +1228,8 @@ void  vision::projectMatchedFeatures(
 					B.resize( 2*Na + 1 );	// Set of output values
 					Pb.fill(0);				// Reset the output covariance
 
-					vector_float		vAux, myPoint;	// Auxiliar vectors
-					vector_float		meanA;			// Mean value of the A group
+					CVectorFloat		vAux, myPoint;	// Auxiliar vectors
+					CVectorFloat		meanA;			// Mean value of the A group
 
 					vAux.resize(3);			// Set the variables size
 					meanA.resize(3);
@@ -1425,8 +1425,8 @@ void  vision::projectMatchedFeatures(
 					B.resize( 2*Na + 1 );	// Set of output values
 					Pb.fill(0);				// Reset the output covariance
 
-					vector_float			vAux, myPoint;	// Auxiliar vectors
-					vector_float			meanA;			// Mean value of the A group
+					CVectorFloat			vAux, myPoint;	// Auxiliar vectors
+					CVectorFloat			meanA;			// Mean value of the A group
 
 					vAux.resize(3);			// Set the variables size
 					meanA.resize(3);
@@ -1534,8 +1534,8 @@ void  vision::projectMatchedFeatures(
 					B.resize( 2*Na + 1 );	// Set of output values
 					Pb.fill(0);				// Reset the output covariance
 
-					vector_float		vAux, myPoint;	// Auxiliar vectors
-					vector_float		meanA;			// Mean value of the A group
+					CVectorFloat		vAux, myPoint;	// Auxiliar vectors
+					CVectorFloat		meanA;			// Mean value of the A group
 
 					vAux.resize(3);			// Set the variables size
 					meanA.resize(3);
@@ -2088,14 +2088,14 @@ void  TStereoSystemParams::loadFromConfigFile(
 			break;
 	} // end switch
 
-	vector_double k_vec(9);
-	iniFile.read_vector( section.c_str(), "k_vec", vector_double(), k_vec, false );
+	CVectorDouble k_vec(9);
+	iniFile.read_vector( section.c_str(), "k_vec", CVectorDouble(), k_vec, false );
 	for (unsigned int ii = 0; ii < 3; ++ii )
         for (unsigned int jj = 0; jj < 3; ++jj)
             K(ii,jj) = k_vec[ii*3+jj];
 
-	vector_double f_vec(9);
-	iniFile.read_vector( section.c_str(), "f_vec", vector_double(), f_vec, false );
+	CVectorDouble f_vec(9);
+	iniFile.read_vector( section.c_str(), "f_vec", CVectorDouble(), f_vec, false );
 	for (unsigned int ii = 0; ii < 3; ++ii )
         for (unsigned int jj = 0; jj < 3; ++jj)
             F(ii,jj) = f_vec[ii*3+jj];

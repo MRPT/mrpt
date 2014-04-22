@@ -425,7 +425,7 @@ void CPose3DPDFSOG::drawSingleSample( CPose3D &outPart ) const
 /*---------------------------------------------------------------
 						drawManySamples
  ---------------------------------------------------------------*/
-void CPose3DPDFSOG::drawManySamples( size_t N, std::vector<vector_double> & outSamples ) const
+void CPose3DPDFSOG::drawManySamples( size_t N, std::vector<CVectorDouble> & outSamples ) const
 {
 	THROW_EXCEPTION("TO DO!");
 }

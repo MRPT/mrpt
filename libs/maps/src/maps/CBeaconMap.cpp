@@ -182,9 +182,9 @@ double	 CBeaconMap::computeObservationLikelihood(
 				case CBeacon::pdfMonteCarlo:
 					{
 						CPointPDFParticles::CParticleList::const_iterator it;
-						vector_double				logWeights(beac->m_locationMC.m_particles.size());
-						vector_double				logLiks(beac->m_locationMC.m_particles.size());
-						vector_double::iterator 	itLW,itLL;
+						CVectorDouble				logWeights(beac->m_locationMC.m_particles.size());
+						CVectorDouble				logLiks(beac->m_locationMC.m_particles.size());
+						CVectorDouble::iterator 	itLW,itLL;
 
 						for (it=beac->m_locationMC.m_particles.begin(),itLW=logWeights.begin(),itLL=logLiks.begin();it!=beac->m_locationMC.m_particles.end();it++,itLW++,itLL++)
 						{
@@ -236,9 +236,9 @@ double	 CBeaconMap::computeObservationLikelihood(
 				case CBeacon::pdfSOG:
 					{
 						CMatrixDouble13				H;
-						vector_double				logWeights(beac->m_locationSOG.size());
-						vector_double				logLiks(beac->m_locationSOG.size());
-						vector_double::iterator 	itLW,itLL;
+						CVectorDouble				logWeights(beac->m_locationSOG.size());
+						CVectorDouble				logLiks(beac->m_locationSOG.size());
+						CVectorDouble::iterator 	itLW,itLL;
 						CPointPDFSOG::const_iterator it;
 						// For each Gaussian mode:
 						for (it=beac->m_locationSOG.begin(),itLW=logWeights.begin(),itLL=logLiks.begin();it!=beac->m_locationSOG.end();it++,itLW++,itLL++)
@@ -430,7 +430,7 @@ bool  CBeaconMap::internal_insertObservation( const CObservation *obs, const CPo
 								{
 									// We must resample:
 									// Make a list with the log weights:
-									vector_double			log_ws;
+									CVectorDouble			log_ws;
 									vector<size_t>		indxs;
 									beac->m_locationMC.getWeights( log_ws );
 

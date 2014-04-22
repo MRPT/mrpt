@@ -18,7 +18,6 @@
 
 #include <mrpt/utils/mrpt_stdint.h>
 #include <mrpt/utils/mrpt_macros.h>
-//#include <vector>
 
 namespace mrpt
 {
@@ -162,11 +161,6 @@ namespace mrpt
 		/** Call this to register handlers for fatal erros (memory access,etc) that show useful debug information (It is called automatically normally, no need for the user to explicitly call this method.).
 		  */
 		void BASE_IMPEXP registerFatalExceptionHandlers();
-
-		/** Only when built in debug (with _DEBUG), this function will be called just before raising any MRPT exception,
-		  *  so the user can conveniently put a breakpoint here to explore the call stack, etc.
-		  */
-		void BASE_IMPEXP breakpoint(const std::string &exception_msg);
 
 		/** For use in  setConsoleColor */
 		enum TConsoleColor

@@ -63,7 +63,7 @@ namespace slam
 
 		/** The velocity of the robot in each of 6D: v_x,v_y,v_z,v_yaw,v_pitch,v_roll (linear in meters/sec and angular in rad/sec).
 		  */
-		vector_float			velocities;
+		mrpt::math::CVectorFloat	velocities;
 
 	}; // End of class def.
 

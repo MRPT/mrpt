@@ -90,8 +90,8 @@ void  CPosePDFParticles::copyFrom(const CPosePDF &o)
 	{
 		const CPosePDFGaussian	*pdf = static_cast<const CPosePDFGaussian*>( &o );
 		size_t M = m_particles.size();
-		std::vector<vector_double>			parts;
-		std::vector<vector_double>::iterator partsIt;
+		std::vector<CVectorDouble>			parts;
+		std::vector<CVectorDouble>::iterator partsIt;
 
 		randomGenerator.drawGaussianMultivariateMany(parts,M,pdf->cov);
 

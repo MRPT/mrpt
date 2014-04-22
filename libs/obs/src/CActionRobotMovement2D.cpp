@@ -14,7 +14,7 @@
 #include <mrpt/poses/CPosePDFGaussian.h>
 #include <mrpt/poses/CPosePDFParticles.h>
 #include <mrpt/random.h>
-//#include <mrpt/math/utils.h>
+#include <mrpt/math/point_poses2vectors.h>
 #include <mrpt/math/wrap2pi.h>
 
 using namespace mrpt::slam;
@@ -632,7 +632,7 @@ void  CActionRobotMovement2D::prepareFastDrawSingleSample_modelThrun() const
   ---------------------------------------------------------------*/
 void  CActionRobotMovement2D::fastDrawSingleSample_modelGaussian( CPose2D &outSample ) const
 {
-	vector_float	rndVector(3,0);
+	CVectorFloat	rndVector(3,0);
 	for (size_t i=0;i<3;i++)
 	{
 		float	rnd = randomGenerator.drawGaussian1D_normalized();

@@ -474,7 +474,7 @@ namespace mrpt
 				*  The lenght of the vector must match the width of the matrix, unless it's empty: in that case the matrix is resized to 1xN.
 				*  \code
 				*    CMatrixDouble  M(0,0);
-				*    vector_double  v(7),w(7);
+				*    CVectorDouble  v(7),w(7);
 				*    // ...
 				*    M.appendRow(v);
 				*    M.appendRow(w);

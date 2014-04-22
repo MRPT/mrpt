@@ -84,7 +84,7 @@ CPose3DPDFGaussian::CPose3DPDFGaussian(
 //#define DO_TEST_JACOB
 
 #ifdef DO_TEST_JACOB
-void ffff(const vector_double &x,const CQuaternionDouble &Q, vector_double &OUT)
+void ffff(const CVectorDouble &x,const CQuaternionDouble &Q, CVectorDouble &OUT)
 {
 	OUT.resize(3);
 	CQuaternionDouble q(x[0],x[1],x[2],x[3]);
@@ -126,9 +126,9 @@ void CPose3DPDFGaussian::copyFrom( const CPose3DQuatPDFGaussian &o)
 #ifdef DO_TEST_JACOB
 		// Test Jacob:
 		{
-			vector_double x(4);
+			CVectorDouble x(4);
 			for (int i=0;i<4;i++) x[i] = o.mean.quat()[i];
-			vector_double Ax(4,1e-7);
+			CVectorDouble Ax(4,1e-7);
 			CMatrixDouble H;
 			jacobians::jacob_numeric_estimate(x,ffff,Ax, o.mean.quat(),H);
 			cout << "num:" <<endl <<H << endl << endl;
@@ -353,7 +353,7 @@ void  CPose3DPDFGaussian::drawSingleSample( CPose3D &outPart ) const
 {
 	MRPT_START
 
-	vector_double	v;
+	CVectorDouble	v;
 	randomGenerator.drawGaussianMultivariate(v,cov);
 
 	outPart.setFromValues(
@@ -374,13 +374,13 @@ void  CPose3DPDFGaussian::drawSingleSample( CPose3D &outPart ) const
  ---------------------------------------------------------------*/
 void  CPose3DPDFGaussian::drawManySamples(
 	size_t						N,
-	vector<vector_double>	&outSamples ) const
+	vector<CVectorDouble>	&outSamples ) const
 {
 	MRPT_START
 
 	randomGenerator.drawGaussianMultivariateMany(outSamples,N,cov);
 
-	for (vector<vector_double>::iterator it=outSamples.begin();it!=outSamples.end();++it)
+	for (vector<CVectorDouble>::iterator it=outSamples.begin();it!=outSamples.end();++it)
 	{
 		(*it)[0] += mean.x();
 		(*it)[1] += mean.y();

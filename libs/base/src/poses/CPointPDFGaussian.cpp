@@ -275,7 +275,7 @@ void CPointPDFGaussian::drawSingleSample(CPoint3D &outSample) const
 {
 	MRPT_START
 
-	vector_double vec;
+	CVectorDouble vec;
 	randomGenerator.drawGaussianMultivariate(vec,cov);
 
 	ASSERT_(vec.size()==3);

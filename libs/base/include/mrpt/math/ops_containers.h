@@ -124,41 +124,6 @@ namespace mrpt
 			return m;
 		}
 
-		/** \name Container initializer from pose classes
-		  * @{
-		  */
-
-		/** Conversion of poses to MRPT containers (vector/matrix) */
-		template <class CONTAINER> CONTAINER & containerFromPoseOrPoint(CONTAINER &C, const TPoint2D &p) {
-			C.resize(2,1);
-			for (size_t i=0;i<2;i++)  C.coeffRef(i,0)=p[i];
-			return C;
-		}
-		template <class CONTAINER> CONTAINER & containerFromPoseOrPoint(CONTAINER &C, const TPoint3D &p) {
-			C.resize(3,1);
-			for (size_t i=0;i<3;i++)  C.coeffRef(i,0)=p[i];
-			return C;
-		}
-		template <class CONTAINER> CONTAINER & containerFromPoseOrPoint(CONTAINER &C, const TPose2D &p) {
-			C.resize(3,1);
-			for (size_t i=0;i<3;i++)  C.coeffRef(i,0)=p[i];
-			return C;
-		}
-		template <class CONTAINER> CONTAINER & containerFromPoseOrPoint(CONTAINER &C, const TPose3D &p) {
-			C.resize(6,1);
-			for (size_t i=0;i<6;i++)  C.coeffRef(i,0)=p[i];
-			return C;
-		}
-		template <class CONTAINER> CONTAINER & containerFromPoseOrPoint(CONTAINER &C, const TPose3DQuat &p) {
-			C.resize(7,1);
-			for (size_t i=0;i<7;i++)  C.coeffRef(i,0)=p[i];
-			return C;
-		}
-
-		/** @} */
-
-
-
 		/** \name Generic container element-wise operations - Miscelaneous
 		  * @{
 		  */

@@ -67,7 +67,7 @@ protected:
 		CQuaternionDouble q1;
 		pp.getAsQuaternion(q1);
 
-		mrpt::vector_double q1_ln = q1.ln<mrpt::vector_double>();
+		mrpt::math::CVectorDouble q1_ln = q1.ln<mrpt::math::CVectorDouble>();
 		const CQuaternionDouble q2 = CQuaternionDouble::exp(q1_ln);
 
 		// q2 should be == q1

@@ -423,7 +423,7 @@ bool  math::RectanglesIntersection(
 {
 	// Compute the rotated R2:
 	// ----------------------------------------
-	vector_double	xs(4),ys(4);
+	CVectorDouble	xs(4),ys(4);
 	double			ccos = cos(R2_pose_phi);
 	double			ssin = sin(R2_pose_phi);
 

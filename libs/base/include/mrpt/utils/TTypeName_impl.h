@@ -39,15 +39,6 @@ namespace mrpt
 		MRPT_DECLARE_TTYPENAME_CONTAINER( std::list )
 		MRPT_DECLARE_TTYPENAME_CONTAINER( std::set )
 
-#ifdef EIGEN_MAJOR_VERSION
-		// These ones act as a "translation" between vector_XXX types and their base classes:
-		#define MRPT_DECLARE_TTYPENAME_MAP_FOR_VECTOR(_CONT) \
-			template<> struct TTypeName <_CONT> : TTypeName<std::vector<_CONT::Scalar> > { };
-
-		MRPT_DECLARE_TTYPENAME_MAP_FOR_VECTOR(vector_float)
-		MRPT_DECLARE_TTYPENAME_MAP_FOR_VECTOR(vector_double)
-#endif
-
 		#define MRPT_DECLARE_TTYPENAME_CONTAINER_ASSOC(_CONTAINER) \
 			template< typename K, typename V > \
 			struct TTypeName <_CONTAINER<K,V> > { \

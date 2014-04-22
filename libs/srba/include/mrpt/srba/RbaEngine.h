@@ -712,7 +712,7 @@ namespace srba
 		}
 
 		void compute_minus_gradient(
-			mrpt::vector_double & minus_grad,
+			mrpt::math::CVectorDouble & minus_grad,
 			const std::vector<typename TSparseBlocksJacobians_dh_dAp::col_t*> & sparse_jacobs_Ap,
 			const std::vector<typename TSparseBlocksJacobians_dh_df::col_t*> & sparse_jacobs_f,
 			const vector_residuals_t  & residuals,

@@ -88,8 +88,8 @@ void  CPose3DPDFParticles::copyFrom(const CPose3DPDF &o)
 		THROW_EXCEPTION("TO DO!!");
 /*		CPose3DPDFGaussian	*pdf = (CPosePDFGaussian*) &o;
 		int					M = (int)m_particles.size();
-		std::vector<vector_float>			parts;
-		std::vector<vector_float>::iterator partsIt;
+		std::vector<CVectorFloat>			parts;
+		std::vector<CVectorFloat>::iterator partsIt;
 
 		mrpt::random::randomNormalMultiDimensionalMany(pdf->cov,M,parts);
 
@@ -228,7 +228,7 @@ void CPose3DPDFParticles::getCovarianceAndMean(CMatrixDouble66 &cov,CPose3D &mea
 
 	// Now the covariance:
 	cov.zeros();
-	vector_double	vars(6,0);	// The diagonal of the final covariance matrix
+	CVectorDouble	vars(6,0);	// The diagonal of the final covariance matrix
 	CPose3DPDFParticles::CParticleList::const_iterator		it;
 
 	// Elements off the diagonal of the covariance matrix:
@@ -405,7 +405,7 @@ void  CPose3DPDFParticles::drawSingleSample( CPose3D &outPart ) const
  ---------------------------------------------------------------*/
 void  CPose3DPDFParticles::drawManySamples(
 	size_t						N,
-	std::vector<vector_double>	&outSamples ) const
+	std::vector<CVectorDouble>	&outSamples ) const
 {
 	MRPT_UNUSED_PARAM(N); MRPT_UNUSED_PARAM(outSamples);
 	THROW_EXCEPTION("TO DO!");

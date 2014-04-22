@@ -57,16 +57,19 @@
 
 namespace mrpt
 {
-	typedef Eigen::Matrix<float,Eigen::Dynamic,1>  vector_float;
-	typedef Eigen::Matrix<double,Eigen::Dynamic,1> vector_double;
+	namespace math 
+	{
+		typedef Eigen::Matrix<float,Eigen::Dynamic,1>  CVectorFloat;
+		typedef Eigen::Matrix<double,Eigen::Dynamic,1> CVectorDouble;
+	}
 
 	namespace utils
 	{
 		class CStream;
 
-		CStream BASE_IMPEXP & operator<<(CStream&s, const vector_float  &a);
-		CStream BASE_IMPEXP & operator<<(CStream&s, const vector_double &a);
-		CStream BASE_IMPEXP & operator>>(CStream&in, vector_double &a);
-		CStream BASE_IMPEXP & operator>>(CStream&in, vector_float &a);
+		CStream BASE_IMPEXP & operator<<(CStream&s, const mrpt::math::CVectorFloat  &a);
+		CStream BASE_IMPEXP & operator<<(CStream&s, const mrpt::math::CVectorDouble &a);
+		CStream BASE_IMPEXP & operator>>(CStream&in, mrpt::math::CVectorDouble &a);
+		CStream BASE_IMPEXP & operator>>(CStream&in, mrpt::math::CVectorFloat &a);
 	}
 }

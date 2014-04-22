@@ -128,12 +128,12 @@ void TCamera::loadFromConfigFile(const std::string &section,  const mrpt::utils:
 
 	setIntrinsicParamsFromValues( fx, fy, cx, cy );
 
-	vector_double dists;
-	cfg.read_vector(section,"dist",vector_double(), dists, true);
+	CVectorDouble dists;
+	cfg.read_vector(section,"dist",CVectorDouble(), dists, true);
 	if (dists.size()!=4 && dists.size()!=5) THROW_EXCEPTION("Expected 4 or 5-length vector in field 'dist'");
 
 	dist.Constant(0);
-	for (vector_double::Index i=0;i<dists.size();i++)
+	for (CVectorDouble::Index i=0;i<dists.size();i++)
 		dist[i] = dists[i];
 
 	focalLengthMeters = cfg.read_double(section,"focal_length",0, false /* optional value */ );

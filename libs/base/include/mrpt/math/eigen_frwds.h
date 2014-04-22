@@ -23,16 +23,14 @@
 
 namespace mrpt
 {
-    // Dynamic size:
-    typedef Eigen::Matrix<float,Eigen::Dynamic,1>  vector_float;
-    typedef Eigen::Matrix<double,Eigen::Dynamic,1> vector_double;
-
     namespace math
     {
         // Dynamic size:
         template <class T> class CMatrixTemplateNumeric;
 		typedef CMatrixTemplateNumeric<float> CMatrixFloat;
         typedef CMatrixTemplateNumeric<double> CMatrixDouble;
+		typedef Eigen::Matrix<float,Eigen::Dynamic,1>  CVectorFloat;
+		typedef Eigen::Matrix<double,Eigen::Dynamic,1> CVectorDouble;
 
 
         // Fixed size:

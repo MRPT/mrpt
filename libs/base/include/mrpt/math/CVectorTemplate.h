@@ -16,9 +16,9 @@ namespace mrpt
 	namespace math
 	{
 
-		typedef mrpt::vector_float  CVectorFloat;   //!< This is just another name for mrpt::vector_float  (Backward compatibility with MRPT <=0.9.2); for a complete introduction to Matrices and vectors in MRPT, see: http://www.mrpt.org/Matrices_vectors_arrays_and_Linear_Algebra_MRPT_and_Eigen_classes
+		typedef mrpt::math::CVectorFloat  CVectorFloat;   //!< This is just another name for mrpt::math::CVectorFloat  (Backward compatibility with MRPT <=0.9.2); for a complete introduction to Matrices and vectors in MRPT, see: http://www.mrpt.org/Matrices_vectors_arrays_and_Linear_Algebra_MRPT_and_Eigen_classes
 
-		typedef mrpt::vector_double CVectorDouble;  //!< This is just another name for mrpt::vector_double (Backward compatibility with MRPT <=0.9.2); for a complete introduction to Matrices and vectors in MRPT, see: http://www.mrpt.org/Matrices_vectors_arrays_and_Linear_Algebra_MRPT_and_Eigen_classes
+		typedef mrpt::math::CVectorDouble CVectorDouble;  //!< This is just another name for mrpt::math::CVectorDouble (Backward compatibility with MRPT <=0.9.2); for a complete introduction to Matrices and vectors in MRPT, see: http://www.mrpt.org/Matrices_vectors_arrays_and_Linear_Algebra_MRPT_and_Eigen_classes
 
 	} // end namespace
 } // end namespace

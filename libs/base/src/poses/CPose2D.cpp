@@ -317,7 +317,7 @@ void CPose2D::inverse()
 /*---------------------------------------------------------------
 		getAsVector
 ---------------------------------------------------------------*/
-void CPose2D::getAsVector(vector_double &v) const
+void CPose2D::getAsVector(CVectorDouble &v) const
 {
 	v.resize(3);
 	v[0]=m_coords[0];

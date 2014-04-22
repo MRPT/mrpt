@@ -218,7 +218,7 @@ TEST(Matrices,largestEigenvector)
 		const Eigen::Matrix<double,4,1>  REAL_EIGVEC(dat_REAL_EIGVEC);
 		//const double REAL_LARGEST_EIGENVALUE =  38.40966;
 
-		mrpt::vector_double lev;
+		mrpt::math::CVectorDouble lev;
 		C1.largestEigenvector(lev,1e-3, 20);
 		EXPECT_NEAR( (REAL_EIGVEC-lev).array().abs().sum(), 0, 1e-3);
 	}

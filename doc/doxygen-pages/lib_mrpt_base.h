@@ -97,7 +97,6 @@ MRPT defines a number of generic <i> math containers</i>, which are:
 
 <ul>
 <li><b>Matrices:</b> Dynamic-size matrices (see mrpt::math::CMatrixDouble) and compile-time fixed-size matrices (see mrpt::math::CMatrixFixedNumeric, mrpt::math::CMatrixDouble33, etc.).  </li>
-<li><b>Vectors:</b> Dynamic-size vectors. See mrpt::vector_double, which inherits from a standard STL vector<double>.  </li>
 <li><b>Arrays:</b> Fixed-size vectors, just like plain C arrays but with support for STL-like iterators and much more. See mrpt::math::CArrayDouble<>. </li>
 </ul>
 

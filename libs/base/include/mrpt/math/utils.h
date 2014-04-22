@@ -107,7 +107,7 @@ namespace mrpt
 		}
 
 		/** Extract a column from a vector of vectors, and store it in another vector.
-			*  - Input data can be: std::vector<vector_double>, std::deque<std::list<double> >, std::list<CArrayDouble<5> >, etc. etc.
+			*  - Input data can be: std::vector<CVectorDouble>, std::deque<std::list<double> >, std::list<CArrayDouble<5> >, etc. etc.
 			*  - Output is the sequence:  data[0][idx],data[1][idx],data[2][idx], etc..
 			*
 			*  For the sake of generality, this function does NOT check the limits in the number of column, unless it's implemented in the [] operator of each of the "rows".
@@ -165,7 +165,7 @@ namespace mrpt
 		  */
 		std::string BASE_IMPEXP  MATLAB_plotCovariance2D(
 			const CMatrixFloat  &cov22,
-			const vector_float  &mean,
+			const CVectorFloat  &mean,
 			const float         &stdCount,
 			const std::string   &style = std::string("b"),
 			const size_t        &nEllipsePoints = 30 );
@@ -180,7 +180,7 @@ namespace mrpt
 		  */
 		std::string BASE_IMPEXP  MATLAB_plotCovariance2D(
 			const CMatrixDouble  &cov22,
-			const vector_double  &mean,
+			const CVectorDouble  &mean,
 			const float         &stdCount,
 			const std::string   &style = std::string("b"),
 			const size_t        &nEllipsePoints = 30 );
@@ -189,7 +189,7 @@ namespace mrpt
 
 		/** Assignment operator for initializing a std::vector from a C array (The vector will be automatically set to the correct size).
 		  * \code
-		  *	 vector_double  v;
+		  *	 CVectorDouble  v;
 		  *  const double numbers[] = { 1,2,3,5,6,7,8,9,10 };
 		  *  loadVector( v, numbers );
 		  * \endcode
@@ -220,8 +220,8 @@ namespace mrpt
 		  *  Some examples:
 		  *
 		  *  \code
-		  *    vector_double  = make_vector<4,double>(1.0,3.0,4.0,5.0);
-		  *    vector_float   = make_vector<2,float>(-8.12, 3e4);
+		  *    CVectorDouble  = make_vector<4,double>(1.0,3.0,4.0,5.0);
+		  *    CVectorFloat   = make_vector<2,float>(-8.12, 3e4);
 		  *  \endcode
 		  */
 		template <size_t N, typename T>

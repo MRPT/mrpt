@@ -597,7 +597,7 @@ float CFeature::internal_distanceBetweenPolarImages(
 	const float desc2_mean = desc2.sum() / static_cast<float>(width*height);
 #endif
 
-	vector_float distances(height,0);  // Distances for each shift
+	CVectorFloat distances(height,0);  // Distances for each shift
 
 	for (delta=0;delta<height;delta++)
 	{

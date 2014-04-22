@@ -206,7 +206,7 @@ void CPoint2DPDFGaussian::drawSingleSample(CPoint2D &outSample) const
 	MRPT_START
 
 	// Eigen3 emits an out-of-array warning here, but it seems to be a false warning? (WTF)
-	vector_double vec;
+	CVectorDouble vec;
 	randomGenerator.drawGaussianMultivariate(vec,cov);
 
 	ASSERT_(vec.size()==2);

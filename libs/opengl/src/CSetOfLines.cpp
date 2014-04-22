@@ -108,7 +108,7 @@ void  CSetOfLines::readFromStream(CStream &in,int version)
 	case 1:
 		{
 			readFromStreamRender(in);
-			vector_float x0,y0,z0,x1,y1,z1;
+			CVectorFloat x0,y0,z0,x1,y1,z1;
 			in>>x0>>y0>>z0>>x1>>y1>>z1;
 			if (version>=1) in>>mLineWidth;
 			else mLineWidth=1;

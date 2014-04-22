@@ -231,7 +231,7 @@ namespace mrpt
 				void         *voidPtr, *voidPtr2;
 				int          x,y;
 				bool         boolVal;
-				vector_float vector_x,vector_y;
+				CVectorFloat vector_x,vector_y;
 				std::string  plotName;
 
 				/** Valid codes are:
@@ -441,16 +441,16 @@ namespace mrpt
 				/** Redirected from CDisplayWindowPlots::plot
 				  */
 				void plot(
-					const vector_float &x,
-					const vector_float &y,
+					const CVectorFloat &x,
+					const CVectorFloat &y,
 					const std::string  &lineFormat,
 					const std::string  &plotName);
 
 				/** Redirected from CDisplayWindowPlots::plotEllipse
 				  */
 				void plotEllipse(
-					const vector_float &x,
-					const vector_float &y,
+					const CVectorFloat &x,
+					const CVectorFloat &y,
 					const std::string  &lineFormat,
 					const std::string  &plotName,
 					bool showName = false);
