@@ -262,7 +262,7 @@ void  CPointsMap::clipOutOfRangeInZ(float zMin, float zMax)
 /*---------------------------------------------------------------
 						clipOutOfRange
  ---------------------------------------------------------------*/
-void  CPointsMap::clipOutOfRange(const CPoint2D	&point, float maxRange)
+void  CPointsMap::clipOutOfRange(const TPoint2D	&p, float maxRange)
 {
 	size_t			i,n=getPointsCount();
 	vector<bool>	deletionMask;
@@ -272,7 +272,7 @@ void  CPointsMap::clipOutOfRange(const CPoint2D	&point, float maxRange)
 
 	// Compute it:
 	for (i=0;i<n;i++)
-		deletionMask[i] = point.distance2DTo( x[i],y[i] ) > maxRange;
+		deletionMask[i] = std::sqrt( square(p.x-x[i]) + square(p.y-y[i])) > maxRange;
 
 	// Perform deletion:
 	applyDeletionMask(deletionMask);
@@ -1217,12 +1217,12 @@ void  CPointsMap::determineMatching3D(
 /*---------------------------------------------------------------
 				extractCylinder
 ---------------------------------------------------------------*/
-void CPointsMap::extractCylinder( const CPoint2D &center, const double radius, const double zmin, const double zmax, CPointsMap *outMap )
+void CPointsMap::extractCylinder( const TPoint2D &center, const double radius, const double zmin, const double zmax, CPointsMap *outMap )
 {
 	outMap->clear();
 	for( size_t k = 0; k < x.size(); k++ )
 	{
-		if( (z[k] <= zmax && z[k] >= zmin) && (center.distance2DTo( x[k],y[k] ) < radius ) )
+		if( (z[k] <= zmax && z[k] >= zmin) && ( sqrt(square(center.x-x[k])+square(center.y-y[k])) < radius ) )
 			outMap->insertPoint( x[k], y[k], z[k] );
 	}
 }

@@ -16,14 +16,6 @@
 
 namespace mrpt
 {
-	namespace poses
-	{
-		class CPose2D;
-		class CPose3D;
-		class CPoint2D;
-		class CPoint3D;
-	}
-
 	namespace math
 	{
 		/**  A matrix of dynamic size.

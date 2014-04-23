@@ -10,10 +10,10 @@
 #define CMetricMapEvents_H
 
 #include <mrpt/utils/mrptEvent.h>
+#include <mrpt/poses/poses_frwds.h>
 
 namespace mrpt
 {
-	namespace poses { class CPose3D; }
 	namespace slam
 	{
 		class CObservation;

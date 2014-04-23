@@ -11,12 +11,10 @@
 
 #include <mrpt/slam/CMetricMap.h>
 #include <mrpt/utils/CSerializable.h>
-#include <mrpt/math/CMatrix.h>
 #include <mrpt/utils/CLoadableOptions.h>
 #include <mrpt/utils/safe_pointers.h>
 #include <mrpt/math/KDTreeCapable.h>
 #include <mrpt/slam/CSinCosLookUpTableFor2DScans.h>
-#include <mrpt/poses/CPoint2D.h>
 #include <mrpt/math/lightweight_geom_data.h>
 #include <mrpt/utils/PLY_import_export.h>
 
@@ -514,7 +512,7 @@ namespace slam
 
 		/** Delete points which are more far than "maxRange" away from the given "point".
 		  */
-		void  clipOutOfRange(const CPoint2D	&point, float maxRange);
+		void  clipOutOfRange(const mrpt::math::TPoint2D &point, float maxRange);
 
 		/** Remove from the map the points marked in a bool's array as "true".
 		  * \exception std::exception If mask size is not equal to points count.
@@ -669,7 +667,7 @@ namespace slam
 
 		/** Extracts the points in the map within a cylinder in 3D defined the provided radius and zmin/zmax values.
 		  */
-		void extractCylinder( const CPoint2D &center, const double radius, const double zmin, const double zmax, CPointsMap *outMap );
+		void extractCylinder( const mrpt::math::TPoint2D &center, const double radius, const double zmin, const double zmax, CPointsMap *outMap );
 
 		/** Extracts the points in the map within the area defined by two corners.
 		  *  The points are coloured according the R,G,B input data.

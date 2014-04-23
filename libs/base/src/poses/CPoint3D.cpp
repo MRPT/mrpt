@@ -27,6 +27,10 @@ CPoint3D::CPoint3D( const CPoint2D &p) { m_coords[0]=p.x(); m_coords[1]=p.y(); m
 /** Constructor from an CPose2D object. */
 CPoint3D::CPoint3D( const CPose2D &p) { m_coords[0]=p.x(); m_coords[1]=p.y(); m_coords[2]=0; }
 
+/** Constructor from an CPose3D object. */
+CPoint3D::CPoint3D( const CPose3D &p) { m_coords[0]=p.x(); m_coords[1]=p.y(); m_coords[2]=p.z(); }
+
+
 /*---------------------------------------------------------------
    Implements the writing to a CStream capability of
      CSerializable objects

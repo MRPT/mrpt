@@ -10,7 +10,10 @@
 #define CSENSORYFRAME_H
 
 #include <mrpt/utils/CSerializable.h>
-#include <mrpt/obs/obs_frwds.h>
+//#include <mrpt/obs/obs_frwds.h>
+#include <mrpt/slam/CMetricMap.h>
+#include <mrpt/slam/CObservation.h>
+#include <mrpt/obs/link_pragmas.h>
 
 namespace mrpt
 {
@@ -124,7 +127,7 @@ namespace mrpt
 			  *
 			  * \sa mrpt::slam::CMetricMap, CObservation::insertObservationInto, CMetricMap::insertObservation
 			  */
-			 bool  insertObservationsInto( mrpt::slam::CMetricMap *theMap, const CPose3D *robotPose = NULL ) const;
+			 bool  insertObservationsInto( mrpt::slam::CMetricMap *theMap, const mrpt::poses::CPose3D *robotPose = NULL ) const;
 
 			 /** Insert all the observations in this SF into a metric map or any kind (see mrpt::slam::CMetricMap).
 			  *  It calls CObservation::insertObservationInto for all stored observation.
@@ -136,7 +139,7 @@ namespace mrpt
 			  *
 			  * \sa mrpt::slam::CMetricMap, CObservation::insertObservationInto, CMetricMap::insertObservation
 			  */
-			 inline bool  insertObservationsInto( mrpt::slam::CMetricMapPtr &theMap, const CPose3D *robotPose = NULL ) const
+			 inline bool  insertObservationsInto( mrpt::slam::CMetricMapPtr &theMap, const mrpt::poses::CPose3D *robotPose = NULL ) const
 			 {
 				 return insertObservationsInto(theMap.pointer(), robotPose);
 			 }

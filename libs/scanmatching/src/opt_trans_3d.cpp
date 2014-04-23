@@ -11,11 +11,11 @@
 
 
 #include <mrpt/scanmatching/scan_matching.h>
+#include <mrpt/poses/CPose3D.h>
 #include <mrpt/poses/CPosePDFGaussian.h>
 #include <mrpt/poses/CPosePDFSOG.h>
 #include <mrpt/poses/CPose3DQuat.h>
 #include <mrpt/random.h>
-#include <mrpt/math/CMatrixD.h>
 
 using namespace mrpt;
 using namespace mrpt::scanmatching;
@@ -201,8 +201,8 @@ bool  scanmatching::leastSquareErrorRigidTransformation6D(
 		THROW_EXCEPTION( "[leastSquareErrorRigidTransformation6D]: Error: at least 3 correspondences must be provided" );
 
 	CPoint3D cL, cR;
-	CMatrixD S, N;
-	CMatrixD Z, D;
+	CMatrixDouble S, N;
+	CMatrixDouble Z, D;
 
 	vector<double> v;
 	const size_t nMatches = in_correspondences.size();

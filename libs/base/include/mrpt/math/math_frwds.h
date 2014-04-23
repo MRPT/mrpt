@@ -11,6 +11,7 @@
 
 #include <mrpt/config.h>
 #include <mrpt/base/link_pragmas.h>
+#include <mrpt/poses/poses_frwds.h>
 #include <string>
 
 /*! \file math_frwds.h
@@ -29,18 +30,6 @@ namespace mrpt
 	namespace system
 	{
 		std::string BASE_IMPEXP MRPT_getVersion();
-	}
-
-	namespace poses
-	{
-		template <class DERIVEDCLASS> class CPoseOrPoint;
-		class CPoint2D;
-		class CPoint3D;
-		class CPose2D;
-		class CPose3D;
-		class CPose3DQuat;
-		class CPosePDF; struct CPosePDFPtr;
-		class CPose3DPDF; struct CPose3DPDFPtr;
 	}
 
 	namespace math

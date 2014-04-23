@@ -10,6 +10,7 @@
 #define CSinCosLookUpTableFor2DScans_H
 
 #include <mrpt/slam/CObservation2DRangeScan.h>
+#include <map>
 
 namespace mrpt
 {

@@ -7,12 +7,13 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/topography.h>  // Precompiled headers
+#include "topography-precomp.h"  // Precompiled headers
+
 #include <mrpt/topography/conversions.h>
 #include <mrpt/poses/CPoint3D.h>
 #include <mrpt/poses/CPose3D.h>
-#include <mrpt/math.h>
-
+#include <mrpt/math/utils.h>
+#include <mrpt/math/geometry.h>
 #include <mrpt/utils/CStartUpClassesRegister.h>
 
 using namespace std;
@@ -294,7 +295,7 @@ void  mrpt::topography::geodeticToUTM(
 
 	const precnum_t	lat		= DEG2RAD( GeodeticCoords.lat );
 	const precnum_t	lon		= DEG2RAD( GeodeticCoords.lon );
-	const int		Huso	= mrpt::math::fix( ( GeodeticCoords.lon / 6 ) + 31);
+	const int		Huso	= mrpt::utils::fix( ( GeodeticCoords.lon / 6 ) + 31);
 	const precnum_t lon0	= DEG2RAD(Huso*6-183);
 
 	const precnum_t sa		= ellip.sa;
@@ -359,7 +360,7 @@ void  mrpt::topography::GeodeticToUTM(
 	const double lat = DEG2RAD(la);
 	const double lon = DEG2RAD(lo);
 
-	const int Huso = mrpt::math::fix( ( lo / 6 ) + 31);
+	const int Huso = mrpt::utils::fix( ( lo / 6 ) + 31);
 	double S = ( ( Huso * 6 ) - 183 );
 	double deltaS = lon - DEG2RAD(S);
 

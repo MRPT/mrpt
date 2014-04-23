@@ -12,19 +12,16 @@
 
 #include <mrpt/utils/CDebugOutputCapable.h>
 #include <mrpt/utils/CLoadableOptions.h>
-
-//#include <mrpt/utils/stl_extensions.h>
-
 #include <mrpt/slam/CMultiMetricMap.h>
 #include <mrpt/slam/CSimplePointsMap.h>
 #include <mrpt/slam/CSimpleMap.h>
 #include <mrpt/slam/CMultiMetricMap.h>
+#include <mrpt/poses/poses_frwds.h>
 
 #include <mrpt/slam/link_pragmas.h>
 
 namespace mrpt
 {
-	namespace poses { class CPose3DPDF; }
 namespace slam
 {
 	DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CIncrementalMapPartitioner, mrpt::utils::CSerializable, SLAM_IMPEXP )

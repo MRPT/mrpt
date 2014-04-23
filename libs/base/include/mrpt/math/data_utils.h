@@ -12,6 +12,7 @@
 #include <mrpt/utils/utils_defs.h>
 #include <mrpt/math/wrap2pi.h>
 #include <mrpt/math/CMatrixFixedNumeric.h>
+#include <mrpt/math/ops_matrices.h>
 
 namespace mrpt
 {

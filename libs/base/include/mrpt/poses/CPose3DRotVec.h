@@ -12,14 +12,12 @@
 #include <mrpt/poses/CPose.h>
 #include <mrpt/math/CMatrixFixedNumeric.h>
 #include <mrpt/math/CQuaternion.h>
+#include <mrpt/poses/poses_frwds.h>
 
 namespace mrpt
 {
 namespace poses
 {
-	class CPose3D;
-	class CPose3DQuat;
-
 	DEFINE_SERIALIZABLE_PRE( CPose3DRotVec )
 
 	/** A 3D pose, with a 3D translation and a rotation in 3D parameterized in rotation-vector form (equivalent to axis-angle).

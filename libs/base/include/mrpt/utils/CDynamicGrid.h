@@ -9,19 +9,31 @@
 #ifndef CDynamicGrid_H
 #define CDynamicGrid_H
 
-#include <mrpt/utils/utils_defs.h>
+#include <mrpt/utils/core_defs.h>
 #include <mrpt/utils/round.h>
+#include <vector>
+#include <string>
+#include <cmath>
 
 namespace mrpt
 {
     namespace utils
     {
-		MRPT_TODO("Refactor into a non-template code and remove </round.h>")
+		namespace internal {
+			// Aux class.
+			struct BASE_IMPEXP dynamic_grid_txt_saver
+			{
+				bool saveToTextFile(const std::string &fileName) const;
+				virtual unsigned int getSizeX() const = 0; 
+				virtual unsigned int getSizeY() const = 0; 
+				virtual float getCellAsFloat(unsigned int cx,unsigned int cy) const = 0;
+			};
+		} // internal
 
-        /** A 2D grid of dynamic size which stores any kind of data at each cell.
-	  * \tparam T The type of each cell in the 2D grid.
-	  * \ingroup mrpt_base_grp
-          */
+		/** A 2D grid of dynamic size which stores any kind of data at each cell.
+		 * \tparam T The type of each cell in the 2D grid.
+		 * \ingroup mrpt_base_grp
+		 */
         template <class T>
         class CDynamicGrid
         {
@@ -38,26 +50,19 @@ namespace mrpt
             size_t			m_size_x, m_size_y;
 
         public:
-            /** Constructor
-              */
-            CDynamicGrid(	float	x_min = -10.0f,
-                            float	x_max = 10.0f,
-                            float	y_min = -10.0f,
-                            float	y_max = 10.0f,
-                            float	resolution  = 0.10f) :
-                                m_map(),
-                                m_x_min(),m_x_max(),m_y_min(),m_y_max(),
-                                m_resolution(),
-                                m_size_x(), m_size_y()
-            {
+            /** Constructor */
+            CDynamicGrid(
+				float x_min = -10.0f, float x_max = 10.0f,
+				float y_min = -10.0f, float y_max = 10.0f,
+				float resolution = 0.10f) :
+					m_map(), m_x_min(),m_x_max(),m_y_min(),m_y_max(),
+					m_resolution(),m_size_x(), m_size_y() 
+			{
                 setSize(x_min,x_max,y_min,y_max,resolution);
             }
 
-            /** Destructor
-              */
-            virtual ~CDynamicGrid()
-            {
-            }
+            /** Destructor */
+            virtual ~CDynamicGrid() { }
 
             /** Changes the size of the grid, ERASING all previous contents.
 			  * If \a fill_value is left as NULL, the contents of cells may be undefined (some will remain with
@@ -67,12 +72,9 @@ namespace mrpt
               * \sa resize, fill
               */
             void  setSize(
-				const float	x_min,
-				const float x_max,
-				const float y_min,
-				const float y_max,
-				const float resolution,
-				const T * fill_value = NULL)
+				const float	x_min, const float x_max,
+				const float y_min, const float y_max,
+				const float resolution, const T * fill_value = NULL)
             {
                 // Adjust sizes to adapt them to full sized cells acording to the resolution:
                 m_x_min = resolution*round(x_min/resolution);
@@ -93,41 +95,27 @@ namespace mrpt
 				else m_map.resize(m_size_x*m_size_y);
             }
 
-            /** Erase the contents of all the cells.
-              */
-            void  clear()
-            {
+            /** Erase the contents of all the cells. */
+            void  clear() {
                 m_map.clear();
                 m_map.resize(m_size_x*m_size_y);
             }
 
             /** Fills all the cells with the same value
               */
-            inline void fill( const T& value ) { std::fill(m_map.begin(),m_map.end(),value); }
+            inline void fill( const T& value ) { 
+				for (std::vector<T>::iterator it=m_map.begin();it!=m_map.end();++it) 
+					*it=value; 
+			}
 
             /** Changes the size of the grid, maintaining previous contents.
               * \sa setSize
               */
             virtual void  resize(
-                float	new_x_min,
-                float	new_x_max,
-                float	new_y_min,
-                float	new_y_max,
-                const T& defaultValueNewCells,
-                float	additionalMarginMeters = 2.0f )
+                float new_x_min, float new_x_max,
+                float new_y_min, float new_y_max,
+                const T& defaultValueNewCells, float additionalMarginMeters = 2.0f )
             {
-                MRPT_START
-
-				MRPT_CHECK_NORMAL_NUMBER(new_x_min)
-				MRPT_CHECK_NORMAL_NUMBER(new_x_max)
-				MRPT_CHECK_NORMAL_NUMBER(new_y_min)
-				MRPT_CHECK_NORMAL_NUMBER(new_y_max)
-
-                unsigned int				x,y;
-                unsigned int				extra_x_izq,extra_y_arr,new_size_x=0,new_size_y=0;
-                typename std::vector<T>				new_map;
-                typename std::vector<T>::iterator	itSrc,itDst;
-
                 // Is resize really necesary?
                 if (new_x_min>=m_x_min &&
                     new_y_min>=m_y_min &&
@@ -159,16 +147,19 @@ namespace mrpt
                     new_y_max = m_resolution*round(new_y_max/m_resolution);
 
                 // Change the map size: Extensions at each side:
-                extra_x_izq = round((m_x_min-new_x_min) / m_resolution);
-                extra_y_arr = round((m_y_min-new_y_min) / m_resolution);
+                unsigned int extra_x_izq = round((m_x_min-new_x_min) / m_resolution);
+                unsigned int extra_y_arr = round((m_y_min-new_y_min) / m_resolution);
 
-                new_size_x = round((new_x_max-new_x_min) / m_resolution);
-                new_size_y = round((new_y_max-new_y_min) / m_resolution);
+                unsigned int new_size_x = round((new_x_max-new_x_min) / m_resolution);
+                unsigned int new_size_y = round((new_y_max-new_y_min) / m_resolution);
 
                 // Reserve new memory:
+				typename std::vector<T> new_map;
                 new_map.resize(new_size_x*new_size_y,defaultValueNewCells);
 
                 // Copy previous rows:
+                unsigned int x,y;
+                typename std::vector<T>::iterator itSrc,itDst;
                 for (y=0;y<m_size_y;y++)
                 {
                     for (x=0,itSrc=(m_map.begin()+y*m_size_x),itDst=(new_map.begin()+extra_x_izq + (y+extra_y_arr)*new_size_x);
@@ -190,9 +181,6 @@ namespace mrpt
 
                 // Keep the new map only:
                 m_map.swap(new_map);
-
-                MRPT_END
-
             }
 
             /** Returns a pointer to the contents of a cell given by its coordinates, or NULL if it is out of the map extensions.
@@ -267,27 +255,6 @@ namespace mrpt
                 */
             inline float  getResolution()const  { return m_resolution; }
 
-            /** The user must implement this in order to provide "saveToTextFile" a way to convert each cell into a numeric value */
-            virtual float cell2float(const T& c) const
-            {
-                return 0;
-            }
-			/** Saves a float representation of the grid (via "cell2float()") to a text file. 
-			  * Calling this file also requires #include <mrpt/system/os.h> */
-            void  saveToTextFile(const std::string &fileName) const
-            {
-                using namespace mrpt::system;
-                FILE	*f=os::fopen(fileName.c_str(),"wt");
-                if(!f) return;
-                for (unsigned int cy=0;cy<m_size_y;cy++)
-                {
-                    for (unsigned int cx=0;cx<m_size_x;cx++)
-                        os::fprintf(f,"%f ",cell2float(m_map[ cx + cy*m_size_x ]));
-                    os::fprintf(f,"\n");
-                }
-                os::fclose(f);
-            }
-
             /** Transform a coordinate values into cell indexes.
               */
             inline int   x2idx(float x) const { return static_cast<int>( (x-m_x_min)/m_resolution ); }
@@ -328,7 +295,27 @@ namespace mrpt
 						m.set_unsafe(cy,cx, *c++);
 			}
 
-        };
+		    /** The user must implement this in order to provide "saveToTextFile" a way to convert each cell into a numeric value */
+            virtual float cell2float(const T& c) const
+            {
+                return 0;
+            }
+			/** Saves a float representation of the grid (via "cell2float()") to a text file. \return false on error */
+            bool saveToTextFile(const std::string &fileName) const
+            {
+				struct aux_saver : public internal::dynamic_grid_txt_saver
+				{
+					aux_saver(const CDynamicGrid<T> &obj) : m_obj(obj) {}
+					virtual unsigned int getSizeX() const { return m_obj.getSizeX(); }
+					virtual unsigned int getSizeY() const { return m_obj.getSizeY(); }
+					virtual float getCellAsFloat(unsigned int cx,unsigned int cy) const { return m_obj.cell2float(m_obj.m_map[ cx + cy*m_obj.getSizeX() ]); }
+					const CDynamicGrid<T> & m_obj;
+				};
+				aux_saver aux(*this);
+				return aux.saveToTextFile(fileName);
+            }
+
+        }; // end of CDynamicGrid<>
 
 	} // End of namespace
 } // end of namespace

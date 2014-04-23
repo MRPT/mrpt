@@ -18,6 +18,7 @@
 #include <mrpt/utils/TMatchingPair.h>
 #include <mrpt/slam/CLogOddsGridMap2D.h>
 #include <mrpt/utils/safe_pointers.h>
+#include <mrpt/poses/poses_frwds.h>
 
 #include <mrpt/maps/link_pragmas.h>
 
@@ -34,7 +35,6 @@
 
 namespace mrpt
 {
-	namespace poses { class CPose2D; }
 namespace slam
 {
 	using namespace mrpt::poses;

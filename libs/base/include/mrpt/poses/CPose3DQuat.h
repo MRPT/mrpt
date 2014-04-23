@@ -13,14 +13,13 @@
 #include <mrpt/math/CMatrixFixedNumeric.h>
 #include <mrpt/math/CQuaternion.h>
 #include <mrpt/poses/CPoint3D.h>
+#include <mrpt/poses/poses_frwds.h>
 #include <mrpt/math/lightweight_geom_data.h>
 
 namespace mrpt
 {
 namespace poses
 {
-	class CPose3D;
-
 	DEFINE_SERIALIZABLE_PRE( CPose3DQuat )
 
 	/** A class used to store a 3D pose as a translation (x,y,z) and a quaternion (qr,qx,qy,qz).

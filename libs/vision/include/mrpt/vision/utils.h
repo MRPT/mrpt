@@ -16,9 +16,6 @@
 #include <mrpt/utils/CLoadableOptions.h>
 #include <mrpt/utils/TMatchingPair.h>
 #include <mrpt/poses/CPose3D.h>
-#include <mrpt/poses/CPoint2D.h>
-#include <mrpt/poses/CPoint3D.h>
-
 #include <mrpt/vision/types.h>
 #include <mrpt/vision/chessboard_camera_calib.h>
 

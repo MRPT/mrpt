@@ -6,15 +6,28 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
-#pragma once
 
-namespace mrpt
+#include "base-precomp.h"  // Precompiled headers
+
+#include <mrpt/utils/CDynamicGrid.h>
+#include <mrpt/system/os.h>
+
+using namespace mrpt;
+using namespace mrpt::utils;
+using namespace mrpt::system;
+using namespace std;
+
+bool internal::dynamic_grid_txt_saver::saveToTextFile(const std::string &fileName) const
 {
-	namespace poses
+	FILE	*f=os::fopen(fileName.c_str(),"wt");
+	if(!f) return false;
+	const unsigned int sy = getSizeY(), sx = getSizeX();
+	for (unsigned int cy=0;cy<sy;cy++)
 	{
-		class CPointPDF; struct CPointPDFPtr;
-		class CPosePDF;  struct CPosePDFPtr;
-		class CPose3DPDF; struct CPose3DPDFPtr;
-		class CPose3DQuatPDF; struct CPose3DQuatPDFPtr;
+		for (unsigned int cx=0;cx<sx;cx++)
+			os::fprintf(f,"%f ", getCellAsFloat(cx,cy) );
+		os::fprintf(f,"\n");
 	}
-} 
+	os::fclose(f);
+	return true;
+};

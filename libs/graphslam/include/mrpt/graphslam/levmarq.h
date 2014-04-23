@@ -13,6 +13,7 @@
 #include <mrpt/utils/TParameters.h>
 
 #include <mrpt/graphslam/levmarq_impl.h> // Aux classes
+#include <mrpt/utils/XX.h> // Aux classes
 
 namespace mrpt
 {

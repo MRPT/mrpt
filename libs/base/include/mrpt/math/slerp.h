@@ -10,11 +10,10 @@
 #define  mrpt_math_slerp_H
 
 #include <mrpt/math/CQuaternion.h>
+#include <mrpt/poses/poses_frwds.h>
 
 namespace mrpt
 {
-	namespace poses  { class CPose3D; class CPose3DQuat; }
-
 	namespace math
 	{
 		/** \addtogroup geometry_grp

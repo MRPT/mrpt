@@ -8,19 +8,27 @@
    +---------------------------------------------------------------------------+ */
 #pragma once
 
-#include <mrpt/poses/poses_frwds.h>
-
-// Forward declarations for the library "mrpt-obs"
 namespace mrpt
 {
-	namespace slam
+	namespace poses
 	{
-		class CObservation; struct CObservationPtr;
-		class CSensoryFrame; struct CSensoryFramePtr;
-		class CMetricMap; struct CMetricMapPtr;
-		class CPointsMap;
-		class CSimplePointsMap;
-		class CSimpleMap;
+		// Values:
+		template <class DERIVEDCLASS> class CPoseOrPoint;
+		class CPoint2D;
+		class CPoint3D;
+		class CPose2D;
+		class CPose3D;
+		class CPose3DQuat;
+		class CPose3DRotVec;
+
+		// PDFs:
+		class CPointPDF; struct CPointPDFPtr;
+		class CPosePDF;  struct CPosePDFPtr;
+		class CPose3DPDF; struct CPose3DPDFPtr;
+		class CPose3DQuatPDF; struct CPose3DQuatPDFPtr;
+		class CPosePDFParticles; struct CPosePDFParticlesPtr;
+		class CPosePDFGaussian; struct CPosePDFGaussianPtr;
+		class CPosePDFSOG; struct CPosePDFSOGPtr;
 
 	}
-}
+} 

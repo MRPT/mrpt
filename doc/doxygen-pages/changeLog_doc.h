@@ -24,7 +24,17 @@
 	- Other changes (to reorder!)
 	- Removed most "using namespace" from public headers.
 	- New important headers after refactoring: 
-		- <mrpt/utils/stl_serialization.h>
+		- <mrpt/utils/stl_extensions.h> has been split into:
+			<mrpt/utils/stl_serialization.h>
+			<mrpt/utils/circular_buffer.h>
+			<mrpt/utils/list_searchable.h>
+			<mrpt/utils/bimap.h>
+			<mrpt/utils/map_as_vector.h>
+			<mrpt/utils/traits_map.h>
+			<mrpt/utils/stl_serialization.h>
+			<mrpt/utils/printf_vector.h>
+			<mrpt/utils/stl_containers_utils.h>
+			<mrpt/utils/ci_less.h>
 	- Deleted methods and functions:  
 		- mrpt::system::breakpoint()
 		- *EXPLAIN*:  mrpt :: vector_float --> mrpt::math::CVectorFloat, etc.

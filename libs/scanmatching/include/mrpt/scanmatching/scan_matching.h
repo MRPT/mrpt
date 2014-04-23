@@ -12,20 +12,12 @@
 #include <mrpt/utils/utils_defs.h>
 #include <mrpt/math/math_frwds.h>
 #include <mrpt/math/CMatrixFixedNumeric.h>
-//#include <mrpt/math.h>   // These 2 headers, in this order, are needed to avoid
-//#include <mrpt/poses.h>  //  undefined classes errors in inline constructors of mrpt::poses classes.
 #include <mrpt/utils/TMatchingPair.h>
 #include <mrpt/scanmatching/link_pragmas.h>
+#include <mrpt/poses/poses_frwds.h>
 
 namespace mrpt
 {
-	namespace poses
-	{
-		class	CPosePDFParticles;
-		class	CPosePDFGaussian;
-		class	CPosePDFSOG;
-	}
-
 	/** A set of scan matching-related static functions.
 	 * \sa mrpt::slam::CICP
 	 * \ingroup mrpt_scanmatching_grp

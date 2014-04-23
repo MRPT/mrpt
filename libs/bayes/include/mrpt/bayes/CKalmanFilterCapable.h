@@ -17,8 +17,6 @@
 #include <mrpt/utils/CTimeLogger.h>
 #include <mrpt/utils/CLoadableOptions.h>
 #include <mrpt/utils/CDebugOutputCapable.h>
-//#include <mrpt/utils/stl_extensions.h>
-//#include <mrpt/utils/stl_serialization.h>
 #include <mrpt/system/os.h>
 #include <mrpt/utils/CTicTac.h>
 #include <mrpt/utils/CFileOutputStream.h>

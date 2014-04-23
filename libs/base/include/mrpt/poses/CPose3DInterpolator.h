@@ -9,6 +9,7 @@
 #ifndef CPose3DInterpolator_H
 #define CPose3DInterpolator_H
 
+#include <mrpt/utils/CSerializable.h>
 #include <mrpt/system/datetime.h>
 #include <mrpt/utils/TEnumType.h>
 #include <mrpt/math/math_frwds.h>

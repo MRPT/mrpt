@@ -17,7 +17,7 @@ namespace mrpt
 	namespace utils
 	{
 		/** @name Conversion of type to string at compile time
-		  * IMPORTANT: See also the implementation of Serialization for STL containers in mrpt/utils/stl_extensions.h
+		  * IMPORTANT: See also the implementation of Serialization for STL containers in <mrpt/utils/stl_serialization.h>
 		@{ */
 
 		/** A template to obtain the type of its argument as a string at compile time.

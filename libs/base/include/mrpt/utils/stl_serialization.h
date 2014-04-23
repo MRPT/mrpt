@@ -8,13 +8,13 @@
    +---------------------------------------------------------------------------+ */
 #pragma once
 
+#include <mrpt/utils/TTypeName_impl.h> // TTypeName<> for STL templates, needed for serialization of STL templates
+#include <mrpt/utils/metaprogramming_serialization.h>
 #include <vector>
 #include <deque>
 #include <set>
 #include <map>
 #include <list>
-
-#include <mrpt/utils/metaprogramming_serialization.h>
 
 namespace mrpt
 {

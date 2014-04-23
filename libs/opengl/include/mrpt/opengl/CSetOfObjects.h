@@ -10,7 +10,7 @@
 #define opengl_CSetOfObjects_H
 
 #include <mrpt/opengl/CRenderizable.h>
-#include <mrpt/poses/posespdf_frwds.h>  // All these are needed for the auxiliary methods posePDF2opengl()
+#include <mrpt/poses/poses_frwds.h>  // All these are needed for the auxiliary methods posePDF2opengl()
 #include <mrpt/utils/CStringList.h>
 
 namespace mrpt

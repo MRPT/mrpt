@@ -11,6 +11,7 @@
 
 #include <mrpt/utils/utils_defs.h>
 #include <mrpt/utils/TTypeName.h>
+#include <set>
 
 namespace mrpt
 {

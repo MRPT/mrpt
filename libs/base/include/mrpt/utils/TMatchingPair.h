@@ -12,11 +12,10 @@
 #include <string>
 #include <vector>
 #include <mrpt/base/link_pragmas.h>
+#include <mrpt/poses/poses_frwds.h>
 
 namespace mrpt
 {
-	namespace poses {  class CPose2D; }
-
 	namespace utils
 	{
 

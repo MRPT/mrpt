@@ -17,13 +17,10 @@
 #include <mrpt/utils/TEnumType.h>
 #include <mrpt/slam/CMetricMap.h>
 #include <mrpt/maps/link_pragmas.h>
+#include <mrpt/poses/poses_frwds.h>
 
 namespace mrpt
 {
-	namespace poses
-	{
-		class CPose2D;
-	}
 	namespace slam
 	{
 		using namespace mrpt::utils;
