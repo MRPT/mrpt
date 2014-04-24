@@ -19,6 +19,7 @@
 #include <mrpt/gui/link_pragmas.h>
 
 #include <queue>
+#include <map>
 
 #if MRPT_HAS_WXWIDGETS
 

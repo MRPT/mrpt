@@ -7,10 +7,10 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/vision.h>  // Precompiled headers
+#include "vision-precomp.h"   // Precompiled headers
 
-#include <mrpt/math/CMatrix.h>
-#include <mrpt/math/CMatrixD.h>
+//#include <mrpt/math/CMatrix.h>
+//#include <mrpt/math/CMatrixD.h>
 #include <mrpt/math/geometry.h>
 #include <mrpt/random.h>
 #include <mrpt/utils/CConfigFile.h>
@@ -19,14 +19,15 @@
 #include <mrpt/slam/CLandmarksMap.h>
 #include <mrpt/slam/CLandmark.h>
 #include <mrpt/slam/CObservationImage.h>
-#include <mrpt/vision/utils.h>
-#include <mrpt/vision/CFeature.h>
+//#include <mrpt/vision/utils.h>
+//#include <mrpt/vision/CFeature.h>
 #include <mrpt/slam/CObservationStereoImages.h>
 #include <mrpt/slam/CObservation2DRangeScan.h>
 #include <mrpt/slam/CObservationGPS.h>
 #include <mrpt/poses/CPointPDFGaussian.h>
 #include <mrpt/slam/CObservationBeaconRanges.h>
 #include <mrpt/slam/CObservationVisualLandmarks.h>
+#include <mrpt/system/os.h>
 
 #include <mrpt/opengl/CGridPlaneXY.h>
 #include <mrpt/opengl/CEllipsoid.h>
@@ -607,7 +608,7 @@ void  CLandmarksMap::loadSiftFeaturesFromImageObservation(
 		D(2,2) = square( width );
 
 		// Finally, compute the covariance!
-		landmark3DPositionPDF.cov = CMatrixDouble33( P * D * (~P) );
+		landmark3DPositionPDF.cov = CMatrixDouble33( P * D * P.transpose() );
 
 		// Save into the landmarks vector:
 		// --------------------------------------------
@@ -1079,7 +1080,7 @@ void  CLandmarksMap::computeMatchingWith3DLandmarks(
 
 						// Equivalent covariance from "i" to "j":
 						Cij = CMatrixDouble( pointPDF_k.cov + pointPDF_j.cov );
-						Cij_1 = !Cij;
+						Cij_1 = Cij.inv();
 
 						distMahaFlik2 = dij.multiply_HCHt_scalar(Cij_1); //( dij * Cij_1 * (~dij) )(0,0);
 
@@ -1389,8 +1390,8 @@ bool  CLandmarksMap::saveToMATLABScript2D(
 		cov(0,1) = cov(1,0) = it->pose_cov_12;
 
 		cov.eigenVectors(eigVec,eigVal);
-		eigVal.Sqrt();
-		M = eigVal * (~eigVec);
+		eigVal = eigVal.array().sqrt().matrix();
+		M = eigVal * eigVec.transpose();
 
 		// Compute the points of the ellipsoid:
 		// ----------------------------------------------
@@ -1865,7 +1866,7 @@ double	 CLandmarksMap::computeLikelihood_SIFT_LandmarkMap( CLandmarksMap		*theMa
 						//std::cout << "ED POSICION: " << sqrt( dij(0,0)*dij(0,0) + dij(0,1)*dij(0,1) + dij(0,2)*dij(0,2) ) << std::endl;
 						// Equivalent covariance from "i" to "j":
 						Cij = CMatrixDouble(lm1_pose.cov + lm2_pose.cov );
-						Cij_1 = !Cij;
+						Cij_1 = Cij.inv();
 
 						distMahaFlik2 =  dij.multiply_HCHt_scalar(Cij_1); //( dij * Cij_1 * (~dij) )(0,0);
 
@@ -1967,7 +1968,7 @@ double	 CLandmarksMap::computeLikelihood_SIFT_LandmarkMap( CLandmarksMap		*theMa
 
 			// Equivalent covariance from "i" to "j":
 			Cij = CMatrixDouble( lm1_pose.cov + lm2_pose.cov );
-			Cij_1 = !Cij;
+			Cij_1 = Cij.inv();
 
 			distMahaFlik2 =  dij.multiply_HCHt_scalar(Cij_1); // ( dij * Cij_1 * (~dij) )(0,0);
 

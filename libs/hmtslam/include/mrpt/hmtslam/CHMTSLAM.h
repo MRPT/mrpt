@@ -150,7 +150,7 @@ namespace mrpt
 				  */
 				std::map< CHMHMapNode::TNodeID, TBI_info >	loopClosureData;
 
-				//EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+				//MRPT_MAKE_ALIGNED_OPERATOR_NEW
 			};
 			typedef stlplus::smart_ptr<TMessageLSLAMfromTBI>	TMessageLSLAMfromTBIPtr;
 

@@ -51,7 +51,7 @@ namespace mrpt
 	class REACTIVENAV_IMPEXP CPRRTNavigator
 	{
 	public:
-		EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+		MRPT_MAKE_ALIGNED_OPERATOR_NEW
 
 	public:
 		CPRRTNavigator();	//!< Constructor

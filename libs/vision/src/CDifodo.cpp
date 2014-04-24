@@ -7,8 +7,11 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/vision.h>		 // Precompiled headers
+#include "vision-precomp.h"   // Precompiled headers
+
 #include <mrpt/vision/CDifodo.h>
+#include <mrpt/utils/utils_defs.h>
+#include <mrpt/utils/CTicTac.h>
 
 using namespace mrpt;
 using namespace mrpt::vision;
@@ -135,7 +138,7 @@ void CDifodo::filterAndDownsample()
 	const int lim_mask = (gaussian_mask_size-1)/2;
 	for (int x = -lim_mask; x <= lim_mask; x++)
 	{
-		r = math::sqrt(float(x*x));
+		r = ::sqrt(float(x*x));
 		kernel(x + lim_mask, 0) = (exp(-(r*r)/s))/(M_PI * s);
 		ksum += kernel(x + lim_mask, 0);
 	}

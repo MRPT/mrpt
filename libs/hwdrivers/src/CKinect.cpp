@@ -7,10 +7,11 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/hwdrivers.h> // Precompiled header
+#include "hwdrivers-precomp.h"   // Precompiled headers
 
 #include <mrpt/hwdrivers/CKinect.h>
 #include <mrpt/utils/CTimeLogger.h>
+#include <mrpt/utils/TStereoCamera.h>
 
 // Universal include for all versions of OpenCV
 #include <mrpt/otherlibs/do_opencv_includes.h>
@@ -18,6 +19,9 @@
 using namespace mrpt::hwdrivers;
 using namespace mrpt::system;
 using namespace mrpt::synch;
+using namespace mrpt::utils;
+using namespace mrpt::math;
+using namespace std;
 
 IMPLEMENTS_GENERIC_SENSOR(CKinect,mrpt::hwdrivers)
 

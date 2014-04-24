@@ -7,7 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/slam.h>  // Precompiled header
+#include "slam-precomp.h"   // Precompiled headers
 
 #include <mrpt/slam/CGridMapAligner.h>
 
@@ -556,7 +556,7 @@ CPosePDFPtr CGridMapAligner::AlignPDF_robustMatch(
 						Hq(0,0) = 1;
 						Hq(1,1) = 1;
 
-						CPoint2D p2_j_local;
+						TPoint2D p2_j_local;
 						vector<float>  matches_dist;
 						std::vector<size_t> matches_idx;
 
@@ -608,8 +608,8 @@ CPosePDFPtr CGridMapAligner::AlignPDF_robustMatch(
 								if ( used_landmarks1[ matches_idx[u] ] ) continue;
 
 								// Jacobian wrt transformation q
-								Hq.get_unsafe(0,2) = -p2_j_local.x()*ssin - p2_j_local.y()*ccos;
-								Hq.get_unsafe(1,2) =  p2_j_local.x()*ccos - p2_j_local.y()*ssin;
+								Hq.get_unsafe(0,2) = -p2_j_local.x*ssin - p2_j_local.y*ccos;
+								Hq.get_unsafe(1,2) =  p2_j_local.x*ccos - p2_j_local.y*ssin;
 
 								// COV_j = Hq \Sigma_q Hq^t + Hc Cj Hc^t
 								Hc.multiply_HCHt(COV_pnt,pdf_M1_i.cov);
@@ -1118,3 +1118,13 @@ void  CGridMapAligner::TConfigParams::loadFromConfigFile(
 	feature_detector_options.loadFromConfigFile(iniFile,section);
 }
 
+
+CPose3DPDFPtr CGridMapAligner::Align3DPDF(
+	const CMetricMap		*m1,
+	const CMetricMap		*m2,
+	const CPose3DPDFGaussian	&initialEstimationPDF,
+	float					*runningTime,
+	void					*info )
+{
+	THROW_EXCEPTION("Align3D method not applicable to gridmap-aligner");
+}

@@ -9,11 +9,9 @@
 #ifndef  CServerTCPSocket_H
 #define  CServerTCPSocket_H
 
-#include <mrpt/config.h>
-#include <mrpt/utils/utils_defs.h>
-#include <mrpt/utils/CStream.h>
-
+#include <mrpt/utils/core_defs.h>
 #include <mrpt/utils/CDebugOutputCapable.h>
+#include <string>
 
 namespace mrpt
 {

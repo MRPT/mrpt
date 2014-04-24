@@ -15,11 +15,10 @@
 #include <mrpt/hwdrivers/CGenericSensor.h>
 #include <mrpt/synch/CPipe.h>
 #include <mrpt/system/threads.h>
+#include <list>
 
 namespace mrpt
 {
-	namespace slam { class CObservationRawDAQ; }
-
 	namespace hwdrivers
 	{
 		/** An interface to read from data acquisition boards compatible with National Instruments "DAQmx Base" or "DAQmx".

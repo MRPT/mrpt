@@ -7,15 +7,16 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/hwdrivers.h>
+#include "hwdrivers-precomp.h"   // Precompiled headers
 
 #include <mrpt/hwdrivers/CRovio.h>
+#include <mrpt/hwdrivers/CFFMPEG_InputStream.h>
 #include <mrpt/utils/net_utils.h>
+#include <mrpt/utils/CMemoryStream.h>
 #include <mrpt/slam/CObservationImage.h>
 
 using namespace mrpt::utils;
 using namespace mrpt::slam;
-using namespace mrpt::gui;
 using namespace mrpt::hwdrivers;
 using namespace mrpt::utils::net;
 using namespace std;
@@ -290,7 +291,7 @@ bool CRovio::retrieve_video()
 		m_videothread_must_exit         = false;
 		m_videothread_finished          = false;
 
-		m_videoThread = createThreadFromObjectMethod(this,&mrpt::hwdrivers::CRovio::thread_video);
+		m_videoThread = mrpt::system::createThreadFromObjectMethod(this,&mrpt::hwdrivers::CRovio::thread_video);
 
 		while (!m_videothread_initialized_done) {
 			mrpt::system::sleep(10);
@@ -358,7 +359,7 @@ bool CRovio::captureImageAsync( CImage & picture, bool rectified)
 		CMemoryStream stream( &resp[0],  resp.size()  );
 		picture.loadFromStreamAsJPEG(stream);
 		if( rectified )//Comprobar que las matrices existen y son correctas********************
-			picture.rectifyImageInPlace(options.cameraParams.intrinsicParams, options.cameraParams.getDistortionParamsAsVector() );
+			picture.rectifyImageInPlace(options.cameraParams);
 		//picture.saveToFile("0000.jpg");
 		//cout<<"Response:\n"<<response<<endl;
 		return true;

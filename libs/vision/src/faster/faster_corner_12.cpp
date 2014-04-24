@@ -217,7 +217,7 @@ void fast_corner_detect_12(const IplImage* I, mrpt::vision::TSimpleFeatureList &
 		return;
 
 #if MRPT_HAS_SSE2
-	if (mrpt::system::is_aligned<16>(I->imageData) && is_aligned<16>(I->imageData+I->widthStep))
+	if (mrpt::system::is_aligned<16>(I->imageData) && mrpt::system::is_aligned<16>(I->imageData+I->widthStep))
 		faster_corner_detect_12<true>(I, corners, barrier, octave,out_feats_index_by_row);
 	else
 		faster_corner_detect_12<false>(I, corners, barrier, octave,out_feats_index_by_row);

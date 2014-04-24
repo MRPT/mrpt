@@ -10,7 +10,6 @@
 #ifndef CROVIO_H
 #define CROVIO_H
 
-#include <mrpt/utils/utils_defs.h>
 #include <mrpt/utils/TCamera.h>
 #include <mrpt/hwdrivers/link_pragmas.h>
 #include <mrpt/synch/CCriticalSection.h>

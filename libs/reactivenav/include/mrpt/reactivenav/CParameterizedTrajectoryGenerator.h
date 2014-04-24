@@ -38,7 +38,7 @@ namespace mrpt
 	class REACTIVENAV_IMPEXP  CParameterizedTrajectoryGenerator
 	{
 	public:
-		EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+		MRPT_MAKE_ALIGNED_OPERATOR_NEW
 	protected:
         /** Constructor: possible values in "params":
 		 *   - ref_distance: The maximum distance in PTGs

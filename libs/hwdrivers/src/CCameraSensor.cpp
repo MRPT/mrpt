@@ -7,7 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/hwdrivers.h> // Precompiled headers
+#include "hwdrivers-precomp.h"   // Precompiled headers
 
 #include <mrpt/system/os.h>
 #include <mrpt/hwdrivers/CCameraSensor.h>
@@ -186,7 +186,7 @@ void CCameraSensor::initialize()
 		try
 		{
 			m_cap_swissranger->initialize(); // This will launch an exception if needed.
-		} catch (std::exception &e)
+		} catch (std::exception &)
 		{
 			m_state = CGenericSensor::ssError;
 			throw;
@@ -209,7 +209,7 @@ void CCameraSensor::initialize()
 		try
 		{
 			m_cap_kinect->initialize(); // This will launch an exception if needed.
-		} catch (std::exception &e)
+		} catch (std::exception &)
 		{
 			m_state = CGenericSensor::ssError;
 			throw;
@@ -237,7 +237,7 @@ void CCameraSensor::initialize()
 		{
 			// Open camera and start capture:
 			m_cap_flycap = new CImageGrabber_FlyCapture2( m_flycap_options );
-		} catch (std::exception &e)
+		} catch (std::exception &)
 		{
 			m_state = CGenericSensor::ssError;
 			throw;
@@ -272,8 +272,7 @@ void CCameraSensor::initialize()
 				m_cap_flycap_stereo_r->startCapture();
 			}
 
-
-		} catch (std::exception &e)
+		} catch (std::exception &)
 		{
 			m_state = CGenericSensor::ssError;
 			throw;
@@ -503,7 +502,7 @@ void  CCameraSensor::loadConfig_sensorSpecific(
 	m_dc1394_options.color_coding = it_color->second;
 
 
-	m_external_images_format = mrpt::utils::trim( configSource.read_string( iniSection, "external_images_format", m_external_images_format ) );
+	m_external_images_format = mrpt::system::trim( configSource.read_string( iniSection, "external_images_format", m_external_images_format ) );
 	m_external_images_jpeg_quality = configSource.read_int( iniSection, "external_images_jpeg_quality", m_external_images_jpeg_quality );
 	m_external_images_own_thread = configSource.read_bool( iniSection, "external_images_own_thread", m_external_images_own_thread );
 	m_external_image_saver_count = configSource.read_int( iniSection, "external_images_own_thread_count", m_external_image_saver_count );

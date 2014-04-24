@@ -12,6 +12,7 @@
 
 #include <mrpt/utils/TCamera.h>
 #include <mrpt/vision/utils.h>
+#include <mrpt/poses/poses_frwds.h>
 
 namespace mrpt
 {
@@ -37,7 +38,7 @@ namespace mrpt
 			  * \sa projectPoints_with_distortion, projectPoint_no_distortion
 			  */
 			void VISION_IMPEXP projectPoints_no_distortion(
-				const std::vector<mrpt::poses::CPoint3D> &in_points_3D,
+				const std::vector<mrpt::math::TPoint3D> &in_points_3D,
 				const mrpt::poses::CPose3D &cameraPose,
 				const mrpt::math::CMatrixDouble33 & intrinsicParams,
 				std::vector<TPixelCoordf> &projectedPoints,
@@ -94,7 +95,7 @@ namespace mrpt
 			  * \sa projectPoint_with_distortion, projectPoints_no_distortion
 			  */
 			void VISION_IMPEXP projectPoints_with_distortion(
-				const std::vector<mrpt::poses::CPoint3D> &in_points_3D,
+				const std::vector<mrpt::math::TPoint3D> &in_points_3D,
 				const mrpt::poses::CPose3D &cameraPose,
 				const mrpt::math::CMatrixDouble33 & intrinsicParams,
 				const std::vector<double> & distortionParams,
@@ -123,7 +124,7 @@ namespace mrpt
 			void VISION_IMPEXP projectPoints_with_distortion(
 				const std::vector<mrpt::math::TPoint3D>  &P,
 				const mrpt::utils::TCamera  &params,
-				const CPose3DQuat &cameraPose,
+				const mrpt::poses::CPose3DQuat &cameraPose,
 				std::vector<TPixelCoordf>  &pixels,
 				bool accept_points_behind = false
 				);

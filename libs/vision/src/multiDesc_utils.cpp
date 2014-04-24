@@ -6,7 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
-#include <mrpt/vision.h>  // Precompiled headers
+#include "vision-precomp.h"   // Precompiled headers
 
 #include <mrpt/vision/multiDesc_utils.h>
 #include <mrpt/vision/utils.h>
@@ -20,6 +20,7 @@
 #include <mrpt/slam/CObservationStereoImages.h>
 #include <mrpt/slam/CObservationBearingRange.h>
 #include <mrpt/system/filesystem.h>
+#include <mrpt/system/os.h>
 #include <mrpt/utils/CTicTac.h>
 #include <mrpt/utils/CTimeLogger.h>
 #include <mrpt/math/utils.h>

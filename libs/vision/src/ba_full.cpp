@@ -7,11 +7,12 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/vision.h>  // Precompiled headers
+#include "vision-precomp.h"   // Precompiled headers
 
 #include <mrpt/vision/bundle_adjustment.h>
 #include <mrpt/utils/CTimeLogger.h>
 #include <mrpt/math/CSparseMatrix.h>
+#include <mrpt/math/ops_containers.h>
 
 #include <memory>  // std::auto_ptr, unique_ptr
 

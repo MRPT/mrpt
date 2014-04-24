@@ -9,8 +9,8 @@
 #ifndef  mrpt_synch_semaphore_H
 #define  mrpt_synch_semaphore_H
 
-#include <mrpt/utils/utils_defs.h>
 #include <mrpt/utils/CReferencedMemBlock.h>
+#include <string>
 
 /*---------------------------------------------------------------
 	Class
@@ -31,7 +31,7 @@ namespace mrpt
 		class BASE_IMPEXP CSemaphore
 		{
 		protected:
-			utils::CReferencedMemBlock		m_data;
+			mrpt::utils::CReferencedMemBlock m_data;
 			std::string  m_name; //!< The name of the named semaphore, or empty if unnamed.
 
         public:

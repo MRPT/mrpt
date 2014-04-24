@@ -108,7 +108,7 @@ namespace mrpt
 	/** @} */
 
 
-	// A version of EIGEN_MAKE_ALIGNED_OPERATOR_NEW that doesn't force including the entire Eigen lib:
+	// A version of MRPT_MAKE_ALIGNED_OPERATOR_NEW that doesn't force including the entire Eigen lib:
 	#define MRPT_MAKE_ALIGNED_OPERATOR_NEW \
 		void *operator new(size_t size)  { return mrpt::system::os::aligned_malloc(size,16); } \
 		void *operator new[](size_t size){ return mrpt::system::os::aligned_malloc(size,16); } \

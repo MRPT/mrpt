@@ -11,9 +11,11 @@
 #define CGenericSensor_H
 
 #include <mrpt/utils/CConfigFileBase.h>
+#include <mrpt/utils/CUncopiable.h>
 #include <mrpt/slam/CObservation.h>
-#include <mrpt/synch.h>
+#include <mrpt/synch/CCriticalSection.h>
 #include <mrpt/system/threads.h>
+#include <map>
 
 #include <mrpt/hwdrivers/link_pragmas.h>
 
@@ -231,7 +233,7 @@ namespace mrpt
 			}
 
 		public:
-			EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+			MRPT_MAKE_ALIGNED_OPERATOR_NEW
 
 		}; // end of class
 

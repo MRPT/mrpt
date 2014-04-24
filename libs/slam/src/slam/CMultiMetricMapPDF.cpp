@@ -7,13 +7,13 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/slam.h>  // Precompiled header
+#include "slam-precomp.h"   // Precompiled headers
 
 
 #include <mrpt/random.h>
-#include <mrpt/math/utils.h>
 #include <mrpt/utils/CTicTac.h>
 #include <mrpt/utils/CFileStream.h>
+#include <mrpt/system/os.h>
 
 #include <mrpt/slam/CMultiMetricMapPDF.h>
 #include <mrpt/slam/CActionRobotMovement2D.h>
@@ -24,7 +24,6 @@
 #include <mrpt/slam/CObservationBeaconRanges.h>
 #include <mrpt/slam/CSimplePointsMap.h>
 #include <mrpt/slam/CLandmarksMap.h>
-#include <mrpt/math.h>
 
 #include <mrpt/slam/PF_aux_structs.h>
 
@@ -34,6 +33,7 @@ using namespace mrpt::slam;
 using namespace mrpt::poses;
 using namespace mrpt::random;
 using namespace mrpt::utils;
+using namespace mrpt::system;
 using namespace std;
 
 IMPLEMENTS_SERIALIZABLE( CMultiMetricMapPDF, CSerializable, mrpt::slam )

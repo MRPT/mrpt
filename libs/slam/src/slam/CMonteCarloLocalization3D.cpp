@@ -7,12 +7,13 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/slam.h>  // Precompiled headers
+#include "slam-precomp.h"   // Precompiled headerss
 
 #include <mrpt/slam/CMonteCarloLocalization3D.h>
 #include <mrpt/slam/CSensoryFrame.h>
 
 #include <mrpt/math/utils.h>
+#include <mrpt/utils/round.h>
 #include <mrpt/slam/PF_aux_structs.h>
 
 using namespace std;
@@ -20,6 +21,7 @@ using namespace mrpt;
 using namespace mrpt::bayes;
 using namespace mrpt::poses;
 using namespace mrpt::math;
+using namespace mrpt::utils;
 
 #include <mrpt/slam/PF_implementations_data.h>
 

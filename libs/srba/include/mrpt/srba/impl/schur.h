@@ -338,7 +338,7 @@ namespace mrpt { namespace srba {
 
 			TInfoPerHfBlock() : sym_Hf_diag_blocks(NULL), num_Hf_diag_blocks_invertible(false) { }
 
-			EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+			MRPT_MAKE_ALIGNED_OPERATOR_NEW
 		};
 
 		typedef typename mrpt::aligned_containers<TInfoPerHfBlock>::vector_t TInfoPerHfBlock_vector_t;
@@ -391,7 +391,7 @@ namespace mrpt { namespace srba {
 				// Used as a temporary container for the product, but also because this term reappears in the gradient update:
 				typename HESS_Apf::matrix_t         Hpi_lk_times_inv_Hf_lk;
 
-				EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+				MRPT_MAKE_ALIGNED_OPERATOR_NEW
 			};
 
 // BUG ALERT in Eigen/Deque/MSVC 2008 32bit: http://eigen.tuxfamily.org/bz/show_bug.cgi?id=83

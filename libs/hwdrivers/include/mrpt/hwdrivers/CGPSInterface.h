@@ -160,7 +160,7 @@ namespace mrpt
 			// MAR'11 -----------------------------------------
 			bool            m_useAIMMode;           //!< Use this mode for receive RTK corrections from a external source through the primary port
             // ------------------------------------------------
-			TTimeStamp      m_last_timestamp;
+			mrpt::system::TTimeStamp      m_last_timestamp;
 
 			// MAR'11 -----------------------------------------
 			bool            m_AIMConfigured;        //!< Indicates if the AIM has been properly set up.

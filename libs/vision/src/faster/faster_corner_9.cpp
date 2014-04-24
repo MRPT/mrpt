@@ -16,6 +16,7 @@
 #include "faster_corner_prototypes.h"
 
 #include <mrpt/utils/SSE_types.h>
+#include <mrpt/system/memory.h>
 #include "faster_corner_utilities.h"
 #include "corner_9.h"
 
@@ -299,7 +300,7 @@ void fast_corner_detect_9(const IplImage* I, mrpt::vision::TSimpleFeatureList & 
 		return;
 
 #if MRPT_HAS_SSE2
-	if (mrpt::system::is_aligned<16>(I->imageData) && is_aligned<16>(I->imageData+I->widthStep))
+	if (mrpt::system::is_aligned<16>(I->imageData) && mrpt::system::is_aligned<16>(I->imageData+I->widthStep))
 		faster_corner_detect_9<true>(I, corners, barrier,octave,out_feats_index_by_row);
 	else
 		faster_corner_detect_9<false>(I, corners, barrier,octave,out_feats_index_by_row);

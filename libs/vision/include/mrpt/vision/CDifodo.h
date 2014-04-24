@@ -10,8 +10,7 @@
 #ifndef CDifodo_H
 #define CDifodo_H
 
-#include <mrpt/base.h>
-#include <Eigen/Dense>
+#include <mrpt/utils/types_math.h> // Eigen
 #include <mrpt/vision/link_pragmas.h>
 
 

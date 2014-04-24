@@ -7,12 +7,12 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/gui.h>  // precompiled header
+#include "gui-precomp.h"   // Precompiled headers
 
-#include <mrpt/config.h>
 #include <mrpt/gui/CDisplayWindow.h>
 #include <mrpt/system/os.h>
 #include <mrpt/utils/CImage.h>
+#include <mrpt/utils/round.h>
 
 #include <mrpt/gui/WxSubsystem.h>
 #include <mrpt/gui/WxUtils.h>

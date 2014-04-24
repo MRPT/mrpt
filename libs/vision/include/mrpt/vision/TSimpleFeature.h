@@ -11,8 +11,10 @@
 
 #include <mrpt/utils/TPixelCoord.h>
 #include <mrpt/math/KDTreeCapable.h>
+#include <mrpt/math/CMatrixTemplate.h>
 #include <mrpt/math/CMatrixTemplateNumeric.h>
 #include <mrpt/vision/types.h>
+#include <mrpt/utils/round.h>
 
 #include <mrpt/vision/link_pragmas.h>
 

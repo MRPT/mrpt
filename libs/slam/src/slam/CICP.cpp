@@ -7,15 +7,21 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/slam.h>  // Precompiled header
+#include "slam-precomp.h"   // Precompiled headers
 
 #include <mrpt/slam/CICP.h>
 #include <mrpt/scanmatching.h>
 #include <mrpt/poses/CPosePDFSOG.h>
 #include <mrpt/utils/CTicTac.h>
-
-#include <mrpt/math/utils.h>
-#include <mrpt/math/geometry.h>
+#include <mrpt/utils/CStream.h>
+#include <mrpt/utils/CConfigFileBase.h>  // MRPT_LOAD_*()
+#include <mrpt/math/wrap2pi.h>
+#include <mrpt/math/ops_containers.h>
+#include <mrpt/poses/CPose2D.h>
+#include <mrpt/poses/CPosePDF.h>
+#include <mrpt/poses/CPose3DPDF.h>
+#include <mrpt/poses/CPosePDFGaussian.h>
+#include <mrpt/poses/CPose3DPDFGaussian.h>
 
 using namespace mrpt::slam;
 using namespace mrpt::poses;
@@ -560,15 +566,15 @@ CPosePDFPtr CICP::ICP_Method_LM(
 	MRPT_START
 
 	// The result can be either a Gaussian or a SOG:
-	size_t									nCorrespondences=0;
-	bool									keepIteratingICP;
-	CPose2D									grossEst = initialEstimationPDF.mean;
-	mrpt::utils::TMatchingPairList			correspondences,old_correspondences;
-	CPose2D									lastMeanPose;
-	CVectorFloat							other_xs_trans,other_ys_trans; // temporary container of "other" map (map2) transformed by "q"
-	CMatrixFloat  							dJ_dq;  // The jacobian
-	CPose2D   								q;	// The updated 2D transformation estimate
-	CPose2D									q_new;
+	size_t              nCorrespondences=0;
+	bool                keepIteratingICP;
+	CPose2D	            grossEst = initialEstimationPDF.mean;
+	TMatchingPairList   correspondences,old_correspondences;
+	CPose2D             lastMeanPose;
+	std::vector<float>  other_xs_trans,other_ys_trans; // temporary container of "other" map (map2) transformed by "q"
+	CMatrixFloat dJ_dq;  // The jacobian
+	CPose2D q;	// The updated 2D transformation estimate
+	CPose2D q_new;
 
 	const bool onlyUniqueRobust = options.onlyUniqueRobust;
 	const bool onlyKeepTheClosest = options.onlyClosestCorrespondences;
@@ -650,7 +656,7 @@ CPosePDFPtr CICP::ICP_Method_LM(
 				const double  Axy = options.Axy_aprox_derivatives;		// For approximating the derivatives
 
 				// Compute at once the square errors for each point with the current "q" and the transformed points:
-				CVectorFloat 	sq_errors;
+				std::vector<float> sq_errors;
 				correspondences.squareErrorVector( q, sq_errors, other_xs_trans,other_ys_trans);
 				double OSE_initial = math::sum( sq_errors );
 
@@ -658,7 +664,7 @@ CPosePDFPtr CICP::ICP_Method_LM(
 				// ------------------------------------
 				double  rho2 = square( options.kernel_rho );
 				mrpt::utils::TMatchingPairList::iterator	it;
-				CVectorFloat::const_iterator other_x_trans,other_y_trans;
+				std::vector<float>::const_iterator other_x_trans,other_y_trans;
 				size_t  i;
 
 				for (i=0,
@@ -762,7 +768,7 @@ CPosePDFPtr CICP::ICP_Method_LM(
 				// ---------------------------------------------------
 				q_new = q;
 
-				CVectorFloat new_sq_errors, new_other_xs_trans, new_other_ys_trans;
+				std::vector<float>  new_sq_errors, new_other_xs_trans, new_other_ys_trans;
 				size_t   		nLMiters = 0;
 				const size_t 	maxLMiters = 100;
 
@@ -778,8 +784,8 @@ CPosePDFPtr CICP::ICP_Method_LM(
 					C_inv = C.inv();
 
 					// LM_delta = C_inv * dJ_dq * sq_errors
-					CVectorFloat dJsq, LM_delta;
-					dJ_dq.multiply_Ab( sq_errors, dJsq );
+					Eigen::VectorXf  dJsq, LM_delta;
+					dJ_dq.multiply_Ab( Eigen::Map<Eigen::VectorXf>(&sq_errors[0],sq_errors.size()), dJsq );
 					C_inv.multiply_Ab(dJsq,LM_delta);
 
 					q_new.x( q.x() - LM_delta[0] );

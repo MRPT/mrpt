@@ -44,7 +44,7 @@ namespace mrpt
 			CMatrixFixedNumeric<double,ObsDim,PointDof>  J_point;
 			bool J_frame_valid, J_point_valid;
 
-			EIGEN_MAKE_ALIGNED_OPERATOR_NEW  // Needed by any struct having Eigen::Matrix<> fields
+			MRPT_MAKE_ALIGNED_OPERATOR_NEW  // Needed by any struct having Eigen::Matrix<> fields
 		};
 
 

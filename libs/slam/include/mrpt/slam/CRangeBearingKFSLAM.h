@@ -11,10 +11,8 @@
 
 #include <mrpt/utils/CDebugOutputCapable.h>
 #include <mrpt/math/CMatrixTemplateNumeric.h>
-#include <mrpt/math/CVectorTemplate.h>
 #include <mrpt/utils/CConfigFileBase.h>
 #include <mrpt/utils/CLoadableOptions.h>
-#include <mrpt/opengl.h>
 #include <mrpt/bayes/CKalmanFilterCapable.h>
 
 #include <mrpt/utils/safe_pointers.h>

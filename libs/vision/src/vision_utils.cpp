@@ -7,7 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/vision.h>  // Precompiled headers
+#include "vision-precomp.h"   // Precompiled headers
 
 
 #include <mrpt/vision/utils.h>
@@ -1113,7 +1113,7 @@ void  vision::projectMatchedFeatures(
 					Pa.chol(L); // math::chol(Pa,L);
 
 					vector<TPoint3D>	B;				// B group
-					poses::TPoint3D			meanB;			// Mean value of the B group
+					TPoint3D			meanB;			// Mean value of the B group
 					CMatrix					Pb;				// Covariance of the B group
 
 					B.resize( 2*Na + 1 );	// Set of output values
@@ -1182,7 +1182,7 @@ void  vision::projectMatchedFeatures(
 						v(1,0) = B[i].y - meanB.y;
 						v(2,0) = B[i].z - meanB.z;
 
-						Pb = Pb + weight*(v*~v);
+						Pb = Pb + weight*(v*v.transpose());
 					} // end for 'i'
 
 					// Store it in the landmark
@@ -1222,7 +1222,7 @@ void  vision::projectMatchedFeatures(
 					Pa.chol(L); //math::chol(Pa,L);
 
 					vector<TPoint3D>	B;				// B group
-					poses::TPoint3D		meanB;			// Mean value of the B group
+					TPoint3D		meanB;			// Mean value of the B group
 					CMatrix				Pb;				// Covariance of the B group
 
 					B.resize( 2*Na + 1 );	// Set of output values
@@ -1293,7 +1293,7 @@ void  vision::projectMatchedFeatures(
 						v(1,0) = B[i].y - meanB.y;
 						v(2,0) = B[i].z - meanB.z;
 
-						Pb = Pb + weight*(v*~v);
+						Pb = Pb + weight*(v*v.transpose());
 					} // end for 'i'
 
 					// Store it in the landmark
@@ -1419,7 +1419,7 @@ void  vision::projectMatchedFeatures(
 					Pa.chol(L); // math::chol(Pa,L);
 
 					vector<TPoint3D>	B;				// B group
-					poses::TPoint3D			meanB;			// Mean value of the B group
+					TPoint3D			meanB;			// Mean value of the B group
 					CMatrix					Pb;				// Covariance of the B group
 
 					B.resize( 2*Na + 1 );	// Set of output values
@@ -1488,7 +1488,7 @@ void  vision::projectMatchedFeatures(
 						v(1,0) = B[i].y - meanB.y;
 						v(2,0) = B[i].z - meanB.z;
 
-						Pb = Pb + weight*(v*~v);
+						Pb = Pb + weight*(v*v.transpose());
 					} // end for 'i'
 
 					// Store it in the landmark
@@ -1528,7 +1528,7 @@ void  vision::projectMatchedFeatures(
 					Pa.chol(L); //math::chol(Pa,L);
 
 					vector<TPoint3D>	B;				// B group
-					poses::TPoint3D		meanB;			// Mean value of the B group
+					TPoint3D		meanB;			// Mean value of the B group
 					CMatrix				Pb;				// Covariance of the B group
 
 					B.resize( 2*Na + 1 );	// Set of output values
@@ -1599,7 +1599,7 @@ void  vision::projectMatchedFeatures(
 						v(1,0) = B[i].y - meanB.y;
 						v(2,0) = B[i].z - meanB.z;
 
-						Pb = Pb + weight*(v*~v);
+						Pb = Pb + weight*(v*v.transpose());
 					} // end for 'i'
 
 					// Store it in the landmark

@@ -7,7 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/slam.h>  // Precompiled header
+#include "slam-precomp.h"   // Precompiled headers
 
 /*
    For all data association algorithms, the individual compatibility is estabished by
@@ -23,7 +23,7 @@
 
 #include <mrpt/slam/data_association.h>
 #include <mrpt/math/distributions.h>  // for chi2inv
-#include <mrpt/math/utils.h>
+#include <mrpt/math/data_utils.h>
 #include <mrpt/poses/CPointPDFGaussian.h>
 #include <mrpt/poses/CPoint2DPDFGaussian.h>
 
@@ -97,7 +97,7 @@ double joint_pdf_metric (
 	// Mean:
 	// The same for the vector of "errors" or "innovation" between predictions and observations:
 	// ----------------------------------------------------------------------
-	Eigen::Vector<T,Eigen::Dynamic,1>  innovations(N * info.length_O);
+	Eigen::Matrix<T,Eigen::Dynamic,1>  innovations(N * info.length_O);
 	T *dst_ptr= &innovations[0];
 	for (map<size_t,size_t>::const_iterator it=info.currentAssociation.begin();it!=info.currentAssociation.end();++it)
 	{

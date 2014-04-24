@@ -225,7 +225,7 @@ namespace mrpt
 
 			/** PTU and serial port initialization */
 
-			virtual bool init(const std::string port);
+			virtual bool init(const std::string &port);
 
 			/** Close conection with serial port */
 

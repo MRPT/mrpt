@@ -7,10 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/hwdrivers.h>
-
-#include <mrpt/utils/utils_defs.h>
-#include <mrpt/system/os.h>
+#include "hwdrivers-precomp.h"   // Precompiled headers
 
 #ifdef MRPT_OS_WINDOWS
 

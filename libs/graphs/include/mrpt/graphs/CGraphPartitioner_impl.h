@@ -63,7 +63,7 @@ void CGraphPartitioner<GRAPH_MATRIX,num_t>::SpectralBisection(
 	size_t  nRows = eigenVectors.getRowCount();
 
 	//for (i=0;i<eigenVectors.getColCount();i++) mean+=eigenVectors(colNo,i);
-	for (i=0;i<nRows;i++) mean+=eigenVectors(i,colNo);
+	for (size_t i=0;i<nRows;i++) mean+=eigenVectors(i,colNo);
 	mean /= nRows;
 
 	out_part1.clear();

@@ -7,9 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/slam.h>  // Precompiled header
-
-
+#include "slam-precomp.h"   // Precompiled headers
 
 #include <mrpt/slam/CIncrementalMapPartitioner.h>
 #include <mrpt/slam/CMultiMetricMap.h>
@@ -18,7 +16,11 @@
 #include <mrpt/poses/CPose3DPDFParticles.h>
 #include <mrpt/graphs/CGraphPartitioner.h>
 #include <mrpt/utils/CTicTac.h>
-#include <mrpt/opengl.h>
+#include <mrpt/utils/stl_serialization.h>
+#include <mrpt/opengl/CGridPlaneXY.h>
+#include <mrpt/opengl/CSetOfObjects.h>
+#include <mrpt/opengl/CSphere.h>
+#include <mrpt/opengl/CSimpleLine.h>
 
 using namespace mrpt::slam;
 using namespace mrpt::graphs;

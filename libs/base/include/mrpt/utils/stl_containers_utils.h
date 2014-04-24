@@ -8,6 +8,10 @@
    +---------------------------------------------------------------------------+ */
 #pragma once
 
+#include <list>
+#include <map>
+#include <set>
+
 namespace mrpt
 {
 	namespace utils

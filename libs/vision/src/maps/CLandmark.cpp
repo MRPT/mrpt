@@ -7,11 +7,12 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/vision.h>  // Precompiled headers
+#include "vision-precomp.h"   // Precompiled headers
 
-
+#include <mrpt/utils/CStream.h>
 #include <mrpt/slam/CLandmark.h>
 #include <mrpt/slam/CObservation.h>
+#include <mrpt/utils/stl_serialization.h>
 #include <mrpt/system/os.h>
 
 using namespace mrpt::slam;

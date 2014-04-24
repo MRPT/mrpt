@@ -9,8 +9,9 @@
 #ifndef  CBaseGUIWindow_H
 #define  CBaseGUIWindow_H
 
-#include <mrpt/synch.h>
+#include <mrpt/synch/CSemaphore.h>
 #include <mrpt/utils/CSerializable.h>
+#include <mrpt/utils/mrptEvent.h>
 #include <mrpt/utils/CObservable.h>
 #include <mrpt/utils/safe_pointers.h>
 #include <mrpt/utils/TPixelCoord.h>

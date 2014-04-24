@@ -7,23 +7,21 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/slam.h>  // Precompiled header
-
+#include "slam-precomp.h"   // Precompiled headers
 
 #include <mrpt/slam/CRangeBearingKFSLAM2D.h>
 #include <mrpt/slam/data_association.h>
 #include <mrpt/poses/CPosePDF.h>
 #include <mrpt/poses/CPosePDFGaussian.h>
 #include <mrpt/slam/CActionRobotMovement3D.h>
-
 #include <mrpt/math/utils.h>
-#include <mrpt/math/CMatrix.h>
-#include <mrpt/math/CMatrixD.h>
 #include <mrpt/utils/CTicTac.h>
+#include <mrpt/system/os.h>
 
 using namespace mrpt::slam;
 using namespace mrpt::poses;
 using namespace mrpt::utils;
+using namespace mrpt::system;
 using namespace std;
 
 #define STATS_EXPERIMENT 0

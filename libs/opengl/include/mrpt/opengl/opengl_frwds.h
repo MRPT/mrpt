@@ -13,6 +13,7 @@ namespace mrpt
 	namespace opengl
 	{
 		class CSetOfObjects; struct CSetOfObjectsPtr;
+		class COpenGLScene; struct COpenGLScenePtr;
 
 
 	} // end namespace

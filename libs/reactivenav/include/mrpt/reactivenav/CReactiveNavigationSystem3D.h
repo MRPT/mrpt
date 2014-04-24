@@ -45,7 +45,7 @@ namespace mrpt
 		class REACTIVENAV_IMPEXP CReactiveNavigationSystem3D : public CAbstractPTGBasedReactive
 		{
 		public:
-			EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+			MRPT_MAKE_ALIGNED_OPERATOR_NEW
 		public:
 			/** See docs in ctor of base class */
 			CReactiveNavigationSystem3D(

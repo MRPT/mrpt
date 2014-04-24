@@ -7,7 +7,11 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/hwdrivers.h> // Precompiled header
+#include "hwdrivers-precomp.h"   // Precompiled headers
+
+#include <mrpt/hwdrivers/CImageGrabber_FlyCapture2.h>
+#include <mrpt/system/string_utils.h>
+#include <mrpt/system/datetime.h>
 
 #if MRPT_HAS_FLYCAPTURE2
 	#include <FlyCapture2.h>
@@ -20,6 +24,7 @@
 #define FC2_BUF_IMG   reinterpret_cast<FlyCapture2::Image*>(m_img_buffer)
 
 using namespace mrpt::hwdrivers;
+using namespace std;
 
 #if MRPT_HAS_FLYCAPTURE2
 // Declare a table to convert strings to their #define values:
@@ -69,10 +74,10 @@ const fc2_str_val fc2_vals[] = {
 template <typename T>
 T fc2_defstr2num(const std::string &str)
 {
-	const std::string s = mrpt::utils::trim(str);
+	const std::string s = mrpt::system::trim(str);
 	for (unsigned int i=0;i<sizeof(fc2_vals)/sizeof(fc2_vals[0]);i++)
 	{
-		if (strCmpI(fc2_vals[i].str,s.c_str()))
+		if (mrpt::system::strCmpI(fc2_vals[i].str,s.c_str()))
 			return static_cast<T>(fc2_vals[i].val);
 	}
 	THROW_EXCEPTION_CUSTOM_MSG1("Error: Unknown FlyCapture2 constant: %s",s.c_str())
@@ -117,7 +122,7 @@ void TCaptureOptions_FlyCapture2::loadOptionsFrom(
 	{
 		string sGUID = cfg.read_string(sect, prefix+string("camera_guid"), "",  true );
 		vector<string> sGUIDparts;
-		mrpt::utils::tokenize(sGUID,"- \t\r\n",sGUIDparts);
+		mrpt::system::tokenize(sGUID,"- \t\r\n",sGUIDparts);
 		ASSERTMSG_(sGUIDparts.size()==4, "GUID format error: must have four blocks like XXX-XXX-XXX-XXX")
 
 		for (int i=0;i<4;i++)
@@ -522,7 +527,7 @@ bool CImageGrabber_FlyCapture2::getObservation( mrpt::slam::CObservationImage &o
 		FC2_BUF_IMG->GetDimensions( &img_rows, &img_cols, &img_stride);
 
 		out_observation.image.loadFromMemoryBuffer(img_cols,img_rows, is_color, FC2_BUF_IMG->GetData() );
-		out_observation.timestamp = mrpt::utils::time_tToTimestamp( timestamp.seconds + 1e-6*timestamp.microSeconds );
+		out_observation.timestamp = mrpt::system::time_tToTimestamp( timestamp.seconds + 1e-6*timestamp.microSeconds );
 
 		return true;
 	}

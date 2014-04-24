@@ -19,6 +19,7 @@
 #include <mrpt/slam/TKLDParams.h>
 
 #include <mrpt/math/distributions.h>  // chi2inv
+#include <mrpt/math/data_utils.h>  // averageLogLikelihood()
 
 #include <mrpt/slam/PF_implementations_data.h>
 
@@ -228,7 +229,7 @@ namespace mrpt
 
 					// The new particle set:
 					std::vector<TPose3D>  newParticles;
-					CVectorDouble         newParticlesWeight;
+					mrpt::math::CVectorDouble   newParticlesWeight;
 					std::vector<size_t>   newParticlesDerivedFromIdx;
 
 					CPose3D	 increment_i;
@@ -574,7 +575,7 @@ namespace mrpt
 			//  the aux. function "PF_SLAM_particlesEvaluator_AuxPFStandard").
 			//
 			vector<TPose3D>			newParticles;
-			vector<double>			newParticlesWeight;
+			mrpt::math::CVectorDouble newParticlesWeight;
 			vector<size_t>			newParticlesDerivedFromIdx;
 
 			// We need the (aproximate) maximum likelihood value for each
@@ -639,7 +640,7 @@ namespace mrpt
 				// -------------------------------------------------------------------------------------------------
 				// The new particle set:
 				newParticles.clear();
-				newParticlesWeight.clear();
+				newParticlesWeight.resize(0);
 				newParticlesDerivedFromIdx.clear();
 
 				// ------------------------------------------------------------------------------

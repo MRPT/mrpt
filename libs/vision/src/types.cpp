@@ -7,10 +7,13 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/vision.h>  // Precompiled headers
+#include "vision-precomp.h"   // Precompiled headers
 
 #include <mrpt/vision/types.h>
 #include <mrpt/system/string_utils.h>
+#include <mrpt/utils/stl_containers_utils.h>
+#include <iostream>
+#include <iomanip>
 
 using namespace std;
 using namespace mrpt;

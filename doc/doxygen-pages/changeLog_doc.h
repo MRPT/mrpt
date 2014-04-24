@@ -12,8 +12,8 @@
 
 <p> <b>Note:</b> <i>If you are displaying a local version of this page and you have not built the whole HTML documentation, the links above will be broken. Either build the documentation invoking <code>make documentation_html</code> or [browse it on-line](http://www.mrpt.org/).</i></p>
 
- <a name="1.1.1">
-  <h2>Version 1.1.1: (Under development) </h2></a>
+ <a name="1.2.0">
+  <h2>Version 1.2.0: (Under development) </h2></a>
 	- Build system:
 		- Fixes to build in OS X - [Patch](https://gist.github.com/randvoorhies/9283072) by Randolph Voorhies.
   	- BUG FIXES:
@@ -41,6 +41,7 @@
 		- mrpt::CImage::rectifyImage() with parameters as separate vectors.
 		- Previous deprecated functions. 
 		- mrpt::slam::CPointsMap::getPoint() with mrpt::poses::CPoint3D arguments.
+		- mrpt::vision::correctDistortion() -> use CImage method instead
 
 
 <hr>
@@ -155,7 +156,7 @@
 			- [mrpt-base] geometry module.
 	- BUG FIXES:
 		- CTimeLogger::registerUserMeasure() ignored the enable/disable state of the logger - <a href="http://code.google.com/p/mrpt/source/detail?r=3382" >r3382</a>
-		- mrpt-srba: SEGFAULT in 32bit builds due to missing EIGEN_MAKE_ALIGNED_OPERATOR_NEW - <a href="http://code.google.com/p/mrpt/source/detail?r=3429" >r3429</a>
+		- mrpt-srba: SEGFAULT in 32bit builds due to missing MRPT_MAKE_ALIGNED_OPERATOR_NEW - <a href="http://code.google.com/p/mrpt/source/detail?r=3429" >r3429</a>
 
  <br/>
  <hr>
@@ -283,7 +284,7 @@
 				- mrpt::gui::CDisplayWindow3D::addTextMessage() (and other opengl text routines) now allows drawing text with a shadow effect - <a href="http://code.google.com/p/mrpt/source/detail?r=3007" >r3007</a>
 			- [mrpt-hwdrivers]
 				- New method mrpt::hwdrivers::CActivMediaRobotBase::areMotorsEnabled()
-				- mrpt::hwdrivers::CGenericSensor (and all derived classes) now allocate objects aligned in memory with EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+				- mrpt::hwdrivers::CGenericSensor (and all derived classes) now allocate objects aligned in memory with MRPT_MAKE_ALIGNED_OPERATOR_NEW
 				- New static method mrpt::hwdrivers::CGPSInterface::parse_NMEA()
 			- [mrpt-maps]
 				- Better integration of point cloud classes with PCL: - <a href="http://code.google.com/p/mrpt/source/detail?r=2943" >r2943</a>

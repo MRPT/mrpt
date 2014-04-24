@@ -9,9 +9,10 @@
 #ifndef  mrpt_synch_pipe_H
 #define  mrpt_synch_pipe_H
 
-#include <mrpt/utils/utils_defs.h>
+#include <mrpt/base/link_pragmas.h>
 #include <mrpt/utils/CUncopiable.h>
 #include <mrpt/utils/CStream.h>
+#include <string>
 #include <memory> // for auto_ptr<>
 
 namespace mrpt

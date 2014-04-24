@@ -7,9 +7,10 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/slam.h>   // Precompiled headers
+#include "slam-precomp.h"   // Precompiled headers
 
 #include <mrpt/utils/CConfigFile.h>
+#include <mrpt/poses/CPoint2D.h>
 #include <mrpt/slam/CMultiMetricMap.h>
 #include <mrpt/utils/CStartUpClassesRegister.h>
 #include <mrpt/utils/metaprogramming.h>
@@ -1010,7 +1011,7 @@ float  CMultiMetricMap::getNewStaticPointsRatio(
 		params, extraResults);
 		
 	size_t nStaticPoints = 0;
-	CPoint2D g,l;
+	TPoint2D g,l;
 
 	for (size_t i=0;i<nTotalPoints;i++)
 	{
@@ -1026,7 +1027,7 @@ float  CMultiMetricMap::getNewStaticPointsRatio(
 			//   it should not be consider as an static point!!
 			points->getPoint(i,l);
 
-			CPoint2D	temp = l - takenFrom;
+			CPoint2D	temp = CPoint2D(l.x,l.y) - takenFrom;
 			if ( temp.norm() < params.maxDistForCorrespondence)
 			{
 				// A new point
@@ -1034,7 +1035,7 @@ float  CMultiMetricMap::getNewStaticPointsRatio(
 				// Translate point to global coordinates:
 				g = takenFrom + l;
 
-				if ( m_gridMaps[0]->isStaticPos( g.x(), g.y() ) )
+				if ( m_gridMaps[0]->isStaticPos( g.x, g.y ) )
 				{
 					// A new, static point:
 					nStaticPoints++;

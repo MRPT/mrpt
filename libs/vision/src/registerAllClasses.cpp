@@ -7,14 +7,10 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
+#include "vision-precomp.h"   // Precompiled headers
+
 #include <mrpt/vision.h>
 #include <mrpt/utils/CSerializable.h>
-
-#ifndef MRPT_ENABLE_PRECOMPILED_HDRS
-#	define MRPT_ALWAYS_INCLUDE_ALL_HEADERS
-#	undef __mrpt_vision_H
-#	include <mrpt/vision.h>
-#endif
 
 #include <mrpt/utils/CStartUpClassesRegister.h>
 

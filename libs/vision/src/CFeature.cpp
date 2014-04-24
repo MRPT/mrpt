@@ -7,7 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/vision.h>  // Precompiled headers
+#include "vision-precomp.h"   // Precompiled headers
 
 
 #include <mrpt/utils/CTextFileLinesParser.h>
@@ -15,9 +15,11 @@
 #include <mrpt/utils/CFileInputStream.h>
 #include <mrpt/utils/CStartUpClassesRegister.h>
 #include <mrpt/utils/CStdOutStream.h>
+#include <mrpt/utils/stl_serialization.h>
 #include <mrpt/vision/CFeature.h>
 #include <mrpt/vision/types.h>
-#include <mrpt/math/utils.h>
+#include <mrpt/math/data_utils.h>
+#include <mrpt/system/os.h>
 
 using namespace mrpt;
 using namespace mrpt::vision;

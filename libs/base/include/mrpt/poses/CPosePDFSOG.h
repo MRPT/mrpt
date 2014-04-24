@@ -57,7 +57,7 @@ namespace mrpt
 				double		log_w;
 
 			public:
-			  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+			  MRPT_MAKE_ALIGNED_OPERATOR_NEW
 			};
 
 			typedef mrpt::aligned_containers<TGaussianMode>::vector_t	CListGaussianModes;

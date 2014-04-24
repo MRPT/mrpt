@@ -7,13 +7,14 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/hwdrivers.h> // Precompiled headers
-
+#include "hwdrivers-precomp.h"   // Precompiled headers
 
 #include <mrpt/hwdrivers/CHokuyoURG.h>
 #include <mrpt/hwdrivers/CSerialPort.h>
-
+#include <mrpt/utils/CClientTCPSocket.h>
+#include <mrpt/system/os.h>
 #include <mrpt/opengl/CPlanarLaserScan.h> // in library mrpt-maps
+#include <mrpt/opengl/CAxis.h>
 
 IMPLEMENTS_GENERIC_SENSOR(CHokuyoURG,mrpt::hwdrivers)
 

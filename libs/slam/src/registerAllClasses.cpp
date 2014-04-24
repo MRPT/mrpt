@@ -7,13 +7,9 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/slam.h>  // Precompiled header
+#include "slam-precomp.h"   // Precompiled headers
 
-#ifndef MRPT_ENABLE_PRECOMPILED_HDRS
-#	define MRPT_ALWAYS_INCLUDE_ALL_HEADERS
-#	undef mrpt_slam_H
-#	include <mrpt/slam.h>
-#endif
+#include <mrpt/slam.h>
 
 #include <mrpt/utils/CStartUpClassesRegister.h>
 

@@ -7,7 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/slam.h>  // Precompiled headers
+#include "slam-precomp.h"   // Precompiled headerss
 
 #include <mrpt/slam/CMonteCarloLocalization2D.h>
 

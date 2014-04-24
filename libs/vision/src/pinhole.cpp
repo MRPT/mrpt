@@ -7,7 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/vision.h>  // Precompiled headers
+#include "vision-precomp.h"   // Precompiled headers
 
 
 #include <mrpt/vision/pinhole.h>
@@ -30,7 +30,7 @@ using namespace std;
 				projectPoints_no_distortion
    ------------------------------------------------------- */
 void mrpt::vision::pinhole::projectPoints_no_distortion(
-	const std::vector<mrpt::poses::CPoint3D> &in_points_3D,
+	const std::vector<mrpt::math::TPoint3D> &in_points_3D,
 	const mrpt::poses::CPose3D &cameraPose,
 	const mrpt::math::CMatrixDouble33 & intrinsicParams,
 	std::vector<TPixelCoordf> &projectedPoints,
@@ -55,7 +55,7 @@ void mrpt::vision::pinhole::projectPoints_no_distortion(
 				projectPoints_with_distortion
    ------------------------------------------------------- */
 void mrpt::vision::pinhole::projectPoints_with_distortion(
-	const std::vector<mrpt::poses::CPoint3D> &in_points_3D,
+	const std::vector<mrpt::math::TPoint3D> &in_points_3D,
 	const mrpt::poses::CPose3D &cameraPose,
 	const mrpt::math::CMatrixDouble33 & intrinsicParams,
 	const std::vector<double> & distortionParams,
@@ -80,12 +80,10 @@ void mrpt::vision::pinhole::projectPoints_with_distortion(
 
 	// generate points relative to camera:
 	for (size_t i=0;i<N;i++)
-	{
-		CPoint3D  pt_rel_to_cam = in_points_3D[i] - cameraPose;
-		objPoints[i].x = pt_rel_to_cam.x();
-		objPoints[i].y = pt_rel_to_cam.y();
-		objPoints[i].z = pt_rel_to_cam.z();
-	}
+		cameraPose.inverseComposePoint(
+			in_points_3D[i].x,in_points_3D[i].y,in_points_3D[i].z,
+			objPoints[i].x,objPoints[i].y,objPoints[i].z
+			);
 
 	// Points are already translated & rotated:
 	static double rotation_matrix[] = {1,0,0, 0,1,0, 0,0,1 };
@@ -243,7 +241,7 @@ void mrpt::vision::pinhole::undistort_point(
 void mrpt::vision::pinhole::projectPoints_with_distortion(
 	const std::vector<mrpt::math::TPoint3D>  &P,
 	const mrpt::utils::TCamera  &params,
-	const CPose3DQuat &cameraPose,
+	const mrpt::poses::CPose3DQuat &cameraPose,
 	std::vector<mrpt::vision::TPixelCoordf>  &pixels,
 	bool accept_points_behind
 	)

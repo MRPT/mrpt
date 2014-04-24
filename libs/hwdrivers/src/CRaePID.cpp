@@ -9,12 +9,15 @@
 
 
 
-#include <mrpt/hwdrivers.h>  // Precompiled headers
+#include "hwdrivers-precomp.h"   // Precompiled headers
 #include <mrpt/hwdrivers/CRaePID.h>
+#include <mrpt/system/threads.h>
+#include <mrpt/system/datetime.h>
 
 #include <iostream>
 #include <sstream>
 
+using namespace std;
 using namespace mrpt::utils;
 using namespace mrpt::hwdrivers;
 
@@ -118,7 +121,7 @@ void CRaePID::doProcess()
 		if (time_out)
 		{
 			//cout << "[CRaePID] " << com_port << " @ " <<com_bauds << " - measurement Timed-Out" << endl;
-			sleep(10);
+			mrpt::system::sleep(10);
 		}
 		else
 			have_reading = true;
@@ -135,12 +138,12 @@ void CRaePID::doProcess()
 	obs.readingsVoltage.push_back(val_ppm);
 	obs.sensorTypes.push_back(0xFFFF);
 
-	CObservationGasSensors obsG;
+	mrpt::slam::CObservationGasSensors obsG;
 	obsG.sensorLabel = this->getSensorLabel();
 	obsG.m_readings.push_back(obs);
-	obsG.timestamp = now();
+	obsG.timestamp = mrpt::system::now();
 
-	appendObservation(CObservationGasSensorsPtr(new CObservationGasSensors(obsG)));
+	appendObservation(mrpt::slam::CObservationGasSensorsPtr(new mrpt::slam::CObservationGasSensors(obsG)));
 
 }
 
@@ -209,7 +212,7 @@ bool CRaePID::switchPower()
 		return false;
 }
 
-CObservationGasSensors CRaePID::getFullInfo()
+mrpt::slam::CObservationGasSensors CRaePID::getFullInfo()
 {
 	// Send the command
 	COM.purgeBuffers();
@@ -230,7 +233,7 @@ CObservationGasSensors CRaePID::getFullInfo()
 
 	// Convert the text to a number (ppm)
 	mrpt::slam::CObservationGasSensors::TObservationENose obs;
-	CObservationGasSensors obsG;
+	mrpt::slam::CObservationGasSensors obsG;
 
 	for (size_t k=0; k < measurements_text.size(); k++)
 	{
@@ -243,7 +246,7 @@ CObservationGasSensors CRaePID::getFullInfo()
 	}
 
 	obsG.sensorLabel = this->getSensorLabel();
-	obsG.timestamp = now();
+	obsG.timestamp = mrpt::system::now();
 
 	return obsG;
 

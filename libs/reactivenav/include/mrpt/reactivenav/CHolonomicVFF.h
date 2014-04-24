@@ -49,7 +49,7 @@ namespace mrpt
 	class REACTIVENAV_IMPEXP CHolonomicVFF : public CAbstractHolonomicReactiveMethod
 	{
 	public:
-		EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+		MRPT_MAKE_ALIGNED_OPERATOR_NEW
 	public:
 		/**  Initialize the parameters of the navigator, from some configuration file, or default values if set to NULL.
 		  */

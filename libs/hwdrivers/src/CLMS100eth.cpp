@@ -7,7 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/hwdrivers.h> // Precompiled headers
+#include "hwdrivers-precomp.h"   // Precompiled headers
 
 #include <mrpt/hwdrivers/CLMS100eth.h>
 #include <mrpt/system/string_utils.h>
@@ -136,7 +136,7 @@ bool CLMS100Eth::turnOn()
                 char msgIn[100];
                 sendCommand(msg);
 
-                read = m_client.readAsync(msgIn, 100, 1000, 1000);
+                size_t read = m_client.readAsync(msgIn, 100, 1000, 1000);
 
                 msgIn[read-1] = 0;
                 printf_debug("read : %d\n",read);
@@ -149,7 +149,7 @@ bool CLMS100Eth::turnOn()
                 char msgIn[100];
                 sendCommand(msg);
 
-                read = m_client.readAsync(msgIn, 100, 1000, 1000);
+                size_t read = m_client.readAsync(msgIn, 100, 1000, 1000);
 
                 msgIn[read-1] = 0;
                 printf_debug("read : %d\n",read);
@@ -161,7 +161,7 @@ bool CLMS100Eth::turnOn()
                 char msg[] = {"sMN LMCstartmeas"};
                 char msgIn[100];
                 sendCommand(msg);
-                read = m_client.readAsync(msgIn, 100, 1000, 1000);
+                size_t read = m_client.readAsync(msgIn, 100, 1000, 1000);
 
                 msgIn[read-1] = 0;
                 printf_debug("message : %s\n",string(&msgIn[1]).c_str());
@@ -172,7 +172,7 @@ bool CLMS100Eth::turnOn()
                 char msg[] = {"sRN STlms"};
                 do{
                     sendCommand(msg);
-                    read = m_client.readAsync(msgIn, 100, 1000, 1000);
+                    size_t read = m_client.readAsync(msgIn, 100, 1000, 1000);
                     sleep(10000);
 
                     msgIn[read-1] = 0;

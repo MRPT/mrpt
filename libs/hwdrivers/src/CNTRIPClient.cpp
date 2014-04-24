@@ -7,13 +7,13 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/hwdrivers.h> // Precompiled headers
+#include "hwdrivers-precomp.h"   // Precompiled headers
 
 #include <mrpt/hwdrivers/CNTRIPClient.h>
 #include <mrpt/utils/CClientTCPSocket.h>
 #include <mrpt/utils/net_utils.h>
 #include <mrpt/utils/CStringList.h>
-#include <mrpt/math/utils.h>
+#include <mrpt/math/wrap2pi.h>
 
 #include <mrpt/system/string_utils.h>
 

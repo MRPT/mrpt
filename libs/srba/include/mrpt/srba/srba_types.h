@@ -61,7 +61,7 @@ namespace srba
 
 			inline void mark_outdated() const { updated=false; }
 
-			EIGEN_MAKE_ALIGNED_OPERATOR_NEW  // Needed because we have fixed-length Eigen matrices (within CPose3D)
+			MRPT_MAKE_ALIGNED_OPERATOR_NEW  // Needed because we have fixed-length Eigen matrices (within CPose3D)
 		};
 
 		/**  "numeric" values of spanning tree poses: */
@@ -84,7 +84,7 @@ namespace srba
 
 			size_t       id; //!< 0-based index of this edge, in the std::list "k2k_edges".
 
-			EIGEN_MAKE_ALIGNED_OPERATOR_NEW    // Needed because we have fixed-length Eigen matrices (within CPose3D)
+			MRPT_MAKE_ALIGNED_OPERATOR_NEW    // Needed because we have fixed-length Eigen matrices (within CPose3D)
 		};
 
 		typedef std::deque<k2k_edge_t*>  k2k_edge_vector_t; //!< A sequence of edges (a "path")
@@ -114,7 +114,7 @@ namespace srba
 			TKeyFrameID  id_frame_base;	//!< The ID of the camera frame which is the coordinate reference of \a pos
 			array_landmark_t   pos;  //!< The parameterization of the feature location, wrt to the camera frame \a id_frame_base - For example, this could simply be Euclidean coordinates (x,y,z)
 
-			EIGEN_MAKE_ALIGNED_OPERATOR_NEW  // Needed because we have fixed-length Eigen matrices ("array_landmark_t")
+			MRPT_MAKE_ALIGNED_OPERATOR_NEW  // Needed because we have fixed-length Eigen matrices ("array_landmark_t")
 		};
 
 		/** An index of feature IDs and their relative locations */
@@ -148,7 +148,7 @@ namespace srba
 			typename OBS_TRAITS::obs_data_t  obs_data; //!< Observed data
 		};
 
-		EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+		MRPT_MAKE_ALIGNED_OPERATOR_NEW
 
 	}; // end of "observation_traits"
 
@@ -431,7 +431,7 @@ namespace srba
 			typename obs_traits_t::array_obs_t   obs_arr;  //!< Observation data, summarized as an array of its parameters:  obs.obs_data.getAsArray(obs_arr);
 			TKeyFrameID   kf_id;    //!< Observed from
 
-			EIGEN_MAKE_ALIGNED_OPERATOR_NEW  // This forces aligned mem allocation
+			MRPT_MAKE_ALIGNED_OPERATOR_NEW  // This forces aligned mem allocation
 		};
 
 
@@ -443,7 +443,7 @@ namespace srba
 			bool              is_first_obs_of_unknown;  //!< true if this is the first observation of a feature with unknown relative position
 			typename lm_traits_t::TRelativeLandmarkPos *feat_rel_pos; //!< Pointer to the known/unknown rel.pos. (always!=NULL)
 
-			EIGEN_MAKE_ALIGNED_OPERATOR_NEW  // This forces aligned mem allocation
+			MRPT_MAKE_ALIGNED_OPERATOR_NEW  // This forces aligned mem allocation
 		};
 
 		/** Information per key-frame needed for RBA */

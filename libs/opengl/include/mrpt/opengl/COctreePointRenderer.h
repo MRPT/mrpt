@@ -196,7 +196,7 @@ namespace mrpt
 				}
 
             public:
-				EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+				MRPT_MAKE_ALIGNED_OPERATOR_NEW
 			};
 
 			struct OPENGL_IMPEXP TRenderQueueElement

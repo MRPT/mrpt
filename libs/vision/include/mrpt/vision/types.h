@@ -11,6 +11,7 @@
 #define mrpt_vision_types_H
 
 #include <mrpt/utils/CImage.h>
+#include <mrpt/utils/aligned_containers.h>
 #include <mrpt/utils/CLoadableOptions.h>
 #include <mrpt/utils/TMatchingPair.h>
 
@@ -23,10 +24,9 @@ namespace mrpt
 		/** \addtogroup mrpt_vision_grp
 		  *  @{ */
 
-		using std::vector;
-		//using namespace mrpt::slam;
-		using namespace mrpt::math;
-		using namespace mrpt::utils;
+		using mrpt::poses::CPose3D;
+		//using namespace mrpt::math;
+		//using namespace mrpt::utils;
 
 
 		typedef uint64_t TFeatureID;	//!< Definition of a feature ID
@@ -37,8 +37,8 @@ namespace mrpt
 		typedef mrpt::aligned_containers<TCameraPoseID,CPose3D>::map_t  TFramePosesMap;        //!< A list of camera frames (6D poses) indexed by unique IDs.
 		typedef mrpt::aligned_containers<CPose3D>::vector_t             TFramePosesVec;        //!< A list of camera frames (6D poses), which assumes indexes are unique, consecutive IDs.
 
-		typedef std::map<TLandmarkID,TPoint3D>   TLandmarkLocationsMap; //!< A list of landmarks (3D points) indexed by unique IDs.
-		typedef std::vector<TPoint3D>            TLandmarkLocationsVec; //!< A list of landmarks (3D points), which assumes indexes are unique, consecutive IDs.
+		typedef std::map<TLandmarkID,mrpt::math::TPoint3D>   TLandmarkLocationsMap; //!< A list of landmarks (3D points) indexed by unique IDs.
+		typedef std::vector<mrpt::math::TPoint3D>            TLandmarkLocationsVec; //!< A list of landmarks (3D points), which assumes indexes are unique, consecutive IDs.
 
 
 		/** Types of features - This means that the point has been detected with this algorithm, which is independent of additional descriptors a feature may also have
@@ -88,11 +88,11 @@ namespace mrpt
 		struct VISION_IMPEXP TFeatureObservation
 		{
 			inline TFeatureObservation() { }
-			inline TFeatureObservation(const TLandmarkID _id_feature, const TCameraPoseID  _id_frame, const TPixelCoordf _px) : id_feature(_id_feature), id_frame(_id_frame), px(_px) { }
+			inline TFeatureObservation(const TLandmarkID _id_feature, const TCameraPoseID  _id_frame, const mrpt::utils::TPixelCoordf _px) : id_feature(_id_feature), id_frame(_id_frame), px(_px) { }
 
 			TLandmarkID    id_feature;  //!< A unique ID of this feature
 			TCameraPoseID  id_frame;    //!< A unique ID of a "frame" (camera position) from where the feature was observed.
-			TPixelCoordf   px;          //!< The pixel coordinates of the observed feature
+			mrpt::utils::TPixelCoordf   px;          //!< The pixel coordinates of the observed feature
 		};
 
 		/** One relative feature observation entry, used with some relative bundle-adjustment functions.
@@ -181,7 +181,7 @@ namespace mrpt
 
 			/** See utils::CLoadableOptions
 			  */
-			void  dumpToTextStream(CStream	&out) const;
+			void  dumpToTextStream(mrpt::utils::CStream	&out) const;
 
 			/** Method for propagating the feature's image coordinate uncertainty into 3D space. Default value: Prop_Linear
 			  */
@@ -201,11 +201,11 @@ namespace mrpt
 			TUnc_Prop_Method uncPropagation;
 
 			/** Stereo Fundamental matrix */
-			CMatrixDouble33 F;
+			mrpt::math::CMatrixDouble33 F;
 
 			/** Intrinsic parameters
 			  */
-			CMatrixDouble33	K;
+			mrpt::math::CMatrixDouble33	K;
 			/** Baseline. Default value: baseline = 0.119f;	[Bumblebee]
 			  */
 			float		baseline;
@@ -304,7 +304,7 @@ namespace mrpt
 			bool	useXRestriction;			//!< Whether or not employ the x-coord restriction for finding correspondences (bumblebee camera, for example)
 			bool    addMatches;                 //!< Whether or not to add the matches found into the input matched list (if false the input list will be cleared before being filled with the new matches)
 
-			CMatrixDouble33 F;
+			mrpt::math::CMatrixDouble33 F;
 
 			// General
 			TMatchingMethod	matching_method;	//!< Matching method
@@ -344,7 +344,7 @@ namespace mrpt
 
 			/** See utils::CLoadableOptions
 			  */
-			void  dumpToTextStream(CStream	&out) const;
+			void  dumpToTextStream(mrpt::utils::CStream	&out) const;
 
 		}; // end struct TMatchingOptions
 
@@ -415,7 +415,7 @@ namespace mrpt
         struct VISION_IMPEXP TMultiResDescOptions : public mrpt::utils::CLoadableOptions
         {
             uint32_t        basePSize;          //!< The size of the base patch
-            vector<double>  scales;             //!< The set of scales relatives to the base patch
+            std::vector<double>  scales;             //!< The set of scales relatives to the base patch
             uint32_t        comLScl, comHScl;   //!< The subset of scales for which to compute the descriptors
             double          sg1, sg2, sg3;      //!< The sigmas for the Gaussian kernels
             bool            computeDepth;       //!< Whether or not to compute the depth of the feature
@@ -442,7 +442,7 @@ namespace mrpt
                 comHScl = 6;
             }
 
-            TMultiResDescOptions( const unsigned int &_basePSize, const vector<double> &_scales,
+            TMultiResDescOptions( const unsigned int &_basePSize, const std::vector<double> &_scales,
                 const unsigned int &_comLScl, const unsigned int &_comHScl,
                 const double &_sg1, const double &_sg2, const double &_sg3,
                 const bool &_computeDepth, const bool _blurImage, const double &_fx, const double &_cx, const double &_cy, const double &_baseline, const bool &_computeHashCoeffs, const double &_cropValue ):
