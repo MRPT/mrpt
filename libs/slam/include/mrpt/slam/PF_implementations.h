@@ -229,7 +229,7 @@ namespace mrpt
 
 					// The new particle set:
 					std::vector<TPose3D>  newParticles;
-					mrpt::math::CVectorDouble   newParticlesWeight;
+					std::vector<double>   newParticlesWeight;
 					std::vector<size_t>   newParticlesDerivedFromIdx;
 
 					CPose3D	 increment_i;
@@ -574,9 +574,9 @@ namespace mrpt
 			//  X is a single point close to the mean of the robot pose prior (as implemented in
 			//  the aux. function "PF_SLAM_particlesEvaluator_AuxPFStandard").
 			//
-			vector<TPose3D>			newParticles;
-			mrpt::math::CVectorDouble newParticlesWeight;
-			vector<size_t>			newParticlesDerivedFromIdx;
+			vector<TPose3D>	 newParticles;
+			vector<double>   newParticlesWeight;
+			vector<size_t>   newParticlesDerivedFromIdx;
 
 			// We need the (aproximate) maximum likelihood value for each
 			//  previous particle [i]:

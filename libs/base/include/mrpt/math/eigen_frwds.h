@@ -29,8 +29,9 @@ namespace mrpt
         template <class T> class CMatrixTemplateNumeric;
 		typedef CMatrixTemplateNumeric<float> CMatrixFloat;
         typedef CMatrixTemplateNumeric<double> CMatrixDouble;
-		typedef Eigen::Matrix<float,Eigen::Dynamic,1>  CVectorFloat;
-		typedef Eigen::Matrix<double,Eigen::Dynamic,1> CVectorDouble;
+		template <typename T> class dynamic_vector;
+		typedef dynamic_vector<float>  CVectorFloat; 
+		typedef dynamic_vector<double> CVectorDouble;
 
 
         // Fixed size:

@@ -9,13 +9,6 @@
 #ifndef CReactiveNavigationSystem3D_H
 #define CReactiveNavigationSystem3D_H
 
-#include <mrpt/maps.h>
-#include <mrpt/poses.h>
-#include <mrpt/math.h>
-#include <mrpt/synch.h>
-#include <mrpt/utils/CTimeLogger.h>
-
-
 #include "CAbstractPTGBasedReactive.h"
 
 namespace mrpt

@@ -228,8 +228,7 @@ void CPose3DPDFParticles::getCovarianceAndMean(CMatrixDouble66 &cov,CPose3D &mea
 
 	// Now the covariance:
 	cov.zeros();
-	CVectorDouble	vars(6,0);	// The diagonal of the final covariance matrix
-	CPose3DPDFParticles::CParticleList::const_iterator		it;
+	CVectorDouble	vars; vars.assign(6,0.0);	// The diagonal of the final covariance matrix
 
 	// Elements off the diagonal of the covariance matrix:
 	double											std_xy = 0,std_xz = 0,std_xya= 0,std_xp = 0,std_xr = 0;
@@ -252,13 +251,13 @@ void CPose3DPDFParticles::getCovarianceAndMean(CMatrixDouble66 &cov,CPose3D &mea
 
 	// Sum all weight values:
 	double		W = 0;
-	for (it=m_particles.begin();it!=m_particles.end();++it)
+	for (CPose3DPDFParticles::CParticleList::const_iterator it=m_particles.begin();it!=m_particles.end();++it)
 		W += exp(it->log_w);
 
 	ASSERT_(W>0);
 
 	// Compute covariance:
-	for (it=m_particles.begin();it!=m_particles.end();++it)
+	for (CPose3DPDFParticles::CParticleList::const_iterator it=m_particles.begin();it!=m_particles.end();++it)
 	{
 		double w = exp( it->log_w ) / W;
 

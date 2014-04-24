@@ -8,6 +8,8 @@
    +---------------------------------------------------------------------------+ */
 
 #include "base-precomp.h"
+
+#define MRPT_NO_WARN_BIG_HDR
 #include <mrpt/base.h>
 
 #ifndef MRPT_ENABLE_PRECOMPILED_HDRS

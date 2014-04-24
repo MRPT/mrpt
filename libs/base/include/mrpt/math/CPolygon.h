@@ -9,7 +9,6 @@
 #ifndef CPOLYGON_H
 #define CPOLYGON_H
 
-#include <mrpt/utils/utils_defs.h>
 #include <mrpt/utils/CSerializable.h>
 #include <mrpt/math/lightweight_geom_data.h>
 

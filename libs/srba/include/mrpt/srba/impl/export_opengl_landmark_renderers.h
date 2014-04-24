@@ -8,8 +8,9 @@
    +---------------------------------------------------------------------------+ */
 
 #pragma once
-
-#include <mrpt/opengl.h>
+#include <mrpt/opengl/CSetOfObjects.h>
+#include <mrpt/opengl/stock_objects.h>
+#include <mrpt/opengl/CSetOfLines.h>
 #include <mrpt/math/lightweight_geom_data.h>
 #include <mrpt/srba/landmark_render_models.h>
 

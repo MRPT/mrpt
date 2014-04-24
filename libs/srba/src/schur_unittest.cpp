@@ -8,7 +8,6 @@
    +---------------------------------------------------------------------------+ */
 
 #include <mrpt/srba.h>
-#include <mrpt/base.h>
 #include <mrpt/random.h>
 
 #include <gtest/gtest.h>
@@ -145,7 +144,7 @@ protected:
 		}
 
 		// A default gradient:
-		vector_double  minus_grad; // The negative of the gradient.
+		CVectorDouble  minus_grad; // The negative of the gradient.
 		const size_t idx_start_f = 6*nUnknowns_k2k;
 		const size_t nLMs_scalars = 3*nUnknowns_k2f;
 		const size_t nUnknowns_scalars = idx_start_f + nLMs_scalars;
@@ -176,7 +175,7 @@ protected:
 
 		// Schur: naive dense computation:
 		const CMatrixDouble  dense_HAp_schur  = dense_HAp - dense_HApf*dense_Hf_plus_lambda.inv()*dense_HApf.transpose();
-		const vector_double  dense_minus_grad_schur = minus_grad.head(idx_start_f) - dense_HApf*(dense_Hf_plus_lambda.inv())*minus_grad.tail(nLMs_scalars);
+		const CVectorDouble  dense_minus_grad_schur = minus_grad.head(idx_start_f) - dense_HApf*(dense_Hf_plus_lambda.inv())*minus_grad.tail(nLMs_scalars);
 
 	#if 0
 		dense_HAp.saveToTextFile("dense_HAp.txt");
@@ -266,7 +265,7 @@ protected:
 			<< "dense_HAp_schur:\n" << dense_HAp_schur << endl
 			;
 
-		const vector_double final_minus_grad_Ap = minus_grad.head(idx_start_f);
+		const CVectorDouble final_minus_grad_Ap = minus_grad.head(idx_start_f);
 		const double Ap_minus_grad_Ap_max_error = (dense_minus_grad_schur-final_minus_grad_Ap).array().abs().maxCoeff();
 		EXPECT_NEAR( Ap_minus_grad_Ap_max_error/dense_minus_grad_schur.array().abs().maxCoeff(),0, 1e-10)
 			<< "nUnknowns_k2k=" << nUnknowns_k2k << endl

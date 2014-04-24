@@ -18,9 +18,6 @@
 #include <mrpt/opengl/CPolyhedron.h>
 #include <mrpt/opengl/CSimpleLine.h>
 #include <mrpt/opengl/C3DSScene.h>
-
-
-#include <mrpt/system.h>
 #include <mrpt/utils/CFileOutputStream.h>
 
 using namespace mrpt::utils;

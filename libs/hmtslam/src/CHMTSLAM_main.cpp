@@ -23,11 +23,13 @@
  */
 
 
-#include <mrpt/hmtslam.h> // Precomp header
+#include "hmtslam-precomp.h" // Precomp header
 
 #include <mrpt/utils/CFileStream.h>
 #include <mrpt/utils/CStartUpClassesRegister.h>
 #include <mrpt/utils/CConfigFile.h>
+#include <mrpt/utils/stl_serialization.h>
+#include <mrpt/system/filesystem.h>
 #include <mrpt/synch.h>
 #include <mrpt/utils/CMemoryStream.h>
 

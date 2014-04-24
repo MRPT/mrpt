@@ -13,7 +13,7 @@
 #include <mrpt/detectors/CObjectDetection.h>
 #include <mrpt/detectors/CCascadeClassifierDetection.h>
 #include <mrpt/utils/CTimeLogger.h>
-#include <mrpt/system.h>
+#include <mrpt/system/threads.h>
 #include <mrpt/synch.h>
 #include <mrpt/slam/CObservation3DRangeScan.h>
 
@@ -28,6 +28,7 @@ namespace mrpt
 		using namespace mrpt::slam;
 		using namespace mrpt::system;
 		using namespace mrpt::synch;
+		using namespace mrpt::math;
 		
 		/** Specific class for face detection.
 		  * Methods and variables labeled as experimentals are temporals (for debug or testing

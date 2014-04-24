@@ -9,6 +9,10 @@
 #ifndef cpointsmap_crtp_common_H
 #define cpointsmap_crtp_common_H
 
+#include <mrpt/utils/round.h>
+#include <mrpt/slam/CObservation3DRangeScan.h>
+#include <mrpt/slam/CObservation2DRangeScan.h>
+
 namespace mrpt
 {
 namespace slam
@@ -215,7 +219,7 @@ namespace detail
 								d<obj.insertionOptions.maxDistForInterpolatePoints &&
 								fabs(changeInDirection)<DEG2RAD(5) )
 							{
-								int nInterpol = round(d / (2*sqrt(minDistSqrBetweenLaserPoints)));
+								int nInterpol = mrpt::utils::round(d / (2*sqrt(minDistSqrBetweenLaserPoints)));
 
 								for (int q=1;q<nInterpol;q++)
 								{

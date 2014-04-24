@@ -9,16 +9,16 @@
 #ifndef CPRRTNavigator_H
 #define CPRRTNavigator_H
 
-#include <mrpt/maps.h>
-#include <mrpt/poses.h>
-#include <mrpt/synch.h>
 #include <mrpt/system/threads.h>
+#include <mrpt/poses/CRobot2DPoseEstimator.h>
 #include <mrpt/reactivenav/CParameterizedTrajectoryGenerator.h>
+#include <mrpt/utils/CLoadableOptions.h>
 
 #include <mrpt/reactivenav/link_pragmas.h>
 
 namespace mrpt
 {
+	namespace slam { class CPointsMap; }
   namespace reactivenav
   {
 	using namespace mrpt;
@@ -26,6 +26,7 @@ namespace mrpt
 	using namespace mrpt::math;
 	using namespace mrpt::synch;
 	using namespace mrpt::poses;
+	using mrpt::system::TTimeStamp;
 
 	/** This class is a multi-threaded mobile robot navigator, implementing an (anytime) PTG-based Rapidly-exploring Random Tree (PRRT) search algorithm.
 	 *
@@ -231,9 +232,9 @@ namespace mrpt
 	private:
 		// ----------- Internal methods & threads -----------
 
-		TThreadHandle  m_thr_planner; //!< Thread handle
-		TThreadHandle  m_thr_testcol; //!< Thread handle
-		TThreadHandle  m_thr_pathtrack; //!< Thread handle
+		mrpt::system::TThreadHandle  m_thr_planner; //!< Thread handle
+		mrpt::system::TThreadHandle  m_thr_testcol; //!< Thread handle
+		mrpt::system::TThreadHandle  m_thr_pathtrack; //!< Thread handle
 
 		void thread_planner();  //!< Thread function
 		void thread_test_collision();  //!< Thread function

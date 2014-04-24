@@ -12,6 +12,7 @@
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/utils/CSerializable.h>
 #include <mrpt/opengl/CSetOfObjects.h>
+#include <mrpt/utils/aligned_containers.h>
 
 #include <mrpt/kinematics/link_pragmas.h>
 

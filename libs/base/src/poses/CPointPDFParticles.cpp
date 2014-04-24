@@ -239,11 +239,14 @@ double CPointPDFParticles::computeKurtosis()
 	MRPT_START
 
 	// kurtosis = \mu^4 / (\sigma^2) -3
-	CVectorDouble						kurts(3,0), mu4(3,0),m(3,0),var(3,0);
-	CParticleList::iterator		it;
+	CVectorDouble kurts, mu4,m,var;
+	kurts.assign(3,.0);
+	mu4.assign(3,.0);
+	m.assign(3,.0);
+	var.assign(3,.0);
 
 	// Means:
-	for (it=m_particles.begin();it!=m_particles.end();++it)
+	for (CParticleList::iterator it=m_particles.begin();it!=m_particles.end();++it)
 	{
 		m[0]+=it->d->x;
 		m[1]+=it->d->y;
@@ -252,7 +255,7 @@ double CPointPDFParticles::computeKurtosis()
 	m*=1.0/m_particles.size();
 
 	// variances:
-	for (it=m_particles.begin();it!=m_particles.end();++it)
+	for (CParticleList::iterator it=m_particles.begin();it!=m_particles.end();++it)
 	{
 		var[0]+=square(it->d->x-m[0]);
 		var[1]+=square(it->d->y-m[1]);
@@ -264,7 +267,7 @@ double CPointPDFParticles::computeKurtosis()
 	var[2]=square(var[2]);
 
 	// Moment:
-	for (it=m_particles.begin();it!=m_particles.end();++it)
+	for (CParticleList::iterator it=m_particles.begin();it!=m_particles.end();++it)
 	{
 		mu4[0]+=pow(it->d->x-m[0],4.0);
 		mu4[1]+=pow(it->d->y-m[1],4.0);

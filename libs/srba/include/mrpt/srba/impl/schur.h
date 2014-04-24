@@ -301,11 +301,11 @@ namespace mrpt { namespace srba {
 				if (!was_ith_feature_invertible(idx_feat))
 					continue;
 
-				//vector_f_t delta_feat = vector_f_t(  out_deltas_feats + idx_feat * HESS_f::matrix_t::RowsAtCompileTime );
+				vector_f_t delta_feat = vector_f_t(  out_deltas_feats + idx_feat * HESS_f::matrix_t::RowsAtCompileTime );
 				vector_f_t grad_df    = vector_f_t(this->minus_grad_f + idx_feat * HESS_f::matrix_t::RowsAtCompileTime );
 				//std::cout  << grad_df.transpose() << std::endl << m_Hf_blocks_info[idx_feat].num_Hf_diag_blocks_inverses << std::endl << std::endl;
 
-				vector_f_t delta_feat = (m_Hf_blocks_info[idx_feat].num_Hf_diag_blocks_inverses * grad_df);
+				delta_feat = (m_Hf_blocks_info[idx_feat].num_Hf_diag_blocks_inverses * grad_df);
 			}
 
 		} // end of numeric_solve_for_features

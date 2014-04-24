@@ -8,7 +8,10 @@
    +---------------------------------------------------------------------------+ */
 
 #include <mrpt/scanmatching.h>
-#include <mrpt/base.h>
+#include <mrpt/random.h>
+#include <mrpt/math/ops_vectors.h>
+#include <mrpt/poses/CPose3D.h>
+#include <mrpt/poses/CPose3DQuat.h>
 #include <gtest/gtest.h>
 
 using namespace mrpt;

@@ -9,13 +9,15 @@
 #ifndef CAbstractReactiveNavigationSystem_H
 #define CAbstractReactiveNavigationSystem_H
 
-#include <mrpt/maps.h>
-#include <mrpt/poses.h>
+#include <mrpt/poses/CPose2D.h>
+#include <mrpt/utils/CDebugOutputCapable.h>
 
 #include <mrpt/reactivenav/link_pragmas.h>
 
 namespace mrpt
 {
+	namespace slam { class CSimplePointsMap; }
+
   namespace reactivenav
   {
 	using namespace mrpt;
@@ -102,8 +104,8 @@ namespace mrpt
 		/** The struct for configuring navigation requests. See also: CAbstractPTGBasedReactive::TNavigationParamsPTG */
 		struct REACTIVENAV_IMPEXP TNavigationParams
 		{
-			mrpt::poses::TPoint2D  target;  //!< Coordinates of desired target location.
-			double                 targetHeading; //!< Target location (heading, in radians).
+			mrpt::math::TPoint2D  target;  //!< Coordinates of desired target location.
+			double                targetHeading; //!< Target location (heading, in radians).
 
 			float                  targetAllowedDistance;    //!< Allowed distance to target in order to end the navigation.
 			bool                   targetIsRelative;  //!< (Default=false) Whether the \a target coordinates are in global coordinates (false) or are relative to the current robot pose (true).

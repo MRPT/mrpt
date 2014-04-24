@@ -13,6 +13,11 @@
 #ifndef mrpt_base_H
 #define mrpt_base_H
 
+#ifndef MRPT_NO_WARN_BIG_HDR
+#include <mrpt/utils/core_defs.h>
+MRPT_WARNING("Including <mrpt/base.h> makes compilation much slower, consider including only what you need (define MRPT_NO_WARN_BIG_HDR to disable this warning)")
+#endif
+
 #include <mrpt/config.h>
 #include <mrpt/version.h>
 

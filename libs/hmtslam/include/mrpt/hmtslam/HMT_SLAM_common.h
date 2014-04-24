@@ -10,7 +10,8 @@
 #define HMT_SLAM_common_H
 
 #include <mrpt/utils/CSerializable.h>
-#include <mrpt/utils/stl_extensions.h>
+#include <mrpt/utils/list_searchable.h>
+#include <set>
 
 #include <mrpt/hmtslam/link_pragmas.h>
 

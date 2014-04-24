@@ -8,7 +8,6 @@
    +---------------------------------------------------------------------------+ */
 
 #include <mrpt/srba.h>
-#include <mrpt/base.h>
 #include <mrpt/random.h>
 
 #include <gtest/gtest.h>

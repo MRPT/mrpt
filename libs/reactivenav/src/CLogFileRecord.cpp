@@ -7,11 +7,10 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/reactivenav.h>  // Precomp header
+#include "reactivenav-precomp.h" // Precomp header
 
-//#if defined(_MSC_VER)
-//	#pragma warning(disable:4267)
-//#endif
+#include <mrpt/reactivenav/CLogFileRecord.h>
+#include <mrpt/poses/CPoint2D.h>
 
 using namespace mrpt::reactivenav;
 

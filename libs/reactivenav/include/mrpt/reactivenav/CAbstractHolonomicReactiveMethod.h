@@ -9,8 +9,10 @@
 #ifndef CAbstractHolonomicReactiveMethod_H
 #define CAbstractHolonomicReactiveMethod_H
 
-#include <mrpt/utils.h>
-#include <mrpt/poses.h>
+#include <mrpt/math/lightweight_geom_data.h>
+#include <mrpt/utils/TEnumType.h>
+#include <mrpt/utils/CConfigFileBase.h>
+
 #include "CHolonomicLogFileRecord.h"
 
 namespace mrpt

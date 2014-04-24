@@ -7,6 +7,6 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/reactivenav.h>
+#include "reactivenav-precomp.h" // Precomp header
 
 

@@ -7,9 +7,10 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/detectors.h>  // Precompiled headers
+#include "detectors-precomp.h"  // Precompiled headers
 
 #include <mrpt/detectors/CDetectableObject.h>
+#include <mrpt/utils/CStream.h>
 #include <mrpt/utils/CStartUpClassesRegister.h>
 
 using namespace mrpt;

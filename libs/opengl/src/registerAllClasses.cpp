@@ -9,13 +9,8 @@
 
 #include "opengl-precomp.h"  // Precompiled header
 
+#define MRPT_NO_WARN_BIG_HDR
 #include <mrpt/opengl.h>
-
-#ifndef MRPT_ENABLE_PRECOMPILED_HDRS
-#	define MRPT_ALWAYS_INCLUDE_ALL_HEADERS
-#	undef _mrpt_opengl_H
-#	include <mrpt/opengl.h>
-#endif
 
 #include <mrpt/utils/CStartUpClassesRegister.h>
 

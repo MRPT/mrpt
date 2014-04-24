@@ -9,6 +9,8 @@
 
 #pragma once
 
+#include <mrpt/utils/CConfigFileBase.h> // MRPT_LOAD_CONFIG_VAR
+
 namespace mrpt { namespace srba {
 
 /** Default constructor */

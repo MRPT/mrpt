@@ -11,7 +11,6 @@
 
 #include <mrpt/utils/CSerializable.h>
 #include <mrpt/utils/CMemoryChunk.h>
-#include <mrpt/system/os.h>
 
 /*---------------------------------------------------------------
 	Class

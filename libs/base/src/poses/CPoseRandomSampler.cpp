@@ -214,7 +214,8 @@ void CPoseRandomSampler::do_sample_2D( CPose2D &p ) const
 		// ------------------------------
 		//      A single gaussian:
 		// ------------------------------
-		CVectorDouble	rndVector(3,0);
+		CVectorDouble	rndVector(3);
+		rndVector.setZero();
 		for (size_t i=0;i<3;i++)
 		{
 			double	rnd = randomGenerator.drawGaussian1D_normalized();
@@ -264,7 +265,8 @@ void CPoseRandomSampler::do_sample_3D( CPose3D &p ) const
 		// ------------------------------
 		//      A single gaussian:
 		// ------------------------------
-		CVectorDouble	rndVector(6,0);
+		CVectorDouble	rndVector(6);
+		rndVector.setZero();
 		for (size_t i=0;i<6;i++)
 		{
 			double	rnd = randomGenerator.drawGaussian1D_normalized();

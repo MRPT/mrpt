@@ -9,6 +9,7 @@
 
 #include "slam-precomp.h"   // Precompiled headers
 
+#define MRPT_NO_WARN_BIG_HDR
 #include <mrpt/slam.h>
 
 #include <mrpt/utils/CStartUpClassesRegister.h>

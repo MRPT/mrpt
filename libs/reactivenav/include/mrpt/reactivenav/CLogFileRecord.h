@@ -46,7 +46,7 @@ namespace mrpt
         {
             std::string				PTG_desc;      //!< A short description for the applied PTG
             CVectorFloat				TP_Obstacles;  //!< Distances until obstacles, in "pseudometers", first index for -PI direction, last one for PI direction.
-            mrpt::poses::CPoint2D		TP_Target;     //!< Target location in TP-Space
+            mrpt::math::TPoint2D		TP_Target;     //!< Target location in TP-Space
             float						timeForTPObsTransformation,timeForHolonomicMethod;  //!< Time, in seconds.
             float						desiredDirection,desiredSpeed, evaluation;          //!< The results from the holonomic method.
             CVectorFloat				evalFactors;   //!< Evaluation factors
@@ -66,7 +66,7 @@ namespace mrpt
 		 float						estimatedExecutionPeriod;  //!< The estimated execution period.
 		 mrpt::slam::CSimplePointsMap  WS_Obstacles;  //!< The WS-Obstacles
 		 mrpt::poses::CPose2D          robotOdometryPose; //!< The robot pose (from raw odometry or a localization system).
-		 mrpt::poses::CPoint2D         WS_target_relative;  //!< The relative location of target point in WS.
+		 mrpt::math::TPoint2D         WS_target_relative;  //!< The relative location of target point in WS.
 
 		 float						v,w;  //!< The final motion command sent to robot, in "m/sec" and "rad/sec".
 		 float						actual_v,actual_w; //!< The actual robot velocities, as read from sensors, in "m/sec" and "rad/sec".

@@ -9,6 +9,8 @@
 
 #pragma once
 
+#include <mrpt/math/ops_containers.h> // norm_inf()
+
 namespace mrpt { namespace srba {
 
 using namespace mrpt;
@@ -491,11 +493,11 @@ void RbaEngine<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::optimize_edges(
 			{
 				// edges_to_optimize:
 				const pose_t &old_pose = k2k_edge_unknowns[i]->inv_pose;
-				pose_t new_pose(UNINITIALIZED_POSE);
+				pose_t new_pose(mrpt::poses::UNINITIALIZED_POSE);
 
 				// Use the Lie Algebra methods for the increment:
 				const CArrayDouble<POSE_DIMS> incr( & my_solver.delta_eps[POSE_DIMS*i] );
-				pose_t  incrPose(UNINITIALIZED_POSE);
+				pose_t  incrPose(mrpt::poses::UNINITIALIZED_POSE);
 				se_traits_t::pseudo_exp(incr,incrPose);   // incrPose = exp(incr) (Lie algebra pseudo-exponential map)
 
 				//new_pose =  old_pose  [+] delta

@@ -10,7 +10,6 @@
 #ifndef CMyGLCanvas_H
 #define CMyGLCanvas_H
 
-#include <mrpt/opengl.h>
 #include <mrpt/opengl/opengl_fonts.h>
 
 #include <mrpt/gui/link_pragmas.h>

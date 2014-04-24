@@ -7,7 +7,9 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/reactivenav.h>  // Precomp header
+#include "reactivenav-precomp.h" // Precomp header
+
+#include <mrpt/reactivenav/CReactiveNavigationSystem3D.h>
 #include <typeinfo>  // For typeid()
 
 using namespace mrpt;

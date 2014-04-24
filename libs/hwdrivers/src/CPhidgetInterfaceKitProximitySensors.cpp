@@ -12,7 +12,6 @@
 #include <mrpt/system/os.h>
 #include <mrpt/hwdrivers/CPhidgetInterfaceKitProximitySensors.h>
 #include <mrpt/utils/CConfigFileBase.h>
-#include <mrpt/utils.h>
 
 #include <algorithm>
 

@@ -220,8 +220,8 @@ namespace mrpt
 		  *  Some examples:
 		  *
 		  *  \code
-		  *    CVectorDouble  = make_vector<4,double>(1.0,3.0,4.0,5.0);
-		  *    CVectorFloat   = make_vector<2,float>(-8.12, 3e4);
+		  *    std::vector<double> = make_vector<4,double>(1.0,3.0,4.0,5.0);
+		  *    std::vector<float>  = make_vector<2,float>(-8.12, 3e4);
 		  *  \endcode
 		  */
 		template <size_t N, typename T>

@@ -10,6 +10,7 @@
 #define CHolonomicND_H
 
 #include "CAbstractHolonomicReactiveMethod.h"
+#include <mrpt/utils/CLoadableOptions.h>
 
 namespace mrpt
 {

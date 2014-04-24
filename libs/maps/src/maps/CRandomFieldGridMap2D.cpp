@@ -11,13 +11,15 @@
 
 #include <mrpt/slam/CRandomFieldGridMap2D.h>
 #include <mrpt/system/os.h>
+#include <mrpt/math/CMatrix.h>
 #include <mrpt/math/utils.h>
 #include <mrpt/utils/CTicTac.h>
 #include <mrpt/utils/CTimeLogger.h>
 #include <mrpt/utils/color_maps.h>
 #include <mrpt/utils/round.h>
+#include <mrpt/opengl/CSetOfObjects.h>
+#include <mrpt/opengl/CSetOfTriangles.h>
 
-#include <mrpt/opengl.h>
 #include <numeric>
 
 // =========== DEBUG MACROS =============

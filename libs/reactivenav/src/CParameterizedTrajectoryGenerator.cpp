@@ -8,7 +8,16 @@
    +---------------------------------------------------------------------------+ */
 
 
-#include <mrpt/reactivenav.h>  // Precomp header
+#include "reactivenav-precomp.h" // Precomp header
+
+#include <mrpt/reactivenav/CParameterizedTrajectoryGenerator.h>
+#include <mrpt/reactivenav/CPTG1.h>
+#include <mrpt/reactivenav/CPTG2.h>
+#include <mrpt/reactivenav/CPTG3.h>
+#include <mrpt/reactivenav/CPTG4.h>
+#include <mrpt/reactivenav/CPTG5.h>
+#include <mrpt/reactivenav/CPTG6.h>
+#include <mrpt/reactivenav/CPTG7.h>
 
 #include <mrpt/utils/CStartUpClassesRegister.h>
 extern mrpt::utils::CStartUpClassesRegister  mrpt_reactivenav_class_reg;
@@ -18,7 +27,9 @@ const int dumm = mrpt_reactivenav_class_reg.do_nothing(); // Avoid compiler remo
 #include <mrpt/utils/CFileGZInputStream.h>
 #include <mrpt/utils/CFileGZOutputStream.h>
 #include <mrpt/system/filesystem.h>
+#include <mrpt/system/os.h>
 #include <mrpt/math/geometry.h>
+#include <mrpt/opengl/CSetOfLines.h>
 
 using namespace mrpt;
 using namespace mrpt::utils;

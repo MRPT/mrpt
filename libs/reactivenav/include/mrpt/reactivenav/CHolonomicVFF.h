@@ -11,6 +11,8 @@
 
 #include "CAbstractHolonomicReactiveMethod.h"
 #include "CHolonomicLogFileRecord.h"
+#include <mrpt/utils/CLoadableOptions.h>
+
 
 namespace mrpt
 {

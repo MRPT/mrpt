@@ -9,30 +9,23 @@
 #ifndef CHMTSLAM_H
 #define CHMTSLAM_H
 
-#include <mrpt/synch.h>
-#include <mrpt/system.h>
+#include <mrpt/synch/CCriticalSection.h>
 #include <mrpt/utils/CDebugOutputCapable.h>
 #include <mrpt/utils/CMessageQueue.h>
+#include <mrpt/system/threads.h>
 
 #include <mrpt/hmtslam/HMT_SLAM_common.h>
 #include <mrpt/hmtslam/CLocalMetricHypothesis.h>
 #include <mrpt/hmtslam/CHierarchicalMHMap.h>
-
 #include <mrpt/hmtslam/CTopLCDetector_GridMatching.h>
 #include <mrpt/hmtslam/CTopLCDetector_FabMap.h>
-
 #include <mrpt/hmtslam/link_pragmas.h>
-
 #include <mrpt/slam/CICP.h>
 #include <mrpt/slam/CPointsMap.h>
 #include <mrpt/slam/TKLDParams.h>
-
 #include <mrpt/slam/CActionCollection.h>
-
 #include <mrpt/opengl/COpenGLScene.h>
-
 #include <queue>
-
 
 namespace mrpt
 {
@@ -251,9 +244,7 @@ namespace mrpt
 			/** The function for the "3D viewer" thread. */
 			void thread_3D_viewer( );
 			/** Threads handles */
-			TThreadHandle 			m_hThread_LSLAM,
-									m_hThread_TBI,
-									m_hThread_3D_viewer;
+			mrpt::system::TThreadHandle m_hThread_LSLAM, m_hThread_TBI, m_hThread_3D_viewer;
 			/** @} */
 
 

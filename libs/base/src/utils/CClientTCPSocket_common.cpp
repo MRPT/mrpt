@@ -13,6 +13,7 @@
 #include <mrpt/utils/CClientTCPSocket.h>
 #include <mrpt/utils/CMessage.h>
 #include <mrpt/utils/net_utils.h>
+#include <mrpt/system/os.h>
 
 using namespace mrpt::utils;
 using namespace mrpt::system;

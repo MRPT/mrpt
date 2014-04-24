@@ -9,7 +9,9 @@
 #ifndef CSinCosLookUpTableFor2DScans_H
 #define CSinCosLookUpTableFor2DScans_H
 
+#include <mrpt/utils/types_math.h>
 #include <mrpt/slam/CObservation2DRangeScan.h>
+#include <mrpt/obs/link_pragmas.h>
 #include <map>
 
 namespace mrpt

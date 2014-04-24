@@ -13,7 +13,7 @@
 #include <mrpt/math/CMatrixTemplateNumeric.h>
 #include <mrpt/utils/CConfigFileBase.h>
 #include <mrpt/utils/CLoadableOptions.h>
-#include <mrpt/opengl.h>
+#include <mrpt/opengl/opengl_frwds.h>
 #include <mrpt/bayes/CKalmanFilterCapable.h>
 
 #include <mrpt/utils/safe_pointers.h>

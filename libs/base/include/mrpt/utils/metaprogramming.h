@@ -69,8 +69,8 @@ namespace mrpt
 			/** An object for transforming between types/classes, intended for being used in STL algorithms.
 			  *  Example of usage:
 			  *   \code
-			  *     vector_int      v1(10);  // Input
-			  *     CVectorDouble   v2(10);  // Output
+			  *     vector<int>      v1(10);  // Input
+			  *     vector<double>   v2(10);  // Output
 			  *     std::transform(v1.begin(),v1.end(), v2.begin(), ObjectConvert<double> );
 			  *   \endcode
 			  */

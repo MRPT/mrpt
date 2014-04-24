@@ -10,7 +10,7 @@
 #include "topography-precomp.h"
 #include <mrpt/topography.h>
 
-#include <mrpt/utils.h>
+#include <mrpt/utils/CStartUpClassesRegister.h>
 
 
 using namespace mrpt::topography;

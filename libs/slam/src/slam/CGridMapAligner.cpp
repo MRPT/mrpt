@@ -10,8 +10,15 @@
 #include "slam-precomp.h"   // Precompiled headers
 
 #include <mrpt/slam/CGridMapAligner.h>
-
-#include <mrpt/base.h>
+#include <mrpt/random.h>
+#include <mrpt/poses/CPoint2DPDFGaussian.h>
+#include <mrpt/poses/CPosePDFGaussian.h>
+#include <mrpt/poses/CPose3DPDFGaussian.h>
+#include <mrpt/math/ops_containers.h>
+#include <mrpt/math/distributions.h>
+#include <mrpt/math/geometry.h>
+#include <mrpt/system/filesystem.h>
+#include <mrpt/utils/CEnhancedMetaFile.h>
 
 #include <mrpt/slam/COccupancyGridMap2D.h>
 #include <mrpt/slam/CMultiMetricMap.h>

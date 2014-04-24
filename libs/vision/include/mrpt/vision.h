@@ -10,6 +10,11 @@
 #ifndef __mrpt_vision_H
 #define __mrpt_vision_H
 
+#ifndef MRPT_NO_WARN_BIG_HDR
+#include <mrpt/utils/core_defs.h>
+MRPT_WARNING("Including <mrpt/vision.h> makes compilation much slower, consider including only what you need (define MRPT_NO_WARN_BIG_HDR to disable this warning)")
+#endif
+
 #include <mrpt/vision/utils.h>
 #include <mrpt/vision/TSimpleFeature.h>
 #include <mrpt/vision/multiDesc_utils.h>

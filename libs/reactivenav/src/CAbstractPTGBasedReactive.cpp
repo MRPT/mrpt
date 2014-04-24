@@ -7,9 +7,15 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/reactivenav.h>  // Precomp header
+#include "reactivenav-precomp.h" // Precomp header
 
+#include <mrpt/reactivenav/CAbstractPTGBasedReactive.h>
 #include <mrpt/system/filesystem.h>
+#include <mrpt/math/wrap2pi.h>
+#include <mrpt/math/ops_containers.h> // sum()
+#include <mrpt/utils/printf_vector.h>
+#include <mrpt/utils/metaprogramming.h>
+#include <mrpt/utils/CFileOutputStream.h>
 
 using namespace mrpt;
 using namespace mrpt::poses;
@@ -469,7 +475,7 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 			{
 				metaprogramming::copy_container_typecasting(ipf.TP_Obstacles, newLogRec.infoPerPTG[indexPTG].TP_Obstacles);
 				newLogRec.infoPerPTG[indexPTG].PTG_desc  = ptg->getDescription();
-				newLogRec.infoPerPTG[indexPTG].TP_Target = CPoint2D(ipf.TP_Target);
+				newLogRec.infoPerPTG[indexPTG].TP_Target = ipf.TP_Target;
 				newLogRec.infoPerPTG[indexPTG].HLFR	     = HLFR;
 				newLogRec.infoPerPTG[indexPTG].desiredDirection = holonomicMovement.direction;
 				newLogRec.infoPerPTG[indexPTG].desiredSpeed     = holonomicMovement.speed;
@@ -553,7 +559,7 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 			this->loggingGetWSObstaclesAndShape(newLogRec);
 
 			newLogRec.robotOdometryPose			= curPose;
-			newLogRec.WS_target_relative		= CPoint2D(relTarget.x(), relTarget.y());
+			newLogRec.WS_target_relative		= TPoint2D(relTarget.x(), relTarget.y());
 			newLogRec.v							= new_cmd_v;
 			newLogRec.w							= new_cmd_w;
 			newLogRec.nSelectedPTG				= nSelectedPTG;

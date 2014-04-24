@@ -9,7 +9,7 @@
 #ifndef  MRPT_SYSTEM_THREADS_H
 #define  MRPT_SYSTEM_THREADS_H
 
-#include <mrpt/utils/utils_defs.h>
+#include <mrpt/utils/core_defs.h>
 
 namespace mrpt
 {

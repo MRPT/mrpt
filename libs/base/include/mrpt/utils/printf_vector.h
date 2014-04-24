@@ -52,7 +52,7 @@ namespace mrpt
 		/** Prints a vector in the format [A,B,C,...] to std::cout, and the fmt string for <b>each</b> vector element. */
 		template <typename T>
 		void printf_vector(const char *fmt, const std::vector<T> &V ) {
-			::fputs(stdout,sprintf_vector(fmt, V).c_str());
+			::fputs(sprintf_vector(fmt, V).c_str(),stdout);
 		}
 
 		/** @} */  // end of grouping

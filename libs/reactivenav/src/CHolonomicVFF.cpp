@@ -7,9 +7,9 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/reactivenav.h>  // Precomp header
+#include "reactivenav-precomp.h" // Precomp header
 
-#include <mrpt/poses/CPoint2D.h>
+#include <mrpt/reactivenav/CHolonomicVFF.h>
 
 using namespace mrpt;
 using namespace mrpt::utils;

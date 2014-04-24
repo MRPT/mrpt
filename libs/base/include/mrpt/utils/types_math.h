@@ -47,7 +47,6 @@
 	/*! Assignment operator from any other Eigen class */ \
     template<typename OtherDerived> \
     inline mrpt_autotype & operator= (const Eigen::MatrixBase <OtherDerived>& other) { \
-        /*Base::operator=(other.template cast<typename Base::Scalar>());*/ \
         Base::operator=(other); \
         return *this; \
     } \
@@ -59,8 +58,26 @@ namespace mrpt
 {
 	namespace math 
 	{
-		typedef Eigen::Matrix<float,Eigen::Dynamic,1>  CVectorFloat;
-		typedef Eigen::Matrix<double,Eigen::Dynamic,1> CVectorDouble;
+		/** Column vector, like Eigen::MatrixX*, but automatically initialized to zeros since construction */
+		template <typename T>
+		class dynamic_vector : public Eigen::Matrix<T,Eigen::Dynamic,1>
+		{
+		public:
+			typedef Eigen::Matrix<T,Eigen::Dynamic,1> Base;
+			typedef dynamic_vector<T> mrpt_autotype;
+			typedef T value_type;
+			MRPT_MATRIX_CONSTRUCTORS_FROM_POSES(dynamic_vector)
+			MRPT_EIGEN_DERIVED_CLASS_CTOR_OPERATOR_EQUAL(dynamic_vector)
+
+			/** Default constructor (vector of given size set to zero) */
+			inline dynamic_vector(size_t length=0) { Base::setZero(length); }
+			/** Constructor to given size and all entries to some value */
+			inline dynamic_vector(size_t length, float value) { Base::resize(length); Base::setConstant(value); }
+
+		};
+
+		typedef dynamic_vector<float>  CVectorFloat;  //!< Column vector, like Eigen::MatrixXf, but automatically initialized to zeros since construction
+		typedef dynamic_vector<double> CVectorDouble; //!< Column vector, like Eigen::MatrixXd, but automatically initialized to zeros since construction
 	}
 
 	namespace utils

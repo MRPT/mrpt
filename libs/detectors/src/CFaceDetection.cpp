@@ -7,13 +7,18 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-
-#include <mrpt/detectors.h>  // Precompiled headers
+#include "detectors-precomp.h"  // Precompiled headers
 #include <mrpt/gui.h>
 #include <mrpt/slam/CColouredPointsMap.h>
 
 #include <mrpt/detectors/CFaceDetection.h>
 #include <mrpt/math.h>
+#include <mrpt/opengl/CPointCloudColoured.h>
+#include <mrpt/opengl/CGridPlaneXY.h>
+#include <mrpt/opengl/CSphere.h>
+#include <mrpt/opengl/CArrow.h>
+#include <mrpt/opengl/CSetOfLines.h>
+#include <mrpt/opengl/CAxis.h>
 
 #include <mrpt/slam/CMetricMapsAlignmentAlgorithm.h>
 #include <mrpt/slam/CICP.h>
@@ -408,7 +413,7 @@ bool CFaceDetection::checkIfFacePlaneCov( CObservation3DRangeScan* face )
 	CMatrixDouble eVects, m_eVals;
 	CVectorDouble eVals;
 
-	cov = covVector( pointsVector );
+	cov = covVector<vector<CArrayDouble<3> >,CMatrixDouble>( pointsVector );
 
 	cov.eigenValues( eVals );
 

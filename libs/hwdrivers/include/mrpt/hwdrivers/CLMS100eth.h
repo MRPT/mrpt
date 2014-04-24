@@ -10,8 +10,8 @@
 #ifndef CLMS100ETH_H
 #define CLMS100ETH_H
 
-#include <mrpt/utils.h>
 #include <mrpt/hwdrivers/C2DRangeFinderAbstract.h>
+#include <mrpt/utils/CClientTCPSocket.h>
 
 namespace mrpt
 {

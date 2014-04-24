@@ -128,7 +128,7 @@ void CPose3DPDFGaussian::copyFrom( const CPose3DQuatPDFGaussian &o)
 		{
 			CVectorDouble x(4);
 			for (int i=0;i<4;i++) x[i] = o.mean.quat()[i];
-			CVectorDouble Ax(4,1e-7);
+			CVectorDouble Ax(4); Ax.assign(1e-7);
 			CMatrixDouble H;
 			jacobians::jacob_numeric_estimate(x,ffff,Ax, o.mean.quat(),H);
 			cout << "num:" <<endl <<H << endl << endl;

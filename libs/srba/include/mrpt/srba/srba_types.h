@@ -11,7 +11,10 @@
 
 #include <mrpt/math/lightweight_geom_data.h>
 #include <mrpt/math/MatrixBlockSparseCols.h>
+#include <mrpt/math/CArrayNumeric.h>
 #include <mrpt/utils/TEnumType.h>
+#include <mrpt/system/memory.h> // for MRPT_MAKE_ALIGNED_OPERATOR_NEW
+#include <set>
 
 // (If you use Visual Studio 2008 and the "std::deque<k2f_edge_t>" line raises the error "error C2719: '_Val': formal parameter with __declspec(align('16')) won't be aligned",
 // it's caused by this bug in either Eigen or VS2008 compiler, still to be fixed: http://eigen.tuxfamily.org/bz/show_bug.cgi?id=83  )

@@ -34,9 +34,9 @@ namespace mrpt
 
 			std::string	m_id; //!< Must be an unique id for each detectable object
 
-			CObservationPtr	obs; //!< Observation wich contain the deteted object
+			mrpt::slam::CObservationPtr	obs; //!< Observation wich contain the deteted object
 
-			inline void setObservation( CObservationPtr newObs ){	obs = newObs;	};
+			inline void setObservation( mrpt::slam::CObservationPtr newObs ){	obs = newObs;	};
 
 		}; // End of class
 

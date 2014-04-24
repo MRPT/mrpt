@@ -15,6 +15,9 @@
 #include <mrpt/reactivenav/CAbstractHolonomicReactiveMethod.h>
 #include <mrpt/reactivenav/CHolonomicVFF.h>
 #include <mrpt/reactivenav/CHolonomicND.h>
+#include <mrpt/utils/CTimeLogger.h>
+#include <mrpt/system/datetime.h>
+#include <mrpt/synch/CCriticalSection.h>
 
 namespace mrpt
 {

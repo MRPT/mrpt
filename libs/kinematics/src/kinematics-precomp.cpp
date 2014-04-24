@@ -7,5 +7,5 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/kinematics.h>  // Precompiled headers
+#include "kinematics-precomp.h"  // Precompiled headers
 

@@ -11,9 +11,10 @@
 
 #include <mrpt/graphslam/types.h>
 #include <mrpt/utils/TParameters.h>
+#include <mrpt/utils/stl_containers_utils.h> // find_in_vector()
+
 
 #include <mrpt/graphslam/levmarq_impl.h> // Aux classes
-#include <mrpt/utils/XX.h> // Aux classes
 
 namespace mrpt
 {
@@ -209,6 +210,7 @@ namespace mrpt
 
 			// other important vars for the main loop:
 			CVectorDouble grad(nFreeNodes*DIMS_POSE);
+			grad.setZero();
 			typedef typename mrpt::aligned_containers<TNodeID,typename gst::matrix_VxV_t>::map_t  map_ID2matrix_VxV_t;
 			vector<map_ID2matrix_VxV_t>  H_map(nFreeNodes);
 
