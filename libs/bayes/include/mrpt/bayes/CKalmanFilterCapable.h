@@ -13,9 +13,11 @@
 #include <mrpt/math/CMatrixTemplateNumeric.h>
 #include <mrpt/math/CArray.h>
 #include <mrpt/math/utils.h>
+#include <mrpt/math/num_jacobian.h>
 
 #include <mrpt/utils/CTimeLogger.h>
 #include <mrpt/utils/CLoadableOptions.h>
+#include <mrpt/utils/stl_containers_utils.h>
 #include <mrpt/utils/CDebugOutputCapable.h>
 #include <mrpt/system/os.h>
 #include <mrpt/utils/CTicTac.h>

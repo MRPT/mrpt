@@ -14,6 +14,7 @@
 #include <mrpt/utils/CFileOutputStream.h>
 #include <mrpt/utils/CMemoryStream.h>
 #include <mrpt/compress/zip.h>
+#include <mrpt/math/CMatrix.h>
 #include <mrpt/math/fourier.h>
 #include <mrpt/math/utils.h>  // for roundup()
 #include <mrpt/utils/round.h> // for round()

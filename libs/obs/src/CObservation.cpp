@@ -10,6 +10,7 @@
 #include "obs-precomp.h"   // Precompiled headers
 
 #include <mrpt/slam/CObservation.h>
+#include <mrpt/utils/CStream.h>
 #include <mrpt/system/os.h>
 #include <mrpt/math/lightweight_geom_data.h>
 

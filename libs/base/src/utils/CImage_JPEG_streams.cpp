@@ -10,9 +10,10 @@
 #include "base-precomp.h"  // Precompiled headers
 
 #include <mrpt/utils/CImage.h>
+#include <mrpt/utils/CStream.h>
 
 // Universal include for all versions of OpenCV
-#include <mrpt/otherlibs/do_opencv_includes.h> 
+#include <mrpt/otherlibs/do_opencv_includes.h>
 
 using namespace mrpt;
 using namespace mrpt::utils;

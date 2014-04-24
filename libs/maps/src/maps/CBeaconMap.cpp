@@ -20,6 +20,7 @@
 #include <mrpt/bayes/CParticleFilter.h>
 #include <mrpt/math/data_utils.h> // averageLogLikelihood()
 #include <mrpt/system/os.h>
+#include <mrpt/utils/CStream.h>
 
 #include <mrpt/opengl/COpenGLScene.h>
 #include <mrpt/opengl/CSetOfObjects.h>
@@ -684,7 +685,7 @@ void CBeaconMap::determineMatching2D(
 	const CPose2D         & otherMapPose,
 	TMatchingPairList     & correspondences,
 	const TMatchingParams & params,
-	TMatchingExtraResults & extraResults ) const 
+	TMatchingExtraResults & extraResults ) const
 {
 	MRPT_START
 	extraResults = TMatchingExtraResults();

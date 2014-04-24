@@ -13,8 +13,7 @@
 #include <mrpt/slam/CPointsMap.h>
 #include <mrpt/slam/CObservation2DRangeScan.h>
 #include <mrpt/slam/CObservation3DRangeScan.h>
-
-
+#include <mrpt/utils/CStream.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/utils/CMemoryChunk.h>
 

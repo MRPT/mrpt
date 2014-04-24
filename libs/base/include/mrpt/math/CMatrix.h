@@ -53,21 +53,14 @@ namespace mrpt
 				*this = m.eval().cast<float>();
 			}
 
-			/** Constructor from a TPose2D, which generates a 3x1 matrix \f$ [x y \phi]^T \f$
-			   */
-			explicit CMatrix( const TPose2D &p) : CMatrixFloat(p) {}
-
-			/** Constructor from a mrpt::poses::CPose6D, which generates a 6x1 matrix \f$ [x y z yaw pitch roll]^T \f$
-			   */
-			explicit CMatrix( const TPose3D &p) : CMatrixFloat(p) {}
-
-			/** Constructor from a TPoint2D, which generates a 2x1 matrix \f$ [x y]^T \f$
-			   */
-			explicit CMatrix( const TPoint2D &p) : CMatrixFloat(p) {}
-
-			/** Constructor from a TPoint3D, which generates a 3x1 matrix \f$ [x y z]^T \f$
-			   */
-			explicit CMatrix( const TPoint3D &p) : CMatrixFloat(p) {}
+			/** Constructor from a TPose2D, which generates a 3x1 matrix \f$ [x y \phi]^T \f$ */
+			explicit CMatrix( const TPose2D &p);
+			/** Constructor from a mrpt::poses::CPose6D, which generates a 6x1 matrix \f$ [x y z yaw pitch roll]^T \f$  */
+			explicit CMatrix( const TPose3D &p);
+			/** Constructor from a TPoint2D, which generates a 2x1 matrix \f$ [x y]^T \f$  */
+			explicit CMatrix( const TPoint2D &p);
+			/** Constructor from a TPoint3D, which generates a 3x1 matrix \f$ [x y z]^T \f$ */
+			explicit CMatrix( const TPoint3D &p);
 
 			/** Assignment operator for float matrixes
 			*/

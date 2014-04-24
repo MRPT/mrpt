@@ -24,8 +24,8 @@ namespace mrpt
 			struct BASE_IMPEXP dynamic_grid_txt_saver
 			{
 				bool saveToTextFile(const std::string &fileName) const;
-				virtual unsigned int getSizeX() const = 0; 
-				virtual unsigned int getSizeY() const = 0; 
+				virtual unsigned int getSizeX() const = 0;
+				virtual unsigned int getSizeY() const = 0;
 				virtual float getCellAsFloat(unsigned int cx,unsigned int cy) const = 0;
 			};
 		} // internal
@@ -56,7 +56,7 @@ namespace mrpt
 				float y_min = -10.0f, float y_max = 10.0f,
 				float resolution = 0.10f) :
 					m_map(), m_x_min(),m_x_max(),m_y_min(),m_y_max(),
-					m_resolution(),m_size_x(), m_size_y() 
+					m_resolution(),m_size_x(), m_size_y()
 			{
                 setSize(x_min,x_max,y_min,y_max,resolution);
             }
@@ -103,9 +103,9 @@ namespace mrpt
 
             /** Fills all the cells with the same value
               */
-            inline void fill( const T& value ) { 
-				for (std::vector<T>::iterator it=m_map.begin();it!=m_map.end();++it) 
-					*it=value; 
+            inline void fill( const T& value ) {
+				for (typename std::vector<T>::iterator it=m_map.begin();it!=m_map.end();++it)
+					*it=value;
 			}
 
             /** Changes the size of the grid, maintaining previous contents.

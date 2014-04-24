@@ -117,19 +117,9 @@ namespace mrpt
 				MATDEST &outMat);
 		}
 
-		/** Conversion of poses to MRPT containers (vector/matrix) */
-		template <class CONTAINER> CONTAINER & containerFromPoseOrPoint(CONTAINER &C, const TPoint2D &p);
-		template <class CONTAINER> CONTAINER & containerFromPoseOrPoint(CONTAINER &C, const TPoint3D &p);
-		template <class CONTAINER> CONTAINER & containerFromPoseOrPoint(CONTAINER &C, const TPose2D &p);
-		template <class CONTAINER> CONTAINER & containerFromPoseOrPoint(CONTAINER &C, const TPose3D &p);
-		template <class CONTAINER> CONTAINER & containerFromPoseOrPoint(CONTAINER &C, const TPose3DQuat &p);
-
-		template <class CONTAINER> inline CONTAINER & containerFromPoseOrPoint(CONTAINER &C, const mrpt::poses::CPoint2D &p) { return containerFromPoseOrPoint(C, mrpt::math::detail::lightFromPose(p)); }
-		template <class CONTAINER> inline CONTAINER & containerFromPoseOrPoint(CONTAINER &C, const mrpt::poses::CPoint3D &p) { return containerFromPoseOrPoint(C, mrpt::math::detail::lightFromPose(p)); }
-		template <class CONTAINER> inline CONTAINER & containerFromPoseOrPoint(CONTAINER &C, const mrpt::poses::CPose2D &p)  { return containerFromPoseOrPoint(C, mrpt::math::detail::lightFromPose(p)); }
-		template <class CONTAINER> inline CONTAINER & containerFromPoseOrPoint(CONTAINER &C, const mrpt::poses::CPose3D &p)  { return containerFromPoseOrPoint(C, mrpt::math::detail::lightFromPose(p)); }
-		template <class CONTAINER> inline CONTAINER & containerFromPoseOrPoint(CONTAINER &C, const mrpt::poses::CPose3DQuat &p)  { return containerFromPoseOrPoint(C, mrpt::math::detail::lightFromPose(p)); }
-
+		/** Conversion of poses (TPose2D,TPoint2D,..., CPoint2D,CPose3D,...) to MRPT containers (vector/matrix) */
+		template <class CONTAINER,class POINT_OR_POSE>
+		CONTAINER & containerFromPoseOrPoint(CONTAINER &C, const POINT_OR_POSE &p);
 
 		// Vicinity classes ----------------------------------------------------
 		namespace detail	{

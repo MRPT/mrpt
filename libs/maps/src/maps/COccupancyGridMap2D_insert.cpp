@@ -12,6 +12,7 @@
 #include <mrpt/slam/COccupancyGridMap2D.h>
 #include <mrpt/slam/CObservation2DRangeScan.h>
 #include <mrpt/slam/CObservationRange.h>
+#include <mrpt/utils/CStream.h>
 #include <mrpt/utils/round.h> // round()
 
 #if HAVE_ALLOCA_H

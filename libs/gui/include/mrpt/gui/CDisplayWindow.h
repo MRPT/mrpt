@@ -11,6 +11,7 @@
 
 #include <mrpt/gui/CBaseGUIWindow.h>
 #include <mrpt/utils/CImage.h>
+#include <mrpt/system/os.h>
 
 namespace mrpt
 {

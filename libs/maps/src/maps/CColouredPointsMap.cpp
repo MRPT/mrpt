@@ -15,6 +15,7 @@
 #include <mrpt/utils/color_maps.h>
 #include <mrpt/system/os.h>
 #include <mrpt/opengl/CPointCloudColoured.h>
+#include <mrpt/utils/CStream.h>
 
 #include "CPointsMap_crtp_common.h"
 

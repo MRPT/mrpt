@@ -12,6 +12,7 @@
 #include <mrpt/slam/CBeacon.h>
 #include <mrpt/slam/CBeaconMap.h>
 #include <mrpt/slam/CObservation.h>
+#include <mrpt/utils/CStream.h>
 
 #include <mrpt/system/os.h>
 #include <mrpt/math/geometry.h>

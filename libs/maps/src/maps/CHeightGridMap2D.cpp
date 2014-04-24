@@ -19,6 +19,7 @@
 #include <mrpt/utils/color_maps.h>
 #include <mrpt/opengl/CMesh.h>
 #include <mrpt/opengl/CPointCloudColoured.h>
+#include <mrpt/utils/CStream.h>
 
 using namespace mrpt::slam;
 using namespace mrpt::poses;

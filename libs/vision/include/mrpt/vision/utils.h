@@ -12,7 +12,8 @@
 
 #include <mrpt/vision/CFeature.h>
 #include <mrpt/utils/CImage.h>
-#include <mrpt/math/utils.h>
+//#include <mrpt/math/utils.h>
+#include <mrpt/math/CMatrixTemplate.h>
 #include <mrpt/utils/CLoadableOptions.h>
 #include <mrpt/utils/TMatchingPair.h>
 #include <mrpt/poses/CPose3D.h>
@@ -180,19 +181,6 @@ namespace mrpt
 								CVectorFloat            & std,
 								CVectorFloat            & mean );
 
-			/** Returns a new image where distortion has been removed.
-			  * \param A The 3x3 intrinsic parameters matrix
-			  * \param dist_coeffs The 1x4 (or 1x5) vector of distortion coefficients
-			  */
-			inline void correctDistortion(
-                                const CImage	        & in_img,
-                                CImage			        & out_img,
-                                const CMatrixDouble33	& A,
-                                const CVectorDouble     & dist_coeffs )
-			{
-				in_img.rectifyImage( out_img, A, dist_coeffs);
-			}
-
 
 			/** Computes the mean squared distance between a set of 3D correspondences
 			  * ...
@@ -344,7 +332,7 @@ namespace mrpt
                                 const CMatchedFeatureList           & inMatches,
                                 const CMatrixDouble33               & intrinsicParams,
                                 const double                        & baseline,
-                                const CPose3D                       & sensorPose,
+                                const mrpt::poses::CPose3D                       & sensorPose,
                                 const vector<double>                & sg,
                                 CObservationBearingRange            & outObs );
 
@@ -384,7 +372,7 @@ namespace mrpt
 
 
 	/** @} */ // end of grouping
-		
+
 	} // end-namespace-vision
 } // end-namespace-mrpt
 

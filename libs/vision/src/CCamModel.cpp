@@ -463,7 +463,7 @@ void  CCamModel::loadFromConfigFile(
 	cam.setIntrinsicParamsFromValues( fx, fy, cx, cy );
 
 	CVectorDouble DD;
-	source.read_vector(section,"dist_params",CVectorDouble(0),DD,true);
+	source.read_vector(section,"dist_params",CVectorDouble(),DD,true);
 	ASSERT_( DD.size()==4 || DD.size()==5 )
 
 	this->cam.setDistortionParamsVector(DD);

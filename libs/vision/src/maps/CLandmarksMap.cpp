@@ -1389,7 +1389,7 @@ bool  CLandmarksMap::saveToMATLABScript2D(
 		cov(0,1) = cov(1,0) = it->pose_cov_12;
 
 		cov.eigenVectors(eigVec,eigVal);
-		eigVal.Sqrt();
+		eigVal = eigVal.array().sqrt().matrix();
 		M = eigVal * (~eigVec);
 
 		// Compute the points of the ellipsoid:

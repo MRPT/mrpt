@@ -1113,7 +1113,7 @@ void  vision::projectMatchedFeatures(
 					Pa.chol(L); // math::chol(Pa,L);
 
 					vector<TPoint3D>	B;				// B group
-					poses::TPoint3D			meanB;			// Mean value of the B group
+					TPoint3D			meanB;			// Mean value of the B group
 					CMatrix					Pb;				// Covariance of the B group
 
 					B.resize( 2*Na + 1 );	// Set of output values
@@ -1222,7 +1222,7 @@ void  vision::projectMatchedFeatures(
 					Pa.chol(L); //math::chol(Pa,L);
 
 					vector<TPoint3D>	B;				// B group
-					poses::TPoint3D		meanB;			// Mean value of the B group
+					TPoint3D		meanB;			// Mean value of the B group
 					CMatrix				Pb;				// Covariance of the B group
 
 					B.resize( 2*Na + 1 );	// Set of output values
@@ -1419,7 +1419,7 @@ void  vision::projectMatchedFeatures(
 					Pa.chol(L); // math::chol(Pa,L);
 
 					vector<TPoint3D>	B;				// B group
-					poses::TPoint3D			meanB;			// Mean value of the B group
+					TPoint3D			meanB;			// Mean value of the B group
 					CMatrix					Pb;				// Covariance of the B group
 
 					B.resize( 2*Na + 1 );	// Set of output values
@@ -1528,7 +1528,7 @@ void  vision::projectMatchedFeatures(
 					Pa.chol(L); //math::chol(Pa,L);
 
 					vector<TPoint3D>	B;				// B group
-					poses::TPoint3D		meanB;			// Mean value of the B group
+					TPoint3D		meanB;			// Mean value of the B group
 					CMatrix				Pb;				// Covariance of the B group
 
 					B.resize( 2*Na + 1 );	// Set of output values

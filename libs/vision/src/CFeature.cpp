@@ -17,6 +17,7 @@
 #include <mrpt/utils/CStdOutStream.h>
 #include <mrpt/vision/CFeature.h>
 #include <mrpt/vision/types.h>
+#include <mrpt/utils/stl_serialization.h>
 #include <mrpt/math/utils.h>
 
 using namespace mrpt;

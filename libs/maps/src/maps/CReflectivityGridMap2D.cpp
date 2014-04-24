@@ -16,6 +16,7 @@
 #include <mrpt/system/os.h>
 #include <mrpt/opengl/CTexturedPlane.h>
 #include <mrpt/opengl/CSetOfObjects.h>
+#include <mrpt/utils/CStream.h>
 
 
 using namespace mrpt;

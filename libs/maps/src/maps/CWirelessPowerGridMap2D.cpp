@@ -16,6 +16,7 @@
 #include <mrpt/utils/CTicTac.h>
 #include <mrpt/utils/color_maps.h>
 #include <mrpt/opengl/CSetOfObjects.h>
+#include <mrpt/utils/CStream.h>
 
 using namespace mrpt;
 using namespace mrpt::slam;

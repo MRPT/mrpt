@@ -10,8 +10,10 @@
 #define CMatrixTemplate_H
 
 #include <mrpt/utils/utils_defs.h>
+#include <mrpt/system/memory.h>
 #include <mrpt/math/math_frwds.h>  // forward declarations
-#include <mrpt/math/CArray.h>
+#include <mrpt/math/CArray.h>  // type CMatrixTemplateSize
+#include <algorithm>  // swap()
 
 namespace mrpt
 {

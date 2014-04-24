@@ -398,7 +398,8 @@ namespace opengl	{
 				o.maxRange=10000;
 				o.sensorPose=pNew;
 				o.deltaPitch=0;
-				mrpt::utils::copy_container_typecasting(values,o.scan);
+				o.scan.resize(values.size());
+				for (size_t i=0;i<values.size();i++) o.scan[i] = values[i];
 				o.validRange=valid;
 				vObs.push_back(o);
 			}

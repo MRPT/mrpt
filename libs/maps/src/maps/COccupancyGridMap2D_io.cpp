@@ -11,6 +11,7 @@
 
 #include <mrpt/system/os.h>
 #include <mrpt/math/CMatrix.h>
+#include <mrpt/utils/CStream.h>
 #include <mrpt/utils/CEnhancedMetaFile.h>
 #include <mrpt/utils/round.h> // round()
 #include <mrpt/slam/COccupancyGridMap2D.h>

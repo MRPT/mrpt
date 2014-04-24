@@ -9,7 +9,7 @@
 
 #include <mrpt/vision.h>  // Precompiled headers
 
-
+#include <mrpt/utils/stl_serialization.h>
 #include <mrpt/slam/CLandmark.h>
 #include <mrpt/slam/CObservation.h>
 #include <mrpt/system/os.h>
@@ -116,7 +116,7 @@ void  CLandmark::readFromStream(CStream &in, int version)
 	case 0:
 	case 1:
 	case 2:
-	case 3: 
+	case 3:
 		THROW_EXCEPTION("Importing from this old version is not implemented");
 		break;
 	case 4:

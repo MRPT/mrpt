@@ -10,17 +10,19 @@
 
 #include <mrpt/utils/TTypeName_impl.h> // TTypeName<> for STL templates, needed for serialization of STL templates
 #include <mrpt/utils/metaprogramming_serialization.h>
+#include <mrpt/utils/CStream.h>
 #include <vector>
 #include <deque>
 #include <set>
 #include <map>
 #include <list>
+#include <algorithm> // for_each()
 
 namespace mrpt
 {
 	namespace utils
 	{
-		/** \addtogroup stlext_grp 
+		/** \addtogroup stlext_grp
 		  * @{ */
 
 		#define MRPTSTL_SERIALIZABLE_SEQ_CONTAINER( CONTAINER )  \

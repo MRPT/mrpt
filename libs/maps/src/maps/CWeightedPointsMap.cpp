@@ -10,6 +10,7 @@
 #include "maps-precomp.h" // Precomp header
 
 #include <mrpt/slam/CWeightedPointsMap.h>
+#include <mrpt/utils/CStream.h>
 
 #include "CPointsMap_crtp_common.h"
 
