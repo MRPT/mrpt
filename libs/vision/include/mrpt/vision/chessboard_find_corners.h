@@ -45,7 +45,7 @@ namespace mrpt
 		  */
 		bool VISION_IMPEXP findChessboardCorners(
 			const mrpt::utils::CImage &img,
-			std::vector<TPixelCoordf> 	&cornerCoords,
+			std::vector<mrpt::utils::TPixelCoordf> 	&cornerCoords,
 			unsigned int  check_size_x,
 			unsigned int  check_size_y,
 			bool  normalize_image = true,
@@ -71,7 +71,7 @@ namespace mrpt
 		  */
 		void VISION_IMPEXP findMultipleChessboardsCorners(
 			const mrpt::utils::CImage &img,
-			std::vector<std::vector<TPixelCoordf> > 	&cornerCoords,
+			std::vector<std::vector<mrpt::utils::TPixelCoordf> > 	&cornerCoords,
 			unsigned int  check_size_x,
 			unsigned int  check_size_y );
 

@@ -15,6 +15,7 @@
 #include <mrpt/system/datetime.h>
 
 #include <iostream>
+#include <iterator>
 #include <sstream>
 
 using namespace std;
@@ -54,7 +55,7 @@ void  CRaePID::loadConfig_sensorSpecific(
 	pose_roll = configSource.read_float(iniSection,"pose_roll",0,true);
 	pose_pitch = configSource.read_float(iniSection,"pose_pitch",0,true);
 	pose_yaw = configSource.read_float(iniSection,"pose_yaw",0,true);
-	
+
 }
 
 /* -----------------------------------------------------
@@ -77,7 +78,7 @@ bool  CRaePID::tryToOpenTheCOM()
 		//mrpt::system::sleep(10);
 		COM.purgeBuffers();
 		//mrpt::system::sleep(10);
-				
+
 		return true; // All OK!
 	}
 	catch (std::exception &e)
@@ -115,8 +116,8 @@ void CRaePID::doProcess()
 		// Send command to PID to request a measurement
 		COM.purgeBuffers();
 		COM.Write("R",1);
-	
-		// Read PID response		
+
+		// Read PID response
 		power_reading = COM.ReadString(500,&time_out);
 		if (time_out)
 		{
@@ -126,7 +127,7 @@ void CRaePID::doProcess()
 		else
 			have_reading = true;
 	}
-	
+
 	//cout << "[CRaePID] " << com_port << " @ " <<com_bauds << " - measurement -> " << power_reading << endl;
 
 	// Convert the text to a number (ppm)
@@ -157,7 +158,7 @@ std::string CRaePID::getFirmware()
 	if (!B_written) return std::string("COMMS.ERROR");
 
 	// Read the returned text
-	bool time_out = false;	
+	bool time_out = false;
 	std::string s_read = COM.ReadString(2000,&time_out);
 	if (time_out)
 		s_read =  "Time_out";

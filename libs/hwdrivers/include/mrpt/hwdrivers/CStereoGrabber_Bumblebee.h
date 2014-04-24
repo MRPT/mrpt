@@ -11,6 +11,7 @@
 
 #include <mrpt/slam/CObservationStereoImages.h>
 #include <mrpt/hwdrivers/link_pragmas.h>
+#include <mrpt/utils/CUncopiable.h>
 
 #ifndef MRPT_OS_WINDOWS
 	#include <mrpt/hwdrivers/CImageGrabber_dc1394.h>
@@ -79,9 +80,9 @@ namespace mrpt
 			  * dstL [output]. The Left CImage.
 			  * dstR [output]. The Right CImage.
 			*/
-			static void convertTriclopsImagesToIplImages( 
-				void* triclopsImage, 
-				void* dstL, 
+			static void convertTriclopsImagesToIplImages(
+				void* triclopsImage,
+				void* dstL,
 				void* dstR );
 
 #endif

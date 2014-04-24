@@ -10,6 +10,7 @@
 #include <mrpt/config.h>
 
 #include <mrpt/utils/utils_defs.h>
+#include <cstring>
 
 using namespace mrpt;
 using namespace mrpt::utils;

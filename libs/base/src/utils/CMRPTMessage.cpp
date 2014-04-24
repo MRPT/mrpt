@@ -7,13 +7,13 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include "base-precomp.h"  // Precompiled headers 
+#include "base-precomp.h"  // Precompiled headers
 
-
-
+#include <mrpt/utils/CSerializable.h>
 #include <mrpt/utils/CMessage.h>
 #include <mrpt/system/os.h>
 #include <mrpt/utils/CMemoryStream.h>
+#include <cstring>
 
 using namespace mrpt::utils;
 

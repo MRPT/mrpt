@@ -11,6 +11,8 @@
 #define mrpt_utils_tcolor_H
 
 #include <mrpt/utils/mrpt_stdint.h>    // compiler-independent version of "stdint.h"
+#include <mrpt/base/link_pragmas.h>
+#include <iosfwd>
 
 namespace mrpt
 {

@@ -11,8 +11,9 @@
 #define CDifodo_H
 
 #include <mrpt/utils/types_math.h> // Eigen
+#include <mrpt/math/CMatrixFixedNumeric.h>
+#include <mrpt/poses/CPose3D.h>
 #include <mrpt/vision/link_pragmas.h>
-
 
 //class CDeflodo Acronim for "Depth Flow odometry" -> otra opción de nombre...
 namespace mrpt

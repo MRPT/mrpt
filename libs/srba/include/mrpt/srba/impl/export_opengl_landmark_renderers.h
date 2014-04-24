@@ -11,6 +11,9 @@
 #include <mrpt/opengl/CSetOfObjects.h>
 #include <mrpt/opengl/stock_objects.h>
 #include <mrpt/opengl/CSetOfLines.h>
+#include <mrpt/opengl/CPointCloud.h>
+#include <mrpt/opengl/CEllipsoid.h>
+#include <mrpt/opengl/CText3D.h>
 #include <mrpt/math/lightweight_geom_data.h>
 #include <mrpt/srba/landmark_render_models.h>
 
@@ -32,6 +35,8 @@ template <> struct LandmarkRendererBase<landmark_rendering_as_point>
 		mrpt::opengl::CSetOfObjects& scene)
 	{
 		using namespace mrpt::math;
+		using mrpt::utils::DEG2RAD;
+		using mrpt::poses::CPose3D;
 
 		// For each fixed known LM, add a point to a point cloud
 		//  and a text label with the landmark ID:
@@ -90,7 +95,7 @@ template <> struct LandmarkRendererBase<landmark_rendering_as_point>
 				// It's the origin.
 			}
 
-			// If LM_TYPE defines this kind of renderer, we 
+			// If LM_TYPE defines this kind of renderer, we
 			TPoint3D p_wrt_base;
 			RBA::lm_type::relativeEuclideanLocation(itLM->second.pos, p_wrt_base);
 
@@ -98,7 +103,7 @@ template <> struct LandmarkRendererBase<landmark_rendering_as_point>
 			base_pose.composePoint(p_wrt_base,p_global);
 
 			gl_lms->insertPoint(p_global.x,p_global.y,p_global.z);
-			
+
 			if( options.show_unknown_feats_ids )
 			{
 				// Add text label:
@@ -166,7 +171,7 @@ template <> struct LandmarkRendererBase<landmark_rendering_as_pose_constraints>
 			const typename RBA::pose_flag_t & pf = it->second;
 
 			const typename RBA::keyframe_info &kfi = rba.get_rba_state().keyframes[kf_id];
-			
+
 			for (size_t i=0;i<kfi.adjacent_k2f_edges.size();i++)
 			{
 				const typename RBA::k2f_edge_t * k2f = kfi.adjacent_k2f_edges[i];
@@ -175,15 +180,15 @@ template <> struct LandmarkRendererBase<landmark_rendering_as_pose_constraints>
 					continue; // It's not an constraint with ANOTHER keyframe
 
 				// Is the other KF in the spanning tree?
-				typename RBA::frameid2pose_map_t::const_iterator other_it=spantree.find(other_kf_id);				
+				typename RBA::frameid2pose_map_t::const_iterator other_it=spantree.find(other_kf_id);
 				if (other_it==spantree.end()) continue;
 
 				const typename RBA::pose_flag_t & other_pf = other_it->second;
-				
+
 				// Add edge between the two KFs to represent the pose constraint:
 				mrpt::poses::CPose3D p1 = mrpt::poses::CPose3D(pf.pose);  // Convert to 3D
 				mrpt::poses::CPose3D p2 = mrpt::poses::CPose3D(other_pf.pose);
-				
+
 				gl_edges->appendLine( p1.x(),p1.y(),p1.z()+0.10, p2.x(),p2.y(),p2.z()+0.10 );
 			}
 

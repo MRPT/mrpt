@@ -12,6 +12,9 @@
 #include <mrpt/scanmatching.h>
 #include <mrpt/slam/CObservationGPS.h>
 #include <mrpt/math/data_utils.h>
+#include <mrpt/topography/data_types.h>
+#include <mrpt/topography/conversions.h>
+#include <mrpt/topography/path_from_rtk_gps.h>
 
 #if MRPT_HAS_WXWIDGETS
 	#include <wx/app.h>
@@ -30,6 +33,7 @@ using namespace mrpt::math;
 using namespace mrpt::utils;
 using namespace mrpt::poses;
 using namespace mrpt::system;
+using namespace mrpt::topography;
 
 template <class T>
 std::set<T> make_set( const T& v0, const T& v1 )

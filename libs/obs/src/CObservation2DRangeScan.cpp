@@ -13,8 +13,7 @@
 #include <mrpt/poses/CPosePDF.h>
 #include <mrpt/utils/CStream.h>
 #include <mrpt/math/CMatrix.h>
-
-//#include <mrpt/math/utils.h>
+#include <mrpt/math/wrap2pi.h>
 
 using namespace std;
 using namespace mrpt::slam;

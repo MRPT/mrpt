@@ -11,7 +11,8 @@
 
 #include <mrpt/graphs/dijkstra.h>
 #include <mrpt/utils/CTextFileLinesParser.h>
-
+#include <mrpt/math/lightweight_geom_data.h>
+#include <mrpt/system/string_utils.h>
 
 namespace mrpt
 {
@@ -179,6 +180,9 @@ namespace mrpt
 				// =================================================================
 				static void load_graph_of_poses_from_text_file(graph_t *g, const std::string &fil)
 				{
+					using mrpt::system::strCmpI;
+					using namespace mrpt::math;
+
 					typedef typename graph_t::constraint_t CPOSE;
 
 					set<string>  alreadyWarnedUnknowns; // for unknown line types, show a warning to cerr just once.
@@ -210,7 +214,7 @@ namespace mrpt
 						if ( !(s >> key) || key.empty() )
 							THROW_EXCEPTION(format("Line %u: Can't read string for entry type in: '%s'", lineNum, lin.c_str() ) );
 
-						if ( strCmpI(key,"EQUIV") )
+						if ( mrpt::system::strCmpI(key,"EQUIV") )
 						{
 							// Process these ones at the end, for now store in a list:
 							TNodeID  id1,id2;

@@ -11,6 +11,7 @@
 
 #include <mrpt/math/kmeans.h>
 #include <mrpt/math/geometry.h>
+#include <list>
 
 // Universal include for all versions of OpenCV
 #include <mrpt/otherlibs/do_opencv_includes.h>

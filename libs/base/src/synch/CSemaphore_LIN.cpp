@@ -7,8 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/base.h>  // Only for precomp. headers, include all libmrpt-core headers.
-
+#include "base-precomp.h"  // Precompiled headers
 
 #include <mrpt/config.h>
 #if defined(MRPT_OS_LINUX)
@@ -18,6 +17,7 @@
 #include <mrpt/system/threads.h>
 
 
+#include <cstring>
 #include <iostream>
 #include <pthread.h>
 #include <errno.h>
@@ -128,7 +128,7 @@ bool CSemaphore::waitForSignal( unsigned int timelimit )
     tm.tv_nsec = tp.millitm * 1000000 ;
 
 	int rc;
-	
+
 #if defined(MRPT_OS_APPLE)
 	// Mac version: we don't have sem_timedwait()
 	while (0!= (rc=sem_trywait(token->semid)) )

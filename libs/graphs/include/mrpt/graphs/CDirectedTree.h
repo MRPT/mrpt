@@ -116,11 +116,11 @@ namespace mrpt
 					CMyVisitor(std::ostringstream &s) : m_s(s) { }
 					virtual void OnVisitNode( const TNodeID parent, const typename mrpt::graphs::CDirectedTree<TYPE_EDGES>::Visitor::tree_t::TEdgeInfo &edge_to_child, const size_t depth_level ) {
 						m_s << std::string(depth_level*5, ' ') << (edge_to_child.reverse ? "<-" : "->" ) //;
-							<< std::setw(3) << edge_to_child.id << std::endl;
+							<< edge_to_child.id << std::endl;
 					}
 				};
 				CMyVisitor myVisitor(s);
-				s << std::setw(3) << root << std::endl;
+				s <<  root << std::endl;
 				visitDepthFirst( root, myVisitor );
 				return s.str();
 			}

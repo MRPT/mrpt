@@ -27,6 +27,7 @@
 #include <mrpt/poses/CPointPDFGaussian.h>
 #include <mrpt/poses/CPoint2DPDFGaussian.h>
 
+#include <set>
 #include <numeric>  // accumulate
 #include <memory>   // auto_ptr, unique_ptr
 
@@ -461,7 +462,7 @@ void mrpt::slam::data_association_full_covariance(
 			// 2) With that lists, start by the best one and make the assignment.
 			//    Remove the prediction from the list of available, and go on.
 			// --------------------------------------------------------------------
-			set<prediction_index_t> lst_already_taken_preds;
+			std::set<prediction_index_t> lst_already_taken_preds;
 
 			for (TListAllICs::const_iterator it=lst_all_ICs.begin();it!=lst_all_ICs.end();++it)
 			{

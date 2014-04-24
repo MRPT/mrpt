@@ -12,6 +12,7 @@
 
 #include <mrpt/utils/TColor.h>
 #include <mrpt/opengl/link_pragmas.h>
+#include <string>
 
 namespace mrpt
 {

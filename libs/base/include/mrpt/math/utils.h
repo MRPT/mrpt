@@ -195,6 +195,16 @@ namespace mrpt
 		  * \endcode
 		  * \note This operator performs the appropiate type castings, if required.
 		  */
+		template <typename EIGEN_VECTOR, typename At, size_t N>
+		EIGEN_VECTOR& loadVector(EIGEN_VECTOR &v, At (&theArray)[N] )
+		{
+			MRPT_COMPILE_TIME_ASSERT(N!=0)
+			v.derived().resize(N);
+			for (size_t i=0; i < N; i++)
+				(v.derived())[i] = static_cast<typename EIGEN_VECTOR::Scalar>(theArray[i]);
+			return v;
+		}
+		//! \overload
 		template <typename T, typename At, size_t N>
 		std::vector<T>& loadVector( std::vector<T> &v, At (&theArray)[N] )
 		{
@@ -202,16 +212,6 @@ namespace mrpt
 			v.resize(N);
 			for (size_t i=0; i < N; i++)
 				v[i] = static_cast<T>(theArray[i]);
-			return v;
-		}
-		//! \overload
-		template <typename Derived, typename At, size_t N>
-		Eigen::EigenBase<Derived>& loadVector( Eigen::EigenBase<Derived> &v, At (&theArray)[N] )
-		{
-			MRPT_COMPILE_TIME_ASSERT(N!=0)
-			v.derived().resize(N);
-			for (size_t i=0; i < N; i++)
-				(v.derived())[i] = static_cast<typename Derived::Scalar>(theArray[i]);
 			return v;
 		}
 

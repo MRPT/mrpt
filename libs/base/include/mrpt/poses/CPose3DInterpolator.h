@@ -13,6 +13,8 @@
 #include <mrpt/system/datetime.h>
 #include <mrpt/utils/TEnumType.h>
 #include <mrpt/math/math_frwds.h>
+#include <mrpt/poses/CPose3D.h>
+
 
 namespace mrpt
 {

@@ -9,6 +9,7 @@
 
 #include "obs-precomp.h"   // Precompiled headers
 
+#define MRPT_NO_WARN_BIG_HDR
 #include <mrpt/obs.h>
 
 #include <mrpt/utils/CSerializable.h>

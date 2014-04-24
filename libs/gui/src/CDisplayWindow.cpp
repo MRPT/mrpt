@@ -18,6 +18,7 @@
 #include <mrpt/gui/WxUtils.h>
 
 using namespace mrpt;
+using namespace mrpt::math;
 using namespace mrpt::gui;
 using namespace mrpt::utils;
 using namespace mrpt::system;

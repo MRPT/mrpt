@@ -15,6 +15,7 @@
 #include <mrpt/config.h>
 #include <mrpt/synch.h>
 #include <mrpt/math/lightweight_geom_data.h>
+#include <mrpt/utils/types_math.h>
 
 #include <mrpt/gui/link_pragmas.h>
 
@@ -232,7 +233,7 @@ namespace mrpt
 				void         *voidPtr, *voidPtr2;
 				int          x,y;
 				bool         boolVal;
-				CVectorFloat vector_x,vector_y;
+				mrpt::math::CVectorFloat vector_x,vector_y;
 				std::string  plotName;
 
 				/** Valid codes are:
@@ -442,16 +443,16 @@ namespace mrpt
 				/** Redirected from CDisplayWindowPlots::plot
 				  */
 				void plot(
-					const CVectorFloat &x,
-					const CVectorFloat &y,
+					const mrpt::math::CVectorFloat &x,
+					const mrpt::math::CVectorFloat &y,
 					const std::string  &lineFormat,
 					const std::string  &plotName);
 
 				/** Redirected from CDisplayWindowPlots::plotEllipse
 				  */
 				void plotEllipse(
-					const CVectorFloat &x,
-					const CVectorFloat &y,
+					const mrpt::math::CVectorFloat &x,
+					const mrpt::math::CVectorFloat &y,
 					const std::string  &lineFormat,
 					const std::string  &plotName,
 					bool showName = false);

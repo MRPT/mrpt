@@ -9,6 +9,7 @@
 
 #include "hwdrivers-precomp.h"   // Precompiled headers
 
+#include <mrpt/hwdrivers/CGenericSensor.h>
 #include <mrpt/slam/CAction.h>
 #include <mrpt/slam/CObservation.h>
 #include <mrpt/utils/CStartUpClassesRegister.h>

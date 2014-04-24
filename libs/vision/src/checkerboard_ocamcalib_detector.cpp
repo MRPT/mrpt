@@ -49,6 +49,7 @@ If you use this code, please cite the following articles:
 
 
 #include "checkerboard_ocamcalib_detector.h"
+#include <mrpt/math/CArray.h>
 
 #if MRPT_HAS_OPENCV
 
