@@ -62,13 +62,13 @@ namespace mrpt
 			inline CMatrixD(const Eigen::MatrixBase <OtherDerived>& other) : CMatrixTemplateNumeric<double>(other) { }
 
 			/** Constructor from a TPose2D, which generates a 3x1 matrix \f$ [x y \phi]^T \f$  */
-			explicit CMatrixD( const TPose2D &p) : CMatrixDouble(p) {}
+			explicit CMatrixD( const TPose2D &p);
 			/** Constructor from a TPose3D, which generates a 6x1 matrix \f$ [x y z yaw pitch roll]^T \f$  */
-			explicit CMatrixD( const TPose3D &p) : CMatrixDouble(p) {}
+			explicit CMatrixD( const TPose3D &p);
 			/** Constructor from a TPoint2D, which generates a 2x1 matrix \f$ [x y]^T \f$ */
-			explicit CMatrixD( const TPoint2D &p) : CMatrixDouble(p) {}
+			explicit CMatrixD( const TPoint2D &p);
 			/** Constructor from a TPoint3D, which generates a 3x1 matrix \f$ [x y z]^T \f$ */
-			explicit CMatrixD( const TPoint3D &p) : CMatrixDouble(p) {}
+			explicit CMatrixD( const TPoint3D &p);
 
 			/** Assignment from any Eigen matrix/vector */
 			template <typename Derived>

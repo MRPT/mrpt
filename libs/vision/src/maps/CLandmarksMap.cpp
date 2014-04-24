@@ -9,8 +9,6 @@
 
 #include "vision-precomp.h"   // Precompiled headers
 
-//#include <mrpt/math/CMatrix.h>
-//#include <mrpt/math/CMatrixD.h>
 #include <mrpt/math/geometry.h>
 #include <mrpt/random.h>
 #include <mrpt/utils/CConfigFile.h>
@@ -19,8 +17,6 @@
 #include <mrpt/slam/CLandmarksMap.h>
 #include <mrpt/slam/CLandmark.h>
 #include <mrpt/slam/CObservationImage.h>
-//#include <mrpt/vision/utils.h>
-//#include <mrpt/vision/CFeature.h>
 #include <mrpt/slam/CObservationStereoImages.h>
 #include <mrpt/slam/CObservation2DRangeScan.h>
 #include <mrpt/slam/CObservationGPS.h>

@@ -10,6 +10,7 @@
 #ifndef mrpt_vision_types_H
 #define mrpt_vision_types_H
 
+#include <mrpt/utils/aligned_containers.h>
 #include <mrpt/utils/CImage.h>
 #include <mrpt/utils/aligned_containers.h>
 #include <mrpt/utils/CLoadableOptions.h>
@@ -34,8 +35,8 @@ namespace mrpt
 		typedef	uint64_t TLandmarkID;   //!< Unique IDs for landmarks
 		typedef uint64_t TCameraPoseID; //!< Unique IDs for camera frames (poses)
 
-		typedef mrpt::aligned_containers<TCameraPoseID,CPose3D>::map_t  TFramePosesMap;        //!< A list of camera frames (6D poses) indexed by unique IDs.
-		typedef mrpt::aligned_containers<CPose3D>::vector_t             TFramePosesVec;        //!< A list of camera frames (6D poses), which assumes indexes are unique, consecutive IDs.
+		typedef mrpt::aligned_containers<TCameraPoseID,mrpt::poses::CPose3D>::map_t  TFramePosesMap;        //!< A list of camera frames (6D poses) indexed by unique IDs.
+		typedef mrpt::aligned_containers<mrpt::poses::CPose3D>::vector_t             TFramePosesVec;        //!< A list of camera frames (6D poses), which assumes indexes are unique, consecutive IDs.
 
 		typedef std::map<TLandmarkID,mrpt::math::TPoint3D>   TLandmarkLocationsMap; //!< A list of landmarks (3D points) indexed by unique IDs.
 		typedef std::vector<mrpt::math::TPoint3D>            TLandmarkLocationsVec; //!< A list of landmarks (3D points), which assumes indexes are unique, consecutive IDs.

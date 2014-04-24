@@ -13,11 +13,12 @@
 #include <mrpt/math/geometry.h>
 
 // Universal include for all versions of OpenCV
-#include <mrpt/otherlibs/do_opencv_includes.h> 
+#include <mrpt/otherlibs/do_opencv_includes.h>
 #include "checkerboard_ocamcalib_detector.h"
 
 
 using namespace mrpt;
+using namespace mrpt::utils;
 using namespace mrpt::math;
 using namespace mrpt::utils;
 using namespace std;

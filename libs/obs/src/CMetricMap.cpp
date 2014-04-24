@@ -9,6 +9,7 @@
 
 #include "obs-precomp.h"   // Precompiled headers
 
+#include <mrpt/utils/CStream.h>
 #include <mrpt/slam/CMetricMap.h>
 #include <mrpt/poses/CPosePDF.h>
 #include <mrpt/poses/CPoint3D.h>
@@ -134,6 +135,6 @@ bool CMetricMap::insertObservationPtr(
 	MRPT_END
 }
 
-bool CMetricMap::canComputeObservationLikelihood( const CObservationPtr &obs ) { 
-	return canComputeObservationLikelihood(obs.pointer()); 
+bool CMetricMap::canComputeObservationLikelihood( const CObservationPtr &obs ) {
+	return canComputeObservationLikelihood(obs.pointer());
 }

@@ -13,6 +13,7 @@
 #include <mrpt/slam/CObservation2DRangeScan.h>
 #include <mrpt/slam/CObservationRange.h>
 #include <mrpt/slam/CSimplePointsMap.h>
+#include <mrpt/utils/CStream.h>
 
 
 using namespace mrpt;

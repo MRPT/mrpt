@@ -15,6 +15,7 @@
 #include <mrpt/utils/CStartUpClassesRegister.h>
 #include <mrpt/system/os.h>
 #include <mrpt/math/geometry.h>
+#include <mrpt/utils/CStream.h>
 
 #include <mrpt/slam/CPointsMap.h>
 #include <mrpt/slam/CSimplePointsMap.h>
@@ -312,7 +313,7 @@ void CPointsMap::determineMatching2D(
 	double       maxDistForCorrespondenceSquared;
 	float        x_local, y_local;
 	unsigned int localIdx;
-	
+
 	const float *x_other_it,*y_other_it,*z_other_it; // *x_global_it,*y_global_it; //,*z_global_it;
 
 	// Prepare output: no correspondences initially:
@@ -625,7 +626,7 @@ void CPointsMap::TInsertionOptions::writeToStream(CStream &out) const
 	const int8_t version = 0;
 	out << version;
 
-	out 
+	out
 	<< minDistBetweenLaserPoints << addToExistingPointsMap << also_interpolate
 	<< disableDeletion << fuseWithExisting << isPlanarMap << horizontalTolerance
 	<< maxDistForInterpolatePoints << insertInvalidPoints; // v0
@@ -639,7 +640,7 @@ void CPointsMap::TInsertionOptions::readFromStream(CStream &in)
 	{
 		case 0:
 		{
-			in 
+			in
 			>> minDistBetweenLaserPoints >> addToExistingPointsMap >> also_interpolate
 			>> disableDeletion >> fuseWithExisting >> isPlanarMap >> horizontalTolerance
 			>> maxDistForInterpolatePoints >> insertInvalidPoints; // v0
@@ -1972,7 +1973,7 @@ void  CPointsMap::fuseWith(
 	params.maxAngularDistForCorrespondence = 0;
 	params.maxDistForCorrespondence = minDistForFuse;
 
-	determineMatching2D( 
+	determineMatching2D(
 		otherMap,// The other map
 		nullPose,	// The other map's pose
 		correspondences,

@@ -175,7 +175,7 @@ namespace mrpt
 			virtual void PF_SLAM_implementation_replaceByNewParticleSet(
 				typename CParticleFilterData<PARTICLE_TYPE>::CParticleList	 &old_particles,
 				const vector<TPose3D>		&newParticles,
-				const CVectorDouble			&newParticlesWeight,
+				const vector<double>		&newParticlesWeight,
 				const vector<size_t>		&newParticlesDerivedFromIdx ) const
 			{
 				// ---------------------------------------------------------------------------------

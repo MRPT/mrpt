@@ -11,6 +11,7 @@
 
 
 #include <mrpt/opengl/CPlanarLaserScan.h>
+#include <mrpt/utils/CStream.h>
 
 
 #if MRPT_HAS_OPENGL_GLUT

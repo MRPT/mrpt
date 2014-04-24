@@ -331,7 +331,7 @@ namespace mrpt
                                 const CMatchedFeatureList           & inMatches,
                                 const CMatrixDouble33               & intrinsicParams,
                                 const double                        & baseline,
-                                const CPose3D                       & sensorPose,
+                                const mrpt::poses::CPose3D                       & sensorPose,
                                 const vector<double>                & sg,
                                 CObservationBearingRange            & outObs );
 
@@ -371,7 +371,7 @@ namespace mrpt
 
 
 	/** @} */ // end of grouping
-		
+
 	} // end-namespace-vision
 } // end-namespace-mrpt
 

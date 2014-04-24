@@ -763,11 +763,11 @@ void  CMultiMetricMap::readFromStream(CStream &in, int version)
 
 				if (version>=9)
 					in >> options.enableInsertion_octoMaps;
-				else options.enableInsertion_octoMaps = true;			
+				else options.enableInsertion_octoMaps = true;
 
 				if (version>=10)
 					in >> options.enableInsertion_colourOctoMaps;
-				else options.enableInsertion_colourOctoMaps = true;			
+				else options.enableInsertion_colourOctoMaps = true;
 			}
 			else
 			{ } // Default!
@@ -1007,9 +1007,9 @@ float  CMultiMetricMap::getNewStaticPointsRatio(
 	m_gridMaps[0]->determineMatching2D(
 		points,
 		takenFrom,
-		correspondences, 
+		correspondences,
 		params, extraResults);
-		
+
 	size_t nStaticPoints = 0;
 	TPoint2D g,l;
 
@@ -1027,7 +1027,7 @@ float  CMultiMetricMap::getNewStaticPointsRatio(
 			//   it should not be consider as an static point!!
 			points->getPoint(i,l);
 
-			CPoint2D	temp = CPoint2D(l.x,l.y) - takenFrom;
+			CPoint2D	temp = CPoint2D(l) - takenFrom;
 			if ( temp.norm() < params.maxDistForCorrespondence)
 			{
 				// A new point
@@ -2042,7 +2042,7 @@ CSimplePointsMap * CMultiMetricMap::getAsSimplePointsMap()
 
 /** Ctor: TOptions::TOptions
 */
-CMultiMetricMap::TOptions::TOptions() :	
+CMultiMetricMap::TOptions::TOptions() :
 	likelihoodMapSelection(mapFuseAll),
 	enableInsertion_pointsMap  (true),
 	enableInsertion_landmarksMap (true),

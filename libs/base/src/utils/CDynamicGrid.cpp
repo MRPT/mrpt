@@ -30,4 +30,4 @@ bool internal::dynamic_grid_txt_saver::saveToTextFile(const std::string &fileNam
 	}
 	os::fclose(f);
 	return true;
-};
+}

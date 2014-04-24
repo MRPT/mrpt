@@ -7,10 +7,11 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include "base-precomp.h"  // Precompiled headers 
+#include "base-precomp.h"  // Precompiled headers
 
 
 #include <mrpt/math/CMatrix.h>
+#include <mrpt/math/lightweight_geom_data.h>
 #include <mrpt/utils/CStream.h>
 
 using namespace mrpt;
@@ -20,6 +21,16 @@ using namespace mrpt::utils;
 
 // This must be added to any CSerializable class implementation file.
 IMPLEMENTS_SERIALIZABLE(CMatrix, CSerializable, mrpt::math)
+
+
+/** Constructor from a TPose2D, which generates a 3x1 matrix \f$ [x y \phi]^T \f$ */
+CMatrix::CMatrix( const TPose2D &p) : CMatrixFloat(p) {}
+/** Constructor from a mrpt::poses::CPose6D, which generates a 6x1 matrix \f$ [x y z yaw pitch roll]^T \f$  */
+CMatrix::CMatrix( const TPose3D &p) : CMatrixFloat(p) {}
+/** Constructor from a TPoint2D, which generates a 2x1 matrix \f$ [x y]^T \f$  */
+CMatrix::CMatrix( const TPoint2D &p) : CMatrixFloat(p) {}
+/** Constructor from a TPoint3D, which generates a 3x1 matrix \f$ [x y z]^T \f$ */
+CMatrix::CMatrix( const TPoint3D &p) : CMatrixFloat(p) {}
 
 /*---------------------------------------------------------------
 						writeToStream

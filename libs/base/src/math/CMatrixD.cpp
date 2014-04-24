@@ -10,6 +10,7 @@
 #include "base-precomp.h"  // Precompiled headers
 
 #include <mrpt/math/CMatrixD.h>
+#include <mrpt/math/lightweight_geom_data.h>
 #include <mrpt/utils/CStream.h>
 
 using namespace mrpt;
@@ -19,6 +20,14 @@ using namespace mrpt::utils;
 // This must be added to any CSerializable class implementation file.
 IMPLEMENTS_SERIALIZABLE(CMatrixD, CSerializable, mrpt::math)
 
+/** Constructor from a TPose2D, which generates a 3x1 matrix \f$ [x y \phi]^T \f$  */
+CMatrixD::CMatrixD( const TPose2D &p) : CMatrixDouble(p) {}
+/** Constructor from a TPose3D, which generates a 6x1 matrix \f$ [x y z yaw pitch roll]^T \f$  */
+CMatrixD::CMatrixD( const TPose3D &p) : CMatrixDouble(p) {}
+/** Constructor from a TPoint2D, which generates a 2x1 matrix \f$ [x y]^T \f$ */
+CMatrixD::CMatrixD( const TPoint2D &p) : CMatrixDouble(p) {}
+/** Constructor from a TPoint3D, which generates a 3x1 matrix \f$ [x y z]^T \f$ */
+CMatrixD::CMatrixD( const TPoint3D &p) : CMatrixDouble(p) {}
 
 
 /*---------------------------------------------------------------

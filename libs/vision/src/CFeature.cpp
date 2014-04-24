@@ -18,8 +18,8 @@
 #include <mrpt/utils/stl_serialization.h>
 #include <mrpt/vision/CFeature.h>
 #include <mrpt/vision/types.h>
-#include <mrpt/math/data_utils.h>
-#include <mrpt/system/os.h>
+#include <mrpt/utils/stl_serialization.h>
+#include <mrpt/math/utils.h>
 
 using namespace mrpt;
 using namespace mrpt::vision;

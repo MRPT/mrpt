@@ -18,6 +18,7 @@
 #include <map>
 
 #include <mrpt/hwdrivers/link_pragmas.h>
+#include <map>
 
 
 namespace mrpt

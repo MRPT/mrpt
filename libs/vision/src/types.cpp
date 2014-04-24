@@ -10,6 +10,7 @@
 #include "vision-precomp.h"   // Precompiled headers
 
 #include <mrpt/vision/types.h>
+#include <mrpt/utils/stl_containers_utils.h>
 #include <mrpt/system/string_utils.h>
 #include <mrpt/utils/stl_containers_utils.h>
 #include <iostream>

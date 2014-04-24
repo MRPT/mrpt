@@ -34,6 +34,7 @@ namespace math	{
 	  */
 //#define TOBJECTS_USE_UNIONS
 	struct BASE_IMPEXP TPoint2D	{
+		enum { static_size = 2 };
 		/**
 		  * X coordinate.
 		  */
@@ -164,6 +165,7 @@ namespace math	{
 	  * \sa mrpt::poses::CPose2D
 	  */
 	struct BASE_IMPEXP TPose2D	{
+		enum { static_size = 3 };
 		/**
 		  * X coordinate.
 		  */
@@ -244,6 +246,7 @@ namespace math	{
 	  */
 	struct BASE_IMPEXP TPoint3Df
 	{
+		enum { static_size = 3 };
 		float x;
 		float y;
 		float z;
@@ -252,6 +255,11 @@ namespace math	{
 		inline TPoint3Df(const float xx,const float yy,const float zz) : x(xx), y(yy),z(zz) { }
 		inline TPoint3Df & operator +=(const TPoint3Df &p) { x+=p.x; y+=p.y; z+=p.z; return *this; }
 		inline TPoint3Df   operator *(const float s) { return TPoint3Df(x*s,y*s,z*s); }
+		/** Unsafe coordinate access using operator[]. Intended for loops. */
+		inline float &operator[](size_t i)	{ switch (i) { case 0: return x; case 1: return y; case 2: default: return z; } }
+		/** Unsafe coordinate access using operator[]. Intended for loops. */
+		inline const float &operator[](size_t i) const	{ switch (i) { case 0: return x; case 1: return y; case 2: default: return z; } }
+
 	};
 
 #pragma pack(push,1)  //Pragma defined to ensure no structure packing
@@ -260,6 +268,7 @@ namespace math	{
 	  * \sa mrpt::poses::CPoint3D, mrpt::math::TPoint3Df
 	  */
 	struct BASE_IMPEXP TPoint3D	{
+		enum { static_size = 3 };
 		double x; //!< X coordinate
 		double y; //!< Y coordinate
 		double z; //!< Z coordinate
@@ -400,6 +409,7 @@ namespace math	{
 	  * \sa mrpt::poses::CPose3D
 	  */
 	struct BASE_IMPEXP TPose3D	{
+		enum { static_size = 6 };
 		/**
 		  * X coordinate.
 		  */
@@ -495,6 +505,7 @@ namespace math	{
 	  * \sa mrpt::poses::CPose3DQuat
 	  */
 	struct BASE_IMPEXP TPose3DQuat	{
+		enum { static_size = 7 };
 		double x;	//!< Translation in x
 		double y;	//!< Translation in y
 		double z;	//!< Translation in z
