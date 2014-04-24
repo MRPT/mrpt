@@ -154,7 +154,7 @@ TEST(Matrices,EigenVal4x4_sym_vs_generic)
 	const CMatrixDouble44  C1(dat_C1);
 
 	CMatrixDouble44 eigvecs_sym, eigvecs_gen, eigvals_symM, eigvals_genM;
-	vector_double   eigvals_sym, eigvals_gen;
+	CVectorDouble   eigvals_sym, eigvals_gen;
 
 	C1.eigenVectorsVec(eigvecs_gen,eigvals_gen);
 	C1.eigenVectorsSymmetricVec(eigvecs_sym,eigvals_sym);

@@ -1637,8 +1637,8 @@ Units are m and radian.
 	obs_odo.odometry = CPose2D(0,0,0);
 
 	// For stats on covariance transforms:
-	vector_double stats_stdRanges,stats_stdYaw;
-	vector_double stats_stdXs,stats_stdYs;
+	CVectorDouble stats_stdRanges,stats_stdYaw;
+	CVectorDouble stats_stdXs,stats_stdYs;
 
 
 	int32_t next_outlier_ID = 10000; // In DLR datasets no real landmark has such a high ID... use these numbers for outliers.

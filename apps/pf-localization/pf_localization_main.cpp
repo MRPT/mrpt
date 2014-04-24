@@ -277,7 +277,7 @@ void do_pf_localization(const std::string &ini_fil, const std::string &cmdline_r
 
 		// Global stats for all the experiment loops:
 		int				nConvergenceTests = 0, nConvergenceOK = 0;
-		vector_double 	covergenceErrors;
+		CVectorDouble 	covergenceErrors;
 		// --------------------------------------------------------------------
 		//					EXPERIMENT REPETITIONS LOOP
 		// --------------------------------------------------------------------

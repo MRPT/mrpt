@@ -75,7 +75,7 @@ void Test_STL_containers_serialize()
 	cout << "==== map< double, pair<CPose3DPDFGaussian, TPoint3D> >: Written & read OK" << endl;
 
 
-	vector_double v2, v1;
+	CVectorDouble v2, v1;
 	v1 = make_vector<5,double>(1.0,2.0,3.0,4.0,5.0);
 
 	{
@@ -88,7 +88,7 @@ void Test_STL_containers_serialize()
 	}
 
 	ASSERT_(v1==v2)
-	cout << "==== vector_double: Written & read OK" << endl;
+	cout << "==== CVectorDouble: Written & read OK" << endl;
 
 
 

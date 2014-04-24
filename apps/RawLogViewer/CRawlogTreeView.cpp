@@ -119,7 +119,7 @@ void CRawlogTreeView::reloadFromRawlog( int hint_rawlog_items )
 	TNodeData  &d = m_tree_nodes.back();
 	d.level = 0;
 
-//	vector_double	tims;
+//	CVectorDouble	tims;
 
 	if (m_rawlog)
 	{

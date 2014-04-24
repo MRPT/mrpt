@@ -173,7 +173,7 @@ void TestParticlesLocalization()
 		printf("Creating directory: %s\n",OUT_DIR.c_str());
 		mrpt::system::createDirectory( OUT_DIR );
 
-		vector_double vector_errs_xy;
+		CVectorDouble vector_errs_xy;
 
 		for (int repetition = 0; repetition <NUM_REPS; repetition++)
 		{

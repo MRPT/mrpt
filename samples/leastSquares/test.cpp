@@ -20,7 +20,7 @@ using namespace std;
 // ------------------------------------------------------
 void TestLeastSquares()
 {
-	vector_double	x,y;
+	CVectorDouble	x,y;
 	normalize(x,y);
 
 	const double X[] = { 1,2,3,4 };
@@ -29,8 +29,8 @@ void TestLeastSquares()
 	loadVector(x,X);
 	loadVector(y,Y);
 
-	vector_double Ts = linspace(-3.0,8.0,100);
-	vector_double Is;
+	CVectorDouble Ts = linspace(-3.0,8.0,100);
+	CVectorDouble Is;
 
 	mrpt::math::leastSquareLinearFit(Ts,Is,x,y);
 

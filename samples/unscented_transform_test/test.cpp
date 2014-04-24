@@ -101,7 +101,7 @@ void Test_SUT()
 	cout << "MC: Time (ms): " << 1e3*tictac.Tac()/N<< endl;
 
 
-	vector_double MC_y[3];
+	CVectorDouble MC_y[3];
 
 	for (int i=0;i<3;i++)
 		extractColumnFromVectorOfVectors(i,MC_samples,MC_y[i]);
@@ -169,8 +169,8 @@ void Test_SUT()
 	{
 		winHistos[i] = mrpt::gui::CDisplayWindowPlots::Create(format("MC-based histogram of the %i dim",i),300,150);
 
-		vector_double  X;
-		vector_double  H = mrpt::math::histogram(MC_y[i],MC_y[i].minimum(),MC_y[i].maximum(),40, true, &X);
+		CVectorDouble  X;
+		CVectorDouble  H = mrpt::math::histogram(MC_y[i],MC_y[i].minimum(),MC_y[i].maximum(),40, true, &X);
 
 		winHistos[i]->plot(X,H,"b");
 		winHistos[i]->axis_fit();

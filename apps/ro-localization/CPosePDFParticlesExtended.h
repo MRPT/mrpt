@@ -218,7 +218,7 @@ namespace mrpt
 
 			/** Draws a number of samples from the distribution, and saves as a list of 1x3 vectors, where each row contains a (x,y,phi) datum.
 			  */
-			void  drawManySamples( size_t N, std::vector<vector_double> & outSamples ) const;
+			void  drawManySamples( size_t N, std::vector<CVectorDouble> & outSamples ) const;
 
 			/** Appends (pose-composition) a given pose "p" to each particle
 			  */
@@ -273,7 +273,7 @@ namespace mrpt
 
 			/** Auxiliary variable used in the "pfAuxiliaryPFOptimal" algorithm.
 			  */
-			mutable vector_double				m_pfAuxiliaryPFOptimal_estimatedProb;
+			mutable CVectorDouble				m_pfAuxiliaryPFOptimal_estimatedProb;
 
 			/** Auxiliary function that evaluates the likelihood of an observation, given a robot pose, and according to the options in "CPosePDFParticlesExtended::options".
 			  */

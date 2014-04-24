@@ -11,7 +11,7 @@
 #define CMyGLCanvas_H
 
 #include <mrpt/opengl/opengl_fonts.h>
-
+#include <mrpt/opengl/COpenGLScene.h>
 #include <mrpt/gui/link_pragmas.h>
 
 namespace mrpt { namespace gui { } }  // At least declare the existence of the namespace mrpt::gui even if we don't have wxWidgets libs
@@ -140,7 +140,7 @@ namespace mrpt
 
 			/**  At constructor an empty scene is created. The object is freed at GL canvas destructor.
 			  */
-			opengl::COpenGLScenePtr		m_openGLScene;
+			mrpt::opengl::COpenGLScenePtr		m_openGLScene;
 
 		protected:
 			wxGLContext *m_gl_context;

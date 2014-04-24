@@ -38,7 +38,12 @@
 #include "../wx-common/CMyRedirector.h"
 #include "CAboutBox.h"
 
-#include <mrpt/base.h>
+//#include <mrpt/base.h>
+
+#include <mrpt/opengl/CSetOfObjects.h>
+#include <mrpt/opengl/CPlanarLaserScan.h>
+#include <mrpt/opengl/CPointCloud.h>
+#include <mrpt/opengl/CGridPlaneXY.h>
 
 #if !wxUSE_GLCANVAS
 #error "OpenGL required: set wxUSE_GLCANVAS to 1 and rebuild wxWidgets"

@@ -17,7 +17,7 @@ using namespace std;
 
 
 // The error function F(x):
-void myFunction( const vector_double &x, const vector_double &y, vector_double &out_f)
+void myFunction( const CVectorDouble &x, const CVectorDouble &y, CVectorDouble &out_f)
 {
 	out_f.resize(1);
 
@@ -30,10 +30,10 @@ void myFunction( const vector_double &x, const vector_double &y, vector_double &
 // ------------------------------------------------------
 void TestLM()
 {
-	vector_double		optimal_x;
-	vector_double		initial_x;
-	vector_double		increments_x;
-	vector_double		y;
+	CVectorDouble		optimal_x;
+	CVectorDouble		initial_x;
+	CVectorDouble		increments_x;
+	CVectorDouble		y;
 
 	CLevenbergMarquardt::TResultInfo	info;
 	CTicTac	tictac;

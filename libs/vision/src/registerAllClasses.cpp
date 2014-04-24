@@ -9,6 +9,7 @@
 
 #include "vision-precomp.h"   // Precompiled headers
 
+#define MRPT_NO_WARN_BIG_HDR
 #include <mrpt/vision.h>
 #include <mrpt/utils/CSerializable.h>
 

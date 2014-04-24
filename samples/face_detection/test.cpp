@@ -101,7 +101,7 @@ void TestCamera3DFaceDetection( CCameraSensorPtr cam )
 	double counter = 0;
 	mrpt::utils::CTicTac	tictac;
 
-	vector_double fps;
+	CVectorDouble fps;
 
 	while (win.isOpen())
 	{

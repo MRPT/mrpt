@@ -18,7 +18,7 @@ using namespace std;
 
 
 
-TEST(vector_double,resize)
+TEST(CVectorDouble,resize)
 {
 	{
 		mrpt::math::CVectorDouble v;

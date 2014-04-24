@@ -35,7 +35,7 @@ using namespace mrpt::poses;
 using namespace std;
 
 
-vector_double history_avr_err;
+CVectorDouble history_avr_err;
 
 double WORLD_SCALE = 1;  // Will change when loading SBA examples
 

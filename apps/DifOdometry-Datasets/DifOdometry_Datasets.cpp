@@ -8,6 +8,7 @@
    +---------------------------------------------------------------------------+ */
 
 #include "DifOdometry_Datasets.h"
+#include <mrpt/system/filesystem.h>
 
 using namespace mrpt;
 using namespace mrpt::opengl;

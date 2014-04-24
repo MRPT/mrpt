@@ -40,7 +40,7 @@ void TestRANSACPlanes()
 		{ 1,+1.5, 1, -1 },
 		{ 0,-1,1, +2 } };
 
-	vector_double xs,ys,zs;
+	CVectorDouble xs,ys,zs;
 	for (size_t p=0;p<N_PLANES;p++)
 	{
 		for (size_t i=0;i<N_plane;i++)
@@ -144,7 +144,7 @@ void TestRANSACLines()
 		{ 0,-1, +2 },
 		{ 0.5,-0.3, +1 } };
 
-	vector_double xs,ys;
+	CVectorDouble xs,ys;
 	for (size_t p=0;p<N_LINES;p++)
 	{
 		for (size_t i=0;i<N_line;i++)
@@ -187,10 +187,10 @@ void TestRANSACLines()
 	unsigned int n=0;
 	for (vector<pair<size_t,TLine2D> >::iterator p=detectedLines.begin();p!=detectedLines.end();++p)
 	{
-		vector_double lx(2),ly(2);
+		CVectorDouble lx(2),ly(2);
 		lx[0] = -15;
 		lx[1] = 15;
-		for (vector_double::Index q=0;q<lx.size();q++)
+		for (CVectorDouble::Index q=0;q<lx.size();q++)
 			ly[q] = -(p->second.coefs[2]+p->second.coefs[0]*lx[q])/p->second.coefs[1];
 		win2.plot(lx,ly,"r-1",format("line_%u",n++));
 	}

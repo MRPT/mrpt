@@ -43,7 +43,7 @@ bool     changeOnlyXYZ=false;
 
 bool	 camReadIsOk;
 CMatrixDouble33 	camIntrinsic;
-vector_double 		camDistortion;
+CVectorDouble 		camDistortion;
 float	 camFocalLen;
 
 

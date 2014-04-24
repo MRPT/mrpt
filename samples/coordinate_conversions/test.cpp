@@ -136,7 +136,7 @@ void exampleResults()
 }
 
 
-void displayResults( const vector_double &thisResults, const unsigned int &example, const bool color )
+void displayResults( const CVectorDouble &thisResults, const unsigned int &example, const bool color )
 {
 	cout << "Example " << example << ". Results" << setprecision(16) << endl;
 	cout << "----------------------------------------------------------------------------" << endl;
@@ -294,7 +294,7 @@ void Examples_01()
 	geodeticToUTM( CANI_96833, CANI_UTM, UTMZone, UTMBand, TEllipsoid::Ellipsoid_WGS84() );
 	geodeticToUTM( HALC_92543, HALC_UTM, UTMZone, UTMBand, TEllipsoid::Ellipsoid_WGS84() );
 
-	vector_double thisResults;
+	CVectorDouble thisResults;
 	thisResults.resize(18);
 
 	thisResults[0]	= MAND_UTM.x;	thisResults[1]	= MAND_UTM.y;	thisResults[2]	= MAND_UTM.z;
@@ -357,7 +357,7 @@ void Examples_02()
 	geodeticToUTM( CANI_Geod, CANI_UTM, UTMZone, UTMBand, ellip );
 	geodeticToUTM( HALC_Geod, HALC_UTM, UTMZone, UTMBand, ellip );
 
-	vector_double thisResults;
+	CVectorDouble thisResults;
 	thisResults.resize(18);
 
 	thisResults[0]	= MAND_UTM.x;	thisResults[1]	= MAND_UTM.y;	thisResults[2]	= MAND_UTM.z;
@@ -403,7 +403,7 @@ void Examples_03()
 	transformHelmert2D_TOPCON( TPoint2D( CANI_UTM.x, CANI_UTM.y ), datum, CANI_point );
 	transformHelmert2D_TOPCON( TPoint2D( HALC_UTM.x, HALC_UTM.y ), datum, HALC_point );
 
-	vector_double thisResults;
+	CVectorDouble thisResults;
 	thisResults.resize(18);
 
 	thisResults[0]	= MAND_point.x;	thisResults[1]	= MAND_point.y;	thisResults[2]	= MAND_UTM.z;
@@ -449,7 +449,7 @@ void Examples_04()
 	transformHelmert3D_TOPCON( CANI_UTM, datum, CANI_point );
 	transformHelmert3D_TOPCON( HALC_UTM, datum, HALC_point );
 
-	vector_double thisResults;
+	CVectorDouble thisResults;
 	thisResults.resize(18);
 
 	thisResults[0]	= MAND_point.x;	thisResults[1]	= MAND_point.y;	thisResults[2]	= MAND_point.z;
@@ -501,7 +501,7 @@ void Examples_05()
 	transform7params_TOPCON( CANI_UTM, datum, CANI_point );
 	transform7params_TOPCON( HALC_UTM, datum, HALC_point );
 
-	vector_double thisResults;
+	CVectorDouble thisResults;
 	thisResults.resize(18);
 
 	thisResults[0]	= MAND_point.x;	thisResults[1]	= MAND_point.y;	thisResults[2]	= MAND_point.z;
@@ -564,7 +564,7 @@ void Examples_06()
 	geodeticToUTM( CANI_Geod, CANI_UTM, UTMZone, UTMBand, ellip );
 	geodeticToUTM( HALC_Geod, HALC_UTM, UTMZone, UTMBand, ellip );
 
-	vector_double thisResults;
+	CVectorDouble thisResults;
 	thisResults.resize(18);
 
 	thisResults[0]	= MAND_UTM.x;	thisResults[1]	= MAND_UTM.y;	thisResults[2]	= MAND_UTM.z;
@@ -646,7 +646,7 @@ void Examples_07()
 	geodeticToUTM( CANI_Geod, CANI_UTM, UTMZone, UTMBand, ellip );
 	geodeticToUTM( HALC_Geod, HALC_UTM, UTMZone, UTMBand, ellip );
 
-	vector_double thisResults;
+	CVectorDouble thisResults;
 	thisResults.resize(18);
 
 	thisResults[0]	= MAND_UTM.x;	thisResults[1]	= MAND_UTM.y;	thisResults[2]	= MAND_UTM.z;
@@ -728,7 +728,7 @@ void Examples_08()
 	geodeticToUTM( CANI_Geod, CANI_UTM, UTMZone, UTMBand, ellip );
 	geodeticToUTM( HALC_Geod, HALC_UTM, UTMZone, UTMBand, ellip );
 
-	vector_double thisResults;
+	CVectorDouble thisResults;
 	thisResults.resize(18);
 
 	thisResults[0]	= MAND_UTM.x;	thisResults[1]	= MAND_UTM.y;	thisResults[2]	= MAND_UTM.z;
@@ -815,7 +815,7 @@ void Examples_10()
 	geodeticToUTM( CANI_Geod, CANI_UTM, UTMZone, UTMBand, ellip );
 	geodeticToUTM( HALC_Geod, HALC_UTM, UTMZone, UTMBand, ellip );
 
-	vector_double thisResults;
+	CVectorDouble thisResults;
 	thisResults.resize(18);
 
 	thisResults[0]	= MAND_UTM.x;	thisResults[1]	= MAND_UTM.y;	thisResults[2]	= MAND_UTM.z;
@@ -879,7 +879,7 @@ void Examples_11()
 	geodeticToUTM( CANI_Geod, CANI_UTM, UTMZone, UTMBand, ellip );
 	geodeticToUTM( HALC_Geod, HALC_UTM, UTMZone, UTMBand, ellip );
 
-	vector_double thisResults;
+	CVectorDouble thisResults;
 	thisResults.resize(18);
 
 	thisResults[0]	= MAND_UTM.x;	thisResults[1]	= MAND_UTM.y;	thisResults[2]	= MAND_UTM.z;
@@ -935,7 +935,7 @@ void Examples_12()
 	transform1D( TPoint3D( CANI_point.x, CANI_point.y, CANI_UTM.z ), datum, CANI_point2 );
 	transform1D( TPoint3D( HALC_point.x, HALC_point.y, HALC_UTM.z ), datum, HALC_point2 );
 
-	vector_double thisResults;
+	CVectorDouble thisResults;
 	thisResults.resize(18);
 
 	thisResults[0]	= MAND_point2.x;	thisResults[1]	= MAND_point2.y;	thisResults[2]	= MAND_point2.z;
@@ -991,7 +991,7 @@ void Examples_13()
 	transform1D( CANI_point, datum, CANI_point2 );
 	transform1D( HALC_point, datum, HALC_point2 );
 
-	vector_double thisResults;
+	CVectorDouble thisResults;
 	thisResults.resize(18);
 
 	thisResults[0]	= MAND_point2.x;	thisResults[1]	= MAND_point2.y;	thisResults[2]	= MAND_point2.z;

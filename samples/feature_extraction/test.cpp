@@ -52,7 +52,7 @@ void TestRectifyImages()
 {
     CImage im;
     CMatrixDouble33 cam_matrix;
-    vector_double dist_coeff(4);
+    CVectorDouble dist_coeff(4);
 
     im.loadFromFile("/home/paco/Documents/Images/calib/L01.bmp");
     cam_matrix(0,0) = 938.8868; cam_matrix(0,1) = 0;            cam_matrix(0,2) = 367.8682;

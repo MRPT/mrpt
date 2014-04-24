@@ -38,7 +38,7 @@ void TestHist()
 // ------------------------------------------------------
 void TestRandomGenerators()
 {
-	vector_double x,y;
+	CVectorDouble x,y;
 
 	randomGenerator.randomize();
 
@@ -47,7 +47,7 @@ void TestRandomGenerators()
 	win1.setPos(10,10);
 	win1.resize(400,400);
 	{
-		//vector_double v1(100000);
+		//CVectorDouble v1(100000);
 		vector_size_t  v1(100000);
 		randomGenerator.drawUniformVector(v1 ,0, 5.999);
 
@@ -65,7 +65,7 @@ void TestRandomGenerators()
 	win2.setPos(420,10);
 	win2.resize(400,400);
 	{
-		vector_double v1(100000);
+		CVectorDouble v1(100000);
 		randomGenerator.drawGaussian1DVector(v1 ,0,1);
 
 		CHistogram  hist(-5,5,100);
@@ -74,8 +74,8 @@ void TestRandomGenerators()
 
 		win2.plot(x,y,"b");
 
-		vector_double y_real(y.size());
-		for (vector_double::Index k=0;k<y_real.size();k++)
+		CVectorDouble y_real(y.size());
+		for (CVectorDouble::Index k=0;k<y_real.size();k++)
 			y_real[k] = mrpt::math::normalPDF(x[k],0,1);
 		win2.plot(x,y_real,"k-","real");
 
@@ -87,7 +87,7 @@ void TestRandomGenerators()
 	win3.setPos(10,430);
 	win3.resize(400,400);
 	{
-		vector_double v1(100000);
+		CVectorDouble v1(100000);
 		randomGenerator.drawGaussian1DVector(v1 ,3,2);
 
 		CHistogram  hist(-5,15,100);
@@ -96,8 +96,8 @@ void TestRandomGenerators()
 
 		win3.plot(x,y,"b");
 
-		vector_double y_real(y.size());
-		for (vector_double::Index k=0;k<y_real.size();k++)
+		CVectorDouble y_real(y.size());
+		for (CVectorDouble::Index k=0;k<y_real.size();k++)
 			y_real[k] = mrpt::math::normalPDF(x[k],3,2);
 		win3.plot(x,y_real,"k-","real");
 
@@ -109,8 +109,8 @@ void TestRandomGenerators()
 	win4.setPos(420,430);
 	win4.resize(400,400);
 	{
-		vector<vector_double> v1;
-		vector_double Mean(2);
+		vector<CVectorDouble> v1;
+		CVectorDouble Mean(2);
 		Mean[0] = 3;
 		Mean[1] = 2;
 
@@ -121,7 +121,7 @@ void TestRandomGenerators()
 		randomGenerator.drawGaussianMultivariateMany(v1,10000,cov,&Mean);
 
 #if 0
-		vector_double m;
+		CVectorDouble m;
 		CMatrixDouble c;
 		mrpt::math::meanAndCov(v1,m,c);
 		cout << "Mean: " << m << endl;
@@ -129,7 +129,7 @@ void TestRandomGenerators()
 #endif
 
 		// pass to (x,y) vectors:
-		vector_double x(v1.size()), y(v1.size());
+		CVectorDouble x(v1.size()), y(v1.size());
 		for (size_t i=0;i<v1.size();i++)
 		{
 			x[i] = v1[i][0];

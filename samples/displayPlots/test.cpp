@@ -32,7 +32,7 @@ void TestDisplayPlots()
 	win.setMenuCallback(myOnMenu);
 
 	// Generate data for a 2D plot:
-	vector_double  X,Y;
+	CVectorDouble  X,Y;
 	for (double x=0;x<5;x+=0.01f)
 	{
 		double y = math::normalPDF(x, 2,0.3);

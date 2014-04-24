@@ -2016,7 +2016,7 @@ void xRawLogViewerFrame::SelectObjectInTreeView( const CSerializablePtr & sel_ob
 
 						// Plot the 2D pose samples:
 						unsigned int                    N = 1000;
-						vector<vector_double>       samples;
+						vector<CVectorDouble>       samples;
 						vector<float>                    xs(N),ys(N),ps(N),dumm(N,0.1f);
 
 						// Draw a set of random (x,y,phi) samples:
@@ -2209,7 +2209,7 @@ void xRawLogViewerFrame::SelectObjectInTreeView( const CSerializablePtr & sel_ob
 												(obs->voltageMainRobotComputerIsValid == true)? "True":"False" );
 
 											cout << "VoltageOtherBatteries: \n";
-											for(vector_double::Index i=0; i<obs->voltageOtherBatteries.size(); i++)
+											for(CVectorDouble::Index i=0; i<obs->voltageOtherBatteries.size(); i++)
 											{
 												cout << format("Index: %d --> %.02fV  isValid= %s \n",
 												int(i),
@@ -5155,9 +5155,9 @@ void xRawLogViewerFrame::OnMenuChangePosesBatch(wxCommandEvent& event)
 			desiredSensorPoses[label] = the_pose;
 
 			// Camera params?
-			vector_double calib, distort;
-			cfg.read_vector(*it,"calib_params",vector_double(),calib);
-			cfg.read_vector(*it,"distort_params",vector_double(),distort);
+			CVectorDouble calib, distort;
+			cfg.read_vector(*it,"calib_params",CVectorDouble(),calib);
+			cfg.read_vector(*it,"distort_params",CVectorDouble(),distort);
 
 			if (calib.empty() || distort.empty()) continue;
 

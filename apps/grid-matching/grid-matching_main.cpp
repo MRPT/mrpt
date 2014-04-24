@@ -538,8 +538,8 @@ void do_grid_align()
 				// Compute the distances:
 				for (size_t i1=0;i1<lm1->landmarks.size();i1++)
 				{
-					vector_double   D(lm2->landmarks.size());   // Distances in descriptor space
-					vector_double   dErrs(lm2->landmarks.size()); // Distances in (x,y)
+					CVectorDouble   D(lm2->landmarks.size());   // Distances in descriptor space
+					CVectorDouble   dErrs(lm2->landmarks.size()); // Distances in (x,y)
 					size_t i2;
 					//size_t gt_corr_of_i1=0;
 

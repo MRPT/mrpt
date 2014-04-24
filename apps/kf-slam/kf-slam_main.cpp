@@ -396,7 +396,7 @@ void Run_KF_SLAM( CConfigFile &cfgFile, const std::string &rawlogFileName )
 			// Save mean pose:
 			if (!(step % SAVE_LOG_FREQUENCY))
 			{
-				const vector_double p = robotPose.mean.getAsVectorVal();
+				const CVectorDouble p = robotPose.mean.getAsVectorVal();
 				p.saveToTextFile(OUT_DIR+format("/robot_pose_%05u.txt",(unsigned int)step));
 			}
 
@@ -744,7 +744,7 @@ void Run_KF_SLAM( CConfigFile &cfgFile, const std::string &rawlogFileName )
             // Each row has:
             //   [0] [1] [2]  [6]
             //    x   y   z    ID
-            vector_double ERRS(0);
+            CVectorDouble ERRS(0);
             for (size_t i=0;i<LMs.size();i++)
             {
                 // Find the entry in the GT for this mapped LM:

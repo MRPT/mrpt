@@ -8,6 +8,8 @@
    +---------------------------------------------------------------------------+ */
 
 #include "maps-precomp.h"
+
+#define MRPT_NO_WARN_BIG_HDR
 #include <mrpt/maps.h>
 #include <mrpt/utils/CStartUpClassesRegister.h>
 

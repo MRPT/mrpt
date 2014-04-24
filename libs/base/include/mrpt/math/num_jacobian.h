@@ -19,7 +19,7 @@ namespace mrpt
 			*   If it is not required, set to "int" or any other basic type.
 			*
 			*  This is a generic template which works with:
-			*    VECTORLIKE: vector_float, vector_double, CArrayNumeric<>, double [N], ...
+			*    VECTORLIKE: vector_float, CVectorDouble, CArrayNumeric<>, double [N], ...
 			*    MATRIXLIKE: CMatrixTemplateNumeric, CMatrixFixedNumeric
 			*/
 		template <class VECTORLIKE,class VECTORLIKE2, class VECTORLIKE3, class MATRIXLIKE, class USERPARAM >

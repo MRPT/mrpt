@@ -81,7 +81,7 @@ void generate_list_of_points( const TPoints &pA, const TPoints &pB, TMatchingPai
 // ------------------------------------------------------
 //				Genreate a vector of matched points
 // ------------------------------------------------------
-void generate_vector_of_points(  const TPoints &pA, const TPoints &pB, vector_double &inV )
+void generate_vector_of_points(  const TPoints &pA, const TPoints &pB, CVectorDouble &inV )
 {
 	// The input vector: inV = [pA1x, pA1y, pA1z, pB1x, pB1y, pB1z, ... ]
 	inV.resize( 30 );
@@ -150,10 +150,10 @@ double scan_matching_test_3( int a1, int a2 )
 	TPoints	pA, pB;
 	generate_points( pA, pB );
 
-	vector_double inV;
+	CVectorDouble inV;
 	generate_vector_of_points( pA, pB, inV );
 
-	vector_double qu;
+	CVectorDouble qu;
 
 	const size_t	N = a1;
 	CTicTac			tictac;
@@ -175,10 +175,10 @@ double scan_matching_test_4( int nCorrs, int nRepets )
 	TPoints	pA, pB;
 	generate_points( pA, pB );
 
-	vector_double inV;
+	CVectorDouble inV;
 	generate_vector_of_points( pA, pB, inV );
 
-	vector_double qu;
+	CVectorDouble qu;
 
 	TMatchingPairList	in_correspondences;
 	CPose2D             out_pose;

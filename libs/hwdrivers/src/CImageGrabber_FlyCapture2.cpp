@@ -178,8 +178,8 @@ CImageGrabber_FlyCapture2::CImageGrabber_FlyCapture2( const TCaptureOptions_FlyC
 /** Destructor */
 CImageGrabber_FlyCapture2::~CImageGrabber_FlyCapture2()
 {
-	this->close();
 #if MRPT_HAS_FLYCAPTURE2
+	this->close();
 	delete FC2_BUF_IMG; m_img_buffer = NULL;
 #endif
 }

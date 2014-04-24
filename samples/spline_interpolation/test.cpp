@@ -79,7 +79,7 @@ void TestSplineInterpolation()
 	x[0] = -1.5;	x[1] = -0.5;	x[2] = 0.5;	x[3] = 1.5;
 	y[0] = 3.14;	y[1] = -3.10;	y[2] = -3.05;	y[3] = 3.10;
 
-	vector_double ts, ys_interp;
+	CVectorDouble ts, ys_interp;
 
 	for(t = x[1]; t <= x[2]; t += 0.01)
 	{
@@ -109,7 +109,7 @@ void TestSplineInterpolation()
 void TestSplineInterpolationVector()
 {
 	const size_t N = 15;
-	vector_double data_x, data_y(N);
+	CVectorDouble data_x, data_y(N);
 
 	// Create random data:
 	data_x = mrpt::math::linspace(-20.0,20.0,N);
@@ -119,9 +119,9 @@ void TestSplineInterpolationVector()
 	mrpt::math::CSplineInterpolator1D	interp( data_x, data_y );
 
 	// Generate sequence of where to interpolate:
-	vector_double xs = mrpt::math::linspace(-20.0,20.0,500);
+	CVectorDouble xs = mrpt::math::linspace(-20.0,20.0,500);
 
-	vector_double ys;
+	CVectorDouble ys;
 	bool valid=interp.queryVector(xs,ys);
 	ASSERT_(valid);
 

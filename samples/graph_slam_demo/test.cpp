@@ -66,7 +66,7 @@ template <class GRAPH> struct EdgeAdders<GRAPH,true>
 	}
 };
 
-vector_double  log_sq_err_evolution;
+CVectorDouble  log_sq_err_evolution;
 
 // This example lives inside this template class, which can be instanced for different kind of graphs (see main()):
 template <class my_graph_t>

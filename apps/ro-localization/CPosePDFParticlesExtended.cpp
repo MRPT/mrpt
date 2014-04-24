@@ -674,7 +674,7 @@ void  CPosePDFParticlesExtended::prediction_and_update_pfAuxiliaryPFOptimal(
 
 	size_t				i,M = m_particles.size();
 	CActionRobotMovement2DPtr robotMovement;
-	//std::vector<vector_double>	rndSamples;
+	//std::vector<CVectorDouble>	rndSamples;
 
 	ASSERT_(sf!=NULL);
 
@@ -721,7 +721,7 @@ void  CPosePDFParticlesExtended::prediction_and_update_pfAuxiliaryPFOptimal(
 		CObservationBeaconRangesPtr	obsBeacon = sf->getObservationByClass<CObservationBeaconRanges>();
 
 		// Compute selection weights for particles:
-		vector_double	selectionW(M,0);
+		CVectorDouble	selectionW(M,0);
 		for (i=0;i<M;i++)
 		{
 			if ( obsBeacon )
@@ -749,7 +749,7 @@ void  CPosePDFParticlesExtended::prediction_and_update_pfAuxiliaryPFOptimal(
 		}
 		selectionW = selectionW- mrpt::math::maximum(selectionW);
 
-		vector_double	selectionWlin(M);
+		CVectorDouble	selectionWlin(M);
 		double			sumW = 0;
 		for (i=0;i<M;i++)
 		{
@@ -759,7 +759,7 @@ void  CPosePDFParticlesExtended::prediction_and_update_pfAuxiliaryPFOptimal(
 		selectionWlin/=sumW;
 
 		// Build CDF:
-		vector_double		Q,T;
+		CVectorDouble		Q,T;
 		vector_int			indx;
 //		int					M = particlesCount();
 		size_t				j;
@@ -1033,7 +1033,7 @@ void  CPosePDFParticlesExtended::drawSingleSample( CPose2D &outPart ) const
 /*---------------------------------------------------------------
 					drawManySamples
  ---------------------------------------------------------------*/
-void  CPosePDFParticlesExtended::drawManySamples( size_t N, std::vector<vector_double> & outSamples ) const
+void  CPosePDFParticlesExtended::drawManySamples( size_t N, std::vector<CVectorDouble> & outSamples ) const
 {
 	TExtendedCPose2D	*ptr;
 

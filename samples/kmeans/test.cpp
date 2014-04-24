@@ -72,7 +72,7 @@ void TestKMeans()
 
 		for (size_t c=0;c<nClusters;c++)
 		{
-			vector_double xs,ys;
+			CVectorDouble xs,ys;
 
 			for (size_t i=0;i<points.size();i++)
 			{

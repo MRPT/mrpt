@@ -22,8 +22,8 @@ unsigned int N_TESTS = 500;
 int N_PARTICLES = 100;
 
 // For batch experiment:
-vector_double				min_log_ws;
-map< string, vector_double > results;
+CVectorDouble				min_log_ws;
+map< string, CVectorDouble > results;
 
 
 // vectorToTextFile( out_indxs, #ALGOR, true, true); /* By rows, append */
@@ -40,7 +40,7 @@ map< string, vector_double > results;
 		CParticleFilterCapable::log2linearWeights(log_ws, lin_ws); \
 		CParticleFilterCapable::computeResampling( CParticleFilter::ALGOR, log_ws, out_indxs );\
 		hist_parts = mrpt::math::histogram( out_indxs, 0, M-1, M, true); \
-		vector_double errs_hist = lin_ws - hist_parts; \
+		CVectorDouble errs_hist = lin_ws - hist_parts; \
 		ERR_MEANs.push_back( mrpt::math::mean(errs_hist) );\
 		ERR_STDs.push_back ( mrpt::math::stddev(errs_hist) );\
 	}\
@@ -54,7 +54,7 @@ map< string, vector_double > results;
 // ------------------------------------------------------
 void TestResampling()
 {
-	vector_double	log_ws;
+	CVectorDouble	log_ws;
 	vector_size_t	out_indxs;
 
 
@@ -64,12 +64,12 @@ void TestResampling()
 	//vectorToTextFile( log_ws, "log_ws.txt");
 
 	// Compute normalized linear weights:
-	vector_double lin_ws;
+	CVectorDouble lin_ws;
 
 
-	vector_double 	hist_parts;
-	vector_double	ERR_MEANs;
-	vector_double	ERR_STDs;
+	CVectorDouble 	hist_parts;
+	CVectorDouble	ERR_MEANs;
+	CVectorDouble	ERR_STDs;
 
 	// prMultinomial
 	TEST_RESAMPLING(prMultinomial)
@@ -96,7 +96,7 @@ void TestBatch()
 	}
 
 	// Save results to files:
-	vector_double R;
+	CVectorDouble R;
 
 	vectorToTextFile( min_log_ws, "min_log_ws.txt");
 
