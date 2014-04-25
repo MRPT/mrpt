@@ -7,8 +7,6 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/base.h>
-#include <mrpt/obs.h>
 #include <mrpt/hwdrivers/CGPSInterface.h>
 
 using namespace mrpt;

@@ -10,15 +10,30 @@
 /*---------------------------------------------------------------
 	APPLICATION: Rao-Blackwellized Particle Filter SLAM
 	FILE: rbpf-slam.cpp
-	AUTHOR: Jose Luis Blanco Claraco <jlblanco@ctima.uma.es>
+	AUTHOR: Jose Luis Blanco Claraco <joseluisblancoc@gmail.com>
 
 	See README.txt for instructions or
          http://www.mrpt.org/Application:rbpf-slam
   ---------------------------------------------------------------*/
 
-#include <mrpt/base.h>
-#include <mrpt/slam.h>
-#include <mrpt/gui.h>
+#include <mrpt/slam/CMetricMapBuilderRBPF.h>
+
+#include <mrpt/slam/CActionRobotMovement2D.h>
+#include <mrpt/slam/CActionRobotMovement3D.h>
+#include <mrpt/slam/CRawlog.h>
+#include <mrpt/utils/CFileGZInputStream.h>
+#include <mrpt/utils/CFileGZOutputStream.h>
+#include <mrpt/utils/CConfigFile.h>
+#include <mrpt/gui/CDisplayWindow3D.h>
+#include <mrpt/random.h>
+#include <mrpt/system/threads.h>
+#include <mrpt/system/filesystem.h>
+#include <mrpt/system/os.h>
+
+#include <mrpt/opengl/CSetOfLines.h>
+#include <mrpt/opengl/CGridPlaneXY.h>
+#include <mrpt/opengl/CEllipsoid.h>
+#include <mrpt/opengl/stock_objects.h>
 
 using namespace mrpt;
 using namespace mrpt::slam;

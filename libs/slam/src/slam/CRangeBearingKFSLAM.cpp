@@ -9,7 +9,6 @@
 
 #include "slam-precomp.h"   // Precompiled headers
 
-
 // ----------------------------------------------------------------------------------------
 // For the theory behind this implementation, see the technical report in:
 //
@@ -136,7 +135,7 @@ mrpt::poses::CPose3DQuat CRangeBearingKFSLAM::getCurrentRobotPoseMean() const
   ---------------------------------------------------------------*/
 void CRangeBearingKFSLAM::getCurrentState(
 	CPose3DQuatPDFGaussian      &out_robotPose,
-	std::vector<CPoint3D>  &out_landmarksPositions,
+	std::vector<TPoint3D>  &out_landmarksPositions,
 	std::map<unsigned int,CLandmark::TLandmarkID> &out_landmarkIDs,
 	CVectorDouble      &out_fullState,
 	CMatrixDouble      &out_fullCovariance ) const
@@ -163,9 +162,9 @@ void CRangeBearingKFSLAM::getCurrentState(
 	out_landmarksPositions.resize(nLMs);
 	for (i=0;i<nLMs;i++)
 	{
-		out_landmarksPositions[i].x( m_xkk[get_vehicle_size()+i*get_feature_size()+0] );
-		out_landmarksPositions[i].y( m_xkk[get_vehicle_size()+i*get_feature_size()+1] );
-		out_landmarksPositions[i].z( m_xkk[get_vehicle_size()+i*get_feature_size()+2] );
+		out_landmarksPositions[i].x = m_xkk[get_vehicle_size()+i*get_feature_size()+0];
+		out_landmarksPositions[i].y = m_xkk[get_vehicle_size()+i*get_feature_size()+1];
+		out_landmarksPositions[i].z = m_xkk[get_vehicle_size()+i*get_feature_size()+2];
 	} // end for i
 
 	// IDs:
@@ -1225,9 +1224,8 @@ void CRangeBearingKFSLAM::saveMapAndPath2DRepresentationAsMATLABFile(
 
 			CPose3D p;
 			pdf3D->getMean(p);
-			CPoint3D pnt3D(p); // 6D -> 3D only
 
-			os::fprintf(f,"%.04f %.04f", pnt3D.x(), pnt3D.y() );
+			os::fprintf(f,"%.04f %.04f", p.x(), p.y() );
 			if (i<(m_SFs.size()-1))
 				os::fprintf(f,";");
 		}

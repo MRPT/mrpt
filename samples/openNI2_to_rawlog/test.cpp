@@ -10,9 +10,9 @@
 #include <OpenNI.h>
 #include <PS1080.h>
 
-#include <mrpt/base.h>
-//#include <mrpt/gui.h>
-//#include <mrpt/opengl.h>
+#include <mrpt/system/filesystem.h>
+#include <mrpt/utils/CImage.h>
+#include <mrpt/opengl.h>
 #include <mrpt/maps.h>
 
 using namespace mrpt;

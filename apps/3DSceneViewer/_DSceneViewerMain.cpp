@@ -54,7 +54,12 @@
 #include <mrpt/gui/CMyGLCanvasBase.h>
 #include <mrpt/opengl/CFBORender.h>
 
-#include <mrpt/opengl.h>  // All objects in mrpt-opengl
+#include <mrpt/opengl/COpenGLScene.h> 
+#include <mrpt/opengl/CGridPlaneXY.h> 
+#include <mrpt/opengl/C3DSScene.h> 
+#include <mrpt/opengl/CPointCloud.h> 
+#include <mrpt/opengl/CPointCloudColoured.h> 
+#include <mrpt/opengl/stock_objects.h> 
 #include <mrpt/opengl/CPlanarLaserScan.h>			// It's in lib mrpt-maps
 #include <mrpt/opengl/CAngularObservationMesh.h>	// It's in lib mrpt-maps
 

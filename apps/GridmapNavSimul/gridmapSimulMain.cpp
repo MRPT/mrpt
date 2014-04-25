@@ -38,8 +38,10 @@
 #include "../wx-common/CMyRedirector.h"
 #include "CAboutBox.h"
 
-//#include <mrpt/base.h>
-
+#include <mrpt/system/filesystem.h>
+#include <mrpt/utils/CFileOutputStream.h>
+#include <mrpt/utils/CFileGZInputStream.h>
+#include <mrpt/utils/CFileGZOutputStream.h>
 #include <mrpt/opengl/CSetOfObjects.h>
 #include <mrpt/opengl/CPlanarLaserScan.h>
 #include <mrpt/opengl/CPointCloud.h>
@@ -88,9 +90,16 @@ wxBitmap MyArtProvider::CreateBitmap(const wxArtID& id,
 
 #include <mrpt/gui/CMyGLCanvasBase.h>
 
-#include <mrpt/maps.h>
-#include <mrpt/obs.h>
-#include <mrpt/hwdrivers.h>
+#include <mrpt/utils/CTicTac.h>
+#include <mrpt/utils/CRobotSimulator.h>
+#include <mrpt/slam/CRawlog.h>
+#include <mrpt/slam/COccupancyGridMap2D.h>
+#include <mrpt/slam/CActionRobotMovement2D.h>
+#include <mrpt/slam/CObservationOdometry.h>
+#include <mrpt/hwdrivers/CJoystick.h>
+
+#include <mrpt/opengl/stock_objects.h>
+#include <mrpt/opengl/stock_objects.h>
 
 #include <mrpt/gui/WxUtils.h>
 

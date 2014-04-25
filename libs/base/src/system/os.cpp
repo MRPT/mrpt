@@ -101,87 +101,10 @@ using namespace std;
 // For UNIX only: If a fatal signal is caught, throw a MRPT exception to inform about the event:
 //   Based on code from wxWidgets (utilsunx.cpp)
 // --------------------------------------------------------------------------------------------------
-
-// Use the wonderful wxWidgets stack walker!
-#if MRPT_HAS_WXWIDGETS && 0
-
-#include <wx/string.h>
-#include <wx/stackwalk.h>
-#if wxUSE_STACKWALKER
-
-#include <mrpt/gui/WxSubsystem.h>
-
-/** A custom class that build a string representation of the stack frames
-  */
-class CMRPTStackWalker : public wxStackWalker
-{
-   private:
-	   std::string  m_stackDescription;
-
-   public:
-	CMRPTStackWalker() : m_stackDescription()
-    {
-    	// We need wx subsystem running for this class!
-		mrpt::gui::WxSubsystem::createOneInstanceMainThread();
-    }
-
-    virtual ~CMRPTStackWalker()
-    {
-    }
-
-	std::string getAsString() const
-	{
-		if (m_stackDescription.empty())
-		{
-			return std::string();
-		}
-		else
-		{
-			// Under Windows, we only have a stack trace in debug:
-#if defined(MRPT_OS_WINDOWS) && !defined(_DEBUG)
-			return std::string();
-#else
-			return std::string("==== MRPT stack trace ====\n")+m_stackDescription;
-#endif
-		}
-	}
-
-    void OnStackFrame(const wxStackFrame& frame)
-    {
-        //cerr << format("%u\n",(unsigned int)frame.GetLevel());
-        string filename(
-            mrpt::system::extractFileName( string(frame.GetFileName().mb_str()) ) +
-            string(".") +
-            mrpt::system::extractFileExtension( string(frame.GetFileName().mb_str()) ) );
-
-        m_stackDescription += format(
-          "[%4u] 0x%p -> %s File: %s Function: %s Line: %u\n",
-          (unsigned int)frame.GetLevel(),
-          frame.GetAddress(),
-          string(frame.GetModule().mb_str()).c_str(),
-          filename.c_str(),
-          string(frame.GetName().mb_str()).c_str(),
-          (unsigned int)frame.GetLine()
-          );
-    }
-
-};
-
-#endif  // stack walker
-#endif  // wxWidgets
-
 extern "C" void MRPT_SIGNAL_HANDLER_SIG( int )
 {
-#if MRPT_HAS_WXWIDGETS && wxUSE_STACKWALKER
-    CMRPTStackWalker    sw;
-    sw.Walk();
-    cerr << sw.getAsString(); cerr.flush();
-    //THROW_EXCEPTION( "*FATAL*: Signal SIGSEGV caught!" );
-    abort();
-#else
 	cerr << "*FATAL*: Signal SIGSEGV caught!" << endl;
-    abort();
-#endif
+	abort();
 }
 
 /*---------------------------------------------------------------
@@ -616,44 +539,31 @@ void mrpt::system::setConsoleColor( TConsoleColor color,bool changeStdErr )
 #endif
 }
 
+const char* sLicenseTextF = 
+"                     Mobile Robot Programming Toolkit (MRPT)                \n"
+"                          http://www.mrpt.org/                              \n"
+"                                                                            \n"
+" Copyright (c) 2005-%Y, Individual contributors, see AUTHORS file         \n"
+" See: http://www.mrpt.org/Authors - All rights reserved.                   \n"
+" Released under BSD License. See details in http://www.mrpt.org/License    \n";
 
-
-const std::string sLicenseText = std::string(
-"                 The Mobile Robot Programming Toolkit (MRPT)\n"
-"\n"
-"                          http://www.mrpt.org/\n"
-"\n"
-" Copyright (c) 2005-2013, Individual contributors, see AUTHORS file\n"
-" Copyright (c) 2005-2013, MAPIR group, University of Malaga\n"
-" Copyright (c) 2012-2013, University of Almeria\n"
-" All rights reserved.\n"
-"\n"
-" Redistribution and use in source and binary forms, with or without\n"
-" modification, are permitted provided that the following conditions are\n"
-" met:\n"
-"    * Redistributions of source code must retain the above copyright\n"
-"      notice, this list of conditions and the following disclaimer.\n"
-"    * Redistributions in binary form must reproduce the above copyright\n"
-"      notice, this list of conditions and the following disclaimer in the\n"
-"      documentation and/or other materials provided with the distribution.\n"
-"    * Neither the name of the copyright holders nor the\n"
-"      names of its contributors may be used to endorse or promote products\n"
-"      derived from this software without specific prior written permission.\n"
-"\n"
-" THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS\n"
-" 'AS IS' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED\n"
-" TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR\n"
-" PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDERS BE LIABLE\n"
-" FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL\n"
-" DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR\n"
-"  SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)\n"
-" HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,\n"
-" STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN\n"
-" ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE\n"
-" POSSIBILITY OF SUCH DAMAGE.\n");
-
+std::string sLicenseText;
+bool sLicenseTextReady=false;
 const std::string & mrpt::system::getMRPTLicense()
 {
+	if (!sLicenseTextReady)
+	{
+		// Automatically update the last year of the copyright to the compilation date:
+		time_t rawtime;
+		struct tm * timeinfo;
+		time (&rawtime);
+		timeinfo = localtime (&rawtime);
+
+		char buf[1024];
+		::strftime(buf,sizeof(buf),sLicenseTextF,timeinfo);
+		sLicenseText = std::string(buf);
+		sLicenseTextReady=true;
+	}
 	return sLicenseText;
 }
 

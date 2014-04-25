@@ -141,7 +141,7 @@ void CAboutBox::OnInit(wxInitDialogEvent& event)
 		cout << "  RawLog Viewer Application\n";
 		cout << "--------------------------------\n";
 		cout << "Jose Luis Blanco (C) 2005-2012\n";
-		cout << "For bug reports or to collaborate: <jlblanco@ctima.uma.es>\n";
+		cout << "For bug reports or to collaborate: <joseluisblancoc@gmail.com>\n";
 		cout << "http://www.isa.uma.es/jlblanco\n\n";
 
 		cout << "MRPT version:           " << MRPT_getVersion() << endl;

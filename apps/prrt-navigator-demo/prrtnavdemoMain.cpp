@@ -13,8 +13,6 @@
 #include <wx/msgdlg.h>
 #include <wx/filename.h>
 
-#include <mrpt/base.h>
-
 // In milliseconds:
 #define SIMULATION_TIME_STEPS   20
 

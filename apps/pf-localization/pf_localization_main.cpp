@@ -11,15 +11,43 @@
 /*---------------------------------------------------------------
 	APPLICATION: Particle Filter (Global) Localization Demo
 	FILE: pf_localization_main.cpp
-	AUTHOR: Jose Luis Blanco Claraco <jlblanco@ctima.uma.es>
+	AUTHOR: Jose Luis Blanco Claraco <joseluisblancoc@gmail.com>
 
 	For instructions and more:
 	 http://www.mrpt.org/Application:pf-localization
   ---------------------------------------------------------------*/
 
-#include <mrpt/base.h>
-#include <mrpt/slam.h>
-#include <mrpt/gui.h>
+#include <mrpt/slam/CMonteCarloLocalization2D.h>
+
+#include <mrpt/utils/CConfigFile.h>
+#include <mrpt/math/ops_vectors.h> // << for vector<>
+#include <mrpt/system/filesystem.h>
+#include <mrpt/gui/CDisplayWindow3D.h>
+#include <mrpt/poses/CPose2D.h>
+#include <mrpt/bayes/CParticleFilter.h>
+#include <mrpt/random.h>
+
+#include <mrpt/slam/CActionRobotMovement2D.h>
+#include <mrpt/slam/CActionCollection.h>
+#include <mrpt/slam/CRawlog.h>
+#include <mrpt/slam/CSimpleMap.h>
+#include <mrpt/slam/COccupancyGridMap2D.h>
+#include <mrpt/slam/CMultiMetricMap.h>
+
+#include <mrpt/system/os.h>
+#include <mrpt/system/threads.h> // sleep()
+#include <mrpt/system/vector_loadsave.h>
+#include <mrpt/math/distributions.h>
+#include <mrpt/math/utils.h>
+#include <mrpt/utils/CTicTac.h>
+#include <mrpt/utils/CFileOutputStream.h>
+#include <mrpt/utils/CFileGZOutputStream.h>
+#include <mrpt/utils/CFileGZInputStream.h>
+
+#include <mrpt/opengl/CGridPlaneXY.h>
+#include <mrpt/opengl/CPointCloud.h>
+#include <mrpt/opengl/CEllipsoid.h>
+#include <mrpt/opengl/CDisk.h>
 
 using namespace mrpt;
 using namespace mrpt::slam;
@@ -29,6 +57,8 @@ using namespace mrpt::math;
 using namespace mrpt::system;
 using namespace mrpt::utils;
 using namespace mrpt::random;
+using namespace mrpt::poses;
+using namespace mrpt::bayes;
 using namespace std;
 
 // Forward declaration:

@@ -11,6 +11,7 @@
 
 #include <mrpt/utils/CTicTac.h>
 #include <mrpt/utils/CDebugOutputCapable.h>
+#include <mrpt/utils/compiler_fixes.h>
 #include <mrpt/utils/mrpt_macros.h>
 #include <vector>
 #include <stack>
@@ -38,7 +39,7 @@ namespace mrpt
 			bool		m_enabled;
 
 			//! Data of all the calls:
-			struct TCallData
+			struct BASE_IMPEXP TCallData
 			{
 				TCallData();
 
@@ -55,7 +56,7 @@ namespace mrpt
 
 		public:
 			/** Data of each call section: # of calls, minimum, maximum, average and overall execution time (in seconds) \sa getStats */
-			struct TCallStats
+			struct BASE_IMPEXP TCallStats
 			{
 				size_t n_calls;
 				double min_t,max_t,mean_t,total_t;

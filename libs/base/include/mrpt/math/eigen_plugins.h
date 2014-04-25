@@ -15,6 +15,7 @@ public:
 	  *  @{ */
 	// size is constant
 	enum { static_size = RowsAtCompileTime*ColsAtCompileTime };
+	typedef Scalar value_type; //!< So Eigen::Matrix looks more like STL
 	/** @} */
 
 

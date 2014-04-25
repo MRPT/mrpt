@@ -9,14 +9,21 @@
 
 #include <mrpt/math/ransac.h>
 #include <mrpt/math/model_search.h>
-#include <mrpt/base.h>
-#include <mrpt/gui.h>
+#include <mrpt/gui/CDisplayWindow3D.h>
+#include <mrpt/utils/CTicTac.h>
+#include <mrpt/opengl/CGridPlaneXY.h>
+#include <mrpt/opengl/stock_objects.h>
+#include <mrpt/opengl/CPointCloud.h>
+#include <mrpt/opengl/CTexturedPlane.h>
+#include <mrpt/poses/CPose3D.h>
+#include <mrpt/random.h>
 
 using namespace mrpt;
 using namespace mrpt::utils;
 using namespace mrpt::gui;
 using namespace mrpt::math;
 using namespace mrpt::random;
+using namespace mrpt::poses;
 using namespace std;
 
 struct Fit3DPlane {

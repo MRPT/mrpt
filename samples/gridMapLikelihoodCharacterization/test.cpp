@@ -7,11 +7,18 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/base.h>
-#include <mrpt/slam.h>
+#include <mrpt/utils/CTicTac.h>
+#include <mrpt/utils/CConfigFile.h>
+#include <mrpt/poses/CPose2D.h>
+#include <mrpt/system/filesystem.h>
+#include <mrpt/system/os.h>
+#include <mrpt/slam/CSimplePointsMap.h>
+#include <mrpt/slam/COccupancyGridMap2D.h>
+#include <mrpt/slam/CObservation2DRangeScan.h>
 
 using namespace mrpt;
 using namespace mrpt::utils;
+using namespace mrpt::system;
 using namespace mrpt::slam;
 using namespace std;
 

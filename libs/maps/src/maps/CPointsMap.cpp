@@ -407,7 +407,7 @@ void CPointsMap::determineMatching2D(
 	}
 
 	// Recover the min/max:
-	EIGEN_ALIGN16 float temp_nums[4];
+	MRPT_ALIGN16 float temp_nums[4];
 
 	_mm_store_ps(temp_nums, x_mins); local_x_min=min(min(temp_nums[0],temp_nums[1]),min(temp_nums[2],temp_nums[3]));
 	_mm_store_ps(temp_nums, y_mins); local_y_min=min(min(temp_nums[0],temp_nums[1]),min(temp_nums[2],temp_nums[3]));
@@ -985,7 +985,7 @@ void CPointsMap::boundingBox(
 			}
 
 			// Recover the min/max:
-			EIGEN_ALIGN16 float temp_nums[4];
+			MRPT_ALIGN16 float temp_nums[4];
 
 			_mm_store_ps(temp_nums, x_mins); m_bb_min_x=min(min(temp_nums[0],temp_nums[1]),min(temp_nums[2],temp_nums[3]));
 			_mm_store_ps(temp_nums, y_mins); m_bb_min_y=min(min(temp_nums[0],temp_nums[1]),min(temp_nums[2],temp_nums[3]));

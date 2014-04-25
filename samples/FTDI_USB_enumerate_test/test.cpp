@@ -7,7 +7,6 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/base.h>
 #include <mrpt/hwdrivers/CInterfaceFTDI.h>
 
 using namespace mrpt;

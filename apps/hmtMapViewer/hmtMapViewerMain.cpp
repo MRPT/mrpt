@@ -45,10 +45,17 @@ extern std::string     global_fileToOpen;
 #error "OpenGL required: set wxUSE_GLCANVAS to 1 and rebuild wxWidgets"
 #endif
 
-#include <mrpt/base.h>
 #include <mrpt/gui/CMyGLCanvasBase.h>
+#include <mrpt/utils/CConfigFile.h>
+#include <mrpt/utils/CFileGZInputStream.h>
+#include <mrpt/utils/CFileOutputStream.h>
+#include <mrpt/utils/CFileGZOutputStream.h>
+#include <mrpt/system/filesystem.h>
+#include <mrpt/opengl/CGridPlaneXY.h>
+#include <mrpt/opengl/CEllipsoid.h>
+#include <mrpt/opengl/CSetOfLines.h>
+#include <mrpt/opengl/stock_objects.h>
 
-#include <mrpt/slam.h>
 #include <mrpt/hmtslam/CHMTSLAM.h>
 #include <mrpt/hmtslam/CRobotPosesGraph.h>
 

@@ -24,11 +24,7 @@ namespace mrpt
 	{
 		/** \addtogroup mrpt_vision_grp
 		  *  @{ */
-
 		using mrpt::poses::CPose3D;
-		//using namespace mrpt::math;
-		//using namespace mrpt::utils;
-
 
 		typedef uint64_t TFeatureID;	//!< Definition of a feature ID
 

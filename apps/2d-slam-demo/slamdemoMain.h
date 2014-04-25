@@ -24,7 +24,6 @@
 #include <wx/timer.h>
 //*)
 
-#include <mrpt/slam.h>
 #include <mrpt/slam/CRangeBearingKFSLAM2D.h>
 #include <mrpt/utils/CFileGZOutputStream.h>
 

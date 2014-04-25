@@ -22,9 +22,19 @@
     DATE: 20-Aug-2010
    =========================================================================== */
 
-#include <mrpt/base.h>
-#include <mrpt/vision.h>
-#include <mrpt/gui.h>
+#include <mrpt/vision/bundle_adjustment.h>
+#include <mrpt/vision/pinhole.h>
+#include <mrpt/gui/CDisplayWindow3D.h>
+#include <mrpt/gui/CDisplayWindowPlots.h>
+#include <mrpt/random.h>
+#include <mrpt/math/geometry.h>
+#include <mrpt/system/filesystem.h>
+#include <mrpt/utils/CConfigFile.h>
+#include <mrpt/utils/CTextFileLinesParser.h>
+#include <mrpt/opengl/CGridPlaneXY.h>
+#include <mrpt/opengl/CPointCloud.h>
+#include <mrpt/opengl/stock_objects.h>
+
 
 using namespace mrpt;
 using namespace mrpt::gui;
@@ -32,6 +42,7 @@ using namespace mrpt::utils;
 using namespace mrpt::math;
 using namespace mrpt::opengl;
 using namespace mrpt::poses;
+using namespace mrpt::vision;
 using namespace std;
 
 

@@ -467,7 +467,7 @@ void CPose3DRotVec::composeFrom(const CPose3DRotVec& A,
         const double C = 1/(1-qCr*qCr);
         const double D = acos(qCr)/sqrt(1-qCr*qCr);
 
-		EIGEN_ALIGN16 const double aux_valsH[] = {
+		MRPT_ALIGN16 const double aux_valsH[] = {
              2*C*qCx*(D*qCr-1), 2*D,    0,      0,
              2*C*qCy*(D*qCr-1), 0,      2*D,    0,
              2*C*qCz*(D*qCr-1), 0,      0,      2*D
@@ -479,7 +479,7 @@ void CPose3DRotVec::composeFrom(const CPose3DRotVec& A,
         const double alpha2 = alpha*alpha;
         const double KA     = alpha*cos(alpha/2)-2*sin(alpha/2);
 
-		EIGEN_ALIGN16 const double aux_valsG[] = {
+		MRPT_ALIGN16 const double aux_valsG[] = {
              -r1*alpha2*sin(alpha/2),           -r2*alpha2*sin(alpha/2),            -r3*alpha2*sin(alpha/2),
              2*alpha2*sin(alpha/2)+r1*r1*KA,    r1*r2*KA,                           r1*r3*KA,
              r1*r2*KA,                          2*alpha2*sin(alpha/2)+r2*r2*KA,     r2*r3*KA,
@@ -497,7 +497,7 @@ void CPose3DRotVec::composeFrom(const CPose3DRotVec& A,
             const double &qAy = qA.m_quat[2];
             const double &qAz = qA.m_quat[3];
 
-            EIGEN_ALIGN16 const double aux_valsQA[] = {qAr, -qAx, -qAy, -qAz, qAx, qAr, qAz, -qAy, qAy, -qAz, qAr, qAx, qAz, qAy, -qAx, qAr};
+            MRPT_ALIGN16 const double aux_valsQA[] = {qAr, -qAx, -qAy, -qAz, qAx, qAr, qAz, -qAy, qAy, -qAz, qAr, qAx, qAz, qAy, -qAx, qAr};
             CMatrixDouble44 QA(aux_valsQA);
 
             CMatrixDouble33 jac_rot_B;
@@ -516,7 +516,7 @@ void CPose3DRotVec::composeFrom(const CPose3DRotVec& A,
             const double &qBy = qB.m_quat[2];
             const double &qBz = qB.m_quat[3];
 
-            EIGEN_ALIGN16 const double aux_valsQB[] = {qBr, -qBx, -qBy, -qBz, qBx, qBr, -qBz, qBy, qBy, qBz, qBr, -qBx, qBz, -qBy, qBx, qBr};
+            MRPT_ALIGN16 const double aux_valsQB[] = {qBr, -qBx, -qBy, -qBz, qBx, qBr, -qBz, qBy, qBy, qBz, qBr, -qBx, qBz, -qBy, qBx, qBr};
             CMatrixDouble44 QB(aux_valsQB);
 
             CMatrixDouble33 jac_rot_A, id3;

@@ -8,7 +8,7 @@
    +---------------------------------------------------------------------------+ */
 
 
-#include <mrpt/vision.h>
+#include <mrpt/vision/CDifodo.h>
 #include <mrpt/utils/CConfigFileBase.h>
 #include <mrpt/utils/CImage.h>
 #include <mrpt/opengl.h>

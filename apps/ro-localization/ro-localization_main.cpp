@@ -21,12 +21,30 @@
   Gracias!! :-)
  --------------------------------------------------------------------------------- */
 
-#include <mrpt/base.h>
-#include <mrpt/slam.h>
-#include <mrpt/gui.h>
+#include <mrpt/utils/CConfigFile.h>
+#include <mrpt/utils/CFileGZInputStream.h>
+#include <mrpt/utils/CFileGZOutputStream.h>
+#include <mrpt/utils/CFileStream.h>
+#include <mrpt/gui/CDisplayWindow3D.h>
+#include <mrpt/system/filesystem.h>
+#include <mrpt/system/os.h>
+#include <mrpt/math/data_utils.h>
+#include <mrpt/system/threads.h>
+#include <mrpt/slam/CObservationBeaconRanges.h>
+#include <mrpt/slam/CRawlog.h>
+#include <mrpt/bayes/CParticleFilter.h>
+#include <mrpt/random.h>
+
+#include <mrpt/opengl/CSphere.h>
+#include <mrpt/opengl/CAxis.h>
+#include <mrpt/opengl/CDisk.h>
+#include <mrpt/opengl/CEllipsoid.h>
+#include <mrpt/opengl/CPointCloud.h>
+#include <mrpt/opengl/CGridPlaneXY.h>
 
 using namespace mrpt;
 using namespace mrpt::slam;
+using namespace mrpt::bayes;
 using namespace mrpt::opengl;
 using namespace mrpt::gui;
 using namespace mrpt::math;
@@ -231,8 +249,8 @@ void TestParticlesLocalization()
 			// Initialize the PDF:
 			// -----------------------------
 			tictac.Tic();
-			vector_float		state_min(nBeaconsInMap, 0.0f);
-			vector_float		state_max(nBeaconsInMap, 0.0f);
+			CVectorFloat		state_min(nBeaconsInMap, 0.0f);
+			CVectorFloat		state_max(nBeaconsInMap, 0.0f);
 
 			pdf.resetUniform(
 				initialPoseExperiment.x()-0.5, initialPoseExperiment.x()+0.5,
@@ -278,7 +296,7 @@ void TestParticlesLocalization()
 
 
 			//Grid2D
-			if ( mrpt::utils::fileExists(MAP_FILE) )
+			if ( mrpt::system::fileExists(MAP_FILE) )
 			{
 				COccupancyGridMap2D	grid2d;
 				CFileGZInputStream(MAP_FILE) >> grid2d;

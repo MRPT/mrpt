@@ -123,7 +123,7 @@ void CPose3DQuat::composePoint(const double lx,const double ly,const double lz,d
 		{
 			// 3x3:  df_{qr} / da
 
-			EIGEN_ALIGN16 const double vals[3*3] = {
+			MRPT_ALIGN16 const double vals[3*3] = {
 				1-2*(qy2+qz2) ,
 				2*(m_quat.x()*m_quat.y() - m_quat.r()*m_quat.z() ) ,
 				2*(m_quat.r()*m_quat.y() + m_quat.x()*m_quat.z() ) ,
@@ -143,14 +143,14 @@ void CPose3DQuat::composePoint(const double lx,const double ly,const double lz,d
 		if (out_jacobian_df_dpose)
 		{
 			// 3x7:  df_{qr} / dp
-			EIGEN_ALIGN16 const double vals1[3*7] = {
+			MRPT_ALIGN16 const double vals1[3*7] = {
 				1,0,0, 0,0,0,0,
 				0,1,0, 0,0,0,0,
 				0,0,1, 0,0,0,0 };
 			out_jacobian_df_dpose->loadFromArray(vals1);
 
 
-			EIGEN_ALIGN16 const double vals[3*4] = {
+			MRPT_ALIGN16 const double vals[3*4] = {
 				2*(-m_quat.z()*ly +m_quat.y()*lz  ),
 				2*(m_quat.y()*ly + m_quat.z()*lz  ),
 				2*(-2*m_quat.y()*lx + m_quat.x()*ly +m_quat.r()*lz  ),
@@ -204,7 +204,7 @@ void CPose3DQuat::inverseComposePoint(const double gx,const double gy,const doub
 			//		[     2*qx*qz - 2*qr*qy,     2*qr*qx + 2*qy*qz, - 2*qx^2 - 2*qy^2 + 1]
 			//
 
-			EIGEN_ALIGN16 const double vals[3*3] = {
+			MRPT_ALIGN16 const double vals[3*3] = {
 				1-2*(qy2+qz2),
 				2*(m_quat.x()*m_quat.y() + m_quat.r()*m_quat.z() ) ,
 				2*(-m_quat.r()*m_quat.y() + m_quat.x()*m_quat.z() ) ,
@@ -235,7 +235,7 @@ void CPose3DQuat::inverseComposePoint(const double gx,const double gy,const doub
 			const double qz = m_quat.z();
 
 
-			EIGEN_ALIGN16 const double vals1[3*7] = {
+			MRPT_ALIGN16 const double vals1[3*7] = {
 				2*qy2 + 2*qz2 - 1,
 				-2*qr*qz - 2*qx*qy ,
 				2*qr*qy - 2*qx*qz ,
@@ -258,7 +258,7 @@ void CPose3DQuat::inverseComposePoint(const double gx,const double gy,const doub
 			const double Ay = 2*(gy - m_coords[1]);
 			const double Az = 2*(gz - m_coords[2]);
 
-			EIGEN_ALIGN16 const double vals[3*4] = {
+			MRPT_ALIGN16 const double vals[3*4] = {
 				-qy*Az + qz*Ay ,
 				qy*Ay + qz*Az ,
 				qx*Ay - 2*qy*Ax - qr*Az ,

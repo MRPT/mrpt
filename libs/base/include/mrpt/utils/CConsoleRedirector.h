@@ -9,9 +9,11 @@
 #ifndef CConsoleRedirector_H
 #define CConsoleRedirector_H
 
+#include <mrpt/synch/CCriticalSection.h>
+#include <mrpt/utils/core_defs.h>
 #include <streambuf>
 #include <iostream>
-
+#include <fstream>
 
 namespace mrpt
 {
@@ -21,7 +23,7 @@ namespace mrpt
 		  *  Based on code from http://www.devmaster.net/forums/showthread.php?t=7037
 		 * \ingroup mrpt_base_grp
 		  */
-		class CConsoleRedirector : public std::streambuf
+		class BASE_IMPEXP CConsoleRedirector : public std::streambuf
 		{
 		protected:
 			std::ofstream 	m_of;		//!< The text output file stream.

@@ -14,6 +14,7 @@
 #include <mrpt/slam/CMultiMetricMap.h>
 #include <mrpt/bayes/CProbabilityParticle.h>
 #include <mrpt/bayes/CParticleFilterCapable.h>
+#include <mrpt/math/CMatrixFixedNumeric.h>
 
 #include <mrpt/slam/COccupancyGridMap2D.h>
 #include <mrpt/slam/CSensoryFrame.h>
@@ -27,7 +28,7 @@ namespace mrpt
 		{
 		public:
 			CPose2D			pose;
-			vector<double>	state;
+			mrpt::math::CVectorDouble	state;
 		};
 
 #define DUMMY_LINKAGE
@@ -65,11 +66,11 @@ namespace mrpt
 
 				/** [update stage] Must be set to a metric map used to estimate the likelihood of observations
 				  */
-				CMetricMap			*metricMap;
+				mrpt::slam::CMetricMap			*metricMap;
 
 				/** [update stage] Alternative way (if metricMap==NULL): A metric map is supplied for each particle: There must be the same maps here as pose particles.
 				  */
-				TMetricMapList		metricMaps;
+				mrpt::slam::TMetricMapList		metricMaps;
 
 				/** Parameters for the KLD adaptive sample size algorithm (see Dieter Fox's papers), which is used only if the CParticleFilter is created with the "adaptiveSampleSize" flag set to true.
 				  */
@@ -146,8 +147,8 @@ namespace mrpt
 										  float x_max,
 										  float y_min,
 										  float y_max,
-										  vector_float	state_min,
-										  vector_float	state_max,
+										  mrpt::math::CVectorFloat	state_min,
+										  mrpt::math::CVectorFloat	state_max,
 										  float phi_min = -M_PI,
 										  float phi_max = M_PI,
 										  int	particlesCount = -1);
@@ -164,7 +165,7 @@ namespace mrpt
 
 			/** Returns an estimate of the pose covariance matrix (3x3 cov.matrix  for x,y,phi variables)
 			  */
-			void getCovarianceAndMean(CMatrixDouble33 &C, CPose2D &p) const;
+			void getCovarianceAndMean(mrpt::math::CMatrixDouble33 &C, CPose2D &p) const;
 
 			/** Returns the pose of the i'th particle.
 			  */
@@ -281,7 +282,7 @@ namespace mrpt
 				const bayes::CParticleFilter::TParticleFilterOptions &PF_options,
 				const CParticleFilterCapable	*obj,
 				size_t			particleIndexForMap,
-				const CSensoryFrame	*observation,
+				const mrpt::slam::CSensoryFrame	*observation,
 				const TExtendedCPose2D			*x );
 
 			/** Auxiliary function used in "prediction_and_update_pfAuxiliaryPFOptimal"

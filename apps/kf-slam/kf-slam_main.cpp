@@ -10,14 +10,25 @@
 /*---------------------------------------------------------------
     APPLICATION: Kalman Filter-based SLAM implementation
     FILE: kf-slam_main.cpp
-    AUTHOR: Jose Luis Blanco Claraco <jlblanco@ctima.uma.es>
+    AUTHOR: Jose Luis Blanco Claraco <joseluisblancoc@gmail.com>
 
 	See README.txt for instructions.
  ---------------------------------------------------------------*/
 
-#include <mrpt/base.h>
-#include <mrpt/slam.h>
-#include <mrpt/gui.h>
+#include <mrpt/utils/CConfigFile.h>
+#include <mrpt/utils/CFileGZInputStream.h>
+#include <mrpt/utils/CFileGZOutputStream.h>
+#include <mrpt/system/os.h>
+#include <mrpt/system/string_utils.h>
+#include <mrpt/system/filesystem.h>
+#include <mrpt/slam/CRangeBearingKFSLAM.h>
+#include <mrpt/slam/CRangeBearingKFSLAM2D.h>
+#include <mrpt/slam/CRawlog.h>
+#include <mrpt/math/ops_containers.h>
+#include <mrpt/gui/CDisplayWindow3D.h>
+#include <mrpt/opengl/CGridPlaneXY.h>
+#include <mrpt/opengl/CSetOfLines.h>
+#include <mrpt/opengl/stock_objects.h>
 
 using namespace mrpt;
 using namespace mrpt::slam;
@@ -149,7 +160,7 @@ template <> struct kfslam_traits<CRangeBearingKFSLAM>
 			H.saveToTextFile(OUT_DIR+string("/information_matrix_final.txt"));
 
 			// Replace by absolute values:
-			H.Abs();
+			H = H.array().abs().matrix();
 			CMatrix H2(H); H2.normalize(0,1);
 			CImage   imgF(H2, true);
 			imgF.saveToFile(OUT_DIR+string("/information_matrix_final.png"));
@@ -350,7 +361,7 @@ void Run_KF_SLAM( CConfigFile &cfgFile, const std::string &rawlogFileName )
 	typename traits_t::posepdf_t   robotPose;
 	const bool is_pose_3d = robotPose.state_length != 3;
 
-	std::vector<typename traits_t::lm_t>	 LMs;
+	std::vector<typename IMPL::landmark_point_t>	 LMs;
 	std::map<unsigned int,CLandmark::TLandmarkID>    LM_IDs;
 	CMatrixDouble  fullCov;
 	CVectorDouble  fullState;
@@ -689,13 +700,13 @@ void Run_KF_SLAM( CConfigFile &cfgFile, const std::string &rawlogFileName )
 					win3d->addTextMessage(
 						0.02,0.10,
 						format("Iteration time: %7ss",
-							mrpt::utils::unitsFormat(tim_kf_iter).c_str()),
+							mrpt::system::unitsFormat(tim_kf_iter).c_str()),
 							TColorf(1,1,1), 2, MRPT_GLUT_BITMAP_HELVETICA_12 );
 
 					win3d->addTextMessage(
 						0.02,0.14,
 						format("Execution rate: %7sHz",
-							mrpt::utils::unitsFormat(meanHz).c_str()),
+							mrpt::system::unitsFormat(meanHz).c_str()),
 							TColorf(1,1,1), 3, MRPT_GLUT_BITMAP_HELVETICA_12 );
 
 					win3d->unlockAccess3DScene();

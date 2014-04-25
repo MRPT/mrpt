@@ -7,13 +7,20 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/base.h>
-#include <mrpt/slam.h>
+#include <mrpt/system/filesystem.h>
+#include <mrpt/system/vector_loadsave.h>
+#include <mrpt/random.h>
+#include <mrpt/math/utils.h>
+#include <mrpt/math/ops_vectors.h>
+#include <mrpt/math/data_utils.h>
+#include <mrpt/bayes/CParticleFilterCapable.h>
+#include <map>
 
 using namespace mrpt::utils;
 using namespace mrpt::bayes;
-using namespace mrpt::slam;
+using namespace mrpt::math;
 using namespace mrpt::random;
+using namespace mrpt::system;
 using namespace std;
 
 double MIN_LOG_WEIG	= -1.0;
@@ -40,7 +47,7 @@ map< string, CVectorDouble > results;
 		CParticleFilterCapable::log2linearWeights(log_ws, lin_ws); \
 		CParticleFilterCapable::computeResampling( CParticleFilter::ALGOR, log_ws, out_indxs );\
 		hist_parts = mrpt::math::histogram( out_indxs, 0, M-1, M, true); \
-		CVectorDouble errs_hist = lin_ws - hist_parts; \
+		vector<double> errs_hist = lin_ws - hist_parts; \
 		ERR_MEANs.push_back( mrpt::math::mean(errs_hist) );\
 		ERR_STDs.push_back ( mrpt::math::stddev(errs_hist) );\
 	}\
@@ -54,8 +61,8 @@ map< string, CVectorDouble > results;
 // ------------------------------------------------------
 void TestResampling()
 {
-	CVectorDouble	log_ws;
-	vector_size_t	out_indxs;
+	vector<double>	log_ws;
+	mrpt::vector_size_t	out_indxs;
 
 
 	const size_t M = N_PARTICLES;
@@ -64,12 +71,10 @@ void TestResampling()
 	//vectorToTextFile( log_ws, "log_ws.txt");
 
 	// Compute normalized linear weights:
-	CVectorDouble lin_ws;
-
-
-	CVectorDouble 	hist_parts;
-	CVectorDouble	ERR_MEANs;
-	CVectorDouble	ERR_STDs;
+	vector<double> lin_ws;
+	vector<double> hist_parts;
+	vector<double> ERR_MEANs;
+	vector<double> ERR_STDs;
 
 	// prMultinomial
 	TEST_RESAMPLING(prMultinomial)

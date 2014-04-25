@@ -11,6 +11,7 @@
 #define MRPTPERFAPP_COMMON_H
 
 #include <mrpt/utils/CImage.h>
+#include <list>
 
 // All the register functions: --------------------
 void register_tests_icpslam();

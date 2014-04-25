@@ -7,8 +7,11 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/utils.h>
+#include <mrpt/math/CMatrix.h>
+#include <mrpt/system/os.h>
+#include <iostream>
 
+using namespace std;
 using namespace mrpt;
 using namespace mrpt::utils;
 using namespace mrpt::math;
@@ -37,7 +40,7 @@ void FunctionFoo( CMatrix * )
 
 	FunctionFoo2(0,0);
 
-	CMatrix B = ~A;
+	CMatrix B = A.transpose();
 
 	MRPT_END
 }

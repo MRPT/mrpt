@@ -149,7 +149,7 @@ namespace mrpt
 				detail::AuxErrorEval<typename gst::edge_t,gst>::computePseudoLnError(P1DP2inv, errs.back(),edge);
 
 				// Compute the jacobians:
-				EIGEN_ALIGN16 std::pair<TPairNodeIDs,typename gst::TPairJacobs> newMapEntry;
+				MRPT_ALIGN16 std::pair<TPairNodeIDs,typename gst::TPairJacobs> newMapEntry;
 				newMapEntry.first = ids;
 				gst::SE_TYPE::jacobian_dP1DP2inv_depsilon(P1DP2inv, &newMapEntry.second.first,&newMapEntry.second.second);
 

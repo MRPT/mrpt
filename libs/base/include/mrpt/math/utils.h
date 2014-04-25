@@ -11,6 +11,7 @@
 
 #include <mrpt/utils/utils_defs.h>
 #include <cstdarg>
+#include <cstdio>
 #include <mrpt/math/eigen_frwds.h>
 
 namespace mrpt

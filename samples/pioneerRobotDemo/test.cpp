@@ -8,8 +8,11 @@
    +---------------------------------------------------------------------------+ */
 
 #include <mrpt/hwdrivers/CActivMediaRobotBase.h>
-#include <mrpt/base.h>
+#include <mrpt/system/os.h>
+#include <mrpt/math/ops_vectors.h>  // << for vectors
+#include <mrpt/utils/utils_defs.h>
 
+using namespace mrpt;
 using namespace mrpt::hwdrivers;
 using namespace mrpt::utils;
 using namespace mrpt::math;

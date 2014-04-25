@@ -8,9 +8,6 @@
    +---------------------------------------------------------------------------+ */
 
 #include <mrpt/hwdrivers/CBoardENoses.h>
-#include <mrpt/base.h>
-#include <mrpt/obs.h>
-#include <mrpt/gui.h>
 
 
 using namespace mrpt;

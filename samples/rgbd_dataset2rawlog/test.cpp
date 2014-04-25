@@ -32,8 +32,11 @@ Output files:
    ------------------------------------------------------ */
 
 
-#include <mrpt/base.h>
-#include <mrpt/obs.h>
+#include <mrpt/system/filesystem.h>
+#include <mrpt/utils/CTextFileLinesParser.h>
+#include <mrpt/utils/CFileGZOutputStream.h>
+#include <mrpt/slam/CObservation3DRangeScan.h>
+#include <mrpt/slam/CObservationIMU.h>
 
 using namespace std;
 using namespace mrpt;

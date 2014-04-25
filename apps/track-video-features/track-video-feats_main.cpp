@@ -9,7 +9,7 @@
 
 /*---------------------------------------------------------------
     DEMO: track-video-features
-    Started by: Jose Luis Blanco Claraco <jlblanco@ctima.uma.es>
+    Started by: Jose Luis Blanco Claraco <joseluisblancoc@gmail.com>
                 @ Jun 2010
 
     Purpose: Illustrate MRPT classes and functions for live
@@ -17,11 +17,12 @@
              as real-time visualization of all that stuff.
   ---------------------------------------------------------------*/
 
-#include <mrpt/vision.h> 	// For feature detection, etc.
-#include <mrpt/gui.h>		// For visualization windows
-#include <mrpt/hwdrivers.h>	// For capture of video from videos/cameras
-#include <mrpt/base.h>
+#include <mrpt/vision/tracking.h>
+#include <mrpt/vision/CVideoFileWriter.h>
+#include <mrpt/gui/CDisplayWindow3D.h>		// For visualization windows
+#include <mrpt/hwdrivers/CCameraSensor.h>	// For capture of video from videos/cameras
 #include <mrpt/slam/CRawlog.h>
+#include <mrpt/system/os.h>
 
 using namespace std;
 using namespace mrpt;
@@ -366,7 +367,7 @@ int main(int argc, char **argv)
 	try
 	{
 		printf(" track-video-features - Part of MRPT\n");
-		printf(" MRPT C++ Library: %s - BUILD DATE %s\n", MRPT_getVersion().c_str(), MRPT_getCompilationDate().c_str());
+		printf(" MRPT C++ Library: %s - BUILD DATE %s\n", mrpt::system::MRPT_getVersion().c_str(), mrpt::system::MRPT_getCompilationDate().c_str());
 		printf("-------------------------------------------------------------------\n");
 
 		// The video source:

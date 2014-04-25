@@ -7,10 +7,11 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/base.h>
-#include <mrpt/slam.h>
-#include <mrpt/gui.h>
+#include <mrpt/opengl/CGridPlaneXY.h>
+#include <mrpt/opengl/CAxis.h>
+#include <mrpt/gui/CDisplayWindow3D.h>
 
+using namespace std;
 using namespace mrpt;
 using namespace mrpt::gui;
 using namespace mrpt::opengl;

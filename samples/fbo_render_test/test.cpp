@@ -7,9 +7,13 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/base.h>
-#include <mrpt/opengl.h>
-#include <mrpt/gui.h>
+#include <mrpt/opengl/COpenGLScene.h>
+#include <mrpt/opengl/CGridPlaneXY.h>
+#include <mrpt/opengl/CAxis.h>
+#include <mrpt/opengl/CSphere.h>
+#include <mrpt/opengl/CFBORender.h>
+#include <mrpt/gui/CDisplayWindow.h>
+#include <mrpt/system/threads.h>
 
 using namespace mrpt;
 using namespace mrpt::gui;

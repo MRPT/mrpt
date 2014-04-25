@@ -22,7 +22,6 @@
 #include <mrpt/slam/CSensoryFrame.h>
 #include <mrpt/slam/CActionCollection.h>
 #include <mrpt/slam/CObservationBearingRange.h>
-#include <mrpt/poses/CPoint2D.h>
 #include <mrpt/poses/CPosePDFGaussian.h>
 #include <mrpt/slam/CLandmark.h>
 #include <mrpt/slam/CSimpleMap.h>
@@ -52,6 +51,8 @@ namespace mrpt
 			                               // <size_t VEH_SIZE, size_t OBS_SIZE,   size_t FEAT_SIZE, size_t ACT_SIZE, size typename kftype = double>
 		{
 		 public:
+			typedef mrpt::math::TPoint2D landmark_point_t;  //!< Either mrpt::math::TPoint2D or mrpt::math::TPoint3D
+
 			 CRangeBearingKFSLAM2D( ); //!< Default constructor
 			 virtual ~CRangeBearingKFSLAM2D();	//!< Destructor
 			 void reset(); //!< Reset the state of the SLAM filter: The map is emptied and the robot put back to (0,0,0).

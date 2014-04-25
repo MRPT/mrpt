@@ -28,7 +28,7 @@ using namespace std;
 
 TEST(Matrices, loadFromArray)
 {
-	EIGEN_ALIGN16 const double nums[3*4] = {
+	MRPT_ALIGN16 const double nums[3*4] = {
 		1,2,3,4,
 		5,6,7,8,
 		9,10,11,12 };
@@ -43,7 +43,7 @@ TEST(Matrices, loadFromArray)
 
 TEST(Matrices, CMatrixFixedNumeric_loadWithEigenMap)
 {
-	EIGEN_ALIGN16 double nums[3*4] = {
+	MRPT_ALIGN16 double nums[3*4] = {
 		1,2,3,4,
 		5,6,7,8,
 		9,10,11,12 };
@@ -58,7 +58,7 @@ TEST(Matrices, CMatrixFixedNumeric_loadWithEigenMap)
 
 TEST(Matrices, EigenMatrix_loadWithEigenMap)
 {
-	EIGEN_ALIGN16 double nums[3*4] = {
+	MRPT_ALIGN16 double nums[3*4] = {
 		1,2,3,4,
 		5,6,7,8,
 		9,10,11,12 };

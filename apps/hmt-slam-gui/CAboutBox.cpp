@@ -21,8 +21,8 @@
 #include "../wx-common/CMyRedirector.h"
 #include <mrpt/gui/WxUtils.h>
 
-// For CV_VERSION
-#include <mrpt/base.h>
+// For MRPT_OPENCV_VERSION
+#include <mrpt/config.h>
 
 using namespace mrpt;
 using namespace mrpt::system;
@@ -140,7 +140,7 @@ void CAboutBox::OnInit(wxInitDialogEvent& event)
 		cout << "  HMT-SLAM Visual Interface \n";
 		cout << "--------------------------------\n";
 		cout << "Jose Luis Blanco (C) 2005-2012\n";
-		cout << "For bug reports or to collaborate: <jlblanco@ctima.uma.es>\n";
+		cout << "For bug reports or to collaborate: <joseluisblancoc@gmail.com>\n";
 
 		cout << "MRPT version:           " << MRPT_getVersion() << endl;
 		cout << "MRPT compilation date:  " << MRPT_getCompilationDate() << endl;

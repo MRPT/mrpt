@@ -11,8 +11,9 @@
 #define RAWLOG_PROCESSOR_H
 
 #include <mrpt/slam/CRawlog.h>
-#include <mrpt/base.h>
-
+#include <mrpt/utils/CFileGZInputStream.h>
+#include <mrpt/utils/CTicTac.h>
+	
 // Aparently, TCLAP headers can't be included in more than one source file
 //  or duplicated linking symbols appear! -> Use forward declarations instead:
 // #include <mrpt/otherlibs/tclap/CmdLine.h>

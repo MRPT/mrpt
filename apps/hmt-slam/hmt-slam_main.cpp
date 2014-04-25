@@ -11,14 +11,18 @@
 /*---------------------------------------------------------------
     APPLICATION: Hybrid Metric-Topological SLAM implementation
     FILE: hmt-slam_main.cpp
-    AUTHOR: Jose Luis Blanco Claraco <jlblanco@ctima.uma.es>
+    AUTHOR: Jose Luis Blanco Claraco <joseluisblancoc@gmail.com>
 
 	See README.txt for instructions.
   ---------------------------------------------------------------*/
 
-#include <mrpt/slam.h>
-#include <mrpt/base.h>
 #include <mrpt/hmtslam/CHMTSLAM.h>
+#include <mrpt/utils/CConsoleRedirector.h>
+#include <mrpt/utils/CConfigFile.h>
+#include <mrpt/utils/CFileGZInputStream.h>
+#include <mrpt/utils/CFileGZOutputStream.h>
+#include <mrpt/system/filesystem.h>
+#include <mrpt/system/os.h>
 
 using namespace mrpt;
 using namespace mrpt::slam;
@@ -27,6 +31,7 @@ using namespace mrpt::opengl;
 using namespace mrpt::system;
 using namespace mrpt::math;
 using namespace mrpt::utils;
+using namespace mrpt::system;
 using namespace std;
 
 std::string		configFile;

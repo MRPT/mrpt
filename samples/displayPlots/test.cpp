@@ -7,8 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/base.h>
-#include <mrpt/gui.h>
+#include <mrpt/gui/CDisplayWindowPlots.h>
 
 using namespace mrpt;
 using namespace mrpt::gui;

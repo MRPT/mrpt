@@ -7,13 +7,23 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/base.h>
-#include <mrpt/slam.h>
-#include <mrpt/gui.h>
+#include <mrpt/math/CArrayNumeric.h>
+#include <mrpt/math/transform_gaussian.h>
+#include <mrpt/math/utils.h>
+#include <mrpt/utils/CTicTac.h>
+#include <mrpt/poses/CPose3D.h>
+#include <mrpt/poses/CPose3DPDFGaussian.h>
+#include <mrpt/poses/CPose3DQuat.h>
+#include <mrpt/poses/CPose3DQuatPDFGaussian.h>
+#include <mrpt/gui/CDisplayWindowPlots.h>
+#include <mrpt/gui/CDisplayWindow3D.h>
+#include <mrpt/opengl/CGridPlaneXY.h>
+#include <mrpt/opengl/CEllipsoid.h>
 
 using namespace mrpt;
 using namespace mrpt::utils;
 using namespace mrpt::math;
+using namespace mrpt::poses;
 using namespace std;
 
 
@@ -169,8 +179,8 @@ void Test_SUT()
 	{
 		winHistos[i] = mrpt::gui::CDisplayWindowPlots::Create(format("MC-based histogram of the %i dim",i),300,150);
 
-		CVectorDouble  X;
-		CVectorDouble  H = mrpt::math::histogram(MC_y[i],MC_y[i].minimum(),MC_y[i].maximum(),40, true, &X);
+		std::vector<double> X;
+		std::vector<double> H = mrpt::math::histogram(MC_y[i],MC_y[i].minimum(),MC_y[i].maximum(),40, true, &X);
 
 		winHistos[i]->plot(X,H,"b");
 		winHistos[i]->axis_fit();

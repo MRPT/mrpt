@@ -7,8 +7,12 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/slam.h>
-#include <mrpt/base.h>
+#include <mrpt/slam/CMultiMetricMap.h>
+#include <mrpt/slam/CObservationBeaconRanges.h>
+#include <mrpt/slam/CRejectionSamplingRangeOnlyLocalization.h>
+#include <mrpt/random.h>
+#include <mrpt/utils/CConfigFile.h>
+#include <mrpt/system/os.h>
 
 using namespace mrpt;
 using namespace mrpt::utils;

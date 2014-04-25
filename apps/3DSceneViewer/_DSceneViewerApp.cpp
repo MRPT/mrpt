@@ -20,9 +20,9 @@ IMPLEMENT_APP(_DSceneViewerApp)
 // The file to open (from cmd line), or an empty string
 std::string     global_fileToOpen;
 
-#include <mrpt/opengl.h>
-#include <mrpt/base.h>
 #include <mrpt/gui/WxUtils.h>
+#include <mrpt/utils/CConfigFile.h>
+#include <mrpt/system/filesystem.h>
 using namespace mrpt;
 using namespace mrpt::utils;
 

@@ -7,12 +7,19 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/slam.h>
-#include <mrpt/base.h>
+#include <mrpt/utils/stl_serialization.h>
+#include <mrpt/utils/CFileInputStream.h>
+#include <mrpt/utils/CFileOutputStream.h>
+#include <mrpt/poses/CPose3D.h>
+#include <mrpt/poses/CPose2D.h>
+#include <mrpt/poses/CPose3DPDFGaussian.h>
+#include <mrpt/math/lightweight_geom_data.h>
+#include <mrpt/math/utils.h> // make_vector
 
 using namespace mrpt;
 using namespace mrpt::utils;
 using namespace mrpt::poses;
+using namespace mrpt::math;
 using namespace std;
 
 
@@ -75,7 +82,7 @@ void Test_STL_containers_serialize()
 	cout << "==== map< double, pair<CPose3DPDFGaussian, TPoint3D> >: Written & read OK" << endl;
 
 
-	CVectorDouble v2, v1;
+	std::vector<double> v2, v1;
 	v1 = make_vector<5,double>(1.0,2.0,3.0,4.0,5.0);
 
 	{

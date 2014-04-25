@@ -112,7 +112,7 @@ bool  scanmatching::leastSquareErrorRigidTransformation(
 
 	}
 
-	EIGEN_ALIGN16 float sums_a[4], sums_b[4];
+	MRPT_ALIGN16 float sums_a[4], sums_b[4];
 	_mm_store_ps(sums_a,sum_a_xyz);
 	_mm_store_ps(sums_b,sum_b_xyz);
 
@@ -131,7 +131,7 @@ bool  scanmatching::leastSquareErrorRigidTransformation(
 	// means_a[1]: mean_y_a
 	// means_b[0]: mean_x_b
 	// means_b[1]: mean_y_b
-	EIGEN_ALIGN16 float means_a[4], means_b[4];
+	MRPT_ALIGN16 float means_a[4], means_b[4];
 	_mm_store_ps(means_a,sum_a_xyz);
 	_mm_store_ps(means_b,sum_b_xyz);
 
@@ -142,7 +142,7 @@ bool  scanmatching::leastSquareErrorRigidTransformation(
 
 	//      Sxx   Syy     Sxy    Syx
 	//    xa*xb  ya*yb   xa*yb  xb*ya
-	EIGEN_ALIGN16 float cross_sums[4];
+	MRPT_ALIGN16 float cross_sums[4];
 	_mm_store_ps(cross_sums,sum_ab_xyz);
 
 	const float	&Sxx = cross_sums[0];

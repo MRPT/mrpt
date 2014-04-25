@@ -8,20 +8,19 @@
    +---------------------------------------------------------------------------+ */
  
 #include <mrpt/detectors.h>
-#include <mrpt/vision.h>
-#include <mrpt/hwdrivers.h>
-#include <mrpt/slam.h>
+#include <mrpt/hwdrivers/CCameraSensor.h>
+#include <mrpt/slam/CColouredPointsMap.h>
+#include <mrpt/slam/CRawlog.h>
 #include <mrpt/gui.h>
-
-//#include <mrpt/detectors/CObjectDetection.h>  // Already in <mrpt/detectors.h>
-//#include <mrpt/detectors/CCascadeClassifierDetection.h>
-//#include <mrpt/detectors/CFaceDetection.h>
+#include <mrpt/opengl/CPointCloudColoured.h>
+#include <mrpt/opengl/CGridPlaneXY.h>
+#include <mrpt/opengl/stock_objects.h>
+#include <mrpt/math/ops_containers.h>
 
 using namespace mrpt;
 using namespace mrpt::gui;
 using namespace mrpt::math;
 using namespace mrpt::utils;
-using namespace mrpt::vision;
 using namespace mrpt::hwdrivers;
 using namespace mrpt::detectors;
 using namespace std;

@@ -11,15 +11,25 @@
 /*-----------------------------------------------------------------------------
 	APPLICATION: rawlog-grabber
 	FILE: rawloggrabber_main.cpp
-	AUTHOR: Jose Luis Blanco Claraco <jlblanco@ctima.uma.es>
+	AUTHOR: Jose Luis Blanco Claraco <joseluisblancoc@gmail.com>
 
 	For instructions and details, see:
 	 http://www.mrpt.org/Application:rawlog-grabber
   -----------------------------------------------------------------------------*/
 
-#include <mrpt/obs.h>
-#include <mrpt/base.h>
-#include <mrpt/hwdrivers.h>
+#include <mrpt/hwdrivers/CGenericSensor.h>
+#include <mrpt/utils/CConfigFile.h>
+#include <mrpt/utils/CFileGZOutputStream.h>
+#include <mrpt/utils/CImage.h>
+#include <mrpt/utils/round.h>
+#include <mrpt/slam/CActionCollection.h>
+#include <mrpt/slam/CSensoryFrame.h>
+#include <mrpt/slam/CObservationOdometry.h>
+#include <mrpt/slam/CObservationGPS.h>
+#include <mrpt/slam/CObservationIMU.h>
+#include <mrpt/slam/CActionRobotMovement2D.h>
+#include <mrpt/system/os.h>
+#include <mrpt/system/filesystem.h>
 
 #ifdef RAWLOGGRABBER_PLUGIN
 #	include "rawloggrabber_plugin.h"

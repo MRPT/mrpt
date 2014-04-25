@@ -11,6 +11,7 @@
 
 #include <mrpt/utils/core_defs.h>
 #include <mrpt/bayes/CProbabilityParticle.h>
+#include <mrpt/bayes/CParticleFilterCapable.h>
 
 #include <deque>
 #include <algorithm>

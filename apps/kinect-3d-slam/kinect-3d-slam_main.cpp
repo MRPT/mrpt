@@ -25,12 +25,17 @@ Note: This is a very *simple* approach to SLAM. It would be better to first sele
 */
 
 
-#include <mrpt/hwdrivers.h>
-#include <mrpt/gui.h>
-#include <mrpt/maps.h>
-#include <mrpt/vision.h>
+#include <mrpt/hwdrivers/CKinect.h>
+#include <mrpt/gui/CDisplayWindow3D.h>
+#include <mrpt/vision/tracking.h>
 #include <mrpt/scanmatching.h>
 #include <mrpt/system/filesystem.h>
+#include <mrpt/synch/CThreadSafeVariable.h>
+#include <mrpt/utils/CConfigFile.h>
+#include <mrpt/slam/CColouredPointsMap.h>
+#include <mrpt/opengl/CPointCloudColoured.h>
+#include <mrpt/opengl/CGridPlaneXY.h>
+#include <mrpt/opengl/stock_objects.h>
 
 using namespace mrpt;
 using namespace mrpt::vision;

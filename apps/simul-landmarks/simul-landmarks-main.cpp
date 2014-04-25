@@ -7,15 +7,32 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/base.h>
-#include <mrpt/slam.h>
-#include <mrpt/gui.h>
+#include <mrpt/system/os.h>
+#include <mrpt/system/filesystem.h>
+#include <mrpt/utils/CConfigFile.h>
+#include <mrpt/poses/CPose3D.h>
+#include <mrpt/utils/CFileGZInputStream.h>
+#include <mrpt/utils/CFileGZOutputStream.h>
+#include <mrpt/slam/CActionCollection.h>
+#include <mrpt/slam/CActionRobotMovement3D.h>
+#include <mrpt/slam/CSensoryFrame.h>
+#include <mrpt/slam/CObservationBearingRange.h>
+#include <mrpt/slam/CLandmarksMap.h>
+#include <mrpt/random.h>
+#include <mrpt/gui/CDisplayWindow3D.h>
+
+#include <mrpt/opengl/CGridPlaneXY.h>
+#include <mrpt/opengl/stock_objects.h>
+#include <mrpt/opengl/CSetOfLines.h>
+#include <mrpt/opengl/CSphere.h>
 
 using namespace mrpt;
 using namespace mrpt::math;
 using namespace mrpt::utils;
 using namespace mrpt::slam;
 using namespace mrpt::random;
+using namespace mrpt::system;
+using namespace mrpt::opengl;
 using namespace std;
 
 

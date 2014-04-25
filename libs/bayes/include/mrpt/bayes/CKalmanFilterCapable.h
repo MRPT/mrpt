@@ -15,6 +15,7 @@
 #include <mrpt/math/num_jacobian.h>
 #include <mrpt/math/utils.h>
 #include <mrpt/math/num_jacobian.h>
+#include <mrpt/utils/CConfigFileBase.h>
 #include <mrpt/utils/CTimeLogger.h>
 #include <mrpt/utils/aligned_containers.h>
 #include <mrpt/utils/CLoadableOptions.h>
@@ -24,6 +25,7 @@
 #include <mrpt/utils/CTicTac.h>
 #include <mrpt/utils/CFileOutputStream.h>
 #include <mrpt/utils/TEnumType.h>
+#include <mrpt/system/vector_loadsave.h>
 
 
 namespace mrpt
@@ -1562,7 +1564,7 @@ namespace mrpt
 							// Append to m_xkk:
 							size_t q;
 							size_t idx = obj.m_xkk.size();
-							obj.m_xkk.resize( obj.m_xkk.size() + FEAT_SIZE );
+							obj.m_xkk.conservativeResize( obj.m_xkk.size() + FEAT_SIZE );
 
 							for (q=0;q<FEAT_SIZE;q++)
 								obj.m_xkk[idx+q] = yn[q];

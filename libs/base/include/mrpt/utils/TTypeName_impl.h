@@ -11,6 +11,7 @@
 
 #include <mrpt/utils/TTypeName.h>
 #include <list>
+#include <vector>
 #include <deque>
 #include <set>
 #include <map>

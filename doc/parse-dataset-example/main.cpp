@@ -14,10 +14,23 @@
    +---------------------------------------------------------------------------+ */
 
 // This program requires the MRPT libraries ( http://www.mrpt.org/ )
-#include <mrpt/base.h>   // Serialization, etc.
-#include <mrpt/obs.h>    // Sensor observations classes
-#include <mrpt/maps.h>   // Point clouds, etc.
-#include <mrpt/gui.h>    // GUI windows
+
+// Serialization, etc.
+#include <mrpt/utils/CFileGZInputStream.h>
+#include <mrpt/system/os.h>
+#include <mrpt/system/filesystem.h>
+
+// Sensor observations classes
+//#include <mrpt/obs.h>     // Include *all* classes
+#include <mrpt/slam/CObservationGPS.h>
+#include <mrpt/slam/CObservation2DRangeScan.h>
+#include <mrpt/slam/CObservationStereoImages.h>
+#include <mrpt/slam/CObservationIMU.h>
+
+// Point clouds, etc.
+//#include <mrpt/maps.h>   
+
+#include <mrpt/gui/CDisplayWindow3D.h> // GPS coordinates processing
 #include <mrpt/topography.h>   // GPS coordinates processing
 
 using namespace mrpt;

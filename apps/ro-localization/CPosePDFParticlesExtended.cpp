@@ -9,11 +9,16 @@
 
 
 #include <mrpt/random.h>
-#include <mrpt/math.h>
-#include <mrpt/poses.h>
-#include <mrpt/maps.h>
-#include <mrpt/obs.h>
 #include <mrpt/utils/CTicTac.h>
+#include <mrpt/poses/CPoseRandomSampler.h>
+#include <mrpt/poses/CPosePDFGaussian.h>
+#include <mrpt/math/utils.h>
+#include <mrpt/math/distributions.h>
+#include <mrpt/math/wrap2pi.h>
+#include <mrpt/slam/CActionCollection.h>
+#include <mrpt/slam/CActionRobotMovement2D.h>
+#include <mrpt/slam/CObservationBeaconRanges.h>
+#include <mrpt/system/os.h>
 
 #include "CPosePDFParticlesExtended.h"
 
@@ -22,6 +27,7 @@ using namespace mrpt::slam;
 using namespace mrpt::math;
 using namespace mrpt::system;
 using namespace mrpt::utils;
+using namespace mrpt::bayes;
 using namespace mrpt::random;
 using namespace std;
 
@@ -231,7 +237,7 @@ TExtendedCPose2D  CPosePDFParticlesExtended::getEstimatedPoseState() const
 		est.pose.x_incr( (p.x() * w));
 		est.pose.y_incr( (p.y() * w));
 
-		vector<double>	auxVec (m_particles[i].d->state);
+		CVectorDouble	auxVec (m_particles[i].d->state);
 		auxVec *= w;
 		est.state += auxVec;
 
@@ -430,7 +436,7 @@ void  CPosePDFParticlesExtended::prediction_and_update_pfStandardProposal(
 			m_particles[i].d->pose = m_particles[i].d->pose + increment_i;
 
 			// Prediction of the BIAS "state vector":
-			for (size_t k=0;k<m_particles[i].d->state.size();k++)
+			for (int k=0;k<m_particles[i].d->state.size();k++)
 				offsetTransitionModel( m_particles[i].d->state[k] );
 		}
 	} // end of fixed sample size
@@ -931,8 +937,8 @@ void  CPosePDFParticlesExtended::resetDeterministic(
 void  CPosePDFParticlesExtended::resetUniform(
 			  float x_min,  float x_max,
 			  float y_min,  float y_max,
-			  vector_float	state_min,
-			  vector_float	state_max,
+			  CVectorFloat	state_min,
+			  CVectorFloat	state_max,
 			  float phi_min,float phi_max,
 			  int	particlesCount)
 {

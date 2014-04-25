@@ -68,7 +68,7 @@
 #include "std_msgs/String.h"
 #include <sstream>
 
-#include <mrpt/base.h>
+#include <mrpt/poses.h>
 
 /**
  * This tutorial demonstrates simple sending of messages over the ROS system.
