@@ -32,7 +32,7 @@ using namespace mrpt::utils;
 using namespace std;
 
 
-MRPT_TODO("Mark as deprecated and rewrite a clearer and more consistent API for all least-squares transform methods!")
+MRPT_TODO("Mark as deprecated and rewrite a clearer and more consistent API for all least-squares transform methods!") // And rename lib to [mrpt-registration/optimaltransf] ?
 
 //#define AVOID_MULTIPLE_CORRESPONDENCES
 

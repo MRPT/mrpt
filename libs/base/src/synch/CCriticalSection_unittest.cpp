@@ -109,10 +109,11 @@ void thread_example(int id)
 
 		mrpt::system::sleep( delay*1000 );
 
-		int remaining;
+		//int remaining;
 		{
 			CCriticalSectionLocker lock(&csCounter);
-			remaining = --counter;
+			//remaining = 
+			--counter;
 		}
 
 		time_t	timcr,timex;

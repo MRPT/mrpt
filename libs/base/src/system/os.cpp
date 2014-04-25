@@ -16,8 +16,6 @@
 #   include <mrpt/synch/CCriticalSection.h>
 #endif // HAVE_TIMEGM
 
-#include <cstdlib>
-#include <cstdarg>
 #include <cstring>
 #include <float.h>
 #include <iostream>
@@ -539,7 +537,7 @@ void mrpt::system::setConsoleColor( TConsoleColor color,bool changeStdErr )
 #endif
 }
 
-const char* sLicenseTextF = 
+const char* sLicenseTextF =
 "                     Mobile Robot Programming Toolkit (MRPT)                \n"
 "                          http://www.mrpt.org/                              \n"
 "                                                                            \n"
