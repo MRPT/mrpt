@@ -11,8 +11,9 @@
 
 #include <mrpt/utils/core_defs.h>
 #include <mrpt/system/memory.h>
-#include <stdio.h>
-//#include <iostream>
+#include <cstdio>
+#include <cstring>
+#include <cstdlib> // realloc(), posix_memalign()...
 
 #ifdef MRPT_OS_APPLE
 #include <mach/mach_init.h>
