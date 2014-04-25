@@ -21,6 +21,7 @@
 // --------------------------------------------------
 #include <fstream> // These headers are assumed by <mrpt/math/eigen_plugins.h>:
 #include <ctime>
+#include <stdexcept>
 #ifdef EIGEN_MATRIXBASE_H
 #	error **FATAL ERROR**: MRPT headers must be included before <Eigen/Dense> headers.
 #endif
