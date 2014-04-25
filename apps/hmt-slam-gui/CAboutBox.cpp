@@ -23,6 +23,7 @@
 
 // For MRPT_OPENCV_VERSION
 #include <mrpt/config.h>
+#include <mrpt/system/os.h>
 
 using namespace mrpt;
 using namespace mrpt::system;

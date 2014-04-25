@@ -13,7 +13,7 @@
 #include <mrpt/math/CMatrixFixedNumeric.h>
 #include <mrpt/utils/types_math.h>
 #include <mrpt/utils/CStream.h> // for >> ops
-#include <mrpt/math/ops_matrices.h> // for >> ops
+#include <mrpt/math/matrix_serialization.h> // for >> ops
 #include <mrpt/opengl/link_pragmas.h>
 
 namespace mrpt

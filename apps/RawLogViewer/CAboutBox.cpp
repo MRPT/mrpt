@@ -21,7 +21,7 @@
 #include "../wx-common/CMyRedirector.h"
 
 
-#include <mrpt/utils.h>
+#include <mrpt/system/os.h>
 
 using namespace mrpt;
 using namespace mrpt::utils;

@@ -12,7 +12,7 @@
 #include <mrpt/random.h>
 #include <mrpt/math/wrap2pi.h>
 #include <mrpt/math/transform_gaussian.h>
-
+#include <mrpt/utils/CStream.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/poses/CPose3DPDFGaussianInf.h>
 #include <mrpt/poses/CPose3DQuatPDFGaussian.h>

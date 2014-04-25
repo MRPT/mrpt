@@ -10,6 +10,7 @@
 #include "reactivenav-precomp.h" // Precomp header
 
 #include <mrpt/reactivenav/CReactiveNavigationSystem.h>
+#include <mrpt/reactivenav/motion_planning_utils.h>
 #include <mrpt/system/filesystem.h>
 #include <typeinfo>  // For typeid()
 
@@ -171,7 +172,7 @@ void CReactiveNavigationSystem::loadConfigFile(const mrpt::utils::CConfigFileBas
 	printf_debug("  Robot name \t\t\t=%s\n",robotName.c_str());
 
 	ASSERT_(!m_holonomicMethod.empty())
-	printf_debug("  Holonomic method \t\t= %s\n",typeid(m_holonomicMethod[0]).name()); 
+	printf_debug("  Holonomic method \t\t= %s\n",typeid(m_holonomicMethod[0]).name());
 	printf_debug("\n  GPT Count\t\t\t= %u\n", (int)PTG_COUNT );
 	printf_debug("  Max. ref. distance\t\t= %f\n", refDistance );
 	printf_debug("  Cells resolution \t= %.04f\n", colGridRes );
@@ -208,7 +209,7 @@ void CReactiveNavigationSystem::STEP1_CollisionGridsBuilder()
 				PTGs[i],
 				m_robotShape,
 				format("ReacNavGrid_%s_%03u.dat.gz",robotName.c_str(),i),
-				m_enableConsoleOutput /*verbose*/ 
+				m_enableConsoleOutput /*verbose*/
 				);
 		}
 
@@ -246,23 +247,23 @@ bool CReactiveNavigationSystem::STEP2_SenseObstacles()
 /*************************************************************************
 				STEP3_WSpaceToTPSpace
 *************************************************************************/
-void CReactiveNavigationSystem::STEP3_WSpaceToTPSpace(const size_t ptg_idx,mrpt::math::CVectorDouble &out_TPObstacles)
+void CReactiveNavigationSystem::STEP3_WSpaceToTPSpace(const size_t ptg_idx,std::vector<float> &out_TPObstacles)
 {
 	CParameterizedTrajectoryGenerator	*ptg = this->PTGs[ptg_idx];
 
 	const float OBS_MAX_XY = this->refDistance*1.1f;
-		
+
 	// Merge all the (k,d) for which the robot collides with each obstacle point:
 	size_t nObs;
 	const float *xs,*ys,*zs;
-	m_WS_Obstacles.getPointsBuffer(nObs,xs,ys,zs);	
+	m_WS_Obstacles.getPointsBuffer(nObs,xs,ys,zs);
 
 	for (size_t obs=0;obs<nObs;obs++)
 	{
 		const float ox=xs[obs], oy = ys[obs], oz=zs[obs];
 
-		if (ox>-OBS_MAX_XY && ox<OBS_MAX_XY && 
-			oy>-OBS_MAX_XY && oy<OBS_MAX_XY && 
+		if (ox>-OBS_MAX_XY && ox<OBS_MAX_XY &&
+			oy>-OBS_MAX_XY && oy<OBS_MAX_XY &&
 			oz>=minObstaclesHeight && oz<=maxObstaclesHeight)
 		{
 			const CParameterizedTrajectoryGenerator::TCollisionCell & cell = ptg->m_collisionGrid.getTPObstacle(ox,oy);

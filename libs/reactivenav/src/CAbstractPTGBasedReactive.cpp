@@ -600,7 +600,7 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 
 void CAbstractPTGBasedReactive::STEP5_PTGEvaluator(
 	THolonomicMovement         & holonomicMovement,
-	const CVectorDouble        & in_TPObstacles,
+	const std::vector<float>        & in_TPObstacles,
 	const mrpt::math::TPose2D  & WS_Target,
 	const mrpt::math::TPoint2D & TP_Target,
 	CLogFileRecord::TInfoPerPTG & log )
@@ -608,7 +608,7 @@ void CAbstractPTGBasedReactive::STEP5_PTGEvaluator(
 	const double   refDist	    = holonomicMovement.PTG->refDistance;
 	const double   TargetDir    = (TP_Target.x!=0 || TP_Target.y!=0) ? atan2( TP_Target.y, TP_Target.x) : 0.0;
 	const int      TargetSector = static_cast<int>( holonomicMovement.PTG->alpha2index( TargetDir ) );
-	const double   TargetDist   = TP_Target.norm();
+	const float    TargetDist   = TP_Target.norm();
 	// Picked movement direction:
 	const int      kDirection   = static_cast<int>( holonomicMovement.PTG->alpha2index( holonomicMovement.direction ) );
 
@@ -668,7 +668,7 @@ void CAbstractPTGBasedReactive::STEP5_PTGEvaluator(
 	// Factor6: Fast when free space
 	// -----------------------------------------------------
 	float aver_obs = 0;
-	for (int i=0; i<in_TPObstacles.size(); i++)
+	for (size_t i=0; i<in_TPObstacles.size(); i++)
 		aver_obs += in_TPObstacles[i];
 
 	aver_obs = aver_obs/in_TPObstacles.size();

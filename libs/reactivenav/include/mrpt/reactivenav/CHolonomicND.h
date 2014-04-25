@@ -65,7 +65,7 @@ namespace mrpt
 		   *     <br><center><code>pseudometer<sup>2</sup>= meter<sup>2</sup> + (rad · r)<sup>2</sup></code><br></center>
 		   */
 		 void  navigate(	const mrpt::math::TPoint2D &target,
-							const CVectorDouble	&obstacles,
+							const std::vector<float>	&obstacles,
 							double			maxRobotSpeed,
 							double			&desiredDirection,
 							double			&desiredSpeed,
@@ -107,7 +107,7 @@ namespace mrpt
 			double TOO_CLOSE_OBSTACLE,WIDE_GAP_SIZE_PERCENT,RISK_EVALUATION_SECTORS_PERCENT;
 			double RISK_EVALUATION_DISTANCE,MAX_SECTOR_DIST_FOR_D2_PERCENT;
 			double TARGET_SLOW_APPROACHING_DISTANCE;
-			CVectorDouble factorWeights;  //!< Vector of 4 weights: [0]=Free space, [1]=Dist. in sectors, [2]=Closer to target (Euclidean), [3]=Hysteresis
+			std::vector<double> factorWeights;  //!< Vector of 4 weights: [0]=Free space, [1]=Dist. in sectors, [2]=Closer to target (Euclidean), [3]=Hysteresis
 
 
 			TOptions();
@@ -125,7 +125,7 @@ namespace mrpt
 		/**  Find gaps in the obtacles.
 		  */
 		void  gapsEstimator(
-			const CVectorDouble         & obstacles,
+			const std::vector<float>         & obstacles,
 			const mrpt::math::TPoint2D  & in_target,
 			TGapArray                   & gaps );
 
@@ -133,7 +133,7 @@ namespace mrpt
 		/** Search the best gap.
 		  */
 		void  searchBestGap(
-			const CVectorDouble         & in_obstacles,
+			const std::vector<float>         & in_obstacles,
 			const double                  in_maxObsRange,
 			const TGapArray             & in_gaps,
 			const mrpt::math::TPoint2D  & in_target,
@@ -148,17 +148,17 @@ namespace mrpt
 		void  calcRepresentativeSectorForGap(
 			TGap                        & gap,
 			const mrpt::math::TPoint2D  & target,
-			const CVectorDouble         & obstacles);
+			const std::vector<float>         & obstacles);
 
 		/** Evaluate each gap:
 		  */
 		void  evaluateGaps(
-			const CVectorDouble & in_obstacles,
-			const double          in_maxObsRange,
+			const std::vector<float> & in_obstacles,
+			const float          in_maxObsRange,
 			const TGapArray     & in_gaps,
 			const unsigned int	  TargetSector,
-			const double          TargetDist,
-			CVectorDouble       & out_gaps_evaluation );
+			const float          TargetDist,
+			std::vector<double>       & out_gaps_evaluation );
 
 	}; // end of CHolonomicND
 
@@ -174,7 +174,7 @@ namespace mrpt
 		 /** Member data.
 		   */
 		vector_int				gaps_ini,gaps_end;
-		CVectorDouble			gaps_eval;
+		std::vector<double>			gaps_eval;
 		int32_t                 selectedSector;
 		double                   evaluation;
 		double					riskEvaluation;

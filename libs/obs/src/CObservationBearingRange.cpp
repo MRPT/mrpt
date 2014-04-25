@@ -12,7 +12,7 @@
 #include <mrpt/utils/CStream.h>
 #include <mrpt/slam/CObservationBearingRange.h>
 #include <mrpt/system/os.h>
-#include <mrpt/math/ops_matrices.h> // for << ops
+#include <mrpt/math/matrix_serialization.h> // for << ops
 #include <set>
 
 using namespace mrpt::slam;

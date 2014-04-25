@@ -10,6 +10,16 @@
 #include <mrpt/graphs.h>
 #include <mrpt/graphslam.h>
 #include <mrpt/gui.h>
+#include <mrpt/utils/CObserver.h>
+#include <mrpt/system/threads.h>
+#include <mrpt/opengl/gl_utils.h>
+#include <mrpt/opengl/CPointCloud.h>
+#include <mrpt/opengl/CSetOfObjects.h>
+#include <mrpt/opengl/CSimpleLine.h>
+#include <mrpt/opengl/CSetOfLines.h>
+#include <mrpt/opengl/stock_objects.h>
+#include <mrpt/opengl/CGridPlaneXY.h>
+#include <mrpt/opengl/graph_tools.h>
 
 using namespace mrpt;
 using namespace mrpt::graphs;
@@ -87,7 +97,7 @@ void display_graph(const GRAPHTYPE & g)
 			m_graph(g),
 			request_to_refresh_3D_view(false),
 			request_to_quit(false),
-			showing_help(false), 
+			showing_help(false),
 			hiding_help(false)
 		{
 			params["show_edges"] = 1;
@@ -143,7 +153,7 @@ void display_graph(const GRAPHTYPE & g)
 						static int cnt = 0;
 						const std::string sFil = mrpt::format("dump_graph_%05i.3Dscene",++cnt);
 						std::cout << "Dumping scene to file: " << sFil << std::endl;
-						
+
 						mrpt::opengl::COpenGLScene scene;
 						scene.insert(m_new_3dobj);
 						mrpt::utils::CFileGZOutputStream  f(sFil);
@@ -185,7 +195,7 @@ void display_graph(const GRAPHTYPE & g)
 					break;
 				};
 
-				if (rebuild_3d_obj) 
+				if (rebuild_3d_obj)
 				{
 					m_new_3dobj = mrpt::opengl::graph_tools::graph_visualize(m_graph,params);
 					request_to_refresh_3D_view = true;

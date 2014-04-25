@@ -11,6 +11,7 @@
 
 #include <mrpt/synch/CCriticalSection.h>
 #include <mrpt/math/lightweight_geom_data.h>
+#include <mrpt/math/CMatrixFixedNumeric.h>
 #include <mrpt/system/datetime.h>
 
 namespace mrpt
@@ -56,21 +57,8 @@ namespace mrpt
 			   */
 			 bool getCurrentEstimate( mrpt::math::TPose2D &pose, float &v, float &w, mrpt::system::TTimeStamp tim_query = mrpt::system::now() ) const;
 
-			 /** Get the current estimate, obtained as:
-			   *
-			   *   last_loc (+) [ last_odo (-) odo_ref ] (+) extrapolation_from_vw
-			   *
-			   * \return true is the estimate can be trusted. False if the real observed data is too old or there is no valid data yet.
-			   * \sa getLatestRobotPose
-			   */
-			 bool getCurrentEstimate( mrpt::poses::CPose2D &pose, float &v, float &w, mrpt::system::TTimeStamp tim_query = mrpt::system::now() ) const
-			 {
-			 	mrpt::math::TPose2D  p;
-			 	bool ret = getCurrentEstimate(p,v,w,tim_query);
-			 	if (ret)
-					pose = CPose2D(p);
-			 	return ret;
-			 }
+			 /** \overload */
+			 bool getCurrentEstimate( mrpt::poses::CPose2D &pose, float &v, float &w, mrpt::system::TTimeStamp tim_query = mrpt::system::now() ) const;
 
 			 /** Get the latest known robot pose, either from odometry or localization.
 			   *  This differs from getCurrentEstimate() in that this method does NOT extrapolate as getCurrentEstimate() does.
@@ -79,22 +67,8 @@ namespace mrpt
 			   */
 			 bool getLatestRobotPose(mrpt::math::TPose2D &pose) const;
 
-			 /** Get the latest known robot pose, either from odometry or localization.
-			   * \return false if there is not estimation yet.
-			   */
-			 inline bool getLatestRobotPose(CPose2D &pose) const
-			 {
-			 	mrpt::math::TPose2D p;
-			 	bool v = getLatestRobotPose(p);
-				if (v)
-				{
-			 		pose.x(p.x);
-			 		pose.y(p.y);
-			 		pose.phi(p.phi);
-				}
-			 	return v;
-			 }
-
+			 /** \overload */
+			 bool getLatestRobotPose(CPose2D &pose) const;
 
 			 struct TOptions
 			 {

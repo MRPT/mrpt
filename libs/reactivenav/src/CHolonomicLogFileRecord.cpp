@@ -10,6 +10,7 @@
 #include "reactivenav-precomp.h" // Precomp header
 
 #include <mrpt/reactivenav/CHolonomicLogFileRecord.h>
+#include <mrpt/utils/CStream.h>
 
 using namespace mrpt;
 using namespace mrpt::utils;

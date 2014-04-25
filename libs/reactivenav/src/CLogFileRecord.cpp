@@ -11,6 +11,7 @@
 
 #include <mrpt/reactivenav/CLogFileRecord.h>
 #include <mrpt/poses/CPoint2D.h>
+#include <mrpt/utils/CStream.h>
 
 using namespace mrpt::reactivenav;
 

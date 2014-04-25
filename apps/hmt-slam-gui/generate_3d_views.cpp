@@ -9,6 +9,7 @@
 
 
 #include "hmt_slam_guiMain.h"
+#include <mrpt/opengl.h>
 
 #include <wx/msgdlg.h>
 

@@ -12,9 +12,9 @@
 #include <mrpt/graphslam/types.h>
 #include <mrpt/utils/TParameters.h>
 #include <mrpt/utils/stl_containers_utils.h> // find_in_vector()
-
-
 #include <mrpt/graphslam/levmarq_impl.h> // Aux classes
+
+#include <iterator> // ostream_iterator
 
 namespace mrpt
 {

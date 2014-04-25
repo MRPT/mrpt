@@ -50,7 +50,7 @@ namespace mrpt
 		   *     <br><center><code>pseudometer<sup>2</sup>= meter<sup>2</sup> + (rad · r)<sup>2</sup></code><br></center>
 		   */
 		 virtual void  navigate(const mrpt::math::TPoint2D &target,
-								const CVectorDouble	&obstacles,
+								const std::vector<float>	&obstacles,
 								double			maxRobotSpeed,
 								double			&desiredDirection,
 								double			&desiredSpeed,

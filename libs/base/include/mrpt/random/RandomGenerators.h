@@ -121,7 +121,7 @@ namespace mrpt
 				{
 					const size_t N = v.size();
 					for (size_t c=0;c<N;c++)
-						v[c] = static_cast<typename VEC::value_type>( drawUniform(unif_min,unif_max) );
+						v[c] = static_cast<typename mrpt::math::ContainerType<VEC>::element_t>( drawUniform(unif_min,unif_max) );
 				}
 
 			/** @} */
@@ -172,7 +172,7 @@ namespace mrpt
 				{
 					const size_t N = v.size();
 					for (size_t c=0;c<N;c++)
-						v[c] = static_cast<typename VEC::value_type>( drawGaussian1D(mean,std) );
+						v[c] = static_cast<typename mrpt::math::ContainerType<VEC>::element_t>( drawGaussian1D(mean,std) );
 				}
 
 				/** Generate multidimensional random samples according to a given covariance matrix.

@@ -10,7 +10,12 @@
 
 #include <mrpt/reactivenav.h>
 #include <mrpt/opengl.h>
+#include <mrpt/opengl/CPlanarLaserScan.h>
+#include <mrpt/utils/CObserver.h>
+#include <mrpt/slam/COccupancyGridMap2D.h>
+#include <mrpt/utils/CRobotSimulator.h>
 #include <mrpt/gui.h>
+#include <mrpt/utils/round.h>
 #include "map2_1.xpm"
 #include "map2_2.xpm"
 #include "map2_3.xpm"
@@ -19,6 +24,7 @@
 using namespace mrpt;
 using namespace mrpt::reactivenav;
 using namespace mrpt::opengl;
+using namespace mrpt::slam;
 using namespace mrpt::gui;
 
 class MyObserver : public mrpt::utils::CObserver
@@ -154,7 +160,7 @@ public:
 
 	void KinectScan(vector <COccupancyGridMap2D> m_maps, vector <float> heights, CPose3D robotpose, CPose3D kinectrelpose)
 	{
-	unsigned int acc_factor = max(1,mrpt::math::round<double>(80.0/m_columns));
+	unsigned int acc_factor = max(1,mrpt::utils::round<double>(80.0/m_columns));
 	float h = 0, incrz;
 	CObservation2DRangeScan m_auxlaser;
 	CPose2D scanpose2d;

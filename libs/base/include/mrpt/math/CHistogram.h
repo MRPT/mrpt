@@ -9,9 +9,9 @@
 #ifndef  CHISTOGRAM_H
 #define  CHISTOGRAM_H
 
-#include <mrpt/utils/utils_defs.h>
-
-namespace Eigen { template<typename Derived> class MatrixBase; }
+#include <mrpt/utils/core_defs.h>
+#include <mrpt/math/eigen_frwds.h>
+#include <vector>
 
 namespace mrpt
 {

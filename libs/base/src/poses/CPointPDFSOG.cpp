@@ -17,6 +17,8 @@
 #include <mrpt/bayes/CParticleFilterCapable.h>
 #include <mrpt/random.h>
 #include <mrpt/math/distributions.h>
+#include <mrpt/math/matrix_serialization.h>
+#include <mrpt/utils/CStream.h>
 #include <mrpt/system/os.h>
 
 using namespace mrpt::poses;

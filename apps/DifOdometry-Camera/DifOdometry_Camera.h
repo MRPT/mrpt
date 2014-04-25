@@ -11,7 +11,7 @@
 #include <mrpt/vision/CDifodo.h>
 #include <mrpt/utils/CConfigFileBase.h>
 #include <mrpt/utils/CImage.h>
-#include <mrpt/opengl.h>
+#include <mrpt/opengl/COpenGLScene.h>
 #include <mrpt/gui/CDisplayWindow3D.h>
 #include <iostream>
 

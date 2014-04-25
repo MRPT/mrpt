@@ -11,7 +11,7 @@
 
 #include <mrpt/utils/TCamera.h>
 #include <mrpt/utils/CConfigFileMemory.h>
-#include <mrpt/math/ops_matrices.h>  // For "<<" ">>" operators.
+#include <mrpt/math/matrix_serialization.h>  // For "<<" ">>" operators.
 
 using namespace mrpt::utils;
 using namespace mrpt::math;
@@ -170,11 +170,11 @@ void TCamera::scaleToResolution(unsigned int new_ncols, unsigned int new_nrows)
 
 bool mrpt::utils::operator ==(const mrpt::utils::TCamera& a, const mrpt::utils::TCamera& b)
 {
-	return 
+	return
 		a.ncols==b.ncols &&
-		a.nrows==b.nrows && 
-		a.intrinsicParams==b.intrinsicParams && 
-		a.dist==b.dist && 
+		a.nrows==b.nrows &&
+		a.intrinsicParams==b.intrinsicParams &&
+		a.dist==b.dist &&
 		a.focalLengthMeters==b.focalLengthMeters;
 }
 bool mrpt::utils::operator !=(const mrpt::utils::TCamera& a, const mrpt::utils::TCamera& b)

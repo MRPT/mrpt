@@ -10,6 +10,7 @@
 #define CLogFileRecord_H
 
 #include <mrpt/utils/CSerializable.h>
+#include <mrpt/poses/CPose2D.h>
 #include <mrpt/slam/CSimplePointsMap.h>
 
 #include "CHolonomicLogFileRecord.h"

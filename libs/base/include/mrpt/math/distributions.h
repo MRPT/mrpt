@@ -182,9 +182,9 @@ namespace mrpt
 		template <typename CONTAINER>
 		void confidenceIntervals(
 			const CONTAINER &data,
-			typename CONTAINER::value_type &out_mean,
-			typename CONTAINER::value_type &out_lower_conf_interval,
-			typename CONTAINER::value_type &out_upper_conf_interval,
+			typename mrpt::math::ContainerType<CONTAINER>::element_t &out_mean,
+			typename mrpt::math::ContainerType<CONTAINER>::element_t &out_lower_conf_interval,
+			typename mrpt::math::ContainerType<CONTAINER>::element_t &out_upper_conf_interval,
 			const double confidenceInterval = 0.1,
 			const size_t histogramNumBins = 1000 )
 		{
@@ -193,10 +193,10 @@ namespace mrpt
 			ASSERT_(confidenceInterval>0 && confidenceInterval<1)
 
 			out_mean = mean(data);
-			typename CONTAINER::value_type x_min,x_max;
+			typename mrpt::math::ContainerType<CONTAINER>::element_t x_min,x_max;
 			minimum_maximum(data,x_min,x_max);
 
-			const typename CONTAINER::value_type binWidth = (x_max-x_min)/histogramNumBins;
+			const typename mrpt::math::ContainerType<CONTAINER>::element_t binWidth = (x_max-x_min)/histogramNumBins;
 
 			const std::vector<double> H = mrpt::math::histogram(data,x_min,x_max,histogramNumBins);
 			std::vector<double> Hc;

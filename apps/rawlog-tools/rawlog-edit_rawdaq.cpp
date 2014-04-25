@@ -9,14 +9,13 @@
 
 #include "rawlog-edit-declarations.h"
 
-#include <mrpt/topography.h>
+#include <mrpt/slam/CObservationRawDAQ.h>
 
 using namespace mrpt;
 using namespace mrpt::utils;
 using namespace mrpt::slam;
 using namespace mrpt::system;
 using namespace mrpt::rawlogtools;
-using namespace mrpt::topography;
 using namespace std;
 
 #define WRITE_AIN_SAMPLES(_VECTOR_NAME, _FRMT, _TYPECAST) \

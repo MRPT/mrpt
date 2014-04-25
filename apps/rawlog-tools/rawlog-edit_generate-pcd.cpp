@@ -11,6 +11,8 @@
 
 #include <mrpt/slam/CColouredPointsMap.h>
 #include <mrpt/slam/CSimplePointsMap.h>
+#include <mrpt/slam/CObservation2DRangeScan.h>
+#include <mrpt/slam/CObservation3DRangeScan.h>
 
 using namespace mrpt;
 using namespace mrpt::utils;

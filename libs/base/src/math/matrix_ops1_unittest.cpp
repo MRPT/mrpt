@@ -8,12 +8,13 @@
    +---------------------------------------------------------------------------+ */
 
 // Note: Matrices unit tests have been split in different files since
-// building them with eigen3 eats a lot of RAM and may be a problem while 
+// building them with eigen3 eats a lot of RAM and may be a problem while
 // compiling in small systems.
 
 #include <mrpt/math/CMatrixFixedNumeric.h>
 #include <mrpt/math/CMatrixD.h>
-#include <mrpt/math/ops_matrices.h>  // serialization of matrices
+#include <mrpt/math/matrix_serialization.h>  // serialization of matrices
+#include <mrpt/math/ops_matrices.h>
 #include <mrpt/utils/metaprogramming.h>
 #include <mrpt/utils/CMemoryStream.h>
 #include <mrpt/random.h>

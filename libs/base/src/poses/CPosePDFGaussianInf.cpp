@@ -19,6 +19,7 @@
 #include <mrpt/math/distributions.h>
 #include <mrpt/math/wrap2pi.h>
 #include <mrpt/system/os.h>
+#include <mrpt/utils/CStream.h>
 
 #include <mrpt/random.h>
 

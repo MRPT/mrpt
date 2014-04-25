@@ -10,6 +10,7 @@
 #include "reactivenav-precomp.h" // Precomp header
 
 #include <mrpt/reactivenav/CPRRTNavigator.h>
+#include <mrpt/poses/CPose2D.h>
 #include <mrpt/math/wrap2pi.h>
 #include <mrpt/system/threads.h>
 

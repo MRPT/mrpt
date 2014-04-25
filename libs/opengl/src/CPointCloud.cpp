@@ -33,7 +33,7 @@ IMPLEMENTS_SERIALIZABLE( CPointCloud, CRenderizable, mrpt::opengl )
 							render
   ---------------------------------------------------------------*/
 CPointCloud::CPointCloud( ) :
-    m_colorFromDepth(CPointCloud::None),
+    m_colorFromDepth(CPointCloud::colNone),
 	m_xs(),m_ys(),m_zs(),
 	m_pointSize(1),
 	m_pointSmooth(false),
@@ -74,7 +74,7 @@ void   CPointCloud::render() const
 			m_minmax_valid = true;
 			if (!m_zs.empty())
 				mrpt::math::minimum_maximum(
-					m_colorFromDepth == CPointCloud::Z ? m_zs : (m_colorFromDepth == CPointCloud::Y ? m_ys : m_xs),
+					m_colorFromDepth == CPointCloud::colZ ? m_zs : (m_colorFromDepth == CPointCloud::colY ? m_ys : m_xs),
 					m_min, m_max);
 			else m_max=m_min=0;
 		}
@@ -139,9 +139,9 @@ void   CPointCloud::render() const
 inline void CPointCloud::internal_render_one_point(size_t i) const
 {
 #if MRPT_HAS_OPENGL_GLUT
-	if ( m_colorFromDepth!=None && m_max_m_min>0 )
+	if ( m_colorFromDepth!=colNone && m_max_m_min>0 )
 	{
-		const float depthCol = (m_colorFromDepth==X ? m_xs[i] : (m_colorFromDepth==Y ? m_ys[i] : m_zs[i]));
+		const float depthCol = (m_colorFromDepth==colX ? m_xs[i] : (m_colorFromDepth==colY ? m_ys[i] : m_zs[i]));
 
 		float	f = (depthCol - m_min) * m_max_m_min_inv;
 		f=std::max(0.0f,min(1.0f,f));
@@ -235,7 +235,7 @@ void  CPointCloud::readFromStream(CStream &in,int version)
 			{
 				bool colorFromZ;
 				in >> colorFromZ;
-				m_colorFromDepth = colorFromZ ? CPointCloud::Z : CPointCloud::None;
+				m_colorFromDepth = colorFromZ ? CPointCloud::colZ : CPointCloud::colNone;
 			}
 			in >> m_xs >> m_ys >> m_zs;
 

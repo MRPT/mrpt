@@ -67,7 +67,13 @@ BEGIN_EVENT_TABLE(CFormPlayVideo,wxDialog)
 END_EVENT_TABLE()
 
 // Global variables:
-#include <mrpt/slam.h>
+#include <mrpt/utils/CFileGZInputStream.h>
+#include <mrpt/system/filesystem.h>
+#include <mrpt/slam/CObservationImage.h>
+#include <mrpt/slam/CObservationStereoImages.h>
+#include <mrpt/slam/CObservation3DRangeScan.h>
+#include <mrpt/gui/WxUtils.h>
+
 using namespace mrpt;
 using namespace mrpt::slam;
 using namespace mrpt::opengl;
@@ -97,7 +103,7 @@ CFormPlayVideo::CFormPlayVideo(wxWindow* parent,wxWindowID id)
     wxFlexGridSizer* FlexGridSizer7;
     wxFlexGridSizer* FlexGridSizer12;
     wxFlexGridSizer* FlexGridSizer11;
-    
+
     Create(parent, wxID_ANY, _("Play images in a Rawlog as a video"), wxDefaultPosition, wxDefaultSize, wxCAPTION|wxDEFAULT_DIALOG_STYLE|wxSYSTEM_MENU|wxRESIZE_BORDER|wxCLOSE_BOX|wxMAXIMIZE_BOX, _T("wxID_ANY"));
     FlexGridSizer1 = new wxFlexGridSizer(4, 1, 0, 0);
     FlexGridSizer1->AddGrowableCol(0);
@@ -225,7 +231,7 @@ CFormPlayVideo::CFormPlayVideo(wxWindow* parent,wxWindowID id)
     FlexGridSizer1->Fit(this);
     FlexGridSizer1->SetSizeHints(this);
     Center();
-    
+
     Connect(ID_RADIOBUTTON1,wxEVT_COMMAND_RADIOBUTTON_SELECTED,(wxObjectEventFunction)&CFormPlayVideo::OnrbLoadedSelect);
     Connect(ID_RADIOBUTTON2,wxEVT_COMMAND_RADIOBUTTON_SELECTED,(wxObjectEventFunction)&CFormPlayVideo::OnrbFileSelect);
     Connect(ID_BUTTON4,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&CFormPlayVideo::OnbtnPickClick);

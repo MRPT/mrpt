@@ -9,11 +9,17 @@
 
 #include <mrpt/vision/CFeatureExtraction.h>
 #include <mrpt/gui/CDisplayWindow.h>
+#include <mrpt/gui/CDisplayWindowPlots.h>
+#include <mrpt/utils/CMemoryStream.h>
+#include <mrpt/utils/metaprogramming.h>
+#include <mrpt/math/data_utils.h>
+#include <mrpt/system/threads.h>
 
 using namespace mrpt::utils;
 using namespace mrpt::math;
 using namespace mrpt::gui;
 using namespace mrpt::vision;
+using namespace mrpt;
 using namespace std;
 
 #include "../common/sample_image1.h"
@@ -45,7 +51,7 @@ bool DemoFeatures()
 	// --------------------------------------
 	mrpt::vision::CFeatureExtraction	fext;
 
-	cout << endl 
+	cout << endl
 		<< "Detectors:\n"
 		"0: KLT\n"
 		"1: Harris\n"
@@ -324,7 +330,7 @@ bool DemoFeatures()
 			break;
 			case descSIFT:
 				{
-					vector_float v1, v2;
+					vector<float> v1, v2;
 					mrpt::utils::metaprogramming::copy_container_typecasting(feats1[i1]->descriptors.SIFT, v1);
 					mrpt::utils::metaprogramming::copy_container_typecasting(feats2[min_dist_idx]->descriptors.SIFT, v2);
 					winptrPlot_descr1->plot( v1 );

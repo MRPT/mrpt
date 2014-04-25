@@ -13,7 +13,7 @@
 #include <mrpt/poses/CPointPDFGaussian.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/math/CMatrixD.h>
-#include <mrpt/math/ops_matrices.h>
+#include <mrpt/math/matrix_serialization.h>
 #include <mrpt/random/RandomGenerators.h>
 #include <mrpt/system/os.h>
 #include <mrpt/utils/CStream.h>

@@ -10,14 +10,13 @@
 #include "reactivenav-precomp.h" // Precomp header
 
 #include <mrpt/reactivenav/CHolonomicND.h>
-
+#include <mrpt/utils/CStream.h>
 #include <mrpt/math/geometry.h>
 #include <mrpt/math/ops_containers.h>
 
 using namespace mrpt;
 using namespace mrpt::utils;
 using namespace mrpt::math;
-using namespace mrpt::slam;
 using namespace mrpt::reactivenav;
 using namespace std;
 
@@ -41,7 +40,7 @@ CHolonomicND::CHolonomicND(const mrpt::utils::CConfigFileBase *INI_FILE ) :
   ---------------------------------------------------------------*/
 void  CHolonomicND::navigate(
 	const mrpt::math::TPoint2D &target,
-	const CVectorDouble	&obstacles,
+	const std::vector<float>	&obstacles,
 	double			maxRobotSpeed,
 	double			&desiredDirection,
 	double			&desiredSpeed,
@@ -133,7 +132,7 @@ void  CHolonomicND::navigate(
 				Find gaps in the obtacles (Beta version)
   ---------------------------------------------------------------*/
 void  CHolonomicND::gapsEstimator(
-	const CVectorDouble         & obstacles,
+	const std::vector<float>         & obstacles,
 	const mrpt::math::TPoint2D  & target,
 	TGapArray                   & gaps_out)
 {
@@ -147,7 +146,7 @@ void  CHolonomicND::gapsEstimator(
 
 	// Find the maximum distances to obstacles:
 	// ----------------------------------------------------------
-	double overall_max_dist = std::numeric_limits<double>::min(), overall_min_dist = std::numeric_limits<double>::max();
+	float overall_max_dist = std::numeric_limits<float>::min(), overall_min_dist = std::numeric_limits<float>::max();
 	for (size_t i=1;i<(n-1);i++)
 	{
 		mrpt::utils::keep_max(overall_max_dist, obstacles[i]);
@@ -166,7 +165,7 @@ void  CHolonomicND::gapsEstimator(
 
 			bool    is_inside = false;
 			size_t  sec_ini=0, sec_end=0;
-			double  maxDist=0;
+			float  maxDist=0.f;
 
 			for (size_t i=0;i<n;i++)
 			{
@@ -294,7 +293,7 @@ void  CHolonomicND::gapsEstimator(
 						Search the best gap.
   ---------------------------------------------------------------*/
 void  CHolonomicND::searchBestGap(
-	const CVectorDouble         & obstacles,
+	const std::vector<float>         & obstacles,
 	const double                  maxObsRange,
 	const TGapArray             & in_gaps,
 	const mrpt::math::TPoint2D  & target,
@@ -348,7 +347,7 @@ void  CHolonomicND::searchBestGap(
 	else
 	{
 		// Evaluate all gaps (if any):
-		CVectorDouble  gaps_evaluation;
+		std::vector<double>  gaps_evaluation;
 		int            selected_gap			=-1;
 		double         selected_gap_eval	= -100;
 
@@ -450,7 +449,7 @@ void  CHolonomicND::searchBestGap(
 void  CHolonomicND::calcRepresentativeSectorForGap(
 	TGap                        & gap,
 	const mrpt::math::TPoint2D  & target,
-	const CVectorDouble         & obstacles)
+	const std::vector<float>         & obstacles)
 {
 	int sector;
 	const unsigned int sectors_to_be_wide = round( options.WIDE_GAP_SIZE_PERCENT * obstacles.size());
@@ -461,7 +460,7 @@ void  CHolonomicND::calcRepresentativeSectorForGap(
 #if	1
 		sector = round(0.5f*gap.ini+0.5f*gap.end);
 #else
-		double	min_dist_obs_near_ini=1, min_dist_obs_near_end=1;
+		float	min_dist_obs_near_ini=1, min_dist_obs_near_end=1;
 		int		i;
 		for ( i= gap.ini;i>=max(0,gap.ini-2);i--)
 			min_dist_obs_near_ini = min(min_dist_obs_near_ini, obstacles[i]);
@@ -503,12 +502,12 @@ void  CHolonomicND::calcRepresentativeSectorForGap(
 						Evaluate each gap
   ---------------------------------------------------------------*/
 void  CHolonomicND::evaluateGaps(
-	const CVectorDouble	&obstacles,
-	const double		maxObsRange,
+	const std::vector<float>	&obstacles,
+	const float		maxObsRange,
 	const TGapArray		&gaps,
 	const unsigned int	target_sector,
-	const double		target_dist,
-	CVectorDouble		&out_gaps_evaluation )
+	const float		target_dist,
+	std::vector<double>		&out_gaps_evaluation )
 {
 	out_gaps_evaluation.resize( gaps.size());
 
@@ -521,10 +520,10 @@ void  CHolonomicND::evaluateGaps(
 		// Short cut:
 		const TGap *gap = &gaps[i];
 
-		const double d = min3(
+		const float d = min3(
 			obstacles[ gap->representative_sector ],
 			maxObsRange,
-			0.95*target_dist );
+			0.95f*target_dist );
 
 		// The TP-Space representative coordinates for this gap:
 		const double	phi = M_PI*(-1 + 2*(0.5+gap->representative_sector)/double(obstacles.size()));
@@ -535,7 +534,7 @@ void  CHolonomicND::evaluateGaps(
 		// Factor #1: Maximum reachable distance with this PTG:
 		// -----------------------------------------------------
 		// It computes the average free distance of the gap:
-		double	meanDist = 0;
+		float	meanDist = 0.f;
 		for (unsigned int j=gap->ini;j<=gap->end;j++)
 			meanDist+= obstacles[j];
 		meanDist/= ( gap->end - gap->ini + 1);
@@ -562,13 +561,13 @@ void  CHolonomicND::evaluateGaps(
 		// Factor #3: Punish paths that take us far away wrt the target:  **** I don't understand it *********
 		// -----------------------------------------------------
 		double	closestX,closestY;
-		double dist_eucl = math::minimumDistanceFromPointToSegment(
+		float dist_eucl = math::minimumDistanceFromPointToSegment(
 			target_x, target_y, // Point
 			0,0,  x,y,          // Segment
 			closestX,closestY   // Out
 			);
 
-		const double factor3 = ( maxObsRange - std::min(maxObsRange ,dist_eucl) ) / maxObsRange;
+		const float factor3 = ( maxObsRange - std::min(maxObsRange ,dist_eucl) ) / maxObsRange;
 
 
 
@@ -696,7 +695,7 @@ void CHolonomicND::TOptions::loadFromConfigFile(const mrpt::utils::CConfigFileBa
 	MRPT_LOAD_CONFIG_VAR(TOO_CLOSE_OBSTACLE,double,  source,section );
 	MRPT_LOAD_CONFIG_VAR(TARGET_SLOW_APPROACHING_DISTANCE,double,  source,section );
 
-	source.read_vector(section,"factorWeights", CVectorDouble(0), factorWeights, true );
+	source.read_vector(section,"factorWeights", std::vector<double>(), factorWeights, true );
 	ASSERT_(factorWeights.size()==4);
 
 	MRPT_END

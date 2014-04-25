@@ -11,7 +11,7 @@
 
 
 #include <mrpt/opengl/CEllipsoidInverseDepth2D.h>
-#include <mrpt/math/ops_matrices.h>  // for << >> ops of matrices
+#include <mrpt/math/matrix_serialization.h>  // for << >> ops of matrices
 #include <mrpt/utils/CStream.h>
 
 using namespace mrpt;

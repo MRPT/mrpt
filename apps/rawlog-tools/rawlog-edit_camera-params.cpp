@@ -8,6 +8,11 @@
    +---------------------------------------------------------------------------+ */
 
 #include "rawlog-edit-declarations.h"
+#include <mrpt/utils/TCamera.h>
+#include <mrpt/utils/TStereoCamera.h>
+#include <mrpt/utils/CConfigFile.h>
+#include <mrpt/slam/CObservationImage.h>
+#include <mrpt/slam/CObservationStereoImages.h>
 
 using namespace mrpt;
 using namespace mrpt::utils;

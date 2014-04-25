@@ -374,7 +374,7 @@ namespace mrpt
 				VECTORLIKE2	&out_binValues )
 			{
 				MRPT_START
-				typedef typename VECTORLIKE1::Scalar TNum;
+				typedef typename mrpt::math::ContainerType<VECTORLIKE1>::element_t TNum;
 
 				ASSERT_( values.size() == weights.size() );
 				ASSERT_( binWidth > 0 );
@@ -428,7 +428,7 @@ namespace mrpt
 			VECTORLIKE2	&out_binValues )
 		{
 			MRPT_START
-			typedef typename VECTORLIKE1::Scalar TNum;
+			typedef typename mrpt::math::ContainerType<VECTORLIKE1>::element_t TNum;
 
 			ASSERT_( values.size() == log_weights.size() );
 			ASSERT_( binWidth > 0 );

@@ -13,8 +13,8 @@
 #include <mrpt/poses/CRobot2DPoseEstimator.h>
 #include <mrpt/reactivenav/CParameterizedTrajectoryGenerator.h>
 #include <mrpt/utils/CLoadableOptions.h>
-
 #include <mrpt/reactivenav/link_pragmas.h>
+#include <list>
 
 namespace mrpt
 {

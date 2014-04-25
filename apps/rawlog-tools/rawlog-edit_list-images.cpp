@@ -8,6 +8,8 @@
    +---------------------------------------------------------------------------+ */
 
 #include "rawlog-edit-declarations.h"
+#include <mrpt/slam/CObservationImage.h>
+#include <mrpt/slam/CObservationStereoImages.h>
 
 using namespace mrpt;
 using namespace mrpt::utils;

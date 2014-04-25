@@ -15,7 +15,9 @@
 #include <mrpt/poses/CPosePDFGaussian.h>
 #include <mrpt/system/os.h>
 #include <mrpt/math/distributions.h>
+#include <mrpt/math/CMatrixD.h>
 #include <mrpt/math/wrap2pi.h>
+#include <mrpt/utils/CStream.h>
 
 
 using namespace mrpt;

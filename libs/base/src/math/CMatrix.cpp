@@ -76,4 +76,3 @@ void  CMatrix::readFromStream(CStream &in, int version)
 
 	};
 }
-

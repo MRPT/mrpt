@@ -19,6 +19,7 @@
 
 #include <mrpt/vision/tracking.h>
 #include <mrpt/vision/CVideoFileWriter.h>
+#include <mrpt/system/filesystem.h>
 #include <mrpt/gui/CDisplayWindow3D.h>		// For visualization windows
 #include <mrpt/hwdrivers/CCameraSensor.h>	// For capture of video from videos/cameras
 #include <mrpt/slam/CRawlog.h>
@@ -29,6 +30,7 @@ using namespace mrpt;
 using namespace mrpt::hwdrivers;
 using namespace mrpt::utils;
 using namespace mrpt::slam;
+using namespace mrpt::system;
 using namespace mrpt::vision;
 using namespace mrpt::poses;
 

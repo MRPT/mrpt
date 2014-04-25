@@ -12,6 +12,7 @@
 
 #include <mrpt/utils/CSerializable.h>
 #include <mrpt/slam/CObservation.h>
+#include <cmath>
 
 #include <mrpt/detectors/link_pragmas.h>
 
@@ -74,7 +75,7 @@ namespace mrpt
 				double c_y1 = ( m_y + m_height/2 ) ;
 				double c_y2 = ( d2.m_y + d2.m_height/2 ) ;
 
-				return sqrt( pow( c_x1 - c_x2, 2 ) + pow( c_y1 - c_y2, 2 ) );
+				return std::sqrt( std::pow( c_x1 - c_x2, 2 ) + pow( c_y1 - c_y2, 2 ) );
 			};
 
 		};

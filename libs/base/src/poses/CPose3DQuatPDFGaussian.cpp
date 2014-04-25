@@ -16,7 +16,7 @@
 #include <mrpt/poses/CPosePDF.h>
 #include <mrpt/poses/CPosePDFGaussian.h>
 #include <mrpt/system/os.h>
-
+#include <mrpt/utils/CStream.h>
 
 using namespace mrpt;
 using namespace mrpt::poses;

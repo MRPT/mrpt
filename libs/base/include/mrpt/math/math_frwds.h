@@ -79,6 +79,12 @@ namespace mrpt
 		template <class T> class CMatrixTemplate;
 		template <class T> class CMatrixTemplateObjects;
 
+    	/** ContainerType<T>::element_t exposes the value of any STL or Eigen container.
+		  *  Default specialization works for STL and MRPT containers, there is another one for Eigen in <mrpt/math/eigen_frwds.h> */
+    	template <typename CONTAINER> struct ContainerType {
+    		typedef typename CONTAINER::value_type element_t;
+		};
+
 #define MRPT_MATRIX_CONSTRUCTORS_FROM_POSES(_CLASS_) \
 		explicit inline _CLASS_( const mrpt::math::TPose2D &p)  { mrpt::math::containerFromPoseOrPoint(*this,p); } \
 		explicit inline _CLASS_( const mrpt::math::TPose3D &p)  { mrpt::math::containerFromPoseOrPoint(*this,p); } \

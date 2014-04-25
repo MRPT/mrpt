@@ -9,6 +9,7 @@
 
 #include "reactivenav-precomp.h" // Precomp header
 
+#include <mrpt/reactivenav/motion_planning_utils.h>
 #include <mrpt/math/geometry.h>
 #include <mrpt/utils/CTicTac.h>
 
@@ -31,7 +32,7 @@ void mrpt::reactivenav::build_PTG_collision_grids(
 {
 	MRPT_START
 
-	if (verbose) 
+	if (verbose)
 		cout << endl << "[build_PTG_collision_grids] Starting... *** THIS MAY TAKE A WHILE, BUT MUST BE COMPUTED ONLY ONCE!! **" << endl;
 
 	utils::CTicTac		tictac;
@@ -57,7 +58,7 @@ void mrpt::reactivenav::build_PTG_collision_grids(
 	}
 	else
 	{
-		// BUGFIX: In case we start reading the file and in the end detected an error, 
+		// BUGFIX: In case we start reading the file and in the end detected an error,
 		//         we must make sure that there's space enough for the grid:
 		PT->m_collisionGrid.setSize( -PT->refDistance,PT->refDistance,-PT->refDistance,PT->refDistance,PT->m_collisionGrid.getResolution());
 
@@ -104,15 +105,15 @@ void mrpt::reactivenav::build_PTG_collision_grids(
 				for (int ix=ix_min;ix<ix_max;ix++)
 				{
 					const float cx = PT->m_collisionGrid.idx2x(ix);
-							
+
 					for (int iy=iy_min;iy<iy_max;iy++)
 					{
 						const float cy = PT->m_collisionGrid.idx2y(iy);
 
 						if ( poly.contains( TPoint2D(cx,cy) ) )
-						{ 
+						{
 							// Colision!! Update cell info:
-							const float d = PT->GetCPathPoint_d(k,n);								
+							const float d = PT->GetCPathPoint_d(k,n);
 							PT->m_collisionGrid.updateCellInfo(ix  ,iy  ,  k,d);
 							PT->m_collisionGrid.updateCellInfo(ix-1,iy  ,  k,d);
 							PT->m_collisionGrid.updateCellInfo(ix  ,iy-1,  k,d);
@@ -122,12 +123,12 @@ void mrpt::reactivenav::build_PTG_collision_grids(
 				}	// for ix
 
 			} // n
-				
-			if (verbose) 
+
+			if (verbose)
 				cout << k << "/" << Ki << ",";
 		} // k
 
-		if (verbose) 
+		if (verbose)
 			cout << format("Done! [%.03f sec]\n",tictac.Tac() );
 
 		// save it to the cache file for the next run:

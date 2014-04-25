@@ -6,7 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
-   
+
 /** \page changelog Change Log
  *
 
@@ -21,9 +21,11 @@
 		- mrpt::opengl::CArrow was always drawn of normalized length.
 
 
+	- New template: mrpt::math::ContainerType<CONTAINER>::element_t to allow handling either Eigen or STL containers seamlessly.
+
 	- Other changes (to reorder!)
 	- Removed most "using namespace" from public headers.
-	- New important headers after refactoring: 
+	- New important headers after refactoring:
 		- <mrpt/utils/stl_extensions.h> has been split into:
 			<mrpt/utils/stl_serialization.h>
 			<mrpt/utils/circular_buffer.h>
@@ -35,11 +37,11 @@
 			<mrpt/utils/printf_vector.h>
 			<mrpt/utils/stl_containers_utils.h>
 			<mrpt/utils/ci_less.h>
-	- Deleted methods and functions:  
+	- Deleted methods and functions:
 		- mrpt::system::breakpoint()
 		- *EXPLAIN*:  mrpt :: vector_float --> mrpt::math::CVectorFloat, etc.
 		- mrpt::CImage::rectifyImage() with parameters as separate vectors.
-		- Previous deprecated functions. 
+		- Previous deprecated functions.
 		- mrpt::slam::CPointsMap::getPoint() with mrpt::poses::CPoint3D arguments.
 		- mrpt::vision::correctDistortion() -> use CImage method instead
 
@@ -84,7 +86,7 @@
 		- New options in point maps: mrpt::slam::CPointsMap::TInsertionOptions::insertInvalidPoints - [(commit)](https://github.com/jlblancoc/mrpt/pull/8)
 		- mrpt::slam::CObservationIMU now includes data fields for 3D magnetometers and altimeters. - [(commit)](http://code.google.com/p/mrpt/source/detail?r=3451)
 		- Method renamed mrpt::utils::CEnhancedMetaFile::selectVectorTextFont() to avoid shadowing mrpt::utils::CCanvas::selectTextFont()
-		- mrpt::reactivenav::CParameterizedTrajectoryGenerator: New methods:  
+		- mrpt::reactivenav::CParameterizedTrajectoryGenerator: New methods:
 			- mrpt::reactivenav::CParameterizedTrajectoryGenerator::inverseMap_WS2TP() for inverse look-up of WS to TP space - [(commit)](https://github.com/jlblancoc/mrpt/commit/4d04ef50e3dea581bed6287d4ea6593034c47da3)
 			- mrpt::reactivenav::CParameterizedTrajectoryGenerator::renderPathAsSimpleLine() - [(commit)](https://github.com/jlblancoc/mrpt/commit/a224fc2489ad00b3ab116c84e8d4a48532a005df)
 		- Changed the signature of mrpt::reactivenav::build_PTG_collision_grids() to become more generic for 2D & 2.5D PTGs - [(commit)](https://github.com/jlblancoc/mrpt/commit/7bd68e49a4ba3bf08f194678787816c65de1d685)

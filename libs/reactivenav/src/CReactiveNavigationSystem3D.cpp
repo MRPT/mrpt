@@ -10,6 +10,7 @@
 #include "reactivenav-precomp.h" // Precomp header
 
 #include <mrpt/reactivenav/CReactiveNavigationSystem3D.h>
+#include <mrpt/reactivenav/motion_planning_utils.h>
 #include <typeinfo>  // For typeid()
 
 using namespace mrpt;
@@ -295,7 +296,7 @@ bool CReactiveNavigationSystem3D::STEP2_SenseObstacles()
 *************************************************************************/
 void CReactiveNavigationSystem3D::STEP3_WSpaceToTPSpace(
 	const size_t ptg_idx,
-	mrpt::math::CVectorDouble &out_TPObstacles )
+	std::vector<float> &out_TPObstacles )
 {
 	ASSERT_EQUAL_(m_WS_Obstacles_inlevels.size(),m_robotShape.heights.size())
 

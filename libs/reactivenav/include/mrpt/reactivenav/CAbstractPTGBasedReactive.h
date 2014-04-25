@@ -35,9 +35,9 @@ namespace mrpt
 	  *  - Instantiate a reactive navigation object (one of the derived classes of this virtual class).
 	  *  - A class with callbacks must be defined by the user and provided to the constructor (derived from CReactiveInterfaceImplementation)
 	  *  - loadConfigFile() must be called to set up the bunch of parameters from a config file (could be a memory-based virtual config file).
-	  *  - navigationStep() must be called periodically in order to effectively run the navigation. This method will internally call the callbacks to gather sensor data and robot positioning data.	
+	  *  - navigationStep() must be called periodically in order to effectively run the navigation. This method will internally call the callbacks to gather sensor data and robot positioning data.
 	  *
-	  * For working examples, refer to the source code of the apps: 
+	  * For working examples, refer to the source code of the apps:
 	  *  - [ReactiveNavigationDemo](http://www.mrpt.org/list-of-mrpt-apps/application-reactivenavigationdemo/)
 	  *  - [ReactiveNav3D-Demo](http://www.mrpt.org/list-of-mrpt-apps/application-reactivenav3d-demo/)
 	  *
@@ -55,9 +55,9 @@ namespace mrpt
 		/** The struct for configuring navigation requests to CAbstractPTGBasedReactive and derived classes. */
 		struct REACTIVENAV_IMPEXP TNavigationParamsPTG : public CAbstractReactiveNavigationSystem::TNavigationParams
 		{
-			/** (Default=empty) Optionally, a list of PTG indices can be sent such that 
+			/** (Default=empty) Optionally, a list of PTG indices can be sent such that
 			 *  the navigator will restrict itself to only employ those PTGs. */
-			std::vector<size_t>    restrict_PTG_indices; 
+			std::vector<size_t>    restrict_PTG_indices;
 
 			TNavigationParamsPTG() { }
 			virtual ~TNavigationParamsPTG() { }
@@ -66,7 +66,7 @@ namespace mrpt
 		};
 
 
-		/** Constructor. 
+		/** Constructor.
 		  * \param[in] react_iterf_impl An instance of an object that implement all the required interfaces to read from and control a robot.
 		  * \param[in] enableConsoleOutput Can be set to false to reduce verbosity.
 		  * \param[in] enableLogFile Set to true to enable creation of navigation log files, useful for inspection and debugging.
@@ -78,7 +78,7 @@ namespace mrpt
 
 		virtual ~CAbstractPTGBasedReactive();
 
-		/** Must be called for loading collision grids, or the first navigation command may last a long time to be executed. 
+		/** Must be called for loading collision grids, or the first navigation command may last a long time to be executed.
 		  * Internally, it just calls STEP1_CollisionGridsBuilder().
 		  */
 		void initialize();
@@ -122,10 +122,10 @@ namespace mrpt
 		const mrpt::utils::CTimeLogger & getTimeLogger() const { return m_timelogger; }
 
 		/** Returns the number of different PTGs that have been setup */
-		virtual size_t getPTG_count() const = 0; 
+		virtual size_t getPTG_count() const = 0;
 
 		/** Gets the i'th PTG */
-		virtual CParameterizedTrajectoryGenerator* getPTG(size_t i) = 0; 
+		virtual CParameterizedTrajectoryGenerator* getPTG(size_t i) = 0;
 
 	protected:
 		// ------------------------------------------------------
@@ -170,8 +170,8 @@ namespace mrpt
 		float  SPEEDFILTER_TAU;     //!< Time constant for the low-pass filter applied to the speed commands
 		std::vector<float> weights;  //!< length: 6 [0,5]
 
-		/** In normalized distances, the start and end of a ramp function that scales the velocity 
-		  *  output from the holonomic navigator: 
+		/** In normalized distances, the start and end of a ramp function that scales the velocity
+		  *  output from the holonomic navigator:
 		  *
 		  * \code
 		  *  velocity scale
@@ -184,9 +184,9 @@ namespace mrpt
 		  *         Start
 		  *              End
 		  * \endcode
-		  * 
+		  *
 		  */
-		float secureDistanceStart,secureDistanceEnd; 
+		float secureDistanceStart,secureDistanceEnd;
 
 
 		float  DIST_TO_TARGET_FOR_SENDING_EVENT;
@@ -212,14 +212,14 @@ namespace mrpt
 		// Steps for the reactive navigation sytem.
 		// ----------------------------------------------------------------------------
 		virtual void STEP1_CollisionGridsBuilder() = 0;
-		
+
 		/** Return false on any fatal error */
 		virtual bool STEP2_SenseObstacles() = 0;
 
-		/** Builds TP-Obstacles from Workspace obstacles for the given PTG. 
+		/** Builds TP-Obstacles from Workspace obstacles for the given PTG.
 		  * "out_TPObstacles" is already initialized to the proper length and maximum collision-free distance for each "k" trajectory index.
 		  * Distances are in "pseudo-meters". They will be normalized automatically to [0,1] upon return. */
-		virtual void STEP3_WSpaceToTPSpace(const size_t ptg_idx,mrpt::math::CVectorDouble &out_TPObstacles) = 0;
+		virtual void STEP3_WSpaceToTPSpace(const size_t ptg_idx,std::vector<float> &out_TPObstacles) = 0;
 
 		/** Generates a pointcloud of obstacles, and the robot shape, to be saved in the logging record for the current timestep */
 		virtual void loggingGetWSObstaclesAndShape(CLogFileRecord &out_log) = 0;
@@ -228,7 +228,7 @@ namespace mrpt
 		/** Scores \a holonomicMovement */
 		void STEP5_PTGEvaluator(
 			THolonomicMovement         & holonomicMovement,
-			const CVectorDouble        & in_TPObstacles,
+			const std::vector<float>        & in_TPObstacles,
 			const mrpt::math::TPose2D  & WS_Target,
 			const mrpt::math::TPoint2D & TP_Target,
 			CLogFileRecord::TInfoPerPTG & log );
@@ -246,10 +246,10 @@ namespace mrpt
 		{
 			bool                 valid_TP;   //!< For each PTG, whether the target falls into the PTG domain.
 			mrpt::math::TPoint2D TP_Target; //!< The Target, in TP-Space (x,y)
-			float                target_alpha,target_dist;  //!< TP-Target 
+			float                target_alpha,target_dist;  //!< TP-Target
 			int                  target_k;
 
-			CVectorDouble        TP_Obstacles; //!< One distance per discretized alpha value, describing the "polar plot" of TP obstacles.
+			std::vector<float>        TP_Obstacles; //!< One distance per discretized alpha value, describing the "polar plot" of TP obstacles.
 		};
 
 		std::vector<TInfoPerPTG> m_infoPerPTG; //!< Temporary buffers for working with each PTG during a navigationStep()

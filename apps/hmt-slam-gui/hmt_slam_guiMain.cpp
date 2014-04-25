@@ -28,6 +28,7 @@
 //*)
 
 #include <mrpt/utils.h>
+#include <mrpt/system/filesystem.h>
 
 using namespace std;
 using namespace mrpt;

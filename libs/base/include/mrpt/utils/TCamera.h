@@ -128,10 +128,10 @@ namespace mrpt
 			template <class VECTORLIKE>
 			void setDistortionParamsVector( const VECTORLIKE &distParVector )
 			{
-				ASSERT_(distParVector.size()==4 || distParVector.size()==5)
+				size_t N = static_cast<size_t>(distParVector.size());
+				ASSERT_(N==4 || N==5)
 				dist[4] = 0; // Default value
-				for (typename VECTORLIKE::Index i=0;i<distParVector.size();i++)
-					dist[i] = distParVector[i];
+				for (size_t i=0;i<N;i++) dist[i] = distParVector[i];
 			}
 
 			/** Set the vector of distortion params of the camera from the individual values of the distortion coefficients

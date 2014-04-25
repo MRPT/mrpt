@@ -145,17 +145,6 @@ namespace mrpt
 			return n;
 		}
 
-		/** Round a decimal number up to the given 10'th power (eg, to 1000,100,10, and also fractions)
-		  *  power10 means round up to: 1 -> 10, 2 -> 100, 3 -> 1000, ...  -1 -> 0.1, -2 -> 0.01, ...
-		  */
-		template <class T>
-		T round_10power(T val, int power10)
-		{
-			long double F = ::pow((long double)10.0,-(long double)power10);
-			long int t = round_long( val * F );
-			return T(t/F);
-		}
-
 		/** Generates a string with the MATLAB commands required to plot an confidence interval (ellipse) for a 2D Gaussian ('float' version)..
 		  *  \param cov22 The 2x2 covariance matrix
 		  *  \param mean  The 2-length vector with the mean

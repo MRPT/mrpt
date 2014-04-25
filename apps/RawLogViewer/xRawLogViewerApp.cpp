@@ -24,9 +24,12 @@ IMPLEMENT_APP(xRawLogViewerApp)
 // The file to open (from cmd line), or an empty string
 std::string     global_fileToOpen;
 
-#include <mrpt/utils.h>
+#include <mrpt/utils/CConfigFile.h>
+#include <mrpt/system/filesystem.h>
+
 using namespace mrpt;
 using namespace mrpt::utils;
+using namespace mrpt::system;
 using namespace std;
 
 // The configuration file:

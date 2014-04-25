@@ -37,6 +37,15 @@ namespace mrpt
 {
     namespace math
     {
+    	/** ContainerType<T>::element_t exposes the value of any STL or Eigen container */
+    	template <typename CONTAINER> struct ContainerType;
+    	/** Specialization for Eigen containers */
+    	template <>
+    	template <typename Derived>
+    	struct ContainerType<Eigen::EigenBase<Derived> > {
+    		typedef typename Derived::Scalar element_t;
+		};
+
         // Dynamic size:
         template <class T> class CMatrixTemplateNumeric;
 		typedef CMatrixTemplateNumeric<float> CMatrixFloat;

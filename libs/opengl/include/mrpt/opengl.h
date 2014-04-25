@@ -10,11 +10,6 @@
 #ifndef _mrpt_opengl_H
 #define _mrpt_opengl_H
 
-#ifndef MRPT_NO_WARN_BIG_HDR
-#include <mrpt/utils/core_defs.h>
-MRPT_WARNING("Including <mrpt/opengl.h> makes compilation much slower, consider including only what you need (define MRPT_NO_WARN_BIG_HDR to disable this warning)")
-#endif
-
 #include <mrpt/config.h>
 
 #include <mrpt/opengl/CRenderizable.h>

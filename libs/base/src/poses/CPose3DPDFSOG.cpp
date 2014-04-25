@@ -12,7 +12,7 @@
 #include <mrpt/poses/CPose3DPDFSOG.h>
 #include <mrpt/system/os.h>
 #include <mrpt/utils/CStream.h>
-#include <mrpt/math/ops_matrices.h>
+#include <mrpt/math/matrix_serialization.h>
 
 using namespace mrpt;
 using namespace mrpt::poses;

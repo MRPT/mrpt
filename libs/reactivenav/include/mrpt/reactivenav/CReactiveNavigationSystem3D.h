@@ -23,7 +23,7 @@ namespace mrpt
 
 		/** See base class CAbstractPTGBasedReactive for a description and instructions of use.
 		* This particular implementation assumes a 3D (or "2.5D") robot shape model, build as a vertical stack of "2D slices".
-		* 
+		*
 		* Publications:
 		*  - "Reactive Navigation of a 3D-shape Robot in a 3D World" (Submitted)
 		*
@@ -56,10 +56,10 @@ namespace mrpt
 			void changeRobotShape( TRobotShape robotShape );
 
 			/** Returns the number of different PTGs that have been setup */
-			virtual size_t getPTG_count() const { return m_ptgmultilevel.size(); } 
+			virtual size_t getPTG_count() const { return m_ptgmultilevel.size(); }
 
 			/** Gets the i'th PTG */
-			virtual CParameterizedTrajectoryGenerator* getPTG(size_t i) 
+			virtual CParameterizedTrajectoryGenerator* getPTG(size_t i)
 			{
 				ASSERT_(i<m_ptgmultilevel.size() && !m_ptgmultilevel[i].PTGs.empty())
 				return m_ptgmultilevel[i].PTGs[0];  // Return the 0'th because the PTG itself is the same, what changes is the collision grid.
@@ -98,16 +98,16 @@ namespace mrpt
 			// Steps for the reactive navigation sytem.
 			// ----------------------------------------------------------------------------
 			virtual void STEP1_CollisionGridsBuilder();
-			
+
 			// See docs in parent class
 			virtual bool STEP2_SenseObstacles();
 
 			// See docs in parent class
-			virtual void STEP3_WSpaceToTPSpace(const size_t ptg_idx,mrpt::math::CVectorDouble &out_TPObstacles);
+			virtual void STEP3_WSpaceToTPSpace(const size_t ptg_idx,std::vector<float> &out_TPObstacles);
 
 			/** Generates a pointcloud of obstacles, and the robot shape, to be saved in the logging record for the current timestep */
 			virtual void loggingGetWSObstaclesAndShape(CLogFileRecord &out_log);
-				
+
 
 
 		}; // end class

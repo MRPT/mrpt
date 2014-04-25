@@ -21,10 +21,10 @@
 #include "../wx-common/CMyRedirector.h"
 
 
-#include <mrpt/utils.h>
+#include <mrpt/system/os.h>
+#include <mrpt/utils/types_math.h> // For Eigen version
 
 using namespace mrpt;
-using namespace mrpt::utils;
 using namespace mrpt::system;
 using namespace std;
 
