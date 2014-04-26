@@ -24,6 +24,7 @@
 #include <mrpt/slam/PF_implementations_data.h>
 
 #include <mrpt/slam/link_pragmas.h>
+#include <cstdio> // printf()
 
 
 /** \file PF_implementations.h
