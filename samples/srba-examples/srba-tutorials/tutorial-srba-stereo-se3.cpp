@@ -12,6 +12,7 @@
 
 using namespace mrpt::srba;
 using namespace std;
+using mrpt::utils::DEG2RAD;
 
 // --------------------------------------------------------------------------------
 // Declare a typedef "my_srba_t" for easily referring to my RBA problem type:
@@ -20,26 +21,26 @@ struct my_srba_options
 {
 	typedef options::sensor_pose_on_robot_se3       sensor_pose_on_robot_t;
 	typedef options::observation_noise_identity     obs_noise_matrix_t;      // The sensor noise matrix is the same for all observations and equal to \sigma * I(identity)
-	
+
 	// Solver algorithm:
 	typedef options::solver_LM_schur_dense_cholesky      solver_t;
 	//typedef options::solver_LM_schur_sparse_cholesky     solver_t;
 	//typedef options::solver_LM_no_schur_sparse_cholesky  solver_t;
-			
+
 };
 
 typedef RbaEngine<
 	kf2kf_poses::SE3,                // Parameterization  KF-to-KF poses
-	landmarks::Euclidean3D,          // Parameterization of landmark positions    
+	landmarks::Euclidean3D,          // Parameterization of landmark positions
 	observations::StereoCamera,      // Type of observations
 	my_srba_options                  // Other parameters
-	> 
+	>
 	my_srba_t;
 
 // --------------------------------------------------------------------------------
 // A test dataset (generated with http://code.google.com/p/recursive-world-toolkit/ )
 // --------------------------------------------------------------------------------
-struct basic_stereo_dataset_entry_t 
+struct basic_stereo_dataset_entry_t
 {
 	unsigned int landmark_id;
 	double l_px_x, l_px_y, r_px_x, r_px_y;
@@ -79,7 +80,7 @@ basic_stereo_dataset_entry_t  dataset0[] = {
  {    30,  995.84106445,  405.77438354,  973.26440430,  405.77438354},
  {    13,  485.14672852,  439.37075806,  475.89678955,  439.37075806},
  {   148,  880.86297607,  206.19326782,  860.58264160,  206.19326782},
-};	
+};
 // Observations for KF#10. 1.226071 0.293637 0.110099 0.521317 -0.478835 0.477946 -0.520108
 const mrpt::poses::CPose3DQuat GT_pose10(1.226071, 0.293637, 0.110099, mrpt::math::CQuaternionDouble(0.521317, -0.478835, 0.477946, -0.520108));
 basic_stereo_dataset_entry_t  dataset1[] = {
@@ -126,7 +127,7 @@ int main(int argc, char**argv)
 	my_srba_t rba;     //  Create an empty RBA problem
 
 	// --------------------------------------------------------------------------------
-	// Set parameters 
+	// Set parameters
 	// --------------------------------------------------------------------------------
 	rba.setVerbosityLevel( 1 );   // 0: None; 1:Important only; 2:Verbose
 
@@ -150,7 +151,7 @@ int main(int argc, char**argv)
 	lc.dist.setZero();
 	rba.parameters.sensor.camera_calib.rightCamera = lc;
 	rba.parameters.sensor.camera_calib.rightCameraPose.fromString("[0.2 0 0  1 0 0 0]");  // [X Y Z qr qx qy qz]
-	
+
 	// Sensor pose on the robot parameters:
 	rba.parameters.sensor_pose.relative_pose = mrpt::poses::CPose3D(0,0,0,DEG2RAD(-90),DEG2RAD(0),DEG2RAD(-90) ); // Set camera pointing forwards (camera's +Z is robot +X)
 
@@ -158,7 +159,7 @@ int main(int argc, char**argv)
 	// -----------------------------------------------------------------------
 	// rba.parameters.loadFromConfigFileName("config_file.cfg", "srba");
 	//rba.sensor_params.camera_calib.loadFromConfigFile("CAMERA","config_file.cfg");
-	
+
 	// --------------------------------------------------------------------------------
 	// Dump parameters to console (for checking/debugging only)
 	// --------------------------------------------------------------------------------
@@ -199,7 +200,7 @@ int main(int argc, char**argv)
 		true           // Also run local optimization?
 		);
 
-	cout << "Created KF #" << new_kf_info.kf_id 
+	cout << "Created KF #" << new_kf_info.kf_id
 		<< " | # kf-to-kf edges created:" <<  new_kf_info.created_edge_ids.size()  << endl
 		<< "Optimization error: " << new_kf_info.optimize_results.total_sqr_error_init << " -> " << new_kf_info.optimize_results.total_sqr_error_final << endl
 		<< "-------------------------------------------------------" << endl;
@@ -219,7 +220,7 @@ int main(int argc, char**argv)
 		obs_field.obs.obs_data.right_px.y = dataset1[i].r_px_y;
 		list_obs.push_back( obs_field );
 	}
-	
+
 	//  Here happens the main stuff: create Key-frames, build structures, run optimization, etc.
 	//  ============================================================================================
 	rba.define_new_keyframe(
@@ -228,7 +229,7 @@ int main(int argc, char**argv)
 		true           // Also run local optimization?
 		);
 
-	cout << "Created KF #" << new_kf_info.kf_id 
+	cout << "Created KF #" << new_kf_info.kf_id
 		<< " | # kf-to-kf edges created:" <<  new_kf_info.created_edge_ids.size() << endl
 		<< "Optimization error: " << new_kf_info.optimize_results.total_sqr_error_init << " -> " << new_kf_info.optimize_results.total_sqr_error_final << endl
 		<< "-------------------------------------------------------" << endl;
@@ -258,7 +259,7 @@ int main(int argc, char**argv)
 	rba.build_opengl_representation(
 		0,  // Root KF,
 		opengl_options, // Rendering options
-		rba_3d  // Output scene 
+		rba_3d  // Output scene
 		);
 
 	// Display:
@@ -269,12 +270,12 @@ int main(int argc, char**argv)
 		scene->insert(rba_3d);
 		win.unlockAccess3DScene();
 	}
-	win.setCameraZoom( 4 ); 
+	win.setCameraZoom( 4 );
 	win.repaint();
 
 	cout << "Press any key or close window to exit.\n";
 	win.waitForKey();
 #endif
-		
+
 	return 0; // All ok
 }

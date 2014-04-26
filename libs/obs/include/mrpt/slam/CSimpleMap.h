@@ -13,6 +13,7 @@
 #include <mrpt/slam/CSensoryFrame.h>
 #include <mrpt/poses/CPosePDF.h>
 #include <mrpt/poses/CPose3DPDF.h>
+#include <mrpt/obs/obs_frwds.h>
 
 namespace mrpt
 {

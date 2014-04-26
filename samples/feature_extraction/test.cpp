@@ -7,14 +7,15 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/base.h>
-#include <mrpt/vision.h>
+#include <mrpt/vision/CFeatureExtraction.h>
+#include <mrpt/vision/tracking.h>
 #include <mrpt/gui.h>
 
 using namespace mrpt::utils;
 using namespace mrpt::gui;
 using namespace mrpt::vision;
 using namespace std;
+using mrpt::format;
 
 #include <mrpt/examples_config.h>
 string   myDataDir( MRPT_EXAMPLES_BASE_DIRECTORY + string("imageConvolutionFFT/") );
@@ -47,27 +48,6 @@ void TestTrackFeatures()
 
 	feats.saveToTextFile("/Trabajo/Experimentos/[2009] vOdometry Characterization/after.txt");
 }
-
-void TestRectifyImages()
-{
-    CImage im;
-    CMatrixDouble33 cam_matrix;
-    vector_double dist_coeff(4);
-
-    im.loadFromFile("/home/paco/Documents/Images/calib/L01.bmp");
-    cam_matrix(0,0) = 938.8868; cam_matrix(0,1) = 0;            cam_matrix(0,2) = 367.8682;
-    cam_matrix(1,0) = 0;        cam_matrix(1,1) = 938.8868;     cam_matrix(1,2) = 303.2578;
-    cam_matrix(2,0) = 0;        cam_matrix(2,1) = 0;            cam_matrix(2,2) = 1;
-
-    dist_coeff[0] = -0.3202480;
-    dist_coeff[1] = -0.3470451;
-    dist_coeff[2] = 0;
-    dist_coeff[4] = 0;
-
-    im.rectifyImageInPlace( cam_matrix, dist_coeff );
-
-    im.saveToFile("/home/paco/Documents/Images/calib/L01_REC.bmp");
-} // end TestRectifyImages
 
 // ------------------------------------------------------
 //				TestCapture
@@ -701,7 +681,6 @@ int main(int argc, char **argv)
 		//TestMatchFeatures();
 		//TestExtractFeatures();
 		//TestExtractFeaturesTile();
-		//TestRectifyImages();
 		//TestTrackFeatures();
 		TestMatchingComparative();
 

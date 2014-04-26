@@ -7,9 +7,13 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/base.h>
-#include <mrpt/slam.h>
-#include <mrpt/gui.h>
+#include <mrpt/gui/CDisplayWindow3D.h>
+#include <mrpt/utils/CTicTac.h>
+#include <mrpt/random.h>
+#include <mrpt/system/os.h>
+#include <mrpt/system/threads.h>
+#include <mrpt/opengl/CGridPlaneXY.h>
+#include <mrpt/opengl/CSphere.h>
 
 using namespace mrpt;
 using namespace std;
@@ -19,13 +23,13 @@ using namespace mrpt::opengl;
 
 const size_t  	N_MASSES = 750;
 
-const double    BOX     = 300;
-const double	V0		= 150;
-const double    MASS_MIN = log(10.0), MASS_MAX = log(90.0);
-const double    M2R      = 0.5;
+const double    BOX     = 500;
+const double	V0		= 100;
+const double    MASS_MIN = log(40.0), MASS_MAX = log(100.0);
+const double    M2R      = 2.0;
 const double  	LARGEST_STEP = 0.001;
 const double 	G = 300;
-const double  	COLLIS_LOSS = 0.95;
+const double  	COLLIS_LOSS = 0.98;
 
 struct TMass
 {

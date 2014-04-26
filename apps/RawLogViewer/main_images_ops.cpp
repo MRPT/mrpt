@@ -21,7 +21,9 @@
 #include <wx/dirdlg.h>
 
 // General global variables:
-#include <mrpt/slam.h>
+#include <mrpt/slam/CObservationImage.h>
+#include <mrpt/slam/CObservationStereoImages.h>
+#include <mrpt/system/filesystem.h>
 
 using namespace mrpt;
 using namespace mrpt::slam;
@@ -30,7 +32,6 @@ using namespace mrpt::system;
 using namespace mrpt::math;
 using namespace mrpt::gui;
 using namespace mrpt::utils;
-using namespace mrpt::vision;
 using namespace std;
 
 
@@ -322,7 +323,7 @@ void xRawLogViewerFrame::OnMenuRectifyImages(wxCommandEvent& event)
                                 string p;
                                 obsIm->image.getExternalStorageFileAbsolutePath( p );
 
-                                obsIm->image.rectifyImageInPlace( obsIm->cameraParams.intrinsicParams, obsIm->cameraParams.getDistortionParamsAsVector() );
+                                obsIm->image.rectifyImageInPlace(obsIm->cameraParams);
 
                                 // Set distortion parameters to zero -> indicating that the image is now rectified
                                 obsIm->cameraParams.setDistortionParamsFromValues(0,0,0,0);
@@ -353,7 +354,7 @@ void xRawLogViewerFrame::OnMenuRectifyImages(wxCommandEvent& event)
                             string p;
                             obsIm->image.getExternalStorageFileAbsolutePath( p );
 
-							obsIm->image.rectifyImageInPlace( obsIm->cameraParams.intrinsicParams, obsIm->cameraParams.getDistortionParamsAsVector() );
+							obsIm->image.rectifyImageInPlace( obsIm->cameraParams );
 
                             // Set distortion parameters to zero -> indicating that the image is now rectified
 							obsIm->cameraParams.setDistortionParamsFromValues(0,0,0,0);

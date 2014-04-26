@@ -7,7 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/hwdrivers.h> // Precompiled headers
+#include "hwdrivers-precomp.h"   // Precompiled headers
 
 #include <mrpt/utils/crc.h>
 #include <mrpt/system/os.h>
@@ -200,7 +200,7 @@ void CBoardDLMS::doProcess()
 
 					for(itScan = myObs->scan.begin(), itCont = inMsg.content.begin()+7, itValid = myObs->validRange.begin();
 						itScan != myObs->scan.end();
-						itScan++, itValid++)
+						++itScan, ++itValid)
 					{
 						unsigned char lowByte = *itCont;
 						unsigned char highByte = (*(itCont+1)) & 0x7F;			// Mask MSB FOR 15 bits data!
@@ -233,7 +233,7 @@ void CBoardDLMS::doProcess()
 	{
 		cerr << "[CBoardDLMS - doProces] Exception while gathering data: " << e.what() << endl;
 		m_state = ssError;
-		throw e;
+		throw;
 	}
 }
 

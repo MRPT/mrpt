@@ -10,6 +10,7 @@
 #define  MRPT_MEMORY_POOL_H
 
 #include <mrpt/synch/CCriticalSection.h>
+#include <list>
 
 namespace mrpt
 {

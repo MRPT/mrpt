@@ -17,7 +17,7 @@
 #if MRPT_HAS_PCL
 
 
-#include <mrpt/base.h>
+#include <mrpt/utils/types_math.h> // Eigen
 #include <mrpt/system/threads.h>
 
 //#include <pcl/io/io.h>
@@ -918,7 +918,7 @@ bool PbMapMaker::areSamePlane(Plane &plane1, Plane &plane2, const float &cosAngl
   float dist_normal = plane1.v3normal.dot(plane2.v3center - plane1.v3center);
 //  if(fabs(dist_normal) > distThreshold ) // Avoid matching different parallel planes
 //    return false;
-  float thres_max_dist = max(distThreshold, distThreshold*2*norm(plane2.v3center - plane1.v3center));
+  float thres_max_dist = max(distThreshold, distThreshold*2*(plane2.v3center - plane1.v3center).norm());
   if(fabs(dist_normal) > thres_max_dist ) // Avoid matching different parallel planes
     return false;
 //  if(plane1.id == 2)
@@ -937,7 +937,7 @@ void PbMapMaker::mergePlanes(Plane &updatePlane, Plane &discardPlane)
 {
   // Update normal and center
   updatePlane.v3normal = updatePlane.areaVoxels*updatePlane.v3normal + discardPlane.areaVoxels*discardPlane.v3normal;
-  updatePlane.v3normal = updatePlane.v3normal / norm(updatePlane.v3normal);
+  updatePlane.v3normal = updatePlane.v3normal / (updatePlane.v3normal).norm();
   // Update point inliers
 //  *updatePlane.polygonContourPtr += *discardPlane.polygonContourPtr; // Merge polygon points
   *updatePlane.planePointCloudPtr += *discardPlane.planePointCloudPtr; // Add the points of the new detection and perform a voxel grid

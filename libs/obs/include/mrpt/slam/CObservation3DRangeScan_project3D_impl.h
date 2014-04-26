@@ -9,6 +9,8 @@
 #ifndef CObservation3DRangeScan_project3D_impl_H
 #define CObservation3DRangeScan_project3D_impl_H
 
+#include <mrpt/utils/round.h> // round()
+
 namespace mrpt {
 namespace slam {
 namespace detail {
@@ -274,7 +276,7 @@ namespace detail {
 			// Use optimized version:
 			const int W_4 = W >> 2;  // /=4 , since we process 4 values at a time.
 			size_t idx=0;
-			EIGEN_ALIGN16 float xs[4],ys[4],zs[4];
+			MRPT_ALIGN16 float xs[4],ys[4],zs[4];
 			for (int r=0;r<H;r++)
 			{
 				const float *D_ptr = &rangeImage.coeffRef(r,0);  // Matrices are 16-aligned

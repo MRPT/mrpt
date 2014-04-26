@@ -7,20 +7,21 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/base.h>  // Precompiled headers
+#include "base-precomp.h"  // Precompiled headers
 
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/poses/CPoint2D.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/poses/CPoint3D.h>
-
 #include <mrpt/poses/CPose3DQuat.h>
 #include <mrpt/poses/CPose3DRotVec.h>
-
-#include <mrpt/math/utils.h>
-#include <mrpt/math/geometry.h>
 #include <mrpt/math/CMatrix.h>
-
+#include <mrpt/math/geometry.h>
+#include <mrpt/math/wrap2pi.h>
+#include <mrpt/math/matrix_serialization.h>
+#include <mrpt/math/ops_matrices.h>
+#include <mrpt/utils/CStream.h>
+#include <iomanip>
 
 #ifndef M_SQRT1_2
 #define M_SQRT1_2 0.70710678118654752440
@@ -260,7 +261,7 @@ void  CPose3D::rebuildRotationMatrix()
 	const double	sr = sin(m_roll);
 #endif
 
-	EIGEN_ALIGN16 const double rot_vals[] = {
+	MRPT_ALIGN16 const double rot_vals[] = {
 		cy*cp,      cy*sp*sr-sy*cr,     cy*sp*cr+sy*sr,
 		sy*cp,      sy*sp*sr+cy*cr,     sy*sp*cr-cy*sr,
 		-sp,        cp*sr,              cp*cr
@@ -408,7 +409,7 @@ void CPose3D::composePoint(double lx,double ly,double lz, double &gx, double &gy
 		if (use_small_rot_approx)
 		{
 			// Linearized Jacobians around (yaw,pitch,roll)=(0,0,0):
-			EIGEN_ALIGN16 const double nums[3*6] = {
+			MRPT_ALIGN16 const double nums[3*6] = {
 				1, 0, 0, -ly, lz,   0,
 				0, 1, 0,  lx,  0, -lz,
 				0, 0, 1,   0, -lx,  ly };
@@ -434,7 +435,7 @@ void CPose3D::composePoint(double lx,double ly,double lz, double &gx, double &gy
 			const double	sr = sin(m_roll);
 	#	endif
 
-			EIGEN_ALIGN16 const double nums[3*6] = {
+			MRPT_ALIGN16 const double nums[3*6] = {
 				1, 0, 0,
 					-lx*sy*cp+ly*(-sy*sp*sr-cy*cr)+lz*(-sy*sp*cr+cy*sr),   // d_x'/d_yaw
 					-lx*cy*sp+ly*(cy*cp*sr       )+lz*(cy*cp*cr      ),   // d_x'/d_pitch
@@ -459,7 +460,7 @@ void CPose3D::composePoint(double lx,double ly,double lz, double &gx, double &gy
 	// Jacob: df/dse3
 	if (out_jacobian_df_dse3)
 	{
-		EIGEN_ALIGN16 const double nums[3*6] = {
+		MRPT_ALIGN16 const double nums[3*6] = {
 			1, 0, 0,   0, gz, -gy,
 			0, 1, 0, -gz,  0,  gx,
 			0, 0, 1,  gy,-gx,   0 };
@@ -484,7 +485,7 @@ void CPose3D::composePoint(double lx,double ly,double lz, double &gx, double &gy
 /*---------------------------------------------------------------
 		getAsVector
 ---------------------------------------------------------------*/
-void CPose3D::getAsVector(vector_double &r) const
+void CPose3D::getAsVector(CVectorDouble &r) const
 {
 	updateYawPitchRoll();
 	r.resize(6);
@@ -551,7 +552,7 @@ void CPose3D::getAsQuaternion(mrpt::math::CQuaternionDouble &q, mrpt::math::CMat
 	//   http://www.mrpt.org/6D_poses:equivalences_compositions_and_uncertainty
 	if (out_dq_dr)
 	{
-		EIGEN_ALIGN16 const double nums[4*3] = {
+		MRPT_ALIGN16 const double nums[4*3] = {
 			-0.5*q[3], 0.5*( -csc+scs ), -0.5*q[1],
 			-0.5*q[2],  0.5*( -ssc-ccs ), 0.5* q[0],
 			0.5*q[1], 0.5*( ccc-sss  ),  0.5*q[3],
@@ -726,7 +727,7 @@ void CPose3D::inverseComposePoint(const double gx,const double gy,const double g
 		const double Ay = gy-m_coords[1];
 		const double Az = gz-m_coords[2];
 
-		EIGEN_ALIGN16 const double nums[3*6] = {
+		MRPT_ALIGN16 const double nums[3*6] = {
 			-m_ROT(0,0), -m_ROT(1,0), -m_ROT(2,0),
 				Ax*m11_dy + Ay*m12_dy + Az*m13_dy ,  // d_x'/d_yaw
 				Ax*m11_dp + Ay*m12_dp + Az*m13_dp,  // d_x'/d_pitch
@@ -752,7 +753,7 @@ void CPose3D::inverseComposePoint(const double gx,const double gy,const double g
 	// Jacob: df/dse3
 	if (out_jacobian_df_dse3)
 	{
-		EIGEN_ALIGN16 const double nums[3*6] = {
+		MRPT_ALIGN16 const double nums[3*6] = {
 			-1, 0, 0,   0,-lz,  ly,
 			0, -1, 0,  lz,  0, -lx,
 			0, 0, -1, -ly, lx,   0 };
@@ -989,7 +990,7 @@ namespace mrpt
 			const MAT3x3 &B,
 			MAT3x9       &RES)
 		{
-			EIGEN_ALIGN16 const double vals[] = {
+			MRPT_ALIGN16 const double vals[] = {
 				a[0], -B(0,2), B(0,1), B(0,2), a[0], -B(0,0),-B(0,1), B(0,0), a[0],
 				a[1], -B(1,2), B(1,1), B(1,2), a[1], -B(1,0),-B(1,1), B(1,0), a[1],
 				a[2], -B(2,2), B(2,1), B(2,2), a[2], -B(2,0),-B(2,1), B(2,0), a[2]
@@ -1008,7 +1009,7 @@ namespace mrpt
 			double b = abc[1];
 			double c = abc[2];
 
-			EIGEN_ALIGN16 const double vals[] = {
+			MRPT_ALIGN16 const double vals[] = {
 				-b*t[1]-c*t[2], 2*b*t[0]-a*t[1], 2*c*t[0]-a*t[2],
 				-b*t[0]+2*a*t[1],-a*t[0]-c*t[2], 2*c*t[1]-b*t[2],
 				-c*t[0]+2*a*t[2],-c*t[1]+2*b*t[2],-a*t[0]-b*t[1]

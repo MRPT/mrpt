@@ -6,9 +6,10 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
+
 #include <mrpt/slam.h>
 #include <mrpt/stereoslam.h>
-#include <mrpt/vision.h> 	// For feature detection, etc.
+#include <mrpt/features.h> 	// For feature detection, etc.
 #include <mrpt/gui.h>		// For visualization windows
 #include <mrpt/hwdrivers.h>	// For capture of video from videos/cameras
 

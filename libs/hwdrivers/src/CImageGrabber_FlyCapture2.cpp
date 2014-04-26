@@ -7,7 +7,11 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/hwdrivers.h> // Precompiled header
+#include "hwdrivers-precomp.h"   // Precompiled headers
+
+#include <mrpt/hwdrivers/CImageGrabber_FlyCapture2.h>
+#include <mrpt/system/string_utils.h>
+#include <mrpt/system/datetime.h>
 
 #if MRPT_HAS_FLYCAPTURE2
 	#include <FlyCapture2.h>
@@ -20,6 +24,7 @@
 #define FC2_BUF_IMG   reinterpret_cast<FlyCapture2::Image*>(m_img_buffer)
 
 using namespace mrpt::hwdrivers;
+using namespace std;
 
 #if MRPT_HAS_FLYCAPTURE2
 // Declare a table to convert strings to their #define values:
@@ -69,10 +74,10 @@ const fc2_str_val fc2_vals[] = {
 template <typename T>
 T fc2_defstr2num(const std::string &str)
 {
-	const std::string s = mrpt::utils::trim(str);
+	const std::string s = mrpt::system::trim(str);
 	for (unsigned int i=0;i<sizeof(fc2_vals)/sizeof(fc2_vals[0]);i++)
 	{
-		if (strCmpI(fc2_vals[i].str,s.c_str()))
+		if (mrpt::system::strCmpI(fc2_vals[i].str,s.c_str()))
 			return static_cast<T>(fc2_vals[i].val);
 	}
 	THROW_EXCEPTION_CUSTOM_MSG1("Error: Unknown FlyCapture2 constant: %s",s.c_str())
@@ -80,7 +85,7 @@ T fc2_defstr2num(const std::string &str)
 #endif
 
 
-//  Options: TCaptureOptions_bumblebee 
+//  Options: TCaptureOptions_bumblebee
 // -------------------------------------------------------------
 TCaptureOptions_FlyCapture2::TCaptureOptions_FlyCapture2() :
 	camera_index (0),
@@ -90,7 +95,7 @@ TCaptureOptions_FlyCapture2::TCaptureOptions_FlyCapture2() :
 	grabmode("BUFFER_FRAMES"),
 	numBuffers(30),
 	grabTimeout(-1),
-	trigger_enabled(false), 
+	trigger_enabled(false),
 	trigger_polarity(0),
 	trigger_source(0),
 	trigger_mode(0),
@@ -112,12 +117,12 @@ void TCaptureOptions_FlyCapture2::loadOptionsFrom(
 {
 	camera_index = cfg.read_int(sect, prefix+string("camera_index"), camera_index);
 	open_by_guid = cfg.read_bool(sect, prefix+string("open_by_guid"), open_by_guid);
-	
+
 	if (open_by_guid)
 	{
 		string sGUID = cfg.read_string(sect, prefix+string("camera_guid"), "",  true );
 		vector<string> sGUIDparts;
-		mrpt::utils::tokenize(sGUID,"- \t\r\n",sGUIDparts);
+		mrpt::system::tokenize(sGUID,"- \t\r\n",sGUIDparts);
 		ASSERTMSG_(sGUIDparts.size()==4, "GUID format error: must have four blocks like XXX-XXX-XXX-XXX")
 
 		for (int i=0;i<4;i++)
@@ -148,7 +153,7 @@ void TCaptureOptions_FlyCapture2::loadOptionsFrom(
 
 // ---------------------------------------------------------------
 /** Default constructor */
-CImageGrabber_FlyCapture2::CImageGrabber_FlyCapture2() : 
+CImageGrabber_FlyCapture2::CImageGrabber_FlyCapture2() :
 	m_camera(NULL),
 	m_camera_info(NULL),
 	m_img_buffer(NULL)
@@ -159,7 +164,7 @@ CImageGrabber_FlyCapture2::CImageGrabber_FlyCapture2() :
 }
 
 /** Constructor + open */
-CImageGrabber_FlyCapture2::CImageGrabber_FlyCapture2( const TCaptureOptions_FlyCapture2 &options ) : 
+CImageGrabber_FlyCapture2::CImageGrabber_FlyCapture2( const TCaptureOptions_FlyCapture2 &options ) :
 	m_camera(NULL),
 	m_camera_info(NULL),
 	m_img_buffer(NULL)
@@ -197,7 +202,7 @@ void CImageGrabber_FlyCapture2::open( const TCaptureOptions_FlyCapture2 &options
 	if (m_options.open_by_guid)
 	{
 		// Open by GUID:
-		for (int i=0;i<4;i++) 
+		for (int i=0;i<4;i++)
 			guid.value[i] = m_options.camera_guid[i];
 	}
 	else
@@ -366,7 +371,7 @@ void CImageGrabber_FlyCapture2::open( const TCaptureOptions_FlyCapture2 &options
 	error = FC2_CAM->GetEmbeddedImageInfo(&eii);
 	if (error == PGRERROR_OK)
 	{
-		if (eii.frameCounter.available) eii.frameCounter.onOff = true; 
+		if (eii.frameCounter.available) eii.frameCounter.onOff = true;
 		if (eii.timestamp.available)    eii.timestamp.onOff = true;
 		if (eii.exposure.available)     eii.exposure.onOff = true;
 		if (eii.brightness.available)   eii.brightness.onOff = true;
@@ -375,7 +380,7 @@ void CImageGrabber_FlyCapture2::open( const TCaptureOptions_FlyCapture2 &options
 		FC2_CAM->SetEmbeddedImageInfo(&eii);
 	}
 
-	
+
 	// Start:
 	if (startCapture)
 		this->startCapture();
@@ -389,8 +394,8 @@ void CImageGrabber_FlyCapture2::startCapture()
 {
 #if MRPT_HAS_FLYCAPTURE2
 	if (!m_camera) { THROW_EXCEPTION("Camera is not opened. Call open() first.") }
-	
-	FlyCapture2::Error error = FC2_CAM->StartCapture(); 
+
+	FlyCapture2::Error error = FC2_CAM->StartCapture();
 	CHECK_FC2_ERROR(error)
 
 #else
@@ -409,11 +414,11 @@ void CImageGrabber_FlyCapture2::startSyncCapture( int numCameras, const CImageGr
 	{
 		const CImageGrabber_FlyCapture2 *obj = cameras_array[i];
 		if (!obj->m_camera) { THROW_EXCEPTION_CUSTOM_MSG1("Camera #%i in list is not opened. Call open() first.",i) }
-		
+
 		FlyCapture2::Camera *cam = reinterpret_cast<FlyCapture2::Camera*>(obj->m_camera);
 		cam_ptrs[i] = cam;
 	}
-	
+
 	if (!cam_ptrs.empty())
 	{
 		FlyCapture2::Error error = FlyCapture2::Camera::StartSyncCapture(cam_ptrs.size(), &cam_ptrs[0]);
@@ -458,8 +463,8 @@ void CImageGrabber_FlyCapture2::close()
 	catch (...) { }
 
 	// Delete objects:
-	try { if (m_camera) delete FC2_CAM;  } catch (...) {} 
-	try { if (m_camera_info) delete FC2_CAM_INFO; } catch (...) {} 
+	try { if (m_camera) delete FC2_CAM;  } catch (...) {}
+	try { if (m_camera_info) delete FC2_CAM_INFO; } catch (...) {}
 
 	m_camera=NULL;
 	m_camera_info=NULL;
@@ -488,8 +493,8 @@ std::string CImageGrabber_FlyCapture2::getFC2version()
 bool CImageGrabber_FlyCapture2::getObservation( mrpt::slam::CObservationImage &out_observation )
 {
 #if MRPT_HAS_FLYCAPTURE2
-	if (!m_camera) { 
-		std::cerr << "[CImageGrabber_FlyCapture2::getObservation] Camera is not opened. Call open() first.\n"; 
+	if (!m_camera) {
+		std::cerr << "[CImageGrabber_FlyCapture2::getObservation] Camera is not opened. Call open() first.\n";
 		return false;
 	}
 
@@ -507,12 +512,12 @@ bool CImageGrabber_FlyCapture2::getObservation( mrpt::slam::CObservationImage &o
 
 		// Determine if it's B/W or color:
 		FlyCapture2::PixelFormat pf = image.GetPixelFormat();
-		const bool is_color = 
-			pf==PIXEL_FORMAT_RGB8 || pf==PIXEL_FORMAT_RGB16 || pf==PIXEL_FORMAT_S_RGB16 || 
-			pf==PIXEL_FORMAT_RAW8 || pf==PIXEL_FORMAT_RAW16 || pf==PIXEL_FORMAT_RAW12 || 
-			pf==PIXEL_FORMAT_BGR || pf==PIXEL_FORMAT_BGRU || pf==PIXEL_FORMAT_RGBU || 
+		const bool is_color =
+			pf==PIXEL_FORMAT_RGB8 || pf==PIXEL_FORMAT_RGB16 || pf==PIXEL_FORMAT_S_RGB16 ||
+			pf==PIXEL_FORMAT_RAW8 || pf==PIXEL_FORMAT_RAW16 || pf==PIXEL_FORMAT_RAW12 ||
+			pf==PIXEL_FORMAT_BGR || pf==PIXEL_FORMAT_BGRU || pf==PIXEL_FORMAT_RGBU ||
 			pf==PIXEL_FORMAT_BGR16 || pf==PIXEL_FORMAT_BGRU16 || pf==PIXEL_FORMAT_422YUV8_JPEG;
-		
+
 		// Decode image:
 		error = image.Convert(is_color ? PIXEL_FORMAT_BGR : PIXEL_FORMAT_MONO8, FC2_BUF_IMG);
 		CHECK_FC2_ERROR(error)
@@ -532,7 +537,7 @@ bool CImageGrabber_FlyCapture2::getObservation( mrpt::slam::CObservationImage &o
 	}
 	catch( std::exception &e)
 	{
-		std::cerr << "[CImageGrabber_FlyCapture2::getObservation] Error:\n" << e.what() << std::endl; 
+		std::cerr << "[CImageGrabber_FlyCapture2::getObservation] Error:\n" << e.what() << std::endl;
 		return false;
 	}
 #else

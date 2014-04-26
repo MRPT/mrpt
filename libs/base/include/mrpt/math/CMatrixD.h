@@ -11,8 +11,7 @@
 
 #include <mrpt/utils/CSerializable.h>
 #include <mrpt/math/CMatrixTemplateNumeric.h>
-#include <mrpt/utils/CStream.h>
-#include <mrpt/utils/utils_defs.h>
+//#include <mrpt/utils/utils_defs.h>
 
 
 namespace mrpt
@@ -34,7 +33,6 @@ namespace mrpt
 		{
 			// This must be added to any CSerializable derived class:
 			DEFINE_SERIALIZABLE_CUSTOM_LINKAGE( CMatrixD, void BASE_IMPEXP, static BASE_IMPEXP, virtual BASE_IMPEXP )
-
 		public:
 			/** Constructor */
 			CMatrixD() : CMatrixTemplateNumeric<double>(1,1)
@@ -48,10 +46,8 @@ namespace mrpt
 			CMatrixD( const CMatrixTemplateNumeric<double> &m ) : CMatrixTemplateNumeric<double>(m)
 			{ }
 
-			/** Copy constructor
-			  */
-			CMatrixD( const CMatrixFloat &m ) : CMatrixTemplateNumeric<double>(0,0)
-			{
+			/** Copy constructor  */
+			CMatrixD( const CMatrixFloat &m ) : CMatrixTemplateNumeric<double>(0,0) {
 				*this = m.eval().cast<double>();
 			}
 
@@ -65,28 +61,18 @@ namespace mrpt
 			template<typename OtherDerived>
 			inline CMatrixD(const Eigen::MatrixBase <OtherDerived>& other) : CMatrixTemplateNumeric<double>(other) { }
 
-			/** Constructor from a TPose2D, which generates a 3x1 matrix \f$ [x y \phi]^T \f$
-			   */
-			explicit CMatrixD( const TPose2D &p) : CMatrixDouble(p) {}
+			/** Constructor from a TPose2D, which generates a 3x1 matrix \f$ [x y \phi]^T \f$  */
+			explicit CMatrixD( const TPose2D &p);
+			/** Constructor from a TPose3D, which generates a 6x1 matrix \f$ [x y z yaw pitch roll]^T \f$  */
+			explicit CMatrixD( const TPose3D &p);
+			/** Constructor from a TPoint2D, which generates a 2x1 matrix \f$ [x y]^T \f$ */
+			explicit CMatrixD( const TPoint2D &p);
+			/** Constructor from a TPoint3D, which generates a 3x1 matrix \f$ [x y z]^T \f$ */
+			explicit CMatrixD( const TPoint3D &p);
 
-			/** Constructor from a TPose3D, which generates a 6x1 matrix \f$ [x y z yaw pitch roll]^T \f$
-			   */
-			explicit CMatrixD( const TPose3D &p) : CMatrixDouble(p) {}
-
-			/** Constructor from a TPoint2D, which generates a 2x1 matrix \f$ [x y]^T \f$
-			   */
-			explicit CMatrixD( const TPoint2D &p) : CMatrixDouble(p) {}
-
-			/** Constructor from a mrpt::poses::CPoint3D, which generates a 3x1 matrix \f$ [x y z]^T \f$
-			   */
-			explicit CMatrixD( const TPoint3D &p) : CMatrixDouble(p) {}
-
-
-			/** Assignment operator for float matrixes
-			*/
-			template <class OTHERMAT>
-			inline CMatrixD & operator = (const OTHERMAT& m)
-			{
+			/** Assignment from any Eigen matrix/vector */
+			template <typename Derived>
+			inline CMatrixD& operator =(const Eigen::MatrixBase<Derived>& m) const {
 				CMatrixDouble::operator =(m);
 				return *this;
 			}

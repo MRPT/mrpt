@@ -8,15 +8,14 @@
    +---------------------------------------------------------------------------+ */
 
 
-#include <mrpt/base.h>
 #include <mrpt/math/distributions.h>
+#include <mrpt/random.h>
 #include <gtest/gtest.h>
 
 using namespace mrpt;
 using namespace mrpt::utils;
 using namespace mrpt::math;
 using namespace mrpt::random;
-using namespace mrpt::utils::metaprogramming;
 using namespace std;
 
 const double eps = 1e-12;

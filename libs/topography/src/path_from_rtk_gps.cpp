@@ -7,10 +7,14 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/topography.h>  // Precompiled headers
+#include "topography-precomp.h"  // Precompiled headers
 
 #include <mrpt/scanmatching.h>
-#include <mrpt/obs.h>
+#include <mrpt/slam/CObservationGPS.h>
+#include <mrpt/math/data_utils.h>
+#include <mrpt/topography/data_types.h>
+#include <mrpt/topography/conversions.h>
+#include <mrpt/topography/path_from_rtk_gps.h>
 
 #if MRPT_HAS_WXWIDGETS
 	#include <wx/app.h>
@@ -28,6 +32,8 @@ using namespace mrpt::slam;
 using namespace mrpt::math;
 using namespace mrpt::utils;
 using namespace mrpt::poses;
+using namespace mrpt::system;
+using namespace mrpt::topography;
 
 template <class T>
 std::set<T> make_set( const T& v0, const T& v1 )
@@ -212,7 +218,7 @@ void  mrpt::topography::path_from_rtk_gps(
 
 	CMatrixDouble	  D_cov;   // square distances cov
 	CMatrixDouble	  D_cov_1;   // square distances cov (inverse)
-	vector_double	  D_mean;  // square distances mean
+	CVectorDouble	  D_mean;  // square distances mean
 
 	if (doConsistencyCheck && GPS_local_coords_on_vehicle.size()==3)
 	{
@@ -369,7 +375,7 @@ void  mrpt::topography::path_from_rtk_gps(
 			{
 				const size_t N = i->second.size();
 				std::map<std::string, CObservationGPSPtr> & GPS = i->second;
-				vector_double X(N),Y(N),Z(N); 	// Global XYZ coordinates
+				CVectorDouble X(N),Y(N),Z(N); 	// Global XYZ coordinates
 				std::map<string,size_t> XYZidxs;  // Sensor label -> indices in X Y Z
 
 				if (!ref_valid)	// get the reference lat/lon, if it's not set from rawlog configuration block.
@@ -417,7 +423,7 @@ void  mrpt::topography::path_from_rtk_gps(
 					// GPS[k] are the CObservations:
 
 					// Compute the inter-GPS square distances:
-					vector_double iGPSdist2(3);
+					CVectorDouble iGPSdist2(3);
 
 					// [0]: sq dist between: D_cov_rev_indexes[0],D_cov_rev_indexes[1]
 					TPoint3D   P0( X[XYZidxs[D_cov_rev_indexes[0]]], Y[XYZidxs[D_cov_rev_indexes[0]]], Z[XYZidxs[D_cov_rev_indexes[0]]] );
@@ -505,7 +511,7 @@ void  mrpt::topography::path_from_rtk_gps(
 			{
 				CPose3D   p = i->second;
 
-				vector_double pitchs, rolls;	// The elements to average
+				CVectorDouble pitchs, rolls;	// The elements to average
 
 				pitchs.push_back(p.pitch());
 				rolls.push_back(p.roll());

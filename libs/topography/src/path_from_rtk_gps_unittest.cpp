@@ -78,11 +78,11 @@ TEST(TopographyReconstructPathFrom3RTK, sampleDataset )
 		robot_path.interpolate(t2,pose2,valid);
 		EXPECT_TRUE(valid);
 
-		vector_double p1vec(12), p2vec(12);
+		CVectorDouble p1vec(12), p2vec(12);
 		pose1.getAs12Vector(p1vec);
 		pose2.getAs12Vector(p2vec);
 
-		vector_double p1vec_gt(12), p2vec_gt(12);
+		CVectorDouble p1vec_gt(12), p2vec_gt(12);
 		pose_GT_1.getAs12Vector(p1vec_gt);
 		pose_GT_2.getAs12Vector(p2vec_gt);
 

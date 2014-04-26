@@ -7,9 +7,10 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-
+#define MRPT_NO_WARN_BIG_HDR  // Yes, we really want to include all classes.
 #include <mrpt/obs.h>
-#include <mrpt/base.h>
+
+#include <mrpt/utils/CMemoryStream.h>
 #include <gtest/gtest.h>
 
 using namespace mrpt;

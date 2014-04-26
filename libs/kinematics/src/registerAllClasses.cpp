@@ -7,9 +7,11 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
+#include "kinematics-precomp.h"  // Precompiled headers
+
 #include <mrpt/kinematics.h>
 
-#include <mrpt/utils.h>
+#include <mrpt/utils/CStartUpClassesRegister.h>
 
 
 using namespace mrpt::kinematics;

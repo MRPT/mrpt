@@ -7,13 +7,14 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/maps.h>  // Precompiled header
+#include "maps-precomp.h" // Precomp header
 
 // Force size_x being a multiple of 16 cells
 //#define		ROWSIZE_MULTIPLE_16
 
 #include <mrpt/slam/COccupancyGridMap2D.h>
 #include <mrpt/slam/CSimplePointsMap.h>
+#include <mrpt/utils/CStream.h>
 
 using namespace mrpt;
 using namespace mrpt::slam;
@@ -470,7 +471,7 @@ void COccupancyGridMap2D::determineMatching2D(
 	const CPose2D         & otherMapPose_,
 	TMatchingPairList     & correspondences,
 	const TMatchingParams & params,
-	TMatchingExtraResults & extraResults ) const 
+	TMatchingExtraResults & extraResults ) const
 {
 	MRPT_START
 

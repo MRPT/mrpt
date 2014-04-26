@@ -7,9 +7,8 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/base.h>  // Precompiled headers
+#include "base-precomp.h"  // Precompiled headers
 
-#include <mrpt/math/utils.h>
 #include <mrpt/math/model_search.h>
 
 using namespace mrpt;

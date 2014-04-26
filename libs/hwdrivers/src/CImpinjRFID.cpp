@@ -7,18 +7,13 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-
-
-#include <mrpt/hwdrivers.h>  // Precompiled headers
+#include "hwdrivers-precomp.h"   // Precompiled headers
 
 #include <mrpt/hwdrivers/CImpinjRFID.h>
-
-#include <string.h>
-
-#include <stdlib.h>
-
+#include <mrpt/system/os.h>
 
 using namespace mrpt::hwdrivers;
+using namespace mrpt::system;
 
 IMPLEMENTS_GENERIC_SENSOR(CImpinjRFID,mrpt::hwdrivers)
 
@@ -146,15 +141,15 @@ bool CImpinjRFID::getObservation( mrpt::slam::CObservationRFID &obs)
 		{
 			receivedSomething = true;
 			// the received string is in the format: ANT_PORT EPC RX_PWR ZERO_FILL
-			const char *ant_port_ptr = strtok(msg," ",&tmp);
+			const char *ant_port_ptr = mrpt::system::strtok(msg," ",&tmp);
 			if (!ant_port_ptr)
 			{
 			    std::cerr << "[CImpinjRFID::getObservation] Unexpected format in sensor data! (skipping).\n";
 			    continue;
 			}
 			const char ant_port =  *ant_port_ptr;
-			strcpy(epc,strtok(NULL," ",&tmp));
-			strcpy(rx_pwr,strtok(NULL, " ",&tmp));
+			strcpy(epc,mrpt::system::strtok(NULL," ",&tmp));
+			strcpy(rx_pwr,mrpt::system::strtok(NULL, " ",&tmp));
 
 			// Fill the observation
 			obs.tag_readings.resize(obs.tag_readings.size()+1);  // Alloc space for one more tag obs
@@ -176,7 +171,7 @@ bool CImpinjRFID::getObservation( mrpt::slam::CObservationRFID &obs)
 	}
 	catch (std::exception &e)
 	{
-		cerr << e.what() << endl;
+		std::cerr << e.what() << std::endl;
 		return false;
 	}
 }

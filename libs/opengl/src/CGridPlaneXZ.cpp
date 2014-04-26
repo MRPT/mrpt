@@ -7,10 +7,10 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/opengl.h>  // Precompiled header
-
+#include "opengl-precomp.h"  // Precompiled header
 
 #include <mrpt/opengl/CGridPlaneXZ.h>
+#include <mrpt/utils/CStream.h>
 
 #include "opengl_internals.h"
 
@@ -81,7 +81,7 @@ void   CGridPlaneXZ::render_dl() const
 	glEnable(GL_LIGHTING);
 
 	// End antialiasing:
-	if (m_antiAliasing) 
+	if (m_antiAliasing)
 	{
 		glPopAttrib();
 		checkOpenGLError();
@@ -124,9 +124,9 @@ void  CGridPlaneXZ::readFromStream(CStream &in,int version)
 			in >> m_xMin >> m_xMax;
 			in >> m_zMin >> m_zMax >> m_plane_y;
 			in >> m_frequency;
-			if (version>=1) 
+			if (version>=1)
 				in >> m_lineWidth >> m_antiAliasing;
-			else 
+			else
 			{
 				m_lineWidth=1.0f;
 				m_antiAliasing=true;

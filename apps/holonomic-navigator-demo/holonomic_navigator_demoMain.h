@@ -25,9 +25,14 @@
 #include <wx/statusbr.h>
 //*)
 
-#include <mrpt/opengl.h>
 #include <mrpt/reactivenav.h>
+#include <mrpt/opengl/CSetOfObjects.h>
+#include <mrpt/opengl/CDisk.h>
+#include <mrpt/opengl/CSimpleLine.h>
+#include <mrpt/opengl/CSetOfLines.h>
+#include <mrpt/opengl/CPointCloud.h>
 #include <mrpt/opengl/CPlanarLaserScan.h>			// It's in the lib mrpt-maps
+#include <mrpt/slam/COccupancyGridMap2D.h>
 
 // JLBC: Unix X headers have these funny things...
 #ifdef Button1

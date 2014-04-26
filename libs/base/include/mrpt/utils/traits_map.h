@@ -9,7 +9,6 @@
 #ifndef  mrpt_traits_maps_H
 #define  mrpt_traits_maps_H
 
-// File to be included from stl_extensions.h
 #include <mrpt/utils/map_as_vector.h>
 
 namespace mrpt

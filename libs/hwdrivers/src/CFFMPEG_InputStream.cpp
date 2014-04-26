@@ -11,7 +11,7 @@
 	#define __STDC_CONSTANT_MACROS  // Needed for having "UINT64_C" and so
 #endif
 
-#include <mrpt/hwdrivers.h> // Precompiled headers
+#include "hwdrivers-precomp.h"   // Precompiled headers
 
 #include <mrpt/config.h>
 #include <mrpt/utils/utils_defs.h>

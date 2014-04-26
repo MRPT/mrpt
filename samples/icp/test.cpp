@@ -7,8 +7,14 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/slam.h>
+#include <mrpt/slam/CSimplePointsMap.h>
+#include <mrpt/slam/CObservation2DRangeScan.h>
+#include <mrpt/slam/CICP.h>
+#include <mrpt/poses/CPose2D.h>
+#include <mrpt/poses/CPosePDF.h>
+#include <mrpt/poses/CPosePDFGaussian.h>
 #include <mrpt/gui.h>
+#include <mrpt/math/utils.h>
 
 #include <iostream>
 #include <fstream>
@@ -149,12 +155,12 @@ void TestICP()
 		gui::CDisplayWindowPlots	win("ICP results");
 
 		// Reference map:
-		vector_float   map1_xs, map1_ys, map1_zs;
+		vector<float>   map1_xs, map1_ys, map1_zs;
 		m1.getAllPoints(map1_xs,map1_ys,map1_zs);
 		win.plot( map1_xs, map1_ys, "b.3", "map1");
 
 		// Translated map:
-		vector_float   map2_xs, map2_ys, map2_zs;
+		vector<float>   map2_xs, map2_ys, map2_zs;
 		m2_trans.getAllPoints(map2_xs,map2_ys,map2_zs);
 		win.plot( map2_xs, map2_ys, "r.3", "map2");
 

@@ -29,7 +29,6 @@ void CGraphPartitioner<GRAPH_MATRIX,num_t>::SpectralBisection(
 	bool			forceSimetry )
 {
 	size_t  nodeCount;		// Nodes count
-	size_t  i,j;
     GRAPH_MATRIX	Adj, eigenVectors,eigenValues;
 
 	// Check matrix is square:
@@ -43,8 +42,8 @@ void CGraphPartitioner<GRAPH_MATRIX,num_t>::SpectralBisection(
 	if (forceSimetry)
 	{
 		Adj.setSize(nodeCount,nodeCount);
-		for (i=0;i<nodeCount;i++)
-			for (j=i;j<nodeCount;j++)
+		for (size_t i=0;i<nodeCount;i++)
+			for (size_t j=i;j<nodeCount;j++)
 				Adj(i,j)=Adj(j,i)= 0.5f*(in_A(i,j)+in_A(j,i));
 	}
 	else Adj = in_A;
@@ -64,13 +63,13 @@ void CGraphPartitioner<GRAPH_MATRIX,num_t>::SpectralBisection(
 	size_t  nRows = eigenVectors.getRowCount();
 
 	//for (i=0;i<eigenVectors.getColCount();i++) mean+=eigenVectors(colNo,i);
-	for (i=0;i<nRows;i++) mean+=eigenVectors(i,colNo);
+	for (size_t i=0;i<nRows;i++) mean+=eigenVectors(i,colNo);
 	mean /= nRows;
 
 	out_part1.clear();
 	out_part2.clear();
 
-    for(i=0;i<nRows;i++)
+    for(size_t i=0;i<nRows;i++)
     {
       if ( eigenVectors(i,colNo) >= mean)
 			out_part1.push_back( i );
@@ -85,7 +84,7 @@ void CGraphPartitioner<GRAPH_MATRIX,num_t>::SpectralBisection(
 		out_part1.clear();
 		out_part2.clear();
 		// Assign 50%-50%:
-		for (i=0;i<Adj.getColCount();i++)
+		for (size_t i=0;i<Adj.getColCount();i++)
 			if (i<=Adj.getColCount()/2)
 					out_part1.push_back(i);
 			else	out_part2.push_back(i);
@@ -283,7 +282,6 @@ void CGraphPartitioner<GRAPH_MATRIX,num_t>::exactBisection(
 	vector_uint					part1,part2;
 	num_t						partCutValue, bestCutValue = std::numeric_limits<num_t>::max();
 	bool						end = false;
-	bool						carry;
 
 	// Check matrix is square:
 	if (in_A.getColCount() != (nodeCount = in_A.getRowCount()) )
@@ -334,7 +332,8 @@ void CGraphPartitioner<GRAPH_MATRIX,num_t>::exactBisection(
 		}
 
 		// Next combo in the binary vector:
-		i = 0; carry = false;
+		i = 0;
+		bool carry = false;
 		do
 		{
             carry = partition[i];

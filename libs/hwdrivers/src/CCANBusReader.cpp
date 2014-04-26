@@ -9,11 +9,12 @@
 
 // This file contains portions of code from sicklms200.cc from the Player/Stage project.
 
-#include <mrpt/hwdrivers.h> // Precompiled headers
+#include "hwdrivers-precomp.h"   // Precompiled headers
 
 #include <mrpt/utils/crc.h>
 #include <mrpt/utils/CTicTac.h>
 #include <mrpt/system/os.h>
+#include <cstdio> // printf
 
 #include <mrpt/hwdrivers/CCANBusReader.h>
 

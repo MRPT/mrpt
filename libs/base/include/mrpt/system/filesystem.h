@@ -9,7 +9,11 @@
 #ifndef  MRPT_FILESYSTEM_H
 #define  MRPT_FILESYSTEM_H
 
-#include <mrpt/utils/utils_defs.h>
+#include <mrpt/config.h>
+#include <mrpt/utils/compiler_fixes.h>
+#include <mrpt/base/link_pragmas.h>
+#include <mrpt/utils/types_simple.h>
+#include <string>
 
 namespace mrpt
 {

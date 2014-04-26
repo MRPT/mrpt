@@ -51,15 +51,7 @@ namespace mrpt
 				m_accumRobotMovement3DIsValid(false)
 			{
 			}
-
-			//typedef mrpt::bayes::CParticleFilterData<PARTICLE_TYPE> BASE;
-			//typedef mrpt::bayes::CParticleFilterCapable				BASE2;
-
 		protected:
-
-			//BASE	&m_partdata;  //!< the particle filter data object, implementing CParticleFilterData<PARTICLE_TYPE>
-			//BASE2	&m_pfc;  	  //!< the particle filter data object, implementing CParticleFilterCapable
-
 			/** \name Data members and methods used by generic PF implementations
 			    @{ */
 
@@ -69,9 +61,9 @@ namespace mrpt
 			bool					m_accumRobotMovement3DIsValid;
 
 			CPoseRandomSampler				m_movementDrawer;						//!< Used in al PF implementations. \sa PF_SLAM_implementation_gatherActionsCheckBothActObs
-			mutable vector_double			m_pfAuxiliaryPFOptimal_estimatedProb;	//!< Auxiliary variable used in the "pfAuxiliaryPFOptimal" algorithm.
-			mutable vector_double			m_pfAuxiliaryPFStandard_estimatedProb;	//!< Auxiliary variable used in the "pfAuxiliaryPFStandard" algorithm.
-			mutable vector_double			m_pfAuxiliaryPFOptimal_maxLikelihood;						//!< Auxiliary variable used in the "pfAuxiliaryPFOptimal" algorithm.
+			mutable CVectorDouble			m_pfAuxiliaryPFOptimal_estimatedProb;	//!< Auxiliary variable used in the "pfAuxiliaryPFOptimal" algorithm.
+			mutable CVectorDouble			m_pfAuxiliaryPFStandard_estimatedProb;	//!< Auxiliary variable used in the "pfAuxiliaryPFStandard" algorithm.
+			mutable CVectorDouble			m_pfAuxiliaryPFOptimal_maxLikelihood;						//!< Auxiliary variable used in the "pfAuxiliaryPFOptimal" algorithm.
 			mutable std::vector<TPose3D>	m_pfAuxiliaryPFOptimal_maxLikDrawnMovement;		//!< Auxiliary variable used in the "pfAuxiliaryPFOptimal" algorithm.
 			std::vector<bool>				m_pfAuxiliaryPFOptimal_maxLikMovementDrawHasBeenUsed;
 
@@ -175,7 +167,7 @@ namespace mrpt
 			virtual void PF_SLAM_implementation_replaceByNewParticleSet(
 				typename CParticleFilterData<PARTICLE_TYPE>::CParticleList	 &old_particles,
 				const vector<TPose3D>		&newParticles,
-				const vector_double			&newParticlesWeight,
+				const vector<double>		&newParticlesWeight,
 				const vector<size_t>		&newParticlesDerivedFromIdx ) const
 			{
 				// ---------------------------------------------------------------------------------

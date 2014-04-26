@@ -11,6 +11,7 @@
 #define math_modelsearch_h
 
 #include <mrpt/utils/utils_defs.h>
+#include <set>
 
 namespace mrpt {
 	namespace math {

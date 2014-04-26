@@ -11,10 +11,9 @@
 
 #include <mrpt/utils/utils_defs.h>
 #include <mrpt/utils/CSerializable.h>
-#include <mrpt/math/CMatrix.h>
+#include <mrpt/math/eigen_frwds.h>
 #include <mrpt/utils/CCanvas.h>
 #include <mrpt/utils/TCamera.h>
-#include <mrpt/system/os.h>
 #include <mrpt/utils/exceptions.h>
 
 namespace mrpt
@@ -414,38 +413,11 @@ namespace mrpt
 			  */
 			void rectifyImage( CImage &out_img, const mrpt::utils::TCamera &cameraParams) const;
 
-			/** Rectify (un-distort) the image according to a certain camera matrix and vector of distortion coefficients and returns an output rectified image
-			  * \param out_img The output rectified image
-			  * \param cameraMatrix The input camera matrix (containing the intrinsic parameters of the camera): [fx 0 cx; 0 fy cy; 0 0 1]: (fx,fy)  focal length and (cx,cy) principal point coordinates
-			  * \param distCoeff The (input) distortion coefficients: [k1, k2, p1, p2]:  k1 and k2 (radial) and p1 and p2 (tangential)
-			  * \sa mrpt::vision::CUndistortMap
-			  */
-			inline void rectifyImage( CImage &out_img, const math::CMatrixDouble33 &cameraMatrix, const vector_double &distCoeff ) const
-			{
-				mrpt::utils::TCamera  cam;
-				cam.intrinsicParams = cameraMatrix;
-				cam.setDistortionParamsVector(distCoeff);
-				rectifyImage(out_img,cam);
-			}
-
 			/** Rectify (un-distort) the image according to a certain camera matrix and vector of distortion coefficients, replacing "this" with the rectified image
 			  * \param cameraParams The input camera params (containing the intrinsic and distortion parameters of the camera)
 			  * \sa mrpt::vision::CUndistortMap
 			  */
 			void rectifyImageInPlace(const mrpt::utils::TCamera &cameraParams );
-
-			/** Rectify (un-distort) the image according to a certain camera matrix and vector of distortion coefficients, replacing "this" with the rectified image
-			  * \param cameraMatrix The input camera matrix (containing the intrinsic parameters of the camera): [fx 0 cx; 0 fy cy; 0 0 1]: (fx,fy)  focal length and (cx,cy) principal point coordinates
-			  * \param distCoeff The (input) distortion coefficients: [k1, k2, p1, p2]:  k1 and k2 (radial) and p1 and p2 (tangential)
-			  * \sa mrpt::vision::CUndistortMap
-			  */
-			inline void rectifyImageInPlace( const math::CMatrixDouble33 &cameraMatrix, const vector_double &distCoeff )
-			{
-				mrpt::utils::TCamera  cam;
-				cam.intrinsicParams = cameraMatrix;
-				cam.setDistortionParamsVector(distCoeff);
-				rectifyImageInPlace(cam);
-			}
 
 			/** Rectify an image (undistorts and rectification) from a stereo pair according to a pair of precomputed rectification maps
 			  * \param mapX, mapY   [IN] The pre-computed maps of the rectification (should be computed beforehand)

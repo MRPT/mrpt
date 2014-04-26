@@ -7,14 +7,16 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/base.h>  // Precompiled headers
+#include "base-precomp.h"  // Precompiled headers
 
+#include <mrpt/utils/CStream.h>
 #include <mrpt/poses/CPose3DQuatPDF.h>
 #include <mrpt/poses/CPose3DQuatPDFGaussian.h>
 #include <mrpt/poses/CPose3DPDF.h>
 #include <mrpt/poses/CPose3DPDFGaussian.h>
 
 using namespace mrpt::poses;
+using namespace mrpt::math;
 using namespace std;
 
 IMPLEMENTS_VIRTUAL_SERIALIZABLE( CPose3DQuatPDF, CSerializable, mrpt::poses )
@@ -75,7 +77,7 @@ void CPose3DQuatPDF::jacobiansPoseComposition(
 	df_dx.set_unsafe(1,1, 1);
 	df_dx.set_unsafe(2,2, 1);
 
-	EIGEN_ALIGN16 const double vals2[3*4] = {
+	MRPT_ALIGN16 const double vals2[3*4] = {
 		2*(-qz*ay +qy*az  ),
 		2*(qy*ay + qz*az  ),
 		2*(-2*qy*ax + qx*ay +qr*az  ),
@@ -97,7 +99,7 @@ void CPose3DQuatPDF::jacobiansPoseComposition(
 
 	// second part:
 	{
-		EIGEN_ALIGN16 const double aux44_data[4*4] = {
+		MRPT_ALIGN16 const double aux44_data[4*4] = {
 			q2r,-q2x,-q2y,-q2z,
 			q2x, q2r, q2z,-q2y,
 			q2y,-q2z, q2r, q2x,
@@ -124,7 +126,7 @@ void CPose3DQuatPDF::jacobiansPoseComposition(
 
 	// Second part:
 	{
-		EIGEN_ALIGN16 const double aux44_data[4*4] = {
+		MRPT_ALIGN16 const double aux44_data[4*4] = {
 			qr,-qx,-qy,-qz,
 			qx, qr,-qz, qy,
 			qy, qz, qr,-qx,

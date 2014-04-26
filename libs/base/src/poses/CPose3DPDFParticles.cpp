@@ -7,14 +7,18 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/base.h>  // Precompiled headers
+#include "base-precomp.h"  // Precompiled headers
 
 #include <mrpt/poses/CPose3DPDFParticles.h>
 #include <mrpt/poses/CPose3DPDFGaussian.h>
-#include <mrpt/math/utils.h>
+#include <mrpt/poses/CPose3D.h>
+#include <mrpt/math/wrap2pi.h>
+#include <mrpt/utils/CStream.h>
 
+using namespace mrpt;
 using namespace mrpt::poses;
 using namespace mrpt::math;
+using namespace mrpt::utils;
 
 IMPLEMENTS_SERIALIZABLE( CPose3DPDFParticles, CPose3DPDF, mrpt::poses )
 
@@ -64,14 +68,14 @@ void  CPose3DPDFParticles::copyFrom(const CPose3DPDF &o)
 		}
 		else
 		{
-			for ( itDest = m_particles.begin();itDest!=m_particles.end();itDest++ )
+			for ( itDest = m_particles.begin();itDest!=m_particles.end();++itDest )
 				delete itDest->d;
 
 			m_particles.resize( pdf->m_particles.size() );
 
 			for ( itSrc=pdf->m_particles.begin(), itDest = m_particles.begin();
 				   itSrc!=pdf->m_particles.end();
-			      itSrc++, itDest++ )
+			      ++itSrc, ++itDest )
 			{
 				itDest->d = new CPose3D( *itSrc->d );
 				itDest->log_w = itSrc->log_w;
@@ -84,8 +88,8 @@ void  CPose3DPDFParticles::copyFrom(const CPose3DPDF &o)
 		THROW_EXCEPTION("TO DO!!");
 /*		CPose3DPDFGaussian	*pdf = (CPosePDFGaussian*) &o;
 		int					M = (int)m_particles.size();
-		std::vector<vector_float>			parts;
-		std::vector<vector_float>::iterator partsIt;
+		std::vector<CVectorFloat>			parts;
+		std::vector<CVectorFloat>::iterator partsIt;
 
 		mrpt::random::randomNormalMultiDimensionalMany(pdf->cov,M,parts);
 
@@ -127,7 +131,7 @@ void CPose3DPDFParticles::getMean(CPose3D &p) const
 	MRPT_START
 
 	double			X=0,Y=0,Z=0,YAW=0,PITCH=0,ROLL=0;
-	double			ang,w,W=0;
+	double			W=0;
 
 	double			W_yaw_R=0,W_yaw_L=0;
 	double			yaw_R=0,yaw_L=0;
@@ -138,7 +142,7 @@ void CPose3DPDFParticles::getMean(CPose3D &p) const
 	// -----------------------------------
 	for (CPose3DPDFParticles::CParticleList::const_iterator it=m_particles.begin();it!=m_particles.end();++it)
 	{
-		w  = exp(it->log_w);
+		const double w  = exp(it->log_w);
 		W += w;
 
 		X		+= w * it->d->x();
@@ -147,7 +151,7 @@ void CPose3DPDFParticles::getMean(CPose3D &p) const
 		PITCH	+= w * it->d->pitch();
 
 		// Angles Yaw and Roll are especial!:
-		ang = it->d->yaw();
+		double ang = it->d->yaw();
 		if (fabs( ang )>0.5*M_PI)
 		{
 			// LEFT HALF: 0,2pi
@@ -224,8 +228,7 @@ void CPose3DPDFParticles::getCovarianceAndMean(CMatrixDouble66 &cov,CPose3D &mea
 
 	// Now the covariance:
 	cov.zeros();
-	vector_double	vars(6,0);	// The diagonal of the final covariance matrix
-	CPose3DPDFParticles::CParticleList::const_iterator		it;
+	CVectorDouble	vars; vars.assign(6,0.0);	// The diagonal of the final covariance matrix
 
 	// Elements off the diagonal of the covariance matrix:
 	double											std_xy = 0,std_xz = 0,std_xya= 0,std_xp = 0,std_xr = 0;
@@ -248,13 +251,13 @@ void CPose3DPDFParticles::getCovarianceAndMean(CMatrixDouble66 &cov,CPose3D &mea
 
 	// Sum all weight values:
 	double		W = 0;
-	for (it=m_particles.begin();it!=m_particles.end();it++)
+	for (CPose3DPDFParticles::CParticleList::const_iterator it=m_particles.begin();it!=m_particles.end();++it)
 		W += exp(it->log_w);
 
 	ASSERT_(W>0);
 
 	// Compute covariance:
-	for (it=m_particles.begin();it!=m_particles.end();it++)
+	for (CPose3DPDFParticles::CParticleList::const_iterator it=m_particles.begin();it!=m_particles.end();++it)
 	{
 		double w = exp( it->log_w ) / W;
 
@@ -383,7 +386,7 @@ CPose3D	 CPose3DPDFParticles::getParticlePose(int i) const
  ---------------------------------------------------------------*/
 void  CPose3DPDFParticles::changeCoordinatesReference( const CPose3D &newReferenceBase )
 {
-	for (CParticleList::iterator it=m_particles.begin();it!=m_particles.end();it++)
+	for (CParticleList::iterator it=m_particles.begin();it!=m_particles.end();++it)
 		it->d->composeFrom(newReferenceBase, *it->d);
 }
 
@@ -401,7 +404,7 @@ void  CPose3DPDFParticles::drawSingleSample( CPose3D &outPart ) const
  ---------------------------------------------------------------*/
 void  CPose3DPDFParticles::drawManySamples(
 	size_t						N,
-	std::vector<vector_double>	&outSamples ) const
+	std::vector<CVectorDouble>	&outSamples ) const
 {
 	MRPT_UNUSED_PARAM(N); MRPT_UNUSED_PARAM(outSamples);
 	THROW_EXCEPTION("TO DO!");
@@ -439,7 +442,7 @@ void CPose3DPDFParticles::inverse(CPose3DPDF  &o) const
 	CPose3DPDFParticles::CParticleList::iterator it;
 	CPose3D   zero(0,0,0);
 
-	for (it=out->m_particles.begin();it!=out->m_particles.end();it++)
+	for (it=out->m_particles.begin();it!=out->m_particles.end();++it)
 		*it->d = zero - *it->d;
 
 	MRPT_END
@@ -453,7 +456,7 @@ CPose3D	 CPose3DPDFParticles::getMostLikelyParticle() const
 	CPose3DPDFParticles::CParticleList::const_iterator	it, itMax=m_particles.begin();
 	double		max_w = -1e300;
 
-	for (it=m_particles.begin();it!=m_particles.end();it++)
+	for (it=m_particles.begin();it!=m_particles.end();++it)
 	{
 		if (it->log_w > max_w)
 		{
@@ -488,11 +491,11 @@ void  CPose3DPDFParticles::resetDeterministic( const CPose3D &location,
 	{
 		clearParticles();
 		m_particles.resize(particlesCount);
-		for (it=m_particles.begin();it!=m_particles.end();it++)
+		for (it=m_particles.begin();it!=m_particles.end();++it)
 			it->d = new CPose3D();
 	}
 
-	for (it=m_particles.begin();it!=m_particles.end();it++)
+	for (it=m_particles.begin();it!=m_particles.end();++it)
 	{
 		*it->d	= location;
 		it->log_w	= 0;

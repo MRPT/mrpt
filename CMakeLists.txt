@@ -167,7 +167,7 @@ include(cmakemodules/script_detect_functions_headers.cmake REQUIRED)
 # ===================================================
 IF(MSVC)
 	# Enable Parallel compilation?
-	SET(COMPILE_IN_PARALLEL OFF CACHE BOOL "Enable parallel compilation in Visual Studio")
+	SET(COMPILE_IN_PARALLEL ON CACHE BOOL "Enable parallel compilation in Visual Studio")
 ENDIF(MSVC)
 
 include(cmakemodules/script_gridmap_options.cmake REQUIRED)			# Enable Intel Threading Building Blocks (TBB) lib?

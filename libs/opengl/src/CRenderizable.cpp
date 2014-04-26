@@ -7,10 +7,10 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/opengl.h>  // Precompiled header
-
+#include "opengl-precomp.h"  // Precompiled header
 
 #include <mrpt/opengl/CRenderizable.h>		// Include these before windows.h!!
+#include <mrpt/opengl/gl_utils.h>
 #include <mrpt/synch.h>
 #include <mrpt/utils/CStringList.h>
 #include <mrpt/math/utils.h>
@@ -298,7 +298,7 @@ CRenderizable& CRenderizable::setPose( const mrpt::poses::CPose3D &o )
   ---------------------------------------------------------------*/
 CRenderizable& CRenderizable::setPose( const mrpt::math::TPose3D &o )
 {
-	m_pose = CPose3D(o);
+	m_pose = mrpt::poses::CPose3D(o);
 	return *this;
 }
 
@@ -336,7 +336,7 @@ bool CRenderizable::traceRay(const mrpt::poses::CPose3D &o,double &dist) const	{
 	return false;
 }
 
-CRenderizablePtr &mrpt::opengl::operator<<(CRenderizablePtr &r,const CPose3D &p)	{
+CRenderizablePtr &mrpt::opengl::operator<<(CRenderizablePtr &r,const mrpt::poses::CPose3D &p)	{
 	r->setPose(p+r->getPose());
 	return r;
 }

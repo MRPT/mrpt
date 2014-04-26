@@ -9,8 +9,10 @@
 #ifndef CCANBusReader_H
 #define CCANBusReader_H
 
-#include <mrpt/hwdrivers/CSerialPort.h>
 #include <mrpt/slam/CObservationCANBusJ1939.h>
+#include <mrpt/utils/CDebugOutputCapable.h>
+#include <mrpt/hwdrivers/CGenericSensor.h>
+#include <mrpt/hwdrivers/CSerialPort.h>
 
 namespace mrpt
 {
@@ -48,7 +50,7 @@ namespace mrpt
 		  * \sa C2DRangeFinderAbstract
 		  * \ingroup mrpt_hwdrivers_grp
 		  */
-		class HWDRIVERS_IMPEXP CCANBusReader : public utils::CDebugOutputCapable, public CGenericSensor
+		class HWDRIVERS_IMPEXP CCANBusReader : public mrpt::utils::CDebugOutputCapable, public CGenericSensor
 		{
 			DEFINE_GENERIC_SENSOR(CCANBusReader)
 
@@ -62,8 +64,8 @@ namespace mrpt
                     uint8_t &out_src_address,
                     uint8_t &out_data_length,
                     uint16_t &out_pgn,
-                    vector<uint8_t> &out_data,
-                    vector<char> &out_raw_frame);
+                    std::vector<uint8_t> &out_data,
+                    std::vector<char> &out_raw_frame);
 
 			bool sendCANBusReaderSpeed();	        //!< Sends the specified speed to the CAN Converter.
 			bool CANBusOpenChannel();	            //!< Opens the CAN Channel

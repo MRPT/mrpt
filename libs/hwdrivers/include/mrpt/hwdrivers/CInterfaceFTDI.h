@@ -12,9 +12,10 @@
 
 #include <mrpt/config.h>
 #include <mrpt/utils/CStream.h>
-#include <mrpt/utils/stl_extensions.h>
+#include <mrpt/utils/circular_buffer.h>
 
 #include <mrpt/hwdrivers/link_pragmas.h>
+#include <deque>
 
 namespace mrpt
 {

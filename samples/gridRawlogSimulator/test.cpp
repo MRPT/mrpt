@@ -7,16 +7,22 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-
-#include <mrpt/slam.h>
-#include <mrpt/gui.h>
-#include <mrpt/base.h>
+#include <mrpt/slam/COccupancyGridMap2D.h>
+#include <mrpt/gui/CDisplayWindowPlots.h>
+#include <mrpt/utils/CRobotSimulator.h>
+#include <mrpt/utils/CFileOutputStream.h>
+#include <mrpt/utils/CTicTac.h>
+#include <mrpt/system/filesystem.h>
+#include <mrpt/system/threads.h>
+#include <mrpt/system/os.h>
+#include <mrpt/random.h>
 
 using namespace mrpt;
 using namespace mrpt::gui;
 using namespace mrpt::utils;
 using namespace mrpt::slam;
 using namespace mrpt::random;
+using namespace mrpt::system;
 using namespace std;
 
 

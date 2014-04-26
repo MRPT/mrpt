@@ -13,6 +13,7 @@
 // ---------------------------------------------------------------------------
 
 #include <mrpt/utils/utils_defs.h>
+#include <mrpt/system/memory.h>
 #include "faster_corner_prototypes.h"
 
 #include <mrpt/utils/SSE_types.h>
@@ -32,7 +33,7 @@ void faster_corner_detect_10(const IplImage* I, mrpt::vision::TSimpleFeatureList
 	//corners.mark_kdtree_as_outdated();
 
 	size_t *ptr_feat_index_by_row;
-	if (out_feats_index_by_row) 
+	if (out_feats_index_by_row)
 	{
 		out_feats_index_by_row->resize(I->height);
 		ptr_feat_index_by_row = &(*out_feats_index_by_row)[0];
@@ -42,7 +43,7 @@ void faster_corner_detect_10(const IplImage* I, mrpt::vision::TSimpleFeatureList
 	}
 
 
-	// 3 first rows have no features: 
+	// 3 first rows have no features:
 	if (ptr_feat_index_by_row) {
 		*ptr_feat_index_by_row++ = corners.size();
 		*ptr_feat_index_by_row++ = corners.size();
@@ -220,7 +221,7 @@ void faster_corner_detect_10(const IplImage* I, mrpt::vision::TSimpleFeatureList
 		    corners.push_back_fast(x, y);
 	}
 
-	// 3 last rows have no features: 
+	// 3 last rows have no features:
 	if (ptr_feat_index_by_row) {
 		*ptr_feat_index_by_row++ = corners.size();
 		*ptr_feat_index_by_row++ = corners.size();
@@ -245,7 +246,7 @@ void fast_corner_detect_10(const IplImage* I, mrpt::vision::TSimpleFeatureList &
 		return;
 
 #if MRPT_HAS_SSE2
-	if (mrpt::system::is_aligned<16>(I->imageData) && is_aligned<16>(I->imageData+I->widthStep))
+	if (mrpt::system::is_aligned<16>(I->imageData) && mrpt::system::is_aligned<16>(I->imageData+I->widthStep))
 		faster_corner_detect_10<true>(I, corners, barrier, octave,out_feats_index_by_row);
 	else
 		faster_corner_detect_10<false>(I, corners, barrier, octave,out_feats_index_by_row);

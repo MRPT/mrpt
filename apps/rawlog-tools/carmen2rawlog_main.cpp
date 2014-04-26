@@ -20,10 +20,19 @@
 //  Started: JLBC @ Aug-2010
 // ===========================================================================
 
-#include <mrpt/obs.h>
-#include <mrpt/base.h>
+#include <mrpt/utils/CFileGZOutputStream.h>
+#include <mrpt/system/os.h>
+#include <mrpt/system/datetime.h>
+#include <mrpt/system/filesystem.h>
+#include <mrpt/math/lightweight_geom_data.h>
+
+#include <mrpt/slam/carmen_log_tools.h>
+#include <mrpt/slam/CObservationOdometry.h>
+
 #include <mrpt/otherlibs/tclap/CmdLine.h>
 
+#include <fstream>
+#include <map>
 
 using namespace mrpt;
 using namespace mrpt::utils;

@@ -7,15 +7,15 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/maps.h>  // Precompiled header
+#include "maps-precomp.h" // Precomp header
 
 #include <mrpt/slam/CColouredPointsMap.h>
 #include <mrpt/slam/CObservation3DRangeScan.h>
 #include <mrpt/slam/CSimplePointsMap.h>
-
 #include <mrpt/utils/color_maps.h>
-
+#include <mrpt/system/os.h>
 #include <mrpt/opengl/CPointCloudColoured.h>
+#include <mrpt/utils/CStream.h>
 
 #include "CPointsMap_crtp_common.h"
 
@@ -25,6 +25,7 @@ using namespace mrpt;
 using namespace mrpt::slam;
 using namespace mrpt::utils;
 using namespace mrpt::poses;
+using namespace mrpt::system;
 using namespace mrpt::math;
 
 IMPLEMENTS_SERIALIZABLE(CColouredPointsMap, CPointsMap,mrpt::slam)

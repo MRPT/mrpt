@@ -14,7 +14,6 @@
 #include <mrpt/slam/CObservationImage.h>
 #include <mrpt/utils/CSerializable.h>
 #include <mrpt/math/CMatrix.h>
-#include <mrpt/utils/stl_extensions.h>
 
 #include <mrpt/maps/link_pragmas.h>
 
@@ -156,9 +155,7 @@ namespace mrpt
 				mark_as_modified();
 			}
 			/// \overload
-			inline void  setPoint(size_t index,CPoint2D &p) {  setPoint(index,p.x(),p.y(),0); }
-			/// \overload
-			inline void  setPoint(size_t index,CPoint3D &p)  { setPoint(index,p.x(),p.y(),p.z()); }
+			inline void  setPoint(size_t index,mrpt::math::TPoint3Df &p)  { setPoint(index,p.x,p.y,p.z); }
 			/// \overload
 			inline void  setPoint(size_t index,float x, float y) { setPoint(index,x,y,0); }
 
@@ -170,6 +167,8 @@ namespace mrpt
 			inline void  insertPoint( const CPoint3D &p ) { insertPoint(p.x(),p.y(),p.z()); }
 			/// \overload
 			inline void  insertPoint( const mrpt::math::TPoint3D &p ) { insertPoint(p.x,p.y,p.z); }
+			/// \overload
+			inline void  insertPoint( const mrpt::math::TPoint3Df &p ) { insertPoint(p.x,p.y,p.z); }
 			/// \overload
 			inline void  insertPoint( float x, float y, float z) { insertPointFast(x,y,z); mark_as_modified(); }
 

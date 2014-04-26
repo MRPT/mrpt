@@ -7,7 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/base.h>  // Precompiled headers
+#include "base-precomp.h"  // Precompiled headers
 
 #include <mrpt/system/threads.h>
 #include <mrpt/system/string_utils.h>
@@ -36,6 +36,7 @@
 	#include <signal.h>
 #endif
 
+#include <fstream>
 #include <sys/types.h>
 #include <sys/stat.h>
 #ifdef MRPT_OS_APPLE
@@ -79,11 +80,11 @@ namespace mrpt
 		struct TAuxThreadLaucher
 		{
 	#ifdef MRPT_OS_WINDOWS
-			TAuxThreadLaucher() : win_sem(0,10)
+			TAuxThreadLaucher() : ptrFunc(NULL),param(NULL),win_sem(0,10)
 			{
 			}
 	#else
-			TAuxThreadLaucher() { };
+			TAuxThreadLaucher() : ptrFunc(NULL),param(NULL) { };
 	#endif
 			void    (*ptrFunc) (void *);
 			void    *param;
@@ -99,7 +100,7 @@ namespace mrpt
 		{
 			try
 			{
-			TAuxThreadLaucher   *d = (TAuxThreadLaucher*) param;
+			TAuxThreadLaucher   *d = reinterpret_cast<TAuxThreadLaucher*>(param);
 
 			TAuxThreadLaucher	localCopy = *d;
 

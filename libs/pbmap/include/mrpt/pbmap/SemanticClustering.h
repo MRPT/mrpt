@@ -24,6 +24,9 @@
 
 #include <mrpt/pbmap/PbMap.h>
 #include <mrpt/pbmap/Plane.h>
+#include <vector>
+#include <set>
+#include <map>
 
 static std::vector<unsigned> DEFAULT_VECTOR_U;
 
@@ -171,6 +174,7 @@ cout << "connectivity_matrix matrix\n" << connectivity_matrix << endl;
     */
     void arrangeNewGroups(std::vector<mrpt::vector_uint> &parts)
     {
+	  using namespace std;
       int group_diff = parts.size() - neighborGroups.size();
       std::map<unsigned, std::vector<unsigned> > newGroups;
 
@@ -318,8 +322,9 @@ cout << "connectivity_matrix matrix\n" << connectivity_matrix << endl;
     /*!
     * Evaluate the partition of the current semantic groups into new ones with minNcut
     */
-    int evalPartition(set<unsigned> &observedPlanes)
+    int evalPartition(std::set<unsigned> &observedPlanes)
     {
+    	using namespace std;
 //      mrpt::utils::CTicTac time;
 //      time.Tic();
 //

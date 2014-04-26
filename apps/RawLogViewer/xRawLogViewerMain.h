@@ -42,9 +42,11 @@
 #include <wx/docview.h>
 
 // General global variables:
-#include <mrpt/base.h>
-#include <mrpt/slam.h>
-#include <mrpt/gui.h>
+#include <mrpt/utils/CSerializable.h>
+#include <mrpt/utils/CConfigFile.h>
+//#include <mrpt/slam.h>
+#include <mrpt/gui/CDisplayWindow3D.h>
+#include <mrpt/gui/CDisplayWindowPlots.h>
 
 // JLBC: Unix X headers have these funny things...
 #ifdef Button1

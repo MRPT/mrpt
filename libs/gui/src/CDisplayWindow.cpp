@@ -7,17 +7,18 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/gui.h>  // precompiled header
+#include "gui-precomp.h"   // Precompiled headers
 
-#include <mrpt/config.h>
 #include <mrpt/gui/CDisplayWindow.h>
 #include <mrpt/system/os.h>
 #include <mrpt/utils/CImage.h>
+#include <mrpt/utils/round.h>
 
 #include <mrpt/gui/WxSubsystem.h>
 #include <mrpt/gui/WxUtils.h>
 
 using namespace mrpt;
+using namespace mrpt::math;
 using namespace mrpt::gui;
 using namespace mrpt::utils;
 using namespace mrpt::system;
@@ -385,7 +386,7 @@ void  CDisplayWindow::showImage( const	CImage& img )
 /*---------------------------------------------------------------
 					showImageAndPoints
  ---------------------------------------------------------------*/
-void  CDisplayWindow::showImageAndPoints( const CImage &img, const vector_float &x, const vector_float &y, const TColor &color, const bool &showNumbers )
+void  CDisplayWindow::showImageAndPoints( const CImage &img, const CVectorFloat &x, const CVectorFloat &y, const TColor &color, const bool &showNumbers )
 {
 #if MRPT_HAS_WXWIDGETS
 	MRPT_START
@@ -393,7 +394,7 @@ void  CDisplayWindow::showImageAndPoints( const CImage &img, const vector_float 
 
 	CImage imgColor(1,1,3);
 	img.colorImage( imgColor );	// Create a colorimage
-	for(vector_float::Index i = 0; i < x.size(); i++)
+	for(CVectorFloat::Index i = 0; i < x.size(); i++)
 	{
 		imgColor.cross(round(x[i]),round(y[i]),color,'+');
 
@@ -412,7 +413,7 @@ void  CDisplayWindow::showImageAndPoints( const CImage &img, const vector_float 
 /*---------------------------------------------------------------
 					plot
  ---------------------------------------------------------------*/
-void  CDisplayWindow::plot( const vector_float &x, const vector_float &y )
+void  CDisplayWindow::plot( const CVectorFloat &x, const CVectorFloat &y )
 {
 	MRPT_START
 
@@ -437,8 +438,8 @@ void  CDisplayWindow::plot( const vector_float &x, const vector_float &y )
 	//imgColor.textOut( 550, 25, "x", TColor::black );
 	//imgColor.textOut( 25, 430, "y", TColor::black );
 
-	vector_float::const_iterator itx, ity;
-	vector_float::const_iterator itymx, itymn;
+	CVectorFloat::const_iterator itx, ity;
+	CVectorFloat::const_iterator itymx, itymn;
 	itymx = std::max_element( y.begin(), y.end() );
 	itymn = std::min_element( y.begin(), y.end() );
 	float px = (x[x.size()-1] - x[0])/520;
@@ -446,7 +447,7 @@ void  CDisplayWindow::plot( const vector_float &x, const vector_float &y )
 
 	float tpxA=0, tpyA=0;
 
-	for( itx = x.begin(), ity = y.begin(); itx != x.end(); itx++, ity++ )
+	for( itx = x.begin(), ity = y.begin(); itx != x.end(); ++itx, ++ity )
 	{
 		float tpx = (*itx-x[0])/px + ox;
 		float tpy = (*ity-*itymn)/py + oy;
@@ -465,7 +466,7 @@ void  CDisplayWindow::plot( const vector_float &x, const vector_float &y )
 /*---------------------------------------------------------------
 					plot
  ---------------------------------------------------------------*/
-void  CDisplayWindow::plot( const vector_float &y )
+void  CDisplayWindow::plot( const CVectorFloat &y )
 {
 	MRPT_START
 
@@ -490,8 +491,8 @@ void  CDisplayWindow::plot( const vector_float &y )
 	imgColor.textOut( 550, 25, "x", TColor::black );
 	imgColor.textOut( 25, 430, "y", TColor::black );
 
-	vector_float::const_iterator ity;
-	vector_float::const_iterator itymx, itymn;
+	CVectorFloat::const_iterator ity;
+	CVectorFloat::const_iterator itymx, itymn;
 	itymx = std::max_element( y.begin(), y.end() );
 	itymn = std::min_element( y.begin(), y.end() );
 	float px = y.size()/520.0f;

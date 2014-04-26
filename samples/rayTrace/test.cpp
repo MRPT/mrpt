@@ -11,6 +11,7 @@
 #include <mrpt/gui.h>
 #include <mrpt/maps.h>
 #include <mrpt/system.h>
+#include <mrpt/opengl.h>
 
 #define COLORR 1.0f
 #define COLORG 0.0f

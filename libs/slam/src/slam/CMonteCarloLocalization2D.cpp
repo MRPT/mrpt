@@ -7,7 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/slam.h>  // Precompiled headers
+#include "slam-precomp.h"   // Precompiled headerss
 
 #include <mrpt/slam/CMonteCarloLocalization2D.h>
 
@@ -17,7 +17,6 @@
 #include <mrpt/slam/CSensoryFrame.h>
 
 #include <mrpt/random.h>
-#include <mrpt/math.h>
 
 #include <mrpt/slam/PF_aux_structs.h>
 
@@ -213,10 +212,10 @@ void CMonteCarloLocalization2D::PF_SLAM_implementation_custom_update_particle_wi
 
 
 void CMonteCarloLocalization2D::PF_SLAM_implementation_replaceByNewParticleSet(
-	CParticleList	&old_particles,
-	const vector<TPose3D>	&newParticles,
-	const vector_double		&newParticlesWeight,
-	const vector<size_t>	&newParticlesDerivedFromIdx )  const
+	CParticleList &old_particles,
+	const vector<TPose3D>		&newParticles,
+	const vector<double>		&newParticlesWeight,
+	const vector<size_t>		&newParticlesDerivedFromIdx ) const
 {
 	ASSERT_EQUAL_(size_t(newParticlesWeight.size()),size_t(newParticles.size()))
 

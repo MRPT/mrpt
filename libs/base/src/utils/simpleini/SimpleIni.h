@@ -29,6 +29,7 @@
 #include <list>
 #include <algorithm>
 #include <stdio.h>
+#include <cstring>
 
 #ifdef SI_SUPPORT_IOSTREAMS
 # include <iostream>

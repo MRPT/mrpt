@@ -7,7 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/base.h>  // Precompiled headers
+#include "base-precomp.h"  // Precompiled headers
 
 
 #include <mrpt/utils/CSerializable.h>
@@ -18,7 +18,7 @@ using namespace mrpt;
 using namespace mrpt::utils;
 using namespace mrpt::system;
 
-#include <iostream>
+#include <cstdio>
 
 
 IMPLEMENTS_VIRTUAL_MRPT_OBJECT(CSerializable, CObject, mrpt::utils)
@@ -31,22 +31,20 @@ IMPLEMENTS_VIRTUAL_MRPT_OBJECT(CSerializable, CObject, mrpt::utils)
 std::string utils::ObjectToString(const CSerializable *o)
 {
 	CMemoryStream				tmp,tmpCoded;
-	size_t						n;
 	std::string					str;
 
 	try
 	{
 		tmp.WriteObject(o);
-		n = tmp.getTotalBytesCount();
+		size_t n = tmp.getTotalBytesCount();
 
 		// Scan the string to code it:
 		// ----------------------------------
 		int				lastIdx = 0;
 		unsigned char	*data = (unsigned char*)tmp.getRawBufferData();
-		unsigned char	c;
 		for (size_t i=0;i<n;i++)
 		{
-			c = data[i];
+			unsigned char c = data[i];
 			// Search for first "0x00" byte:
 			if ( c == 0x01 || !c )
 			{
@@ -78,18 +76,18 @@ std::string utils::ObjectToString(const CSerializable *o)
 		memcpy(&str[0],tmpCoded.getRawBufferData(),n);
 		return str;
 	}
-	catch (std::bad_alloc &e)
+	catch (std::bad_alloc &)
 	{
-		throw e;
+		throw;
 	}
 	catch(std::exception &e)
 	{
-		std::cerr << "[ObjectToString] Exception: " << e.what() << std::endl;
+	    fprintf(stderr, "[ObjectToString] Exception: %s\n", e.what());
 		return "";
 	}
 	catch(...)
 	{
-		std::cerr << "[ObjectToString] Unknown exception" << std::endl;
+	    fprintf(stderr, "[ObjectToString] Unknown exception\n");
 		return "";
 	}
 }
@@ -171,17 +169,17 @@ void utils::ObjectToOctetVector(const CSerializable *o, vector_byte & out_vector
 			os::memcpy( &out_vector[0],N,tmp.getRawBufferData(), N );
 		}
 	}
-	catch (std::bad_alloc &e)
+	catch (std::bad_alloc &)
 	{
-		throw e;
+		throw;
 	}
 	catch(std::exception &e)
 	{
-		std::cerr << "[ObjectToOctetVector] Exception: " << e.what() << std::endl;
+	    fprintf(stderr, "[ObjectToOctetVector] Exception: %s\n",e.what());
 	}
 	catch(...)
 	{
-		std::cerr << "[ObjectToOctetVector] Unknown exception" << std::endl;
+		fprintf(stderr, "[ObjectToOctetVector] Unknown exception\n");
 	}
 }
 
@@ -200,17 +198,17 @@ void utils::OctetVectorToObject(const vector_byte & in_data, CSerializablePtr &o
 		tmp.assignMemoryNotOwn(&in_data[0], in_data.size());
 		obj = tmp.ReadObject();
 	}
-	catch (std::bad_alloc &e)
+	catch (std::bad_alloc &)
 	{
-		throw e;
+		throw;
 	}
 	catch(std::exception &e)
 	{
-		std::cerr << "[OctetVectorToObject] Exception: " << e.what() << std::endl;
+	    fprintf(stderr, "[OctetVectorToObject] Exception: %s\n",e.what());
 	}
 	catch(...)
 	{
-		std::cerr << "[OctetVectorToObject] Unknown exception" << std::endl;
+		fprintf(stderr, "[OctetVectorToObject] Unknown exception\n");
 	}
 }
 
@@ -231,17 +229,17 @@ void utils::ObjectToRawString(const CSerializable *o, std::string & out_vector)
 			os::memcpy( &out_vector[0],N,tmp.getRawBufferData(), N );
 		}
 	}
-	catch (std::bad_alloc &e)
+	catch (std::bad_alloc &)
 	{
-		throw e;
+		throw;
 	}
 	catch(std::exception &e)
 	{
-		std::cerr << "[ObjectToOctetVector] Exception: " << e.what() << std::endl;
+	    fprintf(stderr, "[ObjectToRawString] Exception: %s\n",e.what());
 	}
 	catch(...)
 	{
-		std::cerr << "[ObjectToOctetVector] Unknown exception" << std::endl;
+		fprintf(stderr, "[ObjectToRawString] Unknown exception\n");
 	}
 }
 
@@ -260,17 +258,17 @@ void utils::RawStringToObject(const std::string & in_data, CSerializablePtr &obj
 		tmp.assignMemoryNotOwn(&in_data[0], in_data.size());
 		obj = tmp.ReadObject();
 	}
-	catch (std::bad_alloc &e)
+	catch (std::bad_alloc &)
 	{
-		throw e;
+		throw;
 	}
 	catch(std::exception &e)
 	{
-		std::cerr << "[RawStringToObject] Exception: " << e.what() << std::endl;
+		fprintf(stderr, "[RawStringToObject] Exception: %s\n",e.what());
 	}
 	catch(...)
 	{
-		std::cerr << "[RawStringToObject] Unknown exception" << std::endl;
+		fprintf(stderr, "[RawStringToObject] Unknown exception\n");
 	}
 }
 

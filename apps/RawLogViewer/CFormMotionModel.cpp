@@ -25,7 +25,11 @@
 #include <wx/textdlg.h>
 
 // General global variables:
-#include <mrpt/slam.h>
+#include <mrpt/utils/CFileGZInputStream.h>
+#include <mrpt/utils/CFileGZOutputStream.h>
+#include <mrpt/system/filesystem.h>
+#include <mrpt/slam/CActionCollection.h>
+#include <mrpt/slam/CSensoryFrame.h>
 
 using namespace mrpt;
 using namespace mrpt::slam;
@@ -764,7 +768,6 @@ void CFormMotionModel::drawRandomSamples()
 
     // Plot the 2D pose samples:
     unsigned int                    N = 1000;
-    std::vector<vector_float>       samples;
     vector<float>                    xs(N),ys(N),ps(N),dumm(N,0.1f);
 
     CActionRobotMovement2D          act;

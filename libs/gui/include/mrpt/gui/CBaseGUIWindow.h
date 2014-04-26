@@ -9,11 +9,13 @@
 #ifndef  CBaseGUIWindow_H
 #define  CBaseGUIWindow_H
 
-#include <mrpt/synch.h>
+#include <mrpt/synch/CSemaphore.h>
 #include <mrpt/utils/CSerializable.h>
+#include <mrpt/utils/mrptEvent.h>
 #include <mrpt/utils/CObservable.h>
 #include <mrpt/utils/safe_pointers.h>
 #include <mrpt/utils/TPixelCoord.h>
+#include <mrpt/utils/mrptEvent.h>
 #include <mrpt/gui/keycodes.h>
 
 #include <mrpt/gui/link_pragmas.h>
@@ -212,7 +214,7 @@ namespace mrpt
 		}; // End of class def.
 
 		/**  An event sent by a window upon when it's about to be closed, either manually by the user or programatically.
-		  *   The event field member \a allow_close is default by default, but can be set to false in the event callback 
+		  *   The event field member \a allow_close is default by default, but can be set to false in the event callback
 		  *   to forbid the window to be closed by the user. If the event corresponds to a programatic close, this field is ignored.
 		  *
 		  *  IMPORTANTE NOTICE: Event handlers in your observer class will be invoked from the wxWidgets internal MRPT thread,
@@ -227,12 +229,12 @@ namespace mrpt
 		public:
 			inline mrptEventWindowClosed (
 				CBaseGUIWindow *obj,
-				bool _allow_close = true ) 
+				bool _allow_close = true )
 				: source_object(obj), allow_close(_allow_close)
 			{ }
 			CBaseGUIWindow *source_object;
 			bool   allow_close;
-		}; // End of class def.		
+		}; // End of class def.
 
 		/**  @} */
 

@@ -7,12 +7,11 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/base.h>  // Precompiled headers
+#include "base-precomp.h"  // Precompiled headers
 
 #include <mrpt/poses/CPoint2D.h>
-#include <mrpt/poses/CPoint3D.h>
 #include <mrpt/poses/CPose2D.h>
-#include <mrpt/poses/CPose3D.h>
+#include <mrpt/utils/CStream.h>
 
 using namespace mrpt::poses;
 using namespace mrpt::utils;

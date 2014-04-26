@@ -7,12 +7,14 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/detectors.h>  // Precompiled headers
+#include "detectors-precomp.h"  // Precompiled headers
 
 #include <mrpt/detectors/CObjectDetection.h>
-#include <mrpt/obs.h>
 #include <mrpt/slam/CObservationImage.h>
 #include <mrpt/utils/CStartUpClassesRegister.h>
+#include <mrpt/slam/CObservationImage.h>
+#include <mrpt/slam/CObservationStereoImages.h>
+#include <mrpt/slam/CObservation3DRangeScan.h>
 
 // Universal include for all versions of OpenCV
 #include <mrpt/otherlibs/do_opencv_includes.h> 

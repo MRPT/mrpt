@@ -7,8 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/base.h>  // Only for precomp. headers, include all libmrpt-core headers.
-
+#include "base-precomp.h"  // Precompiled headers
 
 #include <mrpt/config.h>
 
@@ -23,7 +22,7 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <errno.h>
-#include <iostream>
+//#include <iostream>
 #include <sys/types.h>
 #include <sys/ioctl.h>
 #include <netdb.h>

@@ -12,6 +12,7 @@
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/utils/CSerializable.h>
 #include <mrpt/opengl/CSetOfObjects.h>
+#include <mrpt/utils/aligned_containers.h>
 
 #include <mrpt/kinematics/link_pragmas.h>
 
@@ -90,7 +91,7 @@ namespace mrpt
 			/** Get all the DOFs of the arm at once, returning them in a vector with all the "q_i" values, which
 			  * can be interpreted as rotations (radians) or displacements (meters) depending on links being "revolute" or "prismatic".
 			  * The vector is automatically resized to the correct size (the number of links).
-			  * \tparam VECTOR Can be any Eigen vector, mrpt::vector_double, or std::vector<double>
+			  * \tparam VECTOR Can be any Eigen vector, mrpt::math::CVectorDouble, or std::vector<double>
 			  */
 			template <class VECTOR>
 			void getConfiguration(VECTOR &v) const
@@ -107,7 +108,7 @@ namespace mrpt
 			/** Set all the DOFs of the arm at once, from a vector with all the "q_i" values, which
 			  * are interpreted as rotations (radians) or displacements (meters) depending on links being "revolute" or "prismatic".
 			  * \exception std::exception If the size of the vector doesn't match the number of links.
-			  * \tparam VECTOR Can be any Eigen vector, mrpt::vector_double, or std::vector<double>
+			  * \tparam VECTOR Can be any Eigen vector, mrpt::math::CVectorDouble, or std::vector<double>
 			  */
 			template <class VECTOR>
 			void setConfiguration(const VECTOR &v)

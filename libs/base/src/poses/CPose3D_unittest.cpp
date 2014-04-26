@@ -7,7 +7,8 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/base.h>
+#include <mrpt/poses/CPose3D.h>
+#include <mrpt/math/jacobians.h>
 #include <gtest/gtest.h>
 
 using namespace mrpt;
@@ -15,8 +16,6 @@ using namespace mrpt::poses;
 using namespace mrpt::utils;
 using namespace mrpt::math;
 using namespace std;
-
-
 
 class Pose3DTests : public ::testing::Test {
 protected:
@@ -35,7 +34,7 @@ protected:
 
 		CMatrixDouble44 I4; I4.unit(4,1.0);
 
-		EXPECT_NEAR( (HM*HMi-I4).Abs().sumAll(), 0, 1e-3 ) <<
+		EXPECT_NEAR( (HM*HMi-I4).array().abs().sum(), 0, 1e-3 ) <<
 			"HM:\n"      << HM <<
 			"inv(HM):\n" << HMi <<
 			"inv(HM)*HM:\n" << HM*HMi << endl;
@@ -47,11 +46,11 @@ protected:
 
 		p1_inv_inv.inverse();
 
-		EXPECT_NEAR( (p1.getAsVectorVal()-p1_inv_inv.getAsVectorVal()).Abs().sumAll(), 0, 1e-3 ) <<
+		EXPECT_NEAR( (p1.getAsVectorVal()-p1_inv_inv.getAsVectorVal()).array().abs().sum(), 0, 1e-3 ) <<
 			"p1: "      << p1 <<
 			"p1_inv_inv: " << p1_inv_inv << endl;
 
-		EXPECT_NEAR((HMi_from_p1_inv-HMi).Abs().sumAll(),0, 1e-4)
+		EXPECT_NEAR((HMi_from_p1_inv-HMi).array().abs().sum(),0, 1e-4)
 			<< "HMi_from_p1_inv:\n" << HMi_from_p1_inv
 			<< "HMi:\n" << HMi << endl;
 	}
@@ -69,11 +68,11 @@ protected:
 		const CPose3D  p1_c_p2_i_p2 = p1_c_p2 - p1; // should be -> p2
 		const CPose3D  p2_c_p1_i_p2 = p2 + p1_i_p2; // Should be -> p1
 
-		EXPECT_NEAR(0, (p1_c_p2_i_p2.getAsVectorVal()-p2.getAsVectorVal()).Abs().sumAll(), 1e-5)
+		EXPECT_NEAR(0, (p1_c_p2_i_p2.getAsVectorVal()-p2.getAsVectorVal()).array().abs().sum(), 1e-5)
 			<< "p2          : " << p2 << endl
 			<< "p1_c_p2_i_p2: " << p1_c_p2_i_p2 << endl;
 
-		EXPECT_NEAR(0, (p2_c_p1_i_p2.getAsVectorVal()-p1.getAsVectorVal()).Abs().sumAll(), 1e-5)
+		EXPECT_NEAR(0, (p2_c_p1_i_p2.getAsVectorVal()-p1.getAsVectorVal()).array().abs().sum(), 1e-5)
 			<< "p1          : " << p1 << endl
 			<< "p2          : " << p2 << endl
 			<< "p2 matrix   : " << endl << p2.getHomogeneousMatrixVal() << endl
@@ -108,7 +107,7 @@ protected:
 			CPose3D p1_plus_p2bis;
 			p1_plus_p2bis.composeFrom(p1,p2);
 
-			EXPECT_NEAR(0, (p1_plus_p2bis.getAsVectorVal()-p1_plus_p2.getAsVectorVal()).Abs().sumAll(), 1e-5)
+			EXPECT_NEAR(0, (p1_plus_p2bis.getAsVectorVal()-p1_plus_p2.getAsVectorVal()).array().abs().sum(), 1e-5)
 				<< "p2 : " << p2 << endl
 				<< "p1 : " << p1 << endl
 				<< "p1_plus_p2    : " << p1_plus_p2 << endl
@@ -119,7 +118,7 @@ protected:
 			CPose3D p1_plus_p2bis = p1;
 			p1_plus_p2bis.composeFrom(p1_plus_p2bis,p2);
 
-			EXPECT_NEAR(0, (p1_plus_p2bis.getAsVectorVal()-p1_plus_p2.getAsVectorVal()).Abs().sumAll(), 1e-5)
+			EXPECT_NEAR(0, (p1_plus_p2bis.getAsVectorVal()-p1_plus_p2.getAsVectorVal()).array().abs().sum(), 1e-5)
 				<< "p2 : " << p2 << endl
 				<< "p1 : " << p1 << endl
 				<< "p1_plus_p2    : " << p1_plus_p2 << endl
@@ -130,7 +129,7 @@ protected:
 			CPose3D p1_plus_p2bis = p2;
 			p1_plus_p2bis.composeFrom(p1,p1_plus_p2bis);
 
-			EXPECT_NEAR(0, (p1_plus_p2bis.getAsVectorVal()-p1_plus_p2.getAsVectorVal()).Abs().sumAll(), 1e-5)
+			EXPECT_NEAR(0, (p1_plus_p2bis.getAsVectorVal()-p1_plus_p2.getAsVectorVal()).array().abs().sum(), 1e-5)
 				<< "p2 : " << p2 << endl
 				<< "p1 : " << p1 << endl
 				<< "p1_plus_p2    : " << p1_plus_p2 << endl
@@ -148,7 +147,7 @@ protected:
 		CPoint3D  p1_plus_p2;
 		p1.composePoint(p.x(),p.y(),p.z() ,p1_plus_p2.x(), p1_plus_p2.y(), p1_plus_p2.z());
 
-		EXPECT_NEAR(0, (p1_plus_p2.getAsVectorVal()-p1_plus_p.getAsVectorVal()).Abs().sumAll(), 1e-5);
+		EXPECT_NEAR(0, (p1_plus_p2.getAsVectorVal()-p1_plus_p.getAsVectorVal()).array().abs().sum(), 1e-5);
 
 		// Repeat using same input/output variables:
 		{
@@ -165,9 +164,9 @@ protected:
 		CPoint3D  p_recov2;
 		p1.inverseComposePoint(p1_plus_p.x(),p1_plus_p.y(),p1_plus_p.z(), p_recov2.x(),p_recov2.y(),p_recov2.z() );
 
-		EXPECT_NEAR(0, (p_recov2.getAsVectorVal()-p_recov.getAsVectorVal()).Abs().sumAll(), 1e-5);
+		EXPECT_NEAR(0, (p_recov2.getAsVectorVal()-p_recov.getAsVectorVal()).array().abs().sum(), 1e-5);
 
-		EXPECT_NEAR(0, (p.getAsVectorVal()-p_recov.getAsVectorVal()).Abs().sumAll(), 1e-5);
+		EXPECT_NEAR(0, (p.getAsVectorVal()-p_recov.getAsVectorVal()).array().abs().sum(), 1e-5);
 	}
 
 	static void func_compose_point(const CArrayDouble<6+3> &x, const double &dummy, CArrayDouble<3> &Y)
@@ -221,14 +220,14 @@ protected:
 
 		const double max_eror = use_aprox ? 0.1 : 3e-3;
 
-		EXPECT_NEAR(0, (df_dpoint-num_df_dpoint).Abs().sumAll(), max_eror )
+		EXPECT_NEAR(0, (df_dpoint-num_df_dpoint).array().abs().sum(), max_eror )
 			<< "p1: " << p1 << endl
 			<< "p:  " << p << endl
 			<< "Numeric approximation of df_dpoint: " << endl << num_df_dpoint << endl
 			<< "Implemented method: " << endl << df_dpoint << endl
 			<< "Error: " << endl << df_dpoint-num_df_dpoint << endl;
 
-		EXPECT_NEAR(0, (df_dpose-num_df_dpose).Abs().sumAll(), max_eror )
+		EXPECT_NEAR(0, (df_dpose-num_df_dpose).array().abs().sum(), max_eror )
 			<< "p1: " << p1 << endl
 			<< "p:  " << p << endl
 			<< "Numeric approximation of df_dpose: " << endl << num_df_dpose << endl
@@ -242,7 +241,7 @@ protected:
 		const CPose3D p1(x1,y1,z1,yaw1,pitch1,roll1);
 
 		const CPose3D p2 = CPose3D::exp( p1.ln() );
-		EXPECT_NEAR((p1.getAsVectorVal()-p2.getAsVectorVal()).Abs().sumAll(),0, 1e-5 ) << "p1: " << p1 <<endl;
+		EXPECT_NEAR((p1.getAsVectorVal()-p2.getAsVectorVal()).array().abs().sum(),0, 1e-5 ) << "p1: " << p1 <<endl;
 	}
 
 
@@ -278,14 +277,14 @@ protected:
 			numJacobs.extractMatrix(0,6, num_df_dpoint);
 		}
 
-		EXPECT_NEAR(0, (df_dpoint-num_df_dpoint).Abs().sumAll(), 3e-3 )
+		EXPECT_NEAR(0, (df_dpoint-num_df_dpoint).array().abs().sum(), 3e-3 )
 			<< "p1: " << p1 << endl
 			<< "p:  " << p << endl
 			<< "Numeric approximation of df_dpoint: " << endl << num_df_dpoint << endl
 			<< "Implemented method: " << endl << df_dpoint << endl
 			<< "Error: " << endl << df_dpoint-num_df_dpoint << endl;
 
-		EXPECT_NEAR(0, (df_dpose-num_df_dpose).Abs().sumAll(), 3e-3 )
+		EXPECT_NEAR(0, (df_dpose-num_df_dpose).array().abs().sum(), 3e-3 )
 			<< "p1: " << p1 << endl
 			<< "p:  " << p << endl
 			<< "Numeric approximation of df_dpose: " << endl << num_df_dpose << endl
@@ -348,7 +347,7 @@ protected:
 			mrpt::math::jacobians::jacob_numeric_estimate(x_mean,func_compose_point_se3,x_incrs, P, num_df_dse3 );
 		}
 
-		EXPECT_NEAR(0, (df_dse3-num_df_dse3).Abs().sumAll(), 3e-3 )
+		EXPECT_NEAR(0, (df_dse3-num_df_dse3).array().abs().sum(), 3e-3 )
 			<< "p: " << p << endl
 			<< "x_l:  " << x_l << endl
 			<< "Numeric approximation of df_dse3: " << endl <<num_df_dse3 << endl
@@ -377,7 +376,7 @@ protected:
 			mrpt::math::jacobians::jacob_numeric_estimate(x_mean,func_invcompose_point_se3,x_incrs, P, num_df_dse3 );
 		}
 
-		EXPECT_NEAR(0, (df_dse3-num_df_dse3).Abs().sumAll(), 3e-3 )
+		EXPECT_NEAR(0, (df_dse3-num_df_dse3).array().abs().sum(), 3e-3 )
 			<< "p: " << p << endl
 			<< "x_g:  " << x_g << endl
 			<< "Numeric approximation of df_dse3: " << endl <<num_df_dse3 << endl
@@ -430,7 +429,7 @@ protected:
 		};
 		CMatrixFixedNumeric<double,12,6>  M(vals);
 
-		EXPECT_NEAR( (numJacobs-M).Abs().maxCoeff(), 0, 1e-5) << "M:\n" << M << "numJacobs:\n" << numJacobs << "\n";
+		EXPECT_NEAR( (numJacobs-M).array().abs().maxCoeff(), 0, 1e-5) << "M:\n" << M << "numJacobs:\n" << numJacobs << "\n";
 	}
 
 	static void func_jacob_LnT_T(
@@ -461,7 +460,7 @@ protected:
 			mrpt::math::jacobians::jacob_numeric_estimate(x_mean,func_jacob_LnT_T,x_incrs,dummy, numJacobs );
 		}
 
-		EXPECT_NEAR( (numJacobs-theor_jacob).Abs().sumAll(), 0, 1e-3)
+		EXPECT_NEAR( (numJacobs-theor_jacob).array().abs().sum(), 0, 1e-3)
 			<< "Pose: " << p << endl
 			<< "Pose matrix:\n" << p.getHomogeneousMatrixVal()
 			<< "Num. Jacob:\n" << numJacobs << endl

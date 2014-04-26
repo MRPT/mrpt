@@ -7,7 +7,10 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/hwdrivers.h>
+#include <mrpt/hwdrivers/CImageGrabber_OpenCV.h>
+#include <mrpt/utils/CFileGZOutputStream.h>
+#include <mrpt/utils/CTicTac.h>
+#include <mrpt/gui/CDisplayWindow.h>
 
 using namespace mrpt::utils;
 using namespace mrpt::hwdrivers;

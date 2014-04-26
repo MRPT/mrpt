@@ -7,16 +7,19 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/base.h>  // Precompiled headers
+#include "base-precomp.h"  // Precompiled headers
 
 #include <mrpt/utils/TMatchingPair.h>
 #include <mrpt/utils/CFileOutputStream.h>
 #include <mrpt/utils/utils_defs.h>
-#include <mrpt/math/utils.h>
 #include <mrpt/poses/CPose2D.h>
+#include <mrpt/system/os.h>
+#include <mrpt/math/ops_containers.h>
 
+using namespace mrpt;
 using namespace mrpt::utils;
 using namespace mrpt::math;
+using namespace mrpt::poses;
 using namespace mrpt::system;
 using namespace std;
 
@@ -28,7 +31,7 @@ void  TMatchingPairList::dumpToFile(const std::string &fileName)
 	CFileOutputStream  f(fileName);
 	ASSERT_(f.fileOpenCorrectly())
 
-	for (iterator it=begin();it!=end();it++)
+	for (iterator it=begin();it!=end();++it)
 	{
 		f.printf("%u %u %f %f %f %f %f %f %f\n",
 				it->this_idx,
@@ -60,7 +63,7 @@ void TMatchingPairList::saveAsMATLABScript( const std::string &filName )
 
 	fprintf(f,"axis equal; hold on;\n");
 	iterator	it;
-	for (it=begin();it!=end();it++)
+	for (it=begin();it!=end();++it)
 	{
 		fprintf(f,"line([%f %f],[%f %f],'Color',colorLines);\n",
 				it->this_x,
@@ -84,7 +87,7 @@ bool  TMatchingPairList::indexOtherMapHasCorrespondence(unsigned int idx)
 	iterator	it;
 	bool		has = false;
 
-	for (it=begin();it!=end() && !has;it++)
+	for (it=begin();it!=end() && !has;++it)
 	{
 		has = it->other_idx == idx;
 	}
@@ -109,7 +112,7 @@ bool mrpt::utils::operator == (const TMatchingPairList& a,const TMatchingPairLis
 {
 	if (a.size()!=b.size())
 		return false;
-	for (TMatchingPairList::const_iterator it1=a.begin(),it2=b.begin();it1!=a.end();it1++,it2++)
+	for (TMatchingPairList::const_iterator it1=a.begin(),it2=b.begin();it1!=a.end();++it1,++it2)
 		if (!  ( (*it1)==(*it2)))
 			return false;
 	return true;
@@ -121,7 +124,7 @@ bool mrpt::utils::operator == (const TMatchingPairList& a,const TMatchingPairLis
   ---------------------------------------------------------------*/
 float TMatchingPairList::overallSquareError( const CPose2D &q ) const
 {
-	vector_float errs( size() );
+	vector<float> errs( size() );
 	squareErrorVector(q,errs);
 	return math::sum( errs );
 }
@@ -131,10 +134,10 @@ float TMatchingPairList::overallSquareError( const CPose2D &q ) const
   ---------------------------------------------------------------*/
 float TMatchingPairList::overallSquareErrorAndPoints(
 	const CPose2D &q,
-	vector_float &xs,
-	vector_float &ys ) const
+	vector<float> &xs,
+	vector<float> &ys ) const
 {
-	vector_float errs( size() );
+	vector<float> errs( size() );
 	squareErrorVector(q,errs,xs,ys);
 	return math::sum( errs );
 }
@@ -153,7 +156,7 @@ bool TMatchingPairList::contains (const TMatchingPair &p) const
 /*---------------------------------------------------------------
 						squareErrorVector
   ---------------------------------------------------------------*/
-void  TMatchingPairList::squareErrorVector(const CPose2D &q, vector_float &out_sqErrs ) const
+void  TMatchingPairList::squareErrorVector(const CPose2D &q, vector<float> &out_sqErrs ) const
 {
 	out_sqErrs.resize( size() );
 	// *    \f[ e_i = | x_{this} -  q \oplus x_{other}  |^2 \f]
@@ -162,14 +165,13 @@ void  TMatchingPairList::squareErrorVector(const CPose2D &q, vector_float &out_s
 	const float csin = sin(q.phi());
 	const float qx   = q.x();
 	const float qy   = q.y();
-	float  xx, yy;		// Transformed points
 
 	const_iterator 			corresp;
-	vector_float::iterator	e_i;
-	for (corresp=begin(), e_i = out_sqErrs.begin();corresp!=end();corresp++, e_i++)
+	vector<float>::iterator	e_i;
+	for (corresp=begin(), e_i = out_sqErrs.begin();corresp!=end();++corresp, ++e_i)
 	{
-		xx = qx + ccos * corresp->other_x - csin * corresp->other_y;
-		yy = qy + csin * corresp->other_x + ccos * corresp->other_y;
+		float xx = qx + ccos * corresp->other_x - csin * corresp->other_y;
+		float yy = qy + csin * corresp->other_x + ccos * corresp->other_y;
 		*e_i = square( corresp->this_x - xx ) + square( corresp->this_y - yy );
 	}
 }
@@ -179,9 +181,9 @@ void  TMatchingPairList::squareErrorVector(const CPose2D &q, vector_float &out_s
   ---------------------------------------------------------------*/
 void  TMatchingPairList::squareErrorVector(
 	const CPose2D &q,
-	vector_float &out_sqErrs,
-	vector_float &xs,
-	vector_float &ys ) const
+	vector<float> &out_sqErrs,
+	vector<float> &xs,
+	vector<float> &ys ) const
 {
 	out_sqErrs.resize( size() );
 	xs.resize( size() );
@@ -195,8 +197,8 @@ void  TMatchingPairList::squareErrorVector(
 	const float qy   = q.y();
 
 	const_iterator 			corresp;
-	vector_float::iterator	e_i, xx, yy;
-	for (corresp=begin(), e_i = out_sqErrs.begin(), xx = xs.begin(), yy = ys.begin();corresp!=end();corresp++, e_i++, xx++,yy++)
+	vector<float>::iterator	e_i, xx, yy;
+	for (corresp=begin(), e_i = out_sqErrs.begin(), xx = xs.begin(), yy = ys.begin();corresp!=end();++corresp, ++e_i, ++xx,++yy)
 	{
 		*xx = qx + ccos * corresp->other_x - csin * corresp->other_y;
 		*yy = qy + csin * corresp->other_x + ccos * corresp->other_y;

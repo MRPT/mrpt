@@ -11,10 +11,8 @@
 
 #include <mrpt/utils/utils_defs.h>
 #include <mrpt/system/os.h>
+#include <deque>
 
-/*---------------------------------------------------------------
-	Class
-  ---------------------------------------------------------------*/
 namespace mrpt
 {
 	namespace system

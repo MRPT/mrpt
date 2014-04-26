@@ -7,16 +7,20 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/utils.h>
-#include <mrpt/slam.h>
+#include <mrpt/utils/CTicTac.h>
 #include <mrpt/bayes.h>
+#include <mrpt/poses/CPose2D.h>
+#include <mrpt/poses/CPoint2D.h>
+#include <mrpt/random.h>
+#include <mrpt/system/os.h>
 
 using namespace mrpt;
 using namespace mrpt::utils;
 using namespace mrpt::synch;
 using namespace mrpt::bayes;
-using namespace mrpt::slam;
+using namespace mrpt::poses;
 using namespace mrpt::random;
+using namespace mrpt::system;
 
 double SIGMA = 0.05;
 

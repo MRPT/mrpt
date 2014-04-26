@@ -7,20 +7,19 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/maps.h>  // Precompiled header
-
-
+#include "maps-precomp.h" // Precomp header
 
 #include <mrpt/slam/CHeightGridMap2D.h>
 #include <mrpt/slam/CObservationGasSensors.h>
 #include <mrpt/slam/CObservation2DRangeScan.h>
 #include <mrpt/slam/CSimplePointsMap.h>
 #include <mrpt/system/os.h>
-#include <mrpt/math/utils.h>
+#include <mrpt/utils/stl_serialization.h>
 #include <mrpt/utils/CTicTac.h>
 #include <mrpt/utils/color_maps.h>
 #include <mrpt/opengl/CMesh.h>
 #include <mrpt/opengl/CPointCloudColoured.h>
+#include <mrpt/utils/CStream.h>
 
 using namespace mrpt::slam;
 using namespace mrpt::poses;

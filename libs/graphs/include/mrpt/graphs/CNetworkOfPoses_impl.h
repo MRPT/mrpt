@@ -11,7 +11,12 @@
 
 #include <mrpt/graphs/dijkstra.h>
 #include <mrpt/utils/CTextFileLinesParser.h>
-
+#include <mrpt/math/lightweight_geom_data.h>
+#include <mrpt/math/CArrayNumeric.h>
+#include <mrpt/math/wrap2pi.h>
+#include <mrpt/math/ops_matrices.h> // multiply_*()
+#include <mrpt/math/matrix_serialization.h>
+#include <mrpt/system/string_utils.h>
 
 namespace mrpt
 {
@@ -179,6 +184,9 @@ namespace mrpt
 				// =================================================================
 				static void load_graph_of_poses_from_text_file(graph_t *g, const std::string &fil)
 				{
+					using mrpt::system::strCmpI;
+					using namespace mrpt::math;
+
 					typedef typename graph_t::constraint_t CPOSE;
 
 					set<string>  alreadyWarnedUnknowns; // for unknown line types, show a warning to cerr just once.
@@ -210,7 +218,7 @@ namespace mrpt
 						if ( !(s >> key) || key.empty() )
 							THROW_EXCEPTION(format("Line %u: Can't read string for entry type in: '%s'", lineNum, lin.c_str() ) );
 
-						if ( strCmpI(key,"EQUIV") )
+						if ( mrpt::system::strCmpI(key,"EQUIV") )
 						{
 							// Process these ones at the end, for now store in a list:
 							TNodeID  id1,id2;
@@ -350,7 +358,7 @@ namespace mrpt
 							if (from_id!=to_id)	// Don't load self-edges! (probably come from an EQUIV)
 							{
 								TPose2D  Ap_mean;
-								CMatrixDouble33 Ap_cov_inv;
+								mrpt::math::CMatrixDouble33 Ap_cov_inv;
 								if (!(s>>
 										Ap_mean.x >> Ap_mean.y >> Ap_mean.phi >>
 										Ap_cov_inv(0,0) >> Ap_cov_inv(0,1) >> Ap_cov_inv(1,1) >>
@@ -391,7 +399,7 @@ namespace mrpt
 							if (from_id!=to_id)	// Don't load self-edges! (probably come from an EQUIV)
 							{
 								TPose3D  Ap_mean;
-								CMatrixDouble66 Ap_cov_inv;
+								mrpt::math::CMatrixDouble66 Ap_cov_inv;
 								// **CAUTION** In the TORO graph format angles are in the RPY order vs. MRPT's YPR.
 								if (!(s>> Ap_mean.x >> Ap_mean.y >> Ap_mean.z >> Ap_mean.roll >> Ap_mean.pitch >> Ap_mean.yaw ))
 									THROW_EXCEPTION(format("Line %u: Error parsing EDGE3 line: '%s'", lineNum, lin.c_str() ) );
@@ -619,7 +627,7 @@ namespace mrpt
 				}
 				template <class VEC> static inline double auxMaha2Dist(VEC &err,const CPosePDFGaussian &p) {
 					math::wrapToPiInPlace(err[2]);
-					CMatrixDouble33  COV_INV(UNINITIALIZED_MATRIX);
+					mrpt::math::CMatrixDouble33  COV_INV(mrpt::math::UNINITIALIZED_MATRIX);
 					p.cov.inv(COV_INV);
 					return mrpt::math::multiply_HCHt_scalar(err,COV_INV); // err^t*cov_inv*err
 				}
@@ -627,7 +635,7 @@ namespace mrpt
 					math::wrapToPiInPlace(err[3]);
 					math::wrapToPiInPlace(err[4]);
 					math::wrapToPiInPlace(err[5]);
-					CMatrixDouble66 COV_INV(UNINITIALIZED_MATRIX);
+					mrpt::math::CMatrixDouble66 COV_INV(mrpt::math::UNINITIALIZED_MATRIX);
 					p.cov.inv(COV_INV);
 					return mrpt::math::multiply_HCHt_scalar(err,COV_INV); // err^t*cov_inv*err
 				}
@@ -712,7 +720,7 @@ namespace mrpt
 						//  We want to compute the squared Mahalanobis distance:
 						//       err^t * INV_COV * err
 						//
-						CArrayDouble<constraint_t::type_value::static_size> err;
+						mrpt::math::CArrayDouble<constraint_t::type_value::static_size> err;
 						for (size_t i=0;i<constraint_t::type_value::static_size;i++)
 							err[i] = from_plus_delta.getPoseMean()[i] - to_mean[i];
 

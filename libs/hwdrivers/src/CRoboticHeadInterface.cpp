@@ -7,10 +7,10 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/hwdrivers.h> // Precompiled headers
+#include "hwdrivers-precomp.h"   // Precompiled headers
 
-#include <mrpt/utils/utils_defs.h>
-#include <mrpt/system/os.h>
+//#include <mrpt/system/os.h>
+#include <mrpt/hwdrivers/CRoboticHeadInterface.h>
 
 using namespace mrpt::utils;
 using namespace mrpt::hwdrivers;

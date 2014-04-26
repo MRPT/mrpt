@@ -11,11 +11,17 @@
 //  http://www.mrpt.org/Kalman_Filters
 // ------------------------------------------------------
 
-#include <mrpt/base.h>
-#include <mrpt/gui.h>
-#include <mrpt/obs.h>
-
 #include <mrpt/bayes/CKalmanFilterCapable.h>
+#include <mrpt/bayes/CParticleFilterData.h>
+
+#include <mrpt/gui/CDisplayWindowPlots.h>
+#include <mrpt/random.h>
+#include <mrpt/system/os.h>
+#include <mrpt/system/threads.h>
+#include <mrpt/math/wrap2pi.h>
+#include <mrpt/math/distributions.h>
+#include <mrpt/slam/CSensoryFrame.h>
+#include <mrpt/slam/CObservationBearingRange.h>
 
 using namespace mrpt;
 using namespace mrpt::bayes;
@@ -305,7 +311,7 @@ void TestBayesianTracking()
 #endif
 
 		// Draw the velocity vector:
-		vector_float vx(2),vy(2);
+		vector<float> vx(2),vy(2);
 		vx[0] = EKF_xkk[0];  vx[1] = vx[0] + EKF_xkk[2] * 1;
 		vy[0] = EKF_xkk[1];  vy[1] = vy[0] + EKF_xkk[3] * 1;
 		winEKF.plot( vx,vy, "g-4", "velocityEKF" );
@@ -314,7 +320,7 @@ void TestBayesianTracking()
 		// Draw PF state:
 		{
 			size_t i,N = particles.m_particles.size();
-			vector_float   parts_x(N),parts_y(N);
+			vector<float>   parts_x(N),parts_y(N);
 			for (i=0;i<N;i++)
 			{
 				parts_x[i] = particles.m_particles[i].d->x;
@@ -328,19 +334,19 @@ void TestBayesianTracking()
 
 			particles.getMean(avrg_x, avrg_y, avrg_vx,avrg_vy);
 
-			vector_float vx(2),vy(2);
+			vector<float> vx(2),vy(2);
 			vx[0] = avrg_x;  vx[1] = vx[0] + avrg_vx * 1;
 			vy[0] = avrg_y;  vy[1] = vy[0] + avrg_vy * 1;
 			winPF.plot( vx,vy, "g-4", "velocityPF" );
 		}
 
 		// Draw GT:
-		winEKF.plot( vector_float(1,x), vector_float(1,y),"k.8","plot_GT");
-		winPF.plot( vector_float(1,x), vector_float(1,y),"k.8","plot_GT");
+		winEKF.plot( vector<float>(1,x), vector<float>(1,y),"k.8","plot_GT");
+		winPF.plot( vector<float>(1,x), vector<float>(1,y),"k.8","plot_GT");
 
 
 		// Draw noisy observations:
-		vector_float  obs_x(2),obs_y(2);
+		vector<float>  obs_x(2),obs_y(2);
 		obs_x[0] = obs_y[0] = 0;
 		obs_x[1] = obsRange * cos( obsBearing );
 		obs_y[1] = obsRange * sin( obsBearing );
@@ -386,7 +392,7 @@ CRangeBearing::CRangeBearing()
 	KF_options.method = kfEKFAlaDavison;
 
 	// INIT KF STATE
-	m_xkk.resize(4,0);	// State: (x,y,heading,v,w)
+	m_xkk.resize(4);	// State: (x,y,heading,v,w)
 	m_xkk[0]= VEHICLE_INITIAL_X;
 	m_xkk[1]= VEHICLE_INITIAL_Y;
 	m_xkk[2]=-VEHICLE_INITIAL_V;

@@ -18,10 +18,6 @@ namespace mrpt
 {
 namespace poses
 {
-	using namespace mrpt::math;
-
-
-
 	DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE( CPointPDF, mrpt::utils::CSerializable )
 
 	/** Declares a class that represents a Probability Distribution

@@ -7,11 +7,11 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/base.h>  // Precompiled headers
+#include "base-precomp.h"  // Precompiled headers
 
 #include <mrpt/utils/TCamera.h>
 #include <mrpt/utils/CConfigFileMemory.h>
-#include <mrpt/math/ops_matrices.h>  // For "<<" ">>" operators.
+#include <mrpt/math/matrix_serialization.h>  // For "<<" ">>" operators.
 
 using namespace mrpt::utils;
 using namespace mrpt::math;
@@ -128,12 +128,12 @@ void TCamera::loadFromConfigFile(const std::string &section,  const mrpt::utils:
 
 	setIntrinsicParamsFromValues( fx, fy, cx, cy );
 
-	vector_double dists;
-	cfg.read_vector(section,"dist",vector_double(), dists, true);
+	CVectorDouble dists;
+	cfg.read_vector(section,"dist",CVectorDouble(), dists, true);
 	if (dists.size()!=4 && dists.size()!=5) THROW_EXCEPTION("Expected 4 or 5-length vector in field 'dist'");
 
 	dist.Constant(0);
-	for (vector_double::Index i=0;i<dists.size();i++)
+	for (CVectorDouble::Index i=0;i<dists.size();i++)
 		dist[i] = dists[i];
 
 	focalLengthMeters = cfg.read_double(section,"focal_length",0, false /* optional value */ );
@@ -170,11 +170,11 @@ void TCamera::scaleToResolution(unsigned int new_ncols, unsigned int new_nrows)
 
 bool mrpt::utils::operator ==(const mrpt::utils::TCamera& a, const mrpt::utils::TCamera& b)
 {
-	return 
+	return
 		a.ncols==b.ncols &&
-		a.nrows==b.nrows && 
-		a.intrinsicParams==b.intrinsicParams && 
-		a.dist==b.dist && 
+		a.nrows==b.nrows &&
+		a.intrinsicParams==b.intrinsicParams &&
+		a.dist==b.dist &&
 		a.focalLengthMeters==b.focalLengthMeters;
 }
 bool mrpt::utils::operator !=(const mrpt::utils::TCamera& a, const mrpt::utils::TCamera& b)

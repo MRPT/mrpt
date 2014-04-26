@@ -9,12 +9,10 @@
 #ifndef  CHISTOGRAM_H
 #define  CHISTOGRAM_H
 
-#include <cmath>
-#include <mrpt/utils/utils_defs.h>
+#include <mrpt/utils/core_defs.h>
+#include <mrpt/math/eigen_frwds.h>
+#include <vector>
 
-/*---------------------------------------------------------------
-	Class
-  ---------------------------------------------------------------*/
 namespace mrpt
 {
 namespace math
@@ -96,12 +94,12 @@ namespace math
 		/** Returns the list of bin centers & hit counts
 		  * \sa getHistogramNormalized
 		  */
-		void getHistogram( vector_double &x, vector_double &hits ) const;
+		void getHistogram( std::vector<double> &x, std::vector<double> &hits ) const;
 
 		/** Returns the list of bin centers & hit counts, normalized such as the integral of the histogram, interpreted as a density PDF, amounts to 1.
 		  * \sa getHistogram
 		  */
-		void getHistogramNormalized( vector_double &x, vector_double &hits ) const;
+		void getHistogramNormalized( std::vector<double> &x, std::vector<double> &hits ) const;
 
 
 	}; // End of class def.

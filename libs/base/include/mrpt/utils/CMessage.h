@@ -9,8 +9,9 @@
 #ifndef  CMessage_H
 #define  CMessage_H
 
-#include <mrpt/utils/utils_defs.h>
-#include <mrpt/utils/CSerializable.h>
+#include <mrpt/utils/core_defs.h>
+#include <mrpt/utils/mrpt_stdint.h>
+#include <vector>
 
 /*---------------------------------------------------------------
 	Class
@@ -19,6 +20,8 @@ namespace mrpt
 {
 	namespace utils
 	{
+		class CSerializable; struct CSerializablePtr; 
+
 		/** A class that contain generic messages, that can be sent and received from a "CClientTCPSocket" object.
 		  *  A message consists of a "header" (or type), and a "body" (or content).
 		  *  Apart from arbitrary data, specific methods are provided for easing the serialization of MRPT's "CSerializable" objects.

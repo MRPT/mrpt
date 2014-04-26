@@ -13,8 +13,6 @@
 #include <wx/msgdlg.h>
 #include <wx/filename.h>
 
-#include <mrpt/base.h>
-
 // In milliseconds:
 #define SIMULATION_TIME_STEPS   20
 
@@ -38,6 +36,10 @@
 //*)
 
 #include <mrpt/gui/WxUtils.h>
+#include <mrpt/system/filesystem.h>
+#include <mrpt/slam/CObservation2DRangeScan.h>
+#include <mrpt/slam/CPointsMap.h>
+#include <mrpt/math/wrap2pi.h>
 
 
 #define WX_START_TRY \
@@ -88,7 +90,10 @@ wxBitmap MyArtProvider::CreateBitmap(const wxArtID& id,
 }
 
 // General global variables:
-#include <mrpt/maps.h>
+#include <mrpt/utils/CFileGZInputStream.h>
+#include <mrpt/utils/CMemoryStream.h>
+#include <mrpt/utils/CRobotSimulator.h>
+#include <mrpt/slam/COccupancyGridMap2D.h>
 
 using namespace mrpt;
 using namespace mrpt::slam;

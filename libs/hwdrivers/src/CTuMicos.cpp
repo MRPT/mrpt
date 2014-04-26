@@ -7,9 +7,14 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/hwdrivers.h> // Precompiled headers
+#include "hwdrivers-precomp.h"   // Precompiled headers
 
+#include <mrpt/hwdrivers/CTuMicos.h>
 #include <mrpt/system/threads.h>
+#include <mrpt/system/string_utils.h>
+#include <mrpt/utils/utils_defs.h>
+#include <cstring>
+#include <cstdio>
 
 using namespace std;
 using namespace mrpt::utils;
@@ -467,7 +472,7 @@ bool CTuMicos::changeMotionDir() {
 							init
 -------------------------------------------------------------*/
 
-bool CTuMicos::init(const string port){
+bool CTuMicos::init(const string &port){
 
 	try{
 

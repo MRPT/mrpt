@@ -11,12 +11,10 @@
 
 #include <mrpt/slam/CMetricMap.h>
 #include <mrpt/utils/CSerializable.h>
-#include <mrpt/math/CMatrix.h>
 #include <mrpt/utils/CLoadableOptions.h>
 #include <mrpt/utils/safe_pointers.h>
 #include <mrpt/math/KDTreeCapable.h>
 #include <mrpt/slam/CSinCosLookUpTableFor2DScans.h>
-#include <mrpt/poses/CPoint2D.h>
 #include <mrpt/math/lightweight_geom_data.h>
 #include <mrpt/utils/PLY_import_export.h>
 
@@ -70,7 +68,7 @@ namespace slam
 	protected:
 		/** Helper struct used for \a internal_loadFromRangeScan2D_prepareOneRange() */
 		struct MAPS_IMPEXP TLaserRange2DInsertContext {
-			TLaserRange2DInsertContext(const CObservation2DRangeScan  &_rangeScan) : HM(UNINITIALIZED_MATRIX), rangeScan(_rangeScan)
+			TLaserRange2DInsertContext(const CObservation2DRangeScan  &_rangeScan) : HM(mrpt::math::UNINITIALIZED_MATRIX), rangeScan(_rangeScan)
 			{ }
 			CMatrixDouble44	HM;  //!< Homog matrix of the local sensor pose within the robot
 			const CObservation2DRangeScan  &rangeScan;
@@ -81,7 +79,7 @@ namespace slam
 
 		/** Helper struct used for \a internal_loadFromRangeScan3D_prepareOneRange() */
 		struct MAPS_IMPEXP TLaserRange3DInsertContext {
-			TLaserRange3DInsertContext(const CObservation3DRangeScan  &_rangeScan) : HM(UNINITIALIZED_MATRIX), rangeScan(_rangeScan)
+			TLaserRange3DInsertContext(const CObservation3DRangeScan  &_rangeScan) : HM(mrpt::math::UNINITIALIZED_MATRIX), rangeScan(_rangeScan)
 			{ }
 			CMatrixDouble44	HM;  //!< Homog matrix of the local sensor pose within the robot
 			const CObservation3DRangeScan  &rangeScan;
@@ -349,10 +347,6 @@ namespace slam
 		/// \overload
 		unsigned long  getPoint(size_t index,double &x,double &y) const;
 		/// \overload
-		inline unsigned long  getPoint(size_t index,CPoint2D &p) const { return getPoint(index,p.x(),p.y()); }
-		/// \overload
-		inline unsigned long  getPoint(size_t index,CPoint3D &p) const  { return getPoint(index,p.x(),p.y(),p.z()); }
-		/// \overload
 		inline unsigned long  getPoint(size_t index,mrpt::math::TPoint2D &p) const  { return getPoint(index,p.x,p.y); }
 		/// \overload
 		inline unsigned long  getPoint(size_t index,mrpt::math::TPoint3D &p) const  { return getPoint(index,p.x,p.y,p.z); }
@@ -383,9 +377,9 @@ namespace slam
 			mark_as_modified();
 		}
 		/// \overload
-		inline void  setPoint(size_t index,CPoint2D &p) {  setPoint(index,p.x(),p.y(),0); }
+		inline void  setPoint(size_t index,mrpt::math::TPoint2D &p) {  setPoint(index,p.x,p.y,0); }
 		/// \overload
-		inline void  setPoint(size_t index,CPoint3D &p)  { setPoint(index,p.x(),p.y(),p.z()); }
+		inline void  setPoint(size_t index,mrpt::math::TPoint3D &p)  { setPoint(index,p.x,p.y,p.z); }
 		/// \overload
 		inline void  setPoint(size_t index,float x, float y) { setPoint(index,x,y,0); }
 		/// \overload (RGB data is ignored in classes without color information)
@@ -411,7 +405,7 @@ namespace slam
 		/** Returns a copy of the 2D/3D points as a std::vector of float coordinates.
 		  * If decimation is greater than 1, only 1 point out of that number will be saved in the output, effectively performing a subsampling of the points.
 		  * \sa getPointsBufferRef_x, getPointsBufferRef_y, getPointsBufferRef_z
-		  * \tparam VECTOR can be std::vector<float or double> or any row/column Eigen::Array or Eigen::Matrix (this includes mrpt::vector_float and mrpt::vector_double).
+		  * \tparam VECTOR can be std::vector<float or double> or any row/column Eigen::Array or Eigen::Matrix (this includes mrpt::math::CVectorFloat and mrpt::math::CVectorDouble).
 		  */
 		template <class VECTOR>
 		void  getAllPoints( VECTOR &xs, VECTOR &ys, VECTOR &zs, size_t decimation = 1 ) const
@@ -464,14 +458,12 @@ namespace slam
 		  */
 		inline void  insertPoint( float x, float y, float z=0 ) { insertPointFast(x,y,z); mark_as_modified(); }
 		/// \overload of \a insertPoint()
-		inline void  insertPoint( const CPoint3D &p ) { insertPoint(p.x(),p.y(),p.z()); }
-		/// \overload
 		inline void  insertPoint( const mrpt::math::TPoint3D &p ) { insertPoint(p.x,p.y,p.z); }
 		/// \overload (RGB data is ignored in classes without color information)
 		virtual void  insertPoint( float x, float y, float z, float R, float G, float B ) { insertPoint(x,y,z); }
 
 		/** Set all the points at once from vectors with X,Y and Z coordinates (if Z is not provided, it will be set to all zeros).
-		  * \tparam VECTOR can be mrpt::vector_float or std::vector<float> or any other column or row Eigen::Matrix.
+		  * \tparam VECTOR can be mrpt::math::CVectorFloat or std::vector<float> or any other column or row Eigen::Matrix.
 		  */
 		template <typename VECTOR>
 		inline void setAllPointsTemplate(const VECTOR &X,const VECTOR &Y,const VECTOR &Z = VECTOR())
@@ -520,7 +512,7 @@ namespace slam
 
 		/** Delete points which are more far than "maxRange" away from the given "point".
 		  */
-		void  clipOutOfRange(const CPoint2D	&point, float maxRange);
+		void  clipOutOfRange(const mrpt::math::TPoint2D &point, float maxRange);
 
 		/** Remove from the map the points marked in a bool's array as "true".
 		  * \exception std::exception If mask size is not equal to points count.
@@ -533,7 +525,7 @@ namespace slam
 			const CPose2D         & otherMapPose,
 			TMatchingPairList     & correspondences,
 			const TMatchingParams & params,
-			TMatchingExtraResults & extraResults ) const; 
+			TMatchingExtraResults & extraResults ) const;
 
 		// See docs in base class
 		virtual void  determineMatching3D(
@@ -541,7 +533,7 @@ namespace slam
 			const CPose3D         & otherMapPose,
 			TMatchingPairList     & correspondences,
 			const TMatchingParams & params,
-			TMatchingExtraResults & extraResults ) const; 
+			TMatchingExtraResults & extraResults ) const;
 
 		// See docs in base class
 		float  compute3DMatchingRatio(
@@ -675,7 +667,7 @@ namespace slam
 
 		/** Extracts the points in the map within a cylinder in 3D defined the provided radius and zmin/zmax values.
 		  */
-		void extractCylinder( const CPoint2D &center, const double radius, const double zmin, const double zmax, CPointsMap *outMap );
+		void extractCylinder( const mrpt::math::TPoint2D &center, const double radius, const double zmin, const double zmax, CPointsMap *outMap );
 
 		/** Extracts the points in the map within the area defined by two corners.
 		  *  The points are coloured according the R,G,B input data.

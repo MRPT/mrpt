@@ -7,8 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/base.h>  // Precompiled headers
-
+#include "base-precomp.h"  // Precompiled headers
 
 #include <mrpt/poses/CPoseRandomSampler.h>
 #include <mrpt/poses/CPosePDFGaussian.h>
@@ -17,9 +16,7 @@
 #include <mrpt/poses/CPose3DPDFGaussian.h>
 #include <mrpt/poses/CPose3DPDFParticles.h>
 #include <mrpt/poses/CPose3DPDFSOG.h>
-
 #include <mrpt/random.h>
-#include <mrpt/math/utils.h>
 
 using namespace mrpt;
 using namespace mrpt::poses;
@@ -85,7 +82,7 @@ void CPoseRandomSampler::setPosePDF( const CPosePDF *pdf )
 		cov.eigenVectors( m_fastdraw_gauss_Z3, D );
 
 		// Scale eigenvectors with eigenvalues:
-		D.Sqrt();
+		D = D.array().sqrt().matrix();
 		m_fastdraw_gauss_Z3.multiply( m_fastdraw_gauss_Z3, D);
     }
     else
@@ -130,7 +127,7 @@ void CPoseRandomSampler::setPosePDF( const CPose3DPDF *pdf )
 		cov.eigenVectors( m_fastdraw_gauss_Z6, D );
 
 		// Scale eigenvectors with eigenvalues:
-		D.Sqrt();
+		D = D.array().sqrt().matrix();
 		m_fastdraw_gauss_Z6.multiply( m_fastdraw_gauss_Z6, D);
     }
     else
@@ -146,6 +143,13 @@ void CPoseRandomSampler::setPosePDF( const CPose3DPDF *pdf )
     MRPT_END
 }
 
+void CPoseRandomSampler::setPosePDF( const CPose3DPDFPtr &pdf ) { 
+	setPosePDF(pdf.pointer()); 
+}
+
+void CPoseRandomSampler::setPosePDF( const CPosePDFPtr &pdf ) { 
+	setPosePDF(pdf.pointer()); 
+}
 
 /*---------------------------------------------------------------
                     drawSample
@@ -210,7 +214,8 @@ void CPoseRandomSampler::do_sample_2D( CPose2D &p ) const
 		// ------------------------------
 		//      A single gaussian:
 		// ------------------------------
-		vector_double	rndVector(3,0);
+		CVectorDouble	rndVector(3);
+		rndVector.setZero();
 		for (size_t i=0;i<3;i++)
 		{
 			double	rnd = randomGenerator.drawGaussian1D_normalized();
@@ -260,7 +265,8 @@ void CPoseRandomSampler::do_sample_3D( CPose3D &p ) const
 		// ------------------------------
 		//      A single gaussian:
 		// ------------------------------
-		vector_double	rndVector(6,0);
+		CVectorDouble	rndVector(6);
+		rndVector.setZero();
 		for (size_t i=0;i<6;i++)
 		{
 			double	rnd = randomGenerator.drawGaussian1D_normalized();

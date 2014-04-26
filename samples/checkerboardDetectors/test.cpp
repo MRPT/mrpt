@@ -7,8 +7,10 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/base.h>
-#include <mrpt/vision.h>
+#include <mrpt/utils/CImage.h>
+#include <mrpt/utils/CTimeLogger.h>
+#include <mrpt/vision/chessboard_find_corners.h>
+#include <mrpt/system/threads.h>
 #include <mrpt/gui.h>
 
 using namespace std;

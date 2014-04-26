@@ -7,12 +7,14 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/base.h>  // Precompiled headers
+#include "base-precomp.h"  // Precompiled headers
 
 
 #include <mrpt/utils/CClientTCPSocket.h>
 #include <mrpt/utils/CMessage.h>
 #include <mrpt/utils/net_utils.h>
+#include <mrpt/system/os.h>
+#include <cstring>
 
 using namespace mrpt::utils;
 using namespace mrpt::system;
@@ -298,7 +300,6 @@ size_t  CClientTCPSocket::readAsync(
 	size_t			remainToRead, alreadyRead = 0;
 	int				readNow;
 	bool			timeoutExpired = false;
-	int				curTimeout;
 
 	struct timeval	timeoutSelect;
 	struct timeval	*ptrTimeout;
@@ -312,7 +313,7 @@ size_t  CClientTCPSocket::readAsync(
 	while ( alreadyRead<Count && !timeoutExpired )
 	{
 		// Use the "first" or "between" timeouts:
-		curTimeout = alreadyRead==0 ? timeoutStart_ms : timeoutBetween_ms;
+		int curTimeout = alreadyRead==0 ? timeoutStart_ms : timeoutBetween_ms;
 
 		if (curTimeout<0)
 			ptrTimeout = NULL;

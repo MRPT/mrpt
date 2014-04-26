@@ -7,10 +7,11 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/hmtslam.h> // Precomp header
+#include "hmtslam-precomp.h" // Precomp header
 
+#include <mrpt/utils/CSimpleDatabase.h>
 #include <mrpt/utils/metaprogramming.h>
-#include <mrpt/utils.h>
+#include <mrpt/poses/CPoint2D.h>
 
 using namespace mrpt::poses;
 using namespace mrpt::slam;
@@ -221,7 +222,7 @@ void CHierarchicalMHMap::loadFromXMLfile(std::string fileName)
 
 
 				std::deque<std::string> lista;
-				mrpt::utils::tokenize(table->get(j,"annotation-list")," ",lista);
+				mrpt::system::tokenize(table->get(j,"annotation-list")," ",lista);
 
 				for (size_t r=0;r<lista.size();r++)
 					nodeanotmap.insert(IDnodeanotPair((size_t)atoi(lista[r].c_str()),node->getID()));

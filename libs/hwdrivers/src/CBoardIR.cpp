@@ -7,7 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/hwdrivers.h> // Precompiled headers
+#include "hwdrivers-precomp.h"   // Precompiled headers
 
 #include <mrpt/system/os.h>
 #include <mrpt/hwdrivers/CBoardIR.h>
@@ -47,12 +47,11 @@ void  CBoardIR::loadConfig_sensorSpecific(
 
 	m_COMbauds		= configSource.read_int( iniSection, "baudRate",m_COMbauds, true );
 
-	std::vector<int32_t>::iterator itIR;
 	std::vector<double> aux;				// Auxiliar vector
 	for( unsigned int i = 0; i < 6; i++ )
 	{
 		configSource.read_vector( iniSection, format("pose%d",i), aux, aux, true );	// Get the IR poses
-		m_IRPoses[i] = mrpt::poses::TPose3D( aux[0], aux[1], aux[2], DEG2RAD( (float)aux[3]), DEG2RAD( (float)aux[4]), DEG2RAD( (float)aux[5]) );
+		m_IRPoses[i] = mrpt::math::TPose3D( aux[0], aux[1], aux[2], DEG2RAD( (float)aux[3]), DEG2RAD( (float)aux[4]), DEG2RAD( (float)aux[5]) );
 	}
 }
 

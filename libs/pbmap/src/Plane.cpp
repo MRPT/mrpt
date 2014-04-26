@@ -20,11 +20,12 @@
 #include <mrpt/pbmap/Miscellaneous.h>
 #include <pcl/common/time.h>
 #include <pcl/filters/voxel_grid.h>
+#include <cassert>
 
 using namespace mrpt::pbmap;
 using namespace mrpt::utils;
 
-IMPLEMENTS_SERIALIZABLE(Plane, CSerializable, pbmap)
+IMPLEMENTS_SERIALIZABLE(Plane, CSerializable, mrpt::pbmap)
 
 ///*---------------------------------------------------------------
 //						writeToStream
@@ -1070,11 +1071,11 @@ bool Plane::hasSimilarDominantColor(Plane &plane, const float colorThreshold)
 void Plane::mergePlane(Plane &same_plane_patch)
 {
   // Update normal and center
-//assert(areaVoxels > 0 && same_plane_patch.areaVoxels > 0)
-//  v3normal = (areaVoxels*v3normal + same_plane_patch.areaVoxels*same_plane_patch.v3normal);
-assert(inliers.size() > 0 && same_plane_patch.inliers.size() > 0);
+  //assert(areaVoxels > 0 && same_plane_patch.areaVoxels > 0)
+  //  v3normal = (areaVoxels*v3normal + same_plane_patch.areaVoxels*same_plane_patch.v3normal);
+  assert(inliers.size() > 0 && same_plane_patch.inliers.size() > 0);
   v3normal = (inliers.size()*v3normal + same_plane_patch.inliers.size()*same_plane_patch.v3normal);
-  v3normal = v3normal / norm(v3normal);
+  v3normal = v3normal / v3normal.norm();
 
   // Update point inliers
 //  *polygonContourPtr += *same_plane_patch.polygonContourPtr; // Merge polygon points

@@ -7,7 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/vision.h>  // Precompiled headers
+#include "vision-precomp.h"   // Precompiled headers
 
 #include <mrpt/system/memory.h>
 #include <mrpt/vision/tracking.h>
@@ -15,6 +15,10 @@
 
 // Universal include for all versions of OpenCV
 #include <mrpt/otherlibs/do_opencv_includes.h>
+
+#if HAVE_ALLOCA_H
+# include <alloca.h>
+#endif
 
 
 using namespace mrpt;

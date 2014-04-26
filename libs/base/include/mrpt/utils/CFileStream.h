@@ -12,7 +12,7 @@
 #include <mrpt/utils/CStream.h>
 #include <mrpt/utils/CUncopiable.h>
 
-#include <iostream>
+#include <fstream>
 
 /*---------------------------------------------------------------
 	Class

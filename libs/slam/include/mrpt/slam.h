@@ -9,16 +9,12 @@
 #ifndef mrpt_slam_H
 #define mrpt_slam_H
 
-#include <mrpt/config.h>
-
-// Only really include all headers if we come from a user program (anything
-//  not defining mrpt_*_EXPORTS) or MRPT is being built with precompiled headers.
-#if !defined(mrpt_slam_EXPORTS) || MRPT_ENABLE_PRECOMPILED_HDRS || defined(MRPT_ALWAYS_INCLUDE_ALL_HEADERS)
-
-// This is to try to avoid an internal compiler error in MSVC 2008... :-(
-#if defined(mrpt_slam_EXPORTS) && MRPT_ENABLE_PRECOMPILED_HDRS
-	#include <mrpt/base.h>
+#ifndef MRPT_NO_WARN_BIG_HDR
+#include <mrpt/utils/core_defs.h>
+MRPT_WARNING("Including <mrpt/slam.h> makes compilation much slower, consider including only what you need (define MRPT_NO_WARN_BIG_HDR to disable this warning)")
 #endif
+
+#include <mrpt/config.h>
 
 // Maps:
 #include <mrpt/slam/CMetricMap.h>
@@ -93,7 +89,5 @@
 #include <mrpt/slam/CRawlog.h>
 
 #include <mrpt/slam/COccupancyGridMapFeatureExtractor.h>
-
-#endif // end precomp.headers
 
 #endif

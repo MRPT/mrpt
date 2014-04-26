@@ -7,13 +7,13 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/hmtslam.h>
-#include <mrpt/utils.h>
+#include "hmtslam-precomp.h" // Precomp header
 
+#include <mrpt/hmtslam.h>
+#include <mrpt/utils/CStartUpClassesRegister.h>
 
 using namespace mrpt::utils;
 using namespace mrpt::hmtslam;
-
 
 void registerAllClasses_mrpt_hmtslam();
 

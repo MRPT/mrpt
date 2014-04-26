@@ -7,16 +7,17 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/graphs.h>
-#include <mrpt/gui.h>
-#include <mrpt/base.h>
+#include <mrpt/graphs/dijkstra.h>
+#include <mrpt/graphs/CNetworkOfPoses.h>
+#include <mrpt/gui/CDisplayWindowPlots.h>
+#include <mrpt/utils/CTicTac.h>
+#include <mrpt/random.h>
 
 using namespace mrpt;
 using namespace mrpt::utils;
 using namespace mrpt::graphs;
 using namespace mrpt::poses;
 using namespace mrpt::math;
-using namespace mrpt::opengl;
 using namespace mrpt::gui;
 using namespace mrpt::random;
 using namespace std;
@@ -60,7 +61,7 @@ void TestDijkstra()
 	const double DIST_THRES = 10;
 	const double NODES_XY_MAX = 15;
 
-	vector_float  xs,ys;
+	vector<float>  xs,ys;
 
 	for (size_t j=0;j<N_VERTEX;j++)
 	{
@@ -157,8 +158,8 @@ void TestDijkstra()
 			const CPose2D &p1 = real_poses[ e->first.first ];
 			const CPose2D &p2 = real_poses[ e->first.second ];
 
-			vector_float X(2);
-			vector_float Y(2);
+			vector<float> X(2);
+			vector<float> Y(2);
 			X[0] = p1.x();  Y[0] = p1.y();
 			X[1] = p2.x();  Y[1] = p2.y();
 			win.plot(X,Y,"k1");
@@ -170,8 +171,8 @@ void TestDijkstra()
 			const CPose2D &p1 = real_poses[ a->first];
 			const CPose2D &p2 = real_poses[ a->second ];
 
-			vector_float X(2);
-			vector_float Y(2);
+			vector<float> X(2);
+			vector<float> Y(2);
 			X[0] = p1.x();  Y[0] = p1.y();
 			X[1] = p2.x();  Y[1] = p2.y();
 			win.plot(X,Y,"g3");

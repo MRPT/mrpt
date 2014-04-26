@@ -7,12 +7,12 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/hwdrivers.h> // Precompiled headers
+#include "hwdrivers-precomp.h"   // Precompiled headers
 
 #include <mrpt/hwdrivers/CPtuHokuyo.h>
 #include <mrpt/hwdrivers/CTuMicos.h>
+#include <mrpt/math/interp_fit.h>
 #include <vector>
-#include <mrpt/gui.h>
 
 using namespace mrpt;
 
@@ -704,7 +704,7 @@ int CPtuHokuyo::obsPosition()
 			if(ts <= last_time){
 				double pos;
 				// Calculate laser position
-				pos = interpolate2points(ts,v_ptu_time.at(0),v_ptu_pos.at(0),v_ptu_time.at(v_ptu_time.size()-1),v_ptu_pos.at(v_ptu_pos.size()-1));
+				pos = mrpt::math::interpolate2points(ts,v_ptu_time.at(0),v_ptu_pos.at(0),v_ptu_time.at(v_ptu_time.size()-1),v_ptu_pos.at(v_ptu_pos.size()-1));
 				calculateSensorPose(m_axis,pos,vObs.at(i));
 				num_obs++;
 			}

@@ -7,16 +7,16 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/synch.h>
-#include <mrpt/utils.h>
+#include <mrpt/synch/CSemaphore.h>
 #include <mrpt/random.h>
-#include <mrpt/system.h>
+#include <mrpt/system/threads.h>
 #include <gtest/gtest.h>
 
 using namespace mrpt;
 using namespace mrpt::utils;
 using namespace mrpt::synch;
 using namespace mrpt::random;
+using namespace mrpt::system;
 using namespace std;
 
 // External in other .cpp

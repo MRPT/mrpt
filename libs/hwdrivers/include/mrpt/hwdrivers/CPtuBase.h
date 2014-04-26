@@ -20,11 +20,11 @@ namespace mrpt
 		  * control a generic Pan and Tilt Unit, working in radians.
 		  * \ingroup mrpt_hwdrivers_grp
 		  */
-		class HWDRIVERS_IMPEXP CPtuBase 
+		class HWDRIVERS_IMPEXP CPtuBase
 		{
 
 			/*************************** Atributes **********************/
-		
+
 		public:
 
 			double tiltResolution,panResolution;
@@ -62,7 +62,7 @@ namespace mrpt
 			*		TO * Current Tilt position is -500
 			*		TO500 *
 			*		A *
-			*		TT * Current Pan position is 1000 
+			*		TT * Current Pan position is 1000
 			*	\endcode
 			*/
 
@@ -122,7 +122,7 @@ namespace mrpt
 			/** Inmediately stop */
 
 			virtual bool halt(char axis)=0;
-			
+
 		    /** Specification of turn speed */
 
 			virtual bool  speed(char axis,double RadSec)=0;
@@ -202,7 +202,7 @@ namespace mrpt
 			/** Check if ptu is moving */
 
 			virtual double status(double &rad)=0;
-			
+
 			/** Set limits of movement */
 
 			virtual bool setLimits(char axis, double &l, double &u)=0;
@@ -227,7 +227,7 @@ namespace mrpt
 
 			/** PTU and serial port initialization */
 
-			virtual bool init(const std::string port)=0;
+			virtual bool init(const std::string &port)=0;
 
 			/** Close conection with serial port */
 
@@ -250,7 +250,7 @@ namespace mrpt
 
 			/** Performs a scan in the axis indicated and whit the precision desired.
 			*		\param <axis> {Pan or Till}
-			*		\param <tWait> {Wait time betwen commands} 
+			*		\param <tWait> {Wait time betwen commands}
 			*		\param <initial> {initial position}
 			*		\param <final> {final position}
 			*		\param <RadPre> {radians precision for the scan}

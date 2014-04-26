@@ -13,8 +13,14 @@
   ---------------------------------------------------------------*/
 
 #include <mrpt/version.h>
-#include <mrpt/base.h>
-#include <mrpt/system.h>
+#include <mrpt/utils/CFileOutputStream.h>
+#include <mrpt/utils/CFileInputStream.h>
+#include <mrpt/utils/stl_serialization.h>
+#include <mrpt/system/CDirectoryExplorer.h>
+#include <mrpt/system/os.h>
+#include <mrpt/system/filesystem.h>
+#include <mrpt/system/datetime.h>
+#include <iomanip>
 
 #include "../mrpt-performance/common.h"
 

@@ -7,8 +7,12 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/base.h>
-#include <mrpt/slam.h>
+#include <mrpt/utils.h>
+#include <mrpt/random.h>
+#include <mrpt/system/filesystem.h>
+#include <mrpt/slam/CMetricMapBuilderICP.h>
+#include <mrpt/slam/CMultiMetricMap.h>
+#include <mrpt/slam/CRawlog.h>
 
 #include "common.h"
 

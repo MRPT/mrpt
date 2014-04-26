@@ -7,11 +7,12 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/hmtslam.h> // Precomp header
+#include "hmtslam-precomp.h" // Precomp header
 
 #include <mrpt/utils/CTicTac.h>
 #include <mrpt/random.h>
 #include <mrpt/utils/CFileStream.h>
+#include <mrpt/utils/printf_vector.h>
 #include <mrpt/poses/CPose3DPDFParticles.h>
 #include <mrpt/system/os.h>
 

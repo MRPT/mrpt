@@ -8,18 +8,21 @@
    +---------------------------------------------------------------------------+ */
 
 #include <mrpt/hwdrivers/CPtuDPerception.h>
+#include <mrpt/utils/utils_defs.h> // DEG2RAD
 
 #include <iostream>
-#include <stdlib.h>
+#include <cstdlib>
+#include <cstdio>
 
 using namespace std;
+using namespace mrpt::utils;
 using namespace mrpt::hwdrivers;
 
 void showMenu();
 void showInfo(CPtuBase *ptu);
 
 int main(){
-	
+
 	CPtuBase *ptu = new CPtuDPerception();
 
 	string port;
@@ -33,35 +36,35 @@ int main(){
 	cout << "<Pan & Tilt Unit test application>" << endl;
 	cout << "Enter the serial port name (e.g. COM1, ttyS0, ttyUSB0): ";
 	getline(cin,port);
-	
+
 	// Ptu initialization
 
 	if(!ptu->init(port))
-		cout << endl << "[INFO] Initialitation error";	
+		cout << endl << "[INFO] Initialitation error";
 
 	showMenu();
-	
+
 	cout << ">> Command: ";
 	cin >> c;
 
 	while (c!='q'){
 
 		switch(c){
-		
+
 			// Discreet scan
-			case 's':	
+			case 's':
 				// Get parameters for performs a scan
-		
+
 				cout << endl << "Enter axis to scan (T for Till or P for Pan): ";
-				cin >> axis;	
+				cin >> axis;
 				cout << endl << "Enter wait time between steps (in milliseconds): ";
-				cin >> tWait;	
+				cin >> tWait;
 				cout << endl << "Enter initial position: ";
-				cin >> initial;	
+				cin >> initial;
 				cout << endl << "Enter final position: ";
 				cin >> final;
 				cout << endl << "Enter precision degrees: ";
-				cin >> graPre;	
+				cin >> graPre;
 
 				// Performs a scan
 				initialRad = DEG2RAD(initial);
@@ -74,7 +77,7 @@ int main(){
 
 			// PTU config information
 			case 'i':
-				
+
 				showInfo(ptu);
 
 				break;
@@ -85,7 +88,7 @@ int main(){
 				showMenu();
 
 				break;
-			
+
 			// Incorrect command
 			default:
 
@@ -94,7 +97,7 @@ int main(){
 				break;
 		}
 
-		
+
 			cout << "\n";
 			cout << ">> Command: ";
 			cin >> c;
@@ -111,7 +114,7 @@ int main(){
 -------------------------------------------------------------*/
 
 void showMenu(){
-	
+
 	printf("\n======================\n"
 		"PTU test application\n"
 		"======================\n\n"

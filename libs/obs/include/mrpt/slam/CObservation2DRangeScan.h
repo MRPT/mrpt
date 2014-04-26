@@ -12,12 +12,8 @@
 #include <mrpt/utils/CSerializable.h>
 #include <mrpt/slam/CObservation.h>
 #include <mrpt/poses/CPose3D.h>
-#include <mrpt/poses/CPose2D.h>
-
 #include <mrpt/slam/CMetricMap.h>
-
 #include <mrpt/math/CPolygon.h>
-
 
 namespace mrpt
 {

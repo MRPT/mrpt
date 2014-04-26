@@ -7,15 +7,16 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/scanmatching.h>  // Precompiled header
+#include "scanmatching-precomp.h"  // Precompiled headers
 
 
 #include <mrpt/scanmatching/scan_matching.h>
 #include <mrpt/poses/CPosePDFGaussian.h>
 #include <mrpt/poses/CPosePDFSOG.h>
 #include <mrpt/random.h>
-#include <mrpt/math/CMatrixD.h>
+#include <mrpt/poses/CPose3D.h>
 #include <mrpt/math/utils.h>
+#include <mrpt/utils/round.h>
 #include <mrpt/math/CQuaternion.h>
 
 #include <algorithm>
@@ -48,7 +49,7 @@ bool  scanmatching::leastSquareErrorRigidTransformation6DRANSAC(
 	// -------------------------------------------
 	// Thresholds
 	// -------------------------------------------
-	vector_float	th(7);
+	CVectorFloat	th(7);
 	th[0] = 0.05;			// X (meters)
 	th[1] = 0.05;			// Y (meters)
 	th[2] = 0.05;			// Z (meters)
@@ -92,7 +93,7 @@ bool  scanmatching::leastSquareErrorRigidTransformation6DRANSAC(
 
 		// Compute first inliers output
 		CPose3D							mbOut;
-		vector_float					mbOut_vec(7);
+		CVectorFloat					mbOut_vec(7);
 		TMatchingPairList	mbInliers;
 		mbInliers.resize( n );
 		for( unsigned int i = 0; i < n; i++ )

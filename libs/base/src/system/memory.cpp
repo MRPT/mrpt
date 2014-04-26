@@ -7,9 +7,13 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/base.h>  // Precompiled headers
+#include "base-precomp.h"  // Precompiled headers
 
+#include <mrpt/utils/core_defs.h>
 #include <mrpt/system/memory.h>
+#include <cstdio>
+#include <cstring>
+#include <cstdlib> // realloc(), posix_memalign()...
 
 #ifdef MRPT_OS_APPLE
 #include <mach/mach_init.h>
@@ -17,7 +21,6 @@
 #endif
 
 using namespace mrpt;
-using namespace mrpt::utils;
 using namespace mrpt::system;
 using namespace std;
 

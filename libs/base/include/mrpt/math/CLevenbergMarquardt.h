@@ -10,8 +10,9 @@
 #define  CLevenbergMarquardt_H
 
 #include <mrpt/utils/CDebugOutputCapable.h>
-#include <mrpt/math/CMatrixD.h>
-#include <mrpt/math/utils.h>
+#include <mrpt/utils/types_math.h>
+#include <mrpt/math/num_jacobian.h>
+#include <mrpt/utils/printf_vector.h>
 
 /*---------------------------------------------------------------
 	Class
@@ -28,12 +29,12 @@ namespace math
 	 * \tparam USERPARAM The type of the "y" input to the user supplied evaluation functor. Default type is a vector of NUMTYPE.
 	 * \ingroup mrpt_base_grp
 	 */
-	template <typename VECTORTYPE = mrpt::vector_double, class USERPARAM = VECTORTYPE >
+	template <typename VECTORTYPE = Eigen::VectorXd, class USERPARAM = VECTORTYPE >
 	class CLevenbergMarquardtTempl : public mrpt::utils::CDebugOutputCapable
 	{
 	public:
-		typedef typename VECTORTYPE::value_type  NUMTYPE;
-		typedef mrpt::math::CMatrixTemplateNumeric<NUMTYPE>  matrix_t;
+		typedef typename VECTORTYPE::Scalar  NUMTYPE;
+		typedef Eigen::Matrix<NUMTYPE,Eigen::Dynamic,Eigen::Dynamic>  matrix_t;
 		typedef VECTORTYPE vector_t;
 
 
@@ -155,7 +156,7 @@ namespace math
 				double h_lm_n2 = math::norm(h_lm);
 				double x_n2 = math::norm(x);
 
-				if (verbose) printf_debug( (format("[LM] Iter: %u x:",(unsigned)iter)+ sprintf_vector(" %f",x) + string("\n")).c_str() );
+				if (verbose) printf_debug( (format("[LM] Iter: %u x:",(unsigned)iter)+ sprintf_vector(" %f",x) + std::string("\n")).c_str() );
 
 				if (h_lm_n2<e2*(x_n2+e2))
 				{
@@ -225,7 +226,7 @@ namespace math
 	}; // End of class def.
 
 
-	typedef CLevenbergMarquardtTempl<vector_double> CLevenbergMarquardt;  //!< The default name for the LM class is an instantiation for "double"
+	typedef CLevenbergMarquardtTempl<CVectorDouble> CLevenbergMarquardt;  //!< The default name for the LM class is an instantiation for "double"
 
 	} // End of namespace
 } // End of namespace

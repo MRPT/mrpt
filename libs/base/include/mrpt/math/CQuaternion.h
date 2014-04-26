@@ -11,7 +11,7 @@
 #define CQuaternion_H
 
 #include <mrpt/math/CMatrixTemplateNumeric.h>
-#include <mrpt/math/CArray.h>
+#include <mrpt/math/CArrayNumeric.h>
 
 namespace mrpt
 {
@@ -126,7 +126,7 @@ namespace mrpt
 
 		/** Logarithm of the 3x3 matrix defined by this pose, generating the corresponding vector in the SO(3) Lie Algebra,
 		  *  which coincides with the so-called "rotation vector" (I don't have space here for the proof ;-).
-		  *  \param[out] out_ln The target vector, which can be: std::vector<>, or mrpt::vector_double or any row or column Eigen::Matrix<>.
+		  *  \param[out] out_ln The target vector, which can be: std::vector<>, or mrpt::math::CVectorDouble or any row or column Eigen::Matrix<>.
 		  *  \sa exp,  mrpt::poses::SE_traits  */
 		template <class ARRAYLIKE3>
 		inline void ln(ARRAYLIKE3 &out_ln) const

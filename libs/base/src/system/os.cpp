@@ -7,18 +7,16 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/base.h>  // Precompiled headers
-
+#include "base-precomp.h"  // Precompiled headers
 
 #include <mrpt/utils/CTicTac.h>
-#include <mrpt/utils/CFileOutputStream.h>
-#include <mrpt/utils/CFileInputStream.h>
-#include <mrpt/system/os.h>
-#include <mrpt/synch/CCriticalSection.h>
 #include <mrpt/system/os.h>
 
-#include <cstdlib>
-#include <cstdarg>
+#ifndef HAVE_TIMEGM
+#   include <mrpt/synch/CCriticalSection.h>
+#endif // HAVE_TIMEGM
+
+#include <cstring>
 #include <float.h>
 #include <iostream>
 #include <algorithm>
@@ -101,110 +99,11 @@ using namespace std;
 // For UNIX only: If a fatal signal is caught, throw a MRPT exception to inform about the event:
 //   Based on code from wxWidgets (utilsunx.cpp)
 // --------------------------------------------------------------------------------------------------
-
-// Use the wonderful wxWidgets stack walker!
-#if MRPT_HAS_WXWIDGETS && 0
-
-#include <wx/string.h>
-#include <wx/stackwalk.h>
-#if wxUSE_STACKWALKER
-
-#include <mrpt/gui/WxSubsystem.h>
-//#include <wx/string.h>
-//#include <wx/log.h>
-//#include <wx/app.h>
-
-
-/** A custom class that build a string representation of the stack frames
-  */
-class CMRPTStackWalker : public wxStackWalker
-{
-   private:
-	   std::string  m_stackDescription;
-
-   public:
-	CMRPTStackWalker() : m_stackDescription()
-    {
-    	// We need wx subsystem running for this class!
-		mrpt::gui::WxSubsystem::createOneInstanceMainThread();
-    }
-
-    virtual ~CMRPTStackWalker()
-    {
-    }
-
-	std::string getAsString() const
-	{
-		if (m_stackDescription.empty())
-		{
-			return std::string();
-		}
-		else
-		{
-			// Under Windows, we only have a stack trace in debug:
-#if defined(MRPT_OS_WINDOWS) && !defined(_DEBUG)
-			return std::string();
-#else
-			return std::string("==== MRPT stack trace ====\n")+m_stackDescription;
-#endif
-		}
-	}
-
-    void OnStackFrame(const wxStackFrame& frame)
-    {
-        //cerr << format("%u\n",(unsigned int)frame.GetLevel());
-        string filename(
-            mrpt::system::extractFileName( string(frame.GetFileName().mb_str()) ) +
-            string(".") +
-            mrpt::system::extractFileExtension( string(frame.GetFileName().mb_str()) ) );
-
-        m_stackDescription += format(
-          "[%4u] 0x%p -> %s File: %s Function: %s Line: %u\n",
-          (unsigned int)frame.GetLevel(),
-          frame.GetAddress(),
-          string(frame.GetModule().mb_str()).c_str(),
-          filename.c_str(),
-          string(frame.GetName().mb_str()).c_str(),
-          (unsigned int)frame.GetLine()
-          );
-    }
-
-};
-
-#endif  // stack walker
-#endif  // wxWidgets
-
 extern "C" void MRPT_SIGNAL_HANDLER_SIG( int )
 {
-#if MRPT_HAS_WXWIDGETS && wxUSE_STACKWALKER
-    CMRPTStackWalker    sw;
-    sw.Walk();
-    cerr << sw.getAsString(); cerr.flush();
-    //THROW_EXCEPTION( "*FATAL*: Signal SIGSEGV caught!" );
-    abort();
-#else
 	cerr << "*FATAL*: Signal SIGSEGV caught!" << endl;
-    abort();
-#endif
+	abort();
 }
-
-/** Dumps the current program stack with detailed information of source files and lines.
-  *  This function requires MRPT linked against wxWidgets. Otherwise, an empty string is returned.
-  *  File names and lines won't be available in release builds.
-  */
-std::string mrpt::system::stack_trace(bool calling_from_exception )
-{
-#if MRPT_HAS_WXWIDGETS && wxUSE_STACKWALKER
-    CMRPTStackWalker    sw;
-	/*if (calling_from_exception)
-		 sw.WalkFromException();
-	else sw.Walk();*/
-    return sw.getAsString();
-#else
-	return std::string();
-#endif
-}
-
 
 /*---------------------------------------------------------------
             registerFatalExceptionHandlers
@@ -286,94 +185,6 @@ void mrpt::system::registerFatalExceptionHandlers()
 
 	#endif
 #endif	// HAVE_TIMEGM
-
-/*---------------------------------------------------------------
-						vectorToTextFile
- ---------------------------------------------------------------*/
-bool  mrpt::system::vectorToTextFile( const vector<float> &vec, const string &fileName, bool append, bool byRows )
-{
-	FILE	*f=os::fopen(fileName.c_str(), append ? "at" : "wt");
-	if (!f) return false;
-
-	for (vector<float>::const_iterator	it=vec.begin();it!=vec.end();++it)
-		os::fprintf(f,byRows ? "%e ":"%e\n",*it);
-
-	if (byRows) os::fprintf(f,"\n");
-
-	os::fclose(f);
-	return true;	// All ok.
-}
-
-/*---------------------------------------------------------------
-						vectorToTextFile
- ---------------------------------------------------------------*/
-bool  mrpt::system::vectorToTextFile( const vector<double> &vec, const string &fileName, bool append, bool byRows  )
-{
-	FILE	*f=os::fopen(fileName.c_str(),append ? "at" : "wt");
-	if (!f) return false;
-
-	for (vector<double>::const_iterator	it=vec.begin();it!=vec.end();++it)
-		os::fprintf(f,byRows ? "%e ":"%e\n",*it);
-
-	if (byRows) os::fprintf(f,"\n");
-
-	os::fclose(f);
-	return true;	// All ok.
-}
-
-/*---------------------------------------------------------------
-						vectorToTextFile
- ---------------------------------------------------------------*/
-bool  mrpt::system::vectorToTextFile( const vector<int> &vec, const string &fileName, bool append, bool byRows  )
-{
-	FILE	*f=os::fopen(fileName.c_str(),append ? "at" : "wt");
-	if (!f) return false;
-
-	for (vector<int>::const_iterator	it=vec.begin();it!=vec.end();++it)
-		os::fprintf(f,byRows ? "%i ":"%i\n",*it);
-
-	if (byRows) os::fprintf(f,"\n");
-
-	os::fclose(f);
-	return true;	// All ok.
-}
-
-/*---------------------------------------------------------------
-						vectorToTextFile
- ---------------------------------------------------------------*/
-bool  mrpt::system::vectorToTextFile( const vector<size_t> &vec, const string &fileName, bool append, bool byRows  )
-{
-	FILE	*f=os::fopen(fileName.c_str(),append ? "at" : "wt");
-	if (!f) return false;
-
-	for (vector<size_t>::const_iterator	it=vec.begin();it!=vec.end();++it)
-		os::fprintf(f,byRows ? "%u ":"%u\n",static_cast<unsigned int>(*it));
-
-	if (byRows) os::fprintf(f,"\n");
-
-	os::fclose(f);
-	return true;	// All ok.
-}
-
-/*---------------------------------------------------------------
-						vectorFromTextFile
- ---------------------------------------------------------------*/
-bool  mrpt::system::vectorFromTextFile( std::vector<double> &vec, const std::string &fileName, bool byRows )
-{
-	FILE	*f = os::fopen( fileName.c_str(), "r" );
-	if (!f) return false;
-
-	double number = 0;
-
-	while ( !feof(f) )
-	{
-		size_t readed = fscanf( f, byRows ? "%lf" : "%lf\n", &number );
-		if ( (!byRows) || (readed == 1) )
-			vec.push_back( number );
-	}
-
-	return true;
-}
 
 /*---------------------------------------------------------------
 					mrpt::system::MRPT_getCompilationDate
@@ -658,41 +469,6 @@ void mrpt::system::clearConsole()
 		cerr << "[mrpt::system::clearConsole] Error invoking 'clear screen' " << endl;
 }
 
-/*---------------------------------------------------------------
-					loadBinaryFile
-  ---------------------------------------------------------------*/
-bool mrpt::system::loadBinaryFile( vector_byte &out_data, const std::string &fileName )
-{
-	try
-	{
-		CFileInputStream	fi(fileName);
-		size_t  N = fi.getTotalBytesCount();
-
-		out_data.resize(N);
-		if (N)
-		{
-			size_t NN = fi.ReadBuffer( &out_data[0], N);
-			return NN==N;
-		}
-		else return true;
-	}
-	catch(...) { return false; }
-}
-
-/*---------------------------------------------------------------
-					vectorToBinaryFile
-  ---------------------------------------------------------------*/
-bool mrpt::system::vectorToBinaryFile( const vector_byte &vec, const std::string &fileName )
-{
-	try
-	{
-		mrpt::utils::CFileOutputStream	of(fileName);
-		if (!vec.empty())
-			of.WriteBuffer( &vec[0], sizeof(vec[0])*vec.size() );
-		return true;
-	}
-	catch(...) { return false; }
-}
 
 /*---------------------------------------------------------------
 					_strtoll
@@ -761,44 +537,31 @@ void mrpt::system::setConsoleColor( TConsoleColor color,bool changeStdErr )
 #endif
 }
 
+const char* sLicenseTextF =
+"                     Mobile Robot Programming Toolkit (MRPT)                \n"
+"                          http://www.mrpt.org/                              \n"
+"                                                                            \n"
+" Copyright (c) 2005-%Y, Individual contributors, see AUTHORS file         \n"
+" See: http://www.mrpt.org/Authors - All rights reserved.                   \n"
+" Released under BSD License. See details in http://www.mrpt.org/License    \n";
 
-
-const std::string sLicenseText = std::string(
-"                 The Mobile Robot Programming Toolkit (MRPT)\n"
-"\n"
-"                          http://www.mrpt.org/\n"
-"\n"
-" Copyright (c) 2005-2013, Individual contributors, see AUTHORS file\n"
-" Copyright (c) 2005-2013, MAPIR group, University of Malaga\n"
-" Copyright (c) 2012-2013, University of Almeria\n"
-" All rights reserved.\n"
-"\n"
-" Redistribution and use in source and binary forms, with or without\n"
-" modification, are permitted provided that the following conditions are\n"
-" met:\n"
-"    * Redistributions of source code must retain the above copyright\n"
-"      notice, this list of conditions and the following disclaimer.\n"
-"    * Redistributions in binary form must reproduce the above copyright\n"
-"      notice, this list of conditions and the following disclaimer in the\n"
-"      documentation and/or other materials provided with the distribution.\n"
-"    * Neither the name of the copyright holders nor the\n"
-"      names of its contributors may be used to endorse or promote products\n"
-"      derived from this software without specific prior written permission.\n"
-"\n"
-" THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS\n"
-" 'AS IS' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED\n"
-" TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR\n"
-" PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDERS BE LIABLE\n"
-" FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL\n"
-" DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR\n"
-"  SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)\n"
-" HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,\n"
-" STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN\n"
-" ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE\n"
-" POSSIBILITY OF SUCH DAMAGE.\n");
-
+std::string sLicenseText;
+bool sLicenseTextReady=false;
 const std::string & mrpt::system::getMRPTLicense()
 {
+	if (!sLicenseTextReady)
+	{
+		// Automatically update the last year of the copyright to the compilation date:
+		time_t rawtime;
+		struct tm * timeinfo;
+		time (&rawtime);
+		timeinfo = localtime (&rawtime);
+
+		char buf[1024];
+		::strftime(buf,sizeof(buf),sLicenseTextF,timeinfo);
+		sLicenseText = std::string(buf);
+		sLicenseTextReady=true;
+	}
 	return sLicenseText;
 }
 

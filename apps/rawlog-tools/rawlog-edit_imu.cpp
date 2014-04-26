@@ -9,14 +9,13 @@
 
 #include "rawlog-edit-declarations.h"
 
-#include <mrpt/topography.h>
+#include <mrpt/slam/CObservationIMU.h>
 
 using namespace mrpt;
 using namespace mrpt::utils;
 using namespace mrpt::slam;
 using namespace mrpt::system;
 using namespace mrpt::rawlogtools;
-using namespace mrpt::topography;
 using namespace std;
 
 // ======================================================================
@@ -83,7 +82,7 @@ DECLARE_OP_FUNCTION(op_export_imu_txt)
 					"%22s %22s %22s "	// IMU_X_VEL...
 					"%22s %22s %22s "	// IMU_YAW...
 					"%22s %22s %22s "	// IMU_X...
-					"%22s %22s %22s "   // MAG_X MAG_Y MAG_Z 
+					"%22s %22s %22s "   // MAG_X MAG_Y MAG_Z
 					"%22s %22s %22s "   // PRESS ALTIT TEMP
 					"\n"
 					,

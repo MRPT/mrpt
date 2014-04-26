@@ -8,8 +8,11 @@
    +---------------------------------------------------------------------------+ */
 
 #include <mrpt/hwdrivers/CSickLaserSerial.h>
-#include <mrpt/gui.h>
-#include <mrpt/maps.h>
+#include <mrpt/gui/CDisplayWindowPlots.h>
+#include <mrpt/slam/CSimplePointsMap.h>
+#include <mrpt/slam/CObservation2DRangeScan.h>
+#include <mrpt/system/threads.h> // sleep()
+#include <mrpt/system/os.h>
 
 using namespace mrpt;
 using namespace mrpt::utils;
@@ -94,7 +97,7 @@ void TestPLS()
 			theMap.insertObservation( &obs );
 
 #if MRPT_HAS_WXWIDGETS
-			vector_float	xs,ys,zs;
+			std::vector<float>	xs,ys,zs;
 			theMap.getAllPoints(xs,ys,zs);
 			win.plot(xs,ys,".b3");
 			win.axis_equal();

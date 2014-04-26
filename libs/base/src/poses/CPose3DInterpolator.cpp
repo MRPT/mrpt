@@ -7,15 +7,17 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/base.h>  // Precompiled headers
+#include "base-precomp.h"  // Precompiled headers
 
 #include <mrpt/poses/CPose3D.h>
+#include <mrpt/poses/CPoint3D.h>
 #include <mrpt/poses/CPose3DPDFParticles.h>
 #include <mrpt/poses/CPose3DInterpolator.h>
 #include <mrpt/utils/CFileOutputStream.h>
-
-#include <mrpt/math/utils.h>
+#include <mrpt/utils/stl_serialization.h>
 #include <mrpt/math/slerp.h>
+#include <mrpt/math/wrap2pi.h>
+#include <mrpt/math/interp_fit.h>
 #include <mrpt/math/CMatrixD.h>
 
 using namespace mrpt;
@@ -132,7 +134,7 @@ CPose3D & CPose3DInterpolator::interpolate( mrpt::system::TTimeStamp t, CPose3D 
 	}
 	p4 = *(it_ge1);		// Fourth pair
 
-	it_ge1--;
+	--it_ge1;
 	p2 = *(--it_ge1);	// Second pair
 
 	if( it_ge1 == m_path.begin() )
@@ -164,14 +166,14 @@ CPose3D & CPose3DInterpolator::interpolate( mrpt::system::TTimeStamp t, CPose3D 
 	// Time where to interpolate:  t
 	double td     = mrpt::system::timestampTotime_t(t);
 
-	vector_double	ts;
+	CVectorDouble	ts;
 	ts.resize(4);
 	ts[0] = mrpt::system::timestampTotime_t(p1.first);
 	ts[1] = mrpt::system::timestampTotime_t(p2.first);
 	ts[2] = mrpt::system::timestampTotime_t(p3.first);
 	ts[3] = mrpt::system::timestampTotime_t(p4.first);
 
-	vector_double	X,Y,Z,yaw,pitch,roll;
+	CVectorDouble	X,Y,Z,yaw,pitch,roll;
 	X.resize(4);						Y.resize(4);							Z.resize(4);
 	X[0]	= p1.second.x();				Y[0]	= p1.second.y();					Z[0]	= p1.second.z();
 	X[1]	= p2.second.x();				Y[1]	= p2.second.y();					Z[1]	= p2.second.z();
@@ -318,7 +320,7 @@ bool CPose3DInterpolator::getPreviousPoseWithMinDistance(  const mrpt::system::T
 	double d = 0.0;
 	do
 	{
-		it--;
+		--it;
 		d = myPose.distance2DTo( it->second.x(), it->second.y());
 	} while( d < distance && it != m_path.begin() );
 
@@ -521,7 +523,7 @@ void CPose3DInterpolator::filter( unsigned int component, unsigned int samples )
 	CPose3DInterpolator::iterator it1, it2, it3;
 
 	//int asamples;
-	for( it1 = m_path.begin(); it1 != m_path.end(); it1++, k++ )
+	for( it1 = m_path.begin(); it1 != m_path.end(); ++it1, ++k )
 	{
 		//asamples = samples;
 

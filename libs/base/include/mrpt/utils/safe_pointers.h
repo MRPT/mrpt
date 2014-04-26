@@ -10,7 +10,8 @@
 #define  safe_pointers_H
 
 #include <mrpt/config.h>
-#include <mrpt/utils/utils_defs.h>
+#include <mrpt/utils/boost_join.h>
+#include <mrpt/utils/mrpt_macros.h>  // ASSERT_()
 
 /*---------------------------------------------------------------
 	Class
@@ -162,7 +163,7 @@ namespace utils
 		ignored_copy_ptr(const T* p) : ptr(const_cast<T*>(p)) { }
 		ignored_copy_ptr<T> &operator =(T * p) { ptr=p; return *this; }
 
-		ignored_copy_ptr<T> &operator =(const ignored_copy_ptr<T>&o) { }
+		ignored_copy_ptr<T> &operator =(const ignored_copy_ptr<T>&o) { return *this; }
 
 		/** This method can change the pointer, since the change is made explicitly, not through copy operators transparent to the user. */
 		void set( const T* p ) { ptr = const_cast<T*>(p); }

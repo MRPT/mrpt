@@ -10,6 +10,7 @@
 #define  CRaePID_H
 
 #include <mrpt/hwdrivers/CGenericSensor.h>
+#include <mrpt/hwdrivers/CSerialPort.h>
 #include <mrpt/slam/CObservationGasSensors.h>
 #include <mrpt/utils/CConfigFileBase.h>
 
@@ -84,7 +85,7 @@ namespace mrpt
 
 			 /** Get full reading (see PID documentation). In the returned observation, each reding is saved as a separate e-nose
 			  */
-			 CObservationGasSensors getFullInfo();
+			 mrpt::slam::CObservationGasSensors getFullInfo();
 
 			 /** Get error status (true if an error was found). errorString shows the error code (see PID documentation)
 			  */

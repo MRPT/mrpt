@@ -10,7 +10,7 @@
 #define mrpt_matrix_adaptors_H
 
 #include <mrpt/utils/utils_defs.h>
-#include <mrpt/math/math_frwds.h>  // Fordward declarations
+#include <mrpt/math/math_frwds.h>  // forward declarations
 
 namespace mrpt
 {

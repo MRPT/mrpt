@@ -7,8 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/slam.h>  // Precompiled header
-
+#include "slam-precomp.h"   // Precompiled headers
 
 // ----------------------------------------------------------------------------------------
 // For the theory behind this implementation, see the technical report in:
@@ -21,15 +20,20 @@
 #include <mrpt/poses/CPosePDFGaussian.h>
 #include <mrpt/poses/CPose3DQuatPDFGaussian.h>
 #include <mrpt/slam/CActionRobotMovement3D.h>
-
 #include <mrpt/math/utils.h>
-#include <mrpt/math/CMatrix.h>
-#include <mrpt/math/CMatrixD.h>
+#include <mrpt/math/ops_containers.h>
+#include <mrpt/math/wrap2pi.h>
 #include <mrpt/utils/CTicTac.h>
+#include <mrpt/system/os.h>
+
+#include <mrpt/opengl/stock_objects.h>
+#include <mrpt/opengl/CSetOfObjects.h>
+#include <mrpt/opengl/CEllipsoid.h>
 
 using namespace mrpt::slam;
 using namespace mrpt::poses;
 using namespace mrpt::utils;
+using namespace mrpt::system;
 using namespace std;
 
 
@@ -131,7 +135,7 @@ mrpt::poses::CPose3DQuat CRangeBearingKFSLAM::getCurrentRobotPoseMean() const
   ---------------------------------------------------------------*/
 void CRangeBearingKFSLAM::getCurrentState(
 	CPose3DQuatPDFGaussian      &out_robotPose,
-	std::vector<CPoint3D>  &out_landmarksPositions,
+	std::vector<TPoint3D>  &out_landmarksPositions,
 	std::map<unsigned int,CLandmark::TLandmarkID> &out_landmarkIDs,
 	CVectorDouble      &out_fullState,
 	CMatrixDouble      &out_fullCovariance ) const
@@ -158,9 +162,9 @@ void CRangeBearingKFSLAM::getCurrentState(
 	out_landmarksPositions.resize(nLMs);
 	for (i=0;i<nLMs;i++)
 	{
-		out_landmarksPositions[i].x( m_xkk[get_vehicle_size()+i*get_feature_size()+0] );
-		out_landmarksPositions[i].y( m_xkk[get_vehicle_size()+i*get_feature_size()+1] );
-		out_landmarksPositions[i].z( m_xkk[get_vehicle_size()+i*get_feature_size()+2] );
+		out_landmarksPositions[i].x = m_xkk[get_vehicle_size()+i*get_feature_size()+0];
+		out_landmarksPositions[i].y = m_xkk[get_vehicle_size()+i*get_feature_size()+1];
+		out_landmarksPositions[i].z = m_xkk[get_vehicle_size()+i*get_feature_size()+2];
 	} // end for i
 
 	// IDs:
@@ -562,7 +566,7 @@ void CRangeBearingKFSLAM::OnGetObservationsAndDataAssociation(
 	Z.resize(N);
 
 	size_t row;
-	for (row=0,itObs = obs->sensedData.begin();itObs!=obs->sensedData.end();itObs++,row++)
+	for (row=0,itObs = obs->sensedData.begin();itObs!=obs->sensedData.end();++itObs,++row)
 	{
 		// Fill one row in Z:
 		Z[row][0] =itObs->range;
@@ -582,7 +586,7 @@ void CRangeBearingKFSLAM::OnGetObservationsAndDataAssociation(
 		vector_int::iterator itDA;
 		CObservationBearingRange::TMeasurementList::const_iterator itObs;
 		size_t row;
-		for (row=0,itObs = obs->sensedData.begin(),itDA=data_association.begin();itObs!=obs->sensedData.end();itObs++,itDA++,row++)
+		for (row=0,itObs = obs->sensedData.begin(),itDA=data_association.begin();itObs!=obs->sensedData.end();++itObs,++itDA,++row)
 		{
     		// Fill data asociation: Using IDs!
 			if (itObs->landmarkID<0)
@@ -666,7 +670,7 @@ void CRangeBearingKFSLAM::OnGetObservationsAndDataAssociation(
 				);
 
 			// Return pairings to the main KF algorithm:
-			for (map<size_t,size_t>::const_iterator it= m_last_data_association.results.associations.begin();it!=m_last_data_association.results.associations.end();it++)
+			for (map<size_t,size_t>::const_iterator it= m_last_data_association.results.associations.begin();it!=m_last_data_association.results.associations.end();++it)
 				data_association[ it->first ] = it->second;
 		}
 	}
@@ -1120,7 +1124,7 @@ double CRangeBearingKFSLAM::computeOffDiagonalBlocksApproximationError(
         fullCov(i,i) = max(fullCov(i,i), 1e-6);
 
     CMatrixTemplateNumeric<kftype>		H( fullCov.inv() );
-    H.Abs();        // Replace by absolute values:
+    H.array().abs();        // Replace by absolute values:
 
     double sumOffBlocks = 0;
     unsigned int nLMs = landmarksMembership.size();
@@ -1220,9 +1224,8 @@ void CRangeBearingKFSLAM::saveMapAndPath2DRepresentationAsMATLABFile(
 
 			CPose3D p;
 			pdf3D->getMean(p);
-			CPoint3D pnt3D(p); // 6D -> 3D only
 
-			os::fprintf(f,"%.04f %.04f", pnt3D.x(), pnt3D.y() );
+			os::fprintf(f,"%.04f %.04f", p.x(), p.y() );
 			if (i<(m_SFs.size()-1))
 				os::fprintf(f,";");
 		}

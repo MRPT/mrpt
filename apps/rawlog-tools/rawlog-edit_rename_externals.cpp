@@ -8,6 +8,9 @@
    +---------------------------------------------------------------------------+ */
 
 #include "rawlog-edit-declarations.h"
+#include <mrpt/slam/CObservation3DRangeScan.h>
+#include <mrpt/slam/CObservationImage.h>
+#include <mrpt/slam/CObservationStereoImages.h>
 
 using namespace mrpt;
 using namespace mrpt::utils;
@@ -147,7 +150,7 @@ DECLARE_OP_FUNCTION(op_rename_externals)
 					string strErr;
 					if (!mrpt::system::renameFile(prevFil,newFil,&strErr)) THROW_EXCEPTION(strErr)
 				}
-				else 
+				else
 				{
 					std::cerr << "Warning: Missing external file: " << prevFil << std::endl;
 				}

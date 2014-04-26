@@ -17,10 +17,10 @@
 #include <mrpt/slam/CMetricMap.h>
 #include <mrpt/utils/TMatchingPair.h>
 #include <mrpt/slam/CLogOddsGridMap2D.h>
+#include <mrpt/utils/safe_pointers.h>
+#include <mrpt/poses/poses_frwds.h>
 
 #include <mrpt/maps/link_pragmas.h>
-
-#include <mrpt/utils/safe_pointers.h>
 
 #include <mrpt/config.h>
 
@@ -35,7 +35,6 @@
 
 namespace mrpt
 {
-	namespace poses { class CPose2D; }
 namespace slam
 {
 	using namespace mrpt::poses;
@@ -673,7 +672,7 @@ namespace slam
 
 		/** Auxiliary private class.
 		  */
-		typedef std::pair<double,CPoint2D> TPairLikelihoodIndex;
+		typedef std::pair<double,mrpt::math::TPoint2D> TPairLikelihoodIndex;
 
 		/** Some members of this struct will contain intermediate or output data after calling "computeObservationLikelihood" for some likelihood functions.
 		  */

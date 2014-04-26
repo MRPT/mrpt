@@ -7,20 +7,22 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/base.h>  // Precompiled headers
+#include "base-precomp.h"  // Precompiled headers
 
 
 #include <mrpt/poses/CPosePDFGrid.h>
+#include <mrpt/poses/CPose3D.h>
 #include <mrpt/poses/CPosePDFParticles.h>
-
+#include <mrpt/utils/CStream.h>
 #include <mrpt/random.h>
-#include <mrpt/math/utils.h>
+#include <mrpt/system/os.h>
 
 using namespace std;
 using namespace mrpt;
 using namespace mrpt::utils;
 using namespace mrpt::math;
 using namespace mrpt::poses;
+using namespace mrpt::system;
 
 IMPLEMENTS_SERIALIZABLE( CPosePDFGrid, CPosePDF, mrpt::poses )
 
@@ -255,7 +257,7 @@ void  CPosePDFGrid::drawSingleSample( CPose2D &outPart ) const
  ---------------------------------------------------------------*/
 void  CPosePDFGrid::drawManySamples(
 	size_t						N,
-	std::vector<vector_double>	&outSamples ) const
+	std::vector<CVectorDouble>	&outSamples ) const
 {
 	MRPT_UNUSED_PARAM(N); MRPT_UNUSED_PARAM(outSamples);
 
@@ -270,12 +272,12 @@ void  CPosePDFGrid::normalize()
 	double						SUM = 0;
 
 	// SUM:
-	for (vector<double>::const_iterator it=m_data.begin();it!=m_data.end();it++)	SUM += *it;
+	for (vector<double>::const_iterator it=m_data.begin();it!=m_data.end();++it)	SUM += *it;
 
 	if (SUM>0)
 	{
 		// Normalize:
-		for (vector<double>::iterator it=m_data.begin();it!=m_data.end();it++)	*it /= SUM;
+		for (vector<double>::iterator it=m_data.begin();it!=m_data.end();++it)	*it /= SUM;
 	}
 }
 
@@ -286,6 +288,6 @@ void  CPosePDFGrid::uniformDistribution()
 {
 	double						val =  1.0f / m_data.size();
 
-	for (vector<double>::iterator it=m_data.begin();it!=m_data.end();it++)
+	for (vector<double>::iterator it=m_data.begin();it!=m_data.end();++it)
 		*it = val;
 }

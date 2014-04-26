@@ -123,7 +123,7 @@ public:
 	  * \return true on success. false if the string is malformed, and then the matrix will be resized to 0x0.
 	  * \sa inMatlabFormat, CConfigFile::read_matrix
 	  */
-	bool fromMatlabStringFormat(const std::string &s, bool dumpErrorMsgToStdErr = true);
+	bool fromMatlabStringFormat(const std::string &s, std::ostream *dump_errors_here = NULL);
 	// Method implemented in eigen_plugins_impl.h
 
 	/** Dump matrix in matlab format.
@@ -346,7 +346,7 @@ public:
 	}
 
 	/** Finds the maximum value in the diagonal of the matrix. */
-	EIGEN_STRONG_INLINE Scalar maximumDiagonal() const { return diagonal().maximum(); }
+	EIGEN_STRONG_INLINE Scalar maximumDiagonal() const { return diagonal().maxCoeff(); }
 
 	/** Computes the mean of the entire matrix
 	  * \sa meanAndStdAll */
@@ -433,7 +433,7 @@ public:
 	EIGEN_STRONG_INLINE void unsafeRemoveColumns(const std::vector<size_t> &idxs)
 	{
 		size_t k = 1;
-		for (std::vector<size_t>::const_reverse_iterator it = idxs.rbegin(); it != idxs.rend(); it++, k++)
+		for (std::vector<size_t>::const_reverse_iterator it = idxs.rbegin(); it != idxs.rend(); ++it, ++k)
 		{
 			const size_t nC = cols() - *it - k;
 			if( nC > 0 )
@@ -457,7 +457,7 @@ public:
 	EIGEN_STRONG_INLINE void unsafeRemoveRows(const std::vector<size_t> &idxs)
 	{
 		size_t k = 1;
-		for (std::vector<size_t>::reverse_iterator it = idxs.rbegin(); it != idxs.rend(); it++, k++)
+		for (std::vector<size_t>::reverse_iterator it = idxs.rbegin(); it != idxs.rend(); ++it, ++k)
 		{
 			const size_t nR = rows() - *it - k;
 			if( nR > 0 )
@@ -712,21 +712,6 @@ public:
 
 	/** @name MRPT plugin: Scalar and element-wise extra operators
 	    @{ */
-
-	EIGEN_STRONG_INLINE MatrixBase<Derived>& Sqrt()       { (*this) = this->array().sqrt(); return *this; }
-	EIGEN_STRONG_INLINE PlainObject          Sqrt() const { PlainObject res = this->array().sqrt(); return res; }
-
-	EIGEN_STRONG_INLINE MatrixBase<Derived>& Abs()       { (*this) = this->array().abs(); return *this; }
-	EIGEN_STRONG_INLINE PlainObject          Abs() const { PlainObject res = this->array().abs(); return res; }
-
-	EIGEN_STRONG_INLINE MatrixBase<Derived>& Log()       { (*this) = this->array().log(); return *this; }
-	EIGEN_STRONG_INLINE PlainObject          Log() const { PlainObject res = this->array().log(); return res; }
-
-	EIGEN_STRONG_INLINE MatrixBase<Derived>& Exp()       { (*this) = this->array().exp(); return *this; }
-	EIGEN_STRONG_INLINE PlainObject          Exp() const { PlainObject res = this->array().exp(); return res; }
-
-	EIGEN_STRONG_INLINE MatrixBase<Derived>& Square()       { (*this) = this->array().square(); return *this; }
-	EIGEN_STRONG_INLINE PlainObject          Square() const { PlainObject res = this->array().square(); return res; }
 
 	/** Scales all elements such as the minimum & maximum values are shifted to the given values */
 	void normalize(Scalar valMin, Scalar valMax)

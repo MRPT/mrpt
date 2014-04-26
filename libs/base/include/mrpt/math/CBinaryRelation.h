@@ -273,7 +273,7 @@ namespace mrpt	{	namespace math	{
 			typename std::set<T>::const_iterator it=elements.begin();
 			std::advance(it,i);
 			elements.erase(i);
-			set<size_t> ii;
+			std::set<size_t> ii;
 			ii.insert(i);
 			relation.removeRowsAndCols(ii,ii);
 		}
@@ -290,24 +290,18 @@ namespace mrpt	{	namespace math	{
 		/**
 		  * Removes a set of elements. Returns the number of elements which were actually erased.
 		  */
-		size_t removeElements(const set<T> &vals)	{
-			set<size_t> positions;
-			for (typename set<T>::const_iterator it=vals.begin();it!=vals.end();++it)	{
-				typename set<T>::iterator elsIt=std::find(elements.begin(),elements.end(),*it);
+		size_t removeElements(const std::set<T> &vals)	{
+			std::set<size_t> positions;
+			for (typename std::set<T>::const_iterator it=vals.begin();it!=vals.end();++it)	{
+				typename std::set<T>::iterator elsIt=std::find(elements.begin(),elements.end(),*it);
 				if (elsIt!=elements.end()) positions.insert(std::distance(elements.begin(),elsIt));
 			}
-/*			for (set<size_t>::const_reverse_iterator it=positions.rbegin();it!=positions.rend();++it)	{
-				typename std::set<T>::const_iterator it2=elements.begin();
-				std::advance(it2,*it);
-				elements.erase(it2);
-			}
-			relation.removeRowsAndCols(positions,positions);*/
 			removeElementsAt(positions);
 			return positions.size();
 		}
-		void removeElementsAt(const set<size_t> &poss)	{
+		void removeElementsAt(const std::set<size_t> &poss)	{
 			relation.removeRowsAndCols(poss,poss);
-			for (set<size_t>::const_reverse_iterator it=poss.rbegin();it!=poss.rend();++it)	{
+			for (std::set<size_t>::const_reverse_iterator it=poss.rbegin();it!=poss.rend();++it)	{
 				typename std::set<T>::const_iterator it2=elements.begin();
 				std::advance(it2,*it);
 				elements.erase(it2);

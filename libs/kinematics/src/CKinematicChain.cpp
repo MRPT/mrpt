@@ -7,13 +7,14 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/kinematics.h>  // Precompiled headers
+#include "kinematics-precomp.h"  // Precompiled headers
 
 #include <mrpt/kinematics/CKinematicChain.h>
 #include <mrpt/utils/CStream.h>
-#include <mrpt/opengl.h>
-
-//#include <mrpt/math/slerp.h>
+#include <mrpt/utils/stl_serialization.h>
+#include <mrpt/opengl/CSetOfObjects.h>
+#include <mrpt/opengl/CCylinder.h>
+#include <mrpt/opengl/stock_objects.h>
 
 using namespace mrpt;
 using namespace mrpt::math;

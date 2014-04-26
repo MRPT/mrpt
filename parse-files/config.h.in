@@ -303,6 +303,10 @@ ${CMAKE_MRPT_BUILD_SHARED_LIB}
 #cmakedefine HAVE_ALIGNED_MALLOC
 #endif
 
+#ifndef HAVE_STRTOK_R 
+#cmakedefine HAVE_STRTOK_R
+#endif
+
 /* Standard types  */
 #ifndef HAVE_LONG_DOUBLE
 #cmakedefine HAVE_LONG_DOUBLE

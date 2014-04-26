@@ -21,10 +21,10 @@
 #include "../wx-common/CMyRedirector.h"
 
 
-#include <mrpt/utils.h>
+#include <mrpt/system/os.h>
+#include <mrpt/utils/types_math.h> // For Eigen version
 
 using namespace mrpt;
-using namespace mrpt::utils;
 using namespace mrpt::system;
 using namespace std;
 
@@ -141,7 +141,7 @@ void CAboutBox::OnInit(wxInitDialogEvent& event)
 		cout << "  GridmapSimul Application\n";
 		cout << "--------------------------------\n";
 		cout << "Jose Luis Blanco (C) 2005-2012\n";
-		cout << "For bug reports or to collaborate: <jlblanco@ctima.uma.es>\n";
+		cout << "For bug reports or to collaborate: <joseluisblancoc@gmail.com>\n";
 		cout << "http://www.isa.uma.es/jlblanco\n\n";
 
 		cout << "Version:                " << GRIDMAPSIMUL_VERSION << endl;

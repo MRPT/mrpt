@@ -7,17 +7,23 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/base.h>  // Precompiled headers
+#include "base-precomp.h"  // Precompiled headers
 
 #include <mrpt/math/lightweight_geom_data.h>
-#include <mrpt/poses.h>
+#include <mrpt/poses/CPoint2D.h>
+#include <mrpt/poses/CPoint3D.h>
+#include <mrpt/poses/CPose2D.h>
+#include <mrpt/poses/CPose3DQuat.h>
 #include <mrpt/math/geometry.h>
+#include <mrpt/math/ops_containers.h>
 #include <mrpt/utils/CStream.h>
+#include <mrpt/utils/stl_serialization.h>
 
 using namespace std; // For min/max, etc...
 
 namespace mrpt	{	namespace math	{
 	using namespace mrpt::poses; // For the +,- operators
+	using namespace mrpt::utils;
 
 
 	namespace detail
@@ -54,6 +60,9 @@ TPose2D::TPose2D(const TPoint2D &p):x(p.x),y(p.y),phi(0.0)	{}
 TPose2D::TPose2D(const TPoint3D &p):x(p.x),y(p.y),phi(0.0)	{}
 TPose2D::TPose2D(const TPose3D &p):x(p.x),y(p.y),phi(p.yaw)	{}
 TPose2D::TPose2D(const mrpt::poses::CPose2D &p):x(p.x()),y(p.y()),phi(p.phi())	{}
+void TPose2D::asString(std::string &s) const {
+	s = mrpt::format("[%f %f %f]",x,y,mrpt::utils::RAD2DEG(phi));
+}
 
 void TPose2D::fromString(const std::string &s)
 {
@@ -91,6 +100,9 @@ TPose3D::TPose3D(const TPoint2D &p):x(p.x),y(p.y),z(0.0),yaw(0.0),pitch(0.0),rol
 TPose3D::TPose3D(const TPose2D &p):x(p.x),y(p.y),z(0.0),yaw(p.phi),pitch(0.0),roll(0.0)	{}
 TPose3D::TPose3D(const TPoint3D &p):x(p.x),y(p.y),z(p.z),yaw(0.0),pitch(0.0),roll(0.0)	{}
 TPose3D::TPose3D(const mrpt::poses::CPose3D &p):x(p.x()),y(p.y()),z(p.z()),yaw(p.yaw()),pitch(p.pitch()),roll(p.roll())	{}
+void TPose3D::asString(std::string &s) const {
+	s = mrpt::format("[%f %f %f %f %f %f]",x,y,z,RAD2DEG(yaw),RAD2DEG(pitch),RAD2DEG(roll));
+}
 void TPose3D::fromString(const std::string &s)
 {
 	CMatrixDouble  m;
@@ -124,7 +136,17 @@ std::ostream & operator << (std::ostream& o, const TPose2D & p)  { return (o << 
 std::ostream & operator << (std::ostream& o, const TPose3D & p)  { return (o << CPose3D(p)); }
 std::ostream & operator << (std::ostream& o, const TPose3DQuat & p) { return (o << CPose3DQuat(p)); }
 
+CStream &operator>>(CStream &in,mrpt::math::TSegment2D &s)	{ return in>>s.point1>>s.point2; }
+CStream &operator<<(CStream &out,const mrpt::math::TSegment2D &s)	{ return out<<s.point1<<s.point2; }
+CStream &operator>>(CStream &in,mrpt::math::TLine2D &l)	{ return in>>l.coefs[0]>>l.coefs[1]>>l.coefs[2]; }
+CStream &operator<<(CStream &out,const mrpt::math::TLine2D &l)	{ return out<<l.coefs[0]<<l.coefs[1]<<l.coefs[2]; }
 
+mrpt::utils::CStream &operator>>(mrpt::utils::CStream &in,mrpt::math::TSegment3D &s)	{ return in>>s.point1>>s.point2; }
+mrpt::utils::CStream &operator<<(mrpt::utils::CStream &out,const mrpt::math::TSegment3D &s)	{ return out<<s.point1<<s.point2; }
+mrpt::utils::CStream &operator>>(mrpt::utils::CStream &in,mrpt::math::TLine3D &l)	{ return in>>l.pBase>>l.director[0]>>l.director[1]>>l.director[2]; }
+mrpt::utils::CStream &operator<<(mrpt::utils::CStream &out,const mrpt::math::TLine3D &l)	{ return out<<l.pBase<<l.director[0]<<l.director[1]<<l.director[2]; }
+mrpt::utils::CStream &operator>>(mrpt::utils::CStream &in,mrpt::math::TPlane &p)	{ return in>>p.coefs[0]>>p.coefs[1]>>p.coefs[2]>>p.coefs[3]; }
+mrpt::utils::CStream &operator<<(mrpt::utils::CStream &out,const mrpt::math::TPlane &p)	{ return out<<p.coefs[0]<<p.coefs[1]<<p.coefs[2]<<p.coefs[3]; }
 
 double TSegment2D::length() const	{
 	return math::distance(point1,point2);
@@ -172,7 +194,7 @@ double TSegment3D::distance(const TPoint3D &point) const	{
 	return min(min(math::distance(point,point1),math::distance(point,point2)),TLine3D(*this).distance(point));
 }
 double TSegment3D::distance(const TSegment3D &segment) const	{
-    vector_double u, v, w;
+    Eigen::Vector3d u, v, w;
     TPoint3D diff_vect = point2 - point1;
     diff_vect.getAsVector(u);
     diff_vect = segment.point2 - segment.point1;
@@ -239,7 +261,7 @@ double TSegment3D::distance(const TSegment3D &segment) const	{
     tc = (fabs(tN) < 0.00000001 ? 0.0 : tN / tD);
 
     // get the difference of the two closest points
-    vector_double dP = w + (sc * u) - (tc * v);  // = S1(sc) - S2(tc)
+    CVectorDouble dP = w + (sc * u) - (tc * v);  // = S1(sc) - S2(tc)
 
     return dP.norm();   // return the closest distance
 }
@@ -898,13 +920,6 @@ mrpt::utils::CStream& operator<<(mrpt::utils::CStream& out,const mrpt::math::TPo
 	out << o.x << o.y << o.z << o.yaw << o.pitch << o.roll;
 	return out;
 }
-
-/*mrpt::utils::CStream &operator>>(mrpt::utils::CStream &in,mrpt::math::TPolygon2D &p)	{
-	vector_serializable<TPoint2D> v;
-	in>>v;
-	p=v;
-	return in;
-}*/
 
 mrpt::utils::CStream &operator>>(mrpt::utils::CStream &in,mrpt::math::TObject2D &o)	{
 	uint16_t type;

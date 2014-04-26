@@ -7,11 +7,13 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/base.h>
-#include <mrpt/opengl.h>
+#include <mrpt/opengl/CFBORender.h>
+#include <mrpt/utils/CFileGZInputStream.h>
+#include <mrpt/utils/CImage.h>
 
 using namespace std;
 using namespace mrpt;
+using namespace mrpt::utils;
 using namespace mrpt::opengl;
 
 // ------------------------------------------------------

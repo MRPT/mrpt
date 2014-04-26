@@ -9,15 +9,13 @@
 #ifndef  list_searchable_H
 #define  list_searchable_H
 
-// Note: This file is included from "stl_extensions.h"
-
 #include <list>
+#include <algorithm>
 
 namespace mrpt
 {
 	namespace utils
 	{
-		using namespace mrpt::utils::metaprogramming;
 		using std::for_each;
 		using std::string;
 

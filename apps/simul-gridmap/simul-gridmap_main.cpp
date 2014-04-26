@@ -8,9 +8,17 @@
    +---------------------------------------------------------------------------+ */
 
 
-#include <mrpt/maps.h>
-#include <mrpt/obs.h>
-#include <mrpt/base.h>
+#include <mrpt/system/os.h>
+#include <mrpt/system/filesystem.h>
+#include <mrpt/utils/CConfigFile.h>
+#include <mrpt/utils/CFileGZInputStream.h>
+#include <mrpt/utils/CFileGZOutputStream.h>
+#include <mrpt/slam/CActionRobotMovement2D.h>
+#include <mrpt/slam/COccupancyGridMap2D.h>
+#include <mrpt/slam/CObservation2DRangeScan.h>
+#include <mrpt/slam/CRawlog.h>
+#include <mrpt/random.h>
+
 #include <mrpt/otherlibs/tclap/CmdLine.h>
 
 

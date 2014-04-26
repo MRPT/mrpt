@@ -7,13 +7,13 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/hwdrivers.h> // Precompiled headers
+#include "hwdrivers-precomp.h"   // Precompiled headers
 
 #include <mrpt/hwdrivers/CNTRIPClient.h>
 #include <mrpt/utils/CClientTCPSocket.h>
 #include <mrpt/utils/net_utils.h>
 #include <mrpt/utils/CStringList.h>
-#include <mrpt/math/utils.h>
+#include <mrpt/math/wrap2pi.h>
 
 #include <mrpt/system/string_utils.h>
 
@@ -163,8 +163,6 @@ void CNTRIPClient::private_ntrip_thread()
 			TConnResult   connect_res = connError;
 
 			vector_byte   buf;
-			size_t len;
-
 			try
 			{
 				// Nope, it's the first time: get params and try open the connection:
@@ -213,8 +211,8 @@ void CNTRIPClient::private_ntrip_thread()
 				// Try to read the header of the response:
 				size_t	to_read_now = 30;
 				buf.resize(to_read_now);
-				len = my_sock.readAsync(&buf[0],to_read_now, 4000,1000);
-				
+				size_t len = my_sock.readAsync(&buf[0],to_read_now, 4000,1000);
+
 				buf.resize(len);
 
 				if ((len!=0) && my_sock.isConnected())
@@ -313,7 +311,7 @@ bool CNTRIPClient::retrieveListOfMountpoints(
 	const string		&auth_user,
 	const string		&auth_pass)
 {
-	string  content, errmsg;
+	string  content;
 	int		http_code;
 	TParameters<string> my_headers;
 

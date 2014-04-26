@@ -7,13 +7,12 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/base.h>  // Precompiled headers
+#include "base-precomp.h"  // Precompiled headers
 
 #include <mrpt/utils/CTypeSelector.h>
 #include <mrpt/utils/CStream.h>
 #include <mrpt/system/string_utils.h>
-
-#include <iostream>
+#include <mrpt/system/os.h>
 
 using namespace mrpt::utils;
 using namespace mrpt::system;
@@ -36,7 +35,7 @@ void  CTypeSelector::writeToStream(CStream &out, int *out_Version) const
 
 		out << n;
 
-		for (it=possibleTypes.begin();it<possibleTypes.end();it++)
+		for (it=possibleTypes.begin();it<possibleTypes.end();++it)
 			out << *it;
 
 		// Selection:
@@ -87,7 +86,6 @@ CTypeSelector::CTypeSelector(	std::string		posibilitiesList,
 	possibleTypes.clear();
 
 	// Extract tokens from the string:
-	vector<string> tokens;
 	mrpt::system::tokenize(posibilitiesList,",",possibleTypes);
 
 	// Select default type:

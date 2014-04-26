@@ -7,15 +7,18 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/slam.h>
-#include <mrpt/gui.h>
-#include <mrpt/base.h>
+#include <mrpt/poses/CPosePDFSOG.h>
+#include <mrpt/utils/CFileGZOutputStream.h>
+#include <mrpt/gui/CDisplayWindow3D.h>
+#include <mrpt/opengl/CGridPlaneXY.h>
+#include <mrpt/system/os.h>
 
 using namespace mrpt;
 using namespace mrpt::utils;
-using namespace mrpt::slam;
+using namespace mrpt::poses;
 using namespace mrpt::opengl;
 using namespace mrpt::gui;
+using namespace mrpt::system;
 using namespace std;
 
 /* ------------------------------------------------------------------------

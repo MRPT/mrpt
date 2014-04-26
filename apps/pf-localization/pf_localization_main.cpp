@@ -7,19 +7,46 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-
 /*---------------------------------------------------------------
 	APPLICATION: Particle Filter (Global) Localization Demo
 	FILE: pf_localization_main.cpp
-	AUTHOR: Jose Luis Blanco Claraco <jlblanco@ctima.uma.es>
+	AUTHOR: Jose Luis Blanco Claraco <joseluisblancoc@gmail.com>
 
 	For instructions and more:
 	 http://www.mrpt.org/Application:pf-localization
   ---------------------------------------------------------------*/
 
-#include <mrpt/base.h>
-#include <mrpt/slam.h>
-#include <mrpt/gui.h>
+#include <mrpt/slam/CMonteCarloLocalization2D.h>
+
+#include <mrpt/utils/CConfigFile.h>
+#include <mrpt/math/ops_vectors.h> // << for vector<>
+#include <mrpt/system/filesystem.h>
+#include <mrpt/gui/CDisplayWindow3D.h>
+#include <mrpt/poses/CPose2D.h>
+#include <mrpt/bayes/CParticleFilter.h>
+#include <mrpt/random.h>
+
+#include <mrpt/slam/CActionRobotMovement2D.h>
+#include <mrpt/slam/CActionCollection.h>
+#include <mrpt/slam/CRawlog.h>
+#include <mrpt/slam/CSimpleMap.h>
+#include <mrpt/slam/COccupancyGridMap2D.h>
+#include <mrpt/slam/CMultiMetricMap.h>
+
+#include <mrpt/system/os.h>
+#include <mrpt/system/threads.h> // sleep()
+#include <mrpt/system/vector_loadsave.h>
+#include <mrpt/math/distributions.h>
+#include <mrpt/math/utils.h>
+#include <mrpt/utils/CTicTac.h>
+#include <mrpt/utils/CFileOutputStream.h>
+#include <mrpt/utils/CFileGZOutputStream.h>
+#include <mrpt/utils/CFileGZInputStream.h>
+
+#include <mrpt/opengl/CGridPlaneXY.h>
+#include <mrpt/opengl/CPointCloud.h>
+#include <mrpt/opengl/CEllipsoid.h>
+#include <mrpt/opengl/CDisk.h>
 
 using namespace mrpt;
 using namespace mrpt::slam;
@@ -29,6 +56,8 @@ using namespace mrpt::math;
 using namespace mrpt::system;
 using namespace mrpt::utils;
 using namespace mrpt::random;
+using namespace mrpt::poses;
+using namespace mrpt::bayes;
 using namespace std;
 
 // Forward declaration:
@@ -277,7 +306,7 @@ void do_pf_localization(const std::string &ini_fil, const std::string &cmdline_r
 
 		// Global stats for all the experiment loops:
 		int				nConvergenceTests = 0, nConvergenceOK = 0;
-		vector_double 	covergenceErrors;
+		CVectorDouble 	covergenceErrors;
 		// --------------------------------------------------------------------
 		//					EXPERIMENT REPETITIONS LOOP
 		// --------------------------------------------------------------------
@@ -870,11 +899,11 @@ void getGroundTruth( CPose2D &expectedPose, size_t rawlogEntry, const CMatrixDou
 			if (first_step)
 			{
 				for (size_t i=0;i<GT.getRowCount();i++)
-					GT_path[ mrpt::math::round_10power(GT(i,0),-4) ] = CPose2D(GT(i,1),GT(i,2),GT(i,3));
+					GT_path[ mrpt::utils::round_10power(GT(i,0),-4) ] = CPose2D(GT(i,1),GT(i,2),GT(i,3));
 			}
 
 			double TT =mrpt::system::timestampTotime_t(cur_time);
-			double T = mrpt::math::round_10power( TT, -4);
+			double T = mrpt::utils::round_10power( TT, -4);
 
 			it = GT_path.find(T);
 			if (it!=GT_path.end())

@@ -11,6 +11,10 @@
 
 #include <mrpt/opengl/CRenderizableDisplayList.h>
 #include <mrpt/math/CMatrixFixedNumeric.h>
+#include <mrpt/utils/types_math.h>
+#include <mrpt/utils/CStream.h> // for >> ops
+#include <mrpt/math/matrix_serialization.h> // for >> ops
+#include <mrpt/opengl/link_pragmas.h>
 
 namespace mrpt
 {
@@ -20,22 +24,22 @@ namespace mrpt
 		{
 			template <int DIM>
 			void OPENGL_IMPEXP renderGeneralizedEllipsoidTemplate(
-				const std::vector<mrpt::math::CArray<float,DIM> > & pts,
+				const std::vector<mrpt::math::CMatrixFixedNumeric<float,DIM,1> > & pts,
 				const float    lineWidth,
 				const uint32_t slices,
 				const uint32_t stacks);
-			template <> void OPENGL_IMPEXP renderGeneralizedEllipsoidTemplate<2>(const std::vector<mrpt::math::CArray<float,2> > & pts,const float    lineWidth,const uint32_t slices,const uint32_t stacks);
-			template <> void OPENGL_IMPEXP renderGeneralizedEllipsoidTemplate<3>(const std::vector<mrpt::math::CArray<float,3> > & pts,const float    lineWidth,const uint32_t slices,const uint32_t stacks);
+			template <> void OPENGL_IMPEXP renderGeneralizedEllipsoidTemplate<2>(const std::vector<mrpt::math::CMatrixFixedNumeric<float,2,1> > & pts,const float    lineWidth,const uint32_t slices,const uint32_t stacks);
+			template <> void OPENGL_IMPEXP renderGeneralizedEllipsoidTemplate<3>(const std::vector<mrpt::math::CMatrixFixedNumeric<float,3,1> > & pts,const float    lineWidth,const uint32_t slices,const uint32_t stacks);
 
 			template <int DIM>
 			void OPENGL_IMPEXP generalizedEllipsoidPoints(
 				const mrpt::math::CMatrixFixedNumeric<double,DIM,DIM> & U,
 				const mrpt::math::CMatrixFixedNumeric<double,DIM,1>   & mean,
-				std::vector<mrpt::math::CArray<float,DIM> >   &out_params_pts,
+				std::vector<mrpt::math::CMatrixFixedNumeric<float,DIM,1> >   &out_params_pts,
 				const uint32_t slices,
 				const uint32_t stacks);
-			template <> void OPENGL_IMPEXP generalizedEllipsoidPoints<2>(const mrpt::math::CMatrixFixedNumeric<double,2,2> & U,const mrpt::math::CMatrixFixedNumeric<double,2,1> & mean,std::vector<mrpt::math::CArray<float,2> >   &out_params_pts,const uint32_t slices,const uint32_t stacks);
-			template <> void OPENGL_IMPEXP generalizedEllipsoidPoints<3>(const mrpt::math::CMatrixFixedNumeric<double,3,3> & U,const mrpt::math::CMatrixFixedNumeric<double,3,1> & mean,std::vector<mrpt::math::CArray<float,3> >   &out_params_pts,const uint32_t slices,const uint32_t stacks);
+			template <> void OPENGL_IMPEXP generalizedEllipsoidPoints<2>(const mrpt::math::CMatrixFixedNumeric<double,2,2> & U,const mrpt::math::CMatrixFixedNumeric<double,2,1> & mean,std::vector<mrpt::math::CMatrixFixedNumeric<float,2,1> >   &out_params_pts,const uint32_t slices,const uint32_t stacks);
+			template <> void OPENGL_IMPEXP generalizedEllipsoidPoints<3>(const mrpt::math::CMatrixFixedNumeric<double,3,3> & U,const mrpt::math::CMatrixFixedNumeric<double,3,1> & mean,std::vector<mrpt::math::CMatrixFixedNumeric<float,3,1> >   &out_params_pts,const uint32_t slices,const uint32_t stacks);
 		}
 
 		/** A class that generalizes the concept of an ellipsoid to arbitrary parameterizations of
@@ -57,8 +61,8 @@ namespace mrpt
 			typedef mrpt::math::CMatrixFixedNumeric<double,DIM,DIM> cov_matrix_t;   //!< The type of fixed-size covariance matrices for this representation
 			typedef mrpt::math::CMatrixFixedNumeric<double,DIM,1> mean_vector_t;   //!< The type of fixed-size vector for this representation
 
-			typedef mrpt::math::CArray<float,DIM> array_parameter_t;
-			typedef mrpt::math::CArray<float,DIM>     array_point_t;
+			typedef mrpt::math::CMatrixFixedNumeric<float,DIM,1> array_parameter_t;
+			typedef mrpt::math::CMatrixFixedNumeric<float,DIM,1> array_point_t;
 
 			/**  Set the NxN covariance matrix that will determine the aspect of the ellipsoid - Notice that the
 			  *  covariance determines the uncertainty in the parameter space, which would be transformed by derived function
@@ -79,9 +83,9 @@ namespace mrpt
 			const cov_matrix_t &getCovMatrix() const { return m_cov; }
 
 			/** Changes the scale of the "sigmas" for drawing the ellipse/ellipsoid (default=3, ~97 or ~98% CI); the exact mathematical meaning is:
-			  *   This value of "quantiles" \a q should be set to the square root of the chi-squared inverse cdf corresponding to 
-			  *   the desired confidence interval. 
-			  *   <b>Note that this value depends on the dimensionality</b>. 
+			  *   This value of "quantiles" \a q should be set to the square root of the chi-squared inverse cdf corresponding to
+			  *   the desired confidence interval.
+			  *   <b>Note that this value depends on the dimensionality</b>.
 			  *   Refer to the MATLAB functions \a chi2inv() and \a chi2cdf().
 			  *
 			  *  Some common values follow here for the convenience of users:
@@ -100,7 +104,7 @@ namespace mrpt
 			  *			- 95.45% CI -> q=2
 			  *			- 99.73% CI -> q=3
 			  *			- 99.9937% CI -> q=4
-			  * 
+			  *
 			  */
 			void setQuantiles(float q) { m_quantiles=q; CRenderizableDisplayList::notifyChange(); }
 			/** Refer to documentation of \a setQuantiles() */
@@ -161,8 +165,8 @@ namespace mrpt
 					for (size_t i=0;i<render_pts.size();i++)
 						for (int k=0;k<DIM;k++)
 						{
-							mrpt::utils::keep_min(m_bb_min[k], render_pts[i][k] ); 
-							mrpt::utils::keep_max(m_bb_max[k], render_pts[i][k] ); 
+							mrpt::utils::keep_min(m_bb_min[k], render_pts[i][k] );
+							mrpt::utils::keep_max(m_bb_max[k], render_pts[i][k] );
 						}
 					// Convert to coordinates of my parent:
 					m_pose.composePoint(m_bb_min, m_bb_min);
@@ -180,7 +184,7 @@ namespace mrpt
 			/** Evaluates the bounding box of this object (including possible children) in the coordinate frame of the object parent. */
 			virtual void getBoundingBox(mrpt::math::TPoint3D &bb_min, mrpt::math::TPoint3D &bb_max) const
 			{
-				bb_min = m_bb_min; 
+				bb_min = m_bb_min;
 				bb_max = m_bb_max;
 			}
 
@@ -208,6 +212,7 @@ namespace mrpt
 
 			void  thisclass_writeToStream(mrpt::utils::CStream &out) const
 			{
+				using namespace mrpt::math; using namespace mrpt::utils;
 				const uint8_t version = 0;
 				out << version
 					<< m_cov << m_mean
@@ -237,7 +242,7 @@ namespace mrpt
 				m_quantiles(3.f),
 				m_lineWidth(1.f),
 				m_numSegments(50),
-				m_bb_min(0,0,0), 
+				m_bb_min(0,0,0),
 				m_bb_max(0,0,0)
 			{
 			}

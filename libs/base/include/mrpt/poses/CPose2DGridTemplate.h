@@ -10,13 +10,13 @@
 #define CPose2DGridTemplate_H
 
 #include <mrpt/utils/CSerializable.h>
+#include <mrpt/utils/round.h> // for round()
 
 namespace mrpt
 {
 namespace poses
 {
-	using namespace mrpt::math;
-	using namespace mrpt::utils;
+	using mrpt::utils::DEG2RAD;
 
 	/** This is a template class for storing a 3D (2D+heading) grid containing any kind of data.
 	 * \ingroup poses_pdf_grp
@@ -49,7 +49,7 @@ namespace poses
 		  */
 		size_t  x2idx(double x) const
 		{
-			int idx = round( (x-m_xMin) / m_resolutionXY );
+			int idx = mrpt::utils::round( (x-m_xMin) / m_resolutionXY );
 			ASSERT_(idx>=0 && idx< static_cast<int>(m_sizeX));
 			return idx;
 		}
@@ -58,7 +58,7 @@ namespace poses
 		  */
 		size_t  y2idx(double y) const
 		{
-			int idx = round( (y-m_yMin) / m_resolutionXY );
+			int idx = mrpt::utils::round( (y-m_yMin) / m_resolutionXY );
 			ASSERT_(idx>=0 && idx< static_cast<int>(m_sizeY));
 			return idx;
 		}
@@ -67,7 +67,7 @@ namespace poses
 		  */
 		size_t  phi2idx(double phi) const
 		{
-			int idx = round( (phi-m_phiMin) / m_resolutionPhi );
+			int idx = mrpt::utils::round( (phi-m_phiMin) / m_resolutionPhi );
 			ASSERT_(idx>=0 && idx< static_cast<int>(m_sizePhi) );
 			return idx;
 		}
@@ -150,14 +150,14 @@ namespace poses
 			m_resolutionPhi = resolutionPhi;
 
 			// Compute the indexes of the starting borders:
-			m_idxLeftX = round( xMin/resolutionXY ) ;
-			m_idxLeftY = round( yMin/resolutionXY ) ;
-			m_idxLeftPhi = round( phiMin/resolutionPhi ) ;
+			m_idxLeftX = mrpt::utils::round( xMin/resolutionXY ) ;
+			m_idxLeftY = mrpt::utils::round( yMin/resolutionXY ) ;
+			m_idxLeftPhi = mrpt::utils::round( phiMin/resolutionPhi ) ;
 
 			// Compute new required space:
-			m_sizeX = round( xMax/resolutionXY ) - m_idxLeftX + 1;
-			m_sizeY = round( yMax/resolutionXY ) - m_idxLeftY + 1;
-			m_sizePhi = round( phiMax/resolutionPhi ) - m_idxLeftPhi + 1;
+			m_sizeX = mrpt::utils::round( xMax/resolutionXY ) - m_idxLeftX + 1;
+			m_sizeY = mrpt::utils::round( yMax/resolutionXY ) - m_idxLeftY + 1;
+			m_sizePhi = mrpt::utils::round( phiMax/resolutionPhi ) - m_idxLeftPhi + 1;
 			m_sizeXY = m_sizeX * m_sizeY;
 
 			// Resize "m_data":
@@ -183,9 +183,7 @@ namespace poses
 		  */
 		const T*  getByIndex( size_t x,size_t y, size_t phi )  const
 		{
-			ASSERT_(x>=0 && x<m_sizeX);
-			ASSERT_(y>=0 && y<m_sizeY);
-			ASSERT_(phi>=0 && phi<m_sizePhi);
+			ASSERT_(x<m_sizeX && y<m_sizeY && phi<m_sizePhi)
 			return &m_data[ phi*m_sizeXY + y*m_sizeX + x ];
 		}
 
@@ -193,15 +191,14 @@ namespace poses
 		  */
 		T*  getByIndex( size_t x,size_t y, size_t phi )
 		{
-			ASSERT_(x>=0 && x<m_sizeX);
-			ASSERT_(y>=0 && y<m_sizeY);
-			ASSERT_(phi>=0 && phi<m_sizePhi);
+			ASSERT_(x<m_sizeX && y<m_sizeY && phi<m_sizePhi)
 			return &m_data[ phi*m_sizeXY + y*m_sizeX + x ];
 		}
 
 		/** Returns the whole grid as a matrix, for a given constant "phi" and where each row contains values for a fixed "y".
 		  */
-		void getAsMatrix( const double &phi, CMatrixTemplate<T> &outMat )
+		template <class MATRIXLIKE>
+		void getAsMatrix( const double &phi, MATRIXLIKE &outMat )
 		{
 			MRPT_START
 			outMat.setSize( m_sizeY, m_sizeX );

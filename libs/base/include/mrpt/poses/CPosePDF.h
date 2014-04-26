@@ -19,8 +19,6 @@ namespace mrpt
 {
 namespace poses
 {
-	using namespace mrpt::math;
-
 	class CPosePDFGaussian; // frd decl.
 
 	// This must be added to any CSerializable derived class:
@@ -76,8 +74,8 @@ namespace poses
 		static void jacobiansPoseComposition(
 			const CPose2D &x,
 			const CPose2D &u,
-			CMatrixDouble33			 &df_dx,
-			CMatrixDouble33			 &df_du,
+			mrpt::math::CMatrixDouble33			 &df_dx,
+			mrpt::math::CMatrixDouble33			 &df_du,
 			const bool compute_df_dx = true, 
 			const bool compute_df_du = true );
 
@@ -85,8 +83,8 @@ namespace poses
 		static void jacobiansPoseComposition(
 			const CPosePDFGaussian &x,
 			const CPosePDFGaussian &u,
-			CMatrixDouble33			 &df_dx,
-			CMatrixDouble33			 &df_du);
+			mrpt::math::CMatrixDouble33			 &df_dx,
+			mrpt::math::CMatrixDouble33			 &df_du);
 
 
 

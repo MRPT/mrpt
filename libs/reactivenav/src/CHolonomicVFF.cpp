@@ -7,13 +7,13 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/reactivenav.h>  // Precomp header
+#include "reactivenav-precomp.h" // Precomp header
 
-#include <mrpt/poses/CPoint2D.h>
+#include <mrpt/reactivenav/CHolonomicVFF.h>
+#include <mrpt/utils/CStream.h>
 
 using namespace mrpt;
 using namespace mrpt::utils;
-using namespace mrpt::slam;
 using namespace std;
 
 using namespace mrpt::reactivenav;
@@ -34,7 +34,7 @@ CHolonomicVFF::CHolonomicVFF(const mrpt::utils::CConfigFileBase *INI_FILE)
   ---------------------------------------------------------------*/
 void  CHolonomicVFF::navigate(
 	const mrpt::math::TPoint2D &target,
-	const vector_double	&obstacles,
+	const std::vector<float>	&obstacles,
 	double			maxRobotSpeed,
 	double			&desiredDirection,
 	double			&desiredSpeed,

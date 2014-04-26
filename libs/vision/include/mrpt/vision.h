@@ -10,11 +10,10 @@
 #ifndef __mrpt_vision_H
 #define __mrpt_vision_H
 
-#include <mrpt/config.h>
-
-// Only really include all headers if we come from a user program (anything
-//  not defining mrpt_*_EXPORTS) or MRPT is being built with precompiled headers.
-#if !defined(mrpt_vision_EXPORTS) || MRPT_ENABLE_PRECOMPILED_HDRS || defined(MRPT_ALWAYS_INCLUDE_ALL_HEADERS)
+#ifndef MRPT_NO_WARN_BIG_HDR
+#include <mrpt/utils/core_defs.h>
+MRPT_WARNING("Including <mrpt/vision.h> makes compilation much slower, consider including only what you need (define MRPT_NO_WARN_BIG_HDR to disable this warning)")
+#endif
 
 #include <mrpt/vision/utils.h>
 #include <mrpt/vision/TSimpleFeature.h>
@@ -41,7 +40,5 @@
 
 // Obs:
 #include <mrpt/slam/CObservationVisualLandmarks.h>
-
-#endif // end precomp.headers
 
 #endif

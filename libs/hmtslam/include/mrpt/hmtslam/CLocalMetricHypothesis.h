@@ -9,7 +9,7 @@
 #ifndef CLocalMetricHypothesis_H
 #define CLocalMetricHypothesis_H
 
-#include <mrpt/synch.h>
+#include <mrpt/synch/CCriticalSection.h>
 #include <mrpt/bayes/CParticleFilterCapable.h>
 
 #include <mrpt/hmtslam/HMT_SLAM_common.h>
@@ -219,7 +219,7 @@ namespace mrpt
 
 			/** Auxiliary variable used in the "pfAuxiliaryPFOptimal" algorithm.
 			  */
-			mutable vector_double				m_pfAuxiliaryPFOptimal_estimatedProb;
+			mutable CVectorDouble				m_pfAuxiliaryPFOptimal_estimatedProb;
 
 			/** Auxiliary variable used in the "pfAuxiliaryPFOptimal" algorithm.
 			  */

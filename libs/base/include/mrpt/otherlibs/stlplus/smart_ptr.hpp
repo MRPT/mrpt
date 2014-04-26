@@ -44,10 +44,7 @@
 //   - smart_ptr_nocopy for any class that cannot or should not be copied
 
 ////////////////////////////////////////////////////////////////////////////////
-#include "containers_fixes.hpp"
 #include "exceptions.hpp"
-#include <map>
-#include <string>
 
 #include <mrpt/synch/atomic_incr.h>   // JLB: For atomic_count. See smart_ptr.tpp
 

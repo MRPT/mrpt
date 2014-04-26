@@ -9,7 +9,6 @@
 #ifndef  CJOYSTICK_H
 #define  CJOYSTICK_H
 
-#include <mrpt/config.h>
 #include <mrpt/utils/utils_defs.h>
 #include <mrpt/hwdrivers/link_pragmas.h>
 

@@ -16,10 +16,18 @@
 */
 
 
-#include <mrpt/hwdrivers.h>
-#include <mrpt/gui.h>
-#include <mrpt/maps.h>
+#include <mrpt/hwdrivers/CKinect.h>
+#include <mrpt/gui/CDisplayWindow3D.h>
+#include <mrpt/utils/CConfigFile.h>
+#include <mrpt/utils/CTicTac.h>
+#include <mrpt/slam/CColouredPointsMap.h>
+#include <mrpt/opengl/CGridPlaneXY.h>
+#include <mrpt/opengl/stock_objects.h>
+#include <mrpt/opengl/CPointCloudColoured.h>
 #include <mrpt/system/filesystem.h>
+#include <mrpt/synch/CThreadSafeVariable.h>
+#include <mrpt/slam/CObservation3DRangeScan.h>
+#include <mrpt/slam/CObservationIMU.h>
 
 using namespace mrpt;
 using namespace mrpt::hwdrivers;

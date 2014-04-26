@@ -11,17 +11,21 @@
 
 #include <mrpt/math/CMatrixFixedNumeric.h>
 #include <mrpt/math/CMatrixTemplateNumeric.h>
-#include <mrpt/math/CArray.h>
+#include <mrpt/math/CArrayNumeric.h>
+#include <mrpt/math/num_jacobian.h>
 #include <mrpt/math/utils.h>
-
+#include <mrpt/math/num_jacobian.h>
+#include <mrpt/utils/CConfigFileBase.h>
 #include <mrpt/utils/CTimeLogger.h>
+#include <mrpt/utils/aligned_containers.h>
 #include <mrpt/utils/CLoadableOptions.h>
+#include <mrpt/utils/stl_containers_utils.h>
 #include <mrpt/utils/CDebugOutputCapable.h>
-#include <mrpt/utils/stl_extensions.h>
-#include <mrpt/system/os.h>
+#include <mrpt/utils/stl_containers_utils.h> // find_in_vector
 #include <mrpt/utils/CTicTac.h>
 #include <mrpt/utils/CFileOutputStream.h>
 #include <mrpt/utils/TEnumType.h>
+#include <mrpt/system/vector_loadsave.h>
 
 
 namespace mrpt
@@ -166,7 +170,7 @@ namespace mrpt
 			typedef CKalmanFilterCapable<VEH_SIZE,OBS_SIZE,FEAT_SIZE,ACT_SIZE,KFTYPE>  KFCLASS;  //!< My class, in a shorter name!
 
 			// ---------- Many useful typedefs to short the notation a bit... --------
-			typedef mrpt::dynamicsize_vector<KFTYPE> KFVector;
+			typedef Eigen::Matrix<KFTYPE,Eigen::Dynamic,1> KFVector;
 			typedef CMatrixTemplateNumeric<KFTYPE>   KFMatrix;
 
 			typedef CMatrixFixedNumeric<KFTYPE,VEH_SIZE,VEH_SIZE>   KFMatrix_VxV;
@@ -433,7 +437,7 @@ namespace mrpt
 			 */
 
 		public:
-			CKalmanFilterCapable() {} //!< Default constructor
+			CKalmanFilterCapable() : m_user_didnt_implement_jacobian(true) {} //!< Default constructor
 			virtual ~CKalmanFilterCapable() {}  //!< Destructor
 
 			mrpt::utils::CTimeLogger &getProfiler() { return m_timLogger; }
@@ -528,9 +532,9 @@ namespace mrpt
 
 						if (KF_options.debug_verify_analytic_jacobians)
 						{
-							KFMatrix_VxV dfv_dxv_gt(UNINITIALIZED_MATRIX);
+							KFMatrix_VxV dfv_dxv_gt(mrpt::math::UNINITIALIZED_MATRIX);
 							OnTransitionJacobian(dfv_dxv_gt);
-							if ((dfv_dxv-dfv_dxv_gt).Abs().sumAll()>KF_options.debug_verify_analytic_jacobians_threshold)
+							if ((dfv_dxv-dfv_dxv_gt).array().abs().sum()>KF_options.debug_verify_analytic_jacobians_threshold)
 							{
 								std::cerr << "[KalmanFilter] ERROR: User analytical transition Jacobians are wrong: \n"
 									<< " Real dfv_dxv: \n" << dfv_dxv << "\n Analytical dfv_dxv:\n" << dfv_dxv_gt << "Diff:\n" << (dfv_dxv-dfv_dxv_gt) << "\n";
@@ -706,15 +710,15 @@ namespace mrpt
 
 							if (KF_options.debug_verify_analytic_jacobians)
 							{
-								KFMatrix_OxV Hx_gt(UNINITIALIZED_MATRIX);
-								KFMatrix_OxF Hy_gt(UNINITIALIZED_MATRIX);
+								KFMatrix_OxV Hx_gt(mrpt::math::UNINITIALIZED_MATRIX);
+								KFMatrix_OxF Hy_gt(mrpt::math::UNINITIALIZED_MATRIX);
 								OnObservationJacobians(lm_idx,Hx_gt,Hy_gt);
-								if ((Hx-Hx_gt).Abs().sumAll()>KF_options.debug_verify_analytic_jacobians_threshold) {
+								if ((Hx-Hx_gt).array().abs().sum()>KF_options.debug_verify_analytic_jacobians_threshold) {
 									std::cerr << "[KalmanFilter] ERROR: User analytical observation Hx Jacobians are wrong: \n"
 										<< " Real Hx: \n" << Hx << "\n Analytical Hx:\n" << Hx_gt << "Diff:\n" << Hx-Hx_gt << "\n";
 									THROW_EXCEPTION("ERROR: User analytical observation Hx Jacobians are wrong (More details dumped to cerr)")
 								}
-								if ((Hy-Hy_gt).Abs().sumAll()>KF_options.debug_verify_analytic_jacobians_threshold) {
+								if ((Hy-Hy_gt).array().abs().sum()>KF_options.debug_verify_analytic_jacobians_threshold) {
 									std::cerr << "[KalmanFilter] ERROR: User analytical observation Hy Jacobians are wrong: \n"
 										<< " Real Hy: \n" << Hy << "\n Analytical Hx:\n" << Hy_gt << "Diff:\n" << Hy-Hy_gt << "\n";
 									THROW_EXCEPTION("ERROR: User analytical observation Hy Jacobians are wrong (More details dumped to cerr)")
@@ -1325,7 +1329,7 @@ namespace mrpt
 									else
 									{
 										// IKF:
-										mrpt::dynamicsize_vector<KFTYPE> HAx(OBS_SIZE);
+										Eigen::Matrix<KFTYPE,Eigen::Dynamic,1> HAx(OBS_SIZE);
 										size_t o,q;
 										// HAx = H*(x0-xi)
 										for (o=0;o<OBS_SIZE;o++)
@@ -1560,7 +1564,7 @@ namespace mrpt
 							// Append to m_xkk:
 							size_t q;
 							size_t idx = obj.m_xkk.size();
-							obj.m_xkk.resize( obj.m_xkk.size() + FEAT_SIZE );
+							obj.m_xkk.conservativeResize( obj.m_xkk.size() + FEAT_SIZE );
 
 							for (q=0;q<FEAT_SIZE;q++)
 								obj.m_xkk[idx+q] = yn[q];
@@ -1587,10 +1591,10 @@ namespace mrpt
 							const size_t nLMs = (idx-VEH_SIZE)/FEAT_SIZE; // Number of previous landmarks:
 							for (q=0;q<nLMs;q++)
 							{
-								typename KF::KFMatrix_VxF  P_x_yq(UNINITIALIZED_MATRIX);
+								typename KF::KFMatrix_VxF  P_x_yq(mrpt::math::UNINITIALIZED_MATRIX);
 								obj.m_pkk.extractMatrix(0,VEH_SIZE+q*FEAT_SIZE,P_x_yq) ;
 
-								typename KF::KFMatrix_FxF P_cross(UNINITIALIZED_MATRIX);
+								typename KF::KFMatrix_FxF P_cross(mrpt::math::UNINITIALIZED_MATRIX);
 								P_cross.multiply(dyn_dxv, P_x_yq );
 
 								obj.m_pkk.insertMatrix(idx,VEH_SIZE+q*FEAT_SIZE, P_cross );
@@ -1600,7 +1604,7 @@ namespace mrpt
 							// Fill the Pynyn term:
 							//  P_yn_yn =  (dyn_dxv * Pxx * ~dyn_dxv) + (dyn_dhn * R * ~dyn_dhn);
 							// --------------------
-							typename KF::KFMatrix_FxF P_yn_yn(UNINITIALIZED_MATRIX);
+							typename KF::KFMatrix_FxF P_yn_yn(mrpt::math::UNINITIALIZED_MATRIX);
 							dyn_dxv.multiply_HCHt(Pxx,  P_yn_yn);
 							if (use_dyn_dhn_jacobian)
 									dyn_dhn.multiply_HCHt(R, P_yn_yn, true); // Accumulate in P_yn_yn

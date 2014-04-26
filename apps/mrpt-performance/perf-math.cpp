@@ -8,8 +8,8 @@
    +---------------------------------------------------------------------------+ */
 
 
-#include <mrpt/math.h>
-#include <mrpt/utils/CTicTac.h>
+#include <mrpt/random.h>
+#include <mrpt/utils/round.h>
 
 #include "common.h"
 
@@ -32,7 +32,7 @@ double math_test_round(int a1, int a2)
 	double b = 2.3;
 	for (long i=0;i<N;i++)
 	{
-		a=mrpt::math::round(b);
+		a=mrpt::utils::round(b);
 	}
 	double T = tictac.Tac()/N;
 	dummy_do_nothing_with_string( mrpt::format("%i",a) );

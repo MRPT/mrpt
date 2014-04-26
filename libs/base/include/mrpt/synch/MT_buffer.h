@@ -10,6 +10,7 @@
 #define  mrpt_synch_mt_buffer_H
 
 #include <mrpt/synch/CCriticalSection.h>
+#include <mrpt/utils/types_simple.h>
 
 namespace mrpt
 {

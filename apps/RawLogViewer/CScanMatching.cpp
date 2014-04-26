@@ -28,7 +28,11 @@
 
 
 // General global variables:
-#include <mrpt/slam.h>
+#include <mrpt/slam/CSimplePointsMap.h>
+#include <mrpt/slam/COccupancyGridMap2D.h>
+#include <mrpt/poses/CPosePDFSOG.h>
+#include <mrpt/slam/CICP.h>
+
 #include <mrpt/gui/WxUtils.h>
 
 using namespace mrpt;

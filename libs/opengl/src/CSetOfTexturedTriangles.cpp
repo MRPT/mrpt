@@ -7,10 +7,10 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/opengl.h>  // Precompiled header
+#include "opengl-precomp.h"  // Precompiled header
 
 #include <mrpt/opengl/CSetOfTexturedTriangles.h>
-#include <mrpt/math/utils.h>
+#include <mrpt/utils/CStream.h>
 
 #include "opengl_internals.h"
 
@@ -147,7 +147,7 @@ void CSetOfTexturedTriangles::getBoundingBox(mrpt::math::TPoint3D &bb_min, mrpt:
 	bb_min = mrpt::math::TPoint3D(std::numeric_limits<double>::max(),std::numeric_limits<double>::max(), std::numeric_limits<double>::max());
 	bb_max = mrpt::math::TPoint3D(-std::numeric_limits<double>::max(),-std::numeric_limits<double>::max(),-std::numeric_limits<double>::max());
 
-	for (size_t i=0;i<m_triangles.size();i++) 
+	for (size_t i=0;i<m_triangles.size();i++)
 	{
 		const TTriangle &t=m_triangles[i];
 
@@ -168,3 +168,35 @@ void CSetOfTexturedTriangles::getBoundingBox(mrpt::math::TPoint3D &bb_min, mrpt:
 	m_pose.composePoint(bb_min, bb_min);
 	m_pose.composePoint(bb_max, bb_max);
 }
+
+
+CSetOfTexturedTriangles::TVertex::TVertex( ) :
+	m_x(0.0), m_y(0.0), m_z(0.0), m_u(0), m_v(0) 
+{ }
+
+CSetOfTexturedTriangles::TVertex::TVertex(float x, float y, float z, uint32_t u, uint32_t v) :
+	m_x(x), m_y(y), m_z(z), m_u(u), m_v(v) 
+{ }
+
+void CSetOfTexturedTriangles::TVertex::writeToStream(CStream &out) const { 
+	out << m_x << m_y << m_z  << m_u << m_v; 
+}
+void CSetOfTexturedTriangles::TVertex::readFromStream(CStream &in) { 
+	in >> m_x >> m_y >> m_z >> m_u >> m_v; 
+}
+
+CSetOfTexturedTriangles::TTriangle::TTriangle()
+{ }
+
+CSetOfTexturedTriangles::TTriangle::TTriangle(TVertex v1, TVertex v2, TVertex v3) :
+	m_v1(v1), m_v2(v2), m_v3(v3)
+{ }
+
+void CSetOfTexturedTriangles::TTriangle::writeToStream(CStream &out) const {  
+	m_v1.writeToStream(out); m_v2.writeToStream(out); m_v3.writeToStream(out); 
+}
+void CSetOfTexturedTriangles::TTriangle::readFromStream(CStream &in) { 
+	m_v1.readFromStream(in); m_v2.readFromStream(in);  m_v3.readFromStream(in); 
+}
+
+

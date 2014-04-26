@@ -7,11 +7,11 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/obs.h>   // Precompiled headers
+#include "obs-precomp.h"   // Precompiled headers
 
-
+#include <mrpt/utils/CStream.h>
 #include <mrpt/slam/CObservationIMU.h>
-#include <mrpt/math/CMatrixD.h>
+//#include <mrpt/math/CMatrixD.h>
 
 using namespace mrpt::slam;
 using namespace mrpt::utils;
@@ -59,7 +59,7 @@ void  CObservationIMU::readFromStream(CStream &in, int version)
 		// In version 0 it was a vector of floats:
 		if (version<1)
 		{
-			vector_float	tmp;
+			mrpt::math::CVectorFloat	tmp;
 			in >> tmp;
 			rawMeasurements.resize(tmp.size());
 			for (size_t i=0;i<rawMeasurements.size();i++)

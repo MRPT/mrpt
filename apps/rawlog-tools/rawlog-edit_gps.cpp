@@ -10,6 +10,7 @@
 #include "rawlog-edit-declarations.h"
 
 #include <mrpt/topography.h>
+#include <mrpt/slam/CObservationGPS.h>
 
 using namespace mrpt;
 using namespace mrpt::utils;

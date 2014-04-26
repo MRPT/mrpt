@@ -7,7 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/gui.h>  // precompiled header
+#include "gui-precomp.h"   // Precompiled headers
 
 #include <mrpt/gui/CBaseGUIWindow.h>
 #include <mrpt/system/os.h>

@@ -7,9 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/base.h>  // Precompiled headers
-
-
+#include "base-precomp.h"  // Precompiled headers
 
 #include <mrpt/utils/CReferencedMemBlock.h>
 
@@ -19,7 +17,7 @@ using namespace mrpt::utils;
 						constructor
 ---------------------------------------------------------------*/
 CReferencedMemBlock::CReferencedMemBlock(size_t mem_block_size) :
-	stlplus::smart_ptr<vector_byte>( new vector_byte(mem_block_size) )
+	base_t( new std::vector<char>(mem_block_size) )
 {
 }
 

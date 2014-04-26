@@ -7,7 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/vision.h>  // Precompiled headers
+#include "vision-precomp.h"   // Precompiled headers
 
 
 #include <mrpt/utils/CTextFileLinesParser.h>
@@ -15,9 +15,12 @@
 #include <mrpt/utils/CFileInputStream.h>
 #include <mrpt/utils/CStartUpClassesRegister.h>
 #include <mrpt/utils/CStdOutStream.h>
+#include <mrpt/utils/stl_serialization.h>
 #include <mrpt/vision/CFeature.h>
 #include <mrpt/vision/types.h>
-#include <mrpt/math/utils.h>
+#include <mrpt/utils/stl_serialization.h>
+#include <mrpt/math/data_utils.h>
+#include <mrpt/system/os.h>
 
 using namespace mrpt;
 using namespace mrpt::vision;
@@ -593,11 +596,11 @@ float CFeature::internal_distanceBetweenPolarImages(
 //#define LM_CORR_METHOD_CORRELATION
 
 #if defined(LM_CORR_BIAS_MEAN) || defined(LM_CORR_METHOD_CORRELATION)
-	const float desc1_mean = desc1.sumAll() / static_cast<float>(width*height);
-	const float desc2_mean = desc2.sumAll() / static_cast<float>(width*height);
+	const float desc1_mean = desc1.sum() / static_cast<float>(width*height);
+	const float desc2_mean = desc2.sum() / static_cast<float>(width*height);
 #endif
 
-	vector_float distances(height,0);  // Distances for each shift
+	CVectorFloat distances(height,0);  // Distances for each shift
 
 	for (delta=0;delta<height;delta++)
 	{

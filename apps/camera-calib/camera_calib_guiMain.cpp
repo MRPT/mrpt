@@ -29,6 +29,9 @@
 
 
 #include <mrpt/gui/WxUtils.h>
+#include <mrpt/system/filesystem.h>
+#include <mrpt/opengl/CGridPlaneXY.h>
+#include <mrpt/opengl/stock_objects.h>
 
 using namespace mrpt;
 using namespace mrpt::utils;
@@ -633,7 +636,7 @@ void camera_calib_guiDialog::refreshDisplayedImage()
 	}
 	else
 	{
-		imgOrgColor.rectifyImage(imgRect,camera_params.intrinsicParams, camera_params.getDistortionParamsAsVector());
+		imgOrgColor.rectifyImage(imgRect,camera_params);
 		imgRect.scaleImage(imgSizes.x*zoomVal,imgSizes.y*zoomVal, IMG_INTERP_NN);
 
 		// Draw reprojected:

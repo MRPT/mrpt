@@ -27,10 +27,10 @@ namespace mrpt
 		/** Computes the FFT of a 2^N-size vector of real numbers, and returns the Re+Im+Magnitude parts.
 		  * \sa fft2_real
 		  */
-		void BASE_IMPEXP  fft_real(	vector_float	&in_realData,
-								vector_float	&out_FFT_Re,
-								vector_float	&out_FFT_Im,
-								vector_float	&out_FFT_Mag );
+		void BASE_IMPEXP  fft_real(	CVectorFloat	&in_realData,
+								CVectorFloat	&out_FFT_Re,
+								CVectorFloat	&out_FFT_Im,
+								CVectorFloat	&out_FFT_Mag );
 
 		/** Compute the 2D Discrete Fourier Transform (DFT) of a real matrix, returning the real and imaginary parts separately.
 		  * \param in_data The N_1xN_2 matrix.

@@ -9,12 +9,15 @@
 #ifndef metaprogramming_H
 #define metaprogramming_H
 
-#include <mrpt/utils/CSerializable.h>
+#include <mrpt/utils/CObject.h>
+#include <mrpt/utils/metaprogramming_serialization.h>
 
 namespace mrpt
 {
 	namespace utils
 	{
+	    class CStream;
+
 		/** A set of utility objects for metaprogramming with STL algorithms.
 		  * \ingroup stlext_grp
 		  */
@@ -66,8 +69,8 @@ namespace mrpt
 			/** An object for transforming between types/classes, intended for being used in STL algorithms.
 			  *  Example of usage:
 			  *   \code
-			  *     vector_int      v1(10);  // Input
-			  *     vector_double   v2(10);  // Output
+			  *     vector<int>      v1(10);  // Input
+			  *     vector<double>   v2(10);  // Output
 			  *     std::transform(v1.begin(),v1.end(), v2.begin(), ObjectConvert<double> );
 			  *   \endcode
 			  */
@@ -106,38 +109,6 @@ namespace mrpt
 				inline void operator()(mrpt::utils::CObjectPtr &ptr)
 				{
 					ptr.clear_unique();
-				}
-			};
-
-			/** An object for reading objects from a stream, intended for being used in STL algorithms. */
-			struct ObjectReadFromStream
-			{
-			private:
-				CStream		*m_stream;
-			public:
-				inline ObjectReadFromStream(CStream *stream) : m_stream(stream) {  }
-
-				// T can be CSerializablePtr, CSerializable, or any other class implementing ">>"
-				template <typename T>
-				inline void operator()(T &obj)
-				{
-					(*m_stream) >> obj;
-				}
-			};
-
-			/** An object for writing objects to a stream, intended for being used in STL algorithms. */
-			struct ObjectWriteToStream
-			{
-			private:
-				CStream		*m_stream;
-			public:
-				inline ObjectWriteToStream(CStream *stream) : m_stream(stream) {  }
-
-				// T can be CSerializablePtr, CSerializable, or any other class implementing "<<"
-				template <typename T>
-				inline void operator()(const T &ptr)
-				{
-					(*m_stream) << ptr;
 				}
 			};
 

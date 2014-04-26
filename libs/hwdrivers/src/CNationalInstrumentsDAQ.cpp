@@ -7,7 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/hwdrivers.h> // Precompiled headers
+#include "hwdrivers-precomp.h"   // Precompiled headers
 
 #include <mrpt/hwdrivers/CNationalInstrumentsDAQ.h>
 
@@ -161,7 +161,7 @@ void  CNationalInstrumentsDAQ::loadConfig_sensorSpecific(
 		// ---------------------------------------
 		const string sChanns = cfg.read_string(sect,sTask+string(".channels"),"",true);
 		vector<string> lstStrChanns;
-		mrpt::utils::tokenize(sChanns," \t,",lstStrChanns);
+		mrpt::system::tokenize(sChanns," \t,",lstStrChanns);
 		if (lstStrChanns.empty())
 			THROW_EXCEPTION_CUSTOM_MSG1("List of channels for task %u is empty!",i)
 		

@@ -11,16 +11,10 @@
 
 #include <mrpt/utils/utils_defs.h>
 #include <mrpt/utils/TColor.h>
-#include <mrpt/math/CMatrixTemplateNumeric.h>
-#include <mrpt/math/ops_matrices.h>
+#include <mrpt/math/eigen_frwds.h>
 
 namespace mrpt
 {
-	namespace math
-	{
-		class CMatrix;
-		class CMatrixD;
-	}
 	namespace utils
 	{
 		class CImage;
@@ -277,7 +271,7 @@ namespace mrpt
 				// Compute the eigen-vectors & values:
 				cov2D->eigenVectors(eigVec,eigVal);
 
-				eigVal.Sqrt();
+				eigVal = eigVal.array().sqrt().matrix();
 				MATRIX2X2	M;
 				M.multiply_ABt(eigVal, eigVec);
 

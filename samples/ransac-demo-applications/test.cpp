@@ -7,15 +7,24 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/base.h>
-#include <mrpt/slam.h>
-#include <mrpt/gui.h>
+#include <mrpt/math/ransac_applications.h>
+#include <mrpt/gui/CDisplayWindow3D.h>
+#include <mrpt/gui/CDisplayWindowPlots.h>
+#include <mrpt/random.h>
+#include <mrpt/utils/CTicTac.h>
+#include <mrpt/utils/metaprogramming.h>
+#include <mrpt/poses/CPose3D.h>
+#include <mrpt/opengl/CGridPlaneXY.h>
+#include <mrpt/opengl/CPointCloud.h>
+#include <mrpt/opengl/stock_objects.h>
+#include <mrpt/opengl/CTexturedPlane.h>
 
 using namespace mrpt;
 using namespace mrpt::utils;
 using namespace mrpt::gui;
 using namespace mrpt::math;
 using namespace mrpt::random;
+using namespace mrpt::poses;
 using namespace std;
 
 
@@ -40,7 +49,7 @@ void TestRANSACPlanes()
 		{ 1,+1.5, 1, -1 },
 		{ 0,-1,1, +2 } };
 
-	vector_double xs,ys,zs;
+	CVectorDouble xs,ys,zs;
 	for (size_t p=0;p<N_PLANES;p++)
 	{
 		for (size_t i=0;i<N_plane;i++)
@@ -144,7 +153,7 @@ void TestRANSACLines()
 		{ 0,-1, +2 },
 		{ 0.5,-0.3, +1 } };
 
-	vector_double xs,ys;
+	CVectorDouble xs,ys;
 	for (size_t p=0;p<N_LINES;p++)
 	{
 		for (size_t i=0;i<N_line;i++)
@@ -187,10 +196,10 @@ void TestRANSACLines()
 	unsigned int n=0;
 	for (vector<pair<size_t,TLine2D> >::iterator p=detectedLines.begin();p!=detectedLines.end();++p)
 	{
-		vector_double lx(2),ly(2);
+		CVectorDouble lx(2),ly(2);
 		lx[0] = -15;
 		lx[1] = 15;
-		for (vector_double::Index q=0;q<lx.size();q++)
+		for (CVectorDouble::Index q=0;q<lx.size();q++)
 			ly[q] = -(p->second.coefs[2]+p->second.coefs[0]*lx[q])/p->second.coefs[1];
 		win2.plot(lx,ly,"r-1",format("line_%u",n++));
 	}

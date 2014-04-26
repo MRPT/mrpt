@@ -10,16 +10,14 @@
 #define CPosePDFSOG_H
 
 #include <mrpt/poses/CPosePDF.h>
-#include <mrpt/math/CMatrix.h>
-#include <mrpt/math/CMatrixD.h>
+#include <mrpt/math/CMatrixFixedNumeric.h>
+#include <mrpt/math/math_frwds.h>
 
 
 namespace mrpt
 {
 	namespace poses
 	{
-		using namespace mrpt::math;
-
 		// This must be added to any CSerializable derived class:
 		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE( CPosePDFSOG , CPosePDF )
 
@@ -52,14 +50,14 @@ namespace mrpt
 				{ }
 
 				CPose2D			mean;
-				CMatrixDouble33	cov;
+				mrpt::math::CMatrixDouble33	cov;
 
 				/** The log-weight
 				  */
 				double		log_w;
 
 			public:
-			  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+			  MRPT_MAKE_ALIGNED_OPERATOR_NEW
 			};
 
 			typedef mrpt::aligned_containers<TGaussianMode>::vector_t	CListGaussianModes;
@@ -138,12 +136,12 @@ namespace mrpt
 			/** Returns an estimate of the pose covariance matrix (3x3 cov matrix) and the mean, both at once.
 			  * \sa getMean
 			  */
-			void getCovarianceAndMean(CMatrixDouble33 &cov,CPose2D &mean_point) const;
+			void getCovarianceAndMean(mrpt::math::CMatrixDouble33 &cov,CPose2D &mean_point) const;
 
 			/** For the most likely Gaussian mode in the SOG, returns the pose covariance matrix (3x3 cov matrix) and the mean.
 			  * \sa getMean
 			  */
-			void getMostLikelyCovarianceAndMean(CMatrixDouble33 &cov,CPose2D &mean_point) const;
+			void getMostLikelyCovarianceAndMean(mrpt::math::CMatrixDouble33 &cov,CPose2D &mean_point) const;
 
 			/** Normalize the weights in m_modes such as the maximum log-weight is 0.
 			  */
@@ -184,7 +182,7 @@ namespace mrpt
 
 			/** Draws a number of samples from the distribution, and saves as a list of 1x3 vectors, where each row contains a (x,y,phi) datum.
 			  */
-			void  drawManySamples( size_t N, std::vector<vector_double> & outSamples ) const;
+			void  drawManySamples( size_t N, std::vector<CVectorDouble> & outSamples ) const;
 
 			/** Returns a new PDF such as: NEW_PDF = (0,0,0) - THIS_PDF
 			  */
@@ -211,7 +209,7 @@ namespace mrpt
 				const double &		y_max,
 				const double &		resolutionXY,
 				const double &		phi,
-				CMatrixD	&outMatrix,
+				mrpt::math::CMatrixD	&outMatrix,
 				bool		sumOverAllPhis = false );
 
 			/** Bayesian fusion of two pose distributions, then save the result in this object (WARNING: Currently p1 must be a mrpt::poses::CPosePDFSOG object and p2 a mrpt::poses::CPosePDFGaussian object)

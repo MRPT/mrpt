@@ -117,7 +117,7 @@ namespace mrpt
 			/** The poses of the 8 sensors x[m] y[m] z[m] yaw[deg] pitch[deg] roll[deg]. This field is automaticaly filled according to the sensor
 			  * described in the configuration file.
 			  */
-			std::vector<mrpt::math::CPose3D>	m_sensorPoses;
+			std::vector<mrpt::poses::CPose3D>	m_sensorPoses;
 
 			/** The board serial number read in the configuration file. -1 for any  board.
 			 */

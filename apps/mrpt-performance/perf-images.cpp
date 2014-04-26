@@ -7,15 +7,18 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/base.h>
-#include <mrpt/slam.h>
-#include <mrpt/vision.h>
+#include <mrpt/utils/CImage.h>
+#include <mrpt/utils/TStereoCamera.h>
+#include <mrpt/utils/CConfigFileMemory.h>
+#include <mrpt/system/filesystem.h>
+#include <mrpt/vision/CImagePyramid.h>
+#include <mrpt/vision/CStereoRectifyMap.h>
+#include <mrpt/random.h>
 
 #include "common.h"
 
 using namespace mrpt;
 using namespace mrpt::utils;
-using namespace mrpt::slam;
 using namespace mrpt::random;
 using namespace mrpt::vision;
 using namespace std;

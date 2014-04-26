@@ -9,102 +9,23 @@
 #ifndef  mrpt_math_matrix_ops_H
 #define  mrpt_math_matrix_ops_H
 
-#include <mrpt/math/math_frwds.h>  // Fordward declarations
-
-#include <mrpt/math/CMatrix.h>
-#include <mrpt/math/CMatrixD.h>
-#include <mrpt/utils/CStream.h>
+#include <mrpt/math/math_frwds.h>  // forward declarations
+#include <mrpt/math/eigen_frwds.h>  // forward declarations
 
 #include <mrpt/math/CMatrixTemplateNumeric.h>
 #include <mrpt/math/CMatrixFixedNumeric.h>
 
 #include <mrpt/math/ops_containers.h>		// Many generic operations
 
-#include <mrpt/utils/metaprogramming.h>  // for copy_container_typecasting()
-
-
 /** \file ops_matrices.h
-  * This file implements miscelaneous matrix and matrix/vector operations, plus internal functions in mrpt::math::detail
-  *
+  * This file implements miscelaneous matrix and matrix/vector operations, and internal functions in mrpt::math::detail
   */
-
 namespace mrpt
 {
 	namespace math
 	{
 		/** \addtogroup container_ops_grp
 		  *  @{ */
-
-		/** @name Operators for binary streaming of MRPT matrices
-		    @{ */
-
-		/** Read operator from a CStream. The format is compatible with that of CMatrix & CMatrixD */
-		template <size_t NROWS,size_t NCOLS>
-		mrpt::utils::CStream &operator>>(mrpt::utils::CStream &in, CMatrixFixedNumeric<float,NROWS,NCOLS> & M) {
-			CMatrix  aux;
-			in.ReadObject(&aux);
-			ASSERTMSG_(M.cols()==aux.cols() && M.rows()==aux.rows(), format("Size mismatch: deserialized is %ux%u, expected is %ux%u",(unsigned)aux.getRowCount(),(unsigned)aux.getColCount(),(unsigned)NROWS,(unsigned)NCOLS))
-			M = aux;
-			return in;
-		}
-		/** Read operator from a CStream. The format is compatible with that of CMatrix & CMatrixD */
-		template <size_t NROWS,size_t NCOLS>
-		mrpt::utils::CStream &operator>>(mrpt::utils::CStream &in, CMatrixFixedNumeric<double,NROWS,NCOLS> & M) {
-			CMatrixD  aux;
-			in.ReadObject(&aux);
-			ASSERTMSG_(M.cols()==aux.cols() && M.rows()==aux.rows(), format("Size mismatch: deserialized is %ux%u, expected is %ux%u",(unsigned)aux.getRowCount(),(unsigned)aux.getColCount(),(unsigned)NROWS,(unsigned)NCOLS))
-			M = aux;
-			return in;
-		}
-
-		/** Write operator for writing into a CStream. The format is compatible with that of CMatrix & CMatrixD */
-		template <size_t NROWS,size_t NCOLS>
-		mrpt::utils::CStream &operator<<(mrpt::utils::CStream &out,const CMatrixFixedNumeric<float,NROWS,NCOLS> & M) {
-			CMatrix aux = CMatrixFloat(M);
-			out.WriteObject(&aux);
-			return out;
-		}
-		/** Write operator for writing into a CStream. The format is compatible with that of CMatrix & CMatrixD */
-		template <size_t NROWS,size_t NCOLS>
-		mrpt::utils::CStream &operator<<(mrpt::utils::CStream &out,const CMatrixFixedNumeric<double,NROWS,NCOLS> & M) {
-			CMatrixD aux = CMatrixDouble(M);
-			out.WriteObject(&aux);
-			return out;
-		}
-
-		/** @} */  // end MRPT matrices stream operators
-
-
-		/** @name Operators for text streaming of MRPT matrices
-		    @{ */
-
-
-		/** Dumps the matrix to a text ostream, adding a final "\n" to Eigen's default output. */
-		template <typename T,size_t NROWS,size_t NCOLS>
-		inline std::ostream & operator << (std::ostream & s, const CMatrixFixedNumeric<T,NROWS,NCOLS>& m)
-		{
-			Eigen::IOFormat  fmt; fmt.matSuffix="\n";
-			return s << m.format(fmt);
-		}
-
-		/** Dumps the matrix to a text ostream, adding a final "\n" to Eigen's default output. */
-		template<typename T>
-		inline std::ostream & operator << (std::ostream & s, const CMatrixTemplateNumeric<T>& m)
-		{
-			Eigen::IOFormat  fmt; fmt.matSuffix="\n";
-			return s << m.format(fmt);
-		}
-
-		/** Dumps the vector as a row to a text ostream, with the format: "[v1 v2 v3... vN]" */
-		template<typename T>
-		inline std::ostream & operator << (std::ostream & s, const mrpt::dynamicsize_vector<T>& m)
-		{
-			Eigen::IOFormat  fmt; fmt.rowSeparator=" "; fmt.matPrefix="["; fmt.matSuffix="]";
-			return s << m.format(fmt);
-		}
-
-		/** @} */  // end MRPT matrices stream operators
-
 
 		/** Transpose operator for matrices */
 		template <class Derived>

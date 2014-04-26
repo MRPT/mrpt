@@ -11,10 +11,8 @@
 
 #include <mrpt/utils/CDebugOutputCapable.h>
 #include <mrpt/math/CMatrixTemplateNumeric.h>
-#include <mrpt/math/CVectorTemplate.h>
 #include <mrpt/utils/CConfigFileBase.h>
 #include <mrpt/utils/CLoadableOptions.h>
-#include <mrpt/opengl.h>
 #include <mrpt/bayes/CKalmanFilterCapable.h>
 
 #include <mrpt/utils/safe_pointers.h>
@@ -23,7 +21,7 @@
 #include <mrpt/slam/CSensoryFrame.h>
 #include <mrpt/slam/CActionCollection.h>
 #include <mrpt/slam/CObservationBearingRange.h>
-#include <mrpt/poses/CPoint3D.h>
+#include <mrpt/math/lightweight_geom_data.h>
 #include <mrpt/poses/CPose3DPDFGaussian.h>
 #include <mrpt/poses/CPose3DQuatPDFGaussian.h>
 #include <mrpt/slam/CLandmark.h>
@@ -57,12 +55,12 @@ namespace mrpt
 			                               // <size_t VEH_SIZE,            size_t OBS_SIZE,        size_t FEAT_SIZE, size_t ACT_SIZE, size typename kftype = double>
 		{
 		 public:
-			 /** Constructor.
-			   */
+			typedef mrpt::math::TPoint3D landmark_point_t;  //!< Either mrpt::math::TPoint2D or mrpt::math::TPoint3D
+
+			 /** Constructor. */
 			 CRangeBearingKFSLAM( );
 
-			 /** Destructor:
-			   */
+			 /** Destructor: */
 			 virtual ~CRangeBearingKFSLAM();
 
 			 void reset(); //!< Reset the state of the SLAM filter: The map is emptied and the robot put back to (0,0,0).
@@ -85,7 +83,7 @@ namespace mrpt
 			  */
 			void  getCurrentState(
 				CPose3DQuatPDFGaussian &out_robotPose,
-				std::vector<CPoint3D>  &out_landmarksPositions,
+				std::vector<mrpt::math::TPoint3D>  &out_landmarksPositions,
 				std::map<unsigned int,CLandmark::TLandmarkID> &out_landmarkIDs,
 				CVectorDouble      &out_fullState,
 				CMatrixDouble      &out_fullCovariance
@@ -101,7 +99,7 @@ namespace mrpt
 			  */
 			inline void  getCurrentState(
 				CPose3DPDFGaussian &out_robotPose,
-				std::vector<CPoint3D>  &out_landmarksPositions,
+				std::vector<mrpt::math::TPoint3D>  &out_landmarksPositions,
 				std::map<unsigned int,CLandmark::TLandmarkID> &out_landmarkIDs,
 				CVectorDouble      &out_fullState,
 				CMatrixDouble      &out_fullCovariance
@@ -161,7 +159,7 @@ namespace mrpt
 
 				/** A 7-length vector with the std. deviation of the transition model in (x,y,z, qr,qx,qy,qz) used only when there is no odometry (if there is odo, its uncertainty values will be used instead); x y z: In meters.
 				  */
-				vector_float stds_Q_no_odo;
+				CVectorFloat stds_Q_no_odo;
 
 				/** The std. deviation of the sensor (for the matrix R in the kalman filters), in meters and radians.
 				  */

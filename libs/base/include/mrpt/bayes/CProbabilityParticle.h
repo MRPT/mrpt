@@ -9,9 +9,6 @@
 #ifndef CPROBABILITYPARTICLE_H
 #define CPROBABILITYPARTICLE_H
 
-#include <mrpt/utils/utils_defs.h>
-#include <mrpt/utils/CSerializable.h>
-
 namespace mrpt
 {
 namespace bayes

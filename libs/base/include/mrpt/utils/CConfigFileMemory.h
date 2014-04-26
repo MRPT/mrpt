@@ -82,7 +82,7 @@ namespace utils
 
 		/** Returs a list with all the keys into a section.
 		  */
-		virtual void getAllKeys( const std::string section, vector_string	&keys ) const;
+		virtual void getAllKeys( const std::string &section, vector_string	&keys ) const;
 
 	}; // End of class def.
 

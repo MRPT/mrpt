@@ -54,7 +54,7 @@ namespace slam
 		/** The users can use this vector for any arbitrary number of batteries or any other analog measurements.
 		  * \sa voltageOtherBatteriesValid
 		  */
-		vector_double voltageOtherBatteries;
+		CVectorDouble voltageOtherBatteries;
 
 		/** These values must be true if the corresponding fields contain valid values (it MUST has the same size than voltageOtherBatteries)
 		  */

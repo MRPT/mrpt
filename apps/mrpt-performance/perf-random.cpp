@@ -7,14 +7,12 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/slam.h>
-
+#include <mrpt/random.h>
 
 #include "common.h"
 
 using namespace mrpt;
 using namespace mrpt::utils;
-using namespace mrpt::slam;
 using namespace mrpt::random;
 using namespace std;
 
@@ -103,7 +101,7 @@ double random_test_6(int a1, int a2)
 	// ----------------------------------------
 	const long N = 100000;
 	CTicTac	 tictac;
-	vector_double res;
+	CVectorDouble res;
 	for (long i=0;i<N;i++)
 	{
 		rg.drawGaussianMultivariate(res,COV);
@@ -121,7 +119,7 @@ double random_test_7(int a1, int a2)
 	// ----------------------------------------
 	const long N = 100000;
 	CTicTac	 tictac;
-	vector_double res;
+	CVectorDouble res;
 	for (long i=0;i<N;i++)
 	{
 		rg.drawGaussianMultivariate(res,COV);
@@ -146,7 +144,7 @@ double random_test_8(int a1, int a2)
 	// ----------------------------------------
 	const long N = 1000;
 	CTicTac	 tictac;
-	std::vector<vector_double> res;
+	std::vector<CVectorDouble> res;
 	for (long i=0;i<N;i++)
 	{
 		rg.drawGaussianMultivariateMany(res,NSAMPS,COV);
@@ -169,7 +167,7 @@ double random_test_9(int a1, int a2)
 	// ----------------------------------------
 	const long N = 1000;
 	CTicTac	 tictac;
-	std::vector<vector_double> res;
+	std::vector<CVectorDouble> res;
 	for (long i=0;i<N;i++)
 	{
 		rg.drawGaussianMultivariateMany(res,NSAMPS,COV);
@@ -181,13 +179,13 @@ double random_test_10(int a1, int a2)
 {
 	CRandomGenerator  rg;
 
-	vector_double vec(a1);
+	CVectorDouble vec(a1);
 	rg.drawUniformVector(vec,0.0,1.0);
 
 	// test 10: permute
 	// ----------------------------------------
 	const long N = 10000;
-	vector_double vec2;
+	CVectorDouble vec2;
 	CTicTac	 tictac;
 	for (long i=0;i<N;i++)
 	{

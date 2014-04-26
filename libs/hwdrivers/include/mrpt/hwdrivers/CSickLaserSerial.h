@@ -11,6 +11,7 @@
 
 #include <mrpt/hwdrivers/C2DRangeFinderAbstract.h>
 #include <mrpt/hwdrivers/CSerialPort.h>
+#include <mrpt/math/lightweight_geom_data.h>
 
 namespace mrpt
 {
@@ -58,7 +59,7 @@ namespace mrpt
 			int		m_scans_res; //!< 1/100th of deg: 100, 50 or 25
 
 			/** The sensor 6D pose: */
-			poses::TPose3D		m_sensorPose;
+			mrpt::math::TPose3D		m_sensorPose;
 
 			static int			CRC16_GEN_POL;
 

@@ -8,8 +8,15 @@
    +---------------------------------------------------------------------------+ */
 
 
-#include <mrpt/base.h>
-#include <mrpt/slam.h>
+#include <mrpt/utils/CFileGZInputStream.h>
+#include <mrpt/utils/CConfigFile.h>
+#include <mrpt/slam/CMonteCarloLocalization2D.h>
+#include <mrpt/slam/CMultiMetricMap.h>
+#include <mrpt/slam/CSimpleMap.h>
+#include <mrpt/slam/CRawlog.h>
+#include <mrpt/system/filesystem.h>
+#include <mrpt/system/os.h>
+#include <mrpt/random.h>
 #include <gtest/gtest.h>
 
 using namespace mrpt;
@@ -18,6 +25,7 @@ using namespace mrpt::utils;
 using namespace mrpt::poses;
 using namespace mrpt::math;
 using namespace mrpt::random;
+using namespace mrpt::system;
 using namespace std;
 
 // Defined in run_unittests.cpp

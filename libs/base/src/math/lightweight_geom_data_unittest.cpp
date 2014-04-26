@@ -8,11 +8,10 @@
    +---------------------------------------------------------------------------+ */
 
 
-#include <mrpt/base.h>
+#include <mrpt/math/lightweight_geom_data.h>
 #include <gtest/gtest.h>
 
 using namespace mrpt;
-using namespace mrpt::slam;
 using namespace mrpt::utils;
 using namespace mrpt::math;
 using namespace std;

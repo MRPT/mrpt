@@ -7,7 +7,8 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/base.h>
+#include <mrpt/math/CSparseMatrix.h>
+#include <mrpt/random.h>
 
 using namespace mrpt;
 using namespace mrpt::math;
@@ -25,8 +26,8 @@ void ExampleCSparse()
 	SM.insert_submatrix(0,0, COV1);
 	SM.insert_submatrix(6,6, COV2);
 
-     // Get as a dense matrix just for displaying to console:
-     CMatrixDouble M;
+	// Get as a dense matrix just for displaying to console:
+	CMatrixDouble M;
 	SM.get_dense(M);
 	cout << "M (as dense):\n" << M;
 

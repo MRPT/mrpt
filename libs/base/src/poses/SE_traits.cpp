@@ -7,7 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/base.h>  // Precompiled headers
+#include "base-precomp.h"  // Precompiled headers
 
 #include <mrpt/poses/SE_traits.h>
 
@@ -61,7 +61,7 @@ void SE_traits<3>::jacobian_dP1DP2inv_depsilon(
 		J1(1,3) = -P1DP2inv.z();                           J1(1,5) =  P1DP2inv.x();
 		J1(2,3) =  P1DP2inv.y();  J1(2,4) =-P1DP2inv.x();
 
-		EIGEN_ALIGN16 const double aux_vals[] = {
+		MRPT_ALIGN16 const double aux_vals[] = {
 				  0,  R(2,0), -R(1,0),
 			-R(2,0),       0,  R(0,0),
 			 R(1,0), -R(0,0),       0,
@@ -93,7 +93,7 @@ void SE_traits<3>::jacobian_dP1DP2inv_depsilon(
 			for (int j=0;j<3;j++)
 				J2.set_unsafe(i,j, -R.get_unsafe(i,j));
 
-		EIGEN_ALIGN16 const double aux_vals[] = {
+		MRPT_ALIGN16 const double aux_vals[] = {
 				  0,  R(0,2), -R(0,1),
 				  0,  R(1,2), -R(1,1),
 				  0,  R(2,2), -R(2,1),

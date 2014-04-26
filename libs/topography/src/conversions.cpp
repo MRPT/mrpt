@@ -7,12 +7,13 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/topography.h>  // Precompiled headers
+#include "topography-precomp.h"  // Precompiled headers
+
 #include <mrpt/topography/conversions.h>
 #include <mrpt/poses/CPoint3D.h>
 #include <mrpt/poses/CPose3D.h>
-#include <mrpt/math.h>
-
+#include <mrpt/math/utils.h>
+#include <mrpt/math/geometry.h>
 #include <mrpt/utils/CStartUpClassesRegister.h>
 
 using namespace std;
@@ -294,7 +295,7 @@ void  mrpt::topography::geodeticToUTM(
 
 	const precnum_t	lat		= DEG2RAD( GeodeticCoords.lat );
 	const precnum_t	lon		= DEG2RAD( GeodeticCoords.lon );
-	const int		Huso	= mrpt::math::fix( ( GeodeticCoords.lon / 6 ) + 31);
+	const int		Huso	= mrpt::utils::fix( ( GeodeticCoords.lon / 6 ) + 31);
 	const precnum_t lon0	= DEG2RAD(Huso*6-183);
 
 	const precnum_t sa		= ellip.sa;
@@ -359,7 +360,7 @@ void  mrpt::topography::GeodeticToUTM(
 	const double lat = DEG2RAD(la);
 	const double lon = DEG2RAD(lo);
 
-	const int Huso = mrpt::math::fix( ( lo / 6 ) + 31);
+	const int Huso = mrpt::utils::fix( ( lo / 6 ) + 31);
 	double S = ( ( Huso * 6 ) - 183 );
 	double deltaS = lon - DEG2RAD(S);
 
@@ -565,13 +566,13 @@ void mrpt::topography::ENUToGeocentric(
 	TPoint3D P_geocentric_ref;
 	mrpt::topography::geodeticToGeocentric(in_coords_origin,P_geocentric_ref, ellip);
 
-	vector_double   P_ref(3);
+	CVectorDouble   P_ref(3);
 	P_ref[0] = P_geocentric_ref.x;
 	P_ref[1] = P_geocentric_ref.y;
 	P_ref[2] = P_geocentric_ref.z;
 
 	// Z axis -> In direction out-ward the center of the Earth:
-	vector_double	REF_X(3),REF_Y(3),REF_Z(3);
+	CVectorDouble	REF_X(3),REF_Y(3),REF_Z(3);
 	math::normalize(P_ref, REF_Z);
 
 	// 1st column: Starting at the reference point, move in the tangent direction
@@ -580,7 +581,7 @@ void mrpt::topography::ENUToGeocentric(
 	//      A_east[1] = (N+in_height_meters)*cos(lat)*cos(lon);  -->  Z[0]
 	//      A_east[2] = 0;                                       -->  0
 	// ---------------------------------------------------------------------------
-	vector_double AUX_X(3);
+	CVectorDouble AUX_X(3);
 	AUX_X[0]=-REF_Z[1];
 	AUX_X[1]= REF_Z[0];
 	AUX_X[2]= 0;

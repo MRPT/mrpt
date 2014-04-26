@@ -7,7 +7,12 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/hwdrivers.h> // Precompiled headers
+#include "hwdrivers-precomp.h"   // Precompiled headers
+
+#define MRPT_NO_WARN_BIG_HDR
+#include <mrpt/hwdrivers.h>
+
+#include <mrpt/utils/CStartUpClassesRegister.h>
 
 using namespace mrpt::utils;
 using namespace mrpt::hwdrivers;

@@ -11,9 +11,7 @@
 
 #include <mrpt/config.h>
 #include <mrpt/base/link_pragmas.h>
-#include <cmath>
-#include <cstdlib>
-#include <algorithm>
+#include <mrpt/poses/poses_frwds.h>
 #include <string>
 
 /*! \file math_frwds.h
@@ -34,15 +32,6 @@ namespace mrpt
 		std::string BASE_IMPEXP MRPT_getVersion();
 	}
 
-	namespace poses
-	{
-		class CPoint2D;
-		class CPoint3D;
-		class CPose2D;
-		class CPose3D;
-		class CPose3DQuat;
-	}
-
 	namespace math
 	{
 		struct TPoint2D;
@@ -50,6 +39,9 @@ namespace mrpt
 		struct TPose2D;
 		struct TPose3D;
 		struct TPose3DQuat;
+
+		class CMatrix;  // mrpt-binary-serializable matrix
+		class CMatrixD; // mrpt-binary-serializable matrix
 
 		namespace detail
 		{
@@ -86,6 +78,12 @@ namespace mrpt
 		// ---------------- Forward declarations: Classes ----------------
 		template <class T> class CMatrixTemplate;
 		template <class T> class CMatrixTemplateObjects;
+
+    	/** ContainerType<T>::element_t exposes the value of any STL or Eigen container.
+		  *  Default specialization works for STL and MRPT containers, there is another one for Eigen in <mrpt/math/eigen_frwds.h> */
+    	template <typename CONTAINER> struct ContainerType {
+    		typedef typename CONTAINER::value_type element_t;
+		};
 
 #define MRPT_MATRIX_CONSTRUCTORS_FROM_POSES(_CLASS_) \
 		explicit inline _CLASS_( const mrpt::math::TPose2D &p)  { mrpt::math::containerFromPoseOrPoint(*this,p); } \
@@ -125,19 +123,9 @@ namespace mrpt
 				MATDEST &outMat);
 		}
 
-		/** Conversion of poses to MRPT containers (vector/matrix) */
-		template <class CONTAINER> CONTAINER & containerFromPoseOrPoint(CONTAINER &C, const TPoint2D &p);
-		template <class CONTAINER> CONTAINER & containerFromPoseOrPoint(CONTAINER &C, const TPoint3D &p);
-		template <class CONTAINER> CONTAINER & containerFromPoseOrPoint(CONTAINER &C, const TPose2D &p);
-		template <class CONTAINER> CONTAINER & containerFromPoseOrPoint(CONTAINER &C, const TPose3D &p);
-		template <class CONTAINER> CONTAINER & containerFromPoseOrPoint(CONTAINER &C, const TPose3DQuat &p);
-
-		template <class CONTAINER> inline CONTAINER & containerFromPoseOrPoint(CONTAINER &C, const mrpt::poses::CPoint2D &p) { return containerFromPoseOrPoint(C, mrpt::math::detail::lightFromPose(p)); }
-		template <class CONTAINER> inline CONTAINER & containerFromPoseOrPoint(CONTAINER &C, const mrpt::poses::CPoint3D &p) { return containerFromPoseOrPoint(C, mrpt::math::detail::lightFromPose(p)); }
-		template <class CONTAINER> inline CONTAINER & containerFromPoseOrPoint(CONTAINER &C, const mrpt::poses::CPose2D &p)  { return containerFromPoseOrPoint(C, mrpt::math::detail::lightFromPose(p)); }
-		template <class CONTAINER> inline CONTAINER & containerFromPoseOrPoint(CONTAINER &C, const mrpt::poses::CPose3D &p)  { return containerFromPoseOrPoint(C, mrpt::math::detail::lightFromPose(p)); }
-		template <class CONTAINER> inline CONTAINER & containerFromPoseOrPoint(CONTAINER &C, const mrpt::poses::CPose3DQuat &p)  { return containerFromPoseOrPoint(C, mrpt::math::detail::lightFromPose(p)); }
-
+		/** Conversion of poses (TPose2D,TPoint2D,..., CPoint2D,CPose3D,...) to MRPT containers (vector/matrix) */
+		template <class CONTAINER,class POINT_OR_POSE>
+		CONTAINER & containerFromPoseOrPoint(CONTAINER &C, const POINT_OR_POSE &p);
 
 		// Vicinity classes ----------------------------------------------------
 		namespace detail	{

@@ -9,10 +9,10 @@
 #ifndef  CClientTCPSocket_H
 #define  CClientTCPSocket_H
 
-#include <mrpt/config.h>
-#include <mrpt/utils/utils_defs.h>
-#include <mrpt/system/os.h>
+#include <mrpt/utils/core_defs.h>
+#include <mrpt/utils/mrpt_stdint.h>
 #include <mrpt/utils/CStream.h>
+#include <string>
 
 namespace mrpt
 {

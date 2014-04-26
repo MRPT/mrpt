@@ -18,9 +18,6 @@ namespace mrpt
 {
 	namespace poses
 	{
-		using namespace mrpt::bayes;
-		using namespace mrpt::utils;
-
 		// This must be added to any CSerializable derived class:
 		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE(CPose3DPDFParticles,CPose3DPDF)
 
@@ -81,7 +78,7 @@ namespace mrpt
 			/** Returns an estimate of the pose covariance matrix (6x6 cov matrix) and the mean, both at once.
 			  * \sa getMean
 			  */
-			void getCovarianceAndMean(CMatrixDouble66 &cov,CPose3D &mean_point) const;
+			void getCovarianceAndMean(mrpt::math::CMatrixDouble66 &cov,CPose3D &mean_point) const;
 
 			/** Returns the pose of the i'th particle.
 			  */
@@ -106,7 +103,7 @@ namespace mrpt
 
 			/** Draws a number of samples from the distribution, and saves as a list of 1x6 vectors, where each row contains a (x,y,phi) datum.
 			  */
-			void  drawManySamples( size_t N, std::vector<vector_double> & outSamples ) const;
+			void  drawManySamples( size_t N, std::vector<CVectorDouble> & outSamples ) const;
 
 			/** Appends (pose-composition) a given pose "p" to each particle
 			  */

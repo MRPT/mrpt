@@ -7,7 +7,9 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/hwdrivers.h> // Precompiled header
+#include "hwdrivers-precomp.h"   // Precompiled headers
+
+#include <mrpt/hwdrivers/CStereoGrabber_Bumblebee.h>
 
 using namespace mrpt::hwdrivers;
 
@@ -1058,9 +1060,9 @@ void CStereoGrabber_Bumblebee::convertTriclopsImageTo8BitsIplImage( void *src, v
 //					getBothObservation
 // -------------------------------------------------------------*/
 //bool  CStereoGrabber_Bumblebee::getBothObservation(
-//			vector_float						&vX,
-//			vector_float						&vY,
-//			vector_float						&vZ,
+//			CVectorFloat						&vX,
+//			CVectorFloat						&vY,
+//			CVectorFloat						&vZ,
 //			mrpt::slam::CObservationStereoImages		&out_observationStereo )
 //{
 //#if MRPT_HAS_BUMBLEBEE

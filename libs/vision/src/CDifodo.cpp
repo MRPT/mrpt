@@ -7,8 +7,11 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/vision.h>		 // Precompiled headers
+#include "vision-precomp.h"   // Precompiled headers
+
 #include <mrpt/vision/CDifodo.h>
+#include <mrpt/utils/utils_defs.h>
+#include <mrpt/utils/CTicTac.h>
 
 using namespace mrpt;
 using namespace mrpt::vision;
@@ -135,7 +138,7 @@ void CDifodo::filterAndDownsample()
 	const int lim_mask = (gaussian_mask_size-1)/2;
 	for (int x = -lim_mask; x <= lim_mask; x++)
 	{
-		r = math::sqrt(float(x*x));
+		r = std::sqrt(float(x*x));
 		kernel(x + lim_mask, 0) = (exp(-(r*r)/s))/(M_PI * s);
 		ksum += kernel(x + lim_mask, 0);
 	}
@@ -348,7 +351,7 @@ void CDifodo::solveDepthSystem()
 
 	const float f_inv_x = f_dist/x_incr;
 	const float f_inv_y = f_dist/y_incr;
-	const float kz2 = square(1.425e-5/gaussian_mask_size); 
+	const float kz2 = square(1.425e-5/gaussian_mask_size);
 
 	//We need to express the last camera velocity respect to the current camera reference frame
 	math::CMatrixFloat61 kai_abs;
@@ -390,7 +393,7 @@ void CDifodo::solveDepthSystem()
 
 				const float j4 = 1;
 
-				const float j5 =  xx_inter(y,x)*inv_d*inv_d*f_inv_y*(v_old[0] + yy_inter(y,x)*w_old[1] - xx_inter(y,x)*w_old[2]) 
+				const float j5 =  xx_inter(y,x)*inv_d*inv_d*f_inv_y*(v_old[0] + yy_inter(y,x)*w_old[1] - xx_inter(y,x)*w_old[2])
 							   + inv_d*f_inv_x*(-v_old[1] - depth_inter(y,x)*w_old[2] + yy_inter(y,x)*w_old[0]);
 
 				const float j6 = yy_inter(y,x)*inv_d*inv_d*f_inv_y*(v_old[0] + yy_inter(y,x)*w_old[1] - xx_inter(y,x)*w_old[2])

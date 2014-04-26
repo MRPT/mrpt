@@ -7,7 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/hwdrivers.h> // Precompiled header
+#include "hwdrivers-precomp.h"   // Precompiled headers
 
 #include <mrpt/hwdrivers/CSwissRanger3DCamera.h>
 
@@ -158,6 +158,8 @@ void CSwissRanger3DCamera::initialize()
 */
 void CSwissRanger3DCamera::doProcess()
 {
+	using namespace mrpt::slam;
+
 	bool	thereIs, hwError;
 
 	CObservation3DRangeScanPtr newObs = CObservation3DRangeScan::Create();
@@ -185,6 +187,8 @@ void  CSwissRanger3DCamera::loadConfig_sensorSpecific(
 	const mrpt::utils::CConfigFileBase &configSource,
 	const std::string			&iniSection )
 {
+	using mrpt::utils::DEG2RAD;
+
 	m_sensorPoseOnRobot.setFromValues(
 		configSource.read_float(iniSection,"pose_x",0),
 		configSource.read_float(iniSection,"pose_y",0),
@@ -211,7 +215,7 @@ void  CSwissRanger3DCamera::loadConfig_sensorSpecific(
 	m_usb_serial = configSource.read_uint64_t(iniSection,"usb_serial",m_usb_serial);
 	m_ip_address = configSource.read_string(iniSection,"ip_address",m_ip_address);
 
-	m_external_images_format = mrpt::utils::trim( configSource.read_string( iniSection, "external_images_format", m_external_images_format ) );
+	m_external_images_format = mrpt::system::trim( configSource.read_string( iniSection, "external_images_format", m_external_images_format ) );
 	m_external_images_jpeg_quality = configSource.read_int( iniSection, "external_images_jpeg_quality", m_external_images_jpeg_quality );
 
 	try

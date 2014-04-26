@@ -7,21 +7,23 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/base.h>  // Precompiled headers
+#include "base-precomp.h"  // Precompiled headers
 
 #include <mrpt/random.h>
-#include <mrpt/math/utils.h>
 #include <mrpt/math/transform_gaussian.h>
-
 #include <mrpt/poses/CPose3DPDFGaussian.h>
 #include <mrpt/poses/CPose3DQuatPDFGaussian.h>
 #include <mrpt/poses/CPosePDFGaussian.h>
+#include <mrpt/math/wrap2pi.h>
+#include <mrpt/system/os.h>
+#include <mrpt/utils/CStream.h>
 
 using namespace mrpt;
 using namespace mrpt::poses;
 using namespace mrpt::math;
 using namespace mrpt::random;
 using namespace mrpt::utils;
+using namespace mrpt::system;
 using namespace std;
 
 bool mrpt::global_settings::USE_SUT_QUAT2EULER_CONVERSION = false;
@@ -83,7 +85,7 @@ CPose3DPDFGaussian::CPose3DPDFGaussian(
 //#define DO_TEST_JACOB
 
 #ifdef DO_TEST_JACOB
-void ffff(const vector_double &x,const CQuaternionDouble &Q, vector_double &OUT)
+void ffff(const CVectorDouble &x,const CQuaternionDouble &Q, CVectorDouble &OUT)
 {
 	OUT.resize(3);
 	CQuaternionDouble q(x[0],x[1],x[2],x[3]);
@@ -125,9 +127,9 @@ void CPose3DPDFGaussian::copyFrom( const CPose3DQuatPDFGaussian &o)
 #ifdef DO_TEST_JACOB
 		// Test Jacob:
 		{
-			vector_double x(4);
+			CVectorDouble x(4);
 			for (int i=0;i<4;i++) x[i] = o.mean.quat()[i];
-			vector_double Ax(4,1e-7);
+			CVectorDouble Ax(4); Ax.assign(1e-7);
 			CMatrixDouble H;
 			jacobians::jacob_numeric_estimate(x,ffff,Ax, o.mean.quat(),H);
 			cout << "num:" <<endl <<H << endl << endl;
@@ -352,7 +354,7 @@ void  CPose3DPDFGaussian::drawSingleSample( CPose3D &outPart ) const
 {
 	MRPT_START
 
-	vector_double	v;
+	CVectorDouble	v;
 	randomGenerator.drawGaussianMultivariate(v,cov);
 
 	outPart.setFromValues(
@@ -373,13 +375,13 @@ void  CPose3DPDFGaussian::drawSingleSample( CPose3D &outPart ) const
  ---------------------------------------------------------------*/
 void  CPose3DPDFGaussian::drawManySamples(
 	size_t						N,
-	vector<vector_double>	&outSamples ) const
+	vector<CVectorDouble>	&outSamples ) const
 {
 	MRPT_START
 
 	randomGenerator.drawGaussianMultivariateMany(outSamples,N,cov);
 
-	for (vector<vector_double>::iterator it=outSamples.begin();it!=outSamples.end();++it)
+	for (vector<CVectorDouble>::iterator it=outSamples.begin();it!=outSamples.end();++it)
 	{
 		(*it)[0] += mean.x();
 		(*it)[1] += mean.y();
@@ -648,5 +650,5 @@ void CPose3DPDFGaussian::getCovSubmatrix2D( CMatrixDouble &out_cov ) const
 
 bool mrpt::poses::operator==(const CPose3DPDFGaussian &p1,const CPose3DPDFGaussian &p2)
 {
-	return p1.mean==p1.mean && p1.cov==p2.cov;
+	return p1.mean==p2.mean && p1.cov==p2.cov;
 }

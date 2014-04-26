@@ -31,11 +31,14 @@
 #include <wx/statbox.h>
 
 #include <mrpt/system.h>
+#include <mrpt/utils/CFileInputStream.h>
+#include <mrpt/math/utils.h>
 
 extern std::string global_fileToOpen;
 
 using namespace std;
 using namespace mrpt;
+using namespace mrpt::math;
 using namespace mrpt::utils;
 using namespace mrpt::slam;
 using namespace mrpt::poses;
@@ -112,7 +115,7 @@ navlog_viewer_GUI_designDialog::navlog_viewer_GUI_designDialog(wxWindow* parent,
     wxFlexGridSizer* FlexGridSizer6;
     wxStaticBoxSizer* StaticBoxSizer1;
     wxFlexGridSizer* FlexGridSizer1;
-    
+
     Create(parent, wxID_ANY, _("Navigation log viewer - Part of the MRPT project"), wxDefaultPosition, wxDefaultSize, wxDEFAULT_DIALOG_STYLE, _T("wxID_ANY"));
     Move(wxPoint(20,20));
     FlexGridSizer1 = new wxFlexGridSizer(1, 1, 0, 0);
@@ -203,7 +206,7 @@ navlog_viewer_GUI_designDialog::navlog_viewer_GUI_designDialog(wxWindow* parent,
     mnuMoreOps.Append(mnuMatlabPlots);
     FlexGridSizer1->Fit(this);
     FlexGridSizer1->SetSizeHints(this);
-    
+
     Connect(ID_BUTTON1,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&navlog_viewer_GUI_designDialog::OnbtnLoadClick);
     Connect(ID_BUTTON2,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&navlog_viewer_GUI_designDialog::OnbtnHelpClick);
     Connect(ID_BUTTON3,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&navlog_viewer_GUI_designDialog::OnbtnQuitClick);
@@ -420,14 +423,14 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 		win1->plot(log.WS_Obstacles.getPointsBufferRef_x(),log.WS_Obstacles.getPointsBufferRef_y(),"b.4");
 
 		// Robot shape:
-		vector_float shap_x = log.robotShape_x;
-		vector_float shap_y = log.robotShape_y;
+		CVectorFloat shap_x = log.robotShape_x;
+		CVectorFloat shap_y = log.robotShape_y;
 		if (!shap_x.empty()) shap_x.push_back(shap_x[0]);
 		if (!shap_y.empty()) shap_y.push_back(shap_y[0]);
 		win1->plot(shap_x,shap_y,"r3");
 
 		// Target:
-		win1->plot(make_vector<1,double>(log.WS_target_relative.x()),make_vector<1,double>(log.WS_target_relative.y()),"k.9");
+		win1->plot(make_vector<1,double>(log.WS_target_relative.x),make_vector<1,double>(log.WS_target_relative.y),"k.9");
 	}
 
 	// Draw PTG-obstacles
@@ -485,7 +488,7 @@ void navlog_viewer_GUI_designDialog::OnslidLogCmdScroll(wxScrollEvent& event)
 		win->plot(xs,ys,"b-2", "TPOBS");
 
 		// Target:
-		win->plot(make_vector<1,double>(pI.TP_Target.x()),make_vector<1,double>(pI.TP_Target.y()),"k.9", "TPTARGET");
+		win->plot(make_vector<1,double>(pI.TP_Target.x),make_vector<1,double>(pI.TP_Target.y),"k.9", "TPTARGET");
 
 
 	} // end for each PTG

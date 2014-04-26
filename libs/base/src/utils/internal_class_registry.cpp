@@ -7,13 +7,12 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/base.h>  // Precompiled headers
+#include "base-precomp.h"  // Precompiled headers
 
 
 #include <mrpt/utils/CObject.h>
 
 #include <map>
-#include <iostream>
 #include <cstdarg>
 
 #include "internal_class_registry.h"
@@ -48,6 +47,8 @@ CThreadSafeQueue<TRegisterFunction>	 &mrpt::utils::pending_class_registers()
 
 namespace mrpt
 {
+	namespace system { void BASE_IMPEXP registerFatalExceptionHandlers(); } // Fwrd decl.
+
 	namespace utils
 	{
 		typedef std::map<std::string,const TRuntimeClassId*> TClassnameToRuntimeId;

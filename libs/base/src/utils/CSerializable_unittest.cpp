@@ -8,13 +8,20 @@
    +---------------------------------------------------------------------------+ */
 
 
-#include <mrpt/base.h>
+#include <mrpt/utils/CSerializable.h>
+#include <mrpt/utils/CFileInputStream.h>
+#include <mrpt/utils/CMemoryStream.h>
+#include <mrpt/utils/stl_serialization.h>
+#include <mrpt/random.h>
+#include <mrpt/math/ops_vectors.h>  // to serialize vectors
+#include <mrpt/system/filesystem.h>
+#include <mrpt/poses.h> // to test their serialization
 #include <gtest/gtest.h>
 
 using namespace mrpt;
-using namespace mrpt::slam;
 using namespace mrpt::utils;
 using namespace mrpt::math;
+using namespace mrpt::poses;
 using namespace std;
 
 // Defined in run_unittests.cpp

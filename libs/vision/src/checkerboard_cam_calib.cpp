@@ -7,7 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/vision.h>  // Precompiled headers
+#include "vision-precomp.h"   // Precompiled headers
 
 #include <mrpt/system/filesystem.h>
 #include <mrpt/utils/CConfigFileMemory.h>
@@ -370,9 +370,9 @@ bool mrpt::vision::checkerBoardCameraCalibration(
 			// Reproject all the points into pixel coordinates:
 			// -----------------------------------------------------
 
-			vector<CPoint3D>  lstPatternPoints(CORNERS_COUNT);	// Points as seen from the camera:
+			vector<TPoint3D>  lstPatternPoints(CORNERS_COUNT);	// Points as seen from the camera:
 			for (unsigned int p=0;p<CORNERS_COUNT;p++)
-				lstPatternPoints[p] = CPoint3D(obj_points[p].x,obj_points[p].y,obj_points[p].z);
+				lstPatternPoints[p] = TPoint3D(obj_points[p].x,obj_points[p].y,obj_points[p].z);
 
 			vector<TPixelCoordf>	&projectedPoints = dat.projectedPoints_undistorted;
 			vector<TPixelCoordf>	&projectedPoints_distorted = dat.projectedPoints_distorted;

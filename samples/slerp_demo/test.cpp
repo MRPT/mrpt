@@ -7,10 +7,14 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/base.h>
-#include <mrpt/gui.h>
-#include <mrpt/opengl.h>
+#include <mrpt/math/slerp.h>
+#include <mrpt/utils/CTicTac.h>
+#include <mrpt/system/threads.h>
+#include <mrpt/gui/CDisplayWindow3D.h>
+#include <mrpt/opengl/CGridPlaneXY.h>
+#include <mrpt/opengl/stock_objects.h>
 
+using namespace std;
 using namespace mrpt;
 using namespace mrpt::math;
 using namespace mrpt::gui;

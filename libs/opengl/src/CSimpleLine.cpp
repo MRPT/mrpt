@@ -7,12 +7,11 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/opengl.h>  // Precompiled header
-
+#include "opengl-precomp.h"  // Precompiled header
 
 #include <mrpt/opengl/CSimpleLine.h>
+#include <mrpt/utils/CStream.h>
 #include "opengl_internals.h"
-
 
 using namespace mrpt;
 using namespace mrpt::opengl;
@@ -25,7 +24,7 @@ IMPLEMENTS_SERIALIZABLE( CSimpleLine, CRenderizableDisplayList, mrpt::opengl )
 
 CSimpleLine::CSimpleLine(
 	float x0,float y0, float z0,
-	float x1,float y1, float z1, float lineWidth, 
+	float x1,float y1, float z1, float lineWidth,
 	bool antiAliasing) :
 		m_x0(x0),m_y0(y0),m_z0(z0),
 		m_x1(x1),m_y1(y1),m_z1(z1),
@@ -62,7 +61,7 @@ void   CSimpleLine::render_dl() const
 	glEnable(GL_LIGHTING);  // Disable lights when drawing lines
 
 	// End antialiasing:
-	if (m_antiAliasing) 
+	if (m_antiAliasing)
 	{
 		glPopAttrib();
 		checkOpenGLError();

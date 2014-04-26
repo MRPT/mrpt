@@ -37,6 +37,31 @@
 
 #include <mrpt/gui/WxUtils.h>
 #include <mrpt/vision/CVideoFileWriter.h>
+#include <mrpt/utils/stl_containers_utils.h>
+#include <mrpt/utils/CTicTac.h>
+#include <mrpt/utils/CFileGZInputStream.h>
+#include <mrpt/utils/CFileGZOutputStream.h>
+#include <mrpt/system/filesystem.h>
+#include <mrpt/system/CDirectoryExplorer.h>
+#include <mrpt/poses/CPosePDFParticles.h>
+#include <mrpt/poses/CPosePDFGaussian.h>
+#include <mrpt/slam/CRawlog.h>
+#include <mrpt/slam/COccupancyGridMap2D.h>
+#include <mrpt/slam/CSimplePointsMap.h>
+#include <mrpt/slam/CColouredPointsMap.h>
+#include <mrpt/slam/CICP.h>
+#include <mrpt/system/datetime.h>
+#include <mrpt/math/ops_matrices.h> // << ops
+#include <mrpt/math/ops_vectors.h> // << ops
+#include <mrpt/math/wrap2pi.h>
+
+#include <mrpt/opengl/CAxis.h>
+
+#define MRPT_NO_WARN_BIG_HDR // It's ok to include ALL hdrs here.
+#include <mrpt/obs.h>
+
+#include <iomanip>
+
 
 //(*InternalHeaders(xRawLogViewerFrame)
 #include <wx/artprov.h>
@@ -2016,7 +2041,7 @@ void xRawLogViewerFrame::SelectObjectInTreeView( const CSerializablePtr & sel_ob
 
 						// Plot the 2D pose samples:
 						unsigned int                    N = 1000;
-						vector<vector_double>       samples;
+						vector<CVectorDouble>       samples;
 						vector<float>                    xs(N),ys(N),ps(N),dumm(N,0.1f);
 
 						// Draw a set of random (x,y,phi) samples:
@@ -2209,7 +2234,7 @@ void xRawLogViewerFrame::SelectObjectInTreeView( const CSerializablePtr & sel_ob
 												(obs->voltageMainRobotComputerIsValid == true)? "True":"False" );
 
 											cout << "VoltageOtherBatteries: \n";
-											for(vector_double::Index i=0; i<obs->voltageOtherBatteries.size(); i++)
+											for(CVectorDouble::Index i=0; i<obs->voltageOtherBatteries.size(); i++)
 											{
 												cout << format("Index: %d --> %.02fV  isValid= %s \n",
 												int(i),
@@ -5155,9 +5180,9 @@ void xRawLogViewerFrame::OnMenuChangePosesBatch(wxCommandEvent& event)
 			desiredSensorPoses[label] = the_pose;
 
 			// Camera params?
-			vector_double calib, distort;
-			cfg.read_vector(*it,"calib_params",vector_double(),calib);
-			cfg.read_vector(*it,"distort_params",vector_double(),distort);
+			CVectorDouble calib, distort;
+			cfg.read_vector(*it,"calib_params",CVectorDouble(),calib);
+			cfg.read_vector(*it,"distort_params",CVectorDouble(),distort);
 
 			if (calib.empty() || distort.empty()) continue;
 

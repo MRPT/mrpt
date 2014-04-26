@@ -7,9 +7,13 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/base.h>
-#include <mrpt/gui.h>
+#include <mrpt/gui/CDisplayWindow3D.h>
+#include <mrpt/random.h>
+#include <mrpt/system/threads.h>
+
+#define MRPT_NO_WARN_BIG_HDR // It's ok to include ALL opengl hdrs here.
 #include <mrpt/opengl.h>
+
 
 using namespace mrpt;
 using namespace mrpt::gui;

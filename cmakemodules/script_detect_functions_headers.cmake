@@ -19,6 +19,7 @@ CHECK_FUNCTION_EXISTS(lrint HAVE_LRINT)
 CHECK_FUNCTION_EXISTS(erf HAVE_ERF)
 CHECK_FUNCTION_EXISTS(posix_memalign HAVE_POSIX_MEMALIGN)
 CHECK_FUNCTION_EXISTS(_aligned_malloc HAVE_ALIGNED_MALLOC)
+CHECK_FUNCTION_EXISTS(strtok_r HAVE_STRTOK_R)
 
 #  This seems not to work and is more complex than it looks at first sight... :-(
 #SET(CMAKE_REQUIRED_INCLUDES "windows.h")

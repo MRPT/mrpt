@@ -7,16 +7,18 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/base.h>  // Precompiled headers
+#include "base-precomp.h"  // Precompiled headers
 
 
 #include <mrpt/poses/CPosePDFGaussian.h>
 #include <mrpt/poses/CPoint2DPDFGaussian.h>
 #include <mrpt/poses/CPose3DPDF.h>
+#include <mrpt/poses/CPose3D.h>
 #include <mrpt/math/CMatrix.h>
-
-#include <mrpt/math/utils.h>
 #include <mrpt/math/distributions.h>
+#include <mrpt/math/wrap2pi.h>
+#include <mrpt/system/os.h>
+#include <mrpt/utils/CStream.h>
 
 #include <mrpt/random.h>
 
@@ -25,6 +27,7 @@ using namespace mrpt::utils;
 using namespace mrpt::poses;
 using namespace mrpt::math;
 using namespace mrpt::random;
+using namespace mrpt::system;
 
 using namespace std;
 
@@ -200,7 +203,7 @@ void  CPosePDFGaussian::rotateCov(const double ang)
 	const double ccos = cos(ang);
 	const double ssin = sin(ang);
 
-	EIGEN_ALIGN16 const double rot_vals[] = {
+	MRPT_ALIGN16 const double rot_vals[] = {
 		ccos, -ssin, 0.,
 		ssin, ccos,  0.,
 		0.  ,   0.,  1. };
@@ -216,7 +219,7 @@ void  CPosePDFGaussian::drawSingleSample( CPose2D &outPart ) const
 {
 	MRPT_START
 
-	vector_double	v;
+	CVectorDouble	v;
 	randomGenerator.drawGaussianMultivariate(v,cov);
 
 	outPart.x(  mean.x() + v[0] );
@@ -236,11 +239,11 @@ void  CPosePDFGaussian::drawSingleSample( CPose2D &outPart ) const
  ---------------------------------------------------------------*/
 void  CPosePDFGaussian::drawManySamples(
 	size_t						N,
-	std::vector<vector_double>	&outSamples ) const
+	std::vector<CVectorDouble>	&outSamples ) const
 {
 	MRPT_START
 
-	std::vector<vector_double>	rndSamples;
+	std::vector<CVectorDouble>	rndSamples;
 
 	randomGenerator.drawGaussianMultivariateMany(rndSamples,N,cov);
 	outSamples.resize( N );
@@ -318,7 +321,7 @@ void	 CPosePDFGaussian::inverse(CPosePDF &o) const
 	const double ssin = ::sin(mean.phi());
 
 	// jacobian:
-	EIGEN_ALIGN16 const double H_values[] = {
+	MRPT_ALIGN16 const double H_values[] = {
 		-ccos, -ssin,  mean.x()*ssin-mean.y()*ccos,
 		 ssin, -ccos,  mean.x()*ccos+mean.y()*ssin,
 		 0   ,     0,  -1
@@ -556,7 +559,7 @@ void CPosePDFGaussian::composePoint(const mrpt::math::TPoint2D &l, CPoint2DPDFGa
 		this->mean,  // x
 		this->mean,  // u
 		df_dx,
-		df_du, 
+		df_du,
 		true,   // Eval df_dx
 		false   // Eval df_du (not needed)
 		);
@@ -568,18 +571,18 @@ void CPosePDFGaussian::composePoint(const mrpt::math::TPoint2D &l, CPoint2DPDFGa
 
 bool mrpt::poses::operator==(const CPosePDFGaussian &p1,const CPosePDFGaussian &p2)
 {
-	return p1.mean==p1.mean && p1.cov==p2.cov;
+	return p1.mean==p2.mean && p1.cov==p2.cov;
 }
 
 
-CPosePDFGaussian mrpt::poses::operator +( const CPosePDFGaussian &a, const CPosePDFGaussian &b  ) 
+CPosePDFGaussian mrpt::poses::operator +( const CPosePDFGaussian &a, const CPosePDFGaussian &b  )
 {
 	CPosePDFGaussian res(a);
 	res+=b;
 	return res;
 }
 
-CPosePDFGaussian mrpt::poses::operator -( const CPosePDFGaussian &a, const CPosePDFGaussian &b  ) 
+CPosePDFGaussian mrpt::poses::operator -( const CPosePDFGaussian &a, const CPosePDFGaussian &b  )
 {
 	CPosePDFGaussian res;
 	res.inverseComposition(a,b);

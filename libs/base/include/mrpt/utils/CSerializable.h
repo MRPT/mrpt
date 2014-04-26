@@ -10,12 +10,15 @@
 #define  CSERIALIZABLE_H
 
 #include <mrpt/utils/CObject.h>
-#include <mrpt/utils/CStream.h>
-#include <mrpt/utils/safe_pointers.h>
 #include <mrpt/utils/TTypeName.h>
+#include <mrpt/utils/types_simple.h>
 
 namespace mrpt
 {
+	namespace utils {
+		class BASE_IMPEXP CStream;
+	}
+
 	/** Classes for serialization, sockets, ini-file manipulation, streams, list of properties-values, timewatch, extensions to STL.
 	  * \ingroup mrpt_base_grp
 	  */
@@ -132,14 +135,14 @@ namespace mrpt
 		/**  This declaration must be inserted in all CSerializable classes definition, before the class declaration.
 		  */
 		#define DEFINE_SERIALIZABLE_PRE_CUSTOM_LINKAGE(class_name,_LINKAGE_) \
-			DEFINE_MRPT_OBJECT_PRE_CUSTOM_BASE_LINKAGE2(class_name, CSerializable, _LINKAGE_ class_name) \
+			DEFINE_MRPT_OBJECT_PRE_CUSTOM_BASE_LINKAGE2(class_name, mrpt::utils::CSerializable, _LINKAGE_ class_name) \
 			_LINKAGE_ ::mrpt::utils::CStream& operator>>(mrpt::utils::CStream& in, class_name##Ptr &pObj);
 
 
 		/**  This declaration must be inserted in all CSerializable classes definition, before the class declaration.
 		  */
 		#define DEFINE_SERIALIZABLE_PRE(class_name) \
-			DEFINE_MRPT_OBJECT_PRE_CUSTOM_BASE_LINKAGE2(class_name, CSerializable, BASE_IMPEXP class_name) \
+			DEFINE_MRPT_OBJECT_PRE_CUSTOM_BASE_LINKAGE2(class_name, mrpt::utils::CSerializable, BASE_IMPEXP class_name) \
 			BASE_IMPEXP ::mrpt::utils::CStream& operator>>(mrpt::utils::CStream& in, class_name##Ptr &pObj);
 
 		/**  This declaration must be inserted in all CSerializable classes definition, before the class declaration.

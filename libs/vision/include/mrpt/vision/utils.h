@@ -12,13 +12,11 @@
 
 #include <mrpt/vision/CFeature.h>
 #include <mrpt/utils/CImage.h>
-#include <mrpt/math/utils.h>
+//#include <mrpt/math/utils.h>
+#include <mrpt/math/CMatrixTemplate.h>
 #include <mrpt/utils/CLoadableOptions.h>
 #include <mrpt/utils/TMatchingPair.h>
 #include <mrpt/poses/CPose3D.h>
-#include <mrpt/poses/CPoint2D.h>
-#include <mrpt/poses/CPoint3D.h>
-
 #include <mrpt/vision/types.h>
 #include <mrpt/vision/chessboard_camera_calib.h>
 
@@ -180,22 +178,8 @@ namespace mrpt
 			  */
 			void VISION_IMPEXP getDispersion(
                                 const CFeatureList      & list,
-								vector_float            & std,
-								vector_float            & mean );
-
-			/** Returns a new image where distortion has been removed.
-			  * \param A The 3x3 intrinsic parameters matrix
-			  * \param dist_coeffs The 1x4 (or 1x5) vector of distortion coefficients
-			  */
-			inline void correctDistortion(
-                                const CImage	        & in_img,
-                                CImage			        & out_img,
-                                const CMatrixDouble33	& A,
-                                const vector_double     & dist_coeffs )
-			{
-				in_img.rectifyImage( out_img, A, dist_coeffs);
-			}
-
+								CVectorFloat            & std,
+								CVectorFloat            & mean );
 
 			/** Computes the mean squared distance between a set of 3D correspondences
 			  * ...
@@ -219,17 +203,17 @@ namespace mrpt
 			  * \return The main orientation of the image point.
 			  */
 			float VISION_IMPEXP computeMainOrientation(
-                                const CImage                        & image,
-								unsigned int                        x,
-								unsigned int                        y );
+				const CImage                        & image,
+				unsigned int                        x,
+				unsigned int                        y );
 
 			/** Normalizes the brigthness and contrast of an image by setting its mean value to zero and its standard deviation to unit.
 			  * \param image        [IN]        The input image.
 			  * \param nimage       [OUTPUT]    The new normalized image.
 			  */
             void VISION_IMPEXP normalizeImage(
-                                const CImage                        & image,
-                                CImage                              & nimage );
+				const CImage                        & image,
+				CImage                              & nimage );
 
 			/** Find the matches between two lists of features which must be of the same type.
 			  * \param list1    [IN]    One list.
@@ -239,11 +223,11 @@ namespace mrpt
 			  * \return Returns the number of matched pairs of features.
 			  */
 			size_t VISION_IMPEXP matchFeatures(
-                                const CFeatureList                  & list1,
-                                const CFeatureList                  & list2,
-                                CMatchedFeatureList                 & matches,
-                                const TMatchingOptions              & options = TMatchingOptions(),
-                                const TStereoSystemParams           & params = TStereoSystemParams() );
+				const CFeatureList                  & list1,
+				const CFeatureList                  & list2,
+				CMatchedFeatureList                 & matches,
+				const TMatchingOptions              & options = TMatchingOptions(),
+				const TStereoSystemParams           & params = TStereoSystemParams() );
 
             /** Calculates the Sum of Absolutes Differences (range [0,1]) between two patches. Both patches must have the same size.
 			  * \param mList    [IN]  The list of matched features.
@@ -253,10 +237,10 @@ namespace mrpt
 			  * \exception if mList.size() = 0
 	          */
             void VISION_IMPEXP generateMask(
-                                const CMatchedFeatureList           & mList,
-                                CMatrixBool                         & mask1,
-                                CMatrixBool                         & mask2,
-                                int                                 wSize = 10 );
+				const CMatchedFeatureList           & mList,
+				mrpt::math::CMatrixBool                         & mask1,
+				mrpt::math::CMatrixBool                         & mask2,
+				int                                 wSize = 10 );
 
             /** Calculates the Sum of Absolutes Differences (range [0,1]) between two patches. Both patches must have the same size.
 			  * \param patch1 [IN]  One patch.
@@ -264,8 +248,8 @@ namespace mrpt
 			  * \return The value of computed SAD normalized to [0,1]
 	          */
 	        double VISION_IMPEXP computeSAD(
-                                const CImage                        & patch1,
-                                const CImage                        & patch2 );
+				const CImage                        & patch1,
+				const CImage                        & patch2 );
 
 			/** Draw rectangles around each of the features on a copy of the input image.
 			  * \param inImg    [IN]    The input image where to draw the features.
@@ -347,7 +331,7 @@ namespace mrpt
                                 const CMatchedFeatureList           & inMatches,
                                 const CMatrixDouble33               & intrinsicParams,
                                 const double                        & baseline,
-                                const CPose3D                       & sensorPose,
+                                const mrpt::poses::CPose3D                       & sensorPose,
                                 const vector<double>                & sg,
                                 CObservationBearingRange            & outObs );
 
@@ -387,7 +371,7 @@ namespace mrpt
 
 
 	/** @} */ // end of grouping
-		
+
 	} // end-namespace-vision
 } // end-namespace-mrpt
 

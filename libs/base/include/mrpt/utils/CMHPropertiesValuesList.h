@@ -11,7 +11,7 @@
 
 #include <mrpt/utils/CSerializable.h>
 #include <mrpt/utils/CMemoryChunk.h>
-#include <mrpt/system/os.h>
+#include <mrpt/system/string_utils.h>
 
 /*---------------------------------------------------------------
 	Class
@@ -20,8 +20,6 @@ namespace mrpt
 {
     namespace utils
     {
-        using namespace mrpt;
-
         // This must be added to any CSerializable derived class:
 		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE( CMHPropertiesValuesList, mrpt::utils::CSerializable )
 
@@ -83,7 +81,7 @@ namespace mrpt
 			{
 				MRPT_START
 				CSerializablePtr obj = get(propertyName,hypothesis_ID);
-				if (!obj) 
+				if (!obj)
 				{
 					if (allowNullPointer)
 							return typename T::SmartPtr();
@@ -95,7 +93,7 @@ namespace mrpt
 				MRPT_END
 			}
 
-			
+
 			/** Returns the value of the property (case insensitive) for the first hypothesis ID found, or NULL if it does not exist.
               */
             CSerializablePtr  getAnyHypothesis(const char *propertyName) const;
@@ -131,7 +129,7 @@ namespace mrpt
 
                 for (std::vector<TPropertyValueIDTriplet>::iterator it=m_properties.begin();it!=m_properties.end();++it)
                 {
-                    if ( it->ID == hypothesis_ID && !system::os::_strcmpi(propertyName,it->name.c_str()) )
+                    if ( it->ID == hypothesis_ID && mrpt::system::strCmpI(propertyName,it->name) )
                     {
                         // Delete current contents &
                         // Copy new value:
@@ -161,7 +159,7 @@ namespace mrpt
                 MRPT_START
                 for (std::vector<TPropertyValueIDTriplet>::const_iterator it=m_properties.begin();it!=m_properties.end();++it)
                 {
-                    if (!system::os::_strcmpi(propertyName,it->name.c_str()) && it->ID == hypothesis_ID )
+                    if (mrpt::system::strCmpI(propertyName,it->name) && it->ID == hypothesis_ID )
                     {
                         CMemoryChunkPtr memChunk = CMemoryChunkPtr(it->value);
                         ASSERT_(memChunk)

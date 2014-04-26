@@ -7,7 +7,9 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/hmtslam.h> // Precomp header
+#include "hmtslam-precomp.h" // Precomp header
+
+#include <mrpt/hmtslam/CRobotPosesGraph.h>
 
 using namespace mrpt::slam;
 using namespace mrpt::hmtslam;
