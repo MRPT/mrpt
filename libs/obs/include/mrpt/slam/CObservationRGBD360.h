@@ -16,9 +16,8 @@
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/math/CPolygon.h>
+#include <mrpt/math/CMatrix.h>
 #include <mrpt/utils/adapters.h>
-
-#define NUM_SENSORS 2
 
 namespace mrpt
 {
@@ -204,7 +203,10 @@ namespace slam
 //		void points3D_convertToExternalStorage( const std::string &fileName, const std::string &use_this_base_dir ); //!< Users won't normally want to call this, it's only used from internal MRPT programs.
 //		// ---------
 //
-    mrpt::system::TTimeStamp  timestamps[NUM_SENSORS];
+
+		static const int NUM_SENSORS = 2;
+
+		mrpt::system::TTimeStamp  timestamps[NUM_SENSORS];
 
 		bool hasRangeImage; 				//!< true means the field rangeImage contains valid data
 		mrpt::math::CMatrix rangeImages[NUM_SENSORS]; 	//!< If hasRangeImage=true, a matrix of floats with the range data as captured by the camera (in meters) \sa range_is_depth

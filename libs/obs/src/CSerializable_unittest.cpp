@@ -29,6 +29,7 @@ const mrpt::utils::TRuntimeClassId* lstClasses[] = {
 	// Observations:
 	CLASS_ID(CObservation2DRangeScan),
 	CLASS_ID(CObservation3DRangeScan),
+	CLASS_ID(CObservationRGBD360),
 	CLASS_ID(CObservationBearingRange),
 	CLASS_ID(CObservationBatteryState),
 	CLASS_ID(CObservationWirelessPower),

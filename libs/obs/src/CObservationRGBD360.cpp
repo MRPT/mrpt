@@ -7,12 +7,11 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/obs.h>   // Precompiled headers
+#include "obs-precomp.h"   // Precompiled headers
 
 #include <mrpt/slam/CObservationRGBD360.h>
 #include <mrpt/poses/CPosePDF.h>
 
-//#include <mrpt/math/CLevenbergMarquardt.h>
 #include <mrpt/utils/CFileGZInputStream.h>
 #include <mrpt/utils/CFileGZOutputStream.h>
 #include <mrpt/utils/CTimeLogger.h>
@@ -177,7 +176,7 @@ void  CObservationRGBD360::writeToStream(CStream &out, int *version) const
 //		out << hasConfidenceImage; if (hasConfidenceImage) out << confidenceImage;
 		for (unsigned i=0; i < NUM_SENSORS; i++) out << timestamps[i];
 //
-//		out << stdError;
+		out << stdError;
 		out << timestamp;
 		out << sensorLabel;
 
@@ -241,6 +240,7 @@ void  CObservationRGBD360::readFromStream(CStream &in, int version)
 
 //      in >> cameraParams;
 
+      for (unsigned i=0; i < NUM_SENSORS; i++) in >> timestamps[i];
       in >> stdError;
       in >> timestamp;
       in >> sensorLabel;
