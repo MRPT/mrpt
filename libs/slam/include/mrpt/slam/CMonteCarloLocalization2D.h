@@ -37,7 +37,7 @@ namespace mrpt
 		 */
 		class SLAM_IMPEXP CMonteCarloLocalization2D :
 			public CPosePDFParticles,
-			public PF_implementation<CPose2D,CMonteCarloLocalization2D>
+			public PF_implementation<mrpt::poses::CPose2D,CMonteCarloLocalization2D>
 		{
 		public:
 			TMonteCarloLocalizationParams	options; //!< MCL parameters
@@ -129,17 +129,17 @@ namespace mrpt
 
 			// We'll redefine this one:
 			void PF_SLAM_implementation_replaceByNewParticleSet(
-				CParticleList	&old_particles,
-				const std::vector<TPose3D>	&newParticles,
-				const CVectorDouble		&newParticlesWeight,
-				const std::vector<size_t>	&newParticlesDerivedFromIdx )  const;
+				CParticleList &old_particles,
+				const vector<TPose3D>		&newParticles,
+				const vector<double>		&newParticlesWeight,
+				const vector<size_t>		&newParticlesDerivedFromIdx ) const;
 
 			/** Evaluate the observation likelihood for one particle at a given location */
 			double PF_SLAM_computeObservationLikelihoodForParticle(
 				const CParticleFilter::TParticleFilterOptions	&PF_options,
 				const size_t			particleIndexForMap,
 				const CSensoryFrame		&observation,
-				const CPose3D			&x ) const;
+				const mrpt::poses::CPose3D &x ) const;
 			/** @} */
 
 

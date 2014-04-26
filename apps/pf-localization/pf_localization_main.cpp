@@ -7,7 +7,6 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-
 /*---------------------------------------------------------------
 	APPLICATION: Particle Filter (Global) Localization Demo
 	FILE: pf_localization_main.cpp

@@ -6,7 +6,9 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
-#include <mrpt/slam.h>
+
+#include <mrpt/utils/CImage.h>
+#include <mrpt/vision/CFeatureExtraction.h>
 
 #include "common.h"
 
@@ -212,7 +214,7 @@ double feature_extraction_test_FAST( int N, int h )
 		} \
 		const double T = tictac.Tac()/N; \
 		return T; \
-	} 
+	}
 
 GENERATE_BENCHMARK_FASTERS(feature_extraction_test_FAST9,  detectFeatures_SSE2_FASTER9)
 GENERATE_BENCHMARK_FASTERS(feature_extraction_test_FAST10, detectFeatures_SSE2_FASTER10)

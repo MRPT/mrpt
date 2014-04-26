@@ -7,9 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#ifndef UTILSDEFS_H
-#error "This file is intended for include from utils_defs.h only!"
-#endif
+#pragma once
 
 /** This is the global namespace for all Mobile Robot Programming Toolkit (MRPT) libraries. */
 namespace mrpt

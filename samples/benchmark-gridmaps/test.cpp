@@ -9,6 +9,9 @@
 
 #include <mrpt/random.h>
 #include <mrpt/slam/CMultiMetricMap.h>
+#include <mrpt/slam/CObservation2DRangeScan.h>
+#include <mrpt/slam/CRawlog.h>
+#include <mrpt/utils/CConfigFile.h>
 
 using namespace mrpt;
 using namespace mrpt::utils;

@@ -18,12 +18,13 @@
 #include <mrpt/config.h>
 #if MRPT_HAS_PCL
 
-#include <mrpt/base.h>
+#include <mrpt/utils/types_math.h> // Eigen
 #include <string>
 #include <iostream>
 #include <iterator>
 #include <vector>
 #include <pcl/point_types.h>
+#include <pcl/point_cloud.h>
 #include <mrpt/pbmap/link_pragmas.h>
 
 namespace mrpt {

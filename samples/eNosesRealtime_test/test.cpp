@@ -8,15 +8,17 @@
    +---------------------------------------------------------------------------+ */
 
 #include <mrpt/hwdrivers/CBoardENoses.h>
-
+#include <mrpt/gui/CDisplayWindowPlots.h>
+#include <mrpt/system/filesystem.h>
+#include <mrpt/system/os.h>
 
 using namespace mrpt;
 using namespace mrpt::hwdrivers;
 using namespace mrpt::system;
 using namespace mrpt::slam;
 using namespace mrpt::utils;
-using namespace std;
 using namespace mrpt::gui;
+using namespace std;
 
 //Global VARs
 
@@ -240,7 +242,7 @@ int main()
 					{
 
 						if ( j<(obs.m_readings[i].sensorTypes.size() -1) ){	//Not the las item
-							if( (obs.m_readings[i].sensorTypes[j]==obs.m_readings[i].sensorTypes[j+1]) ){
+							if( obs.m_readings[i].sensorTypes[j]==obs.m_readings[i].sensorTypes[j+1] ){
 								Sensor_array[ obs.m_readings[i].sensorTypes[j] ].push_back(obs.m_readings[i].readingsVoltage[j+1]-obs.m_readings[i].readingsVoltage[j]);
 								if (f_log) fprintf(f_log,"%f ",obs.m_readings[i].readingsVoltage[j+1]-obs.m_readings[i].readingsVoltage[j] );
 								j++;	//skip the next sensor as it has been used already.

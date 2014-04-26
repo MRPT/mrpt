@@ -7,9 +7,12 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/maps.h>
-#include <mrpt/gui.h>
+#include <mrpt/slam/COctoMap.h>
+#include <mrpt/opengl/CGridPlaneXY.h>
+#include <mrpt/opengl/COctoMapVoxels.h>
+#include <mrpt/system/os.h>
 #include <mrpt/system/threads.h>  // for sleep()
+#include <mrpt/gui/CDisplayWindow3D.h>
 
 using namespace mrpt;
 using namespace mrpt::utils;
@@ -34,13 +37,13 @@ void TestOctoMap()
 	{
 		// Manually update voxels:
 		map.updateVoxel(1,1,1, true); // integrate 'occupied' measurement
-	
+
 		map.updateVoxel(1.5,1,1, true); // integrate 'occupied' measurement
 		map.updateVoxel(1.5,1,1, true); // integrate 'occupied' measurement
 		map.updateVoxel(1.5,1,1, true); // integrate 'occupied' measurement
 
 		map.updateVoxel(-1,-1,1, false); // integrate 'occupied' measurement
-				
+
 		double occup;
 		bool   is_mapped;
 		mrpt::math::TPoint3D  pt;
@@ -68,7 +71,7 @@ void TestOctoMap()
 
 		map.insertObservation( &scan1 );
 	}
-	
+
 
 	mrpt::gui::CDisplayWindow3D  win("OctoMap demo", 640,480);
 
@@ -138,7 +141,7 @@ void TestOctoMap()
 				break;
 			};
 			update_msg = true;
-	
+
 		}
 
 		if (update_msg)
@@ -146,7 +149,7 @@ void TestOctoMap()
 			update_msg= false;
 
 			win.addTextMessage(
-				5,5,mrpt::format("Commands: 'g' (grids=%s) | 'f' (freespace=%s) | 'o' (occupied=%s) | 'l' (lights=%s)", 
+				5,5,mrpt::format("Commands: 'g' (grids=%s) | 'f' (freespace=%s) | 'o' (occupied=%s) | 'l' (lights=%s)",
 					gl_map->areGridLinesVisible() ? "YES":"NO",
 					gl_map->areVoxelsVisible(VOXEL_SET_FREESPACE) ? "YES":"NO",
 					gl_map->areVoxelsVisible(VOXEL_SET_OCCUPIED) ? "YES":"NO",

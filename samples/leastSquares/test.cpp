@@ -9,6 +9,7 @@
 
 #include <mrpt/slam.h>
 #include <mrpt/gui.h>
+#include <mrpt/math/interp_fit.h>
 
 using namespace mrpt::utils;
 using namespace mrpt::math;
@@ -29,7 +30,8 @@ void TestLeastSquares()
 	loadVector(x,X);
 	loadVector(y,Y);
 
-	CVectorDouble Ts = linspace(-3.0,8.0,100);
+	CVectorDouble Ts;
+	linspace(-3.0,8.0,100, Ts);
 	CVectorDouble Is;
 
 	mrpt::math::leastSquareLinearFit(Ts,Is,x,y);

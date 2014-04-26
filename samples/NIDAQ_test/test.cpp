@@ -9,6 +9,7 @@
 
 #include <mrpt/hwdrivers/CNationalInstrumentsDAQ.h>
 #include <mrpt/system/os.h>
+#include <cstdio>
 
 using namespace mrpt;
 using namespace mrpt::utils;

@@ -271,7 +271,7 @@ namespace mrpt
 				// Compute the eigen-vectors & values:
 				cov2D->eigenVectors(eigVec,eigVal);
 
-				eigVal.Sqrt();
+				eigVal = eigVal.array().sqrt().matrix();
 				MATRIX2X2	M;
 				M.multiply_ABt(eigVal, eigVec);
 

@@ -16,6 +16,7 @@
 #define __HEURISTICPARAMS_H
 
 #include <mrpt/utils/CConfigFile.h>
+#include <mrpt/system/filesystem.h>
 #include <mrpt/pbmap/link_pragmas.h>
 
 namespace mrpt {
@@ -28,7 +29,7 @@ namespace pbmap {
 	 */
   struct PBMAP_IMPEXP config_heuristics
   {
-    void load_params(const string &config_file_name)
+    void load_params(const std::string &config_file_name)
     {
       ASSERT_FILE_EXISTS_(config_file_name)
       mrpt::utils::CConfigFile config_file(config_file_name);

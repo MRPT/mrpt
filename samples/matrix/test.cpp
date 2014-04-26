@@ -149,7 +149,7 @@ void TestEigenvector()
 	A.eigenVectors(Z,D);
 	cout << "Z:\n" << Z << "D:\n" << D;
 
-	D.Sqrt();
+	D = D.array().sqrt().matrix();
 	Z= Z*D;
 	cout << "Z:\n" << Z;
 
@@ -256,7 +256,7 @@ void TestCov()
 			samples[i][j]=Mdyn(i,j);
 	}
 
-	cout << "COV (vector of vectors): " << endl << mrpt::math::covVector(samples)  << endl;
+	cout << "COV (vector of vectors): " << endl << mrpt::math::covVector<vector<CVectorDouble>,Eigen::MatrixXd>(samples)  << endl;
 	cout << "COV (mat fix): " << endl << mrpt::math::cov(Mfix)  << endl;
 	cout << "COV (mat dyn): " << endl << mrpt::math::cov(Mdyn)  << endl;
 }

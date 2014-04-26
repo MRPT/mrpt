@@ -9,6 +9,13 @@
 #ifndef opengl_graph_tools_impl_H
 #define opengl_graph_tools_impl_H
 
+#include <mrpt/opengl/CGridPlaneXY.h>
+#include <mrpt/opengl/CPointCloud.h>
+#include <mrpt/opengl/CSetOfObjects.h>
+#include <mrpt/opengl/CSimpleLine.h>
+#include <mrpt/opengl/CSetOfLines.h>
+#include <mrpt/opengl/stock_objects.h>
+
 namespace mrpt
 {
 	namespace opengl

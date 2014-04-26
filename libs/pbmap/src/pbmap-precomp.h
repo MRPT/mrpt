@@ -9,20 +9,6 @@
 
 #pragma once
 
-#include <mrpt/config.h>
-#if MRPT_ENABLE_PRECOMPILED_HDRS
-
-#include <mrpt/pbmap/ConsistencyTest.h>
-#include <mrpt/pbmap/heuristicParams.h>
 #include <mrpt/pbmap/Miscellaneous.h>
 #include <mrpt/pbmap/PbMap.h>
-#include <mrpt/pbmap/PbMapLocaliser.h>
-#include <mrpt/pbmap/PbMapMaker.h>
-#include <mrpt/pbmap/Plane.h>
-#include <mrpt/pbmap/PlaneInferredInfo.h>
-#include <mrpt/pbmap/SemanticClustering.h>
-#include <mrpt/pbmap/Subgraph.h>
-#include <mrpt/pbmap/SubgraphMatcher.h>
-
-#endif
 

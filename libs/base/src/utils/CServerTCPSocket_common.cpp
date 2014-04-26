@@ -13,6 +13,7 @@
 #include <mrpt/utils/CServerTCPSocket.h>
 #include <mrpt/utils/CClientTCPSocket.h>
 #include <mrpt/system/os.h>
+#include <cstdio> // stderr
 using namespace mrpt::utils;
 
 #if defined(MRPT_OS_LINUX) || defined(MRPT_OS_APPLE)

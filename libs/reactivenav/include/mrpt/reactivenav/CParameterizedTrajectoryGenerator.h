@@ -14,6 +14,8 @@
 #include <mrpt/utils/CStream.h>
 #include <mrpt/utils/TParameters.h>
 #include <mrpt/reactivenav/link_pragmas.h>
+#include <mrpt/utils/mrpt_stdint.h>    // compiler-independent version of "stdint.h"
+#include <limits>  // numeric_limits
 
 namespace mrpt
 {
@@ -26,7 +28,7 @@ namespace mrpt
 	/** This is the base class for any user-defined PTG.
 	 *   The class factory interface in CParameterizedTrajectoryGenerator::CreatePTG.
 	 *
-	 * Papers: 
+	 * Papers:
 	 *  - J.L. Blanco, J. Gonzalez-Jimenez, J.A. Fernandez-Madrigal, "Extending Obstacle Avoidance Methods through Multiple Parameter-Space Transformations", Autonomous Robots, vol. 24, no. 1, 2008. http://ingmec.ual.es/~jlblanco/papers/blanco2008eoa_DRAFT.pdf
 	 *
 	 * Changes history:
@@ -157,9 +159,9 @@ namespace mrpt
 		  * \param[in] max_path_distance If >0, cut the path at this distance (in meters).
 		  */
 		void renderPathAsSimpleLine(
-			const uint16_t k, 
-			mrpt::opengl::CSetOfLines &gl_obj, 
-			const float decimate_distance = 0.1f, 
+			const uint16_t k,
+			mrpt::opengl::CSetOfLines &gl_obj,
+			const float decimate_distance = 0.1f,
 			const float max_path_distance = 0.0f) const;
 
 

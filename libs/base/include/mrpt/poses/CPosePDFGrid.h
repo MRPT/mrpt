@@ -16,6 +16,8 @@ namespace mrpt
 {
 namespace poses
 {
+	using mrpt::utils::DEG2RAD;
+
 	// This must be added to any CSerializable derived class:
 	DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE( CPosePDFGrid, CPosePDF   )
 
@@ -43,7 +45,7 @@ namespace poses
 			double		yMin = -1.0f,
 			double		yMax = 1.0f,
 			double		resolutionXY = 0.5f,
-			double		resolutionPhi = mrpt::utils::DEG2RAD(180),
+			double		resolutionPhi = DEG2RAD(180),
 			double		phiMin = -M_PIf,
 			double		phiMax = M_PIf
 			);

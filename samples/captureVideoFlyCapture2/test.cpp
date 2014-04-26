@@ -7,10 +7,15 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/hwdrivers.h>
+#include <mrpt/hwdrivers/CImageGrabber_FlyCapture2.h>
+#include <mrpt/utils/CFileGZOutputStream.h>
+#include <mrpt/utils/CTicTac.h>
+#include <mrpt/gui/CDisplayWindow.h>
+#include <mrpt/system/os.h>
 
 using namespace mrpt::utils;
 using namespace mrpt::hwdrivers;
+using namespace mrpt::slam;
 using namespace mrpt::gui;
 using namespace std;
 

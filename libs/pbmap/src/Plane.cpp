@@ -24,7 +24,7 @@
 using namespace mrpt::pbmap;
 using namespace mrpt::utils;
 
-IMPLEMENTS_SERIALIZABLE(Plane, CSerializable, pbmap)
+IMPLEMENTS_SERIALIZABLE(Plane, CSerializable, mrpt::pbmap)
 
 /*---------------------------------------------------------------
 						writeToStream
@@ -396,7 +396,7 @@ void Plane::mergePlane(Plane &plane_nearby)
 {
   // Update normal and center
   v3normal = (areaVoxels*v3normal + plane_nearby.areaVoxels*plane_nearby.v3normal);
-  v3normal = v3normal / norm(v3normal);
+  v3normal = v3normal / v3normal.norm();
 
   // Update point inliers
 //  *polygonContourPtr += *plane_nearby.polygonContourPtr; // Merge polygon points

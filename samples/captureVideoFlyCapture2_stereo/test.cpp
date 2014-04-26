@@ -7,11 +7,17 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/hwdrivers.h>
+#include <mrpt/hwdrivers/CImageGrabber_FlyCapture2.h>
+#include <mrpt/utils/CFileGZOutputStream.h>
+#include <mrpt/utils/CTicTac.h>
+#include <mrpt/slam/CObservationImage.h>
+#include <mrpt/gui/CDisplayWindow.h>
+#include <mrpt/system/os.h>
 
 using namespace mrpt::utils;
 using namespace mrpt::hwdrivers;
 using namespace mrpt::gui;
+using namespace mrpt::slam;
 using namespace std;
 
 
@@ -32,15 +38,15 @@ void TestCapture_FlyCapture2_stereo()
 	cam_options_left.videomode="VIDEOMODE_1280x960RGB";
 
 	cam_options_left.open_by_guid = true;
-	cam_options_left.camera_guid[0] = 0x63A8D3CE; 
-	cam_options_left.camera_guid[1] = 0xB49580D6; 
+	cam_options_left.camera_guid[0] = 0x63A8D3CE;
+	cam_options_left.camera_guid[1] = 0xB49580D6;
 	cam_options_left.camera_guid[2] = 0x004AED1C;
 	cam_options_left.camera_guid[3] = 0xDDE4EF14;
-	 
+
 	cam_options_left.strobe_enabled = true;
 	cam_options_left.strobe_source = 1;  // GPIO pin #
 	cam_options_left.strobe_duration = 1.0; // ms
-	
+
 	capture_left.open(cam_options_left,false /*only open, don't start grabbing*/);
 
 	// Right camera:
@@ -50,10 +56,10 @@ void TestCapture_FlyCapture2_stereo()
 
 	cam_options_right.framerate = cam_options_left.framerate;
 	cam_options_right.videomode = cam_options_left.videomode;
-	
+
 	cam_options_right.open_by_guid = true;
-	cam_options_right.camera_guid[0] = 0xB9862FD2; 
-	cam_options_right.camera_guid[1] = 0x7AE0E03A; 
+	cam_options_right.camera_guid[0] = 0xB9862FD2;
+	cam_options_right.camera_guid[1] = 0x7AE0E03A;
 	cam_options_right.camera_guid[2] = 0xA6BC0321;
 	cam_options_right.camera_guid[3] = 0x16654DC9;
 
@@ -99,7 +105,7 @@ void TestCapture_FlyCapture2_stereo()
 			tictac.Tic();
 		}
 
-		const bool ok1 = capture_left.getObservation( *obsL ); 
+		const bool ok1 = capture_left.getObservation( *obsL );
 		const bool ok2 = capture_right.getObservation( *obsR );
 		if (!ok1 || !ok2)
 		{

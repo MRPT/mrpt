@@ -7,14 +7,12 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/slam.h>
-
+#include <mrpt/random.h>
 
 #include "common.h"
 
 using namespace mrpt;
 using namespace mrpt::utils;
-using namespace mrpt::slam;
 using namespace mrpt::random;
 using namespace std;
 

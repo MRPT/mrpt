@@ -7,7 +7,13 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
+#include <mrpt/random.h>
 #include <mrpt/graphslam.h>
+#include <mrpt/system/threads.h> // sleep()
+#include <mrpt/gui.h>
+#include <mrpt/opengl/CSetOfObjects.h>
+#include <mrpt/opengl/COpenGLScene.h>
+#include <mrpt/opengl/graph_tools.h>
 
 using namespace mrpt;
 using namespace mrpt::utils;
@@ -15,8 +21,8 @@ using namespace mrpt::graphs;
 using namespace mrpt::graphslam;
 using namespace mrpt::poses;
 using namespace mrpt::math;
-using namespace mrpt::opengl;
 using namespace mrpt::gui;
+using namespace mrpt::opengl;
 using namespace mrpt::random;
 using namespace std;
 
@@ -63,7 +69,7 @@ template <class GRAPH> struct EdgeAdders<GRAPH,true>
 	}
 };
 
-CVectorDouble  log_sq_err_evolution;
+vector<double>  log_sq_err_evolution;
 
 // This example lives inside this template class, which can be instanced for different kind of graphs (see main()):
 template <class my_graph_t>

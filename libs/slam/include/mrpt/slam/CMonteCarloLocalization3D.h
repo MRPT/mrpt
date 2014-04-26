@@ -31,7 +31,7 @@ namespace mrpt
 		 *   application "app/pf-localization" for an example of usage.
 		 *
 		 * \sa CMonteCarloLocalization2D, CPose2D, CPosePDF, CPoseGaussianPDF, CParticleFilterCapable
-		 * \ingroup mrpt_slam_grp 
+		 * \ingroup mrpt_slam_grp
 		 */
 		class SLAM_IMPEXP CMonteCarloLocalization3D :
 			public CPose3DPDFParticles,
@@ -106,7 +106,7 @@ namespace mrpt
 			void PF_SLAM_implementation_replaceByNewParticleSet(
 				CParticleList	&old_particles,
 				const std::vector<TPose3D>	&newParticles,
-				const CVectorDouble		&newParticlesWeight,
+				const vector<double>		&newParticlesWeight,
 				const std::vector<size_t>	&newParticlesDerivedFromIdx )  const;
 
 			/** Evaluate the observation likelihood for one particle at a given location */

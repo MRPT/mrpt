@@ -7,8 +7,9 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/math.h>
-#include <mrpt/utils/CTicTac.h>
+#include <mrpt/math/CMatrixTemplateNumeric.h>
+#include <mrpt/math/CMatrixFixedNumeric.h>
+#include <mrpt/math/CSparseMatrix.h>
 #include <mrpt/random.h>
 
 #include "common.h"

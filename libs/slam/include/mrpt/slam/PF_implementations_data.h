@@ -51,15 +51,7 @@ namespace mrpt
 				m_accumRobotMovement3DIsValid(false)
 			{
 			}
-
-			//typedef mrpt::bayes::CParticleFilterData<PARTICLE_TYPE> BASE;
-			//typedef mrpt::bayes::CParticleFilterCapable				BASE2;
-
 		protected:
-
-			//BASE	&m_partdata;  //!< the particle filter data object, implementing CParticleFilterData<PARTICLE_TYPE>
-			//BASE2	&m_pfc;  	  //!< the particle filter data object, implementing CParticleFilterCapable
-
 			/** \name Data members and methods used by generic PF implementations
 			    @{ */
 

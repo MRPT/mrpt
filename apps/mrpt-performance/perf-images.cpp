@@ -9,7 +9,6 @@
 
 #include <mrpt/utils/CImage.h>
 #include <mrpt/utils/TStereoCamera.h>
-#include <mrpt/utils/CTicTac.h>
 #include <mrpt/utils/CConfigFileMemory.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/vision/CImagePyramid.h>

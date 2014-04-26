@@ -387,3 +387,9 @@ CPose3D CPose2D::operator -(const CPose3D& b) const
 	RES.multiply(B_INV,HM);
 	return CPose3D( RES );
 }
+
+
+void CPose2D::asString(std::string &s) const
+{
+	s = mrpt::format("[%f %f %f]",x(),y(),mrpt::utils::RAD2DEG(m_phi));
+}

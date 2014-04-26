@@ -9,6 +9,7 @@
 
 #include <mrpt/slam.h>
 #include <mrpt/gui.h>
+#include <mrpt/math/geometry.h>
 
 using namespace mrpt;
 using namespace mrpt::gui;

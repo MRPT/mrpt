@@ -38,7 +38,7 @@ void TestHist()
 // ------------------------------------------------------
 void TestRandomGenerators()
 {
-	CVectorDouble x,y;
+	vector<double> x,y;
 
 	randomGenerator.randomize();
 

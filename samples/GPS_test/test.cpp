@@ -8,6 +8,9 @@
    +---------------------------------------------------------------------------+ */
 
 #include <mrpt/hwdrivers/CGPSInterface.h>
+#include <mrpt/utils/CConfigFile.h>
+#include <mrpt/system/filesystem.h>
+#include <mrpt/system/os.h>
 
 using namespace mrpt;
 using namespace mrpt::utils;

@@ -25,6 +25,8 @@
 #include <mrpt/utils/CSerializable.h>
 #include <pcl/point_types.h>
 #include <pcl/common/pca.h>
+#include <set>
+#include <map>
 
 #define USE_COMPLETNESS_HEURISTICS 1
 #define USE_INFERRED_STRUCTURE 1

@@ -11,11 +11,14 @@
  *  Construction of plane-based maps and localization in it from RGBD Images.
  *  Writen by Eduardo Fernandez-Moral. See docs for <a href="group__mrpt__pbmap__grp.html" >mrpt-pbmap</a>
  */
+#include "pbmap-precomp.h"  // Precompiled headers
 
-#include <mrpt/pbmap.h> // precomp. hdr
 
 #if MRPT_HAS_PCL
 
+#include <mrpt/pbmap/PbMapLocaliser.h>
+#include <mrpt/pbmap/SubgraphMatcher.h>
+#include <mrpt/pbmap/heuristicParams.h>
 #include <mrpt/utils/CConfigFile.h>
 #include <mrpt/system/threads.h>
 #include <pcl/io/pcd_io.h>

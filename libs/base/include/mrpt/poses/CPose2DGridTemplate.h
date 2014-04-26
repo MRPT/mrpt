@@ -16,6 +16,8 @@ namespace mrpt
 {
 namespace poses
 {
+	using mrpt::utils::DEG2RAD;
+
 	/** This is a template class for storing a 3D (2D+heading) grid containing any kind of data.
 	 * \ingroup poses_pdf_grp
 	 */
@@ -102,7 +104,7 @@ namespace poses
 			double		yMin = -1.0f,
 			double		yMax = 1.0f,
 			double		resolutionXY = 0.5f,
-			double		resolutionPhi = mrpt::utils::DEG2RAD(180),
+			double		resolutionPhi = DEG2RAD(180),
 			double		phiMin = -M_PIf,
 			double		phiMax = M_PIf
 			) :

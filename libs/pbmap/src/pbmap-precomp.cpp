@@ -7,5 +7,5 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/pbmap.h>  // Precompiled headers
+#include "pbmap-precomp.h"  // Precompiled headers
 
