@@ -19,14 +19,14 @@
 #define STAGE99_NO_EIGEN2_SUPPORT           99
 #define EIGEN2_SUPPORT_STAGE STAGE99_NO_EIGEN2_SUPPORT
 
-#if !EIGEN_VERSION_AT_LEAST(3,1,0)
+#if !EIGEN_VERSION_AT_LEAST(3,0,93)
 namespace Eigen {
 #endif
 // These headers were assumed to lie inside namespace Eigen{} in Eigen <=3.1.0
 #	include <Eigen/src/Core/util/Constants.h>
 #	include <Eigen/src/Core/util/ForwardDeclarations.h>
 
-#if !EIGEN_VERSION_AT_LEAST(3,1,0)
+#if !EIGEN_VERSION_AT_LEAST(3,0,93)
 }
 #endif
 
