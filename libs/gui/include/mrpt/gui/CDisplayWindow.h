@@ -12,6 +12,7 @@
 #include <mrpt/gui/CBaseGUIWindow.h>
 #include <mrpt/utils/CImage.h>
 #include <mrpt/system/os.h>
+#include <vector>
 
 namespace mrpt
 {
@@ -66,6 +67,8 @@ namespace mrpt
 			 *  It adapts the size of the window to that of the image.
 			 */
 			void  showImageAndPoints( const CImage &img, const mrpt::math::CVectorFloat &x, const mrpt::math::CVectorFloat &y, const TColor &color = TColor::red, const bool &showNumbers = false );
+			/** \overload */
+			void  showImageAndPoints( const CImage &img, const std::vector<float> &x, const std::vector<float> &y, const TColor &color = TColor::red, const bool &showNumbers = false );
 
 			/** Show a given color or grayscale image on the window and print a set of points on it.
 			 *  It adapts the size of the window to that of the image.

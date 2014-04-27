@@ -386,7 +386,16 @@ void  CDisplayWindow::showImage( const	CImage& img )
 /*---------------------------------------------------------------
 					showImageAndPoints
  ---------------------------------------------------------------*/
-void  CDisplayWindow::showImageAndPoints( const CImage &img, const CVectorFloat &x, const CVectorFloat &y, const TColor &color, const bool &showNumbers )
+void  CDisplayWindow::showImageAndPoints( const CImage &img, const CVectorFloat &x_, const CVectorFloat &y_, const TColor &color, const bool &showNumbers )
+{
+	std::vector<float> x(x_.size()),y(y_.size());
+	for (size_t i=0;i<x.size();i++) x[i]=x_[i];
+	for (size_t i=0;i<y.size();i++) y[i]=y_[i];
+	showImageAndPoints(img,x,y,color,showNumbers);
+}
+
+
+void  CDisplayWindow::showImageAndPoints( const CImage &img, const std::vector<float> &x, const std::vector<float> &y, const TColor &color, const bool &showNumbers )
 {
 #if MRPT_HAS_WXWIDGETS
 	MRPT_START
@@ -394,7 +403,7 @@ void  CDisplayWindow::showImageAndPoints( const CImage &img, const CVectorFloat 
 
 	CImage imgColor(1,1,3);
 	img.colorImage( imgColor );	// Create a colorimage
-	for(CVectorFloat::Index i = 0; i < x.size(); i++)
+	for(size_t i = 0; i < x.size(); i++)
 	{
 		imgColor.cross(round(x[i]),round(y[i]),color,'+');
 

@@ -5,13 +5,13 @@ The MRPT project
 1. Introduction
 ------------------------------------------------------------------------------
 
-Mobile Robot Programming Toolkit (MRPT) includes libraries and tools aimed to help researchers
-in the areas of mobile robotics and computer vision in the development of 
-efficient implementations with reusability of code as a priority. 
-It features classes for easily managing 3D(6D) geometry, probability density 
-functions (pdfs) over many predefined variables (points,landmarks,poses,maps,...),
+Mobile Robot Programming Toolkit (MRPT) provides C++ libraries aimed at researchers
+in mobile robotics and computer vision. Libraries include 3D(6D) geometry, SE(2)/SE(3) Lie groups, 
+probability density functions (pdfs) over points, landmarks, poses and maps, 
 Bayesian inference (Kalman filters, particle filters), image processing, obstacle
-avoidance, etc.
+avoidance, etc. 
+MRPT also provides GUI apps for Stereo camera calibration, dataset inspection, 
+and much more. 
 
 2. Resources
 ------------------------------------------------------------------------------
@@ -19,13 +19,8 @@ avoidance, etc.
   * C++ API reference: [http://reference.mrpt.org/](http://reference.mrpt.org/).
   * Google group for questions: [http://www.mrpt.org/forum/](http://www.mrpt.org/forum/)
   * Download the latest unstable code with: 
-    * Git: 
     
             git clone https://github.com/jlblancoc/mrpt.git mrpt-git
-
-    * Subversion: 
-    
-            svn co https://github.com/jlblancoc/mrpt/trunk/ mrpt-svn
 
   * Example configuration files for  MRPT applications can be found at: 
      [MRPT/share/mrpt/config_files](https://github.com/jlblancoc/mrpt/tree/master/share/mrpt/config_files)
