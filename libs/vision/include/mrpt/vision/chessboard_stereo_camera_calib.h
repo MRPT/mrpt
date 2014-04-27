@@ -106,7 +106,8 @@ namespace mrpt
 
 		/** Optimize the calibration parameters of a stereo camera or a RGB+D (Kinect) camera.
 		  *  This computes the projection and distortion parameters of each camera, and their relative spatial pose,
-		  *  from a sequence of pairs of captured images of a checkerboard.
+		  *  from a sequence of pairs of captured images of a checkerboard. 
+		  *  A custom implementation of an optimizer (Levenberg-Marquartd) seeks for the set of selected parameters to estimate that minimize the reprojection errors.
 		  *
 		  *  \param input_images [IN/OUT] At input, this list must have one entry for each image to process. At output the original, detected checkboard and rectified images can be found here. See TImageCalibData.
 		  *  \param params [IN] Mandatory: the user must provide the size of the checkerboard, which parameters to optimize and which to leave fixed to zero, etc.

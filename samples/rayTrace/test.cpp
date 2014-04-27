@@ -170,7 +170,7 @@ int main()	{
 		return 0;
 	}	catch (const exception &e)	{
 		cout<<"Error: "<<e.what()<<'.'<<endl;
-		::pause();
+		mrpt::system::pause();
 		return -1;
 	}	catch (...)	{
 		cout<<"Unknown Error.\n";

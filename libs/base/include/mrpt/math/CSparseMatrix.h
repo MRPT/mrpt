@@ -382,10 +382,11 @@ namespace mrpt
 				void get_L(CMatrixDouble &out_L) const;
 
 				/** Return the vector from a back-substitution step that solves: Ux=b   */
-				inline mrpt::math::CVectorDouble backsub(const mrpt::math::CVectorDouble &b) const { mrpt::math::CVectorDouble res; backsub(b,res); return res; }
+				template <class VECTOR>
+				inline VECTOR backsub(const VECTOR &b) const { VECTOR res; backsub(b,res); return res; }
 
-				/** Return the vector from a back-substitution step that solves: Ux=b   */
-				void backsub(const mrpt::math::CVectorDouble &b, mrpt::math::CVectorDouble &result_x) const;
+				/** Return the vector from a back-substitution step that solves: Ux=b. Vectors can be Eigen::VectorXd or mrpt::math::CVectorDouble   */
+				void backsub(const Eigen::VectorXd &b, Eigen::VectorXd &result_x) const;
 
 				/** \overload for double pointers which assume the user has reserved the output memory for \a result */
 				void backsub(const double *b, double *result, const size_t N) const;

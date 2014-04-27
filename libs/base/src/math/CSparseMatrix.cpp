@@ -360,10 +360,10 @@ void CSparseMatrix::CholeskyDecomp::get_L(CMatrixDouble &L) const
 
 /** Return the vector from a back-substitution step that solves: Ux=b   */
 void CSparseMatrix::CholeskyDecomp::backsub(
-	const mrpt::math::CVectorDouble &b,
-	mrpt::math::CVectorDouble &sol) const
+	const Eigen::VectorXd &b,
+	Eigen::VectorXd &sol) const
 {
-	ASSERT_(!b.empty())
+	ASSERT_(b.size()>0)
 	sol.resize(b.size());
 	this->backsub(&b[0],&sol[0],b.size());
 }

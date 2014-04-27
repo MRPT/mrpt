@@ -7,11 +7,12 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/hwdrivers.h> // Precompiled header
+#include "hwdrivers-precomp.h" // Precompiled header
 
 #include <mrpt/hwdrivers/COpenNI2Generic.h>
 #include <mrpt/hwdrivers/COpenNI2Sensor.h>
 #include <mrpt/utils/CTimeLogger.h>
+#include <mrpt/utils/TStereoCamera.h>
 
 // Universal include for all versions of OpenCV
 #include <mrpt/otherlibs/do_opencv_includes.h>
@@ -21,6 +22,7 @@ using namespace mrpt::hwdrivers;
 using namespace mrpt::system;
 using namespace mrpt::synch;
 using namespace std;
+using mrpt::utils::DEG2RAD;
 
 IMPLEMENTS_GENERIC_SENSOR(COpenNI2Sensor,mrpt::hwdrivers)
 

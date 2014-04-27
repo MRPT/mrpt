@@ -7,7 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/hwdrivers.h> // Precompiled header
+#include "hwdrivers-precomp.h" // Precompiled header
 
 #include <mrpt/hwdrivers/COpenNI2Generic.h>
 #include <mrpt/utils/CTimeLogger.h>

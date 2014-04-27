@@ -393,7 +393,7 @@ void RbaEngine<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::optimize_edges(
 
 	// Compute the gradient: "grad = J^t * (h(x)-z)"
 	// ---------------------------------------------------------------------------------
-	CVectorDouble  minus_grad; // The negative of the gradient.
+	Eigen::VectorXd  minus_grad; // The negative of the gradient.
 
 	DETAILED_PROFILING_ENTER("opt.compute_minus_gradient")
 	compute_minus_gradient(/* Out: */ minus_grad, /* In: */ dh_dAp, dh_df, residuals, obs_global_idx2residual_idx);

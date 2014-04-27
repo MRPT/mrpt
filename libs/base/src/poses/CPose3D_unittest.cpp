@@ -500,7 +500,7 @@ protected:
 			mrpt::math::jacobians::jacob_numeric_estimate(x_mean,func_jacob_expe_D,x_incrs,p, numJacobs );
 		}
 
-		EXPECT_NEAR( (numJacobs-theor_jacob).Abs().maxCoeff(), 0, 1e-3)
+		EXPECT_NEAR( (numJacobs-theor_jacob).array().abs().maxCoeff(), 0, 1e-3)
 			<< "Pose: " << p << endl
 			<< "Pose matrix:\n" << p.getHomogeneousMatrixVal()
 			<< "Num. Jacob:\n" << numJacobs << endl
@@ -551,7 +551,7 @@ protected:
 			mrpt::math::jacobians::jacob_numeric_estimate(x_mean,func_jacob_Aexpe_D,x_incrs,params, numJacobs );
 		}
 
-		EXPECT_NEAR( (numJacobs-theor_jacob).Abs().maxCoeff(), 0, 1e-3)
+		EXPECT_NEAR( (numJacobs-theor_jacob).array().abs().maxCoeff(), 0, 1e-3)
 			<< "Pose A: " << A << endl
 			<< "Pose D: " << D << endl
 			<< "Num. Jacob:\n" << numJacobs << endl

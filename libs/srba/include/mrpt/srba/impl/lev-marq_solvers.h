@@ -38,11 +38,11 @@ namespace internal
 
 		const int m_verbose_level;
 		mrpt::utils::CTimeLogger &m_profiler;
-		CVectorDouble  delta_eps; //!< The result of solving Ax=b will be stored here
+		Eigen::VectorXd  delta_eps; //!< The result of solving Ax=b will be stored here
 		typename hessian_traits_t::TSparseBlocksHessian_Ap  &HAp;
 		typename hessian_traits_t::TSparseBlocksHessian_f   &Hf;
 		typename hessian_traits_t::TSparseBlocksHessian_Apf &HApf;
-		CVectorDouble  &minus_grad;
+		Eigen::VectorXd  &minus_grad;
 		const size_t nUnknowns_k2k, nUnknowns_k2f, nUnknowns_scalars,idx_start_f;
 
 		CSparseMatrix* sS; //!< Sparse Hessian
@@ -57,7 +57,7 @@ namespace internal
 			typename hessian_traits_t::TSparseBlocksHessian_Ap  &HAp_,
 			typename hessian_traits_t::TSparseBlocksHessian_f   &Hf_,
 			typename hessian_traits_t::TSparseBlocksHessian_Apf &HApf_,
-			CVectorDouble  &minus_grad_,
+			Eigen::VectorXd  &minus_grad_,
 			const size_t nUnknowns_k2k_,
 			const size_t nUnknowns_k2f_) :
 				m_verbose_level(verbose_level),
@@ -225,11 +225,11 @@ namespace internal
 		mrpt::utils::CTimeLogger &m_profiler;
 
 		const size_t   nUnknowns_k2k, nUnknowns_k2f;
-		CVectorDouble  delta_eps;
+		Eigen::VectorXd  delta_eps;
 		typename hessian_traits_t::TSparseBlocksHessian_Ap  &HAp;
 		typename hessian_traits_t::TSparseBlocksHessian_f   &Hf;
 		typename hessian_traits_t::TSparseBlocksHessian_Apf &HApf;
-		CVectorDouble  &minus_grad;
+		Eigen::VectorXd  &minus_grad;
 
 		CSparseMatrix* sS; //!< Sparse Hessian
 		bool           sS_is_valid; //!< Whether the Hessian was filled in, in sS
@@ -250,7 +250,7 @@ namespace internal
 			typename hessian_traits_t::TSparseBlocksHessian_Ap  &HAp_,
 			typename hessian_traits_t::TSparseBlocksHessian_f   &Hf_,
 			typename hessian_traits_t::TSparseBlocksHessian_Apf &HApf_,
-			CVectorDouble  &minus_grad_,
+			Eigen::VectorXd  &minus_grad_,
 			const size_t nUnknowns_k2k_,
 			const size_t nUnknowns_k2f_) :
 				m_verbose_level(verbose_level),
@@ -418,11 +418,11 @@ namespace internal
 		mrpt::utils::CTimeLogger &m_profiler;
 		const size_t nUnknowns_k2k, nUnknowns_k2f;
 
-		CVectorDouble  delta_eps; //!< The result of solving Ax=b will be stored here
+		Eigen::VectorXd  delta_eps; //!< The result of solving Ax=b will be stored here
 		typename hessian_traits_t::TSparseBlocksHessian_Ap  &HAp;
 		typename hessian_traits_t::TSparseBlocksHessian_f   &Hf;
 		typename hessian_traits_t::TSparseBlocksHessian_Apf &HApf;
-		CVectorDouble  &minus_grad;
+		Eigen::VectorXd  &minus_grad;
 
 		SchurComplement<
 			typename hessian_traits_t::TSparseBlocksHessian_Ap,
@@ -446,7 +446,7 @@ namespace internal
 			typename hessian_traits_t::TSparseBlocksHessian_Ap  &HAp_,
 			typename hessian_traits_t::TSparseBlocksHessian_f   &Hf_,
 			typename hessian_traits_t::TSparseBlocksHessian_Apf &HApf_,
-			CVectorDouble  &minus_grad_,
+			Eigen::VectorXd  &minus_grad_,
 			const size_t nUnknowns_k2k_,
 			const size_t nUnknowns_k2f_) :
 				m_verbose_level(verbose_level),
