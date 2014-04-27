@@ -11,6 +11,7 @@
 
 #include <mrpt/hwdrivers/COpenNI2Generic.h>
 #include <mrpt/hwdrivers/COpenNI2Sensor.h>
+#include <mrpt/slam/CObservation3DRangeScan.h>
 #include <mrpt/utils/CTimeLogger.h>
 #include <mrpt/utils/TStereoCamera.h>
 
@@ -21,6 +22,8 @@
 using namespace mrpt::hwdrivers;
 using namespace mrpt::system;
 using namespace mrpt::synch;
+using namespace mrpt::slam;
+using namespace mrpt::math;
 using namespace std;
 using mrpt::utils::DEG2RAD;
 

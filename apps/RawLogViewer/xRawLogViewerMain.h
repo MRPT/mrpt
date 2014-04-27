@@ -44,7 +44,6 @@
 // General global variables:
 #include <mrpt/utils/CSerializable.h>
 #include <mrpt/utils/CConfigFile.h>
-//#include <mrpt/slam.h>
 #include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/gui/CDisplayWindowPlots.h>
 

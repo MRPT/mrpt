@@ -8,6 +8,9 @@
    +---------------------------------------------------------------------------+ */
 
 #include "DifOdometry_Camera.h"
+#include <mrpt/system/os.h>
+#include <mrpt/utils/CConfigFileMemory.h>
+#include <mrpt/utils/CConfigFile.h>
 
 using namespace std;
 using namespace mrpt;
@@ -121,7 +124,7 @@ int main(int num_arg, char *argv[])
 		odo.reset();
 
 		while (!stop)
-		{	
+		{
 
 			if (odo.window.keyHit())
 				pushed_key = odo.window.getPushedKey();
@@ -129,7 +132,7 @@ int main(int num_arg, char *argv[])
 				pushed_key = 0;
 
 			switch (pushed_key) {
-			
+
 			//Capture 1 new frame and calculate odometry
 			case  'n':
 				odo.loadFrame();
@@ -143,7 +146,7 @@ int main(int num_arg, char *argv[])
 			case 's':
 				working = !working;
 				break;
-			
+
 			//Close the program
 			case 'e':
 				stop = 1;
@@ -157,7 +160,7 @@ int main(int num_arg, char *argv[])
 				break;
 
 			}
-	
+
 			if (working == 1)
 			{
 				while(main_clock.Tac() < 1.0/odo.fps);

@@ -10,14 +10,18 @@
 #include "hwdrivers-precomp.h" // Precompiled header
 
 #include <mrpt/hwdrivers/COpenNI2_RGBD360.h>
+#include <mrpt/slam/CObservationRGBD360.h>
 #include <mrpt/utils/CTimeLogger.h>
+#include <mrpt/system/threads.h>
 
 // Universal include for all versions of OpenCV
 #include <mrpt/otherlibs/do_opencv_includes.h>
 
 using namespace mrpt::hwdrivers;
 using namespace mrpt::system;
+using namespace mrpt::slam;
 using namespace mrpt::synch;
+using namespace mrpt::math;
 using namespace std;
 using mrpt::utils::DEG2RAD;
 using mrpt::slam::CObservationRGBD360;

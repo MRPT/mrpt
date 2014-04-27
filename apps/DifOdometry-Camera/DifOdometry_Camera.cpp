@@ -20,10 +20,11 @@
 #include <mrpt/opengl/CEllipsoid.h>
 #include <mrpt/opengl/stock_objects.h>
 
+using namespace Eigen;
+using namespace std;
 using namespace mrpt;
 using namespace mrpt::opengl;
 using namespace mrpt::gui;
-using namespace mrpt::slam;
 
 
 void CDifodoCamera::loadConfiguration(const utils::CConfigFileBase &ini )
