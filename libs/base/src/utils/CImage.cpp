@@ -2341,6 +2341,8 @@ bool CImage::drawChessboardCorners(
 	line_colors[6] = CV_RGB(0,0,255);
 	line_colors[7] = CV_RGB(255,0,255);
 
+	CCanvas::selectTextFont("10x20");
+
 	for( y = 0, i = 0; y < check_size_y; y++ )
 	{
 		CvScalar color = line_colors[y % line_max];
@@ -2360,6 +2362,10 @@ bool CImage::drawChessboardCorners(
 					  cvPoint( pt.x + r, pt.y - r), color );
 			cvCircle( img, pt, r+1, color );
 			prev_pt = pt;
+
+			// Text label with the corner index in the first and last corners:
+			if (i==0 || i==cornerCoords.size()-1)
+				CCanvas::textOut(pt.x+5,pt.y-5,mrpt::format("%u",i), mrpt::utils::TColor::blue);
 		}
 	}
 
