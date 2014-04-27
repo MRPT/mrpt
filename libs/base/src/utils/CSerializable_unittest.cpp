@@ -24,7 +24,7 @@ using namespace mrpt::math;
 using namespace mrpt::poses;
 using namespace std;
 
-// Defined in run_unittests.cpp
+// Defined in tests/test_main.cpp
 namespace mrpt { namespace utils {
 	extern std::string MRPT_GLOBAL_UNITTEST_SRC_DIR;
   }
