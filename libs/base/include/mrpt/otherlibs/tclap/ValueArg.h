@@ -13,6 +13,7 @@
 
 #include <string>
 #include <vector>
+#include <cstdio> // EOF
 
 #include <mrpt/otherlibs/tclap/Arg.h>
 #include <mrpt/otherlibs/tclap/Constraint.h>

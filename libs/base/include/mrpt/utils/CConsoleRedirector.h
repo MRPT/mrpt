@@ -14,6 +14,7 @@
 #include <streambuf>
 #include <iostream>
 #include <fstream>
+#include <cstdio> // EOF
 
 namespace mrpt
 {
