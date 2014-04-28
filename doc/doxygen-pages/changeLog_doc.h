@@ -26,29 +26,30 @@
 			- More efficient mrpt::utils::OctetVectorToObject() (avoid memory copy).
 		- [mrpt-srba]
 			- Now also implements SE(3) relative graph-slam.
-	- Removed most "using namespace" from public headers.
-	- Refactoring of MRPT headers. 
-		- <mrpt/utils/stl_extensions.h> has been split into:
-			- <mrpt/utils/stl_serialization.h>
-			- <mrpt/utils/circular_buffer.h>
-			- <mrpt/utils/list_searchable.h>
-			- <mrpt/utils/bimap.h>
-			- <mrpt/utils/map_as_vector.h>
-			- <mrpt/utils/traits_map.h>
-			- <mrpt/utils/stl_serialization.h>
-			- <mrpt/utils/printf_vector.h>
-			- <mrpt/utils/stl_containers_utils.h>
-			- <mrpt/utils/ci_less.h>
-	- Deleted methods and functions:
-		- mrpt::system::breakpoint()
-		- *EXPLAIN*:  mrpt :: vector_float --> mrpt::math::CVectorFloat, etc.
-		- mrpt::CImage::rectifyImage() with parameters as separate vectors.
-		- Previous deprecated functions.
-		- mrpt::slam::CPointsMap::getPoint() with mrpt::poses::CPoint3D arguments.
-		- mrpt::vision::correctDistortion() -> use CImage method instead
-
-	- Build system:
+		- [mrpt-vision]
+			- mrpt::vision::checkerBoardStereoCalibration: More robust handling of stereo calibration patterns. OpenCV sometimes detects corners in the wrong order between (left/right) images, so we detect the situation and fix it.
+	- Build system / public API: 
 		- Fixes to build in OS X - [Patch](https://gist.github.com/randvoorhies/9283072) by Randolph Voorhies.
+		- Removed most "using namespace" from public headers, as good practice.
+		- Refactoring of MRPT headers. 
+			- <mrpt/utils/stl_extensions.h> has been split into:
+				- <mrpt/utils/stl_serialization.h>
+				- <mrpt/utils/circular_buffer.h>
+				- <mrpt/utils/list_searchable.h>
+				- <mrpt/utils/bimap.h>
+				- <mrpt/utils/map_as_vector.h>
+				- <mrpt/utils/traits_map.h>
+				- <mrpt/utils/stl_serialization.h>
+				- <mrpt/utils/printf_vector.h>
+				- <mrpt/utils/stl_containers_utils.h>
+				- <mrpt/utils/ci_less.h>
+		- Deleted methods and functions:
+			- mrpt::system::breakpoint()
+			- mrpt::vector_float is now mrpt::math::CVectorFloat, mrpt::vector_double is mrpt::math::CVectorDouble, for name consistency. Also, using Eigen::VectorXf is preferred for new code.
+			- mrpt::CImage::rectifyImage() with parameters as separate vectors.
+			- mrpt::slam::CPointsMap::getPoint() with mrpt::poses::CPoint3D arguments.
+			- mrpt::vision::correctDistortion() -> use CImage method instead
+			- All previous deprecated functions.
   	- BUG FIXES:
 		- New implementation of mrpt::synch::CSemaphore avoids crashes in OS X - by Randolph Voorhies.
 		- mrpt::opengl::CArrow was always drawn of normalized length.
