@@ -9,7 +9,7 @@
 
 #include "rawlog-edit-declarations.h"
 
-#include <mrpt/slam/CObservationIMU.h>
+#include <mrpt/slam/CObservationOdometry.h>
 
 using namespace mrpt;
 using namespace mrpt::utils;
@@ -19,12 +19,12 @@ using namespace mrpt::rawlogtools;
 using namespace std;
 
 // ======================================================================
-//		op_export_imu_txt
+//		op_export_odometry_txt
 // ======================================================================
-DECLARE_OP_FUNCTION(op_export_imu_txt)
+DECLARE_OP_FUNCTION(op_export_odometry_txt)
 {
 	// A class to do this operation:
-	class CRawlogProcessor_ExportIMU_TXT : public CRawlogProcessorOnEachObservation
+	class CRawlogProcessor_ExportODO_TXT : public CRawlogProcessorOnEachObservation
 	{
 	protected:
 		string	m_inFile;
@@ -36,7 +36,7 @@ DECLARE_OP_FUNCTION(op_export_imu_txt)
 		size_t				m_entriesSaved;
 
 
-		CRawlogProcessor_ExportIMU_TXT(CFileGZInputStream &in_rawlog, TCLAP::CmdLine &cmdline, bool verbose) :
+		CRawlogProcessor_ExportODO_TXT(CFileGZInputStream &in_rawlog, TCLAP::CmdLine &cmdline, bool verbose) :
 			CRawlogProcessorOnEachObservation(in_rawlog,cmdline,verbose),
 			m_entriesSaved(0)
 		{
@@ -50,10 +50,10 @@ DECLARE_OP_FUNCTION(op_export_imu_txt)
 		// return false on any error.
 		bool processOneObservation(CObservationPtr  &o)
 		{
-			if (!IS_CLASS(o, CObservationIMU ) )
+			if (!IS_CLASS(o, CObservationOdometry ) )
 				return true;
 
-			const CObservationIMU* obs = CObservationIMUPtr(o).pointer();
+			const CObservationOdometry* obs = CObservationOdometryPtr(o).pointer();
 
 			map<string, FILE*>::const_iterator  it = lstFiles.find( obs->sensorLabel );
 
@@ -64,10 +64,10 @@ DECLARE_OP_FUNCTION(op_export_imu_txt)
 				const std::string fileName =
 					m_filPrefix+
 					string("_") +
-					fileNameStripInvalidChars( obs->sensorLabel ) +
+					fileNameStripInvalidChars( obs->sensorLabel.empty() ? string("ODOMETRY") : obs->sensorLabel ) +
 					string(".txt");
 
-				VERBOSE_COUT << "Writing IMU TXT file: " << fileName << endl;
+				VERBOSE_COUT << "Writing odometry TXT file: " << fileName << endl;
 
 				f_this = lstFiles[ obs->sensorLabel ] = os::fopen( fileName.c_str(), "wt");
 				if (!f_this)
@@ -77,31 +77,19 @@ DECLARE_OP_FUNCTION(op_export_imu_txt)
 				::fprintf(f_this,
 					"%% "
 					"%14s "				// TIMESTAMP
-					"%22s %22s %22s "	// IMU_{X,Y,Z}_ACC
-					"%22s %22s %22s "	// IMU_YAW_VEL...
-					"%22s %22s %22s "	// IMU_X_VEL...
-					"%22s %22s %22s "	// IMU_YAW...
-					"%22s %22s %22s "	// IMU_X...
-					"%22s %22s %22s "   // MAG_X MAG_Y MAG_Z
-					"%22s %22s %22s "   // PRESS ALTIT TEMP
+					"%18s %18s %18s "	// GLOBAL_ODO_{x,y,phi}
+					"%18s %18s %18s "	// HAS, TICKS_L/R
+					"%18s %18s %18s "	// HAS, V,W
 					"\n"
 					,
 					"Time",
-					"IMU_X_ACC","IMU_Y_ACC","IMU_Z_ACC",
-					"IMU_YAW_VEL","IMU_PITCH_VEL","IMU_ROLL_VEL",
-					"IMU_X_VEL","IMU_Y_VEL","IMU_Z_VEL",
-					"IMU_YAW","IMU_PITCH","IMU_ROLL",
-					"IMU_X","IMU_Y","IMU_Z",
-					"MAG_X","MAG_Y","MAG_Z",
-					"PRESS","ALTITUDE","TEMPERATURE"
+					"GLOBAL_ODO_X","GLOBAL_ODO_Y","GLOBAL_ODO_PHI_RAD",
+					"HAS_ENCODERS","LEFT_ENC_INCR_TICKS","RIGHT_ENC_INCR_TICKS",
+					"HAS_VELOCITIES","LIN_SPEED_MetPerSec","ANG_SPEED_RadPerSec"
 					);
 			}
 			else
 				f_this = it->second;
-
-
-            ASSERT_( obs->dataIsPresent.size()==obs->rawMeasurements.size() );
-            size_t nValuesPerRow = obs->dataIsPresent.size();
 
             // For each entry in this sequence: Compute the timestamp and save all 15 values:
             ASSERT_(obs->timestamp!=INVALID_TIMESTAMP);
@@ -110,20 +98,24 @@ DECLARE_OP_FUNCTION(op_export_imu_txt)
             double 	sampleTime = timestampTotime_t(t);
 
             // Time:
-            ::fprintf(f_this,"%14.4f ",sampleTime);
-            ASSERT_( obs->rawMeasurements.size()==obs->rawMeasurements.size() );
-            for (size_t idx=0;idx<nValuesPerRow;idx++)
-                ::fprintf(f_this,"%23.16f ",obs->dataIsPresent[idx] ? obs->rawMeasurements[idx] : 0);
-            ::fprintf(f_this,"\n");
-
+			::fprintf(f_this,
+				"%14.4f " // TIMESTAMP
+				"%18.5f %18.5f %18.5f "	// GLOBAL_ODO_{x,y,phi}
+				"%18i %18i %18i "	// HAS, TICKS_L/R
+				"%18i %18.5f %18.5f"	// HAS, V,W
+				"\n"
+				,
+				sampleTime, 
+				obs->odometry.x(), obs->odometry.y(), obs->odometry.phi(),
+				static_cast<int>(obs->hasEncodersInfo ? 1:0), static_cast<int>(obs->encoderLeftTicks), static_cast<int>(obs->encoderRightTicks), 
+				static_cast<int>(obs->hasVelocities ? 1:0), obs->velocityLin, obs->velocityAng
+				);
 			m_entriesSaved++;
-
 			return true; // All ok
 		}
 
-
 		// Destructor: close files and generate summary files:
-		~CRawlogProcessor_ExportIMU_TXT()
+		~CRawlogProcessor_ExportODO_TXT()
 		{
 			for (map<string, FILE*>::const_iterator  it=lstFiles.begin();it!=lstFiles.end();++it)
 			{
@@ -132,7 +124,7 @@ DECLARE_OP_FUNCTION(op_export_imu_txt)
 
 			// Save the joint file:
 			// -------------------------
-			VERBOSE_COUT << "Number of different IMU sensorLabels     : " << lstFiles.size() << endl;
+			VERBOSE_COUT << "Number of different odometry sensorLabels  : " << lstFiles.size() << endl;
 
 			lstFiles.clear();
 		} // end of destructor
@@ -141,12 +133,11 @@ DECLARE_OP_FUNCTION(op_export_imu_txt)
 
 	// Process
 	// ---------------------------------
-	CRawlogProcessor_ExportIMU_TXT proc(in_rawlog,cmdline,verbose);
+	CRawlogProcessor_ExportODO_TXT proc(in_rawlog,cmdline,verbose);
 	proc.doProcessRawlog();
 
 	// Dump statistics:
 	// ---------------------------------
 	VERBOSE_COUT << "Time to process file (sec)        : " << proc.m_timToParse << "\n";
 	VERBOSE_COUT << "Number of records saved           : " << proc.m_entriesSaved << "\n";
-
 }
