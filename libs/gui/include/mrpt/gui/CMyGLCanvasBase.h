@@ -156,28 +156,6 @@ namespace mrpt
 			unsigned long  m_LastTime;
 			unsigned long  m_LastRedraw;
 
-			/** DEPRECATED: Use CRenderizable static method instead */
-			static void renderTextBitmap(
-				int screen_x,
-				int screen_y,
-				const std::string &str,
-				float  color_r=1,
-				float  color_g=1,
-				float  color_b=1,
-				mrpt::opengl::TOpenGLFont    font = mrpt::opengl::MRPT_GLUT_BITMAP_TIMES_ROMAN_24
-				)
-			{
-				mrpt::opengl::CRenderizable::renderTextBitmap(screen_x,screen_y,str,color_r,color_g,color_b, font);
-			}
-
-			/** DEPRECATED: Use CRenderizable static method instead */
-			static int textBitmapWidth(
-				const std::string &str,
-				mrpt::opengl::TOpenGLFont    font = mrpt::opengl::MRPT_GLUT_BITMAP_TIMES_ROMAN_24 )
-			{
-				return mrpt::opengl::CRenderizable::textBitmapWidth(str,font);
-			}
-
 			// Used to create the gl context at startup.
 			void OnWindowCreation(wxWindowCreateEvent &ev);
 

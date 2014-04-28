@@ -330,10 +330,6 @@ namespace slam
 		 */
 		inline size_t size() const { return x.size(); }
 
-		/** Returns the number of stored points in the map (DEPRECATED, use "size()" instead better)
-		 */
-		inline size_t getPointsCount() const { return size(); }
-
 		/** Access to a given point from map, as a 2D point. First index is 0.
 		 * \return The return value is the weight of the point (the times it has been fused), or 1 if weights are not used.
 		 * \exception Throws std::exception on index out of bound.

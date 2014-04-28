@@ -331,12 +331,7 @@ namespace mrpt
 					if( ! list.isPointFeature(i) ) this->drawCircle(x,y, list.getScale(i), TColor::red );
 				}
 			}
-
-
-
 		}; // End of class
-
-		typedef CCanvas CMRPTCanvas;	//!< Deprecated name.
 
 	} // end of namespace utils
 

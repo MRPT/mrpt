@@ -444,7 +444,7 @@ CSerializablePtr CStream::ReadObject()
 		return obj;
 
 	}
-	catch (std::bad_alloc &e)
+	catch (std::bad_alloc &)
 	{
 		throw;
 	}
@@ -562,7 +562,7 @@ void CStream::ReadObject(CSerializable *existingObj)
 		}
 
 	}
-	catch (std::bad_alloc &e)
+	catch (std::bad_alloc &)
 	{
 		throw;
 	}
