@@ -26,8 +26,6 @@ CCamModel::CCamModel() : cam()
 void  CCamModel::jacob_undistor_fm(const mrpt::vision::TPixelCoordf &p, math::CMatrixDouble &J_undist)
 {
 	// JL: CHECK!!!!
-	//THROW_EXCEPTION("TO CHECK")
-
 	const double Cx = cam.cx();
 	const double Cy = cam.cy();
 	const double k1 = cam.k1();
@@ -45,24 +43,6 @@ void  CCamModel::jacob_undistor_fm(const mrpt::vision::TPixelCoordf &p, math::CM
 	J_undist(1,1) = (1+k1*rd2+k2*rd4) + (p.y-Cy) * (k1+2*k2*rd2) * (2*(p.y-Cy)*dy*dy);
 	J_undist(0,1) = (p.x-Cx) * (k1+2*k2*rd2) * (2*(p.y-Cy)*dy*dy);
 	J_undist(1,0) = (p.y-Cy) * (k1+2*k2*rd2) * (2*(p.x-Cx)*dx*dx);
-
-
-	/*
-	double xd=(p.x-cam.cx)*cam.d;
-	double yd=(p.y-cam.cy)*cam.d;
-	double rd2=xd*xd+yd*yd;
-	double rd4=rd2*rd2;
-
-	double uu_ud=(1+cam.k1*rd2+cam.k2*rd4)+(p.x-cam.cx)*(cam.k1+2*cam.k2*rd2)*(2*(p.x-cam.cx)*cam.d*cam.d);
-	double vu_vd=(1+cam.k1*rd2+cam.k2*rd4)+(p.y-cam.cy)*(cam.k1+2*cam.k2*rd2)*(2*(p.y-cam.cy)*cam.d*cam.d);
-
-	double uu_vd=(p.x-cam.cx)*(cam.k1+2*cam.k2*rd2)*(2*(p.y-cam.cy)*cam.d*cam.d);
-	double vu_ud=(p.y-cam.cy)*(cam.k1+2*cam.k2*rd2)*(2*(p.x-cam.cx)*cam.d*cam.d);
-
-	J_undist.setSize(2,2);
-	J_undist(0,0)=uu_ud;	J_undist(0,1)=uu_vd;
-	J_undist(1,0)=vu_ud;	J_undist(1,1)=vu_vd;
-	*/
 
 }
 /******************************************************************************************************************************/
@@ -132,37 +112,6 @@ void  CCamModel::distort_a_point(const mrpt::vision::TPixelCoordf &p, mrpt::visi
 	distorted_p.x = cam.cx() + dx*fact;
 	distorted_p.y = cam.cy() + dy*fact;
 	return;
-
-/*	const double r4 = square(r2);
-	const double a1 = 2*x*y;
-	const double a2 = r2 + 2*x*x;
-	const double a3 = r2 + 2*y*y;
-	const double cdist = 1 + cam.k1()*r2 + cam.k2()*r4;
-	const double xd = x*cdist + cam.dist[2]*a1 + cam.dist[3]*a2;
-	const double yd = y*cdist + cam.dist[2]*a3 + cam.dist[3]*a1;
-
-	distorted_p.x = xd*cam.fx + cam.cx;
-	distorted_p.y = yd*cam.fy + cam.cy;
-*/
-
-/*    double ru = sqrt(xu*xu + yu*yu);
-	double rd = ru / (1 + cam.k1 * ru*ru + cam.k2 * ru*ru*ru*ru);	//initial value for iteration
-
-    //Newton-Rapson. 100 iterations
-	double f=0.0, f_p=1.0;
-	for (int k=0 ; k<100 ; k++)
-	{
-        f = rd + cam.k1 * rd*rd*rd + cam.k2 * rd*rd*rd*rd*rd - ru;
-		f_p= 1+ 3 * cam.k1 * rd*rd + 5 * cam.k2 * rd*rd*rd*rd;
-		rd = rd - f / f_p;
-	}
-
-    double D = 1 + cam.k1 * rd*rd + cam.k2*rd*rd*rd*rd;
-
-	uvd.resize(2);
-	uvd[0] = ( cam.cx + (xu/D) / cam.d );
-	uvd[1] = ( cam.cy + (yu/D) / cam.d );
-	*/
 }
 /*************************************************************************************************************************/
 // Removes distortion of a pair of pixel coordinates x,y.
@@ -182,22 +131,6 @@ void  CCamModel::undistort_point(const mrpt::vision::TPixelCoordf &p, mrpt::visi
 	undistorted_p = out_p[0];
 
 	// It's explained fine in page 3, "A visual compass based on SLAM"
-/*	double Cx = cam.cx;
-	double Cy = cam.cy;
-	double k1 = cam.k1;
-	double k2 = cam.k2;
-	double dx = cam.d;
-	double dy = cam.d;
-
-	double ud = col;
-	double vd = row;
-	double rd = sqrt( (dx*(ud-Cx))*(dx*(ud-Cx)) + (dy*(vd-Cy))*(dy*(vd-Cy)) );
-
-	double uu = Cx + ( ud - Cx )*( 1 + k1*rd*rd + k2*rd*rd*rd*rd );
-	double vu = Cy + ( vd - Cy )*( 1 + k1*rd*rd + k2*rd*rd*rd*rd );
-
-	col = uu;
-	row = vu;*/
 }
 
 
@@ -217,19 +150,6 @@ void  CCamModel::project_3D_point(const mrpt::math::TPoint3D &p3D, mrpt::vision:
 	//
 
 	// Offsets from the image center for the undistorted projection, in units of pixels:
-
-
-  //VNL::VectorFixed<2> imagepos_centred;
-  //imagepos_centred[0] = -m_Fku * camera[0] / camera[2];
-  //imagepos_centred[1] = -m_Fkv * camera[1] / camera[2];
-
-  //m_last_image_centred = imagepos_centred;
-
-  //// 1 distortion coefficient model
-  //const double radius2 = imagepos_centred.SquaredMagnitude();
-  //double factor = sqrt(1 + 2 * m_Kd1 * radius2);
-  //return imagepos_centred / factor + m_centre;
-
 
 	ASSERT_(p3D.z!=0)
 	const double dx = (p3D.x / p3D.z)*cam.fx();
@@ -252,25 +172,6 @@ void  CCamModel::unproject_3D_point(const mrpt::vision::TPixelCoordf &distorted_
 	//
 	// 1 distortion coefficient model (+ projection)
 	//
-
-/* MAAA: original source
-  centred = image - m_centre;
-
-  m_last_image_centred = centred;
-
-  const double radius2 = centred.SquaredMagnitude();
-  double factor = sqrt(1 - 2 * m_Kd1 * radius2);
-
-  VNL::VectorFixed<2> undistorted = centred / factor;
-
-  VNL::VectorFixed<3> camera;
-
-  camera[0] = undistorted[0] / -m_Fku;
-  camera[1] = undistorted[1] / -m_Fkv;
-  camera[2] = 1.0;
-
-*/
-
 	const double dx = distorted_p.x - cam.cx();
 	const double dy = distorted_p.y - cam.cy();
 	const double r2 = square(dx)+square(dy);
@@ -286,44 +187,6 @@ void  CCamModel::unproject_3D_point(const mrpt::vision::TPixelCoordf &distorted_
 // JL: See .h file for all the formulas
 void CCamModel::jacobian_project_with_distortion(const mrpt::math::TPoint3D &p3D, math::CMatrixDouble & dh_dy ) const
 {
-
-  /*
-  // Jacobians
-  // Normal image measurement
-  const double fku_yz = m_Fku/m_last_camera[2];
-  const double fkv_yz = m_Fkv/m_last_camera[2];
-  const double a[6] =
-    {-fku_yz,
-      0.0,
-      fku_yz * m_last_camera[0] / m_last_camera[2],
-      0.0,
-     -fkv_yz,
-      fkv_yz * m_last_camera[1] / m_last_camera[2]};
-  const VNL::MatrixFixed<2,3> du_by_dy(a);
-
-  // Distortion model Jacobians
-  // Generate the outer product matrix first
-  VNL::MatrixFixed<2,2> dh_by_du =
-    m_last_image_centred.AsColumn() * m_last_image_centred.AsRow();
-
-  // this matrix is not yet dh_by_du, it is just
-  // [ uc*uc  uc*vc ]
-  // [ vc*uc  vc*vc ]
-  // The trace of this matrix gives the magnitude of the vector
-  const double radius2 = dh_by_du(0,0) + dh_by_du(1,1);
-  // Calculate various constants to save typing
-  const double distor = 1 + 2 * m_Kd1 * radius2;
-  const double distor1_2 = sqrt(distor);
-  const double distor3_2 = distor1_2 * distor;
-
-  // Now form the proper dh_by_du by manipulating the outer product matrix
-  dh_by_du *= -2 * m_Kd1 / distor3_2;
-  dh_by_du(0,0) += (1/distor1_2);
-  dh_by_du(1,1) += (1/distor1_2);
-
-  return dh_by_du * du_by_dy;
-
-*/
 	/*
 	\frac{\partial \vct{u}}{\partial \vct{y}} =
 	\left( \begin{array}{ccc}
@@ -382,35 +245,6 @@ void CCamModel::jacobian_project_with_distortion(const mrpt::math::TPoint3D &p3D
 */
 void CCamModel::jacobian_unproject_with_distortion(const mrpt::vision::TPixelCoordf &p, math::CMatrixDouble & dy_dh ) const
 {
-
-/*
-//MAAA: Original Sourcees
- double a[6] = {-1/m_Fku, 0.0,
-                 0.0, -1/m_Fkv,
-                 0.0, 0.0};
-  VNL::MatrixFixed<3,2,double> dy_by_du(a);
-
-  // Generate the outer product matrix first
-  VNL::MatrixFixed<2,2> du_by_dh =
-    m_last_image_centred.AsColumn() * m_last_image_centred.AsRow();
-  // this matrix is not yet du_by_dh, it is just
-  // [ uc*uc  uc*vc ]
-  // [ vc*uc  vc*vc ]
-  // The trace of this matrix gives the magnitude of the vector
-  const double radius2 = du_by_dh(0,0) + du_by_dh(1,1);
-  // Calculate various constants to save typing
-  double distor = 1 - 2 * m_Kd1 * radius2;
-  double distor1_2 = sqrt(distor);
-  double distor3_2 = distor1_2 * distor;
-
-  // Now form the proper du_by_dh by manipulating the outer product matrix
-  du_by_dh *= 2 * m_Kd1 / distor3_2;
-  du_by_dh(0,0) += (1/distor1_2);
-  du_by_dh(1,1) += (1/distor1_2);
-
-  return dy_by_du * du_by_dh;
-*/
-
 	// dy/du
 	CMatrixDouble dy_du(3,2);  // Default is all zeroes
 	dy_du(0,0) = 1.0/cam.fx();

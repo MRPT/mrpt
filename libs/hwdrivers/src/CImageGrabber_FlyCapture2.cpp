@@ -530,7 +530,7 @@ bool CImageGrabber_FlyCapture2::getObservation( mrpt::slam::CObservationImage &o
 
 		// It seems timestamp is not always correctly filled in the incoming imgs:
 		if (timestamp.seconds!=0)
-		     out_observation.timestamp = mrpt::utils::time_tToTimestamp( timestamp.seconds + 1e-6*timestamp.microSeconds );
+		     out_observation.timestamp = mrpt::system::time_tToTimestamp( timestamp.seconds + 1e-6*timestamp.microSeconds );
 		else out_observation.timestamp = mrpt::system::now();
 
 		return true;
