@@ -992,7 +992,7 @@ float  CMultiMetricMap::getNewStaticPointsRatio(
 		CPointsMap		*points,
 		CPose2D			&takenFrom )
 {
-	const size_t nTotalPoints = points->getPointsCount();
+	const size_t nTotalPoints = points->size();
 	ASSERT_( m_gridMaps.size()>0 );
 
 	// There must be points!
