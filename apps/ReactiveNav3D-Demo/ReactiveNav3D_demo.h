@@ -80,7 +80,7 @@ public:
 		p2.z = kinectrelpose[2];
 		ray.point2 = p2;
 
-		for (unsigned int i=0; i<m_points.getPointsCount();i++)
+		for (unsigned int i=0; i<m_points.size();i++)
 		{
 			if (z[i] < 0)
 			{
@@ -115,7 +115,7 @@ public:
 		p2.z = kinectrelpose[2];
 		ray.point2 = p2;
 
-		for (unsigned int i=0; i<m_points.getPointsCount();i++)
+		for (unsigned int i=0; i<m_points.size();i++)
 		{
 			if (z[i] > height)
 			{
@@ -142,7 +142,7 @@ public:
 
 		m_points.getAllPoints(x,y,z,1);
 
-		for (unsigned int i=0; i<m_points.getPointsCount();i++)
+		for (unsigned int i=0; i<m_points.size();i++)
 		{
 			if ((kinectrelpose.distance3DTo(x[i],y[i],z[i]) < m_min_range)||(kinectrelpose.distance3DTo(x[i],y[i],z[i]) > m_max_range))
 			{
@@ -703,7 +703,7 @@ public:
 				obj[i]->setColor(0,0,1);
 				obj[i]->setPointSize(4.0);
 				obj[i]->enablePointSmooth();
-				for (unsigned int j=0; j<kinects[i].m_points.getPointsCount();j++)
+				for (unsigned int j=0; j<kinects[i].m_points.size();j++)
 				{
 					kinects[i].m_points.getPoint(j,point);
 					obj[i]->insertPoint(point.x,point.y,point.z);
@@ -786,7 +786,7 @@ public:
 				obj->clear();
 				obj->setPose(robotpose3d);
 
-				for (unsigned int j=0; j<kinects[i].m_points.getPointsCount(); j++)
+				for (unsigned int j=0; j<kinects[i].m_points.size(); j++)
 				{
 					kinects[i].m_points.getPoint(j,point);
 					obj->insertPoint(point.x,point.y,point.z);

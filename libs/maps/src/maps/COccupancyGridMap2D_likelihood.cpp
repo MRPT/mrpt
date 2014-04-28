@@ -512,7 +512,7 @@ double	 COccupancyGridMap2D::computeLikelihoodField_Thrun( const CPointsMap	*pm,
 	MRPT_START
 
 	double		ret;
-	size_t		N = pm->getPointsCount();
+	size_t		N = pm->size();
 	int		K = (int)ceil(likelihoodOptions.LF_maxCorrsDistance/*m*/ / resolution);	// The size of the checking area for matchings:
 
 	bool		Product_T_OrSum_F = !likelihoodOptions.LF_alternateAverageMethod;
@@ -693,7 +693,7 @@ double	 COccupancyGridMap2D::computeLikelihoodField_II( const CPointsMap	*pm, co
 	MRPT_START
 
 	double		ret;
-	size_t		N = pm->getPointsCount();
+	size_t		N = pm->size();
 
 	if (!N) return 1e-100; // No way to estimate this likelihood!!
 

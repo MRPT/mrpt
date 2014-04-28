@@ -292,11 +292,14 @@ MARK_AS_ADVANCED(MRPT_WARNINGS_ARE_ERRORS)
 SET( MRPT_WHOLE_PROGRAM_OPTIMIZATION OFF CACHE BOOL "Flags for whole program optimization.")
 MARK_AS_ADVANCED(MRPT_WHOLE_PROGRAM_OPTIMIZATION)
 
-# Even more warnings: "Scott Meyers' Effective C++ book"
+# Even more warnings: "Scott Meyers' Effective C++ book" + Wextra (GCC & CLANG)
 IF(MRPT_EXTRA_WARNINGS)
 	IF(CMAKE_COMPILER_IS_GNUCXX)
-		SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Weffc++")  # -Wold-style-cast  -Woverloaded-virtual
+		SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Weffc++ -Wextra") # -Wold-style-cast  -Woverloaded-virtual
 	ENDIF(CMAKE_COMPILER_IS_GNUCXX)
+	IF("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
+		SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wextra")
+	ENDIF("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
 ENDIF(MRPT_EXTRA_WARNINGS)
 
 # Enable profiling?
@@ -366,7 +369,7 @@ IF(CMAKE_COMPILER_IS_GNUCXX)
 	# High level of warnings.
 	# The -Wno-long-long is required in 64bit systems when including sytem headers.
 	# The -Wno-variadic-macros was needed for Eigen3, StdVector.h
- 	SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CMAKE_CONFIGURE_CFLAGS} -Wall -Wextra -Wno-long-long -Wno-variadic-macros")
+ 	SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CMAKE_CONFIGURE_CFLAGS} -Wall -Wno-long-long -Wno-variadic-macros")
   IF(NOT APPLE)
     # This causes the option "-Wnorite-strings" to be set on gcc-4.9 on OS X
     SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-write-strings")
@@ -400,7 +403,7 @@ if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
 
 	# High level of warnings.
 	# no-unused-private-field: clang seems to complain in templates without reason.
- 	SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CMAKE_CONFIGURE_CFLAGS} -Wall -Wextra -Wno-unused-private-field")
+ 	SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CMAKE_CONFIGURE_CFLAGS} -Wall -Wno-unused-private-field")
  	SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${CMAKE_CONFIGURE_CFLAGS}")
 
 	# Use "modern" C99 ! ;-)

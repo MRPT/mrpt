@@ -12,49 +12,58 @@
 
 <p> <b>Note:</b> <i>If you are displaying a local version of this page and you have not built the whole HTML documentation, the links above will be broken. Either build the documentation invoking <code>make documentation_html</code> or [browse it on-line](http://www.mrpt.org/).</i></p>
 
- <a name="1.2.0">
+<a name="1.2.0">
   <h2>Version 1.2.0: (Under development) </h2></a>
-	- New classes:
-		- [mrpt-base]
-			- mrpt::math::ContainerType<CONTAINER>::element_t to allow handling either Eigen or STL containers seamlessly.
-		- [mrpt-hwdrivers]
-			- mrpt::hwdrivers::COpenNI2Sensor: Interface to OpenNI2 cameras, capable of reading from an array of OpenNI2 RGBD cameras (By Eduardo Fernandez)
-	- Changes in classes: 
-		- [mrpt-base]
-			- Robust kernel templates moved from mrpt::vision to mrpt::math. See mrpt::math::RobustKernel<>. Added unit tests for robust kernels.
-			- CPose3D has new SE(3) methods: mrpt::poses::CPose3D::jacob_dexpeD_de(), mrpt::poses::CPose3D::jacob_dAexpeD_de()
-			- More efficient mrpt::utils::OctetVectorToObject() (avoid memory copy).
-		- [mrpt-srba]
-			- Now also implements SE(3) relative graph-slam.
-		- [mrpt-vision]
-			- mrpt::vision::checkerBoardStereoCalibration: More robust handling of stereo calibration patterns. OpenCV sometimes detects corners in the wrong order between (left/right) images, so we detect the situation and fix it.
-	- Build system / public API: 
-		- Fixes to build in OS X - [Patch](https://gist.github.com/randvoorhies/9283072) by Randolph Voorhies.
-		- Removed most "using namespace" from public headers, as good practice.
-		- Refactoring of MRPT headers. 
-			- <mrpt/utils/stl_extensions.h> has been split into:
-				- <mrpt/utils/stl_serialization.h>
-				- <mrpt/utils/circular_buffer.h>
-				- <mrpt/utils/list_searchable.h>
-				- <mrpt/utils/bimap.h>
-				- <mrpt/utils/map_as_vector.h>
-				- <mrpt/utils/traits_map.h>
-				- <mrpt/utils/stl_serialization.h>
-				- <mrpt/utils/printf_vector.h>
-				- <mrpt/utils/stl_containers_utils.h>
-				- <mrpt/utils/ci_less.h>
-		- Deleted methods and functions:
-			- mrpt::system::breakpoint()
-			- mrpt::vector_float is now mrpt::math::CVectorFloat, mrpt::vector_double is mrpt::math::CVectorDouble, for name consistency. Also, using Eigen::VectorXf is preferred for new code.
-			- mrpt::CImage::rectifyImage() with parameters as separate vectors.
-			- mrpt::slam::CPointsMap::getPoint() with mrpt::poses::CPoint3D arguments.
-			- mrpt::vision::correctDistortion() -> use CImage method instead
-			- All previous deprecated functions.
-  	- BUG FIXES:
-		- New implementation of mrpt::synch::CSemaphore avoids crashes in OS X - by Randolph Voorhies.
-		- mrpt::opengl::CArrow was always drawn of normalized length.
-		- FlyCapture2 monocular & stereo cameras could return an incorrect timestamp (only in Linux?).
-		- mrpt::system::createDirectory() returned false (error) when the directory already existed.
+  	- <b>Most important changes:</b>
+		- Public header files (.h) have undergone a serious refactoring to minimize unnecesary dependencies and reduce compile time and memory as much as possible. 
+		  As a side effect, user code might need to add new #include<> lines. This API change justifies the new minor version series 1.2.X.
+		- MRPT now cleanly builds in clang and OSX.
+		- Many bug fixes.
+	- <b>Detailed list of changes:</b>
+		- Changes in apps:
+			- [rawlog-edit](http://www.mrpt.org/Application%3Arawlog-edit):
+				- New operation: --export-odometry-txt
+		- New classes:
+			- [mrpt-base]
+				- mrpt::math::ContainerType<CONTAINER>::element_t to allow handling either Eigen or STL containers seamlessly.
+			- [mrpt-hwdrivers]
+				- mrpt::hwdrivers::COpenNI2Sensor: Interface to OpenNI2 cameras, capable of reading from an array of OpenNI2 RGBD cameras (By Eduardo Fernandez)
+		- Changes in classes: 
+			- [mrpt-base]
+				- Robust kernel templates moved from mrpt::vision to mrpt::math. See mrpt::math::RobustKernel<>. Added unit tests for robust kernels.
+				- CPose3D has new SE(3) methods: mrpt::poses::CPose3D::jacob_dexpeD_de(), mrpt::poses::CPose3D::jacob_dAexpeD_de()
+				- More efficient mrpt::utils::OctetVectorToObject() (avoid memory copy).
+			- [mrpt-srba]
+				- Now also implements SE(3) relative graph-slam.
+			- [mrpt-vision]
+				- mrpt::vision::checkerBoardStereoCalibration: More robust handling of stereo calibration patterns. OpenCV sometimes detects corners in the wrong order between (left/right) images, so we detect the situation and fix it.
+		- Build system / public API: 
+			- Fixes to build in OS X - [Patch](https://gist.github.com/randvoorhies/9283072) by Randolph Voorhies.
+			- Removed most "using namespace" from public headers, as good practice.
+			- Refactoring of MRPT headers. 
+				- <mrpt/utils/stl_extensions.h> has been split into:
+					- <mrpt/utils/stl_serialization.h>
+					- <mrpt/utils/circular_buffer.h>
+					- <mrpt/utils/list_searchable.h>
+					- <mrpt/utils/bimap.h>
+					- <mrpt/utils/map_as_vector.h>
+					- <mrpt/utils/traits_map.h>
+					- <mrpt/utils/stl_serialization.h>
+					- <mrpt/utils/printf_vector.h>
+					- <mrpt/utils/stl_containers_utils.h>
+					- <mrpt/utils/ci_less.h>
+			- Deleted methods and functions:
+				- mrpt::system::breakpoint()
+				- mrpt::vector_float is now mrpt::math::CVectorFloat, mrpt::vector_double is mrpt::math::CVectorDouble, for name consistency. Also, using Eigen::VectorXf is preferred for new code.
+				- mrpt::CImage::rectifyImage() with parameters as separate vectors.
+				- mrpt::slam::CPointsMap::getPoint() with mrpt::poses::CPoint3D arguments.
+				- mrpt::vision::correctDistortion() -> use CImage method instead
+				- All previous deprecated functions.
+  		- BUG FIXES:
+			- New implementation of mrpt::synch::CSemaphore avoids crashes in OS X - by Randolph Voorhies.
+			- mrpt::opengl::CArrow was always drawn of normalized length.
+			- FlyCapture2 monocular & stereo cameras could return an incorrect timestamp (only in Linux?).
+			- mrpt::system::createDirectory() returned false (error) when the directory already existed.
 
 
 <hr>

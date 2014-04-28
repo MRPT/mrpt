@@ -227,7 +227,7 @@ unsigned long  CPointsMap::getPoint(size_t index,double &x,double &y,double &z) 
  ---------------------------------------------------------------*/
 void  CPointsMap::getPointsBuffer( size_t &outPointsCount, const float *&xs, const float *&ys, const float *&zs ) const
 {
-	outPointsCount = getPointsCount();
+	outPointsCount = size();
 
 	if (outPointsCount>0)
 	{
@@ -246,7 +246,7 @@ void  CPointsMap::getPointsBuffer( size_t &outPointsCount, const float *&xs, con
  ---------------------------------------------------------------*/
 void  CPointsMap::clipOutOfRangeInZ(float zMin, float zMax)
 {
-	const size_t	n=getPointsCount();
+	const size_t	n=size();
 	vector<bool>	deletionMask(n);
 
 	// Compute it:
@@ -265,7 +265,7 @@ void  CPointsMap::clipOutOfRangeInZ(float zMin, float zMax)
  ---------------------------------------------------------------*/
 void  CPointsMap::clipOutOfRange(const TPoint2D	&p, float maxRange)
 {
-	size_t			i,n=getPointsCount();
+	size_t			i,n=size();
 	vector<bool>	deletionMask;
 
 	// The deletion mask:
@@ -1636,7 +1636,7 @@ bool CPointsMap::loadPCDFile(const std::string &filename)
  ---------------------------------------------------------------*/
 void  CPointsMap::applyDeletionMask( const std::vector<bool> &mask )
 {
-	ASSERT_EQUAL_( getPointsCount(), mask.size() )
+	ASSERT_EQUAL_( size(), mask.size() )
 
 	// Remove marked points:
 	const size_t n = mask.size();
@@ -1792,7 +1792,7 @@ bool  CPointsMap::internal_insertObservation(
 					pol.setAllVertices( n, xs, ys );
 
 					// Check for deletion of points in "map"
-					n = getPointsCount();
+					n = size();
 					for (size_t i=0;i<n;i++)
 					{
 						if ( checkForDeletion[i] )		// Default to true, unless a fused point, which must be kept.
@@ -1821,7 +1821,7 @@ bool  CPointsMap::internal_insertObservation(
 				// Don't build this vector if is not used later!
 //				if (!insertionOptions.disableDeletion)
 //				{
-//					const size_t n = getPointsCount();
+//					const size_t n = size();
 //					checkForDeletion.resize(n);
 //					for (size_t i=0;i<n;i++) checkForDeletion[i] = true;
 //				}
@@ -1962,8 +1962,8 @@ void  CPointsMap::fuseWith(
 
 	mark_as_modified();
 
-	//const size_t nThis  =     this->getPointsCount();
-	const size_t nOther = otherMap->getPointsCount();
+	//const size_t nThis  =     this->size();
+	const size_t nOther = otherMap->size();
 
 	// Find correspondences between this map and the other one:
 	// ------------------------------------------------------------

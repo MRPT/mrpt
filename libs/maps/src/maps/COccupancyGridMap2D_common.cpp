@@ -485,7 +485,7 @@ void COccupancyGridMap2D::determineMatching2D(
 
 	const TPose2D  otherMapPose = TPose2D(otherMapPose_);
 
-	const size_t nLocalPoints = otherMap->getPointsCount();
+	const size_t nLocalPoints = otherMap->size();
 	std::vector<float>				x_locals(nLocalPoints), y_locals(nLocalPoints),z_locals(nLocalPoints);
 
 	const float sin_phi = sin(otherMapPose.phi);

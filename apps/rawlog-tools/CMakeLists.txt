@@ -36,6 +36,7 @@ ADD_EXECUTABLE(rawlog-edit
 	rawlog-edit_remap_timestamps.cpp
 	rawlog-edit_imu.cpp
 	rawlog-edit_2d-scans.cpp
+	rawlog-edit_odometry.cpp
 	)
 SET(TMP_TARGET_NAME "rawlog-edit")
 
