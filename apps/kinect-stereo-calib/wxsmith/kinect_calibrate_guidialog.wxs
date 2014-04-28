@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <wxsmith>
 	<object class="wxDialog" name="kinect_calibrate_guiDialog">
-		<title>Kinect &amp; stereo camera calibration wizard (BETA) - Part of MRPT</title>
+		<title>Kinect &amp; stereo camera calibration wizard - Part of MRPT</title>
 		<centered>1</centered>
 		<pos>-1,-1</pos>
 		<id_arg>0</id_arg>

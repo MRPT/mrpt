@@ -163,7 +163,7 @@ bool mrpt::vision::checkerBoardStereoCalibration(
 				const mrpt::math::TPoint2D Ar = pt_r1 - pt_r0;
 
 				// If the dot product is negative, we have INVERTED order of corners:
-				if ( false && Al.x*Ar.x+Al.y*Ar.y < 0)
+				if (Al.x*Ar.x+Al.y*Ar.y < 0)
 				{
 					has_to_redraw_corners = true;
 					// Invert all corners:
@@ -449,7 +449,6 @@ bool mrpt::vision::checkerBoardStereoCalibration(
 			TImageCalibData &dat_r = images[idx].right;
 
 			// Rectify image.
-			MRPT_TODO("rect")
 			dat_l.img_original.colorImage( dat_l.img_rectified );
 			dat_r.img_original.colorImage( dat_r.img_rectified );
 
