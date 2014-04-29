@@ -9,7 +9,6 @@
 
 #include <mrpt/math.h>
 #include <mrpt/poses.h>
-#include <mrpt/utils/CTicTac.h>
 
 #include "common.h"
 

@@ -13,9 +13,6 @@
 #include <mrpt/config.h>
 #include <mrpt/utils/CStream.h>
 #include <mrpt/utils/CTicTac.h>
-#include <mrpt/utils/stl_extensions.h>
-#include <queue>
-
 #include <mrpt/hwdrivers/link_pragmas.h>
 
 namespace mrpt
@@ -97,7 +94,7 @@ namespace mrpt
 
 			/** Returns if port has been correctly open.
 			*/
-			bool  isOpen();
+			bool  isOpen() const;
 
 			/** Purge tx and rx buffers.
 			   * \exception std::exception On communication errors

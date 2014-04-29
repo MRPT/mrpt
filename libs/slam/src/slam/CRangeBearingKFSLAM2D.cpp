@@ -7,23 +7,27 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/slam.h>  // Precompiled header
-
+#include "slam-precomp.h"   // Precompiled headers
 
 #include <mrpt/slam/CRangeBearingKFSLAM2D.h>
 #include <mrpt/slam/data_association.h>
 #include <mrpt/poses/CPosePDF.h>
 #include <mrpt/poses/CPosePDFGaussian.h>
 #include <mrpt/slam/CActionRobotMovement3D.h>
-
 #include <mrpt/math/utils.h>
-#include <mrpt/math/CMatrix.h>
-#include <mrpt/math/CMatrixD.h>
+#include <mrpt/math/wrap2pi.h>
 #include <mrpt/utils/CTicTac.h>
+#include <mrpt/system/os.h>
+
+#include <mrpt/opengl/stock_objects.h>
+#include <mrpt/opengl/CSetOfObjects.h>
+#include <mrpt/opengl/CEllipsoid.h>
+
 
 using namespace mrpt::slam;
 using namespace mrpt::poses;
 using namespace mrpt::utils;
+using namespace mrpt::system;
 using namespace std;
 
 #define STATS_EXPERIMENT 0
@@ -505,7 +509,7 @@ void CRangeBearingKFSLAM2D::OnGetObservationsAndDataAssociation(
 	Z.resize(N);
 
 	size_t row;
-	for (row=0,itObs = obs->sensedData.begin();itObs!=obs->sensedData.end();itObs++,row++)
+	for (row=0,itObs = obs->sensedData.begin();itObs!=obs->sensedData.end();++itObs,++row)
 	{
 		// Fill one row in Z:
 		Z[row][0] =itObs->range;
@@ -525,7 +529,7 @@ void CRangeBearingKFSLAM2D::OnGetObservationsAndDataAssociation(
 		vector_int::iterator itDA;
 		CObservationBearingRange::TMeasurementList::const_iterator itObs;
 		size_t row;
-		for (row=0,itObs = obs->sensedData.begin(),itDA=data_association.begin();itObs!=obs->sensedData.end();itObs++,itDA++,row++)
+		for (row=0,itObs = obs->sensedData.begin(),itDA=data_association.begin();itObs!=obs->sensedData.end();++itObs,++itDA,++row)
 		{
     		// Fill data asociation: Using IDs!
 			if (itObs->landmarkID<0)
@@ -651,7 +655,7 @@ void CRangeBearingKFSLAM2D::OnGetObservationsAndDataAssociation(
 				);
 
 			// Return pairings to the main KF algorithm:
-			for (map<size_t,size_t>::const_iterator it= m_last_data_association.results.associations.begin();it!=m_last_data_association.results.associations.end();it++)
+			for (map<size_t,size_t>::const_iterator it= m_last_data_association.results.associations.begin();it!=m_last_data_association.results.associations.end();++it)
 				data_association[ it->first ] = it->second;
 		}
 	}

@@ -12,6 +12,7 @@
 #include <mrpt/utils/utils_defs.h>
 #include <mrpt/poses/CPoint2DPDFGaussian.h>
 #include <mrpt/poses/CPointPDFGaussian.h>
+#include <mrpt/math/CMatrixTemplate.h>  // CMatrixBool
 #include <mrpt/utils/TEnumType.h>
 
 #include <mrpt/slam/link_pragmas.h>

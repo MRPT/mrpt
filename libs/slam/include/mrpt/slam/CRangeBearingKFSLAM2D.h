@@ -11,10 +11,9 @@
 
 #include <mrpt/utils/CDebugOutputCapable.h>
 #include <mrpt/math/CMatrixTemplateNumeric.h>
-#include <mrpt/math/CVectorTemplate.h>
 #include <mrpt/utils/CConfigFileBase.h>
 #include <mrpt/utils/CLoadableOptions.h>
-#include <mrpt/opengl.h>
+#include <mrpt/opengl/opengl_frwds.h>
 #include <mrpt/bayes/CKalmanFilterCapable.h>
 
 #include <mrpt/utils/safe_pointers.h>
@@ -23,7 +22,6 @@
 #include <mrpt/slam/CSensoryFrame.h>
 #include <mrpt/slam/CActionCollection.h>
 #include <mrpt/slam/CObservationBearingRange.h>
-#include <mrpt/poses/CPoint2D.h>
 #include <mrpt/poses/CPosePDFGaussian.h>
 #include <mrpt/slam/CLandmark.h>
 #include <mrpt/slam/CSimpleMap.h>
@@ -53,6 +51,8 @@ namespace mrpt
 			                               // <size_t VEH_SIZE, size_t OBS_SIZE,   size_t FEAT_SIZE, size_t ACT_SIZE, size typename kftype = double>
 		{
 		 public:
+			typedef mrpt::math::TPoint2D landmark_point_t;  //!< Either mrpt::math::TPoint2D or mrpt::math::TPoint3D
+
 			 CRangeBearingKFSLAM2D( ); //!< Default constructor
 			 virtual ~CRangeBearingKFSLAM2D();	//!< Destructor
 			 void reset(); //!< Reset the state of the SLAM filter: The map is emptied and the robot put back to (0,0,0).
@@ -115,7 +115,7 @@ namespace mrpt
 				void  dumpToTextStream(CStream	&out) const;
 
 
-				vector_float 	stds_Q_no_odo;	//!< A 3-length vector with the std. deviation of the transition model in (x,y,phi) used only when there is no odometry (if there is odo, its uncertainty values will be used instead); x y: In meters, phi: radians (but in degrees when loading from a configuration ini-file!)
+				CVectorFloat 	stds_Q_no_odo;	//!< A 3-length vector with the std. deviation of the transition model in (x,y,phi) used only when there is no odometry (if there is odo, its uncertainty values will be used instead); x y: In meters, phi: radians (but in degrees when loading from a configuration ini-file!)
 				float 			std_sensor_range, std_sensor_yaw;	//!< The std. deviation of the sensor (for the matrix R in the kalman filters), in meters and radians.
 				float 			quantiles_3D_representation;	//!< Default = 3
 				bool			create_simplemap; //!< Whether to fill m_SFs (default=false)

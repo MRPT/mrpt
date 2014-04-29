@@ -7,11 +7,18 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/base.h>
-#include <mrpt/maps.h>
-#include <mrpt/slam.h>
-#include <mrpt/gui.h>
+#include <mrpt/slam/CICP.h>
 
+#include <mrpt/poses/CPose3DPDF.h>
+#include <mrpt/slam/CObservation2DRangeScan.h>
+#include <mrpt/slam/CSimplePointsMap.h>
+#include <mrpt/system/threads.h>
+#include <mrpt/gui/CDisplayWindow3D.h>
+#include <mrpt/opengl/CGridPlaneXY.h>
+#include <mrpt/opengl/CSphere.h>
+#include <mrpt/opengl/CAngularObservationMesh.h>
+#include <mrpt/opengl/CDisk.h>
+#include <mrpt/opengl/stock_objects.h>
 
 using namespace std;
 using namespace mrpt;

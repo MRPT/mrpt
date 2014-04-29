@@ -12,16 +12,12 @@
 #include <mrpt/poses/CPose.h>
 #include <mrpt/math/CMatrixFixedNumeric.h>
 #include <mrpt/math/CQuaternion.h>
+#include <mrpt/poses/poses_frwds.h>
 
 namespace mrpt
 {
 namespace poses
 {
-	using namespace mrpt::math;
-
-	class CPose3D;
-	class CPose3DQuat;
-
 	DEFINE_SERIALIZABLE_PRE( CPose3DRotVec )
 
 	/** A 3D pose, with a 3D translation and a rotation in 3D parameterized in rotation-vector form (equivalent to axis-angle).
@@ -48,8 +44,8 @@ namespace poses
 		DEFINE_SERIALIZABLE( CPose3DRotVec )
 
 	public:
-		CArrayDouble<3>   m_coords; //!< The translation vector [x,y,z]
-		CArrayDouble<3>   m_rotvec; //!< The rotation vector [vx,vy,vz]
+		mrpt::math::CArrayDouble<3>   m_coords; //!< The translation vector [x,y,z]
+		mrpt::math::CArrayDouble<3>   m_rotvec; //!< The rotation vector [vx,vy,vz]
 
 		/** @name Constructors
 		    @{ */
@@ -70,7 +66,7 @@ namespace poses
 		}
 
 		/** Constructor with initilization of the pose from a vector [w1 w2 w3 x y z] */
-		inline CPose3DRotVec(const CArrayDouble<6> &v) {
+		inline CPose3DRotVec(const mrpt::math::CArrayDouble<6> &v) {
 		    m_rotvec[0]=v[0]; m_rotvec[1]=v[1]; m_rotvec[2]=v[2];
 		    m_coords[0]=v[3]; m_coords[1]=v[4]; m_coords[2]=v[5];
 		}
@@ -109,7 +105,7 @@ namespace poses
 		/** Returns the corresponding 4x4 homogeneous transformation matrix for the point(translation) or pose (translation+orientation).
 		  * \sa getInverseHomogeneousMatrix, getRotationMatrix
 		  */
-		inline void  getHomogeneousMatrix(CMatrixDouble44 & out_HM) const {
+		inline void  getHomogeneousMatrix(mrpt::math::CMatrixDouble44 & out_HM) const {
 		    out_HM.block<3,3>(0,0) = getRotationMatrix();
 		    out_HM.set_unsafe(0,3,m_coords[0]);
 		    out_HM.set_unsafe(1,3,m_coords[1]);
@@ -117,12 +113,12 @@ namespace poses
 		    out_HM.set_unsafe(3,0,0); out_HM.set_unsafe(3,1,0); out_HM.set_unsafe(3,2,0); out_HM.set_unsafe(3,3,1);
 		}
 
-		inline CMatrixDouble44 getHomogeneousMatrixVal() const { CMatrixDouble44 M; getHomogeneousMatrix(M); return M;}
+		inline mrpt::math::CMatrixDouble44 getHomogeneousMatrixVal() const { mrpt::math::CMatrixDouble44 M; getHomogeneousMatrix(M); return M;}
 
 		/** Get the 3x3 rotation matrix \sa getHomogeneousMatrix  */
 		void getRotationMatrix( mrpt::math::CMatrixDouble33 & ROT ) const;
 		//! \overload
-		inline const mrpt::math::CMatrixDouble33 getRotationMatrix() const { mrpt::math::CMatrixDouble33 ROT(UNINITIALIZED_MATRIX); getRotationMatrix(ROT); return ROT; }
+		inline const mrpt::math::CMatrixDouble33 getRotationMatrix() const { mrpt::math::CMatrixDouble33 ROT(mrpt::math::UNINITIALIZED_MATRIX); getRotationMatrix(ROT); return ROT; }
 
 		/** @} */  // end rot and HM
 
@@ -144,10 +140,9 @@ namespace poses
 		/** The operator \f$ a \oplus b \f$ is the pose compounding operator. */
 		CPoint3D  operator + (const CPoint2D& b) const;
 
-		inline void setFromTransformationMatrix( const CMatrixDouble44 &m )
+		inline void setFromTransformationMatrix( const mrpt::math::CMatrixDouble44 &m )
 		{
-//		    mrpt::poses::SE_traits<2>::ln_rotation( m.extractSubmatrix )
-		    CArrayDouble<3> aux = rotVecFromRotMat( m );
+		    mrpt::math::CArrayDouble<3> aux = rotVecFromRotMat( m );
 
 		    this->m_rotvec[0] = aux[0];
 		    this->m_rotvec[1] = aux[1];
@@ -162,7 +157,7 @@ namespace poses
 
         /** Computes the spherical coordinates of a 3D point as seen from the 6D pose specified by this object. For the coordinate system see mrpt::poses::CPose3D */
         void sphericalCoordinates(
-            const TPoint3D &point,
+            const mrpt::math::TPoint3D &point,
             double &out_range,
             double &out_yaw,
             double &out_pitch ) const;
@@ -178,7 +173,7 @@ namespace poses
 		/** An alternative, slightly more efficient way of doing \f$ G = P \oplus L \f$ with G and L being 3D points and P this 6D pose.
 		  * \note local_point is passed by value to allow global and local point to be the same variable
 		  */
-		inline void composePoint(const TPoint3D local_point, TPoint3D &global_point) const {
+		inline void composePoint(const mrpt::math::TPoint3D local_point, mrpt::math::TPoint3D &global_point) const {
 			composePoint(local_point.x,local_point.y,local_point.z,  global_point.x,global_point.y,global_point.z );
 		}
 
@@ -270,7 +265,7 @@ namespace poses
 
 		/** Create a vector with 3 components according to the input transformation matrix (only the rotation will be taken into account)
 		  */
-		CArrayDouble<3> rotVecFromRotMat( const math::CMatrixDouble44 &m );
+		mrpt::math::CArrayDouble<3> rotVecFromRotMat( const math::CMatrixDouble44 &m );
 
 		/** Set the pose from a 3D position (meters) and yaw/pitch/roll angles (radians) - This method recomputes the internal rotation matrix.
 		  * \sa getYawPitchRoll, setYawPitchRoll
@@ -354,7 +349,7 @@ namespace poses
 		  * \exception std::exception On invalid format
 		  */
 		void fromString(const std::string &s) {
-		 	CMatrixDouble  m;
+		 	mrpt::math::CMatrixDouble  m;
 		 	if (!m.fromMatlabStringFormat(s)) THROW_EXCEPTION("Malformed expression in ::fromString");
 			ASSERTMSG_(mrpt::math::size(m,1)==1 && mrpt::math::size(m,2)==6, "Wrong size of vector in ::fromString");
 		 	for (int i=0;i<3;i++) m_coords[i]=m.get_unsafe(0,i);
@@ -374,7 +369,7 @@ namespace poses
 		void ln(mrpt::math::CArrayDouble<6> &out_ln) const;
 
 		/** Take the logarithm of the 3x3 rotation matrix part of this pose, generating the corresponding vector in the Lie Algebra. */
-		CArrayDouble<3> ln_rotation() const;
+		mrpt::math::CArrayDouble<3> ln_rotation() const;
 
 		/** @} */
 

@@ -7,14 +7,13 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/maps.h>  // Precompiled header
+#include "maps-precomp.h" // Precomp header
 
 #include <mrpt/slam/COctoMap.h>
 #include <mrpt/slam/CPointsMap.h>
 #include <mrpt/slam/CObservation2DRangeScan.h>
 #include <mrpt/slam/CObservation3DRangeScan.h>
-
-
+#include <mrpt/utils/CStream.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/utils/CMemoryChunk.h>
 

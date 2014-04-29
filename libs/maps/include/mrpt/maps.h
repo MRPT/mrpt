@@ -10,11 +10,12 @@
 #ifndef _mrpt_maps_H
 #define _mrpt_maps_H
 
-#include <mrpt/config.h>
+#ifndef MRPT_NO_WARN_BIG_HDR
+#include <mrpt/utils/core_defs.h>
+MRPT_WARNING("Including <mrpt/maps.h> makes compilation much slower, consider including only what you need (define MRPT_NO_WARN_BIG_HDR to disable this warning)")
+#endif
 
-// Only really include all headers if we come from a user program (anything
-//  not defining mrpt_*_EXPORTS) or MRPT is being built with precompiled headers.
-#if !defined(mrpt_maps_EXPORTS) || MRPT_ENABLE_PRECOMPILED_HDRS || defined(MRPT_ALWAYS_INCLUDE_ALL_HEADERS)
+#include <mrpt/config.h>
 
 #include <mrpt/slam/CBeacon.h>
 #include <mrpt/slam/CBeaconMap.h>
@@ -35,7 +36,5 @@
 
 #include <mrpt/opengl/CAngularObservationMesh.h>
 #include <mrpt/opengl/CPlanarLaserScan.h>
-
-#endif // end precomp.headers
 
 #endif

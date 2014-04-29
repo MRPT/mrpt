@@ -7,12 +7,15 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/obs.h>   // Precompiled headers
+#include "obs-precomp.h"   // Precompiled headers
 
 #include <mrpt/slam/CObservation3DRangeScan.h>
 #include <mrpt/poses/CPosePDF.h>
+#include <mrpt/utils/CStream.h>
 
+#include <mrpt/math/CMatrix.h>
 #include <mrpt/math/CLevenbergMarquardt.h>
+#include <mrpt/math/ops_containers.h> // norm(), etc.
 #include <mrpt/utils/CFileGZInputStream.h>
 #include <mrpt/utils/CFileGZOutputStream.h>
 #include <mrpt/utils/CTimeLogger.h>
@@ -57,7 +60,7 @@ CObservation3DRangeScan::TCached3DProjTables CObservation3DRangeScan::m_3dproj_l
 	{
 		std::vector<float> pts_x,pts_y,pts_z;
 	};
-	typedef CGenericMemoryPool<CObservation3DRangeScan_Points_MemPoolParams,CObservation3DRangeScan_Points_MemPoolData> TMyPointsMemPool;
+	typedef mrpt::system::CGenericMemoryPool<CObservation3DRangeScan_Points_MemPoolParams,CObservation3DRangeScan_Points_MemPoolData> TMyPointsMemPool;
 
 	// Memory pool for the rangeImage matrix ----------------
 	struct CObservation3DRangeScan_Ranges_MemPoolParams
@@ -69,9 +72,9 @@ CObservation3DRangeScan::TCached3DProjTables CObservation3DRangeScan::m_3dproj_l
 	};
 	struct CObservation3DRangeScan_Ranges_MemPoolData
 	{
-		mrpt::utils::CMatrix rangeImage;
+		mrpt::math::CMatrix rangeImage;
 	};
-	typedef CGenericMemoryPool<CObservation3DRangeScan_Ranges_MemPoolParams,CObservation3DRangeScan_Ranges_MemPoolData> TMyRangesMemPool;
+	typedef mrpt::system::CGenericMemoryPool<CObservation3DRangeScan_Ranges_MemPoolParams,CObservation3DRangeScan_Ranges_MemPoolData> TMyRangesMemPool;
 
 	void mempool_donate_xyz_buffers(CObservation3DRangeScan &obs)
 	{
@@ -517,7 +520,7 @@ namespace mrpt
 					obs(obs_),z_offset(z_offset_) {}
 			};
 
-			void cam2vec(const TCamera &camPar,vector_double &x)
+			void cam2vec(const TCamera &camPar,CVectorDouble &x)
 			{
 				if (x.size()<4+4) x.resize(4+4);
 
@@ -529,7 +532,7 @@ namespace mrpt
 				for (size_t i=0;i<4;i++)
 					x[4+i] = camPar.dist[i];
 			}
-			void vec2cam(const vector_double &x, TCamera &camPar)
+			void vec2cam(const CVectorDouble &x, TCamera &camPar)
 			{
 				camPar.intrinsicParams(0,0) = x[0]; // fx
 				camPar.intrinsicParams(1,1) = x[1]; // fy
@@ -540,9 +543,9 @@ namespace mrpt
 					camPar.dist[i] = x[4+i];
 			}
 			void cost_func(
-				const vector_double &par,
+				const CVectorDouble &par,
 				const TLevMarData &d,
-				vector_double &err)
+				CVectorDouble &err)
 			{
 				const CObservation3DRangeScan &obs = d.obs;
 
@@ -553,7 +556,7 @@ namespace mrpt
 				const size_t nR = obs.rangeImage.getRowCount();
 
 
-				err = vector_double(); // .resize( nC*nR/square(CALIB_DECIMAT) );
+				err = CVectorDouble(); // .resize( nC*nR/square(CALIB_DECIMAT) );
 
 				for (size_t r=0;r<nR;r+=CALIB_DECIMAT)
 				{
@@ -606,7 +609,7 @@ double CObservation3DRangeScan::recoverCameraCalibrationParameters(
 	ASSERT_(obs.hasRangeImage && obs.hasPoints3D)
 	ASSERT_(obs.points3D_x.size() == obs.points3D_y.size() && obs.points3D_x.size() == obs.points3D_z.size())
 
-	typedef CLevenbergMarquardtTempl<vector_double, detail::TLevMarData > TMyLevMar;
+	typedef CLevenbergMarquardtTempl<CVectorDouble, detail::TLevMarData > TMyLevMar;
 	TMyLevMar::TResultInfo  info;
 
 	const size_t nR = obs.rangeImage.getRowCount();
@@ -620,13 +623,14 @@ double CObservation3DRangeScan::recoverCameraCalibrationParameters(
 	camInit.intrinsicParams(0,2) = nC >> 1;
 	camInit.intrinsicParams(1,2) = nR >> 1;
 
-	vector_double initial_x;
+	CVectorDouble initial_x;
 	detail::cam2vec(camInit,initial_x);
 
 	initial_x.resize(8);
-	vector_double increments_x(initial_x.size(), 1e-4);
+	CVectorDouble increments_x(initial_x.size()); 
+	increments_x.assign(1e-4);
 
-	vector_double optimal_x;
+	CVectorDouble optimal_x;
 
 	TMyLevMar::execute(
 		optimal_x,

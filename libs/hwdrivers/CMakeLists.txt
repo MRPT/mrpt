@@ -71,6 +71,15 @@ IF(CMAKE_MRPT_HAS_FREENECT)
 	ENDIF (CMAKE_MRPT_HAS_FREENECT_SYSTEM)	
 ENDIF(CMAKE_MRPT_HAS_FREENECT)
 
+## Build Xbox Kinect?
+#IF(CMAKE_MRPT_HAS_FREENECT)
+## Add the required libraries for linking:
+#TARGET_LINK_LIBRARIES(${sampleName} 
+#	${MRPT_LIBS}  # This is filled by FIND_PACKAGE(MRPT ...)
+#	"${OPENNI2_LIBRARIES}"  # Optional extra libs...
+#	)
+#IF(CMAKE_MRPT_HAS_FREENECT)
+
 # Build ARIA?
 IF(CMAKE_MRPT_HAS_ARIA)
 	LIST(APPEND hwdrivers_EXTRA_SRCS

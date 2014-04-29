@@ -7,9 +7,10 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/maps.h>  // Precompiled header
+#include "maps-precomp.h" // Precomp header
 
 #include <mrpt/slam/CSimplePointsMap.h>
+#include <mrpt/utils/CStream.h>
 
 #include "CPointsMap_crtp_common.h"
 
@@ -100,7 +101,7 @@ void  CSimplePointsMap::writeToStream(CStream &out, int *version) const
 			out.WriteBufferFixEndianness(&z[0],n);
 		}
 		out << m_disableSaveAs3DObject;  // Insertion as 3D:
-		
+
 		insertionOptions.writeToStream(out); // version 9: insert options are saved with its own method:
 		likelihoodOptions.writeToStream(out); // Added in version 5:
 	}

@@ -11,6 +11,7 @@
 
 #include <mrpt/slam/CObservationImage.h>
 #include <mrpt/hwdrivers/link_pragmas.h>
+#include <mrpt/utils/CUncopiable.h>
 
 namespace mrpt
 {
@@ -20,21 +21,21 @@ namespace mrpt
 		struct HWDRIVERS_IMPEXP TCaptureOptions_FlyCapture2
 		{
 			TCaptureOptions_FlyCapture2();
-			
-			/** @name Camera to open 
+
+			/** @name Camera to open
 			  * @{ */
 			unsigned int camera_index;   //!< (Default=0) If open_by_guid==false, will open the i'th camera based on this 0-based index.
 			bool         open_by_guid;   //!< (Default=false) Set to true to force opening a camera by its GUID, in \a camera_guid
 			unsigned int camera_guid[4]; //!< GUID of the camera to open, only when open_by_guid==true.
 			/** @} */
 
-			/** @name Camera settings 
+			/** @name Camera settings
 			  * @{ */
 			std::string   videomode;  //!< (Default="", which means default) A string with a video mode, from the list available in [FlyCapture2::VideoMode](http://www.ptgrey.com/support/downloads/documents/flycapture/Doxygen/html/), eg. "VIDEOMODE_640x480Y8", etc.
 			std::string   framerate;  //!< (Default="", which means default) A string with a framerate, from the list available in [FlyCapture2::FrameRate](http://www.ptgrey.com/support/downloads/documents/flycapture/Doxygen/html/), eg. "FRAMERATE_30", etc.
 			std::string   grabmode;   //!< (Default="BUFFER_FRAMES") A string with a grab mode, from the list available in [FlyCapture2::GrabMode](http://www.ptgrey.com/support/downloads/documents/flycapture/Doxygen/html/)
 			unsigned int  numBuffers; //!< (Default=30) Number of images that can be stored in the buffer, if enabled with grabMode.
-			int           grabTimeout; //!< (Default=5000) Time in milliseconds that RetrieveBuffer() and WaitForBufferEvent() will wait for an image before timing out and returning. 
+			int           grabTimeout; //!< (Default=5000) Time in milliseconds that RetrieveBuffer() and WaitForBufferEvent() will wait for an image before timing out and returning.
 
 			bool         trigger_enabled;   //!< (default=false) Enable non-free-running mode, only capturing when a given input trigger signal is detected. Refer to PGR docs.
 			unsigned int trigger_polarity;  //!< (default=0) Refer to PGR docs.
@@ -51,8 +52,8 @@ namespace mrpt
 			float        shutter_time_ms;   //!< (default=4.0) Shutter time, if shutter_auto=false
 			/** @} */
 
-			/** Loads all the options from a config file. 
-			  * Expected format: 
+			/** Loads all the options from a config file.
+			  * Expected format:
 			  *
 			  * \code
 			  * [sectionName]
@@ -60,19 +61,19 @@ namespace mrpt
 			  * camera_index = 0      // (Default=0) If open_by_guid==false, will open the i'th camera based on this 0-based index.
 			  * open_by_guid = false  // (Default=false) Set to true to force opening a camera by its GUID, in \a camera_guid
 			  * camera_guid  = 11223344-55667788-99AABBCC-DDEEFF00  // GUID of the camera to open, only when open_by_guid==true. Hexadecimal blocks separated by dashes ("-")
-			  * 
+			  *
 			  * # Camera settings:
 			  * videomode   = VIDEOMODE_640x480Y8 // (Default="", which means default) A string with a video mode, from the list available in [FlyCapture2::VideoMode](http://www.ptgrey.com/support/downloads/documents/flycapture/Doxygen/html/), eg. "VIDEOMODE_640x480Y8", etc.
 			  * framerate   = FRAMERATE_30        // (Default="", which means default) A string with a framerate, from the list available in [FlyCapture2::FrameRate](http://www.ptgrey.com/support/downloads/documents/flycapture/Doxygen/html/), eg. "FRAMERATE_30", etc.
 			  * grabmode    = BUFFER_FRAMES       // (Default="BUFFER_FRAMES") A string with a grab mode, from the list available in [FlyCapture2::GrabMode](http://www.ptgrey.com/support/downloads/documents/flycapture/Doxygen/html/)
 			  * numBuffers  = 30                  // (Default=30) Number of images that can be stored in the buffer, if enabled with grabMode.
-			  * grabTimeout = 5000                // (Default=5000) Time in milliseconds that RetrieveBuffer() and WaitForBufferEvent() will wait for an image before timing out and returning. 
-			  * 
+			  * grabTimeout = 5000                // (Default=5000) Time in milliseconds that RetrieveBuffer() and WaitForBufferEvent() will wait for an image before timing out and returning.
+			  *
 			  * trigger_enabled = false // (default=false) Enable non-free-running mode, only capturing when a given input trigger signal is detected. Refer to PGR docs.
 			  * #trigger_polarity = 0      // (default=0) Refer to PGR docs.
 			  * #trigger_source   = 0      // (default=0) Refer to PGR docs.
 			  * #trigger_mode     = 0      // (default=0) Refer to PGR docs.
-			  * 
+			  *
 			  * strobe_enabled   = false // (default=false) Enable the generation of a strobe signal in GPIO. Refer to PGR docs.
 			  * #strobe_source    = 1     // (default=0)  Refer to PGR docs.
 			  * #strobe_polarity  = 0     // (default=0)  Refer to PGR docs.
@@ -84,7 +85,7 @@ namespace mrpt
 			  * #shutter_time_ms  = 4.0     // (default=4.0) Shutter time, if shutter_auto=false
 			  *
 			  * \endcode
-			  * \note All parameter names may have an optional prefix, set with the "prefix" parameter. 
+			  * \note All parameter names may have an optional prefix, set with the "prefix" parameter.
 			  *  For example, if prefix="LEFT_", the expected variable name "camera_index" in the config section will be "LEFT_camera_index", and so on.
 			  */
 			void  loadOptionsFrom(
@@ -123,9 +124,9 @@ namespace mrpt
 			/** Returns the current settings of the camera */
 			const TCaptureOptions_FlyCapture2 & getCameraOptions() const { return m_options; }
 
-			/** Tries to open the camera with the given options, and starts capture. Raises an exception on error. 
+			/** Tries to open the camera with the given options, and starts capture. Raises an exception on error.
 			  * \param[in] startCapture If set to false, the camera is only opened and configured, but a posterior call to startCapture() is required to start grabbing images.
-			  * \sa close(), startCapture() 
+			  * \sa close(), startCapture()
 			  */
 			void open( const TCaptureOptions_FlyCapture2 &options, const bool startCapture = true );
 

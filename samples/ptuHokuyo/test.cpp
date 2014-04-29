@@ -41,7 +41,7 @@ int main(){
 	bool inter;
 	CSimplePointsMap		theMap,*mapPtr;
 
-	cout << "PTU & Hokuyo aplication"<< endl;
+	cout << "PTU & Hokuyo application"<< endl;
 
 	// Get comunication serial ports
 

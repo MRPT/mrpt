@@ -8,13 +8,23 @@
    +---------------------------------------------------------------------------+ */
 
 #include "DifOdometry_Camera.h"
-#include <mrpt/opengl.h>
-#include <mrpt/gui.h>
+#include <mrpt/utils/types_math.h> // Eigen (with MRPT "plugin" in BaseMatrix<>)
+#include <mrpt/utils/CTicTac.h>
+#include <mrpt/system/filesystem.h>
+#include <mrpt/system/datetime.h>
+#include <mrpt/opengl/CFrustum.h>
+#include <mrpt/opengl/CGridPlaneXY.h>
+#include <mrpt/opengl/CBox.h>
+#include <mrpt/opengl/CPointCloud.h>
+#include <mrpt/opengl/CSetOfLines.h>
+#include <mrpt/opengl/CEllipsoid.h>
+#include <mrpt/opengl/stock_objects.h>
 
+using namespace Eigen;
+using namespace std;
 using namespace mrpt;
 using namespace mrpt::opengl;
 using namespace mrpt::gui;
-using namespace mrpt::slam;
 
 
 void CDifodoCamera::loadConfiguration(const utils::CConfigFileBase &ini )
@@ -60,7 +70,7 @@ void CDifodoCamera::loadConfiguration(const utils::CConfigFileBase &ini )
 	const int dz = floor(float(resv)/float(rows));
 	const int dy = floor(float(resh)/float(cols));
 
-	duv_threshold = 0.001*(dz + dy)*(cam_mode*downsample);	
+	duv_threshold = 0.001*(dz + dy)*(cam_mode*downsample);
 	dt_threshold = 0.2*fps;
 	dif_threshold = 0.001*(dz + dy)*(cam_mode*downsample);
 	difuv_surroundings = 0.0022*(dz + dy)*(cam_mode*downsample);

@@ -64,8 +64,12 @@ def main():
 		sFrom, sTo)
 
 	replaceInFile(
-		os.path.normpath(parseDir+'/src/precomp_hdr.cpp.in'),
-		os.path.normpath(baseDir+'/src/precomp_hdr.cpp'),
+		os.path.normpath(parseDir+'/src/name-precomp.cpp.in'),
+		os.path.normpath(baseDir+'/src/'+ NewLibName.lower() +'-precomp.cpp'),
+		sFrom, sTo)
+	replaceInFile(
+		os.path.normpath(parseDir+'/src/name-precomp.h.in'),
+		os.path.normpath(baseDir+'/src/'+ NewLibName.lower() +'-precomp.h'),
 		sFrom, sTo)
 
 	replaceInFile(

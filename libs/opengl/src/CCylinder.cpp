@@ -7,14 +7,16 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/opengl.h>  // Precompiled header
+#include "opengl-precomp.h"  // Precompiled header
 #include <mrpt/opengl/CCylinder.h>
 #include <mrpt/math/geometry.h>
+#include <mrpt/utils/CStream.h>
 
 #include "opengl_internals.h"
 
 using namespace mrpt;
 using namespace mrpt::opengl;
+using namespace mrpt::math;
 using namespace mrpt::utils;
 using namespace std;
 
@@ -105,7 +107,7 @@ bool solveEqn(double a,double b,double c,double &t)	{	//Actually, the b from the
 				return true;
 			}	//else return false;	Both solutions are negative
 		}	//else return false;	Both solutions are complex
-	}	else if (abs(b)>=geometryEpsilon)	 {
+	}	else if (abs(b)>=mrpt::math::geometryEpsilon)	 {
 		t=-c/(b+b);
 		return t>=0;
 	}	//else return false;	This actually isn't an equation

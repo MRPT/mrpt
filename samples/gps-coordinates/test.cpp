@@ -12,6 +12,8 @@
 using namespace mrpt;
 using namespace mrpt::slam;
 using namespace mrpt::utils;
+using namespace mrpt::poses;
+using namespace mrpt::math;
 using namespace std;
 
 
@@ -33,7 +35,7 @@ void TestGPS_coords()
 	cout << "Point 0: lat=" << p0.lat << " lon=" << p0.lon << " alt="<< p0.height << endl;
 	cout << "Point 1: lat=" << p1.lat << " lon=" << p1.lon << " alt="<< p1.height << endl;
 
-	mrpt::poses::TPoint3D   p;
+	mrpt::math::TPoint3D   p;
 	mrpt::topography::geodeticToENU_WGS84(p1,p, p0);
 	cout << "ENU XYZ coords: " << p << endl;
 
@@ -41,7 +43,7 @@ void TestGPS_coords()
 	const mrpt::topography::TGeodeticCoords pt0(32.0, -10.0, 0.0 );
 	const mrpt::topography::TGeodeticCoords pt1(32.0, -10.0, 500.0 );
 
-	mrpt::poses::TPoint3D   geo0,geo1;
+	mrpt::math::TPoint3D   geo0,geo1;
 	mrpt::topography::geodeticToGeocentric_WGS84(pt0,geo0);
 	mrpt::topography::geodeticToGeocentric_WGS84(pt1,geo1);
 	cout << "P0 XYZ geocentric coords: " << geo0 << endl;
@@ -85,7 +87,7 @@ void TestGeoid2Geocentric()
 	cout << endl;
 	cout << format("Point: lon=%.012f lat=%.012f h=%.04f\n",lon0,lat0,h0);
 
-	mrpt::poses::TPoint3D   p;
+	mrpt::math::TPoint3D   p;
 	mrpt::topography::geodeticToGeocentric_WGS84(
 		mrpt::topography::TGeodeticCoords(lon0,lat0,h0),
 		p);

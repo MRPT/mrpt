@@ -19,18 +19,6 @@
 
 IMPLEMENT_APP(gridmapSimulApp)
 
-#include <mrpt/maps.h>
-
-using namespace mrpt;
-using namespace mrpt::slam;
-using namespace mrpt::opengl;
-using namespace mrpt::system;
-using namespace mrpt::math;
-using namespace mrpt::utils;
-using namespace std;
-
-
-
 bool gridmapSimulApp::OnInit()
 {
 	// Starting in wxWidgets 2.9.0, we must reset numerics locale to "C",

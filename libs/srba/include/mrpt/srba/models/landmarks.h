@@ -117,6 +117,32 @@ namespace landmarks {
 
 	};
 
+	/** A parameterization of SE(3) relative poses ("fake landmarks" to emulate graph-SLAM) */
+	struct RelativePoses3D
+	{
+		static const size_t  LM_DIMS = 6; //!< The number of parameters in each LM parameterization relative to its base KF
+		static const landmark_jacob_family_t  jacob_family = jacob_relpose_landmark;  //!< Specify the kind of Jacobian to be used for compute_jacobian_dAepsDx_deps<>
+		//static const size_t  LM_EUCLIDEAN_DIMS = 3; //!< Either 2 or 3, depending on the real minimum number of coordinates needed to parameterize the landmark.
+		typedef mrpt::srba::landmark_rendering_as_pose_constraints render_mode_t;
+
+		/** Evaluates pt = pose (+) pt
+		  * \param[in,out] pt A vector with the landmark parameterization values
+		  * \param[in] pose The relative pose */
+		template <class POSE,class VECTOR>
+		inline static void composePosePoint(VECTOR & pt, const POSE & pose) {
+			// Not applicable: nothing to do on "pt"
+		}
+		/** Evaluates lm_local = lm_global (-) pose
+		  * \param[in]  lm_global A vector with the landmark parameterization values in "global" coordinates
+		  * \param[out] lm_local A vector with the landmark parameterization values in "local" coordinates, as seen from "pose"
+		  * \param[in] pose The relative pose */
+		template <class POSE,class VECTOR>
+		static inline void inverseComposePosePoint(const VECTOR &lm_global,VECTOR &lm_local,const POSE &pose) {
+			// Not applicable
+			lm_local=lm_global;
+		}
+
+	};
 
 	/** @} */
 

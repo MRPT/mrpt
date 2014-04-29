@@ -7,11 +7,14 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/base.h>
-#include <mrpt/vision.h>
-#include <mrpt/gui.h>
-#include <mrpt/opengl.h>
+#include <mrpt/vision/CFeatureExtraction.h>
+#include <mrpt/slam/CLandmarksMap.h>
+#include <mrpt/gui/CDisplayWindow.h>
+#include <mrpt/gui/CDisplayWindow3D.h>
+#include <mrpt/opengl/COpenGLScene.h>
+#include <mrpt/opengl/CGridPlaneXY.h>
 
+using mrpt::format;
 using namespace mrpt::utils;
 using namespace mrpt::gui;
 using namespace mrpt::vision;

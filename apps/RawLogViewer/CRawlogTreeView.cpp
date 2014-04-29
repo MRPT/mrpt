@@ -28,10 +28,14 @@ BEGIN_EVENT_TABLE(CRawlogTreeView, wxScrolledWindow)
 	EVT_CHAR      ( CRawlogTreeView::OnKey )
 END_EVENT_TABLE()
 
-#include <mrpt/slam.h>
+#include <mrpt/system/datetime.h>
+
+#define MRPT_NO_WARN_BIG_HDR // It's ok here
+#include <mrpt/obs.h>
 
 using namespace mrpt;
 using namespace mrpt::utils;
+using namespace mrpt::system;
 using namespace mrpt::slam;
 using namespace std;
 
@@ -119,7 +123,7 @@ void CRawlogTreeView::reloadFromRawlog( int hint_rawlog_items )
 	TNodeData  &d = m_tree_nodes.back();
 	d.level = 0;
 
-//	vector_double	tims;
+//	CVectorDouble	tims;
 
 	if (m_rawlog)
 	{

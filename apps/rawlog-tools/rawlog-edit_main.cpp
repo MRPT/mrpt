@@ -49,6 +49,7 @@ DECLARE_OP_FUNCTION(op_export_gps_kml);
 DECLARE_OP_FUNCTION(op_export_gps_gas_kml);
 DECLARE_OP_FUNCTION(op_export_gps_txt);
 DECLARE_OP_FUNCTION(op_export_imu_txt);
+DECLARE_OP_FUNCTION(op_export_odometry_txt);
 DECLARE_OP_FUNCTION(op_export_rawdaq_txt);
 DECLARE_OP_FUNCTION(op_export_2d_scans_txt);
 DECLARE_OP_FUNCTION(op_sensors_pose);
@@ -175,6 +176,14 @@ int main(int argc, char **argv)
 			"filename + each sensorLabel."
 			,cmd,false) );
 		ops_functors["export-imu-txt"] = &op_export_imu_txt;
+
+		arg_ops.push_back(new TCLAP::SwitchArg("","export-odometry-txt",
+			"Op: Export absolute odometry readings to TXT files.\n"
+			"Generates one .txt file for each different sensor label of an odometry observation in the dataset. "
+			"The generated .txt files will be saved in the same path than the input rawlog, with the same "
+			"filename + each sensorLabel."
+			,cmd,false) );
+		ops_functors["export-odometry-txt"] = &op_export_odometry_txt;
 
 		arg_ops.push_back(new TCLAP::SwitchArg("","export-rawdaq-txt",
 			"Op: Export raw DAQ readings to TXT files.\n"

@@ -7,15 +7,19 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/scanmatching.h>  // Precompiled header
+#include "scanmatching-precomp.h"  // Precompiled headers
 
 
 #include <mrpt/scanmatching/scan_matching.h>
 #include <mrpt/poses/CPosePDFGaussian.h>
+#include <mrpt/poses/CPoint2DPDFGaussian.h>
 #include <mrpt/poses/CPosePDFSOG.h>
 #include <mrpt/random.h>
-#include <mrpt/math/CMatrixD.h>
+//#include <mrpt/math/CMatrixD.h>
+#include <mrpt/math/geometry.h>
 #include <mrpt/math/utils.h>
+#include <mrpt/math/wrap2pi.h>
+#include <mrpt/math/distributions.h>
 #include <mrpt/math/CQuaternion.h>
 #include <mrpt/utils/CTimeLogger.h>
 
@@ -28,17 +32,17 @@ using namespace mrpt::utils;
 using namespace std;
 
 
-MRPT_TODO("Mark as deprecated and rewrite a clearer and more consistent API for all least-squares transform methods!")
+MRPT_TODO("Mark as deprecated and rewrite a clearer and more consistent API for all least-squares transform methods!") // And rename lib to [mrpt-registration/optimaltransf] ?
 
 //#define AVOID_MULTIPLE_CORRESPONDENCES
 
 // mark this pair as "selected" so it won't be picked again:
 void markAsPicked(
-	const TMatchingPair & c, 
-	std::vector<bool> &alreadySelectedThis, 
+	const TMatchingPair & c,
+	std::vector<bool> &alreadySelectedThis,
 	std::vector<bool> &alreadySelectedOther
 #ifdef  AVOID_MULTIPLE_CORRESPONDENCES
-	, const std::vector<vector_int> &listDuplicatedLandmarksThis 
+	, const std::vector<vector_int> &listDuplicatedLandmarksThis
 #endif
 	)
 {
@@ -62,9 +66,9 @@ void markAsPicked(
 					robustRigidTransformation
 
   The technique was described in the paper:
-    J.L. Blanco, J. González-Jimenez and J.A. Fernandez-Madrigal. 
-	"A robust, multi-hypothesis approach to matching occupancy grid maps". 
-	Robotica, available on CJO2013. doi:10.1017/S0263574712000732. 
+    J.L. Blanco, J. González-Jimenez and J.A. Fernandez-Madrigal.
+	"A robust, multi-hypothesis approach to matching occupancy grid maps".
+	Robotica, available on CJO2013. doi:10.1017/S0263574712000732.
 	http://journals.cambridge.org/action/displayAbstract?aid=8815308
 
  This works as follows:
@@ -94,7 +98,7 @@ void  scanmatching::robustRigidTransformation(
 	double                      max_rmse_to_end
 	)
 {
-//#define DO_PROFILING 
+//#define DO_PROFILING
 
 #ifdef DO_PROFILING
 	CTimeLogger timlog;
@@ -234,8 +238,8 @@ void  scanmatching::robustRigidTransformation(
 	}
 
 	std::vector<bool> alreadySelectedThis, alreadySelectedOther;
-	
-	if (!ransac_algorithmForLandmarks) 
+
+	if (!ransac_algorithmForLandmarks)
 	{
 		alreadySelectedThis.assign(maxThis+1,false);
 		alreadySelectedOther.assign(maxOther+1, false);
@@ -289,12 +293,12 @@ void  scanmatching::robustRigidTransformation(
 #endif
 		for (unsigned int j=0;j<nCorrs && subSet.size()<ransac_maxSetSize;j++)
 		{
-			const size_t idx = corrsIdxsPermutation[j]; 
+			const size_t idx = corrsIdxsPermutation[j];
 
 			const TMatchingPair & corr_j = in_correspondences[idx];
 
 			// Don't pick the same features twice!
-			if (alreadySelectedThis [corr_j.this_idx] || alreadySelectedOther[corr_j.other_idx]) 
+			if (alreadySelectedThis [corr_j.this_idx] || alreadySelectedOther[corr_j.other_idx])
 				continue;
 
 			if (subSet.size()<2)
@@ -307,7 +311,7 @@ void  scanmatching::robustRigidTransformation(
 
 				if (subSet.size()==2)
 				{
-					// Consistency Test: From 
+					// Consistency Test: From
 
 					// Check the feasibility of this pair "idx1"-"idx2":
 					//  The distance between the pair of points in MAP1 must be very close
@@ -416,7 +420,7 @@ void  scanmatching::robustRigidTransformation(
 			for (size_t k=0;k<subSet.size();k++)
 			{
 				double gx,gy;
-				referenceEstimation.mean.composePoint( 
+				referenceEstimation.mean.composePoint(
 					subSet[k].other_x, subSet[k].other_y,
 					gx,gy);
 
@@ -526,8 +530,8 @@ void  scanmatching::robustRigidTransformation(
 		// Save the largest subset:
 		if (out_largestSubSet!=NULL)
 		{
-			if (subSet.size()>=ransac_minSetSize && 
-			    this_subset_RMSE<largestSubSet_RMSE ) 
+			if (subSet.size()>=ransac_minSetSize &&
+			    this_subset_RMSE<largestSubSet_RMSE )
 			{
 				if (verbose)
 					cout << "[scanmatching::RANSAC] Iter #" << iter_idx << " Better subset: " << subSet.size() << " inliers, RMSE=" << this_subset_RMSE << endl;
@@ -537,8 +541,8 @@ void  scanmatching::robustRigidTransformation(
 			}
 		}
 
-		// Is the found subset good enough? 
-		if (subSet.size()>=ransac_minSetSize && 
+		// Is the found subset good enough?
+		if (subSet.size()>=ransac_minSetSize &&
 			this_subset_RMSE<MAX_RMSE_TO_END)
 		{
 				break; // end RANSAC iterations.
@@ -551,7 +555,7 @@ void  scanmatching::robustRigidTransformation(
 
 	if (verbose)
 		cout << "[scanmatching::RANSAC] Finished after " << iter_idx << " iterations.\n";
-	
+
 
 	// Set the weights of the particles to sum the unity:
 	out_transformation.normalizeWeights();

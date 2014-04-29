@@ -7,7 +7,9 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/reactivenav.h>  // Precomp header
+#include "reactivenav-precomp.h" // Precomp header
+#include <mrpt/reactivenav/CPTG1.h>
+#include <mrpt/math/wrap2pi.h>
 
 using namespace mrpt;
 using namespace mrpt::reactivenav;

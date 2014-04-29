@@ -7,13 +7,15 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/maps.h>  // Precompiled header
+#include "maps-precomp.h" // Precomp header
 
 #include <mrpt/utils/CConfigFile.h>
 #include <mrpt/utils/CTicTac.h>
 #include <mrpt/utils/CTimeLogger.h>
 #include <mrpt/utils/CStartUpClassesRegister.h>
+#include <mrpt/system/os.h>
 #include <mrpt/math/geometry.h>
+#include <mrpt/utils/CStream.h>
 
 #include <mrpt/slam/CPointsMap.h>
 #include <mrpt/slam/CSimplePointsMap.h>
@@ -39,6 +41,7 @@
 
 using namespace mrpt::poses;
 using namespace mrpt::slam;
+using namespace mrpt::system;
 using namespace std;
 
 
@@ -224,7 +227,7 @@ unsigned long  CPointsMap::getPoint(size_t index,double &x,double &y,double &z) 
  ---------------------------------------------------------------*/
 void  CPointsMap::getPointsBuffer( size_t &outPointsCount, const float *&xs, const float *&ys, const float *&zs ) const
 {
-	outPointsCount = getPointsCount();
+	outPointsCount = size();
 
 	if (outPointsCount>0)
 	{
@@ -243,7 +246,7 @@ void  CPointsMap::getPointsBuffer( size_t &outPointsCount, const float *&xs, con
  ---------------------------------------------------------------*/
 void  CPointsMap::clipOutOfRangeInZ(float zMin, float zMax)
 {
-	const size_t	n=getPointsCount();
+	const size_t	n=size();
 	vector<bool>	deletionMask(n);
 
 	// Compute it:
@@ -260,9 +263,9 @@ void  CPointsMap::clipOutOfRangeInZ(float zMin, float zMax)
 /*---------------------------------------------------------------
 						clipOutOfRange
  ---------------------------------------------------------------*/
-void  CPointsMap::clipOutOfRange(const CPoint2D	&point, float maxRange)
+void  CPointsMap::clipOutOfRange(const TPoint2D	&p, float maxRange)
 {
-	size_t			i,n=getPointsCount();
+	size_t			i,n=size();
 	vector<bool>	deletionMask;
 
 	// The deletion mask:
@@ -270,7 +273,7 @@ void  CPointsMap::clipOutOfRange(const CPoint2D	&point, float maxRange)
 
 	// Compute it:
 	for (i=0;i<n;i++)
-		deletionMask[i] = point.distance2DTo( x[i],y[i] ) > maxRange;
+		deletionMask[i] = std::sqrt( square(p.x-x[i]) + square(p.y-y[i])) > maxRange;
 
 	// Perform deletion:
 	applyDeletionMask(deletionMask);
@@ -310,7 +313,7 @@ void CPointsMap::determineMatching2D(
 	double       maxDistForCorrespondenceSquared;
 	float        x_local, y_local;
 	unsigned int localIdx;
-	
+
 	const float *x_other_it,*y_other_it,*z_other_it; // *x_global_it,*y_global_it; //,*z_global_it;
 
 	// Prepare output: no correspondences initially:
@@ -404,7 +407,7 @@ void CPointsMap::determineMatching2D(
 	}
 
 	// Recover the min/max:
-	EIGEN_ALIGN16 float temp_nums[4];
+	MRPT_ALIGN16 float temp_nums[4];
 
 	_mm_store_ps(temp_nums, x_mins); local_x_min=min(min(temp_nums[0],temp_nums[1]),min(temp_nums[2],temp_nums[3]));
 	_mm_store_ps(temp_nums, y_mins); local_y_min=min(min(temp_nums[0],temp_nums[1]),min(temp_nums[2],temp_nums[3]));
@@ -413,7 +416,7 @@ void CPointsMap::determineMatching2D(
 
 #else
 	// Non SSE2 version:
-	mrpt::vector_float  x_org(otherMap->x), y_org(otherMap->y);
+	mrpt::math::CVectorFloat  x_org(otherMap->x), y_org(otherMap->y);
 	Eigen::Array<float,Eigen::Dynamic,1>  x_locals = otherMapPose.x + cos_phi * x_org.array() - sin_phi *  y_org.array() ;
 	Eigen::Array<float,Eigen::Dynamic,1>  y_locals = otherMapPose.y + sin_phi * x_org.array() + cos_phi *  y_org.array() ;
 
@@ -623,7 +626,7 @@ void CPointsMap::TInsertionOptions::writeToStream(CStream &out) const
 	const int8_t version = 0;
 	out << version;
 
-	out 
+	out
 	<< minDistBetweenLaserPoints << addToExistingPointsMap << also_interpolate
 	<< disableDeletion << fuseWithExisting << isPlanarMap << horizontalTolerance
 	<< maxDistForInterpolatePoints << insertInvalidPoints; // v0
@@ -637,7 +640,7 @@ void CPointsMap::TInsertionOptions::readFromStream(CStream &in)
 	{
 		case 0:
 		{
-			in 
+			in
 			>> minDistBetweenLaserPoints >> addToExistingPointsMap >> also_interpolate
 			>> disableDeletion >> fuseWithExisting >> isPlanarMap >> horizontalTolerance
 			>> maxDistForInterpolatePoints >> insertInvalidPoints; // v0
@@ -982,7 +985,7 @@ void CPointsMap::boundingBox(
 			}
 
 			// Recover the min/max:
-			EIGEN_ALIGN16 float temp_nums[4];
+			MRPT_ALIGN16 float temp_nums[4];
 
 			_mm_store_ps(temp_nums, x_mins); m_bb_min_x=min(min(temp_nums[0],temp_nums[1]),min(temp_nums[2],temp_nums[3]));
 			_mm_store_ps(temp_nums, y_mins); m_bb_min_y=min(min(temp_nums[0],temp_nums[1]),min(temp_nums[2],temp_nums[3]));
@@ -1215,12 +1218,12 @@ void  CPointsMap::determineMatching3D(
 /*---------------------------------------------------------------
 				extractCylinder
 ---------------------------------------------------------------*/
-void CPointsMap::extractCylinder( const CPoint2D &center, const double radius, const double zmin, const double zmax, CPointsMap *outMap )
+void CPointsMap::extractCylinder( const TPoint2D &center, const double radius, const double zmin, const double zmax, CPointsMap *outMap )
 {
 	outMap->clear();
 	for( size_t k = 0; k < x.size(); k++ )
 	{
-		if( (z[k] <= zmax && z[k] >= zmin) && (center.distance2DTo( x[k],y[k] ) < radius ) )
+		if( (z[k] <= zmax && z[k] >= zmin) && ( sqrt(square(center.x-x[k])+square(center.y-y[k])) < radius ) )
 			outMap->insertPoint( x[k], y[k], z[k] );
 	}
 }
@@ -1633,7 +1636,7 @@ bool CPointsMap::loadPCDFile(const std::string &filename)
  ---------------------------------------------------------------*/
 void  CPointsMap::applyDeletionMask( const std::vector<bool> &mask )
 {
-	ASSERT_EQUAL_( getPointsCount(), mask.size() )
+	ASSERT_EQUAL_( size(), mask.size() )
 
 	// Remove marked points:
 	const size_t n = mask.size();
@@ -1789,7 +1792,7 @@ bool  CPointsMap::internal_insertObservation(
 					pol.setAllVertices( n, xs, ys );
 
 					// Check for deletion of points in "map"
-					n = getPointsCount();
+					n = size();
 					for (size_t i=0;i<n;i++)
 					{
 						if ( checkForDeletion[i] )		// Default to true, unless a fused point, which must be kept.
@@ -1818,7 +1821,7 @@ bool  CPointsMap::internal_insertObservation(
 				// Don't build this vector if is not used later!
 //				if (!insertionOptions.disableDeletion)
 //				{
-//					const size_t n = getPointsCount();
+//					const size_t n = size();
 //					checkForDeletion.resize(n);
 //					for (size_t i=0;i<n;i++) checkForDeletion[i] = true;
 //				}
@@ -1959,8 +1962,8 @@ void  CPointsMap::fuseWith(
 
 	mark_as_modified();
 
-	//const size_t nThis  =     this->getPointsCount();
-	const size_t nOther = otherMap->getPointsCount();
+	//const size_t nThis  =     this->size();
+	const size_t nOther = otherMap->size();
 
 	// Find correspondences between this map and the other one:
 	// ------------------------------------------------------------
@@ -1970,7 +1973,7 @@ void  CPointsMap::fuseWith(
 	params.maxAngularDistForCorrespondence = 0;
 	params.maxDistForCorrespondence = minDistForFuse;
 
-	determineMatching2D( 
+	determineMatching2D(
 		otherMap,// The other map
 		nullPose,	// The other map's pose
 		correspondences,

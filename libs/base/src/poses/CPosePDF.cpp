@@ -7,12 +7,14 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/base.h>  // Precompiled headers
+#include "base-precomp.h"  // Precompiled headers
 
 #include <mrpt/poses/CPosePDF.h>
 #include <mrpt/poses/CPosePDFGaussian.h>
+#include <mrpt/utils/CStream.h>
 
 using namespace mrpt::poses;
+using namespace mrpt::math;
 using namespace std;
 
 IMPLEMENTS_VIRTUAL_SERIALIZABLE( CPosePDF, CSerializable, mrpt::poses )
@@ -35,7 +37,7 @@ void CPosePDF::jacobiansPoseComposition(
 	const CPose2D &u,
 	CMatrixDouble33			 &df_dx,
 	CMatrixDouble33			 &df_du,
-	const bool compute_df_dx, 
+	const bool compute_df_dx,
 	const bool compute_df_du )
 
 {

@@ -9,11 +9,12 @@
 
 
 
-#include <mrpt/hwdrivers.h>  // Precompiled headers
+#include "hwdrivers-precomp.h"   // Precompiled headers
 
 #include <mrpt/hwdrivers/CWirelessPower.h>
 
 using namespace mrpt::hwdrivers;
+using namespace std;
 
 IMPLEMENTS_GENERIC_SENSOR(CWirelessPower,mrpt::hwdrivers)
 
@@ -21,8 +22,6 @@ CWirelessPower::CWirelessPower()
 {
 	m_sensorLabel = "WIRELESS_POWER";
 }
-
-
 
 
 #ifdef MRPT_OS_LINUX
@@ -505,17 +504,13 @@ bool CWirelessPower::getObservation( mrpt::slam::CObservationWirelessPower &outO
 	}
 }
 
-
 void CWirelessPower::doProcess()
 {
-
 	// Wrapper to getObservation
 	mrpt::slam::CObservationWirelessPowerPtr  outObservation = mrpt::slam::CObservationWirelessPower::Create();
 	getObservation(*outObservation);
 
-
-	appendObservation(CObservationWirelessPowerPtr(new CObservationWirelessPower(*outObservation)));
-
+	appendObservation(mrpt::slam::CObservationWirelessPowerPtr(new mrpt::slam::CObservationWirelessPower(*outObservation)));
 }
 
 

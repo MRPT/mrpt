@@ -10,7 +10,6 @@
 #ifndef PF_implementations_H
 #define PF_implementations_H
 
-#include <mrpt/utils/stl_extensions.h>
 #include <mrpt/bayes/CParticleFilterCapable.h>
 #include <mrpt/bayes/CParticleFilterData.h>
 #include <mrpt/random.h>
@@ -20,10 +19,12 @@
 #include <mrpt/slam/TKLDParams.h>
 
 #include <mrpt/math/distributions.h>  // chi2inv
+#include <mrpt/math/data_utils.h>  // averageLogLikelihood()
 
 #include <mrpt/slam/PF_implementations_data.h>
 
 #include <mrpt/slam/link_pragmas.h>
+#include <cstdio> // printf()
 
 
 /** \file PF_implementations.h
@@ -229,7 +230,7 @@ namespace mrpt
 
 					// The new particle set:
 					std::vector<TPose3D>  newParticles;
-					vector_double         newParticlesWeight;
+					std::vector<double>   newParticlesWeight;
 					std::vector<size_t>   newParticlesDerivedFromIdx;
 
 					CPose3D	 increment_i;
@@ -355,7 +356,7 @@ namespace mrpt
 			ASSERT_(N>1)
 
 			const CPose3D oldPose = *me->getLastPose(index);
-			vector_double   vectLiks(N,0);		// The vector with the individual log-likelihoods.
+			CVectorDouble   vectLiks(N,0);		// The vector with the individual log-likelihoods.
 			CPose3D			drawnSample;
 			for (size_t q=0;q<N;q++)
 			{
@@ -450,7 +451,7 @@ namespace mrpt
 				size_t  N = PF_options.pfAuxFilterOptimal_MaximumSearchSamples;
 				ASSERT_(N>1)
 
-				vector_double   vectLiks(N,0);		// The vector with the individual log-likelihoods.
+				CVectorDouble   vectLiks(N,0);		// The vector with the individual log-likelihoods.
 				CPose3D		drawnSample;
 				for (size_t q=0;q<N;q++)
 				{
@@ -574,9 +575,9 @@ namespace mrpt
 			//  X is a single point close to the mean of the robot pose prior (as implemented in
 			//  the aux. function "PF_SLAM_particlesEvaluator_AuxPFStandard").
 			//
-			vector<TPose3D>			newParticles;
-			vector<double>			newParticlesWeight;
-			vector<size_t>			newParticlesDerivedFromIdx;
+			vector<TPose3D>	 newParticles;
+			vector<double>   newParticlesWeight;
+			vector<size_t>   newParticlesDerivedFromIdx;
 
 			// We need the (aproximate) maximum likelihood value for each
 			//  previous particle [i]:
@@ -640,7 +641,7 @@ namespace mrpt
 				// -------------------------------------------------------------------------------------------------
 				// The new particle set:
 				newParticles.clear();
-				newParticlesWeight.clear();
+				newParticlesWeight.resize(0);
 				newParticlesDerivedFromIdx.clear();
 
 				// ------------------------------------------------------------------------------

@@ -24,9 +24,7 @@ namespace mrpt
 		template <class DERIVEDCLASS>
 		class CPose : public CPoseOrPoint<DERIVEDCLASS>
 		{
-		public:
-			 /** The operator \f$ a \ominus b \f$ is the pose inverse compounding operator. */
-			 CPose3D  operator - (const CPose3D& b) const; // Implemented in CPose3D.h !!
+
 
 		}; // End of class def.
 

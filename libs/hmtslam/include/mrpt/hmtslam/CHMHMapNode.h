@@ -10,13 +10,13 @@
 #define CHMHMapNode_H
 
 #include <mrpt/utils/safe_pointers.h>
-#include <mrpt/utils/stl_extensions.h>
 #include <mrpt/slam/CSensoryFrame.h>
 #include <mrpt/hmtslam/HMT_SLAM_common.h>
 
 #include <mrpt/utils/CSerializable.h>
 #include <mrpt/utils/CMHPropertiesValuesList.h>
 #include <mrpt/utils/CTypeSelector.h>
+#include <map>
 
 namespace mrpt
 {

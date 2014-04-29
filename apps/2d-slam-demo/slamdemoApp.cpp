@@ -17,9 +17,9 @@
 
 IMPLEMENT_APP(slamdemoApp)
 
-#include <mrpt/base.h>
 #include <mrpt/otherlibs/tclap/CmdLine.h>
 #include <mrpt/system/os.h>
+#include <mrpt/system/filesystem.h>
 
 using namespace std;
 

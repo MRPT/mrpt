@@ -7,8 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/base.h>  // Only for precomp. headers, include all libmrpt-core headers.
-
+#include "base-precomp.h"  // Precompiled headers
 
 #include <mrpt/config.h>
 
@@ -16,6 +15,7 @@
 
 #include <mrpt/utils/CClientTCPSocket.h>
 #include <mrpt/utils/CMessage.h>
+#include <cstring>
 
 // Platform specific headers:
 #include <sys/socket.h>

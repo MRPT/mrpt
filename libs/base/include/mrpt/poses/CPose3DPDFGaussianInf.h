@@ -9,6 +9,7 @@
 #ifndef CPose3DPDFGaussianInf_H
 #define CPose3DPDFGaussianInf_H
 
+#include <mrpt/poses/CPose3D.h>
 #include <mrpt/poses/CPose3DPDF.h>
 #include <mrpt/poses/CPosePDF.h>
 #include <mrpt/math/CMatrixD.h>
@@ -49,7 +50,7 @@ namespace poses
 			@{   */
 
 		CPose3D				mean;		//!< The mean value
-		CMatrixDouble66		cov_inv;	//!< The inverse of the 6x6 covariance matrix
+		mrpt::math::CMatrixDouble66		cov_inv;	//!< The inverse of the 6x6 covariance matrix
 
 		/** @} */
 
@@ -68,7 +69,7 @@ namespace poses
 		CPose3DPDFGaussianInf(TConstructorFlags_Poses constructor_dummy_param);
 
 		/** Constructor with mean and inv cov. */
-		CPose3DPDFGaussianInf( const CPose3D &init_Mean, const CMatrixDouble66 &init_CovInv );
+		CPose3DPDFGaussianInf( const CPose3D &init_Mean, const mrpt::math::CMatrixDouble66 &init_CovInv );
 
 		/** Constructor from a 6D pose PDF described as a Quaternion
 		  */
@@ -84,13 +85,13 @@ namespace poses
 		/** Returns an estimate of the pose covariance matrix (6x6 cov matrix) and the mean, both at once.
 		  * \sa getMean
 		  */
-		void getCovarianceAndMean(CMatrixDouble66 &cov,CPose3D &mean_point) const {
+		void getCovarianceAndMean(mrpt::math::CMatrixDouble66 &cov,CPose3D &mean_point) const {
 			mean_point = this->mean;
 			this->cov_inv.inv(cov);
 		}
 
 		/** Returns the information (inverse covariance) matrix (a STATE_LEN x STATE_LEN matrix) \sa getMean, getCovarianceAndMean */
-		virtual void getInformationMatrix(CMatrixDouble66 &inf) const { inf=cov_inv; }
+		virtual void getInformationMatrix(mrpt::math::CMatrixDouble66 &inf) const { inf=cov_inv; }
 
 		/** Copy operator, translating if necesary (for example, between particles and gaussian representations)
 		  */
@@ -119,7 +120,7 @@ namespace poses
 
 		/** Draws a number of samples from the distribution, and saves as a list of 1x6 vectors, where each row contains a (x,y,phi) datum.
 		  */
-		void  drawManySamples( size_t N, std::vector<vector_double> & outSamples ) const;
+		void  drawManySamples( size_t N, std::vector<CVectorDouble> & outSamples ) const;
 
 		/** Bayesian fusion of two points gauss. distributions, then save the result in this object.
 		  *  The process is as follows:<br>
@@ -172,7 +173,7 @@ namespace poses
 
 		/** Returns a 3x3 matrix with submatrix of the inverse covariance for the variables (x,y,yaw) only.
 		  */
-		void getInvCovSubmatrix2D( CMatrixDouble &out_cov ) const;
+		void getInvCovSubmatrix2D( mrpt::math::CMatrixDouble &out_cov ) const;
 
 	}; // End of class def.
 

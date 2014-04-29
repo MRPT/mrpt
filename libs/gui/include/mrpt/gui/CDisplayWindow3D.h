@@ -10,8 +10,9 @@
 #define  CDisplayWindow3D_H
 
 #include <mrpt/gui/CBaseGUIWindow.h>
-#include <mrpt/opengl.h>
+#include <mrpt/opengl/COpenGLScene.h>
 #include <mrpt/opengl/opengl_fonts.h>
+#include <mrpt/synch/CCriticalSection.h>
 #include <mrpt/utils/CImage.h>
 
 /*---------------------------------------------------------------
@@ -317,7 +318,7 @@ namespace mrpt
 				const std::string &text,
 				const mrpt::utils::TColorf &color = mrpt::utils::TColorf(1.0,1.0,1.0),
 				const size_t unique_index = 0,
-				const TOpenGLFont font = MRPT_GLUT_BITMAP_TIMES_ROMAN_24
+				const mrpt::opengl::TOpenGLFont font = mrpt::opengl::MRPT_GLUT_BITMAP_TIMES_ROMAN_24
 				);
 
 			/** \overload with more font parameters - refer to mrpt::opengl::gl_utils::glDrawText()

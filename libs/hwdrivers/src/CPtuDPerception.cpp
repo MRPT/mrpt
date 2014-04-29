@@ -7,11 +7,13 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/hwdrivers.h> // Precompiled headers
+#include "hwdrivers-precomp.h"   // Precompiled headers
 
 #include <mrpt/hwdrivers/CPtuDPerception.h>
 #include <mrpt/system/threads.h>
 #include <mrpt/system/string_utils.h>
+#include <mrpt/system/os.h>
+#include <cstring>
 
 using namespace std;
 using namespace mrpt::utils;
@@ -353,7 +355,7 @@ bool CPtuDPerception::powerMode(bool transit,char mode){
 							init
 -------------------------------------------------------------*/
 
-bool CPtuDPerception::init(const string port){
+bool CPtuDPerception::init(const string &port){
 
 	try{
 

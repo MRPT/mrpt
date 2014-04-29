@@ -14,6 +14,11 @@
 #ifndef HWDRIVERS_H
 #define HWDRIVERS_H
 
+#ifndef MRPT_NO_WARN_BIG_HDR
+#include <mrpt/utils/core_defs.h>
+MRPT_WARNING("Including <mrpt/hwdrivers.h> makes compilation much slower, consider including only what you need (define MRPT_NO_WARN_BIG_HDR to disable this warning)")
+#endif
+
 // Classes into HWDRIVERS
 // --------------------------------------------
 #include <mrpt/hwdrivers/CGenericSensor.h>
@@ -58,6 +63,9 @@
 #include <mrpt/hwdrivers/CStereoGrabber_SVS.h>
 #include <mrpt/hwdrivers/CPhidgetInterfaceKitProximitySensors.h>
 #include <mrpt/hwdrivers/CKinect.h>
+#include <mrpt/hwdrivers/COpenNI2Generic.h>
+#include <mrpt/hwdrivers/COpenNI2Sensor.h>
+#include <mrpt/hwdrivers/COpenNI2_RGBD360.h>
 
 #include <mrpt/hwdrivers/CCANBusReader.h>
 #include <mrpt/hwdrivers/CNationalInstrumentsDAQ.h>

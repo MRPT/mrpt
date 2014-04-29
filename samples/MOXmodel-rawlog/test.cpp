@@ -7,10 +7,12 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/hwdrivers.h>
-
-#include <mrpt/base.h>
-#include <mrpt/slam.h>
+#include <mrpt/slam/CObservationGasSensors.h>
+#include <mrpt/utils/CConfigFile.h>
+#include <mrpt/utils/CFileGZInputStream.h>
+#include <mrpt/utils/CFileGZOutputStream.h>
+#include <mrpt/math/ops_containers.h>
+#include <mrpt/system/filesystem.h>
 
 using namespace mrpt;
 using namespace mrpt::system;
@@ -22,9 +24,9 @@ int main(int argc, char **argv)
 {
 	//Variables
 	string													rawlog_file,sensorLabel;
-	float													a_rise,a_decay,b_rise,b_decay;
-	int														enoseID,winNoise_size,decimate_value,sensorType,indexMonitoredSensor,delay_value;
-	mrpt::hwdrivers::CObservationGasSensors::CMOSmodel		MOSmodel;
+	//float													a_rise,a_decay,; //b_decay, b_rise
+	int														enoseID,sensorType,indexMonitoredSensor,delay_value; // decimate_value, winNoise_size
+	mrpt::slam::CObservationGasSensors::CMOSmodel		MOSmodel;
 	bool													save_maplog,have_estimation,apply_delay;
 
 	// Load configuration:	

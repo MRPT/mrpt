@@ -11,13 +11,18 @@
 /*---------------------------------------------------------------
     APPLICATION: observations2map
     FILE: observations2map_main.cpp
-    AUTHOR: Jose Luis Blanco Claraco <jlblanco@ctima.uma.es>
+    AUTHOR: Jose Luis Blanco Claraco <joseluisblancoc@gmail.com>
 
 	See README.txt for instructions.
   ---------------------------------------------------------------*/
 
-#include <mrpt/base.h>
-#include <mrpt/slam.h>
+#include <mrpt/system/os.h>
+#include <mrpt/slam/CSimpleMap.h>
+#include <mrpt/slam/CMultiMetricMap.h>
+#include <mrpt/utils/CConfigFile.h>
+#include <mrpt/utils/CFileGZInputStream.h>
+#include <mrpt/utils/CFileGZOutputStream.h>
+
 
 using namespace mrpt;
 using namespace mrpt::slam;

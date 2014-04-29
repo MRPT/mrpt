@@ -7,13 +7,17 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/base.h>  // Precompiled headers
-
+#include "base-precomp.h"  // Precompiled headers
 
 #include <mrpt/poses/CPose3DPDFSOG.h>
+#include <mrpt/system/os.h>
+#include <mrpt/utils/CStream.h>
+#include <mrpt/math/matrix_serialization.h>
 
+using namespace mrpt;
 using namespace mrpt::poses;
 using namespace mrpt::utils;
+using namespace mrpt::system;
 using namespace std;
 
 IMPLEMENTS_SERIALIZABLE( CPose3DPDFSOG, CPose3DPDF, mrpt::poses )
@@ -54,19 +58,16 @@ void CPose3DPDFSOG::getMean(CPose3D &p) const
 	if (N)
 	{
 		double			X=0,Y=0,Z=0,YAW=0,PITCH=0,ROLL=0;
-		double			ang,sumW=0;
+		double			sumW=0;
 
 		double			W_yaw_R=0,W_yaw_L=0;
 		double			yaw_R=0,yaw_L=0;
 		double			W_roll_R=0,W_roll_L=0;
 		double			roll_R=0,roll_L=0;
 
-
-		const_iterator	it;
-		double w;
-
-		for (it=m_modes.begin();it!=m_modes.end();it++)
+		for (const_iterator	it=m_modes.begin();it!=m_modes.end();++it)
 		{
+		    double w;
 			sumW += w = exp((it)->log_w);
 
 			X += (it)->val.mean.x() * w;
@@ -75,7 +76,7 @@ void CPose3DPDFSOG::getMean(CPose3D &p) const
 			PITCH	+= w * (it)->val.mean.pitch();
 
 			// Angles Yaw and Roll are especials!:
-			ang = (it)->val.mean.yaw();
+			double ang = (it)->val.mean.yaw();
 			if (fabs( ang )>1.5707963267948966192313216916398f)
 			{
 				// LEFT HALF: 0,2pi
@@ -147,27 +148,26 @@ void CPose3DPDFSOG::getMean(CPose3D &p) const
 /*---------------------------------------------------------------
 						getCovarianceAndMean
  ---------------------------------------------------------------*/
-void CPose3DPDFSOG::getCovarianceAndMean(CMatrixDouble66 &estCovOut,CPose3D &mean) const
+void CPose3DPDFSOG::getCovarianceAndMean(mrpt::math::CMatrixDouble66 &estCovOut,CPose3D &mean) const
 {
 	size_t		N = m_modes.size();
 
 	getMean(mean);
-	CMatrixDouble66 estCov;
+	mrpt::math::CMatrixDouble66 estCov;
 
 	if (N)
 	{
 		// 1) Get the mean:
-		double		w,sumW = 0;
-		CMatrixDouble estMean( mean );
+		double		sumW = 0;
+		mrpt::math::CMatrixDouble estMean( mean );
 
-		const_iterator	it;
-
-		CMatrixDouble66		MMt;
-		CMatrixDouble61 estMean_i;
-		for (it=m_modes.begin();it!=m_modes.end();it++)
+		mrpt::math::CMatrixDouble66		MMt;
+		mrpt::math::CMatrixDouble61 estMean_i;
+		for (const_iterator	it=m_modes.begin();it!=m_modes.end();++it)
 		{
+		    double w;
 			sumW += w = exp((it)->log_w);
-			estMean_i = CMatrixDouble61((it)->val.mean);
+			estMean_i = mrpt::math::CMatrixDouble61((it)->val.mean);
 			MMt.multiply_AAt(estMean_i);
 			MMt+=(it)->val.cov;
 			MMt*=w;
@@ -191,11 +191,8 @@ void  CPose3DPDFSOG::writeToStream(CStream &out,int *version) const
 	else
 	{
 		uint32_t	N = m_modes.size();
-		const_iterator		it;
-
 		out << N;
-
-		for (it=m_modes.begin();it!=m_modes.end();it++)
+		for (const_iterator it=m_modes.begin();it!=m_modes.end();++it)
 		{
 			out << (it)->log_w;
 			out << (it)->val.mean;
@@ -216,13 +213,10 @@ void  CPose3DPDFSOG::readFromStream(CStream &in,int version)
 	case 2:
 		{
 			uint32_t		N;
-			iterator		it;
-
 			in >> N;
-
 			this->resize(N);
 
-			for (it=m_modes.begin();it!=m_modes.end();it++)
+			for (iterator it=m_modes.begin();it!=m_modes.end();++it)
 			{
 				in >> (it)->log_w;
 
@@ -267,7 +261,7 @@ void  CPose3DPDFSOG::copyFrom(const CPose3DPDF &o)
 	{
 		this->resize(1);
 		m_modes[0].log_w = 0;
-		CMatrixDouble66 C;
+		mrpt::math::CMatrixDouble66 C;
 		o.getCovarianceAndMean( C, m_modes[0].val.mean );
 		m_modes[0].val.cov = C;
 	}
@@ -431,7 +425,7 @@ void CPose3DPDFSOG::drawSingleSample( CPose3D &outPart ) const
 /*---------------------------------------------------------------
 						drawManySamples
  ---------------------------------------------------------------*/
-void CPose3DPDFSOG::drawManySamples( size_t N, std::vector<vector_double> & outSamples ) const
+void CPose3DPDFSOG::drawManySamples( size_t N, std::vector<CVectorDouble> & outSamples ) const
 {
 	THROW_EXCEPTION("TO DO!");
 }

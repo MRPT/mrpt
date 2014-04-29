@@ -9,9 +9,9 @@
 #ifndef  mrpt_math_container_ops_H
 #define  mrpt_math_container_ops_H
 
-#include <mrpt/math/math_frwds.h>  // Fordward declarations
+#include <mrpt/math/math_frwds.h>  // forward declarations
 
-#include <mrpt/math/lightweight_geom_data.h>  // Fordward declarations
+#include <mrpt/math/lightweight_geom_data.h>  // forward declarations
 
 #include <functional>
 #include <algorithm>
@@ -50,22 +50,31 @@ namespace mrpt
 		  *  If desired, out_bin_centers can be set to receive the bins centers.
 		  */
 		template<class CONTAINER>
-		vector_double histogram(
+		std::vector<double> histogram(
 			const CONTAINER &v,
 			double limit_min,
 			double limit_max,
 			size_t number_bins,
 			bool do_normalization = false,
-			vector_double *out_bin_centers = NULL)
+			std::vector<double> *out_bin_centers = NULL)
 		{
 			mrpt::math::CHistogram	H( limit_min, limit_max, number_bins );
-			vector_double ret(number_bins);
-			vector_double dummy_ret_bins;
+			std::vector<double> ret(number_bins);
+			std::vector<double> dummy_ret_bins;
 			H.add(v);
 			if (do_normalization)
 					H.getHistogramNormalized( out_bin_centers ? *out_bin_centers : dummy_ret_bins, ret );
 			else	H.getHistogram( out_bin_centers ? *out_bin_centers : dummy_ret_bins, ret );
 			return ret;
+		}
+
+		template <class EIGEN_CONTAINER>
+		void resizeLike(EIGEN_CONTAINER &trg, const EIGEN_CONTAINER&src) {
+			trg.resizeLike(src);
+		}
+		template <typename T>
+		void resizeLike(std::vector<T> &trg, const std::vector<T> &src) {
+			trg.resize(src.size());
 		}
 
 		/** Computes the cumulative sum of all the elements, saving the result in another container.
@@ -75,7 +84,7 @@ namespace mrpt
 		template <class CONTAINER1,class CONTAINER2, typename VALUE>
 		inline void cumsum_tmpl(const CONTAINER1 &in_data, CONTAINER2 &out_cumsum)
 		{
-			out_cumsum.resizeLike(in_data);
+			resizeLike(out_cumsum, in_data);
 			VALUE last=0;
 			const size_t N = in_data.size();
 			for (size_t i=0;i<N;i++)
@@ -83,7 +92,7 @@ namespace mrpt
 		}
 
 		template <class CONTAINER1,class CONTAINER2>
-		inline void cumsum(const CONTAINER1 &in_data, CONTAINER2 &out_cumsum) { cumsum_tmpl<CONTAINER1,CONTAINER2,typename CONTAINER1::Scalar>(in_data,out_cumsum); }
+		inline void cumsum(const CONTAINER1 &in_data, CONTAINER2 &out_cumsum) { cumsum_tmpl<CONTAINER1,CONTAINER2,typename mrpt::math::ContainerType<CONTAINER2>::element_t>(in_data,out_cumsum); }
 
 		/** Computes the cumulative sum of all the elements
 		  * \sa sum  */
@@ -97,7 +106,7 @@ namespace mrpt
 
 		template <class CONTAINER> inline typename CONTAINER::Scalar norm_inf(const CONTAINER &v) { return v.norm_inf(); }
 		template <class CONTAINER> inline typename CONTAINER::Scalar norm(const CONTAINER &v) { return v.norm(); }
-		template <class CONTAINER> inline typename CONTAINER::Scalar maximum(const CONTAINER &v) { return v.maximum(); }
+		template <class CONTAINER> inline typename CONTAINER::Scalar maximum(const CONTAINER &v) { return v.maxCoeff(); }
 		template <class CONTAINER> inline typename CONTAINER::Scalar minimum(const CONTAINER &v) { return v.minimum(); }
 
 		template <typename T> inline T maximum(const std::vector<T> &v)
@@ -115,47 +124,12 @@ namespace mrpt
 			return m;
 		}
 
-		/** \name Container initializer from pose classes
-		  * @{
-		  */
-
-		/** Conversion of poses to MRPT containers (vector/matrix) */
-		template <class CONTAINER> CONTAINER & containerFromPoseOrPoint(CONTAINER &C, const TPoint2D &p) {
-			C.resize(2,1);
-			for (size_t i=0;i<2;i++)  C.coeffRef(i,0)=p[i];
-			return C;
-		}
-		template <class CONTAINER> CONTAINER & containerFromPoseOrPoint(CONTAINER &C, const TPoint3D &p) {
-			C.resize(3,1);
-			for (size_t i=0;i<3;i++)  C.coeffRef(i,0)=p[i];
-			return C;
-		}
-		template <class CONTAINER> CONTAINER & containerFromPoseOrPoint(CONTAINER &C, const TPose2D &p) {
-			C.resize(3,1);
-			for (size_t i=0;i<3;i++)  C.coeffRef(i,0)=p[i];
-			return C;
-		}
-		template <class CONTAINER> CONTAINER & containerFromPoseOrPoint(CONTAINER &C, const TPose3D &p) {
-			C.resize(6,1);
-			for (size_t i=0;i<6;i++)  C.coeffRef(i,0)=p[i];
-			return C;
-		}
-		template <class CONTAINER> CONTAINER & containerFromPoseOrPoint(CONTAINER &C, const TPose3DQuat &p) {
-			C.resize(7,1);
-			for (size_t i=0;i<7;i++)  C.coeffRef(i,0)=p[i];
-			return C;
-		}
-
-		/** @} */
-
-
-
 		/** \name Generic container element-wise operations - Miscelaneous
 		  * @{
 		  */
 
 		/** Accumulate the squared-norm of a vector/array/matrix into "total" (this function is compatible with std::accumulate). */
-		template <class CONTAINER, typename VALUE> 
+		template <class CONTAINER, typename VALUE>
 		VALUE squareNorm_accum(const VALUE total, const CONTAINER &v) {
 			return total+v.squaredNorm();
 		}
@@ -351,13 +325,14 @@ namespace mrpt
 		/** Computes the covariance matrix from a list of values given as a vector of vectors, where each row is a sample.
 		  * \param v The set of data, as a vector of N vectors of M elements.
 		  * \param out_cov The output MxM matrix for the estimated covariance matrix.
+		  * \tparam RETURN_MATRIX The type of the returned matrix, e.g. Eigen::MatrixXd
 		  * \sa math::mean,math::stddev, math::cov, meanAndCovVec
 		  */
-		template<class VECTOR_OF_VECTOR>
-		inline Eigen::MatrixXd covVector( const VECTOR_OF_VECTOR &v )
+		template<class VECTOR_OF_VECTOR, class RETURN_MATRIX>
+		inline RETURN_MATRIX covVector( const VECTOR_OF_VECTOR &v )
 		{
-			vector_double   m;
-			Eigen::MatrixXd C;
+			std::vector<double>   m;
+			RETURN_MATRIX C;
 			meanAndCovVec(v,m,C);
 			return C;
 		}

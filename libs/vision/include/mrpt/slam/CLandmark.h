@@ -11,7 +11,8 @@
 
 #include <mrpt/utils/CSerializable.h>
 #include <mrpt/math/CMatrix.h>
-#include <mrpt/system/os.h>
+//#include <mrpt/system/os.h>
+#include <mrpt/system/datetime.h>
 #include <mrpt/poses/CPointPDFGaussian.h>
 #include <mrpt/poses/CPoint3D.h>
 #include <mrpt/vision/CFeature.h>

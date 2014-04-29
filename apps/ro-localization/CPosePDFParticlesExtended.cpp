@@ -9,11 +9,16 @@
 
 
 #include <mrpt/random.h>
-#include <mrpt/math.h>
-#include <mrpt/poses.h>
-#include <mrpt/maps.h>
-#include <mrpt/obs.h>
 #include <mrpt/utils/CTicTac.h>
+#include <mrpt/poses/CPoseRandomSampler.h>
+#include <mrpt/poses/CPosePDFGaussian.h>
+#include <mrpt/math/utils.h>
+#include <mrpt/math/distributions.h>
+#include <mrpt/math/wrap2pi.h>
+#include <mrpt/slam/CActionCollection.h>
+#include <mrpt/slam/CActionRobotMovement2D.h>
+#include <mrpt/slam/CObservationBeaconRanges.h>
+#include <mrpt/system/os.h>
 
 #include "CPosePDFParticlesExtended.h"
 
@@ -22,6 +27,7 @@ using namespace mrpt::slam;
 using namespace mrpt::math;
 using namespace mrpt::system;
 using namespace mrpt::utils;
+using namespace mrpt::bayes;
 using namespace mrpt::random;
 using namespace std;
 
@@ -231,7 +237,7 @@ TExtendedCPose2D  CPosePDFParticlesExtended::getEstimatedPoseState() const
 		est.pose.x_incr( (p.x() * w));
 		est.pose.y_incr( (p.y() * w));
 
-		vector<double>	auxVec (m_particles[i].d->state);
+		CVectorDouble	auxVec (m_particles[i].d->state);
 		auxVec *= w;
 		est.state += auxVec;
 
@@ -430,7 +436,7 @@ void  CPosePDFParticlesExtended::prediction_and_update_pfStandardProposal(
 			m_particles[i].d->pose = m_particles[i].d->pose + increment_i;
 
 			// Prediction of the BIAS "state vector":
-			for (size_t k=0;k<m_particles[i].d->state.size();k++)
+			for (int k=0;k<m_particles[i].d->state.size();k++)
 				offsetTransitionModel( m_particles[i].d->state[k] );
 		}
 	} // end of fixed sample size
@@ -674,7 +680,7 @@ void  CPosePDFParticlesExtended::prediction_and_update_pfAuxiliaryPFOptimal(
 
 	size_t				i,M = m_particles.size();
 	CActionRobotMovement2DPtr robotMovement;
-	//std::vector<vector_double>	rndSamples;
+	//std::vector<CVectorDouble>	rndSamples;
 
 	ASSERT_(sf!=NULL);
 
@@ -721,7 +727,7 @@ void  CPosePDFParticlesExtended::prediction_and_update_pfAuxiliaryPFOptimal(
 		CObservationBeaconRangesPtr	obsBeacon = sf->getObservationByClass<CObservationBeaconRanges>();
 
 		// Compute selection weights for particles:
-		vector_double	selectionW(M,0);
+		CVectorDouble	selectionW(M,0);
 		for (i=0;i<M;i++)
 		{
 			if ( obsBeacon )
@@ -749,7 +755,7 @@ void  CPosePDFParticlesExtended::prediction_and_update_pfAuxiliaryPFOptimal(
 		}
 		selectionW = selectionW- mrpt::math::maximum(selectionW);
 
-		vector_double	selectionWlin(M);
+		CVectorDouble	selectionWlin(M);
 		double			sumW = 0;
 		for (i=0;i<M;i++)
 		{
@@ -759,7 +765,7 @@ void  CPosePDFParticlesExtended::prediction_and_update_pfAuxiliaryPFOptimal(
 		selectionWlin/=sumW;
 
 		// Build CDF:
-		vector_double		Q,T;
+		CVectorDouble		Q,T;
 		vector_int			indx;
 //		int					M = particlesCount();
 		size_t				j;
@@ -931,8 +937,8 @@ void  CPosePDFParticlesExtended::resetDeterministic(
 void  CPosePDFParticlesExtended::resetUniform(
 			  float x_min,  float x_max,
 			  float y_min,  float y_max,
-			  vector_float	state_min,
-			  vector_float	state_max,
+			  CVectorFloat	state_min,
+			  CVectorFloat	state_max,
 			  float phi_min,float phi_max,
 			  int	particlesCount)
 {
@@ -1033,7 +1039,7 @@ void  CPosePDFParticlesExtended::drawSingleSample( CPose2D &outPart ) const
 /*---------------------------------------------------------------
 					drawManySamples
  ---------------------------------------------------------------*/
-void  CPosePDFParticlesExtended::drawManySamples( size_t N, std::vector<vector_double> & outSamples ) const
+void  CPosePDFParticlesExtended::drawManySamples( size_t N, std::vector<CVectorDouble> & outSamples ) const
 {
 	TExtendedCPose2D	*ptr;
 

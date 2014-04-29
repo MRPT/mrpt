@@ -11,6 +11,8 @@
 #include "CDlgCalibWizardOnline.h"
 #include "camera_calib_guiMain.h"
 
+#include <mrpt/vision/chessboard_find_corners.h>
+
 //(*InternalHeaders(CDlgCalibWizardOnline)
 #include <wx/settings.h>
 #include <wx/string.h>
@@ -74,7 +76,7 @@ CDlgCalibWizardOnline::CDlgCalibWizardOnline(wxWindow* parent,wxWindowID id,cons
 	wxFlexGridSizer* FlexGridSizer18;
 	wxFlexGridSizer* FlexGridSizer5;
 	wxStaticBoxSizer* StaticBoxSizer1;
-	
+
 	Create(parent, id, _("Grab chessboard calibration pattern"), wxDefaultPosition, wxDefaultSize, wxDEFAULT_DIALOG_STYLE, _T("id"));
 	SetClientSize(wxDefaultSize);
 	Move(wxDefaultPosition);
@@ -106,7 +108,7 @@ CDlgCalibWizardOnline::CDlgCalibWizardOnline(wxWindow* parent,wxWindowID id,cons
 	FlexGridSizer17->Add(edSizeY, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
 	StaticBoxSizer4->Add(FlexGridSizer17, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
 	FlexGridSizer6->Add(StaticBoxSizer4, 1, wxALL|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL, 2);
-	wxString __wxRadioBoxChoices_1[2] = 
+	wxString __wxRadioBoxChoices_1[2] =
 	{
 	_("OpenCV\'s default"),
 	_("Scaramuzza et al.\'s")
@@ -174,7 +176,7 @@ CDlgCalibWizardOnline::CDlgCalibWizardOnline(wxWindow* parent,wxWindowID id,cons
 	FlexGridSizer1->Fit(this);
 	FlexGridSizer1->SetSizeHints(this);
 	Center();
-	
+
 	Connect(ID_BUTTON1,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&CDlgCalibWizardOnline::OnbtnStartClick);
 	Connect(ID_BUTTON2,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&CDlgCalibWizardOnline::OnbtnStopClick);
 	Connect(ID_BUTTON3,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&CDlgCalibWizardOnline::OnbtnCloseClick);
@@ -267,19 +269,19 @@ void CDlgCalibWizardOnline::OntimCaptureTrigger(wxTimerEvent& event)
 		CObservationPtr obs = m_video->getNextFrame();
 		ASSERT_(obs)
 		ASSERT_(IS_CLASS(obs,CObservationImage) || IS_CLASS(obs,CObservation3DRangeScan) )
-		
+
 		// Convert to an image:
 		if (IS_CLASS(obs,CObservation3DRangeScan))
 		{
 			CObservation3DRangeScanPtr obs3D = CObservation3DRangeScanPtr(obs);
-			
+
 			CObservationImagePtr obsImg = CObservationImage::Create();
 			obsImg->timestamp = obs3D->timestamp;
 			ASSERT_(obs3D->hasIntensityImage)
 			obsImg->image = obs3D->intensityImage;
-			
+
 			// Ale hoop!
-			obs = obsImg;			
+			obs = obsImg;
 		}
 
 		CImage  img_to_show;
@@ -390,7 +392,7 @@ void CDlgCalibWizardOnline::threadProcessCorners()
 				try
 				{
 					// Detect corners:
-					bool foundCorners = mrpt::vision::findChessboardCorners( 
+					bool foundCorners = mrpt::vision::findChessboardCorners(
 						obj->m_threadImgToProcess->image,
 						obj->m_threadResults, obj->m_check_size_x, obj->m_check_size_y,	obj->m_normalize_image, obj->m_useScaramuzzaAlternativeDetector );
 

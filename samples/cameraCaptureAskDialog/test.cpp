@@ -7,8 +7,10 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/gui.h>
-#include <mrpt/hwdrivers.h>
+#include <mrpt/gui/CDisplayWindow.h>
+#include <mrpt/hwdrivers/CCameraSensor.h>
+#include <mrpt/utils/CTicTac.h>
+#include <mrpt/system/threads.h>
 
 using namespace mrpt;
 using namespace mrpt::gui;

@@ -7,7 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/opengl.h>  // Precompiled header
+#include "opengl-precomp.h"  // Precompiled header
 
 #include <mrpt/opengl/CLight.h>
 #include <mrpt/utils/CStream.h>
@@ -17,7 +17,6 @@
 using namespace mrpt;
 using namespace mrpt::opengl;
 using namespace mrpt::utils;
-using namespace mrpt::poses;
 using namespace mrpt::math;
 using namespace std;
 
@@ -30,10 +29,10 @@ CLight::CLight() :
 	spot_exponent(0.f),
 	spot_cutoff(180.f)
 {
-	color_ambient[0] = 0.05f; 
-	color_ambient[1] = 0.05f; 
-	color_ambient[2] = 0.05f; 
-	color_ambient[3] = 1.f; 
+	color_ambient[0] = 0.05f;
+	color_ambient[1] = 0.05f;
+	color_ambient[2] = 0.05f;
+	color_ambient[3] = 1.f;
 
 	color_diffuse[0] = 0.7f;
 	color_diffuse[1] = 0.7f;
@@ -54,12 +53,12 @@ void CLight::writeToStream(mrpt::utils::CStream &out) const
 {
 	const uint8_t version = 0;
 	out << version;
-	
+
 	out << light_ID
-		<< color_ambient[0] << color_ambient[1] << color_ambient[2] << color_ambient[3] 
-		<< color_diffuse[0] << color_diffuse[1] << color_diffuse[2] << color_diffuse[3] 
-		<< color_specular[0] << color_specular[1] << color_specular[2] << color_specular[3] 
-		<< position[0] << position[1] << position[2] << position[3] 
+		<< color_ambient[0] << color_ambient[1] << color_ambient[2] << color_ambient[3]
+		<< color_diffuse[0] << color_diffuse[1] << color_diffuse[2] << color_diffuse[3]
+		<< color_specular[0] << color_specular[1] << color_specular[2] << color_specular[3]
+		<< position[0] << position[1] << position[2] << position[3]
 		<< direction[0] << direction[1] << direction[2]
 		<< constant_attenuation << linear_attenuation << quadratic_attenuation << spot_exponent << spot_cutoff;
 }
@@ -68,15 +67,15 @@ void  CLight::readFromStream(mrpt::utils::CStream &in)
 {
 	uint8_t version;
 	in >> version;
-	
+
 	switch(version)
 	{
 	case 0:
 		in >> light_ID
-			>> color_ambient[0] >> color_ambient[1] >> color_ambient[2] >> color_ambient[3] 
-			>> color_diffuse[0] >> color_diffuse[1] >> color_diffuse[2] >> color_diffuse[3] 
-			>> color_specular[0] >> color_specular[1] >> color_specular[2] >> color_specular[3] 
-			>> position[0] >> position[1] >> position[2] >> position[3] 
+			>> color_ambient[0] >> color_ambient[1] >> color_ambient[2] >> color_ambient[3]
+			>> color_diffuse[0] >> color_diffuse[1] >> color_diffuse[2] >> color_diffuse[3]
+			>> color_specular[0] >> color_specular[1] >> color_specular[2] >> color_specular[3]
+			>> position[0] >> position[1] >> position[2] >> position[3]
 			>> direction[0] >> direction[1] >> direction[2]
 			>> constant_attenuation >> linear_attenuation >> quadratic_attenuation >> spot_exponent >> spot_cutoff;
 			break;

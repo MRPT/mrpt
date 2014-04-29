@@ -7,19 +7,24 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-
-#include <mrpt/detectors.h>  // Precompiled headers
+#include "detectors-precomp.h"  // Precompiled headers
 #include <mrpt/gui.h>
 #include <mrpt/slam/CColouredPointsMap.h>
 
 #include <mrpt/detectors/CFaceDetection.h>
 #include <mrpt/math.h>
+#include <mrpt/opengl/CPointCloudColoured.h>
+#include <mrpt/opengl/CGridPlaneXY.h>
+#include <mrpt/opengl/CSphere.h>
+#include <mrpt/opengl/CArrow.h>
+#include <mrpt/opengl/CSetOfLines.h>
+#include <mrpt/opengl/CAxis.h>
 
 #include <mrpt/slam/CMetricMapsAlignmentAlgorithm.h>
 #include <mrpt/slam/CICP.h>
 
 // Universal include for all versions of OpenCV
-#include <mrpt/otherlibs/do_opencv_includes.h> 
+#include <mrpt/otherlibs/do_opencv_includes.h>
 
 
 using namespace std;
@@ -78,7 +83,7 @@ CFaceDetection::~CFaceDetection()
 //------------------------------------------------------------------------
 void CFaceDetection::init(const mrpt::utils::CConfigFileBase &cfg )
 {
-	m_options.confidenceThreshold	= cfg.read_int( "FaceDetection", "confidenceThreshold", 240 );		
+	m_options.confidenceThreshold	= cfg.read_int( "FaceDetection", "confidenceThreshold", 240 );
 	m_options.multithread			= cfg.read_bool( "FaceDetection", "multithread", true );
 	m_options.useCovFilter			= cfg.read_bool( "FaceDetection", "useCovFilter", true );
 	m_options.useRegionsFilter		= cfg.read_bool( "FaceDetection", "useRegionsFilter", true );
@@ -176,7 +181,7 @@ void CFaceDetection::detectObjects_Impl(const mrpt::slam::CObservation *obs, vec
 					// To obtain experimental results
 					{
 						if ( m_measure.takeTime )
-						m_timeLog.enter("Multithread filters aplication");
+						m_timeLog.enter("Multithread filters application");
 					}
 
 					// Semaphores signal
@@ -203,7 +208,7 @@ void CFaceDetection::detectObjects_Impl(const mrpt::slam::CObservation *obs, vec
 					// To obtain experimental results
 					{
 						if ( m_measure.takeTime )
-						m_timeLog.leave("Multithread filters aplication");
+						m_timeLog.leave("Multithread filters application");
 					}
 
 					m_measure.faceNum++;
@@ -214,7 +219,7 @@ void CFaceDetection::detectObjects_Impl(const mrpt::slam::CObservation *obs, vec
 					// To obtain experimental results
 					{
 						if ( m_measure.takeTime )
-						m_timeLog.enter("Secuential filters aplication");
+						m_timeLog.enter("Secuential filters application");
 					}
 
 					/////////////////////////////////////////////////////
@@ -259,7 +264,7 @@ void CFaceDetection::detectObjects_Impl(const mrpt::slam::CObservation *obs, vec
 					// To obtain experimental results
 					{
 						if ( m_measure.takeTime )
-						m_timeLog.leave("Secuential filters aplication");
+						m_timeLog.leave("Secuential filters application");
 					}
 
 				}
@@ -309,12 +314,12 @@ bool CFaceDetection::checkIfFacePlane( CObservation3DRangeScan *face )
 
 	vector<TPoint3D> points;
 
-	size_t N = face->points3D_x.size();	
+	size_t N = face->points3D_x.size();
 
 	points.resize( N );
 
 	for ( size_t i = 0; i < N; i++ )
-		points[i] = TPoint3D( face->points3D_x.at(i), face->points3D_y.at(i), face->points3D_z.at(i) );	
+		points[i] = TPoint3D( face->points3D_x.at(i), face->points3D_y.at(i), face->points3D_z.at(i) );
 
 	// Try to ajust a plane
 	TPlane plane;
@@ -406,9 +411,9 @@ bool CFaceDetection::checkIfFacePlaneCov( CObservation3DRangeScan* face )
 	// To obtain the covariance vector and eigenvalues
 	CMatrixDouble cov;
 	CMatrixDouble eVects, m_eVals;
-	vector_double eVals;
+	CVectorDouble eVals;
 
-	cov = covVector( pointsVector );
+	cov = covVector<vector<CArrayDouble<3> >,CMatrixDouble>( pointsVector );
 
 	cov.eigenValues( eVals );
 
@@ -1394,7 +1399,7 @@ void CFaceDetection::experimental_viewFacePointsScanned( const vector<float> &xs
 //				experimental_viewFacePointsAndEigenVects
 //------------------------------------------------------------------------
 
-void CFaceDetection::experimental_viewFacePointsAndEigenVects(  const vector<CArrayDouble<3> > &pointsVector, const CMatrixDouble &eigenVect, const vector_double &eigenVal )
+void CFaceDetection::experimental_viewFacePointsAndEigenVects(  const vector<CArrayDouble<3> > &pointsVector, const CMatrixDouble &eigenVect, const CVectorDouble &eigenVal )
 {
 
 	vector<float> xs, ys, zs;

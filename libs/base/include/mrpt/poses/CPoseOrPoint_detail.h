@@ -9,17 +9,12 @@
 #ifndef CPOSEORPOINT_DETAIL_H
 #define CPOSEORPOINT_DETAIL_H
 
+#include <mrpt/poses/poses_frwds.h>
+
 namespace mrpt
 {
 	namespace poses
 	{
-		class CPoint2D;
-		class CPoint3D;
-		class CPose2D;
-		class CPose3D;
-		class CPose3DQuat;
-		class CPose3DRotVec;
-
 		/** Internal, auxiliary templates for MRPT classes */
 		namespace detail
 		{

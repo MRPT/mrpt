@@ -7,9 +7,15 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/reactivenav.h>  // Precomp header
+#include "reactivenav-precomp.h" // Precomp header
 
+#include <mrpt/reactivenav/CAbstractPTGBasedReactive.h>
 #include <mrpt/system/filesystem.h>
+#include <mrpt/math/wrap2pi.h>
+#include <mrpt/math/ops_containers.h> // sum()
+#include <mrpt/utils/printf_vector.h>
+#include <mrpt/utils/metaprogramming.h>
+#include <mrpt/utils/CFileOutputStream.h>
 
 using namespace mrpt;
 using namespace mrpt::poses;
@@ -21,7 +27,7 @@ using namespace std;
 // ------ CAbstractPTGBasedReactive::TNavigationParamsPTG -----
 std::string CAbstractPTGBasedReactive::TNavigationParamsPTG::getAsText() const
 {
-	
+
 	std::string s = TNavigationParams::getAsText();
 	s += "restrict_PTG_indices: ";
 	s += mrpt::utils::sprintf_vector("%u ",this->restrict_PTG_indices);
@@ -117,7 +123,7 @@ void CAbstractPTGBasedReactive::enableLogFile(bool enable)
 
 			// Open file, find the first free file-name.
 			char	aux[100];
-			int     nFile = 0;
+			unsigned int nFile = 0;
 			bool    free_name = false;
 
 			system::createDirectory("./reactivenav.logs");
@@ -426,7 +432,7 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 						holonomicMovement.speed,
 						HLFR);
 
-					// Security: Scale down the velocity when heading towards obstacles, 
+					// Security: Scale down the velocity when heading towards obstacles,
 					//  such that it's assured that we never go thru an obstacle!
 					const int kDirection = static_cast<int>( holonomicMovement.PTG->alpha2index( holonomicMovement.direction ) );
 					const double obsFreeNormalizedDistance = ipf.TP_Obstacles[kDirection];
@@ -439,7 +445,7 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 						else velScale = (obsFreeNormalizedDistance-secureDistanceStart)/(secureDistanceEnd-secureDistanceStart);
 					}
 
-					// Scale: 
+					// Scale:
 					holonomicMovement.speed *= velScale;
 				}
 
@@ -469,7 +475,7 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 			{
 				metaprogramming::copy_container_typecasting(ipf.TP_Obstacles, newLogRec.infoPerPTG[indexPTG].TP_Obstacles);
 				newLogRec.infoPerPTG[indexPTG].PTG_desc  = ptg->getDescription();
-				newLogRec.infoPerPTG[indexPTG].TP_Target = CPoint2D(ipf.TP_Target);
+				newLogRec.infoPerPTG[indexPTG].TP_Target = ipf.TP_Target;
 				newLogRec.infoPerPTG[indexPTG].HLFR	     = HLFR;
 				newLogRec.infoPerPTG[indexPTG].desiredDirection = holonomicMovement.direction;
 				newLogRec.infoPerPTG[indexPTG].desiredSpeed     = holonomicMovement.speed;
@@ -553,7 +559,7 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 			this->loggingGetWSObstaclesAndShape(newLogRec);
 
 			newLogRec.robotOdometryPose			= curPose;
-			newLogRec.WS_target_relative		= CPoint2D(relTarget.x(), relTarget.y());
+			newLogRec.WS_target_relative		= TPoint2D(relTarget.x(), relTarget.y());
 			newLogRec.v							= new_cmd_v;
 			newLogRec.w							= new_cmd_w;
 			newLogRec.nSelectedPTG				= nSelectedPTG;
@@ -594,7 +600,7 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 
 void CAbstractPTGBasedReactive::STEP5_PTGEvaluator(
 	THolonomicMovement         & holonomicMovement,
-	const vector_double        & in_TPObstacles,
+	const std::vector<float>        & in_TPObstacles,
 	const mrpt::math::TPose2D  & WS_Target,
 	const mrpt::math::TPoint2D & TP_Target,
 	CLogFileRecord::TInfoPerPTG & log )
@@ -602,7 +608,7 @@ void CAbstractPTGBasedReactive::STEP5_PTGEvaluator(
 	const double   refDist	    = holonomicMovement.PTG->refDistance;
 	const double   TargetDir    = (TP_Target.x!=0 || TP_Target.y!=0) ? atan2( TP_Target.y, TP_Target.x) : 0.0;
 	const int      TargetSector = static_cast<int>( holonomicMovement.PTG->alpha2index( TargetDir ) );
-	const double   TargetDist   = TP_Target.norm();
+	const float    TargetDist   = TP_Target.norm();
 	// Picked movement direction:
 	const int      kDirection   = static_cast<int>( holonomicMovement.PTG->alpha2index( holonomicMovement.direction ) );
 
@@ -662,7 +668,7 @@ void CAbstractPTGBasedReactive::STEP5_PTGEvaluator(
 	// Factor6: Fast when free space
 	// -----------------------------------------------------
 	float aver_obs = 0;
-	for (int i=0; i<in_TPObstacles.size(); i++)
+	for (size_t i=0; i<in_TPObstacles.size(); i++)
 		aver_obs += in_TPObstacles[i];
 
 	aver_obs = aver_obs/in_TPObstacles.size();

@@ -7,9 +7,10 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/vision.h>  // Precompiled headers
+#include "vision-precomp.h"   // Precompiled headers
 
 #include <mrpt/system/threads.h>
+#include <mrpt/system/os.h>
 #include <mrpt/vision/CFeatureExtraction.h>
 
 #if MRPT_HAS_OPENCV && MRPT_HAS_SIFT_HESS

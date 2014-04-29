@@ -7,11 +7,15 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/base.h>  // Precompiled headers
+#include "base-precomp.h"  // Precompiled headers
 
 #include <mrpt/system/datetime.h>
 #include <mrpt/system/filesystem.h>
+#include <mrpt/system/os.h>
 #include <mrpt/system/CDirectoryExplorer.h>
+
+#include <cstring>
+#include <stdio.h>
 
 #ifdef MRPT_OS_WINDOWS
     #include <conio.h>
@@ -148,7 +152,8 @@ bool  mrpt::system::directoryExists(const std::string& _path)
 bool  mrpt::system::createDirectory( const string &dirName )
 {
 #ifdef MRPT_OS_WINDOWS
-	return 0!=CreateDirectoryA( dirName.c_str(), NULL );
+	bool rc = 0!=CreateDirectoryA( dirName.c_str(), NULL);
+	return (rc || GetLastError()==ERROR_ALREADY_EXISTS);
 #else
     int ret = mkdir( dirName.c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH );
     if (ret && errno!=EEXIST) // We ignore this error...

@@ -7,10 +7,18 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-
-#include <mrpt/maps.h>
-#include <mrpt/obs.h>
-#include <mrpt/base.h>
+#include <mrpt/system/os.h>
+#include <mrpt/system/filesystem.h>
+#include <mrpt/utils/CConfigFile.h>
+#include <mrpt/utils/CFileOutputStream.h>
+#include <mrpt/utils/CFileGZOutputStream.h>
+#include <mrpt/slam/CBeaconMap.h>
+#include <mrpt/slam/CSensoryFrame.h>
+#include <mrpt/slam/CActionCollection.h>
+#include <mrpt/slam/CActionRobotMovement2D.h>
+#include <mrpt/slam/CObservationBeaconRanges.h>
+#include <mrpt/poses/CPoint3D.h>
+#include <mrpt/random.h>
 
 using namespace mrpt;
 using namespace mrpt::utils;

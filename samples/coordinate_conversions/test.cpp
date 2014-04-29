@@ -7,12 +7,15 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/base.h>
+#include <mrpt/system/os.h>
 #include <mrpt/topography.h>
+#include <mrpt/math/CMatrixD.h>
+#include <iomanip>
 
 using namespace mrpt::utils;
 using namespace mrpt::math;
 using namespace mrpt::topography;
+using namespace mrpt::system;
 using namespace std;
 
 #include <mrpt/examples_config.h>
@@ -136,7 +139,7 @@ void exampleResults()
 }
 
 
-void displayResults( const vector_double &thisResults, const unsigned int &example, const bool color )
+void displayResults( const CVectorDouble &thisResults, const unsigned int &example, const bool color )
 {
 	cout << "Example " << example << ". Results" << setprecision(16) << endl;
 	cout << "----------------------------------------------------------------------------" << endl;
@@ -149,19 +152,19 @@ void displayResults( const vector_double &thisResults, const unsigned int &examp
 		for( unsigned int i = 0; i < N; ++i )
 		{
 			cout << names[i] << "\t";
-			if( fabs( thisResults[3*i+0]-results[example-1].get_unsafe(i,0)) < TH ) 
+			if( fabs( thisResults[3*i+0]-results[example-1].get_unsafe(i,0)) < TH )
 				mrpt::system::setConsoleColor(CONCOL_GREEN);
 			else
 				mrpt::system::setConsoleColor(CONCOL_RED);
 			cout << thisResults[3*i+0] << "\t";
-			
-			if( fabs( thisResults[3*i+1]-results[example-1].get_unsafe(i,1)) < TH ) 
+
+			if( fabs( thisResults[3*i+1]-results[example-1].get_unsafe(i,1)) < TH )
 				mrpt::system::setConsoleColor(CONCOL_GREEN);
 			else
 				mrpt::system::setConsoleColor(CONCOL_RED);
 			cout << thisResults[3*i+1] << "\t";
-			
-			if( fabs( thisResults[3*i+2]-results[example-1].get_unsafe(i,2)) < TH ) 
+
+			if( fabs( thisResults[3*i+2]-results[example-1].get_unsafe(i,2)) < TH )
 				mrpt::system::setConsoleColor(CONCOL_GREEN);
 			else
 				mrpt::system::setConsoleColor(CONCOL_RED);
@@ -284,7 +287,7 @@ void Examples_01()
 	TGeodeticCoords HALC_92543( TCoords(37,53,11.26838).getDecimalValue(), TCoords(-4,2,44.35794).getDecimalValue(), 530.446 );
 
 	// A2
-	int			UTMZone; 
+	int			UTMZone;
 	char		UTMBand;
 	TUTMCoords	MAND_UTM, OROZ_UTM, SANC_UTM, ARJO_UTM, CANI_UTM, HALC_UTM;
 	geodeticToUTM( MAND_92633, MAND_UTM, UTMZone, UTMBand, TEllipsoid::Ellipsoid_WGS84() );
@@ -294,7 +297,7 @@ void Examples_01()
 	geodeticToUTM( CANI_96833, CANI_UTM, UTMZone, UTMBand, TEllipsoid::Ellipsoid_WGS84() );
 	geodeticToUTM( HALC_92543, HALC_UTM, UTMZone, UTMBand, TEllipsoid::Ellipsoid_WGS84() );
 
-	vector_double thisResults;
+	CVectorDouble thisResults;
 	thisResults.resize(18);
 
 	thisResults[0]	= MAND_UTM.x;	thisResults[1]	= MAND_UTM.y;	thisResults[2]	= MAND_UTM.z;
@@ -347,7 +350,7 @@ void Examples_02()
 	geocentricToGeodetic( HALC_Geoc2, HALC_Geod, ellip );
 
 	//A2
-	int			UTMZone; 
+	int			UTMZone;
 	char		UTMBand;
 	TUTMCoords	MAND_UTM, OROZ_UTM, SANC_UTM, ARJO_UTM, CANI_UTM, HALC_UTM;
 	geodeticToUTM( MAND_Geod, MAND_UTM, UTMZone, UTMBand, ellip );
@@ -357,7 +360,7 @@ void Examples_02()
 	geodeticToUTM( CANI_Geod, CANI_UTM, UTMZone, UTMBand, ellip );
 	geodeticToUTM( HALC_Geod, HALC_UTM, UTMZone, UTMBand, ellip );
 
-	vector_double thisResults;
+	CVectorDouble thisResults;
 	thisResults.resize(18);
 
 	thisResults[0]	= MAND_UTM.x;	thisResults[1]	= MAND_UTM.y;	thisResults[2]	= MAND_UTM.z;
@@ -383,7 +386,7 @@ void Examples_03()
 	const TEllipsoid ellip = TEllipsoid::Ellipsoid_WGS84();
 
 	//A2
-	int			UTMZone; 
+	int			UTMZone;
 	char		UTMBand;
 	TUTMCoords	MAND_UTM, OROZ_UTM, SANC_UTM, ARJO_UTM, CANI_UTM, HALC_UTM;
 	geodeticToUTM( MAND_92633, MAND_UTM, UTMZone, UTMBand, ellip );
@@ -403,7 +406,7 @@ void Examples_03()
 	transformHelmert2D_TOPCON( TPoint2D( CANI_UTM.x, CANI_UTM.y ), datum, CANI_point );
 	transformHelmert2D_TOPCON( TPoint2D( HALC_UTM.x, HALC_UTM.y ), datum, HALC_point );
 
-	vector_double thisResults;
+	CVectorDouble thisResults;
 	thisResults.resize(18);
 
 	thisResults[0]	= MAND_point.x;	thisResults[1]	= MAND_point.y;	thisResults[2]	= MAND_UTM.z;
@@ -429,7 +432,7 @@ void Examples_04()
 	const TEllipsoid ellip = TEllipsoid::Ellipsoid_WGS84();
 
 	//A2
-	int			UTMZone; 
+	int			UTMZone;
 	char		UTMBand;
 	TUTMCoords	MAND_UTM, OROZ_UTM, SANC_UTM, ARJO_UTM, CANI_UTM, HALC_UTM;
 	geodeticToUTM( MAND_92633, MAND_UTM, UTMZone, UTMBand, ellip );
@@ -449,7 +452,7 @@ void Examples_04()
 	transformHelmert3D_TOPCON( CANI_UTM, datum, CANI_point );
 	transformHelmert3D_TOPCON( HALC_UTM, datum, HALC_point );
 
-	vector_double thisResults;
+	CVectorDouble thisResults;
 	thisResults.resize(18);
 
 	thisResults[0]	= MAND_point.x;	thisResults[1]	= MAND_point.y;	thisResults[2]	= MAND_point.z;
@@ -476,7 +479,7 @@ void Examples_05()
 	const TEllipsoid ellip = TEllipsoid( 6378137, 6356752.31424518, "USER" );
 
 	//A2
-	int			UTMZone; 
+	int			UTMZone;
 	char		UTMBand;
 	TUTMCoords	MAND_UTM, OROZ_UTM, SANC_UTM, ARJO_UTM, CANI_UTM, HALC_UTM;
 	geodeticToUTM( MAND_92633, MAND_UTM, UTMZone, UTMBand, ellip );
@@ -488,11 +491,11 @@ void Examples_05()
 
 	//A5
 	TUTMCoords	MAND_point, OROZ_point, SANC_point, ARJO_point, CANI_point, HALC_point;
-	TDatum7Params_TOPCON	datum( 
-		109.035107801496, 202.610276063935, 32.727057571807, 
-		0.9999999999, 0.0000005460, 0.0000156068, 
-		-0.0000005463, 0.9999999998, 0.0000180851, 
-		-0.0000156068, -0.0000180851, 0.9999999997, 
+	TDatum7Params_TOPCON	datum(
+		109.035107801496, 202.610276063935, 32.727057571807,
+		0.9999999999, 0.0000005460, 0.0000156068,
+		-0.0000005463, 0.9999999998, 0.0000180851,
+		-0.0000156068, -0.0000180851, 0.9999999997,
 		0.842993545636 );
 	transform7params_TOPCON( MAND_UTM, datum, MAND_point );
 	transform7params_TOPCON( OROZ_UTM, datum, OROZ_point );
@@ -501,7 +504,7 @@ void Examples_05()
 	transform7params_TOPCON( CANI_UTM, datum, CANI_point );
 	transform7params_TOPCON( HALC_UTM, datum, HALC_point );
 
-	vector_double thisResults;
+	CVectorDouble thisResults;
 	thisResults.resize(18);
 
 	thisResults[0]	= MAND_point.x;	thisResults[1]	= MAND_point.y;	thisResults[2]	= MAND_point.z;
@@ -554,7 +557,7 @@ void Examples_06()
 	geocentricToGeodetic( HALC_Geoc2, HALC_Geod, ellip );
 
 	//A2
-	int			UTMZone; 
+	int			UTMZone;
 	char		UTMBand;
 	TUTMCoords	MAND_UTM, OROZ_UTM, SANC_UTM, ARJO_UTM, CANI_UTM, HALC_UTM;
 	geodeticToUTM( MAND_Geod, MAND_UTM, UTMZone, UTMBand, ellip );
@@ -564,7 +567,7 @@ void Examples_06()
 	geodeticToUTM( CANI_Geod, CANI_UTM, UTMZone, UTMBand, ellip );
 	geodeticToUTM( HALC_Geod, HALC_UTM, UTMZone, UTMBand, ellip );
 
-	vector_double thisResults;
+	CVectorDouble thisResults;
 	thisResults.resize(18);
 
 	thisResults[0]	= MAND_UTM.x;	thisResults[1]	= MAND_UTM.y;	thisResults[2]	= MAND_UTM.z;
@@ -636,7 +639,7 @@ void Examples_07()
 	geocentricToGeodetic( HALC_Geoc2, HALC_Geod, ellip );
 
 	//A2
-	int			UTMZone; 
+	int			UTMZone;
 	char		UTMBand;
 	TUTMCoords	MAND_UTM, OROZ_UTM, SANC_UTM, ARJO_UTM, CANI_UTM, HALC_UTM;
 	geodeticToUTM( MAND_Geod, MAND_UTM, UTMZone, UTMBand, ellip );
@@ -646,7 +649,7 @@ void Examples_07()
 	geodeticToUTM( CANI_Geod, CANI_UTM, UTMZone, UTMBand, ellip );
 	geodeticToUTM( HALC_Geod, HALC_UTM, UTMZone, UTMBand, ellip );
 
-	vector_double thisResults;
+	CVectorDouble thisResults;
 	thisResults.resize(18);
 
 	thisResults[0]	= MAND_UTM.x;	thisResults[1]	= MAND_UTM.y;	thisResults[2]	= MAND_UTM.z;
@@ -718,7 +721,7 @@ void Examples_08()
 	geocentricToGeodetic( HALC_Geoc2, HALC_Geod, ellip );
 
 	//A2
-	int			UTMZone; 
+	int			UTMZone;
 	char		UTMBand;
 	TUTMCoords	MAND_UTM, OROZ_UTM, SANC_UTM, ARJO_UTM, CANI_UTM, HALC_UTM;
 	geodeticToUTM( MAND_Geod, MAND_UTM, UTMZone, UTMBand, ellip );
@@ -728,7 +731,7 @@ void Examples_08()
 	geodeticToUTM( CANI_Geod, CANI_UTM, UTMZone, UTMBand, ellip );
 	geodeticToUTM( HALC_Geod, HALC_UTM, UTMZone, UTMBand, ellip );
 
-	vector_double thisResults;
+	CVectorDouble thisResults;
 	thisResults.resize(18);
 
 	thisResults[0]	= MAND_UTM.x;	thisResults[1]	= MAND_UTM.y;	thisResults[2]	= MAND_UTM.z;
@@ -743,8 +746,8 @@ void Examples_08()
 	//A5
 	TGeocentricCoords	MAND_Geoc3, OROZ_Geoc3, SANC_Geoc3, ARJO_Geoc3, CANI_Geoc3, HALC_Geoc3;
 	//TDatum7Params	dat( -34.095438458048, 10.843234125336, 212.169692142148, -8.348308019638, 6.751893142065, -1.738975581025, -1.898114919019 );
-	TDatum7Params_TOPCON	dat( -34.095438458048, 10.843234125336, 212.169692142148, 
-		0.9999999994, 0.0000084308, 0.0000327341, 
+	TDatum7Params_TOPCON	dat( -34.095438458048, 10.843234125336, 212.169692142148,
+		0.9999999994, 0.0000084308, 0.0000327341,
 		-0.0000084321, 0.9999999991, 0.0000404737,
 		-0.0000327338, -0.0000404737, 0.9999999986,
 		-1.898114919019 );
@@ -805,7 +808,7 @@ void Examples_10()
 	geocentricToGeodetic( HALC_Geoc2, HALC_Geod, ellip );
 
 	//A2
-	int			UTMZone; 
+	int			UTMZone;
 	char		UTMBand;
 	TUTMCoords	MAND_UTM, OROZ_UTM, SANC_UTM, ARJO_UTM, CANI_UTM, HALC_UTM;
 	geodeticToUTM( MAND_Geod, MAND_UTM, UTMZone, UTMBand, ellip );
@@ -815,7 +818,7 @@ void Examples_10()
 	geodeticToUTM( CANI_Geod, CANI_UTM, UTMZone, UTMBand, ellip );
 	geodeticToUTM( HALC_Geod, HALC_UTM, UTMZone, UTMBand, ellip );
 
-	vector_double thisResults;
+	CVectorDouble thisResults;
 	thisResults.resize(18);
 
 	thisResults[0]	= MAND_UTM.x;	thisResults[1]	= MAND_UTM.y;	thisResults[2]	= MAND_UTM.z;
@@ -869,7 +872,7 @@ void Examples_11()
 	geocentricToGeodetic( HALC_Geoc2, HALC_Geod, ellip );
 
 	//A2
-	int			UTMZone; 
+	int			UTMZone;
 	char		UTMBand;
 	TUTMCoords	MAND_UTM, OROZ_UTM, SANC_UTM, ARJO_UTM, CANI_UTM, HALC_UTM;
 	geodeticToUTM( MAND_Geod, MAND_UTM, UTMZone, UTMBand, ellip );
@@ -879,7 +882,7 @@ void Examples_11()
 	geodeticToUTM( CANI_Geod, CANI_UTM, UTMZone, UTMBand, ellip );
 	geodeticToUTM( HALC_Geod, HALC_UTM, UTMZone, UTMBand, ellip );
 
-	vector_double thisResults;
+	CVectorDouble thisResults;
 	thisResults.resize(18);
 
 	thisResults[0]	= MAND_UTM.x;	thisResults[1]	= MAND_UTM.y;	thisResults[2]	= MAND_UTM.z;
@@ -905,7 +908,7 @@ void Examples_12()
 	const TEllipsoid ellip = TEllipsoid::Ellipsoid_Hayford_1909();
 
 	//A2
-	int			UTMZone; 
+	int			UTMZone;
 	char		UTMBand;
 	TUTMCoords	MAND_UTM, OROZ_UTM, SANC_UTM, ARJO_UTM, CANI_UTM, HALC_UTM;
 	geodeticToUTM( MAND_92633, MAND_UTM, UTMZone, UTMBand, ellip );
@@ -935,7 +938,7 @@ void Examples_12()
 	transform1D( TPoint3D( CANI_point.x, CANI_point.y, CANI_UTM.z ), datum, CANI_point2 );
 	transform1D( TPoint3D( HALC_point.x, HALC_point.y, HALC_UTM.z ), datum, HALC_point2 );
 
-	vector_double thisResults;
+	CVectorDouble thisResults;
 	thisResults.resize(18);
 
 	thisResults[0]	= MAND_point2.x;	thisResults[1]	= MAND_point2.y;	thisResults[2]	= MAND_point2.z;
@@ -961,7 +964,7 @@ void Examples_13()
 	const TEllipsoid ellip = TEllipsoid::Ellipsoid_Hayford_1909();
 
 	//A2
-	int			UTMZone; 
+	int			UTMZone;
 	char		UTMBand;
 	TUTMCoords	MAND_UTM, OROZ_UTM, SANC_UTM, ARJO_UTM, CANI_UTM, HALC_UTM;
 	geodeticToUTM( MAND_92633, MAND_UTM, UTMZone, UTMBand, ellip );
@@ -991,7 +994,7 @@ void Examples_13()
 	transform1D( CANI_point, datum, CANI_point2 );
 	transform1D( HALC_point, datum, HALC_point2 );
 
-	vector_double thisResults;
+	CVectorDouble thisResults;
 	thisResults.resize(18);
 
 	thisResults[0]	= MAND_point2.x;	thisResults[1]	= MAND_point2.y;	thisResults[2]	= MAND_point2.z;

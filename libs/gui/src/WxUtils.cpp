@@ -7,9 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/gui.h>  // precompiled header
-
-#include <mrpt/config.h>
+#include "gui-precomp.h"   // Precompiled headers
 
 #include <mrpt/gui/WxUtils.h>
 #include <mrpt/utils/CImage.h>

@@ -13,10 +13,6 @@
 #include <mrpt/utils/map_as_vector.h>
 #include <mrpt/math/CMatrixTemplateNumeric.h>  // For mrpt::math::CMatrixDouble
 
-// If the user doesn't have Eigen installed in the system, we'll use the
-// MRPT embedded version, so there is no need to check for Eigen in the system.
-#include <Eigen/Dense>
-
 namespace mrpt
 {
 	namespace math

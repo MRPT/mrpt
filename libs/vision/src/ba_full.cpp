@@ -7,11 +7,12 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/vision.h>  // Precompiled headers
+#include "vision-precomp.h"   // Precompiled headers
 
 #include <mrpt/vision/bundle_adjustment.h>
 #include <mrpt/utils/CTimeLogger.h>
 #include <mrpt/math/CSparseMatrix.h>
+#include <mrpt/math/ops_containers.h>
 
 #include <memory>  // std::auto_ptr, unique_ptr
 
@@ -256,8 +257,8 @@ double mrpt::vision::bundle_adj_full(
 			for (size_t i=0; i<H_f.size(); ++i)
 				YW_map[std::pair<TCameraPoseID,TLandmarkID>(i,i)] = U_star[i];
 
-			vector_double  delta( len_free_frames + len_free_points ); // The optimal step
-			vector_double  e    ( len_free_frames );
+			CVectorDouble  delta( len_free_frames + len_free_points ); // The optimal step
+			CVectorDouble  e    ( len_free_frames );
 
 
 			profiler.enter("Schur.build.reduced.frames");
@@ -328,7 +329,7 @@ double mrpt::vision::bundle_adj_full(
 				profiler.leave("sS:chol");
 
 				profiler.enter("sS:backsub");
-				vector_double  bck_res;
+				CVectorDouble  bck_res;
 				ptrCh->backsub(e, bck_res);  // Ax = b -->  delta= x*
 				::memcpy(&delta[0],&bck_res[0],bck_res.size()*sizeof(bck_res[0]));	// delta.slice(0,...) = Ch.backsub(e);
 				profiler.leave("sS:backsub");
@@ -346,7 +347,7 @@ double mrpt::vision::bundle_adj_full(
 
 			profiler.enter("PostSchur.landmarks");
 
-			vector_double g(len_free_frames+len_free_points);
+			CVectorDouble g(len_free_frames+len_free_points);
 			::memcpy(&g[0],&e[0],len_free_frames*sizeof(g[0])); //g.slice(0,FrameDof*(num_frames-num_fix_frames)) = e;
 
 			for (size_t i=0; i<num_free_points; ++i)

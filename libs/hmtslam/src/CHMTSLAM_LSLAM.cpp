@@ -7,11 +7,13 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/hmtslam.h> // Precomp header
+#include "hmtslam-precomp.h" // Precomp header
 
 #include <mrpt/utils/CTicTac.h>
+#include <mrpt/utils/stl_containers_utils.h>
 #include <mrpt/random.h>
 #include <mrpt/math/distributions.h>
+#include <mrpt/hmtslam/CRobotPosesGraph.h>
 
 #include <mrpt/utils/CFileOutputStream.h>
 

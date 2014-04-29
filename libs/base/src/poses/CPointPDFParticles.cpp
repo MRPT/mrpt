@@ -7,20 +7,19 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/base.h>  // Precompiled headers
-
+#include "base-precomp.h"  // Precompiled headers
 
 #include <mrpt/poses/CPointPDFParticles.h>
 #include <mrpt/poses/CPoint3D.h>
 #include <mrpt/poses/CPose3D.h>
-
-#include <mrpt/math/utils.h>
 #include <mrpt/math/ops_vectors.h>
+#include <mrpt/system/os.h>
 
 using namespace mrpt;
 using namespace mrpt::poses;
 using namespace mrpt::utils;
 using namespace mrpt::math;
+using namespace mrpt::system;
 
 IMPLEMENTS_SERIALIZABLE( CPointPDFParticles, CPointPDF, mrpt::poses )
 IMPLEMENTS_SERIALIZABLE( TSimple3DPoint, CSerializable, mrpt::poses )
@@ -51,11 +50,11 @@ void CPointPDFParticles::setSize(
 {
 	// Free old particles:
 	CParticleList::iterator	it;
-	for (it=m_particles.begin();it!=m_particles.end();it++)
+	for (it=m_particles.begin();it!=m_particles.end();++it)
 		delete it->d;
 
 	m_particles.resize(numberParticles);
-	for (it=m_particles.begin();it!=m_particles.end();it++)
+	for (it=m_particles.begin();it!=m_particles.end();++it)
 	{
 		it->log_w = 0;
 		it->d = new TSimple3DPoint(defaultValue);
@@ -73,11 +72,11 @@ void CPointPDFParticles::getMean(CPoint3D &p) const
 		THROW_EXCEPTION("Cannot compute mean since there are zero particles.")
 
 	CParticleList::const_iterator	it;
-	double		w,sumW=0;
+	double		sumW=0;
 	double		x=0,y=0,z=0;
 	for (it=m_particles.begin();it!=m_particles.end();it++)
 	{
-		w = exp(it->log_w);
+		const double w = exp(it->log_w);
 		x+=it->d->x*w;
 		y+=it->d->y*w;
 		z+=it->d->z*w;
@@ -240,11 +239,14 @@ double CPointPDFParticles::computeKurtosis()
 	MRPT_START
 
 	// kurtosis = \mu^4 / (\sigma^2) -3
-	vector_double						kurts(3,0), mu4(3,0),m(3,0),var(3,0);
-	CParticleList::iterator		it;
+	CVectorDouble kurts, mu4,m,var;
+	kurts.assign(3,.0);
+	mu4.assign(3,.0);
+	m.assign(3,.0);
+	var.assign(3,.0);
 
 	// Means:
-	for (it=m_particles.begin();it!=m_particles.end();it++)
+	for (CParticleList::iterator it=m_particles.begin();it!=m_particles.end();++it)
 	{
 		m[0]+=it->d->x;
 		m[1]+=it->d->y;
@@ -253,7 +255,7 @@ double CPointPDFParticles::computeKurtosis()
 	m*=1.0/m_particles.size();
 
 	// variances:
-	for (it=m_particles.begin();it!=m_particles.end();it++)
+	for (CParticleList::iterator it=m_particles.begin();it!=m_particles.end();++it)
 	{
 		var[0]+=square(it->d->x-m[0]);
 		var[1]+=square(it->d->y-m[1]);
@@ -265,7 +267,7 @@ double CPointPDFParticles::computeKurtosis()
 	var[2]=square(var[2]);
 
 	// Moment:
-	for (it=m_particles.begin();it!=m_particles.end();it++)
+	for (CParticleList::iterator it=m_particles.begin();it!=m_particles.end();++it)
 	{
 		mu4[0]+=pow(it->d->x-m[0],4.0);
 		mu4[1]+=pow(it->d->y-m[1],4.0);

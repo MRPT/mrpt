@@ -11,6 +11,7 @@
 #define ba_internals_H
 
 #include <mrpt/math/CMatrixFixedNumeric.h>
+#include <mrpt/poses/CPose3D.h>
 
 // Declarations shared between ba_*.cpp files, but which are private to MRPT
 //  not to be seen by an MRPT API user.
@@ -44,7 +45,7 @@ namespace mrpt
 			CMatrixFixedNumeric<double,ObsDim,PointDof>  J_point;
 			bool J_frame_valid, J_point_valid;
 
-			EIGEN_MAKE_ALIGNED_OPERATOR_NEW  // Needed by any struct having Eigen::Matrix<> fields
+			MRPT_MAKE_ALIGNED_OPERATOR_NEW  // Needed by any struct having Eigen::Matrix<> fields
 		};
 
 
@@ -58,6 +59,8 @@ namespace mrpt
 			   const TPoint3D & landmark_global,
 			   CMatrixFixedNumeric<double,2,6> & out_J)
 		{
+			using mrpt::utils::square;
+
 			double x,y,z; // wrt cam (local coords)
 			if (POSES_ARE_INVERSE)
 				cam_pose.composePoint(
@@ -122,9 +125,11 @@ namespace mrpt
 			const TPoint3D & landmark_global,
 			CMatrixFixedNumeric<double,2,3> & out_J )
 		{
+			using namespace mrpt::math;
+
 			TPoint3D l; // Local point, wrt camera
 
-			CMatrixDouble33 dp_point(UNINITIALIZED_MATRIX);
+			CMatrixDouble33 dp_point(mrpt::math::UNINITIALIZED_MATRIX);
 
 			if (POSES_ARE_INVERSE)
 				cam_pose.composePoint(
@@ -196,7 +201,7 @@ namespace mrpt
 		}
 
 		/** Construct the BA linear system.
-		  *  Set kernel_1st_deriv!=NULL if using robust kernel. 
+		  *  Set kernel_1st_deriv!=NULL if using robust kernel.
 		  */
 		void ba_build_gradient_Hessians(
 			const TSequenceFeatureObservations          & observations,

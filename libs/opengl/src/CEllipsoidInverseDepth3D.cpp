@@ -7,10 +7,10 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/opengl.h>  // Precompiled header
-
+#include "opengl-precomp.h"  // Precompiled header
 
 #include <mrpt/opengl/CEllipsoidInverseDepth3D.h>
+#include <mrpt/utils/CStream.h>
 
 using namespace mrpt;
 using namespace mrpt::opengl;
@@ -61,7 +61,7 @@ void  CEllipsoidInverseDepth3D::writeToStream(CStream &out,int *version) const
 	{
 		writeToStreamRender(out);
 		BASE::thisclass_writeToStream(out);
-			
+
 		out << m_underflowMaxRange;
 	}
 }

@@ -7,7 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/hwdrivers.h> // Precompiled headers
+#include "hwdrivers-precomp.h"   // Precompiled headers
 
 #include <mrpt/system/os.h>
 
@@ -17,6 +17,7 @@
 
 #include <windows.h>
 
+using namespace std;
 using namespace mrpt::utils;
 using namespace mrpt::hwdrivers;
 
@@ -93,7 +94,7 @@ void  CSerialPort::open( )
 /* -----------------------------------------------------
                 isOpen
    ----------------------------------------------------- */
-bool  CSerialPort::isOpen()
+bool  CSerialPort::isOpen() const 
 {
 	return hCOM != NULL;
 }

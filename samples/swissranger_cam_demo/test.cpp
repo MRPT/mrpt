@@ -7,9 +7,15 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/hwdrivers.h>
+#include <mrpt/hwdrivers/CSwissRanger3DCamera.h>
 #include <mrpt/gui.h>
-#include <mrpt/maps.h>
+#include <mrpt/slam/CObservation3DRangeScan.h>
+#include <mrpt/slam/CColouredPointsMap.h>
+#include <mrpt/opengl/CPointCloudColoured.h>
+#include <mrpt/opengl/CTexturedPlane.h>
+#include <mrpt/opengl/CGridPlaneXY.h>
+#include <mrpt/opengl/stock_objects.h>
+#include <mrpt/utils/CTicTac.h>
 
 using namespace mrpt;
 using namespace mrpt::hwdrivers;
@@ -85,7 +91,7 @@ void Test_SwissRanger()
 		scene->insert( gl_points );
 		scene->insert( mrpt::opengl::CGridPlaneXY::Create() );
 		scene->insert( mrpt::opengl::stock_objects::CornerXYZ() );
-		
+
 		const int VW_WIDTH = 200;
 		const int VW_HEIGHT = 150;
 		const int VW_GAP = 10;
@@ -145,7 +151,7 @@ void Test_SwissRanger()
 			CMatrixFloat  range2D = obs.rangeImage;
 			range2D*= 1.0/ cam.getMaxRange();
 			img.setFromMatrix(range2D);
-			
+
 			win3D.get3DSceneAndLock();
 				gl_img_range->assignImage_fast(img);
 			win3D.unlockAccess3DScene();
@@ -156,7 +162,7 @@ void Test_SwissRanger()
 		{
 			win3D.get3DSceneAndLock();
 				gl_img_intensity->assignImage(obs.intensityImage);
-				
+
 				CImage  undistortImg;
 				obs.intensityImage.rectifyImage(undistortImg, obs.cameraParams);
 				gl_img_intensity_rect->assignImage(undistortImg);

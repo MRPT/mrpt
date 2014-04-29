@@ -7,11 +7,11 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/base.h>  // Precompiled headers
-
+#include "base-precomp.h"  // Precompiled headers
 
 #include <mrpt/utils/CConfigFileBase.h>
 #include <mrpt/system/string_utils.h>
+#include <mrpt/system/os.h>
 
 using namespace std;
 using namespace mrpt::utils;

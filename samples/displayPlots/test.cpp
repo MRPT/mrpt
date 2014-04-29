@@ -7,8 +7,10 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/base.h>
-#include <mrpt/gui.h>
+#include <mrpt/gui/CDisplayWindowPlots.h>
+#include <mrpt/math/distributions.h>
+#include <mrpt/system/os.h>
+#include <mrpt/system/threads.h>
 
 using namespace mrpt;
 using namespace mrpt::gui;
@@ -32,7 +34,7 @@ void TestDisplayPlots()
 	win.setMenuCallback(myOnMenu);
 
 	// Generate data for a 2D plot:
-	vector_double  X,Y;
+	CVectorDouble  X,Y;
 	for (double x=0;x<5;x+=0.01f)
 	{
 		double y = math::normalPDF(x, 2,0.3);

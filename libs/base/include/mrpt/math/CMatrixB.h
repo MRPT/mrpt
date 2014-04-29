@@ -10,7 +10,7 @@
 #define CMATRIXB_H
 
 #include <mrpt/utils/CSerializable.h>
-#include <mrpt/math/CMatrixTemplateNumeric.h>
+#include <mrpt/math/CMatrixTemplate.h>
 
 namespace mrpt
 {

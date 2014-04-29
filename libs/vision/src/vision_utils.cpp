@@ -7,7 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/vision.h>  // Precompiled headers
+#include "vision-precomp.h"   // Precompiled headers
 
 
 #include <mrpt/vision/utils.h>
@@ -44,9 +44,9 @@ using namespace std;
 #endif
 
 const int FEAT_FREE = -1;
-const int NOT_ASIG = 0;
-const int ASG_FEAT = 1;
-const int AMB_FEAT = 2;
+//const int NOT_ASIG = 0;
+//const int ASG_FEAT = 1;
+//const int AMB_FEAT = 2;
 
 /*-------------------------------------------------------------
 					openCV_cross_correlation
@@ -322,8 +322,8 @@ void  vision::rowChecking(
 -------------------------------------------------------------*/
 void vision::getDispersion(
                     const CFeatureList      & list,
-                    vector_float            & std,
-                    vector_float            & mean )
+                    CVectorFloat            & std,
+                    CVectorFloat            & mean )
 {
 	std.assign(2,0);
 	mean.assign(2,0);
@@ -1113,14 +1113,14 @@ void  vision::projectMatchedFeatures(
 					Pa.chol(L); // math::chol(Pa,L);
 
 					vector<TPoint3D>	B;				// B group
-					poses::TPoint3D			meanB;			// Mean value of the B group
+					TPoint3D			meanB;			// Mean value of the B group
 					CMatrix					Pb;				// Covariance of the B group
 
 					B.resize( 2*Na + 1 );	// Set of output values
 					Pb.fill(0);				// Reset the output covariance
 
-					vector_float			vAux, myPoint;	// Auxiliar vectors
-					vector_float			meanA;			// Mean value of the A group
+					CVectorFloat			vAux, myPoint;	// Auxiliar vectors
+					CVectorFloat			meanA;			// Mean value of the A group
 
 					vAux.resize(3);			// Set the variables size
 					meanA.resize(3);
@@ -1182,7 +1182,7 @@ void  vision::projectMatchedFeatures(
 						v(1,0) = B[i].y - meanB.y;
 						v(2,0) = B[i].z - meanB.z;
 
-						Pb = Pb + weight*(v*~v);
+						Pb = Pb + weight*(v*v.transpose());
 					} // end for 'i'
 
 					// Store it in the landmark
@@ -1222,14 +1222,14 @@ void  vision::projectMatchedFeatures(
 					Pa.chol(L); //math::chol(Pa,L);
 
 					vector<TPoint3D>	B;				// B group
-					poses::TPoint3D		meanB;			// Mean value of the B group
+					TPoint3D		meanB;			// Mean value of the B group
 					CMatrix				Pb;				// Covariance of the B group
 
 					B.resize( 2*Na + 1 );	// Set of output values
 					Pb.fill(0);				// Reset the output covariance
 
-					vector_float		vAux, myPoint;	// Auxiliar vectors
-					vector_float		meanA;			// Mean value of the A group
+					CVectorFloat		vAux, myPoint;	// Auxiliar vectors
+					CVectorFloat		meanA;			// Mean value of the A group
 
 					vAux.resize(3);			// Set the variables size
 					meanA.resize(3);
@@ -1293,7 +1293,7 @@ void  vision::projectMatchedFeatures(
 						v(1,0) = B[i].y - meanB.y;
 						v(2,0) = B[i].z - meanB.z;
 
-						Pb = Pb + weight*(v*~v);
+						Pb = Pb + weight*(v*v.transpose());
 					} // end for 'i'
 
 					// Store it in the landmark
@@ -1419,14 +1419,14 @@ void  vision::projectMatchedFeatures(
 					Pa.chol(L); // math::chol(Pa,L);
 
 					vector<TPoint3D>	B;				// B group
-					poses::TPoint3D			meanB;			// Mean value of the B group
+					TPoint3D			meanB;			// Mean value of the B group
 					CMatrix					Pb;				// Covariance of the B group
 
 					B.resize( 2*Na + 1 );	// Set of output values
 					Pb.fill(0);				// Reset the output covariance
 
-					vector_float			vAux, myPoint;	// Auxiliar vectors
-					vector_float			meanA;			// Mean value of the A group
+					CVectorFloat			vAux, myPoint;	// Auxiliar vectors
+					CVectorFloat			meanA;			// Mean value of the A group
 
 					vAux.resize(3);			// Set the variables size
 					meanA.resize(3);
@@ -1488,7 +1488,7 @@ void  vision::projectMatchedFeatures(
 						v(1,0) = B[i].y - meanB.y;
 						v(2,0) = B[i].z - meanB.z;
 
-						Pb = Pb + weight*(v*~v);
+						Pb = Pb + weight*(v*v.transpose());
 					} // end for 'i'
 
 					// Store it in the landmark
@@ -1528,14 +1528,14 @@ void  vision::projectMatchedFeatures(
 					Pa.chol(L); //math::chol(Pa,L);
 
 					vector<TPoint3D>	B;				// B group
-					poses::TPoint3D		meanB;			// Mean value of the B group
+					TPoint3D		meanB;			// Mean value of the B group
 					CMatrix				Pb;				// Covariance of the B group
 
 					B.resize( 2*Na + 1 );	// Set of output values
 					Pb.fill(0);				// Reset the output covariance
 
-					vector_float		vAux, myPoint;	// Auxiliar vectors
-					vector_float		meanA;			// Mean value of the A group
+					CVectorFloat		vAux, myPoint;	// Auxiliar vectors
+					CVectorFloat		meanA;			// Mean value of the A group
 
 					vAux.resize(3);			// Set the variables size
 					meanA.resize(3);
@@ -1599,7 +1599,7 @@ void  vision::projectMatchedFeatures(
 						v(1,0) = B[i].y - meanB.y;
 						v(2,0) = B[i].z - meanB.z;
 
-						Pb = Pb + weight*(v*~v);
+						Pb = Pb + weight*(v*v.transpose());
 					} // end for 'i'
 
 					// Store it in the landmark
@@ -2088,14 +2088,14 @@ void  TStereoSystemParams::loadFromConfigFile(
 			break;
 	} // end switch
 
-	vector_double k_vec(9);
-	iniFile.read_vector( section.c_str(), "k_vec", vector_double(), k_vec, false );
+	CVectorDouble k_vec(9);
+	iniFile.read_vector( section.c_str(), "k_vec", CVectorDouble(), k_vec, false );
 	for (unsigned int ii = 0; ii < 3; ++ii )
         for (unsigned int jj = 0; jj < 3; ++jj)
             K(ii,jj) = k_vec[ii*3+jj];
 
-	vector_double f_vec(9);
-	iniFile.read_vector( section.c_str(), "f_vec", vector_double(), f_vec, false );
+	CVectorDouble f_vec(9);
+	iniFile.read_vector( section.c_str(), "f_vec", CVectorDouble(), f_vec, false );
 	for (unsigned int ii = 0; ii < 3; ++ii )
         for (unsigned int jj = 0; jj < 3; ++jj)
             F(ii,jj) = f_vec[ii*3+jj];

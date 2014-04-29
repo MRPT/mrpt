@@ -7,7 +7,10 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/reactivenav.h>  // Precomp header
+#include "reactivenav-precomp.h" // Precomp header
+
+#include <mrpt/reactivenav/CReactiveNavigationSystem3D.h>
+#include <mrpt/reactivenav/motion_planning_utils.h>
 #include <typeinfo>  // For typeid()
 
 using namespace mrpt;
@@ -182,10 +185,10 @@ void CReactiveNavigationSystem3D::loadConfigFile(const mrpt::utils::CConfigFileB
 	// -------------------------------------------------------------------
 	printf_debug("\tLOADED CONFIGURATION:\n");
 	printf_debug("-------------------------------------------------------------\n");
-	
+
 	printf_debug("  Robot name \t\t\t=%s\n",robotName.c_str());
 	ASSERT_(!m_holonomicMethod.empty())
-	printf_debug("  Holonomic method \t\t= %s\n",typeid(m_holonomicMethod[0]).name()); 
+	printf_debug("  Holonomic method \t\t= %s\n",typeid(m_holonomicMethod[0]).name());
 	printf_debug("  PTG Count\t\t\t= %u\n", num_ptgs );
 	printf_debug("  Max. ref. distance\t\t= %f\n", refDistance );
 	printf_debug("  Cells resolution \t\t= %.04f\n", colGridRes );
@@ -216,10 +219,10 @@ void CReactiveNavigationSystem3D::STEP1_CollisionGridsBuilder()
 			for (unsigned int i=0; i<m_robotShape.heights.size(); i++)
 			{
 				mrpt::reactivenav::build_PTG_collision_grids(
-					m_ptgmultilevel[j].PTGs[i], 
-					m_robotShape.polygons[i], 
-					format("ReacNavGrid_%s_%03u_L%02u.dat.gz",robotName.c_str(),i,j), 
-					m_enableConsoleOutput /*VERBOSE*/ 
+					m_ptgmultilevel[j].PTGs[i],
+					m_robotShape.polygons[i],
+					format("ReacNavGrid_%s_%03u_L%02u.dat.gz",robotName.c_str(),i,j),
+					m_enableConsoleOutput /*VERBOSE*/
 					);
 			}
 		}
@@ -273,7 +276,7 @@ bool CReactiveNavigationSystem3D::STEP2_SenseObstacles()
 			h += m_robotShape.heights[idxH];
 			if (zs[j] < h)
 			{
-				// Speed-up: If the obstacle is, for sure, out of the collision grid, 
+				// Speed-up: If the obstacle is, for sure, out of the collision grid,
 				// just don't account for it, because we don't know its mapping into TP-Obstacles anyway...
 				if (xs[j]>-OBS_MAX_XY && xs[j]<OBS_MAX_XY && ys[j]>-OBS_MAX_XY && ys[j]<OBS_MAX_XY)
 					m_WS_Obstacles_inlevels[idxH].insertPoint(xs[j],ys[j],zs[j]);
@@ -292,8 +295,8 @@ bool CReactiveNavigationSystem3D::STEP2_SenseObstacles()
 		Transform the obstacle into TP-Obstacles in TP-Spaces
 *************************************************************************/
 void CReactiveNavigationSystem3D::STEP3_WSpaceToTPSpace(
-	const size_t ptg_idx, 
-	mrpt::vector_double &out_TPObstacles )
+	const size_t ptg_idx,
+	std::vector<float> &out_TPObstacles )
 {
 	ASSERT_EQUAL_(m_WS_Obstacles_inlevels.size(),m_robotShape.heights.size())
 
@@ -310,7 +313,7 @@ void CReactiveNavigationSystem3D::STEP3_WSpaceToTPSpace(
 			const CParameterizedTrajectoryGenerator::TCollisionCell &cell = m_ptgmultilevel[ptg_idx].PTGs[j]->m_collisionGrid.getTPObstacle(ox,oy);
 
 			// Keep the minimum distance:
-			for (CParameterizedTrajectoryGenerator::TCollisionCell::const_iterator i=cell.begin();i!=cell.end();i++)
+			for (CParameterizedTrajectoryGenerator::TCollisionCell::const_iterator i=cell.begin();i!=cell.end();++i)
 				if ( i->second < out_TPObstacles[i->first] )
 					out_TPObstacles[i->first] = i->second;
 		}

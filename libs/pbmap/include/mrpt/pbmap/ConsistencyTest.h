@@ -18,7 +18,7 @@
 #include <mrpt/config.h>
 #if MRPT_HAS_PCL
 
-#include <mrpt/base.h>
+#include <mrpt/utils/types_math.h> // Eigen
 #include <mrpt/pbmap/link_pragmas.h>
 #include <mrpt/pbmap/PbMap.h>
 
@@ -48,6 +48,8 @@ namespace pbmap {
     /*!Return an initial guess for the rigid transformation which aligns two matched places.
     The translation is calculated from the planes centroids and the rotation from the alignment of the plane's normals.*/
     Eigen::Matrix4f initPose( std::map<unsigned, unsigned> &matched_planes);
+    Eigen::Matrix4f estimatePose( std::map<unsigned, unsigned> &matched_planes ); // Weighted with the area
+    bool estimatePoseWithCovariance(std::map<unsigned, unsigned> &matched_planes, Eigen::Matrix4f &rigidTransf, Eigen::Matrix<float,6,6> &covarianceM);
 
     /*!Return an initial guess for the rigid transformation which aligns two matched places.
     The translation is calculated from the planes centroids and the rotation from the alignment of the plane's normals.
@@ -57,6 +59,11 @@ namespace pbmap {
     /*!Return the estimated rigid transformation which aligns two matched subgraphs (i.e. neighborhoods of planes).
     This function iteratively minimizes the alignment error of the matched planes wrt the rigid transformation.*/
     Eigen::Matrix4f getRTwithModel( std::map<unsigned, unsigned> &matched_planes );
+
+
+//Eigen::Matrix4f getAlignment( const CMatrixFixedNumeric<float,3,8> &matched_planes );
+
+Eigen::Matrix4f estimatePoseRANSAC( std::map<unsigned, unsigned> &matched_planes );
 
    private:
 
@@ -68,6 +75,24 @@ namespace pbmap {
 
     /*!List of pairs of matched planes from the PbMaps PBMSource with those from PBMTarget*/
     std::map<unsigned, unsigned> matched_planes;
+
+//// Ransac functions to detect outliers in the plane matching
+//void ransacPlaneAlignment_fit( const CMatrixFloat &planeCorresp,
+//                                const vector_size_t  &useIndices,
+////                                vector< Eigen::Matrix4f > &fitModels );
+//                                vector< CMatrixFloat44 > &fitModels );
+//
+//void ransac3Dplane_distance( const CMatrixFloat &planeCorresp,
+//                              const vector< Eigen::Matrix4f > & testModels,
+//                              const double distanceThreshold,
+//                              unsigned int & out_bestModelIndex,
+//                              vector_size_t & out_inlierIndices );
+//
+//bool ransac3Dplane_degenerate( const CMatrixFloat &planeCorresp,
+//                                const mrpt::vector_size_t &useIndices );
+//
+//void TestRANSAC();
+
   };
 
 } } // End of namespaces

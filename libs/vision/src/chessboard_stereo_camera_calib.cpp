@@ -7,7 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/vision.h>  // Precompiled headers
+#include "vision-precomp.h"   // Precompiled headers
 
 #include <mrpt/system/filesystem.h>
 #include <mrpt/utils/CConfigFileMemory.h>
@@ -15,7 +15,9 @@
 #include <mrpt/vision/chessboard_find_corners.h>
 #include <mrpt/vision/chessboard_stereo_camera_calib.h>
 #include <mrpt/vision/pinhole.h>
-#include <mrpt/vision/robust_kernels.h>
+#include <mrpt/math/robust_kernels.h>
+#include <mrpt/math/wrap2pi.h>
+#include <algorithm> // reverse()
 
 #include "chessboard_stereo_camera_calib_internal.h"
 
@@ -141,7 +143,41 @@ bool mrpt::vision::checkerBoardStereoCalibration(
 			// We just finished detecting corners in a left/right pair.
 			// Only if corners were detected perfectly in BOTH images, add this image pair as a good one for optimization:
 			if( corners_found[0] && corners_found[1] )
+			{
 				valid_image_pair_indices.push_back(i);
+
+				// Consistency between left/right pair: the corners MUST BE ORDERED so they match to each other, 
+				// and the criterion must be the same in ALL pairs to avoid rubbish optimization:
+				
+				// Key idea: Generate a representative vector that goes along rows and columns. 
+				// Check the angle of those director vectors between L/R images. That can be done 
+				// via the dot product. Swap rows/columns order as needed.
+				bool has_to_redraw_corners = false;
+
+				const mrpt::math::TPoint2D 
+					pt_l0 = images[i].left.detected_corners[0],
+					pt_l1 = images[i].left.detected_corners[1],
+					pt_r0 = images[i].right.detected_corners[0],
+					pt_r1 = images[i].right.detected_corners[1];
+				const mrpt::math::TPoint2D Al = pt_l1 - pt_l0;
+				const mrpt::math::TPoint2D Ar = pt_r1 - pt_r0;
+
+				// If the dot product is negative, we have INVERTED order of corners:
+				if (Al.x*Ar.x+Al.y*Ar.y < 0)
+				{
+					has_to_redraw_corners = true;
+					// Invert all corners:
+					std::reverse( images[i].right.detected_corners.begin(), images[i].right.detected_corners.end() );
+				}
+
+
+				if (has_to_redraw_corners)
+				{
+					// Checkboad as color image:
+					images[i].right.img_original.colorImage( images[i].right.img_checkboard );
+					images[i].right.img_checkboard.drawChessboardCorners( images[i].right.detected_corners,check_size.x,check_size.y);
+				}
+			}
 
 		} // end find corners
 
@@ -413,7 +449,6 @@ bool mrpt::vision::checkerBoardStereoCalibration(
 			TImageCalibData &dat_r = images[idx].right;
 
 			// Rectify image.
-			MRPT_TODO("rect")
 			dat_l.img_original.colorImage( dat_l.img_rectified );
 			dat_r.img_original.colorImage( dat_r.img_rectified );
 
@@ -937,10 +972,10 @@ double mrpt::vision::recompute_errors_and_Jacobians(
 			if (use_robust_kernel)
 			{
 				RobustKernel<rkPseudoHuber>  rk;
-				rk.b_sq = kernel_param;
+				rk.param_sq = kernel_param;
 
-				double kernel_1st_deriv;
-				const double scaled_err = rk.eval( std::sqrt(err_sqr_norm ), &kernel_1st_deriv );
+				double kernel_1st_deriv,kernel_2nd_deriv;
+				const double scaled_err = rk.eval(err_sqr_norm, kernel_1st_deriv,kernel_2nd_deriv );
 
 				rje.residual *= kernel_1st_deriv;
 				total_err += scaled_err;

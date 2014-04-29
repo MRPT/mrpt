@@ -8,8 +8,9 @@
    +---------------------------------------------------------------------------+ */
 
 
-#include <mrpt/hmtslam.h> // Precomp header
+#include "hmtslam-precomp.h" // Precomp header
 
+#include <mrpt/hmtslam/CRobotPosesGraph.h>
 #include <mrpt/utils/CTicTac.h>
 #include <mrpt/random.h>
 #include <mrpt/utils/CFileStream.h>

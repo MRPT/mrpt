@@ -9,7 +9,11 @@
 
 #pragma once
 
-#include <mrpt/opengl.h>
+#include <mrpt/opengl/CSetOfObjects.h>
+#include <mrpt/opengl/stock_objects.h>
+#include <mrpt/opengl/CDisk.h>
+#include <mrpt/opengl/CSetOfLines.h>
+
 #include "export_opengl_landmark_renderers.h" // Declare LandmarkRendererBase<> specializations
 
 namespace mrpt { namespace srba {

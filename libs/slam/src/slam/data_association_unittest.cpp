@@ -8,7 +8,7 @@
    +---------------------------------------------------------------------------+ */
 
 
-#include <mrpt/slam.h>
+#include <mrpt/slam/data_association.h>
 #include <gtest/gtest.h>
 
 using namespace mrpt;

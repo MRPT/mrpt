@@ -8,10 +8,14 @@
    +---------------------------------------------------------------------------+ */
 
 #include <mrpt/gui.h>
-#include <mrpt/opengl.h>
+#include <mrpt/opengl/COpenGLScene.h>
 #include <mrpt/hwdrivers/CCameraSensor.h>
-#include <mrpt/vision.h>
+#include <mrpt/vision/CImagePyramid.h>
+#include <mrpt/vision/types.h>
+#include <mrpt/vision/CFeatureExtraction.h>
+#include <mrpt/vision/TSimpleFeature.h>
 
+using namespace std;
 using namespace mrpt;
 using namespace mrpt::utils;
 using namespace mrpt::gui;

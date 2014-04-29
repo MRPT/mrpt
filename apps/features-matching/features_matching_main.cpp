@@ -7,14 +7,19 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/vision.h>
-#include <mrpt/gui.h>
-#include <mrpt/base.h>
+#include <mrpt/vision/CFeatureExtraction.h>
+#include <mrpt/gui/CDisplayWindow.h>
+#include <mrpt/gui/CDisplayWindowPlots.h>
+#include <mrpt/utils/CMemoryStream.h>
+#include <mrpt/utils/metaprogramming.h>
+#include <mrpt/math/data_utils.h>
+#include <mrpt/system/threads.h>
 
 using namespace mrpt::utils;
 using namespace mrpt::math;
 using namespace mrpt::gui;
 using namespace mrpt::vision;
+using namespace mrpt;
 using namespace std;
 
 #include "../common/sample_image1.h"
@@ -46,7 +51,7 @@ bool DemoFeatures()
 	// --------------------------------------
 	mrpt::vision::CFeatureExtraction	fext;
 
-	cout << endl 
+	cout << endl
 		<< "Detectors:\n"
 		"0: KLT\n"
 		"1: Harris\n"
@@ -240,7 +245,7 @@ bool DemoFeatures()
 	for (unsigned int i1 = 0; i1<feats1.size() && winPlots.isOpen() && win1.isOpen() && win2.isOpen() ;i1++)
 	{
 		// Compute distances:
-		vector_double distances(feats2.size());
+		CVectorDouble distances(feats2.size());
 
 		tictac.Tic();
 		if (desc_to_compute!=descAny)
@@ -270,7 +275,7 @@ bool DemoFeatures()
 		cout << "Min. distance=" << min_dist << " for img2 feat #" << min_dist_idx << " .Distances sigma: " << dist_std << endl;
 
 		winPlots.axis(-15,distances.size(),-0.15*max_dist,max_dist*1.15);
-		winPlots.plot( vector_double(1,(double)min_dist_idx), vector_double(1,min_dist) ,".8b","best_dists");
+		winPlots.plot( CVectorDouble(1,(double)min_dist_idx), CVectorDouble(1,min_dist) ,".8b","best_dists");
 
 		winPlots.setWindowTitle(format("Distances feat #%u -> all others ",i1));
 
@@ -325,7 +330,7 @@ bool DemoFeatures()
 			break;
 			case descSIFT:
 				{
-					vector_float v1, v2;
+					vector<float> v1, v2;
 					mrpt::utils::metaprogramming::copy_container_typecasting(feats1[i1]->descriptors.SIFT, v1);
 					mrpt::utils::metaprogramming::copy_container_typecasting(feats2[min_dist_idx]->descriptors.SIFT, v2);
 					winptrPlot_descr1->plot( v1 );
@@ -350,7 +355,7 @@ bool DemoFeatures()
 		//CFeatureList  feats2_best;
 		img2_show_base = img2;
 
-		vector_double xs_best,ys_best;
+		CVectorDouble xs_best,ys_best;
 		for (unsigned int i2 = 0; i2<feats2.size();i2++)
 		{
 			if (distances[i2]< min_dist + 0.1*dist_std )

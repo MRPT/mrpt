@@ -7,20 +7,11 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/base.h>  // Precompiled headers
+#include "base-precomp.h"  // Precompiled headers
 
-
-
-#include <mrpt/math/ops_vectors.h>
 #include <mrpt/bayes/CParticleFilterCapable.h>
-#include <mrpt/system/os.h>
 #include <mrpt/random.h>
-#include <mrpt/math/utils.h>
-#include <mrpt/utils/utils_defs.h>
 #include <mrpt/math/ops_vectors.h>
-#include <mrpt/random.h>
-
-#include <algorithm>
 
 using namespace mrpt;
 using namespace mrpt::utils;
@@ -45,8 +36,9 @@ void  CParticleFilterCapable::performResampling(
 	const size_t in_particle_count = particlesCount();
 	ASSERT_(in_particle_count>0)
 
-	std::vector<size_t>	indxs;
-	vector_double	log_ws(in_particle_count,0);
+	vector<size_t>	indxs;
+	vector<double>	log_ws;
+	log_ws.assign(in_particle_count, .0);
 	for (size_t i=0;i<in_particle_count;i++)
 		log_ws[i] = getW(i);
 
@@ -71,8 +63,8 @@ void  CParticleFilterCapable::performResampling(
  ---------------------------------------------------------------*/
 void CParticleFilterCapable::computeResampling(
 	CParticleFilter::TParticleResamplingAlgorithm	method,
-	const vector_double	&in_logWeights,
-	std::vector<size_t>			&out_indexes,
+	const vector<double>	&in_logWeights,
+	vector<size_t>			&out_indexes,
 	size_t out_particle_count )
 {
 	MRPT_START
@@ -86,9 +78,9 @@ void CParticleFilterCapable::computeResampling(
 	if (!out_particle_count)
 		out_particle_count = M;
 
-	vector_double					linW( M,0 );
-	vector_double::const_iterator	inIt;
-	vector_double::iterator			outIt;
+	vector<double>					linW( M,0 );
+	vector<double>::const_iterator	inIt;
+	vector<double>::iterator			outIt;
 	double							linW_SUM=0;
 
 	// This is to avoid float point range problems:
@@ -107,17 +99,17 @@ void CParticleFilterCapable::computeResampling(
 			// ==============================================
 			//   Select with replacement
 			// ==============================================
-			vector_double	Q;
-			mrpt::math::cumsum(linW, Q);
+			vector<double>	Q;
+			mrpt::math::cumsum_tmpl<vector<double>,vector<double>,double>(linW, Q);
 			Q[M-1] = 1.1;
 
-			vector_double	T(M);
+			vector<double>	T(M);
 			randomGenerator.drawUniformVector(T,0.0, 0.999999);
 			T.push_back(1.0);
 
 			// Sort:
 			// --------------------
-			std::sort( T.begin(), T.end() );
+			sort( T.begin(), T.end() );
 
 			out_indexes.resize(out_particle_count);
 			i=j=0;
@@ -166,22 +158,22 @@ void CParticleFilterCapable::computeResampling(
 			if (N_rnd)	// If there are "residual" part (should be virtually always!)
 			{
 				// Compute modified weights:
-				vector_double	linW_mod(M);
+				vector<double>	linW_mod(M);
 				const double M_R_1 = 1.0/N_rnd;
 				for (i=0;i<M;i++)
 					linW_mod[i] = M_R_1 * (M*linW[i]-N[i]);
 
 				// perform resampling:
-				vector_double	Q;
-				mrpt::math::cumsum(linW_mod, Q);
+				vector<double>	Q;
+				mrpt::math::cumsum_tmpl<vector<double>,vector<double>,double>(linW_mod, Q);
 				Q[M-1] = 1.1;
 
-				vector_double	T(M);
+				vector<double>	T(M);
 				randomGenerator.drawUniformVector(T, 0.0 , 0.999999);
 				T.push_back(1.0);
 
 				// Sort:
-				std::sort( T.begin(), T.end() );
+				sort( T.begin(), T.end() );
 
 				i=0;
 				j=0;
@@ -206,12 +198,12 @@ void CParticleFilterCapable::computeResampling(
 			// ==============================================
 			//   prStratified
 			// ==============================================
-			vector_double	Q;
-			mrpt::math::cumsum(linW, Q);
+			vector<double>	Q;
+			mrpt::math::cumsum_tmpl<vector<double>,vector<double>,double>(linW, Q);
 			Q[M-1] = 1.1;
 
 			// Stratified-uniform random vector:
-			vector_double	T(M+1);
+			vector<double>	T(M+1);
 			const double	_1_M = 1.0 / M;
 			const double	_1_M_eps = _1_M - 0.000001;
 			double   		T_offset = 0;
@@ -241,12 +233,12 @@ void CParticleFilterCapable::computeResampling(
 			// ==============================================
 			//   prSystematic
 			// ==============================================
-			vector_double	Q;
-			mrpt::math::cumsum(linW, Q);
+			vector<double>	Q;
+			mrpt::math::cumsum_tmpl<vector<double>,vector<double>,double>(linW, Q);
 			Q[M-1] = 1.1;
 
 			// Uniform random vector:
-			vector_double	T(M+1);
+			vector<double>	T(M+1);
 			double	_1_M = 1.0 / M;
 			T[0] = randomGenerator.drawUniform(0.0,_1_M);
 			for (i=1;i<M;i++)	T[i] = T[i-1] + _1_M;
@@ -388,11 +380,11 @@ void  CParticleFilterCapable::prepareFastDrawSample(
 		// Save the log likelihoods:
 		for (i=0;i<M;i++)	m_fastDrawAuxiliary.PDF[i] = partEvaluator(PF_options, this,i,action,observation);
 		// "Normalize":
-		m_fastDrawAuxiliary.PDF.array() -= math::maximum( m_fastDrawAuxiliary.PDF );
+		m_fastDrawAuxiliary.PDF += -math::maximum( m_fastDrawAuxiliary.PDF );
 		for (i=0;i<M;i++)	SUM += m_fastDrawAuxiliary.PDF[i] = exp( m_fastDrawAuxiliary.PDF[i] );
 		ASSERT_(SUM>=0);
 		MRPT_CHECK_NORMAL_NUMBER(SUM);
-		m_fastDrawAuxiliary.PDF /= SUM;
+		m_fastDrawAuxiliary.PDF *= 1.0/SUM;
 
 		// Compute the CDF thresholds:
 		for (i=0;i<PARTICLE_FILTER_CAPABLE_FAST_DRAW_BINS;i++)
@@ -400,10 +392,10 @@ void  CParticleFilterCapable::prepareFastDrawSample(
 		m_fastDrawAuxiliary.CDF[PARTICLE_FILTER_CAPABLE_FAST_DRAW_BINS] = 1.0;
 
 		// Compute the CDF and save threshold indexes:
-		double	CDF = 0,CDF_next; // Cumulative density func.
+		double	CDF = 0; // Cumulative density func.
 		for (i=0,j=0;i<M && j<PARTICLE_FILTER_CAPABLE_FAST_DRAW_BINS;i++)
 		{
-			CDF_next = CDF + m_fastDrawAuxiliary.PDF[i];
+			double CDF_next = CDF + m_fastDrawAuxiliary.PDF[i];
 			if (i==(M-1)) CDF_next = 1.0;	// rounds fix...
 			if (CDF_next>1.0) CDF_next = 1.0;
 
@@ -419,8 +411,8 @@ void  CParticleFilterCapable::prepareFastDrawSample(
 #if !defined(_MSC_VER) || (_MSC_VER>1400)  // <=VC2005 doesn't work with this!
 		MRPT_END_WITH_CLEAN_UP( \
 			/* Debug: */ \
-			std::cout << "j=" << j << "\nm_fastDrawAuxiliary.CDF_indexes:" << m_fastDrawAuxiliary.CDF_indexes << std::endl; \
-			std::cout << "m_fastDrawAuxiliary.CDF:" << m_fastDrawAuxiliary.CDF << std::endl; \
+			cout << "j=" << j << "\nm_fastDrawAuxiliary.CDF_indexes:" << m_fastDrawAuxiliary.CDF_indexes << endl; \
+			cout << "m_fastDrawAuxiliary.CDF:" << m_fastDrawAuxiliary.CDF << endl; \
 			);
 #else
 		MRPT_END
@@ -435,19 +427,19 @@ void  CParticleFilterCapable::prepareFastDrawSample(
 		// ------------------------------------------------------------------------
 		// Generate the vector with the "probabilities" of each particle being selected:
 		size_t	i,M = particlesCount();
-		vector_double		PDF(M,0);
+		vector<double>		PDF(M,0);
 		for (i=0;i<M;i++)
 			PDF[i] = partEvaluator(PF_options,this,i,action,observation); // Default evaluator: takes current weight.
 
-		std::vector<size_t>		idxs;
+		vector<size_t>		idxs;
 
 		// Generate the particle samples:
 		computeResampling( PF_options.resamplingMethod, PDF, idxs );
 
-		std::vector<size_t>::iterator	it;
+		vector<size_t>::iterator	it;
 		vector_uint::iterator			it2;
 		m_fastDrawAuxiliary.alreadyDrawnIndexes.resize( idxs.size() );
-		for ( it=idxs.begin(),it2=m_fastDrawAuxiliary.alreadyDrawnIndexes.begin();it!=idxs.end(); it++, it2++)
+		for ( it=idxs.begin(),it2=m_fastDrawAuxiliary.alreadyDrawnIndexes.begin();it!=idxs.end(); ++it, ++it2)
 			*it2 = (unsigned int)(*it);
 
 		m_fastDrawAuxiliary.alreadyDrawnNextOne = 0;
@@ -472,16 +464,16 @@ size_t  CParticleFilterCapable::fastDrawSample( const bayes::CParticleFilter::TP
 		if (PF_options.resamplingMethod!=CParticleFilter::prMultinomial)
 			THROW_EXCEPTION("resamplingMethod must be 'prMultinomial' for a dynamic number of particles!");
 
-		size_t			i,j;
-		double			draw = randomGenerator.drawUniform(0,0.999999);
-		double			CDF_next=-1, CDF=-1;
+		double draw = randomGenerator.drawUniform(0,0.999999);
+		double CDF_next=-1.;
+		double CDF = -1.;
 
 		MRPT_START
 
 		// Use the look-up table to see the starting index we must start looking from:
-		j = (size_t)floor( draw * ((double)PARTICLE_FILTER_CAPABLE_FAST_DRAW_BINS-0.05) );
+		size_t j = (size_t)floor( draw * ((double)PARTICLE_FILTER_CAPABLE_FAST_DRAW_BINS-0.05) );
 		CDF = m_fastDrawAuxiliary.CDF[j];
-		i = m_fastDrawAuxiliary.CDF_indexes[j];
+		size_t i = m_fastDrawAuxiliary.CDF_indexes[j];
 
 		// Find the drawn particle!
 		while ( draw > (CDF_next = CDF+m_fastDrawAuxiliary.PDF[i]) )
@@ -515,8 +507,8 @@ size_t  CParticleFilterCapable::fastDrawSample( const bayes::CParticleFilter::TP
 						log2linearWeights
  ---------------------------------------------------------------*/
 void CParticleFilterCapable::log2linearWeights(
-	const vector_double	&in_logWeights,
-	vector_double		&out_linWeights )
+	const vector<double>	&in_logWeights,
+	vector<double>		&out_linWeights )
 {
 	MRPT_START
 
@@ -531,7 +523,7 @@ void CParticleFilterCapable::log2linearWeights(
 	for (i=0;i<N;i++)
 		sumW += out_linWeights[i] = exp( in_logWeights[i] );
 
-	ASSERT_(sumW>0);
+	ASSERT_(sumW>0)
 
 	for (i=0;i<N;i++)
 		out_linWeights[i] /= sumW;

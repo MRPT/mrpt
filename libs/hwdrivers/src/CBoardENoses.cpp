@@ -7,11 +7,12 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/hwdrivers.h> // Precompiled headers
+#include "hwdrivers-precomp.h"   // Precompiled headers
 
 #include <mrpt/system/os.h>
 #include <mrpt/hwdrivers/CBoardENoses.h>
-#include <mrpt/math.h>
+#include <mrpt/utils/CMessage.h>
+#include <mrpt/math/ops_vectors.h>
 
 using namespace mrpt::utils;
 using namespace mrpt::math;
@@ -89,7 +90,7 @@ bool CBoardENoses::queryFirmwareVersion( string &out_firmwareVersion )
 {
 	try
 	{
-		utils::CMessage		msg,msgRx;
+		mrpt::utils::CMessage		msg,msgRx;
 
 		// Try to connect to the device:
 		CStream *comms = checkConnectionAndConnect();

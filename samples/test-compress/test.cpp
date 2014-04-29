@@ -7,8 +7,10 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/slam.h>
-#include <mrpt/base.h>
+#include <mrpt/system/vector_loadsave.h>
+#include <mrpt/utils/CTicTac.h>
+#include <mrpt/compress.h>
+#include <cstdio>
 
 using namespace mrpt;
 using namespace mrpt::utils;

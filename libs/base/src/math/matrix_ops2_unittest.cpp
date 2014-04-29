@@ -11,7 +11,13 @@
 // building them with eigen3 eats a lot of RAM and may be a problem while
 // compiling in small systems.
 
-#include <mrpt/base.h>
+#include <mrpt/math/CMatrixFixedNumeric.h>
+#include <mrpt/math/ops_matrices.h>
+#include <mrpt/math/utils.h>
+#include <mrpt/math/geometry.h>
+#include <mrpt/utils/metaprogramming.h>
+#include <mrpt/utils/CMemoryStream.h>
+#include <mrpt/random.h>
 #include <gtest/gtest.h>
 
 using namespace mrpt;
@@ -21,10 +27,6 @@ using namespace mrpt::random;
 using namespace mrpt::utils::metaprogramming;
 using namespace std;
 
-
-const double   dat_A[] = { 4, 5, 8, -2, 1, 3 };
-const double   dat_B[] = { 2, 6, 9, 8 };
-const double   dat_Cok[] = {53,64, -2,32, 29,30  };
 
 
 #define CHECK_AND_RET_ERROR(_COND_,_MSG_)    EXPECT_FALSE(_COND_) << _MSG_;
@@ -37,7 +39,7 @@ TEST(Matrices,inv_4x4_fix)
 	CMatrixDouble44  C = A.inv();
 	const double   dat_AInv[] = {-0.741952742824035,0.493481687552705,-0.134764164880760,0.083693424291000,0.638324207063440,0.519344439204238,0.264483337145361,0.644307267615193,-0.037800456163779,0.131794126194075,0.070338431705792,0.828591793299072,-0.025568212209135,0.068123300450057,-0.297834184749986,0.158964059763645};
 	CMatrixDouble44 AInv(dat_AInv);
-	CHECK_AND_RET_ERROR( (AInv-C).Abs().sumAll() >1e-4,  "Error in inv, 4x4 fix")
+	CHECK_AND_RET_ERROR( (AInv-C).array().abs().sum() >1e-4,  "Error in inv, 4x4 fix")
 }
 
 TEST(Matrices,inv_6x6_fix)
@@ -48,7 +50,7 @@ TEST(Matrices,inv_6x6_fix)
 	A.inv(C);
 	const double   dat_AInv[] = {-0.000303131460181,-0.002689371550382,1.383348917627708,0.000000000000000,0.000000000000000,0.000000000000000,0.000000000000000,0.000000000000000,0.000000000000000,-0.000303131460181,-0.002689371550382,1.383348917627708,0.004729457992255,0.003244936115630,-2.049925698035195,0.000000000000000,0.000000000000000,0.000000000000000,0.000000000000000,0.000000000000000,0.000000000000000,0.004729457992255,0.003244936115630,-2.049925698035195,-0.004426326532074,-0.000555564565248,1.666576780407488,0.000000000000000,0.000000000000000,0.000000000000000,0.000000000000000,0.000000000000000,0.000000000000000,-0.004426326532074,-0.000555564565248,1.666576780407488};
 	CMatrixDouble66 AInv(dat_AInv);
-	CHECK_AND_RET_ERROR( isNaN(C(0,0)) || !isFinite(C(0,0)) || (AInv-C).Abs().sumAll() >1e-4,  "Error in inv, 6x6 fix")
+	CHECK_AND_RET_ERROR( isNaN(C(0,0)) || !isFinite(C(0,0)) || (AInv-C).array().abs().sum() >1e-4,  "Error in inv, 6x6 fix")
 }
 
 TEST(Matrices,inv_6x6_dyn)
@@ -58,7 +60,7 @@ TEST(Matrices,inv_6x6_dyn)
 	CMatrixDouble  C = A.inv();
 	const double   dat_AInv[] = {-0.000303131460181,-0.002689371550382,1.383348917627708,0.000000000000000,0.000000000000000,0.000000000000000,0.000000000000000,0.000000000000000,0.000000000000000,-0.000303131460181,-0.002689371550382,1.383348917627708,0.004729457992255,0.003244936115630,-2.049925698035195,0.000000000000000,0.000000000000000,0.000000000000000,0.000000000000000,0.000000000000000,0.000000000000000,0.004729457992255,0.003244936115630,-2.049925698035195,-0.004426326532074,-0.000555564565248,1.666576780407488,0.000000000000000,0.000000000000000,0.000000000000000,0.000000000000000,0.000000000000000,0.000000000000000,-0.004426326532074,-0.000555564565248,1.666576780407488};
 	CMatrixDouble AInv(6,6,dat_AInv);
-	CHECK_AND_RET_ERROR( isNaN(C(0,0)) || !isFinite(C(0,0)) || (AInv-C).Abs().sumAll() >1e-4,  "Error in inv, 6x6 dyn")
+	CHECK_AND_RET_ERROR( isNaN(C(0,0)) || !isFinite(C(0,0)) || (AInv-C).array().abs().sum() >1e-4,  "Error in inv, 6x6 dyn")
 }
 
 TEST(Matrices,transpose)
@@ -85,7 +87,7 @@ TEST(Matrices,multiply_A_skew3)
 			1,2,3,
 			4,5,6 };
 		const CMatrixDouble  A(2,3,dat_A);
-		const vector_double  v = make_vector<3>(1.0,2.0,3.0);
+		const std::vector<double>  v = make_vector<3>(1.0,2.0,3.0);
 		const CMatrixDouble  S = CMatrixDouble( mrpt::math::skew_symmetric3(v) );
 
 		CMatrixDouble  R;
@@ -115,7 +117,7 @@ TEST(Matrices,multiply_skew3_A)
 			3,4,
 			5,6 };
 		const CMatrixDouble  A(3,2,dat_A);
-		const vector_double  v = make_vector<3>(1.0,2.0,3.0);
+		const std::vector<double>  v = make_vector<3>(1.0,2.0,3.0);
 		const CMatrixDouble  S = CMatrixDouble( mrpt::math::skew_symmetric3(v) );
 
 		CMatrixDouble  R;
@@ -158,25 +160,25 @@ TEST(Matrices,fromMatlabStringFormat)
 	CMatrixDouble	M1,M2,M3, M4, M5, M6;
 
 	if (! M1.fromMatlabStringFormat(mat1) ||
-		(CMatrixFixedNumeric<double,2,3>(vals1)-M1).Abs().sumAll() > 1e-4 )
+		(CMatrixFixedNumeric<double,2,3>(vals1)-M1).array().abs().sum() > 1e-4 )
 		GTEST_FAIL() << mat1;
 
 	{
 		CMatrixFixedNumeric<double,2,3> M1b;
 		if (! M1b.fromMatlabStringFormat(mat1) ||
-			(CMatrixFixedNumeric<double,2,3>(vals1)-M1b).Abs().sumAll() > 1e-4 )
+			(CMatrixFixedNumeric<double,2,3>(vals1)-M1b).array().abs().sum() > 1e-4 )
 			GTEST_FAIL() << mat1;
 	}
 
 	if (! M2.fromMatlabStringFormat(mat2) ||
 		M2.cols()!=2 || M2.rows()!=3 ||
-		(CMatrixFixedNumeric<double,3,2>(vals2)-M2).Abs().sumAll() > 1e-4 )
+		(CMatrixFixedNumeric<double,3,2>(vals2)-M2).array().abs().sum() > 1e-4 )
 		GTEST_FAIL() << mat2;
 
 	{
 		CMatrixFixedNumeric<double,3,2> M2b;
 		if (! M2b.fromMatlabStringFormat(mat2) ||
-			(CMatrixFixedNumeric<double,3,2>(vals2)-M2b).Abs().sumAll() > 1e-4 )
+			(CMatrixFixedNumeric<double,3,2>(vals2)-M2b).array().abs().sum() > 1e-4 )
 			GTEST_FAIL() << mat2;
 	}
 
@@ -184,8 +186,8 @@ TEST(Matrices,fromMatlabStringFormat)
 		GTEST_FAIL() << mat3;
 
 	{
-		vector_double m;
-		if (! m.fromMatlabStringFormat(mat3) || m.size()!=1 ) GTEST_FAIL() << "vector_double:" << mat3;
+		CVectorDouble m;
+		if (! m.fromMatlabStringFormat(mat3) || m.size()!=1 ) GTEST_FAIL() << "CVectorDouble:" << mat3;
 	}
 	{
 		CArrayDouble<1> m;
@@ -193,8 +195,8 @@ TEST(Matrices,fromMatlabStringFormat)
 	}
 
 	{
-		vector_double m;
-		if (! m.fromMatlabStringFormat(mat31) || m.size()!=3 ) GTEST_FAIL() << "vector_double:" << mat31;
+		CVectorDouble m;
+		if (! m.fromMatlabStringFormat(mat31) || m.size()!=3 ) GTEST_FAIL() << "CVectorDouble:" << mat31;
 	}
 	{
 		CArrayDouble<3> m;
@@ -211,7 +213,7 @@ TEST(Matrices,fromMatlabStringFormat)
 	}
 
 	// This one MUST BE detected as WRONG:
-	if ( M4.fromMatlabStringFormat(mat4, false /*dont dump errors to cerr*/) )
+	if ( M4.fromMatlabStringFormat(mat4, NULL /*dont dump errors to cerr*/) )
 		GTEST_FAIL() << mat4;
 
 	if (! M5.fromMatlabStringFormat(mat5) || size(M5,1)!=0 || size(M5,2)!=0 )
@@ -223,6 +225,6 @@ TEST(Matrices,fromMatlabStringFormat)
 	// Check correct values loaded:
 	CMatrixDouble RES = M1*M2;
 
-	EXPECT_NEAR(0,(M6 - M1*M2).Square().sumAll(), 1e-3);
+	EXPECT_NEAR(0,(M6 - M1*M2).array().square().sum(), 1e-3);
 }
 

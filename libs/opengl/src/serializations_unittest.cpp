@@ -7,9 +7,9 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-
+#define MRPT_NO_WARN_BIG_HDR
 #include <mrpt/opengl.h>
-#include <mrpt/base.h>
+
 #include <gtest/gtest.h>
 
 using namespace mrpt;
@@ -17,7 +17,7 @@ using namespace mrpt::opengl;
 using namespace mrpt::utils;
 using namespace std;
 
-// Defined in run_unittests.cpp
+// Defined in tests/test_main.cpp
 namespace mrpt { namespace utils {
 	extern std::string MRPT_GLOBAL_UNITTEST_SRC_DIR;
   }

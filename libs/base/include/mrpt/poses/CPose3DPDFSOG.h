@@ -11,7 +11,7 @@
 
 #include <mrpt/poses/CPose3DPDF.h>
 #include <mrpt/poses/CPose3DPDFGaussian.h>
-#include <mrpt/math/CMatrix.h>
+#include <mrpt/utils/aligned_containers.h>
 
 namespace mrpt
 {
@@ -92,7 +92,7 @@ namespace poses
 		/** Returns an estimate of the pose covariance matrix (6x6 cov matrix) and the mean, both at once.
 		  * \sa getMean
 		  */
-		void getCovarianceAndMean(CMatrixDouble66 &cov,CPose3D &mean_point) const;
+		void getCovarianceAndMean(mrpt::math::CMatrixDouble66 &cov,CPose3D &mean_point) const;
 
 		/** Normalize the weights in m_modes such as the maximum log-weight is 0.
 		  */
@@ -139,7 +139,7 @@ namespace poses
 
 		/** Draws a number of samples from the distribution, and saves as a list of 1x6 vectors, where each row contains a (x,y,z,yaw,pitch,roll) datum.
 		  */
-		void  drawManySamples( size_t N, std::vector<vector_double> & outSamples ) const;
+		void  drawManySamples( size_t N, std::vector<CVectorDouble> & outSamples ) const;
 
 		/** Returns a new PDF such as: NEW_PDF = (0,0,0) - THIS_PDF
 		  */

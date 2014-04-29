@@ -23,6 +23,7 @@ namespace slam
 {
 	using namespace mrpt::utils;
 	using namespace mrpt::slam;
+	using namespace mrpt::math;
 
 	struct OBS_IMPEXP TStereoImageFeatures
 	{

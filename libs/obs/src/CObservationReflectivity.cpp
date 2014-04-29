@@ -7,12 +7,13 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/obs.h>   // Precompiled headers
+#include "obs-precomp.h"   // Precompiled headers
 
 #include <mrpt/slam/CObservationReflectivity.h>
+#include <mrpt/utils/CStream.h>
 
-using namespace mrpt::slam; 
-using namespace mrpt::utils; 
+using namespace mrpt::slam;
+using namespace mrpt::utils;
 using namespace mrpt::poses;
 
 // This must be added to any CSerializable class implementation file.

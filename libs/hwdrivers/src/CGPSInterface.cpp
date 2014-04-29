@@ -7,7 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/hwdrivers.h> // Precompiled headers
+#include "hwdrivers-precomp.h"   // Precompiled headers
 
 #include <mrpt/system/os.h>
 #include <mrpt/synch/CCriticalSection.h>
@@ -236,8 +236,6 @@ bool  CGPSInterface::isGPS_signalAcquired()
 ----------------------------------------------------- */
 void  CGPSInterface::doProcess()
 {
-	size_t	bytesToRead, bytesRead;
-
 	// Is the COM open?
 	if (!tryToOpenTheCOM())
 	{
@@ -246,10 +244,10 @@ void  CGPSInterface::doProcess()
 	}
 
 	// Read as many bytes as available:
-	bytesRead = 1;
+	size_t bytesRead = 1;
 	while (bytesRead)
 	{
-		bytesToRead = (m_BUFFER_LENGTH-10) - m_bufferWritePos;
+		size_t bytesToRead = (m_BUFFER_LENGTH-10) - m_bufferWritePos;
 
 		try
 		{
@@ -291,7 +289,7 @@ void  CGPSInterface::doProcess()
 		// Write command to buffer:
 		if ( m_latestGPS_data.has_GGA_datum ||
 			 m_latestGPS_data.has_RMC_datum ||
-			 m_latestGPS_data.has_RMC_datum ||
+			 m_latestGPS_data.has_PZS_datum ||
 			 m_latestGPS_data.has_SATS_datum )
 		{
 			// Add observation to the output queue:

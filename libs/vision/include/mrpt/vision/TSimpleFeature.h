@@ -10,9 +10,12 @@
 #define _mrpt_vision_TSimpleFeature_H
 
 #include <mrpt/utils/TPixelCoord.h>
+#include <mrpt/utils/round.h>
 #include <mrpt/math/KDTreeCapable.h>
+#include <mrpt/math/CMatrixTemplate.h>  // CMatrixBool
 #include <mrpt/math/CMatrixTemplateNumeric.h>
 #include <mrpt/vision/types.h>
+#include <mrpt/utils/round.h>
 
 #include <mrpt/vision/link_pragmas.h>
 
@@ -20,7 +23,7 @@ namespace mrpt
 {
 	namespace vision
 	{
-		/** \addtogroup  mrptvision_features 
+		/** \addtogroup  mrptvision_features
 		    @{ */
 
 		/** A simple structure for representing one image feature (without descriptor nor patch) - This is

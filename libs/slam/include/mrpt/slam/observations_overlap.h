@@ -9,8 +9,8 @@
 #ifndef observations_overlap_H
 #define observations_overlap_H
 
-#include <mrpt/obs.h>
-
+#include <mrpt/obs/obs_frwds.h>
+#include <mrpt/slam/CSensoryFrame.h>
 #include <mrpt/slam/link_pragmas.h>
 
 namespace mrpt

@@ -7,11 +7,11 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/hwdrivers.h> // Precompiled headers
+#include "hwdrivers-precomp.h"   // Precompiled headers
 
 #include <mrpt/system/os.h>
 #include <mrpt/hwdrivers/CEnoseModular.h>
-#include <mrpt/math.h>
+#include <mrpt/utils/CMessage.h>
 
 using namespace mrpt::utils;
 using namespace mrpt::math;
@@ -149,7 +149,7 @@ bool CEnoseModular::getObservation( mrpt::slam::CObservationGasSensors &obs )
 		// Where <body> = <temp>[<SensorID_H><SensorID_L><Sensor_Value>] x N_senosrs
 		// Modular-nose provides a 4B+body frame lenght 
 
-		utils::CMessage		msg;
+		mrpt::utils::CMessage		msg;
 		bool time_out = false;
 		mrpt::system::TTimeStamp t1 = mrpt::system::getCurrentLocalTime();
 		double time_out_val = 1;	//seconds

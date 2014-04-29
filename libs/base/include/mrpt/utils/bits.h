@@ -7,14 +7,9 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#ifndef UTILSDEFS_H
-#error "This file is intended for include from utils_defs.h only!"
-#endif
+#pragma once
 
-#include <mrpt/utils/SSE_types.h>  // needed by SSE intrinsics used in some inline functions below.
-
-/** This is the global namespace for all Mobile Robot Programming Toolkit (MRPT) libraries.
- */
+/** This is the global namespace for all Mobile Robot Programming Toolkit (MRPT) libraries. */
 namespace mrpt
 {
 	/** A std::string version of C sprintf.
@@ -23,13 +18,6 @@ namespace mrpt
 	  *  Function implemented in format.cpp
 	  */
 	std::string BASE_IMPEXP format(const char *fmt, ...) MRPT_printf_format_check(1,2);
-
-	namespace system
-	{
-		// Forward definition: (Required for Visual C++ 6 implementation of THROW_EXCEPTION...)
-		std::string BASE_IMPEXP extractFileName(const std::string &filePath);
-		std::string BASE_IMPEXP stack_trace(bool calling_from_exception);
-	}
 
 	namespace math
 	{
@@ -95,50 +83,6 @@ namespace mrpt
 		template <typename T>
 		inline int signWithZero(T x)	{ return x==0?0:sign(x);}
 
-		/** Returns the closer integer (int) to x */
-		template <typename T>
-		inline int round(const T value)
-		{
-		#if MRPT_HAS_SSE2
-			__m128d t = _mm_set_sd( value );
-			return _mm_cvtsd_si32(t);
-		#elif (defined WIN32 || defined _WIN32) && !defined WIN64 && !defined _WIN64 && defined _MSC_VER
-			int t;
-			__asm
-			{
-				fld value;
-				fistp t;
-			}
-			return t;
-		#elif defined HAVE_LRINT || defined __GNUC__
-			return static_cast<int>(lrint(value));
-		#else
-			return static_cast<int>(value + 0.5);
-		#endif
-		}
-
-		/** Returns the closer integer (long) to x */
-		template <typename T>
-		inline long round_long(const T value)
-		{
-		#if MRPT_HAS_SSE2 && MRPT_WORD_SIZE==64
-			__m128d t = _mm_set_sd( value );
-			return _mm_cvtsd_si64(t);
-		#elif (defined WIN32 || defined _WIN32) && !defined WIN64 && !defined _WIN64 && defined _MSC_VER
-			long t;
-			__asm
-			{
-				fld value;
-				fistp t;
-			}
-			return t;
-		#elif defined HAVE_LRINT || defined __GNUC__
-			return lrint(value);
-		#else
-			return static_cast<long>(value + 0.5);
-		#endif
-		}
-
 		/** Efficient and portable evaluation of the absolute difference of two unsigned integer values
 		  * (but will also work for signed and floating point types) */
 		template <typename T>
@@ -158,17 +102,17 @@ namespace mrpt
 		inline T square(const T x)    { return x*x; }
 
 		/** Utility to get a cast'ed pointer from a smart pointer */
-		template <class R, class P>
-		inline R* getAs(stlplus::smart_ptr_clone<P> &o) { return static_cast<R*>( & (*o) ); }
+		template <class R, class SMART_PTR>
+		inline R* getAs(SMART_PTR &o) { return static_cast<R*>( & (*o) ); }
 
 		/** Utility to get a cast'ed pointer from a smart pointer */
-		template <class R, class P>
-		inline const R* getAs(const stlplus::smart_ptr_clone<P> &o) { return static_cast<const R*>( & (*o) ); }
+		template <class R, class SMART_PTR>
+		inline const R* getAs(const SMART_PTR &o) { return static_cast<const R*>( & (*o) ); }
 
 		/** Reverse the order of the bytes of a given type (useful for transforming btw little/big endian)  */
 		template <class T> inline void reverseBytesInPlace(T& v_in_out)
 		{
-			uint8_t *ptr = reinterpret_cast<uint8_t*>(&v_in_out);
+			unsigned char *ptr = reinterpret_cast<unsigned char*>(&v_in_out);
 			std::reverse(ptr,ptr+sizeof(T));
 		}
 
@@ -202,9 +146,8 @@ namespace mrpt
 		}
 
 		/** Like calling a std::vector<>'s clear() method, but really forcing deallocating the memory. */
-		template <class T>
-		inline void vector_strong_clear(std::vector<T> & v) { std::vector<T> dummy; dummy.swap(v); }
+		template <class VECTOR_T>
+		inline void vector_strong_clear(VECTOR_T & v) { VECTOR_T dummy; dummy.swap(v); }
 
 	} // End of namespace
 } // end of namespace
-

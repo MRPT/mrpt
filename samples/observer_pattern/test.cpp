@@ -7,15 +7,14 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/utils.h>
-#include <mrpt/slam.h>
+#include <mrpt/utils/CObserver.h>
+#include <mrpt/slam/CObservation2DRangeScan.h>
+#include <mrpt/slam/CSimplePointsMap.h>
 
 using namespace mrpt::utils;
 using namespace mrpt::slam;
 using namespace mrpt::poses;
 using namespace std;
-
-
 
 // Load a example laser scan:
 CObservation2DRangeScan	getScan()

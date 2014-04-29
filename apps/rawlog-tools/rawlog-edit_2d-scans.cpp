@@ -9,14 +9,13 @@
 
 #include "rawlog-edit-declarations.h"
 
-#include <mrpt/topography.h>
+#include <mrpt/slam/CObservation2DRangeScan.h>
 
 using namespace mrpt;
 using namespace mrpt::utils;
 using namespace mrpt::slam;
 using namespace mrpt::system;
 using namespace mrpt::rawlogtools;
-using namespace mrpt::topography;
 using namespace std;
 
 // ======================================================================

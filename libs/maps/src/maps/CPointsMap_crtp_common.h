@@ -9,6 +9,10 @@
 #ifndef cpointsmap_crtp_common_H
 #define cpointsmap_crtp_common_H
 
+#include <mrpt/utils/round.h>
+#include <mrpt/slam/CObservation3DRangeScan.h>
+#include <mrpt/slam/CObservation2DRangeScan.h>
+
 namespace mrpt
 {
 namespace slam
@@ -154,7 +158,7 @@ namespace detail
 				// The "+3" is to assure the buffer has room for the SSE2 method which works with 4-tuples of floats.
 				Eigen::Array<float,Eigen::Dynamic,1>  scan_x(sizeRangeScan+3), scan_y(sizeRangeScan+3);
 
-				mrpt::vector_float scan_vals( rangeScan.scan ); // Convert from the std::vector
+				mrpt::math::CVectorFloat scan_vals( rangeScan.scan ); // Convert from the std::vector
 
 				// Vectorized (optimized) scalar multiplications:
 				scan_x = scan_vals.array() * sincos_vals.ccos.array();
@@ -215,7 +219,7 @@ namespace detail
 								d<obj.insertionOptions.maxDistForInterpolatePoints &&
 								fabs(changeInDirection)<DEG2RAD(5) )
 							{
-								int nInterpol = round(d / (2*sqrt(minDistSqrBetweenLaserPoints)));
+								int nInterpol = mrpt::utils::round(d / (2*sqrt(minDistSqrBetweenLaserPoints)));
 
 								for (int q=1;q<nInterpol;q++)
 								{

@@ -7,14 +7,15 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/hwdrivers.h> // Precompiled headers
+#include "hwdrivers-precomp.h"   // Precompiled headers
 
 #include <mrpt/utils/net_utils.h>
+#include <mrpt/hwdrivers/CServoeNeck.h>
+#include <mrpt/system/threads.h>
 
-const double MAX_VALUE = 10000;					// ICR value in the ATMEGA16
+//const double MAX_VALUE = 10000;					// ICR value in the ATMEGA16
 
 using namespace mrpt::utils;
-using namespace mrpt::gui;
 using namespace mrpt::hwdrivers;
 using namespace mrpt::math;
 
@@ -39,7 +40,7 @@ CServoeNeck::~CServoeNeck()
 /*-------------------------------------------------------------
 					queryFirmwareVersion
 -------------------------------------------------------------*/
-bool CServoeNeck::queryFirmwareVersion( string &out_firmwareVersion )
+bool CServoeNeck::queryFirmwareVersion( std::string &out_firmwareVersion )
 {
 	try
 	{
@@ -77,8 +78,8 @@ unsigned int CServoeNeck::angle2RegValue( const double angle /* rad */ )
 {
 	const uint16_t reg = 1250+(1000/M_PI)*(angle-M_PI*0.5); // equation: v = s*(a-a0) + v0 where s = 450/pi; a0 = 0 and v0 = 750
 	//cout << "Reg: " << reg << endl;
-	return ( reg );								
-	
+	return ( reg );
+
 	//return ( (uint16_t)( (m_MaxValue/20)*(-2*angle/M_PI+1.5) ) );			// equation: v = s*(a-a0) + v0 where s = 450/pi; a0 = 0 and v0 = 750
 	//return ( (uint16_t)( (m_MaxValue/20)*(2*angle/M_PI+1.5) ) );			// equation: v = s*(a-a0) + v0 where s = 450/pi; a0 = 0 and v0 = 750
 	//return ( (uint16_t)( (900/M_PI)*nangle + 750 ) );			// equation: v = s*(a-a0) + v0 where s = 450/pi; a0 = 0 and v0 = 750

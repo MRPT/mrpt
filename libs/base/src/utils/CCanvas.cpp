@@ -7,7 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/base.h>  // Precompiled headers
+#include "base-precomp.h"  // Precompiled headers
 
 
 #include <mrpt/utils/CCanvas.h>
@@ -15,10 +15,11 @@
 #include <mrpt/utils/CImage.h>
 #include <mrpt/utils/CFileOutputStream.h>
 #include <mrpt/utils/CFileGZOutputStream.h>
-
 #include <mrpt/system/string_utils.h>
+#include <mrpt/utils/round.h>
 
 #include <mrpt/compress/zip.h>
+#include <map>
 
 
 // Include the MRPT bitmap fonts:

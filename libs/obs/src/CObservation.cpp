@@ -7,11 +7,10 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/obs.h>   // Precompiled headers
-
-
+#include "obs-precomp.h"   // Precompiled headers
 
 #include <mrpt/slam/CObservation.h>
+#include <mrpt/utils/CStream.h>
 #include <mrpt/system/os.h>
 #include <mrpt/math/lightweight_geom_data.h>
 
@@ -21,6 +20,7 @@
 using namespace mrpt::slam;
 using namespace mrpt::utils;
 using namespace mrpt::poses;
+using namespace mrpt::math;
 
 IMPLEMENTS_VIRTUAL_SERIALIZABLE(CObservation, CSerializable, mrpt::slam)
 

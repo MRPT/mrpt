@@ -10,21 +10,23 @@
 /*---------------------------------------------------------------
     APPLICATION: Map partitioning based on spectral graph
     FILE: map-partition.cpp
-    AUTHOR: Jose Luis Blanco Claraco <jlblanco@ctima.uma.es>
+    AUTHOR: Jose Luis Blanco Claraco <joseluisblancoc@gmail.com>
 
 	See README.txt for instructions.
   ---------------------------------------------------------------*/
 
-#include <mrpt/base.h>
-#include <mrpt/graphs.h>
-#include <mrpt/slam.h>
+#include <mrpt/utils/CTicTac.h>
+#include <mrpt/utils/CFileGZInputStream.h>
+#include <mrpt/utils/CConfigFile.h>
+#include <mrpt/system/filesystem.h>
+#include <mrpt/slam/CIncrementalMapPartitioner.h>
+#include <mrpt/slam/CSimpleMap.h>
 #include <mrpt/gui.h>
 
 using namespace mrpt;
 using namespace mrpt::slam;
 using namespace mrpt::opengl;
 using namespace mrpt::math;
-using namespace mrpt::graphs;
 using namespace mrpt::utils;
 using namespace mrpt::system;
 using namespace std;

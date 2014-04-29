@@ -10,30 +10,23 @@
 #define CMetricMap_H
 
 #include <mrpt/utils/CSerializable.h>
-#include <mrpt/opengl/CSetOfObjects.h>
-
-#include <mrpt/slam/CObservation.h>
 #include <mrpt/utils/TMatchingPair.h>
-
-#include <mrpt/poses/CPoint2D.h>
-#include <mrpt/poses/CPoint3D.h>
-#include <mrpt/poses/CPose2D.h>
-#include <mrpt/poses/CPose3D.h>
-
 #include <mrpt/utils/CObservable.h>
+#include <mrpt/math/math_frwds.h>
+#include <mrpt/math/lightweight_geom_data.h>
+#include <mrpt/opengl/opengl_frwds.h>
 #include <mrpt/slam/CMetricMapEvents.h>
+#include <mrpt/obs/obs_frwds.h>
+#include <mrpt/obs/link_pragmas.h>
+#include <deque>
 
 namespace mrpt
 {
 	namespace slam
 	{
 		using namespace mrpt::utils;
-
-		class CObservation;
-		class CPointsMap;
-		class CSimplePointsMap;
-		class CSimpleMap;
-		class CSensoryFrame;
+		using mrpt::poses::CPose2D;
+		using mrpt::poses::CPose3D;
 
 		/** Parameters for the determination of matchings between point clouds, etc. \sa CMetricMap::determineMatching2D, CMetricMap::determineMatching3D */
 		struct OBS_IMPEXP TMatchingParams
@@ -47,7 +40,7 @@ namespace mrpt
 			mrpt::math::TPoint3D angularDistPivotPoint; //!< The point used to calculate angular distances: e.g. the coordinates of the sensor for a 2D laser scanner.
 
 			/** Ctor: default values */
-			TMatchingParams() : 
+			TMatchingParams() :
 				maxDistForCorrespondence(0.50f),
 				maxAngularDistForCorrespondence(.0f),
 				onlyKeepTheClosest(true),
@@ -144,29 +137,10 @@ namespace mrpt
 			 *
 			 * \sa CObservation::insertObservationInto
 			 */
-			inline bool  insertObservation(
-				const CObservation *obs,
-				const CPose3D *robotPose = NULL )
-			{
-				bool done = internal_insertObservation(obs,robotPose);
-				if (done)
-				{
-					OnPostSuccesfulInsertObs(obs);
-					publishEvent( mrptEventMetricMapInsert(this,obs,robotPose) );
-				}
-				return done;
-			}
+			bool  insertObservation(const CObservation *obs, const CPose3D *robotPose = NULL );
 
 			/** A wrapper for smart pointers, just calls the non-smart pointer version. */
-			inline bool  insertObservationPtr(
-				const CObservationPtr &obs,
-				const CPose3D *robotPose = NULL )
-			{
-				MRPT_START
-				if (!obs.present()) { THROW_EXCEPTION("Trying to pass a null pointer."); }
-				return insertObservation(obs.pointer(),robotPose);
-				MRPT_END
-			}
+			bool  insertObservationPtr(const CObservationPtr &obs, const CPose3D *robotPose = NULL );
 
 			/** Computes the log-likelihood of a given observation given an arbitrary robot 3D pose.
 			 *
@@ -186,10 +160,7 @@ namespace mrpt
 			 *
 			 * \sa Used in particle filter algorithms, see: CMultiMetricMapPDF::update
 			 */
-			double	 computeObservationLikelihood( const CObservation *obs, const CPose2D &takenFrom )
-			{
-				return computeObservationLikelihood(obs,CPose3D(takenFrom));
-			}
+			double	 computeObservationLikelihood( const CObservation *obs, const CPose2D &takenFrom );
 
 			/** Returns true if this map is able to compute a sensible likelihood function for this observation (i.e. an occupancy grid map cannot with an image).
 			 * \param obs The observation.
@@ -201,7 +172,7 @@ namespace mrpt
 			}
 
 			/** \overload */
-			inline bool canComputeObservationLikelihood( const CObservationPtr &obs ) { return canComputeObservationLikelihood(obs.pointer()); }
+			bool canComputeObservationLikelihood( const CObservationPtr &obs );
 
 			/** Returns the sum of the log-likelihoods of each individual observation within a mrpt::slam::CSensoryFrame.
 			 *
@@ -248,7 +219,7 @@ namespace mrpt
 				const CPose2D         & otherMapPose,
 				TMatchingPairList     & correspondences,
 				const TMatchingParams & params,
-				TMatchingExtraResults & extraResults ) const 
+				TMatchingExtraResults & extraResults ) const
 			{
 				MRPT_START
 				THROW_EXCEPTION("Virtual method not implemented in derived class.")
@@ -278,46 +249,12 @@ namespace mrpt
 				const CPose3D         & otherMapPose,
 				TMatchingPairList     & correspondences,
 				const TMatchingParams & params,
-				TMatchingExtraResults & extraResults ) const 
+				TMatchingExtraResults & extraResults ) const
 			{
 				MRPT_START
 				THROW_EXCEPTION("Virtual method not implemented in derived class.")
 				MRPT_END
 			}
-
-
-			/** DEPRECATED: Use alternative version determineMatching2D with struct parameters instead. */
-			MRPT_DEPRECATED_PRE("Deprecated")
-			void  computeMatchingWith2D(
-				const CMetricMap						*otherMap,
-				const CPose2D							&otherMapPose,
-				float									maxDistForCorrespondence,
-				float									maxAngularDistForCorrespondence,
-				const CPose2D							&angularDistPivotPoint,
-				TMatchingPairList						&correspondences,
-				float									&correspondencesRatio,
-				float									*sumSqrDist	= NULL,
-				bool									onlyKeepTheClosest = true,
-				bool									onlyUniqueRobust = false,
-				const size_t                            decimation_other_map_points = 1,
-				const size_t                            offset_other_map_points = 0 ) const MRPT_DEPRECATED_POST("Deprecated");
-
-			/** DEPRECATED: Use alternative version determineMatching3D with struct parameters instead. */
-			MRPT_DEPRECATED_PRE("Deprecated")
-			void  computeMatchingWith3D(
-				const CMetricMap						*otherMap,
-				const CPose3D							&otherMapPose,
-				float									maxDistForCorrespondence,
-				float									maxAngularDistForCorrespondence,
-				const CPoint3D							&angularDistPivotPoint,
-				TMatchingPairList						&correspondences,
-				float									&correspondencesRatio,
-				float									*sumSqrDist	= NULL,
-				bool									onlyKeepTheClosest = true,
-				bool									onlyUniqueRobust = false,
-				const size_t                            decimation_other_map_points = 1,
-				const size_t                            offset_other_map_points = 0 ) const MRPT_DEPRECATED_POST("Deprecated");
-
 
 			/** Computes the ratio in [0,1] of correspondences between "this" and the "otherMap" map, whose 6D pose relative to "this" is "otherMapPose"
 			 *   In the case of a multi-metric map, this returns the average between the maps. This method always return 0 for grid maps.

@@ -7,14 +7,10 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
+#include "obs-precomp.h"   // Precompiled headers
+
+#define MRPT_NO_WARN_BIG_HDR
 #include <mrpt/obs.h>
-
-#ifndef MRPT_ENABLE_PRECOMPILED_HDRS
-#	define MRPT_ALWAYS_INCLUDE_ALL_HEADERS
-#	undef mrpt_obs_H
-#	include <mrpt/obs.h>
-#endif
-
 
 #include <mrpt/utils/CSerializable.h>
 #include <mrpt/utils/CStartUpClassesRegister.h>
@@ -40,6 +36,7 @@ void registerAllClasses_mrpt_obs()
 	registerClass( CLASS_ID( CObservation ) );
 	registerClass( CLASS_ID( CObservation2DRangeScan ) );
 	registerClass( CLASS_ID( CObservation3DRangeScan ) );
+  registerClass( CLASS_ID( CObservationRGBD360 ) );
 	registerClass( CLASS_ID( CObservationBatteryState ) );
 	registerClass( CLASS_ID( CObservationWirelessPower ) );
 	registerClass( CLASS_ID( CObservationRFID ) );

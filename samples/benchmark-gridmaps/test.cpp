@@ -7,8 +7,11 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/slam.h>
-#include <mrpt/base.h>
+#include <mrpt/random.h>
+#include <mrpt/slam/CMultiMetricMap.h>
+#include <mrpt/slam/CObservation2DRangeScan.h>
+#include <mrpt/slam/CRawlog.h>
+#include <mrpt/utils/CConfigFile.h>
 
 using namespace mrpt;
 using namespace mrpt::utils;

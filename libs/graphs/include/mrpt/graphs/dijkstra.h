@@ -11,7 +11,7 @@
 
 #include <mrpt/graphs/CDirectedGraph.h>
 #include <mrpt/graphs/CDirectedTree.h>
-#include <mrpt/utils/stl_extensions.h>
+#include <mrpt/utils/traits_map.h>
 
 namespace mrpt
 {
@@ -35,8 +35,7 @@ namespace mrpt
 		  * See <a href="http://www.mrpt.org/Example:Dijkstra_optimal_path_search_in_graphs" > this page </a> for a complete example.
 		  * \ingroup mrpt_graphs_grp
 		  */
-		//Was: template<class TYPE_EDGES, class MAPS_IMPLEMENTATION = map_traits_stdmap >
-		template<class TYPE_GRAPH, class MAPS_IMPLEMENTATION = map_traits_stdmap >
+		template<class TYPE_GRAPH, class MAPS_IMPLEMENTATION = mrpt::utils::map_traits_stdmap >
 		class CDijkstra
 		{
 		protected:

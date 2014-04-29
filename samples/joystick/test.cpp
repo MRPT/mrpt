@@ -7,9 +7,14 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/base.h>
 #include <mrpt/hwdrivers/CJoystick.h>
+#include <mrpt/utils/CTicTac.h>
+#include <mrpt/system/os.h>
+#include <mrpt/system/threads.h>
+#include <cstdio>
+#include <iostream>
 
+using namespace std;
 using namespace mrpt;
 using namespace mrpt::utils;
 using namespace mrpt::hwdrivers;

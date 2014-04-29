@@ -12,6 +12,7 @@
 
 #include <mrpt/utils/CSerializable.h>
 #include <mrpt/slam/CObservation.h>
+#include <cmath>
 
 #include <mrpt/detectors/link_pragmas.h>
 
@@ -19,8 +20,6 @@ namespace mrpt
 {
 	namespace detectors
 	{
-		using namespace mrpt::slam;
-
 		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CDetectableObject, mrpt::utils::CSerializable, DETECTORS_IMPEXP )
 
 		/** Base class that contains common atributes and functions of detectable objects.
@@ -36,9 +35,9 @@ namespace mrpt
 
 			std::string	m_id; //!< Must be an unique id for each detectable object
 
-			CObservationPtr	obs; //!< Observation wich contain the deteted object
+			mrpt::slam::CObservationPtr	obs; //!< Observation wich contain the deteted object
 
-			inline void setObservation( CObservationPtr newObs ){	obs = newObs;	};
+			inline void setObservation( mrpt::slam::CObservationPtr newObs ){	obs = newObs;	};
 
 		}; // End of class
 
@@ -56,32 +55,32 @@ namespace mrpt
 
 			/** Extra constructor */
 			CDetectable2D( const int &x = 0, const int &y = 0, const int &height = 0, const int &width = 0 )
-				: m_x(x), m_y(y), m_height(height), m_width(width) 
+				: m_x(x), m_y(y), m_height(height), m_width(width)
 			{};
 
 			/** Copy pointer content constructor */
 			CDetectable2D( const CDetectable2D *d )
-			{	
+			{
 				*this = *d;
 			};
-			
+
 			/** Compute distance between centers of two detectable 2D objects.
 			  * \return calculated distance.
 			  */
 			inline double distanceTo( const CDetectable2D &d2 )
-			{	
+			{
 				// Calculate objects centers
 				double c_x1 = ( m_x + m_width/2 );
 				double c_x2 = ( d2.m_x + d2.m_width/2 );
 				double c_y1 = ( m_y + m_height/2 ) ;
 				double c_y2 = ( d2.m_y + d2.m_height/2 ) ;
 
-				return sqrt( pow( c_x1 - c_x2, 2 ) + pow( c_y1 - c_y2, 2 ) );
+				return std::sqrt( std::pow( c_x1 - c_x2, 2 ) + pow( c_y1 - c_y2, 2 ) );
 			};
 
 		};
 
-		
+
 		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CDetectable3D, mrpt::detectors::CDetectable2D, DETECTORS_IMPEXP )
 
 		class DETECTORS_IMPEXP CDetectable3D: public CDetectable2D
@@ -98,11 +97,11 @@ namespace mrpt
 
 			/** Copy pointer content constructor */
 			CDetectable3D( const CDetectable3D *d )
-			{	
+			{
 				*this = *d;
 			};
 
-				
+
 			float		m_z; //!< Z coordinate of detected object
 
 		}; // End of class

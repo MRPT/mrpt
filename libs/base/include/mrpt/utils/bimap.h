@@ -9,8 +9,6 @@
 #ifndef  mrpt_bimap_H
 #define  mrpt_bimap_H
 
-// Note: This file is included from "stl_extensions.h"
-
 #include <mrpt/utils/utils_defs.h>
 #include <map>
 

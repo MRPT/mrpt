@@ -8,7 +8,7 @@
    +---------------------------------------------------------------------------+ */
 
 
-#include <mrpt/maps.h>
+#include <mrpt/slam/COctoMap.h>
 #include <gtest/gtest.h>
 
 using namespace mrpt;

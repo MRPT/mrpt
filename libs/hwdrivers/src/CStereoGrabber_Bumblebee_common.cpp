@@ -7,7 +7,9 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/hwdrivers.h> // Precompiled header
+#include "hwdrivers-precomp.h"   // Precompiled headers
+
+#include <mrpt/hwdrivers/CStereoGrabber_Bumblebee.h>
 
 
 #if MRPT_HAS_BUMBLEBEE

@@ -7,12 +7,15 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/base.h>
-#include <mrpt/graphs.h>
+#include <mrpt/utils/TTypeName.h>
+#include <mrpt/math/CMatrixFixedNumeric.h>
+#include <mrpt/math/CMatrixTemplateNumeric.h>
+#include <mrpt/graphs/CNetworkOfPoses.h>
 
 using namespace mrpt;
 using namespace mrpt::utils;
 using namespace mrpt::poses;
+using namespace mrpt::math;
 using namespace std;
 
 
@@ -29,7 +32,7 @@ void Test_TypeName()
 	cout << "Type: " << TTypeName<CPose2D>::get() << endl;
 //	cout << "Type: " << TTypeName<mrpt::slam::COccupancyGridMap2D>::get() << endl;
 
-	cout << "Type: " << TTypeName<vector_double>::get() << endl;
+	cout << "Type: " << TTypeName<vector<double> >::get() << endl;
 	cout << "Type: " << TTypeName<vector<int32_t> >::get() << endl;
 	cout << "Type: " << TTypeName<set<double> >::get() << endl;
 

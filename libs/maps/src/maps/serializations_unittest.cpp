@@ -8,8 +8,10 @@
    +---------------------------------------------------------------------------+ */
 
 
+#define MRPT_NO_WARN_BIG_HDR  // Yes, we really want to include all classes.
 #include <mrpt/maps.h>
-#include <mrpt/base.h>
+
+#include <mrpt/utils/CMemoryStream.h>
 #include <gtest/gtest.h>
 
 using namespace mrpt;

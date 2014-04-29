@@ -11,21 +11,14 @@
 
 #include <mrpt/config.h>
 
-#include <cstdarg>
 #include <cstdlib>
-#include <cstring>
-#include <deque>
-#include <vector>
+#include <cstdarg>
 
 // Duplicated here since <mrpt/system/os.h> is the only header that cannot include "utils_defs.h"
 #include <mrpt/base/link_pragmas.h>  // DLL import/export definitions
 
-#include <mrpt/utils/types.h>  // This must be AFTER <utils_impexp.h>
-#include <mrpt/utils/mrpt_macros.h>  // This must be AFTER <utils_impexp.h>
-
-/** Represents an invalid timestamp, where applicable.
-  */
-#define INVALID_TIMESTAMP (0)
+#include <mrpt/utils/mrpt_stdint.h>
+#include <mrpt/utils/mrpt_macros.h>
 
 namespace mrpt
 {
@@ -155,43 +148,6 @@ namespace mrpt
 		/** Clears the console window */
 		void BASE_IMPEXP clearConsole();
 
-		/** A useful function for debuging, which saves a std::vector into a text file (compat. with MATLAB)
-		* \return Returns false on any error, true on everything OK.
-		*/
-		bool  BASE_IMPEXP vectorToTextFile( const std::vector<float> &vec, const std::string &fileName, bool append = false, bool byRows=false );
-		//! \overload
-		bool  BASE_IMPEXP vectorToTextFile( const std::vector<double> &vec, const std::string &fileName, bool append = false, bool byRows=false );
-		//! \overload
-		bool  BASE_IMPEXP vectorToTextFile( const std::vector<int> &vec, const std::string &fileName, bool append = false, bool byRows=false );
-		//! \overload
-		bool  BASE_IMPEXP vectorToTextFile( const std::vector<size_t> &vec, const std::string &fileName, bool append = false, bool byRows=false );
-		//! \overload
-		template <class Derived>
-		bool vectorToTextFile( const Eigen::MatrixBase<Derived> &vec, const std::string &fileName ) {
-			try {
-				vec.saveToTextFile(fileName);
-				return true;
-			} catch(...) {return false;}
-		}
-
-		/** Load a std::vector from a text file (compat. with MATLAB)
-		* \return Returns false on any error, true on everything OK.
-		* \sa loadBinaryFile
-		*/
-		bool  BASE_IMPEXP vectorFromTextFile( std::vector<double> &vec, const std::string &fileName, const bool byRows=false );
-
-		/** Saves a vector directly as a binary dump to a file:
-		* \return Returns false on any error, true on everything OK.
-		* \sa loadBinaryFile
-		*/
-		bool BASE_IMPEXP vectorToBinaryFile( const vector_byte &vec, const std::string &fileName );
-
-		/** Loads a entire file as a vector of bytes.
-		* \return Returns false on any error, true on everything OK.
-		* \sa vectorToBinaryFile
-		*/
-		bool BASE_IMPEXP loadBinaryFile( vector_byte &out_data, const std::string &fileName );
-
 		/** Returns the MRPT compilation date
 		  */
 		std::string BASE_IMPEXP MRPT_getCompilationDate();
@@ -206,17 +162,6 @@ namespace mrpt
 		/** Call this to register handlers for fatal erros (memory access,etc) that show useful debug information (It is called automatically normally, no need for the user to explicitly call this method.).
 		  */
 		void BASE_IMPEXP registerFatalExceptionHandlers();
-
-		/** Dumps the current program stack with detailed information of source files and lines.
-		  *  This function requires MRPT linked against wxWidgets. Otherwise, an empty string is returned.
-		  *  File names and lines won't be available in release builds.
-		  */
-		std::string BASE_IMPEXP stack_trace(bool calling_from_exception = false);
-
-		/** Only when built in debug (with _DEBUG), this function will be called just before raising any MRPT exception,
-		  *  so the user can conveniently put a breakpoint here to explore the call stack, etc.
-		  */
-		void BASE_IMPEXP breakpoint(const std::string &exception_msg);
 
 		/** For use in  setConsoleColor */
 		enum TConsoleColor

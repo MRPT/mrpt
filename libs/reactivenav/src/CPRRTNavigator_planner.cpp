@@ -7,14 +7,18 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/reactivenav.h>  // Precomp header
+#include "reactivenav-precomp.h" // Precomp header
 
+#include <mrpt/reactivenav/CPRRTNavigator.h>
 #include <mrpt/graphs/CAStarAlgorithm.h>
+#include <mrpt/slam/CSimplePointsMap.h>
+#include <mrpt/system/datetime.h>
 
 using namespace mrpt::reactivenav;
 using namespace mrpt::synch;
 using namespace mrpt::utils;
 using namespace mrpt::math;
+using namespace mrpt::system;
 using namespace mrpt::slam;
 using namespace std;
 

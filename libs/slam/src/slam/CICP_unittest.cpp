@@ -8,8 +8,18 @@
    +---------------------------------------------------------------------------+ */
 
 
-#include <mrpt/slam.h>
-#include <mrpt/maps.h>  // for CAngularObservationMesh
+#include <mrpt/slam/CICP.h>
+#include <mrpt/slam/CSimplePointsMap.h>
+#include <mrpt/opengl/CAngularObservationMesh.h>
+#include <mrpt/poses/CPosePDF.h>
+#include <mrpt/poses/CPose3DPDF.h>
+
+#include <mrpt/opengl/COpenGLScene.h>
+#include <mrpt/opengl/CGridPlaneXY.h>
+#include <mrpt/opengl/CSetOfObjects.h>
+#include <mrpt/opengl/CSphere.h>
+#include <mrpt/opengl/CDisk.h>
+#include <mrpt/opengl/stock_objects.h>
 #include <gtest/gtest.h>
 
 using namespace mrpt;
@@ -237,7 +247,7 @@ TEST_F(ICPTests, RayTracingICP3D)
 	CPose3D  mean = pdf->getMeanVal();
 
 	// Checks:
-	EXPECT_NEAR(0, (mean.getAsVectorVal()-SCAN2_POSE_ERROR.getAsVectorVal()).Abs().mean(),  0.02)
+	EXPECT_NEAR(0, (mean.getAsVectorVal()-SCAN2_POSE_ERROR.getAsVectorVal()).array().abs().mean(),  0.02)
 		<< "ICP output: mean= " << mean << endl
 		<< "Real displacement: " << SCAN2_POSE_ERROR  << endl;
 

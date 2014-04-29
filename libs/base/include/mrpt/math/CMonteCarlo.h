@@ -16,7 +16,6 @@
 #include <algorithm>
 #include <stdexcept>
 #include <functional>
-//#include <mrpt/gui/CDisplayWindowPlots.h>
 #include <mrpt/random.h>
 #include <mrpt/utils/CTicTac.h>
 
@@ -51,13 +50,13 @@ namespace mrpt	{	namespace math	{
 				v1.assign(data.begin(),data.end());
 			}
 			template<typename VEC1,typename VEC2> inline void getDistribution(VEC1 &vx,VEC2 &vy,const NUM width=1.0) const	{
-				mrpt::vector_double vvx,vvy;
+				std::vector<double> vvx,vvy;
 				getDistribution(vvx,vvy,width);
 				vx.assign(vvx.begin(),vvx.end());
 				vy.assign(vvy.begin(),vvy.end());
 			}
 			// Function overload, not specialization (GCC complains otherwise):
-			inline void getDistribution(mrpt::vector_double &vx,mrpt::vector_double &vy,const NUM width=1.0) const	{
+			inline void getDistribution(std::vector<double> &vx,std::vector<double> &vy,const NUM width=1.0) const	{
 				CHistogram hist(CHistogram::createWithFixedWidth(0,*max_element(data.begin(),data.end()),width));
 				hist.add(data);
 				hist.getHistogram(vx,vy);

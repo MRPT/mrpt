@@ -12,23 +12,15 @@
 
 #include <mrpt/utils/CDynamicGrid.h>
 #include <mrpt/utils/CSerializable.h>
-#include <mrpt/math/CMatrixD.h>
-#include <mrpt/math/geometry.h>
-#include <mrpt/system/os.h>
 #include <mrpt/utils/CLoadableOptions.h>
-#include <mrpt/utils/stl_extensions.h>
 #include <mrpt/utils/color_maps.h>
-
+#include <mrpt/utils/TEnumType.h>
 #include <mrpt/slam/CMetricMap.h>
-
 #include <mrpt/maps/link_pragmas.h>
+#include <mrpt/poses/poses_frwds.h>
 
 namespace mrpt
 {
-	namespace poses
-	{
-		class CPose2D;
-	}
 	namespace slam
 	{
 		using namespace mrpt::utils;
@@ -178,7 +170,7 @@ namespace mrpt
 
 			/** Gets the intersection between a 3D line and a Height Grid map (taking into account the different heights of each individual cell).
 			  */
-			bool intersectLine3D(const TLine3D &r1, TObject3D &obj) const;
+			bool intersectLine3D(const mrpt::math::TLine3D &r1, mrpt::math::TObject3D &obj) const;
 
 			/** Computes the minimum and maximum height in the grid.
 			  * \return False if there is no observed cell yet.

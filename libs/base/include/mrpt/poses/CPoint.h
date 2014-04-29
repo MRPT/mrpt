@@ -10,6 +10,7 @@
 #define CPOINT_H
 
 #include <mrpt/poses/CPoseOrPoint.h>
+#include <mrpt/math/CMatrixTemplateNumeric.h>
 
 namespace mrpt
 {
@@ -47,19 +48,19 @@ namespace mrpt
 			}
 
 			/** Return the pose or point as a 1x2 or 1x3 vector [x y] or [x y z] */
-			inline void getAsVector(vector_double &v) const
+			inline void getAsVector(CVectorDouble &v) const
 			{
 				v.resize(DERIVEDCLASS::static_size);
 				for (int i=0;i<DERIVEDCLASS::static_size;i++)
 					v[i] = static_cast<const DERIVEDCLASS*>(this)->m_coords[i];
 			}
 			//! \overload
-			inline vector_double getAsVector() const { vector_double v; getAsVector(v); return v; }
+			inline CVectorDouble getAsVector() const { CVectorDouble v; getAsVector(v); return v; }
 
 			/** Returns the corresponding 4x4 homogeneous transformation matrix for the point(translation) or pose (translation+orientation).
 			  * \sa getInverseHomogeneousMatrix
 			  */
-			void getHomogeneousMatrix(CMatrixDouble44 & out_HM ) const
+			void getHomogeneousMatrix(mrpt::math::CMatrixDouble44 & out_HM ) const
 			{
 				out_HM.unit(4,1.0);
 				out_HM.get_unsafe(0,3)= static_cast<const DERIVEDCLASS*>(this)->x();
@@ -85,7 +86,7 @@ namespace mrpt
 			*/
 			void fromString(const std::string &s)
 			{
-				CMatrixDouble  m;
+				mrpt::math::CMatrixDouble  m;
 				if (!m.fromMatlabStringFormat(s)) THROW_EXCEPTION("Malformed expression in ::fromString");
 				ASSERT_EQUAL_(mrpt::math::size(m,1),1)
 				ASSERT_EQUAL_(mrpt::math::size(m,2),DERIVEDCLASS::static_size)

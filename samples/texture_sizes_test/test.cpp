@@ -7,13 +7,16 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/base.h>
-#include <mrpt/gui.h>
-#include <mrpt/opengl.h>
+#include <mrpt/utils/CImage.h>
+#include <mrpt/gui/CDisplayWindow3D.h>
+#include <mrpt/system/threads.h>
+#include <mrpt/opengl/CTexturedPlane.h>
+#include <mrpt/opengl/CText.h>
 
 #include <mrpt/examples_config.h>
 const std::string   myTestFile( MRPT_EXAMPLES_BASE_DIRECTORY + std::string("imageBasics/frame_color.jpg") );
 
+using namespace std;
 using namespace mrpt;
 using namespace mrpt::gui;
 using namespace mrpt::opengl;

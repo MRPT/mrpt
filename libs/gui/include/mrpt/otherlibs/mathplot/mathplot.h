@@ -1182,6 +1182,11 @@ public:
 		@return reference to axis colour used in theme */
 	const wxColour& GetAxesColour() { return m_axColour; };
 
+	/** Recalculate global layer bounding box, and save it in m_minX,...
+      * \return true if there is any valid BBox information.
+      */
+    virtual bool UpdateBBox();
+
 protected:
     void OnPaint         (wxPaintEvent     &event); //!< Paint handler, will plot all attached layers
     void OnSize          (wxSizeEvent      &event); //!< Size handler, will update scroll bar sizes
@@ -1213,11 +1218,6 @@ protected:
     void DoZoomInYCalc   (const int         staticYpixel);
     void DoZoomOutXCalc  (const int         staticXpixel);
     void DoZoomOutYCalc  (const int         staticYpixel);
-
-    /** Recalculate global layer bounding box, and save it in m_minX,...
-      * \return true if there is any valid BBox information.
-      */
-    virtual bool UpdateBBox();
 
     //wxList m_layers;    //!< List of attached plot layers
     wxLayerList m_layers; //!< List of attached plot layers

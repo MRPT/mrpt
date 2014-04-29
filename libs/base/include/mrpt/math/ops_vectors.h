@@ -10,7 +10,10 @@
 #define  mrpt_math_vector_ops_H
 
 #include <mrpt/utils/utils_defs.h>
+#include <mrpt/utils/CStream.h>
 #include <mrpt/math/CMatrixTemplateNumeric.h>
+#include <iomanip>  // for setprecision(), etc.
+#include <iterator> // std::ostream_iterator
 
 // Many of the functions originally in this file are now in ops_containers.h
 #include <mrpt/math/ops_containers.h>
@@ -22,6 +25,9 @@ namespace mrpt
 
 	namespace math
 	{
+		// Frwd. decl.
+		template <typename T, std::size_t N> class CArrayNumeric;
+
 		/** \addtogroup container_ops_grp
 		  *  @{ */
 
@@ -108,7 +114,7 @@ namespace mrpt
 			const std::streamsize old_pre = out.precision();
 			const std::ios_base::fmtflags old_flags = out.flags();
 			out << "[" << std::fixed << std::setprecision(4);
-			copy(d.begin(),d.end(), std::ostream_iterator<T>(out," "));
+			std::copy(d.begin(),d.end(), std::ostream_iterator<T>(out," "));
 			out << "]";
 			out.flags(old_flags);
 			out.precision(old_pre);

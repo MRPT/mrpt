@@ -7,9 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/base.h>  // Precompiled headers
-
-
+#include "base-precomp.h"  // Precompiled headers
 
 #include <mrpt/config.h>
 
@@ -28,6 +26,7 @@
 	#include <utime.h>
 	#include <unistd.h>
 	#include <errno.h>
+	#include <cstring>
 #endif
 
 #include <queue>

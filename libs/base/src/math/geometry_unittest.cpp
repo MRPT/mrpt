@@ -8,7 +8,7 @@
    +---------------------------------------------------------------------------+ */
 
 
-#include <mrpt/base.h>
+#include <mrpt/math/geometry.h>
 #include <gtest/gtest.h>
 
 using namespace mrpt;

@@ -8,9 +8,10 @@
    +---------------------------------------------------------------------------+ */
 
 #include <mrpt/hwdrivers/CBoardENoses.h>
-#include <mrpt/base.h>
-#include <mrpt/obs.h>
-
+#include <mrpt/utils/CConfigFile.h>
+#include <mrpt/slam/CObservationGasSensors.h>
+#include <mrpt/system/os.h>
+#include <mrpt/system/filesystem.h>
 
 using namespace mrpt;
 using namespace mrpt::hwdrivers;
@@ -81,8 +82,8 @@ int main()
 					{
 						//printf("%04X: %.03fV ", obs.m_readings[i].sensorTypes[j], obs.m_readings[i].readingsVoltage[j] );
 
-						if ( j<(obs.m_readings[i].sensorTypes.size() -1) ){
-							if( (obs.m_readings[i].sensorTypes[j]==obs.m_readings[i].sensorTypes[j+1]) ){
+						if ( j<(obs.m_readings[i].sensorTypes.size()-1) ){
+							if( obs.m_readings[i].sensorTypes[j]==obs.m_readings[i].sensorTypes[j+1] ){
 								printf("\n%04X: %.03fV \n ", obs.m_readings[i].sensorTypes[j], obs.m_readings[i].readingsVoltage[j]-obs.m_readings[i].readingsVoltage[j+1] );
 								j++;	//skip the next sensor as it has been used already.
 							}else{

@@ -9,8 +9,12 @@
 
 #include <mrpt/hwdrivers/CHokuyoURG.h>
 #include <mrpt/hwdrivers/CSerialPort.h>
-#include <mrpt/gui.h>
-#include <mrpt/maps.h>
+#include <mrpt/gui/CDisplayWindowPlots.h>
+#include <mrpt/slam/CObservation2DRangeScan.h>
+#include <mrpt/slam/CSimplePointsMap.h>
+#include <mrpt/system/string_utils.h>
+#include <mrpt/system/threads.h> // sleep
+#include <mrpt/system/os.h>
 
 using namespace mrpt;
 using namespace mrpt::hwdrivers;
@@ -38,7 +42,7 @@ void Test_HOKUYO()
 	cout << "Specify the type of the Hokuyo connection, usb or ethernet: ";
 	getline(cin,type);
 
-	while ( (lowerCase(type) != "usb" ) && ( lowerCase(type) != "ethernet" ) )
+	while ( (mrpt::system::lowerCase(type) != "usb" ) && ( mrpt::system::lowerCase(type) != "ethernet" ) )
 	{
 		cout << "Incorrect type" << endl;
 		cout << "Specify the type of the Hokuyo connection, usb or ethernet: ";
@@ -47,7 +51,7 @@ void Test_HOKUYO()
 
 	cout << endl << endl << "HOKUYO laser range finder test application." << endl << endl;
 
-	if ( lowerCase(type) == "usb" )
+	if ( mrpt::system::lowerCase(type) == "usb" )
 	{
 		if (SERIAL_NAME.empty())
 		{
@@ -134,7 +138,7 @@ void Test_HOKUYO()
 			*/
 
 #if MRPT_HAS_WXWIDGETS
-			vector_float	xs,ys,zs;
+			std::vector<float>	xs,ys,zs;
 			theMap.getAllPoints(xs,ys,zs);
 			win.plot(xs,ys,".b3");
 			win.axis_equal();

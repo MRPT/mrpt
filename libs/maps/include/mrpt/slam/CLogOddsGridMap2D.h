@@ -10,7 +10,9 @@
 #ifndef CLogOddsGridMap2D_H
 #define CLogOddsGridMap2D_H
 
-#include <mrpt/utils/utils_defs.h>
+#include <mrpt/utils/core_defs.h>
+#include <mrpt/utils/mrpt_stdint.h>
+#include <vector>
 
 namespace mrpt
 {
@@ -160,8 +162,6 @@ namespace mrpt
 			/** Constructor: computes all the required stuff. */
 			CLogOddsGridMapLUT()
 			{
-				MRPT_START
-
 				// The factor for converting log2-odds into integers:
 				static const double LOGODD_K  = 16;
 				static const double LOGODD_K_INV = 1.0/LOGODD_K;
@@ -195,8 +195,6 @@ namespace mrpt
 						L=traits_t::CELLTYPE_MIN;
 					p2lTable[j] = L;
 				}
-
-				MRPT_END
 			}
 
 			/** Scales an integer representation of the log-odd into a real valued probability in [0,1], using p=exp(l)/(1+exp(l))

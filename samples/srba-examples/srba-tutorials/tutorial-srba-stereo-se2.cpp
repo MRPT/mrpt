@@ -12,6 +12,7 @@
 
 using namespace mrpt::srba;
 using namespace std;
+using mrpt::utils::DEG2RAD;
 
 // --------------------------------------------------------------------------------
 // Declare a typedef "my_srba_t" for easily referring to my RBA problem type:
@@ -25,16 +26,16 @@ struct my_srba_options
 
 typedef RbaEngine<
 	kf2kf_poses::SE2,                // Parameterization  KF-to-KF poses
-	landmarks::Euclidean3D,          // Parameterization of landmark positions    
+	landmarks::Euclidean3D,          // Parameterization of landmark positions
 	observations::StereoCamera,      // Type of observations
 	my_srba_options                  // Other parameters
-	> 
+	>
 	my_srba_t;
 
 // --------------------------------------------------------------------------------
 // A test dataset (generated with http://code.google.com/p/recursive-world-toolkit/ )
 // --------------------------------------------------------------------------------
-struct basic_stereo_dataset_entry_t 
+struct basic_stereo_dataset_entry_t
 {
 	unsigned int landmark_id;
 	double l_px_x, l_px_y, r_px_x, r_px_y;
@@ -70,7 +71,7 @@ basic_stereo_dataset_entry_t  dataset0[] = {
  {    27,  705.59130859,  384.00000000,  697.47851563,  384.00000000},
  {    31,  374.95474243,  384.00000000,  367.96514893,  384.00000000},
 };
-	
+
 // Observations for KF#1. GT pose: 10 -> 0.502744 -0.099901 0.000000 0.526224 -0.526224 0.472322 -0.472322
 basic_stereo_dataset_entry_t  dataset1[] = {
  {    39,  538.84362793,  384.00000000,  511.19470215,  384.00000000},
@@ -114,7 +115,7 @@ int main(int argc, char**argv)
 	my_srba_t rba;     //  Create an empty RBA problem
 
 	// --------------------------------------------------------------------------------
-	// Set parameters 
+	// Set parameters
 	// --------------------------------------------------------------------------------
 	rba.setVerbosityLevel( 1 );   // 0: None; 1:Important only; 2:Verbose
 
@@ -141,12 +142,12 @@ int main(int argc, char**argv)
 
 	// Sensor pose on the robot parameters:
 	rba.parameters.sensor_pose.relative_pose = mrpt::poses::CPose3D(0,0,0,DEG2RAD(-90),DEG2RAD(0),DEG2RAD(-90) ); // Set camera pointing forwards (camera's +Z is robot +X)
-	
+
 	// Alternatively, parameters can be loaded from an .ini-like config file
 	// -----------------------------------------------------------------------
 	// rba.parameters.loadFromConfigFileName("config_file.cfg", "srba");
 	//rba.sensor_params.camera_calib.loadFromConfigFile("CAMERA","config_file.cfg");
-	
+
 	// --------------------------------------------------------------------------------
 	// Dump parameters to console (for checking/debugging only)
 	// --------------------------------------------------------------------------------
@@ -188,7 +189,7 @@ int main(int argc, char**argv)
 		true           // Also run local optimization?
 		);
 
-	cout << "Created KF #" << new_kf_info.kf_id 
+	cout << "Created KF #" << new_kf_info.kf_id
 		<< " | # kf-to-kf edges created:" <<  new_kf_info.created_edge_ids.size()  << endl
 		<< "Optimization error: " << new_kf_info.optimize_results.total_sqr_error_init << " -> " << new_kf_info.optimize_results.total_sqr_error_final << endl
 		<< "-------------------------------------------------------" << endl;
@@ -208,7 +209,7 @@ int main(int argc, char**argv)
 		obs_field.obs.obs_data.right_px.y = dataset1[i].r_px_y;
 		list_obs.push_back( obs_field );
 	}
-	
+
 	//  Here happens the main stuff: create Key-frames, build structures, run optimization, etc.
 	//  ============================================================================================
 	rba.define_new_keyframe(
@@ -217,7 +218,7 @@ int main(int argc, char**argv)
 		true           // Also run local optimization?
 		);
 
-	cout << "Created KF #" << new_kf_info.kf_id 
+	cout << "Created KF #" << new_kf_info.kf_id
 		<< " | # kf-to-kf edges created:" <<  new_kf_info.created_edge_ids.size() << endl
 		<< "Optimization error: " << new_kf_info.optimize_results.total_sqr_error_init << " -> " << new_kf_info.optimize_results.total_sqr_error_final << endl
 		<< "-------------------------------------------------------" << endl;
@@ -243,7 +244,7 @@ int main(int argc, char**argv)
 	rba.build_opengl_representation(
 		0,  // Root KF,
 		opengl_options, // Rendering options
-		rba_3d  // Output scene 
+		rba_3d  // Output scene
 		);
 
 	// Display:
@@ -254,12 +255,12 @@ int main(int argc, char**argv)
 		scene->insert(rba_3d);
 		win.unlockAccess3DScene();
 	}
-	win.setCameraZoom( 4 ); 
+	win.setCameraZoom( 4 );
 	win.repaint();
 
 	cout << "Press any key or close window to exit.\n";
 	win.waitForKey();
 #endif
-		
+
 	return 0; // All ok
 }

@@ -1,6 +1,7 @@
 # ----------------------------------------------------------------------------
 # CMake file. Run with "cmake ." at the root directory.
 # ----------------------------------------------------------------------------
+project(ALL_MRPT_APPS)
 
 INCLUDE(../cmakemodules/AssureCMakeRootFile.cmake) # Avoid user mistake in CMake source directory
 

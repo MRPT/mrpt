@@ -91,7 +91,6 @@ IF(BUILD_EXAMPLES)
 		kmeans
 		slerp_demo
 		texture_sizes_test
-		stereo-calib-opencv
 		)
 	SET(CMAKE_EXAMPLE_DEPS mrpt-base mrpt-gui)
 	SET(CMAKE_EXAMPLE_LINK_LIBS ${MRPT_LINKER_LIBS})
@@ -300,25 +299,30 @@ IF(BUILD_EXAMPLES)
 	IF (MRPT_HAS_OPENNI2)
 		SET(LIST_EXAMPLES_IN_THIS_DIR
 			openNI2_RGBD_demo
-			openNI2_proximity_demo)
+			openNI2_proximity_demo
+			openNI2_driver_demo
+			openNI2_to_rawlog)
 			
-		SET(CMAKE_EXAMPLE_DEPS mrpt-base mrpt-gui mrpt-opengl mrpt-maps)
+		SET(CMAKE_EXAMPLE_DEPS mrpt-base mrpt-hwdrivers mrpt-gui mrpt-opengl mrpt-maps)
 		SET(CMAKE_EXAMPLE_LINK_LIBS ${MRPT_LINKER_LIBS} "\${OPENNI2_LIBRARIES}")
 		GENERATE_CMAKE_FILES_SAMPLES_DIRECTORY()
 	ENDIF(MRPT_HAS_OPENNI2)
 	
 	# === SRBA examples ===
-	ADD_SAMPLES_DIRECTORY(srba-examples)
+	IF(BUILD_mrpt-srba)
+		ADD_SAMPLES_DIRECTORY(srba-examples)
+	ENDIF(BUILD_mrpt-srba)
 
 	# === PbMap examples ===
 	IF(BUILD_mrpt-pbmap)
-		SET(LIST_EXAMPLES_IN_THIS_DIR
-			pbmap_example
-			pbmap_visualizer
-			)
-		SET(CMAKE_EXAMPLE_DEPS mrpt-pbmap mrpt-gui)
-		SET(CMAKE_EXAMPLE_LINK_LIBS ${MRPT_LINKER_LIBS})
-		GENERATE_CMAKE_FILES_SAMPLES_DIRECTORY()
+		ADD_SAMPLES_DIRECTORY(pbmap-examples)
+#		SET(LIST_EXAMPLES_IN_THIS_DIR
+#			pbmap_example
+#			pbmap_visualizer
+#			)
+#		SET(CMAKE_EXAMPLE_DEPS mrpt-pbmap mrpt-gui)
+#		SET(CMAKE_EXAMPLE_LINK_LIBS ${MRPT_LINKER_LIBS})
+#		GENERATE_CMAKE_FILES_SAMPLES_DIRECTORY()
 	ENDIF(BUILD_mrpt-pbmap)
 
 	# Generate the CMakeLists.txt in the "/samples" directory

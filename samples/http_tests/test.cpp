@@ -8,6 +8,7 @@
    +---------------------------------------------------------------------------+ */
 
 #include <mrpt/utils/net_utils.h>
+#include <iostream>
 
 using namespace mrpt;
 using namespace mrpt::utils;

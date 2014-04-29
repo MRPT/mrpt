@@ -10,13 +10,13 @@
 #define CPose3DPDFGaussian_H
 
 #include <mrpt/poses/CPose3DPDF.h>
-#include <mrpt/poses/CPosePDF.h>
-#include <mrpt/math/CMatrixD.h>
+#include <mrpt/poses/CPose3D.h>
 
 namespace mrpt
 {
 namespace poses
 {
+	class CPosePDF;
 	class CPosePDFGaussian;
 	class CPose3DQuatPDFGaussian;
 
@@ -58,7 +58,7 @@ namespace poses
 		CPose3DPDFGaussian(TConstructorFlags_Poses constructor_dummy_param);
 
 		/** Constructor  */
-		CPose3DPDFGaussian( const CPose3D &init_Mean, const CMatrixDouble66 &init_Cov );
+		CPose3DPDFGaussian( const CPose3D &init_Mean, const mrpt::math::CMatrixDouble66 &init_Cov );
 
 		/** Constructor from a Gaussian 2D pose PDF (sets to 0 the missing variables z,pitch, and roll).
 		  */
@@ -74,7 +74,7 @@ namespace poses
 
 		/** The 6x6 covariance matrix
 		 */
-		CMatrixDouble66		cov;
+		mrpt::math::CMatrixDouble66		cov;
 
 		inline const CPose3D & getPoseMean() const { return mean; }
 		inline       CPose3D & getPoseMean()       { return mean; }
@@ -89,7 +89,7 @@ namespace poses
 		/** Returns an estimate of the pose covariance matrix (6x6 cov matrix) and the mean, both at once.
 		  * \sa getMean
 		  */
-		void getCovarianceAndMean(CMatrixDouble66 &cov,CPose3D &mean_point) const {
+		void getCovarianceAndMean(mrpt::math::CMatrixDouble66 &cov,CPose3D &mean_point) const {
 			cov = this->cov;
 			mean_point = this->mean;
 		}
@@ -122,7 +122,7 @@ namespace poses
 
 		/** Draws a number of samples from the distribution, and saves as a list of 1x6 vectors, where each row contains a (x,y,phi) datum.
 		  */
-		void  drawManySamples( size_t N, std::vector<vector_double> & outSamples ) const;
+		void  drawManySamples( size_t N, std::vector<CVectorDouble> & outSamples ) const;
 
 		/** Bayesian fusion of two points gauss. distributions, then save the result in this object.
 		  *  The process is as follows:<br>
@@ -176,7 +176,7 @@ namespace poses
 
 		/** Returns a 3x3 matrix with submatrix of the covariance for the variables (x,y,yaw) only.
 		  */
-		void getCovSubmatrix2D( CMatrixDouble &out_cov ) const;
+		void getCovSubmatrix2D( mrpt::math::CMatrixDouble &out_cov ) const;
 
 
 	}; // End of class def.

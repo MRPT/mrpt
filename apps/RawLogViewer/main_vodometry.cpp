@@ -19,7 +19,6 @@
 #include <wx/textdlg.h>
 
 // General global variables:
-#include <mrpt/slam.h>
 
 #ifdef RAWLOGVIEWER_HAS_STEREOSLAM
 	#include <mrpt/stereoslam.h>
@@ -32,7 +31,6 @@ using namespace mrpt::system;
 using namespace mrpt::math;
 using namespace mrpt::gui;
 using namespace mrpt::utils;
-using namespace mrpt::vision;
 using namespace std;
 
 #ifdef RAWLOGVIEWER_HAS_STEREOSLAM

@@ -59,8 +59,8 @@
 #include <mrpt/utils/CProbabilityDensityFunction.h>
 
 #include <mrpt/utils/CConsoleRedirector.h>
-#include <mrpt/utils/stl_extensions.h>
-#include <mrpt/utils/metaprogramming.h>
+//#include <mrpt/utils/stl_extensions.h>
+//#include <mrpt/utils/metaprogramming.h>
 #include <mrpt/utils/exceptions.h>
 #include <mrpt/utils/crc.h>
 #include <mrpt/utils/md5.h>

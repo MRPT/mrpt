@@ -17,8 +17,17 @@
 #include <wx/filedlg.h>
 
 // General global variables:
-#include <mrpt/slam.h>
+#include <mrpt/slam/CObservationGPS.h>
+#include <mrpt/opengl/CPointCloud.h>
+#include <mrpt/opengl/CGridPlaneXY.h>
+#include <mrpt/opengl/CAxis.h>
+#include <mrpt/system/os.h>
 #include <mrpt/topography.h>
+#include <mrpt/utils/stl_containers_utils.h>
+#include <mrpt/math/utils.h>
+#include <mrpt/math/ops_containers.h>
+#include <mrpt/system/filesystem.h>
+#include <mrpt/math/geometry.h>
 
 using namespace mrpt;
 using namespace mrpt::slam;
@@ -175,7 +184,7 @@ void xRawLogViewerFrame::OnMenuDrawGPSPath(wxCommandEvent& event)
 
 
 
-void fixGPStimestamp(CObservationGPSPtr &obs, vector_double &time_changes, std::map<std::string,double> &DeltaTimes )
+void fixGPStimestamp(CObservationGPSPtr &obs, CVectorDouble &time_changes, std::map<std::string,double> &DeltaTimes )
 {
 	if (!obs->has_GGA_datum && !obs->has_RMC_datum) return;
 
@@ -244,7 +253,7 @@ void xRawLogViewerFrame::OnMenuRegenerateGPSTimestamps(wxCommandEvent& event)
 
 	vector_string  the_labels = AskForObservationByLabelMultiple("Choose the GPS(s) to consider:");
 
-	vector_double time_changes;	// all the shifts
+	CVectorDouble time_changes;	// all the shifts
 
 	std::map<std::string,double> DeltaTimes;
 
@@ -347,7 +356,7 @@ void xRawLogViewerFrame::OnMenuDistanceBtwGPSs(wxCommandEvent& event)
     // Look for the 2 observations:
     CObservationGPSPtr last_GPS1, last_GPS2;
 
-    vector_double   dists;
+    CVectorDouble   dists;
 
 	TGeodeticCoords refCoords(0,0,0);
 

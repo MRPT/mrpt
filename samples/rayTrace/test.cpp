@@ -7,10 +7,20 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/slam.h>
 #include <mrpt/gui.h>
-#include <mrpt/maps.h>
-#include <mrpt/system.h>
+#include <mrpt/random.h>
+#include <mrpt/system/threads.h> // sleep()
+#include <mrpt/poses/CPose3D.h>
+#include <mrpt/utils/CTicTac.h>
+#include <mrpt/opengl/CAngularObservationMesh.h>
+#include <mrpt/opengl/CAxis.h>
+#include <mrpt/opengl/CDisk.h>
+#include <mrpt/opengl/CCylinder.h>
+#include <mrpt/opengl/CSphere.h>
+#include <mrpt/opengl/CPolyhedron.h>
+#include <mrpt/opengl/CTexturedPlane.h>
+#include <mrpt/opengl/CEllipsoid.h>
+#include <mrpt/opengl/CGridPlaneXY.h>
 
 #define COLORR 1.0f
 #define COLORG 0.0f
@@ -169,7 +179,7 @@ int main()	{
 		return 0;
 	}	catch (const exception &e)	{
 		cout<<"Error: "<<e.what()<<'.'<<endl;
-		::pause();
+		mrpt::system::pause();
 		return -1;
 	}	catch (...)	{
 		cout<<"Unknown Error.\n";

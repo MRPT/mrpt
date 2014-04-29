@@ -7,13 +7,13 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/slam.h>  // Precompiled header
+#include "slam-precomp.h"   // Precompiled headers
 
 
 #include <mrpt/random.h>
-#include <mrpt/math/utils.h>
 #include <mrpt/utils/CTicTac.h>
 #include <mrpt/utils/CFileStream.h>
+#include <mrpt/system/os.h>
 
 #include <mrpt/slam/CMultiMetricMapPDF.h>
 #include <mrpt/slam/CActionRobotMovement2D.h>
@@ -24,7 +24,6 @@
 #include <mrpt/slam/CObservationBeaconRanges.h>
 #include <mrpt/slam/CSimplePointsMap.h>
 #include <mrpt/slam/CLandmarksMap.h>
-#include <mrpt/math.h>
 
 #include <mrpt/slam/PF_aux_structs.h>
 
@@ -34,6 +33,7 @@ using namespace mrpt::slam;
 using namespace mrpt::poses;
 using namespace mrpt::random;
 using namespace mrpt::utils;
+using namespace mrpt::system;
 using namespace std;
 
 IMPLEMENTS_SERIALIZABLE( CMultiMetricMapPDF, CSerializable, mrpt::slam )
@@ -333,7 +333,7 @@ void  CMultiMetricMapPDF::rebuildAverageMap()
 	// ---------------------------------------------------------
 	//					GRID
 	// ---------------------------------------------------------
-	for (part=m_particles.begin();part!=m_particles.end();part++)
+	for (part=m_particles.begin();part!=m_particles.end();++part)
 	{
 		ASSERT_( part->d->mapTillNow.m_gridMaps.size()>0 );
 
@@ -344,10 +344,10 @@ void  CMultiMetricMapPDF::rebuildAverageMap()
 	}
 
 	// Asure all maps have the same dimensions:
-	for (part=m_particles.begin();part!=m_particles.end();part++)
+	for (part=m_particles.begin();part!=m_particles.end();++part)
 		part->d->mapTillNow.m_gridMaps[0]->resizeGrid(min_x,max_x,min_y,max_y,0.5f,false);
 
-	for (part=m_particles.begin();part!=m_particles.end();part++)
+	for (part=m_particles.begin();part!=m_particles.end();++part)
 	{
 		min_x = min( min_x, part->d->mapTillNow.m_gridMaps[0]->getXMin() );
 		max_x = max( max_x, part->d->mapTillNow.m_gridMaps[0]->getXMax() );
@@ -367,11 +367,11 @@ void  CMultiMetricMapPDF::rebuildAverageMap()
 
 	// Compute the sum of weights:
 	double		sumLinearWeights = 0;
-	for (part=m_particles.begin();part!=m_particles.end();part++)
+	for (part=m_particles.begin();part!=m_particles.end();++part)
 		sumLinearWeights += exp( part->log_w );
 
 	// CHECK:
-	for (part=m_particles.begin();part!=m_particles.end();part++)
+	for (part=m_particles.begin();part!=m_particles.end();++part)
 	{
 		ASSERT_(part->d->mapTillNow.m_gridMaps[0]->getSizeX() == averageMap.m_gridMaps[0]->getSizeX());
 		ASSERT_(part->d->mapTillNow.m_gridMaps[0]->getSizeY() == averageMap.m_gridMaps[0]->getSizeY());
@@ -488,12 +488,12 @@ void  CMultiMetricMapPDF::rebuildAverageMap()
 
 		// For each particle in the RBPF:
 		double		sumW = 0;
-		for (part=m_particles.begin();part!=m_particles.end();part++)
+		for (part=m_particles.begin();part!=m_particles.end();++part)
 			sumW+=exp(part->log_w);
 
 		if (sumW==0) sumW=1;
 
-		for (part=m_particles.begin();part!=m_particles.end();part++)
+		for (part=m_particles.begin();part!=m_particles.end();++part)
 		{
 			// Variables:
 			std::vector<COccupancyGridMap2D::cellType>::iterator	srcCell;
@@ -628,7 +628,7 @@ double  CMultiMetricMapPDF::getCurrentJointEntropy()
 	// ---------------------------------------------------------
 	//			ASSURE ALL THE GRIDS ARE THE SAME SIZE!
 	// ---------------------------------------------------------
-	for (part=m_particles.begin();part!=m_particles.end();part++)
+	for (part=m_particles.begin();part!=m_particles.end();++part)
 	{
 		ASSERT_( part->d->mapTillNow.m_gridMaps.size()>0 );
 
@@ -639,7 +639,7 @@ double  CMultiMetricMapPDF::getCurrentJointEntropy()
 	}
 
 	// Asure all maps have the same dimensions:
-	for (part=m_particles.begin();part!=m_particles.end();part++)
+	for (part=m_particles.begin();part!=m_particles.end();++part)
 		part->d->mapTillNow.m_gridMaps[0]->resizeGrid(min_x,max_x,min_y,max_y,0.5f,false);
 
 

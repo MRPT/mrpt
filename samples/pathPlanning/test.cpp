@@ -7,17 +7,21 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/base.h>
-#include <mrpt/slam.h>
-#include <mrpt/gui.h>
+#include <mrpt/slam/COccupancyGridMap2D.h>
+#include <mrpt/slam/CPathPlanningCircularRobot.h>
+#include <mrpt/gui/CDisplayWindow.h>
+#include <mrpt/utils/CTicTac.h>
+#include <mrpt/utils/CFileGZInputStream.h>
+#include <mrpt/system/filesystem.h>
+#include <mrpt/poses/CPose2D.h>
 
 #include <iostream>
 
 using namespace mrpt;
 using namespace mrpt::utils;
 using namespace mrpt::slam;
+using namespace mrpt::math;
 using namespace std;
-
 
 #include <mrpt/examples_config.h>
 
@@ -44,13 +48,12 @@ void TestPathPlanning()
 	CPathPlanningCircularRobot	pathPlanning;
 	pathPlanning.robotRadius = 0.30f;
 
-	std::deque<poses::TPoint2D>		thePath;
+	std::deque<TPoint2D>		thePath;
 	bool	notFound;
 	CTicTac	tictac;
 
-//	CPoint2D  origin( 20, 1 );
-	CPoint2D  origin( 20, -110 );
-	CPoint2D  target( 90, 40 );
+	CPose2D  origin( 20, -110, 0 );
+	CPose2D  target( 90, 40, 0 );
 
 	cout << "Origin: " << origin << endl;
 	cout << "Target: " << target << endl;
@@ -74,7 +77,7 @@ void TestPathPlanning()
 	// ---------------------
 	int R = round(pathPlanning.robotRadius / gridmap.getResolution() );
 
-	for (std::deque<poses::TPoint2D>::const_iterator it=thePath.begin();it!=thePath.end();++it)
+	for (std::deque<TPoint2D>::const_iterator it=thePath.begin();it!=thePath.end();++it)
 		img.drawCircle( gridmap.x2idx(it->x),gridmap.getSizeY()-1-gridmap.y2idx(it->y),R, TColor(0,0,255) );
 
 	img.cross(gridmap.x2idx(origin.x()),gridmap.getSizeY()-1-gridmap.y2idx(origin.y()),TColor(0x20,0x20,0x20),'+',10);

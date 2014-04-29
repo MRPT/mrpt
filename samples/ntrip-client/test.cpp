@@ -8,6 +8,8 @@
    +---------------------------------------------------------------------------+ */
 
 #include <mrpt/hwdrivers/CNTRIPClient.h>
+#include <mrpt/system/os.h>
+#include <cstdio>
 
 using namespace mrpt;
 using namespace mrpt::hwdrivers;
@@ -50,7 +52,7 @@ void TestNTRIP()
 			"  | COUNTRY: "<< m.country_code <<
 			"  | NMEA?: " << m.needs_nmea <<
 			"  | FORMAT: " << m.format << " (" << m.id << ") " <<
-			m.extra_info << 
+			m.extra_info <<
 			endl;
 	}
 

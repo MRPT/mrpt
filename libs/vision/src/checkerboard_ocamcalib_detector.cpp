@@ -7,7 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/vision.h>  // Precompiled headers
+#include "vision-precomp.h"   // Precompiled headers
 
 #include <stack>  // Precompiled headers
 
@@ -49,6 +49,7 @@ If you use this code, please cite the following articles:
 
 
 #include "checkerboard_ocamcalib_detector.h"
+#include <mrpt/math/CArray.h>
 
 #if MRPT_HAS_OPENCV
 

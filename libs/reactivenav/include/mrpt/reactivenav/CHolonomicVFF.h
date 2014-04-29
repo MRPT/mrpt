@@ -11,6 +11,8 @@
 
 #include "CAbstractHolonomicReactiveMethod.h"
 #include "CHolonomicLogFileRecord.h"
+#include <mrpt/utils/CLoadableOptions.h>
+
 
 namespace mrpt
 {
@@ -49,7 +51,7 @@ namespace mrpt
 	class REACTIVENAV_IMPEXP CHolonomicVFF : public CAbstractHolonomicReactiveMethod
 	{
 	public:
-		EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+		MRPT_MAKE_ALIGNED_OPERATOR_NEW
 	public:
 		/**  Initialize the parameters of the navigator, from some configuration file, or default values if set to NULL.
 		  */
@@ -67,7 +69,7 @@ namespace mrpt
 		  *     <br><center><code>pseudometer<sup>2</sup>= meter<sup>2</sup> + (rad · r)<sup>2</sup></code><br></center>
 		  */
 		void  navigate(	const mrpt::math::TPoint2D &target,
-							const vector_double	&obstacles,
+							const std::vector<float>	&obstacles,
 							double			maxRobotSpeed,
 							double			&desiredDirection,
 							double			&desiredSpeed,

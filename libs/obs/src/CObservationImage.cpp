@@ -7,11 +7,10 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/obs.h>   // Precompiled headers
-
-
+#include "obs-precomp.h"   // Precompiled headers
 
 #include <mrpt/slam/CObservationImage.h>
+#include <mrpt/utils/CStream.h>
 
 #include <iostream>
 
@@ -106,11 +105,10 @@ void  CObservationImage::readFromStream(CStream &in, int version)
 
 }
 
-
 /*---------------------------------------------------------------
 						getRectifiedImage
  ---------------------------------------------------------------*/
 void  CObservationImage::getRectifiedImage( CImage &out_img ) const
 {
-	image.rectifyImage(out_img, cameraParams.intrinsicParams, cameraParams.getDistortionParamsAsVector() );
+	image.rectifyImage(out_img, cameraParams );
 }

@@ -7,11 +7,11 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/base.h>
+#include <mrpt/system/string_utils.h>
+#include <mrpt/random.h>
 #include <gtest/gtest.h>
 
 using namespace mrpt;
-using namespace mrpt::slam;
 using namespace mrpt::utils;
 using namespace mrpt::math;
 using namespace mrpt::random;

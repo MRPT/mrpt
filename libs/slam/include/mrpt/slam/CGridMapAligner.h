@@ -12,7 +12,9 @@
 #include <mrpt/slam/CMetricMapsAlignmentAlgorithm.h>
 #include <mrpt/slam/CLandmarksMap.h>
 #include <mrpt/utils/CLoadableOptions.h>
+#include <mrpt/utils/TEnumType.h>
 #include <mrpt/poses/CPosePDFSOG.h>
+#include <mrpt/poses/poses_frwds.h>
 #include <mrpt/vision/CFeatureExtraction.h>
 #include <mrpt/slam/COccupancyGridMapFeatureExtractor.h>
 
@@ -213,34 +215,14 @@ namespace mrpt
 					void					*info = NULL );
 
 
-			/** The virtual method for aligning a pair of metric maps, aligning the full 6D pose.
-			 *   The meaning of some parameters are implementation dependant,
-			 *    so look at the derived classes for more details.
-			 *  The goal is to find a PDF for the pose displacement between
-			 *   maps, that is, <b>the pose of m2 relative to m1</b>. This pose
-			 *   is returned as a PDF rather than a single value.
-			 *
-			 *  \note This method can be configurated with a "options" structure in the implementation classes.
-			 *
-			 * \param m1			[IN] The first map (MUST BE A COccupancyGridMap2D  derived class)
-			 * \param m2			[IN] The second map. (MUST BE A CPointsMap derived class) The pose of this map respect to m1 is to be estimated.
-			 * \param initialEstimationPDF	[IN] An initial gross estimation for the displacement.
-			 * \param runningTime	[OUT] A pointer to a container for obtaining the algorithm running time in seconds, or NULL if you don't need it.
-			 * \param info			[OUT] See derived classes for details, or NULL if it isn't needed.
-			 *
-			 * \return A smart pointer to the output estimated pose PDF.
-			 * \sa CICP
-			 */
+			/** Not applicable in this class, will launch an exception. */
 			CPose3DPDFPtr Align3DPDF(
 					const CMetricMap		*m1,
 					const CMetricMap		*m2,
 					const CPose3DPDFGaussian	&initialEstimationPDF,
 					float					*runningTime = NULL,
-					void					*info = NULL )
-			{
-				THROW_EXCEPTION("Align3D method not applicable to gridmap-aligner");
-			}
-
+					void					*info = NULL );
+			
 		};
 
 	} // End of namespace

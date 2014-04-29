@@ -7,10 +7,10 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/opengl.h>  // Precompiled header
-
+#include "opengl-precomp.h"  // Precompiled header
 
 #include <mrpt/opengl/CGeneralizedEllipsoidTemplate.h>
+#include <mrpt/opengl/gl_utils.h>
 #include "opengl_internals.h"
 
 using namespace mrpt;
@@ -27,7 +27,7 @@ namespace opengl {
 namespace detail {
 template <>
 void renderGeneralizedEllipsoidTemplate<2>(
-	const std::vector<mrpt::math::CArray<float,2> > & pts,
+	const std::vector<mrpt::math::CMatrixFixedNumeric<float,2,1> > & pts,
 	const float    lineWidth,
 	const uint32_t slices,
 	const uint32_t stacks)
@@ -56,7 +56,7 @@ void renderGeneralizedEllipsoidTemplate<2>(
   ---------------------------------------------------------------*/
 template <>
 void renderGeneralizedEllipsoidTemplate<3>(
-	const std::vector<mrpt::math::CArray<float,3> > & pts,
+	const std::vector<mrpt::math::CMatrixFixedNumeric<float,3,1> > & pts,
 	const float    lineWidth,
 	const uint32_t slices,
 	const uint32_t stacks
@@ -139,7 +139,7 @@ template <>
 void OPENGL_IMPEXP generalizedEllipsoidPoints<2>(
 	const mrpt::math::CMatrixFixedNumeric<double,2,2> & U,
 	const mrpt::math::CMatrixFixedNumeric<double,2,1>   & mean,
-	std::vector<mrpt::math::CArray<float,2> >   &out_params_pts,
+	std::vector<mrpt::math::CMatrixFixedNumeric<float,2,1>  >   &out_params_pts,
 	const uint32_t numSegments,
 	const uint32_t numSegments_unused)
 {
@@ -153,7 +153,7 @@ void OPENGL_IMPEXP generalizedEllipsoidPoints<2>(
 
 		out_params_pts.resize(out_params_pts.size()+1);
 
-		mrpt::math::CArray<float,2> &pt = out_params_pts.back();
+		Eigen::Matrix<float,2,1>  &pt = out_params_pts.back();
 
 		pt[0] = mean[0] + ccos * U.get_unsafe(0,0) + ssin * U.get_unsafe(0,1);
 		pt[1] = mean[1] + ccos * U.get_unsafe(1,0) + ssin * U.get_unsafe(1,1);
@@ -167,12 +167,12 @@ void aux_add3DpointWithEigenVectors(
 	const double x,
 	const double y,
 	const double z,
-	std::vector<mrpt::math::CArray<float,3> >   & pts,
+	std::vector<mrpt::math::CMatrixFixedNumeric<float,3,1>  >   & pts,
 	const mrpt::math::CMatrixFixedNumeric<double,3,3> & M,
 	const mrpt::math::CMatrixFixedNumeric<double,3,1>   & mean)
 {
 	pts.resize(pts.size()+1);
-	mrpt::math::CArray<float,3> &pt= pts.back();
+	mrpt::math::CMatrixFixedNumeric<float,3,1>  &pt= pts.back();
 	pt[0] = mean[0] + x * M.get_unsafe(0,0) + y * M.get_unsafe(0,1) + z * M.get_unsafe(0,2);
 	pt[1] = mean[1] + x * M.get_unsafe(1,0) + y * M.get_unsafe(1,1) + z * M.get_unsafe(1,2);
 	pt[2] = mean[2] + x * M.get_unsafe(2,0) + y * M.get_unsafe(2,1) + z * M.get_unsafe(2,2);
@@ -186,7 +186,7 @@ template <>
 void OPENGL_IMPEXP generalizedEllipsoidPoints<3>(
 	const mrpt::math::CMatrixFixedNumeric<double,3,3> & U,
 	const mrpt::math::CMatrixFixedNumeric<double,3,1>   & mean,
-	std::vector<mrpt::math::CArray<float,3> >   & pts,
+	std::vector<mrpt::math::CMatrixFixedNumeric<float,3,1> >   & pts,
 	const uint32_t slices,
 	const uint32_t stacks)
 {

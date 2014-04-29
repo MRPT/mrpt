@@ -12,8 +12,6 @@
 #include <mrpt/opengl/CRenderizableDisplayList.h>
 #include <mrpt/math/geometry.h>
 
-#include <mrpt/utils/stl_extensions.h>
-
 namespace mrpt	{
 	namespace opengl	{
 		typedef uint32_t _GLENUM;

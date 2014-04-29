@@ -7,21 +7,25 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/maps.h>  // Precompiled header
-
-
+#include "maps-precomp.h" // Precomp header
 
 #include <mrpt/slam/CBeaconMap.h>
 #include <mrpt/slam/CObservationBeaconRanges.h>
 #include <mrpt/random.h>
 #include <mrpt/utils/CFileOutputStream.h>
+#include <mrpt/utils/CConfigFileBase.h>
+#include <mrpt/utils/round.h> // round()
 #include <mrpt/math/geometry.h>
 #include <mrpt/bayes/CParticleFilterCapable.h>
 #include <mrpt/bayes/CParticleFilter.h>
-#include <mrpt/math/utils.h>
+#include <mrpt/math/data_utils.h> // averageLogLikelihood()
+#include <mrpt/system/os.h>
+#include <mrpt/utils/CStream.h>
 
-#include <mrpt/opengl.h>
-
+#include <mrpt/opengl/COpenGLScene.h>
+#include <mrpt/opengl/CSetOfObjects.h>
+#include <mrpt/opengl/CGridPlaneXY.h>
+#include <mrpt/opengl/stock_objects.h>
 
 using namespace mrpt;
 using namespace mrpt::slam;
@@ -29,6 +33,7 @@ using namespace mrpt::utils;
 using namespace mrpt::random;
 using namespace mrpt::poses;
 using namespace mrpt::bayes;
+using namespace mrpt::system;
 using namespace std;
 
 IMPLEMENTS_SERIALIZABLE(CBeaconMap, CMetricMap,mrpt::slam)
@@ -182,9 +187,9 @@ double	 CBeaconMap::computeObservationLikelihood(
 				case CBeacon::pdfMonteCarlo:
 					{
 						CPointPDFParticles::CParticleList::const_iterator it;
-						vector_double				logWeights(beac->m_locationMC.m_particles.size());
-						vector_double				logLiks(beac->m_locationMC.m_particles.size());
-						vector_double::iterator 	itLW,itLL;
+						CVectorDouble				logWeights(beac->m_locationMC.m_particles.size());
+						CVectorDouble				logLiks(beac->m_locationMC.m_particles.size());
+						CVectorDouble::iterator 	itLW,itLL;
 
 						for (it=beac->m_locationMC.m_particles.begin(),itLW=logWeights.begin(),itLL=logLiks.begin();it!=beac->m_locationMC.m_particles.end();it++,itLW++,itLL++)
 						{
@@ -236,9 +241,9 @@ double	 CBeaconMap::computeObservationLikelihood(
 				case CBeacon::pdfSOG:
 					{
 						CMatrixDouble13				H;
-						vector_double				logWeights(beac->m_locationSOG.size());
-						vector_double				logLiks(beac->m_locationSOG.size());
-						vector_double::iterator 	itLW,itLL;
+						CVectorDouble				logWeights(beac->m_locationSOG.size());
+						CVectorDouble				logLiks(beac->m_locationSOG.size());
+						CVectorDouble::iterator 	itLW,itLL;
 						CPointPDFSOG::const_iterator it;
 						// For each Gaussian mode:
 						for (it=beac->m_locationSOG.begin(),itLW=logWeights.begin(),itLL=logLiks.begin();it!=beac->m_locationSOG.end();it++,itLW++,itLL++)
@@ -430,8 +435,8 @@ bool  CBeaconMap::internal_insertObservation( const CObservation *obs, const CPo
 								{
 									// We must resample:
 									// Make a list with the log weights:
-									vector_double			log_ws;
-									vector<size_t>		indxs;
+									vector<double> log_ws;
+									vector<size_t> indxs;
 									beac->m_locationMC.getWeights( log_ws );
 
 									// And compute the resampled indexes:
@@ -596,7 +601,7 @@ bool  CBeaconMap::internal_insertObservation( const CObservation *obs, const CPo
 								varZ =  H.multiply_HCHt_scalar( it->val.cov );
 								varZ += varR;
 								CMatrixDouble31		K;
-								K.multiply( it->val.cov, ~H);
+								K.multiply( it->val.cov, H.transpose());
 								K *= 1.0/varZ;
 
 								// Update stage of the EKF:
@@ -680,7 +685,7 @@ void CBeaconMap::determineMatching2D(
 	const CPose2D         & otherMapPose,
 	TMatchingPairList     & correspondences,
 	const TMatchingParams & params,
-	TMatchingExtraResults & extraResults ) const 
+	TMatchingExtraResults & extraResults ) const
 {
 	MRPT_START
 	extraResults = TMatchingExtraResults();

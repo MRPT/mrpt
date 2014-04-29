@@ -7,11 +7,9 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/base.h>  // Precompiled headers
+#include "base-precomp.h"  // Precompiled headers
 
 #include "zlib.h"
-
-#include <mrpt/config.h>
 
 // For named pipes:
 #ifdef MRPT_OS_WINDOWS
@@ -19,12 +17,11 @@
 	#include <windows.h>
 #endif
 
-
 #include <mrpt/compress/zip.h>
-#include <mrpt/system/os.h>
 #include <mrpt/system/datetime.h>
 #include <mrpt/system/filesystem.h>
-#include <mrpt/utils/CStream.h>
+//#include <mrpt/system/os.h>
+#include <mrpt/system/vector_loadsave.h>
 
 #include <mrpt/utils/CFileGZOutputStream.h>
 #include <mrpt/utils/CFileGZInputStream.h>

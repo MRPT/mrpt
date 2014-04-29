@@ -7,11 +7,10 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/hwdrivers.h>
+#include <mrpt/hwdrivers/CImageGrabber_dc1394.h>
 
 using namespace mrpt::utils;
 using namespace mrpt::hwdrivers;
-using namespace mrpt::gui;
 using namespace mrpt::slam;
 using namespace std;
 

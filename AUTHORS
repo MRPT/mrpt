@@ -63,6 +63,7 @@ the University of Malaga.
   - Many hacks and optimizations in different parts of MRPT.
   
 * Eduardo Fernandez Moral , University of Malaga.
+  - OpenNI2 classes: COpenNI2Sensor, 
   - The new library: mrpt-pbmap
   - Driver for Rovio mobile robot with webcam. 
   - Some other functions.
@@ -112,7 +113,13 @@ the University of Malaga.
 
 * Emilio Sanjurjo Maroño, LIM, University of Coruña (2013)
   - Fixed orientation of ENU axes for Geodetic coordinate conversions in mrpt::topography.
-  
+
+* Randolph Voorhies, University of Southern California (2014)
+  - Fixes for OS X.
+
+* Yuya Ochiai, (Aichi, Japan) (2014)
+  - Fixes for OS X.
+
 
 Several bug reports have been provided from MRPT users world-wide. We kindly thank all of
 them for this valuable feedback, and they are usually mentioned in changelogs.

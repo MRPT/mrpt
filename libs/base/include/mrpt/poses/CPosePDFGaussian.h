@@ -16,8 +16,6 @@ namespace mrpt
 {
 namespace poses
 {
-	using namespace mrpt::math;
-
 	class CPose3DPDF;
 	class CPoint2DPDFGaussian;
 
@@ -46,7 +44,7 @@ namespace poses
 			@{ */
 
 		CPose2D				mean;	//!< The mean value
-		CMatrixDouble33		cov;	//!< The 3x3 covariance matrix
+		mrpt::math::CMatrixDouble33		cov;	//!< The 3x3 covariance matrix
 
 		/** @} */
 
@@ -63,7 +61,7 @@ namespace poses
 
 		/** Constructor
 		  */
-		CPosePDFGaussian( const CPose2D &init_Mean, const CMatrixDouble33 &init_Cov );
+		CPosePDFGaussian( const CPose2D &init_Mean, const mrpt::math::CMatrixDouble33 &init_Cov );
 
 	    /** Copy constructor, including transformations between other PDFs */
 		explicit CPosePDFGaussian( const CPosePDF &o ) { copyFrom( o ); }
@@ -81,7 +79,7 @@ namespace poses
 		/** Returns an estimate of the pose covariance matrix (3x3 cov matrix) and the mean, both at once.
 		  * \sa getMean
 		  */
-		void getCovarianceAndMean(CMatrixDouble33 &cov,CPose2D &mean_point) const {
+		void getCovarianceAndMean(mrpt::math::CMatrixDouble33 &cov,CPose2D &mean_point) const {
 			mean_point = mean;
 			cov = this->cov;
 		}
@@ -116,7 +114,7 @@ namespace poses
 		void inverseComposition(
 			const CPosePDFGaussian &x1,
 			const CPosePDFGaussian &x0,
-			const CMatrixDouble33  &COV_01
+			const mrpt::math::CMatrixDouble33  &COV_01
 			  );
 
 		/** Draws a single sample from the distribution
@@ -125,7 +123,7 @@ namespace poses
 
 		/** Draws a number of samples from the distribution, and saves as a list of 1x3 vectors, where each row contains a (x,y,phi) datum.
 		  */
-		void  drawManySamples( size_t N, std::vector<vector_double> & outSamples ) const;
+		void  drawManySamples( size_t N, std::vector<CVectorDouble> & outSamples ) const;
 
 		/** Bayesian fusion of two points gauss. distributions, then save the result in this object.
 		  *  The process is as follows:<br>

@@ -10,17 +10,26 @@
 /*---------------------------------------------------------------
 	APPLICATION: ICP-based SLAM
 	FILE: icp-slam_main.cpp
-	AUTHOR: Jose Luis Blanco Claraco <jlblanco@ctima.uma.es>
+	AUTHOR: Jose Luis Blanco Claraco <joseluisblancoc@gmail.com>
 
 	See README.txt for instructions or
           http://www.mrpt.org/Application:icp-slam
   ---------------------------------------------------------------*/
 
-#include <mrpt/base.h>
-#include <mrpt/slam.h>
-#include <mrpt/opengl.h>
+#include <mrpt/slam/CMetricMapBuilderICP.h>
+#include <mrpt/slam/CObservationOdometry.h>
+#include <mrpt/slam/CRawlog.h>
+#include <mrpt/opengl/COpenGLScene.h>
+#include <mrpt/opengl/CGridPlaneXY.h>
+#include <mrpt/opengl/stock_objects.h>
+#include <mrpt/utils/CConfigFile.h>
+#include <mrpt/utils/CFileGZInputStream.h>
+#include <mrpt/utils/CFileGZOutputStream.h>
+#include <mrpt/system/os.h>
+#include <mrpt/system/threads.h>
+#include <mrpt/system/filesystem.h>
 #include <mrpt/opengl/CPlanarLaserScan.h>  // This class lives in the lib [mrpt-maps] and must be included by hand
-#include <mrpt/gui.h>
+#include <mrpt/gui/CDisplayWindow3D.h>
 
 using namespace mrpt;
 using namespace mrpt::slam;
@@ -417,7 +426,7 @@ void MapBuilding_ICP(const string &INI_FILENAME, const string &override_rawlog_f
 					// Update:
 					win3D->forceRepaint();
 
-					sleep( SHOW_PROGRESS_3D_REAL_TIME_DELAY_MS );
+					mrpt::system::sleep( SHOW_PROGRESS_3D_REAL_TIME_DELAY_MS );
 				}
 			}
 

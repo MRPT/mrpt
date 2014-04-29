@@ -7,14 +7,16 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/opengl.h>  // Precompiled header
+#include "opengl-precomp.h"  // Precompiled header
 #include <mrpt/opengl/CPolyhedron.h>
-#include <math.h>
-#include <algorithm>
+#include <mrpt/math/CMatrixTemplate.h>
 #include <mrpt/math/CMatrix.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/math/geometry.h>
+#include <mrpt/math/ops_containers.h> // dotProduct()
 #include <mrpt/random.h>
+#include <mrpt/utils/CStream.h>
+#include <mrpt/utils/stl_serialization.h>
 
 #include "opengl_internals.h"
 
@@ -856,7 +858,7 @@ void CPolyhedron::getSetOfPolygonsAbsolute(std::vector<math::TPolygon3D> &vec) c
 	vector<TPoint3D> nVerts;
 	nVerts.resize(N);
 	CPose3D pose=this->m_pose;
-	for (size_t i=0;i<N;i++) nVerts[i]=pose+mVertices[i];
+	for (size_t i=0;i<N;i++) pose.composePoint(mVertices[i],nVerts[i]);
 	transform(mFaces.begin(),mFaces.end(),vec.begin(),FCreatePolygonFromFace<TPolygon3D>(nVerts));
 }
 
@@ -1409,12 +1411,12 @@ void CPolyhedron::addEdges(const TPolyhedronFace &f)	{
 	TPolyhedronEdge e;
 	vector<uint32_t>::const_iterator it=f.vertices.begin();
 	e.v1=*it;
-	it++;
+	++it;
 	while (it!=f.vertices.end())	{
 		e.v2=*it;
 		if (find(mEdges.begin(),mEdges.end(),e)==mEdges.end()) mEdges.push_back(e);
 		e.v1=e.v2;
-		it++;
+		++it;
 	}
 	e.v2=*(f.vertices.begin());
 	if (find(mEdges.begin(),mEdges.end(),e)==mEdges.end()) mEdges.push_back(e);

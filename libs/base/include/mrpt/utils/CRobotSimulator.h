@@ -18,9 +18,6 @@ namespace mrpt
 {
 namespace utils
 {
-	using namespace mrpt::poses;
-	using namespace mrpt::math;
-
 	/** This class can be used to simulate the kinematics and dynamics of a differential driven planar mobile robot, including odometry errors and dynamics limitations.
 	 *  The main methods are:
 			- movementCommand: Call this for send a command to the robot. This comamnd will be
@@ -176,24 +173,24 @@ namespace utils
 			/** Reads the simulated robot odometry (this is NOT equal to the actual error-free robot coordinates).
 			  * \sa getRealPose
 			  */
-			void    getOdometry ( CPose2D &pose ) const {
+			void    getOdometry ( mrpt::poses::CPose2D &pose ) const {
 				pose = m_odometry;
 			}
 
 			/** Reads the simulated robot odometry (this is NOT equal to the actual error-free robot coordinates).
 			  * \sa getRealPose
 			  */
-			void    getOdometry ( TPose2D &pose ) const {
+			void    getOdometry ( mrpt::math::TPose2D &pose ) const {
 				pose = m_odometry;
 			}
 
 			/** Reads the real robot pose. \sa getOdometry  */
-			void    getRealPose ( CPose2D &pose ) const {
+			void    getRealPose ( mrpt::poses::CPose2D &pose ) const {
 				pose = m_pose;
 			}
 
 			/** Reads the real robot pose. \sa getOdometry  */
-			void    getRealPose ( TPose2D &pose ) const {
+			void    getRealPose ( mrpt::math::TPose2D &pose ) const {
 				pose = m_pose;
 			}
 	};

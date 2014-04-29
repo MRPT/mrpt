@@ -7,7 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/obs.h>
+#include <mrpt/slam/CObservationRange.h>
 #include <mrpt/hwdrivers/CBoardIR.h>
 #include <mrpt/gui.h>
 

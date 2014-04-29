@@ -7,11 +7,11 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/reactivenav.h>  // Precomp header
+#include "reactivenav-precomp.h" // Precomp header
 
-//#if defined(_MSC_VER)
-//	#pragma warning(disable:4267)
-//#endif
+#include <mrpt/reactivenav/CLogFileRecord.h>
+#include <mrpt/poses/CPoint2D.h>
+#include <mrpt/utils/CStream.h>
 
 using namespace mrpt::reactivenav;
 
@@ -213,7 +213,7 @@ void  CLogFileRecord::readFromStream(CStream &in,int version)
 
 			if (version<6)
 			{
-				vector_float prevV,prevW,prevSelPTG;
+				CVectorFloat prevV,prevW,prevSelPTG;
 
 				// Previous values: (Removed in version 6)
 				in >> n;

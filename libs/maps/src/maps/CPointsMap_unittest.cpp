@@ -8,7 +8,10 @@
    +---------------------------------------------------------------------------+ */
 
 
-#include <mrpt/maps.h>
+#include <mrpt/slam/CSimplePointsMap.h>
+#include <mrpt/slam/CWeightedPointsMap.h>
+#include <mrpt/slam/CColouredPointsMap.h>
+#include <mrpt/poses/CPoint2D.h>
 #include <gtest/gtest.h>
 
 using namespace mrpt;

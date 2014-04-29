@@ -7,7 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/base.h>  // Precompiled headers
+#include "base-precomp.h"  // Precompiled headers
 
 #include <mrpt/system/threads.h>
 #include <mrpt/system/string_utils.h>
@@ -36,8 +36,14 @@
 	#include <signal.h>
 #endif
 
+#include <fstream>
 #include <sys/types.h>
 #include <sys/stat.h>
+#ifdef MRPT_OS_APPLE
+	#include <sys/sysctl.h>
+	#include <mach/mach_init.h>
+	#include <mach/thread_act.h>
+#endif
 
 using namespace mrpt;
 using namespace mrpt::utils;
@@ -74,11 +80,11 @@ namespace mrpt
 		struct TAuxThreadLaucher
 		{
 	#ifdef MRPT_OS_WINDOWS
-			TAuxThreadLaucher() : win_sem(0,10)
+			TAuxThreadLaucher() : ptrFunc(NULL),param(NULL),win_sem(0,10)
 			{
 			}
 	#else
-			TAuxThreadLaucher() { };
+			TAuxThreadLaucher() : ptrFunc(NULL),param(NULL) { };
 	#endif
 			void    (*ptrFunc) (void *);
 			void    *param;
@@ -94,7 +100,7 @@ namespace mrpt
 		{
 			try
 			{
-			TAuxThreadLaucher   *d = (TAuxThreadLaucher*) param;
+			TAuxThreadLaucher   *d = reinterpret_cast<TAuxThreadLaucher*>(param);
 
 			TAuxThreadLaucher	localCopy = *d;
 
@@ -409,10 +415,14 @@ void mrpt::system::getCurrentThreadTimes(
 #endif
 
 #ifdef MRPT_OS_APPLE
-	//TODO: Not implemented for Apple.
-	creationTime = 0;
-	exitTime = 0;
-	cpuTime = 0;
+	thread_basic_info info;
+	mach_msg_type_number_t count = THREAD_BASIC_INFO_COUNT;
+	if(thread_info(mach_thread_self(), THREAD_BASIC_INFO, (thread_info_t)&info, &count)==0)
+	{
+		double utime = info.user_time.seconds + info.user_time.microseconds * 1e-6;
+		double stime = info.system_time.seconds + info.system_time.microseconds * 1e-6;
+		cpuTime = utime + stime;
+	}
 #endif
 
 	MRPT_END
@@ -464,6 +474,10 @@ unsigned int mrpt::system::getNumberOfProcessors()
         GetSystemInfo(&si);
         ret=si.dwNumberOfProcessors;
         if (ret<1) ret=1;
+#elif defined(MRPT_OS_APPLE)
+        size_t len=sizeof(int);
+        if(sysctlbyname("hw.logicalcpu", &ret, &len, NULL, 0) != 0)
+            ret = 1; // failed
 #else
         // This assumes a Linux kernel 2.6
         ifstream f;

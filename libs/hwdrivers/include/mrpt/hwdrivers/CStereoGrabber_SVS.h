@@ -11,7 +11,7 @@
 
 #include <mrpt/slam/CObservationStereoImages.h>
 #include <mrpt/hwdrivers/link_pragmas.h>
-
+#include <mrpt/utils/CUncopiable.h>
 
 namespace mrpt
 {

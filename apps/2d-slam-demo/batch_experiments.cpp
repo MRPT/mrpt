@@ -13,8 +13,8 @@
 #include <wx/image.h>
 #include <wx/msgdlg.h>
 
-
-#include <mrpt/base.h>
+#include <mrpt/utils/CConfigFile.h>
+#include <mrpt/math/wrap2pi.h>
 
 using namespace std;
 using namespace mrpt;

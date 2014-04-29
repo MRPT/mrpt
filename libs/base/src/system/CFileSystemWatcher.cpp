@@ -7,7 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/base.h>  // Precompiled headers
+#include "base-precomp.h"  // Precompiled headers
 
 
 
@@ -26,6 +26,7 @@
 //	#include <time.h>
 	#include <unistd.h>
 	#include <errno.h>
+	#include <stdio.h>
 #endif
 
 #include <mrpt/system/CFileSystemWatcher.h>

@@ -7,12 +7,13 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/maps.h>  // Precompiled header
+#include "maps-precomp.h" // Precomp header
 
 #include <mrpt/slam/COccupancyGridMap2D.h>
 #include <mrpt/slam/CObservation2DRangeScan.h>
 #include <mrpt/slam/CObservationRange.h>
 #include <mrpt/slam/CSimplePointsMap.h>
+#include <mrpt/utils/CStream.h>
 
 
 using namespace mrpt;
@@ -109,7 +110,7 @@ double	 COccupancyGridMap2D::computeObservationLikelihood_Consensus(
 	// -------------------------------------------
 	size_t			Denom=0;
 //	int			Acells = 1;
-	CPoint2D	pointGlobal,pointLocal;
+	TPoint2D pointGlobal,pointLocal;
 
 
 	// Get the points buffers:
@@ -121,35 +122,16 @@ double	 COccupancyGridMap2D::computeObservationLikelihood_Consensus(
 	{
 		// Get the point and pass it to global coordinates:
 		compareMap->getPoint(i,pointLocal);
-		pointGlobal = takenFrom + pointLocal;
+		takenFrom.composePoint(pointLocal, pointGlobal);
 
-		int		cx0 = x2idx( pointGlobal.x() );
-		int		cy0 = y2idx( pointGlobal.y() );
+		int		cx0 = x2idx( pointGlobal.x );
+		int		cy0 = y2idx( pointGlobal.y );
 
-/**/
 		likResult += 1-getCell_nocheck(cx0,cy0);
 		Denom++;
 	}
 	if (Denom)	likResult/=Denom;
 	likResult = pow(likResult, static_cast<double>( likelihoodOptions.consensus_pow ) );
-/** /
-		int		cxMin = max(0,cx0 - Acells);
-		int		cxMax = min(size_x-1,cx0 + Acells);
-		int		cyMin = max(0,cy0 - Acells);
-		int		cyMax = min(size_y-1,cy0 + Acells);
-
-		for (int cx=cxMin;cx<=cxMax;cx++)
-		{
-			for (int cy=cyMin;cy<=cyMax;cy++)
-			{
-				Denom++;
-				likResult += 1-getCell_nocheck(cx,cy);
-			} // cy
-		} // cx
-	} // for each range point
-	if (Denom)	likResult/=Denom;
-	likResult = pow(likResult, (double) likelihoodOptions.consensus_pow);
-/ **/
 
 	return log(likResult);
 }
@@ -187,7 +169,7 @@ double	 COccupancyGridMap2D::computeObservationLikelihood_ConsensusOWA(
 	// Observation is a points map:
 	// -------------------------------------------
 	int				Acells = 1;
-	CPoint2D		pointGlobal,pointLocal;
+	TPoint2D		pointGlobal,pointLocal;
 
 	// Get the points buffers:
 	const size_t n = compareMap->size();
@@ -198,10 +180,10 @@ double	 COccupancyGridMap2D::computeObservationLikelihood_ConsensusOWA(
 	{
 		// Get the point and pass it to global coordinates:
 		compareMap->getPoint(i,pointLocal);
-		pointGlobal = takenFrom + pointLocal;
+		takenFrom.composePoint(pointLocal, pointGlobal);
 
-		int		cx0 = x2idx( pointGlobal.x() );
-		int		cy0 = y2idx( pointGlobal.y() );
+		int		cx0 = x2idx( pointGlobal.x );
+		int		cy0 = y2idx( pointGlobal.y );
 
 		int		cxMin = max(0,cx0 - Acells);
 		int		cxMax = min(static_cast<int>(size_x)-1,cx0 + Acells);
@@ -424,29 +406,8 @@ double	 COccupancyGridMap2D::computeObservationLikelihood_rayTracing(
 				//printf("Sim=%f\tReal=%f\tlik=%f\n",r_sim,r_obs,likelihood);
 			}
 
-			//if ( r_sim>0 &&
-			//	simulatedObs.validRange[j] &&
-			//	o->validRange[j] )
-			//{
-			//	// Consider this measurement?
-			//	if (!useDF || r_obs>=r_sim)
-			//	{
-			//		// UPDATE ----------------------
-			//		likelihood = 0.1 + 0.9*exp( -square((r_sim-r_obs)/stdSqrt2) );
-			//		ret *= likelihood;
-			//		//printf("Sim=%f\tReal=%f\tlik=%f\n",r_sim,r_obs,likelihood);
-			//		// -----------------------------
-			//	}
-			//}
-			//else
-			//{
-			//	// Likelihood of unknown range:
-			//	ret *= 1/o->maxRange;
-			//}
 		 }
 	 }
-
-	//printf("\t\t\t\tLIKELIHOOD=%e\n",ret);
 
 	 return ret;
 }
@@ -551,15 +512,13 @@ double	 COccupancyGridMap2D::computeLikelihoodField_Thrun( const CPointsMap	*pm,
 	MRPT_START
 
 	double		ret;
-	size_t		N = pm->getPointsCount();
+	size_t		N = pm->size();
 	int		K = (int)ceil(likelihoodOptions.LF_maxCorrsDistance/*m*/ / resolution);	// The size of the checking area for matchings:
 
 	bool		Product_T_OrSum_F = !likelihoodOptions.LF_alternateAverageMethod;
 
 	if (!N)
 	{
-		//printf("[COccupancyGridMap2D::computeLikelihoodField_Thrun] There are no points in the map!!!");
-		//mrpt::system::pause();
 		return -100; // No way to estimate this likelihood!!
 	}
 
@@ -665,13 +624,6 @@ double	 COccupancyGridMap2D::computeLikelihoodField_Thrun( const CPointsMap	*pm,
 				int yy1 = max(0,cy-K);
 				int yy2 = min(size_y_1,(unsigned)(cy+K));
 
-				/** /
-				for (yy=yy1;yy<=yy2;yy++)
-					for (xx=xx1;xx<=xx2;xx++)
-						if ( map[xx+yy*size_x] < thresholdCellValue )
-							occupiedMinDist = min( occupiedMinDist, square(idx2x(xx)-pointGlobal_x)+square(idx2y(yy)-pointGlobal_y) );
-				*/
-
 				// Optimized code: this part will be invoked a *lot* of times:
 				{
 					cellType  *mapPtr  = &map[xx1+yy1*size_x]; // Initial pointer position
@@ -741,7 +693,7 @@ double	 COccupancyGridMap2D::computeLikelihoodField_II( const CPointsMap	*pm, co
 	MRPT_START
 
 	double		ret;
-	size_t		N = pm->getPointsCount();
+	size_t		N = pm->size();
 
 	if (!N) return 1e-100; // No way to estimate this likelihood!!
 
@@ -822,16 +774,6 @@ double	 COccupancyGridMap2D::computeLikelihoodField_II( const CPointsMap	*pm, co
 	if (likelihoodOptions.LF_alternateAverageMethod && nCells>0)
 			ret = log(ret/nCells);
 	else	ret = ret/nCells;
-
-	/** /
-	char	str[100];
-	os::sprintf(str,100,"LIK=%e",ret);
-	win.setWindowTitle( str );
-	debugImg.setOriginTopLeft(false);
-	win.showImage(debugImg);
-	win.setPos(500,0);
-	win.waitForKey();
-	/ **/
 
 	return ret;
 

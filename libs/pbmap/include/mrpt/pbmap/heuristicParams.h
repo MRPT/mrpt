@@ -16,6 +16,7 @@
 #define __HEURISTICPARAMS_H
 
 #include <mrpt/utils/CConfigFile.h>
+#include <mrpt/system/filesystem.h>
 #include <mrpt/pbmap/link_pragmas.h>
 
 namespace mrpt {
@@ -28,7 +29,41 @@ namespace pbmap {
 	 */
   struct PBMAP_IMPEXP config_heuristics
   {
-    void load_params(const string &config_file_name)
+    // [global]
+    /*! Global parameter to indicate the path to previous PbMaps used for place recognition*/
+    std::string path_prev_pbmaps;
+
+    /*! Global parameter indicating the minimum required plane matches for place recognition*/
+    unsigned min_planes_recognition;    // Minimum number of planes to accept a match between two neighborhoods of planes
+    bool use_structure;                  // Use inferred knowledge
+    bool use_completeness;               // Use inferred knowledge
+
+    // [unary]
+    /*! Unary constraint threshold to limit the difference of distances between two pairs camera-plane (to be used in odometry, i.e. when the two cameras are nearby */
+    float dist_d;
+    float angle;
+
+    float color_threshold;
+    float intensity_threshold;
+    float hue_threshold;
+//    float colorDev_threshold;
+    float area_threshold, area_threshold_inv;
+    float area_full_threshold, area_full_threshold_inv;
+    float area_half_threshold, area_half_threshold_inv;     // Constraint with "half confidence": one plana is fully observed
+    float elongation_threshold, elongation_threshold_inv;         // Unary constraint:
+    int   graph_mode;  // This var selects the condition to create edges in the graph, either proximity of planar patches or co-visibility in a single frame
+
+    // [binary]
+    /*! Binary constraint threshold to limit the difference of distances between the centers of two pair of planes. This threashold should be loose if the plane boundaries are not known, which is the most common situation */
+    float dist_threshold, dist_threshold_inv;
+    float angle_threshold;              // Binary constraint: the angle between the normals of two pair of planes
+    float height_threshold;             // Binary constraint: Height from one plane wrt a neighbor (in meters)
+    float height_threshold_parallel;    // Binary constraint: Height from one plane wrt a neighbor (in meters) for complete marked planes
+    float cos_angle_parallel;
+
+
+    /*! Load the PbMap registration thresholds from an .ini file */
+    void load_params(const std::string &config_file_name)
     {
       ASSERT_FILE_EXISTS_(config_file_name)
       mrpt::utils::CConfigFile config_file(config_file_name);
@@ -39,10 +74,16 @@ namespace pbmap {
       use_structure = config_file.read_bool("global","use_structure",true);
       use_completeness = config_file.read_bool("global","use_completeness",true);
       min_planes_recognition = config_file.read_int("global","min_planes_recognition",4);
-      graph_mode = config_file.read_int("global","graph_mode",0);
+      graph_mode = config_file.read_int("global","graph_mode",1);
 
       // Unary constraints
+      dist_d = config_file.read_float("unary","dist_d",0.5);
+      angle = config_file.read_float("unary","angle",50);
+      angle = cos(angle*3.14159/180);
+
       color_threshold = config_file.read_float("unary","color_threshold",0.09);
+      intensity_threshold = config_file.read_float("unary","intensity_threshold",175.0);
+      hue_threshold = config_file.read_float("unary","hue_threshold",0.3);
 //      colorDev_threshold = config_file.read_float("unary","colorDev_threshold",0.005);
       area_threshold = config_file.read_float("unary","area_threshold",3.0);
       area_threshold_inv = 1/area_threshold;
@@ -63,28 +104,23 @@ namespace pbmap {
 
     };
 
-    // [global]
-    std::string path_prev_pbmaps;
-    unsigned min_planes_recognition;    // Minimum number of planes to accept a match between two neighborhoods of planes
-    bool use_structure;                  // Use inferred knowledge
-    bool use_completeness;               // Use inferred knowledge
+    /*! Print the threshold for registration */
+    void print_params()
+    {
+      std::cout << "Unary thresholds:\n";
+      std::cout << "dist_d " << dist_d << endl;
+      std::cout << "angle " << angle << endl;
+      std::cout << "color_threshold " << color_threshold << endl;
+      std::cout << "intensity_threshold " << intensity_threshold << endl;
+      std::cout << "hue_threshold " << hue_threshold << endl;
+      std::cout << "area_threshold " << area_threshold << endl;
+      std::cout << "elongation_threshold " << elongation_threshold << endl;
 
-    // [unary]
-    float color_threshold;
-//    float colorDev_threshold;
-    float area_threshold, area_threshold_inv;
-    float area_full_threshold, area_full_threshold_inv;
-    float area_half_threshold, area_half_threshold_inv;     // Constraint with "half confidence": one plana is fully observed
-    float elongation_threshold, elongation_threshold_inv;         // Unary constraint:
-    int   graph_mode;  // This var selects the condition to create edges in the graph, either proximity of planar patches or co-visibility in a single frame
-
-    // [binary]
-    float dist_threshold, dist_threshold_inv;  // Binary constraint: distence between the centers of two pair of planes
-    float angle_threshold;              // Binary constraint: the angle between the normals of two pair of planes
-    float height_threshold;             // Binary constraint: Height from one plane wrt a neighbor (in meters)
-    float height_threshold_parallel;    // Binary constraint: Height from one plane wrt a neighbor (in meters) for complete marked planes
-    float cos_angle_parallel;
-
+      std::cout << "Binary thresholds:\n";
+      std::cout << "angle_threshold " << angle_threshold << endl;
+      std::cout << "angle " << angle << endl;
+      std::cout << "height_threshold " << height_threshold << endl;
+    };
   };
 
 } } // End of namespaces

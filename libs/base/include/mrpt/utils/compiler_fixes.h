@@ -7,9 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#ifndef UTILSDEFS_H
-#error "This file is intended for include from utils_defs.h only!"
-#endif
+#pragma once
 
 /* ------------------------------------
           Disable some warnings
@@ -25,7 +23,7 @@
 	#pragma warning(disable:4290) // Visual C++ does not implement decl. specifiers: throw(A,B,...)
 	#pragma warning(disable:4251) // Visual C++ 2003+ warnings on STL classes when exporting to DLL...
 	#pragma warning(disable:4275)
-	#pragma warning(disable:4308) // Disable for Eigen: negative integral constant converted to unsigned int 
+	#pragma warning(disable:4308) // Disable for Eigen: negative integral constant converted to unsigned int
 	#if (_MSC_VER >= 1400 )
 		// MS believes they have the right to deprecate functions in the C++ Standard STL... disable their warnings:
 		#ifndef _SCL_SECURE_NO_WARNINGS
@@ -40,7 +38,6 @@
 #endif
 
 // Avoid conflicting declaration of max macro in windows headers
-#include <algorithm>
 #if defined(MRPT_OS_WINDOWS) && !defined(NOMINMAX)
 #	define NOMINMAX
 #	ifdef max

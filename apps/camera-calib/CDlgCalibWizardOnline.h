@@ -24,7 +24,7 @@
 #include <wx/timer.h>
 //*)
 
-#include <mrpt/vision.h>
+#include <mrpt/vision/chessboard_camera_calib.h>
 #include <mrpt/hwdrivers/CCameraSensor.h>
 #include "../wx-common/CMyRedirector.h"
 

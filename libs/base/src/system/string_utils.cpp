@@ -7,10 +7,15 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/base.h>  // Precompiled headers
+#include "base-precomp.h"  // Precompiled headers
 
 #include <mrpt/system/string_utils.h>
-#include <mrpt/synch.h>
+#include <mrpt/system/os.h>
+#include <cstring>
+
+#ifndef HAVE_STRTOK_R
+#   include <mrpt/synch/CCriticalSection.h>
+#endif
 
 using namespace mrpt;
 using namespace mrpt::utils;
@@ -169,8 +174,13 @@ char *mrpt::system::strtok( char *str, const char *strDelimit, char **context ) 
 	// Use a secure version in Visual Studio 2005:
 	return ::strtok_s(str,strDelimit,context);
 #else
+#ifdef HAVE_STRTOK_R
+	// POSIX safe version:
+	return ::strtok_r(str,strDelimit,context);
+#else
 	// Use standard version:
 	return ::strtok(str,strDelimit);
+#endif
 #endif
 }
 
@@ -182,8 +192,10 @@ void  mrpt::system::tokenize(
 	const std::string			&inDelimiters,
 	std::deque<std::string>	&outTokens ) MRPT_NO_THROWS
 {
+#ifndef HAVE_STRTOK_R
     static mrpt::synch::CCriticalSection cs;
     mrpt::synch::CCriticalSectionLocker lock(&cs);
+#endif
 
 	char	*nextTok,*context;
 
@@ -196,7 +208,7 @@ void  mrpt::system::tokenize(
 	{
 		outTokens.push_back( std::string(nextTok) );
 		nextTok = strtok (NULL,inDelimiters.c_str(),&context);
-	};
+	}
 
 	free(dupStr);
 }
@@ -209,8 +221,10 @@ void  mrpt::system::tokenize(
 	const std::string			&inDelimiters,
 	std::vector<std::string>	&outTokens ) MRPT_NO_THROWS
 {
+#ifndef HAVE_STRTOK_R
     static mrpt::synch::CCriticalSection cs;
     mrpt::synch::CCriticalSectionLocker lock(&cs);
+#endif
 
 	char	*nextTok,*context;
 
