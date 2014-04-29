@@ -35,7 +35,6 @@
 
 
 
-#include <mrpt/slam.h>
 #include <mrpt/hmtslam.h>
 
 

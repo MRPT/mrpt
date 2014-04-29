@@ -221,7 +221,7 @@ void CMyGLCanvas::OnPostRender()
 	// Show filename over the screen??
 	if (showFileNameInViewport)
 	{
-		renderTextBitmap( 20,20, extractFileName(loadedFileName).c_str() );
+		mrpt::opengl::CRenderizable::renderTextBitmap( 20,20, extractFileName(loadedFileName).c_str() );
 	}
 }
 

@@ -88,6 +88,7 @@ ENDIF(DOXYGEN_EXECUTABLE)
 
 
 # Compile Latex targets:
+IF(NOT WIN32)
 find_program(LATEXMK_PROGRAM latexmk)
 mark_as_advanced(LATEXMK_PROGRAM)
 IF(LATEXMK_PROGRAM)
@@ -107,5 +108,5 @@ IF(LATEXMK_PROGRAM)
 	add_dependencies(documentation_psgz_guides documentation_pbmap-guide)
 	
 ENDIF(LATEXMK_PROGRAM)
-
+ENDIF(NOT WIN32)
 

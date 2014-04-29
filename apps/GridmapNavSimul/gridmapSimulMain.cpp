@@ -180,10 +180,10 @@ void CMyGLCanvas::OnPostRender()
 	the_robot.getRealPose(p);
 
 	string s = format("Pose: (%.03f,%.03f,%.02fdeg)", p.x(),p.y(), RAD2DEG(p.phi()) );
-	renderTextBitmap( 20,20, s.c_str(), 1,0,0 , MRPT_GLUT_BITMAP_HELVETICA_18);
+	mrpt::opengl::CRenderizable::renderTextBitmap( 20,20, s.c_str(), 1,0,0 , MRPT_GLUT_BITMAP_HELVETICA_18);
 
 	s = format("V=%.03fm/s  W=%.02fdeg/s", the_robot.getV(), RAD2DEG(the_robot.getW()) );
-	renderTextBitmap( 20,45, s.c_str(), 1,0,0 , MRPT_GLUT_BITMAP_HELVETICA_18);
+	mrpt::opengl::CRenderizable::renderTextBitmap( 20,45, s.c_str(), 1,0,0 , MRPT_GLUT_BITMAP_HELVETICA_18);
 }
 
 void CMyGLCanvas::OnCharCustom( wxKeyEvent& event )
