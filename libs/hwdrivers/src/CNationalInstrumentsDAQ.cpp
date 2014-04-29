@@ -317,7 +317,7 @@ const daqmx_str_val daqmx_vals[] = {
 
 int daqmx_defstr2num(const std::string &str)
 {
-	const std::string s = mrpt::utils::trim(str);
+	const std::string s = mrpt::system::trim(str);
 
 	for (unsigned int i=0;i<sizeof(daqmx_vals)/sizeof(daqmx_vals[0]);i++)
 	{
