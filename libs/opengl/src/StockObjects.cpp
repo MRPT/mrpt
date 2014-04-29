@@ -158,6 +158,9 @@ CSetOfObjectsPtr stock_objects::CornerXYZ(float scale)
 	return ret;
 }
 
+/*---------------------------------------------------------------
+					RobotRhodon
+  ---------------------------------------------------------------*/
 CSetOfObjectsPtr stock_objects::RobotRhodon()
 {
 	CSetOfObjectsPtr ret = CSetOfObjects::Create();
@@ -213,6 +216,73 @@ CSetOfObjectsPtr stock_objects::RobotRhodon()
 	obj5->setPose(CPose3D(0.32,0,0.89,0,-1,0));
 	obj5->setColor(0,0,0.9);
 	ret->insert( obj5 );
+
+	return ret;
+}
+
+/*---------------------------------------------------------------
+					RobotGiraff
+  ---------------------------------------------------------------*/
+CSetOfObjectsPtr stock_objects::RobotGiraff()
+{
+	CSetOfObjectsPtr ret = CSetOfObjects::Create();
+	float height = 0;
+	
+	//Base
+	vector<TPoint2D> level1;
+	level1.push_back(TPoint2D(0.31, 0));
+	level1.push_back(TPoint2D(0.22, 0.24));
+	level1.push_back(TPoint2D(-0.22, 0.24));
+	level1.push_back(TPoint2D(-0.31, 0));
+	level1.push_back(TPoint2D(-0.22, -0.24));
+	level1.push_back(TPoint2D(0.22, -0.24));
+
+	CPolyhedronPtr obj1 = opengl::CPolyhedron::CreateCustomPrism(level1, 0.23);
+	obj1->setLocation(0,0,height);
+	height+=0.23;
+	obj1->setColor(1.0,0.6,0.0);
+	ret->insert( obj1 );
+
+	//Electronic's cage
+	vector<TPoint2D> level2;
+	level2.push_back(TPoint2D(0.13, 0.1));
+	level2.push_back(TPoint2D(-0.13, 0.1));
+	level2.push_back(TPoint2D(-0.13, -0.1));
+	level2.push_back(TPoint2D(0.13, -0.1));
+
+	CPolyhedronPtr obj2 = opengl::CPolyhedron::CreateCustomPrism(level2, 0.45);
+	obj2->setLocation(0,0,height);
+	height+=0.45;
+	obj2->setColor(1.0,0.6,0.2);
+	ret->insert( obj2 );
+
+	//Neck
+	vector<TPoint2D> level3;
+	level3.push_back(TPoint2D(0.03, 0.03));
+	level3.push_back(TPoint2D(-0.03, 0.03));
+	level3.push_back(TPoint2D(-0.03, -0.03));
+	level3.push_back(TPoint2D(0.03, -0.03));
+	
+
+	CPolyhedronPtr obj3 = opengl::CPolyhedron::CreateCustomPrism(level3, 0.55);
+	obj3->setLocation(0,0,height);
+	height+=0.55;
+	obj3->setColor(0.6,0.6,0.6);
+	ret->insert( obj3 );
+
+	//Screen
+	vector<TPoint2D> level4;
+	level4.push_back(TPoint2D(0.03, 0.11));
+	level4.push_back(TPoint2D(-0.03, 0.11));
+	level4.push_back(TPoint2D(-0.03, -0.11));
+	level4.push_back(TPoint2D(0.03, -0.11));
+	
+	
+	CPolyhedronPtr obj4 = opengl::CPolyhedron::CreateCustomPrism(level4, 0.4);
+	obj4->setLocation(0,0,height);
+	height+=0.4;
+	obj4->setColor(1.0,0.6,0.0);
+	ret->insert( obj4 );	
 
 	return ret;
 }
