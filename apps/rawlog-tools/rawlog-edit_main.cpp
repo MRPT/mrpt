@@ -46,6 +46,7 @@ DECLARE_OP_FUNCTION(op_remove_label);
 DECLARE_OP_FUNCTION(op_keep_label);
 DECLARE_OP_FUNCTION(op_cut);
 DECLARE_OP_FUNCTION(op_export_gps_kml);
+DECLARE_OP_FUNCTION(op_export_gps_gas_kml);
 DECLARE_OP_FUNCTION(op_export_gps_txt);
 DECLARE_OP_FUNCTION(op_export_imu_txt);
 DECLARE_OP_FUNCTION(op_export_rawdaq_txt);
@@ -150,6 +151,14 @@ int main(int argc, char **argv)
 			"filename + each sensorLabel."
 			,cmd,false) );
 		ops_functors["export-gps-kml"] = &op_export_gps_kml;
+
+		arg_ops.push_back(new TCLAP::SwitchArg("","export-gps-gas-kml",
+			"Op: Export GPS paths to Google Earth KML files coloured by the gas concentration.\n"
+			"Generates one .kml file with different sections for each different sensor label of GPS observations in the dataset. "
+			"The generated .kml files will be saved in the same path than the input rawlog, with the same "
+			"filename + each sensorLabel."
+			,cmd,false) );
+		ops_functors["export-gps-gas-kml"] = &op_export_gps_gas_kml;
 
 		arg_ops.push_back(new TCLAP::SwitchArg("","export-gps-txt",
 			"Op: Export GPS readings to TXT files.\n"
