@@ -10,6 +10,10 @@
 #include "rawlog-edit-declarations.h"
 
 #include <mrpt/topography.h>
+#include <mrpt/slam/CObservationGPS.h>
+#include <mrpt/slam/CObservationGasSensors.h>
+#include <mrpt/utils/color_maps.h>
+#include <mrpt/math/interp_fit.h>
 
 using namespace mrpt;
 using namespace mrpt::utils;
@@ -24,7 +28,7 @@ struct TGPSGASDataPoint
 {
 	double  lon,lat,alt; // degrees, degrees, meters
 	uint8_t fix; // 1: standalone, 2: DGPS, 4: RTK fix, 5: RTK float, ...
-	double color;
+	float color;
 };
 
 struct TDataPerGPSGAS
@@ -45,14 +49,24 @@ DECLARE_OP_FUNCTION(op_export_gps_gas_kml)
 
 		map<string,TDataPerGPSGAS> m_gps_paths;  // sensorLabel -> data
 
-		const CObservationGPS* obs;
-		const CObservationGasSensors* obsGas;
+		mrpt::slam::CObservationGPS* obs;
+		mrpt::slam::CObservationGasSensors* obsGas;		
+		float gasConcentration;
+		float maxGasValue, minGasValue;
+		bool hasGAS, hasGPS;
 	public:
 
 		CRawlogProcessor_ExportGPSGAS_KML(CFileGZInputStream &in_rawlog, TCLAP::CmdLine &cmdline, bool verbose) :
 			CRawlogProcessorOnEachObservation(in_rawlog,cmdline,verbose)
 		{
 			getArgValue<string>(cmdline,"input",m_inFile);
+			
+			maxGasValue = -1.0;
+			minGasValue = 10000;
+			obs = NULL;
+			obsGas = NULL;
+			hasGAS = false;
+			hasGPS = false;
 		}
 
 		// return false on any error.
@@ -66,16 +80,33 @@ DECLARE_OP_FUNCTION(op_export_gps_gas_kml)
 					obs = NULL;
 					return true; // Nothing to do...
 				}
+				hasGPS = true;
 			}
 			else if (IS_CLASS(o, CObservationGasSensors ) )
 			{
 				obsGas = CObservationGasSensorsPtr(o).pointer();
+				if (obsGas->m_readings.size() < 1)
+				{
+					cout << "Empty Gas Sensor" << endl;
+					obsGas = NULL;
+					return true; // Nothing to do...
+				}
+
+				if (obsGas->m_readings[0].readingsVoltage.size() < 1)
+				{
+					cout << "Empty Gas Obs" << endl;
+					obsGas = NULL;
+					return true; // Nothing to do...
+				}
+				//cout << "new observations has: "<< obsGas->m_readings[0].readingsVoltage.size() << " elements." << endl;
+				gasConcentration = obsGas->m_readings[0].readingsVoltage[0];
+				hasGAS = true;				
 			}
 			else
 				return true;
 
 			// Insert the new entries:
-			if(obs && obsGas)
+			if(hasGAS && hasGPS)
 			{
 				TDataPerGPSGAS   &D = m_gps_paths[obs->sensorLabel];
 				TGPSGASDataPoint &d = D.path[o->timestamp];
@@ -84,9 +115,15 @@ DECLARE_OP_FUNCTION(op_export_gps_gas_kml)
 				d.lat = obs->GGA_datum.latitude_degrees;
 				d.alt = obs->GGA_datum.altitude_meters;
 				d.fix = obs->GGA_datum.fix_quality;
-				d.color = 1;
-				obs = NULL;
-				obsGas = NULL;
+				d.color = gasConcentration;
+				
+				if( d.color > maxGasValue)
+					maxGasValue = d.color;
+				if( d.color < minGasValue)
+					minGasValue = d.color;
+
+				hasGAS = false;
+				hasGPS = false;
 			}
 
 			return true; // All ok
@@ -134,102 +171,50 @@ DECLARE_OP_FUNCTION(op_export_gps_gas_kml)
 					);
 
 				//For each GPS point
-				for (map<TTimeStamp,TGPSGASDataPoint>::const_iterator itP=D.path.begin();itP!=D.path.end();++itP)
+				int n = 0;
+				float scale = 1;	//scale to dispay in KML				
+				int alpha = 120;	//[0 255]
+				for (map<TTimeStamp,TGPSGASDataPoint>::const_iterator itP=D.path.begin();itP!=D.path.end();++itP, n++)
 				{
+					const TGPSGASDataPoint &d = itP->second;
+
+					//Decode gas concentration [0,1] to color RGBA
+					float r,g,b;
+					jet2rgb( (d.color-minGasValue)/(maxGasValue-minGasValue),r,g,b );
+
 					f.printf(
 					"        <Placemark>\n"
-					"          <description>%s point: </description>\n"
+					"          <description> %s point: %i </description>\n"
 					"          <Style>\n"
 					"            <IconStyle>\n"
-					"              <color></color>\n"
-					"              <scale></scale>\n"
+					"              <color> %02X%02X%02X%02X </color>\n"
+					"              <scale> %.2f </scale>\n"
 					"              <Icon><href>http://maps.google.com/mapfiles/kml/shapes/shaded_dot.png</href></Icon>\n"
 					"            </IconStyle>\n"
 					"          </Style>\n"
 					"          <Point>\n"
-					"            <coordinates></coordinates>\n"
-					"          </Point>\n"
-					"        </Placemark>\n"
+					"            <coordinates>"
 					,
 					label.c_str(),
-					label.c_str(),
-					int( color_idx % NCOLORS) // Color
+					n,
+					alpha,(int)floor(b*255),(int)floor(g*255),(int)floor(r*255),
+					scale
 					);
-					f.printf("%s",LineString_START.c_str());
-
-					const TGPSGASDataPoint &d = itP->second;
-					// Format is: lon,lat[,alt]
+										
 					if (save_altitude)
-							f.printf(" %.15f,%.15f,%.3f\n",d.lon,d.lat,d.alt);
-					else 	f.printf(" %.15f,%.15f\n",d.lon,d.lat);
+						f.printf(" %.15f,%.15f,%.3f ",d.lon,d.lat,d.alt);
+					else 	
+						f.printf(" %.15f,%.15f ",d.lon,d.lat);
 
-					if (!hasSomeRTK && d.fix==4) hasSomeRTK=true;
+					f.printf(
+					"</coordinates>\n"
+					"          </Point>\n"
+					"        </Placemark>\n"
+					);					
 				}
 
 				// end part:
-				f.printf("%s",LineString_END.c_str());
-
-				f.printf("    </Placemark>\n");
-
-				// Do we have RTK points?
-				if (hasSomeRTK)
-				{
-					f.printf(
-						"    <Placemark>\n"
-						"      <name>%s RTK only</name>\n"
-						"      <description>%s: RTK fixed points only</description>\n"
-						"      <styleUrl>#gpscolor%i_thick</styleUrl>\n"
-						,
-						label.c_str(),
-						label.c_str(),
-						int( color_idx % NCOLORS) // Color
-						);
-
-					f.printf(" <MultiGeometry>\n");
-					f.printf("%s",LineString_START.c_str());
-
-					TGPSGASDataPoint  last_valid;
-					last_valid.lat=0;
-					last_valid.lon=0;
-
-					for (map<TTimeStamp,TGPSGASDataPoint>::const_iterator itP=D.path.begin();itP!=D.path.end();++itP)
-					{
-						const TGPSGASDataPoint &d = itP->second;
-						if (d.fix!=4)
-							continue;	// Skip this one..
-
-						// There was a valid point?
-						if (last_valid.lat!=0 && last_valid.lon!=0)
-						{
-							// Compute distance between points, in meters:
-							//  (very rough, but fast spherical approximation):
-							const double dist= 6.371e6 * DEG2RAD( ::hypot( last_valid.lon-d.lon,  last_valid.lat-d.lat ) );
-
-							// If the distance is above a threshold, finish the line and start another one:
-							if (dist>MIN_DIST_TO_SPLIT)
-							{
-								f.printf("%s",LineString_END.c_str());
-								f.printf("%s",LineString_START.c_str());
-							}
-
-							// Format is: lon,lat[,alt]
-							if (save_altitude)
-									f.printf(" %.15f,%.15f,%.3f\n",d.lon,d.lat,d.alt);
-							else 	f.printf(" %.15f,%.15f\n",d.lon,d.lat);
-
-						}
-
-						// Save last point:
-						last_valid = d;
-
-					}
-
-					// end part:
-					f.printf("%s",LineString_END.c_str());
-					f.printf(" </MultiGeometry>\n");
-
-					f.printf("    </Placemark>\n");
-				}
+				f.printf("    </Folder>\n");
 
 			} // end for each sensor label
 
