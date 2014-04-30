@@ -13,6 +13,7 @@
 #include <mrpt/slam/CObservation2DRangeScan.h>
 #include <mrpt/utils/CStream.h>
 #include <mrpt/system/os.h>
+#include <iterator>
 
 using namespace mrpt::slam;
 using namespace mrpt::poses;

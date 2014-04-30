@@ -11,6 +11,7 @@
 
 #include <mrpt/utils/CSerializable.h>
 #include <deque>
+#include <iterator>
 
 namespace mrpt
 {
