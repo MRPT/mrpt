@@ -59,6 +59,7 @@
 				- mrpt::slam::CPointsMap::getPoint() with mrpt::poses::CPoint3D arguments.
 				- mrpt::vision::correctDistortion() -> use CImage method instead
 				- All previous deprecated functions.
+			- Embedded Eigen updated to version 3.2.1 [(commit)](https://github.com/jlblancoc/mrpt/commit/47913da94a27e98a9115f85b2a530b6c14a10b8f) [(commit)](https://github.com/jlblancoc/mrpt/commit/33258761d3b75bf133d38aecb257c64e4d76b21e)
   		- BUG FIXES:
 			- New implementation of mrpt::synch::CSemaphore avoids crashes in OS X - by Randolph Voorhies.
 			- mrpt::opengl::CArrow was always drawn of normalized length.
