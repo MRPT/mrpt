@@ -12,7 +12,8 @@
 #include <algorithm>
 
 /** 
-  * \defgroup SparseCore_Module SparseCore module
+  * \defgroup SparseCore_Module SparseCore module 
+ * \ingroup eigen_grp
   *
   * This module provides a sparse matrix representation, and basic associatd matrix manipulations
   * and operations.

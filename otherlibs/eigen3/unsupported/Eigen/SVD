@@ -7,7 +7,8 @@
 
 #include "../../Eigen/src/Core/util/DisableStupidWarnings.h"
 
-/** \defgroup SVD_Module SVD module
+/** \defgroup SVD_Module SVD module 
+ * \ingroup eigen_grp
   *
   *
   *
