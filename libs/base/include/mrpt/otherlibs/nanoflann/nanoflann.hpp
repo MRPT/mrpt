@@ -1,11 +1,34 @@
-/* +---------------------------------------------------------------------------+
-   |                     Mobile Robot Programming Toolkit (MRPT)               |
-   |                          http://www.mrpt.org/                             |
-   |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
-   | See: http://www.mrpt.org/Authors - All rights reserved.                   |
-   | Released under BSD License. See details in http://www.mrpt.org/License    |
-   +---------------------------------------------------------------------------+ */
+/***********************************************************************
+ * Software License Agreement (BSD License)
+ *
+ * Copyright 2008-2009  Marius Muja (mariusm@cs.ubc.ca). All rights reserved.
+ * Copyright 2008-2009  David G. Lowe (lowe@cs.ubc.ca). All rights reserved.
+ * Copyright 2011-2014  Jose Luis Blanco (joseluisblancoc@gmail.com).
+ *   All rights reserved.
+ *
+ * THE BSD LICENSE
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in the
+ *    documentation and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
+ * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+ * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+ * IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
+ * NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+ * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
+ * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *************************************************************************/
 
 #ifndef  NANOFLANN_HPP_
 #define  NANOFLANN_HPP_
@@ -33,7 +56,7 @@ namespace nanoflann
   *  @{ */
 
   	/** Library version: 0xMmP (M=Major,m=minor,P=path) */
-	#define NANOFLANN_VERSION 0x117
+	#define NANOFLANN_VERSION 0x118
 
 	/** @addtogroup result_sets_grp Result set classes
 	  *  @{ */
@@ -709,6 +732,9 @@ namespace nanoflann
 	template <typename Distance, class DatasetAdaptor,int DIM = -1, typename IndexType = size_t>
 	class KDTreeSingleIndexAdaptor
 	{
+	private:
+		/** Hidden copy constructor, to disallow copying indices (Not implemented) */
+		KDTreeSingleIndexAdaptor(const KDTreeSingleIndexAdaptor<Distance,DatasetAdaptor,DIM,IndexType>&);
 	public:
 		typedef typename Distance::ElementType  ElementType;
 		typedef typename Distance::DistanceType DistanceType;
@@ -858,8 +884,9 @@ namespace nanoflann
 		void buildIndex()
 		{
 			init_vind();
-			computeBoundingBox(root_bbox);
 			freeIndex();
+			if(m_size == 0) return;
+			computeBoundingBox(root_bbox);
 			root_node = divideTree(0, m_size, root_bbox );   // construct the tree
 		}
 
@@ -906,7 +933,7 @@ namespace nanoflann
 		void findNeighbors(RESULTSET& result, const ElementType* vec, const SearchParams& searchParams) const
 		{
 			assert(vec);
-			if (!root_node) throw std::runtime_error("[nanoflann] findNeighbors() called before building the index.");
+			if (!root_node) throw std::runtime_error("[nanoflann] findNeighbors() called before building the index or no data points.");
 			float epsError = 1+searchParams.eps;
 
 			distance_vector_t dists; // fixed or variable-sized container (depending on DIM)
@@ -1003,11 +1030,12 @@ namespace nanoflann
 			}
 			else
 			{
+				const size_t N = dataset.kdtree_get_point_count();
+				if (!N) throw std::runtime_error("[nanoflann] computeBoundingBox() called but no data points found.");
 				for (int i=0; i<(DIM>0 ? DIM : dim); ++i) {
 					bbox[i].low =
-						bbox[i].high = dataset_get(0,i);
+					bbox[i].high = dataset_get(0,i);
 				}
-				const size_t N = dataset.kdtree_get_point_count();
 				for (size_t k=1; k<N; ++k) {
 					for (int i=0; i<(DIM>0 ? DIM : dim); ++i) {
 						if (dataset_get(k,i)<bbox[i].low) bbox[i].low = dataset_get(k,i);
@@ -1356,6 +1384,10 @@ namespace nanoflann
 			index = new index_t( dims, *this /* adaptor */, nanoflann::KDTreeSingleIndexAdaptorParams(leaf_max_size, dims ) );
 			index->buildIndex();
 		}
+	private:
+		/** Hidden copy constructor, to disallow copying this class (Not implemented) */
+		KDTreeEigenMatrixAdaptor(const self_t&);
+	public:
 
 		~KDTreeEigenMatrixAdaptor() {
 			delete index;
