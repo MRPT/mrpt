@@ -5,8 +5,7 @@
 
 #include "src/Core/util/DisableStupidWarnings.h"
 
-/** \defgroup LU_Module LU module 
- * \ingroup eigen_grp
+/** \defgroup LU_Module LU module
   * This module includes %LU decomposition and related notions such as matrix inversion and determinant.
   * This module defines the following MatrixBase methods:
   *  - MatrixBase::inverse()

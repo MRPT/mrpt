@@ -18,8 +18,7 @@
 namespace Eigen {
   
 /**
-  * \defgroup MPRealSupport_Module MPFRC++ Support module 
- * \ingroup eigen_grp
+  * \defgroup MPRealSupport_Module MPFRC++ Support module
   * \code
   * #include <Eigen/MPRealSupport>
   * \endcode

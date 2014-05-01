@@ -10,8 +10,7 @@ extern "C" {
 }
 
 /** \ingroup Support_modules
-  * \defgroup UmfPackSupport_Module UmfPackSupport module 
- * \ingroup eigen_grp
+  * \defgroup UmfPackSupport_Module UmfPackSupport module
   *
   * This module provides an interface to the UmfPack library which is part of the <a href="http://www.cise.ufl.edu/research/sparse/SuiteSparse/">suitesparse</a> package.
   * It provides the following factorization class:

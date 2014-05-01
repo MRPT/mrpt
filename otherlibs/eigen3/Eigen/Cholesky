@@ -5,8 +5,7 @@
 
 #include "src/Core/util/DisableStupidWarnings.h"
 
-/** \defgroup Cholesky_Module Cholesky module 
- * \ingroup eigen_grp
+/** \defgroup Cholesky_Module Cholesky module
   *
   *
   *

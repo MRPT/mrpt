@@ -19,8 +19,7 @@
 namespace Eigen {
 
 /**
-  * \defgroup BVH_Module BVH module 
- * \ingroup eigen_grp
+  * \defgroup BVH_Module BVH module
   * \brief This module provides generic bounding volume hierarchy algorithms
   * and reference tree implementations.
   *

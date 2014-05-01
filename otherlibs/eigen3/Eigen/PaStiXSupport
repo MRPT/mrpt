@@ -16,8 +16,7 @@ extern "C" {
 #endif
 
 /** \ingroup Support_modules
-  * \defgroup PaStiXSupport_Module PaStiXSupport module 
- * \ingroup eigen_grp
+  * \defgroup PaStiXSupport_Module PaStiXSupport module
   * 
   * This module provides an interface to the <a href="http://pastix.gforge.inria.fr/">PaSTiX</a> library.
   * PaSTiX is a general \b supernodal, \b parallel and \b opensource sparse solver.

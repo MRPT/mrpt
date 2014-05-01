@@ -304,7 +304,7 @@ class Matrix
       : Base(other.derived().rows() * other.derived().cols(), other.derived().rows(), other.derived().cols())
     {
       Base::_check_template_params();
-      Base::resize(other.rows(), other.cols());
+      Base::_resize_to_match(other);
       // FIXME/CHECK: isn't *this = other.derived() more efficient. it allows to
       //              go for pure _set() implementations, right?
       *this = other;
@@ -347,8 +347,7 @@ class Matrix
     using Base::m_storage;
 };
 
-/** \defgroup matrixtypedefs Global matrix typedefs 
- * \ingroup eigen_grp
+/** \defgroup matrixtypedefs Global matrix typedefs
   *
   * \ingroup Core_Module
   *

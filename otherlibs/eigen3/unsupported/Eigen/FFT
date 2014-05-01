@@ -17,8 +17,7 @@
 
 
 /**
-  * \defgroup FFT_Module Fast Fourier Transform module 
- * \ingroup eigen_grp
+  * \defgroup FFT_Module Fast Fourier Transform module
   *
   * \code
   * #include <unsupported/Eigen/FFT>

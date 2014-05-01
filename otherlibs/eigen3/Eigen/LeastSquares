@@ -15,8 +15,7 @@
 #include "Eigenvalues"
 #include "Geometry"
 
-/** \defgroup LeastSquares_Module LeastSquares module 
- * \ingroup eigen_grp
+/** \defgroup LeastSquares_Module LeastSquares module
   * This module provides linear regression and related features.
   *
   * \code

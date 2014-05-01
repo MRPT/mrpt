@@ -27,8 +27,7 @@
 #endif
 
 /**
-  * \defgroup SparseExtra_Module SparseExtra module 
- * \ingroup eigen_grp
+  * \defgroup SparseExtra_Module SparseExtra module
   *
   * This module contains some experimental features extending the sparse module.
   *

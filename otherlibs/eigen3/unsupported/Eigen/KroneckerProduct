@@ -16,8 +16,7 @@
 namespace Eigen {
 
 /**
-  * \defgroup KroneckerProduct_Module KroneckerProduct module 
- * \ingroup eigen_grp
+  * \defgroup KroneckerProduct_Module KroneckerProduct module
   *
   * This module contains an experimental Kronecker product implementation.
   *

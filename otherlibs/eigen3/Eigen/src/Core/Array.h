@@ -210,7 +210,7 @@ class Array
       : Base(other.derived().rows() * other.derived().cols(), other.derived().rows(), other.derived().cols())
     {
       Base::_check_template_params();
-      Base::resize(other.rows(), other.cols());
+      Base::_resize_to_match(other);
       *this = other;
     }
 
@@ -234,8 +234,7 @@ class Array
     friend struct internal::matrix_swap_impl;
 };
 
-/** \defgroup arraytypedefs Global array typedefs 
- * \ingroup eigen_grp
+/** \defgroup arraytypedefs Global array typedefs
   * \ingroup Core_Module
   *
   * Eigen defines several typedef shortcuts for most common 1D and 2D array types.
