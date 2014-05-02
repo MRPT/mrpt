@@ -122,8 +122,11 @@ bool mrpt::vision::checkerBoardStereoCalibration(
 				// User Callback?
 				if (p.callback)
 				{
+					cbPars.calibRound = -1; // Detecting corners
 					cbPars.current_iter = 0;
 					cbPars.current_rmse = 0;
+					cbPars.nImgsProcessed = i*2 + lr+1;
+					cbPars.nImgsToProcess = images.size()*2;
 					(*p.callback)(cbPars, p.callback_user_param);
 				}
 
@@ -146,15 +149,15 @@ bool mrpt::vision::checkerBoardStereoCalibration(
 			{
 				valid_image_pair_indices.push_back(i);
 
-				// Consistency between left/right pair: the corners MUST BE ORDERED so they match to each other, 
+				// Consistency between left/right pair: the corners MUST BE ORDERED so they match to each other,
 				// and the criterion must be the same in ALL pairs to avoid rubbish optimization:
-				
-				// Key idea: Generate a representative vector that goes along rows and columns. 
-				// Check the angle of those director vectors between L/R images. That can be done 
+
+				// Key idea: Generate a representative vector that goes along rows and columns.
+				// Check the angle of those director vectors between L/R images. That can be done
 				// via the dot product. Swap rows/columns order as needed.
 				bool has_to_redraw_corners = false;
 
-				const mrpt::math::TPoint2D 
+				const mrpt::math::TPoint2D
 					pt_l0 = images[i].left.detected_corners[0],
 					pt_l1 = images[i].left.detected_corners[1],
 					pt_r0 = images[i].right.detected_corners[0],

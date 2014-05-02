@@ -39,9 +39,10 @@ namespace mrpt
 		/** Params of the optional callback provided by the user */
 		struct VISION_IMPEXP TImageStereoCallbackData
 		{
-			int     calibRound; //!<  =0: Initial calib without distortion, =1: Calib of all parameters
+			int     calibRound; //!< =-1:Processing images;  =0: Initial calib without distortion, =1: Calib of all parameters
 			size_t current_iter;
 			double current_rmse; //!< Current root-mean square reprojection error (in pixels)
+			unsigned int nImgsProcessed, nImgsToProcess; //!< Info for calibRound==-1
 		};
 
 		/** Prototype of optional user callback function. */
@@ -106,7 +107,7 @@ namespace mrpt
 
 		/** Optimize the calibration parameters of a stereo camera or a RGB+D (Kinect) camera.
 		  *  This computes the projection and distortion parameters of each camera, and their relative spatial pose,
-		  *  from a sequence of pairs of captured images of a checkerboard. 
+		  *  from a sequence of pairs of captured images of a checkerboard.
 		  *  A custom implementation of an optimizer (Levenberg-Marquartd) seeks for the set of selected parameters to estimate that minimize the reprojection errors.
 		  *
 		  *  \param input_images [IN/OUT] At input, this list must have one entry for each image to process. At output the original, detected checkboard and rectified images can be found here. See TImageCalibData.

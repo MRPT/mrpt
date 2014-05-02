@@ -1473,17 +1473,26 @@ void myCalibCallback(const mrpt::vision::TImageStereoCallbackData &d, void* user
 	TCalibCallbackData *dat = reinterpret_cast<TCalibCallbackData*>(user_data);
 
 	string s;
-	if (d.calibRound==0)
+	switch (d.calibRound)
+	{
+		case -1:
+			s = mrpt::format("Detecting corners: %u images done out of %u",d.nImgsProcessed,d.nImgsToProcess);
+			break;
+		case 0:
 			s = "Round #1: Calibration without distortion";
-	else 	s = "Round #2: Full calibration";
+			break;
+		case 1:
+			s = "Round #2: Full calibration";
+			break;
+	};
 
-	s+= mrpt::format(" (RMSE=%.05f px)", d.current_rmse);
+	if (d.calibRound==0 || d.calibRound==1)
+	{
+		s+= mrpt::format(" (RMSE=%.05f px)", d.current_rmse);
+	}
 
 	dat->pd->Update(d.current_iter, _U(s.c_str()));
 	dat->pd->SetSize(500,100);
-
-//	dat->win->CalibUpdate3DViewCameras();
-//	dat->win->m_plot3D_cameras->Refresh();
 
 	wxTheApp->Yield();
 }
