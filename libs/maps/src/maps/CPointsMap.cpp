@@ -416,7 +416,9 @@ void CPointsMap::determineMatching2D(
 
 #else
 	// Non SSE2 version:
-	mrpt::math::CVectorFloat  x_org(otherMap->x), y_org(otherMap->y);
+	const Eigen::Map<Eigen::Matrix<float,Eigen::Dynamic,1> > x_org( const_cast<float*>(&otherMap->x[0]),otherMap->x.size(),1 ); 
+	const Eigen::Map<Eigen::Matrix<float,Eigen::Dynamic,1> > y_org( const_cast<float*>(&otherMap->y[0]),otherMap->y.size(),1 ); 
+
 	Eigen::Array<float,Eigen::Dynamic,1>  x_locals = otherMapPose.x + cos_phi * x_org.array() - sin_phi *  y_org.array() ;
 	Eigen::Array<float,Eigen::Dynamic,1>  y_locals = otherMapPose.y + sin_phi * x_org.array() + cos_phi *  y_org.array() ;
 

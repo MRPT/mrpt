@@ -153,12 +153,12 @@ namespace detail
 					_mm_store_ps(ptr_out_y, _mm_add_ps(m13_4val, _mm_add_ps( _mm_mul_ps(xs,m10_4val), _mm_mul_ps(ys,m11_4val) ) ) );
 					_mm_store_ps(ptr_out_z, _mm_add_ps(m23_4val, _mm_add_ps( _mm_mul_ps(xs,m20_4val), _mm_mul_ps(ys,m21_4val) ) ) );
 				}
-
-		#else
+		#else  // MRPT_HAS_SSE2
 				// The "+3" is to assure the buffer has room for the SSE2 method which works with 4-tuples of floats.
 				Eigen::Array<float,Eigen::Dynamic,1>  scan_x(sizeRangeScan+3), scan_y(sizeRangeScan+3);
 
-				mrpt::math::CVectorFloat scan_vals( rangeScan.scan ); // Convert from the std::vector
+				// Convert from the std::vector format:
+				const Eigen::Map<Eigen::Matrix<float,Eigen::Dynamic,1> > scan_vals( const_cast<float*>(&rangeScan.scan[0]),rangeScan.scan.size(),1 ); 
 
 				// Vectorized (optimized) scalar multiplications:
 				scan_x = scan_vals.array() * sincos_vals.ccos.array();
@@ -169,7 +169,7 @@ namespace detail
 				scan_gx = m00*scan_x+m01*scan_y+m03;
 				scan_gy = m10*scan_x+m11*scan_y+m13;
 				scan_gz = m20*scan_x+m21*scan_y+m23;
-		#endif
+		#endif // MRPT_HAS_SSE2
 			}
 
 
