@@ -107,7 +107,7 @@ void vision::saveQTableToFile( const TQuantizationTable &qTable, const string &f
             {
                 mrpt::system::os::fprintf( f, "%d\t%d\t%d\t", it1->first, it2->first, it3->first );
                 for( int k = 0; k < int(it3->second.size()); ++k )
-                    mrpt::system::os::fprintf( f, "%lu\t%.2f\t", it3->second[k].first, it3->second[k].second );
+                    mrpt::system::os::fprintf( f, "%lu\t%.2f\t",static_cast<unsigned int>(it3->second[k].first), it3->second[k].second );
                 mrpt::system::os::fprintf( f, "\n" );
             } // end-for
     mrpt::system::os::fclose( f );
