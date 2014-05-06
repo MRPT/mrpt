@@ -297,11 +297,11 @@ bool  CSickLaserSerial::waitContinuousSampleFrame(
 			return false;
 		}
 
-		if ( !nRead )
+		if ( !nRead && !nFrameBytes ) 
 			return false;
 
 		if (nRead<nBytesToRead)
-			mrpt::system::sleep(30);
+			mrpt::system::sleep(1);
 
 		// Lectura OK:
 		// Era la primera?
