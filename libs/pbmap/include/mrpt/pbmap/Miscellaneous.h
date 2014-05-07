@@ -19,6 +19,7 @@
 #if MRPT_HAS_PCL
 
 #include <mrpt/utils/types_math.h> // Eigen
+#include <map>
 #include <string>
 #include <iostream>
 #include <iterator>
