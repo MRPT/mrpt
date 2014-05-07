@@ -105,7 +105,7 @@ double graphs_dijkstra(int nNodes, int _N)
 	}
 	tims.enable(false);
 	double ret = tims.getMeanTime("op");
-	tims.clear();
+	tims.clear(true /* deep clear */);
 	return ret;
 }
 

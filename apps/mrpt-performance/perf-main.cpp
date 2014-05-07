@@ -236,6 +236,8 @@ int main(int argc, char **argv)
 #		else
 			const char* compiler_name = "MSVC";
 #		endif
+#elif defined(__clang__)
+			const char* compiler_name = "CLANG";
 #elif defined(__GNUC__)
 			const char* compiler_name = "GCC";
 #else
