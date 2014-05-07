@@ -5,10 +5,11 @@ compiler:
   - clang  
 
 before_install:
+  - sudo add-apt-repository ppa:v-launchpad-jochen-sprickerhof-de/pcl -y
   - sudo apt-get update -d
 
 install:
-  - sudo apt-get install build-essential pkg-config cmake libwxgtk2.8-dev libftdi-dev freeglut3-dev zlib1g-dev libusb-1.0-0-dev  libdc1394-22-dev libavformat-dev libswscale-dev lib3ds-dev libjpeg-dev libopencv-dev libgtest-dev libeigen3-dev libsuitesparse-dev
+  - sudo apt-get install build-essential pkg-config cmake libwxgtk2.8-dev libftdi-dev freeglut3-dev zlib1g-dev libusb-1.0-0-dev  libdc1394-22-dev libavformat-dev libswscale-dev lib3ds-dev libjpeg-dev libopencv-dev libgtest-dev libeigen3-dev libsuitesparse-dev libpcl-all libopenni2-dev
 
 script:
   - bash .travis.sh
