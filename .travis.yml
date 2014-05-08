@@ -17,8 +17,8 @@ script:
 env:
   - TASK="build"
   - TASK="test"
-  - TASK="testhwdrivers"  
-
-matrix:
-      allow_failures:
-              - env: TASK="testhwdrivers"  
+#  - TASK="testhwdrivers"  
+#
+#matrix:
+#      allow_failures:
+#              - env: TASK="testhwdrivers"  
