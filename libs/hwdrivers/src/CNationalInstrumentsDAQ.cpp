@@ -10,6 +10,7 @@
 #include "hwdrivers-precomp.h"   // Precompiled headers
 
 #include <mrpt/hwdrivers/CNationalInstrumentsDAQ.h>
+#include <iterator> // advance()
 
 // If we have both, DAQmx & DAQmxBase, prefer DAQmx:
 #define MRPT_HAS_SOME_NIDAQMX (MRPT_HAS_NIDAQMXBASE || MRPT_HAS_NIDAQMX)
@@ -46,7 +47,7 @@
 #	define MRPT_DAQmxClearTask DAQmxBaseClearTask
 #	define MRPT_DAQmxReadAnalogF64 DAQmxBaseReadAnalogF64
 #	define MRPT_DAQmxReadCounterF64 DAQmxBaseReadCounterF64
-#	define MRPT_DAQmxReadDigitalLines DAQmxBaseReadDigitalLines
+#	define MRPT_DAQmxReadDigitalU8 DAQmxBaseReadDigitalU8
 #else
 #	define MRPT_DAQmxGetExtendedErrorInfo DAQmxGetExtendedErrorInfo
 #	define MRPT_DAQmxCreateTask DAQmxCreateTask
@@ -67,7 +68,7 @@
 #	define MRPT_DAQmxClearTask DAQmxClearTask
 #	define MRPT_DAQmxReadAnalogF64 DAQmxReadAnalogF64
 #	define MRPT_DAQmxReadCounterF64 DAQmxReadCounterF64
-#	define MRPT_DAQmxReadDigitalLines DAQmxReadDigitalLines
+#	define MRPT_DAQmxReadDigitalU8 DAQmxReadDigitalU8
 #endif
 
 // An auxiliary macro to check and report errors in the DAQmx library as exceptions with a well-explained message.
@@ -661,12 +662,12 @@ void CNationalInstrumentsDAQ::grabbing_thread(TInfoPerTask &ipt)
 				const uint32_t totalSamplesToRead = ceil(ipt.task.di.linesCount/8.0) * ipt.task.samplesPerChannelToRead;
 				u8Buf.resize(totalSamplesToRead);
 
-				int32  pointsReadPerChan=-1, numBytesPerSampl=-1;
-				if ((err = MRPT_DAQmxReadDigitalLines(
+				int32  pointsReadPerChan=-1;
+				if ((err = MRPT_DAQmxReadDigitalU8(
 					taskHandle,
 					ipt.task.samplesPerChannelToRead,timeout, DAQmx_Val_GroupByChannel,
 					&u8Buf[0],u8Buf.size(),
-					&pointsReadPerChan,&numBytesPerSampl,NULL))<0 && err!=DAQmxErrorSamplesNotYetAvailable) 
+					&pointsReadPerChan,NULL))<0 && err!=DAQmxErrorSamplesNotYetAvailable) 
 				{
 					MRPT_DAQmx_ErrChk(err)
 				}
@@ -718,6 +719,9 @@ void CNationalInstrumentsDAQ::grabbing_thread(TInfoPerTask &ipt)
 				ipt.write_pipe->WriteObject(&obs);
 				//mrpt::system::sleep(1); // This seems to be needed to allow all objs to be sent to the recv thread
 			}
+			else {
+				mrpt::system::sleep(1);
+			}
 
 		} // end of main thread loop
 	}
@@ -731,6 +735,30 @@ void CNationalInstrumentsDAQ::grabbing_thread(TInfoPerTask &ipt)
 }
 
 
+void CNationalInstrumentsDAQ::writeAnalogOutputTask(size_t task_index, size_t nSamplesPerChannel, const double * volt_values, double timeout, bool groupedByChannel)
+{
+#if MRPT_HAS_SOME_NIDAQMX
+	ASSERT_(task_index<m_running_tasks.size())
+
+	std::list<TInfoPerTask>::iterator it = m_running_tasks.begin(); 
+	std::advance(it, task_index);
+	TInfoPerTask & ipt = *it;
+	TaskHandle  &taskHandle= *reinterpret_cast<TaskHandle*>(&ipt.taskHandle);
+
+	int32 samplesWritten=0;
+	int err=0;
+	if (err = DAQmxBaseWriteAnalogF64(
+		taskHandle,
+		nSamplesPerChannel,FALSE,timeout, groupedByChannel ? DAQmx_Val_GroupByChannel : DAQmx_Val_GroupByScanNumber,
+		const_cast<float64*>(volt_values),
+		&samplesWritten, NULL) )
+	{
+		MRPT_DAQmx_ErrChk(err)
+	}
+
+#endif
+}
+
 
 // Ctor:
 CNationalInstrumentsDAQ::TaskDescription::TaskDescription() :
@@ -741,3 +769,4 @@ CNationalInstrumentsDAQ::TaskDescription::TaskDescription() :
 	samplesPerChannelToRead(1000)
 {
 }
+

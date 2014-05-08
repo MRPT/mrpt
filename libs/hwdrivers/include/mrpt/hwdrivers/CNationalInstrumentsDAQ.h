@@ -184,6 +184,12 @@ namespace mrpt
 				std::vector<mrpt::slam::CObservationRawDAQPtr> &outObservations,
 				bool & hardwareError );
 
+			/** Set voltage outputs to all the outputs in an AOUT task 
+			  * For the meaning of parameters, refere to NI DAQmx docs for DAQmxBaseWriteAnalogF64()
+			  * \note The number of samples in \a volt_values must match the number of channels in the task when it was initiated.
+			  */
+			void writeAnalogOutputTask(size_t task_index, size_t nSamplesPerChannel, const double * volt_values, double timeout, bool groupedByChannel);
+
 			/** Returns true if initialize() was called and at least one task is running. */
 			bool checkDAQIsWorking() const;
 

@@ -30,16 +30,33 @@ void Test_NIDAQ()
 #else
 	// Or set params programatically:
 
-	// Define a task with analog inputs:
-	CNationalInstrumentsDAQ::TaskDescription task;
-	task.has_ai = true;
-	task.ai.physicalChannel = "Dev1/ai0:7";
-	task.ai.physicalChannelCount = 8; // Must be the number of channels encoded in the "physicalChannel" string.
-	task.ai.terminalConfig  = "DAQmx_Val_RSE";
-	task.ai.minVal = -10;
-	task.ai.maxVal =  10;
+	
+	if (1)
+	{
+		// Define a task with analog inputs:
+		CNationalInstrumentsDAQ::TaskDescription task;
+		task.has_ai = true;
+		task.ai.physicalChannel = "Dev1/ai0:7";
+		task.ai.physicalChannelCount = 8; // Must be the number of channels encoded in the "physicalChannel" string.
+		task.ai.terminalConfig  = "DAQmx_Val_RSE";
+		task.ai.minVal = -10;
+		task.ai.maxVal =  10;
 
-	daq.task_definitions.push_back(task);
+		daq.task_definitions.push_back(task);
+	}
+
+	if (1)
+	{
+		// Define a task with 1 analog output:
+		CNationalInstrumentsDAQ::TaskDescription task;
+		task.has_ao = true;
+		task.ao.physicalChannel = "Dev1/ao0";
+		task.ao.physicalChannelCount = 1; // Must be the number of channels encoded in the "physicalChannel" string.
+		task.ao.minVal = -10;
+		task.ao.maxVal =  10;
+
+		daq.task_definitions.push_back(task);
+	}
 
 #endif
 
@@ -49,6 +66,14 @@ void Test_NIDAQ()
 
 	printf("\n ** Press any key to stop grabbing ** \n");
 
+	// Test analog output:
+	if (1)
+	{
+		double volt_values[2]= { 3.0, 3.0 };
+		daq.writeAnalogOutputTask(1, sizeof(volt_values)/sizeof(volt_values[0]),volt_values,0.100, true);
+	}
+
+	// Loop reading:
 	while (!mrpt::system::os::kbhit())
 	{
 		std::vector<mrpt::slam::CObservationRawDAQPtr> readObs;
