@@ -14,6 +14,7 @@
 #include <mrpt/utils/aligned_containers.h>
 #include <set>
 #include <map>
+#include <fstream>
 
 namespace mrpt
 {

@@ -12,6 +12,7 @@
 #include <mrpt/graphs/CDirectedGraph.h>
 #include <mrpt/graphs/CDirectedTree.h>
 #include <mrpt/utils/traits_map.h>
+#include <limits>
 
 namespace mrpt
 {

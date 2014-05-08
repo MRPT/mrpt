@@ -12,8 +12,12 @@
 
 #include <mrpt/system/filesystem.h>
 #include <mrpt/utils/CImage.h>
+#include <mrpt/utils/CFileGZOutputStream.h>
+#include <mrpt/utils/CTicTac.h>
+#include <mrpt/system/os.h>
 #include <mrpt/opengl.h>
-#include <mrpt/maps.h>
+#include <mrpt/slam/CObservation3DRangeScan.h>
+
 
 using namespace mrpt;
 using namespace std;

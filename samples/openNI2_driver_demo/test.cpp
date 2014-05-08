@@ -11,7 +11,7 @@
 #include <mrpt/hwdrivers.h>
 #include <mrpt/hwdrivers/COpenNI2Sensor.h>
 #include <mrpt/gui.h>
-//#include <mrpt/opengl.h>
+#include <mrpt/opengl.h>
 #include <mrpt/maps.h>
 
 using namespace mrpt;
