@@ -241,6 +241,18 @@ void CStereoRectifyMap::setFromCamParams(const mrpt::utils::TStereoCamera & para
 	// Rest of params don't change:
 	m_rectified_image_params.leftCamera.focalLengthMeters = params.leftCamera.focalLengthMeters;
 	m_rectified_image_params.rightCamera.focalLengthMeters = params.rightCamera.focalLengthMeters;
+
+	// R1: Rotation of left camera after rectification: 
+	// R2: idem for right cam:
+	const Eigen::Map<Eigen::Matrix3d> R1e( R1.ptr<double>() );
+	const Eigen::Map<Eigen::Matrix3d> R2e( R2.ptr<double>() );
+
+	CPose3D RR1, RR2;
+	RR1.setRotationMatrix(R1e);
+	RR2.setRotationMatrix(R2e);	
+	m_rot_left  = CPose3DQuat(RR1);
+	m_rot_right = CPose3DQuat(RR2);
+
 	m_rectified_image_params.rightCameraPose = params.rightCameraPose;
 
 #else
@@ -357,6 +369,13 @@ void CStereoRectifyMap::rectify(
 
 	// Copy output image parameters:
 	stereo_image_observation.setStereoCameraParams( this->m_rectified_image_params );
+
+	// Correct poses:
+	stereo_image_observation.cameraPose += m_rot_left;
+
+	const double d = stereo_image_observation.rightCameraPose.m_coords.norm();
+	// the translation is now pure in the +X direction:
+	stereo_image_observation.rightCameraPose = CPose3DQuat(d,.0,.0, mrpt::math::CQuaternionDouble() );
 
 	MRPT_END
 }

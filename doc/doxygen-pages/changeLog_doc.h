@@ -66,7 +66,7 @@
 			- mrpt::opengl::CArrow was always drawn of normalized length.
 			- FlyCapture2 monocular & stereo cameras could return an incorrect timestamp (only in Linux?).
 			- mrpt::system::createDirectory() returned false (error) when the directory already existed.
-
+			- mrpt::vision::CStereoRectifyMap::rectify() didn't update the left & right camera poses inside mrpt::slam::CObservationStereoImages objects while rectifying.
 
 <hr>
  <a name="1.1.0">

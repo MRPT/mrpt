@@ -12,6 +12,7 @@
 #include <mrpt/utils/TStereoCamera.h>
 #include <mrpt/utils/CImage.h>
 #include <mrpt/slam/CObservationStereoImages.h>
+#include <mrpt/poses/CPose3DQuat.h>
 
 #include <mrpt/vision/link_pragmas.h>
 
@@ -138,6 +139,11 @@ namespace mrpt
 			/** \sa enableBothCentersCoincide */
 			bool isEnabledBothCentersCoincide() const { return m_enable_both_centers_coincide; }
 
+			/** After computing the rectification maps, get the rotation applied to the 
+			  * left/right camera so their virtual image plane is the same after rectification */
+			const mrpt::poses::CPose3DQuat  & getLeftCameraRot() const { return m_rot_left; } 
+			/** See \a getLeftCameraRot()  */
+			const mrpt::poses::CPose3DQuat  & getRightCameraRot() const { return m_rot_right; } 
 
 		/** @} */
 
@@ -172,6 +178,9 @@ namespace mrpt
 			  * If \a use_internal_mem_cache is set to \a true (recommended), will reuse over and over again the same
 			  * auxiliary images (kept internally to this object) needed for in-place rectification.
 			  * The only reason not to enable this cache is when multiple threads can invoke this method simultaneously.
+			  * \note This method uses the left & right camera rotations computed by the rectification map to update 
+			  *         mrpt::slam::CObservationStereoImages::cameraPose (left camera wrt the robot frame) and 
+			  *         mrpt::slam::CObservationStereoImages::rightCameraPose (right wrt left camera).
 			  */
 			void rectify(
 				mrpt::slam::CObservationStereoImages & stereo_image_observation,
@@ -201,6 +210,8 @@ namespace mrpt
 
 			mrpt::utils::TStereoCamera  m_camera_params; //!< A copy of the data provided by the user
 			mrpt::utils::TStereoCamera  m_rectified_image_params; //!< Resulting images params
+
+			mrpt::poses::CPose3DQuat  m_rot_left, m_rot_right; //!< The rotation applied to the left/right camera so their virtual image plane is the same after rectification.
 
 			void internal_invalidate();
 
