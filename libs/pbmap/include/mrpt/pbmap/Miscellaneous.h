@@ -27,6 +27,7 @@
 #include <pcl/point_types.h>
 #include <pcl/point_cloud.h>
 #include <mrpt/pbmap/link_pragmas.h>
+#include <mrpt/math.h>
 
 namespace mrpt {
 namespace pbmap {
