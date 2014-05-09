@@ -71,6 +71,7 @@ TCLAP::ValueArg<std::string> arg_outdir ("","out-dir","Output directory (used by
 
 TCLAP::ValueArg<std::string> arg_external_img_extension("","image-format","External image format",false,"jpg","jpg,png,pgm,...",cmd);
 TCLAP::ValueArg<std::string> arg_img_size("","image-size","Resize output images",false,"","COLSxROWS",cmd);
+TCLAP::SwitchArg             arg_rectify_centers("","rectify-centers-coincide","In stereo rectification, force that both image centers after coincide after rectifying.",cmd, false);
 
 TCLAP::ValueArg<std::string> arg_out_text_file("","text-file-output","Output for a text file",false,"out.txt","out.txt",cmd);
 
@@ -348,6 +349,17 @@ TOutputRawlogCreator::TOutputRawlogCreator()
 		throw runtime_error(string("*ABORTING*: Cannot open output file: ") + out_rawlog_filename );
 }
 
+bool isFlagSet(TCLAP::CmdLine &cmdline, const std::string &arg_name)
+{
+	using namespace TCLAP;
+
+	std::list<Arg*>& args = cmdline.getArgList();
+	for (std::list<Arg*>::iterator it=args.begin();it!=args.end();++it)
+		if ( (*it)->getName() == arg_name)
+			return (*it)->isSet();
+	return false;
+}
+
 
 template <typename T>
 bool getArgValue(TCLAP::CmdLine &cmdline, const std::string &arg_name, T &out_val)
@@ -373,3 +385,4 @@ template bool getArgValue<>(TCLAP::CmdLine &cmdline, const std::string &arg_name
 template bool getArgValue<>(TCLAP::CmdLine &cmdline, const std::string &arg_name, double &out_val);
 template bool getArgValue<>(TCLAP::CmdLine &cmdline, const std::string &arg_name, size_t &out_val);
 template bool getArgValue<>(TCLAP::CmdLine &cmdline, const std::string &arg_name, int &out_val);
+

@@ -40,6 +40,8 @@ struct TOutputRawlogCreator
 // ======================================================================
 template <typename T>
 bool getArgValue(TCLAP::CmdLine &cmdline, const std::string &arg_name, T &out_val);
+bool isFlagSet(TCLAP::CmdLine &cmdline, const std::string &arg_name);
+
 
 
 #endif
