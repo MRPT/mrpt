@@ -24,6 +24,7 @@
 
 using namespace mrpt::pbmap;
 using namespace mrpt::utils;
+using namespace std;
 
 IMPLEMENTS_SERIALIZABLE(Plane, CSerializable, mrpt::pbmap)
 
@@ -1117,7 +1118,7 @@ void Plane::mergePlane2(Plane &same_plane_patch)
   // Update normal and center
 assert(inliers.size() > 0 && same_plane_patch.inliers.size() > 0);
   v3normal = (inliers.size()*v3normal + same_plane_patch.inliers.size()*same_plane_patch.v3normal);
-  v3normal = v3normal / norm(v3normal);
+  v3normal = v3normal / v3normal.norm();
 
   // Update point inliers
   *planePointCloudPtr += *same_plane_patch.planePointCloudPtr; // Add the points of the new detection and perform a voxel grid

@@ -28,8 +28,7 @@
 #include <mrpt/pbmap/PbMapLocaliser.h>
 #include <mrpt/pbmap/SemanticClustering.h>
 #include <mrpt/pbmap/link_pragmas.h>
-
-//#include <boost/thread/thread.hpp>
+#include <set>
 
 typedef pcl::PointXYZRGBA PointT;
 
@@ -145,7 +144,7 @@ namespace pbmap {
     bool	m_pbmaker_finished;
 
     // Color paper
-    void watchProperties(set<unsigned> &observedPlanes, Plane &observedPlane);
+    void watchProperties(std::set<unsigned> &observedPlanes, Plane &observedPlane);
     void saveInfoFiles();
     // Unary
     float rejectAreaF, acceptAreaF, rejectAreaT, acceptAreaT;

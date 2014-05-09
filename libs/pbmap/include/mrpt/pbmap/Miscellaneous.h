@@ -177,7 +177,7 @@ namespace pbmap {
       {
 //        cout << "CHeck\n";
         Eigen::Vector3f diff = (*it).head(3) - meanShift;
-        if(norm(diff) > stdDevHist)
+        if(diff.norm() > stdDevHist)
         {
           sum -= (*it).head(3);
           cov -= diff * diff.transpose();
@@ -188,7 +188,7 @@ namespace pbmap {
       }
 //    cout << "sum " << sum.transpose() << " newdatasize " << dataTemp.size() << endl;
       Eigen::Vector3f meanUpdated = sum / dataTemp.size();
-      shift = norm(meanUpdated - meanShift);
+      shift = (meanUpdated - meanShift).norm();
       meanShift = meanUpdated;
       svd = Eigen::JacobiSVD<Eigen::Matrix3f>(cov);
 //      stdDevHist = svd.singularValues().maxCoeff() / dataTemp.size();
@@ -212,7 +212,7 @@ namespace pbmap {
 //    concentration = float(dataTemp.size()) / size;
     int countFringe05 = 0;
     for(typename std::vector<Eigen::Vector4f>::iterator it=data.begin(); it != data.end(); it++)
-        if(norm(it->head(3) - meanShift) < 0.05 ) //&& *it(3) - averageIntensity < 0.3)
+        if((it->head(3) - meanShift).norm() < 0.05 ) //&& *it(3) - averageIntensity < 0.3)
             ++countFringe05;
     concentration = static_cast<dataType>(countFringe05) / data.size();
 

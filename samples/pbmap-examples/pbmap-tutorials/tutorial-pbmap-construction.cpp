@@ -15,10 +15,12 @@
 
 #include <mrpt/utils/CFileGZInputStream.h>
 #include <mrpt/utils/CFileGZOutputStream.h>
+#include <mrpt/system/os.h>
 #include <pcl/io/io.h>
 #include <pcl/io/pcd_io.h>
 
 using namespace std;
+using namespace mrpt::system;
 using namespace mrpt::pbmap;
 
 string path("/home/edu/Libraries/mrpt-svn/share/mrpt/datasets/pbmap-demos/");

@@ -16,6 +16,7 @@
 
 #include <mrpt/math/CArrayNumeric.h>
 #include <mrpt/math/CMatrixFixedNumeric.h>
+#include <mrpt/math/ransac.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/pbmap/ConsistencyTest.h>
 #include <mrpt/pbmap/SubgraphMatcher.h>
@@ -24,6 +25,8 @@
 using namespace std;
 using namespace Eigen;
 using namespace mrpt::pbmap;
+using namespace mrpt::math; // CMatrix*
+using namespace mrpt;
 
 ConsistencyTest::ConsistencyTest(PbMap &PBM_source, PbMap &PBM_target) :
     PBMSource(PBM_source),
@@ -544,7 +547,7 @@ CMatrixDouble getAlignment( const CMatrixDouble &matched_planes )
 // Ransac functions to detect outliers in the plane matching
 void ransacPlaneAlignment_fit(
         const CMatrixDouble &planeCorresp,
-        const vector_size_t  &useIndices,
+        const mrpt::vector_size_t  &useIndices,
         vector< CMatrixDouble > &fitModels )
 //        vector< Eigen::Matrix4f > &fitModels )
 {
@@ -576,7 +579,7 @@ void ransac3Dplane_distance(
         const vector< CMatrixDouble > & testModels,
         const double distanceThreshold,
         unsigned int & out_bestModelIndex,
-        vector_size_t & out_inlierIndices )
+        mrpt::vector_size_t & out_inlierIndices )
 {
   ASSERT_( testModels.size()==1 )
   out_bestModelIndex = 0;

@@ -107,19 +107,21 @@ namespace pbmap {
     /*! Print the threshold for registration */
     void print_params()
     {
-      std::cout << "Unary thresholds:\n";
-      std::cout << "dist_d " << dist_d << endl;
-      std::cout << "angle " << angle << endl;
-      std::cout << "color_threshold " << color_threshold << endl;
-      std::cout << "intensity_threshold " << intensity_threshold << endl;
-      std::cout << "hue_threshold " << hue_threshold << endl;
-      std::cout << "area_threshold " << area_threshold << endl;
-      std::cout << "elongation_threshold " << elongation_threshold << endl;
+		using std::cout; using std::endl;
 
-      std::cout << "Binary thresholds:\n";
-      std::cout << "angle_threshold " << angle_threshold << endl;
-      std::cout << "angle " << angle << endl;
-      std::cout << "height_threshold " << height_threshold << endl;
+		cout << "Unary thresholds:\n";
+		cout << "dist_d " << dist_d << endl;
+		cout << "angle " << angle << endl;
+		cout << "color_threshold " << color_threshold << endl;
+		cout << "intensity_threshold " << intensity_threshold << endl;
+		cout << "hue_threshold " << hue_threshold << endl;
+		cout << "area_threshold " << area_threshold << endl;
+		cout << "elongation_threshold " << elongation_threshold << endl;
+
+		cout << "Binary thresholds:\n";
+		cout << "angle_threshold " << angle_threshold << endl;
+		cout << "angle " << angle << endl;
+		cout << "height_threshold " << height_threshold << endl;
     };
   };
 

@@ -310,7 +310,7 @@ cout << "PbMapMaker::watchProperties..." << configPbMap.color_threshold << " " <
     #if WATCH_COLOR
 //    tCondition = pcl::getTime();
       // Check colorC1C2C3 unary
-      double dif_C1C2C3 = norm(observedPlane.v3colorC1C2C3 - observedPlane.prog_C1C2C3[i]);
+      double dif_C1C2C3 = (observedPlane.v3colorC1C2C3 - observedPlane.prog_C1C2C3[i]).norm();
   //    cout << "color1 " << observedPlane.v3colorC1C2C3 << " color2 " << prevPlane.v3colorC1C2C3 << endl;
       if( dif_C1C2C3 > configPbMap.color_threshold )
         rejectC1C2C3_T++;
@@ -318,7 +318,7 @@ cout << "PbMapMaker::watchProperties..." << configPbMap.color_threshold << " " <
         acceptC1C2C3_T++;
 //    timeCompareC1C2C3.push_back( (pcl::getTime() - tCondition)*1e6 );
 
-      double dif_Nrgb = norm(observedPlane.v3colorNrgb - observedPlane.prog_Nrgb[i]);
+      double dif_Nrgb = (observedPlane.v3colorNrgb - observedPlane.prog_Nrgb[i]).norm();
   //    cout << "color1 " << observedPlane.v3colorNrgb << " color2 " << prevPlane.v3colorNrgb << endl;
 //      if( dif_Nrgb > configPbMap.color_threshold || fabs(observedPlane.dominantIntensity - observedPlane.prog_intensity[i]) > 255)
       if( dif_Nrgb > configPbMap.color_threshold)
@@ -379,7 +379,7 @@ cout << "PbMapMaker::watchProperties..." << configPbMap.color_threshold << " " <
 
     #if WATCH_COLOR
 //    tCondition = pcl::getTime();
-      double dif_C1C2C3 = norm(observedPlane.v3colorC1C2C3 - prevPlane.v3colorC1C2C3);
+      double dif_C1C2C3 = (observedPlane.v3colorC1C2C3 - prevPlane.v3colorC1C2C3).norm();
 //          cout << "color1 " << observedPlane.v3colorC1C2C3 << " color2 " << prevPlane.v3colorC1C2C3 << endl;
       if( dif_C1C2C3 > configPbMap.color_threshold )
         rejectC1C2C3_F++;
@@ -388,7 +388,7 @@ cout << "PbMapMaker::watchProperties..." << configPbMap.color_threshold << " " <
 //    timeCompareC1C2C3.push_back( (pcl::getTime() - tCondition)*1e6 );
 
 //      // Nrgb
-      double dif_Nrgb = norm(observedPlane.v3colorNrgb - prevPlane.v3colorNrgb);
+      double dif_Nrgb = (observedPlane.v3colorNrgb - prevPlane.v3colorNrgb).norm();
 //          cout << "color1 " << observedPlane.v3colorNrgb << " color2 " << prevPlane.v3colorNrgb << endl;
 //      if( dif_Nrgb > configPbMap.color_threshold || fabs(observedPlane.dominantIntensity - prevPlane.dominantIntensity) > 255)
       if( dif_Nrgb > configPbMap.color_threshold)
