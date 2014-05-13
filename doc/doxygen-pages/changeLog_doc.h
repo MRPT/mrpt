@@ -24,6 +24,8 @@
 			- [rawlog-edit](http://www.mrpt.org/Application%3Arawlog-edit):
 				- New operation: --export-odometry-txt
 				- New flag: --rectify-centers-coincide
+		- New examples:
+			- kitti_dataset2rawlog
 		- New classes:
 			- [mrpt-base]
 				- mrpt::math::ContainerType<CONTAINER>::element_t to allow handling either Eigen or STL containers seamlessly.

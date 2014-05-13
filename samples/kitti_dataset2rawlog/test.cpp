@@ -1,0 +1,144 @@
+/* +---------------------------------------------------------------------------+
+   |                     Mobile Robot Programming Toolkit (MRPT)               |
+   |                          http://www.mrpt.org/                             |
+   |                                                                           |
+   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | See: http://www.mrpt.org/Authors - All rights reserved.                   |
+   | Released under BSD License. See details in http://www.mrpt.org/License    |
+   +---------------------------------------------------------------------------+ */
+
+/* ------------------------------------------------------
+	              kitti_dataset2rawlog
+    A small tool to translate the KITTI datasets and 
+	the karlsruhe sequences
+    http://www.cvlibs.net/datasets/karlsruhe_sequences/
+
+    into MRPT rawlog binary format, ready to be parsed
+    by RawLogViewer or user programs.
+
+Usage:
+      kitti_dataset2rawlog  [PATH_TO_DIR_WITH_IMAGES] [OUTPUT_NAME]
+
+Output files:
+	- OUTPUT_NAME.rawlog: The output rawlog file.
+
+  ------------------------------------------------------ */
+
+#include <mrpt/system/filesystem.h>
+#include <mrpt/utils/CFileGZOutputStream.h>
+#include <mrpt/utils/TCamera.h>
+#include <mrpt/slam/CObservationStereoImages.h>
+//#include <mrpt/slam/CObservationIMU.h>
+
+using namespace std;
+using namespace mrpt;
+using namespace mrpt::slam;
+
+const double STEREO_FPS = 10.0;
+
+
+void stereo2rawlog(const string &src_path, const string &out_name)
+{
+	/* Camera params:
+	Left (1):
+	6.790081e+02 0.000000e+00 6.598034e+02 0.000000e+00 
+	0.000000e+00 6.790081e+02 1.865724e+02 0.000000e+00 
+	0.000000e+00 0.000000e+00 1.000000e+00 0.000000e+00
+
+	Right (2):
+
+	6.790081e+02 0.000000e+00 6.598034e+02 -3.887481e+02 
+	0.000000e+00 6.790081e+02 1.865724e+02 0.000000e+00 
+	0.000000e+00 0.000000e+00 1.000000e+00 0.000000e+00
+
+	base = 3.887481e+02  / 6.790081e+02 = 0.57252351 m
+	*/
+
+	mrpt::utils::TCamera cam_params_l;
+	cam_params_l.ncols = 1344;
+	cam_params_l.nrows = 391;
+	cam_params_l.fx( 6.790081e+02 );
+	cam_params_l.fy( 6.790081e+02 );
+	cam_params_l.cx( 6.598034e+02 );
+	cam_params_l.cy( 1.865724e+02 );
+
+	mrpt::utils::TCamera cam_params_r = cam_params_l;
+
+	const double baseline = 0.57252351;
+	const mrpt::poses::CPose3DQuat l2r_pose(baseline,0.0,0.0, mrpt::math::CQuaternionDouble() );
+	
+
+	// Create rawlog file ----------------------------------------------
+	const string  out_rawlog_fil = out_name + string(".rawlog");
+	cout << "Creating rawlog: " << out_rawlog_fil << endl;
+	mrpt::utils::CFileGZOutputStream  f_out(out_rawlog_fil);
+
+	mrpt::system::TTimeStamp tim0 = mrpt::system::now();
+
+	// For each image:
+	for (int i=0;  ; i++)
+	{
+		// I1_000000.png
+		// I2_002570.png
+		const string sImgFile_L = mrpt::format("I1_%06i.png",i);
+		const string sImgFile_R = mrpt::format("I2_%06i.png",i);
+		const string sImg_L = mrpt::format("%s/%s",src_path.c_str(),sImgFile_L.c_str());
+		const string sImg_R = mrpt::format("%s/%s",src_path.c_str(),sImgFile_R.c_str());
+
+		if (!mrpt::system::fileExists(sImg_L) || !mrpt::system::fileExists(sImg_R) )
+		{
+			cout << "Couldn't detect image pair "<< sImg_L << " | " << sImg_R <<"  -> ending.\n";
+			break;
+		}
+		
+		CObservationStereoImages obs;
+		obs.timestamp = mrpt::system::time_tToTimestamp( mrpt::system::timestampTotime_t( tim0 ) + i/STEREO_FPS );
+		obs.cameraPose =  mrpt::poses::CPose3DQuat( mrpt::poses::CPose3D(0,0,0, DEG2RAD(-90.0), DEG2RAD(0.0), DEG2RAD(-90.0) ) );
+
+		obs.leftCamera  = cam_params_l;
+		obs.rightCamera = cam_params_r;
+		obs.rightCameraPose = l2r_pose;
+
+		//obs.imageLeft.saveToFile( out_img_dir + string("/") + sRGBfile );
+		obs.imageLeft.setExternalStorage(sImgFile_L);
+		obs.imageRight.setExternalStorage(sImgFile_R);
+
+		obs.sensorLabel = "CAMERA1";
+
+		// save:
+		f_out << obs;
+
+		cout << "Writing entry #" << i << endl;
+	}
+
+	cout << "\nAll done!\n";
+}
+
+
+// ------------------------------------------------------
+//						MAIN
+// ------------------------------------------------------
+int main(int argc, char**argv)
+{
+	try
+	{
+		if (argc!=3)
+		{
+			cerr << "Usage: " << argv[0] << " [PATH_TO_DATASET] [OUTPUT_NAME]\n";
+			return 1;
+		}
+
+		stereo2rawlog(argv[1],argv[2]);
+
+		return 0;
+	} catch (std::exception &e)
+	{
+		std::cout << "MRPT exception caught: " << e.what() << std::endl;
+		return -1;
+	}
+	catch (...)
+	{
+		printf("Untyped exception!!");
+		return -1;
+	}
+}

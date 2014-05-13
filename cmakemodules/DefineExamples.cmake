@@ -159,6 +159,7 @@ IF(BUILD_EXAMPLES)
 	#  list of examples for each directory:
 	SET(LIST_EXAMPLES_IN_THIS_DIR
 	rgbd_dataset2rawlog
+	kitti_dataset2rawlog
 	)
 	SET(CMAKE_EXAMPLE_DEPS mrpt-obs)
 	SET(CMAKE_EXAMPLE_LINK_LIBS ${MRPT_LINKER_LIBS})
