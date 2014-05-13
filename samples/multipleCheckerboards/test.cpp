@@ -24,22 +24,24 @@ std::string   myDataDir = MRPT_EXAMPLES_BASE_DIRECTORY + string("multipleChecker
 // ------------------------------------------------------
 //				TestMultipleCheckerboard
 // ------------------------------------------------------
-void TestMultipleCheckerboard()
+void TestMultipleCheckerboard(
+	const std::string &img_filename,
+	const unsigned int  checkerboard_size_x,
+	const unsigned int  checkerboard_size_y
+	)
 {
 	CTimeLogger  timlog;
 
 	// Load img:
 	CImage img;
-	if (!img.loadFromFile( myDataDir + string("test_3_checkerboards_5x4.jpg") ))
-		throw std::runtime_error("Can't load demo image!");
+	if (!img.loadFromFile( img_filename ))
+		throw std::runtime_error("Can't load image!");
 
 	// Detect multiple-checkerboards:
 	vector<vector<TPixelCoordf> > 	listCornerCoords;
-	const unsigned int  checkerboard_size_x  = 5;
-	const unsigned int  checkerboard_size_y  = 4;
 
 	timlog.enter("findMultipleChessboardsCorners");
-	
+
 	mrpt::vision::findMultipleChessboardsCorners(
 		img,
 		listCornerCoords,
@@ -70,11 +72,28 @@ void TestMultipleCheckerboard()
 // ------------------------------------------------------
 //						MAIN
 // ------------------------------------------------------
-int main()
+int main(int argc, char **argv)
 {
 	try
 	{
-		TestMultipleCheckerboard();
+		std::string sFile = myDataDir + string("test_3_checkerboards_5x4.jpg");
+		unsigned int  checkerboard_size_x  = 5;
+		unsigned int  checkerboard_size_y  = 4;
+
+		if (argc==4)
+		{
+			sFile = std::string(argv[1]);
+			checkerboard_size_x = atoi(argv[2]);
+			checkerboard_size_y = atoi(argv[3]);
+		}
+		else if (argc!=1)
+		{
+			std::cerr << "Usage: " << argv[0] << " [IMAGE_FILE NX NY]\n";
+			return 1;
+		}
+
+
+		TestMultipleCheckerboard(sFile,checkerboard_size_x,checkerboard_size_y);
 		return 0;
 	} catch (std::exception &e)
 	{
