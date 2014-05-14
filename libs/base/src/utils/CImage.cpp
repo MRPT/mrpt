@@ -2317,7 +2317,8 @@ void CImage::rotateImage( double angle_radians, unsigned int center_x, unsigned 
 bool CImage::drawChessboardCorners(
 	std::vector<TPixelCoordf> 	&cornerCoords,
 	unsigned int  check_size_x,
-	unsigned int  check_size_y )
+	unsigned int  check_size_y,
+	unsigned int  lines_width )
 {
 #if MRPT_HAS_OPENCV
 
@@ -2352,14 +2353,14 @@ bool CImage::drawChessboardCorners(
 			pt.x = cvRound( cornerCoords[i].x);
 			pt.y = cvRound( cornerCoords[i].y);
 
-			if( i != 0 ) cvLine( img, prev_pt, pt, color );
+			if( i != 0 ) cvLine( img, prev_pt, pt, color, lines_width );
 
 			cvLine( img,
 					  cvPoint( pt.x - r, pt.y - r ),
-					  cvPoint( pt.x + r, pt.y + r ), color );
+					  cvPoint( pt.x + r, pt.y + r ), color, lines_width );
 			cvLine( img,
 					  cvPoint( pt.x - r, pt.y + r),
-					  cvPoint( pt.x + r, pt.y - r), color );
+					  cvPoint( pt.x + r, pt.y - r), color, lines_width );
 			cvCircle( img, pt, r+1, color );
 			prev_pt = pt;
 
