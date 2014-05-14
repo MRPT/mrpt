@@ -31,6 +31,8 @@
 				- mrpt::math::ContainerType<CONTAINER>::element_t to allow handling either Eigen or STL containers seamlessly.
 			- [mrpt-hwdrivers]
 				- mrpt::hwdrivers::COpenNI2Sensor: Interface to OpenNI2 cameras, capable of reading from an array of OpenNI2 RGBD cameras (By Eduardo Fernandez)
+			- [mrpt-obs]
+				- mrpt::slam::CObservation6DFeatures 
 		- Changes in classes: 
 			- [mrpt-base]
 				- Robust kernel templates moved from mrpt::vision to mrpt::math. See mrpt::math::RobustKernel<>. Added unit tests for robust kernels.

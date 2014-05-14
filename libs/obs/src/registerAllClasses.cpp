@@ -36,7 +36,7 @@ void registerAllClasses_mrpt_obs()
 	registerClass( CLASS_ID( CObservation ) );
 	registerClass( CLASS_ID( CObservation2DRangeScan ) );
 	registerClass( CLASS_ID( CObservation3DRangeScan ) );
-  registerClass( CLASS_ID( CObservationRGBD360 ) );
+	registerClass( CLASS_ID( CObservationRGBD360 ) );
 	registerClass( CLASS_ID( CObservationBatteryState ) );
 	registerClass( CLASS_ID( CObservationWirelessPower ) );
 	registerClass( CLASS_ID( CObservationRFID ) );
@@ -54,6 +54,7 @@ void registerAllClasses_mrpt_obs()
 	registerClass( CLASS_ID( CObservationStereoImages ) );
 	registerClass( CLASS_ID( CObservationStereoImagesFeatures ) );
 	//registerClass( CLASS_ID( CObservationVisualLandmarks ) );
+	registerClass( CLASS_ID( CObservation6DFeatures) );
 
 	registerClass( CLASS_ID( CSimpleMap ) );
 	registerClassCustomName( "CSensFrameProbSequence", CLASS_ID( CSimpleMap ) );

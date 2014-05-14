@@ -27,6 +27,7 @@ MRPT_WARNING("Including <mrpt/obs.h> makes compilation much slower, consider inc
 #include <mrpt/slam/CObservationStereoImages.h>
 #include <mrpt/slam/CObservationStereoImagesFeatures.h>
 #include <mrpt/slam/CObservationBeaconRanges.h>
+#include <mrpt/slam/CObservation6DFeatures.h>
 #include <mrpt/slam/CObservationGasSensors.h>
 #include <mrpt/slam/CObservationGPS.h>
 #include <mrpt/slam/CObservationBatteryState.h>
