@@ -1902,10 +1902,10 @@ void CImage::setExternalStorage( const std::string &fileName ) MRPT_NO_THROWS
 /*---------------------------------------------------------------
 						unload
  ---------------------------------------------------------------*/
-void CImage::unload() MRPT_NO_THROWS
+void CImage::unload() const MRPT_NO_THROWS
 {
 	if (m_imgIsExternalStorage)
-		releaseIpl( true ); // Do NOT mark the image as NON external
+		const_cast<CImage*>(this)->releaseIpl( true ); // Do NOT mark the image as NON external
 }
 
 /*---------------------------------------------------------------

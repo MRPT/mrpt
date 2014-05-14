@@ -695,14 +695,14 @@ namespace mrpt
 			/** For external storage image objects only, this method makes sure the image is loaded in memory. Note that usually images are loaded on-the-fly on first access and there's no need to call this.
 			  * \unload
 			  */
-			inline void forceLoad() {  makeSureImageIsLoaded(); }
+			inline void forceLoad() const {  makeSureImageIsLoaded(); }
 
 			/** For external storage image objects only, this method unloads the image from memory (or does nothing if already unloaded).
 			  *  It does not need to be called explicitly, unless the user wants to save memory for images that will not be used often.
 			  *  If called for an image without the flag "external storage", it is simply ignored.
 			  * \sa setExternalStorage, forceLoad
 			  */
-			void unload() MRPT_NO_THROWS;
+			void unload()  const MRPT_NO_THROWS;
 
 			/** @}  */
 			// ================================================================
