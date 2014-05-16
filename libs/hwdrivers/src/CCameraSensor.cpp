@@ -90,7 +90,9 @@ CCameraSensor::CCameraSensor() :
 	m_camera_grab_decimator_counter(0),
 	m_preview_counter	(0),
 	m_external_image_saver_count( mrpt::system::getNumberOfProcessors() ),
-	m_threadImagesSaverShouldEnd(false)
+	m_threadImagesSaverShouldEnd(false),
+	m_hook_pre_save      (NULL),
+	m_hook_pre_save_param(NULL)
 {
 	m_sensorLabel = "CAMERA";
 	m_state = CGenericSensor::ssInitializing;
@@ -1185,6 +1187,16 @@ void CCameraSensor::thread_save_images(unsigned int my_working_thread_index)
 
 		for (TListObservations::const_iterator i=newObs.begin();i!=newObs.end();++i)
 		{
+			// Optional user-code hook:
+			if (m_hook_pre_save)
+			{
+				if (IS_DERIVED(i->second, CObservation))
+				{
+					mrpt::slam::CObservationPtr obs = mrpt::slam::CObservationPtr(i->second);
+					(*m_hook_pre_save)(obs,m_hook_pre_save_param);
+				}
+			}
+
 			if (IS_CLASS(i->second, CObservationImage))
 			{
 				CObservationImagePtr obs = CObservationImagePtr(i->second);

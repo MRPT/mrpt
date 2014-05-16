@@ -37,7 +37,8 @@ namespace mrpt
 		/** The central class for camera grabbers in MRPT, implementing the "generic sensor" interface.
 		  *   This class provides the user with a uniform interface to a variety of other classes which manage only one specific camera "driver" (opencv, ffmpeg, bumblebee,...)
 		  *
-		  *   Following the "generic sensor" interface, all the parameters must be passed int the form of a configuration file, which may be also formed on the fly (without being a real config file) as in this example:
+		  *   Following the "generic sensor" interface, all the parameters must be passed int the form of a configuration file, 
+		  *   which may be also formed on the fly (without being a real config file) as in this example:
 		  *
 		  *  \code
 		  *   CCameraSensor myCam;
@@ -57,10 +58,11 @@ namespace mrpt
 		  *  - "grabber_type" determines the class to use internally for image capturing (see below).
 		  *  - For the meaning of cv_camera_type and other parameters, refer to mrpt::hwdrivers::CImageGrabber_OpenCV
 		  *  - For the parameters of dc1394 parameters, refer to generic IEEE1394 documentation, and to mrpt::hwdrivers::TCaptureOptions_dc1394.
-		  *  - If all the existing parameter annoy you, try the function prepareVideoSourceFromUserSelection(), which displays a GUI dialog to the user so he/she can choose the desired camera & its parameters.
+		  *  - If the high number of existing parameters annoy you, try the function prepareVideoSourceFromUserSelection(), 
+		  *     which displays a GUI dialog to the user so he/she can choose the desired camera & its parameters.
 		  *
-		  *  Images can be saved in the "external storage" mode. See setPathForExternalImages and setExternalImageFormat. These methods
-		  *   are called automatically from rawlog-grabber.
+		  *  Images can be saved in the "external storage" mode. Detached threads are created for this task. See \a setPathForExternalImages() and \a setExternalImageFormat(). 
+		  *  These methods are called automatically from the app rawlog-grabber.
 		  *
 		  *  These is the list of all accepted parameters:
 		  *
@@ -179,9 +181,9 @@ namespace mrpt
 		  *
 		  *  \endcode
 		  *
-		  *  \note The execution rate (in rawlog-grabber) should be greater than the required capture FPS.
+		  *  \note The execution rate, in rawlog-grabber or the user code calling doProcess(), should be greater than the required capture FPS.
 		  *  \note In Linux you may need to execute "chmod 666 /dev/video1394/ * " and "chmod 666 /dev/raw1394" for allowing any user R/W access to firewire cameras.
-		  *  \sa mrpt::hwdrivers::CImageGrabber_OpenCV, mrpt::hwdrivers::CImageGrabber_dc1394, CGenericSensor, prepareVideoSourceFromUserSelection
+		  *  \sa mrpt::hwdrivers::CImageGrabber_OpenCV, mrpt::hwdrivers::CImageGrabber_dc1394, CGenericSensor, prepareVideoSourceFromUserSelection()
 		  * \ingroup mrpt_hwdrivers_grp
 		  */
 		class HWDRIVERS_IMPEXP CCameraSensor : public utils::CDebugOutputCapable, public CGenericSensor
@@ -224,6 +226,14 @@ namespace mrpt
 
 			/** This must be called before initialize() */
 			void enableLaunchOwnThreadForSavingImages(bool enable=true) { m_external_images_own_thread = enable; };
+
+			/** Functor type */
+			typedef void (*TPreSaveUserHook)(const mrpt::slam::CObservationPtr &obs, void* user_ptr);
+
+			/** Provides a "hook" for user-code to be run BEFORE an image is going to be saved to disk if external storage is enabled (e.g. to rectify images, preprocess them, etc.)
+			  * Notice that this code may be called from detached threads, so it must be thread safe.
+			  * If used, call this before initialize() */
+			void addPreSaveHook( TPreSaveUserHook user_function, void *user_ptr ) { m_hook_pre_save=user_function; m_hook_pre_save_param=user_ptr; };
 
 		protected:
 			// Options for any grabber_type ------------------------------------
@@ -320,6 +330,9 @@ namespace mrpt
 			mrpt::synch::CCriticalSection	m_csToSaveList;		//!< The critical section for m_toSaveList
 			std::vector<TListObservations>	m_toSaveList;		//!< The queues of objects to be returned by getObservations, one for each working thread.
 			void thread_save_images(unsigned int my_working_thread_index); //!< Thread to save images to files.
+			
+			TPreSaveUserHook  m_hook_pre_save;
+			void            * m_hook_pre_save_param;
 			/**  @} */
 
 		}; // end class
