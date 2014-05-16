@@ -24,6 +24,8 @@
 #include <wx/combobox.h>
 //*)
 
+#include <mrpt/utils/CImage.h>
+
 class CFormPlayVideo: public wxDialog
 {
 public:
@@ -45,6 +47,9 @@ public:
     static const long ID_CHECKBOX1;
     static const long ID_CHECKBOX2;
     static const long ID_CHECKBOX3;
+    static const long ID_CHECKBOX4;
+    static const long ID_STATICTEXT8;
+    static const long ID_SPINCTRL2;
     static const long ID_STATICTEXT6;
     static const long ID_COMBOBOX1;
     static const long ID_BUTTON2;
@@ -52,7 +57,11 @@ public:
     static const long ID_STATICTEXT7;
     static const long ID_TEXTCTRL2;
     static const long ID_BUTTON5;
-    static const long ID_PANEL1;
+    static const long ID_SLIDER1;
+    static const long ID_STATICTEXT1;
+    static const long ID_SPINCTRL1;
+    static const long ID_BUTTON1;
+    static const long ID_STATICTEXT3;
     static const long ID_STATICTEXT5;
     static const long ID_BITMAPBUTTON1;
     static const long ID_STATICTEXT4;
@@ -62,11 +71,6 @@ public:
     static const long ID_PANEL3;
     static const long ID_PANEL4;
     static const long ID_PANEL2;
-    static const long ID_SLIDER1;
-    static const long ID_STATICTEXT1;
-    static const long ID_SPINCTRL1;
-    static const long ID_BUTTON1;
-    static const long ID_STATICTEXT3;
     //*)
 
 protected:
@@ -88,6 +92,8 @@ protected:
 
     bool showSensoryFrame(void *SF, size_t &nImgs);
 
+	void drawHorzRules( mrpt::utils::CImage &img);
+
     //(*Declarations(CFormPlayVideo)
     wxBoxSizer* BoxSizer4;
     wxStaticText* StaticText22;
@@ -99,14 +105,16 @@ protected:
     wxStaticText* StaticText2;
     wxButton* btnClose;
     wxPanel* pnRight;
+    wxSpinCtrl* edHorzRuleSpace;
     wxStaticText* StaticText6;
     wxSlider* progressBar;
     wxPanel* pnRight2;
-    wxPanel* Panel1;
+    wxCheckBox* cbDrawStereoRules;
     wxStaticText* StaticText1;
     wxCheckBox* cbOrderByY;
-    wxButton* btnJump;
     wxBitmapButton* btnSaveCam1;
+    wxButton* btnJump;
+    wxStaticText* StaticText3;
     wxButton* btnPickInput;
     wxStaticText* lbCam1;
     wxComboBox* cbImageDirs;

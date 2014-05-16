@@ -37,6 +37,9 @@ const long CFormPlayVideo::ID_BUTTON4 = wxNewId();
 const long CFormPlayVideo::ID_CHECKBOX1 = wxNewId();
 const long CFormPlayVideo::ID_CHECKBOX2 = wxNewId();
 const long CFormPlayVideo::ID_CHECKBOX3 = wxNewId();
+const long CFormPlayVideo::ID_CHECKBOX4 = wxNewId();
+const long CFormPlayVideo::ID_STATICTEXT8 = wxNewId();
+const long CFormPlayVideo::ID_SPINCTRL2 = wxNewId();
 const long CFormPlayVideo::ID_STATICTEXT6 = wxNewId();
 const long CFormPlayVideo::ID_COMBOBOX1 = wxNewId();
 const long CFormPlayVideo::ID_BUTTON2 = wxNewId();
@@ -44,7 +47,11 @@ const long CFormPlayVideo::ID_BUTTON3 = wxNewId();
 const long CFormPlayVideo::ID_STATICTEXT7 = wxNewId();
 const long CFormPlayVideo::ID_TEXTCTRL2 = wxNewId();
 const long CFormPlayVideo::ID_BUTTON5 = wxNewId();
-const long CFormPlayVideo::ID_PANEL1 = wxNewId();
+const long CFormPlayVideo::ID_SLIDER1 = wxNewId();
+const long CFormPlayVideo::ID_STATICTEXT1 = wxNewId();
+const long CFormPlayVideo::ID_SPINCTRL1 = wxNewId();
+const long CFormPlayVideo::ID_BUTTON1 = wxNewId();
+const long CFormPlayVideo::ID_STATICTEXT3 = wxNewId();
 const long CFormPlayVideo::ID_STATICTEXT5 = wxNewId();
 const long CFormPlayVideo::ID_BITMAPBUTTON1 = wxNewId();
 const long CFormPlayVideo::ID_STATICTEXT4 = wxNewId();
@@ -54,11 +61,6 @@ const long CFormPlayVideo::ID_BITMAPBUTTON3 = wxNewId();
 const long CFormPlayVideo::ID_PANEL3 = wxNewId();
 const long CFormPlayVideo::ID_PANEL4 = wxNewId();
 const long CFormPlayVideo::ID_PANEL2 = wxNewId();
-const long CFormPlayVideo::ID_SLIDER1 = wxNewId();
-const long CFormPlayVideo::ID_STATICTEXT1 = wxNewId();
-const long CFormPlayVideo::ID_SPINCTRL1 = wxNewId();
-const long CFormPlayVideo::ID_BUTTON1 = wxNewId();
-const long CFormPlayVideo::ID_STATICTEXT3 = wxNewId();
 //*)
 
 BEGIN_EVENT_TABLE(CFormPlayVideo,wxDialog)
@@ -99,15 +101,14 @@ CFormPlayVideo::CFormPlayVideo(wxWindow* parent,wxWindowID id)
     wxFlexGridSizer* FlexGridSizer3;
     wxFlexGridSizer* FlexGridSizer5;
     wxFlexGridSizer* FlexGridSizer9;
-    wxFlexGridSizer* FlexGridSizer2;
     wxFlexGridSizer* FlexGridSizer7;
     wxFlexGridSizer* FlexGridSizer12;
     wxFlexGridSizer* FlexGridSizer11;
 
     Create(parent, wxID_ANY, _("Play images in a Rawlog as a video"), wxDefaultPosition, wxDefaultSize, wxCAPTION|wxDEFAULT_DIALOG_STYLE|wxSYSTEM_MENU|wxRESIZE_BORDER|wxCLOSE_BOX|wxMAXIMIZE_BOX, _T("wxID_ANY"));
-    FlexGridSizer1 = new wxFlexGridSizer(4, 1, 0, 0);
+    FlexGridSizer1 = new wxFlexGridSizer(5, 1, 0, 0);
     FlexGridSizer1->AddGrowableCol(0);
-    FlexGridSizer1->AddGrowableRow(2);
+    FlexGridSizer1->AddGrowableRow(4);
     StaticBoxSizer1 = new wxStaticBoxSizer(wxHORIZONTAL, this, _("Apply to:"));
     BoxSizer4 = new wxBoxSizer(wxVERTICAL);
     BoxSizer5 = new wxBoxSizer(wxHORIZONTAL);
@@ -131,43 +132,65 @@ CFormPlayVideo::CFormPlayVideo(wxWindow* parent,wxWindowID id)
     BoxSizer4->Add(BoxSizer5, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
     StaticBoxSizer1->Add(BoxSizer4, 1, wxALL|wxEXPAND|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL, 0);
     FlexGridSizer1->Add(StaticBoxSizer1, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
-    Panel1 = new wxPanel(this, ID_PANEL1, wxDefaultPosition, wxSize(640,38), wxTAB_TRAVERSAL, _T("ID_PANEL1"));
-    FlexGridSizer2 = new wxFlexGridSizer(2, 1, 0, 0);
-    FlexGridSizer2->AddGrowableCol(0);
-    FlexGridSizer9 = new wxFlexGridSizer(2, 3, 0, 0);
-    cbOrderByYaw = new wxCheckBox(Panel1, ID_CHECKBOX1, _("Order images by Yaw (<0:left,=0:middle,>0:right)"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_CHECKBOX1"));
+    FlexGridSizer9 = new wxFlexGridSizer(3, 3, 0, 0);
+    cbOrderByYaw = new wxCheckBox(this, ID_CHECKBOX1, _("Order images by Yaw (<0:left,=0:middle,>0:right)"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_CHECKBOX1"));
     cbOrderByYaw->SetValue(false);
     FlexGridSizer9->Add(cbOrderByYaw, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
-    cbOrderByY = new wxCheckBox(Panel1, ID_CHECKBOX2, _("Order by \'y\' (<0: left, >0:right)"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_CHECKBOX2"));
+    cbOrderByY = new wxCheckBox(this, ID_CHECKBOX2, _("Order by \'y\' (<0: left, >0:right)"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_CHECKBOX2"));
     cbOrderByY->SetValue(false);
     FlexGridSizer9->Add(cbOrderByY, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
-    cbReduceLarge = new wxCheckBox(Panel1, ID_CHECKBOX3, _("Reduce large images (w>640px)"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_CHECKBOX3"));
+    cbReduceLarge = new wxCheckBox(this, ID_CHECKBOX3, _("Reduce large images (w>640px)"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_CHECKBOX3"));
     cbReduceLarge->SetValue(true);
     FlexGridSizer9->Add(cbReduceLarge, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
-    StaticText2 = new wxStaticText(Panel1, ID_STATICTEXT6, _("Directory for delayed-load (external) images:"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT6"));
+    cbDrawStereoRules = new wxCheckBox(this, ID_CHECKBOX4, _("Draw horizontal rules\?"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_CHECKBOX4"));
+    cbDrawStereoRules->SetValue(false);
+    FlexGridSizer9->Add(cbDrawStereoRules, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+    StaticText3 = new wxStaticText(this, ID_STATICTEXT8, _("Rule vertical spacing (pixels):"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT8"));
+    FlexGridSizer9->Add(StaticText3, 1, wxALL|wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL, 5);
+    edHorzRuleSpace = new wxSpinCtrl(this, ID_SPINCTRL2, _T("50"), wxDefaultPosition, wxDefaultSize, 0, 3, 1000, 50, _T("ID_SPINCTRL2"));
+    edHorzRuleSpace->SetValue(_T("50"));
+    FlexGridSizer9->Add(edHorzRuleSpace, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+    StaticText2 = new wxStaticText(this, ID_STATICTEXT6, _("Directory for delayed-load (external) images:"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT6"));
     FlexGridSizer9->Add(StaticText2, 1, wxALL|wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL, 5);
-    cbImageDirs = new wxComboBox(Panel1, ID_COMBOBOX1, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0, 0, wxCB_READONLY|wxCB_DROPDOWN, wxDefaultValidator, _T("ID_COMBOBOX1"));
+    cbImageDirs = new wxComboBox(this, ID_COMBOBOX1, wxEmptyString, wxDefaultPosition, wxDefaultSize, 0, 0, wxCB_READONLY|wxCB_DROPDOWN, wxDefaultValidator, _T("ID_COMBOBOX1"));
     FlexGridSizer9->Add(cbImageDirs, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
-    FlexGridSizer2->Add(FlexGridSizer9, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
+    FlexGridSizer1->Add(FlexGridSizer9, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
     FlexGridSizer8 = new wxFlexGridSizer(2, 7, 0, 0);
     FlexGridSizer8->AddGrowableCol(5);
-    btnPlay = new wxButton(Panel1, ID_BUTTON2, _("Play"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_BUTTON2"));
+    btnPlay = new wxButton(this, ID_BUTTON2, _("Play"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_BUTTON2"));
     FlexGridSizer8->Add(btnPlay, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
-    btnStop = new wxButton(Panel1, ID_BUTTON3, _("Stop"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_BUTTON3"));
+    btnStop = new wxButton(this, ID_BUTTON3, _("Stop"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_BUTTON3"));
     btnStop->Disable();
     FlexGridSizer8->Add(btnStop, 1, wxALL|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL, 5);
     FlexGridSizer8->Add(-1,-1,1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
-    StaticText6 = new wxStaticText(Panel1, ID_STATICTEXT7, _("Additional delay (ms):"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT7"));
+    StaticText6 = new wxStaticText(this, ID_STATICTEXT7, _("Additional delay (ms):"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT7"));
     FlexGridSizer8->Add(StaticText6, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
-    edDelay = new wxTextCtrl(Panel1, ID_TEXTCTRL2, _("10"), wxDefaultPosition, wxSize(61,21), 0, wxDefaultValidator, _T("ID_TEXTCTRL2"));
+    edDelay = new wxTextCtrl(this, ID_TEXTCTRL2, _("10"), wxDefaultPosition, wxSize(61,21), 0, wxDefaultValidator, _T("ID_TEXTCTRL2"));
     FlexGridSizer8->Add(edDelay, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
     FlexGridSizer8->Add(-1,-1,1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
-    btnClose = new wxButton(Panel1, ID_BUTTON5, _("CLOSE"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_BUTTON5"));
+    btnClose = new wxButton(this, ID_BUTTON5, _("CLOSE"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_BUTTON5"));
     FlexGridSizer8->Add(btnClose, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
-    FlexGridSizer2->Add(FlexGridSizer8, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
-    Panel1->SetSizer(FlexGridSizer2);
-    FlexGridSizer2->SetSizeHints(Panel1);
-    FlexGridSizer1->Add(Panel1, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+    FlexGridSizer1->Add(FlexGridSizer8, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
+    FlexGridSizer4 = new wxFlexGridSizer(2, 1, 0, 0);
+    FlexGridSizer4->AddGrowableCol(0);
+    FlexGridSizer5 = new wxFlexGridSizer(1, 1, 0, 0);
+    FlexGridSizer5->AddGrowableCol(0);
+    progressBar = new wxSlider(this, ID_SLIDER1, 0, 0, 100, wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_SLIDER1"));
+    FlexGridSizer5->Add(progressBar, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+    FlexGridSizer4->Add(FlexGridSizer5, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
+    FlexGridSizer7 = new wxFlexGridSizer(1, 4, 0, 0);
+    FlexGridSizer7->AddGrowableCol(3);
+    StaticText1 = new wxStaticText(this, ID_STATICTEXT1, _("Rawlog index:"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT1"));
+    FlexGridSizer7->Add(StaticText1, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+    edIndex = new wxSpinCtrl(this, ID_SPINCTRL1, _T("0"), wxDefaultPosition, wxDefaultSize, 0, 0, 100, 0, _T("ID_SPINCTRL1"));
+    edIndex->SetValue(_T("0"));
+    FlexGridSizer7->Add(edIndex, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+    btnJump = new wxButton(this, ID_BUTTON1, _("Jump"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_BUTTON1"));
+    FlexGridSizer7->Add(btnJump, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
+    lbProgress = new wxStaticText(this, ID_STATICTEXT3, _("(Progress)"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT3"));
+    FlexGridSizer7->Add(lbProgress, 1, wxALL|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL, 5);
+    FlexGridSizer4->Add(FlexGridSizer7, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
+    FlexGridSizer1->Add(FlexGridSizer4, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
     FlexGridSizer3 = new wxFlexGridSizer(2, 3, 0, 0);
     FlexGridSizer3->AddGrowableCol(0);
     FlexGridSizer3->AddGrowableCol(1);
@@ -207,26 +230,6 @@ CFormPlayVideo::CFormPlayVideo(wxWindow* parent,wxWindowID id)
     pnRight2->SetMinSize(wxSize(-1,240));
     FlexGridSizer3->Add(pnRight2, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 1);
     FlexGridSizer1->Add(FlexGridSizer3, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
-    FlexGridSizer4 = new wxFlexGridSizer(2, 1, 0, 0);
-    FlexGridSizer4->AddGrowableCol(0);
-    FlexGridSizer5 = new wxFlexGridSizer(1, 1, 0, 0);
-    FlexGridSizer5->AddGrowableCol(0);
-    progressBar = new wxSlider(this, ID_SLIDER1, 0, 0, 100, wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_SLIDER1"));
-    FlexGridSizer5->Add(progressBar, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
-    FlexGridSizer4->Add(FlexGridSizer5, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
-    FlexGridSizer7 = new wxFlexGridSizer(1, 4, 0, 0);
-    FlexGridSizer7->AddGrowableCol(3);
-    StaticText1 = new wxStaticText(this, ID_STATICTEXT1, _("Rawlog index:"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT1"));
-    FlexGridSizer7->Add(StaticText1, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
-    edIndex = new wxSpinCtrl(this, ID_SPINCTRL1, _T("0"), wxDefaultPosition, wxDefaultSize, 0, 0, 100, 0, _T("ID_SPINCTRL1"));
-    edIndex->SetValue(_T("0"));
-    FlexGridSizer7->Add(edIndex, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
-    btnJump = new wxButton(this, ID_BUTTON1, _("Jump"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_BUTTON1"));
-    FlexGridSizer7->Add(btnJump, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
-    lbProgress = new wxStaticText(this, ID_STATICTEXT3, _("(Progress)"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT3"));
-    FlexGridSizer7->Add(lbProgress, 1, wxALL|wxALIGN_LEFT|wxALIGN_CENTER_VERTICAL, 5);
-    FlexGridSizer4->Add(FlexGridSizer7, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
-    FlexGridSizer1->Add(FlexGridSizer4, 1, wxALL|wxEXPAND|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 0);
     SetSizer(FlexGridSizer1);
     FlexGridSizer1->Fit(this);
     FlexGridSizer1->SetSizeHints(this);
@@ -239,11 +242,11 @@ CFormPlayVideo::CFormPlayVideo(wxWindow* parent,wxWindowID id)
     Connect(ID_BUTTON2,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&CFormPlayVideo::OnbtnPlayClick);
     Connect(ID_BUTTON3,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&CFormPlayVideo::OnbtnStopClick);
     Connect(ID_BUTTON5,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&CFormPlayVideo::OnbtnCloseClick);
+    Connect(ID_SLIDER1,wxEVT_SCROLL_THUMBTRACK,(wxObjectEventFunction)&CFormPlayVideo::OnprogressBarCmdScrollChanged);
+    Connect(ID_SLIDER1,wxEVT_SCROLL_CHANGED,(wxObjectEventFunction)&CFormPlayVideo::OnprogressBarCmdScrollChanged);
     Connect(ID_BITMAPBUTTON1,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&CFormPlayVideo::OnbtnSaveCam1Click);
     Connect(ID_BITMAPBUTTON2,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&CFormPlayVideo::OnbtnSaveCam2Click);
     Connect(ID_BITMAPBUTTON3,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&CFormPlayVideo::OnbtnSaveCam3Click);
-    Connect(ID_SLIDER1,wxEVT_SCROLL_THUMBTRACK,(wxObjectEventFunction)&CFormPlayVideo::OnprogressBarCmdScrollChanged);
-    Connect(ID_SLIDER1,wxEVT_SCROLL_CHANGED,(wxObjectEventFunction)&CFormPlayVideo::OnprogressBarCmdScrollChanged);
     Connect(wxID_ANY,wxEVT_INIT_DIALOG,(wxObjectEventFunction)&CFormPlayVideo::OnInit);
     //*)
 }
@@ -462,9 +465,25 @@ void CFormPlayVideo::OnbtnCloseClick(wxCommandEvent& event)
     Close();
 }
 
+void CFormPlayVideo::drawHorzRules( mrpt::utils::CImage &img)
+{
+	if (!cbDrawStereoRules->IsChecked())
+		return;
+	
+	img.forceLoad();
+	const size_t Ay = edHorzRuleSpace->GetValue();
+	const size_t h = img.getHeight();
+	const size_t w = img.getWidth();
+
+	for (size_t y=Ay;y<h;y+=Ay)
+		img.line(0,y, w-1,y, mrpt::utils::TColor::white);
+}
+
 
 bool CFormPlayVideo::showSensoryFrame(void *SF, size_t &nImgs)
 {
+	WX_START_TRY
+
     ASSERT_(SF);
     CSensoryFrame *sf = (CSensoryFrame*)SF;
 
@@ -478,6 +497,12 @@ bool CFormPlayVideo::showSensoryFrame(void *SF, size_t &nImgs)
 
     // Displayed images:
     //displayedImgs.resize(3);
+
+	// unload current imgs:
+	for (size_t i=0;i<displayedImgs.size();i++)
+		if (displayedImgs[i])
+			displayedImgs[i]->unload();
+
 
 	CImage  auxImgForSubSampling;
 
@@ -567,6 +592,7 @@ bool CFormPlayVideo::showSensoryFrame(void *SF, size_t &nImgs)
 
 
 			// Draw image:
+			drawHorzRules(*imgShow);
 			wxImage *wxIMG = mrpt::gui::MRPTImage2wxImage( *imgShow );
 
 			wxWindowDC  dc( thePanel );
@@ -619,6 +645,7 @@ bool CFormPlayVideo::showSensoryFrame(void *SF, size_t &nImgs)
                     // firstFit=false; // Done in the right pane below...
                 }
 
+				drawHorzRules(*imgShow);
                 wxImage *wxIMG = mrpt::gui::MRPTImage2wxImage( *imgShow );
                 imgShow->unload();  // for delayed-loaded rawlogs, save lots of memory!
 
@@ -655,6 +682,7 @@ bool CFormPlayVideo::showSensoryFrame(void *SF, size_t &nImgs)
                     firstFit=false;
                 }
 
+				drawHorzRules(*imgShow);
                 wxImage *wxIMG = mrpt::gui::MRPTImage2wxImage( *imgShow );
                 imgShow->unload();  // for delayed-loaded rawlogs, save lots of memory!
 
@@ -691,6 +719,7 @@ bool CFormPlayVideo::showSensoryFrame(void *SF, size_t &nImgs)
                     firstFit=false;
                 }
 
+				drawHorzRules(*imgShow);
                 wxImage *wxIMG = mrpt::gui::MRPTImage2wxImage( *imgShow );
                 imgShow->unload();  // for delayed-loaded rawlogs, save lots of memory!
 
@@ -736,6 +765,7 @@ bool CFormPlayVideo::showSensoryFrame(void *SF, size_t &nImgs)
                     // firstFit=false; // Done in the right pane below...
                 }
 
+				drawHorzRules(*imgShow);
                 wxImage *wxIMG = mrpt::gui::MRPTImage2wxImage( *imgShow );
                 imgShow->unload();  // for delayed-loaded rawlogs, save lots of memory!
 
@@ -756,6 +786,9 @@ bool CFormPlayVideo::showSensoryFrame(void *SF, size_t &nImgs)
 	}
 
     return doDelay;
+
+	WX_END_TRY
+	return false;
 }
 
 void CFormPlayVideo::OnprogressBarCmdScrollChanged(wxScrollEvent& event)
