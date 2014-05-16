@@ -17,7 +17,7 @@
     by RawLogViewer or user programs.
 
 Usage:
-      kitti_dataset2rawlog  [PATH_TO_DIR_WITH_IMAGES] [OUTPUT_NAME]
+      kitti_dataset2rawlog  [PATH_TO_DIR_WITH_IMAGES] [CALIB_FILE] [OUTPUT_NAME]
 
 Output files:
 	- OUTPUT_NAME.rawlog: The output rawlog file.
@@ -25,8 +25,10 @@ Output files:
   ------------------------------------------------------ */
 
 #include <mrpt/system/filesystem.h>
+#include <mrpt/system/string_utils.h>
 #include <mrpt/utils/CFileGZOutputStream.h>
 #include <mrpt/utils/TCamera.h>
+#include <mrpt/utils/CTextFileLinesParser.h>
 #include <mrpt/slam/CObservationStereoImages.h>
 //#include <mrpt/slam/CObservationIMU.h>
 
@@ -37,7 +39,7 @@ using namespace mrpt::slam;
 const double STEREO_FPS = 10.0;
 
 
-void stereo2rawlog(const string &src_path, const string &out_name)
+void stereo2rawlog(const string &src_path, const string &calib_file,  const string &out_name)
 {
 	/* Camera params:
 	Left (1):
@@ -54,18 +56,46 @@ void stereo2rawlog(const string &src_path, const string &out_name)
 	base = 3.887481e+02  / 6.790081e+02 = 0.57252351 m
 	*/
 
+	// Parse calib file:
+	mrpt::math::CMatrixDouble P1_roi, P2_roi;
+	bool p1_ok=false, p2_ok=false;
+
+	std::istringstream  ss;
+	mrpt::utils::CTextFileLinesParser fp;
+	fp.open(calib_file);
+	while (fp.getNextLine(ss))
+	{
+		string sStart; 
+		ss >> sStart;
+		if (mrpt::system::strStartsI(sStart,"P1_roi:")) {
+			P1_roi.loadFromTextFile(ss);
+			ASSERT_( P1_roi.cols()==12 && P1_roi.rows()==1 )
+			p1_ok=true;
+		}
+		if (mrpt::system::strStartsI(sStart,"P2_roi:")) {
+			P2_roi.loadFromTextFile(ss);
+			ASSERT_( P2_roi.cols()==12 && P2_roi.rows()==1 )
+			p2_ok=true;
+		}
+	}
+
+	if (!p1_ok || !p2_ok) throw std::runtime_error("Couldn't load P*_ROI calib matrices!");
+
 	mrpt::utils::TCamera cam_params_l;
 	cam_params_l.ncols = 1344;
 	cam_params_l.nrows = 391;
-	cam_params_l.fx( 6.790081e+02 );
-	cam_params_l.fy( 6.790081e+02 );
-	cam_params_l.cx( 6.598034e+02 );
-	cam_params_l.cy( 1.865724e+02 );
+	cam_params_l.fx( P2_roi(0,0) );
+	cam_params_l.fy( P2_roi(0,5) );
+	cam_params_l.cx( P2_roi(0,2) );
+	cam_params_l.cy( P2_roi(0,6) );
 
 	mrpt::utils::TCamera cam_params_r = cam_params_l;
 
-	const double baseline = 0.57252351;
+	// base = -P2_roi(1,4)/P2_roi(1,1)
+	const double baseline = -P2_roi(0,3) / P2_roi(0,0);
 	const mrpt::poses::CPose3DQuat l2r_pose(baseline,0.0,0.0, mrpt::math::CQuaternionDouble() );
+
+	cout << "baseline: " <<baseline << endl;
 	
 
 	// Create rawlog file ----------------------------------------------
@@ -108,7 +138,7 @@ void stereo2rawlog(const string &src_path, const string &out_name)
 		// save:
 		f_out << obs;
 
-		cout << "Writing entry #" << i << endl;
+		//cout << "Writing entry #" << i << endl;
 	}
 
 	cout << "\nAll done!\n";
@@ -122,13 +152,13 @@ int main(int argc, char**argv)
 {
 	try
 	{
-		if (argc!=3)
+		if (argc!=4)
 		{
-			cerr << "Usage: " << argv[0] << " [PATH_TO_DATASET] [OUTPUT_NAME]\n";
+			cerr << "Usage: " << argv[0] << " [PATH_TO_DATASET] [CALIB_FILE] [OUTPUT_NAME]\n";
 			return 1;
 		}
 
-		stereo2rawlog(argv[1],argv[2]);
+		stereo2rawlog(argv[1],argv[2],argv[3]);
 
 		return 0;
 	} catch (std::exception &e)
