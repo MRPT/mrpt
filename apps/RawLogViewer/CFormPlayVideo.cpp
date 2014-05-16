@@ -92,6 +92,8 @@ std::vector<CObservationPtr> 	displayedImgs(3);
 
 CFormPlayVideo::CFormPlayVideo(wxWindow* parent,wxWindowID id)
 {
+	WX_START_TRY
+
     m_nowPlaying = false;
 	firstFit = true;
 
@@ -249,6 +251,8 @@ CFormPlayVideo::CFormPlayVideo(wxWindow* parent,wxWindowID id)
     Connect(ID_BITMAPBUTTON3,wxEVT_COMMAND_BUTTON_CLICKED,(wxObjectEventFunction)&CFormPlayVideo::OnbtnSaveCam3Click);
     Connect(wxID_ANY,wxEVT_INIT_DIALOG,(wxObjectEventFunction)&CFormPlayVideo::OnInit);
     //*)
+
+	WX_END_TRY
 }
 
 CFormPlayVideo::~CFormPlayVideo()
