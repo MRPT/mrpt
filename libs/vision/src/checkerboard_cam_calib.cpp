@@ -77,10 +77,10 @@ bool mrpt::vision::checkerBoardCameraCalibration(
 #if MRPT_HAS_OPENCV
 	try
 	{
-		ASSERT_(check_size_x>2);
-		ASSERT_(check_size_y>2);
-		ASSERT_(check_squares_length_X_meters>0);
-		ASSERT_(check_squares_length_Y_meters>0);
+		ASSERT_(check_size_x>2)
+		ASSERT_(check_size_y>2)
+		ASSERT_(check_squares_length_X_meters>0)
+		ASSERT_(check_squares_length_Y_meters>0)
 
 		if (images.size()<1)
 		{

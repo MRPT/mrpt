@@ -17,7 +17,11 @@
     by RawLogViewer or user programs.
 
 Usage:
-      kitti_dataset2rawlog  [PATH_TO_DIR_WITH_IMAGES] [CALIB_FILE] [OUTPUT_NAME]
+ * Karlsruhe seqs:
+        kitti_dataset2rawlog  [PATH_TO_DIR_WITH_IMAGES] [CALIB_FILE] [OUTPUT_NAME]
+ 
+ * KITTI seqs:
+        kitti_dataset2rawlog  [PATH_TO_IMAGE_00] [PATH_TO_IMAGE_01] [CALIB_FILE] [OUTPUT_NAME]
 
 Output files:
 	- OUTPUT_NAME.rawlog: The output rawlog file.
@@ -39,7 +43,7 @@ using namespace mrpt::slam;
 const double STEREO_FPS = 10.0;
 
 
-void stereo2rawlog(const string &src_path, const string &calib_file,  const string &out_name)
+void stereo2rawlog(bool is_kitti_dataset, const string &src_path0,const string &src_path1, const string &calib_file,  const string &out_name)
 {
 	/* Camera params:
 	Left (1):
@@ -60,6 +64,9 @@ void stereo2rawlog(const string &src_path, const string &calib_file,  const stri
 	mrpt::math::CMatrixDouble P1_roi, P2_roi;
 	bool p1_ok=false, p2_ok=false;
 
+	const string name_P0 = is_kitti_dataset ? "P0:" : "P1_roi:";
+	const string name_P1 = is_kitti_dataset ? "P1:" : "P2_roi:";
+
 	std::istringstream  ss;
 	mrpt::utils::CTextFileLinesParser fp;
 	fp.open(calib_file);
@@ -67,12 +74,12 @@ void stereo2rawlog(const string &src_path, const string &calib_file,  const stri
 	{
 		string sStart; 
 		ss >> sStart;
-		if (mrpt::system::strStartsI(sStart,"P1_roi:")) {
+		if (mrpt::system::strStartsI(sStart,name_P0)) {
 			P1_roi.loadFromTextFile(ss);
 			ASSERT_( P1_roi.cols()==12 && P1_roi.rows()==1 )
 			p1_ok=true;
 		}
-		if (mrpt::system::strStartsI(sStart,"P2_roi:")) {
+		if (mrpt::system::strStartsI(sStart,name_P1)) {
 			P2_roi.loadFromTextFile(ss);
 			ASSERT_( P2_roi.cols()==12 && P2_roi.rows()==1 )
 			p2_ok=true;
@@ -100,20 +107,52 @@ void stereo2rawlog(const string &src_path, const string &calib_file,  const stri
 
 	// Create rawlog file ----------------------------------------------
 	const string  out_rawlog_fil = out_name + string(".rawlog");
+	const string  out_imgs_dir = out_name + string("_Images");
 	cout << "Creating rawlog: " << out_rawlog_fil << endl;
 	mrpt::utils::CFileGZOutputStream  f_out(out_rawlog_fil);
+
+	if (is_kitti_dataset)
+	{
+		cout << "Creating imgs dir: " << out_imgs_dir << endl;
+		mrpt::system::createDirectory(out_imgs_dir);
+	}
 
 	mrpt::system::TTimeStamp tim0 = mrpt::system::now();
 
 	// For each image:
 	for (int i=0;  ; i++)
 	{
-		// I1_000000.png
-		// I2_002570.png
-		const string sImgFile_L = mrpt::format("I1_%06i.png",i);
-		const string sImgFile_R = mrpt::format("I2_%06i.png",i);
-		const string sImg_L = mrpt::format("%s/%s",src_path.c_str(),sImgFile_L.c_str());
-		const string sImg_R = mrpt::format("%s/%s",src_path.c_str(),sImgFile_R.c_str());
+		string sImgFile_L, sImgFile_R;
+		string sImg_L, sImg_R;
+		string sTrgImgFile_L, sTrgImgFile_R;
+		string sTrgImg_L, sTrgImg_R; // If !="", will copy the file.
+
+		if (is_kitti_dataset)
+		{
+			// 0000000000.png
+			// 1234567890
+			sImgFile_L = mrpt::format("%010i.png",i);
+			sImgFile_R = mrpt::format("%010i.png",i);
+			sImg_L = mrpt::format("%s/%s",src_path0.c_str(),sImgFile_L.c_str());
+			sImg_R = mrpt::format("%s/%s",src_path1.c_str(),sImgFile_R.c_str());
+
+			sTrgImgFile_L = mrpt::format("I0_%s",sImgFile_L.c_str());
+			sTrgImgFile_R = mrpt::format("I1_%s",sImgFile_R.c_str());
+
+			sTrgImg_L = mrpt::format("%s/%s",out_imgs_dir.c_str(),sTrgImgFile_L.c_str());
+			sTrgImg_R = mrpt::format("%s/%s",out_imgs_dir.c_str(),sTrgImgFile_R.c_str());
+		}
+		else
+		{
+			// I1_000000.png
+			// I2_002570.png
+			sImgFile_L = mrpt::format("I1_%06i.png",i);
+			sImgFile_R = mrpt::format("I2_%06i.png",i);
+			sTrgImgFile_L = sImgFile_L;
+			sTrgImgFile_R = sImgFile_R;
+			sImg_L = mrpt::format("%s/%s",src_path0.c_str(),sImgFile_L.c_str());
+			sImg_R = mrpt::format("%s/%s",src_path0.c_str(),sImgFile_R.c_str());
+		}
 
 		if (!mrpt::system::fileExists(sImg_L) || !mrpt::system::fileExists(sImg_R) )
 		{
@@ -129,14 +168,26 @@ void stereo2rawlog(const string &src_path, const string &calib_file,  const stri
 		obs.rightCamera = cam_params_r;
 		obs.rightCameraPose = l2r_pose;
 
-		//obs.imageLeft.saveToFile( out_img_dir + string("/") + sRGBfile );
-		obs.imageLeft.setExternalStorage(sImgFile_L);
-		obs.imageRight.setExternalStorage(sImgFile_R);
+		obs.imageLeft.setExternalStorage(sTrgImgFile_L);
+		obs.imageRight.setExternalStorage(sTrgImgFile_R);
 
 		obs.sensorLabel = "CAMERA1";
 
 		// save:
 		f_out << obs;
+
+		// Copy img:
+		if (is_kitti_dataset)
+		{
+			if (!mrpt::system::copyFile(sImg_L,sTrgImg_L)) {
+				cerr << "Error copying file: " << sImg_L << " => " << sTrgImg_L << endl;
+				return;
+			}
+			if (!mrpt::system::copyFile(sImg_R,sTrgImg_R)) {
+				cerr << "Error copying file: " << sImg_R << " => " << sTrgImg_R << endl;
+				return;
+			}
+		}
 
 		//cout << "Writing entry #" << i << endl;
 	}
@@ -152,13 +203,26 @@ int main(int argc, char**argv)
 {
 	try
 	{
-		if (argc!=4)
+		if (argc!=4 && argc!=5)
 		{
-			cerr << "Usage: " << argv[0] << " [PATH_TO_DATASET] [CALIB_FILE] [OUTPUT_NAME]\n";
+			cerr << "Usage:\n"
+				"Karlsruhe seqs:\n"
+				" kitti_dataset2rawlog  [PATH_TO_DIR_WITH_IMAGES] [CALIB_FILE] [OUTPUT_NAME]\n"
+				"KITTI seqs:\n"
+				" kitti_dataset2rawlog  [PATH_TO_IMAGE_00] [PATH_TO_IMAGE_01] [CALIB_FILE] [OUTPUT_NAME]\n";
 			return 1;
 		}
-
-		stereo2rawlog(argv[1],argv[2],argv[3]);
+		
+		if (argc==4)
+		{
+			// "Karlsruhe seqs":
+			stereo2rawlog(false, argv[1],"",argv[2],argv[3]);
+		}
+		else
+		{
+			// "KITTI":
+			stereo2rawlog(true, argv[1],argv[2],argv[3],argv[4]);
+		}
 
 		return 0;
 	} catch (std::exception &e)
