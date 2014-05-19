@@ -781,8 +781,8 @@ kinect_calibrate_guiDialog::kinect_calibrate_guiDialog(wxWindow* parent,wxWindow
 		obj->setColor_u8( TColor(200,200,200) );
 		m_plot3D->m_openGLScene->insert(obj);
 	}
-//	// XYZ corner:
-//	m_plot3D->m_openGLScene->insert( mrpt::opengl::stock_objects::CornerXYZSimple(0.5,2) );
+	//// XYZ corner:
+	//m_plot3D->m_openGLScene->insert( mrpt::opengl::stock_objects::CornerXYZSimple(0.5,2) );
 
 	// 3D points:
 	m_gl_3d_points = mrpt::opengl::CPointCloudColoured::Create();
@@ -2172,6 +2172,8 @@ void kinect_calibrate_guiDialog::CalibUpdate3DViewCameras()
 		obj->setColor_u8( TColor(200,200,200) );
 		scene->insert(obj);
 	}
+	// XYZ corner:
+	scene->insert( mrpt::opengl::stock_objects::CornerXYZSimple(0.5,2) );
 
 	const unsigned int  check_size_x = edCalibCheckX->GetValue();
 	const unsigned int  check_size_y = edCalibCheckY->GetValue();
