@@ -2318,15 +2318,14 @@ bool CImage::drawChessboardCorners(
 	std::vector<TPixelCoordf> 	&cornerCoords,
 	unsigned int  check_size_x,
 	unsigned int  check_size_y,
-	unsigned int  lines_width )
+	unsigned int  lines_width,
+	unsigned int r)
 {
 #if MRPT_HAS_OPENCV
 
 	if (cornerCoords.size()!=check_size_x*check_size_y) return false;
 
 	IplImage* img = this->getAs<IplImage>();
-
-    const int r = 4;
 
 	unsigned int x, y,i;
 	CvPoint prev_pt = cvPoint(0, 0);
@@ -2361,7 +2360,9 @@ bool CImage::drawChessboardCorners(
 			cvLine( img,
 					  cvPoint( pt.x - r, pt.y + r),
 					  cvPoint( pt.x + r, pt.y - r), color, lines_width );
-			cvCircle( img, pt, r+1, color );
+			
+			if (r>0)
+				cvCircle( img, pt, r+1, color );
 			prev_pt = pt;
 
 			// Text label with the corner index in the first and last corners:

@@ -451,8 +451,9 @@ namespace mrpt
 				std::vector<TPixelCoordf> 	&cornerCoords,
 				unsigned int  check_size_x,
 				unsigned int  check_size_y,
-				unsigned int  lines_width = 1
-				 );
+				unsigned int  lines_width = 1,
+				unsigned int  circles_radius = 4
+				);
 
 			/** Joins two images side-by-side horizontally. Both images must have the same number of rows and be of the same type (i.e. depth and color mode)
 			  *
