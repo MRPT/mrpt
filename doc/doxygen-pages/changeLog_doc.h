@@ -45,6 +45,7 @@
 				- Now also implements SE(3) relative graph-slam.
 			- [mrpt-vision]
 				- mrpt::vision::checkerBoardStereoCalibration: More robust handling of stereo calibration patterns. OpenCV sometimes detects corners in the wrong order between (left/right) images, so we detect the situation and fix it.
+				- mrpt::vision::findMultipleChessboardsCorners() now enforces a consistent counterclockwise XYZ coordinate frame at each detected chessboard.
 		- Build system / public API: 
 			- Fixes to build in OS X - [Patch](https://gist.github.com/randvoorhies/9283072) by Randolph Voorhies.
 			- Removed most "using namespace" from public headers, as good practice.

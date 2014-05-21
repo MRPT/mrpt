@@ -52,7 +52,8 @@ void TestMultipleCheckerboard(
 	cout << "Number of checkerboards detected: " << listCornerCoords.size() << endl;
 
 	// Draw:
-	CImage img_detect = img;
+	CImage img_detect;
+	img.colorImage(img_detect);
 	for (size_t i=0;i<listCornerCoords.size();i++)
 		img_detect.drawChessboardCorners(listCornerCoords[i],checkerboard_size_x,checkerboard_size_y);
 

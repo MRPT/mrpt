@@ -10,6 +10,7 @@
 #include "vision-precomp.h"   // Precompiled headers
 
 #include <mrpt/vision/chessboard_find_corners.h>
+#include <mrpt/math/geometry.h> // crossProduct3D()
 
 // Universal include for all versions of OpenCV
 #include <mrpt/otherlibs/do_opencv_includes.h> 
@@ -171,6 +172,25 @@ void mrpt::vision::findMultipleChessboardsCorners(
 			for( unsigned int y = 0, k = 0; y < check_size_y; y++ )
 				for( unsigned int x = 0; x < check_size_x; x++, k++ )
 					cornerCoords[i].push_back(  TPixelCoordf( corners_list[i][k].x, corners_list[i][k].y ) );
+
+
+			// Consistency of the counter-clockwise XYZ reference system and corners ORDER.
+
+			// Key idea: The cross product of X * Y must point outwards the screen:
+
+			const mrpt::math::TPoint2D
+				pt_0  = cornerCoords[i][0],
+				pt_x1 = cornerCoords[i][1],
+				pt_y1 = cornerCoords[i][check_size_x];
+			const mrpt::math::TPoint3D Ax = pt_x1 - pt_0;  // z=0
+			const mrpt::math::TPoint3D Ay = pt_y1 - pt_0;  // z=0
+
+			const Eigen::Matrix<double,3,1> Az = mrpt::math::crossProduct3D(Ax,Ay);
+			if (Az[2] > 0) {
+				// Invert all rows (X):
+				for( unsigned int y = 0, k = 0; y < check_size_y; y++ )
+					std::reverse( cornerCoords[i].begin()+y*check_size_x, cornerCoords[i].begin()+(y+1)*check_size_x );
+			}
 		}
 	}
 	else

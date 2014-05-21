@@ -288,6 +288,7 @@ bool find_chessboard_corners_multiple(
 		}
 	}
 
+
 	// Free mem:
 	cvReleaseStructuringElement(&kernel_cross);
 	cvReleaseStructuringElement(&kernel_rect);
