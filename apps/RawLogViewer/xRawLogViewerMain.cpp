@@ -3809,6 +3809,9 @@ void xRawLogViewerFrame::OnRecomputeOdometry(wxCommandEvent& event)
 
 		size_t  M = 0;
 
+		mrpt::poses::CPose2D auxLastAbsOdo;
+		bool auxLastAbsOdo_valid = false;
+
 		{
 			wxBusyCursor    waitCursor;
 
@@ -3828,6 +3831,37 @@ void xRawLogViewerFrame::OnRecomputeOdometry(wxCommandEvent& event)
 						act->computeFromEncoders( K_left,K_right, D );
 						M++;
 					}
+				}
+
+				if (rawlog.getAsGeneric(i)->GetRuntimeClass() == CLASS_ID(CObservationOdometry ))
+				{
+					CObservationOdometryPtr obs = CObservationOdometryPtr(rawlog.getAsGeneric(i));
+					CObservationOdometry*odo = obs.pointer();
+					if (!odo->hasEncodersInfo)
+					{
+						wxMessageBox( _U( format("An odometry measurement was found at entry %i which does not\ncontain encoders info: Cannot recompute odometry without this information!",(unsigned)i).c_str() ) );
+						return;
+					}
+
+					// Create aux odo increment to recompute the global odo:
+					CActionRobotMovement2D auxOdoIncr;
+					auxOdoIncr.hasEncodersInfo = true;
+					auxOdoIncr.encoderLeftTicks = odo->encoderLeftTicks;
+					auxOdoIncr.encoderRightTicks = odo->encoderRightTicks;
+					auxOdoIncr.computeFromEncoders( K_left,K_right, D );
+
+					if (!auxLastAbsOdo_valid)
+					{
+						auxLastAbsOdo_valid=true;
+						auxLastAbsOdo = odo->odometry;
+						// and don't modify this odo val.
+					}
+					else
+					{
+						odo->odometry = auxLastAbsOdo + auxOdoIncr.rawOdometryIncrementReading;
+						auxLastAbsOdo = odo->odometry;
+					}
+					M++;
 				}
 			}
 		}
