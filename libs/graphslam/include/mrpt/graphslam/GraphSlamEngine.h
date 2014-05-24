@@ -74,8 +74,9 @@ namespace mrpt
 			struct TEdgeAnnotations
 			{
 				bool is_odometry_edge; //!< True only in odometry edges. The difference is that odometry edges are the only ones updated incrementally.
+				TNodeAnnotations *odo_from_node, *odo_to_node;
 				bool is_kf2kf_sensor_constraint; //!< True if the edge has been created by this GraphSLAM engine's "k2k_match" class.
-				inline TEdgeAnnotations() : is_odometry_edge(false),is_kf2kf_sensor_constraint(false) { }
+				inline TEdgeAnnotations() : is_odometry_edge(false),odo_from_node(NULL), odo_to_node(NULL),is_kf2kf_sensor_constraint(false) { }
 			};
 
 			struct KeyFramesKDTree;
@@ -96,8 +97,9 @@ namespace mrpt
 			/** Main entry point (alternative 2): Process one odometry OR sensor observation. */
 			void processObservation (const mrpt::slam::CObservationPtr &obs);
 
-			/** Returns the latest estimate of the current robot pose (the global pose for the current keyframe in the graph) */
-			void getCurrentPose(pose_t &pose) const;
+			/** Gets the latest estimate of the current robot pose (the global pose for the current keyframe in the graph) 
+			  * \return false if the graph is empty */
+			bool getCurrentPose(pose_t &pose) const;
 
 			/** Returns a const ref to the "SLAM map" (not threadsafe: use critical sections and make a copy of this as needed in your code) */
 			const graph_t & getGraph() const { return m_graph; }

@@ -36,14 +36,16 @@ namespace mrpt { namespace graphslam {
 
 	// Returns the latest estimate of the current robot pose (the global pose for the current keyframe in the graph)
 	template <class graph_t,class F2F_MATCH,class UPDATE_DECIDER,class MAPS_IMPLEMENTATION,class GRAPHSLAM_SOLVER>
-	void GraphSlamEngine<graph_t,F2F_MATCH,UPDATE_DECIDER,MAPS_IMPLEMENTATION,GRAPHSLAM_SOLVER>::getCurrentPose(pose_t &pose) const
+	bool GraphSlamEngine<graph_t,F2F_MATCH,UPDATE_DECIDER,MAPS_IMPLEMENTATION,GRAPHSLAM_SOLVER>::getCurrentPose(pose_t &pose) const
 	{
 		const TNodeID curNodeID = m_current_frame.nodeID;
-		ASSERTMSG_(curNodeID!=INVALID_NODEID,"Error: the graph is empty!")
+		if (curNodeID==INVALID_NODEID) 
+			return false; // The graph is empty
 		typename graph_t::global_poses_t::const_iterator itCurNode = m_graph.nodes.find(curNodeID);
 		ASSERT_(itCurNode != m_graph.nodes.end())
 		typename const graph_t::global_pose_t & curNode = itCurNode->second;
 		pose = *static_cast<const typename graph_t::constraint_no_pdf_t *>(& curNode );
+		return true;
 	}
 
 	// Main entry point (alternative 1): Process a pair "action"+"sensory observations" to update the map.
@@ -93,68 +95,15 @@ namespace mrpt { namespace graphslam {
 			is_first_obs_in_empty_graph=true;
 		}
 
-		// Is it an odometry observation??
-		if (IS_CLASS(obs,CObservationOdometry))
+		// Empty map:
+		if (is_first_obs_in_empty_graph)
 		{
-			if (!is_first_obs_in_empty_graph) // Ignore odometry until the map isn't empty so we have some reference observations to compare with!
+			// Is it an odometry observation??
+			if (IS_CLASS(obs,CObservationOdometry))
 			{
-				// Convert an odometry (global pose) reading into incremental odometry:
-				const CObservationOdometryPtr odo = CObservationOdometryPtr(obs);
-				typename graph_t::constraint_no_pdf_t odo_increment;  // Default (NULL increment) 
-
-				if (m_lastOdometry_timestamp!=INVALID_TIMESTAMP) {
-					odo_increment.inverseComposeFrom(typename graph_t::constraint_no_pdf_t(odo->odometry), m_lastOdometry);
-				}
-				m_lastOdometry = typename graph_t::constraint_no_pdf_t(odo->odometry);
-				m_lastOdometry_timestamp = odo->timestamp;
-
-				// Are we far enough from last node as for creating a new node now?
-				bool createNewFrame = m_update_decider.shouldCreateNewFrame(*this,obs);
-
-				// (1/2): Update current estimate of keyframe global pose:
-				// Pose composition: new pose = cur_pose (+) increment
-				const TNodeID prevNodeID = m_current_frame.nodeID;
-				typename graph_t::global_pose_t & prevNode = m_graph.nodes[prevNodeID];
-				typename graph_t::constraint_no_pdf_t &prevPose = *static_cast<typename graph_t::constraint_no_pdf_t *>(&prevNode);
-				
-				// Move to a new keyframe?
-				if (createNewFrame) {
-					// Create new frame ID and set as current:
-					const TNodeID newNodeID = m_graph.nodes.size();
-					m_current_frame = TTimestampedNode(newNodeID, obs->timestamp);
-					m_keyframes_kdtree.markAsOutdated();
-				}
-
-				typename graph_t::global_pose_t & curNode = m_graph.nodes[m_current_frame.nodeID];
-				
-				// Create new odometry edge?
-				if (createNewFrame)
-				{
-					const TPairNodeIDs edge_ids(prevNodeID,m_current_frame.nodeID);
-					typename graph_t::iterator & odoEdgeIt = m_graph.edges.insert(std::pair<TPairNodeIDs,typename graph_t::edge_t>(edge_ids,typename graph_t::edge_t()));
-					curNode.nodeAnnotation_odometryEdge = & odoEdgeIt->second;
-					curNode.nodeAnnotation_odometryEdge->is_odometry_edge = true;
-				}
-				// Pose composition:
-				typename graph_t::constraint_no_pdf_t &newPose = *static_cast<typename graph_t::constraint_no_pdf_t *>(&curNode);
-				newPose.composeFrom(prevPose, odo_increment);
-
-				// (2/2): Update odometry edge constraint:
-				if (curNode.nodeAnnotation_odometryEdge!=NULL) // If this node have an odometry edge:
-				{
-					typename graph_t::edge_t & odoEdge = *curNode.nodeAnnotation_odometryEdge;
-					odoEdge+= odo_increment; // Pose composition
-#ifdef _DEBUG
-					std::cout << "[GSE] Updating odo constraint edge of node " << m_current_frame.nodeID << " to " << odoEdge << std::endl;
-#endif
-				}
-			} // end it's not an empty map
-		} // end it's odometry
-		else
-		{
-			MRPT_TODO("CHECK OBS TYPES NOT TO IGNORE!")
-
-			if (is_first_obs_in_empty_graph)
+				// Ignore odometry until the map isn't empty so we have some reference observations to compare with!
+			}
+			else
 			{
 				const TNodeID firstNodeID = 0;
 				typename graph_t::global_pose_t & newNode = m_graph.nodes[firstNodeID]; // Create empty pose in the map<>
@@ -162,37 +111,94 @@ namespace mrpt { namespace graphslam {
 				m_current_frame = TTimestampedNode(firstNodeID, obs->timestamp); // Set as current position 
 				m_keyframes_kdtree.markAsOutdated();
 			}
-			else
+		}
+		else
+		{
+			typename graph_t::constraint_no_pdf_t odo_increment;  // Default (NULL increment) 
+			if (IS_CLASS(obs,CObservationOdometry))
 			{
-				// Before updating node observations, are we far enough from last node as for creating a new node now?
-				bool createNewFrame = m_update_decider.shouldCreateNewFrame(*this,obs);
+				// Convert an odometry (global pose) reading into incremental odometry:
+				const CObservationOdometryPtr odo = CObservationOdometryPtr(obs);
 
-				const TNodeID prevNodeID = m_current_frame.nodeID;
-				typename graph_t::global_pose_t & prevNode = m_graph.nodes[prevNodeID];
-				typename graph_t::constraint_no_pdf_t &prevPose = *static_cast<typename graph_t::constraint_no_pdf_t *>(&prevNode);
-
-				if (createNewFrame)
-				{
-					// Create new frame ID and set as current:
-					const TNodeID newNodeID = m_graph.nodes.size();
-					m_current_frame = TTimestampedNode(newNodeID, obs->timestamp);
-					m_keyframes_kdtree.markAsOutdated();
+				if (m_lastOdometry_timestamp!=INVALID_TIMESTAMP) {
+					odo_increment.inverseComposeFrom(typename graph_t::constraint_no_pdf_t(odo->odometry), m_lastOdometry);
 				}
+				m_lastOdometry = typename graph_t::constraint_no_pdf_t(odo->odometry);
+				m_lastOdometry_timestamp = odo->timestamp;
+			}
 
-				// Update observations for the current node: 
-				typename graph_t::global_pose_t & curNode = m_graph.nodes[m_current_frame.nodeID]; // Create or get current frame in the map<>
-				curNode.nodeAnnotation_observations.clear();
-				curNode.nodeAnnotation_observations.insert(obs);  // Add obs to node
+			// Are we far enough from last node as for creating a new node now?
+			bool createNewFrame = m_update_decider.shouldCreateNewFrame(*this,obs);
 
-				// If this was a newly created KeyFrame, assigns to it an initial guess of its global pose: the same than the previous KF.
-				if (createNewFrame)
+			// (1/2): Update current estimate of keyframe global pose:
+			// Pose composition: new pose = cur_pose (+) increment
+			const TNodeID prevNodeID = m_current_frame.nodeID;
+			typename graph_t::global_pose_t & prevNode = m_graph.nodes[prevNodeID];
+			typename graph_t::constraint_no_pdf_t &prevPose = *static_cast<typename graph_t::constraint_no_pdf_t *>(&prevNode);
+				
+			// Move to a new keyframe?
+			if (createNewFrame) {
+				// Create new frame ID and set as current:
+				const TNodeID newNodeID = m_graph.nodes.size();
+				m_current_frame = TTimestampedNode(newNodeID, obs->timestamp);
+				m_keyframes_kdtree.markAsOutdated();
+			}
+
+			typename graph_t::global_pose_t & curNode = m_graph.nodes[m_current_frame.nodeID];
+				
+			// Create new odometry edge:
+			if (createNewFrame)
+			{
+				const TPairNodeIDs edge_ids(prevNodeID,m_current_frame.nodeID);
+				typename graph_t::iterator & odoEdgeIt = m_graph.edges.insert(std::pair<TPairNodeIDs,typename graph_t::edge_t>(edge_ids,typename graph_t::edge_t()));
+				curNode.nodeAnnotation_odometryEdge = & odoEdgeIt->second;
+				curNode.nodeAnnotation_odometryEdge->is_odometry_edge = true;
+				curNode.nodeAnnotation_odometryEdge->odo_from_node = &m_graph.nodes[prevNodeID];
+				curNode.nodeAnnotation_odometryEdge->odo_to_node = &m_graph.nodes[m_current_frame.nodeID];
+			}
+			// Pose composition:
+			typename graph_t::constraint_no_pdf_t &newPose = *static_cast<typename graph_t::constraint_no_pdf_t *>(&curNode);
+			newPose.composeFrom(prevPose, odo_increment);
+
+			// Update observations for the current node (overwrite by sensor label): 
+			for (mrpt::slam::CSensoryFrame::iterator it=curNode.nodeAnnotation_observations.begin();it!=curNode.nodeAnnotation_observations.end();++it)
+			{
+				if ( (*it)->sensorLabel==obs->sensorLabel)
 				{
-					typename graph_t::constraint_no_pdf_t &newPose = *static_cast<typename graph_t::constraint_no_pdf_t *>(&curNode);
-					newPose = prevPose;
+					curNode.nodeAnnotation_observations.erase(it);
+					break;
 				}
+			}			
+			curNode.nodeAnnotation_observations.insert(obs);  // Add obs to node
 
-			} // end normal case (not the very first observation)
-		} // end it's a sensor observation
+			// If this was a newly created KeyFrame, assigns to it an initial guess of its global pose: the same than the previous KF.
+			if (createNewFrame)
+			{
+				typename graph_t::constraint_no_pdf_t &newPose = *static_cast<typename graph_t::constraint_no_pdf_t *>(&curNode);
+				newPose = prevPose;
+			}
+
+			// (2/2): Update odometry edge constraint: 
+			// This is done from the CObservationOdometry entries in both the "from" and "to" ends of an odometry edge:
+			if (curNode.nodeAnnotation_odometryEdge!=NULL) // If this node have an odometry edge:
+			{
+				typename graph_t::edge_t & odoEdge = *curNode.nodeAnnotation_odometryEdge;
+				if (odoEdge.odo_from_node && odoEdge.odo_to_node)
+				{
+					mrpt::slam::CObservationOdometryPtr odoFrom = odoEdge.odo_from_node->nodeAnnotation_observations.getObservationByClass<mrpt::slam::CObservationOdometry>();
+					mrpt::slam::CObservationOdometryPtr odoTo = odoEdge.odo_to_node->nodeAnnotation_observations.getObservationByClass<mrpt::slam::CObservationOdometry>();
+					if (odoFrom.present() && odoTo.present())
+					{
+						odoEdge = odoTo->odometry - odoFrom->odometry;
+
+//#ifdef _DEBUG
+						std::cout << "[GSE] Updating odo constraint edge of node " << m_current_frame.nodeID << " to " << odoEdge << std::endl;
+//#endif
+					}
+				}
+			}
+		} // end it's not an empty map
+
 
 		if (!m_graph.nodes.empty())
 		{
@@ -276,6 +282,7 @@ namespace mrpt { namespace graphslam {
 						if (it_the_edge!=m_graph.edges.end())
 						{
 							m_graph.edges.erase( it_the_edge );
+							std::cout << "[GSE] Removing constraint edge " << edge_ids_direct.first << "=>" << edge_ids_direct.second << " due to non match." <<  std::endl;
 						}
 					}
 				} // end for each covisible KF
@@ -299,6 +306,12 @@ namespace mrpt { namespace graphslam {
 			}
 
 		} // end if map not empty
+
+		/*{
+			static int i=0;
+			m_graph.saveToTextFile(mrpt::format("graph_%06i.txt",i++));
+		}*/
+
 
 	} // end of processObservation()
 

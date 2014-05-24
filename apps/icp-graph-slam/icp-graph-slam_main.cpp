@@ -202,7 +202,11 @@ void icp_graphslam_2D(const string & cfgFilename, const string & rawlogFilename)
 
 			// Get current robot pose:
             CPose2D robotPose;
-			graphslam_engine.getCurrentPose(robotPose);
+			if (!graphslam_engine.getCurrentPose(robotPose))
+			{
+				cerr << "Empty graph, skipping this step!\n";
+				continue;
+			}
 			cout << "Current global pose: " << robotPose << endl;
 
 			const CPose3D curRobotPose = CPose3D(robotPose);
@@ -247,13 +251,16 @@ void icp_graphslam_2D(const string & cfgFilename, const string & rawlogFilename)
 						const CPose3D kf_pose = CPose3D(itNode->second);
 						const mrpt::slam::CPointsMap *pntsMap = itNode->second.nodeAnnotation_observations.getAuxPointsMap<mrpt::slam::CPointsMap>();
 						if (!pntsMap) pntsMap = itNode->second.nodeAnnotation_observations.buildAuxPointsMap<mrpt::slam::CPointsMap>();
-						
-						mrpt::opengl::CPointCloudPtr gl_pnts = mrpt::opengl::CPointCloud::Create();
-						gl_pnts->loadFromPointsMap(pntsMap);
-						gl_pnts->setPose(kf_pose);							 
-						gl_pnts->setColor(0,0,1);
-						gl_pnts->setPointSize(2);
-						view->insert(gl_pnts);
+
+						if (pntsMap) // Not all KF must have points map (depending on the sensor type)
+						{
+							mrpt::opengl::CPointCloudPtr gl_pnts = mrpt::opengl::CPointCloud::Create();
+							gl_pnts->loadFromPointsMap(pntsMap);
+							gl_pnts->setPose(kf_pose);							 
+							gl_pnts->setColor(0,0,1);
+							gl_pnts->setPointSize(2);
+							view->insert(gl_pnts);
+						}
 					}
 				}
 
