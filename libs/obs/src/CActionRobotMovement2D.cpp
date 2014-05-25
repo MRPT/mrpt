@@ -338,24 +338,24 @@ void  CActionRobotMovement2D::computeFromEncoders(
 {
 	if (hasEncodersInfo)
 	{
-		int		nSteps = 100;
-		double		factor = 1.0 / nSteps;
+		const double	As   = 0.5* ( K_right*encoderRightTicks + K_left*encoderLeftTicks );
+		const double	Aphi = ( K_right*encoderRightTicks - K_left*encoderLeftTicks ) / D;
 
-		double	As = factor * 0.5* ( K_right*encoderRightTicks + K_left*encoderLeftTicks );
-		double	Aphi = factor * ( K_right*encoderRightTicks - K_left*encoderLeftTicks ) / D;
-		double  x=0,y=0,phi=0;
-
-		for (int step=0;step<nSteps;step++)
+		double  x,y;
+		if (Aphi!=0)
 		{
-			x += cos(phi)*As;
-			y += sin(phi)*As;
-			phi += Aphi;
+			const double R = As/Aphi;
+			x=R*sin(Aphi);
+			y=R*(1-cos(Aphi));
+		}
+		else
+		{
+			x=As;
+			y=0;
 		}
 
-		CPose2D		incrPose(x,y,phi);
-
 		// Build the whole PDF with the current parameters:
-		computeFromOdometry( incrPose, motionModelConfiguration );
+		computeFromOdometry( CPose2D(x,y,Aphi), motionModelConfiguration );
 	}
 }
 
