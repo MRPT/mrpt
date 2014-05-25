@@ -26,10 +26,17 @@ using namespace std;
 //observations. It's meant as a temporary workaround before OpenNI2 is
 //integrated as a generic sensor so that it works with rawlog-grabber.
 
+bool setONI2StreamMode  (openni::VideoStream& stream, int w, int h, int fps, openni::PixelFormat format);
+bool initONI2RGBStream  (openni::Device& device, openni::VideoStream& rgb,   int w, int h, int fps, openni::PixelFormat format);
+bool initONI2DepthStream(openni::Device& device, openni::VideoStream& depth, int w, int h, int fps, openni::PixelFormat format);
 
 int main ( int argc, char** argv )
 {
 	bool manual_mode = false;
+	//						Properties
+	//========================================================================================
+	const unsigned width = 640, height = 480, fps = 30;
+
 	try
 	{
 		if (argc<2)
@@ -71,35 +78,12 @@ int main ( int argc, char** argv )
 
 	//								Create RGB and Depth channels
 	//========================================================================================
-	rc = depth.create(device, openni::SENSOR_DEPTH);
-	if (rc == openni::STATUS_OK)
-	{
-		rc = depth.start();
-		if (rc != openni::STATUS_OK)
-		{
-			printf("Couldn't start depth stream:\n%s\n", openni::OpenNI::getExtendedError());
-			depth.destroy();
-		}
-	}
-	else
-	{
-		printf("Couldn't find depth stream:\n%s\n", openni::OpenNI::getExtendedError());
-	}
-
-
-	rc = rgb.create(device, openni::SENSOR_COLOR);
-	if (rc == openni::STATUS_OK)
-	{
-		rc = rgb.start();
-		if (rc != openni::STATUS_OK)
-		{
-			printf("Couldn't start infrared stream:\n%s\n", openni::OpenNI::getExtendedError());
-			rgb.destroy();
-		}
-	}
-	else
-	{
-		printf("Couldn't find infrared stream:\n%s\n", openni::OpenNI::getExtendedError());
+	initONI2RGBStream  (device, rgb  , width, height, fps, openni::PIXEL_FORMAT_RGB888);
+	initONI2DepthStream(device, depth, width, height, fps, openni::PIXEL_FORMAT_DEPTH_1_MM);
+	if (device.isImageRegistrationModeSupported(openni::IMAGE_REGISTRATION_DEPTH_TO_COLOR)){
+		rc = device.setImageRegistrationMode(openni::IMAGE_REGISTRATION_DEPTH_TO_COLOR);
+	}else{
+		cout << "Device doesn't do image registration!" << endl;
 	}
 
 	if (!depth.isValid() || !rgb.isValid())
@@ -115,54 +99,12 @@ int main ( int argc, char** argv )
 		return 3;
 	}
 
-	//						Configure some properties (resolution)
-	//========================================================================================
-
-	//TODO: 640x480 doesn't work.
-
-	const unsigned width = 320, height = 240;
-
-	if (device.isImageRegistrationModeSupported(openni::IMAGE_REGISTRATION_DEPTH_TO_COLOR))
-		rc = device.setImageRegistrationMode(openni::IMAGE_REGISTRATION_DEPTH_TO_COLOR);
-	else
-		cout << "Device doesn't do image registration!" << endl;
-
 	//	if (device.setDepthColorSyncEnabled(true) == openni::STATUS_OK)
 	//		cout << "setDepthColorSyncEnabled" << endl;
 	//	else
 	//		cout << "setDepthColorSyncEnabled failed!" << endl;
 
 	//rc = device.setImageRegistrationMode(openni::IMAGE_REGISTRATION_OFF);
-
-
-	options = rgb.getVideoMode();
-	printf("\nInitial resolution RGB (%d, %d)", options.getResolutionX(), options.getResolutionY());
-	options.setResolution(width,height);
-	options.setFps(30);
-	options.setPixelFormat(openni::PIXEL_FORMAT_RGB888);
-	rc = rgb.setVideoMode(options);
-	if (rc!=openni::STATUS_OK)
-	{
-		printf("Failed to change RGB resolution!\n");
-		return -1;
-	}
-	rc = rgb.setMirroringEnabled(false);
-
-	options = depth.getVideoMode();
-	printf("\nInitial resolution Depth(%d, %d)", options.getResolutionX(), options.getResolutionY());
-	options.setResolution(width,height);
-	options.setFps(30);
-	options.setPixelFormat(openni::PIXEL_FORMAT_DEPTH_1_MM);
-	rc = depth.setVideoMode(options);
-	if (rc!=openni::STATUS_OK)
-	{
-		printf("Failed to change depth resolution!\n");
-		return -1;
-	}
-	rc = depth.setMirroringEnabled(false);
-
-	options = depth.getVideoMode();
-	printf("\nNew resolution (%d, %d) \n", options.getResolutionX(), options.getResolutionY());
 
 	//Allow detection of closer points (although they will flicker)
 	//bool CloseRange;
@@ -191,7 +133,7 @@ int main ( int argc, char** argv )
 
 	// Fill out the common field to all entries:
 	slam::CObservation3DRangeScan obs;
-	obs.sensorLabel = "KINECT";
+	obs.sensorLabel = "OpenNI2";
 	obs.hasConfidenceImage = false;
 
 	// Kinect style: ranges are actually depth values, not Euclidean distances.
@@ -223,7 +165,7 @@ int main ( int argc, char** argv )
 
 	// Images are already registered from OpenNI2
 	obs.relativePoseIntensityWRTDepth = mrpt::poses::CPose3D(0,0,0,0,0,0);
-
+	obs.hasPoints3D = false;
 
 
 	//							Grab frames and record
@@ -294,9 +236,10 @@ int main ( int argc, char** argv )
 		else
 		{
 			// Read one frame
-			const openni::DepthPixel* pDepthRow = (const openni::DepthPixel*)framed.getData();
-			const openni::RGB888Pixel* pRgbRow = (const openni::RGB888Pixel*)framergb.getData();
-			int rowSize = framed.getStrideInBytes() / sizeof(openni::DepthPixel);
+			const char* pDepthRow = (const char*)framed.getData();
+			const char* pRgbRow   = (const char*)framergb.getData();
+			int d_step   = framed.getStrideInBytes();
+			int rgb_step = framergb.getStrideInBytes();
 
 			obs.timestamp = mrpt::system::getCurrentTime();
 
@@ -311,11 +254,11 @@ int main ( int argc, char** argv )
 			const string sRGBfile = mrpt::format("%i_rgb.png", frame );
 
 			utils::CImage iimage(width,height,CH_RGB);
-			for (int yc = 0; yc < framed.getHeight(); ++yc)
+			for (int yc = 0; yc < height; ++yc)
 			{
-				const openni::DepthPixel* pDepth = pDepthRow;
-				const openni::RGB888Pixel* pRgb = pRgbRow;
-				for (int xc = 0; xc < framed.getWidth(); ++xc, ++pDepth, ++pRgb)
+				const openni::DepthPixel*  pDepth = (const openni::DepthPixel* )pDepthRow;
+				const openni::RGB888Pixel* pRgb   = (const openni::RGB888Pixel*)pRgbRow;
+				for (int xc = 0; xc < width; ++xc, ++pDepth, ++pRgb)
 				{
 					obs.rangeImage(yc,xc) = (*pDepth)*1.0/1000;
 					iimage.setPixel(xc,yc,(pRgb->r<<16)+(pRgb->g<<8)+pRgb->b);
@@ -323,9 +266,8 @@ int main ( int argc, char** argv )
 					//obs.intensityImage.setPixel(xc,yc,(*pRgb));
 
 				}
-
-				pDepthRow += rowSize;
-				pRgbRow += rowSize;
+				pDepthRow += d_step;
+				pRgbRow   += rgb_step;
 			}
 			obs.rangeImage_convertToExternalStorage( sDepthfile, out_img_dir + string("/") );
 			obs.intensityImage = iimage;
@@ -358,3 +300,87 @@ int main ( int argc, char** argv )
 }
 
 
+
+
+bool setONI2StreamMode(openni::VideoStream& stream, int w, int h, int fps, openni::PixelFormat format){
+	/*
+  void openni::VideoMode::setResolution()
+	Setter function for the resolution of this VideoMode. Application use of this function is not recommended.
+	Instead, use SensorInfo::getSupportedVideoModes() to obtain a list of valid video modes
+
+  -- cited from OpenNI2 help. setResolution() is not recommended.
+  */
+	bool found = false;
+	const openni::Array<openni::VideoMode>& modes = stream.getSensorInfo().getSupportedVideoModes();
+	for(int i = 0, i_end = modes.getSize();i < i_end;++i){
+		if(modes[i].getResolutionX() != w){
+			continue;
+		}
+		if(modes[i].getResolutionY() != h){
+			continue;
+		}
+		if(modes[i].getPixelFormat() != format){
+			continue;
+		}
+		openni::Status rc = stream.setVideoMode(modes[i]);
+		if(rc != openni::STATUS_OK){
+			printf("%s:Couldn't find RGB stream:\n%s\n", __FUNCTION__, openni::OpenNI::getExtendedError());
+			return false;
+		}
+		return true;
+	}
+	return false;
+}
+
+bool initONI2RGBStream(openni::Device& device, openni::VideoStream& rgb, int w, int h, int fps, openni::PixelFormat format){
+	openni::Status rc = openni::STATUS_OK;
+	rc = rgb.create(device, openni::SENSOR_COLOR);
+	if(rc != openni::STATUS_OK){
+		printf("%s:Couldn't find RGB stream:\n%s\n", __FUNCTION__, openni::OpenNI::getExtendedError());
+		return false;
+	}
+	rc = rgb.setMirroringEnabled(false);
+	if (rc != openni::STATUS_OK){
+		printf("%s:setMirroringEnabled(false) failed:\n%s\n", __FUNCTION__, openni::OpenNI::getExtendedError());
+		return false;
+	}
+	openni::VideoMode options = rgb.getVideoMode();
+	printf("Initial resolution RGB (%d, %d) FPS %d Format %d\n", options.getResolutionX(), options.getResolutionY(), options.getFps(), options.getPixelFormat());
+	if(setONI2StreamMode(rgb, w, h, fps, format) == false){
+		printf("%s:Can't find desired rgb mode\n", __FUNCTION__ );
+		return false;
+	}
+	options = rgb.getVideoMode();
+	printf("  -> (%d, %d) FPS %d Format %d\n", options.getResolutionX(), options.getResolutionY(), options.getFps(), options.getPixelFormat());
+	rc = rgb.start();
+	if (rc != openni::STATUS_OK){
+		printf("%s:Couldn't start RGB stream:\n%s\n", __FUNCTION__, openni::OpenNI::getExtendedError());
+		rgb.destroy();
+		return false;
+	}
+	return true;
+}
+
+bool initONI2DepthStream(openni::Device& device, openni::VideoStream& depth, int w, int h, int fps, openni::PixelFormat format){
+	openni::Status rc = depth.create(device, openni::SENSOR_DEPTH);
+	if (rc != openni::STATUS_OK){
+		printf("%s:Couldn't find depth stream:\n%s\n", __FUNCTION__, openni::OpenNI::getExtendedError());
+		return false;
+	}
+	openni::VideoMode options = depth.getVideoMode();
+	printf("Initial resolution Depth(%d, %d) FPS %d Format %d\n", options.getResolutionX(), options.getResolutionY(), options.getFps(), options.getPixelFormat());
+	if(setONI2StreamMode(depth, w, h, fps, format) == false){
+		printf("%s:Can't find desired depth mode\n", __FUNCTION__ );
+		return false;
+	}
+	options = depth.getVideoMode();
+	printf("  -> (%d, %d) FPS %d Format %d\n", options.getResolutionX(), options.getResolutionY(), options.getFps(), options.getPixelFormat());
+	depth.setMirroringEnabled(false);
+	rc = depth.start();
+	if (rc != openni::STATUS_OK){
+		printf("Couldn't start depth stream:\n%s\n", openni::OpenNI::getExtendedError());
+		depth.destroy();
+		return false;
+	}
+	return true;
+}
