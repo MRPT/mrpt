@@ -954,6 +954,7 @@ void xRawLogViewerFrame::OnMenuConvertSF(wxCommandEvent& event)
 	CSensoryFrame	SF_new;
 	set<string>  	SF_new_labels;
 	TTimeStamp		SF_new_first_t = INVALID_TIMESTAMP;
+	CObservationOdometryPtr  last_sf_odo, cur_sf_odo;
 
 	for (unsigned int countLoop=0;countLoop<nEntries;countLoop++)
 	{
@@ -989,8 +990,21 @@ void xRawLogViewerFrame::OnMenuConvertSF(wxCommandEvent& event)
 				{
 					new_rawlog.addObservations(SF_new);
 
+					// Odometry increments:
 					CActionCollection	acts;
+					if (last_sf_odo && cur_sf_odo)
+					{
+						CActionRobotMovement2D act;
+						act.timestamp = cur_sf_odo->timestamp;
+						CActionRobotMovement2D::TMotionModelOptions opts;
+						act.computeFromOdometry( cur_sf_odo->odometry - last_sf_odo->odometry,opts);
+						acts.insert(act);
+					}
 					new_rawlog.addActions(acts);
+
+					last_sf_odo = cur_sf_odo;
+					cur_sf_odo.clear_unique();
+
 
 					SF_new.clear();
 					SF_new_labels.clear();
@@ -1005,6 +1019,12 @@ void xRawLogViewerFrame::OnMenuConvertSF(wxCommandEvent& event)
 				}
 				if (SF_new_first_t == INVALID_TIMESTAMP)
 					SF_new_first_t = o->timestamp;
+
+				if (o->GetRuntimeClass() ==CLASS_ID(CObservationOdometry) )
+				{
+					cur_sf_odo = CObservationOdometryPtr(o);
+				}
+
 			}
 			break;
 
