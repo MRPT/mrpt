@@ -34,7 +34,7 @@ using namespace mrpt::slam;
 using namespace mrpt::synch;
 using namespace std;
 
-#define DEVICE_LIST_PTR (reinterpret_cast< openni::Array<openni::DeviceInfo>* >(deviceListPtr))
+#define DEVICE_LIST_PTR (reinterpret_cast<openni::Array<openni::DeviceInfo>* >(deviceListPtr))
 #define DEVICE_ID_PTR (reinterpret_cast<openni::Device*>(vp_devices[sensor_id]))
 #define DEPTH_STREAM_ID_PTR (reinterpret_cast<openni::VideoStream*>(vp_depth_stream[sensor_id]))
 #define RGB_STREAM_ID_PTR (reinterpret_cast<openni::VideoStream*>(vp_rgb_stream[sensor_id]))
@@ -44,20 +44,59 @@ using namespace std;
 // Initialize static member
 std::vector<unsigned> COpenNI2Generic::vOpenDevices = std::vector<unsigned>();
 
+/*
+void openni::VideoMode::setResolution()
+Setter function for the resolution of this VideoMode. Application use of this function is not recommended.
+Instead, use SensorInfo::getSupportedVideoModes() to obtain a list of valid video modes
+
+-- cited from OpenNI2 help. setResolution() is not recommended.
+*/
+bool setONI2StreamMode(openni::VideoStream& stream, int w, int h, int fps, openni::PixelFormat format)
+{
+//std::cout << "Ask mode: " << w << "x" << h << " " << fps << " fps. format " << format << std::endl;
+	bool found = false;
+	const openni::Array<openni::VideoMode>& modes = stream.getSensorInfo().getSupportedVideoModes();
+	for(int i = 0, i_end = modes.getSize();i < i_end;++i){
+//	  std::cout << "Mode: " << modes[i].getResolutionX() << "x" << modes[i].getResolutionY() << " " << modes[i].getFps() << " fps. format " << modes[i].getPixelFormat() << std::endl;
+		if(modes[i].getResolutionX() != w){
+			continue;
+		}
+		if(modes[i].getResolutionY() != h){
+			continue;
+		}
+		if(modes[i].getFps() != fps){
+			continue;
+		}
+		if(modes[i].getPixelFormat() != format){
+			continue;
+		}
+		openni::Status rc = stream.setVideoMode(modes[i]);
+		if(rc != openni::STATUS_OK){
+			printf("%s:Couldn't find RGB stream:\n%s\n", __FUNCTION__, openni::OpenNI::getExtendedError());
+			return false;
+		}
+		return true;
+	}
+	return false;
+}
+
+
 /*-------------------------------------------------------------
 ctor
 -------------------------------------------------------------*/
 COpenNI2Generic::COpenNI2Generic() :
 	numDevices(0),
-	width(320),
-	height(240),
-	//  width(640),
-	//  height(420),
+//	width(320),
+//	height(240),
+  width(640),
+  height(480),
 	fps(30),
   m_grab_image(true),
 	m_grab_depth(true),
 	m_grab_3D_points(true)
 {
+	rgb_pFormat = new openni::PixelFormat(openni::PIXEL_FORMAT_RGB888);
+	depth_pFormat = new openni::PixelFormat(openni::PIXEL_FORMAT_DEPTH_1_MM);
 }
 
 /*-------------------------------------------------------------
@@ -65,12 +104,14 @@ dtor
 -------------------------------------------------------------*/
 COpenNI2Generic::~COpenNI2Generic()
 {
+  delete reinterpret_cast<openni::PixelFormat*>(rgb_pFormat);
+  delete reinterpret_cast<openni::PixelFormat*>(depth_pFormat);
 }
 
 /** This method can or cannot be implemented in the derived class, depending on the need for it.
 *  \exception This method must throw an exception with a descriptive message if some critical error is found.
 */
-void COpenNI2Generic::getConnectedDevices()
+int COpenNI2Generic::getConnectedDevices()
 {
 #if MRPT_HAS_OPENNI2
 	int rc = openni::OpenNI::initialize();
@@ -98,9 +139,11 @@ void COpenNI2Generic::getConnectedDevices()
 	if(numDevices == 0)
 	{
 		cout << "No devices connected -> EXIT\n";
-		return;
 	}
-	cout << "COpenNI2Generic initializes correctly.\n";
+	else
+    cout << "COpenNI2Generic initializes correctly.\n";
+
+  return numDevices;
 
 #else
 	THROW_EXCEPTION("MRPT was built without OpenNI2 support")
@@ -122,7 +165,6 @@ void COpenNI2Generic::kill()
 #endif // MRPT_HAS_OPENNI2
 }
 
-
 bool COpenNI2Generic::isOpen(const unsigned sensor_id) const
 {
 	for(unsigned i=0; i < COpenNI2Generic::vOpenDevices.size(); i++)
@@ -130,6 +172,61 @@ bool COpenNI2Generic::isOpen(const unsigned sensor_id) const
 			return true;
 
 	return false;
+}
+
+bool COpenNI2Generic::initONI2RGBStream(unsigned sensor_id, int w, int h, int fps, void *pFormat)
+{
+	openni::Status rc = openni::STATUS_OK;
+	rc = RGB_STREAM_ID_PTR->create(*DEVICE_ID_PTR, openni::SENSOR_COLOR);
+	if(rc != openni::STATUS_OK){
+		printf("%s: Couldn't find RGB stream:\n%s\n", __FUNCTION__, openni::OpenNI::getExtendedError());
+		return false;
+	}
+	rc = RGB_STREAM_ID_PTR->setMirroringEnabled(false);
+	if (rc != openni::STATUS_OK){
+		printf("%s: setMirroringEnabled(false) failed:\n%s\n", __FUNCTION__, openni::OpenNI::getExtendedError());
+		return false;
+	}
+	openni::VideoMode options = RGB_STREAM_ID_PTR->getVideoMode();
+	printf("Initial resolution RGB (%d, %d) FPS %d Format %d\n", options.getResolutionX(), options.getResolutionY(), options.getFps(), options.getPixelFormat());
+	if(setONI2StreamMode(*RGB_STREAM_ID_PTR, w, h, fps, *(reinterpret_cast<openni::PixelFormat*>(pFormat))) == false){
+		printf("%s: Can't find desired rgb mode\n", __FUNCTION__ );
+		return false;
+	}
+	options = RGB_STREAM_ID_PTR->getVideoMode();
+	printf("  -> (%d, %d) FPS %d Format %d\n", options.getResolutionX(), options.getResolutionY(), options.getFps(), options.getPixelFormat());
+	rc = RGB_STREAM_ID_PTR->start();
+	if (rc != openni::STATUS_OK){
+		printf("%s: Couldn't start RGB stream:\n%s\n", __FUNCTION__, openni::OpenNI::getExtendedError());
+		RGB_STREAM_ID_PTR->destroy();
+		return false;
+	}
+	return true;
+}
+
+bool COpenNI2Generic::initONI2DepthStream(unsigned sensor_id, int w, int h, int fps, void *pFormat)
+{
+	openni::Status rc = DEPTH_STREAM_ID_PTR->create(*DEVICE_ID_PTR, openni::SENSOR_DEPTH);
+	if (rc != openni::STATUS_OK){
+		printf("%s: Couldn't find depth stream:\n%s\n", __FUNCTION__, openni::OpenNI::getExtendedError());
+		return false;
+	}
+	openni::VideoMode options = DEPTH_STREAM_ID_PTR->getVideoMode();
+	printf("Initial resolution Depth(%d, %d) FPS %d Format %d\n", options.getResolutionX(), options.getResolutionY(), options.getFps(), options.getPixelFormat());
+	if(setONI2StreamMode(*DEPTH_STREAM_ID_PTR, w, h, fps, *(reinterpret_cast<openni::PixelFormat*>(pFormat))) == false){
+		printf("%s: Can't find desired depth mode\n", __FUNCTION__ );
+		return false;
+	}
+	options = DEPTH_STREAM_ID_PTR->getVideoMode();
+	printf("  -> (%d, %d) FPS %d Format %d\n", options.getResolutionX(), options.getResolutionY(), options.getFps(), options.getPixelFormat());
+	DEPTH_STREAM_ID_PTR->setMirroringEnabled(false);
+	rc = DEPTH_STREAM_ID_PTR->start();
+	if (rc != openni::STATUS_OK){
+		printf(" Couldn't start depth stream:\n%s\n", openni::OpenNI::getExtendedError());
+		DEPTH_STREAM_ID_PTR->destroy();
+		return false;
+	}
+	return true;
 }
 
 void COpenNI2Generic::open(unsigned sensor_id)
@@ -206,35 +303,18 @@ void COpenNI2Generic::open(unsigned sensor_id)
 
 	//								Create RGB and Depth channels
 	//========================================================================================
-	rc = DEPTH_STREAM_ID_PTR->create(*DEVICE_ID_PTR, openni::SENSOR_DEPTH);
-	if (rc == openni::STATUS_OK)
-	{
-		rc = DEPTH_STREAM_ID_PTR->start();
-		if (rc != openni::STATUS_OK)
-		{
-			THROW_EXCEPTION_CUSTOM_MSG1("Couldn't start depth stream:\n%s\n", openni::OpenNI::getExtendedError());
-			DEPTH_STREAM_ID_PTR->destroy();
-		}
-	}
-	else
-	{
-		printf("Couldn't find depth stream:\n%s\n", openni::OpenNI::getExtendedError());
-	}
+	initONI2DepthStream(sensor_id, width, height, fps, depth_pFormat); // reinterpret_cast<void*>(depth_pFormat)
 
-    m_has_color = DEVICE_ID_PTR->hasSensor(openni::SENSOR_COLOR);
-	rc = RGB_STREAM_ID_PTR->create(*DEVICE_ID_PTR, openni::SENSOR_COLOR);
-	if (rc == openni::STATUS_OK)
+  // Check that the OpenNI2 sensor has RGB camera
+	m_has_color = DEVICE_ID_PTR->hasSensor(openni::SENSOR_COLOR);
+	if(m_has_color)
 	{
-		rc = RGB_STREAM_ID_PTR->start();
-		if (rc != openni::STATUS_OK)
-		{
-			THROW_EXCEPTION_CUSTOM_MSG1("Couldn't start infrared stream:\n%s\n", openni::OpenNI::getExtendedError());
-			RGB_STREAM_ID_PTR->destroy();
-		}
-	}
-	else
-	{
-		printf("Couldn't find infrared stream:\n%s\n", openni::OpenNI::getExtendedError());
+    initONI2RGBStream(sensor_id, width, height, fps, rgb_pFormat);
+    if (DEVICE_ID_PTR->isImageRegistrationModeSupported(openni::IMAGE_REGISTRATION_DEPTH_TO_COLOR)){
+      rc = DEVICE_ID_PTR->setImageRegistrationMode(openni::IMAGE_REGISTRATION_DEPTH_TO_COLOR);
+    }else{
+      cout << "Device doesn't do image registration!" << endl;
+    }
 	}
 
 	if (!DEPTH_STREAM_ID_PTR->isValid() || !RGB_STREAM_ID_PTR->isValid())
@@ -250,49 +330,6 @@ void COpenNI2Generic::open(unsigned sensor_id)
 		return;
 	}
 
-	//						Configure some properties (resolution)
-	//========================================================================================
-	openni::VideoMode	options;
-	if (DEVICE_ID_PTR->isImageRegistrationModeSupported(openni::IMAGE_REGISTRATION_DEPTH_TO_COLOR))
-		rc = DEVICE_ID_PTR->setImageRegistrationMode(openni::IMAGE_REGISTRATION_DEPTH_TO_COLOR);
-	else
-		cout << "Device doesn't do image registration!" << endl;
-
-	if (DEVICE_ID_PTR->setDepthColorSyncEnabled(true) == openni::STATUS_OK)
-		cout << "setDepthColorSyncEnabled" << endl;
-	else
-		cout << "setDepthColorSyncEnabled failed!" << endl;
-
-	//rc = DEVICE_ID_PTR->setImageRegistrationMode(openni::IMAGE_REGISTRATION_OFF);
-
-	options = RGB_STREAM_ID_PTR->getVideoMode();
-	printf("\nInitial resolution RGB (%d, %d)", options.getResolutionX(), options.getResolutionY());
-	options.setResolution(width,height);
-	options.setFps(fps);
-	options.setPixelFormat(openni::PIXEL_FORMAT_RGB888);
-	rc = RGB_STREAM_ID_PTR->setVideoMode(options);
-	if (rc!=openni::STATUS_OK)
-	{
-		printf("Failed to change RGB resolution!\n");
-		return;
-	}
-	rc = RGB_STREAM_ID_PTR->setMirroringEnabled(false);
-
-	options = DEPTH_STREAM_ID_PTR->getVideoMode();
-	options.setResolution(width,height);
-	options.setFps(30);
-	options.setPixelFormat(openni::PIXEL_FORMAT_DEPTH_1_MM);
-	rc = DEPTH_STREAM_ID_PTR->setVideoMode(options);
-	if (rc!=openni::STATUS_OK)
-	{
-		printf("Failed to change depth resolution!\n");
-		return;
-	}
-	rc = DEPTH_STREAM_ID_PTR->setMirroringEnabled(false);
-
-	options = DEPTH_STREAM_ID_PTR->getVideoMode();
-	printf("\nSet resolution (%d, %d) \n", options.getResolutionX(), options.getResolutionY());
-
 	//Allow detection of closer points (although they will flicker)
 	bool CloseRange;
 	DEPTH_STREAM_ID_PTR->setProperty(XN_STREAM_PROPERTY_CLOSE_RANGE, 1);
@@ -305,7 +342,7 @@ void COpenNI2Generic::open(unsigned sensor_id)
 	//    setTiltAngleDegrees(m_initial_tilt_angle);
 
 	mrpt::system::sleep(2000); // Sleep 2s
-	cout << "Device " << sensor_id << " open successfully.\n\n";
+	cout << "Device " << sensor_id << " open successfully.\n\n"; //cout << "Streaming " << width << "x" << height << " open successfully.\n\n";
 #else
 	THROW_EXCEPTION("MRPT was built without OpenNI2 support")
 #endif // MRPT_HAS_OPENNI2

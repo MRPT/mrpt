@@ -83,10 +83,8 @@ COpenNI2Sensor::~COpenNI2Sensor()
 void COpenNI2Sensor::initialize()
 {
 #if MRPT_HAS_OPENNI2
-    // Check and list the available devices
-	getConnectedDevices();
-
-	open(m_user_device_number);
+	if( getConnectedDevices() ) // Check and list the available devices. If there is at least one device connected, open the first in the list.
+    open(m_user_device_number);
 #else
 	THROW_EXCEPTION("MRPT was built without OpenNI2 support")
 #endif // MRPT_HAS_OPENNI2
