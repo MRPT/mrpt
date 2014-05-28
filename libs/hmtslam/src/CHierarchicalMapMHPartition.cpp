@@ -1266,6 +1266,10 @@ void  CHierarchicalMapMHPartition::computeGloballyConsistentNodeCoordinates(
 	MRPT_START
 
 	nodePoses.clear();
+	
+	if (m_arcs.empty())
+		return; // Nothing we can do!
+
 
 	// 1) Convert hmt-slam graph into graphslam graph... (this should be avoided in future version of HTML-SLAM!!)
 	graphs::CNetworkOfPoses3DInf  pose_graph;
