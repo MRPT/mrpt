@@ -51,6 +51,7 @@ Instead, use SensorInfo::getSupportedVideoModes() to obtain a list of valid vide
 
 -- cited from OpenNI2 help. setResolution() is not recommended.
 */
+#if MRPT_HAS_OPENNI2
 bool setONI2StreamMode(openni::VideoStream& stream, int w, int h, int fps, openni::PixelFormat format)
 {
 //std::cout << "Ask mode: " << w << "x" << h << " " << fps << " fps. format " << format << std::endl;
@@ -79,6 +80,7 @@ bool setONI2StreamMode(openni::VideoStream& stream, int w, int h, int fps, openn
 	}
 	return false;
 }
+#endif // MRPT_HAS_OPENNI2
 
 
 /*-------------------------------------------------------------
@@ -95,8 +97,10 @@ COpenNI2Generic::COpenNI2Generic() :
 	m_grab_depth(true),
 	m_grab_3D_points(true)
 {
+#if MRPT_HAS_OPENNI2
 	rgb_pFormat = new openni::PixelFormat(openni::PIXEL_FORMAT_RGB888);
 	depth_pFormat = new openni::PixelFormat(openni::PIXEL_FORMAT_DEPTH_1_MM);
+#endif
 }
 
 /*-------------------------------------------------------------
@@ -104,8 +108,10 @@ dtor
 -------------------------------------------------------------*/
 COpenNI2Generic::~COpenNI2Generic()
 {
+#if MRPT_HAS_OPENNI2
   delete reinterpret_cast<openni::PixelFormat*>(rgb_pFormat);
   delete reinterpret_cast<openni::PixelFormat*>(depth_pFormat);
+#endif
 }
 
 /** This method can or cannot be implemented in the derived class, depending on the need for it.
@@ -176,6 +182,7 @@ bool COpenNI2Generic::isOpen(const unsigned sensor_id) const
 
 bool COpenNI2Generic::initONI2RGBStream(unsigned sensor_id, int w, int h, int fps, void *pFormat)
 {
+#if MRPT_HAS_OPENNI2
 	openni::Status rc = openni::STATUS_OK;
 	rc = RGB_STREAM_ID_PTR->create(*DEVICE_ID_PTR, openni::SENSOR_COLOR);
 	if(rc != openni::STATUS_OK){
@@ -202,10 +209,14 @@ bool COpenNI2Generic::initONI2RGBStream(unsigned sensor_id, int w, int h, int fp
 		return false;
 	}
 	return true;
+#else
+    return false;
+#endif
 }
 
 bool COpenNI2Generic::initONI2DepthStream(unsigned sensor_id, int w, int h, int fps, void *pFormat)
 {
+#if MRPT_HAS_OPENNI2
 	openni::Status rc = DEPTH_STREAM_ID_PTR->create(*DEVICE_ID_PTR, openni::SENSOR_DEPTH);
 	if (rc != openni::STATUS_OK){
 		printf("%s: Couldn't find depth stream:\n%s\n", __FUNCTION__, openni::OpenNI::getExtendedError());
@@ -227,6 +238,9 @@ bool COpenNI2Generic::initONI2DepthStream(unsigned sensor_id, int w, int h, int 
 		return false;
 	}
 	return true;
+#else
+    return false;
+#endif
 }
 
 void COpenNI2Generic::open(unsigned sensor_id)
