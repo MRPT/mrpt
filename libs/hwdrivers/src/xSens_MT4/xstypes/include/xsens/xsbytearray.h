@@ -42,7 +42,7 @@ XSTYPES_DLL_API void XsByteArray_construct(XsByteArray* thisPtr, XsSize count, u
 #endif
 
 #ifdef __cplusplus
-struct XsByteArray : public XsArrayImpl<uint8_t, g_xsByteArrayDescriptor, XsByteArray> {
+struct XsByteArray : public XsArrayImpl<uint8_t, &g_xsByteArrayDescriptor, XsByteArray> {
 	//! \brief Constructs an XsByteArray
 	inline XsByteArray(XsSize sz = 0, uint8_t const* src = 0)
 		 : ArrayImpl(sz, src)

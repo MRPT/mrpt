@@ -32,7 +32,7 @@ XSTYPES_DLL_API void XsMessageArray_construct(XsMessageArray* thisPtr, XsSize co
 #endif
 
 #ifdef __cplusplus
-struct XsMessageArray : public XsArrayImpl<XsMessage, g_xsMessageArrayDescriptor, XsMessageArray> {
+struct XsMessageArray : public XsArrayImpl<XsMessage, &g_xsMessageArrayDescriptor, XsMessageArray> {
 	//! \brief Constructs an XsMessageArray
 	inline XsMessageArray(XsSize sz = 0, XsMessage const* src = 0)
 		 : ArrayImpl(sz, src)

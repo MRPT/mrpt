@@ -31,7 +31,7 @@ XSTYPES_DLL_API void XsPortInfoArray_construct(XsPortInfoArray* thisPtr, XsSize 
 #endif
 
 #ifdef __cplusplus
-struct XsPortInfoArray : public XsArrayImpl<XsPortInfo, g_xsPortInfoArrayDescriptor, XsPortInfoArray> {
+struct XsPortInfoArray : public XsArrayImpl<XsPortInfo, &g_xsPortInfoArrayDescriptor, XsPortInfoArray> {
 	//! \brief Constructs an XsPortInfoArray
 	inline XsPortInfoArray(XsSize sz = 0, XsPortInfo const* src = 0)
 		 : ArrayImpl(sz, src)

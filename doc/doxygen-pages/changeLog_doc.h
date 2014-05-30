@@ -15,7 +15,7 @@
 <a name="1.2.0">
   <h2>Version 1.2.0: (Under development) </h2></a>
   	- <b>Most important changes:</b>
-		- Public header files (.h) have undergone a serious refactoring to minimize unnecesary dependencies and reduce compile time and memory as much as possible. 
+		- Public header files (.h) have undergone a serious refactoring to minimize unnecesary dependencies and reduce compile time and memory as much as possible.
 		  As a side effect, user code might need to add new #include<> lines. This API change justifies the new minor version series 1.2.X.
 		- MRPT now cleanly builds in clang and OSX.
 		- Many bug fixes.
@@ -32,8 +32,8 @@
 			- [mrpt-hwdrivers]
 				- mrpt::hwdrivers::COpenNI2Sensor: Interface to OpenNI2 cameras, capable of reading from an array of OpenNI2 RGBD cameras (By Eduardo Fernandez)
 			- [mrpt-obs]
-				- mrpt::slam::CObservation6DFeatures 
-		- Changes in classes: 
+				- mrpt::slam::CObservation6DFeatures
+		- Changes in classes:
 			- [mrpt-base]
 				- Robust kernel templates moved from mrpt::vision to mrpt::math. See mrpt::math::RobustKernel<>. Added unit tests for robust kernels.
 				- CPose3D has new SE(3) methods: mrpt::poses::CPose3D::jacob_dexpeD_de(), mrpt::poses::CPose3D::jacob_dAexpeD_de()
@@ -46,10 +46,10 @@
 			- [mrpt-vision]
 				- mrpt::vision::checkerBoardStereoCalibration: More robust handling of stereo calibration patterns. OpenCV sometimes detects corners in the wrong order between (left/right) images, so we detect the situation and fix it.
 				- mrpt::vision::findMultipleChessboardsCorners() now enforces a consistent counterclockwise XYZ coordinate frame at each detected chessboard.
-		- Build system / public API: 
+		- Build system / public API:
 			- Fixes to build in OS X - [Patch](https://gist.github.com/randvoorhies/9283072) by Randolph Voorhies.
 			- Removed most "using namespace" from public headers, as good practice.
-			- Refactoring of MRPT headers. 
+			- Refactoring of MRPT headers.
 				- <mrpt/utils/stl_extensions.h> has been split into:
 					- <mrpt/utils/stl_serialization.h>
 					- <mrpt/utils/circular_buffer.h>
@@ -76,6 +76,7 @@
 			- mrpt::system::createDirectory() returned false (error) when the directory already existed.
 			- mrpt::vision::CStereoRectifyMap::rectify() didn't update the left & right camera poses inside mrpt::slam::CObservationStereoImages objects while rectifying.
 			- RawLogViewer: Operation "convert to SF format" didn't take into account odometry observations.
+			- Fix build errors with GCC 4.9
 
 <hr>
  <a name="1.1.0">
