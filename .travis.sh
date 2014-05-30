@@ -8,6 +8,7 @@ CMAKE_CXX_FLAGS="-Wall -Wextra -Wabi -O2"
 
 function build ()
 {
+  env 
   mkdir $BUILD_DIR && cd $BUILD_DIR
   cmake $MRPT_DIR -DBUILD_EXAMPLES=TRUE -DBUILD_APPLICATIONS=TRUE -DBUILD_TESTING=FALSE
   make -j2
