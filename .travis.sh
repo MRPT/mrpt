@@ -8,9 +8,18 @@ CMAKE_CXX_FLAGS="-Wall -Wextra -Wabi -O2"
 
 function build ()
 {
-  env 
+  #env 
   mkdir $BUILD_DIR && cd $BUILD_DIR
-  cmake $MRPT_DIR -DBUILD_EXAMPLES=TRUE -DBUILD_APPLICATIONS=TRUE -DBUILD_TESTING=FALSE
+  if CC=gcc
+
+  # gcc is too slow and we have a time limit in Travis CI: exclude examples when building with gcc
+  if [ "$CC" == "gcc" ]; then
+    BUILD_EXAMPLES=FALSE
+  else
+    BUILD_EXAMPLES=TRUE
+  fi
+
+  cmake $MRPT_DIR -DBUILD_EXAMPLES=$BUILD_EXAMPLES -DBUILD_APPLICATIONS=TRUE -DBUILD_TESTING=FALSE
   make -j2
 }
 
