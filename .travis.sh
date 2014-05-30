@@ -10,7 +10,6 @@ function build ()
 {
   #env 
   mkdir $BUILD_DIR && cd $BUILD_DIR
-  if CC=gcc
 
   # gcc is too slow and we have a time limit in Travis CI: exclude examples when building with gcc
   if [ "$CC" == "gcc" ]; then
