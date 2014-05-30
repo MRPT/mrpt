@@ -175,8 +175,8 @@ void xRawLogViewerFrame::SelectObjectInTreeView( const CSerializablePtr & sel_ob
 
 					cout << "Homogeneous matrix for the sensor's 3D pose, relative to robot base:\n";
 					cout << obs->cameraPose.getHomogeneousMatrixVal() << endl
-					<< "Camera pose: " << obs->cameraPose << endl 
-					<< "Camera pose (YPR): " << CPose3D(obs->cameraPose) << endl 
+					<< "Camera pose: " << obs->cameraPose << endl
+					<< "Camera pose (YPR): " << CPose3D(obs->cameraPose) << endl
 					<< endl;
 
 					mrpt::utils::TStereoCamera stParams;
@@ -978,6 +978,28 @@ void xRawLogViewerFrame::SelectObjectInTreeView( const CSerializablePtr & sel_ob
 
                                                         cout << endl;
 
+                                                    }
+                                                    else
+                                                    if ( classID  == CLASS_ID(CObservation6DFeatures) )
+                                                    {
+                                                        // ----------------------------------------------------------------------
+                                                        //              CObservation6DFeatures
+                                                        // ----------------------------------------------------------------------
+                                                        CObservation6DFeaturesPtr obs = CObservation6DFeaturesPtr( sel_obj);
+                                                        curSelectedObservation = CObservationPtr( sel_obj );
+                                                        cout << endl;
+
+                                                        cout << "Sensor pose: " << obs->sensorPose << endl;
+                                                        cout << "Min range  : " << obs->minSensorDistance << endl;
+                                                        cout << "Max range  : " << obs->maxSensorDistance << endl << endl;
+
+                                                        cout << "Observation count : " << obs->sensedFeatures.size() << endl << endl;
+
+                                                        for (size_t k=0;k<obs->sensedFeatures.size();k++)
+                                                        {
+                                                            const CObservation6DFeatures::TMeasurement & m = obs->sensedFeatures[k];
+                                                            cout << "#" << k << ": ID=" << m.id << "; value=" << m.pose << "; inf=" <<m.inf_matrix.inMatlabFormat() << endl;
+                                                        }
                                                     }
                                                     else
 													{
