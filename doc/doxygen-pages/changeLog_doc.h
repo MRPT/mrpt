@@ -77,6 +77,7 @@
 			- mrpt::vision::CStereoRectifyMap::rectify() didn't update the left & right camera poses inside mrpt::slam::CObservationStereoImages objects while rectifying.
 			- RawLogViewer: Operation "convert to SF format" didn't take into account odometry observations.
 			- Fix build errors with GCC 4.9
+			- Fix crash of mrpt::hwdrivers::CIMUXSens_MT4's destructor when it fails to scan and open a device.
 
 <hr>
  <a name="1.1.0">

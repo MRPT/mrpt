@@ -85,7 +85,8 @@ using namespace std;
 		*/
 		void close()
 		{
-			m_streamInterface->close();
+			if (m_streamInterface)
+				m_streamInterface->close();
 		}
 
 		/*! \brief Read available data from the open IO device
