@@ -78,12 +78,10 @@ namespace mrpt
 		* task0.ao.maxVal          =  10.0    // Volts
 		* 
 		* ; Digital input channel params.
-		* task0.di.lines           = Dev1/port2, Dev1/port0/line0:4
-		* task0.di.linesCount      = 12  // *IMPORTANT* This must be the total number of lines
+		* task0.di.line           = Dev1/port1/line0
 		* 
 		* ; Digital input channel params.
-		* task0.do.lines           = Dev1/port0/line6:7, Dev1/port1
-		* task0.do.linesCount      = 10  // *IMPORTANT* This must be the total number of lines
+		* task0.do.line           = Dev1/port1/line2
 		* 
 		* ; Counter: period of a digital signal
 		* task0.ci_period.counter  = Dev1/ctr0
