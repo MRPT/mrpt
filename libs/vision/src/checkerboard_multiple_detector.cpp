@@ -17,6 +17,10 @@
 #include <mrpt/otherlibs/do_opencv_includes.h>
 #include "checkerboard_ocamcalib_detector.h"
 
+#if VIS
+#include <mrpt/gui/CDisplayWindow.h>
+#endif
+
 
 using namespace mrpt;
 using namespace mrpt::utils;
