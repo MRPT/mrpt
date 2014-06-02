@@ -42,12 +42,14 @@
 #	define MRPT_DAQmxCreateCOPulseChanFreq DAQmxBaseCreateCOPulseChanFreq
 #	define MRPT_DAQmxCfgSampClkTiming DAQmxBaseCfgSampClkTiming
 #	define MRPT_DAQmxCfgInputBuffer DAQmxBaseCfgInputBuffer
+#	define MRPT_DAQmxCfgOutputBuffer DAQmxBaseCfgOutputBuffer
 #	define MRPT_DAQmxStartTask DAQmxBaseStartTask
 #	define MRPT_DAQmxStopTask DAQmxBaseStopTask
 #	define MRPT_DAQmxClearTask DAQmxBaseClearTask
 #	define MRPT_DAQmxReadAnalogF64 DAQmxBaseReadAnalogF64
 #	define MRPT_DAQmxReadCounterF64 DAQmxBaseReadCounterF64
 #	define MRPT_DAQmxReadDigitalU8 DAQmxBaseReadDigitalU8
+#	define MRPT_DAQmxWriteAnalogF64 DAQmxBaseWriteAnalogF64
 #else
 #	define MRPT_DAQmxGetExtendedErrorInfo DAQmxGetExtendedErrorInfo
 #	define MRPT_DAQmxCreateTask DAQmxCreateTask
@@ -63,12 +65,14 @@
 #	define MRPT_DAQmxCreateCOPulseChanFreq DAQmxCreateCOPulseChanFreq
 #	define MRPT_DAQmxCfgSampClkTiming DAQmxCfgSampClkTiming
 #	define MRPT_DAQmxCfgInputBuffer DAQmxCfgInputBuffer
+#	define MRPT_DAQmxCfgOutputBuffer DAQmxCfgOutputBuffer
 #	define MRPT_DAQmxStartTask DAQmxStartTask
 #	define MRPT_DAQmxStopTask DAQmxStopTask
 #	define MRPT_DAQmxClearTask DAQmxClearTask
 #	define MRPT_DAQmxReadAnalogF64 DAQmxReadAnalogF64
 #	define MRPT_DAQmxReadCounterF64 DAQmxReadCounterF64
 #	define MRPT_DAQmxReadDigitalU8 DAQmxReadDigitalU8
+#	define MRPT_DAQmxWriteAnalogF64 DAQmxWriteAnalogF64
 #endif
 
 // An auxiliary macro to check and report errors in the DAQmx library as exceptions with a well-explained message.
@@ -434,13 +438,26 @@ void  CNationalInstrumentsDAQ::initialize()
 					tf.co_pulses.dutyCycle));
 			}
 
-			// sample rate:
-			ASSERT_ABOVE_(tf.samplesPerSecond,0)
-			MRPT_DAQmx_ErrChk (MRPT_DAQmxCfgSampClkTiming(taskHandle,tf.sampleClkSource.c_str(),tf.samplesPerSecond,DAQmx_Val_Rising, DAQmx_Val_ContSamps,tf.samplesPerChannelToRead));
-
 			// Seems to be needed to avoid an errors avoid like: 
 			// " Onboard device memory overflow. Because of system and/or bus-bandwidth limitations, the driver could not read data from the device fast enough to keep up with the device throughput."
-			MRPT_DAQmx_ErrChk (MRPT_DAQmxCfgInputBuffer(taskHandle,tf.bufferSamplesPerChannel));
+			if (tf.has_ai || tf.has_di || tf.has_ci_period || tf.has_ci_count_edges ||tf.has_ci_pulse_width || tf.has_ci_lin_encoder || tf.has_ci_ang_encoder )
+			{
+				// sample rate:
+				ASSERT_ABOVE_(tf.samplesPerSecond,0)
+				MRPT_DAQmx_ErrChk (MRPT_DAQmxCfgSampClkTiming(taskHandle,tf.sampleClkSource.c_str(),tf.samplesPerSecond,DAQmx_Val_Rising, DAQmx_Val_ContSamps,tf.samplesPerChannelToRead));
+
+				MRPT_DAQmx_ErrChk (MRPT_DAQmxCfgInputBuffer(taskHandle,tf.bufferSamplesPerChannel));
+			}
+
+			if (tf.has_ao)
+			{
+				// Nothing to do as long as we only need "on demand" outputs.
+			//	MRPT_DAQmx_ErrChk (MRPT_DAQmxCfgOutputBuffer(taskHandle,2 /*tf.bufferSamplesPerChannel*/ ));
+			//	// Output buffer MUST have some data before starting the task: write 0s:
+			//	vector<double> d;
+			//	d.assign(tf.ao.physicalChannelCount*2, 0.0);
+			//	this->writeAnalogOutputTask(i,1 /* samples per channel */, &d[0], 0.10 /*timeout*/, false);
+			}
 
 			// Create pipe:
 			mrpt::synch::CPipe::createPipe(ipt.read_pipe, ipt.write_pipe);
@@ -452,10 +469,12 @@ void  CNationalInstrumentsDAQ::initialize()
 			MRPT_DAQmx_ErrChk (MRPT_DAQmxStartTask(taskHandle));
 
 			ipt.hThread = mrpt::system::createThreadFromObjectMethodRef<CNationalInstrumentsDAQ,TInfoPerTask>(this, &CNationalInstrumentsDAQ::grabbing_thread, ipt);
+			
 
 		}
-		catch (std::exception const &)
+		catch (std::exception const &e)
 		{
+			std::cerr << "[CNationalInstrumentsDAQ] Error:" << std::endl << e.what() << std::endl;
 			if( ipt.taskHandle!=NULL )
 			{
 				TaskHandle  &taskHandle= *reinterpret_cast<TaskHandle*>(&ipt.taskHandle);
@@ -747,7 +766,7 @@ void CNationalInstrumentsDAQ::writeAnalogOutputTask(size_t task_index, size_t nS
 
 	int32 samplesWritten=0;
 	int err=0;
-	if (err = DAQmxBaseWriteAnalogF64(
+	if (err = MRPT_DAQmxWriteAnalogF64(
 		taskHandle,
 		nSamplesPerChannel,FALSE,timeout, groupedByChannel ? DAQmx_Val_GroupByChannel : DAQmx_Val_GroupByScanNumber,
 		const_cast<float64*>(volt_values),

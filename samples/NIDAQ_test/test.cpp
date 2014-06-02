@@ -45,7 +45,7 @@ void Test_NIDAQ()
 		daq.task_definitions.push_back(task);
 	}
 
-	if (1)
+	if (0)
 	{
 		// Define a task with 1 analog output:
 		CNationalInstrumentsDAQ::TaskDescription task;
@@ -67,9 +67,9 @@ void Test_NIDAQ()
 	printf("\n ** Press any key to stop grabbing ** \n");
 
 	// Test analog output:
-	if (1)
+	if (0)
 	{
-		double volt_values[2]= { 3.0, 3.0 };
+		double volt_values[1]= { -4.0 };
 		daq.writeAnalogOutputTask(1, sizeof(volt_values)/sizeof(volt_values[0]),volt_values,0.100, true);
 	}
 
