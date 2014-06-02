@@ -50,6 +50,8 @@
 #	define MRPT_DAQmxReadCounterF64 DAQmxBaseReadCounterF64
 #	define MRPT_DAQmxReadDigitalU8 DAQmxBaseReadDigitalU8
 #	define MRPT_DAQmxWriteAnalogF64 DAQmxBaseWriteAnalogF64
+#	define MRPT_DAQmxWriteDigitalU32 DAQmxBaseWriteDigitalU32
+#	define MRPT_DAQmxWriteDigitalLines DAQmxBaseWriteDigitalLines 
 #else
 #	define MRPT_DAQmxGetExtendedErrorInfo DAQmxGetExtendedErrorInfo
 #	define MRPT_DAQmxCreateTask DAQmxCreateTask
@@ -73,6 +75,8 @@
 #	define MRPT_DAQmxReadCounterF64 DAQmxReadCounterF64
 #	define MRPT_DAQmxReadDigitalU8 DAQmxReadDigitalU8
 #	define MRPT_DAQmxWriteAnalogF64 DAQmxWriteAnalogF64
+#	define MRPT_DAQmxWriteDigitalU32 DAQmxWriteDigitalU32
+#	define MRPT_DAQmxWriteDigitalLines DAQmxWriteDigitalLines 
 #endif
 
 // An auxiliary macro to check and report errors in the DAQmx library as exceptions with a well-explained message.
@@ -198,14 +202,12 @@ void  CNationalInstrumentsDAQ::loadConfig_sensorSpecific(
 			else if (strCmpI(lstStrChanns[j],"di"))
 			{
 				t.has_di = true;
-				MY_LOAD_HERE_CONFIG_VAR_NO_DEFAULT( sTask+string(".di.lines"), string, t.di.lines, cfg,sect)
-				MY_LOAD_HERE_CONFIG_VAR_NO_DEFAULT( sTask+string(".di.linesCount"), uint64_t, t.di.linesCount, cfg,sect)
+				MY_LOAD_HERE_CONFIG_VAR_NO_DEFAULT( sTask+string(".di.line"), string, t.di.line, cfg,sect)
 			}
 			else if (strCmpI(lstStrChanns[j],"do"))
 			{
 				t.has_do = true;
-				MY_LOAD_HERE_CONFIG_VAR_NO_DEFAULT( sTask+string(".do.lines"), string, t.douts.lines, cfg,sect)
-				MY_LOAD_HERE_CONFIG_VAR_NO_DEFAULT( sTask+string(".do.linesCount"), uint64_t, t.douts.linesCount, cfg,sect)
+				MY_LOAD_HERE_CONFIG_VAR_NO_DEFAULT( sTask+string(".do.line"), string, t.douts.line, cfg,sect)
 			}
 			else if (strCmpI(lstStrChanns[j],"ci_period"))
 			{
@@ -373,11 +375,11 @@ void  CNationalInstrumentsDAQ::initialize()
 			}
 			if (tf.has_di) {
 				MRPT_DAQmx_ErrChk(MRPT_DAQmxCreateDIChan(taskHandle,
-					tf.di.lines.c_str(),NULL,DAQmx_Val_ChanForAllLines));
+					tf.di.line.c_str(),NULL,DAQmx_Val_ChanPerLine));
 			}
 			if (tf.has_do) {
 				MRPT_DAQmx_ErrChk(MRPT_DAQmxCreateDOChan(taskHandle,
-					tf.douts.lines.c_str(),NULL,DAQmx_Val_ChanForAllLines));
+					tf.douts.line.c_str(),NULL,DAQmx_Val_ChanPerLine));
 			}
 			if (tf.has_ci_period) {
 				MRPT_DAQmx_ErrChk(MRPT_DAQmxCreateCIPeriodChan(taskHandle,
@@ -678,7 +680,7 @@ void CNationalInstrumentsDAQ::grabbing_thread(TInfoPerTask &ipt)
 			} // end AI
 			if (ipt.task.has_di) 
 			{
-				const uint32_t totalSamplesToRead = ceil(ipt.task.di.linesCount/8.0) * ipt.task.samplesPerChannelToRead;
+				const uint32_t totalSamplesToRead = 1 * ipt.task.samplesPerChannelToRead;
 				u8Buf.resize(totalSamplesToRead);
 
 				int32  pointsReadPerChan=-1;
@@ -771,6 +773,32 @@ void CNationalInstrumentsDAQ::writeAnalogOutputTask(size_t task_index, size_t nS
 		nSamplesPerChannel,FALSE,timeout, groupedByChannel ? DAQmx_Val_GroupByChannel : DAQmx_Val_GroupByScanNumber,
 		const_cast<float64*>(volt_values),
 		&samplesWritten, NULL) )
+	{
+		MRPT_DAQmx_ErrChk(err)
+	}
+
+#endif
+}
+
+void CNationalInstrumentsDAQ::writeDigitalOutputTask(size_t task_index, bool line_value, double timeout)
+{
+#if MRPT_HAS_SOME_NIDAQMX
+	ASSERT_(task_index<m_running_tasks.size())
+
+	std::list<TInfoPerTask>::iterator it = m_running_tasks.begin(); 
+	std::advance(it, task_index);
+	TInfoPerTask & ipt = *it;
+	TaskHandle  &taskHandle= *reinterpret_cast<TaskHandle*>(&ipt.taskHandle);
+
+	uInt8 dat = line_value ? 1:0;
+
+	int32 samplesWritten=0;
+	int32 nSamplesPerChannel = 1;
+	int err=0;
+	if (err =  MRPT_DAQmxWriteDigitalLines(
+		taskHandle,
+		nSamplesPerChannel,FALSE,timeout, DAQmx_Val_GroupByScanNumber,
+		&dat,&samplesWritten,NULL) )
 	{
 		MRPT_DAQmx_ErrChk(err)
 	}

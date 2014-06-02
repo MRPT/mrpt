@@ -58,6 +58,26 @@ void Test_NIDAQ()
 		daq.task_definitions.push_back(task);
 	}
 
+	if (1)
+	{
+		{
+			// Define a task with 1 digital output:
+			CNationalInstrumentsDAQ::TaskDescription task;
+			task.has_do = true;
+			task.douts.line = "Dev1/port1/line0";
+
+			daq.task_definitions.push_back(task);
+		}
+		{
+			// Define a task with 1 digital output:
+			CNationalInstrumentsDAQ::TaskDescription task;
+			task.has_do = true;
+			task.douts.line = "Dev1/port1/line1";
+
+			daq.task_definitions.push_back(task);
+		}
+	}
+
 #endif
 
 	printf("[Example] Initializing DAQ...\n");
@@ -71,6 +91,22 @@ void Test_NIDAQ()
 	{
 		double volt_values[1]= { -4.0 };
 		daq.writeAnalogOutputTask(1, sizeof(volt_values)/sizeof(volt_values[0]),volt_values,0.100, true);
+	}
+
+	// Test digital output:
+	if (0)
+	{
+		while (1)
+		{
+			cout << "1 ";
+			daq.writeDigitalOutputTask(1, true, 0.1);
+			daq.writeDigitalOutputTask(2, false, 0.1);
+			mrpt::system::sleep(5000);
+			cout << "0 ";
+			daq.writeDigitalOutputTask(1, false, 0.1);
+			daq.writeDigitalOutputTask(2, true, 0.1);
+			mrpt::system::sleep(5000);
+		}
 	}
 
 	// Loop reading:

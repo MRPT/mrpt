@@ -33,6 +33,8 @@
 				- Robust kernel templates moved from mrpt::vision to mrpt::math. See mrpt::math::RobustKernel<>. Added unit tests for robust kernels.
 				- CPose3D has new SE(3) methods: mrpt::poses::CPose3D::jacob_dexpeD_de(), mrpt::poses::CPose3D::jacob_dAexpeD_de()
 				- More efficient mrpt::utils::OctetVectorToObject() (avoid memory copy).
+			- [mrpt-hwdrivers]
+				- mrpt::hwdrivers::CNationalInstrumentsDAQ now supports analog and digital outputs.
 			- [mrpt-srba]
 				- Now also implements SE(3) relative graph-slam.
 			- [mrpt-vision]
