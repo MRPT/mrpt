@@ -10,6 +10,7 @@
 #include "hwdrivers-precomp.h"   // Precompiled headers
 
 #include <mrpt/hwdrivers/CNationalInstrumentsDAQ.h>
+#include <iterator> // advance()
 
 // If we have both, DAQmx & DAQmxBase, prefer DAQmx:
 #define MRPT_HAS_SOME_NIDAQMX (MRPT_HAS_NIDAQMXBASE || MRPT_HAS_NIDAQMX)
@@ -41,12 +42,16 @@
 #	define MRPT_DAQmxCreateCOPulseChanFreq DAQmxBaseCreateCOPulseChanFreq
 #	define MRPT_DAQmxCfgSampClkTiming DAQmxBaseCfgSampClkTiming
 #	define MRPT_DAQmxCfgInputBuffer DAQmxBaseCfgInputBuffer
+#	define MRPT_DAQmxCfgOutputBuffer DAQmxBaseCfgOutputBuffer
 #	define MRPT_DAQmxStartTask DAQmxBaseStartTask
 #	define MRPT_DAQmxStopTask DAQmxBaseStopTask
 #	define MRPT_DAQmxClearTask DAQmxBaseClearTask
 #	define MRPT_DAQmxReadAnalogF64 DAQmxBaseReadAnalogF64
 #	define MRPT_DAQmxReadCounterF64 DAQmxBaseReadCounterF64
-#	define MRPT_DAQmxReadDigitalLines DAQmxBaseReadDigitalLines
+#	define MRPT_DAQmxReadDigitalU8 DAQmxBaseReadDigitalU8
+#	define MRPT_DAQmxWriteAnalogF64 DAQmxBaseWriteAnalogF64
+#	define MRPT_DAQmxWriteDigitalU32 DAQmxBaseWriteDigitalU32
+#	define MRPT_DAQmxWriteDigitalLines DAQmxBaseWriteDigitalLines 
 #else
 #	define MRPT_DAQmxGetExtendedErrorInfo DAQmxGetExtendedErrorInfo
 #	define MRPT_DAQmxCreateTask DAQmxCreateTask
@@ -62,12 +67,16 @@
 #	define MRPT_DAQmxCreateCOPulseChanFreq DAQmxCreateCOPulseChanFreq
 #	define MRPT_DAQmxCfgSampClkTiming DAQmxCfgSampClkTiming
 #	define MRPT_DAQmxCfgInputBuffer DAQmxCfgInputBuffer
+#	define MRPT_DAQmxCfgOutputBuffer DAQmxCfgOutputBuffer
 #	define MRPT_DAQmxStartTask DAQmxStartTask
 #	define MRPT_DAQmxStopTask DAQmxStopTask
 #	define MRPT_DAQmxClearTask DAQmxClearTask
 #	define MRPT_DAQmxReadAnalogF64 DAQmxReadAnalogF64
 #	define MRPT_DAQmxReadCounterF64 DAQmxReadCounterF64
-#	define MRPT_DAQmxReadDigitalLines DAQmxReadDigitalLines
+#	define MRPT_DAQmxReadDigitalU8 DAQmxReadDigitalU8
+#	define MRPT_DAQmxWriteAnalogF64 DAQmxWriteAnalogF64
+#	define MRPT_DAQmxWriteDigitalU32 DAQmxWriteDigitalU32
+#	define MRPT_DAQmxWriteDigitalLines DAQmxWriteDigitalLines 
 #endif
 
 // An auxiliary macro to check and report errors in the DAQmx library as exceptions with a well-explained message.
@@ -193,14 +202,12 @@ void  CNationalInstrumentsDAQ::loadConfig_sensorSpecific(
 			else if (strCmpI(lstStrChanns[j],"di"))
 			{
 				t.has_di = true;
-				MY_LOAD_HERE_CONFIG_VAR_NO_DEFAULT( sTask+string(".di.lines"), string, t.di.lines, cfg,sect)
-				MY_LOAD_HERE_CONFIG_VAR_NO_DEFAULT( sTask+string(".di.linesCount"), uint64_t, t.di.linesCount, cfg,sect)
+				MY_LOAD_HERE_CONFIG_VAR_NO_DEFAULT( sTask+string(".di.line"), string, t.di.line, cfg,sect)
 			}
 			else if (strCmpI(lstStrChanns[j],"do"))
 			{
 				t.has_do = true;
-				MY_LOAD_HERE_CONFIG_VAR_NO_DEFAULT( sTask+string(".do.lines"), string, t.douts.lines, cfg,sect)
-				MY_LOAD_HERE_CONFIG_VAR_NO_DEFAULT( sTask+string(".do.linesCount"), uint64_t, t.douts.linesCount, cfg,sect)
+				MY_LOAD_HERE_CONFIG_VAR_NO_DEFAULT( sTask+string(".do.line"), string, t.douts.line, cfg,sect)
 			}
 			else if (strCmpI(lstStrChanns[j],"ci_period"))
 			{
@@ -368,11 +375,11 @@ void  CNationalInstrumentsDAQ::initialize()
 			}
 			if (tf.has_di) {
 				MRPT_DAQmx_ErrChk(MRPT_DAQmxCreateDIChan(taskHandle,
-					tf.di.lines.c_str(),NULL,DAQmx_Val_ChanForAllLines));
+					tf.di.line.c_str(),NULL,DAQmx_Val_ChanPerLine));
 			}
 			if (tf.has_do) {
 				MRPT_DAQmx_ErrChk(MRPT_DAQmxCreateDOChan(taskHandle,
-					tf.douts.lines.c_str(),NULL,DAQmx_Val_ChanForAllLines));
+					tf.douts.line.c_str(),NULL,DAQmx_Val_ChanPerLine));
 			}
 			if (tf.has_ci_period) {
 				MRPT_DAQmx_ErrChk(MRPT_DAQmxCreateCIPeriodChan(taskHandle,
@@ -433,13 +440,26 @@ void  CNationalInstrumentsDAQ::initialize()
 					tf.co_pulses.dutyCycle));
 			}
 
-			// sample rate:
-			ASSERT_ABOVE_(tf.samplesPerSecond,0)
-			MRPT_DAQmx_ErrChk (MRPT_DAQmxCfgSampClkTiming(taskHandle,tf.sampleClkSource.c_str(),tf.samplesPerSecond,DAQmx_Val_Rising, DAQmx_Val_ContSamps,tf.samplesPerChannelToRead));
-
 			// Seems to be needed to avoid an errors avoid like: 
 			// " Onboard device memory overflow. Because of system and/or bus-bandwidth limitations, the driver could not read data from the device fast enough to keep up with the device throughput."
-			MRPT_DAQmx_ErrChk (MRPT_DAQmxCfgInputBuffer(taskHandle,tf.bufferSamplesPerChannel));
+			if (tf.has_ai || tf.has_di || tf.has_ci_period || tf.has_ci_count_edges ||tf.has_ci_pulse_width || tf.has_ci_lin_encoder || tf.has_ci_ang_encoder )
+			{
+				// sample rate:
+				ASSERT_ABOVE_(tf.samplesPerSecond,0)
+				MRPT_DAQmx_ErrChk (MRPT_DAQmxCfgSampClkTiming(taskHandle,tf.sampleClkSource.c_str(),tf.samplesPerSecond,DAQmx_Val_Rising, DAQmx_Val_ContSamps,tf.samplesPerChannelToRead));
+
+				MRPT_DAQmx_ErrChk (MRPT_DAQmxCfgInputBuffer(taskHandle,tf.bufferSamplesPerChannel));
+			}
+
+			if (tf.has_ao)
+			{
+				// Nothing to do as long as we only need "on demand" outputs.
+			//	MRPT_DAQmx_ErrChk (MRPT_DAQmxCfgOutputBuffer(taskHandle,2 /*tf.bufferSamplesPerChannel*/ ));
+			//	// Output buffer MUST have some data before starting the task: write 0s:
+			//	vector<double> d;
+			//	d.assign(tf.ao.physicalChannelCount*2, 0.0);
+			//	this->writeAnalogOutputTask(i,1 /* samples per channel */, &d[0], 0.10 /*timeout*/, false);
+			}
 
 			// Create pipe:
 			mrpt::synch::CPipe::createPipe(ipt.read_pipe, ipt.write_pipe);
@@ -451,10 +471,12 @@ void  CNationalInstrumentsDAQ::initialize()
 			MRPT_DAQmx_ErrChk (MRPT_DAQmxStartTask(taskHandle));
 
 			ipt.hThread = mrpt::system::createThreadFromObjectMethodRef<CNationalInstrumentsDAQ,TInfoPerTask>(this, &CNationalInstrumentsDAQ::grabbing_thread, ipt);
+			
 
 		}
-		catch (std::exception const &)
+		catch (std::exception const &e)
 		{
+			std::cerr << "[CNationalInstrumentsDAQ] Error:" << std::endl << e.what() << std::endl;
 			if( ipt.taskHandle!=NULL )
 			{
 				TaskHandle  &taskHandle= *reinterpret_cast<TaskHandle*>(&ipt.taskHandle);
@@ -658,15 +680,15 @@ void CNationalInstrumentsDAQ::grabbing_thread(TInfoPerTask &ipt)
 			} // end AI
 			if (ipt.task.has_di) 
 			{
-				const uint32_t totalSamplesToRead = ceil(ipt.task.di.linesCount/8.0) * ipt.task.samplesPerChannelToRead;
+				const uint32_t totalSamplesToRead = 1 * ipt.task.samplesPerChannelToRead;
 				u8Buf.resize(totalSamplesToRead);
 
-				int32  pointsReadPerChan=-1, numBytesPerSampl=-1;
-				if ((err = MRPT_DAQmxReadDigitalLines(
+				int32  pointsReadPerChan=-1;
+				if ((err = MRPT_DAQmxReadDigitalU8(
 					taskHandle,
 					ipt.task.samplesPerChannelToRead,timeout, DAQmx_Val_GroupByChannel,
 					&u8Buf[0],u8Buf.size(),
-					&pointsReadPerChan,&numBytesPerSampl,NULL))<0 && err!=DAQmxErrorSamplesNotYetAvailable) 
+					&pointsReadPerChan,NULL))<0 && err!=DAQmxErrorSamplesNotYetAvailable) 
 				{
 					MRPT_DAQmx_ErrChk(err)
 				}
@@ -718,6 +740,9 @@ void CNationalInstrumentsDAQ::grabbing_thread(TInfoPerTask &ipt)
 				ipt.write_pipe->WriteObject(&obs);
 				//mrpt::system::sleep(1); // This seems to be needed to allow all objs to be sent to the recv thread
 			}
+			else {
+				mrpt::system::sleep(1);
+			}
 
 		} // end of main thread loop
 	}
@@ -731,6 +756,56 @@ void CNationalInstrumentsDAQ::grabbing_thread(TInfoPerTask &ipt)
 }
 
 
+void CNationalInstrumentsDAQ::writeAnalogOutputTask(size_t task_index, size_t nSamplesPerChannel, const double * volt_values, double timeout, bool groupedByChannel)
+{
+#if MRPT_HAS_SOME_NIDAQMX
+	ASSERT_(task_index<m_running_tasks.size())
+
+	std::list<TInfoPerTask>::iterator it = m_running_tasks.begin(); 
+	std::advance(it, task_index);
+	TInfoPerTask & ipt = *it;
+	TaskHandle  &taskHandle= *reinterpret_cast<TaskHandle*>(&ipt.taskHandle);
+
+	int32 samplesWritten=0;
+	int err=0;
+	if (err = MRPT_DAQmxWriteAnalogF64(
+		taskHandle,
+		nSamplesPerChannel,FALSE,timeout, groupedByChannel ? DAQmx_Val_GroupByChannel : DAQmx_Val_GroupByScanNumber,
+		const_cast<float64*>(volt_values),
+		&samplesWritten, NULL) )
+	{
+		MRPT_DAQmx_ErrChk(err)
+	}
+
+#endif
+}
+
+void CNationalInstrumentsDAQ::writeDigitalOutputTask(size_t task_index, bool line_value, double timeout)
+{
+#if MRPT_HAS_SOME_NIDAQMX
+	ASSERT_(task_index<m_running_tasks.size())
+
+	std::list<TInfoPerTask>::iterator it = m_running_tasks.begin(); 
+	std::advance(it, task_index);
+	TInfoPerTask & ipt = *it;
+	TaskHandle  &taskHandle= *reinterpret_cast<TaskHandle*>(&ipt.taskHandle);
+
+	uInt8 dat = line_value ? 1:0;
+
+	int32 samplesWritten=0;
+	int32 nSamplesPerChannel = 1;
+	int err=0;
+	if (err =  MRPT_DAQmxWriteDigitalLines(
+		taskHandle,
+		nSamplesPerChannel,FALSE,timeout, DAQmx_Val_GroupByScanNumber,
+		&dat,&samplesWritten,NULL) )
+	{
+		MRPT_DAQmx_ErrChk(err)
+	}
+
+#endif
+}
+
 
 // Ctor:
 CNationalInstrumentsDAQ::TaskDescription::TaskDescription() :
@@ -741,3 +816,4 @@ CNationalInstrumentsDAQ::TaskDescription::TaskDescription() :
 	samplesPerChannelToRead(1000)
 {
 }
+

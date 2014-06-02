@@ -41,6 +41,7 @@
 				- Fixed const-correctness of mrpt::utils::CImage::forceLoad() and mrpt::utils::CImage::unload()
 			- [mrpt-hwdrivers]
 				- CCameraSensor: Added a hook for user code to run before saving external image files: mrpt::hwdrivers::CCameraSensor::addPreSaveHook()
+				- mrpt::hwdrivers::CNationalInstrumentsDAQ now supports analog and digital outputs.
 			- [mrpt-srba]
 				- Now also implements SE(3) relative graph-slam.
 			- [mrpt-vision]
