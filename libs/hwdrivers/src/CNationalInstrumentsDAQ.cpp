@@ -174,8 +174,8 @@ void  CNationalInstrumentsDAQ::loadConfig_sensorSpecific(
 		if (lstStrChanns.empty())
 			THROW_EXCEPTION_CUSTOM_MSG1("List of channels for task %u is empty!",i)
 		
-		MY_LOAD_HERE_CONFIG_VAR_NO_DEFAULT( sTask+string(".samplesPerSecond"), double, t.samplesPerSecond, cfg,sect)
-		MY_LOAD_HERE_CONFIG_VAR_NO_DEFAULT( sTask+string(".samplesPerChannelToRead"), double, t.samplesPerChannelToRead, cfg,sect)
+		MY_LOAD_HERE_CONFIG_VAR( sTask+string(".samplesPerSecond"), double, t.samplesPerSecond, cfg,sect)
+		MY_LOAD_HERE_CONFIG_VAR( sTask+string(".samplesPerChannelToRead"), double, t.samplesPerChannelToRead, cfg,sect)
         MY_LOAD_HERE_CONFIG_VAR( sTask+string(".sampleClkSource"), string, t.sampleClkSource, cfg,sect)
         MY_LOAD_HERE_CONFIG_VAR( sTask+string(".bufferSamplesPerChannel"), double, t.bufferSamplesPerChannel, cfg,sect)
 		t.taskLabel = cfg.read_string(sect,sTask+string(".taskLabel"), sTask, false );
