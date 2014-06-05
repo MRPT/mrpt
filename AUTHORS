@@ -18,6 +18,7 @@ the University of Malaga.
   - Many functions in mrpt::topography
   - mrpt::hwdrivers::CCANBusReader and related classes
   - mrpt::poses::CPose3DRotVec
+  - mrpt::hwdrivers::CDUO3DCamera for DUO3D cameras
 
 * Antonio J. Ortiz de Galisteo, University of Malaga (2007).
   - Addition of many mathematical functions.

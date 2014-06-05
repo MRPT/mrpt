@@ -18,6 +18,7 @@
 		- Public header files (.h) have undergone a serious refactoring to minimize unnecesary dependencies and reduce compile time and memory as much as possible.
 		  As a side effect, user code might need to add new #include<> lines. This API change justifies the new minor version series 1.2.X.
 		- MRPT now cleanly builds in clang and OSX.
+		- Support for new camera drivers (OpenNI2, DUO3D).
 		- Many bug fixes.
 	- <b>Detailed list of changes:</b>
 		- Changes in apps:
@@ -31,6 +32,7 @@
 				- mrpt::math::ContainerType<CONTAINER>::element_t to allow handling either Eigen or STL containers seamlessly.
 			- [mrpt-hwdrivers]
 				- mrpt::hwdrivers::COpenNI2Sensor: Interface to OpenNI2 cameras, capable of reading from an array of OpenNI2 RGBD cameras (By Eduardo Fernandez)
+				- mrpt::hwdrivers::CDUO3DCamera: Interface to DUO3D cameras (By Francisco Angel Moreno)
 			- [mrpt-obs]
 				- mrpt::slam::CObservation6DFeatures
 		- Changes in classes:
