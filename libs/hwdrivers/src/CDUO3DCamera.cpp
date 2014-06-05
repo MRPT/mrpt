@@ -22,6 +22,10 @@
 #endif
 MRPT_TODO("FIXME: Try to remove the pragma lib above ==> TARGET_LINK_LIBRARIES() in hwdrivers/CMakeLists.txt, so it can work seamlessly on Linux in the future")
 
+// m_duo: Opaque pointer to DUO3D's "DUOInstance":
+#define M_DUO_PTR    ( reinterpret_cast<DUOInstance*>(m_duo)) 
+#define M_DUO_VALUE  (*M_DUO_PTR)
+
 
 using namespace std;
 using namespace mrpt;
@@ -268,20 +272,24 @@ void TCaptureOptions_DUO3D::loadOptionsFrom(
 static void CALLBACK DUOCallback(const PDUOFrame pFrameData, void *pUserData)
 {
 	CDUO3DCamera* obj = static_cast<CDUO3DCamera*>(pUserData);
-	obj->setDataFrame( pFrameData );
-	SetEvent( obj->getEvent() );
+	obj->setDataFrame( reinterpret_cast<void*>(pFrameData) );
+	SetEvent( reinterpret_cast<HANDLE>( obj->getEvent() ) );
 }
 #endif
 
 /** Default constructor. */
 CDUO3DCamera::CDUO3DCamera() :
-	m_options(TCaptureOptions_DUO3D())/*,
+	m_options(TCaptureOptions_DUO3D()),
+	m_duo(NULL)
+	/*,
 	m_input_image_left(NULL),
 	m_input_image_right(NULL),
 	m_initialized(false)*/
 {
 #if MRPT_HAS_DUO3D
-	m_duo = NULL;
+	m_duo = new DUOInstance[1];
+	M_DUO_VALUE = NULL;  // m_duo = NULL;
+
 	m_pframe_data = NULL;
 	m_evFrame = CreateEvent(NULL, FALSE, FALSE, NULL);
 #else
@@ -290,10 +298,13 @@ CDUO3DCamera::CDUO3DCamera() :
 } // end-constructor
 
 /** Custom initialization and start grabbing constructor. */
-CDUO3DCamera::CDUO3DCamera( const TCaptureOptions_DUO3D & options )
+CDUO3DCamera::CDUO3DCamera( const TCaptureOptions_DUO3D & options ) :
+	m_duo(NULL)
 {
 #if MRPT_HAS_DUO3D
-	m_duo = NULL;
+	m_duo = new DUOInstance[1];
+	M_DUO_VALUE = NULL;  // m_duo = NULL;
+
 	m_pframe_data = NULL;
 	m_evFrame = CreateEvent(NULL, FALSE, FALSE, NULL);
 	this->open( options );
@@ -310,6 +321,7 @@ CDUO3DCamera::~CDUO3DCamera()
 	cvReleaseImageHeader( & m_input_image_right );*/
 #if MRPT_HAS_DUO3D
 	this->close();
+	if (m_duo) { delete[] M_DUO_PTR; m_duo=NULL;}
 #endif
 } // end-destructor
 
@@ -317,7 +329,7 @@ CDUO3DCamera::~CDUO3DCamera()
 void CDUO3DCamera::open( const TCaptureOptions_DUO3D & options, const bool startCapture )
 {
 #if MRPT_HAS_DUO3D
-	if( m_duo ) this->close();
+	if( M_DUO_VALUE ) this->close();
 	this->m_options = options;
 	
 	if( this->m_options.m_calibration_from_file )
@@ -389,27 +401,27 @@ void CDUO3DCamera::open( const TCaptureOptions_DUO3D & options, const bool start
 	if(!EnumerateResolutions(&ri, 1, this->m_options.m_img_width, this->m_options.m_img_height, binning, this->m_options.m_fps))
 		THROW_EXCEPTION( "[CDUO3DCamera] Error: Resolution not supported." )
 
-	if(!OpenDUO(&m_duo))
+	if(!OpenDUO(& M_DUO_VALUE ))  // was: m_duo
 		THROW_EXCEPTION( "[CDUO3DCamera] Error: Camera could not be opened." )
 
 	// Get and print some DUO parameter values
 	char name[260], version[260];
-	GetDUODeviceName(m_duo,name);
-	GetDUOFirmwareVersion(m_duo,version);
+	GetDUODeviceName(M_DUO_VALUE,name);
+	GetDUOFirmwareVersion(M_DUO_VALUE,version);
 	cout << "[CDUO3DCamera::open] DUO3DCamera name: " << name << " (v" << version << ")" << endl;
 	
 	// Set selected resolution
-	SetDUOResolutionInfo(m_duo,ri);
+	SetDUOResolutionInfo(M_DUO_VALUE,ri);
 
 	// Set selected camera settings
-	SetDUOExposure(m_duo,m_options.m_exposure);
-	SetDUOGain(m_duo,m_options.m_gain);
-	SetDUOLedPWM(m_duo,m_options.m_led);
+	SetDUOExposure(M_DUO_VALUE,m_options.m_exposure);
+	SetDUOGain(M_DUO_VALUE,m_options.m_gain);
+	SetDUOLedPWM(M_DUO_VALUE,m_options.m_led);
 
 	// Start capture
 	if( startCapture )
 	{
-		if(!StartDUO(m_duo, DUOCallback, (void*)this))
+		if(!StartDUO(M_DUO_VALUE, DUOCallback, reinterpret_cast<void*>(this)))
 			THROW_EXCEPTION( "[CDUO3DCamera] Error: Camera could not be started." )
 	}
 
@@ -442,13 +454,13 @@ void  CDUO3DCamera::getObservations(
 			m_options.m_img_width, 
 			m_options.m_img_height,
 			false,
-			(unsigned char*)m_pframe_data->leftData);
+			(unsigned char*)reinterpret_cast<PDUOFrame>(m_pframe_data)->leftData);
 
 	outObservation_img.imageRight.loadFromMemoryBuffer( 
 			m_options.m_img_width, 
 			m_options.m_img_height,
 			false,
-			(unsigned char*)m_pframe_data->rightData);
+			(unsigned char*)reinterpret_cast<PDUOFrame>(m_pframe_data)->rightData);
 		
 	if( this->m_options.m_capture_rectified )
 		m_rectify_map.rectify( outObservation_img );
@@ -457,7 +469,7 @@ void  CDUO3DCamera::getObservations(
 
 	if( this->m_options.m_capture_imu )
 	{
-		if( !m_pframe_data->accelerometerPresent )
+		if( !reinterpret_cast<PDUOFrame>(m_pframe_data)->accelerometerPresent )
 		{
 			cout << "[CDUO3DCamera] Warning: This device does not provide IMU data. No IMU observations will be created." << endl;
 			this->m_options.m_capture_imu = false;
@@ -467,14 +479,14 @@ void  CDUO3DCamera::getObservations(
 			// Accelerometer data
 			for(size_t k = 0; k < 3; ++k)
 			{   
-				outObservation_imu.rawMeasurements[k] = m_pframe_data->accelData[k];
+				outObservation_imu.rawMeasurements[k] = reinterpret_cast<PDUOFrame>(m_pframe_data)->accelData[k];
 				outObservation_imu.dataIsPresent[k] = true;
 			}
 
 			// Gyroscopes data
 			for(size_t k = 0; k < 3; ++k)
 			{
-				outObservation_imu.rawMeasurements[k+3] = m_pframe_data->gyroData[k];
+				outObservation_imu.rawMeasurements[k+3] = reinterpret_cast<PDUOFrame>(m_pframe_data)->gyroData[k];
 				outObservation_imu.dataIsPresent[k+3] = true;
 			}
 			there_is_imu = true;
@@ -487,43 +499,57 @@ void  CDUO3DCamera::getObservations(
 void CDUO3DCamera::close()
 {
 #if MRPT_HAS_DUO3D
-	if( m_duo ) return;
-	StopDUO( m_duo );
-	CloseDUO( m_duo );
-	m_duo = NULL;
+	if( !M_DUO_VALUE ) return;
+	StopDUO( M_DUO_VALUE );
+	CloseDUO( M_DUO_VALUE );
+	M_DUO_VALUE = NULL;
 #endif
 } // end-close
 
-#if MRPT_HAS_DUO3D
 // Waits until the new DUO frame is ready and returns it
-PDUOFrame CDUO3DCamera::m_get_duo_frame()
+void* CDUO3DCamera::m_get_duo_frame()
 {
-	if( m_duo == NULL ) return 0;
+#if MRPT_HAS_DUO3D
+	if( M_DUO_VALUE == NULL ) return 0;
 	if(WaitForSingleObject( m_evFrame, 1000 ) == WAIT_OBJECT_0) return m_pframe_data;
 	else return NULL;
-}
+#else
+	return NULL; // return something to silent compiler warnings.
 #endif
+}
 
 void CDUO3DCamera::m_set_exposure(float value)
 {
 #if MRPT_HAS_DUO3D
-	if( m_duo == NULL ) return;
-	SetDUOExposure( m_duo, value );
+	if( M_DUO_VALUE == NULL ) return;
+	SetDUOExposure( M_DUO_VALUE, value );
 #endif
 }
 
 void CDUO3DCamera::m_set_gain(float value)
 {
 #if MRPT_HAS_DUO3D
-	if( m_duo == NULL ) return;
-	SetDUOGain( m_duo, value );
+	if( M_DUO_VALUE == NULL ) return;
+	SetDUOGain( M_DUO_VALUE, value );
 #endif
 }
 
 void CDUO3DCamera::m_set_led(float value)
 {
 #if MRPT_HAS_DUO3D
-	if( m_duo == NULL ) return;
-	SetDUOLedPWM( m_duo, value );
+	if( M_DUO_VALUE == NULL ) return;
+	SetDUOLedPWM( M_DUO_VALUE, value );
+#endif
+}
+
+/** Queries the DUO3D Camera firmware version */
+bool CDUO3DCamera::queryVersion(std::string version, bool printOutVersion)
+{
+#if MRPT_HAS_DUO3D
+	version = std::string(GetLibVersion());
+	if( printOutVersion ) std::cout << "DUO3D Camera library version: " << version << std::endl;
+	return true;
+#else
+	return false;
 #endif
 }

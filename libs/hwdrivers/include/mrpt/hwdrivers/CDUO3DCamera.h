@@ -141,11 +141,9 @@ namespace mrpt
 			// [INTERNAL]
 			mrpt::vision::CStereoRectifyMap m_rectify_map;
 
-#if MRPT_HAS_DUO3D
-			DUOInstance				m_duo;
-			PDUOFrame				m_pframe_data;
-			HANDLE					m_evFrame;
-#endif
+			void * m_duo;          //!< Opaque pointer to DUO's DUOInstance
+			void * m_pframe_data; //!< Pointer, to be reinterpreted as "PDUOFrame"
+			void * m_evFrame;     //!< DUO's HANDLE
 
 		public:
 			/** Default Constructor (does not open the camera) */
@@ -188,24 +186,19 @@ namespace mrpt
 			/** Indicates if the camera is grabbing IMU data */
 			inline bool captureIMUIsSet() { return m_options.m_capture_imu; }
 
-#if MRPT_HAS_DUO3D
-			inline HANDLE getEvent() { return this->m_evFrame; }
-			inline void setDataFrame( const PDUOFrame & frame ) { this->m_pframe_data = frame; }
-#endif
+			/** Returned pointer to be reinterpreted as DUO3D's "HANDLE" */
+			inline void* getEvent() { return this->m_evFrame; }
+
+			/** frame is a reinterpreted PDUOFrame */
+			inline void setDataFrame( void* frame ) { this->m_pframe_data = frame; }
+
 		protected:
-#if MRPT_HAS_DUO3D
 			/** Queries the DUO3D Camera firmware version */
-			bool inline queryVersion(std::string version, bool printOutVersion = false)
-			{
-				version = std::string(GetLibVersion());
-				if( printOutVersion ) std::cout << "DUO3D Camera library version: " << version << std::endl;
-				return true;
-			}
-			void CALLBACK m_duo_callback(const PDUOFrame pFrameData, void *pUserData);
+			bool queryVersion(std::string version, bool printOutVersion = false);
 			
-			/** Gets a stereo frame from the DUO3D Camera */
-			PDUOFrame m_get_duo_frame();
-#endif
+			/** Gets a stereo frame from the DUO3D Camera (void* to be reinterpreted as PDUOFrame) */
+			void * m_get_duo_frame(); 
+
 			/** Opens DUO3D camera */
 			bool m_open_duo_camera(int width, int height, float fps);
 			
