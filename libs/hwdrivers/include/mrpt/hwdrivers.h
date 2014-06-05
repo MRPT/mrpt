@@ -69,5 +69,6 @@ MRPT_WARNING("Including <mrpt/hwdrivers.h> makes compilation much slower, consid
 
 #include <mrpt/hwdrivers/CCANBusReader.h>
 #include <mrpt/hwdrivers/CNationalInstrumentsDAQ.h>
+#include <mrpt/hwdrivers/CDUO3DCamera.h>
 
 #endif

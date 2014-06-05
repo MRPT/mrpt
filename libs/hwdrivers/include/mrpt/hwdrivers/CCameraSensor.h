@@ -24,6 +24,7 @@
 #include <mrpt/hwdrivers/CSwissRanger3DCamera.h>
 #include <mrpt/hwdrivers/CKinect.h>
 #include <mrpt/hwdrivers/COpenNI2Sensor.h>
+#include <mrpt/hwdrivers/CDUO3DCamera.h>
 
 #include <mrpt/utils/CFileGZInputStream.h>
 #include <mrpt/hwdrivers/CStereoGrabber_SVS.h>
@@ -71,7 +72,7 @@ namespace mrpt
 		  * -------------------------------------------------------
 		  *   [supplied_section_name]
 		  *    # Select one of the grabber implementations -----------------------
-		  *    grabber_type       = opencv | dc1394 | bumblebee | ffmpeg | rawlog | swissranger | svs | kinect | flycap | flycap_stereo
+		  *    grabber_type       = opencv | dc1394 | bumblebee | ffmpeg | rawlog | swissranger | svs | kinect | flycap | flycap_stereo | image_dir | duo3d
 		  *
 		  *    #  Options for any grabber_type ------------------------------------
 		  *    preview_decimation = 0     // N<=0 (or not present): No preview; N>0, display 1 out of N captured frames.
@@ -179,6 +180,56 @@ namespace mrpt
 		  *    fcs_RIGHT_camera_index          = 0
 		  *    #... (all the parameters enumerated in mrpt::hwdrivers::TCaptureOptions_FlyCapture2 with the prefix "fcs_RIGHT_")
 		  *
+		  *	   # Options for grabber_type= image_dir
+		  *    image_dir_is_stereo				=true	// [bool]	Whether the images are from stereo pair
+		  *	   image_dir_url					=		// [string] URL of the directory 
+		  *	   left_image_prefix				=		// [string] Prefix of the left images (default= imL_)
+		  *	   right_image_prefix				=		// [string] Prefix of the right images (default= imR_)
+		  *	   image_extension					=		// [string] Image extension
+		  *	   num_total_images					=		// [int]	Total number of images in the directory. If they are stereo, just the number of images for one camera, e.g.: if in the directory there are: imL_001.jpg ... imL_100.jpg and imR_001.jpg ... imR_100.jpg -> num_total_images= 100.
+		  *	   num_digits_in_name				=		// [int]	For zeroing the image name (default= 4). Example: imL_001.jpg -> num_digits_in_name = 3, imL_00001.jpg -> num_digits_in_name = 5
+
+		  *	   # Options for grabber_type= duo3d
+		  *		Create a section like this:
+		  *		[DUO3DOptions]
+		  *		rawlog-grabber-ignore	= true // Instructs rawlog-grabber to ignore this section (it is not a separate device!)
+		  *
+		  *		image_width   			= 640			// [int]	x Resolution
+		  *		image_height  			= 480			// [int]	y Resolution
+		  *		fps						= 30			// [int]	Frames per second (<= 30)
+		  *		exposure				= 50			// [int]	Exposure value (1..100)
+		  *		led						= 0				// [int]	Led intensity (only for some device models) (1..100).
+		  *		gain					= 50			// [int]	Camera gain (1..100)
+		  *		capture_rectified 		= false			// [bool]	Rectify captured images
+		  *		capture_imu 			= true			// [bool]	Capture IMU data from DUO3D device (if available)
+		  *		calibration_from_file	= true			// [bool]	Use YML calibration files provided by calibration application supplied with DUO3D device
+		  *	  	intrinsic_filename		= ""			// [string]	Intrinsic parameters file. This filename should contain a substring _RWWWxHHH_ with WWW being the image width and HHH the image height, as provided by the calibration application.
+		  *		extrinsic_filename		= ""			// [string]	Extrinsic parameters file. This filename should contain a substring _RWWWxHHH_ with WWW being the image width and HHH the image height, as provided by the calibration application.
+		  *		rectify_map_filename	= ""			// [string]	Rectification map file. This filename should contain a substring _RWWWxHHH_ with WWW being the image width and HHH the image height, as provided by the calibration application.
+		  *		
+		  *		// if 'calibration_from_file' = false, three more sections containing the calibration must be provided:
+		  *		[DUO3D_LEFT]
+		  *		rawlog-grabber-ignore	= true // Instructs rawlog-grabber to ignore this section (it is not a separate device!)
+		  *		resolution 		= [640 480]
+		  *		cx 				= 320
+		  *		cy 				= 240
+		  *		fx 				= 700
+		  *		fy 				= 700
+		  *		dist 			= [0 0 0 0 0]
+		  *
+		  *		[DUO3D_RIGHT]
+		  *		rawlog-grabber-ignore	= true // Instructs rawlog-grabber to ignore this section (it is not a separate device!)
+		  *		resolution 		= [640 480]
+		  *		cx 				= 320
+		  *		cy 				= 240
+		  *		fx 				= 700
+		  *		fy 				= 700
+		  *		dist 			= [0 0 0 0 0]
+		  *
+		  *		[DUO3D_LEFT2RIGHT_POSE]
+		  *		rawlog-grabber-ignore	= true // Instructs rawlog-grabber to ignore this section (it is not a separate device!)
+		  *		pose_quaternion = [0.12 0 0 1 0 0 0]
+		  *
 		  *  \endcode
 		  *
 		  *  \note The execution rate, in rawlog-grabber or the user code calling doProcess(), should be greater than the required capture FPS.
@@ -206,7 +257,8 @@ namespace mrpt
 			  *		- mrpt::slam::CObservationStereoImages (For stereo cameras)
 			  *		- mrpt::slam::CObservation3DRangeScan (For 3D cameras)
 			  */
-			mrpt::slam::CObservationPtr getNextFrame();
+			mrpt::slam::CObservationPtr getNextFrame( );
+			void getNextFrame( std::vector<mrpt::utils::CSerializablePtr> & out_obs );
 
 			/** Tries to open the camera, after setting all the parameters with a call to loadConfig.
 			  *  \exception This method must throw an exception with a descriptive message if some critical error is found.
@@ -292,6 +344,19 @@ namespace mrpt
 			bool            m_fcs_start_synch_capture;
 			TCaptureOptions_FlyCapture2   m_flycap_stereo_options[2]; // [0]:left, [1]:right
 
+			// Options for grabber type= image_dir
+			std::string		m_img_dir_url;
+			std::string		m_img_dir_left_prefix;
+			std::string		m_img_dir_right_prefix;
+			std::string		m_img_dir_extension;
+			int				m_img_dir_num_zeros;
+			bool			m_img_dir_is_stereo;
+			int				m_img_dir_counter;
+			int				m_img_dir_num_imgs;
+			
+			// Options for grabber type= duo3d
+			TCaptureOptions_DUO3D	m_duo3d_options;
+
 			// Other options:
 			bool				m_external_images_own_thread; //!< Whether to launch independent thread
 
@@ -312,7 +377,9 @@ namespace mrpt
 			mrpt::utils::CFileGZInputStream * m_cap_rawlog;	//!< The input file for rawlogs
 			CSwissRanger3DCamera      * m_cap_swissranger; //!< SR 3D camera object.
 			CKinect                   * m_cap_kinect;    //!< Kinect camera object.
-			COpenNI2Sensor 		        * m_cap_openni2;  //!< OpenNI2 object.
+			COpenNI2Sensor 		      * m_cap_openni2;  //!< OpenNI2 object.
+			std::string				  * m_cap_image_dir;	//!< Read images from directory
+			CDUO3DCamera			  * m_cap_duo3d;		//!< The DUO3D capture object
 			// =========================
 
 			int			m_camera_grab_decimator;

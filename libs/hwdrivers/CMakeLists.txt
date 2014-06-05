@@ -103,6 +103,7 @@ define_mrpt_lib(
 	mrpt-gui    # used to camera preview, etc.
 	mrpt-opengl  # needed by mrpt-gui
 	mrpt-maps # needed by laser preview
+	mrpt-vision
 	)
 
 IF(BUILD_mrpt-hwdrivers) 

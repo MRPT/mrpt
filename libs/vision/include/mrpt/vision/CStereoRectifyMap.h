@@ -144,6 +144,13 @@ namespace mrpt
 			const mrpt::poses::CPose3DQuat  & getLeftCameraRot() const { return m_rot_left; } 
 			/** See \a getLeftCameraRot()  */
 			const mrpt::poses::CPose3DQuat  & getRightCameraRot() const { return m_rot_right; } 
+			/** Direct input access to rectify maps */
+			void setRectifyMaps( const std::vector<int16_t> &left_x,  const std::vector<uint16_t> &left_y,
+								const std::vector<int16_t> &right_x, const std::vector<uint16_t> &right_y );
+			
+			/** Direct input access to rectify maps. This method swaps the vectors so the inputs are no longer available.*/
+			void setRectifyMapsFast( std::vector<int16_t> &left_x,  std::vector<uint16_t> &left_y,
+								std::vector<int16_t> &right_x, std::vector<uint16_t> &right_y );
 
 		/** @} */
 

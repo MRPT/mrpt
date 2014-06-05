@@ -86,6 +86,8 @@ CCameraSensor::CCameraSensor() :
 	m_cap_swissranger    (NULL),
 	m_cap_kinect         (NULL),
 	m_cap_openni2        (NULL),
+	m_cap_image_dir		(NULL),
+	m_cap_duo3d			(NULL),
 	m_camera_grab_decimator (0),
 	m_camera_grab_decimator_counter(0),
 	m_preview_counter	(0),
@@ -238,6 +240,13 @@ void CCameraSensor::initialize()
 			throw e;
 		}
 	}
+	else if (m_grabber_type=="image_dir" )
+	{
+		//m_cap_image_dir
+		cout << format("[CCameraSensor::initialize] Image dir: %s...\n", m_img_dir_url.c_str() );
+		m_img_dir_counter = 0;
+		m_cap_image_dir = new std::string();
+	}
 	else if (m_grabber_type=="rawlog")
 	{
 		//m_cap_rawlog
@@ -301,6 +310,21 @@ void CCameraSensor::initialize()
 			throw;
 		}
 	}
+	else if (m_grabber_type=="duo3d")
+	{
+		//m_cap_duo3D
+		cout << format("[CCameraSensor::initialize] DUO3D stereo camera ...\n" );
+
+		// Open it:
+		try
+		{
+			m_cap_duo3d = new CDUO3DCamera( m_duo3d_options );		
+		} catch (std::exception &e)
+		{
+			m_state = CGenericSensor::ssError;
+			throw e;
+		}
+	}
 	else
 		THROW_EXCEPTION_CUSTOM_MSG1("Unknown 'grabber_type' found: %s", m_grabber_type.c_str() )
 
@@ -343,6 +367,7 @@ void CCameraSensor::close()
 	delete_safe(m_cap_swissranger);
 	delete_safe(m_cap_kinect);
 	delete_safe(m_cap_svs);
+	delete_safe(m_cap_duo3d);
 
 	m_state = CGenericSensor::ssInitializing;
 
@@ -439,6 +464,18 @@ void  CCameraSensor::loadConfig_sensorSpecific(
 	// Rawlog options:
 	m_rawlog_file = mrpt::system::trim( configSource.read_string( iniSection, "rawlog_file", m_rawlog_file ) );
 	m_rawlog_camera_sensor_label = mrpt::system::trim( configSource.read_string( iniSection, "rawlog_camera_sensor_label", m_rawlog_camera_sensor_label ) );
+
+	// Image directory options:
+	m_img_dir_url =  mrpt::system::trim( configSource.read_string( iniSection, "image_dir_url", m_img_dir_url ) );
+	m_img_dir_left_prefix = mrpt::system::trim( configSource.read_string( iniSection, "left_image_prefix", m_img_dir_left_prefix ) );
+	m_img_dir_right_prefix = mrpt::system::trim( configSource.read_string( iniSection, "right_image_prefix", m_img_dir_right_prefix ) );
+	m_img_dir_extension = mrpt::system::trim( configSource.read_string( iniSection, "image_extension", m_img_dir_extension ) );
+	m_img_dir_num_zeros = configSource.read_int( iniSection, "num_digits_in_name", m_img_dir_num_zeros );
+	m_img_dir_num_imgs = configSource.read_int( iniSection, "num_total_images", m_img_dir_num_imgs );
+	m_img_dir_is_stereo = configSource.read_bool( iniSection, "image_dir_is_stereo", m_img_dir_is_stereo );
+
+	// DUO3D Camera
+	m_duo3d_options.loadOptionsFrom( configSource, "DUO3DOptions" );
 
 	// SwissRanger options:
 	m_sr_open_from_usb = configSource.read_bool( iniSection, "sr_use_usb", m_sr_open_from_usb );
@@ -551,15 +588,26 @@ CCameraSensor::~CCameraSensor()
 	m_preview_win1.clear();
 	m_preview_win2.clear();
 }
+/* -----------------------------------------------------
+				getNextFrame
+----------------------------------------------------- */
+CObservationPtr CCameraSensor::getNextFrame( )
+{
+	vector<CSerializablePtr> out_obs;
+	getNextFrame(out_obs);
+	return static_cast<CObservationPtr>(out_obs[0]);
+}
 
 /* -----------------------------------------------------
 				getNextFrame
 ----------------------------------------------------- */
-CObservationPtr CCameraSensor::getNextFrame()
+void CCameraSensor::getNextFrame( vector<CSerializablePtr> & out_obs )
 {
 	CObservationImagePtr		obs;
 	CObservationStereoImagesPtr	stObs;
-	CObservation3DRangeScanPtr	obs3D;  // 3D range image, also with an intensity channel
+	CObservation3DRangeScanPtr	obs3D;		// 3D range image, also with an intensity channel
+	CObservationIMUPtr			obsIMU;		// IMU observation grabbed by DUO3D cameras
+
 	bool  capture_ok = false;
 
 	if (m_cap_cv)
@@ -667,6 +715,43 @@ CObservationPtr CCameraSensor::getNextFrame()
 			THROW_EXCEPTION("Error grabbing image");
 		}
 		else capture_ok = true;
+	}
+	else if (m_cap_image_dir)
+	{
+		if( m_img_dir_counter >= m_img_dir_num_imgs )
+		{
+			m_state = CGenericSensor::ssError;
+			// THROW_EXCEPTION("Error reading images");
+		}
+
+		std::string aux = format( "%%s/%%s%%0%dd.%%s", m_img_dir_num_zeros );
+		
+		if( m_img_dir_is_stereo )
+		{
+			stObs = CObservationStereoImages::Create();
+			if( !stObs->imageLeft.loadFromFile(format(aux.c_str(), m_img_dir_url.c_str(), m_img_dir_left_prefix.c_str(), ++m_img_dir_counter, m_img_dir_extension.c_str()),0) )
+			{
+				m_state = CGenericSensor::ssError;
+				THROW_EXCEPTION("Error reading images from directory");
+			}
+			if( !stObs->imageRight.loadFromFile(format(aux.c_str(), m_img_dir_url.c_str(), m_img_dir_right_prefix.c_str(), m_img_dir_counter, m_img_dir_extension.c_str()),0) )
+			{
+				m_state = CGenericSensor::ssError;
+				THROW_EXCEPTION("Error reading images from directory");
+			}
+			else capture_ok = true;
+		}
+		else
+		{
+			// use only left image prefix
+			obs = CObservationImage::Create();
+			if( !obs->image.loadFromFile(format(aux.c_str(), m_img_dir_url.c_str(), m_img_dir_left_prefix.c_str(), ++m_img_dir_counter, m_img_dir_extension.c_str()),0) )
+			{
+				m_state = CGenericSensor::ssError;
+				THROW_EXCEPTION("Error reading images from directory");
+			}
+			else capture_ok = true;
+		}
 	}
 	else if (m_cap_rawlog)
 	{
@@ -789,6 +874,26 @@ CObservationPtr CCameraSensor::getNextFrame()
 			capture_ok = true;
 		}
 	}
+	else if( m_cap_duo3d )
+	{
+		// ASSERT_( m_cap_duo3d->captureImgIsSet() || m_cap_duo3d->captureIMUIsSet() )
+
+		stObs = CObservationStereoImages::Create();
+		obsIMU = CObservationIMU::Create();
+
+		bool thereIsIMG, thereIsIMU;
+		m_cap_duo3d->getObservations(*stObs,*obsIMU,thereIsIMG,thereIsIMU);
+		if( !thereIsIMG )
+		{
+			m_state = CGenericSensor::ssError;
+			THROW_EXCEPTION("Error getting observations from DUO3D camera.");
+		}
+		else if( m_cap_duo3d->captureIMUIsSet() && !thereIsIMU )
+		{
+			cout << "[CCamera, duo3d] Warning: There are no IMU data from the device. Only images are being grabbed.";
+		}
+		capture_ok = true;
+	}
 	else
 	{
 		THROW_EXCEPTION("There is no initialized camera driver: has 'initialize()' been called?")
@@ -799,26 +904,31 @@ CObservationPtr CCameraSensor::getNextFrame()
 	// Are we supposed to do a decimation??
 	m_camera_grab_decimator_counter++;
 	if (m_camera_grab_decimator_counter<m_camera_grab_decimator)
+	{
 		// Done here:
-		return CObservationPtr();
-
+		out_obs.push_back( CObservationPtr() );
+		return;
+	}
 	// Continue as normal:
 	m_camera_grab_decimator_counter = 0;
 
-	ASSERT_(obs || stObs || obs3D)
-
+	ASSERT_(obs || stObs || obs3D || obsIMU)
 	// If we grabbed an image: prepare it and add it to the internal queue:
 	if (obs) {
 		obs->sensorLabel = m_sensorLabel;
 		obs->setSensorPose( m_sensorPose );
 	}
 	else if (stObs) {
-		stObs->sensorLabel = m_sensorLabel;
+		stObs->sensorLabel = (m_cap_duo3d && m_cap_duo3d->captureIMUIsSet()) ? m_sensorLabel + "_IMG" : m_sensorLabel;
 		stObs->setSensorPose( m_sensorPose );
 	}
-	else {
+	else if (obs3D) {
 		obs3D->sensorLabel = m_sensorLabel;
 		obs3D->setSensorPose( m_sensorPose );
+	}
+	if (obsIMU)	{
+		obsIMU->sensorLabel = m_sensorLabel + "_IMU";
+		obsIMU->setSensorPose( m_sensorPose );
 	}
 
 	// Convert to grayscale if the user wants so and  the driver did ignored us:
@@ -839,7 +949,6 @@ CObservationPtr CCameraSensor::getNextFrame()
 			if (obs3D->hasIntensityImage && obs3D->intensityImage.isColor()) obs3D->intensityImage.grayscaleInPlace();
 		}
 	}
-
 	// External storage?
 	bool delayed_insertion_in_obs_queue = false; // If true, we'll return nothing, but the observation will be inserted from the thread.
 
@@ -909,7 +1018,6 @@ CObservationPtr CCameraSensor::getNextFrame()
 			}
 		} // end else
 	}
-
 	// Show preview??
 	if (m_preview_decimation>0)
 	{	// Yes
@@ -991,11 +1099,17 @@ CObservationPtr CCameraSensor::getNextFrame()
 			}
 		}
 	} // end show preview
-
 	if (delayed_insertion_in_obs_queue)
-		return CObservationPtr();
+	{
+		if( m_cap_duo3d && m_cap_duo3d->captureIMUIsSet() && obsIMU )	out_obs.push_back( CObservationPtr(obsIMU) );
+	}
 	else
-		return stObs ? CObservationPtr(stObs) : (obs ? CObservationPtr(obs) : CObservationPtr(obs3D));
+	{
+		if( stObs )		out_obs.push_back( CObservationPtr(stObs) );
+		if( obs )		out_obs.push_back( CObservationPtr(obs) );
+		if( obs3D )		out_obs.push_back( CObservationPtr(obs3D) );
+	} 
+	return;
 }
 
 
@@ -1005,9 +1119,9 @@ CObservationPtr CCameraSensor::getNextFrame()
 ----------------------------------------------------- */
 void  CCameraSensor::doProcess()
 {
-	CObservationPtr obs = getNextFrame();
-	if (obs)
-		appendObservation(obs);
+	vector<CSerializablePtr> out_obs;
+	getNextFrame(out_obs);
+	appendObservations(out_obs);
 }
 
 /* -----------------------------------------------------
@@ -1095,6 +1209,7 @@ CCameraSensorPtr mrpt::hwdrivers::prepareVideoSourceFromUserSelection()
 						prepareVideoSourceFromPanel
    ------------------------------------------------------------------------ */
 MRPT_TODO("Add flycap")
+MRPT_TODO("Add duo3D")
 CCameraSensorPtr mrpt::hwdrivers::prepareVideoSourceFromPanel(void *_panel)
 {
 #if MRPT_HAS_WXWIDGETS
