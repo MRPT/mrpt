@@ -92,6 +92,11 @@ IF(CMAKE_MRPT_HAS_ARIA)
 		)
 ENDIF(CMAKE_MRPT_HAS_ARIA)
 
+IF(CMAKE_MRPT_HAS_DUO3D)
+	INCLUDE_DIRECTORIES("${DUO3D_ROOT_DIR}/include")
+	LINK_DIRECTORIES("${DUO3D_ROOT_DIR}/lib")
+ENDIF(CMAKE_MRPT_HAS_DUO3D)
+
 # Macro declared in "DeclareMRPTLib.cmake":
 define_mrpt_lib(
 	# Lib name
@@ -103,7 +108,7 @@ define_mrpt_lib(
 	mrpt-gui    # used to camera preview, etc.
 	mrpt-opengl  # needed by mrpt-gui
 	mrpt-maps # needed by laser preview
-	mrpt-vision
+	mrpt-vision  # needed to stereo rectification
 	)
 
 IF(BUILD_mrpt-hwdrivers) 
