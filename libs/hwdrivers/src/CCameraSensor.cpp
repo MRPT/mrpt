@@ -367,6 +367,7 @@ void CCameraSensor::close()
 	delete_safe(m_cap_swissranger);
 	delete_safe(m_cap_kinect);
 	delete_safe(m_cap_svs);
+	delete_safe(m_cap_image_dir);
 	delete_safe(m_cap_duo3d);
 
 	m_state = CGenericSensor::ssInitializing;
