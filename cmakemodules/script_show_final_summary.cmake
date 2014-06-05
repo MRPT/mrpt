@@ -128,7 +128,7 @@ SHOW_CONFIG_LINE_SYSTEM("Has OpenNI2                             " CMAKE_MRPT_HA
 SHOW_CONFIG_LINE_SYSTEM("Has PCL (Pointscloud library)           " CMAKE_MRPT_HAS_PCL  "[Version: ${PCL_VERSION}]")
 IF(NOT UNIX)	# In fact, it's not "support for Bumblebee" but for it thru PGR vendor libraries.
 SHOW_CONFIG_LINE("Has PGR Digiclops/Triclops              " CMAKE_MRPT_HAS_BUMBLEBEE)
-SHOW_CONFIG_LINE("Has DUO3D Camera libs             	  	" CMAKE_MRPT_HAS_DUO3D)
+SHOW_CONFIG_LINE("Has DUO3D Camera libs                   " CMAKE_MRPT_HAS_DUO3D)
 ENDIF(NOT UNIX)
 SHOW_CONFIG_LINE("Has PGR FlyCapture2                     " CMAKE_MRPT_HAS_FLYCAPTURE2)
 SHOW_CONFIG_LINE("Has SuiteSparse                         " CMAKE_MRPT_HAS_SUITESPARSE)
