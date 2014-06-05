@@ -63,10 +63,12 @@ namespace mrpt
 			/** @name Others
 			  * @{ */
 			mrpt::utils::TStereoCamera	m_stereo_camera;
+#if MRPT_HAS_OPENCV
 			cv::Mat		m_rectify_map_left_x;
 			cv::Mat		m_rectify_map_left_y;
 			cv::Mat		m_rectify_map_right_x;
 			cv::Mat		m_rectify_map_right_y;
+#endif
 			/** @} */
 
 			/** Loads all the options from a config file.

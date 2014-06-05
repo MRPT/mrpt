@@ -20,6 +20,7 @@ using namespace mrpt::utils;
 using namespace mrpt::slam;
 using namespace mrpt::hwdrivers;
 
+MRPT_TODO("FIXME: Put #if MRPT_HAS_OPENCV around cv::Mat, if they are definitive!")
 
 // opencv header files and namespaces
 #if MRPT_HAS_OPENCV
@@ -39,11 +40,14 @@ TCaptureOptions_DUO3D::TCaptureOptions_DUO3D() :
 	m_rectify_map_filename(""),
 	m_intrinsic_filename(""),
 	m_extrinsic_filename(""),
-	m_stereo_camera(TStereoCamera()),
+	m_stereo_camera(TStereoCamera())
+#if MRPT_HAS_OPENCV
+	,
 	m_rectify_map_left_x(cv::Mat()),
 	m_rectify_map_left_y(cv::Mat()),
 	m_rectify_map_right_x(cv::Mat()),
 	m_rectify_map_right_y(cv::Mat())
+#endif
 {}
 
 TCaptureOptions_DUO3D::TYMLReadResult TCaptureOptions_DUO3D::m_rectify_map_from_yml( const string & _file_name )
