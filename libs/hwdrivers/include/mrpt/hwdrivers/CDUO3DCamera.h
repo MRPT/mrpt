@@ -19,12 +19,6 @@
 
 #include <mrpt/otherlibs/do_opencv_includes.h> 
 
-// duo3d header files
-#if MRPT_HAS_DUO3D
-#		include <DUOLib.h>
-#		pragma comment(lib, "DUOLib.lib")
-#endif
-
 namespace mrpt
 {
 	namespace hwdrivers
