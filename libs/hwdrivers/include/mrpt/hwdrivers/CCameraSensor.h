@@ -181,14 +181,12 @@ namespace mrpt
 		  *    #... (all the parameters enumerated in mrpt::hwdrivers::TCaptureOptions_FlyCapture2 with the prefix "fcs_RIGHT_")
 		  *
 		  *	   # Options for grabber_type= image_dir
-		  *    image_dir_is_stereo				=true	// [bool]	Whether the images are from stereo pair
-		  *	   image_dir_url					=		// [string] URL of the directory 
-		  *	   left_image_prefix				=		// [string] Prefix of the left images (default= imL_)
-		  *	   right_image_prefix				=		// [string] Prefix of the right images (default= imR_)
-		  *	   image_extension					=		// [string] Image extension
-		  *	   num_total_images					=		// [int]	Total number of images in the directory. If they are stereo, just the number of images for one camera, e.g.: if in the directory there are: imL_001.jpg ... imL_100.jpg and imR_001.jpg ... imR_100.jpg -> num_total_images= 100.
-		  *	   num_digits_in_name				=		// [int]	For zeroing the image name (default= 4). Example: imL_001.jpg -> num_digits_in_name = 3, imL_00001.jpg -> num_digits_in_name = 5
-
+		  *	   image_dir_url					= 				// [string] URL of the directory 
+		  *    left_filename_format				= imL_%05d.jpg	// [string] Format including prefix, number of trailing zeros, digits and image format (extension)
+		  *	   right_filename_format			= imR_%05d.jpg	// [string] Format including prefix, number of trailing zeros, digits and image format (extension). Leave blank if only images from one camera will be used.
+		  *	   start_index						= 0				// [int]	Starting index for images
+		  *	   end_index						= 100			// [int]	End index for the images
+		  *
 		  *	   # Options for grabber_type= duo3d
 		  *		Create a section like this:
 		  *		[DUO3DOptions]
@@ -346,13 +344,13 @@ namespace mrpt
 
 			// Options for grabber type= image_dir
 			std::string		m_img_dir_url;
-			std::string		m_img_dir_left_prefix;
-			std::string		m_img_dir_right_prefix;
-			std::string		m_img_dir_extension;
-			int				m_img_dir_num_zeros;
+			std::string		m_img_dir_left_format;
+			std::string		m_img_dir_right_format;
+			int				m_img_dir_start_index;
+			int				m_img_dir_end_index;
+			
 			bool			m_img_dir_is_stereo;
 			int				m_img_dir_counter;
-			int				m_img_dir_num_imgs;
 			
 			// Options for grabber type= duo3d
 			TCaptureOptions_DUO3D	m_duo3d_options;

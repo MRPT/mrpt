@@ -71,6 +71,14 @@ CCameraSensor::CCameraSensor() :
 	m_kinect_save_intensity_img(true),
 	m_kinect_video_rgb		(true),
 
+	m_img_dir_url			(""),
+	m_img_dir_left_format	("imL_%04d.jpg"),
+	m_img_dir_right_format	("imR_%04d.jpg"),
+	m_img_dir_start_index	(0),
+	m_img_dir_end_index		(100),
+	m_img_dir_is_stereo		(true),
+	m_img_dir_counter		(0),
+
 	m_fcs_start_synch_capture(false),
 
 	m_external_images_own_thread(false),
@@ -244,7 +252,6 @@ void CCameraSensor::initialize()
 	{
 		//m_cap_image_dir
 		cout << format("[CCameraSensor::initialize] Image dir: %s...\n", m_img_dir_url.c_str() );
-		m_img_dir_counter = 0;
 		m_cap_image_dir = new std::string();
 	}
 	else if (m_grabber_type=="rawlog")
@@ -467,15 +474,16 @@ void  CCameraSensor::loadConfig_sensorSpecific(
 	m_rawlog_camera_sensor_label = mrpt::system::trim( configSource.read_string( iniSection, "rawlog_camera_sensor_label", m_rawlog_camera_sensor_label ) );
 
 	// Image directory options:
-	m_img_dir_url =  mrpt::system::trim( configSource.read_string( iniSection, "image_dir_url", m_img_dir_url ) );
-	m_img_dir_left_prefix = mrpt::system::trim( configSource.read_string( iniSection, "left_image_prefix", m_img_dir_left_prefix ) );
-	m_img_dir_right_prefix = mrpt::system::trim( configSource.read_string( iniSection, "right_image_prefix", m_img_dir_right_prefix ) );
-	m_img_dir_extension = mrpt::system::trim( configSource.read_string( iniSection, "image_extension", m_img_dir_extension ) );
-	m_img_dir_num_zeros = configSource.read_int( iniSection, "num_digits_in_name", m_img_dir_num_zeros );
-	m_img_dir_num_imgs = configSource.read_int( iniSection, "num_total_images", m_img_dir_num_imgs );
-	m_img_dir_is_stereo = configSource.read_bool( iniSection, "image_dir_is_stereo", m_img_dir_is_stereo );
+	m_img_dir_url			=  mrpt::system::trim( configSource.read_string( iniSection, "image_dir_url", m_img_dir_url ) );
+	m_img_dir_left_format	= mrpt::system::trim( configSource.read_string( iniSection, "left_format", m_img_dir_left_format ) );
+	m_img_dir_right_format	= mrpt::system::trim( configSource.read_string( iniSection, "right_format", "" ) );
+	m_img_dir_start_index	= configSource.read_int( iniSection, "start_index", m_img_dir_start_index );;
+	m_img_dir_end_index		= configSource.read_int( iniSection, "end_index", m_img_dir_end_index );
 
-	// DUO3D Camera
+	m_img_dir_is_stereo = !m_img_dir_right_format.empty();
+	m_img_dir_counter   = m_img_dir_start_index;
+
+	// DUO3D Camera options:
 	m_duo3d_options.loadOptionsFrom( configSource, "DUO3DOptions" );
 
 	// SwissRanger options:
@@ -719,23 +727,23 @@ void CCameraSensor::getNextFrame( vector<CSerializablePtr> & out_obs )
 	}
 	else if (m_cap_image_dir)
 	{
-		if( m_img_dir_counter >= m_img_dir_num_imgs )
+		if( m_img_dir_counter > m_img_dir_end_index )
 		{
 			m_state = CGenericSensor::ssError;
-			// THROW_EXCEPTION("Error reading images");
+			THROW_EXCEPTION("Reached end index.");
 		}
 
-		std::string aux = format( "%%s/%%s%%0%dd.%%s", m_img_dir_num_zeros );
-		
+		std::string auxL = format( "%s/%s", m_img_dir_url.c_str(), m_img_dir_left_format.c_str() );
 		if( m_img_dir_is_stereo )
 		{
 			stObs = CObservationStereoImages::Create();
-			if( !stObs->imageLeft.loadFromFile(format(aux.c_str(), m_img_dir_url.c_str(), m_img_dir_left_prefix.c_str(), ++m_img_dir_counter, m_img_dir_extension.c_str()),0) )
+			if( !stObs->imageLeft.loadFromFile( format(auxL.c_str(), m_img_dir_counter) ) )
 			{
 				m_state = CGenericSensor::ssError;
 				THROW_EXCEPTION("Error reading images from directory");
 			}
-			if( !stObs->imageRight.loadFromFile(format(aux.c_str(), m_img_dir_url.c_str(), m_img_dir_right_prefix.c_str(), m_img_dir_counter, m_img_dir_extension.c_str()),0) )
+			std::string auxR = format( "%s/%s", m_img_dir_url.c_str(), m_img_dir_right_format.c_str() );			
+			if( !stObs->imageRight.loadFromFile( format(auxR.c_str(), m_img_dir_counter++)) )
 			{
 				m_state = CGenericSensor::ssError;
 				THROW_EXCEPTION("Error reading images from directory");
@@ -746,7 +754,7 @@ void CCameraSensor::getNextFrame( vector<CSerializablePtr> & out_obs )
 		{
 			// use only left image prefix
 			obs = CObservationImage::Create();
-			if( !obs->image.loadFromFile(format(aux.c_str(), m_img_dir_url.c_str(), m_img_dir_left_prefix.c_str(), ++m_img_dir_counter, m_img_dir_extension.c_str()),0) )
+			if( !obs->image.loadFromFile( format(auxL.c_str(), m_img_dir_counter++) ) )
 			{
 				m_state = CGenericSensor::ssError;
 				THROW_EXCEPTION("Error reading images from directory");
@@ -758,7 +766,6 @@ void CCameraSensor::getNextFrame( vector<CSerializablePtr> & out_obs )
 	{
 		// Read in a loop until we found at least one image:
 		//  Assign to: obs && stObs
-
 		CSerializablePtr  newObs;
 		while (!obs.present() && !stObs.present() && !obs3D.present())
 		{
@@ -877,8 +884,6 @@ void CCameraSensor::getNextFrame( vector<CSerializablePtr> & out_obs )
 	}
 	else if( m_cap_duo3d )
 	{
-		// ASSERT_( m_cap_duo3d->captureImgIsSet() || m_cap_duo3d->captureIMUIsSet() )
-
 		stObs = CObservationStereoImages::Create();
 		obsIMU = CObservationIMU::Create();
 

@@ -100,7 +100,6 @@ namespace mrpt
 
 		/** This "software driver" implements the communication protocol for interfacing a DUO3D Stereo Camera 
 		  *
-		  *   For an example of usage see the example in "samples/DUO3D_camera_test".
 		  *   See also the example configuration file for rawlog-grabber in "share/mrpt/config_files/rawlog-grabber".
 		  *
 		  *  \code

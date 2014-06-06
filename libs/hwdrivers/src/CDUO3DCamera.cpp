@@ -104,15 +104,6 @@ TCaptureOptions_DUO3D::TYMLReadResult TCaptureOptions_DUO3D::m_camera_ext_params
 	if( found == std::string::npos )
 	{
 		m_stereo_camera.rightCameraPose = CPose3DQuat();
-		/*
-		m_stereo_camera.rightCameraPose.m_coords[0] = 
-		m_stereo_camera.rightCameraPose.m_coords[1] = 
-		m_stereo_camera.rightCameraPose.m_coords[2] = 
-		m_stereo_camera.rightCameraPose.m_quat[1] = 
-		m_stereo_camera.rightCameraPose.m_quat[2] = 
-		m_stereo_camera.rightCameraPose.m_quat[3] = 0.0;
-
-		m_stereo_camera.rightCameraPose.m_quat[0] = 1.0;*/
 		return yrr_NAME_NON_CONSISTENT;
 	}
 	// read file
@@ -133,15 +124,6 @@ TCaptureOptions_DUO3D::TYMLReadResult TCaptureOptions_DUO3D::m_camera_ext_params
 	{
 		empty = true;
 		m_stereo_camera.rightCameraPose = CPose3DQuat();
-
-		/*m_stereo_camera.rightCameraPose.m_coords[0] = 
-		m_stereo_camera.rightCameraPose.m_coords[1] = 
-		m_stereo_camera.rightCameraPose.m_coords[2] = 
-		m_stereo_camera.rightCameraPose.m_quat[1] = 
-		m_stereo_camera.rightCameraPose.m_quat[2] = 
-		m_stereo_camera.rightCameraPose.m_quat[3] = 0.0;
-
-		m_stereo_camera.rightCameraPose.m_quat[0] = 1.0;*/
 	}
 
 	// translation
@@ -156,24 +138,10 @@ TCaptureOptions_DUO3D::TYMLReadResult TCaptureOptions_DUO3D::m_camera_ext_params
 	{
 		empty = true;
 		m_stereo_camera.rightCameraPose = CPose3DQuat();
-
-		/*m_stereo_camera.rightCameraPose.m_coords[0] = 
-		m_stereo_camera.rightCameraPose.m_coords[1] = 
-		m_stereo_camera.rightCameraPose.m_coords[2] = 
-		m_stereo_camera.rightCameraPose.m_quat[1] = 
-		m_stereo_camera.rightCameraPose.m_quat[2] = 
-		m_stereo_camera.rightCameraPose.m_quat[3] = 0.0;
-
-		m_stereo_camera.rightCameraPose.m_quat[0] = 1.0;*/
 	}
 
 	if( empty ) return yrr_EMPTY;
 
-	/*CPose3D aux_pose(M,t);
-	aux_pose.getAsQuaternion( m_stereo_camera.rightCameraPose.m_quat );
-	m_stereo_camera.rightCameraPose.m_coords[0] = t(0,0);
-	m_stereo_camera.rightCameraPose.m_coords[1] = t(0,1);
-	m_stereo_camera.rightCameraPose.m_coords[2] = t(0,2);*/
 	m_stereo_camera.rightCameraPose = CPose3DQuat( CPose3D(M,t) );
 	return yrr_OK;
 }
@@ -281,10 +249,6 @@ static void CALLBACK DUOCallback(const PDUOFrame pFrameData, void *pUserData)
 CDUO3DCamera::CDUO3DCamera() :
 	m_options(TCaptureOptions_DUO3D()),
 	m_duo(NULL)
-	/*,
-	m_input_image_left(NULL),
-	m_input_image_right(NULL),
-	m_initialized(false)*/
 {
 #if MRPT_HAS_DUO3D
 	m_duo = new DUOInstance[1];
@@ -316,9 +280,6 @@ CDUO3DCamera::CDUO3DCamera( const TCaptureOptions_DUO3D & options ) :
 /** Destructor */
 CDUO3DCamera::~CDUO3DCamera()
 {
-	// Release image headers
-	/*cvReleaseImageHeader( & m_input_image_left );
-	cvReleaseImageHeader( & m_input_image_right );*/
 #if MRPT_HAS_DUO3D
 	this->close();
 	if (m_duo) { delete[] M_DUO_PTR; m_duo=NULL;}
