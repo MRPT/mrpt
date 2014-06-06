@@ -23,7 +23,7 @@
 	- <b>Detailed list of changes:</b>
 		- Changes in apps:
 			- [rawlog-edit](http://www.mrpt.org/Application%3Arawlog-edit):
-				- New operation: --export-odometry-txt
+				- New operations: --export-odometry-txt, --recalc-odometry
 				- New flag: --rectify-centers-coincide
 		- New examples:
 			- kitti_dataset2rawlog

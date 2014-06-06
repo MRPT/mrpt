@@ -50,6 +50,7 @@ DECLARE_OP_FUNCTION(op_export_gps_gas_kml);
 DECLARE_OP_FUNCTION(op_export_gps_txt);
 DECLARE_OP_FUNCTION(op_export_imu_txt);
 DECLARE_OP_FUNCTION(op_export_odometry_txt);
+DECLARE_OP_FUNCTION(op_recalc_odometry);
 DECLARE_OP_FUNCTION(op_export_rawdaq_txt);
 DECLARE_OP_FUNCTION(op_export_2d_scans_txt);
 DECLARE_OP_FUNCTION(op_sensors_pose);
@@ -80,6 +81,10 @@ TCLAP::ValueArg<uint64_t> arg_to_index  ("","to-index",  "End index for --cut",f
 
 TCLAP::ValueArg<double> arg_from_time("","from-time","Starting time for --cut, as UNIX timestamp, optionally with fractions of seconds.",false,0,"T0",cmd);
 TCLAP::ValueArg<double> arg_to_time  ("","to-time",  "End time for --cut, as UNIX timestamp, optionally with fractions of seconds.",false,0,"T1",cmd);
+
+TCLAP::ValueArg<double> arg_odo_KL  ("","odo-KL",  "Constant from encoder ticks to meters (left wheel), used in --recalc-odometry.",false,0,"KL",cmd);
+TCLAP::ValueArg<double> arg_odo_KR  ("","odo-KR",  "Constant from encoder ticks to meters (right wheel), used in --recalc-odometry.",false,0,"KR",cmd);
+TCLAP::ValueArg<double> arg_odo_D   ("","odo-D",   "Distance between left-right wheels (meters), used in --recalc-odometry.",false,0,"D",cmd);
 
 TCLAP::SwitchArg arg_overwrite("w","overwrite","Force overwrite target file without prompting.",cmd, false);
 
@@ -185,6 +190,14 @@ int main(int argc, char **argv)
 			"filename + each sensorLabel."
 			,cmd,false) );
 		ops_functors["export-odometry-txt"] = &op_export_odometry_txt;
+
+		arg_ops.push_back(new TCLAP::SwitchArg("","recalc-odometry",
+			"Op: Recomputes odometry increments from new encoder-to-odometry constants.\n"
+			"Requires: -o (or --output)\n"
+			"Requires: --odo-KL, --odo-KR and --odo-D.\n"
+			,cmd,false) );
+		ops_functors["recalc-odometry"] = &op_recalc_odometry;
+
 
 		arg_ops.push_back(new TCLAP::SwitchArg("","export-rawdaq-txt",
 			"Op: Export raw DAQ readings to TXT files.\n"
