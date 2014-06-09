@@ -619,6 +619,26 @@ size_t vision::matchFeatures(
 					break; // end case featSURF
 				} // end mmDescriptorSURF
 
+				case TMatchingOptions::mmDescriptorORB:
+				{
+					// Ensure that both features have SURF descriptors
+					ASSERT_((*itList1)->descriptors.hasDescriptorORB() && (*itList2)->descriptors.hasDescriptorORB() );
+					distDesc = (*itList1)->descriptorORBDistanceTo( *(*itList2) );
+					
+					// Search for the two minimum values
+					if( distDesc < minDist1 )
+					{
+						minDist2 = minDist1;
+						minDist1 = distDesc;
+						minLeftIdx  = lFeat;
+						minRightIdx = rFeat;
+					}
+					else if ( distDesc < minDist2 )
+						minDist2 = distDesc;
+
+					break;
+				} // end mmDescriptorORB
+
 				case TMatchingOptions::mmSAD:
 				{
 					// Ensure that both features have patches
@@ -702,6 +722,11 @@ size_t vision::matchFeatures(
 				cond1 = minSAD1 < options.maxSAD_TH;
 				cond2 = (minSAD1/minSAD2) < options.SAD_RATIO;
 				minVal = minSAD1;
+				break;
+			case TMatchingOptions::mmDescriptorORB:
+				cond1 = minDist1 < options.maxORB_dist;
+				cond2 = true;
+				minVal = minDist1;
 				break;
 			default:
 				THROW_EXCEPTION("Invalid value of 'matching_method'");
@@ -893,6 +918,30 @@ void  vision::addFeaturesToImage(
 		outImg.rectangle( (*it)->x-5, (*it)->y-5, (*it)->x+5, (*it)->y+5, TColor(255,0,0) );
 }
 
+/*-------------------------------------------------------------
+					projectMatchedFeatures
+-------------------------------------------------------------*/
+void vision::projectMatchedFeatures(
+					const CMatchedFeatureList	& matches,
+					const mrpt::utils::TStereoCamera			& stereo_camera,
+					vector<TPoint3D>			& out_points )
+{
+	out_points.clear();
+	out_points.reserve( matches.size() );
+	for( CMatchedFeatureList::const_iterator it = matches.begin(); it != matches.end(); ++it )
+	{
+		const double disp = it->first->x - it->second->x;
+		if( disp < 1 )
+			continue;
+
+		const double b_d = stereo_camera.rightCameraPose.x()/disp;
+		out_points.push_back( 
+			TPoint3D( (it->first->x - stereo_camera.leftCamera.cx())*b_d,
+				      (it->first->y - stereo_camera.leftCamera.cy())*b_d,
+					  stereo_camera.leftCamera.fx()*b_d ) 
+					  );
+	} // end-for
+}
 /*-------------------------------------------------------------
 					projectMatchedFeatures
 -------------------------------------------------------------*/
@@ -2163,6 +2212,9 @@ TMatchingOptions::TMatchingOptions() :
 	parallelOpticalAxis ( true ),		// Whether or not take into account the epipolar restriction for finding correspondences
 	useXRestriction ( true ),			// Whether or not employ the x-coord restriction for finding correspondences (bumblebee camera, for example)
 	addMatches( false ),
+	useDisparityLimits( false ),
+
+	min_disp(1.0), max_disp(1e4),
 
 	matching_method ( mmCorrelation ),	// Matching method
 	epipolar_TH	( 1.5f ),				// Epipolar constraint (rows of pixels)
@@ -2216,6 +2268,9 @@ void  TMatchingOptions::loadFromConfigFile(
 	case 3:
 		matching_method = mmSAD;
 		break;
+	case 4:
+		matching_method = mmDescriptorORB;
+		break;
 	} // end switch
 
     useEpipolarRestriction  = iniFile.read_bool(section.c_str(), "useEpipolarRestriction", useEpipolarRestriction );
@@ -2223,7 +2278,11 @@ void  TMatchingOptions::loadFromConfigFile(
     parallelOpticalAxis     = iniFile.read_bool(section.c_str(), "parallelOpticalAxis", parallelOpticalAxis );
     useXRestriction         = iniFile.read_bool(section.c_str(), "useXRestriction", useXRestriction );
     addMatches              = iniFile.read_bool(section.c_str(), "addMatches", addMatches );
+	useDisparityLimits		= iniFile.read_bool(section.c_str(), "useDisparityLimits", useDisparityLimits );
 
+	min_disp		= iniFile.read_float(section.c_str(),"min_disp",min_disp);
+	max_disp		= iniFile.read_float(section.c_str(),"max_disp",max_disp);
+	
 	epipolar_TH		= iniFile.read_float(section.c_str(),"epipolar_TH",epipolar_TH);
 	maxEDD_TH		= iniFile.read_float(section.c_str(),"maxEDD_TH",maxEDD_TH);
 	EDD_RATIO		= iniFile.read_float(section.c_str(),"minDIF_TH",EDD_RATIO);
@@ -2234,7 +2293,7 @@ void  TMatchingOptions::loadFromConfigFile(
 	EDSD_RATIO		= iniFile.read_float(section.c_str(),"EDSD_RATIO",EDSD_RATIO);
 	maxSAD_TH		= iniFile.read_float(section.c_str(),"maxSAD_TH",maxSAD_TH);
 	SAD_RATIO		= iniFile.read_float(section.c_str(),"SAD_RATIO",SAD_RATIO);
-	SAD_RATIO		= iniFile.read_float(section.c_str(),"SAD_RATIO",SAD_RATIO);
+	maxORB_dist		= iniFile.read_float(section.c_str(),"maxORB_dist",maxORB_dist);
 
 	estimateDepth       = iniFile.read_bool(section.c_str(), "estimateDepth", estimateDepth );
 	maxDepthThreshold   = iniFile.read_float(section.c_str(), "maxDepthThreshold", maxDepthThreshold );
@@ -2275,6 +2334,10 @@ void  TMatchingOptions::dumpToTextStream(
         out.printf("· Max. Dif. SAD Threshold:      %f\n", maxSAD_TH);
         out.printf("· Ratio SAD Threshold:          %f\n", SAD_RATIO);
 		break;
+	case mmDescriptorORB:
+		out.printf("ORB\n");
+		out.printf("· Max. distance between desc:	%f\n",maxORB_dist);
+		break;
 	} // end switch
 	out.printf("Epipolar Thres:                 %.2f px\n", epipolar_TH);
 	out.printf("Using epipolar restriction?:    ");
@@ -2285,6 +2348,10 @@ void  TMatchingOptions::dumpToTextStream(
 	out.printf( parallelOpticalAxis ? "Yes\n" : "No\n" );
 	out.printf("Use X-coord restriction?:       ");
 	out.printf( useXRestriction ? "Yes\n" : "No\n" );
+	out.printf("Use disparity limits?:       ");
+	out.printf( useDisparityLimits ? "Yes\n" : "No\n" );
+	if( useDisparityLimits )
+		out.printf("· Min/max disp limits:          %.2f/%.2f px\n", min_disp, max_disp );
 	out.printf("Estimate depth?:                ");
 	out.printf( estimateDepth ? "Yes\n" : "No\n" );
 	if( estimateDepth )

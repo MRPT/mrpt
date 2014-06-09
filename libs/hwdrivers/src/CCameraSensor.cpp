@@ -736,6 +736,7 @@ void CCameraSensor::getNextFrame( vector<CSerializablePtr> & out_obs )
 		std::string auxL = format( "%s/%s", m_img_dir_url.c_str(), m_img_dir_left_format.c_str() );
 		if( m_img_dir_is_stereo )
 		{
+
 			stObs = CObservationStereoImages::Create();
 			if( !stObs->imageLeft.loadFromFile( format(auxL.c_str(), m_img_dir_counter) ) )
 			{

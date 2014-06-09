@@ -12,7 +12,7 @@
 
 #include <mrpt/vision/CFeature.h>
 #include <mrpt/utils/CImage.h>
-//#include <mrpt/math/utils.h>
+#include <mrpt/utils/TStereoCamera.h>
 #include <mrpt/math/CMatrixTemplate.h>
 #include <mrpt/utils/CLoadableOptions.h>
 #include <mrpt/utils/TMatchingPair.h>
@@ -260,6 +260,11 @@ namespace mrpt
                                 const CImage                        & inImg,
                                 const CFeatureList                  & theList,
                                 CImage                              & outImg );
+
+			void VISION_IMPEXP projectMatchedFeatures(
+								const CMatchedFeatureList			& matches,
+								const mrpt::utils::TStereoCamera	& stereo_camera,
+								vector<TPoint3D>					& out_points );
 
 			/** Computes the 3D position of a set of matched features from their coordinates in the images. The list have to be matched in order, e.g. leftList[0]<->rightList[0]
 			  * \param leftList     [IN]    The left list of features.
