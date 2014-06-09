@@ -52,7 +52,8 @@ namespace mrpt
 			featFAST,				//!< FAST feature detector, OpenCV's implementation ("Faster and better: A machine learning approach to corner detection", E. Rosten, R. Porter and T. Drummond, PAMI, 2009).
 			featFASTER9,			//!< FASTER-9 detector, Edward Rosten's libcvd implementation optimized for SSE2.
 			featFASTER10,			//!< FASTER-9 detector, Edward Rosten's libcvd implementation optimized for SSE2.
-			featFASTER12			//!< FASTER-9 detector, Edward Rosten's libcvd implementation optimized for SSE2.
+			featFASTER12,			//!< FASTER-9 detector, Edward Rosten's libcvd implementation optimized for SSE2.
+			featORB					//!< ORB detector and descriptor, OpenCV's implementation ("ORB: an efficient alternative to SIFT or SURF", E. Rublee, V. Rabaud, K. Konolige, G. Bradski, ICCV, 2012).
 		};
 
 		/** The bitwise OR combination of values of TDescriptorType are used in CFeatureExtraction::computeDescriptors to indicate which descriptors are to be computed for features.
@@ -64,7 +65,8 @@ namespace mrpt
 			descSURF			= 2,  //!< SURF descriptors
 			descSpinImages      = 4,  //!< Intensity-domain spin image descriptors
 			descPolarImages     = 8,  //!< Polar image descriptor
-			descLogPolarImages	= 16  //!< Log-Polar image descriptor
+			descLogPolarImages	= 16,  //!< Log-Polar image descriptor
+			descORB				= 32  //!< Bit-based feature descriptor
 		};
 
 		enum TFeatureTrackStatus
@@ -291,7 +293,10 @@ namespace mrpt
 				mmDescriptorSURF,
 				/** Matching by sum of absolute differences of the image patches
 				  */
-				mmSAD
+				mmSAD,
+				/** Matching by Hamming distance between ORB descriptors
+				  */
+				mmDescriptorORB
 			};
 
 			// For determining
@@ -300,6 +305,10 @@ namespace mrpt
 			bool	parallelOpticalAxis;		//!< Whether or not the stereo rig has the optical axes parallel
 			bool	useXRestriction;			//!< Whether or not employ the x-coord restriction for finding correspondences (bumblebee camera, for example)
 			bool    addMatches;                 //!< Whether or not to add the matches found into the input matched list (if false the input list will be cleared before being filled with the new matches)
+			bool	useDisparityLimits;			//!< Whether or not use limits (min,max) for the disparity, see also 'min_disp, max_disp'
+			bool	enable_robust_1to1_match;	//!< Whether or not only permit matches that are consistent from left->right and right->left
+
+			float	min_disp, max_disp;			//!< Disparity limits, see also 'useDisparityLimits'
 
 			mrpt::math::CMatrixDouble33 F;
 
@@ -324,6 +333,9 @@ namespace mrpt
 			double	maxSAD_TH;                  //!< Minimum Euclidean Distance Between Sum of Absolute Differences
 			double  SAD_RATIO;                  //!< Boundary Ratio between the two highest SAD
 
+			// ORB
+			double	maxORB_dist;				//!< Maximun distance between ORB descriptors
+
 //			// To estimate depth
 			bool    estimateDepth;              //!< Whether or not estimate the 3D position of the real features for the matches (only with parallelOpticalAxis by now).
 			double  maxDepthThreshold;          //!< The maximum allowed depth for the matching. If its computed depth is larger than this, the match won't be considered.
@@ -342,6 +354,66 @@ namespace mrpt
 			/** See utils::CLoadableOptions
 			  */
 			void  dumpToTextStream(mrpt::utils::CStream	&out) const;
+
+#define COPY_MEMBER(_m) this->_m = o._m;
+#define CHECK_MEMBER(_m) this->_m == o._m
+
+			bool operator==( const TMatchingOptions & o ) const
+			{
+				return	
+					CHECK_MEMBER(useXRestriction) && 
+					CHECK_MEMBER(useDisparityLimits) &&
+					CHECK_MEMBER(useEpipolarRestriction) &&
+					CHECK_MEMBER(addMatches) &&
+					CHECK_MEMBER(EDD_RATIO) &&
+					CHECK_MEMBER(EDSD_RATIO) &&
+					CHECK_MEMBER(enable_robust_1to1_match) &&
+					CHECK_MEMBER(epipolar_TH) &&
+					CHECK_MEMBER(estimateDepth) &&
+					CHECK_MEMBER(F) &&
+					CHECK_MEMBER(hasFundamentalMatrix) &&
+					CHECK_MEMBER(matching_method) &&
+					CHECK_MEMBER(maxDepthThreshold) &&
+					CHECK_MEMBER(maxEDD_TH) &&
+					CHECK_MEMBER(maxEDSD_TH) &&
+					CHECK_MEMBER(maxORB_dist) &&
+					CHECK_MEMBER(maxSAD_TH) &&
+					CHECK_MEMBER(max_disp) &&
+					CHECK_MEMBER(minCC_TH) &&
+					CHECK_MEMBER(minDCC_TH) &&
+					CHECK_MEMBER(min_disp) &&
+					CHECK_MEMBER(parallelOpticalAxis) &&
+					CHECK_MEMBER(rCC_TH) &&
+					CHECK_MEMBER(SAD_RATIO);
+			}
+
+			void operator=( const TMatchingOptions & o )
+			{
+				COPY_MEMBER(useXRestriction)
+				COPY_MEMBER(useDisparityLimits)
+				COPY_MEMBER(useEpipolarRestriction)
+				COPY_MEMBER(addMatches)
+				COPY_MEMBER(EDD_RATIO)
+				COPY_MEMBER(EDSD_RATIO)
+				COPY_MEMBER(enable_robust_1to1_match)
+				COPY_MEMBER(epipolar_TH)
+				COPY_MEMBER(estimateDepth)
+				COPY_MEMBER(F)
+				COPY_MEMBER(hasFundamentalMatrix)
+				COPY_MEMBER(matching_method)
+				COPY_MEMBER(maxDepthThreshold)
+				COPY_MEMBER(maxEDD_TH)
+				COPY_MEMBER(maxEDSD_TH)
+				COPY_MEMBER(maxORB_dist)
+				COPY_MEMBER(maxSAD_TH)
+				COPY_MEMBER(max_disp)
+				COPY_MEMBER(minCC_TH)
+				COPY_MEMBER(minDCC_TH)
+				COPY_MEMBER(min_disp)
+				COPY_MEMBER(parallelOpticalAxis)
+				COPY_MEMBER(rCC_TH)
+				COPY_MEMBER(SAD_RATIO)
+			}
 
 		}; // end struct TMatchingOptions
 
