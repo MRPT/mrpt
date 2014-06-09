@@ -45,6 +45,7 @@ Instead, use SensorInfo::getSupportedVideoModes() to obtain a list of valid vide
 
 -- cited from OpenNI2 help. setResolution() is not recommended.
 */
+#if MRPT_HAS_OPENNI2
 bool setONI2StreamMode(openni::VideoStream& stream, int w, int h, int fps, openni::PixelFormat format)
 {
 //std::cout << "Ask mode: " << w << "x" << h << " " << fps << " fps. format " << format << std::endl;
@@ -73,6 +74,7 @@ bool setONI2StreamMode(openni::VideoStream& stream, int w, int h, int fps, openn
 	}
 	return false;
 }
+#endif
 
 
 /*-------------------------------------------------------------
@@ -80,8 +82,6 @@ ctor
 -------------------------------------------------------------*/
 COpenNI2Generic::COpenNI2Generic() :
 	numDevices(0),
-//	width(320),
-//	height(240),
   width(640),
   height(480),
 	fps(30),
@@ -89,8 +89,10 @@ COpenNI2Generic::COpenNI2Generic() :
 	m_grab_depth(true),
 	m_grab_3D_points(true)
 {
+#if MRPT_HAS_OPENNI2
 	rgb_pFormat = new openni::PixelFormat(openni::PIXEL_FORMAT_RGB888);
 	depth_pFormat = new openni::PixelFormat(openni::PIXEL_FORMAT_DEPTH_1_MM);
+#endif
 }
 
 /*-------------------------------------------------------------
@@ -98,8 +100,10 @@ dtor
 -------------------------------------------------------------*/
 COpenNI2Generic::~COpenNI2Generic()
 {
+#if MRPT_HAS_OPENNI2
   delete reinterpret_cast<openni::PixelFormat*>(rgb_pFormat);
   delete reinterpret_cast<openni::PixelFormat*>(depth_pFormat);
+#endif
 }
 
 /** This method can or cannot be implemented in the derived class, depending on the need for it.
