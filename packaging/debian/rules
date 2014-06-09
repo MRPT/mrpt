@@ -6,6 +6,10 @@
 export DH_DEBUG=1
 export DH_VERBOSE=1
 
+export MY_DBG_MAKE_FLAGS=-j8
+
+# For multiarch support:
+DEB_HOST_MULTIARCH ?= $(shell dpkg-architecture -qDEB_HOST_MULTIARCH)
 
 # These are used for cross-compiling and for saving the configure script
 # from having to guess our platform (since we know it already)
@@ -70,34 +74,21 @@ install: build
 	# Compile manual(s):
 	make documentation_psgz_guides || echo "*** Ignoring failed manual build! ***"
 	# Build all
-	$(MAKE) VERBOSE=1
+	$(MAKE) VERBOSE=1 $(MY_DBG_MAKE_FLAGS)
 	# Run tests
-	make test || echo "*** Ignoring failed tests! ***"
+	make test  $(MY_DBG_MAKE_FLAGS) || echo "*** Ignoring failed tests! ***"
 
 	# Install
 	$(MAKE) install
 	
 	# Move all the ".so" files to the proper place: the -dev package:
-	mkdir -p $(CURDIR)/debian/libmrpt-dev/usr/lib/
-	find $(CURDIR)/debian/ -name "*.so" | grep -v 'libmrpt-dev' | xargs -I FIL mv -f FIL $(CURDIR)/debian/libmrpt-dev/usr/lib/
+	mkdir -p $(CURDIR)/debian/libmrpt-dev/usr/lib/$(DEB_HOST_MULTIARCH)
+	find $(CURDIR)/debian/ -name "*.so" | grep -v 'libmrpt-dev' | xargs -I FIL mv -f FIL $(CURDIR)/debian/libmrpt-dev/usr/lib/$(DEB_HOST_MULTIARCH)
 
 	# DEBUG PACKAGES -------------	
-	#./configure MRPT_IS_DEB_PACKAGE=1 --prefix=$(CURDIR)/debian/ CMAKE_MRPT_USE_DEB_POSTFIXS="1" --buildtype=Debug
-	# Build libs only
-	cmake . -DCMAKE_BUILD_TYPE=Debug -DBUILD_APPLICATIONS=OFF
-	$(MAKE) VERBOSE=1 
-
-	# Install
-	$(MAKE) install
-
 	# Move all the "-dbg.so" files to the proper place: the -dev package:
-	mkdir -p $(CURDIR)/debian/libmrpt-dbg/usr/lib/
-	find $(CURDIR)/debian/ -name "*-dbg.so*" | grep -v 'libmrpt-dev' | grep -v 'libmrpt-dbg' | xargs -I FIL mv -f FIL $(CURDIR)/debian/libmrpt-dbg/usr/lib/
-
-	# Create Lintian overrides:
-	mkdir -p $(CURDIR)/debian/libmrpt-dbg/usr/share/lintian/overrides/
-	echo "libmrpt-dbg: non-dev-pkg-with-shlib-symlink" > $(CURDIR)/debian/libmrpt-dbg/usr/share/lintian/overrides/libmrpt-dbg
-	echo "libmrpt-dbg: package-name-doesnt-match-sonames" >> $(CURDIR)/debian/libmrpt-dbg/usr/share/lintian/overrides/libmrpt-dbg
+	#mkdir -p $(CURDIR)/debian/libmrpt-dbg/usr/lib/$(DEB_HOST_MULTIARCH)
+	#find $(CURDIR)/debian/ -name "*-dbg.so*" | grep -v 'libmrpt-dev' | grep -v 'libmrpt-dbg' | xargs -I FIL mv -f FIL $(CURDIR)/debian/libmrpt-dbg/usr/lib/$(DEB_HOST_MULTIARCH)
 
 	
 # Build architecture-independent files here.
@@ -111,13 +102,12 @@ binary-arch: build install
 	dh_installchangelogs 
 	dh_installdocs
 	dh_installmenu
-	dh_installmime -p mrpt-core
+	dh_installmime -p mrpt-apps
 	dh_installman -p mrpt-apps $(CURDIR)/man-pages/*.1*
 	# Register .desktop files with a MIME type:
 #	dh_desktop -p mrpt-apps
 	dh_link
-	#dh_strip -plibmrpt-dbg --dbg-package=libmrpt-dbg
-	dh_strip --exclude=-dbg
+	dh_strip --dbg-package=libmrpt-dbg
 	dh_compress
 	dh_fixperms
 	dh_makeshlibs -a

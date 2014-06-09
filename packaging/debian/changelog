@@ -1,3 +1,8 @@
+
+  * Fix Debian wishlist bug and incorrect watch file (Closes: #750978)
+  * Build against newer wxWidgets 3.0 (Closes: #750968)
+  * Fix error during doc generation (mrpt-perfdata2html) (Closes: #724466)
+
 mrpt (1:1.0.2-1) unstable; urgency=low
 
   * New version of upstream sources.
