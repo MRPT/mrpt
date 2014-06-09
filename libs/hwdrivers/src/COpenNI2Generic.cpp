@@ -82,14 +82,11 @@ bool setONI2StreamMode(openni::VideoStream& stream, int w, int h, int fps, openn
 }
 #endif // MRPT_HAS_OPENNI2
 
-
 /*-------------------------------------------------------------
 ctor
 -------------------------------------------------------------*/
 COpenNI2Generic::COpenNI2Generic() :
 	numDevices(0),
-//	width(320),
-//	height(240),
   width(640),
   height(480),
 	fps(30),
