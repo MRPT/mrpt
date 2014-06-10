@@ -83,7 +83,7 @@ namespace slam
 			  */
 			template <class TGEODETICCOORDS>
 			inline TGEODETICCOORDS getOrthoAsStruct() const {
-				return TGEODETICCOORDS(latitude_degrees,longitude_degrees,corrected_orthometric_altitude);
+				return TGEODETICCOORDS(latitude_degrees,longitude_degrees,orthometric_altitude);
 			}
 			
 			/**  Return the corrected geodetic coords as a mrpt::topography::TGeodeticCoords structure (requires linking against mrpt-topography)
