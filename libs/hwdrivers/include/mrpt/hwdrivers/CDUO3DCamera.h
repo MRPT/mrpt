@@ -214,5 +214,5 @@ namespace mrpt
 			void m_set_led(float value);
 		};	// End of class
 	} // End of namespace
-}; // End of namespace
+} // End of namespace
 #endif
