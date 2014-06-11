@@ -188,7 +188,7 @@ void mrpt::vision::findMultipleChessboardsCorners(
 			const Eigen::Matrix<double,3,1> Az = mrpt::math::crossProduct3D(Ax,Ay);
 			if (Az[2] > 0) {
 				// Invert all rows (X):
-				for( unsigned int y = 0, k = 0; y < check_size_y; y++ )
+				for( unsigned int y = 0; y < check_size_y; y++ )
 					std::reverse( cornerCoords[i].begin()+y*check_size_x, cornerCoords[i].begin()+(y+1)*check_size_x );
 			}
 		}
