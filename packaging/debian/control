@@ -24,8 +24,8 @@ Build-Depends: debhelper (>= 9),
                doxygen-latex | perl,
                subversion,
                libeigen3-dev ,
-               libdc1394-22-dev [!hurd-i386],
-               libusb-1.0-0-dev [!hurd-i386]
+               libdc1394-22-dev [linux-any],
+               libusb-1.0-0-dev [linux-any]
 Standards-Version: 3.9.5
 Homepage: http://www.mrpt.org/
 
