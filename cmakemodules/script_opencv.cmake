@@ -106,6 +106,10 @@ ENDIF(DISABLE_OPENCV)
 # OpenCV (all compilers):
 SET(CMAKE_MRPT_HAS_OPENCV_NONFREE 0)
 IF(CMAKE_MRPT_HAS_OPENCV)
+	# Important: we can't link against opencv_ts, apparently it leads to crashes 
+	# when also linking to gtest (???)
+	list(REMOVE_ITEM OpenCV_LIBRARIES opencv_ts)
+
 	INCLUDE_DIRECTORIES(${OpenCV_INCLUDE_DIR})
 	APPEND_MRPT_LIBS(${OpenCV_LIBRARIES})
 
