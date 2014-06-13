@@ -1,11 +1,11 @@
 #!/bin/bash
-# Copies sources from SVN tree and delete windows-only files, for preparing a Debian package.
+# Copies sources from source tree and delete windows-only files, for preparing a Debian package.
 # JLBC, 2008-2010
 
 #set -o verbose # echo on
 set +o verbose # echo off
 
-APPEND_SVN_NUM=0
+APPEND_SNAPSHOT_NUM=0
 IS_FOR_UBUNTU=0
 LEAVE_EMBEDDED_EIGEN=0
 APPEND_LINUX_DISTRO=""
@@ -14,7 +14,7 @@ while getopts "sued:c:" OPTION
 do
      case $OPTION in
          s)
-             APPEND_SVN_NUM=1
+             APPEND_SNAPSHOT_NUM=1
              ;;
          u)
              IS_FOR_UBUNTU=1
@@ -68,30 +68,27 @@ fi
 rm -fR $MRPT_DEB_DIR
 mkdir $MRPT_DEB_DIR
 
-# Are we in svn?
-MRPT_SVN_VERSION=`svnversion -n`
-
-if [ $MRPT_SVN_VERSION = "exported" ];
+# Export / copy sources to target dir:
+if [ -d "$MRPTSRC/.git" ];
 then
+	echo "Exporting git source tree to $MRPT_DEB_DIR/mrpt-${MRPT_VERSION_STR}"
+	git archive  --format=tar master | tar -x -C $MRPT_DEB_DIR/mrpt-${MRPT_VERSION_STR}
+else
 	echo "Copying sources to $MRPT_DEB_DIR/mrpt-${MRPT_VERSION_STR}"
 	cp -R . $MRPT_DEB_DIR/mrpt-${MRPT_VERSION_STR}
-else
-	# Strip the last "M", if any:
-	if [ ${MRPT_SVN_VERSION:(-1)} = "M" ];
-	then
-		MRPT_SVN_VERSION=${MRPT_SVN_VERSION:0:${#MRPT_SVN_VERSION}-1}
-	fi
-
-	if [ $APPEND_SVN_NUM == "1" ];
-	then
-		MRPT_VERSION_STR="${MRPT_VERSION_STR}~svn${MRPT_SVN_VERSION}${APPEND_LINUX_DISTRO}"
-	else
-		MRPT_VERSION_STR="${MRPT_VERSION_STR}${APPEND_LINUX_DISTRO}"
-	fi
-
-	echo "Exporting to $MRPT_DEB_DIR/mrpt-${MRPT_VERSION_STR}"
-	svn export . $MRPT_DEB_DIR/mrpt-${MRPT_VERSION_STR}
 fi
+
+# Append snapshot?
+MRPT_SNAPSHOT_VERSION=`date +%Y%m%d`
+if [ $APPEND_SNAPSHOT_NUM == "1" ];
+then
+	MRPT_VERSION_STR="${MRPT_VERSION_STR}~snapshot${MRPT_SNAPSHOT_VERSION}${APPEND_LINUX_DISTRO}"
+else
+	MRPT_VERSION_STR="${MRPT_VERSION_STR}${APPEND_LINUX_DISTRO}"
+fi
+
+echo "MRPT_VERSION_STR:${MRPT_VERSION_STR}"
+
 
 # Copy the MRPT book:
 if [ -f /Work/MyBooks/mrpt-book/mrpt-book.ps ];
@@ -179,7 +176,7 @@ cd .. # Back to MRPT root
 # Figure out the next Debian version number:
 echo "Detecting next Debian version number..."
 
-CHANGELOG_UPSTREAM_VER=$( dpkg-parsechangelog | sed -n 's/Version:.*\([0-9]\.[0-9]*\.[0-9]*.*svn.*\)-.*/\1/p' )
+CHANGELOG_UPSTREAM_VER=$( dpkg-parsechangelog | sed -n 's/Version:.*\([0-9]\.[0-9]*\.[0-9]*.*snapshot.*\)-.*/\1/p' )
 CHANGELOG_LAST_DEBIAN_VER=$( dpkg-parsechangelog | sed -n 's/Version:.*\([0-9]\.[0-9]*\.[0-9]*\).*-\([0-9]*\).*/\2/p' )
 
 echo " -> PREVIOUS UPSTREAM: $CHANGELOG_UPSTREAM_VER -> New: ${MRPT_VERSION_STR}"
