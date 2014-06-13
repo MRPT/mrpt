@@ -133,7 +133,7 @@ bool CEnoseModular::getObservation( mrpt::slam::CObservationGasSensors &obs )
 	{
 		// Connected?
 		CStream *comms = checkConnectionAndConnect();
-
+		
 		if (!comms)
 		{
 			cout << "ERORR: Problem connecting to Device." << endl;
@@ -213,10 +213,13 @@ bool CEnoseModular::getObservation( mrpt::slam::CObservationGasSensors &obs )
 				
 			}
 			
+			//Purge buffers
+			purgeBuffers();
+
 			// Add data to observation:
 			obs.m_readings.push_back( newRead );
 			obs.sensorLabel = m_sensorLabel;
-			obs.timestamp = mrpt::system::getCurrentTime();
+			obs.timestamp = mrpt::system::getCurrentTime();			
 			return !obs.m_readings.empty();	// Done OK!
 
 		} 
@@ -247,7 +250,7 @@ bool CEnoseModular::getObservation( mrpt::slam::CObservationGasSensors &obs )
 /** This method should be called periodically (at least at 1Hz to capture ALL the real-time data)
 *  It is thread safe, i.e. you can call this from one thread, then to other methods from other threads.
 */
-void  CEnoseModular::doProcess()
+void CEnoseModular::doProcess()
 {
 	CObservationGasSensorsPtr obs= CObservationGasSensors::Create();
 
@@ -263,3 +266,22 @@ void  CEnoseModular::doProcess()
 	   // THROW_EXCEPTION("No observation received from the USB board!");
 	}
 }
+
+/*-------------------------------------------------------------
+						purgeBuffers
+-------------------------------------------------------------*/
+void CEnoseModular::purgeBuffers()
+{
+	if (!checkConnectionAndConnect()) 
+		return;
+
+	if (m_stream_FTDI)
+	{	// FTDI pipe
+		m_stream_FTDI->Purge();		
+	}
+	else
+	{	//Serial pipe
+		m_stream_SERIAL->purgeBuffers();
+	}
+}
+

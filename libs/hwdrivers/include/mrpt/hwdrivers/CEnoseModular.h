@@ -83,6 +83,9 @@ namespace mrpt
 				const mrpt::utils::CConfigFileBase &configSource,
 				const std::string			&section );
 
+			/** Purge the Serial/FTDI buffer */
+			void purgeBuffers();
+
 		public:
 			/** Constructor
 			  * \param serialNumberUSBdevice The serial number (text) of the device to open.
