@@ -19,13 +19,10 @@ then
 	MRPT_VERSION_MAJOR=${MRPT_VERSION_STR:0:1}
 	MRPT_VERSION_MINOR=${MRPT_VERSION_STR:2:1}
 	MRPT_VERSION_PATCH=${MRPT_VERSION_STR:4:1}
-	AUX_SVN=$(svnversion)
-	#Remove the trailing "M":
-	MRPT_VERSION_SVN=${AUX_SVN%M}
 
 	MRPT_VER_MM="${MRPT_VERSION_MAJOR}.${MRPT_VERSION_MINOR}"
 	MRPT_VER_MMP="${MRPT_VERSION_MAJOR}.${MRPT_VERSION_MINOR}.${MRPT_VERSION_PATCH}"
-	echo "MRPT version: ${MRPT_VER_MMP} (SVN: ${MRPT_VERSION_SVN})"
+	echo "MRPT version: ${MRPT_VER_MMP}"
 else
 	echo "ERROR: Run this script from the MRPT root directory."
 	exit 1
@@ -68,12 +65,13 @@ do
 	cd ${MRPTSRC}
 	bash scripts/prepare_debian.sh -s -u -d ${DEBIAN_DIST} ${EMBED_EIGEN_FLAG} -c "${MRPT_PKG_CUSTOM_CMAKE_PARAMS}" 
 
-	echo 
+	MRPT_SNAPSHOT_VERSION=`date +%Y%m%d`
+
 	echo "===== Distribution: ${DEBIAN_DIST}  ========="
-	cd ${MRPT_DEB_DIR}/mrpt-${MRPT_VER_MMP}~svn${MRPT_VERSION_SVN}${DEBIAN_DIST}/debian
+	cd ${MRPT_DEB_DIR}/mrpt-${MRPT_VER_MMP}~snapshot${MRPT_SNAPSHOT_VERSION}${DEBIAN_DIST}/debian
 	#cp ${MRPT_EXTERN_DEBIAN_DIR}/changelog changelog
 	cp /tmp/my_changelog changelog
-	DEBCHANGE_CMD="--newversion 1:${MRPT_VERSION_STR}~svn${MRPT_VERSION_SVN}${DEBIAN_DIST}-1~ppa1~${DEBIAN_DIST}"
+	DEBCHANGE_CMD="--newversion 1:${MRPT_VERSION_STR}~snapshot${MRPT_SNAPSHOT_VERSION}${DEBIAN_DIST}-1~ppa1~${DEBIAN_DIST}"
 	echo "Changing to a new Debian version: ${DEBCHANGE_CMD}"
 	echo "Adding a new entry to debian/changelog for distribution ${DEBIAN_DIST}"
 	DEBEMAIL=${EMAIL4DEB} debchange $DEBCHANGE_CMD -b --distribution ${DEBIAN_DIST} --force-distribution New version of upstream sources.

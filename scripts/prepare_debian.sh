@@ -63,21 +63,6 @@ else
 	exit 1
 fi
 
-# Prepare a directory for building the debian package:
-# 
-rm -fR $MRPT_DEB_DIR
-mkdir $MRPT_DEB_DIR
-
-# Export / copy sources to target dir:
-if [ -d "$MRPTSRC/.git" ];
-then
-	echo "Exporting git source tree to $MRPT_DEB_DIR/mrpt-${MRPT_VERSION_STR}"
-	git archive  --format=tar master | tar -x -C $MRPT_DEB_DIR/mrpt-${MRPT_VERSION_STR}
-else
-	echo "Copying sources to $MRPT_DEB_DIR/mrpt-${MRPT_VERSION_STR}"
-	cp -R . $MRPT_DEB_DIR/mrpt-${MRPT_VERSION_STR}
-fi
-
 # Append snapshot?
 MRPT_SNAPSHOT_VERSION=`date +%Y%m%d`
 if [ $APPEND_SNAPSHOT_NUM == "1" ];
@@ -87,19 +72,43 @@ else
 	MRPT_VERSION_STR="${MRPT_VERSION_STR}${APPEND_LINUX_DISTRO}"
 fi
 
-echo "MRPT_VERSION_STR:${MRPT_VERSION_STR}"
+MRPT_DEBSRC_DIR=$MRPT_DEB_DIR/mrpt-${MRPT_VERSION_STR}
 
+echo "MRPT_VERSION_STR: ${MRPT_VERSION_STR}"
+echo "MRPT_DEBSRC_DIR: ${MRPT_DEBSRC_DIR}"
+
+# Prepare a directory for building the debian package:
+# 
+rm -fR $MRPT_DEB_DIR
+mkdir -p ${MRPT_DEBSRC_DIR}
+
+
+# Export / copy sources to target dir:
+if [ -d "$MRPTSRC/.git" ];
+then
+	echo "Exporting git source tree to ${MRPT_DEBSRC_DIR}"
+	git archive  --format=tar master | tar -x -C ${MRPT_DEBSRC_DIR}
+else
+	echo "Copying sources to ${MRPT_DEBSRC_DIR}"
+	cp -R . ${MRPT_DEBSRC_DIR}
+fi
+
+if [ ! -f "${MRPT_DEBSRC_DIR}/CMakeLists.txt" ];
+then
+	echo "*ERROR*: Seems there was a problem copying sources to ${MRPT_DEBSRC_DIR}... aborting script."
+	exit 1
+fi
 
 # Copy the MRPT book:
 if [ -f /Work/MyBooks/mrpt-book/mrpt-book.ps ];
 then
-	cp  /Work/MyBooks/mrpt-book/mrpt-book.ps $MRPT_DEB_DIR/mrpt-${MRPT_VERSION_STR}/doc/
-	ps2pdf $MRPT_DEB_DIR/mrpt-${MRPT_VERSION_STR}/doc/mrpt-book.ps $MRPT_DEB_DIR/mrpt-${MRPT_VERSION_STR}/doc/mrpt-book.pdf
-	gzip $MRPT_DEB_DIR/mrpt-${MRPT_VERSION_STR}/doc/mrpt-book.ps
+	cp  /Work/MyBooks/mrpt-book/mrpt-book.ps ${MRPT_DEBSRC_DIR}/doc/
+	ps2pdf ${MRPT_DEBSRC_DIR}/doc/mrpt-book.ps ${MRPT_DEBSRC_DIR}/doc/mrpt-book.pdf
+	gzip ${MRPT_DEBSRC_DIR}/doc/mrpt-book.ps
 fi
 
 
-cd $MRPT_DEB_DIR/mrpt-${MRPT_VERSION_STR}
+cd ${MRPT_DEBSRC_DIR}
 echo "Deleting Windows-only and not required files for Debian packages..."
 
 # Deletions:
