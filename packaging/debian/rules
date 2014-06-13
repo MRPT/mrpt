@@ -6,126 +6,65 @@
 export DH_DEBUG=1
 export DH_VERBOSE=1
 
+export DEB_BUILD_MAINT_OPTIONS=hardening=+all,-pie,+fortify
 
-# These are used for cross-compiling and for saving the configure script
-# from having to guess our platform (since we know it already)
-DEB_HOST_GNU_TYPE   ?= $(shell dpkg-architecture -qDEB_HOST_GNU_TYPE)
-DEB_BUILD_GNU_TYPE  ?= $(shell dpkg-architecture -qDEB_BUILD_GNU_TYPE)
+# For multiarch support:
+DEB_HOST_ARCH ?= $(shell dpkg-architecture -qDEB_HOST_ARCH)
+DEB_HOST_MULTIARCH ?= $(shell dpkg-architecture -qDEB_HOST_MULTIARCH)
+DEB_HOST_ARCH_OS ?= $(shell dpkg-architecture -qDEB_HOST_ARCH_OS)
 
-ifneq (,$(filter parallel=%,$(DEB_BUILD_OPTIONS)))
-         NUMJOBS = $(patsubst parallel=%,%,$(filter parallel=%,$(DEB_BUILD_OPTIONS)))
-         MAKEFLAGS += -j$(NUMJOBS)
+# SSE options
+ifeq ($(DEB_HOST_ARCH),amd64)
+CMAKE_ARCH_FLAGS = -DMRPT_AUTODETECT_SSE=OFF -DDISABLE_SSE2=OFF -DDISABLE_SSE3=ON -DDISABLE_SSE4=ON  
+else
+CMAKE_ARCH_FLAGS = -DMRPT_AUTODETECT_SSE=OFF -DDISABLE_SSE2=ON -DDISABLE_SSE3=ON -DDISABLE_SSE4=ON 
 endif
 
-config.status: CMakeLists.txt
-	dh_testdir
-	# Add here commands to configure the package and install it into debian/mrpt-*
-	cmake . \
-		-DCMAKE_HOST=$(DEB_HOST_GNU_TYPE) \
-		-DCMAKE_BUILD=$(DEB_BUILD_GNU_TYPE) \
-		-DCMAKE_BUILD_TYPE=Release  \
-		-DCMAKE_INSTALL_PREFIX=$(CURDIR)/debian/ \
-		-DCMAKE_CONFIGURE_LDFLAGS="$(LDFLAGS)" \
-		-DCMAKE_MRPT_USE_DEB_POSTFIXS="1" \
-		-DCMAKE_MRPT_IS_RPM_PACKAGE="0" \
-		-DCMAKE_C_FLAGS="$(CFLAGS) $(CPPFLAGS)" \
-		-DCMAKE_CXX_FLAGS="$(CXXFLAGS) $(CPPFLAGS)" \
-		-DCMAKE_VERBOSE_MAKEFILE=ON \
-		REPLACE_HERE_EXTRA_CMAKE_PARAMS 
+CMAKE_FLAGS = \
+	-DCMAKE_INSTALL_PREFIX="$(CURDIR)/debian/" \
+	-DCMAKE_INSTALL_LIBDIR="lib/$(DEB_HOST_MULTIARCH)" \
+	-DCMAKE_VERBOSE_MAKEFILE=ON \
+	-DCMAKE_BUILD_TYPE=Release  \
+	-DCMAKE_HOST="$(DEB_HOST_GNU_TYPE)" \
+	-DCMAKE_BUILD="$(DEB_BUILD_GNU_TYPE)" \
+	-DCMAKE_MRPT_USE_DEB_POSTFIXS="1" \
+	-DCMAKE_VERBOSE_MAKEFILE=ON \
+	-DCMAKE_C_FLAGS_RELEASE="$(CFLAGS)" \
+	-DCMAKE_CXX_FLAGS_RELEASE="$(CXXFLAGS)" \
+	-DCMAKE_SHARED_LINKER_FLAGS_RELEASE="$(LDFLAGS)" \
+	-DCMAKE_EXE_LINKER_FLAGS_RELEASE="$(LDFLAGS)" \
+	$(CMAKE_ARCH_FLAGS) \
+	REPLACE_HERE_EXTRA_CMAKE_PARAMS 
 
-build: build-arch build-indep
+# Don't set: CMAKE_SKIP_RPATH=ON --> it makes unit tests to fail, 
+# and anyway the rpath is removed by cmake's install target.
 
-build-arch: build-stamp
-build-indep: build-stamp
 
-build-stamp:  config.status
-	dh_testdir
+%:
+	dh $@ --buildsystem=cmake
 
-	touch $@
+override_dh_auto_build:
+	dh_auto_build -O--buildsystem=cmake -- # -j4
 
-distclean:
-    # Nothing to do (do not remove this line!)
+	# Also build doc targets:
+	dh_auto_build -O--buildsystem=cmake -- \
+		documentation_html \
+		documentation_performance_html \
+		man_pages_all \
+		documentation_psgz_guides
 
-clean:
-	dh_testdir
-	dh_testroot
-	rm -f build-stamp 
+override_dh_auto_configure:
+	dh_auto_configure -- $(CMAKE_FLAGS)
 
-	# Add here commands to clean up after the build process.
-	rm -f config.sub config.guess
+override_dh_auto_install:
+	# Do nothing?
+	echo "[override_dh_auto_install]"
 
-	dh_clean 
+override_dh_install:
+	# Install:
+	dh_auto_build -O--buildsystem=cmake -- install
 
-install: build
-	dh_testdir
-	dh_testroot
-	dh_clean -k 
-	dh_installdirs
-
-	# Create mrpt documentation
-	VERBOSE=1 make documentation_html
-	VERBOSE=1 make documentation_performance_html
-	# Create man pages:
-	make man_pages_all
-	# Compile manual(s):
-	make documentation_psgz_guides || echo "*** Ignoring failed manual build! ***"
-	# Build all
-	$(MAKE) VERBOSE=1
-	# Run tests
-	make test || echo "*** Ignoring failed tests! ***"
-
-	# Install
-	$(MAKE) install
-	
 	# Move all the ".so" files to the proper place: the -dev package:
-	mkdir -p $(CURDIR)/debian/libmrpt-dev/usr/lib/
-	find $(CURDIR)/debian/ -name "*.so" | grep -v 'libmrpt-dev' | xargs -I FIL mv -f FIL $(CURDIR)/debian/libmrpt-dev/usr/lib/
+	mkdir -p $(CURDIR)/debian/libmrpt-dev/usr/lib/$(DEB_HOST_MULTIARCH)
+	find $(CURDIR)/debian/ -name "*.so" | grep -v 'libmrpt-dev' | xargs -I FIL mv -f FIL $(CURDIR)/debian/libmrpt-dev/usr/lib/$(DEB_HOST_MULTIARCH)
 
-	# DEBUG PACKAGES -------------	
-	#./configure MRPT_IS_DEB_PACKAGE=1 --prefix=$(CURDIR)/debian/ CMAKE_MRPT_USE_DEB_POSTFIXS="1" --buildtype=Debug
-	# Build libs only
-	cmake . -DCMAKE_BUILD_TYPE=Debug -DBUILD_APPLICATIONS=OFF
-	$(MAKE) VERBOSE=1 
-
-	# Install
-	$(MAKE) install
-
-	# Move all the "-dbg.so" files to the proper place: the -dev package:
-	mkdir -p $(CURDIR)/debian/libmrpt-dbg/usr/lib/
-	find $(CURDIR)/debian/ -name "*-dbg.so*" | grep -v 'libmrpt-dev' | grep -v 'libmrpt-dbg' | xargs -I FIL mv -f FIL $(CURDIR)/debian/libmrpt-dbg/usr/lib/
-
-	# Create Lintian overrides:
-	mkdir -p $(CURDIR)/debian/libmrpt-dbg/usr/share/lintian/overrides/
-	echo "libmrpt-dbg: non-dev-pkg-with-shlib-symlink" > $(CURDIR)/debian/libmrpt-dbg/usr/share/lintian/overrides/libmrpt-dbg
-	echo "libmrpt-dbg: package-name-doesnt-match-sonames" >> $(CURDIR)/debian/libmrpt-dbg/usr/share/lintian/overrides/libmrpt-dbg
-
-	
-# Build architecture-independent files here.
-binary-indep: build install
-# We have nothing to do by default.
-
-# Build architecture-dependent files here.
-binary-arch: build install
-	dh_testdir
-	dh_testroot
-	dh_installchangelogs 
-	dh_installdocs
-	dh_installmenu
-	dh_installmime -p mrpt-core
-	dh_installman -p mrpt-apps $(CURDIR)/man-pages/*.1*
-	# Register .desktop files with a MIME type:
-#	dh_desktop -p mrpt-apps
-	dh_link
-	#dh_strip -plibmrpt-dbg --dbg-package=libmrpt-dbg
-	dh_strip --exclude=-dbg
-	dh_compress
-	dh_fixperms
-	dh_makeshlibs -a
-	dh_installdeb
-	dh_shlibdeps
-	dh_gencontrol
-	dh_md5sums
-	dh_builddeb
-
-binary: binary-indep binary-arch
-.PHONY: build clean binary-indep binary-arch binary install 

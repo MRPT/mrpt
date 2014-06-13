@@ -6,7 +6,7 @@ FILE(GLOB MRPT_PKGCONFIG_PC_FILES "${MRPT_BINARY_DIR}/pkgconfig/mrpt-*.pc")
 IF(EXISTS "${MRPT_BINARY_DIR}/pkgconfig/mrpt-base.pc" AND NOT IS_DEBIAN_DBG_PKG)
 	INSTALL(
 		FILES ${MRPT_PKGCONFIG_PC_FILES}
-		DESTINATION ${libmrpt_dev_INSTALL_PREFIX}lib${LIB_SUFFIX}/pkgconfig )
+		DESTINATION ${libmrpt_dev_INSTALL_PREFIX}${CMAKE_INSTALL_LIBDIR}/pkgconfig )
 ENDIF(EXISTS "${MRPT_BINARY_DIR}/pkgconfig/mrpt-base.pc" AND NOT IS_DEBIAN_DBG_PKG)
 
 # CMake will look for MRPTConfig.cmake at: /usr/share|lib/mrpt

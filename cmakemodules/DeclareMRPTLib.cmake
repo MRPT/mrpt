@@ -244,8 +244,8 @@ macro(internal_define_mrpt_lib name headers_only)
 		# make sure the library gets installed
 		INSTALL(TARGETS mrpt-${name}
 			RUNTIME DESTINATION ${MRPT_PREFIX_INSTALL}bin  COMPONENT Libraries
-			LIBRARY DESTINATION ${MRPT_PREFIX_INSTALL}lib${LIB_SUFFIX} COMPONENT Libraries
-			ARCHIVE DESTINATION ${MRPT_PREFIX_INSTALL}lib${LIB_SUFFIX} COMPONENT Libraries
+			LIBRARY DESTINATION ${MRPT_PREFIX_INSTALL}${CMAKE_INSTALL_LIBDIR} COMPONENT Libraries
+			ARCHIVE DESTINATION ${MRPT_PREFIX_INSTALL}${CMAKE_INSTALL_LIBDIR} COMPONENT Libraries  # WAS: lib${LIB_SUFFIX}
 			)
 			
 		# Collect .pdb debug files for optional installation:
