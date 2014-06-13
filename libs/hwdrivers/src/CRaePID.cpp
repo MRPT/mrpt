@@ -137,7 +137,7 @@ void CRaePID::doProcess()
 	// Fill the observation
 	mrpt::slam::CObservationGasSensors::TObservationENose obs;
 	obs.readingsVoltage.push_back(val_ppm);
-	obs.sensorTypes.push_back(0xFFFF);
+	obs.sensorTypes.push_back(0x0001);
 
 	mrpt::slam::CObservationGasSensors obsG;
 	obsG.sensorLabel = this->getSensorLabel();
