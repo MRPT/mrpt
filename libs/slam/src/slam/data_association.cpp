@@ -70,6 +70,7 @@ double joint_pdf_metric (
 {
 	// Make a list of the indices of the predictions that appear in "currentAssociation":
 	const size_t  N = info.currentAssociation.size();
+	ASSERT_(N>0)
 
 	vector_size_t  indices_pred(N);  // Appearance order indices in the std::maps
 	vector_size_t  indices_obs(N);
@@ -166,7 +167,7 @@ void JCBB_recursive(
 				info,
 				results);
 		}
-		else if ( info.currentAssociation.size()==results.associations.size() )
+		else if ( !info.currentAssociation.empty() && info.currentAssociation.size()==results.associations.size() )
 		{
 			// The same # of features matched than the previous best one... decide by better distance:
 			const double d2 = joint_pdf_metric<T,METRIC>(
