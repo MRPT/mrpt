@@ -83,7 +83,7 @@
 			- RawLogViewer: Operation "convert to SF format" didn't take into account odometry observations.
 			- Fix build errors with GCC 4.9
 			- Fix crash of mrpt::hwdrivers::CIMUXSens_MT4's destructor when it fails to scan and open a device.
-			- Fix potential crash in mrpt::slam::data_association_full_covariance with JCBB when no individually compatible matching exists [(commit)]()
+			- Fix potential crash in mrpt::slam::data_association_full_covariance with JCBB when no individually compatible matching exists [(commit)](https://github.com/jlblancoc/mrpt/commit/482472ebd80a3484dce63d294b1ac4e8f001e1eb)
 
 <hr>
  <a name="1.1.0">
