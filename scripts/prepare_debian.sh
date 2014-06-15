@@ -55,7 +55,7 @@ MRPTSRC=`pwd`
 MRPT_DEB_DIR="$HOME/mrpt_debian"
 MRPT_EXTERN_DEBIAN_DIR="$MRPTSRC/packaging/debian/"
 
-if [ -f ${MRPT_EXTERN_DEBIAN_DIR}/control ];
+if [ -f ${MRPT_EXTERN_DEBIAN_DIR}/control.in ];
 then
 	echo "Using debian dir: ${MRPT_EXTERN_DEBIAN_DIR}"
 else
@@ -143,6 +143,11 @@ echo "LEAVE_EMBEDDED_EIGEN=${LEAVE_EMBEDDED_EIGEN}"
 # Copy debian directory:
 mkdir mrpt-${MRPT_VERSION_STR}/debian
 cp -r ${MRPT_EXTERN_DEBIAN_DIR}/* mrpt-${MRPT_VERSION_STR}/debian
+
+# Parse debian/ control.in --> control
+mv mrpt-${MRPT_VERSION_STR}/debian/control.in mrpt-${MRPT_VERSION_STR}/debian/control
+sed -i "s/@MRPT_VER_MM@/${MRPT_VER_MM}/g" mrpt-${MRPT_VERSION_STR}/debian/control 
+
 
 if [ ${LEAVE_EMBEDDED_EIGEN} == "1" ];
 then
