@@ -37,7 +37,7 @@ CMAKE_FLAGS = \
 	REPLACE_HERE_EXTRA_CMAKE_PARAMS 
 
 # Don't set: CMAKE_SKIP_RPATH=ON --> it makes unit tests to fail, 
-# and anyway the rpath is removed by cmake's install target.
+# and the rpath is removed anyway by cmake's install target.
 
 
 %:
@@ -67,4 +67,11 @@ override_dh_install:
 	# Move all the ".so" files to the proper place: the -dev package:
 	mkdir -p $(CURDIR)/debian/libmrpt-dev/usr/lib/$(DEB_HOST_MULTIARCH)
 	find $(CURDIR)/debian/ -name "*.so" | grep -v 'libmrpt-dev' | xargs -I FIL mv -f FIL $(CURDIR)/debian/libmrpt-dev/usr/lib/$(DEB_HOST_MULTIARCH)
+
+	# Fix permissions:
+	chmod a+x $(CURDIR)/debian/mrpt-apps/usr/share/mrpt/datasets/srba-demos/*.sh
+
+
+override_dh_strip:
+	dh_strip --dbg-package=libmrpt-dbg
 

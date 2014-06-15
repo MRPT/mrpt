@@ -1,0 +1,3 @@
+# jquery is not part of MRPT sources, but of Doxygen docs:
+mrpt-doc: embedded-javascript-library usr/share/doc/mrpt-doc/html/jquery.js
+
