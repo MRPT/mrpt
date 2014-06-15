@@ -96,18 +96,23 @@ public:
 		*/
 		UsbContext()
 		{
-			libusb_init(&m_usbContext);
+			int res = libusb_init(&m_usbContext);
+			if (res < 0)
+			{
+				m_usbContext = NULL;
+			}
 			//libusb_set_debug(m_usbContext, 3);
 		}
 
 		/*! \brief Destroy the USB context */
 		~UsbContext()
 		{
-			libusb_exit(m_usbContext);
+			if (m_usbContext)
+				libusb_exit(m_usbContext);
 		}
 		libusb_context *m_usbContext; // needed for proper use of libusb
 	};
-	static UsbContext m_contextManager;
+	//static UsbContext m_contextManager;
 
 
 	/*! \brief Map a libusb_error to XsResultValue
@@ -369,7 +374,8 @@ void UsbInterfacePrivate::threadFunc()
 }
 
 #else
-UsbInterfacePrivate::UsbContext UsbInterfacePrivate::m_contextManager;
+// JLBC for MRPT: Moved to static var inside function below to avoid a crash at program final cleanup.
+//UsbInterfacePrivate::UsbContext UsbInterfacePrivate::m_contextManager;
 #endif
 
 /*! \class UsbInterface
@@ -677,8 +683,10 @@ XsResultValue UsbInterface::open(const XsPortInfo &portInfo, uint32_t, uint32_t)
 	}
 
 #else // !USE_WINUSB
+	static UsbInterfacePrivate::UsbContext  contextManager; //m_contextManager;
+
 	libusb_device **deviceList;
-	ssize_t listLength = libusb_get_device_list(d->m_contextManager.m_usbContext, &deviceList);
+	ssize_t listLength = libusb_get_device_list(contextManager.m_usbContext /*d->m_contextManager.m_usbContext*/, &deviceList);
 	if (listLength < 0)
 		return d->m_lastResult = d->libusbErrorToXrv((int)listLength);
 
