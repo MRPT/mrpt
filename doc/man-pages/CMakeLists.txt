@@ -25,7 +25,7 @@ IF (PROG_GZIP AND PROG_POD2MAN)
 			)
 		add_dependencies(man_pages_all man_page_${appname})
 		if (UNIX)
-			INSTALL(FILES "${MRPT_BINARY_DIR}/man-pages/${appname}.1.gz" DESTINATION share/man/man1/ )
+			INSTALL(FILES "${MRPT_BINARY_DIR}/man-pages/${appname}.1.gz" DESTINATION ${mrpt_apps_INSTALL_PREFIX}share/man/man1/ )
 		endif(UNIX)
 	ENDMACRO(CREATE_MANPAGE_PROJECT)
 
