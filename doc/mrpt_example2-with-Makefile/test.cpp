@@ -8,8 +8,8 @@
    +---------------------------------------------------------------------------+ */
 
 #include <mrpt/hwdrivers/CCameraSensor.h>
-#include <mrpt/obs/CObservationImage.h>
-#include <mrpt/obs/CObservationStereoImages.h>
+#include <mrpt/slam/CObservationImage.h>
+#include <mrpt/slam/CObservationStereoImages.h>
 #include <mrpt/gui.h>
 #include <mrpt/utils/CTicTac.h>
 
