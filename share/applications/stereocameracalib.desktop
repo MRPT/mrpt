@@ -1,13 +1,13 @@
 [Desktop Entry]
 Version=1.0
-Name=Stereo camera & Kinect Calibration
-Comment=Stereo Camera & Kinect Calibration GUI
-Exec=kinect-stereo-calib
+Name=Camera Calibration
+Comment=Camera Calibration GUI
+Exec=camera-calib
 Icon=cameracalibgui
 Terminal=false
 X-MultipleArgs=false
 Type=Application
 Categories=Science;Robotics;ArtificialIntelligence;
 StartupNotify=true
-Keywords=mrpt;camera;vision;computer vision;calibration;
+Keywords=mrpt;stereo;camera;vision;computer vision;calibration;
 

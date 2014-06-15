@@ -7,7 +7,8 @@ Icon=gridmapsimul
 Terminal=false
 X-MultipleArgs=false
 Type=Application
-Categories=Education;Science;Robotics;ArtificialIntelligence;
+Categories=Science;Robotics;ArtificialIntelligence;
 StartupNotify=true
 MimeType=
+Keywords=mrpt;gridmap;robotics;simulator;laser;
 
