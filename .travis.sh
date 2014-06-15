@@ -29,13 +29,6 @@ function test ()
   make test
 }
 
-function testhwdrivers ()
-{
-  mkdir $BUILD_DIR && cd $BUILD_DIR
-  cmake $MRPT_DIR -DBUILD_APPLICATIONS=FALSE 
-  make run_tests_mrpt_hwdrivers
-}
-
 function doc ()
 {
   echo doc placeholder
