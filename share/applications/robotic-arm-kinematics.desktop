@@ -1,0 +1,14 @@
+[Desktop Entry]
+Version=1.0
+Name=Robot ARM kinematics
+Comment=Robot ARM kinematics (Denavit-Hartenberg)
+Exec=robotic-arm-kinematics
+Icon=robotic-arm-kinematics
+Terminal=false
+X-MultipleArgs=false
+Type=Application
+Categories=Science;Robotics;ArtificialIntelligence;
+StartupNotify=true
+MimeType=
+Keywords=mrpt;robotic;arm;Denavit-Hartenberg;kinematics;
+
