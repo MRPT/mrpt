@@ -332,7 +332,7 @@ namespace detail
 			float		m22 = lric.HM.get_unsafe(2,2);
 			float		m23 = lric.HM.get_unsafe(2,3);
 
-			float		lx_1,ly_1,lz_1,lx,ly,lz;		// Punto anterior y actual:
+			float		lx_1,ly_1,lz_1,lx=0,ly=0,lz=0;		// Punto anterior y actual:
 
 			// Initial last point:
 			lx_1 = -100; ly_1 = -100; lz_1 = -100;
@@ -403,11 +403,14 @@ namespace detail
 			// The last point
 			if (lastPointWasValid && !lastPointWasInserted)
 			{
-				obj.x.push_back( lx );
-				obj.y.push_back( ly );
-				obj.z.push_back( lz );
-				// Allow derived classes to add any other information to that point:
-				pointmap_traits<Derived>::internal_loadFromRangeScan3D_postPushBack(obj,lric);
+				if (lx!=0 || ly!=0 || lz!=0) 
+				{
+					obj.x.push_back( lx );
+					obj.y.push_back( ly );
+					obj.z.push_back( lz );
+					// Allow derived classes to add any other information to that point:
+					pointmap_traits<Derived>::internal_loadFromRangeScan3D_postPushBack(obj,lric);
+				}
 			}
 		}
 
