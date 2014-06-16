@@ -80,6 +80,10 @@ CSemaphore::CSemaphore(
 	if (token->semid==SEM_FAILED)
 		THROW_EXCEPTION( format("Creating semaphore (name='%s') raised error: %s",m_name.c_str(),strerror(errno) ) )
 
+    int sval;
+    sem_getvalue(token->semid, &sval);
+    //std::cout << "Semaphore: Init val=" << sval << " desired initialCount=" << initialCount <<std::endl;
+
 	MRPT_END
 }
 
