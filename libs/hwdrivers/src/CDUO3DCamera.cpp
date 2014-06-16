@@ -18,12 +18,12 @@
 #	include <DUOLib.h>
 #	ifdef _MSC_VER  // this pragma only works for MSVC:
 #		pragma comment(lib, "DUOLib.lib")
-#	endif 
+#	endif
 #endif
 MRPT_TODO("FIXME: Try to remove the pragma lib above ==> TARGET_LINK_LIBRARIES() in hwdrivers/CMakeLists.txt, so it can work seamlessly on Linux in the future")
 
 // m_duo: Opaque pointer to DUO3D's "DUOInstance":
-#define M_DUO_PTR    ( reinterpret_cast<DUOInstance*>(m_duo)) 
+#define M_DUO_PTR    ( reinterpret_cast<DUOInstance*>(m_duo))
 #define M_DUO_VALUE  (*M_DUO_PTR)
 
 
@@ -42,8 +42,8 @@ MRPT_TODO("FIXME: Put #if MRPT_HAS_OPENCV around any function using cv::Mat, if 
 #endif
 
 TCaptureOptions_DUO3D::TCaptureOptions_DUO3D() :
-	m_img_width(640), 
-	m_img_height(480), 
+	m_img_width(640),
+	m_img_height(480),
 	m_fps(30),
 	m_exposure(50),
 	m_led(25),
@@ -66,15 +66,16 @@ TCaptureOptions_DUO3D::TCaptureOptions_DUO3D() :
 
 TCaptureOptions_DUO3D::TYMLReadResult TCaptureOptions_DUO3D::m_rectify_map_from_yml( const string & _file_name )
 {
+#if MRPT_HAS_OPENCV
 	const string file_name = _file_name.empty() ? m_rectify_map_filename : _file_name;
 
 	string aux = mrpt::system::extractFileName( file_name );
 	const size_t found = aux.find( mrpt::format("_R%dx%d_",this->m_img_width,this->m_img_height) );
 	if( found == std::string::npos )
 	{
-		m_rectify_map_left_x  = 
+		m_rectify_map_left_x  =
 		m_rectify_map_left_y  =
-		m_rectify_map_right_x = 
+		m_rectify_map_right_x =
 		m_rectify_map_right_y = cv::Mat();
 		return yrr_NAME_NON_CONSISTENT;
 	}
@@ -86,14 +87,18 @@ TCaptureOptions_DUO3D::TYMLReadResult TCaptureOptions_DUO3D::m_rectify_map_from_
 	fs["R1Y"] >> m_rectify_map_right_y;
 
 	if( m_rectify_map_left_x.size() == Size(0,0)  || m_rectify_map_left_y.size() == Size(0,0) ||
-		m_rectify_map_right_x.size() == Size(0,0) || m_rectify_map_right_y.size() == Size(0,0) ) 
+		m_rectify_map_right_x.size() == Size(0,0) || m_rectify_map_right_y.size() == Size(0,0) )
 	return yrr_EMPTY;
-	
+
 	return yrr_OK;
+#else
+    THROW_EXCEPTION("This function requires building with OpenCV support")
+#endif
 }
 
 TCaptureOptions_DUO3D::TYMLReadResult TCaptureOptions_DUO3D::m_camera_ext_params_from_yml( const string & _file_name )
 {
+#if MRPT_HAS_OPENCV
 	const string file_name = _file_name.empty() ? m_extrinsic_filename : _file_name;
 
 	// this will look for R and t matrixes
@@ -128,7 +133,7 @@ TCaptureOptions_DUO3D::TYMLReadResult TCaptureOptions_DUO3D::m_camera_ext_params
 
 	// translation
 	fs["T"] >> aux_mat;
-	if( aux_mat.size() == Size(1,3) ) 
+	if( aux_mat.size() == Size(1,3) )
 	{
 		t(0,0) = aux_mat.at<double>(0,0)/1000.0;
 		t(0,1) = aux_mat.at<double>(1,0)/1000.0;
@@ -144,10 +149,14 @@ TCaptureOptions_DUO3D::TYMLReadResult TCaptureOptions_DUO3D::m_camera_ext_params
 
 	m_stereo_camera.rightCameraPose = CPose3DQuat( CPose3D(M,t) );
 	return yrr_OK;
+#else
+    THROW_EXCEPTION("This function requires building with OpenCV support")
+#endif
 }
 
 TCaptureOptions_DUO3D::TYMLReadResult TCaptureOptions_DUO3D::m_camera_int_params_from_yml( const string & _file_name )
 {
+#if MRPT_HAS_OPENCV
 	const string file_name = _file_name.empty() ? m_intrinsic_filename : _file_name;
 
 	// this will look for M1, D1, M2 and D2 matrixes
@@ -169,7 +178,7 @@ TCaptureOptions_DUO3D::TYMLReadResult TCaptureOptions_DUO3D::m_camera_int_params
 
 	// left camera
 	fs["M1"] >> aux_mat;
-	if( aux_mat.size() == Size(0,0) ) 
+	if( aux_mat.size() == Size(0,0) )
 	{
 		empty = true;
 		m_stereo_camera.leftCamera.intrinsicParams.zeros();
@@ -177,7 +186,7 @@ TCaptureOptions_DUO3D::TYMLReadResult TCaptureOptions_DUO3D::m_camera_int_params
 	m_stereo_camera.leftCamera.setIntrinsicParamsFromValues( aux_mat.at<double>(0,0), aux_mat.at<double>(1,1), aux_mat.at<double>(0,2), aux_mat.at<double>(1,2) );
 
 	fs["D1"] >> aux_mat;
-	if( aux_mat.size() == Size(0,0) ) 
+	if( aux_mat.size() == Size(0,0) )
 	{
 		empty = true;
 		m_stereo_camera.leftCamera.dist.zeros();
@@ -185,7 +194,7 @@ TCaptureOptions_DUO3D::TYMLReadResult TCaptureOptions_DUO3D::m_camera_int_params
 	m_stereo_camera.leftCamera.setDistortionParamsFromValues( aux_mat.at<double>(0,0), aux_mat.at<double>(0,1), aux_mat.at<double>(0,2), aux_mat.at<double>(0,3), aux_mat.at<double>(0,4) );
 
 	fs["M2"] >> aux_mat;
-	if( aux_mat.size() == Size(0,0) ) 
+	if( aux_mat.size() == Size(0,0) )
 	{
 		empty = true;
 		m_stereo_camera.rightCamera.intrinsicParams.zeros();
@@ -193,7 +202,7 @@ TCaptureOptions_DUO3D::TYMLReadResult TCaptureOptions_DUO3D::m_camera_int_params
 	m_stereo_camera.rightCamera.setIntrinsicParamsFromValues( aux_mat.at<double>(0,0), aux_mat.at<double>(1,1), aux_mat.at<double>(0,2), aux_mat.at<double>(1,2) );
 
 	fs["D2"] >> aux_mat;
-	if( aux_mat.size() == Size(0,0) ) 
+	if( aux_mat.size() == Size(0,0) )
 	{
 		empty = true;
 		m_stereo_camera.rightCamera.dist.zeros();
@@ -201,6 +210,9 @@ TCaptureOptions_DUO3D::TYMLReadResult TCaptureOptions_DUO3D::m_camera_int_params
 	m_stereo_camera.rightCamera.setDistortionParamsFromValues( aux_mat.at<double>(0,0), aux_mat.at<double>(0,1), aux_mat.at<double>(0,2), aux_mat.at<double>(0,3), aux_mat.at<double>(0,4) );
 
 	return empty ? yrr_EMPTY : yrr_OK;
+#else
+    THROW_EXCEPTION("This function requires building with OpenCV support")
+#endif
 }
 
 void TCaptureOptions_DUO3D::loadOptionsFrom(
@@ -210,12 +222,12 @@ void TCaptureOptions_DUO3D::loadOptionsFrom(
 {
 	m_img_width				= configSource.read_int(iniSection,"image_width",m_img_width);
 	m_img_height			= configSource.read_int(iniSection,"image_height",m_img_height);
-		
+
 	m_fps					= configSource.read_float(iniSection,"fps",m_fps);
 	m_exposure				= configSource.read_float(iniSection,"exposure",m_exposure);
 	m_led					= configSource.read_float(iniSection,"led",m_led);
 	m_gain					= configSource.read_float(iniSection,"gain",m_gain);
-		
+
 	m_capture_rectified		= configSource.read_bool(iniSection,"capture_rectified",m_capture_rectified);
 	m_capture_imu			= configSource.read_bool(iniSection,"capture_imu",m_capture_imu);
 	m_calibration_from_file = configSource.read_bool(iniSection,"calibration_from_file",m_calibration_from_file);
@@ -229,7 +241,7 @@ void TCaptureOptions_DUO3D::loadOptionsFrom(
 	}
 	else
 		m_stereo_camera.loadFromConfigFile( "DUO3D", configSource );
-	
+
 	if( m_capture_rectified )
 	{
 		m_rectify_map_filename = configSource.read_string(iniSection,"rectify_map_filename", m_rectify_map_filename);
@@ -292,7 +304,7 @@ void CDUO3DCamera::open( const TCaptureOptions_DUO3D & options, const bool start
 #if MRPT_HAS_DUO3D
 	if( M_DUO_VALUE ) this->close();
 	this->m_options = options;
-	
+
 	if( this->m_options.m_calibration_from_file )
 	{
 		// get intrinsic parameters
@@ -319,14 +331,14 @@ void CDUO3DCamera::open( const TCaptureOptions_DUO3D & options, const bool start
 						cout << "[CDUO3DCamera] Warning: Rectification map could not be read (size==0). Check file content." << endl;
 					else if( res == TCaptureOptions_DUO3D::yrr_NAME_NON_CONSISTENT )
 						cout << "[CDUO3DCamera] Warning: Rectification map filename is not consistent with image size. Are you using the correct calibration?. Rectification map set to zero." << endl;
-				
+
 				this->m_options.m_capture_rectified = res == TCaptureOptions_DUO3D::yrr_OK;
 
 				const size_t area = this->m_options.m_rectify_map_left_x.size().area();
 				vector<int16_t> v_left_x(area), v_right_x(area);
 				vector<uint16_t> v_left_y(area), v_right_y(area);
 
-				for( size_t k = 0; k < area; ++k ) 
+				for( size_t k = 0; k < area; ++k )
 				{
 					v_left_x[k] = this->m_options.m_rectify_map_left_x.at<int16_t>(k);
 					v_left_y[k] = this->m_options.m_rectify_map_left_y.at<uint16_t>(k);
@@ -350,11 +362,11 @@ void CDUO3DCamera::open( const TCaptureOptions_DUO3D & options, const bool start
 	// Find optimal binning parameters for given (width, height)
 	// This maximizes sensor imaging area for given resolution
 	int binning = DUO_BIN_NONE;
-	if(this->m_options.m_img_width <= 752/2) 
+	if(this->m_options.m_img_width <= 752/2)
 		binning += DUO_BIN_HORIZONTAL2;
-	if(this->m_options.m_img_height <= 480/4) 
+	if(this->m_options.m_img_height <= 480/4)
 		binning += DUO_BIN_VERTICAL4;
-	else if(this->m_options.m_img_height <= 480/2) 
+	else if(this->m_options.m_img_height <= 480/2)
 		binning += DUO_BIN_VERTICAL2;
 
 	// Check if we support given resolution (width, height, binning, fps)
@@ -370,7 +382,7 @@ void CDUO3DCamera::open( const TCaptureOptions_DUO3D & options, const bool start
 	GetDUODeviceName(M_DUO_VALUE,name);
 	GetDUOFirmwareVersion(M_DUO_VALUE,version);
 	cout << "[CDUO3DCamera::open] DUO3DCamera name: " << name << " (v" << version << ")" << endl;
-	
+
 	// Set selected resolution
 	SetDUOResolutionInfo(M_DUO_VALUE,ri);
 
@@ -401,7 +413,7 @@ void  CDUO3DCamera::getObservations(
 #if MRPT_HAS_DUO3D
 	there_is_img	= false;
 	there_is_imu	= false;
-	
+
 	m_pframe_data = m_get_duo_frame();
     if(!m_pframe_data) return;
 
@@ -411,18 +423,18 @@ void  CDUO3DCamera::getObservations(
 	outObservation_img.timestamp = outObservation_imu.timestamp = mrpt::system::now();
 
 	outObservation_img.setStereoCameraParams(m_options.m_stereo_camera);
-	outObservation_img.imageLeft.loadFromMemoryBuffer( 
-			m_options.m_img_width, 
+	outObservation_img.imageLeft.loadFromMemoryBuffer(
+			m_options.m_img_width,
 			m_options.m_img_height,
 			false,
 			(unsigned char*)reinterpret_cast<PDUOFrame>(m_pframe_data)->leftData);
 
-	outObservation_img.imageRight.loadFromMemoryBuffer( 
-			m_options.m_img_width, 
+	outObservation_img.imageRight.loadFromMemoryBuffer(
+			m_options.m_img_width,
 			m_options.m_img_height,
 			false,
 			(unsigned char*)reinterpret_cast<PDUOFrame>(m_pframe_data)->rightData);
-		
+
 	if( this->m_options.m_capture_rectified )
 		m_rectify_map.rectify( outObservation_img );
 
@@ -439,7 +451,7 @@ void  CDUO3DCamera::getObservations(
 		{
 			// Accelerometer data
 			for(size_t k = 0; k < 3; ++k)
-			{   
+			{
 				outObservation_imu.rawMeasurements[k] = reinterpret_cast<PDUOFrame>(m_pframe_data)->accelData[k];
 				outObservation_imu.dataIsPresent[k] = true;
 			}
