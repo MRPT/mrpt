@@ -34,7 +34,10 @@ TEST(SerializeTestOpenGL, WriteReadToMem)
 		CLASS_ID( CFrustum ),
 		CLASS_ID( CDisk ),
 		CLASS_ID( CGridPlaneXY ),
+#if MRPT_HAS_OPENCV   // These classes need CImage serialization
 		CLASS_ID( CMesh ),
+		CLASS_ID( CTexturedPlane ),
+#endif
 		CLASS_ID( COpenGLViewport ),
 		CLASS_ID( CPointCloud ),
 		CLASS_ID( CPointCloudColoured ),
@@ -44,7 +47,6 @@ TEST(SerializeTestOpenGL, WriteReadToMem)
 		CLASS_ID( CCylinder ),
 		CLASS_ID( CGeneralizedCylinder ),
 		CLASS_ID( CPolyhedron ),
-		CLASS_ID( CTexturedPlane ),
 		CLASS_ID( CArrow ),
 		CLASS_ID( CCamera ),
 		CLASS_ID( CEllipsoid  ),

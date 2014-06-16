@@ -38,12 +38,14 @@ const mrpt::utils::TRuntimeClassId* lstClasses[] = {
 	CLASS_ID(CObservationComment),
 	CLASS_ID(CObservationGasSensors),
 	CLASS_ID(CObservationGPS),
-	CLASS_ID(CObservationImage),
 	CLASS_ID(CObservationReflectivity),
 	CLASS_ID(CObservationIMU),
 	CLASS_ID(CObservationOdometry),
 	CLASS_ID(CObservationRange),
+#if MRPT_HAS_OPENCV   // These classes need CImage serialization
+	CLASS_ID(CObservationImage),
 	CLASS_ID(CObservationStereoImages),
+#endif
 	CLASS_ID(CObservationCANBusJ1939),
 	CLASS_ID(CObservationRawDAQ),
 	CLASS_ID(CObservation6DFeatures),
