@@ -82,17 +82,19 @@ ctor
 -------------------------------------------------------------*/
 COpenNI2Generic::COpenNI2Generic() :
 	numDevices(0),
-  width(640),
-  height(480),
+	width(640),
+	height(480),
 	fps(30),
-  m_grab_image(true),
+	m_grab_image(true),
 	m_grab_depth(true),
 	m_grab_3D_points(true)
 {
 #if MRPT_HAS_OPENNI2
 	rgb_pFormat = new openni::PixelFormat(openni::PIXEL_FORMAT_RGB888);
 	depth_pFormat = new openni::PixelFormat(openni::PIXEL_FORMAT_DEPTH_1_MM);
-#endif
+#else
+	THROW_EXCEPTION("MRPT was built without OpenNI2 support")
+#endif // MRPT_HAS_OPENNI2
 }
 
 /*-------------------------------------------------------------
@@ -103,7 +105,9 @@ COpenNI2Generic::~COpenNI2Generic()
 #if MRPT_HAS_OPENNI2
   delete reinterpret_cast<openni::PixelFormat*>(rgb_pFormat);
   delete reinterpret_cast<openni::PixelFormat*>(depth_pFormat);
-#endif
+#else
+	THROW_EXCEPTION("MRPT was built without OpenNI2 support")
+#endif // MRPT_HAS_OPENNI2
 }
 
 /** This method can or cannot be implemented in the derived class, depending on the need for it.
@@ -130,8 +134,9 @@ int COpenNI2Generic::getConnectedDevices()
 
 	for(unsigned i=0; i < numDevices; i++)
 	{
-		int product_id = (*DEVICE_LIST_PTR)[i].getUsbProductId();
-		printf("Device %u: name=%s uri=%s vendor=%s product=%i \n", i, (*DEVICE_LIST_PTR)[i].getName(), (*DEVICE_LIST_PTR)[i].getUri(), (*DEVICE_LIST_PTR)[i].getVendor(), product_id);
+		int UsbProductId = (*DEVICE_LIST_PTR)[i].getUsbProductId();
+		int UsbVendorId = (*DEVICE_LIST_PTR)[i].getUsbVendorId();
+		printf("Device %u: name=%s vendor=%s usb_product=%i usb_vendor=%i uri=%s \n", i, (*DEVICE_LIST_PTR)[i].getName(), (*DEVICE_LIST_PTR)[i].getVendor(), UsbProductId, UsbVendorId, (*DEVICE_LIST_PTR)[i].getUri());
 	}
 
 	if(numDevices == 0)
@@ -238,7 +243,6 @@ void COpenNI2Generic::open(unsigned sensor_id)
 
 	if(isOpen(sensor_id))
 	{
-		//		close(sensor_id);
 		cout << "The sensor " << sensor_id << " is already opened\n";
 		return;
 	}
@@ -249,45 +253,14 @@ void COpenNI2Generic::open(unsigned sensor_id)
   if (sensor_id >= numDevices)
     THROW_EXCEPTION("Sensor index is higher than the number of connected devices.")
 
-  int rc;
-	//  unsigned sensor_id; // To use with serial_num
+  vp_devices[sensor_id] = new openni::Device;
+  vp_depth_stream[sensor_id] = new openni::VideoStream;
+  vp_rgb_stream[sensor_id] = new openni::VideoStream;
+  vp_frame_depth[sensor_id] = new openni::VideoFrameRef;
+  vp_frame_rgb[sensor_id] = new openni::VideoFrameRef;
 
-	// Open the given device number:
-	//  if(sensor_id == 100)
-	//  {
-	//    const char* deviceURI = openni::ANY_DEVICE;
-	//    rc = DEVICE_ID_PTR->open(deviceURI);
-	//  }
-	//  else
-	{
-		vp_devices[sensor_id] = new openni::Device;
-		vp_depth_stream[sensor_id] = new openni::VideoStream;
-		vp_rgb_stream[sensor_id] = new openni::VideoStream;
-		vp_frame_depth[sensor_id] = new openni::VideoFrameRef;
-		vp_frame_rgb[sensor_id] = new openni::VideoFrameRef;
-
-		COpenNI2Generic::vOpenDevices.push_back(sensor_id);
-
-		rc = DEVICE_ID_PTR->open((*DEVICE_LIST_PTR)[sensor_id].getUri());
-
-		//    bool serial_found = false;
-		//    for(sensor_id=0; sensor_id < numDevices; sensor_id++)
-		//    {
-		//      if(serial_num == static_cast<int>((*DEVICE_LIST_PTR)[sensor_id].getUsbProductId()) )
-		//      {
-		//        serial_found = true;
-		//        COpenNI2Generic::vOpenDevices.push_back(sensor_id);
-		//        rc = DEVICE_ID_PTR->open((*DEVICE_LIST_PTR)[sensor_id].getUri());
-		//        break;
-		//      }
-		//    }
-		//    if(!serial_found)
-		//    {
-		//      THROW_EXCEPTION_CUSTOM_MSG1("Device open failed:\n%s\n", openni::OpenNI::getExtendedError());
-		//      openni::OpenNI::shutdown();
-		//      return;
-		//    }
-	}
+  int rc = DEVICE_ID_PTR->open((*DEVICE_LIST_PTR)[sensor_id].getUri());
+  COpenNI2Generic::vOpenDevices.push_back(sensor_id);
 
 	if(rc != openni::STATUS_OK)
 	{
@@ -295,9 +268,9 @@ void COpenNI2Generic::open(unsigned sensor_id)
 		openni::OpenNI::shutdown();
 	}
 
-//	char serialNumber[1024];
-//	DEVICE_ID_PTR->getProperty(ONI_DEVICE_PROPERTY_SERIAL_NUMBER, &serialNumber);
-//	cout << "Serial " << serialNumber << endl;
+  char serialNumber[16];
+  DEVICE_ID_PTR->getProperty(ONI_DEVICE_PROPERTY_SERIAL_NUMBER, &serialNumber);
+  cout << "Serial " << serialNumber << endl;
 
 	//								Create RGB and Depth channels
 	//========================================================================================
@@ -334,21 +307,69 @@ void COpenNI2Generic::open(unsigned sensor_id)
 	DEPTH_STREAM_ID_PTR->getProperty(XN_STREAM_PROPERTY_CLOSE_RANGE, &CloseRange);
 	printf("\nClose range: %s", CloseRange?"On\n":"Off\n");
 
-
 	//	// Setup:
 	//	if(m_initial_tilt_angle!=360) // 360 means no motor command.
 	//    setTiltAngleDegrees(m_initial_tilt_angle);
 
 	mrpt::system::sleep(2000); // Sleep 2s
-	cout << "Device " << sensor_id << " open successfully.\n\n"; //cout << "Streaming " << width << "x" << height << " open successfully.\n\n";
+	cout << "Device " << sensor_id << " opens successfully.\n\n"; //cout << "Streaming " << width << "x" << height << " open successfully.\n\n";
 #else
 	THROW_EXCEPTION("MRPT was built without OpenNI2 support")
+#endif // MRPT_HAS_OPENNI2
+}
+
+void COpenNI2Generic::openDevicesBySerialNum(const std::vector<unsigned> v_serial_required)
+{
+#if MRPT_HAS_OPENNI2
+  // Check that the serial numbers of all the devices are different
+	for(unsigned i=0; i < v_serial_required.size()-1; i++)
+    for(unsigned j=i+1; j < v_serial_required.size(); j++)
+      if(v_serial_required[i] == v_serial_required[j])
+        THROW_EXCEPTION("The device serial numbers to open are the same")
+
+  char serialNumber[16];
+  vSerialNums.resize(numDevices);
+  vector<unsigned> vOpenDevOrdered(v_serial_required.size());
+  unsigned num_open_dev = 0;
+	for(unsigned sensor_id=0; sensor_id < numDevices; sensor_id++)
+	{
+	  if(!isOpen(sensor_id))
+	  {
+	    open(sensor_id);
+      DEVICE_ID_PTR->getProperty(ONI_DEVICE_PROPERTY_SERIAL_NUMBER, &serialNumber);
+      // cout << "Serial " << atoi(serialNumber) << endl;
+      vSerialNums[sensor_id] = atoi(serialNumber);
+      bool isRequired = false;
+      for(unsigned i=0; i < v_serial_required.size(); i++)
+        if(v_serial_required[i] == vSerialNums[sensor_id])
+        {
+          vOpenDevOrdered[i] = sensor_id;
+          num_open_dev++;
+          isRequired = true;
+          break;
+        }
+      if(!isRequired)
+        close(sensor_id);
+	  }
+
+    if(v_serial_required.size() == num_open_dev)
+    {
+      COpenNI2Generic::vOpenDevices = vOpenDevOrdered;
+      return;
+    }
+	}
+
+	if(v_serial_required.size() != vOpenDevOrdered.size())
+    THROW_EXCEPTION("Passed object must be CObservation.");
+
 #endif // MRPT_HAS_OPENNI2
 }
 
 void COpenNI2Generic::close(unsigned sensor_id)
 {
 #if MRPT_HAS_OPENNI2
+  cout << "COpenNI2Generic::close " << sensor_id << endl;
+
 	DEPTH_STREAM_ID_PTR->destroy();
 	RGB_STREAM_ID_PTR->destroy();
 
