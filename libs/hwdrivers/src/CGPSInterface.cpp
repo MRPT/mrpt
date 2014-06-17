@@ -154,6 +154,9 @@ bool  CGPSInterface::tryToOpenTheCOM()
 
     if (m_verbose) cout << "[CGPSInterface] Opening " << m_COMname << " @ " << m_COMbauds << endl;
 
+	m_last_GGA.clear();  // On comms reset, empty this cache
+
+
 	try
 	{
         if( useExternCOM() )
@@ -410,7 +413,15 @@ void  CGPSInterface::processBuffer()
 ----------------------------------------------------- */
 void  CGPSInterface::processGPSstring(const std::string &s)
 {
+	const bool did_have_gga = m_latestGPS_data.has_GGA_datum;
+	// Parse:
 	CGPSInterface::parse_NMEA(s,m_latestGPS_data, m_verbose);
+	
+	// Save GGA cache (useful for NTRIP,...)
+	const bool has_gga = m_latestGPS_data.has_GGA_datum;
+	if (has_gga && !did_have_gga) {
+		m_last_GGA = s;
+	}
 
 	// Generic observation data:
 	m_latestGPS_data.sensorPose     = m_sensorPose;
@@ -969,3 +980,10 @@ bool CGPSInterface::setJAVAD_AIM_mode()
     MRPT_END
 
 } // end-setJAVAD_AIM_mode
+
+std::string CGPSInterface::getLastGGA(bool reset)
+{
+	std::string ret = m_last_GGA;
+	if (reset) m_last_GGA.clear();
+	return ret;
+}
