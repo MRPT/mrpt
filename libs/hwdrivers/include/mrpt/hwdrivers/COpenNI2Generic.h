@@ -97,12 +97,19 @@ namespace mrpt
 			/** Set the Depth stream mode (resolution, fps and pixel format) for the OpenNI2 device */
       bool initONI2DepthStream(unsigned sensor_id, int w, int h, int fps, void* pFormat);
 
-			/** Try to open the camera (set all the parameters before calling this) - users may also call initialize(), which in turn calls this method.
+			/** Try to open the camera (all the parameters [resolution,fps,...] must be set before calling this) - users may also call initialize(), which in turn calls this method.
 			  *  Raises an exception upon error.
 			  * \exception std::exception A textual description of the error.
 			  */
 			void open(unsigned sensor_id = 0);
 
+      /** Open a set of RGBD devices specified by their serial number. Raises an exception when the demanded serial numbers
+      *  are not among the connected devices. This function also fills a vector with the serial numbers of the connected
+      *  OpenNI2 sensors (this requires openning the sensors which are still closed)
+      */
+      void openDevicesBySerialNum(const std::vector<unsigned> vSerialRequired);
+
+			/** Check if the given 'sensor_id' has been open.*/
 			bool isOpen(const unsigned sensor_id) const; //!< Whether there is a working connection to the sensor
 
 			/** Close the conection to the sensor (not need to call it manually unless desired for some reason,
@@ -121,7 +128,9 @@ namespace mrpt
 
 			/** The index of the chosen devices */
 			static std::vector<unsigned> vOpenDevices;
-//			static std::vector<COpenNI2Generic*> vOpenDevices;
+
+			/** A vector with the serial numbers of the available devices */
+			std::vector<int>	vSerialNums;
 
 			/** A vector with pointers to the available devices */
 			std::vector<void*>	vp_devices; // Opaque pointer to "openni::Device"
