@@ -13,7 +13,7 @@ create a map using scan matching with 2D laser scans.
 
 =head1 BUGS
 
-Please report bugs at http://www.mrpt.org/project/issues/MRPT
+Please report bugs at https://github.com/jlblancoc/mrpt/issues
 
 =head1 SEE ALSO
 

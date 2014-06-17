@@ -18,7 +18,7 @@ visualization in 3D of the particles, the beacons, and the measurements.
 
 =head1 BUGS
 
-Please report bugs at http://www.mrpt.org/project/issues/MRPT
+Please report bugs at https://github.com/jlblancoc/mrpt/issues
 
 =head1 SEE ALSO
 
