@@ -30,6 +30,7 @@
 		- New classes:
 			- [mrpt-base]
 				- mrpt::math::ContainerType<CONTAINER>::element_t to allow handling either Eigen or STL containers seamlessly.
+				- mrpt::utils::CConfigFilePrefixer 
 			- [mrpt-hwdrivers]
 				- mrpt::hwdrivers::COpenNI2Sensor: Interface to OpenNI2 cameras, capable of reading from an array of OpenNI2 RGBD cameras (By Eduardo Fernandez)
 				- mrpt::hwdrivers::CDUO3DCamera: Interface to DUO3D cameras (By Francisco Angel Moreno)
