@@ -19,8 +19,8 @@ CConfigFilePrefixer::CConfigFilePrefixer() :
 	m_bound_object(NULL)
 {
 }
-CConfigFilePrefixer::CConfigFilePrefixer(CConfigFileBase &o, const std::string &prefix_sections, const std::string &prefix_keys) :
-	m_bound_object(&o),
+CConfigFilePrefixer::CConfigFilePrefixer(const CConfigFileBase &o, const std::string &prefix_sections, const std::string &prefix_keys) :
+	m_bound_object( const_cast<CConfigFileBase*>(&o) ),
 	m_prefix_sections(prefix_sections), 
 	m_prefix_keys(prefix_keys)
 {
@@ -30,9 +30,9 @@ CConfigFilePrefixer::~CConfigFilePrefixer()
 	// Nothing to free manually
 }
 
-void CConfigFilePrefixer::bind(CConfigFileBase &o)
+void CConfigFilePrefixer::bind(const CConfigFileBase &o)
 {
-	m_bound_object = &o;
+	m_bound_object = const_cast<CConfigFileBase*>(&o);
 }
 
 void CConfigFilePrefixer::setPrefixes(const std::string &prefix_sections, const std::string &prefix_keys)

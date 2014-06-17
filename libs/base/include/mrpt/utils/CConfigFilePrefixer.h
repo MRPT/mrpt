@@ -47,10 +47,10 @@ namespace utils
 		/** Unbound constructor: must bind this object to CConfigFileBase before usage with \a bind() and \a setPrefixes() */
 		CConfigFilePrefixer();
 		/** Construct and bind to (wrap) a given object with given prefix texts */
-		CConfigFilePrefixer(CConfigFileBase &o, const std::string &prefix_sections, const std::string &prefix_keys);
+		CConfigFilePrefixer(const CConfigFileBase &o, const std::string &prefix_sections, const std::string &prefix_keys);
 
 		/** Make this object to wrap the given existing CConfigFileBase object. Can be changed at any moment after construction */
-		void bind(CConfigFileBase &o);
+		void bind(const CConfigFileBase &o);
 
 		/** Change the prefix for sections and keys. Can be called at any moment. */
 		void setPrefixes(const std::string &prefix_sections, const std::string &prefix_keys);

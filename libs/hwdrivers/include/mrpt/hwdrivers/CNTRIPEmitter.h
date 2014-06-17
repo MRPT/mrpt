@@ -85,6 +85,11 @@ namespace mrpt
 			  */
 			void doProcess(); 
 
+			/** Exposes the NTRIP client object */
+			CNTRIPClient & getNTRIPClient() { return m_client; }
+			/** Exposes the NTRIP client object */
+			const CNTRIPClient & getNTRIPClient() const { return m_client; }
+
 		};	// End of class
 
 	} // End of namespace

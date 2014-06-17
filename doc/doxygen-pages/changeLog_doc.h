@@ -34,6 +34,7 @@
 			- [mrpt-hwdrivers]
 				- mrpt::hwdrivers::COpenNI2Sensor: Interface to OpenNI2 cameras, capable of reading from an array of OpenNI2 RGBD cameras (By Eduardo Fernandez)
 				- mrpt::hwdrivers::CDUO3DCamera: Interface to DUO3D cameras (By Francisco Angel Moreno)
+				- mrpt::hwdrivers::CGPS_NTRIP: A combination of GPS receiver + NTRIP receiver capable of submitting GGA frames to enable RTCM 3.0 
 			- [mrpt-obs]
 				- mrpt::slam::CObservation6DFeatures
 		- Changes in classes:

@@ -56,5 +56,6 @@ void registerAllClasses_mrpt_hwdrivers()
 	COpenNI2_RGBD360::doRegister();
 	CCANBusReader::doRegister();
 	CNationalInstrumentsDAQ::doRegister();
+	CGPS_NTRIP::doRegister();
 }
 
