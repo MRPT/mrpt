@@ -39,7 +39,7 @@ documentation and/or software.
 
 */
 
-#include <mrpt/base.h>  // Precompiled headers
+#include "base-precomp.h"  // Precompiled headers
 
 
 #include <mrpt/utils/md5.h>
@@ -48,7 +48,9 @@ using namespace mrpt::utils;
 using namespace std;
 
 #include <string>
+#include <cstring>
 #include <iostream>
+#include <stdio.h>
 
 
 	// a small class for calculating MD5 hashes of strings or byte arrays

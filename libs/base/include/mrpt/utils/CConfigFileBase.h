@@ -10,8 +10,6 @@
 #define  CConfigFileBase_H
 
 #include <mrpt/utils/utils_defs.h>
-#include <mrpt/utils/TEnumType.h>
-#include <mrpt/math/CMatrixTemplate.h>
 #include <mrpt/system/string_utils.h>
 
 /*---------------------------------------------------------------
@@ -21,6 +19,9 @@ namespace mrpt
 {
 namespace utils
 {
+	// Frwd. decl:
+	template <typename ENUMTYPE> struct TEnumType;
+
 	/** This class allows loading and storing values and vectors of different types from a configuration text, which can be implemented as a ".ini" file, a memory-stored string, etc...
 	  *   This is a virtual class, use only as a pointer to an implementation of one of the derived classes.
 		 * \ingroup mrpt_base_grp
@@ -57,7 +58,7 @@ namespace utils
 
 		/** Returs a list with all the keys into a section.
 		  */
-		virtual void getAllKeys( const std::string section, vector_string	&keys ) const = 0;
+		virtual void getAllKeys( const std::string &section, vector_string	&keys ) const = 0;
 
 		/** Checks if a given section exists (name is case insensitive) */
 		bool sectionExists( const std::string &section_name) const;

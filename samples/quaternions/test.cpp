@@ -7,7 +7,9 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/slam.h>
+#include <mrpt/poses/CPose3D.h>
+#include <mrpt/poses/CPose3DQuat.h>
+#include <mrpt/math/CQuaternion.h>
 
 using namespace mrpt::poses;
 using namespace mrpt::utils;

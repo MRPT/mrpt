@@ -11,6 +11,7 @@
 
 #include <mrpt/utils/CSerializable.h>
 #include <mrpt/system/string_utils.h>
+#include <set>
 
 namespace mrpt
 {

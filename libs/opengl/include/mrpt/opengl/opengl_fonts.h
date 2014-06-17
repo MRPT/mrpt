@@ -11,8 +11,9 @@
 #define mrpt_opengl_fonts_H
 
 #include <mrpt/utils/TColor.h>
-#include <mrpt/utils/types.h>
+#include <mrpt/utils/compiler_fixes.h> // disable warnings
 #include <mrpt/opengl/link_pragmas.h>
+#include <string>
 
 namespace mrpt
 {
@@ -84,7 +85,7 @@ namespace mrpt
 		  */
 		struct OPENGL_IMPEXP T2DTextData : public TFontParams
 		{
-			T2DTextData() { }
+			T2DTextData() : x(0),y(0) { }
 
 			std::string text;
 			double      x,y;

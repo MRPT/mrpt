@@ -31,7 +31,7 @@ XSTYPES_DLL_API void XsOutputConfigurationArray_construct(XsOutputConfigurationA
 #endif
 
 #ifdef __cplusplus
-struct XsOutputConfigurationArray : public XsArrayImpl<XsOutputConfiguration, g_xsOutputConfigurationArrayDescriptor, XsOutputConfigurationArray> {
+struct XsOutputConfigurationArray : public XsArrayImpl<XsOutputConfiguration, &g_xsOutputConfigurationArrayDescriptor, XsOutputConfigurationArray> {
 	//! \brief Constructs an XsOutputConfigurationArray
 	inline XsOutputConfigurationArray(XsSize sz = 0, XsOutputConfiguration const* src = 0)
 		 : ArrayImpl(sz, src)

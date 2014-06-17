@@ -27,8 +27,6 @@
 #include "xRawLogViewerMain.h"
 // General global variables:
 
-#include <mrpt/slam.h>
-
 using namespace mrpt;
 using namespace mrpt::slam;
 using namespace mrpt::opengl;

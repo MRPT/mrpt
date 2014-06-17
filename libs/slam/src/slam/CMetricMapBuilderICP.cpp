@@ -7,7 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/slam.h>  // Precompiled header
+#include "slam-precomp.h"   // Precompiled headers
 
 
 
@@ -16,6 +16,7 @@
 #include <mrpt/slam/CSimplePointsMap.h>
 #include <mrpt/slam/CObservationOdometry.h>
 #include <mrpt/poses/CPose3DPDFGaussian.h>
+#include <mrpt/poses/CPosePDFGaussian.h>
 #include <mrpt/utils/CTicTac.h>
 #include <mrpt/utils/CEnhancedMetaFile.h>
 

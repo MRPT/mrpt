@@ -59,7 +59,7 @@ namespace mrpt
 			*		TO * Current Tilt position is -500
 			*		TO500 *
 			*		A *
-			*		TT * Current Pan position is 1000 
+			*		TT * Current Pan position is 1000
 			*	\endcode
 			*/
 
@@ -210,7 +210,7 @@ namespace mrpt
 
 
 		/**************************** State Queries ********************/
-			
+
 			/** Check errors, returns 0 if there are not errors or error code in otherwise
 			*	Error codes:
 			*	\code
@@ -242,7 +242,7 @@ namespace mrpt
 			inline bool outOfRange() { return (nError % CPtuDPerception::OutOfRange)==0; }
 			inline bool illegalCommandError() { return (nError % CPtuDPerception::IllegalCommandError)==0; }
 			inline bool unExpectedError() { return (nError % CPtuDPerception::UnExpectedError)==0; }
-			
+
 			/** Clear errors **/
 
 			virtual void clearErrors() { nError=NoError; }
@@ -254,7 +254,7 @@ namespace mrpt
 
 			/** PTU and serial port initialization */
 
-			virtual bool init(const std::string port);
+			virtual bool init(const std::string &port);
 
 			/** Close conection with serial port */
 
@@ -284,7 +284,7 @@ namespace mrpt
 			*/
 
 			virtual bool scan(char axis, int wait, float initial, float final, double radPre);
-						
+
 			/** Query verbose mode */
 
 			virtual bool verboseQ(bool &modo);

@@ -7,7 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/hwdrivers.h> // Precompiled headers
+#include "hwdrivers-precomp.h"   // Precompiled headers
 
 #include <mrpt/utils/utils_defs.h>
 #include <mrpt/system/os.h>
@@ -76,7 +76,7 @@ void  CBoardSonars::loadConfig_sensorSpecific(	const mrpt::utils::CConfigFileBas
 	for( itSonar = m_firingOrder.begin(); itSonar != m_firingOrder.end(); ++itSonar )
 	{
 		configSource.read_vector( iniSection, format("pose%i",*itSonar), aux, aux, true );	// Get the sonar poses
-		m_sonarPoses[ *itSonar ] = mrpt::poses::TPose3D( aux[0], aux[1], aux[2], DEG2RAD( (float)aux[3]), DEG2RAD( (float)aux[4]), DEG2RAD( (float)aux[5]) );
+		m_sonarPoses[ *itSonar ] = mrpt::math::TPose3D( aux[0], aux[1], aux[2], DEG2RAD( (float)aux[3]), DEG2RAD( (float)aux[4]), DEG2RAD( (float)aux[5]) );
 	}
 	// ----------------------------------------------------------------------------------------------------------------------
 	ASSERT_( m_sonarGains.size() == m_firingOrder.size() );

@@ -9,7 +9,7 @@
 
 // This file contains portions of code from sicklms200.cc from the Player/Stage project.
 
-#include <mrpt/hwdrivers.h> // Precompiled headers
+#include "hwdrivers-precomp.h"   // Precompiled headers
 
 #include <mrpt/utils/crc.h>
 #include <mrpt/utils/CTicTac.h>
@@ -42,7 +42,8 @@ CSickLaserSerial::CSickLaserSerial() :
 	m_mySerialPort( NULL ),
 	m_com_baudRate(38400),
 	m_nTries_connect(1),
-	m_nTries_current(0)
+	m_nTries_current(0),
+	m_skip_laser_config(false)
 {
 	m_sensorLabel = "SICKLMS";
 	memset(m_received_frame_buffer,0,sizeof(m_received_frame_buffer));
@@ -57,7 +58,10 @@ CSickLaserSerial::~CSickLaserSerial()
 	{
 		try
 		{
-			LMS_endContinuousMode();
+            if (!m_skip_laser_config)
+		    {
+                LMS_endContinuousMode();
+		    }
 		}
 		catch(...) {}
 	}
@@ -157,6 +161,8 @@ void  CSickLaserSerial::loadConfig_sensorSpecific(
     m_scans_FOV = configSource.read_int(iniSection, "FOV", m_scans_FOV );
     m_scans_res = configSource.read_int(iniSection, "resolution", m_scans_res );
 
+    m_skip_laser_config = configSource.read_bool(iniSection, "skip_laser_config", m_skip_laser_config );
+
 	// Parent options:
 	this->loadExclusionAreas(configSource,iniSection);
 }
@@ -229,20 +235,28 @@ bool CSickLaserSerial::tryToOpenComms(std::string *err_msg)
 		//  ** initialization commands **
 		// and put the laser in continuous measuring mode:
 		// ==================================================================
-		if (!LMS_setupSerialComms())  RET_ERROR("error");
+		if (!m_skip_laser_config)
+		{
+            if (!LMS_setupSerialComms())  RET_ERROR("error");
 
-        bool res;
-        for (int nTry=0;nTry<4;nTry++)
-            if (true==(res=LMS_sendMeasuringMode_cm_mm()))
-                break;
+            bool res;
+            for (int nTry=0;nTry<4;nTry++)
+                if (true==(res=LMS_sendMeasuringMode_cm_mm()))
+                    break;
 
-        if (!res) return false;
+            if (!res) return false;
 
-        for (int nTry=0;nTry<4;nTry++)
-            if (true==(res=LMS_startContinuousMode()))
-                break;
+            for (int nTry=0;nTry<4;nTry++)
+                if (true==(res=LMS_startContinuousMode()))
+                    break;
 
-		return res;
+            return res;
+		}
+		else
+		{
+		    // Skip setup:
+		    return true;
+		}
 	}
 	catch(std::exception &e)
 	{
@@ -297,11 +311,11 @@ bool  CSickLaserSerial::waitContinuousSampleFrame(
 			return false;
 		}
 
-		if ( !nRead )
+		if ( !nRead && !nFrameBytes )
 			return false;
 
 		if (nRead<nBytesToRead)
-			mrpt::system::sleep(30);
+			mrpt::system::sleep(1);
 
 		// Lectura OK:
 		// Era la primera?

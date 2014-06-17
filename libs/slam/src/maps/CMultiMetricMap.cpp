@@ -7,9 +7,10 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/slam.h>   // Precompiled headers
+#include "slam-precomp.h"   // Precompiled headers
 
 #include <mrpt/utils/CConfigFile.h>
+#include <mrpt/poses/CPoint2D.h>
 #include <mrpt/slam/CMultiMetricMap.h>
 #include <mrpt/utils/CStartUpClassesRegister.h>
 #include <mrpt/utils/metaprogramming.h>
@@ -762,11 +763,11 @@ void  CMultiMetricMap::readFromStream(CStream &in, int version)
 
 				if (version>=9)
 					in >> options.enableInsertion_octoMaps;
-				else options.enableInsertion_octoMaps = true;			
+				else options.enableInsertion_octoMaps = true;
 
 				if (version>=10)
 					in >> options.enableInsertion_colourOctoMaps;
-				else options.enableInsertion_colourOctoMaps = true;			
+				else options.enableInsertion_colourOctoMaps = true;
 			}
 			else
 			{ } // Default!
@@ -991,7 +992,7 @@ float  CMultiMetricMap::getNewStaticPointsRatio(
 		CPointsMap		*points,
 		CPose2D			&takenFrom )
 {
-	const size_t nTotalPoints = points->getPointsCount();
+	const size_t nTotalPoints = points->size();
 	ASSERT_( m_gridMaps.size()>0 );
 
 	// There must be points!
@@ -1006,11 +1007,11 @@ float  CMultiMetricMap::getNewStaticPointsRatio(
 	m_gridMaps[0]->determineMatching2D(
 		points,
 		takenFrom,
-		correspondences, 
+		correspondences,
 		params, extraResults);
-		
+
 	size_t nStaticPoints = 0;
-	CPoint2D g,l;
+	TPoint2D g,l;
 
 	for (size_t i=0;i<nTotalPoints;i++)
 	{
@@ -1026,7 +1027,7 @@ float  CMultiMetricMap::getNewStaticPointsRatio(
 			//   it should not be consider as an static point!!
 			points->getPoint(i,l);
 
-			CPoint2D	temp = l - takenFrom;
+			CPoint2D	temp = CPoint2D(l) - takenFrom;
 			if ( temp.norm() < params.maxDistForCorrespondence)
 			{
 				// A new point
@@ -1034,7 +1035,7 @@ float  CMultiMetricMap::getNewStaticPointsRatio(
 				// Translate point to global coordinates:
 				g = takenFrom + l;
 
-				if ( m_gridMaps[0]->isStaticPos( g.x(), g.y() ) )
+				if ( m_gridMaps[0]->isStaticPos( g.x, g.y ) )
 				{
 					// A new, static point:
 					nStaticPoints++;
@@ -2041,7 +2042,7 @@ CSimplePointsMap * CMultiMetricMap::getAsSimplePointsMap()
 
 /** Ctor: TOptions::TOptions
 */
-CMultiMetricMap::TOptions::TOptions() :	
+CMultiMetricMap::TOptions::TOptions() :
 	likelihoodMapSelection(mapFuseAll),
 	enableInsertion_pointsMap  (true),
 	enableInsertion_landmarksMap (true),

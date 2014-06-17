@@ -11,8 +11,10 @@
 
 #include <mrpt/graphslam/types.h>
 #include <mrpt/utils/TParameters.h>
-
+#include <mrpt/utils/stl_containers_utils.h> // find_in_vector()
 #include <mrpt/graphslam/levmarq_impl.h> // Aux classes
+
+#include <iterator> // ostream_iterator
 
 namespace mrpt
 {
@@ -207,7 +209,8 @@ namespace mrpt
 			}
 
 			// other important vars for the main loop:
-			vector_double grad(nFreeNodes*DIMS_POSE);
+			CVectorDouble grad(nFreeNodes*DIMS_POSE);
+			grad.setZero();
 			typedef typename mrpt::aligned_containers<TNodeID,typename gst::matrix_VxV_t>::map_t  map_ID2matrix_VxV_t;
 			vector<map_ID2matrix_VxV_t>  H_map(nFreeNodes);
 
@@ -330,21 +333,21 @@ namespace mrpt
 							// Is "i" a free (to be optimized) node? -> Ji^t * Inf *  Ji
 							if (is_i_free_node)
 							{
-								typename gst::matrix_VxV_t JtJ(UNINITIALIZED_MATRIX);
+								typename gst::matrix_VxV_t JtJ(mrpt::math::UNINITIALIZED_MATRIX);
 								detail::AuxErrorEval<typename gst::edge_t,gst>::multiplyJtLambdaJ(J1,JtJ,lstObservationData[idxObs].edge);
 								H_map[idx_i][idx_i] += JtJ;
 							}
 							// Is "j" a free (to be optimized) node? -> Jj^t * Inf *  Jj
 							if (is_j_free_node)
 							{
-								typename gst::matrix_VxV_t JtJ(UNINITIALIZED_MATRIX);
+								typename gst::matrix_VxV_t JtJ(mrpt::math::UNINITIALIZED_MATRIX);
 								detail::AuxErrorEval<typename gst::edge_t,gst>::multiplyJtLambdaJ(J2,JtJ,lstObservationData[idxObs].edge);
 								H_map[idx_j][idx_j] += JtJ;
 							}
 							// Are both "i" and "j" free nodes? -> Ji^t * Inf *  Jj
 							if (is_i_free_node && is_j_free_node)
 							{
-								typename gst::matrix_VxV_t JtJ(UNINITIALIZED_MATRIX);
+								typename gst::matrix_VxV_t JtJ(mrpt::math::UNINITIALIZED_MATRIX);
 								detail::AuxErrorEval<typename gst::edge_t,gst>::multiplyJ1tLambdaJ2(J1,J2,JtJ,lstObservationData[idxObs].edge);
 								H_map[idx_j][idx_i] += JtJ;
 							}
@@ -433,7 +436,7 @@ namespace mrpt
 				//   (H+\lambda*I) \delta = -J^t * (f(x)-z)
 				//          A         x   =  b         -->       x = A^{-1} * b
 				//
-				vector_double  delta; // The (minus) increment to be added to the current solution in this step
+				CVectorDouble  delta; // The (minus) increment to be added to the current solution in this step
 				try
 				{
 					profiler.enter("optimize_graph_spa_levmarq.sp_H:chol");

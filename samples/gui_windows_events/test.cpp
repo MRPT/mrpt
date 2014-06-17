@@ -7,9 +7,10 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/base.h>
-#include <mrpt/slam.h>
 #include <mrpt/gui.h>
+#include <mrpt/utils/CObserver.h>
+#include <mrpt/opengl/CGridPlaneXY.h>
+#include <mrpt/system/threads.h>
 
 using namespace mrpt;
 using namespace mrpt::gui;

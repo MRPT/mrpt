@@ -7,18 +7,17 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/base.h>  // Precompiled headers
-
+#include "base-precomp.h"  // Precompiled headers
 
 #include <mrpt/utils/CImage.h>
-#include <mrpt/math/CMatrix.h>
-#include <mrpt/math/CMatrixD.h>
 #include <mrpt/utils/CFileInputStream.h>
 #include <mrpt/utils/CFileOutputStream.h>
 #include <mrpt/utils/CMemoryStream.h>
 #include <mrpt/compress/zip.h>
-#include <mrpt/math/utils.h>
+#include <mrpt/math/CMatrix.h>
 #include <mrpt/math/fourier.h>
+#include <mrpt/math/utils.h>  // for roundup()
+#include <mrpt/utils/round.h> // for round()
 #include <mrpt/utils/CTicTac.h>
 #include <mrpt/utils/CTimeLogger.h>
 #include <mrpt/system/memory.h>
@@ -664,7 +663,7 @@ void  CImage::readFromStream(CStream &in, int version)
 
 	switch(version)
 	{
-	case -1: // Saved from an MRPT build without OpenCV:
+	case 100: // Saved from an MRPT build without OpenCV:
 		{
 			in >> m_imgIsExternalStorage;
 			if (m_imgIsExternalStorage)
@@ -1903,10 +1902,10 @@ void CImage::setExternalStorage( const std::string &fileName ) MRPT_NO_THROWS
 /*---------------------------------------------------------------
 						unload
  ---------------------------------------------------------------*/
-void CImage::unload() MRPT_NO_THROWS
+void CImage::unload() const MRPT_NO_THROWS
 {
 	if (m_imgIsExternalStorage)
-		releaseIpl( true ); // Do NOT mark the image as NON external
+		const_cast<CImage*>(this)->releaseIpl( true ); // Do NOT mark the image as NON external
 }
 
 /*---------------------------------------------------------------
@@ -2318,15 +2317,15 @@ void CImage::rotateImage( double angle_radians, unsigned int center_x, unsigned 
 bool CImage::drawChessboardCorners(
 	std::vector<TPixelCoordf> 	&cornerCoords,
 	unsigned int  check_size_x,
-	unsigned int  check_size_y )
+	unsigned int  check_size_y,
+	unsigned int  lines_width,
+	unsigned int r)
 {
 #if MRPT_HAS_OPENCV
 
 	if (cornerCoords.size()!=check_size_x*check_size_y) return false;
 
 	IplImage* img = this->getAs<IplImage>();
-
-    const int r = 4;
 
 	unsigned int x, y,i;
 	CvPoint prev_pt = cvPoint(0, 0);
@@ -2342,6 +2341,8 @@ bool CImage::drawChessboardCorners(
 	line_colors[6] = CV_RGB(0,0,255);
 	line_colors[7] = CV_RGB(255,0,255);
 
+	CCanvas::selectTextFont("10x20");
+
 	for( y = 0, i = 0; y < check_size_y; y++ )
 	{
 		CvScalar color = line_colors[y % line_max];
@@ -2351,16 +2352,22 @@ bool CImage::drawChessboardCorners(
 			pt.x = cvRound( cornerCoords[i].x);
 			pt.y = cvRound( cornerCoords[i].y);
 
-			if( i != 0 ) cvLine( img, prev_pt, pt, color );
+			if( i != 0 ) cvLine( img, prev_pt, pt, color, lines_width );
 
 			cvLine( img,
 					  cvPoint( pt.x - r, pt.y - r ),
-					  cvPoint( pt.x + r, pt.y + r ), color );
+					  cvPoint( pt.x + r, pt.y + r ), color, lines_width );
 			cvLine( img,
 					  cvPoint( pt.x - r, pt.y + r),
-					  cvPoint( pt.x + r, pt.y - r), color );
-			cvCircle( img, pt, r+1, color );
+					  cvPoint( pt.x + r, pt.y - r), color, lines_width );
+			
+			if (r>0)
+				cvCircle( img, pt, r+1, color );
 			prev_pt = pt;
+
+			// Text label with the corner index in the first and last corners:
+			if (i==0 || i==cornerCoords.size()-1)
+				CCanvas::textOut(pt.x+5,pt.y-5,mrpt::format("%u",i), mrpt::utils::TColor::blue);
 		}
 	}
 

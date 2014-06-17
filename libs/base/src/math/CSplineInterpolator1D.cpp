@@ -7,10 +7,12 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/base.h>  // Precompiled headers
+#include "base-precomp.h"  // Precompiled headers
 
 #include <mrpt/math/CSplineInterpolator1D.h>
-#include <mrpt/math/utils.h>
+#include <mrpt/utils/CStream.h>
+#include <mrpt/math/interp_fit.h>
+#include <mrpt/utils/stl_serialization.h>
 
 using namespace mrpt;
 using namespace mrpt::math;
@@ -69,8 +71,8 @@ double & CSplineInterpolator1D::query( double x, double &y, bool &out_valid ) co
 	}
 	p4 = *it_ge1;		// Fourth pair
 
-	it_ge1--;
-	it_ge1--;
+	--it_ge1;
+	--it_ge1;
 	p2 = *it_ge1;	// Second pair
 
 	if( it_ge1 == m_x2y.begin() )
@@ -83,13 +85,13 @@ double & CSplineInterpolator1D::query( double x, double &y, bool &out_valid ) co
 	// ---------------------------------------
 	//    SPLINE INTERPOLATION
 	// ---------------------------------------
-	vector_double	xs(4);
+	CVectorDouble	xs(4);
 	xs[0] = p1.first;
 	xs[1] = p2.first;
 	xs[2] = p3.first;
 	xs[3] = p4.first;
 
-	vector_double	ys(4);
+	CVectorDouble	ys(4);
 	ys[0] = p1.second;
 	ys[1] = p2.second;
 	ys[2] = p3.second;

@@ -30,7 +30,8 @@
 #include <ctype.h>
 #endif
 
-#include <mrpt/utils.h>
+#include <mrpt/gui/CDisplayWindow.h>
+#include <mrpt/base.h>
 #include <mrpt/slam.h>
 #include <mrpt/hwdrivers.h>
 #include <mrpt/vision.h>

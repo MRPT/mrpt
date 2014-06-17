@@ -7,11 +7,20 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/base.h>
+#include <mrpt/math/ransac.h>
+#include <mrpt/gui/CDisplayWindow3D.h>
+#include <mrpt/random.h>
+#include <mrpt/poses/CPose2D.h>
+#include <mrpt/poses/CPosePDFGaussian.h>
+#include <mrpt/poses/CPosePDFSOG.h>
+#include <mrpt/math/geometry.h>
+#include <mrpt/utils/CTimeLogger.h>
+#include <mrpt/utils/CTicTac.h>
+#include <mrpt/opengl/CPointCloud.h>
+#include <mrpt/opengl/CSetOfLines.h>
+#include <mrpt/opengl/stock_objects.h>
 #include <mrpt/scanmatching.h>
 #include <mrpt/slam/CSimplePointsMap.h>
-#include <mrpt/gui.h>
-#include <mrpt/opengl.h>
 
 // ============= PARAMETERS ===================
 

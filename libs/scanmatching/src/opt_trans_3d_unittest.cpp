@@ -8,7 +8,10 @@
    +---------------------------------------------------------------------------+ */
 
 #include <mrpt/scanmatching.h>
-#include <mrpt/base.h>
+#include <mrpt/random.h>
+#include <mrpt/math/ops_vectors.h>
+#include <mrpt/poses/CPose3D.h>
+#include <mrpt/poses/CPose3DQuat.h>
 #include <gtest/gtest.h>
 
 using namespace mrpt;
@@ -77,7 +80,7 @@ void generate_list_of_points( const TPoints &pA, const TPoints &pB, TMatchingPai
 // ------------------------------------------------------
 //				Genreate a vector of matched points
 // ------------------------------------------------------
-void generate_vector_of_points(  const TPoints &pA, const TPoints &pB, vector_double &inV )
+void generate_vector_of_points(  const TPoints &pA, const TPoints &pB, std::vector<double> &inV )
 {
 	// The input vector: inV = [pA1x, pA1y, pA1z, pB1x, pB1y, pB1z, ... ]
 	inV.resize( 30 );
@@ -159,10 +162,10 @@ TEST(LSRigidTrans6D, vector)
 	TPoints	pA, pB;										// The input points
 	CPose3DQuat qPose = generate_points( pA, pB );
 
-	vector_double inV;
+	std::vector<double> inV;
 	generate_vector_of_points( pA, pB, inV );			// Generate a vector of matched points
 
-	vector_double	qu;									// Output quaternion for the Horn Method
+	std::vector<double>	qu;									// Output quaternion for the Horn Method
 
 	HornMethod( inV, qu, false );
 

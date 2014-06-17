@@ -7,7 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/base.h>  // Precompiled headers
+#include "base-precomp.h"  // Precompiled headers
 
 
 #include <mrpt/poses/CPointPDFSOG.h>
@@ -16,15 +16,17 @@
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/bayes/CParticleFilterCapable.h>
 #include <mrpt/random.h>
-
-#include <mrpt/math/utils.h>
 #include <mrpt/math/distributions.h>
+#include <mrpt/math/matrix_serialization.h>
+#include <mrpt/utils/CStream.h>
+#include <mrpt/system/os.h>
 
 using namespace mrpt::poses;
 using namespace mrpt::math;
 using namespace mrpt::utils;
 using namespace mrpt::bayes;
 using namespace mrpt::random;
+using namespace mrpt::system;
 using namespace std;
 
 IMPLEMENTS_SERIALIZABLE( CPointPDFSOG, CPosePDF, mrpt::poses )
@@ -67,10 +69,11 @@ void CPointPDFSOG::getMean(CPoint3D &p) const
 	if (N)
 	{
 		CListGaussianModes::const_iterator	it;
-		double		w,sumW = 0;
+		double		sumW = 0;
 
-		for (it=m_modes.begin();it!=m_modes.end();it++)
+		for (it=m_modes.begin();it!=m_modes.end();++it)
 		{
+		    double w;
 			sumW += w = exp(it->log_w);
 			X += it->val.mean.x() * w;
 			Y += it->val.mean.y() * w;
@@ -102,15 +105,16 @@ void CPointPDFSOG::getCovarianceAndMean(CMatrixDouble33 &estCov, CPoint3D &p) co
 	if (N)
 	{
 		// 1) Get the mean:
-		double		w,sumW = 0;
+		double		sumW = 0;
 		CMatrixDouble31	estMean = CMatrixDouble31(p);
 
 		CListGaussianModes::const_iterator	it;
 
 		CMatrixDouble33  partCov;
 
-		for (it=m_modes.begin();it!=m_modes.end();it++)
+		for (it=m_modes.begin();it!=m_modes.end();++it)
 		{
+		    double w;
 			sumW += w = exp(it->log_w);
 
 			// estCov += w * ( it->val.cov + ((estMean_i-estMean)*(~(estMean_i-estMean))) );
@@ -141,7 +145,7 @@ void  CPointPDFSOG::writeToStream(CStream &out,int *version) const
 
 		out << N;
 
-		for (it=m_modes.begin();it!=m_modes.end();it++)
+		for (it=m_modes.begin();it!=m_modes.end();++it)
 		{
 			out << it->log_w;
 			out << it->val.mean;
@@ -169,7 +173,7 @@ void  CPointPDFSOG::readFromStream(CStream &in,int version)
 
 			this->resize(N);
 
-			for (it=m_modes.begin();it!=m_modes.end();it++)
+			for (it=m_modes.begin();it!=m_modes.end();++it)
 			{
 				in >> it->log_w;
 
@@ -258,11 +262,11 @@ void CPointPDFSOG::drawSingleSample(CPoint3D  &outSample) const
 
 
 	// 1st: Select a mode with a probability proportional to its weight:
-	vector_double				logWeights( m_modes.size() );
+	vector<double>				logWeights( m_modes.size() );
 	vector<size_t>				outIdxs;
-	vector_double::iterator 	itW;
+	vector<double>::iterator 	itW;
 	CListGaussianModes::const_iterator it;
-	for (it=m_modes.begin(),itW=logWeights.begin();it!=m_modes.end();it++,itW++)
+	for (it=m_modes.begin(),itW=logWeights.begin();it!=m_modes.end();++it,++itW)
 		*itW = it->log_w;
 
 	CParticleFilterCapable::computeResampling(
@@ -278,7 +282,7 @@ void CPointPDFSOG::drawSingleSample(CPoint3D  &outSample) const
 
 
 	// 2nd: Draw a position from the selected Gaussian:
-	vector_double vec;
+	CVectorDouble vec;
 	randomGenerator.drawGaussianMultivariate(vec,selMode->cov);
 
 	ASSERT_(vec.size()==3);
@@ -438,10 +442,10 @@ void  CPointPDFSOG::normalizeWeights()
 
 	CListGaussianModes::iterator		it;
 	double		maxW = m_modes[0].log_w;
-	for (it=m_modes.begin();it!=m_modes.end();it++)
+	for (it=m_modes.begin();it!=m_modes.end();++it)
 		maxW = max(maxW,it->log_w);
 
-	for (it=m_modes.begin();it!=m_modes.end();it++)
+	for (it=m_modes.begin();it!=m_modes.end();++it)
 		it->log_w -= maxW;
 
 	MRPT_END
@@ -458,10 +462,10 @@ double CPointPDFSOG::ESS() const
 
 	/* Sum of weights: */
 	double sumLinearWeights = 0;
-	for (it=m_modes.begin();it!=m_modes.end();it++) sumLinearWeights += exp(it->log_w);
+	for (it=m_modes.begin();it!=m_modes.end();++it) sumLinearWeights += exp(it->log_w);
 
 	/* Compute ESS: */
-	for (it=m_modes.begin();it!=m_modes.end();it++)
+	for (it=m_modes.begin();it!=m_modes.end();++it)
 		cum+= square( exp(it->log_w) / sumLinearWeights );
 
 	if (cum==0)
@@ -489,19 +493,16 @@ void  CPointPDFSOG::evaluatePDFInArea(
 	ASSERT_(y_max>y_min);
 	ASSERT_(resolutionXY>0);
 
-	size_t		Nx = (size_t)ceil((x_max-x_min)/resolutionXY);
-	size_t		Ny = (size_t)ceil((y_max-y_min)/resolutionXY);
-	size_t		i,j;
-	float		x,y;
-
+	const size_t Nx = (size_t)ceil((x_max-x_min)/resolutionXY);
+	const size_t Ny = (size_t)ceil((y_max-y_min)/resolutionXY);
 	outMatrix.setSize(Ny,Nx);
 
-	for (i=0;i<Ny;i++)
+	for (size_t i=0;i<Ny;i++)
 	{
-		y = y_min + i*resolutionXY;
-		for (j=0;j<Nx;j++)
+		const float y = y_min + i*resolutionXY;
+		for (size_t j=0;j<Nx;j++)
 		{
-			x = x_min + j*resolutionXY;
+			float x = x_min + j*resolutionXY;
 			outMatrix(i,j) = evaluatePDF(CPoint3D(x,y,z),sumOverAllZs);
 		}
 	}
@@ -585,7 +586,7 @@ void CPointPDFSOG::getMostLikelyMode( CPointPDFGaussian& outVal ) const
 //void  CPointPDFSOG::getAs3DObject( mrpt::opengl::CSetOfObjectsPtr	&outObj ) const
 //{
 //	// For each gaussian node
-//	for (CListGaussianModes::const_iterator it = m_modes.begin(); it!= m_modes.end();it++)
+//	for (CListGaussianModes::const_iterator it = m_modes.begin(); it!= m_modes.end();++it)
 //	{
 //		opengl::CEllipsoidPtr obj = opengl::CEllipsoid::Create();
 //

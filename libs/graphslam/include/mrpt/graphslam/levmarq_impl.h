@@ -27,7 +27,7 @@ namespace mrpt
 		using namespace std;
 
 		/// Internal auxiliary classes
-		namespace detail 
+		namespace detail
 		{
 			// An auxiliary struct to compute the pseudo-ln of a pose error, possibly modified with an information matrix.
 			//  Specializations are below.
@@ -79,7 +79,7 @@ namespace mrpt
 				template <class JAC,class EDGE_ITERATOR,class VEC1,class VEC2>
 				static inline void multiply_Jt_W_err(const JAC &J,const EDGE_ITERATOR &edge,const VEC1 & ERR,VEC2 &OUT)
 				{
-					CMatrixDouble33 JtInf(UNINITIALIZED_MATRIX);
+					CMatrixDouble33 JtInf(mrpt::math::UNINITIALIZED_MATRIX);
 					JtInf.multiply_AtB(J,edge->second.cov_inv);
 					JtInf.multiply_Ab(ERR,OUT, true /* accumulate in output */ );
 				}
@@ -99,7 +99,7 @@ namespace mrpt
 				template <class JAC,class EDGE_ITERATOR,class VEC1,class VEC2>
 				static inline void multiply_Jt_W_err(const JAC &J,const EDGE_ITERATOR &edge,const VEC1 & ERR,VEC2 &OUT)
 				{
-					CMatrixDouble66 JtInf(UNINITIALIZED_MATRIX);
+					CMatrixDouble66 JtInf(mrpt::math::UNINITIALIZED_MATRIX);
 					JtInf.multiply_AtB(J,edge->second.cov_inv);
 					JtInf.multiply_Ab(ERR,OUT, true /* accumulate in output */ );
 				}
@@ -149,7 +149,7 @@ namespace mrpt
 				detail::AuxErrorEval<typename gst::edge_t,gst>::computePseudoLnError(P1DP2inv, errs.back(),edge);
 
 				// Compute the jacobians:
-				EIGEN_ALIGN16 std::pair<TPairNodeIDs,typename gst::TPairJacobs> newMapEntry;
+				MRPT_ALIGN16 std::pair<TPairNodeIDs,typename gst::TPairJacobs> newMapEntry;
 				newMapEntry.first = ids;
 				gst::SE_TYPE::jacobian_dP1DP2inv_depsilon(P1DP2inv, &newMapEntry.second.first,&newMapEntry.second.second);
 

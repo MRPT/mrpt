@@ -7,10 +7,11 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/vision.h>  // Precompiled headers
+#include "vision-precomp.h"   // Precompiled headers
 
 #include <mrpt/vision/CFeatureExtraction.h>
 #include <mrpt/utils/CTicTac.h>
+#include <mrpt/utils/CStream.h>
 
 using namespace mrpt;
 using namespace mrpt::vision;
@@ -191,6 +192,10 @@ void  CFeatureExtraction::detectFeatures(
 			extractFeaturesFASTER_N(12,img, feats, init_ID, nDesiredFeatures, ROI);
 			break;
 
+		case featORB:
+			extractFeaturesORB( img, feats, init_ID, nDesiredFeatures, ROI );
+			break;
+
 		default:
 			THROW_EXCEPTION("options.method has an invalid value!");
 			break;
@@ -232,6 +237,11 @@ void  CFeatureExtraction::computeDescriptors(
 	if ((in_descriptor_list & descLogPolarImages) != 0)
 	{
 		this->internal_computeLogPolarImageDescriptors(in_img,inout_features);
+		++nDescComputed;
+	}
+	if ((in_descriptor_list & descORB) != 0)
+	{
+		this->internal_computeORBDescriptors(in_img,inout_features);
 		++nDescComputed;
 	}
 
@@ -300,6 +310,12 @@ CFeatureExtraction::TOptions::TOptions(const TFeatureType _featsType) :
 	FASTOptions.use_KLT_response		= false;
 	FASTOptions.min_distance 			= 5;
 
+	// ORB:
+	ORBOptions.extract_patch			= false;
+	ORBOptions.min_distance				= 0;
+	ORBOptions.n_levels					= 8;
+	ORBOptions.scale_factor				= 1.2;
+
 	// SpinImages Options:
 	SpinImagesOptions.hist_size_distance  = 10;
 	SpinImagesOptions.hist_size_intensity = 10;
@@ -353,6 +369,11 @@ void CFeatureExtraction::TOptions::dumpToTextStream(CStream	&out) const
 	LOADABLEOPTS_DUMP_VAR(FASTOptions.nonmax_suppression,bool)
 	LOADABLEOPTS_DUMP_VAR(FASTOptions.min_distance,float)
 	LOADABLEOPTS_DUMP_VAR(FASTOptions.use_KLT_response,bool)
+
+	LOADABLEOPTS_DUMP_VAR(ORBOptions.scale_factor,float)
+	LOADABLEOPTS_DUMP_VAR(ORBOptions.min_distance,int)
+	LOADABLEOPTS_DUMP_VAR(ORBOptions.n_levels,int)
+	LOADABLEOPTS_DUMP_VAR(ORBOptions.extract_patch,bool)
 
 	LOADABLEOPTS_DUMP_VAR(SpinImagesOptions.hist_size_distance,int)
 	LOADABLEOPTS_DUMP_VAR(SpinImagesOptions.hist_size_intensity,int)
@@ -408,6 +429,11 @@ void CFeatureExtraction::TOptions::loadFromConfigFile(
 	MRPT_LOAD_CONFIG_VAR(FASTOptions.nonmax_suppression,bool,  iniFile,section)
 	MRPT_LOAD_CONFIG_VAR(FASTOptions.min_distance,float,  iniFile,section)
 	MRPT_LOAD_CONFIG_VAR(FASTOptions.use_KLT_response,bool,  iniFile,section)
+
+	MRPT_LOAD_CONFIG_VAR(ORBOptions.extract_patch,bool,  iniFile,section)
+	MRPT_LOAD_CONFIG_VAR(ORBOptions.min_distance,int,  iniFile,section)
+	MRPT_LOAD_CONFIG_VAR(ORBOptions.n_levels,int,  iniFile,section)
+	MRPT_LOAD_CONFIG_VAR(ORBOptions.scale_factor,float,  iniFile,section)
 
 	MRPT_LOAD_CONFIG_VAR(SpinImagesOptions.hist_size_distance,int,  iniFile,section)
 	MRPT_LOAD_CONFIG_VAR(SpinImagesOptions.hist_size_intensity,int,  iniFile,section)

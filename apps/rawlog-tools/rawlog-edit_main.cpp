@@ -46,8 +46,11 @@ DECLARE_OP_FUNCTION(op_remove_label);
 DECLARE_OP_FUNCTION(op_keep_label);
 DECLARE_OP_FUNCTION(op_cut);
 DECLARE_OP_FUNCTION(op_export_gps_kml);
+DECLARE_OP_FUNCTION(op_export_gps_gas_kml);
 DECLARE_OP_FUNCTION(op_export_gps_txt);
 DECLARE_OP_FUNCTION(op_export_imu_txt);
+DECLARE_OP_FUNCTION(op_export_odometry_txt);
+DECLARE_OP_FUNCTION(op_recalc_odometry);
 DECLARE_OP_FUNCTION(op_export_rawdaq_txt);
 DECLARE_OP_FUNCTION(op_export_2d_scans_txt);
 DECLARE_OP_FUNCTION(op_sensors_pose);
@@ -69,6 +72,7 @@ TCLAP::ValueArg<std::string> arg_outdir ("","out-dir","Output directory (used by
 
 TCLAP::ValueArg<std::string> arg_external_img_extension("","image-format","External image format",false,"jpg","jpg,png,pgm,...",cmd);
 TCLAP::ValueArg<std::string> arg_img_size("","image-size","Resize output images",false,"","COLSxROWS",cmd);
+TCLAP::SwitchArg             arg_rectify_centers("","rectify-centers-coincide","In stereo rectification, force that both image centers after coincide after rectifying.",cmd, false);
 
 TCLAP::ValueArg<std::string> arg_out_text_file("","text-file-output","Output for a text file",false,"out.txt","out.txt",cmd);
 
@@ -77,6 +81,10 @@ TCLAP::ValueArg<uint64_t> arg_to_index  ("","to-index",  "End index for --cut",f
 
 TCLAP::ValueArg<double> arg_from_time("","from-time","Starting time for --cut, as UNIX timestamp, optionally with fractions of seconds.",false,0,"T0",cmd);
 TCLAP::ValueArg<double> arg_to_time  ("","to-time",  "End time for --cut, as UNIX timestamp, optionally with fractions of seconds.",false,0,"T1",cmd);
+
+TCLAP::ValueArg<double> arg_odo_KL  ("","odo-KL",  "Constant from encoder ticks to meters (left wheel), used in --recalc-odometry.",false,0,"KL",cmd);
+TCLAP::ValueArg<double> arg_odo_KR  ("","odo-KR",  "Constant from encoder ticks to meters (right wheel), used in --recalc-odometry.",false,0,"KR",cmd);
+TCLAP::ValueArg<double> arg_odo_D   ("","odo-D",   "Distance between left-right wheels (meters), used in --recalc-odometry.",false,0,"D",cmd);
 
 TCLAP::SwitchArg arg_overwrite("w","overwrite","Force overwrite target file without prompting.",cmd, false);
 
@@ -151,6 +159,14 @@ int main(int argc, char **argv)
 			,cmd,false) );
 		ops_functors["export-gps-kml"] = &op_export_gps_kml;
 
+		arg_ops.push_back(new TCLAP::SwitchArg("","export-gps-gas-kml",
+			"Op: Export GPS paths to Google Earth KML files coloured by the gas concentration.\n"
+			"Generates one .kml file with different sections for each different sensor label of GPS observations in the dataset. "
+			"The generated .kml files will be saved in the same path than the input rawlog, with the same "
+			"filename + each sensorLabel."
+			,cmd,false) );
+		ops_functors["export-gps-gas-kml"] = &op_export_gps_gas_kml;
+
 		arg_ops.push_back(new TCLAP::SwitchArg("","export-gps-txt",
 			"Op: Export GPS readings to TXT files.\n"
 			"Generates one .txt file for each different sensor label of GPS observations in the dataset. "
@@ -166,6 +182,22 @@ int main(int argc, char **argv)
 			"filename + each sensorLabel."
 			,cmd,false) );
 		ops_functors["export-imu-txt"] = &op_export_imu_txt;
+
+		arg_ops.push_back(new TCLAP::SwitchArg("","export-odometry-txt",
+			"Op: Export absolute odometry readings to TXT files.\n"
+			"Generates one .txt file for each different sensor label of an odometry observation in the dataset. "
+			"The generated .txt files will be saved in the same path than the input rawlog, with the same "
+			"filename + each sensorLabel."
+			,cmd,false) );
+		ops_functors["export-odometry-txt"] = &op_export_odometry_txt;
+
+		arg_ops.push_back(new TCLAP::SwitchArg("","recalc-odometry",
+			"Op: Recomputes odometry increments from new encoder-to-odometry constants.\n"
+			"Requires: -o (or --output)\n"
+			"Requires: --odo-KL, --odo-KR and --odo-D.\n"
+			,cmd,false) );
+		ops_functors["recalc-odometry"] = &op_recalc_odometry;
+
 
 		arg_ops.push_back(new TCLAP::SwitchArg("","export-rawdaq-txt",
 			"Op: Export raw DAQ readings to TXT files.\n"
@@ -330,6 +362,17 @@ TOutputRawlogCreator::TOutputRawlogCreator()
 		throw runtime_error(string("*ABORTING*: Cannot open output file: ") + out_rawlog_filename );
 }
 
+bool isFlagSet(TCLAP::CmdLine &cmdline, const std::string &arg_name)
+{
+	using namespace TCLAP;
+
+	std::list<Arg*>& args = cmdline.getArgList();
+	for (std::list<Arg*>::iterator it=args.begin();it!=args.end();++it)
+		if ( (*it)->getName() == arg_name)
+			return (*it)->isSet();
+	return false;
+}
+
 
 template <typename T>
 bool getArgValue(TCLAP::CmdLine &cmdline, const std::string &arg_name, T &out_val)
@@ -355,3 +398,4 @@ template bool getArgValue<>(TCLAP::CmdLine &cmdline, const std::string &arg_name
 template bool getArgValue<>(TCLAP::CmdLine &cmdline, const std::string &arg_name, double &out_val);
 template bool getArgValue<>(TCLAP::CmdLine &cmdline, const std::string &arg_name, size_t &out_val);
 template bool getArgValue<>(TCLAP::CmdLine &cmdline, const std::string &arg_name, int &out_val);
+

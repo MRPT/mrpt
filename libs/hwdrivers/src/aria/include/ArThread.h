@@ -14,6 +14,8 @@
 #include <map>
 #ifndef WIN32
 #include <pthread.h>
+#include <sys/types.h>
+#include <unistd.h>
 #endif
 #include "ariaTypedefs.h"
 #include "ArMutex.h"

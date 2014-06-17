@@ -7,11 +7,10 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/base.h>
+#include <mrpt/utils/utils_defs.h>
 #include <gtest/gtest.h>
 
 using namespace mrpt;
-using namespace mrpt::slam;
 using namespace mrpt::utils;
 using namespace mrpt::math;
 using namespace std;
@@ -24,7 +23,7 @@ TEST(FormatTest, LargeStrings)
 	const size_t test_str_len = 30000;
 	test_str.assign(test_str_len,'A');
 
-	std::string s =	mrpt::utils::format("%u %s",static_cast<unsigned int>(10), test_str.c_str() );
+	std::string s =	mrpt::format("%u %s",static_cast<unsigned int>(10), test_str.c_str() );
 
 	const size_t out_str_len = s.size();
 

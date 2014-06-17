@@ -7,15 +7,15 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/obs.h>   // Precompiled headers
-
-
+#include "obs-precomp.h"   // Precompiled headers
 
 #include <mrpt/slam/CActionRobotMovement2D.h>
+#include <mrpt/utils/CStream.h>
 #include <mrpt/poses/CPosePDFGaussian.h>
 #include <mrpt/poses/CPosePDFParticles.h>
 #include <mrpt/random.h>
-#include <mrpt/math/utils.h>
+#include <mrpt/math/point_poses2vectors.h>
+#include <mrpt/math/wrap2pi.h>
 
 using namespace mrpt::slam;
 using namespace mrpt::utils;
@@ -338,24 +338,24 @@ void  CActionRobotMovement2D::computeFromEncoders(
 {
 	if (hasEncodersInfo)
 	{
-		int		nSteps = 100;
-		double		factor = 1.0 / nSteps;
+		const double	As   = 0.5* ( K_right*encoderRightTicks + K_left*encoderLeftTicks );
+		const double	Aphi = ( K_right*encoderRightTicks - K_left*encoderLeftTicks ) / D;
 
-		double	As = factor * 0.5* ( K_right*encoderRightTicks + K_left*encoderLeftTicks );
-		double	Aphi = factor * ( K_right*encoderRightTicks - K_left*encoderLeftTicks ) / D;
-		double  x=0,y=0,phi=0;
-
-		for (int step=0;step<nSteps;step++)
+		double  x,y;
+		if (Aphi!=0)
 		{
-			x += cos(phi)*As;
-			y += sin(phi)*As;
-			phi += Aphi;
+			const double R = As/Aphi;
+			x=R*sin(Aphi);
+			y=R*(1-cos(Aphi));
+		}
+		else
+		{
+			x=As;
+			y=0;
 		}
 
-		CPose2D		incrPose(x,y,phi);
-
 		// Build the whole PDF with the current parameters:
-		computeFromOdometry( incrPose, motionModelConfiguration );
+		computeFromOdometry( CPose2D(x,y,Aphi), motionModelConfiguration );
 	}
 }
 
@@ -614,7 +614,7 @@ void  CActionRobotMovement2D::prepareFastDrawSingleSample_modelGaussian() const
 	cov.eigenVectors( m_fastDrawGauss_Z, D );
 
 	// Scale eigenvectors with eigenvalues:
-	D.Sqrt();
+	D = D.array().sqrt().matrix();
 	m_fastDrawGauss_Z = m_fastDrawGauss_Z * D;
 
 	MRPT_END
@@ -632,7 +632,7 @@ void  CActionRobotMovement2D::prepareFastDrawSingleSample_modelThrun() const
   ---------------------------------------------------------------*/
 void  CActionRobotMovement2D::fastDrawSingleSample_modelGaussian( CPose2D &outSample ) const
 {
-	vector_float	rndVector(3,0);
+	CVectorFloat	rndVector(3,0);
 	for (size_t i=0;i<3;i++)
 	{
 		float	rnd = randomGenerator.drawGaussian1D_normalized();

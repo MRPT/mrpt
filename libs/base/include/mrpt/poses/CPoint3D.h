@@ -10,7 +10,6 @@
 #define CPOINT3D_H
 
 #include <mrpt/poses/CPoint.h>
-#include <mrpt/poses/CPose3D.h>
 
 namespace mrpt
 {
@@ -49,7 +48,7 @@ namespace poses
 		CPoint3D( const CPoint2D &p);
 
 		/** Constructor from an CPose3D object. */
-		explicit inline CPoint3D( const CPose3D &p) { m_coords[0]=p.x(); m_coords[1]=p.y(); m_coords[2]=p.z(); }
+		explicit CPoint3D( const CPose3D &p);
 
 		/** Constructor from an CPose2D object. */
 		explicit CPoint3D( const CPose2D &p);

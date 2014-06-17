@@ -7,16 +7,14 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/base.h>
-#include <mrpt/obs.h>
+#include <mrpt/system/os.h>
+#include <mrpt/system/threads.h>
 #include <mrpt/hwdrivers/CServoeNeck.h>
-#include <mrpt/gui.h>
 
 using namespace mrpt;
+using namespace mrpt::system;
 using namespace mrpt::hwdrivers;
-using namespace mrpt::slam;
 using namespace mrpt::utils;
-using namespace mrpt::gui;
 using namespace std;
 
 #define SRV1 0
@@ -66,7 +64,7 @@ int main()
 		cout << "h: do a complete run [2]" << endl;
 
 		cout << "-------------------------" << endl;
-		
+
 		cout << "q: read angle [1]" << endl;
 		cout << "w: send a set of angles for testing filtering [1]" << endl;
 		cout << "e: send a concrete angle to the servo [1]" << endl;
@@ -76,10 +74,10 @@ int main()
 		cout << "u: send a set of angles for testing filtering [2]" << endl;
 		cout << "i: send a concrete angle to the servo [2]" << endl;
 		cout << "o: send a concrete angle to the servo (fast) [2]" << endl;
-		
+
 		cout << "-------------------------" << endl;
 		cout << "ESC: end program" << endl << endl;
-		
+
 		int cangle = 0;
 		double nangle, angle, angles[10];
 		int srv;
@@ -87,7 +85,7 @@ int main()
 		do {
 			c = os::getch();
 
-			switch(c)			
+			switch(c)
 			{
 			case 'a':
 			case 'j': // turn left
@@ -97,7 +95,7 @@ int main()
 				eNeckBoard.setAngle( DEG2RAD(cangle), srv );
 				std::cout << "Turning servo " << srv+1 << " 5deg to the left" << std::endl;
 				break;
-			
+
 			case 'd':
 			case 'l': // turn right
 				srv = c == 'd' ? SRV1 : SRV2;
@@ -171,7 +169,7 @@ int main()
 				else
 					std::cout << "Servos could not be enabled ..." << std::endl;
 				break;
-			
+
 			case 'n':
 				eNeckBoard.disableServo();
 				std::cout << "Servos disabled ..." << std::endl;

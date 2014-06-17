@@ -33,9 +33,10 @@ IF(wxWidgets_FOUND)
 	 main_vodometry.cpp
 	 main_artwork.cpp
 	 main_convert_ops.cpp
+	 main_show_selected_object.cpp
 	 CRawlogTreeView.cpp	CRawlogTreeView.h
 	 CFormBatchSensorPose.cpp  CFormBatchSensorPose.h
-	 CIniEditor.cpp 		CIniEditor.h
+	 CIniEditor.cpp 		CIniEditor.h	 
 	 ../wx-common/CMyRedirector.h
 	 )
 	 

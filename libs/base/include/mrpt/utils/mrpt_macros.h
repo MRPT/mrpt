@@ -7,12 +7,12 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#ifndef UTILSDEFS_H
-#error "This file is intended for include from utils_defs.h only!"
-#endif
-
 #ifndef MRPT_MACROS_H
 #define MRPT_MACROS_H
+
+#include <mrpt/base/link_pragmas.h>
+#include <sstream> // ostringstream
+#include <stdexcept> // logic_error
 
 /** Does the compiler support C++11? */
 #if (__cplusplus>199711L)
@@ -61,8 +61,8 @@
 	#define MRPT_MSG_PRAGMA(_msg)
 #endif
 
-#define MRPT_WARNING(x) MRPT_MSG_PRAGMA("Warning: " #x)
-#define MRPT_TODO(x)	MRPT_MSG_PRAGMA("TODO: " #x)
+#define MRPT_WARNING(x) MRPT_MSG_PRAGMA("Warning: " x)
+#define MRPT_TODO(x)	MRPT_MSG_PRAGMA("TODO: " x)
 
 // Define a decl. modifier for printf-like format checks at compile time:
 #ifdef __GNUC__
@@ -98,23 +98,8 @@
 		#define	__CURRENT_FUNCTION_NAME__	__FUNC__
 #elif defined(_MSC_VER) && (_MSC_VER>=1300)
 		#define	__CURRENT_FUNCTION_NAME__	__FUNCTION__
-#elif defined(_MSC_VER) && (_MSC_VER<1300)
-		// Visual C++ 6 HAS NOT A __FUNCTION__ equivalent.
-#define	__CURRENT_FUNCTION_NAME__	::system::extractFileName(__FILE__).c_str()
 #else
 		#define	__CURRENT_FUNCTION_NAME__	__PRETTY_FUNCTION__
-#endif
-
-
-/** \def MRPT_DEBUG_BREAKPOINT(_msg)
-  *  Only if compiled in debug (_DEBUG defined), calls mrpt::system::breakpoint() with the given message.
-  *  All MRPT exceptions use this macro, so mrpt::system::breakpoint() is the ideal point to set a breakpoint
-  *  and catch exception before they're actually raised.
-  */
-#ifdef _DEBUG
-#	define MRPT_DEBUG_BREAKPOINT(_msg)  { mrpt::system::breakpoint(std::string(_msg)); }
-#else
-#	define MRPT_DEBUG_BREAKPOINT(_msg)  { }
 #endif
 
 /** \def THROW_EXCEPTION(msg)
@@ -128,8 +113,6 @@
 		auxCompStr << "\n\n =============== MRPT EXCEPTION =============\n";\
 		auxCompStr << __CURRENT_FUNCTION_NAME__ << ", line " << __LINE__ << ":\n";\
 		auxCompStr << msg << std::endl; \
-		auxCompStr << mrpt::system::stack_trace(); \
-		MRPT_DEBUG_BREAKPOINT(msg) \
 		throw std::logic_error( auxCompStr.str() );\
 	}\
 
@@ -143,7 +126,6 @@
 		auxCompStr << "\n\n =============== MRPT EXCEPTION =============\n";\
 		auxCompStr << __CURRENT_FUNCTION_NAME__ << ", line " << __LINE__ << ":\n";\
 		auxCompStr << mrpt::format(msg,param1)<< std::endl; \
-		auxCompStr << mrpt::system::stack_trace(); \
 		throw std::logic_error( auxCompStr.str() );\
 	}\
 
@@ -158,7 +140,6 @@
 		auxCompStr << "\n\n =============== MRPT EXCEPTION =============\n";\
 		auxCompStr << __CURRENT_FUNCTION_NAME__ << ", line " << __LINE__ << ":\n";\
 		auxCompStr << msg << std::endl; \
-		auxCompStr << mrpt::system::stack_trace(); \
 		throw exceptionClass( auxCompStr.str() );\
 	}\
 
@@ -172,7 +153,6 @@
 		auxCompStr << "\n\n =============== MRPT EXCEPTION =============\n";\
 		auxCompStr << __CURRENT_FUNCTION_NAME__ << ", line " << __LINE__ << ":\n";\
 		auxCompStr << mrpt::format(msg,param1)<< std::endl; \
-		auxCompStr << mrpt::system::stack_trace(); \
 		throw exceptionClass( auxCompStr.str() );\
 	}\
 
@@ -187,7 +167,6 @@
 		{ \
 			str+= __CURRENT_FUNCTION_NAME__;\
 			str+= mrpt::format(", line %i:\n", __LINE__ );\
-			if (str.size()>3000) { std::cerr << "TOO MANY STACKED EXCEPTIONS!: " << std::endl << str << std::endl; abort(); } \
 			throw std::logic_error( str );\
 		} \
 		else throw std::logic_error( e.what() );\
@@ -419,5 +398,12 @@
 #else
 #define MRPT_FORCE_INLINE inline
 #endif
+
+
+namespace mrpt
+{
+	// Redeclared here for convenience:
+	std::string BASE_IMPEXP format(const char *fmt, ...) MRPT_printf_format_check(1,2);
+}
 
 #endif

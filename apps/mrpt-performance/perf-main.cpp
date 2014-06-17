@@ -13,15 +13,15 @@
   ---------------------------------------------------------------*/
 
 #include <mrpt/version.h>
-#include <mrpt/slam.h>
-#include <mrpt/base.h>
-
 #include <mrpt/otherlibs/tclap/CmdLine.h>
+#include <mrpt/utils/CMemoryStream.h>
+#include <mrpt/utils/CFileOutputStream.h>
+#include <mrpt/utils/CFileInputStream.h>
+#include <mrpt/utils/stl_serialization.h>
 
 #include "common.h"
 
 using namespace mrpt;
-using namespace mrpt::slam;
 using namespace mrpt::system;
 using namespace mrpt::math;
 using namespace mrpt::utils;
@@ -236,6 +236,8 @@ int main(int argc, char **argv)
 #		else
 			const char* compiler_name = "MSVC";
 #		endif
+#elif defined(__clang__)
+			const char* compiler_name = "CLANG";
 #elif defined(__GNUC__)
 			const char* compiler_name = "GCC";
 #else

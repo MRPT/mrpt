@@ -11,6 +11,7 @@
 
 #include <mrpt/hwdrivers/C2DRangeFinderAbstract.h>
 #include <mrpt/hwdrivers/CSerialPort.h>
+#include <mrpt/math/lightweight_geom_data.h>
 
 namespace mrpt
 {
@@ -35,7 +36,7 @@ namespace mrpt
 		  *   mm_mode      = 1/0   // 1: millimeter mode, 0:centimeter mode (Default=0)
 		  *   FOV          = 180   // Field of view: 100 or 180 degrees (Default=180)
 		  *   resolution   =  50   // Scanning resolution, in units of 1/100 degree. Valid values: 25,50,100 (Default=50)
-		  *
+		  *   //skip_laser_config  = true // (Default:false) If true, doesn't send the initialization commands to the laser and go straight to capturing
 		  *
 		  *   pose_x=0.21	// Laser range scaner 3D position in the robot (meters)
 		  *   pose_y=0
@@ -58,7 +59,7 @@ namespace mrpt
 			int		m_scans_res; //!< 1/100th of deg: 100, 50 or 25
 
 			/** The sensor 6D pose: */
-			poses::TPose3D		m_sensorPose;
+			mrpt::math::TPose3D		m_sensorPose;
 
 			static int			CRC16_GEN_POL;
 
@@ -85,6 +86,7 @@ namespace mrpt
 			int             m_com_baudRate; //!< Baudrate: 9600, 38400, 500000
 			unsigned int    m_nTries_connect; //!< Default = 1
 			unsigned int    m_nTries_current;
+            bool            m_skip_laser_config; //!< If true, doesn't send the initialization commands to the laser and go straight to capturing
 
 		protected:
 			/** See the class documentation at the top for expected parameters */

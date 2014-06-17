@@ -22,7 +22,14 @@
 #include "xRawLogViewerMain.h"
 // General global variables:
 
-#include <mrpt/slam.h>
+#include <mrpt/utils/CFileGZOutputStream.h>
+#include <mrpt/utils/CFileGZInputStream.h>
+#include <mrpt/utils/CStream.h>
+#include <mrpt/slam/CObservationImage.h>
+#include <mrpt/slam/CActionCollection.h>
+#include <mrpt/slam/CSensoryFrame.h>
+#include <mrpt/system/filesystem.h>
+#include <mrpt/system/os.h>
 
 using namespace mrpt;
 using namespace mrpt::slam;
@@ -42,8 +49,8 @@ TPose3D  sensorPoseToSet,sensorPoseToRead;
 bool     changeOnlyXYZ=false;
 
 bool	 camReadIsOk;
-CMatrixDouble33 	camIntrinsic;
-vector_double 		camDistortion;
+CMatrixDouble33     camIntrinsic;
+std::vector<double> camDistortion;
 float	 camFocalLen;
 
 

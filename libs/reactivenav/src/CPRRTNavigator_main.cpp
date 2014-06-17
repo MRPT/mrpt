@@ -7,12 +7,18 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/reactivenav.h>  // Precomp header
+#include "reactivenav-precomp.h" // Precomp header
+
+#include <mrpt/utils/CConfigFileBase.h> // MRPT_LOAD*
+#include <mrpt/math/CMatrixTemplateNumeric.h>
+#include <mrpt/reactivenav/CPRRTNavigator.h>
+#include <mrpt/slam/CPointsMap.h>
 
 using namespace mrpt::reactivenav;
 using namespace mrpt::utils;
 using namespace mrpt::synch;
 using namespace mrpt::system;
+using namespace mrpt::math;
 using namespace std;
 
 
@@ -73,7 +79,7 @@ bool CPRRTNavigator::initialize()
 		// Initialize PTG tables:
 		// ==========================
 		// Clear previous contents:
-		for (TListPTGs::iterator i = m_PTGs.begin();i!=m_PTGs.end();i++) delete *i;
+		for (TListPTGs::iterator i = m_PTGs.begin();i!=m_PTGs.end();++i) delete *i;
 		m_PTGs.clear();
 
         TParameters<double> p;

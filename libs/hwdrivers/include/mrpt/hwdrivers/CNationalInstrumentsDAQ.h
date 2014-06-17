@@ -15,11 +15,10 @@
 #include <mrpt/hwdrivers/CGenericSensor.h>
 #include <mrpt/synch/CPipe.h>
 #include <mrpt/system/threads.h>
+#include <list>
 
 namespace mrpt
 {
-	namespace slam { class CObservationRawDAQ; }
-
 	namespace hwdrivers
 	{
 		/** An interface to read from data acquisition boards compatible with National Instruments "DAQmx Base" or "DAQmx".
@@ -79,12 +78,10 @@ namespace mrpt
 		* task0.ao.maxVal          =  10.0    // Volts
 		* 
 		* ; Digital input channel params.
-		* task0.di.lines           = Dev1/port2, Dev1/port0/line0:4
-		* task0.di.linesCount      = 12  // *IMPORTANT* This must be the total number of lines
+		* task0.di.line           = Dev1/port1/line0
 		* 
 		* ; Digital input channel params.
-		* task0.do.lines           = Dev1/port0/line6:7, Dev1/port1
-		* task0.do.linesCount      = 10  // *IMPORTANT* This must be the total number of lines
+		* task0.do.line           = Dev1/port1/line2
 		* 
 		* ; Counter: period of a digital signal
 		* task0.ci_period.counter  = Dev1/ctr0
@@ -185,6 +182,18 @@ namespace mrpt
 				std::vector<mrpt::slam::CObservationRawDAQPtr> &outObservations,
 				bool & hardwareError );
 
+			/** Set voltage outputs to all the outputs in an AOUT task 
+			  * For the meaning of parameters, refere to NI DAQmx docs for DAQmxBaseWriteAnalogF64()
+			  * \note The number of samples in \a volt_values must match the number of channels in the task when it was initiated.
+			  */
+			void writeAnalogOutputTask(size_t task_index, size_t nSamplesPerChannel, const double * volt_values, double timeout, bool groupedByChannel);
+
+			/** Changes the boolean state of one digital output line.
+			  * For the meaning of parameters, refere to NI DAQmx docs for DAQmxBaseWriteAnalogF64()
+			  * \note The number of samples in \a volt_values must match the number of channels in the task when it was initiated.
+			  */
+			void writeDigitalOutputTask(size_t task_index, bool line_value, double timeout);
+
 			/** Returns true if initialize() was called and at least one task is running. */
 			bool checkDAQIsWorking() const;
 
@@ -229,19 +238,13 @@ namespace mrpt
 
 				struct HWDRIVERS_IMPEXP desc_di_t
 				{
-					desc_di_t(): linesCount(0) {}
-
-					std::string lines;
-					unsigned int linesCount; //!< *IMPORTANT* This must be the total number of lines listed in "physicalChannel" (e.g. 1 for "Dev1/ao0")
+					std::string line;  //!< The digital line (for example "Dev1/port0/line1")
 				} 
 				di; //!< Digital inputs (di)
 
 				struct HWDRIVERS_IMPEXP desc_do_t
 				{
-					desc_do_t(): linesCount(0) {}
-
-					std::string lines;
-					unsigned int linesCount; //!< *IMPORTANT* This must be the total number of lines listed in "physicalChannel" (e.g. 1 for "Dev1/ao0")
+					std::string line;   //!< The digital line (for example "Dev1/port0/line1")
 				} 
 				douts; //!< Digital outs (do)
 

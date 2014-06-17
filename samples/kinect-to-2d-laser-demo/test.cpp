@@ -16,10 +16,17 @@
              2D planar scan.
 */
 
-#include <mrpt/hwdrivers.h>
-#include <mrpt/gui.h>
-#include <mrpt/maps.h>
+#include <mrpt/hwdrivers/CKinect.h>
+#include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/system/filesystem.h>
+#include <mrpt/utils/CTicTac.h>
+#include <mrpt/utils/CConfigFile.h>
+#include <mrpt/synch/CThreadSafeVariable.h>
+#include <mrpt/opengl/CPointCloudColoured.h>
+#include <mrpt/opengl/CPlanarLaserScan.h>
+#include <mrpt/opengl/CFrustum.h>
+#include <mrpt/opengl/CGridPlaneXY.h>
+#include <mrpt/opengl/stock_objects.h>
 
 using namespace mrpt;
 using namespace mrpt::hwdrivers;

@@ -9,6 +9,10 @@
 #ifndef cpointsmap_crtp_common_H
 #define cpointsmap_crtp_common_H
 
+#include <mrpt/utils/round.h>
+#include <mrpt/slam/CObservation3DRangeScan.h>
+#include <mrpt/slam/CObservation2DRangeScan.h>
+
 namespace mrpt
 {
 namespace slam
@@ -149,12 +153,12 @@ namespace detail
 					_mm_store_ps(ptr_out_y, _mm_add_ps(m13_4val, _mm_add_ps( _mm_mul_ps(xs,m10_4val), _mm_mul_ps(ys,m11_4val) ) ) );
 					_mm_store_ps(ptr_out_z, _mm_add_ps(m23_4val, _mm_add_ps( _mm_mul_ps(xs,m20_4val), _mm_mul_ps(ys,m21_4val) ) ) );
 				}
-
-		#else
+		#else  // MRPT_HAS_SSE2
 				// The "+3" is to assure the buffer has room for the SSE2 method which works with 4-tuples of floats.
 				Eigen::Array<float,Eigen::Dynamic,1>  scan_x(sizeRangeScan+3), scan_y(sizeRangeScan+3);
 
-				mrpt::vector_float scan_vals( rangeScan.scan ); // Convert from the std::vector
+				// Convert from the std::vector format:
+				const Eigen::Map<Eigen::Matrix<float,Eigen::Dynamic,1> > scan_vals( const_cast<float*>(&rangeScan.scan[0]),rangeScan.scan.size(),1 ); 
 
 				// Vectorized (optimized) scalar multiplications:
 				scan_x = scan_vals.array() * sincos_vals.ccos.array();
@@ -165,7 +169,7 @@ namespace detail
 				scan_gx = m00*scan_x+m01*scan_y+m03;
 				scan_gy = m10*scan_x+m11*scan_y+m13;
 				scan_gz = m20*scan_x+m21*scan_y+m23;
-		#endif
+		#endif // MRPT_HAS_SSE2
 			}
 
 
@@ -215,7 +219,7 @@ namespace detail
 								d<obj.insertionOptions.maxDistForInterpolatePoints &&
 								fabs(changeInDirection)<DEG2RAD(5) )
 							{
-								int nInterpol = round(d / (2*sqrt(minDistSqrBetweenLaserPoints)));
+								int nInterpol = mrpt::utils::round(d / (2*sqrt(minDistSqrBetweenLaserPoints)));
 
 								for (int q=1;q<nInterpol;q++)
 								{
@@ -328,7 +332,7 @@ namespace detail
 			float		m22 = lric.HM.get_unsafe(2,2);
 			float		m23 = lric.HM.get_unsafe(2,3);
 
-			float		lx_1,ly_1,lz_1,lx,ly,lz;		// Punto anterior y actual:
+			float		lx_1,ly_1,lz_1,lx=0,ly=0,lz=0;		// Punto anterior y actual:
 
 			// Initial last point:
 			lx_1 = -100; ly_1 = -100; lz_1 = -100;
@@ -399,11 +403,14 @@ namespace detail
 			// The last point
 			if (lastPointWasValid && !lastPointWasInserted)
 			{
-				obj.x.push_back( lx );
-				obj.y.push_back( ly );
-				obj.z.push_back( lz );
-				// Allow derived classes to add any other information to that point:
-				pointmap_traits<Derived>::internal_loadFromRangeScan3D_postPushBack(obj,lric);
+				if (lx!=0 || ly!=0 || lz!=0) 
+				{
+					obj.x.push_back( lx );
+					obj.y.push_back( ly );
+					obj.z.push_back( lz );
+					// Allow derived classes to add any other information to that point:
+					pointmap_traits<Derived>::internal_loadFromRangeScan3D_postPushBack(obj,lric);
+				}
 			}
 		}
 

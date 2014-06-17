@@ -141,7 +141,7 @@ void CAboutBox::OnInit(wxInitDialogEvent& event)
 		cout << "  Camera calibration\n";
 		cout << "--------------------------------\n";
 		cout << "Jose Luis Blanco (C) 2005-2012\n";
-		cout << "For bug reports or to collaborate: <jlblanco@ctima.uma.es>\n";
+		cout << "For bug reports or to collaborate: <joseluisblancoc@gmail.com>\n";
 		cout << "http://www.isa.uma.es/jlblanco\n\n";
 
 		cout << "Program version:        " << CAMERA_CALIB_GUI_VERSION << endl;

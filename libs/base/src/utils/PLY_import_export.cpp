@@ -45,14 +45,16 @@ WARRANTY OF MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE.
 
 */
 
-#include <mrpt/base.h>  // Precompiled headers
+#include "base-precomp.h"  // Precompiled headers
 
 #include <mrpt/utils/PLY_import_export.h>
 #include <mrpt/system/string_utils.h>
+#include <stdio.h>
 
 using namespace std;
 using namespace mrpt;
 using namespace mrpt::utils;
+using namespace mrpt::math;
 
 
 #define PLY_ASCII      1        /* ascii PLY file */

@@ -10,15 +10,12 @@
 #define  mrpt_math_slerp_H
 
 #include <mrpt/math/CQuaternion.h>
+#include <mrpt/poses/poses_frwds.h>
 
 namespace mrpt
 {
-	namespace poses  { class CPose3D; class CPose3DQuat; }
-
 	namespace math
 	{
-		using namespace mrpt::poses;
-
 		/** \addtogroup geometry_grp
 		  *  @{ */
 
@@ -59,7 +56,7 @@ namespace mrpt
 			}
 			// Calculate temporary values.
 			const double halfTheta = acos(cosHalfTheta);
-			const double sinHalfTheta = std::sqrt(1.0 - square(cosHalfTheta));
+			const double sinHalfTheta = std::sqrt(1.0 - mrpt::utils::square(cosHalfTheta));
 			// if theta = 180 degrees then result is not fully defined
 			// we could rotate around any axis normal to qa or qb
 			if (std::abs(sinHalfTheta) < 0.001)
@@ -84,17 +81,17 @@ namespace mrpt
 		  * \exception std::exception Only in Debug, if t is not in the valid range.
 		  */
 		void BASE_IMPEXP slerp(
-			const CPose3D  & q0,
-			const CPose3D  & q1,
+			const mrpt::poses::CPose3D  & q0,
+			const mrpt::poses::CPose3D  & q1,
 			const double     t,
-			CPose3D        & p);
+			mrpt::poses::CPose3D        & p);
 
 		//! \overload
 		void BASE_IMPEXP slerp(
-			const CPose3DQuat & q0,
-			const CPose3DQuat & q1,
+			const mrpt::poses::CPose3DQuat & q0,
+			const mrpt::poses::CPose3DQuat & q1,
 			const double        t,
-			CPose3DQuat       & p);
+			mrpt::poses::CPose3DQuat       & p);
 
 		/** @} */
 

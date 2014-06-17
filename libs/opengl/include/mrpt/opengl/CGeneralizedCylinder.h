@@ -45,12 +45,12 @@ namespace opengl	{
 			TPoint3D points[4];
 			/**
 			  * Normal vector.
-			  */ 
+			  */
 			double normal[3];
 			/**
 			  * Given a polygon with 4 already positions allocated, this method fills it with the quadrilateral points.
 			  * \sa mrpt::math::TPolygon3D
-			  */ 
+			  */
 			inline void getAsPolygonUnsafe(mrpt::math::TPolygon3D &vec) const	{
 				vec[0]=points[0];
 				vec[1]=points[1];
@@ -59,7 +59,7 @@ namespace opengl	{
 			}
 			/**
 			  * Constructor from 4 points.
-			  */ 
+			  */
 			TQuadrilateral(const TPoint3D &p1,const TPoint3D &p2,const TPoint3D &p3,const TPoint3D &p4)	{
 				points[0]=p1;
 				points[1]=p2;
@@ -69,18 +69,18 @@ namespace opengl	{
 			}
 			/**
 			  * Construction from any array of four compatible objects.
-			  */ 
+			  */
 			template<class T> TQuadrilateral(const T (&p)[4])	{
 				for (int i=0;i<4;i++) points[i]=p[i];
 				calculateNormal();
 			}
 			/**
 			  * Empty constructor. Initializes to garbage.
-			  */ 
+			  */
 			TQuadrilateral()	{}
 			/**
 			  * Destructor.
-			  */ 
+			  */
 			~TQuadrilateral()	{}
 		};
 	protected:
@@ -185,7 +185,7 @@ namespace opengl	{
 		/**
 		  * Set cylinder's profile.
 		  */
-		inline void setGeneratrix(const std::vector<TPoint3D> g)	{
+		inline void setGeneratrix(const std::vector<TPoint3D> &g)	{
 			generatrix=g;
 			meshUpToDate=false;
 			CRenderizableDisplayList::notifyChange();

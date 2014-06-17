@@ -9,6 +9,13 @@
 #ifndef opengl_graph_tools_impl_H
 #define opengl_graph_tools_impl_H
 
+#include <mrpt/opengl/CGridPlaneXY.h>
+#include <mrpt/opengl/CPointCloud.h>
+#include <mrpt/opengl/CSetOfObjects.h>
+#include <mrpt/opengl/CSimpleLine.h>
+#include <mrpt/opengl/CSetOfLines.h>
+#include <mrpt/opengl/stock_objects.h>
+
 namespace mrpt
 {
 	namespace opengl
@@ -21,6 +28,11 @@ namespace mrpt
 				const mrpt::utils::TParametersDouble &extra_params)
 			{
 				MRPT_TRY_START
+
+				using mrpt::poses::CPose3D;
+				using mrpt::math::TPose3D;
+				using mrpt::utils::keep_min;
+				using mrpt::utils::keep_max;
 
 				// Is a 2D or 3D graph network?
 				typedef typename GRAPH_T::constraint_t constraint_t;
@@ -107,7 +119,7 @@ namespace mrpt
 					}
 				} // end draw node corners
 
-				if (show_edge_rel_poses) 
+				if (show_edge_rel_poses)
 				{
 					const TColor col8bit(edge_rel_poses_color & 0xffffff, edge_rel_poses_color >> 24);
 

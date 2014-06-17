@@ -7,10 +7,11 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/base.h>  // Precompiled headers
+#include "base-precomp.h"  // Precompiled headers
 
 
 #include <mrpt/poses/CPose2D.h>
+#include <mrpt/poses/CPose3D.h>
 #include <mrpt/poses/CRobot2DPoseEstimator.h>
 
 using namespace mrpt;
@@ -229,6 +230,24 @@ void CRobot2DPoseEstimator::extrapolateRobotPose(
 	}
 }
 
+bool CRobot2DPoseEstimator::getCurrentEstimate( mrpt::poses::CPose2D &pose, float &v, float &w, mrpt::system::TTimeStamp tim_query) const
+{
+	mrpt::math::TPose2D  p;
+	bool ret = getCurrentEstimate(p,v,w,tim_query);
+	if (ret)
+		pose = CPose2D(p);
+	return ret;
+}
 
-
-
+bool CRobot2DPoseEstimator::getLatestRobotPose(CPose2D &pose) const
+{
+	mrpt::math::TPose2D p;
+	bool v = getLatestRobotPose(p);
+	if (v)
+	{
+		pose.x(p.x);
+		pose.y(p.y);
+		pose.phi(p.phi);
+	}
+	return v;
+}

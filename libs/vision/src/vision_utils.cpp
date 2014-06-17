@@ -7,7 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/vision.h>  // Precompiled headers
+#include "vision-precomp.h"   // Precompiled headers
 
 
 #include <mrpt/vision/utils.h>
@@ -44,9 +44,9 @@ using namespace std;
 #endif
 
 const int FEAT_FREE = -1;
-const int NOT_ASIG = 0;
-const int ASG_FEAT = 1;
-const int AMB_FEAT = 2;
+//const int NOT_ASIG = 0;
+//const int ASG_FEAT = 1;
+//const int AMB_FEAT = 2;
 
 /*-------------------------------------------------------------
 					openCV_cross_correlation
@@ -322,8 +322,8 @@ void  vision::rowChecking(
 -------------------------------------------------------------*/
 void vision::getDispersion(
                     const CFeatureList      & list,
-                    vector_float            & std,
-                    vector_float            & mean )
+                    CVectorFloat            & std,
+                    CVectorFloat            & mean )
 {
 	std.assign(2,0);
 	mean.assign(2,0);
@@ -619,6 +619,26 @@ size_t vision::matchFeatures(
 					break; // end case featSURF
 				} // end mmDescriptorSURF
 
+				case TMatchingOptions::mmDescriptorORB:
+				{
+					// Ensure that both features have SURF descriptors
+					ASSERT_((*itList1)->descriptors.hasDescriptorORB() && (*itList2)->descriptors.hasDescriptorORB() );
+					distDesc = (*itList1)->descriptorORBDistanceTo( *(*itList2) );
+					
+					// Search for the two minimum values
+					if( distDesc < minDist1 )
+					{
+						minDist2 = minDist1;
+						minDist1 = distDesc;
+						minLeftIdx  = lFeat;
+						minRightIdx = rFeat;
+					}
+					else if ( distDesc < minDist2 )
+						minDist2 = distDesc;
+
+					break;
+				} // end mmDescriptorORB
+
 				case TMatchingOptions::mmSAD:
 				{
 					// Ensure that both features have patches
@@ -702,6 +722,11 @@ size_t vision::matchFeatures(
 				cond1 = minSAD1 < options.maxSAD_TH;
 				cond2 = (minSAD1/minSAD2) < options.SAD_RATIO;
 				minVal = minSAD1;
+				break;
+			case TMatchingOptions::mmDescriptorORB:
+				cond1 = minDist1 < options.maxORB_dist;
+				cond2 = true;
+				minVal = minDist1;
 				break;
 			default:
 				THROW_EXCEPTION("Invalid value of 'matching_method'");
@@ -893,6 +918,30 @@ void  vision::addFeaturesToImage(
 		outImg.rectangle( (*it)->x-5, (*it)->y-5, (*it)->x+5, (*it)->y+5, TColor(255,0,0) );
 }
 
+/*-------------------------------------------------------------
+					projectMatchedFeatures
+-------------------------------------------------------------*/
+void vision::projectMatchedFeatures(
+					const CMatchedFeatureList	& matches,
+					const mrpt::utils::TStereoCamera			& stereo_camera,
+					vector<TPoint3D>			& out_points )
+{
+	out_points.clear();
+	out_points.reserve( matches.size() );
+	for( CMatchedFeatureList::const_iterator it = matches.begin(); it != matches.end(); ++it )
+	{
+		const double disp = it->first->x - it->second->x;
+		if( disp < 1 )
+			continue;
+
+		const double b_d = stereo_camera.rightCameraPose.x()/disp;
+		out_points.push_back( 
+			TPoint3D( (it->first->x - stereo_camera.leftCamera.cx())*b_d,
+				      (it->first->y - stereo_camera.leftCamera.cy())*b_d,
+					  stereo_camera.leftCamera.fx()*b_d ) 
+					  );
+	} // end-for
+}
 /*-------------------------------------------------------------
 					projectMatchedFeatures
 -------------------------------------------------------------*/
@@ -1113,14 +1162,14 @@ void  vision::projectMatchedFeatures(
 					Pa.chol(L); // math::chol(Pa,L);
 
 					vector<TPoint3D>	B;				// B group
-					poses::TPoint3D			meanB;			// Mean value of the B group
+					TPoint3D			meanB;			// Mean value of the B group
 					CMatrix					Pb;				// Covariance of the B group
 
 					B.resize( 2*Na + 1 );	// Set of output values
 					Pb.fill(0);				// Reset the output covariance
 
-					vector_float			vAux, myPoint;	// Auxiliar vectors
-					vector_float			meanA;			// Mean value of the A group
+					CVectorFloat			vAux, myPoint;	// Auxiliar vectors
+					CVectorFloat			meanA;			// Mean value of the A group
 
 					vAux.resize(3);			// Set the variables size
 					meanA.resize(3);
@@ -1182,7 +1231,7 @@ void  vision::projectMatchedFeatures(
 						v(1,0) = B[i].y - meanB.y;
 						v(2,0) = B[i].z - meanB.z;
 
-						Pb = Pb + weight*(v*~v);
+						Pb = Pb + weight*(v*v.transpose());
 					} // end for 'i'
 
 					// Store it in the landmark
@@ -1222,14 +1271,14 @@ void  vision::projectMatchedFeatures(
 					Pa.chol(L); //math::chol(Pa,L);
 
 					vector<TPoint3D>	B;				// B group
-					poses::TPoint3D		meanB;			// Mean value of the B group
+					TPoint3D		meanB;			// Mean value of the B group
 					CMatrix				Pb;				// Covariance of the B group
 
 					B.resize( 2*Na + 1 );	// Set of output values
 					Pb.fill(0);				// Reset the output covariance
 
-					vector_float		vAux, myPoint;	// Auxiliar vectors
-					vector_float		meanA;			// Mean value of the A group
+					CVectorFloat		vAux, myPoint;	// Auxiliar vectors
+					CVectorFloat		meanA;			// Mean value of the A group
 
 					vAux.resize(3);			// Set the variables size
 					meanA.resize(3);
@@ -1293,7 +1342,7 @@ void  vision::projectMatchedFeatures(
 						v(1,0) = B[i].y - meanB.y;
 						v(2,0) = B[i].z - meanB.z;
 
-						Pb = Pb + weight*(v*~v);
+						Pb = Pb + weight*(v*v.transpose());
 					} // end for 'i'
 
 					// Store it in the landmark
@@ -1419,14 +1468,14 @@ void  vision::projectMatchedFeatures(
 					Pa.chol(L); // math::chol(Pa,L);
 
 					vector<TPoint3D>	B;				// B group
-					poses::TPoint3D			meanB;			// Mean value of the B group
+					TPoint3D			meanB;			// Mean value of the B group
 					CMatrix					Pb;				// Covariance of the B group
 
 					B.resize( 2*Na + 1 );	// Set of output values
 					Pb.fill(0);				// Reset the output covariance
 
-					vector_float			vAux, myPoint;	// Auxiliar vectors
-					vector_float			meanA;			// Mean value of the A group
+					CVectorFloat			vAux, myPoint;	// Auxiliar vectors
+					CVectorFloat			meanA;			// Mean value of the A group
 
 					vAux.resize(3);			// Set the variables size
 					meanA.resize(3);
@@ -1488,7 +1537,7 @@ void  vision::projectMatchedFeatures(
 						v(1,0) = B[i].y - meanB.y;
 						v(2,0) = B[i].z - meanB.z;
 
-						Pb = Pb + weight*(v*~v);
+						Pb = Pb + weight*(v*v.transpose());
 					} // end for 'i'
 
 					// Store it in the landmark
@@ -1528,14 +1577,14 @@ void  vision::projectMatchedFeatures(
 					Pa.chol(L); //math::chol(Pa,L);
 
 					vector<TPoint3D>	B;				// B group
-					poses::TPoint3D		meanB;			// Mean value of the B group
+					TPoint3D		meanB;			// Mean value of the B group
 					CMatrix				Pb;				// Covariance of the B group
 
 					B.resize( 2*Na + 1 );	// Set of output values
 					Pb.fill(0);				// Reset the output covariance
 
-					vector_float		vAux, myPoint;	// Auxiliar vectors
-					vector_float		meanA;			// Mean value of the A group
+					CVectorFloat		vAux, myPoint;	// Auxiliar vectors
+					CVectorFloat		meanA;			// Mean value of the A group
 
 					vAux.resize(3);			// Set the variables size
 					meanA.resize(3);
@@ -1599,7 +1648,7 @@ void  vision::projectMatchedFeatures(
 						v(1,0) = B[i].y - meanB.y;
 						v(2,0) = B[i].z - meanB.z;
 
-						Pb = Pb + weight*(v*~v);
+						Pb = Pb + weight*(v*v.transpose());
 					} // end for 'i'
 
 					// Store it in the landmark
@@ -2088,14 +2137,14 @@ void  TStereoSystemParams::loadFromConfigFile(
 			break;
 	} // end switch
 
-	vector_double k_vec(9);
-	iniFile.read_vector( section.c_str(), "k_vec", vector_double(), k_vec, false );
+	CVectorDouble k_vec(9);
+	iniFile.read_vector( section.c_str(), "k_vec", CVectorDouble(), k_vec, false );
 	for (unsigned int ii = 0; ii < 3; ++ii )
         for (unsigned int jj = 0; jj < 3; ++jj)
             K(ii,jj) = k_vec[ii*3+jj];
 
-	vector_double f_vec(9);
-	iniFile.read_vector( section.c_str(), "f_vec", vector_double(), f_vec, false );
+	CVectorDouble f_vec(9);
+	iniFile.read_vector( section.c_str(), "f_vec", CVectorDouble(), f_vec, false );
 	for (unsigned int ii = 0; ii < 3; ++ii )
         for (unsigned int jj = 0; jj < 3; ++jj)
             F(ii,jj) = f_vec[ii*3+jj];
@@ -2163,6 +2212,9 @@ TMatchingOptions::TMatchingOptions() :
 	parallelOpticalAxis ( true ),		// Whether or not take into account the epipolar restriction for finding correspondences
 	useXRestriction ( true ),			// Whether or not employ the x-coord restriction for finding correspondences (bumblebee camera, for example)
 	addMatches( false ),
+	useDisparityLimits( false ),
+
+	min_disp(1.0), max_disp(1e4),
 
 	matching_method ( mmCorrelation ),	// Matching method
 	epipolar_TH	( 1.5f ),				// Epipolar constraint (rows of pixels)
@@ -2216,6 +2268,9 @@ void  TMatchingOptions::loadFromConfigFile(
 	case 3:
 		matching_method = mmSAD;
 		break;
+	case 4:
+		matching_method = mmDescriptorORB;
+		break;
 	} // end switch
 
     useEpipolarRestriction  = iniFile.read_bool(section.c_str(), "useEpipolarRestriction", useEpipolarRestriction );
@@ -2223,7 +2278,11 @@ void  TMatchingOptions::loadFromConfigFile(
     parallelOpticalAxis     = iniFile.read_bool(section.c_str(), "parallelOpticalAxis", parallelOpticalAxis );
     useXRestriction         = iniFile.read_bool(section.c_str(), "useXRestriction", useXRestriction );
     addMatches              = iniFile.read_bool(section.c_str(), "addMatches", addMatches );
+	useDisparityLimits		= iniFile.read_bool(section.c_str(), "useDisparityLimits", useDisparityLimits );
 
+	min_disp		= iniFile.read_float(section.c_str(),"min_disp",min_disp);
+	max_disp		= iniFile.read_float(section.c_str(),"max_disp",max_disp);
+	
 	epipolar_TH		= iniFile.read_float(section.c_str(),"epipolar_TH",epipolar_TH);
 	maxEDD_TH		= iniFile.read_float(section.c_str(),"maxEDD_TH",maxEDD_TH);
 	EDD_RATIO		= iniFile.read_float(section.c_str(),"minDIF_TH",EDD_RATIO);
@@ -2234,7 +2293,7 @@ void  TMatchingOptions::loadFromConfigFile(
 	EDSD_RATIO		= iniFile.read_float(section.c_str(),"EDSD_RATIO",EDSD_RATIO);
 	maxSAD_TH		= iniFile.read_float(section.c_str(),"maxSAD_TH",maxSAD_TH);
 	SAD_RATIO		= iniFile.read_float(section.c_str(),"SAD_RATIO",SAD_RATIO);
-	SAD_RATIO		= iniFile.read_float(section.c_str(),"SAD_RATIO",SAD_RATIO);
+	maxORB_dist		= iniFile.read_float(section.c_str(),"maxORB_dist",maxORB_dist);
 
 	estimateDepth       = iniFile.read_bool(section.c_str(), "estimateDepth", estimateDepth );
 	maxDepthThreshold   = iniFile.read_float(section.c_str(), "maxDepthThreshold", maxDepthThreshold );
@@ -2275,6 +2334,10 @@ void  TMatchingOptions::dumpToTextStream(
         out.printf("· Max. Dif. SAD Threshold:      %f\n", maxSAD_TH);
         out.printf("· Ratio SAD Threshold:          %f\n", SAD_RATIO);
 		break;
+	case mmDescriptorORB:
+		out.printf("ORB\n");
+		out.printf("· Max. distance between desc:	%f\n",maxORB_dist);
+		break;
 	} // end switch
 	out.printf("Epipolar Thres:                 %.2f px\n", epipolar_TH);
 	out.printf("Using epipolar restriction?:    ");
@@ -2285,6 +2348,10 @@ void  TMatchingOptions::dumpToTextStream(
 	out.printf( parallelOpticalAxis ? "Yes\n" : "No\n" );
 	out.printf("Use X-coord restriction?:       ");
 	out.printf( useXRestriction ? "Yes\n" : "No\n" );
+	out.printf("Use disparity limits?:       ");
+	out.printf( useDisparityLimits ? "Yes\n" : "No\n" );
+	if( useDisparityLimits )
+		out.printf("· Min/max disp limits:          %.2f/%.2f px\n", min_disp, max_disp );
 	out.printf("Estimate depth?:                ");
 	out.printf( estimateDepth ? "Yes\n" : "No\n" );
 	if( estimateDepth )

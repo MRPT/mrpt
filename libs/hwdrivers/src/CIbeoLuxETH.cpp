@@ -8,7 +8,7 @@
    +---------------------------------------------------------------------------+ */
 
 
-#include <mrpt/hwdrivers.h> // Precompiled headers
+#include "hwdrivers-precomp.h"   // Precompiled headers
 
 #include <mrpt/hwdrivers/CIbeoLuxETH.h> // Precompiled headers
 

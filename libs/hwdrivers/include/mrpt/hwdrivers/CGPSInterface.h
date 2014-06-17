@@ -55,6 +55,7 @@ namespace mrpt
 		  *		-4/JUN/2008: Added virtual methods for device-specific initialization commands.
 		  *		-10/JUN/2008: Converted into CGenericSensor class (there are no inhirited classes anymore).
 		  *		-7/DEC/2012: Added public static method to parse NMEA strings.
+		  *		-17/JUN/2014: Added GGA feedback.
 		  *
 		  *  \note Verbose debug info will be dumped to cout if the environment variable "MRPT_HWDRIVERS_VERBOSE" is set to "1", or if you call CGenericSensor::enableVerbose(true)
 		  *
@@ -98,6 +99,11 @@ namespace mrpt
 			  * \return true if some new data field has been correctly parsed and inserted into out_obs
 			  */
 			static bool parse_NMEA(const std::string &cmd_line, mrpt::slam::CObservationGPS &out_obs, const bool verbose=false);
+
+			/** Gets the latest GGA command or an empty string if no newer GGA command was received since the last call to this method.
+			  * \param[in] reset If set to true, will empty the GGA cache so next calls will return an empty string if no new frame is received.
+			  */
+			std::string getLastGGA(bool reset=true);
 
 		protected:
 			/** Implements custom messages to be sent to the GPS unit just after connection and before normal use.
@@ -160,7 +166,7 @@ namespace mrpt
 			// MAR'11 -----------------------------------------
 			bool            m_useAIMMode;           //!< Use this mode for receive RTK corrections from a external source through the primary port
             // ------------------------------------------------
-			TTimeStamp      m_last_timestamp;
+			mrpt::system::TTimeStamp      m_last_timestamp;
 
 			// MAR'11 -----------------------------------------
 			bool            m_AIMConfigured;        //!< Indicates if the AIM has been properly set up.
@@ -185,6 +191,8 @@ namespace mrpt
 			mrpt::slam::CObservationGPS	            m_latestGPS_data;
 			mrpt::slam::CObservationGPS::TUTCTime   m_last_UTC_time;
 
+			std::string   m_last_GGA; //!< Used in getLastGGA()
+			
 			void JAVAD_sendMessage(const char*str, bool waitForAnswer = true); //!< Private auxiliary method. Raises exception on error.
 
 		}; // end class

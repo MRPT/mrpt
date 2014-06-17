@@ -7,7 +7,8 @@ Icon=2d-slam-demo
 Terminal=false
 X-MultipleArgs=false
 Type=Application
-Categories=Education;Science;Robotics;ArtificialIntelligence;
+Categories=Science;Robotics;ArtificialIntelligence;
 StartupNotify=true
 MimeType=
+Keywords=mrpt;SLAM;robotics;simulator;
 

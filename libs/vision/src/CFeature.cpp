@@ -7,7 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/vision.h>  // Precompiled headers
+#include "vision-precomp.h"   // Precompiled headers
 
 
 #include <mrpt/utils/CTextFileLinesParser.h>
@@ -15,9 +15,12 @@
 #include <mrpt/utils/CFileInputStream.h>
 #include <mrpt/utils/CStartUpClassesRegister.h>
 #include <mrpt/utils/CStdOutStream.h>
+#include <mrpt/utils/stl_serialization.h>
 #include <mrpt/vision/CFeature.h>
 #include <mrpt/vision/types.h>
-#include <mrpt/math/utils.h>
+#include <mrpt/utils/stl_serialization.h>
+#include <mrpt/math/data_utils.h>
+#include <mrpt/system/os.h>
 
 using namespace mrpt;
 using namespace mrpt::vision;
@@ -251,6 +254,7 @@ void CFeature::dumpToTextStream( mrpt::utils::CStream &out) const
 	    case 7: out.printf("FASTER-9\n"); break;
 	    case 8: out.printf("FASTER-10\n"); break;
 	    case 9: out.printf("FASTER-12\n"); break;
+		case 10:out.printf("ORB"); break;
 	}
 	out.printf("Status:                         ");
 	switch( track_status )
@@ -283,6 +287,9 @@ void CFeature::dumpToTextStream( mrpt::utils::CStream &out) const
 	descriptors.hasDescriptorPolarImg() ? out.printf("Yes\n") : out.printf("No\n");
 	out.printf("Has Log Polar descriptor?:      ");
 	descriptors.hasDescriptorLogPolarImg() ? out.printf("Yes\n") : out.printf("No\n");
+	out.printf("Has ORB descriptor?:			");
+	descriptors.hasDescriptorORB() ? out.printf("Yes\n") : out.printf("No\n");
+
 
 	out.printf("Has multiscale?:                ");
     if( !descriptors.hasDescriptorMultiSIFT() )
@@ -316,7 +323,7 @@ void CFeature::dumpToConsole() const
 void  CFeature::writeToStream(CStream &out,int *version) const
 {
 	if (version)
-		*version = 1;
+		*version = 2;
 	else
 	{
 		// The coordinates:
@@ -347,7 +354,8 @@ void  CFeature::writeToStream(CStream &out,int *version) const
 			<< descriptors.PolarImg
 			<< descriptors.LogPolarImg
 			<< descriptors.polarImgsNoRotation
-			<< descriptors.multiSIFTDescriptors;
+			<< descriptors.multiSIFTDescriptors
+			<< descriptors.ORB;
 	}
 }
 
@@ -392,6 +400,8 @@ void  CFeature::readFromStream(CStream &in,int version)
 				>> descriptors.polarImgsNoRotation;
             if( version > 0 )
                 in  >> descriptors.multiSIFTDescriptors;
+			if( version > 1 )
+				in 	>> descriptors.ORB;
 
 			type		    = (TFeatureType)aux_type;
 			track_status	= (TFeatureTrackStatus)aux_KLTS;
@@ -420,7 +430,8 @@ CFeature::TDescriptors::TDescriptors() :
 	SpinImg(), SpinImg_range_rows(0),
 	PolarImg(0,0),
 	LogPolarImg(0,0),
-	polarImgsNoRotation(false)
+	polarImgsNoRotation(false),
+	ORB()
 { }
 
 // Return false only for Blob detectors (SIFT, SURF)
@@ -472,6 +483,8 @@ float CFeature::descriptorDistanceTo(
 			descriptorToUse = descPolarImages;
 		else if (descriptors.hasDescriptorLogPolarImg())
 			descriptorToUse = descLogPolarImages;
+		else if (descriptors.hasDescriptorORB())
+			descriptorToUse = descORB;
 		else THROW_EXCEPTION("Feature has no descriptors and descriptorToUse=descAny")
 	}
 
@@ -493,6 +506,8 @@ float CFeature::descriptorDistanceTo(
 			float minAng;
 			return descriptorLogPolarImgDistanceTo(oFeature,minAng,normalize_distances);
 		}
+	case descORB:
+		return float(descriptorORBDistanceTo(oFeature));
 	default:
 		THROW_EXCEPTION_CUSTOM_MSG1("Unknown value for 'descriptorToUse'=%u",(unsigned)descriptorToUse);
 	}
@@ -593,11 +608,11 @@ float CFeature::internal_distanceBetweenPolarImages(
 //#define LM_CORR_METHOD_CORRELATION
 
 #if defined(LM_CORR_BIAS_MEAN) || defined(LM_CORR_METHOD_CORRELATION)
-	const float desc1_mean = desc1.sumAll() / static_cast<float>(width*height);
-	const float desc2_mean = desc2.sumAll() / static_cast<float>(width*height);
+	const float desc1_mean = desc1.sum() / static_cast<float>(width*height);
+	const float desc2_mean = desc2.sum() / static_cast<float>(width*height);
 #endif
 
-	vector_float distances(height,0);  // Distances for each shift
+	CVectorFloat distances(height,0);  // Distances for each shift
 
 	for (delta=0;delta<height;delta++)
 	{
@@ -737,19 +752,46 @@ float CFeature::descriptorLogPolarImgDistanceTo(
 } // end descriptorPolarImgDistanceTo
 
 // --------------------------------------------------
+//        descriptorORBDistanceTo
+// --------------------------------------------------
+uint8_t CFeature::descriptorORBDistanceTo( const CFeature &oFeature ) const
+{
+	ASSERT_( this->descriptors.hasDescriptorORB() && oFeature.descriptors.hasDescriptorORB() )
+	ASSERT_( this->descriptors.ORB.size() == oFeature.descriptors.ORB.size() )
+
+	const std::vector<uint8_t> & t_desc = this->descriptors.ORB;
+	const std::vector<uint8_t> & o_desc = oFeature.descriptors.ORB;
+
+	// Descriptors XOR + Hamming weight
+	uint8_t distance = 0;
+	for( uint8_t k = 0; k < t_desc.size(); ++k )
+	{
+		uint8_t x_or = t_desc[k] ^ o_desc[k];
+		uint8_t count;								// from : Wegner, Peter (1960), "A technique for counting ones in a binary computer", Communications of the ACM 3 (5): 322, doi:10.1145/367236.367286
+		for( count = 0; x_or; count++ )				// ...
+			x_or &= x_or-1;							// ...
+		distance += count;
+	}
+
+	return float(distance);
+} // end-descriptorORBDistanceTo
+
+// --------------------------------------------------
 //              saveToTextFile
 // --------------------------------------------------
 void CFeature::saveToTextFile( const std::string &filename, bool APPEND )
 {
 	MRPT_START
 //    "%% Dump of mrpt::vision::CFeatureList. Each line format is:\n"
-//    "%% ID TYPE X Y ORIENTATION SCALE TRACK_STATUS RESPONSE HAS_SIFT [SIFT] HAS_SURF [SURF]\n"
+//    "%% ID TYPE X Y ORIENTATION SCALE TRACK_STATUS RESPONSE HAS_SIFT [SIFT] HAS_SURF [SURF] HAS_MULTI [MULTI_i] HAS_ORB [ORB]"
 //    "%% \\---------------------- feature ------------------/ \\--------- descriptors -------/\n"
 //    "%% with:\n"
 //    "%%  TYPE  : The used detector: 0:KLT, 1: Harris, 2: BCD, 3: SIFT, 4: SURF, 5: Beacon, 6: FAST\n"
 //    "%%  HAS_* : 1 if a descriptor of that type is associated to the feature. \n"
 //    "%%  SIFT  : Present if HAS_SIFT=1: N DESC_0 ... DESC_N-1 \n"
 //    "%%  SURF  : Present if HAS_SURF=1: N DESC_0 ... DESC_N-1 \n"
+//	  "%%  MULTI : Present if HAS_MULTI=1: SCALE ORI N DESC_0 ... DESC_N-1"
+//	  "%%  ORB   : Present if HAS_ORB=1: VALUE
 //    "%%-------------------------------------------------------------------------------------------\n");
 	CFileOutputStream	f;
 
@@ -791,6 +833,11 @@ void CFeature::saveToTextFile( const std::string &filename, bool APPEND )
             }
         } // end-for
     } // end-if
+
+	f.printf("%2d ", int(this->descriptors.hasDescriptorORB() ? 1:0) );
+	if( this->descriptors.hasDescriptorORB() )
+		for( size_t k = 0; k < this->descriptors.ORB.size(); ++k )
+			f.printf("%d ", this->descriptors.ORB[k] );
 
     f.printf( "\n");
 	f.close();

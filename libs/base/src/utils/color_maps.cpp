@@ -7,11 +7,10 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/base.h>  // Precompiled headers
-
+#include "base-precomp.h"  // Precompiled headers
 
 #include <mrpt/utils/color_maps.h>
-#include <mrpt/math/utils.h>
+#include <mrpt/math/interp_fit.h>
 
 using namespace mrpt;
 using namespace mrpt::utils;
@@ -131,7 +130,7 @@ void  mrpt::utils::jet2rgb(
 	float	&b)
 {
 	static bool	jet_table_done = false;
-	static vector_float	jet_r,jet_g,jet_b;
+	static Eigen::VectorXf jet_r,jet_g,jet_b;
 
 
 	// Initialize tables

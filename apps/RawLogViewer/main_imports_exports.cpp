@@ -21,7 +21,24 @@
 
 
 // General global variables:
-#include <mrpt/slam.h>
+#include <mrpt/system/CDirectoryExplorer.h>
+#include <mrpt/system/filesystem.h>
+#include <mrpt/system/string_utils.h>
+#include <mrpt/system/os.h>
+#include <mrpt/math/data_utils.h>
+#include <mrpt/utils/CTextFileLinesParser.h>
+#include <mrpt/utils/CFileGZInputStream.h>
+#include <mrpt/utils/CFileGZOutputStream.h>
+#include <mrpt/slam/CObservation2DRangeScan.h>
+#include <mrpt/slam/CObservationImage.h>
+#include <mrpt/slam/CObservationOdometry.h>
+#include <mrpt/slam/CObservationGasSensors.h>
+#include <mrpt/slam/CObservationBearingRange.h>
+#include <mrpt/slam/CObservationIMU.h>
+#include <mrpt/slam/CSensoryFrame.h>
+#include <mrpt/slam/CActionCollection.h>
+#include <mrpt/slam/CObservationWirelessPower.h>
+#include <mrpt/slam/CObservationRFID.h>
 
 using namespace mrpt;
 using namespace mrpt::slam;
@@ -30,7 +47,6 @@ using namespace mrpt::system;
 using namespace mrpt::math;
 using namespace mrpt::gui;
 using namespace mrpt::utils;
-using namespace mrpt::vision;
 using namespace std;
 
 
@@ -1637,8 +1653,8 @@ Units are m and radian.
 	obs_odo.odometry = CPose2D(0,0,0);
 
 	// For stats on covariance transforms:
-	vector_double stats_stdRanges,stats_stdYaw;
-	vector_double stats_stdXs,stats_stdYs;
+	CVectorDouble stats_stdRanges,stats_stdYaw;
+	CVectorDouble stats_stdXs,stats_stdYs;
 
 
 	int32_t next_outlier_ID = 10000; // In DLR datasets no real landmark has such a high ID... use these numbers for outliers.
@@ -1647,7 +1663,7 @@ Units are m and radian.
 	while (fileParser.getNextLine(line))
 	{
 		std::vector<std::string> words;
-		mrpt::utils::tokenize(line," \t",words);
+		mrpt::system::tokenize(line," \t",words);
 		if (words.empty()) continue;
 
 		if (words[0]=="STEP")

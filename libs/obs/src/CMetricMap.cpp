@@ -7,20 +7,22 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/obs.h>   // Precompiled headers
+#include "obs-precomp.h"   // Precompiled headers
 
-
+#include <mrpt/utils/CStream.h>
 #include <mrpt/slam/CMetricMap.h>
 #include <mrpt/poses/CPosePDF.h>
+#include <mrpt/poses/CPoint3D.h>
+#include <mrpt/poses/CPose3D.h>
 #include <mrpt/slam/CSensoryFrame.h>
 #include <mrpt/slam/CSimpleMap.h>
 
 #include <mrpt/math/lightweight_geom_data.h>
-#include <mrpt/math/utils.h>
 
 using namespace mrpt::slam;
 using namespace mrpt::utils;
 using namespace mrpt::poses;
+using namespace mrpt::math;
 
 IMPLEMENTS_VIRTUAL_SERIALIZABLE(CMetricMap, CSerializable, mrpt::slam)
 
@@ -94,6 +96,11 @@ double CMetricMap::computeObservationsLikelihood(
 	return lik;
 }
 
+double CMetricMap::computeObservationLikelihood( const CObservation *obs, const CPose2D &takenFrom )
+{
+	return computeObservationLikelihood(obs,CPose3D(takenFrom));
+}
+
 /*---------------------------------------------------------------
 				canComputeObservationLikelihood
   ---------------------------------------------------------------*/
@@ -105,67 +112,29 @@ bool CMetricMap::canComputeObservationsLikelihood( const CSensoryFrame &sf )
 	return can;
 }
 
-
-// Deprecated wrapper:
-void CMetricMap::computeMatchingWith2D(
-	const CMetricMap						*otherMap,
-	const CPose2D							&otherMapPose,
-	float									maxDistForCorrespondence,
-	float									maxAngularDistForCorrespondence,
-	const CPose2D							&angularDistPivotPoint,
-	TMatchingPairList						&correspondences,
-	float									&correspondencesRatio,
-	float									*sumSqrDist,
-	bool									onlyKeepTheClosest,
-	bool									onlyUniqueRobust,
-	const size_t                            decimation_other_map_points,
-	const size_t                            offset_other_map_points ) const
+bool CMetricMap::insertObservation(
+	const CObservation *obs,
+	const CPose3D *robotPose)
 {
-	TMatchingExtraResults extraResults;
-	TMatchingParams params;
-	params.angularDistPivotPoint = TPoint3D(angularDistPivotPoint.x(),angularDistPivotPoint.y(),0);
-	params.decimation_other_map_points = decimation_other_map_points;
-	params.maxAngularDistForCorrespondence = maxAngularDistForCorrespondence;
-	params.maxDistForCorrespondence = maxDistForCorrespondence;
-	params.offset_other_map_points = offset_other_map_points;
-	params.onlyKeepTheClosest = onlyKeepTheClosest;
-	params.onlyUniqueRobust = onlyUniqueRobust;
-	
-	this->determineMatching2D(otherMap,otherMapPose,correspondences,params,extraResults);
-
-	correspondencesRatio = extraResults.correspondencesRatio;
-	if (sumSqrDist) *sumSqrDist = extraResults.sumSqrDist;
+	bool done = internal_insertObservation(obs,robotPose);
+	if (done)
+	{
+		OnPostSuccesfulInsertObs(obs);
+		publishEvent( mrptEventMetricMapInsert(this,obs,robotPose) );
+	}
+	return done;
 }
 
-
-// Deprecated wrapper:
-void CMetricMap::computeMatchingWith3D(
-	const CMetricMap						*otherMap,
-	const CPose3D							&otherMapPose,
-	float									maxDistForCorrespondence,
-	float									maxAngularDistForCorrespondence,
-	const CPoint3D							&angularDistPivotPoint,
-	TMatchingPairList						&correspondences,
-	float									&correspondencesRatio,
-	float									*sumSqrDist,
-	bool									onlyKeepTheClosest,
-	bool									onlyUniqueRobust,
-	const size_t                            decimation_other_map_points,
-	const size_t                            offset_other_map_points ) const
+bool CMetricMap::insertObservationPtr(
+	const CObservationPtr &obs,
+	const CPose3D *robotPose)
 {
-	TMatchingExtraResults extraResults;
-	TMatchingParams params;
-	params.angularDistPivotPoint = TPoint3D(angularDistPivotPoint.x(),angularDistPivotPoint.y(),angularDistPivotPoint.z());
-	params.decimation_other_map_points = decimation_other_map_points;
-	params.maxAngularDistForCorrespondence = maxAngularDistForCorrespondence;
-	params.maxDistForCorrespondence = maxDistForCorrespondence;
-	params.offset_other_map_points = offset_other_map_points;
-	params.onlyKeepTheClosest = onlyKeepTheClosest;
-	params.onlyUniqueRobust = onlyUniqueRobust;
-	
-	this->determineMatching3D(otherMap,otherMapPose,correspondences,params,extraResults);
-
-	correspondencesRatio = extraResults.correspondencesRatio;
-	if (sumSqrDist) *sumSqrDist = extraResults.sumSqrDist;
+	MRPT_START
+	if (!obs.present()) { THROW_EXCEPTION("Trying to pass a null pointer."); }
+	return insertObservation(obs.pointer(),robotPose);
+	MRPT_END
 }
 
+bool CMetricMap::canComputeObservationLikelihood( const CObservationPtr &obs ) {
+	return canComputeObservationLikelihood(obs.pointer());
+}

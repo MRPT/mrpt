@@ -54,7 +54,7 @@ typedef stlplus::smart_ptr<CvCBQuad>  CvCBQuadPtr;
 
 struct CvCBQuad
 {
-	CvCBQuad() : count(0),group_idx(0),edge_len(0),labeled(false)
+	CvCBQuad() : count(0),group_idx(0),edge_len(0),labeled(false),area(0.0), area_ratio(1.0)
 	{}
 
     int				count;							// Number of quad neihbors
@@ -63,6 +63,7 @@ struct CvCBQuad
     CvCBCornerPtr	corners[4];				//CvCBCorner *corners[4];				// Coordinates of quad corners
     CvCBQuadPtr		neighbors[4];		// Pointers of quad neighbors
 	bool labeled;						// Has this corner been labeled?
+	double          area, area_ratio; 
 };
 
 

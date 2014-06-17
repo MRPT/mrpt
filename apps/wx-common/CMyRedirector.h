@@ -15,6 +15,7 @@
 #include <wx/thread.h>
 #include <streambuf>
 #include <iostream>
+#include <cstdio>
 
 /** This auxiliary class redirects the output sent to a streambuf to a wxTextCtrl object.
   *  Uses code from http://www.devmaster.net/forums/showthread.php?t=7037

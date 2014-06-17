@@ -15,10 +15,7 @@
 
 using namespace mrpt::srba;
 using namespace mrpt::random;
-using namespace std;
-
-using namespace mrpt::srba;
-using namespace mrpt::random;
+using namespace mrpt::utils;
 using namespace std;
 
 // --------------------------------------------------------------------------------

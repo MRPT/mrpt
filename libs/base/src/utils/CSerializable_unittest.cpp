@@ -8,16 +8,24 @@
    +---------------------------------------------------------------------------+ */
 
 
-#include <mrpt/base.h>
+#include <mrpt/utils/CSerializable.h>
+#include <mrpt/utils/CFileInputStream.h>
+#include <mrpt/utils/CMemoryStream.h>
+#include <mrpt/utils/stl_serialization.h>
+#include <mrpt/utils/TStereoCamera.h>
+#include <mrpt/random.h>
+#include <mrpt/math/ops_vectors.h>  // to serialize vectors
+#include <mrpt/system/filesystem.h>
+#include <mrpt/poses.h> // to test their serialization
 #include <gtest/gtest.h>
 
 using namespace mrpt;
-using namespace mrpt::slam;
 using namespace mrpt::utils;
 using namespace mrpt::math;
+using namespace mrpt::poses;
 using namespace std;
 
-// Defined in run_unittests.cpp
+// Defined in tests/test_main.cpp
 namespace mrpt { namespace utils {
 	extern std::string MRPT_GLOBAL_UNITTEST_SRC_DIR;
   }
@@ -77,21 +85,23 @@ TEST(SerializeTestBase, LoadDemoFile)
 	}
 }
 
+const mrpt::utils::TRuntimeClassId* lstClasses[] = {
+	// Misc:
+	CLASS_ID(CPose2D),
+	CLASS_ID(CPose3D),
+	CLASS_ID(CPose3DQuat),
+	CLASS_ID(CPoint2D),
+	CLASS_ID(CPoint3D),
+	// Poses:
+	CLASS_ID(CPose3DPDFGaussian),
+	CLASS_ID(CPose3DQuatPDFGaussian),
+	// Others:
+	CLASS_ID(TStereoCamera)
+	};
+
 // Create a set of classes, then serialize and deserialize to test possible bugs:
 TEST(SerializeTestBase, WriteReadToMem)
 {
-	const mrpt::utils::TRuntimeClassId* lstClasses[] = {
-		// Misc:
-		CLASS_ID(CPose2D),
-		CLASS_ID(CPose3D),
-		CLASS_ID(CPose3DQuat),
-		CLASS_ID(CPoint2D),
-		CLASS_ID(CPoint3D),
-		// Poses:
-		CLASS_ID(CPose3DPDFGaussian),
-		CLASS_ID(CPose3DQuatPDFGaussian)
-		};
-
 	for (size_t i=0;i<sizeof(lstClasses)/sizeof(lstClasses[0]);i++)
 	{
 		try
@@ -111,6 +121,27 @@ TEST(SerializeTestBase, WriteReadToMem)
 		{
 			GTEST_FAIL() <<
 				"Exception during serialization test for class '"<< lstClasses[i]->className <<"':\n" << e.what() << endl;
+		}
+	}
+}
+
+// Create a set of classes, then test that copy operators "work" (doesn't crash)
+TEST(SerializeTestBase, CopyOperator)
+{
+	for (size_t i=0;i<sizeof(lstClasses)/sizeof(lstClasses[0]);i++)
+	{
+		try
+		{
+			CSerializable* o1 = static_cast<CSerializable*>(lstClasses[i]->createObject());
+			CSerializable* o2 = static_cast<CSerializable*>(lstClasses[i]->createObject());
+			*o2 = *o1;
+			delete o1;
+			delete o2;
+		}
+		catch(std::exception &e)
+		{
+			GTEST_FAIL() <<
+				"Exception during copy operator test for class '"<< lstClasses[i]->className <<"':\n" << e.what() << endl;
 		}
 	}
 }

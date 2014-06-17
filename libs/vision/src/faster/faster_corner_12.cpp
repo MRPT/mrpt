@@ -13,6 +13,7 @@
 // ---------------------------------------------------------------------------
 
 #include <mrpt/utils/utils_defs.h>
+#include <mrpt/system/memory.h>
 #include "faster_corner_prototypes.h"
 
 #include <mrpt/utils/SSE_types.h>
@@ -69,7 +70,7 @@ void faster_corner_detect_12(const IplImage* I, mrpt::vision::TSimpleFeatureList
 	//corners.mark_kdtree_as_outdated();
 
 	size_t *ptr_feat_index_by_row, *ptr_feat_index_end;
-	if (out_feats_index_by_row) 
+	if (out_feats_index_by_row)
 	{
 		out_feats_index_by_row->resize(I->height);
 		ptr_feat_index_by_row = &(*out_feats_index_by_row)[0];
@@ -165,7 +166,7 @@ for (int i=3; i<I->height-3; ++i) {
     passed.push_back(0);
 }
 
-	// 3 first rows have no features: 
+	// 3 first rows have no features:
 	if (ptr_feat_index_by_row) {
 		*ptr_feat_index_by_row++ = corners.size();
 		*ptr_feat_index_by_row++ = corners.size();
@@ -176,7 +177,7 @@ for (int i=3; i<I->height-3; ++i) {
 
 	const uint8_t* row_start = (const uint8_t*)I->imageData + I->widthStep*3;
 	for (Passed::iterator it = passed.begin(); it != passed.end(); ++it) {
-		if (*it == 0) 
+		if (*it == 0)
 		{
 			// next row:
 			if (ptr_feat_index_by_row)  // save index by row:
@@ -190,7 +191,7 @@ for (int i=3; i<I->height-3; ++i) {
 		corners.push_back_fast(x<<octave, row<<octave);
 	}
 
-	// 3 last rows have no features: 
+	// 3 last rows have no features:
 	if (ptr_feat_index_by_row) {
 		*ptr_feat_index_by_row++ = corners.size();
 		*ptr_feat_index_by_row++ = corners.size();
@@ -217,7 +218,7 @@ void fast_corner_detect_12(const IplImage* I, mrpt::vision::TSimpleFeatureList &
 		return;
 
 #if MRPT_HAS_SSE2
-	if (mrpt::system::is_aligned<16>(I->imageData) && is_aligned<16>(I->imageData+I->widthStep))
+	if (mrpt::system::is_aligned<16>(I->imageData) && mrpt::system::is_aligned<16>(I->imageData+I->widthStep))
 		faster_corner_detect_12<true>(I, corners, barrier, octave,out_feats_index_by_row);
 	else
 		faster_corner_detect_12<false>(I, corners, barrier, octave,out_feats_index_by_row);

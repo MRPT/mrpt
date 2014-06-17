@@ -7,7 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/slam.h>  // Precompiled header
+#include "slam-precomp.h"   // Precompiled headers
 
 /*
    For all data association algorithms, the individual compatibility is estabished by
@@ -23,10 +23,11 @@
 
 #include <mrpt/slam/data_association.h>
 #include <mrpt/math/distributions.h>  // for chi2inv
-#include <mrpt/math/utils.h>
+#include <mrpt/math/data_utils.h>
 #include <mrpt/poses/CPointPDFGaussian.h>
 #include <mrpt/poses/CPoint2DPDFGaussian.h>
 
+#include <set>
 #include <numeric>  // accumulate
 #include <memory>   // auto_ptr, unique_ptr
 
@@ -69,6 +70,7 @@ double joint_pdf_metric (
 {
 	// Make a list of the indices of the predictions that appear in "currentAssociation":
 	const size_t  N = info.currentAssociation.size();
+	ASSERT_(N>0)
 
 	vector_size_t  indices_pred(N);  // Appearance order indices in the std::maps
 	vector_size_t  indices_obs(N);
@@ -97,7 +99,7 @@ double joint_pdf_metric (
 	// Mean:
 	// The same for the vector of "errors" or "innovation" between predictions and observations:
 	// ----------------------------------------------------------------------
-	mrpt::dynamicsize_vector<T> innovations(N * info.length_O);
+	Eigen::Matrix<T,Eigen::Dynamic,1>  innovations(N * info.length_O);
 	T *dst_ptr= &innovations[0];
 	for (map<size_t,size_t>::const_iterator it=info.currentAssociation.begin();it!=info.currentAssociation.end();++it)
 	{
@@ -165,7 +167,7 @@ void JCBB_recursive(
 				info,
 				results);
 		}
-		else if ( info.currentAssociation.size()==results.associations.size() )
+		else if ( !info.currentAssociation.empty() && info.currentAssociation.size()==results.associations.size() )
 		{
 			// The same # of features matched than the previous best one... decide by better distance:
 			const double d2 = joint_pdf_metric<T,METRIC>(
@@ -344,7 +346,7 @@ void mrpt::slam::data_association_full_covariance(
 
 	CMatrixDouble pred_i_cov(length_O,length_O);
 
-	mrpt::dynamicsize_vector<CMatrixDouble::Scalar>  diff_means_i_j(length_O);
+	Eigen::VectorXd  diff_means_i_j(length_O);
 
 	for (size_t j=0;j<nObservations;++j)
 	{
@@ -461,7 +463,7 @@ void mrpt::slam::data_association_full_covariance(
 			// 2) With that lists, start by the best one and make the assignment.
 			//    Remove the prediction from the list of available, and go on.
 			// --------------------------------------------------------------------
-			set<prediction_index_t> lst_already_taken_preds;
+			std::set<prediction_index_t> lst_already_taken_preds;
 
 			for (TListAllICs::const_iterator it=lst_all_ICs.begin();it!=lst_all_ICs.end();++it)
 			{

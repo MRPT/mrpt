@@ -8,13 +8,16 @@
    +---------------------------------------------------------------------------+ */
 
 
-#include <mrpt/hmtslam.h> // Precomp header
+#include "hmtslam-precomp.h" // Precomp header
 
+#include <mrpt/hmtslam/CRobotPosesGraph.h>
 #include <mrpt/poses/CPosePDFGaussian.h>
+#include <mrpt/math/wrap2pi.h>
 #include <mrpt/slam/CICP.h>
 
 #include <mrpt/random.h>
 #include <mrpt/math/utils.h>
+#include <mrpt/math/ops_containers.h>
 #include <mrpt/utils/CTicTac.h>
 #include <mrpt/utils/CFileStream.h>
 #include <mrpt/bayes/CParticleFilter.h>
@@ -326,7 +329,7 @@ void  CLSLAM_RBPF_2DLASER::prediction_and_update_pfAuxiliaryPFOptimal(
 	//
 	//     max{ p( z^t | data^[i], x_(t-1)^[i], u_(t) ) }
 	//
-	//vector_double					maxLikelihood(M, -1 );
+	//CVectorDouble					maxLikelihood(M, -1 );
 
 	float							MIN_ACCEPT_UNIF_DISTRIB = 0.00f;
 
@@ -559,7 +562,7 @@ double  CLSLAM_RBPF_2DLASER::particlesEvaluator_AuxPFOptimal(
 
 	CPose2D			oldPose( * myObj->getCurrentPose(index) );
 //	CPose2D			drawnSample;
-	vector_double   vectLiks(N,0);		// The vector with the individual log-likelihoods.
+	CVectorDouble   vectLiks(N,0);		// The vector with the individual log-likelihoods.
 
 	for (size_t q=0;q<N;q++)
 	{

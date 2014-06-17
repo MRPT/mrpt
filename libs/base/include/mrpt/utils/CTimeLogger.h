@@ -11,15 +11,16 @@
 
 #include <mrpt/utils/CTicTac.h>
 #include <mrpt/utils/CDebugOutputCapable.h>
-
+#include <mrpt/utils/compiler_fixes.h>
+#include <mrpt/utils/mrpt_macros.h>
+#include <vector>
 #include <stack>
+#include <map>
 
 namespace mrpt
 {
 	namespace utils
 	{
-		using namespace std;
-
 		/** A versatile "profiler" that logs the time spent within each pair of calls to enter(X)-leave(X), among other stats.
 		 *  The results can be dumped to cout or to Visual Studio's output panel.
 		 *  Recursive methods are supported with no problems, that is, calling "enter(X) enter(X) ... leave(X) leave(X)".
@@ -27,7 +28,7 @@ namespace mrpt
 		 *  This class can be also used to monitorize min/mean/max/total stats of any user-provided parameters via the method CTimeLogger::registerUserMeasure()
 		 *
 		 * \sa CTimeLoggerEntry
-		 * 
+		 *
 		 * \note The default behavior is dumping all the information at destruction.
 		 * \ingroup mrpt_base_grp
 		 */
@@ -38,24 +39,24 @@ namespace mrpt
 			bool		m_enabled;
 
 			//! Data of all the calls:
-			struct TCallData
+			struct BASE_IMPEXP TCallData
 			{
 				TCallData();
 
 				size_t n_calls;
 				double min_t,max_t,mean_t;
-				stack<double,vector<double> >   open_calls;
+				std::stack<double,std::vector<double> >   open_calls;
 				bool has_time_units;
 			};
 
-			map<string,TCallData>  m_data;
+			std::map<std::string,TCallData>  m_data;
 
 			void do_enter( const char *func_name );
 			double do_leave( const char *func_name );
 
 		public:
 			/** Data of each call section: # of calls, minimum, maximum, average and overall execution time (in seconds) \sa getStats */
-			struct TCallStats
+			struct BASE_IMPEXP TCallStats
 			{
 				size_t n_calls;
 				double min_t,max_t,mean_t,total_t;
@@ -86,9 +87,9 @@ namespace mrpt
 		}; // End of class def.
 
 
-		/** A safe way to call enter() and leave() of a mrpt::utils::CTimeLogger upon construction and destruction of 
+		/** A safe way to call enter() and leave() of a mrpt::utils::CTimeLogger upon construction and destruction of
 		 * this auxiliary object, making sure that leave() will be called upon exceptions, etc.
-		 * Usage: 
+		 * Usage:
 		 * \code
 		 *    CTimeLogger logger;
 		 *    // ...
@@ -97,7 +98,7 @@ namespace mrpt
 		 *
 		 *       // do whatever
 		 *
-		 *    } // End of scope 
+		 *    } // End of scope
 		 * \endcode
 		 * \ingroup mrpt_base_grp
 		 */

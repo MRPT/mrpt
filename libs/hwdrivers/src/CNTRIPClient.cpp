@@ -7,13 +7,13 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/hwdrivers.h> // Precompiled headers
+#include "hwdrivers-precomp.h"   // Precompiled headers
 
 #include <mrpt/hwdrivers/CNTRIPClient.h>
 #include <mrpt/utils/CClientTCPSocket.h>
 #include <mrpt/utils/net_utils.h>
 #include <mrpt/utils/CStringList.h>
-#include <mrpt/math/utils.h>
+#include <mrpt/math/wrap2pi.h>
 
 #include <mrpt/system/string_utils.h>
 
@@ -63,6 +63,7 @@ CNTRIPClient::~CNTRIPClient()
    -------------------------------------------------------- */
 void CNTRIPClient::close()
 {
+	m_upload_data.clear();
 	if (!m_thread_do_process) return;
 	m_thread_do_process = false;
 	m_sem_sock_closed.waitForSignal(500);
@@ -163,8 +164,6 @@ void CNTRIPClient::private_ntrip_thread()
 			TConnResult   connect_res = connError;
 
 			vector_byte   buf;
-			size_t len;
-
 			try
 			{
 				// Nope, it's the first time: get params and try open the connection:
@@ -213,8 +212,8 @@ void CNTRIPClient::private_ntrip_thread()
 				// Try to read the header of the response:
 				size_t	to_read_now = 30;
 				buf.resize(to_read_now);
-				len = my_sock.readAsync(&buf[0],to_read_now, 4000,1000);
-				
+				size_t len = my_sock.readAsync(&buf[0],to_read_now, 4000,1000);
+
 				buf.resize(len);
 
 				if ((len!=0) && my_sock.isConnected())
@@ -285,6 +284,18 @@ void CNTRIPClient::private_ntrip_thread()
 			buf.clear();
 		}
 
+		// Send back data to the server, if so requested:
+		// ------------------------------------------
+		mrpt::vector_byte upload_data;
+		m_upload_data.readAndClear(upload_data);
+		if (!upload_data.empty())
+		{
+			const size_t N = upload_data.size();
+			const size_t nWritten = my_sock.writeAsync( &upload_data[0],N, 1000);
+			if (nWritten!=N)
+				cerr << "*ERROR*: Couldn't write back " << N << " bytes to NTRIP server!.\n";
+		}
+
 		mrpt::system::sleep(10);
 	} // end while
 
@@ -313,7 +324,7 @@ bool CNTRIPClient::retrieveListOfMountpoints(
 	const string		&auth_user,
 	const string		&auth_pass)
 {
-	string  content, errmsg;
+	string  content;
 	int		http_code;
 	TParameters<string> my_headers;
 
@@ -375,3 +386,13 @@ bool CNTRIPClient::retrieveListOfMountpoints(
 	return true;
 }
 
+
+/** Enqueues a string to be sent back to the NTRIP server (e.g. GGA frames) */
+void CNTRIPClient::sendBackToServer(const std::string &data)
+{
+	if (data.empty()) return;
+
+	mrpt::vector_byte d(data.size());
+	::memcpy(&d[0],&data[0],data.size());
+	m_upload_data.appendData(d);
+}

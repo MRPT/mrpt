@@ -7,8 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/gui.h>  // precompiled header
-
+#include "gui-precomp.h"   // Precompiled headers
 
 #include <mrpt/config.h>
 
@@ -43,9 +42,9 @@ IMPLEMENTS_MRPT_OBJECT(CDisplayWindow3D,CBaseGUIWindow,mrpt::gui)
 		#include <GL/gl.h>
 		#include <GL/glu.h>
 		#include <GL/glut.h>
-	#endif
-	#ifdef HAVE_FREEGLUT_EXT_H
-		#include <GL/freeglut_ext.h>
+	  #ifdef HAVE_FREEGLUT_EXT_H
+	  	#include <GL/freeglut_ext.h>
+	  #endif
 	#endif
 #endif
 

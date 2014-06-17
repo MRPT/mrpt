@@ -7,10 +7,11 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/opengl.h>  // Precompiled header
-
+#include "opengl-precomp.h"  // Precompiled header
 
 #include <mrpt/opengl/CVectorField2D.h>
+#include <mrpt/utils/CStream.h>
+
 #include "opengl_internals.h"
 
 
@@ -203,7 +204,7 @@ void CVectorField2D::getBoundingBox(mrpt::math::TPoint3D &bb_min, mrpt::math::TP
 void CVectorField2D::adjustVectorFieldToGrid()
 {
 	ASSERT_(xcomp.size() > 0)
-	
+
 	const float ratio_xp = xcomp.maxCoeff()*(xcomp.getColCount()-1)/(xMax-xMin);
 	const float ratio_xn = xcomp.minCoeff()*(xcomp.getColCount()-1)/(xMax-xMin);
 	const float ratio_yp = ycomp.maxCoeff()*(ycomp.getRowCount()-1)/(yMax-yMin);

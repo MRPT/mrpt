@@ -7,11 +7,10 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/utils.h>
-#include <mrpt/gui.h>
-#include <mrpt/opengl.h>
+#include <mrpt/utils/CTimeLogger.h>
+#include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/system/filesystem.h> // for ASSERT_FILE_EXISTS_
-#include <mrpt/vision.h>
+#include <mrpt/vision/chessboard_stereo_camera_calib.h>
 
 using namespace mrpt;
 using namespace mrpt::utils;

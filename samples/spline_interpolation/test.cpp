@@ -7,13 +7,18 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/base.h>
-#include <mrpt/slam.h>
-#include <mrpt/gui.h>
+#include <mrpt/system/os.h>
+#include <mrpt/system/datetime.h>
+#include <mrpt/poses/CPose3D.h>
+#include <mrpt/poses/CPose3DInterpolator.h>
+#include <mrpt/math/CSplineInterpolator1D.h>
+#include <mrpt/math/interp_fit.h>
+#include <mrpt/math/utils.h>
+#include <mrpt/random.h>
+#include <mrpt/gui/CDisplayWindowPlots.h>
 
 using namespace mrpt::utils;
 using namespace mrpt::gui;
-using namespace mrpt::vision;
 using namespace mrpt::random;
 using namespace std;
 
@@ -68,7 +73,7 @@ void TestSplineInterpolation()
 {
 	FILE *f = mrpt::system::os::fopen("out2","wt");
 
-	vector<double>	x, y;
+	CVectorDouble	x, y;
 	double			t;
 	x.resize(4);
 	y.resize(4);
@@ -79,12 +84,12 @@ void TestSplineInterpolation()
 	x[0] = -1.5;	x[1] = -0.5;	x[2] = 0.5;	x[3] = 1.5;
 	y[0] = 3.14;	y[1] = -3.10;	y[2] = -3.05;	y[3] = 3.10;
 
-	vector_double ts, ys_interp;
+	CVectorDouble ts, ys_interp;
 
 	for(t = x[1]; t <= x[2]; t += 0.01)
 	{
-		double w = math::spline(t, x, y  ); // wrap no
-//		double w = math::spline(t, x, y, true); // wrap yes
+		double w = mrpt::math::spline(t, x, y  ); // wrap no
+//		double w = mrpt::math::spline(t, x, y, true); // wrap yes
 		ts.push_back(t);
 		ys_interp.push_back(w);
 		mrpt::system::os::fprintf(f,"%f %f\n", t, w);
@@ -109,19 +114,20 @@ void TestSplineInterpolation()
 void TestSplineInterpolationVector()
 {
 	const size_t N = 15;
-	vector_double data_x, data_y(N);
+	CVectorDouble data_x, data_y(N);
 
 	// Create random data:
-	data_x = mrpt::math::linspace(-20.0,20.0,N);
+	mrpt::math::linspace(-20.0,20.0,N, data_x);
 	randomGenerator.drawGaussian1DVector(data_y,  2.0,1.0);
 
 	// Create interpolator
 	mrpt::math::CSplineInterpolator1D	interp( data_x, data_y );
 
 	// Generate sequence of where to interpolate:
-	vector_double xs = mrpt::math::linspace(-20.0,20.0,500);
+	CVectorDouble xs;
+	mrpt::math::linspace(-20.0,20.0,500, xs);
 
-	vector_double ys;
+	CVectorDouble ys;
 	bool valid=interp.queryVector(xs,ys);
 	ASSERT_(valid);
 

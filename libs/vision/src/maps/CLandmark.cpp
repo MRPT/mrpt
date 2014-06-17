@@ -7,14 +7,19 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/vision.h>  // Precompiled headers
+#include "vision-precomp.h"   // Precompiled headers
 
-
+#include <mrpt/utils/CStream.h>
+#include <mrpt/utils/stl_serialization.h>
 #include <mrpt/slam/CLandmark.h>
 #include <mrpt/slam/CObservation.h>
+#include <mrpt/utils/stl_serialization.h>
 #include <mrpt/system/os.h>
 
-using namespace mrpt::slam; using namespace mrpt::utils; using namespace mrpt::poses;
+using namespace mrpt::slam;
+using namespace mrpt::utils;
+using namespace mrpt::poses;
+
 
 IMPLEMENTS_SERIALIZABLE(CLandmark, CSerializable,mrpt::slam)
 
@@ -113,7 +118,7 @@ void  CLandmark::readFromStream(CStream &in, int version)
 	case 0:
 	case 1:
 	case 2:
-	case 3: 
+	case 3:
 		THROW_EXCEPTION("Importing from this old version is not implemented");
 		break;
 	case 4:

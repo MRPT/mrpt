@@ -43,13 +43,14 @@ namespace pbmap {
     {
       subgraphPlanesIdx.insert(refPlaneId);
       // Add proximity neighbors
-      for(std::set<unsigned>::iterator it = pPBM->vPlanes[refPlaneId].nearbyPlanes.begin(); it != pPBM->vPlanes[refPlaneId].nearbyPlanes.end(); it++)
-        subgraphPlanesIdx.insert(*it);
+//      for(std::set<unsigned>::iterator it = pPBM->vPlanes[refPlaneId].nearbyPlanes.begin(); it != pPBM->vPlanes[refPlaneId].nearbyPlanes.end(); it++)
+//        subgraphPlanesIdx.insert(*it);
 
-      #ifdef _VERBOSE
         // Add neighbors co-visible neighbors
         for(std::map<unsigned,unsigned>::iterator it = pPBM->vPlanes[refPlaneId].neighborPlanes.begin(); it != pPBM->vPlanes[refPlaneId].neighborPlanes.end(); it++)
           subgraphPlanesIdx.insert(it->first);
+
+      #ifdef _VERBOSE
         std::cout << "Subgraph constructor: ";
         for(std::set<unsigned>::iterator it = subgraphPlanesIdx.begin(); it != subgraphPlanesIdx.end(); it++)
           std::cout << *it << " ";

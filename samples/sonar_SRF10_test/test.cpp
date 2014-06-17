@@ -8,14 +8,23 @@
    +---------------------------------------------------------------------------+ */
 
 #include <mrpt/hwdrivers/CBoardSonars.h>
-#include <mrpt/base.h>
-#include <mrpt/gui.h>
+#include <mrpt/utils/CTicTac.h>
+#include <mrpt/utils/CConfigFile.h>
+#include <mrpt/system/os.h>
+#include <mrpt/system/filesystem.h>
+#include <mrpt/gui/CDisplayWindow3D.h>
+#include <mrpt/opengl/CCylinder.h>
+#include <mrpt/opengl/COpenGLScene.h>
+#include <mrpt/opengl/CGridPlaneXY.h>
+#include <mrpt/opengl/stock_objects.h>
 
 using namespace mrpt;
 using namespace mrpt::hwdrivers;
 using namespace mrpt::slam;
 using namespace mrpt::utils;
 using namespace mrpt::gui;
+using namespace mrpt::opengl;
+using namespace mrpt::system;
 using namespace std;
 
 int main()

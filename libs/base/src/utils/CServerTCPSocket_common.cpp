@@ -7,16 +7,14 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/base.h>  // Precompiled headers
+#include "base-precomp.h"  // Precompiled headers
 
 
 #include <mrpt/utils/CServerTCPSocket.h>
 #include <mrpt/utils/CClientTCPSocket.h>
 #include <mrpt/system/os.h>
+#include <cstdio> // stderr
 using namespace mrpt::utils;
-
-#include <iostream>
-
 
 #if defined(MRPT_OS_LINUX) || defined(MRPT_OS_APPLE)
 	#define  INVALID_SOCKET		(-1)
@@ -127,7 +125,7 @@ CClientTCPSocket *  CServerTCPSocket::accept( int timeout_ms )
 
 	if( selRet==int(INVALID_SOCKET))
 	{
-		std::cerr << getLastErrorStr() << std::endl;
+	    fprintf(stderr,"%s\n", getLastErrorStr().c_str());
 		return NULL;
 	}
 
@@ -155,7 +153,7 @@ CClientTCPSocket *  CServerTCPSocket::accept( int timeout_ms )
 
 		if (aceptdSock==int(INVALID_SOCKET))
 		{
-			std::cerr << getLastErrorStr() << std::endl;
+			fprintf(stderr,"%s\n",getLastErrorStr().c_str());
 			delete ret;
 			return NULL;
 		}

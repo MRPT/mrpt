@@ -7,18 +7,19 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/base.h>  // Precompiled headers
-
-
+#include "base-precomp.h"  // Precompiled headers
 
 #include <mrpt/math/utils.h>
+#include <mrpt/math/wrap2pi.h>
+#include <mrpt/math/interp_fit.h>
+#include <mrpt/math/data_utils.h>
 #include <mrpt/math/distributions.h>
 #include <mrpt/math/fourier.h>
 
 #include <mrpt/system/string_utils.h>
 #include <mrpt/utils/CFileStream.h>
-
 #include <mrpt/math/CMatrixD.h>
+#include <mrpt/utils/types_math.h>
 #include <mrpt/math/ops_matrices.h>
 
 #include <float.h>
@@ -28,7 +29,6 @@ using namespace mrpt;
 using namespace mrpt::utils;
 using namespace mrpt::math;
 using namespace std;
-
 
 // Next there are declared some auxiliary functions:
 namespace mrpt
@@ -41,7 +41,7 @@ namespace mrpt
 		//be an integer power of 2 (this is not checked for!).
 		void four1(float data[], unsigned long nn, int isign)
 		{
-			unsigned long	n,mmax,m,j,istep,i;
+			unsigned long	n,mmax,m,j,i;
 			double			wtemp,wr,wpr,wpi,wi,theta; // Double precision for the trigonometric recurrences.
 			float			tempr,tempi;
 
@@ -67,7 +67,7 @@ namespace mrpt
 			mmax=2;
 			while (n > mmax) // Outer loop executed log2 nn times.
 			{
-				istep=mmax << 1;
+				unsigned long istep=mmax << 1;
 				theta=isign*(6.28318530717959/mmax);	// Initialize the trigonometric recurrence.
 				wtemp=sin(0.5*theta);
 				wpr = -2.0*wtemp*wtemp;
@@ -1002,10 +1002,10 @@ double  math::factorial(unsigned int n)
 /*---------------------------------------------------------------
 						fft_real
  ---------------------------------------------------------------*/
-void  math::fft_real(	vector_float	&in_realData,
-						vector_float	&out_FFT_Re,
-						vector_float	&out_FFT_Im,
-						vector_float	&out_FFT_Mag )
+void  math::fft_real(	CVectorFloat	&in_realData,
+						CVectorFloat	&out_FFT_Re,
+						CVectorFloat	&out_FFT_Im,
+						CVectorFloat	&out_FFT_Mag )
 {
 	MRPT_START
 
@@ -1013,7 +1013,7 @@ void  math::fft_real(	vector_float	&in_realData,
 
 	// TODO: Test data lenght is 2^N...
 
-	vector_float		auxVect( n+1 );
+	CVectorFloat		auxVect( n+1 );
 
 	memcpy( &auxVect[1], &in_realData[0], n * sizeof(auxVect[0]));
 
@@ -1072,8 +1072,8 @@ double  math::normalQuantile(double p)
 		2.445134137142996e+00,  3.754408661907416e+00
 		};
 
-	ASSERT_(!isNaN(p));
-	ASSERT_(p < 1.0 || p > 0.0);
+	ASSERT_(!isNaN(p))
+	ASSERT_(p < 1.0 && p > 0.0)
 
 	q = min(p,1-p);
 
@@ -1807,8 +1807,8 @@ bool math::loadVector( CFileStream &f, ::std::vector<double> &d)
 
 // See declaration for the documentation
 double math::averageLogLikelihood(
-	const vector_double &logWeights,
-	const vector_double &logLikelihoods )
+	const CVectorDouble &logWeights,
+	const CVectorDouble &logLikelihoods )
 {
 	MRPT_START
 
@@ -1819,7 +1819,7 @@ double math::averageLogLikelihood(
 	if ( !logWeights.size() )
 		THROW_EXCEPTION("ERROR: logWeights vector is empty!")
 
-	vector_double::const_iterator itLW,itLL;
+	CVectorDouble::const_iterator itLW,itLL;
 	double lw_max = math::maximum(logWeights);
 	double ll_max = math::maximum(logLikelihoods);
 	double SUM1=0, SUM2=0, tmpVal;
@@ -1838,7 +1838,7 @@ double math::averageLogLikelihood(
 }
 
 // Unweighted version:
-double math::averageLogLikelihood( const vector_double &logLikelihoods )
+double math::averageLogLikelihood( const CVectorDouble &logLikelihoods )
 {
 	MRPT_START
 
@@ -1862,7 +1862,7 @@ double math::averageLogLikelihood( const vector_double &logLikelihoods )
 }
 
 // Wrapped angles average:
-double math::averageWrap2Pi(const vector_double &angles )
+double math::averageWrap2Pi(const CVectorDouble &angles )
 {
 	if (angles.empty()) return 0;
 
@@ -1871,7 +1871,7 @@ double math::averageWrap2Pi(const vector_double &angles )
 
 	// First: XY
 	// -----------------------------------
-	for (vector_double::Index i=0;i<angles.size();i++)
+	for (CVectorDouble::Index i=0;i<angles.size();i++)
 	{
 		double phi = angles[i];
 		if (abs(phi)>1.5707963267948966192313216916398)
@@ -1904,7 +1904,7 @@ double math::averageWrap2Pi(const vector_double &angles )
 }
 
 // Spline
-double math::spline(const double t, const vector_double &x, const vector_double &y, bool wrap2pi)
+double math::spline(const double t, const CVectorDouble &x, const CVectorDouble &y, bool wrap2pi)
 {
 	// Check input data
 	ASSERT_( x.size() == 4 && y.size() == 4 );
@@ -1997,14 +1997,14 @@ double math::spline(const double t, const vector_double &x, const vector_double 
 
 string math::MATLAB_plotCovariance2D(
 	const CMatrixFloat  &cov,
-	const vector_float  &mean,
+	const CVectorFloat  &mean,
     const float         &stdCount,
 	const string        &style,
 	const size_t		&nEllipsePoints )
 {
 	MRPT_START
 	CMatrixD        cov2(cov);
-	vector_double   mean2(2);
+	CVectorDouble   mean2(2);
 	mean2[0]=mean[0];
 	mean2[1]=mean[1];
 
@@ -2015,7 +2015,7 @@ string math::MATLAB_plotCovariance2D(
 
 string math::MATLAB_plotCovariance2D(
 	const CMatrixDouble  &cov,
-	const vector_double  &mean,
+	const CVectorDouble  &mean,
     const float         &stdCount,
 	const string        &style,
 	const size_t		&nEllipsePoints )
@@ -2039,19 +2039,19 @@ string math::MATLAB_plotCovariance2D(
 	SIN.resize(nEllipsePoints);
 
 	// Fill the angles:
-	for (Cos=COS.begin(),Sin=SIN.begin(),ang=0;Cos!=COS.end();Cos++,Sin++, ang+= (M_2PI/(nEllipsePoints-1)) )
+	for (Cos=COS.begin(),Sin=SIN.begin(),ang=0;Cos!=COS.end();++Cos,++Sin, ang+= (M_2PI/(nEllipsePoints-1)) )
 	{
 		*Cos = (float)cos(ang);
 		*Sin = (float)sin(ang);
 	}
 
 	cov.eigenVectors(eigVec,eigVal);
-	eigVal.Sqrt();
+	eigVal = eigVal.array().sqrt().matrix();
 	M = eigVal * eigVec.adjoint();
 
 	// Compute the points of the ellipsoid:
 	// ----------------------------------------------
-	for (x=X.begin(), y=Y.begin(), Cos=COS.begin(),Sin=SIN.begin(); x!=X.end(); x++,y++,Cos++,Sin++)
+	for (x=X.begin(), y=Y.begin(), Cos=COS.begin(),Sin=SIN.begin(); x!=X.end(); ++x,++y,++Cos,++Sin)
 	{
 		*x = (float)( mean[0] + stdCount * (*Cos * M(0,0) + *Sin * M(1,0)) );
 		*y = (float)( mean[1] + stdCount * (*Cos * M(0,1) + *Sin * M(1,1)) );
@@ -2060,13 +2060,13 @@ string math::MATLAB_plotCovariance2D(
 	// Save the code to plot the ellipsoid:
 	// ----------------------------------------------
 	str += string("plot([ ");
-	for (x=X.begin();x!=X.end();x++)
+	for (x=X.begin();x!=X.end();++x)
 	{
 		str += format("%.4f",*x);
 		if (x!=(X.end()-1))	str += format(",");
 	}
 	str += string("],[ ");
-	for (y=Y.begin();y!=Y.end();y++)
+	for (y=Y.begin();y!=Y.end();++y)
 	{
 		str += format("%.4f",*y);
 		if (y!=(Y.end()-1))	str += format(",");
@@ -2149,22 +2149,6 @@ double mrpt::math::interpolate2points(const double x, const double x0, const dou
 	MRPT_END
 }
 
-
-/** Modify a sequence of angle values such as no consecutive values have a jump larger than PI in absolute value.
-  */
-void mrpt::math::unwrap2PiSequence(vector_double &x)
-{
-	for (vector_double::Index i=0;i<x.size();i++)
-	{
-		mrpt::math::wrapToPiInPlace(x[i]); // assure it's in the -pi,pi range.
-		if (!i) continue;
-
-		double Ap = x[i]-x[i-1];
-		if (Ap>M_PI)  x[i]-=M_2PI;
-		if (Ap<-M_PI) x[i]+=M_2PI;
-	}
-}
-
 /*---------------------------------------------------------------
                     median filter of a vector
  ---------------------------------------------------------------*/
@@ -2198,7 +2182,7 @@ void mrpt::math::medianFilter( const std::vector<double> &inV, std::vector<doubl
 
         size_t  auxSz       = aux.size();
         int     auxMPoint   = auxSz*0.5;
-        outV[k] = auxSz%2 ? aux[auxMPoint] : 0.5*(aux[auxMPoint-1]+aux[auxMPoint]);     // If the window is even, take the mean value of the middle points
+        outV[k] = (auxSz%2) ? (aux[auxMPoint]) : (0.5*(aux[auxMPoint-1]+aux[auxMPoint]));     // If the window is even, take the mean value of the middle points
     } // end-for
 } // end medianFilter
 

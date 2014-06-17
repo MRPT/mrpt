@@ -7,14 +7,17 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/obs.h>   // Precompiled headers
+#include "obs-precomp.h"   // Precompiled headers
 
 
-
+#include <mrpt/utils/CStream.h>
 #include <mrpt/slam/CActionRobotMovement3D.h>
 
 using namespace mrpt;
-using namespace mrpt::slam; using namespace mrpt::utils; using namespace mrpt::poses;
+using namespace mrpt::slam;
+using namespace mrpt::utils;
+using namespace mrpt::poses;
+
 using namespace mrpt::utils;
 
 IMPLEMENTS_SERIALIZABLE(CActionRobotMovement3D, CAction, mrpt::slam)
@@ -26,8 +29,9 @@ CActionRobotMovement3D::CActionRobotMovement3D() :
 	poseChange(),
 	estimationMethod( emOdometry ),
 	hasVelocities(6,false),
-	velocities(6,0)
+	velocities(6)
 {
+	velocities.assign(.0);
 }
 
 /*---------------------------------------------------------------

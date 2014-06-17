@@ -42,9 +42,10 @@
 #include <wx/docview.h>
 
 // General global variables:
-#include <mrpt/base.h>
-#include <mrpt/slam.h>
-#include <mrpt/gui.h>
+#include <mrpt/utils/CSerializable.h>
+#include <mrpt/utils/CConfigFile.h>
+#include <mrpt/gui/CDisplayWindow3D.h>
+#include <mrpt/gui/CDisplayWindowPlots.h>
 
 // JLBC: Unix X headers have these funny things...
 #ifdef Button1
@@ -622,12 +623,12 @@ private:
 	catch(std::exception &e) \
     { \
 		std::cerr << e.what() << std::endl; \
-        wxMessageBox( wxString(e.what(),wxConvUTF8), wxT("Exception"), wxOK, this); \
+        wxMessageBox( wxString(e.what(),wxConvUTF8), wxT("Exception"), wxOK, NULL); \
     } \
     catch(...) \
     { \
 		std::cerr << "Untyped exception!" << std::endl; \
-        wxMessageBox( _("Untyped exception!"), _("Exception"), wxOK, this); \
+        wxMessageBox( _("Untyped exception!"), _("Exception"), wxOK, NULL); \
     }
 
 

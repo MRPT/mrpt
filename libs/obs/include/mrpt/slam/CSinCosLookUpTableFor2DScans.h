@@ -9,7 +9,10 @@
 #ifndef CSinCosLookUpTableFor2DScans_H
 #define CSinCosLookUpTableFor2DScans_H
 
+#include <mrpt/utils/types_math.h>
 #include <mrpt/slam/CObservation2DRangeScan.h>
+#include <mrpt/obs/link_pragmas.h>
+#include <map>
 
 namespace mrpt
 {
@@ -26,7 +29,7 @@ namespace slam
 	public:
 		/** A pair of vectors with the cos and sin values. */
 		struct TSinCosValues {
-			mrpt::vector_float ccos, csin;
+			mrpt::math::CVectorFloat ccos, csin;
 		};
 
 		/** Return two vectors with the cos and the sin of the angles for each of the

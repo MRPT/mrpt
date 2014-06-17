@@ -7,13 +7,14 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/vision.h>  // Precompiled headers
+#include "vision-precomp.h"   // Precompiled headers
 #include <mrpt/vision/CStereoRectifyMap.h>
 
 // Universal include for all versions of OpenCV
 #include <mrpt/otherlibs/do_opencv_includes.h> 
 
 using namespace mrpt;
+using namespace mrpt::poses;
 using namespace mrpt::vision;
 using namespace mrpt::utils;
 using namespace mrpt::math;
@@ -241,6 +242,18 @@ void CStereoRectifyMap::setFromCamParams(const mrpt::utils::TStereoCamera & para
 	// Rest of params don't change:
 	m_rectified_image_params.leftCamera.focalLengthMeters = params.leftCamera.focalLengthMeters;
 	m_rectified_image_params.rightCamera.focalLengthMeters = params.rightCamera.focalLengthMeters;
+
+	// R1: Rotation of left camera after rectification: 
+	// R2: idem for right cam:
+	const Eigen::Map<Eigen::Matrix3d> R1e( R1.ptr<double>() );
+	const Eigen::Map<Eigen::Matrix3d> R2e( R2.ptr<double>() );
+
+	CPose3D RR1, RR2;
+	RR1.setRotationMatrix(R1e);
+	RR2.setRotationMatrix(R2e);	
+	m_rot_left  = CPose3DQuat(RR1);
+	m_rot_right = CPose3DQuat(RR2);
+
 	m_rectified_image_params.rightCameraPose = params.rightCameraPose;
 
 #else
@@ -358,6 +371,13 @@ void CStereoRectifyMap::rectify(
 	// Copy output image parameters:
 	stereo_image_observation.setStereoCameraParams( this->m_rectified_image_params );
 
+	// Correct poses:
+	stereo_image_observation.cameraPose += m_rot_left;
+
+	const double d = stereo_image_observation.rightCameraPose.m_coords.norm();
+	// the translation is now pure in the +X direction:
+	stereo_image_observation.rightCameraPose = CPose3DQuat(d,.0,.0, mrpt::math::CQuaternionDouble() );
+
 	MRPT_END
 }
 
@@ -381,7 +401,6 @@ void CStereoRectifyMap::rectify_IPL(
 	const uint32_t ncols_out = m_resize_output ? m_resize_output_value.x : ncols;
 	const uint32_t nrows_out = m_resize_output ? m_resize_output_value.y : nrows;
 
-
 	const CvMat mapx_left = cvMat(nrows_out,ncols_out,  CV_16SC2, const_cast<int16_t*>(&m_dat_mapx_left[0]) );
 	const CvMat mapy_left = cvMat(nrows_out,ncols_out,  CV_16UC1, const_cast<uint16_t*>(&m_dat_mapy_left[0]) );
 	const CvMat mapx_right = cvMat(nrows_out,ncols_out,  CV_16SC2, const_cast<int16_t*>(&m_dat_mapx_right[0]) );
@@ -399,7 +418,6 @@ void CStereoRectifyMap::rectify_IPL(
 
     cv::remap( src1, dst1, mapx1, mapy1,static_cast<int>(m_interpolation_method),cv::BORDER_CONSTANT, cvScalarAll(0) );
     cv::remap( src2, dst2, mapx2, mapy2,static_cast<int>(m_interpolation_method),cv::BORDER_CONSTANT, cvScalarAll(0) );
-
 #endif
 	MRPT_END
 }
@@ -425,3 +443,27 @@ const mrpt::utils::TCamera & CStereoRectifyMap::getRectifiedRightImageParams() c
 	return m_rectified_image_params.rightCamera;
 }
 
+void CStereoRectifyMap::setRectifyMaps( 
+	const std::vector<int16_t> &left_x,  const std::vector<uint16_t> &left_y,
+	const std::vector<int16_t> &right_x, const std::vector<uint16_t> &right_y )
+{
+	m_dat_mapx_left.resize( left_x.size() );
+	m_dat_mapy_left.resize( left_y.size() );
+	m_dat_mapx_right.resize( right_x.size() );
+	m_dat_mapy_right.resize( right_y.size() );
+
+	std::copy( left_x.begin(), left_x.end(), m_dat_mapx_left.begin() );
+	std::copy( left_y.begin(), left_y.end(), m_dat_mapy_left.begin() );
+	std::copy( right_x.begin(), right_x.end(), m_dat_mapx_right.begin() );
+	std::copy( right_y.begin(), right_y.end(), m_dat_mapy_right.begin() );
+}
+
+void CStereoRectifyMap::setRectifyMapsFast( 
+	std::vector<int16_t> & left_x,  std::vector<uint16_t> & left_y,
+	std::vector<int16_t> & right_x, std::vector<uint16_t> & right_y )
+{
+	left_x.swap( m_dat_mapx_left );
+	left_y.swap( m_dat_mapy_left );
+	right_x.swap( m_dat_mapx_right );
+	right_y.swap( m_dat_mapy_right );
+}

@@ -14,9 +14,11 @@
 #include <mrpt/utils/CUncopiable.h>
 
 #include <mrpt/math/math_frwds.h>
+#include <mrpt/utils/types_math.h>
 #include <mrpt/math/CSparseMatrixTemplate.h>
 #include <mrpt/math/CMatrixTemplateNumeric.h>
 #include <mrpt/math/CMatrixFixedNumeric.h>
+#include <cstring> // memcpy
 
 // Include CSparse lib headers, either from the system or embedded:
 extern "C"{
@@ -207,7 +209,7 @@ namespace mrpt
 
 			void add_AB(const CSparseMatrix & A,const CSparseMatrix & B); //!< this = A+B
 			void multiply_AB(const CSparseMatrix & A,const CSparseMatrix & B); //!< this = A*B
-			void multiply_Ab(const mrpt::vector_double &b, mrpt::vector_double &out_res) const; //!< out_res = this * b
+			void multiply_Ab(const mrpt::math::CVectorDouble &b, mrpt::math::CVectorDouble &out_res) const; //!< out_res = this * b
 
 			inline CSparseMatrix operator + (const CSparseMatrix & other) const
 			{
@@ -221,8 +223,8 @@ namespace mrpt
 				RES.multiply_AB(*this,other);
 				return RES;
 			}
-			inline mrpt::vector_double operator * (const mrpt::vector_double & other) const {
-				mrpt::vector_double res;
+			inline mrpt::math::CVectorDouble operator * (const mrpt::math::CVectorDouble & other) const {
+				mrpt::math::CVectorDouble res;
 				multiply_Ab(other,res);
 				return res;
 			}
@@ -380,10 +382,11 @@ namespace mrpt
 				void get_L(CMatrixDouble &out_L) const;
 
 				/** Return the vector from a back-substitution step that solves: Ux=b   */
-				inline mrpt::vector_double backsub(const mrpt::vector_double &b) const { mrpt::vector_double res; backsub(b,res); return res; }
+				template <class VECTOR>
+				inline VECTOR backsub(const VECTOR &b) const { VECTOR res; backsub(b,res); return res; }
 
-				/** Return the vector from a back-substitution step that solves: Ux=b   */
-				void backsub(const mrpt::vector_double &b, mrpt::vector_double &result_x) const;
+				/** Return the vector from a back-substitution step that solves: Ux=b. Vectors can be Eigen::VectorXd or mrpt::math::CVectorDouble   */
+				void backsub(const Eigen::VectorXd &b, Eigen::VectorXd &result_x) const;
 
 				/** \overload for double pointers which assume the user has reserved the output memory for \a result */
 				void backsub(const double *b, double *result, const size_t N) const;

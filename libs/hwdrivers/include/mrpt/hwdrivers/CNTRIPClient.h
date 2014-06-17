@@ -117,6 +117,8 @@ namespace mrpt
 			mutable TConnResult m_answer_connection;
 			mutable NTRIPArgs  m_args;  //!< All the parameters for the NTRIP connection
 
+			mrpt::synch::MT_buffer   m_upload_data;  //!< Buffer for data to be sent back to the server
+
 		public:
 			CNTRIPClient();   //!< Default constructor
 			virtual ~CNTRIPClient();   //!< Default destructor
@@ -160,6 +162,9 @@ namespace mrpt
 				const string		&auth_pass = string()
 				);
 
+			/** Enqueues a string to be sent back to the NTRIP server (e.g. GGA frames) */
+			void sendBackToServer(const std::string &data);
+			
 
 		};	// End of class
 

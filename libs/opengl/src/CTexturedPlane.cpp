@@ -7,14 +7,15 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/opengl.h>  // Precompiled header
+#include "opengl-precomp.h"  // Precompiled header
 
 
 #include <mrpt/opengl/CTexturedPlane.h>
-#include <mrpt/math/utils.h>
-#include "opengl_internals.h"
-#include <mrpt/poses/CPose3D.h>
+//#include <mrpt/math/utils.h>
+#include <mrpt/utils/CStream.h>
 #include <mrpt/opengl/CSetOfTriangles.h>
+
+#include "opengl_internals.h"
 
 using namespace mrpt;
 using namespace mrpt::opengl;

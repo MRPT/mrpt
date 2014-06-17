@@ -7,8 +7,9 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-
-#include <mrpt/base.h>
+#include <mrpt/math/CQuaternion.h>
+#include <mrpt/poses/CPose3D.h>
+#include <mrpt/poses/CPose3DQuat.h>
 #include <gtest/gtest.h>
 
 using namespace mrpt;
@@ -37,7 +38,7 @@ protected:
 		TPose3D t1(CPose3D(q1,0,0,0));
 		TPose3D t2(CPose3D(q1r,0,0,0));
 
-		EXPECT_NEAR(0, std::abs((CPose3D(q1,0,0,0).getAsVectorVal()-CPose3D(q1r,0,0,0).getAsVectorVal()).sumAll()), 1e-6);
+		EXPECT_NEAR(0, std::abs((CPose3D(q1,0,0,0).getAsVectorVal()-CPose3D(q1r,0,0,0).getAsVectorVal()).sum()), 1e-6);
 	}
 
 	void test_toYPRAndBack(double YAW,double PITCH,double ROLL)
@@ -46,14 +47,14 @@ protected:
 		CPose3DQuat		q1(p1);
 		CPose3D			p2 = q1;
 
-		EXPECT_NEAR(0,(p1.getRotationMatrix()-p2.getRotationMatrix()).Abs().sumAll(), 1e-4) <<
+		EXPECT_NEAR(0,(p1.getRotationMatrix()-p2.getRotationMatrix()).array().abs().sum(), 1e-4) <<
 			"ypr->quat->ypr failed with:" << endl
 			<< "  p1:" << p1 << endl
 			<< "  q1:" << q1 << endl
 			<< "  p2:" << p2 << endl;
 
 		CPose3D			p3(q1.quat(),q1[0],q1[1],q1[2] );
-		EXPECT_NEAR(0,(p1.getRotationMatrix()-p3.getRotationMatrix()).Abs().sumAll(), 1e-4) <<
+		EXPECT_NEAR(0,(p1.getRotationMatrix()-p3.getRotationMatrix()).array().abs().sum(), 1e-4) <<
 			"pose constructor from quat failed with:" << endl
 			<< "  p1:" << p1 << endl
 			<< "  q1:" << q1 << endl
@@ -66,11 +67,11 @@ protected:
 		CQuaternionDouble q1;
 		pp.getAsQuaternion(q1);
 
-		mrpt::vector_double q1_ln = q1.ln<mrpt::vector_double>();
+		mrpt::math::CVectorDouble q1_ln = q1.ln<mrpt::math::CVectorDouble>();
 		const CQuaternionDouble q2 = CQuaternionDouble::exp(q1_ln);
 
 		// q2 should be == q1
-		EXPECT_NEAR(0, (q1-q2).Abs().sumAll(), 1e-10 )
+		EXPECT_NEAR(0, (q1-q2).array().abs().sum(), 1e-10 )
 			<< "q1:\n" << q1 << endl
 			<< "q2:\n" << q2 << endl
 			<< "Error:\n" << (q1-q2) << endl;
@@ -87,7 +88,7 @@ protected:
 		CArrayDouble<3> q1_ln = q1.ln<CArrayDouble<3> >();
 
 		// q1_ln should be == v
-		EXPECT_NEAR(0, (q1_ln-v).Abs().sumAll(), 1e-10 )
+		EXPECT_NEAR(0, (q1_ln-v).array().abs().sum(), 1e-10 )
 			<< "v:\n" << v << endl
 			<< "q1_ln:\n" << q1_ln << endl
 			<< "Error:\n" << (q1_ln-v) << endl;
@@ -110,7 +111,7 @@ TEST_F(QuaternionTests, crossProduct)
 
 	const CPose3D p3 = p1 + p2;
 
-	EXPECT_NEAR(0,std::abs((p3.getAsVectorVal()-CPose3D(q3,0,0,0).getAsVectorVal()).sumAll()),  1e-6) <<
+	EXPECT_NEAR(0,std::abs((p3.getAsVectorVal()-CPose3D(q3,0,0,0).getAsVectorVal()).sum()),  1e-6) <<
 		"q1 = " << q1 << endl <<
 		"q1 as CPose3D = " << CPose3D(q1,0,0,0) << endl <<
 		"q2 = " << q2 << endl <<

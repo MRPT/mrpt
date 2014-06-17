@@ -19,7 +19,7 @@ namespace mrpt
   {
 		/** See base class CAbstractPTGBasedReactive for a description and instructions of use.
 		* This particular implementation assumes a 2D robot shape.
-		* 
+		*
 		* Publications:
 		*  - Blanco, Jose-Luis, Javier Gonzalez, and Juan-Antonio Fernandez-Madrigal. "[Extending obstacle avoidance methods through multiple parameter-space transformations](http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.190.4672&rep=rep1&type=pdf)." Autonomous Robots 24.1 (2008): 29-48.
 		*
@@ -36,7 +36,7 @@ namespace mrpt
 		class REACTIVENAV_IMPEXP  CReactiveNavigationSystem : public CAbstractPTGBasedReactive
 		{
 		public:
-			EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+			MRPT_MAKE_ALIGNED_OPERATOR_NEW
 		public:
 			/** See docs in ctor of base class */
 			CReactiveNavigationSystem(
@@ -58,10 +58,10 @@ namespace mrpt
 			void changeRobotShape( const math::CPolygon &shape );
 
 			/** Returns the number of different PTGs that have been setup */
-			virtual size_t getPTG_count() const { return PTGs.size(); } 
+			virtual size_t getPTG_count() const { return PTGs.size(); }
 
 			/** Gets the i'th PTG */
-			virtual CParameterizedTrajectoryGenerator* getPTG(size_t i) 
+			virtual CParameterizedTrajectoryGenerator* getPTG(size_t i)
 			{
 				ASSERT_(i<PTGs.size())
 				return PTGs[i];
@@ -84,12 +84,12 @@ namespace mrpt
 			// Steps for the reactive navigation sytem.
 			// ----------------------------------------------------------------------------
 			virtual void STEP1_CollisionGridsBuilder();
-			
+
 			// See docs in parent class
 			virtual bool STEP2_SenseObstacles();
 
 			// See docs in parent class
-			virtual void STEP3_WSpaceToTPSpace(const size_t ptg_idx,mrpt::vector_double &out_TPObstacles);
+			virtual void STEP3_WSpaceToTPSpace(const size_t ptg_idx,std::vector<float> &out_TPObstacles);
 
 			/** Generates a pointcloud of obstacles, and the robot shape, to be saved in the logging record for the current timestep */
 			virtual void loggingGetWSObstaclesAndShape(CLogFileRecord &out_log);

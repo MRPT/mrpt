@@ -8,6 +8,7 @@
    +---------------------------------------------------------------------------+ */
 
 #include "rawlog-edit-declarations.h"
+#include <mrpt/system/string_utils.h>
 
 using namespace mrpt;
 using namespace mrpt::utils;
@@ -66,7 +67,7 @@ DECLARE_OP_FUNCTION(op_remap_timestamps)
 		throw std::runtime_error("remap-timestamps: This operation needs two arguments in the format 'a;b'.");
 
 	vector<string> sAB_tokens;
-	mrpt::utils::tokenize(sAB_params," ;",sAB_tokens);
+	mrpt::system::tokenize(sAB_params," ;",sAB_tokens);
 	if (sAB_tokens.size()!=2)
 		throw std::runtime_error("remap-timestamps: This operation needs two arguments in the format 'a;b'.");
 

@@ -20,9 +20,6 @@ namespace mrpt
 {
 	namespace utils
 	{
-		using namespace mrpt::math;
-		using namespace mrpt::poses;
-
 		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE( TCamera, mrpt::utils::CSerializable )
 
 		/** Structure to hold the parameters of a pinhole camera model.
@@ -51,8 +48,8 @@ namespace mrpt
 			    @{ */
 
 			uint32_t			ncols,nrows;        //!< Camera resolution
-			CMatrixDouble33 	intrinsicParams;    //!< Matrix of intrinsic parameters (containing the focal length and principal point coordinates)
-			CArrayDouble<5> 	dist;               //!< [k1 k2 t1 t2 k3] -> k_i: parameters of radial distortion, t_i: parameters of tangential distortion (default=0)
+			mrpt::math::CMatrixDouble33 	intrinsicParams;    //!< Matrix of intrinsic parameters (containing the focal length and principal point coordinates)
+			mrpt::math::CArrayDouble<5> 	dist;               //!< [k1 k2 t1 t2 k3] -> k_i: parameters of radial distortion, t_i: parameters of tangential distortion (default=0)
 			double  			focalLengthMeters;  //!< The focal length of the camera, in meters (can be used among 'intrinsicParams' to determine the pixel size).
 
 			/** @} */
@@ -106,7 +103,7 @@ namespace mrpt
 			}
 
 			/** Get the vector of distortion params of the camera  */
-			inline void getDistortionParamsVector ( CMatrixDouble15 &distParVector ) const
+			inline void getDistortionParamsVector ( mrpt::math::CMatrixDouble15 &distParVector ) const
 			{
 				for (size_t i=0;i<5;i++)
 					distParVector.set_unsafe(0,i, dist[i]);
@@ -121,7 +118,7 @@ namespace mrpt
 			}
 
 			/** Set the whole vector of distortion params of the camera */
-			void setDistortionParamsVector( const CMatrixDouble15 &distParVector )
+			void setDistortionParamsVector( const mrpt::math::CMatrixDouble15 &distParVector )
 			{
 				for (size_t i=0;i<5;i++)
 					dist[i] = distParVector.get_unsafe(0,i);
@@ -131,10 +128,10 @@ namespace mrpt
 			template <class VECTORLIKE>
 			void setDistortionParamsVector( const VECTORLIKE &distParVector )
 			{
-				ASSERT_(distParVector.size()==4 || distParVector.size()==5)
+				size_t N = static_cast<size_t>(distParVector.size());
+				ASSERT_(N==4 || N==5)
 				dist[4] = 0; // Default value
-				for (typename VECTORLIKE::Index i=0;i<distParVector.size();i++)
-					dist[i] = distParVector[i];
+				for (size_t i=0;i<N;i++) dist[i] = distParVector[i];
 			}
 
 			/** Set the vector of distortion params of the camera from the individual values of the distortion coefficients

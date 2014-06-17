@@ -10,9 +10,7 @@
 #define CFeature_H
 
 #include <mrpt/utils/CImage.h>
-#include <mrpt/utils/stl_extensions.h>
 #include <mrpt/math/CMatrix.h>
-#include <mrpt/math/ops_matrices.h>
 #include <mrpt/math/KDTreeCapable.h>
 
 #include <mrpt/vision/types.h>
@@ -91,14 +89,15 @@ namespace mrpt
 			{
 				TDescriptors();  // Initialization
 
-				std::vector<uint8_t>	        SIFT;			        //!< Feature descriptor
-				std::vector<float>			    SURF;			        //!< Feature descriptor
-				std::vector<float>			    SpinImg;		        //!< The 2D histogram as a single row
-				uint16_t					    SpinImg_range_rows;     //!< The number of rows (corresponding to range bins in the 2D histogram) of the original matrix from which SpinImg was extracted as a vector.
-				mrpt::math::CMatrix			    PolarImg;		        //!< A polar image centered at the interest point
-				mrpt::math::CMatrix			    LogPolarImg;	        //!< A log-polar image centered at the interest point
-				bool						    polarImgsNoRotation;    //!< If set to true (manually, default=false) the call to "descriptorDistanceTo" will not consider all the rotations between polar image descriptors (PolarImg, LogPolarImg)
+				std::vector<uint8_t>	        SIFT;						//!< SIFT feature descriptor
+				std::vector<float>			    SURF;						//!< SURF feature descriptor
+				std::vector<float>			    SpinImg;					//!< The 2D histogram as a single row
+				uint16_t					    SpinImg_range_rows;			//!< The number of rows (corresponding to range bins in the 2D histogram) of the original matrix from which SpinImg was extracted as a vector.
+				mrpt::math::CMatrix			    PolarImg;					//!< A polar image centered at the interest point
+				mrpt::math::CMatrix			    LogPolarImg;				//!< A log-polar image centered at the interest point
+				bool						    polarImgsNoRotation;		//!< If set to true (manually, default=false) the call to "descriptorDistanceTo" will not consider all the rotations between polar image descriptors (PolarImg, LogPolarImg)
 				deque<vector<vector<int32_t> > >    multiSIFTDescriptors;   //!< A set of SIFT-like descriptors for each orientation and scale of the multiResolution feature (there is a vector of descriptors for each scale)
+				std::vector<uint8_t>			ORB;						//!< ORB feature descriptor	
 
 				bool hasDescriptorSIFT() const { return !SIFT.empty(); };                       //!< Whether this feature has this kind of descriptor
 				bool hasDescriptorSURF() const { return !SURF.empty(); }                        //!< Whether this feature has this kind of descriptor
@@ -108,6 +107,7 @@ namespace mrpt
 				bool hasDescriptorMultiSIFT() const {
                     return (multiSIFTDescriptors.size() > 0 && multiSIFTDescriptors[0].size() > 0); //!< Whether this feature has this kind of descriptor
                 }
+				bool hasDescriptorORB() const { return !ORB.empty(); }						//!< Whether this feature has this kind of descriptor
 			}
 			descriptors;
 
@@ -157,17 +157,21 @@ namespace mrpt
 				float &minDistAngle,
 				bool normalize_distances = true ) const;
 
+			/** Computes the Hamming distance "this" and the "other" descriptor ORB descriptor */
+			uint8_t descriptorORBDistanceTo( const CFeature &oFeature ) const; 
+
 			/** Save the feature to a text file in this format:
               *    "%% Dump of mrpt::vision::CFeatureList. Each line format is:\n"
-              *    "%% ID TYPE X Y ORIENTATION SCALE TRACK_STATUS RESPONSE HAS_SIFT [SIFT] HAS_SURF [SURF] HAS_MULTI [MULTI]_i"
+              *    "%% ID TYPE X Y ORIENTATION SCALE TRACK_STATUS RESPONSE HAS_SIFT [SIFT] HAS_SURF [SURF] HAS_MULTI [MULTI_i] HAS_ORB [ORB]"
               *    "%% |---------------------- feature ------------------| |---------------------- descriptors ------------------------|"
               *    "%% with:\n"
-              *    "%%  TYPE  : The used detector: 0:KLT, 1: Harris, 2: BCD, 3: SIFT, 4: SURF, 5: Beacon, 6: FAST\n"
+              *    "%%  TYPE  : The used detector: 0:KLT, 1: Harris, 2: BCD, 3: SIFT, 4: SURF, 5: Beacon, 6: FAST, 7: ORB\n"
               *    "%%  HAS_* : 1 if a descriptor of that type is associated to the feature."
               *    "%%  SIFT  : Present if HAS_SIFT=1: N DESC_0 ... DESC_N-1"
               *    "%%  SURF  : Present if HAS_SURF=1: N DESC_0 ... DESC_N-1"
               *    "%%  MULTI : Present if HAS_MULTI=1: SCALE ORI N DESC_0 ... DESC_N-1"
-              *    "%%-------------------------------------------------------------------------------------------\n");
+			  *	   "%%  ORB   : Present if HAS_ORB=1: DESC_0 ... DESC_31
+              *    "%%-----------------------------------------------------------------------------\n");
 			*/
             void saveToTextFile( const std::string &filename, bool APPEND = false );
 

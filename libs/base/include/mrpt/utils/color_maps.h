@@ -10,7 +10,7 @@
 #ifndef color_maps_H
 #define color_maps_H
 
-#include <mrpt/utils/utils_defs.h>
+#include <mrpt/base/link_pragmas.h>
 
 namespace mrpt
 {

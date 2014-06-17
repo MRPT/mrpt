@@ -7,13 +7,13 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/base.h>  // Precompiled headers
-
+#include "base-precomp.h"  // Precompiled headers
 
 #include <mrpt/poses/CPoint3D.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/poses/CPoint2D.h>
 #include <mrpt/poses/CPose2D.h>
+#include <mrpt/utils/CStream.h>
 
 using namespace mrpt;
 using namespace mrpt::poses;
@@ -26,6 +26,10 @@ IMPLEMENTS_SERIALIZABLE(CPoint3D, CSerializable, mrpt::poses)
 CPoint3D::CPoint3D( const CPoint2D &p) { m_coords[0]=p.x(); m_coords[1]=p.y(); m_coords[2]=0; }
 /** Constructor from an CPose2D object. */
 CPoint3D::CPoint3D( const CPose2D &p) { m_coords[0]=p.x(); m_coords[1]=p.y(); m_coords[2]=0; }
+
+/** Constructor from an CPose3D object. */
+CPoint3D::CPoint3D( const CPose3D &p) { m_coords[0]=p.x(); m_coords[1]=p.y(); m_coords[2]=p.z(); }
+
 
 /*---------------------------------------------------------------
    Implements the writing to a CStream capability of

@@ -13,6 +13,7 @@
 #include <mrpt/poses/CPose3D.h>
 
 using namespace mrpt;
+using namespace mrpt::poses;
 using namespace mrpt::utils;
 using namespace mrpt::synch;
 using namespace mrpt::system;
@@ -31,7 +32,7 @@ void thread_reader(std::auto_ptr<CPipeReadEndPoint> read_pipe)
 		read_pipe->ReadBuffer(&len,sizeof(len));
 		read_pipe->ReadBuffer(buf,len);
 		buf[len]=0;
-		
+
 		cout << "RX: " << buf << endl;
 
 		// Read MRPT object from a pipe:
@@ -87,9 +88,9 @@ void thread_writer(std::auto_ptr<CPipeWriteEndPoint> write_pipe)
 void ThreadsTest()
 {
 	// Create a pipe:
-	std::auto_ptr<CPipeReadEndPoint>  read_pipe; 
+	std::auto_ptr<CPipeReadEndPoint>  read_pipe;
 	std::auto_ptr<CPipeWriteEndPoint> write_pipe;
-	
+
 	CPipe::createPipe(read_pipe,write_pipe);
 
 	// And send the two end-points to two threads:

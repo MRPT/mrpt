@@ -9,7 +9,7 @@ kinect-3d-view
 =head1 DESCRIPTION
 
 B<kinect-3d-view> is a simple example that continuously grabs from a
-Kinect sensor and displays the 3D point cloud live. It also allows to 
+Kinect sensor and displays the 3D point cloud live. It also allows one to 
 switch between the RGB and IR channels, to control the tilt servo and 
 displays the accelerometer readings.
 

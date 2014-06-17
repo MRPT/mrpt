@@ -87,11 +87,11 @@ namespace mrpt
 		} \
 		catch(std::exception &e) \
 		{ \
-			wxMessageBox( wxString(e.what(),wxConvUTF8), wxT("Exception"), wxOK, this); \
+			wxMessageBox( wxString(e.what(),wxConvUTF8), wxT("Exception"), wxOK, NULL); \
 		} \
 		catch(...) \
 		{ \
-			wxMessageBox( _("Untyped exception!"), _("Exception"), wxOK, this); \
+			wxMessageBox( _("Untyped exception!"), _("Exception"), wxOK, NULL); \
 		}
 
 #endif

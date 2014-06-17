@@ -9,12 +9,12 @@
 #ifndef CPose3DInterpolator_H
 #define CPose3DInterpolator_H
 
-#include <mrpt/poses/CPose.h>
-#include <mrpt/poses/CPose3D.h>
-#include <mrpt/poses/CPoint3D.h>
-#include <mrpt/system/os.h>
-#include <mrpt/utils/stl_extensions.h>
+#include <mrpt/utils/CSerializable.h>
+#include <mrpt/system/datetime.h>
 #include <mrpt/utils/TEnumType.h>
+#include <mrpt/math/math_frwds.h>
+#include <mrpt/poses/CPose3D.h>
+
 
 namespace mrpt
 {

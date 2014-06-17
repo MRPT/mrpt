@@ -23,8 +23,14 @@
 
 #include "CAboutBox.h"
 
-#include <mrpt/utils.h>
 #include <mrpt/gui/WxUtils.h>
+
+#include <mrpt/utils/CFileGZInputStream.h>
+#include <mrpt/utils/CFileGZOutputStream.h>
+#include <mrpt/utils/CFileOutputStream.h>
+#include <mrpt/opengl/CGridPlaneXY.h>
+#include <mrpt/opengl/CText.h>
+#include <mrpt/opengl/stock_objects.h>
 
 
 #include "imgs/main_icon.xpm"

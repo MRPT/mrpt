@@ -7,7 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/gui.h>  // precompiled header
+#include "gui-precomp.h"   // Precompiled headers
 
 
 
@@ -274,8 +274,8 @@ void CWindowDialogPlots::OnMouseMove(wxMouseEvent& event)
 
 // Add / Modify a 2D plot using a MATLAB-like format string
 void CWindowDialogPlots::plot(
-	const vector_float &x,
-	const vector_float &y,
+	const CVectorFloat &x,
+	const CVectorFloat &y,
 	const std::string  &lineFormat,
 	const std::string  &plotName)
 {
@@ -362,8 +362,8 @@ void CWindowDialogPlots::plot(
 // x[0,1]: Mean
 // y[0,1,2]: Covariance matrix (0,0),(1,1),(0,1)
 void CWindowDialogPlots::plotEllipse(
-	const vector_float &x,
-	const vector_float &y,
+	const CVectorFloat &x,
+	const CVectorFloat &y,
 	const std::string  &lineFormat,
 	const std::string  &plotName,
 	bool showName)
@@ -892,8 +892,8 @@ void CDisplayWindowPlots::image(
 					internal_plot
  ---------------------------------------------------------------*/
 void CDisplayWindowPlots::internal_plot(
-	vector_float &x,
-	vector_float &y,
+	CVectorFloat &x,
+	CVectorFloat &y,
 	const std::string  &lineFormat,
 	const std::string  &plotName)
 {

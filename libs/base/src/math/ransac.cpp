@@ -7,11 +7,9 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/base.h>  // Precompiled headers
-
+#include "base-precomp.h"  // Precompiled headers
 
 #include <mrpt/math/ransac.h>
-#include <mrpt/math/utils.h>
 #include <mrpt/math/ops_vectors.h>
 #include <mrpt/math/CMatrix.h>
 #include <mrpt/math/CMatrixD.h>

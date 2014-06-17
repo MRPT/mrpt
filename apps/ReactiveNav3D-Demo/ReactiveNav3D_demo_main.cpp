@@ -9,6 +9,8 @@
 
 #include <iostream>
 #include "ReactiveNav3D_demo.h"
+#include <mrpt/utils/CConfigFile.h>
+#include <mrpt/utils/CConfigFileMemory.h>
 
 
 const char *default_cfg_txt =

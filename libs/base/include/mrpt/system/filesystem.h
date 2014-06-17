@@ -9,7 +9,11 @@
 #ifndef  MRPT_FILESYSTEM_H
 #define  MRPT_FILESYSTEM_H
 
-#include <mrpt/utils/utils_defs.h>
+#include <mrpt/config.h>
+#include <mrpt/utils/compiler_fixes.h>
+#include <mrpt/base/link_pragmas.h>
+#include <mrpt/utils/types_simple.h>
+#include <string>
 
 namespace mrpt
 {
@@ -27,8 +31,7 @@ namespace mrpt
 		std::string BASE_IMPEXP getcwd();
 
 		/** Creates a directory
-		  * \return Returns false on any error, true on everything OK.
-		  * \todo Seems to return false on Linux even after creating the directory OK.
+		  * \return Returns false on any error, true on directory created or already existed.
 		  */
 		bool  BASE_IMPEXP createDirectory( const std::string &dirName );
 

@@ -1,0 +1,47 @@
+=head1 NAME
+
+DifOdometry-Datasets - DIFODO (visual odometry method) from datasets
+
+=head1 SYNOPSIS
+
+DifOdometry-Datasets  [-h] [-c] [-cc ] [-s] 
+
+=head1 DESCRIPTION
+
+This GUI application is designed to test the performance of DIFODO 
+(visual odometry method) with the datasets of TUM. 
+Only the ground truth and the depth images are used.
+
+A config file can be used to customize the most important parameters of the
+method (there is an embedded config file that is loaded by default but you 
+should at least change the rawlog file path). 
+
+See more details online: 
+http://www.mrpt.org/list-of-mrpt-apps/application-difodometry-datasets/
+
+=head1 BUGS
+
+Please report bugs at http://www.mrpt.org/project/issues/MRPT
+
+=head1 SEE ALSO
+
+The application wiki page at http://www.mrpt.org/Applications
+
+=head1 AUTHORS
+
+B<DifOdometry-Datasets> is part of the Mobile Robot Programming Toolkit (MRPT),
+and was originally written by Mariano Jaimez Tarifa, from the 
+MAPIR laboratory (University of Malaga).
+
+This manual page was written by Jose Luis Blanco <joseluisblancoc@gmail.com>.
+
+=head1 COPYRIGHT
+
+This program is free software; you can redistribute it and/or modify it
+under the terms of the BSD License.
+
+On Debian GNU/Linux systems, the complete text of the BSD License can be 
+found in `/usr/share/common-licenses/BSD'.
+
+=cut
+

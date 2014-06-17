@@ -49,7 +49,7 @@ namespace options
 			{
 				bool hessian_valid; //!< Will be false if the Hessian wasn't evaluated for some reason.
 				/** The column-compressed form of the last Hessian matrix (the inverse of covariance), for all the kf-to-kf unknowns (note that this is after Schur reduction) */
-				mrpt::utils::CSparseMatrix  hessian;
+				mrpt::math::CSparseMatrix  hessian;
 
 				extra_results_t() { clear(); }
 				void clear() { hessian_valid=false; }
@@ -68,7 +68,7 @@ namespace options
 			{
 				bool hessian_valid; //!< Will be false if the Hessian wasn't evaluated for some reason.
 				/** The column-compressed form of the last Hessian matrix (the inverse of covariance), for all the problem unknowns */
-				mrpt::utils::CSparseMatrix  hessian;
+				mrpt::math::CSparseMatrix  hessian;
 
 				extra_results_t() { clear(); }
 				void clear() { hessian_valid=false; }

@@ -13,22 +13,13 @@
 #include <mrpt/obs/link_pragmas.h>
 
 #include <mrpt/utils/CSerializable.h>
-#include <mrpt/utils/CStream.h>
-#include <mrpt/system/os.h>
+//#include <mrpt/utils/CStream.h>
+//#include <mrpt/system/os.h>
 #include <mrpt/system/datetime.h>
+#include <mrpt/math/math_frwds.h>
 
-/** The main namespace for all the Mobile Robot Programming Toolkit (MRPT) C++ libraries. */
 namespace mrpt
 {
-	namespace poses
-	{
-		class CPosePDF;
-		class CPose2D;
-		class CPose3D;
-	}
-
-	namespace math { struct TPose3D; }
-
 	/** This namespace contains algorithms for SLAM, localization, map building, representation of robot's actions and observations, and representation of many kinds of metric maps.
 	  */
 	namespace slam
@@ -48,10 +39,10 @@ namespace mrpt
 		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CObservation, mrpt::utils::CSerializable, OBS_IMPEXP )
 
 		/** Declares a class that represents any robot's observation.
-		 *  This is a base class for many types of sensor observations. 
+		 *  This is a base class for many types of sensor observations.
 		 *  Users can add new observation types creating a new class deriving from this one.
 		 *
-		 *  <b>IMPORTANT</b>: Observations don't include any information about the robot pose, 
+		 *  <b>IMPORTANT</b>: Observations don't include any information about the robot pose,
 		 *   just  raw sensory data and, where aplicable, information about the sensor position and
 		 *   orientation in the local frame of the robot.
 		 *

@@ -17,10 +17,18 @@
 */
 
 
-#include <mrpt/hwdrivers.h>
+#include <mrpt/hwdrivers/CKinect.h>
 #include <mrpt/gui.h>
-#include <mrpt/maps.h>
+#include <mrpt/slam/CColouredPointsMap.h>
+#include <mrpt/synch/CThreadSafeVariable.h>
+#include <mrpt/utils/CTimeLogger.h>
+#include <mrpt/utils/CFileGZInputStream.h>
 #include <mrpt/slam/CRawlog.h>
+#include <mrpt/opengl/CPointCloudColoured.h>
+#include <mrpt/opengl/CPlanarLaserScan.h>
+#include <mrpt/opengl/CFrustum.h>
+#include <mrpt/opengl/CGridPlaneXY.h>
+#include <mrpt/opengl/stock_objects.h>
 #include <memory> // for std::auto_ptr, unique_ptr
 
 // Demonstrate MRPT RGB+D --> PCL point cloud conversion:

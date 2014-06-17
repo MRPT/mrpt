@@ -124,7 +124,7 @@ EIGEN_STRONG_INLINE void Eigen::MatrixBase<Derived>::eigenVectorsSymmetricVec( M
 
 
 template <class Derived>
-bool Eigen::MatrixBase<Derived>::fromMatlabStringFormat(const std::string &s, bool dumpErrorMsgToStdErr)
+bool Eigen::MatrixBase<Derived>::fromMatlabStringFormat(const std::string &s, std::ostream *dump_errors_here)
 {
 	// Start with a (0,0) matrix:
 	if ( Derived::RowsAtCompileTime==Eigen::Dynamic)
@@ -184,8 +184,8 @@ bool Eigen::MatrixBase<Derived>::fromMatlabStringFormat(const std::string &s, bo
 			if ((nRow>0 && size_t(cols())!=N) ||
 				(nRow==0 && Derived::ColsAtCompileTime!=Eigen::Dynamic && Derived::ColsAtCompileTime!=int(N)) )
 			{
-				if (dumpErrorMsgToStdErr)
-					std::cerr << "[fromMatlabStringFormat] Row " << nRow+1 << " has invalid number of columns.\n";
+				if (dump_errors_here)
+                    (*dump_errors_here) << "[fromMatlabStringFormat] Row " << nRow+1 << " has invalid number of columns.\n";
 				return false;
 			}
 
@@ -194,8 +194,8 @@ bool Eigen::MatrixBase<Derived>::fromMatlabStringFormat(const std::string &s, bo
 				internal_mrpt::MatOrVecResizer<Derived::RowsAtCompileTime,Derived::ColsAtCompileTime>::doit(derived(),nRow+1,N);
 			else if (Derived::RowsAtCompileTime!=Eigen::Dynamic && int(nRow)>=Derived::RowsAtCompileTime)
 			{
-				if (dumpErrorMsgToStdErr)
-					std::cerr << "[fromMatlabStringFormat] Read more rows than the capacity of the fixed sized matrix.\n";
+				if (dump_errors_here)
+					(*dump_errors_here) << "[fromMatlabStringFormat] Read more rows than the capacity of the fixed sized matrix.\n";
 				return false;
 			}
 
@@ -211,8 +211,8 @@ bool Eigen::MatrixBase<Derived>::fromMatlabStringFormat(const std::string &s, bo
 	// For fixed sized matrices, check size:
 	if (Derived::RowsAtCompileTime!=Eigen::Dynamic && int(nRow)!=Derived::RowsAtCompileTime)
 	{
-		if (dumpErrorMsgToStdErr)
-			std::cerr << "[fromMatlabStringFormat] Read less rows than the capacity of the fixed sized matrix.\n";
+		if (dump_errors_here)
+			(*dump_errors_here) << "[fromMatlabStringFormat] Read less rows than the capacity of the fixed sized matrix.\n";
 		return false;
 	}
 	return true; // Ok

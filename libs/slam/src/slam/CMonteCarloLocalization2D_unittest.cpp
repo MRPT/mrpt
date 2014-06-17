@@ -8,8 +8,15 @@
    +---------------------------------------------------------------------------+ */
 
 
-#include <mrpt/base.h>
-#include <mrpt/slam.h>
+#include <mrpt/utils/CFileGZInputStream.h>
+#include <mrpt/utils/CConfigFile.h>
+#include <mrpt/slam/CMonteCarloLocalization2D.h>
+#include <mrpt/slam/CMultiMetricMap.h>
+#include <mrpt/slam/CSimpleMap.h>
+#include <mrpt/slam/CRawlog.h>
+#include <mrpt/system/filesystem.h>
+#include <mrpt/system/os.h>
+#include <mrpt/random.h>
 #include <gtest/gtest.h>
 
 using namespace mrpt;
@@ -18,16 +25,17 @@ using namespace mrpt::utils;
 using namespace mrpt::poses;
 using namespace mrpt::math;
 using namespace mrpt::random;
+using namespace mrpt::system;
 using namespace std;
 
-// Defined in run_unittests.cpp
+// Defined in tests/test_main.cpp
 namespace mrpt { namespace utils {
 	extern std::string MRPT_GLOBAL_UNITTEST_SRC_DIR;
   }
 }
 
 
-TEST(MonteCarlo2D, RunSampleDataset)
+void run_test_pf_localization(CPose2D &meanPose, CMatrixDouble33 &cov)
 {
 // ------------------------------------------------------
 // The code below is a simplification of the program "pf-localization"
@@ -136,10 +144,6 @@ TEST(MonteCarlo2D, RunSampleDataset)
 	// --------------------------
 	rawlog.loadFromRawLogFile(RAWLOG_FILE);
 	rawlogEntries = rawlog.size();
-
-	CPose2D              meanPose;
-	CMatrixDouble33      cov;
-
 
 	for ( vector_int::iterator itNum = particles_count.begin(); itNum!=particles_count.end(); ++itNum )
 	{
@@ -255,18 +259,37 @@ TEST(MonteCarlo2D, RunSampleDataset)
 		} // for repetitions
 	} // end of loop for different # of particles
 
+}
 
-
-	// TEST =================
+// TEST =================
+TEST(MonteCarlo2D, RunSampleDataset)
+{
 	// Actual ending point:
 	const CPose2D  GT_endpose(15.904,-10.010,DEG2RAD(4.93));
 
-	const double  final_pf_cov_trace = cov.trace();
-	const CPose2D final_pf_pose      = meanPose;
+	// Placeholder for results:
+	CPose2D meanPose;
+	CMatrixDouble33 cov;
 
-	EXPECT_NEAR( (final_pf_pose-GT_endpose).norm(),0, 0.10 )
-		<< "Final pose: " << final_pf_pose << endl << "Expected: " << GT_endpose << endl;
+	// Invoke test:
+	// Give it 3 opportunities, since it might fail once for bad luck, or even twice in an extreme bad luck:
+	for (int op=0;op<3;op++)
+	{
+		run_test_pf_localization(meanPose,cov);
 
-	EXPECT_TRUE(final_pf_cov_trace < 0.01 )
-		<< "final_pf_cov_trace = " << final_pf_cov_trace << endl;
+		const double  final_pf_cov_trace = cov.trace();
+		const CPose2D final_pf_pose      = meanPose;
+
+		bool pass1 = (final_pf_pose-GT_endpose).norm() < 0.10; 
+		bool pass2 = final_pf_cov_trace < 0.01;
+
+		if (pass1 && pass2) 
+			return; // OK! 
+
+		// else: give it another try...
+		cout << "\n*Warning: Test failed. Will give it another chance, since after all it's nondeterministic!\n";
+	}
+
+	FAIL() << "Failed to converge after 3 opportunities!!" << endl;
 }
+

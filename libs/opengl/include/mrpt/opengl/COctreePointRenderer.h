@@ -12,7 +12,8 @@
 #include <mrpt/opengl/CRenderizable.h>
 #include <mrpt/opengl/CSetOfObjects.h>
 #include <mrpt/opengl/CBox.h>
-
+#include <mrpt/opengl/gl_utils.h>
+#include <mrpt/utils/aligned_containers.h>
 
 namespace mrpt
 {
@@ -37,6 +38,7 @@ namespace mrpt
 	namespace opengl
 	{
 		using namespace mrpt::utils;
+		using namespace mrpt::math;
 
 		/** Template class that implements the data structure and algorithms for Octree-based efficient rendering.
 		  *  \sa mrpt::opengl::CPointCloud, mrpt::opengl::CPointCloudColoured, http://www.mrpt.org/Efficiently_rendering_point_clouds_of_millions_of_points
@@ -55,7 +57,9 @@ namespace mrpt
 
 			/** Copy ctor */
 			COctreePointRenderer(const COctreePointRenderer &) :
-				m_octree_has_to_rebuild_all(true)
+				m_octree_has_to_rebuild_all(true),
+				m_visible_octree_nodes(0),
+				m_visible_octree_nodes_ongoing(0)
 			{ }
 
 
@@ -192,7 +196,7 @@ namespace mrpt
 				}
 
             public:
-				EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+				MRPT_MAKE_ALIGNED_OPERATOR_NEW
 			};
 
 			struct OPENGL_IMPEXP TRenderQueueElement

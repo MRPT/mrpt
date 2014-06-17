@@ -8,6 +8,9 @@
    +---------------------------------------------------------------------------+ */
 
 #include "rawlog-edit-declarations.h"
+#include <mrpt/slam/CObservation3DRangeScan.h>
+#include <mrpt/slam/CObservationImage.h>
+#include <mrpt/slam/CObservationStereoImages.h>
 
 using namespace mrpt;
 using namespace mrpt::utils;
@@ -42,7 +45,7 @@ DECLARE_OP_FUNCTION(op_externalize)
 		{
 			entries_converted = 0;
 			entries_skipped  = 0;
-			getArgValue<string>(cmdline,"image-format",imgFileExtension); 
+			getArgValue<string>(cmdline,"image-format",imgFileExtension);
 
 			// Create the default "/Images" directory.
 			const string out_rawlog_basedir = extractFileDirectory(outrawlog.out_rawlog_filename);

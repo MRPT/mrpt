@@ -10,12 +10,8 @@
 #define opengl_CSetOfObjects_H
 
 #include <mrpt/opengl/CRenderizable.h>
-
-// All these are needed for the auxiliary methods posePDF2opengl()
-#include <mrpt/poses/CPointPDF.h>
-#include <mrpt/poses/CPosePDF.h>
-#include <mrpt/poses/CPose3DPDF.h>
-#include <mrpt/poses/CPose3DQuatPDF.h>
+#include <mrpt/poses/poses_frwds.h>  // All these are needed for the auxiliary methods posePDF2opengl()
+#include <mrpt/utils/CStringList.h>
 
 namespace mrpt
 {
@@ -129,7 +125,7 @@ namespace mrpt
 
 			/** Retrieves a list of all objects in text form.
 			  */
-			void dumpListOfObjects( utils::CStringList  &lst );
+			void dumpListOfObjects( mrpt::utils::CStringList  &lst );
 
 			/** Ray tracing
 			  */

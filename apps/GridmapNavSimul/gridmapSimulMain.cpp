@@ -38,7 +38,14 @@
 #include "../wx-common/CMyRedirector.h"
 #include "CAboutBox.h"
 
-#include <mrpt/base.h>
+#include <mrpt/system/filesystem.h>
+#include <mrpt/utils/CFileOutputStream.h>
+#include <mrpt/utils/CFileGZInputStream.h>
+#include <mrpt/utils/CFileGZOutputStream.h>
+#include <mrpt/opengl/CSetOfObjects.h>
+#include <mrpt/opengl/CPlanarLaserScan.h>
+#include <mrpt/opengl/CPointCloud.h>
+#include <mrpt/opengl/CGridPlaneXY.h>
 
 #if !wxUSE_GLCANVAS
 #error "OpenGL required: set wxUSE_GLCANVAS to 1 and rebuild wxWidgets"
@@ -83,9 +90,16 @@ wxBitmap MyArtProvider::CreateBitmap(const wxArtID& id,
 
 #include <mrpt/gui/CMyGLCanvasBase.h>
 
-#include <mrpt/maps.h>
-#include <mrpt/obs.h>
-#include <mrpt/hwdrivers.h>
+#include <mrpt/utils/CTicTac.h>
+#include <mrpt/utils/CRobotSimulator.h>
+#include <mrpt/slam/CRawlog.h>
+#include <mrpt/slam/COccupancyGridMap2D.h>
+#include <mrpt/slam/CActionRobotMovement2D.h>
+#include <mrpt/slam/CObservationOdometry.h>
+#include <mrpt/hwdrivers/CJoystick.h>
+
+#include <mrpt/opengl/stock_objects.h>
+#include <mrpt/opengl/stock_objects.h>
 
 #include <mrpt/gui/WxUtils.h>
 
@@ -166,10 +180,10 @@ void CMyGLCanvas::OnPostRender()
 	the_robot.getRealPose(p);
 
 	string s = format("Pose: (%.03f,%.03f,%.02fdeg)", p.x(),p.y(), RAD2DEG(p.phi()) );
-	renderTextBitmap( 20,20, s.c_str(), 1,0,0 , MRPT_GLUT_BITMAP_HELVETICA_18);
+	mrpt::opengl::CRenderizable::renderTextBitmap( 20,20, s.c_str(), 1,0,0 , MRPT_GLUT_BITMAP_HELVETICA_18);
 
 	s = format("V=%.03fm/s  W=%.02fdeg/s", the_robot.getV(), RAD2DEG(the_robot.getW()) );
-	renderTextBitmap( 20,45, s.c_str(), 1,0,0 , MRPT_GLUT_BITMAP_HELVETICA_18);
+	mrpt::opengl::CRenderizable::renderTextBitmap( 20,45, s.c_str(), 1,0,0 , MRPT_GLUT_BITMAP_HELVETICA_18);
 }
 
 void CMyGLCanvas::OnCharCustom( wxKeyEvent& event )

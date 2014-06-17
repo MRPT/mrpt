@@ -7,11 +7,13 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/maps.h>  // Precompiled header
-
+#include "maps-precomp.h" // Precomp header
 
 #include <mrpt/slam/COccupancyGridMap2D.h>
-#include <mrpt/opengl.h>
+#include <mrpt/system/os.h>
+#include <mrpt/utils/round.h>
+#include <mrpt/opengl/CSetOfObjects.h>
+#include <mrpt/opengl/CTexturedPlane.h>
 
 using namespace mrpt;
 using namespace mrpt::slam;

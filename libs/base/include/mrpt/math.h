@@ -14,6 +14,7 @@
 #include <mrpt/math/transform_gaussian.h>
 #include <mrpt/math/fourier.h>
 #include <mrpt/math/utils.h>
+#include <mrpt/math/data_utils.h>
 #include <mrpt/math/ops_vectors.h>
 #include <mrpt/math/ops_matrices.h>
 #include <mrpt/math/ops_containers.h>

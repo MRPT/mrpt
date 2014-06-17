@@ -7,12 +7,13 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/slam.h>  // Precompiled headers
+#include "slam-precomp.h"   // Precompiled headerss
 
 #include <mrpt/slam/CMonteCarloLocalization3D.h>
 #include <mrpt/slam/CSensoryFrame.h>
 
 #include <mrpt/math/utils.h>
+#include <mrpt/utils/round.h>
 #include <mrpt/slam/PF_aux_structs.h>
 
 using namespace std;
@@ -20,6 +21,7 @@ using namespace mrpt;
 using namespace mrpt::bayes;
 using namespace mrpt::poses;
 using namespace mrpt::math;
+using namespace mrpt::utils;
 
 #include <mrpt/slam/PF_implementations_data.h>
 
@@ -206,7 +208,7 @@ void CMonteCarloLocalization3D::PF_SLAM_implementation_custom_update_particle_wi
 void CMonteCarloLocalization3D::PF_SLAM_implementation_replaceByNewParticleSet(
 	CParticleList	&old_particles,
 	const vector<TPose3D>	&newParticles,
-	const vector_double		&newParticlesWeight,
+	const vector<double>	&newParticlesWeight,
 	const vector<size_t>	&newParticlesDerivedFromIdx )  const
 {
 	ASSERT_(size_t(newParticlesWeight.size())==newParticles.size())

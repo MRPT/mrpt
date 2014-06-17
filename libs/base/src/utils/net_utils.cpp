@@ -7,13 +7,15 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/base.h>  // Precompiled headers
+#include "base-precomp.h"  // Precompiled headers
 
 #include <mrpt/utils/net_utils.h>
 #include <mrpt/utils/CTicTac.h>
 #include <mrpt/system/string_utils.h>
 #include <mrpt/system/threads.h>
 #include <mrpt/synch.h>
+#include <cstring>
+#include <stdio.h>
 
 #if defined(MRPT_OS_LINUX) || defined(MRPT_OS_APPLE)
 	#define  INVALID_SOCKET		(-1)
@@ -162,7 +164,7 @@ mrpt::utils::net::http_get(
 		  get_object.c_str(),server_addr.c_str());
 
 		// Other headers:
-		for (TParameters<string>::const_iterator i=headers_to_send.begin();i!=headers_to_send.end();i++)
+		for (TParameters<string>::const_iterator i=headers_to_send.begin();i!=headers_to_send.end();++i)
 		{
 			req+=i->first;
 			req+=": ";
@@ -287,7 +289,7 @@ mrpt::utils::net::http_get(
 
 						mrpt::system::tokenize(aux_all_headers,"\r\n",lstLines);
 
-						for (deque<string>::const_iterator i=lstLines.begin();i!=lstLines.end();i++)
+						for (deque<string>::const_iterator i=lstLines.begin();i!=lstLines.end();++i)
 						{
 							const size_t p = i->find(":");
 							if (p==string::npos) continue;

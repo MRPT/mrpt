@@ -7,8 +7,11 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/reactivenav.h>  // Precomp header
+#include "reactivenav-precomp.h" // Precomp header
 
+#include <mrpt/reactivenav/CPRRTNavigator.h>
+#include <mrpt/poses/CPose2D.h>
+#include <mrpt/math/wrap2pi.h>
 #include <mrpt/system/threads.h>
 
 using namespace mrpt::reactivenav;

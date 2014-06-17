@@ -14,7 +14,6 @@
 #define GLEW_STATIC
 
 #include <mrpt/config.h>
-#include <mrpt/utils/utils_defs.h>
 
 #if MRPT_HAS_OPENGL_GLUT
 	#ifdef MRPT_OS_WINDOWS
@@ -47,18 +46,19 @@
 
 	/* Jerome Monceaux : bilock@gmail.com
 	 * Add inclusion of otherlibs/freeglut/GL/glut.h
-	 * because GLUT_INIT_STATE is detected as undefined 
+	 * because GLUT_INIT_STATE is detected as undefined
 	 * under osx
 	 */
 	#ifdef __APPLE__
-		#include <otherlibs/freeglut/GL/freeglut_std.h>
+		//#include <otherlibs/freeglut/GL/freeglut_std.h>
+		#ifndef GLUT_INIT_STATE
+			#define GLUT_INIT_STATE 0x007C
+		#endif
+	#else
+		#ifdef HAVE_FREEGLUT_EXT_H
+			#include <GL/freeglut_ext.h>
+		#endif
 	#endif
-
-	#ifdef HAVE_FREEGLUT_EXT_H
-		#include <GL/freeglut_ext.h>
-	#endif
-
-
 
 #endif // MRPT_HAS_OPENGL_GLUT
 

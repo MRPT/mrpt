@@ -1,4 +1,3 @@
-
 [Desktop Entry]
 Version=1.0
 Name=Navigation log viewer
@@ -8,7 +7,8 @@ Icon=navlog-viewer
 Terminal=false
 X-MultipleArgs=false
 Type=Application
-Categories=Education;Science;Robotics;ArtificialIntelligence;
+Categories=Science;Robotics;ArtificialIntelligence;
 StartupNotify=true
 MimeType=application/x-mrpt-navlog;
+Keywords=mrpt;navigation;reactive;robotics;robot;
 

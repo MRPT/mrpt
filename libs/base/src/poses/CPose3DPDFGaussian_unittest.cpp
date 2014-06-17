@@ -7,7 +7,12 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/base.h>
+#include <mrpt/poses/CPose3D.h>
+#include <mrpt/poses/CPose3DPDFGaussian.h>
+#include <mrpt/poses/CPose3DQuatPDFGaussian.h>
+#include <mrpt/random.h>
+#include <mrpt/math/transform_gaussian.h>
+#include <mrpt/math/jacobians.h>
 #include <gtest/gtest.h>
 
 using namespace mrpt;
@@ -48,8 +53,8 @@ protected:
 		CPose3DPDFGaussian  p6pdf_recov = CPose3DPDFGaussian(p7pdf);
 		//cout << "p6pdf_recov: " << p6pdf_recov  << endl;
 
-		const double val_mean_error = (p6pdf_recov.mean.getAsVectorVal() - p6pdf.mean.getAsVectorVal()).Abs().mean();
-		const double cov_mean_error = (p6pdf_recov.cov - p6pdf.cov).Abs().mean();
+		const double val_mean_error = (p6pdf_recov.mean.getAsVectorVal() - p6pdf.mean.getAsVectorVal()).array().abs().mean();
+		const double cov_mean_error = (p6pdf_recov.cov - p6pdf.cov).array().abs().mean();
 		//cout << "cov err: " << cov_mean_error << " " << "val_mean_error: " << val_mean_error << endl;
 		EXPECT_TRUE(val_mean_error < 1e-8);
 		EXPECT_TRUE(cov_mean_error < 1e-8);
@@ -100,12 +105,12 @@ protected:
 			transform_gaussian_linear(x_mean,x_cov,func_compose,DUMMY, y_mean,y_cov, x_incrs );
 		}
 		// Compare mean:
-		EXPECT_NEAR(0, (y_mean-p6_comp.mean.getAsVectorVal()).Abs().sumAll(), 1e-2 )
+		EXPECT_NEAR(0, (y_mean-p6_comp.mean.getAsVectorVal()).array().abs().sum(), 1e-2 )
 			<< "p1 mean: " << p6pdf1.mean << endl
 			<< "p2 mean: " << p6pdf2.mean << endl;
 
 		// Compare cov:
-		EXPECT_NEAR(0, (y_cov-p6_comp.cov).Abs().sumAll(), 1e-2 )
+		EXPECT_NEAR(0, (y_cov-p6_comp.cov).array().abs().sum(), 1e-2 )
 			<< "p1 mean: " << p6pdf1.mean << endl
 			<< "p2 mean: " << p6pdf2.mean << endl;
 
@@ -114,12 +119,12 @@ protected:
 		p6_comp += p6pdf2;
 
 		// Compare mean:
-		EXPECT_NEAR(0, (y_mean-p6_comp.mean.getAsVectorVal()).Abs().sumAll(), 1e-2 )
+		EXPECT_NEAR(0, (y_mean-p6_comp.mean.getAsVectorVal()).array().abs().sum(), 1e-2 )
 			<< "p1 mean: " << p6pdf1.mean << endl
 			<< "p2 mean: " << p6pdf2.mean << endl;
 
 		// Compare cov:
-		EXPECT_NEAR(0, (y_cov-p6_comp.cov).Abs().sumAll(), 1e-2 )
+		EXPECT_NEAR(0, (y_cov-p6_comp.cov).array().abs().sum(), 1e-2 )
 			<< "p1 mean: " << p6pdf1.mean << endl
 			<< "p2 mean: " << p6pdf2.mean << endl;
 	}
@@ -158,14 +163,14 @@ protected:
 		}
 
 		// Compare:
-		EXPECT_NEAR(0, (df_dx-num_df_dx).Abs().sumAll(), 3e-3 )
+		EXPECT_NEAR(0, (df_dx-num_df_dx).array().abs().sum(), 3e-3 )
 			<< "q1: " << q1 << endl
 			<< "q2: " << q2 << endl
 			<< "Numeric approximation of df_dx: " << endl << num_df_dx << endl
 			<< "Implemented method: " << endl << df_dx << endl
 			<< "Error: " << endl << df_dx-num_df_dx << endl;
 
-		EXPECT_NEAR(0, (df_du-num_df_du).Abs().sumAll(), 3e-3 )
+		EXPECT_NEAR(0, (df_du-num_df_du).array().abs().sum(), 3e-3 )
 			<< "q1: " << q1 << endl
 			<< "q2: " << q2 << endl
 			<< "Numeric approximation of df_du: " << endl << num_df_du << endl
@@ -203,12 +208,12 @@ protected:
 			transform_gaussian_linear(x_mean,x_cov,func_inv_compose,DUMMY, y_mean,y_cov, x_incrs );
 		}
 		// Compare mean:
-		EXPECT_NEAR(0, (y_mean-p6_comp.mean.getAsVectorVal()).Abs().sumAll(), 1e-2 )
+		EXPECT_NEAR(0, (y_mean-p6_comp.mean.getAsVectorVal()).array().abs().sum(), 1e-2 )
 			<< "p1 mean: " << p6pdf1.mean << endl
 			<< "p2 mean: " << p6pdf2.mean << endl;
 
 		// Compare cov:
-		EXPECT_NEAR(0, (y_cov-p6_comp.cov).Abs().sumAll(), 1e-2 )
+		EXPECT_NEAR(0, (y_cov-p6_comp.cov).array().abs().sum(), 1e-2 )
 			<< "p1 mean: " << p6pdf1.mean << endl
 			<< "p2 mean: " << p6pdf2.mean << endl;
 
@@ -217,12 +222,12 @@ protected:
 		p6_comp -= p6pdf2;
 
 		// Compare mean:
-		EXPECT_NEAR(0, (y_mean-p6_comp.mean.getAsVectorVal()).Abs().sumAll(), 1e-2 )
+		EXPECT_NEAR(0, (y_mean-p6_comp.mean.getAsVectorVal()).array().abs().sum(), 1e-2 )
 			<< "p1 mean: " << p6pdf1.mean << endl
 			<< "p2 mean: " << p6pdf2.mean << endl;
 
 		// Compare cov:
-		EXPECT_NEAR(0, (y_cov-p6_comp.cov).Abs().sumAll(), 1e-2 )
+		EXPECT_NEAR(0, (y_cov-p6_comp.cov).array().abs().sum(), 1e-2 )
 			<< "p1 mean: " << p6pdf1.mean << endl
 			<< "p2 mean: " << p6pdf2.mean << endl;
 	}
@@ -241,11 +246,11 @@ protected:
 		const CPose3DPDFGaussian p6_comp = p6_zero - p6pdf2;
 
 		// Compare mean:
-		EXPECT_NEAR(0, (p6_inv.mean.getAsVectorVal()-p6_comp.mean.getAsVectorVal()).Abs().sumAll(), 1e-2 )
+		EXPECT_NEAR(0, (p6_inv.mean.getAsVectorVal()-p6_comp.mean.getAsVectorVal()).array().abs().sum(), 1e-2 )
 			<< "p mean: " << p6pdf2.mean << endl;
 
 		// Compare cov:
-		EXPECT_NEAR(0, (p6_inv.cov-p6_comp.cov).Abs().sumAll(), 1e-2 )
+		EXPECT_NEAR(0, (p6_inv.cov-p6_comp.cov).array().abs().sum(), 1e-2 )
 			<< "p mean: " << p6pdf2.mean << endl;
 
 
@@ -254,13 +259,13 @@ protected:
 		p6pdf2.inverse(p6_inv2);
 
 		// Compare mean:
-		EXPECT_NEAR(0, (p6_inv2.mean.getAsVectorVal()-p6_comp.mean.getAsVectorVal()).Abs().sumAll(), 1e-2 )
+		EXPECT_NEAR(0, (p6_inv2.mean.getAsVectorVal()-p6_comp.mean.getAsVectorVal()).array().abs().sum(), 1e-2 )
 			<< "p mean: " << p6pdf2.mean << endl 
 			<< "p6_inv2 mean: " << p6_inv2.mean << endl 
 			<< "p6_comp mean: " << p6_comp.mean << endl;
 
 		// Compare cov:
-		EXPECT_NEAR(0, (p6_inv2.cov-p6_comp.cov).Abs().sumAll(), 1e-2 )
+		EXPECT_NEAR(0, (p6_inv2.cov-p6_comp.cov).array().abs().sum(), 1e-2 )
 			<< "p mean: " << p6pdf2.mean << endl 
 			<< "p6_inv2 mean: " << p6_inv2.mean << endl 
 			<< "p6_comp mean: " << p6_comp.mean << endl;
@@ -294,10 +299,10 @@ protected:
 
 		
 		// Compare:
-		EXPECT_NEAR(0, (p6_new_base_pdf.cov - p6pdf1.cov).Abs().mean(), 1e-2 )
+		EXPECT_NEAR(0, (p6_new_base_pdf.cov - p6pdf1.cov).array().abs().mean(), 1e-2 )
 			<< "p1 mean: " << p6pdf1.mean << endl
 			<< "new_base: " << new_base << endl;
-		EXPECT_NEAR(0, (p6_new_base_pdf.mean.getAsVectorVal() - p6pdf1.mean.getAsVectorVal() ).Abs().mean(), 1e-2 )
+		EXPECT_NEAR(0, (p6_new_base_pdf.mean.getAsVectorVal() - p6pdf1.mean.getAsVectorVal() ).array().abs().mean(), 1e-2 )
 			<< "p1 mean: " << p6pdf1.mean << endl
 			<< "new_base: " << new_base << endl;
 	}

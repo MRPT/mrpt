@@ -11,6 +11,10 @@
 
 #include <mrpt/utils/utils_defs.h>
 #include <mrpt/utils/TTypeName.h>
+#include <mrpt/utils/aligned_containers.h>
+#include <set>
+#include <map>
+#include <fstream>
 
 namespace mrpt
 {
@@ -87,7 +91,7 @@ namespace mrpt
 			/** Insert an edge (from -> to) with the given edge value. \sa insertEdgeAtEnd */
 			inline void insertEdge(TNodeID from_nodeID, TNodeID to_nodeID,const edge_t &edge_value )
 			{
-				EIGEN_ALIGN16 typename edges_map_t::value_type entry(
+				MRPT_ALIGN16 typename edges_map_t::value_type entry(
 					std::make_pair(from_nodeID,to_nodeID),
 					edge_value);
 				edges.insert(entry);
@@ -96,7 +100,7 @@ namespace mrpt
 			/** Insert an edge (from -> to) with the given edge value (more efficient version to be called if you know that the end will go at the end of the sorted std::multimap). \sa insertEdge */
 			inline void insertEdgeAtEnd(TNodeID from_nodeID, TNodeID to_nodeID,const edge_t &edge_value )
 			{
-				EIGEN_ALIGN16 typename edges_map_t::value_type entry(
+				MRPT_ALIGN16 typename edges_map_t::value_type entry(
 					std::make_pair(from_nodeID,to_nodeID),
 					edge_value);
 				edges.insert(edges.end(), entry);

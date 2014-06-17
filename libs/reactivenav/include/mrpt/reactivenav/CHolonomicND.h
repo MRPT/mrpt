@@ -10,6 +10,7 @@
 #define CHolonomicND_H
 
 #include "CAbstractHolonomicReactiveMethod.h"
+#include <mrpt/utils/CLoadableOptions.h>
 
 namespace mrpt
 {
@@ -46,7 +47,7 @@ namespace mrpt
 	class REACTIVENAV_IMPEXP CHolonomicND : public CAbstractHolonomicReactiveMethod
 	{
 	public:
-		EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+		MRPT_MAKE_ALIGNED_OPERATOR_NEW
 	public:
 		 /**  Initialize the parameters of the navigator, from some configuration file, or default values if set to NULL.
 		   */
@@ -64,7 +65,7 @@ namespace mrpt
 		   *     <br><center><code>pseudometer<sup>2</sup>= meter<sup>2</sup> + (rad · r)<sup>2</sup></code><br></center>
 		   */
 		 void  navigate(	const mrpt::math::TPoint2D &target,
-							const vector_double	&obstacles,
+							const std::vector<float>	&obstacles,
 							double			maxRobotSpeed,
 							double			&desiredDirection,
 							double			&desiredSpeed,
@@ -106,7 +107,7 @@ namespace mrpt
 			double TOO_CLOSE_OBSTACLE,WIDE_GAP_SIZE_PERCENT,RISK_EVALUATION_SECTORS_PERCENT;
 			double RISK_EVALUATION_DISTANCE,MAX_SECTOR_DIST_FOR_D2_PERCENT;
 			double TARGET_SLOW_APPROACHING_DISTANCE;
-			vector_double factorWeights;  //!< Vector of 4 weights: [0]=Free space, [1]=Dist. in sectors, [2]=Closer to target (Euclidean), [3]=Hysteresis
+			std::vector<double> factorWeights;  //!< Vector of 4 weights: [0]=Free space, [1]=Dist. in sectors, [2]=Closer to target (Euclidean), [3]=Hysteresis
 
 
 			TOptions();
@@ -124,7 +125,7 @@ namespace mrpt
 		/**  Find gaps in the obtacles.
 		  */
 		void  gapsEstimator(
-			const vector_double         & obstacles,
+			const std::vector<float>         & obstacles,
 			const mrpt::math::TPoint2D  & in_target,
 			TGapArray                   & gaps );
 
@@ -132,7 +133,7 @@ namespace mrpt
 		/** Search the best gap.
 		  */
 		void  searchBestGap(
-			const vector_double         & in_obstacles,
+			const std::vector<float>         & in_obstacles,
 			const double                  in_maxObsRange,
 			const TGapArray             & in_gaps,
 			const mrpt::math::TPoint2D  & in_target,
@@ -147,17 +148,17 @@ namespace mrpt
 		void  calcRepresentativeSectorForGap(
 			TGap                        & gap,
 			const mrpt::math::TPoint2D  & target,
-			const vector_double         & obstacles);
+			const std::vector<float>         & obstacles);
 
 		/** Evaluate each gap:
 		  */
 		void  evaluateGaps(
-			const vector_double & in_obstacles,
-			const double          in_maxObsRange,
+			const std::vector<float> & in_obstacles,
+			const float          in_maxObsRange,
 			const TGapArray     & in_gaps,
 			const unsigned int	  TargetSector,
-			const double          TargetDist,
-			vector_double       & out_gaps_evaluation );
+			const float          TargetDist,
+			std::vector<double>       & out_gaps_evaluation );
 
 	}; // end of CHolonomicND
 
@@ -173,7 +174,7 @@ namespace mrpt
 		 /** Member data.
 		   */
 		vector_int				gaps_ini,gaps_end;
-		vector_double			gaps_eval;
+		std::vector<double>			gaps_eval;
 		int32_t                 selectedSector;
 		double                   evaluation;
 		double					riskEvaluation;

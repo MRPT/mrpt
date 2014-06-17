@@ -21,7 +21,7 @@
 #include <mrpt/utils/CFileGZOutputStream.h>
 
 #include <mrpt/utils/traits_map.h>
-#include <mrpt/utils/stl_extensions.h>
+#include <mrpt/utils/stl_serialization.h>
 
 namespace mrpt
 {

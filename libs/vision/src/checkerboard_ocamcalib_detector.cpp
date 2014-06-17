@@ -7,7 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/vision.h>  // Precompiled headers
+#include "vision-precomp.h"   // Precompiled headers
 
 #include <stack>  // Precompiled headers
 
@@ -49,6 +49,7 @@ If you use this code, please cite the following articles:
 
 
 #include "checkerboard_ocamcalib_detector.h"
+#include <mrpt/math/CArray.h>
 
 #if MRPT_HAS_OPENCV
 
@@ -233,7 +234,7 @@ int cvFindChessboardCorners3( const mrpt::utils::CImage & img_, CvSize pattern_s
 
 //VISUALIZATION--------------------------------------------------------------
 #if VIS
-	mrpt::system::deleteFiles("./DBG_*.png");
+	//mrpt::system::deleteFiles("./DBG_*.png");
 	img.saveToFile("./DBG_OrigImg.png");
 #endif
 //END------------------------------------------------------------------------
@@ -709,6 +710,22 @@ int cvFindChessboardCorners3( const mrpt::utils::CImage & img_, CvSize pattern_s
 }
 
 
+double triangleArea(
+	double x0,double y0, 
+	double x1,double y1, 
+	double x2,double y2 )
+{
+	return std::abs( 0.5*(x0*(y1-y2)+x1*(y2-y0)+x2*(y0-y1)) );
+}	
+
+double median(const std::vector<double> &vec)
+{
+	std::vector<double> v = vec; // Copy for sorting
+    const size_t n = v.size() / 2;
+    nth_element(v.begin(), v.begin()+n, v.end());
+    return v[n];
+}
+
 //===========================================================================
 // ERASE OVERHEAD
 //===========================================================================
@@ -730,23 +747,28 @@ void icvCleanFoundConnectedQuads( std::vector<CvCBQuadPtr> &quad_group, const Cv
     // If we have more quadrangles than we should, try to eliminate duplicates
 	// or ones which don't belong to the pattern rectangle. Else go to the end
 	// of the function
-    if(quad_group.size() <= expected_quads_count )
+	const size_t nQuads = quad_group.size();
+    if(nQuads <= expected_quads_count )
 		return; // Nothing to be done.
 
 
     // Create an array of quadrangle centers
-    vector<CvPoint2D32f>	centers( quad_group.size() );
+    vector<CvPoint2D32f>	centers( nQuads );
 #if CV_MAJOR_VERSION==1
 	temp_storage = cvCreateMemStorage(0);
 #else
 	temp_storage = cv::MemStorage(cvCreateMemStorage(0));
 #endif
 
+	// make also the list of squares areas, so we can discriminate by too-large/small quads:
+	// (Added by JLBC, JUN-2014)
+	std::vector<double> quad_areas(nQuads);
+	double min_area = DBL_MAX, max_area=-DBL_MAX, mean_area = 0.0;
 
-    for( size_t i = 0; i < quad_group.size(); i++ )
+    for( size_t i = 0; i < nQuads; i++ )
     {
         CvPoint2D32f ci = cvPoint2D32f(0,0);
-        const CvCBQuadPtr& q = quad_group[i];
+        CvCBQuadPtr& q = quad_group[i];
 
         for( size_t j = 0; j < 4; j++ )
         {
@@ -758,6 +780,23 @@ void icvCleanFoundConnectedQuads( std::vector<CvCBQuadPtr> &quad_group, const Cv
         ci.x *= 0.25f;
         ci.y *= 0.25f;
 
+		// Quad area:
+		const double a = 
+			triangleArea( 
+				q->corners[0]->pt.x, q->corners[0]->pt.y, 
+				q->corners[1]->pt.x, q->corners[1]->pt.y,
+				q->corners[2]->pt.x, q->corners[2]->pt.y )
+			+
+			triangleArea( 
+				q->corners[0]->pt.x, q->corners[0]->pt.y, 
+				q->corners[2]->pt.x, q->corners[2]->pt.y,
+				q->corners[3]->pt.x, q->corners[3]->pt.y );
+
+		q->area = a;
+		quad_areas[i]=a;
+		mean_area+=a;
+		if (a<min_area) min_area=a;
+		if (a>max_area) max_area=a;
 
 		// Centers(i), is the geometric center of quad(i)
 		// Center, is the center of all found quads
@@ -765,8 +804,17 @@ void icvCleanFoundConnectedQuads( std::vector<CvCBQuadPtr> &quad_group, const Cv
         center.x += ci.x;
         center.y += ci.y;
     }
-    center.x /= quad_group.size();
-    center.y /= quad_group.size();
+    center.x /= nQuads;
+    center.y /= nQuads;
+	mean_area /= nQuads;
+	const double median_area = median(quad_areas);
+
+	// ration: area/median:
+    for( size_t i = 0; i < nQuads; i++ )
+	{
+		quad_group[i]->area_ratio = quad_group[i]->area / median_area;
+	}
+
 
     // If we have more quadrangles than we should, we try to eliminate bad
 	// ones based on minimizing the bounding box. We iteratively remove the
@@ -774,31 +822,60 @@ void icvCleanFoundConnectedQuads( std::vector<CvCBQuadPtr> &quad_group, const Cv
     // (since we want the rectangle to be as small as possible) remove the
 	// quadrange that causes the biggest reduction in pattern size until we
 	// have the correct number
+
+	// JLBC (2014): Additional preliminary filter: remove quads that are too 
+	// small or too large
+	const double MIN_RATIO = 0.65, MAX_RATIO=1.0/MIN_RATIO;
+
+	// In the following, use "quad_group.size()" since the size will change with iterations
     while( quad_group.size() > expected_quads_count )
     {
         double min_box_area = DBL_MAX;
         int min_box_area_index = -1;
 
-        // For each point, calculate box area without that point
+		// For each point, check area:
+		int most_outlier_idx = -1;
+		double most_outlier_ratio = 1.0;
         for( size_t skip = 0; skip < quad_group.size(); skip++ )
-        {
-            // get bounding rectangle
-            CvPoint2D32f temp = centers[skip];
-            centers[skip] = center;
-            CvMat pointMat = cvMat(1, quad_group.size(), CV_32FC2, &centers[0]);
-			CvSeq *hull = cvConvexHull2( &pointMat, temp_storage , CV_CLOCKWISE, 1 );
-            centers[skip] = temp;
-            double hull_area = fabs(cvContourArea(hull, CV_WHOLE_SEQ));
+		{
+			double ar = quad_group[skip]->area_ratio;
+			if (ar>1.0) ar=1.0/ar;
+
+			if (ar<most_outlier_ratio)
+			{
+				most_outlier_ratio=ar;
+				most_outlier_idx = skip;
+			}
+		}
+
+		if (most_outlier_idx>=0)
+		{
+			min_box_area_index=most_outlier_idx;
+		}
+
+		if (min_box_area_index==-1) // if the previous filter didn't work:
+		{
+			// For each point, calculate box area without that point
+			for( size_t skip = 0; skip < quad_group.size(); skip++ )
+			{
+				// get bounding rectangle
+				CvPoint2D32f temp = centers[skip];
+				centers[skip] = center;
+				CvMat pointMat = cvMat(1, quad_group.size(), CV_32FC2, &centers[0]);
+				CvSeq *hull = cvConvexHull2( &pointMat, temp_storage , CV_CLOCKWISE, 1 );
+				centers[skip] = temp;
+				double hull_area = fabs(cvContourArea(hull, CV_WHOLE_SEQ));
 
 
-            // remember smallest box area
-            if( hull_area < min_box_area )
-            {
-                min_box_area = hull_area;
-                min_box_area_index = skip;
-            }
-			cvClearMemStorage( temp_storage );
-        }
+				// remember smallest box area
+				if( hull_area < min_box_area )
+				{
+					min_box_area = hull_area;
+					min_box_area_index = skip;
+				}
+				cvClearMemStorage( temp_storage );
+			}
+		}
 
         CvCBQuadPtr &q0 = quad_group[min_box_area_index];
 

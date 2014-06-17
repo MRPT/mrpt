@@ -7,14 +7,14 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/base.h>  // Precompiled headers
-
+#include "base-precomp.h"  // Precompiled headers
 
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/poses/CPoint2D.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/poses/CPoint3D.h>
-#include <mrpt/math/utils.h>
+#include <mrpt/utils/CStream.h>
+#include <mrpt/math/wrap2pi.h>
 
 using namespace mrpt;
 using namespace mrpt::math;
@@ -317,7 +317,7 @@ void CPose2D::inverse()
 /*---------------------------------------------------------------
 		getAsVector
 ---------------------------------------------------------------*/
-void CPose2D::getAsVector(vector_double &v) const
+void CPose2D::getAsVector(CVectorDouble &v) const
 {
 	v.resize(3);
 	v[0]=m_coords[0];
@@ -375,4 +375,21 @@ void CPose2D::fromString(const std::string &s)
 double CPose2D::distance2DFrobeniusTo( const CPose2D & p) const
 {
      return std::sqrt(square(p.x()-x())+square(p.y()-y())+4*(1-cos(p.phi()-phi())));
+}
+
+CPose3D CPose2D::operator -(const CPose3D& b) const
+{
+	CMatrixDouble44 B_INV(UNINITIALIZED_MATRIX);
+	b.getInverseHomogeneousMatrix( B_INV );
+	CMatrixDouble44 HM(UNINITIALIZED_MATRIX);
+	this->getHomogeneousMatrix(HM);
+	CMatrixDouble44 RES(UNINITIALIZED_MATRIX);
+	RES.multiply(B_INV,HM);
+	return CPose3D( RES );
+}
+
+
+void CPose2D::asString(std::string &s) const
+{
+	s = mrpt::format("[%f %f %f]",x(),y(),mrpt::utils::RAD2DEG(m_phi));
 }

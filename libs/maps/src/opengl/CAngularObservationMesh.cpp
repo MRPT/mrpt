@@ -7,10 +7,12 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/maps.h>  // Precompiled header
+#include "maps-precomp.h" // Precomp header
 
 #include <mrpt/opengl/CAngularObservationMesh.h>
-#include <algorithm>
+#include <mrpt/poses/CPoint3D.h>
+#include <mrpt/utils/stl_serialization.h>
+#include <mrpt/utils/CStream.h>
 
 #if MRPT_HAS_OPENGL_GLUT
 	#ifdef MRPT_OS_WINDOWS

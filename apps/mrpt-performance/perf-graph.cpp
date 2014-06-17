@@ -7,10 +7,9 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/graphs.h>
-#include <mrpt/graphslam.h>
+#include <mrpt/graphs/CNetworkOfPoses.h>
+#include <mrpt/graphs/dijkstra.h>
 #include <mrpt/random.h>
-#include <mrpt/utils/CTicTac.h>
 #include <mrpt/utils/CTimeLogger.h>
 
 #include "common.h"
@@ -19,7 +18,7 @@ using namespace mrpt;
 using namespace mrpt::utils;
 using namespace mrpt::math;
 using namespace mrpt::graphs;
-using namespace mrpt::graphslam;
+//using namespace mrpt::graphslam;
 using namespace mrpt::poses;
 using namespace mrpt::random;
 using namespace std;
@@ -106,7 +105,7 @@ double graphs_dijkstra(int nNodes, int _N)
 	}
 	tims.enable(false);
 	double ret = tims.getMeanTime("op");
-	tims.clear();
+	tims.clear(true /* deep clear */);
 	return ret;
 }
 

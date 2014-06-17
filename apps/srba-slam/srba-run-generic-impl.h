@@ -15,10 +15,12 @@
 #include <mrpt/system/threads.h>  // for sleep()
 #include <mrpt/random.h>
 #include <mrpt/utils/CFileOutputStream.h>  // For CMatrixDouble
-//#include <mrpt/math/CMatrixTemplateNumeric.h>  // For CMatrixDouble
-//#include <mrpt/math/CMatrixD.h>  // For the serializable version of matrices
 #include <mrpt/vision/CVideoFileWriter.h>
-
+#include <mrpt/opengl/CGridPlaneXY.h>
+#include <mrpt/opengl/CSetOfLines.h>
+#include <mrpt/opengl/CSetOfObjects.h>
+#include <mrpt/opengl/CPointCloud.h>
+#include <mrpt/opengl/stock_objects.h>
 #include <mrpt/gui/CDisplayWindow3D.h>
 
 // We can use "using namespace" in this header since it's designed to be only included in this app, not in user code.

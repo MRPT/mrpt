@@ -7,7 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/opengl.h>  // Precompiled header
+#include "opengl-precomp.h"  // Precompiled header
 
 #include <mrpt/opengl/CFBORender.h>
 #include "opengl_internals.h"
@@ -20,9 +20,9 @@ using namespace mrpt::opengl;
 /*---------------------------------------------------------------
 						Constructor
 ---------------------------------------------------------------*/
-CFBORender::CFBORender( unsigned int width, unsigned int height, const bool skip_glut_window ) : 
-	m_width(width), 
-	m_height(height), 
+CFBORender::CFBORender( unsigned int width, unsigned int height, const bool skip_glut_window ) :
+	m_width(width),
+	m_height(height),
 	m_win_used(!skip_glut_window),
 	m_default_bk_color(.6f,.6f,.6f,1)
 {

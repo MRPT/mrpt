@@ -8,10 +8,10 @@
    +---------------------------------------------------------------------------+ */
 
 #include <mrpt/srba.h>
-#include <mrpt/base.h>
 #include <mrpt/random.h>
 
 #include <gtest/gtest.h>
+#include <mrpt/system/os.h>
 
 using namespace mrpt;
 using namespace mrpt::srba;
@@ -21,9 +21,9 @@ using namespace std;
 
 typedef RbaEngine<
 	kf2kf_poses::SE3,                // Parameterization  KF-to-KF poses
-	landmarks::Euclidean3D,          // Parameterization of landmark positions    
+	landmarks::Euclidean3D,          // Parameterization of landmark positions
 	observations::MonocularCamera    // Type of observations
-	> 
+	>
 	my_rba_t;
 
 /*

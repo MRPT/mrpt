@@ -7,15 +7,18 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/hmtslam.h> // Precomp header
+#include "hmtslam-precomp.h" // Precomp header
 
+#include <mrpt/hmtslam/CRobotPosesGraph.h>
 #include <mrpt/opengl/CDisk.h>
 #include <mrpt/opengl/CText.h>
 #include <mrpt/opengl/CSetOfObjects.h>
 #include <mrpt/opengl/CGridPlaneXY.h>
 #include <mrpt/opengl/CSphere.h>
 #include <mrpt/opengl/CSimpleLine.h>
-
+#include <mrpt/system/os.h>
+#include <mrpt/poses/CPose3DPDFParticles.h>
+#include <mrpt/math/ops_containers.h>
 #include <mrpt/random.h>
 #include <mrpt/graphslam.h>
 
@@ -885,13 +888,13 @@ void  CHierarchicalMapMHPartition::computeCoordinatesTransformationBetweenNodes(
 		CPose3DPDFGaussian pdf; // Convert to gaussian
 		pdf.copyFrom(*CPose3DPDFPtr(anotation));
 
-		vector<vector_double>  samples;
+		vector<CVectorDouble>  samples;
 
 		pdf.drawManySamples(lstIt->size(),samples);
 		ASSERT_( samples.size() == lstIt->size() );
 		ASSERT_( samples[0].size() == 6 );
 
-		vector<vector_double>::const_iterator  samplIt;
+		vector<CVectorDouble>::const_iterator  samplIt;
 		for (poseIt=lstIt->begin(),samplIt=samples.begin();poseIt!=lstIt->end();poseIt++,samplIt++)
 		{
 			// Minimum added noise:
@@ -1263,6 +1266,10 @@ void  CHierarchicalMapMHPartition::computeGloballyConsistentNodeCoordinates(
 	MRPT_START
 
 	nodePoses.clear();
+	
+	if (m_arcs.empty())
+		return; // Nothing we can do!
+
 
 	// 1) Convert hmt-slam graph into graphslam graph... (this should be avoided in future version of HTML-SLAM!!)
 	graphs::CNetworkOfPoses3DInf  pose_graph;

@@ -18,8 +18,6 @@ namespace mrpt
 {
 	namespace poses
 	{
-		using namespace mrpt::bayes;
-
 		// This must be added to any CSerializable derived class:
 		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE( CPosePDFParticles , CPosePDF )
 
@@ -95,7 +93,7 @@ namespace mrpt
 			/** Returns an estimate of the pose covariance matrix (3x3 cov matrix) and the mean, both at once.
 			  * \sa getMean
 			  */
-			void getCovarianceAndMean(CMatrixDouble33 &cov,CPose2D &mean_point) const;
+			void getCovarianceAndMean(mrpt::math::CMatrixDouble33 &cov,CPose2D &mean_point) const;
 
 			/** Returns the pose of the i'th particle.
 			  */

@@ -7,14 +7,14 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/opengl.h>  // Precompiled header
+#include "opengl-precomp.h"  // Precompiled header
 
 #include <mrpt/poses/CPose3D.h>
-
 #include <mrpt/opengl/CMesh.h>
 #include <mrpt/opengl/CSetOfTriangles.h>
-
 #include <mrpt/utils/color_maps.h>
+#include <mrpt/utils/CStream.h>
+
 #include "opengl_internals.h"
 
 using namespace mrpt;
@@ -153,7 +153,7 @@ void CMesh::updateTriangles() const	{
 				colormap(m_colorMap,C(iX,iY),tri.r[0],tri.g[0],tri.b[0]);
 				colormap(m_colorMap,C(iX+1,iY+1),tri.r[1],tri.g[1],tri.b[1]);
 				colormap(m_colorMap,C(iX,iY+1),tri.r[2],tri.g[2],tri.b[2]);
-			}	
+			}
 			else if (m_isImage)	{
 				if (m_textureImage.isColor())
 				{
@@ -274,7 +274,7 @@ void  CMesh::assignImage(
 	m_colorFromZ = false;
 	m_isImage = true;
 	trianglesUpToDate=false;
-	
+
 
 	CRenderizableDisplayList::notifyChange();
 
@@ -291,7 +291,7 @@ void  CMesh::assignImageAndZ( const CImage& img, const mrpt::math::CMatrixTempla
 	ASSERT_((img.getWidth() == static_cast<size_t>(in_Z.cols()))&&(img.getHeight() == static_cast<size_t>(in_Z.rows())))
 
 	Z = in_Z;
-		
+
 	// Make a copy:
 	m_textureImage = img;
 
@@ -301,7 +301,7 @@ void  CMesh::assignImageAndZ( const CImage& img, const mrpt::math::CMatrixTempla
 	m_colorFromZ = false;
 	m_isImage = true;
 	trianglesUpToDate = false;
-	
+
 
 	CRenderizableDisplayList::notifyChange();
 
@@ -389,7 +389,7 @@ void CMesh::updateColorsMatrix() const
 	{
 		const size_t cols = m_textureImage.getWidth();
 		const size_t rows = m_textureImage.getHeight();
-		
+
 		if ((cols != Z.getColCount())||(rows != Z.getRowCount()))
 		{
 			printf("\nTexture Image and Z sizes have to be equal");

@@ -11,9 +11,9 @@
 #define mrpt_vision_chessboard_camera_calib_H
 
 #include <mrpt/utils/CImage.h>
-
+#include <mrpt/poses/CPose3D.h>
+#include <mrpt/math/CMatrixFixedNumeric.h>
 #include <mrpt/vision/types.h>
-
 #include <mrpt/vision/link_pragmas.h>
 
 namespace mrpt
@@ -98,7 +98,7 @@ namespace mrpt
 			unsigned int  check_size_y,
 			double        check_squares_length_X_meters,
 			double        check_squares_length_Y_meters,
-			CMatrixDouble33			&intrinsicParams,
+			mrpt::math::CMatrixDouble33			&intrinsicParams,
 			std::vector<double>		&distortionParams,
 			bool		normalize_image = true,
 			double            *out_MSE = NULL,

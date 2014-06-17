@@ -7,12 +7,13 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/opengl.h>  // Precompiled header
+#include "opengl-precomp.h"  // Precompiled header
 
 
 #include <mrpt/opengl/CArrow.h>
 #include <mrpt/math/CMatrix.h>
 #include <mrpt/math/geometry.h>
+#include <mrpt/utils/CStream.h>
 
 #include "opengl_internals.h"
 
@@ -74,7 +75,7 @@ void   CArrow::render_dl() const
 	}
 
     // Normalize:
-    float		v_mod = sqrt( square(vx)+square(vy)+square(vz) );
+    const float v_mod = sqrt( square(vx)+square(vy)+square(vz) );
     if (v_mod>0)
     {
     	vx/=v_mod;
@@ -128,22 +129,22 @@ void   CArrow::render_dl() const
 
     glMultMatrixf( mat );
 	// Scale Z to the size of the cylinder:
-    glScalef(1.0f,1.0f,1.0f-m_headRatio);
+    glScalef(1.0f,1.0f,v_mod*(1.0f-m_headRatio));
 	gluCylinder( obj1, m_smallRadius, m_smallRadius, 1, 10, 1 );
 
     glPopMatrix();
 
     // Draw the head of the arrow: a cone (built from a cylinder)
 	//-------------------------------------------------------------
-    mat[12] = m_x0 + vx*(1.0f-m_headRatio);
-	mat[13] = m_y0 + vy*(1.0f-m_headRatio);
-	mat[14] = m_z0 + vz*(1.0f-m_headRatio);
+    mat[12] = m_x0 + vx*v_mod*(1.0f-m_headRatio);
+	mat[13] = m_y0 + vy*v_mod*(1.0f-m_headRatio);
+	mat[14] = m_z0 + vz*v_mod*(1.0f-m_headRatio);
 
     glPushMatrix();
 
     glMultMatrixf( mat );
 	// Scale Z to the size of the cylinder:
-    glScalef(1.0f,1.0f,m_headRatio);
+    glScalef(1.0f,1.0f,v_mod*m_headRatio);
 
 	gluCylinder( obj2, m_largeRadius, 0, 1, 10, 10 );
 

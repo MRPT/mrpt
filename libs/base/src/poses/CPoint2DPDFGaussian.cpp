@@ -7,18 +7,22 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/base.h>  // Precompiled headers
+#include "base-precomp.h"  // Precompiled headers
 
 
 #include <mrpt/poses/CPoint2DPDFGaussian.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/poses/CPoint3D.h>
 #include <mrpt/math/CMatrixD.h>
+#include <mrpt/math/matrix_serialization.h>
+#include <mrpt/utils/CStream.h>
 #include <mrpt/random/RandomGenerators.h>
+#include <mrpt/system/os.h>
 
 using namespace mrpt::poses;
 using namespace mrpt::utils;
 using namespace mrpt::random;
+using namespace mrpt::system;
 
 IMPLEMENTS_SERIALIZABLE( CPoint2DPDFGaussian, CPoint2DPDF, mrpt::poses )
 
@@ -202,7 +206,7 @@ void CPoint2DPDFGaussian::drawSingleSample(CPoint2D &outSample) const
 	MRPT_START
 
 	// Eigen3 emits an out-of-array warning here, but it seems to be a false warning? (WTF)
-	vector_double vec;
+	CVectorDouble vec;
 	randomGenerator.drawGaussianMultivariate(vec,cov);
 
 	ASSERT_(vec.size()==2);

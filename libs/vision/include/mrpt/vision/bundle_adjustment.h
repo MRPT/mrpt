@@ -14,17 +14,19 @@
 #include <mrpt/utils/TCamera.h>
 #include <mrpt/utils/TParameters.h>
 #include <mrpt/math/lightweight_geom_data.h>
+#include <mrpt/math/CArray.h>
 
 // The methods declared in this file are implemented in separate files in: vision/src/ba_*.cpp
 namespace mrpt
 {
 	namespace vision
 	{
+		using mrpt::math::CArray;
 		using mrpt::math::TPose3D;
 		using mrpt::math::TPoint3D;
 		using mrpt::utils::TCamera;
 
-		/** \defgroup bundle_adj Bundle-Adjustment methods 
+		/** \defgroup bundle_adj Bundle-Adjustment methods
 		  * \ingroup mrpt_vision_grp
 		  */
 
@@ -155,7 +157,7 @@ namespace mrpt
 		  */
 		void VISION_IMPEXP add_se3_deltas_to_frames(
 			const mrpt::vision::TFramePosesVec & frame_poses,
-			const mrpt::vector_double &delta,
+			const mrpt::math::CVectorDouble &delta,
 			const size_t         delta_first_idx,
 			const size_t         delta_num_vals,
 			mrpt::vision::TFramePosesVec       & new_frame_poses,
@@ -170,7 +172,7 @@ namespace mrpt
 		  */
 		void VISION_IMPEXP add_3d_deltas_to_points(
 			const mrpt::vision::TLandmarkLocationsVec & landmark_points,
-			const mrpt::vector_double       & delta,
+			const mrpt::math::CVectorDouble       & delta,
 			const size_t                delta_first_idx,
 			const size_t                delta_num_vals,
 			mrpt::vision::TLandmarkLocationsVec        & new_landmark_points,

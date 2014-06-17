@@ -9,8 +9,8 @@
 #ifndef  mrpt_synch_atomicincr_H
 #define  mrpt_synch_atomicincr_H
 
-// This file CANNOT include "utils_defs.h" to avoid a double include:
 #include <mrpt/config.h>
+#include <mrpt/utils/compiler_fixes.h>
 #include <mrpt/base/link_pragmas.h>  // DLL import/export definitions
 
 namespace mrpt

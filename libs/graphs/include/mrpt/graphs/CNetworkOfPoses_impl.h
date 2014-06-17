@@ -11,10 +11,12 @@
 
 #include <mrpt/graphs/dijkstra.h>
 #include <mrpt/utils/CTextFileLinesParser.h>
-#include <mrpt/poses/CPosePDFGaussian.h>
-#include <mrpt/poses/CPose3DPDFGaussian.h>
-#include <mrpt/poses/CPosePDFGaussianInf.h>
-#include <mrpt/poses/CPose3DPDFGaussianInf.h>
+#include <mrpt/math/lightweight_geom_data.h>
+#include <mrpt/math/CArrayNumeric.h>
+#include <mrpt/math/wrap2pi.h>
+#include <mrpt/math/ops_matrices.h> // multiply_*()
+#include <mrpt/math/matrix_serialization.h>
+#include <mrpt/system/string_utils.h>
 
 namespace mrpt
 {
@@ -182,6 +184,9 @@ namespace mrpt
 				// =================================================================
 				static void load_graph_of_poses_from_text_file(graph_t *g, const std::string &fil)
 				{
+					using mrpt::system::strCmpI;
+					using namespace mrpt::math;
+
 					typedef typename graph_t::constraint_t CPOSE;
 
 					set<string>  alreadyWarnedUnknowns; // for unknown line types, show a warning to cerr just once.
@@ -213,7 +218,7 @@ namespace mrpt
 						if ( !(s >> key) || key.empty() )
 							THROW_EXCEPTION(format("Line %u: Can't read string for entry type in: '%s'", lineNum, lin.c_str() ) );
 
-						if ( strCmpI(key,"EQUIV") )
+						if ( mrpt::system::strCmpI(key,"EQUIV") )
 						{
 							// Process these ones at the end, for now store in a list:
 							TNodeID  id1,id2;
@@ -236,15 +241,19 @@ namespace mrpt
 
 						// Recognized strings:
 						//  VERTEX2 id x y phi
+						//   =(VERTEX_SE2)
 						//  EDGE2 from_id to_id Ax Ay Aphi inf_xx inf_xy inf_yy inf_pp inf_xp inf_yp
+						//   =(EDGE or EDGE_SE2 or ODOMETRY)
 						//  VERTEX3 id x y z roll pitch yaw
+						//  VERTEX_SE3:QUAT id x y z qx qy qz qw
 						//  EDGE3 from_id to_id Ax Ay Az Aroll Apitch Ayaw inf_11 inf_12 .. inf_16 inf_22 .. inf_66
+						//  EDGE_SE3:QUAT from_id to_id Ax Ay Az qx qy qz qw inf_11 inf_12 .. inf_16 inf_22 .. inf_66
 						//  EQUIV id1 id2
 						string key;
 						if ( !(s >> key) || key.empty() )
 							THROW_EXCEPTION(format("Line %u: Can't read string for entry type in: '%s'", lineNum, lin.c_str() ) );
 
-						if ( strCmpI(key,"VERTEX2") || strCmpI(key,"VERTEX")  )
+						if ( strCmpI(key,"VERTEX2") || strCmpI(key,"VERTEX") || strCmpI(key,"VERTEX_SE2") )
 						{
 							TNodeID  id;
 							TPose2D  p2D;
@@ -273,7 +282,6 @@ namespace mrpt
 							if (!graph_is_3D)
 								THROW_EXCEPTION(format("Line %u: Try to load VERTEX3 into a 2D graph: '%s'", lineNum, lin.c_str() ) );
 
-
 							//  VERTEX3 id x y z roll pitch yaw
 							TNodeID  id;
 							TPose3D  p3D;
@@ -297,7 +305,34 @@ namespace mrpt
 								g->nodes[id] = typename CNetworkOfPoses<CPOSE>::constraint_t::type_value( CPose3D(p3D) ); // Auto converted to CPose2D if needed
 							}
 						}
-						else if ( strCmpI(key,"EDGE2") || strCmpI(key,"EDGE") )
+						else if ( strCmpI(key,"VERTEX_SE3:QUAT") )
+						{
+							if (!graph_is_3D)
+								THROW_EXCEPTION(format("Line %u: Try to load VERTEX_SE3:QUAT into a 2D graph: '%s'", lineNum, lin.c_str() ) );
+
+							// VERTEX_SE3:QUAT id x y z qx qy qz qw
+							TNodeID  id;
+							TPose3DQuat  p3D;
+							if (!(s>> id >> p3D.x >> p3D.y >> p3D.z >> p3D.qx >> p3D.qy >> p3D.qz >> p3D.qr ))
+								THROW_EXCEPTION(format("Line %u: Error parsing VERTEX_SE3:QUAT line: '%s'", lineNum, lin.c_str() ) );
+
+							// Make sure the node is new:
+							if (g->nodes.find(id)!=g->nodes.end())
+								THROW_EXCEPTION(format("Line %u: Error, duplicated verted ID %u in line: '%s'", lineNum, static_cast<unsigned int>(id), lin.c_str() ) );
+
+							// EQUIV? Replace ID by new one.
+							{
+								const map<TNodeID,TNodeID>::const_iterator itEq = lstEquivs.find(id);
+								if (itEq!=lstEquivs.end()) id = itEq->second;
+							}
+
+							// Add to map: ID -> absolute pose:
+							if (g->nodes.find(id)==g->nodes.end())
+							{
+								g->nodes[id] = typename CNetworkOfPoses<CPOSE>::constraint_t::type_value( CPose3D(CPose3DQuat(p3D)) ); // Auto converted to CPose2D if needed
+							}
+						}
+						else if ( strCmpI(key,"EDGE2") || strCmpI(key,"EDGE") || strCmpI(key,"ODOMETRY") || strCmpI(key,"EDGE_SE2") )
 						{
 							//  EDGE2 from_id to_id Ax Ay Aphi inf_xx inf_xy inf_yy inf_pp inf_xp inf_yp
 							//                                   s00   s01     s11    s22    s02    s12
@@ -323,7 +358,7 @@ namespace mrpt
 							if (from_id!=to_id)	// Don't load self-edges! (probably come from an EQUIV)
 							{
 								TPose2D  Ap_mean;
-								CMatrixDouble33 Ap_cov_inv;
+								mrpt::math::CMatrixDouble33 Ap_cov_inv;
 								if (!(s>>
 										Ap_mean.x >> Ap_mean.y >> Ap_mean.phi >>
 										Ap_cov_inv(0,0) >> Ap_cov_inv(0,1) >> Ap_cov_inv(1,1) >>
@@ -364,7 +399,7 @@ namespace mrpt
 							if (from_id!=to_id)	// Don't load self-edges! (probably come from an EQUIV)
 							{
 								TPose3D  Ap_mean;
-								CMatrixDouble66 Ap_cov_inv;
+								mrpt::math::CMatrixDouble66 Ap_cov_inv;
 								// **CAUTION** In the TORO graph format angles are in the RPY order vs. MRPT's YPR.
 								if (!(s>> Ap_mean.x >> Ap_mean.y >> Ap_mean.z >> Ap_mean.roll >> Ap_mean.pitch >> Ap_mean.yaw ))
 									THROW_EXCEPTION(format("Line %u: Error parsing EDGE3 line: '%s'", lineNum, lin.c_str() ) );
@@ -398,6 +433,66 @@ namespace mrpt
 								// Convert as needed:
 								typename CNetworkOfPoses<CPOSE>::edge_t  newEdge;
 								TPosePDFHelper<CPOSE>::copyFrom3D(newEdge, CPose3DPDFGaussianInf( CPose3D(Ap_mean), Ap_cov_inv ) );
+								g->insertEdge(from_id, to_id, newEdge);
+							}
+						}
+						else if ( strCmpI(key,"EDGE_SE3:QUAT") )
+						{
+							if (!graph_is_3D)
+								THROW_EXCEPTION(format("Line %u: Try to load EDGE3 into a 2D graph: '%s'", lineNum, lin.c_str() ) );
+
+							//  EDGE_SE3:QUAT from_id to_id Ax Ay Az qx qy qz qw inf_11 inf_12 .. inf_16 inf_22 .. inf_66
+							//  EDGE3 from_id to_id Ax Ay Az Aroll Apitch Ayaw inf_11 inf_12 .. inf_16 inf_22 .. inf_66
+							TNodeID  to_id, from_id;
+							if (!(s>> from_id >> to_id ))
+								THROW_EXCEPTION(format("Line %u: Error parsing EDGE_SE3:QUAT line: '%s'", lineNum, lin.c_str() ) );
+
+							// EQUIV? Replace ID by new one.
+							{
+								const map<TNodeID,TNodeID>::const_iterator itEq = lstEquivs.find(to_id);
+								if (itEq!=lstEquivs.end()) to_id = itEq->second;
+							}
+							{
+								const map<TNodeID,TNodeID>::const_iterator itEq = lstEquivs.find(from_id);
+								if (itEq!=lstEquivs.end()) from_id = itEq->second;
+							}
+
+							if (from_id!=to_id)	// Don't load self-edges! (probably come from an EQUIV)
+							{
+								TPose3DQuat Ap_mean;
+								CMatrixDouble66 Ap_cov_inv;
+								if (!(s>> Ap_mean.x >> Ap_mean.y >> Ap_mean.z >> Ap_mean.qx >> Ap_mean.qy >> Ap_mean.qz >> Ap_mean.qr ))
+									THROW_EXCEPTION(format("Line %u: Error parsing EDGE_SE3:QUAT line: '%s'", lineNum, lin.c_str() ) );
+
+								// **CAUTION** Indices are shuffled to the change YAW(3) <-> ROLL(5) in the order of the data.
+								if (!(s>>
+										Ap_cov_inv(0,0) >> Ap_cov_inv(0,1) >> Ap_cov_inv(0,2) >> Ap_cov_inv(0,5) >> Ap_cov_inv(0,4) >> Ap_cov_inv(0,3) >>
+										Ap_cov_inv(1,1) >> Ap_cov_inv(1,2) >> Ap_cov_inv(1,5) >> Ap_cov_inv(1,4) >> Ap_cov_inv(1,3) >>
+										Ap_cov_inv(2,2) >> Ap_cov_inv(2,5) >> Ap_cov_inv(2,4) >> Ap_cov_inv(2,3) >>
+										Ap_cov_inv(5,5) >> Ap_cov_inv(5,4) >> Ap_cov_inv(5,3) >>
+										Ap_cov_inv(4,4) >> Ap_cov_inv(4,3) >>
+										Ap_cov_inv(3,3) ))
+								{
+									// Cov may be omitted in the file:
+									Ap_cov_inv.unit(6,1.0);
+
+									if (alreadyWarnedUnknowns.find("MISSING_3D")==alreadyWarnedUnknowns.end())
+									{
+										alreadyWarnedUnknowns.insert("MISSING_3D");
+										cerr << "[CNetworkOfPoses::loadFromTextFile] " << fil << ":" << lineNum << ": Warning: Information matrix missing, assuming unity.\n";
+									}
+								}
+								else
+								{
+									// Complete low triangular part of inf matrix:
+									for (size_t r=1;r<6;r++)
+										for (size_t c=0;c<r;c++)
+											Ap_cov_inv(r,c) = Ap_cov_inv(c,r);
+								}
+
+								// Convert as needed:
+								typename CNetworkOfPoses<CPOSE>::edge_t  newEdge;
+								TPosePDFHelper<CPOSE>::copyFrom3D(newEdge, CPose3DPDFGaussianInf( CPose3D(CPose3DQuat(Ap_mean)), Ap_cov_inv ) );
 								g->insertEdge(from_id, to_id, newEdge);
 							}
 						}
@@ -532,7 +627,7 @@ namespace mrpt
 				}
 				template <class VEC> static inline double auxMaha2Dist(VEC &err,const CPosePDFGaussian &p) {
 					math::wrapToPiInPlace(err[2]);
-					CMatrixDouble33  COV_INV(UNINITIALIZED_MATRIX);
+					mrpt::math::CMatrixDouble33  COV_INV(mrpt::math::UNINITIALIZED_MATRIX);
 					p.cov.inv(COV_INV);
 					return mrpt::math::multiply_HCHt_scalar(err,COV_INV); // err^t*cov_inv*err
 				}
@@ -540,7 +635,7 @@ namespace mrpt
 					math::wrapToPiInPlace(err[3]);
 					math::wrapToPiInPlace(err[4]);
 					math::wrapToPiInPlace(err[5]);
-					CMatrixDouble66 COV_INV(UNINITIALIZED_MATRIX);
+					mrpt::math::CMatrixDouble66 COV_INV(mrpt::math::UNINITIALIZED_MATRIX);
 					p.cov.inv(COV_INV);
 					return mrpt::math::multiply_HCHt_scalar(err,COV_INV); // err^t*cov_inv*err
 				}
@@ -625,7 +720,7 @@ namespace mrpt
 						//  We want to compute the squared Mahalanobis distance:
 						//       err^t * INV_COV * err
 						//
-						CArrayDouble<constraint_t::type_value::static_size> err;
+						mrpt::math::CArrayDouble<constraint_t::type_value::static_size> err;
 						for (size_t i=0;i<constraint_t::type_value::static_size;i++)
 							err[i] = from_plus_delta.getPoseMean()[i] - to_mean[i];
 

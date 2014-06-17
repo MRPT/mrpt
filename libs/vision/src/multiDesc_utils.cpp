@@ -6,7 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
-#include <mrpt/vision.h>  // Precompiled headers
+#include "vision-precomp.h"   // Precompiled headers
 
 #include <mrpt/vision/multiDesc_utils.h>
 #include <mrpt/vision/utils.h>
@@ -20,6 +20,7 @@
 #include <mrpt/slam/CObservationStereoImages.h>
 #include <mrpt/slam/CObservationBearingRange.h>
 #include <mrpt/system/filesystem.h>
+#include <mrpt/system/os.h>
 #include <mrpt/utils/CTicTac.h>
 #include <mrpt/utils/CTimeLogger.h>
 #include <mrpt/math/utils.h>
@@ -106,7 +107,7 @@ void vision::saveQTableToFile( const TQuantizationTable &qTable, const string &f
             {
                 mrpt::system::os::fprintf( f, "%d\t%d\t%d\t", it1->first, it2->first, it3->first );
                 for( int k = 0; k < int(it3->second.size()); ++k )
-                    mrpt::system::os::fprintf( f, "%lu\t%.2f\t", it3->second[k].first, it3->second[k].second );
+                    mrpt::system::os::fprintf( f, "%lu\t%.2f\t",static_cast<long unsigned int>(it3->second[k].first), it3->second[k].second );
                 mrpt::system::os::fprintf( f, "\n" );
             } // end-for
     mrpt::system::os::fclose( f );
@@ -333,7 +334,7 @@ void vision::updateBaseList(
 
     size_t sz = idx.size();
 
-    vector_double dp(sz), my(sz);
+    CVectorDouble dp(sz), my(sz);
     int counter = 0;
     for( int k = 0; k < (int)sz; ++k )
     {

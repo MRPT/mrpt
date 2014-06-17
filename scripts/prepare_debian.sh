@@ -1,11 +1,11 @@
 #!/bin/bash
-# Copies sources from SVN tree and delete windows-only files, for preparing a Debian package.
+# Copies sources from source tree and delete windows-only files, for preparing a Debian package.
 # JLBC, 2008-2010
 
 #set -o verbose # echo on
 set +o verbose # echo off
 
-APPEND_SVN_NUM=0
+APPEND_SNAPSHOT_NUM=0
 IS_FOR_UBUNTU=0
 LEAVE_EMBEDDED_EIGEN=0
 APPEND_LINUX_DISTRO=""
@@ -14,7 +14,7 @@ while getopts "sued:c:" OPTION
 do
      case $OPTION in
          s)
-             APPEND_SVN_NUM=1
+             APPEND_SNAPSHOT_NUM=1
              ;;
          u)
              IS_FOR_UBUNTU=1
@@ -55,7 +55,7 @@ MRPTSRC=`pwd`
 MRPT_DEB_DIR="$HOME/mrpt_debian"
 MRPT_EXTERN_DEBIAN_DIR="$MRPTSRC/packaging/debian/"
 
-if [ -f ${MRPT_EXTERN_DEBIAN_DIR}/control ];
+if [ -f ${MRPT_EXTERN_DEBIAN_DIR}/control.in ];
 then
 	echo "Using debian dir: ${MRPT_EXTERN_DEBIAN_DIR}"
 else
@@ -63,73 +63,68 @@ else
 	exit 1
 fi
 
+# Append snapshot?
+MRPT_SNAPSHOT_VERSION=`date +%Y%m%d`
+if [ $APPEND_SNAPSHOT_NUM == "1" ];
+then
+	MRPT_VERSION_STR="${MRPT_VERSION_STR}~snapshot${MRPT_SNAPSHOT_VERSION}${APPEND_LINUX_DISTRO}"
+else
+	MRPT_VERSION_STR="${MRPT_VERSION_STR}${APPEND_LINUX_DISTRO}"
+fi
+
+MRPT_DEBSRC_DIR=$MRPT_DEB_DIR/mrpt-${MRPT_VERSION_STR}
+
+echo "MRPT_VERSION_STR: ${MRPT_VERSION_STR}"
+echo "MRPT_DEBSRC_DIR: ${MRPT_DEBSRC_DIR}"
+
 # Prepare a directory for building the debian package:
 # 
 rm -fR $MRPT_DEB_DIR
-mkdir $MRPT_DEB_DIR
+mkdir -p ${MRPT_DEBSRC_DIR}
 
-# Are we in svn?
-MRPT_SVN_VERSION=`svnversion -n`
 
-if [ $MRPT_SVN_VERSION = "exported" ];
+# Export / copy sources to target dir:
+if [ -d "$MRPTSRC/.git" ];
 then
-	echo "Copying sources to $MRPT_DEB_DIR/mrpt-${MRPT_VERSION_STR}"
-	cp -R . $MRPT_DEB_DIR/mrpt-${MRPT_VERSION_STR}
+	echo "Exporting git source tree to ${MRPT_DEBSRC_DIR}"
+	git archive  --format=tar master | tar -x -C ${MRPT_DEBSRC_DIR}
 else
-	# Strip the last "M", if any:
-	if [ ${MRPT_SVN_VERSION:(-1)} = "M" ];
-	then
-		MRPT_SVN_VERSION=${MRPT_SVN_VERSION:0:${#MRPT_SVN_VERSION}-1}
-	fi
+	echo "Copying sources to ${MRPT_DEBSRC_DIR}"
+	cp -R . ${MRPT_DEBSRC_DIR}
+fi
 
-	if [ $APPEND_SVN_NUM == "1" ];
-	then
-		MRPT_VERSION_STR="${MRPT_VERSION_STR}~svn${MRPT_SVN_VERSION}${APPEND_LINUX_DISTRO}"
-	else
-		MRPT_VERSION_STR="${MRPT_VERSION_STR}${APPEND_LINUX_DISTRO}"
-	fi
-
-	echo "Exporting to $MRPT_DEB_DIR/mrpt-${MRPT_VERSION_STR}"
-	svn export . $MRPT_DEB_DIR/mrpt-${MRPT_VERSION_STR}
+if [ ! -f "${MRPT_DEBSRC_DIR}/CMakeLists.txt" ];
+then
+	echo "*ERROR*: Seems there was a problem copying sources to ${MRPT_DEBSRC_DIR}... aborting script."
+	exit 1
 fi
 
 # Copy the MRPT book:
 if [ -f /Work/MyBooks/mrpt-book/mrpt-book.ps ];
 then
-	cp  /Work/MyBooks/mrpt-book/mrpt-book.ps $MRPT_DEB_DIR/mrpt-${MRPT_VERSION_STR}/doc/
-	ps2pdf $MRPT_DEB_DIR/mrpt-${MRPT_VERSION_STR}/doc/mrpt-book.ps $MRPT_DEB_DIR/mrpt-${MRPT_VERSION_STR}/doc/mrpt-book.pdf
-	gzip $MRPT_DEB_DIR/mrpt-${MRPT_VERSION_STR}/doc/mrpt-book.ps
+	cp  /Work/MyBooks/mrpt-book/mrpt-book.ps ${MRPT_DEBSRC_DIR}/doc/
+	ps2pdf ${MRPT_DEBSRC_DIR}/doc/mrpt-book.ps ${MRPT_DEBSRC_DIR}/doc/mrpt-book.pdf
+	gzip ${MRPT_DEBSRC_DIR}/doc/mrpt-book.ps
 fi
 
 
-cd $MRPT_DEB_DIR/mrpt-${MRPT_VERSION_STR}
+cd ${MRPT_DEBSRC_DIR}
 echo "Deleting Windows-only and not required files for Debian packages..."
 
 # Deletions:
 rm -fR lib
 rm -fR packaging
 
-rm -fR apps/HolonomicNavigatorTester
-rm -fR apps/PTG_Designer
-rm -fR apps/SimpleMapsViewer
+# Not stable...
 rm -fR apps/vOdometry
 rm -fR share/mrpt/config_files/vOdometry
 
-# Not stable yet...
 rm -fR apps/hmt-slam
-rm -fR apps/hmt-slam-gui
 rm -fR apps/hmtMapViewer
-
-
-rm -fr apps/*monoslam*
-rm -fr libs/*monoslam*
-rm -fr share/applications/monoslam.desktop
-
-rm -fr libs/stereoslam
 
 rm -fR scripts/Hha.dll scripts/hhc.exe scripts/prepare_*.sh scripts/recompile*
 
-rm -fR doc/papers
+find . -name '.gitignore' | xargs rm 
 
 if [ ${LEAVE_EMBEDDED_EIGEN} == "0" ];
 then
@@ -148,6 +143,11 @@ echo "LEAVE_EMBEDDED_EIGEN=${LEAVE_EMBEDDED_EIGEN}"
 # Copy debian directory:
 mkdir mrpt-${MRPT_VERSION_STR}/debian
 cp -r ${MRPT_EXTERN_DEBIAN_DIR}/* mrpt-${MRPT_VERSION_STR}/debian
+
+# Parse debian/ control.in --> control
+mv mrpt-${MRPT_VERSION_STR}/debian/control.in mrpt-${MRPT_VERSION_STR}/debian/control
+sed -i "s/@MRPT_VER_MM@/${MRPT_VER_MM}/g" mrpt-${MRPT_VERSION_STR}/debian/control 
+
 
 if [ ${LEAVE_EMBEDDED_EIGEN} == "1" ];
 then
@@ -190,7 +190,7 @@ cd .. # Back to MRPT root
 # Figure out the next Debian version number:
 echo "Detecting next Debian version number..."
 
-CHANGELOG_UPSTREAM_VER=$( dpkg-parsechangelog | sed -n 's/Version:.*\([0-9]\.[0-9]*\.[0-9]*.*svn.*\)-.*/\1/p' )
+CHANGELOG_UPSTREAM_VER=$( dpkg-parsechangelog | sed -n 's/Version:.*\([0-9]\.[0-9]*\.[0-9]*.*snapshot.*\)-.*/\1/p' )
 CHANGELOG_LAST_DEBIAN_VER=$( dpkg-parsechangelog | sed -n 's/Version:.*\([0-9]\.[0-9]*\.[0-9]*\).*-\([0-9]*\).*/\2/p' )
 
 echo " -> PREVIOUS UPSTREAM: $CHANGELOG_UPSTREAM_VER -> New: ${MRPT_VERSION_STR}"

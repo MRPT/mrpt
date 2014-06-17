@@ -10,6 +10,7 @@
 #define  MRPT_STRING_UTILS_H
 
 #include <mrpt/utils/utils_defs.h>
+#include <deque>
 
 namespace mrpt
 {

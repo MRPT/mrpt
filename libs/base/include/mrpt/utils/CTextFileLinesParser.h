@@ -11,6 +11,7 @@
 
 #include <mrpt/utils/utils_defs.h>
 #include <mrpt/system/string_utils.h>
+#include <fstream>
 
 namespace mrpt
 {
@@ -39,7 +40,7 @@ namespace mrpt
 					m_curLineNum = 0;
 					m_fileName = fil;
 					m_in.close();
-					m_in.clear(); 
+					m_in.clear();
 					m_in.open(fil.c_str());
 					if (!m_in.is_open())
 						THROW_EXCEPTION_CUSTOM_MSG1("Error opening file '%s' for reading",fil.c_str());

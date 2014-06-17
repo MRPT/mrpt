@@ -16,7 +16,7 @@
  * License:
  **************************************************************/
 
-#include <mrpt/base.h>  // Precompiled headers
+#include "base-precomp.h"  // Precompiled headers
 
 #include <mrpt/utils/CLog.h>
 #include <mrpt/system/datetime.h>

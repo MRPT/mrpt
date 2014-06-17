@@ -7,22 +7,26 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/base.h>  // Precompiled headers
+#include "base-precomp.h"  // Precompiled headers
 
 #include <mrpt/math/geometry.h>
-#include <mrpt/math/utils.h>
 #include <mrpt/math/CPolygon.h>
 #include <mrpt/math/CSparseMatrixTemplate.h>
 #include <mrpt/math/CMatrixTemplateNumeric.h>
-#include <cmath>
-#include <algorithm>
+#include <mrpt/math/data_utils.h>
+#include <mrpt/math/ops_containers.h>
+#include <mrpt/poses/CPoint2D.h>
+#include <mrpt/poses/CPose2D.h>
+#include <mrpt/math/lightweight_geom_data.h>
+#include <mrpt/utils/stl_serialization.h>
 
-#include <mrpt/math/ops_matrices.h>
+
 
 using namespace mrpt;
 using namespace mrpt::utils;
 using namespace std;
 using namespace mrpt::poses;
+using namespace mrpt::math;
 
 double mrpt::math::geometryEpsilon=1e-3;
 
@@ -77,8 +81,6 @@ void math::closestFromPointToSegment(
 		double	&out_x,
 		double	&out_y)
 {
-	double	Ratio, Dx, Dy;
-
 	if (x1==x2 && y1==y2)
 	{
 		out_x = x1;
@@ -86,9 +88,9 @@ void math::closestFromPointToSegment(
 	}
 	else
 	{
-		Dx    = x2 - x1;
-		Dy    = y2 - y1;
-		Ratio = ((Px - x1) * Dx + (Py - y1) * Dy) / (Dx * Dx + Dy * Dy);
+		double Dx    = x2 - x1;
+		double Dy    = y2 - y1;
+		double Ratio = ((Px - x1) * Dx + (Py - y1) * Dy) / (Dx * Dx + Dy * Dy);
 		if (Ratio<0)
 		{
 		 out_x = x1;
@@ -123,8 +125,6 @@ void math::closestFromPointToLine(
 		double	&out_x,
 		double	&out_y)
 {
-	double	Ratio, Dx, Dy;
-
 	if (x1==x2 && y1==y2)
 	{
 		out_x = x1;
@@ -132,9 +132,9 @@ void math::closestFromPointToLine(
 	}
 	else
 	{
-		Dx    = x2 - x1;
-		Dy    = y2 - y1;
-		Ratio = ((Px - x1) * Dx + (Py - y1) * Dy) / (Dx * Dx + Dy * Dy);
+		double Dx    = x2 - x1;
+		double Dy    = y2 - y1;
+		double Ratio = ((Px - x1) * Dx + (Py - y1) * Dy) / (Dx * Dx + Dy * Dy);
 
 		out_x = x1 + (Ratio * Dx);
 		out_y = y1 + (Ratio * Dy);
@@ -152,17 +152,15 @@ double math::closestSquareDistanceFromPointToLine(
 		const double &	x2,
 		const double &	y2 )
 {
-	double	Ratio, Dx, Dy;
-
 	if (x1==x2 && y1==y2)
 	{
 		return square( Px-x1 ) + square( Py-y1 );
 	}
 	else
 	{
-		Dx    = x2 - x1;
-		Dy    = y2 - y1;
-		Ratio = ((Px - x1) * Dx + (Py - y1) * Dy) / (Dx * Dx + Dy * Dy);
+		double Dx    = x2 - x1;
+		double Dy    = y2 - y1;
+		double Ratio = ((Px - x1) * Dx + (Py - y1) * Dy) / (Dx * Dx + Dy * Dy);
 
 		return square( x1 + (Ratio * Dx) - Px ) + square( y1 + (Ratio * Dy) - Py );
 	}
@@ -425,7 +423,7 @@ bool  math::RectanglesIntersection(
 {
 	// Compute the rotated R2:
 	// ----------------------------------------
-	vector_double	xs(4),ys(4);
+	CVectorDouble	xs(4),ys(4);
 	double			ccos = cos(R2_pose_phi);
 	double			ssin = sin(R2_pose_phi);
 
@@ -477,7 +475,7 @@ bool  math::RectanglesIntersection(
 }
 
 //Auxiliary functions needed to avoid code repetition and unnecesary recalculations
-template<class T2D,class U2D,class T3D,class U3D> bool intersectInCommonPlane(const T3D &o1,const U3D &o2,const TPlane &p,TObject3D &obj)	{
+template<class T2D,class U2D,class T3D,class U3D> bool intersectInCommonPlane(const T3D &o1,const U3D &o2,const mrpt::math::TPlane &p,mrpt::math::TObject3D &obj)	{
 	T3D proj1;
 	U3D proj2;
 	//Project into 3D plane, ignoring Z coordinate.
@@ -500,7 +498,7 @@ template<class T2D,class U2D,class T3D,class U3D> bool intersectInCommonPlane(co
 		return true;
 	}	else return false;
 }
-bool intersectInCommonLine(const TSegment3D &s1,const TSegment3D &s2,const TLine3D &lin,TObject3D &obj)	{
+bool intersectInCommonLine(const mrpt::math::TSegment3D &s1,const mrpt::math::TSegment3D &s2,const mrpt::math::TLine3D &lin,mrpt::math::TObject3D &obj)	{
 	//Move in a free coordinate, searching for minima and maxima.
 	size_t i1=0;
 	while (abs(lin.director[i1])<geometryEpsilon) i1++;
@@ -906,7 +904,7 @@ bool math::areAligned(const std::vector<TPoint2D> &points,TLine2D &r)	{
 	for (size_t i=1;;i++) try	{
 		r=TLine2D(p0,points[i]);
 		return true;
-	}	catch (logic_error l)	{}
+	}	catch (logic_error &)	{}
 }
 
 bool math::areAligned(const std::vector<TPoint3D> &points)	{
@@ -929,7 +927,7 @@ bool math::areAligned(const std::vector<TPoint3D> &points,TLine3D &r)	{
 	for (size_t i=1;;i++) try	{
 		r=TLine3D(p0,points[i]);
 		return true;
-	}	catch (logic_error l)	{}
+	}	catch (logic_error &)	{}
 }
 
 void math::project3D(const TLine3D &line,const CPose3D &newXYpose,TLine3D &newLine)	{
@@ -1006,6 +1004,10 @@ void math::project3D(const TObject3D &object,const CPose3D &newXYpose,TObject3D 
 		default:
 			newObject=TObject3D();
 	}
+}
+
+void math::project2D(const TPoint2D &point,const mrpt::poses::CPose2D &newXpose,TPoint2D &newPoint)	{
+	newPoint=newXpose+mrpt::poses::CPoint2D(point);
 }
 
 void math::project2D(const TLine2D &line,const CPose2D &newXpose,TLine2D &newLine)	{
@@ -1158,7 +1160,8 @@ struct TCommonRegion	{
 	~TCommonRegion()	{
 		destroy();
 	}
-	void operator=(const TCommonRegion &r)	{
+	TCommonRegion & operator=(const TCommonRegion &r)	{
+	    if (&r==this) return *this;
 		destroy();
 		switch (type=r.type)	{
 			case 0:
@@ -1168,6 +1171,7 @@ struct TCommonRegion	{
 				data.segment=new TSegment2D(*(r.data.segment));
 				break;
 		}
+		return *this;
 	}
 	TCommonRegion(const TCommonRegion &r):type(0)	{
 		operator=(r);
@@ -1199,7 +1203,8 @@ struct TTempIntersection	{
 	~TTempIntersection()	{
 		destroy();
 	}
-	void operator=(const TTempIntersection &t)	{
+	TTempIntersection & operator=(const TTempIntersection &t)	{
+	    if (&t==this) return *this;
 		destroy();
 		switch (type=t.type)	{
 			case 0:
@@ -1209,6 +1214,7 @@ struct TTempIntersection	{
 				data.common=new TCommonRegion(*(t.data.common));
 				break;
 		}
+		return *this;
 	}
 	TTempIntersection(const TTempIntersection &t):type(0)	{
 		operator=(t);
@@ -1430,14 +1436,14 @@ size_t math::intersect(const std::vector<TPolygon3D> &v1,const std::vector<TPoly
 	std::vector<TPlane>::const_iterator itP1=w1.begin();
 	std::vector<TPoint3D>::const_iterator itMin1=minBounds1.begin();
 	std::vector<TPoint3D>::const_iterator itMax1=maxBounds1.begin();
-	for (std::vector<TPolygon3D>::const_iterator it1=v1.begin();it1!=v1.end();it1++,itP1++,itMin1++,itMax1++)	{
+	for (std::vector<TPolygon3D>::const_iterator it1=v1.begin();it1!=v1.end();++it1,++itP1,++itMin1,++itMax1)	{
 		const TPolygon3D &poly1=*it1;
 		const TPlane &plane1=*itP1;
 		std::vector<TPlane>::const_iterator itP2=w2.begin();
 		const TPoint3D &min1=*itMin1,max1=*itMax1;
 		std::vector<TPoint3D>::const_iterator itMin2=minBounds2.begin();
 		std::vector<TPoint3D>::const_iterator itMax2=maxBounds2.begin();
-		for (std::vector<TPolygon3D>::const_iterator it2=v2.begin();it2!=v2.end();it2++,itP2++,itMin2++,itMax2++) if (!compatibleBounds(min1,max1,*itMin2,*itMax2)) continue;
+		for (std::vector<TPolygon3D>::const_iterator it2=v2.begin();it2!=v2.end();++it2,++itP2,++itMin2,++itMax2) if (!compatibleBounds(min1,max1,*itMin2,*itMax2)) continue;
 		else if (intersectAux(poly1,plane1,*it2,*itP2,obj)) objs.push_back(obj);
 	}
 	return objs.size();
@@ -1815,7 +1821,6 @@ void math::assemblePolygons(const std::vector<TSegment3D> &segms,std::vector<TPo
 	else remainder.push_back(*it);
 	size_t N=tmp.size();
 	CSparseMatrixTemplate<unsigned char> matches(N,N);
-	std::vector<size_t> reps;
 	for (size_t i=0;i<N-1;i++) for (size_t j=i+1;j<N;j++)	{
 		if (distance(tmp[i].point1,tmp[j].point1)<geometryEpsilon)	{
 			matches(i,j)|=1;

@@ -11,16 +11,16 @@
 
 #include <mrpt/utils/utils_defs.h>
 #include <mrpt/math/CMatrixTemplateNumeric.h>
-#include <mrpt/math/ops_matrices.h>
 
 namespace mrpt
 {
+	namespace math { template <class T> class CMatrixTemplateNumeric; }  // Frwd. decl.
+
 	/** A namespace of pseudo-random numbers genrators of diferent distributions. The central class in this namespace is mrpt::random::CRandomGenerator
 	 * \ingroup mrpt_base_grp
 	 */
 	namespace random
 	{
-		using namespace mrpt::utils;
 		using namespace mrpt::math;
 
 		/** A thred-safe pseudo random number generator, based on an internal MT19937 randomness generator.
@@ -121,7 +121,7 @@ namespace mrpt
 				{
 					const size_t N = v.size();
 					for (size_t c=0;c<N;c++)
-						v[c] = static_cast<typename VEC::value_type>( drawUniform(unif_min,unif_max) );
+						v[c] = static_cast<typename mrpt::math::ContainerType<VEC>::element_t>( drawUniform(unif_min,unif_max) );
 				}
 
 			/** @} */
@@ -159,7 +159,7 @@ namespace mrpt
 
 				/** Generates a random definite-positive matrix of the given size, using the formula C = v*v^t + epsilon*I, with "v" being a vector of gaussian random samples.
 				  */
-				CMatrixDouble drawDefinitePositiveMatrix(const size_t dim, const double std_scale = 1.0, const double diagonal_epsilon = 1e-8);
+				mrpt::math::CMatrixDouble drawDefinitePositiveMatrix(const size_t dim, const double std_scale = 1.0, const double diagonal_epsilon = 1e-8);
 
 				/** Fills the given vector with independent, 1D-normally distributed samples.
 				  * \sa drawGaussian1D
@@ -172,7 +172,7 @@ namespace mrpt
 				{
 					const size_t N = v.size();
 					for (size_t c=0;c<N;c++)
-						v[c] = static_cast<typename VEC::value_type>( drawGaussian1D(mean,std) );
+						v[c] = static_cast<typename mrpt::math::ContainerType<VEC>::element_t>( drawGaussian1D(mean,std) );
 				}
 
 				/** Generate multidimensional random samples according to a given covariance matrix.
@@ -425,10 +425,10 @@ namespace mrpt
 		 * \exception std::exception On invalid covariance matrix
 		 * \sa randomNormalMultiDimensional
 		 */
-		 template <typename T,size_t N>
+		 template <typename T,typename MATRIXLIKE>
 		 void  randomNormalMultiDimensionalMany(
-			const CMatrixFixedNumeric<T,N,N> &cov,
-			size_t							desiredSamples,
+			const MATRIXLIKE &cov,
+			size_t           desiredSamples,
 			std::vector< std::vector<T> >	&ret )
 		 {
 			 randomGenerator.drawGaussianMultivariateMany(ret,desiredSamples,cov);
@@ -438,10 +438,10 @@ namespace mrpt
 		 * \exception std::exception On invalid covariance matrix
 		 * \sa randomNormalMultiDimensionalMany
 		 */
-		 template <typename T,size_t N>
+		 template <typename T,typename MATRIXLIKE>
 		 void  randomNormalMultiDimensional(
-			const CMatrixFixedNumeric<T,N,N> &cov,
-			std::vector<T>		&out_result)
+			const MATRIXLIKE &cov,
+			std::vector<T>   &out_result)
 		{
 			randomGenerator.drawGaussianMultivariate(out_result,cov);
 		}

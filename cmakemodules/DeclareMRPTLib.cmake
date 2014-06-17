@@ -210,6 +210,7 @@ macro(internal_define_mrpt_lib name headers_only)
 		KEEP_MATCHING_FILES_FROM_LIST("^.*h$" AUX_LIST_TO_IGNORE)
 		set_source_files_properties(${AUX_LIST_TO_IGNORE} PROPERTIES HEADER_FILE_ONLY true)
 	
+		INCLUDE_DIRECTORIES("${CMAKE_SOURCE_DIR}/libs/${name}/src/") # For include "${name}-precomp.h"
 		IF(MRPT_ENABLE_PRECOMPILED_HDRS)
 			IF (MSVC)
 				# Precompiled hdrs for MSVC:
@@ -219,17 +220,17 @@ macro(internal_define_mrpt_lib name headers_only)
 				# The "use precomp.headr" for all the files...
 				set_target_properties(mrpt-${name}
 					PROPERTIES
-					COMPILE_FLAGS "/Yumrpt/${name}.h")
+					COMPILE_FLAGS "/Yu${name}-precomp.h")
 
 				# But for the file used to build the precomp. header:
-				set_source_files_properties("${CMAKE_SOURCE_DIR}/libs/${name}/src/precomp_hdr.cpp"
+				set_source_files_properties("${CMAKE_SOURCE_DIR}/libs/${name}/src/${name}-precomp.cpp"
 					PROPERTIES
-					COMPILE_FLAGS "/Ycmrpt/${name}.h")
+					COMPILE_FLAGS "/Yc${name}-precomp.h")
 			ENDIF (MSVC)
 		
-			SOURCE_GROUP("Precomp. header files" FILES 
-				"${CMAKE_SOURCE_DIR}/libs/${name}/src/precomp_hdr.cpp"
-				"${CMAKE_SOURCE_DIR}/libs/${name}/include/mrpt/${name}.h"
+			SOURCE_GROUP("Precompiled headers" FILES 
+				"${CMAKE_SOURCE_DIR}/libs/${name}/src/${name}-precomp.cpp"
+				"${CMAKE_SOURCE_DIR}/libs/${name}/src/${name}-precomp.h"
 				)	
 		ENDIF(MRPT_ENABLE_PRECOMPILED_HDRS)
 
@@ -237,14 +238,14 @@ macro(internal_define_mrpt_lib name headers_only)
 		IF(CMAKE_MRPT_USE_DEB_POSTFIXS)
 			SET(MRPT_PREFIX_INSTALL "${CMAKE_INSTALL_PREFIX}/libmrpt-${name}${CMAKE_MRPT_VERSION_NUMBER_MAJOR}.${CMAKE_MRPT_VERSION_NUMBER_MINOR}/usr/")
 		ELSE(CMAKE_MRPT_USE_DEB_POSTFIXS)
-			SET(MRPT_PREFIX_INSTALL "")
+			SET(MRPT_PREFIX_INSTALL "${CMAKE_INSTALL_PREFIX}")
 		ENDIF(CMAKE_MRPT_USE_DEB_POSTFIXS)
 
 		# make sure the library gets installed
 		INSTALL(TARGETS mrpt-${name}
 			RUNTIME DESTINATION ${MRPT_PREFIX_INSTALL}bin  COMPONENT Libraries
-			LIBRARY DESTINATION ${MRPT_PREFIX_INSTALL}lib${LIB_SUFFIX} COMPONENT Libraries
-			ARCHIVE DESTINATION ${MRPT_PREFIX_INSTALL}lib${LIB_SUFFIX} COMPONENT Libraries
+			LIBRARY DESTINATION ${MRPT_PREFIX_INSTALL}${CMAKE_INSTALL_LIBDIR} COMPONENT Libraries
+			ARCHIVE DESTINATION ${MRPT_PREFIX_INSTALL}${CMAKE_INSTALL_LIBDIR} COMPONENT Libraries  # WAS: lib${LIB_SUFFIX}
 			)
 			
 		# Collect .pdb debug files for optional installation:

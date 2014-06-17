@@ -45,7 +45,7 @@ AREXPORT bool ArCameraCollection::addCamera(const char *cameraName,
   }
 
   info = new CameraInfo();
-  
+
   info->myCameraName = cameraName;
   info->myCameraType = cameraType;
   info->myDisplayName = ((displayName != NULL) ? displayName : cameraName);
@@ -66,7 +66,7 @@ AREXPORT bool ArCameraCollection::removeCamera(const char *cameraName)
   }
   lock();
 
-  std::map<std::string, CameraInfo*>::iterator iter = 
+  std::map<std::string, CameraInfo*>::iterator iter =
                                             myCameraToInfoMap.find(cameraName);
   if (iter == myCameraToInfoMap.end()) {
     unlock();
@@ -136,7 +136,7 @@ AREXPORT bool ArCameraCollection::removeCameraCommand(const char *cameraName,
     return false;
   }
 
-  std::map<std::string, CommandInfo*>::iterator iter = 
+  std::map<std::string, CommandInfo*>::iterator iter =
                                         info->myCommandToInfoMap.find(command);
 
   if (iter == info->myCommandToInfoMap.end()) {
@@ -196,7 +196,7 @@ AREXPORT bool ArCameraCollection::removeParameter(const char *cameraName,
     return false;
   }
 
-  std::map<std::string, ParamInfo*>::iterator iter = 
+  std::map<std::string, ParamInfo*>::iterator iter =
         camInfo->myParamToInfoMap.find(paramName);
 
   if (iter == camInfo->myParamToInfoMap.end()) {
@@ -209,7 +209,7 @@ AREXPORT bool ArCameraCollection::removeParameter(const char *cameraName,
   unlock();
   return true;
 
-} // end method removeParameter 
+} // end method removeParameter
 
 
 AREXPORT void ArCameraCollection::getCameraNames(std::list<std::string> &outList)
@@ -379,7 +379,7 @@ AREXPORT bool ArCameraCollection::getParameter(const char *cameraName,
 } // end method getParameter
 
 
-  
+
 AREXPORT bool ArCameraCollection::setParameter(const char *cameraName,
                                                const ArConfigArg &param)
 {
@@ -391,7 +391,7 @@ AREXPORT bool ArCameraCollection::setParameter(const char *cameraName,
     return false;
   }
   info->myParam = param;
-  
+
   if (info->mySource != NULL) {
     info->mySource->setParameter(param);
   }
@@ -431,7 +431,7 @@ AREXPORT bool ArCameraCollection::exists(const char *cameraName,
   return (info != NULL);
 
 } // end method exists
-  
+
 
 AREXPORT bool ArCameraCollection::parameterExists(const char *cameraName,
 					          const char *paramName)
@@ -492,8 +492,8 @@ AREXPORT bool ArCameraCollection::addModifiedCB(ArFunctor *functor,
 
   default:
     isSuccess = false;
-    ArLog::log(ArLog::Terse, 
-               "ArCameraCollection::addModifiedCB: Unrecognized position = %i.", 
+    ArLog::log(ArLog::Terse,
+               "ArCameraCollection::addModifiedCB: Unrecognized position = %i.",
                position);
     break;
   }
@@ -513,7 +513,7 @@ AREXPORT bool ArCameraCollection::removeModifiedCB(ArFunctor *functor)
 
   lock();
   // Could/should add a check to make sure functor is really there in order
-  // to return a more accurate status... (But this probably isn't really 
+  // to return a more accurate status... (But this probably isn't really
   // an issue since functors aren't removed all that often.)
   myModifiedCBList.remove(functor);
   unlock();
@@ -531,7 +531,7 @@ ArCameraCollection::CameraInfo *ArCameraCollection::findCameraInfo(const char *c
 
   CameraInfo *info = NULL;
 
-  std::map<std::string, CameraInfo*>::iterator iter = 
+  std::map<std::string, CameraInfo*>::iterator iter =
                                             myCameraToInfoMap.find(cameraName);
 
   if (iter != myCameraToInfoMap.end()) {
@@ -549,12 +549,12 @@ ArCameraCollection::CommandInfo *ArCameraCollection::findCommandInfo
 {
   CameraInfo *cameraInfo = findCameraInfo(cameraName);
   if (cameraInfo == NULL) {
-    return false;
+    return NULL;
   }
 
   CommandInfo *info = NULL;
 
-  std::map<std::string, CommandInfo*>::iterator iter = 
+  std::map<std::string, CommandInfo*>::iterator iter =
                                      cameraInfo->myCommandToInfoMap.find(commandName);
 
   if (iter != cameraInfo->myCommandToInfoMap.end()) {
@@ -571,12 +571,12 @@ ArCameraCollection::ParamInfo *ArCameraCollection::findParamInfo
 {
   CameraInfo *cameraInfo = findCameraInfo(cameraName);
   if (cameraInfo == NULL) {
-    return false;
+    return NULL;
   }
 
   ParamInfo *info = NULL;
 
-  std::map<std::string, ParamInfo*>::iterator iter = 
+  std::map<std::string, ParamInfo*>::iterator iter =
                                      cameraInfo->myParamToInfoMap.find(paramName);
 
   if (iter != cameraInfo->myParamToInfoMap.end()) {
@@ -620,7 +620,7 @@ ArCameraCollection::CameraInfo::CameraInfo() :
 
 ArCameraCollection::CameraInfo::~CameraInfo()
 {
-  ArUtil::deleteSetPairs(myCommandToInfoMap.begin(), 
+  ArUtil::deleteSetPairs(myCommandToInfoMap.begin(),
                          myCommandToInfoMap.end());
   myCommandToInfoMap.clear();
 }

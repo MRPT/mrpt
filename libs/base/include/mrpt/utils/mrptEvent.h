@@ -9,7 +9,6 @@
 #ifndef  mrptEvent_H
 #define  mrptEvent_H
 
-#include <mrpt/utils/utils_defs.h>
 #include <mrpt/system/datetime.h>
 
 namespace mrpt
@@ -45,7 +44,7 @@ namespace mrpt
 
 			template <class EVENTTYPE>
 			inline const EVENTTYPE* getAs() const { return dynamic_cast<const EVENTTYPE*>(this); }
-			
+
 			template <class EVENTTYPE>
 			inline EVENTTYPE* getAsNonConst() const { return const_cast<EVENTTYPE*>(dynamic_cast<const EVENTTYPE*>(this)); }
 

@@ -7,20 +7,19 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/base.h>  // Precompiled headers
+#include "base-precomp.h"  // Precompiled headers
 
 #include <mrpt/poses/CPose3DQuatPDFGaussianInf.h>
-
-#include <mrpt/math/utils.h>
-//#include <mrpt/math/jacobians.h>
 #include <mrpt/math/transform_gaussian.h>
 #include <mrpt/math/distributions.h>
-
 #include <mrpt/poses/CPose3DPDFGaussian.h>
 #include <mrpt/poses/CPosePDF.h>
 #include <mrpt/poses/CPosePDFGaussian.h>
+#include <mrpt/system/os.h>
+#include <mrpt/utils/CStream.h>
 
-
+using namespace mrpt;
+using namespace mrpt::system;
 using namespace mrpt::poses;
 using namespace mrpt::math;
 using namespace mrpt::random;
@@ -187,7 +186,7 @@ void  CPose3DQuatPDFGaussianInf::drawSingleSample( CPose3DQuat &outPart ) const
  ---------------------------------------------------------------*/
 void  CPose3DQuatPDFGaussianInf::drawManySamples(
 	size_t						N,
-	vector<vector_double>	&outSamples ) const
+	vector<CVectorDouble>	&outSamples ) const
 {
 	MRPT_START
 	CMatrixDouble77  COV(UNINITIALIZED_MATRIX);
@@ -195,7 +194,7 @@ void  CPose3DQuatPDFGaussianInf::drawManySamples(
 
 	randomGenerator.drawGaussianMultivariateMany(outSamples,N,COV);
 
-	for (vector<vector_double>::iterator it=outSamples.begin();it!=outSamples.end();++it)
+	for (vector<CVectorDouble>::iterator it=outSamples.begin();it!=outSamples.end();++it)
 		for (unsigned int k=0;k<7;k++)
 			(*it)[k] += mean[k];
 
@@ -336,5 +335,5 @@ ostream &   mrpt::poses::operator << (
 
 bool mrpt::poses::operator==(const CPose3DQuatPDFGaussianInf &p1,const CPose3DQuatPDFGaussianInf &p2)
 {
-	return p1.mean==p1.mean && p1.cov_inv==p2.cov_inv;
+	return p1.mean==p2.mean && p1.cov_inv==p2.cov_inv;
 }

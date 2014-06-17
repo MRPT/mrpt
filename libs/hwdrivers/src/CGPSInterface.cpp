@@ -7,7 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/hwdrivers.h> // Precompiled headers
+#include "hwdrivers-precomp.h"   // Precompiled headers
 
 #include <mrpt/system/os.h>
 #include <mrpt/synch/CCriticalSection.h>
@@ -154,6 +154,9 @@ bool  CGPSInterface::tryToOpenTheCOM()
 
     if (m_verbose) cout << "[CGPSInterface] Opening " << m_COMname << " @ " << m_COMbauds << endl;
 
+	m_last_GGA.clear();  // On comms reset, empty this cache
+
+
 	try
 	{
         if( useExternCOM() )
@@ -236,8 +239,6 @@ bool  CGPSInterface::isGPS_signalAcquired()
 ----------------------------------------------------- */
 void  CGPSInterface::doProcess()
 {
-	size_t	bytesToRead, bytesRead;
-
 	// Is the COM open?
 	if (!tryToOpenTheCOM())
 	{
@@ -246,10 +247,10 @@ void  CGPSInterface::doProcess()
 	}
 
 	// Read as many bytes as available:
-	bytesRead = 1;
+	size_t bytesRead = 1;
 	while (bytesRead)
 	{
-		bytesToRead = (m_BUFFER_LENGTH-10) - m_bufferWritePos;
+		size_t bytesToRead = (m_BUFFER_LENGTH-10) - m_bufferWritePos;
 
 		try
 		{
@@ -291,7 +292,7 @@ void  CGPSInterface::doProcess()
 		// Write command to buffer:
 		if ( m_latestGPS_data.has_GGA_datum ||
 			 m_latestGPS_data.has_RMC_datum ||
-			 m_latestGPS_data.has_RMC_datum ||
+			 m_latestGPS_data.has_PZS_datum ||
 			 m_latestGPS_data.has_SATS_datum )
 		{
 			// Add observation to the output queue:
@@ -412,7 +413,15 @@ void  CGPSInterface::processBuffer()
 ----------------------------------------------------- */
 void  CGPSInterface::processGPSstring(const std::string &s)
 {
+	const bool did_have_gga = m_latestGPS_data.has_GGA_datum;
+	// Parse:
 	CGPSInterface::parse_NMEA(s,m_latestGPS_data, m_verbose);
+	
+	// Save GGA cache (useful for NTRIP,...)
+	const bool has_gga = m_latestGPS_data.has_GGA_datum;
+	if (has_gga && !did_have_gga) {
+		m_last_GGA = s;
+	}
 
 	// Generic observation data:
 	m_latestGPS_data.sensorPose     = m_sensorPose;
@@ -971,3 +980,10 @@ bool CGPSInterface::setJAVAD_AIM_mode()
     MRPT_END
 
 } // end-setJAVAD_AIM_mode
+
+std::string CGPSInterface::getLastGGA(bool reset)
+{
+	std::string ret = m_last_GGA;
+	if (reset) m_last_GGA.clear();
+	return ret;
+}

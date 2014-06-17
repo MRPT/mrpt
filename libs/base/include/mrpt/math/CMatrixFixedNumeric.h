@@ -9,17 +9,16 @@
 #ifndef CMatrixFixedNumeric_H
 #define CMatrixFixedNumeric_H
 
-#include <mrpt/math/CArray.h>
-#include <mrpt/math/math_frwds.h>  // Fordward declarations
+#include <mrpt/math/math_frwds.h>  // Forward declarations
+#include <mrpt/math/eigen_frwds.h>
+#include <mrpt/utils/types_math.h>
 #include <mrpt/utils/CSerializable.h>
+#include <mrpt/math/point_poses2vectors.h> // MRPT_MATRIX_CONSTRUCTORS_FROM_POSES()
 
 namespace mrpt
 {
 	namespace math
 	{
-		using namespace mrpt::system;
-		using namespace mrpt::poses;
-
 		/**  A numeric matrix of compile-time fixed size.
 		 *   Basically, this class is a wrapper on Eigen::Matrix<T,NROWS,NCOLS>, but
 		 *   with a RowMajor element memory layout (except for column vectors).
@@ -32,14 +31,14 @@ namespace mrpt
 		 * \ingroup mrpt_base_grp
 		 */
 		template <typename T,size_t NROWS,size_t NCOLS>
-		class CMatrixFixedNumeric  : 
+		class CMatrixFixedNumeric  :
 			public Eigen::Matrix<
 				T,
 				NROWS,
 				NCOLS,
 				// Use row major storage for backward compatibility with MRPT matrices in all cases, except in column vectors:
 				Eigen::AutoAlign |
-				( (NCOLS==1 && NROWS!=1) ? Eigen::ColMajor : Eigen::RowMajor ) 
+				( (NCOLS==1 && NROWS!=1) ? Eigen::ColMajor : Eigen::RowMajor )
 				>
 		{
 		public:
@@ -56,7 +55,7 @@ namespace mrpt
 			inline CMatrixFixedNumeric(const T * vals) : Base(vals) { }
 
 			/** Constructor which leaves the matrix uninitialized.
-			  *  Example of usage: CMatrixFixedNumeric<double,3,2> M(UNINITIALIZED_MATRIX);
+			  *  Example of usage: CMatrixFixedNumeric<double,3,2> M(mrpt::math::UNINITIALIZED_MATRIX);
 			  */
 			inline CMatrixFixedNumeric(TConstructorFlags_Matrices constructor_flag) : Base() { }
 
@@ -64,7 +63,7 @@ namespace mrpt
 				return detail::getVicinity<CMatrixFixedNumeric<T,NROWS,NCOLS>,T,ReturnType,N>::get(c,r,*this);
 			}
 
-			inline void loadFromArray(const T* vals) 
+			inline void loadFromArray(const T* vals)
 			{
 				Base b(vals);
 				*this = b;
@@ -74,8 +73,8 @@ namespace mrpt
 			template <typename Derived>
 			inline bool operator ==(const Eigen::MatrixBase<Derived>& m2) const
 			{
-				return Base::cols()==m2.cols() && 
-					   Base::rows()==m2.rows() && 
+				return Base::cols()==m2.cols() &&
+					   Base::rows()==m2.rows() &&
 					   Base::cwiseEqual(m2).all();
 			}
 			/** != comparison of two matrices; it differs from default Eigen operator in that returns true if matrices are of different sizes instead of raising an assert. */
@@ -85,48 +84,7 @@ namespace mrpt
 
 		}; // end of class definition ------------------------------
 
-		/** @name Typedefs for common sizes
-			@{ */
-		typedef CMatrixFixedNumeric<double,2,2> CMatrixDouble22;
-		typedef CMatrixFixedNumeric<double,2,3> CMatrixDouble23;
-		typedef CMatrixFixedNumeric<double,3,2> CMatrixDouble32;
-		typedef CMatrixFixedNumeric<double,3,3> CMatrixDouble33;
-		typedef CMatrixFixedNumeric<double,4,4> CMatrixDouble44;
-		typedef CMatrixFixedNumeric<double,6,6> CMatrixDouble66;
-		typedef CMatrixFixedNumeric<double,7,7> CMatrixDouble77;
-		typedef CMatrixFixedNumeric<double,1,3> CMatrixDouble13;
-		typedef CMatrixFixedNumeric<double,3,1> CMatrixDouble31;
-		typedef CMatrixFixedNumeric<double,1,2> CMatrixDouble12;
-		typedef CMatrixFixedNumeric<double,2,1> CMatrixDouble21;
-		typedef CMatrixFixedNumeric<double,6,1> CMatrixDouble61;
-		typedef CMatrixFixedNumeric<double,1,6> CMatrixDouble16;
-		typedef CMatrixFixedNumeric<double,7,1> CMatrixDouble71;
-		typedef CMatrixFixedNumeric<double,1,7> CMatrixDouble17;
-		typedef CMatrixFixedNumeric<double,5,1> CMatrixDouble51;
-		typedef CMatrixFixedNumeric<double,1,5> CMatrixDouble15;
-		typedef CMatrixFixedNumeric<double,4,1> CMatrixDouble41;
-
-		typedef CMatrixFixedNumeric<float,2,2> CMatrixFloat22;
-		typedef CMatrixFixedNumeric<float,2,3> CMatrixFloat23;
-		typedef CMatrixFixedNumeric<float,3,2> CMatrixFloat32;
-		typedef CMatrixFixedNumeric<float,3,3> CMatrixFloat33;
-		typedef CMatrixFixedNumeric<float,4,4> CMatrixFloat44;
-		typedef CMatrixFixedNumeric<float,6,6> CMatrixFloat66;
-		typedef CMatrixFixedNumeric<float,7,7> CMatrixFloat77;
-		typedef CMatrixFixedNumeric<float,1,3> CMatrixFloat13;
-		typedef CMatrixFixedNumeric<float,3,1> CMatrixFloat31;
-		typedef CMatrixFixedNumeric<float,1,2> CMatrixFloat12;
-		typedef CMatrixFixedNumeric<float,2,1> CMatrixFloat21;
-		typedef CMatrixFixedNumeric<float,6,1> CMatrixFloat61;
-		typedef CMatrixFixedNumeric<float,1,6> CMatrixFloat16;
-		typedef CMatrixFixedNumeric<float,7,1> CMatrixFloat71;
-		typedef CMatrixFixedNumeric<float,1,7> CMatrixFloat17;
-		typedef CMatrixFixedNumeric<float,5,1> CMatrixFloat51;
-		typedef CMatrixFixedNumeric<float,1,5> CMatrixFloat15;
-		/**  @} */
-
-
-		namespace detail	
+		namespace detail
 		{
 			/**
 			  * Vicinity traits class specialization for fixed size matrices.

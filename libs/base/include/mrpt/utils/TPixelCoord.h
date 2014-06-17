@@ -10,7 +10,7 @@
 #ifndef mrpt_utils_tpixelcoord_H
 #define mrpt_utils_tpixelcoord_H
 
-#include <iostream>
+#include <iosfwd>
 #include <mrpt/base/link_pragmas.h>
 
 namespace mrpt

@@ -7,7 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/hwdrivers.h> // Precompiled headers
+#include "hwdrivers-precomp.h"   // Precompiled headers
 
 #include <mrpt/utils/crc.h>
 #include <mrpt/system/os.h>
@@ -200,7 +200,7 @@ void CBoardDLMS::doProcess()
 
 					for(itScan = myObs->scan.begin(), itCont = inMsg.content.begin()+7, itValid = myObs->validRange.begin();
 						itScan != myObs->scan.end();
-						itScan++, itValid++)
+						++itScan, ++itValid)
 					{
 						unsigned char lowByte = *itCont;
 						unsigned char highByte = (*(itCont+1)) & 0x7F;			// Mask MSB FOR 15 bits data!
@@ -233,7 +233,7 @@ void CBoardDLMS::doProcess()
 	{
 		cerr << "[CBoardDLMS - doProces] Exception while gathering data: " << e.what() << endl;
 		m_state = ssError;
-		throw e;
+		throw;
 	}
 }
 
@@ -294,7 +294,7 @@ bool CBoardDLMS::queryTimeStamp( mrpt::system::TTimeStamp &tstamp )
 		} while(msgRx.type != 0x90); // end do while
 
 		tstamp = (uint64_t)msgRx.content[0] + (((uint64_t)msgRx.content[1])<<8) + (((uint64_t)msgRx.content[2])<<16) + (((uint64_t)msgRx.content[3])<<24);
-		cout << "CBoardDLMS: USB Port open succesfully" << endl;
+		cout << "CBoardDLMS: USB Port open successfully" << endl;
 		cout << "Received Initial TimeStamp: " << tstamp << endl;
 
 		//cout << "TS  Received: [" << msgRx.content.size() << "]"<< endl;

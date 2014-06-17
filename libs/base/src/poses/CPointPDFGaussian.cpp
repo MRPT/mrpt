@@ -7,17 +7,21 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/base.h>  // Precompiled headers
+#include "base-precomp.h"  // Precompiled headers
 
 
 #include <mrpt/poses/CPointPDFGaussian.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/math/CMatrixD.h>
+#include <mrpt/math/matrix_serialization.h>
 #include <mrpt/random/RandomGenerators.h>
+#include <mrpt/system/os.h>
+#include <mrpt/utils/CStream.h>
 
 using namespace mrpt::poses;
 using namespace mrpt::utils;
 using namespace mrpt::random;
+using namespace mrpt::system;
 
 IMPLEMENTS_SERIALIZABLE( CPointPDFGaussian, CPointPDF, mrpt::poses )
 
@@ -271,7 +275,7 @@ void CPointPDFGaussian::drawSingleSample(CPoint3D &outSample) const
 {
 	MRPT_START
 
-	vector_double vec;
+	CVectorDouble vec;
 	randomGenerator.drawGaussianMultivariate(vec,cov);
 
 	ASSERT_(vec.size()==3);

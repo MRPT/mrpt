@@ -8,7 +8,8 @@
    +---------------------------------------------------------------------------+ */
 
 
-#include <mrpt/maps.h>
+#include <mrpt/slam/COccupancyGridMap2D.h>
+#include <mrpt/slam/CObservation2DRangeScan.h>
 #include <gtest/gtest.h>
 
 using namespace mrpt;

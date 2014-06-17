@@ -7,13 +7,20 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/base.h>  // Precompiled headers
+#include "base-precomp.h"  // Precompiled headers
 
+#include <mrpt/utils/core_defs.h>
 #include <mrpt/system/memory.h>
+#include <cstdio>
+#include <cstring>
+#include <cstdlib> // realloc(), posix_memalign()...
 
+#ifdef MRPT_OS_APPLE
+#include <mach/mach_init.h>
+#include <mach/task.h>
+#endif
 
 using namespace mrpt;
-using namespace mrpt::utils;
 using namespace mrpt::system;
 using namespace std;
 
@@ -208,8 +215,12 @@ unsigned long  mrpt::system::getMemoryUsage()
 #endif
 
 #ifdef MRPT_OS_APPLE
-	//TODO: Not implemented for Apple.
-	MEM = 0;
+	mach_task_basic_info info;
+	mach_msg_type_number_t count = MACH_TASK_BASIC_INFO_COUNT;
+	if(task_info(mach_task_self(), MACH_TASK_BASIC_INFO, (task_info_t)&info, &count)==0)
+	{
+		MEM=info.virtual_size;
+	}
 #endif
 
 	return MEM;

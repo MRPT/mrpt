@@ -7,18 +7,25 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/vision.h>  // Precompiled headers
+#include "vision-precomp.h"   // Precompiled headers
 
 #include <mrpt/math/kmeans.h>
 #include <mrpt/math/geometry.h>
+#include <list>
 
 // Universal include for all versions of OpenCV
-#include <mrpt/otherlibs/do_opencv_includes.h> 
+#include <mrpt/otherlibs/do_opencv_includes.h>
 #include "checkerboard_ocamcalib_detector.h"
+
+#if VIS
+#include <mrpt/gui/CDisplayWindow.h>
+#endif
 
 
 using namespace mrpt;
+using namespace mrpt::utils;
 using namespace mrpt::math;
+using namespace mrpt::utils;
 using namespace std;
 
 
@@ -284,6 +291,7 @@ bool find_chessboard_corners_multiple(
 			}
 		}
 	}
+
 
 	// Free mem:
 	cvReleaseStructuringElement(&kernel_cross);

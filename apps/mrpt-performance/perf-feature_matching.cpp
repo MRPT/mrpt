@@ -6,8 +6,9 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
-#include <mrpt/slam.h>
-#include <mrpt/scanmatching.h>
+
+#include <mrpt/utils/CImage.h>
+#include <mrpt/vision/CFeatureExtraction.h>
 
 #include "common.h"
 
@@ -15,7 +16,6 @@ using namespace mrpt::vision;
 using namespace mrpt::utils;
 using namespace mrpt::poses;
 using namespace mrpt::system;
-using namespace mrpt::scanmatching;
 using namespace std;
 
 const unsigned int NFEATS = 100;

@@ -7,7 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/base.h>  // Precompiled headers
+#include "base-precomp.h"  // Precompiled headers
 
 #include <mrpt/math/CSparseMatrix.h>
 
@@ -198,7 +198,7 @@ void CSparseMatrix::multiply_AB(const CSparseMatrix & A,const CSparseMatrix & B)
 	cs_spfree(sm);
 }
 
-void CSparseMatrix::multiply_Ab(const mrpt::vector_double &b, mrpt::vector_double &out_res) const
+void CSparseMatrix::multiply_Ab(const mrpt::math::CVectorDouble &b, mrpt::math::CVectorDouble &out_res) const
 {
 	ASSERT_EQUAL_(int(b.size()), int(getColCount()))
 	out_res.resize( getRowCount() );
@@ -313,7 +313,8 @@ bool CSparseMatrix::saveToTextFile_sparse(const std::string &filName)
           }
 	}
 
-     return true;
+	fclose(f);
+    return true;
 }
 
 
@@ -359,10 +360,10 @@ void CSparseMatrix::CholeskyDecomp::get_L(CMatrixDouble &L) const
 
 /** Return the vector from a back-substitution step that solves: Ux=b   */
 void CSparseMatrix::CholeskyDecomp::backsub(
-	const mrpt::vector_double &b,
-	mrpt::vector_double &sol) const
+	const Eigen::VectorXd &b,
+	Eigen::VectorXd &sol) const
 {
-	ASSERT_(!b.empty())
+	ASSERT_(b.size()>0)
 	sol.resize(b.size());
 	this->backsub(&b[0],&sol[0],b.size());
 }
@@ -375,7 +376,7 @@ void CSparseMatrix::CholeskyDecomp::backsub(
 {
 	ASSERT_(N>0)
 	std::vector<double> tmp(N);
-	
+
 	cs_ipvec(m_symbolic_structure->pinv,&b[0],&tmp[0],N); /* tmp = PERMUT*b */
 	//permute con. pivoting
 	cs_lsolve(m_numeric_structure->L,&tmp[0]);   /* tmp = L\tmp */

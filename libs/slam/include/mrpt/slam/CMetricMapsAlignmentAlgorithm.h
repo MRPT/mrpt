@@ -10,11 +10,7 @@
 #define CMetricMapsAlignmentAlgorithm_H
 
 #include <mrpt/slam/CPointsMap.h>
-#include <mrpt/poses/CPose2D.h>
-#include <mrpt/poses/CPosePDF.h>
-#include <mrpt/poses/CPose3DPDF.h>
-#include <mrpt/poses/CPosePDFGaussian.h>
-#include <mrpt/poses/CPose3DPDFGaussian.h>
+#include <mrpt/poses/poses_frwds.h>
 
 #include <mrpt/utils/CDebugOutputCapable.h>
 
@@ -131,7 +127,7 @@ namespace slam
 		virtual CPose3DPDFPtr Align3DPDF(
 				const CMetricMap		*m1,
 				const CMetricMap		*m2,
-				const CPose3DPDFGaussian	&initialEstimationPDF,
+				const mrpt::poses::CPose3DPDFGaussian	&initialEstimationPDF,
 				float					*runningTime = NULL,
 				void					*info = NULL ) = 0;
 

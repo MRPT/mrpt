@@ -24,9 +24,9 @@ IF (PROG_GZIP AND PROG_POD2MAN)
 			COMMENT 		"Generating MRPT man pages"
 			)
 		add_dependencies(man_pages_all man_page_${appname})
-		if (UNIX AND NOT CMAKE_MRPT_USE_DEB_POSTFIXS)
-			INSTALL(FILES "${MRPT_BINARY_DIR}/man-pages/${appname}.1.gz" DESTINATION share/man/man1/ )
-		endif(UNIX AND NOT CMAKE_MRPT_USE_DEB_POSTFIXS)
+		if (UNIX)
+			INSTALL(FILES "${MRPT_BINARY_DIR}/man-pages/${appname}.1.gz" DESTINATION ${mrpt_apps_INSTALL_PREFIX}share/man/man1/ )
+		endif(UNIX)
 	ENDMACRO(CREATE_MANPAGE_PROJECT)
 
 	# The main (empty) target:
@@ -71,6 +71,9 @@ IF (PROG_GZIP AND PROG_POD2MAN)
 	CREATE_MANPAGE_PROJECT(carmen2rawlog)
         CREATE_MANPAGE_PROJECT(carmen2simplemap)
 #	CREATE_MANPAGE_PROJECT(rawlog2carmen)
+
+	CREATE_MANPAGE_PROJECT(DifOdometry-Datasets)
+	CREATE_MANPAGE_PROJECT(DifOdometry-Camera)
 
 ENDIF (PROG_GZIP AND PROG_POD2MAN)
 

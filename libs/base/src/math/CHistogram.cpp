@@ -7,14 +7,10 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/base.h>  // Precompiled headers
-
+#include "base-precomp.h"  // Precompiled headers
 
 #include <mrpt/math/CHistogram.h>
-#include <mrpt/math/ops_vectors.h>
 #include <mrpt/math/utils.h>
-#include <mrpt/system/os.h>
-#include <mrpt/utils/metaprogramming.h>
 
 using namespace mrpt;
 using namespace mrpt::math;
@@ -77,17 +73,19 @@ double CHistogram::getBinRatio(const size_t index) const
 /*---------------------------------------------------------------
 					getHistogram
  ---------------------------------------------------------------*/
-void CHistogram::getHistogram( vector_double &x, vector_double &hits ) const
+void CHistogram::getHistogram( std::vector<double> &x, std::vector<double> &hits ) const
 {
 	linspace(m_min,m_max,m_bins.size(), x);
-	metaprogramming::copy_container_typecasting(m_bins,hits);
+	const size_t N= m_bins.size();
+	hits.resize(N);
+	for (size_t i=0;i<N;i++) hits[i] = m_bins[i]; // metaprogramming::copy_container_typecasting(m_bins,);
 }
 
 
 /*---------------------------------------------------------------
 					getHistogramNormalized
  ---------------------------------------------------------------*/
-void CHistogram::getHistogramNormalized( vector_double &x, vector_double &hits ) const
+void CHistogram::getHistogramNormalized( std::vector<double> &x, std::vector<double> &hits ) const
 {
 	const size_t N = m_bins.size();
 	linspace(m_min,m_max,N, x);

@@ -7,9 +7,11 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/opengl.h>  // Precompiled header
+#include "opengl-precomp.h"  // Precompiled header
 
 #include <mrpt/opengl/COpenGLStandardObject.h>
+#include <mrpt/utils/CStream.h>
+#include <mrpt/utils/stl_serialization.h>
 #include "opengl_internals.h"
 
 using namespace mrpt;

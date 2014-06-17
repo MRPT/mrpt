@@ -7,29 +7,19 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/base.h>  // Precompiled headers
+#include "base-precomp.h"  // Precompiled headers
 
-
-
-#include <mrpt/config.h>
-
-#include <mrpt/math/CMatrix.h>
-#include <mrpt/math/CMatrixD.h>
 #include <mrpt/random/RandomGenerators.h>
 #include <mrpt/system/os.h>
-
-#include <mrpt/math/ops_matrices.h>
+#include <mrpt/system/datetime.h>
 
 using namespace mrpt;
 using namespace mrpt::random;
 using namespace mrpt::utils;
 using namespace std;
 
-
 // The global instance of CRandomGenerator for single-thread programs:
 CRandomGenerator mrpt::random::randomGenerator;
-
-
 
 // MT19937 algorithm
 // http://en.wikipedia.org/wiki/Mersenne_twister
@@ -234,7 +224,7 @@ void  CRandomGenerator::drawGaussianMultivariate(
 	cov.eigenVectors( Z, D );
 
 	// Scale eigenvectors with eigenvalues:
-	D.Sqrt();
+	D = D.array().sqrt().matrix();
 	Z.multiply(Z,D);
 
 	for (size_t i=0;i<dim;i++)

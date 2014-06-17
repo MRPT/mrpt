@@ -9,6 +9,9 @@
 
 #pragma once
 
+#include <mrpt/utils/CConfigFileBase.h> // MRPT_LOAD_CONFIG_VAR
+#include <mrpt/math/ops_containers.h> // meanAndStd()
+
 namespace mrpt { namespace srba {
 
 /** Default constructor */

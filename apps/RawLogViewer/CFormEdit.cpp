@@ -22,7 +22,13 @@
 #include <wx/app.h>
 
 // General global variables:
-#include <mrpt/slam.h>
+#include <mrpt/utils/CFileGZInputStream.h>
+#include <mrpt/utils/CFileGZOutputStream.h>
+#include <mrpt/utils/stl_containers_utils.h>
+#include <mrpt/system/filesystem.h>
+#include <mrpt/slam/CObservationImage.h>
+#include <mrpt/slam/CObservationStereoImages.h>
+#include <mrpt/slam/CObservation2DRangeScan.h>
 
 using namespace mrpt;
 using namespace mrpt::slam;

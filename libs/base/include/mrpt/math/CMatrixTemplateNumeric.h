@@ -9,27 +9,15 @@
 #ifndef CMatrixTemplateNumeric_H
 #define CMatrixTemplateNumeric_H
 
-#include <mrpt/math/CMatrixTemplate.h>
-#include <mrpt/utils/CSerializable.h>
-
-#include <mrpt/system/os.h>
-#include <cmath>
-#include <limits>
+#include <mrpt/utils/core_defs.h>
+#include <mrpt/utils/types_math.h>
+#include <mrpt/utils/TTypeName.h>
+#include <mrpt/math/point_poses2vectors.h> // MRPT_MATRIX_CONSTRUCTORS_FROM_POSES()
 
 namespace mrpt
 {
-	namespace poses
-	{
-		class CPose2D;
-		class CPose3D;
-		class CPoint2D;
-		class CPoint3D;
-	}
-
 	namespace math
 	{
-		using namespace mrpt::system;
-
 		/**  A matrix of dynamic size.
 		  *   Basically, this class is a wrapper on Eigen::Matrix<T,Dynamic,Dynamic>, but
 		  *   with a RowMajor element memory layout (except for column vectors).
@@ -41,7 +29,7 @@ namespace mrpt
 		 * \ingroup mrpt_base_grp
 		  */
 		template <class T>
-		class CMatrixTemplateNumeric : 
+		class CMatrixTemplateNumeric :
 			public Eigen::Matrix<
 				T,
 				Eigen::Dynamic,
@@ -85,6 +73,15 @@ namespace mrpt
 				return *this;
 			}
 
+			/** Assignment from any Eigen matrix/vector */
+			template <typename Derived>
+			inline CMatrixTemplateNumeric<T>& operator =(const Eigen::MatrixBase<Derived>& m) const
+			{
+				Base::operator =(m);
+				return *this;
+			}
+
+
 			/** Constructor from a given size and a C array. The array length must match cols x row.
 			  * \code
 			  *  const double numbers[] = {
@@ -109,8 +106,8 @@ namespace mrpt
 			template <typename Derived>
 			inline bool operator ==(const Eigen::MatrixBase<Derived>& m2) const
 			{
-				return Base::cols()==m2.cols() && 
-					   Base::rows()==m2.rows() && 
+				return Base::cols()==m2.cols() &&
+					   Base::rows()==m2.rows() &&
 					   Base::cwiseEqual(m2).all();
 			}
 			/** != comparison of two matrices; it differs from default Eigen operator in that returns true if matrices are of different sizes instead of raising an assert. */
@@ -137,11 +134,6 @@ namespace mrpt
 		  */
 		typedef CMatrixTemplateNumeric<unsigned int> CMatrixUInt;
 
-		/** Declares a matrix of booleans (non serializable).
-		  *  \sa CMatrixDouble, CMatrixFloat, CMatrixB
-		  */
-		typedef CMatrixTemplate<bool> CMatrixBool;
-
 #ifdef HAVE_LONG_DOUBLE
 		/** Declares a matrix of "long doubles" (non serializable), or of "doubles" if the compiler does not support "long double".
 		  *  \sa CMatrixDouble, CMatrixFloat
@@ -155,7 +147,7 @@ namespace mrpt
 #endif
 
 
-		namespace detail	
+		namespace detail
 		{
 			/**
 			  * Vicinity traits class specialization for fixed size matrices.

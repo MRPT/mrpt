@@ -81,8 +81,12 @@ wxBitmap MyArtProvider::CreateBitmap(const wxArtID& id,
 }
 
 // General global variables:
-#include <mrpt/maps.h>
-#include <mrpt/base.h>
+#include <mrpt/slam/COccupancyGridMap2D.h>
+#include <mrpt/utils/CRobotSimulator.h>
+#include <mrpt/utils/CFileGZInputStream.h>
+#include <mrpt/utils/CConfigFile.h>
+#include <mrpt/utils/CMemoryStream.h>
+#include <mrpt/system/filesystem.h>
 
 using namespace mrpt;
 using namespace mrpt::slam;

@@ -30,6 +30,16 @@ namespace mrpt
 			  */
 			CSetOfObjectsPtr OPENGL_IMPEXP RobotRhodon();
 			
+			/** Returns a representation of RobotGiraff.
+			  *  The generated object must be inserted in a opengl::COpenGLScene or opengl::CSetOfObjects.
+			  *  <div align="center">
+			  *  <table border="0" cellspan="4" cellspacing="4" style="border-width: 1px; border-style: solid;">
+			  *    <tr> <td> mrpt::opengl::stock_objects::RobotGiraff() </td> <td> \image html preview_stock_objects_RobotGiraff.png </td> </tr>
+			  *  </table>
+			  *  </div>
+			  */
+			CSetOfObjectsPtr OPENGL_IMPEXP RobotGiraff();
+
 			/** Returns a representation of a Pioneer II mobile base.
 			  *  The generated object must be inserted in a opengl::COpenGLScene or opengl::CSetOfObjects.
 			  *  <div align="center">

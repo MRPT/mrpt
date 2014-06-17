@@ -49,7 +49,7 @@ void CMyGLCanvas::OnPostRender()
 {
 	// Show credits on the screen??
 	if (last_timestamp!=INVALID_TIMESTAMP)
-		renderTextBitmap(20, 20, mrpt::system::dateTimeLocalToString(last_timestamp) );
+		mrpt::opengl::CRenderizable::renderTextBitmap(20, 20, mrpt::system::dateTimeLocalToString(last_timestamp) );
 }
 
 #endif

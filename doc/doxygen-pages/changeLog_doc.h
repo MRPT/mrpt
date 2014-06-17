@@ -6,17 +6,87 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
-   
+
 /** \page changelog Change Log
  *
 
 <p> <b>Note:</b> <i>If you are displaying a local version of this page and you have not built the whole HTML documentation, the links above will be broken. Either build the documentation invoking <code>make documentation_html</code> or [browse it on-line](http://www.mrpt.org/).</i></p>
 
- <a name="1.1.1">
-  <h2>Version 1.1.1: (Under development) </h2></a>
-  	- BUG FIXES:
-		- RawlogViewer app: Fixed abort while converting SF->obs.only datasets when there is no odometry.
-		- mrpt::slam::CSensoryFrame: The cached point map is now invalidated with any change to the list of observations so it's rebuild upon next call.
+<a name="1.2.0">
+  <h2>Version 1.2.0: (Under development) </h2></a>
+  	- <b>Most important changes:</b>
+		- Public header files (.h) have undergone a serious refactoring to minimize unnecesary dependencies and reduce compile time and memory as much as possible.
+		  As a side effect, user code might need to add new #include<> lines. This API change justifies the new minor version series 1.2.X.
+		- MRPT now cleanly builds in clang and OSX.
+		- Support for new camera drivers (OpenNI2, DUO3D).
+		- Many bug fixes.
+	- <b>Detailed list of changes:</b>
+		- Changes in apps:
+			- [rawlog-edit](http://www.mrpt.org/Application%3Arawlog-edit):
+				- New operations: --export-odometry-txt, --recalc-odometry
+				- New flag: --rectify-centers-coincide
+		- New examples:
+			- kitti_dataset2rawlog
+		- New classes:
+			- [mrpt-base]
+				- mrpt::math::ContainerType<CONTAINER>::element_t to allow handling either Eigen or STL containers seamlessly.
+			- [mrpt-hwdrivers]
+				- mrpt::hwdrivers::COpenNI2Sensor: Interface to OpenNI2 cameras, capable of reading from an array of OpenNI2 RGBD cameras (By Eduardo Fernandez)
+				- mrpt::hwdrivers::CDUO3DCamera: Interface to DUO3D cameras (By Francisco Angel Moreno)
+			- [mrpt-obs]
+				- mrpt::slam::CObservation6DFeatures
+		- Changes in classes:
+			- [mrpt-base]
+				- Robust kernel templates moved from mrpt::vision to mrpt::math. See mrpt::math::RobustKernel<>. Added unit tests for robust kernels.
+				- CPose3D has new SE(3) methods: mrpt::poses::CPose3D::jacob_dexpeD_de(), mrpt::poses::CPose3D::jacob_dAexpeD_de()
+				- More efficient mrpt::utils::OctetVectorToObject() (avoid memory copy).
+				- Fixed const-correctness of mrpt::utils::CImage::forceLoad() and mrpt::utils::CImage::unload()
+			- [mrpt-hwdrivers]
+				- mrpt::hwdrivers::CCameraSensor: Added a hook for user code to run before saving external image files: mrpt::hwdrivers::CCameraSensor::addPreSaveHook()
+				- mrpt::hwdrivers::CNationalInstrumentsDAQ now supports analog and digital outputs.
+				- New method mrpt::hwdrivers::CNTRIPClient::sendBackToServer()
+			- [mrpt-srba]
+				- Now also implements SE(3) relative graph-slam.
+			- [mrpt-vision]
+				- mrpt::vision::checkerBoardStereoCalibration: More robust handling of stereo calibration patterns. OpenCV sometimes detects corners in the wrong order between (left/right) images, so we detect the situation and fix it.
+				- mrpt::vision::findMultipleChessboardsCorners():
+					- Now enforces a consistent counterclockwise XYZ coordinate frame at each detected chessboard.
+					- Much more robust in distingishing quads of different sizes.
+		- Build system / public API:
+			- Fixes to build in OS X - [Patch](https://gist.github.com/randvoorhies/9283072) by Randolph Voorhies.
+			- Removed most "using namespace" from public headers, as good practice.
+			- Refactoring of MRPT headers.
+				- <mrpt/utils/stl_extensions.h> has been split into:
+					- <mrpt/utils/stl_serialization.h>
+					- <mrpt/utils/circular_buffer.h>
+					- <mrpt/utils/list_searchable.h>
+					- <mrpt/utils/bimap.h>
+					- <mrpt/utils/map_as_vector.h>
+					- <mrpt/utils/traits_map.h>
+					- <mrpt/utils/stl_serialization.h>
+					- <mrpt/utils/printf_vector.h>
+					- <mrpt/utils/stl_containers_utils.h>
+					- <mrpt/utils/ci_less.h>
+			- Deleted methods and functions:
+				- mrpt::system::breakpoint()
+				- mrpt::vector_float is now mrpt::math::CVectorFloat, mrpt::vector_double is mrpt::math::CVectorDouble, for name consistency. Also, using Eigen::VectorXf is preferred for new code.
+				- mrpt::CImage::rectifyImage() with parameters as separate vectors.
+				- mrpt::slam::CPointsMap::getPoint() with mrpt::poses::CPoint3D arguments.
+				- mrpt::vision::correctDistortion() -> use CImage method instead
+				- All previous deprecated functions.
+			- Embedded Eigen updated to version 3.2.1 [(commit)](https://github.com/jlblancoc/mrpt/commit/47913da94a27e98a9115f85b2a530b6c14a10b8f) [(commit)](https://github.com/jlblancoc/mrpt/commit/33258761d3b75bf133d38aecb257c64e4d76b21e)
+  		- BUG FIXES:
+			- RawlogViewer app: Fixed abort while converting SF->obs.only datasets when there is no odometry.
+			- mrpt::slam::CSensoryFrame: The cached point map is now invalidated with any change to the list of observations so it's rebuild upon next call.
+			- New implementation of mrpt::synch::CSemaphore avoids crashes in OS X - by Randolph Voorhies.
+			- mrpt::opengl::CArrow was always drawn of normalized length.
+			- FlyCapture2 monocular & stereo cameras could return an incorrect timestamp (only in Linux?).
+			- mrpt::system::createDirectory() returned false (error) when the directory already existed.
+			- mrpt::vision::CStereoRectifyMap::rectify() didn't update the left & right camera poses inside mrpt::slam::CObservationStereoImages objects while rectifying.
+			- RawLogViewer: Operation "convert to SF format" didn't take into account odometry observations.
+			- Fix build errors with GCC 4.9
+			- Fix crash of mrpt::hwdrivers::CIMUXSens_MT4's destructor when it fails to scan and open a device.
+			- Fix potential crash in mrpt::slam::data_association_full_covariance with JCBB when no individually compatible matching exists [(commit)](https://github.com/jlblancoc/mrpt/commit/482472ebd80a3484dce63d294b1ac4e8f001e1eb)
 
 <hr>
  <a name="1.1.0">
@@ -58,7 +128,7 @@
 		- New options in point maps: mrpt::slam::CPointsMap::TInsertionOptions::insertInvalidPoints - [(commit)](https://github.com/jlblancoc/mrpt/pull/8)
 		- mrpt::slam::CObservationIMU now includes data fields for 3D magnetometers and altimeters. - [(commit)](http://code.google.com/p/mrpt/source/detail?r=3451)
 		- Method renamed mrpt::utils::CEnhancedMetaFile::selectVectorTextFont() to avoid shadowing mrpt::utils::CCanvas::selectTextFont()
-		- mrpt::reactivenav::CParameterizedTrajectoryGenerator: New methods:  
+		- mrpt::reactivenav::CParameterizedTrajectoryGenerator: New methods:
 			- mrpt::reactivenav::CParameterizedTrajectoryGenerator::inverseMap_WS2TP() for inverse look-up of WS to TP space - [(commit)](https://github.com/jlblancoc/mrpt/commit/4d04ef50e3dea581bed6287d4ea6593034c47da3)
 			- mrpt::reactivenav::CParameterizedTrajectoryGenerator::renderPathAsSimpleLine() - [(commit)](https://github.com/jlblancoc/mrpt/commit/a224fc2489ad00b3ab116c84e8d4a48532a005df)
 		- Changed the signature of mrpt::reactivenav::build_PTG_collision_grids() to become more generic for 2D & 2.5D PTGs - [(commit)](https://github.com/jlblancoc/mrpt/commit/7bd68e49a4ba3bf08f194678787816c65de1d685)
@@ -130,7 +200,7 @@
 			- [mrpt-base] geometry module.
 	- BUG FIXES:
 		- CTimeLogger::registerUserMeasure() ignored the enable/disable state of the logger - <a href="http://code.google.com/p/mrpt/source/detail?r=3382" >r3382</a>
-		- mrpt-srba: SEGFAULT in 32bit builds due to missing EIGEN_MAKE_ALIGNED_OPERATOR_NEW - <a href="http://code.google.com/p/mrpt/source/detail?r=3429" >r3429</a>
+		- mrpt-srba: SEGFAULT in 32bit builds due to missing MRPT_MAKE_ALIGNED_OPERATOR_NEW - <a href="http://code.google.com/p/mrpt/source/detail?r=3429" >r3429</a>
 
  <br/>
  <hr>
@@ -258,7 +328,7 @@
 				- mrpt::gui::CDisplayWindow3D::addTextMessage() (and other opengl text routines) now allows drawing text with a shadow effect - <a href="http://code.google.com/p/mrpt/source/detail?r=3007" >r3007</a>
 			- [mrpt-hwdrivers]
 				- New method mrpt::hwdrivers::CActivMediaRobotBase::areMotorsEnabled()
-				- mrpt::hwdrivers::CGenericSensor (and all derived classes) now allocate objects aligned in memory with EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+				- mrpt::hwdrivers::CGenericSensor (and all derived classes) now allocate objects aligned in memory with MRPT_MAKE_ALIGNED_OPERATOR_NEW
 				- New static method mrpt::hwdrivers::CGPSInterface::parse_NMEA()
 			- [mrpt-maps]
 				- Better integration of point cloud classes with PCL: - <a href="http://code.google.com/p/mrpt/source/detail?r=2943" >r2943</a>
@@ -391,3 +461,5 @@
 		- [mrpt-vision]
 			- mrpt::vision::TSIFTDescriptorsKDTreeIndex, TSURFDescriptorsKDTreeIndex  - <a href="http://code.google.com/p/mrpt/source/detail?r=2799" >2799</a>
 			- mrpt::vision::CStereoRectifyMap - See tutorial online: http://www.mrpt.org/Rectifying_stereo_
+
+*/

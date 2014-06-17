@@ -14,6 +14,7 @@
 #include <mrpt/utils/CFileGZInputStream.h>
 #include <mrpt/utils/CFileGZOutputStream.h>
 #include <mrpt/utils/CConfigFile.h>
+#include <mrpt/utils/stl_serialization.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/system.h>
 
@@ -126,7 +127,7 @@ struct CDatasetParserBase
 		const std::string sFil_MAPbin = mrpt::system::fileNameChangeExtension(sFil_MAP,"bin");
 
 		if (mrpt::system::fileExists(sFil_MAPbin) && mrpt::system::fileExists(sFil_MAP) &&
-			getFileModificationTime(sFil_MAPbin)>getFileModificationTime(sFil_MAP) )
+			mrpt::system::getFileModificationTime(sFil_MAPbin)>mrpt::system::getFileModificationTime(sFil_MAP) )
 		{
 			try
 			{
@@ -188,7 +189,7 @@ struct CDatasetParserBase
 		const std::string sFil_PATHbin = mrpt::system::fileNameChangeExtension(sFil_PATH,"bin");
 
 		if (mrpt::system::fileExists(sFil_PATHbin) && mrpt::system::fileExists(sFil_PATH) &&
-			getFileModificationTime(sFil_PATHbin)>getFileModificationTime(sFil_PATH) )
+			mrpt::system::getFileModificationTime(sFil_PATHbin)>mrpt::system::getFileModificationTime(sFil_PATH) )
 		{
 			try
 			{

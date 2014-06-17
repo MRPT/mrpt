@@ -216,6 +216,34 @@ namespace observations {
 
 	// -------------------------------------------------------------------------------------------------
 
+	/** Observation = Relative SE(3) poses (x,y,z,yaw,pitch,roll) */
+	struct RelativePoses_3D
+	{
+		static const size_t  OBS_DIMS = 6; //!< Each observation is a vector (x,y,z,yaw,pitch,roll) 
+		
+		/** The observation-specific data structure */
+		struct obs_data_t
+		{
+			double x,y,z;   //!< Displacement (in meters)
+			double yaw,pitch,roll;   //!< Angles (in radians)
+
+			/** Converts this observation into a plain array of its parameters */
+			template <class ARRAY>
+			inline void getAsArray(ARRAY &obs) const {
+				obs[0]=x; obs[1]=y; obs[2]=z; 
+				obs[3]=yaw; obs[4]=pitch; obs[5]=roll;
+			}
+		};
+
+		/** The type "TObservationParams" must be declared in each "observations::TYPE" to 
+		  *  hold sensor-specific parameters, etc. needed in the sensor model. */
+		struct TObservationParams
+		{
+			// This type of observations has no further parameters.
+		};
+	};
+
+	// -------------------------------------------------------------------------------------------------
 
 	/** @} */
 

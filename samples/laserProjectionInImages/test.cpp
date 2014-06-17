@@ -13,14 +13,24 @@
 // and access to the contained "image" instead of "imageLeft".
 // -----------------------------------------------------------------------------------------------------------------------
 
-#include <mrpt/base.h>
-#include <mrpt/slam.h>
-#include <mrpt/gui.h>
+#include <mrpt/utils/CFileGZInputStream.h>
+#include <mrpt/system/filesystem.h>
+#include <mrpt/system/os.h>
+#include <mrpt/system/threads.h>
+#include <mrpt/slam/CRawlog.h>
+#include <mrpt/slam/CSimplePointsMap.h>
+#include <mrpt/slam/CActionCollection.h>
+#include <mrpt/slam/CSensoryFrame.h>
+#include <mrpt/slam/CObservation2DRangeScan.h>
+#include <mrpt/slam/CObservationImage.h>
+#include <mrpt/slam/CObservationStereoImages.h>
+#include <mrpt/gui/CDisplayWindow.h>
 
 using namespace mrpt;
 using namespace mrpt::utils;
 using namespace mrpt::slam;
 using namespace mrpt::gui;
+using namespace mrpt::system;
 using namespace std;
 
 #include <mrpt/examples_config.h>
@@ -104,16 +114,16 @@ void TestLaser2Imgs()
 		observations->insertObservationsInto( &mapa );		// <- The map contains the pose of the points (P1)
 
 		// Get the points into the map
-		vector_float			X, Y, Z;
-		vector_float::iterator	itX, itY, itZ;
+		vector<float>			X, Y, Z;
+		vector<float>::iterator	itX, itY, itZ;
 		mapa.getAllPoints(X,Y,Z);
 
 		unsigned int imgW = sImgs? sImgs->imageLeft.getWidth() : Img->image.getWidth();
 		unsigned int imgH = sImgs? sImgs->imageLeft.getHeight() : Img->image.getHeight();
 
 		//unsigned int			idx = 0;
-		vector_float			imgX,imgY;
-		vector_float::iterator	itImgX,itImgY;
+		vector<float>			imgX,imgY;
+		vector<float>::iterator	itImgX,itImgY;
 		imgX.resize( X.size() );
 		imgY.resize( Y.size() );
 

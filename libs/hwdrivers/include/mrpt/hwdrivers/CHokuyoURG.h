@@ -11,10 +11,8 @@
 
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/hwdrivers/C2DRangeFinderAbstract.h>
-#include <mrpt/utils/stl_extensions.h>
-
+#include <mrpt/utils/circular_buffer.h>
 #include <mrpt/gui/CDisplayWindow3D.h>
-#include <mrpt/opengl.h>
 
 namespace mrpt
 {

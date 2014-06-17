@@ -16,8 +16,6 @@ namespace mrpt
 {
 namespace poses
 {
-	using namespace mrpt::math;
-
 	DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE( CPointPDFGaussian, CPointPDF )
 
 	/** A gaussian distribution for 3D points. Also a method for bayesian fusion is provided.
@@ -41,7 +39,7 @@ namespace poses
 
 		/** Constructor
 		  */
-		CPointPDFGaussian( const CPoint3D &init_Mean, const CMatrixDouble33 &init_Cov );
+		CPointPDFGaussian( const CPoint3D &init_Mean, const mrpt::math::CMatrixDouble33 &init_Cov );
 
 		/** The mean value
 		 */
@@ -49,7 +47,7 @@ namespace poses
 
 		/** The 3x3 covariance matrix
 		 */
-		CMatrixDouble33		cov;
+		mrpt::math::CMatrixDouble33		cov;
 
 		 /** Returns an estimate of the point, (the mean, or mathematical expectation of the PDF)
 		  */
@@ -58,7 +56,7 @@ namespace poses
 		/** Returns an estimate of the point covariance matrix (3x3 cov matrix) and the mean, both at once.
 		  * \sa getMean
 		  */
-		void getCovarianceAndMean(CMatrixDouble33 &cov,CPoint3D &mean_point) const;
+		void getCovarianceAndMean(mrpt::math::CMatrixDouble33 &cov,CPoint3D &mean_point) const;
 
 		/** Copy operator, translating if necesary (for example, between particles and gaussian representations)
 		  */

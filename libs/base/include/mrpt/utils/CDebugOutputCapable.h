@@ -9,8 +9,7 @@
 #ifndef  CDebugOutputCapable_H
 #define  CDebugOutputCapable_H
 
-#include <mrpt/utils/utils_defs.h>
-#include <mrpt/utils/CStream.h>
+#include <mrpt/base/link_pragmas.h>
 
 /*---------------------------------------------------------------
 	Class
@@ -20,7 +19,7 @@ namespace mrpt
 	namespace utils
 	{
 		/** This base class provides a common printf-like method to send debug information to std::cout, with the purpose of allowing its redirection to other streams if desired.
-		  *  By default, messages sent to "printf_debug" will be shown in the console (cout) and also in 
+		  *  By default, messages sent to "printf_debug" will be shown in the console (cout) and also in
 		  *   the stream passed to debugOutputSetStream, but the console output can be
 		  *   switched off with debugOutputEnableConsole(false).
 		  *

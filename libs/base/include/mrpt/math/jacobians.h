@@ -9,8 +9,8 @@
 #ifndef  mrpt_math_jacobians_H
 #define  mrpt_math_jacobians_H
 
+#include <mrpt/math/num_jacobian.h>
 #include <mrpt/math/CQuaternion.h>
-#include <mrpt/math/utils.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/poses/CPosePDF.h>
 #include <mrpt/poses/CPose3DQuatPDF.h>
@@ -26,9 +26,8 @@ namespace mrpt
 		  */
 		namespace jacobians
 		{
-			using namespace mrpt::utils;
-			using namespace mrpt::poses;
-			using namespace mrpt::math;
+			using mrpt::poses::CPose3D;
+			using mrpt::math::CQuaternionDouble;
 
 			/** Computes the 4x3 Jacobian of the transformation from a 3D pose angles (yaw pitch roll) into a Quaternion, that is, the Jacobian of:
 			  * \f[ \mathbf{q} = \left( \begin{array}{c} \cos (\phi /2) \cos (\theta /2) \cos (\psi /2) +  \sin (\phi /2) \sin (\theta /2) \sin (\psi /2) \\ \sin (\phi /2) \cos (\theta /2) \cos (\psi /2) -  \cos (\phi /2) \sin (\theta /2) \sin (\psi /2) \\ \cos (\phi /2) \sin (\theta /2) \cos (\psi /2) +  \sin (\phi /2) \cos (\theta /2) \sin (\psi /2) \\ \cos (\phi /2) \cos (\theta /2) \sin (\psi /2) -  \sin (\phi /2) \sin (\theta /2) \cos (\psi /2) \\ \end{array}\right) \f]
@@ -36,7 +35,7 @@ namespace mrpt
 			  * \sa jacob_yawpitchroll_from_quat, mrpt::poses::CPose3D::getAsQuaternion
 			  */
 			inline void jacob_quat_from_yawpitchroll(
-				CMatrixFixedNumeric<double,4,3>  &out_dq_dr,
+				mrpt::math::CMatrixFixedNumeric<double,4,3>  &out_dq_dr,
 				const double yaw,
 				const double pitch,
 				const double roll
@@ -53,7 +52,7 @@ namespace mrpt
 			  * \sa jacob_yawpitchroll_from_quat, mrpt::poses::CPose3D::getAsQuaternion
 			  */
 			inline void jacob_quat_from_yawpitchroll(
-				CMatrixFixedNumeric<double,4,3> &out_dq_dr,
+				mrpt::math::CMatrixFixedNumeric<double,4,3> &out_dq_dr,
 				const CPose3D  &in_pose
 				)
 			{
@@ -66,7 +65,7 @@ namespace mrpt
 			  * \sa jacob_quat_from_yawpitchroll
 			  */
 			inline void jacob_yawpitchroll_from_quat(
-				CMatrixFixedNumeric<double,3,4>  &out_dr_dq
+				mrpt::math::CMatrixFixedNumeric<double,3,4>  &out_dr_dq
 				)
 			{
 				THROW_EXCEPTION("TO DO")
@@ -90,31 +89,31 @@ namespace mrpt
 				CMatrixDouble66		&out_df_dx,
 				CMatrixDouble66		&out_df_du)
 			{
-				CPose3DPDF::jacobiansPoseComposition(x,u,out_df_dx,out_df_du);
+				mrpt::poses::CPose3DPDF::jacobiansPoseComposition(x,u,out_df_dx,out_df_du);
 			}
 
 			/** Given the 3D(6D) pose composition \f$ f(x,u) = x \oplus u \f$, compute the two 6x6 Jacobians \f$ \frac{\partial f}{\partial x} \f$ and \f$ \frac{\partial f}{\partial u} \f$.
 			  * For the equations, see CPose3DQuatPDF::jacobiansPoseComposition
 			  */
 			inline void jacobs_6D_pose_comp(
-				const CPose3DQuat	&x,
-				const CPose3DQuat	&u,
+				const mrpt::poses::CPose3DQuat	&x,
+				const mrpt::poses::CPose3DQuat	&u,
 				CMatrixDouble77		&out_df_dx,
 				CMatrixDouble77		&out_df_du)
 			{
-				CPose3DQuatPDF::jacobiansPoseComposition(x,u,out_df_dx,out_df_du);
+				mrpt::poses::CPose3DQuatPDF::jacobiansPoseComposition(x,u,out_df_dx,out_df_du);
 			}
 
 			/** Given the 2D pose composition \f$ f(x,u) = x \oplus u \f$, compute the two 3x3 Jacobians \f$ \frac{\partial f}{\partial x} \f$ and \f$ \frac{\partial f}{\partial u} \f$.
 			  * For the equations, see CPosePDF::jacobiansPoseComposition
 			  */
 			inline void jacobs_2D_pose_comp(
-				const CPosePDFGaussian &x,
-				const CPosePDFGaussian &u,
+				const mrpt::poses::CPosePDFGaussian &x,
+				const mrpt::poses::CPosePDFGaussian &u,
 				CMatrixDouble33			 &out_df_dx,
 				CMatrixDouble33			 &out_df_du)
 			{
-				CPosePDF::jacobiansPoseComposition(x,u,out_df_dx,out_df_du);
+				mrpt::poses::CPosePDF::jacobiansPoseComposition(x,u,out_df_dx,out_df_du);
 			}
 
 			/** Numerical estimation of the Jacobian of a user-supplied function - this template redirects to mrpt::math::estimateJacobian, see that function for documentation. */

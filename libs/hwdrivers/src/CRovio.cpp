@@ -7,15 +7,16 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/hwdrivers.h>
+#include "hwdrivers-precomp.h"   // Precompiled headers
 
 #include <mrpt/hwdrivers/CRovio.h>
+#include <mrpt/hwdrivers/CFFMPEG_InputStream.h>
 #include <mrpt/utils/net_utils.h>
+#include <mrpt/utils/CMemoryStream.h>
 #include <mrpt/slam/CObservationImage.h>
 
 using namespace mrpt::utils;
 using namespace mrpt::slam;
-using namespace mrpt::gui;
 using namespace mrpt::hwdrivers;
 using namespace mrpt::utils::net;
 using namespace std;
@@ -290,7 +291,7 @@ bool CRovio::retrieve_video()
 		m_videothread_must_exit         = false;
 		m_videothread_finished          = false;
 
-		m_videoThread = createThreadFromObjectMethod(this,&mrpt::hwdrivers::CRovio::thread_video);
+		m_videoThread = mrpt::system::createThreadFromObjectMethod(this,&mrpt::hwdrivers::CRovio::thread_video);
 
 		while (!m_videothread_initialized_done) {
 			mrpt::system::sleep(10);
@@ -358,7 +359,7 @@ bool CRovio::captureImageAsync( CImage & picture, bool rectified)
 		CMemoryStream stream( &resp[0],  resp.size()  );
 		picture.loadFromStreamAsJPEG(stream);
 		if( rectified )//Comprobar que las matrices existen y son correctas********************
-			picture.rectifyImageInPlace(options.cameraParams.intrinsicParams, options.cameraParams.getDistortionParamsAsVector() );
+			picture.rectifyImageInPlace(options.cameraParams);
 		//picture.saveToFile("0000.jpg");
 		//cout<<"Response:\n"<<response<<endl;
 		return true;
@@ -376,7 +377,7 @@ bool CRovio::captureImageAsync( CImage & picture, bool rectified)
 bool CRovio::getRovioState(CRovio::TRovioState &status)
 {
 	size_t x_pos, /*y_pos, theta_pos,*/ lenght;
-	string x_value, y_value, theta_value, MF, response, errormsg;
+	string x_value, theta_value, MF, response, errormsg;
 	mrpt::math::TPose2D pose;
 	general_command(1, response, errormsg);		//Get report from Rovio to response
 
@@ -411,14 +412,14 @@ bool CRovio::getEncoders(CRovio::TEncoders &encoders)//Revisar esto
 {
 	string resp, error, field;
 	//string field_name[12]={"Packet length","Not Used","Left Wheel:Dir Rotation","Left Wheel:Ticks","Right Wheel:Dir Rotation","Right Wheel:Ticks","Rear Wheel:Dir Rotation","Rear Wheel:Ticks","Not used","Head Position","Batery","Config Status"};
-	size_t pos, length;
+	size_t length;
 	int *a_enc = new int[11];	//12 encoder's fields
 	long l_value;
 
 	general_command(20, resp, error);	//get Encoders string to resp
 	if(error.empty())
 	{
-		pos=(resp.find("responses =")+12);
+		size_t pos=(resp.find("responses =")+12);
 		for(int i=0;i<=11;i++)
 		{
 			if ( (i==3)||(i==5)||(i==7) )

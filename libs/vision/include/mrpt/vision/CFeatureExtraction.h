@@ -139,6 +139,18 @@ namespace mrpt
 					bool    use_KLT_response; //!< (default=false) If true, use CImage::KLT_response to compute the response at each point instead of the FAST "standard response".
 				} FASTOptions;
 
+				/** ORB Options */
+				struct VISION_IMPEXP TORBOptions
+				{
+					TORBOptions() : scale_factor(1.2), n_levels(8), extract_patch(false), min_distance(0) {}
+
+					float	scale_factor;
+					size_t	n_levels;
+					bool	extract_patch;
+					size_t	min_distance;
+
+				} ORBOptions;
+
 				/** SIFT Options  */
 				struct VISION_IMPEXP TSIFTOptions
 				{
@@ -324,6 +336,13 @@ namespace mrpt
 			void  internal_computeSurfDescriptors( const CImage	&in_img,
 										  CFeatureList		&in_features) const;
 
+			/** Compute the ORB descriptor of the provided features into the input image
+			* \param in_img (input) The image from where to compute the descriptors.
+			* \param in_features (input/output) The list of features whose descriptors are going to be computed.
+			*/
+			void  internal_computeORBDescriptors( const CImage	&in_img,
+										  CFeatureList		&in_features) const;
+
 			/** Compute the intensity-domain spin images descriptor of the provided features into the input image
 			* \param in_img (input) The image from where to compute the descriptors.
 			* \param in_features (input/output) The list of features whose descriptors are going to be computed.
@@ -408,6 +427,25 @@ namespace mrpt
 				unsigned int			init_ID = 0,
 				unsigned int			nDesiredFeatures = 0,
 				const TImageROI			&ROI = TImageROI()) const;
+
+			// ------------------------------------------------------------------------------------
+			//											ORB
+			// ------------------------------------------------------------------------------------
+			/** Extract features from the image based on the ORB method.
+			* \param img The image from where to extract the images.
+			* \param feats The list of extracted features.
+			* \param nDesiredFeatures Number of features to be extracted. Default: authomatic.
+			* \param ROI (op. input) Region of Interest. Default: All the image.
+			*/
+			void  extractFeaturesORB(
+				const CImage			&img,
+				CFeatureList			&feats,
+				const unsigned int		init_ID = 0,
+				const unsigned int		nDesiredFeatures = 0,
+				const TImageROI			&ROI = TImageROI(),
+                const CMatrixBool       * mask = NULL ) const; // Important: This was a const ref. in mrpt <0.9.4, but the instantiation of a default value
+                                                               // for CMatrixBool being a template generated duplicated linking errors for MSVC, thus it was changed to a pointer.
+
 
 			// ------------------------------------------------------------------------------------
 			//											SURF

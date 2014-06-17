@@ -98,6 +98,13 @@ DECLARE_OP_FUNCTION(op_stereo_rectify)
 
                 rectify_map.enableResizeOutput(true,nCols,nRows);
 			}
+
+			// Optional argument: "--rectify-centers-coincide"
+			if (isFlagSet(cmdline,"rectify-centers-coincide"))
+			{
+                VERBOSE_COUT << "Will rectify such that both image centers coincide.\n";
+				rectify_map.enableBothCentersCoincide(true);
+			}
 		}
 
 		bool processOneObservation(CObservationPtr  &obs)

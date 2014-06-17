@@ -7,28 +7,26 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/maps.h>  // Precompiled header
-
-
+#include "maps-precomp.h" // Precomp header
 
 #include <mrpt/slam/CGasConcentrationGridMap2D.h>
 #include <mrpt/slam/CObservationGasSensors.h>
-#include <mrpt/system/os.h>
-#include <mrpt/math/utils.h>
+#include <mrpt/math/CMatrix.h>
+#include <mrpt/math/ops_containers.h>
 #include <mrpt/utils/CTicTac.h>
 #include <mrpt/utils/color_maps.h>
+#include <mrpt/utils/round.h>  // round()
 #include <mrpt/utils/CFileGZOutputStream.h>
 #include <mrpt/utils/CFileGZInputStream.h>
-#include <mrpt/system.h>
-#include <mrpt/base.h>
-#include <mrpt/opengl.h>
-#include <numeric>
-#include <ios>
-#include <sstream>
+#include <mrpt/system/datetime.h>
+#include <mrpt/system/filesystem.h>
+#include <mrpt/system/os.h>
+#include <mrpt/opengl/CArrow.h>
+#include <mrpt/opengl/CSetOfObjects.h>
+#include <mrpt/utils/CStream.h>
 
 // Short-cut:
 #define LUT_TABLE (*(LUT.table))
-
 
 using namespace mrpt;
 using namespace mrpt::slam;
@@ -61,7 +59,7 @@ CGasConcentrationGridMap2D::CGasConcentrationGridMap2D(
 	windGrid_direction.setSize( x_min,x_max,y_min,y_max,resolution );
 
 	//initialize counter for advection simulation
-	timeLastSimulated = now();
+	timeLastSimulated = mrpt::system::now();
 }
 
 CGasConcentrationGridMap2D::~CGasConcentrationGridMap2D()
@@ -98,7 +96,7 @@ void  CGasConcentrationGridMap2D::internal_clear()
 		// Generate Look-Up Table of the Gaussian weights due to wind advection.
 		if( !build_Gaussian_Wind_Grid())
 		{
-			mrpt::system::pause();
+			//mrpt::system::pause();
 			THROW_EXCEPTION("Problem with LUT wind table");
 
 		}
@@ -142,10 +140,10 @@ bool  CGasConcentrationGridMap2D::internal_insertObservation(
 			CPose2D		sensorPose;
 
 			if ( o->sensorLabel.compare("MCEnose")==0 || o->sensorLabel.compare("Full_MCEnose")==0 )
-			{							
+			{
 				ASSERT_(o->m_readings.size() > insertionOptions.enose_id);
 				const CObservationGasSensors::TObservationENose *it = &o->m_readings[insertionOptions.enose_id];
-				
+
 				// Compute the 3D sensor pose in world coordinates:
 				sensorPose = CPose2D( CPose3D(robotPose2D) + it->eNosePoseOnTheRobot );
 
@@ -565,7 +563,7 @@ void  CGasConcentrationGridMap2D::getWindAs3DObject( mrpt::opengl::CSetOfObjects
 	if( m_map.size() != wind_map_size )
 	{
 		cout << " GAS MAP DIMENSIONS DO NOT MATCH WIND MAP " << endl;
-		mrpt::system::pause();
+		//mrpt::system::pause();
 	}
 
 
@@ -591,7 +589,7 @@ void  CGasConcentrationGridMap2D::getWindAs3DObject( mrpt::opengl::CSetOfObjects
 			double mod_xy = *windGrid_module.cellByPos( xs[cx],ys[cy] );
 
 
-			mrpt::opengl::CArrowPtr obj = CArrow::Create(
+			mrpt::opengl::CArrowPtr obj = mrpt::opengl::CArrow::Create(
 				xs[cx],ys[cy],0,
 				xs[cx]+scale*cos(dir_xy),ys[cy]+scale*sin(dir_xy),0,
 				1.15f*scale,0.3f*scale,0.35f*scale);
@@ -646,21 +644,21 @@ bool CGasConcentrationGridMap2D::simulateAdvection( const double &STD_increase_v
 	-------------------------------------------------*/
 	if(!insertionOptions.useWindInformation)
 		return false;
-	
+
 	//Get time since last simulation
 	double At = mrpt::system::timeDifference(timeLastSimulated, mrpt::system::now());
 	cout << endl << " - At since last simulation = " << At << "seconds" << endl;
 	//update time of last updated.
 	timeLastSimulated = mrpt::system::now();
 
-	
+
 	/* 3- Build Transition Matrix (SA)
 	  This Matrix contains the probabilities of each cell
 	  to "be displaced" to other cells by the wind effect.
 	------------------------------------------------------*/
 	mrpt::utils::CTicTac tictac;
 	size_t i=0,c=0;
-	int cell_i_cx,cell_i_cy;	
+	int cell_i_cx,cell_i_cy;
 	float mu_phi, mu_r, mu_modwind;
 	const size_t N = m_map.size();
 	mrpt::math::CMatrix A(N,N);
@@ -676,7 +674,7 @@ bool CGasConcentrationGridMap2D::simulateAdvection( const double &STD_increase_v
 		if( N != wind_map_size )
 		{
 			cout << " GAS MAP DIMENSIONS DO NOT MATCH WIND INFORMATION " << endl;
-			mrpt::system::pause();
+			//mrpt::system::pause();
 		}
 
 		tictac.Tic();
@@ -685,7 +683,7 @@ bool CGasConcentrationGridMap2D::simulateAdvection( const double &STD_increase_v
 		for(i=0; i<N; i++)
 		{
 			//Cell_i indx and coordinates
-			idx2cxcy(i,cell_i_cx,cell_i_cy);			
+			idx2cxcy(i,cell_i_cx,cell_i_cy);
 
 			//Read dirwind value of cell i
 			mu_phi = *windGrid_direction.cellByIndex(cell_i_cx,cell_i_cy);		//[0,2*pi]
@@ -718,23 +716,23 @@ bool CGasConcentrationGridMap2D::simulateAdvection( const double &STD_increase_v
 					// Add Value to SA Matrix
 					if( cells_to_update[ci].value != 0.0 )
 					{
-						A(final_idx,i) = cells_to_update[ci].value;						
-						row_sum[final_idx] += cells_to_update[ci].value;						
+						A(final_idx,i) = cells_to_update[ci].value;
+						row_sum[final_idx] += cells_to_update[ci].value;
 					}
 				}
 			}//end-for ci
-		}//end-for cell i				
+		}//end-for cell i
 
 		cout << " - SA matrix computed in " << tictac.Tac() << "s" << endl << endl;
 	}
-	catch( mrpt::utils::exception e)
+	catch( std::exception &e)
 	{
 		cout << " #########  EXCEPTION computing Transition Matrix (A) ##########\n: " << e.what() << endl;
 		cout << "on cell i= " << i << "  c=" << c << endl << endl;
 		return false;
 	}
-	
-	
+
+
 	/* Update Mean + Variance as a Gaussian Mixture
 	------------------------------------------------*/
 	try
@@ -746,12 +744,12 @@ bool CGasConcentrationGridMap2D::simulateAdvection( const double &STD_increase_v
 		double *new_variances = (double*)calloc(N, sizeof(double));
 
 		for( size_t it_i=0; it_i<N; it_i++)
-		{	
+		{
 			//--------
 			// mean
 			//--------
 			for( size_t it_j=0; it_j<N; it_j++)
-			{	
+			{
 				if (m_map[it_j].kf_mean!=0 && A(it_i,it_j)!=0)
 				{
 					if (row_sum[it_i] >= 1)
@@ -760,14 +758,14 @@ bool CGasConcentrationGridMap2D::simulateAdvection( const double &STD_increase_v
 						new_means[it_i] +=  A(it_i,it_j) * m_map[it_j].kf_mean;
 				}
 			}
-			
-			
+
+
 			//----------
 			// variance
 			//----------
 			//Consider special case (borders cells)
 			if (row_sum[it_i] < 1)
-				new_variances[it_i] = (1-row_sum[it_i]) * square(insertionOptions.KF_initialCellStd);			
+				new_variances[it_i] = (1-row_sum[it_i]) * square(insertionOptions.KF_initialCellStd);
 
 			for( size_t it_j=0; it_j<N; it_j++)
 			{
@@ -798,15 +796,15 @@ bool CGasConcentrationGridMap2D::simulateAdvection( const double &STD_increase_v
 		recoverMeanAndCov();
 
 		cout << " - Mean&Var updated in " << tictac.Tac() << "s" << endl;
-	
+
 
 		//Free Memory
 		free(row_sum);
 		free(new_means);
 		free(new_variances);
-	
+
 	}
-	catch( mrpt::utils::exception e)
+	catch( std::exception &e)
 				{
 		cout << " #########  EXCEPTION Updating Covariances ##########\n: " << e.what() << endl;
 		cout << "on row i= " << i << "  column c=" << c << endl << endl;

@@ -9,9 +9,11 @@
 #ifndef CParticleFilterData_H
 #define CParticleFilterData_H
 
-#include <mrpt/utils/utils_defs.h>
+#include <mrpt/utils/core_defs.h>
 #include <mrpt/bayes/CProbabilityParticle.h>
+#include <mrpt/bayes/CParticleFilterCapable.h>
 
+#include <deque>
 #include <algorithm>
 
 namespace mrpt
@@ -103,7 +105,6 @@ namespace bayes
 			std::vector<bool>  oldParticlesReused(M_old,false);
 			std::vector<bool>::const_iterator  oldPartIt;
 			std::vector<size_t>           sorted_indx(indx);
-			std::vector<size_t>::iterator sort_idx_it;
 
 			/* Assure the input index is sorted: */
 			std::sort( sorted_indx.begin(), sorted_indx.end() );
@@ -209,7 +210,8 @@ namespace bayes
 		/** Dumps the sequence of particles and their weights to a stream (requires T implementing CSerializable).
 		  * \sa readParticlesFromStream
 		  */
-		void  writeParticlesToStream( utils::CStream &out ) const
+		template <class STREAM>
+		void  writeParticlesToStream( STREAM &out ) const
 		{
 			MRPT_START
 			uint32_t	n = static_cast<uint32_t>(m_particles.size());
@@ -223,7 +225,8 @@ namespace bayes
 		/** Reads the sequence of particles and their weights from a stream (requires T implementing CSerializable).
 		  * \sa writeParticlesToStream
 		  */
-		void  readParticlesFromStream(utils::CStream &in)
+		template <class STREAM>
+		void  readParticlesFromStream(STREAM &in)
 		{
 			MRPT_START
 			clearParticles(); // Erase previous content:
@@ -243,13 +246,13 @@ namespace bayes
 
 		/** Returns a vector with the sequence of the logaritmic weights of all the samples.
 		  */
-		void getWeights( vector_double &out_logWeights ) const
+		void getWeights( std::vector<double> &out_logWeights ) const
 		{
 			MRPT_START
 			out_logWeights.resize(m_particles.size());
-			vector_double::iterator	it;
+			std::vector<double>::iterator	it;
 			typename CParticleList::const_iterator	it2;
-			for (it=out_logWeights.begin(),it2=m_particles.begin();it2!=m_particles.end();it++,it2++)
+			for (it=out_logWeights.begin(),it2=m_particles.begin();it2!=m_particles.end();++it,++it2)
 				*it = it2->log_w;
 			MRPT_END
 		}

@@ -45,7 +45,7 @@ void TestInitMatrix()
 	cout << "Initialized matrix (I): " << endl << M << endl;
 
 	const double numbers2[] = { 0.5, 4.5, 6.7, 8.9, 15.2 };
-	vector_double  v1;
+	CVectorDouble  v1;
 	loadVector(v1, numbers2);
 	cout << "Initialized double vector: " << v1 << endl;
 
@@ -149,7 +149,7 @@ void TestEigenvector()
 	A.eigenVectors(Z,D);
 	cout << "Z:\n" << Z << "D:\n" << D;
 
-	D.Sqrt();
+	D = D.array().sqrt().matrix();
 	Z= Z*D;
 	cout << "Z:\n" << Z;
 
@@ -248,7 +248,7 @@ void TestCov()
 	CMatrixDouble   Mdyn(4,3,numbers);
 	CMatrixFixedNumeric<double,4,3> Mfix(numbers);
 
-	vector<vector_double> samples(4);
+	vector<CVectorDouble> samples(4);
 	for (size_t i=0;i<4;i++)
 	{
 		samples[i].resize(3);
@@ -256,7 +256,7 @@ void TestCov()
 			samples[i][j]=Mdyn(i,j);
 	}
 
-	cout << "COV (vector of vectors): " << endl << mrpt::math::covVector(samples)  << endl;
+	cout << "COV (vector of vectors): " << endl << mrpt::math::covVector<vector<CVectorDouble>,Eigen::MatrixXd>(samples)  << endl;
 	cout << "COV (mat fix): " << endl << mrpt::math::cov(Mfix)  << endl;
 	cout << "COV (mat dyn): " << endl << mrpt::math::cov(Mdyn)  << endl;
 }

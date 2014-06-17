@@ -7,12 +7,13 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/obs.h>   // Precompiled headers
+#include "obs-precomp.h"   // Precompiled headers
 
 #include <mrpt/slam/CActionCollection.h>
 #include <mrpt/slam/CActionRobotMovement2D.h>
 #include <mrpt/slam/CActionRobotMovement3D.h>
 #include <mrpt/poses/CPosePDF.h>
+#include <mrpt/utils/CStream.h>
 
 using namespace mrpt;
 using namespace mrpt::slam;

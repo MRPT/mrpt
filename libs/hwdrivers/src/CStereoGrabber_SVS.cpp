@@ -6,7 +6,8 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
-#include <mrpt/hwdrivers.h>  // Only for precomp. headers, include all libmrpt-core headers.
+
+#include "hwdrivers-precomp.h"   // Precompiled headers
 
 #include <mrpt/hwdrivers/CStereoGrabber_SVS.h>
 

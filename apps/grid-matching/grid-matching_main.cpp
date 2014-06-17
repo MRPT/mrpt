@@ -7,16 +7,28 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/slam.h>
+#include <mrpt/utils/CFileStream.h>
+#include <mrpt/utils/CFileGZInputStream.h>
+#include <mrpt/utils/CFileGZOutputStream.h>
+#include <mrpt/utils/CConfigFile.h>
+#include <mrpt/poses/CPosePDFGaussian.h>
+#include <mrpt/poses/CPosePDFParticles.h>
+#include <mrpt/poses/CPoint2D.h>
+#include <mrpt/math/ops_containers.h>
+#include <mrpt/math/wrap2pi.h>
+#include <mrpt/slam/CGridMapAligner.h>
+#include <mrpt/slam/CSimpleMap.h>
+#include <mrpt/slam/CSensoryFrame.h>
+#include <mrpt/slam/CMultiMetricMap.h>
 #include <mrpt/gui.h>
-#include <mrpt/base.h>
+#include <mrpt/system/datetime.h>
+#include <mrpt/system/filesystem.h>
+#include <mrpt/system/vector_loadsave.h>
+#include <mrpt/system/os.h>
+#include <mrpt/random.h>
 #include <mrpt/otherlibs/tclap/CmdLine.h>
-
-//#if MRPT_HAS_TBB
-//#	include <tbb/parallel_for.h>
-//#	include <tbb/blocked_range.h>
-//	using namespace tbb;
-//#endif
+#include <mrpt/opengl/CGridPlaneXY.h>
+#include <mrpt/opengl/CSetOfLines.h>
 
 
 using namespace mrpt;
@@ -206,10 +218,10 @@ void do_grid_align()
 	}
 
 	{
-		vector_float	stats_covDet, stats_stdPhi;
-		vector_float	stats_errorXY, stats_errorPhi;
-		vector_float	stats_bruteErrorXY, stats_bruteErrorPhi;
-		vector_float	stats_GT_likelihood;
+		CVectorFloat	stats_covDet, stats_stdPhi;
+		CVectorFloat	stats_errorXY, stats_errorPhi;
+		CVectorFloat	stats_bruteErrorXY, stats_bruteErrorPhi;
+		CVectorFloat	stats_GT_likelihood;
 		vector_uint		overallGTcorrsFound;
 
 		for (unsigned int iter=0;iter<N_ITERS;iter++)
@@ -372,7 +384,7 @@ void do_grid_align()
 
 					if (!SAVE_ICP_GOODNESS_FIL.empty())
 					{
-						vectorToTextFile( info.icp_goodness_all_sog_modes, SAVE_ICP_GOODNESS_FIL, true ); // append & as column
+						mrpt::system::vectorToTextFile( info.icp_goodness_all_sog_modes, SAVE_ICP_GOODNESS_FIL, true ); // append & as column
 					}
 
 					// Save all the maps overlap hypotheses:
@@ -538,8 +550,8 @@ void do_grid_align()
 				// Compute the distances:
 				for (size_t i1=0;i1<lm1->landmarks.size();i1++)
 				{
-					vector_double   D(lm2->landmarks.size());   // Distances in descriptor space
-					vector_double   dErrs(lm2->landmarks.size()); // Distances in (x,y)
+					CVectorDouble   D(lm2->landmarks.size());   // Distances in descriptor space
+					CVectorDouble   dErrs(lm2->landmarks.size()); // Distances in (x,y)
 					size_t i2;
 					//size_t gt_corr_of_i1=0;
 
@@ -639,7 +651,7 @@ int main(int argc, char **argv)
     try
     {
 		// Declare the supported options.
-		TCLAP::CmdLine cmd("grid-matching", ' ', MRPT_getVersion().c_str());
+		TCLAP::CmdLine cmd("grid-matching", ' ', mrpt::system::MRPT_getVersion().c_str());
 
 		TCLAP::SwitchArg arg_match("m","match","Operation: match two maps",cmd, false);
 		TCLAP::SwitchArg arg_detect("d","detect-test","Operation: Quality of match with one map",cmd, false);
@@ -707,7 +719,7 @@ int main(int argc, char **argv)
 		if (!arg_nologo.getValue())
 		{
 			printf(" grid-matching - Part of the MRPT\n");
-			printf(" MRPT C++ Library: %s - BUILD DATE %s\n", MRPT_getVersion().c_str(), MRPT_getCompilationDate().c_str());
+			printf(" MRPT C++ Library: %s - BUILD DATE %s\n", mrpt::system::MRPT_getVersion().c_str(), mrpt::system::MRPT_getCompilationDate().c_str());
 		}
 
 		SKIP_ICP_STAGE = arg_skip_icp.getValue();

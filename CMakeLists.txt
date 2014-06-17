@@ -167,7 +167,7 @@ include(cmakemodules/script_detect_functions_headers.cmake REQUIRED)
 # ===================================================
 IF(MSVC)
 	# Enable Parallel compilation?
-	SET(COMPILE_IN_PARALLEL OFF CACHE BOOL "Enable parallel compilation in Visual Studio")
+	SET(COMPILE_IN_PARALLEL ON CACHE BOOL "Enable parallel compilation in Visual Studio")
 ENDIF(MSVC)
 
 include(cmakemodules/script_gridmap_options.cmake REQUIRED)			# Enable Intel Threading Building Blocks (TBB) lib?
@@ -197,7 +197,7 @@ include(cmakemodules/script_national_instruments.cmake REQUIRED)  # NI C library
 include(cmakemodules/script_sift_hess.cmake REQUIRED)  # SIFT Hess implementation 
 include(cmakemodules/script_xsens.cmake REQUIRED)      # XSens Motion trackers / IMU drivers
 include(cmakemodules/script_flycapture2.cmake REQUIRED)# Check for PointGreyResearch (PGR) FlyCapture2 library
-
+include(cmakemodules/script_duo3d.cmake REQUIRED)		# Support for DUO3D Camera
 # ---------------------------------------------------------------------------
 #			OPTIONS
 #The options for the user when using "cmakesetup" or "ccmake":
@@ -292,11 +292,14 @@ MARK_AS_ADVANCED(MRPT_WARNINGS_ARE_ERRORS)
 SET( MRPT_WHOLE_PROGRAM_OPTIMIZATION OFF CACHE BOOL "Flags for whole program optimization.")
 MARK_AS_ADVANCED(MRPT_WHOLE_PROGRAM_OPTIMIZATION)
 
-# Even more warnings: "Scott Meyers' Effective C++ book"
+# Even more warnings: "Scott Meyers' Effective C++ book" + Wextra (GCC & CLANG)
 IF(MRPT_EXTRA_WARNINGS)
 	IF(CMAKE_COMPILER_IS_GNUCXX)
-		SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Weffc++")  # -Wold-style-cast  -Woverloaded-virtual
+		SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Weffc++ -Wextra") # -Wold-style-cast  -Woverloaded-virtual
 	ENDIF(CMAKE_COMPILER_IS_GNUCXX)
+	IF("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
+		SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wextra")
+	ENDIF("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
 ENDIF(MRPT_EXTRA_WARNINGS)
 
 # Enable profiling?
@@ -355,6 +358,9 @@ IF(CMAKE_COMPILER_IS_GNUCXX)
 		SET(MRPT_BUILD_GCC_PEDANTIC_DEFAULT "OFF")
 	ELSE(APPLE)
 		SET(MRPT_BUILD_GCC_PEDANTIC_DEFAULT "ON")
+
+
+    
 	ENDIF(APPLE)
 
 	SET( MRPT_BUILD_GCC_PEDANTIC ${MRPT_BUILD_GCC_PEDANTIC_DEFAULT} CACHE BOOL "Enable pedantic error detection (with GCC only)")
@@ -363,7 +369,11 @@ IF(CMAKE_COMPILER_IS_GNUCXX)
 	# High level of warnings.
 	# The -Wno-long-long is required in 64bit systems when including sytem headers.
 	# The -Wno-variadic-macros was needed for Eigen3, StdVector.h
- 	SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CMAKE_CONFIGURE_CFLAGS} -Wall -Wno-long-long -Wno-write-strings -Wno-variadic-macros")
+ 	SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CMAKE_CONFIGURE_CFLAGS} -Wall -Wno-long-long -Wno-variadic-macros")
+  IF(NOT APPLE)
+    # This causes the option "-Wnorite-strings" to be set on gcc-4.9 on OS X
+    SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-write-strings")
+  ENDIF(NOT APPLE)
  	SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${CMAKE_CONFIGURE_CFLAGS}")
 
 	# Use "modern" C99 ! ;-)
@@ -400,14 +410,15 @@ if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
  	SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c99")
 
 	# Use modern C++11
-# 	SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+	# --> Seems to break Eigen (??)
+ 	#SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
-#	IF(APPLE) # any reason for not using it in all platforms?
+	IF(NOT APPLE) # any reason for not using it in all platforms?
 	# Use the libstdc++ lib vs. libc++, to avoid some build errors in MacOS
-	SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libstdc++")
-	SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -stdlib=libstdc++")
-	SET(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -stdlib=libstdc++")
-#	ENDIF(APPLE)
+		SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libstdc++")
+		SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -stdlib=libstdc++")
+		SET(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -stdlib=libstdc++")
+	ENDIF(NOT APPLE)
 
 	# This is to fix the compilation of C++ templates
 	SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fdelayed-template-parsing")
@@ -526,10 +537,6 @@ IF(CMAKE_COMPILER_IS_GNUCXX AND NOT APPLE)
 ENDIF(CMAKE_COMPILER_IS_GNUCXX AND NOT APPLE)
 
 
-IF ("${CMAKE_CONFIGURE_LDFLAGS}")
-	SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${CMAKE_CONFIGURE_LDFLAGS}")
-ENDIF ("${CMAKE_CONFIGURE_LDFLAGS}")
-
 IF($ENV{VERBOSE})
 	MESSAGE(STATUS "Final CMAKE_CXX_FLAGS: ${CMAKE_CXX_FLAGS}")
 	MESSAGE(STATUS "Final CMAKE_EXE_LINKER_FLAGS: ${CMAKE_EXE_LINKER_FLAGS}")
@@ -600,6 +607,9 @@ IF( BUILD_TESTING)
 	# Try using libgtest (Google testing library) from the system, if available
 	# Note: In gtest 1.6.0 things changed and there's no prebuilt system lib anymore.
 	# TODO: Is it possible to compile here the /usr/src/gtest/ sources??
+	IF("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang" AND APPLE)
+		add_definitions(-DGTEST_USE_OWN_TR1_TUPLE=1)
+	ENDIF("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang" AND APPLE)
 	add_subdirectory(${CMAKE_MRPT_GTEST_SRC_DIR})  # Build gtest from sources
 	add_subdirectory(tests)  # Build my tests
 ENDIF( BUILD_TESTING)

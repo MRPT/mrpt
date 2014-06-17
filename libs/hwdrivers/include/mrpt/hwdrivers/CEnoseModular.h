@@ -83,6 +83,9 @@ namespace mrpt
 				const mrpt::utils::CConfigFileBase &configSource,
 				const std::string			&section );
 
+			/** Purge the Serial/FTDI buffer */
+			void purgeBuffers();
+
 		public:
 			/** Constructor
 			  * \param serialNumberUSBdevice The serial number (text) of the device to open.
@@ -94,11 +97,6 @@ namespace mrpt
 			  */
 			virtual ~CEnoseModular();
 
-			/** Query the firmware version on the device (can be used to test communications).
-			  * \return true on success, false on communications errors or device not found.
-			  */
-			bool	queryFirmwareVersion( std::string &out_firmwareVersion );
-
 			/** Request the master eNose the latest readings from all the eNoses.
 			  *  The output observation contains a valid timestamp and 3D positions if "loadConfig" has been called previously.
 			  * \return true if OK, false if there were any error.
@@ -107,12 +105,7 @@ namespace mrpt
 
 
 			// See docs in parent class
-			void  doProcess();
-
-			/** Tries to open the camera, after setting all the parameters with a call to loadConfig.
-			  *  \exception This method must throw an exception with a descriptive message if some critical error is found.
-			  */
-			virtual void initialize();
+			void  doProcess();		
 
 
 
@@ -133,5 +126,3 @@ namespace mrpt
 
 
 #endif
-
-

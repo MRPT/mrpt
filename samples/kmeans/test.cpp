@@ -7,8 +7,11 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/base.h>
-#include <mrpt/gui.h>
+#include <mrpt/random.h>
+#include <mrpt/math/kmeans.h>
+#include <mrpt/utils/aligned_containers.h>
+#include <mrpt/utils/CTicTac.h>
+#include <mrpt/gui/CDisplayWindowPlots.h>
 
 using namespace mrpt::utils;
 using namespace mrpt::math;
@@ -72,7 +75,7 @@ void TestKMeans()
 
 		for (size_t c=0;c<nClusters;c++)
 		{
-			vector_double xs,ys;
+			CVectorDouble xs,ys;
 
 			for (size_t i=0;i<points.size();i++)
 			{
@@ -82,7 +85,7 @@ void TestKMeans()
 					ys.push_back( points[i][1] );
 				}
 			}
-			win.plot(xs,ys,format(".4%c",colors[c%6]));
+			win.plot(xs,ys,mrpt::format(".4%c",colors[c%6]));
 		}
 		win.axis_fit();
 		win.axis_equal();

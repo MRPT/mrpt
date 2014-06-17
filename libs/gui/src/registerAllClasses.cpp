@@ -7,6 +7,8 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
+#include "gui-precomp.h"
+
 #include <mrpt/gui.h>
 
 #include <mrpt/utils/CSerializable.h>

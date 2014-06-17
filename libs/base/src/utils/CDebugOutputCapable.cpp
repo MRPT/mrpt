@@ -7,17 +7,18 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/base.h>  // Precompiled headers
+#include "base-precomp.h"  // Precompiled headers
 
 #include <mrpt/utils/CDebugOutputCapable.h>
 #include <mrpt/system/memory.h>
+#include <mrpt/system/os.h>
 
 #ifdef MRPT_OS_WINDOWS
 	#define WIN32_LEAN_AND_MEAN
 	#include <windows.h>
 #endif
 
-
+#include <vector>
 #include <cstdarg>
 #include <iostream>
 

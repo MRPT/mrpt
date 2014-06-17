@@ -9,7 +9,8 @@
 #ifndef  exceptions_H
 #define  exceptions_H
 
-#include <mrpt/utils/utils_defs.h>
+#include <stdexcept>
+#include <string>
 
 namespace mrpt
 {

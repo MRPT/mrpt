@@ -7,7 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/base.h>  // Precompiled headers
+#include "base-precomp.h"  // Precompiled headers
 
 
 #include <mrpt/utils/CStringList.h>
@@ -15,6 +15,7 @@
 #include <mrpt/utils/CFileOutputStream.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/system/string_utils.h>
+#include <mrpt/system/os.h>
 
 using namespace mrpt::utils;
 using namespace mrpt::system;
@@ -118,7 +119,6 @@ bool  CStringList::find(
 				return true;
 	}
 	else
-	if (caseSensitive)
 	{
 		for (deque<string>::const_iterator it=m_strings.begin();it!=m_strings.end();++it,foundIndex++)
 			if (!os::_strcmpi(compareText.c_str(),it->c_str()))
@@ -205,7 +205,7 @@ void  CStringList::saveToFile(const string &fileName) const
 	CFileOutputStream	fil(fileName.c_str());
 	deque<string>::const_iterator	it;
 
-	for (it=m_strings.begin();it!=m_strings.end();it++)
+	for (it=m_strings.begin();it!=m_strings.end();++it)
 	{
 		fil.WriteBuffer( it->c_str(), it->size() );
 		fil.WriteBuffer( "\r\n",2 );

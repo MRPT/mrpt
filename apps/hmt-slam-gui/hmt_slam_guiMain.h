@@ -35,7 +35,6 @@
 
 
 
-#include <mrpt/slam.h>
 #include <mrpt/hmtslam.h>
 
 
@@ -54,7 +53,7 @@ class hmt_slam_guiFrame: public wxFrame
 	friend class CDlgLog;
 
 	public:
-		EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+		MRPT_MAKE_ALIGNED_OPERATOR_NEW
 
     public:
 

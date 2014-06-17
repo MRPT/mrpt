@@ -7,11 +7,11 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/base.h>  // Precompiled headers
-
+#include "base-precomp.h"  // Precompiled headers
 
 #include <mrpt/utils/CSimpleDatabase.h>
 #include <mrpt/utils/CStream.h>
+#include <mrpt/system/os.h>
 
 using namespace mrpt::utils;
 using namespace mrpt::system;
@@ -405,7 +405,7 @@ void CSimpleDatabaseTable::deleteRecord(size_t recordIndex)
 {
 	MRPT_START
 	ASSERT_(recordIndex<getRecordCount())
-	
+
 	std::vector<vector_string>::iterator it = data.begin();
 	std::advance(it,recordIndex);
 	data.erase(it);
@@ -421,8 +421,6 @@ bool CSimpleDatabase::saveAsXML( const string &fileName ) const
 {
 	try
 	{
-		unsigned int    i;
-
 		// Root node:
 		XMLNode  rootXml = XMLNode::createXMLTopNode("CSimpleDatabase-MRPT-Object");
 
@@ -439,12 +437,12 @@ bool CSimpleDatabase::saveAsXML( const string &fileName ) const
 			size_t  nRecs   = t->getRecordCount();
 
 			XMLNode fNod = tabNod.addChild("fields");
-			for (i=0;i<nFields;i++)
+			for (unsigned int i=0;i<nFields;i++)
 				fNod.addChild( t->getFieldName(i).c_str() );
 
 			// Add record contents:
 			// ------------------------
-			for (i=0;i<nRecs;i++)
+			for (unsigned int i=0;i<nRecs;i++)
 			{
 				XMLNode recNod = tabNod.addChild("record");
 				for (size_t j=0;j<nFields;j++)
@@ -563,7 +561,7 @@ void CSimpleDatabase::dropTable(const std::string &tableName)
 		THROW_EXCEPTION_CUSTOM_MSG1("Table '%s' was not found",tableName.c_str())
 
 	m_tables.erase(it);
-	
+
 
 	MRPT_END
 }
@@ -593,7 +591,7 @@ void CSimpleDatabase::renameTable(
 
 	m_tables.erase(it);
 	m_tables[newTableName] = tb;
-	
+
 
 	MRPT_END
 }

@@ -7,7 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/hwdrivers.h> // Precompiled headers
+#include "hwdrivers-precomp.h"   // Precompiled headers
 
 
 #include <mrpt/system/threads.h>
@@ -85,7 +85,8 @@ using namespace std;
 		*/
 		void close()
 		{
-			m_streamInterface->close();
+			if (m_streamInterface)
+				m_streamInterface->close();
 		}
 
 		/*! \brief Read available data from the open IO device
@@ -294,7 +295,7 @@ using namespace std;
 			return waitForMessage(XMID_SetOutputConfigurationAck, rcv);
 		}
 
-		
+
 
 
 	private:
@@ -332,7 +333,7 @@ CIMUXSens_MT4::CIMUXSens_MT4( ) :
 	m_devid_ptr     (NULL)
 {
 	m_sensorLabel = "XSensMTi_MT4";
-	
+
 #if MRPT_HAS_xSENS_MT4
     m_dev_ptr  = new DeviceClass;
     m_devid_ptr  = new XsDeviceId;
@@ -380,7 +381,7 @@ void CIMUXSens_MT4::doProcess()
 	{
 		// Retrieve a packet
 		XsDataPacket packet;
-		if ((*it).getMessageId() == XMID_MtData) 
+		if ((*it).getMessageId() == XMID_MtData)
 		{
 			LegacyDataPacket lpacket(1, false);
 
@@ -562,7 +563,7 @@ void CIMUXSens_MT4::initialize()
 			configArray.push_back( XsOutputConfiguration(XDI_Acceleration,m_sampleFreq) );
 			configArray.push_back( XsOutputConfiguration(XDI_RateOfTurn,m_sampleFreq) );
 			configArray.push_back( XsOutputConfiguration(XDI_MagneticField,m_sampleFreq) );
-			configArray.push_back( XsOutputConfiguration(XDI_VelocityXYZ,m_sampleFreq) );			
+			configArray.push_back( XsOutputConfiguration(XDI_VelocityXYZ,m_sampleFreq) );
 
 			if (!my_xsens_device.setOutputConfiguration(configArray))
 				throw std::runtime_error("Could not configure MTmk4 device. Aborting.");

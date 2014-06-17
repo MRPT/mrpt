@@ -11,6 +11,7 @@
 #define mrpt_utils_parameters_H
 
 #include <cstdarg>
+#include <cstdio>
 #include <map>
 #include <string>
 
@@ -89,7 +90,7 @@ namespace mrpt
 			inline T & operator[](const std::string &s) { return BASE::operator[](s); }
 
 			/** Dumps to console the output from getAsString() */
-			inline void dumpToConsole() const { std::cout << getAsString(); }
+			inline void dumpToConsole() const { ::fputs(getAsString(),stdout); }
 
 			/** Returns a multi-like string representation of the parameters like : 'nam   = val\nnam2   = val2...' */
 			inline std::string getAsString() const { std::string s; getAsString(s); return s; }

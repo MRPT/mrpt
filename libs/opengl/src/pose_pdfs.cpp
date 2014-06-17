@@ -7,7 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/opengl.h>  // Precompiled header
+#include "opengl-precomp.h"  // Precompiled header
 
 #include <mrpt/opengl/CEllipsoid.h>
 #include <mrpt/opengl/CSetOfObjects.h>
@@ -130,7 +130,7 @@ CSetOfObjectsPtr CSetOfObjects::posePDF2opengl(const CPointPDF &o)
 		const CPointPDFSOG *p = static_cast<const CPointPDFSOG*>(&o);
 
 		// For each gaussian node
-		for (CPointPDFSOG::CListGaussianModes::const_iterator it = p->begin(); it!= p->end();it++)
+		for (CPointPDFSOG::CListGaussianModes::const_iterator it = p->begin(); it!= p->end();++it)
 		{
 			opengl::CEllipsoidPtr obj = opengl::CEllipsoid::Create();
 
@@ -188,7 +188,7 @@ CSetOfObjectsPtr CSetOfObjects::posePDF2opengl(const CPose3DPDF &o)
 		const CPose3DPDFSOG *p = static_cast<const CPose3DPDFSOG*>(&o);
 
 		// For each gaussian node
-		for (CPose3DPDFSOG::const_iterator it = p->begin(); it!= p->end();it++)
+		for (CPose3DPDFSOG::const_iterator it = p->begin(); it!= p->end();++it)
 		{
 			opengl::CEllipsoidPtr obj = opengl::CEllipsoid::Create();
 

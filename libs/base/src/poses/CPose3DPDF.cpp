@@ -7,23 +7,21 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/base.h>  // Precompiled headers
+#include "base-precomp.h"  // Precompiled headers
 
-
-
+#include <mrpt/poses/CPose3D.h>
 #include <mrpt/poses/CPose3DPDF.h>
-
 #include <mrpt/poses/CPose3DPDFGaussian.h>
 #include <mrpt/poses/CPose3DPDFSOG.h>
 #include <mrpt/poses/CPose3DPDFParticles.h>
 #include <mrpt/poses/CPose3DQuatPDF.h>
-
 #include <mrpt/poses/CPosePDFGaussian.h>
 #include <mrpt/poses/CPosePDFSOG.h>
 #include <mrpt/poses/CPosePDFParticles.h>
-
+#include <mrpt/utils/CStream.h>
 
 using namespace mrpt::poses;
+using namespace mrpt::math;
 using namespace std;
 
 IMPLEMENTS_VIRTUAL_SERIALIZABLE( CPose3DPDF, CSerializable, mrpt::poses )
@@ -61,7 +59,7 @@ CPose3DPDF* CPose3DPDF::createFrom2D(const CPosePDF &o)
 
 			CPosePDFParticles::CParticleList::const_iterator  it1;
 			CPose3DPDFParticles::CParticleList::iterator      it2;
-			for (it1=obj->m_particles.begin(),it2=newObj->m_particles.begin();it1!=obj->m_particles.end();it1++,it2++)
+			for (it1=obj->m_particles.begin(),it2=newObj->m_particles.begin();it1!=obj->m_particles.end();++it1,++it2)
 			{
 				it2->log_w = it1->log_w;
 				(*it2->d) = (*it1->d);
@@ -78,7 +76,7 @@ CPose3DPDF* CPose3DPDF::createFrom2D(const CPosePDF &o)
 				CPosePDFSOG::const_iterator it1;
 				CPose3DPDFSOG::iterator     it2;
 
-				for (it1=obj->begin(),it2=newObj->begin();it1!=obj->end();it1++,it2++)
+				for (it1=obj->begin(),it2=newObj->begin();it1!=obj->end();++it1,++it2)
 				{
 					it2->log_w = it1->log_w;
 					it2->val.mean.setFromValues( it1->mean.x(),it1->mean.y(),0, it1->mean.phi(),0,0 );

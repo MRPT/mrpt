@@ -146,14 +146,14 @@ namespace mrpt
 
 				scene.insert(obj3D);
 
-				const string fil = filNamePrefix + string("_3D.3Dscene");
+				const std::string fil = filNamePrefix + std::string("_3D.3Dscene");
 				mrpt::utils::CFileOutputStream	f(fil);
 				f << scene;
 			}
 
 			// Save as ".bt" file (a binary format from the octomap lib):
 			{
-				const string fil = filNamePrefix + string("_binary.bt");
+				const std::string fil = filNamePrefix + std::string("_binary.bt");
 				const_cast<OCTREE*>(&m_octomap)->writeBinary(fil);
 			}
 			MRPT_END
@@ -327,7 +327,7 @@ namespace mrpt
 		template <class OCTREE,class OCTREE_NODE>
 		void  COctoMapBase<OCTREE,OCTREE_NODE>::TInsertionOptions::loadFromConfigFile(
 			const mrpt::utils::CConfigFileBase  &iniFile,
-			const string &section)
+			const std::string &section)
 		{
 			MRPT_LOAD_CONFIG_VAR(maxrange,double, iniFile,section);
 			MRPT_LOAD_CONFIG_VAR(pruning,bool, iniFile,section);
@@ -349,7 +349,7 @@ namespace mrpt
 		template <class OCTREE,class OCTREE_NODE>
 		void  COctoMapBase<OCTREE,OCTREE_NODE>::TLikelihoodOptions::loadFromConfigFile(
 			const mrpt::utils::CConfigFileBase  &iniFile,
-			const string &section)
+			const std::string &section)
 		{
 			MRPT_LOAD_CONFIG_VAR(decimation,int,iniFile,section);
 		}

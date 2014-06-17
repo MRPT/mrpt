@@ -237,7 +237,7 @@ kinect_calibrate_guiDialog::kinect_calibrate_guiDialog(wxWindow* parent,wxWindow
     wxStaticBoxSizer* StaticBoxSizer1;
     wxFlexGridSizer* FlexGridSizer20;
 
-    Create(parent, wxID_ANY, _("Kinect & stereo camera calibration wizard (BETA) - Part of MRPT"), wxDefaultPosition, wxDefaultSize, wxDEFAULT_DIALOG_STYLE|wxRESIZE_BORDER|wxMAXIMIZE_BOX|wxMINIMIZE_BOX, _T("wxID_ANY"));
+    Create(parent, wxID_ANY, _("Kinect & stereo camera calibration wizard - Part of MRPT"), wxDefaultPosition, wxDefaultSize, wxDEFAULT_DIALOG_STYLE|wxRESIZE_BORDER|wxMAXIMIZE_BOX|wxMINIMIZE_BOX, _T("wxID_ANY"));
     Move(wxPoint(-1,-1));
     FlexGridSizer1 = new wxFlexGridSizer(2, 1, 0, 0);
     FlexGridSizer1->AddGrowableCol(0);
@@ -781,8 +781,8 @@ kinect_calibrate_guiDialog::kinect_calibrate_guiDialog(wxWindow* parent,wxWindow
 		obj->setColor_u8( TColor(200,200,200) );
 		m_plot3D->m_openGLScene->insert(obj);
 	}
-//	// XYZ corner:
-//	m_plot3D->m_openGLScene->insert( mrpt::opengl::stock_objects::CornerXYZSimple(0.5,2) );
+	//// XYZ corner:
+	//m_plot3D->m_openGLScene->insert( mrpt::opengl::stock_objects::CornerXYZSimple(0.5,2) );
 
 	// 3D points:
 	m_gl_3d_points = mrpt::opengl::CPointCloudColoured::Create();
@@ -1473,17 +1473,26 @@ void myCalibCallback(const mrpt::vision::TImageStereoCallbackData &d, void* user
 	TCalibCallbackData *dat = reinterpret_cast<TCalibCallbackData*>(user_data);
 
 	string s;
-	if (d.calibRound==0)
+	switch (d.calibRound)
+	{
+		case -1:
+			s = mrpt::format("Detecting corners: %u images done out of %u",d.nImgsProcessed,d.nImgsToProcess);
+			break;
+		case 0:
 			s = "Round #1: Calibration without distortion";
-	else 	s = "Round #2: Full calibration";
+			break;
+		case 1:
+			s = "Round #2: Full calibration";
+			break;
+	};
 
-	s+= mrpt::format(" (RMSE=%.05f px)", d.current_rmse);
+	if (d.calibRound==0 || d.calibRound==1)
+	{
+		s+= mrpt::format(" (RMSE=%.05f px)", d.current_rmse);
+	}
 
 	dat->pd->Update(d.current_iter, _U(s.c_str()));
 	dat->pd->SetSize(500,100);
-
-//	dat->win->CalibUpdate3DViewCameras();
-//	dat->win->m_plot3D_cameras->Refresh();
 
 	wxTheApp->Yield();
 }
@@ -2163,6 +2172,8 @@ void kinect_calibrate_guiDialog::CalibUpdate3DViewCameras()
 		obj->setColor_u8( TColor(200,200,200) );
 		scene->insert(obj);
 	}
+	// XYZ corner:
+	scene->insert( mrpt::opengl::stock_objects::CornerXYZSimple(0.5,2) );
 
 	const unsigned int  check_size_x = edCalibCheckX->GetValue();
 	const unsigned int  check_size_y = edCalibCheckY->GetValue();

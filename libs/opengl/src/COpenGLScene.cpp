@@ -7,7 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/opengl.h>  // Precompiled header
+#include "opengl-precomp.h"  // Precompiled header
 
 
 #include <mrpt/opengl/CRenderizable.h>
@@ -15,6 +15,7 @@
 #include <mrpt/opengl/CRenderizableDisplayList.h>
 #include <mrpt/utils/CStringList.h>
 #include <mrpt/utils/metaprogramming.h>
+#include <mrpt/utils/CStream.h>
 
 #include <mrpt/utils/CFileGZOutputStream.h>
 #include <mrpt/utils/CFileGZInputStream.h>
@@ -330,6 +331,6 @@ void COpenGLScene::getBoundingBox(mrpt::math::TPoint3D &bb_min, mrpt::math::TPoi
 {
 	COpenGLViewportPtr vp = this->getViewport(vpn);
 	ASSERTMSG_(vp.present(), "No opengl viewport exists with the given name")
-	
+
 	return vp->getBoundingBox(bb_min, bb_max);
 }

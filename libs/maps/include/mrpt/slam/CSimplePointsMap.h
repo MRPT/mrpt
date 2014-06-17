@@ -10,8 +10,6 @@
 #define CSimplePointsMap_H
 
 #include <mrpt/slam/CPointsMap.h>
-#include <mrpt/slam/CObservation2DRangeScan.h>
-#include <mrpt/slam/CObservation3DRangeScan.h>
 #include <mrpt/utils/CSerializable.h>
 #include <mrpt/math/CMatrix.h>
 
@@ -21,6 +19,8 @@ namespace mrpt
 {
 	namespace slam
 	{
+		class CObservation2DRangeScan;
+		class CObservation3DRangeScan;
 
 		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CSimplePointsMap , CPointsMap, MAPS_IMPEXP )
 

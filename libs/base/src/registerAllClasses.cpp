@@ -7,12 +7,15 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
+#include "base-precomp.h"
+
+#define MRPT_NO_WARN_BIG_HDR
 #include <mrpt/base.h>
 
 #ifndef MRPT_ENABLE_PRECOMPILED_HDRS
 #	define MRPT_ALWAYS_INCLUDE_ALL_HEADERS
 #	undef mrpt_base_H
-#	include <mrpt/base.h>
+#	include "base-precomp.h"
 #endif
 
 
@@ -95,6 +98,7 @@ void registerAllClasses_mrpt_base()
 	registerClass( CLASS_ID( CPose3DInterpolator ) );
 
 	registerClass( CLASS_ID( TCamera ) );
+	registerClass( CLASS_ID( TStereoCamera ) );
 	registerClass( CLASS_ID( CSplineInterpolator1D  ) );
 	registerClass( CLASS_ID( CStringList ) );
 }

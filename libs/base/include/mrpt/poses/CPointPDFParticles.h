@@ -90,7 +90,7 @@ namespace poses
 		/** Returns an estimate of the point covariance matrix (3x3 cov matrix) and the mean, both at once.
 		  * \sa getMean
 		  */
-		void getCovarianceAndMean(CMatrixDouble33 &cov,CPoint3D &mean_point) const;
+		void getCovarianceAndMean(mrpt::math::CMatrixDouble33 &cov,CPoint3D &mean_point) const;
 
 		/** Copy operator, translating if necesary (for example, between particles and gaussian representations)
 		  */

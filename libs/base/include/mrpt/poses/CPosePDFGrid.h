@@ -16,7 +16,7 @@ namespace mrpt
 {
 namespace poses
 {
-	using namespace mrpt::utils;
+	using mrpt::utils::DEG2RAD;
 
 	// This must be added to any CSerializable derived class:
 	DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE( CPosePDFGrid, CPosePDF   )
@@ -74,7 +74,7 @@ namespace poses
 		/** Returns an estimate of the pose covariance matrix (3x3 cov matrix) and the mean, both at once.
 		  * \sa getMean
 		  */
-		void getCovarianceAndMean(CMatrixDouble33 &cov,CPose2D &mean_point) const;
+		void getCovarianceAndMean(mrpt::math::CMatrixDouble33 &cov,CPose2D &mean_point) const;
 
 		/** Save the contents of the 3D grid in one file, as a vertical concatenation of rectangular matrix for the different "PHI" discrete levels, and the size in X,Y,and PHI in another file named "<filename>_dims.txt"
 		 */
@@ -99,7 +99,7 @@ namespace poses
 
 		/** Draws a number of samples from the distribution, and saves as a list of 1x3 vectors, where each row contains a (x,y,phi) datum.
 		  */
-		void  drawManySamples( size_t N, std::vector<vector_double> & outSamples ) const;
+		void  drawManySamples( size_t N, std::vector<CVectorDouble> & outSamples ) const;
 
 	}; // End of class def.
 

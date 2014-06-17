@@ -9,7 +9,12 @@
 #ifndef RAWLOG_EDIT_DECLS_H
 #define RAWLOG_EDIT_DECLS_H
 
-#include <mrpt/obs.h>
+#include <mrpt/utils/CFileGZOutputStream.h>
+#include <mrpt/utils/CFileGZInputStream.h>
+#include <mrpt/utils/CFileOutputStream.h>
+#include <mrpt/utils/CImage.h>
+#include <mrpt/system/filesystem.h>
+#include <mrpt/slam/CObservation.h>
 #include "CRawlogProcessor.h"
 
 // Declarations:
@@ -35,6 +40,8 @@ struct TOutputRawlogCreator
 // ======================================================================
 template <typename T>
 bool getArgValue(TCLAP::CmdLine &cmdline, const std::string &arg_name, T &out_val);
+bool isFlagSet(TCLAP::CmdLine &cmdline, const std::string &arg_name);
+
 
 
 #endif

@@ -51,7 +51,7 @@ namespace mrpt
 		{
 			DEFINE_SERIALIZABLE( CPointCloud )
 		protected:
-			enum Axis { None=0, Z, Y, X} m_colorFromDepth;
+			enum Axis { colNone=0, colZ, colY, colX} m_colorFromDepth;
 			std::vector<float>	m_xs,m_ys,m_zs;
 			float           m_pointSize; //!< By default is 1.0
 			bool			m_pointSmooth; //!< Default: false
@@ -99,7 +99,7 @@ namespace mrpt
 		public:
 
 			/** Evaluates the bounding box of this object (including possible children) in the coordinate frame of the object parent. */
-			virtual void getBoundingBox(mrpt::math::TPoint3D &bb_min, mrpt::math::TPoint3D &bb_max) const 
+			virtual void getBoundingBox(mrpt::math::TPoint3D &bb_min, mrpt::math::TPoint3D &bb_max) const
 			{
 				this->octree_getBoundingBox(bb_min, bb_max);
 			}
@@ -219,9 +219,9 @@ namespace mrpt
 
 			/** @name Modify the appearance of the rendered points
 			    @{ */
-			inline void enableColorFromX(bool v=true) { m_colorFromDepth = v ? CPointCloud::X : CPointCloud::None;  }
-			inline void enableColorFromY(bool v=true) { m_colorFromDepth = v ? CPointCloud::Y : CPointCloud::None; }
-			inline void enableColorFromZ(bool v=true) { m_colorFromDepth = v ? CPointCloud::Z : CPointCloud::None; }
+			inline void enableColorFromX(bool v=true) { m_colorFromDepth = v ? CPointCloud::colX : CPointCloud::colNone;  }
+			inline void enableColorFromY(bool v=true) { m_colorFromDepth = v ? CPointCloud::colY : CPointCloud::colNone; }
+			inline void enableColorFromZ(bool v=true) { m_colorFromDepth = v ? CPointCloud::colZ : CPointCloud::colNone; }
 
 			inline void setPointSize(float p) { m_pointSize=p; }  //!< By default is 1.0
 			inline float getPointSize() const { return m_pointSize; }

@@ -7,15 +7,18 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/base.h>
-#include <mrpt/slam.h>
-#include <mrpt/vision.h>
+#include <mrpt/utils/CImage.h>
+#include <mrpt/utils/TStereoCamera.h>
+#include <mrpt/utils/CConfigFileMemory.h>
+#include <mrpt/system/filesystem.h>
+#include <mrpt/vision/CImagePyramid.h>
+#include <mrpt/vision/CStereoRectifyMap.h>
+#include <mrpt/random.h>
 
 #include "common.h"
 
 using namespace mrpt;
 using namespace mrpt::utils;
-using namespace mrpt::slam;
 using namespace mrpt::random;
 using namespace mrpt::vision;
 using namespace std;
@@ -58,6 +61,71 @@ double image_test_1(int w, int img_quality)
     mrpt::system::deleteFile(fil);
 	return T;
 }
+
+// ------------------------------------------------------
+//				Benchmark: save/load to disk vs shared mem
+// ------------------------------------------------------
+template <bool perf_load>
+double image_saveload(int iFormat, int to_shm)
+{
+    const char* format;
+    switch (iFormat)
+    {
+        case 0: format = "bmp"; break;
+        case 1: format = "png"; break;
+        case 2: format = "jpg"; break;
+        default: THROW_EXCEPTION("Wrong format")
+    }
+
+    const int w=800, h=600;
+	CImage  img(w,h,3);
+	for (int i=0;i<5000;i++)
+		img.line(randomGenerator.drawUniform(0,w-1),randomGenerator.drawUniform(0,h-1),randomGenerator.drawUniform(0,w-1),randomGenerator.drawUniform(0,h-1), TColor( randomGenerator.drawUniform32bit() )  );
+
+	CTicTac	 tictac;
+
+	string fil;
+	if (to_shm) {
+        fil = string("/dev/shm/mrpt_perf_test.") + string(format);
+    }
+    else {
+        fil = mrpt::system::getTempFileName()+ string(".") + string(format);
+    }
+
+    double T;
+    if (perf_load)
+    {
+        // LOAD:
+        img.saveToFile(fil);
+
+        const size_t N = 30;
+
+        tictac.Tic();
+        for (size_t i=0;i<N;i++)
+        {
+            CImage img_new;
+            img.loadFromFile(fil);
+        }
+
+        T = tictac.Tac()/N;
+    }
+    else
+    {
+        // WRITE:
+        const size_t N = 30;
+
+        tictac.Tic();
+        for (size_t i=0;i<N;i++)
+            img.saveToFile(fil);
+
+        T = tictac.Tac()/N;
+    }
+
+    mrpt::system::deleteFile(fil);
+	return T;
+}
+
+
 
 double image_test_2(int w, int h)
 {
@@ -267,6 +335,23 @@ void register_tests_image()
 	lstTests.push_back( TestData("images: Save as JPEG (640x480, quality=75%)",image_test_1,  640,  75 ) );
 	lstTests.push_back( TestData("images: Save as JPEG (800x600, quality=75%)",image_test_1,  800,  75) );
 	lstTests.push_back( TestData("images: Save as JPEG (1024x768, quality=75%)",image_test_1, 1024, 75) );
+
+	lstTests.push_back( TestData("images: Save BMP 800x600 disk",image_saveload<false>, 0, 0  ));
+	lstTests.push_back( TestData("images: Save PNG 800x600 disk",image_saveload<false>, 1, 0 ));
+	lstTests.push_back( TestData("images: Save JPG 800x600 disk",image_saveload<false>, 2, 0 ));
+	lstTests.push_back( TestData("images: Load BMP 800x600 disk",image_saveload<true>, 0, 0 ));
+	lstTests.push_back( TestData("images: Load PNG 800x600 disk",image_saveload<true>, 1, 0 ));
+	lstTests.push_back( TestData("images: Load JPG 800x600 disk",image_saveload<true>, 2, 0 ));
+
+    if (mrpt::system::directoryExists("/dev/shm"))
+    {
+        lstTests.push_back( TestData("images: Save BMP 800x600 shared mem",image_saveload<false>, 0, 1 ) );
+        lstTests.push_back( TestData("images: Save PNG 800x600 shared mem",image_saveload<false>, 1, 1) );
+        lstTests.push_back( TestData("images: Save JPG 800x600 shared mem",image_saveload<false>, 2, 1) );
+        lstTests.push_back( TestData("images: Load BMP 800x600 shared mem",image_saveload<true>, 0, 1) );
+        lstTests.push_back( TestData("images: Load PNG 800x600 shared mem",image_saveload<true>, 1, 1) );
+        lstTests.push_back( TestData("images: Load JPG 800x600 shared mem",image_saveload<true>, 2, 1) );
+    }
 
 	lstTests.push_back( TestData("images: Gauss filter (640x480)",image_test_2,  640,480) );
 	lstTests.push_back( TestData("images: Gauss filter (800x600)",image_test_2,  800,600) );
