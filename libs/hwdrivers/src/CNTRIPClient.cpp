@@ -63,6 +63,7 @@ CNTRIPClient::~CNTRIPClient()
    -------------------------------------------------------- */
 void CNTRIPClient::close()
 {
+	m_upload_data.clear();
 	if (!m_thread_do_process) return;
 	m_thread_do_process = false;
 	m_sem_sock_closed.waitForSignal(500);
@@ -283,6 +284,18 @@ void CNTRIPClient::private_ntrip_thread()
 			buf.clear();
 		}
 
+		// Send back data to the server, if so requested:
+		// ------------------------------------------
+		mrpt::vector_byte upload_data;
+		m_upload_data.readAndClear(upload_data);
+		if (!upload_data.empty())
+		{
+			const size_t N = upload_data.size();
+			const size_t nWritten = my_sock.writeAsync( &upload_data[0],N, 1000);
+			if (nWritten!=N)
+				cerr << "*ERROR*: Couldn't write back " << N << " bytes to NTRIP server!.\n";
+		}
+
 		mrpt::system::sleep(10);
 	} // end while
 
@@ -373,3 +386,13 @@ bool CNTRIPClient::retrieveListOfMountpoints(
 	return true;
 }
 
+
+/** Enqueues a string to be sent back to the NTRIP server (e.g. GGA frames) */
+void CNTRIPClient::sendBackToServer(const std::string &data)
+{
+	if (data.empty()) return;
+
+	mrpt::vector_byte d(data.size());
+	::memcpy(&d[0],&data[0],data.size());
+	m_upload_data.appendData(d);
+}
