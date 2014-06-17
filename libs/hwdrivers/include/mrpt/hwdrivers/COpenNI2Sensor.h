@@ -172,6 +172,16 @@ namespace mrpt
 			COpenNI2Sensor();	 //!< Default ctor
 			~COpenNI2Sensor();	 //!< Default ctor
 
+			/** Set the serial number of the device to open.
+			  *  \exception This method must throw an exception when such serial number is not found among the connected devices.
+			  */
+      inline void setSerialToOpen(const unsigned serial) { m_serial_number = serial; }
+
+			/** Set the sensor_id of the device to open.
+			  *  \exception This method must throw an exception when such serial number is not found among the connected devices.
+			  */
+      inline void setSensorIDToOpen(const unsigned sensor_id) { m_user_device_number = sensor_id; }
+
 			/** Initializes the 3D camera - should be invoked after calling loadConfig() or setting the different parameters with the set*() methods.
 			  *  \exception This method must throw an exception with a descriptive message if some critical error is found.
 			  */
@@ -195,8 +205,7 @@ namespace mrpt
 			void getNextObservation(
 				mrpt::slam::CObservation3DRangeScan &out_obs,
 				bool &there_is_obs,
-				bool &hardware_error ,
-				unsigned sensor_id = 0);
+				bool &hardware_error);
 
 			/**  Set the path where to save off-rawlog image files (this class DOES take into account this path).
 			  *  An  empty string (the default value at construction) means to save images embedded in the rawlog, instead of on separate files.
@@ -262,6 +271,7 @@ namespace mrpt
 			double  m_maxRange; //!< Sensor max range (meters)
 
 			int  m_user_device_number; //!< Number of device to open (0:first,...)
+			int  m_serial_number; //!< Serial number of device to open
 
 		};	// End of class
 	} // End of NS

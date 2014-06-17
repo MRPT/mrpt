@@ -40,7 +40,8 @@ COpenNI2Sensor::COpenNI2Sensor() :
 	m_preview_decim_counter_rgb(0),
 
 	m_relativePoseIntensityWRTDepth(0,0,0, DEG2RAD(0),DEG2RAD(0),DEG2RAD(0)),
-	m_user_device_number(0)
+	m_user_device_number(0),
+	m_serial_number(0)
 {
 
 	// Default label:
@@ -75,6 +76,11 @@ dtor
 -------------------------------------------------------------*/
 COpenNI2Sensor::~COpenNI2Sensor()
 {
+#if MRPT_HAS_OPENNI2
+  close(m_user_device_number);
+#else
+	THROW_EXCEPTION("MRPT was built without OpenNI2 support")
+#endif // MRPT_HAS_OPENNI2
 }
 
 /** This method can or cannot be implemented in the derived class, depending on the need for it.
@@ -84,7 +90,16 @@ void COpenNI2Sensor::initialize()
 {
 #if MRPT_HAS_OPENNI2
 	if( getConnectedDevices() ) // Check and list the available devices. If there is at least one device connected, open the first in the list.
-    open(m_user_device_number);
+	{
+    if(m_serial_number != 0)
+    {
+      vector<unsigned> vSerial(1,m_serial_number);
+      openDevicesBySerialNum(vSerial);
+      m_user_device_number = vOpenDevices[0];
+    }
+    else
+      open(m_user_device_number);
+	}
 #else
 	THROW_EXCEPTION("MRPT was built without OpenNI2 support")
 #endif // MRPT_HAS_OPENNI2
@@ -103,7 +118,7 @@ void COpenNI2Sensor::doProcess()
 	CObservation3DRangeScanPtr newObs = CObservation3DRangeScan::Create();
 
 	assert(!COpenNI2Generic::vOpenDevices.empty());
-	getNextObservation( *newObs, thereIs, hwError, m_user_device_number );
+	getNextObservation( *newObs, thereIs, hwError );
 
 	if (hwError)
 	{
@@ -167,8 +182,9 @@ void  COpenNI2Sensor::loadConfig_sensorSpecific(
 	m_relativePoseIntensityWRTDepth = twist + mrpt::poses::CPose3D(sc.rightCameraPose);
 
 	// Id:
-	m_user_device_number = configSource.read_int(iniSection,"device_number",m_user_device_number );
-	cout << "LOAD m_user_device_number " << m_user_device_number << endl;
+	m_user_device_number = configSource.read_int(iniSection, "device_number", m_user_device_number);
+	//cout << "LOAD m_user_device_number " << m_user_device_number << endl;
+	m_serial_number = configSource.read_int(iniSection, "serial_number", m_serial_number);
 
 	m_grab_image = configSource.read_bool(iniSection,"grab_image",m_grab_image);
 	m_grab_depth = configSource.read_bool(iniSection,"grab_depth",m_grab_depth);
@@ -193,14 +209,13 @@ void  COpenNI2Sensor::loadConfig_sensorSpecific(
 void COpenNI2Sensor::getNextObservation(
 	mrpt::slam::CObservation3DRangeScan &out_obs,
 	bool &there_is_obs,
-	bool &hardware_error,
-	unsigned sensor_id )
+	bool &hardware_error)
 {
 #if MRPT_HAS_OPENNI2
 //	cout << "COpenNI2Sensor::getNextObservation \n";
 
     // Read a frame (depth + rgb)
-    getNextFrameRGBD(out_obs, there_is_obs, hardware_error, sensor_id );
+    getNextFrameRGBD(out_obs, there_is_obs, hardware_error, m_user_device_number );
 
 
     // Set common data into observation:
