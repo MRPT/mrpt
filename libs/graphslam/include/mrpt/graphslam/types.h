@@ -28,8 +28,7 @@ namespace mrpt
 		template <class GRAPH_T>
 		struct graphslam_traits
 		{
-			//typedef mrpt::graphs::CNetworkOfPoses<EDGE_TYPE,MAPS_IMPLEMENTATION>  graph_t;
-			typedef GRAPH_T  graph_t;
+			typedef GRAPH_T  graph_t;  //!< Typ:  mrpt::graphs::CNetworkOfPoses<...>
 			typedef typename graph_t::edges_map_t::const_iterator   edge_const_iterator;
 			typedef typename graph_t::constraint_t                  edge_t;
 			typedef typename edge_t::type_value                     edge_poses_type;
@@ -40,7 +39,7 @@ namespace mrpt
 			typedef typename mrpt::aligned_containers<
 				mrpt::utils::TPairNodeIDs,
 				TPairJacobs
-				>::map_t  map_pairIDs_pairJacobs_t;
+				>::multimap_t  map_pairIDs_pairJacobs_t;
 
 			/** Auxiliary struct used in graph-slam implementation: It holds the relevant information for each of the constraints being taking into account. */
 			struct observation_info_t

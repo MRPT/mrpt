@@ -144,7 +144,7 @@ void  CICP::TConfigParams::loadFromConfigFile(
 	MRPT_LOAD_CONFIG_VAR( minAbsStep_trans, float,			iniFile, section);
 	MRPT_LOAD_CONFIG_VAR( minAbsStep_rot, float,			iniFile, section);
 
-	MRPT_LOAD_CONFIG_VAR_CAST( ICP_algorithm, int, TICPAlgorithm, iniFile, section);
+	ICP_algorithm = iniFile.read_enum<TICPAlgorithm>(section,"ICP_algorithm",ICP_algorithm);
 
 	MRPT_LOAD_CONFIG_VAR( thresholdDist, float,			iniFile, section);
 	thresholdAng = DEG2RAD( iniFile.read_float(section.c_str(),"thresholdAng_DEG",RAD2DEG(thresholdAng)) );

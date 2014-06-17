@@ -9,10 +9,10 @@
 #ifndef CONSTRAINED_POSE_NETWORK_H
 #define CONSTRAINED_POSE_NETWORK_H
 
-#include <mrpt/poses/CPosePDFGaussian.h>
-#include <mrpt/poses/CPose3DPDFGaussian.h>
-#include <mrpt/poses/CPosePDFGaussianInf.h>
-#include <mrpt/poses/CPose3DPDFGaussianInf.h>
+/** \file The main class in this file is mrpt::poses::CNetworkOfPoses<>, a generic 
+           basic template for predefined 2D/3D graphs of pose contraints. 
+*/
+
 #include <mrpt/graphs/CDirectedGraph.h>
 #include <mrpt/graphs/CDirectedTree.h>
 
@@ -23,10 +23,15 @@
 #include <mrpt/utils/traits_map.h>
 #include <mrpt/utils/stl_serialization.h>
 
-// The main class in this file is CNetworkOfPoses, a generic basic template for
-//  predefined 2D/3D graphs of pose contraints.
 namespace mrpt
 {
+	// Fwd decls:
+	namespace poses {
+		class CPose2D; class CPose3D;
+		class CPosePDFGaussian;  class CPose3DPDFGaussian;
+		class CPosePDFGaussianInf; class CPose3DPDFGaussianInf;
+	}
+
 	namespace graphs
 	{
 		using mrpt::utils::TNodeID;

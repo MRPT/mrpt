@@ -15,7 +15,7 @@ for the shape of the robot, i.e. it's a point or a circle.
 
 =head1 BUGS
 
-Please report bugs at http://www.mrpt.org/project/issues/MRPT
+Please report bugs at https://github.com/jlblancoc/mrpt/issues
 
 =head1 SEE ALSO
 

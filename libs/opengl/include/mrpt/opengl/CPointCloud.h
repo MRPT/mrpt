@@ -303,6 +303,7 @@ namespace mrpt
 		template <class POINTSMAP>
 		void CPointCloud::loadFromPointsMap( const POINTSMAP *themap)
 		{
+			ASSERT_(themap!=NULL)
 			mrpt::utils::PointCloudAdapter<CPointCloud>     pc_dst(*this);
 			const mrpt::utils::PointCloudAdapter<POINTSMAP> pc_src(*themap);
 			const size_t N=pc_src.size();
