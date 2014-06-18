@@ -212,7 +212,7 @@ void CNTRIPClient::private_ntrip_thread()
 				// Try to read the header of the response:
 				size_t	to_read_now = 30;
 				buf.resize(to_read_now);
-				size_t len = my_sock.readAsync(&buf[0],to_read_now, 4000,1000);
+				size_t len = my_sock.readAsync(&buf[0],to_read_now, 4000,200);
 
 				buf.resize(len);
 

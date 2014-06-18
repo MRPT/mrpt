@@ -32,6 +32,12 @@ CGPS_NTRIP::~CGPS_NTRIP()
 {
 }
 
+void CGPS_NTRIP::initialize()
+{
+    gps.initialize();
+    ntrip.initialize();
+}
+
 // See docs in parent class
 void  CGPS_NTRIP::doProcess()
 {
@@ -47,17 +53,17 @@ void  CGPS_NTRIP::doProcess()
 		vect.reserve(lst.size());
 		for (TListObservations::const_iterator it=lst.begin();it!=lst.end();++it)
 			vect.push_back( it->second );
-		this->appendObservations(vect);		
+		this->appendObservations(vect);
 	}
-	
+
 	// New GGA frames?
 	std::string sLastGGA = gps.getLastGGA();
-	if (!sLastGGA.empty()) 
+	if (!sLastGGA.empty())
 	{
 		if (m_verbose) cout << "[CGPS_NTRIP] Redirecting GGA frame from GPS->NTRIP: '" << sLastGGA << "'" << endl;
 
 		ntrip.getNTRIPClient().sendBackToServer( sLastGGA );
-	}	
+	}
 
 	// Process NTRIP server comms:
 	ntrip.doProcess();
@@ -70,6 +76,6 @@ void CGPS_NTRIP::loadConfig_sensorSpecific( const mrpt::utils::CConfigFileBase &
 	// NTRIP params:
 	ntrip.loadConfig( mrpt::utils::CConfigFilePrefixer(cfg,"","ntrip_"), section );
 
-	// Own params: 
+	// Own params:
 	// (none yet)
 }

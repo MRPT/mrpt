@@ -18,16 +18,16 @@ namespace mrpt
 	namespace hwdrivers
 	{
 		/** A combination of GPS receiver + NTRIP receiver capable of submitting GGA frames to enable RTCM 3.0.
-		  * This class holds instances of two classes, publicly exposed as member variables: 
+		  * This class holds instances of two classes, publicly exposed as member variables:
 		  *  - mrpt::hwdrivers::CGPSInterface  gps;
 		  *  - mrpt::hwdrivers::CNTRIPEmitter  ntrip;
 		  *
-		  * and acts as a "joint sensor", calling both objects' doProcess() inside the doProcess() loop, etc. 
+		  * and acts as a "joint sensor", calling both objects' doProcess() inside the doProcess() loop, etc.
 		  *
 		  * The goal of this class is automatically gather GGA frames from the gps sensor and upload them to the NTRIP server.
 		  *
-		  * Configuration file format is a combination of the original parameters for both classes, each with 
-		  * a prefix: "gps_" for CGPSInterface params and "ntrip_" for CNTRIPEmitter. 
+		  * Configuration file format is a combination of the original parameters for both classes, each with
+		  * a prefix: "gps_" for CGPSInterface params and "ntrip_" for CNTRIPEmitter.
 		  *
 		  *  \code
 		  *  PARAMETERS IN THE ".INI"-LIKE CONFIGURATION STRINGS:
@@ -43,7 +43,7 @@ namespace mrpt
 		  *
 		  *    ntrip_COM_port_WIN = COM1         // Serial port where the NTRIP stream will be dumped to.
 		  *    ntrip_COM_port_LIN = ttyUSB0
-		  *    ntrip_baudRate     = 38400   
+		  *    ntrip_baudRate     = 38400
 		  *
 		  *    ntrip_server   = 143.123.9.129    // NTRIP caster IP
 		  *    ntrip_port     = 2101
@@ -64,7 +64,7 @@ namespace mrpt
 		public:
 			mrpt::hwdrivers::CGPSInterface  gps;
 			mrpt::hwdrivers::CNTRIPEmitter  ntrip;
-			
+
 			/** Constructor. See mrpt::hwdrivers::CGPSInterface for the meaning of params. */
 			CGPS_NTRIP( int BUFFER_LENGTH = 500, mrpt::hwdrivers::CSerialPort *outPort = NULL, mrpt::synch::CCriticalSection *csOutPort = NULL);
 
@@ -74,6 +74,7 @@ namespace mrpt
 			// See docs in parent class
 			void  doProcess();
 
+			virtual void initialize();
 		protected:
 			/** See the class documentation at the top for expected parameters */
 			void  loadConfig_sensorSpecific( const mrpt::utils::CConfigFileBase &configSource, const std::string &iniSection );

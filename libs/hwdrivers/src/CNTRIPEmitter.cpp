@@ -60,7 +60,7 @@ void CNTRIPEmitter::doProcess()
 		m_out_COM.WriteBuffer(&buf[0],buf.size());
 	}
 
-	mrpt::system::sleep(50);
+	mrpt::system::sleep(1);
 }
 
 /*-------------------------------------------------------------
