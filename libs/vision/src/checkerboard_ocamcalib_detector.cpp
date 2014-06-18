@@ -825,7 +825,6 @@ void icvCleanFoundConnectedQuads( std::vector<CvCBQuadPtr> &quad_group, const Cv
 
 	// JLBC (2014): Additional preliminary filter: remove quads that are too 
 	// small or too large
-	const double MIN_RATIO = 0.65, MAX_RATIO=1.0/MIN_RATIO;
 
 	// In the following, use "quad_group.size()" since the size will change with iterations
     while( quad_group.size() > expected_quads_count )
