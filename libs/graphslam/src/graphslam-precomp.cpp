@@ -7,5 +7,5 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/graphslam.h>  // Precompiled headers
+#include "graphslam-precomp.h"  // Precompiled headers
 

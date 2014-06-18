@@ -16,10 +16,5 @@
 // Graph SLAM: Batch solvers
 #include <mrpt/graphslam/levmarq.h>
 
-// Graph SLAM: Online solvers
-#include <mrpt/graphslam/GraphSlamEngine.h>
-
-// Implementations of GraphSlamEngine<...,F2F_MATCH,...>
-#include <mrpt/graphslam/f2f_match_icp_2d.h> 
 
 #endif
