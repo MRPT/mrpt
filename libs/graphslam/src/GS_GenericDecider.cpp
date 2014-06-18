@@ -8,6 +8,7 @@
    +---------------------------------------------------------------------------+ */
 
 #include <mrpt/graphslam.h>
+#include <mrpt/utils/CConfigFileBase.h>
 
 using namespace mrpt::graphslam;
 using namespace mrpt::graphslam::deciders;
@@ -43,4 +44,3 @@ void GS_GenericDecider::TParams::dumpToTextStream(mrpt::utils::CStream &out) con
 	LOADABLEOPTS_DUMP_VAR_DEG(verbose)
 }
 
-		

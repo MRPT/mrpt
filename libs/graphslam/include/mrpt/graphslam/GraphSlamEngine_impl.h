@@ -10,6 +10,8 @@
 #define GRAPH_SLAM_ENGINE_IMPL_H
 // Only to be included from within <mrpt/graphslam/GraphSlamEngine.h>
 
+#include <mrpt/slam/CObservationOdometry.h>
+
 namespace mrpt { namespace graphslam {
 
 	// Default ctor:
@@ -25,13 +27,13 @@ namespace mrpt { namespace graphslam {
 	void GraphSlamEngine<graph_t,F2F_MATCH,UPDATE_DECIDER,MAPS_IMPLEMENTATION,GRAPHSLAM_SOLVER>::resetState()
 	{
 		MRPT_TODO("Uncomment when all TParams...")
-		typename F2F_MATCH::TParams        f2f_bckup = m_f2f_match_params;
-		typename UPDATE_DECIDER::TParams   dec_bckup = m_update_decider_params; 
-		//typename GRAPHSLAM_SOLVER::TParams sol_bckup = m_solver_params; 
+//		typename F2F_MATCH::TParams        f2f_bckup = m_f2f_match_params;
+//		typename UPDATE_DECIDER::TParams   dec_bckup = m_update_decider_params;
+		//typename GRAPHSLAM_SOLVER::TParams sol_bckup = m_solver_params;
 		*this = self_t(); // Reset
-		m_f2f_match_params = f2f_bckup;
-		m_update_decider_params = dec_bckup; 
-		//m_solver_params = sol_bckup; 
+//		m_f2f_match_params = f2f_bckup;
+//		m_update_decider_params = dec_bckup;
+		//m_solver_params = sol_bckup;
 	}
 
 	// Returns the latest estimate of the current robot pose (the global pose for the current keyframe in the graph)
@@ -39,11 +41,11 @@ namespace mrpt { namespace graphslam {
 	bool GraphSlamEngine<graph_t,F2F_MATCH,UPDATE_DECIDER,MAPS_IMPLEMENTATION,GRAPHSLAM_SOLVER>::getCurrentPose(pose_t &pose) const
 	{
 		const TNodeID curNodeID = m_current_frame.nodeID;
-		if (curNodeID==INVALID_NODEID) 
+		if (curNodeID==INVALID_NODEID)
 			return false; // The graph is empty
 		typename graph_t::global_poses_t::const_iterator itCurNode = m_graph.nodes.find(curNodeID);
 		ASSERT_(itCurNode != m_graph.nodes.end())
-		typename const graph_t::global_pose_t & curNode = itCurNode->second;
+		const typename graph_t::global_pose_t & curNode = itCurNode->second;
 		pose = *static_cast<const typename graph_t::constraint_no_pdf_t *>(& curNode );
 		return true;
 	}
@@ -51,11 +53,11 @@ namespace mrpt { namespace graphslam {
 	// Main entry point (alternative 1): Process a pair "action"+"sensory observations" to update the map.
 	template <class graph_t,class F2F_MATCH,class UPDATE_DECIDER,class MAPS_IMPLEMENTATION,class GRAPHSLAM_SOLVER>
 	void GraphSlamEngine<graph_t,F2F_MATCH,UPDATE_DECIDER,MAPS_IMPLEMENTATION,GRAPHSLAM_SOLVER>::processActionObservation (
-		const mrpt::slam::CActionCollection &action, 
+		const mrpt::slam::CActionCollection &action,
 		const mrpt::slam::CSensoryFrame &in_SF)
 	{
-		using namespace mrpt::slam; 
-		using namespace mrpt::poses; 
+		using namespace mrpt::slam;
+		using namespace mrpt::poses;
 
 		// 1) process action:
 		CActionRobotMovement2DPtr movEstimation = action.getBestMovementEstimation();
@@ -85,7 +87,7 @@ namespace mrpt { namespace graphslam {
 		ASSERT_(obs.present())
 		ASSERT_(obs->timestamp!=INVALID_TIMESTAMP)
 
-		// STAGE 1: Process observation, update sensor data in current KeyFrame or 
+		// STAGE 1: Process observation, update sensor data in current KeyFrame or
 		//           start a new Keyframe, as needed.
 		// -----------------------------------------------------------------------------------
 		bool is_first_obs_in_empty_graph = false; // Is the first obs in a totally empty graph?
@@ -108,13 +110,13 @@ namespace mrpt { namespace graphslam {
 				const TNodeID firstNodeID = 0;
 				typename graph_t::global_pose_t & newNode = m_graph.nodes[firstNodeID]; // Create empty pose in the map<>
 				newNode.nodeAnnotation_observations.insert(obs);  // Add obs to node
-				m_current_frame = TTimestampedNode(firstNodeID, obs->timestamp); // Set as current position 
+				m_current_frame = TTimestampedNode(firstNodeID, obs->timestamp); // Set as current position
 				m_keyframes_kdtree.markAsOutdated();
 			}
 		}
 		else
 		{
-			typename graph_t::constraint_no_pdf_t odo_increment;  // Default (NULL increment) 
+			typename graph_t::constraint_no_pdf_t odo_increment;  // Default (NULL increment)
 			if (IS_CLASS(obs,CObservationOdometry))
 			{
 				// Convert an odometry (global pose) reading into incremental odometry:
@@ -135,7 +137,7 @@ namespace mrpt { namespace graphslam {
 			const TNodeID prevNodeID = m_current_frame.nodeID;
 			typename graph_t::global_pose_t & prevNode = m_graph.nodes[prevNodeID];
 			typename graph_t::constraint_no_pdf_t &prevPose = *static_cast<typename graph_t::constraint_no_pdf_t *>(&prevNode);
-				
+
 			// Move to a new keyframe?
 			if (createNewFrame) {
 				// Create new frame ID and set as current:
@@ -145,7 +147,7 @@ namespace mrpt { namespace graphslam {
 			}
 
 			typename graph_t::global_pose_t & curNode = m_graph.nodes[m_current_frame.nodeID];
-				
+
 			// Create new odometry edge:
 			if (createNewFrame)
 			{
@@ -160,7 +162,7 @@ namespace mrpt { namespace graphslam {
 			typename graph_t::constraint_no_pdf_t &newPose = *static_cast<typename graph_t::constraint_no_pdf_t *>(&curNode);
 			newPose.composeFrom(prevPose, odo_increment);
 
-			// Update observations for the current node (overwrite by sensor label): 
+			// Update observations for the current node (overwrite by sensor label):
 			for (mrpt::slam::CSensoryFrame::iterator it=curNode.nodeAnnotation_observations.begin();it!=curNode.nodeAnnotation_observations.end();++it)
 			{
 				if ( (*it)->sensorLabel==obs->sensorLabel)
@@ -168,7 +170,7 @@ namespace mrpt { namespace graphslam {
 					curNode.nodeAnnotation_observations.erase(it);
 					break;
 				}
-			}			
+			}
 			curNode.nodeAnnotation_observations.insert(obs);  // Add obs to node
 
 			// If this was a newly created KeyFrame, assigns to it an initial guess of its global pose: the same than the previous KF.
@@ -178,15 +180,15 @@ namespace mrpt { namespace graphslam {
 				newPose = prevPose;
 			}
 
-			// (2/2): Update odometry edge constraint: 
+			// (2/2): Update odometry edge constraint:
 			// This is done from the CObservationOdometry entries in both the "from" and "to" ends of an odometry edge:
 			if (curNode.nodeAnnotation_odometryEdge!=NULL) // If this node have an odometry edge:
 			{
 				typename graph_t::edge_t & odoEdge = *curNode.nodeAnnotation_odometryEdge;
 				if (odoEdge.odo_from_node && odoEdge.odo_to_node)
 				{
-					mrpt::slam::CObservationOdometryPtr odoFrom = odoEdge.odo_from_node->nodeAnnotation_observations.getObservationByClass<mrpt::slam::CObservationOdometry>();
-					mrpt::slam::CObservationOdometryPtr odoTo = odoEdge.odo_to_node->nodeAnnotation_observations.getObservationByClass<mrpt::slam::CObservationOdometry>();
+					mrpt::slam::CObservationOdometryPtr odoFrom = odoEdge.odo_from_node->nodeAnnotation_observations.template getObservationByClass<mrpt::slam::CObservationOdometry>();
+					mrpt::slam::CObservationOdometryPtr odoTo = odoEdge.odo_to_node->nodeAnnotation_observations.template getObservationByClass<mrpt::slam::CObservationOdometry>();
 					if (odoFrom.present() && odoTo.present())
 					{
 						odoEdge = odoTo->odometry - odoFrom->odometry;
@@ -206,7 +208,7 @@ namespace mrpt { namespace graphslam {
 			// ------------------------------------------------------------
 			std::set<TNodeID> covisible_KFs;
 			m_f2f_match.getCovisibleKeyframes(*this, m_current_frame.nodeID, covisible_KFs);
-	
+
 			// STAGE 3: Match neighboring KeyFrames and establish (or refine) edges among them:
 			// ------------------------------------------------------------------------------
 			bool some_edge_modified = false;
@@ -215,7 +217,7 @@ namespace mrpt { namespace graphslam {
 				const CSensoryFrame &cur_sf = m_graph.nodes[m_current_frame.nodeID].nodeAnnotation_observations;
 				typename graph_t::global_pose_t & curNode = m_graph.nodes[m_current_frame.nodeID];
 				typename graph_t::constraint_no_pdf_t &curPose = *static_cast<typename graph_t::constraint_no_pdf_t *>(&curNode);
-				
+
 				for (std::set<TNodeID>::const_iterator itKF=covisible_KFs.begin();itKF!=covisible_KFs.end();++itKF)
 				{
 					// Observations in "other":
@@ -276,8 +278,8 @@ namespace mrpt { namespace graphslam {
 					} // end valid "match" found.
 					else
 					{
-						// We had an edge OLD_NODE ==> CURRENT_NODE but now the registration seems invalid: 
-						// The edge must be deleted, since it no longer reflects accurate localization data 
+						// We had an edge OLD_NODE ==> CURRENT_NODE but now the registration seems invalid:
+						// The edge must be deleted, since it no longer reflects accurate localization data
 						// for the current (MOVING) keyframe:
 						if (it_the_edge!=m_graph.edges.end())
 						{
@@ -290,7 +292,7 @@ namespace mrpt { namespace graphslam {
 
 			// STAGE 4: Optimize the global pose of the current keyframe only:
 			// ------------------------------------------------------------------------------
-			if (some_edge_modified) 
+			if (some_edge_modified)
 			{
 				m_solver.optimizeSingle(m_graph, m_current_frame.nodeID);
 				// NOTE: Don't need to call "m_keyframes_kdtree.markAsOutdated();" if we only modify the last (current) KeyFrame.

@@ -17,6 +17,12 @@
 #include <mrpt/math/ops_matrices.h> // multiply_*()
 #include <mrpt/math/matrix_serialization.h>
 #include <mrpt/system/string_utils.h>
+#include <mrpt/poses/CPose2D.h>
+#include <mrpt/poses/CPose3D.h>
+#include <mrpt/poses/CPosePDFGaussian.h>
+#include <mrpt/poses/CPosePDFGaussianInf.h>
+#include <mrpt/poses/CPose3DPDFGaussian.h>
+#include <mrpt/poses/CPose3DPDFGaussianInf.h>
 
 namespace mrpt
 {
@@ -120,8 +126,6 @@ namespace mrpt
 				// =================================================================
 				static void save_graph_of_poses_to_text_file(const graph_t *g, const std::string &fil)
 				{
-					typedef typename graph_t::constraint_t CPOSE;
-
 					std::ofstream  f;
 					f.open(fil.c_str());
 					if (!f.is_open())

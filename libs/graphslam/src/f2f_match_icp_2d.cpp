@@ -8,7 +8,9 @@
    +---------------------------------------------------------------------------+ */
 
 #include <mrpt/graphslam.h>
+#include <mrpt/utils/CConfigFileBase.h>
 #include <mrpt/slam/CICP.h>
+
 
 using namespace mrpt::slam;
 using namespace mrpt::poses;
@@ -24,7 +26,7 @@ GS_F2F_ICP_2D::GS_F2F_ICP_2D()
 	* \return true if a valid registration was found.
 	*/
 bool GS_F2F_ICP_2D::matchTwoKeyframes(
-	const TNodeID id_a, const TNodeID id_b, 
+	const TNodeID id_a, const TNodeID id_b,
 	const CSensoryFrame &obs_a, const CSensoryFrame &obs_b,
 	const mrpt::poses::CPose2D &approx_pose_b_from_a,
 	mrpt::poses::CPosePDFGaussianInf & out_pose_b_from_a)
@@ -48,7 +50,7 @@ bool GS_F2F_ICP_2D::matchTwoKeyframes(
 		&icpReturn // Returned information
 		);
 
-	
+
 	// save tentative estimation:
 	out_pose_b_from_a.copyFrom( *pestPose );
 
@@ -114,4 +116,3 @@ void GS_F2F_ICP_2D::TParams::dumpToTextStream(mrpt::utils::CStream &out) const
 	icp_params.dumpToTextStream(out);
 }
 
-		
