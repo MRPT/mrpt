@@ -99,11 +99,11 @@ macro(SuiteSparse_FIND_COMPONENTS )
 
 	## On windows : we absolutly need SuiteSparse_config.h every time for all projects
 	if(WIN32)
-		list(FIND SuiteSparse_FIND_COMPONENTS "SuiteSparse_config" SS_config_index)
+		list(FIND SuiteSparse_FIND_COMPONENTS "suitesparseconfig" SS_config_index)
 		if(${SS_config_index} MATCHES "-1")
-			list(APPEND SuiteSparse_FIND_COMPONENTS SuiteSparse_config)
+			list(APPEND SuiteSparse_FIND_COMPONENTS suitesparseconfig)
 			if(SuiteSparse_VERBOSE)
-				message(STATUS "   On windows, we absolutly need SuiteSparse_config.h every time for all projects : add SuiteSparse_config component to look for")
+				message(STATUS "   On windows, we absolutly need SuiteSparse_config.h every time for all projects : add suitesparseconfig component to look for")
 			endif()
 		endif()
 	endif()
@@ -269,7 +269,7 @@ endmacro()
 
 ## Default behavior if user don't use the COMPONENTS flag in find_package(SuiteSparse ...) command
 if(NOT SuiteSparse_FIND_COMPONENTS)
-	list(APPEND SuiteSparse_FIND_COMPONENTS AMD CAMD CCOLAMD COLAMD CHOLMOD SPQR LDL BTF KLU CXSPARSE)  ## suitesparse and metis are not searched by default (special case)
+	list(APPEND SuiteSparse_FIND_COMPONENTS AMD CAMD CCOLAMD COLAMD CHOLMOD SPQR LDL BTF KLU CXSPARSE UMFPACK)  ## suitesparse and metis are not searched by default (special case)
 endif()
 
 SuiteSparse_FIND_COMPONENTS()
