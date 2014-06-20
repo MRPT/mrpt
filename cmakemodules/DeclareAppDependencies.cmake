@@ -27,6 +27,9 @@ macro(DeclareAppDependencies name)
 	
 	# Add the detected dependencies:
 	list(REMOVE_DUPLICATES ALL_DEPS)
+
+	set(AUX_ALL_DEPS_BUILD 1)  # Will be set to "0" if any dependency if not built
+
 	IF (NOT "${ALL_DEPS}" STREQUAL "")
 		#MESSAGE(STATUS "Adding deps: ${name} --> ${ALL_DEPS}")
 		ADD_DEPENDENCIES(${name} ${ALL_DEPS})
@@ -45,9 +48,23 @@ macro(DeclareAppDependencies name)
 			IF(NOT "${DEP_MRPT_NAME}" STREQUAL "")
 				INCLUDE_DIRECTORIES("${MRPT_LIBS_ROOT}/${DEP_MRPT_NAME}/include/")
 			ENDIF(NOT "${DEP_MRPT_NAME}" STREQUAL "")
-		ENDFOREACH (_DEP)		
+
+			# Check if all dependencies are to be build: 
+			if ("BUILD_mrpt-${DEP_MRPT_NAME}" STREQUAL "OFF")
+				SET(AUX_ALL_DEPS_BUILD 0)
+				MESSAGE(STATUS "*Warning*: App ${name} cannot be built because dependency mrpt-${DEP_MRPT_NAME} has been disabled!")
+			endif ("BUILD_mrpt-${DEP_MRPT_NAME}" STREQUAL "OFF")
+
+		ENDFOREACH (_DEP)
 	ENDIF (NOT "${ALL_DEPS}" STREQUAL "")
 	
+	# Impossible to build? 
+	if (NOT AUX_ALL_DEPS_BUILD)
+		MESSAGE(STATUS "*Warning* ==> Forcing BUILD_APP_${name}=OFF for missing dependencies listed above (re-enable manually if needed).")
+		SET(BUILD_APP_${name} OFF CACHE BOOL "Build ${name}" FORCE) # this var is checked in [MRPT]/app/CMakeLists.txt
+		mark_as_advanced(CLEAR BUILD_APP_${name})
+	endif (NOT AUX_ALL_DEPS_BUILD)
+
 endmacro(DeclareAppDependencies)
 
 # Macro for adding links to the Start menu folder (for binary packages in Windows)

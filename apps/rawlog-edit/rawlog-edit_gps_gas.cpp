@@ -160,8 +160,6 @@ DECLARE_OP_FUNCTION(op_export_gps_gas_kml)
 				const string  &label = it->first;		//GPS Label
 				const TDataPerGPSGAS &D = it->second;
 
-				bool hasSomeRTK = false;
-
 				f.printf(
 					"    <Folder>\n"
 					"      <name>%s all points</name>\n"

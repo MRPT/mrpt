@@ -147,7 +147,7 @@ macro(internal_define_mrpt_lib name headers_only)
 	# Include dirs for mrpt-XXX libs:
 	set(AUX_DEPS_LIST "")
 	set(AUX_EXTRA_LINK_LIBS "")
-	set(AUX_ALL_DEPS_BUILD 1)
+	set(AUX_ALL_DEPS_BUILD 1)  # Will be set to "0" if any dependency if not built
 	FOREACH(DEP ${ARGN})
 		# Only for "mrpt-XXX" libs:
 		IF (${DEP} MATCHES "mrpt-")
