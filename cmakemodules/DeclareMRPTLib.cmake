@@ -147,6 +147,7 @@ macro(internal_define_mrpt_lib name headers_only)
 	# Include dirs for mrpt-XXX libs:
 	set(AUX_DEPS_LIST "")
 	set(AUX_EXTRA_LINK_LIBS "")
+	set(AUX_ALL_DEPS_BUILD 1)
 	FOREACH(DEP ${ARGN})
 		# Only for "mrpt-XXX" libs:
 		IF (${DEP} MATCHES "mrpt-")
@@ -168,9 +169,23 @@ macro(internal_define_mrpt_lib name headers_only)
 				
 				# Append to list of mrpt-* lib dependences:
 				LIST(APPEND AUX_DEPS_LIST ${DEP})
+				
+				# Check if all dependencies are to be build: 
+				if ("BUILD_mrpt-${DEP_MRPT_NAME}" STREQUAL "OFF")
+					SET(AUX_ALL_DEPS_BUILD 0)
+					MESSAGE(STATUS "*Warning*: Lib mrpt-${name} cannot be built because dependency mrpt-${DEP_MRPT_NAME} has been disabled!")
+				endif ("BUILD_mrpt-${DEP_MRPT_NAME}" STREQUAL "OFF")
+				
 			ENDIF(NOT "${DEP_MRPT_NAME}" STREQUAL "")
 		ENDIF (${DEP} MATCHES "mrpt-")		
 	ENDFOREACH(DEP)
+	
+	# Impossible to build? 
+	if (NOT AUX_ALL_DEPS_BUILD)
+		MESSAGE(STATUS "*Warning* ==> Disabling compilation of lib mrpt-${name} for missing dependencies listed above.")		
+		SET(BUILD_mrpt-${name} OFF CACHE BOOL "Build the library mrpt-${name}" FORCE)
+	endif (NOT AUX_ALL_DEPS_BUILD)
+	
 	
 	# Emulates a global variable:
 	set_property(GLOBAL PROPERTY "mrpt-${name}_LIB_DEPS" "${AUX_DEPS_LIST}")
