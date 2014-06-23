@@ -12,6 +12,7 @@
 #include <mrpt/opengl/CRenderizableDisplayList.h>
 #include <mrpt/utils/CStream.h>
 #include <mrpt/synch/CCriticalSection.h>
+#include <cstdlib> // atexit()
 
 #include "opengl_internals.h"
 
@@ -23,8 +24,10 @@ using namespace mrpt::utils;
 
 IMPLEMENTS_VIRTUAL_SERIALIZABLE( CRenderizableDisplayList, CRenderizable, mrpt::opengl )
 
+// TAuxDLData: needed since it seems we must delete display lists from the same thread we create them....
 
-// This is needed since it seems we must delete display lists from the same thread we create them....
+// Phoenix Singleton pattern
+void deleteSingleton();
 struct TAuxDLData
 {
 	std::vector<unsigned int>      dls_to_delete;
@@ -32,10 +35,25 @@ struct TAuxDLData
 
 	static TAuxDLData& getSingleton()
 	{
-		static TAuxDLData instance;
-		return instance;
+	    if (!m_pInstance)
+        {
+            m_pInstance = new TAuxDLData;
+            std::atexit( deleteSingleton );
+        }
+		return *m_pInstance;
 	}
+
+    static TAuxDLData *m_pInstance;
 };
+void deleteSingleton()
+{
+    if (TAuxDLData::m_pInstance)
+    {
+        delete TAuxDLData::m_pInstance;
+        TAuxDLData::m_pInstance = NULL;
+    }
+}
+TAuxDLData* TAuxDLData::m_pInstance = NULL;
 
 // Default constructor:
 CRenderizableDisplayList::CRenderizableDisplayList() :

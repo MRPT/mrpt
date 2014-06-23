@@ -30,7 +30,7 @@
 //   at the end:
 //  ** (MRPT:11711): CRITICAL **: giop_thread_request_push: assertion `tdata != NULL' failed
 // ------------------------------------------------------------------------
-//#define WXSHUTDOWN_DO_IT_CLEAN
+#define WXSHUTDOWN_DO_IT_CLEAN
 
 #if MRPT_HAS_WXWIDGETS
 
