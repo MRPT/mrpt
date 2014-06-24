@@ -13,10 +13,10 @@
 <p> <b>Note:</b> <i>If you are displaying a local version of this page and you have not built the whole HTML documentation, the links above will be broken. Either build the documentation invoking <code>make documentation_html</code> or [browse it on-line](http://www.mrpt.org/).</i></p>
 
 <a name="1.2.0">
-  <h2>Version 1.2.0: (Under development) </h2></a>
+  <h2>Version 1.2.0: Released 25-JUN-2014  </h2></a>
   	- <b>Most important changes:</b>
 		- Public header files (.h) have undergone a serious refactoring to minimize unnecesary dependencies and reduce compile time and memory as much as possible.
-		  As a side effect, user code might need to add new #include<> lines. This API change justifies the new minor version series 1.2.X.
+		  As a side effect, user code might need to add new #include<> lines. This change justifies the new minor version series 1.2.X.
 		- MRPT now cleanly builds in clang and OSX.
 		- Support for new camera drivers (OpenNI2, DUO3D).
 		- Many bug fixes.
