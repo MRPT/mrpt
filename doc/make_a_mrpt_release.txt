@@ -6,10 +6,9 @@
 =============================
 
 1) CREATE PACKAGES OF SOURCES
-> Go to mrpt-src. 
-> Update "Build & Install" documentation. 
-> bash scripts/build_docs.sh -c
-> Do the final "svn ci" before the release.
+> Go to MRPT dir. 
+> bash scripts/build_docs.sh -c (from Windows, or everything from linux, then CHM from Windows)
+> Do the final "git commit" before the release.
 > bash scripts/prepare_release.sh
 > bash scripts/prepare_debian.sh
 
