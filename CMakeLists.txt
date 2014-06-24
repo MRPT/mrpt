@@ -205,7 +205,6 @@ include(cmakemodules/script_duo3d.cmake REQUIRED)		# Support for DUO3D Camera
 OPTION(MRPT_ALWAYS_CHECKS_DEBUG "Additional checks even in Release" "OFF")
 OPTION(MRPT_ALWAYS_CHECKS_DEBUG_MATRICES "Additional checks even in Release (Only in matrix classes)" "OFF")
 
-
 # ---------------------------------------------------------------------------
 # Create the minimum list of libraries required by an application that
 #  uses the MRPT C++ library. This must be passed to "TARGET_LINK_LIBRARIES"
@@ -229,11 +228,9 @@ ENDIF(NOT MSVC)
 
 SET(CMAKE_MRPT_HAS_GZ_STREAMS ${CMAKE_MRPT_HAS_ZLIB})   # We have gz-streams is we have zlib:
 
-
 include(cmakemodules/script_kinect.cmake REQUIRED)  # Kinect support in a set of different ways
 include(cmakemodules/script_pcl.cmake REQUIRED)     # PCL library
 include(cmakemodules/script_suitesparse.cmake REQUIRED)     # SuiteSparse libs
-
 
 # Save the basic list of libraries (without MRPT-libs):
 # -------------------------------------------------------------------------------------
@@ -259,8 +256,6 @@ ENDIF(CMAKE_BUILD_TYPE STREQUAL "Debug")
 
 # Include Asian fonts in utils::CMRPTCanvas ?
 SET( MRPT_HAS_ASIAN_FONTS ON CACHE BOOL "Enable Asian fonts in utils::CMRPTCanvas (increases library size).")
-
-
 
 include(cmakemodules/script_declare_defines.cmake REQUIRED)  # Transform the variables MRPT_XXX="ON/OFF" to CMAKE_MRPT_XXX="1/0"
 
@@ -304,7 +299,6 @@ ENDIF(MRPT_EXTRA_WARNINGS)
 
 # Enable profiling?
 SET(MRPT_ENABLE_PROFILING OFF CACHE BOOL "Enable profiling (add -g -pg in GCC/CLANG, /PROFILE in Visual C++)")
-
 
 IF(MSVC)
 	SET(EXTRA_CPP_FLAGS "/W3 /D _CRT_SECURE_NO_DEPRECATE /D _CRT_NONSTDC_NO_DEPRECATE")
@@ -508,7 +502,6 @@ if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang" OR CMAKE_COMPILER_IS_GNUCXX)
 	ENDIF(CMAKE_MRPT_HAS_SSE4)
 
 endif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang" OR CMAKE_COMPILER_IS_GNUCXX)
-
 
 # Add user supplied extra options (optimization, etc...)
 # ==========================================================

@@ -150,7 +150,8 @@ IF(BUILD_mrpt-hwdrivers)
 
 	# build with link on Phidget21 lib
 	IF(CMAKE_MRPT_HAS_PHIDGET)
-		TARGET_LINK_LIBRARIES(mrpt-hwdrivers phidget21)
+		INCLUDE_DIRECTORIES(${PHIDGETS_INCLUDE_DIR})
+		TARGET_LINK_LIBRARIES(mrpt-hwdrivers ${PHIDGETS_LIBRARIES})
 	ENDIF(CMAKE_MRPT_HAS_PHIDGET)
 
 	# Link to National Instrument libraries:
