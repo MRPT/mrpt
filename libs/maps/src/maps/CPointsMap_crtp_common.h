@@ -159,10 +159,13 @@ namespace detail
 
 				// Convert from the std::vector format:
 				const Eigen::Map<Eigen::Matrix<float,Eigen::Dynamic,1> > scan_vals( const_cast<float*>(&rangeScan.scan[0]),rangeScan.scan.size(),1 ); 
+				// SinCos table allocates N+4 floats for the convenience of SSE2: Map to make it appears it has the correct size:
+				const Eigen::Map<Eigen::Matrix<float,Eigen::Dynamic,1> > ccos( const_cast<float*>(&sincos_vals.ccos[0]),rangeScan.scan.size(),1 ); 
+				const Eigen::Map<Eigen::Matrix<float,Eigen::Dynamic,1> > csin( const_cast<float*>(&sincos_vals.csin[0]),rangeScan.scan.size(),1 ); 
 
 				// Vectorized (optimized) scalar multiplications:
-				scan_x = scan_vals.array() * sincos_vals.ccos.array();
-				scan_y = scan_vals.array() * sincos_vals.csin.array();
+				scan_x = scan_vals.array() * ccos.array();
+				scan_y = scan_vals.array() * csin.array();
 
 				// To global:
 				// Non (manually) vectorized version:
