@@ -65,7 +65,9 @@ IF(MRPT_HAS_OPENNI2)
 		# Add include directories as "-isystem" to avoid warnings :
 		ADD_DIRECTORIES_AS_ISYSTEM(OPENNI2_INCLUDE_DIRS)
 		
-		message(STATUS "OpenNI2 found (include: ${OPENNI2_INCLUDE_DIR}, lib: ${OPENNI2_LIBRARY})")
+		if ($ENV{VERBOSE})
+			message(STATUS "OpenNI2 found (include: ${OPENNI2_INCLUDE_DIR}, lib: ${OPENNI2_LIBRARY})")
+		endif ($ENV{VERBOSE})
 	ELSE (OPENNI2_INCLUDE_DIRS AND OPENNI2_LIBRARIES)
 		message(FATAL_ERROR "OpenNI2 not found: Either correctly set OPENNI2_INCLUDE_DIR and OPENNI2_LIBRARY or uncheck MRPT_HAS_OPENNI2")
 	ENDIF (OPENNI2_INCLUDE_DIRS AND OPENNI2_LIBRARIES)

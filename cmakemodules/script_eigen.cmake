@@ -55,6 +55,9 @@ ELSE(EIGEN_USE_EMBEDDED_VERSION)
 ENDIF(EIGEN_USE_EMBEDDED_VERSION)
 
 
+# Add directories as "-isystem" to avoid warnings with :
+SET(AUX_EIGEN_INCL_DIR ${MRPT_EIGEN_INCLUDE_DIR}/Eigen)
+ADD_DIRECTORIES_AS_ISYSTEM(AUX_EIGEN_INCL_DIR)
 
 # Detect Eigen version (just to show it in the CMake config summary)
 SET(EIGEN_VER_H "${MRPT_EIGEN_INCLUDE_DIR}/Eigen/src/Core/util/Macros.h")
