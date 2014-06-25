@@ -1,3 +1,12 @@
+mrpt (1:1.2.0-1) unstable; urgency=medium
+
+  * New version of upstream sources.
+  * Fix Debian wishlist bug and incorrect watch file (Closes: #750978)
+  * Build against newer wxWidgets 3.0 (Closes: #750968)
+  * Fix error during doc generation (mrpt-perfdata2html) (Closes: #724466)
+
+ -- Jose Luis Blanco (University of Malaga) <joseluisblancoc@gmail.com>  Wed, 25 Jun 2014 19:05:56 +0200
+
 mrpt (1:1.0.2-1) unstable; urgency=low
 
   * New version of upstream sources.
