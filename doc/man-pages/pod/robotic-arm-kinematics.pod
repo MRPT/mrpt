@@ -1,6 +1,6 @@
 =head1 NAME
 
-robotic-arm-kinematics - GUI for editing and visualizing Denavit–Hartenberg parameters
+robotic-arm-kinematics - GUI for editing and visualizing Denavit-Hartenberg parameters
 
 =head1 SYNOPSIS
 
@@ -10,7 +10,7 @@ robotic-arm-kinematics
 
 B<robotic-arm-kinematics> is a graphical application with both practical and 
 didactic intentions: it can be used to teach and learn the usage of 
-Denavit–Hartenberg (DH) parameters to define the kinematic chain of robotic 
+Denavit-Hartenberg (DH) parameters to define the kinematic chain of robotic 
 manipulators. But it can be also used to define real kinematic chains for 
 a subsequent usage within C++ programs.
 
