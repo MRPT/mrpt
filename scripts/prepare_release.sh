@@ -24,65 +24,60 @@ fi
 MRPTSRC=`pwd`
 MRPT_DEB_DIR="$HOME/mrpt_release"
 
+MRPT_DEBSRC_DIR=$MRPT_DEB_DIR/mrpt-${MRPT_VERSION_STR}
+
+echo "MRPT_VERSION_STR: ${MRPT_VERSION_STR}"
+echo "MRPT_DEBSRC_DIR: ${MRPT_DEBSRC_DIR}"
+
 # Prepare a directory for building the debian package:
 # 
 rm -fR $MRPT_DEB_DIR
-mkdir $MRPT_DEB_DIR
+mkdir -p ${MRPT_DEBSRC_DIR} 
 
-# Are we in svn?
-MRPT_SVN_VERSION=`svnversion -n`
-
-if [ $MRPT_SVN_VERSION = "exported" ];
+# Export / copy sources to target dir:
+if [ -d "$MRPTSRC/.git" ];
 then
-	echo "Copying sources to $MRPT_DEB_DIR/mrpt-${MRPT_VERSION_STR}"
-	cp -R . $MRPT_DEB_DIR/mrpt-${MRPT_VERSION_STR}
+	echo "Exporting git source tree to ${MRPT_DEBSRC_DIR}"
+	git archive --format=tar master | tar -x -C ${MRPT_DEBSRC_DIR}
 else
-	# Strip the last "M", if any:
-	if [ ${MRPT_SVN_VERSION:(-1)} = "M" ];
-	then
-		MRPT_SVN_VERSION=${MRPT_SVN_VERSION:0:${#MRPT_SVN_VERSION}-1}
-	fi
-
-#	MRPT_VERSION_STR="${MRPT_VERSION_STR}svn${MRPT_SVN_VERSION}"
-	MRPT_VERSION_STR="${MRPT_VERSION_STR}"
-	echo "Exporting to $MRPT_DEB_DIR/mrpt-${MRPT_VERSION_STR}"
-	svn export . $MRPT_DEB_DIR/mrpt-${MRPT_VERSION_STR}
+	echo "Copying sources to ${MRPT_DEBSRC_DIR}"
+	cp -R . ${MRPT_DEBSRC_DIR}
 fi
+
 
 # Copy the MRPT book:
 if [ -f /Work/MyBooks/mrpt-book/mrpt-book.ps ];
 then
-	cp  /Work/MyBooks/mrpt-book/mrpt-book.ps $MRPT_DEB_DIR/mrpt-${MRPT_VERSION_STR}/doc/
-	ps2pdf $MRPT_DEB_DIR/mrpt-${MRPT_VERSION_STR}/doc/mrpt-book.ps $MRPT_DEB_DIR/mrpt-${MRPT_VERSION_STR}/doc/mrpt-book.pdf
-	gzip $MRPT_DEB_DIR/mrpt-${MRPT_VERSION_STR}/doc/mrpt-book.ps
+	cp  /Work/MyBooks/mrpt-book/mrpt-book.ps ${MRPT_DEBSRC_DIR}/doc/
+	ps2pdf ${MRPT_DEBSRC_DIR}/doc/mrpt-book.ps ${MRPT_DEBSRC_DIR}/doc/mrpt-book.pdf
+	gzip ${MRPT_DEBSRC_DIR}/doc/mrpt-book.ps
 fi
 
 # Try to compile guide now:
 make -C $MRPTSRC/doc/srba-guide/
 if [ -f $MRPTSRC/doc/srba-guide/srba-guide.pdf ];
 then
-	cp $MRPTSRC/doc/srba-guide/srba-guide.pdf $MRPT_DEB_DIR/mrpt-${MRPT_VERSION_STR}/doc/
+	cp $MRPTSRC/doc/srba-guide/srba-guide.pdf ${MRPT_DEBSRC_DIR}/doc/
 fi
 
 make -C $MRPTSRC/doc/pbmap-guide/
 if [ -f $MRPTSRC/doc/pbmap-guide/pbmap-guide.pdf ];
 then
-	cp $MRPTSRC/doc/pbmap-guide/pbmap-guide.pdf $MRPT_DEB_DIR/mrpt-${MRPT_VERSION_STR}/doc/
+	cp $MRPTSRC/doc/pbmap-guide/pbmap-guide.pdf ${MRPT_DEBSRC_DIR}/doc/
 fi
 
 #printf "Generating mrpt.spec ..."
-#eval "echo \"`cat mrpt.spec.in`\"" > $MRPT_DEB_DIR/mrpt-${MRPT_VERSION_STR}/mrpt.spec
+#eval "echo \"`cat mrpt.spec.in`\"" > ${MRPT_DEBSRC_DIR}/mrpt.spec
 #printf "OK\n"
 
 
-cd $MRPT_DEB_DIR/mrpt-${MRPT_VERSION_STR}
+cd ${MRPT_DEBSRC_DIR}
 echo "Deleting some files..."
 
 # Deletions:
 rm -fR lib
 rm -fR packaging
 
-rm -fR apps/HolonomicNavigatorTester
 rm -fR apps/vOdometry
 rm -fR share/mrpt/config_files/vOdometry
 
@@ -90,17 +85,6 @@ rm -fR share/mrpt/config_files/vOdometry
 rm -fR apps/hmt-slam
 rm -fR apps/hmt-slam-gui
 rm -fR apps/hmtMapViewer
-
-
-rm -fr apps/*monoslam*
-rm -fr libs/*monoslam*
-rm -fr share/applications/monoslam.desktop
-
-rm -fr libs/stereoslam
-
-# And remove the corrs. lines:
-#(echo "g/console2gui/d"; echo 'wq') | ex -s apps/CMakeLists.txt
-
 
 # Orig tarball:
 cd ..
