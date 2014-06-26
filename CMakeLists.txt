@@ -24,6 +24,11 @@ LIST(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmakemodules") # Directory fo
 # The root directory for all MRPT libraries/modules:
 SET(MRPT_LIBS_ROOT "${CMAKE_SOURCE_DIR}/libs" CACHE INTERNAL "")  # This emulates global vars
 
+# Windows default: lib. Debian pkgs: set from outside rules script
+IF(NOT DEFINED CMAKE_INSTALL_LIBDIR)
+	SET(CMAKE_INSTALL_LIBDIR "lib")
+ENDIF(NOT DEFINED CMAKE_INSTALL_LIBDIR)
+
 # ---------------------------------------------------------------------------
 # Create the minimum list of libraries required by an application that
 #  uses the MRPT C++ library. This must be passed to "TARGET_LINK_LIBRARIES"
