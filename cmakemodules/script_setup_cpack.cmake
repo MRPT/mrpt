@@ -67,9 +67,8 @@ IF(WIN32)
 	ENDIF (PACKAGE_INCLUDES_SOURCES)
 
 	INSTALL(FILES
+		AUTHORS
 		CMakeLists.txt
-		INSTALL_COMPILE.html
-		NEWS.html
 		README.md
 		version_prefix.txt
 	DESTINATION .)
