@@ -214,6 +214,9 @@ namespace mrpt
 				return M;
 			}
 
+			/** Set all data fields to quiet NaN */
+			virtual void setToNaN() = 0;
+
 			/** @} */
 		}; // End of class def.
 

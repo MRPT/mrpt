@@ -19,6 +19,7 @@
 #include <mrpt/math/CMatrix.h>
 #include <mrpt/utils/CStream.h>
 #include <iomanip>
+#include <limits>
 
 using namespace std;
 using namespace mrpt;
@@ -446,4 +447,13 @@ void CPose3DQuat::inverse()
 	m_quat[1] = -m_quat[1];
 	m_quat[2] = -m_quat[2];
 	m_quat[3] = -m_quat[3];
+}
+
+void CPose3DQuat::setToNaN()
+{
+	for (int i=0;i<3;i++)
+		m_coords[i] = std::numeric_limits<double>::quiet_NaN();
+
+	for (int i=0;i<4;i++)
+		quat()[i] = std::numeric_limits<double>::quiet_NaN();
 }

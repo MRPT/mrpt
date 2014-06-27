@@ -498,6 +498,8 @@ namespace poses
 
 		/** @} */
 
+		void setToNaN();
+
 		typedef CPose3D  type_value; //!< Used to emulate CPosePDF types, for example, in mrpt::graphs::CNetworkOfPoses
 		enum { is_3D_val = 1 };
 		static inline bool is_3D() { return is_3D_val!=0; }

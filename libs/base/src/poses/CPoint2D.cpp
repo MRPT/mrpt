@@ -12,6 +12,7 @@
 #include <mrpt/poses/CPoint2D.h>
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/utils/CStream.h>
+#include <limits>
 
 using namespace mrpt::poses;
 using namespace mrpt::utils;
@@ -72,3 +73,10 @@ CPoint2D  CPoint2D::operator - (const CPose2D& b) const
 
 	return CPoint2D( Ax * ccos + Ay * ssin, -Ax * ssin + Ay * ccos );
 }
+
+void CPoint2D::setToNaN()
+{
+	for (int i=0;i<2;i++)
+		m_coords[i] = std::numeric_limits<double>::quiet_NaN();
+}
+

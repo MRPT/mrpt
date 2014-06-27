@@ -15,6 +15,10 @@
 
  <a name="1.2.1">
   <h2>Version 1.2.1: (Under development) </h2></a>
+	- Changes in classes:
+		- [mrpt-base]
+			- All points and poses now have a method setToNaN(), e.g. mrpt::poses::CPose3D::setToNaN()
+		- Fix compilation of SRBA with DEBUG_GARBAGE_FILL_ALL_NUMS=1
 	- Build system:
 		- Fix compilation of SRBA with DEBUG_GARBAGE_FILL_ALL_NUMS=1
 

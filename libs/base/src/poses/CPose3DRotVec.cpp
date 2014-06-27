@@ -20,6 +20,7 @@
 #include <mrpt/math/ops_matrices.h>
 #include <mrpt/utils/CStream.h>
 #include <iomanip>
+#include <limits>
 
 
 using namespace mrpt;
@@ -611,4 +612,12 @@ void CPose3DRotVec::ln(CArrayDouble<6> &result) const
 {
     result.head<3>() = m_coords;
     result.tail<3>() = m_rotvec;
+}
+
+void CPose3DRotVec::setToNaN()
+{
+	for (int i=0;i<3;i++) {
+		m_coords[i] = std::numeric_limits<double>::quiet_NaN();
+		m_rotvec[i] = std::numeric_limits<double>::quiet_NaN();
+	}
 }

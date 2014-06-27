@@ -426,6 +426,8 @@ namespace poses
 		typedef CPose3DQuat  mrpt_autotype;
 		//DECLARE_MRPT_CONTAINER_TYPES
 
+		void setToNaN();
+
 	}; // End of class def.
 
 	std::ostream BASE_IMPEXP  & operator << (std::ostream& o, const CPose3DQuat& p);

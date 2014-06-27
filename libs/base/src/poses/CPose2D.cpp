@@ -15,6 +15,7 @@
 #include <mrpt/poses/CPoint3D.h>
 #include <mrpt/utils/CStream.h>
 #include <mrpt/math/wrap2pi.h>
+#include <limits>
 
 using namespace mrpt;
 using namespace mrpt::math;
@@ -392,4 +393,10 @@ CPose3D CPose2D::operator -(const CPose3D& b) const
 void CPose2D::asString(std::string &s) const
 {
 	s = mrpt::format("[%f %f %f]",x(),y(),mrpt::utils::RAD2DEG(m_phi));
+}
+
+void CPose2D::setToNaN()
+{
+	for (int i=0;i<3;i++)
+		(*this)[i] = std::numeric_limits<double>::quiet_NaN();
 }

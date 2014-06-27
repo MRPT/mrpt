@@ -22,6 +22,7 @@
 #include <mrpt/math/ops_matrices.h>
 #include <mrpt/utils/CStream.h>
 #include <iomanip>
+#include <limits>
 
 #ifndef M_SQRT1_2
 #define M_SQRT1_2 0.70710678118654752440
@@ -1188,4 +1189,14 @@ void CPose3D::jacob_dAexpeD_de(const CPose3D &A, const CPose3D &D, Eigen::Matrix
 	}
 	mrpt::math::skew_symmetric3_neg( D.m_coords, aux );
 	jacob.block<3,3>(9,3) = A.m_ROT * aux;
+}
+
+void CPose3D::setToNaN()
+{
+	for (int i=0;i<3;i++)
+		for (int j=0;j<3;j++)
+			m_ROT(i,j) = std::numeric_limits<double>::quiet_NaN();
+
+	for (int i=0;i<3;i++)
+		m_coords[i] = std::numeric_limits<double>::quiet_NaN();
 }

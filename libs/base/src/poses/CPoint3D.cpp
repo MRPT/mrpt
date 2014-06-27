@@ -14,6 +14,7 @@
 #include <mrpt/poses/CPoint2D.h>
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/utils/CStream.h>
+#include <limits>
 
 using namespace mrpt;
 using namespace mrpt::poses;
@@ -111,5 +112,11 @@ CPoint3D  CPoint3D::operator + (const CPoint3D& b) const
 CPose3D	CPoint3D::operator + (const CPose3D& b) const
 {
 	return CPose3D( m_coords[0]+b.x(), m_coords[1]+b.y(),m_coords[2]+b.z(), b.yaw(), b.pitch(), b.roll() );
+}
+
+void CPoint3D::setToNaN()
+{
+	for (int i=0;i<3;i++)
+		m_coords[i] = std::numeric_limits<double>::quiet_NaN();
 }
 

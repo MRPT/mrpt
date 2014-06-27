@@ -383,6 +383,8 @@ namespace poses
 		inline const type_value & getPoseMean() const { return *this; }
 		inline       type_value & getPoseMean()       { return *this; }
 
+		void setToNaN();
+
 		/** @name STL-like methods and typedefs
 		   @{   */
 		typedef double         value_type;		//!< The type of the elements
