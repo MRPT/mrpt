@@ -165,7 +165,7 @@ namespace pbmap {
     }
 //    cov /= size;
     Eigen::JacobiSVD<Eigen::Matrix3f> svd(cov);
-    stdDevHist = svd.singularValues().maxCoeff() / sqrt(size);
+    stdDevHist = svd.singularValues().maxCoeff() / sqrt((double) size);
 //    stdDevHist = 0.05;
 
     double shift = 1000; // Large limit
@@ -193,7 +193,7 @@ namespace pbmap {
       meanShift = meanUpdated;
       svd = Eigen::JacobiSVD<Eigen::Matrix3f>(cov);
 //      stdDevHist = svd.singularValues().maxCoeff() / dataTemp.size();
-      stdDevHist = svd.singularValues().maxCoeff() / sqrt(dataTemp.size());
+      stdDevHist = svd.singularValues().maxCoeff() / sqrt((double) dataTemp.size());
 
       iteration_counter++;
     }
