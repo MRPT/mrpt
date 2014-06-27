@@ -464,9 +464,9 @@ void Plane::getPlaneC1C2C3()
 
   for(unsigned i=0; i < planePointCloudPtr->size(); i++)
   {
-    c1[i] = atan2(planePointCloudPtr->points[i].r, max(planePointCloudPtr->points[i].g,planePointCloudPtr->points[i].b));
-    c2[i] = atan2(planePointCloudPtr->points[i].g, max(planePointCloudPtr->points[i].r,planePointCloudPtr->points[i].b));
-    c3[i] = atan2(planePointCloudPtr->points[i].b, max(planePointCloudPtr->points[i].r,planePointCloudPtr->points[i].g));
+    c1[i] = atan2((double) planePointCloudPtr->points[i].r, (double) max(planePointCloudPtr->points[i].g,planePointCloudPtr->points[i].b));
+    c2[i] = atan2((double) planePointCloudPtr->points[i].g, (double) max(planePointCloudPtr->points[i].r,planePointCloudPtr->points[i].b));
+    c3[i] = atan2((double) planePointCloudPtr->points[i].b, (double) max(planePointCloudPtr->points[i].r,planePointCloudPtr->points[i].g));
   }
 }
 
