@@ -12,6 +12,14 @@
 
 <p> <b>Note:</b> <i>If you are displaying a local version of this page and you have not built the whole HTML documentation, the links above will be broken. Either build the documentation invoking <code>make documentation_html</code> or [browse it on-line](http://www.mrpt.org/).</i></p>
 
+
+ <a name="1.2.1">
+  <h2>Version 1.2.1: (Under development) </h2></a>
+	- Build system:
+		- Fix compilation of SRBA with DEBUG_GARBAGE_FILL_ALL_NUMS=1
+
+
+<hr>
 <a name="1.2.0">
   <h2>Version 1.2.0: Released 25-JUN-2014  </h2></a>
   	- <b>Most important changes:</b>

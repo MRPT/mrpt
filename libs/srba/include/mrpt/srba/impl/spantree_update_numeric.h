@@ -82,32 +82,41 @@ size_t TRBA_Problem_state<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::TSpanni
 	return it->second.size();
 }
 
-template <class KF2KF_POSE_TYPE,class LM_TYPE,class OBS_TYPE,class RBA_OPTIONS>
-void setAllNumericToGarbage(typename TRBA_Problem_state<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::TSpanningTree &st)
-{
-	// Mark all numeric values to trash so we detect if some goes un-initialized.
+#if DEBUG_GARBAGE_FILL_ALL_NUMS	
+
+template <class CPOSE> void setPoseToGarbage(CPOSE &p);
+template <> void setPoseToGarbage(mrpt::poses::CPose2D &p) {
+	for (int i=0;i<3;i++)
+		p[i] = std::numeric_limits<double>::quiet_NaN();
+}
+template <> void setPoseToGarbage(mrpt::poses::CPose3D &p) {
 	mrpt::math::CMatrixDouble33 R_trash;
 	for (int i=0;i<3;i++)
 		for (int j=0;j<3;j++)
 			R_trash(i,j) = std::numeric_limits<double>::quiet_NaN();
+	for (int i=0;i<3;i++)
+		p.m_coords[i] = std::numeric_limits<double>::quiet_NaN();
+	p.setRotationMatrix( R_trash );
+}
 
+template <class KF2KF_POSE_TYPE,class LM_TYPE,class OBS_TYPE,class RBA_OPTIONS>
+void setAllNumericToGarbage(typename TRBA_Problem_state<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::TSpanningTree &st)
+{
+	// Mark all numeric values to trash so we detect if some goes un-initialized.
 	for (typename kf2kf_pose_traits<KF2KF_POSE_TYPE>::TRelativePosesForEachTarget::iterator it=st.num.begin();it!=st.num.end();++it)
 	{
 		typename kf2kf_pose_traits<KF2KF_POSE_TYPE>::frameid2pose_map_t & m = it->second;
 		for (typename kf2kf_pose_traits<KF2KF_POSE_TYPE>::frameid2pose_map_t::iterator it2=m.begin();it2!=m.end();++it2)
-		{
-			for (int i=0;i<3;i++)
-				it2->second.pose.m_coords[i] = std::numeric_limits<double>::quiet_NaN();
-			it2->second.pose.setRotationMatrix( R_trash );
-		}
+			setPoseToGarbage(it2->second.pose);
 	}
 }
+#endif
 
 template <class KF2KF_POSE_TYPE,class LM_TYPE,class OBS_TYPE,class RBA_OPTIONS>
 size_t TRBA_Problem_state<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::TSpanningTree::update_numeric(bool skip_marked_as_uptodate)
 {
 #if DEBUG_GARBAGE_FILL_ALL_NUMS
-	setAllNumericToGarbage(*this);
+	setAllNumericToGarbage<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>(*this);
 #endif
 	size_t pose_count = 0;
 	for (typename all_edges_maps_t::const_iterator it=sym.all_edges.begin();it!=sym.all_edges.end();++it)
@@ -119,7 +128,7 @@ template <class KF2KF_POSE_TYPE,class LM_TYPE,class OBS_TYPE,class RBA_OPTIONS>
 size_t TRBA_Problem_state<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::TSpanningTree::update_numeric(const std::set<TKeyFrameID> & kfs_to_update,bool skip_marked_as_uptodate)
 {
 #if DEBUG_GARBAGE_FILL_ALL_NUMS
-	setAllNumericToGarbage(*this);
+	setAllNumericToGarbage<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>(*this);
 #endif
 
 	size_t pose_count = 0;
