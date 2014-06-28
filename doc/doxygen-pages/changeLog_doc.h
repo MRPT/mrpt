@@ -18,7 +18,6 @@
 	- Changes in classes:
 		- [mrpt-base]
 			- All points and poses now have a method setToNaN(), e.g. mrpt::poses::CPose3D::setToNaN()
-		- Fix compilation of SRBA with DEBUG_GARBAGE_FILL_ALL_NUMS=1
 	- Build system:
 		- Fix compilation of SRBA with DEBUG_GARBAGE_FILL_ALL_NUMS=1
 
