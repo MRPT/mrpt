@@ -18,12 +18,19 @@ find_library(PHIDGETS_LIBRARIES
 		"$ENV{ProgramFiles}/Phidgets/lib"
 	DOC "Full path of library file 'phidget21.so' or 'phidget21.lib'" )
 
+# Help find the .h files:
+IF (EXISTS ${PHIDGETS_LIBRARIES})
+	get_filename_component(AUX_PARENT_DIR1 ${PHIDGETS_LIBRARIES} PATH)
+	get_filename_component(AUX_PARENT_DIR2 ${AUX_PARENT_DIR1} PATH)
+ENDIF (EXISTS ${PHIDGETS_LIBRARIES})
+	
 find_path(PHIDGETS_INCLUDE_DIR
 	NAMES phidget21.h
 	PATHS 
 		"/usr/local/include"
 		"/usr/include/"
 		"$ENV{ProgramFiles}/Phidgets/include"
+		"${AUX_PARENT_DIR1}" "${AUX_PARENT_DIR2}"
 	DOC "Path to [PATH]/phidget21.h"
 )
 
