@@ -7,8 +7,9 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
+#include "pbmap-precomp.h" // precomp. hdr
 #include <mrpt/pbmap.h>
-#include <mrpt/utils.h>
+#include <mrpt/utils/CStartUpClassesRegister.h>
 
 
 using namespace mrpt::utils;

@@ -12,7 +12,7 @@
  *  Writen by Eduardo Fernandez-Moral. See docs for <a href="group__mrpt__pbmap__grp.html" >mrpt-pbmap</a>
  */
 
-#include <mrpt/pbmap.h> // precomp. hdr
+#include "pbmap-precomp.h"  // Precompiled headers
 
 #if MRPT_HAS_PCL
 
