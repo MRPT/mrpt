@@ -3,3 +3,4 @@ samples/CMakeLists.txt
 build*
 install*
 *.layout
+CMakeFiles/
