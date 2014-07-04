@@ -13,6 +13,7 @@
 #include <mrpt/utils/types_simple.h>
 #include <mrpt/utils/CUncopiable.h>
 #include <mrpt/utils/exceptions.h>
+#include <mrpt/utils/bits.h> // reverseBytesInPlace()
 #include <vector>
 
 namespace mrpt
