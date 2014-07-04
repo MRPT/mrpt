@@ -11,7 +11,6 @@
 #include <mrpt/random.h>
 #include <mrpt/system/threads.h>
 
-#define MRPT_NO_WARN_BIG_HDR // It's ok to include ALL opengl hdrs here.
 #include <mrpt/opengl.h>
 
 
