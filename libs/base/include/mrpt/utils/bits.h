@@ -9,6 +9,9 @@
 
 #pragma once
 
+#include <cmath> // floor()
+#include <algorithm> // reverse()
+
 /** This is the global namespace for all Mobile Robot Programming Toolkit (MRPT) libraries. */
 namespace mrpt
 {
