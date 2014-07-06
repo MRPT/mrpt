@@ -227,6 +227,10 @@ ${CMAKE_MRPT_BUILD_SHARED_LIB}
 #cmakedefine HAVE_LINUX_SERIAL_H 1
 #endif
 
+#ifndef HAVE_LINUX_INPUT_H
+#cmakedefine HAVE_LINUX_INPUT_H 1
+#endif
+
 // Has <malloc.h>?
 #ifndef HAVE_MALLOC_H
 #cmakedefine HAVE_MALLOC_H 1

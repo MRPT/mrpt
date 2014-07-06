@@ -35,7 +35,7 @@
 	#include <stdlib.h>
 	#include <stdint.h>
 
-	#if defined(MRPT_OS_LINUX)
+	#if defined(MRPT_OS_LINUX) && defined(HAVE_LINUX_INPUT_H)
 		#include <linux/input.h>
 		#include <linux/joystick.h>
 	#endif
@@ -49,7 +49,7 @@ using namespace mrpt::hwdrivers;
 					Constructor
  ---------------------------------------------------------------*/
 CJoystick::CJoystick()
-#ifdef MRPT_OS_LINUX
+#if defined(MRPT_OS_LINUX) && defined(HAVE_LINUX_INPUT_H)
    :
 	m_joy_fd		(-1),
 	m_joy_index		(-1)
@@ -63,7 +63,7 @@ CJoystick::CJoystick()
  ---------------------------------------------------------------*/
 CJoystick::~CJoystick()
 {
-#ifdef MRPT_OS_LINUX
+#if defined(MRPT_OS_LINUX) && defined(HAVE_LINUX_INPUT_H)
 	// Close joystick, if open:
 	if (m_joy_fd>0)
 	{
@@ -82,7 +82,7 @@ int  CJoystick::getJoysticksCount()
 	MRPT_START
 #ifdef MRPT_OS_WINDOWS
 	return joyGetNumDevs();
-#elif defined(MRPT_OS_LINUX)
+#elif defined(MRPT_OS_LINUX) && defined(HAVE_LINUX_INPUT_H)
 	// Try to open several joy devs:
 	int joy_fd=-1;
 	int nJoys = 0;
@@ -151,7 +151,7 @@ bool CJoystick::getJoystickPosition(
 	if (raw_z_pos) *raw_z_pos=jinfo.wZpos;
 
 	return true;
-#elif defined(MRPT_OS_LINUX)
+#elif defined(MRPT_OS_LINUX) && defined(HAVE_LINUX_INPUT_H)
 	// Already open?
 	if ( m_joy_index == nJoy && m_joy_fd!=-1)
 	{
