@@ -1,6 +1,6 @@
 
   * Fixed build without opencv-nonfree (Closes: #679066)
-  * Fixed embedded copy of Eigen in source package, against Debian rules (Closes: #707860)
+  * Fixed embedded copy of Eigen: against Debian rules (Closes: #707860)
   * Fixed FTBFS: reverseBytesInPlace unknown to CStream.h (Closes: #753452)
   * Fixed FTBFS on kFreeBSD: missing linux/input.h (Closes: #753451)
 

@@ -72,8 +72,8 @@ override_dh_install:
 	chmod a+x $(CURDIR)/debian/mrpt-apps/usr/share/mrpt/datasets/srba-demos/*.sh
 
 	# Fix Doxygen's embedded JQuery lib:
-	rm $(CURDIR)/debian/mrpt-docs/usr/share/doc/mrpt-doc/html/jquery.js
-	ln -s /usr/share/javascript/jquery/jquery.js $(CURDIR)/debian/mrpt-docs/usr/share/doc/mrpt-doc/html/jquery.js
+	rm $(CURDIR)/debian/mrpt-doc/usr/share/doc/mrpt-doc/html/jquery.js
+	ln -s /usr/share/javascript/jquery/jquery.js $(CURDIR)/debian/mrpt-doc/usr/share/doc/mrpt-doc/html/jquery.js
 
 override_dh_strip:
 	dh_strip --dbg-package=libmrpt-dbg
