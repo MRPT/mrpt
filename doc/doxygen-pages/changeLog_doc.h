@@ -18,9 +18,10 @@
 	- Changes in classes:
 		- [mrpt-base]
 			- All points and poses now have a method setToNaN(), e.g. mrpt::poses::CPose3D::setToNaN()
+		- [mrpt-hwdrivers]
+			- mrpt::hwdrivers::COpenNI2Sensor now has better support for opening several RGBD cameras (by Kenzaburo Miyawaki & Eduardo Fernandez)
 	- Build system:
 		- Fix compilation of SRBA with DEBUG_GARBAGE_FILL_ALL_NUMS=1
-
 
 <hr>
 <a name="1.2.0">
