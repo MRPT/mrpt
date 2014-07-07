@@ -27,8 +27,9 @@ using namespace std;
 //integrated as a generic sensor so that it works with rawlog-grabber.
 
 bool setONI2StreamMode  (openni::VideoStream& stream, int w, int h, int fps, openni::PixelFormat format);
-bool initONI2RGBStream  (openni::Device& device, openni::VideoStream& rgb,   int w, int h, int fps, openni::PixelFormat format);
-bool initONI2DepthStream(openni::Device& device, openni::VideoStream& depth, int w, int h, int fps, openni::PixelFormat format);
+bool initONI2Stream(openni::Device& device, openni::SensorType sensorType, openni::VideoStream& stream, int w, int h, int fps, openni::PixelFormat format);
+bool synchONI2MirrorMode(openni::VideoStream& rgb, openni::VideoStream& depth, bool& isMirrorMode);
+bool startONI2Streams(openni::VideoStream& rgb, openni::VideoStream& depth);
 
 int main ( int argc, char** argv )
 {
@@ -78,8 +79,19 @@ int main ( int argc, char** argv )
 
 	//								Create RGB and Depth channels
 	//========================================================================================
-	initONI2RGBStream  (device, rgb  , width, height, fps, openni::PIXEL_FORMAT_RGB888);
-	initONI2DepthStream(device, depth, width, height, fps, openni::PIXEL_FORMAT_DEPTH_1_MM);
+    if(initONI2Stream(device, openni::SENSOR_COLOR, rgb,   width, height, fps, openni::PIXEL_FORMAT_RGB888) == false){
+      return 1;
+    }
+    if(initONI2Stream(device, openni::SENSOR_DEPTH, depth, width, height, fps, openni::PIXEL_FORMAT_DEPTH_1_MM) == false){
+      return 1;
+    }
+    bool isMirror;
+    if(synchONI2MirrorMode(rgb, depth, isMirror) == false){
+      return 1;
+    }
+    if(startONI2Streams(rgb, depth) == false){
+      return 1;
+    }
 	if (device.isImageRegistrationModeSupported(openni::IMAGE_REGISTRATION_DEPTH_TO_COLOR)){
 		rc = device.setImageRegistrationMode(openni::IMAGE_REGISTRATION_DEPTH_TO_COLOR);
 	}else{
@@ -260,8 +272,12 @@ int main ( int argc, char** argv )
 				const openni::RGB888Pixel* pRgb   = (const openni::RGB888Pixel*)pRgbRow;
 				for (int xc = 0; xc < width; ++xc, ++pDepth, ++pRgb)
 				{
-					obs.rangeImage(yc,xc) = (*pDepth)*1.0/1000;
-					iimage.setPixel(xc,yc,(pRgb->r<<16)+(pRgb->g<<8)+pRgb->b);
+            int _x = xc;
+            if(isMirror){
+              _x = width -_x - 1;
+            }
+            obs.rangeImage (yc, _x) = (*pDepth)*1.0/1000;
+            iimage.setPixel(_x, yc, (pRgb->r<<16)+(pRgb->g<<8)+pRgb->b);
 
 					//obs.intensityImage.setPixel(xc,yc,(*pRgb));
 
@@ -332,6 +348,7 @@ bool setONI2StreamMode(openni::VideoStream& stream, int w, int h, int fps, openn
 	return false;
 }
 
+#if 0
 bool initONI2RGBStream(openni::Device& device, openni::VideoStream& rgb, int w, int h, int fps, openni::PixelFormat format){
 	openni::Status rc = openni::STATUS_OK;
 	rc = rgb.create(device, openni::SENSOR_COLOR);
@@ -383,4 +400,75 @@ bool initONI2DepthStream(openni::Device& device, openni::VideoStream& depth, int
 		return false;
 	}
 	return true;
+}
+#endif
+
+bool initONI2Stream(openni::Device& device, openni::SensorType sensorType, openni::VideoStream& stream, int w, int h, int fps, openni::PixelFormat format){
+  openni::Status rc = openni::STATUS_OK;
+  const char* strSensor;
+  if(sensorType == openni::SENSOR_COLOR){
+    strSensor = "openni::SENSOR_COLOR";
+  }else if(sensorType == openni::SENSOR_DEPTH){
+    strSensor = "openni::SENSOR_DEPTH";
+  }else{
+    printf("%s:Unknown SensorType -> %d\n", sensorType);
+    return false;
+  }
+  rc = stream.create(device, sensorType);
+  if(rc != openni::STATUS_OK){
+    printf("%s:Couldn't find sensor %s: %s\n", __FUNCTION__, strSensor, openni::OpenNI::getExtendedError());
+    return false;
+  }
+  openni::VideoMode options = stream.getVideoMode();
+  printf("%s:Initial resolution %s (%d, %d) FPS %d Format %d\n", __FUNCTION__, strSensor, options.getResolutionX(), options.getResolutionY(), options.getFps(), options.getPixelFormat());
+  if(setONI2StreamMode(stream, w, h, fps, format) == false){
+    printf("%s:Can't find desired mode in the %s\n", __FUNCTION__, strSensor);
+    return false;
+  }
+  options = stream.getVideoMode();
+  printf("  -> (%d, %d) FPS %d Format %d\n", options.getResolutionX(), options.getResolutionY(), options.getFps(), options.getPixelFormat());
+  return true;
+}
+
+bool synchONI2MirrorMode(openni::VideoStream& rgb, openni::VideoStream& depth, bool& isMirrorMode){
+  static const int SIZE = 2;
+  openni::VideoStream* streams[SIZE]  = { &rgb,                   &depth                 };
+  static const char*   strNames[SIZE] = { "openni::SENSOR_COLOR", "openni::SENSOR_DEPTH" };
+  isMirrorMode       = false;
+  // Check whether both stream support mirroring.
+  for(int i = 0;i < SIZE;++i){
+    if(streams[i]->isPropertySupported(openni::STREAM_PROPERTY_MIRRORING) == false){
+      printf("%s:openni::STREAM_PROPERTY_MIRRORING is not supported on %s.\n"
+        "  We assume this is MS Kinect and taken images are inverted to right and left.\n", __FUNCTION__, strNames[i]);
+      // In this case, getMirroringEnabled() method always returns false. So we cannot confirm whether the images are inverted or not.
+      isMirrorMode  = true;
+      break;
+    }
+  }
+  // Set both stream to same mirror mode.
+  for(int i = 0;i < SIZE;++i){
+    if(streams[i]->isPropertySupported(openni::STREAM_PROPERTY_MIRRORING) == false){
+      break;
+    }
+    if(streams[i]->setMirroringEnabled(isMirrorMode) != openni::STATUS_OK){
+      printf("%s:setMirroringEnabled() failed: %s\n", __FUNCTION__, openni::OpenNI::getExtendedError());
+      return false;
+    }
+  }
+  return true;
+}
+
+bool startONI2Streams(openni::VideoStream& rgb, openni::VideoStream& depth){ 
+  static const int SIZE = 2;
+  openni::VideoStream* streams[SIZE]  = { &rgb,                   &depth                 };
+  static const char*   strNames[SIZE] = { "openni::SENSOR_COLOR", "openni::SENSOR_DEPTH" };
+  for(int i = 0;i < SIZE;++i){
+    openni::Status rc = streams[i]->start();
+    if (rc != openni::STATUS_OK){
+      printf("%s:Couldn't start RGB stream:\n%s\n", __FUNCTION__, openni::OpenNI::getExtendedError());
+      streams[i]->destroy();
+      return false;
+    }
+  }
+  return true;
 }

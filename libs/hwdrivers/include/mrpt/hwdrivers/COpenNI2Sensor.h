@@ -175,12 +175,12 @@ namespace mrpt
 			/** Set the serial number of the device to open.
 			  *  \exception This method must throw an exception when such serial number is not found among the connected devices.
 			  */
-      inline void setSerialToOpen(const unsigned serial) { m_serial_number = serial; }
+            inline void setSerialToOpen(const unsigned serial) { m_serial_number = serial; }
 
 			/** Set the sensor_id of the device to open.
 			  *  \exception This method must throw an exception when such serial number is not found among the connected devices.
 			  */
-      inline void setSensorIDToOpen(const unsigned sensor_id) { m_user_device_number = sensor_id; }
+            inline void setSensorIDToOpen(const unsigned sensor_id) { m_user_device_number = sensor_id; }
 
 			/** Initializes the 3D camera - should be invoked after calling loadConfig() or setting the different parameters with the set*() methods.
 			  *  \exception This method must throw an exception with a descriptive message if some critical error is found.
