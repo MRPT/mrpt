@@ -100,7 +100,7 @@ void COpenNI2Sensor::initialize()
 	{
     if(m_serial_number != 0)
     {
-      openDevicesBySerialNum(m_serial_number);
+      openDeviceBySerial(m_serial_number);
       if(getDeviceIDFromSerialNum(m_serial_number, m_user_device_number) == false){
         THROW_EXCEPTION(mrpt::format("Failed to find sensor_id from serial number(%d).", m_serial_number))
       }
@@ -142,7 +142,7 @@ void COpenNI2Sensor::doProcess()
 
 	CObservation3DRangeScanPtr newObs = CObservation3DRangeScan::Create();
 
-  assert(getNumDevices() > 0);
+    assert(getNumDevices() > 0);
 	getNextObservation( *newObs, thereIs, hwError );
 
 	if (hwError)
@@ -185,14 +185,14 @@ void  COpenNI2Sensor::loadConfig_sensorSpecific(
 
 	m_preview_window = configSource.read_bool(iniSection,"preview_window",m_preview_window);
 
-  m_width  = configSource.read_int(iniSection,"width",0);
-  m_height = configSource.read_int(iniSection,"height",0);
-  m_fps    = configSource.read_float(iniSection,"fps",0);
-  std::cout << "width " << m_width << " height " << m_height << " fps " << m_fps << endl;
+    m_width  = configSource.read_int(iniSection,"width",0);
+    m_height = configSource.read_int(iniSection,"height",0);
+    m_fps    = configSource.read_float(iniSection,"fps",0);
+    std::cout << "width " << m_width << " height " << m_height << " fps " << m_fps << endl;
 
-  bool hasRightCameraSection = configSource.sectionExists(iniSection + string("_RIGHT"));
-  bool hasLeftCameraSection  = configSource.sectionExists(iniSection + string("_LEFT"));
-  bool hasLeft2RightPose     = configSource.sectionExists(iniSection + string("_LEFT2RIGHT_POSE"));
+    bool hasRightCameraSection = configSource.sectionExists(iniSection + string("_RIGHT"));
+    bool hasLeftCameraSection  = configSource.sectionExists(iniSection + string("_LEFT"));
+    bool hasLeft2RightPose     = configSource.sectionExists(iniSection + string("_LEFT2RIGHT_POSE"));
 
 	mrpt::utils::TStereoCamera  sc;
 
@@ -201,16 +201,16 @@ void  COpenNI2Sensor::loadConfig_sensorSpecific(
 	} catch (std::exception &e) {
 		std::cout << "[COpenNI2Sensor::loadConfig_sensorSpecific] Warning: Ignoring error loading calibration parameters:\n" << e.what();
 	}
-  if(hasRightCameraSection){
+    if(hasRightCameraSection){
     m_cameraParamsRGB   = sc.rightCamera;
-  }
-  if(hasLeftCameraSection){
+    }
+    if(hasLeftCameraSection){
     m_cameraParamsDepth = sc.leftCamera;
-  }
-  if(hasLeft2RightPose){
+    }
+    if(hasLeft2RightPose){
     const mrpt::poses::CPose3D  twist(0,0,0,DEG2RAD(-90),DEG2RAD(0),DEG2RAD(-90));
     m_relativePoseIntensityWRTDepth = twist + mrpt::poses::CPose3D(sc.rightCameraPose);
-  }
+    }
 
 	// Id:
 	m_user_device_number = configSource.read_int(iniSection, "device_number", m_user_device_number);
