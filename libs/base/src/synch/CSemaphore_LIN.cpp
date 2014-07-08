@@ -72,7 +72,7 @@ CSemaphore::CSemaphore(
 		token->semid = static_cast<sem_t*>( malloc(sizeof(sem_t)) );
 
 		if (sem_init(token->semid, 0 /*pshared:false*/, initialCount))
-			token->semid=SEM_FAILED;
+			token->semid=(sem_t*)SEM_FAILED;
 	}
 
 
