@@ -14,6 +14,8 @@
 
 #include "pbmap-precomp.h"  // Precompiled headers
 
+#include <mrpt/pbmap/PlaneInferredInfo.h>
+
 #if MRPT_HAS_PCL
 
 using namespace std;

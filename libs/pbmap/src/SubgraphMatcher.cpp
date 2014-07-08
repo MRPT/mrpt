@@ -14,6 +14,7 @@
 
 #include "pbmap-precomp.h"  // Precompiled headers
 #include <mrpt/utils/utils_defs.h>
+#include <mrpt/pbmap/SubgraphMatcher.h>
 
 //#define _VERBOSE 1
 

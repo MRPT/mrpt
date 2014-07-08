@@ -31,6 +31,9 @@
 #include <pcl/filters/voxel_grid.h>
 #include <pcl/common/transforms.h>
 #include <pcl/common/time.h>
+#include <mrpt/synch/CCriticalSection.h>
+#include <mrpt/utils/CConfigFile.h>
+#include <mrpt/pbmap/PbMapMaker.h>
 
 #include <iostream>
 
