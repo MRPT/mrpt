@@ -7,6 +7,10 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
+// This seems to be assumed by OpenNI.h and undefined for some reason in GCC/Ubuntu
+#if !defined(MRPT_OS_WINDOWS)
+#   define linux 1
+#endif
 #include <OpenNI.h>
 #include <PS1080.h>
 
