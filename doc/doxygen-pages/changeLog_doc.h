@@ -22,6 +22,7 @@
 			- mrpt::hwdrivers::COpenNI2Sensor now has better support for opening several RGBD cameras (by Kenzaburo Miyawaki & Eduardo Fernandez)
 	- Build system:
 		- Fix compilation of SRBA with DEBUG_GARBAGE_FILL_ALL_NUMS=1
+		- Several Debian bugs closed (see packaging/debian/changelog), including build errors in uncommon platforms (MIPS, kFreeBSD, etc.)
 
 <hr>
 <a name="1.2.0">
