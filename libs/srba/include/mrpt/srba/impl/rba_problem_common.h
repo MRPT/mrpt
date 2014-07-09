@@ -41,6 +41,7 @@ RbaEngine<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::TSRBAParameters::TSRBAP
 	// -------------------------------
 	optimize_new_edges_alone (true),
 	use_robust_kernel    ( false ),
+	use_robust_kernel_stage1 ( false ),
 	kernel_param         ( 3. ),
 	max_iters            ( 20 ),
 	max_error_per_obs_to_stop    ( 1e-6 ),
@@ -66,6 +67,7 @@ void RbaEngine<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::TSRBAParameters::l
 
 	MRPT_LOAD_CONFIG_VAR(optimize_new_edges_alone,bool,source,section)
 	MRPT_LOAD_CONFIG_VAR(use_robust_kernel,bool,source,section)
+	MRPT_LOAD_CONFIG_VAR(use_robust_kernel_stage1,bool,source,section)
 	MRPT_LOAD_CONFIG_VAR(max_rho,double,source,section)
 	MRPT_LOAD_CONFIG_VAR(max_lambda,double,source,section)
 	MRPT_LOAD_CONFIG_VAR(kernel_param,double,source,section)
@@ -89,6 +91,7 @@ void RbaEngine<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::TSRBAParameters::s
 
 	out.write(section,"optimize_new_edges_alone",optimize_new_edges_alone,  /* text width */ 30, 30, "Optimize new edges alone before optimizing the entire local area?");
 	out.write(section,"use_robust_kernel",use_robust_kernel,  /* text width */ 30, 30, "Use pseudo-Huber kernel?");
+	out.write(section,"use_robust_kernel_stage1",use_robust_kernel_stage1,  /* text width */ 30, 30, "Use pseudo-Huber kernel at stage1?");
 	out.write(section,"kernel_param",kernel_param,  /* text width */ 30, 30, "robust kernel parameter");
 	out.write(section,"max_rho",max_rho,  /* text width */ 30, 30, "Lev-Marq optimization: maximum rho value to stop");
 	out.write(section,"max_lambda",max_lambda,  /* text width */ 30, 30, "Lev-Marq optimization: maximum lambda to stop");

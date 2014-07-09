@@ -698,6 +698,28 @@ void RbaEngine<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::optimize_edges(
 
 	} // end for LM "iter"
 
+	cout << "residuals" << endl;
+	for( size_t r = 0; r < residuals.size(); ++r ) 
+	{
+		cout << involved_obs[r].k2f->obs.obs.feat_id << "," 
+			 << residuals[r][0] << "," 
+			 << residuals[r][1] << "," 
+			 << residuals[r][2] << "," 
+			 << residuals[r][3];
+
+		const double totalres = residuals[r][0]*residuals[r][0]+
+			residuals[r][1]*residuals[r][1]+
+			residuals[r][2]*residuals[r][2]+
+			residuals[r][3]*residuals[r][3];
+
+		if( totalres > 20 )
+			cout << " <-- spurious( " << totalres << ")";
+		
+		cout << endl;
+
+	}
+	cout << "done" << endl;
+
 
 	// Final output info:
 	out_info.total_sqr_error_final = total_proj_error;
@@ -756,6 +778,7 @@ void RbaEngine<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::optimize_edges(
 	out_info.optimized_landmark_indices.swap(run_feat_ids);
 
 	m_profiler.leave("opt");
+	out_info.obs_rmse = RMSE;
 
 	VERBOSE_LEVEL(1) << "[OPT] Final RMSE=" <<  RMSE << " #iters=" << iter << "\n";
 }
