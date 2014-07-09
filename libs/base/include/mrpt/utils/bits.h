@@ -9,6 +9,7 @@
 
 #pragma once
 
+#define _USE_MATH_DEFINES // (For VS to define M_PI, etc. in cmath)
 #include <cmath> // floor()
 #include <algorithm> // reverse()
 

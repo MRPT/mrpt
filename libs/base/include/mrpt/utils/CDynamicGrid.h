@@ -13,6 +13,7 @@
 #include <mrpt/utils/round.h>
 #include <vector>
 #include <string>
+#define _USE_MATH_DEFINES // (For VS to define M_PI, etc. in cmath)
 #include <cmath>
 
 namespace mrpt

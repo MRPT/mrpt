@@ -10,6 +10,7 @@
 #define CASTARALGORITHM_H
 #include <map>
 #include <vector>
+#define _USE_MATH_DEFINES // (For VS to define M_PI, etc. in cmath)
 #include <cmath>
 #include <mrpt/utils/CTicTac.h>
 

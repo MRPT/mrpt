@@ -9,6 +9,7 @@
 #ifndef  MRPT_MATH_WRAP2PI_H
 #define  MRPT_MATH_WRAP2PI_H
 
+#define _USE_MATH_DEFINES // (For VS to define M_PI, etc. in cmath)
 #include <cmath>
 
 namespace mrpt
@@ -79,7 +80,7 @@ namespace mrpt
 		}
 
 
-		/** @} */ 
+		/** @} */
 
 	} // End of MATH namespace
 } // End of namespace

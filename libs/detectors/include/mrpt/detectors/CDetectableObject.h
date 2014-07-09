@@ -12,6 +12,7 @@
 
 #include <mrpt/utils/CSerializable.h>
 #include <mrpt/slam/CObservation.h>
+#define _USE_MATH_DEFINES // (For VS to define M_PI, etc. in cmath)
 #include <cmath>
 
 #include <mrpt/detectors/link_pragmas.h>

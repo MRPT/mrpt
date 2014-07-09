@@ -10,7 +10,6 @@
 #define _MRPT_MONTE_CARLO_H_
 
 #include <map>
-#include <cmath>
 #include <vector>
 #include <numeric>
 #include <algorithm>

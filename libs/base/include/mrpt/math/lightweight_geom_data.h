@@ -16,7 +16,6 @@
 #include <mrpt/utils/TTypeName.h>
 #include <mrpt/math/math_frwds.h>  // forward declarations
 #include <vector>
-#include <cmath>  // sqrt(),...
 
 namespace mrpt	{
 namespace math	{
