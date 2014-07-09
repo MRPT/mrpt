@@ -45,8 +45,9 @@ include(cmakemodules/DeclareMRPTLib.cmake REQUIRED)
 include(cmakemodules/DeclareAppDependencies.cmake REQUIRED)
 # --------------------------
 
-include(cmakemodules/script_detect_unix_arch.cmake REQUIRED)	# Detect machine architecture, on UNIX
-include(cmakemodules/script_detect_gcc.cmake REQUIRED)			# Detect GNU GCC version
+include(cmakemodules/script_detect_unix_arch.cmake REQUIRED) # Detect machine architecture, on UNIX
+include(cmakemodules/script_detect_gcc.cmake REQUIRED)       # Detect GNU GCC version
+include(cmakemodules/script_detect_clang.cmake REQUIRED)     # Detect clang compiler version
 
 
 # ------------------------------------------
