@@ -105,7 +105,7 @@ CLogFileRecord::~CLogFileRecord()
 void  CLogFileRecord::writeToStream(CStream &out,int *version) const
 {
 	if (version)
-		*version = 7;
+		*version = 8;
 	else
 	{
 		uint32_t	i,n;
@@ -121,12 +121,13 @@ void  CLogFileRecord::writeToStream(CStream &out,int *version) const
 			out << m;
 			if (m) out.WriteBuffer((const void*)&(*infoPerPTG[i].TP_Obstacles.begin()), m * sizeof(infoPerPTG[i].TP_Obstacles[0]));
 
-			out << infoPerPTG[i].TP_Target << infoPerPTG[i].timeForTPObsTransformation << infoPerPTG[i].timeForHolonomicMethod;
+			out << infoPerPTG[i].TP_Target;  // v8: CPoint2D -> TPoint2D
+			out << infoPerPTG[i].timeForTPObsTransformation << infoPerPTG[i].timeForHolonomicMethod;
 			out << infoPerPTG[i].desiredDirection << infoPerPTG[i].desiredSpeed << infoPerPTG[i].evaluation;
 			out << *infoPerPTG[i].HLFR;
 		}
 
-		out << nSelectedPTG << WS_Obstacles << robotOdometryPose << WS_target_relative << v << w << executionTime;
+		out << nSelectedPTG << WS_Obstacles << robotOdometryPose << WS_target_relative /*v8*/ << v << w << executionTime;
 
 		// Previous values: REMOVED IN VERSION #6
 
@@ -182,6 +183,7 @@ void  CLogFileRecord::readFromStream(CStream &in,int version)
 	case 5:
 	case 6:
 	case 7:
+	case 8:
 		{
 			// Version 0 --------------
 			uint32_t  i,n;
@@ -203,12 +205,32 @@ void  CLogFileRecord::readFromStream(CStream &in,int version)
 				infoPerPTG[i].TP_Obstacles.resize(m);
 				if (m) in.ReadBuffer((void*)&(*infoPerPTG[i].TP_Obstacles.begin()), m * sizeof(infoPerPTG[i].TP_Obstacles[0]));
 
-				in >> infoPerPTG[i].TP_Target >> infoPerPTG[i].timeForTPObsTransformation >> infoPerPTG[i].timeForHolonomicMethod;
+				if (version>=8)
+					in >> infoPerPTG[i].TP_Target; 
+				else
+				{
+					mrpt::poses::CPoint2D pos;
+					in >> pos;
+					infoPerPTG[i].TP_Target = mrpt::math::TPoint2D(pos);
+				}
+
+				in >> infoPerPTG[i].timeForTPObsTransformation >> infoPerPTG[i].timeForHolonomicMethod;
 				in >> infoPerPTG[i].desiredDirection >> infoPerPTG[i].desiredSpeed >> infoPerPTG[i].evaluation;
 				in >> infoPerPTG[i].HLFR;
 			}
 
-			in >> nSelectedPTG >> WS_Obstacles >> robotOdometryPose >> WS_target_relative >> v >> w >> executionTime;
+			in >> nSelectedPTG >> WS_Obstacles >> robotOdometryPose; 
+				
+			if (version>=8)
+				in >> WS_target_relative; 
+			else
+			{
+				mrpt::poses::CPoint2D pos;
+				in >> pos;
+				WS_target_relative = mrpt::math::TPoint2D(pos);
+			}
+			
+			in >> v >> w >> executionTime;
 
 
 			if (version<6)
