@@ -357,10 +357,7 @@
 
 // Generic constants and defines:
 // ---------------------------------------------------------
-#ifndef M_PI
-#	define M_PI 3.14159265358979323846264338327950288		// PI constant
-#endif
-
+// M_PI: Rely on standard <cmath>
 #ifndef M_2PI
 #	define M_2PI 6.283185307179586476925286766559	// The 2*PI constant
 #endif
