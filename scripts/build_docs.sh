@@ -198,6 +198,7 @@ then
 else
 	HHC_INVOKING_CODE="../../scripts/run_hhc.sh"
 fi
+mkdir doc/chm
 
 # Set the CHM file name:
 CHM_FILENAME="libMRPT-$MRPT_VERSION_STR.chm"
