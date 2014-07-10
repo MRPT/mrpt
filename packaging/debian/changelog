@@ -1,9 +1,13 @@
+mrpt (1:1.2.1-1) unstable; urgency=medium
 
+  * New version of upstream sources.
   * Fixed build without opencv-nonfree (Closes: #679066)
   * Fixed FTBFS: reverseBytesInPlace unknown to CStream.h (Closes: #753452)
   * Fixed FTBFS on kFreeBSD: missing linux/input.h (Closes: #753451)
   * Fixed FTBFS on hurd. (Closes: #753450)
   * Fixed docs license unsuitable for Debian main (Closes: #753390)
+
+ -- Jose Luis Blanco (University of Malaga) <joseluisblancoc@gmail.com>  Thu, 10 Jul 2014 13:56:42 +0200
 
 mrpt (1:1.2.0-1) unstable; urgency=medium
 
