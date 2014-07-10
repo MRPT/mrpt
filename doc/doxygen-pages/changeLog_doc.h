@@ -14,7 +14,7 @@
 
 
  <a name="1.2.1">
-  <h2>Version 1.2.1: (Under development) </h2></a>
+  <h2>Version 1.2.1: Released 10-JUL-2014 </h2></a>
 	- Changes in classes:
 		- [mrpt-base]
 			- All points and poses now have a method setToNaN(), e.g. mrpt::poses::CPose3D::setToNaN()
