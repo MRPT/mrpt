@@ -61,6 +61,10 @@ namespace mrpt
 #ifdef RAD2DEG
 #undef RAD2DEG
 #endif
+#if !defined(M_PI)
+#	define M_PI 3.14159265358979323846
+#endif
+
 		/** Degrees to radians */
 		inline double DEG2RAD(const double x) { return x*M_PI/180.0;	}
 		/** Degrees to radians */
