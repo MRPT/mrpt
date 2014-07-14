@@ -23,6 +23,7 @@
 // Include CSparse lib headers, either from the system or embedded:
 extern "C"{
 #if MRPT_HAS_SUITESPARSE
+#	define NCOMPLEX    // In MRPT we don't need complex numbers, so avoid the annoying warning: 'cs_ci_house' has C-linkage specified, but returns UDT 'std::complex<double>' which is incompatible with C
 #	include "cs.h"
 #else
 #	include <mrpt/otherlibs/CSparse/cs.h>
