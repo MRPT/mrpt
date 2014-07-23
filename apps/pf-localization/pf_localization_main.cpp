@@ -360,7 +360,7 @@ void do_pf_localization(const std::string &ini_fil, const std::string &cmdline_r
 			}
 
 			int						M = PARTICLE_COUNT;
-			CMonteCarloLocalization2D  pdf(M);
+			CMonteCarloLocalization2D  pdf;
 
 			// PDF Options:
 			pdf.options = pdfPredictionOptions;
