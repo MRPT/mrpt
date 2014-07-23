@@ -239,6 +239,8 @@ namespace slam
 		 virtual bool  internal_insertObservation( const CObservation *obs, const CPose3D *robotPose = NULL );
 
 	public:
+		/** Read-only access to the raw cell contents (cells are in log-odd units) */
+		const std::vector<cellType> & getRawMap() const { return this->map; }
 
 		/** Performs the Bayesian fusion of a new observation of a cell.
 		  * \sa updateInfoChangeOnly, updateCell_fast_occupied, updateCell_fast_free

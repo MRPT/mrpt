@@ -14,7 +14,9 @@
 
 <a name="1.2.2">
   <h2>Version 1.2.2: (Under development) </h2></a>
-	- (No changes yet)
+	- Changes in classes:
+		- [mrpt-maps]
+			- New method mrpt::slam::COccupancyGridMap2D::getRawMap()
 
 <hr>
 <a name="1.2.1">
