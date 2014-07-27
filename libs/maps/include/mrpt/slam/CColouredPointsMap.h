@@ -280,8 +280,22 @@ namespace mrpt
 					this->insertPoint(cloud.points[i].x,cloud.points[i].y,cloud.points[i].z,cloud.points[i].r*f,cloud.points[i].g*f,cloud.points[i].b*f);
 			}
 
+			/** Like CPointsMap::getPCLPointCloud() but for PointCloud<PointXYZRGB> */
+			template <class POINTCLOUD>
+			void getPCLPointCloudXYZRGB(POINTCLOUD &cloud) const
+			{
+				const size_t nThis = this->size();
+				this->getPCLPointCloud(cloud);  // 1st: xyz data
+				// 2nd: RGB data
+				for (size_t i = 0; i < nThis; ++i) {
+					uint8_t r,g,b;
+					this->getPointRGBu8(i,r,g,b);
+					cloud.points[i].r = r;
+					cloud.points[i].g = g;
+					cloud.points[i].b = b;
+				}
+			}
 			/** @} */
-
 
 		protected:
 			/** The color data */

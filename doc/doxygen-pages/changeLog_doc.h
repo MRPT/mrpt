@@ -17,6 +17,7 @@
 	- Changes in classes:
 		- [mrpt-maps]
 			- New method mrpt::slam::COccupancyGridMap2D::getRawMap()
+			- New method mrpt::slam::CColouredPointsMap::getPCLPointCloudXYZRGB()
 	- BUG FIXES:	
 		- mrpt::utils::CImage constructor from a matrix crashed.
 

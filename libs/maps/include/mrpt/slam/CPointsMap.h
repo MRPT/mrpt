@@ -698,7 +698,7 @@ namespace slam
 			@{ */
 
 
-		/** Use to convert this MRPT point cloud object into a PCL point cloud object.
+		/** Use to convert this MRPT point cloud object into a PCL point cloud object (PointCloud<PointXYZ>).
 		  *  Usage example:
 		  *  \code
 		  *    mrpt::slam::CPointsCloud       pc;
@@ -706,7 +706,7 @@ namespace slam
 		  *
 		  *    pc.getPCLPointCloud(cloud);
 		  *  \endcode
-		  * \sa setFromPCLPointCloud
+		  * \sa setFromPCLPointCloud, CColouredPointsMap::getPCLPointCloudXYZRGB (for color data)
 		  */
 		template <class POINTCLOUD>
 		void getPCLPointCloud(POINTCLOUD &cloud) const
