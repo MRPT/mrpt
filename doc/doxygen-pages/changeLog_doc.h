@@ -17,6 +17,8 @@
 	- Changes in classes:
 		- [mrpt-maps]
 			- New method mrpt::slam::COccupancyGridMap2D::getRawMap()
+	- BUG FIXES:	
+		- mrpt::utils::CImage constructor from a matrix crashed.
 
 <hr>
 <a name="1.2.1">

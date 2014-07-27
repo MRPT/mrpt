@@ -756,8 +756,6 @@ namespace mrpt
 			void setFromMatrix(const Eigen::MatrixBase<Derived> &m, bool matrix_is_normalized=true)
 			{
 				MRPT_START
-				makeSureImageIsLoaded();   // For delayed loaded images stored externally
-				ASSERT_(img)
 				const unsigned int lx = m.cols();
 				const unsigned int ly = m.rows();
 				this->changeSize(lx,ly,1,true);
