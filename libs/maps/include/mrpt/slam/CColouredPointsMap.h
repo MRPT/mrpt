@@ -288,11 +288,11 @@ namespace mrpt
 				this->getPCLPointCloud(cloud);  // 1st: xyz data
 				// 2nd: RGB data
 				for (size_t i = 0; i < nThis; ++i) {
-					uint8_t r,g,b;
-					this->getPointRGBu8(i,r,g,b);
-					cloud.points[i].r = r;
-					cloud.points[i].g = g;
-					cloud.points[i].b = b;
+					float R,G,B;
+					this->getPointColor_fast(i,R,G,B);
+					cloud.points[i].r = static_cast<uint8_t>(R*255);
+					cloud.points[i].g = static_cast<uint8_t>(G*255);
+					cloud.points[i].b = static_cast<uint8_t>(B*255);
 				}
 			}
 			/** @} */
