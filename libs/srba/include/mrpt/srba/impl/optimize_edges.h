@@ -698,6 +698,7 @@ void RbaEngine<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::optimize_edges(
 
 	} // end for LM "iter"
 
+#if 0
 	cout << "residuals" << endl;
 	for( size_t r = 0; r < residuals.size(); ++r ) 
 	{
@@ -716,10 +717,9 @@ void RbaEngine<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::optimize_edges(
 			cout << " <-- spurious( " << totalres << ")";
 		
 		cout << endl;
-
 	}
 	cout << "done" << endl;
-
+#endif 
 
 	// Final output info:
 	out_info.total_sqr_error_final = total_proj_error;
