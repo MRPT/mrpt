@@ -419,7 +419,7 @@ void CRangeBearingKFSLAM::OnObservationModel(
 
 	// Get the sensor pose relative to the robot:
 	CObservationBearingRangePtr obs = m_SF->getObservationByClass<CObservationBearingRange>();
-	ASSERT_(obs);
+	ASSERTMSG_(obs,"*ERROR*: This method requires an observation of type CObservationBearingRange")
 	const CPose3DQuat sensorPoseOnRobot = CPose3DQuat(obs->sensorLocationOnRobot);
 
 	/* -------------------------------------------
@@ -485,7 +485,7 @@ void CRangeBearingKFSLAM::OnObservationJacobians(
 
 	// Get the sensor pose relative to the robot:
 	CObservationBearingRangePtr obs = m_SF->getObservationByClass<CObservationBearingRange>();
-	ASSERT_(obs);
+	ASSERTMSG_(obs,"*ERROR*: This method requires an observation of type CObservationBearingRange")
 	const CPose3DQuat sensorPoseOnRobot = CPose3DQuat(obs->sensorLocationOnRobot);
 
     const size_t  vehicle_size = get_vehicle_size();
@@ -560,7 +560,7 @@ void CRangeBearingKFSLAM::OnGetObservationsAndDataAssociation(
 	CObservationBearingRange::TMeasurementList::const_iterator itObs;
 
 	CObservationBearingRangePtr obs = m_SF->getObservationByClass<CObservationBearingRange>();
-	ASSERT_(obs);
+	ASSERTMSG_(obs,"*ERROR*: This method requires an observation of type CObservationBearingRange")
 
 	const size_t N = obs->sensedData.size();
 	Z.resize(N);
@@ -801,7 +801,7 @@ void CRangeBearingKFSLAM::OnInverseObservationModel(
 	MRPT_START
 
 	CObservationBearingRangePtr obs = m_SF->getObservationByClass<CObservationBearingRange>();
-	ASSERT_(obs);
+	ASSERTMSG_(obs,"*ERROR*: This method requires an observation of type CObservationBearingRange")
 	const CPose3DQuat   sensorPoseOnRobot = CPose3DQuat( obs->sensorLocationOnRobot );
 
 	// Mean of the prior of the robot pose:
@@ -890,7 +890,7 @@ void CRangeBearingKFSLAM::OnNewLandmarkAddedToMap(
 	MRPT_START
 
 	CObservationBearingRangePtr obs = m_SF->getObservationByClass<CObservationBearingRange>();
-	ASSERT_(obs);
+	ASSERTMSG_(obs,"*ERROR*: This method requires an observation of type CObservationBearingRange")
 
 	// ----------------------------------------------
 	// introduce in the lists of ID<->index in map:
@@ -1282,7 +1282,7 @@ void CRangeBearingKFSLAM::OnPreComputingPredictions(
 	vector_size_t				&out_LM_indices_to_predict ) const
 {
 	CObservationBearingRangePtr obs = m_SF->getObservationByClass<CObservationBearingRange>();
-	ASSERT_(obs);
+	ASSERTMSG_(obs,"*ERROR*: This method requires an observation of type CObservationBearingRange")
 
 #define USE_HEURISTIC_PREDICTION
 

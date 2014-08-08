@@ -331,7 +331,7 @@ void CRangeBearingKFSLAM2D::OnObservationModel(
 
 	// Get the sensor pose relative to the robot:
 	CObservationBearingRangePtr obs = m_SF->getObservationByClass<CObservationBearingRange>();
-	ASSERT_(obs);
+	ASSERTMSG_(obs,"*ERROR*: This method requires an observation of type CObservationBearingRange")
 	const CPose2D  sensorPoseOnRobot = CPose2D(obs->sensorLocationOnRobot);
 
 	/* -------------------------------------------
@@ -392,7 +392,7 @@ void CRangeBearingKFSLAM2D::OnObservationJacobians(
 
 	// Get the sensor pose relative to the robot:
 	CObservationBearingRangePtr obs = m_SF->getObservationByClass<CObservationBearingRange>();
-	ASSERT_(obs);
+	ASSERTMSG_(obs,"*ERROR*: This method requires an observation of type CObservationBearingRange")
 	const CPose2D  sensorPoseOnRobot = CPose2D(obs->sensorLocationOnRobot);
 
 	/* -------------------------------------------
@@ -503,7 +503,7 @@ void CRangeBearingKFSLAM2D::OnGetObservationsAndDataAssociation(
 	CObservationBearingRange::TMeasurementList::const_iterator itObs;
 
 	CObservationBearingRangePtr obs = m_SF->getObservationByClass<CObservationBearingRange>();
-	ASSERT_(obs);
+	ASSERTMSG_(obs,"*ERROR*: This method requires an observation of type CObservationBearingRange")
 
 	const size_t N = obs->sensedData.size();
 	Z.resize(N);
@@ -777,7 +777,7 @@ void CRangeBearingKFSLAM2D::OnInverseObservationModel(
 	  ------------------------------------------- */
 
 	CObservationBearingRangePtr obs = m_SF->getObservationByClass<CObservationBearingRange>();
-	ASSERT_(obs);
+	ASSERTMSG_(obs,"*ERROR*: This method requires an observation of type CObservationBearingRange")
 	const CPose2D   sensorPoseOnRobot = CPose2D( obs->sensorLocationOnRobot );
 
 	// Mean of the prior of the robot pose:
@@ -838,7 +838,7 @@ void CRangeBearingKFSLAM2D::OnNewLandmarkAddedToMap(
 	MRPT_START
 
 	CObservationBearingRangePtr obs = m_SF->getObservationByClass<CObservationBearingRange>();
-	ASSERT_(obs);
+	ASSERTMSG_(obs,"*ERROR*: This method requires an observation of type CObservationBearingRange")
 
 	// ----------------------------------------------
 	// introduce in the lists of ID<->index in map:
@@ -1043,7 +1043,7 @@ void CRangeBearingKFSLAM2D::OnPreComputingPredictions(
 	vector_size_t				&out_LM_indices_to_predict ) const
 {
 	CObservationBearingRangePtr obs = m_SF->getObservationByClass<CObservationBearingRange>();
-	ASSERT_(obs);
+	ASSERTMSG_(obs,"*ERROR*: This method requires an observation of type CObservationBearingRange")
 
 	const double sensor_max_range = obs->maxSensorDistance;
 	const double fov_yaw   = obs->fieldOfView_yaw;
