@@ -756,20 +756,6 @@ const char * mrpt_default_icon_xpm[] = {
 "                                ",
 "                                ",
 "                                "};
-/*
-class MRPTCustomIcons : public wxArtProvider
-{
-protected:
-    virtual wxBitmap CreateBitmap(const wxArtID& id,
-                                  const wxArtClient& client,
-                                  const wxSize& size)
-	{
-		if (id == wxART_MAKE_ART_ID(MRPT_DEFAULT_ICON))
-			return WxSubsystem::getMRPTDefaultIcon();
-		// Any wxWidgets icons not implemented here will be provided by the default art provider.
-		return wxNullBitmap;
-	}
-};*/
 
 wxBitmap WxSubsystem::getMRPTDefaultIcon()
 {
@@ -800,10 +786,6 @@ bool CDisplayWindow_WXAPP::OnInit()
 	wxSetlocale(LC_NUMERIC, wxString(wxT("C")) );
 
     wxInitAllImageHandlers();
-
-	// Load my custom icons:
-	//wxArtProvider::Push(new MRPTCustomIcons);
-
 
     //cout << "[wxApp::OnInit] wxApplication OnInit called." << endl;
 
