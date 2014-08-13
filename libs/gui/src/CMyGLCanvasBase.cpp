@@ -86,6 +86,7 @@ void CMyGLCanvasBase::OnLeftUp(wxMouseEvent& event)
 {
 	mouseClicked = false;
 }
+
 void CMyGLCanvasBase::OnMouseMove(wxMouseEvent& event)
 {
 	int X = m_mouseLastX = event.GetX();
@@ -148,7 +149,9 @@ void CMyGLCanvasBase::OnMouseMove(wxMouseEvent& event)
 		// Potential user filter:
 		OnUserManuallyMovesCamera(cameraPointingX, cameraPointingY, cameraPointingZ, cameraZoomDistance, cameraElevationDeg, cameraAzimuthDeg);
 
+		wxTheApp->SafeYieldFor(NULL,wxEVT_CATEGORY_TIMER);
 		Refresh(false);
+
 	}
 	else
 	if ( event.RightIsDown() )
@@ -165,6 +168,7 @@ void CMyGLCanvasBase::OnMouseMove(wxMouseEvent& event)
 		// Potential user filter:
 		OnUserManuallyMovesCamera(cameraPointingX, cameraPointingY, cameraPointingZ, cameraZoomDistance, cameraElevationDeg, cameraAzimuthDeg);
 
+		wxTheApp->SafeYieldFor(NULL,wxEVT_CATEGORY_TIMER);
 		Refresh(false);
 	}
 }

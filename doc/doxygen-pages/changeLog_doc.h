@@ -18,6 +18,8 @@
 		- [mrpt-maps]
 			- New method mrpt::slam::COccupancyGridMap2D::getRawMap()
 			- New method mrpt::slam::CColouredPointsMap::getPCLPointCloudXYZRGB()
+		- [mrpt-opengl]
+			- mrpt::opengl::CMyGLCanvasBase (affects all 3D rendering classes): better handling of internal timers for smoother updates while rendering in multithreading apps.
 	- BUG FIXES:	
 		- mrpt::utils::CImage constructor from a matrix crashed.
 
