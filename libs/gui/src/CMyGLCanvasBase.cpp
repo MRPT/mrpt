@@ -149,7 +149,9 @@ void CMyGLCanvasBase::OnMouseMove(wxMouseEvent& event)
 		// Potential user filter:
 		OnUserManuallyMovesCamera(cameraPointingX, cameraPointingY, cameraPointingZ, cameraZoomDistance, cameraElevationDeg, cameraAzimuthDeg);
 
+#if wxCHECK_VERSION(2,9,5)
 		wxTheApp->SafeYieldFor(NULL,wxEVT_CATEGORY_TIMER);
+#endif
 		Refresh(false);
 
 	}
@@ -168,7 +170,9 @@ void CMyGLCanvasBase::OnMouseMove(wxMouseEvent& event)
 		// Potential user filter:
 		OnUserManuallyMovesCamera(cameraPointingX, cameraPointingY, cameraPointingZ, cameraZoomDistance, cameraElevationDeg, cameraAzimuthDeg);
 
+#if wxCHECK_VERSION(2,9,5)
 		wxTheApp->SafeYieldFor(NULL,wxEVT_CATEGORY_TIMER);
+#endif
 		Refresh(false);
 	}
 }
