@@ -23,6 +23,7 @@
 	- BUG FIXES:
 		- mrpt::utils::CImage constructor from a matrix crashed.
 		- Unit tests: Named semaphores are not tested anymore if it's detected that the kernel version doesn't support them (Fix Debian 758725).
+		- mrpt::synch::CSemaphore [Linux]: didn't call sem_unlink().
 
 <hr>
 <a name="1.2.1">

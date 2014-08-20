@@ -80,9 +80,7 @@ CSemaphore::CSemaphore(
 	if (token->semid==SEM_FAILED)
 		THROW_EXCEPTION( format("Creating semaphore (name='%s') raised error: %s",m_name.c_str(),strerror(errno) ) )
 
-    int sval;
-    sem_getvalue(token->semid, &sval);
-    //std::cout << "Semaphore: Init val=" << sval << " desired initialCount=" << initialCount <<std::endl;
+	//int sval; sem_getvalue(token->semid, &sval); std::cout << mrpt::format("Semaphore: Init val=%i desired initialCount=%i.\n",sval,initialCount);std::cout.flush();
 
 	MRPT_END
 }
@@ -95,8 +93,18 @@ CSemaphore::~CSemaphore()
 	if (m_data.alias_count()==1)
 	{
 		sem_private token = m_data.getAs<sem_private>();
-
-		sem_destroy(token->semid);
+		
+		if (isNamed())
+		{
+			// Named sems: sem_close() + sem_unlink()
+			sem_close((sem_t *)token->semid);
+			sem_unlink(m_name.c_str());
+		}
+		else
+		{
+			// Unnamed sems: sem_destroy()
+			sem_destroy((sem_t *)token->semid);
+		}
 
 		if (token->has_to_free_mem)
 			free(token->semid);
@@ -114,41 +122,35 @@ bool CSemaphore::waitForSignal( unsigned int timelimit )
 
     sem_private token = m_data.getAs<sem_private>();
 
-	// Prepare the "tm" struct with the absolute timeout timestamp:
-    struct timeb tp;
-
-    const long sec = timelimit / 1000;
-    const long millisec = timelimit % 1000;
-    ftime( &tp );
-    tp.time += sec;
-    tp.millitm += millisec;
-    if( tp.millitm > 999 )
-    {
-        tp.millitm -= 1000;
-        tp.time++;
-    }
-
-    struct timespec tm;
-    tm.tv_sec = tp.time;
-    tm.tv_nsec = tp.millitm * 1000000 ;
 
 	int rc;
 
-#if defined(MRPT_OS_APPLE)
-	// Mac version: we don't have sem_timedwait()
-	while (0!= (rc=sem_trywait(token->semid)) )
-	{
-		mrpt::system::sleep(1);
-	}
-
-#else
 	if (timelimit==0)
 	{
+		//{int sval; sem_getvalue(token->semid, &sval); std::cout << mrpt::format("Semaphore:wait1: val=%i.\n",sval);std::cout.flush();}
 		// No timeout
 		rc = sem_wait( token->semid );
 	}
 	else
 	{
+		// Prepare the "tm" struct with the absolute timeout timestamp:
+		struct timeb tp;
+
+		const long sec = timelimit / 1000;
+		const long millisec = timelimit % 1000;
+		ftime( &tp );
+		tp.time += sec;
+		tp.millitm += millisec;
+		if( tp.millitm > 999 )
+		{
+			tp.millitm -= 1000;
+			tp.time++;
+		}
+
+		struct timespec tm;
+		tm.tv_sec = tp.time;
+		tm.tv_nsec = tp.millitm * 1000000 ;
+
 		// We have a timeout:
 		while ((rc = sem_timedwait( token->semid, &tm )) == -1 && errno == EINTR)
 			continue; // Restart if interrupted by handler
@@ -157,7 +159,6 @@ bool CSemaphore::waitForSignal( unsigned int timelimit )
 	// If there's an error != than a timeout, dump to stderr:
 	if (rc!=0 && errno!=ETIMEDOUT)
 		std::cerr << format("[CSemaphore::waitForSignal] In semaphore named '%s', error: %s\n", m_name.c_str(),strerror(errno) );
-#endif
 
 	return rc==0; // true: all ok.
 

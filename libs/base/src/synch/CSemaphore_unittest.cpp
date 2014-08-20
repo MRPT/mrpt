@@ -31,21 +31,24 @@ void sem_thread_example(int id)
 	try
 	{
 #ifdef DEBUG_OUT
-    printf("[thread_example2 %i, ID:%lu] Started, trying to get into semaphore...\n", id, getCurrentThreadId());
+    cout << mrpt::format("[thread_example2 %i, ID:%lu] Started, trying to get into semaphore...\n", id, getCurrentThreadId()); cout.flush();
 #endif // DEBUG_OUT
 
-		CSemaphore  sem(0,1,"mrpt-demo-sem1");
+		CSemaphore  sem(1,1,"/mrpt-demo-sem");
+#ifdef DEBUG_OUT
+    cout << mrpt::format("[thread_example2 %i, ID:%lu] Object created...\n", id, getCurrentThreadId()); cout.flush();
+#endif // DEBUG_OUT
 
 		sem.waitForSignal();
 
 		double delay = randomGenerator.drawUniform(0.1,0.5);
 #ifdef DEBUG_OUT
-        printf("[thread_example2 %i, ID:%lu] I'm in. Delaying %f seconds...\n", id, getCurrentThreadId(), delay);
+    cout << mrpt::format("[thread_example2 %i, ID:%lu] I'm in. Delaying %f seconds...\n", id, getCurrentThreadId(), delay); cout.flush();
 #endif // DEBUG_OUT
 		mrpt::system::sleep( delay*1000 );
 
 #ifdef DEBUG_OUT
-		printf("[thread_example2 %i] Releasing..\n", id);
+    cout << mrpt::format("[thread_example2 %i] Releasing..\n", id);cout.flush();
 #endif // DEBUG_OUT
 		sem.release();
 	}
