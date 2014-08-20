@@ -39,6 +39,7 @@ namespace mrpt
               *  If \a name is not an empty string, a named semaphore is created. In that case
               *   if the semaphore didn't exist it's created. Otherwise, the existing semaphore
               *   is linked to this object and then \a initialCount and \a maxCount are ignored.
+              *  \note Named semaphores require Linux kernel version>2.6.12
               */
             CSemaphore(
                 unsigned int    initialCount,

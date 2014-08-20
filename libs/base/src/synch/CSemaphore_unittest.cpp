@@ -76,11 +76,20 @@ void my_CSemaphore_named()
 	for (size_t i=0;i<threads.size();i++)
 		joinThread( threads[i] );
 }
-TEST(Synch, CSemaphore_named_6t_1init )
+
+TEST(Synch, CSemaphore_named )
 {
-	launchTestWithTimeout(my_CSemaphore_named<6,1>, 5.0, "CSemaphore named: #threads=6, init count=1");
-}
-TEST(Synch, CSemaphore_named_10t_5init )
-{
-	launchTestWithTimeout(my_CSemaphore_named<10,5>, 5.0, "CSemaphore named: #threads=10, init count=5");
+	try
+	{
+		{ // Probe if this kernel version doesn't support named semaphores (it will raise an exception just for this simple construction)
+			CSemaphore  sem(1 /*init val*/,2 /*max val*/,"mrpt-probe-sem");
+		} // ----
+
+		launchTestWithTimeout(my_CSemaphore_named<6,1>, 5.0, "CSemaphore named: #threads=6, init count=1");
+		launchTestWithTimeout(my_CSemaphore_named<10,5>, 5.0, "CSemaphore named: #threads=10, init count=5");
+	}
+	catch (std::exception &e)
+	{
+		std::cerr << "*Skipping test* It seems the kernel doesn't support named semaphores in this platform\n";
+	}
 }

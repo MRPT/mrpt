@@ -20,8 +20,9 @@
 			- New method mrpt::slam::CColouredPointsMap::getPCLPointCloudXYZRGB()
 		- [mrpt-opengl]
 			- mrpt::opengl::CMyGLCanvasBase (affects all 3D rendering classes): better handling of internal timers for smoother updates while rendering in multithreading apps.
-	- BUG FIXES:	
+	- BUG FIXES:
 		- mrpt::utils::CImage constructor from a matrix crashed.
+		- Unit tests: Named semaphores are not tested anymore if it's detected that the kernel version doesn't support them (Fix Debian 758725).
 
 <hr>
 <a name="1.2.1">
@@ -55,11 +56,11 @@
 		- New classes:
 			- [mrpt-base]
 				- mrpt::math::ContainerType<CONTAINER>::element_t to allow handling either Eigen or STL containers seamlessly.
-				- mrpt::utils::CConfigFilePrefixer 
+				- mrpt::utils::CConfigFilePrefixer
 			- [mrpt-hwdrivers]
 				- mrpt::hwdrivers::COpenNI2Sensor: Interface to OpenNI2 cameras, capable of reading from an array of OpenNI2 RGBD cameras (By Eduardo Fernandez)
 				- mrpt::hwdrivers::CDUO3DCamera: Interface to DUO3D cameras (By Francisco Angel Moreno)
-				- mrpt::hwdrivers::CGPS_NTRIP: A combination of GPS receiver + NTRIP receiver capable of submitting GGA frames to enable RTCM 3.0 
+				- mrpt::hwdrivers::CGPS_NTRIP: A combination of GPS receiver + NTRIP receiver capable of submitting GGA frames to enable RTCM 3.0
 			- [mrpt-obs]
 				- mrpt::slam::CObservation6DFeatures
 		- Changes in classes:
