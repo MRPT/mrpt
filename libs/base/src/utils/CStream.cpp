@@ -666,7 +666,7 @@ void  CStream::sendMessage( const utils::CMessage &msg)
 bool  CStream::receiveMessage( utils::CMessage &msg )
 {
 	MRPT_START
-	unsigned char		buf[66000];
+	std::vector<unsigned char> buf(66000);
 	unsigned int		nBytesInFrame=0;
 	unsigned long		nBytesToRx=0;
 	unsigned char		tries = 2;
