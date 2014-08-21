@@ -692,7 +692,7 @@ bool  CStream::receiveMessage( utils::CMessage &msg )
 			} // end else
 		} // end else
 
-		unsigned long nBytesRx = ReadBufferImmediate(buf+nBytesInFrame, nBytesToRx);
+		unsigned long nBytesRx = ReadBufferImmediate(&buf[nBytesInFrame], nBytesToRx);
 
 		// No more data! (read timeout is already included in the call to "Read")
 		if (!nBytesRx)
