@@ -40,11 +40,6 @@ void run_test_pf_localization(CPose2D &meanPose, CMatrixDouble33 &cov)
 // ------------------------------------------------------
 // The code below is a simplification of the program "pf-localization"
 // ------------------------------------------------------
-#if MRPT_IS_BIG_ENDIAN
-	MRPT_TODO("Debug this issue in big endian platforms")
-	return; // Skip this test for now
-#endif
-
 	const string ini_fil = MRPT_GLOBAL_UNITTEST_SRC_DIR + string("/tests/montecarlo_test1.ini");
 	if (!mrpt::system::fileExists(ini_fil))
 	{
@@ -264,6 +259,11 @@ void run_test_pf_localization(CPose2D &meanPose, CMatrixDouble33 &cov)
 // TEST =================
 TEST(MonteCarlo2D, RunSampleDataset)
 {
+#if MRPT_IS_BIG_ENDIAN
+	MRPT_TODO("Debug this issue in big endian platforms")
+	return; // Skip this test for now
+#endif
+
 	// Actual ending point:
 	const CPose2D  GT_endpose(15.904,-10.010,DEG2RAD(4.93));
 
