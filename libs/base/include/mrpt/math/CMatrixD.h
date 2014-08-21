@@ -70,13 +70,6 @@ namespace mrpt
 			/** Constructor from a TPoint3D, which generates a 3x1 matrix \f$ [x y z]^T \f$ */
 			explicit CMatrixD( const TPoint3D &p);
 
-			/** Assignment from any Eigen matrix/vector */
-			template <typename Derived>
-			inline CMatrixD& operator =(const Eigen::MatrixBase<Derived>& m) const {
-				CMatrixDouble::operator =(m);
-				return *this;
-			}
-
 		}; // end of class definition
 
 	} // End of namespace
