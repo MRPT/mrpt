@@ -37,7 +37,9 @@ namespace slam
 	DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CRandomFieldGridMap2D , CMetricMap, MAPS_IMPEXP )
 
 	// Pragma defined to ensure no structure packing: since we'll serialize TRandomFieldCell to streams, we want it not to depend on compiler options, etc.
+#if defined(MRPT_IS_X86_AMD64)
 #pragma pack(push,1)
+#endif
 
 	/** The contents of each cell in a CRandomFieldGridMap2D map.
 	  * \ingroup mrpt_maps_grp
@@ -80,7 +82,10 @@ namespace slam
 		mrpt::system::TTimeStamp last_updated;	//!< [Dynamic maps only] The timestamp of the last time the cell was updated
 		double updated_std;			//!< [Dynamic maps only] The std cell value that was updated (to be used in the Forgetting_curve
 	};
+
+#if defined(MRPT_IS_X86_AMD64)
 #pragma pack(pop)
+#endif
 
 	/** CRandomFieldGridMap2D represents a 2D grid map where each cell is associated one real-valued property which is estimated by this map, either
 	  *   as a simple value or as a probility distribution (for each cell).
