@@ -16,6 +16,7 @@
 #include <mrpt/utils/TTypeName.h>
 #include <mrpt/math/math_frwds.h>  // forward declarations
 #include <vector>
+#include <stdexcept>
 
 namespace mrpt	{
 namespace math	{
@@ -24,26 +25,15 @@ namespace math	{
 	/** \addtogroup geometry_grp
 	  * @{ */
 
-	//Pragma defined to ensure no structure packing
-#pragma pack(push,1)
 	//Set of typedefs for lightweight geometric items.
 	/**
 	  * Lightweight 2D point. Allows coordinate access using [] operator.
 	  * \sa mrpt::poses::CPoint2D
 	  */
-//#define TOBJECTS_USE_UNIONS
 	struct BASE_IMPEXP TPoint2D	{
 		enum { static_size = 2 };
-		/**
-		  * X coordinate.
-		  */
-		double x;
-		/**
-		  * Y coordinate.
-		  */
-		double y;
-		/**
-		  * Constructor from TPose2D, discarding phi.
+		double x, y; //!< X,Y coordinates
+		/** Constructor from TPose2D, discarding phi.
 		  * \sa TPose2D
 		  */
 		explicit TPoint2D(const TPose2D &p);
@@ -77,18 +67,10 @@ namespace math	{
 		  * Default fast constructor. Initializes to garbage.
 		  */
 		inline TPoint2D()	{}
-		/**
-		  * Unsafe coordinate access using operator[]. Intended for loops.
-		  */
-		inline double &operator[](size_t i)	{
-			return (&x)[i];
-		}
-		/**
-		  * Unsafe coordinate access using operator[]. Intended for loops.
-		  */
-		inline const double &operator[](size_t i) const	{
-			return (&x)[i];
-		}
+		/** Coordinate access using operator[]. Order: x,y */
+		inline double &operator[](size_t i)	{ switch (i) { case 0: return x; case 1: return y; default: throw std::out_of_range("index out of range"); } }
+		/** Coordinate access using operator[]. Order: x,y */
+		inline const double &operator[](size_t i) const { switch (i) { case 0: return x; case 1: return y; default: throw std::out_of_range("index out of range"); } }
 		/**
 		  * Transformation into vector.
 		  */
@@ -165,20 +147,9 @@ namespace math	{
 	  */
 	struct BASE_IMPEXP TPose2D	{
 		enum { static_size = 3 };
-		/**
-		  * X coordinate.
-		  */
-		double x;
-		/**
-		  * Y coordinate.
-		  */
-		double y;
-		/**
-		  * Phi coordinate.
-		  */
-		double phi;
-		/**
-		  * Implicit constructor from TPoint2D. Zeroes the phi coordinate.
+		double x,y; //!< X,Y coordinates
+		double phi; //!< Orientation (rads)
+		/** Implicit constructor from TPoint2D. Zeroes the phi coordinate.
 		  * \sa TPoint2D
 		  */
 		TPose2D(const TPoint2D &p);
@@ -205,18 +176,10 @@ namespace math	{
 		  * Default fast constructor. Initializes to garbage.
 		  */
 		inline TPose2D()	{}
-		/**
-		  * Unsafe coordinate access using operator[]. Intended for loops.
-		  */
-		inline double &operator[](size_t i)	{
-			return (&x)[i];
-		}
-		/**
-		  * Unsafe coordinate access using operator[]. Intended for loops.
-		  */
-		inline const double &operator[](size_t i) const	{
-			return (&x)[i];
-		}
+		/** Coordinate access using operator[]. Order: x,y,phi */
+		inline double &operator[](size_t i)	{ switch (i) { case 0: return x; case 1: return y; case 2: return phi; default: throw std::out_of_range("index out of range");  } }
+		/** Coordinate access using operator[]. Order: x,y,phi */
+		inline const double &operator[](size_t i) const	{ switch (i) { case 0: return x; case 1: return y; case 2: return phi; default: throw std::out_of_range("index out of range");  } }
 		/**
 		  * Transformation into vector.
 		  */
@@ -238,8 +201,6 @@ namespace math	{
 		 static size_t size() { return 3; }
 	};
 
-#pragma pack(pop) // NOTE: Don't force TPoint3Df to be mem aligned (may break CPU mem access alignment in ARM)
-
 	/** Lightweight 3D point (float version).
 	  * \sa mrpt::poses::CPoint3D, mrpt::math::TPoint3D
 	  */
@@ -254,23 +215,20 @@ namespace math	{
 		inline TPoint3Df(const float xx,const float yy,const float zz) : x(xx), y(yy),z(zz) { }
 		inline TPoint3Df & operator +=(const TPoint3Df &p) { x+=p.x; y+=p.y; z+=p.z; return *this; }
 		inline TPoint3Df   operator *(const float s) { return TPoint3Df(x*s,y*s,z*s); }
-		/** Unsafe coordinate access using operator[]. Intended for loops. */
-		inline float &operator[](size_t i)	{ switch (i) { case 0: return x; case 1: return y; case 2: default: return z; } }
-		/** Unsafe coordinate access using operator[]. Intended for loops. */
-		inline const float &operator[](size_t i) const	{ switch (i) { case 0: return x; case 1: return y; case 2: default: return z; } }
-
+		/** Coordinate access using operator[]. Order: x,y,z */
+		inline float &operator[](size_t i)	{ switch (i) { case 0: return x; case 1: return y; case 2: return z; default: throw std::out_of_range("index out of range");  } }
+		
+		/** Coordinate access using operator[]. Order: x,y,z */
+		inline const float &operator[](size_t i) const	{ switch (i) { case 0: return x; case 1: return y; case 2: return z; default: throw std::out_of_range("index out of range");  } }
 	};
-
-#pragma pack(push,1)  //Pragma defined to ensure no structure packing
+	
 	/**
 	  * Lightweight 3D point. Allows coordinate access using [] operator.
 	  * \sa mrpt::poses::CPoint3D, mrpt::math::TPoint3Df
 	  */
 	struct BASE_IMPEXP TPoint3D	{
 		enum { static_size = 3 };
-		double x; //!< X coordinate
-		double y; //!< Y coordinate
-		double z; //!< Z coordinate
+		double x,y,z; //!< X,Y,Z coordinates
 
 		/** Constructor from coordinates.  */
 		inline TPoint3D(double xx,double yy,double zz):x(xx),y(yy),z(zz)	{}
@@ -303,18 +261,10 @@ namespace math	{
 		  * \sa mrpt::poses::CPose3D.
 		  */
 		explicit TPoint3D(const mrpt::poses::CPose3D &p);
-		/**
-		  * Unsafe coordinate access using operator[]. Intended for loops.
-		  */
-		inline double &operator[](size_t i)	{
-			return (&x)[i];
-		}
-		/**
-		  * Unsafe coordinate access using operator[]. Intended for loops.
-		  */
-		inline const double &operator[](size_t i) const	{
-			return (&x)[i];
-		}
+		/** Coordinate access using operator[]. Order: x,y,z */
+		inline double &operator[](size_t i)	{ switch (i) { case 0: return x; case 1: return y; case 2: return z; default: throw std::out_of_range("index out of range");  } }
+		/** Coordinate access using operator[]. Order: x,y,z */
+		inline const double &operator[](size_t i) const	{ switch (i) { case 0: return x; case 1: return y; case 2: return z; default: throw std::out_of_range("index out of range");  } }
 		/**
 		  * Point-to-point distance.
 		  */
@@ -409,32 +359,11 @@ namespace math	{
 	  */
 	struct BASE_IMPEXP TPose3D	{
 		enum { static_size = 6 };
-		/**
-		  * X coordinate.
-		  */
-		double x;
-		/**
-		  * Y coordinate.
-		  */
-		double y;
-		/**
-		  * Z coordinate.
-		  */
-		double z;
-		/**
-		  * Yaw coordinate (rotation angle over Z axis).
-		  */
-		double yaw;
-		/**
-		  * Pitch coordinate (rotation angle over Y axis).
-		  */
-		double pitch;
-		/**
-		  * Roll coordinate (rotation angle over X coordinate).
-		  */
-		double roll;
-		/**
-		  * Implicit constructor from TPoint2D. Zeroes all the unprovided information.
+		double x,y,z; //!< X,Y,Z, coords
+		double yaw; //!< Yaw coordinate (rotation angle over Z axis).
+		double pitch; //!< Pitch coordinate (rotation angle over Y axis).
+		double roll; //!< Roll coordinate (rotation angle over X coordinate).
+		/** Implicit constructor from TPoint2D. Zeroes all the unprovided information.
 		  * \sa TPoint2D
 		  */
 		TPose3D(const TPoint2D &p);
@@ -461,18 +390,10 @@ namespace math	{
 		  * Default fast constructor. Initializes to garbage.
 		  */
 		inline TPose3D()	{}
-		/**
-		  * Unsafe coordinate access using operator[]. Intended for loops.
-		  */
-		inline double &operator[](size_t i)	{
-			return (&x)[i];
-		}
-		/**
-		  * Unsafe coordinate access using operator[]. Intended for loops.
-		  */
-		inline const double &operator[](size_t i) const	{
-			return (&x)[i];
-		}
+		/** Coordinate access using operator[]. Order: x,y,z,yaw,pitch,roll */
+		inline double &operator[](size_t i)	{ switch (i) { case 0: return x; case 1: return y; case 2: return z; case 3: return yaw; case 4: return pitch; case 5: return roll; default: throw std::out_of_range("index out of range");  } }
+		/** Coordinate access using operator[]. Order: x,y,z,yaw,pitch,roll */
+		inline const double &operator[](size_t i) const	{ switch (i) { case 0: return x; case 1: return y; case 2: return z; case 3: return yaw; case 4: return pitch; case 5: return roll; default: throw std::out_of_range("index out of range");  } }
 		/**
 		  * Pose's spatial coordinates norm.
 		  */
@@ -505,13 +426,8 @@ namespace math	{
 	  */
 	struct BASE_IMPEXP TPose3DQuat	{
 		enum { static_size = 7 };
-		double x;	//!< Translation in x
-		double y;	//!< Translation in y
-		double z;	//!< Translation in z
-		double qr;  //!< Quaternion part, r
-		double qx;  //!< Quaternion part, x
-		double qy;  //!< Quaternion part, y
-		double qz;  //!< Quaternion part, z
+		double x,y,z;	//!< Translation in x,y,z
+		double qr,qx,qy,qz;  //!< Unit quaternion part, qr,qx,qy,qz
 
 		/** Constructor from coordinates. */
 		inline TPose3DQuat(double _x,double _y,double _z,double _qr,double _qx, double _qy, double _qz):x(_x),y(_y),z(_z),qr(_qr),qx(_qx),qy(_qy),qz(_qz) {  }
@@ -520,14 +436,10 @@ namespace math	{
 		/** Constructor from a CPose3DQuat */
 		TPose3DQuat(const mrpt::poses::CPose3DQuat &p);
 
-		/** Unsafe coordinate access using operator[]. Intended for loops. */
-		inline double &operator[](size_t i)	{
-			return (&x)[i];
-		}
-		/** Unsafe coordinate access using operator[]. Intended for loops. */
-		inline const double &operator[](size_t i) const	{
-			return (&x)[i];
-		}
+		/** Coordinate access using operator[]. Order: x,y,z,qr,qx,qy,qz */
+		inline double &operator[](size_t i)	{ switch (i) { case 0: return x; case 1: return y; case 2: return z; case 3: return qr; case 4: return qx; case 5: return qy; case 6: return qz; default: throw std::out_of_range("index out of range");  } }
+		/** Coordinate access using operator[]. Order: x,y,z,qr,qx,qy,qz */
+		inline const double &operator[](size_t i) const	{ switch (i) { case 0: return x; case 1: return y; case 2: return z; case 3: return qr; case 4: return qx; case 5: return qy; case 6: return qz; default: throw std::out_of_range("index out of range");  } }
 		/** Pose's spatial coordinates norm. */
 		double norm() const {
 			return sqrt(square(x)+square(y)+square(z));
@@ -550,7 +462,6 @@ namespace math	{
 		 void fromString(const std::string &s);
 		 static size_t size() { return 7; }
 	};
-#pragma pack(pop)
 
 	// Text streaming functions:
 	std::ostream BASE_IMPEXP & operator << (std::ostream& o, const TPoint2D & p);
@@ -621,7 +532,6 @@ namespace math	{
 	struct BASE_IMPEXP TObject3D;
 
 	//Pragma defined to ensure no structure packing
-#pragma pack(push,1)
 	/**
 	  * 2D segment, consisting of two points.
 	  * \sa TSegment3D,TLine2D,TPolygon2D,TPoint2D
@@ -652,18 +562,10 @@ namespace math	{
 		  * Check whether a point is inside a segment.
 		  */
 		bool contains(const TPoint2D &point) const;
-		/**
-		  * Unsafe point access using [] operator, intended for loops.
-		  */
-		inline TPoint2D &operator[](size_t i)	{
-			return (&point1)[i];
-		}
-		/**
-		  * Unsafe point access using [] operator, intended for loops.
-		  */
-		inline const TPoint2D &operator[](size_t i) const	{
-			return (&point1)[i];
-		}
+		/** Access to points using operator[0-1] */
+		inline TPoint2D &operator[](size_t i)	{ switch (i) { case 0: return point1; case 1: return point2; default: throw std::out_of_range("index out of range");  } }
+		/** Access to points using operator[0-1] */
+		inline const TPoint2D &operator[](size_t i) const { switch (i) { case 0: return point1; case 1: return point2; default: throw std::out_of_range("index out of range");  } }
 		/**
 		  * Project into 3D space, setting the z to 0.
 		  */
@@ -720,18 +622,10 @@ namespace math	{
 		  * Check whether a point is inside the segment.
 		  */
 		bool contains(const TPoint3D &point) const;
-		/**
-		  * Unsafe point access using [] operator, intended for loops.
-		  */
-		inline TPoint3D &operator[](size_t i)	{
-			return (&point1)[i];
-		}
-		/**
-		  * Unsafe point access using [] operator, intended for loops.
-		  */
-		inline const TPoint3D &operator[](size_t i) const	{
-			return (&point1)[i];
-		}
+		/** Access to points using operator[0-1] */
+		inline TPoint3D &operator[](size_t i) { switch (i) { case 0: return point1; case 1: return point2; default: throw std::out_of_range("index out of range");  } }
+		/** Access to points using operator[0-1] */
+		inline const TPoint3D &operator[](size_t i) const { switch (i) { case 0: return point1; case 1: return point2; default: throw std::out_of_range("index out of range");  } }
 		/**
 		  * Projection into 2D space, discarding the z.
 		  */
@@ -761,7 +655,6 @@ namespace math	{
 
 		bool operator<(const TSegment3D &s) const;
 	};
-#pragma pack(pop)
 
 	inline bool operator==(const TSegment2D &s1,const TSegment2D &s2)	{
 		return (s1.point1==s2.point1)&&(s1.point2==s2.point2);
@@ -1239,549 +1132,6 @@ namespace math	{
 	  * Standard type for storing any lightweight 2D type. Do not inherit from this class.
 	  * \sa TPoint2D,TSegment2D,TLine2D,TPolygon2D
 	  */
-#ifdef TOBJECTS_USE_UNIONS
-	struct BASE_IMPEXP TObject2D	{
-	private:
-		/**
-		  * Object type identifier.
-		  */
-		unsigned char type;
-		/**
-		  * Union type storing pointers to every allowed type.
-		  */
-		union	{
-			TPoint2D *point;
-			TSegment2D *segment;
-			TLine2D *line;
-			TPolygon2D *polygon;
-		}	data;
-		/**
-		  * Destroys the object, releasing the pointer to the content (if any).
-		  */
-		void destroy()	{
-			switch(type)	{
-				case GEOMETRIC_TYPE_POINT:
-					delete data.point;
-					break;
-				case GEOMETRIC_TYPE_SEGMENT:
-					delete data.segment;
-					break;
-				case GEOMETRIC_TYPE_LINE:
-					delete data.line;
-					break;
-				case GEOMETRIC_TYPE_POLYGON:
-					delete data.polygon;
-					break;
-			}
-			type=GEOMETRIC_TYPE_UNDEFINED;
-		}
-	public:
-		/**
-		  * Implicit constructor from point.
-		  */
-		TObject2D(const TPoint2D &p):type(GEOMETRIC_TYPE_POINT)	{
-			data.point=new TPoint2D(p);
-		}
-		/**
-		  * Implicit constructor from segment.
-		  */
-		TObject2D(const TSegment2D &s):type(GEOMETRIC_TYPE_SEGMENT)	{
-			data.segment=new TSegment2D(s);
-		}
-		/**
-		  * Implicit constructor from line.
-		  */
-		TObject2D(const TLine2D &r):type(GEOMETRIC_TYPE_LINE)	{
-			data.line=new TLine2D(r);
-		}
-		/**
-		  * Implicit constructor from polygon.
-		  */
-		TObject2D(const TPolygon2D &p):type(GEOMETRIC_TYPE_POLYGON)	{
-			data.polygon=new TPolygon2D(p);
-		}
-		/**
-		  * Implicit constructor from polygon.
-		  */
-		TObject2D():type(GEOMETRIC_TYPE_UNDEFINED)	{}
-		/**
-		  * Object destruction.
-		  */
-		~TObject2D()	{
-			destroy();
-		}
-		/**
-		  * Checks whether content is a point.
-		  */
-		inline bool isPoint() const	{
-			return type==GEOMETRIC_TYPE_POINT;
-		}
-		/**
-		  * Checks whether content is a segment.
-		  */
-		inline bool isSegment() const	{
-			return type==GEOMETRIC_TYPE_SEGMENT;
-		}
-		/**
-		  * Checks whether content is a line.
-		  */
-		inline bool isLine() const	{
-			return type==GEOMETRIC_TYPE_LINE;
-		}
-		/**
-		  * Checks whether content is a polygon.
-		  */
-		inline bool isPolygon() const	{
-			return type==GEOMETRIC_TYPE_POLYGON;
-		}
-		/**
-		  * Gets content type.
-		  */
-		inline unsigned char getType() const	{
-			return type;
-		}
-		/**
-		  * Gets the content as a point, returning false if the type is inadequate.
-		  */
-		inline bool getPoint(TPoint2D &p) const	{
-			if (isPoint())	{
-				p=*(data.point);
-				return true;
-			}	else return false;
-		}
-		/**
-		  * Gets the content as a segment, returning false if the type is inadequate.
-		  */
-		inline bool getSegment(TSegment2D &s) const	{
-			if (isSegment())	{
-				s=*(data.segment);
-				return true;
-			}	else return false;
-		}
-		/**
-		  * Gets the content as a line, returning false if the type is inadequate.
-		  */
-		inline bool getLine(TLine2D &r) const	{
-			if (isLine())	{
-				r=*(data.line);
-				return true;
-			}	else return false;
-		}
-		/**
-		  * Gets the content as a polygon, returning false if the type is inadequate.
-		  */
-		inline bool getPolygon(TPolygon2D &p) const	{
-			if (isPolygon())	{
-				p=*(data.polygon);
-				return true;
-			}	else return false;
-		}
-		/**
-		  * Assign another TObject2D. Pointers are not shared.
-		  */
-		void operator=(const TObject2D &obj)	{
-			if (this==&obj) return;
-			destroy();
-			switch (type=obj.type)	{
-				case GEOMETRIC_TYPE_POINT:
-					data.point=new TPoint2D(*(obj.data.point));
-					break;
-				case GEOMETRIC_TYPE_SEGMENT:
-					data.segment=new TSegment2D(*(obj.data.segment));
-					break;
-				case GEOMETRIC_TYPE_LINE:
-					data.line=new TLine2D(*(obj.data.line));
-					break;
-				case GEOMETRIC_TYPE_POLYGON:
-					data.polygon=new TPolygon2D(*(obj.data.polygon));
-					break;
-			}
-		}
-		/**
-		  * Assign a point to this object.
-		  */
-		inline void operator=(const TPoint2D &p)	{
-			destroy();
-			type=GEOMETRIC_TYPE_POINT;
-			data.point=new TPoint2D(p);
-		}
-		/**
-		  * Assign a segment to this object.
-		  */
-		inline void operator=(const TSegment2D &s)	{
-			destroy();
-			type=GEOMETRIC_TYPE_SEGMENT;
-			data.segment=new TSegment2D(s);
-		}
-		/**
-		  * Assign a line to this object.
-		  */
-		inline void operator=(const TLine2D &l)	{
-			destroy();
-			type=GEOMETRIC_TYPE_LINE;
-			data.line=new TLine2D(l);
-		}
-		/**
-		  * Assign a polygon to this object.
-		  */
-		inline void operator=(const TPolygon2D &p)	{
-			destroy();
-			type=GEOMETRIC_TYPE_POLYGON;
-			data.polygon=new TPolygon2D(p);
-		}
-		/**
-		  * Project into 3D space.
-		  */
-		void generate3DObject(TObject3D &obj) const;
-		/**
-		  * Constructor from another TObject2D.
-		  */
-		TObject2D(const TObject2D &obj):type(GEOMETRIC_TYPE_UNDEFINED)	{
-			operator=(obj);
-		}
-		/**
-		  * Static method to retrieve all the points in a vector of TObject2D.
-		  */
-		static void getPoints(const std::vector<TObject2D> &objs,std::vector<TPoint2D> &pnts);
-		/**
-		  * Static method to retrieve all the segments in a vector of TObject2D.
-		  */
-		static void getSegments(const std::vector<TObject2D> &objs,std::vector<TSegment2D> &sgms);
-		/**
-		  * Static method to retrieve all the lines in a vector of TObject2D.
-		  */
-		static void getLines(const std::vector<TObject2D> &objs,std::vector<TLine2D> &lins);
-		/**
-		  * Static method to retrieve all the polygons in a vector of TObject2D.
-		  */
-		static void getPolygons(const std::vector<TObject2D> &objs,std::vector<TPolygon2D> &polys);
-		/**
-		  * Static method to retrieve all the points in a vector of TObject2D, returning the remainder objects in another parameter.
-		  */
-		static void getPoints(const std::vector<TObject2D> &objs,std::vector<TPoint2D> &pnts,std::vector<TObject2D> &remainder);
-		/**
-		  * Static method to retrieve all the segments in a vector of TObject2D, returning the remainder objects in another parameter.
-		  */
-		static void getSegments(const std::vector<TObject2D> &objs,std::vector<TSegment2D> &sgms,std::vector<TObject2D> &remainder);
-		/**
-		  * Static method to retrieve all the lines in a vector of TObject2D, returning the remainder objects in another parameter.
-		  */
-		static void getLines(const std::vector<TObject2D> &objs,std::vector<TLine2D> &lins,std::vector<TObject2D> &remainder);
-		/**
-		  * Static method to retrieve all the polygons in a vector of TObject2D, returning the remainder objects in another parameter.
-		  */
-		static void getPolygons(const std::vector<TObject2D> &objs,std::vector<TPolygon2D> &polys,std::vector<TObject2D> &remainder);
-	};
-	/**
-	  * Standard object for storing any 3D lightweight object. Do not inherit from this class.
-	  * \sa TPoint3D,TSegment3D,TLine3D,TPlane,TPolygon3D
-	  */
-	struct BASE_IMPEXP TObject3D	{
-	private:
-		/**
-		  * Object type identifier.
-		  */
-		unsigned char type;
-		/**
-		  * Union containing pointer to actual data.
-		  */
-		union	{
-			TPoint3D *point;
-			TSegment3D *segment;
-			TLine3D *line;
-			TPolygon3D *polygon;
-			TPlane *plane;
-		}	data;
-		/**
-		  * Destroys the object and releases the pointer, if any.
-		  */
-		void destroy()	{
-			switch (type)	{
-				case GEOMETRIC_TYPE_POINT:
-					delete data.point;
-					break;
-				case GEOMETRIC_TYPE_SEGMENT:
-					delete data.segment;
-					break;
-				case GEOMETRIC_TYPE_LINE:
-					delete data.line;
-					break;
-				case GEOMETRIC_TYPE_POLYGON:
-					delete data.polygon;
-					break;
-				case GEOMETRIC_TYPE_PLANE:
-					delete data.plane;
-					break;
-				case GEOMETRIC_TYPE_UNDEFINED:
-					break;
-				default:
-					THROW_EXCEPTION("Invalid TObject2D object");
-			}
-			type=GEOMETRIC_TYPE_UNDEFINED;
-		}
-	public:
-		/**
-		  * Constructor from point.
-		  */
-		TObject3D(const TPoint3D &p):type(GEOMETRIC_TYPE_POINT)	{
-			data.point=new TPoint3D(p);
-		}
-		/**
-		  * Constructor from segment.
-		  */
-		TObject3D(const TSegment3D &s):type(GEOMETRIC_TYPE_SEGMENT)	{
-			data.segment=new TSegment3D(s);
-		}
-		/**
-		  * Constructor from line.
-		  */
-		TObject3D(const TLine3D &r):type(GEOMETRIC_TYPE_LINE)	{
-			data.line=new TLine3D(r);
-		}
-		/**
-		  * Constructor from polygon.
-		  */
-		TObject3D(const TPolygon3D &p):type(GEOMETRIC_TYPE_POLYGON)	{
-			data.polygon=new TPolygon3D(p);
-		}
-		/**
-		  * Constructor from plane.
-		  */
-		TObject3D(const TPlane &p):type(GEOMETRIC_TYPE_PLANE)	{
-			data.plane=new TPlane(p);
-		}
-		/**
-		  * Empty constructor.
-		  */
-		TObject3D():type(GEOMETRIC_TYPE_UNDEFINED)	{}
-		/**
-		  * Destructor.
-		  */
-		~TObject3D()	{
-			destroy();
-		}
-		/**
-		  * Checks whether content is a point.
-		  */
-		inline bool isPoint() const	{
-			return type==GEOMETRIC_TYPE_POINT;
-		}
-		/**
-		  * Checks whether content is a segment.
-		  */
-		inline bool isSegment() const	{
-			return type==GEOMETRIC_TYPE_SEGMENT;
-		}
-		/**
-		  * Checks whether content is a line.
-		  */
-		inline bool isLine() const	{
-			return type==GEOMETRIC_TYPE_LINE;
-		}
-		/**
-		  * Checks whether content is a polygon.
-		  */
-		inline bool isPolygon() const	{
-			return type==GEOMETRIC_TYPE_POLYGON;
-		}
-		/**
-		  * Checks whether content is a plane.
-		  */
-		inline bool isPlane() const	{
-			return type==GEOMETRIC_TYPE_PLANE;
-		}
-		/**
-		  * Gets object type.
-		  */
-		inline unsigned char getType() const	{
-			return type;
-		}
-		/**
-		  * Gets the content as a point, returning false if the type is not adequate.
-		  */
-		inline bool getPoint(TPoint3D &p) const	{
-			if (isPoint())	{
-				p=*(data.point);
-				return true;
-			}	else return false;
-		}
-		/**
-		  * Gets the content as a segment, returning false if the type is not adequate.
-		  */
-		inline bool getSegment(TSegment3D &s) const	{
-			if (isSegment())	{
-				s=*(data.segment);
-				return true;
-			}	else return false;
-		}
-		/**
-		  * Gets the content as a line, returning false if the type is not adequate.
-		  */
-		inline bool getLine(TLine3D &r) const	{
-			if (isLine())	{
-				r=*(data.line);
-				return true;
-			}	else return false;
-		}
-		/**
-		  * Gets the content as a polygon, returning false if the type is not adequate.
-		  */
-		inline bool getPolygon(TPolygon3D &p) const	{
-			if (isPolygon())	{
-				p=*(data.polygon);
-				return true;
-			}	else return false;
-		}
-		/**
-		  * Gets the content as a plane, returning false if the type is not adequate.
-		  */
-		inline bool getPlane(TPlane &p) const	{
-			if (isPlane())	{
-				p=*(data.plane);
-				return true;
-			}	else return false;
-		}
-		/**
-		  * Assigns another object, creating a new pointer if needed.
-		  */
-		void operator=(const TObject3D &obj)	{
-			if (this==&obj) return;
-			destroy();
-			switch (type=obj.type)	{
-				case GEOMETRIC_TYPE_POINT:
-					data.point=new TPoint3D(*(obj.data.point));
-					break;
-				case GEOMETRIC_TYPE_SEGMENT:
-					data.segment=new TSegment3D(*(obj.data.segment));
-					break;
-				case GEOMETRIC_TYPE_LINE:
-					data.line=new TLine3D(*(obj.data.line));
-					break;
-				case GEOMETRIC_TYPE_POLYGON:
-					data.polygon=new TPolygon3D(*(obj.data.polygon));
-					break;
-				case GEOMETRIC_TYPE_PLANE:
-					data.plane=new TPlane(*(obj.data.plane));
-					break;
-				case GEOMETRIC_TYPE_UNDEFINED:
-					break;
-				default:
-					THROW_EXCEPTION("Invalid TObject3D object");
-			}
-		}
-		/**
-		  * Assigns a point to this object.
-		  */
-		inline void operator=(const TPoint3D &p)	{
-			destroy();
-			type=GEOMETRIC_TYPE_POINT;
-			data.point=new TPoint3D(p);
-		}
-		/**
-		  * Assigns a segment to this object.
-		  */
-		inline void operator=(const TSegment3D &s)	{
-			destroy();
-			type=GEOMETRIC_TYPE_SEGMENT;
-			data.segment=new TSegment3D(s);
-		}
-		/**
-		  * Assigns a line to this object.
-		  */
-		inline void operator=(const TLine3D &l)	{
-			destroy();
-			type=GEOMETRIC_TYPE_LINE;
-			data.line=new TLine3D(l);
-		}
-		/**
-		  * Assigns a polygon to this object.
-		  */
-		inline void operator=(const TPolygon3D &p)	{
-			destroy();
-			type=GEOMETRIC_TYPE_POLYGON;
-			data.polygon=new TPolygon3D(p);
-		}
-		/**
-		  * Assigns a plane to this object.
-		  */
-		inline void operator=(const TPlane &p)	{
-			destroy();
-			type=GEOMETRIC_TYPE_PLANE;
-			data.plane=new TPlane(p);
-		}
-		/**
-		  * Projects into 2D space.
-		  * \throw std::logic_error if the 3D object loses its properties when projecting into 2D space (for example, it's a plane or a vertical line).
-		  */
-		inline void generate2DObject(TObject2D &obj) const	{
-			switch (type)	{
-				case GEOMETRIC_TYPE_POINT:
-					obj=TPoint2D(*(data.point));
-					break;
-				case GEOMETRIC_TYPE_SEGMENT:
-					obj=TSegment2D(*(data.segment));
-					break;
-				case GEOMETRIC_TYPE_LINE:
-					obj=TLine2D(*(data.line));
-					break;
-				case GEOMETRIC_TYPE_POLYGON:
-					obj=TPolygon2D(*(data.polygon));
-					break;
-				case GEOMETRIC_TYPE_PLANE:
-					throw std::logic_error("Too many dimensions");
-				default:
-					obj=TObject2D();
-					break;
-			}
-		}
-		/**
-		  * Constructs from another object.
-		  */
-		TObject3D(const TObject3D &obj):type(GEOMETRIC_TYPE_UNDEFINED)	{
-			operator=(obj);
-		}
-		/**
-		  * Static method to retrieve every point included in a vector of objects.
-		  */
-		static void getPoints(const std::vector<TObject3D> &objs,std::vector<TPoint3D> &pnts);
-		/**
-		  * Static method to retrieve every segment included in a vector of objects.
-		  */
-		static void getSegments(const std::vector<TObject3D> &objs,std::vector<TSegment3D> &sgms);
-		/**
-		  * Static method to retrieve every line included in a vector of objects.
-		  */
-		static void getLines(const std::vector<TObject3D> &objs,std::vector<TLine3D> &lins);
-		/**
-		  * Static method to retrieve every plane included in a vector of objects.
-		  */
-		static void getPlanes(const std::vector<TObject3D> &objs,std::vector<TPlane> &plns);
-		/**
-		  * Static method to retrieve every polygon included in a vector of objects.
-		  */
-		static void getPolygons(const std::vector<TObject3D> &objs,std::vector<TPolygon3D> &polys);
-		/**
-		  * Static method to retrieve every point included in a vector of objects, returning the remaining objects in another argument.
-		  */
-		static void getPoints(const std::vector<TObject3D> &objs,std::vector<TPoint3D> &pnts,std::vector<TObject3D> &remainder);
-		/**
-		  * Static method to retrieve every segment included in a vector of objects, returning the remaining objects in another argument.
-		  */
-		static void getSegments(const std::vector<TObject3D> &objs,std::vector<TSegment3D> &sgms,std::vector<TObject3D> &remainder);
-		/**
-		  * Static method to retrieve every line included in a vector of objects, returning the remaining objects in another argument.
-		  */
-		static void getLines(const std::vector<TObject3D> &objs,std::vector<TLine3D> &lins,std::vector<TObject3D> &remainder);
-		/**
-		  * Static method to retrieve every plane included in a vector of objects, returning the remaining objects in another argument.
-		  */
-		static void getPlanes(const std::vector<TObject3D> &objs,std::vector<TPlane> &plns,std::vector<TObject3D> &remainder);
-		/**
-		  * Static method to retrieve every polygon included in a vector of objects, returning the remaining objects in another argument.
-		  */
-		static void getPolygons(const std::vector<TObject3D> &objs,std::vector<TPolygon3D> &polys,std::vector<TObject3D> &remainder);
-	};
-#else
 	struct BASE_IMPEXP TObject2D	{
 	private:
 		/**
@@ -2297,7 +1647,6 @@ namespace math	{
 		static void getPolygons(const std::vector<TObject3D> &objs,std::vector<TPolygon3D> &polys,std::vector<TObject3D> &remainder);
 	};
 
-#endif
 
 
 	//Streaming functions
