@@ -666,7 +666,7 @@ void  CStream::sendMessage( const utils::CMessage &msg)
 bool  CStream::receiveMessage( utils::CMessage &msg )
 {
 	MRPT_START
-	unsigned char		buf[66000];
+	std::vector<unsigned char> buf(66000);
 	unsigned int		nBytesInFrame=0;
 	unsigned long		nBytesToRx=0;
 	unsigned char		tries = 2;
@@ -692,7 +692,7 @@ bool  CStream::receiveMessage( utils::CMessage &msg )
 			} // end else
 		} // end else
 
-		unsigned long nBytesRx = ReadBufferImmediate(buf+nBytesInFrame, nBytesToRx);
+		unsigned long nBytesRx = ReadBufferImmediate(&buf[nBytesInFrame], nBytesToRx);
 
 		// No more data! (read timeout is already included in the call to "Read")
 		if (!nBytesRx)

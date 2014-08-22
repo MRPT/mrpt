@@ -58,17 +58,8 @@ void  COccupancyGridMap2D::laserScanSimulator(
     inout_Scan.scan.resize(N);
     inout_Scan.validRange.resize(N);
 
-    double  A, AA;
-	if (inout_Scan.rightToLeft)
-	{
-		A = sensorPose.phi() - 0.5*inout_Scan.aperture;
-		AA = (inout_Scan.aperture / N);
-	}
-	else
-	{
-		A = sensorPose.phi() + 0.5*inout_Scan.aperture;
-		AA = -(inout_Scan.aperture / N);
-	}
+    double  A = sensorPose.phi() + (inout_Scan.rightToLeft ? -0.5:+0.5) *inout_Scan.aperture;
+	const double AA = (inout_Scan.rightToLeft ? 1.0:-1.0) * (inout_Scan.aperture / N);
 
     const float free_thres = 1.0f - threshold;
     const unsigned int max_ray_len = round(inout_Scan.maxRange / resolution);
