@@ -71,6 +71,8 @@ CCameraSensor::CCameraSensor() :
 	m_kinect_save_intensity_img(true),
 	m_kinect_video_rgb		(true),
 
+	m_fcs_start_synch_capture(false),
+
 	m_img_dir_url			(""),
 	m_img_dir_left_format	("imL_%04d.jpg"),
 	m_img_dir_right_format	("imR_%04d.jpg"),
@@ -78,8 +80,6 @@ CCameraSensor::CCameraSensor() :
 	m_img_dir_end_index		(100),
 	m_img_dir_is_stereo		(true),
 	m_img_dir_counter		(0),
-
-	m_fcs_start_synch_capture(false),
 
 	m_external_images_own_thread(false),
 	m_cap_cv             (NULL),
