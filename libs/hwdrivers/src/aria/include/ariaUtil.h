@@ -17,7 +17,7 @@
 #include <string.h>
 #include <memory.h>
 #include <list>
-#include <math.h>
+#include <cmath>
 #include <stdarg.h>
 #include <limits.h>
 
