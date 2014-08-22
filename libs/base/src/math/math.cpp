@@ -1046,7 +1046,7 @@ void  math::fft_real(	CVectorFloat	&in_realData,
  ---------------------------------------------------------------*/
 double  math::normalQuantile(double p)
 {
-	register double q, t, u;
+	double q, t, u;
 
 	static const double a[6] =
 		{
@@ -1140,7 +1140,7 @@ double  math::normalCDF(double u)
 		1.00000000000000000e00,2.56852019228982242e00,1.87295284992346047e00,
 		5.27905102951428412e-1,6.05183413124413191e-2,2.33520497626869185e-3
 		};
-	register double y, z;
+	double y, z;
 
 	ASSERT_( !isNaN(u) );
 	ASSERT_(  isFinite(u) );
