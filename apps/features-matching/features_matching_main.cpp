@@ -233,6 +233,11 @@ bool DemoFeatures()
 			winptrPlot_descr2->resize(220,200);
 		}
 		break;
+   default:
+      {
+         cerr << "Descriptor specified is not handled yet" << endl;
+      }
+      break;
 	}
 
 	CImage img1_show, img2_show, img2_show_base;
@@ -347,6 +352,11 @@ bool DemoFeatures()
 					winptrPlot_descr2->axis_fit();
 				}
 				break;
+         default:
+            {
+               cerr << "Descriptor specified is not handled yet" << endl;
+            }
+            break;
 		}
 
 

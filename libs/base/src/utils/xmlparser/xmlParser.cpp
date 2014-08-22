@@ -275,10 +275,12 @@ char myIsTextWideChar(const void *b, int len) { return FALSE; }
         static inline XMLSTR xstrstr(XMLCSTR c1, XMLCSTR c2) { return (XMLSTR)strstr(c1,c2); }
         static inline XMLSTR xstrcpy(XMLSTR c1, XMLCSTR c2) { return (XMLSTR)strcpy(c1,c2); }
     #endif
+#ifdef __clang__
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wunused-function"
     static inline int _strnicmp(const char *c1,const char *c2, int l) { return strncasecmp(c1,c2,l);}
 #pragma clang diagnostic pop
+#endif
 #endif
 
 

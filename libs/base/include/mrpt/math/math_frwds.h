@@ -48,8 +48,8 @@ namespace mrpt
 			/** Internal resize which compiles to nothing on fixed-size matrices. */
 			template <typename MAT,int TypeSizeAtCompileTime>
 			struct TAuxResizer {
-				static inline void internal_resize(MAT &obj, size_t row, size_t col) { }
-				static inline void internal_resize(MAT &obj, size_t nsize) { }
+				static inline void internal_resize(MAT &, size_t , size_t ) { }
+				static inline void internal_resize(MAT &, size_t ) { }
 			};
 			template <typename MAT>
 			struct TAuxResizer<MAT,-1> {

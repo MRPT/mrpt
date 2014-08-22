@@ -93,11 +93,11 @@ namespace utils
 
 	public:
 		non_copiable_ptr_basic() : ptr(NULL) { }
-		non_copiable_ptr_basic(const non_copiable_ptr_basic<T> &o) : ptr(NULL) { THROW_EXCEPTION("Pointer non-copiable..."); }
+		non_copiable_ptr_basic(const non_copiable_ptr_basic<T> &) : ptr(NULL) { THROW_EXCEPTION("Pointer non-copiable..."); }
 		non_copiable_ptr_basic(const T* p) : ptr(const_cast<T*>(p)) { }
 		non_copiable_ptr_basic<T> &operator =(T * p) { ptr = p; return *this; }
 
-		non_copiable_ptr_basic<T> &operator =(const non_copiable_ptr_basic<T>&o)
+		non_copiable_ptr_basic<T> &operator =(const non_copiable_ptr_basic<T>&)
 		{ THROW_EXCEPTION("Pointer non-copiable..."); }
 
 		/** This method can change the pointer, since the change is made explicitly, not through copy operators transparent to the user. */
@@ -134,7 +134,7 @@ namespace utils
 
 		non_copiable_ptr<T> &operator =(const T* p) { non_copiable_ptr_basic<T>::ptr = const_cast<T*>(p); return *this; }
 
-		non_copiable_ptr<T> &operator =(const non_copiable_ptr<T>&o)
+		non_copiable_ptr<T> &operator =(const non_copiable_ptr<T>&)
 		{ THROW_EXCEPTION("Pointer non-copiable..."); }
 
 		virtual ~non_copiable_ptr() {  }
@@ -159,11 +159,11 @@ namespace utils
 
 	public:
 		ignored_copy_ptr() : ptr(NULL) { }
-		ignored_copy_ptr(const ignored_copy_ptr<T> &o) : ptr(NULL) { }
+		ignored_copy_ptr(const ignored_copy_ptr<T> &) : ptr(NULL) { }
 		ignored_copy_ptr(const T* p) : ptr(const_cast<T*>(p)) { }
 		ignored_copy_ptr<T> &operator =(T * p) { ptr=p; return *this; }
 
-		ignored_copy_ptr<T> &operator =(const ignored_copy_ptr<T>&o) { return *this; }
+		ignored_copy_ptr<T> &operator =(const ignored_copy_ptr<T>&) { return *this; }
 
 		/** This method can change the pointer, since the change is made explicitly, not through copy operators transparent to the user. */
 		void set( const T* p ) { ptr = const_cast<T*>(p); }
@@ -198,11 +198,11 @@ namespace utils
 
 	public:
 		copiable_NULL_ptr_basic() : ptr(NULL) { }
-		copiable_NULL_ptr_basic(const copiable_NULL_ptr_basic<T> &o) : ptr(NULL) {  }
+		copiable_NULL_ptr_basic(const copiable_NULL_ptr_basic<T> &) : ptr(NULL) {  }
 
 		copiable_NULL_ptr_basic<T> &operator =(T * p) { ptr=p; return *this; }
 
-		copiable_NULL_ptr_basic<T> &operator =(const copiable_NULL_ptr_basic<T>&o) { ptr=NULL; return *this; }
+		copiable_NULL_ptr_basic<T> &operator =(const copiable_NULL_ptr_basic<T>&) { ptr=NULL; return *this; }
 
 		virtual ~copiable_NULL_ptr_basic() {  }
 

@@ -74,7 +74,6 @@ void ArSystemStatus::refreshCPU()
   //fgets(line,  512, uptimefp);
   //printf("read uptime file: %s\n", line);
   int dum_ret = fscanf(uptimefp, "%lf %lf", &uptime, &idle_uptime);
-  dum_ret;
   fclose(uptimefp);
   unsigned long user, nice, sys, idle, total;
   char tag[32];

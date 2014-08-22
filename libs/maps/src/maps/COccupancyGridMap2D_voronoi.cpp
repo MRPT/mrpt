@@ -298,7 +298,7 @@ int  COccupancyGridMap2D::computeClearance( int cx, int cy, int *basis_x, int *b
 					int             nPasos = round(1+(M_2PI*i)); // Estimacion de # de entradas (luego seran menos)
 					float           A = 0;
 					float           AA = (2.0f*M_PIf / nPasos);
-					register int    ult_x=0,x,ult_y=0,y;
+					int             ult_x=0,x,ult_y=0,y;
 					int             nEntradas = 0;
 
 					circ_PrimeraEntrada[i] = indice_absoluto;
@@ -343,8 +343,8 @@ int  COccupancyGridMap2D::computeClearance( int cx, int cy, int *basis_x, int *b
 
 			for (int j=0;j<nEnts && (*nBasis)<2;j++,idx++)
 			{
-					register int xx = cx+circs_x[idx];
-					register int yy = cy+circs_y[idx];
+					int xx = cx+circs_x[idx];
+					int yy = cy+circs_y[idx];
 
 				   if (xx>=0 && xx<static_cast<int>(size_x) && yy>=0 && yy<static_cast<int>(size_y))
 				   {
