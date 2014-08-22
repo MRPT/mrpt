@@ -120,12 +120,7 @@ CImageGrabber_dc1394::CImageGrabber_dc1394(
 		return;
 	}
 
-	// Display all supported modes:
-	if (verbose)
-	{
-	}
-
-	// Is mode7? treat differently:
+    // Is mode7? treat differently:
 	if (options.mode7>=0)
 	{
 		m_desired_mode = DC1394_VIDEO_MODE_FORMAT7_MIN + options.mode7;
@@ -133,9 +128,8 @@ CImageGrabber_dc1394::CImageGrabber_dc1394(
 			cout << "[CImageGrabber_dc1394] Mode is mode7: " << options.mode7 << endl;
 	}
 	else
-	{
-		// Build the mode value from the user request:
-	#define TEST_MODE(W,H,COLORMODEL)  else if (options.frame_width==W && options.frame_height==H && options.color_coding==COLOR_CODING_##COLORMODEL)  m_desired_mode=DC1394_VIDEO_MODE_##W##x##H##_##COLORMODEL;
+    {
+    #define TEST_MODE(W,H,COLORMODEL)  else if (options.frame_width==W && options.frame_height==H && options.color_coding==COLOR_CODING_##COLORMODEL)  m_desired_mode=DC1394_VIDEO_MODE_##W##x##H##_##COLORMODEL;
 
 		if (0) { }
 		TEST_MODE(160,120,YUV444)
@@ -165,8 +159,74 @@ CImageGrabber_dc1394::CImageGrabber_dc1394(
 		{
 			cerr << format("[CImageGrabber_dc1394] ERROR: Requested mode %ix%i color_model:%i is unknown.", options.frame_width,options.frame_height, int(options.color_coding) ) << endl;
 			return;
-		}
+        }
+
+        // Check if video mode is available for this camera
+        dc1394video_mode_t * p;
+        p = find( modes.modes, modes.modes+modes.num, m_desired_mode );
+        // Check if end was reached:
+        if (*p == modes.modes[modes.num])
+        {
+            cerr << format("[CImageGrabber_dc1394] ERROR: Requested mode %ix%i color_model:%i is not available for this camera.", options.frame_width,options.frame_height, int(options.color_coding) ) << endl;
+            //return;
+        }
 	}
+    // Display all supported modes and chosen:
+    if (verbose) cout << "------ Supported video modes ------" << endl;
+    bool valid_video_mode = false;
+    for(uint32_t i=0; i<modes.num; i++)
+    {
+        string mode;
+        switch( modes.modes[i] )
+        {
+        case DC1394_VIDEO_MODE_160x120_YUV444: mode = "160x120_YUV444"; break;
+        case DC1394_VIDEO_MODE_320x240_YUV422: mode = "320x240_YUV422"; break;
+        case DC1394_VIDEO_MODE_640x480_YUV411: mode = "640x480_YUV411"; break;
+        case DC1394_VIDEO_MODE_640x480_YUV422: mode = "640x480_YUV422"; break;
+        case DC1394_VIDEO_MODE_640x480_RGB8: mode = "640x480_RGB8"; break;
+        case DC1394_VIDEO_MODE_640x480_MONO8: mode = "640x480_MONO8"; break;
+        case DC1394_VIDEO_MODE_640x480_MONO16: mode = "640x480_MONO16"; break;
+        case DC1394_VIDEO_MODE_800x600_YUV422: mode = "800x600_YUV422"; break;
+        case DC1394_VIDEO_MODE_800x600_RGB8: mode = "800x600_RGB8"; break;
+        case DC1394_VIDEO_MODE_800x600_MONO8: mode = "800x600_MONO8"; break;
+        case DC1394_VIDEO_MODE_1024x768_YUV422: mode = "1024x768_YUV422"; break;
+        case DC1394_VIDEO_MODE_1024x768_RGB8: mode = "1024x768_RGB8"; break;
+        case DC1394_VIDEO_MODE_1024x768_MONO8: mode = "1024x768_MONO8"; break;
+        case DC1394_VIDEO_MODE_800x600_MONO16: mode = "800x600_MONO16"; break;
+        case DC1394_VIDEO_MODE_1024x768_MONO16: mode = "1024x768_MONO16"; break;
+        case DC1394_VIDEO_MODE_1280x960_YUV422: mode = "1280x960_YUV422"; break;
+        case DC1394_VIDEO_MODE_1280x960_RGB8: mode = "1280x960_RGB8"; break;
+        case DC1394_VIDEO_MODE_1280x960_MONO8: mode = "1280x960_MONO8"; break;
+        case DC1394_VIDEO_MODE_1600x1200_YUV422: mode = "1600x1200_YUV422"; break;
+        case DC1394_VIDEO_MODE_1600x1200_RGB8: mode = "1600x1200_RGB8"; break;
+        case DC1394_VIDEO_MODE_1600x1200_MONO8: mode = "1600x1200_MONO8"; break;
+        case DC1394_VIDEO_MODE_1280x960_MONO16: mode = "1280x960_MONO16"; break;
+        case DC1394_VIDEO_MODE_1600x1200_MONO16: mode = "1600x1200_MONO16"; break;
+        case DC1394_VIDEO_MODE_EXIF: mode = "EXIF"; break;
+        case DC1394_VIDEO_MODE_FORMAT7_0: mode = "FORMAT7_0"; break;
+        case DC1394_VIDEO_MODE_FORMAT7_1: mode = "FORMAT7_1"; break;
+        case DC1394_VIDEO_MODE_FORMAT7_2: mode = "FORMAT7_2"; break;
+        case DC1394_VIDEO_MODE_FORMAT7_3: mode = "FORMAT7_3"; break;
+        case DC1394_VIDEO_MODE_FORMAT7_4: mode = "FORMAT7_4"; break;
+        case DC1394_VIDEO_MODE_FORMAT7_5: mode = "FORMAT7_5"; break;
+        case DC1394_VIDEO_MODE_FORMAT7_6: mode = "FORMAT7_6"; break;
+        case DC1394_VIDEO_MODE_FORMAT7_7: mode = "FORMAT7_7"; break;
+        default:
+            cerr << "[CImageGrabber_dc1394] ERROR: Requested framerate is not valid." << endl;
+            return;
+        }
+        if (modes.modes[i] == m_desired_mode) valid_video_mode = true;
+        if (verbose)
+        {
+            if (modes.modes[i] == m_desired_mode) cout << mode << " (*)" << endl;
+            else cout << mode << endl;
+        }
+    }
+    if (!valid_video_mode)
+    {
+        cerr << format("[CImageGrabber_dc1394] ERROR: Requested mode %ix%i color_model:%i is not available for this camera.", options.frame_width,options.frame_height, int(options.color_coding) ) << endl;
+        return;
+    }
 
 	// Reset to bus just in case:
 	// And only once in a program, at start up:
@@ -190,6 +250,7 @@ CImageGrabber_dc1394::CImageGrabber_dc1394(
 	}
 
 	err=dc1394_video_set_mode(THE_CAMERA, dc1394video_mode_t(m_desired_mode));
+    // This checking only assures that m_desired_mode is inside dc1394video_mode_t enum range
 	if (err!=DC1394_SUCCESS)
 	{
 		cerr << "[CImageGrabber_dc1394] ERROR: Could not set video mode." << endl;
@@ -228,6 +289,7 @@ CImageGrabber_dc1394::CImageGrabber_dc1394(
 		return;
 	}
 
+    cout << "------ Other options ------" << endl;
 	uint32_t iso_chan;
 	if ((err = dc1394_video_get_iso_channel(THE_CAMERA, &iso_chan)) == DC1394_SUCCESS)
 		if (verbose)
@@ -253,6 +315,15 @@ CImageGrabber_dc1394::CImageGrabber_dc1394(
 	m_bInitialized = true;
 
 	changeCaptureOptions(m_options);
+
+    // Camera current features:
+    if (verbose)
+    {
+        dc1394featureset_t features;
+        if( (err=dc1394_feature_get_all(THE_CAMERA,&features)) == DC1394_SUCCESS )
+            dc1394_feature_print_all(&features, stdout);
+    }
+
 
 #else
 	THROW_EXCEPTION("[CImageGrabber_dc1394] ERROR: MRPT compiled with MRPT_HAS_LIBDC1394_2=0 !");
