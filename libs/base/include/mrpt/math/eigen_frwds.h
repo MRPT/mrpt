@@ -11,7 +11,6 @@
 // Eigen forward declarations:
 #include <mrpt/config.h>
 
-//#include <Eigen/Dense>
 #include <Eigen/src/Core/util/DisableStupidWarnings.h>
 #include <Eigen/src/Core/util/Macros.h>
 #include <complex> // Needed by hdrs below

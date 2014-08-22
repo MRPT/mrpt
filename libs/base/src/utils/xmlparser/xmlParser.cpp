@@ -13,10 +13,6 @@
 #undef _UNICODE			// JLBC
 #include "xmlParser.h"
 #ifdef _XMLWINDOWS
-//#ifdef _DEBUG
-//#define _CRTDBG_MAP_ALLOC
-//#include <crtdbg.h>
-//#endif
 #define WIN32_LEAN_AND_MEAN
 #include <Windows.h> // to have IsTextUnicode, MultiByteToWideChar, WideCharToMultiByte to handle unicode files
                      // to have "MessageBoxA" to display error messages for openFilHelper

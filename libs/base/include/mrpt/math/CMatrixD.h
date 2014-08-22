@@ -11,8 +11,6 @@
 
 #include <mrpt/utils/CSerializable.h>
 #include <mrpt/math/CMatrixTemplateNumeric.h>
-//#include <mrpt/utils/utils_defs.h>
-
 
 namespace mrpt
 {
