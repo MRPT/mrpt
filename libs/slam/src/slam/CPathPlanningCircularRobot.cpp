@@ -51,7 +51,7 @@ void  CPathPlanningCircularRobot::computePath(
 
 	std::vector<uint16_t>	grid;
 	int								size_x,size_y,i,n,m;
-	register int					x,y;
+	int					      x,y;
 	bool							searching;
 	uint16_t				minNeigh=CELL_EMPTY, maxNeigh=CELL_EMPTY, v=0, c;
 	int								passCellFound_x = -1,
