@@ -214,7 +214,7 @@ namespace stlplus
   class no_copy
   {
   public:
-    T* operator() (const T& from) throw(illegal_copy)
+    T* operator() (const T& ) throw(illegal_copy)
       {
         throw illegal_copy("no_copy functor called");
         return 0;

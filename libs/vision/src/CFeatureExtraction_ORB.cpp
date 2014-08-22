@@ -98,15 +98,15 @@ void  CFeatureExtraction::extractFeaturesORB(
 		for( size_t k = 0; k < n_feats; ++k )
 		{
 			feats[k]->descriptors.ORB.resize( cv_descs.cols );
-			for( size_t m = 0; m < cv_descs.cols; ++m )
+			for( int m = 0; m < cv_descs.cols; ++m )
 				feats[k]->descriptors.ORB[m] = cv_descs.at<uchar>(k,m);		// to do: memcopy
 
-			/** /
+			/*
 			feats[k].response	= cv_feats[k].response;
 			feats[k].scale		= cv_feats[k].size;
 			feats[k].angle		= cv_feats[k].orientation;
 			feats[k].ID			= f_id++;
-			/**/
+			*/
 			feats[k]->type		= featORB;
 
 			if( options.ORBOptions.extract_patch && options.patchSize > 0 )
@@ -202,7 +202,7 @@ void  CFeatureExtraction::extractFeaturesORB(
 
 		// descriptor
 		ft->descriptors.ORB.resize( cv_descs.cols );
-		for( size_t m = 0; m < cv_descs.cols; ++m )
+		for( int m = 0; m < cv_descs.cols; ++m )
 			ft->descriptors.ORB[m] = cv_descs.at<uchar>(idx,m);
 
 		if( options.ORBOptions.extract_patch && options.patchSize > 0 )
@@ -256,7 +256,7 @@ void CFeatureExtraction::internal_computeORBDescriptors(
 	for( size_t k = 0; k < n_feats; ++k )
 	{
 		in_features[k]->descriptors.ORB.resize( cv_descs.cols );
-		for( size_t i = 0; i < cv_descs.cols; ++i )
+		for( int i = 0; i < cv_descs.cols; ++i )
 			in_features[k]->descriptors.ORB[i] = cv_descs.at<uchar>(k,i);
 
 	} // end-for

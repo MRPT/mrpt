@@ -80,12 +80,12 @@ namespace stlplus
     T* m_data;
 
     // make these private to disallow copying because the holder doesn't know how to copy
-    inline smart_ptr_holder(const smart_ptr_holder& s) :
+    inline smart_ptr_holder(const smart_ptr_holder& ) :
       m_count(0), m_data(0)
       {
       }
 
-    inline smart_ptr_holder& operator=(const smart_ptr_holder& s)
+    inline smart_ptr_holder& operator=(const smart_ptr_holder& )
       {
         return *this;
       }

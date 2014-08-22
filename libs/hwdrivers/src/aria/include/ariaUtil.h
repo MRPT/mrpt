@@ -17,7 +17,7 @@
 #include <string.h>
 #include <memory.h>
 #include <list>
-#include <math.h>
+#include <cmath>
 #include <stdarg.h>
 #include <limits.h>
 
@@ -770,7 +770,7 @@ public:
     {
       unsigned long timeThis;
       timeThis = mySec * 1000 + myMSec;
-      if (ms < 0 && (unsigned)abs(ms) > timeThis)
+      if (ms < 0 && (unsigned)std::abs(ms) > timeThis)
       {
 	ArLog::log(ArLog::Terse, "ArTime::addMsec: tried to subtract too many milliseconds, would result in a negative time.");
 	mySec = 0;

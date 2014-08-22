@@ -73,7 +73,7 @@ void CRandomGenerator::MT19937_generateNumbers()
 	const int N = 624;	// length of state vector
 	const int M = 397;	// period parameter
 
-	register uint32_t *p = m_MT19937_data.MT;
+	uint32_t *p = m_MT19937_data.MT;
 	for( int i = N - M; i--; ++p )
 		*p = twist( p[M], p[0], p[1] );
 	for( int i = M; --i; ++p )
