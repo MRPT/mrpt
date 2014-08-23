@@ -116,13 +116,24 @@ namespace mrpt
 		  *    dc1394_framerate		= 15					// eg: 7.5, 15, 30, 60, etc... For posibilities see mrpt::hwdrivers::TCaptureOptions_dc1394
 		  *    dc1394_mode7         = -1                    // -1: Ignore, i>=0, set to MODE7_i
 		  *    dc1394_color_coding	= COLOR_CODING_YUV422	// For posibilities see mrpt::hwdrivers::TCaptureOptions_dc1394
-		  *    dc1394_shutter		= -1	// A value, or -1 (or not present) for not to change this parameter in the camera
-		  *    dc1394_gain			= -1	// A value, or -1 (or not present) for not to change this parameter in the camera
-		  *    dc1394_gamma			= -1	// A value, or -1 (or not present) for not to change this parameter in the camera
-		  *    dc1394_brightness	= -1	// A value, or -1 (or not present) for not to change this parameter in the camera
-		  *    dc1394_exposure		= -1	// A value, or -1 (or not present) for not to change this parameter in the camera
-		  *    dc1394_sharpness		= -1	// A value, or -1 (or not present) for not to change this parameter in the camera
-		  *    dc1394_white_balance	= -1	// A value, or -1 (or not present) for not to change this parameter in the camera
+          *    # Options for setting feature values: dc1394_<feature> = <n>
+          *    # with <feature> = brightness | exposure | sharpness | white_balance | gamma | shutter | gain
+          *    #      <n> a value, or -1 (or not present) for not to change this feature value in the camera, possible values are shown in execution
+          *    dc1394_shutter       = -1
+          *    # Options for setting feature modes: dc1394_<feature>_mode = <n>
+          *    # with <feature> = brightness | exposure | sharpness | white_balance | gamma | shutter | gain
+          *    #      <n> = -1 (or not present) [not to change] | 0 [manual] | 1 [auto] | 2 [one_push_auto]
+          *    dc1394_shutter_mode	= -1
+          *    # Options for setting trigger options: dc1394_trigger_<opt> = <n>
+          *    # with <opt> = power | mode | source | polarity
+          *    #      <n_power>    = -1 | 0 [OFF] | [ON]
+          *    #      <n_mode>     = -1 | 0..7 corresponding to possible modes 0,1,2,3,4,5,14,15
+          *    #      <n_source>   = -1 | 0..4 corresponding to possible sources 0,1,2,3,SOFTWARE
+          *    #      <n_polarity> = -1 | 0 [ACTIVE_LOW] | 1 [ACTIVE_HIGH]
+          *    dc1394_trigger_power	= -1
+          *    dc1394_trigger_mode	= -1
+          *    dc1394_trigger_source= -1
+          *    dc1394_trigger_polarity = -1
 		  *
 		  *    # Options for grabber_type= bumblebee ----------------------------------
 		  *    bumblebee_camera_index  = 0       // [bumblebee] Number of camera within the firewire bus to open (typically = 0)
@@ -268,6 +279,10 @@ namespace mrpt
 			  */
 			void close();
 
+            /** Set Software trigger level value (ON or OFF) for cameras with this function available.
+              */
+            void setSoftwareTriggerLevel( bool level );
+
 			/**  Set the path where to save off-rawlog image files (this class DOES take into account this path).
 			  *  An  empty string (the default value at construction) means to save images embedded in the rawlog, instead of on separate files.
 			  * \exception std::exception If the directory doesn't exists and cannot be created.
@@ -301,8 +316,8 @@ namespace mrpt
 			uint64_t								m_dc1394_camera_guid;
 			int										m_dc1394_camera_unit;
 			TCaptureOptions_dc1394	m_dc1394_options;
-			int										m_preview_decimation;
-			int										m_preview_reduction;
+            int										m_preview_decimation;
+            int										m_preview_reduction;
 
 			// Options for grabber_type= bumblebee ----------------------------------
 			int										m_bumblebee_camera_index;
