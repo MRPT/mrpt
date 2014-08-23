@@ -47,7 +47,8 @@ void  COccupancyGridMap2D::laserScanSimulator(
 {
 	MRPT_START
 
-	ASSERT_(decimation>=1);
+	ASSERT_(decimation>=1)
+	ASSERT_(N>=2)
 
 	// Sensor pose in global coordinates
 	CPose3D		sensorPose3D = CPose3D(robotPose) + inout_Scan.sensorPose;
@@ -55,11 +56,12 @@ void  COccupancyGridMap2D::laserScanSimulator(
 	CPose2D		sensorPose(sensorPose3D);
 
     // Scan size:
+
     inout_Scan.scan.resize(N);
     inout_Scan.validRange.resize(N);
 
     double  A = sensorPose.phi() + (inout_Scan.rightToLeft ? -0.5:+0.5) *inout_Scan.aperture;
-	const double AA = (inout_Scan.rightToLeft ? 1.0:-1.0) * (inout_Scan.aperture / N);
+	const double AA = (inout_Scan.rightToLeft ? 1.0:-1.0) * (inout_Scan.aperture / (N-1));
 
     const float free_thres = 1.0f - threshold;
     const unsigned int max_ray_len = round(inout_Scan.maxRange / resolution);

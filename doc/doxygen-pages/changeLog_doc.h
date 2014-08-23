@@ -15,6 +15,7 @@
 <a name="1.2.2">
   <h2>Version 1.2.2: (Under development) </h2></a>
 	- Changes in classes:
+		- Consistency in all "laser scan" classes: angular increments between rays are now FOV/(N-1) instead of FOV/N.
 		- [mrpt-maps]
 			- New method mrpt::slam::COccupancyGridMap2D::getRawMap()
 			- New method mrpt::slam::CColouredPointsMap::getPCLPointCloudXYZRGB()
