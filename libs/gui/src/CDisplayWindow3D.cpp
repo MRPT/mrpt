@@ -631,6 +631,24 @@ void CDisplayWindow3D::setMaxRange(double new_max)
 	}
 }
 
+float CDisplayWindow3D::getFOV() const 
+{ 
+#if MRPT_HAS_WXWIDGETS && MRPT_HAS_OPENGL_GLUT
+	C3DWindowDialog *win = (C3DWindowDialog*) m_hwnd.get();
+	if (win)
+		return win->m_canvas->cameraFOV;
+#endif
+	return .0f;
+}
+
+void CDisplayWindow3D::setFOV(float v)
+{
+#if MRPT_HAS_WXWIDGETS && MRPT_HAS_OPENGL_GLUT
+	C3DWindowDialog *win = (C3DWindowDialog*) m_hwnd.get();
+	if (win)
+		win->m_canvas->cameraFOV = v;
+#endif
+}
 
 /*---------------------------------------------------------------
 					getCameraElevationDeg

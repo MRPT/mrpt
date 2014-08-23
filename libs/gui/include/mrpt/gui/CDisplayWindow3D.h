@@ -85,11 +85,6 @@ namespace mrpt
 		protected:
 			friend class C3DWindowDialog;
 			friend class CMyGLCanvas_DisplayWindow3D;
-
-
-			float m_FOV;
-
-
 			/** Internal OpenGL object (see general discussion in about usage of this object)
 			  */
 			opengl::COpenGLScenePtr			m_3Dscene;
@@ -166,9 +161,8 @@ namespace mrpt
 			  */
 			void  updateWindow() { forceRepaint(); }
 
-			/** Return the camera field of view (in degrees) (used for gluPerspective).
-			  */
-			float getFOV() const { return m_FOV; };
+			/** Return the camera field of view (in degrees) (used for gluPerspective). */
+			float getFOV() const;
 
 			/** Changes the camera min clip range (z) (used for gluPerspective).
 			  *  The window is not updated with this method, call "forceRepaint" to update the 3D view.
@@ -183,7 +177,7 @@ namespace mrpt
 			/** Changes the camera field of view (in degrees) (used for gluPerspective).
 			  *  The window is not updated with this method, call "forceRepaint" to update the 3D view.
 			  */
-			void setFOV(float v)  { m_FOV=v; };
+			void setFOV(float v);
 
 			/** Resizes the window, stretching the image to fit into the display area.
 			 */
