@@ -124,16 +124,11 @@ namespace mrpt
           *    # with <feature> = brightness | exposure | sharpness | white_balance | gamma | shutter | gain
           *    #      <n> = -1 (or not present) [not to change] | 0 [manual] | 1 [auto] | 2 [one_push_auto]
           *    dc1394_shutter_mode	= -1
-          *    # Options for setting trigger options: dc1394_trigger_<opt> = <n>
-          *    # with <opt> = power | mode | source | polarity
-          *    #      <n_power>    = -1 | 0 [OFF] | [ON]
-          *    #      <n_mode>     = -1 | 0..7 corresponding to possible modes 0,1,2,3,4,5,14,15
-          *    #      <n_source>   = -1 | 0..4 corresponding to possible sources 0,1,2,3,SOFTWARE
-          *    #      <n_polarity> = -1 | 0 [ACTIVE_LOW] | 1 [ACTIVE_HIGH]
-          *    dc1394_trigger_power	= -1
-          *    dc1394_trigger_mode	= -1
-          *    dc1394_trigger_source= -1
-          *    dc1394_trigger_polarity = -1
+          *    # Options for setting trigger options:
+          *    dc1394_trigger_power	= -1    // -1 (or not present) for not to change | 0 [OFF] | 1 [ON]
+          *    dc1394_trigger_mode	= -1    // -1 (or not present) for not to change | 0..7 corresponding to possible modes 0,1,2,3,4,5,14,15
+          *    dc1394_trigger_source= -1    // -1 (or not present) for not to change | 0..4 corresponding to possible sources 0,1,2,3,SOFTWARE
+          *    dc1394_trigger_polarity = -1 // -1 (or not present) for not to change | 0 [ACTIVE_LOW] | 1 [ACTIVE_HIGH]
 		  *
 		  *    # Options for grabber_type= bumblebee ----------------------------------
 		  *    bumblebee_camera_index  = 0       // [bumblebee] Number of camera within the firewire bus to open (typically = 0)
