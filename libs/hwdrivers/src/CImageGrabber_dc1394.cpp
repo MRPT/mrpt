@@ -155,22 +155,7 @@ CImageGrabber_dc1394::CImageGrabber_dc1394(
 		TEST_MODE(1600,1200,RGB8)
 		TEST_MODE(1600,1200,MONO8)
 		TEST_MODE(1600,1200,MONO16)
-		else
-		{
-			cerr << format("[CImageGrabber_dc1394] ERROR: Requested mode %ix%i color_model:%i is unknown.", options.frame_width,options.frame_height, int(options.color_coding) ) << endl;
-			return;
-        }
-
-        // Check if video mode is available for this camera
-        dc1394video_mode_t * p;
-        p = find( modes.modes, modes.modes+modes.num, m_desired_mode );
-        // Check if end was reached:
-        if (*p == modes.modes[modes.num])
-        {
-            cerr << format("[CImageGrabber_dc1394] ERROR: Requested mode %ix%i color_model:%i is not available for this camera.", options.frame_width,options.frame_height, int(options.color_coding) ) << endl;
-            //return;
-        }
-	}
+    }
     // Display all supported modes and chosen:
     if (verbose) cout << "------ Supported video modes ------" << endl;
     bool valid_video_mode = false;
@@ -212,7 +197,7 @@ CImageGrabber_dc1394::CImageGrabber_dc1394(
         case DC1394_VIDEO_MODE_FORMAT7_6: mode = "FORMAT7_6"; break;
         case DC1394_VIDEO_MODE_FORMAT7_7: mode = "FORMAT7_7"; break;
         default:
-            cerr << "[CImageGrabber_dc1394] ERROR: Requested framerate is not valid." << endl;
+            cerr << "[CImageGrabber_dc1394] ERROR: Requested video mode is not valid." << endl;
             return;
         }
         if (modes.modes[i] == m_desired_mode) valid_video_mode = true;
@@ -223,7 +208,7 @@ CImageGrabber_dc1394::CImageGrabber_dc1394(
         }
     }
     if (!valid_video_mode)
-    {
+    {   
         cerr << format("[CImageGrabber_dc1394] ERROR: Requested mode %ix%i color_model:%i is not available for this camera.", options.frame_width,options.frame_height, int(options.color_coding) ) << endl;
         return;
     }
@@ -300,6 +285,22 @@ CImageGrabber_dc1394::CImageGrabber_dc1394(
 		if (verbose)
 			cout << "ISO Speed: " << iso_speed << endl;
 
+    // set trigger options:
+    #define SET_TRIGGER(opt,OPT,TYPE) \
+    if (options.trigger_##opt>=0) \
+    { \
+        err=dc1394_external_trigger_set_##opt(THE_CAMERA, static_cast<dc1394trigger_##opt##_t>(DC1394_TRIGGER_##TYPE##_MIN + options.trigger_##opt)); \
+        DC1394_WRN(err, "[CImageGrabber_dc1394::changeCaptureOptions] Could not set trigger opt"); \
+    }
+    SET_TRIGGER(mode,MODE,MODE)
+    SET_TRIGGER(source,SOURCE,SOURCE)
+    SET_TRIGGER(polarity,POLARITY,ACTIVE)
+    if (options.trigger_power>=0)
+    {
+        err=dc1394_external_trigger_set_power(THE_CAMERA, dc1394switch_t(options.trigger_power));
+        DC1394_WRN(err, "[CImageGrabber_dc1394::changeCaptureOptions] Could not set trigger power");
+    }
+    #undef SET_TRIGGER
 
 	/*-----------------------------------------------------------------------
 	 *  have the camera start sending us data
@@ -373,7 +374,8 @@ bool  CImageGrabber_dc1394::getObservation( mrpt::slam::CObservationImage &out_o
     dc1394video_frame_t *frame=NULL;
 
 	// get frame from ring buffer:
-	dc1394error_t err=dc1394_capture_dequeue(THE_CAMERA, DC1394_CAPTURE_POLICY_WAIT, &frame);
+    MRPT_TODO("Thread will keep frozen in this line when using software trigger if no frame is available: Assure trigger before getObservation")
+    dc1394error_t err=dc1394_capture_dequeue(THE_CAMERA, DC1394_CAPTURE_POLICY_WAIT, &frame);
 	if (err!=DC1394_SUCCESS)
 	{
 		cerr << "[CImageGrabber_dc1394] ERROR: Could not capture a frame" << endl;
@@ -524,43 +526,37 @@ bool CImageGrabber_dc1394::changeCaptureOptions( const TCaptureOptions_dc1394 &o
 
 #if MRPT_HAS_LIBDC1394_2
 	dc1394error_t err;
+    // set features modes:
+    #define SET_MODE(feat,FEAT) \
+    if (options.feat##_mode>=0) \
+    { \
+        err=dc1394_feature_set_mode(THE_CAMERA, DC1394_FEATURE_##FEAT, static_cast<dc1394feature_mode_t>(DC1394_FEATURE_MODE_MIN + options.feat##_mode)); \
+        DC1394_WRN(err, "[CImageGrabber_dc1394::changeCaptureOptions] Could not set feat mode"); \
+    }
+    SET_MODE(shutter,SHUTTER)
+    SET_MODE(gain,GAIN)
+    SET_MODE(gamma,GAMMA)
+    SET_MODE(brightness,BRIGHTNESS)
+    SET_MODE(exposure,EXPOSURE)
+    SET_MODE(sharpness,SHARPNESS)
+    SET_MODE(white_balance,WHITE_BALANCE)
+    #undef SET_MODE
 
-	// Set features:
-	if (options.shutter>=0)
-	{
-		err=dc1394_feature_set_value(THE_CAMERA, DC1394_FEATURE_SHUTTER, options.shutter );
-		DC1394_WRN(err, "[CImageGrabber_dc1394::changeCaptureOptions] Could not set shutter");
-	}
-	if (options.gain>=0)
-	{
-		err=dc1394_feature_set_value(THE_CAMERA, DC1394_FEATURE_GAIN, options.gain );
-		DC1394_WRN(err, "[CImageGrabber_dc1394::changeCaptureOptions] Could not set gain");
-	}
-	if (options.gamma>=0)
-	{
-		err=dc1394_feature_set_value(THE_CAMERA, DC1394_FEATURE_GAMMA, options.gamma );
-		DC1394_WRN(err, "[CImageGrabber_dc1394::changeCaptureOptions] Could not set gamma");
-	}
-	if (options.brightness>=0)
-	{
-		err=dc1394_feature_set_value(THE_CAMERA, DC1394_FEATURE_BRIGHTNESS, options.brightness );
-		DC1394_WRN(err, "[CImageGrabber_dc1394::changeCaptureOptions] Could not set brightness");
-	}
-	if (options.exposure>=0)
-	{
-		err=dc1394_feature_set_value(THE_CAMERA, DC1394_FEATURE_EXPOSURE, options.exposure );
-		DC1394_WRN(err, "[CImageGrabber_dc1394::changeCaptureOptions] Could not set exposure");
-	}
-	if (options.sharpness>=0)
-	{
-		err=dc1394_feature_set_value(THE_CAMERA, DC1394_FEATURE_SHARPNESS, options.sharpness );
-		DC1394_WRN(err, "[CImageGrabber_dc1394::changeCaptureOptions] Could not set sharpness");
-	}
-	if (options.white_balance>=0)
-	{
-		err=dc1394_feature_set_value(THE_CAMERA, DC1394_FEATURE_WHITE_BALANCE, options.white_balance );
-		DC1394_WRN(err, "[CImageGrabber_dc1394::changeCaptureOptions] Could not set white_balance");
-	}
+    // Set features values:
+    #define SET_VALUE(feat,FEAT) \
+    if (options.feat>=0) \
+    { \
+        err=dc1394_feature_set_value(THE_CAMERA, DC1394_FEATURE_##FEAT, options.feat); \
+        DC1394_WRN(err, "[CImageGrabber_dc1394::changeCaptureOptions] Could not set feat value"); \
+    }
+    SET_VALUE(shutter,SHUTTER)
+    SET_VALUE(gain,GAIN)
+    SET_VALUE(gamma,GAMMA)
+    SET_VALUE(brightness,BRIGHTNESS)
+    SET_VALUE(exposure,EXPOSURE)
+    SET_VALUE(sharpness,SHARPNESS)
+    SET_VALUE(white_balance,WHITE_BALANCE)
+    #undef SET_VALUE
 
 	return true;
 #else
@@ -568,6 +564,29 @@ bool CImageGrabber_dc1394::changeCaptureOptions( const TCaptureOptions_dc1394 &o
 #endif
    MRPT_END
 }
+
+/*-------------------------------------------------------------
+                    setSoftwareTriggerLevel
+ -------------------------------------------------------------*/
+bool CImageGrabber_dc1394::setSoftwareTriggerLevel( bool level  )
+{
+   MRPT_START
+
+   if (!m_bInitialized) return false;
+
+#if MRPT_HAS_LIBDC1394_2
+    dc1394error_t err;
+    err = dc1394_software_trigger_set_power(THE_CAMERA, (dc1394switch_t)level);
+    DC1394_WRN(err, "[CImageGrabber_dc1394::setSoftwareTriggerLevel] Could not set software trigger level");
+
+    return true;
+#else
+   THROW_EXCEPTION("The MRPT has been compiled with MRPT_HAS_LIBDC1394_2=0 !");
+#endif
+   MRPT_END
+}
+
+
 
 /** Generates a list with the information on all the existing (Firewire) cameras in the system.
   * \exception std::runtime_error On any error calling libdc1394.

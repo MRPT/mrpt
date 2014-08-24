@@ -41,7 +41,6 @@ namespace mrpt
 			COLOR_CODING_MONO16
 		} grabber_dc1394_color_coding_t;
 
-
 		/** Options used when creating an dc1394 capture object
 		  *   All but the frame size, framerate, and color_coding can be changed dynamically by CImageGrabber_dc1394::changeCaptureOptions
 		  * \sa CImageGrabber_dc1394
@@ -49,23 +48,34 @@ namespace mrpt
 		  */
 		struct TCaptureOptions_dc1394
 		{
-			TCaptureOptions_dc1394() :
-				frame_width		(640),
-				frame_height	(480),
-				framerate		(FRAMERATE_15),
-				color_coding	(COLOR_CODING_YUV422),
-				mode7			(-1),
-				shutter			(-1),
-				gain			(-1),
-				gamma			(-1),
-				brightness		(-1),
-				exposure		(-1),
-				sharpness		(-1),
-				white_balance	(-1),
-				deinterlace_stereo(false)
-			{}
+            TCaptureOptions_dc1394() :
+                frame_width		(640),
+                frame_height	(480),
+                framerate		(FRAMERATE_15),
+                color_coding	(COLOR_CODING_YUV422),
+                mode7			(-1),
+                shutter			(-1),
+                gain			(-1),
+                gamma			(-1),
+                brightness		(-1),
+                exposure		(-1),
+                sharpness		(-1),
+                white_balance	(-1),
+                shutter_mode    (-1),
+                gain_mode       (-1),
+                gamma_mode      (-1),
+                brightness_mode (-1),
+                exposure_mode   (-1),
+                sharpness_mode  (-1),
+                white_balance_mode(-1),
+                deinterlace_stereo(false),
+                trigger_power   (-1),
+                trigger_mode    (-1),
+                trigger_source  (-1),
+                trigger_polarity(-1)
+            {}
 
-			int		frame_width,frame_height;	//!< Capture resolution (Default: 640x480)
+            int		frame_width,frame_height;	//!< Capture resolution (Default: 640x480)
 			grabber_dc1394_framerate_t		framerate;
 			grabber_dc1394_color_coding_t	color_coding;
 
@@ -78,7 +88,18 @@ namespace mrpt
 			int		exposure;		//!< Exposure, -1=default:Do not change
 			int		sharpness;		//!< Sharpness, -1=default:Do not change
 			int		white_balance;	//!< White balance, -1=default:Do not change
-			bool  	deinterlace_stereo;	//!< For stereo cameras (eg PR Bumblebee)
+            int		shutter_mode;		//!< Shutter mode, -1=default:Do not change
+            int		gain_mode;			//!< Gain mode, -1=default:Do not change
+            int		gamma_mode;			//!< Gamma mode, -1=default:Do not change
+            int		brightness_mode;	//!< Brightness mode, -1=default:Do not change
+            int		exposure_mode;		//!< Exposure mode, -1=default:Do not change
+            int		sharpness_mode;		//!< Sharpness mode, -1=default:Do not change
+            int		white_balance_mode;	//!< White balance mode, -1=default:Do not change
+            bool  	deinterlace_stereo;	//!< For stereo cameras (eg PR Bumblebee)
+            int     trigger_power;
+            int     trigger_mode;
+            int     trigger_source;
+            int     trigger_polarity;
 		};
 
 		/** A class for grabing images from a IEEE1394 (Firewire) camera using the libdc1394-2 library.
@@ -156,6 +177,12 @@ namespace mrpt
 			 * \return false on any error, true if all go fine.
 			*/
 			bool  getObservation( mrpt::slam::CObservationStereoImages &out_observation);
+
+            /** Changes the boolean level associated to Software Trigger (ON/OFF)
+              * Can be used to control camera triggering trough software
+              * \return false on error
+              */
+            bool  setSoftwareTriggerLevel( bool level );
 
 			/** Used in enumerateCameras */
 			struct TCameraInfo
