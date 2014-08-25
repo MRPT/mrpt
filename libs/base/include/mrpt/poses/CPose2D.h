@@ -78,7 +78,7 @@ namespace poses
 		 explicit CPose2D(const CPoint3D &);
 
 		 /** Fast constructor that leaves all the data uninitialized - call with UNINITIALIZED_POSE as argument */
-		 inline CPose2D(TConstructorFlags_Poses constructor_dummy_param) : m_cossin_uptodate(false) { }
+		 inline CPose2D(TConstructorFlags_Poses ) : m_cossin_uptodate(false) { }
 
 		 /** Get the phi angle of the 2D pose (in radians) */
 		 inline const double &phi() const { return m_phi; }

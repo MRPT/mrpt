@@ -168,6 +168,7 @@ namespace mrpt
 			 */
 			virtual bool canComputeObservationLikelihood( const CObservation *obs )
 			{
+            UNUSED(obs);
 				return true; // Unless implemented otherwise, assume we can always compute the likelihood.
 			}
 
@@ -221,6 +222,11 @@ namespace mrpt
 				const TMatchingParams & params,
 				TMatchingExtraResults & extraResults ) const
 			{
+            UNUSED(otherMap);
+            UNUSED(otherMapPose);
+            UNUSED(correspondences);
+            UNUSED(params);
+            UNUSED(extraResults);
 				MRPT_START
 				THROW_EXCEPTION("Virtual method not implemented in derived class.")
 				MRPT_END
@@ -251,6 +257,11 @@ namespace mrpt
 				const TMatchingParams & params,
 				TMatchingExtraResults & extraResults ) const
 			{
+            UNUSED(otherMap);
+            UNUSED(otherMapPose);
+            UNUSED(correspondences);
+            UNUSED(params);
+            UNUSED(extraResults);
 				MRPT_START
 				THROW_EXCEPTION("Virtual method not implemented in derived class.")
 				MRPT_END
@@ -273,6 +284,10 @@ namespace mrpt
 				float									maxMahaDistForCorr = 2.0f
 			) const
 			{
+            UNUSED(otherMap);
+            UNUSED(otherMapPose);
+            UNUSED(maxDistForCorr);
+            UNUSED(maxMahaDistForCorr);
 				MRPT_START
 				THROW_EXCEPTION("Virtual method not implemented in derived class.")
 				MRPT_END
@@ -307,6 +322,8 @@ namespace mrpt
 				float x0,
 				float y0 ) const
 			{
+            UNUSED(x0);
+            UNUSED(y0);
 				MRPT_START
 				THROW_EXCEPTION("Virtual method not implemented in derived class.")
 				MRPT_END
