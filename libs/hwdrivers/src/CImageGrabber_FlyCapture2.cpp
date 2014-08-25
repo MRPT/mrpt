@@ -27,13 +27,14 @@ using namespace mrpt::hwdrivers;
 using namespace std;
 
 #if MRPT_HAS_FLYCAPTURE2
-// Declare a table to convert strings to their #define values:
+// Declare tables to convert strings to their #define values:
+template <typename T>
 struct fc2_str_val {
 	const char* str;
-	int val;
+	T val;
 };
 
-const fc2_str_val fc2_vals[] = {
+const fc2_str_val<VideoMode> fc2_VideoMode_table[] = {
 	{ "VIDEOMODE_160x120YUV444",VIDEOMODE_160x120YUV444},
 	{ "VIDEOMODE_320x240YUV422",VIDEOMODE_320x240YUV422},
 	{ "VIDEOMODE_640x480YUV411",VIDEOMODE_640x480YUV411},
@@ -57,7 +58,8 @@ const fc2_str_val fc2_vals[] = {
 	{ "VIDEOMODE_1600x1200RGB",VIDEOMODE_1600x1200RGB},
 	{ "VIDEOMODE_1600x1200Y8",VIDEOMODE_1600x1200Y8},
 	{ "VIDEOMODE_1600x1200Y16",VIDEOMODE_1600x1200Y16},
-	// -----------
+};
+fc2_str_val<FrameRate> fc2_FrameRate_table[] = {
 	{ "FRAMERATE_1_875",FlyCapture2::FRAMERATE_1_875},
 	{ "FRAMERATE_3_75",FlyCapture2::FRAMERATE_3_75},
 	{ "FRAMERATE_7_5",FlyCapture2::FRAMERATE_7_5},
@@ -66,21 +68,44 @@ const fc2_str_val fc2_vals[] = {
 	{ "FRAMERATE_60",FlyCapture2::FRAMERATE_60},
 	{ "FRAMERATE_120",FlyCapture2::FRAMERATE_120},
 	{ "FRAMERATE_240",FlyCapture2::FRAMERATE_240},
-	// ------------------
+};
+fc2_str_val<GrabMode> fc2_GrabMode_table[] = {
 	{ "DROP_FRAMES",DROP_FRAMES},
 	{ "BUFFER_FRAMES",BUFFER_FRAMES}
 };
 
+#define GET_CONV_TABLE(type)  \
+	vector< fc2_str_val<type> > fc2_vals_gen( type ) {  \
+	size_t n = sizeof( fc2_##type##_table ) / sizeof( fc2_##type##_table[0] );  \
+	vector< fc2_str_val<type> > vec( &fc2_##type##_table[0], &fc2_##type##_table[n] );  \
+	return vec; }
+GET_CONV_TABLE(VideoMode)
+GET_CONV_TABLE(FrameRate)
+GET_CONV_TABLE(GrabMode)
+
 template <typename T>
 T fc2_defstr2num(const std::string &str)
 {
+	vector< fc2_str_val<T> > fc2_vals = fc2_vals_gen( T() );
 	const std::string s = mrpt::system::trim(str);
-	for (unsigned int i=0;i<sizeof(fc2_vals)/sizeof(fc2_vals[0]);i++)
+	for (size_t i=0;i<fc2_vals.size();i++)
 	{
 		if (mrpt::system::strCmpI(fc2_vals[i].str,s.c_str()))
-			return static_cast<T>(fc2_vals[i].val);
+			return fc2_vals[i].val;
 	}
 	THROW_EXCEPTION_CUSTOM_MSG1("Error: Unknown FlyCapture2 constant: %s",s.c_str())
+}
+
+
+template <typename T>
+const char* fc2_defnum2str(const T &val)
+{
+    vector< fc2_str_val<T> > fc2_vals = fc2_vals_gen( T() );
+	 size_t i = static_cast<int>(val);
+	 if (i < fc2_vals.size())
+		  return fc2_vals[i].str;
+	 else
+		  THROW_EXCEPTION_CUSTOM_MSG1("Error: Unknown FlyCapture2 enum: %i",static_cast<int>(val))
 }
 #endif
 
@@ -276,7 +301,9 @@ void CImageGrabber_FlyCapture2::open( const TCaptureOptions_FlyCapture2 &options
 		FlyCapture2::FrameRate curVidRate;
 		error = FC2_CAM->GetVideoModeAndFrameRate(&curVidMode,&curVidRate);
 		if (error==PGRERROR_OK)
-			cout << mrpt::format("[CImageGrabber_FlyCapture2::open] Current camera mode is %d, current rate is %d.\n",static_cast<int>(curVidMode),static_cast<int>(curVidRate) );
+			cout << mrpt::format("[CImageGrabber_FlyCapture2::open] Current camera mode is %s, current rate is %s.\n",
+										fc2_defnum2str<FlyCapture2::VideoMode>(curVidMode),
+										fc2_defnum2str<FlyCapture2::FrameRate>(curVidRate));
 	}
 
 
