@@ -388,21 +388,19 @@ void CImageGrabber_FlyCapture2::open( const TCaptureOptions_FlyCapture2 &options
 
 
 	// Set trigger:
+	FlyCapture2::TriggerModeInfo trigInfo;
+	FC2_CAM->GetTriggerModeInfo(&trigInfo);
+
+	FlyCapture2::TriggerMode trig;
+	trig.onOff = m_options.trigger_enabled;
 	if ( m_options.trigger_enabled )
 	{
-		FlyCapture2::TriggerModeInfo trigInfo;
-		FC2_CAM->GetTriggerModeInfo(&trigInfo);
-
-		FlyCapture2::TriggerMode trig;
-
-		trig.onOff = m_options.trigger_enabled;
 		trig.mode  = m_options.trigger_mode;
 		trig.polarity = m_options.trigger_polarity;
 		trig.source   = m_options.trigger_source;
-
-		fe = FC2_CAM->SetTriggerMode(&trig);
-		CHECK_FC2_ERROR(fe)
 	}
+	fe = FC2_CAM->SetTriggerMode(&trig);
+	CHECK_FC2_ERROR(fe)
 
 	// Strobe:
 	if (m_options.strobe_enabled)
