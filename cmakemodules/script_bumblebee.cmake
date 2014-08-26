@@ -1,5 +1,6 @@
 # Support for Bumblebee stereo camera (actually: PGR Digiclops/Triclops Windows libraries)
 # ==========================================================================================
+#TODO: This libraries are deprecated and should be fussed with Flycapture2 and Triclops in flycap driver for supporting both Windows and Linux
 IF(UNIX)
 	SET( MRPT_HAS_BUMBLEBEE OFF CACHE INTERNAL "Has PGR Digiclops/Triclops Windows libraries?" FORCE)
 ELSE(UNIX)

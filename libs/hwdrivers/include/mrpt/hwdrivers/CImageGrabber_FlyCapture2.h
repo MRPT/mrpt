@@ -114,9 +114,8 @@ namespace mrpt
 			void *m_camera;      //!< Opaque pointer to the FlyCapture2::Camera object. NULL if no camera is grabbing.
 			void *m_camera_info; //!< Opaque pointer to the FlyCapture2::CameraInfo object. NULL if no camera is grabbing.
 			void *m_img_buffer;  //!< Opaque pointer to the FlyCapture2::Image, used as a temporary buffer and to avoid mem alloc/reallocs.
-#if MRPT_HAS_TRICLOPS
 			void *m_triclops;		//!< Opaque pointer to the TriclopsContext objetc. NULL if no context is active.
-#endif
+
 			// Camera intrinsic calibration
 			float			m_baseline;						//!< Camera baseline (only for stereo cameras)
 			float			m_focalLength;					//!< Camera focal length

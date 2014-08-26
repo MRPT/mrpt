@@ -570,7 +570,9 @@ void CImageGrabber_FlyCapture2::close()
 	// Delete objects:
 	try { if (m_camera) delete FC2_CAM;  } catch (...) {}
 	try { if (m_camera_info) delete FC2_CAM_INFO; } catch (...) {}
+#if MRPT_HAS_TRICLOPS
 	try { if (m_triclops) delete TRI_CONTEXT; } catch (...) {}
+#endif
 
 	m_camera=NULL;
 	m_camera_info=NULL;
