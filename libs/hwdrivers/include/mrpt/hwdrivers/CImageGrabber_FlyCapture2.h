@@ -10,6 +10,7 @@
 #define CImageGrabber_FlyCapture2_H
 
 #include <mrpt/slam/CObservationImage.h>
+#include <mrpt/slam/CObservationStereoImages.h>
 #include <mrpt/hwdrivers/link_pragmas.h>
 #include <mrpt/utils/CUncopiable.h>
 
@@ -50,6 +51,11 @@ namespace mrpt
 
 			bool         shutter_auto;      //!< (default=true)
 			float        shutter_time_ms;   //!< (default=4.0) Shutter time, if shutter_auto=false
+
+			bool	stereo_mode;	//!< (default=false) Obtain images as stereo pairs with Flycapture2
+			bool	get_rectified;	//!< (default=false) Rectify stereo images (needs Triclops installed)
+			unsigned int rect_width;	//!< (default=640) Width for output rectified images
+			unsigned int rect_height;	//!< (default=480) Height for output rectified images
 			/** @} */
 
 			/** Loads all the options from a config file.
@@ -108,6 +114,12 @@ namespace mrpt
 			void *m_camera;      //!< Opaque pointer to the FlyCapture2::Camera object. NULL if no camera is grabbing.
 			void *m_camera_info; //!< Opaque pointer to the FlyCapture2::CameraInfo object. NULL if no camera is grabbing.
 			void *m_img_buffer;  //!< Opaque pointer to the FlyCapture2::Image, used as a temporary buffer and to avoid mem alloc/reallocs.
+			void *m_triclops;		//!< Opaque pointer to the TriclopsContext objetc. NULL if no context is active.
+
+			// Camera intrinsic calibration
+			float			m_baseline;						//!< Camera baseline (only for stereo cameras)
+			float			m_focalLength;					//!< Camera focal length
+			float			m_centerCol, m_centerRow;		//!< Camera center coordinates
 
 			TCaptureOptions_FlyCapture2	 m_options;			//!< Camera options
 
@@ -150,9 +162,16 @@ namespace mrpt
 			/** Returns the PGR FlyCapture2 library version */
 			static std::string getFC2version();
 
-			/** Grab image from the camera. This method blocks until the next frame is captured.
+			/** Grab mono image from the camera. This method blocks until the next frame is captured.
 			 * \return false on any error. */
-			bool  getObservation( mrpt::slam::CObservationImage &out_observation );
+			bool getObservation( mrpt::slam::CObservationImage &out_observation );
+
+			/** Grab stereo image from the camera. This method blocks until the next frame is captured.
+			 * \return false on any error. */
+			bool getObservation( mrpt::slam::CObservationStereoImages &out_observation );
+
+			/** Returns if current configuration is stereo or not */
+			inline bool isStereo(){ return m_options.stereo_mode; }
 
 		};	// End of class
 

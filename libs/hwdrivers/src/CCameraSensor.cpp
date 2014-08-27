@@ -854,9 +854,19 @@ void CCameraSensor::getNextFrame( vector<CSerializablePtr> & out_obs )
 	}
 	else if (m_cap_flycap)
 	{
-		obs = CObservationImage::Create();
+		bool ok;
+		if (!m_cap_flycap->isStereo()) // Mono image
+		{
+			obs = CObservationImage::Create();
+			ok = m_cap_flycap->getObservation(*obs);
+		}
+		else // Stereo camera connected
+		{
+			stObs = CObservationStereoImages::Create();
+			ok = m_cap_flycap->getObservation(*stObs);
+		}
 
-		if (!m_cap_flycap->getObservation(*obs))
+		if (!ok)
 		{	// Error
 			m_state = CGenericSensor::ssError;
 			THROW_EXCEPTION("Error grabbing image");

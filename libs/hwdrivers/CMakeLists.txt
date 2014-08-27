@@ -173,6 +173,15 @@ IF(BUILD_mrpt-hwdrivers)
 		TARGET_LINK_LIBRARIES(mrpt-hwdrivers ${PGR_FLYCAPTURE2_LIB_FILE_RELEASE})
 	ENDIF(CMAKE_MRPT_HAS_FLYCAPTURE2)
 
+	# Link to PGR Triclops libraries:
+	IF(CMAKE_MRPT_HAS_TRICLOPS)
+		# link_directories() was added in the configuration script under /cmakemodules/*_ni.cmake
+		INCLUDE_DIRECTORIES(${PGR_TRICLOPS_INCLUDE_DIR})
+		TARGET_LINK_LIBRARIES(mrpt-hwdrivers ${PGR_TRICLOPS_LIB_FILE_RELEASE})
+		TARGET_LINK_LIBRARIES(mrpt-hwdrivers ${PGR_FC2BRIDGE_LIB_FILE_RELEASE})
+		TARGET_LINK_LIBRARIES(mrpt-hwdrivers ${PGR_PNMUTILS_LIB_FILE_RELEASE})
+	ENDIF(CMAKE_MRPT_HAS_TRICLOPS)
+
 	# Build with link on SVS lib
 	IF(CMAKE_MRPT_HAS_SVS)
 		TARGET_LINK_LIBRARIES(mrpt-hwdrivers dcap)

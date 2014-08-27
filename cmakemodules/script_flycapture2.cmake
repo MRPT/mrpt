@@ -12,9 +12,10 @@ IF(NOT DISABLE_PGR_FLYCAPTURE2)
 	IF(MRPT_HAS_PGR_FLYCAPTURE2)
 		# Look for libs & headers:
 		find_library(PGR_FLYCAPTURE2_LIB_FILE_RELEASE
-			NAMES FlyCapture2 
+			NAMES flycapture FlyCapture2
 			PATHS 
 				"/usr/local/"
+				"/usr/lib/"
 				"$ENV{ProgramFiles}/Point Grey Research/FlyCapture2/lib64"
 				"$ENV{ProgramFiles}/Point Grey Research/FlyCapture2/lib"
 				"$ENV{ProgramFiles(x86)}/Point Grey Research/FlyCapture2/lib"
@@ -25,6 +26,7 @@ IF(NOT DISABLE_PGR_FLYCAPTURE2)
 			NAMES FlyCapture2.h
 			PATHS 
 				"/usr/local/"
+				"/usr/include/flycapture"
 				"/usr/"
 				"$ENV{ProgramFiles}/Point Grey Research/FlyCapture2/include"
 				"$ENV{ProgramFiles(x86)}/Point Grey Research/FlyCapture2/include"
