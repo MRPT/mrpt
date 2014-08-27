@@ -25,11 +25,6 @@ namespace mrpt { namespace utils {
 // Load test datalog
 TEST(ReactiveNavTests, LoadNavLogFile)
 {
-#if MRPT_IS_BIG_ENDIAN
-	MRPT_TODO("Skip this test in big endian platforms (TODO)")
-	return;
-#endif
-
 	const string navlog_file = MRPT_GLOBAL_UNITTEST_SRC_DIR + string("/tests/serialize_test_data.reactivenavlog");
 	if (!mrpt::system::fileExists(navlog_file))
 	{
