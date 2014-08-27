@@ -136,6 +136,7 @@ SHOW_CONFIG_LINE("PGR Digiclops/Triclops (Windows)    " CMAKE_MRPT_HAS_BUMBLEBEE
 SHOW_CONFIG_LINE("PGR FlyCapture2                     " CMAKE_MRPT_HAS_FLYCAPTURE2)
 SHOW_CONFIG_LINE("PGR Triclops              	       " CMAKE_MRPT_HAS_TRICLOPS)
 SHOW_CONFIG_LINE_SYSTEM("Phidgets                            " CMAKE_MRPT_HAS_PHIDGET)
+SHOW_CONFIG_LINE("RoboPeak LIDAR                      " CMAKE_MRPT_HAS_ROBOPEAK_LIDAR)
 SHOW_CONFIG_LINE_SYSTEM("SwissRanger 3/4000 3D camera        " CMAKE_MRPT_HAS_SWISSRANGE )
 SHOW_CONFIG_LINE_SYSTEM("Videre SVS stereo camera            " CMAKE_MRPT_HAS_SVS)
 SHOW_CONFIG_LINE_SYSTEM("xSENS MT 3rd generation             " CMAKE_MRPT_HAS_xSENS_MT3)

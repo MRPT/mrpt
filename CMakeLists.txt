@@ -118,12 +118,19 @@ endif (ENABLE_SOLUTION_FOLDERS)
 
 # Build the ARIA library?
 SET(BUILD_ARIA ON CACHE BOOL "Build an embedded version of ActivMedia ARIA library (interface to mobile robots)")
-#MARK_AS_ADVANCED(BUILD_ARIA)
 IF(BUILD_ARIA)
 	SET(CMAKE_MRPT_HAS_ARIA 1)
 ELSE(BUILD_ARIA)
 	SET(CMAKE_MRPT_HAS_ARIA 0)
 ENDIF(BUILD_ARIA)
+
+# Build the RoboPeak Lidar library?
+SET(BUILD_ROBOPEAK_LIDAR ON CACHE BOOL "Build an embedded version of RoboPeak LIDAR SDK (interface to low-cost lidar)")
+IF(BUILD_ROBOPEAK_LIDAR)
+	SET(CMAKE_MRPT_HAS_ROBOPEAK_LIDAR 1)
+ELSE(BUILD_ROBOPEAK_LIDAR)
+	SET(CMAKE_MRPT_HAS_ROBOPEAK_LIDAR 0)
+ENDIF(BUILD_ROBOPEAK_LIDAR)
 
 #-----------------------------------
 #  Build the hardware drivers?
