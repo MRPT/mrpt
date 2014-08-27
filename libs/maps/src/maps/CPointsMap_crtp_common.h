@@ -134,6 +134,11 @@ namespace detail
 				const __m128 m21_4val = _mm_set1_ps(m21);
 				const __m128 m23_4val = _mm_set1_ps(m23);
 
+				// Make sure the input std::vector<> has room enough for reads of 4-float at a time:
+				// Invalid reads should not be a problem, but just for safety...
+				if ((rangeScan.scan.size() & 0x03) !=0)
+					const_cast<std::vector<float>*>(&rangeScan.scan)->reserve(rangeScan.scan.size()+4);
+
 				const float *ptr_in_scan = &rangeScan.scan[0];
 				const float *ptr_in_cos  = &sincos_vals.ccos[0];
 				const float *ptr_in_sin  = &sincos_vals.csin[0];
@@ -158,10 +163,10 @@ namespace detail
 				Eigen::Array<float,Eigen::Dynamic,1>  scan_x(sizeRangeScan+3), scan_y(sizeRangeScan+3);
 
 				// Convert from the std::vector format:
-				const Eigen::Map<Eigen::Matrix<float,Eigen::Dynamic,1> > scan_vals( const_cast<float*>(&rangeScan.scan[0]),rangeScan.scan.size(),1 ); 
+				const Eigen::Map<Eigen::Matrix<float,Eigen::Dynamic,1> > scan_vals( const_cast<float*>(&rangeScan.scan[0]),rangeScan.scan.size(),1 );
 				// SinCos table allocates N+4 floats for the convenience of SSE2: Map to make it appears it has the correct size:
-				const Eigen::Map<Eigen::Matrix<float,Eigen::Dynamic,1> > ccos( const_cast<float*>(&sincos_vals.ccos[0]),rangeScan.scan.size(),1 ); 
-				const Eigen::Map<Eigen::Matrix<float,Eigen::Dynamic,1> > csin( const_cast<float*>(&sincos_vals.csin[0]),rangeScan.scan.size(),1 ); 
+				const Eigen::Map<Eigen::Matrix<float,Eigen::Dynamic,1> > ccos( const_cast<float*>(&sincos_vals.ccos[0]),rangeScan.scan.size(),1 );
+				const Eigen::Map<Eigen::Matrix<float,Eigen::Dynamic,1> > csin( const_cast<float*>(&sincos_vals.csin[0]),rangeScan.scan.size(),1 );
 
 				// Vectorized (optimized) scalar multiplications:
 				scan_x = scan_vals.array() * ccos.array();
@@ -406,7 +411,7 @@ namespace detail
 			// The last point
 			if (lastPointWasValid && !lastPointWasInserted)
 			{
-				if (lx!=0 || ly!=0 || lz!=0) 
+				if (lx!=0 || ly!=0 || lz!=0)
 				{
 					obj.x.push_back( lx );
 					obj.y.push_back( ly );

@@ -28,6 +28,7 @@
 		- Unit tests: Named semaphores are not tested anymore if it's detected that the kernel version doesn't support them (Fix Debian 758725).
 		- mrpt::synch::CSemaphore [Linux]: didn't call sem_unlink().
 		- mrpt::gui::CDisplayWindow3D didn't implement get/set FOV.
+		- Valgrind: Fixed potential unaligned memory access warning in point clouds.
 
 <hr>
 <a name="1.2.1">
