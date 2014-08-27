@@ -32,7 +32,7 @@ namespace internal_mrpt
 	struct MatOrVecResizer<R,1>
 	{
 		template <typename S, int Opt, int MaxR, int MaxC>
-		static inline void doit(Eigen::Matrix<S,R,1,Opt,MaxR,MaxC> &mat, size_t new_rows,size_t new_cols)
+		static inline void doit(Eigen::Matrix<S,R,1,Opt,MaxR,MaxC> &mat, size_t new_rows,size_t )
 		{
 			::mrpt::math::detail::TAuxResizer<Eigen::Matrix<S,R,1,Opt,MaxR,MaxC>,Eigen::Matrix<S,R,1,Opt,MaxR,MaxC>::SizeAtCompileTime>::internal_resize(mat,new_rows);
 		}
@@ -42,7 +42,7 @@ namespace internal_mrpt
 	struct MatOrVecResizer<1,C>
 	{
 		template <typename S, int Opt, int MaxR, int MaxC>
-		static inline void doit(Eigen::Matrix<S,1,C,Opt,MaxR,MaxC> &mat, size_t new_rows,size_t new_cols)
+		static inline void doit(Eigen::Matrix<S,1,C,Opt,MaxR,MaxC> &mat, size_t ,size_t new_cols)
 		{
 			::mrpt::math::detail::TAuxResizer<Eigen::Matrix<S,1,C,Opt,MaxR,MaxC>,Eigen::Matrix<S,1,C,Opt,MaxR,MaxC>::SizeAtCompileTime>::internal_resize(mat,new_cols);
 		}
@@ -51,7 +51,7 @@ namespace internal_mrpt
 	struct MatOrVecResizer<1,1>
 	{
 		template <typename S, int Opt, int MaxR, int MaxC>
-		static inline void doit(Eigen::Matrix<S,1,1,Opt,MaxR,MaxC> &mat, size_t new_rows,size_t new_cols)
+		static inline void doit(Eigen::Matrix<S,1,1,Opt,MaxR,MaxC> &mat, size_t ,size_t new_cols)
 		{
 			::mrpt::math::detail::TAuxResizer<Eigen::Matrix<S,1,1,Opt,MaxR,MaxC>,Eigen::Matrix<S,1,1,Opt,MaxR,MaxC>::SizeAtCompileTime>::internal_resize(mat,new_cols);
 		}
