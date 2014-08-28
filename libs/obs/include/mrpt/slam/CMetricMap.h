@@ -168,7 +168,7 @@ namespace mrpt
 			 */
 			virtual bool canComputeObservationLikelihood( const CObservation *obs )
 			{
-            UNUSED(obs);
+				MRPT_UNUSED_PARAM(obs);
 				return true; // Unless implemented otherwise, assume we can always compute the likelihood.
 			}
 
@@ -222,11 +222,11 @@ namespace mrpt
 				const TMatchingParams & params,
 				TMatchingExtraResults & extraResults ) const
 			{
-            UNUSED(otherMap);
-            UNUSED(otherMapPose);
-            UNUSED(correspondences);
-            UNUSED(params);
-            UNUSED(extraResults);
+				MRPT_UNUSED_PARAM(otherMap);
+				MRPT_UNUSED_PARAM(otherMapPose);
+				MRPT_UNUSED_PARAM(correspondences);
+				MRPT_UNUSED_PARAM(params);
+				MRPT_UNUSED_PARAM(extraResults);
 				MRPT_START
 				THROW_EXCEPTION("Virtual method not implemented in derived class.")
 				MRPT_END
@@ -257,11 +257,11 @@ namespace mrpt
 				const TMatchingParams & params,
 				TMatchingExtraResults & extraResults ) const
 			{
-            UNUSED(otherMap);
-            UNUSED(otherMapPose);
-            UNUSED(correspondences);
-            UNUSED(params);
-            UNUSED(extraResults);
+				MRPT_UNUSED_PARAM(otherMap);
+				MRPT_UNUSED_PARAM(otherMapPose);
+				MRPT_UNUSED_PARAM(correspondences);
+				MRPT_UNUSED_PARAM(params);
+				MRPT_UNUSED_PARAM(extraResults);
 				MRPT_START
 				THROW_EXCEPTION("Virtual method not implemented in derived class.")
 				MRPT_END
@@ -284,10 +284,10 @@ namespace mrpt
 				float									maxMahaDistForCorr = 2.0f
 			) const
 			{
-            UNUSED(otherMap);
-            UNUSED(otherMapPose);
-            UNUSED(maxDistForCorr);
-            UNUSED(maxMahaDistForCorr);
+				MRPT_UNUSED_PARAM(otherMap);
+				MRPT_UNUSED_PARAM(otherMapPose);
+				MRPT_UNUSED_PARAM(maxDistForCorr);
+				MRPT_UNUSED_PARAM(maxMahaDistForCorr);
 				MRPT_START
 				THROW_EXCEPTION("Virtual method not implemented in derived class.")
 				MRPT_END
@@ -322,8 +322,8 @@ namespace mrpt
 				float x0,
 				float y0 ) const
 			{
-            UNUSED(x0);
-            UNUSED(y0);
+				MRPT_UNUSED_PARAM(x0);
+				MRPT_UNUSED_PARAM(y0);
 				MRPT_START
 				THROW_EXCEPTION("Virtual method not implemented in derived class.")
 				MRPT_END

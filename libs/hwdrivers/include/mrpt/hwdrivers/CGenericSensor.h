@@ -214,7 +214,7 @@ namespace mrpt
 			  * \exception std::exception If the directory doesn't exists and cannot be created.
 			  */
 			virtual void setPathForExternalImages( const std::string &directory ) {
-            UNUSED(directory);
+				MRPT_UNUSED_PARAM(directory);
 				// In this base class, the default is to ignore image paths.
 			}
 
