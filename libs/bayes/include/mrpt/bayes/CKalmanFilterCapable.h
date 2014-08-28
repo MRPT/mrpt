@@ -52,10 +52,6 @@ namespace mrpt
 		// Forward declaration:
 		template <size_t VEH_SIZE, size_t OBS_SIZE, size_t FEAT_SIZE, size_t ACT_SIZE, typename KFTYPE> class CKalmanFilterCapable;
 
-		namespace detail {
-		struct CRunOneKalmanIteration_addNewLandmarks;
-		}
-
 		/** Generic options for the Kalman Filter algorithm in itself.
 	 	  * \ingroup mrpt_bayes_grp
 		  */
@@ -124,6 +120,19 @@ namespace mrpt
 			// Specialization:
 			template <size_t VEH_SIZE, size_t OBS_SIZE, size_t ACT_SIZE, typename KFTYPE>
 			inline bool isMapEmpty(const CKalmanFilterCapable<VEH_SIZE,OBS_SIZE,0 /*FEAT_SIZE*/,ACT_SIZE,KFTYPE> &obj);
+
+			template <size_t VEH_SIZE, size_t OBS_SIZE, size_t FEAT_SIZE, size_t ACT_SIZE, typename KFTYPE>
+			void addNewLandmarks(
+				CKalmanFilterCapable<VEH_SIZE,OBS_SIZE,FEAT_SIZE,ACT_SIZE,KFTYPE> &obj,
+				const typename CKalmanFilterCapable<VEH_SIZE,OBS_SIZE,FEAT_SIZE,ACT_SIZE,KFTYPE>::vector_KFArray_OBS & Z,
+				const vector_int       &data_association,
+				const typename CKalmanFilterCapable<VEH_SIZE,OBS_SIZE,FEAT_SIZE,ACT_SIZE,KFTYPE>::KFMatrix_OxO		&R);
+			template <size_t VEH_SIZE, size_t OBS_SIZE, size_t ACT_SIZE, typename KFTYPE>
+			void addNewLandmarks(
+				CKalmanFilterCapable<VEH_SIZE,OBS_SIZE,0 /* FEAT_SIZE=0 */,ACT_SIZE,KFTYPE> &obj,
+				const typename CKalmanFilterCapable<VEH_SIZE,OBS_SIZE,0 /* FEAT_SIZE=0 */,ACT_SIZE,KFTYPE>::vector_KFArray_OBS & Z,
+				const vector_int       &data_association,
+				const typename CKalmanFilterCapable<VEH_SIZE,OBS_SIZE,0 /* FEAT_SIZE=0 */,ACT_SIZE,KFTYPE>::KFMatrix_OxO		&R);
 		}
 
 
@@ -194,6 +203,9 @@ namespace mrpt
 			typedef CArrayNumeric<KFTYPE,FEAT_SIZE> KFArray_FEAT;
 
 			inline size_t getStateVectorLength() const { return m_xkk.size(); }
+
+			inline KFVector& internal_getXkk() { return m_xkk; }
+			inline KFMatrix& internal_getPkk() { return m_pkk; }
 
 			/** Returns the mean of the estimated value of the idx'th landmark (not applicable to non-SLAM problems).
 			  * \exception std::exception On idx>= getNumberOfLandmarksInTheMap()
@@ -346,6 +358,8 @@ namespace mrpt
 				A -= B;
 			}
 
+
+			public:
 			/** If applicable to the given problem, this method implements the inverse observation model needed to extend the "map" with a new "element".
 			  * \param in_z The observation vector whose inverse sensor model is to be computed. This is actually one of the vector<> returned by OnGetObservationsAndDataAssociation().
 			  * \param out_yn The F-length vector with the inverse observation model \f$ y_n=y(x,z_n) \f$.
@@ -1435,7 +1449,7 @@ namespace mrpt
 					if (!data_association.empty())
 					{
 						m_timLogger.enter("KF:A.add new landmarks");
- 						detail::CRunOneKalmanIteration_addNewLandmarks()(*this, Z, data_association,R);
+ 						detail::addNewLandmarks(*this, Z, data_association,R);
 						m_timLogger.leave("KF:A.add new landmarks");
 					} // end if data_association!=empty
 
@@ -1503,132 +1517,131 @@ namespace mrpt
 				out_x=prediction[0];
 			}
 
-
- 			friend struct detail::CRunOneKalmanIteration_addNewLandmarks;
-
+		friend
+		void detail::addNewLandmarks(
+			CKalmanFilterCapable<VEH_SIZE,OBS_SIZE,FEAT_SIZE,ACT_SIZE,KFTYPE> &obj,
+			const typename CKalmanFilterCapable<VEH_SIZE,OBS_SIZE,FEAT_SIZE,ACT_SIZE,KFTYPE>::vector_KFArray_OBS & Z,
+			const vector_int       &data_association,
+			const typename CKalmanFilterCapable<VEH_SIZE,OBS_SIZE,FEAT_SIZE,ACT_SIZE,KFTYPE>::KFMatrix_OxO		&R);
 		}; // end class
 
 		namespace detail
 		{
- 			struct CRunOneKalmanIteration_addNewLandmarks
- 			{
-				// generic version for SLAM. There is a speciation below for NON-SLAM problems.
- 				template <size_t VEH_SIZE, size_t OBS_SIZE, size_t FEAT_SIZE, size_t ACT_SIZE, typename KFTYPE>
- 				void operator()(
- 					CKalmanFilterCapable<VEH_SIZE,OBS_SIZE,FEAT_SIZE,ACT_SIZE,KFTYPE> &obj,
- 					const typename CKalmanFilterCapable<VEH_SIZE,OBS_SIZE,FEAT_SIZE,ACT_SIZE,KFTYPE>::vector_KFArray_OBS & Z,
- 					const vector_int       &data_association,
- 					const typename CKalmanFilterCapable<VEH_SIZE,OBS_SIZE,FEAT_SIZE,ACT_SIZE,KFTYPE>::KFMatrix_OxO		&R
- 					)
+			// generic version for SLAM. There is a speciation below for NON-SLAM problems.
+			template <size_t VEH_SIZE, size_t OBS_SIZE, size_t FEAT_SIZE, size_t ACT_SIZE, typename KFTYPE>
+			void addNewLandmarks(
+				CKalmanFilterCapable<VEH_SIZE,OBS_SIZE,FEAT_SIZE,ACT_SIZE,KFTYPE> &obj,
+				const typename CKalmanFilterCapable<VEH_SIZE,OBS_SIZE,FEAT_SIZE,ACT_SIZE,KFTYPE>::vector_KFArray_OBS & Z,
+				const vector_int       &data_association,
+				const typename CKalmanFilterCapable<VEH_SIZE,OBS_SIZE,FEAT_SIZE,ACT_SIZE,KFTYPE>::KFMatrix_OxO		&R
+				)
+			{
+				typedef CKalmanFilterCapable<VEH_SIZE,OBS_SIZE,FEAT_SIZE,ACT_SIZE,KFTYPE> KF;
+
+				for (size_t idxObs=0;idxObs<Z.size();idxObs++)
 				{
-					typedef CKalmanFilterCapable<VEH_SIZE,OBS_SIZE,FEAT_SIZE,ACT_SIZE,KFTYPE> KF;
-
-					for (size_t idxObs=0;idxObs<Z.size();idxObs++)
+					// Is already in the map?
+					if ( data_association[idxObs] < 0 )  // Not in the map yet!
 					{
-						// Is already in the map?
-						if ( data_association[idxObs] < 0 )  // Not in the map yet!
+						obj.getProfiler().enter("KF:9.create new LMs");
+						// Add it:
+
+						// Append to map of IDs <-> position in the state vector:
+						ASSERTDEB_(FEAT_SIZE>0)
+						ASSERTDEB_( 0 == ((obj.internal_getXkk().size() - VEH_SIZE) % FEAT_SIZE) ) // Sanity test
+
+						const size_t  newIndexInMap = (obj.internal_getXkk().size() - VEH_SIZE) / FEAT_SIZE;
+
+						// Inverse sensor model:
+						typename KF::KFArray_FEAT yn;
+						typename KF::KFMatrix_FxV dyn_dxv;
+						typename KF::KFMatrix_FxO dyn_dhn;
+						typename KF::KFMatrix_FxF dyn_dhn_R_dyn_dhnT;
+						bool use_dyn_dhn_jacobian=true;
+
+						// Compute the inv. sensor model and its Jacobians:
+						obj.OnInverseObservationModel(
+							Z[idxObs],
+							yn,
+							dyn_dxv,
+							dyn_dhn,
+							dyn_dhn_R_dyn_dhnT,
+							use_dyn_dhn_jacobian );
+
+						// And let the application do any special handling of adding a new feature to the map:
+						obj.OnNewLandmarkAddedToMap(
+							idxObs,
+							newIndexInMap
+							);
+
+						ASSERTDEB_( yn.size() == FEAT_SIZE )
+
+						// Append to m_xkk:
+						size_t q;
+						size_t idx = obj.internal_getXkk().size();
+						obj.internal_getXkk().conservativeResize( obj.internal_getXkk().size() + FEAT_SIZE );
+
+						for (q=0;q<FEAT_SIZE;q++)
+							obj.internal_getXkk()[idx+q] = yn[q];
+
+						// --------------------
+						// Append to Pkk:
+						// --------------------
+						ASSERTDEB_( obj.internal_getPkk().getColCount()==idx && obj.internal_getPkk().getRowCount()==idx );
+
+						obj.internal_getPkk().setSize( idx+FEAT_SIZE,idx+FEAT_SIZE );
+
+						// Fill the Pxyn term:
+						// --------------------
+						typename KF::KFMatrix_VxV Pxx;
+						obj.internal_getPkk().extractMatrix(0,0,Pxx);
+						typename KF::KFMatrix_FxV Pxyn; // Pxyn = dyn_dxv * Pxx
+						Pxyn.multiply( dyn_dxv, Pxx );
+
+						obj.internal_getPkk().insertMatrix( idx,0, Pxyn );
+						obj.internal_getPkk().insertMatrixTranspose( 0,idx, Pxyn );
+
+						// Fill the Pyiyn terms:
+						// --------------------
+						const size_t nLMs = (idx-VEH_SIZE)/FEAT_SIZE; // Number of previous landmarks:
+						for (q=0;q<nLMs;q++)
 						{
-							obj.m_timLogger.enter("KF:9.create new LMs");
-							// Add it:
+							typename KF::KFMatrix_VxF  P_x_yq(mrpt::math::UNINITIALIZED_MATRIX);
+							obj.internal_getPkk().extractMatrix(0,VEH_SIZE+q*FEAT_SIZE,P_x_yq) ;
 
-							// Append to map of IDs <-> position in the state vector:
-							ASSERTDEB_(FEAT_SIZE>0)
-							ASSERTDEB_( 0 == ((obj.m_xkk.size() - VEH_SIZE) % FEAT_SIZE) ) // Sanity test
+							typename KF::KFMatrix_FxF P_cross(mrpt::math::UNINITIALIZED_MATRIX);
+							P_cross.multiply(dyn_dxv, P_x_yq );
 
-							const size_t  newIndexInMap = (obj.m_xkk.size() - VEH_SIZE) / FEAT_SIZE;
+							obj.internal_getPkk().insertMatrix(idx,VEH_SIZE+q*FEAT_SIZE, P_cross );
+							obj.internal_getPkk().insertMatrixTranspose(VEH_SIZE+q*FEAT_SIZE,idx, P_cross );
+						} // end each previous LM(q)
 
-							// Inverse sensor model:
-							typename KF::KFArray_FEAT yn;
-							typename KF::KFMatrix_FxV dyn_dxv;
-							typename KF::KFMatrix_FxO dyn_dhn;
-							typename KF::KFMatrix_FxF dyn_dhn_R_dyn_dhnT;
-							bool use_dyn_dhn_jacobian=true;
+						// Fill the Pynyn term:
+						//  P_yn_yn =  (dyn_dxv * Pxx * ~dyn_dxv) + (dyn_dhn * R * ~dyn_dhn);
+						// --------------------
+						typename KF::KFMatrix_FxF P_yn_yn(mrpt::math::UNINITIALIZED_MATRIX);
+						dyn_dxv.multiply_HCHt(Pxx,  P_yn_yn);
+						if (use_dyn_dhn_jacobian)
+								dyn_dhn.multiply_HCHt(R, P_yn_yn, true); // Accumulate in P_yn_yn
+						else 	P_yn_yn+=dyn_dhn_R_dyn_dhnT;
 
-							// Compute the inv. sensor model and its Jacobians:
-							obj.OnInverseObservationModel(
-								Z[idxObs],
-								yn,
-								dyn_dxv,
-								dyn_dhn,
-								dyn_dhn_R_dyn_dhnT,
-								use_dyn_dhn_jacobian );
+						obj.internal_getPkk().insertMatrix(idx,idx, P_yn_yn );
 
-							// And let the application do any special handling of adding a new feature to the map:
-							obj.OnNewLandmarkAddedToMap(
-								idxObs,
-								newIndexInMap
-								);
-
-							ASSERTDEB_( yn.size() == FEAT_SIZE )
-
-							// Append to m_xkk:
-							size_t q;
-							size_t idx = obj.m_xkk.size();
-							obj.m_xkk.conservativeResize( obj.m_xkk.size() + FEAT_SIZE );
-
-							for (q=0;q<FEAT_SIZE;q++)
-								obj.m_xkk[idx+q] = yn[q];
-
-							// --------------------
-							// Append to Pkk:
-							// --------------------
-							ASSERTDEB_( obj.m_pkk.getColCount()==idx && obj.m_pkk.getRowCount()==idx );
-
-							obj.m_pkk.setSize( idx+FEAT_SIZE,idx+FEAT_SIZE );
-
-							// Fill the Pxyn term:
-							// --------------------
-							typename KF::KFMatrix_VxV Pxx;
-							obj.m_pkk.extractMatrix(0,0,Pxx);
-							typename KF::KFMatrix_FxV Pxyn; // Pxyn = dyn_dxv * Pxx
-							Pxyn.multiply( dyn_dxv, Pxx );
-
-							obj.m_pkk.insertMatrix( idx,0, Pxyn );
-							obj.m_pkk.insertMatrixTranspose( 0,idx, Pxyn );
-
-							// Fill the Pyiyn terms:
-							// --------------------
-							const size_t nLMs = (idx-VEH_SIZE)/FEAT_SIZE; // Number of previous landmarks:
-							for (q=0;q<nLMs;q++)
-							{
-								typename KF::KFMatrix_VxF  P_x_yq(mrpt::math::UNINITIALIZED_MATRIX);
-								obj.m_pkk.extractMatrix(0,VEH_SIZE+q*FEAT_SIZE,P_x_yq) ;
-
-								typename KF::KFMatrix_FxF P_cross(mrpt::math::UNINITIALIZED_MATRIX);
-								P_cross.multiply(dyn_dxv, P_x_yq );
-
-								obj.m_pkk.insertMatrix(idx,VEH_SIZE+q*FEAT_SIZE, P_cross );
-								obj.m_pkk.insertMatrixTranspose(VEH_SIZE+q*FEAT_SIZE,idx, P_cross );
-							} // end each previous LM(q)
-
-							// Fill the Pynyn term:
-							//  P_yn_yn =  (dyn_dxv * Pxx * ~dyn_dxv) + (dyn_dhn * R * ~dyn_dhn);
-							// --------------------
-							typename KF::KFMatrix_FxF P_yn_yn(mrpt::math::UNINITIALIZED_MATRIX);
-							dyn_dxv.multiply_HCHt(Pxx,  P_yn_yn);
-							if (use_dyn_dhn_jacobian)
-									dyn_dhn.multiply_HCHt(R, P_yn_yn, true); // Accumulate in P_yn_yn
-							else 	P_yn_yn+=dyn_dhn_R_dyn_dhnT;
-
-							obj.m_pkk.insertMatrix(idx,idx, P_yn_yn );
-
-							obj.m_timLogger.leave("KF:9.create new LMs");
-						}
+						obj.getProfiler().leave("KF:9.create new LMs");
 					}
 				}
+			}
 
- 				template <size_t VEH_SIZE, size_t OBS_SIZE, size_t ACT_SIZE, typename KFTYPE>
- 				void operator()(
- 					CKalmanFilterCapable<VEH_SIZE,OBS_SIZE,0 /* FEAT_SIZE=0 */,ACT_SIZE,KFTYPE> &obj,
- 					const typename CKalmanFilterCapable<VEH_SIZE,OBS_SIZE,0 /* FEAT_SIZE=0 */,ACT_SIZE,KFTYPE>::vector_KFArray_OBS & Z,
- 					const vector_int       &data_association,
- 					const typename CKalmanFilterCapable<VEH_SIZE,OBS_SIZE,0 /* FEAT_SIZE=0 */,ACT_SIZE,KFTYPE>::KFMatrix_OxO		&R
-  				)
- 				{
- 					// Do nothing: this is NOT a SLAM problem.
- 				}
-
- 			}; // end runOneKalmanIteration_addNewLandmarks
+			template <size_t VEH_SIZE, size_t OBS_SIZE, size_t ACT_SIZE, typename KFTYPE>
+			void addNewLandmarks(
+				CKalmanFilterCapable<VEH_SIZE,OBS_SIZE,0 /* FEAT_SIZE=0 */,ACT_SIZE,KFTYPE> &obj,
+				const typename CKalmanFilterCapable<VEH_SIZE,OBS_SIZE,0 /* FEAT_SIZE=0 */,ACT_SIZE,KFTYPE>::vector_KFArray_OBS & Z,
+				const vector_int       &data_association,
+				const typename CKalmanFilterCapable<VEH_SIZE,OBS_SIZE,0 /* FEAT_SIZE=0 */,ACT_SIZE,KFTYPE>::KFMatrix_OxO		&R
+			)
+			{
+				// Do nothing: this is NOT a SLAM problem.
+			}
 
 			template <size_t VEH_SIZE, size_t OBS_SIZE, size_t FEAT_SIZE, size_t ACT_SIZE, typename KFTYPE>
 			inline size_t getNumberOfLandmarksInMap(const CKalmanFilterCapable<VEH_SIZE,OBS_SIZE,FEAT_SIZE,ACT_SIZE,KFTYPE> &obj)

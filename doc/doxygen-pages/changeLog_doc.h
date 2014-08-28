@@ -29,6 +29,7 @@
 		- mrpt::synch::CSemaphore [Linux]: didn't call sem_unlink().
 		- mrpt::gui::CDisplayWindow3D didn't implement get/set FOV.
 		- Valgrind: Fixed potential unaligned memory access warning in point clouds.
+		- Fix build error with AppleClang 5.1 (Closes #71).
 
 <hr>
 <a name="1.2.1">
