@@ -379,12 +379,19 @@ namespace slam
 		/// \overload
 		inline void  setPoint(size_t index,float x, float y) { setPoint(index,x,y,0); }
 		/// \overload (RGB data is ignored in classes without color information)
-		virtual void setPoint(size_t index,float x, float y, float z, float R, float G, float B) { setPoint(index,x,y,z); }
+		virtual void setPoint(size_t index,float x, float y, float z, float R, float G, float B)
+		{
+			MRPT_UNUSED_PARAM(R); MRPT_UNUSED_PARAM(G); MRPT_UNUSED_PARAM(B);
+			setPoint(index,x,y,z);
+		}
 
 		/// Sets the point weight, which is ignored in all classes but those which actually store that field (Note: No checks are done for out-of-bounds index). \sa getPointWeight
-		virtual void setPointWeight(size_t index,unsigned long w) {  }
+		virtual void setPointWeight(size_t index,unsigned long w)
+		{
+			MRPT_UNUSED_PARAM(index); MRPT_UNUSED_PARAM(w);
+		}
 		/// Gets the point weight, which is ignored in all classes (defaults to 1) but in those which actually store that field (Note: No checks are done for out-of-bounds index).  \sa setPointWeight
-		virtual unsigned int getPointWeight(size_t index) const { return 1; }
+		virtual unsigned int getPointWeight(size_t index) const { MRPT_UNUSED_PARAM(index); return 1; }
 
 
 		/** Provides a direct access to points buffer, or NULL if there is no points in the map.
@@ -456,7 +463,11 @@ namespace slam
 		/// \overload of \a insertPoint()
 		inline void  insertPoint( const mrpt::math::TPoint3D &p ) { insertPoint(p.x,p.y,p.z); }
 		/// \overload (RGB data is ignored in classes without color information)
-		virtual void  insertPoint( float x, float y, float z, float R, float G, float B ) { insertPoint(x,y,z); }
+		virtual void  insertPoint( float x, float y, float z, float R, float G, float B )
+		{
+			MRPT_UNUSED_PARAM(R); MRPT_UNUSED_PARAM(G); MRPT_UNUSED_PARAM(B);
+			insertPoint(x,y,z);
+		}
 
 		/** Set all the points at once from vectors with X,Y and Z coordinates (if Z is not provided, it will be set to all zeros).
 		  * \tparam VECTOR can be mrpt::math::CVectorFloat or std::vector<float> or any other column or row Eigen::Matrix.
@@ -839,7 +850,7 @@ namespace slam
 		/** @name PLY Import virtual methods to implement in base classes
 			@{ */
 		/** In a base class, reserve memory to prepare subsequent calls to PLY_import_set_face */
-		virtual void PLY_import_set_face_count(const size_t N) {  }
+		virtual void PLY_import_set_face_count(const size_t N) { MRPT_UNUSED_PARAM(N); }
 
 		/** In a base class, will be called after PLY_import_set_vertex_count() once for each loaded point.
 		  *  \param pt_color Will be NULL if the loaded file does not provide color info.

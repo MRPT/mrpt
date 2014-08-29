@@ -110,6 +110,7 @@ namespace mrpt
 
 			/** Auxiliary method called from within \a addFrom() automatically, to finish the copying of class-specific data  */
 			virtual void  addFrom_classSpecific(const CPointsMap &anotherMap, const size_t nPreviousPoints) {
+				MRPT_UNUSED_PARAM(anotherMap); MRPT_UNUSED_PARAM(nPreviousPoints);
 				// No extra data.
 			}
 

@@ -110,6 +110,8 @@ namespace mrpt
 					float									maxMahaDistForCorr = 2.0f
 					) const
 			{
+				MRPT_UNUSED_PARAM(otherMap); MRPT_UNUSED_PARAM(otherMapPose);
+				MRPT_UNUSED_PARAM(maxDistForCorr); MRPT_UNUSED_PARAM(maxMahaDistForCorr);
 				return 0;
 			}
 

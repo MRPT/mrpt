@@ -72,6 +72,7 @@ namespace utils
 			mrpt::utils::CConfigFileBase &target,
 			const std::string            &section) const
 			{
+				MRPT_UNUSED_PARAM(target); MRPT_UNUSED_PARAM(section);
 			    throw std::logic_error("The child class does not implement this method.");
 			}
 
