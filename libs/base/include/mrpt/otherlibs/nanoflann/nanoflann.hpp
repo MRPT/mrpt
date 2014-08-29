@@ -763,27 +763,29 @@ namespace nanoflann
 
 
 		/*--------------------- Internal Data Structures --------------------------*/
+		struct LR
+		{
+			/**
+			 * Indices of points in leaf node
+			 */
+			IndexType left, right;
+		};
+		struct Sub
+		{
+			/**
+			 * Dimension used for subdivision.
+			 */
+			int divfeat;
+			/**
+			 * The values used for subdivision.
+			 */
+			DistanceType divlow, divhigh;
+		};
 		struct Node
 		{
 			union {
-				struct
-				{
-					/**
-					 * Indices of points in leaf node
-					 */
-					IndexType left, right;
-				} lr;
-				struct
-				{
-					/**
-					 * Dimension used for subdivision.
-					 */
-					int divfeat;
-					/**
-					 * The values used for subdivision.
-					 */
-					DistanceType divlow, divhigh;
-				} sub;
+				LR lr;
+				Sub sub;
 			};
 			/**
 			 * The child nodes.
