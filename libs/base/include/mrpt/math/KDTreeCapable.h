@@ -683,7 +683,7 @@ namespace mrpt
 				inline TKDTreeDataHolder() : index(NULL),m_dim(_DIM), m_num_points(0) { }
 
 				/** Copy constructor: It actually does NOT copy the kd-tree, a new object will be created if required!   */
-				inline TKDTreeDataHolder(const TKDTreeDataHolder &o)  : index(NULL),m_dim(_DIM), m_num_points(0) { }
+				inline TKDTreeDataHolder(const TKDTreeDataHolder &)  : index(NULL),m_dim(_DIM), m_num_points(0) { }
 
 				/** Copy operator: It actually does NOT copy the kd-tree, a new object will be created if required!  */
 				inline TKDTreeDataHolder& operator =(const TKDTreeDataHolder &o) {

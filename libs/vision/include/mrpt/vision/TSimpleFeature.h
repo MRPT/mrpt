@@ -174,7 +174,7 @@ namespace mrpt
 			inline typename TSimpleFeatureTraits<FEATURE>::coord_t getFeatureY(size_t i) const { return m_feats[i].pt.y; }
 			inline TFeatureID getFeatureID(size_t i) const { return m_feats[i].ID; }
 			inline float getFeatureResponse(size_t i) const { return m_feats[i].response; }
-			inline bool isPointFeature(size_t i) const { return true; }
+			inline bool isPointFeature(size_t i) const { MRPT_UNUSED_PARAM(i); return true; }
 			inline float getScale(size_t i) const { return static_cast<float>(1<<m_feats[i].octave); }
 			inline TFeatureTrackStatus getTrackStatus(size_t i) { return m_feats[i].track_status; }
 
@@ -262,7 +262,7 @@ namespace mrpt
 				//   Return true if the BBOX was already computed by the class and returned in "bb" so it can be avoided to redo it again.
 				//   Look at bb.size() to find out the expected dimensionality (e.g. 2 or 3 for point clouds)
 				template <typename BBOX>
-				bool kdtree_get_bbox(BBOX &bb) const  { return false; }
+				bool kdtree_get_bbox(BBOX &bb) const  { MRPT_UNUSED_PARAM(bb); return false; }
 
 				/** @} */
 

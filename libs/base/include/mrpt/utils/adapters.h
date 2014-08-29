@@ -61,6 +61,7 @@ namespace mrpt
 			}
 			/** Set XYZ_RGBf coordinates of i'th point */
 			inline void setPointXYZ_RGBf(const size_t idx, const coords_t x,const coords_t y, const coords_t z, const float r,const float g,const float b) {
+				MRPT_UNUSED_PARAM(r); MRPT_UNUSED_PARAM(g); MRPT_UNUSED_PARAM(b);
 				derived().setPointXYZ(idx,x,y,z);
 			}
 
@@ -72,16 +73,25 @@ namespace mrpt
 			}
 			/** Set XYZ_RGBu8 coordinates of i'th point */
 			inline void setPointXYZ_RGBu8(const size_t idx, const coords_t x,const coords_t y, const coords_t z, const uint8_t r,const uint8_t g,const uint8_t b) {
+				MRPT_UNUSED_PARAM(r); MRPT_UNUSED_PARAM(g); MRPT_UNUSED_PARAM(b);
 				derived().setPointXYZ(idx,x,y,z);
 			}
 
 			/** Get RGBf color of i'th point */
-			inline void getPointRGBf(const size_t idx, float &r,float &g,float &b) const { r=g=b=1.0f; }
+			inline void getPointRGBf(const size_t idx, float &r,float &g,float &b) const {
+				MRPT_UNUSED_PARAM(idx);
+				r=g=b=1.0f;
+			}
 			/** Set XYZ_RGBf coordinates of i'th point */
-			inline void setPointRGBf(const size_t idx, const float r,const float g,const float b) { }
+			inline void setPointRGBf(const size_t idx, const float r,const float g,const float b) {
+				MRPT_UNUSED_PARAM(idx); MRPT_UNUSED_PARAM(r); MRPT_UNUSED_PARAM(g); MRPT_UNUSED_PARAM(b);
+			}
 
 			/** Get RGBu8 color of i'th point */
-			inline void getPointRGBu8(const size_t idx, uint8_t &r,uint8_t &g,uint8_t &b) const { r=g=b=255; }
+			inline void getPointRGBu8(const size_t idx, uint8_t &r,uint8_t &g,uint8_t &b) const {
+				MRPT_UNUSED_PARAM(idx);
+				r=g=b=255;
+			}
 			/** Set RGBu8 coordinates of i'th point */
 			inline void setPointRGBu8(const size_t idx,const uint8_t r,const uint8_t g,const uint8_t b) {
 				MRPT_UNUSED_PARAM(idx); MRPT_UNUSED_PARAM(r); MRPT_UNUSED_PARAM(g); MRPT_UNUSED_PARAM(b);

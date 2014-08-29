@@ -310,6 +310,7 @@ namespace mrpt
 			inline float kdtree_distance(const float *p1, const size_t idx_p2,size_t size) const
 			{
 				ASSERTDEB_(size==2)
+				MRPT_UNUSED_PARAM(size); // in release mode
 
 				const float d0 = p1[0] - m_feats[idx_p2]->x; 
 				const float d1 = p1[1] - m_feats[idx_p2]->y; 
@@ -320,7 +321,10 @@ namespace mrpt
 			//   Return true if the BBOX was already computed by the class and returned in "bb" so it can be avoided to redo it again.
 			//   Look at bb.size() to find out the expected dimensionality (e.g. 2 or 3 for point clouds)
 			template <typename BBOX>
-			bool kdtree_get_bbox(BBOX &bb) const  { return false; }
+			bool kdtree_get_bbox(BBOX &bb) const  {
+				MRPT_UNUSED_PARAM(bb);
+				return false;
+			}
 
 			/** @} */
 

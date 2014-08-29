@@ -222,9 +222,11 @@ namespace math
 
         // at() with range check
         reference at(size_type i) {
+			MRPT_UNUSED_PARAM(i);
             throw std::out_of_range("CArray<0>: index out of range");
         }
         const_reference at(size_type i) const {
+			MRPT_UNUSED_PARAM(i);
             throw std::out_of_range("<0>: index out of range");
         }
 
@@ -236,6 +238,7 @@ namespace math
 
         // swap
         void swap (CArray<T,0>& y) {
+			MRPT_UNUSED_PARAM(y);
             //  could swap value of c, but value is not part of documented array state
         }
 
@@ -246,14 +249,15 @@ namespace math
         // assignment with type conversion
         template < typename T2 >
         CArray< T,0 >& operator= (const CArray< T2, 0>& rhs) {
+			MRPT_UNUSED_PARAM(rhs);
             return *this;
         }
 
         //  Calling these operations are undefined behaviour for 0-size arrays,
         //  but Library TR1 requires their presence.
         // operator[]
-        inline reference operator[](size_type i) { makes_no_sense(); static T dumm=0; return dumm; }
-        inline const_reference operator[](size_type i) const { makes_no_sense(); static T dumm=0; return dumm; }
+        inline reference operator[](size_type ) { makes_no_sense(); static T dumm=0; return dumm; }
+        inline const_reference operator[](size_type ) const { makes_no_sense(); static T dumm=0; return dumm; }
 
         // front() and back()
         reference front() { makes_no_sense(); }

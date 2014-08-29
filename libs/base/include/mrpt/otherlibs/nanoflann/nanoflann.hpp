@@ -465,7 +465,7 @@ namespace nanoflann
 		size_t  remaining;  /* Number of bytes left in current block of storage. */
 		void*   base;     /* Pointer to base of current block of storage. */
 		void*   loc;      /* Current location in block to next allocate memory. */
-		size_t  blocksize;
+		// size_t  blocksize; // Not used
 
 		void internal_init()
 		{
@@ -482,7 +482,10 @@ namespace nanoflann
 		/**
 		    Default constructor. Initializes a new pool.
 		 */
-		PooledAllocator(const size_t blocksize_ = BLOCKSIZE) : blocksize(blocksize_) {
+		PooledAllocator(const size_t blocksize_ = BLOCKSIZE)
+//			: blocksize(blocksize_) // not used
+		{
+			MRPT_UNUSED_PARAM(blocksize_);
 			internal_init();
 		}
 
@@ -950,6 +953,7 @@ namespace nanoflann
 		 */
 		inline void knnSearch(const ElementType *query_point, const size_t num_closest, IndexType *out_indices, DistanceType *out_distances_sq, const int nChecks_IGNORED = 10) const
 		{
+			MRPT_UNUSED_PARAM(nChecks_IGNORED);
 			nanoflann::KNNResultSet<DistanceType,IndexType> resultSet(num_closest);
 			resultSet.init(out_indices, out_distances_sq);
 			this->findNeighbors(resultSet, query_point, nanoflann::SearchParams());
@@ -1378,6 +1382,7 @@ namespace nanoflann
 		/// Constructor: takes a const ref to the matrix object with the data points
 		KDTreeEigenMatrixAdaptor(const int dimensionality, const MatrixType &mat, const int leaf_max_size = 10) : m_data_matrix(mat)
 		{
+			MRPT_UNUSED_PARAM(dimensionality);
 			const size_t dims = mat.cols();
 			if (DIM>0 && static_cast<int>(dims)!=DIM)
 				throw std::runtime_error("Data set dimensionality does not match the 'DIM' template argument");
@@ -1402,6 +1407,7 @@ namespace nanoflann
 		  */
 		inline void query(const num_t *query_point, const size_t num_closest, IndexType *out_indices, num_t *out_distances_sq, const int nChecks_IGNORED = 10) const
 		{
+			MRPT_UNUSED_PARAM(nChecks_IGNORED);
 			nanoflann::KNNResultSet<typename MatrixType::Scalar,IndexType> resultSet(num_closest);
 			resultSet.init(out_indices, out_distances_sq);
 			index->findNeighbors(resultSet, query_point, nanoflann::SearchParams());
@@ -1443,6 +1449,7 @@ namespace nanoflann
 		//   Look at bb.size() to find out the expected dimensionality (e.g. 2 or 3 for point clouds)
 		template <class BBOX>
 		bool kdtree_get_bbox(BBOX &bb) const {
+			MRPT_UNUSED_PARAM(bb);
 			return false;
 		}
 
