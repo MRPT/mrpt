@@ -259,6 +259,7 @@ IF(BUILD_EXAMPLES)
 			SICK_laser_serial_test
 			SICK_laser_test
 			HOKUYO_laser_test
+			RoboPeakLidar_laser_test
 			SICK_lms100eth_test
 			kinect-to-2d-laser-demo
 	                )
