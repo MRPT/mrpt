@@ -6,12 +6,14 @@
 SET(CMAKE_MRPT_HAS_ASSIMP 0)
 SET(CMAKE_MRPT_HAS_ASSIMP_SYSTEM 0)
 
+SET(ASSIMP_FOUND_VIA_CMAKE 0)
+
 SET(EMBEDDED_ASSIMP_DIR "${MRPT_BINARY_DIR}/otherlibs/assimp")
 
 # 1st) Try to locate the pkg via pkg-config:
-find_package(PkgConfig)
+find_package(PkgConfig QUIET)
 IF(PKG_CONFIG_FOUND)
-	PKG_CHECK_MODULES(ASSIMP QUIET assimp)
+	PKG_CHECK_MODULES(ASSIMP ${_QUIET} assimp)
 	IF (ASSIMP_FOUND)
 		IF ($ENV{VERBOSE})	
 			MESSAGE(STATUS "Assimp: Found via pkg-config")
@@ -27,19 +29,19 @@ IF(PKG_CONFIG_FOUND)
 ENDIF(PKG_CONFIG_FOUND)
 
 
+# Not worth the problems caused by this: (?)
 # 2nd) Try to locate it via CMake (installed in the system or precompiled somewhere)
-IF (NOT ASSIMP_FOUND)
-	FIND_PACKAGE(ASSIMP QUIET)
-
-	IF (ASSIMP_FOUND)
-		IF ($ENV{VERBOSE})	
-			MESSAGE(STATUS "Assimp: Found via cmake")
-		ENDIF ($ENV{VERBOSE})	
-
-		SET(CMAKE_MRPT_HAS_ASSIMP 1)
-		SET(CMAKE_MRPT_HAS_ASSIMP_SYSTEM 1)
-	ENDIF (ASSIMP_FOUND)
-ENDIF (NOT ASSIMP_FOUND)
+#IF (NOT ASSIMP_FOUND)
+#	FIND_PACKAGE(ASSIMP QUIET)
+#	IF (ASSIMP_FOUND)
+#		SET(ASSIMP_FOUND_VIA_CMAKE 1)
+#		IF ($ENV{VERBOSE})	
+#			MESSAGE(STATUS "Assimp: Found via cmake")
+#		ENDIF ($ENV{VERBOSE})	
+#		SET(CMAKE_MRPT_HAS_ASSIMP 1)
+#		SET(CMAKE_MRPT_HAS_ASSIMP_SYSTEM 1)
+#	ENDIF (ASSIMP_FOUND)
+#ENDIF (NOT ASSIMP_FOUND)
 
 
 IF (NOT ASSIMP_FOUND)
@@ -84,10 +86,11 @@ IF (NOT ASSIMP_FOUND)
 		# 3rd attempt: Fatal error if not found:
 		SET(ASSIMP_DIR "${EMBEDDED_ASSIMP_DIR}" CACHE PATH "Path to ASSIMP CMake config file" FORCE)
 		FIND_PACKAGE(ASSIMP REQUIRED)
-
-		# override wrong target libs in -config.cmake file:
-		set(ASSIMP_LIBRARIES "")
-		LIST(APPEND ASSIMP_LIBRARIES optimized "assimp-mrpt" debug "assimp-mrptd")
+		
+		SET(ASSIMP_FOUND_VIA_CMAKE 1)
+		
+		SET(CMAKE_MRPT_HAS_ASSIMP 1)
+		SET(CMAKE_MRPT_HAS_ASSIMP_SYSTEM 0)
 		
 		# Override binary output dir:
 		SET_TARGET_PROPERTIES(assimp PROPERTIES 
@@ -95,12 +98,18 @@ IF (NOT ASSIMP_FOUND)
 			RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin/"
 			)
 		
-		SET(CMAKE_MRPT_HAS_ASSIMP 1)
-		SET(CMAKE_MRPT_HAS_ASSIMP_SYSTEM 0)
 	ENDIF (BUILD_ASSIMP)
-	
 ENDIF(NOT ASSIMP_FOUND)
 
+IF (ASSIMP_FOUND_VIA_CMAKE)
+	# override wrong target libs in -config.cmake file:
+	set(ASSIMP_LIBRARIES "")
+	LIST(APPEND ASSIMP_LIBRARIES optimized "assimp-mrpt" debug "assimp-mrptd")
+
+	# override wrong include dirs:
+	SET(ASSIMP_INCLUDE_DIRS "${MRPT_SOURCE_DIR}/otherlibs/assimp/include/")
+
+ENDIF (ASSIMP_FOUND_VIA_CMAKE)
 
 # ASSIMP_ROOT_DIR - the root directory where the installation can be found
 # ASSIMP_CXX_FLAGS - extra flags for compilation

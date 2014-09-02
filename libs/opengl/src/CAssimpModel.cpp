@@ -7,33 +7,23 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
+// This file contains portions of code from Assimp's example: "Sample_SimpleOpenGL.c"
+
 #include "opengl-precomp.h"  // Precompiled header
 
-// Include the lib3ds library:
-#include <lib3ds/file.h>
-#include <lib3ds/background.h>
-#include <lib3ds/camera.h>
-#include <lib3ds/mesh.h>
-#include <lib3ds/node.h>
-#include <lib3ds/material.h>
-#include <lib3ds/matrix.h>
-#include <lib3ds/vector.h>
-#include <lib3ds/light.h>
-
 #include <mrpt/opengl/CAssimpModel.h>
-#include <mrpt/opengl/CTexturedPlane.h>
 
-#include <mrpt/compress/zip.h>
-#include <mrpt/system/filesystem.h>
-#include <mrpt/system/vector_loadsave.h>
+#if MRPT_HAS_ASSIMP
+#	include <assimp/cimport.h>
+#	include <assimp/scene.h>
+#	include <assimp/postprocess.h>
+#endif
 
-#include <mrpt/utils/CStringList.h>
-#include <mrpt/utils/CStream.h>
-#include <mrpt/utils/CFileOutputStream.h>
-#include <mrpt/utils/CFileInputStream.h>
+//#include <mrpt/utils/CStream.h>
+//#include <mrpt/utils/CFileOutputStream.h>
+//#include <mrpt/utils/CFileInputStream.h>
 
 #include "opengl_internals.h"
-
 
 using namespace mrpt;
 using namespace mrpt::opengl;
@@ -43,123 +33,49 @@ using namespace std;
 
 IMPLEMENTS_SERIALIZABLE( CAssimpModel, CRenderizableDisplayList, mrpt::opengl )
 
-
-void render_node(Lib3dsNode *node,Lib3dsFile	*file);
-void light_update(Lib3dsLight *l,Lib3dsFile	*file);
+#if MRPT_HAS_OPENGL_GLUT && MRPT_HAS_ASSIMP
+	void recursive_render (const aiScene *sc, const aiNode* nd);
+	void apply_material(const aiMaterial *mtl);
+	void set_float4(float f[4], float a, float b, float c, float d);
+	void color4_to_float4(const aiColor4D *c, float f[4]);
+	void get_bounding_box (const aiScene *sc,aiVector3D* min, aiVector3D* max);
+	void get_bounding_box_for_node (const aiScene *sc,const aiNode* nd, aiVector3D* min, aiVector3D* max, aiMatrix4x4* trafo);
+#endif //MRPT_HAS_OPENGL_GLUT && MRPT_HAS_ASSIMP
 
 /*---------------------------------------------------------------
 							render
   ---------------------------------------------------------------*/
 void   CAssimpModel::render_dl() const
 {
-#if MRPT_HAS_OPENGL_GLUT
+#if MRPT_HAS_OPENGL_GLUT && MRPT_HAS_ASSIMP
 	MRPT_START
 
-	if (! m_3dsfile->file) return;	// No scene
+	if (!m_assimp_scene->scene) return;	// No scene
 
-	Lib3dsFile	*file = (Lib3dsFile*) m_3dsfile->file;
-	if (!file) return;
+	aiScene *scene = (aiScene *) m_assimp_scene->scene;
 
-	glEnable(GL_POLYGON_SMOOTH);
+	//glEnable(GL_POLYGON_SMOOTH);
+	//glEnable(GL_CULL_FACE);
+	//glCullFace(GL_BACK);
 
-	glEnable(GL_CULL_FACE);
-	glCullFace(GL_BACK);
+	glEnable(GL_LIGHTING);
+	glEnable(GL_LIGHT0);    // Uses default lighting parameters
 
+	glEnable(GL_DEPTH_TEST);
 
-	// Add an ambient light:
-	if (m_enable_extra_lighting)
-	{
-		int li = GL_LIGHT7;
-		const GLfloat a[] = {0.8f, 0.8f, 0.8f, 1.0f};
-		GLfloat c[] = {0.5f, 0.5f, 0.5f, 0.5f};
+	glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE);
+	glEnable(GL_NORMALIZE);
 
-		glLightfv(li, GL_AMBIENT, a);
-		glLightfv(li, GL_DIFFUSE, c);
-		glLightfv(li, GL_SPECULAR, c);
-		glEnable(li);
-	}
+	glColorMaterial(GL_FRONT_AND_BACK, GL_DIFFUSE);
 
+	recursive_render(scene, scene->mRootNode);
 
-	glLightModelfv(GL_LIGHT_MODEL_AMBIENT, file->ambient);
+	//glDisable(GL_CULL_FACE);
+	glDisable(GL_NORMALIZE);
 
-	/* Lights.  Set them from light nodes if possible.  If not, use the
-	* light objects directly.
-	*/
-	{
-		const GLfloat a[] = {0.1f, 0.1f, 0.1f, 1.0f};
-		GLfloat c[] = {1.0f, 1.0f, 1.0f, 1.0f};
-		GLfloat p[] = {0.0f, 0.0f, 0.0f, 1.0f};
-
-		int li=GL_LIGHT0;
-		for (Lib3dsLight *l=file->lights; l; l=l->next)
-		{
-		  glEnable(li);
-
-		  light_update(l,file);
-
-		  c[0] = l->color[0];
-		  c[1] = l->color[1];
-		  c[2] = l->color[2];
-		  //c[3] = l->multiplier;
-		  glLightfv(li, GL_AMBIENT, a);
-		  glLightfv(li, GL_DIFFUSE, c);
-		  glLightfv(li, GL_SPECULAR, c);
-
-		  //float att = (1.0/m_scale_x)-1;
-		  //glLightfv(li, GL_LINEAR_ATTENUATION, &att );
-
-		  float att = 1.0/m_scale_x;
-		  glLightfv(li, GL_CONSTANT_ATTENUATION, &att );
-
-		  p[0] = l->position[0];
-		  p[1] = l->position[1];
-		  p[2] = l->position[2];
-		  glLightfv(li, GL_POSITION, p);
-
-		  if (l->spot_light)
-		  {
-			p[0] = (l->spot[0] - l->position[0]);
-			p[1] = (l->spot[1] - l->position[1]);
-			p[2] = (l->spot[2] - l->position[2]);
-			glLightfv(li, GL_SPOT_DIRECTION, p);
-		  }
-		  ++li;
-		}
-	}
-
-
-	for (Lib3dsNode *p=file->nodes; p!=0; p=p->next)
-	  render_node(p,file);
-
-	glDisable(GL_CULL_FACE);
 	MRPT_END
 #endif
 }
-
-
-// texture size: by now minimum standard
-#define	TEX_XSIZE	1024
-#define	TEX_YSIZE	1024
-
-struct _player_texture
-{
-  int valid; // was the loading attempt successful ?
-#ifdef	USE_SDL
-  SDL_Surface *bitmap;
-#else
-  void *bitmap;
-#endif
-
-#if MRPT_HAS_OPENGL_GLUT
-  GLuint tex_id; //OpenGL texture ID
-#else
-  unsigned int tex_id; //OpenGL texture ID
-#endif
-
-  float scale_x, scale_y; // scale the texcoords, as OpenGL thinks in TEX_XSIZE and TEX_YSIZE
-};
-
-typedef struct _player_texture Player_texture;
 
 /*---------------------------------------------------------------
    Implements the writing to a CStream capability of
@@ -168,25 +84,13 @@ typedef struct _player_texture Player_texture;
 void  CAssimpModel::writeToStream(CStream &out,int *version) const
 {
 	if (version)
-		*version = 2;
+		*version = 0;
 	else
 	{
 		writeToStreamRender(out);
 
-		CMemoryChunk chunk;
-		if (m_3dsfile && m_3dsfile->file)
-		{
-			const string	tmpFil = mrpt::system::getTempFileName();
-			lib3ds_file_save( (Lib3dsFile*) m_3dsfile->file, tmpFil.c_str() );
-			chunk.loadBufferFromFile( tmpFil  );
-			mrpt::system::deleteFile( tmpFil );
-		}
-
-		// Write the "3dsfile":
-		out << chunk;
-
-		out << m_enable_extra_lighting; // Added in version 1
-
+		MRPT_TODO("Serialize")
+		THROW_EXCEPTION("TODO")
 	}
 }
 
@@ -199,48 +103,13 @@ void  CAssimpModel::readFromStream(CStream &in,int version)
 	switch(version)
 	{
 	case 0:
-	case 1:
-	case 2:
 		{
 			readFromStreamRender(in);
 
-			// Read the memory block, save to a temp. "3dsfile" and load...
 			clear();
 
-			CMemoryChunk chunk;
-			in >> chunk;
-
-			if (chunk.getTotalBytesCount())
-			{
-				const string	tmpFil = mrpt::system::getTempFileName();
-				if (!chunk.saveBufferToFile( tmpFil ) )
-					THROW_EXCEPTION("Error saving temporary 3ds file");
-
-				try
-				{
-					loadFrom3DSFile( tmpFil );
-				}
-				catch (...)
-				{
-					THROW_EXCEPTION("Error loading temporary 3ds file");
-				}
-				mrpt::system::deleteFile( tmpFil );
-			}
-
-
-			if (version>=1)
-			{
-				if (version==1)
-				{
-					double dummy_scale;
-					in >> dummy_scale >> dummy_scale >> dummy_scale;
-				}
-				in >> m_enable_extra_lighting;
-			}
-			else
-			{
-				m_enable_extra_lighting = false;
-			}
+			MRPT_TODO("Deserialize")
+			THROW_EXCEPTION("TODO")
 
 		} break;
 	default:
@@ -250,22 +119,11 @@ void  CAssimpModel::readFromStream(CStream &in,int version)
 	CRenderizableDisplayList::notifyChange();
 }
 
-/*---------------------------------------------------------------
-					initializeAllTextures
-  ---------------------------------------------------------------*/
-void  CAssimpModel::initializeAllTextures()
-{
-#if MRPT_HAS_OPENGL_GLUT
-
-#endif
-}
-
 CAssimpModel::CAssimpModel() :
 	m_bbox_min(0,0,0),
-	m_bbox_max(0,0,0),
-	m_enable_extra_lighting(false)
+	m_bbox_max(0,0,0)
 {
-	m_3dsfile.set( new TImpl3DS() );
+	m_assimp_scene.set( new TImplAssimp() );
 }
 
 CAssimpModel::~CAssimpModel()
@@ -279,145 +137,43 @@ CAssimpModel::~CAssimpModel()
 void   CAssimpModel::clear()
 {
 	CRenderizableDisplayList::notifyChange();
-	m_3dsfile.set( new TImpl3DS() );
+	m_assimp_scene.set( new TImplAssimp() );
 }
 
-void CAssimpModel::loadFrom3DSFile( const std::string &filepath )
+void CAssimpModel::loadScene( const std::string &filepath )
 {
+#if MRPT_HAS_OPENGL_GLUT && MRPT_HAS_ASSIMP
 	clear();
 	CRenderizableDisplayList::notifyChange();
 
-	Lib3dsFile *file=0;
+	// we are taking one of the postprocessing presets to avoid
+	// spelling out 20+ single postprocessing flags here.
+	m_assimp_scene->scene = (void*) aiImportFile(filepath.c_str(), aiProcessPreset_TargetRealtime_MaxQuality );
 
-	// Normal file, or .gz file?
-	if (mrpt::system::extractFileExtension(filepath)=="gz")
+	if (m_assimp_scene->scene) 
 	{
-		// Load compressed file:
-		vector_byte		out_data;
-		if (!mrpt::compress::zip::decompress_gz_file(filepath, out_data))
-			THROW_EXCEPTION_CUSTOM_MSG1("Error loading compressed file: %s",filepath.c_str())
-
-		// Save to tmp file & load:
-		string	tmpFil = mrpt::system::getTempFileName();
-
-		mrpt::system::vectorToBinaryFile(out_data,tmpFil);
-		out_data.clear();
-
-		file=lib3ds_file_load(tmpFil.c_str());
-
-		mrpt::system::deleteFile( tmpFil );
-	}
-	else
-	{
-		// Uncompressed file:
-		file=lib3ds_file_load(filepath.c_str());
+		aiVector3D scene_min, scene_max;
+		aiScene *scene = (aiScene *) m_assimp_scene->scene;
+		get_bounding_box(scene,&scene_min,&scene_max);
+		m_bbox_min.x = scene_min.x; m_bbox_min.y = scene_min.y; m_bbox_min.z = scene_min.z;
+		m_bbox_max.x = scene_max.x; m_bbox_max.y = scene_max.y; m_bbox_max.z = scene_max.z;
 	}
 
-	if (!file)
-	{
-		THROW_EXCEPTION_CUSTOM_MSG1("Error loading 3DS file: %s", filepath.c_str() );
-	}
-
-
-  /* No nodes?  Fabricate nodes to display all the meshes. */
-  if( !file->nodes )
-  {
-    for(Lib3dsMesh *mesh = file->meshes; mesh != NULL; mesh = mesh->next)
-    {
-      Lib3dsNode *node = lib3ds_node_new_object();
-      strcpy(node->name, mesh->name);
-      node->parent_id = LIB3DS_NO_PARENT;
-      lib3ds_file_insert_node(file, node);
-    }
-  }
-
-  lib3ds_file_eval(file, 1.0f);		// Eval in time
-
-
-	Lib3dsVector bmin, bmax;
-	float	sx, sy, sz, size;	/* bounding box dimensions */
-	float	cx, cy, cz;		/* bounding box center */
-
-#if 1 //def lib3ds_file_bounding_box_of_nodes
-	lib3ds_file_bounding_box_of_nodes(file, LIB3DS_TRUE, LIB3DS_FALSE, LIB3DS_FALSE, bmin, bmax);
 #else
-	bmin[0] = -2;  bmax[0] = -2;
-	bmin[1] = -2;  bmax[1] = -2;
-	bmin[2] = -2;  bmax[2] = -2;
+	THROW_EXCEPTION("MRPT compiled without OpenGL and/or Assimp")
 #endif
 
-	for (int k=0;k<3;k++) {
-		m_bbox_min[k] = bmin[k];
-		m_bbox_max[k] = bmax[k];
-	}
-
-	sx = bmax[0] - bmin[0];
-	sy = bmax[1] - bmin[1];
-	sz = bmax[2] - bmin[2];
-	size = max(sx, sy);
-	size = max(size, sz);
-	cx = (bmin[0] + bmax[0])/2;
-	cy = (bmin[1] + bmax[1])/2;
-	cz = (bmin[2] + bmax[2])/2;
-
-  /* No lights in the file?  Add some. */
-
-  if (file->lights == NULL)
-  {
-    Lib3dsLight *light;
-
-    light = lib3ds_light_new("light0");
-    light->spot_light = 0;
-    light->see_cone = 0;
-    light->color[0] = light->color[1] = light->color[2] = .6;
-    light->position[0] = cx + size * .75;
-    light->position[1] = cy - size * 1.;
-    light->position[2] = cz + size * 1.5;
-      // Out of bounds? //light->position[3] = 0.;
-    light->outer_range = 100;
-    light->inner_range = 10;
-    light->multiplier = 1;
-    lib3ds_file_insert_light(file, light);
-
-    light = lib3ds_light_new("light1");
-    light->spot_light = 0;
-    light->see_cone = 0;
-    light->color[0] = light->color[1] = light->color[2] = .3;
-    light->position[0] = cx - size;
-    light->position[1] = cy - size;
-    light->position[2] = cz + size * .75;
-  // Out of bounds?    light->position[3] = 0.;
-    light->outer_range = 100;
-    light->inner_range = 10;
-    light->multiplier = 1;
-    lib3ds_file_insert_light(file, light);
-
-    light = lib3ds_light_new("light2");
-    light->spot_light = 0;
-    light->see_cone = 0;
-    light->color[0] = light->color[1] = light->color[2] = .3;
-    light->position[0] = cx;
-    light->position[1] = cy + size;
-    light->position[2] = cz + size;
-      // Out of bounds? light->position[3] = 0.;
-    light->outer_range = 100;
-    light->inner_range = 10;
-    light->multiplier = 1;
-    lib3ds_file_insert_light(file, light);
-  }
-
-  lib3ds_file_eval(file,0.);
-
-  m_3dsfile->file = file;
 }
 
 void CAssimpModel::evaluateAnimation( double time_anim )
 {
-	if (m_3dsfile->file)
-	{
-		CRenderizableDisplayList::notifyChange();
-		lib3ds_file_eval( (Lib3dsFile*) m_3dsfile->file, time_anim );
-	}
+#if MRPT_HAS_OPENGL_GLUT && MRPT_HAS_ASSIMP
+	//if (m_assimp_scene->file)
+	//{
+	//	CRenderizableDisplayList::notifyChange();
+	//	lib3ds_file_eval( (Lib3dsFile*) m_assimp_scene->file, time_anim );
+	//}
+#endif
 }
 
 void CAssimpModel::getBoundingBox(mrpt::math::TPoint3D &bb_min, mrpt::math::TPoint3D &bb_max) const
@@ -431,20 +187,215 @@ void CAssimpModel::getBoundingBox(mrpt::math::TPoint3D &bb_min, mrpt::math::TPoi
 }
 
 
-CAssimpModel::TImpl3DS::TImpl3DS() : file(NULL)
+CAssimpModel::TImplAssimp::TImplAssimp() : scene(NULL)
 {
 }
 
-CAssimpModel::TImpl3DS::~TImpl3DS()
+CAssimpModel::TImplAssimp::~TImplAssimp()
 {
-	if (file)
+#if MRPT_HAS_OPENGL_GLUT && MRPT_HAS_ASSIMP
+	if (scene)
 	{
-		lib3ds_file_free( (Lib3dsFile*) file);
-		file= NULL;
+		// cleanup - calling 'aiReleaseImport' is important, as the library 
+		// keeps internal resources until the scene is freed again. Not 
+		// doing so can cause severe resource leaking.
+		aiReleaseImport( (aiScene*) scene);
+		scene=NULL;
 	}
+#endif
 }
 
 bool CAssimpModel::traceRay(const mrpt::poses::CPose3D &o,double &dist) const	{
 	//TODO
 	return false;
 }
+
+
+
+#if MRPT_HAS_OPENGL_GLUT && MRPT_HAS_ASSIMP
+
+// ----------------------------------------------------------------------------
+void get_bounding_box_for_node (const aiScene* scene, const aiNode* nd, aiVector3D* min, aiVector3D* max, aiMatrix4x4* trafo)
+{
+	aiMatrix4x4 prev;
+	unsigned int n = 0, t;
+
+	prev = *trafo;
+	aiMultiplyMatrix4(trafo,&nd->mTransformation);
+
+	for (; n < nd->mNumMeshes; ++n) {
+		const aiMesh* mesh = scene->mMeshes[nd->mMeshes[n]];
+		for (t = 0; t < mesh->mNumVertices; ++t) {
+
+			aiVector3D tmp = mesh->mVertices[t];
+			aiTransformVecByMatrix4(&tmp,trafo);
+
+			min->x = std::min(min->x,tmp.x);
+			min->y = std::min(min->y,tmp.y);
+			min->z = std::min(min->z,tmp.z);
+
+			max->x = std::max(max->x,tmp.x);
+			max->y = std::max(max->y,tmp.y);
+			max->z = std::max(max->z,tmp.z);
+		}
+	}
+
+	for (n = 0; n < nd->mNumChildren; ++n) {
+		get_bounding_box_for_node(scene,nd->mChildren[n],min,max,trafo);
+	}
+	*trafo = prev;
+}
+
+// ----------------------------------------------------------------------------
+void get_bounding_box (const aiScene* scene, aiVector3D* min, aiVector3D* max)
+{
+	aiMatrix4x4 trafo;
+	aiIdentityMatrix4(&trafo);
+
+	min->x = min->y = min->z =  1e10f;
+	max->x = max->y = max->z = -1e10f;
+	get_bounding_box_for_node(scene,scene->mRootNode,min,max,&trafo);
+}
+
+// ----------------------------------------------------------------------------
+void color4_to_float4(const aiColor4D *c, float f[4])
+{
+	f[0] = c->r;
+	f[1] = c->g;
+	f[2] = c->b;
+	f[3] = c->a;
+}
+
+// ----------------------------------------------------------------------------
+void set_float4(float f[4], float a, float b, float c, float d)
+{
+	f[0] = a;
+	f[1] = b;
+	f[2] = c;
+	f[3] = d;
+}
+
+// ----------------------------------------------------------------------------
+void apply_material(const aiMaterial *mtl)
+{
+	float c[4];
+
+	GLenum fill_mode;
+	int ret1, ret2;
+	aiColor4D diffuse;
+	aiColor4D specular;
+	aiColor4D ambient;
+	aiColor4D emission;
+	float shininess, strength;
+	int two_sided;
+	int wireframe;
+	unsigned int max;
+
+	set_float4(c, 0.8f, 0.8f, 0.8f, 1.0f);
+	if(AI_SUCCESS == aiGetMaterialColor(mtl, AI_MATKEY_COLOR_DIFFUSE, &diffuse))
+		color4_to_float4(&diffuse, c);
+	glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, c);
+
+	set_float4(c, 0.0f, 0.0f, 0.0f, 1.0f);
+	if(AI_SUCCESS == aiGetMaterialColor(mtl, AI_MATKEY_COLOR_SPECULAR, &specular))
+		color4_to_float4(&specular, c);
+	glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, c);
+
+	set_float4(c, 0.2f, 0.2f, 0.2f, 1.0f);
+	if(AI_SUCCESS == aiGetMaterialColor(mtl, AI_MATKEY_COLOR_AMBIENT, &ambient))
+		color4_to_float4(&ambient, c);
+	glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, c);
+
+	set_float4(c, 0.0f, 0.0f, 0.0f, 1.0f);
+	if(AI_SUCCESS == aiGetMaterialColor(mtl, AI_MATKEY_COLOR_EMISSIVE, &emission))
+		color4_to_float4(&emission, c);
+	glMaterialfv(GL_FRONT_AND_BACK, GL_EMISSION, c);
+
+	max = 1;
+	ret1 = aiGetMaterialFloatArray(mtl, AI_MATKEY_SHININESS, &shininess, &max);
+	if(ret1 == AI_SUCCESS) {
+    	max = 1;
+    	ret2 = aiGetMaterialFloatArray(mtl, AI_MATKEY_SHININESS_STRENGTH, &strength, &max);
+		if(ret2 == AI_SUCCESS)
+			glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, shininess * strength);
+        else
+        	glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, shininess);
+    }
+	else {
+		glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, 0.0f);
+		set_float4(c, 0.0f, 0.0f, 0.0f, 0.0f);
+		glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, c);
+	}
+
+	max = 1;
+	if(AI_SUCCESS == aiGetMaterialIntegerArray(mtl, AI_MATKEY_ENABLE_WIREFRAME, &wireframe, &max))
+		fill_mode = wireframe ? GL_LINE : GL_FILL;
+	else
+		fill_mode = GL_FILL;
+	glPolygonMode(GL_FRONT_AND_BACK, fill_mode);
+
+	max = 1;
+	if((AI_SUCCESS == aiGetMaterialIntegerArray(mtl, AI_MATKEY_TWOSIDED, &two_sided, &max)) && two_sided)
+		glDisable(GL_CULL_FACE);
+	else 
+		glEnable(GL_CULL_FACE);
+}
+
+// ----------------------------------------------------------------------------
+void recursive_render (const aiScene *scene, const aiNode* nd)
+{
+	aiMatrix4x4 m = nd->mTransformation;
+
+	// update transform
+	aiTransposeMatrix4(&m);
+	glPushMatrix();
+	glMultMatrixf((float*)&m);
+
+	// draw all meshes assigned to this node
+	for (unsigned int n=0; n < nd->mNumMeshes; ++n) {
+		const aiMesh* mesh = scene->mMeshes[nd->mMeshes[n]];
+
+		apply_material(scene->mMaterials[mesh->mMaterialIndex]);
+
+		if(mesh->mNormals == NULL) {
+			glDisable(GL_LIGHTING);
+		} else {
+			glEnable(GL_LIGHTING);
+		}
+
+		for (unsigned int t = 0; t < mesh->mNumFaces; ++t) {
+			const aiFace* face = &mesh->mFaces[t];
+			GLenum face_mode;
+
+			switch(face->mNumIndices) {
+				case 1: face_mode = GL_POINTS; break;
+				case 2: face_mode = GL_LINES; break;
+				case 3: face_mode = GL_TRIANGLES; break;
+				default: face_mode = GL_POLYGON; break;
+			}
+
+			glBegin(face_mode);
+
+			for(unsigned int i = 0; i < face->mNumIndices; i++) {
+				int index = face->mIndices[i];
+				if(mesh->mColors[0] != NULL)
+					glColor4fv((GLfloat*)&mesh->mColors[0][index]);
+				if(mesh->mNormals != NULL) 
+					glNormal3fv(&mesh->mNormals[index].x);
+				glVertex3fv(&mesh->mVertices[index].x);
+			}
+
+			glEnd();
+		}
+
+	}
+
+	// draw all children
+	for (unsigned int n = 0; n < nd->mNumChildren; ++n) {
+		recursive_render(scene, nd->mChildren[n]);
+	}
+
+	glPopMatrix();
+}
+
+#endif // MRPT_HAS_OPENGL_GLUT && MRPT_HAS_ASSIMP

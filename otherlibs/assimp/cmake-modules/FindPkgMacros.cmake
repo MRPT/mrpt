@@ -59,9 +59,9 @@ endmacro(clear_if_changed)
 
 # Try to get some hints from pkg-config, if available
 macro(use_pkgconfig PREFIX PKGNAME)
-  find_package(PkgConfig)
+  find_package(PkgConfig QUIET)
   if (PKG_CONFIG_FOUND)
-    pkg_check_modules(${PREFIX} ${PKGNAME})
+    pkg_check_modules(${PREFIX} ${_QUIET} ${PKGNAME})
   endif ()
 endmacro (use_pkgconfig)
 

@@ -95,9 +95,6 @@ ENDIF(BUILD_SHARED_LIBS)
 # Only for Unix: use pkg-config to find libraries
 # ===================================================
 INCLUDE(FindPkgConfig OPTIONAL)
-IF(PKG_CONFIG_FOUND)
-	INCLUDE(FindPkgConfig)
-ENDIF(PKG_CONFIG_FOUND)
 # "QUIET" was introduced in 2.8.2 for PKG_CHECK_MODULES
 if ("${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION}.${CMAKE_PATCH_VERSION}" VERSION_GREATER "2.8.1")
    set(_QUIET QUIET)

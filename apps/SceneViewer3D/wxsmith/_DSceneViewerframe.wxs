@@ -223,7 +223,7 @@
 				<object class="wxMenu" name="ID_MENUITEM19" variable="MenuItem18" member="yes">
 					<label>Import</label>
 					<object class="wxMenuItem" name="ID_MENUITEM6" variable="MenuItem8" member="yes">
-						<label>a 3DStudio object...</label>
+						<label>a 3D model (any Assimp format)...</label>
 						<handler function="OnInsert3DS" entry="EVT_MENU" />
 					</object>
 					<object class="wxMenuItem" name="ID_MENUITEM20" variable="MenuItem19" member="yes">
@@ -349,7 +349,6 @@
 		</object>
 		<object class="wxTimer" name="ID_TIMER1" variable="timLoadFileCmdLine" member="yes">
 			<interval>50</interval>
-			<oneshoot>1</oneshoot>
 			<handler function="OntimLoadFileCmdLineTrigger" entry="EVT_TIMER" />
 		</object>
 	</object>
