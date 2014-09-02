@@ -9,7 +9,7 @@
 
 #include "opengl-precomp.h"  // Precompiled header
 
-MRPT_TODO("Replace this class with a wrapper to assimp")
+//MRPT_TODO("Replace this class with a wrapper to assimp")
 
 // Include the lib3ds library:
 #include <lib3ds/file.h>
