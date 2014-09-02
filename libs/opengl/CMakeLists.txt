@@ -30,6 +30,18 @@ ENDIF(WIN32)
 # Glext headers only (for Windows)
 INCLUDE_DIRECTORIES("${MRPT_SOURCE_DIR}/libs/opengl/src/glext")
 
+# Assimp:
+IF (CMAKE_MRPT_HAS_ASSIMP)
+	# ASSIMP_ROOT_DIR - the root directory where the installation can be found
+	# ASSIMP_CXX_FLAGS - extra flags for compilation
+	# ASSIMP_LINK_FLAGS - extra flags for linking
+	# ASSIMP_INCLUDE_DIRS - include directories
+	# ASSIMP_LIBRARY_DIRS - link directories
+	# ASSIMP_LIBRARIES - libraries to link plugins with
+	ADD_DEFINITIONS("${ASSIMP_CXX_FLAGS}")
+	INCLUDE_DIRECTORIES("${ASSIMP_INCLUDE_DIRS}")
+	LINK_DIRECTORIES("${ASSIMP_LIBRARY_DIRS}")
+ENDIF (CMAKE_MRPT_HAS_ASSIMP)
 
 #---------------------------------------------
 # Macro declared in "DeclareMRPTLib.cmake":
@@ -41,7 +53,7 @@ define_mrpt_lib(
 	mrpt-base		
 	)
 
-IF(BUILD_mrpt-opengl) 
+IF(BUILD_mrpt-opengl)
 	# Ignore precompiled headers in some sources:
 	IF(MRPT_ENABLE_PRECOMPILED_HDRS)
 		IF (MSVC)
@@ -55,6 +67,13 @@ IF(BUILD_mrpt-opengl)
 			set_source_files_properties(${glew_FILES} PROPERTIES COMPILE_FLAGS "/Y- /DGLEW_STATIC")
 	ENDIF (MSVC)
 	ENDIF(MRPT_ENABLE_PRECOMPILED_HDRS)
+	
+	# Link against assimp:
+	IF (CMAKE_MRPT_HAS_ASSIMP)
+		ADD_DEPENDENCIES(mrpt-opengl assimp)
+		TARGET_LINK_LIBRARIES(mrpt-opengl ${ASSIMP_LIBRARIES})
+	
+	ENDIF (CMAKE_MRPT_HAS_ASSIMP)
 
 ENDIF(BUILD_mrpt-opengl) 
 

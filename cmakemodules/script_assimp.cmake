@@ -23,6 +23,7 @@ IF (NOT ASSIMP_FOUND OR "${ASSIMP_DIR}" STREQUAL "${EMBEDDED_ASSIMP_DIR}")
 		SET (ASSIMP_BUILD_SAMPLES OFF CACHE BOOL "If the official samples are built as well (needs Glut)." FORCE)
 		SET (ASSIMP_BUILD_STATIC_LIB ON CACHE BOOL "Build Assimp static." FORCE)
 		SET (ASSIMP_BUILD_TESTS OFF CACHE BOOL "." FORCE)
+		set(ASSIMP_LIBRARY_SUFFIX "-mrpt" CACHE STRING "Suffix to append to library names" FORCE)
 		
 		add_subdirectory("${MRPT_SOURCE_DIR}/otherlibs/assimp/")
 		if(ENABLE_SOLUTION_FOLDERS)
@@ -47,11 +48,16 @@ IF (NOT ASSIMP_FOUND OR "${ASSIMP_DIR}" STREQUAL "${EMBEDDED_ASSIMP_DIR}")
 			ASSIMP_INSTALL_PDB
 			ASSIMP_OPT_BUILD_PACKAGES
 			ASSIMP_PACKAGE_VERSION
+			ASSIMP_LIBRARY_SUFFIX
 			)
 			
 		# 2nd attempt: Fatal error if not found:
 		SET(ASSIMP_DIR "${EMBEDDED_ASSIMP_DIR}" CACHE PATH "Path to ASSIMP CMake config file" FORCE)
 		FIND_PACKAGE(ASSIMP REQUIRED)
+
+		# override wrong target libs in -config.cmake file:
+		set(ASSIMP_LIBRARIES "")
+		LIST(APPEND ASSIMP_LIBRARIES optimized "assimp-mrpt" debug "assimp-mrptd")
 		
 		SET(CMAKE_MRPT_HAS_ASSIMP 1)
 		SET(CMAKE_MRPT_HAS_ASSIMP_SYSTEM 0)
