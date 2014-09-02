@@ -29,6 +29,7 @@ void registerAllClasses_mrpt_opengl()
 	// Opengl classes:
 	registerClass( CLASS_ID( CRenderizable ) );
 	registerClass( CLASS_ID( C3DSScene ) );
+	registerClass( CLASS_ID( CAssimpModel ) );
 	registerClass( CLASS_ID( CAxis ) );
 	registerClass( CLASS_ID( CBox ) );
 	registerClass( CLASS_ID( CFrustum ) );

@@ -63,11 +63,11 @@ INCLUDE (PrecompiledHeader)
 # write the library/executable files to the respective directories in the
 # source tree. During an out-of-source build, however, do not litter this
 # directory, since that is probably what the user wanted to avoid.
-IF ( ${PROJECT_NAME}_SOURCE_DIR STREQUAL ${PROJECT_NAME}_BINARY_DIR )
-	SET( CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_HOME_DIRECTORY}/lib" )
-	SET( CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_HOME_DIRECTORY}/lib" )
-	SET( CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_HOME_DIRECTORY}/bin" )
-ENDIF ( ${PROJECT_NAME}_SOURCE_DIR STREQUAL ${PROJECT_NAME}_BINARY_DIR )
+#IF ( ${PROJECT_NAME}_SOURCE_DIR STREQUAL ${PROJECT_NAME}_BINARY_DIR )  # mrpt
+#	SET( CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_HOME_DIRECTORY}/lib" )
+#	SET( CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_HOME_DIRECTORY}/lib" )
+#	SET( CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_HOME_DIRECTORY}/bin" )
+#ENDIF ( ${PROJECT_NAME}_SOURCE_DIR STREQUAL ${PROJECT_NAME}_BINARY_DIR )
 
 # Cache these to allow the user to override them manually.
 SET( ASSIMP_LIB_INSTALL_DIR "lib" CACHE PATH

@@ -9,8 +9,6 @@
 
 #include "opengl-precomp.h"  // Precompiled header
 
-MRPT_TODO("Replace this class with a wrapper to assimp")
-
 // Include the lib3ds library:
 #include <lib3ds/file.h>
 #include <lib3ds/background.h>
@@ -22,7 +20,7 @@ MRPT_TODO("Replace this class with a wrapper to assimp")
 #include <lib3ds/vector.h>
 #include <lib3ds/light.h>
 
-#include <mrpt/opengl/C3DSScene.h>
+#include <mrpt/opengl/CAssimpModel.h>
 #include <mrpt/opengl/CTexturedPlane.h>
 
 #include <mrpt/compress/zip.h>
@@ -43,7 +41,7 @@ using namespace mrpt::utils;
 using namespace mrpt::math;
 using namespace std;
 
-IMPLEMENTS_SERIALIZABLE( C3DSScene, CRenderizableDisplayList, mrpt::opengl )
+IMPLEMENTS_SERIALIZABLE( CAssimpModel, CRenderizableDisplayList, mrpt::opengl )
 
 
 void render_node(Lib3dsNode *node,Lib3dsFile	*file);
@@ -52,7 +50,7 @@ void light_update(Lib3dsLight *l,Lib3dsFile	*file);
 /*---------------------------------------------------------------
 							render
   ---------------------------------------------------------------*/
-void   C3DSScene::render_dl() const
+void   CAssimpModel::render_dl() const
 {
 #if MRPT_HAS_OPENGL_GLUT
 	MRPT_START
@@ -162,271 +160,12 @@ struct _player_texture
 };
 
 typedef struct _player_texture Player_texture;
-Player_texture *pt;
-int tex_mode=0; // Texturing active ?
-
-const char *datapath= ".";
-
-/*
-* Render node recursively, first children, then parent.
-* Each node receives its own OpenGL display list.
-*/
-void render_node(Lib3dsNode *node, Lib3dsFile	*file)
-{
-#if MRPT_HAS_OPENGL_GLUT
-  {
-    Lib3dsNode *p;
-    for (p=node->childs; p!=0; p=p->next) {
-      render_node(p,file);
-    }
-  }
-  if (node->type==LIB3DS_OBJECT_NODE) {
-    Lib3dsMesh *mesh;
-
-    if (strcmp(node->name,"$$$DUMMY")==0) {
-      return;
-    }
-
-    mesh = lib3ds_file_mesh_by_name(file, node->data.object.morph);
-    if( mesh == NULL )
-      mesh = lib3ds_file_mesh_by_name(file, node->name);
-
-    if (!mesh->user.d) {
-      ASSERT(mesh);
-      if (!mesh) {
-        return;
-      }
-
-      mesh->user.d=glGenLists(1);
-      glNewList(mesh->user.d, GL_COMPILE);
-
-      {
-        unsigned p;
-        Lib3dsVector *normalL=(Lib3dsVector *)malloc(3*sizeof(Lib3dsVector)*mesh->faces);
-        Lib3dsMaterial *oldmat = (Lib3dsMaterial *)-1;
-        {
-          Lib3dsMatrix M;
-          lib3ds_matrix_copy(M, mesh->matrix);
-          lib3ds_matrix_inv(M);
-          glMultMatrixf(&M[0][0]);
-        }
-        lib3ds_mesh_calculate_normals(mesh, normalL);
-
-        for (p=0; p<mesh->faces; ++p) {
-          Lib3dsFace *f=&mesh->faceL[p];
-          Lib3dsMaterial *mat=0;
-#ifdef	USE_SDL
-          Player_texture *pt = NULL;
-          int tex_mode = 0;
-#endif
-          if (f->material[0]) {
-            mat=lib3ds_file_material_by_name(file, f->material);
-          }
-
-          if( mat != oldmat ) {
-            if (mat) {
-              if( mat->two_sided )
-                glDisable(GL_CULL_FACE);
-              else
-                glEnable(GL_CULL_FACE);
-
-              glDisable(GL_CULL_FACE);
-
-              /* Texturing added by Gernot < gz@lysator.liu.se > */
-
-/*
-              if (mat->texture1_map.name[0]) {		// texture map?
-                Lib3dsTextureMap *tex = &mat->texture1_map;
-                if (!tex->user.p) {		// no player texture yet?
-                  char texname[1024];
-                  pt = (Player_texture*) malloc(sizeof(*pt));
-				  tex->user.p = pt;
-                  snprintf(texname, sizeof(texname), "%s/%s", datapath, tex->name);
-                  strcpy(texname, datapath);
-                  strcat(texname, "/");
-                  strcat(texname, tex->name);
-#ifdef	DEBUG
-                  printf("Loading texture map, name %s\n", texname);
-#endif
-#ifdef	USE_SDL
-#ifdef  USE_SDL_IMG_load
-                  pt->bitmap = IMG_load(texname);
-#else
-                  pt->bitmap = IMG_Load(texname);
-#endif
-
-#else
-                  pt->bitmap = NULL;
-                  fputs("3dsplayer: Warning: No image loading support, skipping texture.\n", stderr);
-#endif // USE_SDL
-                  if (pt->bitmap) {	// could image be loaded ?
-                    // this OpenGL texupload code is incomplete format-wise!
-					// to make it complete, examine SDL_surface->format and
-                    //  tell us @lib3ds.sf.net about your improvements :-)
-                    //int upload_format = GL_RED; // safe choice, shows errors
-#ifdef USE_SDL
-                    int bytespp = pt->bitmap->format->BytesPerPixel;
-                    void *pixel = NULL;
-                    glGenTextures(1, &pt->tex_id);
-#ifdef	DEBUG
-                    printf("Uploading texture to OpenGL, id %d, at %d bytepp\n",
-                      pt->tex_id, bytespp);
-#endif
-                    if (pt->bitmap->format->palette) {
-                      pixel = convert_to_RGB_Surface(pt->bitmap);
-                      upload_format = GL_RGBA;
-                    }
-                    else {
-                      pixel = pt->bitmap->pixels;
-                      // e.g. this could also be a color palette
-                      if (bytespp == 1) upload_format = GL_LUMINANCE;
-                      else if (bytespp == 3) upload_format = GL_RGB;
-                      else if (bytespp == 4) upload_format = GL_RGBA;
-                    }
-                    glBindTexture(GL_TEXTURE_2D, pt->tex_id);
-                    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA,
-                      TEX_XSIZE, TEX_YSIZE, 0,
-                      GL_RGBA, GL_UNSIGNED_BYTE, NULL);
-                    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-                    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-                    glTexParameteri(GL_TEXTURE_2D,
-                      GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-                    glTexParameteri(GL_TEXTURE_2D,
-                      GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-                    glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
-                    glTexSubImage2D(GL_TEXTURE_2D,
-                      0, 0, 0, pt->bitmap->w, pt->bitmap->h,
-                      upload_format, GL_UNSIGNED_BYTE, pixel);
-                    pt->scale_x = (float)pt->bitmap->w/(float)TEX_XSIZE;
-                    pt->scale_y = (float)pt->bitmap->h/(float)TEX_YSIZE;
-#endif
-                    pt->valid = 1;
-                  }
-                  else {
-                    fprintf(stderr,
-                      "Load of texture %s did not succeed "
-                      "(format not supported !)\n",
-                      texname);
-                    pt->valid = 0;
-                  }
-                }
-                else {
-                  pt = (Player_texture *)tex->user.p;
-                }
-                tex_mode = pt->valid;
-              }
-              else */
-              {
-                tex_mode = 0;
-              }
-              glMaterialfv(GL_FRONT, GL_AMBIENT, mat->ambient);
-              glMaterialfv(GL_FRONT, GL_DIFFUSE, mat->diffuse);
-              glMaterialfv(GL_FRONT, GL_SPECULAR, mat->specular);
-              glMaterialf(GL_FRONT, GL_SHININESS, pow(2.0, 10.0*mat->shininess));
-            }
-            else
-            {
-              static const Lib3dsRgba a={0.7, 0.7, 0.7, 1.0};
-              static const Lib3dsRgba d={0.7, 0.7, 0.7, 1.0};
-              static const Lib3dsRgba s={1.0, 1.0, 1.0, 1.0};
-              glMaterialfv(GL_FRONT, GL_AMBIENT, a);
-              glMaterialfv(GL_FRONT, GL_DIFFUSE, d);
-              glMaterialfv(GL_FRONT, GL_SPECULAR, s);
-              glMaterialf(GL_FRONT, GL_SHININESS, pow(2.0, 10.0*0.5));
-            }
-            oldmat = mat;
-          }
-          else if (mat != NULL && mat->texture1_map.name[0])
-          {
-            //Lib3dsTextureMap *tex = &mat->texture1_map;
-            //if (tex != NULL && tex->user.p != NULL)
-            //{
-            //  pt = (Player_texture *)tex->user.p;
-            //  tex_mode = pt->valid;
-            //}
-          }
-
-          {
-            int i;
-
-            if (tex_mode) {
-              //printf("Binding texture %d\n", pt->tex_id);
-              glEnable(GL_TEXTURE_2D);
-              glBindTexture(GL_TEXTURE_2D, pt->tex_id);
-            }
-
-            glBegin(GL_TRIANGLES);
-            glNormal3fv(f->normal);
-            for (i=0; i<3; ++i) {
-              glNormal3fv(normalL[3*p+i]);
-
-              if (tex_mode) {
-                glTexCoord2f(mesh->texelL[f->points[i]][1]*pt->scale_x,
-                  pt->scale_y - mesh->texelL[f->points[i]][0]*pt->scale_y);
-              }
-
-              glVertex3fv(mesh->pointL[f->points[i]].pos);
-            }
-            glEnd();
-
-            if (tex_mode)
-              glDisable(GL_TEXTURE_2D);
-          }
-        }
-
-        free(normalL);
-      }
-
-      glEndList();
-    }
-
-    if (mesh->user.d) {
-      Lib3dsObjectData *d;
-
-      glPushMatrix();
-      d=&node->data.object;
-      glMultMatrixf(&node->matrix[0][0]);
-      glTranslatef(-d->pivot[0], -d->pivot[1], -d->pivot[2]);
-      glCallList(mesh->user.d);
-      /* glutSolidSphere(50.0, 20,20); */
-      glPopMatrix();
-      //if( flush ) glFlush();
-    }
-  }
-#else
-	THROW_EXCEPTION("MRPT was compiled without OpenGL support")
-#endif
-}
-
-
-/*!
-* Update information about a light.  Try to find corresponding nodes
-* if possible, and copy values from nodes into light struct.
-*/
-void light_update(Lib3dsLight *l,Lib3dsFile	*file)
-{
-  Lib3dsNode *ln, *sn;
-
-  ln = lib3ds_file_node_by_name(file, l->name, LIB3DS_LIGHT_NODE);
-  sn = lib3ds_file_node_by_name(file, l->name, LIB3DS_SPOT_NODE);
-
-  if( ln != NULL ) {
-    memcpy(l->color, ln->data.light.col, sizeof(Lib3dsRgb));
-    memcpy(l->position, ln->data.light.pos, sizeof(Lib3dsVector));
-  }
-
-  if( sn != NULL )
-    memcpy(l->spot, sn->data.spot.pos, sizeof(Lib3dsVector));
-}
-
-
-
 
 /*---------------------------------------------------------------
    Implements the writing to a CStream capability of
      CSerializable objects
   ---------------------------------------------------------------*/
-void  C3DSScene::writeToStream(CStream &out,int *version) const
+void  CAssimpModel::writeToStream(CStream &out,int *version) const
 {
 	if (version)
 		*version = 2;
@@ -455,7 +194,7 @@ void  C3DSScene::writeToStream(CStream &out,int *version) const
 	Implements the reading from a CStream capability of
 		CSerializable objects
   ---------------------------------------------------------------*/
-void  C3DSScene::readFromStream(CStream &in,int version)
+void  CAssimpModel::readFromStream(CStream &in,int version)
 {
 	switch(version)
 	{
@@ -514,14 +253,14 @@ void  C3DSScene::readFromStream(CStream &in,int version)
 /*---------------------------------------------------------------
 					initializeAllTextures
   ---------------------------------------------------------------*/
-void  C3DSScene::initializeAllTextures()
+void  CAssimpModel::initializeAllTextures()
 {
 #if MRPT_HAS_OPENGL_GLUT
 
 #endif
 }
 
-C3DSScene::C3DSScene() :
+CAssimpModel::CAssimpModel() :
 	m_bbox_min(0,0,0),
 	m_bbox_max(0,0,0),
 	m_enable_extra_lighting(false)
@@ -529,7 +268,7 @@ C3DSScene::C3DSScene() :
 	m_3dsfile.set( new TImpl3DS() );
 }
 
-C3DSScene::~C3DSScene()
+CAssimpModel::~CAssimpModel()
 {
 	clear();
 }
@@ -537,13 +276,13 @@ C3DSScene::~C3DSScene()
 /*---------------------------------------------------------------
 							clear
   ---------------------------------------------------------------*/
-void   C3DSScene::clear()
+void   CAssimpModel::clear()
 {
 	CRenderizableDisplayList::notifyChange();
 	m_3dsfile.set( new TImpl3DS() );
 }
 
-void C3DSScene::loadFrom3DSFile( const std::string &filepath )
+void CAssimpModel::loadFrom3DSFile( const std::string &filepath )
 {
 	clear();
 	CRenderizableDisplayList::notifyChange();
@@ -672,7 +411,7 @@ void C3DSScene::loadFrom3DSFile( const std::string &filepath )
   m_3dsfile->file = file;
 }
 
-void C3DSScene::evaluateAnimation( double time_anim )
+void CAssimpModel::evaluateAnimation( double time_anim )
 {
 	if (m_3dsfile->file)
 	{
@@ -681,7 +420,7 @@ void C3DSScene::evaluateAnimation( double time_anim )
 	}
 }
 
-void C3DSScene::getBoundingBox(mrpt::math::TPoint3D &bb_min, mrpt::math::TPoint3D &bb_max) const
+void CAssimpModel::getBoundingBox(mrpt::math::TPoint3D &bb_min, mrpt::math::TPoint3D &bb_max) const
 {
 	bb_min = m_bbox_min;
 	bb_max = m_bbox_max;
@@ -692,11 +431,11 @@ void C3DSScene::getBoundingBox(mrpt::math::TPoint3D &bb_min, mrpt::math::TPoint3
 }
 
 
-C3DSScene::TImpl3DS::TImpl3DS() : file(NULL)
+CAssimpModel::TImpl3DS::TImpl3DS() : file(NULL)
 {
 }
 
-C3DSScene::TImpl3DS::~TImpl3DS()
+CAssimpModel::TImpl3DS::~TImpl3DS()
 {
 	if (file)
 	{
@@ -705,7 +444,7 @@ C3DSScene::TImpl3DS::~TImpl3DS()
 	}
 }
 
-bool C3DSScene::traceRay(const mrpt::poses::CPose3D &o,double &dist) const	{
+bool CAssimpModel::traceRay(const mrpt::poses::CPose3D &o,double &dist) const	{
 	//TODO
 	return false;
 }
