@@ -944,6 +944,7 @@ void _DSceneViewerFrame::OnInsert3DS(wxCommandEvent& event)
 
 		mrpt::opengl::CAssimpModelPtr	obj3D = mrpt::opengl::CAssimpModel::Create();
 		obj3D->loadScene( fil );
+		obj3D->setPose( mrpt::math::TPose3D(0,0,0, DEG2RAD(.0),DEG2RAD(0.),DEG2RAD(90.0) ) );
 		m_canvas->m_openGLScene->insert( obj3D );
 
 		m_canvas->Refresh();

@@ -19,9 +19,7 @@
 #	include <assimp/postprocess.h>
 #endif
 
-//#include <mrpt/utils/CStream.h>
-//#include <mrpt/utils/CFileOutputStream.h>
-//#include <mrpt/utils/CFileInputStream.h>
+MRPT_TODO("textues: SimpleTexturedOpenGL")
 
 #include "opengl_internals.h"
 
@@ -88,6 +86,19 @@ void  CAssimpModel::writeToStream(CStream &out,int *version) const
 	else
 	{
 		writeToStreamRender(out);
+		
+		const bool empty = m_assimp_scene->scene!=NULL;
+		out << empty;
+
+		if (!empty)
+		{
+#if MRPT_HAS_OPENGL_GLUT && MRPT_HAS_ASSIMP
+			aiScene *scene = (aiScene *) m_assimp_scene->scene;
+#else
+	THROW_EXCEPTION("MRPT compiled without OpenGL and/or Assimp")
+#endif
+		}
+		
 
 		MRPT_TODO("Serialize")
 		THROW_EXCEPTION("TODO")
@@ -162,7 +173,6 @@ void CAssimpModel::loadScene( const std::string &filepath )
 #else
 	THROW_EXCEPTION("MRPT compiled without OpenGL and/or Assimp")
 #endif
-
 }
 
 void CAssimpModel::evaluateAnimation( double time_anim )
