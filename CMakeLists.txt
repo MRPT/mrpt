@@ -176,6 +176,25 @@ IF(MSVC)
 	SET(COMPILE_IN_PARALLEL ON CACHE BOOL "Enable parallel compilation in Visual Studio")
 ENDIF(MSVC)
 
+# ----------------------------------------------------------------------------
+#   Uninstall target, for "make uninstall"
+# Must be invoked *before* other embedded projects so MRPT's target "uninstall" exists first
+# ----------------------------------------------------------------------------
+CONFIGURE_FILE(
+  "${CMAKE_CURRENT_SOURCE_DIR}/parse-files/cmake_uninstall.cmake.in"
+  "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake"
+  IMMEDIATE @ONLY)
+
+ADD_CUSTOM_TARGET(uninstall
+  "${CMAKE_COMMAND}" -P "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake")
+
+if(ENABLE_SOLUTION_FOLDERS)
+	set_target_properties(uninstall PROPERTIES FOLDER "CMakeTargets")
+endif(ENABLE_SOLUTION_FOLDERS)
+
+# ----------------------------------------------------------------------------
+# Other sub-scripts:
+# ----------------------------------------------------------------------------
 include(cmakemodules/script_gridmap_options.cmake REQUIRED)			# Enable Intel Threading Building Blocks (TBB) lib?
 
 include(cmakemodules/script_tbb.cmake REQUIRED)         # Enable Intel Threading Building Blocks (TBB) lib?
@@ -190,6 +209,7 @@ include(cmakemodules/script_openni2.cmake REQUIRED)     # Check for the OpenNI2 
 include(cmakemodules/script_ffmpeg.cmake REQUIRED)      # Check for ffmpeg C libraries: libavcodec, libavutil, libavformat, libswscale
 include(cmakemodules/script_wxwidgets.cmake REQUIRED)   # Check for wxWidgets + GL
 include(cmakemodules/script_libdc1394.cmake REQUIRED)   # Check for libdc1394-2
+include(cmakemodules/script_assimp.cmake REQUIRED)      # Check for system assimp lib (3D models)
 include(cmakemodules/script_lib3ds.cmake REQUIRED)      # Check for system lib3ds
 include(cmakemodules/script_liblas.cmake REQUIRED)      # Check for the LAS LiDAR format library
 include(cmakemodules/script_libtclap.cmake REQUIRED)    # Check for system libtclap
@@ -617,21 +637,6 @@ include(cmakemodules/script_create_MRPTConfig.cmake REQUIRED)  # Generate the MR
 
 # Prepare CPack params for building binary packages (has to be after the apps/)
 include(cmakemodules/script_setup_cpack.cmake REQUIRED)			
-
-# ----------------------------------------------------------------------------
-#   Uninstall target, for "make uninstall"
-# ----------------------------------------------------------------------------
-CONFIGURE_FILE(
-  "${CMAKE_CURRENT_SOURCE_DIR}/parse-files/cmake_uninstall.cmake.in"
-  "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake"
-  IMMEDIATE @ONLY)
-
-ADD_CUSTOM_TARGET(uninstall
-  "${CMAKE_COMMAND}" -P "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake")
-
-if(ENABLE_SOLUTION_FOLDERS)
-	set_target_properties(uninstall PROPERTIES FOLDER "CMakeTargets")
-endif(ENABLE_SOLUTION_FOLDERS)
 
 # ----------------------------------------------------------------------------
 #  Hide some variables to the user, just show the important variables:
