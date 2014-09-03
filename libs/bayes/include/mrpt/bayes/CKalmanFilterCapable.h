@@ -1518,7 +1518,7 @@ namespace mrpt
 			}
 
 		friend
-		void detail::addNewLandmarks(
+		void detail::addNewLandmarks<>(
 			CKalmanFilterCapable<VEH_SIZE,OBS_SIZE,FEAT_SIZE,ACT_SIZE,KFTYPE> &obj,
 			const typename CKalmanFilterCapable<VEH_SIZE,OBS_SIZE,FEAT_SIZE,ACT_SIZE,KFTYPE>::vector_KFArray_OBS & Z,
 			const vector_int       &data_association,
