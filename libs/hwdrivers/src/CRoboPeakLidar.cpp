@@ -13,8 +13,6 @@
 #include <mrpt/hwdrivers/CSerialPort.h>
 #include <mrpt/utils/CClientTCPSocket.h>
 #include <mrpt/system/os.h>
-#include <mrpt/opengl/CPlanarLaserScan.h> // in library mrpt-maps
-#include <mrpt/opengl/CAxis.h>
 
 IMPLEMENTS_GENERIC_SENSOR(CRoboPeakLidar,mrpt::hwdrivers)
 
@@ -38,8 +36,7 @@ using namespace std;
 CRoboPeakLidar::CRoboPeakLidar() :
 	m_com_port(""),
 	m_com_port_baudrate(115200),
-	m_rplidar_drv(NULL),
-	m_showPreview(false)
+	m_rplidar_drv(NULL)
 {
 	m_sensorLabel = "RPLidar";
 }
@@ -50,8 +47,6 @@ CRoboPeakLidar::CRoboPeakLidar() :
 CRoboPeakLidar::~CRoboPeakLidar()
 {
 	turnOff();
-    m_win.clear(); // clear window
-
 	disconnect();
 }
 
@@ -147,44 +142,12 @@ void  CRoboPeakLidar::doProcessSimple(
 		outObservation.sensorLabel = m_sensorLabel;
 
 		// Do filter:
-		this->filterByExclusionAreas( outObservation );
-		this->filterByExclusionAngles( outObservation );
+		C2DRangeFinderAbstract::filterByExclusionAreas( outObservation );
+		C2DRangeFinderAbstract::filterByExclusionAngles( outObservation );
+		// Do show preview:
+		C2DRangeFinderAbstract::processPreview(outObservation);
 
 		outThereIsObservation = true;
-
-		// show laser scan
-		if( m_showPreview )
-		{
-			if( !m_win )
-			{
-				string caption = string("Preview of ")+m_sensorLabel;
-				m_win = mrpt::gui::CDisplayWindow3D::Create( caption, 640, 480 );
-				COpenGLScenePtr &theScene = m_win->get3DSceneAndLock();
-				theScene->insert(CAxisPtr( CAxis::Create(-300,-300,-50, 300,300,50, 1.0, 3, true  ) ));
-				m_win->unlockAccess3DScene();
-			}
-
-			if( m_win && m_win->isOpen() )
-			{
-				COpenGLScenePtr &theScene = m_win->get3DSceneAndLock();
-				opengl::CPlanarLaserScanPtr laser;
-				CRenderizablePtr obj = theScene->getByName("laser");
-				if( !obj )
-				{
-					laser = opengl::CPlanarLaserScan::Create();
-					laser->setName("laser");
-					laser->setScan(outObservation);
-					theScene->insert(laser);
-				}
-				else
-				{
-					laser = CPlanarLaserScanPtr(obj);
-					laser->setScan(outObservation);
-				}
-				m_win->unlockAccess3DScene();
-				m_win->forceRepaint();
-			} // end if
-		} // end if
     }
 	else
 	{
@@ -221,10 +184,8 @@ void  CRoboPeakLidar::loadConfig_sensorSpecific(
 	m_com_port = configSource.read_string(iniSection, "COM_port_LIN", m_com_port, true );
 #endif
 
-	m_showPreview = configSource.read_bool(iniSection, "preview", false );
-
 	// Parent options:
-	this->loadExclusionAreas(configSource,iniSection);
+	this->loadCommonParams(configSource,iniSection);
 }
 
 /*-------------------------------------------------------------
@@ -377,7 +338,3 @@ void CRoboPeakLidar::setSerialPort(const std::string &port_name)
 	m_com_port = port_name;
 }
 
-// Info struct:
-CRoboPeakLidar::TSensorInfo::TSensorInfo()
-{
-}

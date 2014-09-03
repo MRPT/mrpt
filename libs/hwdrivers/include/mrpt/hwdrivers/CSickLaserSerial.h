@@ -44,6 +44,16 @@ namespace mrpt
 		  *   pose_yaw=0	// Angles in degrees
 		  *   pose_pitch=0
 		  *   pose_roll=0
+		  *
+		  *    //preview = true // Enable GUI visualization of captured data
+		  *
+		  *    // Optional: Exclusion zones to avoid the robot seeing itself:
+		  *    //exclusionZone1_x = 0.20 0.30 0.30 0.20
+		  *    //exclusionZone1_y = 0.20 0.30 0.30 0.20
+		  *
+		  *    // Optional: Exclusion zones to avoid the robot seeing itself:
+		  *    //exclusionAngles1_ini = 20  // Deg
+		  *    //exclusionAngles1_end = 25  // Deg
 		  *  \endcode
 		  *
 		  * \sa C2DRangeFinderAbstract

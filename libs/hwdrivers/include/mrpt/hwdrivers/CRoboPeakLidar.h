@@ -12,7 +12,6 @@
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/hwdrivers/C2DRangeFinderAbstract.h>
 #include <mrpt/utils/circular_buffer.h>
-#include <mrpt/gui/CDisplayWindow3D.h>
 
 namespace mrpt
 {
@@ -34,6 +33,8 @@ namespace mrpt
 		  *    pose_yaw=0	// Angles in degrees
 		  *    pose_pitch=0
 		  *    pose_roll=0
+		  *
+		  *    //preview = true // Enable GUI visualization of captured data
 		  *
 		  *    // Optional: Exclusion zones to avoid the robot seeing itself:
 		  *    //exclusionZone1_x = 0.20 0.30 0.30 0.20
@@ -66,18 +67,6 @@ namespace mrpt
 			void setSerialPort(const std::string &port_name);
 			const std::string getSerialPort() { return m_com_port; }  //!< Returns the currently set serial port \sa setSerialPort
 
-			void showPreview(bool enable=true) { m_showPreview=enable; }
-
-			struct HWDRIVERS_IMPEXP TSensorInfo
-			{
-				TSensorInfo();
-			};
-
-			/** Returns info about the device.
-			  * \return false on communication error or initialize() not called yet. true on success.
-			  */
-			bool getDeviceInfo(TSensorInfo &out_info) const;
-
 			virtual bool  turnOn();  //!< See base class docs
 			virtual bool  turnOff(); //!< See base class docs
 
@@ -91,10 +80,6 @@ namespace mrpt
 			std::string     m_com_port;
 			int             m_com_port_baudrate;
 			void          * m_rplidar_drv;  // Opaque "RPlidarDriver*"
-			TSensorInfo     m_sensor_info;  //!< The information gathered when the laser is first open
-
-			bool            m_showPreview; //!< If true, shows a 3D window with a preview of the grabber data
-			mrpt::gui::CDisplayWindow3DPtr m_win;
 
 			/** Returns true if communication has been established with the device. If it's not, 
 			  *  try to create a comms channel. 

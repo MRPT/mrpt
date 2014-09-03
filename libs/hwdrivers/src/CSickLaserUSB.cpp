@@ -116,8 +116,10 @@ void  CSickLaserUSB::doProcessSimple(
 		outObservation.validRange[i] = (outObservation.scan[i] <= outObservation.maxRange);
 
 	// Do filter:
-	this->filterByExclusionAreas( outObservation );
-	this->filterByExclusionAngles( outObservation );
+	C2DRangeFinderAbstract::filterByExclusionAreas( outObservation );
+	C2DRangeFinderAbstract::filterByExclusionAngles( outObservation );
+	// Do show preview:
+	C2DRangeFinderAbstract::processPreview(outObservation);
 
 	outThereIsObservation = true;
 }
@@ -139,7 +141,7 @@ void  CSickLaserUSB::loadConfig_sensorSpecific(
 		DEG2RAD( configSource.read_float(iniSection,"pose_roll",0) )
 		);
 	// Parent options:
-	this->loadExclusionAreas(configSource,iniSection);
+	C2DRangeFinderAbstract::loadCommonParams(configSource, iniSection);
 }
 
 /*-------------------------------------------------------------
