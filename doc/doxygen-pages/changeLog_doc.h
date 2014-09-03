@@ -14,6 +14,9 @@
 
 <a name="1.2.2">
   <h2>Version 1.2.2: (Under development) </h2></a>
+	- New classes:
+		- [mrpt-hwdrivers]
+			- mrpt::hwdrivers::CRoboPeakLidar to interface Robo Peak LIDAR scanners.
 	- Changes in classes:
 		- Consistency in all "laser scan" classes: angular increments between rays are now FOV/(N-1) instead of FOV/N.
 		- [mrpt-hwdrivers]

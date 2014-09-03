@@ -60,7 +60,7 @@ void CLMS100Eth::initialize()
 void CLMS100Eth::loadConfig_sensorSpecific( const mrpt::utils::CConfigFileBase &configSource,
                              const std::string	  &iniSection )
 {
-    loadExclusionAreas(configSource, iniSection);
+	C2DRangeFinderAbstract::loadCommonParams(configSource, iniSection);
     float pose_x, pose_y, pose_z, pose_yaw, pose_pitch, pose_roll;
 
     pose_x = configSource.read_float(iniSection,"pose_x",0,false);
@@ -311,9 +311,12 @@ void CLMS100Eth::doProcessSimple(bool &outThereIsObservation, CObservation2DRang
 
     if(decodeScan(buffIn, outObservation))
     {
-        // Do filter:
-        this->filterByExclusionAreas( outObservation );
-        this->filterByExclusionAngles( outObservation );
+		// Do filter:
+		C2DRangeFinderAbstract::filterByExclusionAreas( outObservation );
+		C2DRangeFinderAbstract::filterByExclusionAngles( outObservation );
+		// Do show preview:
+		C2DRangeFinderAbstract::processPreview(outObservation);
+
         outThereIsObservation = true;
         hardwareError = false;
     }else

@@ -246,7 +246,7 @@ float CIbeoLuxETH::convertLayerToRad(int scanlayer)
 void CIbeoLuxETH::loadConfig_sensorSpecific( const mrpt::utils::CConfigFileBase &configSource,
                              const std::string	  &iniSection )
 {
-    float pose_x, pose_y, pose_z, pose_yaw, pose_pitch, pose_roll;
+	float pose_x, pose_y, pose_z, pose_yaw, pose_pitch, pose_roll;
     bool faillNotFound = false;
     pose_x = configSource.read_float(iniSection,"pose_x",0,faillNotFound);
     if(faillNotFound) return;

@@ -31,6 +31,7 @@ void registerAllClasses_mrpt_hwdrivers()
 	CSickLaserUSB::doRegister();
 	CIbeoLuxETH::doRegister();
 	CHokuyoURG::doRegister();
+	CRoboPeakLidar::doRegister();
 	CGPSInterface::doRegister();
 	CBoardSonars::doRegister();
 	CBoardIR::doRegister();

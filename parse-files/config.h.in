@@ -169,6 +169,9 @@ ${CMAKE_MRPT_BUILD_SHARED_LIB}
 /** Whether to include the ActivMedia Robotics ARIA: */
 #define MRPT_HAS_ARIA ${CMAKE_MRPT_HAS_ARIA}
 
+/** Whether to include RoboPeak LIDAR: */
+#define MRPT_HAS_ROBOPEAK_LIDAR ${CMAKE_MRPT_HAS_ROBOPEAK_LIDAR}
+
 /** Whether to include the xSens MTi device interface: */
 #define MRPT_HAS_xSENS_MT3 ${CMAKE_MRPT_HAS_xSENS_MT3}
 #define MRPT_HAS_xSENS_MT4 ${CMAKE_MRPT_HAS_xSENS_MT4}
