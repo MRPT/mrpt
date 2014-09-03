@@ -33,6 +33,8 @@
 		- mrpt::gui::CDisplayWindow3D didn't implement get/set FOV.
 		- Valgrind: Fixed potential unaligned memory access warning in point clouds.
 		- Fix build error with AppleClang 5.1 (Closes #71).
+		- mrpt::utils::CClientTCPSocket: Use a connection success check that works on all platforms
+ properly (Patch by Joe Burmeister).
 
 <hr>
 <a name="1.2.1">
