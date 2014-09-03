@@ -491,13 +491,13 @@ namespace mrpt
 			static void KF_aux_estimate_obs_Hx_jacobian(const KFArray_VEH &x, const std::pair<KFCLASS*,size_t> &dat, KFArray_OBS &out_x);
 			static void KF_aux_estimate_obs_Hy_jacobian(const KFArray_FEAT &x,const std::pair<KFCLASS*,size_t> &dat,KFArray_OBS &out_x);
 
-		template <size_t VEH_SIZE, size_t OBS_SIZE, size_t FEAT_SIZE, size_t ACT_SIZE, typename KFTYPE>
+		template <size_t VEH_SIZEb, size_t OBS_SIZEb, size_t FEAT_SIZEb, size_t ACT_SIZEb, typename KFTYPEb>
 		friend 
 			void detail::addNewLandmarks(
-			CKalmanFilterCapable<VEH_SIZE,OBS_SIZE,FEAT_SIZE,ACT_SIZE,KFTYPE> &obj,
-			const typename CKalmanFilterCapable<VEH_SIZE,OBS_SIZE,FEAT_SIZE,ACT_SIZE,KFTYPE>::vector_KFArray_OBS & Z,
+			CKalmanFilterCapable<VEH_SIZEb,OBS_SIZEb,FEAT_SIZEb,ACT_SIZEb,KFTYPEb> &obj,
+			const typename CKalmanFilterCapable<VEH_SIZEb,OBS_SIZEb,FEAT_SIZEb,ACT_SIZEb,KFTYPEb>::vector_KFArray_OBS & Z,
 			const vector_int       &data_association,
-			const typename CKalmanFilterCapable<VEH_SIZE,OBS_SIZE,FEAT_SIZE,ACT_SIZE,KFTYPE>::KFMatrix_OxO		&R);
+			const typename CKalmanFilterCapable<VEH_SIZEb,OBS_SIZEb,FEAT_SIZEb,ACT_SIZEb,KFTYPEb>::KFMatrix_OxO		&R);
 		}; // end class
 
 	} // end namespace
