@@ -20,6 +20,8 @@ IMPLEMENTS_GENERIC_SENSOR(CRoboPeakLidar,mrpt::hwdrivers)
 
 #if MRPT_HAS_ROBOPEAK_LIDAR
 #	include "rplidar.h" // RPLidar API
+using namespace rp::standalone::rplidar;
+#	define RPLIDAR_DRV   static_cast<RPlidarDriver*>(m_rplidar_drv)
 #endif
 
 using namespace mrpt::utils;
@@ -34,22 +36,12 @@ using namespace std;
 						Constructor
 -------------------------------------------------------------*/
 CRoboPeakLidar::CRoboPeakLidar() :
-	m_firstRange(44),
-	m_lastRange(725),
-	m_motorSpeed_rpm(0),
-    m_sensorPose(0,0,0),
-    m_rx_buffer(40000),
-	m_verbose(true),
-	m_highSensMode(false),
-    m_reduced_fov(0),
 	m_com_port(""),
-	m_ip_dir(""),
-	m_port_dir(0),
-	m_I_am_owner_serial_port(false),
-	m_timeStartUI( 0 ),
-	m_showPreview ( false )
+	m_com_port_baudrate(115200),
+	m_rplidar_drv(NULL),
+	m_showPreview(false)
 {
-	m_sensorLabel = "Hokuyo";
+	m_sensorLabel = "RPLidar";
 }
 
 /*-------------------------------------------------------------
@@ -57,17 +49,18 @@ CRoboPeakLidar::CRoboPeakLidar() :
 -------------------------------------------------------------*/
 CRoboPeakLidar::~CRoboPeakLidar()
 {
-	if (m_stream)
-	{
-		turnOff();
-
-		if (m_I_am_owner_serial_port)
-			delete m_stream;
-		m_stream = NULL;
-	}
-
-	// FAMD
+	turnOff();
     m_win.clear(); // clear window
+
+	disconnect();
+}
+
+void CRoboPeakLidar::disconnect()
+{
+#if MRPT_HAS_ROBOPEAK_LIDAR
+	RPlidarDriver::DisposeDriver(RPLIDAR_DRV);
+	m_rplidar_drv=NULL;
+#endif
 }
 
 /*-------------------------------------------------------------
@@ -78,142 +71,132 @@ void  CRoboPeakLidar::doProcessSimple(
 	mrpt::slam::CObservation2DRangeScan	&outObservation,
 	bool							&hardwareError )
 {
+#if MRPT_HAS_ROBOPEAK_LIDAR
 	outThereIsObservation	= false;
 	hardwareError			= false;
 
 	// Bound?
-	if (!checkCOMisOpen())
-	{
-		m_timeStartUI = 0;
-		hardwareError = true;
-		return;
-	}
-
-	// Wait for a message:
-	char			rcv_status0,rcv_status1;
-	vector_byte		rcv_data(10000);
-	int				rcv_dataLength;
-	int				nRanges = m_lastRange-m_firstRange+1;
-	int				expectedSize = nRanges*3 + 4;
-
-    m_state = ssWorking;
-	if (!receiveResponse( m_lastSentMeasCmd.c_str(), rcv_status0,rcv_status1, (char*)&rcv_data[0], rcv_dataLength ) )
-	{
-		// No new data
-		return ;
-	}
-
-	// DECODE:
-	if (rcv_status0!='0' && rcv_status0!='9')
+	if (!checkCOMMs())
 	{
 		hardwareError = true;
 		return;
 	}
 
-	// -----------------------------------------------
-	//   Extract the observation:
-	// -----------------------------------------------
-	outObservation.timestamp = mrpt::system::now();
+	rplidar_response_measurement_node_t nodes[360*2];
+    size_t   count = _countof(nodes);
 
-	if ( expectedSize!=rcv_dataLength )
+	const float angle_min = DEG2RAD(0.0f);
+    const float angle_max = DEG2RAD(359.0f);
+
+	// Scan:
+	const mrpt::system::TTimeStamp tim_scan_start = mrpt::system::now();
+	u_result op_result = RPLIDAR_DRV->grabScanData(nodes, count);
+	const mrpt::system::TTimeStamp tim_scan_end = mrpt::system::now();
+	const double scan_duration = mrpt::system::timeDifference(tim_scan_start,tim_scan_end);
+
+	// Fill in scan data:
+    if (op_result == RESULT_OK) 
 	{
-		if (m_verbose)
-			printf_debug("[CRoboPeakLidar::doProcess] ERROR: Expecting %u data bytes, received %u instead!\n",expectedSize,rcv_dataLength);
-		hardwareError = true;
-		return;
-	}
+        op_result = RPLIDAR_DRV->ascendScanData(nodes, count);
+        if (op_result == RESULT_OK) 
+		{
+            const size_t angle_compensate_nodes_count = 360;
+            const size_t angle_compensate_multiple = 1;
+            int angle_compensate_offset = 0;
+            rplidar_response_measurement_node_t angle_compensate_nodes[angle_compensate_nodes_count];
+            memset(angle_compensate_nodes, 0, angle_compensate_nodes_count*sizeof(rplidar_response_measurement_node_t));
 
-	// Extract the timestamp of the sensor:
-	uint32_t nowUI	=
-		((rcv_data[0]-0x30) << 18) +
-		((rcv_data[1]-0x30) << 12) +
-		((rcv_data[2]-0x30) << 6) +
-		(rcv_data[3]-0x30);
+			outObservation.scan.assign(count, 0);
+			outObservation.validRange.resize(count, 0);
 
-	uint32_t AtUI = 0;
-	if( m_timeStartUI == 0 )
-	{
-		m_timeStartUI = nowUI;
-		m_timeStartTT = mrpt::system::now();
-	}
-	else	AtUI	= nowUI - m_timeStartUI;
-
-	mrpt::system::TTimeStamp AtDO	=  mrpt::system::secondsToTimestamp( AtUI * 1e-3 /* Board time is ms */ );
-	outObservation.timestamp = m_timeStartTT + AtDO;
-
-	// And the scan ranges:
-	outObservation.rightToLeft = true;
-
-	outObservation.aperture = nRanges *2*M_PI/m_sensor_info.scans_per_360deg;
-
-	outObservation.maxRange	= m_sensor_info.d_max;
-	outObservation.stdError = 0.010f;
-	outObservation.sensorPose = m_sensorPose;
-	outObservation.sensorLabel = m_sensorLabel;
-
-	outObservation.scan.resize(nRanges);
-	outObservation.validRange.resize(nRanges);
-	char		*ptr = (char*) &rcv_data[4];
-	for (int i=0;i<nRanges;i++)
-	{
-		int		b1 = (*ptr++)-0x30;
-		int		b2 = (*ptr++)-0x30;
-		int		b3 = (*ptr++)-0x30;
-
-		int		range_mm = ( (b1 << 12) | (b2 << 6) | b3);
-
-		outObservation.scan[i]			= range_mm * 0.001f;
-		outObservation.validRange[i]	= range_mm>=20;
-	}
-
-	// Do filter:
-	this->filterByExclusionAreas( outObservation );
-	this->filterByExclusionAngles( outObservation );
-
-	// FAMD
-	// show laser scan
-	if( m_showPreview )
-    {
-        if( !m_win )
-        {
-            string caption = string("Preview of ")+m_sensorLabel;
-            m_win = mrpt::gui::CDisplayWindow3D::Create( caption, 640, 480 );
-            if( m_win->isOpen() )
-            {
-               COpenGLScenePtr &theScene = m_win->get3DSceneAndLock();
-                {
-//                    opengl::CGridPlaneXYPtr obj = opengl::CGridPlaneXY::Create(-20,20,-20,20,0,1);
-//                    obj->setColor(0.8,0.8,0.8);
-//                    theScene->insert( obj );
-                    theScene->insert(CAxisPtr( CAxis::Create(-300,-300,-50, 300,300,50, 1.0, 3, true  ) ));
+			for(size_t i=0 ; i < count; i++ )
+			{
+                if (nodes[i].distance_q2 != 0) 
+				{
+                    float angle = (float)((nodes[i].angle_q6_checkbit >> RPLIDAR_RESP_MEASUREMENT_ANGLE_SHIFT)/64.0f);
+                    int angle_value = (int)(angle * angle_compensate_multiple);
+                    if ((angle_value - angle_compensate_offset) < 0) angle_compensate_offset = angle_value;
+                    for (size_t j = 0; j < angle_compensate_multiple; j++) 
+					{
+                        angle_compensate_nodes[angle_value-angle_compensate_offset+j] = nodes[i];
+                    }
                 }
-                m_win->unlockAccess3DScene();
-            } // end if
-        } // end if
-        if( m_win->isOpen() )
-        {
-            COpenGLScenePtr &theScene = m_win->get3DSceneAndLock();
-            opengl::CPlanarLaserScanPtr laser;
-            CRenderizablePtr obj = theScene->getByName("laser");
-            if( !obj )
-            {
-                laser = opengl::CPlanarLaserScan::Create();
-                laser->setName("laser");
-                laser->setScan(outObservation);
-                theScene->insert(laser);
-            }
-            else
-            {
-                laser = static_cast<CPlanarLaserScanPtr>(obj);
-                laser->setScan(outObservation);
-//                cout << "nueva obs" << endl;
-            }
-            m_win->unlockAccess3DScene();
-            m_win->forceRepaint();
-        } // end if
-    } // end if
+			}
 
-	outThereIsObservation = true;
+			for(size_t i=0 ; i < count; i++ ) 
+			{
+				const float read_value = (float) angle_compensate_nodes[i].distance_q2/4.0f/1000;
+				outObservation.scan[i] = read_value;
+				outObservation.validRange[i] = (read_value>0);
+			}
+        } 
+		else if (op_result == RESULT_OPERATION_FAIL) 
+		{
+            // All the data is invalid, just publish them
+			outObservation.scan.assign(count, 0);
+			outObservation.validRange.resize(count, 0);
+        }
+
+		// Fill common parts of the obs:
+		outObservation.timestamp = tim_scan_start;
+		outObservation.rightToLeft = false;
+		outObservation.aperture = 2.0*M_PI;
+		outObservation.maxRange	= 6.0;
+		outObservation.stdError = 0.010f;
+		outObservation.sensorPose = m_sensorPose;
+		outObservation.sensorLabel = m_sensorLabel;
+
+		// Do filter:
+		this->filterByExclusionAreas( outObservation );
+		this->filterByExclusionAngles( outObservation );
+
+		outThereIsObservation = true;
+
+		// show laser scan
+		if( m_showPreview )
+		{
+			if( !m_win )
+			{
+				string caption = string("Preview of ")+m_sensorLabel;
+				m_win = mrpt::gui::CDisplayWindow3D::Create( caption, 640, 480 );
+				COpenGLScenePtr &theScene = m_win->get3DSceneAndLock();
+				theScene->insert(CAxisPtr( CAxis::Create(-300,-300,-50, 300,300,50, 1.0, 3, true  ) ));
+				m_win->unlockAccess3DScene();
+			}
+
+			if( m_win && m_win->isOpen() )
+			{
+				COpenGLScenePtr &theScene = m_win->get3DSceneAndLock();
+				opengl::CPlanarLaserScanPtr laser;
+				CRenderizablePtr obj = theScene->getByName("laser");
+				if( !obj )
+				{
+					laser = opengl::CPlanarLaserScan::Create();
+					laser->setName("laser");
+					laser->setScan(outObservation);
+					theScene->insert(laser);
+				}
+				else
+				{
+					laser = CPlanarLaserScanPtr(obj);
+					laser->setScan(outObservation);
+				}
+				m_win->unlockAccess3DScene();
+				m_win->forceRepaint();
+			} // end if
+		} // end if
+    }
+	else
+	{
+		if (op_result==RESULT_OPERATION_TIMEOUT || op_result==RESULT_OPERATION_FAIL)
+		{
+			// Error? Retry connection
+			this->disconnect();
+		}
+	}
+
+
+#endif
 }
 
 /*-------------------------------------------------------------
@@ -223,9 +206,6 @@ void  CRoboPeakLidar::loadConfig_sensorSpecific(
 	const mrpt::utils::CConfigFileBase &configSource,
 	const std::string	  &iniSection )
 {
-	m_reduced_fov = DEG2RAD( configSource.read_float(iniSection,"reduced_fov",0) ),
-
-	m_motorSpeed_rpm	= configSource.read_int(iniSection,"HOKUYO_motorSpeed_rpm",0);
 	m_sensorPose.setFromValues(
 		configSource.read_float(iniSection,"pose_x",0),
 		configSource.read_float(iniSection,"pose_y",0),
@@ -235,18 +215,12 @@ void  CRoboPeakLidar::loadConfig_sensorSpecific(
 		DEG2RAD( configSource.read_float(iniSection,"pose_roll",0) )
 		);
 
-	m_highSensMode = configSource.read_bool(iniSection,"HOKUYO_HS_mode",m_highSensMode);
-
 #ifdef MRPT_OS_WINDOWS
 	m_com_port = configSource.read_string(iniSection, "COM_port_WIN", m_com_port, true );
 #else
 	m_com_port = configSource.read_string(iniSection, "COM_port_LIN", m_com_port, true );
 #endif
 
-	m_ip_dir = configSource.read_string(iniSection, "IP_DIR", m_ip_dir );
-	m_port_dir = configSource.read_int(iniSection, "PORT_DIR", m_port_dir );
-
-	// FAMD
 	m_showPreview = configSource.read_bool(iniSection, "preview", false );
 
 	// Parent options:
@@ -258,105 +232,7 @@ void  CRoboPeakLidar::loadConfig_sensorSpecific(
 -------------------------------------------------------------*/
 bool  CRoboPeakLidar::turnOn()
 {
-	MRPT_START
-
-	// Bound?
-	if (!checkCOMisOpen()) return false;
-
-	// If we are over a serial link, set it up:
-	if ( m_ip_dir.empty() )
-	{
-		CSerialPort* COM = dynamic_cast<CSerialPort*>(m_stream);
-
-		if (COM!=NULL)
-		{
-			// It is a COM:
-			COM->setConfig( 19200 );
-			COM->setTimeouts(100,0,200,0,0);
-
-			// Assure the laser is off and quiet:
-			switchLaserOff();
-			mrpt::system::sleep(10);
-
-			COM->purgeBuffers();
-			mrpt::system::sleep(10);
-
-			COM->setConfig( 115200 );
-			switchLaserOff();
-			mrpt::system::sleep(10);
-			COM->purgeBuffers();
-			mrpt::system::sleep(10);
-			COM->setConfig( 19200 );
-		}
-
-		if (COM!=NULL)
-		{
-			// Set 115200 baud rate:
-			setHighBaudrate();
-			enableSCIP20();
-			COM->setConfig( 115200 );
-		}
-	}
-	else
-	{
-		CClientTCPSocket* COM = dynamic_cast<CClientTCPSocket*>(m_stream);
-
-
-		if ( COM!=NULL )
-		{
-			// Assure the laser is off and quiet:
-			switchLaserOff();
-			mrpt::system::sleep(10);
-
-			purgeBuffers();
-			mrpt::system::sleep(10);
-
-			switchLaserOff();
-			mrpt::system::sleep(10);
-			purgeBuffers();
-		}
-
-	}
-
-	if (!enableSCIP20()) return false;
-
-	// Turn on the laser:
-	if (!switchLaserOn()) return false;
-
-	// Set the motor speed:
-	if (m_motorSpeed_rpm)
-		if (!setMotorSpeed( m_motorSpeed_rpm )) return false;
-
-	// Set HS mode:
-	setHighSensitivityMode(m_highSensMode);
-
-	// Display sensor information:
-	if (!displaySensorInfo(&m_sensor_info )) return false;
-
-	// Set for scanning angles:
-	m_firstRange = m_sensor_info.scan_first;
-	m_lastRange  = m_sensor_info.scan_last;
-
-	// Artificially reduced FOV?
-	if (m_reduced_fov>0 && m_reduced_fov<2*M_PI)
-	{
-		int center=(m_lastRange+m_firstRange)>>1;
-		const int half_range = static_cast<int>((m_sensor_info.scans_per_360deg / 360) * RAD2DEG(m_reduced_fov))>>1;
-		m_firstRange = center-half_range;
-		m_lastRange = center+half_range;
-		cout << "[HOKUYO::turnOn] Using reduced FOV: ranges [" << m_firstRange  << "-" << m_lastRange << "] for " << RAD2DEG(m_reduced_fov) << " deg. FOV" << endl;
-	}
-
-	if (!displayVersionInfo()) {
-		//return false; // It's not SO important
-	}
-
-	// Start!
-	if (!startScanningMode()) return false;
-
-	return true;
-
-	MRPT_END
+	return checkCOMMs();
 }
 
 /*-------------------------------------------------------------
@@ -364,743 +240,116 @@ bool  CRoboPeakLidar::turnOn()
 -------------------------------------------------------------*/
 bool  CRoboPeakLidar::turnOff()
 {
-	// Turn off the laser:
-	if (!switchLaserOff()) return false;
-
+#if MRPT_HAS_ROBOPEAK_LIDAR
+	if (RPLIDAR_DRV) RPLIDAR_DRV->stop();
 	return true;
+#else
+	THROW_EXCEPTION("MRPT has been compiled without RPLidar support!")
+#endif
 }
 
-/*-------------------------------------------------------------
-						setHighBaudrate
--------------------------------------------------------------*/
-bool  CRoboPeakLidar::setHighBaudrate()
+/** Returns true if the device is connected & operative */
+bool CRoboPeakLidar::getDeviceHealth() const
 {
-	char			cmd[20];
-	char			rcv_status0,rcv_status1;
-	char			rcv_data[100];
-	size_t			toWrite;
-	int				rcv_dataLength;
+#if MRPT_HAS_ROBOPEAK_LIDAR
+	if (!RPLIDAR_DRV) return false;
 
-	if (!checkCOMisOpen()) return false;
+	rplidar_response_device_health_t healthinfo;
 
-	printf_debug("[CRoboPeakLidar::setHighBaudrate] Changing baudrate to 115200...");
-
-	// Send command:
-	os::strcpy(cmd,20, "SS115200\x0A");
-	toWrite = 9;
-
-	m_stream->WriteBuffer(cmd,toWrite);
-
-	// Receive response:
-	if (!receiveResponse( cmd, rcv_status0,rcv_status1, rcv_data, rcv_dataLength ) )
+	u_result op_result = RPLIDAR_DRV->getHealth(healthinfo);
+	if (IS_OK(op_result)) 
 	{
-		printf("ERROR!\n");
-		return false;
-	}
-
-	// DECODE:
-	if (rcv_status0!='0')
-	{
-		printf("ERROR!\n");
-		return false;
-	}
-
-	printf_debug("OK\n");
-	return true;
-}
-
-
-/*-------------------------------------------------------------
-						assureBufferHasBytes
--------------------------------------------------------------*/
-bool CRoboPeakLidar::assureBufferHasBytes(const size_t nDesiredBytes)
-{
-	ASSERT_( nDesiredBytes<m_rx_buffer.capacity() );
-
-	if (m_rx_buffer.size()>=nDesiredBytes)
-	{
-		return true;
-	}
-	else
-	{
-		// Try to read more bytes:
-		uint8_t       buf[128];
-		const size_t  to_read=std::min(m_rx_buffer.available(),sizeof(buf));
-
-		try
+		printf("[CRoboPeakLidar] RPLidar health status : %d\n", healthinfo.status);
+		if (healthinfo.status != RPLIDAR_STATUS_OK) 
 		{
-			size_t nRead;
-
-			if ( !m_ip_dir.empty() )
-			{
-				CClientTCPSocket	*client = dynamic_cast<CClientTCPSocket*>(m_stream);
-				nRead = client->readAsync( buf, to_read, 100, 10 );
-			}
-			else
-			{
-				nRead = m_stream->ReadBuffer(buf,to_read);
-			}
-
-			m_rx_buffer.push_many(buf,nRead);
+			fprintf(stderr, "[CRoboPeakLidar] Error, rplidar internal error detected. Please reboot the device to retry.\n");
+			return false;
 		}
-		catch (std::exception &)
-		{
-			// 0 bytes read
-		}
-
-        return (m_rx_buffer.size()>=nDesiredBytes);
-	}
-}
-
-/*-------------------------------------------------------------
-						receiveResponse
--------------------------------------------------------------*/
-bool  CRoboPeakLidar::receiveResponse(
-		const char	*sentCmd_forEchoVerification,
-		char	&rcv_status0,
-		char	&rcv_status1,
-		char	*rcv_data,
-		int		&rcv_dataLength)
-{
-	if (!checkCOMisOpen()) return false;
-
-    ASSERT_(sentCmd_forEchoVerification!=NULL);
-
-	try
+	} 
+	else 
 	{
-		// Process response:
-		// ---------------------------------
-
-		// COMMAND ECHO ---------
-		int i=0;
-		const int verifLen = strlen(sentCmd_forEchoVerification);
-
-		if (verifLen)
-		{
-			do
-			{
-				if (!assureBufferHasBytes( verifLen-i ))
-					return false;
-
-				// If matches the echo, go on:
-				if ( m_rx_buffer.pop()==sentCmd_forEchoVerification[i] )
-					i++;
-				else
-					i=0;
-			} while ( i<verifLen );
-		}
-
-		//printf("VERIF.CMD OK!: %s", sentCmd_forEchoVerification);
-
-		// Now, the status bytes:
-        if (!assureBufferHasBytes( 2 ))
-            return false;
-
-		rcv_status0 = m_rx_buffer.pop();
-		rcv_status1 = m_rx_buffer.pop();
-        //printf("STATUS: %c%c\n", rcv_status0,rcv_status1);
-
-        // In SCIP2.0, there is an additional sum char:
-        if (rcv_status1!=0x0A)
-		{
-			// Yes, it is SCIP2.0
-            if (!assureBufferHasBytes( 1 )) return false;
-
-            // Ignore this byte: sumStatus
-            m_rx_buffer.pop();
-
-            //printf("STATUS SUM: %c\n",sumStatus);
-		}
-		else
-		{
-			// Continue, it seems a SCIP1.1 response...
-		}
-
-        // After the status bytes, there is a LF:
-        if (!assureBufferHasBytes( 1 )) return false;
-        char nextChar = m_rx_buffer.pop();
-        if (nextChar!=0x0A)   return false;
-
-        // -----------------------------------------------------------------------------
-        // Now the data:
-        // There's a problem here, we don't know in advance how many bytes to read,
-        //  so rely on the serial port class implemented buffer and call many times
-        //  the read method with only 1 byte each time:
-        // -----------------------------------------------------------------------------
-        bool lastWasLF=false;
-        i=0;
-        for (;;)
-        {
-            if (!assureBufferHasBytes(1))
-            {
-            	return false;
-            }
-            rcv_data[i] = m_rx_buffer.pop();
-
-            //printf("%c",rcv_data[i]);
-
-            i++;    // One more byte in the buffer
-
-            // No data?
-            if (i==1 && rcv_data[0]==0x0A)
-            {
-                rcv_dataLength = 0;
-                return true;
-            }
-
-            // Is it a LF?
-            if (rcv_data[i-1]==0x0A)
-            {
-                if (!lastWasLF)
-                {
-                    // Discard SUM+LF
-                    ASSERT_(i>=2);
-                    i-=2;
-                }
-                else
-                {
-                    // Discard this last LF:
-                    i--;
-
-                    // Done!
-                    rcv_data[i]=0;
-               //     printf("RX %u:\n'%s'\n",i,rcv_data);
-
-                    rcv_dataLength = i;
-                    return true;
-                }
-                lastWasLF = true;
-            }
-            else lastWasLF = false;
-        }
-
-	}
-	catch(std::exception &)
-	{
-		//cerr << e.what() << endl;
+		fprintf(stderr, "[CRoboPeakLidar] Error, cannot retrieve rplidar health code: %x\n", op_result);
 		return false;
-	}
-	catch(...)
-	{
-
-		return false;	// Serial port timeout,...
-	}
-}
-
-/*-------------------------------------------------------------
-						enableSCIP20
--------------------------------------------------------------*/
-bool  CRoboPeakLidar::enableSCIP20()
-{
-	char			cmd[20];
-	char			rcv_status0,rcv_status1;
-	char			rcv_data[100];
-	size_t			toWrite;
-	int				rcv_dataLength;
-
-	if (!checkCOMisOpen()) return false;
-
-	printf_debug("[CRoboPeakLidar::enableSCIP20] Changing protocol to SCIP2.0...");
-
-	// Send command:
-	os::strcpy(cmd,20, "SCIP2.0\x0A");
-	toWrite = 8;
-
-	m_stream->WriteBuffer(cmd,toWrite);
-
-	// Receive response:
-	if (!receiveResponse( cmd, rcv_status0,rcv_status1, rcv_data, rcv_dataLength ) )
-	{
-		printf("ERROR!\n");
-		return false;
-	}
-
-
-	// DECODE:
-	if (rcv_status0!='0')
-	{
-		printf("ERROR!\n");
-		return false;
-	}
-
-
-	printf_debug("OK\n");
-	return true;
-}
-
-/*-------------------------------------------------------------
-						switchLaserOn
--------------------------------------------------------------*/
-bool  CRoboPeakLidar::switchLaserOn()
-{
-	char			cmd[20];
-	char			rcv_status0,rcv_status1;
-	char			rcv_data[100];
-	size_t			toWrite;
-	int				rcv_dataLength;
-
-	if (!checkCOMisOpen()) return false;
-
-	printf_debug("[CRoboPeakLidar::switchLaserOn] Switching laser ON...");
-
-	// Send command:
-	os::strcpy(cmd,20, "BM\x0A");
-	toWrite = 3;
-
-	m_stream->WriteBuffer(cmd,toWrite);
-
-	// Receive response:
-	if (!receiveResponse( cmd, rcv_status0,rcv_status1, rcv_data, rcv_dataLength ) )
-	{
-		printf("ERROR!\n");
-		return false;
-	}
-
-	// DECODE:
-	if (rcv_status0!='0')
-	{
-		printf("ERROR!\n");
-		return false;
-	}
-
-	printf_debug("OK\n");
-
-	return true;
-}
-
-/*-------------------------------------------------------------
-						switchLaserOff
--------------------------------------------------------------*/
-bool  CRoboPeakLidar::switchLaserOff()
-{
-	char			cmd[20];
-	char			rcv_status0,rcv_status1;
-	char			rcv_data[100];
-	size_t			toWrite;
-	int				rcv_dataLength;
-
-	if (!checkCOMisOpen()) return false;
-
-	printf_debug("[CRoboPeakLidar::switchLaserOff] Switching laser OFF...");
-
-	// Send command:
-	os::strcpy(cmd,20, "QT\x0A");
-	toWrite = 3;
-
-	m_stream->WriteBuffer(cmd,toWrite);
-
-	// Receive response:
-	if (!receiveResponse( cmd, rcv_status0,rcv_status1, rcv_data, rcv_dataLength ) )
-	{
-		printf("ERROR!\n");
-		return false;
-	}
-
-	// DECODE:
-	if (rcv_status0!='0')
-	{
-		printf("ERROR!\n");
-		return false;
-	}
-
-	printf_debug("OK\n");
-	return true;
-}
-
-/*-------------------------------------------------------------
-						setMotorSpeed
--------------------------------------------------------------*/
-bool  CRoboPeakLidar::setMotorSpeed(int motoSpeed_rpm)
-{
-	char			cmd[20];
-	char			rcv_status0,rcv_status1;
-	char			rcv_data[100];
-	size_t			toWrite;
-	int				rcv_dataLength;
-
-	if (!checkCOMisOpen()) return false;
-
-	printf_debug("[CRoboPeakLidar::setMotorSpeed] Setting to %i rpm...",motoSpeed_rpm);
-
-	// Send command:
-	int		motorSpeedCode = (600 - motoSpeed_rpm) / 6;
-	if (motorSpeedCode<0 || motorSpeedCode>10)
-	{
-		printf("ERROR! Motorspeed must be in the range 540-600 rpm\n");
-		return false;
-	}
-
-	os::sprintf(cmd,20, "CR%02i\x0A",motorSpeedCode);
-	toWrite = 5;
-
-	m_stream->WriteBuffer(cmd,toWrite);
-
-	// Receive response:
-	if (!receiveResponse( cmd, rcv_status0,rcv_status1, rcv_data, rcv_dataLength ) )
-	{
-		printf("ERROR!\n");
-		return false;
-	}
-
-	// DECODE:
-	if (rcv_status0!='0')
-	{
-		printf("ERROR!\n");
-		return false;
-	}
-
-	printf_debug("OK\n");
-	return true;
-}
-
-/*-------------------------------------------------------------
-						setHighSensitivityMode
--------------------------------------------------------------*/
-bool  CRoboPeakLidar::setHighSensitivityMode(bool enabled)
-{
-	char			cmd[20];
-	char			rcv_status0,rcv_status1;
-	char			rcv_data[100];
-	size_t			toWrite;
-	int				rcv_dataLength;
-
-	if (!checkCOMisOpen()) return false;
-
-	printf_debug("[CRoboPeakLidar::setHighSensitivityMode] Setting HS mode to: %s...", enabled ? "true":"false" );
-
-	// Send command:
-	os::sprintf(cmd,20, "HS%i\x0A",enabled ? 1:0);
-	toWrite = 4;
-
-	m_stream->WriteBuffer(cmd,toWrite);
-
-	// Receive response:
-	if (!receiveResponse( cmd, rcv_status0,rcv_status1, rcv_data, rcv_dataLength ) )
-	{
-		printf("ERROR!\n");
-		return false;
-	}
-
-	// DECODE:
-	if (rcv_status0!='0')
-	{
-		printf("ERROR!\n");
-		return false;
-	}
-
-	printf_debug("OK\n");
-	return true;
-}
-
-
-/*-------------------------------------------------------------
-						displayVersionInfo
--------------------------------------------------------------*/
-bool  CRoboPeakLidar::displayVersionInfo( )
-{
-	char			cmd[20];
-	char			rcv_status0,rcv_status1;
-	char			rcv_data[2000];
-	size_t			toWrite;
-	int				rcv_dataLength;
-
-	if (!checkCOMisOpen()) return false;
-
-	printf_debug("[CRoboPeakLidar::displayVersionInfo] Asking info...");
-
-	// Send command:
-	os::sprintf(cmd,20, "VV\x0A");
-	toWrite = 3;
-
-	m_stream->WriteBuffer(cmd,toWrite);
-
-	// Receive response:
-	if (!receiveResponse( cmd, rcv_status0,rcv_status1, rcv_data, rcv_dataLength ) )
-	{
-		printf("ERROR!\n");
-		return false;
-	}
-
-	// DECODE:
-	if (rcv_status0!='0')
-	{
-		printf("ERROR!\n");
-		return false;
-	}
-
-	printf_debug("OK\n");
-
-	// PRINT:
-	for (int i=0;i<rcv_dataLength;i++)
-	{
-		if (rcv_data[i]==';')
-			rcv_data[i]='\n';
-	}
-	rcv_data[rcv_dataLength]=0;
-
-	printf_debug("\n------------- HOKUYO Scanner: Version Information ------\n");
-	printf_debug(rcv_data);
-	printf_debug("-------------------------------------------------------\n\n");
-
-	return true;
-}
-
-/*-------------------------------------------------------------
-						displaySensorInfo
--------------------------------------------------------------*/
-bool  CRoboPeakLidar::displaySensorInfo( TSensorInfo * out_data)
-{
-	char			cmd[20];
-	char			rcv_status0,rcv_status1;
-	char			rcv_data[1000];
-	size_t			toWrite;
-	int				rcv_dataLength;
-
-	if (!checkCOMisOpen()) return false;
-
-	printf_debug("[CRoboPeakLidar::displaySensorInfo] Asking for info...");
-
-	// Send command:
-	os::sprintf(cmd,20, "PP\x0A");
-	toWrite = 3;
-
-	m_stream->WriteBuffer(cmd,toWrite);
-
-	// Receive response:
-	if (!receiveResponse( cmd, rcv_status0,rcv_status1, rcv_data, rcv_dataLength ) )
-	{
-		printf("ERROR!\n");
-		return false;
-	}
-
-	// DECODE:
-	if (rcv_status0!='0')
-	{
-		printf("ERROR!\n");
-		return false;
-	}
-
-	printf_debug("OK\n");
-
-	// PRINT:
-	for (int i=0;i<rcv_dataLength;i++)
-	{
-		if (rcv_data[i]==';')
-			rcv_data[i]='\n';
-	}
-	rcv_data[rcv_dataLength]=0;
-
-	printf_debug("\n------------- HOKUYO Scanner: Product Information ------\n");
-	printf_debug(rcv_data);
-	printf_debug("-------------------------------------------------------\n\n");
-
-	// Parse the data:
-	if (out_data)
-	{
-		const char *ptr;
-
-		if ( NULL != (ptr=strstr(rcv_data,"DMAX:")) )
-				out_data->d_max = 0.001 * atoi( ptr+5 );
-		else	cerr << "[CRoboPeakLidar::displayVersionInfo] Parse error: didn't find DMAX" << endl;
-
-		if ( NULL != (ptr=strstr(rcv_data,"DMIN:")) )
-				out_data->d_min= 0.001 * atoi( ptr+5 );
-		else	cerr << "[CRoboPeakLidar::displayVersionInfo] Parse error: didn't find DMIN" << endl;
-
-		if ( NULL != (ptr=strstr(rcv_data,"ARES:")) )
-				out_data->scans_per_360deg= atoi( ptr+5 );
-		else	cerr << "[CRoboPeakLidar::displayVersionInfo] Parse error: didn't find ARES" << endl;
-
-		if ( NULL != (ptr=strstr(rcv_data,"SCAN:")) )
-				out_data->motor_speed_rpm= atoi( ptr+5 );
-		else	cerr << "[CRoboPeakLidar::displayVersionInfo] Parse error: didn't find SCAN" << endl;
-
-		if ( NULL != (ptr=strstr(rcv_data,"AMIN:")) )
-				out_data->scan_first= atoi( ptr+5 );
-		else	cerr << "[CRoboPeakLidar::displayVersionInfo] Parse error: didn't find AMIN" << endl;
-		if ( NULL != (ptr=strstr(rcv_data,"AMAX:")) )
-				out_data->scan_last= atoi( ptr+5 );
-		else	cerr << "[CRoboPeakLidar::displayVersionInfo] Parse error: didn't find AMAX" << endl;
-		if ( NULL != (ptr=strstr(rcv_data,"AFRT:")) )
-				out_data->scan_front= atoi( ptr+5 );
-		else	cerr << "[CRoboPeakLidar::displayVersionInfo] Parse error: didn't find AFRT" << endl;
-
-		if ( NULL != (ptr=strstr(rcv_data,"MODL:")) )
-		{
-			char aux[30];
-			memcpy( aux, ptr+5, 8 );
-			aux[8]='\0';
-			out_data->model= aux;
-		}
-		else	cerr << "[CRoboPeakLidar::displayVersionInfo] Parse error: didn't find AFRT" << endl;
-
 	}
 
 	return true;
+#else
+	THROW_EXCEPTION("MRPT has been compiled without RPLidar support!")
+#endif
 }
 
-/*-------------------------------------------------------------
-						startScanningMode
--------------------------------------------------------------*/
-bool  CRoboPeakLidar::startScanningMode()
-{
-	char			cmd[100];
-	char			rcv_status0,rcv_status1;
-	char			rcv_data[6000];
-	size_t			toWrite;
-	int				rcv_dataLength;
 
-	if (!checkCOMisOpen()) return false;
-
-	printf_debug("[CRoboPeakLidar::startScanningMode] Starting scanning mode...");
-
-	// Send command:
-	os::sprintf(cmd,50, "MD%04u%04u01000\x0A", m_firstRange,m_lastRange);
-	toWrite = 16;
-
-	m_lastSentMeasCmd = cmd;
-
-	m_stream->WriteBuffer(cmd,toWrite);
-
-	// Receive response:
-	if (!receiveResponse( cmd, rcv_status0,rcv_status1, rcv_data, rcv_dataLength ) )
-	{
-		printf("ERROR!\n");
-		return false;
-	}
-
-	// DECODE:
-	if (rcv_status0!='0')
-	{
-		printf("ERROR!\n");
-		return false;
-	}
-
-	printf_debug("OK\n");
-	return true;
-}
 
 /*-------------------------------------------------------------
-						checkCOMisOpen
+						checkCOMMs
 -------------------------------------------------------------*/
-bool  CRoboPeakLidar::checkCOMisOpen()
+bool  CRoboPeakLidar::checkCOMMs()
 {
 	MRPT_START
-
-	if (m_stream)
-	{
-		// Socket or USB connection?
-		if ( !m_ip_dir.empty() && m_port_dir )
-		{
-			// Has the port been disconected (USB serial ports)??
-			CClientTCPSocket* COM = dynamic_cast<CClientTCPSocket*>(m_stream);
-
-			if (COM!=NULL)
-			{
-				if (COM->isConnected())
-					return true;
-
-				// It has been disconnected... try to reconnect:
-				cerr << "[CRoboPeakLidar] Socket connection lost! trying to reconnect..." << endl;
-
-				try
-				{
-					COM->connect( m_ip_dir, m_port_dir );
-					// OK, reconfigure the laser:
-					turnOn();
-					return true;
-				}
-				catch (...)
-				{
-					// Not yet..
-					return false;
-				}
-			}
-			else
-			{
-				return true;		// Assume OK
-			}
-		}
-		else
-		{
-			// Has the port been disconected (USB serial ports)??
-			CSerialPort* COM = dynamic_cast<CSerialPort*>(m_stream);
-			if (COM!=NULL)
-			{
-				if (COM->isOpen())
-					return true;
-
-				// It has been disconnected... try to reconnect:
-				cerr << "[CRoboPeakLidar] Serial port connection lost! Trying to reconnect..." << endl;
-
-				try
-				{
-					COM->open();
-					// OK, reconfigure the laser:
-					turnOn();
-					return true;
-				}
-				catch (...)
-				{
-					// Not yet..
-					return false;
-				}
-			}
-			else
-			{
-				return true;		// Assume OK
-			}
-		}
-	}
-	else
-	{
-		if ( m_com_port.empty() && m_ip_dir.empty() && !m_port_dir )
-		{
-			THROW_EXCEPTION("No stream bound to the laser nor COM serial port or ip and port provided in 'm_com_port','m_ip_dir' and 'm_port_dir'");
-		}
-
-		if ( !m_ip_dir.empty() && m_port_dir )
-		{
-			// Try to open the serial port:
-			CClientTCPSocket	*theCOM = new CClientTCPSocket();
-
-			theCOM->connect( m_ip_dir, m_port_dir );
-
-			if (!theCOM->isConnected())
-			{
-				cerr << "[CRoboPeakLidar] Cannot connect with the server '" << m_com_port << "'" << endl;
-				delete theCOM;
-				return false;
-			}
-
-			// Bind:
-			bindIO( theCOM );
-
-			m_I_am_owner_serial_port=true;
-
-		}
-
-		else
-		{
-			// Try to open the serial port:
-			CSerialPort		*theCOM = new CSerialPort(m_com_port, true);
-
-			if (!theCOM->isOpen())
-			{
-				cerr << "[CRoboPeakLidar] Cannot open serial port '" << m_com_port << "'" << endl;
-				delete theCOM;
-				return false;
-			}
-
-			// Bind:
-			bindIO( theCOM );
-
-			m_I_am_owner_serial_port=true;
-
-		}
-
+#if MRPT_HAS_ROBOPEAK_LIDAR
+	if (RPLIDAR_DRV)
 		return true;
+
+	// create the driver instance
+	m_rplidar_drv = RPlidarDriver::CreateDriver(RPlidarDriver::DRIVER_TYPE_SERIALPORT);
+	ASSERTMSG_(m_rplidar_drv, "Create Driver failed.")
+
+	// Is it COMX, X>4? ->  "\\.\COMX"
+	if (m_com_port.size()>=3)
+	{
+		if ( tolower( m_com_port[0]) =='c' && tolower( m_com_port[1]) =='o' && tolower( m_com_port[2]) =='m' )
+		{
+			// Need to add "\\.\"?
+			if (m_com_port.size()>4 || m_com_port[3]>'4')
+				m_com_port = std::string("\\\\.\\") + m_com_port;
+		}
 	}
+
+	// make connection...
+	if (IS_FAIL(RPLIDAR_DRV->connect( m_com_port.c_str(), (_u32)m_com_port_baudrate))) 
+	{
+		fprintf(stderr, "[CRoboPeakLidar] Error, cannot bind to the specified serial port %s\n",  m_com_port.c_str() );
+		return false;
+	}
+
+	rplidar_response_device_info_t devinfo;
+	if (IS_FAIL(RPLIDAR_DRV->getDeviceInfo(devinfo) ))
+	{
+		return false;
+	}
+
+	if (m_verbose)
+	{
+		printf("[CRoboPeakLidar] Connection established:\n"
+			"Firmware version: %u\n"
+			"Hardware version: %u\n"
+			"Model: %u\n"
+			"Serial: ",
+			(unsigned int)devinfo.firmware_version,
+			(unsigned int)devinfo.hardware_version,
+			(unsigned int)devinfo.model);
+
+		for (int i=0;i<16;i++)
+			printf("%02X",devinfo.serialnum[i]);
+		printf("\n");
+	}
+
+	// check health:
+	if (!getDeviceHealth())
+		return false;
+
+	// start scan...
+	u_result res = RPLIDAR_DRV->startScan();
+	if (IS_FAIL( res ))
+	{
+		fprintf(stderr, "[CRoboPeakLidar] Error starting scanning mode: %x\n", res);
+		return false;
+	}
+
+	return true;
+#else
+	THROW_EXCEPTION("MRPT has been compiled without RPLidar support!")
+#endif
 	MRPT_END
 }
 
@@ -1109,51 +358,26 @@ bool  CRoboPeakLidar::checkCOMisOpen()
 -------------------------------------------------------------*/
 void CRoboPeakLidar::initialize()
 {
-	if (!checkCOMisOpen()) return;
+	if (!checkCOMMs()) return;
 
 	if (!turnOn())
 	{
-		cerr << "[CRoboPeakLidar::initialize] Error initializing HOKUYO scanner" << endl;
+		cerr << "[CRoboPeakLidar::initialize] Error initializing RPLIDAR scanner" << endl;
 		return;
 	}
 
 }
 
 
-/*-------------------------------------------------------------
-						purgeBuffers
--------------------------------------------------------------*/
-void CRoboPeakLidar::purgeBuffers()
+void CRoboPeakLidar::setSerialPort(const std::string &port_name)
 {
-	if (!checkCOMisOpen()) return;
+	if (m_rplidar_drv)
+		THROW_EXCEPTION("Can't change serial port while connected!")
 
-	if ( m_ip_dir.empty() )
-	{
-		CSerialPort* COM = dynamic_cast<CSerialPort*>(m_stream);
-		if (COM!=NULL)
-		{
-			COM->purgeBuffers();
-		}
-	}
-	else  // Socket connection
-	{
-		CClientTCPSocket* COM = dynamic_cast<CClientTCPSocket*>(m_stream);
-
-		size_t to_read = COM->getReadPendingBytes();
-
-		if ( to_read )
-		{
-
-			void *buf = malloc(sizeof(uint8_t)*to_read);
-
-			size_t nRead = m_stream->ReadBuffer(buf,to_read);
-
-			if ( nRead != to_read )
-				THROW_EXCEPTION("Error in purge buffers: read and expected number of bytes are different.");
-
-			free( buf );
-		}
-	}
+	m_com_port = port_name;
 }
 
-
+// Info struct:
+CRoboPeakLidar::TSensorInfo::TSensorInfo()
+{
+}

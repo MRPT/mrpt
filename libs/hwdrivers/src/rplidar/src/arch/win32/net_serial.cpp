@@ -230,7 +230,8 @@ int raw_serial::waitfordata(size_t data_count, _u32 timeout, size_t * returned_s
     COMSTAT  stat;
     DWORD error;
     DWORD msk,length;
-    if (returned_size==NULL) returned_size=(size_t *)&length;
+	size_t dummy_length;
+    if (returned_size==NULL) returned_size=&dummy_length;
 
     
     if ( isOpened()) {

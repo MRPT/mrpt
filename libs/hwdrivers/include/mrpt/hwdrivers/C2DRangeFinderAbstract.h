@@ -57,9 +57,7 @@ namespace mrpt
 
 
 		protected:
-			/** The I/O channel (will be NULL if not bound).
-			  */
-			utils::CStream					*m_stream;
+			utils::CStream					*m_stream;  //!< The I/O channel (will be NULL if not bound).
 
 			/** Should be call by derived classes at "loadConfig" (loads exclusion areas AND exclusion angles).
 			  *  This loads a sequence of vertices of a polygon given by its (x,y) coordinates relative to the vehicle, that is, taking into account the "sensorPose".
@@ -88,14 +86,8 @@ namespace mrpt
 			void filterByExclusionAngles( CObservation2DRangeScan &obs) const;
 
 		public:
-
-			/** Default constructor
-			  */
-			C2DRangeFinderAbstract();
-
-			/** Destructor
-			  */
-			virtual ~C2DRangeFinderAbstract();
+			C2DRangeFinderAbstract();  //!< Default constructor
+			virtual ~C2DRangeFinderAbstract(); //!< Destructor
 
 			/** Binds the object to a given I/O channel.
 			  *  The stream object must not be deleted before the destruction of this class.
@@ -110,9 +102,7 @@ namespace mrpt
 				CObservation2DRangeScan	&outObservation,
 				bool							&hardwareError );
 
-			/** Main method for a CGenericSensor
-			  */
-			void doProcess();
+			void doProcess(); //!< Main method for a CGenericSensor
 
 			/** Specific laser scanner "software drivers" must process here new data from the I/O stream, and, if a whole scan has arrived, return it.
 			  *  This method MUST BE CALLED in a timely fashion by the user to allow the proccessing of incoming data. It can be run in a different thread safely.
