@@ -78,7 +78,7 @@ void  CRoboPeakLidar::doProcessSimple(
 	}
 
 	rplidar_response_measurement_node_t nodes[360*2];
-    size_t   count = _countof(nodes);
+    size_t   count = sizeof(nodes)/sizeof(nodes[0]);
 
 	const float angle_min = DEG2RAD(0.0f);
     const float angle_max = DEG2RAD(359.0f);
@@ -86,14 +86,14 @@ void  CRoboPeakLidar::doProcessSimple(
 	// Scan:
 	const mrpt::system::TTimeStamp tim_scan_start = mrpt::system::now();
 	u_result op_result = RPLIDAR_DRV->grabScanData(nodes, count);
-	const mrpt::system::TTimeStamp tim_scan_end = mrpt::system::now();
-	const double scan_duration = mrpt::system::timeDifference(tim_scan_start,tim_scan_end);
+	//const mrpt::system::TTimeStamp tim_scan_end = mrpt::system::now();
+	//const double scan_duration = mrpt::system::timeDifference(tim_scan_start,tim_scan_end);
 
 	// Fill in scan data:
-    if (op_result == RESULT_OK) 
+    if (op_result == RESULT_OK)
 	{
         op_result = RPLIDAR_DRV->ascendScanData(nodes, count);
-        if (op_result == RESULT_OK) 
+        if (op_result == RESULT_OK)
 		{
             const size_t angle_compensate_nodes_count = 360;
             const size_t angle_compensate_multiple = 1;
@@ -106,26 +106,26 @@ void  CRoboPeakLidar::doProcessSimple(
 
 			for(size_t i=0 ; i < count; i++ )
 			{
-                if (nodes[i].distance_q2 != 0) 
+                if (nodes[i].distance_q2 != 0)
 				{
                     float angle = (float)((nodes[i].angle_q6_checkbit >> RPLIDAR_RESP_MEASUREMENT_ANGLE_SHIFT)/64.0f);
                     int angle_value = (int)(angle * angle_compensate_multiple);
                     if ((angle_value - angle_compensate_offset) < 0) angle_compensate_offset = angle_value;
-                    for (size_t j = 0; j < angle_compensate_multiple; j++) 
+                    for (size_t j = 0; j < angle_compensate_multiple; j++)
 					{
                         angle_compensate_nodes[angle_value-angle_compensate_offset+j] = nodes[i];
                     }
                 }
 			}
 
-			for(size_t i=0 ; i < count; i++ ) 
+			for(size_t i=0 ; i < count; i++ )
 			{
 				const float read_value = (float) angle_compensate_nodes[i].distance_q2/4.0f/1000;
 				outObservation.scan[i] = read_value;
 				outObservation.validRange[i] = (read_value>0);
 			}
-        } 
-		else if (op_result == RESULT_OPERATION_FAIL) 
+        }
+		else if (op_result == RESULT_OPERATION_FAIL)
 		{
             // All the data is invalid, just publish them
 			outObservation.scan.assign(count, 0);
@@ -218,16 +218,16 @@ bool CRoboPeakLidar::getDeviceHealth() const
 	rplidar_response_device_health_t healthinfo;
 
 	u_result op_result = RPLIDAR_DRV->getHealth(healthinfo);
-	if (IS_OK(op_result)) 
+	if (IS_OK(op_result))
 	{
 		printf("[CRoboPeakLidar] RPLidar health status : %d\n", healthinfo.status);
-		if (healthinfo.status != RPLIDAR_STATUS_OK) 
+		if (healthinfo.status != RPLIDAR_STATUS_OK)
 		{
 			fprintf(stderr, "[CRoboPeakLidar] Error, rplidar internal error detected. Please reboot the device to retry.\n");
 			return false;
 		}
-	} 
-	else 
+	}
+	else
 	{
 		fprintf(stderr, "[CRoboPeakLidar] Error, cannot retrieve rplidar health code: %x\n", op_result);
 		return false;
@@ -267,7 +267,7 @@ bool  CRoboPeakLidar::checkCOMMs()
 	}
 
 	// make connection...
-	if (IS_FAIL(RPLIDAR_DRV->connect( m_com_port.c_str(), (_u32)m_com_port_baudrate))) 
+	if (IS_FAIL(RPLIDAR_DRV->connect( m_com_port.c_str(), (_u32)m_com_port_baudrate)))
 	{
 		fprintf(stderr, "[CRoboPeakLidar] Error, cannot bind to the specified serial port %s\n",  m_com_port.c_str() );
 		return false;
