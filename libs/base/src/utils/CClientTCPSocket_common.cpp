@@ -246,10 +246,11 @@ void CClientTCPSocket::connect(
 	int valopt;
  #ifdef MRPT_OS_WINDOWS
 	int lon = sizeof(int);
+	getsockopt(m_hSock, SOL_SOCKET, SO_ERROR, (char*)(&valopt), &lon);
  #else
 	socklen_t lon = sizeof(int);
- #endif
 	getsockopt(m_hSock, SOL_SOCKET, SO_ERROR, (void*)(&valopt), &lon);
+ #endif
 
  #ifdef MRPT_OS_WINDOWS
 	if (valopt) THROW_EXCEPTION( format("Error connecting to %s:%hu. Error: %i.", remotePartAddress.c_str(), remotePartTCPPort, valopt));
