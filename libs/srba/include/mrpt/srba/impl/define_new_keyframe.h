@@ -66,7 +66,7 @@ void RbaEngine<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::define_new_keyfram
 
 				// temporarily disable robust kernel for initialization (faster)
 				const bool old_kernel = parameters.srba.use_robust_kernel;
-				parameters.srba.use_robust_kernel= false;
+				parameters.srba.use_robust_kernel= parameters.srba.use_robust_kernel_stage1;
 
 				std::vector<size_t>  k2f_edges_to_opt;  // Empty: only initialize k2k edges.
 				std::vector<size_t>  k2k_edges_to_opt(1);
@@ -77,11 +77,11 @@ void RbaEngine<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::define_new_keyfram
 						continue;  // Already initialized, can skip it.
 					k2k_edges_to_opt[0] = new_k2k_edge_ids[i].id ;
 
-					TOptimizeExtraOutputInfo  init_opt_info;
+					//TOptimizeExtraOutputInfo  init_opt_info;
 					this->optimize_edges(
 						k2k_edges_to_opt,
 						k2f_edges_to_opt,
-						init_opt_info
+						out_new_kf_info.optimize_results_stg1 /*init_opt_info*/
 						);
 				}
 

@@ -128,6 +128,7 @@ namespace srba
 			size_t  num_kf2lm_edges_optimized; //!< Number of solved unknowns of type "kf-to-landmark".
 			size_t  num_total_scalar_optimized;  //!< The total number of dimensions (scalar values) in all the optimized unknowns.
 			size_t  num_span_tree_numeric_updates; //!< Number of poses updated in the spanning tree numeric-update stage.
+			double  obs_rmse; //!< RMSE for each observation after optimization
 			double  total_sqr_error_init, total_sqr_error_final; //!< Initial and final total squared error for all the observations
 			double  HAp_condition_number; //!< To be computed only if enabled in parameters.compute_condition_number
 
@@ -160,6 +161,7 @@ namespace srba
 			TKeyFrameID                kf_id;         //!< The ID of the newly created KF.
 			std::vector<TNewEdgeInfo>  created_edge_ids;  //!< The newly created edges (minimum: 1 edge)
 			TOptimizeExtraOutputInfo   optimize_results;  //!< Results from the least-squares optimization
+			TOptimizeExtraOutputInfo   optimize_results_stg1;  //!< Results from the least-squares optimization
 
 			void clear()
 			{
@@ -377,6 +379,7 @@ namespace srba
 			// -------------------------------------
 			bool   optimize_new_edges_alone; //!< (Default:true) Before running a whole "local area" optimization, try to optimize new edges one by one to have a better starting point.
 			bool   use_robust_kernel;
+			bool   use_robust_kernel_stage1;
 			double kernel_param;
 			size_t max_iters;
 			double max_error_per_obs_to_stop; //!< default: 1e-9

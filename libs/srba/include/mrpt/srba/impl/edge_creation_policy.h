@@ -48,7 +48,6 @@ void RbaEngine<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::edge_creation_poli
 			const size_t SUBMAP_SIZE = parameters.srba.submap_size; // In # of KFs
 			const TKeyFrameID cur_localmap_center = SUBMAP_SIZE*((new_kf_id-1)/SUBMAP_SIZE);
 
-
 			// For normal KFs, just connect it to its local area central KF:
 			if (0!=(new_kf_id)%SUBMAP_SIZE)
 			{
@@ -152,6 +151,12 @@ void RbaEngine<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::edge_creation_poli
 
 							nei.id = this->create_kf2kf_edge(new_kf_id, TPairKeyFrameID( central_kf_id, new_kf_id), obs);
 							nei.has_aprox_init_val = false; // Will need to estimate this one
+
+#ifdef SRBA_WORKAROUND_MSVC9_DEQUE_BUG
+							this->rba_state.k2k_edges[nei.id]->inv_pose = this->rba_state.k2k_edges[nei.id-1]->inv_pose;
+#else
+							this->rba_state.k2k_edges[nei.id].inv_pose = this->rba_state.k2k_edges[nei.id-1].inv_pose;
+#endif
 							new_k2k_edge_ids.push_back(nei);
 
 							VERBOSE_LEVEL(2) << "[edge_creation_policy] Created extra edge #"<< nei.id << ": "<< central_kf_id <<"->"<<new_kf_id << " with #obs: "<< num_obs_this_base<< endl;
