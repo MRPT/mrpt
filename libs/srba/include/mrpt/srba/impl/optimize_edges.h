@@ -322,6 +322,14 @@ void RbaEngine<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::optimize_edges(
 	VERBOSE_LEVEL(2) << "[OPT] Individual Jacobs: " << count_jacobians << " #k2k_edges=" << nUnknowns_k2k << " #k2f_edges=" << nUnknowns_k2f << " #obs=" << nObs << endl;
 	VERBOSE_LEVEL(2) << "[OPT] k2k_edges to optimize: " << mrpt::system::sprintf_container("% u",run_k2k_edges) << endl;
 	VERBOSE_LEVEL(2) << "[OPT] k2f_edges to optimize: " << mrpt::system::sprintf_container("% u",run_feat_ids) << endl;
+	// Extra verbose: display initial value of each optimized pose:
+	if (m_verbose_level>=2 && !run_k2k_edges.empty())
+	{
+		std::cout << "[OPT] k2k_edges to optimize, initial value(s):\n";
+		ASSERT_(k2k_edge_unknowns.size()==run_k2k_edges.size())
+		for (size_t i=0;i<run_k2k_edges.size();i++)
+			std::cout << " k2k_edge: " <<k2k_edge_unknowns[i]->from << "=>" << k2k_edge_unknowns[i]->to << ",inv_pose=" << k2k_edge_unknowns[i]->inv_pose << std::endl;
+	}
 
 	// VERY IMPORTANT: For J^t*J to be invertible, we need a full rank Hessian:
 	//    nObs*OBS_DIMS >= nUnknowns_k2k*POSE_DIMS+nUnknowns_k2f*LM_DIMS
@@ -771,6 +779,15 @@ void RbaEngine<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::optimize_edges(
 	DETAILED_PROFILING_ENTER("opt.get_extra_results")
 	my_solver.get_extra_results(out_info.extra_results);
 	DETAILED_PROFILING_LEAVE("opt.get_extra_results")
+
+	// Extra verbose: display final value of each optimized pose:
+	if (m_verbose_level>=2 && !run_k2k_edges.empty())
+	{
+		std::cout << "[OPT] k2k_edges to optimize, final value(s):\n";
+		ASSERT_(k2k_edge_unknowns.size()==run_k2k_edges.size())
+		for (size_t i=0;i<run_k2k_edges.size();i++)
+			std::cout << " k2k_edge: " <<k2k_edge_unknowns[i]->from << "=>" << k2k_edge_unknowns[i]->to << ",inv_pose=" << k2k_edge_unknowns[i]->inv_pose << std::endl;
+	}
 
 	// Save (quick swap) the list of unknowns to the output structure, 
 	//  now that these vectors are not needed anymore:
