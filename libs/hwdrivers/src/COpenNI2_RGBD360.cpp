@@ -95,7 +95,7 @@ void COpenNI2_RGBD360::doProcess()
 	CObservationRGBD360Ptr newObs = CObservationRGBD360::Create();
 	//	CObservation3DRangeScanPtr newObs = CObservation3DRangeScan::Create();
 
-	assert(!COpenNI2Generic::vOpenDevices.empty());
+	assert(getNumDevices() > 0);
 	//  unsigned sensor_id = COpenNI2Generic::vOpenDevices.front();
 	getNextObservation( *newObs, thereIs, hwError );
 
