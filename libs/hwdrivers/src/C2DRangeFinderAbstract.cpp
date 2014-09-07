@@ -187,6 +187,8 @@ void C2DRangeFinderAbstract::processPreview(const mrpt::slam::CObservation2DRang
 		{
 			string caption = string("Preview of ")+m_sensorLabel;
 			m_win = mrpt::gui::CDisplayWindow3D::Create( caption, 640, 480 );
+			m_win->setCameraAzimuthDeg(180);
+			m_win->setCameraElevationDeg(90);
 			COpenGLScenePtr &theScene = m_win->get3DSceneAndLock();
 			theScene->insert(CAxisPtr( CAxis::Create(-300,-300,-50, 300,300,50, 1.0, 3, true  ) ));
 			m_win->unlockAccess3DScene();
