@@ -34,6 +34,7 @@ Below follows a table with the preview of most rendering primitive classes:
 <div align="center">
 <table border="0" cellspan="4" cellspacing="4" style="border-width: 1px; border-style: solid;">
  <tr> <td> mrpt::opengl::CArrow </td> <td> \image html preview_CArrow.png </td> </tr>
+ <tr> <td> mrpt::opengl::CAssimpModel </td> <td> \image html preview_CAssimpModel.png </td> </tr>
  <tr> <td> mrpt::opengl::CAxis </td> <td> \image html preview_CAxis.png </td> </tr>
  <tr> <td> mrpt::opengl::CBox </td> <td> \image html preview_CBox.png </td> </tr>
  <tr> <td> mrpt::opengl::CFrustum </td> <td> \image html preview_CFrustum.png </td> </tr>
@@ -55,7 +56,7 @@ Below follows a table with the preview of most rendering primitive classes:
  <tr> <td> mrpt::opengl::CEllipsoidInverseDepth2D </td> <td> \image html preview_CEllipsoidInverseDepth2D.png </td> </tr>
  <tr> <td> mrpt::opengl::CEllipsoidInverseDepth3D </td> <td> \image html preview_CEllipsoidInverseDepth3D.png </td> </tr>
  <tr> <td> mrpt::opengl::COctoMapVoxels </td> <td> \image html preview_COctoMapVoxels.png </td> </tr>
- <tr> <td> mrpt::opengl::CVectorField2D </td> <td> \image html imagen.png </td> </tr>
+ <tr> <td> mrpt::opengl::CVectorField2D </td> <td> \image html preview_CVectorField2D.png </td> </tr>
  <tr> <td> mrpt::opengl::stock_objects::BumblebeeCamera() </td> <td> \image html preview_stock_objects_BumblebeeCamera.png </td> </tr>
  <tr> <td> mrpt::opengl::stock_objects::CornerXYSimple() </td> <td> \image html preview_stock_objects_CornerXYSimple.png </td> </tr>
  <tr> <td> mrpt::opengl::stock_objects::CornerXYZSimple() </td> <td> \image html preview_stock_objects_CornerXYZSimple.png </td> </tr>

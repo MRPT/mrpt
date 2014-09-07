@@ -56,6 +56,8 @@ void   CAssimpModel::render_dl() const
 	aiScene *scene = (aiScene *) m_assimp_scene->scene;
 
 	glEnable(GL_TEXTURE_2D);
+	glDisable(GL_CULL_FACE);
+	//glFrontFace(GL_CW);
 
 	glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE);
 	glEnable(GL_NORMALIZE);
@@ -482,14 +484,17 @@ void load_textures(
 	for (unsigned int m=0; m<scene->mNumMaterials; m++)
 	{
 		int texIndex = 0;
-		aiReturn texFound = AI_SUCCESS;
-		aiString path;	// filename
-		while (texFound == AI_SUCCESS)
+		for (;;)
 		{
-			texFound = scene->mMaterials[m]->GetTexture(aiTextureType_DIFFUSE, texIndex, &path);
-			CAssimpModel::TInfoPerTexture &ipt = textureIdMap[path.data];
-			ipt.id_idx = std::string::npos; //fill map with textures, pointers still NULL yet
-			texIndex++;
+			aiString path;	// filename
+			aiReturn texFound = scene->mMaterials[m]->GetTexture(aiTextureType_DIFFUSE, texIndex, &path);
+			if (texFound == AI_SUCCESS)
+			{
+				CAssimpModel::TInfoPerTexture &ipt = textureIdMap[path.data];
+				ipt.id_idx = std::string::npos; //fill map with textures, pointers still NULL yet
+				texIndex++;
+			}
+			else break;
 		}
 	}
 

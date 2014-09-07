@@ -14,9 +14,14 @@
 
 <a name="1.2.2">
   <h2>Version 1.2.2: (Under development) </h2></a>
+	- Changes in apps:
+		- <a href="http://www.mrpt.org/list-of-mrpt-apps/application-sceneviewer3d/" >SceneViewer3D</a>:
+			- New menu "File" -> "Import" -> "3D model" which supports many standard formats (via mrpt::opengl::CAssimpModel)
 	- New classes:
 		- [mrpt-hwdrivers]
 			- mrpt::hwdrivers::CRoboPeakLidar to interface Robo Peak LIDAR scanners.
+		- [mrpt-opengl]
+			- mrpt::opengl::CAssimpModel for rendering complex 3D models (many supported formats) in OpenGL scenes.
 	- Changes in classes:
 		- Consistency in all "laser scan" classes: angular increments between rays are now FOV/(N-1) instead of FOV/N.
 		- [mrpt-base]
