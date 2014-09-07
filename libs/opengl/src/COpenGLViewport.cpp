@@ -451,6 +451,7 @@ void  COpenGLViewport::render( const int render_width, const int render_height  
 			// Global OpenGL settings:
 			// ---------------------------------
 			glHint(GL_POLYGON_SMOOTH_HINT, m_OpenGL_enablePolygonNicest ? GL_NICEST : GL_FASTEST);
+			glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
 
 			// Render objects:
 			// -------------------------------------------

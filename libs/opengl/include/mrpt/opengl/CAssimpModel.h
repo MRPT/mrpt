@@ -12,6 +12,7 @@
 #include <mrpt/opengl/CRenderizableDisplayList.h>
 #include <mrpt/opengl/COpenGLScene.h>
 #include <mrpt/utils/CMemoryChunk.h>
+#include <map>
 
 namespace mrpt
 {
@@ -56,6 +57,13 @@ namespace mrpt
 			/* Simulation of ray-trace. */
 			virtual bool traceRay(const mrpt::poses::CPose3D &o,double &dist) const;
 
+			struct TInfoPerTexture
+			{
+				size_t id_idx; //!< indices in \a m_textureIds. string::npos for non-initialized ones.
+				mrpt::utils::CImagePtr img_rgb, img_alpha;
+				TInfoPerTexture() : id_idx(std::string::npos) {}
+			};
+
 		private:
 			CAssimpModel( );
 			virtual ~CAssimpModel(); //!< Private, virtual destructor: only can be deleted from smart pointers
@@ -70,8 +78,14 @@ namespace mrpt
 			};
 			stlplus::smart_ptr<TImplAssimp>	m_assimp_scene;
 
-			/** Scale of the object */
 			mrpt::math::TPoint3D   m_bbox_min, m_bbox_max; //!< Bounding box
+
+			mutable bool m_textures_loaded;
+			std::string m_modelPath;
+			mutable std::vector<unsigned int> m_textureIds;
+
+			mutable std::map<std::string,TInfoPerTexture> m_textureIdMap;
+
 		};
 
 	} // end namespace
