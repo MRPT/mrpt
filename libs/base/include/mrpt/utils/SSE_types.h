@@ -30,8 +30,8 @@
     }
 #endif
 
-// SSE4 types:
-#if MRPT_HAS_SSE4  
+// SSE4.1 types:
+#if MRPT_HAS_SSE4_1
 	#include <smmintrin.h>
 #endif
 
