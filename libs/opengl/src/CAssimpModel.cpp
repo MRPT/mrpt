@@ -22,8 +22,6 @@
 #	include <assimp/postprocess.h>
 #endif
 
-MRPT_TODO("textues: SimpleTexturedOpenGL")
-
 #include "opengl_internals.h"
 
 using namespace mrpt;
@@ -35,26 +33,14 @@ using namespace std;
 IMPLEMENTS_SERIALIZABLE( CAssimpModel, CRenderizableDisplayList, mrpt::opengl )
 
 #if MRPT_HAS_OPENGL_GLUT && MRPT_HAS_ASSIMP
-	void recursive_render (const aiScene *sc, const aiNode* nd);
-	void apply_material(const aiMaterial *mtl);
+	void recursive_render (const aiScene *sc, const aiNode* nd,const std::vector<unsigned int> &textureIds,const std::map<std::string,CAssimpModel::TInfoPerTexture> &textureIdMap);
+	void apply_material(const aiMaterial *mtl,const std::vector<unsigned int> &textureIds, const std::map<std::string,CAssimpModel::TInfoPerTexture> &textureIdMap);
 	void set_float4(float f[4], float a, float b, float c, float d);
 	void color4_to_float4(const aiColor4D *c, float f[4]);
 	void get_bounding_box (const aiScene *sc,aiVector3D* min, aiVector3D* max);
 	void get_bounding_box_for_node (const aiScene *sc,const aiNode* nd, aiVector3D* min, aiVector3D* max, aiMatrix4x4* trafo);
-	void load_textures(const aiScene *scene);
-
-	MRPT_TODO("to member!")
-	std::string m_modelPath;
-	// images / texture
-	MRPT_TODO("Move to members!")
-	#include <map>
-	std::map<std::string, GLuint*> textureIdMap;	// map image filenames to textureIds
-	GLuint*		textureIds;							// pointer to texture Array
-
+	void load_textures(const aiScene *scene, std::vector<unsigned int> &textureIds, std::map<std::string,CAssimpModel::TInfoPerTexture> &textureIdMap,const std::string &modelPath);
 #endif //MRPT_HAS_OPENGL_GLUT && MRPT_HAS_ASSIMP
-
-
-bool m_textures_loaded = false;
 
 /*---------------------------------------------------------------
 							render
@@ -68,38 +54,21 @@ void   CAssimpModel::render_dl() const
 
 	aiScene *scene = (aiScene *) m_assimp_scene->scene;
 
-
 	glEnable(GL_TEXTURE_2D);
-	glShadeModel(GL_SMOOTH);		 // Enables Smooth Shading
-	glClearColor(1.0f, 1.0f, 1.0f, 0.0f);
-	glClearDepth(1.0f);				// Depth Buffer Setup
-	glEnable(GL_DEPTH_TEST);		// Enables Depth Testing
-	glDepthFunc(GL_LEQUAL);			// The Type Of Depth Test To Do
-	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);	// Really Nice Perspective Calculation
 
-
-	glEnable(GL_LIGHTING);
-	glEnable(GL_LIGHT0);    // Uses default lighting parameters
 	glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE);
 	glEnable(GL_NORMALIZE);
 
-	GLfloat LightAmbient[]= { 0.5f, 0.5f, 0.5f, 1.0f };
-	GLfloat LightDiffuse[]= { 1.0f, 1.0f, 1.0f, 1.0f };
-	GLfloat LightPosition[]= { 0.0f, 0.0f, 15.0f, 1.0f };
+	if (!m_textures_loaded) 
+	{
+		load_textures(scene,m_textureIds,m_textureIdMap,m_modelPath);
+		m_textures_loaded = true;
+	}
 
-	glLightfv(GL_LIGHT1, GL_AMBIENT, LightAmbient);
-	glLightfv(GL_LIGHT1, GL_DIFFUSE, LightDiffuse);
-	glLightfv(GL_LIGHT1, GL_POSITION, LightPosition);
-	glEnable(GL_LIGHT1);
+	recursive_render(scene, scene->mRootNode,m_textureIds,m_textureIdMap);
 
-	//glColorMaterial(GL_FRONT_AND_BACK, GL_DIFFUSE);
-
-	load_textures(scene); MRPT_TODO("only once!")
-
-	recursive_render(scene, scene->mRootNode);
-
-	//glDisable(GL_CULL_FACE);
 	glDisable(GL_NORMALIZE);
+	glDisable(GL_TEXTURE_2D);
 
 	MRPT_END
 #endif
@@ -162,7 +131,8 @@ void  CAssimpModel::readFromStream(CStream &in,int version)
 
 CAssimpModel::CAssimpModel() :
 	m_bbox_min(0,0,0),
-	m_bbox_max(0,0,0)
+	m_bbox_max(0,0,0),
+	m_textures_loaded(false)
 {
 	m_assimp_scene.set( new TImplAssimp() );
 }
@@ -179,6 +149,17 @@ void   CAssimpModel::clear()
 {
 	CRenderizableDisplayList::notifyChange();
 	m_assimp_scene.set( new TImplAssimp() );
+	m_modelPath.clear();
+	m_textures_loaded = false;
+
+#if MRPT_HAS_OPENGL_GLUT
+	if (!m_textureIds.empty()) 
+	{
+		glDeleteTextures(m_textureIds.size(), &m_textureIds[0]);
+		m_textureIds.clear();
+	}
+	m_textureIdMap.clear();
+#endif
 }
 
 void CAssimpModel::loadScene( const std::string &filepath )
@@ -318,7 +299,7 @@ void set_float4(float f[4], float a, float b, float c, float d)
 }
 
 // ----------------------------------------------------------------------------
-void apply_material(const aiMaterial *mtl)
+void apply_material(const aiMaterial *mtl,const std::vector<unsigned int> &textureIds, const std::map<std::string,CAssimpModel::TInfoPerTexture> &textureIdMap)
 {
 	float c[4];
 
@@ -340,8 +321,16 @@ void apply_material(const aiMaterial *mtl)
 	if(AI_SUCCESS == mtl->GetTexture(aiTextureType_DIFFUSE, texIndex, &texPath))
 	{
 		//bind texture
-		unsigned int texId = *textureIdMap[texPath.data];
-		glBindTexture(GL_TEXTURE_2D, texId);
+		std::map<std::string,CAssimpModel::TInfoPerTexture>::const_iterator it=textureIdMap.find(texPath.data);
+		if (it==textureIdMap.end())
+		{
+			std::cerr << "[CAssimpModel] Error: using un-loaded texture '"<< texPath.data <<"'\n";
+		}
+		else
+		{
+			unsigned int texId = textureIds[it->second.id_idx];
+			glBindTexture(GL_TEXTURE_2D, texId);
+		}
 	}
 
 	set_float4(c, 0.8f, 0.8f, 0.8f, 1.0f);
@@ -401,7 +390,7 @@ void Color4f(const aiColor4D *color)
 }
 
 // ----------------------------------------------------------------------------
-void recursive_render (const aiScene *sc, const aiNode* nd)
+void recursive_render (const aiScene *sc, const aiNode* nd,const std::vector<unsigned int> &textureIds, const std::map<std::string,CAssimpModel::TInfoPerTexture> &textureIdMap)
 {
 	unsigned int i;
 	unsigned int n=0, t;
@@ -417,7 +406,7 @@ void recursive_render (const aiScene *sc, const aiNode* nd)
 	{
 		const struct aiMesh* mesh = sc->mMeshes[nd->mMeshes[n]];
 
-		apply_material(sc->mMaterials[mesh->mMaterialIndex]);
+		apply_material(sc->mMaterials[mesh->mMaterialIndex],textureIds,textureIdMap);
 
 
 		if(mesh->mNormals == NULL)
@@ -466,7 +455,7 @@ void recursive_render (const aiScene *sc, const aiNode* nd)
 
 	// draw all children
 	for (n = 0; n < nd->mNumChildren; ++n)
-		recursive_render(sc, nd->mChildren[n]);
+		recursive_render(sc, nd->mChildren[n],textureIds,textureIdMap);
 
 	glPopMatrix();
 }
@@ -484,9 +473,15 @@ void replaceAll(std::string& str, const std::string& from, const std::string& to
     }
 }
 
-void load_textures(const aiScene *scene)
+void load_textures(
+	const aiScene *scene, 
+	std::vector<unsigned int> &textureIds, 
+	std::map<std::string,CAssimpModel::TInfoPerTexture> &textureIdMap,
+	const std::string &modelPath)
 {
 	if (scene->HasTextures()) THROW_EXCEPTION("Support for meshes with embedded textures is not implemented")
+
+	textureIdMap.clear();
 
 	/* getTexture Filenames and no. of Textures */
 	for (unsigned int m=0; m<scene->mNumMaterials; m++)
@@ -497,13 +492,8 @@ void load_textures(const aiScene *scene)
 		while (texFound == AI_SUCCESS)
 		{
 			texFound = scene->mMaterials[m]->GetTexture(aiTextureType_DIFFUSE, texIndex, &path);
-
-			// Remove double "\\" parts:
-			std::string sPath=std::string(path.data);
-			replaceAll(sPath,"//","/");
-			replaceAll(sPath,"\\\\","\\");
-
-			textureIdMap[sPath] = NULL; //fill map with textures, pointers still NULL yet
+			CAssimpModel::TInfoPerTexture &ipt = textureIdMap[path.data];
+			ipt.id_idx = std::string::npos; //fill map with textures, pointers still NULL yet
 			texIndex++;
 		}
 	}
@@ -511,29 +501,32 @@ void load_textures(const aiScene *scene)
 	int numTextures = textureIdMap.size();
 
 	/* create and fill array with GL texture ids */
-	textureIds = new GLuint[numTextures];
-	glGenTextures(numTextures, textureIds); /* Texture name generation */
-
-	/* define texture path */
-	//std::string texturepath = "../../../test/models/Obj/";
+	textureIds.resize(numTextures);
+	glGenTextures(numTextures, &textureIds[0]); /* Texture name generation */
 
 	/* get iterator */
-	std::map<std::string, GLuint*>::iterator itr = textureIdMap.begin();
+	std::map<std::string,CAssimpModel::TInfoPerTexture>::iterator itr = textureIdMap.begin();
 
-	std::string basepath = mrpt::system::filePathSeparatorsToNative( mrpt::system::extractFileDirectory(m_modelPath) );
+	std::string basepath = mrpt::system::filePathSeparatorsToNative( mrpt::system::extractFileDirectory(modelPath) );
 	for (int i=0; i<numTextures; i++)
 	{
 
 		//save IL image ID
-		std::string filename = (*itr).first;  // get filename
-		(*itr).second =  &textureIds[i];	  // save texture id for filename in map
-		itr++;								  // next texture
+		std::string filename = itr->first;  // get filename
+		CAssimpModel::TInfoPerTexture &ipt = itr->second;
+		ipt.id_idx =  i;	  // save texture id for filename in map
+		itr++; // next texture
 
 		std::string fileloc = basepath + filename;	/* Loading of image */
-		MRPT_TODO("to member, don't leak!")
-		mrpt::utils::CImage *img = new mrpt::utils::CImage();
 
-		if (img->loadFromFile(fileloc)) /* If no error occured: */
+		ipt.img_rgb = mrpt::utils::CImage::Create();
+		ipt.img_alpha = mrpt::utils::CImage::Create();
+		mrpt::utils::CImage *img_rgb = ipt.img_rgb.pointer();
+		mrpt::utils::CImage *img_a = ipt.img_alpha.pointer();
+
+		bool res = CImage::loadTGA(fileloc,*img_rgb,*img_a);
+
+		if (res)
 		{
 			//success = ilConvertImage(IL_RGB, IL_UNSIGNED_BYTE); /* Convert every colour component into unsigned byte. If your image contains alpha channel you can replace IL_RGB with IL_RGBA */
 			glBindTexture(GL_TEXTURE_2D, textureIds[i]); /* Binding of texture name */
@@ -553,19 +546,19 @@ void load_textures(const aiScene *scene)
 			//	GL_UNSIGNED_BYTE,
 			//	ilGetData()); /* Texture specification */
 
-			const int width  = img->getWidth();
-			const int height = img->getHeight();
+			const int width  = img_rgb->getWidth();
+			const int height = img_rgb->getHeight();
 
 			// Prepare image data types:
 			const GLenum img_type = GL_UNSIGNED_BYTE;
-			const int nBytesPerPixel = img->isColor() ? 3 : 1;
-			const bool is_RGB_order = (!::strcmp(img->getChannelsOrder(),"RGB"));  // Reverse RGB <-> BGR order?
+			const int nBytesPerPixel = img_rgb->isColor() ? 3 : 1;
+			const bool is_RGB_order = (!::strcmp(img_rgb->getChannelsOrder(),"RGB"));  // Reverse RGB <-> BGR order?
 			const GLenum img_format = nBytesPerPixel==3 ? (is_RGB_order ? GL_RGB : GL_BGR): GL_LUMINANCE;
 
 			// Send image data to OpenGL:
 			glPixelStorei(GL_UNPACK_ALIGNMENT,4);
-			glPixelStorei(GL_UNPACK_ROW_LENGTH,img->getRowStride()/nBytesPerPixel );
-			glTexImage2D(GL_TEXTURE_2D, 0 /*level*/, 3 /* RGB components */, width, height,0 /*border*/, img_format, img_type, img->get_unsafe(0,0) );
+			glPixelStorei(GL_UNPACK_ROW_LENGTH,img_rgb->getRowStride()/nBytesPerPixel );
+			glTexImage2D(GL_TEXTURE_2D, 0 /*level*/, 3 /* RGB components */, width, height,0 /*border*/, img_format, img_type, img_rgb->get_unsafe(0,0) );
 			glPixelStorei(GL_UNPACK_ROW_LENGTH,0);  // Reset
 		}
 		else
