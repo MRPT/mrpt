@@ -2361,7 +2361,7 @@ bool CImage::drawChessboardCorners(
 			cvLine( img,
 					  cvPoint( pt.x - r, pt.y + r),
 					  cvPoint( pt.x + r, pt.y - r), color, lines_width );
-			
+
 			if (r>0)
 				cvCircle( img, pt, r+1, color );
 			prev_pt = pt;
@@ -2720,7 +2720,7 @@ bool CImage::loadTGA(const std::string& fileName, mrpt::utils::CImage &out_RGB, 
 {
 #if MRPT_HAS_OPENCV
 	std::fstream stream;
-	stream.open(fileName, std::fstream::in | std::fstream::binary);
+	stream.open(fileName.c_str(), std::fstream::in | std::fstream::binary);
 	if (!stream.is_open())
 	{
 		std::cerr << "[CImage::loadTGA] Couldn't open file '"<< fileName <<"'.\n";
@@ -2728,7 +2728,7 @@ bool CImage::loadTGA(const std::string& fileName, mrpt::utils::CImage &out_RGB, 
 	}
 
 	stream.seekg(0, std::ios_base::end);
-	long length = stream.tellg();
+	//long length = stream.tellg();
 	stream.seekg(0, std::ios_base::beg);
 
 	// Simple uncompressed true-color image
@@ -2747,6 +2747,12 @@ bool CImage::loadTGA(const std::string& fileName, mrpt::utils::CImage &out_RGB, 
 	stream.read((char *)&width, 2);
 	stream.read((char *)&height, 2);
 	bpp = stream.get();
+	if(bpp!=32)
+	{
+		std::cerr << "[CImage::loadTGA] Only 32 bpp format supported!\n";
+		return false;
+	}
+
 
 	unsigned char desc;
 	desc = stream.get();
@@ -2765,9 +2771,9 @@ bool CImage::loadTGA(const std::string& fileName, mrpt::utils::CImage &out_RGB, 
 	// Move data to images:
 	out_RGB.resize(width,height, CH_RGB, true );
 	out_alpha.resize(width,height, CH_GRAY, true );
-	
+
 	size_t idx=0;
-	for (unsigned int r=0;r<height;r++) 
+	for (unsigned int r=0;r<height;r++)
 	{
 		unsigned int actual_row = origin_is_low_corner ? (height-1-r) : r;
 		IplImage *ipl = ((IplImage*)out_RGB.img);
@@ -2776,7 +2782,7 @@ bool CImage::loadTGA(const std::string& fileName, mrpt::utils::CImage &out_RGB, 
 		IplImage *ipl_alpha = ((IplImage*)out_alpha.img);
 		unsigned char* data_alpha= (unsigned char*)&ipl->imageData[ actual_row * ipl_alpha->widthStep ];
 
-		for (unsigned int c=0;c<width;c++) 
+		for (unsigned int c=0;c<width;c++)
 		{
 			*data++ = bytes[idx++]; // R
 			*data++ = bytes[idx++]; // G

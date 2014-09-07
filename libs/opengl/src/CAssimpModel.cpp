@@ -23,6 +23,7 @@
 #endif
 
 #include "opengl_internals.h"
+#include <mrpt/system/filesystem.h>
 
 using namespace mrpt;
 using namespace mrpt::opengl;
@@ -59,7 +60,7 @@ void   CAssimpModel::render_dl() const
 	glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE);
 	glEnable(GL_NORMALIZE);
 
-	if (!m_textures_loaded) 
+	if (!m_textures_loaded)
 	{
 		load_textures(scene,m_textureIds,m_textureIdMap,m_modelPath);
 		m_textures_loaded = true;
@@ -85,23 +86,21 @@ void  CAssimpModel::writeToStream(CStream &out,int *version) const
 	else
 	{
 		writeToStreamRender(out);
-		
+
 		const bool empty = m_assimp_scene->scene!=NULL;
 		out << empty;
 
 		if (!empty)
 		{
 #if MRPT_HAS_OPENGL_GLUT && MRPT_HAS_ASSIMP
-			aiScene *scene = (aiScene *) m_assimp_scene->scene;
+			//aiScene *scene = (aiScene *) m_assimp_scene->scene;
+			THROW_EXCEPTION("MRPT can't serialize Assimp objects yet!")
 #else
 	THROW_EXCEPTION("MRPT compiled without OpenGL and/or Assimp")
 #endif
 		}
-		
 
-		MRPT_TODO("Serialize")
-		THROW_EXCEPTION("TODO")
-	}
+}
 }
 
 /*---------------------------------------------------------------
@@ -110,6 +109,8 @@ void  CAssimpModel::writeToStream(CStream &out,int *version) const
   ---------------------------------------------------------------*/
 void  CAssimpModel::readFromStream(CStream &in,int version)
 {
+	THROW_EXCEPTION("MRPT can't serialize Assimp objects yet!")
+
 	switch(version)
 	{
 	case 0:
@@ -117,10 +118,6 @@ void  CAssimpModel::readFromStream(CStream &in,int version)
 			readFromStreamRender(in);
 
 			clear();
-
-			MRPT_TODO("Deserialize")
-			THROW_EXCEPTION("TODO")
-
 		} break;
 	default:
 		MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
@@ -153,7 +150,7 @@ void   CAssimpModel::clear()
 	m_textures_loaded = false;
 
 #if MRPT_HAS_OPENGL_GLUT
-	if (!m_textureIds.empty()) 
+	if (!m_textureIds.empty())
 	{
 		glDeleteTextures(m_textureIds.size(), &m_textureIds[0]);
 		m_textureIds.clear();
@@ -219,8 +216,8 @@ CAssimpModel::TImplAssimp::~TImplAssimp()
 #if MRPT_HAS_OPENGL_GLUT && MRPT_HAS_ASSIMP
 	if (scene)
 	{
-		// cleanup - calling 'aiReleaseImport' is important, as the library 
-		// keeps internal resources until the scene is freed again. Not 
+		// cleanup - calling 'aiReleaseImport' is important, as the library
+		// keeps internal resources until the scene is freed again. Not
 		// doing so can cause severe resource leaking.
 		aiReleaseImport( (aiScene*) scene);
 		scene=NULL;
@@ -379,7 +376,7 @@ void apply_material(const aiMaterial *mtl,const std::vector<unsigned int> &textu
 	max = 1;
 	if((AI_SUCCESS == aiGetMaterialIntegerArray(mtl, AI_MATKEY_TWOSIDED, &two_sided, &max)) && two_sided)
 		glDisable(GL_CULL_FACE);
-	else 
+	else
 		glEnable(GL_CULL_FACE);
 }
 
@@ -419,7 +416,7 @@ void recursive_render (const aiScene *sc, const aiNode* nd,const std::vector<uns
 		else
 			glDisable(GL_COLOR_MATERIAL);
 
-		for (t = 0; t < mesh->mNumFaces; ++t) 
+		for (t = 0; t < mesh->mNumFaces; ++t)
 		{
 			const struct aiFace* face = &mesh->mFaces[t];
 			GLenum face_mode;
@@ -460,8 +457,6 @@ void recursive_render (const aiScene *sc, const aiNode* nd,const std::vector<uns
 	glPopMatrix();
 }
 
-#include <mrpt/system/filesystem.h>
-
 // http://stackoverflow.com/questions/3418231/replace-part-of-a-string-with-another-string
 void replaceAll(std::string& str, const std::string& from, const std::string& to) {
     if(from.empty())
@@ -474,8 +469,8 @@ void replaceAll(std::string& str, const std::string& from, const std::string& to
 }
 
 void load_textures(
-	const aiScene *scene, 
-	std::vector<unsigned int> &textureIds, 
+	const aiScene *scene,
+	std::vector<unsigned int> &textureIds,
 	std::map<std::string,CAssimpModel::TInfoPerTexture> &textureIdMap,
 	const std::string &modelPath)
 {
@@ -517,16 +512,26 @@ void load_textures(
 		ipt.id_idx =  i;	  // save texture id for filename in map
 		itr++; // next texture
 
-		std::string fileloc = basepath + filename;	/* Loading of image */
+		const std::string fileloc = mrpt::system::filePathSeparatorsToNative( basepath + filename );
 
 		ipt.img_rgb = mrpt::utils::CImage::Create();
 		ipt.img_alpha = mrpt::utils::CImage::Create();
 		mrpt::utils::CImage *img_rgb = ipt.img_rgb.pointer();
 		mrpt::utils::CImage *img_a = ipt.img_alpha.pointer();
 
-		bool res = CImage::loadTGA(fileloc,*img_rgb,*img_a);
+		// Load images:
+		// TGA is handled specially since it's not supported by OpenCV:
+		bool load_ok;
+		if ( mrpt::system::lowerCase(mrpt::system::extractFileExtension(fileloc))==string("tga"))
+		{
+			load_ok = CImage::loadTGA(fileloc,*img_rgb,*img_a);
+		}
+		else
+		{
+			load_ok = img_rgb->loadFromFile(fileloc);
+		}
 
-		if (res)
+		if (load_ok)
 		{
 			//success = ilConvertImage(IL_RGB, IL_UNSIGNED_BYTE); /* Convert every colour component into unsigned byte. If your image contains alpha channel you can replace IL_RGB with IL_RGBA */
 			glBindTexture(GL_TEXTURE_2D, textureIds[i]); /* Binding of texture name */
@@ -536,12 +541,12 @@ void load_textures(
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR); /* We will use linear
 			interpolation for minifying filter */
 			//glTexImage2D(
-			//	GL_TEXTURE_2D, 
-			//	0, 
-			//	8 /*ilGetInteger(IL_IMAGE_BPP)*/, 
+			//	GL_TEXTURE_2D,
+			//	0,
+			//	8 /*ilGetInteger(IL_IMAGE_BPP)*/,
 			//	/* ilGetInteger(IL_IMAGE_WIDTH)*/,
-			//	/*ilGetInteger(IL_IMAGE_HEIGHT)*/, 
-			//	0, 
+			//	/*ilGetInteger(IL_IMAGE_HEIGHT)*/,
+			//	0,
 			//	/*ilGetInteger(IL_IMAGE_FORMAT)*/,
 			//	GL_UNSIGNED_BYTE,
 			//	ilGetData()); /* Texture specification */
