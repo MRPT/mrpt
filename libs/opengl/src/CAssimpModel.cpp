@@ -14,7 +14,10 @@
 #include <mrpt/opengl/CAssimpModel.h>
 
 #if MRPT_HAS_ASSIMP
+#	include <assimp/Importer.hpp>
 #	include <assimp/cimport.h>
+#	include <assimp/DefaultLogger.hpp>
+#	include <assimp/LogStream.hpp>
 #	include <assimp/scene.h>
 #	include <assimp/postprocess.h>
 #endif
@@ -38,7 +41,20 @@ IMPLEMENTS_SERIALIZABLE( CAssimpModel, CRenderizableDisplayList, mrpt::opengl )
 	void color4_to_float4(const aiColor4D *c, float f[4]);
 	void get_bounding_box (const aiScene *sc,aiVector3D* min, aiVector3D* max);
 	void get_bounding_box_for_node (const aiScene *sc,const aiNode* nd, aiVector3D* min, aiVector3D* max, aiMatrix4x4* trafo);
+	void load_textures(const aiScene *scene);
+
+	MRPT_TODO("to member!")
+	std::string m_modelPath;
+	// images / texture
+	MRPT_TODO("Move to members!")
+	#include <map>
+	std::map<std::string, GLuint*> textureIdMap;	// map image filenames to textureIds
+	GLuint*		textureIds;							// pointer to texture Array
+
 #endif //MRPT_HAS_OPENGL_GLUT && MRPT_HAS_ASSIMP
+
+
+bool m_textures_loaded = false;
 
 /*---------------------------------------------------------------
 							render
@@ -52,19 +68,33 @@ void   CAssimpModel::render_dl() const
 
 	aiScene *scene = (aiScene *) m_assimp_scene->scene;
 
-	//glEnable(GL_POLYGON_SMOOTH);
-	//glEnable(GL_CULL_FACE);
-	//glCullFace(GL_BACK);
+
+	glEnable(GL_TEXTURE_2D);
+	glShadeModel(GL_SMOOTH);		 // Enables Smooth Shading
+	glClearColor(1.0f, 1.0f, 1.0f, 0.0f);
+	glClearDepth(1.0f);				// Depth Buffer Setup
+	glEnable(GL_DEPTH_TEST);		// Enables Depth Testing
+	glDepthFunc(GL_LEQUAL);			// The Type Of Depth Test To Do
+	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);	// Really Nice Perspective Calculation
+
 
 	glEnable(GL_LIGHTING);
 	glEnable(GL_LIGHT0);    // Uses default lighting parameters
-
-	glEnable(GL_DEPTH_TEST);
-
 	glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE);
 	glEnable(GL_NORMALIZE);
 
-	glColorMaterial(GL_FRONT_AND_BACK, GL_DIFFUSE);
+	GLfloat LightAmbient[]= { 0.5f, 0.5f, 0.5f, 1.0f };
+	GLfloat LightDiffuse[]= { 1.0f, 1.0f, 1.0f, 1.0f };
+	GLfloat LightPosition[]= { 0.0f, 0.0f, 15.0f, 1.0f };
+
+	glLightfv(GL_LIGHT1, GL_AMBIENT, LightAmbient);
+	glLightfv(GL_LIGHT1, GL_DIFFUSE, LightDiffuse);
+	glLightfv(GL_LIGHT1, GL_POSITION, LightPosition);
+	glEnable(GL_LIGHT1);
+
+	//glColorMaterial(GL_FRONT_AND_BACK, GL_DIFFUSE);
+
+	load_textures(scene); MRPT_TODO("only once!")
 
 	recursive_render(scene, scene->mRootNode);
 
@@ -160,8 +190,10 @@ void CAssimpModel::loadScene( const std::string &filepath )
 	// we are taking one of the postprocessing presets to avoid
 	// spelling out 20+ single postprocessing flags here.
 	m_assimp_scene->scene = (void*) aiImportFile(filepath.c_str(), aiProcessPreset_TargetRealtime_MaxQuality );
+	m_modelPath = filepath;
 
-	if (m_assimp_scene->scene) 
+
+	if (m_assimp_scene->scene)
 	{
 		aiVector3D scene_min, scene_max;
 		aiScene *scene = (aiScene *) m_assimp_scene->scene;
@@ -301,6 +333,17 @@ void apply_material(const aiMaterial *mtl)
 	int wireframe;
 	unsigned int max;
 
+
+	int texIndex = 0;
+	aiString texPath;	//contains filename of texture
+
+	if(AI_SUCCESS == mtl->GetTexture(aiTextureType_DIFFUSE, texIndex, &texPath))
+	{
+		//bind texture
+		unsigned int texId = *textureIdMap[texPath.data];
+		glBindTexture(GL_TEXTURE_2D, texId);
+	}
+
 	set_float4(c, 0.8f, 0.8f, 0.8f, 1.0f);
 	if(AI_SUCCESS == aiGetMaterialColor(mtl, AI_MATKEY_COLOR_DIFFUSE, &diffuse))
 		color4_to_float4(&diffuse, c);
@@ -351,33 +394,49 @@ void apply_material(const aiMaterial *mtl)
 		glEnable(GL_CULL_FACE);
 }
 
-// ----------------------------------------------------------------------------
-void recursive_render (const aiScene *scene, const aiNode* nd)
+// Can't send color down as a pointer to aiColor4D because AI colors are ABGR.
+void Color4f(const aiColor4D *color)
 {
+	glColor4f(color->r, color->g, color->b, color->a);
+}
+
+// ----------------------------------------------------------------------------
+void recursive_render (const aiScene *sc, const aiNode* nd)
+{
+	unsigned int i;
+	unsigned int n=0, t;
 	aiMatrix4x4 m = nd->mTransformation;
 
 	// update transform
-	aiTransposeMatrix4(&m);
+	m.Transpose();
 	glPushMatrix();
 	glMultMatrixf((float*)&m);
 
 	// draw all meshes assigned to this node
-	for (unsigned int n=0; n < nd->mNumMeshes; ++n) {
-		const aiMesh* mesh = scene->mMeshes[nd->mMeshes[n]];
+	for (; n < nd->mNumMeshes; ++n)
+	{
+		const struct aiMesh* mesh = sc->mMeshes[nd->mMeshes[n]];
 
-		apply_material(scene->mMaterials[mesh->mMaterialIndex]);
+		apply_material(sc->mMaterials[mesh->mMaterialIndex]);
 
-		if(mesh->mNormals == NULL) {
+
+		if(mesh->mNormals == NULL)
 			glDisable(GL_LIGHTING);
-		} else {
+		else
 			glEnable(GL_LIGHTING);
-		}
 
-		for (unsigned int t = 0; t < mesh->mNumFaces; ++t) {
-			const aiFace* face = &mesh->mFaces[t];
+		if(mesh->mColors[0] != NULL)
+			glEnable(GL_COLOR_MATERIAL);
+		else
+			glDisable(GL_COLOR_MATERIAL);
+
+		for (t = 0; t < mesh->mNumFaces; ++t) 
+		{
+			const struct aiFace* face = &mesh->mFaces[t];
 			GLenum face_mode;
 
-			switch(face->mNumIndices) {
+			switch(face->mNumIndices)
+			{
 				case 1: face_mode = GL_POINTS; break;
 				case 2: face_mode = GL_LINES; break;
 				case 3: face_mode = GL_TRIANGLES; break;
@@ -386,26 +445,140 @@ void recursive_render (const aiScene *scene, const aiNode* nd)
 
 			glBegin(face_mode);
 
-			for(unsigned int i = 0; i < face->mNumIndices; i++) {
-				int index = face->mIndices[i];
+			for(i = 0; i < face->mNumIndices; i++)		// go through all vertices in face
+			{
+				int vertexIndex = face->mIndices[i];	// get group index for current index
 				if(mesh->mColors[0] != NULL)
-					glColor4fv((GLfloat*)&mesh->mColors[0][index]);
-				if(mesh->mNormals != NULL) 
-					glNormal3fv(&mesh->mNormals[index].x);
-				glVertex3fv(&mesh->mVertices[index].x);
-			}
+					Color4f(&mesh->mColors[0][vertexIndex]);
+				if(mesh->mNormals != NULL)
 
+					if(mesh->HasTextureCoords(0))		//HasTextureCoords(texture_coordinates_set)
+					{
+						glTexCoord2f(mesh->mTextureCoords[0][vertexIndex].x, 1 - mesh->mTextureCoords[0][vertexIndex].y); //mTextureCoords[channel][vertex]
+					}
+
+					glNormal3fv(&mesh->mNormals[vertexIndex].x);
+					glVertex3fv(&mesh->mVertices[vertexIndex].x);
+			}
 			glEnd();
 		}
-
 	}
 
 	// draw all children
-	for (unsigned int n = 0; n < nd->mNumChildren; ++n) {
-		recursive_render(scene, nd->mChildren[n]);
-	}
+	for (n = 0; n < nd->mNumChildren; ++n)
+		recursive_render(sc, nd->mChildren[n]);
 
 	glPopMatrix();
 }
+
+#include <mrpt/system/filesystem.h>
+
+// http://stackoverflow.com/questions/3418231/replace-part-of-a-string-with-another-string
+void replaceAll(std::string& str, const std::string& from, const std::string& to) {
+    if(from.empty())
+        return;
+    size_t start_pos = 0;
+    while((start_pos = str.find(from, start_pos)) != std::string::npos) {
+        str.replace(start_pos, from.length(), to);
+        start_pos += to.length(); // In case 'to' contains 'from', like replacing 'x' with 'yx'
+    }
+}
+
+void load_textures(const aiScene *scene)
+{
+	if (scene->HasTextures()) THROW_EXCEPTION("Support for meshes with embedded textures is not implemented")
+
+	/* getTexture Filenames and no. of Textures */
+	for (unsigned int m=0; m<scene->mNumMaterials; m++)
+	{
+		int texIndex = 0;
+		aiReturn texFound = AI_SUCCESS;
+		aiString path;	// filename
+		while (texFound == AI_SUCCESS)
+		{
+			texFound = scene->mMaterials[m]->GetTexture(aiTextureType_DIFFUSE, texIndex, &path);
+
+			// Remove double "\\" parts:
+			std::string sPath=std::string(path.data);
+			replaceAll(sPath,"//","/");
+			replaceAll(sPath,"\\\\","\\");
+
+			textureIdMap[sPath] = NULL; //fill map with textures, pointers still NULL yet
+			texIndex++;
+		}
+	}
+
+	int numTextures = textureIdMap.size();
+
+	/* create and fill array with GL texture ids */
+	textureIds = new GLuint[numTextures];
+	glGenTextures(numTextures, textureIds); /* Texture name generation */
+
+	/* define texture path */
+	//std::string texturepath = "../../../test/models/Obj/";
+
+	/* get iterator */
+	std::map<std::string, GLuint*>::iterator itr = textureIdMap.begin();
+
+	std::string basepath = mrpt::system::filePathSeparatorsToNative( mrpt::system::extractFileDirectory(m_modelPath) );
+	for (int i=0; i<numTextures; i++)
+	{
+
+		//save IL image ID
+		std::string filename = (*itr).first;  // get filename
+		(*itr).second =  &textureIds[i];	  // save texture id for filename in map
+		itr++;								  // next texture
+
+		std::string fileloc = basepath + filename;	/* Loading of image */
+		MRPT_TODO("to member, don't leak!")
+		mrpt::utils::CImage *img = new mrpt::utils::CImage();
+
+		if (img->loadFromFile(fileloc)) /* If no error occured: */
+		{
+			//success = ilConvertImage(IL_RGB, IL_UNSIGNED_BYTE); /* Convert every colour component into unsigned byte. If your image contains alpha channel you can replace IL_RGB with IL_RGBA */
+			glBindTexture(GL_TEXTURE_2D, textureIds[i]); /* Binding of texture name */
+			//redefine standard texture values
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR); /* We will use linear
+			interpolation for magnification filter */
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR); /* We will use linear
+			interpolation for minifying filter */
+			//glTexImage2D(
+			//	GL_TEXTURE_2D, 
+			//	0, 
+			//	8 /*ilGetInteger(IL_IMAGE_BPP)*/, 
+			//	/* ilGetInteger(IL_IMAGE_WIDTH)*/,
+			//	/*ilGetInteger(IL_IMAGE_HEIGHT)*/, 
+			//	0, 
+			//	/*ilGetInteger(IL_IMAGE_FORMAT)*/,
+			//	GL_UNSIGNED_BYTE,
+			//	ilGetData()); /* Texture specification */
+
+			const int width  = img->getWidth();
+			const int height = img->getHeight();
+
+			// Prepare image data types:
+			const GLenum img_type = GL_UNSIGNED_BYTE;
+			const int nBytesPerPixel = img->isColor() ? 3 : 1;
+			const bool is_RGB_order = (!::strcmp(img->getChannelsOrder(),"RGB"));  // Reverse RGB <-> BGR order?
+			const GLenum img_format = nBytesPerPixel==3 ? (is_RGB_order ? GL_RGB : GL_BGR): GL_LUMINANCE;
+
+			// Send image data to OpenGL:
+			glPixelStorei(GL_UNPACK_ALIGNMENT,4);
+			glPixelStorei(GL_UNPACK_ROW_LENGTH,img->getRowStride()/nBytesPerPixel );
+			glTexImage2D(GL_TEXTURE_2D, 0 /*level*/, 3 /* RGB components */, width, height,0 /*border*/, img_format, img_type, img->get_unsafe(0,0) );
+			glPixelStorei(GL_UNPACK_ROW_LENGTH,0);  // Reset
+		}
+		else
+		{
+			/* Error occured */
+			const std::string sError = mrpt::format("[CAssimpModel] Couldn't load texture image: '%s'", fileloc.c_str());
+			cout << sError << endl;
+#ifdef _MSC_VER
+			OutputDebugStringA(&sError[0]);
+#endif
+		}
+	}
+}
+
 
 #endif // MRPT_HAS_OPENGL_GLUT && MRPT_HAS_ASSIMP
