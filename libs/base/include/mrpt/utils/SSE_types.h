@@ -32,7 +32,9 @@
 
 // SSE4.1 types:
 #if MRPT_HAS_SSE4_1
-	#include <smmintrin.h>
+# if defined (__SSE4_2__) || defined (__SSE4_1__)
+#  include <smmintrin.h>
+# endif
 #endif
 
 
