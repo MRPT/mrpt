@@ -14,12 +14,17 @@
 #include <mrpt/opengl/CAssimpModel.h>
 
 #if MRPT_HAS_ASSIMP
-#	include <assimp/Importer.hpp>
-#	include <assimp/cimport.h>
-#	include <assimp/DefaultLogger.hpp>
-#	include <assimp/LogStream.hpp>
-#	include <assimp/scene.h>
-#	include <assimp/postprocess.h>
+#	if defined(MRPT_ASSIMP_VERSION_MAJOR) && MRPT_ASSIMP_VERSION_MAJOR<3
+#		include <assimp.h>
+#		include <aiScene.h>
+#		include <aiPostProcess.h>
+#	else
+#		include <assimp/cimport.h>
+#		include <assimp/DefaultLogger.hpp>
+#		include <assimp/LogStream.hpp>
+#		include <assimp/scene.h>
+#		include <assimp/postprocess.h>
+#	endif
 #endif
 
 #include "opengl_internals.h"
