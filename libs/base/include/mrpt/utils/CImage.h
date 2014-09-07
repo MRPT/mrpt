@@ -52,8 +52,10 @@ namespace mrpt
 		 *  File I/O is supported as:
 		 *		- Binary dump using the CSerializable interface(<< and >> operators), just as most objects
 		 *          in the MRPT library. This format is not compatible with any standarized image format.
-		 *		- Saving/loading from files of different formats (bmp,jpg,png,...) using the methods CImage::loadFromFile and CImage::saveToFile.
+		 *		- Saving/loading from files of different formats (bmp,jpg,png,...) using the methods CImage::loadFromFile and CImage::saveToFile. 
+		 *        Available formats are all those supported by OpenCV
 		 *		- Importing from an XPM array (.xpm file format) using CImage::loadFromXPM
+		 *		- Importing TGA images. See CImage::loadTGA()
 		 *
 		 *  How to create color/grayscale images:
 		 *  \code
@@ -838,9 +840,14 @@ namespace mrpt
 			 * - TIFF files - TIFF, TIF.
 			 *
 			 * \return False on any error
-			 * \sa saveToFile, setExternalStorage,loadFromXPM
+			 * \sa saveToFile, setExternalStorage,loadFromXPM, loadTGA
 			 */
 			bool  loadFromFile( const std::string& fileName, int isColor = -1  );
+
+			/** Loads a TGA true-color RGBA image as two CImage objects, one for the RGB channels plus a separate gray-level image with A channel.
+			  * \return true on success
+			  */
+			static bool  loadTGA(const std::string& fileName, mrpt::utils::CImage &out_RGB, mrpt::utils::CImage &out_alpha);
 
 			/** Loads the image from an XPM array, as #include'd from a ".xpm" file.
 			  * \param[in] swap_rb Swaps red/blue channels from loaded image. *Seems* to be always needed, so it's enabled by default.
