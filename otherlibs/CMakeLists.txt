@@ -10,3 +10,6 @@ ENDIF (CMAKE_MRPT_HAS_WXWIDGETS)
 # CMakeLists.txt so it can be switched to a system version, if available.
 #add_subdirectory(gtest-X.Y.Z)
 
+# Don't include here: will be included from master CMakeLists.txt with proper parameters.
+#add_subdirectory(assimp)
+

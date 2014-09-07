@@ -21,6 +21,7 @@
 #include <mrpt/utils/CTicTac.h>
 #include <mrpt/utils/CTimeLogger.h>
 #include <mrpt/system/memory.h>
+#include <mrpt/system/filesystem.h>
 
 // Universal include for all versions of OpenCV
 #include <mrpt/otherlibs/do_opencv_includes.h>
@@ -2360,7 +2361,7 @@ bool CImage::drawChessboardCorners(
 			cvLine( img,
 					  cvPoint( pt.x - r, pt.y + r),
 					  cvPoint( pt.x + r, pt.y - r), color, lines_width );
-			
+
 			if (r>0)
 				cvCircle( img, pt, r+1, color );
 			prev_pt = pt;
@@ -2707,6 +2708,90 @@ bool CImage::loadFromXPM( const char** xpm_array, bool swap_rb )
 		std::cerr << "[CImage::loadFromXPM] " << e.what() << std::endl;
 		return false;
 	}
+#else
+	return false;
+#endif // MRPT_HAS_OPENCV
+}
+
+
+// Load from TGA files. Used in loadFromFile()
+// Contains code from https://github.com/tjohnman/Simple-Targa-Library/blob/master/src/simpleTGA.cpp (FreeBSD license)
+bool CImage::loadTGA(const std::string& fileName, mrpt::utils::CImage &out_RGB, mrpt::utils::CImage &out_alpha)
+{
+#if MRPT_HAS_OPENCV
+	std::fstream stream;
+	stream.open(fileName.c_str(), std::fstream::in | std::fstream::binary);
+	if (!stream.is_open())
+	{
+		std::cerr << "[CImage::loadTGA] Couldn't open file '"<< fileName <<"'.\n";
+		return false;
+	}
+
+	stream.seekg(0, std::ios_base::end);
+	//long length = stream.tellg();
+	stream.seekg(0, std::ios_base::beg);
+
+	// Simple uncompressed true-color image
+	char dumpBuffer[12];
+	char trueColorHeader[] = "\0\0\2\0\0\0\0\0\0\0\0\0";
+	stream.read(dumpBuffer, 12);
+	if(memcmp(dumpBuffer, trueColorHeader, 12) != 0)
+	{
+		std::cerr << "[CImage::loadTGA] Unsupported format or invalid file.\n";
+		return false;
+	}
+
+	unsigned short width, height;
+	unsigned char bpp;
+
+	stream.read((char *)&width, 2);
+	stream.read((char *)&height, 2);
+	bpp = stream.get();
+	if(bpp!=32)
+	{
+		std::cerr << "[CImage::loadTGA] Only 32 bpp format supported!\n";
+		return false;
+	}
+
+
+	unsigned char desc;
+	desc = stream.get();
+	if(desc!= 8 && desc!=32)
+	{
+		std::cerr << "[CImage::loadTGA] Unsupported format or invalid file.\n";
+		return false;
+	}
+	const bool origin_is_low_corner = (desc==8);
+
+	// Data section
+	std::vector<uint8_t> bytes(width*height*4);
+	stream.read((char *)&bytes[0], width*height*4);
+	stream.close();
+
+	// Move data to images:
+	out_RGB.resize(width,height, CH_RGB, true );
+	out_alpha.resize(width,height, CH_GRAY, true );
+
+	size_t idx=0;
+	for (unsigned int r=0;r<height;r++)
+	{
+		unsigned int actual_row = origin_is_low_corner ? (height-1-r) : r;
+		IplImage *ipl = ((IplImage*)out_RGB.img);
+		unsigned char* data= (unsigned char*) &ipl->imageData[ actual_row * ipl->widthStep ];
+
+		IplImage *ipl_alpha = ((IplImage*)out_alpha.img);
+		unsigned char* data_alpha= (unsigned char*)&ipl->imageData[ actual_row * ipl_alpha->widthStep ];
+
+		for (unsigned int c=0;c<width;c++)
+		{
+			*data++ = bytes[idx++]; // R
+			*data++ = bytes[idx++]; // G
+			*data++ = bytes[idx++]; // B
+			*data_alpha++ = bytes[idx++]; // A
+		}
+	}
+
+	return true;
 #else
 	return false;
 #endif // MRPT_HAS_OPENCV
