@@ -9,7 +9,7 @@ SET(wxWidgets_MRPT_COMPONENTS_TO_SEARCH "base;core;gl;adv;aui;html" CACHE STRING
 IF(UNIX)
 	# Linux:
 	IF(CMAKE_BUILD_TYPE MATCHES "Debug")
-		SET(wxWidgets_USE_DEBUG ON)
+		SET(wxWidgets_USE_DEBUG ON CACHE BOOL "Use wxWidgets debug libs" FORCE)
 	ENDIF(CMAKE_BUILD_TYPE MATCHES "Debug")
 ELSE(UNIX)
 	# Windows configuration of wxWidgets:
@@ -34,7 +34,7 @@ IF(wxWidgets_FOUND)
 	IF(UNIX)
 		IF(CMAKE_BUILD_TYPE MATCHES "Debug")
 			IF(NOT wxWidgets_USE_DEBUG)
-				MESSAGE("Warning: The debug libraries for wxWidgets couldn't be found by CMake. Please install them (libwxbase2.8-dev) or build in release.")
+				MESSAGE("Warning: The debug libraries for wxWidgets couldn't be found by CMake. Please install them (libwxgtk2.8-dbg) or build in release.")
 			ENDIF(NOT wxWidgets_USE_DEBUG)
 		ENDIF(CMAKE_BUILD_TYPE MATCHES "Debug")
 	ENDIF(UNIX)
