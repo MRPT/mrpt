@@ -1,5 +1,6 @@
 
   * Fixed FTBFS (named semaphore not implemented) (Closes: #758725)
+  * Fixed FTBFS on mips, mipsel, powerpc, s390x (Closes: #756104)
 
 mrpt (1:1.2.1-1) unstable; urgency=medium
 
