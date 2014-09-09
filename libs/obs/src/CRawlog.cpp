@@ -574,6 +574,7 @@ void CRawlog::findObservationsByClassInRange(
 	size_t							guess_start_position
 	) const
 {
+	MRPT_UNUSED_PARAM(guess_start_position);
 	MRPT_START
 
 	out_found.clear();

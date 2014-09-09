@@ -206,6 +206,7 @@ void  CMultiMetricMapPDF::getEstimatedPosePDFAtTime(
   ---------------------------------------------------------------*/
 void  CRBPFParticleData::writeToStream(CStream &out,int *version) const
 {
+	MRPT_UNUSED_PARAM(out); MRPT_UNUSED_PARAM(version);
 	THROW_EXCEPTION("Shouldn't arrive here")
 }
 
@@ -214,6 +215,7 @@ void  CRBPFParticleData::writeToStream(CStream &out,int *version) const
   ---------------------------------------------------------------*/
 void  CRBPFParticleData::readFromStream(CStream &in, int version)
 {
+	MRPT_UNUSED_PARAM(in); MRPT_UNUSED_PARAM(version);
 	THROW_EXCEPTION("Shouldn't arrive here")
 }
 

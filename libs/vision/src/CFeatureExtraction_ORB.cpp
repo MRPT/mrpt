@@ -56,6 +56,7 @@ void  CFeatureExtraction::extractFeaturesORB(
 	const TImageROI			    & ROI,
 	const CMatrixBool           * mask )  const
 {
+	MRPT_UNUSED_PARAM(ROI); MRPT_UNUSED_PARAM(mask);
 	MRPT_START
 
 #if MRPT_HAS_OPENCV

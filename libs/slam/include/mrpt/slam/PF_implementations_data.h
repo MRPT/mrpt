@@ -233,6 +233,7 @@ namespace mrpt
 				const typename CParticleFilterData<PARTICLE_TYPE>::CParticleList	&particles,
 				const CSensoryFrame *sf) const
 			{
+				MRPT_UNUSED_PARAM(particles); MRPT_UNUSED_PARAM(sf);
 				return true;	// By default, always process the SFs.
 			}
 

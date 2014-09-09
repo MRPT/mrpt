@@ -40,6 +40,7 @@ std::string CPTG2::getDescription() const
   ---------------------------------------------------------------*/
 void CPTG2::PTG_Generator( float alpha, float t,float x, float y, float phi, float &v, float &w )
 {
+	MRPT_UNUSED_PARAM(t); MRPT_UNUSED_PARAM(x); MRPT_UNUSED_PARAM(y);
     float At_a = alpha - phi;
 
     while (At_a>M_PI) At_a -= (float) M_2PI;
@@ -54,6 +55,7 @@ void CPTG2::PTG_Generator( float alpha, float t,float x, float y, float phi, flo
   ---------------------------------------------------------------*/
 bool CPTG2::PTG_IsIntoDomain( float x, float y )
 {
+	MRPT_UNUSED_PARAM(x); MRPT_UNUSED_PARAM(y);
 	return true;
 }
 

@@ -258,6 +258,7 @@ void CBox::setBoxCorners(const mrpt::math::TPoint3D &corner1, const mrpt::math::
 
 bool CBox::traceRay(const mrpt::poses::CPose3D &o,double &dist) const
 {
+	MRPT_UNUSED_PARAM(o); MRPT_UNUSED_PARAM(dist);
 	THROW_EXCEPTION("TO DO")
 }
 

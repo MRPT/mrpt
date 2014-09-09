@@ -71,7 +71,9 @@ namespace slam
 		  *  It has no effects in this class
 		  * \sa getSensorPose
 		  */
-		void setSensorPose( const CPose3D &newSensorPose ) {  }
+		void setSensorPose( const CPose3D &newSensorPose ) {
+			MRPT_UNUSED_PARAM(newSensorPose);
+		}
 
 
 	}; // End of class def.

@@ -170,6 +170,8 @@ void  CFBORender::getFrame( const COpenGLScene& scene, CImage& buffer )
 	getFrame2(scene,buffer);;
 
 	MRPT_END
+#else
+	MRPT_UNUSED_PARAM(scene); MRPT_UNUSED_PARAM(buffer);
 #endif
 }
 
@@ -211,7 +213,8 @@ void  CFBORender::getFrame2( const COpenGLScene& scene, CImage& buffer )
 	glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
 
 	MRPT_END
-
+#else
+	MRPT_UNUSED_PARAM(scene); MRPT_UNUSED_PARAM(buffer);
 #endif
 }
 
@@ -255,6 +258,8 @@ void CFBORender::resize( unsigned int width, unsigned int height )
 
 //#else
 //	THROW_EXCEPTION("MRPT compiled without OpenCV and/or OpenGL support!!")
+#else
+	MRPT_UNUSED_PARAM(width); MRPT_UNUSED_PARAM(height);
 #endif
 }
 
@@ -296,6 +301,8 @@ int CFBORender::isExtensionSupported( const char* extension )
 
 //#else
 //	THROW_EXCEPTION("MRPT compiled without OpenGL support!!")
+#else
+	MRPT_UNUSED_PARAM(extension);
 #endif
 
 	return 0;

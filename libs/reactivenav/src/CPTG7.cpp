@@ -34,6 +34,7 @@ std::string CPTG7::getDescription() const
   ---------------------------------------------------------------*/
 void CPTG7::PTG_Generator( float alpha, float t,float x, float y, float phi, float &v, float &w )
 {
+	MRPT_UNUSED_PARAM(phi); MRPT_UNUSED_PARAM(x); MRPT_UNUSED_PARAM(y); MRPT_UNUSED_PARAM(t);
   	float	R  = V_MAX / W_MAX;
  	float	Ty = 2*(alpha/M_PIf)*R;
 

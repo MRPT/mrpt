@@ -468,6 +468,7 @@ void aux_projectPoint_with_distortion(
 	bool accept_points_behind
 	)
 {
+	MRPT_UNUSED_PARAM(accept_points_behind);
 	// Pinhole model:
 	const double x = P.x/P.z;
 	const double y = P.y/P.z;
@@ -563,6 +564,7 @@ bool CColouredPointsMap::colourFromObservation( const CObservationImage &obs, co
 
 void CColouredPointsMap::resetPointsMinDist( float defValue )
 {
+	MRPT_UNUSED_PARAM(defValue);
 	// m_min_dist.assign(x.size(),defValue);
 }
 
@@ -679,6 +681,7 @@ bool CColouredPointsMap::savePCDFile(const std::string &filename, bool save_as_b
 	return 0 == pcl::io::savePCDFile(filename, cloud, save_as_binary);
 
 #else
+	MRPT_UNUSED_PARAM(filename); MRPT_UNUSED_PARAM(save_as_binary);
 	THROW_EXCEPTION("Operation not available: MRPT was built without PCL")
 #endif
 }
@@ -707,6 +710,7 @@ namespace mrpt {
 				/** Helper method fot the generic implementation of CPointsMap::loadFromRangeScan(), to be called once per range data */
 				inline static void  internal_loadFromRangeScan2D_prepareOneRange(CColouredPointsMap &me, const float gx,const float gy, const float gz, mrpt::slam::CPointsMap::TLaserRange2DInsertContext & lric )
 				{
+					MRPT_UNUSED_PARAM(gx); MRPT_UNUSED_PARAM(gy);
 					// Relative height of the point wrt the sensor:
 					const float rel_z = gz - lric.HM.get_unsafe(2,3); // m23;
 
@@ -840,6 +844,7 @@ namespace mrpt {
 				/** Helper method fot the generic implementation of CPointsMap::loadFromRangeScan(), to be called once per range data */
 				inline static void  internal_loadFromRangeScan3D_prepareOneRange(CColouredPointsMap &me, const float gx,const float gy, const float gz, mrpt::slam::CPointsMap::TLaserRange3DInsertContext & lric )
 				{
+					MRPT_UNUSED_PARAM(gx); MRPT_UNUSED_PARAM(gy);
 					// Rename variables:
 					float &pR = lric.fVars[0];
 					float &pG = lric.fVars[1];
@@ -954,6 +959,7 @@ namespace mrpt {
 				/** Helper method fot the generic implementation of CPointsMap::loadFromRangeScan(), to be called once per range data, at the end */
 				inline static void  internal_loadFromRangeScan3D_postOneRange(CColouredPointsMap &me, mrpt::slam::CPointsMap::TLaserRange3DInsertContext & lric )
 				{
+					MRPT_UNUSED_PARAM(me);
 					unsigned int & imgW = lric.uVars[0];
 					unsigned int & img_idx_x = lric.uVars[2];
 					unsigned int & img_idx_y = lric.uVars[3];

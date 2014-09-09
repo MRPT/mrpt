@@ -310,7 +310,7 @@ void BASE_IMPEXP mrpt::system::changeCurrentProcessPriority( TProcessPriority pr
 	}
 	SetPriorityClass( GetCurrentProcess(), dwPri );
 #else
-    //MRPT_TODO("changeCurrentProcessPriority: To implement");
+	MRPT_UNUSED_PARAM(priority);
     cout << "[mrpt::system::changeCurrentProcessPriority] Warning: Not implemented in Linux yet" << endl;
 #endif
 }
@@ -368,6 +368,8 @@ void mrpt::system::getCurrentThreadTimes(
 #endif
 
 #ifdef MRPT_OS_LINUX
+	MRPT_UNUSED_PARAM(creationTime);
+	MRPT_UNUSED_PARAM(exitTime);
 	// Unix:
 #	ifdef HAVE_GETTID
 		pid_t 	id = gettid();

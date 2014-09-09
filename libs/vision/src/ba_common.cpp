@@ -33,6 +33,7 @@ void mrpt::vision::ba_initial_estimate(
 	TFramePosesMap                       & frame_poses,
 	TLandmarkLocationsMap                & landmark_points )
 {
+	MRPT_UNUSED_PARAM(camera_params);
 	MRPT_START
 	// VERY CRUDE APPROACH: All camera poses at the origin, all points at (0,0,1)
 	// TODO: Improve with the data in "observations"...
@@ -59,6 +60,7 @@ void mrpt::vision::ba_initial_estimate(
 	TFramePosesVec                       & frame_poses,
 	TLandmarkLocationsVec                & landmark_points )
 {
+	MRPT_UNUSED_PARAM(camera_params);
 	MRPT_START
 	// VERY CRUDE APPROACH: All camera poses at the origin, all points at (0,0,1)
 	// TODO: Improve with the data in "observations"...

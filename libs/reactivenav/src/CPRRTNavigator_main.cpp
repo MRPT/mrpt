@@ -183,7 +183,7 @@ void  CPRRTNavigator::TOptions::loadFromConfigFile(
   ---------------------------------------------------------------*/
 void  CPRRTNavigator::TOptions::dumpToTextStream( CStream	&out) const
 {
-
+	MRPT_UNUSED_PARAM(out);
 }
 
 /*---------------------------------------------------------------

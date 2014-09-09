@@ -65,9 +65,9 @@ double joint_pdf_metric (
 	const CMatrixTemplateNumeric<T>		&Y_predictions_mean,
 	const CMatrixTemplateNumeric<T>		&Y_predictions_cov,
 	const TAuxDataRecursiveJCBB			&info,
-	const TDataAssociationResults	&aux_data
-	)
+	const TDataAssociationResults	&aux_data)
 {
+	MRPT_UNUSED_PARAM(aux_data);
 	// Make a list of the indices of the predictions that appear in "currentAssociation":
 	const size_t  N = info.currentAssociation.size();
 	ASSERT_(N>0)

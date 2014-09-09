@@ -103,6 +103,8 @@ void  CPointCloudColoured::render_subset(const bool all, const std::vector<size_
 			glVertex3f( p.x,p.y,p.z );
 		}
 	}
+#else
+	MRPT_UNUSED_PARAM(all); MRPT_UNUSED_PARAM(idxs); MRPT_UNUSED_PARAM(render_area_sqpixels);
 #endif
 }
 

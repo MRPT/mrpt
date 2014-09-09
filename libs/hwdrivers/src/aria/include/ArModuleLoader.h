@@ -10,7 +10,6 @@
 #ifndef ARMODULELOADER_H
 #define ARMODULELOADER_H
 
-
 #include <map>
 #include <string>
 #include "ariaTypedefs.h"

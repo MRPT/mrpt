@@ -16,7 +16,7 @@
 #include <mrpt/opengl/COpenGLScene.h>
 #include <mrpt/gui.h>
 #include <iostream>
-#include "legend.xpm"
+//#include "legend.xpm"
 
 
 class CDifodoDatasets : public mrpt::vision::CDifodo {

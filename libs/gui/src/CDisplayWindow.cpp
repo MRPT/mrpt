@@ -338,6 +338,8 @@ void CDisplayWindow::setCursorCross(bool cursorIsCross)
 	const CWindowDialog *win = (const CWindowDialog*) m_hwnd.get();
 	if (!win) return;
 	win->m_image->SetCursor( *(cursorIsCross ? wxCROSS_CURSOR : wxSTANDARD_CURSOR) );
+#else
+	MRPT_UNUSED_PARAM(cursorIsCross);
 #endif
 }
 
@@ -353,6 +355,7 @@ bool CDisplayWindow::getLastMousePosition(int &x, int &y) const
 	y = win->m_image->m_last_mouse_point.y;
 	return true;
 #else
+	MRPT_UNUSED_PARAM(x); MRPT_UNUSED_PARAM(y);
     return false;
 #endif
 }
@@ -380,6 +383,8 @@ void  CDisplayWindow::showImage( const	CImage& img )
 
 
 	MRPT_END
+#else
+	MRPT_UNUSED_PARAM(img);
 #endif
 }
 
@@ -416,6 +421,9 @@ void  CDisplayWindow::showImageAndPoints( const CImage &img, const std::vector<f
 	} // end-for
 	showImage(imgColor);
 	MRPT_END
+#else
+	MRPT_UNUSED_PARAM(img); MRPT_UNUSED_PARAM(x); MRPT_UNUSED_PARAM(y);
+	MRPT_UNUSED_PARAM(color); MRPT_UNUSED_PARAM(showNumbers);
 #endif
 }
 
@@ -547,6 +555,8 @@ void  CDisplayWindow::resize(
     REQ->x        = width;
     REQ->y        = height;
     WxSubsystem::pushPendingWxRequest( REQ );
+#else
+	MRPT_UNUSED_PARAM(width); MRPT_UNUSED_PARAM(height);
 #endif
 }
 
@@ -569,6 +579,8 @@ void  CDisplayWindow::setPos( int x, int y )
     REQ->x        = x;
     REQ->y        = y;
     WxSubsystem::pushPendingWxRequest( REQ );
+#else
+	MRPT_UNUSED_PARAM(x); MRPT_UNUSED_PARAM(y);
 #endif
 }
 
@@ -590,5 +602,7 @@ void  CDisplayWindow::setWindowTitle( const std::string &str )
     REQ->OPCODE   = 204;
     REQ->str      = str;
     WxSubsystem::pushPendingWxRequest( REQ );
+#else
+	MRPT_UNUSED_PARAM(str);
 #endif
 }

@@ -358,7 +358,7 @@ void Test_Kinect()
 }
 
 
-int main(int argc, char **argv)
+int main()
 {
 	try
 	{
@@ -377,5 +377,4 @@ int main(int argc, char **argv)
 		printf("Another exception!!");
 		return -1;
 	}
-
 }

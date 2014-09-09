@@ -41,6 +41,7 @@ std::string CPTG5::getDescription() const
   ---------------------------------------------------------------*/
 void CPTG5::PTG_Generator( float alpha, float t,float x, float y, float phi, float &v, float &w )
 {
+	MRPT_UNUSED_PARAM(x); MRPT_UNUSED_PARAM(y); MRPT_UNUSED_PARAM(phi);
 	const float T = 0.847f*std::sqrt(std::abs(alpha))*R/V_MAX;
 
 	if (t< T)

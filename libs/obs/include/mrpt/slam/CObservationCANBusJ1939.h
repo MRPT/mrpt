@@ -65,7 +65,7 @@ namespace slam
 		std::vector<char> m_raw_frame;
 
 		/** Not used */
-		void getSensorPose( CPose3D &out_sensorPose ) const { }
+		void getSensorPose( CPose3D &) const { }
 		void setSensorPose( const CPose3D & ) { }
 
 	}; // End of class def.

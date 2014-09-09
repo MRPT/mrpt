@@ -61,7 +61,7 @@ namespace slam
 		double sample_rate; //!< The sampling rate, in samples per second per channel
 
 		/** Not used in this class */
-		void getSensorPose( CPose3D &out_sensorPose ) const { }
+		void getSensorPose( CPose3D & ) const { }
 		/** Not used in this class */
 		void setSensorPose( const CPose3D & ) { }
 

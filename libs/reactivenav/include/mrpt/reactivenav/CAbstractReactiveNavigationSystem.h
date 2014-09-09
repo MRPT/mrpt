@@ -61,7 +61,10 @@ namespace mrpt
 		 * \param T_ms Period, in ms.
 		 * \return false on any error.
 		 */
-		virtual bool startWatchdog(float T_ms) { return true; }
+		virtual bool startWatchdog(float T_ms) {
+			MRPT_UNUSED_PARAM(T_ms);
+			return true;
+		}
 
 		/** Stop the watchdog timer.
 		 * \return false on any error.
@@ -77,7 +80,9 @@ namespace mrpt
 		virtual void sendNavigationEndEvent() {	std::cout << "[sendNavigationEndEvent] Not implemented by the user." << std::endl; }
 		virtual void sendNavigationEndDueToErrorEvent() { std::cout << "[sendNavigationEndDueToErrorEvent] Not implemented by the user." << std::endl; }
 		virtual void sendWaySeemsBlockedEvent() { std::cout << "[sendWaySeemsBlockedEvent] Not implemented by the user." << std::endl; }
-		virtual void notifyHeadingDirection(const double heading_dir_angle) { }
+		virtual void notifyHeadingDirection(const double heading_dir_angle) {
+			MRPT_UNUSED_PARAM(heading_dir_angle);
+		}
 	};
 
 

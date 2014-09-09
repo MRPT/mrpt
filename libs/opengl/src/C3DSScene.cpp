@@ -392,6 +392,7 @@ void render_node(Lib3dsNode *node, Lib3dsFile	*file)
     }
   }
 #else
+    MRPT_UNUSED_PARAM(node); MRPT_UNUSED_PARAM(file);
 	THROW_EXCEPTION("MRPT was compiled without OpenGL support")
 #endif
 }
@@ -704,6 +705,7 @@ C3DSScene::TImpl3DS::~TImpl3DS()
 }
 
 bool C3DSScene::traceRay(const mrpt::poses::CPose3D &o,double &dist) const	{
+	MRPT_UNUSED_PARAM(o); MRPT_UNUSED_PARAM(dist);
 	//TODO
 	return false;
 }

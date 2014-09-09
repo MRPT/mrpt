@@ -10,6 +10,7 @@
 #define JPEG_INTERNALS
 #include "jinclude.h"
 #include "mrpt_jpeglib.h"
+#include <mrpt/utils/mrpt_macros.h>
 
 #ifdef QUANT_2PASS_SUPPORTED
 
@@ -214,6 +215,7 @@ METHODDEF(void)
 prescan_quantize (j_decompress_ptr cinfo, JSAMPARRAY input_buf,
 		  JSAMPARRAY output_buf, int num_rows)
 {
+  MRPT_UNUSED_PARAM(output_buf); MRPT_UNUSED_PARAM(cinfo);
   my_cquantize_ptr cquantize = (my_cquantize_ptr) cinfo->cquantize;
   register JSAMPROW ptr;
   register histptr histp;
@@ -1143,7 +1145,7 @@ finish_pass1 (j_decompress_ptr cinfo)
 
 
 METHODDEF(void)
-finish_pass2 (j_decompress_ptr cinfo)
+finish_pass2 (j_decompress_ptr )
 {
   /* no work */
 }

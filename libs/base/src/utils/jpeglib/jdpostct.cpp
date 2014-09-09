@@ -10,7 +10,7 @@
 #define JPEG_INTERNALS
 #include "jinclude.h"
 #include "mrpt_jpeglib.h"
-
+#include <mrpt/utils/mrpt_macros.h>
 
 /* Private buffer controller object */
 
@@ -152,6 +152,7 @@ post_process_prepass (j_decompress_ptr cinfo,
 		      JSAMPARRAY output_buf, JDIMENSION *out_row_ctr,
 		      JDIMENSION out_rows_avail)
 {
+	MRPT_UNUSED_PARAM(output_buf); MRPT_UNUSED_PARAM(out_rows_avail);
   my_post_ptr post = (my_post_ptr) cinfo->post;
   JDIMENSION old_next_row, num_rows;
 
@@ -196,6 +197,7 @@ post_process_2pass (j_decompress_ptr cinfo,
 		    JSAMPARRAY output_buf, JDIMENSION *out_row_ctr,
 		    JDIMENSION out_rows_avail)
 {
+	MRPT_UNUSED_PARAM(input_buf); MRPT_UNUSED_PARAM(in_row_group_ctr); MRPT_UNUSED_PARAM(in_row_groups_avail);
   my_post_ptr post = (my_post_ptr) cinfo->post;
   JDIMENSION num_rows, max_rows;
 

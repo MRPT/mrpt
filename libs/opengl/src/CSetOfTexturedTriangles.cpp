@@ -139,6 +139,7 @@ void  CSetOfTexturedTriangles::readFromStream(CStream &in, int version)
 
 bool CSetOfTexturedTriangles::traceRay(const mrpt::poses::CPose3D &o, double &dist) const
 {
+	MRPT_UNUSED_PARAM(o); MRPT_UNUSED_PARAM(dist);
 	throw std::runtime_error("TODO: TraceRay not implemented in CSetOfTexturedTriangles");
 }
 

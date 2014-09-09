@@ -48,6 +48,8 @@ void renderGeneralizedEllipsoidTemplate<2>(
 
 	glEnable(GL_LIGHTING);
 	glDisable(GL_BLEND);
+#else
+	MRPT_UNUSED_PARAM(pts); MRPT_UNUSED_PARAM(lineWidth); MRPT_UNUSED_PARAM(slices); MRPT_UNUSED_PARAM(stacks);
 #endif
 }
 
@@ -128,6 +130,8 @@ void renderGeneralizedEllipsoidTemplate<3>(
 
 	glDisable(GL_BLEND);
 	glEnable(GL_LIGHTING);
+#else
+	MRPT_UNUSED_PARAM(pts); MRPT_UNUSED_PARAM(lineWidth); MRPT_UNUSED_PARAM(slices); MRPT_UNUSED_PARAM(stacks);
 #endif
 }
 
@@ -143,6 +147,7 @@ void OPENGL_IMPEXP generalizedEllipsoidPoints<2>(
 	const uint32_t numSegments,
 	const uint32_t numSegments_unused)
 {
+	MRPT_UNUSED_PARAM(numSegments_unused);
 	out_params_pts.clear();
 	out_params_pts.reserve(numSegments);
 	const double Aa = 2*M_PI/numSegments;

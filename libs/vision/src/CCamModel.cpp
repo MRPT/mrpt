@@ -309,6 +309,6 @@ void  CCamModel::loadFromConfigFile(
 /** This method displays clearly all the contents of the structure in textual form, sending it to a CStream. */
 void  CCamModel::dumpToTextStream( CStream		&out) const
 {
-
+	MRPT_UNUSED_PARAM(out);
 }
 

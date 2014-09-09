@@ -690,6 +690,7 @@ void* CFeatureExtraction::my_scale_space_extrema(
 	int octvs, int intvls, double contr_thr, int curv_thr,
 	void* storage_ ) const
 {
+	MRPT_UNUSED_PARAM(contr_thr); MRPT_UNUSED_PARAM(curv_thr);
 #if MRPT_HAS_OPENCV && MRPT_HAS_SIFT_HESS
 	CvMemStorage*	storage = reinterpret_cast<CvMemStorage*>( storage_ );
 	IplImage***		dog_pyr = reinterpret_cast<IplImage***>( dog_pyr_ );

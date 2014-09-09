@@ -251,6 +251,7 @@ namespace mrpt
 				/// Returns the distance between the vector "p1[0:size-1]" and the data point with index "idx_p2" stored in the class:
 				inline float kdtree_distance(const float *p1, const size_t idx_p2,size_t size) const
 				{
+					MRPT_UNUSED_PARAM(size); // in release mode
 					ASSERTDEB_(size==2)
 
 					const float d0 = p1[0] - m_data[idx_p2].pt.x;

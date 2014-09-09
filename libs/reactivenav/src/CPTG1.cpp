@@ -38,6 +38,7 @@ std::string CPTG1::getDescription() const
   ---------------------------------------------------------------*/
 void CPTG1::PTG_Generator( float alpha, float t,float x, float y, float phi, float &v, float &w )
 {
+	MRPT_UNUSED_PARAM(t); MRPT_UNUSED_PARAM(x); MRPT_UNUSED_PARAM(y); MRPT_UNUSED_PARAM(phi);
     // (v,w)
     v = V_MAX * sign(K);
 	// Use a linear mapping:  (Old was: w = tan( alpha/2 ) * W_MAX * sign(K))
@@ -49,11 +50,13 @@ void CPTG1::PTG_Generator( float alpha, float t,float x, float y, float phi, flo
   ---------------------------------------------------------------*/
 bool CPTG1::PTG_IsIntoDomain( float x, float y )
 {
+	MRPT_UNUSED_PARAM(x); MRPT_UNUSED_PARAM(y);
 	return true;
 }
 
 bool CPTG1::inverseMap_WS2TP(float x, float y, int &k_out, float &d_out, float tolerance_dist) const
 {
+	MRPT_UNUSED_PARAM(tolerance_dist);
 	bool is_exact = true;
 	if (y!=0)
 	{

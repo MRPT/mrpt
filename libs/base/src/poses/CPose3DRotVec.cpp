@@ -586,6 +586,7 @@ void CPose3DRotVec::inverseComposePoint(const double gx,const double gy,const do
 	mrpt::math::CMatrixFixedNumeric<double,3,3>  *out_jacobian_df_dpoint,
 	mrpt::math::CMatrixFixedNumeric<double,3,6>  *out_jacobian_df_dpose ) const
 {
+	MRPT_UNUSED_PARAM(out_jacobian_df_dpoint); MRPT_UNUSED_PARAM(out_jacobian_df_dpose);
     CPose3DRotVec rvt = this->getInverse();
     rvt.composePoint( gx, gy, gz, lx, ly, lz );
     MRPT_TODO("Jacobians");

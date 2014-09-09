@@ -181,7 +181,7 @@ namespace mrpt
 			inline mrptEventWindowResize(
 				CBaseGUIWindow *obj,
 				size_t _new_width,
-				size_t _new_height) : source_object(obj), new_width(_new_width), new_height(_new_width) { }
+				size_t _new_height) : source_object(obj), new_width(_new_width), new_height(_new_height) { }
 
 			CBaseGUIWindow *source_object;
 			size_t new_width, new_height;

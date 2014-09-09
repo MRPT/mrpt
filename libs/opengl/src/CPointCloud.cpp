@@ -153,6 +153,8 @@ inline void CPointCloud::internal_render_one_point(size_t i) const
 			m_color.A * (1.0f/255.f) );
 	}
 	glVertex3f( m_xs[i],m_ys[i],m_zs[i] );
+#else
+	MRPT_UNUSED_PARAM(i);
 #endif
 }
 
@@ -178,6 +180,8 @@ void  CPointCloud::render_subset(const bool all, const std::vector<size_t>& idxs
 		for (size_t i=0;i<N;i+=decimation)
 			internal_render_one_point(idxs[i]);
 	}
+#else
+	MRPT_UNUSED_PARAM(all); MRPT_UNUSED_PARAM(idxs); MRPT_UNUSED_PARAM(render_area_sqpixels);
 #endif
 }
 
@@ -338,6 +342,7 @@ void CPointCloud::PLY_import_set_vertex_count(const size_t N)
   */
 void CPointCloud::PLY_import_set_vertex(const size_t idx, const mrpt::math::TPoint3Df &pt, const mrpt::utils::TColorf *pt_color)
 {
+	MRPT_UNUSED_PARAM(pt_color);
 	this->setPoint(idx,pt.x,pt.y,pt.z);
 }
 
@@ -356,6 +361,7 @@ void CPointCloud::PLY_export_get_vertex(
 	bool &pt_has_color,
 	mrpt::utils::TColorf &pt_color) const
 {
+	MRPT_UNUSED_PARAM(pt_color);
 	pt_has_color=false;
 
 	pt.x = m_xs[idx];

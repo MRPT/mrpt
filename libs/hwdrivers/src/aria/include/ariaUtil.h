@@ -896,11 +896,11 @@ public:
   void newParametersFromEndpoints(double x1, double y1, double x2, double y2)
     { myA = y1 - y2; myB = x2 - x1; myC = (y2 *x1) - (x2 * y1); }
   /// Gets the A line parameter
-  const double getA(void) const { return myA; }
+  double getA(void) const { return myA; }
   /// Gets the B line parameter
-  const double getB(void) const { return myB; }
+  double getB(void) const { return myB; }
   /// Gets the C line parameter
-  const double getC(void) const { return myC; }
+  double getC(void) const { return myC; }
   /// finds the intersection of this line with another line
   /**
       @param line the line to check if it intersects with this line
@@ -1061,21 +1061,21 @@ public:
       return (perpPose.findDistanceTo(pose));
     }
   /// Gets the x coordinate of the first endpoint
-  const double getX1(void) const { return myX1; }
+  double getX1(void) const { return myX1; }
   /// Gets the y coordinate of the first endpoint
-  const double getY1(void) const { return myY1; }
+  double getY1(void) const { return myY1; }
   /// Gets the x coordinate of the second endpoint
-  const double getX2(void) const { return myX2; }
+  double getX2(void) const { return myX2; }
   /// Gets the y coordinate of the second endpoint
-  const double getY2(void) const { return myY2; }
+  double getY2(void) const { return myY2; }
   /// Gets the A line parameter (see ArLine)
-  const double getA(void) const { return myLine.getA(); }
+  double getA(void) const { return myLine.getA(); }
   /// Gets the B line parameter (see ArLine)
-  const double getB(void) const { return myLine.getB(); }
+  double getB(void) const { return myLine.getB(); }
   /// Gets the C line parameter (see ArLine)
-  const double getC(void) const { return myLine.getC(); }
+  double getC(void) const { return myLine.getC(); }
   /// Internal function for seeing if a point on our line is within our segment
-  const bool linePointIsInSegment(ArPose *pose) const
+  bool linePointIsInSegment(ArPose *pose) const
     {
       return (((myX1 == myX2) ||
 	       (pose->getX() >= myX1 && pose->getX() <= myX2) ||

@@ -74,6 +74,7 @@ bool mrpt::vision::checkerBoardCameraCalibration(
 	bool			   useScaramuzzaAlternativeDetector
 	)
 {
+	MRPT_UNUSED_PARAM(skipDrawDetectedImgs);
 #if MRPT_HAS_OPENCV
 	try
 	{

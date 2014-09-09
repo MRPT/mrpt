@@ -888,6 +888,8 @@ CPosePDFPtr CICP::ICP_Method_IKF(
 		const CPosePDFGaussian	&initialEstimationPDF,
 		TReturnInfo				&outInfo )
 {
+	MRPT_UNUSED_PARAM(m1); MRPT_UNUSED_PARAM(mm2); MRPT_UNUSED_PARAM(initialEstimationPDF);
+	MRPT_UNUSED_PARAM(outInfo);
 	MRPT_START
 	THROW_EXCEPTION("Not implemented yet");
 	return CPosePDFGaussian::Create();

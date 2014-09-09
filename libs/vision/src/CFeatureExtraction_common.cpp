@@ -263,6 +263,7 @@ void  CFeatureExtraction::extractFeaturesBCD(
 {
 	MRPT_UNUSED_PARAM(img);
 	MRPT_UNUSED_PARAM(feats);
+	MRPT_UNUSED_PARAM(init_ID);
 	MRPT_UNUSED_PARAM(nDesiredFeatures);
 	MRPT_UNUSED_PARAM(ROI);
 

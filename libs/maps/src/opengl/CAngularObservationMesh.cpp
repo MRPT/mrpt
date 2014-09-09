@@ -160,6 +160,8 @@ void CAngularObservationMesh::render_dl() const	{
 }
 
 bool CAngularObservationMesh::traceRay(const mrpt::poses::CPose3D &o,double &dist) const	{
+	MRPT_UNUSED_PARAM(o);
+	MRPT_UNUSED_PARAM(dist);
 	//TODO: redo
 	return false;
 }

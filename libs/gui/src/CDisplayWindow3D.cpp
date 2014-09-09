@@ -446,6 +446,9 @@ void  CDisplayWindow3D::resize(
     REQ->x        = width;
     REQ->y        = height;
     WxSubsystem::pushPendingWxRequest( REQ );
+#else
+	MRPT_UNUSED_PARAM(width);
+	MRPT_UNUSED_PARAM(height);
 #endif
 }
 
@@ -468,6 +471,8 @@ void  CDisplayWindow3D::setPos( int x, int y )
     REQ->x        = x;
     REQ->y        = y;
     WxSubsystem::pushPendingWxRequest( REQ );
+#else
+	MRPT_UNUSED_PARAM(x); MRPT_UNUSED_PARAM(y);
 #endif
 }
 
@@ -489,6 +494,8 @@ void  CDisplayWindow3D::setWindowTitle( const std::string &str )
     REQ->OPCODE   = 304;
     REQ->str      = str;
     WxSubsystem::pushPendingWxRequest( REQ );
+#else
+	MRPT_UNUSED_PARAM(str); 
 #endif
 }
 
@@ -540,6 +547,8 @@ void CDisplayWindow3D::setCameraElevationDeg( float deg )
 	C3DWindowDialog *win = (C3DWindowDialog*) m_hwnd.get();
 	if (win)
         win->m_canvas->cameraElevationDeg = deg;
+#else
+	MRPT_UNUSED_PARAM(deg); 
 #endif
 }
 
@@ -549,6 +558,8 @@ void CDisplayWindow3D::useCameraFromScene(bool useIt)
 	C3DWindowDialog *win = (C3DWindowDialog*) m_hwnd.get();
 	if (win)
         win->m_canvas->useCameraFromScene = useIt;
+#else
+	MRPT_UNUSED_PARAM(useIt);
 #endif
 }
 
@@ -561,6 +572,8 @@ void CDisplayWindow3D::setCameraAzimuthDeg( float deg )
 	C3DWindowDialog *win = (C3DWindowDialog*) m_hwnd.get();
 	if (win)
         win->m_canvas->cameraAzimuthDeg = deg;
+#else
+	MRPT_UNUSED_PARAM(deg);
 #endif
 }
 
@@ -577,6 +590,8 @@ void CDisplayWindow3D::setCameraPointingToPoint( float x,float y, float z )
         win->m_canvas->cameraPointingY = y;
         win->m_canvas->cameraPointingZ = z;
 	}
+#else
+	MRPT_UNUSED_PARAM(x); MRPT_UNUSED_PARAM(y); MRPT_UNUSED_PARAM(z);
 #endif
 }
 
@@ -589,6 +604,8 @@ void CDisplayWindow3D::setCameraZoom( float zoom )
 	C3DWindowDialog *win = (C3DWindowDialog*) m_hwnd.get();
 	if (win)
         win->m_canvas->cameraZoomDistance = zoom;
+#else
+	MRPT_UNUSED_PARAM(zoom);
 #endif
 }
 
@@ -601,6 +618,8 @@ void CDisplayWindow3D::setCameraProjective( bool isProjective )
 	C3DWindowDialog *win = (C3DWindowDialog*) m_hwnd.get();
 	if (win)
 		win->m_canvas->cameraIsProjective = isProjective;
+#else
+	MRPT_UNUSED_PARAM(isProjective);
 #endif
 }
 
@@ -671,7 +690,10 @@ void CDisplayWindow3D::getCameraPointingToPoint( float &x,float &y, float &z ) c
         y = win->m_canvas->cameraPointingY;
         z = win->m_canvas->cameraPointingZ;
 	}
-	else x=y=z=0;
+	else
+		x=y=z=0;
+#else
+	MRPT_UNUSED_PARAM(x); MRPT_UNUSED_PARAM(y); MRPT_UNUSED_PARAM(z);
 #endif
 }
 
@@ -712,6 +734,7 @@ bool CDisplayWindow3D::getLastMousePosition(int &x, int &y) const
 	win->m_canvas->getLastMousePosition(x,y);
 	return true;
 #else
+	MRPT_UNUSED_PARAM(x); MRPT_UNUSED_PARAM(y);
     return false;
 #endif
 }
@@ -742,6 +765,8 @@ void CDisplayWindow3D::setCursorCross(bool cursorIsCross)
 	const C3DWindowDialog *win = (const C3DWindowDialog*) m_hwnd.get();
 	if (!win) return;
 	win->m_canvas->SetCursor( *(cursorIsCross ? wxCROSS_CURSOR : wxSTANDARD_CURSOR) );
+#else
+	MRPT_UNUSED_PARAM(cursorIsCross);
 #endif
 }
 
@@ -852,6 +877,9 @@ void CDisplayWindow3D::addTextMessage(
 
         WxSubsystem::pushPendingWxRequest( REQ );
 	}
+#else
+	MRPT_UNUSED_PARAM(x_frac); MRPT_UNUSED_PARAM(y_frac); MRPT_UNUSED_PARAM(text);
+	MRPT_UNUSED_PARAM(color); MRPT_UNUSED_PARAM(unique_index); MRPT_UNUSED_PARAM(font);
 #endif
 }
 
@@ -903,6 +931,19 @@ void CDisplayWindow3D::addTextMessage(
 
         WxSubsystem::pushPendingWxRequest( REQ );
 	}
+#else
+	MRPT_UNUSED_PARAM(x_frac);
+	MRPT_UNUSED_PARAM(y_frac);
+	MRPT_UNUSED_PARAM(text);
+	MRPT_UNUSED_PARAM(color);
+	MRPT_UNUSED_PARAM(font_name);
+	MRPT_UNUSED_PARAM(font_size);
+	MRPT_UNUSED_PARAM(font_style);
+	MRPT_UNUSED_PARAM(unique_index);
+	MRPT_UNUSED_PARAM(font_spacing);
+	MRPT_UNUSED_PARAM(font_kerning);
+	MRPT_UNUSED_PARAM(draw_shadow);
+	MRPT_UNUSED_PARAM(shadow_color);
 #endif
 }
 

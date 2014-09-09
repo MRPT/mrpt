@@ -341,6 +341,7 @@ namespace mrpt
 			const void				*action,
 			const void				*observation )
 		{
+			MRPT_UNUSED_PARAM(action);
 			MRPT_START
 
 			//const PF_implementation<PARTICLE_TYPE,MYSELF> *myObj = reinterpret_cast<const PF_implementation<PARTICLE_TYPE,MYSELF>*>( obj );

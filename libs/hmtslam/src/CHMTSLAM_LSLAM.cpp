@@ -250,6 +250,7 @@ void CHMTSLAM::thread_LSLAM()
   ---------------------------------------------------------------*/
 void CHMTSLAM::LSLAM_process_message( const CMessage &msg )
 {
+	MRPT_UNUSED_PARAM(msg);
 	MRPT_START
 
 /*	switch(msg.type)

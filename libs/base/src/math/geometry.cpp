@@ -1608,30 +1608,37 @@ double math::distance(const TPlane &p1,const TPlane &p2)	{
 }
 
 double math::distance(const TPolygon2D &p1,const TPolygon2D &p2)	{
+   MRPT_UNUSED_PARAM(p1); MRPT_UNUSED_PARAM(p2);
 	THROW_EXCEPTION("TO DO:distance(TPolygon2D,TPolygon2D)");
 }
 
 double math::distance(const TPolygon2D &p1,const TSegment2D &s2)	{
+   MRPT_UNUSED_PARAM(p1); MRPT_UNUSED_PARAM(s2);
 	THROW_EXCEPTION("TO DO:distance(TPolygon2D,TSegment)");
 }
 
 double math::distance(const TPolygon2D &p1,const TLine2D &l2)	{
+   MRPT_UNUSED_PARAM(p1); MRPT_UNUSED_PARAM(l2);
 	THROW_EXCEPTION("TO DO:distance(TPolygon2D,TLine2D)");
 }
 
 double math::distance(const TPolygon3D &p1,const TPolygon3D &p2)	{
+   MRPT_UNUSED_PARAM(p1); MRPT_UNUSED_PARAM(p2);
 	THROW_EXCEPTION("TO DO:distance(TPolygon3D,TPolygon3D");
 }
 
 double math::distance(const TPolygon3D &p1,const TSegment3D &s2)	{
+   MRPT_UNUSED_PARAM(p1); MRPT_UNUSED_PARAM(s2);
 	THROW_EXCEPTION("TO DO:distance(TPolygon3D,TSegment3D");
 }
 
 double math::distance(const TPolygon3D &p1,const TLine3D &l2)	{
+   MRPT_UNUSED_PARAM(p1); MRPT_UNUSED_PARAM(l2);
 	THROW_EXCEPTION("TO DO:distance(TPolygon3D,TLine3D");
 }
 
 double math::distance(const TPolygon3D &po,const TPlane &pl)	{
+   MRPT_UNUSED_PARAM(po); MRPT_UNUSED_PARAM(pl);
 	THROW_EXCEPTION("TO DO:distance(TPolygon3D,TPlane");
 }
 

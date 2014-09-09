@@ -64,6 +64,7 @@ CAbstractPTGBasedReactive::CAbstractPTGBasedReactive(CReactiveInterfaceImplement
 	meanTotalExecutionTime       (0.1f),
 	m_closing_navigator          (false)
 {
+	MRPT_UNUSED_PARAM(enableLogFile);
 	this->enableLogFile( m_enableConsoleOutput );
 }
 

@@ -35,6 +35,8 @@ COMPILE_TIME_ASSERT(GLENUM,sizeof(GLenum)==sizeof(_GLENUM));
 void renderFunc(TPoint3D p)	{
 #if MRPT_HAS_OPENGL_GLUT
 	glVertex3f(p.x,p.y,p.z);
+#else
+	MRPT_UNUSED_PARAM(p);
 #endif
 }
 
@@ -92,6 +94,7 @@ void COpenGLStandardObject::readFromStream(CStream &in,int version)	{
 }
 
 bool COpenGLStandardObject::traceRay(const mrpt::poses::CPose3D &o,double &dist) const	{
+	MRPT_UNUSED_PARAM(o); MRPT_UNUSED_PARAM(dist);
 	//This object isn't intended to hold geometric properties. No trace ray should be performed on it.
 	return false;
 }

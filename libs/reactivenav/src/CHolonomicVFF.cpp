@@ -40,6 +40,7 @@ void  CHolonomicVFF::navigate(
 	double			&desiredSpeed,
 	CHolonomicLogFileRecordPtr &logRecord)
 {
+	MRPT_UNUSED_PARAM(maxRobotSpeed);
 	// Create a log record for returning data.
 	if (!logRecord)
 	{
@@ -95,6 +96,7 @@ void  CHolonomicVFF::navigate(
   ---------------------------------------------------------------*/
 void  CLogFileRecord_VFF::writeToStream(CStream &out,int *version) const
 {
+	MRPT_UNUSED_PARAM(out);
 	if (version)
 		*version = 0;
 	else
@@ -107,6 +109,7 @@ void  CLogFileRecord_VFF::writeToStream(CStream &out,int *version) const
   ---------------------------------------------------------------*/
 void  CLogFileRecord_VFF::readFromStream(CStream &in,int version)
 {
+	MRPT_UNUSED_PARAM(in);
 	switch(version)
 	{
 	case 0:

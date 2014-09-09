@@ -93,6 +93,8 @@ namespace mrpt
 			const CMatrixTemplateNumeric<T> &allData,
 			const mrpt::vector_size_t &useIndices )
 		{
+			MRPT_UNUSED_PARAM(allData);
+			MRPT_UNUSED_PARAM(useIndices);
 			return false;
 		}
 	} // end namespace
@@ -269,6 +271,8 @@ namespace mrpt
 			const CMatrixTemplateNumeric<T> &allData,
 			const mrpt::vector_size_t &useIndices )
 		{
+			MRPT_UNUSED_PARAM(allData);
+			MRPT_UNUSED_PARAM(useIndices);
 			return false;
 		}
 	} // end namespace

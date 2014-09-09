@@ -625,6 +625,7 @@ double  CLSLAM_RBPF_2DLASER::auxiliarComputeObservationLikelihood(
 	const CSensoryFrame	*observation,
 	const CPose2D			*x )
 {
+	MRPT_UNUSED_PARAM(PF_options);
 	const CLocalMetricHypothesis  *theObj = static_cast<const CLocalMetricHypothesis*>(obj);
 	CMultiMetricMap			*map = &theObj->m_particles[particleIndexForMap].d->metricMaps;
 

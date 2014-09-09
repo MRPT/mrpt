@@ -170,7 +170,7 @@ inline void StdOutput::failure( CmdLineInterface& _cmd,
 }
 
 inline void StdOutput::_shortUsage( CmdLineInterface& _cmd, 
-				                    std::ostream& os ) const
+				                    std::ostream& ) const
 {
 	std::list<Arg*> argList = _cmd.getArgList();
 	std::string progName = _cmd.getProgramName();
