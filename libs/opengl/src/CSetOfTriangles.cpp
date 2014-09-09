@@ -118,7 +118,7 @@ void  CSetOfTriangles::readFromStream(CStream &in,int version)
 			in >> n;
 			m_triangles.assign(n,TTriangle());
 			if (n)
-				in.ReadBuffer( &m_triangles[0], n*sizeof(TTriangle) );
+				in.ReadBufferFixEndianness( &m_triangles[0], n );
 
 			if (version>=1)
 					in >> m_enableTransparency;

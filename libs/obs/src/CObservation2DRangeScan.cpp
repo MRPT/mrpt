@@ -184,11 +184,11 @@ void  CObservation2DRangeScan::readFromStream(CStream &in, int version)
 			validRange.resize(N);
 			if (N)
 			{
-				in.ReadBuffer( &scan[0], sizeof(scan[0])*N);
+				in.ReadBufferFixEndianness( &scan[0], N);
 				in.ReadBuffer( &validRange[0], sizeof(validRange[0])*N );
 			}
 			in >> stdError;
-			in.ReadBuffer( &timestamp, sizeof(timestamp));
+			in.ReadBufferFixEndianness( &timestamp, 1);
 			in >> beamAperture;
 
 			if (version>=5)
@@ -201,11 +201,9 @@ void  CObservation2DRangeScan::readFromStream(CStream &in, int version)
 				sensorLabel = "";
 				deltaPitch  = 0;
 			}
-
 		} break;
 	default:
 		MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
-
 	};
 
 	m_cachedMap.clear();
