@@ -346,21 +346,18 @@ extern CStartUpClassesRegister  mrpt_base_class_reg;
 
 const int dumm = mrpt_base_class_reg.do_nothing(); // Avoid compiler removing this class in static linking
 
-/*---------------------------------------------------------------
-	Reads an object from stream, where its class is determined
-	at runtime.
-	  exception std::exception On I/O error or undefined class.
- ---------------------------------------------------------------*/
-CSerializablePtr CStream::ReadObject()
+
+template <bool EXISTING_OBJ>
+CSerializable* CStream::internal_ReadObject(CSerializable *existingObj)
 {
 	// Automatically register all classes when the first one is registered.
 	registerAllPendingClasses();
 
 	// First, read the class name:
-	uint8_t     lengthReadClassName = 255;
-	char		readClassName[260];
+	uint8_t lengthReadClassName = 255;
+	bool    isOldFormat=false;   // < MRPT 0.5.5
+	char    readClassName[260];
 	readClassName[0] = 0;
-	bool        isOldFormat=false;   // < MRPT 0.5.5
 
 	try
 	{
@@ -368,26 +365,21 @@ CSerializablePtr CStream::ReadObject()
 		if (sizeof(lengthReadClassName) != ReadBuffer( (void*)&lengthReadClassName, sizeof(lengthReadClassName) ) )
 			THROW_EXCEPTION("Cannot read object header from stream! (EOF?)");
 
-        // Is in old format (< MRPT 0.5.5)?
-        if (! (lengthReadClassName & 0x80 ))
-        {
-            isOldFormat = true;
+		// Is in old format (< MRPT 0.5.5)?
+		if (! (lengthReadClassName & 0x80 ))
+		{
+			isOldFormat = true;
+			uint8_t buf[3];
+			if (3 != ReadBuffer( buf, 3 ) ) THROW_EXCEPTION("Cannot read object header from stream! (EOF?)");
+			if (buf[0] || buf[1] || buf[2]) THROW_EXCEPTION("Expecting 0x00 00 00 while parsing old streaming header (Perhaps it's a gz-compressed stream? Use a GZ-stream for reading)");
+		}
 
-            char buf[3];
-            //if (sizeof(int32_t) != ReadBuffer( (void*)&lengthReadClassName, sizeof(int32_t) ) )
-            if (3 != ReadBuffer( buf, 3 ) )
-                THROW_EXCEPTION("Cannot read object header from stream! (EOF?)");
+		// Remove MSB:
+		lengthReadClassName &= 0x7F;
 
-            if (buf[0] || buf[1] || buf[2])
-                THROW_EXCEPTION("Expecting 0x00 00 00 while parsing old streaming header (Perhaps it's a gz-compressed stream? Use a GZ-stream for reading)");
-        }
-
-        // Remove MSB:
-        lengthReadClassName &= 0x7F;
-
-        // Sensible class name size?
-        if (lengthReadClassName>120)
-            THROW_EXCEPTION("Class name has more than 120 chars. This probably means a corrupted binary stream.")
+		// Sensible class name size?
+		if (lengthReadClassName>120)
+			THROW_EXCEPTION("Class name has more than 120 chars. This probably means a corrupted binary stream.");
 
 		if (((size_t)lengthReadClassName)!=ReadBuffer( readClassName, lengthReadClassName ))
 			THROW_EXCEPTION("Cannot read object class name from stream!");
@@ -395,54 +387,67 @@ CSerializablePtr CStream::ReadObject()
 		readClassName[lengthReadClassName]='\0';
 
 		// Pass to string class:
-		std::string	strClassName(readClassName);
+		const std::string strClassName(readClassName);
 
 		// Next, the version number:
-		int8_t	    version;
+		int8_t version;
 		if (isOldFormat)
 		{
-		    int32_t  version_old;
-            if (sizeof(version_old)!=ReadBuffer( (void*)&version_old, sizeof(version_old) ))
-                THROW_EXCEPTION("Cannot read object streaming version from stream!");
-            ASSERT_(version_old>=0 && version_old<255);
-            version = int8_t(version_old);
+			int32_t  version_old;
+			// Handle big endian right:
+			if (sizeof(version_old)!=ReadBufferFixEndianness( &version_old, 1 /*element count*/ ))
+				THROW_EXCEPTION("Cannot read object streaming version from stream!");
+			ASSERT_(version_old>=0 && version_old<255);
+			version = int8_t(version_old);
 		}
 		else
 		{
-            if (sizeof(version)!=ReadBuffer( (void*)&version, sizeof(version) ))
-                THROW_EXCEPTION("Cannot read object streaming version from stream!");
+			if (sizeof(version)!=ReadBuffer( (void*)&version, sizeof(version) ))
+				THROW_EXCEPTION("Cannot read object streaming version from stream!");
 		}
 
-        // In MRPT 0.5.5 an end flag was introduced:
+		// In MRPT 0.5.5 an end flag was introduced:
 #if CSTREAM_VERBOSE
-        cerr << "[CStream::ReadObject] readClassName:" << strClassName << " version: " << version <<  endl;
+		cerr << "[CStream::ReadObject] readClassName:" << strClassName << " version: " << version <<  endl;
 #endif
 
-		// Get the mapping to the "TRuntimeClassId*" in the registered classes table:
-		CSerializablePtr			obj;
-		const TRuntimeClassId		*classId = findRegisteredClass( strClassName );
-		if (!classId)
-		{
-			std::string msg = format("Class '%s' is not registered! Have you called mrpt::registerClass(CLASS)?",readClassName);
-			std::cerr << "CStream::ReadObject(): " << msg << std::endl;
-			THROW_EXCEPTION(msg)
+		CSerializable* obj = NULL;
+		if (EXISTING_OBJ)
+		{	// (Existing object)
+			// Now, compare to existing class:
+			ASSERT_(existingObj)
+			const TRuntimeClassId	*id  = existingObj->GetRuntimeClass();
+			const TRuntimeClassId	*id2 = findRegisteredClass(strClassName);
+			if (!id2) THROW_EXCEPTION_CUSTOM_MSG1("Stored object has class '%s' which is not registered!",strClassName.c_str());
+			if ( id!=id2 ) THROW_EXCEPTION(format("Stored class does not match with existing object!!:\n Stored: %s\n Expected: %s", id2->className,id->className ));
+			// It matches, OK
+			obj = existingObj;
+		}
+		else
+		{	// (New object)
+			// Get the mapping to the "TRuntimeClassId*" in the registered classes table:
+			const TRuntimeClassId *classId = findRegisteredClass( strClassName );
+			if (!classId)
+			{
+				const std::string msg = format("Class '%s' is not registered! Have you called mrpt::registerClass(CLASS)?",readClassName);
+				std::cerr << "CStream::ReadObject(): " << msg << std::endl;
+				THROW_EXCEPTION(msg)
+			}
+			obj = static_cast<CSerializable*>(classId->createObject());
 		}
 
-		obj.set( classId->createObject() );
+		// Go on, read it:
 		obj->readFromStream( *this, (int)version );
 
 		// Check end flag (introduced in MRPT 0.5.5)
 		if (!isOldFormat)
 		{
-            uint8_t	endFlag;
-            if (sizeof(endFlag)!=ReadBuffer( (void*)&endFlag, sizeof(endFlag) ))
-                THROW_EXCEPTION("Cannot read object streaming version from stream!");
-            if (endFlag!=SERIALIZATION_END_FLAG)
-                THROW_EXCEPTION_CUSTOM_MSG1("end-flag missing: There is a bug in the deserialization method of class: '%s'",strClassName.c_str());
+			uint8_t	endFlag;
+			if (sizeof(endFlag)!=ReadBuffer( (void*)&endFlag, sizeof(endFlag) )) THROW_EXCEPTION("Cannot read object streaming version from stream!");
+			if (endFlag!=SERIALIZATION_END_FLAG) THROW_EXCEPTION_CUSTOM_MSG1("end-flag missing: There is a bug in the deserialization method of class: '%s'",strClassName.c_str());
 		}
 
 		return obj;
-
 	}
 	catch (std::bad_alloc &)
 	{
@@ -450,21 +455,28 @@ CSerializablePtr CStream::ReadObject()
 	}
 	catch(std::exception &e)
 	{
-		if (lengthReadClassName==255)
-		{
-			THROW_TYPED_EXCEPTION("Cannot read object due to EOF", CExceptionEOF)
+		if (lengthReadClassName==255) {
+			THROW_TYPED_EXCEPTION("Cannot read object due to EOF", CExceptionEOF);
 		}
-		else
-		{
+		else {
 			THROW_STACKED_EXCEPTION_CUSTOM_MSG2(e,"Exception while parsing typed object '%s' from stream!\n",readClassName);
 		}
 	}
-	catch (...)
-	{
+	catch (...) {
 		THROW_EXCEPTION("Unexpected runtime error!");
 	}
-}
+} // end method
 
+
+/*---------------------------------------------------------------
+	Reads an object from stream, where its class is determined
+	at runtime.
+	  exception std::exception On I/O error or undefined class.
+ ---------------------------------------------------------------*/
+CSerializablePtr CStream::ReadObject()
+{
+	return CSerializablePtr( internal_ReadObject<false>() );
+}
 
 /*---------------------------------------------------------------
 	Reads an object from stream, where its class is determined
@@ -473,115 +485,7 @@ CSerializablePtr CStream::ReadObject()
  ---------------------------------------------------------------*/
 void CStream::ReadObject(CSerializable *existingObj)
 {
-	// Automatically register all classes when the first one is registered.
-	registerAllPendingClasses();
-
-	uint8_t     lengthReadClassName = 255;
-	char		readClassName[260];
-	readClassName[0] = 0;
-	bool        isOldFormat=false;   // < MRPT 0.5.5
-
-	try
-	{
-		// First, read the class name: (exception is raised here if ZERO bytes read -> possibly an EOF)
-		if (sizeof(lengthReadClassName) != ReadBuffer( (void*)&lengthReadClassName, sizeof(lengthReadClassName) ) )
-			THROW_EXCEPTION("Cannot read object header from stream! (EOF?)");
-
-        // Is in old format (< MRPT 0.5.5)?
-        if (! (lengthReadClassName & 0x80 ))
-        {
-            isOldFormat = true;
-
-            char buf[3];
-            //if (sizeof(int32_t) != ReadBuffer( (void*)&lengthReadClassName, sizeof(int32_t) ) )
-            if (3 != ReadBuffer( buf, 3 ) )
-                THROW_EXCEPTION("Cannot read object header from stream! (EOF?)");
-
-            if (buf[0] || buf[1] || buf[2])
-                THROW_EXCEPTION("Expecting 0x00 00 00 while parsing old streaming header (Perhaps it's a gz-compressed stream? Use a GZ-stream for reading)");
-        }
-
-        // Remove MSB:
-        lengthReadClassName &= 0x7F;
-
-        // Sensible class name size?
-        if (lengthReadClassName>120)
-            THROW_EXCEPTION("Class name has more than 120 chars. This probably means a corrupted binary stream.")
-
-		if (((size_t)lengthReadClassName)!=ReadBuffer( readClassName, lengthReadClassName ))
-			THROW_EXCEPTION("Cannot read object class name from stream!");
-
-		readClassName[lengthReadClassName]='\0';
-
-		// Pass to string class:
-		std::string	strClassName(readClassName);
-
-
-		// Next, the version number:
-		int8_t	    version;
-		if (isOldFormat)
-		{
-		    int32_t  version_old;
-            if (sizeof(version_old)!=ReadBuffer( (void*)&version_old, sizeof(version_old) ))
-                THROW_EXCEPTION("Cannot read object streaming version from stream!");
-            ASSERT_(version_old>=0 && version_old<255);
-            version = int8_t(version_old);
-		}
-		else
-		{
-            if (sizeof(version)!=ReadBuffer( (void*)&version, sizeof(version) ))
-                THROW_EXCEPTION("Cannot read object streaming version from stream!");
-		}
-
-#if CSTREAM_VERBOSE
-        cerr << "[CStream::ReadObject(existing)] readClassName:" << strClassName << " version: " << version <<  endl;
-#endif
-
-		// Now, compare to existing class:
-		ASSERT_(existingObj)
-		const TRuntimeClassId	*id  = existingObj->GetRuntimeClass();
-		const TRuntimeClassId	*id2 = findRegisteredClass(strClassName);
-
-		if (!id2)
-			THROW_EXCEPTION_CUSTOM_MSG1("Stored object has class '%s' which is not registered!",strClassName.c_str());
-
-		if ( id!=id2 )
-			THROW_EXCEPTION(format("Stored class does not match with existing object!!:\n Stored: %s\n Expected: %s", id2->className,id->className ));
-
-		// It matches, OK: read the object
-		existingObj->readFromStream( *this, (int)version );
-
-		// Check end flag (introduced in MRPT 0.5.5)
-		if (!isOldFormat)
-		{
-            uint8_t	endFlag;
-            if (sizeof(endFlag)!=ReadBuffer( (void*)&endFlag, sizeof(endFlag) ))
-                THROW_EXCEPTION("Cannot read object streaming version from stream!");
-            if (endFlag!=SERIALIZATION_END_FLAG)
-                THROW_EXCEPTION_CUSTOM_MSG1("end-flag missing: There is a bug in the deserialization method of class: '%s'",strClassName.c_str());
-		}
-
-	}
-	catch (std::bad_alloc &)
-	{
-		throw;
-	}
-	catch(std::exception &e)
-	{
-		if (lengthReadClassName==255)
-		{
-			THROW_TYPED_EXCEPTION("Cannot read object due to EOF", CExceptionEOF)
-		}
-		else
-		{
-			THROW_STACKED_EXCEPTION_CUSTOM_MSG2(e,"Exception while parsing typed object '%s' from stream!\n",readClassName);
-		}
-	}
-	catch (...)
-	{
-		THROW_EXCEPTION("Unexpected runtime error!");
-	}
-
+	internal_ReadObject<true>(existingObj);
 }
 
 /*---------------------------------------------------------------

@@ -38,8 +38,7 @@ namespace mrpt
 		class BASE_IMPEXP CStream
 		{
 		public:
-			/** Used in CStream::Seek
-			  */
+			/** Used in CStream::Seek */
 			enum TSeekOrigin
 			{
 				sFromBeginning = 0,
@@ -48,14 +47,18 @@ namespace mrpt
 			};
 
 		protected:
-			/** Introduces a pure virtual method responsible for reading from the stream.
-			 */
+			/** Introduces a pure virtual method responsible for reading from the stream. */
 			virtual size_t  Read(void *Buffer, size_t Count) = 0;
 
 			/** Introduces a pure virtual method responsible for writing to the stream.
-			 *  Write attempts to write up to Count bytes to Buffer, and returns the number of bytes actually written.
-			 */
+			 *  Write attempts to write up to Count bytes to Buffer, and returns the number of bytes actually written. */
 			virtual size_t  Write(const void *Buffer, size_t Count) = 0;
+
+			/** A common template code for both versions of CStream::ReadObject()
+			  * - EXISTING_OBJ=true  -> read in the object passed as argument
+			  * - EXISTING_OBJ=false -> build a new object and return it */
+			template <bool EXISTING_OBJ> CSerializable* internal_ReadObject(CSerializable *existingObj = NULL);
+
 		public:
 			/* Constructor
 			 */
