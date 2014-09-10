@@ -178,6 +178,7 @@ namespace mrpt
 			void  set( const std::string &keyName, const bool &value );
 
 		};
+		DEFINE_SERIALIZABLE_POST_CUSTOM_BASE( CStringList, mrpt::utils::CSerializable )
 
 	} // End of namespace
 } // End of namespace

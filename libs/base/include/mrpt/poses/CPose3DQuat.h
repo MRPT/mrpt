@@ -429,6 +429,7 @@ namespace poses
 		void setToNaN();
 
 	}; // End of class def.
+	DEFINE_SERIALIZABLE_POST( CPose3DQuat )
 
 	std::ostream BASE_IMPEXP  & operator << (std::ostream& o, const CPose3DQuat& p);
 

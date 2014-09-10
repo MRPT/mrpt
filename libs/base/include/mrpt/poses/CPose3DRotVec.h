@@ -403,6 +403,7 @@ namespace poses
 		/** @} */
 
 	}; // End of class def.
+	DEFINE_SERIALIZABLE_POST( CPose3DRotVec )
 
 
 	std::ostream BASE_IMPEXP  & operator << (std::ostream& o, const CPose3DRotVec& p);

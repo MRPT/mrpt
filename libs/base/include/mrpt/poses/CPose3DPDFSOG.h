@@ -150,6 +150,7 @@ namespace poses
 		void appendFrom( const CPose3DPDFSOG &o );
 
 	}; // End of class def.
+	DEFINE_SERIALIZABLE_POST_CUSTOM_BASE( CPose3DPDFSOG, CPose3DPDF )
 
 
 	} // End of namespace

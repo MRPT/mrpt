@@ -69,6 +69,7 @@ namespace mrpt
 			explicit CMatrixD( const TPoint3D &p);
 
 		}; // end of class definition
+		DEFINE_MRPT_OBJECT_POST_CUSTOM_BASE_LINKAGE2(CMatrixD, mrpt::utils::CSerializable, CMatrixD)
 
 	} // End of namespace
 } // End of namespace

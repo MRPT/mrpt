@@ -24,7 +24,6 @@ namespace mrpt
         // This must be added to any CSerializable derived class:
 		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE( CMHPropertiesValuesList, mrpt::utils::CSerializable )
 
-
         /** Internal triplet for each property in utils::CMHPropertiesValuesList */
         struct BASE_IMPEXP  TPropertyValueIDTriplet
         {
@@ -192,6 +191,7 @@ namespace mrpt
 			size_t size() const { return m_properties.size(); }
 
         }; // End of class def.
+		DEFINE_SERIALIZABLE_POST_CUSTOM_BASE( CMHPropertiesValuesList, mrpt::utils::CSerializable )
 
 
 	} // End of namespace

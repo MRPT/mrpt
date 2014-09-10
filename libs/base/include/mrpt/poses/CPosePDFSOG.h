@@ -218,6 +218,7 @@ namespace mrpt
 
 
 		}; // End of class def.
+		DEFINE_SERIALIZABLE_POST_CUSTOM_BASE( CPosePDFSOG , CPosePDF )
 
 	} // End of namespace
 } // End of namespace

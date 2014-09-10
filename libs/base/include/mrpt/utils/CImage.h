@@ -949,6 +949,7 @@ namespace mrpt
 			void makeSureImageIsLoaded() const throw (std::exception,utils::CExceptionExternalImageNotFound );
 
 		}; // End of class
+		DEFINE_SERIALIZABLE_POST_CUSTOM_BASE( CImage, mrpt::utils::CSerializable )
 
 	} // end of namespace utils
 
