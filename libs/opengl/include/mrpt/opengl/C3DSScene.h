@@ -95,6 +95,7 @@ namespace mrpt
 			//float	m_light_lin_attenuation;		//!< OpenGL Light attenuation factor (default=0.0)
 			//float	m_light_quad_attenuation;		//!< OpenGL Light attenuation factor (default=0.0)
 		};
+		DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE( C3DSScene, CRenderizableDisplayList, OPENGL_IMPEXP )
 
 
 	} // end namespace

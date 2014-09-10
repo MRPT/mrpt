@@ -51,6 +51,7 @@ namespace slam
 		void setSensorPose( const CPose3D &newSensorPose );
 
 	}; // End of class def.
+	DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE( CObservationWirelessPower, CObservation, OBS_IMPEXP)
 
 
 	} // End of namespace

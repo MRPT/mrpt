@@ -26,6 +26,10 @@ using namespace std;
 
 IMPLEMENTS_SERIALIZABLE(CGeneralizedCylinder,CRenderizableDisplayList,mrpt::opengl)
 
+CGeneralizedCylinderPtr CGeneralizedCylinder::Create(const std::vector<TPoint3D> &axis,const std::vector<TPoint3D> &generatrix)	
+{
+	return CGeneralizedCylinderPtr(new CGeneralizedCylinder(axis,generatrix));
+}
 void CGeneralizedCylinder::TQuadrilateral::calculateNormal()	{
 	double ax=points[1].x-points[0].x;
 	double ay=points[1].y-points[0].y;

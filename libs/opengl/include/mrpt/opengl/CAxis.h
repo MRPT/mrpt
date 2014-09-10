@@ -61,10 +61,7 @@ namespace mrpt
 			static CAxisPtr Create(
 				float xmin,float ymin, float zmin,
 				float xmax, float ymax,  float zmax,
-				float frecuency = 1, float lineWidth = 3, bool marks=false)
-			{
-				return CAxisPtr( new CAxis( xmin,ymin, zmin, xmax,ymax,zmax,frecuency,lineWidth,marks  ) );
-			}
+				float frecuency = 1, float lineWidth = 3, bool marks=false);
 
 			/** Render
 			  */
@@ -91,6 +88,7 @@ namespace mrpt
 			/** Private, virtual destructor: only can be deleted from smart pointers */
 			virtual ~CAxis() { }
 		};
+		DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE( CAxis, CRenderizableDisplayList, OPENGL_IMPEXP )
 
 	} // end namespace
 } // End of namespace

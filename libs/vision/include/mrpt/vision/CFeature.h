@@ -204,6 +204,7 @@ namespace mrpt
 				bool dont_shift_angle );
 
 		}; // end of class
+		DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE( CFeature, mrpt::utils::CSerializable, VISION_IMPEXP )
 
 
 		/****************************************************

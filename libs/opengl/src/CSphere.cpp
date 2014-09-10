@@ -24,6 +24,11 @@ using namespace std;
 
 IMPLEMENTS_SERIALIZABLE( CSphere, CRenderizableDisplayList, mrpt::opengl )
 
+CSpherePtr CSphere::Create(
+	float radius, int nDivsLongitude, int nDivsLatitude)
+{
+	return CSpherePtr( new CSphere(radius,nDivsLongitude,nDivsLatitude) );
+}
 /*---------------------------------------------------------------
 							render_dl
   ---------------------------------------------------------------*/

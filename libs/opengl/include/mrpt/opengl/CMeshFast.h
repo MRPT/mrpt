@@ -148,10 +148,7 @@ namespace mrpt
 
 
 			/** Class factory  */
-			static CMeshFastPtr Create(bool enableTransparency, float xMin = -1.0f, float xMax = 1.0f, float yMin = -1.0f, float yMax = 1.0f )
-			{
-				return CMeshFastPtr( new CMeshFast( enableTransparency, xMin ,xMax , yMin ,yMax ) );
-			}
+			static CMeshFastPtr Create(bool enableTransparency, float xMin = -1.0f, float xMax = 1.0f, float yMin = -1.0f, float yMax = 1.0f );
 
 			/** Render
 			  */
@@ -205,6 +202,7 @@ namespace mrpt
 			virtual ~CMeshFast() { }
 
 		};
+		DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE( CMeshFast, CRenderizableDisplayList, OPENGL_IMPEXP )
 
 	} // end namespace
 

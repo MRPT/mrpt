@@ -29,6 +29,7 @@ namespace mrpt
 	public:
 
 	};
+	DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(CHolonomicLogFileRecord, mrpt::utils::CSerializable, REACTIVENAV_IMPEXP)
 
   }
 }

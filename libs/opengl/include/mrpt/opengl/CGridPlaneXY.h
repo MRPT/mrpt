@@ -86,10 +86,7 @@ namespace mrpt
 				float z    = 0,
 				float frequency = 1, 
 				float lineWidth = 1.3f,
-				bool  antiAliasing = true)
-			{
-				return CGridPlaneXYPtr( new CGridPlaneXY(xMin,xMax,yMin,yMax, z, frequency,lineWidth,antiAliasing ) );
-			}
+				bool  antiAliasing = true);
 
 
 		private:
@@ -107,6 +104,7 @@ namespace mrpt
 			/** Private, virtual destructor: only can be deleted from smart pointers */
 			virtual ~CGridPlaneXY() { }
 		};
+		DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE( CGridPlaneXY , CRenderizableDisplayList, OPENGL_IMPEXP )
 
 	} // end namespace
 

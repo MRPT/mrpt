@@ -339,3 +339,10 @@ void CSetOfTriangles::getBoundingBox(mrpt::math::TPoint3D &bb_min, mrpt::math::T
 	m_pose.composePoint(bb_min, bb_min);
 	m_pose.composePoint(bb_max, bb_max);
 }
+
+void CSetOfTriangles::insertTriangles(const CSetOfTrianglesPtr &p)	{
+	reserve(m_triangles.size()+p->m_triangles.size());
+	m_triangles.insert(m_triangles.end(),p->m_triangles.begin(),p->m_triangles.end());
+	polygonsUpToDate=false;
+	CRenderizableDisplayList::notifyChange();
+}

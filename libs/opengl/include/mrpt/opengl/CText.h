@@ -58,7 +58,7 @@ namespace mrpt
 			virtual void getBoundingBox(mrpt::math::TPoint3D &bb_min, mrpt::math::TPoint3D &bb_max) const;
 
 			/** Class factory  */
-			static CTextPtr Create(const std::string &str) { return CTextPtr( new CText(str) ); }
+			static CTextPtr Create(const std::string &str);
 
 		private:
 			/** Constructor */
@@ -67,6 +67,7 @@ namespace mrpt
 			/** Private, virtual destructor: only can be deleted from smart pointers */
 			virtual ~CText();
 		};
+		DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE( CText, CRenderizable, OPENGL_IMPEXP )
 
 	} // end namespace
 

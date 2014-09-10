@@ -423,6 +423,7 @@ namespace slam
 			const size_t objective_cxo, 
 			const size_t objective_cyo);
 	};
+	DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE( CRandomFieldGridMap2D , CMetricMap, MAPS_IMPEXP )
 
 
 	} // End of namespace

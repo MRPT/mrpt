@@ -93,6 +93,7 @@ namespace mrpt
 			mutable std::map<std::string,TInfoPerTexture> m_textureIdMap;
 
 		};
+		DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE( CAssimpModel, CRenderizableDisplayList, OPENGL_IMPEXP )
 
 	} // end namespace
 } // End of namespace

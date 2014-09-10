@@ -25,7 +25,6 @@ namespace slam
 
 	DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CWirelessPowerGridMap2D , CRandomFieldGridMap2D, MAPS_IMPEXP )
 
-
 	/** CWirelessPowerGridMap2D represents a PDF of wifi concentrations over a 2D area.
 	  *
 	  *  There are a number of methods available to build the wifi grid-map, depending on the value of
@@ -117,10 +116,9 @@ namespace slam
 
 
 	};
-
+	DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE( CWirelessPowerGridMap2D , CRandomFieldGridMap2D, MAPS_IMPEXP )
 
 	} // End of namespace
-
 } // End of namespace
 
 #endif

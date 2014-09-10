@@ -79,6 +79,7 @@ namespace mrpt
 			virtual void  render_dl() const;
 
 		};
+		DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE( CTexturedObject, CRenderizableDisplayList, OPENGL_IMPEXP )
 
 	} // end namespace
 

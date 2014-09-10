@@ -599,6 +599,7 @@ namespace slam
 		virtual void  auxParticleFilterCleanUp();
 
 	}; // End of class def.
+	DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE( CLandmarksMap, CMetricMap, VISION_IMPEXP )
 
 
 	} // End of namespace

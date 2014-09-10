@@ -66,22 +66,10 @@ namespace mrpt
 
 			/** Class factory  */
 			static CArrowPtr Create(
-				float	x0,
-				float	y0,
-				float	z0,
-				float	x1,
-				float	y1,
-				float	z1,
-				float	headRatio = 0.2f,
-				float	smallRadius = 0.05f,
-				float	largeRadius = 0.2f,
-				float	arrow_roll = -1.0f,
-				float	arrow_pitch = -1.0f,
-				float	arrow_yaw = -1.0f
-				)
-			{
-				return CArrowPtr(new CArrow(x0,y0,z0, x1,y1,z1, headRatio, smallRadius, largeRadius, arrow_roll, arrow_pitch, arrow_yaw ));
-			}
+				float x0,float y0,float z0,
+				float x1,float y1,float z1,
+				float headRatio = 0.2f,float smallRadius = 0.05f,float largeRadius = 0.2f,
+				float arrow_roll = -1.0f,float arrow_pitch = -1.0f,float arrow_yaw = -1.0f);
 
 		private:
 			/** Constructor
@@ -114,6 +102,7 @@ namespace mrpt
 			/** Private, virtual destructor: only can be deleted from smart pointers */
 			virtual ~CArrow() { }
 		};
+		DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE( CArrow, CRenderizableDisplayList, OPENGL_IMPEXP )
 
 
 	} // end namespace

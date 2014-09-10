@@ -60,10 +60,7 @@ namespace mrpt
 			/** Class factory */
 			static CSimpleLinePtr Create(
 				float x0,float y0, float z0,
-				float x1,float y1, float z1, float lineWidth = 1 )
-			{
-				return CSimpleLinePtr(new CSimpleLine(x0,y0,z0,x1,y1,z1,lineWidth));
-			}
+				float x1,float y1, float z1, float lineWidth = 1 );
 
 			/** Evaluates the bounding box of this object (including possible children) in the coordinate frame of the object parent. */
 			virtual void getBoundingBox(mrpt::math::TPoint3D &bb_min, mrpt::math::TPoint3D &bb_max) const;
@@ -79,6 +76,7 @@ namespace mrpt
 			/** Private, virtual destructor: only can be deleted from smart pointers */
 			virtual ~CSimpleLine() { }
 		};
+		DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE( CSimpleLine, CRenderizableDisplayList, OPENGL_IMPEXP )
 
 	} // end namespace
 

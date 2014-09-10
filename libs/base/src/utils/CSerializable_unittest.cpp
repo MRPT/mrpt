@@ -225,7 +225,7 @@ TEST(SerializeTestBase, STL_serialization)
 // Test casting of smart pointers:
 TEST(SerializeTestBase, CastSmartPointers)
 {
-	using namespace mrpt::poses:
+	using namespace mrpt::poses;
 
 	// Create:
 	CPose2DPtr p1 = CPose2D::Create();

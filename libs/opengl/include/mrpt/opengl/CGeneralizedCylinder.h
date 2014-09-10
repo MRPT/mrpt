@@ -135,9 +135,7 @@ namespace opengl	{
 		/**
 		  * Creation of generalized cylinder from axis and generatrix
 		  */
-		static CGeneralizedCylinderPtr Create(const std::vector<TPoint3D> &axis,const std::vector<TPoint3D> &generatrix)	{
-			return CGeneralizedCylinderPtr(new CGeneralizedCylinder(axis,generatrix));
-		}
+		static CGeneralizedCylinderPtr Create(const std::vector<TPoint3D> &axis,const std::vector<TPoint3D> &generatrix);
 		/**
 		  * Render.
 		  * \sa mrpt::opengl::CRenderizable
@@ -366,6 +364,7 @@ namespace opengl	{
 		  */
 		virtual ~CGeneralizedCylinder() {};
 	};
+	DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(CGeneralizedCylinder,CRenderizableDisplayList, OPENGL_IMPEXP)
 }
 }
 #endif

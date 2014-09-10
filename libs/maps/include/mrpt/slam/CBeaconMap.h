@@ -303,6 +303,7 @@ namespace slam
 		CBeacon * getBeaconByID( CBeacon::TBeaconID  id );
 
 	}; // End of class def.
+	DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE( CBeaconMap, CMetricMap ,MAPS_IMPEXP )
 
 
 	} // End of namespace

@@ -1539,3 +1539,149 @@ void CPolyhedron::getBoundingBox(mrpt::math::TPoint3D &bb_min, mrpt::math::TPoin
 	}
 	return CreateNoCheck(verts,faces);
 }*/
+
+CPolyhedronPtr CPolyhedron::Create(const vector<TPoint3D> &vertices,const vector<vector<uint32_t> > &faces)	{
+	vector<TPolyhedronFace> aux;
+	for (vector<vector<uint32_t> >::const_iterator it=faces.begin();it!=faces.end();++it)	{
+		TPolyhedronFace f;
+		f.vertices=*it;
+		aux.push_back(f);
+	}
+	return Create(vertices,aux);
+}
+CPolyhedronPtr CPolyhedron::Create(const vector<TPoint3D> &vertices,const vector<TPolyhedronFace> &faces)	{
+	return CPolyhedronPtr(new CPolyhedron(vertices,faces,true));
+}
+CPolyhedronPtr CPolyhedron::CreateTetrahedron(double radius)	{
+	CPolyhedronPtr tetra=CreateJohnsonSolidWithConstantBase(3,radius*sqrt(8.0)/3.0,"P+");
+	for (vector<TPoint3D>::iterator it=tetra->mVertices.begin();it!=tetra->mVertices.end();++it) it->z-=radius/3;
+	return tetra;
+}
+CPolyhedronPtr CPolyhedron::CreateHexahedron(double radius)	{
+	if (radius==0.0) return CreateEmpty();
+	double r=radius/sqrt(3.0);
+	return CreateCubicPrism(-r,r,-r,r,-r,r);
+}
+CPolyhedronPtr CPolyhedron::CreateOctahedron(double radius)	{
+	return CreateJohnsonSolidWithConstantBase(4,radius,"P-P+");
+}
+CPolyhedronPtr CPolyhedron::CreateDodecahedron(double radius)	{
+	return CreateIcosahedron(radius/sqrt(15-6*sqrt(5.0)))->getDual();
+}
+CPolyhedronPtr CPolyhedron::CreateIcosahedron(double radius)	{
+	double ang=M_PI/5;
+	double s2=4*square(sin(ang));
+	double prop=sqrt(s2-1)+sqrt(s2-2+2*cos(ang))/2;
+	return CreateJohnsonSolidWithConstantBase(5,radius/prop,"P-AP+",1);
+}
+CPolyhedronPtr CPolyhedron::CreateTruncatedTetrahedron(double radius)	{
+	return CreateTetrahedron(radius*sqrt(27.0/11.0))->truncate(2.0/3.0);
+}
+CPolyhedronPtr CPolyhedron::CreateCuboctahedron(double radius)	{
+	return CreateHexahedron(radius*sqrt(1.5))->truncate(1.0);
+}
+CPolyhedronPtr CPolyhedron::CreateTruncatedHexahedron(double radius)	{
+	return CreateHexahedron(radius*sqrt(3.0/(5-sqrt(8.0))))->truncate(2-sqrt(2.0));
+}
+CPolyhedronPtr CPolyhedron::CreateTruncatedOctahedron(double radius)	{
+	return CreateOctahedron(radius*3/sqrt(5.0))->truncate(2.0/3.0);
+}
+CPolyhedronPtr CPolyhedron::CreateRhombicuboctahedron(double radius,bool type)	{
+	return CreateJohnsonSolidWithConstantBase(8,radius/sqrt(1+square(sin(M_PI/8))),type?"C-PRC+":"GC-PRC+",3);
+}
+CPolyhedronPtr CPolyhedron::CreateIcosidodecahedron(double radius,bool type)	{
+	return CreateJohnsonSolidWithConstantBase(10,radius,type?"GR-R+":"R-R+",1);
+}
+CPolyhedronPtr CPolyhedron::CreateTruncatedDodecahedron(double radius)	{
+	return CreateDodecahedron(radius*sqrt(45.0)/sqrt(27+6*sqrt(5.0)))->truncate(1-sqrt(0.2));
+}
+CPolyhedronPtr CPolyhedron::CreateTruncatedIcosahedron(double radius)	{
+	return CreateIcosahedron(radius*sqrt(45.0)/sqrt(25+4*sqrt(5.0)))->truncate(2.0/3.0);
+}
+CPolyhedronPtr CPolyhedron::CreateRhombicosidodecahedron(double radius)	{
+	return CreateIcosahedron(radius*sqrt(10.0/(35.0+9.0*sqrt(5.0))))->cantellate(1.5*(sqrt(5.0)-1));
+}
+CPolyhedronPtr CPolyhedron::CreatePentagonalRotunda(double radius)	{
+	return CreateJohnsonSolidWithConstantBase(10,radius,"R+");
+}
+CPolyhedronPtr CPolyhedron::CreateTriakisTetrahedron(double radius)	{
+	return CreateTruncatedTetrahedron(radius*3/sqrt(33.0))->getDual();
+}
+CPolyhedronPtr CPolyhedron::CreateRhombicDodecahedron(double radius)	{
+	return CreateCuboctahedron(radius/sqrt(2.0))->getDual();
+}
+CPolyhedronPtr CPolyhedron::CreateTriakisOctahedron(double radius)	{
+	return CreateTruncatedHexahedron(radius/sqrt((5-sqrt(8.0))))->getDual();
+}
+CPolyhedronPtr CPolyhedron::CreateTetrakisHexahedron(double radius)	{
+	return CreateTruncatedOctahedron(radius*sqrt(0.6))->getDual();
+}
+CPolyhedronPtr CPolyhedron::CreateDeltoidalIcositetrahedron(double radius)	{
+	return CreateRhombicuboctahedron(radius/sqrt(7-sqrt(32.0)),true)->getDual();
+}
+CPolyhedronPtr CPolyhedron::CreateRhombicTriacontahedron(double radius)	{
+	return CreateIcosidodecahedron(radius*sqrt(2/(5-sqrt(5.0))),true)->getDual();
+}
+CPolyhedronPtr CPolyhedron::CreateTriakisIcosahedron(double radius)	{
+	return CreateTruncatedDodecahedron(radius*sqrt(5/(25-8*sqrt(5.0))))->getDual();
+}
+CPolyhedronPtr CPolyhedron::CreatePentakisDodecahedron(double radius)	{
+	return CreateTruncatedIcosahedron(radius*sqrt(3/(17-6*sqrt(5.0))))->getDual();
+}
+CPolyhedronPtr CPolyhedron::CreateDeltoidalHexecontahedron(double radius)	{
+	return CreateRhombicosidodecahedron(radius*3.0/sqrt(15-2*sqrt(5.0)))->getDual();
+}
+CPolyhedronPtr CPolyhedron::CreateCubicPrism(const TPoint3D &p1,const TPoint3D &p2)	{
+	return CreateCubicPrism(p1.x,p2.x,p1.y,p2.y,p1.z,p2.z);
+}
+CPolyhedronPtr CPolyhedron::CreateFrustum(const vector<TPoint2D> &baseVertices,double height,double ratio)	{
+	return CreateTruncatedPyramid(baseVertices,height,ratio);
+}
+CPolyhedronPtr CPolyhedron::CreateCustomPrism(const vector<TPoint2D> &baseVertices,double height)	{
+	return CreateTruncatedPyramid(baseVertices,height,1.0);
+}
+CPolyhedronPtr CPolyhedron::CreateRegularAntiprism(uint32_t numBaseEdges,double baseRadius,double height)	{
+	return CreateCustomAntiprism(generateBase(numBaseEdges,baseRadius),generateShiftedBase(numBaseEdges,baseRadius),height);
+}
+CPolyhedronPtr CPolyhedron::CreateRegularPrism(uint32_t numBaseEdges,double baseRadius,double height)	{
+	return CreateCustomPrism(generateBase(numBaseEdges,baseRadius),height);
+}
+CPolyhedronPtr CPolyhedron::CreateRegularPyramid(uint32_t numBaseEdges,double baseRadius,double height)	{
+	return CreatePyramid(generateBase(numBaseEdges,baseRadius),height);
+}
+CPolyhedronPtr CPolyhedron::CreateRegularDoublePyramid(uint32_t numBaseEdges,double baseRadius,double height1,double height2)	{
+	return CreateDoublePyramid(generateBase(numBaseEdges,baseRadius),height1,height2);
+}
+CPolyhedronPtr CPolyhedron::CreateArchimedeanRegularPrism(uint32_t numBaseEdges,double baseRadius)	{
+	return CreateJohnsonSolidWithConstantBase(numBaseEdges,baseRadius,"PR");
+}
+CPolyhedronPtr CPolyhedron::CreateArchimedeanRegularAntiprism(uint32_t numBaseEdges,double baseRadius)	{
+	return CreateJohnsonSolidWithConstantBase(numBaseEdges,baseRadius,"A");
+}
+CPolyhedronPtr CPolyhedron::CreateRegularTruncatedPyramid(uint32_t numBaseEdges,double baseRadius,double height,double ratio)	{
+	return CreateTruncatedPyramid(generateBase(numBaseEdges,baseRadius),height,ratio);
+}
+CPolyhedronPtr CPolyhedron::CreateRegularFrustum(uint32_t numBaseEdges,double baseRadius,double height,double ratio)	{
+	return CreateRegularTruncatedPyramid(numBaseEdges,baseRadius,height,ratio);
+}
+CPolyhedronPtr CPolyhedron::CreateRegularBifrustum(uint32_t numBaseEdges,double baseRadius,double height1,double ratio1,double height2,double ratio2)	{
+	return CreateBifrustum(generateBase(numBaseEdges,baseRadius),height1,ratio1,height2,ratio2);
+}
+CPolyhedronPtr CPolyhedron::CreateCupola(uint32_t numBaseEdges,double edgeLength)	{
+	return CreateJohnsonSolidWithConstantBase(numBaseEdges,edgeLength/(2*sin(M_PI/numBaseEdges)),"C+");
+}
+CPolyhedronPtr CPolyhedron::CreateCatalanTrapezohedron(uint32_t numBaseEdges,double height)	{
+	return CreateArchimedeanRegularAntiprism(numBaseEdges,height)->getDual();
+}
+CPolyhedronPtr CPolyhedron::CreateCatalanDoublePyramid(uint32_t numBaseEdges,double height)	{
+	return CreateArchimedeanRegularPrism(numBaseEdges,height)->getDual();
+}
+
+CPolyhedronPtr CPolyhedron::CreateNoCheck(const vector<TPoint3D> &vertices,const vector<TPolyhedronFace> &faces)	
+{
+	return CPolyhedronPtr(new CPolyhedron(vertices,faces,false));
+}
+CPolyhedronPtr CPolyhedron::CreateEmpty()	
+{
+	return CPolyhedronPtr(new CPolyhedron());
+}

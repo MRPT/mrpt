@@ -127,10 +127,7 @@ namespace mrpt
 			static CDisplayWindow3DPtr Create(
 				const std::string	&windowCaption,
 				unsigned int		initialWindowWidth = 400,
-				unsigned int		initialWindowHeight = 300 )
-			{
-				return CDisplayWindow3DPtr(new CDisplayWindow3D(windowCaption,initialWindowWidth,initialWindowHeight));
-			}
+				unsigned int		initialWindowHeight = 300 );
 
 			/** Destructor
 			 */

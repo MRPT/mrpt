@@ -101,10 +101,7 @@ namespace mrpt
 				const double scale = 1.0,
 				const mrpt::opengl::TOpenGLFontStyle text_style = mrpt::opengl::FILL,
 				const double text_spacing = 1.5,
-				const double text_kerning = 0.1 )
-				{
-					return CText3DPtr( new CText3D(str,fontName,scale,text_style,text_spacing,text_kerning) );
-				}
+				const double text_kerning = 0.1 );
 
 		private:
 			/** Constructor */
@@ -119,6 +116,7 @@ namespace mrpt
 			/** Private, virtual destructor: only can be deleted from smart pointers */
 			virtual ~CText3D();
 		};
+		DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE( CText3D, CRenderizableDisplayList, OPENGL_IMPEXP )
 
 	} // end namespace
 

@@ -257,6 +257,7 @@ namespace mrpt
 
 			inline void internal_render_one_point(size_t i) const;
 		};
+		DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE( CPointCloud, CRenderizable, OPENGL_IMPEXP )
 
 	} // end namespace
 

@@ -411,7 +411,13 @@ CDisplayWindow3D::CDisplayWindow3D(
 	CBaseGUIWindow::createWxWindow(initialWindowWidth,initialWindowHeight);
 }
 
-
+CDisplayWindow3DPtr CDisplayWindow3D::Create(
+	const std::string	&windowCaption,
+	unsigned int		initialWindowWidth,
+	unsigned int		initialWindowHeight )
+{
+	return CDisplayWindow3DPtr(new CDisplayWindow3D(windowCaption,initialWindowWidth,initialWindowHeight));
+}
 /*---------------------------------------------------------------
 					Destructor
  ---------------------------------------------------------------*/

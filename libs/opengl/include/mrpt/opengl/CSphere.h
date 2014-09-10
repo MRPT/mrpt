@@ -55,10 +55,7 @@ namespace mrpt
 			static CSpherePtr Create(
 				float				radius,
 				int					nDivsLongitude = 20,
-				int					nDivsLatitude = 20 )
-			{
-				return CSpherePtr( new CSphere(radius,nDivsLongitude,nDivsLatitude) );
-			}
+				int					nDivsLatitude = 20 );
 
 			/** Render */
 			void  render_dl() const;
@@ -88,6 +85,7 @@ namespace mrpt
 			/** Private, virtual destructor: only can be deleted from smart pointers */
 			virtual ~CSphere() { }
 		};
+		DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE( CSphere, CRenderizableDisplayList, OPENGL_IMPEXP )
 
 	} // end namespace
 

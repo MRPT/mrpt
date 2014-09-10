@@ -177,6 +177,7 @@ namespace mrpt
 
 		/**  This declaration must be inserted in all CObject classes definition, before the class declaration.  */
 		#define DEFINE_MRPT_OBJECT_PRE_CUSTOM_BASE_LINKAGE2(class_name, base_name, class_name_LINKAGE_ ) \
+			class  class_name_LINKAGE_; \
 			struct class_name_LINKAGE_##Ptr;
 
 		/**  This declaration must be inserted in all CObject classes definition, after the class declaration.  */

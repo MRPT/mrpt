@@ -58,10 +58,7 @@ namespace opengl	{
 
 	public:
 		/** Constructor returning a smart pointer to the newly created object. */
-		static CFrustumPtr Create(float near_distance, float far_distance, float horz_FOV_degrees, float vert_FOV_degrees, float lineWidth = 1.5f, bool draw_lines = true, bool draw_planes = false )
-		{
-			return CFrustumPtr(new CFrustum(near_distance,far_distance,horz_FOV_degrees,vert_FOV_degrees,lineWidth,draw_lines,draw_planes));
-		}
+		static CFrustumPtr Create(float near_distance, float far_distance, float horz_FOV_degrees, float vert_FOV_degrees, float lineWidth = 1.5f, bool draw_lines = true, bool draw_planes = false );
 
 		inline void setLineWidth(float width) { m_lineWidth = width; CRenderizableDisplayList::notifyChange(); }
 		inline float getLineWidth() const { return m_lineWidth; }
@@ -110,6 +107,7 @@ namespace opengl	{
 		/** Destructor  */
 		virtual ~CFrustum() { }
 	};
+	DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(CFrustum,CRenderizableDisplayList, OPENGL_IMPEXP)
 }
 }
 #endif

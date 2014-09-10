@@ -82,10 +82,7 @@ namespace mrpt
 				float frequency = 1,
 				float lineWidth = 1.3f,
 				bool  antiAliasing = true
-				)
-			{
-				return CGridPlaneXZPtr( new CGridPlaneXZ( xMin,xMax, zMin, zMax, y, frequency,lineWidth,antiAliasing ) );
-			}
+				);
 
 			/** Render
 			  */
@@ -108,6 +105,7 @@ namespace mrpt
 			/** Private, virtual destructor: only can be deleted from smart pointers */
 			virtual ~CGridPlaneXZ() { }
 		};
+		DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE( CGridPlaneXZ, CRenderizableDisplayList, OPENGL_IMPEXP )
 
 	} // end namespace
 

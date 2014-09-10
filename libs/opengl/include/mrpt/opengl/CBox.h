@@ -46,10 +46,7 @@ namespace opengl	{
 		
 	public:
 		/** Constructor returning a smart pointer to the newly created object. */
-		static CBoxPtr Create(const mrpt::math::TPoint3D &corner1, const mrpt::math::TPoint3D &corner2, bool  is_wireframe = false, float lineWidth = 1.0 )	
-		{ 
-			return CBoxPtr(new CBox(corner1,corner2,is_wireframe,lineWidth)); 
-		}
+		static CBoxPtr Create(const mrpt::math::TPoint3D &corner1, const mrpt::math::TPoint3D &corner2, bool  is_wireframe = false, float lineWidth = 1.0 );
 		
 		/** Render
 		  * \sa mrpt::opengl::CRenderizable
@@ -93,6 +90,7 @@ namespace opengl	{
 		virtual ~CBox() { }
 		
 	};
+	DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(CBox,CRenderizableDisplayList, OPENGL_IMPEXP)
 }
 }
 #endif

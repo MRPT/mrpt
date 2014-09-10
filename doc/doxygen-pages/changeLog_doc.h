@@ -26,6 +26,23 @@
 		- Consistency in all "laser scan" classes: angular increments between rays are now FOV/(N-1) instead of FOV/N.
 		- [mrpt-base]
 			- New method mrpt::utils::CImage::loadTGA()
+			- *IMPORTANT*: Changed behavior of CSerializable/CObject macros (see bugfix below), introducing the new macros DEFINE_SERIALIZABLE_POST_*. 
+			   May require changes in user code if serializable classes are defined:
+				- Previous version:
+					\code
+						DEFINE_SERIALIZABLE_PRE_*(...)
+						class XXX {
+							DEFINE_SERIALIZABLE(XXX)
+						};
+					\endcode
+				- Must be changed in this version to:
+					\code
+						DEFINE_SERIALIZABLE_PRE_*(...)
+						class XXX {
+							DEFINE_SERIALIZABLE(XXX)
+						};
+						DEFINE_SERIALIZABLE_POST_*(...)
+					\endcode
 		- [mrpt-hwdrivers]
 			- Bumblebee2 Linux support in mrpt::hwdrivers::CImageGrabber_FlyCapture2 via Triclops (by Jesus Briales)
 		- [mrpt-maps]
@@ -41,6 +58,7 @@
 		- Valgrind: Fixed potential unaligned memory access warning in point clouds.
 		- Fix build error with AppleClang 5.1 (Closes #71).
 		- mrpt::utils::CClientTCPSocket: Use a connection success check that works on all platforms
+		- Important bug fixed regarding a missing dynamic_cast<> in smart pointers casting. See above possible implications in user code.
  properly (Patch by Joe Burmeister).
 
 <hr>

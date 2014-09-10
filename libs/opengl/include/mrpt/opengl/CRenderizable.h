@@ -199,10 +199,10 @@ namespace mrpt
 			static void releaseTextureName(unsigned int i);
 
 		};
-		/**
-		  * Applies a CPose3D transformation to the object. Note that this method doesn't <i>set</i> the pose to the given value, but <i>combines</i> it with the existing one.
-		  * \sa setPose
-		  */
+		DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE( CRenderizable, mrpt::utils::CSerializable, OPENGL_IMPEXP )
+
+		/** Applies a CPose3D transformation to the object. Note that this method doesn't <i>set</i> the pose to the given value, but <i>combines</i> it with the existing one.
+		  * \sa setPose */
 		OPENGL_IMPEXP CRenderizablePtr & operator<<(CRenderizablePtr &r,const mrpt::poses::CPose3D &p);
 
 	} // end namespace

@@ -190,6 +190,7 @@ namespace slam
 		void filterByExclusionAngles( const std::vector<std::pair<double,double> >  &angles );
 
 	}; // End of class def.
+	DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE( CObservation2DRangeScan, CObservation, OBS_IMPEXP)
 
 
 	} // End of namespace
