@@ -306,6 +306,7 @@ void COpenNI2Sensor::getNextObservation(
 
 //	cout << "COpenNI2Sensor::getNextObservation finish\n";
 #else
+	MRPT_UNUSED_PARAM(out_obs); MRPT_UNUSED_PARAM(there_is_obs); MRPT_UNUSED_PARAM(hardware_error);
 	THROW_EXCEPTION("MRPT was built without OpenNI2 support")
 #endif // MRPT_HAS_OPENNI2
 }
@@ -316,6 +317,7 @@ setPathForExternalImages
 ----------------------------------------------------- */
 void COpenNI2Sensor::setPathForExternalImages( const std::string &directory )
 {
+	MRPT_UNUSED_PARAM(directory);
 	// Ignore for now. It seems performance is better grabbing everything
 	// to a single big file than creating hundreds of smaller files per second...
 	return;

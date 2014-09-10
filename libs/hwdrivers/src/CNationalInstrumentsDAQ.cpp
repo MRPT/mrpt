@@ -776,7 +776,9 @@ void CNationalInstrumentsDAQ::writeAnalogOutputTask(size_t task_index, size_t nS
 	{
 		MRPT_DAQmx_ErrChk(err)
 	}
-
+#else
+   MRPT_UNUSED_PARAM(task_index); MRPT_UNUSED_PARAM(nSamplesPerChannel);
+   MRPT_UNUSED_PARAM(volt_values); MRPT_UNUSED_PARAM(timeout); MRPT_UNUSED_PARAM(groupedByChannel);
 #endif
 }
 
@@ -803,6 +805,8 @@ void CNationalInstrumentsDAQ::writeDigitalOutputTask(size_t task_index, bool lin
 		MRPT_DAQmx_ErrChk(err)
 	}
 
+#else
+   MRPT_UNUSED_PARAM(task_index); MRPT_UNUSED_PARAM(line_value); MRPT_UNUSED_PARAM(timeout);
 #endif
 }
 

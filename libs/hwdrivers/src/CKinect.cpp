@@ -552,13 +552,13 @@ void  CKinect::setVideoChannel(const TVideoChannel vch)
 
 	freenect_start_video(f_dev);
 
+#else
+	MRPT_UNUSED_PARAM(vch);
 #endif // MRPT_HAS_KINECT_FREENECT
 
 #if MRPT_HAS_KINECT_CL_NUI
 	THROW_EXCEPTION("Grabbing IR intensity is not available with CL NUI Kinect driver.")
 #endif // MRPT_HAS_KINECT_CL_NUI
-
-
 }
 
 
@@ -829,6 +829,7 @@ void CKinect::getNextObservation(
 ----------------------------------------------------- */
 void CKinect::setPathForExternalImages( const std::string &directory )
 {
+	MRPT_UNUSED_PARAM(directory);
 	// Ignore for now. It seems performance is better grabbing everything
 	// to a single big file than creating hundreds of smaller files per second...
 	return;
@@ -852,6 +853,8 @@ void CKinect::setTiltAngleDegrees(double angle)
 	// JL: I deduced this formula empirically, since CLNUI seems not to have documented this API!!
 	const short int send_angle =  ( (angle<-31) ? -31 : ((angle>31) ? 31 : angle) ) * (0x4000)/31.0;
 	SetNUIMotorPosition(clnui_motor, send_angle);
+#else
+	MRPT_UNUSED_PARAM(angle);
 #endif
 
 }

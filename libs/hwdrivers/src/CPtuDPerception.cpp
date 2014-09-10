@@ -789,6 +789,7 @@ void CPtuDPerception::nversion(double &nVersion) {
 -------------------------------------------------------------*/
 
 bool CPtuDPerception::setLimits(char axis, double &l, double &u) {
+	MRPT_UNUSED_PARAM(axis); MRPT_UNUSED_PARAM(l); MRPT_UNUSED_PARAM(u);
 	cout << "[ERROR] Function not defined for this PTU model";
 	return false;
 }

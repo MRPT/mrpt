@@ -110,6 +110,7 @@ CAboutBox::~CAboutBox()
 
 void CAboutBox::OnInit(wxInitDialogEvent& event)
 {
+	MRPT_UNUSED_PARAM(event);
     // Build strings:
     wxString MRPTver( MRPT_getVersion().c_str(), wxConvLibc);
     wxString wxVer( wxVERSION_STRING );
@@ -159,5 +160,6 @@ void CAboutBox::OnInit(wxInitDialogEvent& event)
 
 void CAboutBox::OnButton1Click(wxCommandEvent& event)
 {
+	MRPT_UNUSED_PARAM(event);
     Close();
 }

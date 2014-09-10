@@ -147,6 +147,7 @@ CStereoGrabber_SVS::CStereoGrabber_SVS( int cameraIndex, const TCaptureOptions_S
     m_status = false;
 
 #else
+	MRPT_UNUSED_PARAM(cameraIndex);
 	THROW_EXCEPTION("This class requires MRPT built with Videre SVS library.")
 #endif
 }
@@ -267,6 +268,7 @@ bool  CStereoGrabber_SVS::getStereoObservation( mrpt::slam::CObservationStereoIm
     return false;
      // All ok
 #else
+	MRPT_UNUSED_PARAM(out_observation);
 	// No need to raise an exception on "#else" since it's already raised upon construction.
 	return false;	// This shouldn't actually be never reached, just to please the compiler.
 #endif

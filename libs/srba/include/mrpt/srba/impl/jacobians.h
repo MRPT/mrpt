@@ -382,6 +382,7 @@ struct compute_jacobian_dAepsDx_deps<jacob_point_landmark /* Jacobian family: th
 		const OBS_VECTOR  & all_obs
 		)
 	{
+		MRPT_UNUSED_PARAM(all_obs);
 		// See section 10.3.7 of technical report on SE(3) poses [http://mapir.isa.uma.es/~jlblanco/papers/jlblanco2010geometry3D_techrep.pdf]
 		if (!is_inverse_edge_jacobian)
 		{	// Normal formulation: unknown is pose "d+1 -> d"
@@ -914,6 +915,7 @@ void RbaEngine<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::compute_jacobian_d
 	const k2f_edge_t & observation,
 	std::vector<const pose_flag_t*> *out_list_of_required_num_poses) const
 {
+	MRPT_UNUSED_PARAM(observation);
 	if (! *jacob.sym.is_valid )
 		return; // Another block of the same Jacobian row said this observation was invalid for some reason.
 

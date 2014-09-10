@@ -182,7 +182,7 @@ bool xsEnumerateUsbDevices(XsPortInfoList& ports)
 			current.setPortName(name);
 
 			int id = 0;
-			sscanf((const char *)serialNumber, "%X", &id);
+			sscanf((const char *)serialNumber, "%d", &id);
 			current.setDeviceId((uint32_t) id);
 			ports.push_back(current);
 		}

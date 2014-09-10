@@ -436,6 +436,7 @@ void CActivMediaRobotBase::changeOdometry(const mrpt::poses::CPose2D &newOdometr
 		THE_ROBOT->setDeadReconPose( pos_actual );
 	THE_ROBOT->unlock();
 #else
+	MRPT_UNUSED_PARAM(newOdometry);
 	THROW_EXCEPTION("MRPT has been compiled with 'MRPT_BUILD_ARIA'=OFF, so this class cannot be used.");
 #endif
 }
@@ -457,6 +458,7 @@ void CActivMediaRobotBase::getOdometry(poses::CPose2D &out_odom)
 
 	THE_ROBOT->unlock();
 #else
+	MRPT_UNUSED_PARAM(out_odom);
 	THROW_EXCEPTION("MRPT has been compiled with 'MRPT_BUILD_ARIA'=OFF, so this class cannot be used.");
 #endif
 }
@@ -492,6 +494,8 @@ void CActivMediaRobotBase::getOdometryFull(
 
 	THE_ROBOT->unlock();
 #else
+	MRPT_UNUSED_PARAM(out_odom); MRPT_UNUSED_PARAM(out_lin_vel); MRPT_UNUSED_PARAM(out_ang_vel);
+	MRPT_UNUSED_PARAM(out_left_encoder_ticks); MRPT_UNUSED_PARAM(out_right_encoder_ticks);
 	THROW_EXCEPTION("MRPT has been compiled with 'MRPT_BUILD_ARIA'=OFF, so this class cannot be used.");
 #endif
 }
@@ -555,6 +559,8 @@ void CActivMediaRobotBase::getOdometryIncrement(
 
 	THE_ROBOT->unlock();
 #else
+	MRPT_UNUSED_PARAM(out_incr_odom); MRPT_UNUSED_PARAM(out_lin_vel); MRPT_UNUSED_PARAM(out_ang_vel);
+	MRPT_UNUSED_PARAM(out_incr_left_encoder_ticks); MRPT_UNUSED_PARAM(out_incr_right_encoder_ticks);
 	THROW_EXCEPTION("MRPT has been compiled with 'MRPT_BUILD_ARIA'=OFF, so this class cannot be used.");
 #endif
 }
@@ -622,6 +628,7 @@ void CActivMediaRobotBase::getSonarsReadings( bool &thereIsObservation, CObserva
 		m_lastTimeSonars = time_cnt;
 
 #else
+	MRPT_UNUSED_PARAM(thereIsObservation); MRPT_UNUSED_PARAM(obs);
 	THROW_EXCEPTION("MRPT has been compiled with 'MRPT_BUILD_ARIA'=OFF, so this class cannot be used.");
 #endif
 }
@@ -637,6 +644,7 @@ void CActivMediaRobotBase::getBatteryCharge( double &out_batery_volts )
 		out_batery_volts = THE_ROBOT->getBatteryVoltageNow();
 	THE_ROBOT->unlock();
 #else
+	MRPT_UNUSED_PARAM(out_batery_volts);
 	THROW_EXCEPTION("MRPT has been compiled with 'MRPT_BUILD_ARIA'=OFF, so this class cannot be used.");
 #endif
 }
@@ -652,6 +660,7 @@ void CActivMediaRobotBase::setVelocities( const double lin_vel, const double ang
 		THE_ROBOT->setRotVel( RAD2DEG( ang_vel ) );
 	THE_ROBOT->unlock();
 #else
+	MRPT_UNUSED_PARAM(lin_vel); MRPT_UNUSED_PARAM(ang_vel);
 	THROW_EXCEPTION("MRPT has been compiled with 'MRPT_BUILD_ARIA'=OFF, so this class cannot be used.");
 #endif
 }
@@ -719,6 +728,7 @@ void CActivMediaRobotBase::getRobotInformation(CActivMediaRobotBase::TRobotDescr
 
 	THE_ROBOT->unlock();
 #else
+	MRPT_UNUSED_PARAM(info);
 	THROW_EXCEPTION("MRPT has been compiled with 'MRPT_BUILD_ARIA'=OFF, so this class cannot be used.");
 #endif
 }
@@ -747,6 +757,7 @@ void CActivMediaRobotBase::getBumpers(vector_bool &bumper_state)
 		bumper_state.push_back(  (v & (1<<(i+9)) )!=0 );
 
 #else
+	MRPT_UNUSED_PARAM(bumper_state);
 	THROW_EXCEPTION("MRPT has been compiled with 'MRPT_BUILD_ARIA'=OFF, so this class cannot be used.");
 #endif
 }

@@ -240,6 +240,7 @@ bool CSwissRanger3DCamera::getMesaLibVersion(std::string &out_version) const
 	out_version = format("%d.%d.%d.%d",version[3],version[2],version[1],version[0]);
 	return true;
 #else
+	MRPT_UNUSED_PARAM(out_version);
 	return false;
 #endif
 }
@@ -544,6 +545,10 @@ void CSwissRanger3DCamera::getNextObservation(
 	}
 
 	return;
+#else
+	MRPT_UNUSED_PARAM(_out_obs);
+	MRPT_UNUSED_PARAM(there_is_obs);
+	MRPT_UNUSED_PARAM(hardware_error);
 #endif
 }
 
