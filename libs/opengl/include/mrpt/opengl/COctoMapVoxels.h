@@ -19,7 +19,7 @@ namespace mrpt
 	{
 		using mrpt::math::TPoint3D;
 		using mrpt::utils::TColor;
-		class OPENGL_IMPEXP COctoMapVoxels;
+
 
 		enum predefined_voxel_sets_t
 		{

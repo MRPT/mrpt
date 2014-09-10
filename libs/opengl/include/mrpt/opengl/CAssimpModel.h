@@ -18,7 +18,7 @@ namespace mrpt
 {
 	namespace opengl
 	{
-		class OPENGL_IMPEXP CAssimpModel;
+
 
 		// This must be added to any CSerializable derived class:
 		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CAssimpModel, CRenderizableDisplayList, OPENGL_IMPEXP )

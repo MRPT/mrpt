@@ -19,7 +19,7 @@ namespace mrpt
 	{
 		using mrpt::math::TPoint3D;
 		using mrpt::math::TSegment3D;
-		class OPENGL_IMPEXP CSetOfLines;
+
 
 		// This must be added to any CSerializable derived class:
 		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CSetOfLines, CRenderizableDisplayList, OPENGL_IMPEXP )

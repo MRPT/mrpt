@@ -19,7 +19,7 @@ namespace mrpt
 	{
 		using mrpt::utils::CStream;
 
-		class OPENGL_IMPEXP CSetOfTexturedTriangles;
+
 
 		// This must be added to any CSerializable derived class:
 		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CSetOfTexturedTriangles, CTexturedObject, OPENGL_IMPEXP )

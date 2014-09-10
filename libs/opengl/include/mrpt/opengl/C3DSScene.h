@@ -17,8 +17,6 @@ namespace mrpt
 {
 	namespace opengl
 	{
-		class OPENGL_IMPEXP C3DSScene;
-
 		// This must be added to any CSerializable derived class:
 		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( C3DSScene, CRenderizableDisplayList, OPENGL_IMPEXP )
 

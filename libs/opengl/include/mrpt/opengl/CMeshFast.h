@@ -19,7 +19,7 @@ namespace mrpt
 {
 	namespace opengl
 	{
-		class OPENGL_IMPEXP CMeshFast;
+
 
 		// This must be added to any CSerializable derived class:
 		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CMeshFast, CRenderizableDisplayList, OPENGL_IMPEXP )

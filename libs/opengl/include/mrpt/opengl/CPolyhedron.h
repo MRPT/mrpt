@@ -582,16 +582,10 @@ namespace opengl	{
 		  * \sa mrpt::math::TPolygon3D,mrpt::poses::CPose3D
 		  */
 		void getSetOfPolygonsAbsolute(std::vector<math::TPolygon3D> &vec) const;
-		/**
-		  * Gets the intersection of two polyhedra, either as a set or as a matrix of intersections. Each intersection is represented by a TObject3D.
+		/** Gets the intersection of two polyhedra, either as a set or as a matrix of intersections. Each intersection is represented by a TObject3D.
 		  * \sa mrpt::math::TObject3D
 		  */
-		template<class T> inline static size_t getIntersection(const CPolyhedronPtr &p1,const CPolyhedronPtr &p2,T &container)	{
-			std::vector<TPolygon3D> polys1,polys2;
-			p1->getSetOfPolygonsAbsolute(polys1);
-			p2->getSetOfPolygonsAbsolute(polys2);
-			return mrpt::math::intersect(polys1,polys2,container);
-		}
+		template<class T> inline static size_t getIntersection(const CPolyhedronPtr &p1,const CPolyhedronPtr &p2,T &container);
 		/**
 		  * Returns true if the polygon is a completely closed object.
 		  */
@@ -730,6 +724,16 @@ namespace opengl	{
 		virtual ~CPolyhedron()	{}
 	};
 	DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(CPolyhedron,CRenderizableDisplayList, OPENGL_IMPEXP)
+
+	// Implemented after the definition of SmartPtrs in the _POST() macro above.
+	template<class T>
+	size_t CPolyhedron::getIntersection(const CPolyhedronPtr &p1,const CPolyhedronPtr &p2,T &container)	{
+		std::vector<TPolygon3D> polys1,polys2;
+		p1->getSetOfPolygonsAbsolute(polys1);
+		p2->getSetOfPolygonsAbsolute(polys2);
+		return mrpt::math::intersect(polys1,polys2,container);
+	}
+
 	/**
 	  * Reads a polyhedron edge from a binary stream.
 	  */

@@ -24,7 +24,7 @@ namespace mrpt
 		using mrpt::math::CMatrixFloat;
 		using mrpt::utils::TColor;
 		using mrpt::utils::TColorf;
-		class OPENGL_IMPEXP CVectorField2D;
+
 
 		// This must be added to any CSerializable derived class:
 		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CVectorField2D, CRenderizableDisplayList, OPENGL_IMPEXP )
