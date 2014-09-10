@@ -48,10 +48,7 @@ namespace mrpt
 			static CDisplayWindowPtr Create(
 				const std::string	&windowCaption,
 				unsigned int initWidth = 400,
-				unsigned int initHeight = 400  )
-			{
-				return CDisplayWindowPtr(new CDisplayWindow(windowCaption,initWidth,initHeight));
-			}
+				unsigned int initHeight = 400  );
 
 			/** Destructor
 			 */
@@ -207,6 +204,7 @@ namespace mrpt
 			void  setWindowTitle( const std::string &str );
 
 		}; // End of class def.
+		DEFINE_MRPT_OBJECT_POST_CUSTOM_BASE_LINKAGE(CDisplayWindow, mrpt::gui::CBaseGUIWindow, GUI_IMPEXP)
 
 	} // End of namespace
 

@@ -31,7 +31,7 @@ namespace mrpt
 		class CWindowDialogPlots;
 		class C3DWindowDialog;
 
-		DEFINE_SERIALIZABLE_PRE_CUSTOM_LINKAGE( CBaseGUIWindow, GUI_IMPEXP )
+		DEFINE_MRPT_OBJECT_PRE_CUSTOM_LINKAGE( CBaseGUIWindow, GUI_IMPEXP )
 
 		/** The base class for GUI window classes.
 		  *
@@ -142,6 +142,7 @@ namespace mrpt
 
 
 		}; // End of class def.
+		DEFINE_MRPT_OBJECT_POST_CUSTOM_LINKAGE( CBaseGUIWindow, GUI_IMPEXP )
 
 
 		/** @name Events common to all GUI windows:

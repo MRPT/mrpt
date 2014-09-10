@@ -65,6 +65,7 @@ namespace mrpt
 			CMultiMetricMap            metricMaps;
 			std::map<TPoseID,CPose3D>  robotPoses;
 		};
+		DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE( CLSLAMParticleData, mrpt::utils::CSerializable, HMTSLAM_IMPEXP )
 
 
 		/** This class is used in HMT-SLAM to represent each of the Local Metric Hypotheses (LMHs).
@@ -238,6 +239,7 @@ namespace mrpt
 			mutable StdVector_CPose2D		m_movementDrawMaximumLikelihood;
 
 		}; // End of class def.
+		DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE( CLocalMetricHypothesis, mrpt::utils::CSerializable, HMTSLAM_IMPEXP )
 
 	} // End of namespace
 } // End of namespace

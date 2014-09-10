@@ -161,9 +161,8 @@ namespace mrpt
 			std::vector<double>       & out_gaps_evaluation );
 
 	}; // end of CHolonomicND
-	DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(CLogFileRecord_ND, CHolonomicLogFileRecord, REACTIVENAV_IMPEXP)
 
-        /** A class for storing extra information about the execution of
+	/** A class for storing extra information about the execution of
 	 *    CHolonomicND navigation.
 	 * \sa CHolonomicND, CHolonomicLogFileRecord
 	 */
@@ -181,6 +180,7 @@ namespace mrpt
 		double					riskEvaluation;
 		CHolonomicND::TSituations      situation;
 	};
+	DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(CLogFileRecord_ND, CHolonomicLogFileRecord, REACTIVENAV_IMPEXP)
 
 	} // end namespace
 

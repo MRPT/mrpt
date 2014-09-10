@@ -366,6 +366,7 @@ namespace mrpt
 			void internal_emitGrabImageEvent(const std::string &fil); //!< called by CMyGLCanvas_DisplayWindow3D::OnPostRenderSwapBuffers
 
 		}; // End of class def.
+		DEFINE_MRPT_OBJECT_POST_CUSTOM_BASE_LINKAGE(CDisplayWindow3D, mrpt::gui::CBaseGUIWindow, GUI_IMPEXP)
 
 
 		/** @name Events specific to CDisplayWindow3D
