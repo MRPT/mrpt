@@ -165,14 +165,14 @@ public:
   AREXPORT static void inToA(struct in_addr *addr, char *buff);
 
   /// Size of the sockaddr
-  static const size_t sockAddrLen() {return(sizeof(struct sockaddr_in));}
+  static size_t sockAddrLen() {return(sizeof(struct sockaddr_in));}
 
 #ifdef WIN32
   /// Max host name length
-  static const size_t maxHostNameLen() {return(MAXGETHOSTSTRUCT);}
+  static size_t maxHostNameLen() {return(MAXGETHOSTSTRUCT);}
 #else
   /// Max host name length
-  static const size_t maxHostNameLen() {return(MAXHOSTNAMELEN);}
+  static size_t maxHostNameLen() {return(MAXHOSTNAMELEN);}
 #endif
 
   /// Convert an int from host byte order to network byte order

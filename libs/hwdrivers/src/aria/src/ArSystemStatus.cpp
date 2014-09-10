@@ -78,6 +78,7 @@ void ArSystemStatus::refreshCPU()
   unsigned long user, nice, sys, idle, total;
   char tag[32];
   dum_ret = fscanf(statfp, "%s %lu %lu %lu %lu", tag, &user, &nice, &sys, &idle);
+  MRPT_UNUSED_PARAM(dum_ret);
   fclose(statfp);
   ourUptime = (unsigned long)uptime;
   total = user+nice+sys; // total non-idle cpu time in 100ths of a sec
@@ -110,6 +111,7 @@ private:
   int myRefreshFrequency;
   virtual void* runThread(void* arg)
   {
+	MRPT_UNUSED_PARAM(arg);
     while(getRunning())
     {
       ArSystemStatus::invalidate();

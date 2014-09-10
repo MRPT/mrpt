@@ -133,6 +133,7 @@ namespace mrpt
 				mrpt::slam::CSensoryFramePtr     &SF,
 				mrpt::slam::CObservationPtr      &obs)
 			{
+				MRPT_UNUSED_PARAM(actions); MRPT_UNUSED_PARAM(SF); MRPT_UNUSED_PARAM(obs);
 				// Default: Do nothing
 			}
 
@@ -154,6 +155,7 @@ namespace mrpt
 				mrpt::slam::CSensoryFramePtr     &SF,
 				mrpt::slam::CObservationPtr      &obs)
 			{
+				MRPT_UNUSED_PARAM(actions);
 				// Process each observation individually, either from "obs" or each within a "SF":
 				for (size_t idxObs=0; true; idxObs++)
 				{

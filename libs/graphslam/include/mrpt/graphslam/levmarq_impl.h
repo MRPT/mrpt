@@ -36,38 +36,69 @@ namespace mrpt
 			// For graphs of 2D constraints (no information matrix)
 			template <class gst> struct AuxErrorEval<CPose2D,gst> {
 				template <class POSE,class VEC,class EDGE_ITERATOR>
-				static inline void computePseudoLnError(const POSE &P1DP2inv, VEC &err,const EDGE_ITERATOR &edge) { gst::SE_TYPE::pseudo_ln(P1DP2inv, err); }
+				static inline void computePseudoLnError(const POSE &P1DP2inv, VEC &err,
+					const EDGE_ITERATOR &edge) {
+					MRPT_UNUSED_PARAM(edge);
+					gst::SE_TYPE::pseudo_ln(P1DP2inv, err);
+				}
 
 				template <class MAT,class EDGE_ITERATOR>
-				static inline void 	multiplyJtLambdaJ(const MAT &J1, MAT &JtJ,const EDGE_ITERATOR &edge) { JtJ.multiply_AtA(J1);  }
+				static inline void 	multiplyJtLambdaJ(const MAT &J1, MAT &JtJ,
+					const EDGE_ITERATOR &edge) {
+					MRPT_UNUSED_PARAM(edge);
+					JtJ.multiply_AtA(J1);
+				}
 
 				template <class MAT,class EDGE_ITERATOR>
-				static inline void 	multiplyJ1tLambdaJ2(const MAT &J1, const MAT &J2, MAT &JtJ,const EDGE_ITERATOR &edge) { JtJ.multiply_AtB(J1,J2); }
+				static inline void 	multiplyJ1tLambdaJ2(const MAT &J1, const MAT &J2, MAT &JtJ,
+					const EDGE_ITERATOR &edge) {
+					MRPT_UNUSED_PARAM(edge);
+					JtJ.multiply_AtB(J1,J2);
+				}
 
 				template <class JAC,class EDGE_ITERATOR,class VEC1,class VEC2>
-				static inline void multiply_Jt_W_err(const JAC &J,const EDGE_ITERATOR &edge,const VEC1 & ERR,VEC2 &OUT) {
+				static inline void multiply_Jt_W_err(const JAC &J,const EDGE_ITERATOR &edge,
+					const VEC1 & ERR,VEC2 &OUT) {
 					MRPT_UNUSED_PARAM(edge);
 					J.multiply_Atb(ERR,OUT, true /* accumulate in output */ );
 				}
 			};
 
 			// For graphs of 3D constraints (no information matrix)
-			template <class gst> struct AuxErrorEval<CPose3D,gst> {
+			template <class gst> struct AuxErrorEval<CPose3D,gst>
+			{
 				template <class POSE,class VEC,class EDGE_ITERATOR>
-				static inline void computePseudoLnError(const POSE &P1DP2inv, VEC &err,const EDGE_ITERATOR &edge) { gst::SE_TYPE::pseudo_ln(P1DP2inv, err); }
+				static inline void computePseudoLnError(const POSE &P1DP2inv, VEC &err,
+					const EDGE_ITERATOR &edge) {
+					MRPT_UNUSED_PARAM(edge);
+					gst::SE_TYPE::pseudo_ln(P1DP2inv, err);
+				}
 
 				template <class MAT,class EDGE_ITERATOR>
-				static inline void multiplyJtLambdaJ(const MAT &J1, MAT &JtJ,const EDGE_ITERATOR &edge) { JtJ.multiply_AtA(J1); }
+				static inline void multiplyJtLambdaJ(const MAT &J1, MAT &JtJ,
+					const EDGE_ITERATOR &edge) {
+					MRPT_UNUSED_PARAM(edge);
+					JtJ.multiply_AtA(J1);
+				}
 
 				template <class MAT,class EDGE_ITERATOR>
-				static inline void 	multiplyJ1tLambdaJ2(const MAT &J1, const MAT &J2, MAT &JtJ,const EDGE_ITERATOR &edge) { JtJ.multiply_AtB(J1,J2); }
+				static inline void 	multiplyJ1tLambdaJ2(const MAT &J1, const MAT &J2, MAT &JtJ,
+					const EDGE_ITERATOR &edge) {
+					MRPT_UNUSED_PARAM(edge);
+					JtJ.multiply_AtB(J1,J2);
+				}
 
 				template <class JAC,class EDGE_ITERATOR,class VEC1,class VEC2>
-				static inline void multiply_Jt_W_err(const JAC &J,const EDGE_ITERATOR &edge,const VEC1 & ERR,VEC2 &OUT) { J.multiply_Atb(ERR,OUT, true /* accumulate in output */ ); }
+				static inline void multiply_Jt_W_err(const JAC &J,const EDGE_ITERATOR &edge,
+					const VEC1 & ERR,VEC2 &OUT) {
+					MRPT_UNUSED_PARAM(edge);
+					J.multiply_Atb(ERR,OUT, true /* accumulate in output */ );
+				}
 			};
 
 			// For graphs of 2D constraints (with information matrix)
-			template <class gst> struct AuxErrorEval<CPosePDFGaussianInf,gst> {
+			template <class gst> struct AuxErrorEval<CPosePDFGaussianInf,gst>
+			{
 				template <class POSE,class VEC,class EDGE_ITERATOR>
 				static inline void computePseudoLnError(const POSE &P1DP2inv, VEC &err,const EDGE_ITERATOR &edge)
 				{

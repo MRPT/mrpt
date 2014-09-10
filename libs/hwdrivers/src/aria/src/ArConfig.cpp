@@ -13,6 +13,7 @@
 #include "ArArgumentBuilder.h"
 #include "ArLog.h"
 
+#include <mrpt/utils/mrpt_macros.h>
 
 // Comment out this line to hide the "(probably unimportant)" messages.
 #define ARDEBUG_CONFIG
@@ -866,6 +867,8 @@ AREXPORT bool ArConfig::parseUnknown(ArArgumentBuilder *arg,
 				     char *errorBuffer,
 				     size_t errorBufferLen)
 {
+  MRPT_UNUSED_PARAM(errorBuffer);
+  MRPT_UNUSED_PARAM(errorBufferLen);
   if (arg->getArgc() < 1)
   {
     IFDEBUG(ArLog::log(ArLog::Verbose, "%sEmpty arg in section '%s', ignoring it",

@@ -12,6 +12,7 @@
 #include "ArTcpConnection.h"
 #include "ArLog.h"
 #include "ariaUtil.h"
+#include <mrpt/utils/mrpt_macros.h>
 
 AREXPORT ArTcpConnection::ArTcpConnection()
 {
@@ -222,6 +223,7 @@ AREXPORT bool ArTcpConnection::isTimeStamping(void)
 
 AREXPORT ArTime ArTcpConnection::getTimeRead(int index)
 {
+  MRPT_UNUSED_PARAM(index);
   ArTime now;
   now.setToNow();
   return now;

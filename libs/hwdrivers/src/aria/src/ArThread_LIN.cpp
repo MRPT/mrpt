@@ -20,6 +20,7 @@
 #include "ArThread.h"
 #include "ArLog.h"
 #include "ArSignalHandler.h"
+#include <mrpt/utils/mrpt_macros.h>
 
 
 static void * run(void *arg)
@@ -107,6 +108,7 @@ void ArThread::cancelAll()
 
 int ArThread::create(ArFunctor *func, bool joinable, bool lowerPriority)
 {
+  MRPT_UNUSED_PARAM(lowerPriority);
   int ret;
   pthread_attr_t attr;
 

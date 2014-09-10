@@ -14,6 +14,7 @@
 #include "ArLogFileConnection.h"
 #include "ArLog.h"
 #include "ariaUtil.h"
+#include <mrpt/utils/mrpt_macros.h>
 
 AREXPORT ArLogFileConnection::ArLogFileConnection()
 {
@@ -138,6 +139,7 @@ AREXPORT bool ArLogFileConnection::close(void)
 AREXPORT int ArLogFileConnection::read(const char *data, unsigned int size,
 				   unsigned int msWait)
 {
+  MRPT_UNUSED_PARAM(size);
   ArTime timeDone;
   unsigned int bytesRead = 0;
   int n=0;
@@ -224,6 +226,7 @@ AREXPORT int ArLogFileConnection::read(const char *data, unsigned int size,
 
 AREXPORT int ArLogFileConnection::write(const char *data, unsigned int size)
 {
+  MRPT_UNUSED_PARAM(data);
   return size;                  // always write
 }
 
@@ -248,6 +251,7 @@ AREXPORT bool ArLogFileConnection::isTimeStamping(void)
 
 AREXPORT ArTime ArLogFileConnection::getTimeRead(int index)
 {
+  MRPT_UNUSED_PARAM(index);
   ArTime now;
   now.setToNow();
   return now;

@@ -13,6 +13,7 @@
 #include "ariaTypedefs.h"
 #include "ArFunctor.h"
 #include "ArCommands.h"
+#include <mrpt/utils/mrpt_macros.h>
 
 class ArRobot;
 class ArBasePacket;
@@ -100,9 +101,15 @@ public:
   AREXPORT virtual bool canZoom(void) const = 0;
 
   /// Zooms to the given value
-  /*AREXPORT*/ virtual bool zoom(int zoomValue) { return false; }
+  /*AREXPORT*/ virtual bool zoom(int zoomValue) {
+	  MRPT_UNUSED_PARAM(zoomValue);
+	  return false;
+  }
   /// Zooms relative to the current value, by the given value
-  /*AREXPORT*/ virtual bool zoomRel(int zoomValue) { return false; }
+  /*AREXPORT*/ virtual bool zoomRel(int zoomValue) {
+	  MRPT_UNUSED_PARAM(zoomValue);
+	  return false;
+  }
 
   /// The angle the camera was last told to pan to
   AREXPORT virtual double getPan(void) const = 0;
@@ -147,17 +154,31 @@ public:
 
   /// Set gain on camera, range of 1-100.  Returns false if out of range
   /// or if you can't set the gain on the camera
-  /*AREXPORT*/ virtual bool setGain(double gain) const { return false; }
+  /*AREXPORT*/ virtual bool setGain(double gain) const {
+	  MRPT_UNUSED_PARAM(gain);
+	  return false;
+  }
   /// Get the gain the camera is set to.  0 if not supported
-  /*AREXPORT*/ virtual double getGain(double gain) const { return 0; }
+  /*AREXPORT*/ virtual double getGain(double gain) const {
+	  MRPT_UNUSED_PARAM(gain);
+	  return 0;
+  }
   /// If the driver can set gain on the camera, or not
   /*AREXPORT*/ virtual bool canSetGain(void) const { return false; }
 
   /// Set focus on camera, range of 1-100.  Returns false if out of range
   /// or if you can't set the focus on the camera
-  /*AREXPORT*/ virtual bool setFocus(double focus) const { return false; }
+  /*AREXPORT*/ virtual bool setFocus(double focus) const {
+	  MRPT_UNUSED_PARAM(focus);
+	  return false;
+  }
+
   /// Get the focus the camera is set to.  0 if not supported
-  /*AREXPORT*/ virtual double getFocus(double focus) const { return 0; }
+  /*AREXPORT*/ virtual double getFocus(double focus) const {
+	  MRPT_UNUSED_PARAM(focus);
+	  return 0;
+  }
+
   /// If the driver can set the focus on the camera, or not
   /*AREXPORT*/ virtual bool canSetFocus(void) const { return false; }
 
@@ -196,7 +217,10 @@ public:
      @return true if this packet was handled (ie this knows what it
      is), false otherwise
   **/
-  /*AREXPORT*/ virtual bool packetHandler(ArBasePacket *packet) { return false; }
+  /*AREXPORT*/ virtual bool packetHandler(ArBasePacket *packet) {
+	  MRPT_UNUSED_PARAM(packet);
+	  return false;
+  }
 
   /// Handles a packet that was read by the robot
   /**

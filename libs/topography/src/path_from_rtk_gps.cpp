@@ -65,6 +65,8 @@ void  mrpt::topography::path_from_rtk_gps(
 	stlplus::smart_ptr<wxBusyCursor>	waitCursorPtr;
 	if (isGUI)
 		waitCursorPtr = stlplus::smart_ptr<wxBusyCursor>( new  wxBusyCursor() );
+#else
+	MRPT_UNUSED_PARAM(isGUI);
 #endif
 
     // Go: generate the map:

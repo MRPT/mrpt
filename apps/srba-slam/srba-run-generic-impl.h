@@ -54,6 +54,7 @@ struct InitializerSensorParams
 	template <class RBA>
 	static void init(RBA &rba, RBASLAM_Params &config)
 	{
+		MRPT_UNUSED_PARAM(rba); MRPT_UNUSED_PARAM(config);
 		// Nothing to do by default:
 	}
 };
@@ -68,6 +69,7 @@ struct InitializerSensorPoseParams<options::sensor_pose_on_robot_none>
 	template <class RBA>
 	static void init(RBA &rba, RBASLAM_Params &config)
 	{
+		MRPT_UNUSED_PARAM(rba); MRPT_UNUSED_PARAM(config);
 		// Nothing to do.
 	}
 };
@@ -78,6 +80,7 @@ struct InitializerSensorPoseParams<options::sensor_pose_on_robot_se3>
 	template <class RBA>
 	static void init(RBA &rba, RBASLAM_Params &config)
 	{
+		MRPT_UNUSED_PARAM(config);
 		// Sensor pose on the robot parameters:
 		rba.parameters.sensor_pose.relative_pose = mrpt::poses::CPose3D(0,0,0,DEG2RAD(-90),DEG2RAD(0),DEG2RAD(-90) );
 	}

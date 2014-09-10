@@ -24,6 +24,7 @@ void RbaEngine<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::create_complete_sp
 	vector<bool>  * aux_ws
 	) const
 {
+	MRPT_UNUSED_PARAM(aux_ws);
 	span_tree.clear();
 
 	set<TKeyFrameID>   visited;

@@ -81,6 +81,7 @@ protected:
 
 	static void func_compose_point(const CArrayDouble<7+3> &x, const double &dummy, CArrayDouble<3> &Y)
 	{
+		MRPT_UNUSED_PARAM(dummy);
 		CPose3DQuat 	q(x[0],x[1],x[2],CQuaternionDouble(x[3],x[4],x[5],x[6]));
 		q.quat().normalize();
 		const CPoint3D 		p(x[7+0],x[7+1],x[7+2]);
@@ -162,6 +163,7 @@ protected:
 
 	static void func_inv_compose_point(const CArrayDouble<7+3> &x, const double &dummy, CArrayDouble<3> &Y)
 	{
+		MRPT_UNUSED_PARAM(dummy);
 		CPose3DQuat 	q(x[0],x[1],x[2],CQuaternionDouble(x[3],x[4],x[5],x[6]));
 		q.quat().normalize();
 		const CPoint3D 		p(x[7+0],x[7+1],x[7+2]);
@@ -346,10 +348,9 @@ protected:
 
 	}
 	
-
-
 	static void func_spherical_coords(const CArrayDouble<7+3> &x, const double &dummy, CArrayDouble<3> &Y)
 	{
+		MRPT_UNUSED_PARAM(dummy);
 		CPose3DQuat 	q(x[0],x[1],x[2],CQuaternionDouble(x[3],x[4],x[5],x[6]));
 		q.quat().normalize();
 		const TPoint3D 		p(x[7+0],x[7+1],x[7+2]);
@@ -406,9 +407,9 @@ protected:
 
 	}
 
-
 	static void func_normalizeJacob(const CArrayDouble<4> &x, const double &dummy, CArrayDouble<4> &Y)
 	{
+		MRPT_UNUSED_PARAM(dummy);
 		CQuaternionDouble q;
 		for (int i=0;i<4;i++) q[i]=x[i];
 		q.normalize();

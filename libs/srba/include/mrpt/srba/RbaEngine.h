@@ -507,41 +507,57 @@ namespace srba
 			/* Implementation of FEAT_VISITOR */
 			inline bool visit_filter_feat(const TLandmarkID lm_ID,const topo_dist_t cur_dist)
 			{
+				MRPT_UNUSED_PARAM(lm_ID); MRPT_UNUSED_PARAM(cur_dist);
 				return false; // Don't need to visit landmark nodes.
 			}
+
 			inline void visit_feat(const TLandmarkID lm_ID,const topo_dist_t cur_dist)
 			{
+				MRPT_UNUSED_PARAM(lm_ID); MRPT_UNUSED_PARAM(cur_dist);
 				// Nothing to do
 			}
 
 			/* Implementation of KF_VISITOR */
 			inline bool visit_filter_kf(const TKeyFrameID kf_ID,const topo_dist_t cur_dist)
 			{
+				MRPT_UNUSED_PARAM(cur_dist);
 				return (kf_ID<=params.max_visitable_kf_id);
 			}
+
 			inline void visit_kf(const TKeyFrameID kf_ID,const topo_dist_t cur_dist)
 			{
+				MRPT_UNUSED_PARAM(kf_ID); MRPT_UNUSED_PARAM(cur_dist);
 				// Nothing to do.
 			}
 
 			/* Implementation of K2K_EDGE_VISITOR */
-			inline bool visit_filter_k2k(const TKeyFrameID current_kf, const TKeyFrameID next_kf,const k2k_edge_t* edge, const topo_dist_t cur_dist)
+			inline bool visit_filter_k2k(const TKeyFrameID current_kf, const TKeyFrameID next_kf,
+				const k2k_edge_t* edge, const topo_dist_t cur_dist)
 			{
+				MRPT_UNUSED_PARAM(current_kf); MRPT_UNUSED_PARAM(next_kf);
+				MRPT_UNUSED_PARAM(edge); MRPT_UNUSED_PARAM(cur_dist);
 				return true; // Visit all k2k edges
 			}
-			inline void visit_k2k(const TKeyFrameID current_kf, const TKeyFrameID next_kf,const k2k_edge_t* edge, const topo_dist_t cur_dist)
+
+			inline void visit_k2k(const TKeyFrameID current_kf, const TKeyFrameID next_kf,
+				const k2k_edge_t* edge, const topo_dist_t cur_dist)
 			{
+				MRPT_UNUSED_PARAM(current_kf); MRPT_UNUSED_PARAM(next_kf);
+				MRPT_UNUSED_PARAM(cur_dist);
 				if (params.optimize_k2k_edges)
 					k2k_edges_to_optimize.push_back(edge->id);
 			}
 
 			/* Implementation of K2F_EDGE_VISITOR */
-			inline bool visit_filter_k2f(const TKeyFrameID current_kf, const k2f_edge_t* edge, const topo_dist_t cur_dist)
+			inline bool visit_filter_k2f(const TKeyFrameID current_kf, const k2f_edge_t* edge,
+				const topo_dist_t cur_dist)
 			{
+				MRPT_UNUSED_PARAM(current_kf); MRPT_UNUSED_PARAM(edge); MRPT_UNUSED_PARAM(cur_dist);
 				return params.optimize_landmarks; // Yes: visit all feature nodes if we're asked to
 			}
 			inline void visit_k2f(const TKeyFrameID current_kf, const k2f_edge_t* edge, const topo_dist_t cur_dist)
 			{
+				MRPT_UNUSED_PARAM(current_kf); MRPT_UNUSED_PARAM(cur_dist);
 				if (!edge->feat_has_known_rel_pos)
 				{
 					const TLandmarkID lm_ID = edge->obs.obs.feat_id;
