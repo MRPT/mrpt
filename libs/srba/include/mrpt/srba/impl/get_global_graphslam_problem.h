@@ -7,14 +7,20 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#ifndef _mrpt_graphslam_H
-#define _mrpt_graphslam_H
+#pragma once
 
-// Graph SLAM: Common headers
-#include "graphslam/types.h"
+namespace mrpt { namespace srba {
 
-// Graph SLAM: Batch solvers
-#include "graphslam/levmarq.h"
+/** Exports all the keyframes and landmarks as a directed graph in DOT (graphviz) format */
+template <class KF2KF_POSE_TYPE,class LM_TYPE,class OBS_TYPE,class RBA_OPTIONS>
+template <class POSE_GRAPH>
+void RbaEngine<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::get_global_graphslam_problem(
+	POSE_GRAPH &global_graph
+	) const
+{
+	global_graph.clear();
+
+}
 
 
-#endif
+} }  // end namespaces

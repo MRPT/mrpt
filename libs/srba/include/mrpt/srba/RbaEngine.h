@@ -16,6 +16,7 @@
 #include <mrpt/utils/CTimeLogger.h>
 #include <mrpt/utils/CLoadableOptions.h>
 #include <mrpt/opengl/CSetOfObjects.h>
+#include <mrpt/graphs/CNetworkOfPoses.h>
 
 #include "srba_types.h"
 #include "srba_options.h"
@@ -263,6 +264,16 @@ namespace srba
 		  * The worst-case time consumed by this method is O(M*log(N) + N^2 + N E), N=# of KFs, E=# of edges, M=# of observations.
 		  */
 		double eval_overall_squared_error() const;
+
+		/** Build a graph-slam problem suitable for recovering the (consistent) global pose (vs. relative ones as are handled in SRBA) of each keyframe.
+		  * \note This version of the method doesn't account for the covariances of relative pose estimations in RBA.
+		  * \sa mrpt::graphslam (for methods capable of optimizing the output graph of pose constraints)
+		  * \param[out] global_graph Previous contents will be erased. The output global graph will be returned here.
+		  * \tparam POSE_GRAPH Must be an instance of mrpt::graphs::CNetworkOfPoses<>, e.g. CNetworkOfPoses2D (for 2D poses) or CNetworkOfPoses3D (for 3D).
+		  */		
+		template <class POSE_GRAPH>
+		void get_global_graphslam_problem(POSE_GRAPH &global_graph) const;
+	
 
 		/** @} */  // End of main API methods
 
@@ -780,6 +791,7 @@ namespace srba
 
 #include "impl/export_opengl.h"
 #include "impl/export_dot.h"
+#include "impl/get_global_graphslam_problem.h"
 
 #include "impl/eval_overall_error.h"
 
