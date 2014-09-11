@@ -63,7 +63,7 @@ digraph MRPT_LIBS {
 	slam -> bayes;
 	slam -> graphs;
 
-	graphslam -> slam;
+	graphslam -> graphs;
 	
 	detectors -> vision;
 	detectors -> maps;
