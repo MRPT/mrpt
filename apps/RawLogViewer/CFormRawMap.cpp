@@ -95,7 +95,7 @@ BEGIN_EVENT_TABLE(CFormRawMap,wxDialog)
     //*)
 END_EVENT_TABLE()
 
-CFormRawMap::CFormRawMap(wxWindow* parent,wxWindowID id)
+CFormRawMap::CFormRawMap(wxWindow* parent,wxWindowID )
 {
     //(*Initialize(CFormRawMap)
     wxFlexGridSizer* FlexGridSizer4;
@@ -375,7 +375,7 @@ void loadMapInto3DScene(COpenGLScene &scene)
 
 
 // From slider moved:
-void CFormRawMap::OnslFromCmdScrollThumbTrack(wxScrollEvent& event)
+void CFormRawMap::OnslFromCmdScrollThumbTrack(wxScrollEvent& )
 {
     int toVal = slTo->GetValue();
     int curVal = slFrom->GetValue();
@@ -385,7 +385,7 @@ void CFormRawMap::OnslFromCmdScrollThumbTrack(wxScrollEvent& event)
 }
 
 // To slider moved:
-void CFormRawMap::OnslToCmdScrollThumbTrack(wxScrollEvent& event)
+void CFormRawMap::OnslToCmdScrollThumbTrack(wxScrollEvent& )
 {
     int fromVal = slFrom->GetValue();
     int curVal = slTo->GetValue();
@@ -395,7 +395,7 @@ void CFormRawMap::OnslToCmdScrollThumbTrack(wxScrollEvent& event)
 }
 
 // Generate the map:
-void CFormRawMap::OnbtnGenerateClick(wxCommandEvent& event)
+void CFormRawMap::OnbtnGenerateClick(wxCommandEvent& )
 {
     WX_START_TRY
 
@@ -591,7 +591,7 @@ void CFormRawMap::OnbtnGenerateClick(wxCommandEvent& event)
     WX_END_TRY
 }
 
-void CFormRawMap::OnbtnSaveTxtClick(wxCommandEvent& event)
+void CFormRawMap::OnbtnSaveTxtClick(wxCommandEvent& )
 {
     wxString caption = wxT("Save as text file...");
     wxString wildcard = wxT("Text files (*.txt)|*.txt|All files (*.*)|*.*");
@@ -616,7 +616,7 @@ void CFormRawMap::OnbtnSaveTxtClick(wxCommandEvent& event)
 }
 
 // Save as a 3D scene:
-void CFormRawMap::OnbtnSave3DClick(wxCommandEvent& event)
+void CFormRawMap::OnbtnSave3DClick(wxCommandEvent& )
 {
     wxString caption = wxT("Save as 3D scene file...");
     wxString wildcard = wxT("MRPT 3D scene files (*.3Dscene)|*.3Dscene|All files (*.*)|*.*");
@@ -647,18 +647,18 @@ void CFormRawMap::OnbtnSave3DClick(wxCommandEvent& event)
 }
 
 // Close:
-void CFormRawMap::OnbtnCloseClick(wxCommandEvent& event)
+void CFormRawMap::OnbtnCloseClick(wxCommandEvent& )
 {
     Close();
 }
 
-void CFormRawMap::OnslDecimateCmdScrollThumbTrack(wxScrollEvent& event)
+void CFormRawMap::OnslDecimateCmdScrollThumbTrack(wxScrollEvent& )
 {
     edDec->SetValue( wxString::Format(_("%d"),slDecimate->GetValue() ) );
 }
 
 // Generate random paths from the motion model:
-void CFormRawMap::OnbtnGeneratePathsClick(wxCommandEvent& event)
+void CFormRawMap::OnbtnGeneratePathsClick(wxCommandEvent& )
 {
     WX_START_TRY
 
@@ -822,7 +822,7 @@ void CFormRawMap::OnbtnGeneratePathsClick(wxCommandEvent& event)
 // ----------------------------------------------------------------------------------------
 // Generate a "Ground-truth" path from RTK GPS data, then build maps from those goos poses
 // ----------------------------------------------------------------------------------------
-void CFormRawMap::OnGenerateFromRTK(wxCommandEvent& event)
+void CFormRawMap::OnGenerateFromRTK(wxCommandEvent& )
 {
     WX_START_TRY
 
@@ -1005,7 +1005,7 @@ void CFormRawMap::OnGenerateFromRTK(wxCommandEvent& event)
     WX_END_TRY
 }
 
-void CFormRawMap::OnbtnSavePathClick(wxCommandEvent& event)
+void CFormRawMap::OnbtnSavePathClick(wxCommandEvent& )
 {
 	WX_START_TRY
 
@@ -1216,12 +1216,12 @@ void CFormRawMap::OnbtnSavePathClick(wxCommandEvent& event)
 	WX_END_TRY
 }
 
-void CFormRawMap::OnbtnSaveObsPathClick(wxCommandEvent& event)
+void CFormRawMap::OnbtnSaveObsPathClick(wxCommandEvent& )
 {
 }
 
 
-void CFormRawMap::OnbtnView3DClick(wxCommandEvent& event)
+void CFormRawMap::OnbtnView3DClick(wxCommandEvent& )
 {
 	COpenGLScene		scene;
 
@@ -1234,6 +1234,6 @@ void CFormRawMap::OnbtnView3DClick(wxCommandEvent& event)
 	win3Dmap->repaint();
 }
 
-void CFormRawMap::OnbtnHelpClick(wxCommandEvent& event)
+void CFormRawMap::OnbtnHelpClick(wxCommandEvent& )
 {
 }

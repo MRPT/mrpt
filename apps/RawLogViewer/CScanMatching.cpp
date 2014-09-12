@@ -81,7 +81,7 @@ BEGIN_EVENT_TABLE(CScanMatching,wxDialog)
 	//*)
 END_EVENT_TABLE()
 
-CScanMatching::CScanMatching(wxWindow* parent,wxWindowID id)
+CScanMatching::CScanMatching(wxWindow* parent,wxWindowID)
 {
 	//(*Initialize(CScanMatching)
 	wxFlexGridSizer* FlexGridSizer8;
@@ -284,9 +284,8 @@ CScanMatching::~CScanMatching()
 }
 
 
-void CScanMatching::OnInit(wxInitDialogEvent& event)
+void CScanMatching::OnInit(wxInitDialogEvent& )
 {
-
 }
 
 
@@ -310,7 +309,7 @@ class CMyButtonsDisabler
 };
 
 // Perform the ICP:
-void CScanMatching::OnbtnICPClick(wxCommandEvent& event)
+void CScanMatching::OnbtnICPClick(wxCommandEvent&)
 {
 	WX_START_TRY
 
@@ -623,7 +622,7 @@ void CScanMatching::OnbtnICPClick(wxCommandEvent& event)
 	WX_END_TRY
 }
 
-void CScanMatching::OncbAnimateClick(wxCommandEvent& event)
+void CScanMatching::OncbAnimateClick(wxCommandEvent&)
 {
 	bool show = cbAnimate->GetValue();
 	txtStep->Show( show );
@@ -634,7 +633,7 @@ void CScanMatching::OncbAnimateClick(wxCommandEvent& event)
 	Panel5->Fit();
 }
 
-void CScanMatching::OChangeSelectedMapType(wxCommandEvent& event)
+void CScanMatching::OChangeSelectedMapType(wxCommandEvent&)
 {
 	Notebook1->ChangeSelection( rbPoint->GetValue() ? 0:1 );
 }
@@ -644,12 +643,12 @@ void CScanMatching::OnNotebook1PageChanging(wxNotebookEvent& event)
 	event.Veto();
 }
 
-void CScanMatching::OnbtnCloseClick(wxCommandEvent& event)
+void CScanMatching::OnbtnCloseClick(wxCommandEvent&)
 {
 	Close();
 }
 
-void CScanMatching::OnbtnHelpClick(wxCommandEvent& event)
+void CScanMatching::OnbtnHelpClick(wxCommandEvent&)
 {
 	wxString s;
 	s << _("Scan matching tries to register two maps. Each of them is created by inserting observations,\n");
