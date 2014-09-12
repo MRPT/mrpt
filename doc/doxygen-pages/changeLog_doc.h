@@ -50,6 +50,8 @@
 			- New method mrpt::slam::CColouredPointsMap::getPCLPointCloudXYZRGB()
 		- [mrpt-opengl]
 			- mrpt::opengl::CMyGLCanvasBase (affects all 3D rendering classes): better handling of internal timers for smoother updates while rendering in multithreading apps.
+		- [mrpt-srba]
+			- New method to recover the global coordinates graph-slam problem for a RBA map: mrpt::srba::RbaEngine::get_global_graphslam_problem() (see example [MRPT]\samples\srba-examples\srba-tutorials\tutorial-srba-how-to-recover-global-map.cpp)
 	- BUG FIXES:
 		- mrpt::utils::CImage constructor from a matrix crashed.
 		- Unit tests: Named semaphores are not tested anymore if it's detected that the kernel version doesn't support them (Fix Debian 758725).
