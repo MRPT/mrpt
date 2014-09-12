@@ -220,17 +220,7 @@ namespace mrpt
 				const CPose2D         & otherMapPose,
 				TMatchingPairList     & correspondences,
 				const TMatchingParams & params,
-				TMatchingExtraResults & extraResults ) const
-			{
-				MRPT_UNUSED_PARAM(otherMap);
-				MRPT_UNUSED_PARAM(otherMapPose);
-				MRPT_UNUSED_PARAM(correspondences);
-				MRPT_UNUSED_PARAM(params);
-				MRPT_UNUSED_PARAM(extraResults);
-				MRPT_START
-				THROW_EXCEPTION("Virtual method not implemented in derived class.")
-				MRPT_END
-			}
+				TMatchingExtraResults & extraResults ) const;
 
 			/** Computes the matchings between this and another 3D points map - method used in 3D-ICP.
 			 *  This method finds the set of point pairs in each map.
@@ -255,17 +245,7 @@ namespace mrpt
 				const CPose3D         & otherMapPose,
 				TMatchingPairList     & correspondences,
 				const TMatchingParams & params,
-				TMatchingExtraResults & extraResults ) const
-			{
-				MRPT_UNUSED_PARAM(otherMap);
-				MRPT_UNUSED_PARAM(otherMapPose);
-				MRPT_UNUSED_PARAM(correspondences);
-				MRPT_UNUSED_PARAM(params);
-				MRPT_UNUSED_PARAM(extraResults);
-				MRPT_START
-				THROW_EXCEPTION("Virtual method not implemented in derived class.")
-				MRPT_END
-			}
+				TMatchingExtraResults & extraResults ) const;
 
 			/** Computes the ratio in [0,1] of correspondences between "this" and the "otherMap" map, whose 6D pose relative to "this" is "otherMapPose"
 			 *   In the case of a multi-metric map, this returns the average between the maps. This method always return 0 for grid maps.
@@ -282,17 +262,7 @@ namespace mrpt
 				const CPose3D							&otherMapPose,
 				float									maxDistForCorr = 0.10f,
 				float									maxMahaDistForCorr = 2.0f
-			) const
-			{
-				MRPT_UNUSED_PARAM(otherMap);
-				MRPT_UNUSED_PARAM(otherMapPose);
-				MRPT_UNUSED_PARAM(maxDistForCorr);
-				MRPT_UNUSED_PARAM(maxMahaDistForCorr);
-				MRPT_START
-				THROW_EXCEPTION("Virtual method not implemented in derived class.")
-				MRPT_END
-			}
-
+			) const;
 
 			/** This virtual method saves the map to a file "filNamePrefix"+< some_file_extension >, as an image or in any other applicable way (Notice that other methods to save the map may be implemented in classes implementing this virtual interface).
 			  */
@@ -318,16 +288,7 @@ namespace mrpt
 
 			/** Returns the square distance from the 2D point (x0,y0) to the closest correspondence in the map.
 			  */
-			virtual float squareDistanceToClosestCorrespondence(
-				float x0,
-				float y0 ) const
-			{
-				MRPT_UNUSED_PARAM(x0);
-				MRPT_UNUSED_PARAM(y0);
-				MRPT_START
-				THROW_EXCEPTION("Virtual method not implemented in derived class.")
-				MRPT_END
-			}
+			virtual float squareDistanceToClosestCorrespondence(float x0,float y0 ) const;
 
 
 			/** If the map is a simple points map or it's a multi-metric map that contains EXACTLY one simple points map, return it.

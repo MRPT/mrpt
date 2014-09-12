@@ -147,12 +147,7 @@ namespace mrpt
 					const CPose3D							&otherMapPose,
 					float									maxDistForCorr = 0.10f,
 					float									maxMahaDistForCorr = 2.0f
-					) const
-			{
-				MRPT_UNUSED_PARAM(otherMap); MRPT_UNUSED_PARAM(otherMapPose);
-				MRPT_UNUSED_PARAM(maxDistForCorr); MRPT_UNUSED_PARAM(maxMahaDistForCorr);
-				return 0;
-			}
+					) const;
 
 			/** The implementation in this class just calls all the corresponding method of the contained metric maps.
 			  */

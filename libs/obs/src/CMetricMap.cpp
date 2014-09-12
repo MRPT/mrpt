@@ -138,3 +138,66 @@ bool CMetricMap::insertObservationPtr(
 bool CMetricMap::canComputeObservationLikelihood( const CObservationPtr &obs ) {
 	return canComputeObservationLikelihood(obs.pointer());
 }
+
+void  CMetricMap::determineMatching2D(
+	const CMetricMap      * otherMap,
+	const CPose2D         & otherMapPose,
+	TMatchingPairList     & correspondences,
+	const TMatchingParams & params,
+	TMatchingExtraResults & extraResults ) const
+{
+	MRPT_UNUSED_PARAM(otherMap);
+	MRPT_UNUSED_PARAM(otherMapPose);
+	MRPT_UNUSED_PARAM(correspondences);
+	MRPT_UNUSED_PARAM(params);
+	MRPT_UNUSED_PARAM(extraResults);
+	MRPT_START
+	THROW_EXCEPTION("Virtual method not implemented in derived class.")
+	MRPT_END
+}
+
+
+void CMetricMap::determineMatching3D(
+	const CMetricMap      * otherMap,
+	const CPose3D         & otherMapPose,
+	TMatchingPairList     & correspondences,
+	const TMatchingParams & params,
+	TMatchingExtraResults & extraResults ) const
+{
+	MRPT_UNUSED_PARAM(otherMap);
+	MRPT_UNUSED_PARAM(otherMapPose);
+	MRPT_UNUSED_PARAM(correspondences);
+	MRPT_UNUSED_PARAM(params);
+	MRPT_UNUSED_PARAM(extraResults);
+	MRPT_START
+	THROW_EXCEPTION("Virtual method not implemented in derived class.")
+	MRPT_END
+}
+
+
+float  CMetricMap::compute3DMatchingRatio(
+	const CMetricMap								*otherMap,
+	const CPose3D							&otherMapPose,
+	float									maxDistForCorr,
+	float									maxMahaDistForCorr
+) const
+{
+	MRPT_UNUSED_PARAM(otherMap);
+	MRPT_UNUSED_PARAM(otherMapPose);
+	MRPT_UNUSED_PARAM(maxDistForCorr);
+	MRPT_UNUSED_PARAM(maxMahaDistForCorr);
+	MRPT_START
+	THROW_EXCEPTION("Virtual method not implemented in derived class.")
+	MRPT_END
+}
+
+float CMetricMap::squareDistanceToClosestCorrespondence(
+	float x0,
+	float y0 ) const
+{
+	MRPT_UNUSED_PARAM(x0);
+	MRPT_UNUSED_PARAM(y0);
+	MRPT_START
+	THROW_EXCEPTION("Virtual method not implemented in derived class.")
+	MRPT_END
+}

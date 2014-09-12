@@ -515,3 +515,16 @@ size_t CHeightGridMap2D::countObservedCells() const
 	default: THROW_EXCEPTION("countObservedCells() not implemented for this mapType (!?)")
 	};
 }
+
+
+float  CHeightGridMap2D::compute3DMatchingRatio(
+	const CMetricMap						*otherMap,
+	const CPose3D							&otherMapPose,
+	float									maxDistForCorr,
+	float									maxMahaDistForCorr
+	) const
+{
+	MRPT_UNUSED_PARAM(otherMap); MRPT_UNUSED_PARAM(otherMapPose);
+	MRPT_UNUSED_PARAM(maxDistForCorr); MRPT_UNUSED_PARAM(maxMahaDistForCorr);
+	return 0;
+}

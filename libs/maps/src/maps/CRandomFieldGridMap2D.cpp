@@ -2900,3 +2900,16 @@ bool CRandomFieldGridMap2D::exist_relation_between2cells(
 	//cout << "Connection not found (false)" << endl;
 	return false;
 }
+
+float  CRandomFieldGridMap2D::compute3DMatchingRatio(
+	const CMetricMap						*otherMap,
+	const CPose3D							&otherMapPose,
+	float									maxDistForCorr,
+	float									maxMahaDistForCorr
+	) const
+{
+	MRPT_UNUSED_PARAM(otherMap); MRPT_UNUSED_PARAM(otherMapPose);
+	MRPT_UNUSED_PARAM(maxDistForCorr); MRPT_UNUSED_PARAM(maxMahaDistForCorr);
+	return 0;
+}
+
