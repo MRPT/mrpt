@@ -27,7 +27,7 @@ Build-Depends: debhelper (>= 9),
 	libdc1394-22-dev [linux-any],
 	libusb-1.0-0-dev [linux-any],
 	libjs-jquery,
-	libassimp-dev | perl
+	libassimp-dev
 Standards-Version: 3.9.5
 Homepage: http://www.mrpt.org/
 
