@@ -410,17 +410,7 @@ namespace opengl	{
 		  * The objective may be a COpenGLScene, a CRenderizable or any children of its.
 		  * \sa mrpt::opengl::CRenderizable,mrpt::opengl::COpenGLScene.
 		  */
-		template<class T> static void trace2DSetOfRays(const T &e,const CPose3D &initial,CAngularObservationMeshPtr &caom,const TDoubleRange &pitchs,const TDoubleRange &yaws)	{
-			std::vector<double> pValues;
-			pitchs.values(pValues);
-			std::vector<CObservation2DRangeScan> vObs;
-			vObs.reserve(pValues.size());
-			for_each(pValues.begin(),pValues.end(),FTrace2D<T>(e,initial,caom,yaws,vObs,initial));
-			caom->mWireframe=false;
-			caom->mEnableTransparency=false;
-			caom->setPitchBounds(pValues);
-			caom->setScanSet(vObs);
-		}
+		template<class T> static void trace2DSetOfRays(const T &e,const CPose3D &initial,CAngularObservationMeshPtr &caom,const TDoubleRange &pitchs,const TDoubleRange &yaws);
 		/**
 		  * 2D ray tracing (will generate a vectorial mesh inside a plane). Given an object and a range, realizes a scan from the initial pose and stores it in a CObservation2DRangeScan object.
 		  * The objective may be a COpenGLScene, a CRenderizable or any children of its.
@@ -444,6 +434,20 @@ namespace opengl	{
 			obs.validRange=valid;
 		}
 	};
+	DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(CAngularObservationMesh,CRenderizableDisplayList, MAPS_IMPEXP)
+
+	template<class T>
+	void CAngularObservationMesh::trace2DSetOfRays(const T &e,const CPose3D &initial,CAngularObservationMeshPtr &caom,const TDoubleRange &pitchs,const TDoubleRange &yaws)	{
+		std::vector<double> pValues;
+		pitchs.values(pValues);
+		std::vector<CObservation2DRangeScan> vObs;
+		vObs.reserve(pValues.size());
+		for_each(pValues.begin(),pValues.end(),FTrace2D<T>(e,initial,caom,yaws,vObs,initial));
+		caom->mWireframe=false;
+		caom->mEnableTransparency=false;
+		caom->setPitchBounds(pValues);
+		caom->setScanSet(vObs);
+	}
 }
 }
 #endif

@@ -43,6 +43,7 @@ namespace poses
 
 		float	x,y,z;
 	};
+	DEFINE_SERIALIZABLE_POST_CUSTOM_BASE( TSimple3DPoint, mrpt::utils::CSerializable )
 
 	DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE( CPointPDFParticles, CPointPDF )
 
@@ -121,6 +122,7 @@ namespace poses
 		void  bayesianFusion( const CPointPDF &p1, const CPointPDF &p2, const double &minMahalanobisDistToDrop = 0);
 
 	}; // End of class def.
+	DEFINE_SERIALIZABLE_POST_CUSTOM_BASE( CPointPDFParticles, CPointPDF )
 
 
 	} // End of namespace

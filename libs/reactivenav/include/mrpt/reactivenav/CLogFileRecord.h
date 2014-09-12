@@ -81,6 +81,7 @@ namespace mrpt
 
 
 	};
+	  DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE( CLogFileRecord, mrpt::utils::CSerializable, REACTIVENAV_IMPEXP )
 
   }
 }

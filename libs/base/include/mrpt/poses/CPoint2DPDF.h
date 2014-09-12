@@ -54,6 +54,7 @@ namespace poses
 		static inline bool is_PDF() { return is_PDF_val!=0; }
 
 	}; // End of class def.
+	DEFINE_SERIALIZABLE_POST_CUSTOM_BASE( CPoint2DPDF, mrpt::utils::CSerializable )
 
 
 	} // End of namespace

@@ -92,6 +92,30 @@ IF(CMAKE_MRPT_HAS_ARIA)
 		)
 ENDIF(CMAKE_MRPT_HAS_ARIA)
 
+# Build RPLIDAR?
+IF(CMAKE_MRPT_HAS_ROBOPEAK_LIDAR)
+	LIST(APPEND hwdrivers_EXTRA_SRCS
+		"${MRPT_LIBS_ROOT}/hwdrivers/src/rplidar/src/*.cpp"
+		"${MRPT_LIBS_ROOT}/hwdrivers/src/rplidar/src/hal/*.cpp"
+		"${MRPT_LIBS_ROOT}/hwdrivers/src/rplidar/include/*.h"
+		)
+	LIST(APPEND hwdrivers_EXTRA_SRCS_NAME 
+		"RoboPeakLidar"
+		"RoboPeakLidar"
+		"RoboPeakLidar"
+		)
+	IF (WIN32)
+		LIST(APPEND hwdrivers_EXTRA_SRCS "${MRPT_LIBS_ROOT}/hwdrivers/src/rplidar/src/arch/win32/*.cpp")
+		LIST(APPEND hwdrivers_EXTRA_SRCS_NAME "RoboPeakLidar")
+	ELSE(WIN32)
+		LIST(APPEND hwdrivers_EXTRA_SRCS "${MRPT_LIBS_ROOT}/hwdrivers/src/rplidar/src/arch/linux/*.cpp")
+		LIST(APPEND hwdrivers_EXTRA_SRCS_NAME "RoboPeakLidar")
+	ENDIF(WIN32)
+	INCLUDE_DIRECTORIES("${MRPT_LIBS_ROOT}/hwdrivers/src/rplidar/include/")
+	INCLUDE_DIRECTORIES("${MRPT_LIBS_ROOT}/hwdrivers/src/rplidar/src/")
+ENDIF(CMAKE_MRPT_HAS_ROBOPEAK_LIDAR)
+
+
 IF(CMAKE_MRPT_HAS_DUO3D)
 	INCLUDE_DIRECTORIES("${DUO3D_ROOT_DIR}/include")
 	LINK_DIRECTORIES("${DUO3D_ROOT_DIR}/lib")
@@ -173,6 +197,22 @@ IF(BUILD_mrpt-hwdrivers)
 		TARGET_LINK_LIBRARIES(mrpt-hwdrivers ${PGR_FLYCAPTURE2_LIB_FILE_RELEASE})
 	ENDIF(CMAKE_MRPT_HAS_FLYCAPTURE2)
 
+	# Link to PGR Triclops libraries:
+	IF(CMAKE_MRPT_HAS_TRICLOPS)
+		# link_directories() was added in the configuration script under /cmakemodules/*_ni.cmake
+		INCLUDE_DIRECTORIES(${PGR_TRICLOPS_INCLUDE_DIR})
+		TARGET_LINK_LIBRARIES(mrpt-hwdrivers ${PGR_TRICLOPS_LIB_FILE_RELEASE})
+		TARGET_LINK_LIBRARIES(mrpt-hwdrivers ${PGR_FC2BRIDGE_LIB_FILE_RELEASE})
+		TARGET_LINK_LIBRARIES(mrpt-hwdrivers ${PGR_PNMUTILS_LIB_FILE_RELEASE})
+	ENDIF(CMAKE_MRPT_HAS_TRICLOPS)
+
+	# Ignore precompiled headers in RPLIDAR sources:
+	IF(CMAKE_MRPT_HAS_ROBOPEAK_LIDAR)		
+		IF(MRPT_ENABLE_PRECOMPILED_HDRS AND MSVC)
+			set_source_files_properties(${RoboPeakLidar_FILES} PROPERTIES COMPILE_FLAGS "/Y-")
+		ENDIF(MRPT_ENABLE_PRECOMPILED_HDRS AND MSVC)
+	ENDIF(CMAKE_MRPT_HAS_ROBOPEAK_LIDAR)
+		
 	# Build with link on SVS lib
 	IF(CMAKE_MRPT_HAS_SVS)
 		TARGET_LINK_LIBRARIES(mrpt-hwdrivers dcap)

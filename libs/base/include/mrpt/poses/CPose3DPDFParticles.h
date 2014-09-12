@@ -126,6 +126,7 @@ namespace mrpt
 			void  bayesianFusion( const CPose3DPDF &p1, const CPose3DPDF &p2 );
 
 		}; // End of class def.
+		DEFINE_SERIALIZABLE_POST_CUSTOM_BASE(CPose3DPDFParticles,CPose3DPDF)
 
 
 	} // End of namespace

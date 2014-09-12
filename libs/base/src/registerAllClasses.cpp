@@ -103,4 +103,3 @@ void registerAllClasses_mrpt_base()
 	registerClass( CLASS_ID( CStringList ) );
 }
 
-

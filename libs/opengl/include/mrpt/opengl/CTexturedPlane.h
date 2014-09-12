@@ -15,7 +15,7 @@ namespace mrpt
 {
 	namespace opengl
 	{
-		class OPENGL_IMPEXP CTexturedPlane;
+
 
 		// This must be added to any CSerializable derived class:
 		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CTexturedPlane, CTexturedObject, OPENGL_IMPEXP )
@@ -69,14 +69,7 @@ namespace mrpt
 			}
 
 			/** Class factory  */
-			static CTexturedPlanePtr Create(
-				float				x_min,
-				float				x_max,
-				float				y_min,
-				float				y_max)
-			{
-				return CTexturedPlanePtr( new CTexturedPlane(x_min, x_max, y_min, y_max) );
-			}
+			static CTexturedPlanePtr Create(float x_min, float x_max, float y_min, float y_max);
 
 			/** Ray trace
 			  */
@@ -98,6 +91,7 @@ namespace mrpt
 			/** Private, virtual destructor: only can be deleted from smart pointers */
 			virtual ~CTexturedPlane();
 		};
+		DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE( CTexturedPlane, CTexturedObject, OPENGL_IMPEXP )
 
 	} // end namespace
 

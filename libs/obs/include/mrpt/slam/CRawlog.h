@@ -336,6 +336,7 @@ namespace mrpt
 			static std::string detectImagesDirectory(const std::string &rawlogFilename);
 
 		}; // End of class def.
+		DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE( CRawlog, mrpt::utils::CSerializable, OBS_IMPEXP )
 
 	} // End of namespace
 } // End of namespace

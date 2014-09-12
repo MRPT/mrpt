@@ -338,6 +338,7 @@ namespace mrpt
 
 
 		}; // End of class def.
+		DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE( CMetricMap, mrpt::utils::CSerializable, OBS_IMPEXP )
 
 		/** A list of metric maps (used in the mrpt::poses::CPosePDFParticles class):
 		  */

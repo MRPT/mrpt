@@ -6,7 +6,7 @@ SET(CMAKE_MRPT_HAS_TBB  0)
 # The following code block comes from OpenCV (BSD)
 if (MRPT_HAS_TBB)
     if (UNIX AND NOT APPLE AND NOT ANDROID)
-        PKG_CHECK_MODULES(TBB tbb)
+        PKG_CHECK_MODULES(TBB ${_QUIET} tbb)
         #message(STATUS "TBB detected: ${TBBLIB_FOUND}")
 
         if (TBB_FOUND)

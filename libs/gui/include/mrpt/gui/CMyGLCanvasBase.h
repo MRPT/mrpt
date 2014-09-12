@@ -82,6 +82,7 @@ namespace mrpt
 			float	cameraZoomDistance;
 			float	cameraElevationDeg,cameraAzimuthDeg;
 			bool	cameraIsProjective;
+			float   cameraFOV;
 
 			/** If set to true (default=false), the cameraPointingX,... parameters are ignored and the camera stored in the 3D scene is used instead.
 			  */

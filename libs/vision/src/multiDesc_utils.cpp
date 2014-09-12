@@ -45,9 +45,9 @@ using namespace std;
 #endif
 
 const int FEAT_FREE = -1;
-const int NOT_ASIG = 0;
-const int ASG_FEAT = 1;
-const int AMB_FEAT = 2;
+//const int NOT_ASIG = 0;   // JL: Not used anymore?? (FAMD)
+//const int ASG_FEAT = 1;
+//const int AMB_FEAT = 2;
 
 /*-------------------------------------------------------------
 					insertHashCoeffs

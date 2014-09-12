@@ -123,6 +123,7 @@ namespace slam
 		void swap( CObservationStereoImages &o); //!< Do an efficient swap of all data members of this object with "o".
 
 	}; // End of class def.
+	DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE( CObservationStereoImages , CObservation,OBS_IMPEXP )
 
 	} // End of namespace
 } // End of namespace

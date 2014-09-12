@@ -770,7 +770,7 @@ public:
     {
       unsigned long timeThis;
       timeThis = mySec * 1000 + myMSec;
-      if (ms < 0 && (unsigned)std::abs(ms) > timeThis)
+      if (ms < 0 && (unsigned)std::abs((double)ms) > timeThis)
       {
 	ArLog::log(ArLog::Terse, "ArTime::addMsec: tried to subtract too many milliseconds, would result in a negative time.");
 	mySec = 0;

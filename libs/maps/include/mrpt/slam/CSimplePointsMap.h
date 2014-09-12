@@ -143,6 +143,7 @@ namespace mrpt
 			/** @} */
 
 		}; // End of class def.
+		DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE( CSimplePointsMap , CPointsMap, MAPS_IMPEXP )
 	} // End of namespace
 	
 	namespace utils

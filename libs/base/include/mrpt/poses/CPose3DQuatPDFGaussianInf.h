@@ -135,6 +135,7 @@ namespace poses
 		double  evaluateNormalizedPDF( const CPose3DQuat &x ) const;
 
 	}; // End of class def.
+	DEFINE_SERIALIZABLE_POST_CUSTOM_BASE( CPose3DQuatPDFGaussianInf , CPose3DQuatPDF )
 
 
 	/** Pose composition for two 3D pose Gaussians  \sa CPose3DQuatPDFGaussianInf::operator += */

@@ -41,6 +41,7 @@ namespace mrpt
 			inline void setObservation( mrpt::slam::CObservationPtr newObs ){	obs = newObs;	};
 
 		}; // End of class
+		DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE( CDetectableObject, mrpt::utils::CSerializable, DETECTORS_IMPEXP )
 
 
 		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CDetectable2D, mrpt::detectors::CDetectableObject, DETECTORS_IMPEXP )
@@ -80,6 +81,7 @@ namespace mrpt
 			};
 
 		};
+		DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE( CDetectable2D, mrpt::detectors::CDetectableObject, DETECTORS_IMPEXP )
 
 
 		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CDetectable3D, mrpt::detectors::CDetectable2D, DETECTORS_IMPEXP )
@@ -92,9 +94,7 @@ namespace mrpt
 
 			CDetectable3D(){};
 
-			CDetectable3D( const CDetectable2DPtr &object2d )
-				: CDetectable2D( object2d.pointer() ), m_z(0)
-			{ };
+			CDetectable3D( const CDetectable2DPtr &object2d );
 
 			/** Copy pointer content constructor */
 			CDetectable3D( const CDetectable3D *d )
@@ -106,6 +106,7 @@ namespace mrpt
 			float		m_z; //!< Z coordinate of detected object
 
 		}; // End of class
+		DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE( CDetectable3D, mrpt::detectors::CDetectable2D, DETECTORS_IMPEXP )
 	}
 
 }

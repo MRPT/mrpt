@@ -147,6 +147,7 @@ namespace mrpt
 
 
 		}; // End of class def.
+		DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE( CKinematicChain, mrpt::utils::CSerializable, KINEMATICS_IMPEXP )
 
 	} // End of namespace
 

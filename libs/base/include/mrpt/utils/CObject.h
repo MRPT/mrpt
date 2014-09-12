@@ -168,64 +168,70 @@ namespace mrpt
 			DEFINE_MRPT_OBJECT_CUSTOM_LINKAGE(class_name, static /*none*/, virtual /*none*/)
 
 		// This macro is a workaround to avoid possibly empty arguments to MACROS (when _LINKAGE_ evals to nothing...)
-		#define DEFINE_MRPT_OBJECT_PRE_CUSTOM_BASE_LINKAGE(class_name, base_name, _LINKAGE_ ) \
-			DEFINE_MRPT_OBJECT_PRE_CUSTOM_BASE_LINKAGE2(class_name, base_name, _LINKAGE_ class_name)
+		#define DEFINE_MRPT_OBJECT_PRE_CUSTOM_BASE_LINKAGE(class_name, base_name, _LINKAGE_ )  DEFINE_MRPT_OBJECT_PRE_CUSTOM_BASE_LINKAGE2(class_name, base_name, _LINKAGE_ class_name)
+		#define DEFINE_MRPT_OBJECT_POST_CUSTOM_BASE_LINKAGE(class_name, base_name, _LINKAGE_ ) DEFINE_MRPT_OBJECT_POST_CUSTOM_BASE_LINKAGE2(class_name, base_name, _LINKAGE_ class_name)
 
 		// Use this one when there is NO import/export macro:
-		#define DEFINE_MRPT_OBJECT_PRE_CUSTOM_BASE_NO_LINKAGE(class_name, base_name) \
-			DEFINE_MRPT_OBJECT_PRE_CUSTOM_BASE_LINKAGE2(class_name, base_name, class_name)
+		#define DEFINE_MRPT_OBJECT_PRE_CUSTOM_BASE_NO_LINKAGE(class_name, base_name) DEFINE_MRPT_OBJECT_PRE_CUSTOM_BASE_LINKAGE2(class_name, base_name, class_name)
+		#define DEFINE_MRPT_OBJECT_POST_CUSTOM_BASE_NO_LINKAGE(class_name, base_name) DEFINE_MRPT_OBJECT_POST_CUSTOM_BASE_LINKAGE2(class_name, base_name, class_name)
 
-		/**  This declaration must be inserted in all CObject classes definition, before the class declaration.
-		  */
+		/**  This declaration must be inserted in all CObject classes definition, before the class declaration.  */
 		#define DEFINE_MRPT_OBJECT_PRE_CUSTOM_BASE_LINKAGE2(class_name, base_name, class_name_LINKAGE_ ) \
-			class class_name_LINKAGE_; \
+			class  class_name_LINKAGE_; \
+			struct class_name_LINKAGE_##Ptr;
+
+		/**  This declaration must be inserted in all CObject classes definition, after the class declaration.  */
+		#define DEFINE_MRPT_OBJECT_POST_CUSTOM_BASE_LINKAGE2(class_name, base_name, class_name_LINKAGE_ ) \
 			/*! The smart pointer type for the associated class */ \
 			struct class_name_LINKAGE_##Ptr : public base_name##Ptr \
 			{ \
 				typedef class_name value_type; \
 				inline class_name##Ptr() : base_name##Ptr(static_cast<base_name*>(NULL)) { } \
-				inline explicit class_name##Ptr(class_name* p) : base_name##Ptr( reinterpret_cast<base_name*>(p) ) { } \
+				inline explicit class_name##Ptr(class_name* p) : base_name##Ptr( static_cast<base_name*>(p) ) { } \
 				inline explicit class_name##Ptr(const base_name##Ptr & p) : base_name##Ptr(p) { ASSERTMSG_( p->GetRuntimeClass()->derivedFrom(#class_name),::mrpt::format("Wrong typecasting of smart pointers: %s -> %s",p->GetRuntimeClass()->className, #class_name) )  } \
 				inline explicit class_name##Ptr(const mrpt::utils::CObjectPtr & p) : base_name##Ptr(p) { ASSERTMSG_( p->GetRuntimeClass()->derivedFrom(#class_name),::mrpt::format("Wrong typecasting of smart pointers: %s -> %s",p->GetRuntimeClass()->className, #class_name) )  } \
-				inline void setFromPointerDoNotFreeAtDtor(const class_name* p) { this->set(const_cast<mrpt::utils::CObject*>(reinterpret_cast<const mrpt::utils::CObject*>(p))); m_holder->increment(); } \
+				inline void setFromPointerDoNotFreeAtDtor(const class_name* p) { this->set(const_cast<mrpt::utils::CObject*>(static_cast<const mrpt::utils::CObject*>(p))); m_holder->increment(); } \
 				/*! Return the internal plain C++ pointer */ \
-				inline class_name * pointer() { return reinterpret_cast<class_name*>(base_name##Ptr::pointer()); } \
+				inline class_name * pointer() { return dynamic_cast<class_name*>(base_name##Ptr::pointer()); } \
 				/*! Return the internal plain C++ pointer (const) */ \
-				inline const class_name * pointer() const { return reinterpret_cast<const class_name*>(base_name##Ptr::pointer()); } \
-				inline class_name* operator ->(void) { return reinterpret_cast<class_name*>( base_name##Ptr::operator ->() ); } \
-				inline const class_name* operator ->(void) const { return reinterpret_cast<const class_name*>( base_name##Ptr::operator ->() ); } \
-				inline class_name& operator *(void) { return *reinterpret_cast<class_name*>( base_name##Ptr::operator ->() ); } \
-				inline const class_name& operator *(void) const { return *reinterpret_cast<const class_name*>( base_name##Ptr::operator ->() ); } \
+				inline const class_name * pointer() const { return dynamic_cast<const class_name*>(base_name##Ptr::pointer()); } \
+				inline class_name* operator ->(void) { return dynamic_cast<class_name*>( base_name##Ptr::operator ->() ); } \
+				inline const class_name* operator ->(void) const { return dynamic_cast<const class_name*>( base_name##Ptr::operator ->() ); } \
+				inline class_name& operator *(void) { return *dynamic_cast<class_name*>( base_name##Ptr::operator ->() ); } \
+				inline const class_name& operator *(void) const { return *dynamic_cast<const class_name*>( base_name##Ptr::operator ->() ); } \
 			};
 
 
 		// This macro is a workaround to avoid possibly empty arguments to MACROS (when _LINKAGE_ evals to nothing...)
-		#define DEFINE_MRPT_OBJECT_PRE_CUSTOM_LINKAGE(class_name,_LINKAGE_) \
-			DEFINE_MRPT_OBJECT_PRE_CUSTOM_LINKAGE2(class_name, _LINKAGE_ class_name)
+		#define DEFINE_MRPT_OBJECT_PRE_CUSTOM_LINKAGE(class_name,_LINKAGE_)  DEFINE_MRPT_OBJECT_PRE_CUSTOM_LINKAGE2(class_name, _LINKAGE_ class_name)
+		#define DEFINE_MRPT_OBJECT_POST_CUSTOM_LINKAGE(class_name,_LINKAGE_) DEFINE_MRPT_OBJECT_POST_CUSTOM_LINKAGE2(class_name, _LINKAGE_ class_name)
 
 		// Use this macro when there is NO export/import macro:
-		#define DEFINE_MRPT_OBJECT_PRE_NO_LINKAGE(class_name) \
-			DEFINE_MRPT_OBJECT_PRE_CUSTOM_LINKAGE2(class_name, class_name)
+		#define DEFINE_MRPT_OBJECT_PRE_NO_LINKAGE(class_name) DEFINE_MRPT_OBJECT_PRE_CUSTOM_LINKAGE2(class_name, class_name)
+		#define DEFINE_MRPT_OBJECT_POST_NO_LINKAGE(class_name) DEFINE_MRPT_OBJECT_POST_CUSTOM_LINKAGE2(class_name, class_name)
 
 		// This one is almost identical to the one above, but without a member:
 		/**  This declaration must be inserted in all CObject classes definition, before the class declaration. */
 		#define DEFINE_MRPT_OBJECT_PRE_CUSTOM_LINKAGE2(class_name,class_name_LINKAGE_) \
-			class class_name_LINKAGE_; \
+			struct class_name_LINKAGE_##Ptr;
+
+		/**  This declaration must be inserted in all CObject classes definition, after the class declaration. */
+		#define DEFINE_MRPT_OBJECT_POST_CUSTOM_LINKAGE2(class_name,class_name_LINKAGE_) \
 			/*! The smart pointer type for the associated class */ \
 			struct class_name_LINKAGE_##Ptr : public mrpt::utils::CObjectPtr \
 			{ \
 				inline class_name##Ptr() : mrpt::utils::CObjectPtr(static_cast<mrpt::utils::CObject*>(NULL)) { } \
-				inline explicit class_name##Ptr(class_name* p) : mrpt::utils::CObjectPtr( reinterpret_cast<mrpt::utils::CObject*>(p) ) { } \
+				inline explicit class_name##Ptr(class_name* p) : mrpt::utils::CObjectPtr( static_cast<mrpt::utils::CObject*>(p) ) { } \
 				inline explicit class_name##Ptr(const mrpt::utils::CObjectPtr & p) : mrpt::utils::CObjectPtr(p) { ASSERTMSG_( p->GetRuntimeClass()->derivedFrom(#class_name),::mrpt::format("Wrong typecasting of smart pointers: %s -> %s",p->GetRuntimeClass()->className, #class_name) )  } \
-				inline void setFromPointerDoNotFreeAtDtor(const class_name* p) { this->set(const_cast<mrpt::utils::CObject*>(reinterpret_cast<const mrpt::utils::CObject*>(p))); m_holder->increment(); } \
+				inline void setFromPointerDoNotFreeAtDtor(const class_name* p) { this->set(const_cast<mrpt::utils::CObject*>(static_cast<const mrpt::utils::CObject*>(p))); m_holder->increment(); } \
 				/*! Return the internal plain C++ pointer */ \
-				inline class_name * pointer() { return reinterpret_cast<class_name*>(mrpt::utils::CObjectPtr::pointer()); } \
+				inline class_name * pointer() { return dynamic_cast<class_name*>(mrpt::utils::CObjectPtr::pointer()); } \
 				/*! Return the internal plain C++ pointer (const) */ \
-				inline const class_name * pointer() const { return reinterpret_cast<const class_name*>(mrpt::utils::CObjectPtr::pointer()); } \
-				inline class_name* operator ->(void) { return reinterpret_cast<class_name*>( mrpt::utils::CObjectPtr::operator ->() ); } \
-				inline const class_name* operator ->(void) const { return reinterpret_cast<const class_name*>( mrpt::utils::CObjectPtr::operator ->() ); } \
-				inline class_name& operator *(void) { return *reinterpret_cast<class_name*>( mrpt::utils::CObjectPtr::operator ->() ); } \
-				inline const class_name& operator *(void) const { return *reinterpret_cast<const class_name*>( mrpt::utils::CObjectPtr::operator ->() ); } \
+				inline const class_name * pointer() const { return dynamic_cast<const class_name*>(mrpt::utils::CObjectPtr::pointer()); } \
+				inline class_name* operator ->(void) { return dynamic_cast<class_name*>( mrpt::utils::CObjectPtr::operator ->() ); } \
+				inline const class_name* operator ->(void) const { return dynamic_cast<const class_name*>( mrpt::utils::CObjectPtr::operator ->() ); } \
+				inline class_name& operator *(void) { return *dynamic_cast<class_name*>( mrpt::utils::CObjectPtr::operator ->() ); } \
+				inline const class_name& operator *(void) const { return *dynamic_cast<const class_name*>( mrpt::utils::CObjectPtr::operator ->() ); } \
 			};
 
 		/**  This declaration must be inserted in all CObject classes definition, before the class declaration.
@@ -235,8 +241,8 @@ namespace mrpt
 
 		/**  This declaration must be inserted in all CObject classes definition, before the class declaration.
 		  */
-		#define DEFINE_MRPT_OBJECT_PRE(class_name) \
-			DEFINE_MRPT_OBJECT_PRE_CUSTOM_LINKAGE(class_name, BASE_IMPEXP )  // This macro is valid for classes within mrpt-base only.
+		#define DEFINE_MRPT_OBJECT_PRE(class_name)  DEFINE_MRPT_OBJECT_PRE_CUSTOM_LINKAGE(class_name, BASE_IMPEXP )  // This macro is valid for classes within mrpt-base only.
+		#define DEFINE_MRPT_OBJECT_POST(class_name) DEFINE_MRPT_OBJECT_POST_CUSTOM_LINKAGE(class_name, BASE_IMPEXP )  // This macro is valid for classes within mrpt-base only.
 
 		/** This must be inserted in all CObject classes implementation files
 		  */

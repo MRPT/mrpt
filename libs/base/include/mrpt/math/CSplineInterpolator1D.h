@@ -104,6 +104,7 @@ namespace mrpt
 			}
 
 		};
+		DEFINE_SERIALIZABLE_POST_CUSTOM_BASE( CSplineInterpolator1D, mrpt::utils::CSerializable )
 
 	} // End of namespace
 } // End of namespace

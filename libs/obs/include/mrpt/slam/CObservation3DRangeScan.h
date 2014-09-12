@@ -324,6 +324,7 @@ namespace slam
 		static TCached3DProjTables m_3dproj_lut; //!< 3D point cloud projection look-up-table \sa project3DPointsFromDepthImage
 
 	}; // End of class def.
+	DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE( CObservation3DRangeScan, CObservation,OBS_IMPEXP )
 
 
 	} // End of namespace

@@ -19,7 +19,7 @@ namespace mrpt
 	{
 		using mrpt::math::TPoint3D;
 		using mrpt::utils::TColor;
-		class OPENGL_IMPEXP COctoMapVoxels;
+
 
 		enum predefined_voxel_sets_t
 		{
@@ -215,6 +215,7 @@ namespace mrpt
 			/** Private, virtual destructor: only can be deleted from smart pointers. */
 			virtual ~COctoMapVoxels() { }
 		};
+		DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE( COctoMapVoxels, CRenderizableDisplayList, OPENGL_IMPEXP )
 
 	} // end namespace
 } // End of namespace

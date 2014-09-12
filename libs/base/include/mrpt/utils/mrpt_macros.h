@@ -396,6 +396,11 @@
 #define MRPT_FORCE_INLINE inline
 #endif
 
+/** Determines whether this is an X86 or AMD64 platform */
+#if defined(__amd64__) || defined(__amd64) || defined(__x86_64__) || defined(__x86_64) || defined(_M_AMD64) || defined (_M_X64) \
+	|| defined (__i386__)|| defined (__i386) || defined (_M_I86) || defined (i386) || defined(_M_IX86) || defined (_X86_)
+#	define MRPT_IS_X86_AMD64  1
+#endif
 
 namespace mrpt
 {

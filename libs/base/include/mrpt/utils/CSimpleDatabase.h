@@ -197,6 +197,9 @@ private:
 
 }; // end of class definition
 
+DEFINE_SERIALIZABLE_POST_CUSTOM_BASE( CSimpleDatabase, mrpt::utils::CSerializable )
+DEFINE_SERIALIZABLE_POST_CUSTOM_BASE( CSimpleDatabaseTable, mrpt::utils::CSerializable )
+
 
 } // End of namespace
 } // End of namespace

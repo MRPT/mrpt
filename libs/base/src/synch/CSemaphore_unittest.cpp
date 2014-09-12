@@ -93,7 +93,7 @@ TEST(Synch, CSemaphore_named )
 		launchTestWithTimeout(my_CSemaphore_named<6,1>, 5.0, "CSemaphore named: #threads=6, init count=1");
 		launchTestWithTimeout(my_CSemaphore_named<10,5>, 5.0, "CSemaphore named: #threads=10, init count=5");
 	}
-	catch (std::exception &e)
+	catch (std::exception &)
 	{
 		std::cerr << "*Skipping test* It seems the kernel doesn't support named semaphores in this platform\n";
 	}

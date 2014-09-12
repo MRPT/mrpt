@@ -76,6 +76,7 @@ namespace poses
 		}
 
 	}; // End of class def.
+	DEFINE_SERIALIZABLE_POST_CUSTOM_BASE( CPointPDF, mrpt::utils::CSerializable )
 
 
 	} // End of namespace

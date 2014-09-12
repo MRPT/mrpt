@@ -71,6 +71,7 @@ namespace math
 		}
 
 	};
+	DEFINE_SERIALIZABLE_POST_CUSTOM_BASE( CPolygon, mrpt::utils::CSerializable )
 
 	} // End of namespace
 } // End of namespace

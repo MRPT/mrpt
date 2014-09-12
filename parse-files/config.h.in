@@ -63,6 +63,9 @@ ${CMAKE_MRPT_BUILD_SHARED_LIB}
 /** Has PGR Fly Capture 2? */
 #define MRPT_HAS_FLYCAPTURE2 ${CMAKE_MRPT_HAS_FLYCAPTURE2}
 
+/** Has PGR Triclops? */
+#define MRPT_HAS_TRICLOPS ${CMAKE_MRPT_HAS_TRICLOPS}
+
 /** Define for including Phidget interface kit interface through the vendor's proprietary API (libPhidget). \sa CStereoGrabber_SVS  */
 #define MRPT_HAS_PHIDGET        ${CMAKE_MRPT_HAS_PHIDGET}
 
@@ -156,15 +159,16 @@ ${CMAKE_MRPT_BUILD_SHARED_LIB}
 #endif
 
 /** Use optimized functions with the SSE4 machine instructions set */
-#if defined WIN32 && (!defined WIN64 || defined EM64T) && \
- (_MSC_VER >= 1500) || (defined __SSE4__ && defined __GNUC__ && __GNUC__ >= 4)
-	#define MRPT_HAS_SSE4  ${CMAKE_MRPT_HAS_SSE4}   // This value can be set to 0 from CMake with DISABLE_SSE4
-#else
-	#define MRPT_HAS_SSE4  0
-#endif
+#define MRPT_HAS_SSE4_1  ${CMAKE_MRPT_HAS_SSE4_1}   // This value can be set to 0 from CMake with DISABLE_SSE4_1
+#define MRPT_HAS_SSE4_2  ${CMAKE_MRPT_HAS_SSE4_2}   // This value can be set to 0 from CMake with DISABLE_SSE4_2
+#define MRPT_HAS_SSE4_A  ${CMAKE_MRPT_HAS_SSE4_A}   // This value can be set to 0 from CMake with DISABLE_SSE4_A
+
 
 /** Whether to include the ActivMedia Robotics ARIA: */
 #define MRPT_HAS_ARIA ${CMAKE_MRPT_HAS_ARIA}
+
+/** Whether to include RoboPeak LIDAR: */
+#define MRPT_HAS_ROBOPEAK_LIDAR ${CMAKE_MRPT_HAS_ROBOPEAK_LIDAR}
 
 /** Whether to include the xSens MTi device interface: */
 #define MRPT_HAS_xSENS_MT3 ${CMAKE_MRPT_HAS_xSENS_MT3}
@@ -177,6 +181,9 @@ ${CMAKE_MRPT_BUILD_SHARED_LIB}
 #define MRPT_HAS_ZLIB ${CMAKE_MRPT_HAS_ZLIB}
 #define MRPT_HAS_ZLIB_SYSTEM ${CMAKE_MRPT_HAS_ZLIB_SYSTEM}
 
+/** Whether libassimp is present.  */
+#define MRPT_HAS_ASSIMP ${CMAKE_MRPT_HAS_ASSIMP}
+#define MRPT_HAS_ASSIMP_SYSTEM ${CMAKE_MRPT_HAS_ASSIMP_SYSTEM}
 
 /** Whether libdc1394-2 is installed in the system.  */
 #define MRPT_HAS_LIBDC1394_2 ${CMAKE_MRPT_HAS_LIBDC1394_2}

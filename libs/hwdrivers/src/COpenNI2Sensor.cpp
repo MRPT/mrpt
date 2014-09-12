@@ -82,8 +82,6 @@ COpenNI2Sensor::~COpenNI2Sensor()
 {
 #if MRPT_HAS_OPENNI2
   close(m_user_device_number);
-#else
-	THROW_EXCEPTION("MRPT was built without OpenNI2 support")
 #endif // MRPT_HAS_OPENNI2
 }
 

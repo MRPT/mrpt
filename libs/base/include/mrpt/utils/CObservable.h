@@ -9,7 +9,6 @@
 #ifndef  CObservable_H
 #define  CObservable_H
 
-//#include <mrpt/utils/utils_defs.h>
 #include <mrpt/config.h>
 #include <mrpt/base/link_pragmas.h>
 #include <set>

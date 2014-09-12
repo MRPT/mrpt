@@ -43,19 +43,11 @@ const CSinCosLookUpTableFor2DScans::TSinCosValues & CSinCosLookUpTableFor2DScans
 		new_entry.ccos.resize(scan_prop.nRays+4);
 		new_entry.csin.resize(scan_prop.nRays+4);
 
+		ASSERT_(scan_prop.nRays>=2)
         if (scan_prop.nRays>0)
 		{
-			double Ang, dA;
-			if (scan_prop.rightToLeft)
-			{
-				Ang = - 0.5 * scan_prop.aperture;
-				dA  = scan_prop.aperture / (scan_prop.nRays-1);
-			}
-			else
-			{
-				Ang = + 0.5 * scan_prop.aperture;
-				dA  = - scan_prop.aperture / (scan_prop.nRays-1);
-			}
+			double  Ang = (scan_prop.rightToLeft ? -0.5:+0.5) *scan_prop.aperture;
+			const double dA = (scan_prop.rightToLeft ? 1.0:-1.0) * (scan_prop.aperture / (scan_prop.nRays-1));
 
 			for (size_t i=0;i<scan_prop.nRays;i++)
 			{

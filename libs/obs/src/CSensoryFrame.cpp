@@ -125,7 +125,7 @@ void  CSensoryFrame::readFromStream(CStream &in,int version)
 			}
 
 			if (version==0)
-				in.ReadBuffer( &tempTimeStamp, sizeof(tempTimeStamp));
+				in.ReadBufferFixEndianness( &tempTimeStamp, 1);
 
 			in >> n;
 			m_observations.resize(n);

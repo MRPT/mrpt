@@ -217,18 +217,14 @@ namespace mrpt
 			}
 
 		};
-		/**
-		  * Inserts an openGL object into a scene. Allows call chaining.
-		  * \sa mrpt::opengl::COpenGLScene::insert
-		  */
+		DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE( COpenGLScene, mrpt::utils::CSerializable, OPENGL_IMPEXP )
+		
+			/** Inserts an openGL object into a scene. Allows call chaining. \sa mrpt::opengl::COpenGLScene::insert  */
 		inline COpenGLScenePtr &operator<<(COpenGLScenePtr &s,const CRenderizablePtr &r)	{
 			s->insert(r);
 			return s;
 		}
-		/**
-		  * Inserts any iterable collection of openGL objects into a scene, allowing call chaining.
-		  * \sa mrpt::opengl::COpenGLScene::insert
-		  */
+		/**Inserts any iterable collection of openGL objects into a scene, allowing call chaining.  \sa mrpt::opengl::COpenGLScene::insert */
 		template <class T> inline COpenGLScenePtr &operator<<(COpenGLScenePtr &s,const std::vector<T> &v)	{
 			s->insert(v.begin(),v.end());
 			return s;

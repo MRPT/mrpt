@@ -19,7 +19,7 @@ namespace mrpt
 	{
 		using mrpt::math::TPoint3D;
 		using mrpt::math::TSegment3D;
-		class OPENGL_IMPEXP CSetOfLines;
+
 
 		// This must be added to any CSerializable derived class:
 		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CSetOfLines, CRenderizableDisplayList, OPENGL_IMPEXP )
@@ -166,9 +166,7 @@ namespace mrpt
 			/**
 			  * Class factory
 			  */
-			inline static CSetOfLinesPtr Create(const std::vector<TSegment3D> &sgms, const bool antiAliasing = true)	{
-				return CSetOfLinesPtr(new CSetOfLines(sgms,antiAliasing));
-			}
+			static CSetOfLinesPtr Create(const std::vector<TSegment3D> &sgms, const bool antiAliasing = true);
 			/** Render
 			  */
 			void  render_dl() const;
@@ -230,6 +228,7 @@ namespace mrpt
 			/** Private, virtual destructor: only can be deleted from smart pointers. */
 			virtual ~CSetOfLines() { }
 		};
+		DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE( CSetOfLines, CRenderizableDisplayList, OPENGL_IMPEXP )
 		/** Inserts a set of segments into the list. Allows call chaining.
 		  * \sa mrpt::opengl::CSetOfLines::appendLines
 		  */

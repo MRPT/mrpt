@@ -95,9 +95,6 @@ ENDIF(BUILD_SHARED_LIBS)
 # Only for Unix: use pkg-config to find libraries
 # ===================================================
 INCLUDE(FindPkgConfig OPTIONAL)
-IF(PKG_CONFIG_FOUND)
-	INCLUDE(FindPkgConfig)
-ENDIF(PKG_CONFIG_FOUND)
 # "QUIET" was introduced in 2.8.2 for PKG_CHECK_MODULES
 if ("${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION}.${CMAKE_PATCH_VERSION}" VERSION_GREATER "2.8.1")
    set(_QUIET QUIET)
@@ -118,12 +115,19 @@ endif (ENABLE_SOLUTION_FOLDERS)
 
 # Build the ARIA library?
 SET(BUILD_ARIA ON CACHE BOOL "Build an embedded version of ActivMedia ARIA library (interface to mobile robots)")
-#MARK_AS_ADVANCED(BUILD_ARIA)
 IF(BUILD_ARIA)
 	SET(CMAKE_MRPT_HAS_ARIA 1)
 ELSE(BUILD_ARIA)
 	SET(CMAKE_MRPT_HAS_ARIA 0)
 ENDIF(BUILD_ARIA)
+
+# Build the RoboPeak Lidar library?
+SET(BUILD_ROBOPEAK_LIDAR ON CACHE BOOL "Build an embedded version of RoboPeak LIDAR SDK (interface to low-cost lidar)")
+IF(BUILD_ROBOPEAK_LIDAR)
+	SET(CMAKE_MRPT_HAS_ROBOPEAK_LIDAR 1)
+ELSE(BUILD_ROBOPEAK_LIDAR)
+	SET(CMAKE_MRPT_HAS_ROBOPEAK_LIDAR 0)
+ENDIF(BUILD_ROBOPEAK_LIDAR)
 
 #-----------------------------------
 #  Build the hardware drivers?
@@ -176,6 +180,25 @@ IF(MSVC)
 	SET(COMPILE_IN_PARALLEL ON CACHE BOOL "Enable parallel compilation in Visual Studio")
 ENDIF(MSVC)
 
+# ----------------------------------------------------------------------------
+#   Uninstall target, for "make uninstall"
+# Must be invoked *before* other embedded projects so MRPT's target "uninstall" exists first
+# ----------------------------------------------------------------------------
+CONFIGURE_FILE(
+  "${CMAKE_CURRENT_SOURCE_DIR}/parse-files/cmake_uninstall.cmake.in"
+  "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake"
+  IMMEDIATE @ONLY)
+
+ADD_CUSTOM_TARGET(uninstall
+  "${CMAKE_COMMAND}" -P "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake")
+
+if(ENABLE_SOLUTION_FOLDERS)
+	set_target_properties(uninstall PROPERTIES FOLDER "CMakeTargets")
+endif(ENABLE_SOLUTION_FOLDERS)
+
+# ----------------------------------------------------------------------------
+# Other sub-scripts:
+# ----------------------------------------------------------------------------
 include(cmakemodules/script_gridmap_options.cmake REQUIRED)			# Enable Intel Threading Building Blocks (TBB) lib?
 
 include(cmakemodules/script_tbb.cmake REQUIRED)         # Enable Intel Threading Building Blocks (TBB) lib?
@@ -190,6 +213,7 @@ include(cmakemodules/script_openni2.cmake REQUIRED)     # Check for the OpenNI2 
 include(cmakemodules/script_ffmpeg.cmake REQUIRED)      # Check for ffmpeg C libraries: libavcodec, libavutil, libavformat, libswscale
 include(cmakemodules/script_wxwidgets.cmake REQUIRED)   # Check for wxWidgets + GL
 include(cmakemodules/script_libdc1394.cmake REQUIRED)   # Check for libdc1394-2
+include(cmakemodules/script_assimp.cmake REQUIRED)      # Check for system assimp lib (3D models)
 include(cmakemodules/script_lib3ds.cmake REQUIRED)      # Check for system lib3ds
 include(cmakemodules/script_liblas.cmake REQUIRED)      # Check for the LAS LiDAR format library
 include(cmakemodules/script_libtclap.cmake REQUIRED)    # Check for system libtclap
@@ -203,6 +227,7 @@ include(cmakemodules/script_national_instruments.cmake REQUIRED)  # NI C library
 include(cmakemodules/script_sift_hess.cmake REQUIRED)  # SIFT Hess implementation 
 include(cmakemodules/script_xsens.cmake REQUIRED)      # XSens Motion trackers / IMU drivers
 include(cmakemodules/script_flycapture2.cmake REQUIRED)# Check for PointGreyResearch (PGR) FlyCapture2 library
+include(cmakemodules/script_triclops.cmake REQUIRED)	# Check for PointGreyResearch (PGR) Triclops library
 include(cmakemodules/script_duo3d.cmake REQUIRED)		# Support for DUO3D Camera
 # ---------------------------------------------------------------------------
 #			OPTIONS
@@ -434,9 +459,9 @@ if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang" OR CMAKE_COMPILER_IS_GNUCXX)
 	ENDIF(MRPT_WARNINGS_ARE_ERRORS)
 
 	# We need pthread's
-	IF (UNIX)
+	IF (UNIX AND NOT APPLE)
 		SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
-	ENDIF(UNIX)
+	ENDIF(UNIX AND NOT APPLE)
 
 	IF(CMAKE_BUILD_TYPE MATCHES "Debug")
 		SET(EXTRA_CPP_FLAGS "${EXTRA_CPP_FLAGS} -g")
@@ -501,10 +526,16 @@ if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang" OR CMAKE_COMPILER_IS_GNUCXX)
 		SET(EXTRA_CPP_FLAGS "${EXTRA_CPP_FLAGS} -msse3 -mssse3")
 	ENDIF(CMAKE_MRPT_HAS_SSE3)
 
-	# SSE4?
-	IF (CMAKE_MRPT_HAS_SSE4)
-		SET(EXTRA_CPP_FLAGS "${EXTRA_CPP_FLAGS} -msse4")
-	ENDIF(CMAKE_MRPT_HAS_SSE4)
+	# SSE4*?
+	IF (CMAKE_MRPT_HAS_SSE4_1)
+		SET(EXTRA_CPP_FLAGS "${EXTRA_CPP_FLAGS} -msse4.1")
+	ENDIF(CMAKE_MRPT_HAS_SSE4_1)
+	IF (CMAKE_MRPT_HAS_SSE4_2)
+		SET(EXTRA_CPP_FLAGS "${EXTRA_CPP_FLAGS} -msse4.2")
+	ENDIF(CMAKE_MRPT_HAS_SSE4_2)
+	IF (CMAKE_MRPT_HAS_SSE4_A)
+		SET(EXTRA_CPP_FLAGS "${EXTRA_CPP_FLAGS} -msse4a")
+	ENDIF(CMAKE_MRPT_HAS_SSE4_A)
 
 endif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang" OR CMAKE_COMPILER_IS_GNUCXX)
 
@@ -616,21 +647,6 @@ include(cmakemodules/script_create_MRPTConfig.cmake REQUIRED)  # Generate the MR
 
 # Prepare CPack params for building binary packages (has to be after the apps/)
 include(cmakemodules/script_setup_cpack.cmake REQUIRED)			
-
-# ----------------------------------------------------------------------------
-#   Uninstall target, for "make uninstall"
-# ----------------------------------------------------------------------------
-CONFIGURE_FILE(
-  "${CMAKE_CURRENT_SOURCE_DIR}/parse-files/cmake_uninstall.cmake.in"
-  "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake"
-  IMMEDIATE @ONLY)
-
-ADD_CUSTOM_TARGET(uninstall
-  "${CMAKE_COMMAND}" -P "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake")
-
-if(ENABLE_SOLUTION_FOLDERS)
-	set_target_properties(uninstall PROPERTIES FOLDER "CMakeTargets")
-endif(ENABLE_SOLUTION_FOLDERS)
 
 # ----------------------------------------------------------------------------
 #  Hide some variables to the user, just show the important variables:

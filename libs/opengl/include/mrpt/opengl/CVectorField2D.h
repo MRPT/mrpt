@@ -24,7 +24,7 @@ namespace mrpt
 		using mrpt::math::CMatrixFloat;
 		using mrpt::utils::TColor;
 		using mrpt::utils::TColorf;
-		class OPENGL_IMPEXP CVectorField2D;
+
 
 		// This must be added to any CSerializable derived class:
 		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CVectorField2D, CRenderizableDisplayList, OPENGL_IMPEXP )
@@ -210,9 +210,7 @@ namespace mrpt
 			/**
 			  * Class factory
 			  */
-			inline static CVectorField2DPtr Create(const CMatrixFloat Matrix_x, const CMatrixFloat Matrix_y, float	xmin=-1, float xmax=1, float ymin=-1, float ymax=1)	{
-				return CVectorField2DPtr(new CVectorField2D( Matrix_x,  Matrix_y, xmin, xmax, ymin, ymax));
-			}
+			static CVectorField2DPtr Create(const CMatrixFloat Matrix_x, const CMatrixFloat Matrix_y, float	xmin=-1, float xmax=1, float ymin=-1, float ymax=1);
 			/** Render
 			  */
 			void  render_dl() const;
@@ -232,6 +230,7 @@ namespace mrpt
 			/** Private, virtual destructor: only can be deleted from smart pointers. */
 			virtual ~CVectorField2D() { }
 		};
+		DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE( CVectorField2D, CRenderizableDisplayList, OPENGL_IMPEXP )
 
 
 	} // end namespace

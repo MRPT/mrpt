@@ -20,7 +20,7 @@ namespace mrpt
 {
 	namespace opengl
 	{
-		class OPENGL_IMPEXP CMesh;
+
 
 		// This must be added to any CSerializable derived class:
 		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CMesh, CRenderizableDisplayList, OPENGL_IMPEXP )
@@ -157,10 +157,7 @@ namespace mrpt
 
 
 			/** Class factory  */
-			static CMeshPtr Create(bool enableTransparency, float xMin = 0.0f, float xMax = 0.0f, float yMin = 0.0f, float yMax = 0.0f )
-			{
-				return CMeshPtr( new CMesh( enableTransparency, xMin ,xMax , yMin ,yMax ) );
-			}
+			static CMeshPtr Create(bool enableTransparency, float xMin = 0.0f, float xMax = 0.0f, float yMin = 0.0f, float yMax = 0.0f );
 
 			/** Render
 			  */
@@ -218,6 +215,7 @@ namespace mrpt
 			virtual ~CMesh() { }
 
 		};
+		DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE( CMesh, CRenderizableDisplayList, OPENGL_IMPEXP )
 
 	} // end namespace
 

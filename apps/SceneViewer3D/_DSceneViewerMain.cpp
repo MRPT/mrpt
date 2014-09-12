@@ -13,13 +13,13 @@
 #include <wx/app.h>
 
 //(*InternalHeaders(_DSceneViewerFrame)
-#include <wx/string.h>
-#include <wx/intl.h>
-#include <wx/tglbtn.h>
-#include <wx/bitmap.h>
-#include <wx/icon.h>
-#include <wx/image.h>
 #include <wx/artprov.h>
+#include <wx/bitmap.h>
+#include <wx/tglbtn.h>
+#include <wx/icon.h>
+#include <wx/intl.h>
+#include <wx/image.h>
+#include <wx/string.h>
 //*)
 
 #include "CDialogOptions.h"
@@ -56,7 +56,7 @@
 
 #include <mrpt/opengl/COpenGLScene.h> 
 #include <mrpt/opengl/CGridPlaneXY.h> 
-#include <mrpt/opengl/C3DSScene.h> 
+#include <mrpt/opengl/CAssimpModel.h> 
 #include <mrpt/opengl/CPointCloud.h> 
 #include <mrpt/opengl/CPointCloudColoured.h> 
 #include <mrpt/opengl/stock_objects.h> 
@@ -385,22 +385,22 @@ _DSceneViewerFrame::_DSceneViewerFrame(wxWindow* parent,wxWindowID id)
     wxMenuItem* MenuItem2;
     wxMenu* MenuItem15;
     wxMenuItem* MenuItem1;
-    wxFlexGridSizer* FlexGridSizer1;
+    wxMenuItem* MenuItem4;
     wxFlexGridSizer* FlexGridSizer2;
+    wxMenuItem* MenuItem13;
     wxMenu* Menu1;
     wxMenuItem* MenuItem12;
     wxMenuItem* MenuItem3;
     wxMenuBar* MenuBar1;
-    wxMenuItem* MenuItem4;
-    wxMenuItem* MenuItem13;
+    wxFlexGridSizer* FlexGridSizer1;
     wxMenu* Menu2;
 
     Create(parent, id, _("3DSceneViewer - Part of the MRPT project - Jose Luis Blanco (C) 2005-2008"), wxDefaultPosition, wxDefaultSize, wxDEFAULT_FRAME_STYLE, _T("id"));
     SetMinSize(wxSize(150,100));
     {
-    wxIcon FrameIcon;
-    FrameIcon.CopyFromBitmap(wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("MAIN_ICON")),wxART_FRAME_ICON));
-    SetIcon(FrameIcon);
+    	wxIcon FrameIcon;
+    	FrameIcon.CopyFromBitmap(wxArtProvider::GetBitmap(wxART_MAKE_ART_ID_FROM_STR(_T("MAIN_ICON")),wxART_FRAME_ICON));
+    	SetIcon(FrameIcon);
     }
     FlexGridSizer1 = new wxFlexGridSizer(1, 2, 0, 0);
     FlexGridSizer1->AddGrowableCol(1);
@@ -470,7 +470,7 @@ _DSceneViewerFrame::_DSceneViewerFrame(wxWindow* parent,wxWindowID id)
     Menu1->Append(MenuItem9);
     Menu1->AppendSeparator();
     MenuItem18 = new wxMenu();
-    MenuItem8 = new wxMenuItem(MenuItem18, ID_MENUITEM6, _("a 3DStudio object..."), wxEmptyString, wxITEM_NORMAL);
+    MenuItem8 = new wxMenuItem(MenuItem18, ID_MENUITEM6, _("a 3D model (any Assimp format)..."), wxEmptyString, wxITEM_NORMAL);
     MenuItem18->Append(MenuItem8);
     MenuItem19 = new wxMenuItem(MenuItem18, ID_MENUITEM20, _("a PLY point cloud..."), wxEmptyString, wxITEM_NORMAL);
     MenuItem18->Append(MenuItem19);
@@ -542,7 +542,7 @@ _DSceneViewerFrame::_DSceneViewerFrame(wxWindow* parent,wxWindowID id)
     StatusBar1->SetStatusStyles(4,__wxStatusBarStyles_1);
     SetStatusBar(StatusBar1);
     timLoadFileCmdLine.SetOwner(this, ID_TIMER1);
-    timLoadFileCmdLine.Start(50, true);
+    timLoadFileCmdLine.Start(50, false);
     FlexGridSizer1->Fit(this);
     FlexGridSizer1->SetSizeHints(this);
     Center();
@@ -928,7 +928,7 @@ void _DSceneViewerFrame::OnInsert3DS(wxCommandEvent& event)
 	try
 	{
 		wxString caption = wxT("Choose a file to import");
-		wxString wildcard = wxT("3DS files (*.3DS, *.3DS.gz)|*.3DS;*.3DS.gz;*.3ds;*.3ds.gz|All files (*.*)|*.*");
+		wxString wildcard = wxT("3D models (All Assimp formats)|*.dae;*.blend;*.3ds;*.ase;*.obj;*.ifc;*.xgl;.zgl;*.ply;*.dxf;.lwo;*.lws;*.lxo;*.stl;*.x;*.ac;*.ms3d;*.cob;.scn;*.bvh;*.csm;*.xml;*.irrmesh;*.irr;*.mdl;*.md2;*.md3;*.pk3;*.mdc;*.md5*;*.smd;.vta;*.m3;*.3d;*.b3d;*.q3d;*.q3s;*.nff;*.nff;*.off;*.raw;*.ter;*.mdl;*.hmp;*.ndo;|All files (*.*)|*.*");
 		wxString defaultDir( _U( iniFile->read_string(iniFileSect,"LastDir",".").c_str() ) );
 		wxString defaultFilename = wxT("");
 
@@ -942,8 +942,9 @@ void _DSceneViewerFrame::OnInsert3DS(wxCommandEvent& event)
 
 		saveLastUsedDirectoryToCfgFile(fil);
 
-		mrpt::opengl::C3DSScenePtr	obj3D = mrpt::opengl::C3DSScene::Create();
-		obj3D->loadFrom3DSFile( fil );
+		mrpt::opengl::CAssimpModelPtr	obj3D = mrpt::opengl::CAssimpModel::Create();
+		obj3D->loadScene( fil );
+		obj3D->setPose( mrpt::math::TPose3D(0,0,0, DEG2RAD(.0),DEG2RAD(0.),DEG2RAD(90.0) ) );
 		m_canvas->m_openGLScene->insert( obj3D );
 
 		m_canvas->Refresh();

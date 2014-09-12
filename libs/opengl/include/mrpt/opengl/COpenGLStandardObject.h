@@ -17,7 +17,7 @@ namespace mrpt	{
 		typedef uint32_t _GLENUM;
 		using namespace mrpt::utils;
 		using namespace mrpt::math;
-		class OPENGL_IMPEXP COpenGLStandardObject;
+
 		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE(COpenGLStandardObject,CRenderizableDisplayList, OPENGL_IMPEXP)
 		/**
 		  * Objects of this class represent a generic openGL object without specific geometric properties.
@@ -60,10 +60,8 @@ namespace mrpt	{
 			  * Creation of object from type, vertices, chunk size and a list of enabled openGL flags.
 			  * \throw std::logic_error if the number of vertices is not an exact multiple of the chunk size.
 			  */
-			static COpenGLStandardObjectPtr Create(_GLENUM t,const std::vector<TPoint3D> &v,uint32_t cs=0,const std::vector<_GLENUM> &en=std::vector<_GLENUM>())	{
-				if (cs!=0&&v.size()%cs!=0) throw std::logic_error("Vertices vector does not match chunk size");
-				return COpenGLStandardObjectPtr(new COpenGLStandardObject(t,v,cs,en));
-			}
+			static COpenGLStandardObjectPtr Create(_GLENUM t,const std::vector<TPoint3D> &v,uint32_t cs=0,const std::vector<_GLENUM> &en=std::vector<_GLENUM>());
+
 			/**
 			  * Enable some openGL flag.
 			  */
@@ -128,6 +126,7 @@ namespace mrpt	{
 			  */
 			virtual ~COpenGLStandardObject()	{}
 		};
+		DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(COpenGLStandardObject,CRenderizableDisplayList, OPENGL_IMPEXP)
 	} // end namespace
 } // End of namespace
 #endif

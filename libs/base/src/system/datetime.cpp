@@ -33,7 +33,6 @@
 	#include <signal.h>
 #endif
 
-//#include <iostream>
 #include <time.h>
 #include <sys/types.h>
 #include <sys/stat.h>

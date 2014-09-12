@@ -21,7 +21,7 @@ using namespace mrpt::utils;
 using namespace mrpt::system;
 using namespace std;
 
-IMPLEMENTS_VIRTUAL_SERIALIZABLE(CBaseGUIWindow, CObject,mrpt::gui)
+IMPLEMENTS_VIRTUAL_MRPT_OBJECT(CBaseGUIWindow, CObject,mrpt::gui)
 
 extern CStartUpClassesRegister  mrpt_gui_class_reg;
 const int dumm = mrpt_gui_class_reg.do_nothing(); // Avoid compiler removing this class in static linking

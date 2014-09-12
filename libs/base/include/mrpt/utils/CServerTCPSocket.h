@@ -51,7 +51,7 @@ namespace utils
 	public:
 		/** Constructor that creates the socket, performs binding, and start listening mode.
 		  *  \param listenPort The port to bound to.
-		  *  \param IPaddress The interface to bound the socket to. By default 127.0.0.1 implies listening at all network interfaces.
+		  *  \param IPaddress The interface to bound the socket to. By default is 127.0.0.1 for localhost, for all network interfaces use 0.0.0.0.
 		  *  \param maxConnectionsWaiting Maximum number of incoming connections waiting for "accept" before new ones are rejected.
 		  *  \param verbose Whether to dump state information to the output defined in the utils::CDebugOutputCapable interface.
 		  *  You can check if the socket has been created OK with "isListening".

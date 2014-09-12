@@ -49,6 +49,7 @@ namespace mrpt
 			void convertIntoSimplemap( CSimpleMap &out_simplemap) const;
 
 		}; // end of class
+		DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE( CRobotPosesGraph, mrpt::utils::CSerializable, HMTSLAM_IMPEXP )
 
 
 	} // End of namespace

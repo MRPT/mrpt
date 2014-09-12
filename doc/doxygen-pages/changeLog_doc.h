@@ -14,16 +14,54 @@
 
 <a name="1.2.2">
   <h2>Version 1.2.2: (Under development) </h2></a>
+	- Changes in apps:
+		- <a href="http://www.mrpt.org/list-of-mrpt-apps/application-sceneviewer3d/" >SceneViewer3D</a>:
+			- New menu "File" -> "Import" -> "3D model" which supports many standard formats (via mrpt::opengl::CAssimpModel)
+	- New classes:
+		- [mrpt-hwdrivers]
+			- mrpt::hwdrivers::CRoboPeakLidar to interface Robo Peak LIDAR scanners.
+		- [mrpt-opengl]
+			- mrpt::opengl::CAssimpModel for rendering complex 3D models (many supported formats) in OpenGL scenes.
 	- Changes in classes:
+		- Consistency in all "laser scan" classes: angular increments between rays are now FOV/(N-1) instead of FOV/N.
+		- [mrpt-base]
+			- New method mrpt::utils::CImage::loadTGA()
+			- *IMPORTANT*: Changed behavior of CSerializable/CObject macros (see bugfix below), introducing the new macros DEFINE_SERIALIZABLE_POST_*. 
+			   May require changes in user code if serializable classes are defined:
+				- Previous version:
+					\code
+						DEFINE_SERIALIZABLE_PRE_*(...)
+						class XXX {
+							DEFINE_SERIALIZABLE(XXX)
+						};
+					\endcode
+				- Must be changed in this version to:
+					\code
+						DEFINE_SERIALIZABLE_PRE_*(...)
+						class XXX {
+							DEFINE_SERIALIZABLE(XXX)
+						};
+						DEFINE_SERIALIZABLE_POST_*(...)
+					\endcode
+		- [mrpt-hwdrivers]
+			- Bumblebee2 Linux support in mrpt::hwdrivers::CImageGrabber_FlyCapture2 via Triclops (by Jesus Briales)
 		- [mrpt-maps]
 			- New method mrpt::slam::COccupancyGridMap2D::getRawMap()
 			- New method mrpt::slam::CColouredPointsMap::getPCLPointCloudXYZRGB()
 		- [mrpt-opengl]
 			- mrpt::opengl::CMyGLCanvasBase (affects all 3D rendering classes): better handling of internal timers for smoother updates while rendering in multithreading apps.
+		- [mrpt-srba]
+			- New method to recover the global coordinates graph-slam problem for a RBA map: mrpt::srba::RbaEngine::get_global_graphslam_problem() (see example [MRPT]\samples\srba-examples\srba-tutorials\tutorial-srba-how-to-recover-global-map.cpp)
 	- BUG FIXES:
 		- mrpt::utils::CImage constructor from a matrix crashed.
 		- Unit tests: Named semaphores are not tested anymore if it's detected that the kernel version doesn't support them (Fix Debian 758725).
 		- mrpt::synch::CSemaphore [Linux]: didn't call sem_unlink().
+		- mrpt::gui::CDisplayWindow3D didn't implement get/set FOV.
+		- Valgrind: Fixed potential unaligned memory access warning in point clouds.
+		- Fix build error with AppleClang 5.1 (Closes #71).
+		- mrpt::utils::CClientTCPSocket: Use a connection success check that works on all platforms
+		- Important bug fixed regarding a missing dynamic_cast<> in smart pointers casting. See above possible implications in user code.
+ properly (Patch by Joe Burmeister).
 
 <hr>
 <a name="1.2.1">

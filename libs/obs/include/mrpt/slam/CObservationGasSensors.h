@@ -177,6 +177,7 @@ namespace slam
 					}; //End of CMOSmodel class def.
 
 	}; // End of class def.
+	DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE( CObservationGasSensors , CObservation, OBS_IMPEXP)
 
 
 	} // End of namespace

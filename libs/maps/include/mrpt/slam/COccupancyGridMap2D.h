@@ -1037,6 +1037,7 @@ namespace slam
 		 */
 		int  direction2idx(int dx, int dy);
 	};
+	DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE( COccupancyGridMap2D, CMetricMap, MAPS_IMPEXP )
 
 
 	bool operator <(const COccupancyGridMap2D::TPairLikelihoodIndex &e1, const COccupancyGridMap2D::TPairLikelihoodIndex &e2);

@@ -19,7 +19,7 @@ namespace mrpt
 {
 	namespace opengl
 	{
-		class OPENGL_IMPEXP CPointCloudColoured;
+
 
 		// This must be added to any CSerializable derived class:
 		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CPointCloudColoured, CRenderizable, OPENGL_IMPEXP )
@@ -235,6 +235,7 @@ namespace mrpt
 
 
 		};
+		DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE( CPointCloudColoured, CRenderizable, OPENGL_IMPEXP )
 
 		OPENGL_IMPEXP mrpt::utils::CStream& operator>>(mrpt::utils::CStream& in,  CPointCloudColoured::TPointColour &o);
 		OPENGL_IMPEXP mrpt::utils::CStream& operator<<(mrpt::utils::CStream& out, const CPointCloudColoured::TPointColour &o);

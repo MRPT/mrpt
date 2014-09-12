@@ -66,6 +66,7 @@ namespace mrpt
 			virtual void  readFromStream(mrpt::utils::CStream &in, int version) = 0;
 		}; // End of class def.
 
+		DEFINE_MRPT_OBJECT_POST( CSerializable )
 
 		/** @name Non-streaming serialization functions
 		@{ */
@@ -138,6 +139,8 @@ namespace mrpt
 			DEFINE_MRPT_OBJECT_PRE_CUSTOM_BASE_LINKAGE2(class_name, mrpt::utils::CSerializable, _LINKAGE_ class_name) \
 			_LINKAGE_ ::mrpt::utils::CStream& operator>>(mrpt::utils::CStream& in, class_name##Ptr &pObj);
 
+		#define DEFINE_SERIALIZABLE_POST_CUSTOM_LINKAGE(class_name,_LINKAGE_) \
+			DEFINE_MRPT_OBJECT_POST_CUSTOM_BASE_LINKAGE2(class_name, mrpt::utils::CSerializable, _LINKAGE_ class_name) 
 
 		/**  This declaration must be inserted in all CSerializable classes definition, before the class declaration.
 		  */
@@ -145,28 +148,33 @@ namespace mrpt
 			DEFINE_MRPT_OBJECT_PRE_CUSTOM_BASE_LINKAGE2(class_name, mrpt::utils::CSerializable, BASE_IMPEXP class_name) \
 			BASE_IMPEXP ::mrpt::utils::CStream& operator>>(mrpt::utils::CStream& in, class_name##Ptr &pObj);
 
+		#define DEFINE_SERIALIZABLE_POST(class_name) \
+			DEFINE_MRPT_OBJECT_POST_CUSTOM_BASE_LINKAGE2(class_name, mrpt::utils::CSerializable, BASE_IMPEXP class_name) 
+
 		/**  This declaration must be inserted in all CSerializable classes definition, before the class declaration.
 		  */
 		#define DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE(class_name, base_name, _LINKAGE_ ) \
 			DEFINE_MRPT_OBJECT_PRE_CUSTOM_BASE_LINKAGE2(class_name, base_name, _LINKAGE_ class_name) \
 			_LINKAGE_ ::mrpt::utils::CStream& operator>>(mrpt::utils::CStream& in, class_name##Ptr &pObj);
 
+		#define DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(class_name, base_name, _LINKAGE_ ) \
+			DEFINE_MRPT_OBJECT_POST_CUSTOM_BASE_LINKAGE2(class_name, base_name, _LINKAGE_ class_name) 
 
-		/**  This declaration must be inserted in all CSerializable classes definition, before the class declaration.
-		  */
+		/**  This declaration must be inserted in all CSerializable classes definition, before the class declaration. */
 		#define DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE(class_name, base_name) \
 			DEFINE_MRPT_OBJECT_PRE_CUSTOM_BASE_LINKAGE(class_name, base_name, BASE_IMPEXP ) \
 			BASE_IMPEXP ::mrpt::utils::CStream& operator>>(mrpt::utils::CStream& in, class_name##Ptr &pObj);
+		
+		#define DEFINE_SERIALIZABLE_POST_CUSTOM_BASE(class_name, base_name) \
+			DEFINE_MRPT_OBJECT_POST_CUSTOM_BASE_LINKAGE(class_name, base_name, BASE_IMPEXP ) \
 
-		/** This must be inserted in all CSerializable classes implementation files:
-		  */
+		/** This must be inserted in all CSerializable classes implementation files */
 		#define IMPLEMENTS_SERIALIZABLE(class_name, base,NameSpace) \
 			IMPLEMENTS_MRPT_OBJECT(class_name, base,NameSpace) \
 			mrpt::utils::CStream& NameSpace::operator>>(mrpt::utils::CStream& in, NameSpace::class_name##Ptr &pObj) \
 			{ pObj = NameSpace::class_name##Ptr( in.ReadObject() ); return in; }
 
-		/** This declaration must be inserted in virtual CSerializable classes definition:
-		  */
+		/** This declaration must be inserted in virtual CSerializable classes definition: */
 		#define DEFINE_VIRTUAL_SERIALIZABLE(class_name) \
 			DEFINE_VIRTUAL_MRPT_OBJECT(class_name)
 

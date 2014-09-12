@@ -76,6 +76,8 @@ namespace mrpt
 			TColourUpdate m_colour_method;		//!Method used to updated voxels colour.
 
 		}; // End of class def.
+		DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE( CColouredOctoMap , CMetricMap, MAPS_IMPEXP )
+
 	} // End of namespace
 
 } // End of namespace

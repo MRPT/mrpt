@@ -28,6 +28,11 @@ IMPLEMENTS_SERIALIZABLE(COpenGLStandardObject,CRenderizableDisplayList,mrpt::ope
 COMPILE_TIME_ASSERT(GLENUM,sizeof(GLenum)==sizeof(_GLENUM));
 #endif
 
+COpenGLStandardObjectPtr COpenGLStandardObject::Create(_GLENUM t,const std::vector<TPoint3D> &v,uint32_t cs,const std::vector<_GLENUM> &en)	
+{
+	if (cs!=0&&v.size()%cs!=0) throw std::logic_error("Vertices vector does not match chunk size");
+	return COpenGLStandardObjectPtr(new COpenGLStandardObject(t,v,cs,en));
+}
 
 /*---------------------------------------------------------------
 							render

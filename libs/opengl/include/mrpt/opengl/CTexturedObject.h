@@ -17,7 +17,7 @@ namespace mrpt
 {
 	namespace opengl
 	{
-		class OPENGL_IMPEXP CTexturedObject;
+
 
 		// This must be added to any CSerializable derived class:
 		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CTexturedObject, CRenderizableDisplayList, OPENGL_IMPEXP )
@@ -79,6 +79,7 @@ namespace mrpt
 			virtual void  render_dl() const;
 
 		};
+		DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE( CTexturedObject, CRenderizableDisplayList, OPENGL_IMPEXP )
 
 	} // end namespace
 

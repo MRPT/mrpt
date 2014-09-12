@@ -249,6 +249,7 @@ namespace poses
 		/** @} */
 
 	}; // End of class def.
+	DEFINE_SERIALIZABLE_POST( CPose2D )
 
 
 	std::ostream BASE_IMPEXP & operator << (std::ostream& o, const CPose2D& p);

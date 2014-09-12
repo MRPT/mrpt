@@ -194,6 +194,7 @@ namespace slam
 
 
 	};
+	DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE( CGasConcentrationGridMap2D , CRandomFieldGridMap2D, MAPS_IMPEXP )
 
 	} // End of namespace
 

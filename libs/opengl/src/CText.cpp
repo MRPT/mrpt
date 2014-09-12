@@ -21,6 +21,8 @@ using namespace std;
 
 IMPLEMENTS_SERIALIZABLE( CText, CRenderizable, mrpt::opengl )
 
+CTextPtr CText::Create(const std::string &str) { return CTextPtr( new CText(str) ); }
+
 /*---------------------------------------------------------------
 							Constructor
   ---------------------------------------------------------------*/

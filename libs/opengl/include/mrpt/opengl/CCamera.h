@@ -103,6 +103,7 @@ namespace mrpt
 			virtual ~CCamera() { }
 
 		};
+		DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE( CCamera, CRenderizable, OPENGL_IMPEXP )
 
 	} // end namespace opengl
 

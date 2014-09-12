@@ -312,7 +312,13 @@ void CWindowDialog::OnMenuSave(wxCommandEvent& event)
 
 #endif
 
-
+CDisplayWindowPtr CDisplayWindow::Create(
+	const std::string	&windowCaption,
+	unsigned int initWidth,
+	unsigned int initHeight )
+{
+	return CDisplayWindowPtr(new CDisplayWindow(windowCaption,initWidth,initHeight));
+}
 /*---------------------------------------------------------------
 					Constructor
  ---------------------------------------------------------------*/

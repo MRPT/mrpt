@@ -203,7 +203,7 @@ void  CLogFileRecord::readFromStream(CStream &in,int version)
 				int32_t m;
 				in >> m;
 				infoPerPTG[i].TP_Obstacles.resize(m);
-				if (m) in.ReadBuffer((void*)&(*infoPerPTG[i].TP_Obstacles.begin()), m * sizeof(infoPerPTG[i].TP_Obstacles[0]));
+				if (m) in.ReadBufferFixEndianness( &(*infoPerPTG[i].TP_Obstacles.begin()), m );
 
 				if (version>=8)
 					in >> infoPerPTG[i].TP_Target; 
@@ -240,23 +240,23 @@ void  CLogFileRecord::readFromStream(CStream &in,int version)
 				// Previous values: (Removed in version 6)
 				in >> n;
 				prevV.resize(n);
-				if (n) in.ReadBuffer((void*)&(*prevV.begin()),n*sizeof(prevV[0]));
+				if (n) in.ReadBufferFixEndianness( &(*prevV.begin()),n);
 
 				in >> n;
 				prevW.resize(n);
-				if (n) in.ReadBuffer((void*)&(*prevW.begin()),n*sizeof(prevW[0]));
+				if (n) in.ReadBufferFixEndianness( &(*prevW.begin()),n);
 
 				in >> n;
 				prevSelPTG.resize(n);
-				if (n) in.ReadBuffer((void*)&(*prevSelPTG.begin()),n*sizeof(prevSelPTG[0]));
+				if (n) in.ReadBufferFixEndianness( &(*prevSelPTG.begin()),n);
 			}
 
 			in >> n;
 			robotShape_x.resize(n);
 			robotShape_y.resize(n);
 			if (n) {
-				in.ReadBuffer((void*)&(*robotShape_x.begin()), n*sizeof(robotShape_x[0]));
-				in.ReadBuffer((void*)&(*robotShape_y.begin()), n*sizeof(robotShape_y[0]));
+				in.ReadBufferFixEndianness( &(*robotShape_x.begin()), n);
+				in.ReadBufferFixEndianness( &(*robotShape_y.begin()), n);
 			}
 
 			if (version > 0)

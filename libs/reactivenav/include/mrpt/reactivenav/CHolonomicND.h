@@ -162,7 +162,7 @@ namespace mrpt
 
 	}; // end of CHolonomicND
 
-        /** A class for storing extra information about the execution of
+	/** A class for storing extra information about the execution of
 	 *    CHolonomicND navigation.
 	 * \sa CHolonomicND, CHolonomicLogFileRecord
 	 */
@@ -180,6 +180,7 @@ namespace mrpt
 		double					riskEvaluation;
 		CHolonomicND::TSituations      situation;
 	};
+	DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(CLogFileRecord_ND, CHolonomicLogFileRecord, REACTIVENAV_IMPEXP)
 
 	} // end namespace
 

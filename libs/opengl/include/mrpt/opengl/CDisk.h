@@ -17,8 +17,6 @@ namespace mrpt
 {
 	namespace opengl
 	{
-		class OPENGL_IMPEXP CDisk;
-
 		// This must be added to any CSerializable derived class:
 		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CDisk, CRenderizableDisplayList, OPENGL_IMPEXP )
 
@@ -62,9 +60,7 @@ namespace mrpt
 			  */
 			virtual bool traceRay(const mrpt::poses::CPose3D &o,double &dist) const;
 
-			static CDiskPtr Create(float radiusOut,float radiusIn,uint32_t slices=50,uint32_t loops=4)	{
-				return CDiskPtr(new CDisk(radiusOut,radiusIn,slices,loops));
-			}
+			static CDiskPtr Create(float radiusOut,float radiusIn,uint32_t slices=50,uint32_t loops=4);
 
 		private:
 			/** Constructor
@@ -76,6 +72,7 @@ namespace mrpt
 			/** Private, virtual destructor: only can be deleted from smart pointers */
 			virtual ~CDisk() { }
 		};
+		DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE( CDisk, CRenderizableDisplayList, OPENGL_IMPEXP )
 
 	} // end namespace
 

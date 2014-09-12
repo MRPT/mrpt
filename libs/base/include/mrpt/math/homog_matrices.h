@@ -9,7 +9,6 @@
 #ifndef  MRPT_HOMOG_MATRICES_H
 #define  MRPT_HOMOG_MATRICES_H
 
-//#include <mrpt/utils/utils_defs.h>
 #include <mrpt/config.h>
 #include <mrpt/utils/compiler_fixes.h>
 #include <mrpt/utils/boost_join.h>

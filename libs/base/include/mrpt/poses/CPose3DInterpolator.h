@@ -196,6 +196,7 @@ namespace mrpt
 			 TInterpolatorMethod 	m_method;
 
 		}; // End of class def.
+		DEFINE_SERIALIZABLE_POST_CUSTOM_BASE( CPose3DInterpolator, mrpt::utils::CSerializable )
 
 	} // End of namespace
 

@@ -118,7 +118,7 @@ void  CSetOfTriangles::readFromStream(CStream &in,int version)
 			in >> n;
 			m_triangles.assign(n,TTriangle());
 			if (n)
-				in.ReadBuffer( &m_triangles[0], n*sizeof(TTriangle) );
+				in.ReadBufferFixEndianness( &m_triangles[0], n );
 
 			if (version>=1)
 					in >> m_enableTransparency;
@@ -338,4 +338,11 @@ void CSetOfTriangles::getBoundingBox(mrpt::math::TPoint3D &bb_min, mrpt::math::T
 	// Convert to coordinates of my parent:
 	m_pose.composePoint(bb_min, bb_min);
 	m_pose.composePoint(bb_max, bb_max);
+}
+
+void CSetOfTriangles::insertTriangles(const CSetOfTrianglesPtr &p)	{
+	reserve(m_triangles.size()+p->m_triangles.size());
+	m_triangles.insert(m_triangles.end(),p->m_triangles.begin(),p->m_triangles.end());
+	polygonsUpToDate=false;
+	CRenderizableDisplayList::notifyChange();
 }

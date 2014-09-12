@@ -196,30 +196,6 @@ void  CObservationRGBD360::readFromStream(CStream &in, int version)
 		{
 			in >> maxRange >> sensorPose;
 
-//			if (hasPoints3D)
-//			{
-//        uint32_t		N;
-//				in >> N;
-//				resizePoints3DVectors(N);
-//
-//				if (N)
-//				{
-//					in.ReadBufferFixEndianness( &points3D_x[0], N);
-//					in.ReadBufferFixEndianness( &points3D_y[0], N);
-//					in.ReadBufferFixEndianness( &points3D_z[0], N);
-//
-//					if (version==0)
-//					{
-//						vector<char> validRange(N);  // for v0.
-//						in.ReadBuffer( &validRange[0], sizeof(validRange[0])*N );
-//					}
-//				}
-//			}
-//			else
-//			{
-//				this->resizePoints3DVectors(0);
-//			}
-
       in >> hasRangeImage;
       if (hasRangeImage) for (unsigned i=0; i < NUM_SENSORS; i++)
       {

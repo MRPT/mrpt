@@ -29,7 +29,6 @@ namespace slam
 	 * \sa CObservation
 	 * \ingroup mrpt_obs_grp
 	 */
-
 	class OBS_IMPEXP CObservationWindSensor : public CObservation
 	{
 		// This must be added to any CSerializable derived class:
@@ -56,6 +55,7 @@ namespace slam
 		void setSensorPose( const CPose3D &newSensorPose );
 
 	}; // End of class def.
+	DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE( CObservationWindSensor, CObservation, OBS_IMPEXP)
 
 
 	} // End of namespace

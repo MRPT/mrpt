@@ -47,6 +47,7 @@ namespace slam
 		CMultiMetricMap			mapTillNow;
 		std::deque<TPose3D>		robotPath;
 	};
+	DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE( CRBPFParticleData, mrpt::utils::CSerializable, SLAM_IMPEXP )
 
 
 	DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CMultiMetricMapPDF, mrpt::utils::CSerializable, SLAM_IMPEXP )
@@ -267,6 +268,7 @@ namespace slam
 
 
 	}; // End of class def.
+	DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE( CMultiMetricMapPDF, mrpt::utils::CSerializable, SLAM_IMPEXP )
 
 	} // End of namespace
 } // End of namespace

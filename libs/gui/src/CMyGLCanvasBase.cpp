@@ -213,7 +213,7 @@ CMyGLCanvasBase::CMyGLCanvasBase(wxWindow *parent, wxWindowID id,const wxPoint& 
 	useCameraFromScene	= false;
 
     cameraZoomDistance	= 40;
-
+	cameraFOV           = 30; 
     cameraElevationDeg 	= 45;
     cameraAzimuthDeg	= 45;
 
@@ -313,6 +313,7 @@ void CMyGLCanvasBase::Render()
 				view->getCamera().setAzimuthDegrees( cameraAzimuthDeg );
 				view->getCamera().setElevationDegrees(cameraElevationDeg);
 				view->getCamera().setProjectiveModel( cameraIsProjective );
+				view->getCamera().setProjectiveFOVdeg( cameraFOV );
 			}
 
 			// PART 2: Set the MODELVIEW matrix

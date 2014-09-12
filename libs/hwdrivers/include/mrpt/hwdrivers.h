@@ -27,6 +27,7 @@ MRPT_WARNING("Including <mrpt/hwdrivers.h> makes compilation much slower, consid
 #include <mrpt/hwdrivers/CSickLaserUSB.h>
 #include <mrpt/hwdrivers/CSickLaserSerial.h>
 #include <mrpt/hwdrivers/CIbeoLuxETH.h>
+#include <mrpt/hwdrivers/CRoboPeakLidar.h>
 #include <mrpt/hwdrivers/CGPSInterface.h>
 #include <mrpt/hwdrivers/CInterfaceFTDIMessages.h>
 #include <mrpt/hwdrivers/CWirelessPower.h>

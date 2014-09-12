@@ -82,6 +82,7 @@ namespace mrpt
 			inline CMatrix(const Eigen::MatrixBase <OtherDerived>& other) : CMatrixTemplateNumeric<float>(other) { }
 
 		}; // end of class definition
+		DEFINE_MRPT_OBJECT_POST_CUSTOM_BASE_LINKAGE2(CMatrix, mrpt::utils::CSerializable, CMatrix)
 
 	} // End of namespace
 } // End of namespace

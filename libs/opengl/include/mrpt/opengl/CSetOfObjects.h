@@ -17,7 +17,7 @@ namespace mrpt
 {
 	namespace opengl
 	{
-		class OPENGL_IMPEXP CSetOfObjects;
+
 
 		// This must be added to any CSerializable derived class:
 		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CSetOfObjects, CRenderizable, OPENGL_IMPEXP )
@@ -93,31 +93,8 @@ namespace mrpt
 			   * \endcode
 			   * By default (ith=0), the first observation is returned.
 			   */
-			 template <typename T>
-			 typename T::SmartPtr getByClass( const size_t &ith = 0 ) const
-			 {
-				MRPT_START
-				size_t  foundCount = 0;
-				const mrpt::utils::TRuntimeClassId*	class_ID = T::classinfo;
-				for (CListOpenGLObjects::const_iterator it = m_objects.begin();it!=m_objects.end();++it)
-					if (  (*it).present() && (*it)->GetRuntimeClass()->derivedFrom( class_ID ) )
-						if (foundCount++ == ith)
-							return typename T::SmartPtr(*it);
-
-				// If not found directly, search recursively:
-				for (CListOpenGLObjects::const_iterator it=m_objects.begin();it!=m_objects.end();++it)
-				{
-					if ( (*it).present() && (*it)->GetRuntimeClass() == CLASS_ID_NAMESPACE(CSetOfObjects,mrpt::opengl))
-					{
-						typename T::SmartPtr o = CSetOfObjectsPtr(*it)->getByClass<T>(ith);
-						if (o) return o;
-					}
-				}
-
-				return typename T::SmartPtr();	// Not found: return empty smart pointer
-				MRPT_END
-			 }
-
+			template <typename T>
+			typename T::SmartPtr getByClass( const size_t &ith = 0 ) const;
 
 			/** Removes the given object from the scene (it also deletes the object to free its memory).
 			  */
@@ -175,6 +152,7 @@ namespace mrpt
 			/** Private, virtual destructor: only can be deleted from smart pointers */
 			virtual ~CSetOfObjects();
 		};
+		DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE( CSetOfObjects, CRenderizable, OPENGL_IMPEXP )
 		/** Inserts an object into the list. Allows call chaining.
 		  * \sa mrpt::opengl::CSetOfObjects::insert
 		  */
@@ -190,6 +168,31 @@ namespace mrpt
 			return o;
 		}
 
+		// Implementation: (here because it needs the _POST macro defining the SmartPtr)
+		template <typename T>
+		typename T::SmartPtr CSetOfObjects::getByClass( const size_t &ith ) const
+		{
+			MRPT_START
+			size_t  foundCount = 0;
+			const mrpt::utils::TRuntimeClassId*	class_ID = T::classinfo;
+			for (CListOpenGLObjects::const_iterator it = m_objects.begin();it!=m_objects.end();++it)
+				if (  (*it).present() && (*it)->GetRuntimeClass()->derivedFrom( class_ID ) )
+					if (foundCount++ == ith)
+						return typename T::SmartPtr(*it);
+
+			// If not found directly, search recursively:
+			for (CListOpenGLObjects::const_iterator it=m_objects.begin();it!=m_objects.end();++it)
+			{
+				if ( (*it).present() && (*it)->GetRuntimeClass() == CLASS_ID_NAMESPACE(CSetOfObjects,mrpt::opengl))
+				{
+					typename T::SmartPtr o = CSetOfObjectsPtr(*it)->getByClass<T>(ith);
+					if (o) return o;
+				}
+			}
+
+			return typename T::SmartPtr();	// Not found: return empty smart pointer
+			MRPT_END
+		}
 
 	} // end namespace
 

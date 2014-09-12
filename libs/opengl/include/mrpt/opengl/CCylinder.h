@@ -47,12 +47,8 @@ namespace opengl	{
 		  */
 		bool mHasTopBase,mHasBottomBase;
 	public:
-		/**
-		  * Constructor with two radii. Allows the construction of any cylinder.
-		  */
-		static CCylinderPtr Create(const float baseRadius,const float topRadius,const float height=1,const int slices=10,const int stacks=10)	{
-			return CCylinderPtr(new CCylinder(baseRadius,topRadius,height,slices,stacks));
-		}
+		/** Constructor with two radii. Allows the construction of any cylinder. */
+		static CCylinderPtr Create(const float baseRadius,const float topRadius,const float height=1,const int slices=10,const int stacks=10);
 		/** Render
 		  * \sa mrpt::opengl::CRenderizable
 		  */
@@ -183,6 +179,8 @@ namespace opengl	{
 			return (mHeight<0)?(Z>=mHeight&&Z<=0):(Z<=mHeight&&Z>=0);
 		}
 	};
+	DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(CCylinder,CRenderizableDisplayList, OPENGL_IMPEXP)
+
 }
 }
 #endif

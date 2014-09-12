@@ -20,7 +20,9 @@ namespace mrpt
 	{
 
 	// Pragma defined to ensure no structure packing, so we can use SSE2 vectorization on parts of this struture
+#if defined(MRPT_IS_X86_AMD64)
 #pragma pack(push,1)
+#endif
 
 		/** A structure for holding correspondences between two sets of points or points-like entities in 2D or 3D.
 		 * \ingroup mrpt_base_grp
@@ -51,7 +53,9 @@ namespace mrpt
 
 		};
 
+#if defined(MRPT_IS_X86_AMD64)
 #pragma pack(pop) // End of pack = 1
+#endif
 
 
 		typedef TMatchingPair*  TMatchingPairPtr;

@@ -34,6 +34,7 @@ namespace mrpt
 		   */
 
 	};
+	 DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE( CLogFileRecord_VFF, CHolonomicLogFileRecord, REACTIVENAV_IMPEXP )
 
 
 	/** A holonomic reactive navigation method, based on Virtual Force Fields (VFF).

@@ -102,6 +102,7 @@ namespace poses
 		void  drawManySamples( size_t N, std::vector<CVectorDouble> & outSamples ) const;
 
 	}; // End of class def.
+	DEFINE_SERIALIZABLE_POST_CUSTOM_BASE( CPosePDFGrid, CPosePDF   )
 
 
 	} // End of namespace

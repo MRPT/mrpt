@@ -16,7 +16,7 @@ namespace mrpt
 {
 	namespace opengl
 	{
-		class OPENGL_IMPEXP CSetOfTriangles;
+
 
 		// This must be added to any CSerializable derived class:
 		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CSetOfTriangles, CRenderizableDisplayList, OPENGL_IMPEXP )
@@ -103,12 +103,7 @@ namespace mrpt
 			/**
 			  * Inserts an existing CSetOfTriangles into this one.
 			  */
-			inline void insertTriangles(const CSetOfTrianglesPtr &p)	{
-				reserve(m_triangles.size()+p->m_triangles.size());
-				m_triangles.insert(m_triangles.end(),p->m_triangles.begin(),p->m_triangles.end());
-				polygonsUpToDate=false;
-				CRenderizableDisplayList::notifyChange();
-			}
+			void insertTriangles(const CSetOfTrianglesPtr &p); 
 			/**
 			  * Reserves memory for certain number of triangles, avoiding multiple memory allocation calls.
 			  */
@@ -191,6 +186,7 @@ namespace mrpt
 			/** Private, virtual destructor: only can be deleted from smart pointers */
 			virtual ~CSetOfTriangles() { }
 		};
+		DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE( CSetOfTriangles, CRenderizableDisplayList, OPENGL_IMPEXP )
 		/** Inserts a set of triangles into the list; note that this method allows to pass another CSetOfTriangles as argument. Allows call chaining.
 		  * \sa mrpt::opengl::CSetOfTriangles::insertTriangle
 		  */

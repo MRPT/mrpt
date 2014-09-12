@@ -20,7 +20,6 @@
 #include <mrpt/compress/zip.h>
 #include <mrpt/system/datetime.h>
 #include <mrpt/system/filesystem.h>
-//#include <mrpt/system/os.h>
 #include <mrpt/system/vector_loadsave.h>
 
 #include <mrpt/utils/CFileGZOutputStream.h>

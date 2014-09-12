@@ -247,6 +247,7 @@ namespace slam
 		unsigned int	m_ID;
 
 	}; // End of class def.
+	DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE( CMultiMetricMap , CMetricMap, SLAM_IMPEXP )
 
 	/** Each structure of this kind will determine the kind (and initial configuration) of one map to be build into a CMultiMetricMap object.
 	  *  See "mrpt::slam::TSetOfMetricMapInitializers::loadFromConfigFile" as an easy way of initialize this object.

@@ -217,8 +217,9 @@ void CClientTCPSocket::connect(
 	if (-1==fcntl(m_hSock, F_SETFL, oldflags))  THROW_EXCEPTION( "Error entering non-blocking mode with fcntl()." );
 #endif
 
+	int r = ::connect( m_hSock , (struct sockaddr *)&otherAddress,sizeof(otherAddress));
 	// Try to connect:
-	::connect( m_hSock , (struct sockaddr *)&otherAddress,sizeof(otherAddress));
+	if (r < 0 && errno != EINPROGRESS) THROW_EXCEPTION( format("Error connecting to %s:%hu. Error: %s", remotePartAddress.c_str(), remotePartTCPPort, strerror(errno)));
 
 	// Wait for connect:
 	fd_set socket_set;
@@ -238,25 +239,24 @@ void CClientTCPSocket::connect(
 		timeout_ms==0 ? NULL : &timer
 		);
 
- 	if (sel_ret == 0) THROW_EXCEPTION( format("Timeout connecting to '%s:%i':\n%s",remotePartAddress.c_str(),remotePartTCPPort, getLastErrorStr().c_str() ));
- 	if (sel_ret ==-1) THROW_EXCEPTION( format("Error connecting to '%s:%i':\n%s",remotePartAddress.c_str(),remotePartTCPPort, getLastErrorStr().c_str() ));
+	if (sel_ret == 0) THROW_EXCEPTION( format("Timeout connecting to '%s:%hu':\n%s",remotePartAddress.c_str(),remotePartTCPPort, getLastErrorStr().c_str() ));
+	if (sel_ret ==-1) THROW_EXCEPTION( format("Error connecting to '%s:%hu':\n%s",remotePartAddress.c_str(),remotePartTCPPort, getLastErrorStr().c_str() ));
 
 	// Now, make sure it was not an error!
-	timer.tv_sec  = 0;
-	timer.tv_usec = 1;
+	int valopt;
+ #ifdef MRPT_OS_WINDOWS
+	int lon = sizeof(int);
+	getsockopt(m_hSock, SOL_SOCKET, SO_ERROR, (char*)(&valopt), &lon);
+ #else
+	socklen_t lon = sizeof(int);
+	getsockopt(m_hSock, SOL_SOCKET, SO_ERROR, (void*)(&valopt), &lon);
+ #endif
 
-	sel_ret = select(
-		m_hSock+1,
-		NULL,			// For read
-		NULL,	// For write or *connect done*
-		&socket_set,	// For errors
-		&timer
-		);
-
-	// If (sel_ret == 0), no error was detected:
- 	if (sel_ret == 1)
-		THROW_EXCEPTION( format("Error connecting to '%s:%i':\n%s",remotePartAddress.c_str(),remotePartTCPPort, getLastErrorStr().c_str() ));
-
+ #ifdef MRPT_OS_WINDOWS
+	if (valopt) THROW_EXCEPTION( format("Error connecting to %s:%hu. Error: %i.", remotePartAddress.c_str(), remotePartTCPPort, valopt));
+ #else
+	if (valopt) THROW_EXCEPTION( format("Error connecting to %s:%hu. Error: %s.", remotePartAddress.c_str(), remotePartTCPPort, strerror(valopt)));
+#endif
 	// Connected!
 
 	// If connected OK, remove the non-blocking flag:

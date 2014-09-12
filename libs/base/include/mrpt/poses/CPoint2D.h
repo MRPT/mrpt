@@ -88,6 +88,7 @@ namespace poses
 		void setToNaN();
 
 	}; // End of class def.
+	DEFINE_SERIALIZABLE_POST( CPoint2D )
 
 
 	} // End of namespace

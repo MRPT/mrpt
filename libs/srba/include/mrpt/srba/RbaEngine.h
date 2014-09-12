@@ -16,6 +16,7 @@
 #include <mrpt/utils/CTimeLogger.h>
 #include <mrpt/utils/CLoadableOptions.h>
 #include <mrpt/opengl/CSetOfObjects.h>
+#include <mrpt/graphs/CNetworkOfPoses.h>
 
 #include "srba_types.h"
 #include "srba_options.h"
@@ -128,6 +129,7 @@ namespace srba
 			size_t  num_kf2lm_edges_optimized; //!< Number of solved unknowns of type "kf-to-landmark".
 			size_t  num_total_scalar_optimized;  //!< The total number of dimensions (scalar values) in all the optimized unknowns.
 			size_t  num_span_tree_numeric_updates; //!< Number of poses updated in the spanning tree numeric-update stage.
+			double  obs_rmse; //!< RMSE for each observation after optimization
 			double  total_sqr_error_init, total_sqr_error_final; //!< Initial and final total squared error for all the observations
 			double  HAp_condition_number; //!< To be computed only if enabled in parameters.compute_condition_number
 
@@ -160,6 +162,7 @@ namespace srba
 			TKeyFrameID                kf_id;         //!< The ID of the newly created KF.
 			std::vector<TNewEdgeInfo>  created_edge_ids;  //!< The newly created edges (minimum: 1 edge)
 			TOptimizeExtraOutputInfo   optimize_results;  //!< Results from the least-squares optimization
+			TOptimizeExtraOutputInfo   optimize_results_stg1;  //!< Results from the least-squares optimization
 
 			void clear()
 			{
@@ -261,6 +264,23 @@ namespace srba
 		  * The worst-case time consumed by this method is O(M*log(N) + N^2 + N E), N=# of KFs, E=# of edges, M=# of observations.
 		  */
 		double eval_overall_squared_error() const;
+
+		struct ExportGraphSLAM_Params
+		{
+			TKeyFrameID root_kf_id; //!< The KF to use as a root for the spanning tree to init global poses (default=0)
+
+			ExportGraphSLAM_Params() : root_kf_id(0) {}
+		};
+		/** Build a graph-slam problem suitable for recovering the (consistent) global pose (vs. relative ones as are handled in SRBA) of each keyframe.
+		  * \note This version of the method doesn't account for the covariances of relative pose estimations in RBA.
+		  * \sa mrpt::graphslam (for methods capable of optimizing the output graph of pose constraints)
+		  * \param[out] global_graph Previous contents will be erased. The output global graph will be returned here, initialized with poses from a Dijkstra/Spanning-tree from the first KF.
+		  * \tparam POSE_GRAPH Must be an instance of mrpt::graphs::CNetworkOfPoses<>, e.g. CNetworkOfPoses2D (for 2D poses) or CNetworkOfPoses3D (for 3D).
+		  * \note This method is NOT O(1)
+		  */
+		template <class POSE_GRAPH>
+		void get_global_graphslam_problem(POSE_GRAPH &global_graph, const ExportGraphSLAM_Params &params = ExportGraphSLAM_Params() ) const;
+	
 
 		/** @} */  // End of main API methods
 
@@ -377,6 +397,7 @@ namespace srba
 			// -------------------------------------
 			bool   optimize_new_edges_alone; //!< (Default:true) Before running a whole "local area" optimization, try to optimize new edges one by one to have a better starting point.
 			bool   use_robust_kernel;
+			bool   use_robust_kernel_stage1;
 			double kernel_param;
 			size_t max_iters;
 			double max_error_per_obs_to_stop; //!< default: 1e-9
@@ -793,6 +814,7 @@ namespace srba
 
 #include "impl/export_opengl.h"
 #include "impl/export_dot.h"
+#include "impl/get_global_graphslam_problem.h"
 
 #include "impl/eval_overall_error.h"
 

@@ -19,7 +19,7 @@ namespace mrpt
 	{
 		using mrpt::utils::CStream;
 
-		class OPENGL_IMPEXP CSetOfTexturedTriangles;
+
 
 		// This must be added to any CSerializable derived class:
 		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CSetOfTexturedTriangles, CTexturedObject, OPENGL_IMPEXP )
@@ -88,6 +88,7 @@ namespace mrpt
 			/** Private, virtual destructor: only can be deleted from smart pointers */
 			virtual ~CSetOfTexturedTriangles();
 		};
+		DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE( CSetOfTexturedTriangles, CTexturedObject, OPENGL_IMPEXP )
 
 	} // end namespace
 

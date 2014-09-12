@@ -44,6 +44,8 @@ namespace mrpt
 		  *    // Optional: reduced FOV:
 		  *    // reduced_fov  = 25 // Deg
 		  *
+		  *    //preview = true // Enable GUI visualization of captured data
+		  *
 		  *    // Optional: Exclusion zones to avoid the robot seeing itself:
 		  *    //exclusionZone1_x = 0.20 0.30 0.30 0.20
 		  *    //exclusionZone1_y = 0.20 0.30 0.30 0.20
@@ -213,9 +215,6 @@ namespace mrpt
 
 			uint32_t		m_timeStartUI;	//!< Time of the first data packet, for synchronization purposes.
 			mrpt::system::TTimeStamp	m_timeStartTT;
-
-			// FAMD
-			bool            m_showPreview; //!< If true, shows a 3D window with a preview of the grabber data
 
 			/** See the class documentation at the top for expected parameters */
 			void  loadConfig_sensorSpecific(

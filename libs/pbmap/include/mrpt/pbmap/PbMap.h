@@ -84,6 +84,7 @@ namespace pbmap {
 //    boost::mutex mtx_pbmap_busy;
 
   };
+  DEFINE_SERIALIZABLE_POST_CUSTOM_LINKAGE( PbMap, PBMAP_IMPEXP)
 
 } } // End of namespaces
 

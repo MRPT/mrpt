@@ -202,6 +202,7 @@ namespace mrpt
 			 virtual bool  internal_insertObservation( const CObservation *obs, const CPose3D *robotPose = NULL );
 
 		};
+		DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE( CHeightGridMap2D, CMetricMap, MAPS_IMPEXP  )
 
 
 	} // End of namespace
