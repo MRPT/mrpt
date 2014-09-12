@@ -124,7 +124,7 @@ void CTopLCDetector_GridMatching::OnNewPose(
 	const TPoseID 			&poseID,
 	const CSensoryFrame		*SF )
 {
-
+	MRPT_UNUSED_PARAM(poseID); MRPT_UNUSED_PARAM(SF);
 }
 
 

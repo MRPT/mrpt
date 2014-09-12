@@ -35,7 +35,10 @@ public:
   /*AREXPORT*/ void enable(void) { myEnabled = true; }
   /// Enables this action in a way that'll work from the sector callbacks
   /*AREXPORT*/void enableOnceFromSector(ArMapObject *mapObject)
-    { myEnableOnce = true; }
+    {
+		MRPT_UNUSED_PARAM(mapObject);
+		myEnableOnce = true;
+	}
   /// Disables this action (separate from deactivating it)
   /*AREXPORT*/ void disable(void) { myEnabled = false; }
   /// Sets the parameters (don't use this if you're using the addToConfig)

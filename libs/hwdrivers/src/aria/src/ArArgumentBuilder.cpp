@@ -19,6 +19,7 @@
 #include <ctype.h>
 #include <cmath>
 #include <stdio.h>
+#include <mrpt/utils/mrpt_macros.h>
 
 /**
    @param argvLen the largest number of arguments we'll parse
@@ -296,6 +297,7 @@ AREXPORT void ArArgumentBuilder::addPlainAsIs(const char *str, int position)
 
 AREXPORT void ArArgumentBuilder::internalAddAsIs(const char *str, int position)
 {
+  MRPT_UNUSED_PARAM(position);
   myArgv[myArgc] = new char[strlen(str) + 1];
   strcpy(myArgv[myArgc], str);
   myArgv[myArgc][strlen(str)] = '\0';

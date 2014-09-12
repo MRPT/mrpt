@@ -32,6 +32,7 @@ void  CFeatureExtraction::extractFeaturesSURF(
 		unsigned int			nDesiredFeatures,
 		const TImageROI			&ROI) const
 {
+	MRPT_UNUSED_PARAM(ROI);
 #if MRPT_HAS_OPENCV && MRPT_OPENCV_VERSION_NUM >= 0x111
 
 	const CImage img_grayscale(inImg, FAST_REF_OR_CONVERT_TO_GRAY);

@@ -33,7 +33,6 @@ IMPLEMENTS_VIRTUAL_SERIALIZABLE( CRenderizable, CSerializable, mrpt::opengl )
 extern CStartUpClassesRegister  mrpt_opengl_class_reg;
 const int dumm = mrpt_opengl_class_reg.do_nothing(); // Avoid compiler removing this class in static linking
 
-
 #define MAX_GL_TEXTURE_IDS       0x10000
 #define MAX_GL_TEXTURE_IDS_MASK  0x0FFFF
 
@@ -333,6 +332,7 @@ mrpt::math::TPose3D CRenderizable::getPose() const
 					traceRay
   ---------------------------------------------------------------*/
 bool CRenderizable::traceRay(const mrpt::poses::CPose3D &o,double &dist) const	{
+	MRPT_UNUSED_PARAM(o); MRPT_UNUSED_PARAM(dist);
 	return false;
 }
 

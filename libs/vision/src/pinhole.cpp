@@ -293,6 +293,7 @@ void mrpt::vision::pinhole::projectPoint_with_distortion(
 	bool accept_points_behind
 	)
 {
+	MRPT_UNUSED_PARAM(accept_points_behind);
 	// Pinhole model:
 	const double x = P.x/P.z;
 	const double y = P.y/P.z;

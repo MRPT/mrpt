@@ -44,6 +44,7 @@ namespace options
 			template <class MATRIX_H,class MATRIX_J1,class MATRIX_J2>
 			inline static void accum_JtJ(MATRIX_H & H, const MATRIX_J1 & J1, const MATRIX_J2 &J2, const size_t obs_idx, const parameters_t & obs_noise_params) 
 			{
+				MRPT_UNUSED_PARAM(obs_idx); MRPT_UNUSED_PARAM(obs_noise_params);
 				H.noalias() += J1.transpose() * J2;  // The constant scale factor 1/sigma will be applied in the end (below)
 			}
 			/** Do scaling, if applicable, to H after end of all calls to accum_JtJ()  */
@@ -58,6 +59,7 @@ namespace options
 			template <class VECTOR_GRAD,class MATRIX_J,class VECTOR_R>
 			inline static void accum_Jtr(VECTOR_GRAD & g, const MATRIX_J & J, const VECTOR_R &r, const size_t obs_idx, const parameters_t & obs_noise_params) 
 			{
+				MRPT_UNUSED_PARAM(obs_idx); MRPT_UNUSED_PARAM(obs_noise_params);
 				g.noalias() += J.transpose() * r;  // The constant scale factor 1/sigma will be applied in the end (below)
 			}
 			/** Do scaling, if applicable, to GRAD after end of all calls to accum_Jtr()  */
@@ -98,26 +100,34 @@ namespace options
 
 			/** Must execute H+= J1^t * \Lambda * J2 */
 			template <class MATRIX_H,class MATRIX_J1,class MATRIX_J2>
-			inline static void accum_JtJ(MATRIX_H & H, const MATRIX_J1 & J1, const MATRIX_J2 &J2, const size_t obs_idx, const parameters_t & obs_noise_params) 
+			inline static void accum_JtJ(MATRIX_H & H, const MATRIX_J1 & J1, const MATRIX_J2 &J2,
+				const size_t obs_idx, const parameters_t & obs_noise_params) 
 			{
+				MRPT_UNUSED_PARAM(obs_idx);
 				H.noalias() += J1.transpose() * obs_noise_params.lambda * J2;
 			}
+
 			/** Do scaling, if applicable, to H after end of all calls to accum_JtJ()  */
 			template <class MATRIX_H>
 			inline static void scale_H(MATRIX_H & H, const parameters_t & obs_noise_params) 
 			{  // Nothing else to do.
+				MRPT_UNUSED_PARAM(H);
+				MRPT_UNUSED_PARAM(obs_noise_params);
 			}
 
 			/** Must execute grad+= J^t * \Lambda * r */
 			template <class VECTOR_GRAD,class MATRIX_J,class VECTOR_R>
-			inline static void accum_Jtr(VECTOR_GRAD & g, const MATRIX_J & J, const VECTOR_R &r, const size_t obs_idx, const parameters_t & obs_noise_params) 
+			inline static void accum_Jtr(VECTOR_GRAD & g, const MATRIX_J & J, const VECTOR_R &r,
+				const size_t obs_idx, const parameters_t & obs_noise_params) 
 			{
+				MRPT_UNUSED_PARAM(obs_idx);
 				g.noalias() += J.transpose() * obs_noise_params.lambda * r;
 			}
 			/** Do scaling, if applicable, to GRAD after end of all calls to accum_Jtr()  */
 			template <class VECTOR_GRAD>
 			inline static void scale_Jtr(VECTOR_GRAD & g, const parameters_t & obs_noise_params) 
 			{  // Nothing else to do.
+				MRPT_UNUSED_PARAM(g); MRPT_UNUSED_PARAM(obs_noise_params);
 			}
 
 		};  // end of "observation_noise_constant_matrix"

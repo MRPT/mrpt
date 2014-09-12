@@ -98,8 +98,10 @@ void  CKinematicChain::readFromStream(CStream &in,int version)
 
 /** Go thru all the links of the chain and compute the global pose of each link. The "ground" link pose "pose0" defaults to the origin of coordinates,
 	* but anything else can be passed as the optional argument. */
-void CKinematicChain::recomputeAllPoses( mrpt::aligned_containers<mrpt::poses::CPose3D>::vector_t & poses, const mrpt::poses::CPose3D & pose0 )const
+void CKinematicChain::recomputeAllPoses(mrpt::aligned_containers<mrpt::poses::CPose3D>::vector_t & poses,
+	const mrpt::poses::CPose3D & pose0 )const
 {
+	MRPT_UNUSED_PARAM(pose0);
 	const size_t N=m_links.size();
 
 	poses.resize(N+1);

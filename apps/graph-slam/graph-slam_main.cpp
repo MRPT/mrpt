@@ -188,6 +188,7 @@ int main(int argc, char **argv)
 // -----------------------------------------------------------------------------------
 IMPLEMENT_OP_FUNCTION(op_view)
 {
+	MRPT_UNUSED_PARAM(is3D); MRPT_UNUSED_PARAM(cmdline); MRPT_UNUSED_PARAM(verbose);
 	// Load:
 	GRAPHTYPE g;
 	g.loadFromTextFile(in_file);
@@ -202,6 +203,7 @@ IMPLEMENT_OP_FUNCTION(op_view)
 // -----------------------------------------------------------------------------------
 IMPLEMENT_OP_FUNCTION(op_info)
 {
+	MRPT_UNUSED_PARAM(is3D); MRPT_UNUSED_PARAM(cmdline); MRPT_UNUSED_PARAM(verbose);
 	// Load:
 	GRAPHTYPE g;
 	g.loadFromTextFile(in_file);
@@ -222,6 +224,7 @@ IMPLEMENT_OP_FUNCTION(op_info)
 // -----------------------------------------------------------------------------------
 IMPLEMENT_OP_FUNCTION(op_dijkstra)
 {
+	MRPT_UNUSED_PARAM(is3D); MRPT_UNUSED_PARAM(cmdline); MRPT_UNUSED_PARAM(verbose);
 	const bool save_to_file = arg_output_file.isSet();	// Output to file??
 	const bool display_3D   = arg_view.isSet();         // Output to 3D view??
 
@@ -273,6 +276,7 @@ IMPLEMENT_OP_FUNCTION(op_dijkstra)
 // -----------------------------------------------------------------------------------
 IMPLEMENT_OP_FUNCTION(op_levmarq)
 {
+	MRPT_UNUSED_PARAM(is3D); MRPT_UNUSED_PARAM(cmdline);
 	const bool save_to_file  = arg_output_file.isSet();	// Output to file??
 	const bool display_3D    = arg_view.isSet();         // Output to 3D view??
 	const bool skip_dijkstra = arg_no_span.isSet();

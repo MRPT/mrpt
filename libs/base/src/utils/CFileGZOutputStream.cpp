@@ -89,6 +89,7 @@ void CFileGZOutputStream::close()
  ---------------------------------------------------------------*/
 size_t  CFileGZOutputStream::Read(void *Buffer, size_t Count)
 {
+	MRPT_UNUSED_PARAM(Buffer); MRPT_UNUSED_PARAM(Count);
 	THROW_EXCEPTION("Trying to read from an output file stream.");
 }
 

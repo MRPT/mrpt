@@ -32,7 +32,10 @@ namespace utils
 		 /** Method responsible for reading from the stream:
 		  *   In this class it has no effect.
 		  */
-		size_t  Read(void *Buffer, size_t Count) { THROW_EXCEPTION("Read-only stream"); }
+		size_t  Read(void *Buffer, size_t Count) {
+			MRPT_UNUSED_PARAM(Buffer); MRPT_UNUSED_PARAM(Count);
+			THROW_EXCEPTION("Read-only stream");
+		}
 
 		/** Method responsible for writing to the stream.
 		 *  Write attempts to write up to Count bytes to Buffer, and returns the number of bytes actually written.
@@ -50,8 +53,10 @@ namespace utils
 
 		/** It has no efect in this class.
 		 */
-		uint64_t Seek(uint64_t Offset, CStdOutStream::TSeekOrigin Origin = sFromBeginning)
-			{ THROW_EXCEPTION("Invalid operation for this kind of stream"); }
+		uint64_t Seek(uint64_t Offset, CStdOutStream::TSeekOrigin Origin = sFromBeginning) {
+			MRPT_UNUSED_PARAM(Offset); MRPT_UNUSED_PARAM(Origin);
+			THROW_EXCEPTION("Invalid operation for this kind of stream");
+		}
 
 		/** It has no efect in this class.
 		 */

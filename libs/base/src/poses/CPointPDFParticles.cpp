@@ -289,6 +289,7 @@ double CPointPDFParticles::computeKurtosis()
   ---------------------------------------------------------------*/
 void CPointPDFParticles::drawSingleSample(CPoint3D &outSample) const
 {
+	MRPT_UNUSED_PARAM(outSample);
 	THROW_EXCEPTION("TO DO!")
 }
 
@@ -297,6 +298,7 @@ void CPointPDFParticles::drawSingleSample(CPoint3D &outSample) const
  ---------------------------------------------------------------*/
 void  CPointPDFParticles::bayesianFusion( const  CPointPDF &p1_, const  CPointPDF &p2_,const double &minMahalanobisDistToDrop )
 {
+	MRPT_UNUSED_PARAM(p1_); MRPT_UNUSED_PARAM(p2_); MRPT_UNUSED_PARAM(minMahalanobisDistToDrop);
 	MRPT_START
 
 	THROW_EXCEPTION("TODO!!!");
@@ -310,6 +312,7 @@ void  CPointPDFParticles::bayesianFusion( const  CPointPDF &p1_, const  CPointPD
   ---------------------------------------------------------------*/
 void  TSimple3DPoint::writeToStream(CStream &out,int *version) const
 {
+	MRPT_UNUSED_PARAM(out); MRPT_UNUSED_PARAM(version);
 	THROW_EXCEPTION("Shouldn't arrive here!");
 }
 
@@ -318,5 +321,6 @@ void  TSimple3DPoint::writeToStream(CStream &out,int *version) const
   ---------------------------------------------------------------*/
 void  TSimple3DPoint::readFromStream(CStream &in,int version)
 {
+	MRPT_UNUSED_PARAM(in); MRPT_UNUSED_PARAM(version);
 	THROW_EXCEPTION("Shouldn't arrive here!");
 }

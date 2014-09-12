@@ -85,6 +85,7 @@ CFileOutputStream::~CFileOutputStream()
 
 size_t  CFileOutputStream::Read(void *Buffer, size_t Count)
 {
+	MRPT_UNUSED_PARAM(Buffer); MRPT_UNUSED_PARAM(Count);
 	THROW_EXCEPTION("Trying to read from a write file stream.");
 }
 

@@ -13,6 +13,7 @@
 #include "ArLog.h"
 #include "ariaUtil.h"
 #include "ArRobot.h"
+#include <mrpt/utils/mrpt_macros.h>
 
 
 AREXPORT ArSyncLoop::ArSyncLoop() :
@@ -39,6 +40,7 @@ AREXPORT void ArSyncLoop::stopRunIfNotConnected(bool stopRun)
 
 AREXPORT void * ArSyncLoop::runThread(void *arg)
 {
+  MRPT_UNUSED_PARAM(arg);
   threadStarted();
 
   long timeToSleep;

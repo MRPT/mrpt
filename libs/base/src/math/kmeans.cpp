@@ -42,6 +42,7 @@ namespace mrpt
 				double* out_center,
 				int *out_assignments)
 			{
+            MRPT_UNUSED_PARAM(use_kmeansplusplus_method);
 				return RunKMeans(nPoints,k,dims,const_cast<double*>(points),attempts,out_center,out_assignments);
 			}
 
@@ -56,6 +57,7 @@ namespace mrpt
 				float* out_center,
 				int *out_assignments)
 			{
+            MRPT_UNUSED_PARAM(use_kmeansplusplus_method);
 				std::vector<double>  points_d(nPoints*dims);
 				std::vector<double>  centers_d(k*dims);
 				// Convert: float -> double

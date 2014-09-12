@@ -27,6 +27,7 @@ CVectorField2DPtr CVectorField2D::Create(const CMatrixFloat Matrix_x, const CMat
 {
 	return CVectorField2DPtr(new CVectorField2D( Matrix_x,  Matrix_y, xmin, xmax, ymin, ymax));
 }
+
 /** Constructor */
 CVectorField2D::CVectorField2D()
 	: xcomp(0,0), ycomp(0,0), xMin(-1.0), xMax(1.0), yMin(-1.0), yMax(1.0), m_LineWidth(1.0),m_pointSize(1.0),m_antiAliasing(true)
@@ -39,6 +40,8 @@ CVectorField2D::CVectorField2D()
 CVectorField2D::CVectorField2D( CMatrixFloat Matrix_x, CMatrixFloat Matrix_y, float xmin, float xmax, float ymin, float ymax)
 	: m_LineWidth(1.0),m_pointSize(1.0),m_antiAliasing(true)
 {
+	MRPT_UNUSED_PARAM(Matrix_x); MRPT_UNUSED_PARAM(Matrix_y);
+	MRPT_UNUSED_PARAM(xmin); MRPT_UNUSED_PARAM(xmax); MRPT_UNUSED_PARAM(ymin); MRPT_UNUSED_PARAM(ymax);
 	m_point_color = m_color;
 	m_field_color = m_color;
 }

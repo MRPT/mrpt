@@ -1528,6 +1528,7 @@ void  CLandmarksMap::loadOccupancyFeaturesFrom2DRangeScan(
   ---------------------------------------------------------------*/
 double  CLandmarksMap::computeLikelihood_RSLC_2007( const CLandmarksMap  *s, const CPose2D &sensorPose )
 {
+	MRPT_UNUSED_PARAM(sensorPose);
 	MRPT_START
 
 	double								lik = 1.0;

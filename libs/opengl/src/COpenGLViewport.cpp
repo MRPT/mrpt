@@ -525,6 +525,7 @@ void  COpenGLViewport::render( const int render_width, const int render_height  
 		THROW_EXCEPTION("Runtime error!");
 	}
 #else
+	MRPT_UNUSED_PARAM(render_width); MRPT_UNUSED_PARAM(render_height);
 	THROW_EXCEPTION("The MRPT has been compiled with MRPT_HAS_OPENGL_GLUT=0! OpenGL functions are not implemented");
 #endif
 }

@@ -11,6 +11,7 @@
 #define _CMTDEF_H_2006_05_01
 
 #include <mrpt/utils/mrpt_stdint.h>
+#include <mrpt/utils/mrpt_macros.h>
 #include <time.h>
 
 #ifdef _WIN32
@@ -1098,6 +1099,9 @@ struct CmtPortInfo {
 	uint32_t m_deviceId;	//!< The device Id of the detected Xsens device
 	uint8_t m_portNr;		//!< The port number
 	char m_portName[32];		//!< The port name
+
+	CmtPortInfo() : m_baudrate(0), m_deviceId(0), m_portNr(0)
+	{ }
 #ifdef __cplusplus
 #	ifdef _WIN32
 		//! greater than operator, used for sorting the list
@@ -1116,7 +1120,10 @@ struct CmtPortInfo {
 		//! equality operator, used for finding items in a list
 	bool operator == (const CmtPortInfo& p) const { return strcmp(m_portName, p.m_portName) == 0; }
 		//! equality operator, used for finding items in a list
-	bool operator == (const uint8_t port) const { return false; }
+	bool operator == (const uint8_t port) const {
+		MRPT_UNUSED_PARAM(port);
+		return false;
+	}
 #	endif // ifdef _WIN32/Linux
 #endif
 };

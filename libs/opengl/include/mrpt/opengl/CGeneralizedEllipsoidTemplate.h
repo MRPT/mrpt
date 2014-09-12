@@ -190,7 +190,10 @@ namespace mrpt
 
 			/** Ray tracing
 			  */
-			virtual bool traceRay(const mrpt::poses::CPose3D &o,double &dist) const { THROW_EXCEPTION("Not implemented ") }
+			virtual bool traceRay(const mrpt::poses::CPose3D &o,double &dist) const {
+				MRPT_UNUSED_PARAM(o); MRPT_UNUSED_PARAM(dist);
+				THROW_EXCEPTION("Not implemented ")
+			}
 
 		protected:
 			/** To be implemented by derived classes: maps, using some arbitrary space transformation, a list of points

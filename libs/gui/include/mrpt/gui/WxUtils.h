@@ -151,7 +151,7 @@ namespace mrpt
 			void OnMouseMove(wxMouseEvent& ev);
 			void OnMouseClick(wxMouseEvent& ev);
 
-			void OnEraseBackground(wxEraseEvent &ev) { /* Do nothing */ }
+			void OnEraseBackground(wxEraseEvent &) { /* Do nothing */ }
 		};
 		// end wxMRPTImageControl  -----------
 

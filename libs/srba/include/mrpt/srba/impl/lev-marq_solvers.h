@@ -200,6 +200,7 @@ namespace internal
 		}
 		bool was_ith_feature_invertible(const size_t i)
 		{
+			MRPT_UNUSED_PARAM(i);
 			return true;
 		}
 

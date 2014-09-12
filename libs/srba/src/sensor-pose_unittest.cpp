@@ -113,6 +113,7 @@ struct TEST_DATASET0
 	template <class RBA>
 	static void setExtraOptions(RBA &rba)
 	{
+		MRPT_UNUSED_PARAM(rba);
 	}
 };
 

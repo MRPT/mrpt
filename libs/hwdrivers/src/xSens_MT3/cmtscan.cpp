@@ -121,7 +121,7 @@ bool cmtScanPort(CmtPortInfo& portInfo, uint32_t baud, uint32_t singleScanTimeou
 
 bool cmtScanPorts(List<CmtPortInfo>& ports,uint32_t baudrate, uint32_t singleScanTimeout, uint32_t scanTries)
 {
-	CmtPortInfo current = {0,0,0};
+	CmtPortInfo current;
 	ports.clear();	// clear the list
 #ifdef _WIN32
 	HDEVINFO hDevInfo;

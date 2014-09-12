@@ -687,6 +687,7 @@ void CBeaconMap::determineMatching2D(
 	const TMatchingParams & params,
 	TMatchingExtraResults & extraResults ) const
 {
+	MRPT_UNUSED_PARAM(params);
 	MRPT_START
 	extraResults = TMatchingExtraResults();
 
@@ -814,8 +815,12 @@ bool  CBeaconMap::saveToMATLABScript3D(
 						const char		*style,
 						float			confInterval ) const
 {
+	MRPT_UNUSED_PARAM(style);
+	MRPT_UNUSED_PARAM(confInterval);
+
 	FILE	*f= os::fopen(file.c_str(),"wt");
-	if (!f) return false;
+	if (!f)
+		return false;
 
 	// Header:
 	os::fprintf(f,"%%-------------------------------------------------------\n");

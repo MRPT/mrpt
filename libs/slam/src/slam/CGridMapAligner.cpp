@@ -1133,5 +1133,7 @@ CPose3DPDFPtr CGridMapAligner::Align3DPDF(
 	float					*runningTime,
 	void					*info )
 {
+	MRPT_UNUSED_PARAM(m1); MRPT_UNUSED_PARAM(m2); MRPT_UNUSED_PARAM(initialEstimationPDF);
+	MRPT_UNUSED_PARAM(runningTime); MRPT_UNUSED_PARAM(info);
 	THROW_EXCEPTION("Align3D method not applicable to gridmap-aligner");
 }

@@ -63,13 +63,16 @@ protected:
 
 	static void func_compose(const CArrayDouble<12> &x, const double &dummy, CArrayDouble<6> &Y)
 	{
+		MRPT_UNUSED_PARAM(dummy);
 		const CPose3D p1(x[0],x[1],x[2],x[3],x[4],x[5]);
 		const CPose3D p2(x[6+0],x[6+1],x[6+2],x[6+3],x[6+4],x[6+5]);
 		const CPose3D p = p1+p2;
 		for (int i=0;i<6;i++) Y[i]=p[i];
 	}
+
 	static void func_inv_compose(const CArrayDouble<2*6> &x, const double &dummy, CArrayDouble<6> &Y)
 	{
+		MRPT_UNUSED_PARAM(dummy);
 		const CPose3D p1(x[0],x[1],x[2],x[3],x[4],x[5]);
 		const CPose3D p2(x[6+0],x[6+1],x[6+2],x[6+3],x[6+4],x[6+5]);
 		const CPose3D p = p1-p2;

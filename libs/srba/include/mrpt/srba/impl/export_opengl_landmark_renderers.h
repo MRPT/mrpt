@@ -156,6 +156,8 @@ template <> struct LandmarkRendererBase<landmark_rendering_as_pose_constraints>
 		const typename RBA::TOpenGLRepresentationOptions &options,
 		mrpt::opengl::CSetOfObjects& scene)
 	{
+		MRPT_UNUSED_PARAM(options);
+		MRPT_UNUSED_PARAM(root_keyframe);
 		using namespace mrpt::math;
 
 		mrpt::opengl::CSetOfLinesPtr gl_edges = mrpt::opengl::CSetOfLines::Create();
@@ -207,6 +209,11 @@ template <> struct LandmarkRendererBase<landmark_rendering_none>
 		const typename RBA::TOpenGLRepresentationOptions &options,
 		mrpt::opengl::CSetOfObjects& scene)
 	{
+		MRPT_UNUSED_PARAM(rba);
+		MRPT_UNUSED_PARAM(root_keyframe);
+		MRPT_UNUSED_PARAM(spantree);
+		MRPT_UNUSED_PARAM(options);
+		MRPT_UNUSED_PARAM(scene);
 		// Nothing to render
 	}
 };

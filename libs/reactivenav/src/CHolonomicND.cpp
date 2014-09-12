@@ -46,6 +46,8 @@ void  CHolonomicND::navigate(
 	double			&desiredSpeed,
 	CHolonomicLogFileRecordPtr &logRecord)
 {
+	MRPT_UNUSED_PARAM(maxRobotSpeed);
+
 	TGapArray			gaps;
 	TSituations			situation;
 	unsigned int		selectedSector;

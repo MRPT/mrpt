@@ -65,13 +65,16 @@ protected:
 
 	static void func_compose(const CArrayDouble<2*7> &x, const double &dummy, CArrayDouble<7> &Y)
 	{
+		MRPT_UNUSED_PARAM(dummy);
 		const CPose3DQuat p1(x[0],x[1],x[2],CQuaternionDouble(x[3],x[4],x[5],x[6]));
 		const CPose3DQuat p2(x[7+0],x[7+1],x[7+2],CQuaternionDouble(x[7+3],x[7+4],x[7+5],x[7+6]));
 		const CPose3DQuat p = p1+p2;
 		for (int i=0;i<7;i++) Y[i]=p[i];
 	}
+
 	static void func_inv_compose(const CArrayDouble<2*7> &x, const double &dummy, CArrayDouble<7> &Y)
 	{
+		MRPT_UNUSED_PARAM(dummy);
 		const CPose3DQuat p1(x[0],x[1],x[2],CQuaternionDouble(x[3],x[4],x[5],x[6]));
 		const CPose3DQuat p2(x[7+0],x[7+1],x[7+2],CQuaternionDouble(x[7+3],x[7+4],x[7+5],x[7+6]));
 		const CPose3DQuat p = p1-p2;
@@ -116,6 +119,7 @@ protected:
 
 	static void func_inverse(const CArrayDouble<7> &x, const double &dummy, CArrayDouble<7> &Y)
 	{
+		MRPT_UNUSED_PARAM(dummy);
 		const CPose3DQuat p1(x[0],x[1],x[2],CQuaternionDouble(x[3],x[4],x[5],x[6]));
 		const CPose3DQuat p1_inv ( -p1 );
 		for (int i=0;i<7;i++) Y[i]=p1_inv[i];

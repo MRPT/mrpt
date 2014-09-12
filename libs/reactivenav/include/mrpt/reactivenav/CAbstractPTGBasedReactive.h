@@ -116,7 +116,10 @@ namespace mrpt
 			*  When enabled, a report will be dumped to std::cout upon destruction.
 			* \sa getTimeLogger
 			*/
-		void enableTimeLog(bool enable=true) { m_timelogger.enable(true); }
+		void enableTimeLog(bool enable=true) {
+			MRPT_UNUSED_PARAM(enable);
+			m_timelogger.enable(true);
+		}
 
 		/** Gives access to a const-ref to the internal time logger \sa enableTimeLog */
 		const mrpt::utils::CTimeLogger & getTimeLogger() const { return m_timelogger; }

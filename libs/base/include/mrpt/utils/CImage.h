@@ -129,7 +129,7 @@ namespace mrpt
 			  *    CImage myImg(UNINITIALIZED_IMAGE);
 			  *   \endcode
 			  */
-			inline CImage(TConstructorFlags_CImage constructor_flag) : img(NULL),m_imgIsReadOnly(false), m_imgIsExternalStorage(false)
+			inline CImage(TConstructorFlags_CImage ) : img(NULL),m_imgIsReadOnly(false), m_imgIsExternalStorage(false)
 			{ }
 
 			/** Fast constructor of a grayscale version of another image, making a <b>reference</b> to the original image if it already was in grayscale, or otherwise creating a new grayscale image and converting the original image into it.
@@ -144,6 +144,7 @@ namespace mrpt
 			  */
 			inline CImage(const CImage& other_img, TConstructorFlags_CImage constructor_flag) : img(NULL),m_imgIsReadOnly(false), m_imgIsExternalStorage(false)
 			{
+				MRPT_UNUSED_PARAM(constructor_flag);
 				if( other_img.isColor() ) other_img.grayscale(*this);
 				else this->setFromImageReadOnly(other_img);
 			}

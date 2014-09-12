@@ -415,6 +415,7 @@ void  CPose3DPDFParticles::drawManySamples(
  ---------------------------------------------------------------*/
 void  CPose3DPDFParticles::operator += ( const CPose3D &Ap)
 {
+	MRPT_UNUSED_PARAM(Ap);
 	THROW_EXCEPTION("TO DO!");
 }
 

@@ -63,9 +63,9 @@ namespace poses
 		inline CPose3DQuat() : m_quat() { m_coords[0]=m_coords[1]=m_coords[2]=0.; }
 
 		/** Constructor which left all the quaternion members un-initialized, for use when speed is critical; Use UNINITIALIZED_POSE as argument to this constructor. */
-		inline CPose3DQuat(mrpt::math::TConstructorFlags_Quaternions constructor_dummy_param) : m_quat(mrpt::math::UNINITIALIZED_QUATERNION) { }
+		inline CPose3DQuat(mrpt::math::TConstructorFlags_Quaternions ) : m_quat(mrpt::math::UNINITIALIZED_QUATERNION) { }
 		/** \overload */
-		inline CPose3DQuat(TConstructorFlags_Poses constructor_dummy_param)  : m_quat(mrpt::math::UNINITIALIZED_QUATERNION) { }
+		inline CPose3DQuat(TConstructorFlags_Poses )  : m_quat(mrpt::math::UNINITIALIZED_QUATERNION) { }
 
 		/** Constructor with initilization of the pose - the quaternion is normalized to make sure it's unitary */
 		inline CPose3DQuat(const double x,const double y,const double z,const mrpt::math::CQuaternionDouble &q ) : m_quat(q) { m_coords[0]=x; m_coords[1]=y; m_coords[2]=z; m_quat.normalize(); }
@@ -286,6 +286,8 @@ namespace poses
 	#ifdef _DEBUG
 				ASSERTMSG_(m_obj!=NULL,"non initialized iterator");
 				if (m_cur_idx> (allow_end ? 7u : 6u) ) THROW_EXCEPTION("Index out of range in iterator.")
+	#else
+				MRPT_UNUSED_PARAM(allow_end);
 	#endif
 			}
 		public:
@@ -351,6 +353,8 @@ namespace poses
 	#ifdef _DEBUG
 				ASSERTMSG_(m_obj!=NULL,"non initialized iterator");
 				if (m_cur_idx> (allow_end ? 7u : 6u) ) THROW_EXCEPTION("Index out of range in iterator.")
+	#else
+				MRPT_UNUSED_PARAM(allow_end);
 	#endif
 			}
 		public:

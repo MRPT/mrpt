@@ -337,7 +337,7 @@ null_convert (j_compress_ptr cinfo,
  */
 
 METHODDEF(void)
-null_method (j_compress_ptr cinfo)
+null_method (j_compress_ptr )
 {
   /* no work needed */
 }

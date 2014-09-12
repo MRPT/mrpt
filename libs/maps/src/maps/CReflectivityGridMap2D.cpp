@@ -256,6 +256,8 @@ void  CReflectivityGridMap2D::TInsertionOptions::loadFromConfigFile(
 	const mrpt::utils::CConfigFileBase  &iniFile,
 	const std::string &section)
 {
+	MRPT_UNUSED_PARAM(iniFile);
+	MRPT_UNUSED_PARAM(section);
 	//MRPT_LOAD_CONFIG_VAR( maxOccupancyUpdateCertainty,	float, iniFile, section )
 }
 

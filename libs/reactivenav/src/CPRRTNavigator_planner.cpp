@@ -38,7 +38,8 @@ public:
 	  */
 	virtual bool isSolutionEnded(const CPath &sol)
 	{
-    return true;
+		MRPT_UNUSED_PARAM(sol);
+		return true;
 	}
 
 	/**
@@ -47,7 +48,8 @@ public:
 	  */
 	virtual bool isSolutionValid(const CPath &sol)
 	{
-    return false;
+		MRPT_UNUSED_PARAM(sol);
+		return false;
 	}
 
 	/**
@@ -56,7 +58,7 @@ public:
 	  */
 	virtual void generateChildren(const CPath &sol,std::vector<CPath> &sols)
 	{
-
+		MRPT_UNUSED_PARAM(sol); MRPT_UNUSED_PARAM(sols);
 	}
 	/**
 	  * Client code must implement this method.
@@ -65,7 +67,8 @@ public:
 	  */
 	virtual double getHeuristic(const CPath &sol)
 	{
-    return 0;
+		MRPT_UNUSED_PARAM(sol);
+		return 0;
 	}
 	/**
 	  * Client code must implement this method.
@@ -74,7 +77,8 @@ public:
 	  */
     virtual double getCost(const CPath &sol)
     {
-    return 0;
+		MRPT_UNUSED_PARAM(sol);
+		return 0;
     }
 
 };

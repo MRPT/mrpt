@@ -69,6 +69,8 @@ namespace mrpt
 				double					&out_SSO
 				)
 			{
+				MRPT_UNUSED_PARAM(hypID); MRPT_UNUSED_PARAM(poseID1);
+				MRPT_UNUSED_PARAM(poseID2); MRPT_UNUSED_PARAM(out_SSO);
 				return false;
 			}
 
@@ -78,7 +80,9 @@ namespace mrpt
 			virtual void OnNewPose(
 				const TPoseID 			&poseID,
 				const CSensoryFrame		*SF )
-			{ }
+			{
+				MRPT_UNUSED_PARAM(poseID); MRPT_UNUSED_PARAM(SF);
+			}
 
 		}; // end class
 

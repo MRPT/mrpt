@@ -589,6 +589,7 @@ namespace mrpt
 						VisitorComputePoses(graph_t *g) : m_g(g) { }
 						virtual void OnVisitNode( const TNodeID parent_id, const typename dijkstra_t::tree_graph_t::Visitor::tree_t::TEdgeInfo &edge_to_child, const size_t depth_level )
 						{
+							MRPT_UNUSED_PARAM(depth_level);
 							const TNodeID  child_id = edge_to_child.id;
 
 							// Compute the pose of "child_id" as parent_pose (+) edge_delta_pose,

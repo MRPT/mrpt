@@ -1553,6 +1553,7 @@ TAuxLoadFunctor  dummy_loader;  // used just to set "ptr_internal_build_points_m
   */
 void CPointsMap::PLY_import_set_vertex(const size_t idx, const mrpt::math::TPoint3Df &pt, const mrpt::utils::TColorf *pt_color)
 {
+	MRPT_UNUSED_PARAM(pt_color);
 	this->setPoint(idx,pt.x,pt.y,pt.z);
 }
 
@@ -1571,6 +1572,7 @@ void CPointsMap::PLY_export_get_vertex(
 	bool &pt_has_color,
 	mrpt::utils::TColorf &pt_color) const
 {
+	MRPT_UNUSED_PARAM(pt_color);
 	pt_has_color=false;
 
 	pt.x = x[idx];
@@ -1611,6 +1613,8 @@ bool CPointsMap::savePCDFile(const std::string &filename, bool save_as_binary) c
 	return 0 == pcl::io::savePCDFile(filename, cloud, save_as_binary);
 
 #else
+	MRPT_UNUSED_PARAM(filename);
+	MRPT_UNUSED_PARAM(save_as_binary);
 	THROW_EXCEPTION("Operation not available: MRPT was built without PCL")
 #endif
 }
@@ -1627,6 +1631,7 @@ bool CPointsMap::loadPCDFile(const std::string &filename)
 
 	return true;
 #else
+	MRPT_UNUSED_PARAM(filename);
 	THROW_EXCEPTION("Operation not available: MRPT was built without PCL")
 #endif
 }

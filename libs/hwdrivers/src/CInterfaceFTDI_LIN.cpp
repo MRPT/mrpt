@@ -75,14 +75,14 @@ CInterfaceFTDI::~CInterfaceFTDI()
 }
 
 /** This object cannot be copied */
-CInterfaceFTDI::CInterfaceFTDI(const CInterfaceFTDI &o) :
+CInterfaceFTDI::CInterfaceFTDI(const CInterfaceFTDI &) :
 	m_readBuffer(4096)
 {
 	MRPT_TRY_START
 	THROW_EXCEPTION("This object cannot be copied");
 	MRPT_TRY_END
 }
-CInterfaceFTDI& CInterfaceFTDI::operator =(const CInterfaceFTDI &o)
+CInterfaceFTDI& CInterfaceFTDI::operator =(const CInterfaceFTDI &)
 {
 	MRPT_TRY_START
 	THROW_EXCEPTION("This object cannot be copied");
@@ -133,6 +133,8 @@ void  CInterfaceFTDI::OpenBySerialNumber( const std::string &serialNumber )
 	if (ret) THROW_EXCEPTION( string(ftdi_get_error_string(ctx)) );
 
 	MRPT_TRY_END
+#else
+	MRPT_UNUSED_PARAM(serialNumber);
 #endif
 }
 
@@ -172,6 +174,8 @@ void CInterfaceFTDI::ListAllDevices( TFTDIDeviceList &outList )
 //    }
 
 	MRPT_TRY_END
+#else
+	MRPT_UNUSED_PARAM(outList);
 #endif
 }
 
@@ -248,6 +252,8 @@ void CInterfaceFTDI::recursive_fill_list_devices( void *usb_device_structure , T
 		for (unsigned char j=0;j<dev->num_children;j++)
 			recursive_fill_list_devices( (void*)dev->children[j], outList );
 	}
+#else
+	MRPT_UNUSED_PARAM(usb_device_structure); MRPT_UNUSED_PARAM(outList);
 #endif
 }
 
@@ -274,6 +280,8 @@ void  CInterfaceFTDI::ftdi_read(void  *lpvBuffer, unsigned long dwBuffSize, unsi
 	}
 
 	MRPT_TRY_END
+#else
+	MRPT_UNUSED_PARAM(lpvBuffer); MRPT_UNUSED_PARAM(dwBuffSize); MRPT_UNUSED_PARAM(lpdwBytesRead);
 #endif
 }
 
@@ -293,6 +301,8 @@ void  CInterfaceFTDI::ftdi_write(const void  *lpvBuffer, unsigned long dwBuffSiz
 		THROW_EXCEPTION( string(ftdi_get_error_string(ctx)) );
 
 	MRPT_TRY_END
+#else
+	MRPT_UNUSED_PARAM(lpvBuffer); MRPT_UNUSED_PARAM(dwBuffSize); MRPT_UNUSED_PARAM(lpdwBytes);
 #endif
 }
 
@@ -373,6 +383,8 @@ void  CInterfaceFTDI::SetLatencyTimer (unsigned char latency_ms)
 
 	if (ftdi_set_latency_timer(ctx, latency_ms)<0)
 		THROW_EXCEPTION("Error setting latency timer");
+#else
+	MRPT_UNUSED_PARAM(latency_ms);
 #endif
 }
 
@@ -388,6 +400,8 @@ void  CInterfaceFTDI::SetTimeouts(unsigned long dwReadTimeout_ms, unsigned long 
 	// JL: It seems it works worse with timeouts...
 //	ctx->usb_read_timeout  = dwReadTimeout_ms;
 //	ctx->usb_write_timeout = dwWriteTimeout_ms;
+#else
+	MRPT_UNUSED_PARAM(dwReadTimeout_ms); MRPT_UNUSED_PARAM(dwWriteTimeout_ms);
 #endif
 }
 

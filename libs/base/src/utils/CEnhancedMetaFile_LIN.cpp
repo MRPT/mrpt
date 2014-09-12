@@ -111,6 +111,7 @@ void  CEnhancedMetaFile::selectVectorTextFont(
 	bool				bold,
 	bool				italic )
 {
+	MRPT_UNUSED_PARAM(fontSize); MRPT_UNUSED_PARAM(bold); MRPT_UNUSED_PARAM(italic);
     MRPT_TRY_START;
 
     ((CImage*)m_hdc.get())->selectTextFont(fontName);

@@ -218,7 +218,9 @@ namespace mrpt
 			/** Re-implement this method if you want to know when and why a navigation has ended.
 			  * \param targetReachedOK Will be false if the navigation failed.
 			  */
-			virtual void onNavigationEnd( bool targetReachedOK ) { }
+			virtual void onNavigationEnd( bool targetReachedOK ) {
+				MRPT_UNUSED_PARAM(targetReachedOK);
+			}
 
 			/** Re-implement this method if you want to know when the robot is approaching the target:
 			  *  this event is raised before onNavigationEnd, when the robot is closer than a certain distance to the target.

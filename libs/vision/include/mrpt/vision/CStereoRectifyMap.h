@@ -126,7 +126,9 @@ namespace mrpt
 			mrpt::utils::TImageSize getResizeOutputSize() const { return m_resize_output_value; }
 
 			/** Change remap interpolation method (default=Lineal). This parameter can be safely changed at any instant without consequences. */
-			void setInterpolationMethod(const mrpt::utils::TInterpolationMethod interp) { m_interpolation_method = m_interpolation_method; }
+			void setInterpolationMethod(const mrpt::utils::TInterpolationMethod interp) {
+				m_interpolation_method = interp;
+			}
 
 			/** Get the currently selected interpolation method \sa setInterpolationMethod */
 			mrpt::utils::TInterpolationMethod getInterpolationMethod() const { return m_interpolation_method; }

@@ -137,7 +137,7 @@ namespace poses
 		CPose3D(const CPose3DRotVec &p );
 
 		/** Fast constructor that leaves all the data uninitialized - call with UNINITIALIZED_POSE as argument */
-		inline CPose3D(TConstructorFlags_Poses constructor_dummy_param) : m_ROT(mrpt::math::UNINITIALIZED_MATRIX), m_ypr_uptodate(false) { }
+		inline CPose3D(TConstructorFlags_Poses ) : m_ROT(mrpt::math::UNINITIALIZED_MATRIX), m_ypr_uptodate(false) { }
 
 		/** Constructor from an array with these 12 elements: [r11 r21 r31 r12 r22 r32 r13 r23 r33 tx ty tz]
 		  *  where r{ij} are the entries of the 3x3 rotation matrix and t{x,y,z} are the 3D translation of the pose

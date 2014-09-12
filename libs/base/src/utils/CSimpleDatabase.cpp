@@ -305,7 +305,7 @@ string  CSimpleDatabaseTable::get(
     string		field ) const
 {
 	MRPT_START
-	ASSERT_(recordIndex>=0 && recordIndex<getRecordCount());
+	ASSERT_(recordIndex<getRecordCount());
 	return data[recordIndex][fieldIndex(field.c_str())];
 	MRPT_END
 }

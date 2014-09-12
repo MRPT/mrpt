@@ -85,6 +85,7 @@ void CTimeLogger::getStats(std::map<std::string,TCallStats> &out_stats) const
 
 std::string CTimeLogger::getStatsAsText(const size_t column_width)  const
 {
+	MRPT_UNUSED_PARAM(column_width);
 	std::string s;
 
 	s+="--------------------------- MRPT CTimeLogger report --------------------------\n";

@@ -41,6 +41,7 @@ std::string CPTG3::getDescription() const
   ---------------------------------------------------------------*/
 void CPTG3::PTG_Generator( float alpha, float t,float x, float y, float phi, float &v, float &w )
 {
+	MRPT_UNUSED_PARAM(phi); MRPT_UNUSED_PARAM(x); MRPT_UNUSED_PARAM(y);
 	float	u = fabs(alpha) * 0.5f; //0.14758362f;  // u = atan(0.5)* alpha / PI;
 
 	if (t< u*R/V_MAX)

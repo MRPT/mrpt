@@ -29,6 +29,7 @@ CBoardIR::CBoardIR( int BUFFER_LENGTH ) :
 	m_COMname				(),
 	m_COMbauds				(4800)
 {
+	MRPT_UNUSED_PARAM(BUFFER_LENGTH);
 	m_sensorLabel = "BoardIR";
 }
 

@@ -31,8 +31,9 @@ namespace mrpt { namespace srba {
 
 namespace internal {
     /** Auxiliary template for evaluating the dh_df part in \a recompute_all_Jacobians().
-    // The extra complexity of adding this auxiliary template with specializations is required to avoid
-    //  the compiler trying to evaluate the jacobians dh_df in relative SLAM problems, where the Jacobian does not exist. */
+	 * The extra complexity of adding this auxiliary template with specializations is required to
+	 * avoid the compiler trying to evaluate the jacobians dh_df in relative SLAM problems, where
+	 * the Jacobian does not exist. */
     template <landmark_jacob_family_t LM_JACOB_FAMILY>
     struct recompute_all_Jacobians_dh_df;
 
@@ -78,6 +79,8 @@ namespace internal {
             LSTJACOBCOLS  &lst_JacobCols_df,  // std::vector<typename RBAENGINE::TSparseBlocksJacobians_dh_df::col_t*>
             LSTPOSES * out_list_of_required_num_poses ) // std::vector<const typename RBAENGINE::kf2kf_pose_traits<RBAENGINE::KF2KF_POSE_TYPE>::pose_flag_t*>
         {
+			MRPT_UNUSED_PARAM(rba); MRPT_UNUSED_PARAM(lst_JacobCols_df);
+			MRPT_UNUSED_PARAM(out_list_of_required_num_poses);
             // Nothing to do: this will never be actually called.
             return 0;
         }
@@ -382,6 +385,7 @@ struct compute_jacobian_dAepsDx_deps<jacob_point_landmark /* Jacobian family: th
 		const OBS_VECTOR  & all_obs
 		)
 	{
+		MRPT_UNUSED_PARAM(all_obs);
 		// See section 10.3.7 of technical report on SE(3) poses [http://mapir.isa.uma.es/~jlblanco/papers/jlblanco2010geometry3D_techrep.pdf]
 		if (!is_inverse_edge_jacobian)
 		{	// Normal formulation: unknown is pose "d+1 -> d"
@@ -524,6 +528,7 @@ struct compute_jacobian_dAepsDx_deps_SE2
 		const OBS_VECTOR  & all_obs
 		)
 	{
+		MRPT_UNUSED_PARAM(all_obs);
 		MRPT_COMPILE_TIME_ASSERT(POINT_DIMS==2 || POINT_DIMS==3)
 
 		if (!is_inverse_edge_jacobian)
@@ -673,6 +678,8 @@ struct compute_jacobian_dAepsDx_deps<jacob_relpose_landmark /* Jacobian family: 
 		const OBS_VECTOR  & all_obs
 		)
 	{
+		MRPT_UNUSED_PARAM(xji_i);
+		MRPT_UNUSED_PARAM(all_obs);
 		double Xd,Yd,PHIa;
 		mrpt::poses::CPose2D  base_wrt_obs(mrpt::poses::UNINITIALIZED_POSE); // A(+)D
 
@@ -780,6 +787,8 @@ struct compute_jacobian_dAepsDx_deps<jacob_relpose_landmark /* Jacobian family: 
 		const OBS_VECTOR  & all_obs
 		)
 	{
+		MRPT_UNUSED_PARAM(xji_i);
+		MRPT_UNUSED_PARAM(all_obs);
 		//
 		//  d ps-log(p^obs_base)      d ps-log(p)       d A*e^eps*D
 		// --------------------  =  --------------- * -----------------
@@ -914,6 +923,7 @@ void RbaEngine<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::compute_jacobian_d
 	const k2f_edge_t & observation,
 	std::vector<const pose_flag_t*> *out_list_of_required_num_poses) const
 {
+	MRPT_UNUSED_PARAM(observation);
 	if (! *jacob.sym.is_valid )
 		return; // Another block of the same Jacobian row said this observation was invalid for some reason.
 

@@ -61,6 +61,8 @@ CPose3DPDFPtr CTopLCDetector_FabMap::computeTopologicalObservationModel(
 	double					&out_log_lik
 	)
 {
+	MRPT_UNUSED_PARAM(hypID); MRPT_UNUSED_PARAM(currentArea);
+	MRPT_UNUSED_PARAM(refArea); MRPT_UNUSED_PARAM(out_log_lik);
 	return CPose3DPDFPtr();
 }
 
@@ -90,6 +92,8 @@ void CTopLCDetector_FabMap::OnNewPose(
 	cout << "[OnNewPose] Adding new pose: " << poseID << " # of images: " << lstObsImages.size() <<  endl;
 	THE_FABMAP->hmtslam_addNewPose(poseID,lstObsImages);
 
+#else
+	MRPT_UNUSED_PARAM(poseID); MRPT_UNUSED_PARAM(SF);
 #endif
 }
 

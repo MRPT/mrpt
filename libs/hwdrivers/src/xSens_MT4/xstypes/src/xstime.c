@@ -13,13 +13,13 @@
 #include <wchar.h>
 
 #ifdef _WIN32
-#	include <windows.h>
-#	define snprintf _snprintf
+	#include <windows.h>
+	#define snprintf _snprintf
 #else
-#	include <unistd.h>
-#   include <sys/time.h>
-#	include <pthread.h>
-#	include <string.h>
+	#include <unistd.h>
+	#include <sys/time.h>
+	#include <pthread.h>
+	#include <string.h>
 #endif
 #include <time.h>
 

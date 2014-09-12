@@ -49,6 +49,7 @@ CSemaphore::CSemaphore(
     :
     m_name(name)
 {
+	MRPT_UNUSED_PARAM(maxCount);
 	MRPT_START
 
 	// Reserve memory for my data:

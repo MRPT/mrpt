@@ -96,6 +96,7 @@ int counter = 0;
 
 void thread_example(int id)
 {
+	MRPT_UNUSED_PARAM(id);
 	try
 	{
 		{
