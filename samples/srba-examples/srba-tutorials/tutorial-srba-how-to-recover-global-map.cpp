@@ -14,6 +14,7 @@
 #include <mrpt/gui.h>  // For rendering results as a 3D scene
 
 #include <mrpt/graphslam.h> // For global map recovery only
+#include <mrpt/opengl/graph_tools.h> // To render the global map
 
 using namespace mrpt::srba;
 using namespace std;
@@ -25,14 +26,14 @@ using mrpt::utils::DEG2RAD;
 struct my_srba_options
 {
 	typedef options::sensor_pose_on_robot_none           sensor_pose_on_robot_t;  // sensor pose == robot pose
-	typedef options::observation_noise_constant_matrix<observations::RelativePoses_2D>   obs_noise_matrix_t;      // The sensor noise matrix is the same for all observations and equal to some given matrix
+	typedef options::observation_noise_constant_matrix<observations::RelativePoses_3D>   obs_noise_matrix_t;      // The sensor noise matrix is the same for all observations and equal to some given matrix
 	typedef options::solver_LM_schur_dense_cholesky  solver_t;
 };
 
 typedef RbaEngine<
-	kf2kf_poses::SE2,                // Parameterization  KF-to-KF poses
-	landmarks::RelativePoses2D,      // Parameterization of landmark positions
-	observations::RelativePoses_2D,  // Type of observations
+	kf2kf_poses::SE3,                // Parameterization  KF-to-KF poses
+	landmarks::RelativePoses3D,      // Parameterization of landmark positions
+	observations::RelativePoses_3D,  // Type of observations
 	my_srba_options                  // Other parameters
 	>
 	my_srba_t;
@@ -40,8 +41,8 @@ typedef RbaEngine<
 // --------------------------------------------------------------------------------
 // A test dataset (generated with http://code.google.com/p/recursive-world-toolkit/ )
 // --------------------------------------------------------------------------------
-const double STD_NOISE_XY = 0.20;
-const double STD_NOISE_YAW = DEG2RAD(2.0);
+const double STD_NOISE_XYZ = 0.05;
+const double STD_NOISE_ANGLES = mrpt::utils::DEG2RAD(1.0);
 
 struct basic_graph_slam_dataset_entry_t
 {
@@ -93,11 +94,12 @@ int main(int argc, char**argv)
 
 	// Information matrix for relative pose observations:
 	{
-		Eigen::Matrix3d ObsL;
+		Eigen::Matrix<double,6,6> ObsL;
 		ObsL.setZero();
-		ObsL(0,0) = 1/square(STD_NOISE_XY); // x
-		ObsL(1,1) = 1/square(STD_NOISE_XY); // y
-		ObsL(2,2) = 1/square(STD_NOISE_YAW); // phi
+		// X,Y,Z:
+		for (int i=0;i<3;i++) ObsL(i,i) = 1/square(STD_NOISE_XYZ);
+		// Yaw,pitch,roll:
+		for (int i=0;i<3;i++) ObsL(3+i,3+i) = 1/square(STD_NOISE_ANGLES);
 
 		// Set:
 		rba.parameters.obs_noise.lambda = ObsL;
@@ -140,7 +142,10 @@ int main(int argc, char**argv)
 			obs_field.obs.feat_id = cur_kf; // Feature ID == keyframe ID
 			obs_field.obs.obs_data.x = 0;   // Landmark values are actually ignored.
 			obs_field.obs.obs_data.y = 0;
+			obs_field.obs.obs_data.z = 0;
 			obs_field.obs.obs_data.yaw = 0;
+			obs_field.obs.obs_data.pitch = 0;
+			obs_field.obs.obs_data.roll = 0;
 			list_obs.push_back( obs_field );
 		}
 
@@ -153,9 +158,12 @@ int main(int argc, char**argv)
 			obs_field.is_unknown_with_init_val = false; // Ignored, since all observed "fake landmarks" already have an initialized value.
 
 			obs_field.obs.feat_id      = dataset[obsIdx].observed_kf;
-			obs_field.obs.obs_data.x   = dataset[obsIdx].x + mrpt::random::randomGenerator.drawGaussian1D(0,STD_NOISE_XY);
-			obs_field.obs.obs_data.y   = dataset[obsIdx].y + mrpt::random::randomGenerator.drawGaussian1D(0,STD_NOISE_XY);
-			obs_field.obs.obs_data.yaw = dataset[obsIdx].yaw  + mrpt::random::randomGenerator.drawGaussian1D(0,STD_NOISE_YAW);
+			obs_field.obs.obs_data.x   = dataset[obsIdx].x + mrpt::random::randomGenerator.drawGaussian1D(0,STD_NOISE_XYZ);
+			obs_field.obs.obs_data.y   = dataset[obsIdx].y + mrpt::random::randomGenerator.drawGaussian1D(0,STD_NOISE_XYZ);
+			obs_field.obs.obs_data.z   = dataset[obsIdx].z + mrpt::random::randomGenerator.drawGaussian1D(0,STD_NOISE_XYZ);
+			obs_field.obs.obs_data.yaw   = dataset[obsIdx].yaw  + mrpt::random::randomGenerator.drawGaussian1D(0,STD_NOISE_ANGLES);
+			obs_field.obs.obs_data.pitch = dataset[obsIdx].pitch  + mrpt::random::randomGenerator.drawGaussian1D(0,STD_NOISE_ANGLES);
+			obs_field.obs.obs_data.roll  = dataset[obsIdx].roll  + mrpt::random::randomGenerator.drawGaussian1D(0,STD_NOISE_ANGLES);
 
 			list_obs.push_back( obs_field );
 			obsIdx++; // Next dataset entry
@@ -207,19 +215,41 @@ int main(int argc, char**argv)
 	// --------------------------------------------------------------------------------
 	// Get equivalent graph-slam problem:
 	// --------------------------------------------------------------------------------
-	mrpt::graphs::CNetworkOfPoses2D poseGraph;
+	mrpt::graphs::CNetworkOfPoses3D poseGraph;
 	rba.get_global_graphslam_problem(poseGraph);
 
+	// Run optimization:
 	mrpt::graphslam::TResultInfoSpaLevMarq out_info;
 	mrpt::utils::TParametersDouble extra_params;
 
-	// Run optimization:
 	mrpt::graphslam::optimize_graph_spa_levmarq(
 		poseGraph, 
 		out_info,
 		NULL, /* in_nodes_to_optimize, NULL=all */
 		extra_params
 		);
+
+	// Render resulting graph:
+#if MRPT_HAS_WXWIDGETS
+	mrpt::gui::CDisplayWindow3D win2("Global optimized map",640,480);
+	{
+		mrpt::opengl::COpenGLScenePtr &scene = win2.get3DSceneAndLock();
+
+		mrpt::utils::TParametersDouble render_params;   // See docs for mrpt::opengl::graph_tools::graph_visualize()
+		render_params["show_ID_labels"] = 1;	
+
+		// Get opengl representation of the graph:
+		mrpt::opengl::CSetOfObjectsPtr gl_global_map = mrpt::opengl::graph_tools::graph_visualize( poseGraph,render_params );
+		scene->insert(gl_global_map);
+
+		win2.unlockAccess3DScene();
+		win2.repaint();
+		mrpt::system::pause();
+	}
+	
+
+#endif
+
 
 
 	return 0; // All ok

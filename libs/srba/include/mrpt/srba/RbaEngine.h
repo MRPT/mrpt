@@ -265,14 +265,21 @@ namespace srba
 		  */
 		double eval_overall_squared_error() const;
 
+		struct ExportGraphSLAM_Params
+		{
+			TKeyFrameID root_kf_id; //!< The KF to use as a root for the spanning tree to init global poses (default=0)
+
+			ExportGraphSLAM_Params() : root_kf_id(0) {}
+		};
 		/** Build a graph-slam problem suitable for recovering the (consistent) global pose (vs. relative ones as are handled in SRBA) of each keyframe.
 		  * \note This version of the method doesn't account for the covariances of relative pose estimations in RBA.
 		  * \sa mrpt::graphslam (for methods capable of optimizing the output graph of pose constraints)
-		  * \param[out] global_graph Previous contents will be erased. The output global graph will be returned here.
+		  * \param[out] global_graph Previous contents will be erased. The output global graph will be returned here, initialized with poses from a Dijkstra/Spanning-tree from the first KF.
 		  * \tparam POSE_GRAPH Must be an instance of mrpt::graphs::CNetworkOfPoses<>, e.g. CNetworkOfPoses2D (for 2D poses) or CNetworkOfPoses3D (for 3D).
-		  */		
+		  * \note This method is NOT O(1)
+		  */
 		template <class POSE_GRAPH>
-		void get_global_graphslam_problem(POSE_GRAPH &global_graph) const;
+		void get_global_graphslam_problem(POSE_GRAPH &global_graph, const ExportGraphSLAM_Params &params = ExportGraphSLAM_Params() ) const;
 	
 
 		/** @} */  // End of main API methods
