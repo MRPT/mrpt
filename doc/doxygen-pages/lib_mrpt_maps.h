@@ -25,9 +25,6 @@ the base virtual mrpt::slam::CMetricMap. <b>Note:</b> There are two special
 maps which are not declared here in mrpt-maps, but 
 in <a href="mrpt-vision.html" >mrpt-vision</a>, due to their
 heavy dependence on computer vision functions. </li>
-<li> This library includes an embedded version of the ANN library for 
-kd-tree fast construction and queries. It's used internally in CPointsMap, but 
-could be used directly by the user. See ANNkd_tree. </li>
 <li> This library also adds new classes to the namespace mrpt::opengl, which 
 couldn't be included in the library mrpt-opengl due to its heavy dependence on
 map classes declared here. The classes are:
