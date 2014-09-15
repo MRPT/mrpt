@@ -33,7 +33,7 @@ protected:
 	{
 		// This is the initial input graph (make a copy for later use):
 		my_graph_t graph;
-		create_ring_path(graph);
+		GraphSlamLevMarqTest<my_graph_t>::create_ring_path(graph);
 
 		const my_graph_t  graph_initial = graph;
 
@@ -63,7 +63,7 @@ protected:
 	void test_graph_bin_serialization()
 	{
 		my_graph_t graph;
-		create_ring_path(graph);
+		GraphSlamLevMarqTest<my_graph_t>::create_ring_path(graph);
 
 		// binary dump:
 		mrpt::utils::CMemoryStream mem;
