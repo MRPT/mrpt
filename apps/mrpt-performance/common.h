@@ -28,6 +28,8 @@ void register_tests_scan_matching();
 void register_tests_feature_extraction();
 void register_tests_feature_matching();
 void register_tests_graph();
+void register_tests_graphslam();
+void register_tests_srba();
 // -------------------------------------------------
 
 typedef double (*TestFunctor)(int a1, int a2);  // return run-time in secs.

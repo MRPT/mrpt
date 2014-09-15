@@ -26,6 +26,8 @@ ADD_EXECUTABLE(mrpt-performance
 	perf-feature_extraction.cpp
 	perf-feature_matching.cpp
 	perf-graph.cpp
+	perf-graphslam.cpp
+	perf-srba.cpp
 	perf-gridmaps.cpp
 	perf-icp.cpp
 	perf-images.cpp
@@ -47,7 +49,7 @@ TARGET_LINK_LIBRARIES(${TMP_TARGET_NAME} ${MRPT_LINKER_LIBS})
 # Dependencies on MRPT libraries:
 #  Just mention the top-level dependency, the rest will be detected automatically,
 #  and all the needed #include<> dirs added (see the script DeclareAppDependencies.cmake for further details)
-DeclareAppDependencies(${TMP_TARGET_NAME} mrpt-slam mrpt-gui mrpt-scanmatching mrpt-graphs mrpt-graphslam)
+DeclareAppDependencies(${TMP_TARGET_NAME} mrpt-slam mrpt-gui mrpt-scanmatching mrpt-graphs mrpt-graphslam mrpt-srba)
 
 
 DeclareAppForInstall(${TMP_TARGET_NAME})
