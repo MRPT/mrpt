@@ -164,22 +164,29 @@ int main(int argc, char **argv)
 
 			printf("%-60s",it->name); cout.flush();
 
-			const double t = it->func(it->arg1,it->arg2); // Run it.
-
-			mrpt::system::setConsoleColor(CONCOL_GREEN);
-			cout << mrpt::system::intervalFormat(t);
-			mrpt::system::setConsoleColor(CONCOL_NORMAL);
-			cout << endl;
-
-			// Make list of all data:
-			all_perf_data.push_back( pair<string,double>(it->name, t) );
-
-			if (doLog)
+			try
 			{
-				fo.printf("<tr> <td>%s</td> <td align=\"right\">%s</td> <td align=\"right\">%sHz</td>  </tr>\n",
-					it->name,
-					mrpt::system::intervalFormat(t).c_str(),
-					mrpt::system::unitsFormat(1.0/t).c_str());
+				const double t = it->func(it->arg1,it->arg2); // Run it.
+
+				mrpt::system::setConsoleColor(CONCOL_GREEN);
+				cout << mrpt::system::intervalFormat(t);
+				mrpt::system::setConsoleColor(CONCOL_NORMAL);
+				cout << endl;
+
+				// Make list of all data:
+				all_perf_data.push_back( pair<string,double>(it->name, t) );
+
+				if (doLog)
+				{
+					fo.printf("<tr> <td>%s</td> <td align=\"right\">%s</td> <td align=\"right\">%sHz</td>  </tr>\n",
+						it->name,
+						mrpt::system::intervalFormat(t).c_str(),
+						mrpt::system::unitsFormat(1.0/t).c_str());
+				}
+			}
+			catch (std::exception &e)
+			{
+				cerr << "Skipped due to exception:\n" << e.what() << endl;
 			}
 		}
 
@@ -222,6 +229,12 @@ int main(int argc, char **argv)
 		if (HAVE_PERF_DATA_DIR)
 		{
 			const char* version_postfix = arg_release.isSet() ? "":"dev";
+
+			// Macros to create strings with the compiler version:
+#define ___STR2__(x) #x
+#define ___STR1__(x) ___STR2__(x)
+#define COMP_VER(NAME,MAJ,MIN,PATCH)  NAME ___STR1__(MAJ) ___STR1__(MIN)  ___STR1__(PATCH)
+
 #if defined(_MSC_VER)
 #		if _MSC_VER<=1399
 			const char* compiler_name = "MSVC7";
@@ -233,13 +246,15 @@ int main(int argc, char **argv)
 			const char* compiler_name = "MSVC10";
 #		elif _MSC_VER<=1799
 			const char* compiler_name = "MSVC11";
+#		elif _MSC_VER<=1899
+			const char* compiler_name = "MSVC12";
 #		else
 			const char* compiler_name = "MSVC";
 #		endif
 #elif defined(__clang__)
-			const char* compiler_name = "CLANG";
+			const char* compiler_name = COMP_VER("CLANG",__clang_major__,__clang_minor__,__clang_patchlevel__);
 #elif defined(__GNUC__)
-			const char* compiler_name = "GCC";
+			const char* compiler_name = COMP_VER("GCC",__GNUC__,__GNUC_MINOR__ ,__GNUC_PATCHLEVEL__);
 #else
 			const char* compiler_name = "unknowncompiler";
 #endif
