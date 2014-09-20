@@ -475,14 +475,15 @@ void CAbstractPTGBasedReactive::performNavigationStep()
 			if (fill_log_record)
 			{
 				metaprogramming::copy_container_typecasting(ipf.TP_Obstacles, newLogRec.infoPerPTG[indexPTG].TP_Obstacles);
-				newLogRec.infoPerPTG[indexPTG].PTG_desc  = ptg->getDescription();
-				newLogRec.infoPerPTG[indexPTG].TP_Target = ipf.TP_Target;
-				newLogRec.infoPerPTG[indexPTG].HLFR	     = HLFR;
-				newLogRec.infoPerPTG[indexPTG].desiredDirection = holonomicMovement.direction;
-				newLogRec.infoPerPTG[indexPTG].desiredSpeed     = holonomicMovement.speed;
-				newLogRec.infoPerPTG[indexPTG].evaluation       = holonomicMovement.evaluation;
-				newLogRec.infoPerPTG[indexPTG].timeForTPObsTransformation = 0;  // XXX
-				newLogRec.infoPerPTG[indexPTG].timeForHolonomicMethod     = 0; // XXX
+				CLogFileRecord::TInfoPerPTG &ipp = newLogRec.infoPerPTG[indexPTG];
+				ipp.PTG_desc  = ptg->getDescription();
+				ipp.TP_Target = ipf.TP_Target;
+				ipp.HLFR	     = HLFR;
+				ipp.desiredDirection = holonomicMovement.direction;
+				ipp.desiredSpeed     = holonomicMovement.speed;
+				ipp.evaluation       = holonomicMovement.evaluation;
+				ipp.timeForTPObsTransformation = 0;  // XXX
+				ipp.timeForHolonomicMethod     = 0; // XXX
 			}
 
 		} // end for each PTG

@@ -192,8 +192,8 @@ namespace math
         // iterator support
         iterator begin() { return reinterpret_cast< iterator >( &c ); }
         const_iterator begin() const { return reinterpret_cast< const_iterator >( &c ); }
-        iterator end() { return reinterpret_cast< iterator >( &c ); }
-        const_iterator end() const { return reinterpret_cast< const_iterator >( &c ); }
+        iterator end() { return reinterpret_cast< iterator >( &c ); } //-V524
+        const_iterator end() const { return reinterpret_cast< const_iterator >( &c ); } //-V524
 
         // reverse iterator support
 #if !defined(BOOST_MSVC_STD_ITERATOR) && !defined(BOOST_NO_STD_ITERATOR_TRAITS)

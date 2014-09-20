@@ -127,8 +127,6 @@ void CReactiveNavigationSystem3D::loadConfigFile(const mrpt::utils::CConfigFileB
 	// ---------------------------------------------
 
 	unsigned int num_ptgs, num_alfas; // levels = m_robotShape.heights.size()
-	vector <CPolygon> shape;
-	vector <double> x,y;
 	TParameters<double> params;
 	CParameterizedTrajectoryGenerator *ptgaux;
 
