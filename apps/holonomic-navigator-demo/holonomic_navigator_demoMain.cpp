@@ -758,7 +758,7 @@ void holonomic_navigator_demoFrame::Onplot3DMouseClick(wxMouseEvent& event)
 	m_cursorPickState = cpsNone; // end of mode
 
 	// Do normal process in that class:
-	m_plot3D->OnLeftDown(event);
+	m_plot3D->OnMouseDown(event);
 }
 
 // ==== holonomic_navigator_demoFrame::TOptions ======
