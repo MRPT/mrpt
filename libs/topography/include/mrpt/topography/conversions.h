@@ -26,7 +26,7 @@ namespace mrpt
 	{
 		using namespace std;
 		using namespace mrpt::utils;
-		
+
 		/** \addtogroup mrpt_topography_grp
 		  *  @{ */
 
@@ -163,7 +163,7 @@ namespace mrpt
 			char		hem,
 			double		&out_lon /*degrees*/,
 			double		&out_lat /*degrees*/,
-			TEllipsoid	&ellip = TEllipsoid::Ellipsoid_WGS84() );
+			const TEllipsoid	&ellip = TEllipsoid::Ellipsoid_WGS84() );
 
 		/** Returns the Geodetic coordinates of the UTM input point.
 		  * \param UTMCoords: UTM input coordinates.
@@ -177,7 +177,7 @@ namespace mrpt
 			const int			&zone,
 			const char			&hem,
 			TGeodeticCoords		&GeodeticCoords,
-			TEllipsoid	&ellip = TEllipsoid::Ellipsoid_WGS84() )
+			const TEllipsoid	&ellip = TEllipsoid::Ellipsoid_WGS84() )
 		{
 			UTMToGeodetic( UTMCoords.x, UTMCoords.y, zone, hem, GeodeticCoords.lon.decimal_value, GeodeticCoords.lat.decimal_value, ellip );
 			GeodeticCoords.height = UTMCoords.z;
@@ -204,14 +204,14 @@ namespace mrpt
 			double    	&out_UTM_y,
 			int    		&out_UTM_zone,
 			char    	&out_UTM_latitude_band,
-			TEllipsoid	&ellip = TEllipsoid::Ellipsoid_WGS84());
+			const TEllipsoid	&ellip = TEllipsoid::Ellipsoid_WGS84());
 
 		void  TOPO_IMPEXP geodeticToUTM(
 			const TGeodeticCoords	&GeodeticCoords,
 			TUTMCoords				&UTMCoords,
 			int    					&UTMZone,
 			char    				&UTMLatitudeBand,
-			TEllipsoid				&ellip = TEllipsoid::Ellipsoid_WGS84());
+			const TEllipsoid		&ellip = TEllipsoid::Ellipsoid_WGS84());
 
 
 		/** Convert latitude and longitude coordinates into UTM coordinates, computing the corresponding UTM zone and latitude band.
@@ -233,7 +233,7 @@ namespace mrpt
 			TUTMCoords				&UTMCoords,
 			int    					&UTMZone,
 			char    				&UTMLatitudeBand,
-			TEllipsoid				&ellip = TEllipsoid::Ellipsoid_WGS84())
+			const TEllipsoid		&ellip = TEllipsoid::Ellipsoid_WGS84())
 		{
 			GeodeticToUTM( GeodeticCoords.lat, GeodeticCoords.lon, UTMCoords.x, UTMCoords.y, UTMZone, UTMLatitudeBand, ellip );
 			UTMCoords.z = GeodeticCoords.height;

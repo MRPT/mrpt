@@ -73,10 +73,10 @@ void  mrpt::topography::geodeticToENU_WGS84(
 	// Generate reference 3D point:
 	TPoint3D P_geocentric_ref;
 	geodeticToGeocentric_WGS84(in_coords_origin,P_geocentric_ref);
-	
+
 	const double clat = cos(DEG2RAD(in_coords_origin.lat)), slat = sin(DEG2RAD(in_coords_origin.lat));
 	const double clon = cos(DEG2RAD(in_coords_origin.lon)), slon = sin(DEG2RAD(in_coords_origin.lon));
-	
+
 	// Compute the resulting relative coordinates:
 	// For using smaller numbers:
 	P_geocentric -= P_geocentric_ref;
@@ -110,9 +110,9 @@ void mrpt::topography::ENU_axes_from_WGS84(
 	const double clon = cos(DEG2RAD(in_longitude_reference_degrees)), slon = sin(DEG2RAD(in_longitude_reference_degrees));
 
 	CMatrixDouble44	 HM; // zeros by default
-	HM(0,0) = -slon;   HM(0,1) = -clon*slat;  HM(0,2) = clon*clat; 
-	HM(1,0) = clon;    HM(1,1) = -slon*slat;  HM(1,2) = slon*clat; 
-	HM(2,0) = 0;       HM(2,1) = clat;       HM(2,2) = slat; 
+	HM(0,0) = -slon;   HM(0,1) = -clon*slat;  HM(0,2) = clon*clat;
+	HM(1,0) = clon;    HM(1,1) = -slon*slat;  HM(1,2) = slon*clat;
+	HM(2,0) = 0;       HM(2,1) = clat;       HM(2,2) = slat;
 	HM(3,3)=1;
 
 	if (!only_angles)
@@ -121,7 +121,7 @@ void mrpt::topography::ENU_axes_from_WGS84(
 		HM(1,3) = PPref.y;
 		HM(2,3) = PPref.z;
 	}
-	
+
 	out_ENU = mrpt::math::TPose3D(CPose3D(HM));
 }
 
@@ -222,7 +222,7 @@ void mrpt::topography::UTMToGeodetic(
 	char		hem,
 	double		&out_lon /*degrees*/,
 	double		&out_lat /*degrees*/,
-	TEllipsoid	&ellip )
+	const TEllipsoid	&ellip )
 {
 	ASSERT_(hem=='s' || hem=='S' || hem=='n' || hem=='N');
 
@@ -268,7 +268,7 @@ void  mrpt::topography::geodeticToUTM(
 	TUTMCoords				&UTMCoords,
 	int    					&UTMZone,
 	char    				&UTMLatitudeBand,
-	TEllipsoid				&ellip )
+	const TEllipsoid				&ellip )
 {
 	const double la = GeodeticCoords.lat;
 	char Letra;
@@ -344,7 +344,7 @@ void  mrpt::topography::GeodeticToUTM(
 	double    	&yy,
 	int    		&out_UTM_zone,
 	char    	&out_UTM_latitude_band,
-	TEllipsoid	&ellip )
+	const TEllipsoid	&ellip )
 {
 	// This method is based on public code by Gabriel Ruiz Martinez and Rafael Palacios.
 	//  http://www.mathworks.com/matlabcentral/fileexchange/10915
