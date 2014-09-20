@@ -121,7 +121,6 @@ void CMyGLCanvasBase::OnMouseMove(wxMouseEvent& event)
 			if (cameraElevationDeg>90) cameraElevationDeg = 90;
 
 			// Move cameraPointing pos:
-			const float dis = max(0.01f,(cameraZoomDistance));
 			cameraPointingX = eye_x - dis * cos(DEG2RAD(cameraAzimuthDeg))*cos(DEG2RAD(cameraElevationDeg));
 			cameraPointingY = eye_y - dis * sin(DEG2RAD(cameraAzimuthDeg))*cos(DEG2RAD(cameraElevationDeg));
 			cameraPointingZ = eye_z - dis * sin(DEG2RAD(cameraElevationDeg));
