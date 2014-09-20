@@ -267,8 +267,6 @@ void  CReflectivityGridMap2D::TInsertionOptions::loadFromConfigFile(
 void  CReflectivityGridMap2D::saveMetricMapRepresentationToFile(
 	const std::string	&filNamePrefix ) const
 {
-	std::string		fil;
-
 	// Text matrix:
 	saveToTextFile( filNamePrefix + std::string("_probability.txt") );
 }

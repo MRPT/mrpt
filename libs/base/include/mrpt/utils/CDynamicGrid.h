@@ -165,7 +165,7 @@ namespace mrpt
                 {
                     for (x=0,itSrc=(m_map.begin()+y*m_size_x),itDst=(new_map.begin()+extra_x_izq + (y+extra_y_arr)*new_size_x);
                             x<m_size_x;
-                        x++,itSrc++,itDst++)
+                        ++x,++itSrc,++itDst)
                     {
                         *itDst = *itSrc;
                     }

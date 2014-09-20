@@ -191,7 +191,7 @@ void CAngularObservationMesh::setPitchBounds(const double initial,const double f
 	pitchBounds.push_back(final);
 	meshUpToDate=false;
 }
-void CAngularObservationMesh::setPitchBounds(const std::vector<double> bounds)	{
+void CAngularObservationMesh::setPitchBounds(const std::vector<double> &bounds)	{
 	CRenderizableDisplayList::notifyChange();
 
 	pitchBounds=bounds;

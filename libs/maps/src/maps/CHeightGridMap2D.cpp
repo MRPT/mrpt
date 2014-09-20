@@ -314,8 +314,6 @@ void  CHeightGridMap2D::TInsertionOptions::loadFromConfigFile(
 void  CHeightGridMap2D::saveMetricMapRepresentationToFile(
 	const std::string	&filNamePrefix ) const
 {
-	std::string		fil;
-
 	// Text matrix:
 	saveToTextFile( filNamePrefix + std::string("_mean.txt") );
 }

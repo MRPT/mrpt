@@ -1252,7 +1252,7 @@ void  CRandomFieldGridMap2D::insertObservation_KF(
 
 	// Update mean values:
 	// ---------------------------------------------------------
-	for (i=0,it = m_map.begin();it!=m_map.end();it++,i++)
+	for (i=0,it = m_map.begin();it!=m_map.end();++it,++i)
 		//it->kf_mean =  it->kf_mean + yk * sk_1 * m_cov.get_unsafe(i,cellIdx);
 		it->kf_mean +=  yk * sk_1 * m_cov(i,cellIdx);
 
@@ -2231,8 +2231,6 @@ void  CRandomFieldGridMap2D::insertObservation_KF2(
 
 	double		sk_1 = 1.0 / sk;
 
-	std::vector<TRandomFieldCell>::iterator	it;
-
 #if RANDOMFIELDGRIDMAP_KF2_VERBOSE
 	CTicTac		tictac;
 	printf("[insertObservation_KF2] Updating mean values...");
@@ -2759,9 +2757,9 @@ void CRandomFieldGridMap2D::updateMapEstimation_GMRF()
 				if (ito->Lambda <= 0.0)
 					ito = activeObs[j].erase(ito);
 				else
-					ito++;
+					++ito;
 			}else
-				ito++;
+				++ito;
 		}
 	}
 

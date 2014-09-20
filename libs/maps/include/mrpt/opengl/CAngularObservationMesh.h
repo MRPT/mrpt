@@ -296,7 +296,7 @@ namespace opengl	{
 		/**
 		  * Sets the pitch bounds for this range.
 		  */
-		void setPitchBounds(const std::vector<double> bounds);
+		void setPitchBounds(const std::vector<double> &bounds);
 		/**
 		  * Gets the initial and final pitch bounds for this range.
 		  */

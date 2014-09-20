@@ -143,7 +143,7 @@ namespace octomap {
     // integrate each single beam
     octomap::point3d p;
     for (octomap::Pointcloud::const_iterator point_it = pc.begin();
-         point_it != pc.end(); point_it++) {
+         point_it != pc.end(); ++point_it) {
       this->insertRay(origin, *point_it, maxrange, lazy_eval);
     }
 
@@ -190,7 +190,7 @@ namespace octomap {
 
         // update freespace, break as soon as bbx limit is reached
         if (this->computeRayKeys(origin, p, this->keyray)){
-        for(KeyRay::reverse_iterator rit=this->keyray.rbegin(); rit != this->keyray.rend(); rit++) {
+        for(KeyRay::reverse_iterator rit=this->keyray.rbegin(); rit != this->keyray.rend(); ++rit) {
             if (inBBX(*rit)) {
             free_cells.insert(*rit);
             }
@@ -231,7 +231,7 @@ namespace octomap {
                                                 double maxrange)
   {
     //#pragma omp parallel private (local_key_ray, point_it)
-    for (Pointcloud::const_iterator point_it = scan.begin(); point_it != scan.end(); point_it++) {
+    for (Pointcloud::const_iterator point_it = scan.begin(); point_it != scan.end(); ++point_it) {
       const point3d& p = *point_it;
 	  computeUpdate_onePoint(p,origin,free_cells,occupied_cells,maxrange);
     }
@@ -562,7 +562,7 @@ namespace octomap {
       return false;
     }
 
-    for(KeyRay::iterator it=this->keyray.begin(); it != this->keyray.end(); it++) {
+    for(KeyRay::iterator it=this->keyray.begin(); it != this->keyray.end(); ++it) {
       updateNode(*it, false, lazy_eval); // insert freespace measurement
     }
 

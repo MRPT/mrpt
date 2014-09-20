@@ -501,8 +501,6 @@ bool CColouredPointsMap::colourFromObservation( const CObservationImage &obs, co
 	unsigned int imgW = obs.image.getWidth();
 	unsigned int imgH = obs.image.getHeight();
 
-	std::vector<float>::iterator	itx,ity,itz,itr,itg,itb;
-
 	// Projection related variables
 	std::vector<TPixelCoordf>			projectedPoints;	// The set of projected points in the image
 	std::vector<TPixelCoordf>::iterator itProPoints;		// Iterator for projectedPoints
@@ -541,7 +539,7 @@ bool CColouredPointsMap::colourFromObservation( const CObservationImage &obs, co
 	size_t k;
 	for( itProPoints = projectedPoints.begin(), k = 0;
 		 itProPoints != projectedPoints.end();
-		 itProPoints++, k++ )
+		 ++itProPoints, ++k )
 	{
 		// Only get the points projected inside the image
 		if( itProPoints->x >= 0 && itProPoints->x < imgW && itProPoints->y > 0 && itProPoints->y < imgH )

@@ -140,7 +140,7 @@ namespace octomap {
     void addKey(OcTreeKey& k) {
       assert(end_of_ray != ray.end());
       *end_of_ray = k;
-      end_of_ray++;
+      ++end_of_ray;
     }
 
     size_t size() const { return end_of_ray - ray.begin(); }

@@ -284,8 +284,6 @@ void  COccupancyGridMap2D::computeEntropy( TEntropyInfo &info ) const
 {
 	unsigned long					i;
 	float							h,p;
-	std::vector<unsigned long>		histogram;
-
 
 #ifdef	OCCUPANCY_GRIDMAP_CELL_SIZE_8BITS
 	unsigned int								N = 256;

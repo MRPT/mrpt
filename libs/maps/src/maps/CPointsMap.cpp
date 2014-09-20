@@ -516,7 +516,7 @@ void CPointsMap::determineMatching2D(
 
 		//   1) Go through all the correspondences and keep the best corresp.
 		//       for each "global map" (this) point.
-		for (it=_correspondences.begin();it!=_correspondences.end();it++)
+		for (it=_correspondences.begin();it!=_correspondences.end();++it)
 		{
 			if (!bestMatchForThisMap[it->this_idx])
 			{
@@ -812,7 +812,7 @@ float  CPointsMap::getLargestDistanceFromOrigin() const
 		// NO: Update it:
 		vector<float>::const_iterator    X,Y,Z;
 		float	maxDistSq = 0, d;
-		for (X=x.begin(),Y=y.begin(),Z=z.begin();X!=x.end();X++,Y++,Z++)
+		for (X=x.begin(),Y=y.begin(),Z=z.begin();X!=x.end();++X,++Y,++Z)
 		{
 			d = square(*X)+square(*Y)+square(*Z);
 			maxDistSq = max( d, maxDistSq );
@@ -847,7 +847,7 @@ void  CPointsMap::getAllPoints( vector<float> &xs, vector<float> &ys, size_t dec
 
 		vector<float>::const_iterator    X,Y;
 		vector<float>::iterator    		oX,oY;
-		for (X=x.begin(),Y=y.begin(),oX=xs.begin(),oY=ys.begin();oX!=xs.end();X+=decimation,Y+=decimation,oX++,oY++)
+		for (X=x.begin(),Y=y.begin(),oX=xs.begin(),oY=ys.begin();oX!=xs.end();X+=decimation,Y+=decimation,++oX,++oY)
 		{
 			*oX=*X;
 			*oY=*Y;
@@ -1183,7 +1183,7 @@ void  CPointsMap::determineMatching3D(
 
 		//   1) Go through all the correspondences and keep the best corresp.
 		//       for each "global map" (this) point.
-		for (it=_correspondences.begin();it!=_correspondences.end();it++)
+		for (it=_correspondences.begin();it!=_correspondences.end();++it)
 		{
 			if (!bestMatchForThisMap[it->this_idx])
 			{
