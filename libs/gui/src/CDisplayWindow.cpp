@@ -524,7 +524,7 @@ void  CDisplayWindow::plot( const CVectorFloat &y )
 
 	unsigned int k = 0;
 
-	for( k = 0, ity = y.begin(); ity != y.end(); k++, ity++ )
+	for( k = 0, ity = y.begin(); ity != y.end(); ++k, ++ity )
 	{
 		float tpx = k/px + ox;
 		float tpy = (*ity-*itymn)/py + oy;

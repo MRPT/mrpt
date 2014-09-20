@@ -66,23 +66,13 @@ void CMyGLCanvasBase::OnWindowCreation(wxWindowCreateEvent &ev)
 	if (!m_gl_context) m_gl_context=new wxGLContext(this);
 }
 
-void CMyGLCanvasBase::OnLeftDown(wxMouseEvent& event)
+void CMyGLCanvasBase::OnMouseDown(wxMouseEvent& event)
 {
 	mouseClickX = event.GetX();
 	mouseClickY = event.GetY();
 	mouseClicked = true;
 }
-void CMyGLCanvasBase::OnRightDown(wxMouseEvent& event)
-{
-	mouseClickX = event.GetX();
-	mouseClickY = event.GetY();
-	mouseClicked = true;
-}
-void CMyGLCanvasBase::OnRightUp(wxMouseEvent& event)
-{
-	mouseClicked = false;
-}
-void CMyGLCanvasBase::OnLeftUp(wxMouseEvent& event)
+void CMyGLCanvasBase::OnMouseUp(wxMouseEvent& event)
 {
 	mouseClicked = false;
 }
@@ -116,9 +106,10 @@ void CMyGLCanvasBase::OnMouseMove(wxMouseEvent& event)
 		if (event.ControlDown())
 		{
 			// Rotate camera pointing direction:
-			float	eye_x = cameraPointingX +  max(0.01f,(cameraZoomDistance)) * cos(DEG2RAD(cameraAzimuthDeg))*cos(DEG2RAD(cameraElevationDeg));
-			float	eye_y = cameraPointingY +  max(0.01f,(cameraZoomDistance)) * sin(DEG2RAD(cameraAzimuthDeg))*cos(DEG2RAD(cameraElevationDeg));
-			float	eye_z = cameraPointingZ +  max(0.01f,(cameraZoomDistance)) * sin(DEG2RAD(cameraElevationDeg));
+			const float dis = max(0.01f,(cameraZoomDistance));
+			float	eye_x = cameraPointingX +  dis * cos(DEG2RAD(cameraAzimuthDeg))*cos(DEG2RAD(cameraElevationDeg));
+			float	eye_y = cameraPointingY +  dis * sin(DEG2RAD(cameraAzimuthDeg))*cos(DEG2RAD(cameraElevationDeg));
+			float	eye_z = cameraPointingZ +  dis * sin(DEG2RAD(cameraElevationDeg));
 
 			float A_AzimuthDeg = -SENSIBILITY_DEG_PER_PIXEL*(X - mouseClickX);
 			float A_ElevationDeg = SENSIBILITY_DEG_PER_PIXEL*(Y - mouseClickY);
@@ -130,9 +121,10 @@ void CMyGLCanvasBase::OnMouseMove(wxMouseEvent& event)
 			if (cameraElevationDeg>90) cameraElevationDeg = 90;
 
 			// Move cameraPointing pos:
-			cameraPointingX = eye_x - max(0.01f,(cameraZoomDistance)) * cos(DEG2RAD(cameraAzimuthDeg))*cos(DEG2RAD(cameraElevationDeg));
-			cameraPointingY = eye_y - max(0.01f,(cameraZoomDistance)) * sin(DEG2RAD(cameraAzimuthDeg))*cos(DEG2RAD(cameraElevationDeg));
-			cameraPointingZ = eye_z - max(0.01f,(cameraZoomDistance)) * sin(DEG2RAD(cameraElevationDeg));
+			const float dis = max(0.01f,(cameraZoomDistance));
+			cameraPointingX = eye_x - dis * cos(DEG2RAD(cameraAzimuthDeg))*cos(DEG2RAD(cameraElevationDeg));
+			cameraPointingY = eye_y - dis * sin(DEG2RAD(cameraAzimuthDeg))*cos(DEG2RAD(cameraElevationDeg));
+			cameraPointingZ = eye_z - dis * sin(DEG2RAD(cameraElevationDeg));
 		}
 		else
 		{
@@ -222,10 +214,10 @@ CMyGLCanvasBase::CMyGLCanvasBase(wxWindow *parent, wxWindowID id,const wxPoint& 
     clearColorB			= 0.4f;
 
 
-    Connect(wxID_ANY,wxEVT_LEFT_DOWN,(wxObjectEventFunction)&CMyGLCanvasBase::OnLeftDown);
-    Connect(wxID_ANY,wxEVT_LEFT_UP,(wxObjectEventFunction)&CMyGLCanvasBase::OnLeftUp);
-    Connect(wxID_ANY,wxEVT_RIGHT_DOWN,(wxObjectEventFunction)&CMyGLCanvasBase::OnRightDown);
-    Connect(wxID_ANY,wxEVT_RIGHT_UP,(wxObjectEventFunction)&CMyGLCanvasBase::OnRightUp);
+    Connect(wxID_ANY,wxEVT_LEFT_DOWN,(wxObjectEventFunction)&CMyGLCanvasBase::OnMouseDown);
+    Connect(wxID_ANY,wxEVT_RIGHT_DOWN,(wxObjectEventFunction)&CMyGLCanvasBase::OnMouseDown);
+    Connect(wxID_ANY,wxEVT_LEFT_UP,(wxObjectEventFunction)&CMyGLCanvasBase::OnMouseUp);
+    Connect(wxID_ANY,wxEVT_RIGHT_UP,(wxObjectEventFunction)&CMyGLCanvasBase::OnMouseUp);
     Connect(wxID_ANY,wxEVT_MOTION,(wxObjectEventFunction)&CMyGLCanvasBase::OnMouseMove);
     Connect(wxID_ANY,wxEVT_MOUSEWHEEL,(wxObjectEventFunction)&CMyGLCanvasBase::OnMouseWheel);
 
@@ -308,12 +300,13 @@ void CMyGLCanvasBase::Render()
 					THROW_EXCEPTION("Fatal error: there is no 'main' viewport in the 3D scene!");
 				}
 
-				view->getCamera().setPointingAt( cameraPointingX, cameraPointingY, cameraPointingZ );
-				view->getCamera().setZoomDistance(cameraZoomDistance);
-				view->getCamera().setAzimuthDegrees( cameraAzimuthDeg );
-				view->getCamera().setElevationDegrees(cameraElevationDeg);
-				view->getCamera().setProjectiveModel( cameraIsProjective );
-				view->getCamera().setProjectiveFOVdeg( cameraFOV );
+				mrpt::opengl::CCamera & cam = view->getCamera();
+				cam.setPointingAt( cameraPointingX, cameraPointingY, cameraPointingZ );
+				cam.setZoomDistance(cameraZoomDistance);
+				cam.setAzimuthDegrees( cameraAzimuthDeg );
+				cam.setElevationDegrees(cameraElevationDeg);
+				cam.setProjectiveModel( cameraIsProjective );
+				cam.setProjectiveFOVdeg( cameraFOV );
 			}
 
 			// PART 2: Set the MODELVIEW matrix

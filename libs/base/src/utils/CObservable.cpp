@@ -22,14 +22,12 @@ CObservable::CObservable()
 
 CObservable::~CObservable()
 {
-	MRPT_START
 	// Notify my destruction:
 	this->publishEvent( mrptEventOnDestroy(this) );
 
 	// Tell observers to unsubscribe:
 	while (!m_subscribers.empty())
 		(*m_subscribers.begin())->observeEnd(*this);
-	MRPT_END
 }
 
 void CObservable::internal_observer_begin(CObserver*o)

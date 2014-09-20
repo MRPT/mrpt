@@ -83,7 +83,7 @@ namespace poses
 		 /** Get the phi angle of the 2D pose (in radians) */
 		 inline const double &phi() const { return m_phi; }
 		 //! \overload
-		 inline       double &phi()       { m_cossin_uptodate=false; return m_phi; }
+		 inline       double &phi()       { m_cossin_uptodate=false; return m_phi; } //-V659
 
 		 /** Get a (cached) value of cos(phi), recomputing it only once when phi changes. */
 		 inline double phi_cos() const { update_cached_cos_sin(); return m_cosphi; }

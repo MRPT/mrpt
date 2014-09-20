@@ -345,7 +345,7 @@ namespace mrpt
 			else if (discr<-0.49999)
 			{	// pitch =-90 deg
 				pitch = -0.5*M_PI;
-				yaw   =+2*atan2(x(),r());
+				yaw   = 2*atan2(x(),r());
 				roll  = 0;
 				if (out_dr_dq) {
 					out_dr_dq->zeros();

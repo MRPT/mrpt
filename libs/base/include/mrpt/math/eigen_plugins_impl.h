@@ -315,7 +315,7 @@ void Eigen::MatrixBase<Derived>::loadFromTextFile(std::istream &f)
 	std::string		str;
 	std::vector<double>	fil(512);
 	size_t	nRows = 0;
-	while ( !f.eof() )
+	while ( !f.eof() && !f.fail() )
 	{
 		std::getline(f,str);
 		if (str.size() && str[0]!='#' && str[0]!='%')

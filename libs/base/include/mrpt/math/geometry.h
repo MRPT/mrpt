@@ -530,9 +530,9 @@ namespace mrpt
 		template<class T,class U,class O> size_t intersect(const std::vector<T> &v1,const std::vector<U> &v2,std::vector<O> objs)	{
 			objs.resize(0);
 			O obj;
-			for (typename std::vector<T>::const_iterator it1=v1.begin();it1!=v1.end();it1++)	{
+			for (typename std::vector<T>::const_iterator it1=v1.begin();it1!=v1.end();++it1)	{
 				const T &elem1=*it1;
-				for (typename std::vector<U>::const_iterator it2=v2.begin();it2!=v2.end();it2++) if (intersect(elem1,*it2,obj)) objs.push_back(obj);
+				for (typename std::vector<U>::const_iterator it2=v2.begin();it2!=v2.end();++it2) if (intersect(elem1,*it2,obj)) objs.push_back(obj);
 			}
 			return objs.size();
 		}

@@ -325,7 +325,7 @@ std::string mrpt::system::fileNameStripInvalidChars( const std::string &filename
 			*c !='+' &&
 			*c !='(' && *c !=')' &&
 			*c !='[' && *c !=']' &&
-			*c !='{' && *c !='{' )
+			*c !='{' && *c !='}' )
 				*c = '_';
 	}
 	return ret;

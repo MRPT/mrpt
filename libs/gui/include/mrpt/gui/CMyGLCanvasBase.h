@@ -67,11 +67,9 @@ namespace mrpt
 
 			void OnChar(wxKeyEvent& event);
 
-			void OnLeftDown(wxMouseEvent& event);
+			void OnMouseDown(wxMouseEvent& event);
 			void OnMouseMove(wxMouseEvent& event);
-			void OnRightDown(wxMouseEvent& event);
-			void OnRightUp(wxMouseEvent& event);
-			void OnLeftUp(wxMouseEvent& event);
+			void OnMouseUp(wxMouseEvent& event);
 			void OnMouseWheel(wxMouseEvent& event);
 
 			void Render();

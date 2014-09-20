@@ -65,12 +65,15 @@ WxSubsystem::CAuxWxSubsystemShutdowner::~CAuxWxSubsystemShutdowner()
 		printf("[~CAuxWxSubsystemShutdowner] Sending 999...\n");
 #endif
 		// Shut down:
-		WxSubsystem::TRequestToWxMainThread  *REQ = new WxSubsystem::TRequestToWxMainThread[1];
-		REQ->OPCODE   = 999;
-		WxSubsystem::pushPendingWxRequest( REQ );
+		try
+		{
+			WxSubsystem::TRequestToWxMainThread  *REQ = new WxSubsystem::TRequestToWxMainThread[1];
+			REQ->OPCODE   = 999;
+			WxSubsystem::pushPendingWxRequest( REQ );
 
-		//mrpt::system::sleep(100); // JL: I found no better way of doing this, sorry :-(  See WxSubsystem::waitWxShutdownsIfNoWindows()
-		WxSubsystem::waitWxShutdownsIfNoWindows();
+			//mrpt::system::sleep(100); // JL: I found no better way of doing this, sorry :-(  See WxSubsystem::waitWxShutdownsIfNoWindows()
+			WxSubsystem::waitWxShutdownsIfNoWindows();
+		} catch (...) { } // Just in case we got an out-of-mem error.
 	} // is console app.
 
 
@@ -293,7 +296,6 @@ void WxSubsystem::CWXMainFrame::OnTimerProcessRequests(wxTimerEvent& event)
 				if (msg->source2D)
                 {
                     CWindowDialog  *wnd = new CWindowDialog(msg->source2D, this, (wxWindowID) -1, msg->str, wxSize(msg->x,msg->y)  );
-					if (!wnd) break;
 
                     // Set the "m_hwnd" member of the window:
                     * ((void**)msg->voidPtr) = (void*)wnd;
@@ -373,9 +375,8 @@ void WxSubsystem::CWXMainFrame::OnTimerProcessRequests(wxTimerEvent& event)
 				if (msg->source3D )
                 {
                     C3DWindowDialog  *wnd = new C3DWindowDialog(msg->source3D, this, (wxWindowID) -1, msg->str, wxSize(msg->x,msg->y)  );
-					if (!wnd) break;
 
-                    // Set the "m_hwnd" member of the window:
+					// Set the "m_hwnd" member of the window:
                     * ((void**)msg->voidPtr) = (void*)wnd;
 
                     // Signal to the constructor (still waiting) that the window is now ready so it can continue:
@@ -490,7 +491,6 @@ void WxSubsystem::CWXMainFrame::OnTimerProcessRequests(wxTimerEvent& event)
 				if (msg->sourcePlots )
                 {
                     CWindowDialogPlots  *wnd = new CWindowDialogPlots(msg->sourcePlots, this, (wxWindowID) -1, msg->str, wxSize(msg->x,msg->y) );
-					if (!wnd) break;
 
                     // Set the "m_hwnd" member of the window:
                     * ((void**)msg->voidPtr) = (void*)wnd;

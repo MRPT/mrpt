@@ -257,7 +257,7 @@ namespace mrpt
 				const double				mean_x,
 				const double				mean_y,
 				double						confIntervalStds = 2,
-				const mrpt::utils::TColor 	color = mrpt::utils::TColor(255,255,255),
+				const mrpt::utils::TColor 	&color = mrpt::utils::TColor(255,255,255),
 				unsigned int				width = 1,
 				int							nEllipsePoints = 20
 				)

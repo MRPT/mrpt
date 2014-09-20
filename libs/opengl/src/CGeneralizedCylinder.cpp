@@ -51,7 +51,7 @@ class FQuadrilateralRenderer	{
 private:
 	const mrpt::utils::TColor &color;
 public:
-	void operator()(const CGeneralizedCylinder::TQuadrilateral t) const	{
+	void operator()(const CGeneralizedCylinder::TQuadrilateral &t) const	{
 		glNormal3d(t.normal[0],t.normal[1],t.normal[2]);
 		for (int i=0;i<4;i++) glVertex3d(t.points[i].x,t.points[i].y,t.points[i].z);
 	}
@@ -216,7 +216,7 @@ void CGeneralizedCylinder::getClosedSection(size_t index1,size_t index2,mrpt::op
 		tmp[0]=base;
 		tmp[1]=base+1;
 		tmp[2]=base+nc+2;
-		tmp[2]=base+nc+1;
+		tmp[3]=base+nc+1;
 		faces.push_back(tmp);
 	}
 	tmp.resize(nr+1);

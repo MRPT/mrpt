@@ -40,7 +40,7 @@ std::string utils::ObjectToString(const CSerializable *o)
 
 		// Scan the string to code it:
 		// ----------------------------------
-		int				lastIdx = 0;
+		size_t lastIdx = 0;
 		unsigned char	*data = (unsigned char*)tmp.getRawBufferData();
 		for (size_t i=0;i<n;i++)
 		{
@@ -67,7 +67,7 @@ std::string utils::ObjectToString(const CSerializable *o)
 		} // end for i
 
 		// Copy the rest:
-		if ( (n-lastIdx) > 0)
+		if ( n!=lastIdx)
 			tmpCoded.WriteBuffer( &data[lastIdx], n - lastIdx );
 
 		// Copy to string object:
@@ -137,7 +137,7 @@ void utils::StringToObject(const std::string &str, CSerializablePtr &obj)
 	} // end for i
 
 	// Copy the rest:
-	if ( (n-lastIdx) > 0)
+	if ( n!=lastIdx )
 		tmp.WriteBuffer( &data[lastIdx], n - lastIdx );
 
 	// And the '\0' char:

@@ -1346,7 +1346,7 @@ void mpWindow::OnMouseMove(wxMouseEvent     &event)
             UpdateAll();
         } else {
             wxLayerList::iterator li;
-            for (li = m_layers.begin(); li != m_layers.end(); li++) {
+            for (li = m_layers.begin(); li != m_layers.end(); ++li) {
                 if ((*li)->IsInfo() && (*li)->IsVisible()) {
                     mpInfoLayer* tmpLyr = (mpInfoLayer*) (*li);
                     tmpLyr->UpdateInfo(*this, event);
@@ -1458,9 +1458,9 @@ void mpWindow::Fit(double xMin, double xMax, double yMin, double yMax, wxCoord *
 	//   m_posX = m_minX;
 	//   m_posY = m_maxY;
 	// But account for centering if we have lock aspect:
-	m_posX = (xMin+xMax)/2 - ((m_scrX - m_marginLeft - m_marginRight)/2 + m_marginLeft)/m_scaleX ; // m_posX = (xMin+xMax)/2 - (m_scrX/2)/m_scaleX;
-//	m_posY = (yMin+yMax)/2 + ((m_scrY - m_marginTop - m_marginBottom)/2 - m_marginTop)/m_scaleY;  // m_posY = (yMin+yMax)/2 + (m_scrY/2)/m_scaleY;
-	m_posY = (yMin+yMax)/2 + ((m_scrY - m_marginTop - m_marginBottom)/2 + m_marginTop)/m_scaleY;  // m_posY = (yMin+yMax)/2 + (m_scrY/2)/m_scaleY;
+	m_posX = (xMin+xMax)/2 - ((m_scrX - m_marginLeft - m_marginRight)/2. + m_marginLeft)/m_scaleX ; // m_posX = (xMin+xMax)/2 - (m_scrX/2)/m_scaleX;
+//	m_posY = (yMin+yMax)/2 + ((m_scrY - m_marginTop - m_marginBottom)/2. - m_marginTop)/m_scaleY;  // m_posY = (yMin+yMax)/2 + (m_scrY/2)/m_scaleY;
+	m_posY = (yMin+yMax)/2 + ((m_scrY - m_marginTop - m_marginBottom)/2. + m_marginTop)/m_scaleY;  // m_posY = (yMin+yMax)/2 + (m_scrY/2)/m_scaleY;
 
 #ifdef MATHPLOT_DO_LOGGING
 	wxLogMessage(_("mpWindow::Fit() m_desiredXmin=%f m_desiredXmax=%f  m_desiredYmin=%f m_desiredYmax=%f"), xMin,xMax,yMin,yMax);
@@ -1754,7 +1754,7 @@ bool mpWindow::DelLayer(
     bool        refreshDisplay )
 {
     wxLayerList::iterator layIt;
-    for (layIt = m_layers.begin(); layIt != m_layers.end(); layIt++)
+    for (layIt = m_layers.begin(); layIt != m_layers.end(); ++layIt)
     {
     	if (*layIt == layer)
 	{
@@ -1832,7 +1832,7 @@ void mpWindow::OnPaint( wxPaintEvent& WXUNUSED(event) )
     // Draw all the layers:
     //trgDc->SetDeviceOrigin( m_scrX>>1, m_scrY>>1);  // Origin at the center
     wxLayerList::iterator li;
-    for (li = m_layers.begin(); li != m_layers.end(); li++)
+    for (li = m_layers.begin(); li != m_layers.end(); ++li)
     {
     	(*li)->Plot(*trgDc, *this);
     };
@@ -1957,7 +1957,7 @@ bool mpWindow::UpdateBBox()
 {
     bool first = TRUE;
 
-    for (wxLayerList::iterator li = m_layers.begin(); li != m_layers.end(); li++)
+    for (wxLayerList::iterator li = m_layers.begin(); li != m_layers.end(); ++li)
     {
         mpLayer* f = *li;
 
@@ -2198,7 +2198,7 @@ unsigned int mpWindow::CountLayers()
 {
     //wxNode *node = m_layers.GetFirst();
     unsigned int layerNo = 0;
-    for(wxLayerList::iterator li = m_layers.begin(); li != m_layers.end(); li++)//while(node)
+    for(wxLayerList::iterator li = m_layers.begin(); li != m_layers.end(); ++li)//while(node)
     	{
         if ((*li)->HasBBox()) layerNo++;
 	// node = node->GetNext();
@@ -2214,7 +2214,7 @@ mpLayer* mpWindow::GetLayer(int position)
 
 mpLayer* mpWindow::GetLayerByName( const wxString &name)
 {
-    for (wxLayerList::iterator it=m_layers.begin();it!=m_layers.end();it++)
+    for (wxLayerList::iterator it=m_layers.begin();it!=m_layers.end();++it)
         if (! (*it)->GetName().Cmp( name ) )
             return *it;
     return NULL;    // Not found
@@ -2258,7 +2258,7 @@ bool mpWindow::SaveScreenshot(const wxString& filename, int type, wxSize imageSi
 	}
     // Draw all the layers:
     wxLayerList::iterator li;
-    for (li = m_layers.begin(); li != m_layers.end(); li++)
+    for (li = m_layers.begin(); li != m_layers.end(); ++li)
     	(*li)->Plot(screenDC, *this);
 
 	if (imageSize != wxDefaultSize) {
@@ -2283,7 +2283,7 @@ void mpWindow::SetMargins(int top, int right, int bottom, int left)
 mpInfoLayer* mpWindow::IsInsideInfoLayer(wxPoint& point)
 {
     wxLayerList::iterator li;
-    for (li = m_layers.begin(); li != m_layers.end(); li++) {
+    for (li = m_layers.begin(); li != m_layers.end(); ++li) {
 #ifdef MATHPLOT_DO_LOGGING
         wxLogMessage(_("mpWindow::IsInsideInfoLayer() examinining layer = %p"), (*li));
 #endif // MATHPLOT_DO_LOGGING
@@ -2339,7 +2339,7 @@ void mpWindow::SetColourTheme(const wxColour& bgColour, const wxColour& drawColo
 	 m_axColour = axesColour;
 	// cycle between layers to set colours and properties to them
     wxLayerList::iterator li;
-    for (li = m_layers.begin(); li != m_layers.end(); li++) {
+    for (li = m_layers.begin(); li != m_layers.end(); ++li) {
 		if ((*li)->GetLayerType() == mpLAYER_AXIS) {
 			wxPen axisPen = (*li)->GetPen(); // Get the old pen to modify only colour, not style or width
 			axisPen.SetColour(axesColour);
@@ -2486,12 +2486,12 @@ void mpFXYVector::SetData( const std::vector<double> &xs,const std::vector<doubl
 
         std::vector<double>::const_iterator  it;
 
-        for (it=xs.begin();it!=xs.end();it++)
+        for (it=xs.begin();it!=xs.end();++it)
         {
             if (*it<m_minX) m_minX=*it;
             if (*it>m_maxX) m_maxX=*it;
         }
-        for (it=ys.begin();it!=ys.end();it++)
+        for (it=ys.begin();it!=ys.end();++it)
         {
             if (*it<m_minY) m_minY=*it;
             if (*it>m_maxY) m_maxY=*it;
@@ -2648,7 +2648,7 @@ bool mpPrintout::OnPrintPage(int page)
         // Draw all the layers:
         //trgDc->SetDeviceOrigin( m_prnX>>1, m_prnY>>1);  // Origin at the center
         mpLayer *layer;
-        for (unsigned int li = 0; li < plotWindow->CountAllLayers(); li++) {
+        for (unsigned int li = 0; li < plotWindow->CountAllLayers(); ++li) {
             layer = plotWindow->GetLayer(li);
             layer->Plot(*trgDc, *plotWindow);
         };
@@ -2706,7 +2706,7 @@ void mpMovableObject::ShapeUpdated()
         m_bbox_max_y=-1e300;
 
         for (itXo=m_trans_shape_xs.begin(),itYo=m_trans_shape_ys.begin(),itXi=m_shape_xs.begin(),itYi=m_shape_ys.begin();
-              itXo!=m_trans_shape_xs.end(); itXo++,itYo++,itXi++,itYi++)
+              itXo!=m_trans_shape_xs.end(); ++itXo,++itYo,++itXi,++itYi)
         {
             *itXo = m_reference_x + ccos * (*itXi) - csin * (*itYi);
             *itYo = m_reference_y + csin * (*itXi) + ccos * (*itYi);
@@ -2971,7 +2971,7 @@ void mpPolygon::setPoints(
     		std::vector<float>::const_iterator itX,itY;
     		std::vector<double>::iterator itXo,itYo;
     		for (itX=points_xs.begin(),itY=points_ys.begin(),itXo=m_shape_xs.begin(),itYo=m_shape_ys.begin();
-    		  itX!=points_xs.end();itX++,itY++,itXo++,itYo++)
+    		  itX!=points_xs.end();++itX,++itY,++itXo,++itYo)
 			{
 				*itXo = (double) *itX;
 				*itYo = (double) *itY;

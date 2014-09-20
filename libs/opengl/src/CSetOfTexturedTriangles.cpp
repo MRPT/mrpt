@@ -44,7 +44,7 @@ void   CSetOfTexturedTriangles::render_texturedobj() const
 	float ax, ay, az, bx, by, bz;
 
 	vector<TTriangle>::const_iterator	it;
-	for (it = m_triangles.begin(); it != m_triangles.end(); it++)
+	for (it = m_triangles.begin(); it != m_triangles.end(); ++it)
 	{
 		// Compute the normal vector:
 		// ---------------------------------

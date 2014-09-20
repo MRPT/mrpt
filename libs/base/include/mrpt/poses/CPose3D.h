@@ -216,11 +216,11 @@ namespace poses
 		/** An alternative, slightly more efficient way of doing \f$ G = P \oplus L \f$ with G and L being 3D points and P this 6D pose.
 		  * \note local_point is passed by value to allow global and local point to be the same variable
 		  */
-		inline void composePoint(const mrpt::math::TPoint3D local_point, mrpt::math::TPoint3D &global_point) const {
+		inline void composePoint(const mrpt::math::TPoint3D &local_point, mrpt::math::TPoint3D &global_point) const {
 			composePoint(local_point.x,local_point.y,local_point.z,  global_point.x,global_point.y,global_point.z );
 		}
 		/** This version of the method assumes that the resulting point has no Z component (use with caution!) */
-		inline void composePoint(const mrpt::math::TPoint3D local_point, mrpt::math::TPoint2D &global_point) const {
+		inline void composePoint(const mrpt::math::TPoint3D &local_point, mrpt::math::TPoint2D &global_point) const {
 			double dummy_z;
 			composePoint(local_point.x,local_point.y,local_point.z,  global_point.x,global_point.y,dummy_z );
 		}

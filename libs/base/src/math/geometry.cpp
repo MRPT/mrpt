@@ -709,7 +709,7 @@ bool math::intersect(const TLine3D &r1,const TLine3D &r2,TObject3D &obj)	{
 		if (abs(sysDet)<geometryEpsilon) continue;
 		//We've found a coordinate in which we can solve the associated system
 		d[c1[i]]=r2.pBase[c1[i]]-r1.pBase[c1[i]];
-		d[c2[i]]=r2.pBase[c2[i]]-r2.pBase[c2[i]];
+		d[c2[i]]=r2.pBase[c2[i]]-r1.pBase[c2[i]];
 		u=(r1.director[c1[i]]*d[c2[i]]-r1.director[c2[i]]*d[c1[i]])/sysDet;
 		for (size_t i=0;i<3;i++) p[i]=r2.pBase[i]+u*r2.director[i];
 		if (r1.contains(p))	{

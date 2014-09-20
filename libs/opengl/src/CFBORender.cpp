@@ -108,18 +108,10 @@ CFBORender::CFBORender( unsigned int width, unsigned int height, const bool skip
 CFBORender::~CFBORender()
 {
 #if MRPT_HAS_OPENGL_GLUT
-
-	MRPT_START
-
 	// delete the current texture, the framebuffer object and the GLUT window
 	glDeleteTextures(1, &m_tex);
 	glDeleteFramebuffersEXT(1, &m_fbo);
 	if (m_win_used) glutDestroyWindow(m_win);
-
-	MRPT_END
-
-//#else
-//	THROW_EXCEPTION("MRPT compiled without OpenGL support!!")
 #endif
 }
 

@@ -210,7 +210,7 @@ namespace mrpt
 			/**
 			  * Class factory
 			  */
-			static CVectorField2DPtr Create(const CMatrixFloat Matrix_x, const CMatrixFloat Matrix_y, float	xmin=-1, float xmax=1, float ymin=-1, float ymax=1);
+			static CVectorField2DPtr Create(const CMatrixFloat &Matrix_x, const CMatrixFloat &Matrix_y, float	xmin=-1, float xmax=1, float ymin=-1, float ymax=1);
 			/** Render
 			  */
 			void  render_dl() const;

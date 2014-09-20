@@ -60,13 +60,13 @@ namespace bayes
 			double maxW = minW;
 
 			/* Compute the max/min of weights: */
-			for (typename particle_list_t::iterator it=derived().m_particles.begin();it!=derived().m_particles.end();it++)
+			for (typename particle_list_t::iterator it=derived().m_particles.begin();it!=derived().m_particles.end();++it)
 			{
 				maxW = std::max<double>( maxW, it->log_w );
 				minW = std::min<double>( minW, it->log_w );
 			}
 			/* Normalize: */
-			for (typename particle_list_t::iterator it=derived().m_particles.begin();it!=derived().m_particles.end();it++)
+			for (typename particle_list_t::iterator it=derived().m_particles.begin();it!=derived().m_particles.end();++it)
 				it->log_w -= maxW;
 			if (out_max_log_w) *out_max_log_w = maxW;
 
@@ -82,10 +82,10 @@ namespace bayes
 
 			/* Sum of weights: */
 			double sumLinearWeights = 0;
-			for (typename particle_list_t::const_iterator it=derived().m_particles.begin();it!=derived().m_particles.end();it++)
+			for (typename particle_list_t::const_iterator it=derived().m_particles.begin();it!=derived().m_particles.end();++it)
 				sumLinearWeights += exp( it->log_w  );
 			/* Compute ESS: */
-			for (typename particle_list_t::const_iterator it=derived().m_particles.begin();it!=derived().m_particles.end();it++)
+			for (typename particle_list_t::const_iterator it=derived().m_particles.begin();it!=derived().m_particles.end();++it)
 				cum+= utils::square( exp( it->log_w ) / sumLinearWeights );
 
 			if (cum==0)
@@ -192,7 +192,7 @@ namespace bayes
         void clearParticles()
 		{
 			MRPT_START
-			for (typename CParticleList::iterator it=m_particles.begin();it!=m_particles.end();it++)
+			for (typename CParticleList::iterator it=m_particles.begin();it!=m_particles.end();++it)
 				if (it->d) delete it->d;
 			m_particles.clear();
 			MRPT_END
@@ -202,9 +202,7 @@ namespace bayes
           */
         virtual ~CParticleFilterData()
 		{
-			MRPT_START
 			clearParticles();
-			MRPT_END
 		}
 
 		/** Dumps the sequence of particles and their weights to a stream (requires T implementing CSerializable).
@@ -217,7 +215,7 @@ namespace bayes
 			uint32_t	n = static_cast<uint32_t>(m_particles.size());
 			out << n;
 			typename CParticleList::const_iterator it;
-			for (it=m_particles.begin();it!=m_particles.end();it++)
+			for (it=m_particles.begin();it!=m_particles.end();++it)
 				out << it->log_w << (*it->d);
 			MRPT_END
 		}
@@ -234,7 +232,7 @@ namespace bayes
 			in >> n;
 			m_particles.resize(n);
 			typename CParticleList::iterator it;
-			for (it=m_particles.begin();it!=m_particles.end();it++)
+			for (it=m_particles.begin();it!=m_particles.end();++it)
 			{
 				in >> it->log_w;
 				it->d = new T();
@@ -266,7 +264,7 @@ namespace bayes
 			ASSERT_(m_particles.size()>0)
 
 			typename CParticleList::const_iterator	it;
-			for (it=m_particles.begin();it!=m_particles.end();it++)
+			for (it=m_particles.begin();it!=m_particles.end();++it)
 			{
 				if (ret==NULL || it->log_w > ret->log_w)
 					ret = &(*it);

@@ -81,12 +81,8 @@ void CConfigFile::writeNow()
  ---------------------------------------------------------------*/
 CConfigFile::~CConfigFile()
 {
-    MRPT_START
-
     writeNow();
     delete static_cast<CSimpleIniA*>(m_ini.get());
-
-    MRPT_END
 }
 
 

@@ -23,7 +23,7 @@ using namespace std;
 
 IMPLEMENTS_SERIALIZABLE( CVectorField2D, CRenderizableDisplayList, mrpt::opengl )
 
-CVectorField2DPtr CVectorField2D::Create(const CMatrixFloat Matrix_x, const CMatrixFloat Matrix_y, float xmin, float xmax, float ymin, float ymax)	
+CVectorField2DPtr CVectorField2D::Create(const CMatrixFloat &Matrix_x, const CMatrixFloat &Matrix_y, float xmin, float xmax, float ymin, float ymax)	
 {
 	return CVectorField2DPtr(new CVectorField2D( Matrix_x,  Matrix_y, xmin, xmax, ymin, ymax));
 }

@@ -357,9 +357,10 @@ void  COpenGLViewport::render( const int render_width, const int render_height  
 			m_lastProjMat.azimuth = DEG2RAD(myCamera->m_azimuthDeg);
 			m_lastProjMat.elev    = DEG2RAD(myCamera->m_elevationDeg);
 
-			m_lastProjMat.eye.x = myCamera->m_pointingX +  max(0.01f,myCamera->m_distanceZoom) * cos(m_lastProjMat.azimuth)*cos(m_lastProjMat.elev);
-			m_lastProjMat.eye.y = myCamera->m_pointingY +  max(0.01f,myCamera->m_distanceZoom) * sin(m_lastProjMat.azimuth)*cos(m_lastProjMat.elev);
-			m_lastProjMat.eye.z = myCamera->m_pointingZ +  max(0.01f,myCamera->m_distanceZoom) * sin(m_lastProjMat.elev);
+			const float dis = max(0.01f,myCamera->m_distanceZoom);
+			m_lastProjMat.eye.x = myCamera->m_pointingX +  dis * cos(m_lastProjMat.azimuth)*cos(m_lastProjMat.elev);
+			m_lastProjMat.eye.y = myCamera->m_pointingY +  dis * sin(m_lastProjMat.azimuth)*cos(m_lastProjMat.elev);
+			m_lastProjMat.eye.z = myCamera->m_pointingZ +  dis * sin(m_lastProjMat.elev);
 
 
 			if (fabs(fabs(myCamera->m_elevationDeg)-90)>1e-6)
@@ -514,7 +515,7 @@ void  COpenGLViewport::render( const int render_width, const int render_height  
 	catch(exception &e)
 	{
 		string		msg;
-		if (!it)
+		if (it!=NULL)
 				msg = format("Exception while rendering a class '%s'\n%s", it->GetRuntimeClass()->className, e.what() );
 		else	msg = format("Exception while rendering:\n%s", e.what() );
 

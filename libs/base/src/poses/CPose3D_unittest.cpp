@@ -403,7 +403,7 @@ protected:
 		CArrayDouble<6> x_mean;
 		for (int i=0;i<6;i++) x_mean[i]=0;
 
-		double dummy;
+		double dummy=0.;
 		CArrayDouble<6> x_incrs;
 		x_incrs.assign(1e-9);
 		CMatrixDouble numJacobs;
@@ -459,7 +459,7 @@ protected:
 			CArrayDouble<12> x_mean;
 			p.getAs12Vector(x_mean);
 
-			double dummy;
+			double dummy=0.;
 			CArrayDouble<12> x_incrs;
 			x_incrs.assign(1e-6);
 			mrpt::math::jacobians::jacob_numeric_estimate(x_mean,func_jacob_LnT_T,x_incrs,dummy, numJacobs );

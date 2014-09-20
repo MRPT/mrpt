@@ -57,14 +57,10 @@ CClientTCPSocket::CClientTCPSocket( )
  ---------------------------------------------------------------*/
 CClientTCPSocket::~CClientTCPSocket( )
 {
-	MRPT_START
-
 	// Close socket:
 	close();
 
 	WSACleanup();
-
-	MRPT_END
 }
 
 /*---------------------------------------------------------------

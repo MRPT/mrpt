@@ -120,3 +120,15 @@ void COpenGLStandardObject::getBoundingBox(mrpt::math::TPoint3D &bb_min, mrpt::m
 	m_pose.composePoint(bb_max, bb_max);
 }
 
+
+void COpenGLStandardObject::disable(_GLENUM flag) 
+{
+	std::vector<_GLENUM>::iterator it = enabled.begin();
+	while (it!=enabled.end())
+	{
+		if (*it==flag)
+				it = enabled.erase(it);
+		else ++it;
+	}
+	CRenderizableDisplayList::notifyChange();
+}

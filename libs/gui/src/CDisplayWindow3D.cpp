@@ -195,7 +195,9 @@ void CMyGLCanvas_DisplayWindow3D::OnPostRenderSwapBuffers(double At, wxPaintDC &
 	if (m_win3D) m_win3D->internal_setRenderingFPS(At>0 ? 1.0/At : 1e9);
 
 	// If we are requested to do so, grab images to disk as they are rendered:
-	string grabFile = m_win3D->grabImageGetNextFile();
+	string grabFile; 
+	if (m_win3D) 
+		grabFile = m_win3D->grabImageGetNextFile();
 	if (m_win3D && (!grabFile.empty() || m_win3D->isCapturingImgs()) )
 	{
 		int w,h;
