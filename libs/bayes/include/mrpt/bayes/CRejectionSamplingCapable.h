@@ -57,19 +57,19 @@ namespace bayes
 			if ( outSamples.size() != desiredSamples )
 			{
 				// Free old memory:
-				for (it = outSamples.begin();it!=outSamples.end();it++)
+				for (it = outSamples.begin();it!=outSamples.end();++it)
 					delete (it->d);
 				outSamples.clear();
 
 				// Reserve new memory:
 				outSamples.resize( desiredSamples );
-				for (it = outSamples.begin();it!=outSamples.end();it++)
+				for (it = outSamples.begin();it!=outSamples.end();++it)
 					it->d = new TStateSpace;
 			}
 
 			// Rejection sampling loop:
 			double	acceptanceProb;
-			for (it = outSamples.begin();it!=outSamples.end();it++)
+			for (it = outSamples.begin();it!=outSamples.end();++it)
 			{
 				size_t	timeoutCount = 0;
 				double		bestLik = -1e250;

@@ -659,7 +659,7 @@ namespace octomap {
     return (size_t) (ceil(resolution_factor * (double) size_x) * //sizeof (unsigned int*) *
                            ceil(resolution_factor * (double) size_y) * //sizeof (unsigned int*) *
                            ceil(resolution_factor * (double) size_z)) *
-                           sizeof(root->getValue());
+                           sizeof(root->getValue()); //-V568
 
   }
 

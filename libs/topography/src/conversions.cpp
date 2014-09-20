@@ -222,7 +222,7 @@ void mrpt::topography::UTMToGeodetic(
 	char		hem,
 	double		&out_lon /*degrees*/,
 	double		&out_lat /*degrees*/,
-	TEllipsoid	ellip )
+	TEllipsoid	&ellip )
 {
 	ASSERT_(hem=='s' || hem=='S' || hem=='n' || hem=='N');
 
@@ -268,7 +268,7 @@ void  mrpt::topography::geodeticToUTM(
 	TUTMCoords				&UTMCoords,
 	int    					&UTMZone,
 	char    				&UTMLatitudeBand,
-	TEllipsoid				ellip )
+	TEllipsoid				&ellip )
 {
 	const double la = GeodeticCoords.lat;
 	char Letra;
@@ -344,7 +344,7 @@ void  mrpt::topography::GeodeticToUTM(
 	double    	&yy,
 	int    		&out_UTM_zone,
 	char    	&out_UTM_latitude_band,
-	TEllipsoid	ellip )
+	TEllipsoid	&ellip )
 {
 	// This method is based on public code by Gabriel Ruiz Martinez and Rafael Palacios.
 	//  http://www.mathworks.com/matlabcentral/fileexchange/10915

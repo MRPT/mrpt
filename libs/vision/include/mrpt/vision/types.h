@@ -87,7 +87,7 @@ namespace mrpt
 		struct VISION_IMPEXP TFeatureObservation
 		{
 			inline TFeatureObservation() { }
-			inline TFeatureObservation(const TLandmarkID _id_feature, const TCameraPoseID  _id_frame, const mrpt::utils::TPixelCoordf _px) : id_feature(_id_feature), id_frame(_id_frame), px(_px) { }
+			inline TFeatureObservation(const TLandmarkID _id_feature, const TCameraPoseID  _id_frame, const mrpt::utils::TPixelCoordf &_px) : id_feature(_id_feature), id_frame(_id_frame), px(_px) { }
 
 			TLandmarkID    id_feature;  //!< A unique ID of this feature
 			TCameraPoseID  id_frame;    //!< A unique ID of a "frame" (camera position) from where the feature was observed.
@@ -99,7 +99,7 @@ namespace mrpt
 		struct TRelativeFeaturePos
 		{
 			inline TRelativeFeaturePos() { }
-			inline TRelativeFeaturePos(const mrpt::vision::TCameraPoseID  _id_frame_base, const mrpt::math::TPoint3D _pos) : id_frame_base(_id_frame_base), pos(_pos) {  }
+			inline TRelativeFeaturePos(const mrpt::vision::TCameraPoseID  _id_frame_base, const mrpt::math::TPoint3D &_pos) : id_frame_base(_id_frame_base), pos(_pos) {  }
 
 			mrpt::vision::TCameraPoseID  id_frame_base;	//!< The ID of the camera frame which is the coordinate reference of \a pos
 			mrpt::math::TPoint3D         pos;  //!< The (x,y,z) location of the feature, wrt to the camera frame \a id_frame_base

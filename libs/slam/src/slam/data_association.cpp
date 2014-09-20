@@ -373,7 +373,8 @@ void mrpt::slam::data_association_full_covariance(
 
 				// Individual compatibility
 				const bool IC =  (compatibilityTestMetric==metricML) ? (ml > log_ML_compat_test_threshold) : (d2 < chi2thres);
-				if (true==(results.indiv_compatibility(i,j) = IC ))
+				results.indiv_compatibility(i,j)=IC;
+				if (IC)
 					results.indiv_compatibility_counts[j]++;
 			}
 		}
@@ -410,7 +411,8 @@ void mrpt::slam::data_association_full_covariance(
 
 				// Individual compatibility
 				const bool IC =  (compatibilityTestMetric==metricML) ? (ml > log_ML_compat_test_threshold) : (d2 < chi2thres);
-				if (true==(results.indiv_compatibility(i,j) = IC ))
+				results.indiv_compatibility(i,j) = IC;
+				if (IC)
 					results.indiv_compatibility_counts[j]++;
 			}
 		} // end use KD-Tree

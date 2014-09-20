@@ -134,21 +134,20 @@ namespace mrpt
 				struct VISION_IMPEXP TFASTOptions
 				{
 					int 	threshold;  //!< default= 20
-					bool	nonmax_suppression;		//!< Default = true
 					float	min_distance;	//!< (default=5) minimum distance between features (in pixels)
+					bool	nonmax_suppression;		//!< Default = true
 					bool    use_KLT_response; //!< (default=false) If true, use CImage::KLT_response to compute the response at each point instead of the FAST "standard response".
 				} FASTOptions;
 
 				/** ORB Options */
 				struct VISION_IMPEXP TORBOptions
 				{
-					TORBOptions() : scale_factor(1.2), n_levels(8), extract_patch(false), min_distance(0) {}
+					TORBOptions() : n_levels(8), min_distance(0), scale_factor(1.2f),extract_patch(false) {}
 
-					float	scale_factor;
 					size_t	n_levels;
-					bool	extract_patch;
 					size_t	min_distance;
-
+					float	scale_factor;
+					bool	extract_patch;
 				} ORBOptions;
 
 				/** SIFT Options  */

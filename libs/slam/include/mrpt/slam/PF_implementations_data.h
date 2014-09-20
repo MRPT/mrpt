@@ -184,7 +184,7 @@ namespace mrpt
 
 				size_t i;
 				typename MYSELF::CParticleList::iterator	newPartIt;
-				for (newPartIt=newParticlesArray.begin(),i=0;newPartIt!=newParticlesArray.end();newPartIt++,i++)
+				for (newPartIt=newParticlesArray.begin(),i=0;newPartIt!=newParticlesArray.end();++newPartIt,++i)
 				{
 					// The weight:
 					newPartIt->log_w = newParticlesWeight[i];

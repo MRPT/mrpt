@@ -100,7 +100,6 @@ CPosePDFPtr CGridMapAligner::AlignPDF_robustMatch(
 	mrpt::utils::TMatchingPairList			&correspondences = outInfo.correspondences; // Use directly this placeholder to save 1 variable & 1 copy.
 	mrpt::utils::TMatchingPairList			largestConsensusCorrs;
 
-	mrpt::utils::TMatchingPairList::iterator	corrIt;
 	CTicTac									*tictac=NULL;
 
 	CPose2D									grossEst = initialEstimationPDF.mean;
@@ -287,7 +286,7 @@ CPosePDFPtr CGridMapAligner::AlignPDF_robustMatch(
 				std::set<size_t>::iterator it_j;
 				string fil = format("grid_feats/_FEAT_MATCH_%03i", (int)it->first );
 
-				for (j=0,it_j=it->second.begin();j<nF;j++,it_j++)
+				for (j=0,it_j=it->second.begin();j<nF;++j,++it_j)
 				{
 					fil+=format("_%u",static_cast<unsigned int>(*it_j) );
 
@@ -840,11 +839,9 @@ CPosePDFPtr CGridMapAligner::AlignPDF_robustMatch(
 					  )
 					{
 						icp_est->getMean((i)->mean);
-
-						i++;
+						++i;
 					}
-					else
-					{
+					else {
 						// Delete:
 						i = pdf_SOG->erase(i);
 					}

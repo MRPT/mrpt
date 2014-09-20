@@ -144,7 +144,7 @@ namespace mrpt
 			inline const_reverse_iterator rbegin() const { return m_feats.rbegin(); }
 			inline const_reverse_iterator rend() const { return m_feats.rend(); }
 
-			inline iterator erase(const iterator it)  {  return m_feats.erase(it); }
+			inline iterator erase(const iterator &it)  {  return m_feats.erase(it); }
 
 			inline bool empty() const  { return m_feats.empty(); }
 			inline size_t size() const { return m_feats.size(); }

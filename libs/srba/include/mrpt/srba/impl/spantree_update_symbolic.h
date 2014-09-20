@@ -336,7 +336,7 @@ bool TRBA_Problem_state<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::find_path
 			TKeyFrameID path_node = trg_node;
 			while (path_node != cur_node)
 			{
-				ASSERT_(dist>=0)
+				ASSERT_(dist>0)
 				if (out_path_IDs) (*out_path_IDs)[--dist] = path_node;
 
 				typename std::map<TKeyFrameID,TBFSEntry<k2k_edge_t> >::const_iterator it_prec = preceding.find(path_node);

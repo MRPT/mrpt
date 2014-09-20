@@ -124,7 +124,6 @@ void test_spantree_topology(
 	// Compare incremental STs with BFS trees:
 	// --------------------------------------------
 	const my_rba_t::rba_problem_state_t::TSpanningTree::next_edge_maps_t & kf_nexts = rba.get_rba_state().spanning_tree.sym.next_edge;
-	std::vector<bool> aux_visited;
 	for (size_t kf=0;kf<nKFs;kf++)
 	{
 		// Run BFS to find reachable KFs:

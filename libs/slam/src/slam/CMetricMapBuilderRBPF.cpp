@@ -436,7 +436,7 @@ double  CMetricMapBuilderRBPF::getCurrentJointEntropy()
 /*---------------------------------------------------------------
 					saveCurrentPathEstimationToTextFile
   ---------------------------------------------------------------*/
-void  CMetricMapBuilderRBPF::saveCurrentPathEstimationToTextFile( std::string  fil )
+void  CMetricMapBuilderRBPF::saveCurrentPathEstimationToTextFile( const std::string  &fil )
 {
 	mapPDF.saveCurrentPathEstimationToTextFile( fil );
 }
