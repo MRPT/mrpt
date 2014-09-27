@@ -130,7 +130,7 @@ namespace mrpt
 	bool operator==(const CPoint<DERIVEDCLASS> &p1,const CPoint<DERIVEDCLASS> &p2)
 	{
 		for (int i=0;i<DERIVEDCLASS::static_size;i++)
-			if (p1[i]!=p2[i])	return false;
+			if (p1[i]!=p2[i])	return false; //-V550
 		return true;
 	}
 
@@ -138,7 +138,7 @@ namespace mrpt
 	bool operator!=(const CPoint<DERIVEDCLASS> &p1,const CPoint<DERIVEDCLASS> &p2)
 	{
 		for (int i=0;i<DERIVEDCLASS::static_size;i++)
-			if (p1[i]!=p2[i])	return true;
+			if (p1[i]!=p2[i])	return true; //-V550
 		return false;
 	}
 

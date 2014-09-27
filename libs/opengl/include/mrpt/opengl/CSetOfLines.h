@@ -154,21 +154,12 @@ namespace mrpt
 			  * Gets a specific line in the set, given its index.
 			  * \sa getLineByIndex
 			  */
-			inline void getLineByIndex(size_t index,double &x0,double &y0,double &z0,double &x1,double &y1,double &z1) const	{
-				ASSERT_(index<mSegments.size())
-				x0 = mSegments[index].point1.x;
-				y0 = mSegments[index].point1.y;
-				z0 = mSegments[index].point1.z;
-				x1 = mSegments[index].point2.x;
-				y1 = mSegments[index].point2.y;
-				z1 = mSegments[index].point2.z;
-			}
-			/**
-			  * Class factory
-			  */
+			void getLineByIndex(size_t index,double &x0,double &y0,double &z0,double &x1,double &y1,double &z1) const; 
+
+			/** Class factory */
 			static CSetOfLinesPtr Create(const std::vector<TSegment3D> &sgms, const bool antiAliasing = true);
-			/** Render
-			  */
+
+			/** Render */
 			void  render_dl() const;
 
 			//Iterator management

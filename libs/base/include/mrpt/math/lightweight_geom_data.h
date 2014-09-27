@@ -481,49 +481,49 @@ namespace math	{
 	  * Exact comparison between 2D points.
 	  */
 	inline bool operator==(const TPoint2D &p1,const TPoint2D &p2)	{
-		return (p1.x==p2.x)&&(p1.y==p2.y);
+		return (p1.x==p2.x)&&(p1.y==p2.y); //-V550
 	}
 	/**
 	  * Exact comparison between 2D points.
 	  */
 	inline bool operator!=(const TPoint2D &p1,const TPoint2D &p2)	{
-		return (p1.x!=p2.x)||(p1.y!=p2.y);
+		return (p1.x!=p2.x)||(p1.y!=p2.y); //-V550
 	}
 	/**
 	  * Exact comparison between 3D points.
 	  */
 	inline bool operator==(const TPoint3D &p1,const TPoint3D &p2)	{
-		return (p1.x==p2.x)&&(p1.y==p2.y)&&(p1.z==p2.z);
+		return (p1.x==p2.x)&&(p1.y==p2.y)&&(p1.z==p2.z); //-V550
 	}
 	/**
 	  * Exact comparison between 3D points.
 	  */
 	inline bool operator!=(const TPoint3D &p1,const TPoint3D &p2)	{
-		return (p1.x!=p2.x)||(p1.y!=p2.y)||(p1.z!=p2.z);
+		return (p1.x!=p2.x)||(p1.y!=p2.y)||(p1.z!=p2.z); //-V550
 	}
 	/**
 	  * Exact comparison between 2D poses, taking possible cycles into account.
 	  */
 	inline bool operator==(const TPose2D &p1,const TPose2D &p2)	{
-		return (p1.x==p2.x)&&(p1.y==p2.y)&&(mrpt::math::wrapTo2Pi(p1.phi)==mrpt::math::wrapTo2Pi(p2.phi));
+		return (p1.x==p2.x)&&(p1.y==p2.y)&&(mrpt::math::wrapTo2Pi(p1.phi)==mrpt::math::wrapTo2Pi(p2.phi)); //-V550
 	}
 	/**
 	  * Exact comparison between 2D poses, taking possible cycles into account.
 	  */
 	inline bool operator!=(const TPose2D &p1,const TPose2D &p2)	{
-		return (p1.x!=p2.x)||(p1.y!=p2.y)||(mrpt::math::wrapTo2Pi(p1.phi)!=mrpt::math::wrapTo2Pi(p2.phi));
+		return (p1.x!=p2.x)||(p1.y!=p2.y)||(mrpt::math::wrapTo2Pi(p1.phi)!=mrpt::math::wrapTo2Pi(p2.phi)); //-V550
 	}
 	/**
 	  * Exact comparison between 3D poses, taking possible cycles into account.
 	  */
 	inline bool operator==(const TPose3D &p1,const TPose3D &p2)	{
-		return (p1.x==p2.x)&&(p1.y==p2.y)&&(p1.z==p2.z)&&(mrpt::math::wrapTo2Pi(p1.yaw)==mrpt::math::wrapTo2Pi(p2.yaw))&&(mrpt::math::wrapTo2Pi(p1.pitch)==mrpt::math::wrapTo2Pi(p2.pitch))&&(mrpt::math::wrapTo2Pi(p1.roll)==mrpt::math::wrapTo2Pi(p2.roll));
+		return (p1.x==p2.x)&&(p1.y==p2.y)&&(p1.z==p2.z)&&(mrpt::math::wrapTo2Pi(p1.yaw)==mrpt::math::wrapTo2Pi(p2.yaw))&&(mrpt::math::wrapTo2Pi(p1.pitch)==mrpt::math::wrapTo2Pi(p2.pitch))&&(mrpt::math::wrapTo2Pi(p1.roll)==mrpt::math::wrapTo2Pi(p2.roll)); //-V550
 	}
 	/**
 	  * Exact comparison between 3D poses, taking possible cycles into account.
 	  */
 	inline bool operator!=(const TPose3D &p1,const TPose3D &p2)	{
-		return (p1.x!=p2.x)||(p1.y!=p2.y)||(p1.z!=p2.z)||(mrpt::math::wrapTo2Pi(p1.yaw)!=mrpt::math::wrapTo2Pi(p2.yaw))||(mrpt::math::wrapTo2Pi(p1.pitch)!=mrpt::math::wrapTo2Pi(p2.pitch))||(mrpt::math::wrapTo2Pi(p1.roll)!=mrpt::math::wrapTo2Pi(p2.roll));
+		return (p1.x!=p2.x)||(p1.y!=p2.y)||(p1.z!=p2.z)||(mrpt::math::wrapTo2Pi(p1.yaw)!=mrpt::math::wrapTo2Pi(p2.yaw))||(mrpt::math::wrapTo2Pi(p1.pitch)!=mrpt::math::wrapTo2Pi(p2.pitch))||(mrpt::math::wrapTo2Pi(p1.roll)!=mrpt::math::wrapTo2Pi(p2.roll)); //-V550
 	}
 	//Forward declarations
 	struct BASE_IMPEXP TSegment3D;

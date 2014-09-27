@@ -182,20 +182,9 @@ namespace mrpt
 			  */
 			void adjustVectorFieldToGrid();
 
-			/**
-			  * Resizes the set.
-			  * \sa reserve
+			/** Resizes the set.
 			  */
 			void resize(size_t rows, size_t cols)	{
-				xcomp.resize(rows, cols);
-				ycomp.resize(rows, cols);
-				CRenderizableDisplayList::notifyChange();
-			}
-			/**
-			  * Reserves an amount of lines to the set. This method should be used when some known amount of lines is going to be inserted, so that only a memory allocation is needed.
-			  * \sa resize
-			  */
-			void reserve(size_t rows, size_t cols)	{
 				xcomp.resize(rows, cols);
 				ycomp.resize(rows, cols);
 				CRenderizableDisplayList::notifyChange();

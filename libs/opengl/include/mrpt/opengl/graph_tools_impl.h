@@ -80,10 +80,8 @@ namespace mrpt
 				} // end show_ground_grid
 
 				// Draw nodes as thick points:
-				if (nodes_point_size!=0)
+				if (nodes_point_size>0)
 				{
-					ASSERT_(nodes_point_size>=0);
-
 					CPointCloudPtr pnts = CPointCloud::Create();
 					pnts->setColor( TColorf(TColor(nodes_point_color)) );
 					pnts->setPointSize(nodes_point_size);

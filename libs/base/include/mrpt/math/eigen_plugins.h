@@ -87,7 +87,7 @@ public:
 #endif
 	}
 	/** Reference access to one element (Use with caution, bounds are not checked!) */
-	EIGEN_STRONG_INLINE Scalar& get_unsafe(const size_t row, const size_t col) {
+	EIGEN_STRONG_INLINE Scalar& get_unsafe(const size_t row, const size_t col) { //-V659
 #ifdef _DEBUG
 		return derived()(row,col);
 #endif
@@ -366,7 +366,7 @@ public:
 		VEC &outStdVector,
 		const bool unbiased_variance = true ) const
 	{
-		const double N = rows();
+		const size_t N = rows();
 		if (N==0) throw std::runtime_error("meanAndStd: Empty container.");
 		const double N_inv = 1.0/N;
 		const double N_    = unbiased_variance ? (N>1 ? 1.0/(N-1) : 1.0) : 1.0/N;
@@ -388,7 +388,7 @@ public:
 		double &outStd,
 		const bool unbiased_variance = true )  const
 	{
-		const double N = size();
+		const size_t N = size();
 		if (N==0) throw std::runtime_error("meanAndStdAll: Empty container.");
 		const double N_ = unbiased_variance ? (N>1 ? 1.0/(N-1) : 1.0) : 1.0/N;
 		outMean = derived().array().sum()/static_cast<double>(size());

@@ -131,7 +131,7 @@ namespace mrpt
 					m_needToRecomputeEigenVals = false;
 					// Handle the special case of an ellipsoid of volume = 0
 					const double d=m_cov.det();
-					if (d==0 || d!=d) // Note: "d!=d" is a great test for invalid numbers, don't remove!
+					if (fabs(d)<1e-20 || d!=d) // Note: "d!=d" is a great test for invalid numbers, don't remove!
 					{
 						// All zeros:
 						m_U.setZero(DIM,DIM);
