@@ -14,7 +14,10 @@
 
 <a name="1.3.0">
   <h2>Version 1.3.0: (Under development) </h2></a>
-	- General changes: 
+	- Lib changes:
+		- New library mrpt-nav (\sa mrpt_nav_grp), subsumming the old mrpt-reactivenav (\sa mrpt_reactivenav_grp).
+		- "mrpt-reactivenav" is now a meta-library, depending on "mrpt-nav".
+	- General changes:
 		- Many optimizations in function arguments (value vs ref). Forces ABI incompatibility with previous versions, hence the change to a new minor version number.
 
 <hr>
