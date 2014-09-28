@@ -7,19 +7,13 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#ifndef __mrpt_reactivenav_H
-#define __mrpt_reactivenav_H
+#pragma once
 
-#include <mrpt/reactivenav/CReactiveNavigationSystem.h>
-#include <mrpt/reactivenav/CReactiveNavigationSystem3D.h>
-#include <mrpt/reactivenav/CAbstractReactiveNavigationSystem.h>
-#include <mrpt/reactivenav/motion_planning_utils.h>
-#include <mrpt/reactivenav/CPTG1.h>
-#include <mrpt/reactivenav/CPTG2.h>
-#include <mrpt/reactivenav/CPTG3.h>
-#include <mrpt/reactivenav/CPTG4.h>
-#include <mrpt/reactivenav/CPTG5.h>
-#include <mrpt/reactivenav/CPTG6.h>
-#include <mrpt/reactivenav/CPTG7.h>
+#include <mrpt/utils/mrpt_macros.h>
+MRPT_WARNING("Deprecated header: Use <mrpt/nav.h> or individual headers instead")
+#include <mrpt/nav.h>
 
-#endif
+// MRPT <1.3.0 backwards compatibility 
+namespace mrpt {
+	namespace  reactivenav = mrpt::nav;
+}

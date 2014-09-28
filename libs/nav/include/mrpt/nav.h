@@ -9,7 +9,15 @@
 
 #pragma once
 
-#include <mrpt/reactivenav.h>
-// #include <mrpt/XXX.h>
+#include <mrpt/nav/reactive/CReactiveNavigationSystem.h>
+#include <mrpt/nav/reactive/CReactiveNavigationSystem3D.h>
+#include <mrpt/nav/reactive/CAbstractReactiveNavigationSystem.h>
+#include <mrpt/nav/tpspace/motion_planning_utils.h>
+#include <mrpt/nav/tpspace/CPTG1.h>
+#include <mrpt/nav/tpspace/CPTG2.h>
+#include <mrpt/nav/tpspace/CPTG3.h>
+#include <mrpt/nav/tpspace/CPTG4.h>
+#include <mrpt/nav/tpspace/CPTG5.h>
+#include <mrpt/nav/tpspace/CPTG6.h>
+#include <mrpt/nav/tpspace/CPTG7.h>
 
-#endif

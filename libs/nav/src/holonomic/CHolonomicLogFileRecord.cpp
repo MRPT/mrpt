@@ -6,15 +6,14 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
-#pragma once
 
-#include <mrpt/utils/mrpt_macros.h>
+#include "nav-precomp.h" // Precomp header
 
-MRPT_WARNING("Deprecated header: use <mrpt/nav/tpspace/motion_planning_utils.h> instead")
+#include <mrpt/nav/holonomic/CHolonomicLogFileRecord.h>
+#include <mrpt/utils/CStream.h>
 
-#include <mrpt/nav/tpspace/motion_planning_utils.h>
+using namespace mrpt;
+using namespace mrpt::utils;
+using namespace mrpt::nav;
 
-// MRPT <1.3.0 backwards compatibility 
-namespace mrpt {
-	namespace  reactivenav = mrpt::nav;
-}
+IMPLEMENTS_VIRTUAL_SERIALIZABLE( CHolonomicLogFileRecord, CSerializable, mrpt::nav )

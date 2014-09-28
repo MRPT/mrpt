@@ -1,11 +1,20 @@
 # Lists of directories with source files:
 #  See "DeclareMRPTLib.cmake" for explanations
 # -------------------------------------------------
-LIST(APPEND nav_EXTRA_SRCS	
-	"${MRPT_SOURCE_DIR}/libs/nav/include/mrpt/reactivenav/*.h")
-LIST(APPEND nav_EXTRA_SRCS_NAME
-	"nav")
+SET(NAVDIR "${MRPT_SOURCE_DIR}/libs/nav")
 
+LIST(APPEND nav_EXTRA_SRCS	      "${NAVDIR}/src/tpspace/*.cpp" "${NAVDIR}/include/mrpt/nav/tpspace/*.h")
+LIST(APPEND nav_EXTRA_SRCS_NAME   "PTGs_TPSpace" "PTGs_TPSpace")
+
+LIST(APPEND nav_EXTRA_SRCS	      "${NAVDIR}/src/holonomic/*.cpp" "${NAVDIR}/include/mrpt/nav/holonomic/*.h")
+LIST(APPEND nav_EXTRA_SRCS_NAME   "HolonomicNav" "HolonomicNav")
+
+LIST(APPEND nav_EXTRA_SRCS	      "${NAVDIR}/src/reactive/*.cpp" "${NAVDIR}/include/mrpt/nav/reactive/*.h")
+LIST(APPEND nav_EXTRA_SRCS_NAME   "ReactiveNav" "ReactiveNav")
+
+# Compatibility with MRPT <1.3.0
+LIST(APPEND nav_EXTRA_SRCS	      "${NAVDIR}/include/mrpt/reactivenav/*.h")
+LIST(APPEND nav_EXTRA_SRCS_NAME   "bckwrds_compat_hdrs")
 
 #---------------------------------------------
 # Macro declared in "DeclareMRPTLib.cmake":

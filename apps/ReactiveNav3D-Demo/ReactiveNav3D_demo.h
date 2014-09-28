@@ -8,7 +8,7 @@
    +---------------------------------------------------------------------------+ */
 
 
-#include <mrpt/reactivenav.h>
+#include <mrpt/nav/reactive/CReactiveNavigationSystem3D.h>
 #include <mrpt/opengl.h>
 #include <mrpt/opengl/CPlanarLaserScan.h>
 #include <mrpt/utils/CObserver.h>
@@ -22,7 +22,7 @@
 
 
 using namespace mrpt;
-using namespace mrpt::reactivenav;
+using namespace mrpt::nav;
 using namespace mrpt::opengl;
 using namespace mrpt::slam;
 using namespace mrpt::gui;
@@ -66,7 +66,7 @@ public:
 	unsigned int		m_columns;
 	float				m_std_error;
 
-	void CorrectFloorPoints(CPose3D kinectrelpose)
+	void CorrectFloorPoints(const CPose3D &kinectrelpose)
 	{
 		TSegment3D ray;
 		TPoint3D p1,p2,pint(0,0,0);
@@ -100,7 +100,7 @@ public:
 	}
 
 
-	void CorrectCeiling(CPose3D kinectrelpose, float height)
+	void CorrectCeiling(const CPose3D &kinectrelpose, float height)
 	{
 		TSegment3D ray;
 		TPoint3D p1,p2,pint(0,0,0);
@@ -135,7 +135,7 @@ public:
 	}
 
 
-	void CorrectRanges(CPose3D kinectrelpose)
+	void CorrectRanges(const CPose3D &kinectrelpose)
 	{
 		vector <float> x, y, z;
 		vector <bool> deletion;
@@ -158,7 +158,7 @@ public:
 
 
 
-	void KinectScan(vector <COccupancyGridMap2D> m_maps, vector <float> heights, CPose3D robotpose, CPose3D kinectrelpose)
+	void KinectScan(const vector <COccupancyGridMap2D> &m_maps, const vector <float> &heights, const CPose3D &robotpose, const CPose3D &kinectrelpose)
 	{
 	unsigned int acc_factor = max(1,mrpt::utils::round<double>(80.0/m_columns));
 	float h = 0, incrz;
@@ -245,7 +245,7 @@ public:
 		return dividend;
 	}
 
-	void updateObsGrids(float incrx, float incry, float phi, vector<CRobotKinects> kinects, vector<float> heights )
+	void updateObsGrids(float incrx, float incry, float phi, const vector<CRobotKinects> &kinects, const vector<float> &heights )
 	{
 		//First, move the robot respect to the grid and adjust the likelihood values in the grid according to that movement
 		//-----------------------------------------------------------------------------------------------------------------
@@ -406,7 +406,7 @@ public:
 	CPose2D							last_pose;
 	CPose2D							target;
 	CRobotSimulator					robotSim;
-	reactivenav::TRobotShape		robotShape;
+	mrpt::nav::TRobotShape		robotShape;
 	vector <COccupancyGridMap2D>	maps;
 	vector <TRobotLaser>			lasers;
 	vector <CRobotKinects>			kinects;
@@ -510,10 +510,11 @@ public:
 		for (unsigned int i=1;i<=num_lasers;i++)
 		{
 			ini.read_vector("LASER_CONFIG",format("LASER%d_POSE",i), vector<float> (0), lasercoord , true);
-			lasers[i-1].m_scan.maxRange = ini.read_float("LASER_CONFIG",format("LASER%d_MAX_RANGE",i), 50, true);
-			lasers[i-1].m_scan.aperture = ini.read_float("LASER_CONFIG",format("LASER%d_APERTURE",i), M_PI, true);
-			lasers[i-1].m_scan.stdError = ini.read_float("LASER_CONFIG",format("LASER%d_STD_ERROR",i), 0.05, true);
-			lasers[i-1].m_scan.sensorPose.setFromValues(lasercoord[0],lasercoord[1],lasercoord[2],lasercoord[3],lasercoord[4],lasercoord[5]);
+			mrpt::slam::CObservation2DRangeScan &scan = lasers[i-1].m_scan;
+			scan.maxRange = ini.read_float("LASER_CONFIG",format("LASER%d_MAX_RANGE",i), 50, true);
+			scan.aperture = ini.read_float("LASER_CONFIG",format("LASER%d_APERTURE",i), M_PI, true);
+			scan.stdError = ini.read_float("LASER_CONFIG",format("LASER%d_STD_ERROR",i), 0.05, true);
+			scan.sensorPose.setFromValues(lasercoord[0],lasercoord[1],lasercoord[2],lasercoord[3],lasercoord[4],lasercoord[5]);
 			lasers[i-1].m_level = ini.read_int("LASER_CONFIG",format("LASER%d_LEVEL",i), 1, true);
 			lasers[i-1].m_segments = ini.read_int("LASER_CONFIG",format("LASER%d_SEGMENTS",i), 181, true);
 		}

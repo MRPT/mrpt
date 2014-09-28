@@ -77,9 +77,8 @@ using namespace std;
 
 //wxImage * auxMRPTImage2wxImage( const CImage &img );
 
-
-#include <mrpt/reactivenav/CReactiveNavigationSystem.h>
-using namespace mrpt::reactivenav;
+#include <mrpt/nav/reactive/CReactiveNavigationSystem.h>
+using namespace mrpt::nav;
 
 CReactiveNavigationSystem		*reacNavObj=NULL;
 

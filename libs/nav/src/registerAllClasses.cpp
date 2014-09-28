@@ -9,13 +9,13 @@
 
 #include "nav-precomp.h" // Precomp header
 
-#include <mrpt/reactivenav.h>
+#include <mrpt/nav.h>
 #include <mrpt/utils/CSerializable.h>
 #include <mrpt/utils/CStartUpClassesRegister.h>
 
 using namespace mrpt;
 using namespace mrpt::utils;
-using namespace mrpt::reactivenav;
+using namespace mrpt::nav;
 using namespace std;
 
 void registerAllNavigationClasses();
