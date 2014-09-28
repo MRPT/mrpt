@@ -10,10 +10,13 @@
 #include "nav-precomp.h" // Precomp header
 
 #include <mrpt/nav/planners/TPath.h>
+#include <mrpt/poses/CPose2D.h>
 #include <mrpt/system/filesystem.h> // directoryExists(), ...
 #include <mrpt/system/os.h>
 
 using namespace mrpt::nav;
+using namespace mrpt::poses;
+using namespace mrpt::utils;
 using namespace mrpt::system;
 using namespace mrpt::math;
 using namespace std;
@@ -122,7 +125,7 @@ bool  TPath::TPlannedPath::save_to_text_file(const std::string &file) const
         if (m_planned_path_.empty())// || m_planned_path_.size()<2)
             return 0;//m_planned_path_.size();// if there is no plan or the plan is too short just return the last point
 
-        TPose2D  robotPose_=robotPose;
+        //TPose2D  robotPose_=robotPose;
 
         {
             int closest_path_index=0;  //the first condition will be always true since < than infinity
