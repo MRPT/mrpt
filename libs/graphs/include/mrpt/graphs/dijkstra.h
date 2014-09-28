@@ -294,9 +294,8 @@ namespace mrpt
 					const TNodeID id_to   = itArcs->second.second;
 
 					std::list<TreeEdgeInfo> &edges = out_tree.edges_to_children[id==id_from ? id_to : id_from];
-					TreeEdgeInfo newEdge;
+					TreeEdgeInfo newEdge(id);
 					newEdge.reverse = (id==id_from); // true: root towards leafs.
-					newEdge.id = id;
 					typename graph_t::edges_map_t::const_iterator itEdgeData = m_cached_graph.edges.find(make_pair(id_from,id_to));
 					ASSERTMSG_(itEdgeData!=m_cached_graph.edges.end(),format("Edge %u->%u is in Dijkstra paths but not in original graph!",static_cast<unsigned int>(id_from),static_cast<unsigned int>(id_to) ))
 					newEdge.data = & itEdgeData->second;

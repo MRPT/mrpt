@@ -160,35 +160,35 @@
 <!-- slam -->
 <g id="node12" class="node"><title>slam</title>
 <g id="a_node12"><a xlink:href="group__mrpt__slam__grp.html" xlink:title="mrpt&#45;slam">
-<polygon fill="#d0d0d0" stroke="black" points="451.25,-324 378.75,-324 378.75,-288 451.25,-288 451.25,-324"/>
-<text text-anchor="middle" x="415" y="-302.3" font-family="Times New Roman,serif" font-size="14.00">mrpt&#45;slam</text>
+<polygon fill="#d0d0d0" stroke="black" points="408.25,-324 335.75,-324 335.75,-288 408.25,-288 408.25,-324"/>
+<text text-anchor="middle" x="372" y="-302.3" font-family="Times New Roman,serif" font-size="14.00">mrpt&#45;slam</text>
 </a>
 </g>
 </g>
 <!-- slam&#45;&gt;graphs -->
 <g id="edge20" class="edge"><title>slam&#45;&gt;graphs</title>
-<path fill="none" stroke="black" d="M378.671,-291.316C375.411,-290.166 372.152,-289.045 369,-288 330.866,-275.356 287.7,-262.594 253.2,-252.762"/>
-<polygon fill="black" stroke="black" points="253.826,-249.302 243.25,-249.939 251.915,-256.036 253.826,-249.302"/>
+<path fill="none" stroke="black" d="M335.407,-291.003C308.96,-280.886 272.8,-267.055 243.035,-255.669"/>
+<polygon fill="black" stroke="black" points="244.206,-252.37 233.616,-252.066 241.706,-258.908 244.206,-252.37"/>
 </g>
 <!-- slam&#45;&gt;bayes -->
 <g id="edge19" class="edge"><title>slam&#45;&gt;bayes</title>
-<path fill="none" stroke="black" d="M390.34,-287.812C361.361,-266.189 314.168,-226.238 290,-180 279.969,-160.81 276.103,-136.462 274.67,-118.086"/>
-<polygon fill="black" stroke="black" points="278.16,-117.818 274.079,-108.04 271.172,-118.228 278.16,-117.818"/>
+<path fill="none" stroke="black" d="M357.296,-287.654C338.592,-264.622 306.718,-221.952 290,-180 282.118,-160.221 278.097,-136.421 276.058,-118.41"/>
+<polygon fill="black" stroke="black" points="279.524,-117.895 275.05,-108.291 272.558,-118.589 279.524,-117.895"/>
 </g>
 <!-- slam&#45;&gt;maps -->
 <g id="edge16" class="edge"><title>slam&#45;&gt;maps</title>
-<path fill="none" stroke="black" d="M451.649,-289.638C475.934,-279.459 508.038,-266.002 534.308,-254.991"/>
-<polygon fill="black" stroke="black" points="535.827,-258.149 543.697,-251.055 533.121,-251.693 535.827,-258.149"/>
+<path fill="none" stroke="black" d="M408.579,-292.807C443.314,-281.229 495.743,-263.752 533.859,-251.047"/>
+<polygon fill="black" stroke="black" points="535.332,-254.246 543.712,-247.763 533.118,-247.605 535.332,-254.246"/>
 </g>
 <!-- slam&#45;&gt;vision -->
 <g id="edge17" class="edge"><title>slam&#45;&gt;vision</title>
-<path fill="none" stroke="black" d="M451.531,-296.683C494.278,-286.782 567.094,-269.392 629,-252 630.419,-251.601 631.858,-251.191 633.308,-250.772"/>
-<polygon fill="black" stroke="black" points="634.386,-254.103 642.978,-247.904 632.396,-247.391 634.386,-254.103"/>
+<path fill="none" stroke="black" d="M408.445,-298.69C458.5,-289.751 551.176,-272.219 629,-252 630.257,-251.673 631.529,-251.335 632.81,-250.987"/>
+<polygon fill="black" stroke="black" points="634.069,-254.268 642.732,-248.169 632.156,-247.534 634.069,-254.268"/>
 </g>
 <!-- slam&#45;&gt;scanmatching -->
 <g id="edge18" class="edge"><title>slam&#45;&gt;scanmatching</title>
-<path fill="none" stroke="black" d="M408.486,-287.871C399.202,-263.457 382.077,-218.426 371.129,-189.635"/>
-<polygon fill="black" stroke="black" points="374.363,-188.292 367.537,-180.189 367.82,-190.78 374.363,-188.292"/>
+<path fill="none" stroke="black" d="M370.673,-287.871C368.798,-263.67 365.354,-219.211 363.122,-190.393"/>
+<polygon fill="black" stroke="black" points="366.594,-189.889 362.332,-180.189 359.614,-190.43 366.594,-189.889"/>
 </g>
 <!-- graphslam -->
 <g id="node13" class="node"><title>graphslam</title>
@@ -206,38 +206,38 @@
 <!-- hmtslam -->
 <g id="node14" class="node"><title>hmtslam</title>
 <g id="a_node14"><a xlink:href="group__mrpt__hmtslam__grp.html" xlink:title="mrpt&#45;hmtslam">
-<polygon fill="#d0d0d0" stroke="black" points="286,-396 192,-396 192,-360 286,-360 286,-396"/>
-<text text-anchor="middle" x="239" y="-374.3" font-family="Times New Roman,serif" font-size="14.00">mrpt&#45;hmtslam</text>
+<polygon fill="#d0d0d0" stroke="black" points="265,-396 171,-396 171,-360 265,-360 265,-396"/>
+<text text-anchor="middle" x="218" y="-374.3" font-family="Times New Roman,serif" font-size="14.00">mrpt&#45;hmtslam</text>
 </a>
 </g>
 </g>
 <!-- hmtslam&#45;&gt;slam -->
 <g id="edge25" class="edge"><title>hmtslam&#45;&gt;slam</title>
-<path fill="none" stroke="black" d="M282.054,-359.876C308.43,-349.386 342.168,-335.967 369.057,-325.273"/>
-<polygon fill="black" stroke="black" points="370.628,-328.415 378.627,-321.467 368.041,-321.91 370.628,-328.415"/>
+<path fill="none" stroke="black" d="M255.673,-359.876C276.943,-350.208 303.688,-338.051 326.168,-327.833"/>
+<polygon fill="black" stroke="black" points="327.857,-330.91 335.513,-323.585 324.961,-324.537 327.857,-330.91"/>
 </g>
 <!-- hmtslam&#45;&gt;graphslam -->
 <g id="edge26" class="edge"><title>hmtslam&#45;&gt;graphslam</title>
-<path fill="none" stroke="black" d="M196.19,-359.876C172.054,-350.222 141.716,-338.087 116.194,-327.878"/>
-<polygon fill="black" stroke="black" points="117.255,-324.533 106.671,-324.068 114.656,-331.032 117.255,-324.533"/>
+<path fill="none" stroke="black" d="M180.327,-359.876C159.368,-350.349 133.095,-338.407 110.823,-328.283"/>
+<polygon fill="black" stroke="black" points="112.102,-325.02 101.55,-324.068 109.206,-331.393 112.102,-325.02"/>
 </g>
-<!-- reactivenav -->
-<g id="node15" class="node"><title>reactivenav</title>
-<g id="a_node15"><a xlink:href="group__mrpt__reactivenav__grp.html" xlink:title="mrpt&#45;reactivenav">
-<polygon fill="#d0d0d0" stroke="black" points="360,-324 250,-324 250,-288 360,-288 360,-324"/>
-<text text-anchor="middle" x="305" y="-302.3" font-family="Times New Roman,serif" font-size="14.00">mrpt&#45;reactivenav</text>
+<!-- nav -->
+<g id="node15" class="node"><title>nav</title>
+<g id="a_node15"><a xlink:href="group__mrpt__nav__grp.html" xlink:title="mrpt&#45;nav">
+<polygon fill="#d0d0d0" stroke="black" points="317.25,-324 250.75,-324 250.75,-288 317.25,-288 317.25,-324"/>
+<text text-anchor="middle" x="284" y="-302.3" font-family="Times New Roman,serif" font-size="14.00">mrpt&#45;nav</text>
 </a>
 </g>
 </g>
-<!-- reactivenav&#45;&gt;graphs -->
-<g id="edge28" class="edge"><title>reactivenav&#45;&gt;graphs</title>
-<path fill="none" stroke="black" d="M276.623,-287.876C261.456,-278.724 242.595,-267.342 226.261,-257.485"/>
-<polygon fill="black" stroke="black" points="227.856,-254.36 217.486,-252.19 224.239,-260.353 227.856,-254.36"/>
+<!-- nav&#45;&gt;graphs -->
+<g id="edge28" class="edge"><title>nav&#45;&gt;graphs</title>
+<path fill="none" stroke="black" d="M260.517,-287.697C248.437,-278.796 233.546,-267.823 220.484,-258.199"/>
+<polygon fill="black" stroke="black" points="222.34,-255.219 212.213,-252.104 218.187,-260.854 222.34,-255.219"/>
 </g>
-<!-- reactivenav&#45;&gt;maps -->
-<g id="edge27" class="edge"><title>reactivenav&#45;&gt;maps</title>
-<path fill="none" stroke="black" d="M360.126,-290.224C363.125,-289.462 366.098,-288.716 369,-288 438.926,-270.752 457.434,-270.648 527,-252 529.281,-251.389 531.609,-250.745 533.956,-250.081"/>
-<polygon fill="black" stroke="black" points="535.019,-253.417 543.643,-247.262 533.063,-246.696 535.019,-253.417"/>
+<!-- nav&#45;&gt;maps -->
+<g id="edge27" class="edge"><title>nav&#45;&gt;maps</title>
+<path fill="none" stroke="black" d="M317.25,-290.815C320.183,-289.786 323.128,-288.829 326,-288 413.197,-262.84 438.814,-273.44 527,-252 529.294,-251.442 531.634,-250.843 533.99,-250.214"/>
+<polygon fill="black" stroke="black" points="535.016,-253.561 543.702,-247.494 533.129,-246.82 535.016,-253.561"/>
 </g>
 <!-- detectors -->
 <g id="node16" class="node"><title>detectors</title>

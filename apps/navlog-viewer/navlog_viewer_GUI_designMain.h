@@ -26,7 +26,7 @@
 #include <wx/frame.h>
 
 #include <mrpt/gui.h>
-#include <mrpt/reactivenav.h>
+#include <mrpt/nav.h>
 
 class navlog_viewer_GUI_designDialog: public wxFrame //wxDialog
 {
