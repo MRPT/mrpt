@@ -77,10 +77,10 @@ void  CFeatureExtraction::detectFeatures(
 					tam[k+4].resize(2);
 
 					// First row
-					newROI.xMin = k*wd/4;
+					newROI.xMin = k*wd/4.f;
 					newROI.yMin = 0;
-					newROI.xMax = wd/4 + k*wd/4 - 1;
-					newROI.yMax = hg/2 - 1;
+					newROI.xMax = wd/4.f + k*wd/4.f - 1;
+					newROI.yMax = hg/2.f - 1;
 
 					tictac.Tic();
 					extractFeaturesKLT( img, aux_feats[k], init_ID, nDesiredFeatures, newROI );

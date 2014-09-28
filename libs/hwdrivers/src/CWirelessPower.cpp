@@ -133,7 +133,7 @@ std::vector<PWLAN_INTERFACE_INFO>	ListInterfacesW(HANDLE hClient)
 		 * \return std::string returns a string containing the GUID
 		 */
 
-std::string GUID2Str(GUID ifaceGuid)
+std::string GUID2Str(const GUID &ifaceGuid)
 {
 	// Variables
 	int iRet;
@@ -191,7 +191,7 @@ PWLAN_INTERFACE_INFO GetInterfaceW(std::string guid, HANDLE hClient)
 	ifaceList = ListInterfacesW(hClient);
 
 	// search for the interface that has the given GUID
-	for(ifaceIter = ifaceList.begin(); ifaceIter != ifaceList.end(); ifaceIter++){
+	for(ifaceIter = ifaceList.begin(); ifaceIter != ifaceList.end(); ++ifaceIter){
 		if (GUID2Str((*ifaceIter)->InterfaceGuid) == guid){
 			output = *ifaceIter;
 			break;
@@ -225,8 +225,7 @@ std::vector<PWLAN_AVAILABLE_NETWORK>	ListNetworksW(PWLAN_INTERFACE_INFO iface, H
 
 	std::vector<PWLAN_AVAILABLE_NETWORK> outputVector;	// output vector
 
-	WCHAR GuidString[39] = {0};
-
+//	WCHAR GuidString[39] = {0};
 
 	// Force a scan (to obtain new data)
 	WLAN_RAW_DATA IeData;
@@ -260,7 +259,7 @@ std::vector<PWLAN_AVAILABLE_NETWORK>	ListNetworksW(PWLAN_INTERFACE_INFO iface, H
 		 * \exception std::exception In case there is a failure
 		 * \return PWLAN_AVAILABLE_NETWORK returns a handle to the network
 		 */
-PWLAN_AVAILABLE_NETWORK GetNetworkW(HANDLE hClient, std::string ssid, std::string guid)
+PWLAN_AVAILABLE_NETWORK GetNetworkW(HANDLE hClient, const std::string &ssid, const std::string &guid)
 {
 	// Variables
 	PWLAN_INTERFACE_INFO iface;			// interface handler
@@ -276,7 +275,7 @@ PWLAN_AVAILABLE_NETWORK GetNetworkW(HANDLE hClient, std::string ssid, std::strin
 
 	// Iterate through the list and find the network that has the matching SSID
 	std::vector<PWLAN_AVAILABLE_NETWORK>::iterator netIter;
-	for(netIter = pBssList.begin(); netIter != pBssList.end() ; netIter++){
+	for(netIter = pBssList.begin(); netIter != pBssList.end() ; ++netIter){
 		if (std::string((char*)((*netIter)->dot11Ssid.ucSSID)) == ssid ){
 			output = *netIter;
 			break;
@@ -336,7 +335,7 @@ std::vector<std::string>	CWirelessPower::ListInterfaces()
 	ifaces = ListInterfacesW(hClient);
 
 	// iterate thrugh list and get each GUID as a string
-	for (ifacesIter = ifaces.begin(); ifacesIter != ifaces.end() ; ifacesIter++){
+	for (ifacesIter = ifaces.begin(); ifacesIter != ifaces.end() ; ++ifacesIter){
 		output.push_back(GUID2Str((*ifacesIter)->InterfaceGuid));
 	}
 	#endif
@@ -394,7 +393,7 @@ std::vector<std::string>	CWirelessPower::ListNetworks()
 
 	// Iterate through the list and save the names as strings
 	std::vector<PWLAN_AVAILABLE_NETWORK>::iterator netIter;
-	for(netIter = pBssList.begin(); netIter != pBssList.end() ; netIter++){
+	for(netIter = pBssList.begin(); netIter != pBssList.end() ; ++netIter){
 		output.push_back( std::string((char*)((*netIter)->dot11Ssid.ucSSID)));
 	}
 	#endif

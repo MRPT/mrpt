@@ -95,7 +95,7 @@ bool mrpt::vision::checkerBoardCameraCalibration(
 		// First: Assure all images are loaded:
 		// -------------------------------------------
 		TCalibrationImageList::iterator it;
-		for (it=images.begin();it!=images.end();it++)
+		for (it=images.begin();it!=images.end();++it)
 		{
 			TImageCalibData	&dat = it->second;
 
@@ -241,10 +241,7 @@ bool mrpt::vision::checkerBoardCameraCalibration(
 						}
 					}
 				}
-			}
 
-			if( corners_found )
-			{
 				pointsIdx2imageFile.push_back( it->first );
 				valid_detected_imgs++;
 			}
@@ -351,7 +348,7 @@ bool mrpt::vision::checkerBoardCameraCalibration(
 		// ----------------------------------------
 		// Undistort images:
 		// ----------------------------------------
-		for (it=images.begin();it!=images.end();it++)
+		for (it=images.begin();it!=images.end();++it)
 		{
 			TImageCalibData	&dat = it->second;
 			if (!dat.img_original.isExternallyStored())

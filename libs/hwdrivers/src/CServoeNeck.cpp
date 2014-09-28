@@ -287,7 +287,7 @@ bool CServoeNeck::setAngleWithFilter( double angle, const uint8_t servo, bool fa
 	m_PrevAngles.push_back( angle );									// Push back the new angle
 
 	std::deque<double>::iterator it;
-	for( it = m_PrevAngles.begin(); it != m_PrevAngles.end(); it++ )	// Sum up all the elements in the deque
+	for( it = m_PrevAngles.begin(); it != m_PrevAngles.end(); ++it )	// Sum up all the elements in the deque
 		nangle += *it;
 	nangle /= m_PrevAngles.size();										// Mean angle
 

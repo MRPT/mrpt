@@ -467,7 +467,7 @@ XsensResultValue Cmt1s::open (	const uint32_t portNumber,
 	char comFileName[32];
 
 	// Create file name
-	sprintf(comFileName, "COM%d", portNumber);
+	sprintf(comFileName, "COM%u", portNumber);
 
 	return Cmt1s::open(comFileName, baudRate, readBufSize, writeBufSize);
 }
@@ -718,7 +718,6 @@ XsensResultValue Cmt1f::close (void)
 	m_readPos = 0;
 	m_writePos = 0;
 	m_reading = true;
-	m_isOpen = false;
 	m_fileSize = 0;
 	m_readOnly = false;
 
@@ -771,7 +770,6 @@ XsensResultValue Cmt1f::closeAndDelete(void)
 	m_readPos = 0;
 	m_writePos = 0;
 	m_reading = true;
-	m_isOpen = false;
 	m_fileSize = 0;
 	m_readOnly = false;
 

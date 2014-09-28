@@ -643,7 +643,6 @@ AREXPORT int ArRobot::asyncConnectHandler(bool tryHarderToConnect)
   char robotSubType[255];
   int i;
   int len;
-  std::string str;
   ArTime endTime;
   int timeToWait;
   ArSerialConnection *serConn;

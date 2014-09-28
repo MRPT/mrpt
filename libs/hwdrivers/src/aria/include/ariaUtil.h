@@ -44,7 +44,7 @@
 #include "ariaOSDef.h"
 
 #ifndef M_PI
-#define M_PI 3.1415927
+#define M_PI 3.14159265358979323846
 #endif // of M_PI, windows has a function call instead of a define
 
 /// This class has utility functions
@@ -844,14 +844,14 @@ public:
     {
       int i;
       for (i = 0; i < myNumSectors; i++)
-	mySectors[i] = false;
+	mySectors[i] = 0 /*false*/;
     }
   /// Updates the appropriate quadrant for the given angle
   void update(double angle)
     {
       int angleInt;
       angleInt = ArMath::roundInt(ArMath::fixAngle(angle) + 180);
-      mySectors[angleInt / mySectorSize] = true;
+      mySectors[angleInt / mySectorSize] = 1 /* true */;
     }
   /// Returns true if the all of the quadrants have been gone through
   bool didAll(void) const

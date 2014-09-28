@@ -216,9 +216,9 @@ struct XsDeviceId {
 	/*! \brief Returns true if this deviceId is less or equal to the \a other deviceId */
 	inline bool operator<=(const XsDeviceId& other) const { return m_deviceId <= other.m_deviceId; }
 	/*! \brief Returns true if this deviceId is larger than the \a other deviceId */
-	inline bool operator>(const XsDeviceId& other) const { return m_deviceId < other.m_deviceId; }
+	inline bool operator>(const XsDeviceId& other) const { return m_deviceId > other.m_deviceId; }
 	/*! \brief Returns true if this deviceId is larger or equal to the \a other deviceId */
-	inline bool operator>=(const XsDeviceId& other) const { return m_deviceId <= other.m_deviceId; }
+	inline bool operator>=(const XsDeviceId& other) const { return m_deviceId >= other.m_deviceId; }
 
 	/*! \brief Creates and returns a XsDeviceId representing the broadcast deviceId */
 	static XsDeviceId broadcast()

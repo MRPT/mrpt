@@ -338,14 +338,14 @@ void CActivMediaRobotBase::doProcess()
 
 	TTimeStamp tnow = mrpt::system::now();
 
-	bool do_get_observations = (m_last_do_process==INVALID_TIMESTAMP) || (mrpt::system::timeDifference(m_last_do_process, tnow)>=1.0/m_capture_rate);
-	if (do_get_observations)
-		m_last_do_process = tnow;
+	const bool do_get_observations = (m_last_do_process==INVALID_TIMESTAMP) || (mrpt::system::timeDifference(m_last_do_process, tnow)>=1.0/m_capture_rate);
 
 	// Collect odometry:
 	// ----------------------------
 	if (do_get_observations)
 	{
+		m_last_do_process = tnow;
+
 		int64_t  lticks, rticks;
 		CPose2D  odom;
 		double vel,w;

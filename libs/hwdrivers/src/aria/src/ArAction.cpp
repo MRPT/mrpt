@@ -101,7 +101,6 @@ AREXPORT void ArAction::deactivate(void)
 AREXPORT void ArAction::log(bool verbose) const
 {
   int i;
-  std::string str;
   const ArArg *arg;
   const ArActionDesired *desired;
 

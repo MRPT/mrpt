@@ -764,7 +764,6 @@ size_t vision::matchFeatures(
 		} // end if
 	} // end for 'list1' (left features)
 
-    CMatchedFeatureList::iterator itMatch;
     if( !options.addMatches )
         matches.clear();
 

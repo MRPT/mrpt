@@ -1216,7 +1216,7 @@ bool CFeature::getFirstDescriptorAsMatrix(mrpt::math::CMatrixFloat &desc) const
 			desc(0,i)=descriptors.SURF[i];
 		return true;
 	}
-	else if (descriptors.hasDescriptorSURF())
+	else if (descriptors.hasDescriptorSpinImg())
 	{
 		const size_t nR = descriptors.SpinImg_range_rows;
 		const size_t nC = descriptors.SpinImg.size() / descriptors.SpinImg_range_rows;

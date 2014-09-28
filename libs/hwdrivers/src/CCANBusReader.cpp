@@ -568,7 +568,6 @@ bool CCANBusReader::waitACK(uint16_t timeout_ms)
 	CTicTac tictac;
 	tictac.Tic();
 
-    bool found = false;
 	do
 	{
 		if ( m_mySerialPort->Read(&b,1) )
@@ -581,7 +580,7 @@ bool CCANBusReader::waitACK(uint16_t timeout_ms)
 			}
 
 		}
-	} while( !found && tictac.Tac()<timeout_ms*1e-3  );
+	} while(tictac.Tac()<timeout_ms*1e-3 );
 
 	if (b==0x07)                            // [BELL]
         RET_ERROR(format("ERROR received."))

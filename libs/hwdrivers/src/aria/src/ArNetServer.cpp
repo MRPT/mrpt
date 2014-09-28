@@ -256,7 +256,6 @@ AREXPORT void ArNetServer::runOnce(void)
   std::list<ArSocket *> removeList;
   std::list<ArSocket *>::iterator it;
   ArArgumentBuilder *args = NULL;
-  std::string command;
 
   if (!myOpened)
   {

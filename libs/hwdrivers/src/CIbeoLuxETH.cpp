@@ -249,17 +249,11 @@ void CIbeoLuxETH::loadConfig_sensorSpecific( const mrpt::utils::CConfigFileBase 
 	float pose_x, pose_y, pose_z, pose_yaw, pose_pitch, pose_roll;
     bool faillNotFound = false;
     pose_x = configSource.read_float(iniSection,"pose_x",0,faillNotFound);
-    if(faillNotFound) return;
     pose_y = configSource.read_float(iniSection,"pose_y",0,faillNotFound);
-    if(faillNotFound) return;
     pose_z = configSource.read_float(iniSection,"pose_z",0,faillNotFound);
-    if(faillNotFound) return;
     pose_yaw = configSource.read_float(iniSection,"pose_yaw",0,faillNotFound);
-    if(faillNotFound) return;
     pose_pitch = configSource.read_float(iniSection,"pose_pitch",0,faillNotFound);
-    if(faillNotFound) return;
     pose_roll = configSource.read_float(iniSection,"pose_roll",0,faillNotFound);
-    if(faillNotFound) return;
 
     m_sensorPose = CPose3D( pose_x, pose_y, pose_z,
         DEG2RAD( pose_yaw ),DEG2RAD( pose_pitch ), DEG2RAD( pose_roll ));

@@ -306,7 +306,6 @@ AREXPORT bool ArDataLogger::processFile(char *errorBuffer,
       myMutex.unlock();
       return true;
     }
-    std::string fileName;
     if (myPermanentFileName.size() > 0)
     {
       if ((myFile = fopen(myPermanentFileName.c_str(), "a")) != NULL)

@@ -71,7 +71,7 @@ void  CFeatureExtraction::extractFeaturesSIFT(
 		const TImageROI			&ROI) const
 {
 	bool usingROI = false;
-	if( ROI.xMin != 0 || ROI.xMin != 0 || ROI.xMin != 0 || ROI.xMin != 0 )
+	if( ROI.xMin != 0 || ROI.xMax != 0 || ROI.yMin != 0 || ROI.yMax != 0 )
 		usingROI = true;	// A ROI has been defined
 
 	// ROI can not be managed properly (yet) with these method, so we extract a subimage

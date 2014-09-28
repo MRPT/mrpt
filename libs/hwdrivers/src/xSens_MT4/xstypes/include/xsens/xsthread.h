@@ -16,6 +16,7 @@
 #endif
 
 #ifndef __GNUC__
+#pragma warning(push)
 #pragma warning(disable: 4127)
 #endif
 
@@ -140,7 +141,7 @@ extern "C" {
 #endif // _WIN32
 
 #ifndef __GNUC__
-#pragma warning(default: 4127)
+#pragma warning(pop)
 #endif
 
 #ifdef __cplusplus

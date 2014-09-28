@@ -168,7 +168,7 @@ bool cmtScanPorts(List<CmtPortInfo>& ports,uint32_t baudrate, uint32_t singleSca
 			//if (_strnicmp(buffer,"xsens",5))
 			//	scan = true;
 			//else
-			if (!_strnicmp(buffer,"(Standard port types)",20))
+			if (!_strnicmp(buffer,"(Standard port types)",strlen("(Standard port types)")))
 				continue;
 			if (_strnicmp(buffer,"xsens",5))	// if this is NOT an xsens device, treat it as a BT device
 			{

@@ -643,9 +643,7 @@ void  CLandmarksMap::loadSiftFeaturesFromStereoImageObservation(
 
 	vision::CFeatureExtraction				fExt;
 	vision::CFeatureList					leftSiftList, rightSiftList;
-	vision::CFeatureList::iterator			leftSift, rightSift;
 	vision::CMatchedFeatureList				matchesList;
-	vision::CMatchedFeatureList::iterator	match;
 	vision::TMatchingOptions				matchingOptions;
 	vision::TStereoSystemParams				stereoParams;
 
