@@ -25,7 +25,7 @@
 #include <wx/statusbr.h>
 //*)
 
-#include <mrpt/reactivenav.h>
+#include <mrpt/nav.h>
 #include <mrpt/opengl/CSetOfObjects.h>
 #include <mrpt/opengl/CDisk.h>
 #include <mrpt/opengl/CSimpleLine.h>
@@ -159,7 +159,7 @@ class holonomic_navigator_demoFrame: public wxFrame
         };
 
 
-		mrpt::reactivenav::CAbstractHolonomicReactiveMethod *m_holonomicMethod;
+		mrpt::nav::CAbstractHolonomicReactiveMethod *m_holonomicMethod;
 		mrpt::slam::COccupancyGridMap2D  m_gridMap;
 		mrpt::math::TPoint2D             m_targetPoint;
 		mrpt::math::TPose2D              m_robotPose;

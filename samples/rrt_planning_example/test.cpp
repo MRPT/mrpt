@@ -7,14 +7,17 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/hybridnav.h>
-#include <mrpt/gui.h>
+#include <mrpt/nav.h>
+//#include <mrpt/gui.h>
 #include <mrpt/slam/COccupancyGridMap2D.h>
+#include <mrpt/system/filesystem.h> // directoryExists(), ...
+#include <mrpt/utils/CFileGZInputStream.h>
 
 #include <iostream>
 
 using namespace mrpt;
-using namespace mrpt::hybridnav;
+using namespace mrpt::utils;
+using namespace mrpt::nav;
 using namespace mrpt::slam; // for maps, etc.
 using namespace std;
 

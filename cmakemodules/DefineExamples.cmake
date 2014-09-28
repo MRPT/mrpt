@@ -327,15 +327,15 @@ IF(BUILD_EXAMPLES)
 #		GENERATE_CMAKE_FILES_SAMPLES_DIRECTORY()
 	ENDIF(BUILD_mrpt-pbmap)
 	
-	# === PbMap examples ===
-	IF(BUILD_mrpt-hybridnav)
+	# === Navigation examples ===
+	IF(BUILD_mrpt-nav)
 		SET(LIST_EXAMPLES_IN_THIS_DIR
 			rrt_planning_example
 			)
-		SET(CMAKE_EXAMPLE_DEPS mrpt-hybridnav mrpt-gui)
+		SET(CMAKE_EXAMPLE_DEPS mrpt-nav mrpt-gui)
 		SET(CMAKE_EXAMPLE_LINK_LIBS ${MRPT_LINKER_LIBS})
 		GENERATE_CMAKE_FILES_SAMPLES_DIRECTORY()
-	ENDIF(BUILD_mrpt-hybridnav)
+	ENDIF(BUILD_mrpt-nav)
 	
 
 	# Generate the CMakeLists.txt in the "/samples" directory

@@ -9,7 +9,7 @@
 
 #include "nav-precomp.h" // Precomp header
 
-#include <mrpt/reactivenav/motion_planning_utils.h>
+#include <mrpt/nav/tpspace/motion_planning_utils.h>
 #include <mrpt/math/geometry.h>
 #include <mrpt/utils/CTicTac.h>
 

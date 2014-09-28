@@ -53,7 +53,7 @@ wxBitmap MyArtProvider::CreateBitmap(const wxArtID& id,
     return wxNullBitmap;
 }
 
-#include <mrpt/reactivenav.h>
+#include <mrpt/nav.h>
 #include <mrpt/gui.h>
 #include <mrpt/opengl.h>
 #include <mrpt/system/filesystem.h>
@@ -64,7 +64,7 @@ using namespace mrpt::opengl;
 using namespace mrpt::math;
 using namespace mrpt::system;
 using namespace mrpt::utils;
-using namespace mrpt::reactivenav;
+using namespace mrpt::nav;
 using namespace std;
 
 
@@ -422,10 +422,10 @@ holonomic_navigator_demoFrame::holonomic_navigator_demoFrame(wxWindow* parent,wx
 
 		m_simul_options.saveToConfigFile(cfg,"SIMULATOR");
 
-		mrpt::reactivenav::CHolonomicVFF holo_VFF;
+		mrpt::nav::CHolonomicVFF holo_VFF;
 		holo_VFF.options.saveToConfigFile(cfg,"VFF_CONFIG");
 
-		mrpt::reactivenav::CHolonomicND holo_ND;
+		mrpt::nav::CHolonomicND holo_ND;
 		holo_ND.options.saveToConfigFile(cfg,"ND_CONFIG");
 
 		this->edHoloParams->SetValue( _U( cfg.getContent().c_str() ) );
@@ -542,8 +542,8 @@ void holonomic_navigator_demoFrame::reinitSimulator()
 	mrpt::utils::delete_safe(m_holonomicMethod);
 	switch (rbHoloMethod->GetSelection())
 	{
-	case 0: m_holonomicMethod = new mrpt::reactivenav::CHolonomicVFF(); break;
-	case 1: m_holonomicMethod = new mrpt::reactivenav::CHolonomicND(); break;
+	case 0: m_holonomicMethod = new mrpt::nav::CHolonomicVFF(); break;
+	case 1: m_holonomicMethod = new mrpt::nav::CHolonomicND(); break;
 	default:
 		throw std::runtime_error("Invalid holonomic method selected!");
 	};
@@ -588,7 +588,7 @@ void holonomic_navigator_demoFrame::simulateOneStep(double time_step)
 	relTargetPose*= 1.0/simulatedScan.maxRange;     // Normalized relative target:
 
 	double desiredDirection,desiredSpeed;
-	mrpt::reactivenav::CHolonomicLogFileRecordPtr  out_log;
+	mrpt::nav::CHolonomicLogFileRecordPtr  out_log;
 
 	//tictac.Tic();
 	this->m_holonomicMethod->navigate(

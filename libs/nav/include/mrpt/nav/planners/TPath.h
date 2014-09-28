@@ -10,15 +10,11 @@
 #ifndef TPATH_H
 #define TPATH_H
 
-#include <mrpt/poses.h>
-#include <mrpt/utils.h>
-#include <mrpt/system/filesystem.h>
-
-using namespace mrpt::poses;
+#include <mrpt/math/lightweight_geom_data.h>
 
 namespace mrpt
 {
-  namespace hybridnav
+  namespace nav
   {
 
         /** This class contains methods for path data structures and handling
@@ -33,7 +29,7 @@ namespace mrpt
          * <b>Changes history</b>
          *		- 12/DEC/2013: Creation (MB).
          *      - 21/FEB/2014: Refactoring (MB)
-         *  \ingroup mrpt_hybridnav_grp
+         *  \ingroup mrpt_nav_grp
          */
         class TPath //: public PTRRT_Navigator
         {
@@ -52,7 +48,7 @@ namespace mrpt
                         K(0), ptg_dist(0.0)
                     {}
 
-                    TPose2D p;			    //!< Coordinates are "global"
+                    mrpt::math::TPose2D p;			    //!< Coordinates are "global"
                     double max_v, max_w;	//!< Maximum velocities along this path segment.
                     double trg_v;			//!< Desired linear velocity at the target point, ie: the robot should program its velocities such as after this arc the speeds are the given ones.
                     int ind_ptg;            //!< The PTG index is needed in order to get the correct "trajectory" path
@@ -95,7 +91,7 @@ namespace mrpt
                       * \note the path have to be not-empty.
                       * \return false if can't determine the next point.
                       */
-                    bool getBreadcrumbPoint(mrpt::hybridnav::TPath::TPathData &out_next_point,
+                    bool getBreadcrumbPoint(mrpt::nav::TPath::TPathData &out_next_point,
                                             mrpt::math::TPose2D &robotPose,
                                             mrpt::math::TPose2D &m_target_pose,
                                             double breadcrumb_dist) ;

@@ -7,10 +7,16 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/hybridnav.h>    //precomp header
-#include <mrpt/hybridnav/TPath.h>
+#include "nav-precomp.h" // Precomp header
 
-using namespace mrpt::hybridnav;
+#include <mrpt/nav/planners/TPath.h>
+#include <mrpt/system/filesystem.h> // directoryExists(), ...
+#include <mrpt/system/os.h>
+
+using namespace mrpt::nav;
+using namespace mrpt::system;
+using namespace mrpt::math;
+using namespace std;
 
 TPath::TPath()
 {
@@ -64,10 +70,10 @@ bool  TPath::TPlannedPath::save_to_text_file(const std::string &file) const
 {
 
     MRPT_TODO("Add a flag to activate the log saving")
-    std::string save_folder = "./hybridnav.logs/paths/";
+    std::string save_folder = "./nav.logs/paths/";
     if (!mrpt::system::directoryExists(save_folder.c_str()))
 		{
-			mrpt::system::createDirectory( "./hybridnav.logs"); //if I take it out it will create the subdirectories?
+			mrpt::system::createDirectory( "./nav.logs"); //if I take it out it will create the subdirectories?
 			mrpt::system::createDirectory( save_folder.c_str());
 		}
     std::string file_name = save_folder+file;
@@ -109,8 +115,8 @@ bool  TPath::TPlannedPath::save_to_text_file(const std::string &file) const
     try
 	{
 
-        mrpt::hybridnav::TPath::TPlannedPath m_planned_path_ = *this;
-        mrpt::hybridnav::TPath::TPathData	    next_planned_point;  // next target
+        mrpt::nav::TPath::TPlannedPath m_planned_path_ = *this;
+        mrpt::nav::TPath::TPathData	    next_planned_point;  // next target
         //mrpt::reactivenav::TPath::TPathData	    last_planned_point;  // target
 
         if (m_planned_path_.empty())// || m_planned_path_.size()<2)
@@ -144,16 +150,16 @@ bool  TPath::TPlannedPath::save_to_text_file(const std::string &file) const
 /*---------------------------------------------------------------
             get the next breadcrumb point
   ---------------------------------------------------------------*/
-bool TPath::TPlannedPath::getBreadcrumbPoint(mrpt::hybridnav::TPath::TPathData &out_next_point,
+bool TPath::TPlannedPath::getBreadcrumbPoint(mrpt::nav::TPath::TPathData &out_next_point,
                                              mrpt::math::TPose2D &robotPose,
                                              mrpt::math::TPose2D &m_target_pose,
                                              double breadcrumb_dist)
 {
     try
 	{
-    mrpt::hybridnav::TPath::TPathData	    next_planned_point;  // next target
-	mrpt::hybridnav::TPath::TPathData	    last_planned_point;  // target
-    mrpt::hybridnav::TPath::TPlannedPath    m_planned_path_=*this;
+    mrpt::nav::TPath::TPathData	    next_planned_point;  // next target
+	mrpt::nav::TPath::TPathData	    last_planned_point;  // target
+    mrpt::nav::TPath::TPlannedPath    m_planned_path_=*this;
 
     // we have proper localization
     // Acquire the latest path plan --------------

@@ -12,6 +12,9 @@ LIST(APPEND nav_EXTRA_SRCS_NAME   "HolonomicNav" "HolonomicNav")
 LIST(APPEND nav_EXTRA_SRCS	      "${NAVDIR}/src/reactive/*.cpp" "${NAVDIR}/include/mrpt/nav/reactive/*.h")
 LIST(APPEND nav_EXTRA_SRCS_NAME   "ReactiveNav" "ReactiveNav")
 
+LIST(APPEND nav_EXTRA_SRCS	      "${NAVDIR}/src/planners/*.cpp" "${NAVDIR}/include/mrpt/nav/planners/*.h")
+LIST(APPEND nav_EXTRA_SRCS_NAME   "Planners" "Planners")
+
 # Compatibility with MRPT <1.3.0
 LIST(APPEND nav_EXTRA_SRCS	      "${NAVDIR}/include/mrpt/reactivenav/*.h")
 LIST(APPEND nav_EXTRA_SRCS_NAME   "bckwrds_compat_hdrs")
