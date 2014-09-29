@@ -199,8 +199,8 @@ macro(internal_define_mrpt_lib name headers_only is_metalib)
 	
 	# Emulates a global variable:
 	set_property(GLOBAL PROPERTY "mrpt-${name}_LIB_DEPS" "${AUX_DEPS_LIST}")
-	#message(STATUS "mrpt-${name}_LIB_DEPS= ${AUX_DEPS_LIST}")
 	set_property(GLOBAL PROPERTY "mrpt-${name}_LIB_IS_HEADERS_ONLY" "${headers_only}")
+	set_property(GLOBAL PROPERTY "mrpt-${name}_LIB_IS_METALIB" "${is_metalib}")
 
 	# Dependencies between projects:
 	IF(NOT "${ARGN}" STREQUAL "")
@@ -268,19 +268,21 @@ macro(internal_define_mrpt_lib name headers_only is_metalib)
 		ENDIF(CMAKE_MRPT_USE_DEB_POSTFIXS)
 
 		# make sure the library gets installed
-		INSTALL(TARGETS mrpt-${name}
-			RUNTIME DESTINATION ${MRPT_PREFIX_INSTALL}bin  COMPONENT Libraries
-			LIBRARY DESTINATION ${MRPT_PREFIX_INSTALL}${CMAKE_INSTALL_LIBDIR} COMPONENT Libraries
-			ARCHIVE DESTINATION ${MRPT_PREFIX_INSTALL}${CMAKE_INSTALL_LIBDIR} COMPONENT Libraries  # WAS: lib${LIB_SUFFIX}
-			)
+		IF (NOT is_metalib)
+			INSTALL(TARGETS mrpt-${name}
+				RUNTIME DESTINATION ${MRPT_PREFIX_INSTALL}bin  COMPONENT Libraries
+				LIBRARY DESTINATION ${MRPT_PREFIX_INSTALL}${CMAKE_INSTALL_LIBDIR} COMPONENT Libraries
+				ARCHIVE DESTINATION ${MRPT_PREFIX_INSTALL}${CMAKE_INSTALL_LIBDIR} COMPONENT Libraries  # WAS: lib${LIB_SUFFIX}
+				)
 			
-		# Collect .pdb debug files for optional installation:
-		IF (MSVC)
-			SET(PDB_FILE "${CMAKE_BINARY_DIR}/bin/Debug/libmrpt-${name}${CMAKE_MRPT_VERSION_NUMBER_MAJOR}${CMAKE_MRPT_VERSION_NUMBER_MINOR}${CMAKE_MRPT_VERSION_NUMBER_PATCH}-dbg.pdb")
-			IF (EXISTS "${PDB_FILE}")
-				INSTALL(FILES ${PDB_FILE} DESTINATION bin COMPONENT LibrariesDebugInfoPDB)
-			ENDIF (EXISTS "${PDB_FILE}")
-		ENDIF(MSVC)		
+			# Collect .pdb debug files for optional installation:
+			IF (MSVC)
+				SET(PDB_FILE "${CMAKE_BINARY_DIR}/bin/Debug/libmrpt-${name}${CMAKE_MRPT_VERSION_NUMBER_MAJOR}${CMAKE_MRPT_VERSION_NUMBER_MINOR}${CMAKE_MRPT_VERSION_NUMBER_PATCH}-dbg.pdb")
+				IF (EXISTS "${PDB_FILE}")
+					INSTALL(FILES ${PDB_FILE} DESTINATION bin COMPONENT LibrariesDebugInfoPDB)
+				ENDIF (EXISTS "${PDB_FILE}")
+			ENDIF(MSVC)		
+		ENDIF (NOT is_metalib)
 	ENDIF (NOT ${headers_only})
 
 	# Generate the libmrpt-$NAME.pc file for pkg-config:
