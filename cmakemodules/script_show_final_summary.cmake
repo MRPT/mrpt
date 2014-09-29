@@ -36,11 +36,14 @@ MESSAGE(STATUS "----------------------------------------------------------------
 FOREACH(_LIB ${ALL_MRPT_LIBS})
 	get_property(_LIB_DEP GLOBAL PROPERTY "${_LIB}_LIB_DEPS")
 	get_property(_LIB_HDRONLY GLOBAL PROPERTY "${_LIB}_LIB_IS_HEADERS_ONLY")
+	get_property(_LIB_METALIB GLOBAL PROPERTY "${_LIB}_LIB_IS_METALIB")
 	# Say whether each lib is a normal or header-only lib:
 	set(_LIB_TYPE "")
-	IF (_LIB_HDRONLY)
+	IF (_LIB_METALIB)
+		SET(_LIB_TYPE "  (meta-lib)")
+	ELSEIF(_LIB_HDRONLY)
 		SET(_LIB_TYPE "  (header-only)")
-	ENDIF(_LIB_HDRONLY)
+	ENDIF(_LIB_METALIB)
 	
 	MESSAGE(STATUS "  ${_LIB} : ${_LIB_DEP} ${_LIB_TYPE}")
 ENDFOREACH(_LIB)
