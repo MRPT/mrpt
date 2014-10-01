@@ -35,7 +35,7 @@ struct XsUShortVector {
 	}
 	
 	//! \brief Constructor that creates the vector with all components set to values in array \a a
-	inline XsUShortVector(const unsigned short* a)
+	inline explicit XsUShortVector(const unsigned short* a)
 	{
 		m_data[0] = a[0];
 		m_data[1] = a[1];
@@ -62,6 +62,14 @@ struct XsUShortVector {
 		return *this;
 	}
 	
+	//! \brief Comparison operator, returns true if the contents of the \a other vector match those of this vector
+	inline bool operator == (const XsUShortVector& other) const
+	{
+		return	m_data[0] == other.m_data[0] &&
+				m_data[1] == other.m_data[1] &&
+				m_data[2] == other.m_data[2];
+	}
+
 	//! \brief Return the size of the vector (always 3)
 	inline XsSize size() const
 	{

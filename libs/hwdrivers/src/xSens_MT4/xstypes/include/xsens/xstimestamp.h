@@ -188,6 +188,14 @@ struct XsTimeStamp {
 		return tmp;
 	}
 
+	/*! \brief Returns the current time in ms since the epoch (Jan 1st 1970) */
+	inline static int64_t nowMs()
+	{
+		XsTimeStamp tmp;
+		XsTimeStamp_now(&tmp);
+		return tmp.msTime();
+	}
+
 	/*! \brief Returns the maximum value of an %XsTimeStamp */
 	inline static XsTimeStamp maxValue()
 	{

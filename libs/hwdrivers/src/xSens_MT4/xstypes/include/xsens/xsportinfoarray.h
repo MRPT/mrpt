@@ -31,9 +31,9 @@ XSTYPES_DLL_API void XsPortInfoArray_construct(XsPortInfoArray* thisPtr, XsSize 
 #endif
 
 #ifdef __cplusplus
-struct XsPortInfoArray : public XsArrayImpl<XsPortInfo, &g_xsPortInfoArrayDescriptor, XsPortInfoArray> {
+struct XsPortInfoArray : public XsArrayImpl<XsPortInfo, g_xsPortInfoArrayDescriptor, XsPortInfoArray> {
 	//! \brief Constructs an XsPortInfoArray
-	inline XsPortInfoArray(XsSize sz = 0, XsPortInfo const* src = 0)
+	inline explicit XsPortInfoArray(XsSize sz = 0, XsPortInfo const* src = 0)
 		 : ArrayImpl(sz, src)
 	{
 	}
@@ -50,12 +50,14 @@ struct XsPortInfoArray : public XsArrayImpl<XsPortInfo, &g_xsPortInfoArrayDescri
 	{
 	}
 
+#ifndef XSENS_NOITERATOR
 	//! \brief Constructs an XsPortInfoArray with the array bound by the supplied iterators \a beginIt and \a endIt
 	template <typename Iterator>
 	inline XsPortInfoArray(Iterator beginIt, Iterator endIt)
 		: ArrayImpl(beginIt, endIt)
 	{
 	}
+#endif
 };
 #endif
 

@@ -57,7 +57,7 @@ XSCPPPROTECTED
 	inline int flags() { return m_flags; }
 public:
 	//! \brief Initialize a vector, empty or using the data in the supplied \a sz and \a src
-	inline XsVector(XsSize sz = 0, const XsReal* src = 0)
+	inline explicit XsVector(XsSize sz = 0, const XsReal* src = 0)
 		: m_data(0)
 		, m_size(0)
 		, m_flags(0)
@@ -237,7 +237,7 @@ public:
 		XsVector tmp(m_size);
 		for (XsSize i = 0; i < m_size; ++i)
 			tmp[i] = m_data[i] - sub.m_data[i];
-		return tmp.destructiveCopy();
+		return tmp;
 	}
 
 	//! \brief Return \e this + \a sub
@@ -247,7 +247,7 @@ public:
 		XsVector tmp(m_size);
 		for (XsSize i = 0; i < m_size; ++i)
 			tmp[i] = m_data[i] + sub.m_data[i];
-		return tmp.destructiveCopy();
+		return tmp;
 	}
 
 	//! \brief Return true when the values in this vector are exactly (to the last bit) equal to \a other
@@ -279,16 +279,6 @@ public:
 	{
 		for (XsSize i = 0; i < m_size; ++i)
 			m_data[i] = value;
-	}
-
-	/*! \brief Mark the XsVector for move semantics.
-		\details Calling this function makes the object attempt to move its data into the destination object instead of copying its data when the next assignment or copy operation is done with this object as the source object.
-		\returns A reference to the object for easy returning, ie. return a.destructiveCopy();
-	*/
-	inline XsVector& destructiveCopy()
-	{
-		*((int*) &m_flags) |= XSDF_DestructiveCopy;
-		return *this;
 	}
 
 	/*! \brief Swap the contents of \a b with this

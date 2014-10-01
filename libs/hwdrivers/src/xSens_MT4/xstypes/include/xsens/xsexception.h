@@ -46,7 +46,7 @@ public:
 			if (!m_description.empty())
 				rv << "\tInfo: ";
 			rv.append(m_description);
-			m_description = rv.destructiveCopy();
+			m_description = rv;
 		}
 	}
 

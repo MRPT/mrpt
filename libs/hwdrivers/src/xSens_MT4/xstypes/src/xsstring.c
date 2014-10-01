@@ -118,19 +118,47 @@ void XsString_assignWCharArray(XsString* thisPtr, const wchar_t* src)
 {
 	if (src)
 	{
+#ifdef WIN32
+		int unicodeLength = lstrlenW( src ); // Convert all UNICODE characters
+		int required = WideCharToMultiByte(CP_UTF8, 0, src, unicodeLength, NULL, 0, NULL, NULL);
+		if (required != -1 && required > 0)
+		{
+			if ((XsSize)required+1 > thisPtr->m_reserved)
+				XsArray_reserve(thisPtr, required+1);
+			WideCharToMultiByte(CP_UTF8, 0, src, unicodeLength, thisPtr->m_data, required+1, NULL, NULL); //lint !e534
+			thisPtr->m_data[required] = '\0';
+			*((XsSize*) &thisPtr->m_size) = required+1;
+			return;
+		}
+#else
 		size_t required = wcstombs(0, src, 0);
 		if (required != (size_t) -1 && required > 0)
 		{
-			if (required+1 > thisPtr->m_reserved)
+			if ((XsSize)required+1 > thisPtr->m_reserved)
 				XsArray_reserve(thisPtr, required+1);
 			wcstombs(thisPtr->m_data, src, required+1);	//lint !e534
 			*((XsSize*) &thisPtr->m_size) = required+1;
 			return;
 		}
+#endif
 	}
 	XsArray_assign(thisPtr, 0, 0);
 }
+
+//lint -save -e429
+/*! \brief This function copies the contents of the object to a unicode wchar_t array
+*/
+XsSize XsString_copyToWCharArray(const XsString* thisPtr, wchar_t* dest, XsSize size)
+{
+#ifdef WIN32
+	return MultiByteToWideChar(CP_UTF8, 0, thisPtr->m_data, (int) thisPtr->m_size, dest, (int) size);
+#else
+	return mbstowcs(dest, thisPtr->m_data, size) + (dest?0:1);
+#endif
+}
+//lint -restore
 #endif // XSENS_NO_WCHAR
+
 
 /*! \brief This function resizes the contained string to the desired size, while retaining its contents
 	\param count The desired size of the string. This excludes the terminating 0 character.

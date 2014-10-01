@@ -32,7 +32,7 @@ XSTYPES_DLL_API void XsInt64Array_construct(XsInt64Array* thisPtr, XsSize count,
 #ifdef __cplusplus
 struct XsInt64Array : public XsArrayImpl<int64_t, g_xsInt64ArrayDescriptor, XsInt64Array> {
 	//! \brief Constructs an XsInt64Array
-	inline XsInt64Array(XsSize sz = 0, int64_t const* src = 0)
+	inline explicit XsInt64Array(XsSize sz = 0, int64_t const* src = 0)
 		 : ArrayImpl(sz, src)
 	{
 	}
@@ -49,12 +49,14 @@ struct XsInt64Array : public XsArrayImpl<int64_t, g_xsInt64ArrayDescriptor, XsIn
 	{
 	}
 
+#ifndef XSENS_NOITERATOR
 	//! \brief Constructs an XsInt64Array with the array bound by the supplied iterators \a beginIt and \a endIt
 	template <typename Iterator>
 	inline XsInt64Array(Iterator beginIt, Iterator endIt)
 		: ArrayImpl(beginIt, endIt)
 	{
 	}
+#endif
 };
 #endif
 

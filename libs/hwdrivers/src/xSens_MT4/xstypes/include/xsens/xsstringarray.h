@@ -34,7 +34,7 @@ XSTYPES_DLL_API void XsStringArray_construct(XsStringArray* thisPtr, XsSize coun
 #ifdef __cplusplus
 struct XsStringArray : public XsArrayImpl<XsString, g_xsStringArrayDescriptor, XsStringArray> {
 	//! \brief Constructs an XsStringArray
-	inline XsStringArray(XsSize sz = 0, XsString const* src = 0)
+	inline explicit XsStringArray(XsSize sz = 0, XsString const* src = 0)
 		 : ArrayImpl(sz, src)
 	{
 	}
@@ -51,12 +51,14 @@ struct XsStringArray : public XsArrayImpl<XsString, g_xsStringArrayDescriptor, X
 	{
 	}
 
+#ifndef XSENS_NOITERATOR
 	//! \brief Constructs an XsStringArray with the array bound by the supplied iterators \a beginIt and \a endIt
 	template <typename Iterator>
 	inline XsStringArray(Iterator beginIt, Iterator endIt)
 		: ArrayImpl(beginIt, endIt)
 	{
 	}
+#endif
 };
 #endif
 

@@ -169,9 +169,9 @@ void XsDataPacket_assignFromXsLegacyDataPacket(struct XsDataPacket* thisPtr, str
 	{
 		bool isDetailed = true;
 		uint32_t status = pack->status(index, &isDetailed);
-		
+
 		// For MTw's only, the status needs to be swapEndian32-ed
-		if (hacket->deviceId().isMtw()) 
+		if (hacket->deviceId().isMtw())
 		{
 			status = swapEndian32(status);
 		}
@@ -191,6 +191,9 @@ void XsDataPacket_assignFromXsLegacyDataPacket(struct XsDataPacket* thisPtr, str
 		tmp.m_pressure = pack->gpsPvtData(index).m_pressure * 2.0; // Convert to Pascal
 		tmp.m_pressureAge = pack->gpsPvtData(index).m_pressureAge;
 		hacket->setPressure(tmp);
+		XsGpsPvtData pvt;
+		pvt = pack->gpsPvtData(index);
+		hacket->setGpsPvtData(pvt);
 	}
 	if (pack->containsUtcTime(index))
 	{

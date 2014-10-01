@@ -30,7 +30,7 @@ XSTYPES_DLL_API void XsVersion_toString(const XsVersion* thisPtr, XsString* vers
 struct XsVersion {
 #ifdef __cplusplus
 	//! \brief Constructs a version object using the supplied parameters or an empty version object if no parameters are given.
-	XsVersion(int maj = 0, int min = 0, int rev = 0, int bld = 0, const XsString& extra = XsString())
+	explicit XsVersion(int maj = 0, int min = 0, int rev = 0, int bld = 0, const XsString& extra = XsString())
 		: m_major(maj)
 		, m_minor(min)
 		, m_revision(rev)
@@ -69,7 +69,7 @@ struct XsVersion {
 	{
 		XsString tmp;
 		XsVersion_toString(this, &tmp);
-		return tmp.destructiveCopy();
+		return tmp;
 	}
 
 	//! \brief Return the \e major part of the version

@@ -13,6 +13,9 @@
 #include "xsarray.h"
 #ifndef XSENS_NO_WCHAR
 #include <wchar.h>
+	#if !defined(XSENS_NO_STL) && defined(__cplusplus) && defined(WIN32)
+	#include <Windows.h>	// required for MultiByteToWideChar
+	#endif
 #endif // XSENS_NO_WCHAR
 #include <string.h>
 
@@ -42,6 +45,7 @@ XSTYPES_DLL_API void XsString_assignCharArray(XsString* thisPtr, const char* src
 #ifndef XSENS_NO_WCHAR
 XSTYPES_DLL_API void XsString_assignWCharArray(XsString* thisPtr, const wchar_t* src);
 #endif // XSENS_NO_WCHAR
+XSTYPES_DLL_API XsSize XsString_copyToWCharArray(const XsString* thisPtr, wchar_t* dest, XsSize size);
 //XSTYPES_DLL_API void XsString_assignWString(XsString* thisPtr, XsWString const* src);
 XSTYPES_DLL_API void XsString_resize(XsString* thisPtr, XsSize count);
 XSTYPES_DLL_API void XsString_append(XsString* thisPtr, XsString const* other);
@@ -59,7 +63,7 @@ XSTYPES_DLL_API void XsString_erase(XsString* thisPtr, XsSize index, XsSize coun
 /* We need some special template implementations for strings to keep them 0-terminated
 */
 // this typedef is not _always_ interpreted correctly by doxygen, hence the occasional function where we're NOT using it.
-typedef XsArrayImpl<char, &g_xsStringDescriptor, XsString> XsStringType;
+typedef XsArrayImpl<char, g_xsStringDescriptor, XsString> XsStringType;
 
 /*! \brief Returns the number of items currently in the array, excluding the terminating 0
 	\returns The number of items currently in the array
@@ -101,7 +105,7 @@ template<> inline void XsStringType::erase(XsSize index, XsSize count)
 	append to the actual end of the string.
 	\param count The number of items to insert
 */
-template<> inline void XsArrayImpl<char, &g_xsStringDescriptor, XsString>::insert(char const* items, XsSize index, XsSize count)
+template<> inline void XsArrayImpl<char, g_xsStringDescriptor, XsString>::insert(char const* items, XsSize index, XsSize count)
 {
 	if (size())
 	{
@@ -121,7 +125,7 @@ template<> inline void XsArrayImpl<char, &g_xsStringDescriptor, XsString>::inser
 				filled with spaces instead.
 	\sa XsString_assign
 */
-template<> inline void XsArrayImpl<char, &g_xsStringDescriptor, XsString>::assign(XsSize count, char const* src)
+template<> inline void XsArrayImpl<char, g_xsStringDescriptor, XsString>::assign(XsSize count, char const* src)
 {
 	XsString_assign((XsString*) this, count, src);
 }
@@ -147,14 +151,14 @@ template<> inline void XsStringType::setSize(XsSize count)
 }
 
 /*! \copydoc XsArray_append \sa XsArray_append */
-template<> inline void XsArrayImpl<char, &g_xsStringDescriptor, XsString>::append(const XsStringType& other)
+template<> inline void XsArrayImpl<char, g_xsStringDescriptor, XsString>::append(const XsStringType& other)
 {
 	XsString_append((XsString*) this, (XsString const*) &other);
 }
 
 struct XsString : public XsStringType {
 	//! \brief Constructs an XsString
-	inline XsString(XsSize sz = 0, char const* src = 0)
+	inline explicit XsString(XsSize sz = 0, char const* src = 0)
 		 : XsStringType()
 	{
 		if (sz || src)
@@ -172,13 +176,14 @@ struct XsString : public XsStringType {
 		: XsStringType(ref, sz+1, flags)
 	{
 	}
-
+#ifndef XSENS_NOITERATOR
 	//! \brief Constructs an XsString with the list bound by the supplied iterators \a beginIt and \a endIt
 	template <typename Iterator>
 	inline XsString(Iterator const& beginIt, Iterator const& endIt)
 		: XsStringType(beginIt, endIt)
 	{
 	}
+#endif
 
 	//! \brief Construct an XsString from a 0-terminated character array
 	inline XsString(char const* src)
@@ -251,7 +256,7 @@ struct XsString : public XsStringType {
 		tmp.reserve(size()+other.size());
 		tmp.append(*this);
 		tmp.append(other);
-		return tmp.destructiveCopy();
+		return tmp;
 	}
 
 #ifndef XSENS_NO_STL
@@ -260,11 +265,10 @@ struct XsString : public XsStringType {
 	{
 		if (empty())
 			return std::wstring();
-		size_t s = mbstowcs(0, c_str(), 0);
-		wchar_t* tmp = new wchar_t[s+1];
-		mbstowcs(tmp, c_str(), s+1);	//lint !e534
-		std::wstring w(tmp);
-		delete[] tmp;
+		size_t s = XsString_copyToWCharArray(this, NULL, 0);
+		std::wstring w;
+		w.resize(s-1);
+		s = XsString_copyToWCharArray(this, &w[0], s);
 		return w;
 	}
 #endif // XSENS_NO_STL
@@ -272,7 +276,9 @@ struct XsString : public XsStringType {
 	/*! \cond NODOXYGEN */
 	using XsStringType::operator ==;
 	using XsStringType::operator !=;
+#ifndef XSENS_NOITERATOR
 	using XsStringType::operator <<;
+#endif
 	/*! \endcond */
 
 	//! \brief Return true if the contents of \a str are identical to this string
@@ -314,6 +320,17 @@ struct XsString : public XsStringType {
 		return *this;
 	}
 };
+
+#ifndef XSENS_NO_STL
+namespace std {
+template<typename _CharT, typename _Traits>
+basic_ostream<_CharT, _Traits>& operator<<(basic_ostream<_CharT, _Traits>& o, XsString const& xs)
+{
+	return (o << xs.toStdString());
+}
+}
+#endif
+
 #endif
 
 #endif // file guard

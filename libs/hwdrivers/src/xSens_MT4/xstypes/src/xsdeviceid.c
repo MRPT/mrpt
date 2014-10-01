@@ -177,6 +177,20 @@ int XsDeviceId_isMtMk4_700(const struct XsDeviceId* thisPtr)
 	return ((thisPtr->m_deviceId & XS_DID_MK4TYPE_MASK) == XS_DID_MK4TYPE_MT_700); 
 }
 
+/*! \relates XsDeviceId
+	\brief Test if this device ID represents an MTw2 */
+int XsDeviceId_isMtw2(const struct XsDeviceId* thisPtr)
+{
+	return XS_DID_MTW2(thisPtr->m_deviceId);
+}
+
+/*! \relates XsDeviceId
+	\brief Test if this device ID represents an MTx2 */
+int XsDeviceId_isMtx2(const struct XsDeviceId* thisPtr)
+{	
+	return (((thisPtr->m_deviceId & XS_DID_TYPEH_MASK) == XS_DID_TYPEH_MTX2_MTW2) && !XsDeviceId_isMtw2(thisPtr));
+}
+
 /*!	\relates XsDeviceId
 	\brief Test if the device ID has the broadcast bit set
 */

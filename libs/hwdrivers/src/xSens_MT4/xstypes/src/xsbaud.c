@@ -35,6 +35,8 @@ XsBaudRate XsBaud_codeToRate(XsBaudCode baudcode)
 	case XBC_460k8:		  return XBR_460k8;
 	case XBC_921k6:
 	case XBC_921k6Legacy: return XBR_921k6;
+	case XBC_2MegaBaud:	  return XBR_2000k;
+	case XBC_4MegaBaud:	  return XBR_4000k;
 	default:              return XBR_Invalid;
 	}
 }
@@ -62,6 +64,7 @@ XsBaudCode XsBaud_rateToCode(XsBaudRate baudrate)
 	case XBR_460k8:	return XBC_460k8;
 	case XBR_921k6:	return XBC_921k6Legacy;
 	case XBR_2000k:	return XBC_2MegaBaud;
+	case XBR_4000k: return XBC_4MegaBaud;
 	default:		return XBC_Invalid;
 	}
 }

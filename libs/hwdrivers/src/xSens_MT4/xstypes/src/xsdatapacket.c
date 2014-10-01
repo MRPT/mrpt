@@ -2046,7 +2046,7 @@ void XsDataPacket_setTriggerIndication(XsDataPacket* thisPtr, XsDataIdentifier t
 		XsMessage_resizeData(&thisPtr->m_msg, sz + 3 + DATASIZE);
 
 		XsMessage_setDataShort(&thisPtr->m_msg, triggerId, sz);
-		XsMessage_setDataByte(&thisPtr->m_msg, DATASIZE, sz + 2);
+		XsMessage_setDataByte(&thisPtr->m_msg, (uint8_t) DATASIZE, sz + 2);
 		++thisPtr->m_itemCount;
 	}
 

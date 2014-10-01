@@ -20,8 +20,11 @@
 extern "C" {
 #endif
 
-struct XsPortInfo;
-typedef struct XsPortInfo XsPortInfo;
+#ifndef __cplusplus
+	typedef struct XsPortInfo XsPortInfo;
+#else
+	struct XsPortInfo;
+#endif
 
 XSTYPES_DLL_API void XsPortInfo_clear(XsPortInfo* thisPtr);
 XSTYPES_DLL_API int XsPortInfo_empty(XsPortInfo const* thisPtr);
@@ -29,10 +32,10 @@ XSTYPES_DLL_API int XsPortInfo_portNumber(XsPortInfo const* thisPtr);
 XSTYPES_DLL_API int XsPortInfo_isUsb(XsPortInfo const* thisPtr);
 XSTYPES_DLL_API int XsPortInfo_usbBus(XsPortInfo const* thisPtr);
 XSTYPES_DLL_API int XsPortInfo_usbAddress(XsPortInfo const* thisPtr);
-XSTYPES_DLL_API void XsPortInfo_swap(XsPortInfo* a, XsPortInfo* b);
+XSTYPES_DLL_API void XsPortInfo_swap(XsPortInfo* a, struct XsPortInfo* b);
 
 #ifdef __cplusplus
-} //;
+};
 #endif
 
 #if defined(_MSC_VER)
@@ -54,7 +57,7 @@ struct XsPortInfo {
 		\param portname The name of the port, maximum 255 characters
 		\param baudRate The baud rate to configure for the port, for scanning XBR_Invalid may be used to scan all known baud rates
 	*/
-	XsPortInfo(const XsString& portname, XsBaudRate baudRate = XBR_Invalid)
+	explicit XsPortInfo(const XsString& portname, XsBaudRate baudRate = XBR_Invalid)
 		: m_deviceId(0)
 		, m_baudrate(baudRate)
 	{
@@ -70,7 +73,7 @@ struct XsPortInfo {
 		\param baudRate The baud rate to configure for the port, for scanning XBR_Invalid may be used to scan all known baud rates
 		\note Numbered COM ports are only available on Windows platforms.
 	*/
-	XsPortInfo(int portNr, XsBaudRate baudRate = XBR_Invalid)
+	explicit XsPortInfo(int portNr, XsBaudRate baudRate = XBR_Invalid)
 		: m_deviceId(0)
 		, m_baudrate(baudRate)
 	{
