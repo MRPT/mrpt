@@ -24,7 +24,7 @@ struct XsDataFormat {
 	  \param mode the outputmode
 	  \param settings the output settings
 	*/
-	explicit inline XsDataFormat(const XsOutputMode mode = XS_DEFAULT_OUTPUT_MODE, const XsOutputSettings settings = XS_DEFAULT_OUTPUT_SETTINGS)
+	inline explicit XsDataFormat(const XsOutputMode mode = XS_DEFAULT_OUTPUT_MODE, const XsOutputSettings settings = XS_DEFAULT_OUTPUT_SETTINGS)
 				: m_outputMode(mode), m_outputSettings(settings) {}
 
 	//! Copy constructor

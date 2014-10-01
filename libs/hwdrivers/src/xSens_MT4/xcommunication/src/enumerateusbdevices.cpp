@@ -19,10 +19,7 @@
 #	include <stdlib.h>
 #	include <string.h>
 #	include <dirent.h>
-#	include <libusb-1.0/libusb.h>
-#	ifdef HAVE_UDEV
-#		include <libudev.h>
-#	endif
+#	include "xslibusb.h"
 #endif
 
 #define XSENS_VENDOR_ID				0x2639
@@ -90,6 +87,7 @@ bool xsEnumerateUsbDevices(XsPortInfoList& ports)
 			if (!bResult)
 			{
 				LocalFree(detailData);
+				SetupDiDestroyDeviceInfoList(deviceInfo);
 				return false;
 			}
 
@@ -117,20 +115,22 @@ bool xsEnumerateUsbDevices(XsPortInfoList& ports)
 		}
 	}
 
+	SetupDiDestroyDeviceInfoList(deviceInfo);
 	return true;
 #else
+	XsLibUsb libUsb;
 	libusb_context *context;
-	int result = libusb_init(&context);
+	int result = libUsb.init(&context);
 	if (result != LIBUSB_SUCCESS)
 		return false;
 
 	libusb_device **deviceList;
-	ssize_t deviceCount = libusb_get_device_list(context, &deviceList);
+	ssize_t deviceCount = libUsb.get_device_list(context, &deviceList);
 	for (ssize_t i = 0; i < deviceCount; i++)
 	{
 		libusb_device *device = deviceList[i];
 		libusb_device_descriptor desc;
-		result = libusb_get_device_descriptor(device, &desc);
+		result = libUsb.get_device_descriptor(device, &desc);
 		if (result != LIBUSB_SUCCESS)
 			continue;
 
@@ -138,47 +138,47 @@ bool xsEnumerateUsbDevices(XsPortInfoList& ports)
 			continue;
 
 		libusb_device_handle *handle;
-		result = libusb_open(device, &handle);
+		result = libUsb.open(device, &handle);
 		if (result != LIBUSB_SUCCESS)
 		{
-			libusb_unref_device(device);
+			libUsb.unref_device(device);
 			continue;
 		}
 
 		unsigned char serialNumber[256];
-		result = libusb_get_string_descriptor_ascii(handle, desc.iSerialNumber, serialNumber, 256);
+		result = libUsb.get_string_descriptor_ascii(handle, desc.iSerialNumber, serialNumber, 256);
 
 		if (desc.idVendor == ATMEL_VENDOR_ID && desc.idProduct == ATMEL_BORROWED_PRODUCT_ID)
 		{
 			unsigned char productName[256];
-			result = libusb_get_string_descriptor_ascii(handle, desc.iProduct, productName, 256);
+			result = libUsb.get_string_descriptor_ascii(handle, desc.iProduct, productName, 256);
 
 			if (strcmp("Xsens COM port", (const char *)productName) != 0)
 			{
-				libusb_close(handle);
+				libUsb.close(handle);
 				continue;
 			}
 		}
 
 		libusb_config_descriptor *configDesc;
-		result = libusb_get_active_config_descriptor(device, &configDesc);
+		result = libUsb.get_active_config_descriptor(device, &configDesc);
 		if (result != LIBUSB_SUCCESS)
 			continue;
 
 		bool kernelActive = false;
 		for (uint8_t ifCount = 0; ifCount < configDesc->bNumInterfaces; ++ifCount) {
-			int res = libusb_kernel_driver_active(handle, ifCount);
+			int res = libUsb.kernel_driver_active(handle, ifCount);
 			kernelActive |= (res == 1);
 
 		}
 
-		libusb_free_config_descriptor(configDesc);
+		libUsb.free_config_descriptor(configDesc);
 
 		if (!kernelActive)
 		{
 			char name[256];
-			sprintf(name, "USB%03u:%03u", libusb_get_bus_number(device),
-								libusb_get_device_address(device));
+			sprintf(name, "USB%03u:%03u", libUsb.get_bus_number(device),
+								libUsb.get_device_address(device));
 			current.setPortName(name);
 
 			int id = 0;
@@ -189,14 +189,14 @@ bool xsEnumerateUsbDevices(XsPortInfoList& ports)
 		else
 		{
 			JLDEBUG(gJournal, "Kernel driver active on USB" <<
-				libusb_get_bus_number(device) << ":" << libusb_get_device_address(device) <<
+				libUsb.get_bus_number(device) << ":" << libUsb.get_device_address(device) <<
 					" device " << serialNumber);
 
 		}
-		libusb_close(handle);
+		libUsb.close(handle);
 	}
-	libusb_free_device_list(deviceList, 1);
-	libusb_exit(context);
+	libUsb.free_device_list(deviceList, 1);
+	libUsb.exit(context);
 	return true;
 #endif
 }

@@ -62,11 +62,8 @@ IoInterfaceFile::IoInterfaceFile()
 	m_writePos = 0;
 	m_lastResult = XRV_OK;
 	m_reading = true;
-	m_filename[0] = '\0';
-	m_filename_w[0] = 0;
 	m_fileSize = 0;
 	m_readOnly = false;
-	m_unicode = false;
 	m_handle = 0;
 }
 
@@ -161,25 +158,13 @@ XsResultValue IoInterfaceFile::closeAndDelete(void)
 		else
 		{
 #ifdef _WIN32
-			if (m_unicode)
-			{
-				if (_wremove(m_filename_w) != 0)
-					m_lastResult = XRV_READONLY;
-				else
-					m_lastResult = XRV_OK;
-			}
-			else
-#endif
-			{
-#ifdef _WIN32
-				if (_unlink(m_filename) != 0)
+			if (_wunlink(m_filename.toStdWString().c_str()) != 0)
 #else
-				if (unlink(m_filename) != 0)
+			if (unlink(m_filename.c_str()) != 0)
 #endif
-					m_lastResult = XRV_READONLY;
-				else
-					m_lastResult = XRV_OK;
-			}
+				m_lastResult = XRV_READONLY;
+			else
+				m_lastResult = XRV_OK;
 		}
 	}
 	else
@@ -199,74 +184,43 @@ XsResultValue IoInterfaceFile::closeAndDelete(void)
 	\param filename The desired (path+)name of the file
 	\returns XRV_OK if the file was created successfully
 */
-XsResultValue IoInterfaceFile::create (const char* filename)
+XsResultValue IoInterfaceFile::create (const XsString& filename)
 {
 	if (m_handle)
 		return m_lastResult = XRV_ALREADYOPEN;
 
 	//! \test does this work for non-existing files? Or do we need a check and create?
-	m_handle = fopen(filename, "w+b");	// open for update (r/w)
+#ifdef _WIN32
+	m_handle = _wfopen(filename.toStdWString().c_str(), L"w+b");	// open for update (r/w)
+#else
+	m_handle = fopen(filename.c_str(), "w+b");	// open for update (r/w)
+#endif
 	if (m_handle == NULL)
 		return m_lastResult = XRV_OUTPUTCANNOTBEOPENED;
 
 	bool fail = false;
 #ifdef _WIN32
-	if (_fullpath(m_filename,filename,XS_MAX_FILENAME_LENGTH) == NULL)
+	wchar_t fullpath[XS_MAX_FILENAME_LENGTH];
+	if (_wfullpath(fullpath,filename.toStdWString().c_str(),XS_MAX_FILENAME_LENGTH) == NULL)
 		fail = true;
 #else
 	// based on the assumption that this doesn't concern the serial port, handle
 	// it the same way using realpath(). Apparently realpath() doesn't require a
 	// maximum length. One would possibly want to write a wrapper for it.
-	if (realpath(filename, m_filename) == NULL)
+	char fullpath[XS_MAX_FILENAME_LENGTH*2];
+	if (realpath(filename.c_str(), fullpath) == NULL)
 		fail = true;
 #endif
-	if (mbstowcs(m_filename_w,m_filename,XS_MAX_FILENAME_LENGTH) == (size_t) -1)
-		fail = true;
+	m_filename = XsString(fullpath);
 
 	if (fail)
 	{
 		fclose(m_handle);
-		remove(filename);	//lint !e534
-		m_handle = 0;
-		return m_lastResult = XRV_INVALIDPARAM;
-	}
-
-	m_unicode = false;
-
-	m_readPos = 0;
-	m_writePos = 0;
-	m_fileSize = 0;
-	m_reading = true;
-	m_readOnly = false;
-	return m_lastResult = XRV_OK;
-}
-
-/*! \brief Create an empty file
-	\param filename The desired (path+)name of the file
-	\returns XRV_OK if the file was created successfully
-*/
-XsResultValue IoInterfaceFile::create (const wchar_t* filename)
-{
-	if (m_handle)
-		return m_lastResult = XRV_ALREADYOPEN;
-
 #ifdef _WIN32
-	//! \test does this work for non-existing files? Or do we need a check and create?
-	m_handle = _wfopen(filename, L"w+b");	// open for update (r/w)
-	if (m_handle == NULL)
-		return m_lastResult = XRV_OUTPUTCANNOTBEOPENED;
-
-	bool fail = false;
-	if (_wfullpath(m_filename_w,filename,XS_MAX_FILENAME_LENGTH) == NULL)
-		fail = true;
-	else
-	if (wcstombs(m_filename,m_filename_w,XS_MAX_FILENAME_LENGTH) == (size_t)-1)
-		fail = true;
-
-	if (fail)
-	{
-		fclose(m_handle);
-		_wremove(filename);		//lint !e534
+		_wunlink(m_filename.toStdWString().c_str());
+#else
+		unlink(m_filename.c_str());
+#endif
 		m_handle = 0;
 		return m_lastResult = XRV_INVALIDPARAM;
 	}
@@ -276,14 +230,6 @@ XsResultValue IoInterfaceFile::create (const wchar_t* filename)
 	m_fileSize = 0;
 	m_reading = true;
 	m_readOnly = false;
-#else
-	char tFilename[XS_MAX_FILENAME_LENGTH*2];
-	wcstombs(tFilename, filename, XS_MAX_FILENAME_LENGTH);
-	XsResultValue res = create(tFilename);
-	if (res != XRV_OK)
-		return res;
-#endif
-	m_unicode = true;
 	return m_lastResult = XRV_OK;
 }
 
@@ -455,10 +401,10 @@ XsTimeStamp IoInterfaceFile::getFileDate(void) const
 {
 #ifdef _WIN32
 	struct _stat stats;
-	if (_stat(m_filename, &stats) == 0)
+	if (_wstat(m_filename.toStdWString().c_str(), &stats) == 0)
 #else
 	struct stat stats;
-	if (stat(m_filename, &stats) == 0)
+	if (stat(m_filename.c_str(), &stats) == 0)
 #endif
 	{
 		XsTimeStamp t = XsTimeStamp( (int64_t)stats.st_mtime * 1000);
@@ -477,30 +423,12 @@ XsResultValue IoInterfaceFile::flushData (void)
 
 /*! \brief Retrieve the filename that was last successfully opened.
 
-	\param filename	A buffer for storing the filename. The buffer should be able
-			to hold the filename. A safe size is to make it at least 256 bytes.
+	\param filename	The XsString which will contain the filename.
 	\returns XRV_OK
 */
-XsResultValue IoInterfaceFile::getName(char* filename) const
+XsResultValue IoInterfaceFile::getName(XsString& filename) const
 {
-	strcpy(filename, m_filename);
-	return m_lastResult = XRV_OK;
-}
-
-/*! \brief Retrieve the filename that was last successfully opened in unicode.
-
-	\param filename	A buffer for storing the filename. The buffer should be able
-			to hold the filename. A safe size is to make it at least 256 wide characters.
-	\returns XRV_OK
-*/
-XsResultValue IoInterfaceFile::getName(wchar_t* filename) const
-{
-	//lint --e{534}
-#ifdef _WIN32
-	wcscpy(filename, m_filename_w);
-#else
-	mbstowcs(filename, m_filename, XS_MAX_FILENAME_LENGTH);
-#endif
+	filename = m_filename;
 	return m_lastResult = XRV_OK;
 }
 
@@ -612,7 +540,7 @@ XsResultValue IoInterfaceFile::insertData (XsFilePos start, const XsByteArray& d
 	\returns XRV_OK if the file was opened successfully
 	\sa createFile
 */
-XsResultValue IoInterfaceFile::open(const char* filename, bool createNew, bool readOnly)
+XsResultValue IoInterfaceFile::open(const XsString& filename, bool createNew, bool readOnly)
 {
 	if (m_handle)
 		return m_lastResult = XRV_ALREADYOPEN;
@@ -620,16 +548,32 @@ XsResultValue IoInterfaceFile::open(const char* filename, bool createNew, bool r
 	//! \test does this work for non-existing files? Or do we need a check and create?
 	m_readOnly = readOnly;
 	if (readOnly)
-		m_handle = fopen(filename, "rb");	// open for read only (r)
+#ifdef _WIN32
+		m_handle = _wfopen(filename.toStdWString().c_str(), L"rb");	// open for read only (r)
+#else
+		m_handle = fopen(filename.c_str(), "rb");	// open for read only (r)
+#endif
 	else
-		m_handle = fopen(filename, "r+b");	// open for update (r/w)
+#ifdef _WIN32
+		m_handle = _wfopen(filename.toStdWString().c_str(), L"r+b");	// open for update (r/w)
+#else
+		m_handle = fopen(filename.c_str(), "r+b");	// open for update (r/w)
+#endif
 	if (m_handle == NULL)
 	{
 		if (createNew)
-			m_handle = fopen(filename, "w+b");	// create for update (r/w)
+#ifdef _win32
+			m_handle = _wfopen(filename.toStdWString().c_str(), L"w+b");	// create for update (r/w)
+#else
+			m_handle = fopen(filename.c_str(), "w+b");	// create for update (r/w)
+#endif
 		else
 		{
-			m_handle = fopen(filename, "rb");	// open for read only (r)
+#ifdef _WIN32
+			m_handle = _wfopen(filename.toStdWString().c_str(), L"rb");	// open for read only (r)
+#else
+			m_handle = fopen(filename.c_str(), "rb");	// open for read only (r)
+#endif
 			m_readOnly = true;
 		}
 	}
@@ -638,15 +582,16 @@ XsResultValue IoInterfaceFile::open(const char* filename, bool createNew, bool r
 
 	bool fail = false;
 #ifdef _WIN32
-	if (_fullpath(m_filename,filename,XS_MAX_FILENAME_LENGTH) == NULL)
+	wchar_t fullpath[XS_MAX_FILENAME_LENGTH];
+	if (_wfullpath(fullpath,filename.toStdWString().c_str(),XS_MAX_FILENAME_LENGTH) == NULL)
 		fail = true;
 #else
 	// use the same trick again.
-	if (realpath(filename, m_filename) == NULL)
+	char fullpath[XS_MAX_FILENAME_LENGTH*2];
+	if (realpath(filename.c_str(), fullpath) == NULL)
 		fail = true;
 #endif
-	if (mbstowcs(m_filename_w,m_filename,XS_MAX_FILENAME_LENGTH) == (size_t)-1)
-		fail = true;
+	m_filename = XsString(fullpath);
 
 	if (fail)
 	{
@@ -654,8 +599,6 @@ XsResultValue IoInterfaceFile::open(const char* filename, bool createNew, bool r
 		m_handle = 0;
 		return m_lastResult = XRV_INVALIDPARAM;
 	}
-
-	m_unicode = false;
 
 	m_readPos = 0;
 	m_writePos = 0;
@@ -664,69 +607,6 @@ XsResultValue IoInterfaceFile::open(const char* filename, bool createNew, bool r
 	m_fileSize = FTELL();
 	FSEEK(0);
 	return (m_lastResult = XRV_OK);
-}
-
-/*! \brief Open a file.
-	\param filename The name of the file to open
-	\param createNew When true, the file will be created if it doesn't exist yet
-	\param readOnly When true, the file will be marked as read only for %IoInterfaceFile,
-			preventing accidental writes to the file.
-	\returns XRV_OK if the file was opened successfully
-	\sa createFile
-*/
-XsResultValue IoInterfaceFile::open(const wchar_t* filename, bool createNew, bool readOnly)
-{
-	if (m_handle)
-		return m_lastResult = XRV_ALREADYOPEN;
-
-#ifdef _WIN32
-	//! \test does this work for non-existing files? Or do we need a check and create?
-	m_readOnly = readOnly;
-	if (readOnly)
-		m_handle = _wfopen(filename, L"rb");	// open for read only (r)
-	else
-		m_handle = _wfopen(filename, L"r+b");	// open for update (r/w)
-	if (m_handle == NULL)
-	{
-		if (createNew)
-			m_handle = _wfopen(filename, L"w+b");	// create for update (r/w)
-		else
-		{
-			m_handle = _wfopen(filename, L"rb");	// open for read only (r)
-			m_readOnly = true;
-		}
-	}
-	if (m_handle == NULL)
-		return m_lastResult = XRV_INPUTCANNOTBEOPENED;
-
-	bool fail = false;
-	if (_wfullpath(m_filename_w,filename,XS_MAX_FILENAME_LENGTH) == NULL)
-		fail = true;
-	if (wcstombs(m_filename,m_filename_w,XS_MAX_FILENAME_LENGTH) == (size_t) -1)
-		fail = true;
-
-	if (fail)
-	{
-		fclose(m_handle);
-		m_handle = 0;
-		return m_lastResult = XRV_INVALIDPARAM;
-	}
-
-	m_readPos = 0;
-	m_writePos = 0;
-	m_reading = true;
-	FSEEK_R(0);
-	m_fileSize = FTELL();
-	FSEEK(0);
-#else
-	char tFilename[XS_MAX_FILENAME_LENGTH*2];
-	wcstombs(tFilename,filename,XS_MAX_FILENAME_LENGTH*2);
-	XsResultValue res = open(tFilename, createNew, readOnly);
-	if (res != XRV_OK)
-		return res;
-#endif
-	m_unicode = true;
-	return m_lastResult = XRV_OK;
 }
 
 /*! \copydoc IoInterface::readData

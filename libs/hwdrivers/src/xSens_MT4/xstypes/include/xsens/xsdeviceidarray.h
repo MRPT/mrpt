@@ -31,7 +31,7 @@ XSTYPES_DLL_API void XsDeviceIdArray_construct(XsDeviceIdArray* thisPtr, XsSize 
 #ifdef __cplusplus
 struct XsDeviceIdArray : public XsArrayImpl<XsDeviceId, g_xsDeviceIdArrayDescriptor, XsDeviceIdArray> {
 	//! \brief Constructs an XsDeviceIdArray
-	inline XsDeviceIdArray(XsSize sz = 0, XsDeviceId const* src = 0)
+	inline explicit XsDeviceIdArray(XsSize sz = 0, XsDeviceId const* src = 0)
 		 : ArrayImpl(sz, src)
 	{
 	}
@@ -47,13 +47,14 @@ struct XsDeviceIdArray : public XsArrayImpl<XsDeviceId, g_xsDeviceIdArrayDescrip
 		: ArrayImpl(ref, sz, flags)
 	{
 	}
-
+#ifndef XSENS_NOITERATOR
 	//! \brief Constructs an XsDeviceIdArray with the array bound by the supplied iterators \a beginIt and \a endIt
 	template <typename Iterator>
 	inline XsDeviceIdArray(Iterator beginIt, Iterator endIt)
 		: ArrayImpl(beginIt, endIt)
 	{
 	}
+#endif
 };
 #endif
 

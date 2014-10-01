@@ -59,7 +59,7 @@ XSCPPPROTECTED
 	inline int flags() { return m_flags; }
 public:
 	/*! \brief Initialize an XsMatrix object with the specified number of \a rows and \a cols */
-	inline XsMatrix(XsSize rows = 0, XsSize cols = 0, XsSize strde = 0, const XsReal* dat = 0)
+	inline explicit XsMatrix(XsSize rows = 0, XsSize cols = 0, XsSize strde = 0, const XsReal* dat = 0)
 		: m_data(0)
 		, m_rows(0)
 		, m_cols(0)
@@ -143,7 +143,7 @@ public:
 	{
 		XsMatrix_setZero(this);
 	}
-
+	
 	//! \copydoc XsMatrix_offset */
 	inline XsSize offset(XsSize row, XsSize column) const
 	{
@@ -179,7 +179,7 @@ public:
 	{
 		XsMatrix tmp(m_rows, m_cols);
 		XsMatrix_multiplyScalar(this, scalar, &tmp);
-		return tmp.destructiveCopy();
+		return tmp;
 	}
 
 	/*! \brief \copybrief XsMatrix_fromQuaternion */
@@ -221,13 +221,6 @@ public:
 		return m_stride;
 	}
 
-	/*! \brief Mark the %XsMatrix for move semantics. \details Calling this function makes the object attempt to move its data into the destination object instead of copying its data when the next assignment or copy operation is done with this object as the source object. \returns A reference to the object for easy returning, ie. return a.destructiveCopy(); */
-	inline XsMatrix& destructiveCopy()
-	{
-		*((int*) &m_flags) |= XSDF_DestructiveCopy;
-		return *this;
-	}
-
 	//! \brief Return a const pointer to the internal data
 	inline const XsReal* data() const
 	{
@@ -239,7 +232,7 @@ public:
 	{
 		if (this == &other)
 			return true;
-		if (m_rows != other.m_rows || m_cols != other.m_cols)
+		if (m_rows != other.m_rows || m_cols != m_cols)
 			return false;
 		for (XsSize r = 0; r < m_rows; ++r)
 			for (XsSize c = 0; c < m_cols; ++c)
@@ -258,7 +251,7 @@ public:
 //! \brief Multiplies all values in the matrix \a m by \a scalar
 inline XsMatrix operator *(XsReal scalar, const XsMatrix &m)
 {
-	return (m*scalar).destructiveCopy();
+	return (m*scalar);
 }
 #endif
 

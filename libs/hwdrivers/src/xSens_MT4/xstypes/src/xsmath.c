@@ -123,6 +123,21 @@ XsReal XsMath_pow3(XsReal a)
 	return a*a*a;
 }
 
+/*! \brief Returns non-zero if \a x is finite
+*/
+int XsMath_isFinite(XsReal x)
+{
+#ifdef _MSC_VER
+	return _finite(x);
+#elif defined(APPLE)
+	return isfinite(x);
+#elif defined(__GNUC__)
+	return finite(x);
+#else
+	return 1;
+#endif
+}
+
 /*! \brief Returns \a d integer converted from a double precision floating point value
 */
 int32_t XsMath_doubleToLong(double d)

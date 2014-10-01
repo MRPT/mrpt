@@ -51,6 +51,8 @@ int64_t PacketStamper::stampPacket(XsDataPacket& pack, XsDataPacket& highestPack
 //		JLDEBUG(gJournal, "XsensDeviceAPI", "%s [%08x] SDI interval (%d-%d)\n", __FUNCTION__, sdi.m_deviceId, sdi.m_firstFrameNumber, sdi.m_lastFrameNumber);
 //	}
 
+	//! \todo This could be a (couple of) milliseconds too late, this should be set as soon as the source message arrives: mantis 7157
+	pack.setTimeOfArrival(XsTimeStamp::now());
 	int64_t newCounter, lastCounter = -1;
 
 	if (!highestPacket.empty())

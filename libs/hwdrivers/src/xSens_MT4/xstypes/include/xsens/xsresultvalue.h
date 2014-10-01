@@ -50,6 +50,7 @@ enum XsResultValue {
 	,XRV_MEASUREMENTFAIL8	= 36	//!< 36: TX PC Buffer overflow, cannot fit full message
 	,XRV_DEVICEERROR		= 40	//!< 40: The device generated an error, try updating the firmware
 	,XRV_DATAOVERFLOW		= 41	//!< 41: The device generates more data than the bus communication can handle (baud rate may be too low)
+	,XRV_BUFFEROVERFLOW     = 42 	//!< 42: The sample buffer of the device was full during a communication outage
 
 	// CMT / XDA / XME / etc
 	,XRV_ERROR					= 256	//!< 256: A generic error occurred
@@ -115,7 +116,7 @@ enum XsResultValue {
 typedef enum XsResultValue XsResultValue;
 
 
-//! These enum values can be used to specifiy a device error (XRV_DEVICEERROR 0x28), i.e. a xbus message like [FA FF 42 05 28 XXXXXXXX CS]
+//! These enum values can be used to specify a device error (XRV_DEVICEERROR 0x28), i.e. a xbus message like [FA FF 42 05 28 XXXXXXXX CS]
 enum XsDeviceErrorType
 {
 	  XERR_Unknown					= 0

@@ -84,13 +84,7 @@ void XsArray_copyConstruct(void* thisPtr, void const* src)
 	XsArray* thisArray = (XsArray*) thisPtr;
 	XsArray const* srcArray = (XsArray const*) src;
 	assert(srcArray);
-	if ((srcArray->m_flags & (XSDF_DestructiveCopy | XSDF_Managed)) == (XSDF_DestructiveCopy | XSDF_Managed))
-	{
-		XsArray_construct(thisArray, srcArray->m_descriptor, 0, 0);
-		XsArray_swap(thisArray, (XsArray*) srcArray);
-	}
-	else
-		XsArray_construct(thisArray, srcArray->m_descriptor, srcArray->m_size, srcArray->m_data);
+	XsArray_construct(thisArray, srcArray->m_descriptor, srcArray->m_size, srcArray->m_data);
 }
 
 /*! \relates XsArray
@@ -238,17 +232,7 @@ void XsArray_copy(void* thisPtr, void const* src)
 
 	if (srcArray == thisArray)
 	{
-		*((int*) &thisArray->m_flags) &= ~XSDF_DestructiveCopy;
 		return;
-	}
-	if ((srcArray->m_flags & (XSDF_DestructiveCopy | XSDF_Managed)) == (XSDF_DestructiveCopy | XSDF_Managed))
-	{
-		*((int*) &srcArray->m_flags) &= ~XSDF_DestructiveCopy;
-		if ((thisArray->m_flags & XSDF_Managed) || (thisArray->m_data == 0))
-		{
-			XsArray_swap(thisArray, (XsArray*) srcArray);
-			return;
-		}
 	}
 	XsArray_assign(thisArray, srcArray->m_size, srcArray->m_data);
 }
@@ -481,6 +465,55 @@ int XsArray_find(void const* thisPtr, void const* needle)
 		if (!thisArray->m_descriptor->itemCompare(elemAt(thisArray->m_data, i), needle))
 			return (int) i;
 	return -1;
+}
+
+/*! \relates XsArray
+	\brief Returns a pointer to the item at the supplied \a index or a null pointer if it is out of bounds
+	\param index The index of the item to return
+	\returns A pointer to the item or NULL if \a index is out of bounds
+*/
+void const* XsArray_at(void const* thisPtr, XsSize index)
+{
+	XsArray const* thisArray = (XsArray const*) thisPtr;
+	if (index >= thisArray->m_size)
+		return 0;
+	return elemAt(thisArray->m_data, index);
+}
+
+/*! \relates XsArray
+	\brief Returns a pointer to the item at the supplied \a index or a null pointer if it is out of bounds
+	\param index The index of the item to return
+	\returns A pointer to the item or NULL if \a index is out of bounds
+*/
+void* XsArray_atIndex(void* thisPtr, XsSize index)
+{
+	XsArray* thisArray = (XsArray*) thisPtr;
+	if (index >= thisArray->m_size)
+		return 0;
+	return elemAt(thisArray->m_data, index);
+}
+
+/*! \relates XsArray
+	\brief Removes duplicate entries from the array, keeping only the first instance of each value
+	\todo Optimize for speed by grouping erases
+*/
+void XsArray_removeDuplicates(void* thisPtr)
+{
+	XsSize i,j;
+	XsArray* thisArray = (XsArray*) thisPtr;
+	if (thisArray->m_size > 1)
+	{
+		for (i = 0; i < thisArray->m_size-1; ++i)
+		{
+			for (j = thisArray->m_size-1; j > i; --j)
+			{
+				if (!thisArray->m_descriptor->itemCompare(elemAt(thisArray->m_data, i), elemAt(thisArray->m_data, j)))
+				{
+					XsArray_erase(thisPtr, j, 1);
+				}
+			}
+		}
+	}
 }
 
 /*! @} */ 

@@ -36,11 +36,7 @@ protected:
 		//! The last result of an operation
 	mutable XsResultValue m_lastResult;
 		//! Contains the name of the file that was last successfully opened.
-	char m_filename[XS_MAX_FILENAME_LENGTH];
-		//! Contains the name of the file that was last successfully opened using unicode.
-	wchar_t m_filename_w[XS_MAX_FILENAME_LENGTH];
-		//! Indicates if we're using the unicode filename or the regular filename
-	bool m_unicode;
+	XsString m_filename;
 	/*! \brief Indicates whether the last operation was a read or write operation.
 
 		This value is used to check whether or not a seek is required to perform a
@@ -69,20 +65,17 @@ public:
 	// Other functions
 	XsResultValue appendData(const XsByteArray& bdata);
 	XsResultValue closeAndDelete(void);
-	XsResultValue create(const char* filename);
-	XsResultValue create(const wchar_t* filename);
+	XsResultValue create(const XsString& filename);
 	XsResultValue deleteData(XsFilePos start, XsSize length);
 	XsResultValue find(const XsByteArray& data, XsFilePos& pos);
 	XsFilePos getFileSize(void) const;
 	XsTimeStamp getFileDate(void) const;
-	XsResultValue getName(char* filename) const;
-	XsResultValue getName(wchar_t* filename) const;
+	XsResultValue getName(XsString& filename) const;
 	XsFilePos getReadPosition(void) const;
 	XsFilePos getWritePosition(void) const;
 	XsResultValue insertData(XsFilePos start, const XsByteArray& data);
 	bool isReadOnly(void) const;
-	XsResultValue open(const char* filename, bool createNew, bool readOnly);
-	XsResultValue open(const wchar_t* filename, bool createNew, bool readOnly);
+	XsResultValue open(const XsString& filename, bool createNew, bool readOnly);
 	XsResultValue setReadPosition(XsFilePos pos);
 	XsResultValue setWritePosition(XsFilePos pos = -1);
 };

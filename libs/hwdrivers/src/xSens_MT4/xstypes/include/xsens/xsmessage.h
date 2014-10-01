@@ -144,7 +144,7 @@ struct XsMessage {
 		\param msgId		The message Id that will be assigned to the m_messageId field.
 		\param dataLength	The length of the data in the message.
 	*/
-	XsMessage(XsXbusMessageId msgId = XMID_InvalidMessage, XsSize dataLength = 0)
+	explicit XsMessage(XsXbusMessageId msgId = XMID_InvalidMessage, XsSize dataLength = 0)
 		: m_autoUpdateChecksum(1)
 		, m_checksum(0)
 	{

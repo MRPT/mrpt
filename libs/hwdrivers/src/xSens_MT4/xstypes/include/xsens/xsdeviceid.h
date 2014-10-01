@@ -18,34 +18,36 @@ extern "C" {
 #define XSDEVICEID_INITIALIZER	{ 0 }
 #endif
 
-typedef struct XsDeviceId XsDeviceId;
+struct XsDeviceId;
 
-XSTYPES_DLL_API void XsDeviceId_toString(XsDeviceId const* thisPtr, XsString* str);
-XSTYPES_DLL_API int XsDeviceId_isValid(XsDeviceId const* thisPtr);
-XSTYPES_DLL_API int XsDeviceId_isXbusMaster(XsDeviceId const* thisPtr);
-XSTYPES_DLL_API int XsDeviceId_isXbusMasterMotionTracker(XsDeviceId const* thisPtr);
-XSTYPES_DLL_API int XsDeviceId_isWirelessMaster(XsDeviceId const* thisPtr);
-XSTYPES_DLL_API int XsDeviceId_isMtw(XsDeviceId const* thisPtr);
-XSTYPES_DLL_API int XsDeviceId_isMtix(XsDeviceId const* thisPtr);
-XSTYPES_DLL_API int XsDeviceId_isMtig(XsDeviceId const* thisPtr);
-XSTYPES_DLL_API int XsDeviceId_isLegacyMtig(XsDeviceId const* thisPtr);
-XSTYPES_DLL_API int XsDeviceId_isAwindaStation(XsDeviceId const* thisPtr);
-XSTYPES_DLL_API int XsDeviceId_isAwindaDongle(XsDeviceId const* thisPtr);
-XSTYPES_DLL_API int XsDeviceId_isAwindaOem(XsDeviceId const* thisPtr);
-XSTYPES_DLL_API int XsDeviceId_isMtMk4(XsDeviceId const* thisPtr);
-XSTYPES_DLL_API int XsDeviceId_isMtMk4_X0(XsDeviceId const* thisPtr);
-XSTYPES_DLL_API int XsDeviceId_isMtMk4_10(XsDeviceId const* thisPtr);
-XSTYPES_DLL_API int XsDeviceId_isMtMk4_20(XsDeviceId const* thisPtr);
-XSTYPES_DLL_API int XsDeviceId_isMtMk4_30(XsDeviceId const* thisPtr);
-XSTYPES_DLL_API int XsDeviceId_isMtMk4_X00(XsDeviceId const* thisPtr);
-XSTYPES_DLL_API int XsDeviceId_isMtMk4_100(XsDeviceId const* thisPtr);
-XSTYPES_DLL_API int XsDeviceId_isMtMk4_200(XsDeviceId const* thisPtr);
-XSTYPES_DLL_API int XsDeviceId_isMtMk4_300(XsDeviceId const* thisPtr);
-XSTYPES_DLL_API int XsDeviceId_isMtMk4_700(XsDeviceId const* thisPtr);
-XSTYPES_DLL_API int XsDeviceId_containsBroadcast(XsDeviceId const* thisPtr);
-XSTYPES_DLL_API int XsDeviceId_isBroadcast(XsDeviceId const* thisPtr);
+XSTYPES_DLL_API void XsDeviceId_toString(struct XsDeviceId const* thisPtr, XsString* str);
+XSTYPES_DLL_API int XsDeviceId_isValid(struct XsDeviceId const* thisPtr);
+XSTYPES_DLL_API int XsDeviceId_isXbusMaster(struct XsDeviceId const* thisPtr);
+XSTYPES_DLL_API int XsDeviceId_isXbusMasterMotionTracker(struct XsDeviceId const* thisPtr);
+XSTYPES_DLL_API int XsDeviceId_isWirelessMaster(struct XsDeviceId const* thisPtr);
+XSTYPES_DLL_API int XsDeviceId_isMtw(struct XsDeviceId const* thisPtr);
+XSTYPES_DLL_API int XsDeviceId_isMtix(struct XsDeviceId const* thisPtr);
+XSTYPES_DLL_API int XsDeviceId_isMtig(struct XsDeviceId const* thisPtr);
+XSTYPES_DLL_API int XsDeviceId_isLegacyMtig(struct XsDeviceId const* thisPtr);
+XSTYPES_DLL_API int XsDeviceId_isAwindaStation(struct XsDeviceId const* thisPtr);
+XSTYPES_DLL_API int XsDeviceId_isAwindaDongle(struct XsDeviceId const* thisPtr);
+XSTYPES_DLL_API int XsDeviceId_isAwindaOem(struct XsDeviceId const* thisPtr);
+XSTYPES_DLL_API int XsDeviceId_isMtMk4(struct XsDeviceId const* thisPtr);
+XSTYPES_DLL_API int XsDeviceId_isMtMk4_X0(struct XsDeviceId const* thisPtr);
+XSTYPES_DLL_API int XsDeviceId_isMtMk4_10(struct XsDeviceId const* thisPtr);
+XSTYPES_DLL_API int XsDeviceId_isMtMk4_20(struct XsDeviceId const* thisPtr);
+XSTYPES_DLL_API int XsDeviceId_isMtMk4_30(struct XsDeviceId const* thisPtr);
+XSTYPES_DLL_API int XsDeviceId_isMtMk4_X00(struct XsDeviceId const* thisPtr);
+XSTYPES_DLL_API int XsDeviceId_isMtMk4_100(struct XsDeviceId const* thisPtr);
+XSTYPES_DLL_API int XsDeviceId_isMtMk4_200(struct XsDeviceId const* thisPtr);
+XSTYPES_DLL_API int XsDeviceId_isMtMk4_300(struct XsDeviceId const* thisPtr);
+XSTYPES_DLL_API int XsDeviceId_isMtMk4_700(struct XsDeviceId const* thisPtr);
+XSTYPES_DLL_API int XsDeviceId_isMtw2(struct XsDeviceId const* thisPtr);
+XSTYPES_DLL_API int XsDeviceId_isMtx2(struct XsDeviceId const* thisPtr);
+XSTYPES_DLL_API int XsDeviceId_containsBroadcast(struct XsDeviceId const* thisPtr);
+XSTYPES_DLL_API int XsDeviceId_isBroadcast(struct XsDeviceId const* thisPtr);
 XSTYPES_DLL_API uint32_t XsDeviceId_broadcast(void);
-XSTYPES_DLL_API void XsDeviceId_swap(XsDeviceId* a, XsDeviceId* b);
+XSTYPES_DLL_API void XsDeviceId_swap(struct XsDeviceId* a, struct XsDeviceId* b);
 
 #ifdef __cplusplus
 } // extern "C"
@@ -176,6 +178,16 @@ struct XsDeviceId {
 	{
 		return 0 != XsDeviceId_isMtMk4_700(this);
 	}
+	/*! \brief \copybrief XsDeviceId_isMtw2 */
+	inline bool isMtw2() const
+	{
+		return 0 != XsDeviceId_isMtw2(this);
+	}
+	/*! \brief \copybrief XsDeviceId_isMtx2 */
+	inline bool isMtx2() const
+	{
+		return 0 != XsDeviceId_isMtx2(this);
+	}
 	/*! \brief \copybrief XsDeviceId_isWirelessMaster */
 	inline bool isWirelessMaster() const
 	{
@@ -216,9 +228,9 @@ struct XsDeviceId {
 	/*! \brief Returns true if this deviceId is less or equal to the \a other deviceId */
 	inline bool operator<=(const XsDeviceId& other) const { return m_deviceId <= other.m_deviceId; }
 	/*! \brief Returns true if this deviceId is larger than the \a other deviceId */
-	inline bool operator>(const XsDeviceId& other) const { return m_deviceId < other.m_deviceId; }
+	inline bool operator>(const XsDeviceId& other) const { return m_deviceId > other.m_deviceId; }
 	/*! \brief Returns true if this deviceId is larger or equal to the \a other deviceId */
-	inline bool operator>=(const XsDeviceId& other) const { return m_deviceId <= other.m_deviceId; }
+	inline bool operator>=(const XsDeviceId& other) const { return m_deviceId >= other.m_deviceId; }
 
 	/*! \brief Creates and returns a XsDeviceId representing the broadcast deviceId */
 	static XsDeviceId broadcast()
@@ -230,5 +242,7 @@ private:
 #endif
 	uint32_t m_deviceId;	//!< The actual device id
 };
+
+typedef struct XsDeviceId XsDeviceId;
 
 #endif // file guard
