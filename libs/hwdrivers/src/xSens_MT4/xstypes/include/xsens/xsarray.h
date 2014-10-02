@@ -44,7 +44,13 @@ typedef int (*XsArrayItemCompareFunc)(void const*, void const*);
 	XsArrays of that type.
 */
 struct XsArrayDescriptor {
-	const XsSize itemSize;								//!< The size of an array item in bytes
+#ifndef __cplusplus
+	const
+#else
+protected:
+	template <typename T, XsArrayDescriptor const& D, typename I> friend struct XsArrayImpl;
+#endif
+	XsSize itemSize;									//!< The size of an array item in bytes
 	void (*itemSwap)(void* a, void* b);					//!< The function to use for swapping the data of two array items. \param a Pointer to first item to swap. \param b Pointer to second item to swap.
 	void (*itemConstruct)(void* e);						//!< The function to use for constructing a new array item. May be 0 for simple types. \param e Pointer to item to construct.
 	void (*itemCopyConstruct)(void* e, void const* s);	//!< The function to use for constructing a new array item with a source initializer. This may not be 0. \param e Pointer to item to construct. \param s Pointer to source item to copy from.
@@ -53,7 +59,6 @@ struct XsArrayDescriptor {
 	int (*itemCompare)(void const* a, void const* b);	//!< The function to use for comparing two items. \param a Left hand side of comparison. \param b Right hand side of comparison. \returns The function will return 0 when the items are equal. When greater/less comparison is possible, the function should return < 0 if a < b and > 0 if a > b.
 };
 typedef struct XsArrayDescriptor XsArrayDescriptor;
-typedef struct XsArray XsArray;
 
 #ifdef __cplusplus
 #include <iterator>
@@ -75,6 +80,9 @@ XSTYPES_DLL_API void XsArray_swap(void* a, void* b);
 XSTYPES_DLL_API int XsArray_compare(void const* a, void const* b);
 XSTYPES_DLL_API int XsArray_compareSet(void const* a, void const* b);
 XSTYPES_DLL_API int XsArray_find(void const* thisPtr, void const* needle);
+XSTYPES_DLL_API void const* XsArray_at(void const* thisPtr, XsSize index);
+XSTYPES_DLL_API void* XsArray_atIndex(void* thisPtr, XsSize index);
+XSTYPES_DLL_API void XsArray_removeDuplicates(void* thisPtr);
 
 struct XsArray {
 	XSARRAY_DECL(void)
@@ -116,8 +124,22 @@ struct XsArray {
 	{
 		XsArray_destruct(this);
 	}
+
+	/*! \brief Assignment operator
+		\details Copies the values in \a src into \a this
+		\param src The array to copy from
+		\return A reference to this
+	*/
+	inline XsArray const& operator=(const XsArray& src)
+	{
+		if (this != &src)
+			XsArray_copy(this, &src);
+		return *this;
+	}
 #endif
 };
+
+typedef struct XsArray XsArray;
 
 #ifdef __cplusplus
 } // extern "C"
@@ -127,7 +149,7 @@ struct XsArray {
 	\tparam D The descriptor to use for this specific array implementation. This must be statically allocated and its lifetime must encompass the lifetime of objects that use it.
 	\tparam I The class that inherits from the XsArrayImpl. Some functions (such as the streaming operator) require the inheriting type to be returned for proper functionality.
 */
-template <typename T, XsArrayDescriptor const* D, typename I>
+template <typename T, XsArrayDescriptor const& D, typename I>
 struct XsArrayImpl : private XsArray {
 	//! \brief The contained type
 	typedef T value_type;
@@ -141,20 +163,20 @@ struct XsArrayImpl : private XsArray {
 		\sa XsArray_construct
 	 */
 	inline XsArrayImpl<T, D, I>(XsSize count = 0, T const* src = 0)
-		: XsArray(D, count, src)
+		: XsArray(&D, count, src)
 	{
 	}
 
 	//! \brief Constructs the XsArray as a copy of \a other
-	inline XsArrayImpl<T, D, I>(XsArrayImpl<T, D, I> const& other)
+	inline XsArrayImpl<T, D, I>(ArrayImpl const& other)
 		: XsArray(other)
 	{
 	}
-
+#ifndef XSENS_NOITERATOR
 	//! \brief Constructs the XsArray with a copy of the array bound by the supplied iterators \a beginIt and \a endIt
 	template <typename Iterator>
 	inline XsArrayImpl<T, D, I>(Iterator const& beginIt, Iterator const& endIt)
-		: XsArray(D, 0, 0)
+		: XsArray(&D, 0, 0)
 	{
 		ptrdiff_t diff = endIt-beginIt;
 		if (diff > 0)
@@ -164,15 +186,15 @@ struct XsArrayImpl : private XsArray {
 				push_back(*it);
 		}
 	}
-
+#endif
 	//! \brief Creates the XsArray as a reference to the data supplied in \a ref
 	inline explicit XsArrayImpl<T, D, I>(T* ref, XsSize sz, XsDataFlags flags = XSDF_None)
-		: XsArray(D, ref, sz, flags)
+		: XsArray(&D, ref, sz, flags)
 	{
 	}
 
 	//! \copydoc XsArray_destruct
-	inline ~XsArrayImpl<T, D, I>()
+	inline ~XsArrayImpl()
 	{
 		XsArray_destruct(this);
 	}
@@ -188,7 +210,7 @@ struct XsArrayImpl : private XsArray {
 		\returns true if the two arrays are equal
 		\sa XsArray_compareArray
 	 */
-	inline bool operator == (XsArrayImpl<T, D, I> const& other) const
+	inline bool operator == (ArrayImpl const& other) const
 	{
 		return !XsArray_compare(this, &other);
 	}
@@ -198,7 +220,7 @@ struct XsArrayImpl : private XsArray {
 		\returns true if the two arrays are not equal
 		\sa XsArray_compareArray
 	*/
-	inline bool operator != (XsArrayImpl<T, D, I> const& other) const
+	inline bool operator != (ArrayImpl const& other) const
 	{
 		return !!XsArray_compare(this, &other);
 	}
@@ -222,6 +244,7 @@ struct XsArrayImpl : private XsArray {
 	}
 
 protected:
+#ifndef XSENS_NOITERATOR
 	/*! \brief STL-style iterator */
 	template <ptrdiff_t F, typename R, typename Derived>
 	struct IteratorImplBase {
@@ -238,40 +261,41 @@ protected:
 		//! \brief The category of this type of iterator (random access)
 		typedef std::random_access_iterator_tag iterator_category;
 #endif
-
 		//! \brief The type of the inherited class that is actually this class
 		typedef Derived this_type;
+		//! \brief The direction of the iterator, +1 = forward, -1 = reverse
+		static const ptrdiff_t direction = F;
 	protected:
 		//! \brief Basic constructor
-		inline IteratorImplBase(void* p = 0) : m_ptr((T*) p) {}
+		inline explicit IteratorImplBase(void* p = 0) : m_ptr((T*) p) {}
 		//! \brief Basic constructor
-		inline IteratorImplBase(T* p) : m_ptr(p) {}
+		inline explicit IteratorImplBase(T* p) : m_ptr(p) {}
 		//! \brief Copy constructor
 		inline IteratorImplBase(this_type const& i) : m_ptr(i.m_ptr) {}
 	public:
 		//! \brief Assignment operator
-		inline this_type& operator =(void* p)
+		inline this_type operator =(void* p)
 		{
 			m_ptr = (T*) p;
-			return *reinterpret_cast<Derived*>(this);
+			return this_type(m_ptr);
 		}
 		//! \brief Assignment operator
-		inline this_type& operator =(T* p)
+		inline this_type operator =(T* p)
 		{
 			m_ptr = p;
-			return *reinterpret_cast<Derived*>(this);
+			return this_type(m_ptr);
 		}
 		//! \brief Assignment operator
-		inline this_type& operator =(this_type const& i)
+		inline this_type operator =(this_type const& i)
 		{
 			m_ptr = i.m_ptr;
-			return *reinterpret_cast<Derived*>(this);
+			return this_type(m_ptr);
 		}
 		//! \brief Prefix increment by one operator
 		inline this_type operator ++()
 		{
 			m_ptr = (T*) ptrAt(m_ptr, F);
-			return *reinterpret_cast<Derived*>(this);
+			return this_type(m_ptr);
 		}
 		//! \brief Postfix increment by one operator
 		inline this_type operator ++(int)
@@ -284,7 +308,7 @@ protected:
 		inline this_type operator --()
 		{
 			m_ptr = (T*) ptrAt(m_ptr, -F);
-			return *reinterpret_cast<Derived*>(this);
+			return this_type(m_ptr);
 		}
 		//! \brief Postfix decrement by one operator
 		inline this_type operator --(int)
@@ -294,16 +318,16 @@ protected:
 			return p;
 		}
 		//! \brief Increment by \a count operator
-		inline this_type& operator +=(ptrdiff_t count)
+		inline this_type operator +=(ptrdiff_t count)
 		{
 			m_ptr = ptrAt(m_ptr, F*count);
-			return *reinterpret_cast<Derived*>(this);
+			return this_type(m_ptr);
 		}
 		//! \brief Decrement by \a count operator
-		inline this_type& operator -=(ptrdiff_t count)
+		inline this_type operator -=(ptrdiff_t count)
 		{
 			m_ptr = ptrAt(m_ptr, -F*count);
-			return *reinterpret_cast<Derived*>(this);
+			return this_type(m_ptr);
 		}
 		//! \brief Addition by \a count operator
 		inline this_type operator +(ptrdiff_t count) const
@@ -324,7 +348,7 @@ protected:
 		*/
 		inline difference_type operator - (const this_type& other) const
 		{
-			return (F * (reinterpret_cast<char*>(m_ptr) - reinterpret_cast<char*>(other.m_ptr))) / D->itemSize;
+			return (F * (reinterpret_cast<char*>(m_ptr) - reinterpret_cast<char*>(other.m_ptr))) / D.itemSize;
 		}
 		//! \brief Iterator comparison
 		inline bool operator == (this_type const& i) const { return m_ptr == i.m_ptr; }
@@ -348,7 +372,10 @@ protected:
 		//! \brief The internal pointer
 		T* m_ptr;
 	};
+#endif
+
 public:
+#ifndef XSENS_NOITERATOR
 	/*! \brief A non-const iterator implementation */
 	template <ptrdiff_t F>
 	struct IteratorImpl : public IteratorImplBase<F, T, IteratorImpl<F> >
@@ -411,7 +438,7 @@ public:
 	inline reverse_iterator rbegin() { return rend() - (ptrdiff_t) size(); }
 	/*! \brief STL-style reverse_iterator to the first data item past the end of the reversed array */
 	inline reverse_iterator rend() { return reverse_iterator(m_data) + (ptrdiff_t) 1; }
-
+#endif
 	/*! \brief indexed data access operator */
 	inline T & operator[] (XsSize index) const
 	{
@@ -422,7 +449,7 @@ public:
 	inline T& operator[] (XsSize index)
 	{
 		assert(index < m_size);
-		return *ptrAt(m_data, index);
+		return *ptrAt(m_data, (ptrdiff_t) index);
 	}
 	/*! \brief indexed data access \sa operator[] \param index Index of item to access. \returns The item at \a index (by value). */
 	inline T const& at(XsSize index) const
@@ -466,16 +493,58 @@ public:
 		XsArray_insert(this, index, count, items);
 	}
 
+#ifndef XSENS_NOITERATOR
+	/*! \brief Insert \a item before iterator \a it
+		\param item The item to insert
+		\param it The iterator before which to insert the item.
+		\sa XsArray_insert
+	*/
+	inline void insert(T const& item, const_iterator it)
+	{
+		insert(&item, indexOf(it), 1);
+	}
+	/*! \brief Insert \a item before iterator \a it
+		\param item The item to insert
+		\param it The iterator before which to insert the item.
+		\sa XsArray_insert
+	*/
+	inline void insert(T const& item, const_reverse_iterator it)
+	{
+		insert(&item, indexOf(it), 1);
+	}
+
+	/*! \brief Insert \a item at \a index
+		\param items The items to insert
+		\param it The iterator before which to insert the item.
+		\param count The number of items to insert
+		\sa XsArray_insert
+	*/
+	inline void insert(T const* items, const_iterator it, XsSize count)
+	{
+		insert(items, indexOf(it), count);
+	}
+	/*! \brief Insert \a item at \a index
+		\param items The items to insert
+		\param it The iterator before which to insert the item.
+		\param count The number of items to insert
+		\sa XsArray_insert
+	*/
+	inline void insert(T const* items, const_reverse_iterator it, XsSize count)
+	{
+		insert(items, indexOf(it), count);
+	}
+#endif
+
 	/*! \brief Adds \a item to the end of the array \sa XsArray_insert \param item The item to append to the array. */
 	inline void push_back(T const& item)
 	{
-		insert(&item, -1, 1);
+		insert(&item, (XsSize) -1, 1);
 	}
 	/*! \brief Removes \a count items from the end of the array \sa XsArray_erase \param count The number items to remove */
 	inline void pop_back(XsSize count = 1)
 	{
 		if (count >= size())
-			erase(0, -1);
+			erase(0, (XsSize) -1);
 		else
 			erase(size()-count, count);
 	}
@@ -502,13 +571,22 @@ public:
 	{
 		XsArray_erase(this, index, count);
 	}
+#ifndef XSENS_NOITERATOR
 	/*! \brief Removes the item at iterator \a it. \details \param it The item to remove. \returns An iterator pointing to the next item after the erased item. */
 	inline iterator erase(iterator it)
 	{
-		ptrdiff_t idx = it - (iterator)m_data;
+		XsSize idx = indexOf(it);
 		erase(idx, 1);
-		return ((XsSize) idx < size()) ? ptrAt(m_data, idx) : end();
+		return (idx < size()) ? ptrAt(m_data, idx) : end();
 	}
+	/*! \brief Removes the item at iterator \a it. \details \param it The item to remove. \returns An iterator pointing to the next item after the erased item. */
+	inline reverse_iterator erase(reverse_iterator it)
+	{
+		XsSize idx = indexOf(it);
+		erase(idx, 1);
+		return (idx < size()) ? ptrAt(m_data, idx) : rend();
+	}
+#endif
 	/*! \copydoc XsArray_assign \sa XsArray_assign */
 	inline void assign(XsSize count, T const* src)
 	{
@@ -526,12 +604,12 @@ public:
 			XsArray_assign(this, count, 0);
 	}
 	/*! \copydoc XsArray_append \sa XsArray_append */
-	inline void append(XsArrayImpl<T, D, I> const& other)
+	inline void append(ArrayImpl const& other)
 	{
 		XsArray_append(this, &other);
 	}
 	/*! \brief Assignment operator, copies \a other into this, overwriting the old contents \param other The array to copy from \returns A reference to this \sa XsArray_copy */
-	inline XsArrayImpl<T, D, I>& operator=(XsArrayImpl<T, D, I> const& other)
+	inline ArrayImpl& operator=(ArrayImpl const& other)
 	{
 		if (this != &other)
 			XsArray_copy(this, &other);
@@ -543,21 +621,16 @@ public:
 		return (size() == 0) || (m_data == 0) || (m_flags & XSDF_Empty);
 	}
 
+#ifndef XSENS_NOITERATOR
 	/*! \brief Return the inheriting object */
 	inline I const& inherited() const { return *static_cast<I const*>(this); }
 
 	/*! \brief Return the inheriting object */
 	inline I& inherited() { return *static_cast<I*>(this); }
 
-	/*! \brief Mark the array for move semantics. \details Calling this function makes the object attempt to move its data into the destination object instead of copying its data when the next assignment or copy operation is done with this object as the source object. This prevents unnecessary memory allocation, but invalidates the source array after copying. \returns A reference to the object for easy returning, ie. return a.destructiveCopy(); */
-	inline I& destructiveCopy()
-	{
-		*((int*) &m_flags) |= XSDF_DestructiveCopy;
-		return inherited();
-	}
-
+#endif
 	/*! \brief Swap the contents of the array with those of \a other. \param other The array to swap contents with. \sa XsArray_swap*/
-	inline void swap(XsArrayImpl<T, D, I>& other)
+	inline void swap(ArrayImpl& other)
 	{
 		XsArray_swap(this, &other);
 	}
@@ -569,18 +642,45 @@ public:
 		\returns A reference to the modified array
 		\sa push_back
 	*/
+#ifndef XSENS_NOITERATOR
 	inline I& operator <<(T const& item)
 	{
 		push_back(item);
 		return inherited();
 	}
+#endif
 
 	/*! \copydoc XsArray_find */
-	inline int find(T const& needle)
+	inline int find(T const& needle) const
 	{
 		return XsArray_find(this, &needle);
 	}
+#ifndef XSENS_NOITERATOR
+	/*! \brief Returns the linear index of \a it in the array
+		\param it The iterator to analyze
+		\returns The linear forward index of the item pointed to by \a it. If \a it points to before the
+		beginning of the array it returns 0. If it points beyond the end, it returns the current size()
+	*/
+	template <ptrdiff_t F, typename R, typename Derived>
+	XsSize indexOf(IteratorImplBase<F,R,Derived> const& it) const
+	{
+		ptrdiff_t d = ((char const*) it.ptr() - (char const*) m_data);
+		if (d >= 0)
+		{
+			XsSize r = d/D.itemSize;
+			if (r <= size())
+				return r;
+			return size();
+		}
+		return 0;
+	}
+#endif
 
+	/*! \copydoc XsArray_removeDuplicates */
+	inline void removeDuplicates()
+	{
+		XsArray_removeDuplicates(this);
+	}
 private:
 	/*! \internal
 		\brief Generic pointer movement function
@@ -594,7 +694,7 @@ private:
 	*/
 	inline static T* ptrAt(void const* ptr, ptrdiff_t count)
 	{
-		return (T*)(void*)(((char*)ptr)+count*D->itemSize);
+		return (T*)(void*)(((char*)ptr)+count*D.itemSize);
 	}
 };
 #endif

@@ -103,9 +103,8 @@ The common way to setup configuration-dependent defines:
 
 #if defined(XSENS_DEBUG)
 	//// Debug or RelWithDeb build
-	#define LOG_RX_TX		// Lowest level byte receive and send (binary log)
-
-	#define LOG_RX_TX		// Lowest level byte receive and send (binary log)
+	#define LOG_RX_TX			// Lowest level byte receive and send (binary log)
+	//#define LOG_RX_TX_FLUSH		// Flush after each log operation (can cause hickups in timing, 300ms is not unheard of)
 
 	#if defined(XSENS_RELEASE)
 		//// RelWithDeb build

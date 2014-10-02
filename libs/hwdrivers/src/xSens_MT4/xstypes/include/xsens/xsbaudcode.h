@@ -28,6 +28,7 @@ enum XSNOCOMEXPORT XsBaudCode {
 	XBC_921k6         = 0x0A,		//!< 921k6 (921600 bps). Only usable from MTi/x FW 2.4.6
 	XBC_921k6Legacy   = 0x80,		//!< 921k6 (921600 bps)
 	XBC_2MegaBaud     = 0x0C,		//!< 2000k0 (2000000 bps)
+	XBC_4MegaBaud	  = 0x0D,		//!< 4000k0 (4000000 bps)
 	XBC_Invalid       = 0xFF		//!< Not a valid baud rate
 };
 

@@ -86,14 +86,8 @@ XsResultValue IoInterface::closeAndDelete(void)
 {
 	return XRV_INVALIDOPERATION;
 }
-/*! \copydoc IoInterfaceFile::create(const char*) */
-XsResultValue IoInterface::create(const char* filename)
-{
-	(void) filename;
-	return XRV_INVALIDOPERATION;
-}
-/*! \copydoc IoInterfaceFile::create(const wchar_t*) */
-XsResultValue IoInterface::create(const wchar_t* filename)
+/*! \copydoc IoInterfaceFile::create(const XsString&) */
+XsResultValue IoInterface::create(const XsString& filename)
 {
 	(void) filename;
 	return XRV_INVALIDOPERATION;
@@ -117,14 +111,8 @@ XsFilePos IoInterface::getFileSize(void) const
 {
 	return 0;
 }
-/*! \copydoc IoInterfaceFile::getName(char*) const */
-XsResultValue IoInterface::getName(char* filename) const
-{
-	(void) filename;
-	return XRV_INVALIDOPERATION;
-}
-/*! \copydoc IoInterfaceFile::getName(wchar_t*) const */
-XsResultValue IoInterface::getName(wchar_t* filename) const
+/*! \copydoc IoInterfaceFile::getName(XsString&) const */
+XsResultValue IoInterface::getName(XsString& filename) const
 {
 	(void) filename;
 	return XRV_INVALIDOPERATION;
@@ -151,16 +139,8 @@ bool IoInterface::isReadOnly(void) const
 {
 	return true;
 }
-/*! \copydoc IoInterfaceFile::open(const char*, bool, bool) */
-XsResultValue IoInterface::open(const char* filename, bool createNew, bool readOnly)
-{
-	(void) filename;
-	(void) createNew;
-	(void) readOnly;
-	return XRV_INVALIDOPERATION;
-}
-/*! \copydoc IoInterfaceFile::open(const wchar_t*, bool, bool) */
-XsResultValue IoInterface::open(const wchar_t* filename, bool createNew, bool readOnly)
+/*! \copydoc IoInterfaceFile::open(const XsString&, bool, bool) */
+XsResultValue IoInterface::open(const XsString& filename, bool createNew, bool readOnly)
 {
 	(void) filename;
 	(void) createNew;

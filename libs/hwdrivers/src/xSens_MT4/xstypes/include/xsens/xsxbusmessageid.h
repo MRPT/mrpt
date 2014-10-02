@@ -144,13 +144,18 @@ enum XsXbusMessageId {
 	XMID_SetTransmitDelay         	=0xDC,
 	XMID_SetTransmitDelayAck      	=0xDD,
 
-    XMID_SetMfmResults              =0xDE,
-    XMID_SetMfmResultsAck           =0xDF,
+	XMID_SetMfmResults              =0xDE,
+	XMID_SetMfmResultsAck           =0xDF,
 
 	XMID_ReqObjectAlignment       	=0xE0,
 	XMID_ReqObjectAlignmentAck    	=0xE1,
 	XMID_SetObjectAlignment       	=0xE0,
 	XMID_SetObjectAlignmentAck    	=0xE1,
+
+	XMID_ReqAlignmentRotation       =0xEC,
+	XMID_ReqAlignmentRotationAck    =0xED,
+    XMID_SetAlignmentRotation       =0xEC,
+    XMID_SetAlignmentRotationAck    =0xED,
 
 	// Xbus Master
 	XMID_ReqXmErrorMode           	=0x82,
@@ -183,6 +188,11 @@ enum XsXbusMessageId {
 	XMID_ReqExtOutputModeAck      	=0x87,
 	XMID_SetExtOutputMode         	=0x86,
 	XMID_SetExtOutputModeAck      	=0x87,
+	
+	XMID_ReqStringOutputType		=0x8E,
+	XMID_ReqStringOutputTypeAck		=0x8F,
+	XMID_SetStringOutputType		=0x8E,
+	XMID_SetStringOutputTypeAck		=0x8F,
 
 	// XbusMaster
 	XMID_ReqBatteryLevel          	=0x88,
@@ -269,9 +279,6 @@ enum XsXbusMessageId {
 	// Wireless
 	XMID_MasterIndication         	=0x46,
 
-	XMID_StopRecordingInd         	=0x12,
-	XMID_FlushingInd              	=0x13,
-
 	XMID_ReqFilterSettings        	=0xA0,
 	XMID_ReqFilterSettingsAck     	=0xA1,
 	XMID_SetFilterSettings        	=0xA0,
@@ -301,7 +308,7 @@ enum XsXbusMessageId {
 	XMID_EnableMaster             	=0xB2,
 	XMID_EnableMasterAck          	=0xB3,
 	XMID_DisableMaster            	=0xB4,
-	XMID_DisableMasterAck         	=0xB5,	
+	XMID_DisableMasterAck         	=0xB5,
 	XMID_ReqRadioChannel			=0xB6,
 	XMID_ReqRadioChannelAck			=0xB7,
 	XMID_SetClientPriority        	=0xB8,
@@ -353,7 +360,7 @@ enum XsXbusMessageId {
 	XMID_StoreEmtsAck			  	=0x97,
 
 	XMID_GotoTransparentMode	  	=0x50,
-	XMID_GotoTransparentModeAck	  	=0x51,
+	XMID_GotoTransparentModeAck	  	=0x51
 };
 /*! @} */
 typedef enum XsXbusMessageId XsXbusMessageId;

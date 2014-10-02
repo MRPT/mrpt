@@ -32,9 +32,9 @@ XSTYPES_DLL_API void XsMessageArray_construct(XsMessageArray* thisPtr, XsSize co
 #endif
 
 #ifdef __cplusplus
-struct XsMessageArray : public XsArrayImpl<XsMessage, &g_xsMessageArrayDescriptor, XsMessageArray> {
+struct XsMessageArray : public XsArrayImpl<XsMessage, g_xsMessageArrayDescriptor, XsMessageArray> {
 	//! \brief Constructs an XsMessageArray
-	inline XsMessageArray(XsSize sz = 0, XsMessage const* src = 0)
+	inline explicit XsMessageArray(XsSize sz = 0, XsMessage const* src = 0)
 		 : ArrayImpl(sz, src)
 	{
 	}
@@ -51,12 +51,14 @@ struct XsMessageArray : public XsArrayImpl<XsMessage, &g_xsMessageArrayDescripto
 	{
 	}
 
+#ifndef XSENS_NOITERATOR
 	//! \brief Constructs an XsMessageArray with the array bound by the supplied iterators \a beginIt and \a endIt
 	template <typename Iterator>
 	inline XsMessageArray(Iterator beginIt, Iterator endIt)
 		: ArrayImpl(beginIt, endIt)
 	{
 	}
+#endif
 };
 #endif
 

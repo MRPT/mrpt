@@ -177,19 +177,8 @@ void XsMatrix_copy(XsMatrix* copy, XsMatrix const* src)
 {
 	if (copy == src)
 	{
-		*((int*) &copy->m_flags) &= ~XSDF_DestructiveCopy;
 		return;
 	}
-	if ((src->m_flags & (XSDF_DestructiveCopy | XSDF_Managed)) == (XSDF_DestructiveCopy | XSDF_Managed))
-	{
-		*((int*) &src->m_flags) &= ~XSDF_DestructiveCopy;
-		if ((copy->m_flags & XSDF_Managed) || (copy->m_data == 0))
-		{
-			XsMatrix_swap((XsMatrix*) src, copy);
-			return;
-		}
-	}
-
 	XsMatrix_assign(copy, src->m_rows, src->m_cols, 0, src->m_data, src->m_stride);
 }
 

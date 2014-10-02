@@ -40,12 +40,6 @@ const char *XsDataFlags_toString(XsDataFlags f)
 			strcat(rv, " | ");
 		strcat(rv, "XSDF_Empty");
 	}
-	if (f & XSDF_DestructiveCopy)
-	{
-		if (rv[0])
-			strcat(rv, " | ");
-		strcat(rv, "XSDF_DestructiveCopy");
-	}
 	return rv;
 }
 
