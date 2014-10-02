@@ -32,7 +32,7 @@ XSTYPES_DLL_API int XsRange_empty(const struct XsRange* thisPtr);
 struct XsRange {
 #ifdef __cplusplus
 	//! \brief Constructs a range starting at \a f and ending at \a l. Default value are 0.
-	inline XsRange(int f = 0, int l = 0)
+	inline explicit XsRange(int f = 0, int l = 0)
 		: m_first(f)
 		, m_last(l)
 	{}
@@ -94,6 +94,11 @@ struct XsRange {
 		return m_last;
 	}
 
+	//! \brief Return true if this is equal to other
+	bool operator == (const XsRange& other) const
+	{
+		return m_first == other.m_first && m_last == other.m_last;
+	}
 private:
 #endif
 

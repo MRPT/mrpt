@@ -39,7 +39,6 @@ enum XsDataFlags {
 	,XSDF_Managed = 1			//!< The contained data should be managed (freed) by the object, when false, the object assumes the memory is freed by some other process after its destruction
 	,XSDF_FixedSize = 2			//!< The contained data points to a fixed-size buffer, this allows creation of dynamic objects on the stack without malloc/free overhead.
 	,XSDF_Empty = 4				//!< The object contains undefined data / should be considered empty. Usually only relevant when XSDF_FixedSize is also set, as otherwise the data pointer will be NULL and empty-ness is implicit.
-	,XSDF_DestructiveCopy = 8	//!< The contents of the object may be discarded when it is copied. This allows swapping the internals of a return value instead of copying. Note that the flag may be ignored if either the source or the destination do not allow swapping. Since this is a speed-optimization flag, there is no C-function for setting the flag. After the first copy operation, the flag is automatically reset (also for the copy) and the original object should be considered invalid. \note When set, the flag makes the source object non-const even if it was const! \note For some objects a destructiveCopy() function has been implemented, but it does nothing since the object is too small to benefit from the swap function.
 };
 /*! @} */
 typedef enum XsDataFlags XsDataFlags;

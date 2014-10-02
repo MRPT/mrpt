@@ -54,7 +54,7 @@ XSCPPPROTECTED
 #ifdef __cplusplus
 public:
 	//! \brief Construct a quaternion with the supplied values, or zero's by default
-	inline XsQuaternion(XsReal w = XsMath_zero, XsReal x = XsMath_zero, XsReal y = XsMath_zero, XsReal z = XsMath_zero)
+	inline explicit XsQuaternion(XsReal w = XsMath_zero, XsReal x = XsMath_zero, XsReal y = XsMath_zero, XsReal z = XsMath_zero)
 		: m_w(w)
 		, m_x(x)
 		, m_y(y)

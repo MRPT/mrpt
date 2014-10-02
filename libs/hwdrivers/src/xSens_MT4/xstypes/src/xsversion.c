@@ -33,7 +33,10 @@ void XsVersion_toString(const XsVersion* thisPtr, XsString* version)
 	if (XsVersion_empty(thisPtr))
 		return;
 
-	chars = sprintf(buffer, "%d.%d.%d build %d", thisPtr->m_major, thisPtr->m_minor, thisPtr->m_revision, thisPtr->m_build);
+	if (thisPtr->m_build != 0)
+		chars = sprintf(buffer, "%d.%d.%d build %d", thisPtr->m_major, thisPtr->m_minor, thisPtr->m_revision, thisPtr->m_build);
+	else
+		chars = sprintf(buffer, "%d.%d.%d", thisPtr->m_major, thisPtr->m_minor, thisPtr->m_revision);
 	XsString_assign(version, chars, buffer);
 	if (thisPtr->m_extra.m_size != 0)
 	{

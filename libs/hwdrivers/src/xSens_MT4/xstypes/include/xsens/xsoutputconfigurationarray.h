@@ -31,9 +31,9 @@ XSTYPES_DLL_API void XsOutputConfigurationArray_construct(XsOutputConfigurationA
 #endif
 
 #ifdef __cplusplus
-struct XsOutputConfigurationArray : public XsArrayImpl<XsOutputConfiguration, &g_xsOutputConfigurationArrayDescriptor, XsOutputConfigurationArray> {
+struct XsOutputConfigurationArray : public XsArrayImpl<XsOutputConfiguration, g_xsOutputConfigurationArrayDescriptor, XsOutputConfigurationArray> {
 	//! \brief Constructs an XsOutputConfigurationArray
-	inline XsOutputConfigurationArray(XsSize sz = 0, XsOutputConfiguration const* src = 0)
+	inline explicit XsOutputConfigurationArray(XsSize sz = 0, XsOutputConfiguration const* src = 0)
 		 : ArrayImpl(sz, src)
 	{
 	}
@@ -50,12 +50,14 @@ struct XsOutputConfigurationArray : public XsArrayImpl<XsOutputConfiguration, &g
 	{
 	}
 
+#ifndef XSENS_NOITERATOR
 	//! \brief Constructs an XsOutputConfigurationArray with the array bound by the supplied iterators \a beginIt and \a endIt
 	template <typename Iterator>
 	inline XsOutputConfigurationArray(Iterator beginIt, Iterator endIt)
 		: ArrayImpl(beginIt, endIt)
 	{
 	}
+#endif
 };
 #endif
 

@@ -46,8 +46,9 @@ XSTYPES_DLL_API XsReal XsMath_deg2rad(XsReal degrees);
 XSTYPES_DLL_API XsReal XsMath_pow2(XsReal a);
 XSTYPES_DLL_API XsReal XsMath_pow3(XsReal a);
 XSTYPES_DLL_API XsReal XsMath_asinClamped(XsReal x);
+XSTYPES_DLL_API int XsMath_isFinite(XsReal x);
 XSTYPES_DLL_API int32_t XsMath_doubleToLong(double d);
-#ifdef stdint_int64_defined
+#ifndef XSENS_NO_INT64
 XSTYPES_DLL_API int64_t XsMath_doubleToInt64(double d);
 #endif
 
@@ -137,7 +138,7 @@ namespace XsMath {
 	{
 		return XsMath_doubleToLong(d);
 	}
-#ifdef stdint_int64_defined
+#ifndef XSENS_NO_INT64
 	//! \brief \copybrief XsMath_doubleToInt64
 	inline int64_t doubleToInt64(double d)
 	{

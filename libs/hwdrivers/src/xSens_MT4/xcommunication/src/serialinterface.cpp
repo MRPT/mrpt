@@ -241,7 +241,7 @@ XsIoHandle SerialInterface::getHandle(void) const { return m_handle; }
 //! Retrieve the port number that was last successfully opened.
 uint16_t SerialInterface::getPortNumber (void) const { return m_port; }
 //! Retrieve the port name that was last successfully opened.
-void SerialInterface::getPortName(char *portname) const { sprintf(portname, "%s", m_portname); }
+void SerialInterface::getPortName(XsString& portname) const { portname = m_portname; }
 //! Return the error code of the last operation.
 XsResultValue SerialInterface::getLastResult(void) const { return m_lastResult; }
 //! Return the current timeout value
@@ -282,7 +282,7 @@ XsResultValue SerialInterface::open(const XsPortInfo& portInfo,
 
 #ifdef _WIN32
 	XsResultValue fail = XRV_OK;
-	char winPortName[32];
+	char winPortName[256];
 
 	// Open port
 	sprintf(winPortName, "\\\\.\\%s", portInfo.portName().c_str());
@@ -311,6 +311,7 @@ XsResultValue SerialInterface::open(const XsPortInfo& portInfo,
 	commState.fOutxDsrFlow = FALSE;
 	commState.fOutX = FALSE;
 	commState.fInX = FALSE;
+	commState.fRtsControl = RTS_CONTROL_ENABLE;
 	if (!SetCommState(m_handle, (LPDCB)&commState)) // Set new state
 	{
 		// Bluetooth ports cannot always be opened with 2 stopbits
@@ -327,8 +328,6 @@ XsResultValue SerialInterface::open(const XsPortInfo& portInfo,
 		fail = m_lastResult;
 
 	// Other initialization functions
-	if (!EscapeCommFunction(m_handle, SETRTS))			// Enable RTS (for Xbus Master use)
-		fail = XRV_ERROR;
 	if (!EscapeCommFunction(m_handle, SETDTR))			// Set DTR (Calibration sensors need DTR to startup, won't hurt otherwise
 		fail = XRV_ERROR;
 	if (!SetupComm(m_handle,readBufSize,writeBufSize))	// Set queue size
@@ -439,6 +438,43 @@ XsResultValue SerialInterface::open(const XsPortInfo& portInfo,
 	return (m_lastResult = XRV_OK);
 }
 
+/*! \brief Helper function for making filename of log file unique
+*/
+bool doesFileExist(char* filename)
+{
+	FILE* pf = fopen(filename, "r");
+	if (pf == NULL)
+		return false;
+	fclose (pf);
+	return true;
+}
+
+/*! \brief Helper function for making filename of log file unique
+*/
+void makeFilenameUnique(char* filename)
+{
+	if (doesFileExist(filename))	// if a file already exist with the same name,
+	{
+		// create a unique filename by adding a counter:
+		char filename2[XS_MAX_FILENAME_LENGTH];
+		char basename[XS_MAX_FILENAME_LENGTH];
+		strcpy(basename, filename);
+		basename[strlen(basename) - 4] = 0;	// remove .log extension
+		int counter = 1;
+		do
+		{
+			sprintf(filename2, "%s_%d.log", basename, counter++);
+			if (counter > 10)	// don't count further than 10
+			{
+				sprintf(filename2, "%s_n.log", basename);
+				break;
+			}
+		}
+		while (doesFileExist(filename2));
+		strcpy(filename, filename2);
+	}
+}
+
 /*! \brief Read data from the serial port and put it into the data buffer.
 	\details This function reads up to \a maxLength bytes from the port (non-blocking) and
 	puts it into the \a data buffer.
@@ -461,7 +497,10 @@ XsResultValue SerialInterface::readData(XsSize maxLength, XsByteArray& data)
 
 	if (!rres)
 	{
-		JLALERT(gJournal, "ReadFile returned windows error " << ::GetLastError());
+		DWORD wErr = ::GetLastError();
+		JLALERT(gJournal, "ReadFile returned windows error " << wErr);
+		if (wErr >= ERROR_INVALID_FUNCTION && wErr <= ERROR_INVALID_HANDLE)
+			return (m_lastResult = XRV_NOFILEORPORTOPEN);
 		return (m_lastResult = XRV_ERROR);
 	}
 
@@ -492,15 +531,6 @@ XsResultValue SerialInterface::readData(XsSize maxLength, XsByteArray& data)
 	data.setSize(maxLength);
 	int length = read(m_handle, (void*)data.data(), maxLength);
 	data.pop_back(maxLength - length);
-//	if (m_callbackHandler != NULL && *length > 0) {
-//		XsBinary bytes;
-//		bytes.setPortNumber(m_port);
-//		bytes.setData(data, *length);
-//#ifdef LOG_CALLBACKS
-//		JLDEBUG(gJournal, "XsensDeviceAPI", "C1: onBytesReceived(%d,(%d,%d),%p)\n",(int32_t) m_onBytesReceivedInstance, (int32_t) bytes->m_size, (int32_t) bytes->m_portNr, m_onBytesReceivedParam);
-//#endif
-////		m_callbackHandler->onBytesReceived(bytes);
-//	}
 #endif
 
 #ifdef LOG_RX_TX
@@ -515,10 +545,14 @@ XsResultValue SerialInterface::readData(XsSize maxLength, XsByteArray& data)
 			char *devname = strrchr(m_portname, '/');
 			sprintf(fname, "rx_%s_%d.log", devname + 1, XsBaud::rateToNumeric(m_baudrate));
 #endif
+			makeFilenameUnique(fname);
+			
 			rx_log = fopen(fname, "wb");
 		}
 		fwrite(data.data(), 1, length, rx_log);
+#ifdef LOG_RX_TX_FLUSH
 		fflush(rx_log);
+#endif
 	}
 #endif
 
@@ -656,10 +690,14 @@ XsResultValue SerialInterface::writeData (const XsByteArray& data, XsSize* writt
 			char *devname = strrchr(m_portname, '/');
 			sprintf(fname,"tx_%s_%d.log", devname + 1, XsBaud::rateToNumeric(m_baudrate));
 #endif
+			makeFilenameUnique(fname);
+			
 			tx_log = fopen(fname, "wb");
 		}
 		fwrite(data.data(), 1, *written, tx_log);
+#ifdef LOG_RX_TX_FLUSH
 		fflush(tx_log);
+#endif
 	}
 #endif
 

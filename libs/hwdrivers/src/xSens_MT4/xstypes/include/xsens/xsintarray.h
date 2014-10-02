@@ -17,6 +17,16 @@ extern "C" {
 
 extern XsArrayDescriptor const XSTYPES_DLL_API g_xsIntArrayDescriptor;
 
+#ifdef XSENS_NOITERATOR
+//%rename(intArray) XsArrayImpl<int,g_xsIntArrayDescriptor>;
+//
+//struct XsArrayImpl<int,g_xsIntArrayDescriptor> {
+//	XsArrayImpl<int,g_xsIntArrayDescriptor>(XsSize sz = 0, int const* src = 0);
+//	~XsArrayImpl<int,g_xsIntArrayDescriptor>();
+//};
+//
+#endif
+
 #ifndef __cplusplus
 #define XsIntArray_INITIALIZER	XSARRAY_INITIALIZER(&g_xsIntArrayDescriptor)
 
@@ -31,7 +41,7 @@ XSTYPES_DLL_API void XsIntArray_construct(XsIntArray* thisPtr, XsSize count, int
 #ifdef __cplusplus
 struct XsIntArray : public XsArrayImpl<int, g_xsIntArrayDescriptor, XsIntArray> {
 	//! \brief Constructs an XsIntArray
-	inline XsIntArray(XsSize sz = 0, int const* src = 0)
+	inline explicit XsIntArray(XsSize sz = 0, int const* src = 0)
 		 : ArrayImpl(sz, src)
 	{
 	}
@@ -48,12 +58,14 @@ struct XsIntArray : public XsArrayImpl<int, g_xsIntArrayDescriptor, XsIntArray> 
 	{
 	}
 
+#ifndef XSENS_NOITERATOR
 	//! \brief Constructs an XsIntArray with the array bound by the supplied iterators \a beginIt and \a endIt
 	template <typename Iterator>
 	inline XsIntArray(Iterator beginIt, Iterator endIt)
 		: ArrayImpl(beginIt, endIt)
 	{
 	}
+#endif
 };
 #endif
 

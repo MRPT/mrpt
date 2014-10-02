@@ -8,7 +8,7 @@
    +---------------------------------------------------------------------------+ */
 //{{NO_DEPENDENCIES}}
 // Microsoft Visual C++ generated include file.
-// Used by c:\dev\mtsdk-mtsdk4\xstypes\xstypes.rc
+// Used by C:\work\software\mtsdk4.2\xstypes\xstypes.rc
 //
 
 // Next default values for new objects

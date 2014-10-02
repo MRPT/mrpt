@@ -90,19 +90,16 @@ public:
 	// IOInterfaceFile overridable functions
 	virtual XsResultValue appendData(const XsByteArray& bdata);
 	virtual XsResultValue closeAndDelete(void);
-	virtual XsResultValue create(const char* filename);
-	virtual XsResultValue create(const wchar_t* filename);
+	virtual XsResultValue create(const XsString& filename);
 	virtual XsResultValue deleteData(XsFilePos start, XsSize length);
 	virtual XsResultValue find(const XsByteArray& needleV, XsFilePos& pos);
 	virtual XsFilePos getFileSize(void) const;
-	virtual XsResultValue getName(char* filename) const;
-	virtual XsResultValue getName(wchar_t* filename) const;
+	virtual XsResultValue getName(XsString& filename) const;
 	virtual XsFilePos getReadPosition(void) const;
 	virtual XsFilePos getWritePosition(void) const;
 	virtual XsResultValue insertData(XsFilePos start, const XsByteArray& data);
 	virtual bool isReadOnly(void) const;
-	virtual XsResultValue open(const char* filename, bool createNew, bool readOnly);
-	virtual XsResultValue open(const wchar_t* filename, bool createNew, bool readOnly);
+	virtual XsResultValue open(const XsString& filename, bool createNew, bool readOnly);
 	virtual XsResultValue setReadPosition(XsFilePos pos);
 	virtual XsResultValue setWritePosition(XsFilePos pos = -1);
 

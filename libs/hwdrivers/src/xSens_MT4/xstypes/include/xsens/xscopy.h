@@ -12,17 +12,7 @@
 #define XSLISTCOPY(C)	\
 	if (copy == thisPtr)\
 	{\
-		*((int*) &copy->m_flags) &= ~XSDF_DestructiveCopy;\
 		return;\
-	}\
-	if ((thisPtr->m_flags & (XSDF_DestructiveCopy | XSDF_Managed)) == (XSDF_DestructiveCopy | XSDF_Managed))\
-	{\
-		*((int*) &thisPtr->m_flags) &= ~XSDF_DestructiveCopy;\
-		if ((copy->m_flags & XSDF_Managed) || (copy->m_data == 0))\
-		{\
-			C##_swap((C*) thisPtr, copy); \
-			return;\
-		}\
 	}\
 	C##_assign(copy, thisPtr->m_size, thisPtr->m_data);
 
