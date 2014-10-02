@@ -188,6 +188,9 @@ ${CMAKE_MRPT_BUILD_SHARED_LIB}
 /** Whether libdc1394-2 is installed in the system.  */
 #define MRPT_HAS_LIBDC1394_2 ${CMAKE_MRPT_HAS_LIBDC1394_2}
 
+/** Whether libudev-dev is installed in the system.  */
+#define MRPT_HAS_LIBUDEV ${CMAKE_MRPT_HAS_LIBUDEV}
+
 /** Whether ffmpeg C libraries are installed in the system or (in win32), their precompiled libraries.
   */
 #define MRPT_HAS_FFMPEG ${CMAKE_MRPT_HAS_FFMPEG}

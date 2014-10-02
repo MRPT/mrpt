@@ -19,6 +19,9 @@
 		- "mrpt-reactivenav" is now a meta-library, depending on "mrpt-nav".
 	- General changes:
 		- Many optimizations in function arguments (value vs ref). Forces ABI incompatibility with previous versions, hence the change to a new minor version number.
+	- Changes in classes:
+		- [mrpt-hwdrivers]
+			- mrpt::hwdrivers::CIMUXSens_MT4: Upgrade to latest XSens code. Requires libudev-dev (Patch by Joe Burmeister).
 
 <hr>
 <a name="1.2.2">

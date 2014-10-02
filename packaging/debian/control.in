@@ -26,6 +26,7 @@ Build-Depends: debhelper (>= 9),
 	libeigen3-dev ,
 	libdc1394-22-dev [linux-any],
 	libusb-1.0-0-dev [linux-any],
+	libudev-dev [linux-any],
 	libjs-jquery,
 	libassimp-dev
 Standards-Version: 3.9.5
