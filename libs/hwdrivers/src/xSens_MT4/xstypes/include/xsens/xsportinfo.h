@@ -35,7 +35,7 @@ XSTYPES_DLL_API int XsPortInfo_usbAddress(XsPortInfo const* thisPtr);
 XSTYPES_DLL_API void XsPortInfo_swap(XsPortInfo* a, struct XsPortInfo* b);
 
 #ifdef __cplusplus
-};
+}
 #endif
 
 #if defined(_MSC_VER)

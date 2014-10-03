@@ -63,98 +63,112 @@ XSTYPES_DLL_API void XsString_erase(XsString* thisPtr, XsSize index, XsSize coun
 /* We need some special template implementations for strings to keep them 0-terminated
 */
 // this typedef is not _always_ interpreted correctly by doxygen, hence the occasional function where we're NOT using it.
-typedef XsArrayImpl<char, g_xsStringDescriptor, XsString> XsStringType;
-
-/*! \brief Returns the number of items currently in the array, excluding the terminating 0
-	\returns The number of items currently in the array
-	\sa reserved \sa setSize \sa resize
-*/
-template<> inline XsSize XsStringType::size() const
+//template <typename T, XsArrayDescriptor const& D, typename I>
+//typedef XsArrayImpl<char, g_xsStringDescriptor, XsString> XsStringType;  // MRPT: Converted into a struct to fix building with GCC 4.9+
+struct XsStringType : public XsArrayImpl<char, g_xsStringDescriptor, XsString>
 {
-	return m_size?m_size-1:0;
-}
+    inline XsStringType() : XsArrayImpl()
+    {
+    }
 
-//! \copydoc XsArray_reserve
-template<> inline void XsStringType::reserve(XsSize count)
-{
-	XsArray_reserve(this, count+1);
-}
+    inline explicit XsStringType(char* ref, XsSize sz, XsDataFlags flags) :
+        XsArrayImpl(ref,sz,flags)
+    {
+    }
 
-//! \brief Returns the reserved space in number of items
-template<> inline XsSize XsStringType::reserved() const
-{
-	return m_reserved?m_reserved-1:0;
-}
+    /*! \brief Returns the number of items currently in the array, excluding the terminating 0
+        \returns The number of items currently in the array
+        \sa reserved \sa setSize \sa resize
+    */
+    inline XsSize size() const
+    {
+        return m_size?m_size-1:0;
+    }
 
-/*! \brief indexed data access operator */
-template<> inline char& XsStringType::operator[] (XsSize index)
-{
-	assert(index < size());
-	return *ptrAt(m_data, index);
-}
+    //! \copydoc XsArray_reserve
+    inline void reserve(XsSize count)
+    {
+        XsArray_reserve(this, count+1);
+    }
 
-/*! \brief Removes \a count items from the array starting at \a index. \param index The index of the first item to remove. \param count The number of items to remove. */
-template<> inline void XsStringType::erase(XsSize index, XsSize count)
-{
-	XsString_erase((XsString*) this, index, count);
-}
+    //! \brief Returns the reserved space in number of items
+    inline XsSize reserved() const
+    {
+        return m_reserved?m_reserved-1:0;
+    }
 
-/*! \brief Insert \a count \a items at \a index in the string
-	\param items The items to insert, may not be 0 unless count is 0
-	\param index The index to use for inserting. Anything beyond the end of the string (ie. -1) will
-	append to the actual end of the string.
-	\param count The number of items to insert
-*/
-template<> inline void XsArrayImpl<char, g_xsStringDescriptor, XsString>::insert(char const* items, XsSize index, XsSize count)
-{
-	if (size())
-	{
-		if (index >= size())
-			index = size();
-		XsArray_insert(this, index, count, items);
-	}
-	else
-		XsString_assign((XsString*) this, count, items);
-}
+    /*! \brief indexed data access operator */
+    inline char& operator[] (XsSize index)
+    {
+        assert(index < size());
+        return *ptrAt(m_data, index);
+    }
 
-/*! \brief Assign the characters in \a src to the string
-	\details This function is resizes the string to fit \a count characters and copies those from \a src.
-	\param count The number of characters in src. If this value is 0 and \a scr is not 0, the value is
-				determined automatically by looking through src until a terminating 0 is found.
-	\param src The source string to copy from. If this is 0 and \a count is not 0, the string will be
-				filled with spaces instead.
-	\sa XsString_assign
-*/
-template<> inline void XsArrayImpl<char, g_xsStringDescriptor, XsString>::assign(XsSize count, char const* src)
-{
-	XsString_assign((XsString*) this, count, src);
-}
+    /*! \brief Removes \a count items from the array starting at \a index. \param index The index of the first item to remove. \param count The number of items to remove. */
+    inline void erase(XsSize index, XsSize count)
+    {
+        XsString_erase((XsString*) this, index, count);
+    }
 
-/*! \brief This function resizes the contained string to the desired size, while retaining its contents
-	\param count The desired size of the string. This excludes the terminating 0 character.
-	\sa XsString_resize
-*/
-template<> inline void XsStringType::resize(XsSize count)
-{
-	XsString_resize((XsString*) this, count);
-}
+    /*! \brief Insert \a count \a items at \a index in the string
+        \param items The items to insert, may not be 0 unless count is 0
+        \param index The index to use for inserting. Anything beyond the end of the string (ie. -1) will
+        append to the actual end of the string.
+        \param count The number of items to insert
+    */
+    inline void insert(char const* items, XsSize index, XsSize count)
+    {
+        if (size())
+        {
+            if (index >= size())
+                index = size();
+            XsArray_insert(this, index, count, items);
+        }
+        else
+            XsString_assign((XsString*) this, count, items);
+    }
 
-/*! \brief Set the size of the array to \a count.
-	\details The contents of the array after this operation are undefined.
-	\param count The desired new size fo the array.
-	\sa XsArray_assign \sa reserve \sa resize
-*/
-template<> inline void XsStringType::setSize(XsSize count)
-{
-	if (count != size())
-		XsString_assign((XsString*) this, count, 0);
-}
+    /*! \brief Assign the characters in \a src to the string
+        \details This function is resizes the string to fit \a count characters and copies those from \a src.
+        \param count The number of characters in src. If this value is 0 and \a scr is not 0, the value is
+                    determined automatically by looking through src until a terminating 0 is found.
+        \param src The source string to copy from. If this is 0 and \a count is not 0, the string will be
+                    filled with spaces instead.
+        \sa XsString_assign
+    */
+    inline void assign(XsSize count, char const* src)
+    {
+        XsString_assign((XsString*) this, count, src);
+    }
 
-/*! \copydoc XsArray_append \sa XsArray_append */
-template<> inline void XsArrayImpl<char, g_xsStringDescriptor, XsString>::append(const XsStringType& other)
-{
-	XsString_append((XsString*) this, (XsString const*) &other);
-}
+    /*! \brief This function resizes the contained string to the desired size, while retaining its contents
+        \param count The desired size of the string. This excludes the terminating 0 character.
+        \sa XsString_resize
+    */
+    inline void resize(XsSize count)
+    {
+        XsString_resize((XsString*) this, count);
+    }
+
+    /*! \brief Set the size of the array to \a count.
+        \details The contents of the array after this operation are undefined.
+        \param count The desired new size fo the array.
+        \sa XsArray_assign \sa reserve \sa resize
+    */
+    inline void setSize(XsSize count)
+    {
+        if (count != size())
+            XsString_assign((XsString*) this, count, 0);
+    }
+
+    /*! \copydoc XsArray_append \sa XsArray_append */
+    inline void append(const XsStringType& other)
+    {
+        XsString_append((XsString*) this, (XsString const*) &other);
+    }
+}; // end of struct XsStringType (MRPT)
+
+
 
 struct XsString : public XsStringType {
 	//! \brief Constructs an XsString

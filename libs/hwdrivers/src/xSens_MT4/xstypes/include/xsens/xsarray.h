@@ -150,7 +150,7 @@ typedef struct XsArray XsArray;
 	\tparam I The class that inherits from the XsArrayImpl. Some functions (such as the streaming operator) require the inheriting type to be returned for proper functionality.
 */
 template <typename T, XsArrayDescriptor const& D, typename I>
-struct XsArrayImpl : private XsArray {
+struct XsArrayImpl : protected XsArray { // MRPT
 	//! \brief The contained type
 	typedef T value_type;
 
@@ -681,7 +681,7 @@ public:
 	{
 		XsArray_removeDuplicates(this);
 	}
-private:
+protected: // MRPT
 	/*! \internal
 		\brief Generic pointer movement function
 		\details This function adds \a count items to \a ptr based on the size specified in \a descriptor
