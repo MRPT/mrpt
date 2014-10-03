@@ -6,6 +6,8 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
+#ifndef _WIN32  // patch for MRPT
+
 #include "xsudev.h"
 #include <xsens/xslibraryloader.h>
 
@@ -286,3 +288,5 @@ const char *XsUdev::device_get_sysattr_value(struct udev_device *udev_device, co
 	else
 		return "";
 }
+
+#endif // patch for MRPT

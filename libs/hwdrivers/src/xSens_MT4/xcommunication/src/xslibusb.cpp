@@ -6,6 +6,8 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
+#ifndef _WIN32  // patch for MRPT
+
 #include "xslibusb.h"
 #include <xsens/xslibraryloader.h>
 
@@ -497,3 +499,5 @@ void XsLibUsb::set_debug(libusb_context *ctx, int level)
 	if (m_libUsb.set_debug)
 		m_libUsb.set_debug(ctx, level);
 }
+
+#endif // patch for MRPT
