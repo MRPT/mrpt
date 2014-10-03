@@ -6,6 +6,7 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
+#ifdef _WIN32  // patch for MRPT
 
 #include "xswinusb.h"
 #include <xslibraryloader.h>
@@ -50,7 +51,7 @@ void XsWinUsb::initLibrary()
 	m_winUsb.SetPowerPolicy = NULL;
 	m_winUsb.GetPowerPolicy = NULL;
 	m_winUsb.GetOverlappedResult = NULL;
-		
+
 	if (m_libraryLoader->isLoaded())
 	{
 		m_winUsb.AbortPipe = (WinUSB_AbortPipe*)m_libraryLoader->resolve("WinUsb_AbortPipe");
@@ -78,10 +79,10 @@ void XsWinUsb::initLibrary()
 }
 
 /*! \brief Creates/opens a WinUsb interface handle from the device list.
-	
+
 	\param[out] InterfaceHandle	Receives a handle configured to the first (default) interface on the device. This handle is required by other WinUsb routines that perform operations on the default interface. The handle is opaque. To release this handle, call the \a Free function.
 	\param[in]	DevInfo	The device list element to open.
-	
+
 	\returns On success, TRUE. Otherwise FALSE. Use GetLastError() to get extended error information.
 */
 BOOL XsWinUsb::Initialize(HANDLE DeviceHandle, PWINUSB_INTERFACE_HANDLE InterfaceHandle)
@@ -94,7 +95,7 @@ BOOL XsWinUsb::Initialize(HANDLE DeviceHandle, PWINUSB_INTERFACE_HANDLE Interfac
 
 /*! \brief Frees a WinUsb interface handle.
 	\param[in] InterfaceHandle	Handle to an interface on the device. This handle must be created by a previous call to see \a Initialize or \a GetAssociatedInterface.
-	
+
 	\returns TRUE
 
 	\sa GetAssociatedInterface.
@@ -111,7 +112,7 @@ BOOL XsWinUsb::Free(WINUSB_INTERFACE_HANDLE InterfaceHandle)
 	\param[in]	InterfaceHandle	An initialized usb handle, see \a Initialize.
 	\param[in]	AssociatedInterfaceIndex	An index that specifies the associated interface to retrieve. A value of 0 indicates the first associated interface, a value of 1 indicates the second associated interface, and so on.
 	\param[out]	AssociatedInterfaceHandle	A handle for the associated interface. Callers must pass this interface handle to WinUsb Functions exposed by WinUsb.dll. To close this handle, call Free.
-	
+
 	\returns On success, TRUE. Otherwise FALSE. Use GetLastError() to get extended error information.
 */
 BOOL XsWinUsb::GetAssociatedInterface(WINUSB_INTERFACE_HANDLE InterfaceHandle,UCHAR AssociatedInterfaceIndex, PWINUSB_INTERFACE_HANDLE AssociatedInterfaceHandle)
@@ -122,7 +123,7 @@ BOOL XsWinUsb::GetAssociatedInterface(WINUSB_INTERFACE_HANDLE InterfaceHandle,UC
 		return FALSE;
 }
 
-/*! \brief Gets the requested descriptor. This is a synchronous operation. 
+/*! \brief Gets the requested descriptor. This is a synchronous operation.
 	\param[in]	InterfaceHandle	An initialized usb handle, see \a Initialize.
 	\param[in]	DescriptorType	A value that specifies the type of descriptor to return. This parameter corresponds to the bDescriptorType field of a standard device descriptor, whose values are described in the Universal Serial Bus specification.
 	\param[in]	Index	The descriptor index. For an explanation of the descriptor index, see the Universal Serial Bus specification (www.usb.org).
@@ -141,17 +142,17 @@ BOOL XsWinUsb::GetDescriptor(WINUSB_INTERFACE_HANDLE InterfaceHandle,UCHAR Descr
 		return FALSE;
 }
 
-/*! \brief Retrieves the interface descriptor for the specified alternate interface settings for a particular interface handle. 
+/*! \brief Retrieves the interface descriptor for the specified alternate interface settings for a particular interface handle.
 
-	The \a QueryInterfaceSettings call searches the current/default interface array for the alternate interface specified by the caller in the \a AltSettingIndex. 
-	If the specified alternate interface is found, the function populates the caller-allocated USB_INTERFACE_DESCRIPTOR structure. 
+	The \a QueryInterfaceSettings call searches the current/default interface array for the alternate interface specified by the caller in the \a AltSettingIndex.
+	If the specified alternate interface is found, the function populates the caller-allocated USB_INTERFACE_DESCRIPTOR structure.
 	If the specified alternate interface is not found, then the call fails with the ERROR_NO_MORE_ITEMS code.
 
 	\param[in]	InterfaceHandle	An initialized usb handle, see \a Initialize.
 	\param[in]	AltSettingIndex	A value that indicates which alternate setting index to return. A value of 0 indicates the first alternate setting, a value of 1 indicates the second alternate setting, and so on.
 	\param[out]	UsbAltInterfaceDescriptor	A pointer to a caller-allocated USB_INTERFACE_DESCRIPTOR structure that contains information about the interface that AltSettingNumber specified.
 
-	\returns On success, TRUE. Otherwise FALSE. Use GetLastError() to get extended error information. 
+	\returns On success, TRUE. Otherwise FALSE. Use GetLastError() to get extended error information.
 */
 BOOL XsWinUsb::QueryInterfaceSettings(WINUSB_INTERFACE_HANDLE InterfaceHandle,UCHAR AlternateInterfaceNumber,PUSB_INTERFACE_DESCRIPTOR UsbAltInterfaceDescriptor)
 {
@@ -169,7 +170,7 @@ BOOL XsWinUsb::QueryInterfaceSettings(WINUSB_INTERFACE_HANDLE InterfaceHandle,UC
 					(0x01) low/full speed device.
 					(0x03) high speed device.
 
-	\returns On success, TRUE. Otherwise FALSE. Use GetLastError() to get extended error information. 
+	\returns On success, TRUE. Otherwise FALSE. Use GetLastError() to get extended error information.
 */
 BOOL XsWinUsb::QueryDeviceInformation(WINUSB_INTERFACE_HANDLE InterfaceHandle,ULONG InformationType,PULONG BufferLength,PVOID Buffer)
 {
@@ -184,7 +185,7 @@ BOOL XsWinUsb::QueryDeviceInformation(WINUSB_INTERFACE_HANDLE InterfaceHandle,UL
 
 	\param[in]	InterfaceHandle	An initialized usb handle, see \a Initialize.
 	\param[in]	AltSettingNumber	The value that is contained in the \a bAlternateSetting member of the USB_INTERFACE_DESCRIPTOR structure. This structure can be populated by the \a QueryInterfaceSettings routine.
-	
+
 	\returns On success, TRUE. Otherwise FALSE. Use GetLastError() to get extended error information.
 
 	\sa QueryInterfaceSettings
@@ -216,19 +217,19 @@ BOOL XsWinUsb::GetCurrentAlternateSetting(WINUSB_INTERFACE_HANDLE InterfaceHandl
 /*! \brief Retrieves information about a pipe that is associated with an interface.
 	The \a QueryPipe function does not retrieve information about the control pipe.
 
-	Each interface on the USB device can have multiple endpoints. To communicate with each of these endpoints, the bus driver creates pipes for each endpoint on the interface. 
-	The pipe indices are zero-based. Therefore for n number of endpoints, the pipes' indices are set from n-1. 
-	\a QueryPipe parses the configuration descriptor to get the interface specified by the caller. 
-	It searches the interface descriptor for the endpoint descriptor associated with the caller-specified pipe. 
-	If the endpoint is found, the function populates the caller-allocated WINUSB_PIPE_INFORMATION structure with information from the endpoint descriptor. 
+	Each interface on the USB device can have multiple endpoints. To communicate with each of these endpoints, the bus driver creates pipes for each endpoint on the interface.
+	The pipe indices are zero-based. Therefore for n number of endpoints, the pipes' indices are set from n-1.
+	\a QueryPipe parses the configuration descriptor to get the interface specified by the caller.
+	It searches the interface descriptor for the endpoint descriptor associated with the caller-specified pipe.
+	If the endpoint is found, the function populates the caller-allocated WINUSB_PIPE_INFORMATION structure with information from the endpoint descriptor.
 
 	\param[in]	InterfaceHandle	An initialized usb handle, see \a Initialize.
 	\param[in]	AltSettingNumber	A value that specifies the alternate interface to return the information for.
-	\param[in]	PipeIndex	A value that specifies the pipe to return information about. This value is not the same as the bEndpointAddress field in the endpoint descriptor. 
-				A PipeIndex value of 0 signifies the first endpoint that is associated with the interface, a value of 1 signifies the second endpoint, and so on. 
+	\param[in]	PipeIndex	A value that specifies the pipe to return information about. This value is not the same as the bEndpointAddress field in the endpoint descriptor.
+				A PipeIndex value of 0 signifies the first endpoint that is associated with the interface, a value of 1 signifies the second endpoint, and so on.
 				PipeIndex must be less than the value in the bNumEndpoints field of the interface descriptor.
 	\param[out]	PipeInformation	A pointer, on output, to a caller-allocated WINUSB_PIPE_INFORMATION structure that contains pipe information.
-	
+
 	\returns On success, TRUE. Otherwise FALSE. Use GetLastError() to get extended error information.
 */
 BOOL XsWinUsb::QueryPipe(WINUSB_INTERFACE_HANDLE InterfaceHandle,UCHAR AlternateInterfaceNumber,UCHAR PipeIndex,PWINUSB_PIPE_INFORMATION PipeInformation)
@@ -242,7 +243,7 @@ BOOL XsWinUsb::QueryPipe(WINUSB_INTERFACE_HANDLE InterfaceHandle,UCHAR Alternate
 /*! \brief Sets the policy for a specific pipe associated with an endpoint on the device. This is a synchronous operation.
 	\param[in]	InterfaceHandle	An initialized usb handle, see \a Initialize.
 	\param[in]	PipeID	An 8-bit value that consists of a 7-bit address and a direction bit. This parameter corresponds to the bEndpointAddress field in the endpoint descriptor.
-	\param[in]	PolicyType	A UINT variable that specifies the policy parameter to change. The Value parameter contains the new value for the policy parameter. 
+	\param[in]	PolicyType	A UINT variable that specifies the policy parameter to change. The Value parameter contains the new value for the policy parameter.
 				See the remarks section for information about each of the pipe policies and the resulting behavior.
 	\param[in]	ValueLength	The size, in bytes, of the buffer at Value.
 	\param[in]	Value	The new value for the policy parameter that PolicyType specifies. The size of this input parameter depends on the policy to change. For information about the size of this parameter, see the description of the PolicyType parameter.
@@ -312,7 +313,7 @@ BOOL XsWinUsb::SetPipePolicy(WINUSB_INTERFACE_HANDLE InterfaceHandle,UCHAR PipeI
 	\param[in,out]	ValueLength	A pointer to the size, in bytes, of the buffer that Value points to. On output, ValueLength receives the size, in bytes, of the data that was copied into the Value buffer.
 	\param[out]	Value	A pointer to a buffer that receives the specified pipe policy value.
 
-	\returns On success, TRUE. Otherwise FALSE. Use GetLastError() to get extended error information. 
+	\returns On success, TRUE. Otherwise FALSE. Use GetLastError() to get extended error information.
 */
 BOOL XsWinUsb::GetPipePolicy(WINUSB_INTERFACE_HANDLE InterfaceHandle,UCHAR PipeID,ULONG PolicyType,PULONG ValueLength,PVOID Value)
 {
@@ -328,10 +329,10 @@ BOOL XsWinUsb::GetPipePolicy(WINUSB_INTERFACE_HANDLE InterfaceHandle,UCHAR PipeI
 	\param[out]	Buffer	A caller-allocated buffer that receives the data that is read.
 	\param[in]	BufferLength	The maximum number of bytes to read. This number must be less than or equal to the size, in bytes, of Buffer.
 	\param[out]	LengthTransferred	A pointer to a UINT variable that receives the actual number of bytes that were copied into Buffer. For more information, see Remarks.
-	\param[in]	Overlapped	An optional pointer to an overlapped structure for asynchronous operations. This can be a KOVL_HANDLE or a pointer to a standard windows OVERLAPPED structure. 
+	\param[in]	Overlapped	An optional pointer to an overlapped structure for asynchronous operations. This can be a KOVL_HANDLE or a pointer to a standard windows OVERLAPPED structure.
 			If this parameter is specified, \a ReadPipe returns immediately rather than waiting synchronously for the operation to complete before returning. An event is signaled when the operation is complete.
-	
-	\returns On success, TRUE. Otherwise FALSE. Use GetLastError() to get extended error information. 
+
+	\returns On success, TRUE. Otherwise FALSE. Use GetLastError() to get extended error information.
 */
 BOOL XsWinUsb::ReadPipe(WINUSB_INTERFACE_HANDLE InterfaceHandle,UCHAR PipeID,PUCHAR Buffer,ULONG BufferLength,PULONG LengthTransferred,LPOVERLAPPED Overlapped)
 {
@@ -347,10 +348,10 @@ BOOL XsWinUsb::ReadPipe(WINUSB_INTERFACE_HANDLE InterfaceHandle,UCHAR PipeID,PUC
 	\param[in]	Buffer	A caller-allocated buffer the data is written from.
 	\param[in]	BufferLength	The maximum number of bytes to write. This number must be less than or equal to the size, in bytes, of Buffer.
 	\param[out]	LengthTransferred	A pointer to a UINT variable that receives the actual number of bytes that were transferred from Buffer.
-	\param[in]	Overlapped	An optional pointer to an overlapped structure for asynchronous operations. This can be a KOVL_HANDLE or a pointer to a standard windows OVERLAPPED structure. 
+	\param[in]	Overlapped	An optional pointer to an overlapped structure for asynchronous operations. This can be a KOVL_HANDLE or a pointer to a standard windows OVERLAPPED structure.
 				If this parameter is specified, \a WritePipe returns immediately rather than waiting synchronously for the operation to complete before returning. An event is signaled when the operation is complete.
-	
-	\returns On success, TRUE. Otherwise FALSE. Use GetLastError() to get extended error information. 
+
+	\returns On success, TRUE. Otherwise FALSE. Use GetLastError() to get extended error information.
 */
 BOOL XsWinUsb::WritePipe(WINUSB_INTERFACE_HANDLE InterfaceHandle,UCHAR PipeID,PUCHAR Buffer,ULONG BufferLength,PULONG LengthTransferred,LPOVERLAPPED Overlapped)
 {
@@ -373,7 +374,7 @@ BOOL XsWinUsb::WritePipe(WINUSB_INTERFACE_HANDLE InterfaceHandle,UCHAR PipeID,PU
 	\param[in]	Overlapped	An optional pointer to an OVERLAPPED structure, which is used for asynchronous operations. If this parameter is specified, ControlTransfer immediately returns, and the event is signaled when the operation is complete. If Overlapped is not supplied, the ControlTransfer function transfers data synchronously.
 
 	\returns On success, TRUE. Otherwise FALSE. Use GetLastError() to get extended error information. If an Overlapped member is supplied and the operation succeeds this function returns FALSE and sets last error to ERROR_IO_PENDING.
-*/	
+*/
 BOOL XsWinUsb::ControlTransfer(WINUSB_INTERFACE_HANDLE InterfaceHandle,WINUSB_SETUP_PACKET SetupPacket,PUCHAR Buffer,ULONG BufferLength,PULONG LengthTransferred,LPOVERLAPPED Overlapped)
 {
 	if (m_winUsb.ControlTransfer)
@@ -386,7 +387,7 @@ BOOL XsWinUsb::ControlTransfer(WINUSB_INTERFACE_HANDLE InterfaceHandle,WINUSB_SE
 	\param[in]	InterfaceHandle	An initialized usb handle, see \a Initialize.
 	\param[in]	PipeID	An 8-bit value that consists of a 7-bit address and a direction bit. This parameter corresponds to the \a bEndpointAddress field in the endpoint descriptor.
 
-	\returns On success, TRUE. Otherwise FALSE. Use GetLastError() to get extended error information. 
+	\returns On success, TRUE. Otherwise FALSE. Use GetLastError() to get extended error information.
 */
 BOOL XsWinUsb::ResetPipe(WINUSB_INTERFACE_HANDLE InterfaceHandle,UCHAR PipeID)
 {
@@ -396,11 +397,11 @@ BOOL XsWinUsb::ResetPipe(WINUSB_INTERFACE_HANDLE InterfaceHandle,UCHAR PipeID)
 		return FALSE;
 }
 
-/*! \brief Aborts all of the pending transfers for a pipe. 
+/*! \brief Aborts all of the pending transfers for a pipe.
 	\param[in]	InterfaceHandle	An initialized usb handle, see \a Initialize.
 	\param[in]	PipeID	An 8-bit value that consists of a 7-bit address and a direction bit. This parameter corresponds to the \a bEndpointAddress field in the endpoint descriptor.
 
-	\returns On success, TRUE. Otherwise FALSE. Use GetLastError() to get extended error information. 
+	\returns On success, TRUE. Otherwise FALSE. Use GetLastError() to get extended error information.
 */
 BOOL XsWinUsb::AbortPipe(WINUSB_INTERFACE_HANDLE InterfaceHandle,UCHAR PipeID)
 {
@@ -410,11 +411,11 @@ BOOL XsWinUsb::AbortPipe(WINUSB_INTERFACE_HANDLE InterfaceHandle,UCHAR PipeID)
 		return FALSE;
 }
 
-/*! \brief Discards any data that is cached in a pipe.  
+/*! \brief Discards any data that is cached in a pipe.
 	\param[in]	InterfaceHandle	An initialized usb handle, see \a Initialize.
 	\param[in]	PipeID	An 8-bit value that consists of a 7-bit address and a direction bit. This parameter corresponds to the \a bEndpointAddress field in the endpoint descriptor.
 
-	\returns On success, TRUE. Otherwise FALSE. Use GetLastError() to get extended error information. 
+	\returns On success, TRUE. Otherwise FALSE. Use GetLastError() to get extended error information.
 */
 BOOL XsWinUsb::FlushPipe(WINUSB_INTERFACE_HANDLE InterfaceHandle,UCHAR PipeID)
 {
@@ -449,7 +450,7 @@ BOOL XsWinUsb::FlushPipe(WINUSB_INTERFACE_HANDLE InterfaceHandle,UCHAR PipeID)
 	\param[in]	ValueLength	The size, in bytes, of the buffer at Value.
 	\param[in]	Value	The new value for the power policy parameter. Data type and value for Value depends on the type of power policy passed in PolicyType. For more information, see PolicyType.
 
-	\returns On success, TRUE. Otherwise FALSE. Use GetLastError() to get extended error information. 
+	\returns On success, TRUE. Otherwise FALSE. Use GetLastError() to get extended error information.
 */
 BOOL XsWinUsb::SetPowerPolicy(WINUSB_INTERFACE_HANDLE InterfaceHandle,ULONG PolicyType,ULONG ValueLength,PVOID Value)
 {
@@ -475,8 +476,8 @@ BOOL XsWinUsb::SetPowerPolicy(WINUSB_INTERFACE_HANDLE InterfaceHandle,ULONG Poli
 
 	\param[in,out]	ValueLength	A pointer to the size of the buffer that Value. On output, ValueLength receives the size of the data that was copied into the Value buffer.
 	\param[out]	Value	A buffer that receives the specified power policy parameter. For more information, see PolicyType.
-	
-	\returns On success, TRUE. Otherwise FALSE. Use GetLastError() to get extended error information. 
+
+	\returns On success, TRUE. Otherwise FALSE. Use GetLastError() to get extended error information.
 */
 BOOL XsWinUsb::GetPowerPolicy(WINUSB_INTERFACE_HANDLE InterfaceHandle,ULONG PolicyType,PULONG ValueLength,PVOID Value)
 {
@@ -487,7 +488,7 @@ BOOL XsWinUsb::GetPowerPolicy(WINUSB_INTERFACE_HANDLE InterfaceHandle,ULONG Poli
 }
 
 /*! \brief Retrieves the results of an overlapped operation on the specified winUSB handle.
-	
+
 	This function is like the Win32 API routine, GetOverlappedResult, with one difference; instead of passing a file handle that is returned from CreateFile, the caller passes an interface handle that is returned from \a Initialize, or \a GetAssociatedInterface. The caller can use either API routine, if the appropriate handle is passed. The \a GetOverlappedResult function extracts the file handle from the interface handle and then calls GetOverlappedResult.
 	The results that are reported by the GetOverlappedResult function are those from the specified handle's last overlapped operation to which the specified standard windows OVERLAPPED structure was provided, and for which the operation's results were pending. A pending operation is indicated when the function that started the operation returns FALSE, and the GetLastError routine returns ERROR_IO_PENDING. When an I/O operation is pending, the function that started the operation resets the hEvent member of the standard windows OVERLAPPED structure to the nonsignaled state. Then when the pending operation has been completed, the system sets the event object to the signaled state.
 	The caller can specify that an event object is manually reset in the standard windows OVERLAPPED structure. If an automatic reset event object is used, the event handle must not be specified in any other wait operation in the interval between starting the overlapped operation and the call to \a GetOverlappedResult. For example, the event object is sometimes specified in one of the wait routines to wait for the operation to be completed. When the wait routine returns, the system sets an auto-reset event's state to nonsignaled, and a successive call to \a GetOverlappedResult with the bWait parameter set to TRUE causes the function to be blocked indefinitely.
@@ -500,7 +501,7 @@ BOOL XsWinUsb::GetPowerPolicy(WINUSB_INTERFACE_HANDLE InterfaceHandle,ULONG Poli
 	\param[out]	lpNumberOfBytesTransferred	A pointer to a variable that receives the number of bytes that were actually transferred by a read or write operation.
 	\param[in]	bWait	If this parameter is TRUE, the function does not return until the operation has been completed. If this parameter is FALSE and the operation is still pending, the function returns FALSE and the GetLastError function returns ERROR_IO_INCOMPLETE.
 
-	\returns On success, TRUE. Otherwise FALSE. Use GetLastError() to get extended error information. 
+	\returns On success, TRUE. Otherwise FALSE. Use GetLastError() to get extended error information.
 */
 BOOL XsWinUsb::GetOverlappedResult(WINUSB_INTERFACE_HANDLE InterfaceHandle,LPOVERLAPPED lpOverlapped,LPDWORD lpNumberOfBytesTransferred,BOOL bWait)
 {
@@ -509,3 +510,5 @@ BOOL XsWinUsb::GetOverlappedResult(WINUSB_INTERFACE_HANDLE InterfaceHandle,LPOVE
 	else
 		return FALSE;
 }
+
+#endif // patch for MRPT

@@ -79,7 +79,7 @@ private:
 		WinUSB_GetPowerPolicy (* GetPowerPolicy);
 		WinUSB_GetOverlappedResult (*GetOverlappedResult);
 	} WINUSB_API;
-	
+
 	WINUSB_API m_winUsb;
 	XsLibraryLoader* m_libraryLoader;
 
