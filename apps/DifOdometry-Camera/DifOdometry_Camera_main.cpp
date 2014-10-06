@@ -31,7 +31,7 @@ const char *default_cfg_txt =
 	"downsample = 2 \n\n"
 
 	"Set the frame rate (fps) to 30 or 60 Hz \n"
-	"fps = 60 \n\n"
+	"fps = 30 \n\n"
 
 	";Indicate the number of rows and columns. They must be equal or inferior to what is indicated with the 'downsample' variable). \n"
 	"rows = 60 \n"
