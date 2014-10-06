@@ -26,11 +26,10 @@ using namespace std;
 int main ( int argc, char** argv )
 {
 	openni::Status rc = openni::STATUS_OK;
-
 	openni::Device		device;
 	openni::VideoMode	options;
 	openni::VideoStream depth, rgb;
-	
+
 	//									Device is openned
 	//=======================================================================================
 	const char* deviceURI = openni::ANY_DEVICE;
@@ -38,9 +37,7 @@ int main ( int argc, char** argv )
 		deviceURI = argv[1];
 
 	rc = openni::OpenNI::initialize();
-
 	if (rc != openni::STATUS_OK) { printf("After initialization:\n %s\n", openni::OpenNI::getExtendedError()); }
-
 	rc = device.open(deviceURI);
 	
 	//cout << endl << "Do we have IR sensor? " << device.hasSensor(openni::SENSOR_IR);
@@ -54,59 +51,20 @@ int main ( int argc, char** argv )
 		return 1;
 	}
 
-	//								Create RGB and Depth channels
+	//							Create RGB and Depth channels
 	//========================================================================================
 	rc = depth.create(device, openni::SENSOR_DEPTH);
-	if (rc == openni::STATUS_OK)
-	{
-		rc = depth.start();
-		if (rc != openni::STATUS_OK)
-		{
-			printf("Couldn't start depth stream:\n%s\n", openni::OpenNI::getExtendedError());
-			depth.destroy();
-		}
-	}
-	else
-	{
-		printf("Couldn't find depth stream:\n%s\n", openni::OpenNI::getExtendedError());
-	}
-
-
 	rc = rgb.create(device, openni::SENSOR_COLOR);
-	if (rc == openni::STATUS_OK)
-	{
-		rc = rgb.start();
-		if (rc != openni::STATUS_OK)
-		{
-			printf("Couldn't start infrared stream:\n%s\n", openni::OpenNI::getExtendedError());
-			rgb.destroy();
-		}
-	}
-	else
-	{
-		printf("Couldn't find infrared stream:\n%s\n", openni::OpenNI::getExtendedError());
-	}
 
-	if (!depth.isValid() || !rgb.isValid())
-	{
-		printf("No valid streams. Exiting\n");
-		openni::OpenNI::shutdown();
-		return 2;
-	}
 
-	if (rc != openni::STATUS_OK)
-	{
-		openni::OpenNI::shutdown();
-		return 3;
-	}
-
-	//						Configure some properties (resolution)
+	//							Configure video properties
 	//========================================================================================
-
-	unsigned width = 320, height = 240;
+	int width = 640, height = 480;
 
 	rc = device.setImageRegistrationMode(openni::IMAGE_REGISTRATION_DEPTH_TO_COLOR);
 	//rc = device.setImageRegistrationMode(openni::IMAGE_REGISTRATION_OFF);
+	
+	openni::VideoMode vm;
 
 	options = rgb.getVideoMode();
 	printf("\nInitial resolution RGB (%d, %d)", options.getResolutionX(), options.getResolutionY());
@@ -123,7 +81,56 @@ int main ( int argc, char** argv )
 	options = depth.getVideoMode();
 	printf("\nNew resolution (%d, %d) \n", options.getResolutionX(), options.getResolutionY());
 
-    //Allow detection of closer points (although they will flicker)
+
+	rc = depth.start();
+	if (rc != openni::STATUS_OK)
+	{
+		printf("Couldn't start depth stream:\n%s\n", openni::OpenNI::getExtendedError());
+		depth.destroy();
+	}
+
+	rc = rgb.start();
+	if (rc != openni::STATUS_OK)
+	{
+		printf("Couldn't start rgb stream:\n%s\n", openni::OpenNI::getExtendedError());
+		rgb.destroy();
+	}
+
+	if (rc != openni::STATUS_OK)
+	{
+		openni::OpenNI::shutdown();
+		return 3;
+	}
+
+	if (!depth.isValid() || !rgb.isValid())
+	{
+		printf("No valid streams. Exiting\n");
+		openni::OpenNI::shutdown();
+		return 2;
+	}
+
+	//						Uncomment this to see the video modes available
+	//========================================================================================
+	////Depth modes
+	//for(unsigned int i = 0; i<depth.getSensorInfo().getSupportedVideoModes().getSize(); i++)
+	//{
+	//	vm = depth.getSensorInfo().getSupportedVideoModes()[i];
+	//	printf("\n Depth mode %d: %d x %d, fps - %d Hz, pixel format - ",i, vm.getResolutionX(), vm.getResolutionY(), vm.getFps());
+	//	cout << vm.getPixelFormat();
+	//	if ((vm.getResolutionX() == width)&&(vm.getPixelFormat() == openni::PIXEL_FORMAT_DEPTH_1_MM))
+	//		rc = depth.setVideoMode(vm);
+	//}
+	
+	////Colour modes
+	//for(unsigned int i = 0; i<rgb.getSensorInfo().getSupportedVideoModes().getSize(); i++)
+	//{
+	//	vm = rgb.getSensorInfo().getSupportedVideoModes()[i];
+	//	printf("\n RGB mode %d: %d x %d, fps - %d Hz, pixel format - ",i, vm.getResolutionX(), vm.getResolutionY(), vm.getFps());
+	//	cout << vm.getPixelFormat();
+	//}
+
+    //					Uncomment this to allow for closer points detection
+	//========================================================================================
 	//bool CloseRange;
 	//depth.setProperty(XN_STREAM_PROPERTY_CLOSE_RANGE, 1);
 	//depth.getProperty(XN_STREAM_PROPERTY_CLOSE_RANGE, &CloseRange);
@@ -132,7 +139,6 @@ int main ( int argc, char** argv )
 
 	//										Create scene
 	//========================================================================================
-
 	gui::CDisplayWindow3D window;
 	opengl::COpenGLScenePtr	scene;
 	gui::global_settings::OCTREE_RENDER_MAX_POINTS_PER_NODE = 1000000;
@@ -159,7 +165,6 @@ int main ( int argc, char** argv )
 
 	//							Grab frames continuously and show
 	//========================================================================================
-
 	slam::CColouredPointsMap points;
 	openni::VideoFrameRef framed, framergb;
 	
@@ -170,9 +175,8 @@ int main ( int argc, char** argv )
 		rgb.readFrame(&framergb);
 
 		if ((framed.getWidth() != framergb.getWidth()) || (framed.getHeight() != framergb.getHeight()))
-		{
 			cout << endl << "Both frames don't have the same size.";
-		}
+
 		else
 		{
 			//Read one frame
@@ -200,7 +204,7 @@ int main ( int argc, char** argv )
 
 		scene = window.get3DSceneAndLock();
 		kinectp->loadFromPointsMap<slam::CColouredPointsMap> (&points); 
-		system::sleep(10);
+		system::sleep(5);
 		window.unlockAccess3DScene();
 		window.repaint();
 	}

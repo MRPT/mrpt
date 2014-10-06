@@ -35,7 +35,6 @@ using namespace std;
 int main ( int argc, char** argv )
 {
 	openni::Status rc = openni::STATUS_OK;
-
 	openni::Device		device;
 	openni::VideoMode	options;
 	openni::VideoStream depth, infrared;
@@ -47,9 +46,7 @@ int main ( int argc, char** argv )
 		deviceURI = argv[1];
 
 	rc = openni::OpenNI::initialize();
-
 	if (rc != openni::STATUS_OK) { printf("After initialization:\n %s\n", openni::OpenNI::getExtendedError()); }
-
 	rc = device.open(deviceURI);
 
 	if (rc != openni::STATUS_OK)
@@ -61,36 +58,34 @@ int main ( int argc, char** argv )
 
 	//								Create IR and Depth channels
 	//========================================================================================
-
 	rc = depth.create(device, openni::SENSOR_DEPTH);
-	if (rc == openni::STATUS_OK)
-	{
-		rc = depth.start();
-		if (rc != openni::STATUS_OK)
-		{
-			printf("Couldn't start depth stream:\n%s\n", openni::OpenNI::getExtendedError());
-			depth.destroy();
-		}
-	}
-	else
-	{
-		printf("Couldn't find depth stream:\n%s\n", openni::OpenNI::getExtendedError());
-	}
-
-
 	rc = infrared.create(device, openni::SENSOR_IR);
-	if (rc == openni::STATUS_OK)
+
+	//							Read resolution and start streams
+	//========================================================================================
+	options = infrared.getVideoMode();
+	printf("\nInitial resolution IR (%d, %d)", options.getResolutionX(), options.getResolutionY());
+	options = depth.getVideoMode();
+	printf("\nInitial resolution Depth (%d, %d) \n", options.getResolutionX(), options.getResolutionY());
+
+	rc = depth.start();
+	if (rc != openni::STATUS_OK)
 	{
-		rc = infrared.start();
-		if (rc != openni::STATUS_OK)
-		{
-			printf("Couldn't start infrared stream:\n%s\n", openni::OpenNI::getExtendedError());
-			infrared.destroy();
-		}
+		printf("Couldn't start depth stream:\n%s\n", openni::OpenNI::getExtendedError());
+		depth.destroy();
 	}
-	else
+
+	rc = infrared.start();
+	if (rc != openni::STATUS_OK)
 	{
-		printf("Couldn't find infrared stream:\n%s\n", openni::OpenNI::getExtendedError());
+		printf("Couldn't start infrared stream:\n%s\n", openni::OpenNI::getExtendedError());
+		infrared.destroy();
+	}
+
+	if (rc != openni::STATUS_OK)
+	{
+		openni::OpenNI::shutdown();
+		return 3;
 	}
 
 	if (!depth.isValid() || !infrared.isValid())
@@ -100,26 +95,9 @@ int main ( int argc, char** argv )
 		return 2;
 	}
 
-	if (rc != openni::STATUS_OK)
-	{
-		openni::OpenNI::shutdown();
-		return 3;
-	}
-
-
-	//									Read resolution
-	//========================================================================================
-
-	options = infrared.getVideoMode();
-	printf("\nInitial resolution IR (%d, %d)", options.getResolutionX(), options.getResolutionY());
-
-	options = depth.getVideoMode();
-	printf("\nInitial resolution Depth (%d, %d) \n", options.getResolutionX(), options.getResolutionY());
-
 
 	//										Create scene
 	//========================================================================================
-
 	gui::CDisplayWindow3D window;
 	opengl::COpenGLScenePtr	scene;
 	gui::global_settings::OCTREE_RENDER_MAX_POINTS_PER_NODE = 1000000;
@@ -159,7 +137,7 @@ int main ( int argc, char** argv )
 	//========================================================================================
 
 	openni::VideoFrameRef framed, frameir;
-	const int ir_threshold = 500;
+	const int ir_threshold = 700;	//It can vary depending on the camera and the environment
 	float x,y;
 
 	while (!window.keyHit())	//Push any key to exit
@@ -201,7 +179,7 @@ int main ( int argc, char** argv )
 			}
 		}
 
-		system::sleep(10);
+		system::sleep(5);
 		window.unlockAccess3DScene();
 		window.repaint();
 
