@@ -14,8 +14,7 @@
 namespace Eigen {
 
 /**
-  * \defgroup MoreVectorization More vectorization module 
- * \ingroup eigen_grp
+  * \defgroup MoreVectorization More vectorization module
   */
 
 }

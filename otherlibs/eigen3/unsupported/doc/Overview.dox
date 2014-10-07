@@ -14,8 +14,7 @@ Don't miss the <a href="..//index.html">official Eigen documentation</a>.
 
 /*
 
-\defgroup Unsupported_modules Unsupported modules 
- * \ingroup eigen_grp
+\defgroup Unsupported_modules Unsupported modules
 
 The unsupported modules are contributions from various users. They are
 provided "as is", without any support. Nevertheless, some of them are

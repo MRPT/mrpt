@@ -10,8 +10,7 @@ extern "C" {
 }
 
 /** \ingroup Support_modules
-  * \defgroup CholmodSupport_Module CholmodSupport module 
- * \ingroup eigen_grp
+  * \defgroup CholmodSupport_Module CholmodSupport module
   *
   * This module provides an interface to the Cholmod library which is part of the <a href="http://www.cise.ufl.edu/research/sparse/SuiteSparse/">suitesparse</a> package.
   * It provides the two following main factorization classes:

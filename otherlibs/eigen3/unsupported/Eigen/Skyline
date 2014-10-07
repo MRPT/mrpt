@@ -20,8 +20,7 @@
 #include <algorithm>
 
 /**
- *  \defgroup Skyline_Module Skyline module 
- * \ingroup eigen_grp
+ *  \defgroup Skyline_Module Skyline module
  *
  *
  *

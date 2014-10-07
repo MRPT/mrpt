@@ -10,8 +10,7 @@
 #include <unsupported/Eigen/SparseExtra>
 
 /** \ingroup Support_modules
-  * \defgroup PardisoSupport_Module PardisoSupport module 
- * \ingroup eigen_grp
+  * \defgroup PardisoSupport_Module PardisoSupport module
   *
   * This module brings support for the Intel(R) MKL PARDISO direct sparse solvers.
   *

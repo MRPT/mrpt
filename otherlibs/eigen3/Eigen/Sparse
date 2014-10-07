@@ -1,8 +1,7 @@
 #ifndef EIGEN_SPARSE_MODULE_H
 #define EIGEN_SPARSE_MODULE_H
 
-/** \defgroup Sparse_Module Sparse meta-module 
- * \ingroup eigen_grp
+/** \defgroup Sparse_Module Sparse meta-module
   *
   * Meta-module including all related modules:
   * - \ref SparseCore_Module
