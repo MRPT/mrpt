@@ -17,6 +17,8 @@
 	- Lib changes:
 		- New library mrpt-nav (mrpt_nav_grp), subsumming the old mrpt-reactivenav (\sa mrpt_reactivenav_grp).
 		- "mrpt-reactivenav" is now a meta-library, depending on "mrpt-nav".
+		- These classes have been moved between libs for a more sensible organization:
+			- mrpt::slam::CDetectorDoorCrossing ==> mrpt::detectors::CDetectorDoorCrossing
 	- General changes:
 		- Many optimizations in function arguments (value vs ref). Forces ABI incompatibility with previous versions, hence the change to a new minor version number.
 	- Changes in classes:

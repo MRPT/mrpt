@@ -15,5 +15,6 @@
 #include <mrpt/detectors/CObjectDetection.h>
 #include <mrpt/detectors/CCascadeClassifierDetection.h>
 #include <mrpt/detectors/CFaceDetection.h>
+#include <mrpt/detectors/CDetectorDoorCrossing.h>
 
 #endif

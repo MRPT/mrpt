@@ -74,7 +74,6 @@ MRPT_WARNING("Including <mrpt/slam.h> makes compilation much slower, consider in
 #include <mrpt/slam/CICP.h>
 #include <mrpt/slam/CGridMapAligner.h>
 
-#include <mrpt/slam/CDetectorDoorCrossing.h>
 #include <mrpt/slam/CIncrementalMapPartitioner.h>
 #include <mrpt/slam/CPathPlanningMethod.h>
 #include <mrpt/slam/CPathPlanningCircularRobot.h>
