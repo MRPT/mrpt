@@ -5,7 +5,8 @@
 
 #include "src/Core/util/DisableStupidWarnings.h"
 
-/** \defgroup Householder_Module Householder module
+/** \defgroup Householder_Module Householder module 
+ * \ingroup eigen_grp
   * This module provides Householder transformations.
   *
   * \code

@@ -11,7 +11,8 @@ extern "C" {
 
 
 /** \ingroup Support_modules
-  * \defgroup MetisSupport_Module MetisSupport module
+  * \defgroup MetisSupport_Module MetisSupport module 
+ * \ingroup eigen_grp
   *
   * \code
   * #include <Eigen/MetisSupport>

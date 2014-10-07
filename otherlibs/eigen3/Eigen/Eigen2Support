@@ -27,7 +27,8 @@
 #include "src/Core/util/DisableStupidWarnings.h"
 
 /** \ingroup Support_modules
-  * \defgroup Eigen2Support_Module Eigen2 support module
+  * \defgroup Eigen2Support_Module Eigen2 support module 
+ * \ingroup eigen_grp
   *
   * \warning Eigen2 support is deprecated in Eigen 3.2.x and it will be removed in Eigen 3.3.
   *

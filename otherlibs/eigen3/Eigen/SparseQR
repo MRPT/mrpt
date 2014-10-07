@@ -5,7 +5,8 @@
 #include "OrderingMethods"
 #include "src/Core/util/DisableStupidWarnings.h"
 
-/** \defgroup SparseQR_Module SparseQR module
+/** \defgroup SparseQR_Module SparseQR module 
+ * \ingroup eigen_grp
   * \brief Provides QR decomposition for sparse matrices
   * 
   * This module provides a simplicial version of the left-looking Sparse QR decomposition. 

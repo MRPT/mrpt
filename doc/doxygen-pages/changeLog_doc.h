@@ -21,6 +21,7 @@
 			- mrpt::slam::CDetectorDoorCrossing ==> mrpt::detectors::CDetectorDoorCrossing
 			- mrpt::slam::CPathPlanningMethod & CPathPlanningCircularRobot: mrpt_slam_grp ==> mrpt_nav_grp
 	- General changes:
+		- Updated embedded version of Eigen to 3.2.2
 		- Many optimizations in function arguments (value vs ref). Forces ABI incompatibility with previous versions, hence the change to a new minor version number.
 	- Changes in classes:
 		- [mrpt-hwdrivers]

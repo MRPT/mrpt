@@ -30,7 +30,9 @@ const int DynamicIndex = 0xffffff;
   */
 const int Infinity = -1;
 
-/** \defgroup flags Flags
+/** \defgroup flags Flags  
+ * \ingroup eigen_grp
+ * \ingroup eigen_grp
   * \ingroup Core_Module
   *
   * These are the possible bits which can be OR'ed to constitute the flags of a matrix or
@@ -153,7 +155,9 @@ const unsigned int HereditaryBits = RowMajorBit
                                   | EvalBeforeNestingBit
                                   | EvalBeforeAssigningBit;
 
-/** \defgroup enums Enumerations
+/** \defgroup enums Enumerations  
+ * \ingroup eigen_grp
+ * \ingroup eigen_grp
   * \ingroup Core_Module
   *
   * Various enumerations used in %Eigen. Many of these are used as template parameters.

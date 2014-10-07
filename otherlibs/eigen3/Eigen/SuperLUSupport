@@ -29,7 +29,8 @@ typedef int int_t;
 namespace Eigen { struct SluMatrix; }
 
 /** \ingroup Support_modules
-  * \defgroup SuperLUSupport_Module SuperLUSupport module
+  * \defgroup SuperLUSupport_Module SuperLUSupport module 
+ * \ingroup eigen_grp
   *
   * This module provides an interface to the <a href="http://crd-legacy.lbl.gov/~xiaoye/SuperLU/">SuperLU</a> library.
   * It provides the following factorization class:
