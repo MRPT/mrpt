@@ -111,7 +111,7 @@ void CDifodo::calculateDepthDerivatives()
 
 void CDifodo::filterAndDownsample()
 {
-	CTicTac clock;
+	mrpt::utils::CTicTac clock;
 	
 	//Push the frames back
 	depth_old.swap(depth);

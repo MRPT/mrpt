@@ -53,10 +53,10 @@ namespace nav
 		  * \exception std::exception On any error
 		  */
 		void  computePath(
-				const COccupancyGridMap2D	&theMap,
-				const CPose2D				&origin,
-				const CPose2D				&target,
-				std::deque<math::TPoint2D>	&path,
+				const mrpt::slam::COccupancyGridMap2D	&theMap,
+				const mrpt::poses::CPose2D				&origin,
+				const mrpt::poses::CPose2D				&target,
+				std::deque<mrpt::math::TPoint2D>	&path,
 				bool						&notFound,
 				float						maxSearchPathLength = -1
 				) const;
