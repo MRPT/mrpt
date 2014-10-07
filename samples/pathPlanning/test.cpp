@@ -8,7 +8,7 @@
    +---------------------------------------------------------------------------+ */
 
 #include <mrpt/slam/COccupancyGridMap2D.h>
-#include <mrpt/nav/planner/CPathPlanningCircularRobot.h>
+#include <mrpt/nav/planners/CPathPlanningCircularRobot.h>
 #include <mrpt/gui/CDisplayWindow.h>
 #include <mrpt/utils/CTicTac.h>
 #include <mrpt/utils/CFileGZInputStream.h>

@@ -115,7 +115,6 @@ IF(BUILD_EXAMPLES)
 		RangeOnlyLocalization_RejectionSampling
 		benchmark-gridmaps
 		gridMapLikelihoodCharacterization
-		pathPlanning
 		gridRawlogSimulator
 		gauss_img_filtering
 		test-compress
@@ -154,6 +153,14 @@ IF(BUILD_EXAMPLES)
 	SET(CMAKE_EXAMPLE_LINK_LIBS ${MRPT_LINKER_LIBS})
 	GENERATE_CMAKE_FILES_SAMPLES_DIRECTORY()
 
+	# === Depending on: nav ===
+	#  list of examples for each directory:
+	SET(LIST_EXAMPLES_IN_THIS_DIR
+		pathPlanning
+		)
+	SET(CMAKE_EXAMPLE_DEPS mrpt-nav mrpt-gui)
+	SET(CMAKE_EXAMPLE_LINK_LIBS ${MRPT_LINKER_LIBS})
+	GENERATE_CMAKE_FILES_SAMPLES_DIRECTORY()
 
 	# === Depending on: obs ===
 	#  list of examples for each directory:
