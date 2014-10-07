@@ -16,6 +16,7 @@
 
 using namespace mrpt::hwdrivers;
 using namespace mrpt::system;
+using namespace std;
 
 IMPLEMENTS_GENERIC_SENSOR(CSwissRanger3DCamera,mrpt::hwdrivers)
 
@@ -367,7 +368,7 @@ void CSwissRanger3DCamera::getNextObservation(
 	}
 
 	// Initialize the output observation:
-	CObservation3DRangeScan obs;
+	slam::CObservation3DRangeScan obs;
 	obs.sensorLabel     = m_sensorLabel;
 	obs.sensorPose		= m_sensorPoseOnRobot;
 	obs.maxRange  = m_maxRange;
@@ -521,7 +522,7 @@ void CSwissRanger3DCamera::getNextObservation(
 
 				mrpt::utils::CImage  img;
 				// Normalize the image
-				CMatrixFloat  range2D = _out_obs.rangeImage;
+				math::CMatrixFloat  range2D = _out_obs.rangeImage;
 				range2D*= 1.0/m_maxRange;
 				img.setFromMatrix(range2D);
 				m_win_range->showImage(img);
