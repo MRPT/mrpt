@@ -7,20 +7,24 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#pragma once
-
-#include <mrpt/nav/reactive/CReactiveNavigationSystem.h>
-#include <mrpt/nav/reactive/CReactiveNavigationSystem3D.h>
-#include <mrpt/nav/reactive/CAbstractReactiveNavigationSystem.h>
-#include <mrpt/nav/tpspace/motion_planning_utils.h>
-#include <mrpt/nav/tpspace/CPTG1.h>
-#include <mrpt/nav/tpspace/CPTG2.h>
-#include <mrpt/nav/tpspace/CPTG3.h>
-#include <mrpt/nav/tpspace/CPTG4.h>
-#include <mrpt/nav/tpspace/CPTG5.h>
-#include <mrpt/nav/tpspace/CPTG6.h>
-#include <mrpt/nav/tpspace/CPTG7.h>
+#include "nav-precomp.h"   // Precompiled headers 
 
 #include <mrpt/nav/planners/CPathPlanningMethod.h>
-#include <mrpt/nav/planners/CPathPlanningCircularRobot.h>
 
+using namespace mrpt::slam;
+using namespace mrpt::utils;
+using namespace mrpt::poses;
+using namespace mrpt::nav;
+
+/*---------------------------------------------------------------
+						Constructor
+  ---------------------------------------------------------------*/
+CPathPlanningMethod::CPathPlanningMethod()
+	:	occupancyThreshold(0.7f),
+		minStepInReturnedPath(0.4f)
+{
+}
+
+
+/*---------------------------------------------------------------
+  ---------------------------------------------------------------*/
