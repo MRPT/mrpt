@@ -77,9 +77,10 @@ IF(BUILD_mrpt-opengl)
 	
 	# Link against assimp:
 	IF (CMAKE_MRPT_HAS_ASSIMP)
-		ADD_DEPENDENCIES(mrpt-opengl assimp)
+		IF (NOT CMAKE_MRPT_HAS_ASSIMP_SYSTEM)
+			ADD_DEPENDENCIES(mrpt-opengl assimp)
+		ENDIF (NOT CMAKE_MRPT_HAS_ASSIMP_SYSTEM)
 		TARGET_LINK_LIBRARIES(mrpt-opengl ${ASSIMP_LIBRARIES})
-	
 	ENDIF (CMAKE_MRPT_HAS_ASSIMP)
 
 ENDIF(BUILD_mrpt-opengl) 
