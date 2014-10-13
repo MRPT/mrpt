@@ -533,7 +533,7 @@ void CIMUXSens_MT4::doProcess()
 				XsVector vel_data = packet.velocity();
 
 				rGPS.speed_knots = sqrt(vel_data[0] * vel_data[0] + vel_data[1] * vel_data[1]);
-				rGPS.direction_degrees = atan( vel_data[1] / vel_data[0] ) * 180 / M_PI;
+				rGPS.direction_degrees = 0; //Could be worked out from velocity and magnatic field perhaps.
 			}
 			else rGPS.speed_knots = rGPS.direction_degrees = 0;
 
