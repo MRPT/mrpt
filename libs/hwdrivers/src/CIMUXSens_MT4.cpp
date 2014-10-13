@@ -632,6 +632,10 @@ void CIMUXSens_MT4::initialize()
 			configArray.push_back( XsOutputConfiguration(XDI_MagneticField,m_sampleFreq) );
 			configArray.push_back( XsOutputConfiguration(XDI_VelocityXYZ,m_sampleFreq) );
 
+			configArray.push_back( XsOutputConfiguration(XDI_StatusByte,100) );
+			configArray.push_back( XsOutputConfiguration(XDI_LatLon,100) );
+			configArray.push_back( XsOutputConfiguration(XDI_GpsTimeUtc,100) );
+
 			if (!my_xsens_device.setOutputConfiguration(configArray))
 				throw std::runtime_error("Could not configure MTmk4 device. Aborting.");
 		}
