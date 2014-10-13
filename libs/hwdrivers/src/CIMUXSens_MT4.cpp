@@ -13,6 +13,7 @@
 #include <mrpt/system/threads.h>
 #include <mrpt/hwdrivers/CIMUXSens_MT4.h>
 #include <mrpt/slam/CObservationIMU.h>
+#include <mrpt/slam/CObservationGPS.h>
 
 IMPLEMENTS_GENERIC_SENSOR(CIMUXSens_MT4,mrpt::hwdrivers)
 
@@ -48,6 +49,7 @@ using namespace std;
 	#include <xsens/streaminterface.h>
 	#include <xsens/xsportinfoarray.h>
 	#include <xsens/xsdatapacket.h>
+	#include <xsens/xsstatusflag.h>
 	#include <xsens/xstime.h>
 	#include <xsens/legacydatapacket.h>
 	#include <xsens/int_xsdatapacket.h>
@@ -446,6 +448,11 @@ void CIMUXSens_MT4::doProcess()
 			obs->rawMeasurements[IMU_TEMPERATURE]   = packet.temperature(); obs->dataIsPresent[IMU_TEMPERATURE]   = true;
 		}
 
+		if (packet.containsAltitude())
+		{
+			obs->rawMeasurements[IMU_ALTITUDE ]   = packet.altitude(); obs->dataIsPresent[IMU_ALTITUDE ]   = true;
+		}
+
 		// TimeStamp
 		if (packet.containsSampleTime64())
 		{
@@ -463,15 +470,75 @@ void CIMUXSens_MT4::doProcess()
 			double AtDO	= AtUI * 1000.0;								// Difference in intervals of 100 nsecs
 			obs->timestamp		= m_timeStartTT	+ AtDO;
 		}
-		else
+		else if (packet.containsUtcTime())
 		{
-			obs->timestamp		= mrpt::system::now();
+			XsUtcTime utc = packet.utcTime();
+
+			mrpt::system::TTimeParts parts;
+
+			parts.day_of_week = 0;
+			parts.daylight_saving = 0;
+			parts.year = utc.m_year;
+			parts.month = utc.m_month;
+			parts.day = utc.m_day;
+			parts.hour = utc.m_hour;
+			parts.minute = utc.m_minute;
+			parts.second = utc.m_second + (utc.m_nano * 1000000.0);
+
+			obs->timestamp = mrpt::system::buildTimestampFromParts(parts);
 		}
+		else obs->timestamp		= mrpt::system::now();
 
 		obs->sensorPose		= m_sensorPose;
 		obs->sensorLabel	= m_sensorLabel;
 
 		appendObservation(obs);
+
+		if (packet.containsLatitudeLongitude())
+		{
+			XsVector lla_data = packet.latitudeLongitude();
+
+			CObservationGPSPtr obsGPS = CObservationGPSPtr( new CObservationGPS() );
+			CObservationGPS::TGPSDatum_RMC& rGPS = obsGPS->RMC_datum;
+
+			rGPS.latitude_degrees = lla_data[0];
+			rGPS.longitude_degrees = lla_data[0];
+
+			if (packet.containsStatus() && packet.status() & XSF_GpsValid)
+				rGPS.validity_char = 'A';
+			else
+				rGPS.validity_char = 'V';
+
+			if (packet.containsUtcTime())
+			{
+				XsUtcTime utc = packet.utcTime();
+				rGPS.UTCTime.hour = utc.m_hour;
+				rGPS.UTCTime.minute = utc.m_minute;
+				rGPS.UTCTime.sec = utc.m_second + (utc.m_nano * 1000000.0);
+			}
+			else
+			{
+				rGPS.UTCTime.hour = ((obs->timestamp / (60 * 60 * ((uint64_t)1000000 / 100))) % 24);
+				rGPS.UTCTime.minute = ((obs->timestamp / (60 * ((uint64_t)1000000 / 100))) % 60);
+				rGPS.UTCTime.sec = fmod(obs->timestamp / (1000000.0 / 100), 60);
+			}
+
+			obsGPS->has_RMC_datum = true;
+			obsGPS->timestamp = obs->timestamp;
+			obsGPS->sensorPose	= m_sensorPose;
+			obsGPS->sensorLabel	= m_sensorLabel;
+
+			if (packet.containsVelocity())
+			{
+				XsVector vel_data = packet.velocity();
+
+				rGPS.speed_knots = sqrt(vel_data[0] * vel_data[0] + vel_data[1] * vel_data[1]);
+				rGPS.direction_degrees = atan( vel_data[1] / vel_data[0] ) * 180 / M_PI;
+			}
+			else rGPS.speed_knots = rGPS.direction_degrees = 0;
+
+			appendObservation(obsGPS);
+		}
 
 		std::cout << std::flush;
 	}
