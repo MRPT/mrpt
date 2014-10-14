@@ -20,6 +20,7 @@
 		- These classes have been moved between libs for a more sensible organization:
 			- mrpt::slam::CDetectorDoorCrossing ==> mrpt::detectors::CDetectorDoorCrossing
 			- mrpt::slam::CPathPlanningMethod & CPathPlanningCircularRobot: mrpt_slam_grp ==> mrpt_nav_grp
+		- Add GPS observations to CIMUXSens_MT4 for Xsens devices like GTi-G-700 which have GPS (by Joe Burmeister for Suave Aerial Software)
 	- General changes:
 		- Updated embedded version of Eigen to 3.2.2
 		- Many optimizations in function arguments (value vs ref). Forces ABI incompatibility with previous versions, hence the change to a new minor version number.
