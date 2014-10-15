@@ -114,7 +114,12 @@ endif (ENABLE_SOLUTION_FOLDERS)
 
 
 # Build the ARIA library?
-SET(BUILD_ARIA ON CACHE BOOL "Build an embedded version of ActivMedia ARIA library (interface to mobile robots)")
+SET(DEFAULT_BUILD_ARIA ON) # Default: Yes
+if ("${CMAKE_MRPT_KERNEL}" MATCHES "GNU")   # Unless in HURD
+	SET(DEFAULT_BUILD_ARIA OFF)
+endif ("${CMAKE_MRPT_KERNEL}" MATCHES "GNU")
+# Decl option:
+SET(BUILD_ARIA ${DEFAULT_BUILD_ARIA} CACHE BOOL "Build an embedded version of ActivMedia ARIA library (interface to mobile robots)")
 IF(BUILD_ARIA)
 	SET(CMAKE_MRPT_HAS_ARIA 1)
 ELSE(BUILD_ARIA)
@@ -122,7 +127,12 @@ ELSE(BUILD_ARIA)
 ENDIF(BUILD_ARIA)
 
 # Build the RoboPeak Lidar library?
-SET(BUILD_ROBOPEAK_LIDAR ON CACHE BOOL "Build an embedded version of RoboPeak LIDAR SDK (interface to low-cost lidar)")
+SET(DEFAULT_BUILD_ROBOPEAK_LIDAR ON) # Default: Yes
+if ("${CMAKE_MRPT_KERNEL}" MATCHES "GNU")   # Unless in HURD
+	SET(DEFAULT_BUILD_ROBOPEAK_LIDAR OFF)
+endif ("${CMAKE_MRPT_KERNEL}" MATCHES "GNU")
+# Decl option:
+SET(BUILD_ROBOPEAK_LIDAR ${DEFAULT_BUILD_ROBOPEAK_LIDAR} CACHE BOOL "Build an embedded version of RoboPeak LIDAR SDK (interface to low-cost lidar)")
 IF(BUILD_ROBOPEAK_LIDAR)
 	SET(CMAKE_MRPT_HAS_ROBOPEAK_LIDAR 1)
 ELSE(BUILD_ROBOPEAK_LIDAR)
