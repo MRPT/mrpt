@@ -280,7 +280,13 @@ void raw_serial::_init()
     required_tx_cnt = required_rx_cnt = 0;
 }
 
-
+// Patch for some versions of libc (at least, linux/sparc):
+#ifndef B2500000
+#define  B2500000 0010014
+#define  B3000000 0010015
+#define  B3500000 0010016
+#define  B4000000 0010017
+#endif
 
 _u32 raw_serial::getTermBaudBitmap(_u32 baud)
 {
