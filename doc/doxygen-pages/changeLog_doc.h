@@ -24,6 +24,9 @@
 	- General changes:
 		- Updated embedded version of Eigen to 3.2.2
 		- Many optimizations in function arguments (value vs ref). Forces ABI incompatibility with previous versions, hence the change to a new minor version number.
+		- Kinect: Dropped support for the CL NUI API, which seems discontinued. Alternatives in use are libfreenect and OpenNI2.
+		- libfreenect is now detected in the system and used instead of compiling the embedded copy of it.
+		- Embedded copy of libfreenect has been updated to (23/oct/2014). It now supports "Kinect for Windows".
 	- Changes in classes:
 		- [mrpt-hwdrivers]
 			- mrpt::hwdrivers::CIMUXSens_MT4: Upgrade to latest XSens SDK 4.2.1. Requires libudev-dev in Linux (Patch by Joe Burmeister).

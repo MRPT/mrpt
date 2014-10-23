@@ -1,11 +1,3 @@
-/* +---------------------------------------------------------------------------+
-   |                     Mobile Robot Programming Toolkit (MRPT)               |
-   |                          http://www.mrpt.org/                             |
-   |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
-   | See: http://www.mrpt.org/Authors - All rights reserved.                   |
-   | Released under BSD License. See details in http://www.mrpt.org/License    |
-   +---------------------------------------------------------------------------+ */
 #include "failguard.h"
 #include "libusbemu_threads.h"
 
@@ -67,7 +59,7 @@ int ThreadFailGuardProc(void* params)
   int user_option =
   MessageBoxA(GetDesktopWindow(),
               "The libusb_handle_events() fail guard of libusbemu was reached!\n"
-              "This was caused by pressing the [ESC] key on the console window.\n"
+              "This was caused by pressing and holding the [CTRL] + [ALT] keys.\n"
               "If it was unintentional, click Cancel to resume normal execution;\n"
               "otherwise, click OK to effectively terminate the thread (note that\n"
               "the host program might run abnormally after such termination).",
