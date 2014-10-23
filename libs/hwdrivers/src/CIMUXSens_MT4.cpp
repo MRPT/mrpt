@@ -635,6 +635,7 @@ void CIMUXSens_MT4::initialize()
 			configArray.push_back( XsOutputConfiguration(XDI_StatusByte, m_sampleFreq) );
 			configArray.push_back( XsOutputConfiguration(XDI_LatLon, m_sampleFreq) );
 			configArray.push_back( XsOutputConfiguration(XDI_GpsTimeUtc, m_sampleFreq) );
+			configArray.push_back( XsOutputConfiguration(XDI_AltitudeMsl, m_sampleFreq) );
 
 			if (!my_xsens_device.setOutputConfiguration(configArray))
 				throw std::runtime_error("Could not configure MTmk4 device. Aborting.");
