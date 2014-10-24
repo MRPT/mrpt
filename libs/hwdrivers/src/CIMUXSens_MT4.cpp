@@ -508,7 +508,7 @@ void CIMUXSens_MT4::doProcess()
 			CObservationGPS::TGPSDatum_RMC& rGPS = obsGPS->RMC_datum;
 
 			rGPS.latitude_degrees = lla_data[0];
-			rGPS.longitude_degrees = lla_data[0];
+			rGPS.longitude_degrees = lla_data[1];
 
 			if (packet.containsStatus() && packet.status() & XSF_GpsValid)
 				rGPS.validity_char = 'A';
