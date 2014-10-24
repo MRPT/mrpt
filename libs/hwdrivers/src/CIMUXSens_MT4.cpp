@@ -409,6 +409,12 @@ void CIMUXSens_MT4::doProcess()
 			obs->rawMeasurements[IMU_YAW]   = DEG2RAD(euler.yaw());   obs->dataIsPresent[IMU_YAW] = true;
 			obs->rawMeasurements[IMU_PITCH] = DEG2RAD(euler.pitch()); obs->dataIsPresent[IMU_PITCH]   = true;
 			obs->rawMeasurements[IMU_ROLL]  = DEG2RAD(euler.roll());  obs->dataIsPresent[IMU_ROLL]  = true;
+
+			XsQuaternion quat = packet.orientationQuaternion();
+			obs->rawMeasurements[IMU_ORI_QUAT_X]   = quat.m_x;   obs->dataIsPresent[IMU_ORI_QUAT_X] = true;
+			obs->rawMeasurements[IMU_ORI_QUAT_Y]   = quat.m_y;   obs->dataIsPresent[IMU_ORI_QUAT_Y] = true;
+			obs->rawMeasurements[IMU_ORI_QUAT_Z]   = quat.m_z;   obs->dataIsPresent[IMU_ORI_QUAT_Z] = true;
+			obs->rawMeasurements[IMU_ORI_QUAT_W]   = quat.m_w;   obs->dataIsPresent[IMU_ORI_QUAT_W] = true;
 		}
 
 		if (packet.containsCalibratedAcceleration())
