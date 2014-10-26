@@ -29,7 +29,7 @@ IF(wxWidgets_FOUND)
 	ENDIF(WIN32)
 
 	# Define the executable target:
-	ADD_EXECUTABLE(2d-slam-demo WIN32 ${SRCS})
+	ADD_EXECUTABLE(2d-slam-demo WIN32 ${SRCS} ${MRPT_VERSION_RC_FILE})
 
 	SET(TMP_TARGET_NAME "2d-slam-demo")
 

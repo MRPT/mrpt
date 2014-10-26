@@ -135,7 +135,10 @@ macro(internal_define_mrpt_lib name headers_only is_metalib)
 	IF (NOT ${headers_only})
 
 		# A libray target:
-		ADD_LIBRARY(mrpt-${name}   ${all_${name}_srcs})
+		ADD_LIBRARY(mrpt-${name}   
+			${all_${name}_srcs}      # sources
+			${MRPT_VERSION_RC_FILE}  # Only !="" in Win32: the .rc file with version info
+			)
 
 	ELSE(NOT ${headers_only})
 
