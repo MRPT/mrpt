@@ -100,14 +100,17 @@ void mrpt::vision::pinhole::projectPoints_with_distortion(
 	proj_matrix[5] = intrinsicParams.get_unsafe(1,2);
 
 	// Do the projection:
-	cvProjectPointsSimple(
-		N, // int point_count,
-		&objPoints[0],
-		rotation_matrix,
-		translation_vector,
-		&proj_matrix[0],
-		const_cast<double*>(&distortionParams[0]),
-		&imgPoints[0] );
+	CvMat object_points = cvMat( N, 1, CV_64FC3, &objPoints[0] );
+	CvMat image_points = cvMat( N, 1, CV_64FC2, &imgPoints[0] );
+	CvMat _rotation_matrix = cvMat( 3, 3, CV_64FC1, rotation_matrix );
+	CvMat _translation_vector = cvMat( 3, 1, CV_64FC1, translation_vector );
+	CvMat camera_matrix = cvMat( 3, 3, CV_64FC1, &proj_matrix[0] );
+	CvMat dist_coeffs = cvMat( 4, 1, CV_64FC1, const_cast<double*>(&distortionParams[0]) );
+
+	cvProjectPoints2( 
+		&object_points, &_rotation_matrix, &_translation_vector,
+		&camera_matrix, &dist_coeffs, &image_points,
+		0, 0, 0, 0, 0, 0 );
 
 	for (size_t i=0;i<N;i++)
 	{

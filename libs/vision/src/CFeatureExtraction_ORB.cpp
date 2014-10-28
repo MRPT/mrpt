@@ -53,10 +53,9 @@ void  CFeatureExtraction::extractFeaturesORB(
 	CFeatureList			    & feats,
 	const unsigned int			init_ID,
 	const unsigned int			nDesiredFeatures,
-	const TImageROI			    & ROI,
-	const CMatrixBool           * mask )  const
+	const TImageROI			    & ROI )  const
 {
-	MRPT_UNUSED_PARAM(ROI); MRPT_UNUSED_PARAM(mask);
+	MRPT_UNUSED_PARAM(ROI);
 	MRPT_START
 
 #if MRPT_HAS_OPENCV
@@ -66,8 +65,9 @@ void  CFeatureExtraction::extractFeaturesORB(
 
 	using namespace cv;
 
-	vector<KeyPoint>	cv_feats;							// The opencv keypoint output vector
-	Mat					cv_descs;
+	vector<KeyPoint> cv_feats; // OpenCV keypoint output vector
+	Mat              cv_descs; // OpenCV descriptor output
+
 	const bool use_precomputed_feats = feats.size() > 0;
 
 	if( use_precomputed_feats )
@@ -85,9 +85,14 @@ void  CFeatureExtraction::extractFeaturesORB(
 
 	// The detector and descriptor
 	const size_t n_feats_2_extract = nDesiredFeatures == 0 ? 1000 : 3*nDesiredFeatures;
-	cv::Ptr<cv::ORB> orb_detector = cv::ORB::create(n_feats_2_extract, options.ORBOptions.scale_factor, options.ORBOptions.n_levels );
-	Mat cvImg( inImg_gray.getAs<IplImage>() );
-	orb_detector->detect( cvImg, Mat(), cv_feats, cv_descs, use_precomputed_feats );
+
+	Ptr<Feature2D> orb = Algorithm::create<Feature2D>("Feature2D.ORB");
+	
+	// For opencv 3.0??:
+	//cv::Ptr<cv::ORB> orb_detector = cv::ORB::create( n_feats_2_extract, options.ORBOptions.scale_factor, options.ORBOptions.n_levels );
+
+	const Mat cvImg( inImg_gray.getAs<IplImage>() );
+	orb->operator()( cvImg, Mat(), cv_feats, cv_descs, use_precomputed_feats );
 	
 	const size_t n_feats = cv_feats.size();
 

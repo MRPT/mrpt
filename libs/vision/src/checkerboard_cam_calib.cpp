@@ -285,20 +285,45 @@ bool mrpt::vision::checkerBoardCameraCalibration(
 		double distortion[4];
 
 		vector<CvPoint3D64f> transVects( valid_detected_imgs );
-        vector<double>        rotMatrs( valid_detected_imgs * 9 );
+		vector<double>        rotMatrs( valid_detected_imgs * 9 );
 
 		// Calibrate camera
-		cvCalibrateCamera_64d(
-			valid_detected_imgs,
-			&numsPoints[0],
-			imgSize,
-			&corners_list[0],
-			&obj_points[0],
-			distortion,
-			proj_matrix,
-			(double*)&transVects[0],
-			&rotMatrs[0],
-			0 );
+		//cvCalibrateCamera_64d(
+		//	valid_detected_imgs,
+		//	&numsPoints[0],
+		//	imgSize,
+		//	&corners_list[0],
+		//	&obj_points[0],
+		//	distortion,
+		//	proj_matrix,
+		//	(double*)&transVects[0],
+		//	&rotMatrs[0],
+		//	0 );
+//void cvCalibrateCamera_64d( int image_count, int* _point_counts,
+//    CvSize image_size, CvPoint2D64f* _image_points, CvPoint3D64f* _object_points,
+//    double* _distortion_coeffs, double* _camera_matrix, double* _translation_vectors,
+//    double* _rotation_matrices, int flags )
+		{
+			CvMat point_counts = cvMat( valid_detected_imgs, 1, CV_32SC1, &numsPoints[0] );
+			CvMat image_points, object_points;
+			CvMat dist_coeffs = cvMat( 4, 1, CV_64FC1, distortion );
+			CvMat camera_matrix = cvMat( 3, 3, CV_64FC1, proj_matrix );
+			CvMat rotation_matrices = cvMat( valid_detected_imgs, 9, CV_64FC1, &rotMatrs[0] );
+			CvMat translation_vectors = cvMat( valid_detected_imgs, 3, CV_64FC1, (double*)&transVects[0] );
+
+			size_t total = 0;
+			for(size_t i = 0; i < valid_detected_imgs; i++ )
+				total += numsPoints[i];
+
+			image_points = cvMat( total, 1, CV_64FC2, &corners_list[0] );
+			object_points = cvMat( total, 1, CV_64FC3, &obj_points[0] );
+
+			cvCalibrateCamera2( &object_points, &image_points, &point_counts, imgSize,
+				&camera_matrix, &dist_coeffs, &rotation_matrices, &translation_vectors,
+				0 /*flags*/ );
+		}
+
+
 
 		// Load matrix:
 		out_camera_params.intrinsicParams = CMatrixDouble33( proj_matrix );

@@ -30,6 +30,8 @@
 	- Changes in classes:
 		- [mrpt-hwdrivers]
 			- mrpt::hwdrivers::CIMUXSens_MT4: Upgrade to latest XSens SDK 4.2.1. Requires libudev-dev in Linux (Patch by Joe Burmeister).
+		- [mrpt-vision]
+			- mrpt::vision::CFeatureExtraction: Removed (unused) optional ROI parameter in detectors.
 
 <hr>
 <a name="1.2.2">

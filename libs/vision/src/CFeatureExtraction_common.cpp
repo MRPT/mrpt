@@ -47,13 +47,12 @@ void  CFeatureExtraction::detectFeatures(
 		CFeatureList			& feats,
 		const unsigned int		init_ID,
 		const unsigned int		nDesiredFeatures,
-		const TImageROI			& ROI,
-		const CMatrixBool       * mask) const
+		const TImageROI			& ROI) const
 {
 	switch( options.featsType )
 	{
 		case featHarris:
-
+			MRPT_TODO("Refactor: check if OpenCV's tile method can be directly called to save space here?")
 			if( options.harrisOptions.tile_image )
 			{
 				mrpt::utils::CTicTac tictac;
@@ -179,7 +178,7 @@ void  CFeatureExtraction::detectFeatures(
 			break;
 
 		case featFAST:
-			extractFeaturesFAST(img, feats, init_ID, nDesiredFeatures, ROI, mask);
+			extractFeaturesFAST(img, feats, init_ID, nDesiredFeatures, ROI);
 			break;
 
 		case featFASTER9:

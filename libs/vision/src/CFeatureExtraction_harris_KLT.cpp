@@ -22,14 +22,14 @@ using namespace std;
 
 
 /************************************************************************************************
-*								selectGoodFeaturesKLT  									        *
+*							extractFeaturesKLT
 ************************************************************************************************/
-void CFeatureExtraction::selectGoodFeaturesKLT(
-		const mrpt::utils::CImage		&inImg,
-		CFeatureList		&feats,
-		unsigned int		init_ID,
-		unsigned int		nDesiredFeatures,
-		void				*mask_ ) const
+void CFeatureExtraction::extractFeaturesKLT(
+		const mrpt::utils::CImage			&inImg,
+		CFeatureList			&feats,
+		unsigned int			init_ID,
+		unsigned int			nDesiredFeatures,
+		const TImageROI			&ROI) const
 {
 //#define VERBOSE_TIMING
 
@@ -41,43 +41,34 @@ void CFeatureExtraction::selectGoodFeaturesKLT(
 		#if MRPT_HAS_OPENCV
         const unsigned int MAX_COUNT = 300;
 
-		// Reinterpret opencv formal arguments
-		CvMatrix *mask = reinterpret_cast<CvMatrix*>(mask_);
-
 		// -----------------------------------------------------------------
 		// Create OpenCV Local Variables
 		// -----------------------------------------------------------------
 		int				count = 0;
 		int				nPts;
 
-		CvImage img, cGrey;
-
 #ifdef VERBOSE_TIMING
 		tictac.Tic();
 #endif
-		img.attach( const_cast<IplImage*>(inImg.getAs<IplImage>()), false );	// Attach Image as IplImage and do not use ref counter
+		const cv::Mat img( inImg.getAs<IplImage>() );
+
 #ifdef VERBOSE_TIMING
 		cout << "[KLT] Attach: " << tictac.Tac()*1000.0f << endl;
 #endif
-		if( img.channels() == 1 )
-			cGrey = img;										// Input image is already 'grayscale'
-		else
-		{
-			cGrey.create( cvGetSize( img ), 8, 1);
-			cvCvtColor( img, cGrey, CV_BGR2GRAY );				// Convert input image into 'grayscale'
-		}
+		const CImage inImg_gray( inImg, FAST_REF_OR_CONVERT_TO_GRAY );
+		const cv::Mat cGrey(inImg_gray.getAs<IplImage>() );
 
 		nDesiredFeatures <= 0 ? nPts = MAX_COUNT : nPts = nDesiredFeatures;
 
 		std::vector<CvPoint2D32f> points(nPts);
 
-		CvImage eig, temp;									// temporary and auxiliary images
+		//CvImage eig, temp;									// temporary and auxiliary images
 
 #ifdef VERBOSE_TIMING
 		tictac.Tic();
 #endif
-		eig.create( cvGetSize( cGrey ), 32, 1 );
-		temp.create( cvGetSize( cGrey ), 32, 1 );
+		//eig.create( cvGetSize( cGrey ), 32, 1 );
+		//temp.create( cvGetSize( cGrey ), 32, 1 );
 #ifdef VERBOSE_TIMING
 		cout << "[KLT] Create: " << tictac.Tac()*1000.0f << endl;
 #endif
@@ -93,38 +84,24 @@ void CFeatureExtraction::selectGoodFeaturesKLT(
 		// -----------------------------------------------------------------
 		// Select good features with subpixel accuracy (USING HARRIS OR KLT)
 		// -----------------------------------------------------------------
-		if( options.featsType == featHarris )
-		{
+		const bool use_harris = ( options.featsType == featHarris );
+
 #ifdef VERBOSE_TIMING
-			tictac.Tic();
+		tictac.Tic();
 #endif
-			cvGoodFeaturesToTrack( cGrey, eig, temp, &points[0], &count,	// input and output data
-				(double)options.harrisOptions.threshold,					// for rejecting weak local maxima ( with min_eig < threshold*max(eig_image) )
-				(double)options.harrisOptions.min_distance,					// minimum distance between features
-				mask ? (*mask) : static_cast<const CvMat*>(NULL),			// ROI
-				(double)options.harrisOptions.radius,						// size of the block of pixels used
-				1,															// use Harris
-				options.harrisOptions.k );									// k factor for the Harris algorithm
+		std::vector<cv::Point2f> corners;
+		cv::goodFeaturesToTrack(
+			cGrey,corners, nPts, 
+			(double)options.harrisOptions.threshold,    // for rejecting weak local maxima ( with min_eig < threshold*max(eig_image) )
+			(double)options.harrisOptions.min_distance, // minimum distance between features
+			cv::noArray(), // mask
+			3, // blocksize
+			use_harris, /* harris */
+			options.harrisOptions.k 
+			);
 #ifdef VERBOSE_TIMING
-			cout << "[KLT] Find feats: " << tictac.Tac()*1000.0f << endl;
+		cout << "[KLT] Find feats: " << tictac.Tac()*1000.0f << endl;
 #endif
-		}
-		else
-		{
-#ifdef VERBOSE_TIMING
-			tictac.Tic();
-#endif
-			cvGoodFeaturesToTrack( cGrey, eig, temp, &points[0], &count,	// input and output data
-				(double)options.KLTOptions.threshold,						// for rejecting weak local maxima ( with min_eig < threshold*max(eig_image) )
-				(double)options.KLTOptions.min_distance,					// minimum distance between features
-				mask ? (*mask) : static_cast<const CvMat*>(NULL),			// ROI
-				options.KLTOptions.radius,									// size of the block of pixels used
-				0,															// use Kanade Lucas Tomasi
-				0.04 );														// un-used parameter
-#ifdef VERBOSE_TIMING
-			cout << "[KLT]: Find feats: " << tictac.Tac()*1000.0f << endl;
-#endif
-		}
 
 		if( nDesiredFeatures > 0 && count < nPts )
 			cout << "\n[WARNING][selectGoodFeaturesKLT]: Only " << count << " of " << nDesiredFeatures << " points could be extracted in the image." << endl;
@@ -135,9 +112,9 @@ void CFeatureExtraction::selectGoodFeaturesKLT(
 			tictac.Tic();
 #endif
 			// Subpixel interpolation
-			cvFindCornerSubPix( cGrey, &points[0], count,
-				cvSize(3,3), cvSize(-1,-1),
-				cvTermCriteria( CV_TERMCRIT_ITER|CV_TERMCRIT_EPS, 10, 0.05 ));
+			cv::cornerSubPix(cGrey,corners,
+				cv::Size(3,3), cv::Size(-1,-1),
+				cv::TermCriteria( CV_TERMCRIT_ITER|CV_TERMCRIT_EPS, 10, 0.05 ));
 
 #ifdef VERBOSE_TIMING
 			cout << "[KLT] subpixel: " << tictac.Tac()*1000.0f << endl;
@@ -211,6 +188,8 @@ void CFeatureExtraction::selectGoodFeaturesKLT(
 
 } // end of function
 
+MRPT_TODO("Delete? Refactor / join to mrpt::vision::CGenericFeatureTracker?")
+#if 0
 /*------------------------------------------------------------
 					findMoreFeatures
 -------------------------------------------------------------*/
@@ -225,11 +204,7 @@ void  CFeatureExtraction::findMoreFeatures( const mrpt::utils::CImage &img,
 	if( options.featsType == featHarris || options.featsType == featKLT )
 	{
 		// Mask the points already stored in the list
-		CvMatrix mask( img.getHeight(), img.getWidth(), CV_8UC1 );
-		CvScalar zero = cvRealScalar( 0.0 );
-		CvScalar one = cvRealScalar( 1.0 );
-
-		cvSet( mask, one );												// Set the whole mask to 1 initially
+		cv::Mat mask = cv::Mat::ones(img.getHeight(), img.getWidth(), CV_8UC1 ); // Set the whole mask to 1 initially
 
 		CFeatureList::const_iterator itKLT;
 
@@ -242,7 +217,7 @@ void  CFeatureExtraction::findMoreFeatures( const mrpt::utils::CImage &img,
 
 			// Mask surronding pixels
 			size_t xxI = max( 0, cx - 15 );
-			size_t xxE = min( cx + 15, (int)mask.cols()-1 );
+			size_t xxE = min( cx + 15, mask.cols()-1 );
 			size_t yyI = max( 0, cy - 15 );
 			size_t yyE = min( cy + 15, (int)mask.rows()-1 );
 
@@ -283,18 +258,21 @@ void  CFeatureExtraction::findMoreFeatures( const mrpt::utils::CImage &img,
 	THROW_EXCEPTION("MRPT was compiled without OpenCV")
 #endif
 } // end findMoreFeatures
+#endif
 
+
+MRPT_TODO("Delete? Is not this a duplicate of extractFeaturesKLT ()???")
+#if 0
 /************************************************************************************************
-*								extractFeaturesKLT												*
+*								selectGoodFeaturesKLT												*
 ************************************************************************************************/
-void  CFeatureExtraction::extractFeaturesKLT(
+void  CFeatureExtraction::selectGoodFeaturesKLT(
 		const mrpt::utils::CImage			&img,
 		CFeatureList			&feats,
 		unsigned int			init_ID,
-		unsigned int			nDesiredFeatures,
-		const TImageROI			&ROI) const
+		unsigned int			nDesiredFeatures) const
 {
-#if MRPT_HAS_OPENCV
+#if  MRPT_HAS_OPENCV
 	// Get image size
 	size_t imgW = img.getWidth();
 	size_t imgH = img.getHeight();
@@ -365,5 +343,6 @@ void  CFeatureExtraction::extractFeaturesKLT(
 #endif
 }
 
+#endif
 
 
