@@ -85,9 +85,9 @@ void  CFeatureExtraction::extractFeaturesORB(
 
 	// The detector and descriptor
 	const size_t n_feats_2_extract = nDesiredFeatures == 0 ? 1000 : 3*nDesiredFeatures;
-	ORB orb_detector( n_feats_2_extract, options.ORBOptions.scale_factor, options.ORBOptions.n_levels );
+	cv::Ptr<cv::ORB> orb_detector = cv::ORB::create(n_feats_2_extract, options.ORBOptions.scale_factor, options.ORBOptions.n_levels );
 	Mat cvImg( inImg_gray.getAs<IplImage>() );
-	orb_detector( cvImg, Mat(), cv_feats, cv_descs, use_precomputed_feats );
+	orb_detector->detect( cvImg, Mat(), cv_feats, cv_descs, use_precomputed_feats );
 	
 	const size_t n_feats = cv_feats.size();
 
