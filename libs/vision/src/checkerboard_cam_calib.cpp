@@ -58,6 +58,41 @@ bool mrpt::vision::checkerBoardCameraCalibration(
 	return ret;
 }
 
+#if MRPT_HAS_OPENCV
+// JL says:  This was copied here since it seems OpenCV 2.3 had a broken <opencv2/core/eigen.hpp> header.
+//  It should be removed in the future when 2.3 becomes too old to support.
+namespace cv {
+template<typename _Tp, int _rows, int _cols, int _options, int _maxRows, int _maxCols>
+void my_cv2eigen( const Mat& src,
+			   Eigen::Matrix<_Tp, _rows, _cols, _options, _maxRows, _maxCols>& dst )
+{
+	CV_DbgAssert(src.rows == _rows && src.cols == _cols);
+	if( !(dst.Flags & Eigen::RowMajorBit) )
+	{
+		Mat _dst(src.cols, src.rows, DataType<_Tp>::type,
+				 dst.data(), (size_t)(dst.stride()*sizeof(_Tp)));
+		if( src.type() == _dst.type() )
+			transpose(src, _dst);
+		else if( src.cols == src.rows )
+		{
+			src.convertTo(_dst, _dst.type());
+			transpose(_dst, _dst);
+		}
+		else
+			Mat(src.t()).convertTo(_dst, _dst.type());
+		CV_DbgAssert(_dst.data == (uchar*)dst.data());
+	}
+	else
+	{
+		Mat _dst(src.rows, src.cols, DataType<_Tp>::type,
+				 dst.data(), (size_t)(dst.stride()*sizeof(_Tp)));
+		src.convertTo(_dst, _dst.type());
+		CV_DbgAssert(_dst.data == (uchar*)dst.data());
+	}
+}
+}
+#endif
+
 /* -------------------------------------------------------
 				checkerBoardCameraCalibration
    ------------------------------------------------------- */
@@ -300,13 +335,13 @@ bool mrpt::vision::checkerBoardCameraCalibration(
 				cv::Rodrigues(rvecs[i],cv_rot);
 
 				Eigen::Matrix3d rot;
-				cv::cv2eigen(cv_rot, rot );
+				cv::my_cv2eigen(cv_rot, rot );
 				HM.block<3,3>(0,0) = rot;
 			}
 
 			{
 				Eigen::Matrix<double,3,1> trans;
-				cv::cv2eigen(tvecs[i], trans );
+				cv::my_cv2eigen(tvecs[i], trans );
 				HM.block<3,1>(0,3) = trans;
 			}
 

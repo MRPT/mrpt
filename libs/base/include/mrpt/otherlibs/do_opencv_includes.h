@@ -38,7 +38,7 @@
 #		endif
 #		include <opencv2/calib3d/calib3d.hpp>
 #		include <opencv2/objdetect/objdetect.hpp>
-#		include <opencv2/core/eigen.hpp>
+//#		include <opencv2/core/eigen.hpp>  // Removed: opencv 2.3 had this file broken in Ubuntu (??)
 #		// These ones dissapeared in 3.0.0:  <opencv2/legacy/{legacy,compat}.hpp>  // CvImage
 #		if (MRPT_OPENCV_VERSION_NUM>=0x240) && MRPT_HAS_OPENCV_NONFREE
 #			include <opencv2/nonfree/nonfree.hpp>
