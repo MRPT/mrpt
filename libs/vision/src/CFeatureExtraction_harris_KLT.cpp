@@ -50,13 +50,13 @@ void CFeatureExtraction::extractFeaturesKLT(
 #ifdef VERBOSE_TIMING
 		tictac.Tic();
 #endif
-		const cv::Mat img( inImg.getAs<IplImage>() );
+		const cv::Mat img( cv::cvarrToMat( inImg.getAs<IplImage>() ) );
 
 #ifdef VERBOSE_TIMING
 		cout << "[KLT] Attach: " << tictac.Tac()*1000.0f << endl;
 #endif
 		const CImage inImg_gray( inImg, FAST_REF_OR_CONVERT_TO_GRAY );
-		const cv::Mat cGrey(inImg_gray.getAs<IplImage>() );
+		const cv::Mat cGrey( cv::cvarrToMat( inImg_gray.getAs<IplImage>() ) );
 
 		nDesiredFeatures <= 0 ? nPts = MAX_COUNT : nPts = nDesiredFeatures;
 

@@ -52,7 +52,7 @@ void  CFeatureExtraction::extractFeaturesSURF(
 	//surf->set("upright", params.upright != 0);
 	surf->set("extended", options.SURFOptions.rotation_invariant);
 
-	surf->operator()(img, Mat(), cv_feats, cv_descs);
+	surf->detectAndCompute(img, Mat(), cv_feats, cv_descs);
 	
 	// -----------------------------------------------------------------
 	// MRPT Wrapping

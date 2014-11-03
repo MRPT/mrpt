@@ -2081,7 +2081,7 @@ int icvGenerateQuads( vector<CvCBQuadPtr> &out_quads, vector<CvCBCornerPtr> &out
     {
         CvCBQuadPtr &q = out_quads[quad_count];
         src_contour = *(CvSeq**)cvGetSeqElem( root, idx );
-        if( (flags & CV_CALIB_CB_FILTER_QUADS) && src_contour->v_prev != (CvSeq*)board )
+        if( (flags & cv::CALIB_CB_FILTER_QUADS) && src_contour->v_prev != (CvSeq*)board )
             continue;
 
         // Reset group ID

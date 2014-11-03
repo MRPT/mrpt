@@ -69,6 +69,7 @@ namespace mrpt
 		 *            CImage  img;
 		 *            ...
 		 *            // Call to OpenCV function expecting an "IplImage *" or a "void* arr":
+		 *            cv::Mat cvImg = cv::cvarrToMat( img.getAs<IplImage>() );
 		 *            cvFunction( img.getAs<IplImage>(), ... );
 		 *         \endcode
 		 *		- Only the unsigned 8-bit storage format for pixels (on each channel) is supported.

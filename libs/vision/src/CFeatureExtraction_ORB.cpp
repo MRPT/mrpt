@@ -82,17 +82,18 @@ void  CFeatureExtraction::extractFeaturesORB(
 	
 	// Make sure we operate on a gray-scale version of the image:
 	const CImage inImg_gray( inImg, FAST_REF_OR_CONVERT_TO_GRAY );
+	const Mat cvImg = cv::cvarrToMat( inImg_gray.getAs<IplImage>() );
 
 	// The detector and descriptor
 	const size_t n_feats_2_extract = nDesiredFeatures == 0 ? 1000 : 3*nDesiredFeatures;
 
+#	if MRPT_OPENCV_VERSION_NUM < 0x300
 	Ptr<Feature2D> orb = Algorithm::create<Feature2D>("Feature2D.ORB");
-	
-	// For opencv 3.0??:
-	//cv::Ptr<cv::ORB> orb_detector = cv::ORB::create( n_feats_2_extract, options.ORBOptions.scale_factor, options.ORBOptions.n_levels );
-
-	const Mat cvImg( inImg_gray.getAs<IplImage>() );
 	orb->operator()( cvImg, Mat(), cv_feats, cv_descs, use_precomputed_feats );
+#else
+	Ptr<cv::ORB> orb = cv::ORB::create( n_feats_2_extract, options.ORBOptions.scale_factor, options.ORBOptions.n_levels );
+	orb->detectAndCompute(cvImg, Mat(), cv_feats, cv_descs, use_precomputed_feats );
+#endif
 	
 	const size_t n_feats = cv_feats.size();
 
@@ -254,9 +255,17 @@ void CFeatureExtraction::internal_computeORBDescriptors(
 		kp.angle	= in_features[k]->orientation;
 		kp.size		= in_features[k]->scale;
 	} // end-for
-	ORB orb_detector( n_feats, options.ORBOptions.scale_factor, options.ORBOptions.n_levels );
+
+	Mat cvImg(cv::cvarrToMat(inImg_gray.getAs<IplImage>()));
 	Mat cv_descs;
-	orb_detector( Mat(inImg_gray.getAs<IplImage>()), Mat(), cv_feats, cv_descs, true );
+
+#	if MRPT_OPENCV_VERSION_NUM < 0x300
+	Ptr<Feature2D> orb = Algorithm::create<Feature2D>("Feature2D.ORB");
+	orb->operator()( cvImg, Mat(), cv_feats, cv_descs, use_precomputed_feats );
+#else
+	Ptr<cv::ORB> orb = cv::ORB::create( n_feats, options.ORBOptions.scale_factor, options.ORBOptions.n_levels );
+	orb->detectAndCompute(cvImg, Mat(), cv_feats, cv_descs, true /* use_precomputed_feats */ );
+#endif
 
 	// add descriptor to CFeatureList
 	for( size_t k = 0; k < n_feats; ++k )
