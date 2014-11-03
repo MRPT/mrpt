@@ -274,7 +274,7 @@ bool mrpt::vision::checkerBoardCameraCalibration(
 		cv::Mat cameraMatrix, distCoeffs(1,4,CV_64F,cv::Scalar::all(0));
 		vector<cv::Mat> rvecs, tvecs;
 
-		//const double err = 
+		const double cv_calib_err = 
 		cv::calibrateCamera(
 			objectPoints,imagePoints,imgSize,
 			cameraMatrix, distCoeffs, rvecs, tvecs,
@@ -290,13 +290,25 @@ bool mrpt::vision::checkerBoardCameraCalibration(
 		// Load camera poses:
 		for (i=0;i<valid_detected_imgs;i++)
 		{
-			CMatrixDouble HM(4,4);
+			CMatrixDouble44 HM;
 			HM.zeros();
 			HM(3,3)=1;
 
-			HM.block<3,3>(0,0) = Eigen::Map<Eigen::Matrix3d>( rvecs[i].ptr<double>() );
+			{
+				// Convert rotation vectors -> rot matrices:
+				cv::Mat cv_rot;
+				cv::Rodrigues(rvecs[i],cv_rot);
 
-			HM.block<3,1>(0,3) = Eigen::Map<Eigen::Matrix<double,3,1> >( tvecs[i].ptr<double>() );
+				Eigen::Matrix3d rot;
+				cv::cv2eigen(cv_rot, rot );
+				HM.block<3,3>(0,0) = rot;
+			}
+
+			{
+				Eigen::Matrix<double,3,1> trans;
+				cv::cv2eigen(tvecs[i], trans );
+				HM.block<3,1>(0,3) = trans;
+			}
 
 			CPose3D p = CPose3D(0,0,0) - CPose3D(HM);
 
@@ -382,7 +394,7 @@ bool mrpt::vision::checkerBoardCameraCalibration(
 		if (valid_detected_imgs)
 		{
 			sqrErr /= CORNERS_COUNT*valid_detected_imgs;
-			std::cout << "Average err. of reprojection: " << sqrt(sqrErr) << " pixels" << std::endl;
+			std::cout << "Average err. of reprojection: " << sqrt(sqrErr) << " pixels (OpenCV error=" << cv_calib_err << ")\n";
 		}
 		if(out_MSE) *out_MSE = sqrt(sqrErr);
 
