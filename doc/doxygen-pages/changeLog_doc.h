@@ -15,21 +15,22 @@
 <a name="1.3.0">
   <h2>Version 1.3.0: (Under development) </h2></a>
 	- Lib changes:
-		- New library mrpt-nav (mrpt_nav_grp), subsumming the old mrpt-reactivenav (\sa mrpt_reactivenav_grp).
-		- "mrpt-reactivenav" is now a meta-library, depending on "mrpt-nav".
+		- New library mrpt-nav (\a mrpt_nav_grp), subsumming the old mrpt-reactivenav (\a mrpt_reactivenav_grp).
+		- \a mrpt_reactivenav_grp is now a meta-library, depending on \a mrpt_nav_grp.
 		- These classes have been moved between libs for a more sensible organization:
 			- mrpt::slam::CDetectorDoorCrossing ==> mrpt::detectors::CDetectorDoorCrossing
-			- mrpt::slam::CPathPlanningMethod & CPathPlanningCircularRobot: mrpt_slam_grp ==> mrpt_nav_grp
-		- Add GPS observations to CIMUXSens_MT4 for Xsens devices like GTi-G-700 which have GPS (by Joe Burmeister for Suave Aerial Software)
+			- mrpt::slam::CPathPlanningMethod & CPathPlanningCircularRobot: \a mrpt_slam_grp ==> \a mrpt_nav_grp
 	- General changes:
-		- Updated embedded version of Eigen to 3.2.2
 		- Many optimizations in function arguments (value vs ref). Forces ABI incompatibility with previous versions, hence the change to a new minor version number.
+		- Updated embedded version of Eigen to 3.2.2
 		- Kinect: Dropped support for the CL NUI API, which seems discontinued. Alternatives in use are libfreenect and OpenNI2.
 		- libfreenect is now detected in the system and used instead of compiling the embedded copy of it.
 		- Embedded copy of libfreenect has been updated to (23/oct/2014). It now supports "Kinect for Windows".
 	- Changes in classes:
 		- [mrpt-hwdrivers]
-			- mrpt::hwdrivers::CIMUXSens_MT4: Upgrade to latest XSens SDK 4.2.1. Requires libudev-dev in Linux (Patch by Joe Burmeister).
+			- mrpt::hwdrivers::CIMUXSens_MT4: (by Joe Burmeister for Suave Aerial Software)
+				- Upgrade to latest XSens SDK 4.2.1. Requires libudev-dev in Linux
+				- Add GPS observations to CIMUXSens_MT4 for Xsens devices like GTi-G-700 which have GPS 
 		- [mrpt-vision]
 			- mrpt::vision::CFeatureExtraction: Removed (unused) optional ROI parameter in detectors.
 
