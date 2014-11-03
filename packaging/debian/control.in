@@ -30,7 +30,7 @@ Build-Depends: debhelper (>= 9),
 	libjs-jquery,
 	libassimp-dev,
 	libfreenect-dev
-Standards-Version: 3.9.5
+Standards-Version: 3.9.6
 Homepage: http://www.mrpt.org/
 
 Package: mrpt-doc
