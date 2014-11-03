@@ -25,22 +25,22 @@
 #		include <opencv2/highgui/highgui_c.h>
 #		include <opencv2/imgproc/imgproc_c.h>
 #	else
-#		include <opencv2/core.hpp>
+#		include <opencv2/core/core.hpp>
 #		include <opencv2/core/core_c.h>
-#		include <opencv2/highgui.hpp>
+#		include <opencv2/highgui/highgui.hpp>
 #		include <opencv2/highgui/highgui_c.h>
-#		include <opencv2/imgproc.hpp>
+#		include <opencv2/imgproc/imgproc.hpp>
 #		include <opencv2/imgproc/imgproc_c.h>
-#		include <opencv2/features2d.hpp>
+#		include <opencv2/features2d/features2d.hpp>
 #		include <opencv2/video/tracking.hpp>
 #		if MRPT_OPENCV_VERSION_NUM>=0x300
 #			include <opencv2/video/tracking_c.h>
 #		endif
-#		include <opencv2/calib3d.hpp>
-#		include <opencv2/objdetect.hpp>
+#		include <opencv2/calib3d/calib3d.hpp>
+#		include <opencv2/objdetect/objdetect.hpp>
 #		// These ones dissapeared in 3.0.0:  <opencv2/legacy/{legacy,compat}.hpp>  // CvImage
 #		if (MRPT_OPENCV_VERSION_NUM>=0x240) && MRPT_HAS_OPENCV_NONFREE
-#			include <opencv2/nonfree.hpp>
+#			include <opencv2/nonfree/nonfree.hpp>
 #		endif
 #	endif
 #	else

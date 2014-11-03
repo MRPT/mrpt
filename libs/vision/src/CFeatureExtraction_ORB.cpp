@@ -261,7 +261,7 @@ void CFeatureExtraction::internal_computeORBDescriptors(
 
 #	if MRPT_OPENCV_VERSION_NUM < 0x300
 	Ptr<Feature2D> orb = Algorithm::create<Feature2D>("Feature2D.ORB");
-	orb->operator()( cvImg, Mat(), cv_feats, cv_descs, use_precomputed_feats );
+	orb->operator()( cvImg, Mat(), cv_feats, cv_descs, true /* use_precomputed_feats */ );
 #else
 	Ptr<cv::ORB> orb = cv::ORB::create( n_feats, options.ORBOptions.scale_factor, options.ORBOptions.n_levels );
 	orb->detectAndCompute(cvImg, Mat(), cv_feats, cv_descs, true /* use_precomputed_feats */ );
