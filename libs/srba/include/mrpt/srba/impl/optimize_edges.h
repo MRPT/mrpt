@@ -282,10 +282,12 @@ void RbaEngine<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::optimize_edges(
 
 #if 0  // Save a sparse block representation of the Jacobian.
 	{
+		static unsigned int dbg_idx = 0;
 		CMatrixDouble Jbin;
 		rba_state.lin_system.dh_dAp.getBinaryBlocksRepresentation(Jbin);
-		Jbin.saveToTextFile("sparse_jacobs_blocks.txt", mrpt::math::MATRIX_FORMAT_INT );
-		rba_state.lin_system.dh_dAp.saveToTextFileAsDense("sparse_jacobs.txt");
+		Jbin.saveToTextFile(mrpt::format("sparse_jacobs_blocks_%05u.txt",dbg_idx), mrpt::math::MATRIX_FORMAT_INT );
+		rba_state.lin_system.dh_dAp.saveToTextFileAsDense(mrpt::format("sparse_jacobs_%05u.txt",dbg_idx));
+		++dbg_idx;
 		mrpt::system::pause();
 	}
 #endif
