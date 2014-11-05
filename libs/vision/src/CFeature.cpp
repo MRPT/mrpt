@@ -365,6 +365,7 @@ void  CFeature::readFromStream(CStream &in,int version)
 	{
 	case 0:
 	case 1:
+	case 2:
 		{
 			// The coordinates:
 			uint32_t aux_type, aux_KLTS;
