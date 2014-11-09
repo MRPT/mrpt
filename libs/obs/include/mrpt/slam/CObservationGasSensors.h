@@ -84,19 +84,10 @@ namespace slam
 		  */
 		std::vector<TObservationENose>		m_readings;
 
-		/** A general method to retrieve the sensor pose on the robot.
-		  *  Note that most sensors will return a full (6D) CPose3D, but see the derived classes for more details or special cases.
-		  * \sa setSensorPose
-		  */
+		// See base class docs
 		void getSensorPose( CPose3D &out_sensorPose ) const;
-
-
-		/** A general method to change the sensor pose on the robot.
-		  *  Note that most sensors will use the full (6D) CPose3D, but see the derived classes for more details or special cases.
-		  * \sa getSensorPose
-		  */
+		// See base class docs
 		void setSensorPose( const CPose3D &newSensorPose );
-
 
 					/** Declares a class within "CObservationGasSensors" that represents a set of gas concentration readings from the modelation of a MOS gas sensor readings.
 					 * This class provides the parameters and functions to simulate the inverse model of a MOS gas sensor.

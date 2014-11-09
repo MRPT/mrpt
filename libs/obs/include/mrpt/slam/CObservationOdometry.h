@@ -54,16 +54,9 @@ namespace mrpt
 			float	velocityLin, velocityAng;
 
 
-			/** A general method to retrieve the sensor pose on the robot.
-			  *  It has no effects in this class
-			  * \sa setSensorPose
-			  */
+			// See base class docs
 			void getSensorPose( CPose3D &out_sensorPose ) const { out_sensorPose=CPose3D(0,0,0); }
-
-			/** A general method to change the sensor pose on the robot.
-			  *  It has no effects in this class
-			  * \sa getSensorPose
-			  */
+			// See base class docs
 			void setSensorPose( const CPose3D & ) {  }
 
 		}; // End of class def.

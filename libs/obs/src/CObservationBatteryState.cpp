@@ -89,3 +89,13 @@ void  CObservationBatteryState::readFromStream(CStream &in, int version)
 
 }
 
+// See base class docs
+void CObservationBatteryState::getSensorPose( CPose3D &out_sensorPose ) const { 
+	out_sensorPose=CPose3D(0,0,0); 
+}
+		
+// See base class docs
+void CObservationBatteryState::setSensorPose( const CPose3D &newSensorPose ) {
+	MRPT_UNUSED_PARAM(newSensorPose);
+}
+

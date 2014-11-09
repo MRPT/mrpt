@@ -62,17 +62,9 @@ namespace slam
 		  */
 		void  getRectifiedImage( CImage &out_img ) const;
 
-		/** A general method to retrieve the sensor pose on the robot.
-		  *  Note that most sensors will return a full (6D) CPose3D, but see the derived classes for more details or special cases.
-		  * \sa setSensorPose
-		  */
+		// See base class docs
 		void getSensorPose( CPose3D &out_sensorPose ) const { out_sensorPose = cameraPose; }
-
-
-		/** A general method to change the sensor pose on the robot.
-		  *  Note that most sensors will use the full (6D) CPose3D, but see the derived classes for more details or special cases.
-		  * \sa getSensorPose
-		  */
+		// See base class docs
 		void setSensorPose( const CPose3D &newSensorPose ) { cameraPose = newSensorPose; }
 
 	}; // End of class def.

@@ -289,17 +289,10 @@ namespace slam
 		CPose3D	sensorPose;	//!< The 6D pose of the sensor on the robot.
 		float	stdError;	//!< The "sigma" error of the device in meters, used while inserting the scan in an occupancy grid.
 
-
-		/** A general method to retrieve the sensor pose on the robot.
-		  *  Note that most sensors will return a full (6D) CPose3D, but see the derived classes for more details or special cases.
-		  * \sa setSensorPose
-		  */
+		// See base class docs
 		void getSensorPose( CPose3D &out_sensorPose ) const { out_sensorPose = sensorPose; }
 
-		/** A general method to change the sensor pose on the robot.
-		  *  Note that most sensors will use the full (6D) CPose3D, but see the derived classes for more details or special cases.
-		  * \sa getSensorPose
-		  */
+		// See base class docs
 		void setSensorPose( const CPose3D &newSensorPose ) { sensorPose = newSensorPose; }
 
 		void swap(CObservation3DRangeScan &o);	//!< Very efficient method to swap the contents of two observations.
