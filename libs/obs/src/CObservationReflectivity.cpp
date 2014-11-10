@@ -65,3 +65,10 @@ void  CObservationReflectivity::readFromStream(CStream &in, int version)
 		MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
 	};
 }
+
+void CObservationReflectivity::getDescriptionAsText(std::ostream &o) const
+{
+	CObservation::getDescriptionAsText(o);
+
+}
+

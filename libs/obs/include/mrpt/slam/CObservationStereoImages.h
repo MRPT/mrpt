@@ -111,6 +111,8 @@ namespace slam
 		void getSensorPose( CPose3D &out_sensorPose ) const { out_sensorPose = cameraPose; }
 		// See base class docs
 		void setSensorPose( const CPose3D &newSensorPose ) { cameraPose = CPose3DQuat(newSensorPose); }
+		// See base class docs
+		virtual void getDescriptionAsText(std::ostream &o) const;
 
 		void swap( CObservationStereoImages &o); //!< Do an efficient swap of all data members of this object with "o".
 

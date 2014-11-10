@@ -153,3 +153,26 @@ float CObservationBeaconRanges::getSensedRangeByBeaconID(int32_t beaconID)
 			return sensedData[i].sensedDistance;
 	return 0;
 }
+
+void CObservationBeaconRanges::getDescriptionAsText(std::ostream &o) const
+{
+	using namespace std;
+	CObservation::getDescriptionAsText(o);
+
+	o << "Auxiliary estimated pose (if available): " << auxEstimatePose << endl;
+
+	o << format("minSensorDistance=%f m\n",minSensorDistance);
+	o << format("maxSensorDistance=%f m\n",maxSensorDistance);
+	o << format("stdError=%f m\n\n",stdError);
+
+	o << format("There are %u range measurements:\n\n",(unsigned)sensedData.size());
+
+	o << "  BEACON   RANGE     SENSOR POSITION ON ROBOT \n";
+	o << "------------------------------------------------\n";
+	for (deque<CObservationBeaconRanges::TMeasurement>::const_iterator it=sensedData.begin(); it!=sensedData.end(); it++)
+	{
+		o << format("   %i      %.04f      (%.03f,%.03f,%.03f)\n",
+			(int)it->beaconID,it->sensedDistance,
+			it->sensorLocationOnRobot.x(),it->sensorLocationOnRobot.y(),it->sensorLocationOnRobot.z());
+	}
+}

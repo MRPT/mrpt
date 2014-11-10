@@ -13,6 +13,7 @@
 #include <mrpt/slam/CObservationBearingRange.h>
 #include <mrpt/system/os.h>
 #include <mrpt/math/matrix_serialization.h> // for << ops
+#include <mrpt/math/wrap2pi.h>
 #include <set>
 
 using namespace mrpt::slam;
@@ -191,4 +192,46 @@ void  CObservationBearingRange::debugPrintOut()
 		RAD2DEG( sensedData[i].yaw ),
 		RAD2DEG( sensedData[i].pitch ),
 		sensedData[i].range );
+}
+
+void CObservationBearingRange::getDescriptionAsText(std::ostream &o) const
+{
+	using namespace std;
+	CObservation::getDescriptionAsText(o);
+
+	o << "Homogeneous matrix for the sensor's 3D pose, relative to robot base:\n";
+	o << sensorLocationOnRobot.getHomogeneousMatrixVal()
+	<< sensorLocationOnRobot << endl << endl;
+
+	o << "Do observations have individual covariance matrices? " << (validCovariances ? "YES":"NO") << endl << endl;
+
+	o << "Default noise sigmas:" << endl;
+	o << "sensor_std_range (m)   : " << sensor_std_range << endl;
+	o << "sensor_std_yaw   (deg) : " << RAD2DEG(sensor_std_yaw) << endl;
+	o << "sensor_std_pitch (deg) : " << RAD2DEG(sensor_std_pitch) << endl;
+
+	o << endl;
+
+	// For each entry in this sequence:
+	o << "  LANDMARK_ID    RANGE (m)    YAW (deg)    PITCH (deg)   COV. MATRIX (optional)" << endl;
+	o << "--------------------------------------------------------------------------------------" << endl;
+	for (size_t q=0;q<sensedData.size();q++)
+	{
+
+		o << "      ";
+		if (sensedData[q].landmarkID==INVALID_LANDMARK_ID)
+			o << "(NO ID)";
+		else o << format("%7u",sensedData[q].landmarkID);
+
+		o << format("   %10.03f  %10.03f %10.03f        ",
+			sensedData[q].range,
+			RAD2DEG( mrpt::math::wrapToPi( sensedData[q].yaw)),
+			RAD2DEG( mrpt::math::wrapToPi(sensedData[q].pitch)) );
+
+		if (validCovariances)
+			o << sensedData[q].covariance.inMatlabFormat() << endl;
+		else
+			o << "  (N/A)\n";
+	}
+
 }

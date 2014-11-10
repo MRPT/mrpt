@@ -16,6 +16,7 @@
 
 #include <mrpt/utils/CStartUpClassesRegister.h>
 #include <mrpt/poses/CPose3D.h>
+#include <iomanip>
 
 using namespace mrpt::slam;
 using namespace mrpt::utils;
@@ -51,9 +52,17 @@ void CObservation::setSensorPose( const mrpt::math::TPose3D &newSensorPose )
 	setSensorPose(CPose3D(newSensorPose));
 }
 
-
 void CObservation::swap(CObservation &o)
 {
 	std::swap(timestamp, o.timestamp);
 	std::swap(sensorLabel, o.sensorLabel);
+}
+
+void CObservation::getDescriptionAsText(std::ostream &o) const
+{
+	o << "Timestamp (UTC): " << mrpt::system::dateTimeToString(timestamp) << std::endl;
+	o << "  (as time_t): " <<  std::fixed << std::setprecision(5) << mrpt::system::timestampTotime_t(timestamp) << std::endl;
+	o << "  (as TTimestamp): " << timestamp << std::endl;
+	o << "Sensor label: '" << sensorLabel << "'" << std::endl;
+	o << std::endl;
 }

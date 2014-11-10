@@ -122,4 +122,23 @@ void CObservationRange::setSensorPose( const CPose3D &newSensorPose )
 }
 
 
+void CObservationRange::getDescriptionAsText(std::ostream &o) const
+{
+	using namespace std;
+	CObservation::getDescriptionAsText(o);
+
+	o << "minSensorDistance   = " << minSensorDistance << " m" << endl;
+	o << "maxSensorDistance   = " << maxSensorDistance << " m" << endl;
+	o << "sensorConeApperture = " << RAD2DEG(sensorConeApperture) << " deg" << endl;
+
+	// For each entry in this sequence:
+	o << "  SENSOR_ID    RANGE (m)    SENSOR POSE (on the robot)" << endl;
+	o << "-------------------------------------------------------" << endl;
+	for (size_t q=0;q<sensedData.size();q++)
+	{
+		o << format("     %7u",(unsigned int)sensedData[q].sensorID );
+		o << format("    %4.03f   ",sensedData[q].sensedDistance);
+		o << sensedData[q].sensorPose << endl;
+	}
+}
 

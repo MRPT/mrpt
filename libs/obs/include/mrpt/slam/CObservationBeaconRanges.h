@@ -80,6 +80,8 @@ namespace slam
 		void getSensorPose( CPose3D &out_sensorPose ) const;
 		// See base class docs
 		void setSensorPose( const CPose3D &newSensorPose );
+		// See base class docs
+		virtual void getDescriptionAsText(std::ostream &o) const;
 
 		/** Easy look-up into the vector sensedData, returns the range for a given beacon, or 0 if the beacon is not observed.
 		  */

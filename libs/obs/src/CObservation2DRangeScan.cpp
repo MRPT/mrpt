@@ -393,3 +393,31 @@ bool mrpt::slam::operator<(const T2DScanProperties&a, const T2DScanProperties&b)
 {
 	return (a.nRays<b.nRays || a.aperture<b.aperture || (a.rightToLeft && !b.rightToLeft));
 }
+
+
+void CObservation2DRangeScan::getDescriptionAsText(std::ostream &o) const
+{
+	CObservation::getDescriptionAsText(o);
+	o << "Homogeneous matrix for the sensor's 3D pose, relative to robot base:\n";
+	o << sensorPose.getHomogeneousMatrixVal() << sensorPose << endl;
+
+	o << format("Samples direction: %s\n", (rightToLeft) ? "Right->Left" : "Left->Right");
+	o << format("Points in the scan: %u\n", (unsigned)scan.size());
+	o << format("Estimated sensor 'sigma': %f\n", stdError );
+	o << format("Increment in pitch during the scan: %f deg\n", RAD2DEG( deltaPitch ));
+
+	size_t i,inval = 0;
+	for (i=0;i<scan.size();i++) if (!validRange[i]) inval++;
+	o << format("Invalid points in the scan: %u\n", (unsigned)inval);
+
+	o << format("Sensor maximum range: %.02f m\n", maxRange );
+	o << format("Sensor field-of-view (\"aperture\"): %.01f deg\n", RAD2DEG(aperture) );
+
+	o << "Raw scan values: [";
+	for (i=0;i<scan.size();i++) o << format("%.03f ", scan[i] );
+	o << "]\n";
+
+	o << "Raw valid-scan values: [";
+	for (i=0;i<scan.size();i++) o << format("%u ", validRange[i] ? 1:0 );
+	o << "]\n\n";
+}

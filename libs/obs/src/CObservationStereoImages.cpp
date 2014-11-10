@@ -217,3 +217,48 @@ void CObservationStereoImages::swap( CObservationStereoImages &o)
 	std::swap(cameraPose, o.cameraPose);
 	std::swap(rightCameraPose, o.rightCameraPose);
 }
+
+void CObservationStereoImages::getDescriptionAsText(std::ostream &o) const
+{
+	using namespace std;
+	CObservation::getDescriptionAsText(o);
+
+	o << "Homogeneous matrix for the sensor's 3D pose, relative to robot base:\n";
+	o << cameraPose.getHomogeneousMatrixVal() << endl
+		<< "Camera pose: " << cameraPose << endl
+		<< "Camera pose (YPR): " << CPose3D(cameraPose) << endl
+		<< endl;
+
+	mrpt::utils::TStereoCamera stParams;
+	getStereoCameraParams(stParams);
+	o << stParams.dumpAsText() << endl;
+
+	o << "Right camera pose wrt left camera (YPR):" << endl << CPose3D(stParams.rightCameraPose) << endl;
+
+	if (imageLeft.isExternallyStored())
+		o << " Left image is stored externally in file: " << imageLeft.getExternalStorageFile() << endl;
+
+	o << " Right image";
+	if (hasImageRight )
+	{
+		if (imageRight.isExternallyStored())
+			o << " is stored externally in file: " << imageRight.getExternalStorageFile() << endl;
+	}
+	else o << " : No.\n";
+
+	o << " Disparity image";
+	if (hasImageDisparity )
+	{
+		if (imageDisparity.isExternallyStored())
+			o << " is stored externally in file: " << imageDisparity.getExternalStorageFile() << endl;
+	}
+	else o << " : No.\n";
+
+	o << format(" Image size: %ux%u pixels\n", (unsigned int)imageLeft.getWidth(), (unsigned int)imageLeft.getHeight() );
+
+	o << " Channels order: " << imageLeft.getChannelsOrder() << endl;
+
+	o << format(" Rows are stored in top-bottom order: %s\n", imageLeft.isOriginTopLeft() ? "YES" : "NO");
+}
+
+

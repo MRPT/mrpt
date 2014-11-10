@@ -158,9 +158,10 @@ namespace slam
 
 		// See base class docs
 		void getSensorPose( CPose3D &out_sensorPose ) const { out_sensorPose = sensorPose; }
-
 		// See base class docs
 		void setSensorPose( const CPose3D &newSensorPose ) { sensorPose = newSensorPose; }
+		// See base class docs
+		virtual void getDescriptionAsText(std::ostream &o) const;
 
 		/** A general method to truncate the scan by defining a minimum valid distance and a maximum valid angle as well as minimun and maximum heights
 		   (NOTE: the laser z-coordinate must be provided).

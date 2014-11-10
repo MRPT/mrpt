@@ -88,6 +88,8 @@ namespace slam
 		void getSensorPose( CPose3D &out_sensorPose ) const;
 		// See base class docs
 		void setSensorPose( const CPose3D &newSensorPose );
+		// See base class docs
+		virtual void getDescriptionAsText(std::ostream &o) const;
 
 					/** Declares a class within "CObservationGasSensors" that represents a set of gas concentration readings from the modelation of a MOS gas sensor readings.
 					 * This class provides the parameters and functions to simulate the inverse model of a MOS gas sensor.

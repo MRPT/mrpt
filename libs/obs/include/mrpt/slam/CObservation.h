@@ -119,6 +119,11 @@ namespace mrpt
 		*/
 		void setSensorPose( const mrpt::math::TPose3D &newSensorPose );
 
+		/** Build a detailed, multi-line textual description of the observation contents and dump it to the output stream. 
+		  * \note If overried by derived classes, call base CObservation::getDescriptionAsText() first to show common information. 
+		  * \note This is the text that appears in RawLogViewer when selecting an object in the dataset */
+		virtual void getDescriptionAsText(std::ostream &o) const;
+
 		/** @name Delayed-load manual control methods.
 		    @{ */
 

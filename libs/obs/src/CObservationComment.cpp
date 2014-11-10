@@ -49,3 +49,10 @@ void  CObservationComment::readFromStream(CStream &in, int version)
 	};
 }
 
+void CObservationComment::getDescriptionAsText(std::ostream &o) const
+{
+	CObservation::getDescriptionAsText(o);
+
+	o << "Comment content:\n'" << text << "'\n";
+}
+

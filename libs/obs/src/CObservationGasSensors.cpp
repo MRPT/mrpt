@@ -387,3 +387,35 @@ void CObservationGasSensors::CMOSmodel::save_log_map(
 	}
 	else cout << "Unable to open file";
 }
+
+void CObservationGasSensors::getDescriptionAsText(std::ostream &o) const
+{
+	using namespace std;
+	CObservation::getDescriptionAsText(o);
+
+	for (size_t j=0;j<m_readings.size();j++)
+	{
+		o << format("e-nose #%u:\n",(unsigned)j);
+
+		vector<float>::const_iterator it;
+		vector_int::const_iterator   itKind;
+
+		ASSERT_( m_readings[j].readingsVoltage.size() == m_readings[j].sensorTypes.size());
+
+		for (it=m_readings[j].readingsVoltage.begin(),itKind=m_readings[j].sensorTypes.begin();it!=m_readings[j].readingsVoltage.end();it++,itKind++)
+			o << format( "%04X: %.03f ", *itKind, *it);
+
+		o << endl;
+
+		o << format("  Sensor pose on robot: (x,y,z)=(%.02f,%.02f,%.02f)\n",
+			m_readings[j].eNosePoseOnTheRobot.x,
+			m_readings[j].eNosePoseOnTheRobot.y,
+			m_readings[j].eNosePoseOnTheRobot.z );
+
+		o << "Measured temperature: ";
+		if (m_readings[j].hasTemperature)
+			o << format("%.03f degC\n", m_readings[j].temperature );
+		else
+			o << "NOT AVAILABLE\n";
+	}
+}

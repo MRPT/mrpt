@@ -86,6 +86,8 @@ namespace slam
 		void getSensorPose( CPose3D &out_sensorPose ) const { out_sensorPose = sensorLocationOnRobot; }
 		// See base class docs
 		void setSensorPose( const CPose3D &newSensorPose ) { sensorLocationOnRobot = newSensorPose; }
+		// See base class docs
+		virtual void getDescriptionAsText(std::ostream &o) const;
 
 	}; // End of class def.
 	DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE( CObservationBearingRange , CObservation, OBS_IMPEXP)

@@ -69,14 +69,14 @@ namespace slam
 		IMU_ALTITUDE,
 		/// temperature (degrees Celsius)
 		IMU_TEMPERATURE,
-        /// Orientation Quaternion X
-        IMU_ORI_QUAT_X,
-        /// Orientation Quaternion Y
-        IMU_ORI_QUAT_Y,
-        /// Orientation Quaternion Z
-        IMU_ORI_QUAT_Z,
-        /// Orientation Quaternion W
-        IMU_ORI_QUAT_W,
+		/// Orientation Quaternion X
+		IMU_ORI_QUAT_X,
+		/// Orientation Quaternion Y
+		IMU_ORI_QUAT_Y,
+		/// Orientation Quaternion Z
+		IMU_ORI_QUAT_Z,
+		/// Orientation Quaternion W
+		IMU_ORI_QUAT_W,
 
 		// Always leave this last value to reflect the number of enum values:
 		COUNT_IMU_DATA_FIELDS
@@ -159,6 +159,8 @@ namespace slam
 		void getSensorPose( CPose3D &out_sensorPose ) const { out_sensorPose = sensorPose; }
 		// See base class docs
 		void setSensorPose( const CPose3D &newSensorPose ) { sensorPose = newSensorPose; }
+		// See base class docs
+		virtual void getDescriptionAsText(std::ostream &o) const;
 
 
 	}; // End of class def.
