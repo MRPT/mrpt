@@ -11,6 +11,7 @@
 
 #include <mrpt/slam/CObservationRawDAQ.h>
 #include <mrpt/utils/CStream.h>
+#include <iostream>
 
 using namespace mrpt::slam;
 using namespace mrpt::utils;
