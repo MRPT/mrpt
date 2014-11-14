@@ -27,6 +27,8 @@
 		- libfreenect is now detected in the system and used instead of compiling the embedded copy of it.
 		- Embedded copy of libfreenect has been updated to (23/oct/2014). It now supports "Kinect for Windows".
 	- Changes in classes:
+		- [mrpt-base]
+			- New function mrpt::math::angDistance()
 		- [mrpt-hwdrivers]
 			- mrpt::hwdrivers::CIMUXSens_MT4: (by Joe Burmeister for Suave Aerial Software)
 				- Upgrade to latest XSens SDK 4.2.1. Requires libudev-dev in Linux
@@ -35,6 +37,8 @@
 			- CObservation::getDescriptionAsText(): New virtual method to obstain a textual description of observations. Refactoring of messy code previously in the RawLogViewer app.
 		- [mrpt-vision]
 			- mrpt::vision::CFeatureExtraction: Removed (unused) optional ROI parameter in detectors.
+	- BUG FIXES:
+		- mrpt::poses::CRobot2DPoseEstimator could estimate wrong angular velocities for orientations near +-180deg.
 
 <hr>
 <a name="1.2.2">
