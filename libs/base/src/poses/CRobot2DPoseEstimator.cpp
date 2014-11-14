@@ -13,6 +13,7 @@
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/poses/CRobot2DPoseEstimator.h>
+#include <mrpt/math/wrap2pi.h>
 
 using namespace mrpt;
 using namespace mrpt::poses;
@@ -112,7 +113,7 @@ void CRobot2DPoseEstimator::processUpdateNewOdometry(
 			const double dT = timeDifference(m_last_odo_time,cur_tim);
 			ASSERTMSG_(dT>0, "timestamp must be newer than the last one")
 
-			m_robot_w = (newGlobalOdometry.phi-m_last_odo.phi)/dT;
+			m_robot_w = mrpt::math::angDistance(m_last_odo.phi,newGlobalOdometry.phi)/dT;
 			m_robot_v = ::hypot(newGlobalOdometry.x-m_last_odo.x, newGlobalOdometry.y-m_last_odo.y)/dT;
 			// sign of v:
 			if (fabs(atan2(newGlobalOdometry.y-m_last_odo.y,newGlobalOdometry.x-m_last_odo.x))>0.5*M_PI)
