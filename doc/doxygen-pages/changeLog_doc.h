@@ -39,6 +39,7 @@
 			- mrpt::vision::CFeatureExtraction: Removed (unused) optional ROI parameter in detectors.
 	- BUG FIXES:
 		- mrpt::poses::CRobot2DPoseEstimator could estimate wrong angular velocities for orientations near +-180deg.
+		- mrpt::system::CDirectoryExplorer::sortByName() didn't sort in descending order
 
 <hr>
 <a name="1.2.2">

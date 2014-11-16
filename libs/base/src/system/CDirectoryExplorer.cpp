@@ -196,7 +196,7 @@ bool cmpFileEntriesName_Asc(const CDirectoryExplorer::TFileInfo &a, const CDirec
 }
 bool cmpFileEntriesName_Desc(const CDirectoryExplorer::TFileInfo &a, const CDirectoryExplorer::TFileInfo &b)
 {
-    return a.wholePath < b.wholePath;
+    return a.wholePath > b.wholePath;
 }
 
 /*---------------------------------------------------------------
