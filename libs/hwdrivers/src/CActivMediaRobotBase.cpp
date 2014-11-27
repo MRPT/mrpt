@@ -642,6 +642,21 @@ void CActivMediaRobotBase::getBatteryCharge( double &out_batery_volts )
 }
 
 /*-------------------------------------------------------------
+					getRealBatteryCharge
+-------------------------------------------------------------*/
+void CActivMediaRobotBase::getRealBatteryCharge( double &out_batery_volts )
+{
+#if MRPT_HAS_ARIA
+	ASSERTMSG_(THE_ROBOT!=NULL, "Robot is not connected")
+	THE_ROBOT->lock();
+	out_batery_volts = THE_ROBOT->getRealBatteryVoltage();
+	THE_ROBOT->unlock();
+#else
+	THROW_EXCEPTION("MRPT has been compiled with 'MRPT_BUILD_ARIA'=OFF, so this class cannot be used.");
+#endif
+}
+
+/*-------------------------------------------------------------
 					setVelocities
 -------------------------------------------------------------*/
 void CActivMediaRobotBase::setVelocities( const double lin_vel, const double ang_vel)

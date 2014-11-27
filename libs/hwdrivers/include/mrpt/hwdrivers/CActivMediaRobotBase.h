@@ -145,8 +145,10 @@ namespace mrpt
 			  */
 			void getSonarsReadings( bool &thereIsObservation, mrpt::slam::CObservationRange	&obs );
 
-			/** Get the robot battery charge */
+			/** Get the robot battery charge - normalized to 12V */
 			void getBatteryCharge( double &out_batery_volts );
+			/** Get the robot real battery charge */
+			void getRealBatteryCharge( double &out_batery_volts );
 
 			/** Set the robot linear and angular velocities
 			  * \param lin_vel Linear speed, in m/s.
