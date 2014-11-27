@@ -69,7 +69,7 @@ private:
 
   // Hide regular Thread::Create
   virtual int create(ArFunctor * /*func*/, bool /*joinable=true*/,
-		     bool /*lowerPriority=true*/) {return(false);}
+		     bool /*lowerPriority=true*/) {return(0);}
 
 
   ArRetFunctor1C<void*, ArASyncTask, void*> myFunc;

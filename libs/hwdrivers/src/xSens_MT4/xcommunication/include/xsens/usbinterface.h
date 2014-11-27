@@ -63,7 +63,7 @@ public:
 	XsResultValue waitForData(XsSize maxLength, void *data, XsSize* length = NULL);
 	//lint +e1411
 
-	void getPortName(char *portname) const;
+	void getPortName(XsString& portname) const;
 
 private:
 	XSENS_DISABLE_COPY(UsbInterface)

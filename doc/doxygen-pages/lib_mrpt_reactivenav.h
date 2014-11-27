@@ -16,26 +16,7 @@
 <h2>Library <code>mrpt-reactivenav</code></h2>
 <hr>
 
-This library implements:
-
-<ul>
-
-<li>Holonomic navigation algorithms:  
-   Virtual Force Fields (VFF), Nearness Diagram (ND), ... 
-   See mrpt::reactivenav::CAbstractHolonomicReactiveMethod </li>
-
-
-<li>A complex reactive navigator: Using space transformations (PTGs) to drive
-  a robot using an internal simpler holonomic algorithm. See mrpt::reactivenav::CReactiveNavigationSystem </li>
-
-<li>A number of different PTGs: See mrpt::reactivenav::CParameterizedTrajectoryGenerator</li>
-
-</ul>
-
-See the full list of classes in mrpt::reactivenav, or the online
-page http://www.mrpt.org/Application:ReactiveNavigationDemo for a discussion
-of a working application (see MRPT/apps/ReactiveNavigationDemo).
-
+Since MRPT 1.3.0 this is a meta-library forwarding a dependence to mrpt-nav (\sa mrpt_nav_grp).
 
 */
 

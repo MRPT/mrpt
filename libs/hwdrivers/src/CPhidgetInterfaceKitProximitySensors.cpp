@@ -155,6 +155,9 @@ void  CPhidgetInterfaceKitProximitySensors::loadConfig_sensorSpecific(
 		}
 		cout << "+------------------------------------------------------------------------------+" << endl;
 	}
+#else
+   MRPT_UNUSED_PARAM(configSource);
+   MRPT_UNUSED_PARAM(iniSection);
 #endif
 }
 
@@ -283,5 +286,7 @@ void CPhidgetInterfaceKitProximitySensors::getObservation( mrpt::slam::CObservat
 			obs.sensedData.push_back( obsRange );
 		}
 	}
+#else
+   MRPT_UNUSED_PARAM(obs);
 #endif
 }

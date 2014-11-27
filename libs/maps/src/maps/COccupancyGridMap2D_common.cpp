@@ -284,8 +284,6 @@ void  COccupancyGridMap2D::computeEntropy( TEntropyInfo &info ) const
 {
 	unsigned long					i;
 	float							h,p;
-	std::vector<unsigned long>		histogram;
-
 
 #ifdef	OCCUPANCY_GRIDMAP_CELL_SIZE_8BITS
 	unsigned int								N = 256;
@@ -697,5 +695,17 @@ float  COccupancyGridMap2D::computePathCost( float x1, float y1, float x2, float
 	if (nSteps)
 			return sumCost/static_cast<float>(nSteps);
 	else	return 0;
+}
+
+float  COccupancyGridMap2D::compute3DMatchingRatio(
+	const CMetricMap						*otherMap,
+	const CPose3D							&otherMapPose,
+	float									maxDistForCorr ,
+	float									maxMahaDistForCorr
+	) const
+{
+	MRPT_UNUSED_PARAM(otherMap); MRPT_UNUSED_PARAM(otherMapPose);
+	MRPT_UNUSED_PARAM(maxDistForCorr); MRPT_UNUSED_PARAM(maxMahaDistForCorr);
+	return 0;
 }
 

@@ -980,7 +980,7 @@ CmtDeviceId Cmt3::getMasterId(void)
 
 //////////////////////////////////////////////////////////////////////////////////////////
 // Return the nr of connected MTs (excludes XMs)
-const uint16_t Cmt3::getMtCount(void) const
+uint16_t Cmt3::getMtCount(void) const
 {
 	CMT3LOGDAT("L3: getMtCount\n");
 

@@ -113,3 +113,19 @@ void CObservationRFID::setSensorPose( const CPose3D &newSensorPose )
 	sensorPoseOnRobot = newSensorPose;
 }
 
+void CObservationRFID::getDescriptionAsText(std::ostream &o) const
+{
+	CObservation::getDescriptionAsText(o);
+
+	std::cout << "Number of RFID tags sensed: " << tag_readings.size() << std::endl << std::endl;
+
+	for (size_t i=0;i<tag_readings.size();i++)
+	{
+		const CObservationRFID::TTagReading &rfid = tag_readings[i];
+		std::cout << "#"<< i
+			<< ": Power=" << rfid.power
+			<< " (dBm) | AntennaPort=" << rfid.antennaPort
+			<< " | EPC=" << rfid.epc << std::endl;
+	}
+}
+

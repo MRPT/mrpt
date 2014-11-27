@@ -516,7 +516,7 @@ void CPointsMap::determineMatching2D(
 
 		//   1) Go through all the correspondences and keep the best corresp.
 		//       for each "global map" (this) point.
-		for (it=_correspondences.begin();it!=_correspondences.end();it++)
+		for (it=_correspondences.begin();it!=_correspondences.end();++it)
 		{
 			if (!bestMatchForThisMap[it->this_idx])
 			{
@@ -812,7 +812,7 @@ float  CPointsMap::getLargestDistanceFromOrigin() const
 		// NO: Update it:
 		vector<float>::const_iterator    X,Y,Z;
 		float	maxDistSq = 0, d;
-		for (X=x.begin(),Y=y.begin(),Z=z.begin();X!=x.end();X++,Y++,Z++)
+		for (X=x.begin(),Y=y.begin(),Z=z.begin();X!=x.end();++X,++Y,++Z)
 		{
 			d = square(*X)+square(*Y)+square(*Z);
 			maxDistSq = max( d, maxDistSq );
@@ -847,7 +847,7 @@ void  CPointsMap::getAllPoints( vector<float> &xs, vector<float> &ys, size_t dec
 
 		vector<float>::const_iterator    X,Y;
 		vector<float>::iterator    		oX,oY;
-		for (X=x.begin(),Y=y.begin(),oX=xs.begin(),oY=ys.begin();oX!=xs.end();X+=decimation,Y+=decimation,oX++,oY++)
+		for (X=x.begin(),Y=y.begin(),oX=xs.begin(),oY=ys.begin();oX!=xs.end();X+=decimation,Y+=decimation,++oX,++oY)
 		{
 			*oX=*X;
 			*oY=*Y;
@@ -1183,7 +1183,7 @@ void  CPointsMap::determineMatching3D(
 
 		//   1) Go through all the correspondences and keep the best corresp.
 		//       for each "global map" (this) point.
-		for (it=_correspondences.begin();it!=_correspondences.end();it++)
+		for (it=_correspondences.begin();it!=_correspondences.end();++it)
 		{
 			if (!bestMatchForThisMap[it->this_idx])
 			{
@@ -1553,6 +1553,7 @@ TAuxLoadFunctor  dummy_loader;  // used just to set "ptr_internal_build_points_m
   */
 void CPointsMap::PLY_import_set_vertex(const size_t idx, const mrpt::math::TPoint3Df &pt, const mrpt::utils::TColorf *pt_color)
 {
+	MRPT_UNUSED_PARAM(pt_color);
 	this->setPoint(idx,pt.x,pt.y,pt.z);
 }
 
@@ -1571,6 +1572,7 @@ void CPointsMap::PLY_export_get_vertex(
 	bool &pt_has_color,
 	mrpt::utils::TColorf &pt_color) const
 {
+	MRPT_UNUSED_PARAM(pt_color);
 	pt_has_color=false;
 
 	pt.x = x[idx];
@@ -1611,6 +1613,8 @@ bool CPointsMap::savePCDFile(const std::string &filename, bool save_as_binary) c
 	return 0 == pcl::io::savePCDFile(filename, cloud, save_as_binary);
 
 #else
+	MRPT_UNUSED_PARAM(filename);
+	MRPT_UNUSED_PARAM(save_as_binary);
 	THROW_EXCEPTION("Operation not available: MRPT was built without PCL")
 #endif
 }
@@ -1627,6 +1631,7 @@ bool CPointsMap::loadPCDFile(const std::string &filename)
 
 	return true;
 #else
+	MRPT_UNUSED_PARAM(filename);
 	THROW_EXCEPTION("Operation not available: MRPT was built without PCL")
 #endif
 }

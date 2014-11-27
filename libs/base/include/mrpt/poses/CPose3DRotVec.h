@@ -57,7 +57,9 @@ namespace poses
 		}
 
 		/** Fast constructor that leaves all the data uninitialized - call with UNINITIALIZED_POSE as argument */
-		inline CPose3DRotVec(TConstructorFlags_Poses constructor_dummy_param) : m_coords(),m_rotvec()  { }
+		inline CPose3DRotVec(TConstructorFlags_Poses constructor_dummy_param) : m_coords(),m_rotvec() {
+			MRPT_UNUSED_PARAM(constructor_dummy_param);
+		}
 
 		/** Constructor with initilization of the pose */
 		inline CPose3DRotVec(const double  vx, const double  vy, const double vz, const double x,const double  y,const double  z) {

@@ -256,6 +256,8 @@ void  CReflectivityGridMap2D::TInsertionOptions::loadFromConfigFile(
 	const mrpt::utils::CConfigFileBase  &iniFile,
 	const std::string &section)
 {
+	MRPT_UNUSED_PARAM(iniFile);
+	MRPT_UNUSED_PARAM(section);
 	//MRPT_LOAD_CONFIG_VAR( maxOccupancyUpdateCertainty,	float, iniFile, section )
 }
 
@@ -265,8 +267,6 @@ void  CReflectivityGridMap2D::TInsertionOptions::loadFromConfigFile(
 void  CReflectivityGridMap2D::saveMetricMapRepresentationToFile(
 	const std::string	&filNamePrefix ) const
 {
-	std::string		fil;
-
 	// Text matrix:
 	saveToTextFile( filNamePrefix + std::string("_probability.txt") );
 }
@@ -357,4 +357,16 @@ void  CReflectivityGridMap2D::getAs3DObject( mrpt::opengl::CSetOfObjectsPtr	&out
 	outSetOfObj->insert( outObj );
 
 	MRPT_END
+}
+
+float  CReflectivityGridMap2D::compute3DMatchingRatio(
+	const CMetricMap						*otherMap,
+	const CPose3D							&otherMapPose,
+	float									maxDistForCorr,
+	float									maxMahaDistForCorr
+	) const
+{
+	MRPT_UNUSED_PARAM(otherMap); MRPT_UNUSED_PARAM(otherMapPose);
+	MRPT_UNUSED_PARAM(maxDistForCorr); MRPT_UNUSED_PARAM(maxMahaDistForCorr);
+	return 0;
 }

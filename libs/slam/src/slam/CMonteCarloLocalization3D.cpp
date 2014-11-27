@@ -181,6 +181,7 @@ double CMonteCarloLocalization3D::PF_SLAM_computeObservationLikelihoodForParticl
 	const CSensoryFrame		&observation,
 	const CPose3D			&x ) const
 {
+	MRPT_UNUSED_PARAM(PF_options);
 	ASSERT_( options.metricMap || particleIndexForMap<options.metricMaps.size() )
 
 	CMetricMap *map = (options.metricMap) ?
@@ -211,6 +212,7 @@ void CMonteCarloLocalization3D::PF_SLAM_implementation_replaceByNewParticleSet(
 	const vector<double>	&newParticlesWeight,
 	const vector<size_t>	&newParticlesDerivedFromIdx )  const
 {
+	MRPT_UNUSED_PARAM(newParticlesDerivedFromIdx);
 	ASSERT_(size_t(newParticlesWeight.size())==newParticles.size())
 
 	// ---------------------------------------------------------------------------------

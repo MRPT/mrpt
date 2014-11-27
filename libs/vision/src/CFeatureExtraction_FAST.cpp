@@ -32,6 +32,7 @@ void  CFeatureExtraction::extractFeaturesFAST(
 	const TImageROI			    & ROI,
 	const CMatrixBool           * mask )  const
 {
+	MRPT_UNUSED_PARAM(ROI);
 	MRPT_START
 
 #if MRPT_HAS_OPENCV
@@ -56,8 +57,9 @@ void  CFeatureExtraction::extractFeaturesFAST(
 //    if( _mask )
 //       mask = static_cast<cv::Mat*>(_mask);
 
-	FastFeatureDetector fastDetector( options.FASTOptions.threshold, options.FASTOptions.nonmax_suppression );
 	const Mat theImg = cvarrToMat( inImg_gray.getAs<IplImage>() );
+
+    cv::Mat cvMask;
     if( options.useMask )
     {
         cout << "using mask" << endl;
@@ -65,7 +67,6 @@ void  CFeatureExtraction::extractFeaturesFAST(
         ASSERT_( maskW == inImg_gray.getWidth() && maskH == inImg_gray.getHeight() );
 
         // Convert Mask into CV type
-        cv::Mat cvMask;
         cvMask = cv::Mat::ones( maskH, maskW, CV_8UC1 );
         for( int ii = 0; ii < int(maskW); ++ii )
             for( int jj = 0; jj < int(maskH); ++jj )
@@ -75,19 +76,23 @@ void  CFeatureExtraction::extractFeaturesFAST(
                     cvMask.at<char>(ii,jj) = (char)0;
                 }
             }
-        fastDetector.detect( theImg, cv_feats, cvMask );
     }
-    else
-        fastDetector.detect( theImg, cv_feats );
+
+
+#	if MRPT_OPENCV_VERSION_NUM < 0x300
+	FastFeatureDetector fastDetector( options.FASTOptions.threshold, options.FASTOptions.nonmax_suppression );
+	fastDetector.detect( theImg, cv_feats );
+#else
+	Ptr<cv::FastFeatureDetector> fastDetector = cv::FastFeatureDetector::create(options.FASTOptions.threshold, options.FASTOptions.nonmax_suppression );
+	fastDetector->detect( theImg, cv_feats );
+#endif
 
 #elif MRPT_OPENCV_VERSION_NUM >= 0x210
-
 	FAST(inImg_gray.getAs<IplImage>(), cv_feats, options.FASTOptions.threshold, options.FASTOptions.nonmax_suppression );
-
 #endif
 
 	// *All* the features have been extracted.
-	const size_t	N			= cv_feats.size();
+	const size_t N = cv_feats.size();
 
 	// Use KLT response instead of the OpenCV's original "response" field:
 	if (options.FASTOptions.use_KLT_response)

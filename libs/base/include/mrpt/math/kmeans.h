@@ -41,6 +41,7 @@ namespace mrpt
 				const size_t attempts
 				)
 			{
+				MRPT_UNUSED_PARAM(use_kmeansplusplus_method);
 				MRPT_START
 				ASSERT_(k>=1)
 				const size_t N = points.size();

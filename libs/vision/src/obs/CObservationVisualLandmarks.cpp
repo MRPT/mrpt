@@ -91,3 +91,9 @@ float  CObservationVisualLandmarks::likelihoodWith(
 	return 0;
 }
 
+void CObservationVisualLandmarks::getDescriptionAsText(std::ostream &o) const
+{
+	CObservation::getDescriptionAsText(o);
+
+}
+

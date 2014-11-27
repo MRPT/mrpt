@@ -94,3 +94,11 @@ void CObservationWindSensor::setSensorPose( const CPose3D &newSensorPose )
 	sensorPoseOnRobot = newSensorPose;
 }
 
+
+void CObservationWindSensor::getDescriptionAsText(std::ostream &o) const
+{
+	CObservation::getDescriptionAsText(o);
+
+}
+
+

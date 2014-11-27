@@ -42,9 +42,9 @@ XSTYPES_DLL_API void XsByteArray_construct(XsByteArray* thisPtr, XsSize count, u
 #endif
 
 #ifdef __cplusplus
-struct XsByteArray : public XsArrayImpl<uint8_t, &g_xsByteArrayDescriptor, XsByteArray> {
+struct XsByteArray : public XsArrayImpl<uint8_t, g_xsByteArrayDescriptor, XsByteArray> {
 	//! \brief Constructs an XsByteArray
-	inline XsByteArray(XsSize sz = 0, uint8_t const* src = 0)
+	inline explicit XsByteArray(XsSize sz = 0, uint8_t const* src = 0)
 		 : ArrayImpl(sz, src)
 	{
 	}
@@ -60,14 +60,14 @@ struct XsByteArray : public XsArrayImpl<uint8_t, &g_xsByteArrayDescriptor, XsByt
 		: ArrayImpl(ref, sz, flags)
 	{
 	}
-
+#ifndef XSENS_NOITERATOR
 	//! \brief Constructs an XsByteArray with the array bound by the supplied iterators \a beginIt and \a endIt
 	template <typename Iterator>
 	inline XsByteArray(Iterator beginIt, Iterator endIt)
 		: ArrayImpl(beginIt, endIt)
 	{
 	}
-
+#endif
 	//! \brief Constructs an XsByteArray as a copy of the supplied XsString, including the terminating 0
 	inline XsByteArray(XsString const& src)
 		: ArrayImpl()

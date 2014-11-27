@@ -86,6 +86,7 @@ namespace mrpt
 			/** This method is not implemented in this class */
 			uint64_t Seek(uint64_t Offset, CStream::TSeekOrigin Origin = sFromBeginning)
 			{
+            MRPT_UNUSED_PARAM(Offset); MRPT_UNUSED_PARAM(Origin);
 				THROW_EXCEPTION("Seek is not implemented in this class");
 			}
 

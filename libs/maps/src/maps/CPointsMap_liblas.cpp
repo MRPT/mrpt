@@ -78,6 +78,7 @@ bool CPointsMap::saveLASFile(const std::string &filename, const LAS_WriteParams 
 
 	return true; // All ok.
 #else
+	MRPT_UNUSED_PARAM(filename); MRPT_UNUSED_PARAM(params);
 	THROW_EXCEPTION("Sorry: MRPT wasn't compiled with LAS support. Recompile with liblas.")
 #endif
 }
@@ -143,6 +144,7 @@ bool CPointsMap::loadLASFile(const std::string &filename, LAS_HeaderInfo &out_he
 
 	return true; // All ok.
 #else
+	MRPT_UNUSED_PARAM(filename); MRPT_UNUSED_PARAM(params); MRPT_UNUSED_PARAM(out_headerInfo); 
 	THROW_EXCEPTION("Sorry: MRPT wasn't compiled with LAS support. Recompile with liblas.")
 #endif
 }

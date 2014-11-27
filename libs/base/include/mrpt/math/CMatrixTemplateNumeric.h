@@ -53,7 +53,7 @@ namespace mrpt
 			  *     CMatrixTemplateNumeric<double>  M( UNINITIALIZED_MATRIX);
 			  *   \endcode
 			  */
-			inline CMatrixTemplateNumeric(TConstructorFlags_Matrices constructor_flag) : Base( 0,0 ) { }
+			inline CMatrixTemplateNumeric(TConstructorFlags_Matrices ) : Base( 0,0 ) { }
 
 			/** Constructor, creates a matrix of the given size, filled with zeros. */
 			inline CMatrixTemplateNumeric(size_t row, size_t col) : Base(row,col) { Base::setZero(); }

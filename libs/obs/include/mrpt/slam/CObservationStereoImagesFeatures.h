@@ -92,17 +92,12 @@ namespace slam
 		  */
 		std::vector<TStereoImageFeatures> theFeatures;
 
-		/** A general method to retrieve the sensor pose on the robot in CPose3D form.
-		  *  Note that most sensors will return a full (6D) CPose3DQuat, but see the derived classes for more details or special cases.
-		  * \sa setSensorPose
-		  */
-		inline void getSensorPose( CPose3D &out_sensorPose ) const { out_sensorPose = CPose3D(cameraPoseOnRobot); }
-
-		/** A general method to retrieve the sensor pose on the robot in CPose3DQuat form.
-		  *  Note that most sensors will return a full (6D) CPose3DQuat, but see the derived classes for more details or special cases.
-		  * \sa setSensorPose
-		  */
-		inline void getSensorPose( CPose3DQuat &out_sensorPose ) const { out_sensorPose = cameraPoseOnRobot; }
+		// See base class docs
+		void getSensorPose( CPose3D &out_sensorPose ) const { out_sensorPose = CPose3D(cameraPoseOnRobot); }
+		// See base class docs
+		void getSensorPose( CPose3DQuat &out_sensorPose ) const { out_sensorPose = cameraPoseOnRobot; }
+		// See base class docs
+		virtual void getDescriptionAsText(std::ostream &o) const;
 
 		/** A general method to change the sensor pose on the robot in a CPose3D form.
 		  *  Note that most sensors will use the full (6D) CPose3DQuat, but see the derived classes for more details or special cases.

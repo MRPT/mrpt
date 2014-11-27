@@ -75,6 +75,7 @@ void  CFeatureExtraction::extractFeaturesFASTER_N(
 	unsigned int			    nDesiredFeatures,
 	const TImageROI			    & ROI )  const
 {
+	MRPT_UNUSED_PARAM(ROI);
 	MRPT_START
 
 #if MRPT_HAS_OPENCV

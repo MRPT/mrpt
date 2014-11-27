@@ -318,7 +318,7 @@ AREXPORT void ArSyncTask::log(int depth)
   
   for (i = 0; i < depth; i++)
     str += "\t";
-  str += myName.c_str();
+  str += myName;
   str += " (";
   state = getState();
   switch (state) 

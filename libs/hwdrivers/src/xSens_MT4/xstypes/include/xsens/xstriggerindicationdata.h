@@ -42,7 +42,7 @@ struct XsTriggerIndicationData {
 		\param[in] timestamp Timestamp
 		\param[in] frameNumber Frame number
 	*/
-	XsTriggerIndicationData(uint8_t line = 0, uint8_t polarity = 0, uint32_t timestamp = 0, uint16_t frameNumber = 0)
+	explicit XsTriggerIndicationData(uint8_t line = 0, uint8_t polarity = 0, uint32_t timestamp = 0, uint16_t frameNumber = 0)
 	  : m_line(line), m_polarity(polarity), m_timestamp(timestamp), m_frameNumber(frameNumber)
 	{}
 

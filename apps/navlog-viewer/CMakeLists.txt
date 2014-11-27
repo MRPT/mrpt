@@ -38,13 +38,13 @@ IF(wxWidgets_FOUND)
 	TARGET_LINK_LIBRARIES(${TMP_TARGET_NAME} ${wxWidgets_LIBRARIES} )
 	TARGET_LINK_LIBRARIES(${TMP_TARGET_NAME} ${MRPT_LINKER_LIBS})
 
-	TARGET_LINK_LIBRARIES(${TMP_TARGET_NAME} mrpt-reactivenav mrptwxthings)
+	TARGET_LINK_LIBRARIES(${TMP_TARGET_NAME} mrptwxthings)
 	ADD_DEPENDENCIES(${TMP_TARGET_NAME} mrptwxthings)
 	
 	# Dependencies on MRPT libraries:
 	#  Just mention the top-level dependency, the rest will be detected automatically, 
 	#  and all the needed #include<> dirs added (see the script DeclareAppDependencies.cmake for further details)
-	DeclareAppDependencies(${TMP_TARGET_NAME} mrpt-gui mrpt-reactivenav)
+	DeclareAppDependencies(${TMP_TARGET_NAME} mrpt-gui mrpt-nav)
 
 	DeclareAppForInstall(${TMP_TARGET_NAME})
 

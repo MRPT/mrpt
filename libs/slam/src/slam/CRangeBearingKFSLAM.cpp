@@ -1052,7 +1052,7 @@ void CRangeBearingKFSLAM::getLastPartitionLandmarksAsIfFixedSubmaps( size_t K, s
     getLastPartitionLandmarks(landmarksMembership);
 
     // Replace copy:
-    m_lastPartitionSet = tmpParts;
+    m_lastPartitionSet = tmpParts; //-V519
 }
 
 /*---------------------------------------------------------------

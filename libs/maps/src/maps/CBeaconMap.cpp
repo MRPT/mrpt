@@ -162,7 +162,7 @@ double	 CBeaconMap::computeObservationLikelihood(
 		const CBeacon													*beac;
 		CPoint3D														sensor3D;
 
-		for (it_obs = o->sensedData.begin();it_obs!=o->sensedData.end();it_obs++)
+		for (it_obs = o->sensedData.begin();it_obs!=o->sensedData.end();++it_obs)
 		{
 			// Look for the beacon in this map:
 			beac=getBeaconByID( it_obs->beaconID );
@@ -191,7 +191,7 @@ double	 CBeaconMap::computeObservationLikelihood(
 						CVectorDouble				logLiks(beac->m_locationMC.m_particles.size());
 						CVectorDouble::iterator 	itLW,itLL;
 
-						for (it=beac->m_locationMC.m_particles.begin(),itLW=logWeights.begin(),itLL=logLiks.begin();it!=beac->m_locationMC.m_particles.end();it++,itLW++,itLL++)
+						for (it=beac->m_locationMC.m_particles.begin(),itLW=logWeights.begin(),itLL=logLiks.begin();it!=beac->m_locationMC.m_particles.end();++it,++itLW,++itLL)
 						{
 							float	expectedRange = sensor3D.distance3DTo( it->d->x,it->d->y,it->d->z );
 							//expectedRange += float(0.1*(1-exp(-0.16*expectedRange)));
@@ -246,7 +246,7 @@ double	 CBeaconMap::computeObservationLikelihood(
 						CVectorDouble::iterator 	itLW,itLL;
 						CPointPDFSOG::const_iterator it;
 						// For each Gaussian mode:
-						for (it=beac->m_locationSOG.begin(),itLW=logWeights.begin(),itLL=logLiks.begin();it!=beac->m_locationSOG.end();it++,itLW++,itLL++)
+						for (it=beac->m_locationSOG.begin(),itLW=logWeights.begin(),itLL=logLiks.begin();it!=beac->m_locationSOG.end();++it,++itLW,++itLL)
 						{
 							// Compute the Jacobian H and varZ
 							double varZ, varR = square( likelihoodOptions.rangeStd );
@@ -411,11 +411,10 @@ bool  CBeaconMap::internal_insertObservation( const CObservation *obs, const CPo
 					// ------------------------------
 					case CBeacon::pdfMonteCarlo:
 						{
-							CPointPDFParticles::CParticleList::iterator		it,it2;
 							double		maxW = -1e308, sumW=0;
 							// Update weights:
 							// --------------------
-							for (it=beac->m_locationMC.m_particles.begin();it!=beac->m_locationMC.m_particles.end();it++)
+							for (CPointPDFParticles::CParticleList::iterator it=beac->m_locationMC.m_particles.begin();it!=beac->m_locationMC.m_particles.end();++it)
 							{
 								float	expectedRange = sensorPnt.distance3DTo( it->d->x,it->d->y,it->d->z );
 								// Add bias:
@@ -454,7 +453,7 @@ bool  CBeaconMap::internal_insertObservation( const CObservation *obs, const CPo
 
 									// AND, add a small noise:
 									CPointPDFParticles::CParticleList::iterator		itSample;
-									for (itSample=beac->m_locationMC.m_particles.begin();itSample!=beac->m_locationMC.m_particles.end();itSample++)
+									for (itSample=beac->m_locationMC.m_particles.begin();itSample!=beac->m_locationMC.m_particles.end();++itSample)
 									{
 										itSample->d->x += randomGenerator.drawGaussian1D( 0,noiseStd );
 										itSample->d->y += randomGenerator.drawGaussian1D( 0,noiseStd );
@@ -478,7 +477,7 @@ bool  CBeaconMap::internal_insertObservation( const CObservation *obs, const CPo
 										delete it->d; it->d=NULL;
 										it = beac->m_locationMC.m_particles.erase( it );
 									}
-									else it++;
+									else ++it;
 								}
 							} // end "do not resample"
 
@@ -487,7 +486,7 @@ bool  CBeaconMap::internal_insertObservation( const CObservation *obs, const CPo
 							//  log_w -= log(sumW);
 							// -----------------------------------------
 							sumW=log(sumW);
-							for (it=beac->m_locationMC.m_particles.begin();it!=beac->m_locationMC.m_particles.end();it++)
+							for (CPointPDFParticles::CParticleList::iterator it=beac->m_locationMC.m_particles.begin();it!=beac->m_locationMC.m_particles.end();++it)
 								it->log_w -= sumW;
 
 							// Is the moment to turn into a Gaussian??
@@ -583,7 +582,7 @@ bool  CBeaconMap::internal_insertObservation( const CObservation *obs, const CPo
 							//  2) Update its mean/cov (as in the simple EKF)
 							CPointPDFSOG::iterator it;
 							double max_w = -1e9;
-							for (it=beac->m_locationSOG.begin();it!=beac->m_locationSOG.end();it++)
+							for (it=beac->m_locationSOG.begin();it!=beac->m_locationSOG.end();++it)
 							{
 								double 	expectedRange = sensorPnt.distanceTo( it->val.mean );
 
@@ -628,7 +627,7 @@ bool  CBeaconMap::internal_insertObservation( const CObservation *obs, const CPo
 									// Remove the mode:
 									it = beac->m_locationSOG.erase( it );
 								}
-								else it++;
+								else ++it;
 							}
 
 							//printf("ESS: %f\n",beac->m_locationSOG.ESS());
@@ -687,6 +686,7 @@ void CBeaconMap::determineMatching2D(
 	const TMatchingParams & params,
 	TMatchingExtraResults & extraResults ) const
 {
+	MRPT_UNUSED_PARAM(params);
 	MRPT_START
 	extraResults = TMatchingExtraResults();
 
@@ -763,9 +763,9 @@ void  CBeaconMap::computeMatchingWith3DLandmarks(
 	otherCorrespondences.resize( nOther, false );
 	correspondencesRatio = 0;
 
-	for (k=0,otherIt=anotherMap->m_beacons.begin();otherIt!=anotherMap->m_beacons.end();otherIt++,k++)
+	for (k=0,otherIt=anotherMap->m_beacons.begin();otherIt!=anotherMap->m_beacons.end();++otherIt,++k)
 	{
-		for (j=0,thisIt=m_beacons.begin();thisIt!=m_beacons.end();thisIt++,j++)
+		for (j=0,thisIt=m_beacons.begin();thisIt!=m_beacons.end();++thisIt,++j)
 		{
 			// Is it a correspondence?
 			if ( (otherIt)->m_ID == (thisIt)->m_ID )
@@ -810,12 +810,16 @@ void  CBeaconMap::computeMatchingWith3DLandmarks(
 						saveToMATLABScript3D
   ---------------------------------------------------------------*/
 bool  CBeaconMap::saveToMATLABScript3D(
-						string		file,
-						const char		*style,
-						float			confInterval ) const
+	const string & file,
+	const char   *style,
+	float  confInterval ) const
 {
+	MRPT_UNUSED_PARAM(style);
+	MRPT_UNUSED_PARAM(confInterval);
+
 	FILE	*f= os::fopen(file.c_str(),"wt");
-	if (!f) return false;
+	if (!f)
+		return false;
 
 	// Header:
 	os::fprintf(f,"%%-------------------------------------------------------\n");
@@ -965,7 +969,7 @@ void  CBeaconMap::simulateBeaconReadings(
 	out_Observations.sensedData.clear();
 
 	// For each BEACON landmark in the map:
-	for (it=m_beacons.begin();it!=m_beacons.end();it++)
+	for (it=m_beacons.begin();it!=m_beacons.end();++it)
 	{
 	    it->getMean(beacon3D);
 

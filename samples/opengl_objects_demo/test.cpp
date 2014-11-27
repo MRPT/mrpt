@@ -571,6 +571,45 @@ void TestOpenGLObjects()
 	}
 	off_x+=STEP_X;
 
+	// CVectorField3D
+	{
+		{
+			const unsigned int num = 20;
+			const float scale = 0.8*STEP_X/num;
+			opengl::CVectorField3DPtr obj = opengl::CVectorField3D::Create();
+			obj->setLocation(off_x,-0.5*scale*num,0); //
+
+			CMatrixFloat x(num,num), y(num,num), z(num,num);
+			CMatrixFloat vx(num,num), vy(num,num), vz(num,num);
+			for (unsigned int i=0; i<x.getRowCount(); i++)
+				for (unsigned int j=0; j<x.getColCount(); j++)
+				{
+					x(i,j) = (i - 0.5*num)*scale;
+					y(i,j) = j*scale;
+					z(i,j) = 3*sin(0.3*i)*cos(0.3*j);
+					vx(i,j) = 0.4*sin(0.3*i);
+					vy(i,j) = 0.8*cos(0.3*i);
+					vz(i,j) = 0.01*i*j;
+
+				}
+			obj->setPointCoordinates(x,y,z);
+			obj->setVectorField(vx,vy,vz);
+			obj->setPointColor(1,0.3,0);
+			obj->setVectorFieldColor(0,0,1);
+			obj->setPointSize(3.0);
+			obj->setLineWidth(2.0);
+			obj->enableColorFromModule();
+			obj->setMaxSpeedForColor(3.0);
+			obj->setMotionFieldColormap(0,0,1,1,0,0);
+			theScene->insert( obj );
+		}
+
+		opengl::CTextPtr gl_txt = opengl::CText::Create("CVectorField3D");
+		gl_txt->setLocation(off_x,off_y_label,0);
+		theScene->insert(gl_txt);
+	}
+	off_x+=STEP_X;
+
 	// stock_objects::BumblebeeCamera
 	{
 		{

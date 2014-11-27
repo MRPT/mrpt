@@ -38,16 +38,12 @@ CMetricMapBuilderICP::CMetricMapBuilderICP()
   ---------------------------------------------------------------*/
 CMetricMapBuilderICP::~CMetricMapBuilderICP()
 {
-	MRPT_START
-
 	// Asure, we have exit all critical zones:
 	enterCriticalSection();
 	leaveCriticalSection();
 
 	// Save current map to current file:
 	setCurrentMapFile("");
-
-	MRPT_END
 }
 
 

@@ -29,6 +29,7 @@ using namespace mrpt::utils;
 template <bool Aligned>
 void faster_corner_detect_10(const IplImage* I, mrpt::vision::TSimpleFeatureList & corners, int barrier, uint8_t octave, std::vector<size_t> * out_feats_index_by_row)
 {
+	MRPT_UNUSED_PARAM(octave);
 	corners.reserve(corners.size()+500);
 	//corners.mark_kdtree_as_outdated();
 

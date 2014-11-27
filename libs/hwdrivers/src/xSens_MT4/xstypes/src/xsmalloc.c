@@ -32,7 +32,7 @@ void* lastAlignedFrees[TRACK_ALLOCS];
 #ifndef _MSC_VER
 #	ifdef __ANDROID__
 #		define _aligned_malloc(size, align) memalign(align, size)
-#	elif (defined __ICCARM__) || (defined _ADI_COMPILER) || (defined __CRCC__)
+#	elif (defined __ICCARM__) || (defined _ADI_COMPILER) || (defined __CRCC__) || (defined IAR_ARM_CM3) || (defined __ARMEL__)
 #		define _aligned_malloc(a, b) malloc(a)
 #	else
 

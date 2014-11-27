@@ -198,7 +198,10 @@ namespace mrpt
 
 			/** Check if ptu is moving */
 
-			virtual double status(double &rad){ return 1; }
+			virtual double status(double &rad){
+				MRPT_UNUSED_PARAM(rad);
+				return 1;
+			}
 
 			/** Set limits of movement */
 

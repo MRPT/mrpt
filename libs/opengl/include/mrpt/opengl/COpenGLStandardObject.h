@@ -72,10 +72,7 @@ namespace mrpt	{
 			/**
 			  * Disable some openGL flag.
 			  */
-			inline void disable(_GLENUM flag)	{
-				std::remove(enabled.begin(),enabled.end(),flag);
-				CRenderizableDisplayList::notifyChange();
-			}
+			void disable(_GLENUM flag);
 			/**
 			  * Check whether an openGL will be enabled during the rendering of this object.
 			  */

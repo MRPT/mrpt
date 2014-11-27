@@ -13,7 +13,9 @@ IF(CMAKE_MRPT_HAS_PCL)
 		mrpt-base
 		)
 
-	target_link_libraries(mrpt-pbmap ${PCL_LIBRARIES})
+	IF(BUILD_mrpt-pbmap) 
+		target_link_libraries(mrpt-pbmap ${PCL_LIBRARIES})
+	ENDIF(BUILD_mrpt-pbmap)
 
 ELSE(CMAKE_MRPT_HAS_PCL)
 	SET(BUILD_mrpt-pbmap "OFF" CACHE BOOL "Build the library mrpt-pbmap" FORCE)

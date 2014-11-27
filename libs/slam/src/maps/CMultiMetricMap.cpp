@@ -965,7 +965,7 @@ double	 CMultiMetricMap::computeObservationLikelihood(
 
 	MapExecutor::run(*this,op_likelihood);
 
-	MRPT_CHECK_NORMAL_NUMBER(ret_log_lik)
+	MRPT_CHECK_NORMAL_NUMBER(ret_log_lik) //-V614
 	return ret_log_lik;
 }
 
@@ -979,7 +979,7 @@ bool CMultiMetricMap::canComputeObservationLikelihood( const CObservation *obs )
 
 	MapCanComputeLikelihood op_can_likelihood(*this,obs,can_comp);
 	MapExecutor::run(*this,op_can_likelihood);
-	return can_comp;
+	return can_comp; //-V614
 }
 
 /*---------------------------------------------------------------
@@ -1017,7 +1017,7 @@ float  CMultiMetricMap::getNewStaticPointsRatio(
 	{
 		bool	hasCoor = false;
 		// Has any correspondence?
-		for (mrpt::utils::TMatchingPairList::iterator corrsIt=correspondences.begin();!hasCoor && corrsIt!=correspondences.end();corrsIt++)
+		for (mrpt::utils::TMatchingPairList::iterator corrsIt=correspondences.begin();!hasCoor && corrsIt!=correspondences.end();++corrsIt)
 			if (corrsIt->other_idx==i)
 				hasCoor = true;
 
@@ -1060,7 +1060,7 @@ bool  CMultiMetricMap::internal_insertObservation(
 	int total_insert;
 	MapInsertObservation op_insert_obs(*this,obs,robotPose,total_insert);
 	MapExecutor::run(*this,op_insert_obs);
-	return total_insert!=0;
+	return total_insert!=0; //-V614
 }
 
 /*---------------------------------------------------------------
@@ -1085,7 +1085,7 @@ void CMultiMetricMap::determineMatching2D(
 bool  CMultiMetricMap::isEmpty() const
 {
 	bool is_empty;
-	MapIsEmpty op_insert_obs(is_empty);
+	MapIsEmpty op_insert_obs(is_empty); //-V614
 	MapExecutor::run(*this,op_insert_obs);
 	return is_empty;
 }
@@ -1259,7 +1259,7 @@ void  CMultiMetricMap::saveMetricMapRepresentationToFile(
 	// grid maps:
 	{
 		std::deque<COccupancyGridMap2DPtr>::const_iterator	it;
-		for (idx=0,it = m_gridMaps.begin();it!=m_gridMaps.end();it++,idx++)
+		for (idx=0,it = m_gridMaps.begin();it!=m_gridMaps.end();++it,idx++)
 		{
 			std::string		fil( filNamePrefix );
 			fil += format("_gridmap_no%02u",idx);
@@ -1270,7 +1270,7 @@ void  CMultiMetricMap::saveMetricMapRepresentationToFile(
 	// octo maps:
 	{
 		std::deque<COctoMapPtr>::const_iterator	it;
-		for (idx=0,it = m_octoMaps.begin();it!=m_octoMaps.end();it++,idx++)
+		for (idx=0,it = m_octoMaps.begin();it!=m_octoMaps.end();++it,idx++)
 		{
 			std::string		fil( filNamePrefix );
 			fil += format("_octomap_no%02u",idx);
@@ -1281,7 +1281,7 @@ void  CMultiMetricMap::saveMetricMapRepresentationToFile(
 	// colored octo maps:
 	{
 		std::deque<CColouredOctoMapPtr>::const_iterator	it;
-		for (idx=0,it = m_colourOctoMaps.begin();it!=m_colourOctoMaps.end();it++,idx++)
+		for (idx=0,it = m_colourOctoMaps.begin();it!=m_colourOctoMaps.end();++it,idx++)
 		{
 			std::string		fil( filNamePrefix );
 			fil += format("_colour_octomap_no%02u",idx);
@@ -1292,7 +1292,7 @@ void  CMultiMetricMap::saveMetricMapRepresentationToFile(
 	// Gas grids maps:
 	{
 		std::deque<CGasConcentrationGridMap2DPtr>::const_iterator	it;
-		for (idx=0,it = m_gasGridMaps.begin();it!=m_gasGridMaps.end();it++,idx++)
+		for (idx=0,it = m_gasGridMaps.begin();it!=m_gasGridMaps.end();++it,idx++)
 		{
 			std::string		fil( filNamePrefix );
 			fil += format("_gasgridmap_no%02u",idx);
@@ -1303,7 +1303,7 @@ void  CMultiMetricMap::saveMetricMapRepresentationToFile(
 	// Wifi grids maps:
 	{
 		std::deque<CWirelessPowerGridMap2DPtr>::const_iterator	it;
-		for (idx=0,it = m_wifiGridMaps.begin();it!=m_wifiGridMaps.end();it++,idx++)
+		for (idx=0,it = m_wifiGridMaps.begin();it!=m_wifiGridMaps.end();++it,idx++)
 		{
 			std::string		fil( filNamePrefix );
 			fil += format("_wifigridmap_no%02u",idx);
@@ -1314,7 +1314,7 @@ void  CMultiMetricMap::saveMetricMapRepresentationToFile(
 	// Points maps:
 	{
 		std::deque<CSimplePointsMapPtr>::const_iterator	it;
-		for (idx=0,it = m_pointsMaps.begin();it!=m_pointsMaps.end();it++,idx++)
+		for (idx=0,it = m_pointsMaps.begin();it!=m_pointsMaps.end();++it,idx++)
 		{
 			std::string		fil( filNamePrefix );
 			fil += format("_pointsmap_no%02u",idx);
@@ -1339,7 +1339,7 @@ void  CMultiMetricMap::saveMetricMapRepresentationToFile(
 	// Height grids maps:
 	{
 		std::deque<CHeightGridMap2DPtr>::const_iterator	it;
-		for (idx=0,it = m_heightMaps.begin();it!=m_heightMaps.end();it++,idx++)
+		for (idx=0,it = m_heightMaps.begin();it!=m_heightMaps.end();++it,idx++)
 		{
 			std::string		fil( filNamePrefix );
 			fil += format("_heightgridmap_no%02u",idx);
@@ -1350,7 +1350,7 @@ void  CMultiMetricMap::saveMetricMapRepresentationToFile(
 	// Reflexivity grids maps:
 	{
 		std::deque<CReflectivityGridMap2DPtr>::const_iterator	it;
-		for (idx=0,it = m_reflectivityMaps.begin();it!=m_reflectivityMaps.end();it++,idx++)
+		for (idx=0,it = m_reflectivityMaps.begin();it!=m_reflectivityMaps.end();++it,idx++)
 		{
 			std::string		fil( filNamePrefix );
 			fil += format("_reflectivitygridmap_no%02u",idx);

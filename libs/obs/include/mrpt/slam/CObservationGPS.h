@@ -33,25 +33,15 @@ namespace slam
 		DEFINE_SERIALIZABLE( CObservationGPS )
 
 	 public:
-		/** Constructor.
-		 */
-		CObservationGPS(  );
+		CObservationGPS(  ); //!< ctor
+		void  dumpToStream( CStream &out ) const; //!< Dumps the contents of the observation in a human-readable form to a given output stream \sa dumpToConsole(), getDescriptionAsText()
 
-		/** Dumps the contents of the observation in a human-readable form to a given output stream
-		  */
-		void  dumpToStream( CStream &out );
+		/** Dumps the contents of the observation in a human-readable form to the console */
+		void  dumpToConsole(std::ostream &o = std::cout) const;
+		
+		CPose3D  sensorPose;//!< The sensor pose on the robot.
 
-		/** Dumps the contents of the observation in a human-readable form to the console
-		  */
-		void  dumpToConsole( );
-
-
-		 /** The sensor pose on the robot.
-		  */
-		CPose3D			sensorPose;
-
-		/** A UTC time-stamp structure for GPS messages
-		  */
+		/** A UTC time-stamp structure for GPS messages */
 		struct OBS_IMPEXP TUTCTime
 		{
 			TUTCTime();
@@ -269,19 +259,12 @@ namespace slam
 		/** Empties this observation, setting all "has_*_datum" to "false" */
 		void clear();
 
-		/** A general method to retrieve the sensor pose on the robot.
-		  *  Note that most sensors will return a full (6D) CPose3D, but see the derived classes for more details or special cases.
-		  * \sa setSensorPose
-		  */
+		// See base class docs
 		void getSensorPose( CPose3D &out_sensorPose ) const { out_sensorPose = sensorPose; }
-
-
-		/** A general method to change the sensor pose on the robot.
-		  *  Note that most sensors will use the full (6D) CPose3D, but see the derived classes for more details or special cases.
-		  * \sa getSensorPose
-		  */
+		// See base class docs
 		void setSensorPose( const CPose3D &newSensorPose ) { sensorPose = newSensorPose; }
-
+		// See base class docs
+		virtual void getDescriptionAsText(std::ostream &o) const;
 
 	}; // End of class def.
 	DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE( CObservationGPS , CObservation, OBS_IMPEXP)

@@ -47,13 +47,12 @@ void  CFeatureExtraction::detectFeatures(
 		CFeatureList			& feats,
 		const unsigned int		init_ID,
 		const unsigned int		nDesiredFeatures,
-		const TImageROI			& ROI,
-		const CMatrixBool       * mask) const
+		const TImageROI			& ROI) const
 {
 	switch( options.featsType )
 	{
 		case featHarris:
-
+			MRPT_TODO("Refactor: check if OpenCV's tile method can be directly called to save space here?")
 			if( options.harrisOptions.tile_image )
 			{
 				mrpt::utils::CTicTac tictac;
@@ -77,10 +76,10 @@ void  CFeatureExtraction::detectFeatures(
 					tam[k+4].resize(2);
 
 					// First row
-					newROI.xMin = k*wd/4;
+					newROI.xMin = k*wd/4.f;
 					newROI.yMin = 0;
-					newROI.xMax = wd/4 + k*wd/4 - 1;
-					newROI.yMax = hg/2 - 1;
+					newROI.xMax = wd/4.f + k*wd/4.f - 1;
+					newROI.yMax = hg/2.f - 1;
 
 					tictac.Tic();
 					extractFeaturesKLT( img, aux_feats[k], init_ID, nDesiredFeatures, newROI );
@@ -179,7 +178,7 @@ void  CFeatureExtraction::detectFeatures(
 			break;
 
 		case featFAST:
-			extractFeaturesFAST(img, feats, init_ID, nDesiredFeatures, ROI, mask);
+			extractFeaturesFAST(img, feats, init_ID, nDesiredFeatures, ROI);
 			break;
 
 		case featFASTER9:
@@ -263,6 +262,7 @@ void  CFeatureExtraction::extractFeaturesBCD(
 {
 	MRPT_UNUSED_PARAM(img);
 	MRPT_UNUSED_PARAM(feats);
+	MRPT_UNUSED_PARAM(init_ID);
 	MRPT_UNUSED_PARAM(nDesiredFeatures);
 	MRPT_UNUSED_PARAM(ROI);
 

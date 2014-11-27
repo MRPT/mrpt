@@ -160,6 +160,8 @@ void CAngularObservationMesh::render_dl() const	{
 }
 
 bool CAngularObservationMesh::traceRay(const mrpt::poses::CPose3D &o,double &dist) const	{
+	MRPT_UNUSED_PARAM(o);
+	MRPT_UNUSED_PARAM(dist);
 	//TODO: redo
 	return false;
 }
@@ -189,7 +191,7 @@ void CAngularObservationMesh::setPitchBounds(const double initial,const double f
 	pitchBounds.push_back(final);
 	meshUpToDate=false;
 }
-void CAngularObservationMesh::setPitchBounds(const std::vector<double> bounds)	{
+void CAngularObservationMesh::setPitchBounds(const std::vector<double> &bounds)	{
 	CRenderizableDisplayList::notifyChange();
 
 	pitchBounds=bounds;

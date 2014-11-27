@@ -51,7 +51,7 @@ void XSTYPES_DLL_API xsNameThisThread(const char* threadName)
 /*! \brief Set the name of the current thread to \a threadName
 	\note Not implemented in POSIX
 */
-void xsNameThisThread(const char* threadName)
+void XSTYPES_DLL_API xsNameThisThread(const char* threadName)
 {
 	// no implementation for this in POSIX -- pthread_key_t should be known.
 	// adding this function does remove some

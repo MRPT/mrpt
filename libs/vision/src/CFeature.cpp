@@ -365,6 +365,7 @@ void  CFeature::readFromStream(CStream &in,int version)
 	{
 	case 0:
 	case 1:
+	case 2:
 		{
 			// The coordinates:
 			uint32_t aux_type, aux_KLTS;
@@ -1216,7 +1217,7 @@ bool CFeature::getFirstDescriptorAsMatrix(mrpt::math::CMatrixFloat &desc) const
 			desc(0,i)=descriptors.SURF[i];
 		return true;
 	}
-	else if (descriptors.hasDescriptorSURF())
+	else if (descriptors.hasDescriptorSpinImg())
 	{
 		const size_t nR = descriptors.SpinImg_range_rows;
 		const size_t nC = descriptors.SpinImg.size() / descriptors.SpinImg_range_rows;

@@ -131,7 +131,7 @@ namespace mrpt
 					m_needToRecomputeEigenVals = false;
 					// Handle the special case of an ellipsoid of volume = 0
 					const double d=m_cov.det();
-					if (d==0 || d!=d) // Note: "d!=d" is a great test for invalid numbers, don't remove!
+					if (fabs(d)<1e-20 || d!=d) // Note: "d!=d" is a great test for invalid numbers, don't remove!
 					{
 						// All zeros:
 						m_U.setZero(DIM,DIM);
@@ -190,7 +190,10 @@ namespace mrpt
 
 			/** Ray tracing
 			  */
-			virtual bool traceRay(const mrpt::poses::CPose3D &o,double &dist) const { THROW_EXCEPTION("Not implemented ") }
+			virtual bool traceRay(const mrpt::poses::CPose3D &o,double &dist) const {
+				MRPT_UNUSED_PARAM(o); MRPT_UNUSED_PARAM(dist);
+				THROW_EXCEPTION("Not implemented ")
+			}
 
 		protected:
 			/** To be implemented by derived classes: maps, using some arbitrary space transformation, a list of points

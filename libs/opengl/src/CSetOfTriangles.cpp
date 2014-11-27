@@ -49,7 +49,7 @@ void   CSetOfTriangles::render_dl() const
 	glEnable(GL_NORMALIZE); // Normalize normals
 	glBegin(GL_TRIANGLES);
 
-	for (it=m_triangles.begin();it!=m_triangles.end();it++)
+	for (it=m_triangles.begin();it!=m_triangles.end();++it)
 	{
         // Compute the normal vector:
         // ---------------------------------

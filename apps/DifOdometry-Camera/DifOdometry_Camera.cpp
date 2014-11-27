@@ -61,6 +61,8 @@ void CDifodoCamera::loadConfiguration(const utils::CConfigFileBase &ini )
 	border.assign(0);
 	null.setSize(rows,cols);
 	null.assign(0);
+	weights.setSize(rows,cols);
+	weights.assign(0);
 	est_cov.assign(0);
 
 	x_incr = 2.0*f_dist*(floor(float(resh)/float(cols))*cols/float(resh))*tan(0.5*fovh)/(cols-1);	//In meters
@@ -151,20 +153,34 @@ void CDifodoCamera::loadFrame()
 
 	const int height = framed.getHeight();
 	const int width = framed.getWidth();
+	const int height_down = height/downsample;
+	const int width_down = width/downsample;
 	const unsigned int index_incr = downsample;
 
 	//Read one frame
 	const openni::DepthPixel* pDepthRow = (const openni::DepthPixel*)framed.getData();
 	int rowSize = framed.getStrideInBytes() / sizeof(openni::DepthPixel);
 
-	for (int yc = height-1; yc >= 0; --yc)
+	//for (int yc = height-1; yc >= 0; --yc)
+	//{
+	//	const openni::DepthPixel* pDepth = pDepthRow;
+	//	for (int xc = width-1; xc >= 0; --xc, ++pDepth)
+	//		if ((yc%downsample == 0)&&(xc%downsample == 0))
+	//			depth_wf(yc/downsample,xc/downsample) = 0.001*(*pDepth);
+
+	//	pDepthRow += rowSize;
+	//}
+
+	for (int yc = height_down-1; yc >= 0; --yc)
 	{
 		const openni::DepthPixel* pDepth = pDepthRow;
-		for (int xc = width-1; xc >= 0; --xc, ++pDepth)
-			if ((yc%downsample == 0)&&(xc%downsample == 0))
-				depth_wf(yc/downsample,xc/downsample) = 0.001*(*pDepth);
+		for (int xc = width_down-1; xc >= 0; --xc)
+		{
+			depth_wf(yc,xc) = 0.001*(*pDepth);
+			pDepth += downsample;
+		}
 
-		pDepthRow += rowSize;
+		pDepthRow += downsample*rowSize;
 	}
 }
 
@@ -477,11 +493,10 @@ void CDifodoCamera::filterSpeedAndPoseUpdate()
 	cam_pose.z_incr(v_abs_fil(2,0)/fps);
 	cam_pose.setYawPitchRoll(yaw + w_euler_d(0,0)/fps, pitch + w_euler_d(1,0)/fps, roll + w_euler_d(2,0)/fps);
 
-	execution_time += 1000*clock.Tac();
+	execution_time += 1000.f*clock.Tac();
 
 	if (save_results == 1)
 		writeToLogFile();
-
 }
 
 

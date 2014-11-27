@@ -67,11 +67,9 @@ namespace mrpt
 
 			void OnChar(wxKeyEvent& event);
 
-			void OnLeftDown(wxMouseEvent& event);
+			void OnMouseDown(wxMouseEvent& event);
 			void OnMouseMove(wxMouseEvent& event);
-			void OnRightDown(wxMouseEvent& event);
-			void OnRightUp(wxMouseEvent& event);
-			void OnLeftUp(wxMouseEvent& event);
+			void OnMouseUp(wxMouseEvent& event);
 			void OnMouseWheel(wxMouseEvent& event);
 
 			void Render();
@@ -98,12 +96,19 @@ namespace mrpt
 			static float  SENSIBILITY_DEG_PER_PIXEL;		// Default = 0.1
 
 			/**  Methods that can be implemented in custom derived classes  */
-			virtual void OnCharCustom( wxKeyEvent& event ) { }
+			virtual void OnCharCustom( wxKeyEvent& event ) {
+            MRPT_UNUSED_PARAM(event);
+         }
 
 			virtual void OnPreRender() { }
 			virtual void OnPostRender()  { }
-			virtual void OnPostRenderSwapBuffers(double At, wxPaintDC &dc) { }
-			virtual void OnRenderError( const wxString &str ) { }
+			virtual void OnPostRenderSwapBuffers(double At, wxPaintDC &dc) {
+            MRPT_UNUSED_PARAM(At); MRPT_UNUSED_PARAM(dc);
+         }
+
+			virtual void OnRenderError( const wxString &str ) {
+            MRPT_UNUSED_PARAM(str);
+         }
 
 			/** Overload this method to limit the capabilities of the user to move the camera using the mouse.
 			  *  For all these variables:

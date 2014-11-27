@@ -144,7 +144,7 @@ namespace mrpt
 			inline const_reverse_iterator rbegin() const { return m_feats.rbegin(); }
 			inline const_reverse_iterator rend() const { return m_feats.rend(); }
 
-			inline iterator erase(const iterator it)  {  return m_feats.erase(it); }
+			inline iterator erase(const iterator &it)  {  return m_feats.erase(it); }
 
 			inline bool empty() const  { return m_feats.empty(); }
 			inline size_t size() const { return m_feats.size(); }
@@ -174,7 +174,7 @@ namespace mrpt
 			inline typename TSimpleFeatureTraits<FEATURE>::coord_t getFeatureY(size_t i) const { return m_feats[i].pt.y; }
 			inline TFeatureID getFeatureID(size_t i) const { return m_feats[i].ID; }
 			inline float getFeatureResponse(size_t i) const { return m_feats[i].response; }
-			inline bool isPointFeature(size_t i) const { return true; }
+			inline bool isPointFeature(size_t i) const { MRPT_UNUSED_PARAM(i); return true; }
 			inline float getScale(size_t i) const { return static_cast<float>(1<<m_feats[i].octave); }
 			inline TFeatureTrackStatus getTrackStatus(size_t i) { return m_feats[i].track_status; }
 
@@ -251,6 +251,7 @@ namespace mrpt
 				/// Returns the distance between the vector "p1[0:size-1]" and the data point with index "idx_p2" stored in the class:
 				inline float kdtree_distance(const float *p1, const size_t idx_p2,size_t size) const
 				{
+					MRPT_UNUSED_PARAM(size); // in release mode
 					ASSERTDEB_(size==2)
 
 					const float d0 = p1[0] - m_data[idx_p2].pt.x;
@@ -262,7 +263,7 @@ namespace mrpt
 				//   Return true if the BBOX was already computed by the class and returned in "bb" so it can be avoided to redo it again.
 				//   Look at bb.size() to find out the expected dimensionality (e.g. 2 or 3 for point clouds)
 				template <typename BBOX>
-				bool kdtree_get_bbox(BBOX &bb) const  { return false; }
+				bool kdtree_get_bbox(BBOX &bb) const  { MRPT_UNUSED_PARAM(bb); return false; }
 
 				/** @} */
 

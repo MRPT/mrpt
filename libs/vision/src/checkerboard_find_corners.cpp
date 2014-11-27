@@ -62,19 +62,28 @@ bool mrpt::vision::findChessboardCorners(
 
 	cornerCoords.clear();
 
-	int find_chess_flags = CV_CALIB_CB_ADAPTIVE_THRESH;
+	int find_chess_flags = cv::CALIB_CB_ADAPTIVE_THRESH;
 	if (normalize_image)
-		find_chess_flags |= CV_CALIB_CB_NORMALIZE_IMAGE;
+		find_chess_flags |= cv::CALIB_CB_NORMALIZE_IMAGE;
 
 	if (!useScaramuzzaMethod)
 	{
+		cv::Mat cvImg = cv::cvarrToMat(img.getAs<IplImage>());
+		
+		vector<cv::Point2f> pointbuf;
+
 		// Standard OpenCV's function:
-		corners_found = 0 != cvFindChessboardCorners(
-			img.getAs<IplImage>(),
+		corners_found = 0 != cv::findChessboardCorners(
+			cvImg,
 			check_size,
-			&corners_list[0],
-			&corners_count,
+			pointbuf,
 			find_chess_flags);
+
+		corners_list.resize(pointbuf.size());
+		for (size_t i=0;i<pointbuf.size();i++) {
+			corners_list[i].x = pointbuf[i].x;
+			corners_list[i].y = pointbuf[i].y;
+		}
 	}
 	else
 	{

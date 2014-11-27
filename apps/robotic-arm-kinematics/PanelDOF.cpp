@@ -65,4 +65,5 @@ PanelDOF::~PanelDOF()
 
 void PanelDOF::OnSlider1CmdScroll(wxScrollEvent& event)
 {
+	MRPT_UNUSED_PARAM(event);
 }

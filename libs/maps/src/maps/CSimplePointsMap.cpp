@@ -266,20 +266,47 @@ namespace mrpt {
 			{
 
 				/** Helper method fot the generic implementation of CPointsMap::loadFromRangeScan(), to be called only once before inserting points - this is the place to reserve memory in lric for extra working variables. */
-				inline static void  internal_loadFromRangeScan2D_init(CSimplePointsMap &me, mrpt::slam::CPointsMap::TLaserRange2DInsertContext & lric)  {  }
+				inline static void  internal_loadFromRangeScan2D_init(CSimplePointsMap &me, mrpt::slam::CPointsMap::TLaserRange2DInsertContext & lric) {
+					MRPT_UNUSED_PARAM(me);
+					MRPT_UNUSED_PARAM(lric);
+				}
 				/** Helper method fot the generic implementation of CPointsMap::loadFromRangeScan(), to be called once per range data */
-				inline static void  internal_loadFromRangeScan2D_prepareOneRange(CSimplePointsMap &me, const float gx,const float gy, const float gz, mrpt::slam::CPointsMap::TLaserRange2DInsertContext & lric )  {  }
+				inline static void  internal_loadFromRangeScan2D_prepareOneRange(CSimplePointsMap &me, const float gx,const float gy, const float gz, mrpt::slam::CPointsMap::TLaserRange2DInsertContext & lric ) {
+					MRPT_UNUSED_PARAM(me);
+					MRPT_UNUSED_PARAM(gx);
+					MRPT_UNUSED_PARAM(gy);
+					MRPT_UNUSED_PARAM(gz);
+					MRPT_UNUSED_PARAM(lric);
+				}
 				/** Helper method fot the generic implementation of CPointsMap::loadFromRangeScan(), to be called after each "{x,y,z}.push_back(...);" */
-				inline static void  internal_loadFromRangeScan2D_postPushBack(CSimplePointsMap &me, mrpt::slam::CPointsMap::TLaserRange2DInsertContext & lric)  {  }
+				inline static void  internal_loadFromRangeScan2D_postPushBack(CSimplePointsMap &me, mrpt::slam::CPointsMap::TLaserRange2DInsertContext & lric)  {
+					MRPT_UNUSED_PARAM(me);
+					MRPT_UNUSED_PARAM(lric);
+				}
 
 				/** Helper method fot the generic implementation of CPointsMap::loadFromRangeScan(), to be called only once before inserting points - this is the place to reserve memory in lric for extra working variables. */
-				inline static void  internal_loadFromRangeScan3D_init(CSimplePointsMap &me, mrpt::slam::CPointsMap::TLaserRange3DInsertContext & lric) {  }
+				inline static void  internal_loadFromRangeScan3D_init(CSimplePointsMap &me, mrpt::slam::CPointsMap::TLaserRange3DInsertContext & lric) {
+					MRPT_UNUSED_PARAM(me);
+					MRPT_UNUSED_PARAM(lric);
+				}
 				/** Helper method fot the generic implementation of CPointsMap::loadFromRangeScan(), to be called once per range data */
-				inline static void  internal_loadFromRangeScan3D_prepareOneRange(CSimplePointsMap &me, const float gx,const float gy, const float gz, mrpt::slam::CPointsMap::TLaserRange3DInsertContext & lric )  {  }
+				inline static void  internal_loadFromRangeScan3D_prepareOneRange(CSimplePointsMap &me, const float gx,const float gy, const float gz, mrpt::slam::CPointsMap::TLaserRange3DInsertContext & lric )  {
+					MRPT_UNUSED_PARAM(me);
+					MRPT_UNUSED_PARAM(gx);
+					MRPT_UNUSED_PARAM(gy);
+					MRPT_UNUSED_PARAM(gz);
+					MRPT_UNUSED_PARAM(lric);
+				}
 				/** Helper method fot the generic implementation of CPointsMap::loadFromRangeScan(), to be called after each "{x,y,z}.push_back(...);" */
-				inline static void  internal_loadFromRangeScan3D_postPushBack(CSimplePointsMap &me, mrpt::slam::CPointsMap::TLaserRange3DInsertContext & lric)  {  }
+				inline static void  internal_loadFromRangeScan3D_postPushBack(CSimplePointsMap &me, mrpt::slam::CPointsMap::TLaserRange3DInsertContext & lric)  { 
+					MRPT_UNUSED_PARAM(me);
+					MRPT_UNUSED_PARAM(lric);
+				}
 				/** Helper method fot the generic implementation of CPointsMap::loadFromRangeScan(), to be called once per range data, at the end */
-				inline static void  internal_loadFromRangeScan3D_postOneRange(CSimplePointsMap &me, mrpt::slam::CPointsMap::TLaserRange3DInsertContext & lric )  {  }
+				inline static void  internal_loadFromRangeScan3D_postOneRange(CSimplePointsMap &me, mrpt::slam::CPointsMap::TLaserRange3DInsertContext & lric )  { 
+					MRPT_UNUSED_PARAM(me);
+					MRPT_UNUSED_PARAM(lric);
+				}
 			};
 		}
 	}

@@ -19,7 +19,7 @@
 //http://support.microsoft.com/kb/155196
 #define __STR2__(x) #x
 #define __STR1__(x) __STR2__(x)
-#define __LOC__ __FILE__ "(" __STR1__(__LINE__)") : WARNING: "
+#define __LOC__ __FILE__ "(" __STR1__(__LINE__) ") : WARNING: "
 
 // make sure both _WIN32 and WIN32 are defined if either of them is.
 #if defined(_WIN32) || defined(_M_IX86)

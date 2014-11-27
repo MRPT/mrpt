@@ -106,6 +106,8 @@ void CTextMessageCapable::render_text_messages(const int w, const int h) const
 	if (old_matMode!=GL_PROJECTION)
 		glMatrixMode(old_matMode);
 
+#else
+	MRPT_UNUSED_PARAM(w); MRPT_UNUSED_PARAM(h);
 #endif
 }
 

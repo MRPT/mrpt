@@ -643,9 +643,7 @@ void  CLandmarksMap::loadSiftFeaturesFromStereoImageObservation(
 
 	vision::CFeatureExtraction				fExt;
 	vision::CFeatureList					leftSiftList, rightSiftList;
-	vision::CFeatureList::iterator			leftSift, rightSift;
 	vision::CMatchedFeatureList				matchesList;
-	vision::CMatchedFeatureList::iterator	match;
 	vision::TMatchingOptions				matchingOptions;
 	vision::TStereoSystemParams				stereoParams;
 
@@ -1528,6 +1526,7 @@ void  CLandmarksMap::loadOccupancyFeaturesFrom2DRangeScan(
   ---------------------------------------------------------------*/
 double  CLandmarksMap::computeLikelihood_RSLC_2007( const CLandmarksMap  *s, const CPose2D &sensorPose )
 {
+	MRPT_UNUSED_PARAM(sensorPose);
 	MRPT_START
 
 	double								lik = 1.0;

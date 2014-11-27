@@ -91,3 +91,24 @@ void  CObservationOdometry::readFromStream(CStream &in, int version)
 	};
 }
 
+void CObservationOdometry::getDescriptionAsText(std::ostream &o) const
+{
+	CObservation::getDescriptionAsText(o);
+
+	o << std::endl << "Odometry reading: " << odometry << std::endl;
+
+	// Additional data:
+	if (hasEncodersInfo)
+	{
+		o << format(" Encoder info: deltaL=%i deltaR=%i\n", encoderLeftTicks, encoderRightTicks );
+	}
+	else    o << "Encoder info: Not available!\n";
+
+	if (hasVelocities)
+	{
+		o << format(" Velocity info: v=%.03f m/s  w=%.03f deg/s\n", velocityLin, RAD2DEG(velocityAng) );
+	}
+	else   o << "Velocity info: Not available!\n";
+
+}
+

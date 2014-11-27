@@ -65,9 +65,9 @@ double joint_pdf_metric (
 	const CMatrixTemplateNumeric<T>		&Y_predictions_mean,
 	const CMatrixTemplateNumeric<T>		&Y_predictions_cov,
 	const TAuxDataRecursiveJCBB			&info,
-	const TDataAssociationResults	&aux_data
-	)
+	const TDataAssociationResults	&aux_data)
 {
+	MRPT_UNUSED_PARAM(aux_data);
 	// Make a list of the indices of the predictions that appear in "currentAssociation":
 	const size_t  N = info.currentAssociation.size();
 	ASSERT_(N>0)
@@ -373,7 +373,8 @@ void mrpt::slam::data_association_full_covariance(
 
 				// Individual compatibility
 				const bool IC =  (compatibilityTestMetric==metricML) ? (ml > log_ML_compat_test_threshold) : (d2 < chi2thres);
-				if (true==(results.indiv_compatibility(i,j) = IC ))
+				results.indiv_compatibility(i,j)=IC;
+				if (IC)
 					results.indiv_compatibility_counts[j]++;
 			}
 		}
@@ -410,7 +411,8 @@ void mrpt::slam::data_association_full_covariance(
 
 				// Individual compatibility
 				const bool IC =  (compatibilityTestMetric==metricML) ? (ml > log_ML_compat_test_threshold) : (d2 < chi2thres);
-				if (true==(results.indiv_compatibility(i,j) = IC ))
+				results.indiv_compatibility(i,j) = IC;
+				if (IC)
 					results.indiv_compatibility_counts[j]++;
 			}
 		} // end use KD-Tree

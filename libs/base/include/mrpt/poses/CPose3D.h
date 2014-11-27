@@ -137,7 +137,7 @@ namespace poses
 		CPose3D(const CPose3DRotVec &p );
 
 		/** Fast constructor that leaves all the data uninitialized - call with UNINITIALIZED_POSE as argument */
-		inline CPose3D(TConstructorFlags_Poses constructor_dummy_param) : m_ROT(mrpt::math::UNINITIALIZED_MATRIX), m_ypr_uptodate(false) { }
+		inline CPose3D(TConstructorFlags_Poses ) : m_ROT(mrpt::math::UNINITIALIZED_MATRIX), m_ypr_uptodate(false) { }
 
 		/** Constructor from an array with these 12 elements: [r11 r21 r31 r12 r22 r32 r13 r23 r33 tx ty tz]
 		  *  where r{ij} are the entries of the 3x3 rotation matrix and t{x,y,z} are the 3D translation of the pose
@@ -216,11 +216,11 @@ namespace poses
 		/** An alternative, slightly more efficient way of doing \f$ G = P \oplus L \f$ with G and L being 3D points and P this 6D pose.
 		  * \note local_point is passed by value to allow global and local point to be the same variable
 		  */
-		inline void composePoint(const mrpt::math::TPoint3D local_point, mrpt::math::TPoint3D &global_point) const {
+		inline void composePoint(const mrpt::math::TPoint3D &local_point, mrpt::math::TPoint3D &global_point) const {
 			composePoint(local_point.x,local_point.y,local_point.z,  global_point.x,global_point.y,global_point.z );
 		}
 		/** This version of the method assumes that the resulting point has no Z component (use with caution!) */
-		inline void composePoint(const mrpt::math::TPoint3D local_point, mrpt::math::TPoint2D &global_point) const {
+		inline void composePoint(const mrpt::math::TPoint3D &local_point, mrpt::math::TPoint2D &global_point) const {
 			double dummy_z;
 			composePoint(local_point.x,local_point.y,local_point.z,  global_point.x,global_point.y,dummy_z );
 		}

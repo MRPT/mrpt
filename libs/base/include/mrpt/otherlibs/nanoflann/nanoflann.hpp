@@ -55,8 +55,8 @@ namespace nanoflann
 /** @addtogroup nanoflann_grp nanoflann C++ library for ANN
   *  @{ */
 
-  	/** Library version: 0xMmP (M=Major,m=minor,P=path) */
-	#define NANOFLANN_VERSION 0x118
+  	/** Library version: 0xMmP (M=Major,m=minor,P=patch) */
+	#define NANOFLANN_VERSION 0x119
 
 	/** @addtogroup result_sets_grp Result set classes
 	  *  @{ */
@@ -69,7 +69,7 @@ namespace nanoflann
 		CountType count;
 
 	public:
-		inline KNNResultSet(CountType capacity_) : capacity(capacity_), count(0)
+		inline KNNResultSet(CountType capacity_) : indices(0), dists(0), capacity(capacity_), count(0)
 		{
 		}
 
@@ -337,7 +337,7 @@ namespace nanoflann
 		}
 	};
 
-	/** Squared Euclidean distance functor (suitable for low-dimensionality datasets, like 2D or 3D point clouds)
+	/** Squared Euclidean (L2) distance functor (suitable for low-dimensionality datasets, like 2D or 3D point clouds)
 	  *  Corresponding distance traits: nanoflann::metric_L2_Simple
 	  * \tparam T Type of the elements (e.g. double, float, uint8_t)
 	  * \tparam DistanceType Type of distance variables (must be signed) (e.g. float, double, int64_t)
@@ -707,7 +707,7 @@ namespace nanoflann
 	 *   // Must return the number of data points
 	 *   inline size_t kdtree_get_point_count() const { ... }
 	 *
-	 *   // Must return the Euclidean (L2) distance between the vector "p1[0:size-1]" and the data point with index "idx_p2" stored in the class:
+	 *   // [Only if using the metric_L2_Simple type] Must return the Euclidean (L2) distance between the vector "p1[0:size-1]" and the data point with index "idx_p2" stored in the class:
 	 *   inline DistanceType kdtree_distance(const T *p1, const size_t idx_p2,size_t size) const { ... }
 	 *
 	 *   // Must return the dim'th component of the idx'th point in the class:
@@ -726,7 +726,9 @@ namespace nanoflann
 	 *   }
 	 *
 	 *  \endcode
-	 *
+	 * 
+	 * \tparam DatasetAdaptor The user-provided adaptor (see comments above).
+	 * \tparam Distance The distance metric to use: nanoflann::metric_L1, nanoflann::metric_L2, nanoflann::metric_L2_Simple, etc.
 	 * \tparam IndexType Will be typically size_t or int
 	 */
 	template <typename Distance, class DatasetAdaptor,int DIM = -1, typename IndexType = size_t>
@@ -948,7 +950,7 @@ namespace nanoflann
 		 *  \sa radiusSearch, findNeighbors
 		 * \note nChecks_IGNORED is ignored but kept for compatibility with the original FLANN interface.
 		 */
-		inline void knnSearch(const ElementType *query_point, const size_t num_closest, IndexType *out_indices, DistanceType *out_distances_sq, const int nChecks_IGNORED = 10) const
+		inline void knnSearch(const ElementType *query_point, const size_t num_closest, IndexType *out_indices, DistanceType *out_distances_sq, const int /* nChecks_IGNORED */ = 10) const
 		{
 			nanoflann::KNNResultSet<DistanceType,IndexType> resultSet(num_closest);
 			resultSet.init(out_indices, out_distances_sq);
@@ -1115,51 +1117,6 @@ namespace nanoflann
 				if (val>max_elem) max_elem = val;
 			}
 		}
-
-		void middleSplit(IndexType* ind, IndexType count, IndexType& index, int& cutfeat, DistanceType& cutval, const BoundingBox& bbox)
-		{
-			// find the largest span from the approximate bounding box
-			ElementType max_span = bbox[0].high-bbox[0].low;
-			cutfeat = 0;
-			cutval = (bbox[0].high+bbox[0].low)/2;
-			for (int i=1; i<(DIM>0 ? DIM : dim); ++i) {
-				ElementType span = bbox[i].low-bbox[i].low;
-				if (span>max_span) {
-					max_span = span;
-					cutfeat = i;
-					cutval = (bbox[i].high+bbox[i].low)/2;
-				}
-			}
-
-			// compute exact span on the found dimension
-			ElementType min_elem, max_elem;
-			computeMinMax(ind, count, cutfeat, min_elem, max_elem);
-			cutval = (min_elem+max_elem)/2;
-			max_span = max_elem - min_elem;
-
-			// check if a dimension of a largest span exists
-			size_t k = cutfeat;
-			for (size_t i=0; i<(DIM>0 ? DIM : dim); ++i) {
-				if (i==k) continue;
-				ElementType span = bbox[i].high-bbox[i].low;
-				if (span>max_span) {
-					computeMinMax(ind, count, i, min_elem, max_elem);
-					span = max_elem - min_elem;
-					if (span>max_span) {
-						max_span = span;
-						cutfeat = i;
-						cutval = (min_elem+max_elem)/2;
-					}
-				}
-			}
-			IndexType lim1, lim2;
-			planeSplit(ind, count, cutfeat, cutval, lim1, lim2);
-
-			if (lim1>count/2) index = lim1;
-			else if (lim2<count/2) index = lim2;
-			else index = count/2;
-		}
-
 
 		void middleSplit_(IndexType* ind, IndexType count, IndexType& index, int& cutfeat, DistanceType& cutval, const BoundingBox& bbox)
 		{
@@ -1346,7 +1303,7 @@ namespace nanoflann
 	};   // class KDTree
 
 
-	/** A simple KD-tree adaptor for working with data directly stored in an Eigen Matrix, without duplicating the data storage.
+	/** An L2-metric KD-tree adaptor for working with data directly stored in an Eigen Matrix, without duplicating the data storage.
 	  *  Each row in the matrix represents a point in the state space.
 	  *
 	  *  Example of usage:
@@ -1400,7 +1357,7 @@ namespace nanoflann
 		  *  The user can also call index->... methods as desired.
 		  * \note nChecks_IGNORED is ignored but kept for compatibility with the original FLANN interface.
 		  */
-		inline void query(const num_t *query_point, const size_t num_closest, IndexType *out_indices, num_t *out_distances_sq, const int nChecks_IGNORED = 10) const
+		inline void query(const num_t *query_point, const size_t num_closest, IndexType *out_indices, num_t *out_distances_sq, const int /* nChecks_IGNORED */ = 10) const
 		{
 			nanoflann::KNNResultSet<typename MatrixType::Scalar,IndexType> resultSet(num_closest);
 			resultSet.init(out_indices, out_distances_sq);
@@ -1422,7 +1379,7 @@ namespace nanoflann
 			return m_data_matrix.rows();
 		}
 
-		// Returns the distance between the vector "p1[0:size-1]" and the data point with index "idx_p2" stored in the class:
+		// Returns the L2 distance between the vector "p1[0:size-1]" and the data point with index "idx_p2" stored in the class:
 		inline num_t kdtree_distance(const num_t *p1, const size_t idx_p2,size_t size) const
 		{
 			num_t s=0;

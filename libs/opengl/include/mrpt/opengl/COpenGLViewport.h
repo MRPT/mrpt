@@ -322,16 +322,16 @@ namespace mrpt
 
 			struct TLastProjectiveMatrixInfo
 			{
-				TLastProjectiveMatrixInfo() : is_projective(true),eye(0,0,0),pointing(0,0,0),up(0,0,0), FOV(30), viewport_width(640), viewport_height(480), azimuth(0), elev(0), zoom(1)
+				TLastProjectiveMatrixInfo() : eye(0,0,0),pointing(0,0,0),up(0,0,0), viewport_width(640), viewport_height(480), FOV(30), azimuth(0), elev(0), zoom(1),is_projective(true)
 				{}
-				bool is_projective;  // true: projective, false: ortho
 				TPoint3D 	eye;		//!< The camera is here.
 				TPoint3D 	pointing; 	//!< The camera points to here
 				TPoint3D	up; 		//!< Up vector of the camera.
-				float FOV; //!< FOV in degrees.
 				size_t viewport_width, viewport_height; //!< In pixels. This may be smaller than the total render window.
+				float FOV; //!< FOV in degrees.
 				float azimuth, elev; //!< Camera elev & azimuth, in radians.
 				float zoom;
+				bool is_projective;  // true: projective, false: ortho
 			};
 			mutable TLastProjectiveMatrixInfo m_lastProjMat;  //!< Info updated with each "render()" and used in "get3DRayForPixelCoord"
 

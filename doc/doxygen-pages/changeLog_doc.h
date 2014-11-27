@@ -12,8 +12,38 @@
 
 <p> <b>Note:</b> <i>If you are displaying a local version of this page and you have not built the whole HTML documentation, the links above will be broken. Either build the documentation invoking <code>make documentation_html</code> or [browse it on-line](http://www.mrpt.org/).</i></p>
 
+<a name="1.3.0">
+  <h2>Version 1.3.0: (Under development) </h2></a>
+	- Lib changes:
+		- New library mrpt-nav (\a mrpt_nav_grp), subsumming the old mrpt-reactivenav (\a mrpt_reactivenav_grp).
+		- \a mrpt_reactivenav_grp is now a meta-library, depending on \a mrpt_nav_grp.
+		- These classes have been moved between libs for a more sensible organization:
+			- mrpt::slam::CDetectorDoorCrossing ==> mrpt::detectors::CDetectorDoorCrossing
+			- mrpt::slam::CPathPlanningMethod & CPathPlanningCircularRobot: \a mrpt_slam_grp ==> \a mrpt_nav_grp
+	- General changes:
+		- Many optimizations in function arguments (value vs ref). Forces ABI incompatibility with previous versions, hence the change to a new minor version number.
+		- Updated embedded version of Eigen to 3.2.2
+		- Kinect: Dropped support for the CL NUI API, which seems discontinued. Alternatives in use are libfreenect and OpenNI2.
+		- libfreenect is now detected in the system and used instead of compiling the embedded copy of it.
+		- Embedded copy of libfreenect has been updated to (23/oct/2014). It now supports "Kinect for Windows".
+	- Changes in classes:
+		- [mrpt-base]
+			- New function mrpt::math::angDistance()
+		- [mrpt-hwdrivers]
+			- mrpt::hwdrivers::CIMUXSens_MT4: (by Joe Burmeister for Suave Aerial Software)
+				- Upgrade to latest XSens SDK 4.2.1. Requires libudev-dev in Linux
+				- Add GPS observations to CIMUXSens_MT4 for Xsens devices like GTi-G-700 which have GPS 
+		- [mrpt-obs]
+			- CObservation::getDescriptionAsText(): New virtual method to obstain a textual description of observations. Refactoring of messy code previously in the RawLogViewer app.
+		- [mrpt-vision]
+			- mrpt::vision::CFeatureExtraction: Removed (unused) optional ROI parameter in detectors.
+	- BUG FIXES:
+		- mrpt::poses::CRobot2DPoseEstimator could estimate wrong angular velocities for orientations near +-180deg.
+		- mrpt::system::CDirectoryExplorer::sortByName() didn't sort in descending order
+
+<hr>
 <a name="1.2.2">
-  <h2>Version 1.2.2: (Under development) </h2></a>
+  <h2>Version 1.2.2: Released 12-SEP-2014  </h2></a>
 	- Changes in apps:
 		- <a href="http://www.mrpt.org/list-of-mrpt-apps/application-sceneviewer3d/" >SceneViewer3D</a>:
 			- New menu "File" -> "Import" -> "3D model" which supports many standard formats (via mrpt::opengl::CAssimpModel)
@@ -50,6 +80,8 @@
 			- New method mrpt::slam::CColouredPointsMap::getPCLPointCloudXYZRGB()
 		- [mrpt-opengl]
 			- mrpt::opengl::CMyGLCanvasBase (affects all 3D rendering classes): better handling of internal timers for smoother updates while rendering in multithreading apps.
+		- [mrpt-srba]
+			- New method to recover the global coordinates graph-slam problem for a RBA map: mrpt::srba::RbaEngine::get_global_graphslam_problem() (see example [MRPT]\samples\srba-examples\srba-tutorials\tutorial-srba-how-to-recover-global-map.cpp)
 	- BUG FIXES:
 		- mrpt::utils::CImage constructor from a matrix crashed.
 		- Unit tests: Named semaphores are not tested anymore if it's detected that the kernel version doesn't support them (Fix Debian 758725).

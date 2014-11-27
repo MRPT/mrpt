@@ -65,6 +65,8 @@ void  mrpt::topography::path_from_rtk_gps(
 	stlplus::smart_ptr<wxBusyCursor>	waitCursorPtr;
 	if (isGUI)
 		waitCursorPtr = stlplus::smart_ptr<wxBusyCursor>( new  wxBusyCursor() );
+#else
+	MRPT_UNUSED_PARAM(isGUI);
 #endif
 
     // Go: generate the map:
@@ -389,7 +391,7 @@ void  mrpt::topography::path_from_rtk_gps(
 				unsigned int k;
 				std::map<std::string, CObservationGPSPtr>::iterator g_it;
 
-				for (k=0,g_it=GPS.begin();g_it!=GPS.end();g_it++,k++)
+				for (k=0,g_it=GPS.begin();g_it!=GPS.end();++g_it,++k)
 				{
 					TPoint3D P;
 					mrpt::topography::geodeticToENU_WGS84(
@@ -576,14 +578,15 @@ void  mrpt::topography::path_from_rtk_gps(
 		for (map<TTimeStamp,TPoint3D>::iterator i=outInfoTemp.best_gps_path.begin();i!=outInfoTemp.best_gps_path.end();++i)
 		{
 			TPoint3D P;
+			TPoint3D &pl = i->second;
 			mrpt::topography::geodeticToENU_WGS84(
-				TGeodeticCoords(i->second.x,i->second.y,i->second.z),  // i->second.x,i->second.y,i->second.z, // lat, lon, heigh
+				TGeodeticCoords(pl.x,pl.y,pl.z),  // i->second.x,i->second.y,i->second.z, // lat, lon, heigh
 				P, // X Y Z
 				ref );
 
-			i->second.x = P.x + off_X;
-			i->second.y = P.y + off_Y;
-			i->second.z = P.z + off_Z;
+			pl.x = P.x + off_X;
+			pl.y = P.y + off_Y;
+			pl.z = P.z + off_Z;
 		}
 	} // end best_gps_path
 

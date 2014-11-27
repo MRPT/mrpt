@@ -305,7 +305,7 @@ void  CParticleFilterCapable::prediction_and_update_pfStandardProposal(
 	const mrpt::slam::CSensoryFrame		* observation,
 	const bayes::CParticleFilter::TParticleFilterOptions &PF_options   )
 {
-	MRPT_UNUSED_PARAM(action); MRPT_UNUSED_PARAM(observation);
+	MRPT_UNUSED_PARAM(action); MRPT_UNUSED_PARAM(observation); MRPT_UNUSED_PARAM(PF_options);
 	THROW_EXCEPTION("Algorithm 'pfStandardProposal' is not implemented in inherited class!");
 }
 /*---------------------------------------------------------------
@@ -316,7 +316,7 @@ void  CParticleFilterCapable::prediction_and_update_pfAuxiliaryPFStandard(
 	const mrpt::slam::CSensoryFrame		* observation,
 	const bayes::CParticleFilter::TParticleFilterOptions &PF_options   )
 {
-	MRPT_UNUSED_PARAM(action); MRPT_UNUSED_PARAM(observation);
+	MRPT_UNUSED_PARAM(action); MRPT_UNUSED_PARAM(observation); MRPT_UNUSED_PARAM(PF_options);
 	THROW_EXCEPTION("Algorithm 'pfAuxiliaryPFStandard' is not implemented in inherited class!");
 }
 /*---------------------------------------------------------------
@@ -327,7 +327,7 @@ void  CParticleFilterCapable::prediction_and_update_pfOptimalProposal(
 	const mrpt::slam::CSensoryFrame		* observation,
 	const bayes::CParticleFilter::TParticleFilterOptions &PF_options   )
 {
-	MRPT_UNUSED_PARAM(action); MRPT_UNUSED_PARAM(observation);
+	MRPT_UNUSED_PARAM(action); MRPT_UNUSED_PARAM(observation); MRPT_UNUSED_PARAM(PF_options);
 	THROW_EXCEPTION("Algorithm 'pfOptimalProposal' is not implemented in inherited class!");
 }
 /*---------------------------------------------------------------
@@ -338,7 +338,7 @@ void  CParticleFilterCapable::prediction_and_update_pfAuxiliaryPFOptimal(
 	const mrpt::slam::CSensoryFrame		* observation,
 	const bayes::CParticleFilter::TParticleFilterOptions &PF_options   )
 {
-	MRPT_UNUSED_PARAM(action); MRPT_UNUSED_PARAM(observation);
+	MRPT_UNUSED_PARAM(action); MRPT_UNUSED_PARAM(observation); MRPT_UNUSED_PARAM(PF_options);
 	THROW_EXCEPTION("Algorithm 'pfAuxiliaryPFOptimal' is not implemented in inherited class!");
 }
 

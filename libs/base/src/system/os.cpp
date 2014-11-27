@@ -62,7 +62,7 @@ using namespace std;
 #ifndef MRPT_OS_WINDOWS
     /** By ninjalj in http://stackoverflow.com/questions/3962263/checking-if-a-key-was-pressed
       */
-	void my_aux_sighandler(int signo) {}
+	void my_aux_sighandler(int ) {}
 
     int myKbhit(void)
     {
@@ -382,6 +382,7 @@ void os::memcpy(
 #if defined(_MSC_VER) && (_MSC_VER>=1400)
 	::memcpy_s(dest,destSize,src,copyCount);
 #else
+	MRPT_UNUSED_PARAM(destSize);
 	::memcpy( dest,src,copyCount );
 #endif
 }

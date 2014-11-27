@@ -109,9 +109,7 @@ void CConfigFileMemory::getContent( std::string &str ) const
  ---------------------------------------------------------------*/
 CConfigFileMemory::~CConfigFileMemory(  )
 {
-    MRPT_START
     delete THE_INI;
-    MRPT_END
 }
 
 /*---------------------------------------------------------------

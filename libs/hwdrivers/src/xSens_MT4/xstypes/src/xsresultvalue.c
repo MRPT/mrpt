@@ -92,6 +92,7 @@ const char* XsResultValue_toString(XsResultValue result)
 
 		case XRV_DEVICEERROR:			return "The device generated an error, try updating the firmware";
 		case XRV_DATAOVERFLOW:			return "Data overflow";
+		case XRV_BUFFEROVERFLOW:		return "Sample buffer overflow during communication outage";
 
 		case XRV_ABORTED:				return "The process was aborted by an external event";
 

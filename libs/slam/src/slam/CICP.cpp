@@ -394,7 +394,7 @@ CPosePDFPtr CICP::ICP_Method_Classic(
 			double  rho2 = square( options.kernel_rho );
 			mrpt::utils::TMatchingPairList::iterator	it;
 			size_t  i;
-			for (i=0, it=correspondences.begin();i<nCorrespondences;i++, it++)
+			for (i=0, it=correspondences.begin();i<nCorrespondences; ++i, ++it)
 			{
 				float   other_x_trans = transf.x + ccos * it->other_x - csin * it->other_y;
 				float   other_y_trans = transf.y + csin * it->other_x + ccos * it->other_y;
@@ -672,7 +672,7 @@ CPosePDFPtr CICP::ICP_Method_LM(
 					other_x_trans = other_xs_trans.begin(),
 					other_y_trans = other_ys_trans.begin();
 					i<nCorrespondences;
-					i++, it++,other_x_trans++,other_y_trans++ )
+					++i, ++it,++other_x_trans,++other_y_trans )
 				{
 					// Jacobian: dJ_dx
 					// --------------------------------------
@@ -888,6 +888,8 @@ CPosePDFPtr CICP::ICP_Method_IKF(
 		const CPosePDFGaussian	&initialEstimationPDF,
 		TReturnInfo				&outInfo )
 {
+	MRPT_UNUSED_PARAM(m1); MRPT_UNUSED_PARAM(mm2); MRPT_UNUSED_PARAM(initialEstimationPDF);
+	MRPT_UNUSED_PARAM(outInfo);
 	MRPT_START
 	THROW_EXCEPTION("Not implemented yet");
 	return CPosePDFGaussian::Create();

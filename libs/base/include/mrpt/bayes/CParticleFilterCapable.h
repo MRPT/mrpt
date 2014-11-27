@@ -69,7 +69,7 @@ namespace bayes
 			const void	* action,
 			const void	* observation )
 		{
-			MRPT_UNUSED_PARAM(action); MRPT_UNUSED_PARAM(observation);
+			MRPT_UNUSED_PARAM(PF_options); MRPT_UNUSED_PARAM(action); MRPT_UNUSED_PARAM(observation);
 			return obj->getW(index);
 		}
 

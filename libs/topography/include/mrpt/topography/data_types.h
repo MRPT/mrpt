@@ -86,7 +86,7 @@ namespace mrpt
 		struct TOPO_IMPEXP TEllipsoid
 		{
 			inline TEllipsoid() : sa( 6378137.0 ), sb( 6356752.314245 ), name("WGS84") {}
-			inline TEllipsoid( const double _sa, const double _sb, const string _name ) : sa(_sa), sb(_sb), name(_name) {}
+			inline TEllipsoid( const double _sa, const double _sb, const string &_name ) : sa(_sa), sb(_sb), name(_name) {}
 
 			double sa;		//!< largest semiaxis of the reference ellipsoid (in meters)
 			double sb;		//!< smallest semiaxis of the reference ellipsoid (in meters)

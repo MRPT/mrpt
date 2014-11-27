@@ -179,6 +179,7 @@ void CFrustum::readFromStream(CStream &in,int version)	{
 
 bool CFrustum::traceRay(const mrpt::poses::CPose3D &o,double &dist) const
 {
+	MRPT_UNUSED_PARAM(o); MRPT_UNUSED_PARAM(dist);
 	THROW_EXCEPTION("TO DO")
 }
 

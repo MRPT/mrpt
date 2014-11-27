@@ -103,6 +103,8 @@ namespace landmarks {
 		  * \param[in] pose The relative pose */
 		template <class POSE,class VECTOR>
 		inline static void composePosePoint(VECTOR & pt, const POSE & pose) {
+			MRPT_UNUSED_PARAM(pt);
+			MRPT_UNUSED_PARAM(pose);
 			// Not applicable: nothing to do on "pt"
 		}
 		/** Evaluates lm_local = lm_global (-) pose
@@ -112,6 +114,7 @@ namespace landmarks {
 		template <class POSE,class VECTOR>
 		static inline void inverseComposePosePoint(const VECTOR &lm_global,VECTOR &lm_local,const POSE &pose) {
 			// Not applicable
+			MRPT_UNUSED_PARAM(pose);
 			lm_local=lm_global;
 		}
 
@@ -130,6 +133,8 @@ namespace landmarks {
 		  * \param[in] pose The relative pose */
 		template <class POSE,class VECTOR>
 		inline static void composePosePoint(VECTOR & pt, const POSE & pose) {
+			MRPT_UNUSED_PARAM(pt);
+			MRPT_UNUSED_PARAM(pose);
 			// Not applicable: nothing to do on "pt"
 		}
 		/** Evaluates lm_local = lm_global (-) pose
@@ -139,6 +144,7 @@ namespace landmarks {
 		template <class POSE,class VECTOR>
 		static inline void inverseComposePosePoint(const VECTOR &lm_global,VECTOR &lm_local,const POSE &pose) {
 			// Not applicable
+			MRPT_UNUSED_PARAM(pose);
 			lm_local=lm_global;
 		}
 

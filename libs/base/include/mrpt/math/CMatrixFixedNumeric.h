@@ -57,7 +57,7 @@ namespace mrpt
 			/** Constructor which leaves the matrix uninitialized.
 			  *  Example of usage: CMatrixFixedNumeric<double,3,2> M(mrpt::math::UNINITIALIZED_MATRIX);
 			  */
-			inline CMatrixFixedNumeric(TConstructorFlags_Matrices constructor_flag) : Base() { }
+			inline CMatrixFixedNumeric(TConstructorFlags_Matrices ) : Base() { }
 
 			template<size_t N,typename ReturnType> inline ReturnType getVicinity(size_t c,size_t r) const	{
 				return detail::getVicinity<CMatrixFixedNumeric<T,NROWS,NCOLS>,T,ReturnType,N>::get(c,r,*this);
@@ -92,6 +92,7 @@ namespace mrpt
 			template<typename T,size_t D> class VicinityTraits<CMatrixFixedNumeric<T,D,D> >	{
 			public:
 				inline static void initialize(CMatrixFixedNumeric<T,D,D> &mat,size_t N)	{
+               UNUSED(mat);
 					ASSERT_(N==D);
 				}
 				inline static void insertInContainer(CMatrixFixedNumeric<T,D,D> &mat,size_t r,size_t c,const T &t)	{

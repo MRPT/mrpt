@@ -76,7 +76,6 @@ void mrpt::vision::pinhole::projectPoints_with_distortion(
 	if (!N) return;  // Nothing to do
 
 	vector<CvPoint3D64f>  objPoints(N);
-	vector<CvPoint2D64f>  imgPoints(N);
 
 	// generate points relative to camera:
 	for (size_t i=0;i<N;i++)
@@ -100,21 +99,27 @@ void mrpt::vision::pinhole::projectPoints_with_distortion(
 	proj_matrix[5] = intrinsicParams.get_unsafe(1,2);
 
 	// Do the projection:
-	cvProjectPointsSimple(
-		N, // int point_count,
-		&objPoints[0],
-		rotation_matrix,
-		translation_vector,
-		&proj_matrix[0],
-		const_cast<double*>(&distortionParams[0]),
-		&imgPoints[0] );
+	cv::Mat object_points = cv::Mat( N, 1, CV_64FC3, &objPoints[0] );
+	
+	cv::Mat rotvec;
+	cv::Rodrigues( cv::Mat( 3, 3, CV_64FC1, rotation_matrix ), rotvec);
+
+	cv::Mat _translation_vector = cv::Mat( 3, 1, CV_64FC1, translation_vector );
+	cv::Mat camera_matrix = cv::Mat( 3, 3, CV_64FC1, &proj_matrix[0] );
+	cv::Mat dist_coeffs = cv::Mat( 4, 1, CV_64FC1, const_cast<double*>(&distortionParams[0]) );
+
+	vector<cv::Point2d> image_points;
+
+	cv::projectPoints(
+		object_points, rotvec, _translation_vector,
+		camera_matrix, dist_coeffs, image_points );
 
 	for (size_t i=0;i<N;i++)
 	{
 		if (accept_points_behind || objPoints[i].z>0 )
 		{  // Valid point or we accept them:
-			projectedPoints[i].x = imgPoints[i].x;
-			projectedPoints[i].y = imgPoints[i].y;
+			projectedPoints[i].x = image_points[i].x;
+			projectedPoints[i].y = image_points[i].y;
 		}
 		else
 		{ 	// Invalid point behind the camera:
@@ -293,6 +298,7 @@ void mrpt::vision::pinhole::projectPoint_with_distortion(
 	bool accept_points_behind
 	)
 {
+	MRPT_UNUSED_PARAM(accept_points_behind);
 	// Pinhole model:
 	const double x = P.x/P.z;
 	const double y = P.y/P.z;

@@ -60,20 +60,13 @@ namespace slam
 		  */
 		vector_bool   voltageOtherBatteriesValid;
 
-		/** A general method to retrieve the sensor pose on the robot.
-		  *  It has no effects in this class
-		  * \sa setSensorPose
-		  */
-		void getSensorPose( CPose3D &out_sensorPose ) const { out_sensorPose=CPose3D(0,0,0); }
-
-
-		/** A general method to change the sensor pose on the robot.
-		  *  It has no effects in this class
-		  * \sa getSensorPose
-		  */
-		void setSensorPose( const CPose3D &newSensorPose ) {  }
-
-
+		// See base class docs
+		void getSensorPose( CPose3D &out_sensorPose ) const;		
+		// See base class docs
+		void setSensorPose( const CPose3D &newSensorPose );
+		// See base class docs
+		virtual void getDescriptionAsText(std::ostream &o) const;
+		
 	}; // End of class def.
 	DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE( CObservationBatteryState, CObservation, OBS_IMPEXP)
 

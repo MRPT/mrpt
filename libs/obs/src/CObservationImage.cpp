@@ -11,6 +11,7 @@
 
 #include <mrpt/slam/CObservationImage.h>
 #include <mrpt/utils/CStream.h>
+#include <mrpt/math/ops_vectors.h>  // << of std::vector()
 
 #include <iostream>
 
@@ -111,4 +112,32 @@ void  CObservationImage::readFromStream(CStream &in, int version)
 void  CObservationImage::getRectifiedImage( CImage &out_img ) const
 {
 	image.rectifyImage(out_img, cameraParams );
+}
+
+void CObservationImage::getDescriptionAsText(std::ostream &o) const
+{
+	using namespace std;
+	CObservation::getDescriptionAsText(o);
+
+	o << "Homogeneous matrix for the sensor's 3D pose, relative to robot base:\n";
+	o << cameraPose.getHomogeneousMatrixVal()
+	<< cameraPose << endl;
+
+	o << format("Focal length: %.03f mm\n",cameraParams.focalLengthMeters*1000);
+
+	o << "Intrinsic parameters matrix for the camera:"<< endl
+	<< cameraParams.intrinsicParams.inMatlabFormat() << endl << cameraParams.intrinsicParams << endl;
+
+	o << "Distorsion parameters for the camera: " << cameraParams.getDistortionParamsAsVector() << endl;
+
+	if (image.isExternallyStored())
+		o << " Image is stored externally in file: " << image.getExternalStorageFile() << endl;
+
+	o << format(" Image size: %ux%u pixels\n", (unsigned int)image.getWidth(), (unsigned int)image.getHeight() );
+
+	o << " Channels order: " << image.getChannelsOrder() << endl;
+
+	o << format(" Rows are stored in top-bottom order: %s\n",
+					image.isOriginTopLeft() ? "YES" : "NO");
+
 }

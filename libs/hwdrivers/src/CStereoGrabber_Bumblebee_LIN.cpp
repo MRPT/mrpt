@@ -32,6 +32,7 @@ CStereoGrabber_Bumblebee::CStereoGrabber_Bumblebee(
 		m_centerRow( 0 ),
 		m_options( options )
 {
+	MRPT_UNUSED_PARAM(cameraIndex);
     MRPT_TRY_START;
 
 	TCaptureOptions_dc1394	opt1394;

@@ -171,13 +171,16 @@ protected:
 
 	static void func_compose_point(const CArrayDouble<6+3> &x, const double &dummy, CArrayDouble<3> &Y)
 	{
+		MRPT_UNUSED_PARAM(dummy);
 		CPose3D q(x[0],x[1],x[2],x[3],x[4],x[5]);
 		const CPoint3D 		p(x[6+0],x[6+1],x[6+2]);
 		const CPoint3D pp = q+p;
 		for (int i=0;i<3;i++) Y[i]=pp[i];
 	}
+
 	static void func_inv_compose_point(const CArrayDouble<6+3> &x, const double &dummy, CArrayDouble<3> &Y)
 	{
+		MRPT_UNUSED_PARAM(dummy);
 		CPose3D q(x[0],x[1],x[2],x[3],x[4],x[5]);
 		const CPoint3D 		p(x[6+0],x[6+1],x[6+2]);
 		const CPoint3D pp = p-q;
@@ -388,6 +391,7 @@ protected:
 		const CArrayDouble<6> &x,
 		const double &dummy, CArrayDouble<12> &Y)
 	{
+		MRPT_UNUSED_PARAM(dummy);
 		const CPose3D p = CPose3D::exp(x);
 		//const CMatrixDouble44 R = p.getHomogeneousMatrixVal();
 		p.getAs12Vector(Y);
@@ -399,7 +403,7 @@ protected:
 		CArrayDouble<6> x_mean;
 		for (int i=0;i<6;i++) x_mean[i]=0;
 
-		double dummy;
+		double dummy=0.;
 		CArrayDouble<6> x_incrs;
 		x_incrs.assign(1e-9);
 		CMatrixDouble numJacobs;
@@ -436,6 +440,7 @@ protected:
 		const CArrayDouble<12> &x,
 		const double &dummy, CArrayDouble<6> &Y)
 	{
+		MRPT_UNUSED_PARAM(dummy);
 		CPose3D p;
 		p.setFrom12Vector(x);
 		Y = p.ln();
@@ -454,7 +459,7 @@ protected:
 			CArrayDouble<12> x_mean;
 			p.getAs12Vector(x_mean);
 
-			double dummy;
+			double dummy=0.;
 			CArrayDouble<12> x_incrs;
 			x_incrs.assign(1e-6);
 			mrpt::math::jacobians::jacob_numeric_estimate(x_mean,func_jacob_LnT_T,x_incrs,dummy, numJacobs );

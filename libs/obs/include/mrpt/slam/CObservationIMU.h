@@ -69,6 +69,14 @@ namespace slam
 		IMU_ALTITUDE,
 		/// temperature (degrees Celsius)
 		IMU_TEMPERATURE,
+		/// Orientation Quaternion X
+		IMU_ORI_QUAT_X,
+		/// Orientation Quaternion Y
+		IMU_ORI_QUAT_Y,
+		/// Orientation Quaternion Z
+		IMU_ORI_QUAT_Z,
+		/// Orientation Quaternion W
+		IMU_ORI_QUAT_W,
 
 		// Always leave this last value to reflect the number of enum values:
 		COUNT_IMU_DATA_FIELDS
@@ -94,15 +102,21 @@ namespace slam
 		<tr> <td> 13 </td> <td>IMU_Y</td> <td> y absolute value (meters)</td> </tr>
 		<tr> <td> 14 </td> <td>IMU_Z</td> <td> z absolute value (meters)</td> </tr>
 		<tr> <td> 15 </td> <td>IMU_MAG_X</td> <td> x magnetic field value (gauss)</td> </tr>
-		<tr> <td> 16 </td> <td>IMU_MAG_X</td> <td> x magnetic field value (gauss)</td> </tr>
-		<tr> <td> 17 </td> <td>IMU_MAG_X</td> <td> x magnetic field value (gauss)</td> </tr>
+		<tr> <td> 16 </td> <td>IMU_MAG_Y</td> <td> y magnetic field value (gauss)</td> </tr>
+		<tr> <td> 17 </td> <td>IMU_MAG_Z</td> <td> z magnetic field value (gauss)</td> </tr>
 		<tr> <td> 18 </td> <td>IMU_PRESSURE</td> <td> air pressure (Pascals)</td> </tr>
 		<tr> <td> 19 </td> <td>IMU_ALTITUDE</td> <td>altitude from an altimeter (meters)</td> </tr>
 		<tr> <td> 20 </td> <td>IMU_TEMPERATURE</td> <td> temperature (degrees Celsius)</td> </tr>
+		<tr> <td> 21 </td> <td>IMU_ORI_QUAT_X</td> <td> Orientation Quaternion X value </td> </tr>
+		<tr> <td> 22 </td> <td>IMU_ORI_QUAT_Y</td> <td> Orientation Quaternion Y value </td> </tr>
+		<tr> <td> 23 </td> <td>IMU_ORI_QUAT_Z</td> <td> Orientation Quaternion Z value </td> </tr>
+		<tr> <td> 24 </td> <td>IMU_ORI_QUAT_W</td> <td> Orientation Quaternion W value </td> </tr>
 		</table>
 	 *
 	 *  Values from 0 to 5 are direct measurements measured by accelerometers & gyroscopes. 
 	 *  Values at indices from 6 to 14, if present, are estimates (dead reckoning) from the IMU unit.
+	 *  Values at indices 15 to 20, if present, are from additional sensors.
+	 *  Values at indices 20 to 24, if present, are a quaternion representation of the orientation.
 	 *
 	 * \sa CObservation
 	 * \ingroup mrpt_obs_grp
@@ -117,8 +131,8 @@ namespace slam
 		 */
 		CObservationIMU(  ) :
 			sensorPose(),
-			dataIsPresent(21,false),
-			rawMeasurements(21,0)
+			dataIsPresent(25,false),
+			rawMeasurements(25,0)
 		{ }
 
 		/** Destructor
@@ -141,18 +155,12 @@ namespace slam
 		std::vector<double>  rawMeasurements;
 
 
-		/** A general method to retrieve the sensor pose on the robot.
-		  *  Note that most sensors will return a full (6D) CPose3D, but see the derived classes for more details or special cases.
-		  * \sa setSensorPose
-		  */
+		// See base class docs
 		void getSensorPose( CPose3D &out_sensorPose ) const { out_sensorPose = sensorPose; }
-
-
-		/** A general method to change the sensor pose on the robot.
-		  *  Note that most sensors will use the full (6D) CPose3D, but see the derived classes for more details or special cases.
-		  * \sa getSensorPose
-		  */
+		// See base class docs
 		void setSensorPose( const CPose3D &newSensorPose ) { sensorPose = newSensorPose; }
+		// See base class docs
+		virtual void getDescriptionAsText(std::ostream &o) const;
 
 
 	}; // End of class def.

@@ -29,6 +29,8 @@
 #include "ArRobotConfigPacketReader.h"
 #include "ariaInternal.h"
 
+#include <mrpt/utils/mrpt_macros.h>
+
 /**
  * The parameters only rarely need to be specified.
  *
@@ -68,6 +70,7 @@ AREXPORT ArRobot::ArRobot(const char *name, bool obsolete,
   myRealBatteryAverager(20),
   myAriaExitCB(this, &ArRobot::ariaExitCallback)
 {
+  MRPT_UNUSED_PARAM(obsolete);
   setName(name);
   myAriaExitCB.setName("ArRobotExit");
   myNoTimeWarningThisCycle = false;
@@ -640,7 +643,6 @@ AREXPORT int ArRobot::asyncConnectHandler(bool tryHarderToConnect)
   char robotSubType[255];
   int i;
   int len;
-  std::string str;
   ArTime endTime;
   int timeToWait;
   ArSerialConnection *serConn;

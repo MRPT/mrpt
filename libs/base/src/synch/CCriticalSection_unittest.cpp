@@ -96,6 +96,7 @@ int counter = 0;
 
 void thread_example(int id)
 {
+	MRPT_UNUSED_PARAM(id);
 	try
 	{
 		{
@@ -115,12 +116,6 @@ void thread_example(int id)
 			//remaining = 
 			--counter;
 		}
-
-		time_t	timcr,timex;
-		double	tim;
-		getCurrentThreadTimes( timcr,timex, tim );
-
-		//printf("[thread_example %i] Finished... %i still alive (%fms CPU time)\n", id, remaining, tim*1e3);
 	}
 	catch(std::exception &e)
 	{

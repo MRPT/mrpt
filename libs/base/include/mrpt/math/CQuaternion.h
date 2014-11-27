@@ -47,7 +47,7 @@ namespace mrpt
 	 */
 
 		/**	Can be used with UNINITIALIZED_QUATERNION as argument, does not initialize the 4 elements of the quaternion (use this constructor when speed is critical). */
-		inline CQuaternion(TConstructorFlags_Quaternions constructor_dummy_param) { }
+		inline CQuaternion(TConstructorFlags_Quaternions ) { }
 
 		/**	Default constructor: construct a (1, (0,0,0) ) quaternion representing no rotation. */
 		inline CQuaternion()
@@ -345,7 +345,7 @@ namespace mrpt
 			else if (discr<-0.49999)
 			{	// pitch =-90 deg
 				pitch = -0.5*M_PI;
-				yaw   =+2*atan2(x(),r());
+				yaw   = 2*atan2(x(),r());
 				roll  = 0;
 				if (out_dr_dq) {
 					out_dr_dq->zeros();

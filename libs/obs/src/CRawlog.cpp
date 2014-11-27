@@ -318,18 +318,6 @@ bool  CRawlog::loadFromRawLogFile( const std::string &fileName )
             {
 				m_seqOfActObs.push_back( newObj );
             }
-			/** FOR BACKWARD COMPATIBILITY: CPose2D was used previously intead of an "ActionCollection" object
-																				26-JAN-2006	*/
-            else if ( newObj->GetRuntimeClass() == CLASS_ID(CPose2D))
-            {
-				CPose2DPtr					poseChange = CPose2DPtr( newObj );
-				CActionCollectionPtr	temp = CActionCollectionPtr( new CActionCollection() );
-				CActionRobotMovement2D		action;
-				CActionRobotMovement2D::TMotionModelOptions	options;
-				action.computeFromOdometry( *poseChange, options);
-				temp->insert( action );
-				m_seqOfActObs.push_back( temp );
-            }
 			else
 			{       // Unknown class:
 				keepReading = false;
@@ -574,6 +562,7 @@ void CRawlog::findObservationsByClassInRange(
 	size_t							guess_start_position
 	) const
 {
+	MRPT_UNUSED_PARAM(guess_start_position);
 	MRPT_START
 
 	out_found.clear();

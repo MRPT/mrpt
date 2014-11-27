@@ -314,8 +314,6 @@ void  CHeightGridMap2D::TInsertionOptions::loadFromConfigFile(
 void  CHeightGridMap2D::saveMetricMapRepresentationToFile(
 	const std::string	&filNamePrefix ) const
 {
-	std::string		fil;
-
 	// Text matrix:
 	saveToTextFile( filNamePrefix + std::string("_mean.txt") );
 }
@@ -514,4 +512,17 @@ size_t CHeightGridMap2D::countObservedCells() const
 		break;
 	default: THROW_EXCEPTION("countObservedCells() not implemented for this mapType (!?)")
 	};
+}
+
+
+float  CHeightGridMap2D::compute3DMatchingRatio(
+	const CMetricMap						*otherMap,
+	const CPose3D							&otherMapPose,
+	float									maxDistForCorr,
+	float									maxMahaDistForCorr
+	) const
+{
+	MRPT_UNUSED_PARAM(otherMap); MRPT_UNUSED_PARAM(otherMapPose);
+	MRPT_UNUSED_PARAM(maxDistForCorr); MRPT_UNUSED_PARAM(maxMahaDistForCorr);
+	return 0;
 }

@@ -353,6 +353,7 @@ namespace mrpt { namespace srba {
 			const landmark_traits<LANDMARK_T>::array_landmark_t & lm_pos,
 			const OBS_T::TObservationParams                     & params)
 		{
+			MRPT_UNUSED_PARAM(params);
 			double x,y,z; // wrt cam (local coords)
 			base_pose_wrt_observer.composePoint(lm_pos[0],lm_pos[1],lm_pos[2], x,y,z);
 
@@ -384,6 +385,7 @@ namespace mrpt { namespace srba {
 			const array_landmark_t   & xji_l, 
 			const TObservationParams & sensor_params)
 		{
+			MRPT_UNUSED_PARAM(xji_l); MRPT_UNUSED_PARAM(sensor_params);
 			// xji_l[0:2]=[X Y Z]
 			// This is probably the simplest Jacobian ever:
 			dh_dx.setIdentity();
@@ -404,6 +406,7 @@ namespace mrpt { namespace srba {
 			const observation_traits<OBS_T>::obs_data_t   & obs, 
 			const OBS_T::TObservationParams               & params)
 		{
+			MRPT_UNUSED_PARAM(params);
 			out_lm_pos[0] = obs.pt.x;
 			out_lm_pos[1] = obs.pt.y;
 			out_lm_pos[2] = obs.pt.z;
@@ -479,6 +482,7 @@ namespace mrpt { namespace srba {
 			const array_landmark_t   & xji_l, 
 			const TObservationParams & sensor_params)
 		{
+			MRPT_UNUSED_PARAM(xji_l); MRPT_UNUSED_PARAM(sensor_params);
 			// xji_l[0:1]=[X Y]
 			// This is probably the simplest Jacobian ever:
 			dh_dx.setIdentity();
@@ -499,6 +503,7 @@ namespace mrpt { namespace srba {
 			const observation_traits<OBS_T>::obs_data_t   & obs, 
 			const OBS_T::TObservationParams               & params)
 		{
+			MRPT_UNUSED_PARAM(params);
 			out_lm_pos[0] = obs.pt.x;
 			out_lm_pos[1] = obs.pt.y;
 		}
@@ -581,6 +586,7 @@ namespace mrpt { namespace srba {
 			const array_landmark_t   & xji_l, 
 			const TObservationParams & sensor_params)
 		{
+			MRPT_UNUSED_PARAM(sensor_params);
 			// xji_l[0:2]=[X Y Z]
 			mrpt::math::CMatrixDouble33 dh_dx_(mrpt::math::UNINITIALIZED_MATRIX);
 
@@ -611,6 +617,7 @@ namespace mrpt { namespace srba {
 			const observation_traits<OBS_T>::obs_data_t   & obs, 
 			const OBS_T::TObservationParams               & params)
 		{
+			MRPT_UNUSED_PARAM(params);
 			const double chn_y = cos(obs.yaw),   shn_y = sin(obs.yaw);
 			const double chn_p = cos(obs.pitch), shn_p = sin(obs.pitch);
 			// The new point, relative to the sensor:
@@ -652,12 +659,13 @@ namespace mrpt { namespace srba {
 		  */
 		template <class POSE_T>
 		static void observe_error(
-			observation_traits<OBS_T>::array_obs_t              & out_obs_err, 
-			const observation_traits<OBS_T>::array_obs_t        & z_obs, 
+			observation_traits<OBS_T>::array_obs_t              & out_obs_err,
+			const observation_traits<OBS_T>::array_obs_t        & z_obs,
 			const POSE_T                                        & base_pose_wrt_observer,
 			const landmark_traits<LANDMARK_T>::array_landmark_t & lm_pos,
 			const OBS_T::TObservationParams                     & params)
 		{
+			MRPT_UNUSED_PARAM(params);
 			mrpt::math::TPoint2D  l; // wrt sensor (local coords)
 			base_pose_wrt_observer.composePoint(lm_pos[0],lm_pos[1], l.x,l.y);
 			
@@ -689,9 +697,10 @@ namespace mrpt { namespace srba {
 		  */
 		static bool eval_jacob_dh_dx(
 			TJacobian_dh_dx          & dh_dx,
-			const array_landmark_t   & xji_l, 
+			const array_landmark_t   & xji_l,
 			const TObservationParams & sensor_params)
 		{
+			MRPT_UNUSED_PARAM(sensor_params);
 			// xji_l[0:1]=[X Y]
 			const double r = hypot(xji_l[0], xji_l[1]);
 			if (r==0) return false;
@@ -719,6 +728,7 @@ namespace mrpt { namespace srba {
 			const observation_traits<OBS_T>::obs_data_t   & obs, 
 			const OBS_T::TObservationParams               & params)
 		{
+			MRPT_UNUSED_PARAM(params);
 			const double chn_y = cos(obs.yaw), shn_y = sin(obs.yaw);
 			// The new point, relative to the sensor:
 			out_lm_pos[0] = obs.range * chn_y;
@@ -764,6 +774,7 @@ namespace mrpt { namespace srba {
 			const landmark_traits<LANDMARK_T>::array_landmark_t & lm_pos,
 			const OBS_T::TObservationParams                     & params)
 		{
+			MRPT_UNUSED_PARAM(lm_pos); MRPT_UNUSED_PARAM(params);
 			// Relative pose observation: 
 			//  OUT_OBS_ERR = - pseudo-log( PREDICTED_REL_POSE \ominus Z_OBS )
 			const POSE_T h = POSE_T(z_obs[0],z_obs[1],z_obs[2]) - base_pose_wrt_observer;
@@ -795,6 +806,7 @@ namespace mrpt { namespace srba {
 			const array_landmark_t   & xji_l, 
 			const TObservationParams & sensor_params)
 		{
+			MRPT_UNUSED_PARAM(xji_l); MRPT_UNUSED_PARAM(sensor_params);
 			// h(z_obs \ominus p) = pseudo-log(z_obs \ominus  p)
 			// with p: relative pose in SE(2)
 			dh_dx.setIdentity();
@@ -815,6 +827,7 @@ namespace mrpt { namespace srba {
 			const observation_traits<OBS_T>::obs_data_t   & obs, 
 			const OBS_T::TObservationParams               & params)
 		{
+			MRPT_UNUSED_PARAM(params);
 			out_lm_pos[0] = obs.x;
 			out_lm_pos[1] = obs.y;
 			out_lm_pos[2] = obs.yaw;
@@ -888,6 +901,7 @@ namespace mrpt { namespace srba {
 			const array_landmark_t   & xji_l, 
 			const TObservationParams & sensor_params)
 		{
+			MRPT_UNUSED_PARAM(xji_l); MRPT_UNUSED_PARAM(sensor_params);
 			// h(z_obs \ominus p) = xji_l (the relative pose in SE(3)) 
 			dh_dx.setIdentity();
 			return true;
@@ -907,6 +921,7 @@ namespace mrpt { namespace srba {
 			const observation_traits<OBS_T>::obs_data_t   & obs, 
 			const OBS_T::TObservationParams               & params)
 		{
+			MRPT_UNUSED_PARAM(params);
 			out_lm_pos[0] = obs.x;   out_lm_pos[1] = obs.y;     out_lm_pos[2] = obs.z;
 			out_lm_pos[3] = obs.yaw; out_lm_pos[4] = obs.pitch; out_lm_pos[5] = obs.roll; 
 		}

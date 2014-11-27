@@ -72,7 +72,7 @@ public:
 	XsBaudRate getBaudrate(void) const;
 	XsIoHandle getHandle(void) const;
 	uint16_t getPortNumber (void) const;
-	void getPortName(char *portname) const;
+	void getPortName(XsString& portname) const;
 	uint32_t getTimeout (void) const;
 	XsResultValue open ( const XsPortInfo& portInfo, uint32_t readBufSize = XS_DEFAULT_READ_BUFFER_SIZE, uint32_t writeBufSize = XS_DEFAULT_WRITE_BUFFER_SIZE);
 	XsResultValue setTimeout (uint32_t ms);

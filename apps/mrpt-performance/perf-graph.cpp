@@ -18,7 +18,6 @@ using namespace mrpt;
 using namespace mrpt::utils;
 using namespace mrpt::math;
 using namespace mrpt::graphs;
-//using namespace mrpt::graphslam;
 using namespace mrpt::poses;
 using namespace mrpt::random;
 using namespace std;

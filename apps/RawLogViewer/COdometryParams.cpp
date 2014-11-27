@@ -37,7 +37,7 @@ BEGIN_EVENT_TABLE(COdometryParams,wxDialog)
 	//*)
 END_EVENT_TABLE()
 
-COdometryParams::COdometryParams(wxWindow* parent,wxWindowID id,const wxPoint& pos,const wxSize& size)
+COdometryParams::COdometryParams(wxWindow* parent,wxWindowID id,const wxPoint& ,const wxSize& size)
 {
 	//(*Initialize(COdometryParams)
 	wxFlexGridSizer* FlexGridSizer3;
@@ -96,12 +96,12 @@ COdometryParams::~COdometryParams()
 }
 
 
-void COdometryParams::OnbtnOkClick(wxCommandEvent& event)
+void COdometryParams::OnbtnOkClick(wxCommandEvent& )
 {
 	EndModal(1);
 }
 
-void COdometryParams::OnbtnCancelClick(wxCommandEvent& event)
+void COdometryParams::OnbtnCancelClick(wxCommandEvent& )
 {
 	EndModal(0);
 }

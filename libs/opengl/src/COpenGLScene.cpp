@@ -212,6 +212,7 @@ void COpenGLScene::insert( const CRenderizablePtr &newObject, const std::string 
   ---------------------------------------------------------------*/
 CRenderizablePtr	COpenGLScene::getByName( const string &str, const string &viewportName )
 {
+	MRPT_UNUSED_PARAM(viewportName);
 	CRenderizablePtr obj;
 	for (TListViewports::iterator it=m_viewports.begin();it!=m_viewports.end();++it)
 		if ( (obj = (*it)->getByName(str) ).present() )

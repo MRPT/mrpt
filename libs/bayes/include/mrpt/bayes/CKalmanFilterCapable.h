@@ -259,6 +259,7 @@ namespace mrpt
 			  */
 			virtual void OnTransitionJacobian( KFMatrix_VxV  &out_F ) const
 			{
+				MRPT_UNUSED_PARAM(out_F);
 				m_user_didnt_implement_jacobian=true;
 			}
 
@@ -286,6 +287,7 @@ namespace mrpt
 				const vector_KFArray_OBS &in_all_prediction_means,
 				mrpt::vector_size_t				&out_LM_indices_to_predict ) const
 			{
+				MRPT_UNUSED_PARAM(in_all_prediction_means);
 				// Default: all of them:
 				const size_t N = this->getNumberOfLandmarksInTheMap();
 				out_LM_indices_to_predict.resize(N);
@@ -338,6 +340,7 @@ namespace mrpt
 				KFMatrix_OxF &Hy
 				) const
 			{
+				MRPT_UNUSED_PARAM(idx_landmark_to_predict); MRPT_UNUSED_PARAM(Hx); MRPT_UNUSED_PARAM(Hy);
 				m_user_didnt_implement_jacobian=true;
 			}
 
@@ -379,6 +382,8 @@ namespace mrpt
 				KFMatrix_FxV  & out_dyn_dxv,
 				KFMatrix_FxO  & out_dyn_dhn ) const
 			{
+				MRPT_UNUSED_PARAM(in_z); MRPT_UNUSED_PARAM(out_yn);
+				MRPT_UNUSED_PARAM(out_dyn_dxv); MRPT_UNUSED_PARAM(out_dyn_dhn);
 				MRPT_START
 				THROW_EXCEPTION("Inverse sensor model required but not implemented in derived class.")
 				MRPT_END
@@ -415,6 +420,7 @@ namespace mrpt
 				bool          & out_use_dyn_dhn_jacobian
 				 ) const
 			{
+				MRPT_UNUSED_PARAM(out_dyn_dhn_R_dyn_dhnT);
 				MRPT_START
 				OnInverseObservationModel(in_z,out_yn,out_dyn_dxv,out_dyn_dhn);
 				out_use_dyn_dhn_jacobian=true;
@@ -430,6 +436,7 @@ namespace mrpt
 				const size_t	in_obsIdx,
 				const size_t	in_idxNewFeat )
 			{
+				MRPT_UNUSED_PARAM(in_obsIdx); MRPT_UNUSED_PARAM(in_idxNewFeat);
 				// Do nothing in this base class.
 			}
 

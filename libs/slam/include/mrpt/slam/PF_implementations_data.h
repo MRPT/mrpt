@@ -184,7 +184,7 @@ namespace mrpt
 
 				size_t i;
 				typename MYSELF::CParticleList::iterator	newPartIt;
-				for (newPartIt=newParticlesArray.begin(),i=0;newPartIt!=newParticlesArray.end();newPartIt++,i++)
+				for (newPartIt=newParticlesArray.begin(),i=0;newPartIt!=newParticlesArray.end();++newPartIt,++i)
 				{
 					// The weight:
 					newPartIt->log_w = newParticlesWeight[i];
@@ -233,6 +233,7 @@ namespace mrpt
 				const typename CParticleFilterData<PARTICLE_TYPE>::CParticleList	&particles,
 				const CSensoryFrame *sf) const
 			{
+				MRPT_UNUSED_PARAM(particles); MRPT_UNUSED_PARAM(sf);
 				return true;	// By default, always process the SFs.
 			}
 

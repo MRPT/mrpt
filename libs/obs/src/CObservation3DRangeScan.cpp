@@ -19,6 +19,7 @@
 #include <mrpt/utils/CFileGZInputStream.h>
 #include <mrpt/utils/CFileGZOutputStream.h>
 #include <mrpt/utils/CTimeLogger.h>
+#include <mrpt/utils/CConfigFileMemory.h>
 
 using namespace std;
 using namespace mrpt::slam;
@@ -897,5 +898,68 @@ void CObservation3DRangeScan::convertTo2DScan(
 			out_scan2d.scan[i] = closest_range*std::sqrt(1.0+tan_ang*tan_ang);
 		}
 	} // end for columns
+
+}
+	
+void CObservation3DRangeScan::getDescriptionAsText(std::ostream &o) const
+{
+	CObservation::getDescriptionAsText(o);
+
+	this->load(); // Make sure the 3D point cloud, etc... are all loaded in memory.
+
+	o << "maxRange = " << maxRange << " m" << endl;
+
+	o << "Has 3D point cloud? ";
+	if (hasPoints3D)
+	{
+		o << "YES: " << points3D_x.size() << " points";
+		if (points3D_isExternallyStored())
+			o << ". External file: " << points3D_getExternalStorageFile() << endl;
+		else o << " (embedded)." << endl;
+	}
+	else	o << "NO" << endl;
+
+	o << "Has raw range data? " << (hasRangeImage ? "YES": "NO");
+	if (hasRangeImage)
+	{
+		if (rangeImage_isExternallyStored())
+				o << ". External file: " << rangeImage_getExternalStorageFile() << endl;
+		else o << " (embedded)." << endl;
+	}
+
+	o << endl << "Has intensity data? " << (hasIntensityImage ? "YES": "NO");
+	if (hasIntensityImage)
+	{
+		if (intensityImage.isExternallyStored())
+			o << ". External file: " << intensityImage.getExternalStorageFile() << endl;
+		else o << " (embedded).\n";
+		// Channel?
+		o << "Source channel: " << mrpt::utils::TEnumType<CObservation3DRangeScan::TIntensityChannelID>::value2name(intensityImageChannel) << endl;
+	}
+
+	o << endl << "Has confidence data? " << (hasConfidenceImage ? "YES": "NO");
+	if (hasConfidenceImage)
+	{
+		if (confidenceImage.isExternallyStored())
+			o << ". External file: " << confidenceImage.getExternalStorageFile() << endl;
+		else o << " (embedded)." << endl;
+	}
+
+	o << endl << endl;
+	o << "Depth camera calibration parameters:" << endl;
+	{
+		CConfigFileMemory cfg;
+		cameraParams.saveToConfigFile("DEPTH_CAM_PARAMS",cfg);
+		o << cfg.getContent() << endl;
+	}
+	o << endl << "Intensity camera calibration parameters:" << endl;
+	{
+		CConfigFileMemory cfg;
+		cameraParamsIntensity.saveToConfigFile("INTENSITY_CAM_PARAMS",cfg);
+		o << cfg.getContent() << endl;
+	}
+	o << endl << endl << "Pose of the intensity cam. wrt the depth cam:\n"
+		<< relativePoseIntensityWRTDepth << endl
+		<< relativePoseIntensityWRTDepth.getHomogeneousMatrixVal() << endl;
 
 }

@@ -49,8 +49,16 @@ namespace mrpt
 			float        strobe_delay;      //!< (default=0.0) Delay in ms. Refer to PGR docs.
 			float        strobe_duration;   //!< (default=1.0) Pulse durationin ms. Refer to PGR docs.
 
+            bool         autoexposure_auto; //!< (default=true)
+            bool         autoexposure_onOff;//!< (default=true) Activate this feature
+            bool         autoexposure_abs;  //!< (default=true) Numeric mode (absolute or integer values)
+            float        autoexposure_EV;   //!< (default=0.0) Exposure Value, if autoexposure_auto=false
 			bool         shutter_auto;      //!< (default=true)
+            bool         shutter_abs;       //!< (default=true) Numeric mode (absolute or integer values)
 			float        shutter_time_ms;   //!< (default=4.0) Shutter time, if shutter_auto=false
+            bool         gain_auto;         //!< (default=true)
+            bool         gain_abs;          //!< (default=true) Numeric mode (absolute or integer values)
+            float        gain_dB;           //!< (default=0.0) Sensor gain, if gain_auto=false
 
 			bool	stereo_mode;	//!< (default=false) Obtain images as stereo pairs with Flycapture2
 			bool	get_rectified;	//!< (default=false) Rectify stereo images (needs Triclops installed)
@@ -86,9 +94,21 @@ namespace mrpt
 			  * #strobe_delay     = 0.0   // (default=0.0) Delay in ms. Refer to PGR docs.
 			  * #strobe_duration  = 1.0   // (default=1.0) Pulse durationin ms. Refer to PGR docs.
 			  *
-			  *
-			  * #shutter_auto     = false   // (default=true)
-			  * #shutter_time_ms  = 4.0     // (default=4.0) Shutter time, if shutter_auto=false
+              * #autoexposure_auto; //!< (default=true)
+              * #autoexposure_abs;  //!< (default=true) Numeric mode (absolute or integer values)
+              * #autoexposure_onoff;//!< (default=true) Activate this feature
+              * #autoexposure_EV;   //!< (default=0.0) Exposure Value, if autoexposure_auto=false
+              * #shutter_auto     = false   // (default=true)
+              * #shutter_abs;       //!< (default=true) Numeric mode (absolute or integer values)
+              * #shutter_time_ms  = 4.0     // (default=4.0) Shutter time, if shutter_auto=false
+              * #gain_auto;         //!< (default=true)
+              * #gain_abs;          //!< (default=true) Numeric mode (absolute or integer values)
+              * #gain_dB;           //!< (default=0.0) Sensor gain, if gain_auto=false
+              *
+              * flycap_stereo_mode	= 1	// (default=0) Obtain images as stereo pairs with Flycapture2
+              * flycap_get_rectified	= 1	// (default=0) Rectify stereo images (needs Triclops installed)
+              * flycap_rect_width	= 320	// (default=640) Width for output rectified images
+              * flycap_rect_height	= 240	// (default=480) Height for output rectified images
 			  *
 			  * \endcode
 			  * \note All parameter names may have an optional prefix, set with the "prefix" parameter.

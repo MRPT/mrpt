@@ -152,6 +152,7 @@ void  CSensoryFrame::readFromStream(CStream &in,int version)
   ---------------------------------------------------------------*/
 void CSensoryFrame::operator += (const CSensoryFrame &sf)
 {
+	MRPT_UNUSED_PARAM(sf);
 	m_cachedMap.clear();
 	for (const_iterator it = begin();it!=end();++it)
 	{

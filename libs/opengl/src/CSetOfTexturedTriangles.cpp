@@ -44,7 +44,7 @@ void   CSetOfTexturedTriangles::render_texturedobj() const
 	float ax, ay, az, bx, by, bz;
 
 	vector<TTriangle>::const_iterator	it;
-	for (it = m_triangles.begin(); it != m_triangles.end(); it++)
+	for (it = m_triangles.begin(); it != m_triangles.end(); ++it)
 	{
 		// Compute the normal vector:
 		// ---------------------------------
@@ -139,6 +139,7 @@ void  CSetOfTexturedTriangles::readFromStream(CStream &in, int version)
 
 bool CSetOfTexturedTriangles::traceRay(const mrpt::poses::CPose3D &o, double &dist) const
 {
+	MRPT_UNUSED_PARAM(o); MRPT_UNUSED_PARAM(dist);
 	throw std::runtime_error("TODO: TraceRay not implemented in CSetOfTexturedTriangles");
 }
 

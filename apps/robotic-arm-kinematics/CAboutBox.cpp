@@ -110,6 +110,7 @@ CAboutBox::~CAboutBox()
 
 void CAboutBox::OnInit(wxInitDialogEvent& event)
 {
+	MRPT_UNUSED_PARAM(event);
     // Build strings:
     wxString MRPTver( MRPT_getVersion().c_str(), wxConvLibc);
     wxString wxVer( wxVERSION_STRING );
@@ -148,7 +149,7 @@ void CAboutBox::OnInit(wxInitDialogEvent& event)
 		cout << "MRPT version:           " << MRPT_getVersion() << endl;
 		cout << "MRPT compilation date:  " << MRPT_getCompilationDate() << endl;
  		cout << "Eigen version:          " << EIGEN_WORLD_VERSION << "." << EIGEN_MAJOR_VERSION << "." << EIGEN_MINOR_VERSION << endl;
-		cout << "wxWidgets version:      " << wxVer.mb_str() << endl;
+		cout << "wxWidgets version:      " <<std::string(wxVer.mb_str()) << endl;
     }
 
 	lbProgName->SetLabel( wxT("Robotic Arm Kinematics GUI"));
@@ -159,5 +160,6 @@ void CAboutBox::OnInit(wxInitDialogEvent& event)
 
 void CAboutBox::OnButton1Click(wxCommandEvent& event)
 {
+	MRPT_UNUSED_PARAM(event);
     Close();
 }

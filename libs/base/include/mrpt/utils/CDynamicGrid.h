@@ -165,7 +165,7 @@ namespace mrpt
                 {
                     for (x=0,itSrc=(m_map.begin()+y*m_size_x),itDst=(new_map.begin()+extra_x_izq + (y+extra_y_arr)*new_size_x);
                             x<m_size_x;
-                        x++,itSrc++,itDst++)
+                        ++x,++itSrc,++itDst)
                     {
                         *itDst = *itSrc;
                     }
@@ -276,8 +276,16 @@ namespace mrpt
 
             /** Transform a coordinate value into a cell index, using a diferent "x_min" value
                 */
-            inline int   x2idx(float x,float x_min) const { return static_cast<int>((x-m_x_min)/m_resolution ); }
-            inline int   y2idx(float y, float y_min) const { return static_cast<int>((y-m_y_min)/m_resolution ); }
+            inline int   x2idx(float x,float x_min) const
+			{
+				MRPT_UNUSED_PARAM(x_min);
+				return static_cast<int>((x-m_x_min)/m_resolution );
+			}
+            inline int   y2idx(float y, float y_min) const
+			{
+				MRPT_UNUSED_PARAM(y_min);
+				return static_cast<int>((y-m_y_min)/m_resolution );
+			}
 
 			/** Get the entire grid as a matrix.
 			  *  \tparam MAT The type of the matrix, typically a CMatrixDouble.
@@ -299,6 +307,7 @@ namespace mrpt
 		    /** The user must implement this in order to provide "saveToTextFile" a way to convert each cell into a numeric value */
             virtual float cell2float(const T& c) const
             {
+				MRPT_UNUSED_PARAM(c);
                 return 0;
             }
 			/** Saves a float representation of the grid (via "cell2float()") to a text file. \return false on error */

@@ -353,11 +353,8 @@ bool  COccupancyGridMap2D::saveAsBitmapTwoMapsWithCorrespondences(
 
 	CImage			img1,img2;
 	CImage			img(10,10,3,true);
-	TColor 			lineColor;
 	unsigned int	i,n , Ay1, Ay2;
 	unsigned int	px, py;
-
-	lineColor = TColor::red;
 
 	// The individual maps:
 	// ---------------------------------------------
@@ -392,7 +389,7 @@ bool  COccupancyGridMap2D::saveAsBitmapTwoMapsWithCorrespondences(
 	// Draw the features:
 	// ---------------------------------------------
 	n = corrs.size();
-	lineColor = TColor::black;
+	TColor  lineColor = TColor::black;
 	for (i=0;i<n;i++)
 	{
 		// In M1:

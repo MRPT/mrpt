@@ -11,6 +11,7 @@
 #include "ArSignalHandler.h"
 #include "ArLog.h"
 #include "ariaInternal.h"
+#include <mrpt/utils/mrpt_macros.h>
 
 ArSignalHandler *ArSignalHandler::ourSignalHandler=0;
 ArStrMap ArSignalHandler::ourSigMap;
@@ -234,6 +235,7 @@ ArSignalHandler::~ArSignalHandler()
 
 AREXPORT void * ArSignalHandler::runThread(void *arg)
 {
+  MRPT_UNUSED_PARAM(arg);
   threadStarted();
 
   // I think the old code was broken in that it didn't block all the

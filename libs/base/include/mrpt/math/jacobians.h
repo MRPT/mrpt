@@ -68,6 +68,7 @@ namespace mrpt
 				mrpt::math::CMatrixFixedNumeric<double,3,4>  &out_dr_dq
 				)
 			{
+				MRPT_UNUSED_PARAM(out_dr_dq);
 				THROW_EXCEPTION("TO DO")
 			}
 

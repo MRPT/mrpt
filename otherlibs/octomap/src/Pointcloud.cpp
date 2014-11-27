@@ -70,13 +70,13 @@ namespace octomap {
 
 
   Pointcloud::Pointcloud(const Pointcloud& other) {
-    for (Pointcloud::const_iterator it = other.begin(); it != other.end(); it++) {
+    for (Pointcloud::const_iterator it = other.begin(); it != other.end(); ++it) {
       points.push_back(point3d(*it));
     }
   }
 
   Pointcloud::Pointcloud(Pointcloud* other) {
-    for (Pointcloud::const_iterator it = other->begin(); it != other->end(); it++) {
+    for (Pointcloud::const_iterator it = other->begin(); it != other->end(); ++it) {
       points.push_back(point3d(*it));
     }
   }
@@ -136,7 +136,7 @@ namespace octomap {
 
     float x,y,z;
 
-    for (Pointcloud::const_iterator it=begin(); it!=end(); it++) {
+    for (Pointcloud::const_iterator it=begin(); it!=end(); ++it) {
 
       x = (*it)(0);
       y = (*it)(1);
@@ -167,7 +167,7 @@ namespace octomap {
     min_x = lowerBound(0); min_y = lowerBound(1); min_z = lowerBound(2);
     max_x = upperBound(0); max_y = upperBound(1); max_z = upperBound(2);
 
-    for (Pointcloud::const_iterator it=begin(); it!=end(); it++) {
+    for (Pointcloud::const_iterator it=begin(); it!=end(); ++it) {
       x = (*it)(0);
       y = (*it)(1);
       z = (*it)(2);
@@ -192,7 +192,7 @@ namespace octomap {
     Pointcloud result;
 
     float x,y,z;
-    for (Pointcloud::const_iterator it=begin(); it!=end(); it++) {
+    for (Pointcloud::const_iterator it=begin(); it!=end(); ++it) {
       x = (*it)(0);
       y = (*it)(1);
       z = (*it)(2);

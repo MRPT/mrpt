@@ -37,7 +37,9 @@ ENDIF(CMAKE_MRPT_HAS_xSENS_MT4)
 IF(CMAKE_MRPT_HAS_FREENECT)
 	IF (CMAKE_MRPT_HAS_FREENECT_SYSTEM)
 		# No need to build if it's already built in the system:
-		INCLUDE_DIRECTORIES("${OPENKINECT_FREENECT_INCLUDE_DIR}")
+		IF (NOT "${OPENKINECT_FREENECT_INCLUDE_DIR}" STREQUAL "")
+			INCLUDE_DIRECTORIES("${OPENKINECT_FREENECT_INCLUDE_DIR}")
+		ENDIF (NOT "${OPENKINECT_FREENECT_INCLUDE_DIR}" STREQUAL "")
 	ELSE (CMAKE_MRPT_HAS_FREENECT_SYSTEM)
 		# Embedded version:
 		INCLUDE_DIRECTORIES("${MRPT_LIBS_ROOT}/hwdrivers/src/libfreenect/")
@@ -46,8 +48,8 @@ IF(CMAKE_MRPT_HAS_FREENECT)
 			"${MRPT_LIBS_ROOT}/hwdrivers/src/libfreenect/*.h"
 			)
 		LIST(APPEND hwdrivers_EXTRA_SRCS_NAME 
-			"kinect"
-			"kinect"
+			"libfreenect"
+			"libfreenect"
 			)
 			
 		# Special stuff for windows:
@@ -57,8 +59,8 @@ IF(CMAKE_MRPT_HAS_FREENECT)
 				"${MRPT_LIBS_ROOT}/hwdrivers/src/libfreenect/platform/windows/libusb10emu/libusb-1.0/failguard.cpp"
 				)
 			LIST(APPEND hwdrivers_EXTRA_SRCS_NAME 
-				"kinect"
-				"kinect"
+				"libfreenect"
+				"libfreenect"
 				)
 				
 			INCLUDE_DIRECTORIES("${MRPT_LIBS_ROOT}/hwdrivers/src/libfreenect/platform/windows")
@@ -70,15 +72,6 @@ IF(CMAKE_MRPT_HAS_FREENECT)
 			
 	ENDIF (CMAKE_MRPT_HAS_FREENECT_SYSTEM)	
 ENDIF(CMAKE_MRPT_HAS_FREENECT)
-
-## Build Xbox Kinect?
-#IF(CMAKE_MRPT_HAS_FREENECT)
-## Add the required libraries for linking:
-#TARGET_LINK_LIBRARIES(${sampleName} 
-#	${MRPT_LIBS}  # This is filled by FIND_PACKAGE(MRPT ...)
-#	"${OPENNI2_LIBRARIES}"  # Optional extra libs...
-#	)
-#IF(CMAKE_MRPT_HAS_FREENECT)
 
 # Build ARIA?
 IF(CMAKE_MRPT_HAS_ARIA)
@@ -163,11 +156,11 @@ IF(BUILD_mrpt-hwdrivers)
 			# Using embedded version:
 			# Ignore precompiled headers:
 			IF(MRPT_ENABLE_PRECOMPILED_HDRS AND MSVC)
-				set_source_files_properties(${kinect_FILES} PROPERTIES COMPILE_FLAGS "/Y-")
+				set_source_files_properties(${libfreenect_FILES} PROPERTIES COMPILE_FLAGS "/Y-")
 			ENDIF(MRPT_ENABLE_PRECOMPILED_HDRS AND MSVC)
 		
 			if (MSVC)
-				set_source_files_properties(${kinect_FILES} PROPERTIES LANGUAGE CXX) 			# Build as C++
+				set_source_files_properties(${libfreenect_FILES} PROPERTIES LANGUAGE CXX) 			# Build as C++
 			endif(MSVC)
 		endif (NOT CMAKE_MRPT_HAS_FREENECT_SYSTEM)
 	ENDIF(CMAKE_MRPT_HAS_FREENECT)

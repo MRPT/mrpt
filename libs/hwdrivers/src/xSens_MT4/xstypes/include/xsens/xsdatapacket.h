@@ -183,7 +183,7 @@ struct XsDataPacket {
 		\param msg Either 0 to create an empty object or a pointer to a valid %XsMessage containing
 		MTData2 data.
 	*/
-	XsDataPacket(const XsMessage* msg = 0)
+	explicit XsDataPacket(const XsMessage* msg = 0)
 		: m_lastFoundId(XDI_None)
 		, m_lastFoundOffset(-1)
 		, m_itemCount(0)
@@ -286,9 +286,9 @@ struct XsDataPacket {
 		XsDataPacket_setMessage(this, &msg);
 	}
 
-	/*! \brief Returns a copy of the message that contains the data packet
+	/*! \brief Returns a const reference to the message that contains the data packet
 	*/
-	inline const XsMessage XSNOCOMEXPORT message() const
+	inline const XsMessage& XSNOCOMEXPORT message() const
 	{
 		return m_msg;
 	}

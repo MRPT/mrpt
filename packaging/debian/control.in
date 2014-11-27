@@ -26,9 +26,11 @@ Build-Depends: debhelper (>= 9),
 	libeigen3-dev ,
 	libdc1394-22-dev [linux-any],
 	libusb-1.0-0-dev [linux-any],
+	libudev-dev [linux-any],
 	libjs-jquery,
-	libassimp-dev | perl
-Standards-Version: 3.9.5
+	libassimp-dev,
+	libfreenect-dev (>= 0.2) | perl
+Standards-Version: 3.9.6
 Homepage: http://www.mrpt.org/
 
 Package: mrpt-doc
@@ -268,21 +270,21 @@ Description: Mobile Robot Programming Toolkit - slam library
  More about MRPT libraries in: http://www.mrpt.org/Libraries
 
 
-Package: libmrpt-reactivenav@MRPT_VER_MM@
+Package: libmrpt-nav@MRPT_VER_MM@
 Section: libs
 Architecture: any
 Pre-Depends: ${misc:Pre-Depends}
 Depends: ${shlibs:Depends}, ${misc:Depends},
 	  libmrpt-maps@MRPT_VER_MM@
 #Multi-Arch: same
-Description: Mobile Robot Programming Toolkit - reactivenav library
+Description: Mobile Robot Programming Toolkit - nav library
  The Mobile Robot Programming Toolkit (MRPT) is an extensive, cross-platform,
  and open source C++ library aimed to help robotics researchers to design and
  implement algorithms in the fields of Simultaneous Localization and Mapping 
  (SLAM, Graph-SLAM, Bundle Adjustment), computer vision, and motion planning 
  (obstacle avoidance).
  .
- This package includes the mrpt-reactivenav library. 
+ This package includes the mrpt-nav library. 
  . 
  More about MRPT libraries in: http://www.mrpt.org/Libraries
 
@@ -338,7 +340,7 @@ Depends: ${shlibs:Depends}, ${misc:Depends}, libeigen3-dev,
          libmrpt-maps@MRPT_VER_MM@ (= ${binary:Version}),
          libmrpt-obs@MRPT_VER_MM@ (= ${binary:Version}),
          libmrpt-opengl@MRPT_VER_MM@ (= ${binary:Version}),
-         libmrpt-reactivenav@MRPT_VER_MM@ (= ${binary:Version}),
+         libmrpt-nav@MRPT_VER_MM@ (= ${binary:Version}),
          libmrpt-scanmatching@MRPT_VER_MM@ (= ${binary:Version}),
          libmrpt-slam@MRPT_VER_MM@ (= ${binary:Version}),
          libmrpt-topography@MRPT_VER_MM@ (= ${binary:Version}),

@@ -56,8 +56,8 @@ namespace mrpt
 				void projectPointPixels(float x,float y,float z, float &proj_x_px, float &proj_y_px, float &proj_z_depth) const
 				{
 					projectPoint(x,y,z,proj_x_px,proj_y_px,proj_z_depth);
-					proj_x_px = (proj_x_px+1.0f)*(vp_width/2);
-					proj_y_px = (proj_y_px+1.0f)*(vp_height/2);
+					proj_x_px = (proj_x_px+1.0f)*(vp_width/2.0f);
+					proj_y_px = (proj_y_px+1.0f)*(vp_height/2.0f);
 				}
 			};
 
@@ -128,9 +128,9 @@ namespace mrpt
 				const float msg_w, const float msg_h,
 				const std::string &text,
 				float text_scale,
-				const mrpt::utils::TColor back_col = mrpt::utils::TColor(0,0,50, 150),
-				const mrpt::utils::TColor border_col = mrpt::utils::TColor(0,0,0, 140),
-				const mrpt::utils::TColor text_col = mrpt::utils::TColor(255,255,255, 220),
+				const mrpt::utils::TColor &back_col = mrpt::utils::TColor(0,0,50, 150),
+				const mrpt::utils::TColor &border_col = mrpt::utils::TColor(0,0,0, 140),
+				const mrpt::utils::TColor &text_col = mrpt::utils::TColor(255,255,255, 220),
 				const float border_width = 4.0f,
 				const std::string & text_font = std::string("sans"),
 				mrpt::opengl::TOpenGLFontStyle text_style = mrpt::opengl::FILL,

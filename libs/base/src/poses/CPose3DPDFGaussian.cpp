@@ -44,6 +44,7 @@ CPose3DPDFGaussian::CPose3DPDFGaussian() : mean(0,0,0), cov()
   ---------------------------------------------------------------*/
 CPose3DPDFGaussian::CPose3DPDFGaussian(TConstructorFlags_Poses constructor_dummy_param) : mean(UNINITIALIZED_POSE), cov(UNINITIALIZED_MATRIX)
 {
+	MRPT_UNUSED_PARAM(constructor_dummy_param);
 }
 
 /*---------------------------------------------------------------
@@ -96,6 +97,7 @@ void ffff(const CVectorDouble &x,const CQuaternionDouble &Q, CVectorDouble &OUT)
 
 void aux_posequat2poseypr(const CArrayDouble<7> &x,const double&dummy, CArrayDouble<6> &y)
 {
+	MRPT_UNUSED_PARAM(dummy);
 	y[0]=x[0]; y[1]=x[1]; y[2]=x[2];
 	CQuaternionDouble q(x[3],x[4],x[5],x[6]);
 	q.normalize();

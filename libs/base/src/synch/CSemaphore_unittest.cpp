@@ -32,6 +32,8 @@ void sem_thread_example(int id)
 	{
 #ifdef DEBUG_OUT
     cout << mrpt::format("[thread_example2 %i, ID:%lu] Started, trying to get into semaphore...\n", id, getCurrentThreadId()); cout.flush();
+#else
+	MRPT_UNUSED_PARAM(id);
 #endif // DEBUG_OUT
 
 		CSemaphore  sem(1,1,"/mrpt-demo-sem");

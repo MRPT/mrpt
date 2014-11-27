@@ -77,21 +77,21 @@ CDifodo::CDifodo()
 }
 
 void CDifodo::calculateCoord()
-{
+{	
 	for (unsigned int x = 0; x < cols; x++)
 		for (unsigned int y = 0; y < rows; y++)
 		{
-			if ((depth(y,x)) == 0 || (depth_old(y,x) == 0))
+			if ((depth(y,x)) == 0.f || (depth_old(y,x) == 0.f))
 			{
-				depth_inter(y,x) = 0;
-				xx_inter(y,x) = 0;
-				yy_inter(y,x) = 0;
+				depth_inter(y,x) = 0.f;
+				xx_inter(y,x) = 0.f;
+				yy_inter(y,x) = 0.f;
 			}
 			else
 			{
-				depth_inter(y,x) = 0.5*(depth(y,x) + depth_old(y,x));
-				xx_inter(y,x) = 0.5*(xx(y,x) + xx_old(y,x));
-				yy_inter(y,x) = 0.5*(yy(y,x) + yy_old(y,x));
+				depth_inter(y,x) = 0.5f*(depth(y,x) + depth_old(y,x));
+				xx_inter(y,x) = 0.5f*(xx(y,x) + xx_old(y,x));
+				yy_inter(y,x) = 0.5f*(yy(y,x) + yy_old(y,x));
 			}
 		}
 }
@@ -102,8 +102,8 @@ void CDifodo::calculateDepthDerivatives()
 	for (unsigned int x = 1; x < cols-1; x++)
 		for (unsigned int y = 1; y < rows-1; y++)
 		{
-			du(y,x) = 0.5*(depth_inter(y,x+1) - depth_inter(y,x-1));
-			dv(y,x) = 0.5*(depth_inter(y+1,x) - depth_inter(y-1,x));
+			du(y,x) = 0.5f*(depth_inter(y,x+1) - depth_inter(y,x-1));
+			dv(y,x) = 0.5f*(depth_inter(y+1,x) - depth_inter(y-1,x));
 			dt(y,x) = fps*(depth(y,x) - depth_old(y,x));
 		}
 }
@@ -111,13 +111,12 @@ void CDifodo::calculateDepthDerivatives()
 
 void CDifodo::filterAndDownsample()
 {
-	//CTicTac clock;
-	//clock.Tic();
-
+	mrpt::utils::CTicTac clock;
+	
 	//Push the frames back
-	depth_old = depth;
-	xx_old = xx;
-	yy_old = yy;
+	depth_old.swap(depth);
+	xx_old.swap(xx);
+	yy_old.swap(yy);
 
 	//					Create the kernel
 	//==========================================================
@@ -155,48 +154,57 @@ void CDifodo::filterAndDownsample()
 	MatrixXf depth_if;
 	depth_if.setSize(height, width);
 
+	clock.Tic();
+	float sum, ponder;
+
 	//Apply gaussian filter (separately)
 	//rows
 	for ( int i=0; i<height; i++)
-		for ( int j=0; j<width; j++)
+	{
+		for (int j=0; j<lim_mask; j++)
+			depth_if(i,j) = depth_wf(i,j);
+
+		for (int j=width-lim_mask; j<width; j++)
+			depth_if(i,j) = depth_wf(i,j);
+
+		for ( int j=lim_mask; j<width-lim_mask; j++)
 		{
-			if ((j>=lim_mask)&&(j<width-lim_mask))
+			sum = 0.f;
+			ponder = 1.f;
+			for (int k=-lim_mask; k<=lim_mask; k++)
 			{
-				float sum = 0.0f;
-				float ponder = 1.0f;
-				for (int k=-lim_mask; k<=lim_mask; k++)
-				{
 
-					if (depth_wf(i,j+k) == 0)
-						ponder -= kernel(k+lim_mask,0);
-					else
-						sum += kernel(k+lim_mask,0)*depth_wf(i,j+k);
-				}
-				if (ponder == 1.0f)
-					depth_if(i,j) = sum;
-				else if (ponder > 0.0001f)
-					depth_if(i,j) = sum/ponder;
+				if (depth_wf(i,j+k) == 0.f)
+					ponder -= kernel(k+lim_mask,0);
 				else
-					depth_if(i,j) = 0;
+					sum += kernel(k+lim_mask,0)*depth_wf(i,j+k);
 			}
+			if (ponder == 1.0f)
+				depth_if(i,j) = sum;
+			else if (sum > 0.f)
+				depth_if(i,j) = sum/ponder;
 			else
-				depth_if(i,j) = depth_wf(i,j);
-
+				depth_if(i,j) = 0.f;
 		}
+	}
 
 	//cols
-	for ( int i=0; i<height; i++)
-		for ( int j=0; j<width; j++)
+	for ( int j=0; j<width; j++)
+	{
+		for (int i=0; i<lim_mask; i++)
+			depth_wf(i,j) = depth_if(i,j);
+		for (int i=height-lim_mask; i<height; i++)
+			depth_wf(i,j) = depth_if(i,j);
+
+		for ( int i=lim_mask; i<height-lim_mask; i++)
 		{
-			if ((i>=lim_mask)&&(i<height-lim_mask))
-			{
-				float sum = 0.0f;
-				float ponder = 1.0f;
+				sum = 0.f;
+				ponder = 1.f;
 
 				for (int k=-lim_mask; k<=lim_mask; k++)
 				{
 
-					if (depth_if(i+k,j) == 0)
+					if (depth_if(i+k,j) == 0.f)
 						ponder -= kernel(k+lim_mask,0);
 					else
 						sum += kernel(k+lim_mask,0)*depth_if(i+k,j);
@@ -204,35 +212,35 @@ void CDifodo::filterAndDownsample()
 
 				if (ponder == 1.0f)
 					depth_wf(i,j) = sum;
-				else if (ponder > 0.0001f)
+				else if (sum > 0.f)
 					depth_wf(i,j) = sum/ponder;
 				else
-					depth_wf(i,j) = 0;
-			}
-			else
-				depth_wf(i,j) = depth_if(i,j);
-
+					depth_wf(i,j) = 0.f;
 		}
+	}
 
 	//Downsample the pointcloud
 	const float inv_f = float(640/width)/525.0f;
-	const float disp_x = 0.5*(width-1);
-	const float disp_y = 0.5*(height-1);
+	const float disp_x = 0.5f*(width-1);
+	const float disp_y = 0.5f*(height-1);
 
 	const int dy = floor(float(height)/float(rows));
 	const int dx = floor(float(width)/float(cols));
 	const unsigned int iniy = (height-dy*rows)/2;
 	const unsigned int inix = (width-dx*cols)/2;
 
+	//clock.Tic();
+
 	for (unsigned int y = 0; y < rows; y++)
 		for (unsigned int x = 0; x < cols; x++)
 		{
-			depth(y,x) = depth_wf(iniy+y*dy,inix+x*dx);
-			xx(y,x) = (inix+x*dx - disp_x)*depth_wf(iniy+y*dy,inix+x*dx)*inv_f + lens_disp;
-			yy(y,x) = (iniy+y*dy - disp_y)*depth_wf(iniy+y*dy,inix+x*dx)*inv_f;
+			const int iny = iniy+y*dy, inx = inix+x*dx;
+			depth(y,x) = depth_wf(iny,inx);
+			xx(y,x) = (inx - disp_x)*depth_wf(iny,inx)*inv_f + lens_disp;
+			yy(y,x) = (iny - disp_y)*depth_wf(iny,inx)*inv_f;
 		}
 
-	//cout << endl << "Execution time - filter + downsample (ms): " << 1000*clock.Tac();
+	//cout << endl << "Execution time - downsample (ms): " << 1000*clock.Tac();
 }
 
 void CDifodo::findBorders()
@@ -246,11 +254,10 @@ void CDifodo::findBorders()
 			if (null(y,x) == 0)
 			{
 				const float aver_duv = du(y,x)*du(y,x) + dv(y,x)*dv(y,x);
-				const float ini_dx = 0.5*(depth_old(y,x+1) - depth_old(y,x-1));
-				const float ini_dy = 0.5*(depth_old(y+1,x) - depth_old(y-1,x));
-				const float final_dx = 0.5*(depth(y,x+1) - depth(y,x-1));
-				const float final_dy = 0.5*(depth(y+1,x) - depth(y-1,x));
-
+				const float ini_dx = 0.5f*(depth_old(y,x+1) - depth_old(y,x-1));
+				const float ini_dy = 0.5f*(depth_old(y+1,x) - depth_old(y-1,x));
+				const float final_dx = 0.5f*(depth(y,x+1) - depth(y,x-1));
+				const float final_dy = 0.5f*(depth(y+1,x) - depth(y-1,x));
 
 				//Derivative too high (the average derivative)
 				if (aver_duv > duv_threshold)
@@ -266,9 +273,9 @@ void CDifodo::findBorders()
 				//Difference between derivatives in the surroundings
 				else
 				{
-					float sum_duv = 0;
-					float sum_dift = 0;
-					float sum_difdepth = 0;
+					float sum_duv = 0.f;
+					float sum_dift = 0.f;
+					float sum_difdepth = 0.f;
 					for (int k = -1; k<2; k++)
 						for (int l = -1; l<2; l++)
 						{
@@ -280,7 +287,7 @@ void CDifodo::findBorders()
 					if (sum_dift > depth_inter(y,x)*dift_surroundings)
 						border(y,x) = 1;
 
-					else if (sum_duv > (4.0*sum_difdepth + depth_inter(y,x))*difuv_surroundings)
+					else if (sum_duv > (4.f*sum_difdepth + depth_inter(y,x))*difuv_surroundings)
 						border(y,x) = 1;
 
 				}
@@ -313,7 +320,7 @@ void CDifodo::findNullPoints()
 	null.assign(0);
 	for (unsigned int x = 0; x < cols; x++)
 		for (unsigned int y = 0; y < rows; y++)
-			if (depth_inter(y,x) == 0)
+			if (depth_inter(y,x) == 0.f)
 				null(y,x) = 1;
 
 }
@@ -336,14 +343,10 @@ void CDifodo::solveDepthSystem()
 
 	utils::CTicTac	clock;
 	unsigned int cont = 0;
-	MatrixXf A;
-	MatrixXf Var;
-	MatrixXf B;
+	MatrixXf A, Var, B;
 	A.resize(num_valid_points,6);
 	B.setSize(num_valid_points,1);
 	Var.setSize(6,1);
-
-	//clock.Tic();
 
 	//Fill the matrix A and the vector B
 	//The order of the variables will be (vz, vx, vy, wz, wx, wy)
@@ -367,7 +370,7 @@ void CDifodo::solveDepthSystem()
 			if ((border(y,x) == 0)&&(null(y,x) == 0))
 			{
 				//Precomputed expressions
-				const float inv_d = 1.0f/depth_inter(y,x);
+				const float inv_d = 1.f/depth_inter(y,x);
 				const float dxcomp = du(y,x)*f_inv_x*inv_d;
 				const float dycomp = dv(y,x)*f_inv_y*inv_d;
 				const float z2 = square(depth_inter(y,x));
@@ -381,17 +384,17 @@ void CDifodo::solveDepthSystem()
 				const float var23 = kz2*xx_inter(y,x)*yy_inter(y,x)*z2;
 				const float var33 = kz2*square(yy_inter(y,x))*z2;
 				const float var44 = kz2*z4*fps*fps;
-				const float var55 = kz2*z4*0.25;
-				const float var66 = kz2*z4*0.25;
+				const float var55 = kz2*z4*0.25f;
+				const float var66 = var55;
 
-				const float j1 = -2.0*inv_d*inv_d*(xx_inter(y,x)*dxcomp + yy_inter(y,x)*dycomp)*(v_old[0] + yy_inter(y,x)*w_old[1] - xx_inter(y,x)*w_old[2])
+				const float j1 = -2.f*inv_d*inv_d*(xx_inter(y,x)*dxcomp + yy_inter(y,x)*dycomp)*(v_old[0] + yy_inter(y,x)*w_old[1] - xx_inter(y,x)*w_old[2])
 								+ inv_d*dxcomp*(v_old[1] - yy_inter(y,x)*w_old[0]) + inv_d*dycomp*(v_old[2] + xx_inter(y,x)*w_old[0]);
 
-				const float j2 = inv_d*dxcomp*(v_old[0] + yy_inter(y,x)*w_old[1] - 2.0*xx_inter(y,x)*w_old[2]) - dycomp*w_old[0];
+				const float j2 = inv_d*dxcomp*(v_old[0] + yy_inter(y,x)*w_old[1] - 2.f*xx_inter(y,x)*w_old[2]) - dycomp*w_old[0];
 
-				const float j3 = inv_d*dycomp*(v_old[0] + 2*yy_inter(y,x)*w_old[1] - xx_inter(y,x)*w_old[2]) + dxcomp*w_old[0];
+				const float j3 = inv_d*dycomp*(v_old[0] + 2.f*yy_inter(y,x)*w_old[1] - xx_inter(y,x)*w_old[2]) + dxcomp*w_old[0];
 
-				const float j4 = 1;
+				const float j4 = 1.f;
 
 				const float j5 =  xx_inter(y,x)*inv_d*inv_d*f_inv_y*(v_old[0] + yy_inter(y,x)*w_old[1] - xx_inter(y,x)*w_old[2])
 							   + inv_d*f_inv_x*(-v_old[1] - depth_inter(y,x)*w_old[2] + yy_inter(y,x)*w_old[0]);
@@ -399,10 +402,10 @@ void CDifodo::solveDepthSystem()
 				const float j6 = yy_inter(y,x)*inv_d*inv_d*f_inv_y*(v_old[0] + yy_inter(y,x)*w_old[1] - xx_inter(y,x)*w_old[2])
 							   + inv_d*f_inv_y*(-v_old[2] + depth_inter(y,x)*w_old[1] - xx_inter(y,x)*w_old[0]);
 
-				weights(y,x) = sqrt(1.0/(j1*(j1*var11+j2*var12+j3*var13) + j2*(j1*var12+j2*var22+j3*var23)
+				weights(y,x) = sqrt(1.f/(j1*(j1*var11+j2*var12+j3*var13) + j2*(j1*var12+j2*var22+j3*var23)
 										+j3*(j1*var13+j2*var23+j3*var33) + j4*j4*var44 + j5*j5*var55 + j6*j6*var66));
 
-				A(cont,0) = weights(y,x)*(1.0f + dxcomp*xx_inter(y,x)*inv_d + dycomp*yy_inter(y,x)*inv_d);
+				A(cont,0) = weights(y,x)*(1.f + dxcomp*xx_inter(y,x)*inv_d + dycomp*yy_inter(y,x)*inv_d);
 				A(cont,1) = weights(y,x)*(-dxcomp);
 				A(cont,2) = weights(y,x)*(-dycomp);
 				A(cont,3) = weights(y,x)*(dxcomp*yy_inter(y,x) - dycomp*xx_inter(y,x));
@@ -415,15 +418,21 @@ void CDifodo::solveDepthSystem()
 			}
 
 	//Solve the linear system of equations using a minimum least squares method
-	MatrixXf atrans = A.transpose();
-	MatrixXf a_ls = atrans*A;
-	Var = a_ls.ldlt().solve(atrans*B);
+	//MatrixXf atrans = A.transpose();
+	//MatrixXf a_ls = atrans*A;
+	//Var = a_ls.ldlt().solve(atrans*B);
+	//kai_solver = Var;
+
+	MatrixXf AtA, AtB;
+	AtA.multiply_AtA(A);
+	AtB.multiply_AtB(A,B);
+	Var = AtA.ldlt().solve(AtB);
 	kai_solver = Var;
 
 	//Covariance matrix calculation
 	MatrixXf residuals(num_valid_points,1);
 	residuals = A*Var - B;
-	est_cov = (1.0f/float(num_valid_points-6))*a_ls.inverse()*residuals.squaredNorm();
+	est_cov = (1.0f/float(num_valid_points-6))*AtA.inverse()*residuals.squaredNorm();
 
 }
 
@@ -440,9 +449,9 @@ void CDifodo::OdometryCalculation()
 	findValidPoints();
 
 	if (num_valid_points > 6)	{solveDepthSystem();}
-	else						{kai_solver.assign(0);}
+	else						{kai_solver.assign(0.f);}
 
-	execution_time = 1000*clock.Tac();
+	execution_time = 1000.f*clock.Tac();
 }
 
 

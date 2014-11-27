@@ -17,6 +17,7 @@
 #include "ArSyncTask.h"
 #include "ArArgumentBuilder.h"
 #include "ariaInternal.h"
+#include <mrpt/utils/mrpt_macros.h>
 
 ArNetServer::ArNetServer(bool addAriaExitCB) :
   myTaskCB(this, &ArNetServer::runOnce),
@@ -255,7 +256,6 @@ AREXPORT void ArNetServer::runOnce(void)
   std::list<ArSocket *> removeList;
   std::list<ArSocket *>::iterator it;
   ArArgumentBuilder *args = NULL;
-  std::string command;
 
   if (!myOpened)
   {
@@ -446,6 +446,8 @@ AREXPORT void ArNetServer::internalHelp(ArSocket *socket)
 AREXPORT void ArNetServer::internalHelp(char **argv, int argc, 
 					ArSocket *socket)
 {
+  MRPT_UNUSED_PARAM(argv);
+  MRPT_UNUSED_PARAM(argc);
   internalHelp(socket);
 }
 
@@ -481,6 +483,8 @@ AREXPORT void ArNetServer::internalEcho(char **argv, int argc,
 AREXPORT void ArNetServer::internalQuit(char **argv, int argc, 
 					 ArSocket *socket)
 {
+  MRPT_UNUSED_PARAM(argv);
+  MRPT_UNUSED_PARAM(argc);
   socket->writeString("Closing connection");
 
   myDeleteList.push_front(socket);
@@ -490,6 +494,9 @@ AREXPORT void ArNetServer::internalQuit(char **argv, int argc,
 AREXPORT void ArNetServer::internalShutdownServer(char **argv, int argc, 
 						  ArSocket *socket)
 {
+  MRPT_UNUSED_PARAM(argv);
+  MRPT_UNUSED_PARAM(argc);
+  MRPT_UNUSED_PARAM(socket);
   sendToAllClients("Shutting down server");
   myWantToClose = true;
   if (myRobot != NULL)

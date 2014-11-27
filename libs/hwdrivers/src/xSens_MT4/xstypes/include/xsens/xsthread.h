@@ -16,6 +16,7 @@
 #endif
 
 #ifndef __GNUC__
+#pragma warning(push)
 #pragma warning(disable: 4127)
 #endif
 
@@ -75,7 +76,11 @@ extern "C" {
 
 	//! A handle for a thread
 	typedef HANDLE XsThread;
+#ifdef __cplusplus
+	typedef ::DWORD XsThreadId;
+#else
 	typedef DWORD XsThreadId;
+#endif
 
 	//! Start a function as a thread
 	#define xsStartThread(func,param,pid)	CreateThread(NULL,0,(LPTHREAD_START_ROUTINE) func,param,0,pid)
@@ -140,7 +145,7 @@ extern "C" {
 #endif // _WIN32
 
 #ifndef __GNUC__
-#pragma warning(default: 4127)
+#pragma warning(pop)
 #endif
 
 #ifdef __cplusplus

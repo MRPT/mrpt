@@ -114,7 +114,12 @@ endif (ENABLE_SOLUTION_FOLDERS)
 
 
 # Build the ARIA library?
-SET(BUILD_ARIA ON CACHE BOOL "Build an embedded version of ActivMedia ARIA library (interface to mobile robots)")
+SET(DEFAULT_BUILD_ARIA ON) # Default: Yes
+if ("${CMAKE_MRPT_KERNEL}" MATCHES "GNU")   # Unless in HURD
+	SET(DEFAULT_BUILD_ARIA OFF)
+endif ("${CMAKE_MRPT_KERNEL}" MATCHES "GNU")
+# Decl option:
+SET(BUILD_ARIA ${DEFAULT_BUILD_ARIA} CACHE BOOL "Build an embedded version of ActivMedia ARIA library (interface to mobile robots)")
 IF(BUILD_ARIA)
 	SET(CMAKE_MRPT_HAS_ARIA 1)
 ELSE(BUILD_ARIA)
@@ -122,7 +127,12 @@ ELSE(BUILD_ARIA)
 ENDIF(BUILD_ARIA)
 
 # Build the RoboPeak Lidar library?
-SET(BUILD_ROBOPEAK_LIDAR ON CACHE BOOL "Build an embedded version of RoboPeak LIDAR SDK (interface to low-cost lidar)")
+SET(DEFAULT_BUILD_ROBOPEAK_LIDAR ON) # Default: Yes
+if ("${CMAKE_MRPT_KERNEL}" MATCHES "GNU")   # Unless in HURD
+	SET(DEFAULT_BUILD_ROBOPEAK_LIDAR OFF)
+endif ("${CMAKE_MRPT_KERNEL}" MATCHES "GNU")
+# Decl option:
+SET(BUILD_ROBOPEAK_LIDAR ${DEFAULT_BUILD_ROBOPEAK_LIDAR} CACHE BOOL "Build an embedded version of RoboPeak LIDAR SDK (interface to low-cost lidar)")
 IF(BUILD_ROBOPEAK_LIDAR)
 	SET(CMAKE_MRPT_HAS_ROBOPEAK_LIDAR 1)
 ELSE(BUILD_ROBOPEAK_LIDAR)
@@ -318,14 +328,14 @@ MARK_AS_ADVANCED(MRPT_WARNINGS_ARE_ERRORS)
 SET( MRPT_WHOLE_PROGRAM_OPTIMIZATION OFF CACHE BOOL "Flags for whole program optimization.")
 MARK_AS_ADVANCED(MRPT_WHOLE_PROGRAM_OPTIMIZATION)
 
-# Even more warnings: "Scott Meyers' Effective C++ book" + Wextra (GCC & CLANG)
+# Even more warnings for different compilers
 IF(MRPT_EXTRA_WARNINGS)
-	IF(CMAKE_COMPILER_IS_GNUCXX)
-		SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Weffc++ -Wextra") # -Wold-style-cast  -Woverloaded-virtual
-	ENDIF(CMAKE_COMPILER_IS_GNUCXX)
-	IF("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
+   #TODO - Add options for MSVC
+   IF ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
+      SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wreturn-type -Wextra") # -Wold-style-cast  -Woverloaded-virtual
+   ELSEIF("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
 		SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wextra")
-	ENDIF("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
+	ENDIF()
 ENDIF(MRPT_EXTRA_WARNINGS)
 
 # Enable profiling?

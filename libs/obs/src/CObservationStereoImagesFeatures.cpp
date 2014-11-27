@@ -123,3 +123,40 @@ void  CObservationStereoImagesFeatures::readFromStream(CStream &in, int version)
 	};
 }
 
+void CObservationStereoImagesFeatures::getDescriptionAsText(std::ostream &o) const
+{
+	CObservation::getDescriptionAsText(o);
+
+	o << "Homogeneous matrix for the sensor's 3D pose, relative to robot base:\n";
+	o << cameraPoseOnRobot.getHomogeneousMatrixVal()
+	<< cameraPoseOnRobot << endl;
+
+	o << "Homogeneous matrix for the RIGHT camera's 3D pose, relative to LEFT camera reference system:\n";
+	o << rightCameraPose.getHomogeneousMatrixVal()
+	<< rightCameraPose << endl;
+
+	o << "Intrinsic parameters matrix for the LEFT camera:"<< endl;
+	CMatrixDouble33 aux = cameraLeft.intrinsicParams;
+	o << aux.inMatlabFormat() << endl << aux << endl;
+
+	o << "Distortion parameters vector for the LEFT camera:"<< endl << "[ ";
+	for( unsigned int i = 0; i < 5; ++i )
+		o << cameraLeft.dist[i] << " ";
+	o << "]" << endl;
+
+	o << "Intrinsic parameters matrix for the RIGHT camera:"<< endl;
+	aux = cameraRight.intrinsicParams;
+	o << aux.inMatlabFormat() << endl << aux << endl;
+
+	o << "Distortion parameters vector for the RIGHT camera:"<< endl << "[ ";
+	for( unsigned int i = 0; i < 5; ++i )
+		o << cameraRight.dist[i] << " ";
+	o << "]"<< endl;
+
+	o << endl << format(" Image size: %ux%u pixels\n", (unsigned int)cameraLeft.ncols, (unsigned int)cameraLeft.nrows );
+	o << endl << format(" Number of features in images: %u\n", (unsigned int)theFeatures.size() );
+
+
+}
+
+

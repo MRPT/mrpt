@@ -9,6 +9,7 @@
 
 #include <iostream>
 #include "ReactiveNav3D_demo.h"
+#include <mrpt/system/threads.h> // sleep()
 #include <mrpt/utils/CConfigFile.h>
 #include <mrpt/utils/CConfigFileMemory.h>
 
@@ -377,7 +378,7 @@ int main(int num_arg, char *argv[])
 				ReactInterface.senseObstacles( auxpoints );
 			}
 			ReactInterface.updateScene();
-			system::sleep(5);
+			mrpt::system::sleep(5);
 
 
 			//Move target with the mouse

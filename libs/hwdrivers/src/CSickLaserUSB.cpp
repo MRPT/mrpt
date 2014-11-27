@@ -48,10 +48,8 @@ CSickLaserUSB::CSickLaserUSB() :
 -------------------------------------------------------------*/
 CSickLaserUSB::~CSickLaserUSB()
 {
-	MRPT_START
 	delete m_usbConnection;
 	m_usbConnection = NULL;
-	MRPT_END
 }
 
 /*-------------------------------------------------------------

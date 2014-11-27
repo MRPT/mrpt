@@ -129,6 +129,9 @@ void  CHierarchicalMapMHPartition::saveAreasDiagramForMATLAB(
 	const CHMHMapNode::TNodeID	&idReferenceNode,
 	const THypothesisID &hypothesisID) const
 {
+	MRPT_UNUSED_PARAM(filName);
+	MRPT_UNUSED_PARAM(idReferenceNode);
+	MRPT_UNUSED_PARAM(hypothesisID);
 /*
 	MRPT_START
 	unsigned int	nAreaNodes=0;
@@ -303,6 +306,12 @@ void  CHierarchicalMapMHPartition::saveAreasDiagramWithEllipsedForMATLAB(
 	unsigned int					numberOfIterationsForOptimalGlobalPoses
 	) const
 {
+	MRPT_UNUSED_PARAM(filName);
+	MRPT_UNUSED_PARAM(idReferenceNode);
+	MRPT_UNUSED_PARAM(hypothesisID);
+	MRPT_UNUSED_PARAM(uncertaintyExagerationFactor);
+	MRPT_UNUSED_PARAM(drawArcs);
+	MRPT_UNUSED_PARAM(numberOfIterationsForOptimalGlobalPoses);
 /*	MRPT_START
 
 	const CHMHMapNode	*refNode = getNodeByID( idReferenceNode );
@@ -467,6 +476,9 @@ void  CHierarchicalMapMHPartition::saveGlobalMapForMATLAB(
 	const THypothesisID				&hypothesisID,
 	const CHMHMapNode::TNodeID	&idReferenceNode ) const
 {
+	MRPT_UNUSED_PARAM(filName);
+	MRPT_UNUSED_PARAM(hypothesisID);
+	MRPT_UNUSED_PARAM(idReferenceNode);
 	MRPT_START
 /*
 	unsigned int	nAreaNodes=0;
@@ -951,10 +963,14 @@ float  CHierarchicalMapMHPartition::computeMatchProbabilityBetweenNodes(
 	const THypothesisID				&hypothesisID,
 	unsigned int				monteCarloSamplesPose )
 {
+	MRPT_UNUSED_PARAM(nodeFrom);
+	MRPT_UNUSED_PARAM(nodeTo);
+	MRPT_UNUSED_PARAM(maxMatchProb);
+	MRPT_UNUSED_PARAM(estimatedRelativePose);
+	MRPT_UNUSED_PARAM(hypothesisID);
+	MRPT_UNUSED_PARAM(monteCarloSamplesPose);
 	MRPT_START
-
 	THROW_EXCEPTION("TO DO")
-
 	MRPT_END
 }
 

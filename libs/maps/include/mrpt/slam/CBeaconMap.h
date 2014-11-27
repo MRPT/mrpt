@@ -214,7 +214,7 @@ namespace slam
 		 *  \return Returns false if any error occured, true elsewere.
 		 */
 		bool  saveToMATLABScript3D(
-			std::string	file,
+			const std::string	&file,
 			const char	*style="b",
 			float		confInterval = 0.95f ) const;
 

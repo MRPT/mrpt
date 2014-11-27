@@ -228,9 +228,7 @@ CImage::CImage( void *iplImage ) :
  ---------------------------------------------------------------*/
 CImage::~CImage( )
 {
-	MRPT_START
 	releaseIpl();
-	MRPT_END
 }
 
 /*---------------------------------------------------------------
@@ -1310,6 +1308,7 @@ void  CImage::line(
 	TPenStyle		penStyle)
 {
 #if MRPT_HAS_OPENCV
+	MRPT_UNUSED_PARAM(penStyle);
 	makeSureImageIsLoaded();   // For delayed loaded images stored externally
 	IplImage *ipl = ((IplImage*)img);
 	ASSERT_(ipl);
@@ -2709,8 +2708,9 @@ bool CImage::loadFromXPM( const char** xpm_array, bool swap_rb )
 		return false;
 	}
 #else
+	MRPT_UNUSED_PARAM(xpm_array); MRPT_UNUSED_PARAM(swap_rb);
 	return false;
-#endif // MRPT_HAS_OPENCV
+#endif // MRPT_HAS_OPENCV && MRPT_HAS_WXWIDGETS
 }
 
 

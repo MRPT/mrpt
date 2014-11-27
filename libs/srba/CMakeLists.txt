@@ -17,6 +17,7 @@ define_mrpt_lib_header_only(
 	# Lib name
 	srba
 	# Dependencies
+	mrpt-graphs
 	mrpt-opengl
 	mrpt-base
 	)

@@ -604,8 +604,8 @@ void vision::interpolateHistEntry(
     CTimeLogger logger;
     logger.disable();
 
-    double ncbin = cbin + d/2 - 0.5;
-    double nrbin = rbin + d/2 - 0.5;
+    double ncbin = cbin + d/2. - 0.5;
+    double nrbin = rbin + d/2. - 0.5;
 
     int ncbin_i = floor( ncbin );
     int nrbin_i = floor( nrbin );
@@ -913,7 +913,6 @@ TMultiResMatchingOutput vision::matchMultiResolutionFeatures(
     int imageH = rightImage.getHeight();                    // Image height
     int leftFeatCounter = 0;
     int rightFeatCounter = 0;                               // Counter for features
-    vector<double> orientations;
     int patchSize = computeOpts.basePSize;
     int minScale;
     double maxResponse;
@@ -1212,7 +1211,6 @@ int  vision::matchMultiResolutionFeatures(
     CFeatureList auxList1, auxList2;
     mList2.getBothFeatureLists( auxList1, auxList2 );
 
-    vector<int> leftIdx1, leftIdx2, rightIdx1, rightIdx2;
     vector<int> scales1, scales2;
 
     TMultiResMatchingOutput output1, output2;

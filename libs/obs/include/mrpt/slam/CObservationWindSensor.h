@@ -47,12 +47,12 @@ namespace slam
 
 		/** @} */
 
+		// See base class docs
 		void getSensorPose( CPose3D &out_sensorPose ) const;
-
-		/** A general method to change the sensor pose on the robot.
-		  *  It has no effects in this class
-		  * \sa getSensorPose  */
+		// See base class docs
 		void setSensorPose( const CPose3D &newSensorPose );
+		// See base class docs
+		virtual void getDescriptionAsText(std::ostream &o) const;
 
 	}; // End of class def.
 	DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE( CObservationWindSensor, CObservation, OBS_IMPEXP)

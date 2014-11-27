@@ -43,7 +43,7 @@ using namespace mrpt::utils;
 using namespace mrpt::slam;
 using namespace mrpt::poses;
 using namespace mrpt::gui;
-using namespace mrpt::reactivenav;
+using namespace mrpt::nav;
 
 
 //(*IdInit(navlog_viewer_GUI_designDialog)

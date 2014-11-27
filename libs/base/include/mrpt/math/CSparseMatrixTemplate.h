@@ -87,7 +87,7 @@ namespace math	{
 		/**
 		  * Reference access operator. Checks for bounds.
 		  */
-		inline T& operator()(size_t r,size_t c)	{
+		inline T& operator()(size_t r,size_t c)	{ //-V659
 #if defined(_DEBUG) || (MRPT_ALWAYS_CHECKS_DEBUG_MATRICES)
 			if (r>=mRows||c>=mColumns) throw std::logic_error("Out of range");
 #endif
@@ -350,7 +350,7 @@ namespace math	{
 			if (it==CSparseMatrixTemplate<T>::objectList.end()) return T();
 			else return it->second;
 		}
-		inline T& operator()(size_t r,size_t c)	{
+		inline T& operator()(size_t r,size_t c)	{ //-V659
 			if (c<r) std::swap(r,c); // Symmetrical matrix
 			if (r>=CSparseMatrixTemplate<T>::mRows||c>=CSparseMatrixTemplate<T>::mColumns) throw std::logic_error("Out of range");
 			return CSparseMatrixTemplate<T>::objectList[std::make_pair(r,c)];

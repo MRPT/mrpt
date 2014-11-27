@@ -26,7 +26,80 @@
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><p><b>Note:</b> <em>If you are displaying a local version of this page and you have not built the whole HTML documentation, the links above will be broken. Either build the documentation invoking <code>make documentation_html</code> or <a href="http://www.mrpt.org/">browse it on-line</a>.</em></p>
-<p><a class="anchor" id="1.2.1"></a> </p>
+<p><a class="anchor" id="1.2.2"></a> </p>
+<h2>Version 1.2.2: Released 12-SEP-2014 </h2>
+<ul>
+<li>Changes in apps:<ul>
+<li><a href="http://www.mrpt.org/list-of-mrpt-apps/application-sceneviewer3d/">SceneViewer3D</a>:<ul>
+<li>New menu "File" -&gt; "Import" -&gt; "3D model" which supports many standard formats (via <a class="el" href="classmrpt_1_1opengl_1_1_c_assimp_model.html" title="This class can load &amp; render 3D models in a number of different formats (requires the library assimp)...">mrpt::opengl::CAssimpModel</a>)</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>New classes:<ul>
+<li>[mrpt-hwdrivers]<ul>
+<li><a class="el" href="classmrpt_1_1hwdrivers_1_1_c_robo_peak_lidar.html" title="Interfaces a Robo Peak LIDAR laser scanner. ">mrpt::hwdrivers::CRoboPeakLidar</a> to interface Robo Peak LIDAR scanners.</li>
+</ul>
+</li>
+<li>[mrpt-opengl]<ul>
+<li><a class="el" href="classmrpt_1_1opengl_1_1_c_assimp_model.html" title="This class can load &amp; render 3D models in a number of different formats (requires the library assimp)...">mrpt::opengl::CAssimpModel</a> for rendering complex 3D models (many supported formats) in OpenGL scenes.</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>Changes in classes:<ul>
+<li>Consistency in all "laser scan" classes: angular increments between rays are now FOV/(N-1) instead of FOV/N.</li>
+<li>[mrpt-base]<ul>
+<li>New method <a class="el" href="classmrpt_1_1utils_1_1_c_image.html#a3515dd343f6dca9258d69dcba1788302" title="Loads a TGA true-color RGBA image as two CImage objects, one for the RGB channels plus a separate gra...">mrpt::utils::CImage::loadTGA()</a></li>
+<li><em>IMPORTANT</em>: Changed behavior of CSerializable/CObject macros (see bugfix below), introducing the new macros DEFINE_SERIALIZABLE_POST_*. May require changes in user code if serializable classes are defined:<ul>
+<li>Previous version: <div class="fragment"><div class="line">DEFINE_SERIALIZABLE_PRE_*(...)</div>
+<div class="line">class XXX {</div>
+<div class="line">        <a class="code" href="_c_serializable_8h.html#a72ab55bf7ae009c89b75715cfa21e84d">DEFINE_SERIALIZABLE</a>(XXX)</div>
+<div class="line">};</div>
+</div><!-- fragment --></li>
+<li>Must be changed in this version to: <div class="fragment"><div class="line">DEFINE_SERIALIZABLE_PRE_*(...)</div>
+<div class="line">class XXX {</div>
+<div class="line">        <a class="code" href="_c_serializable_8h.html#a72ab55bf7ae009c89b75715cfa21e84d">DEFINE_SERIALIZABLE</a>(XXX)</div>
+<div class="line">};</div>
+<div class="line">DEFINE_SERIALIZABLE_POST_*(...)</div>
+</div><!-- fragment --></li>
+</ul>
+</li>
+</ul>
+</li>
+<li>[mrpt-hwdrivers]<ul>
+<li>Bumblebee2 Linux support in <a class="el" href="classmrpt_1_1hwdrivers_1_1_c_image_grabber___fly_capture2.html" title="A wrapper for Point Gray Research (PGR) FlyCapture2 API for capturing images from Firewire...">mrpt::hwdrivers::CImageGrabber_FlyCapture2</a> via Triclops (by Jesus Briales)</li>
+</ul>
+</li>
+<li>[mrpt-maps]<ul>
+<li>New method <a class="el" href="classmrpt_1_1slam_1_1_c_occupancy_grid_map2_d.html#ab841be1e2ae957e98abebe81ee4368d3" title="Read-only access to the raw cell contents (cells are in log-odd units) ">mrpt::slam::COccupancyGridMap2D::getRawMap()</a></li>
+<li>New method <a class="el" href="classmrpt_1_1slam_1_1_c_coloured_points_map.html#ad868e2a0e5b4cf9d115b1c94f96be755" title="Like CPointsMap::getPCLPointCloud() but for PointCloud&lt;PointXYZRGB&gt; ">mrpt::slam::CColouredPointsMap::getPCLPointCloudXYZRGB()</a></li>
+</ul>
+</li>
+<li>[mrpt-opengl]<ul>
+<li>mrpt::opengl::CMyGLCanvasBase (affects all 3D rendering classes): better handling of internal timers for smoother updates while rendering in multithreading apps.</li>
+</ul>
+</li>
+<li>[mrpt-srba]<ul>
+<li>New method to recover the global coordinates graph-slam problem for a RBA map: <a class="el" href="classmrpt_1_1srba_1_1_rba_engine.html#addd6b302ff07e7555b8e35b8351e9880" title="Build a graph-slam problem suitable for recovering the (consistent) global pose (vs. ">mrpt::srba::RbaEngine::get_global_graphslam_problem()</a> (see example [MRPT]-examples\srba-tutorials\tutorial-srba-how-to-recover-global-map.cpp)</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>BUG FIXES:<ul>
+<li><a class="el" href="classmrpt_1_1utils_1_1_c_image.html" title="A class for storing images as grayscale or RGB bitmaps. ">mrpt::utils::CImage</a> constructor from a matrix crashed.</li>
+<li>Unit tests: Named semaphores are not tested anymore if it's detected that the kernel version doesn't support them (Fix Debian 758725).</li>
+<li><a class="el" href="classmrpt_1_1synch_1_1_c_semaphore.html" title="A semaphore for inter-thread synchronization. ">mrpt::synch::CSemaphore</a> [Linux]: didn't call sem_unlink().</li>
+<li><a class="el" href="classmrpt_1_1gui_1_1_c_display_window3_d.html" title="A graphical user interface (GUI) for efficiently rendering 3D scenes in real-time. ">mrpt::gui::CDisplayWindow3D</a> didn't implement get/set FOV.</li>
+<li>Valgrind: Fixed potential unaligned memory access warning in point clouds.</li>
+<li>Fix build error with AppleClang 5.1 (Closes #71).</li>
+<li><a class="el" href="classmrpt_1_1utils_1_1_c_client_t_c_p_socket.html" title="A TCP socket that can be connected to a TCP server, implementing MRPT&#39;s CStream interface for passing...">mrpt::utils::CClientTCPSocket</a>: Use a connection success check that works on all platforms</li>
+<li>Important bug fixed regarding a missing dynamic_cast&lt;&gt; in smart pointers casting. See above possible implications in user code. properly (Patch by Joe Burmeister).</li>
+</ul>
+</li>
+</ul>
+<hr/>
+<p> <a class="anchor" id="1.2.1"></a> </p>
 <h2>Version 1.2.1: Released 10-JUL-2014 </h2>
 <ul>
 <li>Changes in classes:<ul>
@@ -777,4 +850,4 @@
 </li>
 </ul>
 </div></div><!-- contents -->
-<br><hr><br> <table border="0" width="100%"> <tr> <td> Page generated by <a href="http://www.doxygen.org" target="_blank">Doxygen 1.8.6</a> for MRPT 1.2.1 SVN:Unversioned directory at jue jul 10 18:14:21 CEST 2014</td><td></td> <td width="150">  </td></tr> </table>  </body></html>
+<br><hr><br> <table border="0" width="100%"> <tr> <td> Page generated by <a href="http://www.doxygen.org" target="_blank">Doxygen 1.8.6</a> for MRPT 1.2.2 SVN:Unversioned directory at sáb sep 13 16:10:47 CEST 2014</td><td></td> <td width="150">  </td></tr> </table>  </body></html>

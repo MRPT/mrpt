@@ -1,6 +1,17 @@
+mrpt (1:1.2.2-1.1) unstable; urgency=medium
 
+  * Non-maintainer upload.
+  * Fix FTBFS on many architectures by fixing disabling of use of SSE4.
+
+ -- Olly Betts <olly@survex.com>  Tue, 14 Oct 2014 14:22:01 +1300
+ 
+mrpt (1:1.2.2-1) unstable; urgency=medium
+
+  * New version of upstream sources.
   * Fixed FTBFS (named semaphore not implemented) (Closes: #758725)
   * Fixed FTBFS on mips, mipsel, powerpc, s390x (Closes: #756104)
+
+ -- Jose Luis Blanco (University of Malaga) <joseluisblancoc@gmail.com>  Fri, 12 Sep 2014 13:01:17 +0200
 
 mrpt (1:1.2.1-1) unstable; urgency=medium
 

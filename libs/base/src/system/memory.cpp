@@ -66,8 +66,10 @@ void* mrpt::system::os::aligned_realloc(void* old_ptr, size_t bytes, size_t alig
 	return _aligned_realloc(old_ptr,bytes,alignment);
 #   endif
 #elif defined(HAVE_POSIX_MEMALIGN)
+	MRPT_UNUSED_PARAM(alignment);
 	return ::realloc(old_ptr,bytes);
 #else
+	MRPT_UNUSED_PARAM(alignment);
 	// We don't have aligned memory:
 	return ::realloc(old_ptr,bytes);
 #endif

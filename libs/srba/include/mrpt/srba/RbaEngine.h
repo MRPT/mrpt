@@ -16,6 +16,7 @@
 #include <mrpt/utils/CTimeLogger.h>
 #include <mrpt/utils/CLoadableOptions.h>
 #include <mrpt/opengl/CSetOfObjects.h>
+#include <mrpt/graphs/CNetworkOfPoses.h>
 
 #include "srba_types.h"
 #include "srba_options.h"
@@ -264,6 +265,23 @@ namespace srba
 		  */
 		double eval_overall_squared_error() const;
 
+		struct ExportGraphSLAM_Params
+		{
+			TKeyFrameID root_kf_id; //!< The KF to use as a root for the spanning tree to init global poses (default=0)
+
+			ExportGraphSLAM_Params() : root_kf_id(0) {}
+		};
+		/** Build a graph-slam problem suitable for recovering the (consistent) global pose (vs. relative ones as are handled in SRBA) of each keyframe.
+		  * \note This version of the method doesn't account for the covariances of relative pose estimations in RBA.
+		  * \sa mrpt::graphslam (for methods capable of optimizing the output graph of pose constraints)
+		  * \param[out] global_graph Previous contents will be erased. The output global graph will be returned here, initialized with poses from a Dijkstra/Spanning-tree from the first KF.
+		  * \tparam POSE_GRAPH Must be an instance of mrpt::graphs::CNetworkOfPoses<>, e.g. CNetworkOfPoses2D (for 2D poses) or CNetworkOfPoses3D (for 3D).
+		  * \note This method is NOT O(1)
+		  */
+		template <class POSE_GRAPH>
+		void get_global_graphslam_problem(POSE_GRAPH &global_graph, const ExportGraphSLAM_Params &params = ExportGraphSLAM_Params() ) const;
+	
+
 		/** @} */  // End of main API methods
 
 
@@ -510,41 +528,57 @@ namespace srba
 			/* Implementation of FEAT_VISITOR */
 			inline bool visit_filter_feat(const TLandmarkID lm_ID,const topo_dist_t cur_dist)
 			{
+				MRPT_UNUSED_PARAM(lm_ID); MRPT_UNUSED_PARAM(cur_dist);
 				return false; // Don't need to visit landmark nodes.
 			}
+
 			inline void visit_feat(const TLandmarkID lm_ID,const topo_dist_t cur_dist)
 			{
+				MRPT_UNUSED_PARAM(lm_ID); MRPT_UNUSED_PARAM(cur_dist);
 				// Nothing to do
 			}
 
 			/* Implementation of KF_VISITOR */
 			inline bool visit_filter_kf(const TKeyFrameID kf_ID,const topo_dist_t cur_dist)
 			{
+				MRPT_UNUSED_PARAM(cur_dist);
 				return (kf_ID<=params.max_visitable_kf_id);
 			}
+
 			inline void visit_kf(const TKeyFrameID kf_ID,const topo_dist_t cur_dist)
 			{
+				MRPT_UNUSED_PARAM(kf_ID); MRPT_UNUSED_PARAM(cur_dist);
 				// Nothing to do.
 			}
 
 			/* Implementation of K2K_EDGE_VISITOR */
-			inline bool visit_filter_k2k(const TKeyFrameID current_kf, const TKeyFrameID next_kf,const k2k_edge_t* edge, const topo_dist_t cur_dist)
+			inline bool visit_filter_k2k(const TKeyFrameID current_kf, const TKeyFrameID next_kf,
+				const k2k_edge_t* edge, const topo_dist_t cur_dist)
 			{
+				MRPT_UNUSED_PARAM(current_kf); MRPT_UNUSED_PARAM(next_kf);
+				MRPT_UNUSED_PARAM(edge); MRPT_UNUSED_PARAM(cur_dist);
 				return true; // Visit all k2k edges
 			}
-			inline void visit_k2k(const TKeyFrameID current_kf, const TKeyFrameID next_kf,const k2k_edge_t* edge, const topo_dist_t cur_dist)
+
+			inline void visit_k2k(const TKeyFrameID current_kf, const TKeyFrameID next_kf,
+				const k2k_edge_t* edge, const topo_dist_t cur_dist)
 			{
+				MRPT_UNUSED_PARAM(current_kf); MRPT_UNUSED_PARAM(next_kf);
+				MRPT_UNUSED_PARAM(cur_dist);
 				if (params.optimize_k2k_edges)
 					k2k_edges_to_optimize.push_back(edge->id);
 			}
 
 			/* Implementation of K2F_EDGE_VISITOR */
-			inline bool visit_filter_k2f(const TKeyFrameID current_kf, const k2f_edge_t* edge, const topo_dist_t cur_dist)
+			inline bool visit_filter_k2f(const TKeyFrameID current_kf, const k2f_edge_t* edge,
+				const topo_dist_t cur_dist)
 			{
+				MRPT_UNUSED_PARAM(current_kf); MRPT_UNUSED_PARAM(edge); MRPT_UNUSED_PARAM(cur_dist);
 				return params.optimize_landmarks; // Yes: visit all feature nodes if we're asked to
 			}
 			inline void visit_k2f(const TKeyFrameID current_kf, const k2f_edge_t* edge, const topo_dist_t cur_dist)
 			{
+				MRPT_UNUSED_PARAM(current_kf); MRPT_UNUSED_PARAM(cur_dist);
 				if (!edge->feat_has_known_rel_pos)
 				{
 					const TLandmarkID lm_ID = edge->obs.obs.feat_id;
@@ -780,6 +814,7 @@ namespace srba
 
 #include "impl/export_opengl.h"
 #include "impl/export_dot.h"
+#include "impl/get_global_graphslam_problem.h"
 
 #include "impl/eval_overall_error.h"
 

@@ -102,11 +102,11 @@ namespace mrpt
 					}
 					//If the solution is not complete, check for its children. Each one is included in the set only if it's valid and it's not yet present in the set.
 					generateChildren(tempSol,children);
-					for (typename std::vector<T>::const_iterator it2=children.begin();it2!=children.end();it2++) if (isSolutionValid(*it2))	{
+					for (typename std::vector<T>::const_iterator it2=children.begin();it2!=children.end();++it2) if (isSolutionValid(*it2))	{
 						bool alreadyPresent=false;
 						double cost=getTotalCost(*it2);
 						typename std::pair<typename std::multimap<double,T>::const_iterator,typename std::multimap<double,T>::const_iterator> range = partialSols.equal_range(cost);
-						for (typename std::multimap<double,T>::const_iterator it3=range.first;it3!=range.second;it3++) if (it3->second==*it2)	{
+						for (typename std::multimap<double,T>::const_iterator it3=range.first;it3!=range.second;++it3) if (it3->second==*it2)	{
 							alreadyPresent=true;
 							break;
 						}

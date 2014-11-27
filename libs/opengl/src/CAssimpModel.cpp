@@ -520,7 +520,7 @@ void load_textures(
 		std::string filename = itr->first;  // get filename
 		CAssimpModel::TInfoPerTexture &ipt = itr->second;
 		ipt.id_idx =  i;	  // save texture id for filename in map
-		itr++; // next texture
+		++itr; // next texture
 
 		const std::string fileloc = mrpt::system::filePathSeparatorsToNative( basepath + filename );
 

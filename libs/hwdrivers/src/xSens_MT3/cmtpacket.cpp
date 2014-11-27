@@ -1219,6 +1219,7 @@ bool Packet::updateSampleCounter(const uint16_t counter, const uint16_t index)
 }
 TimeStamp Packet::getRtc(const uint16_t index) const
 {
+	MRPT_UNUSED_PARAM(index);
 	return m_rtc;
 }
 

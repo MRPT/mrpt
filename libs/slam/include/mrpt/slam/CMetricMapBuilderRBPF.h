@@ -164,7 +164,7 @@ namespace slam
 
 		/** A logging utility: saves the current path estimation for each particle in a text file (a row per particle, each 3-column-entry is a set [x,y,phi], respectively).
 		  */
-		void  saveCurrentPathEstimationToTextFile( std::string  fil );
+		void  saveCurrentPathEstimationToTextFile( const std::string  &fil );
 
 		double  getCurrentJointEntropy();
 

@@ -51,6 +51,7 @@ protected:
 
 	void test_default_values(const CPose3DRotVec &p, const std::string & label)
 	{
+		MRPT_UNUSED_PARAM(label);
 		EXPECT_EQ(p.x(),0);
 		EXPECT_EQ(p.y(),0);
 		EXPECT_EQ(p.z(),0);

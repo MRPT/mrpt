@@ -470,7 +470,7 @@ bool ValueArg<T>::processArg(int *i, std::vector<std::string>& args)
  * Implementation of shortID.
  */
 template<class T>
-std::string ValueArg<T>::shortID(const std::string& val) const
+std::string ValueArg<T>::shortID(const std::string& ) const
 {
     return Arg::shortID( _typeDesc ); 
 }
@@ -479,7 +479,7 @@ std::string ValueArg<T>::shortID(const std::string& val) const
  * Implementation of longID.
  */
 template<class T>
-std::string ValueArg<T>::longID(const std::string& val) const
+std::string ValueArg<T>::longID(const std::string& ) const
 {
     return Arg::longID( _typeDesc ); 
 }

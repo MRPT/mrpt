@@ -70,15 +70,11 @@ std::string CServerTCPSocket::getLastErrorStr()
  ---------------------------------------------------------------*/
 CServerTCPSocket::~CServerTCPSocket( )
 {
-	MRPT_START
-
 	// Delete socket:
 	if (m_serverSock != INVALID_SOCKET)
 		closesocket( m_serverSock );
 
 	WSACleanup();
-
-	MRPT_END
 }
 
 

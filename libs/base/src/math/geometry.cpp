@@ -709,7 +709,7 @@ bool math::intersect(const TLine3D &r1,const TLine3D &r2,TObject3D &obj)	{
 		if (abs(sysDet)<geometryEpsilon) continue;
 		//We've found a coordinate in which we can solve the associated system
 		d[c1[i]]=r2.pBase[c1[i]]-r1.pBase[c1[i]];
-		d[c2[i]]=r2.pBase[c2[i]]-r2.pBase[c2[i]];
+		d[c2[i]]=r2.pBase[c2[i]]-r1.pBase[c2[i]];
 		u=(r1.director[c1[i]]*d[c2[i]]-r1.director[c2[i]]*d[c1[i]])/sysDet;
 		for (size_t i=0;i<3;i++) p[i]=r2.pBase[i]+u*r2.director[i];
 		if (r1.contains(p))	{
@@ -1608,30 +1608,37 @@ double math::distance(const TPlane &p1,const TPlane &p2)	{
 }
 
 double math::distance(const TPolygon2D &p1,const TPolygon2D &p2)	{
+   MRPT_UNUSED_PARAM(p1); MRPT_UNUSED_PARAM(p2);
 	THROW_EXCEPTION("TO DO:distance(TPolygon2D,TPolygon2D)");
 }
 
 double math::distance(const TPolygon2D &p1,const TSegment2D &s2)	{
+   MRPT_UNUSED_PARAM(p1); MRPT_UNUSED_PARAM(s2);
 	THROW_EXCEPTION("TO DO:distance(TPolygon2D,TSegment)");
 }
 
 double math::distance(const TPolygon2D &p1,const TLine2D &l2)	{
+   MRPT_UNUSED_PARAM(p1); MRPT_UNUSED_PARAM(l2);
 	THROW_EXCEPTION("TO DO:distance(TPolygon2D,TLine2D)");
 }
 
 double math::distance(const TPolygon3D &p1,const TPolygon3D &p2)	{
+   MRPT_UNUSED_PARAM(p1); MRPT_UNUSED_PARAM(p2);
 	THROW_EXCEPTION("TO DO:distance(TPolygon3D,TPolygon3D");
 }
 
 double math::distance(const TPolygon3D &p1,const TSegment3D &s2)	{
+   MRPT_UNUSED_PARAM(p1); MRPT_UNUSED_PARAM(s2);
 	THROW_EXCEPTION("TO DO:distance(TPolygon3D,TSegment3D");
 }
 
 double math::distance(const TPolygon3D &p1,const TLine3D &l2)	{
+   MRPT_UNUSED_PARAM(p1); MRPT_UNUSED_PARAM(l2);
 	THROW_EXCEPTION("TO DO:distance(TPolygon3D,TLine3D");
 }
 
 double math::distance(const TPolygon3D &po,const TPlane &pl)	{
+   MRPT_UNUSED_PARAM(po); MRPT_UNUSED_PARAM(pl);
 	THROW_EXCEPTION("TO DO:distance(TPolygon3D,TPlane");
 }
 

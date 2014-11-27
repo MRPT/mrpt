@@ -38,6 +38,7 @@ CPose3DQuatPDFGaussianInf::CPose3DQuatPDFGaussianInf() :
 CPose3DQuatPDFGaussianInf::CPose3DQuatPDFGaussianInf(TConstructorFlags_Quaternions constructor_dummy_param) :
 	mean(UNINITIALIZED_QUATERNION), cov_inv(UNINITIALIZED_MATRIX)
 {
+	MRPT_UNUSED_PARAM(constructor_dummy_param);
 }
 
 /** Constructor from a default mean value, covariance equals to zero. */

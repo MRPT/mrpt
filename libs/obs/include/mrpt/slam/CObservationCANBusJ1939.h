@@ -65,8 +65,10 @@ namespace slam
 		std::vector<char> m_raw_frame;
 
 		/** Not used */
-		void getSensorPose( CPose3D &out_sensorPose ) const { }
+		void getSensorPose( CPose3D &) const { }
 		void setSensorPose( const CPose3D & ) { }
+		// See base class docs
+		virtual void getDescriptionAsText(std::ostream &o) const;
 
 	}; // End of class def.
 	DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE( CObservationCANBusJ1939 , CObservation, OBS_IMPEXP)

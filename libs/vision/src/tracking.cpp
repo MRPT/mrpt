@@ -143,11 +143,13 @@ namespace mrpt {
 			template <>
 			inline void trackFeatures_updatePatch<TSimpleFeatureList>(TSimpleFeatureList &featureList,const CImage &cur_gray)
 			{
+				MRPT_UNUSED_PARAM(featureList); MRPT_UNUSED_PARAM(cur_gray);
 				// This list type does not have patch stored explicitly
 			} // end of trackFeatures_updatePatch<>
 			template <>
 			inline void trackFeatures_updatePatch<TSimpleFeaturefList>(TSimpleFeaturefList &featureList,const CImage &cur_gray)
 			{
+				MRPT_UNUSED_PARAM(featureList); MRPT_UNUSED_PARAM(cur_gray);
 				// This list type does not have patch stored explicitly
 			} // end of trackFeatures_updatePatch<>
 
@@ -310,6 +312,7 @@ namespace mrpt {
 					newFeat.track_status = status_IDLE;  //!< Inactive: right after detection, and before being tried to track
 				}
 #else
+				MRPT_UNUSED_PARAM(patchSize); MRPT_UNUSED_PARAM(cur_gray);
 				// Version with KD-tree
 				CFeatureListKDTree<typename FEAT_LIST::feature_t>  kdtree(featureList.getVector());
 
@@ -435,6 +438,7 @@ namespace mrpt {
 				const size_t img_width, const size_t img_height,
 				const int MIN_DIST_MARGIN_TO_STOP_TRACKING)
 			{
+				MRPT_UNUSED_PARAM(MIN_DIST_MARGIN_TO_STOP_TRACKING);
 				CFeatureList::iterator itFeat = trackedFeats.begin();
 				size_t n_removed = 0;
 				while (itFeat!=trackedFeats.end())
@@ -473,6 +477,7 @@ namespace mrpt {
 
 void CGenericFeatureTracker::trackFeatures_impl(const CImage &old_img,const CImage &new_img,TSimpleFeaturefList  &inout_featureList )
 {
+	MRPT_UNUSED_PARAM(old_img); MRPT_UNUSED_PARAM(new_img); MRPT_UNUSED_PARAM(inout_featureList);
 	THROW_EXCEPTION("Method not implemented by derived class!")
 }
 

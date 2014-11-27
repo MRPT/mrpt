@@ -20,7 +20,7 @@
 // MRPT implements a common interface to Kinect disregarding the
 //  actual underlying library. These macros defined in "mrpt/config.h"
 //  let us know which library is actually used:
-//   - MRPT_HAS_KINECT_CL_NUI     = 0 or 1
+//   - [DEPRECATED AS OF MRPT 1.3.0] MRPT_HAS_KINECT_CL_NUI     = 0 or 1
 //   - MRPT_HAS_KINECT_FREENECT   = 0 or 1
 
 // Depth of Kinect ranges:
@@ -374,11 +374,6 @@ namespace mrpt
 			mrpt::slam::CObservation3DRangeScan  m_latest_obs;
 			volatile uint32_t                 m_tim_latest_depth, m_tim_latest_rgb; // 0 = not updated
 			mrpt::synch::CCriticalSection     m_latest_obs_cs;
-#endif
-
-#if MRPT_HAS_KINECT_CL_NUI
-			void *m_clnui_cam;   //!< The "CLNUICamera" or NULL if closed
-			void *m_clnui_motor; //!< The "CLNUIMotor" or NULL if closed
 #endif
 
 			mrpt::utils::TCamera  	m_cameraParamsRGB;  //!< Params for the RGB camera

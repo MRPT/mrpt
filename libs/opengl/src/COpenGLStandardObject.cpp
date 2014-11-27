@@ -40,6 +40,8 @@ COpenGLStandardObjectPtr COpenGLStandardObject::Create(_GLENUM t,const std::vect
 void renderFunc(TPoint3D p)	{
 #if MRPT_HAS_OPENGL_GLUT
 	glVertex3f(p.x,p.y,p.z);
+#else
+	MRPT_UNUSED_PARAM(p);
 #endif
 }
 
@@ -97,6 +99,7 @@ void COpenGLStandardObject::readFromStream(CStream &in,int version)	{
 }
 
 bool COpenGLStandardObject::traceRay(const mrpt::poses::CPose3D &o,double &dist) const	{
+	MRPT_UNUSED_PARAM(o); MRPT_UNUSED_PARAM(dist);
 	//This object isn't intended to hold geometric properties. No trace ray should be performed on it.
 	return false;
 }
@@ -117,3 +120,15 @@ void COpenGLStandardObject::getBoundingBox(mrpt::math::TPoint3D &bb_min, mrpt::m
 	m_pose.composePoint(bb_max, bb_max);
 }
 
+
+void COpenGLStandardObject::disable(_GLENUM flag) 
+{
+	std::vector<_GLENUM>::iterator it = enabled.begin();
+	while (it!=enabled.end())
+	{
+		if (*it==flag)
+				it = enabled.erase(it);
+		else ++it;
+	}
+	CRenderizableDisplayList::notifyChange();
+}

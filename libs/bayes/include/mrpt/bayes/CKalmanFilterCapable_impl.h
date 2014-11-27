@@ -1080,9 +1080,9 @@ namespace mrpt
 
 						// Append to map of IDs <-> position in the state vector:
 						ASSERTDEB_(FEAT_SIZE>0)
-							ASSERTDEB_( 0 == ((obj.internal_getXkk().size() - VEH_SIZE) % FEAT_SIZE) ) // Sanity test
+						ASSERTDEB_( 0 == ((obj.internal_getXkk().size() - VEH_SIZE) % FEAT_SIZE) ) // Sanity test
 
-							const size_t  newIndexInMap = (obj.internal_getXkk().size() - VEH_SIZE) / FEAT_SIZE;
+						const size_t  newIndexInMap = (obj.internal_getXkk().size() - VEH_SIZE) / FEAT_SIZE;
 
 						// Inverse sensor model:
 						typename KF::KFArray_FEAT yn;

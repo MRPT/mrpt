@@ -18,7 +18,7 @@ digraph MRPT_LIBS {
 	graphslam	[label="mrpt-graphslam (.h)",URL="group__mrpt__graphslam__grp.html"];
 	
 	hmtslam		[label="mrpt-hmtslam",URL="group__mrpt__hmtslam__grp.html"];
-	reactivenav	[label="mrpt-reactivenav",URL="group__mrpt__reactivenav__grp.html"];
+	nav	        [label="mrpt-nav",URL="group__mrpt__nav__grp.html"];
 //	stereoslam	[label="mrpt-stereoslam (*)",URL="group__mrpt__stereoslam__grp.html"];
 	
 	detectors	[label="mrpt-detectors",URL="group__mrpt__detectors__grp.html"];
@@ -63,7 +63,7 @@ digraph MRPT_LIBS {
 	slam -> bayes;
 	slam -> graphs;
 
-	graphslam -> slam;
+	graphslam -> graphs;
 	
 	detectors -> vision;
 	detectors -> maps;
@@ -74,6 +74,6 @@ digraph MRPT_LIBS {
 
 //	stereoslam -> vision;
 	
-	reactivenav -> maps;
-	reactivenav -> graphs;
+	nav -> maps;
+	nav -> graphs;
 }

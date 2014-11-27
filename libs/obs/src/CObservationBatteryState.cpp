@@ -89,3 +89,35 @@ void  CObservationBatteryState::readFromStream(CStream &in, int version)
 
 }
 
+// See base class docs
+void CObservationBatteryState::getSensorPose( CPose3D &out_sensorPose ) const { 
+	out_sensorPose=CPose3D(0,0,0); 
+}
+		
+// See base class docs
+void CObservationBatteryState::setSensorPose( const CPose3D &newSensorPose ) {
+	MRPT_UNUSED_PARAM(newSensorPose);
+}
+
+void CObservationBatteryState::getDescriptionAsText(std::ostream &o) const
+{
+	CObservation::getDescriptionAsText(o);
+
+	o << format("Measured VoltageMainRobotBattery: %.02fV  isValid= %s \n",
+		voltageMainRobotBattery,
+		(voltageMainRobotBatteryIsValid == true)? "True":"False" );
+
+	o << format("Measured VoltageMainRobotComputer: %.02fV  isValid= %s \n",
+		voltageMainRobotComputer,
+		(voltageMainRobotComputerIsValid == true)? "True":"False" );
+
+	o << "VoltageOtherBatteries: \n";
+	for(CVectorDouble::Index i=0; i<voltageOtherBatteries.size(); i++)
+	{
+		o << format("Index: %d --> %.02fV  isValid= %s \n",
+		int(i),
+		voltageOtherBatteries[i],
+		(voltageOtherBatteriesValid[i] == true)? "True":"False" );
+	}
+
+}

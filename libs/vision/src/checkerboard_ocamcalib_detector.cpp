@@ -923,6 +923,7 @@ void icvFindConnectedQuads(
 	const int group_idx,
 	const int dilation )
 {
+	MRPT_UNUSED_PARAM(dilation);
 	// initializations
 	out_group.clear();
 
@@ -950,9 +951,9 @@ void icvFindConnectedQuads(
 			q = seqStack.top();
 			seqStack.pop(); // cvSeqPop( stack, &q );
 
-			for( i = 0; i < 4; i++ )
+			for( size_t k = 0; k < 4; k++ )
 			{
-				CvCBQuadPtr &neighbor = q->neighbors[i];
+				CvCBQuadPtr &neighbor = q->neighbors[k];
 
 				// If he neighbor exists and the neighbor has more than 0
 				// neighbors and the neighbor has not been classified yet.
@@ -1954,6 +1955,7 @@ int mrAugmentBestRun(
 int icvGenerateQuads( vector<CvCBQuadPtr> &out_quads, vector<CvCBCornerPtr> &out_corners,
                   const mrpt::utils::CImage &image, int flags, int dilation, bool firstRun )
 {
+	MRPT_UNUSED_PARAM(dilation);
 	// Initializations
     int quad_count = 0;
 
@@ -1964,9 +1966,6 @@ int icvGenerateQuads( vector<CvCBQuadPtr> &out_quads, vector<CvCBCornerPtr> &out
 #else
 	cv::MemStorage temp_storage = cv::MemStorage(cvCreateMemStorage(0));
 #endif
-
-	out_quads.clear();
-	out_corners.clear();
 
     CvSeq *src_contour = 0;
     CvSeq *root;  // cv::Seq<> root;  //
@@ -2069,11 +2068,11 @@ int icvGenerateQuads( vector<CvCBQuadPtr> &out_quads, vector<CvCBCornerPtr> &out
 
 
     // Allocate quad & corner buffers
-	out_quads.clear();	//*out_quads = (CvCBQuad*)cvAlloc(root->total * sizeof((*out_quads)[0]));
+	out_quads.clear();
 	for (int q=0;q<root->total;q++)
 		out_quads.push_back( CvCBQuadPtr(new CvCBQuad) );
 
-	out_corners.clear();	// *out_corners = (CvCBCorner*)cvAlloc(root->total * 4 * sizeof((*out_corners)[0]));
+	out_corners.clear();
 	for (int q=0;q< 4 * root->total;q++)
 		out_corners.push_back( CvCBCornerPtr(new CvCBCorner) );
 
@@ -2082,7 +2081,7 @@ int icvGenerateQuads( vector<CvCBQuadPtr> &out_quads, vector<CvCBCornerPtr> &out
     {
         CvCBQuadPtr &q = out_quads[quad_count];
         src_contour = *(CvSeq**)cvGetSeqElem( root, idx );
-        if( (flags & CV_CALIB_CB_FILTER_QUADS) && src_contour->v_prev != (CvSeq*)board )
+        if( (flags & cv::CALIB_CB_FILTER_QUADS) && src_contour->v_prev != (CvSeq*)board )
             continue;
 
         // Reset group ID

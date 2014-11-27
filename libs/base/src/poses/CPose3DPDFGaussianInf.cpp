@@ -45,6 +45,7 @@ CPose3DPDFGaussianInf::CPose3DPDFGaussianInf() : mean(0,0,0), cov_inv()
   ---------------------------------------------------------------*/
 CPose3DPDFGaussianInf::CPose3DPDFGaussianInf(TConstructorFlags_Poses constructor_dummy_param) : mean(UNINITIALIZED_POSE), cov_inv(UNINITIALIZED_MATRIX)
 {
+	MRPT_UNUSED_PARAM(constructor_dummy_param);
 }
 
 /*---------------------------------------------------------------

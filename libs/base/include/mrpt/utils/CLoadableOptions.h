@@ -70,10 +70,7 @@ namespace utils
 		 */
 		virtual void  saveToConfigFile(
 			mrpt::utils::CConfigFileBase &target,
-			const std::string            &section) const
-			{
-			    throw std::logic_error("The child class does not implement this method.");
-			}
+			const std::string            &section) const;
 
 		/** Behaves like saveToConfigFile, but you can pass directly a file name and a temporary CConfigFile object will be created automatically to save the file.
 		  * \sa saveToConfigFile, loadFromConfigFileName

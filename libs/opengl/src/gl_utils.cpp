@@ -121,6 +121,8 @@ void gl_utils::renderSetOfObjects(const CListOpenGLObjects &objectsToRender)
 	{
 		THROW_EXCEPTION("Runtime error!");
 	}
+#else
+	MRPT_UNUSED_PARAM(objectsToRender);
 #endif
 }
 
@@ -156,6 +158,8 @@ void gl_utils::renderTriangleWithNormal( const mrpt::math::TPoint3D &p1,const mr
 	glVertex3f(p1.x,p1.y,p1.z);
 	glVertex3f(p2.x,p2.y,p2.z);
 	glVertex3f(p3.x,p3.y,p3.z);
+#else
+	MRPT_UNUSED_PARAM(p1); MRPT_UNUSED_PARAM(p2); MRPT_UNUSED_PARAM(p3);
 #endif
 }
 void gl_utils::renderTriangleWithNormal( const mrpt::math::TPoint3Df &p1,const mrpt::math::TPoint3Df &p2,const mrpt::math::TPoint3Df &p3 )
@@ -174,6 +178,8 @@ void gl_utils::renderTriangleWithNormal( const mrpt::math::TPoint3Df &p1,const m
 	glVertex3f(p1.x,p1.y,p1.z);
 	glVertex3f(p2.x,p2.y,p2.z);
 	glVertex3f(p3.x,p3.y,p3.z);
+#else
+	MRPT_UNUSED_PARAM(p1); MRPT_UNUSED_PARAM(p2); MRPT_UNUSED_PARAM(p3);
 #endif
 }
 void gl_utils::renderQuadWithNormal( const mrpt::math::TPoint3Df &p1,const mrpt::math::TPoint3Df &p2,const mrpt::math::TPoint3Df &p3, const mrpt::math::TPoint3Df &p4 )
@@ -219,6 +225,8 @@ void gl_utils::getCurrentRenderingInfo(TRenderInfo &ri)
 
 	// PROJ * MODEL
 	ri.full_matrix = ri.proj_matrix * ri.model_matrix;
+#else
+	MRPT_UNUSED_PARAM(ri);
 #endif
 }
 
@@ -229,6 +237,8 @@ void	gl_utils::renderTextBitmap( const char *str, void *fontStyle )
 {
 #if MRPT_HAS_OPENGL_GLUT
 	while ( *str ) glutBitmapCharacter( fontStyle ,*(str++) );
+#else
+	MRPT_UNUSED_PARAM(str); MRPT_UNUSED_PARAM(fontStyle);
 #endif
 }
 
@@ -247,6 +257,7 @@ void *aux_mrptfont2glutfont(const TOpenGLFont font)
 	case MRPT_GLUT_BITMAP_HELVETICA_18: return GLUT_BITMAP_HELVETICA_18; break;
 	}
 #else
+	MRPT_UNUSED_PARAM(font);
 	return NULL;
 #endif
 }
@@ -262,6 +273,7 @@ int gl_utils::textBitmapWidth(
 	if (str.empty()) return 0;
 	return glutBitmapLength(aux_mrptfont2glutfont(font), (const unsigned char*)str.c_str() );
 #else
+	MRPT_UNUSED_PARAM(str); MRPT_UNUSED_PARAM(font);
 	return 10;
 #endif
 }
@@ -333,6 +345,10 @@ void CRenderizable::renderTextBitmap(
 		glutBitmapCharacter( glut_font_sel ,str[i] );
 
     glEnable(GL_DEPTH_TEST);
+#else
+	MRPT_UNUSED_PARAM(screen_x); MRPT_UNUSED_PARAM(screen_y);
+	MRPT_UNUSED_PARAM(str); MRPT_UNUSED_PARAM(color_r); MRPT_UNUSED_PARAM(color_g);
+	MRPT_UNUSED_PARAM(color_b); MRPT_UNUSED_PARAM(font);
 #endif
 }
 
@@ -342,9 +358,9 @@ void gl_utils::renderMessageBox(
 	const float msg_w, const float msg_h,
 	const std::string &text,
 	float text_scale,
-	const mrpt::utils::TColor back_col,
-	const mrpt::utils::TColor border_col,
-	const mrpt::utils::TColor text_col,
+	const mrpt::utils::TColor &back_col,
+	const mrpt::utils::TColor &border_col,
+	const mrpt::utils::TColor &text_col,
 	const float border_width,
 	const std::string & text_font,
 	mrpt::opengl::TOpenGLFontStyle text_style,
@@ -449,6 +465,14 @@ void gl_utils::renderMessageBox(
 
 	glMatrixMode(GL_PROJECTION);
 	glPopMatrix();
+#else
+	MRPT_UNUSED_PARAM(msg_x); MRPT_UNUSED_PARAM(msg_y);
+	MRPT_UNUSED_PARAM(msg_w); MRPT_UNUSED_PARAM(msg_h);
+	MRPT_UNUSED_PARAM(text); MRPT_UNUSED_PARAM(text_scale);
+	MRPT_UNUSED_PARAM(back_col); MRPT_UNUSED_PARAM(border_col);
+	MRPT_UNUSED_PARAM(text_col); MRPT_UNUSED_PARAM(border_width);
+	MRPT_UNUSED_PARAM(text_font); MRPT_UNUSED_PARAM(text_style);
+	MRPT_UNUSED_PARAM(text_spacing); MRPT_UNUSED_PARAM(text_kerning);
 #endif
 }
 
@@ -558,6 +582,8 @@ void gl_utils::glSetFont( const std::string & fontname ){
 #if MRPT_HAS_OPENGL_GLUT
     if(Internal::data.fonts.count(fontname) > 0)
         Internal::data.currentFontName = fontname;
+#else
+	MRPT_UNUSED_PARAM(fontname);
 #endif
 }
 
@@ -647,6 +673,8 @@ mrpt::utils::TPixelCoordf gl_utils::glDrawText(const std::string& text, const do
 
     return mrpt::utils::TPixelCoordf(textScale*max_total, textScale*(lines+1)*spacing);
 #else
+	MRPT_UNUSED_PARAM(text); MRPT_UNUSED_PARAM(textScale); MRPT_UNUSED_PARAM(style);
+	MRPT_UNUSED_PARAM(spacing); MRPT_UNUSED_PARAM(kerning);
 	THROW_EXCEPTION("MRPT built without OpenGL")
 #endif
 }
@@ -682,6 +710,8 @@ mrpt::utils::TPixelCoordf gl_utils::glGetExtends(const std::string & text,  cons
     max_total = std::max(total, max_total);
     return mrpt::utils::TPixelCoordf(textScale*max_total, textScale*(lines+1)*spacing);
 #else
+	MRPT_UNUSED_PARAM(text); MRPT_UNUSED_PARAM(textScale);
+	MRPT_UNUSED_PARAM(spacing); MRPT_UNUSED_PARAM(kerning);
 	THROW_EXCEPTION("MRPT built without OpenGL")
 #endif
 }

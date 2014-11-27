@@ -82,12 +82,10 @@ ${CMAKE_MRPT_BUILD_SHARED_LIB}
 #define MRPT_HAS_DUO3D        ${CMAKE_MRPT_HAS_DUO3D}
 
 /* Kinect SDK variants: */
-#define MRPT_HAS_KINECT_CL_NUI           ${CMAKE_MRPT_HAS_CL_NUI}
 #define MRPT_HAS_KINECT_FREENECT         ${CMAKE_MRPT_HAS_FREENECT}
 #define MRPT_HAS_KINECT_FREENECT_SYSTEM  ${CMAKE_MRPT_HAS_FREENECT_SYSTEM}
 
 /* OpenNI2 lib: */
-#define MRPT_HAS_KINECT_CL_NUI           ${CMAKE_MRPT_HAS_CL_NUI}
 #define MRPT_HAS_OPENNI2                 ${CMAKE_MRPT_HAS_OPENNI2}
 
 /* PCL (The pointclouds library): */
@@ -187,6 +185,9 @@ ${CMAKE_MRPT_BUILD_SHARED_LIB}
 
 /** Whether libdc1394-2 is installed in the system.  */
 #define MRPT_HAS_LIBDC1394_2 ${CMAKE_MRPT_HAS_LIBDC1394_2}
+
+/** Whether libudev-dev is installed in the system.  */
+#define MRPT_HAS_LIBUDEV ${CMAKE_MRPT_HAS_LIBUDEV}
 
 /** Whether ffmpeg C libraries are installed in the system or (in win32), their precompiled libraries.
   */

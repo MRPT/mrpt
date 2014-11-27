@@ -85,7 +85,6 @@ void init_fonts_list()
 
 #if 1  // Normal operation: Load fonts and uncompress them:
 
-    	list_registered_fonts.clear();
 		#define LOAD_FONT(FONTNAME) \
 		{ \
 			vector_byte tmpBuf(sizeof(mrpt_font_gz_##FONTNAME)); \

@@ -73,7 +73,7 @@ namespace mrpt
 			static inline void pseudo_exp(const array_t &x, CPose2D &P) { exp(x,P); }
 
 			/** Logarithm map in SE(2) */
-			static inline void ln(const CPose2D &P, array_t &x) { x[0] = P.x(); x[1] = P.y(); x[2] = P.phi();  }
+			static inline void ln(const CPose2D &P, array_t &x) { x[0] = P.x(); x[1] = P.y(); x[2] = P.phi();  } //-V537
 
 			/** A pseudo-Logarithm map in SE(2), where the output = [X,Y, Ln(ROT)], that is, the normal
 			  *  SO(2) logarithm is used for the rotation components, but the translation is left unmodified.

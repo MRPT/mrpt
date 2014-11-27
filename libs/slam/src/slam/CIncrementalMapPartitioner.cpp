@@ -147,7 +147,6 @@ unsigned int CIncrementalMapPartitioner::addMapFrame(
 	CPose3DPDFPtr						posePDF_i, posePDF_j;
 	CSensoryFramePtr					sf_i, sf_j;
 	CMultiMetricMap						*map_i=NULL,*map_j=NULL;
-	int									debug_CheckPoint = 0;
 	mrpt::utils::TMatchingPairList		corrs;
 	static CPose3D						nullPose(0,0,0);
 
@@ -196,21 +195,15 @@ unsigned int CIncrementalMapPartitioner::addMapFrame(
 	newMetricMap.m_landmarksMap->insertionOptions.insert_Landmarks_from_range_scans  = false;
 	frame->insertObservationsInto( newMetricMap.m_landmarksMap );
 
-	debug_CheckPoint=1;
-
 	// Add to corresponding vectors:
 	m_individualFrames.insert(robotPose, frame);
 	// Already added to "m_individualMaps" above
-
-	debug_CheckPoint=2;
 
 	// Ampliar la matriz de adyacencias:
 	// -----------------------------------------------------------------
 	n = m_A.getColCount();
 	n++;
 	m_A.setSize(n,n);
-
-	debug_CheckPoint=3;
 
 	ASSERT_(m_individualMaps.size() == n);
 	ASSERT_(m_individualFrames.size() == n);
@@ -226,8 +219,6 @@ unsigned int CIncrementalMapPartitioner::addMapFrame(
 	// ------------------------------------------------------------------------------
 	bool useMapOrSF = options.useMapMatching;
 
-	debug_CheckPoint=4;
-
 	// Calcular los nuevos matchings y meterlos en la matriz:
 	// ----------------------------------------------------------------
 	//for (i=n-1;i<n;i++)
@@ -240,23 +231,16 @@ unsigned int CIncrementalMapPartitioner::addMapFrame(
 		// And its points map:
 		map_i = &m_individualMaps[i];
 
-		debug_CheckPoint=5;
-
-//			for (j=0;j<n;j++)
 		for (j=0;j<n-1;j++)
 		{
 			// Get node "j":
 			m_individualFrames.get(j, posePDF_j, sf_j);
 			posePDF_j->getMean( pose_j );
 
-			debug_CheckPoint=6;
-
 			relPose = pose_j - pose_i;
 
 			// And its points map:
 			map_j = &m_individualMaps[j];
-
-			debug_CheckPoint=66;
 
 			// Compute matching ratio:
 			if (useMapOrSF)
@@ -280,8 +264,6 @@ unsigned int CIncrementalMapPartitioner::addMapFrame(
 
 	for (i=0;i<n-1;i++)  // Solo ejecutar para "i=n-1" la ultima fila/columna que esta vacia
 	{
-		debug_CheckPoint=8;
-
 		// Get node "i":
 		m_individualFrames.get(i, posePDF_i, sf_i);
 		posePDF_i->getMean(pose_i);
@@ -289,15 +271,11 @@ unsigned int CIncrementalMapPartitioner::addMapFrame(
 		// And its points map:
 		map_i = &m_individualMaps[i];
 
-		debug_CheckPoint=9;
-
 		j=n-1; //for (j=n-1;j<n;j++)
 		{
 			// Get node "j":
 			m_individualFrames.get(j, posePDF_j, sf_j);
 			posePDF_j->getMean(pose_j);
-
-			debug_CheckPoint=10;
 
 			relPose = pose_j - pose_i;
 
@@ -318,14 +296,8 @@ unsigned int CIncrementalMapPartitioner::addMapFrame(
 				//m_A(i,j) = sf_i->likelihoodWith(sf_j.pointer());
 				m_A(i,j) = observationsOverlap(sf_i, sf_j, &relPose );
 			}
-
-			debug_CheckPoint=12;
-
 		} // for j
-
 	} // for i
-
-	debug_CheckPoint=13;
 
 	// Self-similatity: Not used
 	m_A(n-1,n-1) = 0;
@@ -336,8 +308,6 @@ unsigned int CIncrementalMapPartitioner::addMapFrame(
 		for (j=i+1;j<n;j++)
 			m_A(i,j) = m_A(j,i) = 0.5f * (m_A(i,j) + m_A(j,i) );
 
-	debug_CheckPoint=14;
-
 	/* DEBUG: Guardar la matriz: * /
 	A.saveToTextFile("debug_matriz.txt",1);
 	/ **/
@@ -346,8 +316,6 @@ unsigned int CIncrementalMapPartitioner::addMapFrame(
 	// -----------------------------------------------------------------
 	for (i=0;i<n;i++)
 		m_modified_nodes[i] = m_A(i,n-1) > 0;
-
-	debug_CheckPoint=15;
 
 	if (m_last_last_partition_are_new_ones)
 	{
@@ -368,7 +336,7 @@ unsigned int CIncrementalMapPartitioner::addMapFrame(
 	return n-1; // Index of the new node
 
 	MRPT_END_WITH_CLEAN_UP( \
-		cout << "Unexpected runtime error at checkPoint="<< debug_CheckPoint << "\n"; \
+		cout << "Unexpected runtime error:\n"; \
 		cout << "\tn=" << n << "\n"; \
 		cout << "\ti=" << i << "\n"; \
 		cout << "\tj=" << j << "\n"; \

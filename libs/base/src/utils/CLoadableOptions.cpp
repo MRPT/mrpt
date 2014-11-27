@@ -30,6 +30,14 @@ void  CLoadableOptions::loadFromConfigFileName(
 	this->loadFromConfigFile(f,section);
 }
 
+void  CLoadableOptions::saveToConfigFile(
+	mrpt::utils::CConfigFileBase &target,
+	const std::string            &section) const
+{
+	MRPT_UNUSED_PARAM(target); MRPT_UNUSED_PARAM(section);
+	throw std::logic_error("The child class does not implement this method.");
+}
+
 void  CLoadableOptions::saveToConfigFileName(
 	const std::string		&config_file,
 	const std::string		&section) const

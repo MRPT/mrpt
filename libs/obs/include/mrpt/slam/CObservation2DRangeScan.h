@@ -156,18 +156,12 @@ namespace slam
 		  */
 		bool isPlanarScan(const double tolerance = 0) const;
 
-		/** A general method to retrieve the sensor pose on the robot.
-		  *  Note that most sensors will return a full (6D) CPose3D, but see the derived classes for more details or special cases.
-		  * \sa setSensorPose
-		  */
+		// See base class docs
 		void getSensorPose( CPose3D &out_sensorPose ) const { out_sensorPose = sensorPose; }
-
-
-		/** A general method to change the sensor pose on the robot.
-		  *  Note that most sensors will use the full (6D) CPose3D, but see the derived classes for more details or special cases.
-		  * \sa getSensorPose
-		  */
+		// See base class docs
 		void setSensorPose( const CPose3D &newSensorPose ) { sensorPose = newSensorPose; }
+		// See base class docs
+		virtual void getDescriptionAsText(std::ostream &o) const;
 
 		/** A general method to truncate the scan by defining a minimum valid distance and a maximum valid angle as well as minimun and maximum heights
 		   (NOTE: the laser z-coordinate must be provided).

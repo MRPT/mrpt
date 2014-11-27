@@ -557,7 +557,7 @@ namespace mrpt
 			void octree_get_graphics_boundingboxes(
 				mrpt::opengl::CSetOfObjects &gl_bb,
 				const double lines_width = 1,
-				const TColorf lines_color = TColorf(1,1,1),
+				const TColorf &lines_color = TColorf(1,1,1),
 				const bool draw_solid_boxes = false ) const
 			{
 				octree_assure_uptodate();

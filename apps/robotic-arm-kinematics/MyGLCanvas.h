@@ -50,7 +50,7 @@ public:
 	}
 };
 
-#endif 
+#endif
 
 #endif // MYGLCANVAS_H
 

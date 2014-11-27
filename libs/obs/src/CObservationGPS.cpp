@@ -13,6 +13,7 @@
 #include <mrpt/utils/CStdOutStream.h>
 #include <mrpt/utils/CStream.h>
 #include <mrpt/math/matrix_serialization.h> // for << of matrices
+#include <mrpt/utils/CMemoryStream.h>
 
 using namespace std;
 using namespace mrpt;
@@ -281,7 +282,7 @@ void  CObservationGPS::readFromStream(CStream &in, int version)
 /*---------------------------------------------------------------
 					dumpToStream
  ---------------------------------------------------------------*/
-void  CObservationGPS::dumpToStream( CStream &out )
+void  CObservationGPS::dumpToStream( CStream &out ) const 
 {
 	out.printf("\n--------------------- [CObservationGPS] Dump: -----------------------\n");
 
@@ -413,14 +414,15 @@ void  CObservationGPS::dumpToStream( CStream &out )
 	out.printf("---------------------------------------------------------------------\n\n");
 }
 
-/*---------------------------------------------------------------
-					dumpToStream
- ---------------------------------------------------------------*/
-void  CObservationGPS::dumpToConsole()
+void  CObservationGPS::dumpToConsole(std::ostream &o) const
 {
-	dumpToStream( gps_my_cout );
+	mrpt::utils::CMemoryStream memStr;
+	this->dumpToStream( memStr );
+	
+	if (memStr.getTotalBytesCount()) {
+		o.write((const char*)memStr.getRawBufferData(),memStr.getTotalBytesCount());
+	}
 }
-
 
 // Ctor:
 CObservationGPS::TUTCTime::TUTCTime() :
@@ -501,4 +503,16 @@ mrpt::system::TTimeStamp CObservationGPS::TUTCTime::getAsTimestamp(const mrpt::s
     parts.second = this->sec;
 
     return buildTimestampFromParts(parts);
+}
+
+void CObservationGPS::getDescriptionAsText(std::ostream &o) const
+{
+	CObservation::getDescriptionAsText(o);
+
+	if (has_GGA_datum)
+		std::cout << std::endl << "Satellite time: " << format("%02u:%02u:%02.3f",GGA_datum.UTCTime.hour,GGA_datum.UTCTime.minute,GGA_datum.UTCTime.sec) << std::endl;
+
+	std::cout << "Sensor position on the robot: " << sensorPose << std::endl;
+
+	this->dumpToConsole();
 }

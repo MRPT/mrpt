@@ -19,6 +19,7 @@
 #include <mrpt/opengl/CSetOfLines.h>
 #include <mrpt/opengl/CEllipsoid.h>
 #include <mrpt/opengl/stock_objects.h>
+#include "legend.xpm"
 
 using namespace Eigen;
 using namespace std;

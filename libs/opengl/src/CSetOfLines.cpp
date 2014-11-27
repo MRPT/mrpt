@@ -168,3 +168,17 @@ void CSetOfLines::getBoundingBox(mrpt::math::TPoint3D &bb_min, mrpt::math::TPoin
 	m_pose.composePoint(bb_min, bb_min);
 	m_pose.composePoint(bb_max, bb_max);
 }
+
+
+void CSetOfLines::getLineByIndex(size_t index,double &x0,double &y0,double &z0,double &x1,double &y1,double &z1) const
+{
+	ASSERT_(index<mSegments.size())
+	const mrpt::math::TPoint3D &p0 = mSegments[index].point1;
+	const mrpt::math::TPoint3D &p1 = mSegments[index].point2;
+	x0 = p0.x;
+	y0 = p0.y;
+	z0 = p0.z;
+	x1 = p1.x;
+	y1 = p1.y;
+	z1 = p1.z;
+}

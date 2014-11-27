@@ -27,26 +27,6 @@
 
 #include <mrpt/gui/WxUtils.h>
 
-
-
-#define WX_START_TRY \
-    try \
-    {
-
-
-#define WX_END_TRY \
-    } \
-	catch(std::exception &e) \
-    { \
-        wxMessageBox( wxString(e.what(),wxConvUTF8), wxT("Exception"), wxOK, this); \
-    } \
-    catch(...) \
-    { \
-        wxMessageBox( _("Untyped exception!"), _("Exception"), wxOK, this); \
-    }
-
-
-
 // The default configuration strings:
 std::string EDIT_internalCfgReactive;
 std::string EDIT_internalCfgRobot;
@@ -97,9 +77,8 @@ using namespace std;
 
 //wxImage * auxMRPTImage2wxImage( const CImage &img );
 
-
-#include <mrpt/reactivenav/CReactiveNavigationSystem.h>
-using namespace mrpt::reactivenav;
+#include <mrpt/nav/reactive/CReactiveNavigationSystem.h>
+using namespace mrpt::nav;
 
 CReactiveNavigationSystem		*reacNavObj=NULL;
 

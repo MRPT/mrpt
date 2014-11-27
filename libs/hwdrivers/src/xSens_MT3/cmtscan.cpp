@@ -121,7 +121,7 @@ bool cmtScanPort(CmtPortInfo& portInfo, uint32_t baud, uint32_t singleScanTimeou
 
 bool cmtScanPorts(List<CmtPortInfo>& ports,uint32_t baudrate, uint32_t singleScanTimeout, uint32_t scanTries)
 {
-	CmtPortInfo current = {0,0,0};
+	CmtPortInfo current;
 	ports.clear();	// clear the list
 #ifdef _WIN32
 	HDEVINFO hDevInfo;
@@ -168,7 +168,7 @@ bool cmtScanPorts(List<CmtPortInfo>& ports,uint32_t baudrate, uint32_t singleSca
 			//if (_strnicmp(buffer,"xsens",5))
 			//	scan = true;
 			//else
-			if (!_strnicmp(buffer,"(Standard port types)",20))
+			if (!_strnicmp(buffer,"(Standard port types)",strlen("(Standard port types)")))
 				continue;
 			if (_strnicmp(buffer,"xsens",5))	// if this is NOT an xsens device, treat it as a BT device
 			{

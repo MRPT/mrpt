@@ -42,6 +42,7 @@ bool  scanmatching::leastSquareErrorRigidTransformation6DRANSAC(
 	const bool 							forceScaleToUnity
 	)
 {
+	MRPT_UNUSED_PARAM(ransac_maxSetSizePct);
 	MRPT_START
 
 	unsigned int N = (unsigned int)in_correspondences.size();

@@ -102,8 +102,7 @@ void  CSetOfObjects::initializeAllTextures()
 {
 #if MRPT_HAS_OPENGL_GLUT
 	CListOpenGLObjects::iterator it;
-	//deque<mrpt::opengl::CRenderizable*>::iterator it;
-	for (it=m_objects.begin();it!=m_objects.end();it++)
+	for (it=m_objects.begin();it!=m_objects.end();++it++)
 	{
 		if ( IS_DERIVED(*it, CTexturedObject ))
 			getAs<CTexturedObject>(*it)->loadTextureInOpenGL();

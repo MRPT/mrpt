@@ -324,6 +324,7 @@ XsensResultValue Cmt1s::open(  const char *portName,
 						uint32_t readBufSize,
 						uint32_t writeBufSize)
 {
+	MRPT_UNUSED_PARAM(readBufSize); MRPT_UNUSED_PARAM(writeBufSize);
 	m_endTime = 0;
 
 	CMT1LOG("L1: Open port %s at %d baud\n", portName, baudRate);
@@ -466,7 +467,7 @@ XsensResultValue Cmt1s::open (	const uint32_t portNumber,
 	char comFileName[32];
 
 	// Create file name
-	sprintf(comFileName, "COM%d", portNumber);
+	sprintf(comFileName, "COM%u", portNumber);
 
 	return Cmt1s::open(comFileName, baudRate, readBufSize, writeBufSize);
 }
@@ -717,7 +718,6 @@ XsensResultValue Cmt1f::close (void)
 	m_readPos = 0;
 	m_writePos = 0;
 	m_reading = true;
-	m_isOpen = false;
 	m_fileSize = 0;
 	m_readOnly = false;
 
@@ -770,7 +770,6 @@ XsensResultValue Cmt1f::closeAndDelete(void)
 	m_readPos = 0;
 	m_writePos = 0;
 	m_reading = true;
-	m_isOpen = false;
 	m_fileSize = 0;
 	m_readOnly = false;
 
@@ -847,6 +846,7 @@ XsensResultValue Cmt1f::create (const wchar_t* filename)
 	m_reading = true;
 	m_readOnly = false;
 #else
+	MRPT_UNUSED_PARAM(filename);
 	char tFilename[CMT_MAX_FILENAME_LENGTH*2];
 	wcstombs(tFilename,m_filename_w,CMT_MAX_FILENAME_LENGTH);
 	XsensResultValue res = create(tFilename);

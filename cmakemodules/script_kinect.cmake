@@ -1,6 +1,6 @@
 # Look for the libusb1 lib
 # ------------------------------
-OPTION(DISABLE_LIBUSB "Force to not detecting the libusb library" OFF)
+OPTION(DISABLE_LIBUSB "Force to not detect the libusb library" OFF)
 mark_as_advanced(DISABLE_LIBUSB)
 
 IF (NOT DISABLE_LIBUSB)
@@ -12,6 +12,21 @@ IF (NOT DISABLE_LIBUSB)
 ELSE (NOT DISABLE_LIBUSB)
 	SET(PKG_LIBUSB10_FOUND "")
 ENDIF (NOT DISABLE_LIBUSB)
+
+# Look for a system version of libfreenect
+# -----------------------------------------
+OPTION(DISABLE_DETECT_LIBFREENECT "Force to not detect system libfreenect library" OFF)
+mark_as_advanced(DISABLE_DETECT_LIBFREENECT)
+
+IF (NOT DISABLE_DETECT_LIBFREENECT)
+	IF(UNIX)
+		IF(PKG_CONFIG_FOUND)
+			PKG_CHECK_MODULES(PKG_LIBFREENECT ${_QUIET} libfreenect)
+		ENDIF(PKG_CONFIG_FOUND)
+	ENDIF(UNIX)
+ELSE (NOT DISABLE_DETECT_LIBFREENECT)
+	SET(PKG_LIBFREENECT_FOUND "")
+ENDIF (NOT DISABLE_DETECT_LIBFREENECT)
 
 
 # Build the XBox Kinect support (via libfreenect)
@@ -28,7 +43,6 @@ ELSE(UNIX)
 ENDIF(UNIX)
 
 SET(CMAKE_MRPT_HAS_KINECT 0)  # Will be set to 1 only if all conditions are OK
-SET(CMAKE_MRPT_HAS_CL_NUI 0)
 SET(CMAKE_MRPT_HAS_FREENECT 0)
 SET(CMAKE_MRPT_HAS_FREENECT_SYSTEM 0) # This means libfreenect is already built somewhere else in the system.
 
@@ -41,29 +55,36 @@ IF(BUILD_KINECT)
 		IF(NOT PKG_CONFIG_FOUND)
 			MESSAGE(SEND_ERROR "Kinect support: pkg-config is required! Please install it.")
 		ELSE(NOT PKG_CONFIG_FOUND)
-			IF(PKG_LIBUSB10_FOUND)
+			# If a system version is found, use it:
+			IF(PKG_LIBFREENECT_FOUND)
+					#APPEND_MRPT_LIBS(${PKG_LIBFREENECT_LIBRARIES})
+					SET(FREENECT_LIBS ${PKG_LIBFREENECT_LIBRARIES})
+					IF($ENV{VERBOSE})					
+						MESSAGE(STATUS "- PKG_LIBFREENECT_LIBRARIES: ${PKG_LIBFREENECT_LIBRARIES}")
+					ENDIF($ENV{VERBOSE})					
+
 				SET(CMAKE_MRPT_HAS_KINECT 1)
 				SET(CMAKE_MRPT_HAS_FREENECT 1)
-				#MESSAGE(STATUS "PKG_LIBUSB10_LIBRARIES: ${PKG_LIBUSB10_LIBRARIES}")
-				APPEND_MRPT_LIBS(${PKG_LIBUSB10_LIBRARIES})
-			ELSE(PKG_LIBUSB10_FOUND)
-				MESSAGE(SEND_ERROR "BUILD_KINECT requires libusb-1.0. Install it or disable BUILD_KINECT")
-			ENDIF(PKG_LIBUSB10_FOUND)
+				SET(CMAKE_MRPT_HAS_FREENECT_SYSTEM 1)
+			ELSE(PKG_LIBFREENECT_FOUND)
+				IF(PKG_LIBUSB10_FOUND)
+					SET(CMAKE_MRPT_HAS_KINECT 1)
+					SET(CMAKE_MRPT_HAS_FREENECT 1)
+
+					APPEND_MRPT_LIBS(${PKG_LIBUSB10_LIBRARIES})
+					IF($ENV{VERBOSE})					
+						MESSAGE(STATUS "- PKG_LIBUSB10_LIBRARIES: ${PKG_LIBUSB10_LIBRARIES}")
+					ENDIF($ENV{VERBOSE})					
+				ELSE(PKG_LIBUSB10_FOUND)
+					MESSAGE(SEND_ERROR "BUILD_KINECT requires libusb-1.0. Install it or disable BUILD_KINECT")
+				ENDIF(PKG_LIBUSB10_FOUND)
+			ENDIF(PKG_LIBFREENECT_FOUND)
+
 		ENDIF(NOT PKG_CONFIG_FOUND)
 	ELSEIF(WIN32)
-		# Kinect for Win32: CL NUI or external libfreenect built by the user ---------
-
-		SET(BUILD_KINECT_USE_CLNUI    OFF CACHE BOOL "Kinect using CL NUI SDK")
+		# Kinect for Win32: libfreenect ---------
 		SET(BUILD_KINECT_USE_FREENECT ON  CACHE BOOL "Kinect using OpenKinect's libfreenect")
 
-		IF((NOT BUILD_KINECT_USE_FREENECT AND NOT BUILD_KINECT_USE_CLNUI) OR (BUILD_KINECT_USE_FREENECT AND BUILD_KINECT_USE_CLNUI))
-			MESSAGE(SEND_ERROR
-				"You must select the Kinect preferred SDK: OpenKinect freenect or CL NUI\n"
-				"Mark just one from BUILD_KINECT_USE_CLNUI or BUILD_KINECT_USE_CLNUI, or disable BUILD_KINECT.\n"
-				"For more info read: http://www.mrpt.org/Kinect_and_MRPT\n")
-		ENDIF((NOT BUILD_KINECT_USE_FREENECT AND NOT BUILD_KINECT_USE_CLNUI) OR (BUILD_KINECT_USE_FREENECT AND BUILD_KINECT_USE_CLNUI))
-
-		# With external Libfreenect:
 		IF (BUILD_KINECT_USE_FREENECT)
 			# Find packages needed to build library in Windows
 			find_package(libusb-1.0 REQUIRED)
@@ -84,29 +105,6 @@ IF(BUILD_KINECT)
 			endif (LIBUSB_1_FOUND)
 
 		ENDIF (BUILD_KINECT_USE_FREENECT)
-
-		# With the CL NUI SDK:
-		IF (BUILD_KINECT_USE_CLNUI)
-			FIND_PATH(BASE_CLNUI_SDK_DIR  "Code Laboratories/CL NUI Platform/SDK/")
-			MARK_AS_ADVANCED(BASE_CLNUI_SDK_DIR)
-
-			IF(BASE_CLNUI_SDK_DIR)
-				SET(CLNUI_SDK_DIR "${BASE_CLNUI_SDK_DIR}/Code Laboratories/CL NUI Platform/SDK/" CACHE PATH "Path to CL NUI Platform/SDK/ directory")
-				MESSAGE(STATUS "Kinect CL NUI SDK found in: ${CLNUI_SDK_DIR}")
-			ELSE(BASE_CLNUI_SDK_DIR)
-				SET(CLNUI_SDK_DIR "" CACHE PATH "Path to CL NUI Platform/SDK/ directory")
-			ENDIF(BASE_CLNUI_SDK_DIR)
-
-			IF (EXISTS "${CLNUI_SDK_DIR}/Include/CLNUIDevice.h")
-				SET(CMAKE_MRPT_HAS_KINECT 1)
-				SET(CMAKE_MRPT_HAS_CL_NUI 1)
-
-				INCLUDE_DIRECTORIES("${CLNUI_SDK_DIR}/Include")
-				APPEND_MRPT_LIBS("${CLNUI_SDK_DIR}/Lib/CLNUIDevice.lib")
-			ELSE (EXISTS "${CLNUI_SDK_DIR}/Include/CLNUIDevice.h")
-				MESSAGE(SEND_ERROR "*** ERROR *** CL NUI Platform needed for Kinect. Please, install it and set CLNUI_SDK_DIR or disable BUILD_KINECT")
-			ENDIF (EXISTS "${CLNUI_SDK_DIR}/Include/CLNUIDevice.h")
-		ENDIF (BUILD_KINECT_USE_CLNUI)
 
 	ELSE(UNIX)
 		MESSAGE(SEND_ERROR "Sorry! Kinect is supported on Unix or Win32 only. Please, disable BUILD_KINECT.")

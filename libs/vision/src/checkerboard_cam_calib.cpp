@@ -58,6 +58,41 @@ bool mrpt::vision::checkerBoardCameraCalibration(
 	return ret;
 }
 
+#if MRPT_HAS_OPENCV
+// JL says:  This was copied here since it seems OpenCV 2.3 had a broken <opencv2/core/eigen.hpp> header.
+//  It should be removed in the future when 2.3 becomes too old to support.
+namespace cv {
+template<typename _Tp, int _rows, int _cols, int _options, int _maxRows, int _maxCols>
+void my_cv2eigen( const Mat& src,
+			   Eigen::Matrix<_Tp, _rows, _cols, _options, _maxRows, _maxCols>& dst )
+{
+	CV_DbgAssert(src.rows == _rows && src.cols == _cols);
+	if( !(dst.Flags & Eigen::RowMajorBit) )
+	{
+		Mat _dst(src.cols, src.rows, DataType<_Tp>::type,
+				 dst.data(), (size_t)(dst.stride()*sizeof(_Tp)));
+		if( src.type() == _dst.type() )
+			transpose(src, _dst);
+		else if( src.cols == src.rows )
+		{
+			src.convertTo(_dst, _dst.type());
+			transpose(_dst, _dst);
+		}
+		else
+			Mat(src.t()).convertTo(_dst, _dst.type());
+		CV_DbgAssert(_dst.data == (uchar*)dst.data());
+	}
+	else
+	{
+		Mat _dst(src.rows, src.cols, DataType<_Tp>::type,
+				 dst.data(), (size_t)(dst.stride()*sizeof(_Tp)));
+		src.convertTo(_dst, _dst.type());
+		CV_DbgAssert(_dst.data == (uchar*)dst.data());
+	}
+}
+}
+#endif
+
 /* -------------------------------------------------------
 				checkerBoardCameraCalibration
    ------------------------------------------------------- */
@@ -74,6 +109,7 @@ bool mrpt::vision::checkerBoardCameraCalibration(
 	bool			   useScaramuzzaAlternativeDetector
 	)
 {
+	MRPT_UNUSED_PARAM(skipDrawDetectedImgs);
 #if MRPT_HAS_OPENCV
 	try
 	{
@@ -91,10 +127,25 @@ bool mrpt::vision::checkerBoardCameraCalibration(
 		const unsigned CORNERS_COUNT = check_size_x * check_size_y;
 		const CvSize check_size = cvSize(check_size_x, check_size_y);
 
+		// Fill the pattern of expected pattern points only once out of the loop:
+		vector<cv::Point3f> pattern_obj_points(CORNERS_COUNT);
+		{
+			unsigned int y,k;
+			for( y = 0, k = 0; y < check_size_y; y++ )
+			{
+				for( unsigned int x = 0; x < check_size_x; x++, k++ )
+				{
+					pattern_obj_points[k].x =-check_squares_length_X_meters * x;  // The "-" is for convenience, so the camera poses appear with Z>0
+					pattern_obj_points[k].y = check_squares_length_Y_meters * y;
+					pattern_obj_points[k].z = 0;
+				}
+			}
+		}
+
 		// First: Assure all images are loaded:
 		// -------------------------------------------
 		TCalibrationImageList::iterator it;
-		for (it=images.begin();it!=images.end();it++)
+		for (it=images.begin();it!=images.end();++it)
 		{
 			TImageCalibData	&dat = it->second;
 
@@ -114,20 +165,14 @@ bool mrpt::vision::checkerBoardCameraCalibration(
 
 		// For each image, find checkerboard corners:
 		// -----------------------------------------------
-		//const unsigned int N = images.size();
-		unsigned int i;
+		vector<vector<cv::Point3f> > objectPoints;  // final container for detected stuff
+		vector<vector<cv::Point2f> > imagePoints;   // final container for detected stuff
 
-		vector<CvPoint2D64f> corners_list; //  = new CvPoint2D32f[ N * CORNERS_COUNT];
-        unsigned int  valid_detected_imgs = 0;
-
-        CvSize	imgSize = cvSize(0,0);
-
+		unsigned int  valid_detected_imgs = 0;
 		vector<string>   pointsIdx2imageFile;
+		cv::Size imgSize(0,0);
 
-		int find_chess_flags = CV_CALIB_CB_ADAPTIVE_THRESH;
-		if (normalize_image)
-			find_chess_flags |= CV_CALIB_CB_NORMALIZE_IMAGE;
-
+		unsigned int i;
 		for (i=0,it=images.begin();it!=images.end();it++,i++)
 		{
 			TImageCalibData	&dat = it->second;
@@ -137,7 +182,7 @@ bool mrpt::vision::checkerBoardCameraCalibration(
 
 			if (!i)
 			{
-				imgSize = cvSize(img_gray.getWidth(),img_gray.getHeight() );
+				imgSize = cv::Size(img_gray.getWidth(),img_gray.getHeight() );
 				out_camera_params.ncols = imgSize.width;
 				out_camera_params.nrows = imgSize.height;
 			}
@@ -156,7 +201,7 @@ bool mrpt::vision::checkerBoardCameraCalibration(
 
 			corners_count = CORNERS_COUNT;
 
-			corners_list.resize( (1+valid_detected_imgs)*CORNERS_COUNT );
+			vector<cv::Point2f> this_img_pts(CORNERS_COUNT);  // Temporary buffer for points, to be added if the points pass the checks.
 
 			dat.detected_corners.clear();
 
@@ -176,13 +221,12 @@ bool mrpt::vision::checkerBoardCameraCalibration(
 			ASSERT_(detectedCoords.size()<=CORNERS_COUNT);
 			for (size_t p=0;p<detectedCoords.size();p++)
 			{
-				corners_list[valid_detected_imgs*CORNERS_COUNT+p].x = detectedCoords[p].x;
-				corners_list[valid_detected_imgs*CORNERS_COUNT+p].y = detectedCoords[p].y;
+				this_img_pts[p].x = detectedCoords[p].x;
+				this_img_pts[p].y = detectedCoords[p].y;
 			}
 
 			if (corners_found && corners_count!=CORNERS_COUNT)
 				corners_found = false;
-
 
 			cout << format("Img %s: %s\n", mrpt::system::extractFileName(it->first).c_str() , corners_found ? "DETECTED" : "NOT DETECTED" );
 
@@ -193,7 +237,7 @@ bool mrpt::vision::checkerBoardCameraCalibration(
 				unsigned int k;
 				for( y = 0, k = 0; y < check_size.height; y++ )
 					for( x = 0; x < check_size.width; x++, k++ )
-						dat.detected_corners.push_back( mrpt::utils::TPixelCoordf( corners_list[valid_detected_imgs*CORNERS_COUNT + k].x, corners_list[valid_detected_imgs*CORNERS_COUNT + k].y ) );
+						dat.detected_corners.push_back( mrpt::utils::TPixelCoordf( this_img_pts[k].x, this_img_pts[k].y ) );
 
 				// Draw the checkerboard in the corresponding image:
 				// ----------------------------------------------------
@@ -224,8 +268,8 @@ bool mrpt::vision::checkerBoardCameraCalibration(
 						for( x = 0; x < check_size.width; x++, k++ )
 						{
 							CvPoint pt;
-							pt.x = cvRound(corners_list[valid_detected_imgs*CORNERS_COUNT + k].x);
-							pt.y = cvRound(corners_list[valid_detected_imgs*CORNERS_COUNT + k].y);
+							pt.x = cvRound(this_img_pts[k].x);
+							pt.y = cvRound(this_img_pts[k].y);
 
 							if( k != 0 ) cvLine( rgb_img, prev_pt, pt, color );
 
@@ -240,11 +284,12 @@ bool mrpt::vision::checkerBoardCameraCalibration(
 						}
 					}
 				}
-			}
 
-			if( corners_found )
-			{
+				// Accept this image as good:
 				pointsIdx2imageFile.push_back( it->first );
+				imagePoints.push_back( this_img_pts );
+				objectPoints.push_back( pattern_obj_points );
+
 				valid_detected_imgs++;
 			}
 
@@ -260,79 +305,45 @@ bool mrpt::vision::checkerBoardCameraCalibration(
 		// ---------------------------------------------
 		// Calculate the camera parameters
 		// ---------------------------------------------
-		// Was: FillEtalonObjPoints
-		vector<CvPoint3D64f> obj_points( valid_detected_imgs * CORNERS_COUNT );
-
-		{
-			unsigned int y,k;
-			for( y = 0, k = 0; y < check_size_y; y++ )
-			{
-				for( unsigned int x = 0; x < check_size_x; x++, k++ )
-				{
-					obj_points[k].x =-check_squares_length_X_meters * x;  // The "-" is for convenience, so the camera poses appear with Z>0
-					obj_points[k].y = check_squares_length_Y_meters * y;
-					obj_points[k].z = 0;
-				}
-			}
-		}
-
-		// Repeat the pattern N times:
-		for( i= 1; i< valid_detected_imgs; i++ )
-			memcpy( &obj_points[CORNERS_COUNT*i], &obj_points[0], CORNERS_COUNT*sizeof(obj_points[0]));
-
-		// Number of detected points in each image (constant):
-		vector<int> numsPoints(valid_detected_imgs, (int)CORNERS_COUNT );
-
-		double proj_matrix[9];
-		double distortion[4];
-
-		vector<CvPoint3D64f> transVects( valid_detected_imgs );
-        vector<double>        rotMatrs( valid_detected_imgs * 9 );
-
 		// Calibrate camera
-		cvCalibrateCamera_64d(
-			valid_detected_imgs,
-			&numsPoints[0],
-			imgSize,
-			&corners_list[0],
-			&obj_points[0],
-			distortion,
-			proj_matrix,
-			(double*)&transVects[0],
-			&rotMatrs[0],
-			0 );
+		cv::Mat cameraMatrix, distCoeffs(1,4,CV_64F,cv::Scalar::all(0));
+		vector<cv::Mat> rvecs, tvecs;
+
+		const double cv_calib_err = 
+		cv::calibrateCamera(
+			objectPoints,imagePoints,imgSize,
+			cameraMatrix, distCoeffs, rvecs, tvecs,
+			0 /*flags*/ );
 
 		// Load matrix:
-		out_camera_params.intrinsicParams = CMatrixDouble33( proj_matrix );
+		out_camera_params.intrinsicParams = CMatrixDouble33( cameraMatrix.ptr<double>() );
 
 		out_camera_params.dist.assign(0);
 		for (int i=0;i<4;i++)
-			out_camera_params.dist[i] = distortion[i];
+			out_camera_params.dist[i] = distCoeffs.ptr<double>()[i];
 
 		// Load camera poses:
 		for (i=0;i<valid_detected_imgs;i++)
 		{
-			const double *R = &rotMatrs[9*i];
-
-			CMatrixDouble HM(4,4);
+			CMatrixDouble44 HM;
 			HM.zeros();
 			HM(3,3)=1;
 
-			HM(0,0)=R[0];
-			HM(1,0)=R[3];
-			HM(2,0)=R[6];
+			{
+				// Convert rotation vectors -> rot matrices:
+				cv::Mat cv_rot;
+				cv::Rodrigues(rvecs[i],cv_rot);
 
-			HM(0,1)=R[1];
-			HM(1,1)=R[4];
-			HM(2,1)=R[7];
+				Eigen::Matrix3d rot;
+				cv::my_cv2eigen(cv_rot, rot );
+				HM.block<3,3>(0,0) = rot;
+			}
 
-			HM(0,2)=R[2];
-			HM(1,2)=R[5];
-			HM(2,2)=R[8];
-
-			HM(0,3)=transVects[i].x;
-			HM(1,3)=transVects[i].y;
-			HM(2,3)=transVects[i].z;
+			{
+				Eigen::Matrix<double,3,1> trans;
+				cv::my_cv2eigen(tvecs[i], trans );
+				HM.block<3,1>(0,3) = trans;
+			}
 
 			CPose3D p = CPose3D(0,0,0) - CPose3D(HM);
 
@@ -350,7 +361,7 @@ bool mrpt::vision::checkerBoardCameraCalibration(
 		// ----------------------------------------
 		// Undistort images:
 		// ----------------------------------------
-		for (it=images.begin();it!=images.end();it++)
+		for (it=images.begin();it!=images.end();++it)
 		{
 			TImageCalibData	&dat = it->second;
 			if (!dat.img_original.isExternallyStored())
@@ -369,10 +380,9 @@ bool mrpt::vision::checkerBoardCameraCalibration(
 
 			// Reproject all the points into pixel coordinates:
 			// -----------------------------------------------------
-
 			vector<TPoint3D>  lstPatternPoints(CORNERS_COUNT);	// Points as seen from the camera:
 			for (unsigned int p=0;p<CORNERS_COUNT;p++)
-				lstPatternPoints[p] = TPoint3D(obj_points[p].x,obj_points[p].y,obj_points[p].z);
+				lstPatternPoints[p] = TPoint3D(pattern_obj_points[p].x,pattern_obj_points[p].y,pattern_obj_points[p].z);
 
 			vector<TPixelCoordf>	&projectedPoints = dat.projectedPoints_undistorted;
 			vector<TPixelCoordf>	&projectedPoints_distorted = dat.projectedPoints_distorted;
@@ -419,7 +429,7 @@ bool mrpt::vision::checkerBoardCameraCalibration(
 		if (valid_detected_imgs)
 		{
 			sqrErr /= CORNERS_COUNT*valid_detected_imgs;
-			std::cout << "Average err. of reprojection: " << sqrt(sqrErr) << " pixels" << std::endl;
+			std::cout << "Average err. of reprojection: " << sqrt(sqrErr) << " pixels (OpenCV error=" << cv_calib_err << ")\n";
 		}
 		if(out_MSE) *out_MSE = sqrt(sqrErr);
 

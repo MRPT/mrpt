@@ -901,6 +901,7 @@ double CMultiMetricMapPDF::PF_SLAM_computeObservationLikelihoodForParticle(
 	const CSensoryFrame		&observation,
 	const CPose3D			&x ) const
 {
+	MRPT_UNUSED_PARAM(PF_options);
 	CMultiMetricMap	*map = &m_particles[particleIndexForMap].d->mapTillNow;
 	double	ret = 0;
 	for (CSensoryFrame::const_iterator it=observation.begin();it!=observation.end();++it)
