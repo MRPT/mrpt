@@ -418,6 +418,8 @@ void RbaEngine<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::optimize_edges(
 		minus_grad,  // minus gradient of the Ap part
 		nUnknowns_k2k,
 		nUnknowns_k2f);
+	// Notice: At this point, the constructor of "my_solver_t" might have already built the Schur-complement 
+	// of HAp-HApf into HAp: it's overwritten there (Only if RBA_OPTIONS::solver_t::USE_SCHUR=true).
 
 	const double MAX_LAMBDA = this->parameters.srba.max_lambda;
 
