@@ -92,6 +92,20 @@ ELSE(BUILD_SHARED_LIBS)
 	SET(CMAKE_MRPT_BUILD_SHARED_LIB_ONOFF 0)
 ENDIF(BUILD_SHARED_LIBS)
 
+# Default: non PIC:
+# TODO YET
+IF(NOT BUILD_SHARED_LIBS)
+	SET(BUILD_STATIC_PIC OFF CACHE BOOL "Build static libraries (.lib/.a) with PIC flag in Linux (for Position Independent Code)")
+	IF(BUILD_STATIC_PIC)
+		SET(CMAKE_MRPT_BUILD_STATIC_PIC "#define MRPT_BUILT_AS_DLL")
+		SET(CMAKE_MRPT_BUILD_STATIC_PIC_ONOFF 1)
+	ELSE(BUILD_STATIC_PIC)
+		SET(CMAKE_MRPT_BUILD_STATIC_PIC "/* #define MRPT_BUILT_AS_DLL */")
+		SET(CMAKE_MRPT_BUILD_STATIC_PIC_ONOFF 0)
+	ENDIF(BUILD_STATIC_PIC)
+ENDIF(NOT BUILD_SHARED_LIBS)
+
+
 # Only for Unix: use pkg-config to find libraries
 # ===================================================
 INCLUDE(FindPkgConfig OPTIONAL)
