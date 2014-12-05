@@ -14,11 +14,12 @@ PROJECT(MexGrabber)
 # ---------------------------------------------
 # MATLAB FLAGS AND CONFIGURATION:
 # ---------------------------------------------
-set(ENV{MATLAB_ROOT} "/usr/local/MATLAB/R2013a") # To do in a user set input
+SET(MATLAB_ROOT "/usr/local/MATLAB/R2014b" CACHE STRING "Root folder of Matlab installation (hint: typically /usr/local/MATLAB/...)")
+#set(ENV{MATLAB_ROOT} "/usr/local/MATLAB/R2013a") # To do in a user set input
 ADD_DEFINITIONS(/DMATLAB_MEX_FILE) #define matlab macros
 ADD_DEFINITIONS(/DMX_COMPAT_32)
 
-FIND_PACKAGE(Matlab REQUIRED) # Matlab
+FIND_PACKAGE(Matlab REQUIRED) # Matlab	
 #INCLUDE_DIRECTORIES(${MATLAB_INCLUDE_DIR}) # Done inside
 #message("MATLAB_INCLUDE_DIR: ${MATLAB_INCLUDE_DIR}")
 INCLUDE_DIRECTORIES("${CMAKE_CURRENT_LIST_DIR}/include/")
@@ -49,7 +50,7 @@ DeclareAppDependencies(${TMP_TARGET_NAME} mrpt-hwdrivers mrpt-obs)
 #message("CMAKE_LIBRARY_OUTPUT_DIRECTORY: ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}")
 #message("LIBRARY_OUTPUT_DIRECTORY: ${LIBRARY_OUTPUT_DIRECTORY}")
 ADD_LIBRARY(mexcamera SHARED
-		camera_mex.cc
+		camera_mex.cpp
 		${CMAKE_CURRENT_LIST_DIR}/Matlabdef.def
 		)
 

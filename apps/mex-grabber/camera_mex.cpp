@@ -19,6 +19,7 @@
   -----------------------------------------------------------------------------*/
 
 #include <mrpt/hwdrivers/CGenericSensor.h>
+#include <mrpt/hwdrivers/CHokuyoURG.h>
 #include <mrpt/utils/CConfigFile.h>
 #include <mrpt/utils/CFileGZOutputStream.h>
 #include <mrpt/utils/CImage.h>
@@ -43,8 +44,9 @@ using namespace mrpt::slam;
 using namespace std;
 using namespace mexplus;
 
-template class mexplus::Session<CGenericSensor>;
-//template class mexplus::Session<CImage>;
+#define CLASS CHokuyoURG
+
+template class mexplus::Session<CLASS>;
 
 namespace {
 // Defines MEX API for new.
@@ -60,15 +62,24 @@ MEX_DEFINE(new) (int nlhs, mxArray* plhs[],
 	 //intptr_t id_ = Session<CImage>::create( new CImage() );
 	 //output.set(0, id_);
 
-	 mexPrintf("Before sensor\n");
-	 CGenericSensorPtr sensor = CGenericSensor::createSensorPtr("CHokuyoURG");
-	 mexPrintf("After sensor\n");
-	 //output.set(0, Session<CImage>::create(new CImage()));
+     CLASS* var = new CLASS();
+     mexPrintf("Before sensor\n");
+     //CGenericSensorPtr sensor = CGenericSensor::createSensorPtr("CHokuyoURG");
 
-	 intptr_t id_ = Session<CGenericSensor>::create( sensor.pointer() );
+     mexPrintf("After sensor\n");
+
+     //intptr_t id_ = Session<CLASS>::create( new CLASS() );
+     //intptr_t id_ = Session<CGenericSensor>::create( sensor.pointer() );
 	 //intptr_t id_ = Session<CHokuyoURG>::create( new CHokuyoURG() );
 	 //intptr_t id_ = Session<CImage>::create( new CImage() );
-	 output.set(0, id_);
+
+
+     delete var;
+     //output.set(0, Session<CLASS>::create( new CLASS() ));
+     output.set(0, "Output!");
+
+     //delete sensor.pointer();
+     mexPrintf("Sensor smart-pointer deleted\n");
 
 	 mexPrintf("Done new, assigning to output\n");
 }
@@ -78,7 +89,8 @@ MEX_DEFINE(delete) (int nlhs, mxArray* plhs[],
 						  int nrhs, const mxArray* prhs[]) {
 	 InputArguments input(nrhs, prhs, 1);
 	 OutputArguments output(nlhs, plhs, 0);
-	 Session<CGenericSensor>::destroy(input.get(0));
+     Session<CLASS>::destroy(input.get(0));
+     //Session<CGenericSensor>::destroy(input.get(0));
 	 //Session<CHokuyoURG>::destroy(input.get(0));
 	 //Session<CImage>::destroy(input.get(0));
 }
