@@ -17,7 +17,7 @@ if(0) # **Ey!** This app is unmaintaned? (JLBC 1-sep-2012)
 # TARGET:
 # ---------------------------------------------
 # Define the executable target:
-ADD_EXECUTABLE(vOdometry Main.cpp)
+ADD_EXECUTABLE(vOdometry Main.cpp ${MRPT_VERSION_RC_FILE})
 
 SET(TMP_TARGET_NAME "vOdometry")
 

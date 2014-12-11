@@ -16,7 +16,8 @@ PROJECT(simul_landmarks)
 # ---------------------------------------------
 # Define the executable target:
 ADD_EXECUTABLE(simul-landmarks
-               simul-landmarks-main.cpp)
+               simul-landmarks-main.cpp
+			    ${MRPT_VERSION_RC_FILE})
 
 SET(TMP_TARGET_NAME "simul-landmarks")
 

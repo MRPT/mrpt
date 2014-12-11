@@ -20,7 +20,8 @@ PROJECT(DifOdometry-Camera)
 ADD_EXECUTABLE(DifOdometry-Camera
                DifOdometry_Camera_main.cpp
 			   DifOdometry_Camera.cpp
-			   DifOdometry_Camera.h)
+			   DifOdometry_Camera.h
+			    ${MRPT_VERSION_RC_FILE})
 
 SET(TMP_TARGET_NAME "DifOdometry-Camera")
 

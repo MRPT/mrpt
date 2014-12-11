@@ -16,7 +16,8 @@ PROJECT(icp_slam)
 # ---------------------------------------------
 # Define the executable target:
 ADD_EXECUTABLE(icp-slam
-               icp-slam_main.cpp)
+               icp-slam_main.cpp
+			    ${MRPT_VERSION_RC_FILE})
 
 SET(TMP_TARGET_NAME "icp-slam")
 

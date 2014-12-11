@@ -30,7 +30,7 @@ IF(wxWidgets_FOUND AND CMAKE_MRPT_HAS_OPENGL_GLUT)
 	INCLUDE_DIRECTORIES("${MRPT_SOURCE_DIR}/otherlibs/wxThings/")
 	
 	# Define the executable target:
-	ADD_EXECUTABLE(SceneViewer3D WIN32 ${SRCS})
+	ADD_EXECUTABLE(SceneViewer3D WIN32 ${SRCS} ${MRPT_VERSION_RC_FILE})
 
 	SET(TMP_TARGET_NAME "SceneViewer3D")
 
