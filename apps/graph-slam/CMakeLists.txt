@@ -16,6 +16,7 @@ PROJECT(graph_slam)
 ADD_EXECUTABLE(graph-slam
 	graph-slam_main.cpp
 	display_graph.cpp
+	 ${MRPT_VERSION_RC_FILE}
 	)
 
 SET(TMP_TARGET_NAME "graph-slam")

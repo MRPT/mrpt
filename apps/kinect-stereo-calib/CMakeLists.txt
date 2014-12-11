@@ -26,7 +26,7 @@ IF(wxWidgets_FOUND)
 	ENDIF(WIN32)
 
 	# Define the executable target:
-	ADD_EXECUTABLE(kinect-stereo-calib WIN32 ${SRCS})
+	ADD_EXECUTABLE(kinect-stereo-calib WIN32 ${SRCS} ${MRPT_VERSION_RC_FILE})
 
 	SET(TMP_TARGET_NAME "kinect-stereo-calib")
 

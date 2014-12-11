@@ -18,6 +18,7 @@ FILE(GLOB LST_HDRS "*.h")
 ADD_EXECUTABLE(srba-slam
 	${LST_SRCS}
 	${LST_HDRS}
+	 ${MRPT_VERSION_RC_FILE}
 	)
 	
 # Precompiled hdrs for MSVC:

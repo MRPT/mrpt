@@ -47,7 +47,7 @@ IF(wxWidgets_FOUND)
 	INCLUDE_DIRECTORIES("${MRPT_SOURCE_DIR}/otherlibs/wxThings/")
 
 	# Define the executable target:
-	ADD_EXECUTABLE(RawLogViewer WIN32 ${SRCS})
+	ADD_EXECUTABLE(RawLogViewer WIN32 ${SRCS} ${MRPT_VERSION_RC_FILE})
 
 	SET(TMP_TARGET_NAME "RawLogViewer")
 

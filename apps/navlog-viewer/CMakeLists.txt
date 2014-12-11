@@ -28,7 +28,7 @@ IF(wxWidgets_FOUND)
 
 
 	# Define the executable target:
-	ADD_EXECUTABLE(navlog-viewer WIN32 ${SRCS})
+	ADD_EXECUTABLE(navlog-viewer WIN32 ${SRCS} ${MRPT_VERSION_RC_FILE})
 
 	SET(TMP_TARGET_NAME "navlog-viewer")
 
