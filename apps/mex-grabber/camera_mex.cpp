@@ -7,12 +7,12 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-
 /*-----------------------------------------------------------------------------
 	APPLICATION: mex-grabber
 	FILE: mexgrabber_main.cpp
-	AUTHORS: Jose Luis Blanco Claraco <joseluisblancoc@gmail.com>
-				Jesus Briales Garcia <jesusbriales@gmail.com>
+    AUTHORS: Jesus Briales Garcia <jesusbriales@gmail.com>
+             Jose Luis Blanco Claraco <joseluisblancoc@gmail.com>
+
 
 	For instructions and details, see:
 	 http://
@@ -47,7 +47,8 @@ using namespace mrpt::slam;
 using namespace std;
 using namespace mexplus;
 
-#define CLASS CHokuyoURG
+//#define CLASS CHokuyoURG
+#define CLASS CGenericSensor
 
 template class mexplus::Session<CLASS>;
 
@@ -126,19 +127,31 @@ MEX_DEFINE(new) (int nlhs, mxArray* plhs[],
     mexPrintf("Before sensor\n");
     //CGenericSensorPtr sensor = CGenericSensor::createSensorPtr("CHokuyoURG");
 
-    CLASS* sensor = new CLASS( );
+    string sensor_label;
+    for (vector_string::iterator it=sections.begin();it!=sections.end();++it)
+    {
+        if (*it==GLOBAL_SECTION_NAME || it->empty() || iniFile.read_bool(*it,"rawlog-grabber-ignore",false,false) )
+            continue;	// This is not a sensor:
 
-    //     intptr_t id_ = Session<CGenericSensor>::create( sensor.pointer() );
-    //intptr_t id_ = Session<CHokuyoURG>::create( new CHokuyoURG() );
-    //intptr_t id_ = Session<CImage>::create( new CImage() );
-    //     mexPrintf("Pointer value %d\n", 10);
-    //     output.set(0, id_);
-    mexPrintf("After sensor pointer creation\n");
+        sensor_label = *it;
+        break; // Exit when valid iterator is reached
+    }
+    mexPrintf("Launching thread for sensor '%s'\n", sensor_label.c_str());
 
-    sensor->loadConfig( iniFile, "LASER_2D");
-    //sensor->initialize();
+    string driver_name = iniFile.read_string(sensor_label,"driver","",true);
+    mexPrintf("Driver name: %s\n\n", driver_name.c_str());
+
+//    CLASS* sensor = new CLASS( );
+    CLASS* sensor;
+    sensor = CGenericSensor::createSensor( driver_name );
+
+    sensor->loadConfig( iniFile, sensor_label );
+    //cout << format("[thread_%s] Starting...",sensor_label.c_str()) << " at " << sensor->getProcessRate() <<  " Hz" << endl;
+
+    sensor->initialize();
     mexPrintf("After sensor initialization\n");
 
+    /*
     mrpt::slam::CObservation2DRangeScan	outObservation;
     if(sensor->turnOn())
     {
@@ -151,6 +164,7 @@ MEX_DEFINE(new) (int nlhs, mxArray* plhs[],
                                 outObservation,
                                 hardwareError);
     }
+    */
 
     /*
     mrpt::slam::CObservationImage obs;
@@ -186,6 +200,85 @@ MEX_DEFINE(read) (int nlhs, mxArray* plhs[],
   OutputArguments output(nlhs, plhs, 3);
   CLASS* sensor = Session<CLASS>::get(input.get(0));
 
+  TTimeStamp t0= now();
+
+  // Process
+  sensor->doProcess();
+
+  // Get new observations
+  CGenericSensor::TListObservations lstObjs;
+  sensor->getObservations( lstObjs );
+  //cout << "lstObjs container size: " << lstObjs.size() << endl;
+
+  // Create an object the same type as interest object in the multimap (TListObservations)
+  // TListObservations is a multimap with elements <TTimeStamp,CSerializablePtr>
+  CSerializablePtr obj;
+  // Gets a TListObservations::iterator pointing to the wanted pair
+  CGenericSensor::TListObservations::iterator it=lstObjs.begin();
+  // Interest object can be extracted from iterator pointed object, as second element of the pair
+  obj = (*it).second;
+
+  // Check if got object is of the searched class
+  if( IS_CLASS(obj, CObservation2DRangeScan) )
+  {
+      // Casting by constructing new SmartPtr from existing data pointer
+      CObservation2DRangeScanPtr LRF_obs = CObservation2DRangeScanPtr(obj);
+
+      //mrpt::slam::CObservation2DRangeScan	outObservation;
+      CSimplePointsMap map;
+      //map.insertObservation( &outObservation );
+      map.insertObservation( LRF_obs.pointer() );
+      vector<float> xpts;
+      vector<float> ypts;
+      vector<float> zpts;
+      map.getAllPoints(xpts,ypts,zpts);
+
+      output.set(0, xpts);
+      output.set(1, ypts);
+      output.set(2, zpts);
+  }
+  else if( IS_CLASS(obj, CObservationImage) )
+  {
+      mexPrintf("Reading image\n");
+
+      CObservationImagePtr cam_obs = CObservationImagePtr(obj);
+
+      //CMatrixFloat mat;
+      //cam_obs->image.grayscale().getAsMatrix( mat );
+
+      cam_obs->image.saveToFile("/home/jesus/output_image.jpg");
+      /*
+      mexPrintf( "Rows %d and columns %d\n", mat.rows(), mat.cols() );
+      int num_of_pixels = mat.rows() * mat.cols();
+      //vector<float> pixels = vector<float>( mat.data(), mat.data()+num_of_pixels );
+
+      output.set(0, vector<float>( mat.data(), mat.data()+num_of_pixels ) );
+      */
+
+      output.set(0, 0);
+      output.set(1, 1);
+      output.set(2, 2);
+
+      // Delete useless objects
+  }
+  else
+  {
+      mexPrintf("Bad class\n");
+
+      output.set(0, 0);
+      output.set(1, 1);
+      output.set(2, 2);
+  }
+}
+
+/*
+// Defines MEX API for set (non const method).
+MEX_DEFINE(read) (int nlhs, mxArray* plhs[],
+                  int nrhs, const mxArray* prhs[]) {
+  InputArguments input(nrhs, prhs, 1);
+  OutputArguments output(nlhs, plhs, 3);
+  CLASS* sensor = Session<CLASS>::get(input.get(0));
+
   bool outThereIsObservation;
   mrpt::slam::CObservation2DRangeScan	outObservation;
   bool hardwareError;
@@ -211,12 +304,16 @@ MEX_DEFINE(read) (int nlhs, mxArray* plhs[],
 
   //database->put(input.get<string>(1), input.get<string>(2));
 }
+*/
 
 // Defines MEX API for delete.
 MEX_DEFINE(delete) (int nlhs, mxArray* plhs[],
                     int nrhs, const mxArray* prhs[]) {
     InputArguments input(nrhs, prhs, 1);
     OutputArguments output(nlhs, plhs, 0);
+
+    // Delete pointed object prior to removing pointer
+    MRPT_TODO("Delete object prior to destroy handler")
     Session<CLASS>::destroy(input.get(0));
     //Session<CGenericSensor>::destroy(input.get(0));
     //Session<CHokuyoURG>::destroy(input.get(0));
