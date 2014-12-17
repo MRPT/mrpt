@@ -17,6 +17,7 @@ ADD_EXECUTABLE(features-matching
 	features_matching_main.cpp
 	../common/sample_image1.h
 	../common/sample_image2.h
+	 ${MRPT_VERSION_RC_FILE}
 )
 
 SET(TMP_TARGET_NAME "features-matching")

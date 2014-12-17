@@ -16,7 +16,8 @@ PROJECT(map_partition)
 # ---------------------------------------------
 # Define the executable target:
 ADD_EXECUTABLE(map-partition
-               map-partition.cpp)
+               map-partition.cpp
+			    ${MRPT_VERSION_RC_FILE})
 
 SET(TMP_TARGET_NAME "map-partition")
 

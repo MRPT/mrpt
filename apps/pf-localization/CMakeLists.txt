@@ -15,7 +15,7 @@ PROJECT(pf_localization)
 # TARGET:
 # ---------------------------------------------
 # Define the executable target:
-ADD_EXECUTABLE(pf-localization pf_localization_main.cpp)
+ADD_EXECUTABLE(pf-localization pf_localization_main.cpp ${MRPT_VERSION_RC_FILE})
 
 SET(TMP_TARGET_NAME "pf-localization")
 

@@ -16,7 +16,8 @@ PROJECT(grid_matching)
 # ---------------------------------------------
 # Define the executable target:
 ADD_EXECUTABLE(grid-matching
-			   grid-matching_main.cpp)
+			   grid-matching_main.cpp
+			    ${MRPT_VERSION_RC_FILE})
 
 SET(TMP_TARGET_NAME     "grid-matching")
 SET(TMP_TARGET_NAME_OUT "grid-matching")

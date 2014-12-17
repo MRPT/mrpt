@@ -489,7 +489,7 @@ void CIMUXSens_MT4::doProcess()
 			parts.day = utc.m_day;
 			parts.hour = utc.m_hour;
 			parts.minute = utc.m_minute;
-			parts.second = utc.m_second + (utc.m_nano * 1000000.0);
+			parts.second = utc.m_second + (utc.m_nano * 1000000000.0);
 
 			obs->timestamp = mrpt::system::buildTimestampFromParts(parts);
 		}

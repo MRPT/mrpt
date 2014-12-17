@@ -16,7 +16,8 @@ PROJECT(KF_SLAM)
 # ---------------------------------------------
 # Define the executable target:
 ADD_EXECUTABLE(kf-slam
-               kf-slam_main.cpp)
+               kf-slam_main.cpp
+			    ${MRPT_VERSION_RC_FILE})
 
 SET(TMP_TARGET_NAME "kf-slam")
 

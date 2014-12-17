@@ -16,7 +16,8 @@ PROJECT(simul_gridmap)
 # ---------------------------------------------
 # Define the executable target:
 ADD_EXECUTABLE(simul-gridmap
-			   simul-gridmap_main.cpp)
+			   simul-gridmap_main.cpp
+			    ${MRPT_VERSION_RC_FILE})
 			   
 SET(TMP_TARGET_NAME "simul-gridmap")
 

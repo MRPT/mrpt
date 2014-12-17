@@ -16,7 +16,8 @@ PROJECT(hmt_slam)
 # ---------------------------------------------
 # Define the executable target:
 ADD_EXECUTABLE(hmt-slam
-               hmt-slam_main.cpp)
+               hmt-slam_main.cpp
+			    ${MRPT_VERSION_RC_FILE})
 
 SET(TMP_TARGET_NAME "hmt-slam")
 

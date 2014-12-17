@@ -37,6 +37,7 @@ ADD_EXECUTABLE(mrpt-performance
 	perf-poses.cpp
 	perf-random.cpp
 	perf-scan_matching.cpp
+	 ${MRPT_VERSION_RC_FILE}
 	)
 
 SET(TMP_TARGET_NAME "mrpt-performance")

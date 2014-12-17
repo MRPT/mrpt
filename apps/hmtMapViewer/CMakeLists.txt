@@ -23,7 +23,7 @@ IF(wxWidgets_FOUND AND CMAKE_MRPT_HAS_OPENGL_GLUT)
 	ENDIF(WIN32)
 
 	# Define the executable target:
-	ADD_EXECUTABLE(hmtMapViewer WIN32 ${SRCS})
+	ADD_EXECUTABLE(hmtMapViewer WIN32 ${SRCS} ${MRPT_VERSION_RC_FILE})
 
 	SET(TMP_TARGET_NAME "hmtMapViewer")
 
