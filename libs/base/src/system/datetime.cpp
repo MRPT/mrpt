@@ -30,7 +30,7 @@
 	#include <unistd.h>
 	#include <utime.h>
 	#include <errno.h>
-	#include <signal.h>
+//	#include <signal.h>
 #endif
 
 #include <time.h>
