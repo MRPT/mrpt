@@ -230,7 +230,7 @@ void showInfo(CPtuHokuyo *ph){
 
 	double radSec, actRadSec,nRad;
 	bool boolean=false;
-	char *version="";
+	const char *version="";
 
 	cout << "\nGeneral PTU info:\n\n";
 
