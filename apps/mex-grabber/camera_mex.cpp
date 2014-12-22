@@ -34,6 +34,10 @@
 #include <mrpt/system/os.h>
 #include <mrpt/system/filesystem.h>
 
+// MRPT headers for conversion tools
+#include <opencv2/core.hpp>
+#include <opencv2/core/types_c.h>
+#include <opencv2/core/core_c.h>
 #include <mrpt/slam/CSimplePointsMap.h>
 
 // Matlab MEX interface headers
@@ -242,6 +246,10 @@ MEX_DEFINE(read) (int nlhs, mxArray* plhs[],
       mexPrintf("Reading image\n");
 
       CObservationImagePtr cam_obs = CObservationImagePtr(obj);
+
+      // Both core/core_c.h and core/types_c.h have been included
+      // to use cvarrToMat and IplImage, respectively
+      cv::Mat cvImg = cv::cvarrToMat( cam_obs->image.getAs<IplImage>() );
 
       //CMatrixFloat mat;
       //cam_obs->image.grayscale().getAsMatrix( mat );
