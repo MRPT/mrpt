@@ -13,6 +13,10 @@ PROJECT(DifOdometry-Camera)
 
 #MESSAGE(STATUS "Makefile for application: /apps/ReactiveNav3D-Demo ")
 
+include_directories(${OPENNI2_INCLUDE_DIRS})
+# Add include directories as "-isystem" to avoid warnings :
+ADD_DIRECTORIES_AS_ISYSTEM(OPENNI2_INCLUDE_DIRS)
+
 # ---------------------------------------------
 # TARGET:
 # ---------------------------------------------

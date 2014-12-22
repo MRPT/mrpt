@@ -8,9 +8,9 @@
    +---------------------------------------------------------------------------+ */
 
 #include <mrpt/hwdrivers/CPtuHokuyo.h>
-#include <mrpt/obs.h>
+#include <mrpt/slam/CObservation2DRangeScan.h>
+#include <mrpt/slam/CSimplePointsMap.h>
 #include <mrpt/gui.h>
-#include <mrpt/maps.h>
 
 using namespace std;
 using namespace mrpt::hwdrivers;

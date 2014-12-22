@@ -54,5 +54,9 @@ IF(BUILD_mrpt-gui)
 	IF(CMAKE_MRPT_HAS_WXWIDGETS)
 		target_link_libraries(mrpt-gui ${wxWidgets_LIBRARIES})
 	ENDIF(CMAKE_MRPT_HAS_WXWIDGETS)
+	
+	IF(CMAKE_MRPT_HAS_OPENCV)
+		target_link_libraries(mrpt-gui ${OpenCV_LIBRARIES})
+	ENDIF(CMAKE_MRPT_HAS_OPENCV)
 ENDIF(BUILD_mrpt-gui) 
 
