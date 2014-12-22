@@ -74,7 +74,10 @@ IF(BUILD_mrpt-opengl)
 			set_source_files_properties(${glew_FILES} PROPERTIES COMPILE_FLAGS "/Y- /DGLEW_STATIC")
 	ENDIF (MSVC)
 	ENDIF(MRPT_ENABLE_PRECOMPILED_HDRS)
-	
+
+	# Link against gl, glu, glut:	
+	TARGET_LINK_LIBRARIES(mrpt-opengl ${MRPT_OPENGL_LIBS} ${MRPT_3DS_LIBS})
+
 	# Link against assimp:
 	IF (CMAKE_MRPT_HAS_ASSIMP)
 		IF (NOT CMAKE_MRPT_HAS_ASSIMP_SYSTEM)

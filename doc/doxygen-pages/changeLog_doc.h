@@ -20,12 +20,13 @@
 		- These classes have been moved between libs for a more sensible organization:
 			- mrpt::slam::CDetectorDoorCrossing ==> mrpt::detectors::CDetectorDoorCrossing
 			- mrpt::slam::CPathPlanningMethod & CPathPlanningCircularRobot: \a mrpt_slam_grp ==> \a mrpt_nav_grp
-	- General changes:
+	- Build System / General changes:
 		- Many optimizations in function arguments (value vs ref). Forces ABI incompatibility with previous versions, hence the change to a new minor version number.
 		- Updated embedded version of Eigen to 3.2.2
 		- Kinect: Dropped support for the CL NUI API, which seems discontinued. Alternatives in use are libfreenect and OpenNI2.
 		- libfreenect is now detected in the system and used instead of compiling the embedded copy of it.
 		- Embedded copy of libfreenect has been updated to (23/oct/2014). It now supports "Kinect for Windows".
+		- More selective linking of .so files to avoid useless dependencies (Fixes #52).
 	- Changes in classes:
 		- [mrpt-base]
 			- New function mrpt::math::angDistance()
