@@ -11,3 +11,4 @@ Categories=Science;Robotics;ArtificialIntelligence;
 StartupNotify=true
 Keywords=mrpt;stereo;camera;vision;computer vision;calibration;
 
+Name[en_US]=cameracalib.desktop
