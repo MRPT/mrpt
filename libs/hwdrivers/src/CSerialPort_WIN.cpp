@@ -14,7 +14,7 @@
 #ifdef MRPT_OS_WINDOWS
 
 #include <mrpt/hwdrivers/CSerialPort.h>
-
+#include <mrpt/system/threads.h>
 #include <windows.h>
 
 using namespace std;
