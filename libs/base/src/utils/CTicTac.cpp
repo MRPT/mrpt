@@ -13,6 +13,7 @@
 
 #ifdef MRPT_OS_WINDOWS
     #include <windows.h>
+    #include <mrpt/utils/utils_defs.h>
 #else
     #include <sys/time.h>
 #endif
