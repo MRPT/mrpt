@@ -9,15 +9,13 @@
 #ifndef CActionRobotMovement2D_H
 #define CActionRobotMovement2D_H
 
-#include <mrpt/slam/CAction.h>
+#include <mrpt/obs/CAction.h>
 #include <mrpt/poses/CPose2D.h>
-//#include <mrpt/poses/CPosePDFGaussian.h>
-//#include <mrpt/poses/CPosePDFParticles.h>
 #include <mrpt/poses/CPosePDF.h>
 
 namespace mrpt
 {
-	namespace slam
+	namespace obs
 	{
 		using namespace mrpt::math;
 		using namespace mrpt::poses;

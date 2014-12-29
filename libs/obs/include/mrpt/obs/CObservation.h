@@ -22,7 +22,7 @@ namespace mrpt
 {
 	/** This namespace contains algorithms for SLAM, localization, map building, representation of robot's actions and observations, and representation of many kinds of metric maps.
 	  */
-	namespace slam
+	namespace obs
 	{
 		using namespace poses;
 

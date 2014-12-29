@@ -10,14 +10,13 @@
 #define CSENSORYFRAME_H
 
 #include <mrpt/utils/CSerializable.h>
-//#include <mrpt/obs/obs_frwds.h>
-#include <mrpt/slam/CMetricMap.h>
-#include <mrpt/slam/CObservation.h>
+#include <mrpt/maps/CMetricMap.h>
+#include <mrpt/obs/CObservation.h>
 #include <mrpt/obs/link_pragmas.h>
 
 namespace mrpt
 {
-	namespace slam
+	namespace obs
 	{
 		// This must be added to any CSerializable derived class:
 		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CSensoryFrame, mrpt::utils::CSerializable, OBS_IMPEXP )
@@ -70,7 +69,7 @@ namespace mrpt
 			/** A points map, build only under demand by the methods getAuxPointsMap() and buildAuxPointsMap().
 			  *  It's a generic smart pointer to avoid depending here in the library mrpt-obs on classes on other libraries.
 			  */
-			mutable mrpt::slam::CMetricMapPtr  m_cachedMap;
+			mutable mrpt::maps::CMetricMapPtr  m_cachedMap;
 
 			void internal_buildAuxPointsMap( const void *options = NULL ) const;  //!< Internal method, used from buildAuxPointsMap()
 
@@ -79,7 +78,7 @@ namespace mrpt
 			/** Returns the cached points map representation of the scan, if already build with buildAuxPointsMap(), or NULL otherwise.
 			  * Usage:
 			  *  \code
-			  *    mrpt::slam::CPointsMap *map = obs->getAuxPointsMap<mrpt::slam::CPointsMap>();
+			  *    mrpt::maps::CPointsMap *map = obs->getAuxPointsMap<mrpt::maps::CPointsMap>();
 			  *  \endcode
 			  * \sa buildAuxPointsMap
 			  */
@@ -92,7 +91,7 @@ namespace mrpt
 			  * \param options Can be NULL to use default point maps' insertion options, or a pointer to a "CPointsMap::TInsertionOptions" structure to override some params.
 			  * Usage:
 			  *  \code
-			  *    mrpt::slam::CPointsMap *map = sf->buildAuxPointsMap<mrpt::slam::CPointsMap>(&options or NULL);
+			  *    mrpt::maps::CPointsMap *map = sf->buildAuxPointsMap<mrpt::maps::CPointsMap>(&options or NULL);
 			  *  \endcode
 			  * \sa getAuxPointsMap
 			  */
@@ -117,7 +116,7 @@ namespace mrpt
 			  */
 			 void		clear();
 
-			 /** Insert all the observations in this SF into a metric map or any kind (see mrpt::slam::CMetricMap).
+			 /** Insert all the observations in this SF into a metric map or any kind (see mrpt::maps::CMetricMap).
 			  *  It calls CObservation::insertObservationInto for all stored observation.
 			  * \param theMap The map where this observation is to be inserted: the map will be updated.
 			  * \param robotPose The pose of the robot base for this observation, relative to the target metric map. Set to NULL (default) to use (0,0,0deg)
@@ -125,11 +124,11 @@ namespace mrpt
 			  * \return Returns true if the map has been updated, or false if this observations
 			  *			has nothing to do with a metric map (for example, a sound observation).
 			  *
-			  * \sa mrpt::slam::CMetricMap, CObservation::insertObservationInto, CMetricMap::insertObservation
+			  * \sa mrpt::maps::CMetricMap, CObservation::insertObservationInto, CMetricMap::insertObservation
 			  */
-			 bool  insertObservationsInto( mrpt::slam::CMetricMap *theMap, const mrpt::poses::CPose3D *robotPose = NULL ) const;
+			 bool  insertObservationsInto( mrpt::maps::CMetricMap *theMap, const mrpt::poses::CPose3D *robotPose = NULL ) const;
 
-			 /** Insert all the observations in this SF into a metric map or any kind (see mrpt::slam::CMetricMap).
+			 /** Insert all the observations in this SF into a metric map or any kind (see mrpt::maps::CMetricMap).
 			  *  It calls CObservation::insertObservationInto for all stored observation.
 			  * \param theMap The map where this observation is to be inserted: the map will be updated.
 			  * \param robotPose The pose of the robot base for this observation, relative to the target metric map. Set to NULL (default) to use (0,0,0deg)
@@ -137,9 +136,9 @@ namespace mrpt
 			  * \return Returns true if the map has been updated, or false if this observations
 			  *			has nothing to do with a metric map (for example, a sound observation).
 			  *
-			  * \sa mrpt::slam::CMetricMap, CObservation::insertObservationInto, CMetricMap::insertObservation
+			  * \sa mrpt::maps::CMetricMap, CObservation::insertObservationInto, CMetricMap::insertObservation
 			  */
-			 inline bool  insertObservationsInto( mrpt::slam::CMetricMapPtr &theMap, const mrpt::poses::CPose3D *robotPose = NULL ) const
+			 inline bool  insertObservationsInto( mrpt::maps::CMetricMapPtr &theMap, const mrpt::poses::CPose3D *robotPose = NULL ) const
 			 {
 				 return insertObservationsInto(theMap.pointer(), robotPose);
 			 }

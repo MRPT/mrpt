@@ -11,16 +11,16 @@
 
 
 #include <mrpt/utils/CStream.h>
-#include <mrpt/slam/CActionRobotMovement3D.h>
+#include <mrpt/obs/CActionRobotMovement3D.h>
 
 using namespace mrpt;
-using namespace mrpt::slam;
+using namespace mrpt::obs;
 using namespace mrpt::utils;
 using namespace mrpt::poses;
 
 using namespace mrpt::utils;
 
-IMPLEMENTS_SERIALIZABLE(CActionRobotMovement3D, CAction, mrpt::slam)
+IMPLEMENTS_SERIALIZABLE(CActionRobotMovement3D, CAction, mrpt::obs)
 
 /*---------------------------------------------------------------
 						Constructor

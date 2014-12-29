@@ -15,14 +15,14 @@
 #include <mrpt/math/math_frwds.h>
 #include <mrpt/math/lightweight_geom_data.h>
 #include <mrpt/opengl/opengl_frwds.h>
-#include <mrpt/slam/CMetricMapEvents.h>
+#include <mrpt/maps/CMetricMapEvents.h>
 #include <mrpt/obs/obs_frwds.h>
 #include <mrpt/obs/link_pragmas.h>
 #include <deque>
 
 namespace mrpt
 {
-	namespace slam
+	namespace maps
 	{
 		using namespace mrpt::utils;
 		using mrpt::poses::CPose2D;
@@ -74,8 +74,8 @@ namespace mrpt
 		 *
 		 *  Note that all metric maps implement this mrpt::utils::CObservable interface,
 		 *   emitting the following events:
-		 *	  - mrpt::slam::mrptEventMetricMapClear: Upon call of the ::clear() method.
-		 *    - mrpt::slam::mrptEventMetricMapInsert: Upon insertion of an observation that effectively modifies the map (e.g. inserting an image into a grid map will NOT raise an event, inserting a laser scan will).
+		 *	  - mrpt::obs::mrptEventMetricMapClear: Upon call of the ::clear() method.
+		 *    - mrpt::obs::mrptEventMetricMapInsert: Upon insertion of an observation that effectively modifies the map (e.g. inserting an image into a grid map will NOT raise an event, inserting a laser scan will).
 		 *
 		 * \sa CObservation, CSensoryFrame, CMultiMetricMap
 	 	 * \ingroup mrpt_obs_grp
@@ -94,14 +94,14 @@ namespace mrpt
 			/** Hook for each time a "internal_insertObservation" returns "true"
 			  * This is called automatically from insertObservation() when internal_insertObservation returns true.
 			  */
-			virtual void OnPostSuccesfulInsertObs(const CObservation *)
+			virtual void OnPostSuccesfulInsertObs(const mrpt::obs::CObservation *)
 			{
 				// Default: do nothing
 			}
 
 			/** Internal method called by insertObservation() */
 			virtual bool  internal_insertObservation(
-				const CObservation *obs,
+				const mrpt::obs::CObservation *obs,
 				const CPose3D *robotPose = NULL ) = 0;
 
 		public:
@@ -119,7 +119,7 @@ namespace mrpt
 			 * \sa insertObservation, CSimpleMap
 			 * \exception std::exception Some internal steps in invoked methods can raise exceptions on invalid parameters, etc...
 			 */
-			void  loadFromProbabilisticPosesAndObservations( const CSimpleMap &Map );
+			void  loadFromProbabilisticPosesAndObservations( const mrpt::maps::CSimpleMap &Map );
 
 			/** Load the map contents from a CSimpleMap object, erasing all previous content of the map.
 			 *  This is automaticed invoking "insertObservation" for each observation at the mean 3D robot pose as
@@ -128,7 +128,7 @@ namespace mrpt
 			 * \sa insertObservation, CSimpleMap
 			 * \exception std::exception Some internal steps in invoked methods can raise exceptions on invalid parameters, etc...
 			 */
-			inline void  loadFromSimpleMap( const CSimpleMap &Map ) {  loadFromProbabilisticPosesAndObservations(Map); }
+			inline void  loadFromSimpleMap( const mrpt::maps::CSimpleMap &Map ) {  loadFromProbabilisticPosesAndObservations(Map); }
 
 			/** Insert the observation information into this map. This method must be implemented
 			 *    in derived classes.
@@ -137,10 +137,10 @@ namespace mrpt
 			 *
 			 * \sa CObservation::insertObservationInto
 			 */
-			bool  insertObservation(const CObservation *obs, const CPose3D *robotPose = NULL );
+			bool  insertObservation(const mrpt::obs::CObservation *obs, const CPose3D *robotPose = NULL );
 
 			/** A wrapper for smart pointers, just calls the non-smart pointer version. */
-			bool  insertObservationPtr(const CObservationPtr &obs, const CPose3D *robotPose = NULL );
+			bool  insertObservationPtr(const mrpt::obs::CObservationPtr &obs, const CPose3D *robotPose = NULL );
 
 			/** Computes the log-likelihood of a given observation given an arbitrary robot 3D pose.
 			 *
@@ -150,7 +150,7 @@ namespace mrpt
 			 *
 			 * \sa Used in particle filter algorithms, see: CMultiMetricMapPDF::update
 			 */
-			virtual double	 computeObservationLikelihood( const CObservation *obs, const CPose3D &takenFrom ) = 0;
+			virtual double	 computeObservationLikelihood( const mrpt::obs::CObservation *obs, const CPose3D &takenFrom ) = 0;
 
 			/** Computes the log-likelihood of a given observation given an arbitrary robot 2D pose.
 			 *
@@ -160,35 +160,35 @@ namespace mrpt
 			 *
 			 * \sa Used in particle filter algorithms, see: CMultiMetricMapPDF::update
 			 */
-			double	 computeObservationLikelihood( const CObservation *obs, const CPose2D &takenFrom );
+			double	 computeObservationLikelihood( const mrpt::obs::CObservation *obs, const CPose2D &takenFrom );
 
 			/** Returns true if this map is able to compute a sensible likelihood function for this observation (i.e. an occupancy grid map cannot with an image).
 			 * \param obs The observation.
 			 * \sa computeObservationLikelihood
 			 */
-			virtual bool canComputeObservationLikelihood( const CObservation *obs )
+			virtual bool canComputeObservationLikelihood( const mrpt::obs::CObservation *obs )
 			{
 				MRPT_UNUSED_PARAM(obs);
 				return true; // Unless implemented otherwise, assume we can always compute the likelihood.
 			}
 
 			/** \overload */
-			bool canComputeObservationLikelihood( const CObservationPtr &obs );
+			bool canComputeObservationLikelihood( const mrpt::obs::CObservationPtr &obs );
 
-			/** Returns the sum of the log-likelihoods of each individual observation within a mrpt::slam::CSensoryFrame.
+			/** Returns the sum of the log-likelihoods of each individual observation within a mrpt::obs::CSensoryFrame.
 			 *
 			 * \param takenFrom The robot's pose the observation is supposed to be taken from.
 			 * \param sf The set of observations in a CSensoryFrame.
 			 * \return This method returns a log-likelihood.
 			 * \sa canComputeObservationsLikelihood
 			 */
-			double computeObservationsLikelihood( const CSensoryFrame &sf, const CPose2D &takenFrom );
+			double computeObservationsLikelihood( const mrpt::obs::CSensoryFrame &sf, const CPose2D &takenFrom );
 
 			/** Returns true if this map is able to compute a sensible likelihood function for this observation (i.e. an occupancy grid map cannot with an image).
 			 * \param sf The observations.
 			 * \sa canComputeObservationLikelihood
 			 */
-			bool canComputeObservationsLikelihood( const CSensoryFrame &sf );
+			bool canComputeObservationsLikelihood( const mrpt::obs::CSensoryFrame &sf );
 
 			/** Constructor */
 			CMetricMap();
@@ -278,7 +278,7 @@ namespace mrpt
 			  */
 			bool			m_disableSaveAs3DObject;
 
-			/** This method is called at the end of each "prediction-update-map insertion" cycle within "mrpt::slam::CMetricMapBuilderRBPF::processActionObservation".
+			/** This method is called at the end of each "prediction-update-map insertion" cycle within "mrpt::obs::CMetricMapBuilderRBPF::processActionObservation".
 			  *  This method should normally do nothing, but in some cases can be used to free auxiliary cached variables.
 			  */
 			virtual void  auxParticleFilterCleanUp()
@@ -294,8 +294,8 @@ namespace mrpt
 			/** If the map is a simple points map or it's a multi-metric map that contains EXACTLY one simple points map, return it.
 			  * Otherwise, return NULL
 			  */
-			virtual const CSimplePointsMap * getAsSimplePointsMap() const { return NULL; }
-			virtual       CSimplePointsMap * getAsSimplePointsMap()       { return NULL; }
+			virtual const mrpt::maps::CSimplePointsMap * getAsSimplePointsMap() const { return NULL; }
+			virtual       mrpt::maps::CSimplePointsMap * getAsSimplePointsMap()       { return NULL; }
 
 
 		}; // End of class def.

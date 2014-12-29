@@ -9,19 +9,19 @@
 #ifndef CActionCollection_H
 #define CActionCollection_H
 
-#include <mrpt/slam/CAction.h>
-#include <mrpt/slam/CActionRobotMovement2D.h>
+#include <mrpt/obs/CAction.h>
+#include <mrpt/obs/CActionRobotMovement2D.h>
 #include <mrpt/utils/CSerializable.h>
 #include <mrpt/poses/CPose3DPDFGaussian.h>
 
 namespace mrpt
 {
-	namespace slam
+	namespace obs
 	{
 		// This must be added to any CSerializable derived class:
 		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CActionCollection, mrpt::utils::CSerializable, OBS_IMPEXP )
 
-		/** Declares a class for storing a collection of robot actions. It is used in mrpt::slam::CRawlog,
+		/** Declares a class for storing a collection of robot actions. It is used in mrpt::obs::CRawlog,
 		 *    for logs storage and particle filter based simulations.
 		 *
 		 * \sa CAction, CRawlog

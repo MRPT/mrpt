@@ -10,20 +10,20 @@
 #include "obs-precomp.h"   // Precompiled headers
 
 #include <mrpt/system/filesystem.h>
-#include <mrpt/slam/CRawlog.h>
+#include <mrpt/obs/CRawlog.h>
 #include <mrpt/utils/CFileInputStream.h>
 #include <mrpt/utils/CFileGZInputStream.h>
 #include <mrpt/utils/CFileGZOutputStream.h>
 #include <mrpt/utils/CStream.h>
 
 using namespace mrpt;
-using namespace mrpt::slam;
+using namespace mrpt::obs;
 using namespace mrpt::utils;
 using namespace mrpt::poses;
 using namespace mrpt::utils;
 using namespace mrpt::system;
 
-IMPLEMENTS_SERIALIZABLE(CRawlog, CSerializable,mrpt::slam)
+IMPLEMENTS_SERIALIZABLE(CRawlog, CSerializable,mrpt::obs)
 
 /*---------------------------------------------------------------
 					Default constructor

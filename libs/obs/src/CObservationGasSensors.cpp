@@ -9,11 +9,11 @@
 
 #include "obs-precomp.h"   // Precompiled headers
 
-#include <mrpt/slam/CObservationGasSensors.h>
+#include <mrpt/obs/CObservationGasSensors.h>
 #include <mrpt/utils/CStream.h>
 #include <mrpt/system/os.h>
 
-using namespace mrpt::slam;
+using namespace mrpt::obs;
 using namespace mrpt::utils;
 using namespace mrpt::poses;
 using namespace mrpt::math;
@@ -21,7 +21,7 @@ using namespace std;
 
 
 // This must be added to any CSerializable class implementation file.
-IMPLEMENTS_SERIALIZABLE(CObservationGasSensors, CObservation,mrpt::slam)
+IMPLEMENTS_SERIALIZABLE(CObservationGasSensors, CObservation,mrpt::obs)
 
 /** Constructor
  */

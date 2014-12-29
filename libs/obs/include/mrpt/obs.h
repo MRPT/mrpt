@@ -17,47 +17,47 @@ MRPT_WARNING("Including <mrpt/obs.h> makes compilation much slower, consider inc
 #include <mrpt/config.h>
 
 // Observations:
-#include <mrpt/slam/CObservation.h>
-#include <mrpt/slam/CObservation2DRangeScan.h>
-#include <mrpt/slam/CObservation3DRangeScan.h>
-#include <mrpt/slam/CObservationRGBD360.h>
-#include <mrpt/slam/CObservationRange.h>
-#include <mrpt/slam/CObservationImage.h>
-// #include <mrpt/slam/CObservationVisualLandmarks.h>  // This one is in mrpt-core
-#include <mrpt/slam/CObservationStereoImages.h>
-#include <mrpt/slam/CObservationStereoImagesFeatures.h>
-#include <mrpt/slam/CObservationBeaconRanges.h>
-#include <mrpt/slam/CObservation6DFeatures.h>
-#include <mrpt/slam/CObservationGasSensors.h>
-#include <mrpt/slam/CObservationGPS.h>
-#include <mrpt/slam/CObservationBatteryState.h>
-#include <mrpt/slam/CObservationIMU.h>
-#include <mrpt/slam/CObservationOdometry.h>
-#include <mrpt/slam/CObservationBearingRange.h>
-#include <mrpt/slam/CObservationComment.h>
-#include <mrpt/slam/CObservationReflectivity.h>
-#include <mrpt/slam/CObservationWirelessPower.h>
-#include <mrpt/slam/CObservationRFID.h>
-#include <mrpt/slam/CSensoryFrame.h>
-#include <mrpt/slam/CObservationWindSensor.h>
-#include <mrpt/slam/CObservationCANBusJ1939.h>
-#include <mrpt/slam/CObservationRawDAQ.h>
+#include <mrpt/obs/CObservation.h>
+#include <mrpt/obs/CObservation2DRangeScan.h>
+#include <mrpt/obs/CObservation3DRangeScan.h>
+#include <mrpt/obs/CObservationRGBD360.h>
+#include <mrpt/obs/CObservationRange.h>
+#include <mrpt/obs/CObservationImage.h>
+// #include <mrpt/obs/CObservationVisualLandmarks.h>  // This one is in mrpt-core
+#include <mrpt/obs/CObservationStereoImages.h>
+#include <mrpt/obs/CObservationStereoImagesFeatures.h>
+#include <mrpt/obs/CObservationBeaconRanges.h>
+#include <mrpt/obs/CObservation6DFeatures.h>
+#include <mrpt/obs/CObservationGasSensors.h>
+#include <mrpt/obs/CObservationGPS.h>
+#include <mrpt/obs/CObservationBatteryState.h>
+#include <mrpt/obs/CObservationIMU.h>
+#include <mrpt/obs/CObservationOdometry.h>
+#include <mrpt/obs/CObservationBearingRange.h>
+#include <mrpt/obs/CObservationComment.h>
+#include <mrpt/obs/CObservationReflectivity.h>
+#include <mrpt/obs/CObservationWirelessPower.h>
+#include <mrpt/obs/CObservationRFID.h>
+#include <mrpt/obs/CSensoryFrame.h>
+#include <mrpt/obs/CObservationWindSensor.h>
+#include <mrpt/obs/CObservationCANBusJ1939.h>
+#include <mrpt/obs/CObservationRawDAQ.h>
 
 
 // Observations:
-#include <mrpt/slam/CAction.h>
-#include <mrpt/slam/CActionCollection.h>
-#include <mrpt/slam/CActionRobotMovement2D.h>
-#include <mrpt/slam/CActionRobotMovement3D.h>
+#include <mrpt/obs/CAction.h>
+#include <mrpt/obs/CActionCollection.h>
+#include <mrpt/obs/CActionRobotMovement2D.h>
+#include <mrpt/obs/CActionRobotMovement3D.h>
 
 
 // Others:
-#include <mrpt/slam/CRawlog.h>
-#include <mrpt/slam/carmen_log_tools.h>
+#include <mrpt/obs/CRawlog.h>
+#include <mrpt/obs/carmen_log_tools.h>
 
 // Very basic classes for maps:
-#include <mrpt/slam/CMetricMap.h>
-#include <mrpt/slam/CSimpleMap.h>
+#include <mrpt/maps/CMetricMap.h>
+#include <mrpt/maps/CSimpleMap.h>
 
 
 #endif

@@ -12,14 +12,14 @@
 #include <mrpt/utils/CSerializable.h>
 #include <mrpt/utils/CImage.h>
 #include <mrpt/utils/TStereoCamera.h>
-#include <mrpt/slam/CObservation.h>
+#include <mrpt/obs/CObservation.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/poses/CPose3DQuat.h>
 #include <mrpt/poses/CPose2D.h>
 
 namespace mrpt
 {
-namespace slam
+namespace obs
 {
 	using namespace mrpt::utils;
 

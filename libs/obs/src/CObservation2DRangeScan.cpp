@@ -9,20 +9,20 @@
 
 #include "obs-precomp.h"   // Precompiled headers
 
-#include <mrpt/slam/CObservation2DRangeScan.h>
+#include <mrpt/obs/CObservation2DRangeScan.h>
 #include <mrpt/poses/CPosePDF.h>
 #include <mrpt/utils/CStream.h>
 #include <mrpt/math/CMatrix.h>
 #include <mrpt/math/wrap2pi.h>
 
 using namespace std;
-using namespace mrpt::slam;
+using namespace mrpt::obs;
 using namespace mrpt::utils;
 using namespace mrpt::poses;
 using namespace mrpt::math;
 
 // This must be added to any CSerializable class implementation file.
-IMPLEMENTS_SERIALIZABLE(CObservation2DRangeScan, CObservation,mrpt::slam)
+IMPLEMENTS_SERIALIZABLE(CObservation2DRangeScan, CObservation,mrpt::obs)
 
 /*---------------------------------------------------------------
 							Constructor
@@ -361,11 +361,11 @@ void CObservation2DRangeScan::filterByExclusionAngles( const std::vector<std::pa
 
 namespace mrpt
 {
-	namespace slam
+	namespace obs
 	{
 		// Tricky way to call to a library that depends on us, a sort of "run-time" linking:
 		//  ptr_internal_build_points_map_from_scan2D is a functor in "mrpt-obs", set by "mrpt-maps" at its startup.
-		void OBS_IMPEXP (*ptr_internal_build_points_map_from_scan2D)(const mrpt::slam::CObservation2DRangeScan &obs, mrpt::slam::CMetricMapPtr &out_map, const void *insertOps) = NULL;
+		void OBS_IMPEXP (*ptr_internal_build_points_map_from_scan2D)(const mrpt::obs::CObservation2DRangeScan &obs, mrpt::maps::CMetricMapPtr &out_map, const void *insertOps) = NULL;
 
 	}
 }
@@ -389,7 +389,7 @@ void CObservation2DRangeScan::getScanProperties(T2DScanProperties& p) const
 	p.rightToLeft = this->rightToLeft;
 }
 
-bool mrpt::slam::operator<(const T2DScanProperties&a, const T2DScanProperties&b)
+bool mrpt::obs::operator<(const T2DScanProperties&a, const T2DScanProperties&b)
 {
 	return (a.nRays<b.nRays || a.aperture<b.aperture || (a.rightToLeft && !b.rightToLeft));
 }

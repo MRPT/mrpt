@@ -11,8 +11,8 @@
 
 #include <mrpt/utils/CSerializable.h>
 #include <mrpt/utils/CImage.h>
-#include <mrpt/slam/CObservation.h>
-#include <mrpt/slam/CObservation2DRangeScan.h>
+#include <mrpt/obs/CObservation.h>
+#include <mrpt/obs/CObservation2DRangeScan.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/math/CPolygon.h>
@@ -23,7 +23,7 @@
 
 namespace mrpt
 {
-namespace slam
+namespace obs
 {
 	DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CObservation3DRangeScan, CObservation,OBS_IMPEXP )
 
@@ -158,7 +158,7 @@ namespace slam
 		  *  the points are transformed with \a sensorPose. Furthermore, if provided, those coordinates are transformed with \a robotPoseInTheWorld
 		  *
 		  * \param[in] PROJ3D_USE_LUT (Only when range_is_depth=true) Whether to use a Look-up-table (LUT) to speed up the conversion. It's thread safe in all situations <b>except</b> when you call this method from different threads <b>and</b> with different camera parameter matrices. In all other cases, it's a good idea to left it enabled.
-		  * \tparam POINTMAP Supported maps are all those covered by mrpt::utils::PointCloudAdapter (mrpt::slam::CPointsMap and derived, mrpt::opengl::CPointCloudColoured, PCL point clouds,...)
+		  * \tparam POINTMAP Supported maps are all those covered by mrpt::utils::PointCloudAdapter (mrpt::maps::CPointsMap and derived, mrpt::opengl::CPointCloudColoured, PCL point clouds,...)
 		  *
 		  * \note In MRPT < 0.9.5, this method always assumes that ranges were in Kinect-like format.
 		  */
@@ -208,10 +208,10 @@ namespace slam
 		  * \sa The example in http://www.mrpt.org/Example_Kinect_To_2D_laser_scan
 		  */
 		void convertTo2DScan(
-			mrpt::slam::CObservation2DRangeScan & out_scan2d,
+			mrpt::obs::CObservation2DRangeScan & out_scan2d,
 			const std::string       & sensorLabel,
-			const double angle_sup = DEG2RAD(5),
-			const double angle_inf = DEG2RAD(5),
+			const double angle_sup = mrpt::utils::DEG2RAD(5),
+			const double angle_inf = mrpt::utils::DEG2RAD(5),
 			const double oversampling_ratio = 1.2 );
 
 
@@ -313,7 +313,7 @@ namespace slam
 		struct TCached3DProjTables
 		{
 			mrpt::math::CVectorFloat Kzs,Kys;
-			TCamera  prev_camParams;
+			mrpt::utils::TCamera  prev_camParams;
 		};
 		static TCached3DProjTables m_3dproj_lut; //!< 3D point cloud projection look-up-table \sa project3DPointsFromDepthImage
 
@@ -325,26 +325,26 @@ namespace slam
 
 	namespace utils
 	{
-		using namespace ::mrpt::slam;
+		using namespace ::mrpt::obs;
 		// Specialization must occur in the same namespace
 		MRPT_DECLARE_TTYPENAME_PTR(CObservation3DRangeScan)
 
 		// Enum <-> string converter:
 		template <>
-		struct TEnumTypeFiller<slam::CObservation3DRangeScan::TIntensityChannelID>
+		struct TEnumTypeFiller<obs::CObservation3DRangeScan::TIntensityChannelID>
 		{
-			typedef slam::CObservation3DRangeScan::TIntensityChannelID enum_t;
+			typedef obs::CObservation3DRangeScan::TIntensityChannelID enum_t;
 			static void fill(bimap<enum_t,std::string>  &m_map)
 			{
-				m_map.insert(slam::CObservation3DRangeScan::CH_VISIBLE, "CH_VISIBLE");
-				m_map.insert(slam::CObservation3DRangeScan::CH_IR, "CH_IR");
+				m_map.insert(obs::CObservation3DRangeScan::CH_VISIBLE, "CH_VISIBLE");
+				m_map.insert(obs::CObservation3DRangeScan::CH_IR, "CH_IR");
 			}
 		};
 	}
 
 	namespace utils
 	{
-		using mrpt::slam::CObservation3DRangeScan;
+		using mrpt::obs::CObservation3DRangeScan;
 
 		/** Specialization mrpt::utils::PointCloudAdapter<CObservation3DRangeScan> \ingroup mrpt_adapters_grp */
 		template <>

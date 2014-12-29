@@ -219,7 +219,7 @@ namespace slam
 		/** Adds all the points from \a anotherMap to this map, without fusing.
 		  *  This operation can be also invoked via the "+=" operator, for example:
 		  *  \code
-		  *   CSimplePointsMap m1, m2;
+		  *   mrpt::maps::CSimplePointsMap m1, m2;
 		  *   ...
 		  *   m1.addFrom( m2 );  // Add all points of m2 to m1
 		  *   m1 += m2;          // Exactly the same than above
@@ -643,8 +643,8 @@ namespace slam
 		/** If the map is a simple points map or it's a multi-metric map that contains EXACTLY one simple points map, return it.
 			* Otherwise, return NULL
 			*/
-		virtual const CSimplePointsMap * getAsSimplePointsMap() const { return NULL; }
-		virtual       CSimplePointsMap * getAsSimplePointsMap()       { return NULL; }
+		virtual const mrpt::maps::CSimplePointsMap * getAsSimplePointsMap() const { return NULL; }
+		virtual       mrpt::maps::CSimplePointsMap * getAsSimplePointsMap()       { return NULL; }
 
 
 		/** This method returns the largest distance from the origin to any of the points, such as a sphere centered at the origin with this radius cover ALL the points in the map (the results are buffered, such as, if the map is not modified, the second call will be much faster than the first one). */

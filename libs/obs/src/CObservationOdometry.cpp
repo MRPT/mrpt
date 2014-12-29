@@ -9,16 +9,16 @@
 
 #include "obs-precomp.h"   // Precompiled headers
 
-#include <mrpt/slam/CObservationOdometry.h>
+#include <mrpt/obs/CObservationOdometry.h>
 #include <mrpt/utils/CStream.h>
 #include <mrpt/system/os.h>
 
-using namespace mrpt::slam;
+using namespace mrpt::obs;
 using namespace mrpt::utils;
 using namespace mrpt::poses;
 
 // This must be added to any CSerializable class implementation file.
-IMPLEMENTS_SERIALIZABLE(CObservationOdometry, CObservation,mrpt::slam)
+IMPLEMENTS_SERIALIZABLE(CObservationOdometry, CObservation,mrpt::obs)
 
 /** Constructor
  */

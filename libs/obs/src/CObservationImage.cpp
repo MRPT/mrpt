@@ -9,19 +9,19 @@
 
 #include "obs-precomp.h"   // Precompiled headers
 
-#include <mrpt/slam/CObservationImage.h>
+#include <mrpt/obs/CObservationImage.h>
 #include <mrpt/utils/CStream.h>
 #include <mrpt/math/ops_vectors.h>  // << of std::vector()
 
 #include <iostream>
 
-using namespace mrpt::slam;
+using namespace mrpt::obs;
 using namespace mrpt::utils;
 using namespace mrpt::math;
 using namespace mrpt::poses;
 
 // This must be added to any CSerializable class implementation file.
-IMPLEMENTS_SERIALIZABLE(CObservationImage, CObservation,mrpt::slam)
+IMPLEMENTS_SERIALIZABLE(CObservationImage, CObservation,mrpt::obs)
 
 /** Constructor
  */

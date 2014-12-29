@@ -11,18 +11,18 @@
 #define CARMEN_LOG_TOOLS_H
 
 #include <mrpt/system/datetime.h>
-#include <mrpt/slam/CObservation.h>
+#include <mrpt/obs/CObservation.h>
 
 namespace mrpt
 {
-	namespace slam
+	namespace obs
 	{
 		/** Parse one line from an text input stream and interpret it as a CARMEN log entry,
 		  *  returning its MRPT observation representation.
 		  *
 		  * The first word in each line determines the type of that entry. Supported
 		  *  line entries in this class are the following:
-		  *		- "ROBOTLASER(.*)": A joint odometry-laser entry. This function will return both an mrpt::slam::CObservationOdometry and an mrpt::slam::CObservation2DRangeScan
+		  *		- "ROBOTLASER(.*)": A joint odometry-laser entry. This function will return both an mrpt::obs::CObservationOdometry and an mrpt::obs::CObservation2DRangeScan
 		  *		- "FLASER": (Idem)
 		  *		- "RLASER": (Idem)
 		  *		- "PARAM": This case is special (read below).
@@ -52,7 +52,7 @@ namespace mrpt
 		  */
 		  bool OBS_IMPEXP carmen_log_parse_line(
 			std::istream &in_stream,
-			std::vector<mrpt::slam::CObservationPtr> &out_imported_observations,
+			std::vector<mrpt::obs::CObservationPtr> &out_imported_observations,
 			const mrpt::system::TTimeStamp &time_start_log );
 
 

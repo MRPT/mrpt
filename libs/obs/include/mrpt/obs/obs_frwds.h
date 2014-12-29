@@ -9,18 +9,21 @@
 #pragma once
 
 #include <mrpt/poses/poses_frwds.h>
-
 // Forward declarations for the library "mrpt-obs"
 namespace mrpt
 {
-	namespace slam
+	namespace obs
 	{
 		class CObservation; struct CObservationPtr;
 		class CSensoryFrame; struct CSensoryFramePtr;
+		class CObservation2DRangeScan;
+		class CObservation3DRangeScan;
+	}
+	namespace maps
+	{
 		class CMetricMap; struct CMetricMapPtr;
 		class CPointsMap;
 		class CSimplePointsMap;
 		class CSimpleMap;
-
 	}
 }

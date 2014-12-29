@@ -9,16 +9,16 @@
 
 #include "obs-precomp.h"   // Precompiled headers
 
-#include <mrpt/slam/CObservationRange.h>
+#include <mrpt/obs/CObservationRange.h>
 #include <mrpt/utils/CStream.h>
 
-using namespace mrpt::slam;
+using namespace mrpt::obs;
 using namespace mrpt::utils;
 using namespace mrpt::poses;
 
 
 // This must be added to any CSerializable class implementation file.
-IMPLEMENTS_SERIALIZABLE(CObservationRange, CObservation,mrpt::slam)
+IMPLEMENTS_SERIALIZABLE(CObservationRange, CObservation,mrpt::obs)
 
 
 /** Default constructor.

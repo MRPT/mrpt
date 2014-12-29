@@ -8,19 +8,19 @@
    +---------------------------------------------------------------------------+ */
 
 #include "obs-precomp.h"   // Precompiled headers
-#include <mrpt/slam/CObservationStereoImagesFeatures.h>
+#include <mrpt/obs/CObservationStereoImagesFeatures.h>
 
 #include <mrpt/utils/CFileOutputStream.h>
 #include <mrpt/utils/CStream.h>
 
-using namespace mrpt::slam;
+using namespace mrpt::obs;
 using namespace mrpt::utils;
 using namespace mrpt::poses;
 using namespace mrpt::math;
 using namespace std;
 
 // This must be added to any CSerializable class implementation file.
-IMPLEMENTS_SERIALIZABLE(CObservationStereoImagesFeatures, CObservation,mrpt::slam)
+IMPLEMENTS_SERIALIZABLE(CObservationStereoImagesFeatures, CObservation,mrpt::obs)
 
  CObservationStereoImagesFeatures::CObservationStereoImagesFeatures( ) :
 	cameraLeft(),

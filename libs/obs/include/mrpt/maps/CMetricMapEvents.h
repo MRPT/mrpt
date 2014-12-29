@@ -14,9 +14,9 @@
 
 namespace mrpt
 {
-	namespace slam
+namespace obs { class CObservation; }
+	namespace maps
 	{
-		class CObservation;
 		class CMetricMap;
 
 		/** Event emitted by a metric up upon call of clear()
@@ -42,10 +42,10 @@ namespace mrpt
 		protected:
 			virtual void do_nothing() { } //!< Just to allow this class to be polymorphic
 		public:
-			inline mrptEventMetricMapInsert(const CMetricMap   *smap, const CObservation *obs,const mrpt::poses::CPose3D *robotPose ) : source_map(smap), inserted_obs(obs), inserted_robotPose(robotPose) { } 
+			inline mrptEventMetricMapInsert(const CMetricMap   *smap, const mrpt::obs::CObservation *obs,const mrpt::poses::CPose3D *robotPose ) : source_map(smap), inserted_obs(obs), inserted_robotPose(robotPose) { }
 
 			const CMetricMap   *source_map;
-			const CObservation *inserted_obs;
+			const mrpt::obs::CObservation *inserted_obs;
 			const mrpt::poses::CPose3D *inserted_robotPose;
 		};
 

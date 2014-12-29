@@ -9,21 +9,21 @@
 
 #include "obs-precomp.h"   // Precompiled headers
 
-#include <mrpt/slam/CActionCollection.h>
-#include <mrpt/slam/CActionRobotMovement2D.h>
-#include <mrpt/slam/CActionRobotMovement3D.h>
+#include <mrpt/obs/CActionCollection.h>
+#include <mrpt/obs/CActionRobotMovement2D.h>
+#include <mrpt/obs/CActionRobotMovement3D.h>
 #include <mrpt/poses/CPosePDF.h>
 #include <mrpt/utils/CStream.h>
 
 using namespace mrpt;
-using namespace mrpt::slam;
+using namespace mrpt::obs;
 using namespace mrpt::poses;
 using namespace mrpt::utils;
 
 #include <mrpt/utils/metaprogramming.h>
 using namespace mrpt::utils::metaprogramming;
 
-IMPLEMENTS_SERIALIZABLE(CActionCollection, CSerializable, mrpt::slam)
+IMPLEMENTS_SERIALIZABLE(CActionCollection, CSerializable, mrpt::obs)
 
 
 /*---------------------------------------------------------------

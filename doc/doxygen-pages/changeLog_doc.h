@@ -15,6 +15,10 @@
 <a name="1.3.0">
   <h2>Version 1.3.0: (Under development) </h2></a>
 	- Lib changes:
+		- Namespace "slam" deprecated in libraries mrpt-obs and mrpt-maps (used for historical reasons):
+			- New namespaces mrpt::obs and mrpt::maps.
+			- #include files moved from old paths <mrpt/slam/...> => <mrpt/{obs,maps}/...>
+			- Backward compatible headers added in <mrpt/slam/...> until mrpt 2.0.0
 		- New library mrpt-nav (\a mrpt_nav_grp), subsumming the old mrpt-reactivenav (\a mrpt_reactivenav_grp).
 		- \a mrpt_reactivenav_grp is now a meta-library, depending on \a mrpt_nav_grp.
 		- These classes have been moved between libs for a more sensible organization:

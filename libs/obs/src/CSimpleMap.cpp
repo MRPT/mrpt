@@ -9,12 +9,13 @@
 
 #include "obs-precomp.h"   // Precompiled headers
 
-#include <mrpt/slam/CSimpleMap.h>
+#include <mrpt/maps/CSimpleMap.h>
 #include <mrpt/utils/CFileGZInputStream.h>
 #include <mrpt/utils/CFileGZOutputStream.h>
 #include <mrpt/utils/CStream.h>
 
-using namespace mrpt::slam;
+using namespace mrpt::obs;
+using namespace mrpt::maps;
 using namespace mrpt::utils;
 using namespace mrpt::poses;
 using namespace mrpt::poses;
@@ -23,7 +24,7 @@ using namespace std;
 #include <mrpt/utils/metaprogramming.h>
 using namespace mrpt::utils::metaprogramming;
 
-IMPLEMENTS_SERIALIZABLE(CSimpleMap, CSerializable,mrpt::slam)
+IMPLEMENTS_SERIALIZABLE(CSimpleMap, CSerializable,mrpt::maps)
 
 /*---------------------------------------------------------------
 						Constructor

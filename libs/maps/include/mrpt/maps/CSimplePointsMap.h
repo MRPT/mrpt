@@ -22,7 +22,7 @@ namespace mrpt
 		class CObservation2DRangeScan;
 		class CObservation3DRangeScan;
 
-		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CSimplePointsMap , CPointsMap, MAPS_IMPEXP )
+		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( mrpt::maps::CSimplePointsMap , CPointsMap, MAPS_IMPEXP )
 
 		/** A cloud of points in 2D or 3D, which can be built from a sequence of laser scans.
 		 *    This class only stores the coordinates (x,y,z) of each point.
@@ -32,10 +32,10 @@ namespace mrpt
 		 * \sa CMetricMap, CWeightedPointsMap, CPoint, mrpt::utils::CSerializable
 	  	 * \ingroup mrpt_maps_grp
 		 */
-		class MAPS_IMPEXP CSimplePointsMap : public CPointsMap
+		class MAPS_IMPEXP mrpt::maps::CSimplePointsMap : public CPointsMap
 		{
 			// This must be added to any CSerializable derived class:
-			DEFINE_SERIALIZABLE( CSimplePointsMap )
+			DEFINE_SERIALIZABLE( mrpt::maps::CSimplePointsMap )
 
 		 public:
 			 CSimplePointsMap();          //!< Default constructor
@@ -128,8 +128,8 @@ namespace mrpt
 			/** If the map is a simple points map or it's a multi-metric map that contains EXACTLY one simple points map, return it.
 				* Otherwise, return NULL
 				*/
-			virtual const CSimplePointsMap * getAsSimplePointsMap() const { return this; }
-			virtual       CSimplePointsMap * getAsSimplePointsMap()       { return this; }
+			virtual const mrpt::maps::CSimplePointsMap * getAsSimplePointsMap() const { return this; }
+			virtual       mrpt::maps::CSimplePointsMap * getAsSimplePointsMap()       { return this; }
 
 		protected:
 			/** Clear the map, erasing all the points.
@@ -143,7 +143,7 @@ namespace mrpt
 			/** @} */
 
 		}; // End of class def.
-		DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE( CSimplePointsMap , CPointsMap, MAPS_IMPEXP )
+		DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE( mrpt::maps::CSimplePointsMap , CPointsMap, MAPS_IMPEXP )
 	} // End of namespace
 	
 	namespace utils

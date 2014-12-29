@@ -12,7 +12,7 @@
 #include <mrpt/utils/round.h> // round()
 
 namespace mrpt {
-namespace slam {
+namespace obs {
 namespace detail {
 	// Auxiliary functions which implement SSE-optimized proyection of 3D point cloud:
 	template <class POINTMAP> void do_project_3d_pointcloud(const int H,const int W,const float *kys,const float *kzs,const mrpt::math::CMatrix &rangeImage, mrpt::utils::PointCloudAdapter<POINTMAP> &pca);

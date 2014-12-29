@@ -10,14 +10,14 @@
 #define CObservation2DRangeScan_H
 
 #include <mrpt/utils/CSerializable.h>
-#include <mrpt/slam/CObservation.h>
+#include <mrpt/obs/CObservation.h>
 #include <mrpt/poses/CPose3D.h>
-#include <mrpt/slam/CMetricMap.h>
+#include <mrpt/maps/CMetricMap.h>
 #include <mrpt/math/CPolygon.h>
 
 namespace mrpt
 {
-namespace slam
+namespace obs
 {
 	/** Auxiliary struct that holds all the relevant *geometry* information about a 2D scan.
 	  * This class is used in CSinCosLookUpTableFor2DScans
@@ -116,7 +116,7 @@ namespace slam
 		/** A points map, build only under demand by the methods getAuxPointsMap() and buildAuxPointsMap().
 		  *  It's a generic smart pointer to avoid depending here in the library mrpt-obs on classes on other libraries.
 		  */
-		mutable mrpt::slam::CMetricMapPtr  m_cachedMap;
+		mutable mrpt::maps::CMetricMapPtr  m_cachedMap;
 
 		void internal_buildAuxPointsMap( const void *options = NULL ) const;  //!< Internal method, used from buildAuxPointsMap()
 
@@ -125,7 +125,7 @@ namespace slam
 		/** Returns the cached points map representation of the scan, if already build with buildAuxPointsMap(), or NULL otherwise.
 		  * Usage:
 		  *  \code
-		  *    mrpt::slam::CPointsMap *map = obs->getAuxPointsMap<mrpt::slam::CPointsMap>();
+		  *    mrpt::maps::CPointsMap *map = obs->getAuxPointsMap<mrpt::maps::CPointsMap>();
 		  *  \endcode
 		  * \sa buildAuxPointsMap
 		  */
@@ -138,7 +138,7 @@ namespace slam
 		  * \param options Can be NULL to use default point maps' insertion options, or a pointer to a "CPointsMap::TInsertionOptions" structure to override some params.
 		  * Usage:
 		  *  \code
-		  *    mrpt::slam::CPointsMap *map = obs->buildAuxPointsMap<mrpt::slam::CPointsMap>(&options or NULL);
+		  *    mrpt::maps::CPointsMap *map = obs->buildAuxPointsMap<mrpt::maps::CPointsMap>(&options or NULL);
 		  *  \endcode
 		  * \sa getAuxPointsMap
 		  */
@@ -191,7 +191,7 @@ namespace slam
 
 	namespace utils
 	{
-		using namespace ::mrpt::slam;
+		using namespace ::mrpt::obs;
 		// Specialization must occur in the same namespace
 		MRPT_DECLARE_TTYPENAME_PTR(CObservation2DRangeScan)
 	}

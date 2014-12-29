@@ -10,15 +10,15 @@
 #define CRawlog_H
 
 #include <mrpt/poses/CPose2D.h>
-#include <mrpt/slam/CSensoryFrame.h>
-#include <mrpt/slam/CActionCollection.h>
-#include <mrpt/slam/CObservationComment.h>
+#include <mrpt/obs/CSensoryFrame.h>
+#include <mrpt/obs/CActionCollection.h>
+#include <mrpt/obs/CObservationComment.h>
 #include <mrpt/utils/CConfigFileMemory.h>
 
 
 namespace mrpt
 {
-	namespace slam
+	namespace obs
 	{
 		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CRawlog, mrpt::utils::CSerializable, OBS_IMPEXP )
 

@@ -9,15 +9,15 @@
 
 #include "obs-precomp.h"   // Precompiled headers
 
-#include <mrpt/slam/CObservationRFID.h>
+#include <mrpt/obs/CObservationRFID.h>
 #include <mrpt/utils/CStream.h>
 
-using namespace mrpt::slam;
+using namespace mrpt::obs;
 using namespace mrpt::utils;
 using namespace mrpt::poses;
 
 // This must be added to any CSerializable class implementation file.
-IMPLEMENTS_SERIALIZABLE(CObservationRFID, CObservation,mrpt::slam)
+IMPLEMENTS_SERIALIZABLE(CObservationRFID, CObservation,mrpt::obs)
 
 /** Constructor
  */

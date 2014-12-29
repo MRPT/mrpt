@@ -9,22 +9,22 @@
 #ifndef CActionRobotMovement3D_H
 #define CActionRobotMovement3D_H
 
-#include <mrpt/slam/CAction.h>
+#include <mrpt/obs/CAction.h>
 #include <mrpt/poses/CPose3DPDFGaussian.h>
 #include <mrpt/poses/CPose3DQuatPDFGaussian.h>
 
 namespace mrpt
 {
-namespace slam
+namespace obs
 {
 	DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CActionRobotMovement3D, CAction, OBS_IMPEXP )
 
-		/** Represents a probabilistic 3D (6D) movement.
-	 *   Currently this can be determined from visual odometry for full 6D, or from wheel encoders for 2D movements only.
-     *
-	 * \ingroup mrpt_obs_grp
-	 * \sa CAction
-	 */
+	/** Represents a probabilistic 3D (6D) movement.
+	*   Currently this can be determined from visual odometry for full 6D, or from wheel encoders for 2D movements only.
+	*
+	* \ingroup mrpt_obs_grp
+	* \sa CAction
+	*/
 	class OBS_IMPEXP CActionRobotMovement3D : public CAction
 	{
 		// This must be added to any CSerializable derived class:

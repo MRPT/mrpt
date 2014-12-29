@@ -11,8 +11,8 @@
 
 #include <mrpt/utils/CSerializable.h>
 #include <mrpt/utils/CImage.h>
-#include <mrpt/slam/CObservation.h>
-#include <mrpt/slam/CObservation2DRangeScan.h>
+#include <mrpt/obs/CObservation.h>
+#include <mrpt/obs/CObservation2DRangeScan.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/math/CPolygon.h>
@@ -21,7 +21,7 @@
 
 namespace mrpt
 {
-namespace slam
+namespace obs
 {
 	DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CObservationRGBD360, CObservation, OBS_IMPEXP )
 

@@ -10,13 +10,13 @@
 #define CObservationGasSensors_H
 
 #include <mrpt/utils/CSerializable.h>
-#include <mrpt/slam/CObservation.h>
+#include <mrpt/obs/CObservation.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/poses/CPose2D.h>
 
 namespace mrpt
 {
-namespace slam
+namespace obs
 {
 
 	DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CObservationGasSensors , CObservation, OBS_IMPEXP)

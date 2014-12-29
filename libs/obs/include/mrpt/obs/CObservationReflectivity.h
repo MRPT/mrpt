@@ -9,19 +9,19 @@
 #ifndef CObservationReflectivity_H
 #define CObservationReflectivity_H
 
-#include <mrpt/slam/CObservation.h>
+#include <mrpt/obs/CObservation.h>
 #include <mrpt/poses/CPose3D.h>
 
 namespace mrpt
 {
-namespace slam
+namespace obs
 {
 	DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CObservationReflectivity , CObservation,OBS_IMPEXP )
 
 	/** Declares a class derived from "CObservation" that encapsules a single short-range reflectivity measurement. 
 	 *    This can be used for example to store readings from IR sensors (Lego Mindstorm NXT, etc...).
 	 *
-	 * \sa mrpt::slam::CReflectivityGridMap2D, CObservation
+	 * \sa mrpt::obs::CReflectivityGridMap2D, CObservation
 	 * \ingroup mrpt_obs_grp
 	 */
 	class OBS_IMPEXP CObservationReflectivity : public CObservation

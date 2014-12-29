@@ -10,11 +10,11 @@
 #define CObservationComment_H
 
 #include <mrpt/utils/CSerializable.h>
-#include <mrpt/slam/CObservation.h>
+#include <mrpt/obs/CObservation.h>
 
 namespace mrpt
 {
-namespace slam
+namespace obs
 {
 	DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CObservationComment , CObservation, OBS_IMPEXP)
 

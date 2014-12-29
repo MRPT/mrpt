@@ -10,15 +10,15 @@
 #include "obs-precomp.h"   // Precompiled headers
 
 #include <mrpt/utils/CStream.h>
-#include <mrpt/slam/CObservationIMU.h>
+#include <mrpt/obs/CObservationIMU.h>
 //#include <mrpt/math/CMatrixD.h>
 
-using namespace mrpt::slam;
+using namespace mrpt::obs;
 using namespace mrpt::utils;
 using namespace mrpt::poses;
 
 // This must be added to any CSerializable class implementation file.
-IMPLEMENTS_SERIALIZABLE(CObservationIMU, CObservation,mrpt::slam)
+IMPLEMENTS_SERIALIZABLE(CObservationIMU, CObservation,mrpt::obs)
 
 /*---------------------------------------------------------------
   Implements the writing to a CStream capability of CSerializable objects
@@ -119,7 +119,7 @@ void CObservationIMU::getDescriptionAsText(std::ostream &o) const
 
 	// Units:
 	// Use "COUNT_IMU_DATA_FIELDS" so a compile error happens if the sizes don't fit ;-)
-	static const char * imu_units[ mrpt::slam::COUNT_IMU_DATA_FIELDS ] =
+	static const char * imu_units[ mrpt::obs::COUNT_IMU_DATA_FIELDS ] =
 	{
 		"m/s^2", //	IMU_X_ACC,
 		"m/s^2", //	IMU_Y_ACC,

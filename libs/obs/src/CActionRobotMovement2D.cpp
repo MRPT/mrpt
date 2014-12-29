@@ -9,7 +9,7 @@
 
 #include "obs-precomp.h"   // Precompiled headers
 
-#include <mrpt/slam/CActionRobotMovement2D.h>
+#include <mrpt/obs/CActionRobotMovement2D.h>
 #include <mrpt/utils/CStream.h>
 #include <mrpt/poses/CPosePDFGaussian.h>
 #include <mrpt/poses/CPosePDFParticles.h>
@@ -17,13 +17,13 @@
 #include <mrpt/math/point_poses2vectors.h>
 #include <mrpt/math/wrap2pi.h>
 
-using namespace mrpt::slam;
+using namespace mrpt::obs;
 using namespace mrpt::utils;
 using namespace mrpt::poses;
 using namespace mrpt::random;
 using namespace std;
 
-IMPLEMENTS_SERIALIZABLE(CActionRobotMovement2D, CAction, mrpt::slam)
+IMPLEMENTS_SERIALIZABLE(CActionRobotMovement2D, CAction, mrpt::obs)
 
 /*---------------------------------------------------------------
 						Constructor

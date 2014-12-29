@@ -9,7 +9,7 @@
 
 #include "obs-precomp.h"   // Precompiled headers
 
-#include <mrpt/slam/CObservationGPS.h>
+#include <mrpt/obs/CObservationGPS.h>
 #include <mrpt/utils/CStdOutStream.h>
 #include <mrpt/utils/CStream.h>
 #include <mrpt/math/matrix_serialization.h> // for << of matrices
@@ -18,11 +18,11 @@
 using namespace std;
 using namespace mrpt;
 using namespace mrpt::utils;
-using namespace mrpt::slam;
+using namespace mrpt::obs;
 using namespace mrpt::math;
 
 // This must be added to any CSerializable class implementation file.
-IMPLEMENTS_SERIALIZABLE(CObservationGPS, CObservation,mrpt::slam)
+IMPLEMENTS_SERIALIZABLE(CObservationGPS, CObservation,mrpt::obs)
 
 CStdOutStream	gps_my_cout;
 

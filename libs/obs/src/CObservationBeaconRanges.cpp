@@ -11,16 +11,16 @@
 
 
 #include <mrpt/utils/CStream.h>
-#include <mrpt/slam/CObservationBeaconRanges.h>
+#include <mrpt/obs/CObservationBeaconRanges.h>
 #include <mrpt/system/os.h>
 
-using namespace mrpt::slam;
+using namespace mrpt::obs;
 using namespace mrpt::utils;
 using namespace mrpt::poses;
 
 
 // This must be added to any CSerializable class implementation file.
-IMPLEMENTS_SERIALIZABLE(CObservationBeaconRanges, CObservation,mrpt::slam)
+IMPLEMENTS_SERIALIZABLE(CObservationBeaconRanges, CObservation,mrpt::obs)
 
 /** Default constructor.
  */

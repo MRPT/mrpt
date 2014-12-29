@@ -239,8 +239,8 @@ namespace slam
 		/** If the map is a simple point map or it's a multi-metric map that contains EXACTLY one simple point map, return it.
 			* Otherwise, return NULL
 			*/
-		virtual const CSimplePointsMap * getAsSimplePointsMap() const;
-		virtual       CSimplePointsMap * getAsSimplePointsMap();
+		virtual const mrpt::maps::CSimplePointsMap * getAsSimplePointsMap() const;
+		virtual       mrpt::maps::CSimplePointsMap * getAsSimplePointsMap();
 
 		/** An auxiliary variable that can be used freely by the users (this will be copied to other maps using the copy constructor, copy operator, streaming,etc) The default value is 0.
 		  */
@@ -514,11 +514,11 @@ namespace slam
 		  *
 		  *
 		  * // ====================================================
-		  * // Insertion Options for CSimplePointsMap ##:
+		  * // Insertion Options for mrpt::maps::CSimplePointsMap ##:
 		  * [<sectionName>+"_pointsMap_##_insertOpts"]
 		  *  <See CPointsMap::TInsertionOptions>
 		  *
-		  * // Likelihood Options for CSimplePointsMap ##:
+		  * // Likelihood Options for mrpt::maps::CSimplePointsMap ##:
 		  * [<sectionName>+"_pointsMap_##_likelihoodOpts"]
 		  *  <See CPointsMap::TLikelihoodOptions>
 		  *
@@ -623,7 +623,7 @@ namespace slam
 		  * [<sectionName>+"_colourPointsMap_##_colorOpts"]
 		  *  <See CColouredPointsMap::TColourOptions>
 		  *
-		  * // Likelihood Options for CSimplePointsMap ##:
+		  * // Likelihood Options for mrpt::maps::CSimplePointsMap ##:
 		  * [<sectionName>+"_colourPointsMap_##_likelihoodOpts"]
 		  *  <See CPointsMap::TLikelihoodOptions>
 		  *

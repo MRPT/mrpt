@@ -11,16 +11,16 @@
 
 
 #include <mrpt/utils/CStream.h>
-#include <mrpt/slam/CObservationBatteryState.h>
+#include <mrpt/obs/CObservationBatteryState.h>
 #include <mrpt/system/os.h>
 
-using namespace mrpt::slam;
+using namespace mrpt::obs;
 using namespace mrpt::utils;
 using namespace mrpt::poses;
 
 
 // This must be added to any CSerializable class implementation file.
-IMPLEMENTS_SERIALIZABLE(CObservationBatteryState, CObservation,mrpt::slam)
+IMPLEMENTS_SERIALIZABLE(CObservationBatteryState, CObservation,mrpt::obs)
 
 /** Constructor
  */

@@ -9,7 +9,7 @@
 
 #include "obs-precomp.h"   // Precompiled headers
 
-#include <mrpt/slam/CObservation.h>
+#include <mrpt/obs/CObservation.h>
 #include <mrpt/utils/CStream.h>
 #include <mrpt/system/os.h>
 #include <mrpt/math/lightweight_geom_data.h>
@@ -18,12 +18,12 @@
 #include <mrpt/poses/CPose3D.h>
 #include <iomanip>
 
-using namespace mrpt::slam;
+using namespace mrpt::obs;
 using namespace mrpt::utils;
 using namespace mrpt::poses;
 using namespace mrpt::math;
 
-IMPLEMENTS_VIRTUAL_SERIALIZABLE(CObservation, CSerializable, mrpt::slam)
+IMPLEMENTS_VIRTUAL_SERIALIZABLE(CObservation, CSerializable, mrpt::obs)
 
 
 extern CStartUpClassesRegister  mrpt_obs_class_reg;

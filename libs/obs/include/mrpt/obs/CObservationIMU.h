@@ -11,18 +11,18 @@
 
 #include <mrpt/utils/CSerializable.h>
 #include <mrpt/math/CMatrixD.h>
-#include <mrpt/slam/CObservation.h>
+#include <mrpt/obs/CObservation.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/poses/CPose2D.h>
 
 namespace mrpt
 {
-namespace slam
+namespace obs
 {
 
 	DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CObservationIMU , CObservation,OBS_IMPEXP )
 
-	/** Symbolic names for the indices of IMU data (refer to mrpt::slam::CObservationIMU)
+	/** Symbolic names for the indices of IMU data (refer to mrpt::obs::CObservationIMU)
 	 * \ingroup mrpt_obs_grp
 	  */
 	enum TIMUDataIndex
@@ -84,7 +84,7 @@ namespace slam
 
 	/** This class stores measurements from an Inertial Measurement Unit (IMU) (attitude estimation, raw gyroscope and accelerometer values), altimeters or magnetometers.
 	 *
-	 *  The order of the 21 raw values in each entry of mrpt::slam::CObservationIMU::rawMeasurements is (you can use the TIMUDataIndex "enum" symbolic names):
+	 *  The order of the 21 raw values in each entry of mrpt::obs::CObservationIMU::rawMeasurements is (you can use the TIMUDataIndex "enum" symbolic names):
 		<table>
 		<tr> <td> 0 </td> <td>IMU_X_ACC</td> <td> x-axis acceleration (m/sec<sup>2</sup>)</td> </tr>
 		<tr> <td> 1 </td> <td>IMU_Y_ACC</td> <td> y-axis acceleration (m/sec<sup>2</sup>)</td> </tr>

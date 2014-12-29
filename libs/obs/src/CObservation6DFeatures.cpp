@@ -11,17 +11,17 @@
 
 
 #include <mrpt/utils/CStream.h>
-#include <mrpt/slam/CObservation6DFeatures.h>
+#include <mrpt/obs/CObservation6DFeatures.h>
 #include <mrpt/system/os.h>
 #include <mrpt/math/matrix_serialization.h>
 
-using namespace mrpt::slam;
+using namespace mrpt::obs;
 using namespace mrpt::utils;
 using namespace mrpt::poses;
 
 
 // This must be added to any CSerializable class implementation file.
-IMPLEMENTS_SERIALIZABLE(CObservation6DFeatures, CObservation,mrpt::slam)
+IMPLEMENTS_SERIALIZABLE(CObservation6DFeatures, CObservation,mrpt::obs)
 
 /** Default constructor */
 CObservation6DFeatures::CObservation6DFeatures( ) :

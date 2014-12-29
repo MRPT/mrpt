@@ -10,18 +10,18 @@
 #define CSinCosLookUpTableFor2DScans_H
 
 #include <mrpt/utils/types_math.h>
-#include <mrpt/slam/CObservation2DRangeScan.h>
+#include <mrpt/obs/CObservation2DRangeScan.h>
 #include <mrpt/obs/link_pragmas.h>
 #include <map>
 
 namespace mrpt
 {
-namespace slam
+namespace obs
 {
 	/** A smart look-up-table (LUT) of sin/cos values for 2D laser scans.
 	  *  Refer to the main method CSinCosLookUpTableFor2DScans::getSinCosForScan()
 	  *
-	  *  This class is used in mrpt::slam::CPointsMap
+	  *  This class is used in mrpt::maps::CPointsMap
 	 * \ingroup mrpt_obs_grp
 	  */
 	class OBS_IMPEXP CSinCosLookUpTableFor2DScans
@@ -48,7 +48,7 @@ namespace slam
 	};
 
 
-} // end NS slam
+} // end NS obs
 } // end NS mrpt
 
 #endif

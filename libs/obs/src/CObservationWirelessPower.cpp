@@ -9,16 +9,16 @@
 
 #include "obs-precomp.h"   // Precompiled headers
 
-#include <mrpt/slam/CObservationWirelessPower.h>
+#include <mrpt/obs/CObservationWirelessPower.h>
 #include <mrpt/utils/CStream.h>
 
-using namespace mrpt::slam;
+using namespace mrpt::obs;
 using namespace mrpt::utils;
 using namespace mrpt::poses;
 
 
 // This must be added to any CSerializable class implementation file.
-IMPLEMENTS_SERIALIZABLE(CObservationWirelessPower, CObservation,mrpt::slam)
+IMPLEMENTS_SERIALIZABLE(CObservationWirelessPower, CObservation,mrpt::obs)
 
 /** Constructor
  */

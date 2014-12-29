@@ -9,7 +9,7 @@
 
 #include "obs-precomp.h"   // Precompiled headers
 
-#include <mrpt/slam/CObservationRGBD360.h>
+#include <mrpt/obs/CObservationRGBD360.h>
 #include <mrpt/poses/CPosePDF.h>
 
 #include <mrpt/utils/CFileGZInputStream.h>
@@ -17,13 +17,13 @@
 #include <mrpt/utils/CTimeLogger.h>
 
 using namespace std;
-using namespace mrpt::slam;
+using namespace mrpt::obs;
 using namespace mrpt::utils;
 using namespace mrpt::poses;
 using namespace mrpt::math;
 
 // This must be added to any CSerializable class implementation file.
-IMPLEMENTS_SERIALIZABLE(CObservationRGBD360, CObservation, mrpt::slam)
+IMPLEMENTS_SERIALIZABLE(CObservationRGBD360, CObservation, mrpt::obs)
 
 /*---------------------------------------------------------------
 							Constructor

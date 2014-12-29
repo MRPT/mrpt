@@ -9,16 +9,16 @@
 
 #include "obs-precomp.h"   // Precompiled headers
 
-#include <mrpt/slam/CObservationCANBusJ1939.h>
+#include <mrpt/obs/CObservationCANBusJ1939.h>
 #include <mrpt/utils/CStream.h>
 
-using namespace mrpt::slam;
+using namespace mrpt::obs;
 using namespace mrpt::utils;
 using namespace mrpt::poses;
 using namespace std;
 
 // This must be added to any CSerializable class implementation file.
-IMPLEMENTS_SERIALIZABLE(CObservationCANBusJ1939, CObservation,mrpt::slam)
+IMPLEMENTS_SERIALIZABLE(CObservationCANBusJ1939, CObservation,mrpt::obs)
 
 /*---------------------------------------------------------------
   Implements the writing to a CStream capability of CSerializable objects
