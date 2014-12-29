@@ -44,6 +44,7 @@ using namespace mrpt::poses;
 using namespace mrpt::math;
 using namespace mrpt::gui;
 using namespace mrpt::utils;
+using namespace mrpt::maps;
 using namespace std;
 
 // Thread for grabbing: Do this is another thread so we divide rendering and grabbing

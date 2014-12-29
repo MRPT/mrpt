@@ -23,7 +23,8 @@
 #include "CPosePDFParticlesExtended.h"
 
 using namespace mrpt;
-using namespace mrpt::slam;
+using namespace mrpt::obs;
+using namespace mrpt::maps;
 using namespace mrpt::math;
 using namespace mrpt::system;
 using namespace mrpt::utils;

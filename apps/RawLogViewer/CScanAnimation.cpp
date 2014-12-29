@@ -54,7 +54,8 @@ END_EVENT_TABLE()
 #include <mrpt/opengl/CPlanarLaserScan.h> // in library mrpt-maps
 
 using namespace mrpt;
-using namespace mrpt::slam;
+using namespace mrpt::maps;
+using namespace mrpt::obs;
 using namespace mrpt::opengl;
 using namespace mrpt::system;
 using namespace mrpt::math;

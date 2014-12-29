@@ -36,7 +36,7 @@ END_EVENT_TABLE()
 using namespace mrpt;
 using namespace mrpt::utils;
 using namespace mrpt::system;
-using namespace mrpt::slam;
+using namespace mrpt::obs;
 using namespace std;
 
 const int CRawlogTreeView::ROW_HEIGHT = 17;

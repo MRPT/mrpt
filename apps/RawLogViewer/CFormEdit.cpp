@@ -31,7 +31,7 @@
 #include <mrpt/obs/CObservation2DRangeScan.h>
 
 using namespace mrpt;
-using namespace mrpt::slam;
+using namespace mrpt::obs;
 using namespace mrpt::opengl;
 using namespace mrpt::system;
 using namespace mrpt::math;

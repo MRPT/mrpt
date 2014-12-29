@@ -105,7 +105,8 @@ wxBitmap MyArtProvider::CreateBitmap(const wxArtID& id,
 
 using namespace mrpt;
 using namespace mrpt::hwdrivers;
-using namespace mrpt::slam;
+using namespace mrpt::obs;
+using namespace mrpt::maps;
 using namespace mrpt::opengl;
 using namespace mrpt::gui;
 using namespace mrpt::system;

@@ -434,7 +434,7 @@ void TestParticlesLocalization()
 						bool any_valid=false;
 						for (size_t q=0;q<nBeaconsInMap;q++)
 						{
-							slam::CLandmark *lm = metricMap.m_landmarksMap->landmarks.get(q);
+							mrpt::maps::CLandmark *lm = metricMap.m_landmarksMap->landmarks.get(q);
 							// Real range
 							double R_real = sensorPose.distanceTo( lm->pose_mean );
 							real_ranges(step,q) = R_real;

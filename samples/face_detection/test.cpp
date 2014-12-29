@@ -18,6 +18,7 @@
 #include <mrpt/math/ops_containers.h>
 
 using namespace mrpt;
+using namespace mrpt::maps;
 using namespace mrpt::gui;
 using namespace mrpt::math;
 using namespace mrpt::utils;
