@@ -17,20 +17,20 @@ MRPT_WARNING("Including <mrpt/slam.h> makes compilation much slower, consider in
 #include <mrpt/config.h>
 
 // Maps:
-#include <mrpt/slam/CMetricMap.h>
+#include <mrpt/maps/CMetricMap.h>
 #include <mrpt/slam/CPointsMap.h>
-#include <mrpt/slam/CSimplePointsMap.h>
-#include <mrpt/slam/CColouredPointsMap.h>
-#include <mrpt/slam/COccupancyGridMap2D.h>
-#include <mrpt/slam/CMultiMetricMap.h>
-#include <mrpt/slam/CSimpleMap.h>
-#include <mrpt/slam/CLandmarksMap.h>
+#include <mrpt/maps/CSimplePointsMap.h>
+#include <mrpt/maps/CColouredPointsMap.h>
+#include <mrpt/maps/COccupancyGridMap2D.h>
+#include <mrpt/maps/CMultiMetricMap.h>
+#include <mrpt/maps/CSimpleMap.h>
+#include <mrpt/maps/CLandmarksMap.h>
 #include <mrpt/slam/CLandmark.h>
-#include <mrpt/slam/CGasConcentrationGridMap2D.h>
+#include <mrpt/maps/CGasConcentrationGridMap2D.h>
 
-#include <mrpt/slam/CWirelessPowerGridMap2D.h>
+#include <mrpt/maps/CWirelessPowerGridMap2D.h>
 
-#include <mrpt/slam/CBeaconMap.h>
+#include <mrpt/maps/CBeaconMap.h>
 
 // Map Building algorithms:
 #include <mrpt/slam/CMetricMapBuilderICP.h>
@@ -39,32 +39,32 @@ MRPT_WARNING("Including <mrpt/slam.h> makes compilation much slower, consider in
 #include <mrpt/slam/CRangeBearingKFSLAM2D.h>
 
 // Observations:
-#include <mrpt/slam/CObservation.h>
-#include <mrpt/slam/CObservation2DRangeScan.h>
-#include <mrpt/slam/CObservation3DRangeScan.h>
-#include <mrpt/slam/CObservationRange.h>
-#include <mrpt/slam/CObservationImage.h>
-#include <mrpt/slam/CObservationVisualLandmarks.h>
-#include <mrpt/slam/CObservationStereoImages.h>
-#include <mrpt/slam/CObservationBeaconRanges.h>
-#include <mrpt/slam/CObservationGasSensors.h>
-#include <mrpt/slam/CObservationWirelessPower.h>
-#include <mrpt/slam/CObservationRFID.h>
-#include <mrpt/slam/CObservationGPS.h>
-#include <mrpt/slam/CObservationBatteryState.h>
-#include <mrpt/slam/CObservationIMU.h>
-#include <mrpt/slam/CObservationOdometry.h>
-#include <mrpt/slam/CObservationBearingRange.h>
-#include <mrpt/slam/CObservationComment.h>
+#include <mrpt/obs/CObservation.h>
+#include <mrpt/obs/CObservation2DRangeScan.h>
+#include <mrpt/obs/CObservation3DRangeScan.h>
+#include <mrpt/obs/CObservationRange.h>
+#include <mrpt/obs/CObservationImage.h>
+#include <mrpt/obs/CObservationVisualLandmarks.h>
+#include <mrpt/obs/CObservationStereoImages.h>
+#include <mrpt/obs/CObservationBeaconRanges.h>
+#include <mrpt/obs/CObservationGasSensors.h>
+#include <mrpt/obs/CObservationWirelessPower.h>
+#include <mrpt/obs/CObservationRFID.h>
+#include <mrpt/obs/CObservationGPS.h>
+#include <mrpt/obs/CObservationBatteryState.h>
+#include <mrpt/obs/CObservationIMU.h>
+#include <mrpt/obs/CObservationOdometry.h>
+#include <mrpt/obs/CObservationBearingRange.h>
+#include <mrpt/obs/CObservationComment.h>
 
 #include <mrpt/slam/observations_overlap.h>
 
-#include <mrpt/slam/CSensoryFrame.h>
+#include <mrpt/obs/CSensoryFrame.h>
 
 // Actions:
-#include <mrpt/slam/CActionCollection.h>
-#include <mrpt/slam/CActionRobotMovement2D.h>
-#include <mrpt/slam/CActionRobotMovement3D.h>
+#include <mrpt/obs/CActionCollection.h>
+#include <mrpt/obs/CActionRobotMovement2D.h>
+#include <mrpt/obs/CActionRobotMovement3D.h>
 
 
 // Algorithms:

@@ -13,7 +13,7 @@
 #include <mrpt/slam/data_association.h>
 #include <mrpt/poses/CPosePDF.h>
 #include <mrpt/poses/CPosePDFGaussian.h>
-#include <mrpt/slam/CActionRobotMovement3D.h>
+#include <mrpt/obs/CActionRobotMovement3D.h>
 #include <mrpt/math/utils.h>
 #include <mrpt/math/wrap2pi.h>
 #include <mrpt/utils/CTicTac.h>

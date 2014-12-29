@@ -27,8 +27,8 @@ If available, it will provide the following functionality:
 	- mrpt::slam::CColouredPointsMap::getPCLPointCloudRGB() (*)
 	- mrpt::maps::CPointsMap::savePCDFile()
 	- mrpt::maps::CPointsMap::loadPCDFile()
-- In mrpt::slam::CObservation3DRangeScan (observations from 3D cameras, e.g. Kinect):
-	- mrpt::slam::CObservation3DRangeScan::project3DPointsFromDepthImageInto() (*)
+- In mrpt::obs::CObservation3DRangeScan (observations from 3D cameras, e.g. Kinect):
+	- mrpt::obs::CObservation3DRangeScan::project3DPointsFromDepthImageInto() (*)
 - Read also: <a href="http://www.mrpt.org/Generating_3D_point_clouds_from_RGB_D_observations" >"Generating 3D point clouds from RGB+D observations"</a>.
 		
 <b>Note:</b> (*) means that the functionality is header-only. This means that will be

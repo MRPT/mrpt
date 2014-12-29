@@ -9,7 +9,7 @@
  
 #include <mrpt/detectors.h>
 #include <mrpt/hwdrivers/CCameraSensor.h>
-#include <mrpt/slam/CColouredPointsMap.h>
+#include <mrpt/maps/CColouredPointsMap.h>
 #include <mrpt/slam/CRawlog.h>
 #include <mrpt/gui.h>
 #include <mrpt/opengl/CPointCloudColoured.h>
@@ -227,7 +227,7 @@ void TestCameraFaceDetection()
 		return;
 	}
 
-	mrpt::slam::CObservationPtr  obs = cam->getNextFrame();
+	mrpt::obs::CObservationPtr  obs = cam->getNextFrame();
 	ASSERT_(obs);
 
 	if ( IS_CLASS(obs, CObservation3DRangeScan) )
@@ -248,7 +248,7 @@ void TestCameraFaceDetection()
 		if( !counter )
 			tictac.Tic();
 
-		mrpt::slam::CObservationPtr  obs;
+		mrpt::obs::CObservationPtr  obs;
 		try 
 		{
 			obs = cam->getNextFrame();

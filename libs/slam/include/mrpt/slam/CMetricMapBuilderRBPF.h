@@ -11,7 +11,7 @@
 
 #include <mrpt/slam/CMetricMapBuilder.h>
 #include <mrpt/slam/CMultiMetricMapPDF.h>
-#include <mrpt/slam/CMultiMetricMap.h>
+#include <mrpt/maps/CMultiMetricMap.h>
 
 #include <mrpt/bayes/CParticleFilter.h>
 #include <mrpt/bayes/CParticleFilterCapable.h>
@@ -43,7 +43,7 @@ namespace slam
 	 *
 	 * \sa CMetricMap   \ingroup metric_slam_grp
 	 */
-	class SLAM_IMPEXP CMetricMapBuilderRBPF : public CMetricMapBuilder
+	class SLAM_IMPEXP CMetricMapBuilderRBPF : public mrpt::maps::CMetricMapBuilder
 	{
 	public:
 		/** The map PDF: It includes a path and associated map for each particle.
@@ -90,7 +90,7 @@ namespace slam
 
 			/** See utils::CLoadableOptions
 			  */
-			void  dumpToTextStream(CStream	&out) const;
+			void  dumpToTextStream(mrpt::utils::CStream	&out) const;
 
 			float	insertionLinDistance;
 			float	insertionAngDistance;

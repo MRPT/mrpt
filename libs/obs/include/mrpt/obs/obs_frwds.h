@@ -20,6 +20,9 @@ namespace mrpt
 		class CObservation3DRangeScan;
 		class CObservationRange;
 		class CObservationBeaconRanges;
+		class CObservationBearingRange;
+		class CObservationStereoImages;
+		class CObservationGPS;
 	}
 	namespace maps
 	{

@@ -12,7 +12,7 @@
 #include <mrpt/utils/CConfigFileBase.h>
 #include <mrpt/utils/CImage.h>
 #include <mrpt/slam/CRawlog.h>
-#include <mrpt/slam/CObservation3DRangeScan.h>
+#include <mrpt/obs/CObservation3DRangeScan.h>
 #include <mrpt/opengl/COpenGLScene.h>
 #include <mrpt/gui.h>
 #include <iostream>

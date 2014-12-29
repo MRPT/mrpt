@@ -130,7 +130,7 @@ CPose3D::CPose3D(const CPose3DRotVec &p )
    Implements the writing to a CStream capability of
      CSerializable objects
   ---------------------------------------------------------------*/
-void  CPose3D::writeToStream(CStream &out,int *version) const
+void  CPose3D::writeToStream(mrpt::utils::CStream &out,int *version) const
 {
 	if (version)
 		*version = 2;
@@ -146,7 +146,7 @@ void  CPose3D::writeToStream(CStream &out,int *version) const
 	Implements the reading from a CStream capability of
 		CSerializable objects
   ---------------------------------------------------------------*/
-void  CPose3D::readFromStream(CStream &in,int version)
+void  CPose3D::readFromStream(mrpt::utils::CStream &in,int version)
 {
 	switch(version)
 	{

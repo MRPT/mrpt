@@ -38,8 +38,8 @@ COccupancyGridMapFeatureExtractor::~COccupancyGridMapFeatureExtractor()
 						uncached_extractFeatures
   ---------------------------------------------------------------*/
 void COccupancyGridMapFeatureExtractor::uncached_extractFeatures(
-	const mrpt::slam::COccupancyGridMap2D &grid,
-	mrpt::slam::CLandmarksMap	&outMap,
+	const mrpt::maps::COccupancyGridMap2D &grid,
+	mrpt::maps::CLandmarksMap	&outMap,
 	const size_t  number_of_features,
 	const mrpt::vision::TDescriptorType	descriptors,
 	const mrpt::vision::CFeatureExtraction::TOptions  &feat_options
@@ -95,8 +95,8 @@ void COccupancyGridMapFeatureExtractor::uncached_extractFeatures(
 						extractFeatures
   ---------------------------------------------------------------*/
 void COccupancyGridMapFeatureExtractor::extractFeatures(
-	const mrpt::slam::COccupancyGridMap2D &grid,
-	mrpt::slam::CLandmarksMap	&outMap,
+	const mrpt::maps::COccupancyGridMap2D &grid,
+	mrpt::maps::CLandmarksMap	&outMap,
 	const size_t  number_of_features,
 	const mrpt::vision::TDescriptorType	descriptors,
 	const mrpt::vision::CFeatureExtraction::TOptions  &feat_options

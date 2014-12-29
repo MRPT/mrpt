@@ -9,7 +9,7 @@
 #ifndef CMetricMapsAlignmentAlgorithm_H
 #define CMetricMapsAlignmentAlgorithm_H
 
-#include <mrpt/slam/CPointsMap.h>
+#include <mrpt/maps/CPointsMap.h>
 #include <mrpt/poses/poses_frwds.h>
 
 #include <mrpt/utils/CDebugOutputCapable.h>
@@ -50,10 +50,10 @@ namespace slam
 		 * \return A smart pointer to the output estimated pose PDF.
 		 * \sa CICP
 		 */
-		CPosePDFPtr Align(
-				const CMetricMap		*m1,
-				const CMetricMap		*m2,
-				const CPose2D			&grossEst,
+		mrpt::poses::CPosePDFPtr Align(
+				const mrpt::maps::CMetricMap		*m1,
+				const mrpt::maps::CMetricMap		*m2,
+				const mrpt::poses::CPose2D			&grossEst,
 				float					*runningTime = NULL,
 				void					*info = NULL );
 
@@ -75,10 +75,10 @@ namespace slam
 		 * \return A smart pointer to the output estimated pose PDF.
 		 * \sa CICP
 		 */
-		virtual CPosePDFPtr AlignPDF(
-				const CMetricMap		*m1,
-				const CMetricMap		*m2,
-				const CPosePDFGaussian	&initialEstimationPDF,
+		virtual mrpt::poses::CPosePDFPtr AlignPDF(
+				const mrpt::maps::CMetricMap		*m1,
+				const mrpt::maps::CMetricMap		*m2,
+				const mrpt::poses::CPosePDFGaussian	&initialEstimationPDF,
 				float					*runningTime = NULL,
 				void					*info = NULL ) = 0;
 
@@ -99,10 +99,10 @@ namespace slam
 		 * \return A smart pointer to the output estimated pose PDF.
 		 * \sa CICP
 		 */
-		CPose3DPDFPtr Align3D(
-				const CMetricMap		*m1,
-				const CMetricMap		*m2,
-				const CPose3D			&grossEst,
+		mrpt::poses::CPose3DPDFPtr Align3D(
+				const mrpt::maps::CMetricMap		*m1,
+				const mrpt::maps::CMetricMap		*m2,
+				const mrpt::poses::CPose3D			&grossEst,
 				float					*runningTime = NULL,
 				void					*info = NULL );
 
@@ -124,9 +124,9 @@ namespace slam
 		 * \return A smart pointer to the output estimated pose PDF.
 		 * \sa CICP
 		 */
-		virtual CPose3DPDFPtr Align3DPDF(
-				const CMetricMap		*m1,
-				const CMetricMap		*m2,
+		virtual mrpt::poses::CPose3DPDFPtr Align3DPDF(
+				const mrpt::maps::CMetricMap		*m1,
+				const mrpt::maps::CMetricMap		*m2,
 				const mrpt::poses::CPose3DPDFGaussian	&initialEstimationPDF,
 				float					*runningTime = NULL,
 				void					*info = NULL ) = 0;

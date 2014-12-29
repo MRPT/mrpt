@@ -624,7 +624,7 @@ CPointsMap::TInsertionOptions::TInsertionOptions() :
 }
 
 // Binary dump to/read from stream - for usage in derived classes' serialization
-void CPointsMap::TInsertionOptions::writeToStream(CStream &out) const
+void CPointsMap::TInsertionOptions::writeToStream(mrpt::utils::CStream &out) const
 {
 	const int8_t version = 0;
 	out << version;
@@ -635,7 +635,7 @@ void CPointsMap::TInsertionOptions::writeToStream(CStream &out) const
 	<< maxDistForInterpolatePoints << insertInvalidPoints; // v0
 }
 
-void CPointsMap::TInsertionOptions::readFromStream(CStream &in)
+void CPointsMap::TInsertionOptions::readFromStream(mrpt::utils::CStream &in)
 {
 	int8_t version;
 	in >> version;
@@ -662,14 +662,14 @@ CPointsMap::TLikelihoodOptions::TLikelihoodOptions() :
 
 }
 
-void CPointsMap::TLikelihoodOptions::writeToStream(CStream &out) const
+void CPointsMap::TLikelihoodOptions::writeToStream(mrpt::utils::CStream &out) const
 {
 	const int8_t version = 0;
 	out << version;
 	out << sigma_dist << max_corr_distance << decimation;
 }
 
-void CPointsMap::TLikelihoodOptions::readFromStream(CStream &in)
+void CPointsMap::TLikelihoodOptions::readFromStream(mrpt::utils::CStream &in)
 {
 	int8_t version;
 	in >> version;
@@ -688,7 +688,7 @@ void CPointsMap::TLikelihoodOptions::readFromStream(CStream &in)
 /*---------------------------------------------------------------
 					dumpToTextStream
   ---------------------------------------------------------------*/
-void  CPointsMap::TInsertionOptions::dumpToTextStream(CStream	&out) const
+void  CPointsMap::TInsertionOptions::dumpToTextStream(mrpt::utils::CStream	&out) const
 {
 	out.printf("\n----------- [CPointsMap::TInsertionOptions] ------------ \n\n");
 
@@ -707,7 +707,7 @@ void  CPointsMap::TInsertionOptions::dumpToTextStream(CStream	&out) const
 	out.printf("\n");
 }
 
-void  CPointsMap::TLikelihoodOptions::dumpToTextStream(CStream	&out) const
+void  CPointsMap::TLikelihoodOptions::dumpToTextStream(mrpt::utils::CStream	&out) const
 {
 	out.printf("\n----------- [CPointsMap::TLikelihoodOptions] ------------ \n\n");
 

@@ -28,8 +28,8 @@
 #include <mrpt/utils/CFileGZInputStream.h>
 #include <mrpt/utils/CFileGZOutputStream.h>
 #include <mrpt/system/filesystem.h>
-#include <mrpt/slam/CActionCollection.h>
-#include <mrpt/slam/CSensoryFrame.h>
+#include <mrpt/obs/CActionCollection.h>
+#include <mrpt/obs/CSensoryFrame.h>
 
 using namespace mrpt;
 using namespace mrpt::slam;

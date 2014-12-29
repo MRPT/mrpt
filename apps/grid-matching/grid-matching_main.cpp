@@ -17,9 +17,9 @@
 #include <mrpt/math/ops_containers.h>
 #include <mrpt/math/wrap2pi.h>
 #include <mrpt/slam/CGridMapAligner.h>
-#include <mrpt/slam/CSimpleMap.h>
-#include <mrpt/slam/CSensoryFrame.h>
-#include <mrpt/slam/CMultiMetricMap.h>
+#include <mrpt/maps/CSimpleMap.h>
+#include <mrpt/obs/CSensoryFrame.h>
+#include <mrpt/maps/CMultiMetricMap.h>
 #include <mrpt/gui.h>
 #include <mrpt/system/datetime.h>
 #include <mrpt/system/filesystem.h>

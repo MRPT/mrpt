@@ -338,7 +338,7 @@ CFeatureExtraction::TOptions::TOptions(const TFeatureType _featsType) :
 /*---------------------------------------------------------------
 					dumpToTextStream
   ---------------------------------------------------------------*/
-void CFeatureExtraction::TOptions::dumpToTextStream(CStream	&out) const
+void CFeatureExtraction::TOptions::dumpToTextStream(mrpt::utils::CStream	&out) const
 {
 	out.printf("\n----------- [CFeatureExtraction::TOptions] ------------ \n\n");
 

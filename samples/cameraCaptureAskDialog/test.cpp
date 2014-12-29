@@ -45,7 +45,7 @@ void TestCameraCaptureAsk()
 		if( !counter )
 			tictac.Tic();
 
-		mrpt::slam::CObservationPtr  obs = cam->getNextFrame();
+		mrpt::obs::CObservationPtr  obs = cam->getNextFrame();
 		ASSERT_(obs);
 
 		CImage *img = NULL;

@@ -90,7 +90,7 @@ namespace mrpt
 		* \sa CMetricMap, CMetricMap::insertObservation
 		*/
 		template <class METRICMAP>
-		inline bool insertObservationInto( METRICMAP *theMap, const CPose3D *robotPose = NULL ) const
+		inline bool insertObservationInto( METRICMAP *theMap, const mrpt::poses::CPose3D *robotPose = NULL ) const
 		{
 			return theMap->insertObservation(this,robotPose);
 		}
@@ -99,7 +99,7 @@ namespace mrpt
 		*  Note that most sensors will return a full (6D) CPose3D, but see the derived classes for more details or special cases.
 		* \sa setSensorPose
 		*/
-		virtual void getSensorPose( CPose3D &out_sensorPose ) const = 0;
+		virtual void getSensorPose( mrpt::poses::CPose3D &out_sensorPose ) const = 0;
 
 		/** A general method to retrieve the sensor pose on the robot.
 		*  Note that most sensors will return a full (6D) CPose3D, but see the derived classes for more details or special cases.
@@ -111,7 +111,7 @@ namespace mrpt
 		*  Note that most sensors will use the full (6D) CPose3D, but see the derived classes for more details or special cases.
 		* \sa getSensorPose
 		*/
-		virtual void setSensorPose( const CPose3D &newSensorPose ) = 0;
+		virtual void setSensorPose( const mrpt::poses::CPose3D &newSensorPose ) = 0;
 
 		/** A general method to change the sensor pose on the robot.
 		*  Note that most sensors will use the full (6D) CPose3D, but see the derived classes for more details or special cases.

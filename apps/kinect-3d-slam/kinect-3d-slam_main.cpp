@@ -32,7 +32,7 @@ Note: This is a very *simple* approach to SLAM. It would be better to first sele
 #include <mrpt/system/filesystem.h>
 #include <mrpt/synch/CThreadSafeVariable.h>
 #include <mrpt/utils/CConfigFile.h>
-#include <mrpt/slam/CColouredPointsMap.h>
+#include <mrpt/maps/CColouredPointsMap.h>
 #include <mrpt/opengl/CPointCloudColoured.h>
 #include <mrpt/opengl/CGridPlaneXY.h>
 #include <mrpt/opengl/stock_objects.h>

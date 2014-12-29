@@ -112,7 +112,7 @@ void Test_NIDAQ()
 	// Loop reading:
 	while (!mrpt::system::os::kbhit())
 	{
-		std::vector<mrpt::slam::CObservationRawDAQPtr> readObs;
+		std::vector<mrpt::obs::CObservationRawDAQPtr> readObs;
 		bool hardError;
 
 		try

@@ -64,7 +64,7 @@ namespace mrpt
 		  *		- "num_fix_points": Idem, for the landmarks positions (default=0: optimize all)
 		  *		- "profiler": If !=0, displays profiling information to the console at return.
 		  *
-		  * \note In this function, all coordinates are absolute. Camera frames are such that +Z points forward from the focal point (see the figure in mrpt::slam::CObservationImage).
+		  * \note In this function, all coordinates are absolute. Camera frames are such that +Z points forward from the focal point (see the figure in mrpt::obs::CObservationImage).
 		  * \note The first frame pose will be not updated since at least one frame must remain fixed.
 		  *
 		  * \param observations [IN] All the feature observations (WITHOUT distortion), indexed by feature ID as lists of <frame_ID, (x,y)>. See TSequenceFeatureObservations.

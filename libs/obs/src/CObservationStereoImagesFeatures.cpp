@@ -73,7 +73,7 @@ void  CObservationStereoImagesFeatures::saveFeaturesToTextFile( const std::strin
 /*---------------------------------------------------------------
   Implements the writing to a CStream capability of CSerializable objects
  ---------------------------------------------------------------*/
-void  CObservationStereoImagesFeatures::writeToStream(CStream &out, int *version) const
+void  CObservationStereoImagesFeatures::writeToStream(mrpt::utils::CStream &out, int *version) const
 {
 	if (version)
 		*version = 0 ;
@@ -97,7 +97,7 @@ void  CObservationStereoImagesFeatures::writeToStream(CStream &out, int *version
 /*---------------------------------------------------------------
   Implements the reading from a CStream capability of CSerializable objects
  ---------------------------------------------------------------*/
-void  CObservationStereoImagesFeatures::readFromStream(CStream &in, int version)
+void  CObservationStereoImagesFeatures::readFromStream(mrpt::utils::CStream &in, int version)
 {
 	switch(version)
 	{

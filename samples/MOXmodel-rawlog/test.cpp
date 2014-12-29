@@ -7,7 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/slam/CObservationGasSensors.h>
+#include <mrpt/obs/CObservationGasSensors.h>
 #include <mrpt/utils/CConfigFile.h>
 #include <mrpt/utils/CFileGZInputStream.h>
 #include <mrpt/utils/CFileGZOutputStream.h>
@@ -26,7 +26,7 @@ int main(int argc, char **argv)
 	string													rawlog_file,sensorLabel;
 	//float													a_rise,a_decay,; //b_decay, b_rise
 	int														enoseID,sensorType,indexMonitoredSensor,delay_value; // decimate_value, winNoise_size
-	mrpt::slam::CObservationGasSensors::CMOSmodel		MOSmodel;
+	mrpt::obs::CObservationGasSensors::CMOSmodel		MOSmodel;
 	bool													save_maplog,have_estimation,apply_delay;
 
 	// Load configuration:	
@@ -145,7 +145,7 @@ int main(int argc, char **argv)
 						if (have_estimation)
 						{
 							//Save as new obs
-							mrpt::slam::CObservationGasSensors::TObservationENose gd_est;
+							mrpt::obs::CObservationGasSensors::TObservationENose gd_est;
 							gd_est.hasTemperature = false;
 							gd_est.temperature = 0.0;
 							gd_est.isActive = false;
@@ -153,7 +153,7 @@ int main(int argc, char **argv)
 							gd_est.readingsVoltage.push_back(MOXmodel_estimation);
 							gd_est.eNosePoseOnTheRobot = MOXmodel_pose;							
 
-							mrpt::slam::CObservationGasSensorsPtr obs_GDM = CObservationGasSensors::Create();
+							mrpt::obs::CObservationGasSensorsPtr obs_GDM = CObservationGasSensors::Create();
 							obs_GDM->sensorLabel = "GDM";
 							// modify timestamp to deal with the delay of the model
 							obs_GDM->timestamp = MOXmodel_timestamp;

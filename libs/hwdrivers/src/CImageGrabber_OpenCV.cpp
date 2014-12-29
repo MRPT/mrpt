@@ -196,7 +196,7 @@ CImageGrabber_OpenCV::~CImageGrabber_OpenCV()
 /*-------------------------------------------------------------
 					get the image
  -------------------------------------------------------------*/
-bool  CImageGrabber_OpenCV::getObservation( mrpt::slam::CObservationImage &out_observation)
+bool  CImageGrabber_OpenCV::getObservation( mrpt::obs::CObservationImage &out_observation)
 {
    MRPT_START
 

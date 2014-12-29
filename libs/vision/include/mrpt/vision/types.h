@@ -48,7 +48,7 @@ namespace mrpt
 			featBCD,				//!< Binary corder detector
 			featSIFT,				//!< Scale Invariant Feature Transform [LOWE'04]
 			featSURF,				//!< Speeded Up Robust Feature [BAY'06]
-			featBeacon,				//!< A especial case: this is not an image feature, but a 2D/3D beacon (used for range-only SLAM from mrpt::slam::CLandmark)
+			featBeacon,				//!< A especial case: this is not an image feature, but a 2D/3D beacon (used for range-only SLAM from mrpt::maps::CLandmark)
 			featFAST,				//!< FAST feature detector, OpenCV's implementation ("Faster and better: A machine learning approach to corner detection", E. Rosten, R. Porter and T. Drummond, PAMI, 2009).
 			featFASTER9,			//!< FASTER-9 detector, Edward Rosten's libcvd implementation optimized for SSE2.
 			featFASTER10,			//!< FASTER-9 detector, Edward Rosten's libcvd implementation optimized for SSE2.

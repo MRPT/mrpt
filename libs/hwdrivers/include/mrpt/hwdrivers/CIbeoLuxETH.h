@@ -12,7 +12,7 @@
 #include <mrpt/hwdrivers/CGenericSensor.h>
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/poses/CPoint3D.h>
-#include <mrpt/slam/CObservation3DRangeScan.h>
+#include <mrpt/obs/CObservation3DRangeScan.h>
 #include <mrpt/utils/CClientTCPSocket.h>
 
 namespace mrpt
@@ -78,7 +78,7 @@ namespace mrpt
             double                  m_angleResolution;  // in degrees
             double                  m_startAngle;       // degrees
             double                  m_stopAngle;        // degrees
-            CPose3D                 m_sensorPose;
+            mrpt::poses::CPose3D                 m_sensorPose;
             double                  m_maxRange;
             double                  m_beamApperture;
 			bool					m_run;

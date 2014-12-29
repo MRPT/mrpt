@@ -16,14 +16,14 @@
 #include <mrpt/system/os.h>
 
 #include <mrpt/slam/CMultiMetricMapPDF.h>
-#include <mrpt/slam/CActionRobotMovement2D.h>
-#include <mrpt/slam/CActionRobotMovement3D.h>
-#include <mrpt/slam/CActionCollection.h>
+#include <mrpt/obs/CActionRobotMovement2D.h>
+#include <mrpt/obs/CActionRobotMovement3D.h>
+#include <mrpt/obs/CActionCollection.h>
 #include <mrpt/poses/CPosePDFGaussian.h>
 #include <mrpt/poses/CPosePDFGrid.h>
-#include <mrpt/slam/CObservationBeaconRanges.h>
-#include <mrpt/slam/CSimplePointsMap.h>
-#include <mrpt/slam/CLandmarksMap.h>
+#include <mrpt/obs/CObservationBeaconRanges.h>
+#include <mrpt/maps/CSimplePointsMap.h>
+#include <mrpt/maps/CLandmarksMap.h>
 
 #include <mrpt/slam/PF_aux_structs.h>
 
@@ -204,7 +204,7 @@ void  CMultiMetricMapPDF::getEstimatedPosePDFAtTime(
 /*---------------------------------------------------------------
 						writeToStream
   ---------------------------------------------------------------*/
-void  CRBPFParticleData::writeToStream(CStream &out,int *version) const
+void  CRBPFParticleData::writeToStream(mrpt::utils::CStream &out,int *version) const
 {
 	MRPT_UNUSED_PARAM(out); MRPT_UNUSED_PARAM(version);
 	THROW_EXCEPTION("Shouldn't arrive here")
@@ -213,7 +213,7 @@ void  CRBPFParticleData::writeToStream(CStream &out,int *version) const
 /*---------------------------------------------------------------
 						readFromStream
   ---------------------------------------------------------------*/
-void  CRBPFParticleData::readFromStream(CStream &in, int version)
+void  CRBPFParticleData::readFromStream(mrpt::utils::CStream &in, int version)
 {
 	MRPT_UNUSED_PARAM(in); MRPT_UNUSED_PARAM(version);
 	THROW_EXCEPTION("Shouldn't arrive here")
@@ -222,7 +222,7 @@ void  CRBPFParticleData::readFromStream(CStream &in, int version)
 /*---------------------------------------------------------------
 						writeToStream
   ---------------------------------------------------------------*/
-void  CMultiMetricMapPDF::writeToStream(CStream &out,int *version) const
+void  CMultiMetricMapPDF::writeToStream(mrpt::utils::CStream &out,int *version) const
 {
 	if (version)
 		*version = 0;
@@ -248,7 +248,7 @@ void  CMultiMetricMapPDF::writeToStream(CStream &out,int *version) const
 /*---------------------------------------------------------------
 						readFromStream
   ---------------------------------------------------------------*/
-void  CMultiMetricMapPDF::readFromStream(CStream &in, int version)
+void  CMultiMetricMapPDF::readFromStream(mrpt::utils::CStream &in, int version)
 {
 	switch(version)
 	{
@@ -763,7 +763,7 @@ CMultiMetricMapPDF::TPredictionParams::TPredictionParams() :
 /*---------------------------------------------------------------
 					dumpToTextStream
   ---------------------------------------------------------------*/
-void  CMultiMetricMapPDF::TPredictionParams::dumpToTextStream(CStream	&out) const
+void  CMultiMetricMapPDF::TPredictionParams::dumpToTextStream(mrpt::utils::CStream	&out) const
 {
 	out.printf("\n----------- [CMultiMetricMapPDF::TPredictionParams] ------------ \n\n");
 

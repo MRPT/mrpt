@@ -61,9 +61,9 @@ namespace obs
 		vector_bool   voltageOtherBatteriesValid;
 
 		// See base class docs
-		void getSensorPose( CPose3D &out_sensorPose ) const;		
+		void getSensorPose( mrpt::poses::CPose3D &out_sensorPose ) const;		
 		// See base class docs
-		void setSensorPose( const CPose3D &newSensorPose );
+		void setSensorPose( const mrpt::poses::CPose3D &newSensorPose );
 		// See base class docs
 		virtual void getDescriptionAsText(std::ostream &o) const;
 		

@@ -50,7 +50,7 @@ namespace mrpt
 		  *   These poses are stored in the edges in the format specified by the template argument CPOSE. Users should employ the following derived classes
 		  *   depending on the desired representation of edges:
 		  *      - mrpt::graphs::CNetworkOfPoses2D    : 2D edges as a simple CPose2D (x y phi)
-		  *      - mrpt::graphs::CNetworkOfPoses3D    : 3D edges as a simple CPose3D (x y z yaw pitch roll)
+		  *      - mrpt::graphs::CNetworkOfPoses3D    : 3D edges as a simple mrpt::poses::CPose3D (x y z yaw pitch roll)
 		  *      - mrpt::graphs::CNetworkOfPoses2DInf : 2D edges as a Gaussian PDF with information matrix ( CPosePDFGaussianInf )
 		  *      - mrpt::graphs::CNetworkOfPoses3DInf : 3D edges as a Gaussian PDF with information matrix ( CPose3DPDFGaussianInf )
 		  *      - mrpt::graphs::CNetworkOfPoses2DCov : 2D edges as a Gaussian PDF with covariance matrix ( CPosePDFGaussian ). It's more efficient to use the information matrix version instead!
@@ -235,7 +235,7 @@ namespace mrpt
 
 		/** Binary serialization (write) operator "stream << graph" */
 		template <class CPOSE,class MAPS_IMPLEMENTATION,class NODE_ANNOTATIONS,class EDGE_ANNOTATIONS>
-		CStream & operator << (CStream&out, const CNetworkOfPoses<CPOSE,MAPS_IMPLEMENTATION,NODE_ANNOTATIONS,EDGE_ANNOTATIONS> &obj)
+		CStream & operator << (mrpt::utils::CStream&out, const CNetworkOfPoses<CPOSE,MAPS_IMPLEMENTATION,NODE_ANNOTATIONS,EDGE_ANNOTATIONS> &obj)
 		{
 			typedef CNetworkOfPoses<CPOSE,MAPS_IMPLEMENTATION,NODE_ANNOTATIONS,EDGE_ANNOTATIONS> graph_t;
 			detail::graph_ops<graph_t>::save_graph_of_poses_to_binary_file(&obj,out);
@@ -244,7 +244,7 @@ namespace mrpt
 
 		/** Binary serialization (read) operator "stream >> graph" */
 		template <class CPOSE,class MAPS_IMPLEMENTATION,class NODE_ANNOTATIONS,class EDGE_ANNOTATIONS>
-		CStream & operator >> (CStream&in, CNetworkOfPoses<CPOSE,MAPS_IMPLEMENTATION,NODE_ANNOTATIONS,EDGE_ANNOTATIONS> &obj)
+		CStream & operator >> (mrpt::utils::CStream&in, CNetworkOfPoses<CPOSE,MAPS_IMPLEMENTATION,NODE_ANNOTATIONS,EDGE_ANNOTATIONS> &obj)
 		{
 			typedef CNetworkOfPoses<CPOSE,MAPS_IMPLEMENTATION,NODE_ANNOTATIONS,EDGE_ANNOTATIONS> graph_t;
 			detail::graph_ops<graph_t>::read_graph_of_poses_from_binary_file(&obj,in);
@@ -255,7 +255,7 @@ namespace mrpt
 		    @{ */
 
 		typedef CNetworkOfPoses<mrpt::poses::CPose2D,map_traits_stdmap>               CNetworkOfPoses2D;     //!< The specialization of CNetworkOfPoses for poses of type CPose2D (not a PDF!), also implementing serialization.
-		typedef CNetworkOfPoses<mrpt::poses::CPose3D,map_traits_stdmap>               CNetworkOfPoses3D;     //!< The specialization of CNetworkOfPoses for poses of type CPose3D (not a PDF!), also implementing serialization.
+		typedef CNetworkOfPoses<mrpt::poses::CPose3D,map_traits_stdmap>               CNetworkOfPoses3D;     //!< The specialization of CNetworkOfPoses for poses of type mrpt::poses::CPose3D (not a PDF!), also implementing serialization.
 		typedef CNetworkOfPoses<mrpt::poses::CPosePDFGaussian,map_traits_stdmap>      CNetworkOfPoses2DCov;  //!< The specialization of CNetworkOfPoses for poses of type CPosePDFGaussian, also implementing serialization.
 		typedef CNetworkOfPoses<mrpt::poses::CPose3DPDFGaussian,map_traits_stdmap>    CNetworkOfPoses3DCov;  //!< The specialization of CNetworkOfPoses for poses of type CPose3DPDFGaussian, also implementing serialization.
 		typedef CNetworkOfPoses<mrpt::poses::CPosePDFGaussianInf,map_traits_stdmap>   CNetworkOfPoses2DInf;  //!< The specialization of CNetworkOfPoses for poses of type CPosePDFGaussianInf, also implementing serialization.

@@ -12,10 +12,10 @@
 #include <mrpt/utils/CDebugOutputCapable.h>
 #include <mrpt/slam/CRawlog.h>
 #include <mrpt/poses/CPose2D.h>
-#include <mrpt/slam/CSensoryFrame.h>
-#include <mrpt/slam/CSimplePointsMap.h>
-#include <mrpt/slam/COccupancyGridMap2D.h>
-#include <mrpt/slam/CActionRobotMovement2D.h>
+#include <mrpt/obs/CSensoryFrame.h>
+#include <mrpt/maps/CSimplePointsMap.h>
+#include <mrpt/maps/COccupancyGridMap2D.h>
+#include <mrpt/obs/CActionRobotMovement2D.h>
 
 #include <mrpt/detectors/link_pragmas.h>
 
@@ -101,7 +101,7 @@ namespace detectors
 		  */
 		void  process(
 			mrpt::slam::CActionRobotMovement2D & in_poseChange,
-			mrpt::slam::CSensoryFrame          & in_sf,
+			mrpt::obs::CSensoryFrame          & in_sf,
 			TDoorCrossingOutParams             & out_estimation
 			);
 
@@ -118,7 +118,7 @@ namespace detectors
 		mrpt::slam::CRawlog  lastObs;
 
 		/** Entropy of current, and last "map patchs". */
-		mrpt::slam::COccupancyGridMap2D::TEntropyInfo entropy, lastEntropy;
+		mrpt::maps::COccupancyGridMap2D::TEntropyInfo entropy, lastEntropy;
 		bool  lastEntropyValid;
 
 

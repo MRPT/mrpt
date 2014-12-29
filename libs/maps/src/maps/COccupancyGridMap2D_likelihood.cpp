@@ -848,7 +848,7 @@ void  COccupancyGridMap2D::TLikelihoodOptions::loadFromConfigFile(
 /*---------------------------------------------------------------
 					dumpToTextStream
   ---------------------------------------------------------------*/
-void  COccupancyGridMap2D::TLikelihoodOptions::dumpToTextStream(CStream	&out) const
+void  COccupancyGridMap2D::TLikelihoodOptions::dumpToTextStream(mrpt::utils::CStream	&out) const
 {
 	out.printf("\n----------- [COccupancyGridMap2D::TLikelihoodOptions] ------------ \n\n");
 

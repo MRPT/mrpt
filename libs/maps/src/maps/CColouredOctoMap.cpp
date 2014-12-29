@@ -54,7 +54,7 @@ CColouredOctoMap::~CColouredOctoMap()
    Implements the writing to a CStream capability of
 				CSerializable objects
   ---------------------------------------------------------------*/
-void  CColouredOctoMap::writeToStream(CStream &out, int *version) const
+void  CColouredOctoMap::writeToStream(mrpt::utils::CStream &out, int *version) const
 {
 	if (version)
 		*version = 1;
@@ -78,7 +78,7 @@ void  CColouredOctoMap::writeToStream(CStream &out, int *version) const
    Implements the reading from a CStream capability of
       CSerializable objects
   ---------------------------------------------------------------*/
-void  CColouredOctoMap::readFromStream(CStream &in, int version)
+void  CColouredOctoMap::readFromStream(mrpt::utils::CStream &in, int version)
 {
 	switch(version)
 	{

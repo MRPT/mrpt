@@ -58,7 +58,7 @@ CObservationRGBD360::~CObservationRGBD360()
 /*---------------------------------------------------------------
   Implements the writing to a CStream capability of CSerializable objects
  ---------------------------------------------------------------*/
-void  CObservationRGBD360::writeToStream(CStream &out, int *version) const
+void  CObservationRGBD360::writeToStream(mrpt::utils::CStream &out, int *version) const
 {
 	if (version)
 		*version = 0;
@@ -97,7 +97,7 @@ void  CObservationRGBD360::writeToStream(CStream &out, int *version) const
 /*---------------------------------------------------------------
   Implements the reading from a CStream capability of CSerializable objects
  ---------------------------------------------------------------*/
-void  CObservationRGBD360::readFromStream(CStream &in, int version)
+void  CObservationRGBD360::readFromStream(mrpt::utils::CStream &in, int version)
 {
 	switch(version)
 	{

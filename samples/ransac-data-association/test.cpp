@@ -20,7 +20,7 @@
 #include <mrpt/opengl/CSetOfLines.h>
 #include <mrpt/opengl/stock_objects.h>
 #include <mrpt/scanmatching.h>
-#include <mrpt/slam/CSimplePointsMap.h>
+#include <mrpt/maps/CSimplePointsMap.h>
 
 // ============= PARAMETERS ===================
 

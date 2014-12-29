@@ -37,7 +37,7 @@ CObservationBatteryState::CObservationBatteryState( ) :
 /*---------------------------------------------------------------
   Implements the writing to a CStream capability of CSerializable objects
  ---------------------------------------------------------------*/
-void  CObservationBatteryState::writeToStream(CStream &out, int *version) const
+void  CObservationBatteryState::writeToStream(mrpt::utils::CStream &out, int *version) const
 {
 	MRPT_UNUSED_PARAM(out);
 	if (version)
@@ -59,7 +59,7 @@ void  CObservationBatteryState::writeToStream(CStream &out, int *version) const
 /*---------------------------------------------------------------
   Implements the reading from a CStream capability of CSerializable objects
  ---------------------------------------------------------------*/
-void  CObservationBatteryState::readFromStream(CStream &in, int version)
+void  CObservationBatteryState::readFromStream(mrpt::utils::CStream &in, int version)
 {
 	MRPT_UNUSED_PARAM(in);
 	switch(version)

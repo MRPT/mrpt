@@ -14,7 +14,7 @@
 #include <mrpt/hwdrivers/link_pragmas.h>
 #include <mrpt/synch/CCriticalSection.h>
 #include <mrpt/synch/CThreadSafeVariable.h>
-#include <mrpt/slam/CObservationImage.h>
+#include <mrpt/obs/CObservationImage.h>
 
 #include <mrpt/hwdrivers/CGenericSensor.h>
 
@@ -39,7 +39,7 @@ namespace mrpt
 			bool	m_videothread_initialized_error;
 			bool    m_videothread_finished;
 
-			mrpt::slam::CObservationImagePtr buffer_img;
+			mrpt::obs::CObservationImagePtr buffer_img;
 			mrpt::synch::CCriticalSection buffer_img_cs;
 
 

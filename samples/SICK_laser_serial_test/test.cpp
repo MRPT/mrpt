@@ -9,8 +9,8 @@
 
 #include <mrpt/hwdrivers/CSickLaserSerial.h>
 #include <mrpt/gui/CDisplayWindowPlots.h>
-#include <mrpt/slam/CSimplePointsMap.h>
-#include <mrpt/slam/CObservation2DRangeScan.h>
+#include <mrpt/maps/CSimplePointsMap.h>
+#include <mrpt/obs/CObservation2DRangeScan.h>
 #include <mrpt/system/threads.h> // sleep()
 #include <mrpt/system/os.h>
 

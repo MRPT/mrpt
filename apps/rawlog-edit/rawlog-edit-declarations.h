@@ -14,7 +14,7 @@
 #include <mrpt/utils/CFileOutputStream.h>
 #include <mrpt/utils/CImage.h>
 #include <mrpt/system/filesystem.h>
-#include <mrpt/slam/CObservation.h>
+#include <mrpt/obs/CObservation.h>
 #include "CRawlogProcessor.h"
 
 // Declarations:

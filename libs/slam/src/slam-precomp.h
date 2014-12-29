@@ -12,9 +12,9 @@
 #if MRPT_ENABLE_PRECOMPILED_HDRS
 
 // Maps:
-#include <mrpt/slam/CMetricMap.h>
-#include <mrpt/slam/CObservation.h>
-#include <mrpt/slam/CSensoryFrame.h>
+#include <mrpt/maps/CMetricMap.h>
+#include <mrpt/obs/CObservation.h>
+#include <mrpt/obs/CSensoryFrame.h>
 
 #endif
 

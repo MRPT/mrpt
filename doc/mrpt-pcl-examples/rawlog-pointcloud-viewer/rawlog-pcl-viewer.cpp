@@ -137,9 +137,9 @@ int main(int argc, char**argv)
 
 		while (!viewer.wasStopped ())
 		{
-			mrpt::slam::CActionCollectionPtr	actions;
-			mrpt::slam::CSensoryFramePtr		SF;
-			mrpt::slam::CObservationPtr			obs;
+			mrpt::obs::CActionCollectionPtr	actions;
+			mrpt::obs::CSensoryFramePtr		SF;
+			mrpt::obs::CObservationPtr			obs;
 
 			if (!rawlog_eof)
 			{

@@ -36,7 +36,7 @@ CObservationBeaconRanges::CObservationBeaconRanges( ) :
 /*---------------------------------------------------------------
   Implements the writing to a CStream capability of CSerializable objects
  ---------------------------------------------------------------*/
-void  CObservationBeaconRanges::writeToStream(CStream &out, int *version) const
+void  CObservationBeaconRanges::writeToStream(mrpt::utils::CStream &out, int *version) const
 {
 	if (version)
 		*version = 3;
@@ -62,7 +62,7 @@ void  CObservationBeaconRanges::writeToStream(CStream &out, int *version) const
 /*---------------------------------------------------------------
   Implements the reading from a CStream capability of CSerializable objects
  ---------------------------------------------------------------*/
-void  CObservationBeaconRanges::readFromStream(CStream &in, int version)
+void  CObservationBeaconRanges::readFromStream(mrpt::utils::CStream &in, int version)
 {
 	switch(version)
 	{

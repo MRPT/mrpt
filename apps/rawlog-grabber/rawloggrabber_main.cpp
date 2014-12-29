@@ -22,12 +22,12 @@
 #include <mrpt/utils/CFileGZOutputStream.h>
 #include <mrpt/utils/CImage.h>
 #include <mrpt/utils/round.h>
-#include <mrpt/slam/CActionCollection.h>
-#include <mrpt/slam/CSensoryFrame.h>
-#include <mrpt/slam/CObservationOdometry.h>
-#include <mrpt/slam/CObservationGPS.h>
-#include <mrpt/slam/CObservationIMU.h>
-#include <mrpt/slam/CActionRobotMovement2D.h>
+#include <mrpt/obs/CActionCollection.h>
+#include <mrpt/obs/CSensoryFrame.h>
+#include <mrpt/obs/CObservationOdometry.h>
+#include <mrpt/obs/CObservationGPS.h>
+#include <mrpt/obs/CObservationIMU.h>
+#include <mrpt/obs/CActionRobotMovement2D.h>
 #include <mrpt/system/os.h>
 #include <mrpt/system/filesystem.h>
 

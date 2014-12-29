@@ -149,7 +149,7 @@ namespace mrpt
 
 
 			/** Copies a specified number of bytes from one stream to another. */
-			size_t  CopyFrom(CStream* Source, size_t Count);
+			size_t  CopyFrom(mrpt::utils::CStream* Source, size_t Count);
 
 			/** Introduces a pure virtual method for moving to a specified position in the streamed resource.
 			 *   he Origin parameter indicates how to interpret the Offset parameter. Origin should be one of the following values:
@@ -260,8 +260,8 @@ namespace mrpt
 
 
 	#define DECLARE_CSTREAM_READ_WRITE_SIMPLE_TYPE( T ) \
-		CStream BASE_IMPEXP & operator<<(CStream&out, const T &a); \
-		CStream BASE_IMPEXP & operator>>(CStream&in, T &a);
+		CStream BASE_IMPEXP & operator<<(mrpt::utils::CStream&out, const T &a); \
+		CStream BASE_IMPEXP & operator>>(mrpt::utils::CStream&in, T &a);
 
 		// Definitions:
 		DECLARE_CSTREAM_READ_WRITE_SIMPLE_TYPE( bool )
@@ -285,47 +285,47 @@ namespace mrpt
 		// the ones listed here:
 
 		// Write --------------------
-		CStream BASE_IMPEXP & operator << (CStream&s, const char *a);
-		CStream BASE_IMPEXP & operator << (CStream&s, const std::string &str);
+		CStream BASE_IMPEXP & operator << (mrpt::utils::CStream&s, const char *a);
+		CStream BASE_IMPEXP & operator << (mrpt::utils::CStream&s, const std::string &str);
 
-		CStream BASE_IMPEXP & operator << (CStream&, const vector_int &a);
-		CStream BASE_IMPEXP & operator << (CStream&, const vector_uint &a);
-		CStream BASE_IMPEXP & operator << (CStream&, const vector_word &a);
-		CStream BASE_IMPEXP & operator << (CStream&, const vector_signed_word &a);
-		CStream BASE_IMPEXP & operator << (CStream&, const vector_long &a);
-		CStream BASE_IMPEXP & operator << (CStream&, const vector_byte &a);
-		CStream BASE_IMPEXP & operator << (CStream&, const vector_signed_byte &a);
+		CStream BASE_IMPEXP & operator << (mrpt::utils::CStream&, const vector_int &a);
+		CStream BASE_IMPEXP & operator << (mrpt::utils::CStream&, const vector_uint &a);
+		CStream BASE_IMPEXP & operator << (mrpt::utils::CStream&, const vector_word &a);
+		CStream BASE_IMPEXP & operator << (mrpt::utils::CStream&, const vector_signed_word &a);
+		CStream BASE_IMPEXP & operator << (mrpt::utils::CStream&, const vector_long &a);
+		CStream BASE_IMPEXP & operator << (mrpt::utils::CStream&, const vector_byte &a);
+		CStream BASE_IMPEXP & operator << (mrpt::utils::CStream&, const vector_signed_byte &a);
 
-		CStream BASE_IMPEXP & operator << (CStream&, const vector_bool &a);
-		CStream BASE_IMPEXP & operator << (CStream&, const std::vector<std::string> &);
+		CStream BASE_IMPEXP & operator << (mrpt::utils::CStream&, const vector_bool &a);
+		CStream BASE_IMPEXP & operator << (mrpt::utils::CStream&, const std::vector<std::string> &);
 
         #if MRPT_WORD_SIZE!=32  // If it's 32 bit, size_t <=> uint32_t
-		CStream BASE_IMPEXP & operator << (CStream&, const std::vector<size_t> &a);
+		CStream BASE_IMPEXP & operator << (mrpt::utils::CStream&, const std::vector<size_t> &a);
         #endif
 
 		// Read --------------------
-		CStream BASE_IMPEXP & operator>>(CStream&in, char *a);
-		CStream BASE_IMPEXP & operator>>(CStream&in, std::string &str);
+		CStream BASE_IMPEXP & operator>>(mrpt::utils::CStream&in, char *a);
+		CStream BASE_IMPEXP & operator>>(mrpt::utils::CStream&in, std::string &str);
 
-		CStream BASE_IMPEXP & operator>>(CStream&in, vector_int &a);
-		CStream BASE_IMPEXP & operator>>(CStream&in, vector_uint &a);
-		CStream BASE_IMPEXP & operator>>(CStream&in, vector_word &a);
-		CStream BASE_IMPEXP & operator>>(CStream&in, vector_signed_word &a);
-		CStream BASE_IMPEXP & operator>>(CStream&in, vector_long &a);
-		CStream BASE_IMPEXP & operator>>(CStream&in, vector_byte &a);
-		CStream BASE_IMPEXP & operator>>(CStream&in, vector_signed_byte &a);
-		CStream BASE_IMPEXP & operator>>(CStream&in, vector_bool &a);
+		CStream BASE_IMPEXP & operator>>(mrpt::utils::CStream&in, vector_int &a);
+		CStream BASE_IMPEXP & operator>>(mrpt::utils::CStream&in, vector_uint &a);
+		CStream BASE_IMPEXP & operator>>(mrpt::utils::CStream&in, vector_word &a);
+		CStream BASE_IMPEXP & operator>>(mrpt::utils::CStream&in, vector_signed_word &a);
+		CStream BASE_IMPEXP & operator>>(mrpt::utils::CStream&in, vector_long &a);
+		CStream BASE_IMPEXP & operator>>(mrpt::utils::CStream&in, vector_byte &a);
+		CStream BASE_IMPEXP & operator>>(mrpt::utils::CStream&in, vector_signed_byte &a);
+		CStream BASE_IMPEXP & operator>>(mrpt::utils::CStream&in, vector_bool &a);
 
-		CStream BASE_IMPEXP & operator>>(CStream&in, std::vector<std::string> &a);
+		CStream BASE_IMPEXP & operator>>(mrpt::utils::CStream&in, std::vector<std::string> &a);
 
 		// For backward compatibility, since in MRPT<0.8.1 vector_XXX and std::vector<XXX> were exactly equivalent, now there're not.
-		CStream BASE_IMPEXP & operator >> (CStream&s, std::vector<float>  &a);
-		CStream BASE_IMPEXP & operator >> (CStream&s, std::vector<double> &a);
-		CStream BASE_IMPEXP & operator << (CStream&s, const std::vector<float>  &a);
-		CStream BASE_IMPEXP & operator << (CStream&s, const std::vector<double> &a);
+		CStream BASE_IMPEXP & operator >> (mrpt::utils::CStream&s, std::vector<float>  &a);
+		CStream BASE_IMPEXP & operator >> (mrpt::utils::CStream&s, std::vector<double> &a);
+		CStream BASE_IMPEXP & operator << (mrpt::utils::CStream&s, const std::vector<float>  &a);
+		CStream BASE_IMPEXP & operator << (mrpt::utils::CStream&s, const std::vector<double> &a);
 
         #if MRPT_WORD_SIZE!=32  // If it's 32 bit, size_t <=> uint32_t
-		CStream BASE_IMPEXP & operator >> (CStream&s, std::vector<size_t> &a);
+		CStream BASE_IMPEXP & operator >> (mrpt::utils::CStream&s, std::vector<size_t> &a);
         #endif
 
 	} // End of namespace

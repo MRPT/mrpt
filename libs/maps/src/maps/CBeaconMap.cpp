@@ -78,7 +78,7 @@ void CBeaconMap::resize(const size_t N)
    Implements the writing to a CStream capability of
      CSerializable objects
   ---------------------------------------------------------------*/
-void  CBeaconMap::writeToStream(CStream &out, int *version) const
+void  CBeaconMap::writeToStream(mrpt::utils::CStream &out, int *version) const
 {
 	if (version)
 		*version = 0;
@@ -101,7 +101,7 @@ void  CBeaconMap::writeToStream(CStream &out, int *version) const
    Implements the reading from a CStream capability of
       CSerializable objects
   ---------------------------------------------------------------*/
-void  CBeaconMap::readFromStream(CStream &in, int version)
+void  CBeaconMap::readFromStream(mrpt::utils::CStream &in, int version)
 {
 	switch(version)
 	{
@@ -861,7 +861,7 @@ CBeaconMap::TLikelihoodOptions::TLikelihoodOptions() :
 /*---------------------------------------------------------------
 					dumpToTextStream
   ---------------------------------------------------------------*/
-void  CBeaconMap::TLikelihoodOptions::dumpToTextStream(CStream	&out) const
+void  CBeaconMap::TLikelihoodOptions::dumpToTextStream(mrpt::utils::CStream	&out) const
 {
 	out.printf("\n----------- [CBeaconMap::TLikelihoodOptions] ------------ \n\n");
 
@@ -901,7 +901,7 @@ CBeaconMap::TInsertionOptions::TInsertionOptions() :
 /*---------------------------------------------------------------
 					dumpToTextStream
   ---------------------------------------------------------------*/
-void  CBeaconMap::TInsertionOptions::dumpToTextStream(CStream	&out) const
+void  CBeaconMap::TInsertionOptions::dumpToTextStream(mrpt::utils::CStream	&out) const
 {
 	out.printf("\n----------- [CBeaconMap::TInsertionOptions] ------------ \n\n");
 

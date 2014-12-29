@@ -10,7 +10,7 @@
 #define  CWirelessPower_H
 
 #include <mrpt/hwdrivers/CGenericSensor.h>
-#include <mrpt/slam/CObservationWirelessPower.h>
+#include <mrpt/obs/CObservationWirelessPower.h>
 #include <mrpt/utils/CConfigFileBase.h>
 
 namespace mrpt
@@ -18,7 +18,7 @@ namespace mrpt
 	namespace hwdrivers
 	{
 		/** This class implements a wireless power probe.
-		  *  \sa mrpt::slam::CWirelessPowerGridMap2D, mrpt::slam::CObservationWirelessPower
+		  *  \sa mrpt::slam::CWirelessPowerGridMap2D, mrpt::obs::CObservationWirelessPower
 		  * \ingroup mrpt_hwdrivers_grp
 		  */
 		class HWDRIVERS_IMPEXP CWirelessPower : public mrpt::hwdrivers::CGenericSensor
@@ -80,7 +80,7 @@ namespace mrpt
 			 * \sa mrpt::hwdrivers::CGenericSensor
 			 */
 
-			bool getObservation( mrpt::slam::CObservationWirelessPower &outObservation );
+			bool getObservation( mrpt::obs::CObservationWirelessPower &outObservation );
 
 
 			/** Gets a list of the networks available for an interface

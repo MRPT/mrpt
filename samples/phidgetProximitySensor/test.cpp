@@ -10,7 +10,7 @@
 #include <mrpt/hwdrivers/CPhidgetInterfaceKitProximitySensors.h>
 #include <mrpt/utils/CConfigFile.h>
 #include <mrpt/utils/CTicTac.h>
-#include <mrpt/slam/CObservationRange.h>
+#include <mrpt/obs/CObservationRange.h>
 #include <mrpt/system.h>
 
 using namespace mrpt::hwdrivers;

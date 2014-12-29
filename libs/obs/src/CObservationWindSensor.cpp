@@ -31,7 +31,7 @@ CObservationWindSensor::CObservationWindSensor( ) :
 /*---------------------------------------------------------------
   Implements the writing to a CStream capability of CSerializable objects
  ---------------------------------------------------------------*/
-void  CObservationWindSensor::writeToStream(CStream &out, int *version) const
+void  CObservationWindSensor::writeToStream(mrpt::utils::CStream &out, int *version) const
 {
 	MRPT_UNUSED_PARAM(out);
 	if (version)
@@ -50,7 +50,7 @@ void  CObservationWindSensor::writeToStream(CStream &out, int *version) const
 /*---------------------------------------------------------------
   Implements the reading from a CStream capability of CSerializable objects
  ---------------------------------------------------------------*/
-void  CObservationWindSensor::readFromStream(CStream &in, int version)
+void  CObservationWindSensor::readFromStream(mrpt::utils::CStream &in, int version)
 {
 	//MRPT_UNUSED_PARAM(in);
 	switch(version)

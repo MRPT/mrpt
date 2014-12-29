@@ -24,7 +24,7 @@ IMPLEMENTS_SERIALIZABLE(CPoint2D, CSerializable, mrpt::poses)
    Implements the writing to a CStream capability of
      CSerializable objects
   ---------------------------------------------------------------*/
-void  CPoint2D::writeToStream(CStream &out, int *version) const
+void  CPoint2D::writeToStream(mrpt::utils::CStream &out, int *version) const
 {
 	if (version)
 		*version = 1;
@@ -39,7 +39,7 @@ void  CPoint2D::writeToStream(CStream &out, int *version) const
 	Implements the reading from a CStream capability of
 		CSerializable objects
   ---------------------------------------------------------------*/
-void  CPoint2D::readFromStream(CStream &in, int version)
+void  CPoint2D::readFromStream(mrpt::utils::CStream &in, int version)
 {
 	switch(version)
 	{

@@ -61,9 +61,9 @@ namespace obs
 		double sample_rate; //!< The sampling rate, in samples per second per channel
 
 		/** Not used in this class */
-		void getSensorPose( CPose3D & ) const { }
+		void getSensorPose( mrpt::poses::CPose3D & ) const { }
 		/** Not used in this class */
-		void setSensorPose( const CPose3D & ) { }
+		void setSensorPose( const mrpt::poses::CPose3D & ) { }
 		// See base class docs
 		virtual void getDescriptionAsText(std::ostream &o) const;
 

@@ -20,10 +20,10 @@
 #include <mrpt/system/filesystem.h>
 #include <mrpt/utils/CEnhancedMetaFile.h>
 
-#include <mrpt/slam/COccupancyGridMap2D.h>
-#include <mrpt/slam/CMultiMetricMap.h>
+#include <mrpt/maps/COccupancyGridMap2D.h>
+#include <mrpt/maps/CMultiMetricMap.h>
 #include <mrpt/slam/CICP.h>
-#include <mrpt/slam/CLandmarksMap.h>
+#include <mrpt/maps/CLandmarksMap.h>
 #include <mrpt/scanmatching.h>
 
 
@@ -1063,7 +1063,7 @@ CGridMapAligner::TConfigParams::TConfigParams() :
 /*---------------------------------------------------------------
 					dumpToTextStream
   ---------------------------------------------------------------*/
-void  CGridMapAligner::TConfigParams::dumpToTextStream(CStream	&out) const
+void  CGridMapAligner::TConfigParams::dumpToTextStream(mrpt::utils::CStream	&out) const
 {
 	out.printf("\n----------- [CGridMapAligner::TConfigParams] ------------ \n\n");
 

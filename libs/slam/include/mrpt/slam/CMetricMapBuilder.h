@@ -13,11 +13,11 @@
 #include <mrpt/utils/CListOfClasses.h>
 #include <mrpt/utils/CDebugOutputCapable.h>
 #include <mrpt/synch.h>
-#include <mrpt/slam/CMultiMetricMap.h>
-#include <mrpt/slam/CSensoryFrame.h>
-#include <mrpt/slam/CSimpleMap.h>
+#include <mrpt/maps/CMultiMetricMap.h>
+#include <mrpt/obs/CSensoryFrame.h>
+#include <mrpt/maps/CSimpleMap.h>
 #include <mrpt/poses/CPose3DPDF.h>
-#include <mrpt/slam/CActionCollection.h>
+#include <mrpt/obs/CActionCollection.h>
 
 #include <mrpt/slam/link_pragmas.h>
 
@@ -57,21 +57,21 @@ namespace slam
 
 		/** Initialize the method, starting with a known location PDF "x0"(if supplied, set to NULL to left unmodified) and a given fixed, past map. */
 		virtual void  initialize(
-				const CSimpleMap &initialMap = CSimpleMap(),
-				CPosePDF					*x0 = NULL
-				) = 0;
+			const mrpt::maps::CSimpleMap &initialMap = mrpt::maps::CSimpleMap(),
+			mrpt::poses::CPosePDF *x0 = NULL
+			) = 0;
 
 		/** Returns a copy of the current best pose estimation as a pose PDF. */
-		virtual CPose3DPDFPtr  getCurrentPoseEstimation() const = 0;
+		virtual mrpt::poses::CPose3DPDFPtr  getCurrentPoseEstimation() const = 0;
 
 		/** Process a new action and observations pair to update this map: See the description of the class at the top of this page to see a more complete description.
 		 *  \param action The estimation of the incremental pose change in the robot pose.
 		 *	\param observations The set of observations that robot senses at the new pose.
 		 */
-		virtual void  processActionObservation( CActionCollection &action,CSensoryFrame	&observations ) = 0;
+		virtual void  processActionObservation( mrpt::obs::CActionCollection &action,mrpt::obs::CSensoryFrame	&observations ) = 0;
 
 		/** Fills "out_map" with the set of "poses"-"sensory-frames", thus the so far built map. */
-		virtual void  getCurrentlyBuiltMap(CSimpleMap &out_map) const = 0;
+		virtual void  getCurrentlyBuiltMap(mrpt::maps::CSimpleMap &out_map) const = 0;
 
 		/** Returns just how many sensory-frames are stored in the currently build map. */
 		virtual unsigned int  getCurrentlyBuiltMapSize() = 0;
@@ -117,7 +117,7 @@ namespace slam
 			bool	enableMapUpdating;   //!< Enable map updating, default is true.
 			bool	debugForceInsertion; //!< Always insert into map. Default is false: detect if necesary.
 
-			/** A list of observation classes (derived from mrpt::slam::CObservation) which will be always inserted in the map, disregarding the minimum insertion distances).
+			/** A list of observation classes (derived from mrpt::obs::CObservation) which will be always inserted in the map, disregarding the minimum insertion distances).
 			  *  Default: Empty. How to insert classes:
 			  *   \code
 			  *     alwaysInserByClass.insert(CLASS_ID(CObservationImage));

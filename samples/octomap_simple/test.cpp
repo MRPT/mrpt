@@ -7,7 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/slam/COctoMap.h>
+#include <mrpt/maps/COctoMap.h>
 #include <mrpt/opengl/CGridPlaneXY.h>
 #include <mrpt/opengl/COctoMapVoxels.h>
 #include <mrpt/system/os.h>

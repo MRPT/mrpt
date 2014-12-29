@@ -239,7 +239,7 @@ namespace mrpt
 
 				/** See utils::CLoadableOptions
 				  */
-				void  dumpToTextStream(CStream	&out) const;
+				void  dumpToTextStream(mrpt::utils::CStream	&out) const;
 
 				TColouringMethod	scheme;
 				float				z_min,z_max;

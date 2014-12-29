@@ -21,8 +21,8 @@ using namespace std;
   *  \note This is used in mrpt::slam::CIncrementalMapPartitioner
   */
 double mrpt::slam::observationsOverlap(
-	const mrpt::slam::CObservation* o1,
-	const mrpt::slam::CObservation* o2,
+	const mrpt::obs::CObservation* o1,
+	const mrpt::obs::CObservation* o2,
 	const mrpt::poses::CPose3D *pose_o2_wrt_o1 )
 {
 	if (IS_CLASS(o1,CObservation2DRangeScan) && IS_CLASS(o2,CObservation2DRangeScan))
@@ -39,8 +39,8 @@ double mrpt::slam::observationsOverlap(
 			otherObsPose = *pose_o2_wrt_o1;
 
 		mrpt::utils::TMatchingPairList	correspondences;
-		TMatchingParams matchParams;
-		TMatchingExtraResults matchExtraResults;
+		mrpt::maps::TMatchingParams matchParams;
+		mrpt::maps::TMatchingExtraResults matchExtraResults;
 
 		matchParams.maxDistForCorrespondence = 0.04f;
 		matchParams.maxAngularDistForCorrespondence = 0;
@@ -65,8 +65,8 @@ double mrpt::slam::observationsOverlap(
   *  \note This is used in mrpt::slam::CIncrementalMapPartitioner
   */
 double mrpt::slam::observationsOverlap(
-	const mrpt::slam::CSensoryFrame &sf1,
-	const mrpt::slam::CSensoryFrame &sf2,
+	const mrpt::obs::CSensoryFrame &sf1,
+	const mrpt::obs::CSensoryFrame &sf2,
 	const mrpt::poses::CPose3D *pose_sf2_wrt_sf1 )
 {
 	MRPT_UNUSED_PARAM(pose_sf2_wrt_sf1);

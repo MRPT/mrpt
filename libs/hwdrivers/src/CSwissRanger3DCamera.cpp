@@ -340,7 +340,7 @@ void CSwissRanger3DCamera::internal_resendParamsToCamera() const
   * \sa doProcess
   */
 void CSwissRanger3DCamera::getNextObservation(
-	mrpt::slam::CObservation3DRangeScan &_out_obs,
+	mrpt::obs::CObservation3DRangeScan &_out_obs,
 	bool &there_is_obs,
 	bool &hardware_error )
 {

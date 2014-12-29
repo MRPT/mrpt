@@ -7,7 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/slam/CObservationRange.h>
+#include <mrpt/obs/CObservationRange.h>
 #include <mrpt/hwdrivers/CBoardIR.h>
 #include <mrpt/gui.h>
 
@@ -31,14 +31,14 @@ int main()
 		// Load configuration:
 		while ( !mrpt::system::os::kbhit() )
 		{
-			mrpt::slam::CObservationRange obs;
+			mrpt::obs::CObservationRange obs;
 			bool thereIsObservation,hardwareError;
 
 			IRBoard.getObservation(thereIsObservation,obs,hardwareError);
 
 			if (thereIsObservation)
 			{
-				for (mrpt::slam::CObservationRange::const_iterator i=obs.begin();i!=obs.end();++i)
+				for (mrpt::obs::CObservationRange::const_iterator i=obs.begin();i!=obs.end();++i)
 					printf("ID %u -> %.02f cm\n", (unsigned int)i->sensorID, i->sensedDistance * 100.0f);
 				printf("\n");
 			}

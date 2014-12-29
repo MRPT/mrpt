@@ -10,7 +10,7 @@
 #include "slam-precomp.h"   // Precompiled headers
 
 #include <mrpt/slam/CIncrementalMapPartitioner.h>
-#include <mrpt/slam/CMultiMetricMap.h>
+#include <mrpt/maps/CMultiMetricMap.h>
 #include <mrpt/slam/observations_overlap.h>
 #include <mrpt/poses/CPosePDFParticles.h>
 #include <mrpt/poses/CPose3DPDFParticles.h>
@@ -23,6 +23,7 @@
 #include <mrpt/opengl/CSimpleLine.h>
 
 using namespace mrpt::slam;
+using namespace mrpt::maps;
 using namespace mrpt::graphs;
 using namespace mrpt::poses;
 using namespace mrpt::utils;
@@ -90,7 +91,7 @@ void  CIncrementalMapPartitioner::TOptions::loadFromConfigFile(
 /*---------------------------------------------------------------
 						dumpToTextStream
   ---------------------------------------------------------------*/
-void  CIncrementalMapPartitioner::TOptions::dumpToTextStream(CStream	&out) const
+void  CIncrementalMapPartitioner::TOptions::dumpToTextStream(mrpt::utils::CStream	&out) const
 {
 	out.printf("\n----------- [CIncrementalMapPartitioner::TOptions] ------------ \n\n");
 
@@ -685,7 +686,7 @@ void CIncrementalMapPartitioner::getAs3DScene(
 /*---------------------------------------------------------------
 					readFromStream
   ---------------------------------------------------------------*/
-void  CIncrementalMapPartitioner::readFromStream(CStream &in,int version)
+void  CIncrementalMapPartitioner::readFromStream(mrpt::utils::CStream &in,int version)
 {
 	switch(version)
 	{
@@ -709,7 +710,7 @@ void  CIncrementalMapPartitioner::readFromStream(CStream &in,int version)
 	Implements the writing to a CStream capability of
 	  CSerializable objects
   ---------------------------------------------------------------*/
-void  CIncrementalMapPartitioner::writeToStream(CStream &out, int *version) const
+void  CIncrementalMapPartitioner::writeToStream(mrpt::utils::CStream &out, int *version) const
 {
 	if (version)
 		*version = 0;

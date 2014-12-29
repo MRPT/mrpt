@@ -218,7 +218,7 @@ void  CStringList::saveToFile(const string &fileName) const
 /*---------------------------------------------------------------
 						writeToStream
  ---------------------------------------------------------------*/
-void  CStringList::writeToStream(CStream &out, int *out_Version) const
+void  CStringList::writeToStream(mrpt::utils::CStream &out, int *out_Version) const
 {
 	if (out_Version)
 		*out_Version = 0;
@@ -237,7 +237,7 @@ void  CStringList::writeToStream(CStream &out, int *out_Version) const
 /*---------------------------------------------------------------
 						readFromStream
  ---------------------------------------------------------------*/
-void  CStringList::readFromStream(CStream &in, int version)
+void  CStringList::readFromStream(mrpt::utils::CStream &in, int version)
 {
 	switch(version)
 	{

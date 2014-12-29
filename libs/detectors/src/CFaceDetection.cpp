@@ -9,7 +9,7 @@
 
 #include "detectors-precomp.h"  // Precompiled headers
 #include <mrpt/gui.h>
-#include <mrpt/slam/CColouredPointsMap.h>
+#include <mrpt/maps/CColouredPointsMap.h>
 
 #include <mrpt/detectors/CFaceDetection.h>
 #include <mrpt/math.h>
@@ -122,7 +122,7 @@ void CFaceDetection::init(const mrpt::utils::CConfigFileBase &cfg )
 //------------------------------------------------------------------------
 //							detectObjects
 //------------------------------------------------------------------------
-void CFaceDetection::detectObjects_Impl(const mrpt::slam::CObservation *obs, vector_detectable_object &detected)
+void CFaceDetection::detectObjects_Impl(const mrpt::obs::CObservation *obs, vector_detectable_object &detected)
 {
 	MRPT_START
 

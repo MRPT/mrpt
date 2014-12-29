@@ -34,9 +34,9 @@
 #include <mrpt/opengl/CSetOfLines.h>
 #include <mrpt/system/os.h>
 #include <mrpt/system/filesystem.h>
-#include <mrpt/slam/CMultiMetricMap.h>
+#include <mrpt/maps/CMultiMetricMap.h>
 #include <mrpt/slam/CPointsMap.h>
-#include <mrpt/slam/CObservationOdometry.h>
+#include <mrpt/obs/CObservationOdometry.h>
 #include <mrpt/poses/CPosePDFParticles.h>
 #include <mrpt/math/geometry.h>
 #include <mrpt/topography.h>

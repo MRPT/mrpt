@@ -20,9 +20,9 @@ In this library there are <b>five</b> key elements or groups of elements:
 <ul>
 
 <li><b>Sensor observations:</b> All sensor observations share a common virtual base
-class (mrpt::slam::CObservation). There are classes to store laser scanners, 3D range images,
+class (mrpt::obs::CObservation). There are classes to store laser scanners, 3D range images,
 monocular and stereo images, GPS data, odometry, etc. A concept very related to observations
-is a mrpt::slam::CSensoryFrame, a set of observations which were collected approximately at the same instant. </li>
+is a mrpt::obs::CSensoryFrame, a set of observations which were collected approximately at the same instant. </li>
 
 <li><b>Rawlogs (datasets):</b> A robotics dataset can be loaded, edited and explored by means 
 of the class mrpt::slam::CRawlog. See also: http://www.mrpt.org/Rawlog_Format </li>

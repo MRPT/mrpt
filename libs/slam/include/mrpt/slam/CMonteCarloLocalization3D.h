@@ -12,6 +12,7 @@
 #include <mrpt/poses/CPose3DPDFParticles.h>
 #include <mrpt/slam/PF_implementations_data.h>
 #include <mrpt/slam/TMonteCarloLocalizationParams.h>
+#include <mrpt/obs/obs_frwds.h>
 
 #include <mrpt/slam/link_pragmas.h>
 
@@ -19,8 +20,6 @@ namespace mrpt
 {
 	namespace slam
 	{
-		class CSensoryFrame;
-
 		using namespace mrpt::poses;
 		using namespace mrpt::slam;
 		using namespace mrpt::bayes;
@@ -60,8 +59,8 @@ namespace mrpt
 			  * \sa options
 			  */
 			void  prediction_and_update_pfStandardProposal(
-				const mrpt::slam::CActionCollection	* action,
-				const mrpt::slam::CSensoryFrame		* observation,
+				const mrpt::obs::CActionCollection	* action,
+				const mrpt::obs::CSensoryFrame		* observation,
 				const bayes::CParticleFilter::TParticleFilterOptions &PF_options );
 
 			 /** Update the m_particles, predicting the posterior of robot pose and map after a movement command.
@@ -74,8 +73,8 @@ namespace mrpt
 			  * \sa options
 			  */
 			void  prediction_and_update_pfAuxiliaryPFStandard(
-				const mrpt::slam::CActionCollection	* action,
-				const mrpt::slam::CSensoryFrame		* observation,
+				const mrpt::obs::CActionCollection	* action,
+				const mrpt::obs::CSensoryFrame		* observation,
 				const bayes::CParticleFilter::TParticleFilterOptions &PF_options );
 
 			 /** Update the m_particles, predicting the posterior of robot pose and map after a movement command.
@@ -88,8 +87,8 @@ namespace mrpt
 			  * \sa options
 			  */
 			void  prediction_and_update_pfAuxiliaryPFOptimal(
-				const mrpt::slam::CActionCollection	* action,
-				const mrpt::slam::CSensoryFrame		* observation,
+				const mrpt::obs::CActionCollection	* action,
+				const mrpt::obs::CSensoryFrame		* observation,
 				const bayes::CParticleFilter::TParticleFilterOptions &PF_options );
 
 		//protected:

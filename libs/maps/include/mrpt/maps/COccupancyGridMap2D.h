@@ -511,7 +511,7 @@ namespace maps
 
 			/** This method must display clearly all the contents of the structure in textual form, sending it to a CStream.
 			  */
-			void  dumpToTextStream(CStream	&out) const;
+			void  dumpToTextStream(mrpt::utils::CStream	&out) const;
 
 
 			/** The altitude (z-axis) of 2D scans (within a 0.01m tolerance) for they to be inserted in this map!
@@ -595,7 +595,7 @@ namespace maps
 
 			/** This method must display clearly all the contents of the structure in textual form, sending it to a CStream.
 			  */
-			void  dumpToTextStream(CStream	&out) const;
+			void  dumpToTextStream(mrpt::utils::CStream	&out) const;
 
 			/** The selected method to compute an observation likelihood.
 			*/
@@ -853,14 +853,14 @@ namespace maps
 		  * \param relativePose The relative pose of the points map in this map's coordinates, or NULL for (0,0,0).
 		  *  See "likelihoodOptions" for configuration parameters.
 		  */
-		double	 computeLikelihoodField_Thrun( const CPointsMap	*pm, const CPose2D *relativePose = NULL);
+		double	 computeLikelihoodField_Thrun( const CPointsMap	*pm, const mrpt::poses::CPose2D *relativePose = NULL);
 
 		/** Computes the likelihood [0,1] of a set of points, given the current grid map as reference.
 		  * \param pm The points map
 		  * \param relativePose The relative pose of the points map in this map's coordinates, or NULL for (0,0,0).
 		  *  See "likelihoodOptions" for configuration parameters.
 		  */
-		double	 computeLikelihoodField_II( const CPointsMap	*pm, const CPose2D *relativePose = NULL);
+		double	 computeLikelihoodField_II( const CPointsMap	*pm, const mrpt::poses::CPose2D *relativePose = NULL);
 
 		/** Saves the gridmap as a graphical file (BMP,PNG,...).
 		 * The format will be derived from the file extension (see  CImage::saveToFile )
@@ -966,7 +966,7 @@ namespace maps
 		 */
 		virtual void  determineMatching2D(
 			const CMetricMap      * otherMap,
-			const CPose2D         & otherMapPose,
+			const mrpt::poses::CPose2D         & otherMapPose,
 			TMatchingPairList     & correspondences,
 			const TMatchingParams & params,
 			TMatchingExtraResults & extraResults ) const ;

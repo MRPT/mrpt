@@ -33,8 +33,8 @@ Output files:
 #include <mrpt/utils/CFileGZOutputStream.h>
 #include <mrpt/utils/TCamera.h>
 #include <mrpt/utils/CTextFileLinesParser.h>
-#include <mrpt/slam/CObservationStereoImages.h>
-//#include <mrpt/slam/CObservationIMU.h>
+#include <mrpt/obs/CObservationStereoImages.h>
+//#include <mrpt/obs/CObservationIMU.h>
 
 using namespace std;
 using namespace mrpt;

@@ -10,7 +10,7 @@
 #ifndef CNationalInstrumentsDAQ_H
 #define CNationalInstrumentsDAQ_H
 
-#include <mrpt/slam/CObservationRawDAQ.h>
+#include <mrpt/obs/CObservationRawDAQ.h>
 #include <mrpt/utils/CDebugOutputCapable.h>
 #include <mrpt/hwdrivers/CGenericSensor.h>
 #include <mrpt/synch/CPipe.h>
@@ -29,11 +29,11 @@ namespace mrpt
 		*  This class can be used as a sensor from the application "rawlog-grabber", or directly as a C++ class from a user program.
 		*  Refer to the example:  [MRPT]/samples/NIDAQ_test
 		*
-		*  Samples will be returned inside mrpt::slam::CObservationRawDAQ in "packets" of a predefined number of samples, which can 
+		*  Samples will be returned inside mrpt::obs::CObservationRawDAQ in "packets" of a predefined number of samples, which can 
 		*  be changed by the user through the "samplesPerChannelToRead" parameter of each task.
 		*
 		*  For multichannels tasks, samples will be **interleaved**. For example, the readings from succesive timesteps for 4 ADC channels 
-		*  will be available in the ADC vector inside mrpt::slam::CObservationRawDAQ in this order:
+		*  will be available in the ADC vector inside mrpt::obs::CObservationRawDAQ in this order:
 		*
 		*   - A0[0] A1[0] A2[0] A3[0]  A0[1] A1[1] A2[1] A3[1]  A0[2] A1[2] A2[2] A3[2] ...
 		*
@@ -59,7 +59,7 @@ namespace mrpt
 		* ;  - "co_pulses": Output digital pulses (WARNING: NI says "a task can include only one counter output channel")
 		* ;
 		* task0.channels = ai  //, ao, di, do, ci_ang_encoder
-		* ;task0.taskLabel= MY_LABEL     // Optional textual label to build the CObservation sensor label (default: task number)
+		* ;task0.taskLabel= MY_LABEL     // Optional textual label to build the mrpt::obs::CObservation sensor label (default: task number)
 		* task0.samplesPerSecond = 1000 // Samples per second. Continuous (infinite) sampling is assumed.
 		* task0.samplesPerChannelToRead = 1000  // The number of samples to grab at once from each channel.
 		* ;task0.bufferSamplesPerChannel = 200000 // Increase if you have errors about " Onboard device memory overflow.(...)"
@@ -179,7 +179,7 @@ namespace mrpt
 			  *  No observations may be returned if there are not samples enough yet from any task.
 			  */
 			void  readFromDAQ(
-				std::vector<mrpt::slam::CObservationRawDAQPtr> &outObservations,
+				std::vector<mrpt::obs::CObservationRawDAQPtr> &outObservations,
 				bool & hardwareError );
 
 			/** Set voltage outputs to all the outputs in an AOUT task 
@@ -325,7 +325,7 @@ namespace mrpt
 				const std::string	  &iniSection );
 
 		private:
-			std::vector<mrpt::slam::CObservationRawDAQPtr> m_nextObservations; //!< A buffer for doProcess
+			std::vector<mrpt::obs::CObservationRawDAQPtr> m_nextObservations; //!< A buffer for doProcess
 
 			struct TInfoPerTask
 			{

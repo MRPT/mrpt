@@ -46,7 +46,7 @@ namespace mrpt
 				detectObjects_Impl(obs.pointer(), detected); 
 			};
 
-			inline void detectObjects( const CObservation *obs, vector_detectable_object &detected)
+			inline void detectObjects( const mrpt::obs::CObservation *obs, vector_detectable_object &detected)
 			{
 				detectObjects_Impl( obs, detected );
 			};			
@@ -55,7 +55,7 @@ namespace mrpt
 
 		protected:
 
-			virtual void detectObjects_Impl( const CObservation *obs, vector_detectable_object &detected) = 0;			
+			virtual void detectObjects_Impl( const mrpt::obs::CObservation *obs, vector_detectable_object &detected) = 0;			
 
 		}; // End of class
 	}

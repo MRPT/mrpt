@@ -20,7 +20,7 @@
 #include <mrpt/utils/CConfigFile.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/slam/CIncrementalMapPartitioner.h>
-#include <mrpt/slam/CSimpleMap.h>
+#include <mrpt/maps/CSimpleMap.h>
 #include <mrpt/gui.h>
 
 using namespace mrpt;

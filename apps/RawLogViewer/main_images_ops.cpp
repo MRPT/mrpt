@@ -21,8 +21,8 @@
 #include <wx/dirdlg.h>
 
 // General global variables:
-#include <mrpt/slam/CObservationImage.h>
-#include <mrpt/slam/CObservationStereoImages.h>
+#include <mrpt/obs/CObservationImage.h>
+#include <mrpt/obs/CObservationStereoImages.h>
 #include <mrpt/system/filesystem.h>
 
 using namespace mrpt;

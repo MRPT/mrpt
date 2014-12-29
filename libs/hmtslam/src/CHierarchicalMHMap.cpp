@@ -62,7 +62,7 @@ void  CHierarchicalMHMap::clear()
 /*---------------------------------------------------------------
 						writeToStream
   ---------------------------------------------------------------*/
-void  CHierarchicalMHMap::writeToStream(CStream &out,int *version) const
+void  CHierarchicalMHMap::writeToStream(mrpt::utils::CStream &out,int *version) const
 {
 	if (version)
 		*version = 0;
@@ -89,7 +89,7 @@ void  CHierarchicalMHMap::writeToStream(CStream &out,int *version) const
 /*---------------------------------------------------------------
 						readFromStream
   ---------------------------------------------------------------*/
-void  CHierarchicalMHMap::readFromStream(CStream &in, int version)
+void  CHierarchicalMHMap::readFromStream(mrpt::utils::CStream &in, int version)
 {
 	switch(version)
 	{

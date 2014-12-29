@@ -242,7 +242,7 @@ void CPhidgetInterfaceKitProximitySensors::doProcess( )
 /*-------------------------------------------------------------
 					getObservation
 -------------------------------------------------------------*/
-void CPhidgetInterfaceKitProximitySensors::getObservation( mrpt::slam::CObservationRange &obs )
+void CPhidgetInterfaceKitProximitySensors::getObservation( mrpt::obs::CObservationRange &obs )
 {
 #if MRPT_HAS_PHIDGET
 	obs.timestamp				= mrpt::system::getCurrentTime();
@@ -257,7 +257,7 @@ void CPhidgetInterfaceKitProximitySensors::getObservation( mrpt::slam::CObservat
 	{
 		if(m_sensorIsPlugged[i])
 		{
-			mrpt::slam::CObservationRange::TMeasurement obsRange;
+			mrpt::obs::CObservationRange::TMeasurement obsRange;
 			int err = CPhidgetInterfaceKit_getSensorValue(*((CPhidgetInterfaceKitHandle*)(m_carteInterfaceKit)), i, &sensorValue);
 			if(err>0)
 			{

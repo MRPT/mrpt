@@ -460,7 +460,7 @@ void CTexturedObject::unloadTexture()
    Implements the writing to a CStream capability of
      CSerializable objects
   ---------------------------------------------------------------*/
-void  CTexturedObject::writeToStreamTexturedObject(CStream &out) const
+void  CTexturedObject::writeToStreamTexturedObject(mrpt::utils::CStream &out) const
 {
 	uint8_t ver = 0;
 
@@ -538,7 +538,7 @@ void  CTexturedObject::render_post() const
 	Implements the reading from a CStream capability of
 		CSerializable objects
   ---------------------------------------------------------------*/
-void  CTexturedObject::readFromStreamTexturedObject(CStream &in)
+void  CTexturedObject::readFromStreamTexturedObject(mrpt::utils::CStream &in)
 {
 	uint8_t version;
 	in >> version;

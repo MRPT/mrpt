@@ -12,17 +12,17 @@
 #include <mrpt/poses/CPosePDFParticles.h>
 #include <mrpt/slam/PF_implementations_data.h>
 #include <mrpt/slam/TMonteCarloLocalizationParams.h>
+#include <mrpt/obs/obs_frwds.h>
 
 #include <mrpt/slam/link_pragmas.h>
 
 namespace mrpt
 {
+	namespace maps { class COccupancyGridMap2D; }
+
 	/** \ingroup mrpt_slam_grp */
 	namespace slam
 	{
-		class COccupancyGridMap2D;
-		class CSensoryFrame;
-
 		using namespace mrpt::poses;
 		using namespace mrpt::slam;
 		using namespace mrpt::bayes;
@@ -65,15 +65,15 @@ namespace mrpt
 			  * \exception std::exception On any error (no free cell found in map, map=NULL, etc...)
 			  */
 			void  resetUniformFreeSpace(
-						COccupancyGridMap2D		*theMap,
-						const double 					freeCellsThreshold = 0.7,
-						const int	 					particlesCount = -1,
-						const double 					x_min = -1e10f,
-						const double 					x_max = 1e10f,
-						const double 					y_min = -1e10f,
-						const double 					y_max = 1e10f,
-						const double 					phi_min = -M_PI,
-						const double 					phi_max = M_PI );
+				mrpt::maps::COccupancyGridMap2D		*theMap,
+				const double 					freeCellsThreshold = 0.7,
+				const int	 					particlesCount = -1,
+				const double 					x_min = -1e10f,
+				const double 					x_max = 1e10f,
+				const double 					y_min = -1e10f,
+				const double 					y_max = 1e10f,
+				const double 					phi_min = -M_PI,
+				const double 					phi_max = M_PI );
 
 			 /** Update the m_particles, predicting the posterior of robot pose and map after a movement command.
 			  *  This method has additional configuration parameters in "options".
@@ -85,8 +85,8 @@ namespace mrpt
 			  * \sa options
 			  */
 			void  prediction_and_update_pfStandardProposal(
-				const mrpt::slam::CActionCollection	* action,
-				const mrpt::slam::CSensoryFrame		* observation,
+				const mrpt::obs::CActionCollection	* action,
+				const mrpt::obs::CSensoryFrame		* observation,
 				const bayes::CParticleFilter::TParticleFilterOptions &PF_options );
 
 			 /** Update the m_particles, predicting the posterior of robot pose and map after a movement command.
@@ -99,8 +99,8 @@ namespace mrpt
 			  * \sa options
 			  */
 			void  prediction_and_update_pfAuxiliaryPFStandard(
-				const mrpt::slam::CActionCollection	* action,
-				const mrpt::slam::CSensoryFrame		* observation,
+				const mrpt::obs::CActionCollection	* action,
+				const mrpt::obs::CSensoryFrame		* observation,
 				const bayes::CParticleFilter::TParticleFilterOptions &PF_options );
 
 			 /** Update the m_particles, predicting the posterior of robot pose and map after a movement command.
@@ -113,8 +113,8 @@ namespace mrpt
 			  * \sa options
 			  */
 			void  prediction_and_update_pfAuxiliaryPFOptimal(
-				const mrpt::slam::CActionCollection	* action,
-				const mrpt::slam::CSensoryFrame		* observation,
+				const mrpt::obs::CActionCollection	* action,
+				const mrpt::obs::CSensoryFrame		* observation,
 				const bayes::CParticleFilter::TParticleFilterOptions &PF_options );
 
 		//protected:
@@ -138,7 +138,7 @@ namespace mrpt
 			double PF_SLAM_computeObservationLikelihoodForParticle(
 				const CParticleFilter::TParticleFilterOptions	&PF_options,
 				const size_t			particleIndexForMap,
-				const CSensoryFrame		&observation,
+				const mrpt::obs::CSensoryFrame		&observation,
 				const mrpt::poses::CPose3D &x ) const;
 			/** @} */
 

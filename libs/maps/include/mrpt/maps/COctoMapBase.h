@@ -40,7 +40,7 @@ namespace mrpt
 	  	 * \ingroup mrpt_maps_grp
 		 */
 		template <class OCTREE,class OCTREE_NODE>
-		class COctoMapBase : public CMetricMap
+		class COctoMapBase : public mrpt::maps::CMetricMap
 		{
 		public:
 			typedef COctoMapBase<OCTREE,OCTREE_NODE> myself_t;       //!< The type of this MRPT class
@@ -89,7 +89,7 @@ namespace mrpt
 				/** See utils::CLoadableOptions */
 				void  loadFromConfigFile(const mrpt::utils::CConfigFileBase  &source,const std::string &section);
 				/** See utils::CLoadableOptions */
-				void  dumpToTextStream(CStream	&out) const;
+				void  dumpToTextStream(mrpt::utils::CStream	&out) const;
 
 				double maxrange;  //!< maximum range for how long individual beams are inserted (default -1: complete beam)
 				bool pruning;     //!< whether the tree is (losslessly) pruned after insertion (default: true)
@@ -156,10 +156,10 @@ namespace mrpt
 					const std::string &section);
 
 				/** See utils::CLoadableOptions */
-				void  dumpToTextStream(CStream	&out) const;
+				void  dumpToTextStream(mrpt::utils::CStream	&out) const;
 
-				void writeToStream(CStream &out) const;		//!< Binary dump to stream
-				void readFromStream(CStream &in);			//!< Binary dump to stream
+				void writeToStream(mrpt::utils::CStream &out) const;		//!< Binary dump to stream
+				void readFromStream(mrpt::utils::CStream &in);			//!< Binary dump to stream
 
 				uint32_t	decimation; //!< Speed up the likelihood computation by considering only one out of N rays (default=1)
 			};
@@ -195,8 +195,8 @@ namespace mrpt
 					visibleFreeVoxels      (true)
 				{ }
 
-				void writeToStream(CStream &out) const;		//!< Binary dump to stream
-				void readFromStream(CStream &in);			//!< Binary dump to stream
+				void writeToStream(mrpt::utils::CStream &out) const;		//!< Binary dump to stream
+				void readFromStream(mrpt::utils::CStream &in);			//!< Binary dump to stream
 			};
 
 			TRenderingOptions renderingOptions;

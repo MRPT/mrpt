@@ -11,7 +11,7 @@
 #include <mrpt/random.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/slam/CMetricMapBuilderICP.h>
-#include <mrpt/slam/CMultiMetricMap.h>
+#include <mrpt/maps/CMultiMetricMap.h>
 #include <mrpt/slam/CRawlog.h>
 
 #include "common.h"

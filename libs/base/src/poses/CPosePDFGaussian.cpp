@@ -63,7 +63,7 @@ CPosePDFGaussian::CPosePDFGaussian(const CPose2D  &init_Mean ) : mean(init_Mean)
 /*---------------------------------------------------------------
 						writeToStream
   ---------------------------------------------------------------*/
-void  CPosePDFGaussian::writeToStream(CStream &out,int *version) const
+void  CPosePDFGaussian::writeToStream(mrpt::utils::CStream &out,int *version) const
 {
 	if (version)
 		*version = 2;
@@ -78,7 +78,7 @@ void  CPosePDFGaussian::writeToStream(CStream &out,int *version) const
 /*---------------------------------------------------------------
 						readFromStream
   ---------------------------------------------------------------*/
-void  CPosePDFGaussian::readFromStream(CStream &in,int version)
+void  CPosePDFGaussian::readFromStream(mrpt::utils::CStream &in,int version)
 {
 	switch(version)
 	{

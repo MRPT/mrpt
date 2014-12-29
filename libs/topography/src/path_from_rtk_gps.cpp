@@ -10,7 +10,7 @@
 #include "topography-precomp.h"  // Precompiled headers
 
 #include <mrpt/scanmatching.h>
-#include <mrpt/slam/CObservationGPS.h>
+#include <mrpt/obs/CObservationGPS.h>
 #include <mrpt/math/data_utils.h>
 #include <mrpt/topography/data_types.h>
 #include <mrpt/topography/conversions.h>

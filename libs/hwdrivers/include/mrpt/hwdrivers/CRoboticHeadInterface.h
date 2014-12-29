@@ -17,7 +17,7 @@
 #include <mrpt/math/CMatrixTemplate.h>
 #include <mrpt/utils/CDebugOutputCapable.h>
 #include <mrpt/utils/CConfigFileBase.h>
-#include <mrpt/slam/CObservationRange.h>
+#include <mrpt/obs/CObservationRange.h>
 
 
 namespace mrpt

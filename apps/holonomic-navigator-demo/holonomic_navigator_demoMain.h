@@ -32,7 +32,7 @@
 #include <mrpt/opengl/CSetOfLines.h>
 #include <mrpt/opengl/CPointCloud.h>
 #include <mrpt/opengl/CPlanarLaserScan.h>			// It's in the lib mrpt-maps
-#include <mrpt/slam/COccupancyGridMap2D.h>
+#include <mrpt/maps/COccupancyGridMap2D.h>
 
 // JLBC: Unix X headers have these funny things...
 #ifdef Button1
@@ -160,7 +160,7 @@ class holonomic_navigator_demoFrame: public wxFrame
 
 
 		mrpt::nav::CAbstractHolonomicReactiveMethod *m_holonomicMethod;
-		mrpt::slam::COccupancyGridMap2D  m_gridMap;
+		mrpt::maps::COccupancyGridMap2D  m_gridMap;
 		mrpt::math::TPoint2D             m_targetPoint;
 		mrpt::math::TPose2D              m_robotPose;
 

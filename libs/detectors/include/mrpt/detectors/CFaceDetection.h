@@ -15,13 +15,11 @@
 #include <mrpt/utils/CTimeLogger.h>
 #include <mrpt/system/threads.h>
 #include <mrpt/synch.h>
-#include <mrpt/slam/CObservation3DRangeScan.h>
+#include <mrpt/obs/CObservation3DRangeScan.h>
+#include <mrpt/obs/obs_frwds.h>
 
 namespace mrpt
 {
-
-	namespace slam { class CObservation3DRangeScan; }
-
 	/** \ingroup mrpt_detectors_grp  */
 	namespace detectors
 	{
@@ -47,7 +45,7 @@ namespace mrpt
 
 			virtual void init(const mrpt::utils::CConfigFileBase &cfg );
 
-			virtual void detectObjects_Impl(const CObservation *obs, vector_detectable_object &detected);
+			virtual void detectObjects_Impl(const mrpt::obs::CObservation *obs, vector_detectable_object &detected);
 			
 			struct TOptions
 			{

@@ -180,7 +180,7 @@ void  CICP::TConfigParams::loadFromConfigFile(
 /*---------------------------------------------------------------
 					dumpToTextStream
   ---------------------------------------------------------------*/
-void  CICP::TConfigParams::dumpToTextStream(CStream	&out) const
+void  CICP::TConfigParams::dumpToTextStream(mrpt::utils::CStream	&out) const
 {
 	out.printf("\n----------- [CICP::TConfigParams] ------------ \n\n");
 

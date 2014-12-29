@@ -44,7 +44,7 @@ DECLARE_OP_FUNCTION(op_remove_label)
 		}
 
 		/** To be implemented by users: return false means the observation is  */
-		virtual bool tellIfThisObsPasses(mrpt::slam::CObservationPtr  &obs)
+		virtual bool tellIfThisObsPasses(mrpt::obs::CObservationPtr  &obs)
 		{
 			for (size_t i=0;i<m_filter_labels.size();i++)
 				if (obs->sensorLabel==m_filter_labels[i])
@@ -100,7 +100,7 @@ DECLARE_OP_FUNCTION(op_keep_label)
 		}
 
 		/** To be implemented by users: return false means the observation is  */
-		virtual bool tellIfThisObsPasses(mrpt::slam::CObservationPtr  &obs)
+		virtual bool tellIfThisObsPasses(mrpt::obs::CObservationPtr  &obs)
 		{
 			for (size_t i=0;i<m_filter_labels.size();i++)
 				if (obs->sensorLabel==m_filter_labels[i])

@@ -30,7 +30,7 @@
 #include <mrpt/system/os.h>
 #include <mrpt/math/data_utils.h>
 #include <mrpt/system/threads.h>
-#include <mrpt/slam/CObservationBeaconRanges.h>
+#include <mrpt/obs/CObservationBeaconRanges.h>
 #include <mrpt/slam/CRawlog.h>
 #include <mrpt/bayes/CParticleFilter.h>
 #include <mrpt/random.h>

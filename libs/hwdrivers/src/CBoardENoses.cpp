@@ -180,7 +180,7 @@ CStream *CBoardENoses::checkConnectionAndConnect()
 /*-------------------------------------------------------------
 					getObservation
 -------------------------------------------------------------*/
-bool CBoardENoses::getObservation( mrpt::slam::CObservationGasSensors &obs )
+bool CBoardENoses::getObservation( mrpt::obs::CObservationGasSensors &obs )
 {
 	try
 	{

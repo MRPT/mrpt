@@ -38,8 +38,8 @@ Executes a prediction-update stage of particle filtering. This includes:
   ---------------------------------------------------------------*/
 void  CParticleFilter::executeOn(
 	CParticleFilterCapable 			&obj,
-	const mrpt::slam::CActionCollection   *action,
-	const mrpt::slam::CSensoryFrame	    *observation,
+	const mrpt::obs::CActionCollection   *action,
+	const mrpt::obs::CSensoryFrame	    *observation,
 	TParticleFilterStats	        *stats )
 {
 	MRPT_START
@@ -113,7 +113,7 @@ CParticleFilter::TParticleFilterOptions::TParticleFilterOptions() :
 /*---------------------------------------------------------------
 					dumpToTextStream
   ---------------------------------------------------------------*/
-void  CParticleFilter::TParticleFilterOptions::dumpToTextStream(CStream	&out) const
+void  CParticleFilter::TParticleFilterOptions::dumpToTextStream(mrpt::utils::CStream	&out) const
 {
 	out.printf("\n----------- [CParticleFilter::TParticleFilterOptions] ------------ \n\n");
 

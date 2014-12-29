@@ -13,7 +13,7 @@
 #include <mrpt/hwdrivers/CFFMPEG_InputStream.h>
 #include <mrpt/utils/net_utils.h>
 #include <mrpt/utils/CMemoryStream.h>
-#include <mrpt/slam/CObservationImage.h>
+#include <mrpt/obs/CObservationImage.h>
 
 using namespace mrpt::utils;
 using namespace mrpt::slam;

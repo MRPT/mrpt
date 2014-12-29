@@ -10,7 +10,7 @@
 #define CHMHMapNode_H
 
 #include <mrpt/utils/safe_pointers.h>
-#include <mrpt/slam/CSensoryFrame.h>
+#include <mrpt/obs/CSensoryFrame.h>
 #include <mrpt/hmtslam/HMT_SLAM_common.h>
 
 #include <mrpt/utils/CSerializable.h>

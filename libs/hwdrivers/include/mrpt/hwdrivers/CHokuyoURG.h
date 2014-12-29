@@ -158,7 +158,7 @@ namespace mrpt
 			  */
 			void  doProcessSimple(
 				bool							&outThereIsObservation,
-				mrpt::slam::CObservation2DRangeScan	&outObservation,
+				mrpt::obs::CObservation2DRangeScan	&outObservation,
 				bool							&hardwareError );
 
 			/** Enables the scanning mode (which may depend on the specific laser device); this must be called before asking for observations to assure that the protocol has been initializated.

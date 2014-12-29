@@ -55,11 +55,11 @@ namespace obs
 
 		/** @} */
 
-		void getSensorPose( CPose3D &out_sensorPose ) const;
+		void getSensorPose( mrpt::poses::CPose3D &out_sensorPose ) const;
 		/** A general method to change the sensor pose on the robot.
 		  *  It has no effects in this class
 		  * \sa getSensorPose  */
-		void setSensorPose( const CPose3D &newSensorPose );
+		void setSensorPose( const mrpt::poses::CPose3D &newSensorPose );
 		// See base class docs
 		virtual void getDescriptionAsText(std::ostream &o) const;
 

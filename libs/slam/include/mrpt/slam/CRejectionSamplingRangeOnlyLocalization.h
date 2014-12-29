@@ -68,7 +68,7 @@ namespace mrpt
 
 			/** Returns the NORMALIZED observation likelihood (linear, not exponential!!!) at a given point of the state space (values in the range [0,1]).
 			  */
-			double RS_observationLikelihood( const CPose2D &x);
+			double RS_observationLikelihood( const mrpt::poses::CPose2D &x);
 
 			/** Z coordinate of the robot.
 			  */

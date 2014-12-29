@@ -1444,27 +1444,27 @@ size_t CPolyhedron::facesInVertex(size_t vertex) const	{
 	return res;
 }
 
-CStream &mrpt::opengl::operator>>(CStream& in,CPolyhedron::TPolyhedronEdge &o)	{
+CStream &mrpt::opengl::operator>>(mrpt::utils::CStream& in,CPolyhedron::TPolyhedronEdge &o)	{
 	in>>o.v1>>o.v2;
 	return in;
 }
 
-CStream &mrpt::opengl::operator<<(CStream &out,const CPolyhedron::TPolyhedronEdge &o)	{
+CStream &mrpt::opengl::operator<<(mrpt::utils::CStream &out,const CPolyhedron::TPolyhedronEdge &o)	{
 	out<<o.v1<<o.v2;
 	return out;
 }
 
-CStream &mrpt::opengl::operator>>(CStream& in,CPolyhedron::TPolyhedronFace &o)	{
+CStream &mrpt::opengl::operator>>(mrpt::utils::CStream& in,CPolyhedron::TPolyhedronFace &o)	{
 	in>>o.vertices>>o.normal[0]>>o.normal[1]>>o.normal[2];
 	return in;
 }
 
-CStream &mrpt::opengl::operator<<(CStream& out,const CPolyhedron::TPolyhedronFace &o)	{
+CStream &mrpt::opengl::operator<<(mrpt::utils::CStream& out,const CPolyhedron::TPolyhedronFace &o)	{
 	out<<o.vertices<<o.normal[0]<<o.normal[1]<<o.normal[2];
 	return out;
 }
 
-void CPolyhedron::writeToStream(CStream &out,int *version) const	{
+void CPolyhedron::writeToStream(mrpt::utils::CStream &out,int *version) const	{
 	if (version) *version=0;
 	else	{
 		writeToStreamRender(out);
@@ -1473,7 +1473,7 @@ void CPolyhedron::writeToStream(CStream &out,int *version) const	{
 	}
 }
 
-void CPolyhedron::readFromStream(CStream &in,int version)	{
+void CPolyhedron::readFromStream(mrpt::utils::CStream &in,int version)	{
 	switch (version)	{
 		case 0:
 			readFromStreamRender(in);

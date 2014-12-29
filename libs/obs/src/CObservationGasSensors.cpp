@@ -34,7 +34,7 @@ CObservationGasSensors::CObservationGasSensors( ) :
 /*---------------------------------------------------------------
   Implements the writing to a CStream capability of CSerializable objects
  ---------------------------------------------------------------*/
-void  CObservationGasSensors::writeToStream(CStream &out, int *version) const
+void  CObservationGasSensors::writeToStream(mrpt::utils::CStream &out, int *version) const
 {
 	if (version)
 		*version = 5;
@@ -62,7 +62,7 @@ void  CObservationGasSensors::writeToStream(CStream &out, int *version) const
 /*---------------------------------------------------------------
   Implements the reading from a CStream capability of CSerializable objects
  ---------------------------------------------------------------*/
-void  CObservationGasSensors::readFromStream(CStream &in, int version)
+void  CObservationGasSensors::readFromStream(mrpt::utils::CStream &in, int version)
 {
 	switch(version)
 	{

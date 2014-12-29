@@ -83,7 +83,7 @@ namespace mrpt
 
 				/** See utils::CLoadableOptions
 				  */
-				void  dumpToTextStream(CStream		&out) const;
+				void  dumpToTextStream(mrpt::utils::CStream		&out) const;
 
 				/** Type of the extracted features
 				*/

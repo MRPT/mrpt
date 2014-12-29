@@ -30,7 +30,7 @@ IMPLEMENTS_SERIALIZABLE(CSimpleDatabaseTable, CSerializable, mrpt::utils)
 /*---------------------------------------------------------------
 						writeToStream
  ---------------------------------------------------------------*/
-void  CSimpleDatabase::writeToStream(CStream &out, int *out_Version) const
+void  CSimpleDatabase::writeToStream(mrpt::utils::CStream &out, int *out_Version) const
 {
 	if (out_Version)
 		*out_Version = 0;
@@ -50,7 +50,7 @@ void  CSimpleDatabase::writeToStream(CStream &out, int *out_Version) const
 /*---------------------------------------------------------------
 						readFromStream
  ---------------------------------------------------------------*/
-void  CSimpleDatabase::readFromStream(CStream &in, int version)
+void  CSimpleDatabase::readFromStream(mrpt::utils::CStream &in, int version)
 {
 	switch (version)
 	{
@@ -85,7 +85,7 @@ void  CSimpleDatabase::readFromStream(CStream &in, int version)
 /*---------------------------------------------------------------
 						writeToStream
  ---------------------------------------------------------------*/
-void  CSimpleDatabaseTable::writeToStream(CStream &out, int *out_Version) const
+void  CSimpleDatabaseTable::writeToStream(mrpt::utils::CStream &out, int *out_Version) const
 {
 	if (out_Version)
 		*out_Version = 0;
@@ -106,7 +106,7 @@ void  CSimpleDatabaseTable::writeToStream(CStream &out, int *out_Version) const
 /*---------------------------------------------------------------
 						readFromStream
  ---------------------------------------------------------------*/
-void  CSimpleDatabaseTable::readFromStream(CStream &in, int version)
+void  CSimpleDatabaseTable::readFromStream(mrpt::utils::CStream &in, int version)
 {
 	switch (version)
 	{

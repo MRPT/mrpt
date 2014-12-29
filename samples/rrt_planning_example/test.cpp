@@ -9,7 +9,7 @@
 
 #include <mrpt/nav.h>
 //#include <mrpt/gui.h>
-#include <mrpt/slam/COccupancyGridMap2D.h>
+#include <mrpt/maps/COccupancyGridMap2D.h>
 #include <mrpt/system/filesystem.h> // directoryExists(), ...
 #include <mrpt/utils/CFileGZInputStream.h>
 

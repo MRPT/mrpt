@@ -9,8 +9,8 @@
 
 #include <mrpt/hwdrivers/CSwissRanger3DCamera.h>
 #include <mrpt/gui.h>
-#include <mrpt/slam/CObservation3DRangeScan.h>
-#include <mrpt/slam/CColouredPointsMap.h>
+#include <mrpt/obs/CObservation3DRangeScan.h>
+#include <mrpt/maps/CColouredPointsMap.h>
 #include <mrpt/opengl/CPointCloudColoured.h>
 #include <mrpt/opengl/CTexturedPlane.h>
 #include <mrpt/opengl/CGridPlaneXY.h>

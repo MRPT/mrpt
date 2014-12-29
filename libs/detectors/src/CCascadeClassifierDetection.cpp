@@ -10,9 +10,9 @@
 #include "detectors-precomp.h"  // Precompiled headers
 
 #include <mrpt/detectors/CCascadeClassifierDetection.h>
-#include <mrpt/slam/CObservationImage.h>
-#include <mrpt/slam/CObservationStereoImages.h>
-#include <mrpt/slam/CObservation3DRangeScan.h>
+#include <mrpt/obs/CObservationImage.h>
+#include <mrpt/obs/CObservationStereoImages.h>
+#include <mrpt/obs/CObservation3DRangeScan.h>
 #include <mrpt/system/threads.h> // sleep()
 
 // Universal include for all versions of OpenCV

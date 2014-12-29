@@ -86,7 +86,7 @@ void  CSensoryFrame::clear()
 /*---------------------------------------------------------------
 						writeToStream
   ---------------------------------------------------------------*/
-void  CSensoryFrame::writeToStream(CStream &out,int *version) const
+void  CSensoryFrame::writeToStream(mrpt::utils::CStream &out,int *version) const
 {
 	if (version)
 		*version = 2;
@@ -104,7 +104,7 @@ void  CSensoryFrame::writeToStream(CStream &out,int *version) const
 /*---------------------------------------------------------------
 						readFromStream
   ---------------------------------------------------------------*/
-void  CSensoryFrame::readFromStream(CStream &in,int version)
+void  CSensoryFrame::readFromStream(mrpt::utils::CStream &in,int version)
 {
 	MRPT_START
 

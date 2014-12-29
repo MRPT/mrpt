@@ -39,7 +39,7 @@ CObservation6DFeatures::TMeasurement::TMeasurement() :
 /*---------------------------------------------------------------
   Implements the writing to a CStream capability of CSerializable objects
  ---------------------------------------------------------------*/
-void  CObservation6DFeatures::writeToStream(CStream &out, int *version) const
+void  CObservation6DFeatures::writeToStream(mrpt::utils::CStream &out, int *version) const
 {
 	if (version)
 		*version = 0;
@@ -63,7 +63,7 @@ void  CObservation6DFeatures::writeToStream(CStream &out, int *version) const
 /*---------------------------------------------------------------
   Implements the reading from a CStream capability of CSerializable objects
  ---------------------------------------------------------------*/
-void  CObservation6DFeatures::readFromStream(CStream &in, int version)
+void  CObservation6DFeatures::readFromStream(mrpt::utils::CStream &in, int version)
 {
 	switch(version)
 	{

@@ -21,8 +21,8 @@
 #define MRPT_NO_WARN_BIG_HDR // It's ok to include ALL hdrs here.
 #include <mrpt/obs.h>
 
-#include <mrpt/slam/CSimplePointsMap.h>
-#include <mrpt/slam/CColouredPointsMap.h>
+#include <mrpt/maps/CSimplePointsMap.h>
+#include <mrpt/maps/CColouredPointsMap.h>
 #include <mrpt/poses/CPosePDFParticles.h>
 
 #include <iomanip>

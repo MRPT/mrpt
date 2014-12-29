@@ -11,7 +11,7 @@
 
 #include <mrpt/system/threads.h>
 #include <mrpt/hwdrivers/CGyroKVHDSP3000.h>
-#include <mrpt/slam/CObservationIMU.h>
+#include <mrpt/obs/CObservationIMU.h>
 
 
 

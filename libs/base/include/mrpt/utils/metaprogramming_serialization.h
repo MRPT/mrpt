@@ -25,7 +25,7 @@ namespace mrpt
 			private:
 				CStream		*m_stream;
 			public:
-				inline ObjectReadFromStream(CStream *stream) : m_stream(stream) {  }
+				inline ObjectReadFromStream(mrpt::utils::CStream *stream) : m_stream(stream) {  }
 
 				// T can be CSerializablePtr, CSerializable, or any other class implementing ">>"
 				template <typename T> 
@@ -40,7 +40,7 @@ namespace mrpt
 			private:
 				CStream		*m_stream;
 			public:
-				inline ObjectWriteToStream(CStream *stream) : m_stream(stream) {  }
+				inline ObjectWriteToStream(mrpt::utils::CStream *stream) : m_stream(stream) {  }
 
 				// T can be CSerializablePtr, CSerializable, or any other class implementing "<<"
 				template <typename T>

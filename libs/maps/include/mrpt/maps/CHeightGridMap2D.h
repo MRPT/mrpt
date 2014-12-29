@@ -65,7 +65,7 @@ namespace mrpt
 		  *   Each cell contains the up-to-date average height from measured falling in that cell. Algorithms that can be used:
 		  *		- mrSimpleAverage: Each cell only stores the current average value.
 		  */
-		class MAPS_IMPEXP CHeightGridMap2D : public CMetricMap, public utils::CDynamicGrid<THeightGridmapCell>
+		class MAPS_IMPEXP CHeightGridMap2D : public mrpt::maps::CMetricMap, public utils::CDynamicGrid<THeightGridmapCell>
 		{
 			// This must be added to any CSerializable derived class:
 			DEFINE_SERIALIZABLE( CHeightGridMap2D )
@@ -124,7 +124,7 @@ namespace mrpt
 
 				/** See utils::CLoadableOptions
 				  */
-				void  dumpToTextStream(CStream	&out) const;
+				void  dumpToTextStream(mrpt::utils::CStream	&out) const;
 
 				/** Wether to perform filtering by z-coordinate (default=false): coordinates are always RELATIVE to the robot for this filter.
 				  */

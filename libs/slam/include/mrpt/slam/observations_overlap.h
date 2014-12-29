@@ -10,7 +10,7 @@
 #define observations_overlap_H
 
 #include <mrpt/obs/obs_frwds.h>
-#include <mrpt/slam/CSensoryFrame.h>
+#include <mrpt/obs/CSensoryFrame.h>
 #include <mrpt/slam/link_pragmas.h>
 
 namespace mrpt
@@ -27,16 +27,16 @@ namespace mrpt
 		  *  \note This is used in mrpt::slam::CIncrementalMapPartitioner
 		  */
 		double SLAM_IMPEXP observationsOverlap(
-			const mrpt::slam::CObservation* o1,
-			const mrpt::slam::CObservation* o2,
+			const mrpt::obs::CObservation* o1,
+			const mrpt::obs::CObservation* o2,
 			const mrpt::poses::CPose3D *pose_o2_wrt_o1 = NULL );
 
 		/** Estimates the "overlap" or "matching ratio" of two observations (range [0,1]), possibly taking into account their relative positions.
 		  *  \note This is used in mrpt::slam::CIncrementalMapPartitioner
 		  */
 		inline double observationsOverlap(
-			const mrpt::slam::CObservationPtr & o1,
-			const mrpt::slam::CObservationPtr & o2,
+			const mrpt::obs::CObservationPtr & o1,
+			const mrpt::obs::CObservationPtr & o2,
 			const mrpt::poses::CPose3D *pose_o2_wrt_o1 = NULL ) 
 		{
 			return observationsOverlap(o1.pointer(), o2.pointer(), pose_o2_wrt_o1 );
@@ -47,8 +47,8 @@ namespace mrpt
 		  *  \note This is used in mrpt::slam::CIncrementalMapPartitioner
 		  */
 		double SLAM_IMPEXP observationsOverlap(
-			const mrpt::slam::CSensoryFrame &sf1,
-			const mrpt::slam::CSensoryFrame &sf2,
+			const mrpt::obs::CSensoryFrame &sf1,
+			const mrpt::obs::CSensoryFrame &sf2,
 			const mrpt::poses::CPose3D *pose_sf2_wrt_sf1 = NULL );
 
 		/** Estimates the "overlap" or "matching ratio" of two set of observations (range [0,1]), possibly taking into account their relative positions.
@@ -56,8 +56,8 @@ namespace mrpt
 		  *  \note This is used in mrpt::slam::CIncrementalMapPartitioner
 		  */
 		inline double observationsOverlap(
-			const mrpt::slam::CSensoryFramePtr &sf1,
-			const mrpt::slam::CSensoryFramePtr &sf2,
+			const mrpt::obs::CSensoryFramePtr &sf1,
+			const mrpt::obs::CSensoryFramePtr &sf2,
 			const mrpt::poses::CPose3D *pose_sf2_wrt_sf1 = NULL )
 		{
 			return observationsOverlap(*sf1.pointer(), *sf2.pointer(), pose_sf2_wrt_sf1);

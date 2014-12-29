@@ -595,7 +595,7 @@ private:
 	std::map<std::string,TInfoPerSensorLabel>	listOfSensorLabels;
 
 	// ALWAYS access this inside a "try" block, for the case...
-	mrpt::slam::CObservationPtr			curSelectedObservation;
+	mrpt::obs::CObservationPtr			curSelectedObservation;
 	mrpt::utils::CSerializablePtr		curSelectedObject;
 	mrpt::gui::CDisplayWindow3DPtr		winGPSPath;
 	mrpt::gui::CDisplayWindowPlotsPtr  	winGPSPath2D_xy, winGPSPath2D_xz;

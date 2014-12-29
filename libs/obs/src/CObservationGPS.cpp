@@ -44,7 +44,7 @@ CObservationGPS::CObservationGPS( ) :
 /*---------------------------------------------------------------
   Implements the writing to a CStream capability of CSerializable objects
  ---------------------------------------------------------------*/
-void  CObservationGPS::writeToStream(CStream &out, int *version) const
+void  CObservationGPS::writeToStream(mrpt::utils::CStream &out, int *version) const
 {
 	MRPT_UNUSED_PARAM(out);
 	if (version)
@@ -133,7 +133,7 @@ void  CObservationGPS::writeToStream(CStream &out, int *version) const
 /*---------------------------------------------------------------
   Implements the reading from a CStream capability of CSerializable objects
  ---------------------------------------------------------------*/
-void  CObservationGPS::readFromStream(CStream &in, int version)
+void  CObservationGPS::readFromStream(mrpt::utils::CStream &in, int version)
 {
 	MRPT_UNUSED_PARAM(in);
 	switch(version)

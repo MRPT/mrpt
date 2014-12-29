@@ -16,8 +16,8 @@
 #include <mrpt/utils/CLoadableOptions.h>
 #include <mrpt/utils/TMatchingPair.h>
 #include <mrpt/poses/CPose3D.h>
-#include <mrpt/slam/CLandmarksMap.h>
-#include <mrpt/slam/CObservationVisualLandmarks.h>
+#include <mrpt/maps/CLandmarksMap.h>
+#include <mrpt/obs/CObservationVisualLandmarks.h>
 
 #include <mrpt/vision/types.h>
 #include <mrpt/vision/chessboard_camera_calib.h>
@@ -29,7 +29,6 @@ namespace mrpt
     namespace vision
     {
 		using namespace std;
-		using namespace mrpt::slam;
 		using namespace mrpt::math;
 		using namespace mrpt::utils;
 		

@@ -127,7 +127,7 @@ void CGeneralizedCylinder::updateMesh() const	{
 	polysUpToDate=false;
 }
 
-void CGeneralizedCylinder::writeToStream(CStream &out,int *version) const	{
+void CGeneralizedCylinder::writeToStream(mrpt::utils::CStream &out,int *version) const	{
 	if (version) *version=1;
 	else	{
 		writeToStreamRender(out);
@@ -135,7 +135,7 @@ void CGeneralizedCylinder::writeToStream(CStream &out,int *version) const	{
 	}
 }
 
-void CGeneralizedCylinder::readFromStream(CStream &in,int version)	{
+void CGeneralizedCylinder::readFromStream(mrpt::utils::CStream &in,int version)	{
 	switch (version)	{
 		case 0:	{
 			readFromStreamRender(in);

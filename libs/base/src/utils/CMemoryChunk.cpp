@@ -21,7 +21,7 @@ IMPLEMENTS_SERIALIZABLE(CMemoryChunk, CSerializable, mrpt::utils)
 /*---------------------------------------------------------------
 						writeToStream
  ---------------------------------------------------------------*/
-void  CMemoryChunk::writeToStream(CStream &out, int *out_Version) const
+void  CMemoryChunk::writeToStream(mrpt::utils::CStream &out, int *out_Version) const
 {
 	if (out_Version)
 		*out_Version = 0;
@@ -40,7 +40,7 @@ void  CMemoryChunk::writeToStream(CStream &out, int *out_Version) const
 /*---------------------------------------------------------------
 						readFromStream
  ---------------------------------------------------------------*/
-void  CMemoryChunk::readFromStream(CStream &in, int version)
+void  CMemoryChunk::readFromStream(mrpt::utils::CStream &in, int version)
 {
 	switch(version)
 	{

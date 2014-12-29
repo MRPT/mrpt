@@ -44,7 +44,7 @@ CActionRobotMovement3D::~CActionRobotMovement3D()
 /*---------------------------------------------------------------
   Implements the writing to a CStream capability of CSerializable objects
  ---------------------------------------------------------------*/
-void  CActionRobotMovement3D::writeToStream(CStream &out, int *version) const
+void  CActionRobotMovement3D::writeToStream(mrpt::utils::CStream &out, int *version) const
 {
 	if (version)
 		*version = 1;
@@ -66,7 +66,7 @@ void  CActionRobotMovement3D::writeToStream(CStream &out, int *version) const
 /*---------------------------------------------------------------
   Implements the reading from a CStream capability of CSerializable objects
  ---------------------------------------------------------------*/
-void  CActionRobotMovement3D::readFromStream(CStream &in, int version)
+void  CActionRobotMovement3D::readFromStream(mrpt::utils::CStream &in, int version)
 {
 	switch(version)
 	{

@@ -46,7 +46,7 @@ namespace maps
 	  * \ingroup mrpt_maps_grp
 	 * \sa CMetricMap
 	 */
-	class MAPS_IMPEXP CBeaconMap : public CMetricMap
+	class MAPS_IMPEXP CBeaconMap : public mrpt::maps::CMetricMap
 	{
 		// This must be added to any CSerializable derived class:
 		DEFINE_SERIALIZABLE( CBeaconMap )
@@ -135,7 +135,7 @@ namespace maps
 
 			/** See utils::CLoadableOptions
 			  */
-			void  dumpToTextStream(CStream	&out) const;
+			void  dumpToTextStream(mrpt::utils::CStream	&out) const;
 
 			 /** The standard deviation used for Beacon ranges likelihood (default=0.08m).
 			   */
@@ -160,7 +160,7 @@ namespace maps
 
 			/** See utils::CLoadableOptions
 			  */
-			void  dumpToTextStream(CStream	&out) const;
+			void  dumpToTextStream(mrpt::utils::CStream	&out) const;
 
 			/** Insert a new beacon as a set of montecarlo samples (default=true), or, if false, as a sum of gaussians (see mrpt::maps::CBeacon).
 			  * \sa MC_performResampling
@@ -229,7 +229,7 @@ namespace maps
 		// See docs in base class
 		virtual void  determineMatching2D(
 			const CMetricMap      * otherMap,
-			const CPose2D         & otherMapPose,
+			const mrpt::poses::CPose2D         & otherMapPose,
 			TMatchingPairList     & correspondences,
 			const TMatchingParams & params,
 			TMatchingExtraResults & extraResults ) const ;

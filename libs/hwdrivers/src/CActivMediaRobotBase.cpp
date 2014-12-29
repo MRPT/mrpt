@@ -14,8 +14,8 @@
 #include <mrpt/hwdrivers/CActivMediaRobotBase.h>
 #include <mrpt/utils/CTicTac.h>
 #include <mrpt/system/os.h>
-#include <mrpt/slam/CObservationRange.h>
-#include <mrpt/slam/CObservationOdometry.h>
+#include <mrpt/obs/CObservationRange.h>
+#include <mrpt/obs/CObservationOdometry.h>
 
 #if MRPT_HAS_ARIA
 	#include "Aria.h"

@@ -23,7 +23,7 @@
 #include <mrpt/slam/CICP.h>
 #include <mrpt/slam/CPointsMap.h>
 #include <mrpt/slam/TKLDParams.h>
-#include <mrpt/slam/CActionCollection.h>
+#include <mrpt/obs/CActionCollection.h>
 #include <mrpt/opengl/COpenGLScene.h>
 #include <queue>
 
@@ -413,7 +413,7 @@ namespace mrpt
 
 				/** This method must display clearly all the contents of the structure in textual form, sending it to a CStream.
 				  */
-				void  dumpToTextStream(CStream	&out) const;
+				void  dumpToTextStream(mrpt::utils::CStream	&out) const;
 
 
 				std::string	LOG_OUTPUT_DIR;		//!< [LOGGING] If it is not an empty string (""), a directory with that name will be created and log files save there.
@@ -510,15 +510,15 @@ namespace mrpt
 			  */
 			virtual void  prediction_and_update_pfAuxiliaryPFOptimal(
 				CLocalMetricHypothesis			* LMH,
-				const mrpt::slam::CActionCollection	* action,
-				const mrpt::slam::CSensoryFrame		* observation,
+				const mrpt::obs::CActionCollection	* action,
+				const mrpt::obs::CSensoryFrame		* observation,
 				const bayes::CParticleFilter::TParticleFilterOptions &PF_options ) = 0;
 
 			/** The PF algorithm implementation.  */
 			virtual void  prediction_and_update_pfOptimalProposal(
 				CLocalMetricHypothesis			*LMH,
-				const mrpt::slam::CActionCollection	* action,
-				const mrpt::slam::CSensoryFrame		* observation,
+				const mrpt::obs::CActionCollection	* action,
+				const mrpt::obs::CSensoryFrame		* observation,
 				const bayes::CParticleFilter::TParticleFilterOptions &PF_options ) = 0;
 
 		}; // end of class CLSLAMAlgorithmBase
@@ -557,15 +557,15 @@ namespace mrpt
 			/** The PF algorithm implementation.  */
 			void  prediction_and_update_pfAuxiliaryPFOptimal(
 				CLocalMetricHypothesis			*LMH,
-				const mrpt::slam::CActionCollection	* action,
-				const mrpt::slam::CSensoryFrame		* observation,
+				const mrpt::obs::CActionCollection	* action,
+				const mrpt::obs::CSensoryFrame		* observation,
 				const bayes::CParticleFilter::TParticleFilterOptions &PF_options );
 
 			/** The PF algorithm implementation.  */
 			void  prediction_and_update_pfOptimalProposal(
 				CLocalMetricHypothesis			*LMH,
-				const mrpt::slam::CActionCollection	* action,
-				const mrpt::slam::CSensoryFrame		* observation,
+				const mrpt::obs::CActionCollection	* action,
+				const mrpt::obs::CSensoryFrame		* observation,
 				const bayes::CParticleFilter::TParticleFilterOptions &PF_options );
 
 		protected:

@@ -21,7 +21,7 @@ in the rest of MRPT classes.
 Interesting starting points:
 <ul>
 <li> To see the list of existing metric maps, see the classes inheriting from
-the base virtual mrpt::slam::CMetricMap. <b>Note:</b> There are two special
+the base virtual mrpt::maps::CMetricMap. <b>Note:</b> There are two special
 maps which are not declared here in mrpt-maps, but 
 in <a href="mrpt-vision.html" >mrpt-vision</a>, due to their
 heavy dependence on computer vision functions. </li>

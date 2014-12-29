@@ -10,7 +10,7 @@
 #include "detectors-precomp.h"   // Precompiled headers
 
 #include <mrpt/detectors/CDetectorDoorCrossing.h>
-#include <mrpt/slam/CMultiMetricMap.h>
+#include <mrpt/maps/CMultiMetricMap.h>
 #include <mrpt/poses/CPosePDF.h>
 
 using namespace mrpt;

@@ -16,10 +16,10 @@
 #include <mrpt/utils/CTypeSelector.h>
 #include <mrpt/utils/CConfigFile.h>
 #include <mrpt/utils/CConfigFileMemory.h>
-#include <mrpt/slam/CSensoryFrame.h>
+#include <mrpt/obs/CSensoryFrame.h>
 #include <mrpt/slam/CRawlog.h>
-#include <mrpt/slam/CObservationImage.h>
-#include <mrpt/slam/CObservationStereoImages.h>
+#include <mrpt/obs/CObservationImage.h>
+#include <mrpt/obs/CObservationStereoImages.h>
 #include <mrpt/gui/WxUtils.h>
 #include <mrpt/gui/WxSubsystem.h>
 
@@ -1354,7 +1354,7 @@ void CCameraSensor::thread_save_images(unsigned int my_working_thread_index)
 			{
 				if (IS_DERIVED(i->second, CObservation))
 				{
-					mrpt::slam::CObservationPtr obs = mrpt::slam::CObservationPtr(i->second);
+					mrpt::obs::CObservationPtr obs = mrpt::obs::CObservationPtr(i->second);
 					(*m_hook_pre_save)(obs,m_hook_pre_save_param);
 				}
 			}

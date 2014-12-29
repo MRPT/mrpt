@@ -47,8 +47,8 @@ BEGIN_EVENT_TABLE(CScanAnimation,wxDialog)
 	//*)
 END_EVENT_TABLE()
 
-#include <mrpt/slam/CObservation3DRangeScan.h>
-#include <mrpt/slam/CColouredPointsMap.h>
+#include <mrpt/obs/CObservation3DRangeScan.h>
+#include <mrpt/maps/CColouredPointsMap.h>
 #include <mrpt/opengl/CGridPlaneXY.h>
 #include <mrpt/opengl/stock_objects.h>
 #include <mrpt/opengl/CPlanarLaserScan.h> // in library mrpt-maps

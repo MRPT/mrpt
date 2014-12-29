@@ -9,7 +9,7 @@
 #ifndef CHMHMapArc_H
 #define CHMHMapArc_H
 
-#include <mrpt/slam/CSensoryFrame.h>
+#include <mrpt/obs/CSensoryFrame.h>
 #include <mrpt/hmtslam/CHMHMapNode.h>
 #include <mrpt/utils/CSerializable.h>
 

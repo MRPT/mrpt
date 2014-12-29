@@ -43,8 +43,8 @@ namespace mrpt
 		// Text streaming:
 		std::ostream BASE_IMPEXP & operator << (std::ostream& o, const TColor & c);
 		// Binary streaming:
-		CStream BASE_IMPEXP & operator << (CStream& o, const TColor & c);
-		CStream BASE_IMPEXP & operator >> (CStream& i, TColor & c);
+		CStream BASE_IMPEXP & operator << (mrpt::utils::CStream& o, const TColor & c);
+		CStream BASE_IMPEXP & operator >> (mrpt::utils::CStream& i, TColor & c);
 
 
 		/** A RGB color - floats in the range [0,1]
@@ -58,8 +58,8 @@ namespace mrpt
 		// Text streaming:
 		std::ostream BASE_IMPEXP & operator << (std::ostream& o, const TColorf & c);
 		// Binary streaming:
-		CStream BASE_IMPEXP & operator << (CStream& o, const TColorf & c);
-		CStream BASE_IMPEXP & operator >> (CStream& i, TColorf & c);
+		CStream BASE_IMPEXP & operator << (mrpt::utils::CStream& o, const TColorf & c);
+		CStream BASE_IMPEXP & operator >> (mrpt::utils::CStream& i, TColorf & c);
 
 	} // end namespace
 }

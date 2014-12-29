@@ -12,7 +12,7 @@
 #include <mrpt/opengl.h>
 #include <mrpt/opengl/CPlanarLaserScan.h>
 #include <mrpt/utils/CObserver.h>
-#include <mrpt/slam/COccupancyGridMap2D.h>
+#include <mrpt/maps/COccupancyGridMap2D.h>
 #include <mrpt/utils/CRobotSimulator.h>
 #include <mrpt/gui.h>
 #include <mrpt/utils/round.h>
@@ -66,7 +66,7 @@ public:
 	unsigned int		m_columns;
 	float				m_std_error;
 
-	void CorrectFloorPoints(const CPose3D &kinectrelpose)
+	void CorrectFloorPoints(const mrpt::poses::CPose3D &kinectrelpose)
 	{
 		TSegment3D ray;
 		TPoint3D p1,p2,pint(0,0,0);
@@ -100,7 +100,7 @@ public:
 	}
 
 
-	void CorrectCeiling(const CPose3D &kinectrelpose, float height)
+	void CorrectCeiling(const mrpt::poses::CPose3D &kinectrelpose, float height)
 	{
 		TSegment3D ray;
 		TPoint3D p1,p2,pint(0,0,0);
@@ -135,7 +135,7 @@ public:
 	}
 
 
-	void CorrectRanges(const CPose3D &kinectrelpose)
+	void CorrectRanges(const mrpt::poses::CPose3D &kinectrelpose)
 	{
 		vector <float> x, y, z;
 		vector <bool> deletion;
@@ -158,7 +158,7 @@ public:
 
 
 
-	void KinectScan(const vector <COccupancyGridMap2D> &m_maps, const vector <float> &heights, const CPose3D &robotpose, const CPose3D &kinectrelpose)
+	void KinectScan(const vector <COccupancyGridMap2D> &m_maps, const vector <float> &heights, const mrpt::poses::CPose3D &robotpose, const mrpt::poses::CPose3D &kinectrelpose)
 	{
 	unsigned int acc_factor = max(1,mrpt::utils::round<double>(80.0/m_columns));
 	float h = 0, incrz;
@@ -510,7 +510,7 @@ public:
 		for (unsigned int i=1;i<=num_lasers;i++)
 		{
 			ini.read_vector("LASER_CONFIG",format("LASER%d_POSE",i), vector<float> (0), lasercoord , true);
-			mrpt::slam::CObservation2DRangeScan &scan = lasers[i-1].m_scan;
+			mrpt::obs::CObservation2DRangeScan &scan = lasers[i-1].m_scan;
 			scan.maxRange = ini.read_float("LASER_CONFIG",format("LASER%d_MAX_RANGE",i), 50, true);
 			scan.aperture = ini.read_float("LASER_CONFIG",format("LASER%d_APERTURE",i), M_PI, true);
 			scan.stdError = ini.read_float("LASER_CONFIG",format("LASER%d_STD_ERROR",i), 0.05, true);

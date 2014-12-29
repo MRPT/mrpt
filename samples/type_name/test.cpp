@@ -30,7 +30,7 @@ void Test_TypeName()
 	cout << "Type: " << TTypeName<int32_t>::get() << endl;
 	cout << "Type: " << TTypeName<double>::get() << endl;
 	cout << "Type: " << TTypeName<CPose2D>::get() << endl;
-//	cout << "Type: " << TTypeName<mrpt::slam::COccupancyGridMap2D>::get() << endl;
+//	cout << "Type: " << TTypeName<mrpt::maps::COccupancyGridMap2D>::get() << endl;
 
 	cout << "Type: " << TTypeName<vector<double> >::get() << endl;
 	cout << "Type: " << TTypeName<vector<int32_t> >::get() << endl;

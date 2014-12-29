@@ -17,7 +17,7 @@
 #include <wx/filedlg.h>
 
 // General global variables:
-#include <mrpt/slam/CObservationGPS.h>
+#include <mrpt/obs/CObservationGPS.h>
 #include <mrpt/opengl/CPointCloud.h>
 #include <mrpt/opengl/CGridPlaneXY.h>
 #include <mrpt/opengl/CAxis.h>
@@ -964,8 +964,8 @@ void xRawLogViewerFrame::OnGenGPSTxt(wxCommandEvent& event)
 // Delete rawlog entries with GPS observations with lat/lon/height being Not-A-Number
 //  (useful for some vendor-specific devices...)
 void filter_delGPSNan(
-    mrpt::slam::CActionCollection *acts,
-    mrpt::slam::CSensoryFrame *SF,
+    mrpt::obs::CActionCollection *acts,
+    mrpt::obs::CSensoryFrame *SF,
     int &changesCount  )
 {
     if (SF)

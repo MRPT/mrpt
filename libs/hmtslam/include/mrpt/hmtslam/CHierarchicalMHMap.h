@@ -12,8 +12,8 @@
 #include <mrpt/hmtslam/CHMHMapNode.h>
 #include <mrpt/hmtslam/CHMHMapArc.h>
 #include <mrpt/hmtslam/CHierarchicalMapMHPartition.h>
-#include <mrpt/slam/CSimpleMap.h>
-#include <mrpt/slam/CMultiMetricMap.h>
+#include <mrpt/maps/CSimpleMap.h>
+#include <mrpt/maps/CMultiMetricMap.h>
 #include <mrpt/utils/CSerializable.h>
 
 

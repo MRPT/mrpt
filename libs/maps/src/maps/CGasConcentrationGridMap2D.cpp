@@ -222,7 +222,7 @@ double	 CGasConcentrationGridMap2D::computeObservationLikelihood(
 /*---------------------------------------------------------------
   Implements the writing to a CStream capability of CSerializable objects
  ---------------------------------------------------------------*/
-void  CGasConcentrationGridMap2D::writeToStream(CStream &out, int *version) const
+void  CGasConcentrationGridMap2D::writeToStream(mrpt::utils::CStream &out, int *version) const
 {
 	if (version)
 		*version = 3;
@@ -286,7 +286,7 @@ struct TOldCellTypeInVersion1
 /*---------------------------------------------------------------
   Implements the reading from a CStream capability of CSerializable objects
  ---------------------------------------------------------------*/
-void  CGasConcentrationGridMap2D::readFromStream(CStream &in, int version)
+void  CGasConcentrationGridMap2D::readFromStream(mrpt::utils::CStream &in, int version)
 {
 	switch(version)
 	{
@@ -397,7 +397,7 @@ CGasConcentrationGridMap2D::TInsertionOptions::TInsertionOptions() :
 /*---------------------------------------------------------------
 					dumpToTextStream
   ---------------------------------------------------------------*/
-void  CGasConcentrationGridMap2D::TInsertionOptions::dumpToTextStream(CStream	&out) const
+void  CGasConcentrationGridMap2D::TInsertionOptions::dumpToTextStream(mrpt::utils::CStream	&out) const
 {
 	out.printf("\n----------- [CGasConcentrationGridMap2D::TInsertionOptions] ------------ \n\n");
 	out.printf("[TInsertionOptions.Common] ------------ \n\n");

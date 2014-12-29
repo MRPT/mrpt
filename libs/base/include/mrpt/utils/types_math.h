@@ -85,9 +85,9 @@ namespace mrpt
 	{
 		class CStream;
 
-		CStream BASE_IMPEXP & operator<<(CStream&s, const mrpt::math::CVectorFloat  &a);
-		CStream BASE_IMPEXP & operator<<(CStream&s, const mrpt::math::CVectorDouble &a);
-		CStream BASE_IMPEXP & operator>>(CStream&in, mrpt::math::CVectorDouble &a);
-		CStream BASE_IMPEXP & operator>>(CStream&in, mrpt::math::CVectorFloat &a);
+		CStream BASE_IMPEXP & operator<<(mrpt::utils::CStream&s, const mrpt::math::CVectorFloat  &a);
+		CStream BASE_IMPEXP & operator<<(mrpt::utils::CStream&s, const mrpt::math::CVectorDouble &a);
+		CStream BASE_IMPEXP & operator>>(mrpt::utils::CStream&in, mrpt::math::CVectorDouble &a);
+		CStream BASE_IMPEXP & operator>>(mrpt::utils::CStream&in, mrpt::math::CVectorFloat &a);
 	}
 }

@@ -50,7 +50,7 @@ namespace mrpt
 		 * \sa CMetricMapsAlignmentAlgorithm
 		 * \ingroup mrpt_slam_grp
 		 */
-		class SLAM_IMPEXP  CICP : public CMetricMapsAlignmentAlgorithm
+		class SLAM_IMPEXP  CICP : public mrpt::slam::CMetricMapsAlignmentAlgorithm
 		{
 		public:
 			/** The ICP algorithm configuration data
@@ -64,7 +64,7 @@ namespace mrpt
 					const mrpt::utils::CConfigFileBase  &source,
 					const std::string &section); //!< See utils::CLoadableOptions
 
-				void  dumpToTextStream(CStream	&out) const; //!<See utils::CLoadableOptions
+				void  dumpToTextStream(mrpt::utils::CStream	&out) const; //!<See utils::CLoadableOptions
 
 
 				/** The algorithm to use (default: icpClassic)

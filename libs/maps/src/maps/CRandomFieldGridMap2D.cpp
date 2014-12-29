@@ -779,7 +779,7 @@ CRandomFieldGridMap2D::TInsertionOptionsCommon::TInsertionOptionsCommon() :
 /*---------------------------------------------------------------
 					internal_dumpToTextStream_common
   ---------------------------------------------------------------*/
-void  CRandomFieldGridMap2D::TInsertionOptionsCommon::internal_dumpToTextStream_common(CStream	&out) const
+void  CRandomFieldGridMap2D::TInsertionOptionsCommon::internal_dumpToTextStream_common(mrpt::utils::CStream	&out) const
 {
 	out.printf("sigma                                   = %f\n", sigma);
 	out.printf("cutoffRadius                            = %f\n", cutoffRadius);

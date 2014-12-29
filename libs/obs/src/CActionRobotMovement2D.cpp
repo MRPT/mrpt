@@ -87,7 +87,7 @@ CActionRobotMovement2D::~CActionRobotMovement2D()
 /*---------------------------------------------------------------
   Implements the writing to a CStream capability of CSerializable objects
  ---------------------------------------------------------------*/
-void  CActionRobotMovement2D::writeToStream(CStream &out, int *version) const
+void  CActionRobotMovement2D::writeToStream(mrpt::utils::CStream &out, int *version) const
 {
 	if (version)
 		*version = 6;
@@ -140,7 +140,7 @@ void  CActionRobotMovement2D::writeToStream(CStream &out, int *version) const
 /*---------------------------------------------------------------
   Implements the reading from a CStream capability of CSerializable objects
  ---------------------------------------------------------------*/
-void  CActionRobotMovement2D::readFromStream(CStream &in, int version)
+void  CActionRobotMovement2D::readFromStream(mrpt::utils::CStream &in, int version)
 {
 	switch(version)
 	{

@@ -55,9 +55,9 @@ namespace mrpt
 
 
 			// See base class docs
-			void getSensorPose( CPose3D &out_sensorPose ) const { out_sensorPose=CPose3D(0,0,0); }
+			void getSensorPose( mrpt::poses::CPose3D &out_sensorPose ) const { out_sensorPose=CPose3D(0,0,0); }
 			// See base class docs
-			void setSensorPose( const CPose3D & ) {  }
+			void setSensorPose( const mrpt::poses::CPose3D & ) {  }
 			// See base class docs
 			virtual void getDescriptionAsText(std::ostream &o) const;
 

@@ -62,7 +62,7 @@ namespace mrpt
 			*/
 			int					m_ptu_type;
 
-			std::vector<mrpt::slam::CObservation2DRangeScan> vObs;
+			std::vector<mrpt::obs::CObservation2DRangeScan> vObs;
 
 			// High between ptu tilt axis and hokuyo laser scan
 			double high;
@@ -131,7 +131,7 @@ namespace mrpt
 
 			/** Obtain a observation from the laser */
 
-			bool obtainObs( mrpt::slam::CObservation2DRangeScan & obs );
+			bool obtainObs( mrpt::obs::CObservation2DRangeScan & obs );
 
 			/** This method can or cannot be implemented in the derived class, depending on the need for it.
 			  *  \exception This method must throw an exception with a descriptive message if some critical error is found.
@@ -164,11 +164,11 @@ namespace mrpt
 
 			/** Calculate minimum lenght of scan vectors */
 
-			int minLengthVectors(mrpt::slam::CObservation2DRangeScan &obs, std::vector<mrpt::slam::CObservation2DRangeScan> &vObsAux);
+			int minLengthVectors(mrpt::obs::CObservation2DRangeScan &obs, std::vector<mrpt::obs::CObservation2DRangeScan> &vObsAux);
 
 			/** Calculate minimum lenght of 2 scan vectors */
 
-			int minLengthVectors(mrpt::slam::CObservation2DRangeScan &obs1, mrpt::slam::CObservation2DRangeScan &obs2, const int &mode);
+			int minLengthVectors(mrpt::obs::CObservation2DRangeScan &obs1, mrpt::obs::CObservation2DRangeScan &obs2, const int &mode);
 
 			/** Load observations in a points map */
 			//void loadObs2PointsMap(mrpt::slam::CSimplePointsMap	&theMap);
@@ -181,7 +181,7 @@ namespace mrpt
 
 			/** Calculate the sensor pose depending teh axis of movements and the ptu position */
 
-			void calculateSensorPose(const char &axis, const double &pos, mrpt::slam::CObservation2DRangeScan &obs);
+			void calculateSensorPose(const char &axis, const double &pos, mrpt::obs::CObservation2DRangeScan &obs);
 
 			/** Obtain position of observations between first and second position in m_my_pos map */
 

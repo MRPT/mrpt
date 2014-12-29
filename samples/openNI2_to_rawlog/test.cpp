@@ -20,7 +20,7 @@
 #include <mrpt/utils/CTicTac.h>
 #include <mrpt/system/os.h>
 #include <mrpt/opengl.h>
-#include <mrpt/slam/CObservation3DRangeScan.h>
+#include <mrpt/obs/CObservation3DRangeScan.h>
 
 
 using namespace mrpt;

@@ -13,8 +13,8 @@
 
 #include <mrpt/slam/CICP.h>
 #include <mrpt/slam/CMetricMapBuilderICP.h>
-#include <mrpt/slam/CSimplePointsMap.h>
-#include <mrpt/slam/CObservationOdometry.h>
+#include <mrpt/maps/CSimplePointsMap.h>
+#include <mrpt/obs/CObservationOdometry.h>
 #include <mrpt/poses/CPose3DPDFGaussian.h>
 #include <mrpt/poses/CPosePDFGaussian.h>
 #include <mrpt/utils/CTicTac.h>

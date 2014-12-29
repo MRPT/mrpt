@@ -11,7 +11,7 @@
 
 #include <mrpt/utils/CSerializable.h>
 #include <mrpt/poses/CPose2D.h>
-#include <mrpt/slam/CSimplePointsMap.h>
+#include <mrpt/maps/CSimplePointsMap.h>
 
 #include <mrpt/nav/holonomic/CHolonomicLogFileRecord.h>
 

@@ -15,6 +15,7 @@
 #include <mrpt/poses/CPose3DPDFGaussian.h>
 
 using namespace mrpt::slam;
+using namespace mrpt::maps;
 using namespace mrpt::utils;
 using namespace mrpt::poses;
 

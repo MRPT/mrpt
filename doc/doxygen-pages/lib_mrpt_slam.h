@@ -18,7 +18,7 @@
 
 Interesting stuff in this library:
 
-- mrpt::slam::CMetricMapBuilder: A virtual base for both ICP and RBPF-based SLAM.
+- mrpt::maps::CMetricMapBuilder: A virtual base for both ICP and RBPF-based SLAM.
 
 - mrpt::slam::CMonteCarloLocalization2D: Particle filter-based (Monte Carlo) localization for a robot in a planar scenario.
 

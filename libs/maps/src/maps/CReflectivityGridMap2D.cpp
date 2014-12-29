@@ -173,7 +173,7 @@ double	 CReflectivityGridMap2D::computeObservationLikelihood(
 /*---------------------------------------------------------------
   Implements the writing to a CStream capability of CSerializable objects
  ---------------------------------------------------------------*/
-void  CReflectivityGridMap2D::writeToStream(CStream &out, int *version) const
+void  CReflectivityGridMap2D::writeToStream(mrpt::utils::CStream &out, int *version) const
 {
 	if (version)
 		*version = 0;
@@ -199,7 +199,7 @@ void  CReflectivityGridMap2D::writeToStream(CStream &out, int *version) const
 /*---------------------------------------------------------------
   Implements the reading from a CStream capability of CSerializable objects
  ---------------------------------------------------------------*/
-void  CReflectivityGridMap2D::readFromStream(CStream &in, int version)
+void  CReflectivityGridMap2D::readFromStream(mrpt::utils::CStream &in, int version)
 {
 	switch(version)
 	{
@@ -241,7 +241,7 @@ CReflectivityGridMap2D::TInsertionOptions::TInsertionOptions()
 /*---------------------------------------------------------------
 					dumpToTextStream
   ---------------------------------------------------------------*/
-void  CReflectivityGridMap2D::TInsertionOptions::dumpToTextStream(CStream	&out) const
+void  CReflectivityGridMap2D::TInsertionOptions::dumpToTextStream(mrpt::utils::CStream	&out) const
 {
 	out.printf("\n----------- [CReflectivityGridMap2D::TInsertionOptions] ------------ \n\n");
 

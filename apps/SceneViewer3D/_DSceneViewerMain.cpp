@@ -63,7 +63,7 @@
 #include <mrpt/opengl/CPlanarLaserScan.h>			// It's in lib mrpt-maps
 #include <mrpt/opengl/CAngularObservationMesh.h>	// It's in lib mrpt-maps
 
-#include <mrpt/slam/CColouredPointsMap.h>
+#include <mrpt/maps/CColouredPointsMap.h>
 
 // A custom Art provider for customizing the icons:
 class MyArtProvider : public wxArtProvider

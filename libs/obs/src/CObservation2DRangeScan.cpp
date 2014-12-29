@@ -51,7 +51,7 @@ CObservation2DRangeScan::~CObservation2DRangeScan()
 /*---------------------------------------------------------------
   Implements the writing to a CStream capability of CSerializable objects
  ---------------------------------------------------------------*/
-void  CObservation2DRangeScan::writeToStream(CStream &out, int *version) const
+void  CObservation2DRangeScan::writeToStream(mrpt::utils::CStream &out, int *version) const
 {
 	if (version)
 		*version = 6;
@@ -111,7 +111,7 @@ void CObservation2DRangeScan::truncateByDistanceAndAngle(float min_distance, flo
 /*---------------------------------------------------------------
   Implements the reading from a CStream capability of CSerializable objects
  ---------------------------------------------------------------*/
-void  CObservation2DRangeScan::readFromStream(CStream &in, int version)
+void  CObservation2DRangeScan::readFromStream(mrpt::utils::CStream &in, int version)
 {
 	switch(version)
 	{

@@ -355,11 +355,11 @@ void CStereoRectifyMap::rectify(
 	MRPT_END
 }
 
-/** Overloaded version for in-place rectification of image pairs stored in a mrpt::slam::CObservationStereoImages.
+/** Overloaded version for in-place rectification of image pairs stored in a mrpt::obs::CObservationStereoImages.
   *  Upon return, the new camera intrinsic parameters will be already stored in the observation object.
   */
 void CStereoRectifyMap::rectify(
-	mrpt::slam::CObservationStereoImages & stereo_image_observation,
+	mrpt::obs::CObservationStereoImages & stereo_image_observation,
 	const bool use_internal_mem_cache) const
 {
 	MRPT_START

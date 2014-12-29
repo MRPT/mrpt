@@ -618,7 +618,7 @@ unsigned int CHolonomicND::direction2sector(const double a, const unsigned int N
 	Implements the writing to a CStream capability of
 	  CSerializable objects
   ---------------------------------------------------------------*/
-void  CLogFileRecord_ND::writeToStream(CStream &out,int *version) const
+void  CLogFileRecord_ND::writeToStream(mrpt::utils::CStream &out,int *version) const
 {
 	if (version)
 		*version = 1;
@@ -632,7 +632,7 @@ void  CLogFileRecord_ND::writeToStream(CStream &out,int *version) const
 /*---------------------------------------------------------------
 					readFromStream
   ---------------------------------------------------------------*/
-void  CLogFileRecord_ND::readFromStream(CStream &in,int version)
+void  CLogFileRecord_ND::readFromStream(mrpt::utils::CStream &in,int version)
 {
 	switch(version)
 	{

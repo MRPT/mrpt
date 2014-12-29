@@ -54,7 +54,7 @@ void  C2DRangeFinderAbstract::bindIO( CStream	*streamIO )
 -------------------------------------------------------------*/
 void  C2DRangeFinderAbstract::getObservation(
 	bool							&outThereIsObservation,
-	mrpt::slam::CObservation2DRangeScan	&outObservation,
+	mrpt::obs::CObservation2DRangeScan	&outObservation,
 	bool							&hardwareError )
 {
 	m_csLastObservation.enter();
@@ -162,7 +162,7 @@ void C2DRangeFinderAbstract::loadCommonParams(
 /*-------------------------------------------------------------
 						filterByExclusionAreas
 -------------------------------------------------------------*/
-void C2DRangeFinderAbstract::filterByExclusionAreas( mrpt::slam::CObservation2DRangeScan &obs) const
+void C2DRangeFinderAbstract::filterByExclusionAreas( mrpt::obs::CObservation2DRangeScan &obs) const
 {
 	obs.filterByExclusionAreas( m_lstExclusionPolys );
 }
@@ -170,13 +170,13 @@ void C2DRangeFinderAbstract::filterByExclusionAreas( mrpt::slam::CObservation2DR
 /*-------------------------------------------------------------
 						filterByExclusionAngles
 -------------------------------------------------------------*/
-void C2DRangeFinderAbstract::filterByExclusionAngles( mrpt::slam::CObservation2DRangeScan &obs) const
+void C2DRangeFinderAbstract::filterByExclusionAngles( mrpt::obs::CObservation2DRangeScan &obs) const
 {
 	obs.filterByExclusionAngles( m_lstExclusionAngles );
 }
 
 
-void C2DRangeFinderAbstract::processPreview(const mrpt::slam::CObservation2DRangeScan &obs)
+void C2DRangeFinderAbstract::processPreview(const mrpt::obs::CObservation2DRangeScan &obs)
 {
 	using namespace mrpt::opengl;
 

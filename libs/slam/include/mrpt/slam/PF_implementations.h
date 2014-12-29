@@ -13,9 +13,9 @@
 #include <mrpt/bayes/CParticleFilterCapable.h>
 #include <mrpt/bayes/CParticleFilterData.h>
 #include <mrpt/random.h>
-#include <mrpt/slam/CActionCollection.h>
-#include <mrpt/slam/CActionRobotMovement3D.h>
-#include <mrpt/slam/CActionRobotMovement2D.h>
+#include <mrpt/obs/CActionCollection.h>
+#include <mrpt/obs/CActionRobotMovement3D.h>
+#include <mrpt/obs/CActionRobotMovement2D.h>
 #include <mrpt/slam/TKLDParams.h>
 
 #include <mrpt/math/distributions.h>  // chi2inv
@@ -51,8 +51,8 @@ namespace mrpt
 		template <class PARTICLE_TYPE,class MYSELF>
 		template <class BINTYPE>
 		bool PF_implementation<PARTICLE_TYPE,MYSELF>::PF_SLAM_implementation_gatherActionsCheckBothActObs(
-			const CActionCollection	* actions,
-			const CSensoryFrame		* sf )
+			const mrpt::obs::CActionCollection	* actions,
+			const mrpt::obs::CSensoryFrame		* sf )
 		{
 			MYSELF *me = static_cast<MYSELF*>(this);
 
@@ -108,7 +108,7 @@ namespace mrpt
 			}
 			else
 			{
-				CActionRobotMovement2D	theResultingRobotMov;
+				mrpt::obs::CActionRobotMovement2D	theResultingRobotMov;
 				theResultingRobotMov.computeFromOdometry(
 					m_accumRobotMovement2D.rawOdometryIncrementReading,
 					m_accumRobotMovement2D.motionModelConfiguration );
@@ -135,8 +135,8 @@ namespace mrpt
 		template <class PARTICLE_TYPE,class MYSELF>
 		template <class BINTYPE>
 		void PF_implementation<PARTICLE_TYPE,MYSELF>::PF_SLAM_implementation_pfAuxiliaryPFOptimal(
-			const CActionCollection	* actions,
-			const CSensoryFrame		* sf,
+			const mrpt::obs::CActionCollection	* actions,
+			const mrpt::obs::CSensoryFrame		* sf,
 			const CParticleFilter::TParticleFilterOptions &PF_options,
 			const TKLDParams &KLD_options)
 		{
@@ -153,8 +153,8 @@ namespace mrpt
 		template <class PARTICLE_TYPE,class MYSELF>
 		template <class BINTYPE>
 		void PF_implementation<PARTICLE_TYPE,MYSELF>::PF_SLAM_implementation_pfStandardProposal(
-			const CActionCollection	* actions,
-			const CSensoryFrame		* sf,
+			const mrpt::obs::CActionCollection	* actions,
+			const mrpt::obs::CSensoryFrame		* sf,
 			const CParticleFilter::TParticleFilterOptions &PF_options,
 			const TKLDParams &KLD_options)
 		{
@@ -174,7 +174,7 @@ namespace mrpt
 				// Find a robot movement estimation:
 				CPose3D				motionModelMeanIncr;
 				{
-					CActionRobotMovement2DPtr	robotMovement2D = actions->getBestMovementEstimation();
+					mrpt::obs::CActionRobotMovement2DPtr	robotMovement2D = actions->getBestMovementEstimation();
 					// If there is no 2D action, look for a 3D action:
 					if (robotMovement2D.present())
 					{
@@ -183,7 +183,7 @@ namespace mrpt
 					}
 					else
 					{
-						CActionRobotMovement3DPtr	robotMovement3D = actions->getActionByClass<CActionRobotMovement3D>();
+						mrpt::obs::CActionRobotMovement3DPtr	robotMovement3D = actions->getActionByClass<CActionRobotMovement3D>();
 						if (robotMovement3D)
 						{
 							m_movementDrawer.setPosePDF( robotMovement3D->poseChange );
@@ -243,7 +243,7 @@ namespace mrpt
 
 						// generate the new particle:
 						const size_t drawn_idx = me->fastDrawSample(PF_options);
-						const CPose3D newPose = CPose3D(*getLastPose(drawn_idx)) + increment_i;
+						const mrpt::poses::CPose3D newPose = CPose3D(*getLastPose(drawn_idx)) + increment_i;
 						const TPose3D newPose_s = newPose;
 
 						// Add to the new particles list:
@@ -356,7 +356,7 @@ namespace mrpt
 			size_t  N = PF_options.pfAuxFilterOptimal_MaximumSearchSamples;
 			ASSERT_(N>1)
 
-			const CPose3D oldPose = *me->getLastPose(index);
+			const mrpt::poses::CPose3D oldPose = *me->getLastPose(index);
 			CVectorDouble   vectLiks(N,0);		// The vector with the individual log-likelihoods.
 			CPose3D			drawnSample;
 			for (size_t q=0;q<N;q++)
@@ -422,7 +422,7 @@ namespace mrpt
 
 			// Take the previous particle weight:
 			const double cur_logweight = myObj->m_particles[index].log_w;
-			const CPose3D oldPose = *myObj->getLastPose(index);
+			const mrpt::poses::CPose3D oldPose = *myObj->getLastPose(index);
 
 			if (!PF_options.pfAuxFilterStandard_FirstStageWeightsMonteCarlo)
 			{
@@ -862,7 +862,7 @@ namespace mrpt
 				if (PF_options.verbose) cout << "[PF_implementation] Warning: Discarding very unlikely particle" << endl;
 			}
 
-			const CPose3D oldPose = *getLastPose(k);	// Get the current pose of the k'th particle
+			const mrpt::poses::CPose3D oldPose = *getLastPose(k);	// Get the current pose of the k'th particle
 
 			//   (b) Rejection-sampling: Draw a new robot pose from x[k],
 			//       and accept it with probability p(zk|x) / maxLikelihood:

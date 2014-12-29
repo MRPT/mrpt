@@ -91,7 +91,7 @@ void  CPose3DQuatPDFGaussian::getCovarianceAndMean(CMatrixDouble77 &C, CPose3DQu
 /*---------------------------------------------------------------
 						writeToStream
   ---------------------------------------------------------------*/
-void  CPose3DQuatPDFGaussian::writeToStream(CStream &out,int *version) const
+void  CPose3DQuatPDFGaussian::writeToStream(mrpt::utils::CStream &out,int *version) const
 {
 	if (version)
 		*version = 0;
@@ -110,7 +110,7 @@ void  CPose3DQuatPDFGaussian::writeToStream(CStream &out,int *version) const
 /*---------------------------------------------------------------
 						readFromStream
   ---------------------------------------------------------------*/
-void  CPose3DQuatPDFGaussian::readFromStream(CStream &in,int version)
+void  CPose3DQuatPDFGaussian::readFromStream(mrpt::utils::CStream &in,int version)
 {
 	switch(version)
 	{

@@ -26,7 +26,7 @@ namespace mrpt
 		  *  \code
 		  *     cout << TTypeName<double>::get() << endl;                          // "double"
 		  *   	cout << TTypeName<CPose2D>::get() << endl;                         // "CPose2D"
-		  *   	cout << TTypeName<mrpt::slam::COccupancyGridMap2D>::get() << endl; // "COccupancyGridMap2D"
+		  *   	cout << TTypeName<mrpt::maps::COccupancyGridMap2D>::get() << endl; // "COccupancyGridMap2D"
 		  *  \endcode
 		  *
 		  *  Users can extend this for custom structs/classes with the macro DECLARE_CUSTOM_TTYPENAME:

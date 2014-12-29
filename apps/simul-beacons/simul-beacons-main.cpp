@@ -12,11 +12,11 @@
 #include <mrpt/utils/CConfigFile.h>
 #include <mrpt/utils/CFileOutputStream.h>
 #include <mrpt/utils/CFileGZOutputStream.h>
-#include <mrpt/slam/CBeaconMap.h>
-#include <mrpt/slam/CSensoryFrame.h>
-#include <mrpt/slam/CActionCollection.h>
-#include <mrpt/slam/CActionRobotMovement2D.h>
-#include <mrpt/slam/CObservationBeaconRanges.h>
+#include <mrpt/maps/CBeaconMap.h>
+#include <mrpt/obs/CSensoryFrame.h>
+#include <mrpt/obs/CActionCollection.h>
+#include <mrpt/obs/CActionRobotMovement2D.h>
+#include <mrpt/obs/CObservationBeaconRanges.h>
 #include <mrpt/poses/CPoint3D.h>
 #include <mrpt/random.h>
 

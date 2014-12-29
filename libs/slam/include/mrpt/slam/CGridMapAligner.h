@@ -10,7 +10,7 @@
 #define CGridMapAligner_H
 
 #include <mrpt/slam/CMetricMapsAlignmentAlgorithm.h>
-#include <mrpt/slam/CLandmarksMap.h>
+#include <mrpt/maps/CLandmarksMap.h>
 #include <mrpt/utils/CLoadableOptions.h>
 #include <mrpt/utils/TEnumType.h>
 #include <mrpt/poses/CPosePDFSOG.h>
@@ -38,7 +38,7 @@ namespace mrpt
 		 * \sa CMetricMapsAlignmentAlgorithm
 		 * \ingroup mrpt_slam_grp
 		 */
-		class SLAM_IMPEXP  CGridMapAligner : public CMetricMapsAlignmentAlgorithm
+		class SLAM_IMPEXP  CGridMapAligner : public mrpt::maps::CMetricMapsAlignmentAlgorithm
 		{
 		private:
 			/** Private member, implements one the algorithms.
@@ -92,7 +92,7 @@ namespace mrpt
 
 				/** See utils::CLoadableOptions
 				  */
-				void  dumpToTextStream(CStream	&out) const;
+				void  dumpToTextStream(mrpt::utils::CStream	&out) const;
 
 
 				TAlignerMethod		methodSelection;		//!< The aligner method:

@@ -93,9 +93,9 @@ wxBitmap MyArtProvider::CreateBitmap(const wxArtID& id,
 #include <mrpt/utils/CTicTac.h>
 #include <mrpt/utils/CRobotSimulator.h>
 #include <mrpt/slam/CRawlog.h>
-#include <mrpt/slam/COccupancyGridMap2D.h>
-#include <mrpt/slam/CActionRobotMovement2D.h>
-#include <mrpt/slam/CObservationOdometry.h>
+#include <mrpt/maps/COccupancyGridMap2D.h>
+#include <mrpt/obs/CActionRobotMovement2D.h>
+#include <mrpt/obs/CObservationOdometry.h>
 #include <mrpt/hwdrivers/CJoystick.h>
 
 #include <mrpt/opengl/stock_objects.h>
@@ -657,7 +657,7 @@ void gridmapSimulFrame::OntimRunTrigger(wxTimerEvent& event)
 		the_robot.getRealPose(p);
 
 		// Simulate scan:
-		mrpt::slam::CObservation2DRangeScan the_scan;
+		mrpt::obs::CObservation2DRangeScan the_scan;
 		the_scan.sensorLabel = "LASER_SIM";
 		the_scan.sensorPose.setFromValues(0.20,0,0.10);
 		the_scan.maxRange = 80; //LASER_MAX_RANGE;
@@ -745,7 +745,7 @@ void gridmapSimulFrame::OntimRunTrigger(wxTimerEvent& event)
 				else
 				{
 					// Observations only format:
-					mrpt::slam::CObservationOdometry odo_obs;
+					mrpt::obs::CObservationOdometry odo_obs;
 					odo_obs.timestamp = tim_now;
 					odo_obs.sensorLabel = "odometry";
 

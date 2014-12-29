@@ -176,7 +176,7 @@ namespace mrpt
 			/** Look for the first 2D or 3D "odometry" found in this collection of actions, and return the "mean" increment of the robot according to it.
 			  * \return true on success,false on no odometry found.
 			  */
-			bool getFirstMovementEstimationMean( CPose3D &out_pose_increment ) const;
+			bool getFirstMovementEstimationMean( mrpt::poses::CPose3D &out_pose_increment ) const;
 
 			/** Look for the first 2D or 3D "odometry" found in this collection of actions, and return the "mean" increment of the robot and its covariance according to it.
 			  * \return true on success,false on no odometry found.

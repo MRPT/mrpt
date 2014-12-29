@@ -7,7 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/slam/COccupancyGridMap2D.h>
+#include <mrpt/maps/COccupancyGridMap2D.h>
 #include <mrpt/gui/CDisplayWindowPlots.h>
 #include <mrpt/utils/CRobotSimulator.h>
 #include <mrpt/utils/CFileOutputStream.h>

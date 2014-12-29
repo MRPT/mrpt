@@ -7,8 +7,8 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/slam/CMultiMetricMap.h>
-#include <mrpt/slam/CObservationBeaconRanges.h>
+#include <mrpt/maps/CMultiMetricMap.h>
+#include <mrpt/obs/CObservationBeaconRanges.h>
 #include <mrpt/slam/CRejectionSamplingRangeOnlyLocalization.h>
 #include <mrpt/random.h>
 #include <mrpt/utils/CConfigFile.h>
@@ -37,8 +37,8 @@ void TestRS()
 	map.setListOfMaps( &mapInit );
 
 	// Create a dummy observation:
-	mrpt::slam::CObservationBeaconRanges					obs;
-	mrpt::slam::CObservationBeaconRanges::TMeasurement	meas;
+	mrpt::obs::CObservationBeaconRanges					obs;
+	mrpt::obs::CObservationBeaconRanges::TMeasurement	meas;
 	obs.stdError = SIGMA;
 
 	meas.beaconID = 0;

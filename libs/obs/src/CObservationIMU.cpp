@@ -23,7 +23,7 @@ IMPLEMENTS_SERIALIZABLE(CObservationIMU, CObservation,mrpt::obs)
 /*---------------------------------------------------------------
   Implements the writing to a CStream capability of CSerializable objects
  ---------------------------------------------------------------*/
-void  CObservationIMU::writeToStream(CStream &out, int *version) const
+void  CObservationIMU::writeToStream(mrpt::utils::CStream &out, int *version) const
 {
 	if (version)
 		*version = 3;  // v1->v2 was only done to fix a bug in the ordering of YAW/PITCH/ROLL rates.
@@ -43,7 +43,7 @@ void  CObservationIMU::writeToStream(CStream &out, int *version) const
 /*---------------------------------------------------------------
   Implements the reading from a CStream capability of CSerializable objects
  ---------------------------------------------------------------*/
-void  CObservationIMU::readFromStream(CStream &in, int version)
+void  CObservationIMU::readFromStream(mrpt::utils::CStream &in, int version)
 {
 	switch(version)
 	{

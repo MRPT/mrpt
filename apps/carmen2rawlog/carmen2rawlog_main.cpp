@@ -27,7 +27,7 @@
 #include <mrpt/math/lightweight_geom_data.h>
 
 #include <mrpt/slam/carmen_log_tools.h>
-#include <mrpt/slam/CObservationOdometry.h>
+#include <mrpt/obs/CObservationOdometry.h>
 
 #include <mrpt/otherlibs/tclap/CmdLine.h>
 

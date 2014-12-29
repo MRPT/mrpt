@@ -116,7 +116,7 @@ namespace mrpt
             double                  m_angleResolution;  // en degrés
             double                  m_startAngle;       // degrés
             double                  m_stopAngle;        // degrés
-            CPose3D                 m_sensorPose;
+            mrpt::poses::CPose3D                 m_sensorPose;
             double                  m_maxRange;
             double                  m_beamApperture;
 

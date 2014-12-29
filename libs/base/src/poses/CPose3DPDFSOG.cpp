@@ -184,7 +184,7 @@ void CPose3DPDFSOG::getCovarianceAndMean(mrpt::math::CMatrixDouble66 &estCovOut,
 /*---------------------------------------------------------------
 						writeToStream
   ---------------------------------------------------------------*/
-void  CPose3DPDFSOG::writeToStream(CStream &out,int *version) const
+void  CPose3DPDFSOG::writeToStream(mrpt::utils::CStream &out,int *version) const
 {
 	if (version)
 		*version = 2;
@@ -204,7 +204,7 @@ void  CPose3DPDFSOG::writeToStream(CStream &out,int *version) const
 /*---------------------------------------------------------------
 						readFromStream
   ---------------------------------------------------------------*/
-void  CPose3DPDFSOG::readFromStream(CStream &in,int version)
+void  CPose3DPDFSOG::readFromStream(mrpt::utils::CStream &in,int version)
 {
 	switch(version)
 	{

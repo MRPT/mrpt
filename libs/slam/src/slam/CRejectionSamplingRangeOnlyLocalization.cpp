@@ -11,9 +11,9 @@
 
 
 #include <mrpt/slam/CRejectionSamplingRangeOnlyLocalization.h>
-#include <mrpt/slam/CObservationBeaconRanges.h>
+#include <mrpt/obs/CObservationBeaconRanges.h>
 #include <mrpt/slam/CLandmark.h>
-#include <mrpt/slam/CLandmarksMap.h>
+#include <mrpt/maps/CLandmarksMap.h>
 #include <mrpt/math/utils.h>
 
 using namespace mrpt::utils;

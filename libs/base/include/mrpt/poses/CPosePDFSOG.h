@@ -190,15 +190,15 @@ namespace mrpt
 
 			/** Makes: thisPDF = thisPDF + Ap, where "+" is pose composition (both the mean, and the covariance matrix are updated).
 			  */
-			void  operator += ( const CPose2D &Ap);
+			void  operator += ( const mrpt::poses::CPose2D &Ap);
 
 			/** Evaluates the PDF at a given point.
 			  */
-			double  evaluatePDF( const CPose2D &x, bool sumOverAllPhis = false ) const;
+			double  evaluatePDF( const mrpt::poses::CPose2D &x, bool sumOverAllPhis = false ) const;
 
 			/** Evaluates the ratio PDF(x) / max_PDF(x*), that is, the normalized PDF in the range [0,1].
 			  */
-			double  evaluateNormalizedPDF( const CPose2D &x ) const;
+			double  evaluateNormalizedPDF( const mrpt::poses::CPose2D &x ) const;
 
 			/** Evaluates the PDF within a rectangular grid (and a fixed orientation) and saves the result in a matrix (each row contains values for a fixed y-coordinate value).
 			  */

@@ -112,7 +112,7 @@ namespace maps
 	  * \sa mrpt::maps::CGasConcentrationGridMap2D, mrpt::maps::CWirelessPowerGridMap2D, mrpt::maps::CMetricMap, mrpt::utils::CDynamicGrid, The application icp-slam, mrpt::maps::CMultiMetricMap
 	  * \ingroup mrpt_maps_grp
 	  */
-	class CRandomFieldGridMap2D : public CMetricMap, public utils::CDynamicGrid<TRandomFieldCell>
+	class CRandomFieldGridMap2D : public mrpt::maps::CMetricMap, public utils::CDynamicGrid<TRandomFieldCell>
 	{
 		typedef utils::CDynamicGrid<TRandomFieldCell> BASE;
 
@@ -192,7 +192,7 @@ namespace maps
 				const mrpt::utils::CConfigFileBase  &source,
 				const std::string &section);
 
-			void  internal_dumpToTextStream_common(CStream	&out) const; //!< See utils::CLoadableOptions
+			void  internal_dumpToTextStream_common(mrpt::utils::CStream	&out) const; //!< See utils::CLoadableOptions
 
 			/** @name Kernel methods (mrKernelDM, mrKernelDMV)
 			    @{ */
@@ -280,7 +280,7 @@ namespace maps
 		/** Direct update of the map with a reading in a given position of the map, using 
 		  *  the appropriate method according to mapType passed in the constructor.
 		  *
-		  * This is a direct way to update the map, an alternative to the generic insertObservation() method which works with CObservation objects.
+		  * This is a direct way to update the map, an alternative to the generic insertObservation() method which works with mrpt::obs::CObservation objects.
 		  */
 		void insertIndividualReading(const float sensorReading,const mrpt::math::TPoint2D & point);
 

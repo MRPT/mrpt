@@ -17,7 +17,8 @@
 
 using namespace mrpt::vision;
 using namespace mrpt::utils;
-using namespace mrpt::slam;
+using namespace mrpt::obs;
+using namespace mrpt::maps;
 
 void registerAllClasses_mrpt_vision();
 

@@ -28,8 +28,8 @@
 #include <mrpt/math/lightweight_geom_data.h>
 
 #include <mrpt/slam/carmen_log_tools.h>
-#include <mrpt/slam/CSimpleMap.h>
-#include <mrpt/slam/CObservationOdometry.h>
+#include <mrpt/maps/CSimpleMap.h>
+#include <mrpt/obs/CObservationOdometry.h>
 #include <mrpt/poses/CPosePDFGaussian.h>
 
 #include <mrpt/otherlibs/tclap/CmdLine.h>

@@ -9,7 +9,7 @@
 
 
 #include <mrpt/slam/CICP.h>
-#include <mrpt/slam/CSimplePointsMap.h>
+#include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/opengl/CAngularObservationMesh.h>
 #include <mrpt/poses/CPosePDF.h>
 #include <mrpt/poses/CPose3DPDF.h>

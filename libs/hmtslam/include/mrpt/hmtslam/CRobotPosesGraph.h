@@ -13,9 +13,9 @@
 
 #include <mrpt/hmtslam/HMT_SLAM_common.h>
 #include <mrpt/poses/CPose3DPDFParticles.h>
-#include <mrpt/slam/CSensoryFrame.h>
-#include <mrpt/slam/CSimpleMap.h>
-#include <mrpt/slam/CMultiMetricMap.h>
+#include <mrpt/obs/CSensoryFrame.h>
+#include <mrpt/maps/CSimpleMap.h>
+#include <mrpt/maps/CMultiMetricMap.h>
 
 
 namespace mrpt

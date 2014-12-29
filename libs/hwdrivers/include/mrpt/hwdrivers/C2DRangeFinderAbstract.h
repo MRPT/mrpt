@@ -12,7 +12,7 @@
 #include <mrpt/utils/CStream.h>
 #include <mrpt/synch.h>
 #include <mrpt/utils/CDebugOutputCapable.h>
-#include <mrpt/slam/CObservation2DRangeScan.h>
+#include <mrpt/obs/CObservation2DRangeScan.h>
 #include <mrpt/utils/CConfigFileBase.h>
 #include <mrpt/hwdrivers/link_pragmas.h>
 #include <mrpt/hwdrivers/CGenericSensor.h>
@@ -89,7 +89,7 @@ namespace mrpt
 			void filterByExclusionAngles( CObservation2DRangeScan &obs) const;
 
 			/** Must be called inside the capture method to allow optional GUI preview of scans */
-			void processPreview(const mrpt::slam::CObservation2DRangeScan &obs);
+			void processPreview(const mrpt::obs::CObservation2DRangeScan &obs);
 
 		public:
 			C2DRangeFinderAbstract();  //!< Default constructor

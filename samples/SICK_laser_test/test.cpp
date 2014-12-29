@@ -10,7 +10,7 @@
 #include <mrpt/utils/CConfigFile.h>
 #include <mrpt/hwdrivers/CSerialPort.h>
 #include <mrpt/hwdrivers/CSickLaserUSB.h>
-#include <mrpt/slam/CSimplePointsMap.h>
+#include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/system/os.h>
 
 using namespace mrpt;

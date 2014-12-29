@@ -8,8 +8,8 @@
    +---------------------------------------------------------------------------+ */
 
 #include <mrpt/system/filesystem.h>
-#include <mrpt/slam/CSimpleMap.h>
-#include <mrpt/slam/COccupancyGridMap2D.h>
+#include <mrpt/maps/CSimpleMap.h>
+#include <mrpt/maps/COccupancyGridMap2D.h>
 #include <mrpt/gui/CDisplayWindow.h>
 #include <mrpt/random.h>
 

@@ -82,7 +82,7 @@
 		- [mrpt-hwdrivers]
 			- Bumblebee2 Linux support in mrpt::hwdrivers::CImageGrabber_FlyCapture2 via Triclops (by Jesus Briales)
 		- [mrpt-maps]
-			- New method mrpt::slam::COccupancyGridMap2D::getRawMap()
+			- New method mrpt::maps::COccupancyGridMap2D::getRawMap()
 			- New method mrpt::slam::CColouredPointsMap::getPCLPointCloudXYZRGB()
 		- [mrpt-opengl]
 			- mrpt::opengl::CMyGLCanvasBase (affects all 3D rendering classes): better handling of internal timers for smoother updates while rendering in multithreading apps.
@@ -137,11 +137,11 @@
 				- mrpt::hwdrivers::CDUO3DCamera: Interface to DUO3D cameras (By Francisco Angel Moreno)
 				- mrpt::hwdrivers::CGPS_NTRIP: A combination of GPS receiver + NTRIP receiver capable of submitting GGA frames to enable RTCM 3.0
 			- [mrpt-obs]
-				- mrpt::slam::CObservation6DFeatures
+				- mrpt::obs::CObservation6DFeatures
 		- Changes in classes:
 			- [mrpt-base]
 				- Robust kernel templates moved from mrpt::vision to mrpt::math. See mrpt::math::RobustKernel<>. Added unit tests for robust kernels.
-				- CPose3D has new SE(3) methods: mrpt::poses::CPose3D::jacob_dexpeD_de(), mrpt::poses::CPose3D::jacob_dAexpeD_de()
+				- mrpt::poses::CPose3D has new SE(3) methods: mrpt::poses::CPose3D::jacob_dexpeD_de(), mrpt::poses::CPose3D::jacob_dAexpeD_de()
 				- More efficient mrpt::utils::OctetVectorToObject() (avoid memory copy).
 				- Fixed const-correctness of mrpt::utils::CImage::forceLoad() and mrpt::utils::CImage::unload()
 			- [mrpt-hwdrivers]
@@ -180,12 +180,12 @@
 			- Embedded Eigen updated to version 3.2.1 [(commit)](https://github.com/jlblancoc/mrpt/commit/47913da94a27e98a9115f85b2a530b6c14a10b8f) [(commit)](https://github.com/jlblancoc/mrpt/commit/33258761d3b75bf133d38aecb257c64e4d76b21e)
   		- BUG FIXES:
 			- RawlogViewer app: Fixed abort while converting SF->obs.only datasets when there is no odometry.
-			- mrpt::slam::CSensoryFrame: The cached point map is now invalidated with any change to the list of observations so it's rebuild upon next call.
+			- mrpt::obs::CSensoryFrame: The cached point map is now invalidated with any change to the list of observations so it's rebuild upon next call.
 			- New implementation of mrpt::synch::CSemaphore avoids crashes in OS X - by Randolph Voorhies.
 			- mrpt::opengl::CArrow was always drawn of normalized length.
 			- FlyCapture2 monocular & stereo cameras could return an incorrect timestamp (only in Linux?).
 			- mrpt::system::createDirectory() returned false (error) when the directory already existed.
-			- mrpt::vision::CStereoRectifyMap::rectify() didn't update the left & right camera poses inside mrpt::slam::CObservationStereoImages objects while rectifying.
+			- mrpt::vision::CStereoRectifyMap::rectify() didn't update the left & right camera poses inside mrpt::obs::CObservationStereoImages objects while rectifying.
 			- RawLogViewer: Operation "convert to SF format" didn't take into account odometry observations.
 			- Fix build errors with GCC 4.9
 			- Fix crash of mrpt::hwdrivers::CIMUXSens_MT4's destructor when it fails to scan and open a device.
@@ -209,7 +209,7 @@
 				- mrpt::slam::COctoMap (only occupancy)
 				- mrpt::slam::CColouredOctoMap (occupancy + RGB color)
 		- [mrpt-obs]
-			- mrpt::slam::CObservationRawDAQ, a placeholder for raw and generic measurements from data acquisition devices. - [(commit)](http://code.google.com/p/mrpt/source/detail?r=3459)
+			- mrpt::obs::CObservationRawDAQ, a placeholder for raw and generic measurements from data acquisition devices. - [(commit)](http://code.google.com/p/mrpt/source/detail?r=3459)
 		- [mrpt-opengl]
 			- mrpt::opengl::CMeshFast, an open gl object that draws a "mesh" as a structured point cloud which is faster to render (by Mariano Jaimez Tarifa). -[(commit)](https://github.com/jlblancoc/mrpt/commit/9306bb4a585387d4c85b3f6e41dd2cbe5a354e80)
 			- mrpt::opengl::CVectorField2D, an opengl object that shows a 2D Vector Field (by Mariano Jaimez Tarifa). - [(commit)](http://code.google.com/p/mrpt/source/detail?r=3461)
@@ -222,14 +222,14 @@
 	- Changes in classes:
 		- Clean up and slight optimization of metric map matching API: - [(commit)](http://code.google.com/p/mrpt/source/detail?r=3446)
 			- <b>Methods marked as deprecated: </b>
-				- mrpt::slam::CMetricMap::computeMatchingWith2D() --> mrpt::slam::CMetricMap::determineMatching2D()
-				- mrpt::slam::CMetricMap::computeMatchingWith3D() --> mrpt::slam::CMetricMap::determineMatching3D()
+				- mrpt::maps::CMetricMap::computeMatchingWith2D() --> mrpt::maps::CMetricMap::determineMatching2D()
+				- mrpt::maps::CMetricMap::computeMatchingWith3D() --> mrpt::maps::CMetricMap::determineMatching3D()
 			- New structures:
 				- mrpt::slam::TMatchingParams
 				- mrpt::slam::TMatchingExtraResults
 		- mrpt::maps::CPointsMap::TInsertionOptions now have methods to save/load from binary streams, making more maintainable the serialization of point maps - [(commit)](https://github.com/jlblancoc/mrpt/commit/544d439c3462228b07344142de68e5bc10c1a2e3)
 		- New options in point maps: mrpt::maps::CPointsMap::TInsertionOptions::insertInvalidPoints - [(commit)](https://github.com/jlblancoc/mrpt/pull/8)
-		- mrpt::slam::CObservationIMU now includes data fields for 3D magnetometers and altimeters. - [(commit)](http://code.google.com/p/mrpt/source/detail?r=3451)
+		- mrpt::obs::CObservationIMU now includes data fields for 3D magnetometers and altimeters. - [(commit)](http://code.google.com/p/mrpt/source/detail?r=3451)
 		- Method renamed mrpt::utils::CEnhancedMetaFile::selectVectorTextFont() to avoid shadowing mrpt::utils::CCanvas::selectTextFont()
 		- mrpt::reactivenav::CParameterizedTrajectoryGenerator: New methods:
 			- mrpt::reactivenav::CParameterizedTrajectoryGenerator::inverseMap_WS2TP() for inverse look-up of WS to TP space - [(commit)](https://github.com/jlblancoc/mrpt/commit/4d04ef50e3dea581bed6287d4ea6593034c47da3)
@@ -319,7 +319,7 @@
 			- mrpt::hwdrivers::CInterfaceNI845x: An interface for this USB SPI/I2C data acquisition board.
 			- mrpt::hwdrivers::CCANBusReader: A class to record CAN bus frames with a CAN232 converter.
 		- [mrpt-obs]
-			- mrpt::slam::CObservationCANBusJ1939
+			- mrpt::obs::CObservationCANBusJ1939
 	- New functions:
 		- New opengl_stock objects:
 			- mrpt::opengl::stock_objects::Hokuyo_URG()
@@ -330,7 +330,7 @@
 			- gmrf_map_demo
 	- Changes in classes:
 		- [mrpt-maps]
-			- mrpt::slam::COccupancyGridMap2D now also evalutes likelihoods for sonar-like observations (mrpt::slam::CObservationRange), allowing particle-filter localization with these sensors - <a href="http://code.google.com/p/mrpt/source/detail?r=3330" >r3330</a>
+			- mrpt::maps::COccupancyGridMap2D now also evalutes likelihoods for sonar-like observations (mrpt::obs::CObservationRange), allowing particle-filter localization with these sensors - <a href="http://code.google.com/p/mrpt/source/detail?r=3330" >r3330</a>
 			- New method mrpt::slam::CRandomFieldGridMap2D::insertIndividualReading()
 		- [mrpt-kinematics]
 			- mrpt::kinematics::CKinematicChain: Now allows changing the orientation of the first DOF (X,Y,Z).
@@ -382,7 +382,7 @@
 				- mrpt::utils::ignored_copy_ptr<>
 				- mrpt::utils::CTimeLoggerEntry
 			- [mrpt-obs]
-				- mrpt::slam::CObservationWindSensor - <a href="http://code.google.com/p/mrpt/source/detail?r=3050" >r3050</a>
+				- mrpt::obs::CObservationWindSensor - <a href="http://code.google.com/p/mrpt/source/detail?r=3050" >r3050</a>
 			- [mrpt-maps]
 				- mrpt::slam::COctoMap
 			- [mrpt-opengl]
@@ -443,7 +443,7 @@
 					- mrpt::maps::CPointsMap::saveLASFile()
 				- Integration of wind measurements in gas-concentration maps (by Javier G. Monroy) - <a href="http://code.google.com/p/mrpt/source/detail?r=3050" >r3050</a>
 			- [mrpt-obs]
-				- New method mrpt::slam::CObservationGPS::clear()
+				- New method mrpt::obs::CObservationGPS::clear()
 			- [mrpt-opengl]
 				- Evaluation of bounding box of opengl objects. New methods: - <a href="http://code.google.com/p/mrpt/source/detail?r=3026" >r3026</a>
 					- mrpt::opengl::CRenderizable::getBoundingBox()
@@ -467,7 +467,7 @@
 					- Changed behavior not to allow features to appear in duplicated pairings.
 					- Added a consistency test to avoid seeding RANSAC with an inconsistent initial model.
 			- [mrpt-slam]
-				- mrpt::slam::CMetricMapBuilderICP now does not integrate the small pose changes due to odometry and/or relocalization when considering the distance and angle thresholds. This means that fewer map updates are now done for the same ICP-SLAM parameters, which should lead to "less noisy" maps.
+				- mrpt::maps::CMetricMapBuilderICP now does not integrate the small pose changes due to odometry and/or relocalization when considering the distance and angle thresholds. This means that fewer map updates are now done for the same ICP-SLAM parameters, which should lead to "less noisy" maps.
 		- New functions:
 			- [mrpt-base]
 				- mrpt::utils::abs_diff()
@@ -509,7 +509,7 @@
 			- [mrpt-graphs] Fixed bug in RecursiveSpectralPartition (Thanks to Edu!) - <a href="http://code.google.com/p/mrpt/source/detail?r=3026" >r3026</a>
 			- [mrpt-hwdrivers] Fixed potential SEGFAULT in mrpt::hwdrivers::CGPSInterface (Thanks K.Miyawaki for <a href="http://www.mrpt.org/node/2474" >reporting</a>)
 			- [mrpt-hwdrivers] Fixed communications to LMS 1xx scanners (Thanks Henry! See http://code.google.com/p/mrpt/issues/detail?id=49 )
-			- [mrpt-maps] mrpt::slam::COccupancyGridMap2D::getAs3DObject() returned cells with an occupancy of exactly "0" as transparent - <a href="http://code.google.com/p/mrpt/source/detail?r=2957" >r2957</a>
+			- [mrpt-maps] mrpt::maps::COccupancyGridMap2D::getAs3DObject() returned cells with an occupancy of exactly "0" as transparent - <a href="http://code.google.com/p/mrpt/source/detail?r=2957" >r2957</a>
 			- [mrpt-maps] Fixed saving the correct point colors in mrpt::slam::CColouredPointsMap::savePCDFile() (Thanks Mariano!) - <a href="http://code.google.com/p/mrpt/source/detail?r=3090" >r3090</a>
 			- [mrpt-maps] In CPointsMap::computeMatchingWith3D. Fixed matching two 3D point clouds as each correspondence was inserted twice into the output vector. (By Paco) - <a href="http://code.google.com/p/mrpt/source/detail?r=3162" >r3162</a>
 			- [mrpt-opengl] Fixed a potential bug: after deserializing an object based on a display-list (most of them), it won't update in the opengl view.
@@ -545,7 +545,7 @@
 			- mrpt::hwdrivers::CKinect no longer forces a horizontal tilt at start up by default, what may be annoying (if required, set "initial_tilt_angle") - <a href="http://code.google.com/p/mrpt/source/detail?r=2722" >r2722</a>
 			- mrpt::hwdrivers::CKinect now loads Kinect calibration files in a format compatible with stereo cameras. See http://www.mrpt.org/Kinect_calibration
 		- [mrpt-obs]
-			- New method mrpt::slam::CObservation3DRangeScan::convertTo2DScan() allows simulating a "fake 2D laser scanner" from a Kinect. See the example: http://www.mrpt.org/Example_Kinect_To_2D_laser_scan
+			- New method mrpt::obs::CObservation3DRangeScan::convertTo2DScan() allows simulating a "fake 2D laser scanner" from a Kinect. See the example: http://www.mrpt.org/Example_Kinect_To_2D_laser_scan
 		- [mrpt-vision]
 			- New function mrpt::vision::checkerBoardStereoCalibration() to calibrate stereo and RGB+D cameras. See also the program <a href="http://www.mrpt.org/Application:kinect-stereo-calibrate" >kinect-stereo-calibrate</a>:
 	- New classes:

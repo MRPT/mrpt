@@ -102,7 +102,7 @@ namespace mrpt
 			/** Internal method called by insertObservation() */
 			virtual bool  internal_insertObservation(
 				const mrpt::obs::CObservation *obs,
-				const CPose3D *robotPose = NULL ) = 0;
+				const mrpt::poses::CPose3D *robotPose = NULL ) = 0;
 
 		public:
 			/** Erase all the contents of the map */
@@ -137,10 +137,10 @@ namespace mrpt
 			 *
 			 * \sa CObservation::insertObservationInto
 			 */
-			bool  insertObservation(const mrpt::obs::CObservation *obs, const CPose3D *robotPose = NULL );
+			bool  insertObservation(const mrpt::obs::CObservation *obs, const mrpt::poses::CPose3D *robotPose = NULL );
 
 			/** A wrapper for smart pointers, just calls the non-smart pointer version. */
-			bool  insertObservationPtr(const mrpt::obs::CObservationPtr &obs, const CPose3D *robotPose = NULL );
+			bool  insertObservationPtr(const mrpt::obs::CObservationPtr &obs, const mrpt::poses::CPose3D *robotPose = NULL );
 
 			/** Computes the log-likelihood of a given observation given an arbitrary robot 3D pose.
 			 *
@@ -150,7 +150,7 @@ namespace mrpt
 			 *
 			 * \sa Used in particle filter algorithms, see: CMultiMetricMapPDF::update
 			 */
-			virtual double	 computeObservationLikelihood( const mrpt::obs::CObservation *obs, const CPose3D &takenFrom ) = 0;
+			virtual double	 computeObservationLikelihood( const mrpt::obs::CObservation *obs, const mrpt::poses::CPose3D &takenFrom ) = 0;
 
 			/** Computes the log-likelihood of a given observation given an arbitrary robot 2D pose.
 			 *
@@ -160,7 +160,7 @@ namespace mrpt
 			 *
 			 * \sa Used in particle filter algorithms, see: CMultiMetricMapPDF::update
 			 */
-			double	 computeObservationLikelihood( const mrpt::obs::CObservation *obs, const CPose2D &takenFrom );
+			double	 computeObservationLikelihood( const mrpt::obs::CObservation *obs, const mrpt::poses::CPose2D &takenFrom );
 
 			/** Returns true if this map is able to compute a sensible likelihood function for this observation (i.e. an occupancy grid map cannot with an image).
 			 * \param obs The observation.
@@ -182,7 +182,7 @@ namespace mrpt
 			 * \return This method returns a log-likelihood.
 			 * \sa canComputeObservationsLikelihood
 			 */
-			double computeObservationsLikelihood( const mrpt::obs::CSensoryFrame &sf, const CPose2D &takenFrom );
+			double computeObservationsLikelihood( const mrpt::obs::CSensoryFrame &sf, const mrpt::poses::CPose2D &takenFrom );
 
 			/** Returns true if this map is able to compute a sensible likelihood function for this observation (i.e. an occupancy grid map cannot with an image).
 			 * \param sf The observations.
@@ -217,7 +217,7 @@ namespace mrpt
 			 */
 			virtual void  determineMatching2D(
 				const CMetricMap      * otherMap,
-				const CPose2D         & otherMapPose,
+				const mrpt::poses::CPose2D         & otherMapPose,
 				TMatchingPairList     & correspondences,
 				const TMatchingParams & params,
 				TMatchingExtraResults & extraResults ) const;
@@ -242,7 +242,7 @@ namespace mrpt
 			 */
 			virtual void  determineMatching3D(
 				const CMetricMap      * otherMap,
-				const CPose3D         & otherMapPose,
+				const mrpt::poses::CPose3D         & otherMapPose,
 				TMatchingPairList     & correspondences,
 				const TMatchingParams & params,
 				TMatchingExtraResults & extraResults ) const;
@@ -278,7 +278,7 @@ namespace mrpt
 			  */
 			bool			m_disableSaveAs3DObject;
 
-			/** This method is called at the end of each "prediction-update-map insertion" cycle within "mrpt::obs::CMetricMapBuilderRBPF::processActionObservation".
+			/** This method is called at the end of each "prediction-update-map insertion" cycle within "mrpt::maps::CMetricMapBuilderRBPF::processActionObservation".
 			  *  This method should normally do nothing, but in some cases can be used to free auxiliary cached variables.
 			  */
 			virtual void  auxParticleFilterCleanUp()

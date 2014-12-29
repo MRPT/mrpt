@@ -364,7 +364,7 @@ CImageGrabber_dc1394::~CImageGrabber_dc1394()
 /*-------------------------------------------------------------
 					get the image - MONO
  -------------------------------------------------------------*/
-bool  CImageGrabber_dc1394::getObservation( mrpt::slam::CObservationImage &out_observation)
+bool  CImageGrabber_dc1394::getObservation( mrpt::obs::CObservationImage &out_observation)
 {
    MRPT_START
 
@@ -448,7 +448,7 @@ bool  CImageGrabber_dc1394::getObservation( mrpt::slam::CObservationImage &out_o
 /*-------------------------------------------------------------
 					get the image - STEREO
  -------------------------------------------------------------*/
-bool  CImageGrabber_dc1394::getObservation( mrpt::slam::CObservationStereoImages &out_observation)
+bool  CImageGrabber_dc1394::getObservation( mrpt::obs::CObservationStereoImages &out_observation)
 {
    MRPT_START
 

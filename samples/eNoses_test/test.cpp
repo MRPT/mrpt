@@ -9,7 +9,7 @@
 
 #include <mrpt/hwdrivers/CBoardENoses.h>
 #include <mrpt/utils/CConfigFile.h>
-#include <mrpt/slam/CObservationGasSensors.h>
+#include <mrpt/obs/CObservationGasSensors.h>
 #include <mrpt/system/os.h>
 #include <mrpt/system/filesystem.h>
 

@@ -15,14 +15,14 @@
 #include <mrpt/utils/CFileStream.h>
 
 #include <mrpt/slam/CMultiMetricMapPDF.h>
-#include <mrpt/slam/CActionRobotMovement2D.h>
-#include <mrpt/slam/CActionRobotMovement3D.h>
-#include <mrpt/slam/CActionCollection.h>
+#include <mrpt/obs/CActionRobotMovement2D.h>
+#include <mrpt/obs/CActionRobotMovement3D.h>
+#include <mrpt/obs/CActionCollection.h>
 #include <mrpt/poses/CPosePDFGaussian.h>
 #include <mrpt/poses/CPosePDFGrid.h>
-#include <mrpt/slam/CObservationBeaconRanges.h>
-#include <mrpt/slam/CSimplePointsMap.h>
-#include <mrpt/slam/CLandmarksMap.h>
+#include <mrpt/obs/CObservationBeaconRanges.h>
+#include <mrpt/maps/CSimplePointsMap.h>
+#include <mrpt/maps/CLandmarksMap.h>
 #include <mrpt/math.h>
 
 #include <mrpt/slam/PF_aux_structs.h>
@@ -134,8 +134,8 @@ struct TAuxRangeMeasInfo
   See paper reference in "PF_SLAM_implementation_pfAuxiliaryPFOptimal"
  ----------------------------------------------------------------------------------*/
 void  CMultiMetricMapPDF::prediction_and_update_pfAuxiliaryPFOptimal(
-	const mrpt::slam::CActionCollection	* actions,
-	const mrpt::slam::CSensoryFrame		* sf,
+	const mrpt::obs::CActionCollection	* actions,
+	const mrpt::obs::CSensoryFrame		* sf,
 	const bayes::CParticleFilter::TParticleFilterOptions &PF_options )
 {
 	MRPT_START
@@ -163,8 +163,8 @@ For beacon maps:
 
  ----------------------------------------------------------------------------------*/
 void  CMultiMetricMapPDF::prediction_and_update_pfOptimalProposal(
-	const mrpt::slam::CActionCollection	* actions,
-	const mrpt::slam::CSensoryFrame		* sf,
+	const mrpt::obs::CActionCollection	* actions,
+	const mrpt::obs::CSensoryFrame		* sf,
 	const bayes::CParticleFilter::TParticleFilterOptions &PF_options )
 {
 	MRPT_START
@@ -850,8 +850,8 @@ void  CMultiMetricMapPDF::prediction_and_update_pfOptimalProposal(
 			prediction_and_update_pfStandardProposal
  ---------------------------------------------------------------*/
 void  CMultiMetricMapPDF::prediction_and_update_pfStandardProposal(
-	const mrpt::slam::CActionCollection	* actions,
-	const mrpt::slam::CSensoryFrame		* sf,
+	const mrpt::obs::CActionCollection	* actions,
+	const mrpt::obs::CSensoryFrame		* sf,
 	const bayes::CParticleFilter::TParticleFilterOptions &PF_options )
 {
 	MRPT_START

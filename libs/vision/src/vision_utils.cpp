@@ -16,10 +16,10 @@
 #include <mrpt/vision/CFeature.h>
 
 #include <mrpt/poses/CPoint3D.h>
-#include <mrpt/slam/CLandmarksMap.h>
-#include <mrpt/slam/CObservationVisualLandmarks.h>
-#include <mrpt/slam/CObservationStereoImages.h>
-#include <mrpt/slam/CObservationBearingRange.h>
+#include <mrpt/maps/CLandmarksMap.h>
+#include <mrpt/obs/CObservationVisualLandmarks.h>
+#include <mrpt/obs/CObservationStereoImages.h>
+#include <mrpt/obs/CObservationBearingRange.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/utils/CTicTac.h>
 #include <mrpt/math/utils.h>
@@ -33,7 +33,7 @@
 using namespace mrpt;
 using namespace mrpt::vision;
 using namespace mrpt::utils;
-using namespace mrpt::slam;
+using namespace mrpt::maps;
 using namespace mrpt::math;
 using namespace mrpt::system;
 using namespace std;
@@ -1371,7 +1371,7 @@ void  vision::projectMatchedFeatures(
                     CFeatureList					    & leftList,
                     CFeatureList					    & rightList,
                     const vision::TStereoSystemParams	& param,
-                    mrpt::slam::CLandmarksMap			& landmarks )
+                    mrpt::maps::CLandmarksMap			& landmarks )
 {
 	MRPT_START
 	ASSERT_( leftList.size() == rightList.size() );

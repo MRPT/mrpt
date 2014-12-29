@@ -17,8 +17,8 @@
   ---------------------------------------------------------------*/
 
 #include <mrpt/system/os.h>
-#include <mrpt/slam/CSimpleMap.h>
-#include <mrpt/slam/CMultiMetricMap.h>
+#include <mrpt/maps/CSimpleMap.h>
+#include <mrpt/maps/CMultiMetricMap.h>
 #include <mrpt/utils/CConfigFile.h>
 #include <mrpt/utils/CFileGZInputStream.h>
 #include <mrpt/utils/CFileGZOutputStream.h>

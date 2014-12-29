@@ -65,8 +65,8 @@ namespace obs
 		std::vector<char> m_raw_frame;
 
 		/** Not used */
-		void getSensorPose( CPose3D &) const { }
-		void setSensorPose( const CPose3D & ) { }
+		void getSensorPose( mrpt::poses::CPose3D &) const { }
+		void setSensorPose( const mrpt::poses::CPose3D & ) { }
 		// See base class docs
 		virtual void getDescriptionAsText(std::ostream &o) const;
 

@@ -28,7 +28,7 @@ CObservationRFID::CObservationRFID() : tag_readings()
 /*---------------------------------------------------------------
   Implements the writing to a CStream capability of CSerializable objects
  ---------------------------------------------------------------*/
-void  CObservationRFID::writeToStream(CStream &out, int *version) const
+void  CObservationRFID::writeToStream(mrpt::utils::CStream &out, int *version) const
 {
 		//std::cout << "AP-1" << std::endl;
 	MRPT_UNUSED_PARAM(out);
@@ -54,7 +54,7 @@ void  CObservationRFID::writeToStream(CStream &out, int *version) const
 /*---------------------------------------------------------------
   Implements the reading from a CStream capability of CSerializable objects
  ---------------------------------------------------------------*/
-void  CObservationRFID::readFromStream(CStream &in, int version)
+void  CObservationRFID::readFromStream(mrpt::utils::CStream &in, int version)
 {
 	//MRPT_UNUSED_PARAM(in);
 	switch(version)

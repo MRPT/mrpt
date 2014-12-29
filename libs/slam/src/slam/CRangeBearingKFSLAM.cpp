@@ -19,7 +19,7 @@
 #include <mrpt/poses/CPosePDF.h>
 #include <mrpt/poses/CPosePDFGaussian.h>
 #include <mrpt/poses/CPose3DQuatPDFGaussian.h>
-#include <mrpt/slam/CActionRobotMovement3D.h>
+#include <mrpt/obs/CActionRobotMovement3D.h>
 #include <mrpt/math/utils.h>
 #include <mrpt/math/ops_containers.h>
 #include <mrpt/math/wrap2pi.h>

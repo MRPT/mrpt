@@ -34,7 +34,7 @@ TKLDParams::TKLDParams() :
 /*---------------------------------------------------------------
 					dumpToTextStream
   ---------------------------------------------------------------*/
-void  TKLDParams::dumpToTextStream(CStream	&out) const
+void  TKLDParams::dumpToTextStream(mrpt::utils::CStream	&out) const
 {
 	out.printf("\n----------- [TKLDParams] ------------ \n\n");
 

@@ -361,8 +361,8 @@ void CLocalMetricHypothesis::getAs3DScene( opengl::CSetOfObjectsPtr &objs ) cons
 
 /** The PF algorithm implementation.  */
 void  CLocalMetricHypothesis::prediction_and_update_pfAuxiliaryPFOptimal(
-	const mrpt::slam::CActionCollection	* action,
-	const mrpt::slam::CSensoryFrame		* observation,
+	const mrpt::obs::CActionCollection	* action,
+	const mrpt::obs::CSensoryFrame		* observation,
 	const bayes::CParticleFilter::TParticleFilterOptions &PF_options )
 {
 	ASSERT_(m_parent.get());
@@ -371,8 +371,8 @@ void  CLocalMetricHypothesis::prediction_and_update_pfAuxiliaryPFOptimal(
 }
 
 void  CLocalMetricHypothesis::prediction_and_update_pfOptimalProposal(
-	const mrpt::slam::CActionCollection	* action,
-	const mrpt::slam::CSensoryFrame		* observation,
+	const mrpt::obs::CActionCollection	* action,
+	const mrpt::obs::CSensoryFrame		* observation,
 	const bayes::CParticleFilter::TParticleFilterOptions &PF_options )
 {
 	ASSERT_(m_parent.get());
@@ -879,7 +879,7 @@ void  CLocalMetricHypothesis::dumpAsText(utils::CStringList &st) const
 /*---------------------------------------------------------------
 					readFromStream
   ---------------------------------------------------------------*/
-void  CLocalMetricHypothesis::readFromStream(CStream &in,int version)
+void  CLocalMetricHypothesis::readFromStream(mrpt::utils::CStream &in,int version)
 {
 	switch(version)
 	{
@@ -909,7 +909,7 @@ void  CLocalMetricHypothesis::readFromStream(CStream &in,int version)
 	Implements the writing to a CStream capability of
 	  CSerializable objects
   ---------------------------------------------------------------*/
-void  CLocalMetricHypothesis::writeToStream(CStream &out, int *version) const
+void  CLocalMetricHypothesis::writeToStream(mrpt::utils::CStream &out, int *version) const
 {
 	if (version)
 		*version = 0;
@@ -935,7 +935,7 @@ void  CLocalMetricHypothesis::writeToStream(CStream &out, int *version) const
 /*---------------------------------------------------------------
 					readFromStream
   ---------------------------------------------------------------*/
-void  CLSLAMParticleData::readFromStream(CStream &in,int version)
+void  CLSLAMParticleData::readFromStream(mrpt::utils::CStream &in,int version)
 {
 	switch(version)
 	{
@@ -953,7 +953,7 @@ void  CLSLAMParticleData::readFromStream(CStream &in,int version)
 	Implements the writing to a CStream capability of
 	  CSerializable objects
   ---------------------------------------------------------------*/
-void  CLSLAMParticleData::writeToStream(CStream &out, int *version) const
+void  CLSLAMParticleData::writeToStream(mrpt::utils::CStream &out, int *version) const
 {
 	if (version)
 		*version = 0;

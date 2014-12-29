@@ -10,7 +10,7 @@
 #include "hwdrivers-precomp.h" // Precompiled header
 
 #include <mrpt/hwdrivers/COpenNI2_RGBD360.h>
-#include <mrpt/slam/CObservationRGBD360.h>
+#include <mrpt/obs/CObservationRGBD360.h>
 #include <mrpt/utils/CTimeLogger.h>
 #include <mrpt/system/threads.h>
 
@@ -24,7 +24,7 @@ using namespace mrpt::synch;
 using namespace mrpt::math;
 using namespace std;
 using mrpt::utils::DEG2RAD;
-using mrpt::slam::CObservationRGBD360;
+using mrpt::obs::CObservationRGBD360;
 
 IMPLEMENTS_GENERIC_SENSOR(COpenNI2_RGBD360,mrpt::hwdrivers)
 

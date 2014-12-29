@@ -8,8 +8,8 @@
    +---------------------------------------------------------------------------+ */
 
 #include <mrpt/hwdrivers/CCameraSensor.h>
-#include <mrpt/slam/CObservationImage.h>
-#include <mrpt/slam/CObservationStereoImages.h>
+#include <mrpt/obs/CObservationImage.h>
+#include <mrpt/obs/CObservationStereoImages.h>
 #include <mrpt/gui.h>
 #include <mrpt/utils/CTicTac.h>
 
@@ -45,7 +45,7 @@ void TestCameraCaptureAsk()
 		if( !counter )
 			tictac.Tic();
 
-		mrpt::slam::CObservationPtr  obs = cam->getNextFrame();
+		mrpt::obs::CObservationPtr  obs = cam->getNextFrame();
 		ASSERT_(obs);
 
 		if (IS_CLASS(obs,CObservationImage))

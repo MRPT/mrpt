@@ -9,7 +9,7 @@
 #ifndef CStereoGrabber_SVS_H
 #define CStereoGrabber_SVS_H
 
-#include <mrpt/slam/CObservationStereoImages.h>
+#include <mrpt/obs/CObservationStereoImages.h>
 #include <mrpt/hwdrivers/link_pragmas.h>
 #include <mrpt/utils/CUncopiable.h>
 
@@ -100,7 +100,7 @@ namespace mrpt
 			 *
 			 * \return false on any error, true if all go fine.
 			*/
-			bool  getStereoObservation( mrpt::slam::CObservationStereoImages &out_observation );
+			bool  getStereoObservation( mrpt::obs::CObservationStereoImages &out_observation );
 
 		};	// End of class
 

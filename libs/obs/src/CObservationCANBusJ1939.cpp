@@ -23,7 +23,7 @@ IMPLEMENTS_SERIALIZABLE(CObservationCANBusJ1939, CObservation,mrpt::obs)
 /*---------------------------------------------------------------
   Implements the writing to a CStream capability of CSerializable objects
  ---------------------------------------------------------------*/
-void  CObservationCANBusJ1939::writeToStream(CStream &out, int *version) const
+void  CObservationCANBusJ1939::writeToStream(mrpt::utils::CStream &out, int *version) const
 {
 	if (version)
 		*version = 1;
@@ -54,7 +54,7 @@ void  CObservationCANBusJ1939::writeToStream(CStream &out, int *version) const
 /*---------------------------------------------------------------
   Implements the reading from a CStream capability of CSerializable objects
  ---------------------------------------------------------------*/
-void  CObservationCANBusJ1939::readFromStream(CStream &in, int version)
+void  CObservationCANBusJ1939::readFromStream(mrpt::utils::CStream &in, int version)
 {
 	switch(version)
 	{

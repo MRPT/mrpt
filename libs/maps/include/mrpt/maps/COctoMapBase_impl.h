@@ -269,7 +269,7 @@ namespace mrpt
 		}
 
 		template <class OCTREE,class OCTREE_NODE>
-		void COctoMapBase<OCTREE,OCTREE_NODE>::TLikelihoodOptions::writeToStream(CStream &out) const
+		void COctoMapBase<OCTREE,OCTREE_NODE>::TLikelihoodOptions::writeToStream(mrpt::utils::CStream &out) const
 		{
 			const int8_t version = 0;
 			out << version;
@@ -277,7 +277,7 @@ namespace mrpt
 		}
 
 		template <class OCTREE,class OCTREE_NODE>
-		void COctoMapBase<OCTREE,OCTREE_NODE>::TLikelihoodOptions::readFromStream(CStream &in)
+		void COctoMapBase<OCTREE,OCTREE_NODE>::TLikelihoodOptions::readFromStream(mrpt::utils::CStream &in)
 		{
 			int8_t version;
 			in >> version;
@@ -297,7 +297,7 @@ namespace mrpt
 							dumpToTextStream
 		  ---------------------------------------------------------------*/
 		template <class OCTREE,class OCTREE_NODE>
-		void  COctoMapBase<OCTREE,OCTREE_NODE>::TInsertionOptions::dumpToTextStream(CStream	&out) const
+		void  COctoMapBase<OCTREE,OCTREE_NODE>::TInsertionOptions::dumpToTextStream(mrpt::utils::CStream	&out) const
 		{
 			out.printf("\n----------- [COctoMapBase<>::TInsertionOptions] ------------ \n\n");
 
@@ -314,7 +314,7 @@ namespace mrpt
 		}
 
 		template <class OCTREE,class OCTREE_NODE>
-		void  COctoMapBase<OCTREE,OCTREE_NODE>::TLikelihoodOptions::dumpToTextStream(CStream	&out) const
+		void  COctoMapBase<OCTREE,OCTREE_NODE>::TLikelihoodOptions::dumpToTextStream(mrpt::utils::CStream	&out) const
 		{
 			out.printf("\n----------- [COctoMapBase<>::TLikelihoodOptions] ------------ \n\n");
 
@@ -356,7 +356,7 @@ namespace mrpt
 
 		/*  COctoMapColoured */
 		template <class OCTREE,class OCTREE_NODE>
-		void COctoMapBase<OCTREE,OCTREE_NODE>::TRenderingOptions::writeToStream(CStream &out) const
+		void COctoMapBase<OCTREE,OCTREE_NODE>::TRenderingOptions::writeToStream(mrpt::utils::CStream &out) const
 		{
 			const int8_t version = 0;
 			out << version;
@@ -365,7 +365,7 @@ namespace mrpt
 		}
 
 		template <class OCTREE,class OCTREE_NODE>
-		void COctoMapBase<OCTREE,OCTREE_NODE>::TRenderingOptions::readFromStream(CStream &in)
+		void COctoMapBase<OCTREE,OCTREE_NODE>::TRenderingOptions::readFromStream(mrpt::utils::CStream &in)
 		{
 			int8_t version;
 			in >> version;

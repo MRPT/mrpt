@@ -1184,7 +1184,7 @@ void  COccupancyGridMap2D::TInsertionOptions::loadFromConfigFile(
 /*---------------------------------------------------------------
 					dumpToTextStream
   ---------------------------------------------------------------*/
-void  COccupancyGridMap2D::TInsertionOptions::dumpToTextStream(CStream	&out) const
+void  COccupancyGridMap2D::TInsertionOptions::dumpToTextStream(mrpt::utils::CStream	&out) const
 {
 	out.printf("\n----------- [COccupancyGridMap2D::TInsertionOptions] ------------ \n\n");
 

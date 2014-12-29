@@ -34,7 +34,7 @@ CObservationImage::CObservationImage( void *iplImage  ) :
 /*---------------------------------------------------------------
   Implements the writing to a CStream capability of CSerializable objects
  ---------------------------------------------------------------*/
-void  CObservationImage::writeToStream(CStream &out, int *version) const
+void  CObservationImage::writeToStream(mrpt::utils::CStream &out, int *version) const
 {
 	if (version)
 		*version = 4;
@@ -50,7 +50,7 @@ void  CObservationImage::writeToStream(CStream &out, int *version) const
 /*---------------------------------------------------------------
   Implements the reading from a CStream capability of CSerializable objects
  ---------------------------------------------------------------*/
-void  CObservationImage::readFromStream(CStream &in, int version)
+void  CObservationImage::readFromStream(mrpt::utils::CStream &in, int version)
 {
 	switch(version)
 	{

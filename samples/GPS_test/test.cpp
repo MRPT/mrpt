@@ -59,7 +59,7 @@ void Test_GPS()
 	if (!f) return;
 
 //	bool					thereisData;
-//	mrpt::slam::CObservationGPS	gpsData;
+//	mrpt::obs::CObservationGPS	gpsData;
 
 	CGenericSensor::TListObservations			lstObs;
 	CGenericSensor::TListObservations::iterator 	itObs;

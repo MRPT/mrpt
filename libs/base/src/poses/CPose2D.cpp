@@ -56,7 +56,7 @@ CPose2D::CPose2D(const CPose3D &p) : m_phi(p.yaw()),m_cossin_uptodate(false)
    Implements the writing to a CStream capability of
      CSerializable objects
   ---------------------------------------------------------------*/
-void  CPose2D::writeToStream(CStream &out,int *version) const
+void  CPose2D::writeToStream(mrpt::utils::CStream &out,int *version) const
 {
 	if (version)
 		*version = 1;
@@ -71,7 +71,7 @@ void  CPose2D::writeToStream(CStream &out,int *version) const
 	Implements the reading from a CStream capability of
 		CSerializable objects
   ---------------------------------------------------------------*/
-void  CPose2D::readFromStream(CStream &in,int version)
+void  CPose2D::readFromStream(mrpt::utils::CStream &in,int version)
 {
 	switch(version)
 	{

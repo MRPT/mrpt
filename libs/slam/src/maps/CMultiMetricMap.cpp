@@ -11,11 +11,12 @@
 
 #include <mrpt/utils/CConfigFile.h>
 #include <mrpt/poses/CPoint2D.h>
-#include <mrpt/slam/CMultiMetricMap.h>
+#include <mrpt/maps/CMultiMetricMap.h>
 #include <mrpt/utils/CStartUpClassesRegister.h>
 #include <mrpt/utils/metaprogramming.h>
 
 using namespace mrpt::slam;
+using namespace mrpt::maps;
 using namespace mrpt::utils;
 using namespace mrpt::poses;
 using namespace mrpt::utils::metaprogramming;
@@ -632,7 +633,7 @@ void  CMultiMetricMap::deleteAllMaps( )
 /*---------------------------------------------------------------
   Implements the writing to a CStream capability of CSerializable objects
  ---------------------------------------------------------------*/
-void  CMultiMetricMap::writeToStream(CStream &out, int *version) const
+void  CMultiMetricMap::writeToStream(mrpt::utils::CStream &out, int *version) const
 {
 	if (version)
 		*version = 10;
@@ -725,7 +726,7 @@ void  CMultiMetricMap::writeToStream(CStream &out, int *version) const
 /*---------------------------------------------------------------
   Implements the reading from a CStream capability of CSerializable objects
  ---------------------------------------------------------------*/
-void  CMultiMetricMap::readFromStream(CStream &in, int version)
+void  CMultiMetricMap::readFromStream(mrpt::utils::CStream &in, int version)
 {
 	switch(version)
 	{
@@ -1384,10 +1385,10 @@ void  TSetOfMetricMapInitializers::loadFromConfigFile(
 
 /*
 		  *  ; Creation of maps:
-		  *  occupancyGrid_count=<Number of mrpt::slam::COccupancyGridMap2D maps>
+		  *  occupancyGrid_count=<Number of mrpt::maps::COccupancyGridMap2D maps>
 		  *  gasGrid_count=<Number of mrpt::slam::CGasConcentrationGridMap2D maps>
 		  *  wifiGrid_count=<Number of mrpt::slam::CWirelessPowerGridMap2D maps>
-		  *  landmarksMap_count=<0 or 1, for creating a mrpt::slam::CLandmarksMap map>
+		  *  landmarksMap_count=<0 or 1, for creating a mrpt::maps::CLandmarksMap map>
 		  *  beaconMap_count=<0 or 1>
 		  *  pointsMap_count=<0 or 1, for creating a mrpt::slam::CSimplePointsMap map>
 */
@@ -1724,7 +1725,7 @@ void  TSetOfMetricMapInitializers::loadFromConfigFile(
 /*---------------------------------------------------------------
 		TSetOfMetricMapInitializers::dumpToTextStream
  ---------------------------------------------------------------*/
-void  TSetOfMetricMapInitializers::dumpToTextStream(CStream	&out) const
+void  TSetOfMetricMapInitializers::dumpToTextStream(mrpt::utils::CStream	&out) const
 {
 	MRPT_START
 
@@ -2000,7 +2001,7 @@ void  CMultiMetricMap::TOptions::loadFromConfigFile(
 
 /** This method must display clearly all the contents of the structure in textual form, sending it to a CStream.
   */
-void  CMultiMetricMap::TOptions::dumpToTextStream(CStream	&out) const
+void  CMultiMetricMap::TOptions::dumpToTextStream(mrpt::utils::CStream	&out) const
 {
 	out.printf("\n----------- [CMultiMetricMap::TOptions] ------------ \n\n");
 

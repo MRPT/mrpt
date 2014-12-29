@@ -209,7 +209,7 @@ void CPose3DPDFGaussian::copyFrom( const CPose3DQuatPDFGaussian &o)
 /*---------------------------------------------------------------
 						writeToStream
   ---------------------------------------------------------------*/
-void  CPose3DPDFGaussian::writeToStream(CStream &out,int *version) const
+void  CPose3DPDFGaussian::writeToStream(mrpt::utils::CStream &out,int *version) const
 {
 	if (version)
 		*version = 1;
@@ -227,7 +227,7 @@ void  CPose3DPDFGaussian::writeToStream(CStream &out,int *version) const
 /*---------------------------------------------------------------
 						readFromStream
   ---------------------------------------------------------------*/
-void  CPose3DPDFGaussian::readFromStream(CStream &in,int version)
+void  CPose3DPDFGaussian::readFromStream(mrpt::utils::CStream &in,int version)
 {
 	switch(version)
 	{

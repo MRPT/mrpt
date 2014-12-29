@@ -53,7 +53,7 @@ namespace mrpt
 			  */
 			inline void jacob_quat_from_yawpitchroll(
 				mrpt::math::CMatrixFixedNumeric<double,4,3> &out_dq_dr,
-				const CPose3D  &in_pose
+				const mrpt::poses::CPose3D  &in_pose
 				)
 			{
 				CQuaternionDouble q(UNINITIALIZED_QUATERNION);

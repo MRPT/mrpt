@@ -80,7 +80,7 @@ CCANBusReader::~CCANBusReader()
 
 void  CCANBusReader::doProcess()
 {
-    mrpt::slam::CObservationCANBusJ1939Ptr	obs = mrpt::slam::CObservationCANBusJ1939::Create();
+    mrpt::obs::CObservationCANBusJ1939Ptr	obs = mrpt::obs::CObservationCANBusJ1939::Create();
     bool thereIsObservation;
     bool hardwareError;
 
@@ -96,7 +96,7 @@ void  CCANBusReader::doProcess()
 -------------------------------------------------------------*/
 void  CCANBusReader::doProcessSimple(
 	bool							    &outThereIsObservation,
-	mrpt::slam::CObservationCANBusJ1939	&outObservation,
+	mrpt::obs::CObservationCANBusJ1939	&outObservation,
 	bool							    &hardwareError )
 {
 	outThereIsObservation	= false;

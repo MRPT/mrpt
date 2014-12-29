@@ -11,8 +11,8 @@
 
 #include <mrpt/config.h>
 
-#include <mrpt/slam/CObservationImage.h>
-#include <mrpt/slam/CObservationStereoImages.h>
+#include <mrpt/obs/CObservationImage.h>
+#include <mrpt/obs/CObservationStereoImages.h>
 
 #include <mrpt/hwdrivers/link_pragmas.h>
 
@@ -169,14 +169,14 @@ namespace mrpt
 			 *
 			 * \return false on any error, true if all go fine.
 			*/
-			bool  getObservation( mrpt::slam::CObservationImage &out_observation);
+			bool  getObservation( mrpt::obs::CObservationImage &out_observation);
 
 			/** Grab an image from the opened camera (for stereo cameras).
 			 * \param out_observation The object to be filled with sensed data.
 			 *
 			 * \return false on any error, true if all go fine.
 			*/
-			bool  getObservation( mrpt::slam::CObservationStereoImages &out_observation);
+			bool  getObservation( mrpt::obs::CObservationStereoImages &out_observation);
 
             /** Changes the boolean level associated to Software Trigger (ON/OFF)
               * Can be used to control camera triggering trough software

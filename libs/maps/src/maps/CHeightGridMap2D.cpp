@@ -178,7 +178,7 @@ double	 CHeightGridMap2D::computeObservationLikelihood(
 /*---------------------------------------------------------------
   Implements the writing to a CStream capability of CSerializable objects
  ---------------------------------------------------------------*/
-void  CHeightGridMap2D::writeToStream(CStream &out, int *version) const
+void  CHeightGridMap2D::writeToStream(mrpt::utils::CStream &out, int *version) const
 {
 	if (version)
 		*version = 1;
@@ -213,7 +213,7 @@ void  CHeightGridMap2D::writeToStream(CStream &out, int *version) const
 /*---------------------------------------------------------------
   Implements the reading from a CStream capability of CSerializable objects
  ---------------------------------------------------------------*/
-void  CHeightGridMap2D::readFromStream(CStream &in, int version)
+void  CHeightGridMap2D::readFromStream(mrpt::utils::CStream &in, int version)
 {
 	switch(version)
 	{
@@ -279,7 +279,7 @@ CHeightGridMap2D::TInsertionOptions::TInsertionOptions() :
 /*---------------------------------------------------------------
 					dumpToTextStream
   ---------------------------------------------------------------*/
-void  CHeightGridMap2D::TInsertionOptions::dumpToTextStream(CStream	&out) const
+void  CHeightGridMap2D::TInsertionOptions::dumpToTextStream(mrpt::utils::CStream	&out) const
 {
 	out.printf("\n----------- [CHeightGridMap2D::TInsertionOptions] ------------ \n\n");
 	out.printf("filterByHeight                          = %c\n", filterByHeight ? 'y':'n');

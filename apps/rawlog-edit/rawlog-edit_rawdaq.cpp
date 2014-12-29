@@ -9,7 +9,7 @@
 
 #include "rawlog-edit-declarations.h"
 
-#include <mrpt/slam/CObservationRawDAQ.h>
+#include <mrpt/obs/CObservationRawDAQ.h>
 
 using namespace mrpt;
 using namespace mrpt::utils;

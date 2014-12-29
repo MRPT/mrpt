@@ -83,9 +83,9 @@ namespace obs
 		 void  debugPrintOut();
 
 		// See base class docs
-		void getSensorPose( CPose3D &out_sensorPose ) const { out_sensorPose = sensorLocationOnRobot; }
+		void getSensorPose( mrpt::poses::CPose3D &out_sensorPose ) const { out_sensorPose = sensorLocationOnRobot; }
 		// See base class docs
-		void setSensorPose( const CPose3D &newSensorPose ) { sensorLocationOnRobot = newSensorPose; }
+		void setSensorPose( const mrpt::poses::CPose3D &newSensorPose ) { sensorLocationOnRobot = newSensorPose; }
 		// See base class docs
 		virtual void getDescriptionAsText(std::ostream &o) const;
 

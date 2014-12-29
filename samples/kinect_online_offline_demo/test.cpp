@@ -19,7 +19,7 @@
 
 #include <mrpt/hwdrivers/CKinect.h>
 #include <mrpt/gui.h>
-#include <mrpt/slam/CColouredPointsMap.h>
+#include <mrpt/maps/CColouredPointsMap.h>
 #include <mrpt/synch/CThreadSafeVariable.h>
 #include <mrpt/utils/CTimeLogger.h>
 #include <mrpt/utils/CFileGZInputStream.h>

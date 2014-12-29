@@ -11,8 +11,8 @@
 #include <mrpt/utils/TCamera.h>
 #include <mrpt/utils/TStereoCamera.h>
 #include <mrpt/utils/CConfigFile.h>
-#include <mrpt/slam/CObservationImage.h>
-#include <mrpt/slam/CObservationStereoImages.h>
+#include <mrpt/obs/CObservationImage.h>
+#include <mrpt/obs/CObservationStereoImages.h>
 
 using namespace mrpt;
 using namespace mrpt::utils;
@@ -109,9 +109,9 @@ DECLARE_OP_FUNCTION(op_camera_params)
 
 		// This method can be reimplemented to save the modified object to an output stream.
 		virtual void OnPostProcess(
-			mrpt::slam::CActionCollectionPtr &actions,
-			mrpt::slam::CSensoryFramePtr     &SF,
-			mrpt::slam::CObservationPtr      &obs)
+			mrpt::obs::CActionCollectionPtr &actions,
+			mrpt::obs::CSensoryFramePtr     &SF,
+			mrpt::obs::CObservationPtr      &obs)
 		{
 			ASSERT_((actions && SF) || obs)
 			if (actions)

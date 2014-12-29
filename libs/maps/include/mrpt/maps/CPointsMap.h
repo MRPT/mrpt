@@ -165,7 +165,7 @@ namespace maps
 			/** See utils::CLoadableOptions */
 			void  loadFromConfigFile(const mrpt::utils::CConfigFileBase  &source,const std::string &section);
 			/** See utils::CLoadableOptions */
-			void  dumpToTextStream(CStream	&out) const;
+			void  dumpToTextStream(mrpt::utils::CStream	&out) const;
 
 			float   minDistBetweenLaserPoints;   //!< The minimum distance between points (in 3D): If two points are too close, one of them is not inserted into the map. Default is 0.02 meters.
 			bool    addToExistingPointsMap;      //!< Applicable to "loadFromRangeScan" only! If set to false, the points from the scan are loaded, clearing all previous content. Default is false.
@@ -177,8 +177,8 @@ namespace maps
 			float   maxDistForInterpolatePoints; //!< The maximum distance between two points to interpolate between them (ONLY when also_interpolate=true)
 			bool    insertInvalidPoints;             //!< Points with x,y,z coordinates set to zero will also be inserted
 
-			void writeToStream(CStream &out) const;		//!< Binary dump to stream - for usage in derived classes' serialization
-			void readFromStream(CStream &in);			//!< Binary dump to stream - for usage in derived classes' serialization
+			void writeToStream(mrpt::utils::CStream &out) const;		//!< Binary dump to stream - for usage in derived classes' serialization
+			void readFromStream(mrpt::utils::CStream &in);			//!< Binary dump to stream - for usage in derived classes' serialization
 		 };
 
 		TInsertionOptions insertionOptions; //!< The options used when inserting observations in the map
@@ -199,10 +199,10 @@ namespace maps
 				const std::string &section);
 
 			/** See utils::CLoadableOptions */
-			void  dumpToTextStream(CStream	&out) const;
+			void  dumpToTextStream(mrpt::utils::CStream	&out) const;
 
-			void writeToStream(CStream &out) const;		//!< Binary dump to stream - for usage in derived classes' serialization
-			void readFromStream(CStream &in);			//!< Binary dump to stream - for usage in derived classes' serialization
+			void writeToStream(mrpt::utils::CStream &out) const;		//!< Binary dump to stream - for usage in derived classes' serialization
+			void readFromStream(mrpt::utils::CStream &in);			//!< Binary dump to stream - for usage in derived classes' serialization
 
 			double 		sigma_dist; //!< Sigma (standard deviation, in meters) of the exponential used to model the likelihood (default= 0.5meters)
 			double 		max_corr_distance; //!< Maximum distance in meters to consider for the numerator divided by "sigma_dist", so that each point has a minimum (but very small) likelihood to avoid underflows (default=1.0 meters)
@@ -525,7 +525,7 @@ namespace maps
 		// See docs in base class.
 		virtual void  determineMatching2D(
 			const CMetricMap      * otherMap,
-			const CPose2D         & otherMapPose,
+			const mrpt::poses::CPose2D         & otherMapPose,
 			TMatchingPairList     & correspondences,
 			const TMatchingParams & params,
 			TMatchingExtraResults & extraResults ) const;
@@ -613,7 +613,7 @@ namespace maps
 
 		/** Replace each point \f$ p_i \f$ by \f$ p'_i = b \oplus p_i \f$ (pose compounding operator).
 		  */
-		void   changeCoordinatesReference(const CPose2D &b);
+		void   changeCoordinatesReference(const mrpt::poses::CPose2D &b);
 
 		/** Replace each point \f$ p_i \f$ by \f$ p'_i = b \oplus p_i \f$ (pose compounding operator).
 		  */

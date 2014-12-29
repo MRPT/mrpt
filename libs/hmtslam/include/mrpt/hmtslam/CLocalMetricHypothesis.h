@@ -15,8 +15,8 @@
 #include <mrpt/hmtslam/HMT_SLAM_common.h>
 #include <mrpt/hmtslam/CHMHMapNode.h>
 
-#include <mrpt/slam/CMultiMetricMap.h>
-#include <mrpt/slam/CActionRobotMovement2D.h>
+#include <mrpt/maps/CMultiMetricMap.h>
+#include <mrpt/obs/CActionRobotMovement2D.h>
 #include <mrpt/slam/CIncrementalMapPartitioner.h>
 
 #include <list>
@@ -129,7 +129,7 @@ namespace mrpt
 			/** Returns the mean of each robot pose in this LMH, as computed from the set of particles.
 			  * \sa getPathParticles, getRelativePose
 			  */
-			void getMeans( std::map< TPoseID, CPose3D > &outList ) const;
+			void getMeans( std::map< TPoseID, mrpt::poses::CPose3D > &outList ) const;
 
 			/** Returns the mean and covariance of each robot pose in this LMH, as computed from the set of particles.
 			  * \sa getMeans, getPoseParticles
@@ -168,7 +168,7 @@ namespace mrpt
 			void clearRobotPoses();
 
 			/** Returns the i'th particle hypothesis for the current robot pose.  */
-			const CPose3D * getCurrentPose(const size_t &particleIdx) const;
+			const mrpt::poses::CPose3D * getCurrentPose(const size_t &particleIdx) const;
 
 			/** Returns the i'th particle hypothesis for the current robot pose.  */
 			CPose3D * getCurrentPose(const size_t &particleIdx);
@@ -205,14 +205,14 @@ namespace mrpt
 			/** The PF algorithm implementation.
 			  */
 			void  prediction_and_update_pfAuxiliaryPFOptimal(
-				const mrpt::slam::CActionCollection	* action,
-				const mrpt::slam::CSensoryFrame		* observation,
+				const mrpt::obs::CActionCollection	* action,
+				const mrpt::obs::CSensoryFrame		* observation,
 				const bayes::CParticleFilter::TParticleFilterOptions &PF_options );
 
 			/** The PF algorithm implementation.  */
 			void  prediction_and_update_pfOptimalProposal(
-				const mrpt::slam::CActionCollection	* action,
-				const mrpt::slam::CSensoryFrame		* observation,
+				const mrpt::obs::CActionCollection	* action,
+				const mrpt::obs::CSensoryFrame		* observation,
 				const bayes::CParticleFilter::TParticleFilterOptions &PF_options );
 			/** @}
 			 */

@@ -19,12 +19,12 @@
 #include <mrpt/utils/safe_pointers.h>
 #include <mrpt/utils/bimap.h>
 
-#include <mrpt/slam/CSensoryFrame.h>
-#include <mrpt/slam/CActionCollection.h>
-#include <mrpt/slam/CObservationBearingRange.h>
+#include <mrpt/obs/CSensoryFrame.h>
+#include <mrpt/obs/CActionCollection.h>
+#include <mrpt/obs/CObservationBearingRange.h>
 #include <mrpt/poses/CPosePDFGaussian.h>
 #include <mrpt/slam/CLandmark.h>
-#include <mrpt/slam/CSimpleMap.h>
+#include <mrpt/maps/CSimpleMap.h>
 #include <mrpt/slam/CIncrementalMapPartitioner.h>
 #include <mrpt/slam/data_association.h>
 
@@ -112,7 +112,7 @@ namespace mrpt
 
 				/** This method must display clearly all the contents of the structure in textual form, sending it to a CStream.
 				*/
-				void  dumpToTextStream(CStream	&out) const;
+				void  dumpToTextStream(mrpt::utils::CStream	&out) const;
 
 
 				CVectorFloat 	stds_Q_no_odo;	//!< A 3-length vector with the std. deviation of the transition model in (x,y,phi) used only when there is no odometry (if there is odo, its uncertainty values will be used instead); x y: In meters, phi: radians (but in degrees when loading from a configuration ini-file!)

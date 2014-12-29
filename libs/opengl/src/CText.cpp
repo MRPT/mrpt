@@ -67,7 +67,7 @@ void   CText::render() const
    Implements the writing to a CStream capability of
      CSerializable objects
   ---------------------------------------------------------------*/
-void  CText::writeToStream(CStream &out,int *version) const
+void  CText::writeToStream(mrpt::utils::CStream &out,int *version) const
 {
 	if (version)
 		*version = 1;
@@ -85,7 +85,7 @@ void  CText::writeToStream(CStream &out,int *version) const
 	Implements the reading from a CStream capability of
 		CSerializable objects
   ---------------------------------------------------------------*/
-void  CText::readFromStream(CStream &in,int version)
+void  CText::readFromStream(mrpt::utils::CStream &in,int version)
 {
 	switch(version)
 	{

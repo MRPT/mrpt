@@ -11,7 +11,7 @@
 
 #include <mrpt/hwdrivers/COpenNI2Generic.h>
 #include <mrpt/hwdrivers/COpenNI2Sensor.h>
-#include <mrpt/slam/CObservation3DRangeScan.h>
+#include <mrpt/obs/CObservation3DRangeScan.h>
 #include <mrpt/utils/CTimeLogger.h>
 #include <mrpt/utils/TStereoCamera.h>
 
@@ -236,7 +236,7 @@ void  COpenNI2Sensor::loadConfig_sensorSpecific(
 * \sa doProcess
 */
 void COpenNI2Sensor::getNextObservation(
-	mrpt::slam::CObservation3DRangeScan &out_obs,
+	mrpt::obs::CObservation3DRangeScan &out_obs,
 	bool &there_is_obs,
 	bool &hardware_error)
 {

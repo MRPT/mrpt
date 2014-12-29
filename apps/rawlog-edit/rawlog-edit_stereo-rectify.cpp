@@ -170,9 +170,9 @@ DECLARE_OP_FUNCTION(op_stereo_rectify)
 
 		// This method can be reimplemented to save the modified object to an output stream.
 		virtual void OnPostProcess(
-			mrpt::slam::CActionCollectionPtr &actions,
-			mrpt::slam::CSensoryFramePtr     &SF,
-			mrpt::slam::CObservationPtr      &obs)
+			mrpt::obs::CActionCollectionPtr &actions,
+			mrpt::obs::CSensoryFramePtr     &SF,
+			mrpt::obs::CObservationPtr      &obs)
 		{
 		    if (!m_this_obs_is_ok) return;
 

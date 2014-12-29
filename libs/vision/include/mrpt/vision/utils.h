@@ -19,25 +19,19 @@
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/vision/types.h>
 #include <mrpt/vision/chessboard_camera_calib.h>
-
+#include <mrpt/obs/obs_frwds.h>
 #include <mrpt/vision/link_pragmas.h>
 
 namespace mrpt
 {
-	namespace slam
-	{
-		class CObservationStereoImages;
-		class CObservationBearingRange;
-		class CLandmarksMap;
-		class CObservationVisualLandmarks;
-	}
+	namespace maps { class CLandmarksMap; }
+	namespace obs { class CObservationVisualLandmarks;}
 
 	/** Classes for computer vision, detectors, features, etc.  \ingroup mrpt_vision_grp
 	 */
 	namespace vision
 	{
 		using std::vector;
-		using namespace mrpt::slam;
 		using namespace mrpt::math;
 		using namespace mrpt::utils;
 
@@ -192,9 +186,9 @@ namespace mrpt
 			  * ...
 			  */
 			void VISION_IMPEXP cloudsToMatchedList(
-                                const CObservationVisualLandmarks   & cloud1,
-                                const CObservationVisualLandmarks   & cloud2,
-								TMatchingPairList                   & outList);
+				const mrpt::obs::CObservationVisualLandmarks   & cloud1,
+				const mrpt::obs::CObservationVisualLandmarks   & cloud2,
+				TMatchingPairList                   & outList);
 
 			/** Computes the main orientation of a set of points with an image (for using in SIFT-based algorithms)
 			  * \param image    [IN] The input image.
@@ -297,9 +291,9 @@ namespace mrpt
 			  * \sa TStereoSystemParams, CLandmarksMap
 			  */
 			void VISION_IMPEXP projectMatchedFeatures(
-                                CMatchedFeatureList			        & mfList,
-                                const TStereoSystemParams	        & param,
-                                CLandmarksMap			            & landmarks );
+				CMatchedFeatureList			        & mfList,
+				const TStereoSystemParams	        & param,
+				mrpt::maps::CLandmarksMap			            & landmarks );
 
 			/** Project a pair of feature lists into the 3D space, using the provided options for the stereo system. The matches must be in order,
 			  *	i.e. leftList[0] corresponds to rightList[0] and so on. Features which yields a 3D point outside the area defined in TStereoSystemParams are removed from the lists.
@@ -310,10 +304,10 @@ namespace mrpt
 			  * \sa TStereoSystemParams, CLandmarksMap
 			  */
 			void VISION_IMPEXP projectMatchedFeatures(
-                                CFeatureList				        & leftList,
-                                CFeatureList					    & rightList,
-                                const TStereoSystemParams	        & param,
-                                CLandmarksMap			            & landmarks );
+				CFeatureList				        & leftList,
+				CFeatureList					    & rightList,
+				const TStereoSystemParams	        & param,
+				mrpt::maps::CLandmarksMap			            & landmarks );
 
 			/** Converts a stereo images observation into a bearing and range observation.
 				\param inObs	[IN]	The input stereo images observation.
@@ -321,9 +315,9 @@ namespace mrpt
 				\param outObs	[OUT]	The output bearing and range observation (including covariances).
 			*/
 			void VISION_IMPEXP StereoObs2BRObs(
-                                const CObservationStereoImages      & inObs,
-                                const vector<double>                & sg,
-                                CObservationBearingRange            & outObs );
+				const mrpt::obs::CObservationStereoImages      & inObs,
+				const std::vector<double>                & sg,
+				mrpt::obs::CObservationBearingRange            & outObs );
 
 			/** Converts a matched feature list into a bearing and range observation (some of the stereo camera system must be provided).
 				\param inMatches		[IN]	The input list of matched features.
@@ -333,46 +327,46 @@ namespace mrpt
 				\param outObs			[OUT]	The output bearing and range observation (including covariances).
 			*/
 			void VISION_IMPEXP StereoObs2BRObs(
-                                const CMatchedFeatureList           & inMatches,
-                                const CMatrixDouble33               & intrinsicParams,
-                                const double                        & baseline,
-                                const mrpt::poses::CPose3D                       & sensorPose,
-                                const vector<double>                & sg,
-                                CObservationBearingRange            & outObs );
+				const CMatchedFeatureList           & inMatches,
+				const CMatrixDouble33               & intrinsicParams,
+				const double                        & baseline,
+				const mrpt::poses::CPose3D                       & sensorPose,
+				const vector<double>                & sg,
+				mrpt::obs::CObservationBearingRange            & outObs );
 
 			/** Converts a CObservationVisualLandmarks into a bearing and range observation (without any covariances). Fields of view are not computed.
 				\param inObs			[IN]	The input observation.
 				\param sg				[IN]	The sigma of the row, col, and disparity variables involved in the feature detection.
 				\param outObs			[OUT]	The output bearing and range observation.
 			*/
-            void VISION_IMPEXP StereoObs2BRObs(
-                                const CObservationStereoImages      & inObs,
-                                const vector<double>                & sg,
-                                CObservationBearingRange            & outObs );
+			void VISION_IMPEXP StereoObs2BRObs(
+				const mrpt::obs::CObservationStereoImages      & inObs,
+				const std::vector<double>                & sg,
+				mrpt::obs::CObservationBearingRange            & outObs );
 
 			/** Converts a CObservationVisualLandmarks into a bearing and range observation (without any covariances). Fields of view are not computed.
 				\param inObs			[IN]	The input observation.
 				\param outObs			[OUT]	The output bearing and range observation.
 			*/
 			void VISION_IMPEXP StereoObs2BRObs(
-                                const CObservationVisualLandmarks   & inObs,
-                                CObservationBearingRange            & outObs );
+				const mrpt::obs::CObservationVisualLandmarks   & inObs,
+				mrpt::obs::CObservationBearingRange            & outObs );
 
-            /** Computes a pair of x-and-y maps for stereo rectification from a pair of cameras and the relative pose of the second one wrt the first one.
-                \param cam1, cam2           [IN]    The pair of involved cameras
-                \param rightCameraPose      [IN]    The change in pose of the second camera wrt the first one
-                \param outMap1x,outMap1y    [OUT]   The x-and-y maps corresponding to cam1 (should be converted to *cv::Mat)
-                \param outMap2x,outMap2y    [OUT]   The x-and-y maps corresponding to cam2 (should be converted to *cv::Mat)
+			/** Computes a pair of x-and-y maps for stereo rectification from a pair of cameras and the relative pose of the second one wrt the first one.
+				\param cam1, cam2           [IN]    The pair of involved cameras
+				\param rightCameraPose      [IN]    The change in pose of the second camera wrt the first one
+				\param outMap1x,outMap1y    [OUT]   The x-and-y maps corresponding to cam1 (should be converted to *cv::Mat)
+				\param outMap2x,outMap2y    [OUT]   The x-and-y maps corresponding to cam2 (should be converted to *cv::Mat)
 			* \sa An easier to use class for stereo rectification mrpt::vision::CStereoRectifyMap
-            */
-            void VISION_IMPEXP computeStereoRectificationMaps(
-                                const TCamera                       & cam1,
-                                const TCamera                       & cam2,
-                                const poses::CPose3D                & rightCameraPose,
-                                void                                *outMap1x,
-                                void                                *outMap1y,
-                                void                                *outMap2x,
-                                void                                *outMap2y );
+			*/
+			void VISION_IMPEXP computeStereoRectificationMaps(
+				const TCamera                       & cam1,
+				const TCamera                       & cam2,
+				const mrpt::poses::CPose3D                & rightCameraPose,
+				void                                *outMap1x,
+				void                                *outMap1y,
+				void                                *outMap2x,
+				void                                *outMap2y );
 
 
 	/** @} */ // end of grouping

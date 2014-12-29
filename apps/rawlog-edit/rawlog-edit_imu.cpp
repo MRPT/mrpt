@@ -9,7 +9,7 @@
 
 #include "rawlog-edit-declarations.h"
 
-#include <mrpt/slam/CObservationIMU.h>
+#include <mrpt/obs/CObservationIMU.h>
 
 using namespace mrpt;
 using namespace mrpt::utils;

@@ -7,7 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/slam/CGasConcentrationGridMap2D.h>
+#include <mrpt/maps/CGasConcentrationGridMap2D.h>
 #include <mrpt/gui.h>
 #include <mrpt/random.h>
 

@@ -143,7 +143,7 @@ void  CTopLCDetector_GridMatching::TOptions::loadFromConfigFile(
 }
 
 //  This method must display clearly all the contents of the structure in textual form, sending it to a CStream.
-void CTopLCDetector_GridMatching::TOptions::dumpToTextStream(CStream &out) const	{
+void CTopLCDetector_GridMatching::TOptions::dumpToTextStream(mrpt::utils::CStream &out) const	{
 	out.printf("\n----------- [CTopLCDetector_GridMatching::TOptions] ------------ \n\n");
 	matchingOptions.dumpToTextStream(out);
 }

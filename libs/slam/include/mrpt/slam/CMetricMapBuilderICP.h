@@ -25,7 +25,7 @@ namespace slam
 	 *	 thread-safe.
 	 * \ingroup metric_slam_grp
 	 */
-	class SLAM_IMPEXP  CMetricMapBuilderICP : public CMetricMapBuilder
+	class SLAM_IMPEXP  CMetricMapBuilderICP : public mrpt::maps::CMetricMapBuilder
 	{
 	 public:
 		 /** Default constructor - Upon construction, you can set the parameters in ICP_options, then call "initialize".
@@ -161,8 +161,8 @@ namespace slam
 		mrpt::aligned_containers<std::string,TDist>::map_t  m_distSinceLastInsertion; //!< Indexed by sensor label.
 		bool	 m_there_has_been_an_odometry;
 
-		void accumulateRobotDisplacementCounters(const CPose2D & new_pose);
-		void resetRobotDisplacementCounters(const CPose2D & new_pose);
+		void accumulateRobotDisplacementCounters(const mrpt::poses::CPose2D & new_pose);
+		void resetRobotDisplacementCounters(const mrpt::poses::CPose2D & new_pose);
 
 	};
 

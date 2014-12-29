@@ -76,7 +76,7 @@ CStereoGrabber_Bumblebee::~CStereoGrabber_Bumblebee()
 /*-------------------------------------------------------------
 					get the image
  -------------------------------------------------------------*/
-bool  CStereoGrabber_Bumblebee::getStereoObservation( mrpt::slam::CObservationStereoImages &out_observation )
+bool  CStereoGrabber_Bumblebee::getStereoObservation( mrpt::obs::CObservationStereoImages &out_observation )
 {
 	if (!m_firewire_capture->isOpen())
 	{

@@ -22,19 +22,19 @@ IMPLEMENTS_SERIALIZABLE(CDetectable2D, CDetectableObject,mrpt::detectors)
 IMPLEMENTS_SERIALIZABLE(CDetectable3D, CDetectable2D,mrpt::detectors)
 
 
-void CDetectable2D::readFromStream(CStream &, int )
+void CDetectable2D::readFromStream(mrpt::utils::CStream &, int )
 {
 }
 
-void CDetectable2D::writeToStream(CStream &, int *) const
+void CDetectable2D::writeToStream(mrpt::utils::CStream &, int *) const
 {
 }
 
-void CDetectable3D::readFromStream(CStream &, int )
+void CDetectable3D::readFromStream(mrpt::utils::CStream &, int )
 {
 }
 
-void CDetectable3D::writeToStream(CStream &, int *) const
+void CDetectable3D::writeToStream(mrpt::utils::CStream &, int *) const
 {
 }
 

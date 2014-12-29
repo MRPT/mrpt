@@ -102,7 +102,7 @@ CLogFileRecord::~CLogFileRecord()
 /*---------------------------------------------------------------
 						writeToStream
  ---------------------------------------------------------------*/
-void  CLogFileRecord::writeToStream(CStream &out,int *version) const
+void  CLogFileRecord::writeToStream(mrpt::utils::CStream &out,int *version) const
 {
 	if (version)
 		*version = 8;
@@ -171,7 +171,7 @@ void  CLogFileRecord::writeToStream(CStream &out,int *version) const
 /*---------------------------------------------------------------
 						readFromStream
  ---------------------------------------------------------------*/
-void  CLogFileRecord::readFromStream(CStream &in,int version)
+void  CLogFileRecord::readFromStream(mrpt::utils::CStream &in,int version)
 {
 	switch(version)
 	{

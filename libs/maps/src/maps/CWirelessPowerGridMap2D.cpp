@@ -134,7 +134,7 @@ double	 CWirelessPowerGridMap2D::computeObservationLikelihood(
 /*---------------------------------------------------------------
   Implements the writing to a CStream capability of CSerializable objects
  ---------------------------------------------------------------*/
-void  CWirelessPowerGridMap2D::writeToStream(CStream &out, int *version) const
+void  CWirelessPowerGridMap2D::writeToStream(mrpt::utils::CStream &out, int *version) const
 {
 	if (version)
 		*version = 3;
@@ -198,7 +198,7 @@ struct TOldCellTypeInVersion1
 /*---------------------------------------------------------------
   Implements the reading from a CStream capability of CSerializable objects
  ---------------------------------------------------------------*/
-void  CWirelessPowerGridMap2D::readFromStream(CStream &in, int version)
+void  CWirelessPowerGridMap2D::readFromStream(mrpt::utils::CStream &in, int version)
 {
 	switch(version)
 	{
@@ -299,7 +299,7 @@ CWirelessPowerGridMap2D::TInsertionOptions::TInsertionOptions()
 /*---------------------------------------------------------------
 					dumpToTextStream
   ---------------------------------------------------------------*/
-void  CWirelessPowerGridMap2D::TInsertionOptions::dumpToTextStream(CStream	&out) const
+void  CWirelessPowerGridMap2D::TInsertionOptions::dumpToTextStream(mrpt::utils::CStream	&out) const
 {
 	out.printf("\n----------- [CWirelessPowerGridMap2D::TInsertionOptions] ------------ \n\n");
 	internal_dumpToTextStream_common(out);  // Common params to all random fields maps:

@@ -10,8 +10,8 @@
 #include <mrpt/hwdrivers/CHokuyoURG.h>
 #include <mrpt/hwdrivers/CSerialPort.h>
 #include <mrpt/gui/CDisplayWindowPlots.h>
-#include <mrpt/slam/CObservation2DRangeScan.h>
-#include <mrpt/slam/CSimplePointsMap.h>
+#include <mrpt/obs/CObservation2DRangeScan.h>
+#include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/system/string_utils.h>
 #include <mrpt/system/threads.h> // sleep
 #include <mrpt/system/os.h>

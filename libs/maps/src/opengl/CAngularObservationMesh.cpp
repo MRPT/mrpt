@@ -244,7 +244,7 @@ void CAngularObservationMesh::generatePointCloud(CPointsMap *out_map) const {
    Implements the writing to a CStream capability of
      CSerializable objects
   ---------------------------------------------------------------*/
-void CAngularObservationMesh::writeToStream(CStream &out,int *version) const	{
+void CAngularObservationMesh::writeToStream(mrpt::utils::CStream &out,int *version) const	{
 	if (version) *version=0;
 	else	{
 		writeToStreamRender(out);
@@ -257,7 +257,7 @@ void CAngularObservationMesh::writeToStream(CStream &out,int *version) const	{
 	Implements the reading from a CStream capability of
 		CSerializable objects
   ---------------------------------------------------------------*/
-void CAngularObservationMesh::readFromStream(CStream &in,int version)	{
+void CAngularObservationMesh::readFromStream(mrpt::utils::CStream &in,int version)	{
 	switch (version)	{
 		case 0:
 			readFromStreamRender(in);

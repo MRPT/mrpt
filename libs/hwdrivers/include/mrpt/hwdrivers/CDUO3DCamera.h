@@ -10,8 +10,8 @@
 #ifndef CDUO3DCamera_H
 #define CDUO3DCamera_H
 
-#include <mrpt/slam/CObservationStereoImages.h>
-#include <mrpt/slam/CObservationIMU.h>
+#include <mrpt/obs/CObservationStereoImages.h>
+#include <mrpt/obs/CObservationIMU.h>
 #include <mrpt/vision/CStereoRectifyMap.h>
 
 #include <mrpt/hwdrivers/link_pragmas.h>
@@ -177,8 +177,8 @@ namespace mrpt
 			  *  This method will be typically called in a different thread than other methods, and will be called in a timely fashion.
 			  */
 			void getObservations(
-				mrpt::slam::CObservationStereoImages	& outObservation_img,
-				mrpt::slam::CObservationIMU				& outObservation_imu,
+				mrpt::obs::CObservationStereoImages	& outObservation_img,
+				mrpt::obs::CObservationIMU				& outObservation_imu,
 				bool									& there_is_img,
 				bool									& there_is_imu );
 

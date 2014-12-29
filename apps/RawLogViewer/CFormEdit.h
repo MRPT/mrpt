@@ -28,8 +28,8 @@
 #include <wx/combobox.h>
 
 
-#include <mrpt/slam/CActionCollection.h>
-#include <mrpt/slam/CSensoryFrame.h>
+#include <mrpt/obs/CActionCollection.h>
+#include <mrpt/obs/CSensoryFrame.h>
 
 
 class CFormEdit: public wxDialog
@@ -41,7 +41,7 @@ public:
 
 	/** Used in executeOperationOnRawlogFiles
 	  */
-	typedef void (*TRawlogFilter)( mrpt::slam::CActionCollection *acts, mrpt::slam::CSensoryFrame *SF, int &changesCount  );
+	typedef void (*TRawlogFilter)( mrpt::obs::CActionCollection *acts, mrpt::obs::CSensoryFrame *SF, int &changesCount  );
     /** This is the common function for all operations over a rawlog file ("filter" a rawlog file into a new one) or over the loaded rawlog (depending on the user selection in the GUI).
       */
     void executeOperationOnRawlog( TRawlogFilter operation, const char *endMsg);

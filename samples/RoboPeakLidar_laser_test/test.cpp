@@ -8,7 +8,7 @@
    +---------------------------------------------------------------------------+ */
 
 #include <mrpt/hwdrivers/CRoboPeakLidar.h>
-#include <mrpt/slam/CObservation2DRangeScan.h>
+#include <mrpt/obs/CObservation2DRangeScan.h>
 #include <mrpt/utils/CTicTac.h>
 #include <mrpt/system/string_utils.h>
 #include <mrpt/system/threads.h> // sleep

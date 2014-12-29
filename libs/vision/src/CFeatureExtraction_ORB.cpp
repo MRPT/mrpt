@@ -85,12 +85,11 @@ void  CFeatureExtraction::extractFeaturesORB(
 	const Mat cvImg = cv::cvarrToMat( inImg_gray.getAs<IplImage>() );
 
 	// The detector and descriptor
-	const size_t n_feats_2_extract = nDesiredFeatures == 0 ? 1000 : 3*nDesiredFeatures;
-
 #	if MRPT_OPENCV_VERSION_NUM < 0x300
 	Ptr<Feature2D> orb = Algorithm::create<Feature2D>("Feature2D.ORB");
 	orb->operator()( cvImg, Mat(), cv_feats, cv_descs, use_precomputed_feats );
 #else
+	const size_t n_feats_2_extract = nDesiredFeatures == 0 ? 1000 : 3*nDesiredFeatures;
 	Ptr<cv::ORB> orb = cv::ORB::create( n_feats_2_extract, options.ORBOptions.scale_factor, options.ORBOptions.n_levels );
 	orb->detectAndCompute(cvImg, Mat(), cv_feats, cv_descs, use_precomputed_feats );
 #endif

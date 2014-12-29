@@ -55,7 +55,7 @@ CPoint2DPDFGaussian::CPoint2DPDFGaussian(
 /*---------------------------------------------------------------
 						writeToStream
   ---------------------------------------------------------------*/
-void  CPoint2DPDFGaussian::writeToStream(CStream &out,int *version) const
+void  CPoint2DPDFGaussian::writeToStream(mrpt::utils::CStream &out,int *version) const
 {
 	if (version)
 		*version = 0;
@@ -68,7 +68,7 @@ void  CPoint2DPDFGaussian::writeToStream(CStream &out,int *version) const
 /*---------------------------------------------------------------
 						readFromStream
   ---------------------------------------------------------------*/
-void  CPoint2DPDFGaussian::readFromStream(CStream &in,int version)
+void  CPoint2DPDFGaussian::readFromStream(mrpt::utils::CStream &in,int version)
 {
 	switch(version)
 	{

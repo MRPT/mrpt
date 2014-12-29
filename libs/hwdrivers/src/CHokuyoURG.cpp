@@ -70,7 +70,7 @@ CHokuyoURG::~CHokuyoURG()
 -------------------------------------------------------------*/
 void  CHokuyoURG::doProcessSimple(
 	bool							&outThereIsObservation,
-	mrpt::slam::CObservation2DRangeScan	&outObservation,
+	mrpt::obs::CObservation2DRangeScan	&outObservation,
 	bool							&hardwareError )
 {
 	outThereIsObservation	= false;

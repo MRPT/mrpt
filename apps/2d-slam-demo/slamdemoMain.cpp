@@ -29,7 +29,7 @@
 #include <mrpt/math/wrap2pi.h>
 #include <mrpt/system/vector_loadsave.h>
 #include <mrpt/random.h>
-#include <mrpt/slam/CObservationComment.h>
+#include <mrpt/obs/CObservationComment.h>
 
 using namespace std;
 using namespace mrpt;

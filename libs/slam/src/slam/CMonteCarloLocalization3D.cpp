@@ -10,7 +10,7 @@
 #include "slam-precomp.h"   // Precompiled headerss
 
 #include <mrpt/slam/CMonteCarloLocalization3D.h>
-#include <mrpt/slam/CSensoryFrame.h>
+#include <mrpt/obs/CSensoryFrame.h>
 
 #include <mrpt/math/utils.h>
 #include <mrpt/utils/round.h>
@@ -104,8 +104,8 @@ const TPose3D* CMonteCarloLocalization3D::getLastPose(const size_t i) const
 
  ---------------------------------------------------------------*/
 void  CMonteCarloLocalization3D::prediction_and_update_pfStandardProposal(
-	const mrpt::slam::CActionCollection	* actions,
-	const mrpt::slam::CSensoryFrame		* sf,
+	const mrpt::obs::CActionCollection	* actions,
+	const mrpt::obs::CSensoryFrame		* sf,
 	const bayes::CParticleFilter::TParticleFilterOptions &PF_options )
 {
 	MRPT_START
@@ -128,8 +128,8 @@ void  CMonteCarloLocalization3D::prediction_and_update_pfStandardProposal(
 
  ---------------------------------------------------------------*/
 void  CMonteCarloLocalization3D::prediction_and_update_pfAuxiliaryPFStandard(
-	const mrpt::slam::CActionCollection	* actions,
-	const mrpt::slam::CSensoryFrame		* sf,
+	const mrpt::obs::CActionCollection	* actions,
+	const mrpt::obs::CSensoryFrame		* sf,
 	const bayes::CParticleFilter::TParticleFilterOptions &PF_options )
 {
 	MRPT_START
@@ -153,8 +153,8 @@ void  CMonteCarloLocalization3D::prediction_and_update_pfAuxiliaryPFStandard(
 
  ---------------------------------------------------------------*/
 void  CMonteCarloLocalization3D::prediction_and_update_pfAuxiliaryPFOptimal(
-	const mrpt::slam::CActionCollection	* actions,
-	const mrpt::slam::CSensoryFrame		* sf,
+	const mrpt::obs::CActionCollection	* actions,
+	const mrpt::obs::CSensoryFrame		* sf,
 	const bayes::CParticleFilter::TParticleFilterOptions &PF_options )
 {
 	MRPT_START
