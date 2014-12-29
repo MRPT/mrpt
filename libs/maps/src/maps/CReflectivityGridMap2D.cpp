@@ -9,8 +9,8 @@
 
 #include "maps-precomp.h" // Precomp header
 
-#include <mrpt/slam/CReflectivityGridMap2D.h>
-#include <mrpt/slam/CObservationReflectivity.h>
+#include <mrpt/maps/CReflectivityGridMap2D.h>
+#include <mrpt/obs/CObservationReflectivity.h>
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/utils/round.h> // round()
 #include <mrpt/system/os.h>
@@ -20,14 +20,15 @@
 
 
 using namespace mrpt;
-using namespace mrpt::slam;
+using namespace mrpt::maps;
+using namespace mrpt::obs;
 using namespace mrpt::poses;
 using namespace mrpt::math;
 using namespace mrpt::utils;
 using namespace mrpt::system;
 using namespace std;
 
-IMPLEMENTS_SERIALIZABLE(CReflectivityGridMap2D, CMetricMap,mrpt::slam)
+IMPLEMENTS_SERIALIZABLE(CReflectivityGridMap2D, CMetricMap,mrpt::maps)
 
 
 // Lookup tables for log-odds

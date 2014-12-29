@@ -25,7 +25,7 @@ namespace mrpt
 {
 	namespace utils { class CStringList; }
 
-namespace slam
+namespace maps
 {
 	using namespace mrpt::poses;
 	using namespace mrpt::utils;
@@ -111,7 +111,7 @@ namespace slam
 		/** this = p (+) this. This can be used to convert a PDF from local coordinates to global, providing the point (newReferenceBase) from which
 		  *   "to project" the current pdf. Result PDF substituted the currently stored one in the object.
 		  */
-		void  changeCoordinatesReference( const CPose3D &newReferenceBase );
+		void  changeCoordinatesReference( const mrpt::poses::CPose3D &newReferenceBase );
 
 		/** Saves a 3D representation of the beacon into a given OpenGL scene
 		  */

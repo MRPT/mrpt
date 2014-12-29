@@ -9,9 +9,9 @@
 #ifndef CWeightedPointsMap_H
 #define CWeightedPointsMap_H
 
-#include <mrpt/slam/CPointsMap.h>
-#include <mrpt/slam/CObservation2DRangeScan.h>
-#include <mrpt/slam/CObservation3DRangeScan.h>
+#include <mrpt/maps/CPointsMap.h>
+#include <mrpt/obs/CObservation2DRangeScan.h>
+#include <mrpt/obs/CObservation3DRangeScan.h>
 #include <mrpt/utils/CSerializable.h>
 #include <mrpt/math/CMatrix.h>
 
@@ -19,7 +19,7 @@
 
 namespace mrpt
 {
-	namespace slam
+	namespace maps
 	{
 
 		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CWeightedPointsMap , CPointsMap, MAPS_IMPEXP )
@@ -143,12 +143,12 @@ namespace mrpt
 
 	namespace utils
 	{
-		/** Specialization mrpt::utils::PointCloudAdapter<mrpt::slam::CWeightedPointsMap>  \ingroup mrpt_adapters_grp*/
+		/** Specialization mrpt::utils::PointCloudAdapter<mrpt::maps::CWeightedPointsMap>  \ingroup mrpt_adapters_grp*/
 		template <>
-		class PointCloudAdapter<mrpt::slam::CWeightedPointsMap> : public detail::PointCloudAdapterHelperNoRGB<mrpt::slam::CWeightedPointsMap,float>
+		class PointCloudAdapter<mrpt::maps::CWeightedPointsMap> : public detail::PointCloudAdapterHelperNoRGB<mrpt::maps::CWeightedPointsMap,float>
 		{
 		private:
-			mrpt::slam::CWeightedPointsMap &m_obj;
+			mrpt::maps::CWeightedPointsMap &m_obj;
 		public:
 			typedef float  coords_t;         //!< The type of each point XYZ coordinates
 			static const int HAS_RGB   = 0;  //!< Has any color RGB info?
@@ -156,7 +156,7 @@ namespace mrpt
 			static const int HAS_RGBu8 = 0;  //!< Has native RGB info (as uint8_t)?
 
 			/** Constructor (accept a const ref for convenience) */
-			inline PointCloudAdapter(const mrpt::slam::CWeightedPointsMap &obj) : m_obj(*const_cast<mrpt::slam::CWeightedPointsMap*>(&obj)) { }
+			inline PointCloudAdapter(const mrpt::maps::CWeightedPointsMap &obj) : m_obj(*const_cast<mrpt::maps::CWeightedPointsMap*>(&obj)) { }
 			/** Get number of points */
 			inline size_t size() const { return m_obj.size(); }
 			/** Set number of points (to uninitialized values) */
@@ -171,7 +171,7 @@ namespace mrpt
 			inline void setPointXYZ(const size_t idx, const coords_t x,const coords_t y, const coords_t z) {
 				m_obj.setPointFast(idx,x,y,z);
 			}
-		}; // end of PointCloudAdapter<mrpt::slam::CPointsMap>
+		}; // end of PointCloudAdapter<mrpt::maps::CPointsMap>
 	}
 } // End of namespace
 

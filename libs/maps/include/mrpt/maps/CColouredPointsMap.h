@@ -9,9 +9,9 @@
 #ifndef CColouredPointsMap_H
 #define CColouredPointsMap_H
 
-#include <mrpt/slam/CPointsMap.h>
-#include <mrpt/slam/CObservation2DRangeScan.h>
-#include <mrpt/slam/CObservationImage.h>
+#include <mrpt/maps/CPointsMap.h>
+#include <mrpt/obs/obs_frwds.h>
+#include <mrpt/obs/CObservationImage.h>
 #include <mrpt/utils/CSerializable.h>
 #include <mrpt/math/CMatrix.h>
 
@@ -19,17 +19,14 @@
 
 namespace mrpt
 {
-	namespace slam
+	namespace maps
 	{
-		class CObservation3DRangeScan;
-
-
 		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CColouredPointsMap, CPointsMap,MAPS_IMPEXP )
 
 		/** A map of 2D/3D points with individual colours (RGB).
 		 *  For different color schemes, see CColouredPointsMap::colorScheme
 		 *  Colors are defined in the range [0,1].
-		 * \sa mrpt::slam::CPointsMap, mrpt::slam::CMetricMap, mrpt::utils::CSerializable
+		 * \sa mrpt::maps::CPointsMap, mrpt::maps::CMetricMap, mrpt::utils::CSerializable
   		 * \ingroup mrpt_maps_grp
 		 */
 		class MAPS_IMPEXP CColouredPointsMap : public CPointsMap
@@ -213,7 +210,7 @@ namespace mrpt
 
 			/** Colour a set of points from a CObservationImage and the global pose of the robot
 			  */
-			bool colourFromObservation( const CObservationImage &obs, const CPose3D &robotPose );
+			bool colourFromObservation( const CObservationImage &obs, const mrpt::poses::CPose3D &robotPose );
 
 			/** The choices for coloring schemes:
 			  *		- cmFromHeightRelativeToSensor: The Z coordinate wrt the sensor will be used to obtain the color using the limits z_min,z_max.
@@ -263,7 +260,7 @@ namespace mrpt
 			  *  Usage example:
 			  *  \code
 			  *    pcl::PointCloud<pcl::PointXYZRGB> cloud;
-			  *    mrpt::slam::CColouredPointsMap       pc;
+			  *    mrpt::maps::CColouredPointsMap       pc;
 			  *
 			  *    pc.setFromPCLPointCloudRGB(cloud);
 			  *  \endcode
@@ -339,12 +336,12 @@ namespace mrpt
 #include <mrpt/utils/adapters.h>
 	namespace utils
 	{
-		/** Specialization mrpt::utils::PointCloudAdapter<mrpt::slam::CColouredPointsMap> \ingroup mrpt_adapters_grp */
+		/** Specialization mrpt::utils::PointCloudAdapter<mrpt::maps::CColouredPointsMap> \ingroup mrpt_adapters_grp */
 		template <>
-		class PointCloudAdapter<mrpt::slam::CColouredPointsMap>
+		class PointCloudAdapter<mrpt::maps::CColouredPointsMap>
 		{
 		private:
-			mrpt::slam::CColouredPointsMap &m_obj;
+			mrpt::maps::CColouredPointsMap &m_obj;
 		public:
 			typedef float  coords_t;         //!< The type of each point XYZ coordinates
 			static const int HAS_RGB   = 1;  //!< Has any color RGB info?
@@ -352,7 +349,7 @@ namespace mrpt
 			static const int HAS_RGBu8 = 0;  //!< Has native RGB info (as uint8_t)?
 
 			/** Constructor (accept a const ref for convenience) */
-			inline PointCloudAdapter(const mrpt::slam::CColouredPointsMap &obj) : m_obj(*const_cast<mrpt::slam::CColouredPointsMap*>(&obj)) { }
+			inline PointCloudAdapter(const mrpt::maps::CColouredPointsMap &obj) : m_obj(*const_cast<mrpt::maps::CColouredPointsMap*>(&obj)) { }
 			/** Get number of points */
 			inline size_t size() const { return m_obj.size(); }
 			/** Set number of points (to uninitialized values) */
@@ -406,7 +403,7 @@ namespace mrpt
 				m_obj.setPointColor_fast(idx,r/255.f,g/255.f,b/255.f);
 			}
 
-		}; // end of PointCloudAdapter<mrpt::slam::CColouredPointsMap>
+		}; // end of PointCloudAdapter<mrpt::maps::CColouredPointsMap>
 
 	}
 

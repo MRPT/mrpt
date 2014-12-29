@@ -9,8 +9,8 @@
 
 #include "maps-precomp.h" // Precomp header
 
-#include <mrpt/slam/CWirelessPowerGridMap2D.h>
-#include <mrpt/slam/CObservationWirelessPower.h>
+#include <mrpt/maps/CWirelessPowerGridMap2D.h>
+#include <mrpt/obs/CObservationWirelessPower.h>
 #include <mrpt/system/os.h>
 #include <mrpt/utils/round.h>
 #include <mrpt/utils/CTicTac.h>
@@ -19,12 +19,13 @@
 #include <mrpt/utils/CStream.h>
 
 using namespace mrpt;
-using namespace mrpt::slam;
+using namespace mrpt::maps;
+using namespace mrpt::obs;
 using namespace mrpt::utils;
 using namespace mrpt::poses;
 using namespace std;
 
-IMPLEMENTS_SERIALIZABLE(CWirelessPowerGridMap2D, CRandomFieldGridMap2D,mrpt::slam)
+IMPLEMENTS_SERIALIZABLE(CWirelessPowerGridMap2D, CRandomFieldGridMap2D,mrpt::maps)
 
 /*---------------------------------------------------------------
 						Constructor

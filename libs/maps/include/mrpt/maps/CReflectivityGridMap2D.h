@@ -14,26 +14,25 @@
 #include <mrpt/utils/CDynamicGrid.h>
 #include <mrpt/utils/CSerializable.h>
 #include <mrpt/utils/CLoadableOptions.h>
-#include <mrpt/slam/CMetricMap.h>
-#include <mrpt/slam/CLogOddsGridMap2D.h>
+#include <mrpt/maps/CMetricMap.h>
+#include <mrpt/maps/CLogOddsGridMap2D.h>
+#include <mrpt/obs/obs_frwds.h>
 
 #include <mrpt/maps/link_pragmas.h>
 
 namespace mrpt
 {
-	namespace slam
+	namespace maps
 	{
 		using namespace mrpt;
 		using namespace mrpt::utils;
-
-		class CObservation;
 
 		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CReflectivityGridMap2D, CMetricMap, MAPS_IMPEXP  )
 
 		/** A 2D grid map representing the reflectivity of the environment (for example, measured with an IR proximity sensor).
 		  *
 		  *  Important implemented features are:
-		  *		- Insertion of mrpt::slam::CObservationReflectivity observations.
+		  *		- Insertion of mrpt::obs::CObservationReflectivity observations.
 		  *		- Probability estimation of observations. See base class.
 		  *		- Rendering as 3D object: a 2D textured plane.
 		  *		- Automatic resizing of the map limits when inserting observations close to the border.
@@ -80,7 +79,7 @@ namespace mrpt
 			 bool  isEmpty() const;
 
 			// See docs in base class
-			double	 computeObservationLikelihood( const CObservation *obs, const CPose3D &takenFrom );
+			double	 computeObservationLikelihood( const mrpt::obs::CObservation *obs, const mrpt::poses::CPose3D &takenFrom );
 
 			/** Parameters related with inserting observations into the map.
 			  */
@@ -138,7 +137,7 @@ namespace mrpt
 			  *
 			  * \sa CObservation::insertObservationInto
 			  */
-			 virtual bool  internal_insertObservation( const CObservation *obs, const CPose3D *robotPose = NULL );
+			 virtual bool  internal_insertObservation( const mrpt::obs::CObservation *obs, const mrpt::poses::CPose3D *robotPose = NULL );
 
 		};
 		DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE( CReflectivityGridMap2D, CMetricMap, MAPS_IMPEXP  )

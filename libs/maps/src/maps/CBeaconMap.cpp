@@ -9,8 +9,8 @@
 
 #include "maps-precomp.h" // Precomp header
 
-#include <mrpt/slam/CBeaconMap.h>
-#include <mrpt/slam/CObservationBeaconRanges.h>
+#include <mrpt/maps/CBeaconMap.h>
+#include <mrpt/obs/CObservationBeaconRanges.h>
 #include <mrpt/random.h>
 #include <mrpt/utils/CFileOutputStream.h>
 #include <mrpt/utils/CConfigFileBase.h>
@@ -28,7 +28,8 @@
 #include <mrpt/opengl/stock_objects.h>
 
 using namespace mrpt;
-using namespace mrpt::slam;
+using namespace mrpt::maps;
+using namespace mrpt::obs;
 using namespace mrpt::utils;
 using namespace mrpt::random;
 using namespace mrpt::poses;
@@ -36,7 +37,7 @@ using namespace mrpt::bayes;
 using namespace mrpt::system;
 using namespace std;
 
-IMPLEMENTS_SERIALIZABLE(CBeaconMap, CMetricMap,mrpt::slam)
+IMPLEMENTS_SERIALIZABLE(CBeaconMap, CMetricMap,mrpt::maps)
 
 /*---------------------------------------------------------------
 						Constructor
@@ -306,7 +307,7 @@ double	 CBeaconMap::computeObservationLikelihood(
 /*---------------------------------------------------------------
 						insertObservation
   ---------------------------------------------------------------*/
-bool  CBeaconMap::internal_insertObservation( const CObservation *obs, const CPose3D *robotPose)
+bool  CBeaconMap::internal_insertObservation( const mrpt::obs::CObservation *obs, const CPose3D *robotPose)
 {
 	MRPT_START
 
@@ -724,7 +725,7 @@ void  CBeaconMap::changeCoordinatesReference( const CPose3D &newOrg )
 /*---------------------------------------------------------------
 				changeCoordinatesReference
   ---------------------------------------------------------------*/
-void  CBeaconMap::changeCoordinatesReference( const CPose3D &newOrg, const mrpt::slam::CBeaconMap *otherMap )
+void  CBeaconMap::changeCoordinatesReference( const CPose3D &newOrg, const mrpt::maps::CBeaconMap *otherMap )
 {
 	// In this object we cannot apply any special speed-up: Just copy and change coordinates:
 	(*this) = *otherMap;
@@ -736,7 +737,7 @@ void  CBeaconMap::changeCoordinatesReference( const CPose3D &newOrg, const mrpt:
 						computeMatchingWith3DLandmarks
   ---------------------------------------------------------------*/
 void  CBeaconMap::computeMatchingWith3DLandmarks(
-    const mrpt::slam::CBeaconMap						*anotherMap,
+    const mrpt::maps::CBeaconMap						*anotherMap,
     TMatchingPairList						&correspondences,
     float									&correspondencesRatio,
     vector<bool>						&otherCorrespondences) const
@@ -958,7 +959,7 @@ void  CBeaconMap::simulateBeaconReadings(
     CObservationBeaconRanges        &out_Observations ) const
 {
 	TSequenceBeacons::const_iterator					    it;
-	mrpt::slam::CObservationBeaconRanges::TMeasurement	newMeas;
+	mrpt::obs::CObservationBeaconRanges::TMeasurement	newMeas;
 	CPoint3D										point3D,beacon3D;
 	CPointPDFGaussian								beaconPDF;
 

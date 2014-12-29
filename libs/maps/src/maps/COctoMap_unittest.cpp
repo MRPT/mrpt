@@ -8,11 +8,12 @@
    +---------------------------------------------------------------------------+ */
 
 
-#include <mrpt/slam/COctoMap.h>
+#include <mrpt/maps/COctoMap.h>
 #include <gtest/gtest.h>
 
 using namespace mrpt;
-using namespace mrpt::slam;
+using namespace mrpt::maps;
+using namespace mrpt::obs;
 using namespace mrpt::utils;
 using namespace mrpt::poses;
 using namespace mrpt::math;
@@ -56,7 +57,7 @@ TEST(COctoMapTests, insert2DScan)
 	const size_t SCAN_SIZE = sizeof(SCAN_RANGES_1)/sizeof(SCAN_RANGES_1[0]);
 
 	// Load scans:
-	CObservation2DRangeScan	scan1;
+	mrpt::obs::CObservation2DRangeScan	scan1;
 	scan1.aperture = M_PIf;
 	scan1.rightToLeft = true;
 	scan1.validRange.resize( SCAN_SIZE );

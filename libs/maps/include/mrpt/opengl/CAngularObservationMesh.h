@@ -13,8 +13,8 @@
 #include <mrpt/opengl/CSetOfTriangles.h>
 #include <mrpt/math/CMatrixTemplate.h>
 #include <mrpt/math/CMatrixB.h>
-#include <mrpt/slam/CObservation2DRangeScan.h>
-#include <mrpt/slam/CPointsMap.h>
+#include <mrpt/obs/CObservation2DRangeScan.h>
+#include <mrpt/maps/CPointsMap.h>
 #include <mrpt/opengl/CSetOfLines.h>
 
 #include <mrpt/math/geometry.h>
@@ -22,7 +22,6 @@
 namespace mrpt	{
 namespace opengl	{
 	using namespace mrpt::utils;
-	using namespace mrpt::slam;
 	using namespace mrpt::poses;
 
 	DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE(CAngularObservationMesh,CRenderizableDisplayList, MAPS_IMPEXP)
@@ -30,7 +29,7 @@ namespace opengl	{
 	/**
 	  * A mesh built from a set of 2D laser scan observations.
 	  * Each element of this set is a single scan through the yaw, given a specific pitch.
-	  * Each scan has a CPose3D identifying the origin of the scan, which ideally is the
+	  * Each scan has a mrpt::poses::CPose3D identifying the origin of the scan, which ideally is the
 	  * same for every one of them.
 	  *
 	  *  <div align="center">
@@ -321,7 +320,7 @@ namespace opengl	{
 		/**
 		  * Returns the scanned points as a 3D point cloud. The target pointmap must be passed as a pointer to allow the use of any derived class.
 		  */
-		void generatePointCloud(CPointsMap *out_map) const;
+		void generatePointCloud(mrpt::maps::CPointsMap *out_map) const;
 		/**
 		  * Gets a set of lines containing the traced rays, for displaying them.
 		  * \sa getUntracedRays,mrpt::opengl::CSetOfLines
@@ -336,7 +335,7 @@ namespace opengl	{
 		  * Gets the mesh as a set of polygons, to work with them.
 		  * \sa generateSetOfTriangles(mrpt::opengl::CSetOfTriangles &)
 		  */
-		void generateSetOfTriangles(std::vector<TPolygon3D> &res) const;
+		void generateSetOfTriangles(std::vector<mrpt::math::TPolygon3D> &res) const;
 		/**
 		  * Retrieves the full mesh, along with the validity matrix.
 		  */
@@ -351,15 +350,15 @@ namespace opengl	{
 		  */
 		template<class T> class FTrace1D	{
 		protected:
-			const CPose3D &initial;
+			const mrpt::poses::CPose3D &initial;
 			const T &e;
 			std::vector<double> &values;
 			std::vector<char> &valid;
 		public:
-			FTrace1D(const T &s,const CPose3D &p,std::vector<double> &v,std::vector<char> &v2):initial(p),e(s),values(v),valid(v2)	{}
+			FTrace1D(const T &s,const mrpt::poses::CPose3D &p,std::vector<double> &v,std::vector<char> &v2):initial(p),e(s),values(v),valid(v2)	{}
 			void operator()(double yaw)	{
 				double dist;
-				const CPose3D pNew=initial+CPose3D(0.0,0.0,0.0,yaw,0.0,0.0);
+				const mrpt::poses::CPose3D pNew=initial+CPose3D(0.0,0.0,0.0,yaw,0.0,0.0);
 				if (e->traceRay(pNew,dist))	{
 					values.push_back(dist);
 					valid.push_back(1);
@@ -375,18 +374,18 @@ namespace opengl	{
 		template<class T> class FTrace2D	{
 		protected:
 			const T &e;
-			const CPose3D &initial;
+			const mrpt::poses::CPose3D &initial;
 			CAngularObservationMeshPtr &caom;
 			const CAngularObservationMesh::TDoubleRange &yaws;
 			std::vector<CObservation2DRangeScan> &vObs;
-			const CPose3D &pBase;
+			const mrpt::poses::CPose3D &pBase;
 		public:
-			FTrace2D(const T &s,const CPose3D &p,CAngularObservationMeshPtr &om,const CAngularObservationMesh::TDoubleRange &y,std::vector<CObservation2DRangeScan> &obs,const CPose3D &b):e(s),initial(p),caom(om),yaws(y),vObs(obs),pBase(b)	{}
+			FTrace2D(const T &s,const mrpt::poses::CPose3D &p,CAngularObservationMeshPtr &om,const CAngularObservationMesh::TDoubleRange &y,std::vector<CObservation2DRangeScan> &obs,const mrpt::poses::CPose3D &b):e(s),initial(p),caom(om),yaws(y),vObs(obs),pBase(b)	{}
 			void operator()(double pitch)	{
 				std::vector<double> yValues;
 				yaws.values(yValues);
-				CObservation2DRangeScan o=CObservation2DRangeScan();
-				const CPose3D pNew=initial+CPose3D(0,0,0,0,pitch,0);
+				mrpt::obs::CObservation2DRangeScan o=CObservation2DRangeScan();
+				const mrpt::poses::CPose3D pNew=initial+CPose3D(0,0,0,0,pitch,0);
 				std::vector<double> values;
 				std::vector<char> valid;
 				size_t nY=yValues.size();
@@ -410,13 +409,13 @@ namespace opengl	{
 		  * The objective may be a COpenGLScene, a CRenderizable or any children of its.
 		  * \sa mrpt::opengl::CRenderizable,mrpt::opengl::COpenGLScene.
 		  */
-		template<class T> static void trace2DSetOfRays(const T &e,const CPose3D &initial,CAngularObservationMeshPtr &caom,const TDoubleRange &pitchs,const TDoubleRange &yaws);
+		template<class T> static void trace2DSetOfRays(const T &e,const mrpt::poses::CPose3D &initial,CAngularObservationMeshPtr &caom,const TDoubleRange &pitchs,const TDoubleRange &yaws);
 		/**
 		  * 2D ray tracing (will generate a vectorial mesh inside a plane). Given an object and a range, realizes a scan from the initial pose and stores it in a CObservation2DRangeScan object.
 		  * The objective may be a COpenGLScene, a CRenderizable or any children of its.
 		  * \sa mrpt::opengl::CRenderizable,mrpt::opengl::COpenGLScene.
 		  */
-		template<class T> static void trace1DSetOfRays(const T &e,const CPose3D &initial,CObservation2DRangeScan &obs,const TDoubleRange &yaws)	{
+		template<class T> static void trace1DSetOfRays(const T &e,const mrpt::poses::CPose3D &initial,CObservation2DRangeScan &obs,const TDoubleRange &yaws)	{
 			std::vector<double> yValues;
 			yaws.values(yValues);
 			std::vector<double> scanValues;
@@ -437,7 +436,7 @@ namespace opengl	{
 	DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(CAngularObservationMesh,CRenderizableDisplayList, MAPS_IMPEXP)
 
 	template<class T>
-	void CAngularObservationMesh::trace2DSetOfRays(const T &e,const CPose3D &initial,CAngularObservationMeshPtr &caom,const TDoubleRange &pitchs,const TDoubleRange &yaws)	{
+	void CAngularObservationMesh::trace2DSetOfRays(const T &e,const mrpt::poses::CPose3D &initial,CAngularObservationMeshPtr &caom,const TDoubleRange &pitchs,const TDoubleRange &yaws)	{
 		std::vector<double> pValues;
 		pitchs.values(pValues);
 		std::vector<CObservation2DRangeScan> vObs;

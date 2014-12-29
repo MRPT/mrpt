@@ -10,24 +10,21 @@
 #ifndef MRPT_CColouredOctoMap_H
 #define MRPT_CColouredOctoMap_H
 
-#include <mrpt/slam/COctoMapBase.h>
+#include <mrpt/maps/COctoMapBase.h>
 #include <mrpt/otherlibs/octomap/octomap.h>
 #include <mrpt/otherlibs/octomap/ColorOcTree.h>
+#include <mrpt/obs/obs_frwds.h>
 
 #include <mrpt/maps/link_pragmas.h>
 
 namespace mrpt
 {
-	namespace slam
+	namespace maps
 	{
-		class CPointsMap;
-		class CObservation2DRangeScan;
-		class CObservation3DRangeScan;
-
 		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CColouredOctoMap , CMetricMap, MAPS_IMPEXP )
 
 		/** A three-dimensional probabilistic occupancy grid, implemented as an octo-tree with the "octomap" C++ library.
-		 *  This version stores both, occupancy information and RGB colour data at each octree node. See the base class mrpt::slam::COctoMapBase.
+		 *  This version stores both, occupancy information and RGB colour data at each octree node. See the base class mrpt::maps::COctoMapBase.
 		 *
 		 * \sa CMetricMap, the example in "MRPT/samples/octomap_simple"
 	  	 * \ingroup mrpt_maps_grp
@@ -71,7 +68,7 @@ namespace mrpt
 
 		protected:
 
-			bool internal_insertObservation(const CObservation *obs,const CPose3D *robotPose);
+			bool internal_insertObservation(const mrpt::obs::CObservation *obs,const mrpt::poses::CPose3D *robotPose);
 
 			TColourUpdate m_colour_method;		//!Method used to updated voxels colour.
 

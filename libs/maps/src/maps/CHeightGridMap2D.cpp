@@ -9,10 +9,10 @@
 
 #include "maps-precomp.h" // Precomp header
 
-#include <mrpt/slam/CHeightGridMap2D.h>
-#include <mrpt/slam/CObservationGasSensors.h>
-#include <mrpt/slam/CObservation2DRangeScan.h>
-#include <mrpt/slam/CSimplePointsMap.h>
+#include <mrpt/maps/CHeightGridMap2D.h>
+#include <mrpt/obs/CObservationGasSensors.h>
+#include <mrpt/obs/CObservation2DRangeScan.h>
+#include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/system/os.h>
 #include <mrpt/utils/stl_serialization.h>
 #include <mrpt/utils/CTicTac.h>
@@ -21,14 +21,15 @@
 #include <mrpt/opengl/CPointCloudColoured.h>
 #include <mrpt/utils/CStream.h>
 
-using namespace mrpt::slam;
+using namespace mrpt::maps;
+using namespace mrpt::obs;
 using namespace mrpt::poses;
 using namespace mrpt::math;
 using namespace mrpt::utils;
 using namespace mrpt::system;
 using namespace std;
 
-IMPLEMENTS_SERIALIZABLE(CHeightGridMap2D, CMetricMap,mrpt::slam)
+IMPLEMENTS_SERIALIZABLE(CHeightGridMap2D, CMetricMap,mrpt::maps)
 
 
 bool mrpt::global_settings::HEIGHTGRIDMAP_EXPORT3D_AS_MESH = true;
@@ -97,7 +98,7 @@ bool  CHeightGridMap2D::internal_insertObservation(
 		// Create points map, if not created yet:
 		CPointsMap::TInsertionOptions	opts;
 		opts.minDistBetweenLaserPoints = insertionOptions.minDistBetweenPointsWhenInserting;
-		const CPointsMap	*thePoints = o->buildAuxPointsMap<mrpt::slam::CPointsMap>( &opts );
+		const CPointsMap	*thePoints = o->buildAuxPointsMap<mrpt::maps::CPointsMap>( &opts );
 
 		// And rotate to the robot pose:
 		CSimplePointsMap	thePointsMoved;

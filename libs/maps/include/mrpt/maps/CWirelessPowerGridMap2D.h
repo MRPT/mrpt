@@ -10,14 +10,14 @@
 #ifndef CWirelessPowerGridMap2D_H
 #define CWirelessPowerGridMap2D_H
 
-#include <mrpt/slam/CRandomFieldGridMap2D.h>
-#include <mrpt/slam/CObservationWirelessPower.h>
+#include <mrpt/maps/CRandomFieldGridMap2D.h>
+#include <mrpt/obs/CObservationWirelessPower.h>
 
 #include <mrpt/maps/link_pragmas.h>
 
 namespace mrpt
 {
-namespace slam
+namespace maps
 {
 	using namespace mrpt::utils;
 	using namespace mrpt::poses;
@@ -32,7 +32,7 @@ namespace slam
 	  *
 	  * Update the map with insertIndividualReading() or insertObservation()
 	  *
-	  * \sa mrpt::slam::CRandomFieldGridMap2D, mrpt::slam::CMetricMap, mrpt::utils::CDynamicGrid, The application icp-slam, mrpt::slam::CMultiMetricMap
+	  * \sa mrpt::maps::CRandomFieldGridMap2D, mrpt::maps::CMetricMap, mrpt::utils::CDynamicGrid, The application icp-slam, mrpt::maps::CMultiMetricMap
 	  * \ingroup mrpt_maps_grp
 	  */
 	class MAPS_IMPEXP CWirelessPowerGridMap2D : public CRandomFieldGridMap2D
@@ -56,7 +56,7 @@ namespace slam
 
 
 		// See docs in base class
-		double	 computeObservationLikelihood( const CObservation *obs, const CPose3D &takenFrom );
+		double	 computeObservationLikelihood( const mrpt::obs::CObservation *obs, const mrpt::poses::CPose3D &takenFrom );
 
 
 		/** Parameters related with inserting observations into the map:
@@ -112,7 +112,7 @@ namespace slam
 		  *
 		  * \sa CObservation::insertObservationInto
 		  */
-		 virtual bool  internal_insertObservation( const CObservation *obs, const CPose3D *robotPose = NULL );
+		 virtual bool  internal_insertObservation( const mrpt::obs::CObservation *obs, const mrpt::poses::CPose3D *robotPose = NULL );
 
 
 	};

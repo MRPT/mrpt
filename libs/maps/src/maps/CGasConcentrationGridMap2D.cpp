@@ -9,8 +9,8 @@
 
 #include "maps-precomp.h" // Precomp header
 
-#include <mrpt/slam/CGasConcentrationGridMap2D.h>
-#include <mrpt/slam/CObservationGasSensors.h>
+#include <mrpt/maps/CGasConcentrationGridMap2D.h>
+#include <mrpt/obs/CObservationGasSensors.h>
 #include <mrpt/math/CMatrix.h>
 #include <mrpt/math/ops_containers.h>
 #include <mrpt/utils/CTicTac.h>
@@ -29,13 +29,14 @@
 #define LUT_TABLE (*(LUT.table))
 
 using namespace mrpt;
-using namespace mrpt::slam;
+using namespace mrpt::maps;
+using namespace mrpt::obs;
 using namespace mrpt::utils;
 using namespace mrpt::poses;
 using namespace std;
 using namespace mrpt::math;
 
-IMPLEMENTS_SERIALIZABLE(CGasConcentrationGridMap2D, CRandomFieldGridMap2D,mrpt::slam)
+IMPLEMENTS_SERIALIZABLE(CGasConcentrationGridMap2D, CRandomFieldGridMap2D,mrpt::maps)
 
 /*---------------------------------------------------------------
 						Constructor

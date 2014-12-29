@@ -10,27 +10,24 @@
 #ifndef MRPT_COctoMapBase_H
 #define MRPT_COctoMapBase_H
 
-#include <mrpt/slam/CMetricMap.h>
+#include <mrpt/maps/CMetricMap.h>
 #include <mrpt/utils/CLoadableOptions.h>
 #include <mrpt/utils/safe_pointers.h>
 #include <mrpt/otherlibs/octomap/octomap.h>
 #include <mrpt/opengl/COctoMapVoxels.h>
 #include <mrpt/opengl/COpenGLScene.h>
+#include <mrpt/obs/obs_frwds.h>
 
 #include <mrpt/maps/link_pragmas.h>
 
 namespace mrpt
 {
-	namespace slam
+	namespace maps
 	{
-		class CPointsMap;
-		class CObservation2DRangeScan;
-		class CObservation3DRangeScan;
-
 		/** A three-dimensional probabilistic occupancy grid, implemented as an octo-tree with the "octomap" C++ library.
 		 *  This base class represents a 3D map where each voxel may contain an "occupancy" property, RGBD data, etc. depending on the derived class.
 		 *
-		 * As with any other mrpt::slam::CMetricMap, you can obtain a 3D representation of the map calling getAs3DObject() or getAsOctoMapVoxels()
+		 * As with any other mrpt::maps::CMetricMap, you can obtain a 3D representation of the map calling getAs3DObject() or getAsOctoMapVoxels()
 		 *
 		 * To use octomap's iterators to go through the voxels, use COctoMap::getOctomap()
 		 *
@@ -175,11 +172,11 @@ namespace mrpt
 
 
 			// See docs in base class
-			virtual double	 computeObservationLikelihood( const CObservation *obs, const CPose3D &takenFrom );
+			virtual double	 computeObservationLikelihood( const mrpt::obs::CObservation *obs, const mrpt::poses::CPose3D &takenFrom );
 
 			virtual void  saveMetricMapRepresentationToFile(const std::string	&filNamePrefix) const;
 
-			/** Options for the conversion of a mrpt::slam::COctoMap into a mrpt::opengl::COctoMapVoxels */
+			/** Options for the conversion of a mrpt::maps::COctoMap into a mrpt::opengl::COctoMapVoxels */
 			struct TRenderingOptions
 			{
 				bool  generateGridLines;       //!< Generate grid lines for all octree nodes, useful to draw the "structure" of the octree, but computationally costly (Default: false)
@@ -312,7 +309,7 @@ namespace mrpt
 			  * \param[out] ptr_scan Is in fact a pointer to "octomap::Pointcloud". Not declared as such to avoid headers dependencies in user code.
 			  * \return false if the observation kind is not applicable.
 			  */
-			bool internal_build_PointCloud_for_observation(const CObservation *obs,const CPose3D *robotPose, octomap::point3d &point3d_sensorPt, octomap::Pointcloud &ptr_scan) const;
+			bool internal_build_PointCloud_for_observation(const mrpt::obs::CObservation *obs,const mrpt::poses::CPose3D *robotPose, octomap::point3d &point3d_sensorPt, octomap::Pointcloud &ptr_scan) const;
 
 			OCTREE m_octomap; //!< The actual octo-map object.
 

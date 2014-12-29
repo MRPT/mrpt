@@ -15,17 +15,16 @@
 #include <mrpt/utils/CLoadableOptions.h>
 #include <mrpt/utils/color_maps.h>
 #include <mrpt/utils/TEnumType.h>
-#include <mrpt/slam/CMetricMap.h>
+#include <mrpt/maps/CMetricMap.h>
 #include <mrpt/maps/link_pragmas.h>
 #include <mrpt/poses/poses_frwds.h>
+#include <mrpt/obs/obs_frwds.h>
 
 namespace mrpt
 {
-	namespace slam
+	namespace maps
 	{
 		using namespace mrpt::utils;
-
-		class CObservation;
 
 		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CHeightGridMap2D, CMetricMap, MAPS_IMPEXP  )
 
@@ -83,7 +82,7 @@ namespace mrpt
 			}
 
 			/** The type of map representation to be used.
-			  *  See mrpt::slam::CHeightGridMap2D for discussion.
+			  *  See mrpt::maps::CHeightGridMap2D for discussion.
 			  */
 			enum TMapRepresentation
 			{
@@ -107,7 +106,7 @@ namespace mrpt
 			 bool  isEmpty() const;
 
 			// See docs in base class
-			double	 computeObservationLikelihood( const CObservation *obs, const CPose3D &takenFrom );
+			double	 computeObservationLikelihood( const mrpt::obs::CObservation *obs, const mrpt::poses::CPose3D &takenFrom );
 
 			/** Parameters related with inserting observations into the map.
 			  */
@@ -194,7 +193,7 @@ namespace mrpt
 			  *
 			  * \sa CObservation::insertObservationInto
 			  */
-			 virtual bool  internal_insertObservation( const CObservation *obs, const CPose3D *robotPose = NULL );
+			 virtual bool  internal_insertObservation( const mrpt::obs::CObservation *obs, const mrpt::poses::CPose3D *robotPose = NULL );
 
 		};
 		DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE( CHeightGridMap2D, CMetricMap, MAPS_IMPEXP  )
@@ -204,7 +203,7 @@ namespace mrpt
 
 	namespace global_settings
 	{
-		/** If set to true (default), mrpt::slam::CHeightGridMap2D will be exported as a opengl::CMesh, otherwise, as a opengl::CPointCloudColoured
+		/** If set to true (default), mrpt::maps::CHeightGridMap2D will be exported as a opengl::CMesh, otherwise, as a opengl::CPointCloudColoured
 		  * Affects to:
 		  *		- CHeightGridMap2D::getAs3DObject
 		  */
@@ -215,12 +214,12 @@ namespace mrpt
 	namespace utils
 	{
 		template <>
-		struct TEnumTypeFiller<slam::CHeightGridMap2D::TMapRepresentation>
+		struct TEnumTypeFiller<maps::CHeightGridMap2D::TMapRepresentation>
 		{
-			typedef slam::CHeightGridMap2D::TMapRepresentation enum_t;
+			typedef maps::CHeightGridMap2D::TMapRepresentation enum_t;
 			static void fill(bimap<enum_t,std::string>  &m_map)
 			{
-				m_map.insert(slam::CHeightGridMap2D::mrSimpleAverage,     "mrSimpleAverage");
+				m_map.insert(maps::CHeightGridMap2D::mrSimpleAverage,     "mrSimpleAverage");
 			}
 		};
 	} // End of namespace

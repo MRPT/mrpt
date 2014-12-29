@@ -18,6 +18,8 @@ namespace mrpt
 		class CSensoryFrame; struct CSensoryFramePtr;
 		class CObservation2DRangeScan;
 		class CObservation3DRangeScan;
+		class CObservationRange;
+		class CObservationBeaconRanges;
 	}
 	namespace maps
 	{

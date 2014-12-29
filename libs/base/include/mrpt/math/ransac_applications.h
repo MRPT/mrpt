@@ -55,7 +55,7 @@ namespace mrpt
 			);
 
 
-		/** A stub for ransac_detect_3D_planes() with the points given as a mrpt::slam::CPointsMap
+		/** A stub for ransac_detect_3D_planes() with the points given as a mrpt::maps::CPointsMap
 		  */
 		template <class POINTSMAP>
 		inline void ransac_detect_3D_planes(

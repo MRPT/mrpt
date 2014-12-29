@@ -174,7 +174,7 @@
 				- mrpt::system::breakpoint()
 				- mrpt::vector_float is now mrpt::math::CVectorFloat, mrpt::vector_double is mrpt::math::CVectorDouble, for name consistency. Also, using Eigen::VectorXf is preferred for new code.
 				- mrpt::CImage::rectifyImage() with parameters as separate vectors.
-				- mrpt::slam::CPointsMap::getPoint() with mrpt::poses::CPoint3D arguments.
+				- mrpt::maps::CPointsMap::getPoint() with mrpt::poses::CPoint3D arguments.
 				- mrpt::vision::correctDistortion() -> use CImage method instead
 				- All previous deprecated functions.
 			- Embedded Eigen updated to version 3.2.1 [(commit)](https://github.com/jlblancoc/mrpt/commit/47913da94a27e98a9115f85b2a530b6c14a10b8f) [(commit)](https://github.com/jlblancoc/mrpt/commit/33258761d3b75bf133d38aecb257c64e4d76b21e)
@@ -227,8 +227,8 @@
 			- New structures:
 				- mrpt::slam::TMatchingParams
 				- mrpt::slam::TMatchingExtraResults
-		- mrpt::slam::CPointsMap::TInsertionOptions now have methods to save/load from binary streams, making more maintainable the serialization of point maps - [(commit)](https://github.com/jlblancoc/mrpt/commit/544d439c3462228b07344142de68e5bc10c1a2e3)
-		- New options in point maps: mrpt::slam::CPointsMap::TInsertionOptions::insertInvalidPoints - [(commit)](https://github.com/jlblancoc/mrpt/pull/8)
+		- mrpt::maps::CPointsMap::TInsertionOptions now have methods to save/load from binary streams, making more maintainable the serialization of point maps - [(commit)](https://github.com/jlblancoc/mrpt/commit/544d439c3462228b07344142de68e5bc10c1a2e3)
+		- New options in point maps: mrpt::maps::CPointsMap::TInsertionOptions::insertInvalidPoints - [(commit)](https://github.com/jlblancoc/mrpt/pull/8)
 		- mrpt::slam::CObservationIMU now includes data fields for 3D magnetometers and altimeters. - [(commit)](http://code.google.com/p/mrpt/source/detail?r=3451)
 		- Method renamed mrpt::utils::CEnhancedMetaFile::selectVectorTextFont() to avoid shadowing mrpt::utils::CCanvas::selectTextFont()
 		- mrpt::reactivenav::CParameterizedTrajectoryGenerator: New methods:
@@ -435,12 +435,12 @@
 				- New static method mrpt::hwdrivers::CGPSInterface::parse_NMEA()
 			- [mrpt-maps]
 				- Better integration of point cloud classes with PCL: - <a href="http://code.google.com/p/mrpt/source/detail?r=2943" >r2943</a>
-					- mrpt::slam::CPointsMap::loadPCDFile()
-					- mrpt::slam::CPointsMap::setFromPCLPointCloud()
+					- mrpt::maps::CPointsMap::loadPCDFile()
+					- mrpt::maps::CPointsMap::setFromPCLPointCloud()
 					- mrpt::slam::CColouredPointsMap::setFromPCLPointCloudRGB()
 				- Point cloud loading & saving in the standard ASPRS LiDAR LAS format (if liblas is installed in the system, see http://www.liblas.org/ ). See also the ready-to-use import menu in SceneViewer3D - <a href="http://code.google.com/p/mrpt/source/detail?r=3244" >r3244</a>
-					- mrpt::slam::CPointsMap::loadLASFile()
-					- mrpt::slam::CPointsMap::saveLASFile()
+					- mrpt::maps::CPointsMap::loadLASFile()
+					- mrpt::maps::CPointsMap::saveLASFile()
 				- Integration of wind measurements in gas-concentration maps (by Javier G. Monroy) - <a href="http://code.google.com/p/mrpt/source/detail?r=3050" >r3050</a>
 			- [mrpt-obs]
 				- New method mrpt::slam::CObservationGPS::clear()

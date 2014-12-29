@@ -7,18 +7,18 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-// This file is to be included from <mrpt/slam/COctoMapBase.h>
+// This file is to be included from <mrpt/maps/COctoMapBase.h>
 #include <mrpt/utils/CFileOutputStream.h>
-#include <mrpt/slam/CObservation2DRangeScan.h>
-#include <mrpt/slam/CObservation3DRangeScan.h>
-#include <mrpt/slam/CPointsMap.h>
+#include <mrpt/obs/CObservation2DRangeScan.h>
+#include <mrpt/obs/CObservation3DRangeScan.h>
+#include <mrpt/maps/CPointsMap.h>
 
 namespace mrpt
 {
-	namespace slam
+	namespace maps
 	{
 		template <class OCTREE,class OCTREE_NODE>
-		bool COctoMapBase<OCTREE,OCTREE_NODE>::internal_build_PointCloud_for_observation(const CObservation *obs,const mrpt::poses::CPose3D *robotPose, octomap::point3d &sensorPt, octomap::Pointcloud &scan) const
+		bool COctoMapBase<OCTREE,OCTREE_NODE>::internal_build_PointCloud_for_observation(const mrpt::obs::CObservation *obs,const mrpt::poses::CPose3D *robotPose, octomap::point3d &sensorPt, octomap::Pointcloud &scan) const
 		{
 			using namespace mrpt::poses;
 
@@ -42,7 +42,7 @@ namespace mrpt
 				sensorPose.composeFrom(robotPose3D,o->sensorPose);
 				sensorPt = octomap::point3d(sensorPose.x(),sensorPose.y(),sensorPose.z());
 
-				const CPointsMap *scanPts = o->buildAuxPointsMap<mrpt::slam::CPointsMap>();
+				const CPointsMap *scanPts = o->buildAuxPointsMap<mrpt::maps::CPointsMap>();
 				const size_t nPts = scanPts->size();
 
 				// Transform 3D point cloud:
@@ -160,7 +160,7 @@ namespace mrpt
 		}
 
 		template <class OCTREE,class OCTREE_NODE>
-		double COctoMapBase<OCTREE,OCTREE_NODE>::computeObservationLikelihood( const CObservation *obs, const CPose3D &takenFrom )
+		double COctoMapBase<OCTREE,OCTREE_NODE>::computeObservationLikelihood( const mrpt::obs::CObservation *obs, const mrpt::poses::CPose3D &takenFrom )
 		{
 			octomap::point3d     sensorPt;
 			octomap::Pointcloud  scan;

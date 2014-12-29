@@ -10,27 +10,25 @@
 #ifndef MRPT_COctoMap_H
 #define MRPT_COctoMap_H
 
-#include <mrpt/slam/COctoMapBase.h>
+#include <mrpt/maps/COctoMapBase.h>
 
-#include <mrpt/slam/CMetricMap.h>
+#include <mrpt/maps/CMetricMap.h>
 #include <mrpt/utils/CLoadableOptions.h>
 #include <mrpt/utils/safe_pointers.h>
 #include <mrpt/otherlibs/octomap/octomap.h>
+#include <mrpt/obs/obs_frwds.h>
 
 #include <mrpt/maps/link_pragmas.h>
 
 namespace mrpt
 {
-	namespace slam
+	namespace maps
 	{
-		class CPointsMap;
-		class CObservation2DRangeScan;
-		class CObservation3DRangeScan;
 
 		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( COctoMap , CMetricMap, MAPS_IMPEXP )
 
 		/** A three-dimensional probabilistic occupancy grid, implemented as an octo-tree with the "octomap" C++ library.
-		 *  This version only stores occupancy information at each octree node. See the base class mrpt::slam::COctoMapBase.
+		 *  This version only stores occupancy information at each octree node. See the base class mrpt::maps::COctoMapBase.
 		 *
 		 * \sa CMetricMap, the example in "MRPT/samples/octomap_simple"
 	  	 * \ingroup mrpt_maps_grp
@@ -47,7 +45,7 @@ namespace mrpt
 			virtual void getAsOctoMapVoxels(mrpt::opengl::COctoMapVoxels &gl_obj) const;
 
 		protected:
-			bool internal_insertObservation(const CObservation *obs,const CPose3D *robotPose);
+			bool internal_insertObservation(const mrpt::obs::CObservation *obs,const mrpt::poses::CPose3D *robotPose);
 
 		}; // End of class def.
 		DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE( COctoMap , CMetricMap, MAPS_IMPEXP )

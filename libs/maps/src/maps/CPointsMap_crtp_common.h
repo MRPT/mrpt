@@ -10,12 +10,12 @@
 #define cpointsmap_crtp_common_H
 
 #include <mrpt/utils/round.h>
-#include <mrpt/slam/CObservation3DRangeScan.h>
-#include <mrpt/slam/CObservation2DRangeScan.h>
+#include <mrpt/obs/CObservation3DRangeScan.h>
+#include <mrpt/obs/CObservation2DRangeScan.h>
 
 namespace mrpt
 {
-namespace slam
+namespace maps
 {
 namespace detail
 {
@@ -26,8 +26,9 @@ namespace detail
 		static inline void  templ_loadFromRangeScan(
 			Derived &obj,
 			const CObservation2DRangeScan		&rangeScan,
-			const CPose3D						*robotPose )
+			const mrpt::poses::CPose3D			*robotPose )
 		{
+			using namespace mrpt::poses;
 			obj.mark_as_modified();
 
 			// If robot pose is supplied, compute sensor pose relative to it.
@@ -53,7 +54,7 @@ namespace detail
 
 			// GENERAL CASE OF SCAN WITH ARBITRARY 3D ORIENTATION:
 			//  Specialize a bit the equations since we know that z=0 always for the scan in local coordinates:
-			mrpt::slam::CPointsMap::TLaserRange2DInsertContext  lric(rangeScan);
+			mrpt::maps::CPointsMap::TLaserRange2DInsertContext  lric(rangeScan);
 			sensorPose3D.getHomogeneousMatrix(lric.HM);
 
 			// For quicker access as "float" numbers:
@@ -297,8 +298,8 @@ namespace detail
 
 		static inline void  templ_loadFromRangeScan(
 			Derived &obj,
-			const CObservation3DRangeScan		&rangeScan,
-			const CPose3D						*robotPose )
+			const mrpt::obs::CObservation3DRangeScan		&rangeScan,
+			const mrpt::poses::CPose3D						*robotPose )
 		{
 			obj.mark_as_modified();
 
@@ -324,7 +325,7 @@ namespace detail
 
 			// GENERAL CASE OF SCAN WITH ARBITRARY 3D ORIENTATION:
 			// --------------------------------------------------------------------------
-			mrpt::slam::CPointsMap::TLaserRange3DInsertContext  lric(rangeScan);
+			mrpt::maps::CPointsMap::TLaserRange3DInsertContext  lric(rangeScan);
 			sensorPose3D.getHomogeneousMatrix(lric.HM);
 			// For quicker access to values as "float" instead of "doubles":
 			float		m00 = lric.HM.get_unsafe(0,0);

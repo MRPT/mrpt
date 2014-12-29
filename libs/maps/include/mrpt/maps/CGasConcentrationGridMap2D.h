@@ -10,14 +10,14 @@
 #ifndef CGasConcentrationGridMap2D_H
 #define CGasConcentrationGridMap2D_H
 
-#include <mrpt/slam/CRandomFieldGridMap2D.h>
-#include <mrpt/slam/CObservationGasSensors.h>
+#include <mrpt/maps/CRandomFieldGridMap2D.h>
+#include <mrpt/obs/CObservationGasSensors.h>
 
 #include <mrpt/maps/link_pragmas.h>
 
 namespace mrpt
 {
-namespace slam
+namespace maps
 {
 	using namespace mrpt::utils;
 	using namespace mrpt::poses;
@@ -31,11 +31,11 @@ namespace slam
 	/** CGasConcentrationGridMap2D represents a PDF of gas concentrations over a 2D area.
 	  *
 	  *  There are a number of methods available to build the gas grid-map, depending on the value of
-	  *    "TMapRepresentation maptype" passed in the constructor (see base class mrpt::slam::CRandomFieldGridMap2D).
+	  *    "TMapRepresentation maptype" passed in the constructor (see base class mrpt::maps::CRandomFieldGridMap2D).
 	  *
 	  * Update the map with insertIndividualReading() or insertObservation()
 	  *
-	  * \sa mrpt::slam::CRandomFieldGridMap2D, mrpt::slam::CMetricMap, mrpt::utils::CDynamicGrid, The application icp-slam, mrpt::slam::CMultiMetricMap
+	  * \sa mrpt::maps::CRandomFieldGridMap2D, mrpt::maps::CMetricMap, mrpt::utils::CDynamicGrid, The application icp-slam, mrpt::maps::CMultiMetricMap
 	  * \ingroup mrpt_maps_grp
 	  */
 	class MAPS_IMPEXP CGasConcentrationGridMap2D : public CRandomFieldGridMap2D
@@ -59,7 +59,7 @@ namespace slam
 		virtual ~CGasConcentrationGridMap2D();
 
 		// See docs in base class
-		virtual double	 computeObservationLikelihood( const CObservation *obs, const CPose3D &takenFrom );
+		virtual double	 computeObservationLikelihood( const mrpt::obs::CObservation *obs, const mrpt::poses::CPose3D &takenFrom );
 
 
 		/** Parameters related with inserting observations into the map:
@@ -175,7 +175,7 @@ namespace slam
 		  *
 		  * \sa CObservation::insertObservationInto
 		  */
-		 virtual bool  internal_insertObservation( const CObservation *obs, const CPose3D *robotPose = NULL );
+		 virtual bool  internal_insertObservation( const mrpt::obs::CObservation *obs, const mrpt::poses::CPose3D *robotPose = NULL );
 
 		 /** Builds a LookUp table with the values of the Gaussian Weights result of the wind advection
 		 *   for a specific std_windNoise_phi value.
@@ -187,7 +187,7 @@ namespace slam
 
 		 /** Gridmaps of the wind Direction/Module.
 		  */
-		 mrpt::slam::CDynamicGrid<double> windGrid_module, windGrid_direction;
+		 mrpt::maps::CDynamicGrid<double> windGrid_module, windGrid_direction;
 
 		 /** The timestamp of the last time the advection simulation was executed */
 		 mrpt::system::TTimeStamp timeLastSimulated;

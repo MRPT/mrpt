@@ -12,10 +12,10 @@
 
 #include <mrpt/opengl/CRenderizableDisplayList.h>
 
-#include <mrpt/slam/CMetricMap.h>
-#include <mrpt/slam/CObservation.h>
-#include <mrpt/slam/CObservation2DRangeScan.h>
-#include <mrpt/slam/CSimplePointsMap.h>
+#include <mrpt/maps/CMetricMap.h>
+#include <mrpt/obs/CObservation.h>
+#include <mrpt/obs/CObservation2DRangeScan.h>
+#include <mrpt/maps/CSimplePointsMap.h>
 
 
 namespace mrpt
@@ -54,8 +54,8 @@ namespace mrpt
 		{
 			DEFINE_SERIALIZABLE( CPlanarLaserScan )
 		protected:
-			mrpt::slam::CObservation2DRangeScan	m_scan;
-			mutable mrpt::slam::CSimplePointsMap		m_cache_points;
+			mrpt::obs::CObservation2DRangeScan	m_scan;
+			mutable mrpt::maps::CSimplePointsMap		m_cache_points;
 			mutable bool	m_cache_valid;
 
 
@@ -110,7 +110,7 @@ namespace mrpt
 				m_plane_A=A;
 			}
 
-			void setScan( const mrpt::slam::CObservation2DRangeScan	&scan)
+			void setScan( const mrpt::obs::CObservation2DRangeScan	&scan)
 			{
 				CRenderizableDisplayList::notifyChange();
 				m_cache_valid = false;

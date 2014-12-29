@@ -9,33 +9,31 @@
 #ifndef CSimplePointsMap_H
 #define CSimplePointsMap_H
 
-#include <mrpt/slam/CPointsMap.h>
+#include <mrpt/maps/CPointsMap.h>
 #include <mrpt/utils/CSerializable.h>
 #include <mrpt/math/CMatrix.h>
+#include <mrpt/obs/obs_frwds.h>
 
 #include <mrpt/maps/link_pragmas.h>
 
 namespace mrpt
 {
-	namespace slam
+	namespace maps
 	{
-		class CObservation2DRangeScan;
-		class CObservation3DRangeScan;
-
-		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( mrpt::maps::CSimplePointsMap , CPointsMap, MAPS_IMPEXP )
+		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CSimplePointsMap , CPointsMap, MAPS_IMPEXP )
 
 		/** A cloud of points in 2D or 3D, which can be built from a sequence of laser scans.
 		 *    This class only stores the coordinates (x,y,z) of each point.
 		 *
-		 *  See mrpt::slam::CPointsMap and derived classes for other point cloud classes.
+		 *  See mrpt::maps::CPointsMap and derived classes for other point cloud classes.
 		 *
 		 * \sa CMetricMap, CWeightedPointsMap, CPoint, mrpt::utils::CSerializable
 	  	 * \ingroup mrpt_maps_grp
 		 */
-		class MAPS_IMPEXP mrpt::maps::CSimplePointsMap : public CPointsMap
+		class MAPS_IMPEXP CSimplePointsMap : public CPointsMap
 		{
 			// This must be added to any CSerializable derived class:
-			DEFINE_SERIALIZABLE( mrpt::maps::CSimplePointsMap )
+			DEFINE_SERIALIZABLE( CSimplePointsMap )
 
 		 public:
 			 CSimplePointsMap();          //!< Default constructor
@@ -143,17 +141,17 @@ namespace mrpt
 			/** @} */
 
 		}; // End of class def.
-		DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE( mrpt::maps::CSimplePointsMap , CPointsMap, MAPS_IMPEXP )
+		DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE( CSimplePointsMap , CPointsMap, MAPS_IMPEXP )
 	} // End of namespace
 	
 	namespace utils
 	{
-		/** Specialization mrpt::utils::PointCloudAdapter<mrpt::slam::CSimplePointsMap>  \ingroup mrpt_adapters_grp*/
+		/** Specialization mrpt::utils::PointCloudAdapter<mrpt::maps::CSimplePointsMap>  \ingroup mrpt_adapters_grp*/
 		template <>
-		class PointCloudAdapter<mrpt::slam::CSimplePointsMap> : public detail::PointCloudAdapterHelperNoRGB<mrpt::slam::CSimplePointsMap,float>
+		class PointCloudAdapter<mrpt::maps::CSimplePointsMap> : public detail::PointCloudAdapterHelperNoRGB<mrpt::maps::CSimplePointsMap,float>
 		{
 		private:
-			mrpt::slam::CSimplePointsMap &m_obj;
+			mrpt::maps::CSimplePointsMap &m_obj;
 		public:
 			typedef float  coords_t;         //!< The type of each point XYZ coordinates
 			static const int HAS_RGB   = 0;  //!< Has any color RGB info?
@@ -161,7 +159,7 @@ namespace mrpt
 			static const int HAS_RGBu8 = 0;  //!< Has native RGB info (as uint8_t)?
 
 			/** Constructor (accept a const ref for convenience) */
-			inline PointCloudAdapter(const mrpt::slam::CSimplePointsMap &obj) : m_obj(*const_cast<mrpt::slam::CSimplePointsMap*>(&obj)) { }
+			inline PointCloudAdapter(const mrpt::maps::CSimplePointsMap &obj) : m_obj(*const_cast<mrpt::maps::CSimplePointsMap*>(&obj)) { }
 			/** Get number of points */
 			inline size_t size() const { return m_obj.size(); }
 			/** Set number of points (to uninitialized values) */
@@ -176,7 +174,7 @@ namespace mrpt
 			inline void setPointXYZ(const size_t idx, const coords_t x,const coords_t y, const coords_t z) {
 				m_obj.setPointFast(idx,x,y,z);
 			}
-		}; // end of PointCloudAdapter<mrpt::slam::CPointsMap>
+		}; // end of PointCloudAdapter<mrpt::maps::CPointsMap>
 
 	}
 	

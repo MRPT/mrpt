@@ -14,11 +14,12 @@
 #include <mrpt/utils/CStream.h>
 #include <mrpt/utils/CEnhancedMetaFile.h>
 #include <mrpt/utils/round.h> // round()
-#include <mrpt/slam/COccupancyGridMap2D.h>
+#include <mrpt/maps/COccupancyGridMap2D.h>
 #include <mrpt/random.h>
 
 using namespace mrpt;
-using namespace mrpt::slam;
+using namespace mrpt::maps;
+using namespace mrpt::obs;
 using namespace mrpt::random;
 using namespace mrpt::utils;
 using namespace mrpt::poses;

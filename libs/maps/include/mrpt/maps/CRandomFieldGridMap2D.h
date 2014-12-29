@@ -16,8 +16,8 @@
 #include <mrpt/math/CMatrixD.h>
 #include <mrpt/utils/CLoadableOptions.h>
 #include <mrpt/utils/TEnumType.h>
-#include <mrpt/slam/CMetricMap.h>
-#include <mrpt/slam/COccupancyGridMap2D.h>
+#include <mrpt/maps/CMetricMap.h>
+#include <mrpt/maps/COccupancyGridMap2D.h>
 
 #include <mrpt/maps/link_pragmas.h>
 
@@ -28,7 +28,7 @@
 
 namespace mrpt
 {
-namespace slam
+namespace maps
 {
 	using namespace mrpt::utils;
 	using namespace mrpt::poses;
@@ -100,16 +100,16 @@ namespace slam
 	  *			- "A Statistical Approach to Gas Distribution Modelling with Mobile Robots--The Kernel DM+ V Algorithm", Lilienthal, A.J. and Reggente, M. and Trincavelli, M. and Blanco, J.L. and Gonzalez, J., IROS 2009.
 	  *		- mrKalmanFilter: A "brute-force" approach to estimate the entire map with a dense (linear) Kalman filter. Will be very slow for mid or large maps. It's provided just for comparison purposes, not useful in practice.
 	  *		- mrKalmanApproximate: A compressed/sparse Kalman filter approach. See:
-	  *			- "A Kalman Filter Based Approach to Probabilistic Gas Distribution Mapping", JL Blanco, JG Monroy, J González-Jimenez, A Lilienthal, 28th Symposium On Applied Computing (SAC), 2013.
+	  *			- "A Kalman Filter Based Approach to Probabilistic Gas Distribution Mapping", JL Blanco, JG Monroy, J Gonzalez-Jimenez, A Lilienthal, 28th Symposium On Applied Computing (SAC), 2013.
 	  *		- mrGMRF: Time-Varying Gas Distribution Mapping with a Sparse MArkov Random Field estimator. See: 
 	  *			- (under review)
 	  *
 	  *  Note that this class is virtual, since derived classes still have to implement:
-	  *		- mrpt::slam::CMetricMap::computeObservationLikelihood()
-	  *		- mrpt::slam::CMetricMap::internal_insertObservation()
+	  *		- mrpt::maps::CMetricMap::computeObservationLikelihood()
+	  *		- mrpt::maps::CMetricMap::internal_insertObservation()
 	  *		- Serialization methods: writeToStream() and readFromStream()
 	  *
-	  * \sa mrpt::slam::CGasConcentrationGridMap2D, mrpt::slam::CWirelessPowerGridMap2D, mrpt::slam::CMetricMap, mrpt::utils::CDynamicGrid, The application icp-slam, mrpt::slam::CMultiMetricMap
+	  * \sa mrpt::maps::CGasConcentrationGridMap2D, mrpt::maps::CWirelessPowerGridMap2D, mrpt::maps::CMetricMap, mrpt::utils::CDynamicGrid, The application icp-slam, mrpt::maps::CMultiMetricMap
 	  * \ingroup mrpt_maps_grp
 	  */
 	class CRandomFieldGridMap2D : public CMetricMap, public utils::CDynamicGrid<TRandomFieldCell>
@@ -410,7 +410,7 @@ namespace slam
 
 		/** Check if two cells of the gridmap (m_map) are connected, based on the provided occupancy gridmap*/
 		bool exist_relation_between2cells(
-			const mrpt::slam::COccupancyGridMap2D *m_Ocgridmap,
+			const mrpt::maps::COccupancyGridMap2D *m_Ocgridmap,
 			size_t cxo_min, 
 			size_t cxo_max, 
 			size_t cyo_min, 
@@ -430,18 +430,18 @@ namespace slam
 	namespace utils
 	{
 		template <>
-		struct TEnumTypeFiller<slam::CRandomFieldGridMap2D::TMapRepresentation>
+		struct TEnumTypeFiller<maps::CRandomFieldGridMap2D::TMapRepresentation>
 		{
-			typedef slam::CRandomFieldGridMap2D::TMapRepresentation enum_t;
+			typedef maps::CRandomFieldGridMap2D::TMapRepresentation enum_t;
 			static void fill(bimap<enum_t,std::string>  &m_map)
 			{
-				m_map.insert(slam::CRandomFieldGridMap2D::mrKernelDM,          "mrKernelDM");
-				m_map.insert(slam::CRandomFieldGridMap2D::mrKalmanFilter,      "mrKalmanFilter");
-				m_map.insert(slam::CRandomFieldGridMap2D::mrKalmanApproximate, "mrKalmanApproximate");
-				m_map.insert(slam::CRandomFieldGridMap2D::mrKernelDMV,         "mrKernelDMV");
-				m_map.insert(slam::CRandomFieldGridMap2D::mrGMRF_G,			   "mrGMRF_G");
-				m_map.insert(slam::CRandomFieldGridMap2D::mrGMRF_SD,		   "mrGMRF_SD");
-				m_map.insert(slam::CRandomFieldGridMap2D::mrGMRF_L,			   "mrGMRF_L");
+				m_map.insert(maps::CRandomFieldGridMap2D::mrKernelDM,          "mrKernelDM");
+				m_map.insert(maps::CRandomFieldGridMap2D::mrKalmanFilter,      "mrKalmanFilter");
+				m_map.insert(maps::CRandomFieldGridMap2D::mrKalmanApproximate, "mrKalmanApproximate");
+				m_map.insert(maps::CRandomFieldGridMap2D::mrKernelDMV,         "mrKernelDMV");
+				m_map.insert(maps::CRandomFieldGridMap2D::mrGMRF_G,			   "mrGMRF_G");
+				m_map.insert(maps::CRandomFieldGridMap2D::mrGMRF_SD,		   "mrGMRF_SD");
+				m_map.insert(maps::CRandomFieldGridMap2D::mrGMRF_L,			   "mrGMRF_L");
 			}
 		};
 	} // End of namespace

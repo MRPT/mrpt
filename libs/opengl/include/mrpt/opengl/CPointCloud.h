@@ -26,14 +26,14 @@ namespace mrpt
 
 
 		/** A cloud of points, all with the same color or each depending on its value along a particular coordinate axis.
-		  *  This class is just an OpenGL representation of a point cloud. For operating with maps of points, see mrpt::slam::CPointsMap and derived classes.
+		  *  This class is just an OpenGL representation of a point cloud. For operating with maps of points, see mrpt::maps::CPointsMap and derived classes.
 		  *
 		  *  To load from a points-map, CPointCloud::loadFromPointsMap().
 		  *
 		  *   This class uses smart optimizations while rendering to efficiently draw clouds of millions of points,
 		  *   as described in this page: http://www.mrpt.org/Efficiently_rendering_point_clouds_of_millions_of_points
 		  *
-		  *  \sa opengl::CPlanarLaserScan, opengl::COpenGLScene, opengl::CPointCloudColoured, mrpt::slam::CPointsMap
+		  *  \sa opengl::CPlanarLaserScan, opengl::COpenGLScene, opengl::CPointCloudColoured, mrpt::maps::CPointsMap
 		  *
 		  *  <div align="center">
 		  *  <table border="0" cellspan="4" cellspacing="4" style="border-width: 1px; border-style: solid;">

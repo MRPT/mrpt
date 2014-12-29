@@ -9,10 +9,10 @@
 
 #include "maps-precomp.h" // Precomp header
 
-#include <mrpt/slam/CColouredOctoMap.h>
-#include <mrpt/slam/CPointsMap.h>
-#include <mrpt/slam/CObservation2DRangeScan.h>
-#include <mrpt/slam/CObservation3DRangeScan.h>
+#include <mrpt/maps/CColouredOctoMap.h>
+#include <mrpt/maps/CPointsMap.h>
+#include <mrpt/obs/CObservation2DRangeScan.h>
+#include <mrpt/obs/CObservation3DRangeScan.h>
 
 #include <mrpt/opengl/COctoMapVoxels.h>
 #include <mrpt/opengl/COpenGLScene.h>
@@ -24,13 +24,14 @@
 
 using namespace std;
 using namespace mrpt;
-using namespace mrpt::slam;
+using namespace mrpt::maps;
+using namespace mrpt::obs;
 using namespace mrpt::utils;
 using namespace mrpt::poses;
 using namespace mrpt::opengl;
 using namespace mrpt::math;
 
-IMPLEMENTS_SERIALIZABLE(CColouredOctoMap, CMetricMap,mrpt::slam)
+IMPLEMENTS_SERIALIZABLE(CColouredOctoMap, CMetricMap,mrpt::maps)
 
 /*---------------------------------------------------------------
 						Constructor
@@ -110,7 +111,7 @@ void  CColouredOctoMap::readFromStream(CStream &in, int version)
 /*---------------------------------------------------------------
 				insertObservation
  ---------------------------------------------------------------*/
-bool CColouredOctoMap::internal_insertObservation(const CObservation *obs,const CPose3D *robotPose)
+bool CColouredOctoMap::internal_insertObservation(const mrpt::obs::CObservation *obs,const CPose3D *robotPose)
 {
 	octomap::point3d     sensorPt;
 	octomap::Pointcloud  scan;
@@ -133,7 +134,7 @@ bool CColouredOctoMap::internal_insertObservation(const CObservation *obs,const 
 		sensorPose.composeFrom(robotPose3D,o->sensorPose);
 		sensorPt = octomap::point3d(sensorPose.x(),sensorPose.y(),sensorPose.z());
 
-		const CPointsMap *scanPts = o->buildAuxPointsMap<mrpt::slam::CPointsMap>();
+		const CPointsMap *scanPts = o->buildAuxPointsMap<mrpt::maps::CPointsMap>();
 		const size_t nPts = scanPts->size();
 
 		// Transform 3D point cloud:

@@ -9,8 +9,8 @@
 
 #include "maps-precomp.h" // Precomp header
 
-#include <mrpt/slam/CPointsMap.h>
-#include <mrpt/slam/CSimplePointsMap.h>
+#include <mrpt/maps/CPointsMap.h>
+#include <mrpt/maps/CSimplePointsMap.h>
 
 #if MRPT_HAS_LIBLAS
 #   include <liblas/liblas.hpp>
@@ -18,7 +18,8 @@
 #	include <liblas/laswriter.hpp>
 #endif
 
-using namespace mrpt::slam;
+using namespace mrpt::maps;
+using namespace mrpt::obs;
 using namespace std;
 
 /*---------------------------------------------------------------

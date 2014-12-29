@@ -9,14 +9,15 @@
 #ifndef CPOINTSMAP_H
 #define CPOINTSMAP_H
 
-#include <mrpt/slam/CMetricMap.h>
+#include <mrpt/maps/CMetricMap.h>
 #include <mrpt/utils/CSerializable.h>
 #include <mrpt/utils/CLoadableOptions.h>
 #include <mrpt/utils/safe_pointers.h>
 #include <mrpt/math/KDTreeCapable.h>
-#include <mrpt/slam/CSinCosLookUpTableFor2DScans.h>
+#include <mrpt/obs/CSinCosLookUpTableFor2DScans.h>
 #include <mrpt/math/lightweight_geom_data.h>
 #include <mrpt/utils/PLY_import_export.h>
+#include <mrpt/obs/obs_frwds.h>
 
 #include <mrpt/maps/link_pragmas.h>
 #include <mrpt/utils/adapters.h>
@@ -24,13 +25,8 @@
 namespace mrpt
 {
 /** \ingroup mrpt_maps_grp */
-namespace slam
+namespace maps
 {
-	// Fordward declarations:
-	class CSimplePointsMap;
-	class CObservation2DRangeScan;
-	class CObservation3DRangeScan;
-
 	using namespace mrpt::poses;
 	using namespace mrpt::math;
 
@@ -46,10 +42,10 @@ namespace slam
 	/** A cloud of points in 2D or 3D, which can be built from a sequence of laser scans or other sensors.
 	 *  This is a virtual class, thus only a derived class can be instantiated by the user. The user most usually wants to use CSimplePointsMap.
 	 *
-	 *  This class implements generic version of mrpt::slam::CMetric::insertObservation() accepting these types of sensory data:
-	 *		- mrpt::slam::CObservation2DRangeScan: 2D range scans
-	 *		- mrpt::slam::CObservation3DRangeScan: 3D range scans (Kinect, etc...)
-	 *		- mrpt::slam::CObservationRange: IRs, Sonars, etc.
+	 *  This class implements generic version of mrpt::maps::CMetric::insertObservation() accepting these types of sensory data:
+	 *		- mrpt::obs::CObservation2DRangeScan: 2D range scans
+	 *		- mrpt::obs::CObservation3DRangeScan: 3D range scans (Kinect, etc...)
+	 *		- mrpt::obs::CObservationRange: IRs, Sonars, etc.
 	 *
 	 * If built against liblas, this class also provides method for loading and saving in the standard LAS LiDAR point cloud format: saveLASFile(), loadLASFile()
 	 *
@@ -58,7 +54,7 @@ namespace slam
 	 */
 	class MAPS_IMPEXP CPointsMap :
 		public CMetricMap,
-		public mrpt::utils::KDTreeCapable<CPointsMap>,
+		public mrpt::math::KDTreeCapable<CPointsMap>,
 		public mrpt::utils::PLY_Importer,
 		public mrpt::utils::PLY_Exporter
 	{
@@ -319,7 +315,7 @@ namespace slam
 		virtual bool saveLASFile(const std::string &filename, const LAS_WriteParams & params = LAS_WriteParams() ) const;
 
 		/** Load the point cloud from an ASPRS LAS binary file (requires MRPT built against liblas). Refer to http://www.liblas.org/
-		  * \note Color (RGB) information will be taken into account if using the derived class mrpt::slam::CColouredPointsMap
+		  * \note Color (RGB) information will be taken into account if using the derived class mrpt::maps::CColouredPointsMap
 		  * \return false on any error */
 		virtual bool loadLASFile(const std::string &filename, LAS_HeaderInfo &out_headerInfo, const LAS_LoadParams &params = LAS_LoadParams() );
 
@@ -537,7 +533,7 @@ namespace slam
 		// See docs in base class
 		virtual void  determineMatching3D(
 			const CMetricMap      * otherMap,
-			const CPose3D         & otherMapPose,
+			const mrpt::poses::CPose3D         & otherMapPose,
 			TMatchingPairList     & correspondences,
 			const TMatchingParams & params,
 			TMatchingExtraResults & extraResults ) const;
@@ -578,7 +574,7 @@ namespace slam
 		  *  Only ranges marked as "valid=true" in the observation will be inserted
 		  *
 		  *  \note Each derived class may enrich points in different ways (color, weight, etc..), so please refer to the description of the specific
-		  *         implementation of mrpt::slam::CPointsMap you are using.
+		  *         implementation of mrpt::maps::CPointsMap you are using.
 		  *  \note The actual generic implementation of this file lives in <src>/CPointsMap_crtp_common.h, but specific instantiations are generated at each derived class.
 		  *
 		  * \sa CObservation2DRangeScan, CObservation3DRangeScan
@@ -593,12 +589,12 @@ namespace slam
 		  * \param robotPose The robot 3D pose, default to (0,0,0|0deg,0deg,0deg). It is used to compute the sensor pose relative to the robot actual pose. Recall sensor pose is embeded in the observation class.
 		  *
 		  *  \note Each derived class may enrich points in different ways (color, weight, etc..), so please refer to the description of the specific
-		  *         implementation of mrpt::slam::CPointsMap you are using.
+		  *         implementation of mrpt::maps::CPointsMap you are using.
 		  *  \note The actual generic implementation of this file lives in <src>/CPointsMap_crtp_common.h, but specific instantiations are generated at each derived class.
 		  */
 		virtual void  loadFromRangeScan(
-				const CObservation3DRangeScan &rangeScan,
-				const CPose3D				  *robotPose = NULL ) = 0;
+				const mrpt::obs::CObservation3DRangeScan &rangeScan,
+				const mrpt::poses::CPose3D				  *robotPose = NULL ) = 0;
 
 		/** Insert the contents of another map into this one, fusing the previous content with the new one.
 		 *    This means that points very close to existing ones will be "fused", rather than "added". This prevents
@@ -621,11 +617,11 @@ namespace slam
 
 		/** Replace each point \f$ p_i \f$ by \f$ p'_i = b \oplus p_i \f$ (pose compounding operator).
 		  */
-		void   changeCoordinatesReference(const CPose3D &b);
+		void   changeCoordinatesReference(const mrpt::poses::CPose3D &b);
 
 		/** Copy all the points from "other" map to "this", replacing each point \f$ p_i \f$ by \f$ p'_i = b \oplus p_i \f$ (pose compounding operator).
 		  */
-		void   changeCoordinatesReference(const CPointsMap &other, const CPose3D &b);
+		void   changeCoordinatesReference(const CPointsMap &other, const mrpt::poses::CPose3D &b);
 
 		/** Returns true if the map is empty/no observation has been inserted.
 		   */
@@ -703,7 +699,7 @@ namespace slam
 
 
 		// See docs in base class
-		virtual double computeObservationLikelihood( const CObservation *obs, const CPose3D &takenFrom );
+		virtual double computeObservationLikelihood( const mrpt::obs::CObservation *obs, const mrpt::poses::CPose3D &takenFrom );
 
 		/** @name PCL library support
 			@{ */
@@ -712,7 +708,7 @@ namespace slam
 		/** Use to convert this MRPT point cloud object into a PCL point cloud object (PointCloud<PointXYZ>).
 		  *  Usage example:
 		  *  \code
-		  *    mrpt::slam::CPointsCloud       pc;
+		  *    mrpt::maps::CPointsCloud       pc;
 		  *    pcl::PointCloud<pcl::PointXYZ> cloud;
 		  *
 		  *    pc.getPCLPointCloud(cloud);
@@ -739,7 +735,7 @@ namespace slam
 		  *  Usage example:
 		  *  \code
 		  *    pcl::PointCloud<pcl::PointXYZ> cloud;
-		  *    mrpt::slam::CPointsCloud       pc;
+		  *    mrpt::maps::CPointsCloud       pc;
 		  *
 		  *    pc.setFromPCLPointCloud(cloud);
 		  *  \endcode
@@ -837,11 +833,11 @@ namespace slam
 
 		/** This is a common version of CMetricMap::insertObservation() for point maps (actually, CMetricMap::internal_insertObservation),
 		  *   so derived classes don't need to worry implementing that method unless something special is really necesary.
-		  * See mrpt::slam::CPointsMap for the enumeration of types of observations which are accepted.
+		  * See mrpt::maps::CPointsMap for the enumeration of types of observations which are accepted.
 		  */
 		bool  internal_insertObservation(
 			const CObservation	*obs,
-			const CPose3D *robotPose);
+			const mrpt::poses::CPose3D *robotPose);
 
 		/** Helper method for ::copyFrom() */
 		void  base_copyFrom(const CPointsMap &obj);
@@ -901,19 +897,19 @@ namespace slam
 	{
 		/** The size of points when exporting with getAs3DObject() (default=3.0)
 		  * Affects to:
-		  *		- mrpt::slam::CPointsMap and all its children classes.
+		  *		- mrpt::maps::CPointsMap and all its children classes.
 		  */
 		extern MAPS_IMPEXP float POINTSMAPS_3DOBJECT_POINTSIZE;
 	}
 
 	namespace utils
 	{
-		/** Specialization mrpt::utils::PointCloudAdapter<mrpt::slam::CPointsMap>  \ingroup mrpt_adapters_grp*/
+		/** Specialization mrpt::utils::PointCloudAdapter<mrpt::maps::CPointsMap>  \ingroup mrpt_adapters_grp*/
 		template <>
-		class PointCloudAdapter<mrpt::slam::CPointsMap> : public detail::PointCloudAdapterHelperNoRGB<mrpt::slam::CPointsMap,float>
+		class PointCloudAdapter<mrpt::maps::CPointsMap> : public detail::PointCloudAdapterHelperNoRGB<mrpt::maps::CPointsMap,float>
 		{
 		private:
-			mrpt::slam::CPointsMap &m_obj;
+			mrpt::maps::CPointsMap &m_obj;
 		public:
 			typedef float  coords_t;         //!< The type of each point XYZ coordinates
 			static const int HAS_RGB   = 0;  //!< Has any color RGB info?
@@ -921,7 +917,7 @@ namespace slam
 			static const int HAS_RGBu8 = 0;  //!< Has native RGB info (as uint8_t)?
 
 			/** Constructor (accept a const ref for convenience) */
-			inline PointCloudAdapter(const mrpt::slam::CPointsMap &obj) : m_obj(*const_cast<mrpt::slam::CPointsMap*>(&obj)) { }
+			inline PointCloudAdapter(const mrpt::maps::CPointsMap &obj) : m_obj(*const_cast<mrpt::maps::CPointsMap*>(&obj)) { }
 			/** Get number of points */
 			inline size_t size() const { return m_obj.size(); }
 			/** Set number of points (to uninitialized values) */
@@ -936,7 +932,7 @@ namespace slam
 			inline void setPointXYZ(const size_t idx, const coords_t x,const coords_t y, const coords_t z) {
 				m_obj.setPointFast(idx,x,y,z);
 			}
-		}; // end of PointCloudAdapter<mrpt::slam::CPointsMap>
+		}; // end of PointCloudAdapter<mrpt::maps::CPointsMap>
 
 	}
 

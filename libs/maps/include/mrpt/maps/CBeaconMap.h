@@ -9,33 +9,32 @@
 #ifndef CBeaconMap_H
 #define CBeaconMap_H
 
-#include <mrpt/slam/CMetricMap.h>
-#include <mrpt/slam/CBeacon.h>
+#include <mrpt/maps/CMetricMap.h>
+#include <mrpt/maps/CBeacon.h>
 #include <mrpt/utils/CSerializable.h>
 #include <mrpt/math/CMatrix.h>
 #include <mrpt/utils/CDynamicGrid.h>
 #include <mrpt/utils/CLoadableOptions.h>
+#include <mrpt/obs/obs_frwds.h>
 
 #include <mrpt/maps/link_pragmas.h>
 
 namespace mrpt
 {
-namespace slam
+namespace maps
 {
 	using namespace mrpt::utils;
 	using namespace mrpt::math;
-
-	class CObservationBeaconRanges;
 
 
 	DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CBeaconMap, CMetricMap ,MAPS_IMPEXP )
 
 	/** A class for storing a map of 3D probabilistic beacons, using a Montecarlo, Gaussian, or Sum of Gaussians (SOG) representation (for range-only SLAM).
 	 * <br>
-	 *  The individual beacons are defined as mrpt::slam::CBeacon objects.
+	 *  The individual beacons are defined as mrpt::maps::CBeacon objects.
 	 * <br>
 	 *  When invoking CBeaconMap::insertObservation(), landmarks will be extracted and fused into the map.
-	 *   The only currently supported observation type is mrpt::slam::CObservationBeaconRanges.
+	 *   The only currently supported observation type is mrpt::obs::CObservationBeaconRanges.
 	 *   See insertionOptions and likelihoodOptions for parameters used when creating and fusing beacon landmarks.
 	 * <br>
 	 *   Use "TInsertionOptions::insertAsMonteCarlo" to select between 2 different behaviors:
@@ -72,7 +71,7 @@ namespace slam
 		  *
 		  * \sa CObservation::insertObservationInto
 		  */
-		 virtual bool  internal_insertObservation( const CObservation *obs, const CPose3D *robotPose = NULL );
+		 virtual bool  internal_insertObservation( const mrpt::obs::CObservation *obs, const mrpt::poses::CPose3D *robotPose = NULL );
 
 	public:
 		/** Constructor */
@@ -163,7 +162,7 @@ namespace slam
 			  */
 			void  dumpToTextStream(CStream	&out) const;
 
-			/** Insert a new beacon as a set of montecarlo samples (default=true), or, if false, as a sum of gaussians (see mrpt::slam::CBeacon).
+			/** Insert a new beacon as a set of montecarlo samples (default=true), or, if false, as a sum of gaussians (see mrpt::maps::CBeacon).
 			  * \sa MC_performResampling
 			  */
 			bool	insertAsMonteCarlo;
@@ -225,7 +224,7 @@ namespace slam
 
 
 		// See docs in base class
-		double	 computeObservationLikelihood( const CObservation *obs, const CPose3D &takenFrom );
+		double	 computeObservationLikelihood( const mrpt::obs::CObservation *obs, const mrpt::poses::CPose3D &takenFrom );
 
 		// See docs in base class
 		virtual void  determineMatching2D(
@@ -244,18 +243,18 @@ namespace slam
 		  * \param otherCorrespondences [OUT] Will be returned with a vector containing "true" for the indexes of the other map's landmarks with a correspondence.
 		  */
 		void  computeMatchingWith3DLandmarks(
-				const mrpt::slam::CBeaconMap					*otherMap,
+				const mrpt::maps::CBeaconMap					*otherMap,
 				TMatchingPairList						&correspondences,
 				float									&correspondencesRatio,
 				std::vector<bool>						&otherCorrespondences) const;
 
 		/** Changes the reference system of the map to a given 3D pose.
 		  */
-		void  changeCoordinatesReference( const CPose3D &newOrg );
+		void  changeCoordinatesReference( const mrpt::poses::CPose3D &newOrg );
 
 		/** Changes the reference system of the map "otherMap" and save the result in "this" map.
 		  */
-		void  changeCoordinatesReference( const CPose3D &newOrg, const mrpt::slam::CBeaconMap *otherMap );
+		void  changeCoordinatesReference( const mrpt::poses::CPose3D &newOrg, const mrpt::maps::CBeaconMap *otherMap );
 
 
 		/** Returns true if the map is empty/no observation has been inserted.
@@ -271,7 +270,7 @@ namespace slam
 		void  simulateBeaconReadings(
             const CPose3D					&in_robotPose,
 			const CPoint3D					&in_sensorLocationOnRobot,
-			CObservationBeaconRanges		&out_Observations ) const;
+			mrpt::obs::CObservationBeaconRanges		&out_Observations ) const;
 
 		/** This virtual method saves the map to a file "filNamePrefix"+< some_file_extension >, as an image or in any other applicable way (Notice that other methods to save the map may be implemented in classes implementing this virtual interface).
 		  *  In the case of this class, these files are generated:

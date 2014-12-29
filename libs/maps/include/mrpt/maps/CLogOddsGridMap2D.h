@@ -16,7 +16,7 @@
 
 namespace mrpt
 {
-	namespace slam
+	namespace maps
 	{
 		namespace detail
 		{

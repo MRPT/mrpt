@@ -9,7 +9,7 @@
 
 #include "maps-precomp.h" // Precomp header
 
-#include <mrpt/slam/CRandomFieldGridMap2D.h>
+#include <mrpt/maps/CRandomFieldGridMap2D.h>
 #include <mrpt/system/os.h>
 #include <mrpt/math/CMatrix.h>
 #include <mrpt/math/utils.h>
@@ -29,13 +29,14 @@
 
 
 using namespace mrpt;
-using namespace mrpt::slam;
+using namespace mrpt::maps;
+using namespace mrpt::obs;
 using namespace mrpt::utils;
 using namespace mrpt::poses;
 using namespace mrpt::system;
 using namespace std;
 
-IMPLEMENTS_VIRTUAL_SERIALIZABLE(CRandomFieldGridMap2D, CMetricMap,mrpt::slam)
+IMPLEMENTS_VIRTUAL_SERIALIZABLE(CRandomFieldGridMap2D, CMetricMap,mrpt::maps)
 
 /*---------------------------------------------------------------
 						Constructor
@@ -350,7 +351,7 @@ void  CRandomFieldGridMap2D::internal_clear()
 			TRandomFieldCell	def(0,0);		// mean, std
 			fill( def );
 
-			mrpt::slam::COccupancyGridMap2D	m_Ocgridmap;
+			mrpt::maps::COccupancyGridMap2D	m_Ocgridmap;
 			float res_coef = 1.f; // Default value
 
 			if (this->m_insertOptions_common->GMRF_use_occupancy_information)
@@ -370,7 +371,7 @@ void  CRandomFieldGridMap2D::internal_clear()
 					//metricMap.setListOfMaps( &mapList );
 
 					/*printf("Loading '.simplemap' file...");
-					mrpt::slam::CSimpleMap MsimpleMap;
+					mrpt::maps::CSimpleMap MsimpleMap;
 					CFileGZInputStream(this->m_insertOptions_common->GMRF_simplemap_file) >> simpleMap;
 					printf("Ok (%u poses)\n",(unsigned)simpleMap.size());*/
 
@@ -2801,7 +2802,7 @@ void CRandomFieldGridMap2D::updateMapEstimation_GMRF()
 
 
 bool CRandomFieldGridMap2D::exist_relation_between2cells(
-	const mrpt::slam::COccupancyGridMap2D *m_Ocgridmap,
+	const mrpt::maps::COccupancyGridMap2D *m_Ocgridmap,
 	size_t cxo_min,
 	size_t cxo_max,
 	size_t cyo_min,

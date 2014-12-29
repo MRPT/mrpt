@@ -17,15 +17,15 @@
 #include <mrpt/math/geometry.h>
 #include <mrpt/utils/CStream.h>
 
-#include <mrpt/slam/CPointsMap.h>
-#include <mrpt/slam/CSimplePointsMap.h>
+#include <mrpt/maps/CPointsMap.h>
+#include <mrpt/maps/CSimplePointsMap.h>
 
 #include <mrpt/opengl/CPointCloud.h>
 
 // Observations:
-#include <mrpt/slam/CObservationRange.h>
-#include <mrpt/slam/CObservation2DRangeScan.h>
-#include <mrpt/slam/CObservation3DRangeScan.h>
+#include <mrpt/obs/CObservationRange.h>
+#include <mrpt/obs/CObservation2DRangeScan.h>
+#include <mrpt/obs/CObservation3DRangeScan.h>
 
 
 #if MRPT_HAS_PCL
@@ -40,7 +40,8 @@
 #endif
 
 using namespace mrpt::poses;
-using namespace mrpt::slam;
+using namespace mrpt::maps;
+using namespace mrpt::obs;
 using namespace mrpt::system;
 using namespace std;
 
@@ -48,7 +49,7 @@ using namespace std;
 float mrpt::global_settings::POINTSMAPS_3DOBJECT_POINTSIZE = 3.0f;
 
 
-IMPLEMENTS_VIRTUAL_SERIALIZABLE(CPointsMap, CMetricMap,mrpt::slam)
+IMPLEMENTS_VIRTUAL_SERIALIZABLE(CPointsMap, CMetricMap,mrpt::maps)
 
 
 float CPointsMap::COLOR_3DSCENE_R = 0;
@@ -1511,15 +1512,15 @@ double	 CPointsMap::computeObservationLikelihood(
 
 namespace mrpt
 {
-	namespace slam
+	namespace maps
 	{
 		// Tricky way to call to a library that depends on us, a sort of "run-time" linking:
 		//  ptr_internal_build_points_map_from_scan2D is a functor in "mrpt-obs", set by "mrpt-maps" at its startup.
-		extern void OBS_IMPEXP (*ptr_internal_build_points_map_from_scan2D)(const mrpt::slam::CObservation2DRangeScan &obs, mrpt::slam::CMetricMapPtr &out_map, const void *insertOps);
+		extern void OBS_IMPEXP (*ptr_internal_build_points_map_from_scan2D)(const mrpt::obs::CObservation2DRangeScan &obs, mrpt::maps::CMetricMapPtr &out_map, const void *insertOps);
 	}
 }
 
-void internal_build_points_map_from_scan2D(const mrpt::slam::CObservation2DRangeScan &obs, mrpt::slam::CMetricMapPtr &out_map, const void *insertOps)
+void internal_build_points_map_from_scan2D(const mrpt::obs::CObservation2DRangeScan &obs, mrpt::maps::CMetricMapPtr &out_map, const void *insertOps)
 {
 	// Create on first call:
 	if (out_map)

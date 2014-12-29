@@ -42,7 +42,7 @@ namespace slam
 	 *    evaluate the likelihood of one observation by fusing (multiplying) the likelihoods over the different maps, etc.
 	 *
 	 *  <b>All these kinds of metric maps can be kept in a multi-metric map:</b>:
-	 *		- mrpt::slam::CPointsMap: For laser 2D range scans, and posibly for IR ranges,... (It keeps the full 3D structure of scans)
+	 *		- mrpt::maps::CPointsMap: For laser 2D range scans, and posibly for IR ranges,... (It keeps the full 3D structure of scans)
 	 *		- mrpt::slam::COccupancyGridMap2D: Exclusively for 2D, <b>horizontal</b>  laser range scans, at different altitudes.
 	 *		- mrpt::slam::COctoMap: For 3D occupancy grids of variable resolution, with octrees (based on the library "octomap").
 	 *		- mrpt::slam::CColouredOctoMap: The same than above, but nodes can store RGB data appart from occupancy.
@@ -299,7 +299,7 @@ namespace slam
 			CColouredOctoMap::TLikelihoodOptions  likelihoodOpts;	//!< Customizable initial options.
 		} colourOctoMap_options;		
 
-		/** Specific options for point maps (mrpt::slam::CPointsMap)
+		/** Specific options for point maps (mrpt::maps::CPointsMap)
 		  */
 		struct SLAM_IMPEXP CPointsMapOptions
 		{
@@ -377,7 +377,7 @@ namespace slam
 			CReflectivityGridMap2D::TInsertionOptions	insertionOpts;	//!< Customizable initial options.
 		} reflectivityMap_options;
 
-		/** Specific options for coloured point maps (mrpt::slam::CPointsMap)
+		/** Specific options for coloured point maps (mrpt::maps::CPointsMap)
 		  */
 		struct SLAM_IMPEXP CColouredPointsMapOptions
 		{
@@ -387,7 +387,7 @@ namespace slam
 			CColouredPointsMap::TColourOptions colourOpts;	//!< Customizable initial options for loading the class' own defaults. */
 		} colouredPointsMapOptions_options;
 
-		/** Specific options for coloured point maps (mrpt::slam::CPointsMap)
+		/** Specific options for coloured point maps (mrpt::maps::CPointsMap)
 		  */
 		struct SLAM_IMPEXP CWeightedPointsMapOptions
 		{

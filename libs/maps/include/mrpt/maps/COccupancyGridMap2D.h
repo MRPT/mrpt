@@ -14,11 +14,12 @@
 #include <mrpt/utils/CLoadableOptions.h>
 #include <mrpt/utils/CImage.h>
 #include <mrpt/utils/CDynamicGrid.h>
-#include <mrpt/slam/CMetricMap.h>
+#include <mrpt/maps/CMetricMap.h>
 #include <mrpt/utils/TMatchingPair.h>
-#include <mrpt/slam/CLogOddsGridMap2D.h>
+#include <mrpt/maps/CLogOddsGridMap2D.h>
 #include <mrpt/utils/safe_pointers.h>
 #include <mrpt/poses/poses_frwds.h>
+#include <mrpt/obs/obs_frwds.h>
 
 #include <mrpt/maps/link_pragmas.h>
 
@@ -32,18 +33,12 @@
 		#error Only one of OCCUPANCY_GRIDMAP_CELL_SIZE_16BITS or OCCUPANCY_GRIDMAP_CELL_SIZE_8BITS must be defined at a time.
 #endif
 
-
 namespace mrpt
 {
-namespace slam
+namespace maps
 {
 	using namespace mrpt::poses;
 	using namespace mrpt::utils;
-
-	class CObservation2DRangeScan;
-	class CObservationRange;
-	class CObservation;
-	class CPointsMap;
 
 	DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( COccupancyGridMap2D, CMetricMap, MAPS_IMPEXP )
 
@@ -137,7 +132,7 @@ namespace slam
 
 		bool m_is_empty; //!< True upon construction; used by isEmpty()
 
-		virtual void OnPostSuccesfulInsertObs(const CObservation *); //!< See base class
+		virtual void OnPostSuccesfulInsertObs(const mrpt::obs::CObservation *); //!< See base class
 
 		/** The free-cells threshold used to compute the Voronoi diagram.
 		 */
@@ -183,45 +178,45 @@ namespace slam
 		/** One of the methods that can be selected for implementing "computeObservationLikelihood" (This method is the Range-Scan Likelihood Consensus for gridmaps, see the ICRA2007 paper by Blanco et al.)
 		  */
 		double	 computeObservationLikelihood_Consensus(
-					const CObservation		*obs,
-					const CPose2D				&takenFrom );
+			const mrpt::obs::CObservation *obs,
+			const mrpt::poses::CPose2D &takenFrom );
 
 		/** One of the methods that can be selected for implementing "computeObservationLikelihood"
 		  *  TODO: This method is described in....
 		  */
 		double	 computeObservationLikelihood_ConsensusOWA(
-					const CObservation		*obs,
-					const CPose2D				&takenFrom );
+			const mrpt::obs::CObservation *obs,
+			const mrpt::poses::CPose2D &takenFrom );
 
 		/** One of the methods that can be selected for implementing "computeObservationLikelihood".
 		  */
 		double	 computeObservationLikelihood_CellsDifference(
-					const CObservation		*obs,
-					const CPose2D				&takenFrom );
+			const mrpt::obs::CObservation *obs,
+			const mrpt::poses::CPose2D &takenFrom );
 
 		/** One of the methods that can be selected for implementing "computeObservationLikelihood".
 		  */
 		double	 computeObservationLikelihood_MI(
-					const CObservation		*obs,
-					const CPose2D				&takenFrom );
+			const mrpt::obs::CObservation *obs,
+			const mrpt::poses::CPose2D &takenFrom );
 
 		/** One of the methods that can be selected for implementing "computeObservationLikelihood".
 		  */
 		double	 computeObservationLikelihood_rayTracing(
-					const CObservation		*obs,
-					const CPose2D				&takenFrom );
+			const mrpt::obs::CObservation *obs,
+			const mrpt::poses::CPose2D &takenFrom );
 
 		/** One of the methods that can be selected for implementing "computeObservationLikelihood".
 		  */
 		double	 computeObservationLikelihood_likelihoodField_Thrun(
-					const CObservation		*obs,
-					const CPose2D				&takenFrom );
+			const mrpt::obs::CObservation *obs,
+			const mrpt::poses::CPose2D &takenFrom );
 
 		/** One of the methods that can be selected for implementing "computeObservationLikelihood".
 		  */
 		double	 computeObservationLikelihood_likelihoodField_II(
-					const CObservation		*obs,
-					const CPose2D				&takenFrom );
+			const mrpt::obs::CObservation *obs,
+			const mrpt::poses::CPose2D &takenFrom );
 
 		/** Clear the map: It set all cells to their default occupancy value (0.5), without changing the resolution (the grid extension is reset to the default values).
 		  */
@@ -236,7 +231,7 @@ namespace slam
 		  *
 		  * \sa insertionOptions, CObservation::insertObservationInto
 		  */
-		 virtual bool  internal_insertObservation( const CObservation *obs, const CPose3D *robotPose = NULL );
+		 virtual bool  internal_insertObservation( const mrpt::obs::CObservation *obs, const mrpt::poses::CPose3D *robotPose = NULL );
 
 	public:
 		/** Read-only access to the raw cell contents (cells are in log-odd units) */
@@ -806,7 +801,7 @@ namespace slam
 		 * \sa sonarSimulator
 		 */
 		void  laserScanSimulator(
-				CObservation2DRangeScan	        &inout_Scan,
+				mrpt::obs::CObservation2DRangeScan	        &inout_Scan,
 				const CPose2D					&robotPose,
 				float						    threshold = 0.5f,
 				size_t						    N = 361,
@@ -826,7 +821,7 @@ namespace slam
 		 * \sa laserScanSimulator
 		 */
 		void  sonarSimulator(
-				CObservationRange	        &inout_observation,
+				mrpt::obs::CObservationRange &inout_observation,
 				const CPose2D				&robotPose,
 				float						threshold = 0.5f,
 				float						rangeNoiseStd = 0,
@@ -845,13 +840,13 @@ namespace slam
 		/** @} */
 
 		// See docs in base class
-		double	 computeObservationLikelihood( const CObservation *obs, const CPose3D &takenFrom );
+		double	 computeObservationLikelihood( const mrpt::obs::CObservation *obs, const mrpt::poses::CPose3D &takenFrom );
 
 		/** Returns true if this map is able to compute a sensible likelihood function for this observation (i.e. an occupancy grid map cannot with an image).
 		 * \param obs The observation.
 		 * \sa computeObservationLikelihood
 		 */
-		bool canComputeObservationLikelihood( const CObservation *obs );
+		bool canComputeObservationLikelihood( const mrpt::obs::CObservation *obs );
 
 		/** Computes the likelihood [0,1] of a set of points, given the current grid map as reference.
 		  * \param pm The points map
@@ -894,7 +889,7 @@ namespace slam
 			const TMatchingPairList		&corrs);
 
 		/** Saves the gridmap as a graphical bitmap file, 8 bit gray scale, 1 pixel is 1 cell, and with an overlay of landmarks.
-		 * \note The template parameter CLANDMARKSMAP is assumed to be mrpt::slam::CLandmarksMap normally.
+		 * \note The template parameter CLANDMARKSMAP is assumed to be mrpt::maps::CLandmarksMap normally.
 		 * \return False on any error.
 		 */
 		template <class CLANDMARKSMAP>
