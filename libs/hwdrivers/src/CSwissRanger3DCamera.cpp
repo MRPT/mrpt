@@ -159,7 +159,7 @@ void CSwissRanger3DCamera::initialize()
 */
 void CSwissRanger3DCamera::doProcess()
 {
-	using namespace mrpt::slam;
+	using namespace mrpt::obs;
 
 	bool	thereIs, hwError;
 

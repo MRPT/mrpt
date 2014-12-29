@@ -17,7 +17,7 @@
 #include <mrpt/utils/CConfigFile.h>
 #include <mrpt/utils/CConfigFileMemory.h>
 #include <mrpt/obs/CSensoryFrame.h>
-#include <mrpt/slam/CRawlog.h>
+#include <mrpt/obs/CRawlog.h>
 #include <mrpt/obs/CObservationImage.h>
 #include <mrpt/obs/CObservationStereoImages.h>
 #include <mrpt/gui/WxUtils.h>
@@ -34,7 +34,7 @@ using namespace mrpt;
 using namespace mrpt::hwdrivers;
 using namespace mrpt::gui;
 using namespace mrpt::utils;
-using namespace mrpt::slam;
+using namespace mrpt::obs;
 using namespace mrpt::system;
 using namespace std;
 

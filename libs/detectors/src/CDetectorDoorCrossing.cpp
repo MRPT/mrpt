@@ -14,7 +14,8 @@
 #include <mrpt/poses/CPosePDF.h>
 
 using namespace mrpt;
-using namespace mrpt::slam;
+using namespace mrpt::obs;
+using namespace mrpt::maps;
 using namespace mrpt::detectors;
 using namespace mrpt::utils;
 using namespace mrpt::poses;

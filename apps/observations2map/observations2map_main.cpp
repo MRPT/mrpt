@@ -25,7 +25,7 @@
 
 
 using namespace mrpt;
-using namespace mrpt::slam;
+using namespace mrpt::maps;
 using namespace mrpt::opengl;
 using namespace mrpt::system;
 using namespace mrpt::math;
@@ -68,7 +68,7 @@ int main(int argc, char **argv)
 
 		// Load simplemap:
 		cout << "Loading simplemap...";
-		mrpt::slam::CSimpleMap	simplemap;
+		mrpt::maps::CSimpleMap	simplemap;
 		CFileGZInputStream f( inputFile.c_str() );
 		f >> simplemap;
 		cout <<"done: " << simplemap.size() << " observations." << endl;

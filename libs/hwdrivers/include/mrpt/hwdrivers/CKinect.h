@@ -92,12 +92,12 @@ namespace mrpt
 		  *
 		  * \code
 		  * mrpt::obs::CObservation3DRangeScan  obs3D;
-		  * mrpt::slam::CColouredPointsMap       pntsMap;
+		  * mrpt::maps::CColouredPointsMap       pntsMap;
 		  * pntsMap.colorScheme.scheme = CColouredPointsMap::cmFromIntensityImage;
 		  * pntsMap.loadFromRangeScan(obs3D);
 		  * \endcode
 		  *
-		  *   Then the point cloud mrpt::slam::CColouredPointsMap can be converted into an OpenGL object for
+		  *   Then the point cloud mrpt::maps::CColouredPointsMap can be converted into an OpenGL object for
 		  *    rendering with mrpt::maps::CMetricMap::getAs3DObject() or alternatively with:
 		  *
 		  *  \code

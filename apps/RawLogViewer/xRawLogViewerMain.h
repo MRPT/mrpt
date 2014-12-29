@@ -635,7 +635,7 @@ private:
 extern std::string             	iniFileSect;
 extern mrpt::utils::CConfigFile *iniFile;
 extern std::string              loadedFileName;
-extern mrpt::slam::CRawlog		rawlog;
+extern mrpt::obs::CRawlog		rawlog;
 
 
 #endif // XRAWLOGVIEWERMAIN_H

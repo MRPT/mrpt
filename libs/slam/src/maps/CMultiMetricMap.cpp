@@ -1389,7 +1389,7 @@ void  TSetOfMetricMapInitializers::loadFromConfigFile(
 		  *  wifiGrid_count=<Number of mrpt::slam::CWirelessPowerGridMap2D maps>
 		  *  landmarksMap_count=<0 or 1, for creating a mrpt::maps::CLandmarksMap map>
 		  *  beaconMap_count=<0 or 1>
-		  *  pointsMap_count=<0 or 1, for creating a mrpt::slam::CSimplePointsMap map>
+		  *  pointsMap_count=<0 or 1, for creating a mrpt::maps::CSimplePointsMap map>
 */
 
 	unsigned int n = ini.read_int(sectionName,"occupancyGrid_count",0);

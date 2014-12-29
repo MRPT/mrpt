@@ -105,10 +105,10 @@ namespace mrpt
 			bool continuousScan(char &axis, const double &velocity, double &initial, double &final);
 
 			/** Show a graphic with the points obtained from the scan or a map*/
-			//bool showGraphic(mrpt::slam::CSimplePointsMap	*theMap=0);
+			//bool showGraphic(mrpt::maps::CSimplePointsMap	*theMap=0);
 
 			/** Save a simple points map into a simple file (if colours==true save points with a color) */
-			//bool saveMap2File(mrpt::slam::CSimplePointsMap	&theMap, char* fname="Data.pts", const bool &colours=false);
+			//bool saveMap2File(mrpt::maps::CSimplePointsMap	&theMap, char* fname="Data.pts", const bool &colours=false);
 
 			/** Save vector of observations in a CFileOutputStream file */
 
@@ -123,7 +123,7 @@ namespace mrpt
 			bool savePitchAndDistances2File();
 
 			/** Method for limit map points obtained from a scan */
-			//void limit(mrpt::slam::CSimplePointsMap &theMap);
+			//void limit(mrpt::maps::CSimplePointsMap &theMap);
 
 			/** Set high between ptu tilt axis and hokuyo laser scan */
 
@@ -171,10 +171,10 @@ namespace mrpt
 			int minLengthVectors(mrpt::obs::CObservation2DRangeScan &obs1, mrpt::obs::CObservation2DRangeScan &obs2, const int &mode);
 
 			/** Load observations in a points map */
-			//void loadObs2PointsMap(mrpt::slam::CSimplePointsMap	&theMap);
+			//void loadObs2PointsMap(mrpt::maps::CSimplePointsMap	&theMap);
 
 			/** Limit the valid position of scan points */
-			//bool limitScan(const char &axis, double &low, double &high, mrpt::slam::CSimplePointsMap		&theMap);
+			//bool limitScan(const char &axis, double &low, double &high, mrpt::maps::CSimplePointsMap		&theMap);
 
 			/** Refine the observations obtains from a continuous scan */
 			void refineVObs(const char &axis);

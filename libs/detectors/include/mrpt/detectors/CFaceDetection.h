@@ -23,7 +23,6 @@ namespace mrpt
 	/** \ingroup mrpt_detectors_grp  */
 	namespace detectors
 	{
-		using namespace mrpt::slam;
 		using namespace mrpt::system;
 		using namespace mrpt::synch;
 		using namespace mrpt::math;

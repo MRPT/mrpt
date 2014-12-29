@@ -45,7 +45,7 @@ namespace mrpt
 			/** Insert all the observations in the map (without erasing previous contents). */
 			void insertIntoMetricMap( CMultiMetricMap	&metricMap ) const;
 
-			/** Converts the contents of this object into a 'simplemap' (mrpt::slam::CSimpleMap) object. */
+			/** Converts the contents of this object into a 'simplemap' (mrpt::maps::CSimpleMap) object. */
 			void convertIntoSimplemap( CSimpleMap &out_simplemap) const;
 
 		}; // end of class

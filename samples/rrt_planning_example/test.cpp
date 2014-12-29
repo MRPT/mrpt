@@ -18,7 +18,7 @@
 using namespace mrpt;
 using namespace mrpt::utils;
 using namespace mrpt::nav;
-using namespace mrpt::slam; // for maps, etc.
+using namespace mrpt::maps;
 using namespace std;
 
 // Load example grid map

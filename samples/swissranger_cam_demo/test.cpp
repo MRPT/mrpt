@@ -21,6 +21,7 @@ using namespace mrpt;
 using namespace mrpt::hwdrivers;
 using namespace mrpt::math;
 using namespace mrpt::gui;
+using namespace mrpt::maps;
 using namespace mrpt::utils;
 using namespace std;
 
@@ -172,7 +173,7 @@ void Test_SwissRanger()
 		// Show 3D points:
 		if (there_is_obs && obs.hasPoints3D )
 		{
-			//mrpt::slam::CSimplePointsMap  pntsMap;
+			//mrpt::maps::CSimplePointsMap  pntsMap;
 			CColouredPointsMap pntsMap;
 			pntsMap.colorScheme.scheme = CColouredPointsMap::cmFromIntensityImage;
 			pntsMap.loadFromRangeScan(obs);

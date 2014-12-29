@@ -15,7 +15,8 @@
 
 using namespace mrpt;
 using namespace mrpt::utils;
-using namespace mrpt::slam;
+using namespace mrpt::obs;
+using namespace mrpt::maps;
 using namespace mrpt::opengl;
 using namespace mrpt::hwdrivers;
 using namespace std;
@@ -68,7 +69,7 @@ void TestPLS()
 
 			obs.sensorPose = CPose3D(0,0,0);
 
-			mrpt::slam::CSimplePointsMap		map;
+			mrpt::maps::CSimplePointsMap		map;
 			map.insertionOptions.minDistBetweenLaserPoints	= 0;
 			map.insertObservation( &obs );
 			map.save2D_to_text_file("_out_scan.txt");

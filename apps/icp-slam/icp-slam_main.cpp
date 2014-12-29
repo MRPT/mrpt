@@ -18,7 +18,7 @@
 
 #include <mrpt/slam/CMetricMapBuilderICP.h>
 #include <mrpt/obs/CObservationOdometry.h>
-#include <mrpt/slam/CRawlog.h>
+#include <mrpt/obs/CRawlog.h>
 #include <mrpt/opengl/COpenGLScene.h>
 #include <mrpt/opengl/CGridPlaneXY.h>
 #include <mrpt/opengl/stock_objects.h>
@@ -33,6 +33,8 @@
 
 using namespace mrpt;
 using namespace mrpt::slam;
+using namespace mrpt::obs;
+using namespace mrpt::maps;
 using namespace mrpt::opengl;
 using namespace mrpt::gui;
 using namespace mrpt::system;

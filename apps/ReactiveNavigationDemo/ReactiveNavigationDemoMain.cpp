@@ -69,7 +69,8 @@ wxBitmap MyArtProvider::CreateBitmap(const wxArtID& id,
 #include <mrpt/system/filesystem.h>
 
 using namespace mrpt;
-using namespace mrpt::slam;
+using namespace mrpt::obs;
+using namespace mrpt::maps;
 using namespace mrpt::opengl;
 using namespace mrpt::math;
 using namespace mrpt::utils;
@@ -104,7 +105,7 @@ public:
 		return true;
 	}
 
-	bool senseObstacles( mrpt::slam::CSimplePointsMap 		&obstacles )
+	bool senseObstacles( mrpt::maps::CSimplePointsMap 		&obstacles )
 	{
 		CPose2D  robotPose;
 

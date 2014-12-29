@@ -25,7 +25,7 @@ monocular and stereo images, GPS data, odometry, etc. A concept very related to 
 is a mrpt::obs::CSensoryFrame, a set of observations which were collected approximately at the same instant. </li>
 
 <li><b>Rawlogs (datasets):</b> A robotics dataset can be loaded, edited and explored by means 
-of the class mrpt::slam::CRawlog. See also: http://www.mrpt.org/Rawlog_Format </li>
+of the class mrpt::obs::CRawlog. See also: http://www.mrpt.org/Rawlog_Format </li>
 
 <li><b>Actions:</b> For convenience in many Bayesian filtering algorithms, robot actions 
 (like 2D displacement characterized by an odometry increment) can be represented by means

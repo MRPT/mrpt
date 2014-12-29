@@ -24,7 +24,7 @@ namespace mrpt
 	namespace hwdrivers
 	{
 		using namespace std;
-		using namespace mrpt::slam;
+		using namespace mrpt::obs;
 		
 		/** A class to interface a Rovio robot (manufactured by WowWee).
 		  *  Supports: Simple motion commands, video streaming. 

@@ -24,7 +24,7 @@ If available, it will provide the following functionality:
 - In point map classes:
 	- mrpt::maps::CPointsMap::getPCLPointCloud() (*)
 	- mrpt::maps::CPointsMap::setFromPCLPointCloud() (*)
-	- mrpt::slam::CColouredPointsMap::getPCLPointCloudRGB() (*)
+	- mrpt::maps::CColouredPointsMap::getPCLPointCloudRGB() (*)
 	- mrpt::maps::CPointsMap::savePCDFile()
 	- mrpt::maps::CPointsMap::loadPCDFile()
 - In mrpt::obs::CObservation3DRangeScan (observations from 3D cameras, e.g. Kinect):

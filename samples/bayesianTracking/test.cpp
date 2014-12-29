@@ -27,7 +27,7 @@ using namespace mrpt;
 using namespace mrpt::bayes;
 using namespace mrpt::gui;
 using namespace mrpt::math;
-using namespace mrpt::slam;
+using namespace mrpt::obs;
 using namespace mrpt::utils;
 using namespace mrpt::random;
 using namespace std;

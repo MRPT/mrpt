@@ -18,7 +18,7 @@
 IMPLEMENTS_GENERIC_SENSOR(CIMUXSens_MT4,mrpt::hwdrivers)
 
 using namespace mrpt::utils;
-using namespace mrpt::slam;
+using namespace mrpt::obs;
 using namespace mrpt::hwdrivers;
 using namespace std;
 

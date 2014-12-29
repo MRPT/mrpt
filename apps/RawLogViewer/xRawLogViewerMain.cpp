@@ -43,7 +43,7 @@
 #include <mrpt/system/CDirectoryExplorer.h>
 #include <mrpt/poses/CPosePDFParticles.h>
 #include <mrpt/poses/CPosePDFGaussian.h>
-#include <mrpt/slam/CRawlog.h>
+#include <mrpt/obs/CRawlog.h>
 #include <mrpt/maps/COccupancyGridMap2D.h>
 #include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/maps/CColouredPointsMap.h>

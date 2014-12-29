@@ -52,7 +52,7 @@ namespace maps
 	 *		- mrpt::slam::CBeaconMap: For range-only SLAM.
 	 *		- mrpt::slam::CHeightGridMap2D: For maps of height for each (x,y) location.
 	 *		- mrpt::slam::CReflectivityGridMap2D: For maps of "reflectivity" for each (x,y) location.
-	 *		- mrpt::slam::CColouredPointsMap: For point map with color.
+	 *		- mrpt::maps::CColouredPointsMap: For point map with color.
 	 *		- mrpt::slam::CWeightedPointsMap: For point map with weights (capable of "fusing").
 	 *
 	 *  See CMultiMetricMap::setListOfMaps() for the method for initializing this class programatically. 
@@ -445,10 +445,10 @@ namespace maps
 		  *  wifiGrid_count=<Number of mrpt::slam::CWirelessPowerGridMap2D maps>
 		  *  landmarksMap_count=<0 or 1, for creating a mrpt::maps::CLandmarksMap map>
 		  *  beaconMap_count=<0 or 1, for creating a mrpt::slam::CBeaconMap map>
-		  *  pointsMap_count=<Number of mrpt::slam::CSimplePointsMap map>
+		  *  pointsMap_count=<Number of mrpt::maps::CSimplePointsMap map>
 		  *  heightMap_count=<Number of mrpt::slam::CHeightGridMap2D maps>
 		  *  reflectivityMap_count=<Number of mrpt::slam::CReflectivityGridMap2D maps>
-		  *  colourPointsMap_count=<0 or 1, for creating a mrpt::slam::CColouredPointsMap map>
+		  *  colourPointsMap_count=<0 or 1, for creating a mrpt::maps::CColouredPointsMap map>
 		  *  weightedPointsMap_count=<0 or 1, for creating a mrpt::slam::CWeightedPointsMap map>
 		  *
 		  *  // Selection of map for likelihood. Either a numeric value or the textual enum

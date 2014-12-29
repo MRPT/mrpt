@@ -10,7 +10,7 @@
 #include <mrpt/detectors.h>
 #include <mrpt/hwdrivers/CCameraSensor.h>
 #include <mrpt/maps/CColouredPointsMap.h>
-#include <mrpt/slam/CRawlog.h>
+#include <mrpt/obs/CRawlog.h>
 #include <mrpt/gui.h>
 #include <mrpt/opengl/CPointCloudColoured.h>
 #include <mrpt/opengl/CGridPlaneXY.h>

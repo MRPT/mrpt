@@ -40,7 +40,7 @@ Output files:
 
 using namespace std;
 using namespace mrpt;
-using namespace mrpt::slam;
+using namespace mrpt::obs;
 
 const double KINECT_FPS = 30.0;
 
@@ -143,7 +143,7 @@ void rgbd2rawlog(const string &src_path, const string &out_name)
 	obs.cameraParams.fx(FOCAL);   obs.cameraParams.fy(FOCAL);
 	obs.cameraParams.cx(319.5);   obs.cameraParams.cy(239.5);
 	obs.cameraParamsIntensity = obs.cameraParams;
-	obs.relativePoseIntensityWRTDepth = mrpt::poses::CPose3D(0,0,0,DEG2RAD(-90),0,DEG2RAD(-90));  // No translation between rgb & range cameras, and rotation only due to XYZ axes conventions.
+	obs.relativePoseIntensityWRTDepth = mrpt::poses::CPose3D(0,0,0,mrpt::utils::DEG2RAD(-90),0,mrpt::utils::DEG2RAD(-90));  // No translation between rgb & range cameras, and rotation only due to XYZ axes conventions.
 
 	CObservationIMU obs_imu;
 	obs_imu.sensorLabel = "KINECT_ACC";

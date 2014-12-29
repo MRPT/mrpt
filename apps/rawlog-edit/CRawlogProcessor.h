@@ -10,7 +10,7 @@
 #ifndef RAWLOG_PROCESSOR_H
 #define RAWLOG_PROCESSOR_H
 
-#include <mrpt/slam/CRawlog.h>
+#include <mrpt/obs/CRawlog.h>
 #include <mrpt/utils/CFileGZInputStream.h>
 #include <mrpt/utils/CTicTac.h>
 #include <mrpt/system/os.h>
@@ -62,7 +62,7 @@ namespace mrpt
 				m_timParse.Tic();
 
 				// Parse the entire rawlog:
-				while (mrpt::slam::CRawlog::getActionObservationPairOrObservation(
+				while (mrpt::obs::CRawlog::getActionObservationPairOrObservation(
 					m_in_rawlog,
 					actions,SF, obs,
 					m_rawlogEntry ) )

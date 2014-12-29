@@ -24,7 +24,8 @@
 using namespace mrpt;
 using namespace mrpt::nav;
 using namespace mrpt::opengl;
-using namespace mrpt::slam;
+using namespace mrpt::maps;
+using namespace mrpt::obs;
 using namespace mrpt::gui;
 
 class MyObserver : public mrpt::utils::CObserver
@@ -230,7 +231,7 @@ public:
 class CShortTermMemory {
 public:
 	bool								is_active;
-	vector <slam::COccupancyGridMap2D>	obsgrids;
+	vector <mrpt::maps::COccupancyGridMap2D>	obsgrids;
 	float								vision_limit;
 	float								likelihood_incr;
 	float								likelihood_decr;
@@ -432,7 +433,7 @@ public:
 	}
 
 
-	bool senseObstacles( slam::CSimplePointsMap 	&obstacles )
+	bool senseObstacles( mrpt::maps::CSimplePointsMap 	&obstacles )
 	{
 		last_pose = new_pose;
 		robotSim.getRealPose(new_pose);

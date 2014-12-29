@@ -83,7 +83,7 @@
 			- Bumblebee2 Linux support in mrpt::hwdrivers::CImageGrabber_FlyCapture2 via Triclops (by Jesus Briales)
 		- [mrpt-maps]
 			- New method mrpt::maps::COccupancyGridMap2D::getRawMap()
-			- New method mrpt::slam::CColouredPointsMap::getPCLPointCloudXYZRGB()
+			- New method mrpt::maps::CColouredPointsMap::getPCLPointCloudXYZRGB()
 		- [mrpt-opengl]
 			- mrpt::opengl::CMyGLCanvasBase (affects all 3D rendering classes): better handling of internal timers for smoother updates while rendering in multithreading apps.
 		- [mrpt-srba]
@@ -437,7 +437,7 @@
 				- Better integration of point cloud classes with PCL: - <a href="http://code.google.com/p/mrpt/source/detail?r=2943" >r2943</a>
 					- mrpt::maps::CPointsMap::loadPCDFile()
 					- mrpt::maps::CPointsMap::setFromPCLPointCloud()
-					- mrpt::slam::CColouredPointsMap::setFromPCLPointCloudRGB()
+					- mrpt::maps::CColouredPointsMap::setFromPCLPointCloudRGB()
 				- Point cloud loading & saving in the standard ASPRS LiDAR LAS format (if liblas is installed in the system, see http://www.liblas.org/ ). See also the ready-to-use import menu in SceneViewer3D - <a href="http://code.google.com/p/mrpt/source/detail?r=3244" >r3244</a>
 					- mrpt::maps::CPointsMap::loadLASFile()
 					- mrpt::maps::CPointsMap::saveLASFile()
@@ -510,7 +510,7 @@
 			- [mrpt-hwdrivers] Fixed potential SEGFAULT in mrpt::hwdrivers::CGPSInterface (Thanks K.Miyawaki for <a href="http://www.mrpt.org/node/2474" >reporting</a>)
 			- [mrpt-hwdrivers] Fixed communications to LMS 1xx scanners (Thanks Henry! See http://code.google.com/p/mrpt/issues/detail?id=49 )
 			- [mrpt-maps] mrpt::maps::COccupancyGridMap2D::getAs3DObject() returned cells with an occupancy of exactly "0" as transparent - <a href="http://code.google.com/p/mrpt/source/detail?r=2957" >r2957</a>
-			- [mrpt-maps] Fixed saving the correct point colors in mrpt::slam::CColouredPointsMap::savePCDFile() (Thanks Mariano!) - <a href="http://code.google.com/p/mrpt/source/detail?r=3090" >r3090</a>
+			- [mrpt-maps] Fixed saving the correct point colors in mrpt::maps::CColouredPointsMap::savePCDFile() (Thanks Mariano!) - <a href="http://code.google.com/p/mrpt/source/detail?r=3090" >r3090</a>
 			- [mrpt-maps] In CPointsMap::computeMatchingWith3D. Fixed matching two 3D point clouds as each correspondence was inserted twice into the output vector. (By Paco) - <a href="http://code.google.com/p/mrpt/source/detail?r=3162" >r3162</a>
 			- [mrpt-opengl] Fixed a potential bug: after deserializing an object based on a display-list (most of them), it won't update in the opengl view.
 			- [mrpt-reactivenav] Class mrpt::reactivenav::CHolonomicVFF was not exported in Windows DLL's (Thanks Mariano for noticing!).

@@ -97,10 +97,10 @@ namespace slam
 			options.enableMapUpdating = enable;
 		}
 
-		/** Load map (mrpt::slam::CSimpleMap) from a ".simplemap" file */
+		/** Load map (mrpt::maps::CSimpleMap) from a ".simplemap" file */
 		void  loadCurrentMapFromFile(const std::string &fileName);
 
-		/** Save map (mrpt::slam::CSimpleMap) to a ".simplemap" file. */
+		/** Save map (mrpt::maps::CSimpleMap) to a ".simplemap" file. */
 		void  saveCurrentMapToFile(const std::string &fileName, bool compressGZ=true) const;
 
 		/** Options for the algorithm */

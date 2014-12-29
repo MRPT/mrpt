@@ -17,7 +17,7 @@
 using namespace mrpt::utils;
 using namespace mrpt::hwdrivers;
 using namespace mrpt::gui;
-using namespace mrpt::slam;
+using namespace mrpt::obs;
 using namespace std;
 
 

@@ -1152,7 +1152,7 @@ void CFormRawMap::OnbtnSavePathClick(wxCommandEvent& )
 		CRawlog::iterator itRawlog;
 		for( itRawlog = rawlog.begin(); itRawlog != rawlog.end(); itRawlog++ )
 		{
-			if( itRawlog.getType() == mrpt::slam::CRawlog::etObservation )
+			if( itRawlog.getType() == mrpt::obs::CRawlog::etObservation )
 			{
 				CObservationPtr obs( *itRawlog );
 				for( itStr = the_labels.begin(), itOutFiles = outFiles.begin(); itStr != the_labels.end(); itStr++, itOutFiles++ )

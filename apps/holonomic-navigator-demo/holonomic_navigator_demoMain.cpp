@@ -59,7 +59,7 @@ wxBitmap MyArtProvider::CreateBitmap(const wxArtID& id,
 #include <mrpt/system/filesystem.h>
 
 using namespace mrpt;
-using namespace mrpt::slam;
+using namespace mrpt::maps;
 using namespace mrpt::opengl;
 using namespace mrpt::math;
 using namespace mrpt::system;

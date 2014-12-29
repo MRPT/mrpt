@@ -1512,7 +1512,7 @@ double	 CPointsMap::computeObservationLikelihood(
 
 namespace mrpt
 {
-	namespace maps
+	namespace obs
 	{
 		// Tricky way to call to a library that depends on us, a sort of "run-time" linking:
 		//  ptr_internal_build_points_map_from_scan2D is a functor in "mrpt-obs", set by "mrpt-maps" at its startup.
@@ -1538,7 +1538,7 @@ struct TAuxLoadFunctor
 {
 	TAuxLoadFunctor()
 	{
-		ptr_internal_build_points_map_from_scan2D = internal_build_points_map_from_scan2D;
+		mrpt::obs::ptr_internal_build_points_map_from_scan2D = internal_build_points_map_from_scan2D;
 	}
 };
 

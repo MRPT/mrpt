@@ -89,7 +89,7 @@ void xRawLogViewerFrame::SelectObjectInTreeView( const CSerializablePtr & sel_ob
 			CObservation2DRangeScanPtr obs = CObservation2DRangeScanPtr( sel_obj );
 
 			// The plot:
-			mrpt::slam::CSimplePointsMap  dummMap;
+			mrpt::maps::CSimplePointsMap  dummMap;
 			dummMap.insertionOptions.minDistBetweenLaserPoints = 0;
 			dummMap.insertObservation( obs.pointer() );
 

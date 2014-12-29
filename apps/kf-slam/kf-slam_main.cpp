@@ -23,7 +23,7 @@
 #include <mrpt/system/filesystem.h>
 #include <mrpt/slam/CRangeBearingKFSLAM.h>
 #include <mrpt/slam/CRangeBearingKFSLAM2D.h>
-#include <mrpt/slam/CRawlog.h>
+#include <mrpt/obs/CRawlog.h>
 #include <mrpt/math/ops_containers.h>
 #include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/opengl/CGridPlaneXY.h>

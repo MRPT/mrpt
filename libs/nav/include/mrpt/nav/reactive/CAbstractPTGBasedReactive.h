@@ -24,7 +24,7 @@ namespace mrpt
   namespace nav
   {
 	using namespace mrpt;
-	using namespace mrpt::slam;
+	using namespace mrpt::obs;
 	using namespace mrpt::poses;
 
 	/** Base class for reactive navigator systems based on TP-Space, with an arbitrary holonomic

@@ -11,9 +11,6 @@
 
 #include <mrpt/nav/planners/CPathPlanningMethod.h>
 
-using namespace mrpt::slam;
-using namespace mrpt::utils;
-using namespace mrpt::poses;
 using namespace mrpt::nav;
 
 /*---------------------------------------------------------------
@@ -25,6 +22,3 @@ CPathPlanningMethod::CPathPlanningMethod()
 {
 }
 
-
-/*---------------------------------------------------------------
-  ---------------------------------------------------------------*/

@@ -1787,8 +1787,8 @@ void _DSceneViewerFrame::OnmnuImportLASSelected(wxCommandEvent& event)
 		else
 			gl_points_col = opengl::CPointCloudColoured::Create();
 
-		mrpt::slam::CColouredPointsMap pts_map;
-		mrpt::slam::CPointsMap::LAS_HeaderInfo  las_hdr;
+		mrpt::maps::CColouredPointsMap pts_map;
+		mrpt::maps::CPointsMap::LAS_HeaderInfo  las_hdr;
 
 		bool res;
 		{

@@ -24,7 +24,7 @@ namespace mrpt
 	namespace hwdrivers
 	{
 		using namespace mrpt::utils;
-		using namespace mrpt::slam;
+		using namespace mrpt::obs;
 
 		/** This is the base, abstract class for "software drivers" interfaces to 2D scanners (laser range finders).
 		  *  Physical devices may be interfaced through a serial port, a USB connection,etc. but this class

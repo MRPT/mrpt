@@ -16,7 +16,8 @@
 
 using namespace mrpt;
 using namespace mrpt::utils;
-using namespace mrpt::slam;
+using namespace mrpt::obs;
+using namespace mrpt::maps;
 using namespace mrpt::gui;
 using namespace mrpt::opengl;
 using namespace mrpt::hwdrivers;
@@ -92,7 +93,7 @@ void TestPLS()
 				obs.scan[obs.scan.size()/2]);
 
 			obs.sensorPose = CPose3D(0,0,0);
-			mrpt::slam::CSimplePointsMap		theMap;
+			mrpt::maps::CSimplePointsMap		theMap;
 			theMap.insertionOptions.minDistBetweenLaserPoints	= 0;
 			theMap.insertObservation( &obs );
 

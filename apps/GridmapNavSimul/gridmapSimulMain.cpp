@@ -92,7 +92,7 @@ wxBitmap MyArtProvider::CreateBitmap(const wxArtID& id,
 
 #include <mrpt/utils/CTicTac.h>
 #include <mrpt/utils/CRobotSimulator.h>
-#include <mrpt/slam/CRawlog.h>
+#include <mrpt/obs/CRawlog.h>
 #include <mrpt/maps/COccupancyGridMap2D.h>
 #include <mrpt/obs/CActionRobotMovement2D.h>
 #include <mrpt/obs/CObservationOdometry.h>

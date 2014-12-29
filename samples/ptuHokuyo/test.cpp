@@ -14,7 +14,8 @@
 
 using namespace std;
 using namespace mrpt::hwdrivers;
-using namespace mrpt::slam;
+using namespace mrpt::maps;
+using namespace mrpt::obs;
 using namespace mrpt::math;
 
 // Adicional functions

@@ -11,17 +11,16 @@
 
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/utils/CDebugOutputCapable.h>
+#include <mrpt/obs/obs_frwds.h>
 
 #include <mrpt/nav/link_pragmas.h>
 
 namespace mrpt
 {
-	namespace slam { class CSimplePointsMap; }
-
   namespace nav
   {
 	using namespace mrpt;
-	using namespace mrpt::slam;
+	using namespace mrpt::obs;
 	using namespace mrpt::poses;
 
 	/** The pure virtual class that a user of CAbstractReactiveNavigationSystem-derived classes must implement in order to allow the navigator sense the world and send motion commands to the robot.
@@ -74,7 +73,7 @@ namespace mrpt
 		/** Return the current set of obstacle points, as seen from the local coordinate frame of the robot.
 		  * \return false on any error.
 		  */
-		virtual bool senseObstacles( mrpt::slam::CSimplePointsMap 		&obstacles ) = 0;
+		virtual bool senseObstacles( mrpt::maps::CSimplePointsMap 		&obstacles ) = 0;
 
 		virtual void sendNavigationStartEvent () { std::cout << "[sendNavigationStartEvent] Not implemented by the user." << std::endl; }
 		virtual void sendNavigationEndEvent() {	std::cout << "[sendNavigationEndEvent] Not implemented by the user." << std::endl; }

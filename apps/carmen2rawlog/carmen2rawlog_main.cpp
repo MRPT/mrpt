@@ -26,7 +26,7 @@
 #include <mrpt/system/filesystem.h>
 #include <mrpt/math/lightweight_geom_data.h>
 
-#include <mrpt/slam/carmen_log_tools.h>
+#include <mrpt/obs/carmen_log_tools.h>
 #include <mrpt/obs/CObservationOdometry.h>
 
 #include <mrpt/otherlibs/tclap/CmdLine.h>
@@ -36,7 +36,7 @@
 
 using namespace mrpt;
 using namespace mrpt::utils;
-using namespace mrpt::slam;
+using namespace mrpt::obs;
 using namespace mrpt::math;
 using namespace mrpt::system;
 using namespace std;

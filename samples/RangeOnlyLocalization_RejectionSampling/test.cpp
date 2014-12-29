@@ -17,6 +17,7 @@
 using namespace mrpt;
 using namespace mrpt::utils;
 using namespace mrpt::slam;
+using namespace mrpt::maps;
 using namespace mrpt::system;
 using namespace mrpt::random;
 using namespace std;

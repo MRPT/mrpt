@@ -23,7 +23,7 @@
 #include <mrpt/synch/CThreadSafeVariable.h>
 #include <mrpt/utils/CTimeLogger.h>
 #include <mrpt/utils/CFileGZInputStream.h>
-#include <mrpt/slam/CRawlog.h>
+#include <mrpt/obs/CRawlog.h>
 #include <mrpt/opengl/CPointCloudColoured.h>
 #include <mrpt/opengl/CPlanarLaserScan.h>
 #include <mrpt/opengl/CFrustum.h>
@@ -39,7 +39,7 @@
 using namespace mrpt;
 using namespace mrpt::hwdrivers;
 using namespace mrpt::gui;
-using namespace mrpt::slam;
+using namespace mrpt::obs;
 using namespace mrpt::utils;
 using namespace std;
 

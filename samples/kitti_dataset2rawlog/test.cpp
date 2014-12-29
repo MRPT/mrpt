@@ -34,11 +34,10 @@ Output files:
 #include <mrpt/utils/TCamera.h>
 #include <mrpt/utils/CTextFileLinesParser.h>
 #include <mrpt/obs/CObservationStereoImages.h>
-//#include <mrpt/obs/CObservationIMU.h>
 
 using namespace std;
 using namespace mrpt;
-using namespace mrpt::slam;
+using namespace mrpt::obs;
 
 const double STEREO_FPS = 10.0;
 

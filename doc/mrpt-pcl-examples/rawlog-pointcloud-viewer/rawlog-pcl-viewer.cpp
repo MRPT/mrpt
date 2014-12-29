@@ -143,7 +143,7 @@ int main(int argc, char**argv)
 
 			if (!rawlog_eof)
 			{
-				if (!mrpt::slam::CRawlog::getActionObservationPairOrObservation(fil, actions, SF, obs,rawlogEntry))
+				if (!mrpt::obs::CRawlog::getActionObservationPairOrObservation(fil, actions, SF, obs,rawlogEntry))
 				{
 					rawlog_eof = true;
 					std::cerr << "End of rawlog file!! Close the window to exit\n";
@@ -152,16 +152,16 @@ int main(int argc, char**argv)
 				{
 					// Can generate a point cloud from this data?
 					// TODO: Process Kinect observations differently to extract RGB data.
-					mrpt::slam::CPointsMapPtr  new_map;
+					mrpt::maps::CPointsMapPtr  new_map;
 					if (SF)
 					{
-						new_map = mrpt::slam::CSimplePointsMap::Create();
+						new_map = mrpt::maps::CSimplePointsMap::Create();
 						// new_map->insertionOptions.minDistBetweenLaserPoints = 0;
 						SF->insertObservationsInto(new_map);
 					}
 					else if (obs)
 					{
-						new_map = mrpt::slam::CSimplePointsMap::Create();
+						new_map = mrpt::maps::CSimplePointsMap::Create();
 						// new_map->insertionOptions.minDistBetweenLaserPoints = 0;
 						new_map->insertObservation(obs.pointer());
 					}

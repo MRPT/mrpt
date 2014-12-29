@@ -31,7 +31,7 @@ using namespace std;
 using namespace mrpt;
 using namespace mrpt::math;
 using namespace mrpt::utils;
-using namespace mrpt::slam;
+using namespace mrpt::obs;
 using namespace mrpt::hwdrivers;
 
 MRPT_TODO("FIXME: Put #if MRPT_HAS_OPENCV around any function using cv::Mat, if cv::Mat is to be definitive (=> Eigen?)")

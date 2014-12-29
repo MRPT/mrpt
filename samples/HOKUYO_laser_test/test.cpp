@@ -18,7 +18,8 @@
 
 using namespace mrpt;
 using namespace mrpt::hwdrivers;
-using namespace mrpt::slam;
+using namespace mrpt::obs;
+using namespace mrpt::maps;
 using namespace mrpt::gui;
 using namespace mrpt::utils;
 using namespace std;
@@ -124,7 +125,7 @@ void Test_HOKUYO()
 
 			obs.sensorPose = CPose3D(0,0,0);
 
-			mrpt::slam::CSimplePointsMap		theMap;
+			mrpt::maps::CSimplePointsMap		theMap;
 			theMap.insertionOptions.minDistBetweenLaserPoints	= 0;
 			theMap.insertObservation( &obs );
 			//map.save2D_to_text_file("_out_scan.txt");

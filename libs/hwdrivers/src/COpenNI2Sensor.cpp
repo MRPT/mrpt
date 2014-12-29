@@ -22,7 +22,7 @@
 using namespace mrpt::hwdrivers;
 using namespace mrpt::system;
 using namespace mrpt::synch;
-using namespace mrpt::slam;
+using namespace mrpt::obs;
 using namespace mrpt::math;
 using namespace std;
 using mrpt::utils::DEG2RAD;
@@ -153,7 +153,7 @@ void COpenNI2Sensor::doProcess()
 	{
 		m_state = ssWorking;
 
-		vector<CSerializablePtr> objs;
+		std::vector<mrpt::utils::CSerializablePtr> objs;
 		if (m_grab_image || m_grab_depth || m_grab_3D_points)  objs.push_back(newObs);
 
 		appendObservations( objs );

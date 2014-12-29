@@ -25,7 +25,7 @@ IMPLEMENTS_GENERIC_SENSOR(CCANBusReader,mrpt::hwdrivers)
 using namespace std;
 using namespace mrpt;
 using namespace mrpt::utils;
-using namespace mrpt::slam;
+using namespace mrpt::obs;
 using namespace mrpt::hwdrivers;
 
 char hexCharToInt(char n)

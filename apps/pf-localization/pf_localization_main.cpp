@@ -28,7 +28,7 @@
 
 #include <mrpt/obs/CActionRobotMovement2D.h>
 #include <mrpt/obs/CActionCollection.h>
-#include <mrpt/slam/CRawlog.h>
+#include <mrpt/obs/CRawlog.h>
 #include <mrpt/maps/CSimpleMap.h>
 #include <mrpt/maps/COccupancyGridMap2D.h>
 #include <mrpt/maps/CMultiMetricMap.h>
@@ -50,6 +50,7 @@
 
 using namespace mrpt;
 using namespace mrpt::slam;
+using namespace mrpt::maps;
 using namespace mrpt::opengl;
 using namespace mrpt::gui;
 using namespace mrpt::math;

@@ -13,7 +13,7 @@
 #include <mrpt/hwdrivers/CBoardIR.h>
 
 using namespace mrpt::hwdrivers;
-using namespace mrpt::slam;
+using namespace mrpt::obs;
 using namespace mrpt::system;
 using namespace std;
 

@@ -31,7 +31,7 @@ TEST(TopographyReconstructPathFrom3RTK, sampleDataset )
 {
 	mrpt::poses::CPose3DInterpolator robot_path;
 
-	mrpt::slam::CRawlog  rawlog;
+	mrpt::obs::CRawlog  rawlog;
 
 	const string dataset_fil = MRPT_GLOBAL_UNITTEST_SRC_DIR + string("/share/mrpt/datasets/test_rtk_path.rawlog");
 	if (!mrpt::system::fileExists(dataset_fil))

@@ -31,7 +31,7 @@
 #include <mrpt/math/data_utils.h>
 #include <mrpt/system/threads.h>
 #include <mrpt/obs/CObservationBeaconRanges.h>
-#include <mrpt/slam/CRawlog.h>
+#include <mrpt/obs/CRawlog.h>
 #include <mrpt/bayes/CParticleFilter.h>
 #include <mrpt/random.h>
 
@@ -43,7 +43,8 @@
 #include <mrpt/opengl/CGridPlaneXY.h>
 
 using namespace mrpt;
-using namespace mrpt::slam;
+using namespace mrpt::obs;
+using namespace mrpt::maps;
 using namespace mrpt::bayes;
 using namespace mrpt::opengl;
 using namespace mrpt::gui;
@@ -621,7 +622,7 @@ void TestParticlesLocalization()
 						for (size_t k=0;k<dist->sensedData.size();k++)
 						{
 							string beacon_name = format("ring%u",unsigned(dist->sensedData[k].beaconID));
-							const slam::CLandmark *lm = metricMap.m_landmarksMap->landmarks.getByBeaconID( dist->sensedData[k].beaconID );
+							const mrpt::maps::CLandmark *lm = metricMap.m_landmarksMap->landmarks.getByBeaconID( dist->sensedData[k].beaconID );
 							if (lm)
 							{
 								#ifdef	SHOW_REAL_TIME_3D

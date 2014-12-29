@@ -235,7 +235,7 @@ void  CLogFileRecord::readFromStream(mrpt::utils::CStream &in,int version)
 
 			if (version<6)
 			{
-				CVectorFloat prevV,prevW,prevSelPTG;
+				mrpt::math::CVectorFloat prevV,prevW,prevSelPTG;
 
 				// Previous values: (Removed in version 6)
 				in >> n;

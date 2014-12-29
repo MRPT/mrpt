@@ -19,10 +19,11 @@
 
 using namespace mrpt::hwdrivers;
 using namespace mrpt::system;
-using namespace mrpt::slam;
+using namespace mrpt::obs;
 using namespace mrpt::synch;
 using namespace mrpt::math;
 using namespace std;
+using mrpt::utils::CTicTac;
 using mrpt::utils::DEG2RAD;
 using mrpt::obs::CObservationRGBD360;
 
@@ -109,7 +110,7 @@ void COpenNI2_RGBD360::doProcess()
 	{
 		m_state = ssWorking;
 
-		vector<CSerializablePtr> objs;
+		std::vector<mrpt::utils::CSerializablePtr> objs;
 		if (m_grab_rgb || m_grab_depth || m_grab_3D_points) objs.push_back(newObs);
 
 		appendObservations( objs );

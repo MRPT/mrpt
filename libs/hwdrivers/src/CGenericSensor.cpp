@@ -15,7 +15,7 @@
 #include <mrpt/utils/CStartUpClassesRegister.h>
 
 using namespace mrpt::utils;
-using namespace mrpt::slam;
+using namespace mrpt::obs;
 using namespace mrpt::system;
 using namespace mrpt::hwdrivers;
 using namespace std;

@@ -27,7 +27,8 @@ IMPLEMENTS_GENERIC_SENSOR(CActivMediaRobotBase,mrpt::hwdrivers)
 using namespace mrpt;
 using namespace mrpt::utils;
 using namespace mrpt::system;
-using namespace mrpt::slam;
+using namespace mrpt::obs;
+using namespace mrpt::poses;
 using namespace mrpt::hwdrivers;
 using namespace std;
 

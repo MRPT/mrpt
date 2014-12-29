@@ -12,7 +12,7 @@
 
 using namespace mrpt;
 using namespace mrpt::utils;
-using namespace mrpt::slam;
+using namespace mrpt::obs;
 using namespace mrpt::system;
 using namespace mrpt::rawlogtools;
 using namespace std;

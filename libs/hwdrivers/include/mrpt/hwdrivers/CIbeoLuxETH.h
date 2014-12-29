@@ -22,7 +22,7 @@ namespace mrpt
 		using namespace std;
 		using namespace mrpt::hwdrivers;
 		using namespace mrpt::utils;
-		using namespace mrpt::slam;
+		using namespace mrpt::obs;
 
         /** This "software driver" implements the communication protocol for interfacing a Ibeo Lux laser scanners through an ethernet controller.
           *   This class does not need to be bind, i.e. you do not need to call C2DRangeFinderAbstract::bindIO.

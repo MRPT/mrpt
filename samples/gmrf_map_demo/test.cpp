@@ -12,7 +12,7 @@
 #include <mrpt/random.h>
 
 using namespace mrpt;
-using namespace mrpt::slam;
+using namespace mrpt::maps;
 using namespace mrpt::math;
 using namespace mrpt::random;
 using namespace std;
@@ -24,7 +24,7 @@ void Example_GMRF()
 	const double Y_SIZE     = 10.0;
 	const double RESOLUTION = 0.5;
 
-	mrpt::slam::CGasConcentrationGridMap2D  gasmap(
+	mrpt::maps::CGasConcentrationGridMap2D  gasmap(
 		CRandomFieldGridMap2D::mrGMRF_G /*map type*/,
 		0,X_SIZE,
 		0,Y_SIZE,

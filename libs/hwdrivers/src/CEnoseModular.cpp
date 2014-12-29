@@ -15,7 +15,7 @@
 
 using namespace mrpt::utils;
 using namespace mrpt::math;
-using namespace mrpt::slam;
+using namespace mrpt::obs;
 using namespace mrpt::hwdrivers;
 using namespace std;
 
@@ -127,7 +127,7 @@ CStream *CEnoseModular::checkConnectionAndConnect()
 /*-------------------------------------------------------------
 					getObservation
 -------------------------------------------------------------*/
-bool CEnoseModular::getObservation( mrpt::slam::CObservationGasSensors &obs )
+bool CEnoseModular::getObservation( mrpt::obs::CObservationGasSensors &obs )
 {
 	try
 	{
@@ -192,7 +192,7 @@ bool CEnoseModular::getObservation( mrpt::slam::CObservationGasSensors &obs )
 			else
 				newRead.eNosePoseOnTheRobot = CPose3D(0,0,0);
 
-			// Get Temperature (ºC)
+			// Get Temperature (degrees C)
 			newRead.temperature = msg.content[0]*1.65214 - 277.74648;
 
 			//process all sensors

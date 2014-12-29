@@ -13,7 +13,7 @@
 
 using namespace std;
 using namespace mrpt;
-using namespace mrpt::slam;
+using namespace mrpt::obs;
 using namespace mrpt::hwdrivers;
 
 /*-------------------------------------------------------------

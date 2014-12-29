@@ -17,7 +17,7 @@
 IMPLEMENTS_GENERIC_SENSOR(CIMUXSens,mrpt::hwdrivers)
 
 using namespace mrpt::utils;
-using namespace mrpt::slam;
+using namespace mrpt::obs;
 using namespace mrpt::hwdrivers;
 
 #if MRPT_HAS_xSENS_MT3
