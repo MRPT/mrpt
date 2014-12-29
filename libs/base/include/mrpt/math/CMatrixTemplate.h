@@ -553,7 +553,17 @@ namespace mrpt
 		/** Declares a matrix of booleans (non serializable).
 		  *  \sa CMatrixDouble, CMatrixFloat, CMatrixB
 		  */
-		typedef CMatrixTemplate<bool> CMatrixBool;
+		//typedef CMatrixTemplate<bool> CMatrixBool;
+		class BASE_IMPEXP CMatrixBool : public CMatrixTemplate<bool>
+		{
+		public:
+			/** Constructor */
+			CMatrixBool(size_t row=1, size_t col=1);
+			/** Copy constructor */
+			CMatrixBool( const CMatrixTemplate<bool> &m );
+			/** Assignment operator for float matrixes */
+			CMatrixBool & operator = (const CMatrixTemplate<bool> & m);
+		};
 
 	} // End of namespace
 } // End of namespace

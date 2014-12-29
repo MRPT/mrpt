@@ -30,11 +30,11 @@ namespace mrpt
 		// This must be added to any CSerializable derived class:
 		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( COctoMapVoxels, CRenderizableDisplayList, OPENGL_IMPEXP )
 
-		/** A flexible renderer of voxels, typically from a 3D octo map (see mrpt::slam::COctoMap).
+		/** A flexible renderer of voxels, typically from a 3D octo map (see mrpt::maps::COctoMap).
 		  *  This class is sort of equivalent to octovis::OcTreeDrawer from the octomap package, but
 		  *  relying on MRPT's CRenderizableDisplayList so there's no need to manually cache the rendering of OpenGL primitives.
 		  *
-		  *  Normally users call mrpt::slam::COctoMap::getAs3DObject() to obtain a generic mrpt::opengl::CSetOfObjects which insides holds an instance of COctoMapVoxels.
+		  *  Normally users call mrpt::maps::COctoMap::getAs3DObject() to obtain a generic mrpt::opengl::CSetOfObjects which insides holds an instance of COctoMapVoxels.
 		  *  You can also alternativelly call COctoMapVoxels::setFromOctoMap(), so you can tune the display parameters, colors, etc.
 		  *  As with any other mrpt::opengl class, all object coordinates refer to some frame of reference which is relative to the object parent and can be changed with mrpt::opengl::CRenderizable::setPose()
 		  *
@@ -44,7 +44,7 @@ namespace mrpt
 		  *			- setGridLinesColor()
 		  *			- setGridLinesWidth()
 		  *			- push_back_GridCube()
-		  *		- A number of <b>voxel collections</b>, drawn as cubes each having a different color (e.g. depending on the color scheme in the original mrpt::slam::COctoMap object).
+		  *		- A number of <b>voxel collections</b>, drawn as cubes each having a different color (e.g. depending on the color scheme in the original mrpt::maps::COctoMap object).
 		  *       The meanning of each collection is user-defined, but you can use the constants VOXEL_SET_OCCUPIED, VOXEL_SET_FREESPACE for predefined meanings.
 		  *			- showVoxels()
 		  *			- push_back_Voxel()
@@ -199,8 +199,8 @@ namespace mrpt
 			/** Evaluates the bounding box of this object (including possible children) in the coordinate frame of the object parent. */
 			virtual void getBoundingBox(mrpt::math::TPoint3D &bb_min, mrpt::math::TPoint3D &bb_max) const;
 
-			/** Sets the contents of the object from a mrpt::slam::COctoMap object.
-			  * \tparam Typically, an mrpt::slam::COctoMap object
+			/** Sets the contents of the object from a mrpt::maps::COctoMap object.
+			  * \tparam Typically, an mrpt::maps::COctoMap object
 			  *
 			  * \note Declared as a template because in the library [mrpt-opengl] we don't have access to the library [mrpt-maps].
 			  */

@@ -20,7 +20,7 @@ namespace mrpt
 	namespace detectors
 	{
 		using namespace std;
-		using namespace mrpt::slam;
+		using namespace mrpt::obs;
 		using namespace mrpt::utils;
 
 		typedef std::vector<CDetectableObjectPtr> vector_detectable_object;
@@ -29,8 +29,6 @@ namespace mrpt
 		class DETECTORS_IMPEXP CObjectDetection	
 		{
 		public:
-			//virtual ~CObjectDetection();
-
 			/** Initialize the object with parameters loaded from the given config file. */
 			inline void init(const std::string &configFile)
 			{

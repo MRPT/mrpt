@@ -44,21 +44,22 @@ namespace maps
 	 *  <b>All these kinds of metric maps can be kept in a multi-metric map:</b>:
 	 *		- mrpt::maps::CPointsMap: For laser 2D range scans, and posibly for IR ranges,... (It keeps the full 3D structure of scans)
 	 *		- mrpt::maps::COccupancyGridMap2D: Exclusively for 2D, <b>horizontal</b>  laser range scans, at different altitudes.
-	 *		- mrpt::slam::COctoMap: For 3D occupancy grids of variable resolution, with octrees (based on the library "octomap").
-	 *		- mrpt::slam::CColouredOctoMap: The same than above, but nodes can store RGB data appart from occupancy.
+	 *		- mrpt::maps::COctoMap: For 3D occupancy grids of variable resolution, with octrees (based on the library "octomap").
+	 *		- mrpt::maps::CColouredOctoMap: The same than above, but nodes can store RGB data appart from occupancy.
 	 *		- mrpt::maps::CLandmarksMap: For visual landmarks,etc...
-	 *		- mrpt::slam::CGasConcentrationGridMap2D: For gas concentration maps.
-	 *		- mrpt::slam::CWirelessPowerGridMap2D: For wifi power maps.
-	 *		- mrpt::slam::CBeaconMap: For range-only SLAM.
-	 *		- mrpt::slam::CHeightGridMap2D: For maps of height for each (x,y) location.
-	 *		- mrpt::slam::CReflectivityGridMap2D: For maps of "reflectivity" for each (x,y) location.
+	 *		- mrpt::maps::CGasConcentrationGridMap2D: For gas concentration maps.
+	 *		- mrpt::maps::CWirelessPowerGridMap2D: For wifi power maps.
+	 *		- mrpt::maps::CBeaconMap: For range-only SLAM.
+	 *		- mrpt::maps::CHeightGridMap2D: For maps of height for each (x,y) location.
+	 *		- mrpt::maps::CReflectivityGridMap2D: For maps of "reflectivity" for each (x,y) location.
 	 *		- mrpt::maps::CColouredPointsMap: For point map with color.
-	 *		- mrpt::slam::CWeightedPointsMap: For point map with weights (capable of "fusing").
+	 *		- mrpt::maps::CWeightedPointsMap: For point map with weights (capable of "fusing").
 	 *
 	 *  See CMultiMetricMap::setListOfMaps() for the method for initializing this class programatically. 
 	 *  See also TSetOfMetricMapInitializers::loadFromConfigFile for a template of ".ini"-like configuration
 	 *   file that can be used to define which maps to create and all their parameters.
 	 *
+	 * \note This class belongs to [mrpt-slam] instead of [mrpt-maps] due to the dependency on map classes in mrpt-vision.
 	 * \sa CMetricMap  \ingroup mrpt_slam_grp 
 	 */
 	class SLAM_IMPEXP CMultiMetricMap : public mrpt::maps::CMetricMap
@@ -279,7 +280,7 @@ namespace maps
 
 		} occupancyGridMap2D_options;
 
-		/** Specific options for 3D octo maps (mrpt::slam::COctoMap) */
+		/** Specific options for 3D octo maps (mrpt::maps::COctoMap) */
 		struct SLAM_IMPEXP TOctoMapOptions
 		{
 			TOctoMapOptions();	//!< Default values loader
@@ -289,7 +290,7 @@ namespace maps
 			mrpt::maps::COctoMap::TLikelihoodOptions  likelihoodOpts;	//!< Customizable initial options.
 		} octoMap_options;
 
-		/** Specific options for 3D octo maps (mrpt::slam::COctoMap) */
+		/** Specific options for 3D octo maps (mrpt::maps::COctoMap) */
 		struct SLAM_IMPEXP TColourOctoMapOptions
 		{
 			TColourOctoMapOptions();	//!< Default values loader
@@ -308,7 +309,7 @@ namespace maps
 			mrpt::maps::CPointsMap::TLikelihoodOptions  likelihoodOpts; //!< 	//!< Customizable initial likelihood options
 		} pointsMapOptions_options;
 
-		/** Specific options for gas grid maps (mrpt::slam::CGasConcentrationGridMap2D)
+		/** Specific options for gas grid maps (mrpt::maps::CGasConcentrationGridMap2D)
 		  */
 		struct SLAM_IMPEXP CGasConcentrationGridMap2DOptions
 		{
@@ -320,7 +321,7 @@ namespace maps
 
 		} gasGridMap_options;
 
-		/** Specific options for wifi grid maps (mrpt::slam::CWirelessPowerGridMap2D)
+		/** Specific options for wifi grid maps (mrpt::maps::CWirelessPowerGridMap2D)
 		  */
 		struct SLAM_IMPEXP CWirelessPowerGridMap2DOptions
 		{
@@ -345,7 +346,7 @@ namespace maps
 		} landmarksMap_options;
 
 
-		/** Specific options for landmarks maps (mrpt::slam::CBeaconMap)
+		/** Specific options for landmarks maps (mrpt::maps::CBeaconMap)
 		  */
 		struct SLAM_IMPEXP CBeaconMapOptions
 		{
@@ -356,7 +357,7 @@ namespace maps
 
 		} beaconMap_options;
 
-		/** Specific options for height grid maps (mrpt::slam::CHeightGridMap2D)
+		/** Specific options for height grid maps (mrpt::maps::CHeightGridMap2D)
 		  */
 		struct SLAM_IMPEXP CHeightGridMap2DOptions
 		{
@@ -367,7 +368,7 @@ namespace maps
 			mrpt::maps::CHeightGridMap2D::TInsertionOptions	insertionOpts;	//!< Customizable initial options.
 		} heightMap_options;
 
-		/** Specific options for height grid maps (mrpt::slam::CReflectivityGridMap2D)
+		/** Specific options for height grid maps (mrpt::maps::CReflectivityGridMap2D)
 		  */
 		struct SLAM_IMPEXP CReflectivityGridMap2DOptions
 		{
@@ -439,17 +440,17 @@ namespace maps
 		  * [<sectionName>]
 		  *  // Creation of maps:
 		  *  occupancyGrid_count=<Number of mrpt::maps::COccupancyGridMap2D maps>
-		  *  octoMap_count=<Number of mrpt::slam::COctoMap maps>
+		  *  octoMap_count=<Number of mrpt::maps::COctoMap maps>
 		  *  colourOctoMap_count=<Number of mrpt::slam::CColourOctoMap maps>
-		  *  gasGrid_count=<Number of mrpt::slam::CGasConcentrationGridMap2D maps>
-		  *  wifiGrid_count=<Number of mrpt::slam::CWirelessPowerGridMap2D maps>
+		  *  gasGrid_count=<Number of mrpt::maps::CGasConcentrationGridMap2D maps>
+		  *  wifiGrid_count=<Number of mrpt::maps::CWirelessPowerGridMap2D maps>
 		  *  landmarksMap_count=<0 or 1, for creating a mrpt::maps::CLandmarksMap map>
-		  *  beaconMap_count=<0 or 1, for creating a mrpt::slam::CBeaconMap map>
+		  *  beaconMap_count=<0 or 1, for creating a mrpt::maps::CBeaconMap map>
 		  *  pointsMap_count=<Number of mrpt::maps::CSimplePointsMap map>
-		  *  heightMap_count=<Number of mrpt::slam::CHeightGridMap2D maps>
-		  *  reflectivityMap_count=<Number of mrpt::slam::CReflectivityGridMap2D maps>
+		  *  heightMap_count=<Number of mrpt::maps::CHeightGridMap2D maps>
+		  *  reflectivityMap_count=<Number of mrpt::maps::CReflectivityGridMap2D maps>
 		  *  colourPointsMap_count=<0 or 1, for creating a mrpt::maps::CColouredPointsMap map>
-		  *  weightedPointsMap_count=<0 or 1, for creating a mrpt::slam::CWeightedPointsMap map>
+		  *  weightedPointsMap_count=<0 or 1, for creating a mrpt::maps::CWeightedPointsMap map>
 		  *
 		  *  // Selection of map for likelihood. Either a numeric value or the textual enum
 		  *  //   enum value of mrpt::maps::CMultiMetricMap::TOptions::TMapSelectionForLikelihood (e.g: either "-1" or "fuseAll", ect...)

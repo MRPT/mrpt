@@ -12,7 +12,7 @@
 
 #include <mrpt/slam/CRejectionSamplingRangeOnlyLocalization.h>
 #include <mrpt/obs/CObservationBeaconRanges.h>
-#include <mrpt/slam/CLandmark.h>
+#include <mrpt/maps/CLandmark.h>
 #include <mrpt/maps/CLandmarksMap.h>
 #include <mrpt/math/utils.h>
 

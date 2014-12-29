@@ -17,20 +17,9 @@ MRPT_WARNING("Including <mrpt/slam.h> makes compilation much slower, consider in
 #include <mrpt/config.h>
 
 // Maps:
-#include <mrpt/maps/CMetricMap.h>
-#include <mrpt/slam/CPointsMap.h>
-#include <mrpt/maps/CSimplePointsMap.h>
-#include <mrpt/maps/CColouredPointsMap.h>
-#include <mrpt/maps/COccupancyGridMap2D.h>
-#include <mrpt/maps/CMultiMetricMap.h>
-#include <mrpt/maps/CSimpleMap.h>
-#include <mrpt/maps/CLandmarksMap.h>
-#include <mrpt/slam/CLandmark.h>
-#include <mrpt/maps/CGasConcentrationGridMap2D.h>
-
-#include <mrpt/maps/CWirelessPowerGridMap2D.h>
-
-#include <mrpt/maps/CBeaconMap.h>
+#include <mrpt/maps.h>
+#include <mrpt/maps/CMultiMetricMap.h>    // This class is in [mrpt-slam]
+#include <mrpt/maps/CMultiMetricMapPDF.h> // This class is in [mrpt-slam]
 
 // Map Building algorithms:
 #include <mrpt/slam/CMetricMapBuilderICP.h>
@@ -39,52 +28,20 @@ MRPT_WARNING("Including <mrpt/slam.h> makes compilation much slower, consider in
 #include <mrpt/slam/CRangeBearingKFSLAM2D.h>
 
 // Observations:
-#include <mrpt/obs/CObservation.h>
-#include <mrpt/obs/CObservation2DRangeScan.h>
-#include <mrpt/obs/CObservation3DRangeScan.h>
-#include <mrpt/obs/CObservationRange.h>
-#include <mrpt/obs/CObservationImage.h>
-#include <mrpt/obs/CObservationVisualLandmarks.h>
-#include <mrpt/obs/CObservationStereoImages.h>
-#include <mrpt/obs/CObservationBeaconRanges.h>
-#include <mrpt/obs/CObservationGasSensors.h>
-#include <mrpt/obs/CObservationWirelessPower.h>
-#include <mrpt/obs/CObservationRFID.h>
-#include <mrpt/obs/CObservationGPS.h>
-#include <mrpt/obs/CObservationBatteryState.h>
-#include <mrpt/obs/CObservationIMU.h>
-#include <mrpt/obs/CObservationOdometry.h>
-#include <mrpt/obs/CObservationBearingRange.h>
-#include <mrpt/obs/CObservationComment.h>
-
-#include <mrpt/slam/observations_overlap.h>
-
-#include <mrpt/obs/CSensoryFrame.h>
-
-// Actions:
-#include <mrpt/obs/CActionCollection.h>
-#include <mrpt/obs/CActionRobotMovement2D.h>
-#include <mrpt/obs/CActionRobotMovement3D.h>
-
+#include <mrpt/obs.h>
+#include <mrpt/obs/CObservationVisualLandmarks.h>  // In [mrpt-vision]
 
 // Algorithms:
 #include <mrpt/slam/CMonteCarloLocalization2D.h>
 #include <mrpt/slam/CMonteCarloLocalization3D.h>
-
 #include <mrpt/slam/CICP.h>
 #include <mrpt/slam/CGridMapAligner.h>
-
 #include <mrpt/slam/CIncrementalMapPartitioner.h>
 #include <mrpt/slam/CRejectionSamplingRangeOnlyLocalization.h>
-
 #include <mrpt/slam/data_association.h>
 
-// PDFs:
-#include <mrpt/slam/CMultiMetricMapPDF.h>
-
 // Others:
-#include <mrpt/obs/CRawlog.h>
-
+#include <mrpt/slam/observations_overlap.h>
 #include <mrpt/slam/COccupancyGridMapFeatureExtractor.h>
 
 #endif

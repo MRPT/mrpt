@@ -1385,8 +1385,8 @@ void  TSetOfMetricMapInitializers::loadFromConfigFile(
 /*
 		  *  ; Creation of maps:
 		  *  occupancyGrid_count=<Number of mrpt::maps::COccupancyGridMap2D maps>
-		  *  gasGrid_count=<Number of mrpt::slam::CGasConcentrationGridMap2D maps>
-		  *  wifiGrid_count=<Number of mrpt::slam::CWirelessPowerGridMap2D maps>
+		  *  gasGrid_count=<Number of mrpt::maps::CGasConcentrationGridMap2D maps>
+		  *  wifiGrid_count=<Number of mrpt::maps::CWirelessPowerGridMap2D maps>
 		  *  landmarksMap_count=<0 or 1, for creating a mrpt::maps::CLandmarksMap map>
 		  *  beaconMap_count=<0 or 1>
 		  *  pointsMap_count=<0 or 1, for creating a mrpt::maps::CSimplePointsMap map>

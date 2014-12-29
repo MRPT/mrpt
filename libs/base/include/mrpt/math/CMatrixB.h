@@ -28,26 +28,12 @@ namespace mrpt
 			// This must be added to any CSerializable derived class:
 			DEFINE_SERIALIZABLE( CMatrixB )
 		public:
-			/** Constructor
-			  */
-			CMatrixB(size_t row = 1, size_t col = 1) : CMatrixBool(row,col)
-			{
-			}
-
-			/** Copy constructor
-			  */
-			CMatrixB( const CMatrixBool &m ) : CMatrixBool(m)
-			{
-			}
-
-			/** Assignment operator for float matrixes
-			*/
-			CMatrixB & operator = (const CMatrixBool& m)
-			{
-				CMatrixBool::operator =(m);
-				return *this;
-			}
-
+			/** Constructor */
+			CMatrixB(size_t row = 1, size_t col = 1) : CMatrixBool(row,col) { }
+			/** Copy constructor */
+			CMatrixB( const CMatrixBool &m ) : CMatrixBool(m)  { }
+			/** Assignment operator for float matrixes */
+			CMatrixB & operator = (const CMatrixBool& m) { CMatrixBool::operator =(m); return *this; }
 		}; // end of class definition
 		DEFINE_SERIALIZABLE_POST_CUSTOM_BASE( CMatrixB, mrpt::utils::CSerializable )
 

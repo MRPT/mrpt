@@ -19,7 +19,7 @@
 #include <mrpt/otherlibs/do_opencv_includes.h> 
 
 using namespace mrpt::detectors;
-using namespace mrpt::slam;
+using namespace mrpt::obs;
 using namespace std;
 
 #if MRPT_HAS_OPENCV && MRPT_OPENCV_VERSION_NUM>=0x200

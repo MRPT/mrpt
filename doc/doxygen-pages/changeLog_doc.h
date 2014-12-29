@@ -206,8 +206,8 @@
 			- mrpt::hwdrivers::CImageGrabber_FlyCapture2: Support for Point Grey Research's cameras via the FlyCapture2 libray - [(commits)](https://github.com/jlblancoc/mrpt/pull/5/commits).
 		- [mrpt-maps]
 			- There are now two versions of octomaps (by Mariano Jaimez Tarifa/Jose Luis Blanco) - [(commit)](http://code.google.com/p/mrpt/source/detail?r=3443)
-				- mrpt::slam::COctoMap (only occupancy)
-				- mrpt::slam::CColouredOctoMap (occupancy + RGB color)
+				- mrpt::maps::COctoMap (only occupancy)
+				- mrpt::maps::CColouredOctoMap (occupancy + RGB color)
 		- [mrpt-obs]
 			- mrpt::obs::CObservationRawDAQ, a placeholder for raw and generic measurements from data acquisition devices. - [(commit)](http://code.google.com/p/mrpt/source/detail?r=3459)
 		- [mrpt-opengl]
@@ -284,7 +284,7 @@
 				- mrpt::bayes::CParticleFilterCapable::computeResampling()
 			- New method: CImage::loadFromXPM() - <a href="http://code.google.com/p/mrpt/source/detail?r=3397" >r3397</a>
 		- [mrpt-maps]
-			- mrpt::slam::COctoMap now exposes the inner octomap::OcTree object. See example samples/octomap_simple - <a href="http://code.google.com/p/mrpt/source/detail?r=4304" >r4304</a>
+			- mrpt::maps::COctoMap now exposes the inner octomap::OcTree object. See example samples/octomap_simple - <a href="http://code.google.com/p/mrpt/source/detail?r=4304" >r4304</a>
 		- [mrpt-openg]
 			- mrpt::opengl::CBox now be also rendered as a solid box + line borders. See mrpt::opengl::CBox::enableBoxBorder()
 			- mrpt::opengl::COctoMapVoxels - <a href="http://code.google.com/p/mrpt/source/detail?r=4329" >r4329</a>
@@ -353,7 +353,7 @@
 		- New library with a flexible implementation of Sparser Relative Bundle Adjustment (RBA), as presented in ICRA 2013: <a href="http://www.mrpt.org/srba" >mrpt-srba</a>.
 		- New library for Plane-based Maps: <a href="group__mrpt__pbmap__grp.html" >mrpt-pbmap</a> (also presented in ICRA 2013).
 		- Some MRPT modules are now header-only libraries.
-		- Support for a new Octomap metric map, via the octomap library. See mrpt::slam::COctoMap and detailed changes below.
+		- Support for a new Octomap metric map, via the octomap library. See mrpt::maps::COctoMap and detailed changes below.
 		- Support for importing/exporting point clouds in the standard LAS format (Look for liblas below).
 		- Better support for custom builds of MRPT (selective building of individual apps and libs, etc.)
 		- Ready for Visual Studio 2012 and GCC 4.7
@@ -384,7 +384,7 @@
 			- [mrpt-obs]
 				- mrpt::obs::CObservationWindSensor - <a href="http://code.google.com/p/mrpt/source/detail?r=3050" >r3050</a>
 			- [mrpt-maps]
-				- mrpt::slam::COctoMap
+				- mrpt::maps::COctoMap
 			- [mrpt-opengl]
 				- mrpt::opengl::COctoMapVoxels
 		- Deleted classes:
@@ -400,7 +400,7 @@
 				- [mrpt-graphs]
 				- [mrpt-graphslam]
 			- Integration of the Octomap C++ library (new BSD License) by Kai M. Wurm et al.: <a href="http://code.google.com/p/mrpt/source/detail?r=3081" >r3081</a>, <a href="http://code.google.com/p/mrpt/source/detail?r=3083" >r3083</a>, <a href="http://code.google.com/p/mrpt/source/detail?r=3084" >r3084</a>, <a href="http://code.google.com/p/mrpt/source/detail?r=3086" >r3086</a>, <a href="http://code.google.com/p/mrpt/source/detail?r=3087" >r3087</a>, <a href="http://code.google.com/p/mrpt/source/detail?r=3088" >r3088</a>, <a href="http://code.google.com/p/mrpt/source/detail?r=3093" >r3093</a>
-				- The main new classes are mrpt::slam::COctoMap & mrpt::opengl::COctoMapVoxels
+				- The main new classes are mrpt::maps::COctoMap & mrpt::opengl::COctoMapVoxels
 				- mrpt::maps::CMultiMetricMap now allows the seamless integration of octomaps in many MRPT map building or localization algorithms.
 				- New example: samples/octomap_simple
 		- Changes in classes:
@@ -504,7 +504,7 @@
 			- [mrpt-base] mrpt::dynamicsize_vector::resize() performed a memory reallocation even if given the current size, due to an inherited behavior from Eigen. It is not the expected behavior, so it has been fixed. - <a href="http://code.google.com/p/mrpt/source/detail?r=3003" >r3003</a>
 			- [mrpt-base] Wrong computation of normPDF() values for the multidimensional cases. Closes <a href="http://code.google.com/p/mrpt/issues/detail?id=46" >#46</a> - <a href="http://code.google.com/p/mrpt/source/detail?r=3068" >r3068</a>
 			- [mrpt-base] mrpt::poses::CPoint::asString() confused the 2D and 3D cases (Thanks Cipri!)
-			- [mrpt-base] Fixed errors in de-serialization of mrpt::utils::CPointPDFSOG and mrpt::slam::CReflectivityGridMap2D
+			- [mrpt-base] Fixed errors in de-serialization of mrpt::utils::CPointPDFSOG and mrpt::maps::CReflectivityGridMap2D
 			- [mrpt-base] mrpt::math::KDTreeCapable::kdTreeRadiusSearch2D() always returned 0 matched.
 			- [mrpt-graphs] Fixed bug in RecursiveSpectralPartition (Thanks to Edu!) - <a href="http://code.google.com/p/mrpt/source/detail?r=3026" >r3026</a>
 			- [mrpt-hwdrivers] Fixed potential SEGFAULT in mrpt::hwdrivers::CGPSInterface (Thanks K.Miyawaki for <a href="http://www.mrpt.org/node/2474" >reporting</a>)

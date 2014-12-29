@@ -10,9 +10,10 @@
 #include "slam-precomp.h"   // Precompiled headers
 
 #include <mrpt/slam/observations_overlap.h>
-#include <mrpt/slam/CPointsMap.h>
+#include <mrpt/maps/CPointsMap.h>
 
 using namespace mrpt::slam;
+using namespace mrpt::maps;
 using namespace mrpt::utils;
 using namespace mrpt::poses;
 using namespace std;

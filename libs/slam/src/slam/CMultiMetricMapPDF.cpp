@@ -15,7 +15,7 @@
 #include <mrpt/utils/CFileStream.h>
 #include <mrpt/system/os.h>
 
-#include <mrpt/slam/CMultiMetricMapPDF.h>
+#include <mrpt/maps/CMultiMetricMapPDF.h>
 #include <mrpt/obs/CActionRobotMovement2D.h>
 #include <mrpt/obs/CActionRobotMovement3D.h>
 #include <mrpt/obs/CActionCollection.h>

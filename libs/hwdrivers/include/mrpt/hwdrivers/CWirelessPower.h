@@ -18,7 +18,7 @@ namespace mrpt
 	namespace hwdrivers
 	{
 		/** This class implements a wireless power probe.
-		  *  \sa mrpt::slam::CWirelessPowerGridMap2D, mrpt::obs::CObservationWirelessPower
+		  *  \sa mrpt::maps::CWirelessPowerGridMap2D, mrpt::obs::CObservationWirelessPower
 		  * \ingroup mrpt_hwdrivers_grp
 		  */
 		class HWDRIVERS_IMPEXP CWirelessPower : public mrpt::hwdrivers::CGenericSensor

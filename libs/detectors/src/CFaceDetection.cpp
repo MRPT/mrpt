@@ -35,9 +35,8 @@ using namespace mrpt::gui;
 using namespace mrpt::math;
 using namespace mrpt::opengl;
 using namespace mrpt::system;
-using namespace mrpt::slam;
+using namespace mrpt::maps;
 
-//CColouredPointsMap mapa;
 
 //------------------------------------------------------------------------
 //							CFaceDetection

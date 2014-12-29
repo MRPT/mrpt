@@ -21,7 +21,7 @@
 #include <mrpt/hmtslam/CTopLCDetector_FabMap.h>
 #include <mrpt/hmtslam/link_pragmas.h>
 #include <mrpt/slam/CICP.h>
-#include <mrpt/slam/CPointsMap.h>
+#include <mrpt/maps/CPointsMap.h>
 #include <mrpt/slam/TKLDParams.h>
 #include <mrpt/obs/CActionCollection.h>
 #include <mrpt/opengl/COpenGLScene.h>

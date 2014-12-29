@@ -72,4 +72,9 @@ void  CMatrixB::readFromStream(mrpt::utils::CStream &in, int version)
 	};
 }
 
+// Implementation of CMatrixBool
+CMatrixBool::CMatrixBool(size_t row, size_t col) : CMatrixTemplate<bool>(row,col) { }
+CMatrixBool::CMatrixBool( const CMatrixTemplate<bool> &m ) : CMatrixTemplate<bool>(m)  { }
+CMatrixBool & CMatrixBool::operator = (const CMatrixTemplate<bool> & m) { CMatrixTemplate<bool>::operator =(m); return *this; }
+
 

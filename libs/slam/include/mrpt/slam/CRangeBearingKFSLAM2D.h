@@ -23,7 +23,7 @@
 #include <mrpt/obs/CActionCollection.h>
 #include <mrpt/obs/CObservationBearingRange.h>
 #include <mrpt/poses/CPosePDFGaussian.h>
-#include <mrpt/slam/CLandmark.h>
+#include <mrpt/maps/CLandmark.h>
 #include <mrpt/maps/CSimpleMap.h>
 #include <mrpt/slam/CIncrementalMapPartitioner.h>
 #include <mrpt/slam/data_association.h>
@@ -76,7 +76,7 @@ namespace mrpt
 			void  getCurrentState(
 				CPosePDFGaussian &out_robotPose,
 				std::vector<TPoint2D>  &out_landmarksPositions,
-				std::map<unsigned int,CLandmark::TLandmarkID> &out_landmarkIDs,
+				std::map<unsigned int,mrpt::maps::CLandmark::TLandmarkID> &out_landmarkIDs,
 				CVectorDouble      &out_fullState,
 				CMatrixDouble      &out_fullCovariance
 				) const;
@@ -313,7 +313,7 @@ namespace mrpt
 			 */
 
 
-			void getLandmarkIDsFromIndexInStateVector(std::map<unsigned int,CLandmark::TLandmarkID>  &out_id2index) const
+			void getLandmarkIDsFromIndexInStateVector(std::map<unsigned int,mrpt::maps::CLandmark::TLandmarkID>  &out_id2index) const
 			{
 				out_id2index = m_IDs.getInverseMap();
 			}
@@ -327,7 +327,7 @@ namespace mrpt
 			CSensoryFramePtr		m_SF;
 
 			/** The mapping between landmark IDs and indexes in the Pkk cov. matrix: */
-			mrpt::utils::bimap<CLandmark::TLandmarkID,unsigned int>	m_IDs;
+			mrpt::utils::bimap<mrpt::maps::CLandmark::TLandmarkID,unsigned int>	m_IDs;
 
 			/** The sequence of all the observations and the robot path (kept for debugging, statistics,etc) */
 			mrpt::maps::CSimpleMap      m_SFs;

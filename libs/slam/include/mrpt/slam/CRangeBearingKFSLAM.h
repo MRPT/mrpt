@@ -24,7 +24,7 @@
 #include <mrpt/math/lightweight_geom_data.h>
 #include <mrpt/poses/CPose3DPDFGaussian.h>
 #include <mrpt/poses/CPose3DQuatPDFGaussian.h>
-#include <mrpt/slam/CLandmark.h>
+#include <mrpt/maps/CLandmark.h>
 #include <mrpt/maps/CSimpleMap.h>
 #include <mrpt/slam/CIncrementalMapPartitioner.h>
 #include <mrpt/slam/data_association.h>
@@ -84,7 +84,7 @@ namespace mrpt
 			void  getCurrentState(
 				CPose3DQuatPDFGaussian &out_robotPose,
 				std::vector<mrpt::math::TPoint3D>  &out_landmarksPositions,
-				std::map<unsigned int,CLandmark::TLandmarkID> &out_landmarkIDs,
+				std::map<unsigned int,mrpt::maps::CLandmark::TLandmarkID> &out_landmarkIDs,
 				CVectorDouble      &out_fullState,
 				CMatrixDouble      &out_fullCovariance
 				) const;
@@ -100,7 +100,7 @@ namespace mrpt
 			inline void  getCurrentState(
 				CPose3DPDFGaussian &out_robotPose,
 				std::vector<mrpt::math::TPoint3D>  &out_landmarksPositions,
-				std::map<unsigned int,CLandmark::TLandmarkID> &out_landmarkIDs,
+				std::map<unsigned int,mrpt::maps::CLandmark::TLandmarkID> &out_landmarkIDs,
 				CVectorDouble      &out_fullState,
 				CMatrixDouble      &out_fullCovariance
 				) const
@@ -419,7 +419,7 @@ namespace mrpt
 
 			/** The mapping between landmark IDs and indexes in the Pkk cov. matrix:
 			  */
-			mrpt::utils::bimap<CLandmark::TLandmarkID,unsigned int>	m_IDs;
+			mrpt::utils::bimap<mrpt::maps::CLandmark::TLandmarkID,unsigned int>	m_IDs;
 
 
 			/** Used for map partitioning experiments
