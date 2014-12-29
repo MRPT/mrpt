@@ -17,6 +17,7 @@
 using namespace mrpt::utils;
 using namespace mrpt::math;
 using namespace mrpt::slam;
+using namespace mrpt::maps;
 using namespace mrpt::poses;
 using namespace mrpt::opengl;
 

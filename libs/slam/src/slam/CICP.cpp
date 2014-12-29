@@ -24,6 +24,8 @@
 #include <mrpt/poses/CPose3DPDFGaussian.h>
 
 using namespace mrpt::slam;
+using namespace mrpt::maps;
+using namespace mrpt::math;
 using namespace mrpt::poses;
 using namespace mrpt::utils;
 using namespace std;
@@ -48,8 +50,8 @@ The method for aligning a pair of 2D points map.
 * \sa CPointsMapAlignmentAlgorithm
   ---------------------------------------------------------------*/
 CPosePDFPtr CICP::AlignPDF(
-    const CMetricMap		*m1,
-    const CMetricMap		*mm2,
+    const mrpt::maps::CMetricMap		*m1,
+    const mrpt::maps::CMetricMap		*mm2,
     const CPosePDFGaussian	&initialEstimationPDF,
     float					*runningTime,
     void					*info )
@@ -233,8 +235,8 @@ float CICP::kernel(const float &x2, const float &rho2)
 
   ----------------------------------------------------------------------------*/
 CPosePDFPtr CICP::ICP_Method_Classic(
-		const CMetricMap		*m1,
-		const CMetricMap		*mm2,
+		const mrpt::maps::CMetricMap		*m1,
+		const mrpt::maps::CMetricMap		*mm2,
 		const CPosePDFGaussian	&initialEstimationPDF,
 		TReturnInfo				&outInfo )
 {
@@ -252,7 +254,7 @@ CPosePDFPtr CICP::ICP_Method_Classic(
 	CPose2D lastMeanPose;
 
 	// Assure the class of the maps:
-	const CMetricMap		*m2 = mm2;
+	const mrpt::maps::CMetricMap		*m2 = mm2;
 
 	// Asserts:
 	// -----------------
@@ -273,8 +275,8 @@ CPosePDFPtr CICP::ICP_Method_Classic(
 	gaussPdf->mean = grossEst;
 
 	// Initial thresholds:
-	TMatchingParams matchParams;
-	TMatchingExtraResults matchExtraResults;
+	mrpt::maps::TMatchingParams matchParams;
+	mrpt::maps::TMatchingExtraResults matchExtraResults;
 
 	matchParams.maxDistForCorrespondence = options.thresholdDist;			// Distance threshold
 	matchParams.maxAngularDistForCorrespondence = options.thresholdAng;	// Angular threshold
@@ -558,8 +560,8 @@ CPosePDFPtr CICP::ICP_Method_Classic(
 
   ----------------------------------------------------------------------------*/
 CPosePDFPtr CICP::ICP_Method_LM(
-		const CMetricMap		*mm1,
-		const CMetricMap		*m2,
+		const mrpt::maps::CMetricMap		*mm1,
+		const mrpt::maps::CMetricMap		*m2,
 		const CPosePDFGaussian	&initialEstimationPDF,
 		TReturnInfo				&outInfo )
 {
@@ -883,8 +885,8 @@ CPosePDFPtr CICP::ICP_Method_LM(
 					ICP_Method_IKF
   ---------------------------------------------------------------*/
 CPosePDFPtr CICP::ICP_Method_IKF(
-		const CMetricMap		*m1,
-		const CMetricMap		*mm2,
+		const mrpt::maps::CMetricMap		*m1,
+		const mrpt::maps::CMetricMap		*mm2,
 		const CPosePDFGaussian	&initialEstimationPDF,
 		TReturnInfo				&outInfo )
 {
@@ -916,8 +918,8 @@ The method for aligning a pair of 2D points map.
 * \sa CPointsMapAlignmentAlgorithm
   ---------------------------------------------------------------*/
 CPose3DPDFPtr CICP::Align3DPDF(
-    const CMetricMap		*m1,
-    const CMetricMap		*mm2,
+    const mrpt::maps::CMetricMap		*m1,
+    const mrpt::maps::CMetricMap		*mm2,
     const CPose3DPDFGaussian	&initialEstimationPDF,
     float					*runningTime,
     void					*info )
@@ -964,8 +966,8 @@ CPose3DPDFPtr CICP::Align3DPDF(
 
 
 CPose3DPDFPtr CICP::ICP3D_Method_Classic(
-		const CMetricMap		*m1,
-		const CMetricMap		*mm2,
+		const mrpt::maps::CMetricMap		*m1,
+		const mrpt::maps::CMetricMap		*mm2,
 		const CPose3DPDFGaussian &initialEstimationPDF,
 		TReturnInfo				&outInfo )
 {

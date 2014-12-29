@@ -26,11 +26,12 @@
 
 namespace mrpt
 {
-namespace slam
+namespace slam { class CMetricMapBuilderRBPF; }
+namespace maps
 {
 	DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CRBPFParticleData, mrpt::utils::CSerializable, SLAM_IMPEXP )
 
-	/** Auxiliary class used in mrpt::slam::CMultiMetricMapPDF
+	/** Auxiliary class used in mrpt::maps::CMultiMetricMapPDF
 	 * \ingroup mrpt_slam_grp
 	  */
 	class SLAM_IMPEXP CRBPFParticleData : public mrpt::utils::CSerializable
@@ -53,9 +54,9 @@ namespace slam
 	DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CMultiMetricMapPDF, mrpt::utils::CSerializable, SLAM_IMPEXP )
 
 	/** Declares a class that represents a Rao-Blackwellized set of particles for solving the SLAM problem (This class is the base of RBPF-SLAM applications).
-	 *   This class is used internally by the map building algorithm in "mrpt::maps::CMetricMapBuilderRBPF"
+	 *   This class is used internally by the map building algorithm in "mrpt::slam::CMetricMapBuilderRBPF"
 	 *
-	 * \sa mrpt::maps::CMetricMapBuilderRBPF
+	 * \sa mrpt::slam::CMetricMapBuilderRBPF
 	 * \ingroup metric_slam_grp
 	 */
 	class SLAM_IMPEXP CMultiMetricMapPDF :
@@ -64,8 +65,7 @@ namespace slam
 		public mrpt::bayes::CParticleFilterDataImpl<CMultiMetricMapPDF,mrpt::bayes::CParticleFilterData<CRBPFParticleData>::CParticleList>,
 		public mrpt::slam::PF_implementation<CRBPFParticleData,CMultiMetricMapPDF>
 	{
-		friend class CMetricMapBuilderRBPF;
-		//template <class PARTICLE_TYPE, class MYSELF> friend class PF_implementation;
+		friend class mrpt::slam::CMetricMapBuilderRBPF;
 
 		// This must be added to any CSerializable derived class:
 		DEFINE_SERIALIZABLE( CMultiMetricMapPDF )
@@ -94,14 +94,13 @@ namespace slam
 
 
 	private:
-		/** Internal buffer for the averaged map.
-		  */
-		CMultiMetricMap			averageMap;
+		/** Internal buffer for the averaged map. */
+		mrpt::maps::CMultiMetricMap			averageMap;
 		bool					averageMapIsUpdated;
 
 		/** The SFs and their corresponding pose estimations:
 		 */
-		CSimpleMap	SFs;
+		mrpt::maps::CSimpleMap	SFs;
 
 		/** A mapping between indexes in the SFs to indexes in the robot paths from particles.
 		  */
@@ -154,9 +153,9 @@ namespace slam
 			  */
 			COccupancyGridMap2D::TLikelihoodOptions		update_gridMapLikelihoodOptions;
 
-			TKLDParams		KLD_params;
+			mrpt::slam::TKLDParams	KLD_params;
 
-			CICP::TConfigParams		icp_params; //!< ICP parameters, used only when "PF_algorithm=2" in the particle filter.
+			mrpt::slam::CICP::TConfigParams		icp_params; //!< ICP parameters, used only when "PF_algorithm=2" in the particle filter.
 
 		} options;
 
@@ -164,7 +163,7 @@ namespace slam
 		  */
 		CMultiMetricMapPDF(
 			const bayes::CParticleFilter::TParticleFilterOptions    &opts = bayes::CParticleFilter::TParticleFilterOptions(),
-			const mrpt::slam::TSetOfMetricMapInitializers		    *mapsInitializers = NULL,
+			const mrpt::maps::TSetOfMetricMapInitializers		    *mapsInitializers = NULL,
 			const TPredictionParams						    *predictionOptions = NULL );
 
 		/** Destructor
@@ -260,10 +259,10 @@ namespace slam
 
 			/** Evaluate the observation likelihood for one particle at a given location */
 			double PF_SLAM_computeObservationLikelihoodForParticle(
-				const CParticleFilter::TParticleFilterOptions	&PF_options,
+				const mrpt::bayes::CParticleFilter::TParticleFilterOptions	&PF_options,
 				const size_t			particleIndexForMap,
-				const CSensoryFrame		&observation,
-				const CPose3D			&x ) const;
+				const mrpt::obs::CSensoryFrame		&observation,
+				const mrpt::poses::CPose3D			&x ) const;
 			/** @} */
 
 

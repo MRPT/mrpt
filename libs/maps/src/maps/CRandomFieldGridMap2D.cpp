@@ -2901,7 +2901,7 @@ bool CRandomFieldGridMap2D::exist_relation_between2cells(
 }
 
 float  CRandomFieldGridMap2D::compute3DMatchingRatio(
-	const CMetricMap						*otherMap,
+	const mrpt::maps::CMetricMap						*otherMap,
 	const CPose3D							&otherMapPose,
 	float									maxDistForCorr,
 	float									maxMahaDistForCorr

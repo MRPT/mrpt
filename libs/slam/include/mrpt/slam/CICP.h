@@ -205,8 +205,8 @@ namespace mrpt
 			 * \sa CMetricMapsAlignmentAlgorithm, CICP::options, CICP::TReturnInfo
 			 */
 			CPosePDFPtr AlignPDF(
-					const CMetricMap		*m1,
-					const CMetricMap		*m2,
+					const mrpt::maps::CMetricMap		*m1,
+					const mrpt::maps::CMetricMap		*m2,
 					const CPosePDFGaussian	&initialEstimationPDF,
 					float					*runningTime = NULL,
 					void					*info = NULL );
@@ -230,8 +230,8 @@ namespace mrpt
 			 * \sa CICP
 			 */
 			CPose3DPDFPtr Align3DPDF(
-					const CMetricMap		*m1,
-					const CMetricMap		*m2,
+					const mrpt::maps::CMetricMap		*m1,
+					const mrpt::maps::CMetricMap		*m2,
 					const CPose3DPDFGaussian	&initialEstimationPDF,
 					float					*runningTime = NULL,
 					void					*info = NULL );
@@ -247,32 +247,32 @@ namespace mrpt
 			/** The internal method implementing CICP::AlignPDF when options.ICP_algorithm is icpClassic.
 			  */
 			CPosePDFPtr ICP_Method_Classic(
-					const CMetricMap		*m1,
-					const CMetricMap		*m2,
+					const mrpt::maps::CMetricMap		*m1,
+					const mrpt::maps::CMetricMap		*m2,
 					const CPosePDFGaussian	&initialEstimationPDF,
 					TReturnInfo				&outInfo );
 
 			/** The internal method implementing CICP::AlignPDF when options.ICP_algorithm is icpLevenbergMarquardt.
 			  */
 			CPosePDFPtr ICP_Method_LM(
-					const CMetricMap		*m1,
-					const CMetricMap		*m2,
+					const mrpt::maps::CMetricMap		*m1,
+					const mrpt::maps::CMetricMap		*m2,
 					const CPosePDFGaussian	&initialEstimationPDF,
 					TReturnInfo				&outInfo );
 
 			/** The internal method implementing CICP::AlignPDF when options.ICP_algorithm is icpIKF.
 			  */
 			CPosePDFPtr ICP_Method_IKF(
-					const CMetricMap		*m1,
-					const CMetricMap		*m2,
+					const mrpt::maps::CMetricMap		*m1,
+					const mrpt::maps::CMetricMap		*m2,
 					const CPosePDFGaussian	&initialEstimationPDF,
 					TReturnInfo				&outInfo );
 
 			/** The internal method implementing CICP::Align3DPDF when options.ICP_algorithm is icpClassic.
 			  */
 			CPose3DPDFPtr ICP3D_Method_Classic(
-					const CMetricMap		*m1,
-					const CMetricMap		*m2,
+					const mrpt::maps::CMetricMap		*m1,
+					const mrpt::maps::CMetricMap		*m2,
 					const CPose3DPDFGaussian &initialEstimationPDF,
 					TReturnInfo				&outInfo );
 

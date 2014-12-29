@@ -116,7 +116,7 @@ void CIncrementalMapPartitioner::clear()
 	m_individualFrames.clear();	// Liberar el mapa hasta ahora:
 
 	// Free individual maps:
-	//for (deque_serializable<mrpt::slam::CMultiMetricMap>::iterator it=m_individualMaps.begin();it!=m_individualMaps.end();++it)	delete (*it);
+	//for (deque_serializable<mrpt::maps::CMultiMetricMap>::iterator it=m_individualMaps.begin();it!=m_individualMaps.end();++it)	delete (*it);
 	m_individualMaps.clear();
 
 	m_last_partition.clear();		// Borrar las ultimas particiones
@@ -545,7 +545,7 @@ void  CIncrementalMapPartitioner::removeSetOfNodes(vector_uint	indexesToRemove, 
 	vector_uint::reverse_iterator it;
 	for (it= indexesToRemove.rbegin(); it!=indexesToRemove.rend(); ++it)
 	{
-		deque<mrpt::slam::CMultiMetricMap>::iterator  itM = m_individualMaps.begin() + *it;
+		deque<mrpt::maps::CMultiMetricMap>::iterator  itM = m_individualMaps.begin() + *it;
 		// delete *itM; // Delete map
 		m_individualMaps.erase( itM ); // Delete from list
 	}

@@ -517,7 +517,7 @@ size_t CHeightGridMap2D::countObservedCells() const
 
 
 float  CHeightGridMap2D::compute3DMatchingRatio(
-	const CMetricMap						*otherMap,
+	const mrpt::maps::CMetricMap						*otherMap,
 	const CPose3D							&otherMapPose,
 	float									maxDistForCorr,
 	float									maxMahaDistForCorr

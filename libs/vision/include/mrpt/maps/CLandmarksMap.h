@@ -170,7 +170,7 @@ namespace maps
 
 		// See docs in base class
 		float  compute3DMatchingRatio(
-				const CMetricMap						*otherMap,
+				const mrpt::maps::CMetricMap						*otherMap,
 				const CPose3D							&otherMapPose,
 				float									maxDistForCorr = 0.10f,
 				float									maxMahaDistForCorr = 2.0f
@@ -488,7 +488,7 @@ namespace maps
 
 		// See docs in base class
 		void  computeMatchingWith2D(
-				const CMetricMap								*otherMap,
+				const mrpt::maps::CMetricMap								*otherMap,
 				const CPose2D									&otherMapPose,
 				float									maxDistForCorrespondence,
 				float									maxAngularDistForCorrespondence,
@@ -592,7 +592,7 @@ namespace maps
 		  */
 		void  getAs3DObject ( mrpt::opengl::CSetOfObjectsPtr	&outObj ) const;
 
-		/** This method is called at the end of each "prediction-update-map insertion" cycle within "mrpt::maps::CMetricMapBuilderRBPF::processActionObservation".
+		/** This method is called at the end of each "prediction-update-map insertion" cycle within "mrpt::slam::CMetricMapBuilderRBPF::processActionObservation".
 		  *  This method should normally do nothing, but in some cases can be used to free auxiliary cached variables.
 		  */
 		virtual void  auxParticleFilterCleanUp();

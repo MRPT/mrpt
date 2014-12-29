@@ -59,7 +59,7 @@ namespace mrpt
 			if (actions!=NULL)	// A valid action?
 			{
 				{
-					CActionRobotMovement2DPtr	robotMovement2D = actions->getBestMovementEstimation();
+					mrpt::obs::CActionRobotMovement2DPtr	robotMovement2D = actions->getBestMovementEstimation();
 					if (robotMovement2D.present())
 					{
 						if (m_accumRobotMovement3DIsValid) THROW_EXCEPTION("Mixing 2D and 3D actions is not allowed.")
@@ -75,7 +75,7 @@ namespace mrpt
 					}
 					else // If there is no 2D action, look for a 3D action:
 					{
-						CActionRobotMovement3DPtr	robotMovement3D = actions->getActionByClass<CActionRobotMovement3D>();
+						mrpt::obs::CActionRobotMovement3DPtr	robotMovement3D = actions->getActionByClass<mrpt::obs::CActionRobotMovement3D>();
 						if (robotMovement3D)
 						{
 							if (m_accumRobotMovement2DIsValid) THROW_EXCEPTION("Mixing 2D and 3D actions is not allowed.")
@@ -183,7 +183,7 @@ namespace mrpt
 					}
 					else
 					{
-						mrpt::obs::CActionRobotMovement3DPtr	robotMovement3D = actions->getActionByClass<CActionRobotMovement3D>();
+						mrpt::obs::CActionRobotMovement3DPtr	robotMovement3D = actions->getActionByClass<mrpt::obs::CActionRobotMovement3D>();
 						if (robotMovement3D)
 						{
 							m_movementDrawer.setPosePDF( robotMovement3D->poseChange );
@@ -320,8 +320,8 @@ namespace mrpt
 		template <class PARTICLE_TYPE,class MYSELF>
 		template <class BINTYPE>
 		void PF_implementation<PARTICLE_TYPE,MYSELF>::PF_SLAM_implementation_pfAuxiliaryPFStandard(
-			const CActionCollection	* actions,
-			const CSensoryFrame		* sf,
+			const mrpt::obs::CActionCollection	* actions,
+			const mrpt::obs::CSensoryFrame		* sf,
 			const CParticleFilter::TParticleFilterOptions &PF_options,
 			const TKLDParams &KLD_options)
 		{
@@ -368,7 +368,7 @@ namespace mrpt
 				indivLik = me->PF_SLAM_computeObservationLikelihoodForParticle(
 					PF_options,
 					index,
-					*static_cast<const CSensoryFrame*>(observation),
+					*static_cast<const mrpt::obs::CSensoryFrame*>(observation),
 					x_predict );
 
 				MRPT_CHECK_NORMAL_NUMBER(indivLik);
@@ -435,7 +435,7 @@ namespace mrpt
 				// --------------------------------------------
 				myObj->m_pfAuxiliaryPFStandard_estimatedProb[index] = myObj->PF_SLAM_computeObservationLikelihoodForParticle(
 					PF_options, index,
-					*static_cast<const CSensoryFrame*>(observation), x_predict );
+					*static_cast<const mrpt::obs::CSensoryFrame*>(observation), x_predict );
 
 				// Combined log_likelihood: Previous weight * obs_likelihood:
 				return cur_logweight + myObj->m_pfAuxiliaryPFStandard_estimatedProb[index];
@@ -463,7 +463,7 @@ namespace mrpt
 					indivLik = myObj->PF_SLAM_computeObservationLikelihoodForParticle(
 						PF_options,
 						index,
-						*static_cast<const CSensoryFrame*>(observation),
+						*static_cast<const mrpt::obs::CSensoryFrame*>(observation),
 						x_predict );
 
 					MRPT_CHECK_NORMAL_NUMBER(indivLik);
@@ -500,8 +500,8 @@ namespace mrpt
 		template <class PARTICLE_TYPE,class MYSELF>
 		template <class BINTYPE>
 		void PF_implementation<PARTICLE_TYPE,MYSELF>::PF_SLAM_implementation_pfAuxiliaryPFStandardAndOptimal(
-			const CActionCollection	* actions,
-			const CSensoryFrame		* sf,
+			const mrpt::obs::CActionCollection	* actions,
+			const mrpt::obs::CSensoryFrame		* sf,
 			const CParticleFilter::TParticleFilterOptions &PF_options,
 			const TKLDParams &KLD_options,
 			const bool USE_OPTIMAL_SAMPLING  )
@@ -845,9 +845,9 @@ namespace mrpt
 			const bool		doResample,
 			const double	maxMeanLik,
 			size_t    k, // The particle from the old set "m_particles[]"
-			const CSensoryFrame		* sf,
-			const CParticleFilter::TParticleFilterOptions &PF_options,
-			CPose3D			& out_newPose,
+			const mrpt::obs::CSensoryFrame		* sf,
+			const mrpt::bayes::CParticleFilter::TParticleFilterOptions &PF_options,
+			mrpt::poses::CPose3D			& out_newPose,
 			double			& out_newParticleLogWeight)
 		{
 			MYSELF *me = static_cast<MYSELF*>(this);

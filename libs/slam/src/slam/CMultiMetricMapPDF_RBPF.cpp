@@ -46,7 +46,7 @@ namespace mrpt
 		void KLF_loadBinFromParticle(
 			detail::TPoseBin2D	&outBin,
 			const TKLDParams  	&opts,
-			const CRBPFParticleData	*currentParticleValue,
+			const mrpt::maps::CRBPFParticleData	*currentParticleValue,
 			const TPose3D			*newPoseToBeInserted)
 		{
 			// 2D pose approx: Use the latest pose only:
@@ -72,7 +72,7 @@ namespace mrpt
 		void KLF_loadBinFromParticle(
 			detail::TPathBin2D	&outBin,
 			const TKLDParams  	&opts,
-			const CRBPFParticleData	*currentParticleValue,
+			const mrpt::maps::CRBPFParticleData	*currentParticleValue,
 			const TPose3D			*newPoseToBeInserted)
 		{
 			const size_t lenBinPath = (currentParticleValue!=NULL) ? currentParticleValue->robotPath.size() : 0;

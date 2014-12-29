@@ -178,7 +178,7 @@ namespace slam
 
 	private:
 		mrpt::maps::CSimpleMap					m_individualFrames;
-		std::deque<mrpt::slam::CMultiMetricMap>	m_individualMaps;
+		std::deque<mrpt::maps::CMultiMetricMap>	m_individualMaps;
 
 		/** Adjacency matrix */
 		mrpt::math::CMatrixD	m_A;

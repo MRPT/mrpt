@@ -466,7 +466,7 @@ void  COccupancyGridMap2D::subSample( int downRatio )
 							computeMatchingWith
  ---------------------------------------------------------------*/
 void COccupancyGridMap2D::determineMatching2D(
-	const CMetricMap      * otherMap2,
+	const mrpt::maps::CMetricMap      * otherMap2,
 	const CPose2D         & otherMapPose_,
 	TMatchingPairList     & correspondences,
 	const TMatchingParams & params,
@@ -699,7 +699,7 @@ float  COccupancyGridMap2D::computePathCost( float x1, float y1, float x2, float
 }
 
 float  COccupancyGridMap2D::compute3DMatchingRatio(
-	const CMetricMap						*otherMap,
+	const mrpt::maps::CMetricMap						*otherMap,
 	const CPose3D							&otherMapPose,
 	float									maxDistForCorr ,
 	float									maxMahaDistForCorr

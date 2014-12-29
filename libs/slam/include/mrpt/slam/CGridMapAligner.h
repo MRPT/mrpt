@@ -38,14 +38,14 @@ namespace mrpt
 		 * \sa CMetricMapsAlignmentAlgorithm
 		 * \ingroup mrpt_slam_grp
 		 */
-		class SLAM_IMPEXP  CGridMapAligner : public mrpt::maps::CMetricMapsAlignmentAlgorithm
+		class SLAM_IMPEXP  CGridMapAligner : public mrpt::slam::CMetricMapsAlignmentAlgorithm
 		{
 		private:
 			/** Private member, implements one the algorithms.
 			  */
 			CPosePDFPtr AlignPDF_correlation(
-					const CMetricMap		*m1,
-					const CMetricMap		*m2,
+					const mrpt::maps::CMetricMap		*m1,
+					const mrpt::maps::CMetricMap		*m2,
 					const CPosePDFGaussian	&initialEstimationPDF,
 					float					*runningTime = NULL,
 					void					*info = NULL );
@@ -53,8 +53,8 @@ namespace mrpt
 			/** Private member, implements both, the "robustMatch" and the newer "modifiedRANSAC" algorithms.
 			  */
 			CPosePDFPtr AlignPDF_robustMatch(
-					const CMetricMap		*m1,
-					const CMetricMap		*m2,
+					const mrpt::maps::CMetricMap		*m1,
+					const mrpt::maps::CMetricMap		*m2,
 					const CPosePDFGaussian	&initialEstimationPDF,
 					float					*runningTime = NULL,
 					void					*info = NULL );
@@ -165,7 +165,7 @@ namespace mrpt
 				CPosePDFSOGPtr	sog1,sog2,sog3;
 
 				/** The landmarks of each map (the indices of these landmarks correspond to those in "correspondences")  */
-				CLandmarksMapPtr	landmarks_map1, landmarks_map2;
+				mrpt::maps::CLandmarksMapPtr	landmarks_map1, landmarks_map2;
 
 				/** All the found correspondences (not consistent) */
 				mrpt::utils::TMatchingPairList	correspondences;
@@ -193,8 +193,8 @@ namespace mrpt
 			 *
 			 *  NOTE: This method can be configurated with "options"
 			 *
-			 * \param m1			[IN] The first map (Must be a mrpt::slam::CMultiMetricMap class)
-			 * \param m2			[IN] The second map (Must be a mrpt::slam::CMultiMetricMap class)
+			 * \param m1			[IN] The first map (Must be a mrpt::maps::CMultiMetricMap class)
+			 * \param m2			[IN] The second map (Must be a mrpt::maps::CMultiMetricMap class)
 			 * \param initialEstimationPDF	[IN] (IGNORED IN THIS ALGORITHM!)
 			 * \param runningTime	[OUT] A pointer to a container for obtaining the algorithm running time in seconds, or NULL if you don't need it.
 			 * \param info			[OUT] A pointer to a CAlignerFromMotionDraws::TReturnInfo struct, or NULL if result information are not required.
@@ -207,8 +207,8 @@ namespace mrpt
 			 * \sa CPointsMapAlignmentAlgorithm, options
 			 */
 			CPosePDFPtr AlignPDF(
-					const CMetricMap		*m1,
-					const CMetricMap		*m2,
+					const mrpt::maps::CMetricMap		*m1,
+					const mrpt::maps::CMetricMap		*m2,
 					const CPosePDFGaussian	&initialEstimationPDF,
 					float					*runningTime = NULL,
 
@@ -217,8 +217,8 @@ namespace mrpt
 
 			/** Not applicable in this class, will launch an exception. */
 			CPose3DPDFPtr Align3DPDF(
-					const CMetricMap		*m1,
-					const CMetricMap		*m2,
+					const mrpt::maps::CMetricMap		*m1,
+					const mrpt::maps::CMetricMap		*m2,
 					const CPose3DPDFGaussian	&initialEstimationPDF,
 					float					*runningTime = NULL,
 					void					*info = NULL );

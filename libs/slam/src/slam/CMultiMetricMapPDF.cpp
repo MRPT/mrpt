@@ -30,14 +30,15 @@
 using namespace mrpt;
 using namespace mrpt::math;
 using namespace mrpt::slam;
+using namespace mrpt::maps;
 using namespace mrpt::poses;
 using namespace mrpt::random;
 using namespace mrpt::utils;
 using namespace mrpt::system;
 using namespace std;
 
-IMPLEMENTS_SERIALIZABLE( CMultiMetricMapPDF, CSerializable, mrpt::slam )
-IMPLEMENTS_SERIALIZABLE( CRBPFParticleData,  CSerializable, mrpt::slam )
+IMPLEMENTS_SERIALIZABLE( CMultiMetricMapPDF, CSerializable, mrpt::maps )
+IMPLEMENTS_SERIALIZABLE( CRBPFParticleData,  CSerializable, mrpt::maps )
 
 
 #if MRPT_HAS_SSE2
@@ -84,19 +85,13 @@ IMPLEMENTS_SERIALIZABLE( CRBPFParticleData,  CSerializable, mrpt::slam )
 #endif
 
 
-//#if defined(_MSC_VER)
-//#	pragma warning(push)
-//#	pragma warning(disable:4355) // for the "this" argument below
-//#endif
-
 /*---------------------------------------------------------------
 				Constructor
   ---------------------------------------------------------------*/
 CMultiMetricMapPDF::CMultiMetricMapPDF(
 	const bayes::CParticleFilter::TParticleFilterOptions    &opts,
-	const  mrpt::slam::TSetOfMetricMapInitializers		        *mapsInitializers,
+	const  mrpt::maps::TSetOfMetricMapInitializers		        *mapsInitializers,
 	const  TPredictionParams						        *predictionOptions) :
-//		PF_implementation<CRBPFParticleData>(static_cast<mrpt::bayes::CParticleFilterData<CRBPFParticleData>&>(*this),static_cast<mrpt::bayes::CParticleFilterCapable&>(*this) ),
 		averageMap( mapsInitializers ),
 		averageMapIsUpdated(false),
 		SFs(),
@@ -119,10 +114,6 @@ CMultiMetricMapPDF::CMultiMetricMapPDF(
 	if (predictionOptions!=NULL)
 		options = *predictionOptions;
 }
-
-//#if defined(_MSC_VER)
-//#	pragma warning(pop)
-//#endif
 
 /*---------------------------------------------------------------
 						clear

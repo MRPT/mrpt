@@ -18,11 +18,11 @@
 
 Interesting stuff in this library:
 
-- mrpt::maps::CMetricMapBuilder: A virtual base for both ICP and RBPF-based SLAM.
+- mrpt::slam::CMetricMapBuilder: A virtual base for both ICP and RBPF-based SLAM.
 
 - mrpt::slam::CMonteCarloLocalization2D: Particle filter-based (Monte Carlo) localization for a robot in a planar scenario.
 
-- mrpt::slam::CMultiMetricMap: The most versatile kind of metric map, which contains an arbitrary number of any other maps.
+- mrpt::maps::CMultiMetricMap: The most versatile kind of metric map, which contains an arbitrary number of any other maps.
 
 - Kalman Filters-based Range-Bearing SLAM, in 2D and 3D: See mrpt::slam::CRangeBearingKFSLAM and mrpt::slam::CRangeBearingKFSLAM2D.
 

@@ -33,7 +33,7 @@ mrpt::opengl::CPlanarLaserScan </li>
 </ul> 
 
 Please, note that there is another very important map class 
-(mrpt::slam::CMultiMetricMap) which is not in mrpt-maps, but in the library mrpt-slam 
+(mrpt::maps::CMultiMetricMap) which is not in mrpt-maps, but in the library mrpt-slam 
 (the reason is that there is not another reasonable way to factor MRPT into small libraries).
 
 

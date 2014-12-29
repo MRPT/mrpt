@@ -112,8 +112,8 @@ namespace mrpt
 			double PF_SLAM_computeObservationLikelihoodForParticle(
 				const CParticleFilter::TParticleFilterOptions	&PF_options,
 				const size_t			particleIndexForMap,
-				const CSensoryFrame		&observation,
-				const CPose3D			&x ) const;
+				const mrpt::obs::CSensoryFrame		&observation,
+				const mrpt::poses::CPose3D			&x ) const;
 			/** @} */
 
 

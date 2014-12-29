@@ -19,6 +19,8 @@
 using namespace mrpt::utils;
 using namespace mrpt::math;
 using namespace mrpt::slam;
+using namespace mrpt::maps;
+using namespace mrpt::obs;
 using namespace mrpt::random;
 using namespace mrpt::poses;
 using namespace std;
@@ -122,7 +124,7 @@ bool CRejectionSamplingRangeOnlyLocalization::setParams(
 	m_dataPerBeacon.clear();
 
 	// Minimum radius:
-	std::deque<CObservationBeaconRanges::TMeasurement>::const_iterator	it;
+	std::deque<mrpt::obs::CObservationBeaconRanges::TMeasurement>::const_iterator	it;
 	size_t																i;
 
 	// For each observation:

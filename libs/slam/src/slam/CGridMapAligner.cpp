@@ -29,6 +29,7 @@
 
 using namespace mrpt::math;
 using namespace mrpt::slam;
+using namespace mrpt::maps;
 using namespace mrpt::utils;
 using namespace mrpt::poses;
 using namespace mrpt::random;
@@ -51,8 +52,8 @@ The method for aligning a pair of 2D points map.
 * \sa CPointsMapAlignmentAlgorithm
   ---------------------------------------------------------------*/
 CPosePDFPtr CGridMapAligner::AlignPDF(
-    const CMetricMap		*mm1,
-    const CMetricMap		*mm2,
+    const mrpt::maps::CMetricMap		*mm1,
+    const mrpt::maps::CMetricMap		*mm2,
     const CPosePDFGaussian	&initialEstimationPDF,
     float					*runningTime,
     void					*info )
@@ -86,8 +87,8 @@ bool myVectorOrder( const pair<size_t,float> & o1, const pair<size_t,float> & o2
 					AlignPDF_robustMatch
 ---------------------------------------------------------------*/
 CPosePDFPtr CGridMapAligner::AlignPDF_robustMatch(
-    const CMetricMap		*mm1,
-    const CMetricMap		*mm2,
+    const mrpt::maps::CMetricMap		*mm1,
+    const mrpt::maps::CMetricMap		*mm2,
     const CPosePDFGaussian	&initialEstimationPDF,
     float					*runningTime,
     void					*info )
@@ -886,8 +887,8 @@ CPosePDFPtr CGridMapAligner::AlignPDF_robustMatch(
 					AlignPDF_correlation
 ---------------------------------------------------------------*/
 CPosePDFPtr CGridMapAligner::AlignPDF_correlation(
-    const CMetricMap		*mm1,
-    const CMetricMap		*mm2,
+    const mrpt::maps::CMetricMap		*mm1,
+    const mrpt::maps::CMetricMap		*mm2,
     const CPosePDFGaussian	&initialEstimationPDF,
     float					*runningTime,
     void					*info )
@@ -1124,8 +1125,8 @@ void  CGridMapAligner::TConfigParams::loadFromConfigFile(
 
 
 CPose3DPDFPtr CGridMapAligner::Align3DPDF(
-	const CMetricMap		*m1,
-	const CMetricMap		*m2,
+	const mrpt::maps::CMetricMap		*m1,
+	const mrpt::maps::CMetricMap		*m2,
 	const CPose3DPDFGaussian	&initialEstimationPDF,
 	float					*runningTime,
 	void					*info )

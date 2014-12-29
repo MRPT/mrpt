@@ -681,7 +681,7 @@ bool  CBeaconMap::internal_insertObservation( const mrpt::obs::CObservation *obs
 				determineMatching2D
   ---------------------------------------------------------------*/
 void CBeaconMap::determineMatching2D(
-	const CMetricMap      * otherMap,
+	const mrpt::maps::CMetricMap      * otherMap,
 	const CPose2D         & otherMapPose,
 	TMatchingPairList     & correspondences,
 	const TMatchingParams & params,
@@ -1089,7 +1089,7 @@ void  CBeaconMap::getAs3DObject( mrpt::opengl::CSetOfObjectsPtr	&outObj ) const
  * \sa computeMatchingWith2D
  ----------------------------------------------------------------*/
 float  CBeaconMap::compute3DMatchingRatio(
-    const CMetricMap								*otherMap2,
+    const mrpt::maps::CMetricMap								*otherMap2,
     const CPose3D							&otherMapPose,
     float									maxDistForCorr,
     float									maxMahaDistForCorr ) const

@@ -14,18 +14,19 @@
 #include <mrpt/poses/CPoint2D.h>
 #include <mrpt/bayes/CRejectionSamplingCapable.h>
 #include <mrpt/math/lightweight_geom_data.h>
+#include <mrpt/obs/obs_frwds.h>
 
 #include <mrpt/slam/link_pragmas.h>
 
 namespace mrpt
 {
+	namespace maps { class CLandmarksMap; }
+
 	namespace slam
 	{
 		using namespace mrpt::poses;
 		using namespace mrpt::math;
 
-		class	CLandmarksMap;
-		class   CObservationBeaconRanges;
 
 		/** An implementation of rejection sampling for generating 2D robot pose from range-only measurements within a landmarks (beacons) map.
 		 *    Before calling the method "rejectionSampling" to generate the samples, you must call "setParams".
@@ -54,8 +55,8 @@ namespace mrpt
 			  * \return true if at least ONE beacon has been successfully loaded, false otherwise. In this case do not call "rejectionSampling" or an exception will be launch, since there is no information to generate samples.
 			  */
 			bool setParams(
-				const CLandmarksMap				&beaconsMap,
-				const CObservationBeaconRanges	&observation,
+				const mrpt::maps::CLandmarksMap				&beaconsMap,
+				const mrpt::obs::CObservationBeaconRanges	&observation,
 				float							sigmaRanges,
 				const CPose2D					&oldPose,
 				float							robot_z = 0,

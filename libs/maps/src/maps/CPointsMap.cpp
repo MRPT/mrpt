@@ -283,7 +283,7 @@ void  CPointsMap::clipOutOfRange(const TPoint2D	&p, float maxRange)
 }
 
 void CPointsMap::determineMatching2D(
-	const CMetricMap      * otherMap2,
+	const mrpt::maps::CMetricMap      * otherMap2,
 	const CPose2D         & otherMapPose_,
 	TMatchingPairList     & correspondences,
 	const TMatchingParams & params,
@@ -779,7 +779,7 @@ void  CPointsMap::getAs3DObject( mrpt::opengl::CSetOfObjectsPtr	&outObj ) const
  * \sa determineMatching2D
 ---------------------------------------------------------------*/
 float  CPointsMap::compute3DMatchingRatio(
-		const CMetricMap								*otherMap2,
+		const mrpt::maps::CMetricMap								*otherMap2,
 		const CPose3D							&otherMapPose,
 		float									maxDistForCorr,
 		float									maxMahaDistForCorr
@@ -1029,7 +1029,7 @@ void CPointsMap::boundingBox(
 				computeMatchingWith3D
 ---------------------------------------------------------------*/
 void  CPointsMap::determineMatching3D(
-	const CMetricMap      * otherMap2,
+	const mrpt::maps::CMetricMap      * otherMap2,
 	const CPose3D         & otherMapPose,
 	TMatchingPairList     & correspondences,
 	const TMatchingParams & params,
@@ -1254,7 +1254,7 @@ void CPointsMap::extractPoints( const TPoint3D &corner1, const TPoint3D &corner2
 				compute3DDistanceToMesh
 ---------------------------------------------------------------*/
 void CPointsMap::compute3DDistanceToMesh(
-    const CMetricMap						*otherMap2,
+    const mrpt::maps::CMetricMap						*otherMap2,
 	const CPose3D							&otherMapPose,
 	float									maxDistForCorrespondence,
 	TMatchingPairList                       &correspondences,

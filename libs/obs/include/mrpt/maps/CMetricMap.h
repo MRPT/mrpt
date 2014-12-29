@@ -216,7 +216,7 @@ namespace mrpt
 			 * \sa compute3DMatchingRatio
 			 */
 			virtual void  determineMatching2D(
-				const CMetricMap      * otherMap,
+				const mrpt::maps::CMetricMap      * otherMap,
 				const mrpt::poses::CPose2D         & otherMapPose,
 				TMatchingPairList     & correspondences,
 				const TMatchingParams & params,
@@ -241,7 +241,7 @@ namespace mrpt
 			 * \sa compute3DMatchingRatio
 			 */
 			virtual void  determineMatching3D(
-				const CMetricMap      * otherMap,
+				const mrpt::maps::CMetricMap      * otherMap,
 				const mrpt::poses::CPose3D         & otherMapPose,
 				TMatchingPairList     & correspondences,
 				const TMatchingParams & params,
@@ -258,7 +258,7 @@ namespace mrpt
 			 * \sa determineMatching2D
 			 */
 			virtual float  compute3DMatchingRatio(
-				const CMetricMap								*otherMap,
+				const mrpt::maps::CMetricMap								*otherMap,
 				const CPose3D							&otherMapPose,
 				float									maxDistForCorr = 0.10f,
 				float									maxMahaDistForCorr = 2.0f
@@ -278,7 +278,7 @@ namespace mrpt
 			  */
 			bool			m_disableSaveAs3DObject;
 
-			/** This method is called at the end of each "prediction-update-map insertion" cycle within "mrpt::maps::CMetricMapBuilderRBPF::processActionObservation".
+			/** This method is called at the end of each "prediction-update-map insertion" cycle within "mrpt::slam::CMetricMapBuilderRBPF::processActionObservation".
 			  *  This method should normally do nothing, but in some cases can be used to free auxiliary cached variables.
 			  */
 			virtual void  auxParticleFilterCleanUp()

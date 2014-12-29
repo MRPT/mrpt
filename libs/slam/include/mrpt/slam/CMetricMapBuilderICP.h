@@ -25,7 +25,7 @@ namespace slam
 	 *	 thread-safe.
 	 * \ingroup metric_slam_grp
 	 */
-	class SLAM_IMPEXP  CMetricMapBuilderICP : public mrpt::maps::CMetricMapBuilder
+	class SLAM_IMPEXP  CMetricMapBuilderICP : public mrpt::slam::CMetricMapBuilder
 	{
 	 public:
 		 /** Default constructor - Upon construction, you can set the parameters in ICP_options, then call "initialize".
@@ -45,7 +45,7 @@ namespace slam
 			 virtual void  loadFromConfigFile(
 				const mrpt::utils::CConfigFileBase	&source,
 				const std::string		&section);
-			 virtual void  dumpToTextStream( CStream		&out) const;
+			 virtual void  dumpToTextStream( mrpt::utils::CStream &out) const;
 
 			/** (default:false) Match against the occupancy grid or the points map? The former is quicker but less precise. */
 			bool	matchAgainstTheGrid;
@@ -60,7 +60,7 @@ namespace slam
 			/** What maps to create (at least one points map and/or a grid map are needed).
 			  *  For the expected format in the .ini file when loaded with loadFromConfigFile(), see documentation of TSetOfMetricMapInitializers.
 			  */
-			TSetOfMetricMapInitializers	mapInitializers;
+			mrpt::maps::TSetOfMetricMapInitializers	mapInitializers;
 
 		 };
 
@@ -71,7 +71,7 @@ namespace slam
 		  *  This method MUST be called if using the default constructor, after loading the configuration into ICP_options. In particular, TConfigParams::mapInitializers
 		  */
 		void  initialize(
-			const CSimpleMap &initialMap  = CSimpleMap(),
+			const mrpt::maps::CSimpleMap &initialMap  = mrpt::maps::CSimpleMap(),
 			CPosePDF					*x0 = NULL
 			);
 
@@ -90,20 +90,20 @@ namespace slam
 		 * \sa processObservation
 		 */
 		void  processActionObservation(
-					CActionCollection	&action,
-					CSensoryFrame		&in_SF );
+			mrpt::obs::CActionCollection	&action,
+			mrpt::obs::CSensoryFrame		&in_SF );
 
 		/**  The main method of this class: Process one odometry or sensor observation.
 		    The new entry point of the algorithm (the old one  was processActionObservation, which now is a wrapper to
 		  this method).
 		 * See params in CMetricMapBuilder::options and CMetricMapBuilderICP::ICP_options
 		  */
-		void  processObservation(const CObservationPtr &obs);
+		void  processObservation(const mrpt::obs::CObservationPtr &obs);
 
 
 		/** Fills "out_map" with the set of "poses"-"sensory-frames", thus the so far built map.
 		  */
-		void  getCurrentlyBuiltMap(CSimpleMap &out_map) const;
+		void  getCurrentlyBuiltMap(mrpt::maps::CSimpleMap &out_map) const;
 
 
 		 /** Returns the 2D points of current local map
@@ -112,7 +112,7 @@ namespace slam
 
 		/** Returns the map built so far. NOTE that for efficiency a pointer to the internal object is passed, DO NOT delete nor modify the object in any way, if desired, make a copy of ir with "duplicate()".
 		  */
-		CMultiMetricMap*   getCurrentlyBuiltMetricMap();
+		mrpt::maps::CMultiMetricMap*   getCurrentlyBuiltMetricMap();
 
 		/** Returns just how many sensory-frames are stored in the currently build map.
 		  */
@@ -125,16 +125,13 @@ namespace slam
 		void  saveCurrentEstimationToImage(const std::string &file, bool formatEMF_BMP = true);
 
 	 private:
-		 /** The set of observations that leads to current map:
-		   */
-		 CSimpleMap		SF_Poses_seq;
+		 /** The set of observations that leads to current map: */
+		 mrpt::maps::CSimpleMap		SF_Poses_seq;
 
-		 /** The metric map representation as a points map:
-		   */
-		 CMultiMetricMap			metricMap;
+		 /** The metric map representation as a points map: */
+		 mrpt::maps::CMultiMetricMap			metricMap;
 
-		 /** Current map file.
-		   */
+		 /** Current map file. */
 		 std::string				currentMapFile;
 
 		 /** The pose estimation by the alignment algorithm (ICP). */

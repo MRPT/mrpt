@@ -141,7 +141,7 @@ bool CMetricMap::canComputeObservationLikelihood( const CObservationPtr &obs ) {
 }
 
 void  CMetricMap::determineMatching2D(
-	const CMetricMap      * otherMap,
+	const mrpt::maps::CMetricMap      * otherMap,
 	const CPose2D         & otherMapPose,
 	TMatchingPairList     & correspondences,
 	const TMatchingParams & params,
@@ -159,7 +159,7 @@ void  CMetricMap::determineMatching2D(
 
 
 void CMetricMap::determineMatching3D(
-	const CMetricMap      * otherMap,
+	const mrpt::maps::CMetricMap      * otherMap,
 	const CPose3D         & otherMapPose,
 	TMatchingPairList     & correspondences,
 	const TMatchingParams & params,
@@ -177,7 +177,7 @@ void CMetricMap::determineMatching3D(
 
 
 float  CMetricMap::compute3DMatchingRatio(
-	const CMetricMap								*otherMap,
+	const mrpt::maps::CMetricMap								*otherMap,
 	const CPose3D							&otherMapPose,
 	float									maxDistForCorr,
 	float									maxMahaDistForCorr

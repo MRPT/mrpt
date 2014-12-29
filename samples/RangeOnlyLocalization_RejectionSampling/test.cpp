@@ -32,7 +32,7 @@ void TestRS()
 
 	// Load the map:
 	CMultiMetricMap									map;
-	mrpt::slam::TSetOfMetricMapInitializers				mapInit;
+	mrpt::maps::TSetOfMetricMapInitializers				mapInit;
 	mapInit.loadFromConfigFile( CConfigFile("_demo_map.ini"),"MetricMap");
 	map.setListOfMaps( &mapInit );
 

@@ -30,7 +30,7 @@
 
 namespace mrpt
 {
-namespace slam
+namespace maps
 {
 	class TSetOfMetricMapInitializers;
 
@@ -169,19 +169,19 @@ namespace slam
 		 *  If initializers is NULL, no internal map will be created.
 		 */
 		CMultiMetricMap(
-			const mrpt::slam::TSetOfMetricMapInitializers	*initializers = NULL,
+			const mrpt::maps::TSetOfMetricMapInitializers	*initializers = NULL,
 			const TOptions		*opts		  = NULL );
 
 		/** Sets the list of internal map according to the passed list of map initializers (Current maps' content will be deleted!)
 		  */
-		void  setListOfMaps( const mrpt::slam::TSetOfMetricMapInitializers	*initializers );
+		void  setListOfMaps( const mrpt::maps::TSetOfMetricMapInitializers	*initializers );
 
 		/** Copy constructor */
-		CMultiMetricMap(const mrpt::slam::CMultiMetricMap &other );
+		CMultiMetricMap(const mrpt::maps::CMultiMetricMap &other );
 
 		/** Copy operator from "other" object.
 		 */
-		mrpt::slam::CMultiMetricMap &operator = ( const mrpt::slam::CMultiMetricMap &other );
+		mrpt::maps::CMultiMetricMap &operator = ( const mrpt::maps::CMultiMetricMap &other );
 
 		/** Destructor.
 		 */
@@ -221,7 +221,7 @@ namespace slam
 			const std::string	&filNamePrefix
 			) const;
 
-		/** This method is called at the end of each "prediction-update-map insertion" cycle within "mrpt::maps::CMetricMapBuilderRBPF::processActionObservation".
+		/** This method is called at the end of each "prediction-update-map insertion" cycle within "mrpt::slam::CMetricMapBuilderRBPF::processActionObservation".
 		  *  This method should normally do nothing, but in some cases can be used to free auxiliary cached variables.
 		  */
 		void  auxParticleFilterCleanUp();
@@ -250,7 +250,7 @@ namespace slam
 	DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE( CMultiMetricMap , mrpt::maps::CMetricMap, SLAM_IMPEXP )
 
 	/** Each structure of this kind will determine the kind (and initial configuration) of one map to be build into a CMultiMetricMap object.
-	  *  See "mrpt::slam::TSetOfMetricMapInitializers::loadFromConfigFile" as an easy way of initialize this object.
+	  *  See "mrpt::maps::TSetOfMetricMapInitializers::loadFromConfigFile" as an easy way of initialize this object.
 	  * \sa TSetOfMetricMapInitializers, CMultiMetricMap::CMultiMetricMap
 	  */
 	struct SLAM_IMPEXP  TMetricMapInitializer
@@ -452,7 +452,7 @@ namespace slam
 		  *  weightedPointsMap_count=<0 or 1, for creating a mrpt::slam::CWeightedPointsMap map>
 		  *
 		  *  // Selection of map for likelihood. Either a numeric value or the textual enum
-		  *  //   enum value of slam::CMultiMetricMap::TOptions::TMapSelectionForLikelihood (e.g: either "-1" or "fuseAll", ect...)
+		  *  //   enum value of mrpt::maps::CMultiMetricMap::TOptions::TMapSelectionForLikelihood (e.g: either "-1" or "fuseAll", ect...)
 		  *  likelihoodMapSelection = -1
 		  *
 		  *  // Enables (1 or "true") / Disables (0 or "false") insertion into specific maps (Defaults are all "true"):
@@ -662,24 +662,24 @@ namespace slam
 	namespace utils
 	{
 		template <>
-		struct TEnumTypeFiller<slam::CMultiMetricMap::TOptions::TMapSelectionForLikelihood>
+		struct TEnumTypeFiller<maps::CMultiMetricMap::TOptions::TMapSelectionForLikelihood>
 		{
-			typedef slam::CMultiMetricMap::TOptions::TMapSelectionForLikelihood enum_t;
+			typedef mrpt::maps::CMultiMetricMap::TOptions::TMapSelectionForLikelihood enum_t;
 			static void fill(bimap<enum_t,std::string>  &m_map)
 			{
-				m_map.insert(slam::CMultiMetricMap::TOptions::mapFuseAll,   "mapFuseAll");
-				m_map.insert(slam::CMultiMetricMap::TOptions::mapGrid,      "mapGrid");
-				m_map.insert(slam::CMultiMetricMap::TOptions::mapOctoMaps,  "mapOctoMaps");
-				m_map.insert(slam::CMultiMetricMap::TOptions::mapColourOctoMaps,  "mapColourOctoMaps");
-				m_map.insert(slam::CMultiMetricMap::TOptions::mapPoints,    "mrSimpleAverage");
-				m_map.insert(slam::CMultiMetricMap::TOptions::mapLandmarks, "mapLandmarks");
-				m_map.insert(slam::CMultiMetricMap::TOptions::mapGasGrid,   "mapGasGrid");
-				m_map.insert(slam::CMultiMetricMap::TOptions::mapWifiGrid,  "mapWifiGrid");
-				m_map.insert(slam::CMultiMetricMap::TOptions::mapBeacon,    "mapBeacon");
-				m_map.insert(slam::CMultiMetricMap::TOptions::mapHeight,    "mapHeight");
-				m_map.insert(slam::CMultiMetricMap::TOptions::mapColourPoints, "mapColourPoints");
-				m_map.insert(slam::CMultiMetricMap::TOptions::mapReflectivity, "mapReflectivity");
-				m_map.insert(slam::CMultiMetricMap::TOptions::mapWeightedPoints, "mapWeightedPoints");
+				m_map.insert(mrpt::maps::CMultiMetricMap::TOptions::mapFuseAll,   "mapFuseAll");
+				m_map.insert(mrpt::maps::CMultiMetricMap::TOptions::mapGrid,      "mapGrid");
+				m_map.insert(mrpt::maps::CMultiMetricMap::TOptions::mapOctoMaps,  "mapOctoMaps");
+				m_map.insert(mrpt::maps::CMultiMetricMap::TOptions::mapColourOctoMaps,  "mapColourOctoMaps");
+				m_map.insert(mrpt::maps::CMultiMetricMap::TOptions::mapPoints,    "mrSimpleAverage");
+				m_map.insert(mrpt::maps::CMultiMetricMap::TOptions::mapLandmarks, "mapLandmarks");
+				m_map.insert(mrpt::maps::CMultiMetricMap::TOptions::mapGasGrid,   "mapGasGrid");
+				m_map.insert(mrpt::maps::CMultiMetricMap::TOptions::mapWifiGrid,  "mapWifiGrid");
+				m_map.insert(mrpt::maps::CMultiMetricMap::TOptions::mapBeacon,    "mapBeacon");
+				m_map.insert(mrpt::maps::CMultiMetricMap::TOptions::mapHeight,    "mapHeight");
+				m_map.insert(mrpt::maps::CMultiMetricMap::TOptions::mapColourPoints, "mapColourPoints");
+				m_map.insert(mrpt::maps::CMultiMetricMap::TOptions::mapReflectivity, "mapReflectivity");
+				m_map.insert(mrpt::maps::CMultiMetricMap::TOptions::mapWeightedPoints, "mapWeightedPoints");
 			}
 		};
 	} // End of namespace

@@ -19,6 +19,7 @@
 
 using namespace mrpt;
 using namespace mrpt::slam;
+using namespace mrpt::maps;
 using namespace mrpt::utils;
 using namespace mrpt::poses;
 using namespace mrpt::bayes;

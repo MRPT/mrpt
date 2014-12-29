@@ -509,7 +509,7 @@ bool  CLandmarksMap::internal_insertObservation( const CObservation *obs, const 
 				computeMatchingWith2D
   ---------------------------------------------------------------*/
 void  CLandmarksMap::computeMatchingWith2D(
-		const CMetricMap						*otherMap,
+		const mrpt::maps::CMetricMap						*otherMap,
 		const CPose2D							&otherMapPose,
 		float									maxDistForCorrespondence,
 		float									maxAngularDistForCorrespondence,
@@ -2354,7 +2354,7 @@ const CLandmark* 	CLandmarksMap::TCustomSequenceLandmarks::getByBeaconID( unsign
  * \sa computeMatchingWith2D
  ----------------------------------------------------------------*/
 float  CLandmarksMap::compute3DMatchingRatio(
-		const CMetricMap						*otherMap2,
+		const mrpt::maps::CMetricMap						*otherMap2,
 		const CPose3D							&otherMapPose,
 		float									maxDistForCorr,
 		float									maxMahaDistForCorr

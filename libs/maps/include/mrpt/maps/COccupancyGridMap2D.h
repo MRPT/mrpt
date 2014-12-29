@@ -965,7 +965,7 @@ namespace maps
 		 * \sa computeMatching3DWith
 		 */
 		virtual void  determineMatching2D(
-			const CMetricMap      * otherMap,
+			const mrpt::maps::CMetricMap      * otherMap,
 			const mrpt::poses::CPose2D         & otherMapPose,
 			TMatchingPairList     & correspondences,
 			const TMatchingParams & params,
@@ -974,7 +974,7 @@ namespace maps
 
 		/** See docs in base class: in this class this always returns 0 */
 		float  compute3DMatchingRatio(
-				const CMetricMap						*otherMap,
+				const mrpt::maps::CMetricMap						*otherMap,
 				const CPose3D							&otherMapPose,
 				float									maxDistForCorr = 0.10f,
 				float									maxMahaDistForCorr = 2.0f

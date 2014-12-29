@@ -68,7 +68,7 @@ namespace mrpt
 				);
 
 		protected:
-			void OnEvent(const mrptEvent &e); //!< This will receive the events from maps in order to purge the cache.
+			void OnEvent(const mrpt::utils::mrptEvent &e); //!< This will receive the events from maps in order to purge the cache.
 			typedef std::map<const mrpt::maps::COccupancyGridMap2D*,mrpt::maps::CLandmarksMapPtr> TCache;
 			TCache m_cache; //!< A cache of already computed maps.
 

@@ -28,9 +28,9 @@ namespace obs { class CObservation; }
 		protected:
 			virtual void do_nothing() { } //!< Just to allow this class to be polymorphic
 		public:
-			inline mrptEventMetricMapClear(const CMetricMap   *smap) : source_map(smap) {}
+			inline mrptEventMetricMapClear(const mrpt::maps::CMetricMap   *smap) : source_map(smap) {}
 
-			const CMetricMap  *source_map;
+			const mrpt::maps::CMetricMap  *source_map;
 		};
 
 		/** Event emitted by a metric up upon a succesful call to insertObservation()
@@ -42,9 +42,9 @@ namespace obs { class CObservation; }
 		protected:
 			virtual void do_nothing() { } //!< Just to allow this class to be polymorphic
 		public:
-			inline mrptEventMetricMapInsert(const CMetricMap   *smap, const mrpt::obs::CObservation *obs,const mrpt::poses::CPose3D *robotPose ) : source_map(smap), inserted_obs(obs), inserted_robotPose(robotPose) { }
+			inline mrptEventMetricMapInsert(const mrpt::maps::CMetricMap   *smap, const mrpt::obs::CObservation *obs,const mrpt::poses::CPose3D *robotPose ) : source_map(smap), inserted_obs(obs), inserted_robotPose(robotPose) { }
 
-			const CMetricMap   *source_map;
+			const mrpt::maps::CMetricMap   *source_map;
 			const mrpt::obs::CObservation *inserted_obs;
 			const mrpt::poses::CPose3D *inserted_robotPose;
 		};

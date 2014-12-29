@@ -401,7 +401,7 @@
 				- [mrpt-graphslam]
 			- Integration of the Octomap C++ library (new BSD License) by Kai M. Wurm et al.: <a href="http://code.google.com/p/mrpt/source/detail?r=3081" >r3081</a>, <a href="http://code.google.com/p/mrpt/source/detail?r=3083" >r3083</a>, <a href="http://code.google.com/p/mrpt/source/detail?r=3084" >r3084</a>, <a href="http://code.google.com/p/mrpt/source/detail?r=3086" >r3086</a>, <a href="http://code.google.com/p/mrpt/source/detail?r=3087" >r3087</a>, <a href="http://code.google.com/p/mrpt/source/detail?r=3088" >r3088</a>, <a href="http://code.google.com/p/mrpt/source/detail?r=3093" >r3093</a>
 				- The main new classes are mrpt::slam::COctoMap & mrpt::opengl::COctoMapVoxels
-				- mrpt::slam::CMultiMetricMap now allows the seamless integration of octomaps in many MRPT map building or localization algorithms.
+				- mrpt::maps::CMultiMetricMap now allows the seamless integration of octomaps in many MRPT map building or localization algorithms.
 				- New example: samples/octomap_simple
 		- Changes in classes:
 			- [mrpt-base]
@@ -467,7 +467,7 @@
 					- Changed behavior not to allow features to appear in duplicated pairings.
 					- Added a consistency test to avoid seeding RANSAC with an inconsistent initial model.
 			- [mrpt-slam]
-				- mrpt::maps::CMetricMapBuilderICP now does not integrate the small pose changes due to odometry and/or relocalization when considering the distance and angle thresholds. This means that fewer map updates are now done for the same ICP-SLAM parameters, which should lead to "less noisy" maps.
+				- mrpt::slam::CMetricMapBuilderICP now does not integrate the small pose changes due to odometry and/or relocalization when considering the distance and angle thresholds. This means that fewer map updates are now done for the same ICP-SLAM parameters, which should lead to "less noisy" maps.
 		- New functions:
 			- [mrpt-base]
 				- mrpt::utils::abs_diff()

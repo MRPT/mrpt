@@ -320,21 +320,17 @@ namespace mrpt
 
 		protected:
 
-			/** Set up by processActionObservation
-			  */
+			/** Set up by processActionObservation */
 			CActionCollectionPtr	m_action;
 
-			/** Set up by processActionObservation
-			  */
+			/** Set up by processActionObservation */
 			CSensoryFramePtr		m_SF;
 
-			/** The mapping between landmark IDs and indexes in the Pkk cov. matrix:
-			  */
+			/** The mapping between landmark IDs and indexes in the Pkk cov. matrix: */
 			mrpt::utils::bimap<CLandmark::TLandmarkID,unsigned int>	m_IDs;
 
-			/** The sequence of all the observations and the robot path (kept for debugging, statistics,etc)
-			  */
-			CSimpleMap      m_SFs;
+			/** The sequence of all the observations and the robot path (kept for debugging, statistics,etc) */
+			mrpt::maps::CSimpleMap      m_SFs;
 
 			TDataAssocInfo m_last_data_association; //!< Last data association
 
