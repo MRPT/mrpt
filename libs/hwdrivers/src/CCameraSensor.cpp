@@ -432,32 +432,33 @@ void  CCameraSensor::loadConfig_sensorSpecific(
 	MRPT_LOAD_HERE_CONFIG_VAR( dc1394_frame_width, int, m_dc1394_options.frame_width, configSource, iniSection )
 	MRPT_LOAD_HERE_CONFIG_VAR( dc1394_frame_height, int, m_dc1394_options.frame_height, configSource, iniSection )
 
-    MRPT_LOAD_HERE_CONFIG_VAR( dc1394_mode7, int, m_dc1394_options.mode7, configSource, iniSection )
+	MRPT_LOAD_HERE_CONFIG_VAR( dc1394_mode7, int, m_dc1394_options.mode7, configSource, iniSection )
 
-    MRPT_LOAD_HERE_CONFIG_VAR( dc1394_shutter, int, m_dc1394_options.shutter, configSource, iniSection )
-    MRPT_LOAD_HERE_CONFIG_VAR( dc1394_gain, int, m_dc1394_options.gain, configSource, iniSection )
-    MRPT_LOAD_HERE_CONFIG_VAR( dc1394_gamma, int, m_dc1394_options.gamma, configSource, iniSection )
-    MRPT_LOAD_HERE_CONFIG_VAR( dc1394_brightness, int, m_dc1394_options.brightness, configSource, iniSection )
-    MRPT_LOAD_HERE_CONFIG_VAR( dc1394_exposure, int, m_dc1394_options.exposure, configSource, iniSection )
-    MRPT_LOAD_HERE_CONFIG_VAR( dc1394_sharpness, int, m_dc1394_options.sharpness, configSource, iniSection )
-    MRPT_LOAD_HERE_CONFIG_VAR( dc1394_white_balance, int, m_dc1394_options.white_balance, configSource, iniSection )
+	MRPT_LOAD_HERE_CONFIG_VAR( dc1394_shutter, int, m_dc1394_options.shutter, configSource, iniSection )
+	MRPT_LOAD_HERE_CONFIG_VAR( dc1394_gain, int, m_dc1394_options.gain, configSource, iniSection )
+	MRPT_LOAD_HERE_CONFIG_VAR( dc1394_gamma, int, m_dc1394_options.gamma, configSource, iniSection )
+	MRPT_LOAD_HERE_CONFIG_VAR( dc1394_brightness, int, m_dc1394_options.brightness, configSource, iniSection )
+	MRPT_LOAD_HERE_CONFIG_VAR( dc1394_exposure, int, m_dc1394_options.exposure, configSource, iniSection )
+	MRPT_LOAD_HERE_CONFIG_VAR( dc1394_sharpness, int, m_dc1394_options.sharpness, configSource, iniSection )
+	MRPT_LOAD_HERE_CONFIG_VAR( dc1394_white_balance, int, m_dc1394_options.white_balance, configSource, iniSection )
 
-    MRPT_LOAD_HERE_CONFIG_VAR( dc1394_shutter_mode, int, m_dc1394_options.shutter_mode, configSource, iniSection )
-    MRPT_LOAD_HERE_CONFIG_VAR( dc1394_gain_mode, int, m_dc1394_options.gain_mode, configSource, iniSection )
-    MRPT_LOAD_HERE_CONFIG_VAR( dc1394_gamma_mode, int, m_dc1394_options.gamma_mode, configSource, iniSection )
-    MRPT_LOAD_HERE_CONFIG_VAR( dc1394_brightness_mode, int, m_dc1394_options.brightness_mode, configSource, iniSection )
-    MRPT_LOAD_HERE_CONFIG_VAR( dc1394_exposure_mode, int, m_dc1394_options.exposure_mode, configSource, iniSection )
-    MRPT_LOAD_HERE_CONFIG_VAR( dc1394_sharpness_mode, int, m_dc1394_options.sharpness_mode, configSource, iniSection )
-    MRPT_LOAD_HERE_CONFIG_VAR( dc1394_white_balance_mode, int, m_dc1394_options.white_balance_mode, configSource, iniSection )
+	MRPT_LOAD_HERE_CONFIG_VAR( dc1394_shutter_mode, int, m_dc1394_options.shutter_mode, configSource, iniSection )
+	MRPT_LOAD_HERE_CONFIG_VAR( dc1394_gain_mode, int, m_dc1394_options.gain_mode, configSource, iniSection )
+	MRPT_LOAD_HERE_CONFIG_VAR( dc1394_gamma_mode, int, m_dc1394_options.gamma_mode, configSource, iniSection )
+	MRPT_LOAD_HERE_CONFIG_VAR( dc1394_brightness_mode, int, m_dc1394_options.brightness_mode, configSource, iniSection )
+	MRPT_LOAD_HERE_CONFIG_VAR( dc1394_exposure_mode, int, m_dc1394_options.exposure_mode, configSource, iniSection )
+	MRPT_LOAD_HERE_CONFIG_VAR( dc1394_sharpness_mode, int, m_dc1394_options.sharpness_mode, configSource, iniSection )
+	MRPT_LOAD_HERE_CONFIG_VAR( dc1394_white_balance_mode, int, m_dc1394_options.white_balance_mode, configSource, iniSection )
 
-    MRPT_LOAD_HERE_CONFIG_VAR( dc1394_trigger_power, int, m_dc1394_options.trigger_power, configSource, iniSection )
-    MRPT_LOAD_HERE_CONFIG_VAR( dc1394_trigger_mode, int, m_dc1394_options.trigger_mode, configSource, iniSection )
-    MRPT_LOAD_HERE_CONFIG_VAR( dc1394_trigger_source, int, m_dc1394_options.trigger_source, configSource, iniSection )
-    MRPT_LOAD_HERE_CONFIG_VAR( dc1394_trigger_polarity, int, m_dc1394_options.trigger_polarity, configSource, iniSection )
+	MRPT_LOAD_HERE_CONFIG_VAR( dc1394_trigger_power, int, m_dc1394_options.trigger_power, configSource, iniSection )
+	MRPT_LOAD_HERE_CONFIG_VAR( dc1394_trigger_mode, int, m_dc1394_options.trigger_mode, configSource, iniSection )
+	MRPT_LOAD_HERE_CONFIG_VAR( dc1394_trigger_source, int, m_dc1394_options.trigger_source, configSource, iniSection )
+	MRPT_LOAD_HERE_CONFIG_VAR( dc1394_trigger_polarity, int, m_dc1394_options.trigger_polarity, configSource, iniSection )
+	MRPT_LOAD_HERE_CONFIG_VAR( dc1394_ring_buffer_size, int, m_dc1394_options.ring_buffer_size, configSource, iniSection )
 
-    // Bumblebee options:
-    m_bumblebee_camera_index			= configSource.read_int( iniSection, "bumblebee_camera_index", m_bumblebee_camera_index );
-    m_bumblebee_options.frame_width 	= configSource.read_int( iniSection, "bumblebee_frame_width", m_bumblebee_options.frame_width );
+	// Bumblebee options:
+	m_bumblebee_camera_index			= configSource.read_int( iniSection, "bumblebee_camera_index", m_bumblebee_camera_index );
+	m_bumblebee_options.frame_width 	= configSource.read_int( iniSection, "bumblebee_frame_width", m_bumblebee_options.frame_width );
 	m_bumblebee_options.frame_height	= configSource.read_int( iniSection, "bumblebee_frame_height", m_bumblebee_options.frame_height );
 	m_bumblebee_options.color			= !m_capture_grayscale;
 	m_bumblebee_monocam                 = configSource.read_int( iniSection, "bumblebee_mono", m_bumblebee_monocam );

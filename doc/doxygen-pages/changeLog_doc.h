@@ -34,6 +34,7 @@
 			- mrpt::hwdrivers::CIMUXSens_MT4: (by Joe Burmeister for Suave Aerial Software)
 				- Upgrade to latest XSens SDK 4.2.1. Requires libudev-dev in Linux
 				- Add GPS observations to CIMUXSens_MT4 for Xsens devices like GTi-G-700 which have GPS 
+			- mrpt::hwdrivers::CImageGrabber_dc1394: Length of ring buffer is now configurable via TCaptureOptions_dc1394::ring_buffer_size
 		- [mrpt-obs]
 			- CObservation::getDescriptionAsText(): New virtual method to obstain a textual description of observations. Refactoring of messy code previously in the RawLogViewer app.
 		- [mrpt-vision]
