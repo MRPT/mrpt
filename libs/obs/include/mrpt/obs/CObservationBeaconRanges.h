@@ -67,11 +67,9 @@ namespace obs
 		  */
 		std::deque<TMeasurement> sensedData;
 
-		/** The (X,Y,PHI) pose estimated by the UWB software, for comparison purposes (Added in streamming version 1)
-		  */
-		CPose2D					auxEstimatePose;
-
-
+		/** The (X,Y,PHI) pose estimated by the UWB software, for comparison purposes (Added in streamming version 1)  */
+		mrpt::poses::CPose2D auxEstimatePose;
+		
 		 /** Prints out the contents of the object.
 		   */
 		 void  debugPrintOut();

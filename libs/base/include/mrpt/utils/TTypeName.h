@@ -71,7 +71,7 @@ namespace mrpt
 
 		#define MRPT_DECLARE_TTYPENAME_PTR_NAMESPACE(_TYPE,__NS) \
 			template<> struct TTypeName <__NS :: _TYPE##Ptr> { \
-			static std::string get() { return TTypeName<_TYPE>::get(); }	};
+			static std::string get() { return TTypeName<__NS :: _TYPE>::get(); }	};
 
 		MRPT_DECLARE_TTYPENAME(bool)
 		MRPT_DECLARE_TTYPENAME(double)

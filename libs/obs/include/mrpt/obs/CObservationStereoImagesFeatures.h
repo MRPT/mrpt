@@ -23,8 +23,8 @@ namespace obs
 {
 	struct OBS_IMPEXP TStereoImageFeatures
 	{
-		std::pair<TPixelCoordf,TPixelCoordf>	pixels;
-		unsigned int 							ID;
+		std::pair<mrpt::utils::TPixelCoordf,mrpt::utils::TPixelCoordf> pixels;
+		unsigned int ID;
 	};
 
 	DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CObservationStereoImagesFeatures , CObservation, OBS_IMPEXP )
@@ -49,14 +49,14 @@ namespace obs
 		 */
 		CObservationStereoImagesFeatures( 
 			const mrpt::math::CMatrixDouble33 &iPLeft /*left intrinsic params*/, const mrpt::math::CMatrixDouble33 &iPRight /*right intrinsic params*/,
-			const CArrayDouble<5> &dPLeft /*left distortion params*/, const CArrayDouble<5> &dPRight /*right distortion params*/,
-			const CPose3DQuat &rCPose /*rightCameraPose*/, const CPose3DQuat &cPORobot /*cameraPoseOnRobot*/ );
+			const mrpt::math::CArrayDouble<5> &dPLeft /*left distortion params*/, const mrpt::math::CArrayDouble<5> &dPRight /*right distortion params*/,
+			const mrpt::poses::CPose3DQuat &rCPose /*rightCameraPose*/, const mrpt::poses::CPose3DQuat &cPORobot /*cameraPoseOnRobot*/ );
 		
 		/** Other constructor providing members initialization.
 		 */
 		CObservationStereoImagesFeatures( 
-			const TCamera &cLeft /*left camera*/, const TCamera &cRight /*right camera*/,
-			const CPose3DQuat &rCPose /*rightCameraPose*/, const CPose3DQuat &cPORobot /*cameraPoseOnRobot*/ );
+			const mrpt::utils::TCamera &cLeft /*left camera*/, const mrpt::utils::TCamera &cRight /*right camera*/,
+			const mrpt::poses::CPose3DQuat &rCPose /*rightCameraPose*/, const mrpt::poses::CPose3DQuat &cPORobot /*cameraPoseOnRobot*/ );
 
 		/** Destructor
 		 */
@@ -71,27 +71,27 @@ namespace obs
 		// ------------------
 		// Class Members
 		// ------------------
-		TCamera cameraLeft, cameraRight;
+		mrpt::utils::TCamera cameraLeft, cameraRight;
 		
 		/** The pose of the right camera, relative to the left one:
 		  *  Note that for the Bumblebee stereo camera and using the conventional reference coordinates for the left
 		  *   camera ("x" points to the right, "y" down), the "right" camera is situated
 		  *   at position (BL, 0, 0) with q = [1 0 0 0], where BL is the BASELINE.
 		  */
-		CPose3DQuat	rightCameraPose;
+		mrpt::poses::CPose3DQuat	rightCameraPose;
 
 		/** The pose of the LEFT camera, relative to the robot.
 		  */
-		CPose3DQuat	cameraPoseOnRobot;
+		mrpt::poses::CPose3DQuat	cameraPoseOnRobot;
 
 		/** Vectors of image feature pairs (with ID).
 		  */
 		std::vector<TStereoImageFeatures> theFeatures;
 
 		// See base class docs
-		void getSensorPose( mrpt::poses::CPose3D &out_sensorPose ) const { out_sensorPose = CPose3D(cameraPoseOnRobot); }
+		void getSensorPose( mrpt::poses::CPose3D &out_sensorPose ) const { out_sensorPose = mrpt::poses::CPose3D(cameraPoseOnRobot); }
 		// See base class docs
-		void getSensorPose( CPose3DQuat &out_sensorPose ) const { out_sensorPose = cameraPoseOnRobot; }
+		void getSensorPose( mrpt::poses::CPose3DQuat &out_sensorPose ) const { out_sensorPose = cameraPoseOnRobot; }
 		// See base class docs
 		virtual void getDescriptionAsText(std::ostream &o) const;
 
@@ -99,13 +99,13 @@ namespace obs
 		  *  Note that most sensors will use the full (6D) CPose3DQuat, but see the derived classes for more details or special cases.
 		  * \sa getSensorPose
 		  */
-		inline void setSensorPose( const mrpt::poses::CPose3D &newSensorPose ) { cameraPoseOnRobot = CPose3DQuat(newSensorPose); }
+		inline void setSensorPose( const mrpt::poses::CPose3D &newSensorPose ) { cameraPoseOnRobot = mrpt::poses::CPose3DQuat(newSensorPose); }
 
 		/** A general method to change the sensor pose on the robot in a CPose3DQuat form.
 		  *  Note that most sensors will use the full (6D) CPose3DQuat, but see the derived classes for more details or special cases.
 		  * \sa getSensorPose
 		  */
-		inline void setSensorPose( const CPose3DQuat &newSensorPose ) { cameraPoseOnRobot = newSensorPose; }
+		inline void setSensorPose( const mrpt::poses::CPose3DQuat &newSensorPose ) { cameraPoseOnRobot = newSensorPose; }
 	}; // End of class def.
 	DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE( CObservationStereoImagesFeatures , CObservation, OBS_IMPEXP )
 

@@ -32,12 +32,12 @@ namespace obs
 
 	 public:
 		CObservationGPS(  ); //!< ctor
-		void  dumpToStream( CStream &out ) const; //!< Dumps the contents of the observation in a human-readable form to a given output stream \sa dumpToConsole(), getDescriptionAsText()
+		void  dumpToStream( mrpt::utils::CStream &out ) const; //!< Dumps the contents of the observation in a human-readable form to a given output stream \sa dumpToConsole(), getDescriptionAsText()
 
 		/** Dumps the contents of the observation in a human-readable form to the console */
 		void  dumpToConsole(std::ostream &o = std::cout) const;
 		
-		CPose3D  sensorPose;//!< The sensor pose on the robot.
+		mrpt::poses::CPose3D  sensorPose;//!< The sensor pose on the robot.
 
 		/** A UTC time-stamp structure for GPS messages */
 		struct OBS_IMPEXP TUTCTime

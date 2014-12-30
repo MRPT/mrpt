@@ -40,90 +40,58 @@ namespace mrpt
 				emScan2DMatching
 			};
 
-			/** Constructor
-			  */
-			CActionRobotMovement2D();
+			CActionRobotMovement2D(); //!< Constructor
+			CActionRobotMovement2D(const CActionRobotMovement2D &o);  //!< Copy constructor
+			CActionRobotMovement2D & operator =(const CActionRobotMovement2D &o); //!< Copy operator
+			~CActionRobotMovement2D();  //!< Destructor
 
-			/** Copy constructor
-			  */
-			CActionRobotMovement2D(const CActionRobotMovement2D &o);
+			mrpt::poses::CPosePDFPtr				poseChange; //!< The 2D pose change probabilistic estimation.
+			/** This is the raw odometry reading, and only is used when "estimationMethod" is "TEstimationMethod::emOdometry" */
+			mrpt::poses::CPose2D					rawOdometryIncrementReading;
+			TEstimationMethod		estimationMethod; //!< This fields indicates the way in which this estimation was obtained.
 
-			/** Copy operator
-			  */
-			CActionRobotMovement2D & operator =(const CActionRobotMovement2D &o);
-
-			/** Destructor
-			  */
-			~CActionRobotMovement2D();
-
-			/** The 2D pose change probabilistic estimation.
-			  */
-			CPosePDFPtr				poseChange;
-
-			/** This is the raw odometry reading, and only is used when "estimationMethod" is "TEstimationMethod::emOdometry"
-			  */
-			CPose2D					rawOdometryIncrementReading;
-
-			/** This fields indicates the way this estimation was obtained.
-			  */
-			TEstimationMethod		estimationMethod;
-
-			/** If "true" means that "encoderLeftTicks" and "encoderRightTicks" contain valid values.
-			  */
-			bool					hasEncodersInfo;
-
+			bool					hasEncodersInfo; //!< If "true" means that "encoderLeftTicks" and "encoderRightTicks" contain valid values.
 			/** For odometry only: the ticks count for each wheel FROM the last reading (positive means FORWARD, for both wheels);
 			  * \sa hasEncodersInfo
 			  */
 			int32_t					encoderLeftTicks,encoderRightTicks;
 
-			/** If "true" means that "velocityLin" and "velocityAng" contain valid values.
-			  */
-			bool					hasVelocities;
-
-			/** The velocity of the robot, linear in meters/sec and angular in rad/sec.
-			  */
-			float					velocityLin, velocityAng;
+			bool					hasVelocities; //!< If "true" means that "velocityLin" and "velocityAng" contain valid values.
+			float					velocityLin, velocityAng; //!< The velocity of the robot, linear in meters/sec and angular in rad/sec.
 
 			enum TDrawSampleMotionModel
 			{
 				mmGaussian = 0,
 				mmThrun
 			};
-			/** The parameter to be passed to "computeFromOdometry".
-			  */
+			/** The parameter to be passed to "computeFromOdometry". */
 			struct OBS_IMPEXP TMotionModelOptions
 			{
-				/** Default values loader.
-				  */
-				TMotionModelOptions();
+				TMotionModelOptions(); //!< Default values loader.
 
-				/** The model to be used.
-				  */
-				TDrawSampleMotionModel	modelSelection;
+				TDrawSampleMotionModel	modelSelection; //!< The model to be used.
 
-				/** Options for the gaussian model, which generates a CPosePDFGaussian object in poseChange
+				/** Options for the gaussian model, which generates a CPosePDFGaussian object in poseChange 
+				  * See docs in : http://www.mrpt.org/tutorials/programming/odometry-and-motion-models/probabilistic_motion_models/
 				  */
 				struct OBS_IMPEXP TOptions_GaussianModel
 				{
 					float		a1,a2,a3,a4,minStdXY,minStdPHI;
 				} gausianModel;
 
-				/** Options for the Thrun's model, which generates a CPosePDFParticles object in poseChange
+				/** Options for the Thrun's model, which generates a CPosePDFParticles object in poseChange 
+				  * See docs in : http://www.mrpt.org/tutorials/programming/odometry-and-motion-models/probabilistic_motion_models/
 				  */
 				struct OBS_IMPEXP  TOptions_ThrunModel
 				{
-					/** The default number of particles to generate in a internal representation (anyway you can draw as many samples as you want through CActionRobotMovement2D::drawSingleSample)
-					  */
+					/** The default number of particles to generate in a internal representation (anyway you can draw as many samples as you want through CActionRobotMovement2D::drawSingleSample)  */
 					uint32_t		nParticlesCount;
-
 					float			alfa1_rot_rot;
 					float			alfa2_rot_trans;
 					float			alfa3_trans_trans;
 					float			alfa4_trans_rot;
 
-					/** An additional noise added to the thrun model (std. dev. in meters and radians).
-					  */
+					/** An additional noise added to the thrun model (std. dev. in meters and radians). */
 					float			additional_std_XY, additional_std_phi;
 				} thrunModel;
 
@@ -134,7 +102,7 @@ namespace mrpt
 			  * \sa computeFromOdometry_modelGaussian, computeFromOdometry_modelThrun
 			  */
 			void  computeFromOdometry(
-				const CPose2D				&odometryIncrement,
+				const mrpt::poses::CPose2D &odometryIncrement,
 				const TMotionModelOptions	&options);
 
 			/** If "hasEncodersInfo"=true, this method updates the pose estimation according to the ticks from both encoders and the passed parameters, which is passed internally to the method "computeFromOdometry" with the last used PDF options (or the defualt ones if not explicitly called by the user).
@@ -151,7 +119,7 @@ namespace mrpt
 			/** Using this method instead of "poseChange->drawSingleSample()" may be more efficient in most situations.
 			  * \sa CPosePDF::drawSingleSample
 			  */
-			void  drawSingleSample( CPose2D &outSample ) const;
+			void  drawSingleSample( mrpt::poses::CPose2D &outSample ) const;
 
 			/** Call this before calling a high number of times "fastDrawSingleSample", which is much faster than "drawSingleSample"
 			  */
@@ -159,14 +127,14 @@ namespace mrpt
 
 			/** Faster version than "drawSingleSample", but requires a previous call to "prepareFastDrawSingleSamples"
 			  */
-			void  fastDrawSingleSample( CPose2D &outSample ) const;
+			void  fastDrawSingleSample( mrpt::poses::CPose2D &outSample ) const;
 
 		protected:
 			/** Computes the PDF of the pose increment from an odometry reading, using a Gaussian approximation as the motion model.
 			 * \sa computeFromOdometry
 			 */
 			void  computeFromOdometry_modelGaussian(
-				const CPose2D				&odometryIncrement,
+				const mrpt::poses::CPose2D		&odometryIncrement,
 				const TMotionModelOptions	&o
 				);
 
@@ -175,17 +143,17 @@ namespace mrpt
 			 * \sa computeFromOdometry
 			 */
 			void  computeFromOdometry_modelThrun(
-				const CPose2D				&odometryIncrement,
+				const mrpt::poses::CPose2D		&odometryIncrement,
 				const TMotionModelOptions	&o
 				);
 
 			/** The sample generator for the model "computeFromOdometry_modelGaussian", internally called when the user invokes "drawSingleSample".
 			  */
-			void  drawSingleSample_modelGaussian( CPose2D &outSample ) const;
+			void  drawSingleSample_modelGaussian( mrpt::poses::CPose2D &outSample ) const;
 
 			/** The sample generator for the model "computeFromOdometry_modelThrun", internally called when the user invokes "drawSingleSample".
 			  */
-			void  drawSingleSample_modelThrun( CPose2D &outSample ) const;
+			void  drawSingleSample_modelThrun( mrpt::poses::CPose2D &outSample ) const;
 
 			/** Internal use
 			  */
@@ -197,16 +165,16 @@ namespace mrpt
 
 			/** Internal use
 			  */
-			void  fastDrawSingleSample_modelGaussian( CPose2D &outSample ) const;
+			void  fastDrawSingleSample_modelGaussian( mrpt::poses::CPose2D &outSample ) const;
 
 			/** Internal use
 			  */
-			void  fastDrawSingleSample_modelThrun( CPose2D &outSample ) const;
+			void  fastDrawSingleSample_modelThrun( mrpt::poses::CPose2D &outSample ) const;
 
 			/** Auxiliary matrix
 			  */
 			mutable mrpt::math::CMatrixDouble33	m_fastDrawGauss_Z;
-			mutable CPose2D			m_fastDrawGauss_M;
+			mutable mrpt::poses::CPose2D		m_fastDrawGauss_M;
 
 
 		}; // End of class def.

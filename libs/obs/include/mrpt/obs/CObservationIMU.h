@@ -140,9 +140,8 @@ namespace obs
 		virtual ~CObservationIMU()
 		{ }
 
-		/** The pose of the sensor on the robot.
-		  */
-		CPose3D  sensorPose;
+		/** The pose of the sensor on the robot. */
+		mrpt::poses::CPose3D  sensorPose;
 
 		/** Each entry in this vector is true if the corresponding data index contains valid data (the IMU unit supplies that kind of data).
 		  *  See the top of this page for the meaning of the indices.

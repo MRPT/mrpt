@@ -55,7 +55,7 @@ namespace mrpt
 			DEFINE_SERIALIZABLE( CRawlog )
 
 		private:
-			typedef	std::vector<CSerializablePtr> TListObjects;
+			typedef	std::vector<mrpt::utils::CSerializablePtr> TListObjects;
 			TListObjects	m_seqOfActObs;	//!< The list where the objects really are in.
 
 			CObservationComment		m_commentTexts;	//!< Comments of the rawlog.
@@ -168,7 +168,7 @@ namespace mrpt
 			  * \sa size, isAction, getAsAction, getAsObservations
 			  * \exception std::exception If index is out of bounds
 			  */
-			CSerializablePtr    getAsGeneric( size_t index ) const;
+			mrpt::utils::CSerializablePtr    getAsGeneric( size_t index ) const;
 
 			/** Returns the i'th element in the sequence, as being an observation, where index=0 is the first object.
 			  *  If it is not an CObservation, it throws an exception. Do neighter modify nor delete the returned pointer.
@@ -195,7 +195,7 @@ namespace mrpt
 				bool operator == (const iterator& o) {  return m_it == o.m_it; }
 				bool operator != (const iterator& o) {  return m_it != o.m_it; }
 
-				CSerializablePtr operator *() { return *m_it; }
+				mrpt::utils::CSerializablePtr operator *() { return *m_it; }
 
 				inline iterator  operator ++(int) { iterator aux =*this; m_it++; return aux; }  // Post
 				inline iterator& operator ++()    { m_it++; return *this; }  // Pre
@@ -229,7 +229,7 @@ namespace mrpt
 				bool operator == (const const_iterator& o) {  return m_it == o.m_it; }
 				bool operator != (const const_iterator& o) {  return m_it != o.m_it; }
 
-				const CSerializablePtr operator *() const { return *m_it; }
+				const mrpt::utils::CSerializablePtr operator *() const { return *m_it; }
 
 				inline const_iterator  operator ++(int) { const_iterator aux =*this; m_it++; return aux; }  // Post
 				inline const_iterator& operator ++()    { m_it++; return *this; }  // Pre
@@ -285,7 +285,7 @@ namespace mrpt
 			  * \sa getActionObservationPair, getActionObservationPairOrObservation
 			  */
 			static bool readActionObservationPair(
-				CStream					&inStream,
+				mrpt::utils::CStream					&inStream,
 				CActionCollectionPtr	&action,
 				CSensoryFramePtr		&observations,
 				size_t			& rawlogEntry );
@@ -303,7 +303,7 @@ namespace mrpt
 			  * \sa getActionObservationPair
 			  */
 			static bool getActionObservationPairOrObservation(
-				CStream					&inStream,
+				mrpt::utils::CStream					&inStream,
 				CActionCollectionPtr	&action,
 				CSensoryFramePtr		&observations,
 				CObservationPtr			&observation,

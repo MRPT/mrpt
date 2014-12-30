@@ -64,54 +64,21 @@ namespace obs
 
 		/** @name Scan data
 		    @{ */
+		std::vector<float>   scan; //!< The range values of the scan, in meters. Must have same length than \a validRange 
+		std::vector<char>    validRange;  //!< It's false (=0) on no reflected rays, referenced to elements in \a scan
+		float                aperture; //!< The "aperture" or field-of-view of the range finder, in radians (typically M_PI = 180 degrees).
+		bool                 rightToLeft; //!< The scanning direction
+		float                maxRange; //!< The maximum range allowed by the device, in meters (e.g. 80m, 50m,...)
+		mrpt::poses::CPose3D sensorPose; //!< The 6D pose of the sensor on the robot at the moment of starting the scan.
+		float                stdError; //!< The "sigma" error of the device in meters, used while inserting the scan in an occupancy grid.
+		float                beamAperture; //!< The aperture of each beam, in radians, used to insert "thick" rays in the occupancy grid.
+		double               deltaPitch; //!< If the laser gathers data by sweeping in the pitch/elevation angle, this holds the increment in "pitch" (=-"elevation") between the beginning and the end of the scan (the sensorPose member stands for the pose at the beginning of the scan).
 
-		/** The range values of the scan, in meters.
-		  */
-		std::vector<float>	    scan;
-
-		/** It's false (=0) on no reflected rays, referenced to elements in "scan"
-		  *  (Added in the streamming version #1 of the class)
-		  */
-		std::vector<char>	validRange;
-
-		/** The aperture of the range finder, in radians (typically M_PI = 180 degrees).
-		  */
-		float				aperture;
-
-		/** The scanning direction
-		  */
-		bool				rightToLeft;
-
-		/** The maximum range allowed by the device, in meters (e.g. 80m, 50m,...)
-		  */
-		float				maxRange;
-
-		/** The 6D pose of the sensor on the robot.
-		  */
-		CPose3D				sensorPose;
-
-		/** The "sigma" error of the device in meters, used while inserting the scan in an occupancy grid.
-		  */
-		float				stdError;
-
-		/** The aperture of each beam, in radians, used to insert "thick" rays in the occupancy grid.
-		  * (Added in the streamming version #4 of the class)
-		  */
-		float				beamAperture;
-
-		/** If the laser gathers data by sweeping in the pitch/elevation angle, this holds the increment in "pitch" (=-"elevation") between the beginning and the end of the scan (the sensorPose member stands for the pose at the beginning of the scan).
-		  */
-		double				deltaPitch;
-
-		/** Fill out a T2DScanProperties structure with the parameters of this scan */
-		void getScanProperties(T2DScanProperties& p) const;
-
+		void getScanProperties(T2DScanProperties& p) const;  //!< Fill out a T2DScanProperties structure with the parameters of this scan
 		/** @} */
-
-
+		
 		/** @name Cached points map
 		    @{  */
-
 	protected:
 		/** A points map, build only under demand by the methods getAuxPointsMap() and buildAuxPointsMap().
 		  *  It's a generic smart pointer to avoid depending here in the library mrpt-obs on classes on other libraries.

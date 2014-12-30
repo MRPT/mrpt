@@ -39,7 +39,7 @@ namespace obs
 
 		/** The pose of this sensor in robot's local coordinates.
 		  */
-		CPose3D sensorPose;
+		mrpt::poses::CPose3D sensorPose;
 
 		/** 1-sigma of the sensor Gaussian noise (in the same normalized units than \a reflectivityLevel)
 		  */

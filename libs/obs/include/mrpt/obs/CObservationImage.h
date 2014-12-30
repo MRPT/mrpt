@@ -46,18 +46,18 @@ namespace obs
 
 		 /** The pose of the camera on the robot
 		  */
-		CPose3D			cameraPose;
+		mrpt::poses::CPose3D			cameraPose;
 
 		 /** Intrinsic and distortion parameters of the camera.
 		   * See the <a href="http://www.mrpt.org/Camera_Parameters" >tutorial</a> for a discussion of these parameters.
 		   */
-		TCamera		cameraParams;
+		mrpt::utils::TCamera		cameraParams;
 
-		CImage		image; //!< The image captured by the camera, that is, the main piece of information of this observation.
+		mrpt::utils::CImage		image; //!< The image captured by the camera, that is, the main piece of information of this observation.
 
 		/** Computes the rectified (un-distorted) image, using the embeded distortion parameters.
 		  */
-		void  getRectifiedImage( CImage &out_img ) const;
+		void  getRectifiedImage( mrpt::utils::CImage &out_img ) const;
 
 		// See base class docs
 		void getSensorPose( mrpt::poses::CPose3D &out_sensorPose ) const { out_sensorPose = cameraPose; }

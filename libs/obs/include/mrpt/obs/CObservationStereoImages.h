@@ -80,16 +80,16 @@ namespace obs
 		  * See the <a href="http://www.mrpt.org/Camera_Parameters" >tutorial</a> for a discussion of these parameters.
 		  * \sa areImagesRectified(), getStereoCameraParams()
 		  */
-		TCamera		leftCamera, rightCamera;
+		mrpt::utils::TCamera		leftCamera, rightCamera;
 
-		CPose3DQuat	cameraPose;		//!< The pose of the LEFT camera, relative to the robot.
+		mrpt::poses::CPose3DQuat	cameraPose;		//!< The pose of the LEFT camera, relative to the robot.
 
 		/** The pose of the right camera, relative to the left one:
 		  *  Note that using the conventional reference coordinates for the left
 		  *   camera (x points to the right, y down), the "right" camera is situated
 		  *   at position (BL, 0, 0) with yaw=pitch=roll=0, where BL is the BASELINE.
 		  */
-		CPose3DQuat	rightCameraPose;
+		mrpt::poses::CPose3DQuat	rightCameraPose;
 
 		/** Populates a TStereoCamera structure with the parameters in \a leftCamera, \a rightCamera and \a rightCameraPose \sa areImagesRectified() */
 		void getStereoCameraParams(mrpt::utils::TStereoCamera &out_params) const;
@@ -108,7 +108,7 @@ namespace obs
 		// See base class docs
 		void getSensorPose( mrpt::poses::CPose3D &out_sensorPose ) const { out_sensorPose = cameraPose; }
 		// See base class docs
-		void setSensorPose( const mrpt::poses::CPose3D &newSensorPose ) { cameraPose = CPose3DQuat(newSensorPose); }
+		void setSensorPose( const mrpt::poses::CPose3D &newSensorPose ) { cameraPose = mrpt::poses::CPose3DQuat(newSensorPose); }
 		// See base class docs
 		virtual void getDescriptionAsText(std::ostream &o) const;
 

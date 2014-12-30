@@ -42,7 +42,7 @@ namespace obs
 
 		/** The position of the sensor on the robot.
 		  */
-		CPose3D		sensorLocationOnRobot;
+		mrpt::poses::CPose3D		sensorLocationOnRobot;
 
 		/** Each one of the measurements:
 			*/

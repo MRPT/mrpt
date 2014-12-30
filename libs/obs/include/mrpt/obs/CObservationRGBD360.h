@@ -93,7 +93,7 @@ namespace obs
 		mrpt::utils::TCamera sensorParamss[NUM_SENSORS];	//!< Projection parameters of the 8 RGBD sensor.
 
 		float  	maxRange;	//!< The maximum range allowed by the device, in meters (e.g. 8.0m, 5.0m,...)
-		CPose3D	sensorPose;	//!< The 6D pose of the sensor on the robot.
+		mrpt::poses::CPose3D	sensorPose;	//!< The 6D pose of the sensor on the robot.
 		float	stdError;	//!< The "sigma" error of the device in meters, used while inserting the scan in an occupancy grid.
 
 		// See base class docs

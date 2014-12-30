@@ -286,7 +286,7 @@ namespace obs
 
 
 		float  	maxRange;	//!< The maximum range allowed by the device, in meters (e.g. 8.0m, 5.0m,...)
-		CPose3D	sensorPose;	//!< The 6D pose of the sensor on the robot.
+		mrpt::poses::CPose3D	sensorPose;	//!< The 6D pose of the sensor on the robot.
 		float	stdError;	//!< The "sigma" error of the device in meters, used while inserting the scan in an occupancy grid.
 
 		// See base class docs
@@ -326,17 +326,17 @@ namespace obs
 	namespace utils
 	{
 		// Specialization must occur in the same namespace
-		MRPT_DECLARE_TTYPENAME_PTR(CObservation3DRangeScan)
+		MRPT_DECLARE_TTYPENAME_PTR_NAMESPACE(CObservation3DRangeScan, mrpt::obs)
 
 		// Enum <-> string converter:
 		template <>
-		struct TEnumTypeFiller<obs::CObservation3DRangeScan::TIntensityChannelID>
+		struct TEnumTypeFiller< mrpt::obs::CObservation3DRangeScan::TIntensityChannelID>
 		{
-			typedef obs::CObservation3DRangeScan::TIntensityChannelID enum_t;
+			typedef  mrpt::obs::CObservation3DRangeScan::TIntensityChannelID enum_t;
 			static void fill(bimap<enum_t,std::string>  &m_map)
 			{
-				m_map.insert(obs::CObservation3DRangeScan::CH_VISIBLE, "CH_VISIBLE");
-				m_map.insert(obs::CObservation3DRangeScan::CH_IR, "CH_IR");
+				m_map.insert( mrpt::obs::CObservation3DRangeScan::CH_VISIBLE, "CH_VISIBLE");
+				m_map.insert( mrpt::obs::CObservation3DRangeScan::CH_IR, "CH_IR");
 			}
 		};
 	}
@@ -345,10 +345,10 @@ namespace obs
 	{
 		/** Specialization mrpt::utils::PointCloudAdapter<CObservation3DRangeScan> \ingroup mrpt_adapters_grp */
 		template <>
-		class PointCloudAdapter<CObservation3DRangeScan> : public detail::PointCloudAdapterHelperNoRGB<CObservation3DRangeScan,float>
+		class PointCloudAdapter< mrpt::obs::CObservation3DRangeScan> : public detail::PointCloudAdapterHelperNoRGB<mrpt::obs::CObservation3DRangeScan,float>
 		{
 		private:
-			CObservation3DRangeScan &m_obj;
+			mrpt::obs::CObservation3DRangeScan &m_obj;
 		public:
 			typedef float  coords_t;  //!< The type of each point XYZ coordinates
 			static const int HAS_RGB   = 0;  //!< Has any color RGB info?
@@ -356,7 +356,7 @@ namespace obs
 			static const int HAS_RGBu8 = 0;  //!< Has native RGB info (as uint8_t)?
 
 			/** Constructor (accept a const ref for convenience) */
-			inline PointCloudAdapter(const CObservation3DRangeScan &obj) : m_obj(*const_cast<CObservation3DRangeScan*>(&obj)) { }
+			inline PointCloudAdapter(const mrpt::obs::CObservation3DRangeScan &obj) : m_obj(*const_cast<mrpt::obs::CObservation3DRangeScan*>(&obj)) { }
 			/** Get number of points */
 			inline size_t size() const { return m_obj.points3D_x.size(); }
 			/** Set number of points (to uninitialized values) */
