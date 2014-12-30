@@ -18,17 +18,12 @@ namespace mrpt
 {
 	namespace vision
 	{
-		using namespace std;
-		using namespace mrpt;
-		using namespace mrpt::poses;
-		using namespace mrpt::math;
-
 		// State of the Lev-Marq optimization:
 		struct lm_stat_t
 		{
 			const TCalibrationStereoImageList & images;
 			const vector<size_t> & valid_image_pair_indices;
-			const vector<TPoint3D> &obj_points;
+			const vector mrpt::math::TPoint3D> &obj_points;
 
 			// State being optimized:
 			//  N*left_cam_pose + right2left_pose + left_cam_params + right_cam_params
@@ -41,7 +36,7 @@ namespace mrpt
 			lm_stat_t(
 			const TCalibrationStereoImageList & _images,
 			const vector<size_t> & _valid_image_pair_indices,
-			const vector<TPoint3D> &_obj_points
+			const vector mrpt::math::TPoint3D> &_obj_points
 			) : images(_images), valid_image_pair_indices(_valid_image_pair_indices), obj_points(_obj_points)
 			{
 				left_cam_poses.assign(images.size(), CPose3D(0,0,1, 0,0,0) );  // Initial

@@ -18,24 +18,16 @@
 #include <mrpt/maps/CMultiMetricMap.h>
 #include <mrpt/obs/CActionRobotMovement2D.h>
 #include <mrpt/slam/CIncrementalMapPartitioner.h>
+#include <mrpt/opengl/opengl_frwds.h>
 
 #include <list>
 
 namespace mrpt
 {
-	namespace opengl
-	{
-		struct CSetOfObjectsPtr;
-	}
-	namespace poses
-	{
-		class CPose3DPDFParticles;
-	}
+	namespace poses { class CPose3DPDFParticles; }
 
 	namespace hmtslam
 	{
-		using namespace mrpt::slam;
-
 		class HMTSLAM_IMPEXP CHMTSLAM;
 		class HMTSLAM_IMPEXP CLSLAM_RBPF_2DLASER;
 

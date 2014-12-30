@@ -161,7 +161,7 @@ namespace mrpt
 			virtual void  insertPoint( float x, float y, float z, float R, float G, float B );
 			// The following overloads must be repeated here (from CPointsMap) due to the shadowing of the above "insertPoint()"
 			/// \overload of \a insertPoint()
-			inline void  insertPoint( const CPoint3D &p ) { insertPoint(p.x(),p.y(),p.z()); }
+			inline void  insertPoint( const mrpt::poses::CPoint3D &p ) { insertPoint(p.x(),p.y(),p.z()); }
 			/// \overload
 			inline void  insertPoint( const mrpt::math::TPoint3D &p ) { insertPoint(p.x,p.y,p.z); }
 			/// \overload

@@ -27,9 +27,6 @@ namespace mrpt
 {
 	namespace vision
 	{
-		using namespace mrpt::math;
-		using namespace mrpt::utils;
-
 		/** \addtogroup vision_tracking Feature detection and tracking
 		  *  \ingroup mrpt_vision_grp
 		  *   @{  */

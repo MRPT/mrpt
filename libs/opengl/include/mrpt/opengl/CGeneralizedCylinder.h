@@ -17,8 +17,6 @@
 
 namespace mrpt	{
 namespace opengl	{
-	using namespace std;
-	using namespace mrpt::math;
 	class OPENGL_IMPEXP CGeneralizedCylinder;
 	// This must be added to any CSerializable derived class:
 	DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE(CGeneralizedCylinder,CRenderizableDisplayList, OPENGL_IMPEXP)
@@ -42,7 +40,7 @@ namespace opengl	{
 			/**
 			  * Quadrilateral`'s points.
 			  */
-			TPoint3D points[4];
+		 mrpt::math::TPoint3D points[4];
 			/**
 			  * Normal vector.
 			  */
@@ -60,7 +58,7 @@ namespace opengl	{
 			/**
 			  * Constructor from 4 points.
 			  */
-			TQuadrilateral(const TPoint3D &p1,const TPoint3D &p2,const TPoint3D &p3,const TPoint3D &p4)	{
+			TQuadrilateral(const mrpt::math::TPoint3D &p1,const mrpt::math::TPoint3D &p2,const mrpt::math::TPoint3D &p3,const mrpt::math::TPoint3D &p4)	{
 				points[0]=p1;
 				points[1]=p2;
 				points[2]=p3;
@@ -91,7 +89,7 @@ namespace opengl	{
 		/**
 		  * Object's generatrix, that is, profile which will be extruded.
 		  */
-		vector<TPoint3D> generatrix;
+		vector mrpt::math::TPoint3D> generatrix;
 		/**
 		  * Mutable object with mesh information, used to avoid repeated computations.
 		  */
@@ -99,7 +97,7 @@ namespace opengl	{
 		/**
 		  * Mutable object with the cylinder's points, used to avoid repeated computations.
 		  */
-		mutable CMatrixTemplate<TPoint3D> pointsMesh;
+		mutable mrpt::math::CMatrixTemplate mrpt::math::TPoint3D> pointsMesh;
 		/**
 		  * Mutable flag which tells if recalculations are needed.
 		  */
@@ -135,7 +133,7 @@ namespace opengl	{
 		/**
 		  * Creation of generalized cylinder from axis and generatrix
 		  */
-		static CGeneralizedCylinderPtr Create(const std::vector<TPoint3D> &axis,const std::vector<TPoint3D> &generatrix);
+		static CGeneralizedCylinderPtr Create(const std::vector mrpt::math::TPoint3D> &axis,const std::vector mrpt::math::TPoint3D> &generatrix);
 		/**
 		  * Render.
 		  * \sa mrpt::opengl::CRenderizable
@@ -149,7 +147,7 @@ namespace opengl	{
 		/**
 		  * Get axis's spatial coordinates.
 		  */
-		inline void getAxis(std::vector<TPoint3D> &a) const	{
+		inline void getAxis(std::vector mrpt::math::TPoint3D> &a) const	{
 			//a=axis;
 			size_t N=axis.size();
 			a.resize(N);
@@ -168,7 +166,7 @@ namespace opengl	{
 		/**
 		  * Set the axis points.
 		  */
-		inline void setAxis(const std::vector<TPoint3D> &a)	{
+		inline void setAxis(const std::vector mrpt::math::TPoint3D> &a)	{
 			generatePoses(a,axis);
 			meshUpToDate=false;
 			fullyVisible=true;
@@ -177,13 +175,13 @@ namespace opengl	{
 		/**
 		  * Get cylinder's profile.
 		  */
-		inline void getGeneratrix(std::vector<TPoint3D> &g) const	{
+		inline void getGeneratrix(std::vector mrpt::math::TPoint3D> &g) const	{
 			g=generatrix;
 		}
 		/**
 		  * Set cylinder's profile.
 		  */
-		inline void setGeneratrix(const std::vector<TPoint3D> &g)	{
+		inline void setGeneratrix(const std::vector mrpt::math::TPoint3D> &g)	{
 			generatrix=g;
 			meshUpToDate=false;
 			CRenderizableDisplayList::notifyChange();
@@ -340,7 +338,7 @@ namespace opengl	{
 		/**
 		  * Updates the axis, transforming each point into a pose pointing to the next section.
 		  */
-		void generatePoses(const std::vector<TPoint3D> &pIn,std::vector<CPose3D> &pOut);
+		void generatePoses(const std::vector mrpt::math::TPoint3D> &pIn,std::vector<CPose3D> &pOut);
 		/**
 		  * Updates the mutable mesh.
 		  */
@@ -356,7 +354,7 @@ namespace opengl	{
 		/**
 		  * Constructor with axis and generatrix.
 		  */
-		CGeneralizedCylinder(const std::vector<TPoint3D> &a,const std::vector<TPoint3D> &g):generatrix(g),mesh(),meshUpToDate(false),polysUpToDate(false),closed(false),fullyVisible(true)	{
+		CGeneralizedCylinder(const std::vector mrpt::math::TPoint3D> &a,const std::vector mrpt::math::TPoint3D> &g):generatrix(g),mesh(),meshUpToDate(false),polysUpToDate(false),closed(false),fullyVisible(true)	{
 			generatePoses(a,axis);
 		}
 		/**

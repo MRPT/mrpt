@@ -19,8 +19,6 @@ namespace mrpt
 	/** Classes for creating GUI windows for 2D and 3D visualization.   \ingroup mrpt_gui_grp */
 	namespace gui
 	{
-		using namespace mrpt::utils;
-
 		DEFINE_MRPT_OBJECT_PRE_CUSTOM_BASE_LINKAGE(CDisplayWindow, mrpt::gui::CBaseGUIWindow, GUI_IMPEXP)
 
 		/** This class creates a window as a graphical user interface (GUI) for displaying images to the user.

@@ -29,8 +29,6 @@ namespace mrpt
 /** An heavily template-based implementation of Relative Bundle Adjustment (RBA) - See \ref mrpt_srba_grp */
 namespace srba
 {
-	using namespace std;
-
 	/** The set of default settings for RbaEngine */
 	struct RBA_OPTIONS_DEFAULT
 	{

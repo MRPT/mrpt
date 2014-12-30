@@ -24,10 +24,6 @@ namespace mrpt
 
 	namespace slam
 	{
-		using namespace mrpt::poses;
-		using namespace mrpt::math;
-
-
 		/** An implementation of rejection sampling for generating 2D robot pose from range-only measurements within a landmarks (beacons) map.
 		 *    Before calling the method "rejectionSampling" to generate the samples, you must call "setParams".
 		 *    It is assumed a planar scenario, where the robot is at a fixed height (default=0).
@@ -89,8 +85,8 @@ namespace mrpt
 				TDataPerBeacon()  : sensorOnRobot(), beaconPosition(), radiusAtRobotPlane(0),minAngle(0),maxAngle(0)
 				{}
 
-				TPoint3D	sensorOnRobot;
-				TPoint2D	beaconPosition;
+			 mrpt::math::TPoint3D	sensorOnRobot;
+			 mrpt::math::TPoint2D	beaconPosition;
 				float		radiusAtRobotPlane;
 				float		minAngle,maxAngle;
 			};

@@ -21,10 +21,6 @@ namespace mrpt
 {
 namespace obs
 {
-	using namespace mrpt::utils;
-	using namespace mrpt::obs;
-	using namespace mrpt::math;
-
 	struct OBS_IMPEXP TStereoImageFeatures
 	{
 		std::pair<TPixelCoordf,TPixelCoordf>	pixels;
@@ -52,7 +48,7 @@ namespace obs
 		/** Other constructor providing members initialization.
 		 */
 		CObservationStereoImagesFeatures( 
-			const CMatrixDouble33 &iPLeft /*left intrinsic params*/, const CMatrixDouble33 &iPRight /*right intrinsic params*/,
+			const mrpt::math::CMatrixDouble33 &iPLeft /*left intrinsic params*/, const mrpt::math::CMatrixDouble33 &iPRight /*right intrinsic params*/,
 			const CArrayDouble<5> &dPLeft /*left distortion params*/, const CArrayDouble<5> &dPRight /*right distortion params*/,
 			const CPose3DQuat &rCPose /*rightCameraPose*/, const CPose3DQuat &cPORobot /*cameraPoseOnRobot*/ );
 		

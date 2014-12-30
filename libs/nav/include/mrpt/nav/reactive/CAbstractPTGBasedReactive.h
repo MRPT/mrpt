@@ -23,10 +23,6 @@ namespace mrpt
 {
   namespace nav
   {
-	using namespace mrpt;
-	using namespace mrpt::obs;
-	using namespace mrpt::poses;
-
 	/** Base class for reactive navigator systems based on TP-Space, with an arbitrary holonomic
 	  * reactive method running on it and any number of PTGs for transforming the navigation space.
 	  * Both, the holonomic method and the PTGs can be customized by the apropriate user derived classes.

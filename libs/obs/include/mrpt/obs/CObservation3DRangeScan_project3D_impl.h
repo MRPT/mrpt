@@ -154,11 +154,11 @@ namespace detail {
 
 			// ...precompute the inverse of the pose transformation out of the loop,
 			//  store as a 4x4 homogeneous matrix to exploit SSE optimizations below:
-			CMatrixFixedNumeric<float,4,4> T_inv;
+		 mrpt::math::CMatrixFixedNumeric<float,4,4> T_inv;
 			if (!isDirectCorresp)
 			{
-				CMatrixFixedNumeric<double,3,3> R_inv;
-				CMatrixFixedNumeric<double,3,1> t_inv;
+			 mrpt::math::CMatrixFixedNumeric<double,3,3> R_inv;
+			 mrpt::math::CMatrixFixedNumeric<double,3,1> t_inv;
 				mrpt::math::homogeneousMatrixInverse(
 					src_obs.relativePoseIntensityWRTDepth.getRotationMatrix(),src_obs.relativePoseIntensityWRTDepth.m_coords,
 					R_inv,t_inv);
@@ -238,7 +238,7 @@ namespace detail {
 			if (robotPoseInTheWorld)
 				transf_to_apply.composeFrom(*robotPoseInTheWorld, CPose3D(transf_to_apply));
 
-			const CMatrixFixedNumeric<float,4,4> HM = transf_to_apply.getHomogeneousMatrixVal().cast<float>();
+			const mrpt::math::CMatrixFixedNumeric<float,4,4> HM = transf_to_apply.getHomogeneousMatrixVal().cast<float>();
 			Eigen::Matrix<float,4,1>  pt, pt_transf;
 			pt[3]=1;
 

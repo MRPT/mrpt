@@ -19,10 +19,6 @@ namespace mrpt
 {
   namespace nav
   {
-	using namespace mrpt;
-	using namespace mrpt::obs;
-	using namespace mrpt::poses;
-
 	/** The pure virtual class that a user of CAbstractReactiveNavigationSystem-derived classes must implement in order to allow the navigator sense the world and send motion commands to the robot.
 	  *
 	  *  The user must define a new class derived from CReactiveInterfaceImplementation and reimplement

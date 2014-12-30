@@ -52,7 +52,7 @@ namespace obs
 
 			/** The position of the sensor on the robot.
 			  */
-			CPoint3D		sensorLocationOnRobot;
+		 mrpt::poses::CPoint3D		sensorLocationOnRobot;
 
 			/** The sensed range itself (in meters).
 			  */

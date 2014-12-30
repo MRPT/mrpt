@@ -16,26 +16,16 @@
 #include <mrpt/poses/CPose3DPDFSOG.h>
 #include <mrpt/poses/CPose3DPDFGaussian.h>
 #include <mrpt/utils/CDebugOutputCapable.h>
+#include <mrpt/opengl/opengl_frwds.h>
 
 #include <map>
 
 namespace mrpt
 {
-	namespace opengl 
-	{
-		class COpenGLScene;
-	}
-	namespace poses
-	{
-		class CPose3DPDFParticles;
-	}
+	namespace poses  { class CPose3DPDFParticles; }
 
 	namespace hmtslam
 	{
-		using namespace mrpt::opengl;
-		using namespace mrpt::slam;
-		using namespace mrpt::utils;
-
 		/** Represents a set of nodes and arcs, posibly only a part of the whole hierarchical, multi-hypothesis map.
 		 *  A usar will never create an instance of this class, rather it will employ CHierarchicalMHMap.
 		 * \sa CHierarchicalMHMap, CHMHMapArc, CHMHMapNode

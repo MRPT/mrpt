@@ -18,8 +18,6 @@ namespace mrpt
 {
 namespace obs
 {
-	using namespace mrpt::utils;
-
 	DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CObservationGPS , CObservation, OBS_IMPEXP)
 
 	/** Declares a class derived from "CObservation" that represents a Global Positioning System (GPS) reading.

@@ -22,8 +22,6 @@ namespace mrpt
 {
 	namespace hwdrivers
 	{
-		using namespace std;
-
 		/** A client for NTRIP (HTTP) sources of differential GPS corrections from internet servers, or Global navigation satellite system (GNSS) internet radio.
 		  *  Usage:
 		  *		- To open the server, invoke "open" with the proper parameters. Then use "stream_data" to read the read data.

@@ -82,18 +82,12 @@
 #endif
 
 #endif
+#include <mrpt/gui/gui_frwds.h>
 
 namespace mrpt
 {
 	namespace gui
 	{
-		using namespace mrpt::system;
-
-		class CDisplayWindow;
-		class CDisplayWindow3D;
-		class CDisplayWindowPlots;
-		class CMyGLCanvas_DisplayWindow3D;
-
 		/** This class implements the GUI thread required for the wxWidgets-based GUI.
 		  *  This system is employed internally by gui::CDisplayWindow and gui::CDisplayWindow3D, and must be not used in any way directly by the MRPT user.
 		  *

@@ -19,9 +19,6 @@ namespace mrpt
 {
 	namespace nav
 	{
-		using namespace mrpt::utils;
-		using namespace mrpt::poses;
-
 	/**  The implemented reactive navigation methods. This enum works with mrpt::utils::TEnumType
 	*  \ingroup mrpt_nav_grp
 	*/

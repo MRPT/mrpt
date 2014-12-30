@@ -23,10 +23,6 @@ namespace mrpt
 {
 namespace maps
 {
-	using namespace mrpt::utils;
-	using namespace mrpt::math;
-
-
 	DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CBeaconMap, CMetricMap ,MAPS_IMPEXP )
 
 	/** A class for storing a map of 3D probabilistic beacons, using a Montecarlo, Gaussian, or Sum of Gaussians (SOG) representation (for range-only SLAM).
@@ -269,7 +265,7 @@ namespace maps
 		  */
 		void  simulateBeaconReadings(
             const CPose3D					&in_robotPose,
-			const CPoint3D					&in_sensorLocationOnRobot,
+			const mrpt::poses::CPoint3D					&in_sensorLocationOnRobot,
 			mrpt::obs::CObservationBeaconRanges		&out_Observations ) const;
 
 		/** This virtual method saves the map to a file "filNamePrefix"+< some_file_extension >, as an image or in any other applicable way (Notice that other methods to save the map may be implemented in classes implementing this virtual interface).

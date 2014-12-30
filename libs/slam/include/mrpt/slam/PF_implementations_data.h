@@ -24,12 +24,6 @@ namespace mrpt
 {
 	namespace slam
 	{
-		using namespace std;
-		using namespace mrpt::poses;
-		using namespace mrpt::bayes;
-		using namespace mrpt::math;
-
-
 		// Frwd decl:
 		template <class PARTICLETYPE, class BINTYPE>
 		void KLF_loadBinFromParticle(

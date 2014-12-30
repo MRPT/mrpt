@@ -546,7 +546,7 @@ namespace maps
 		  */
 		void  simulateBeaconReadings(
 			const CPose3D					&in_robotPose,
-			const CPoint3D					&in_sensorLocationOnRobot,
+			const mrpt::poses::CPoint3D					&in_sensorLocationOnRobot,
 			CObservationBeaconRanges		&out_Observations ) const;
 
 		/** Simulates a noisy bearing-range observation of all the beacons (landamrks with type glBeacon) in the landmarks map, if any.

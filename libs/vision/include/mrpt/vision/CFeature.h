@@ -20,10 +20,6 @@ namespace mrpt
 {
 	namespace vision
 	{
-		using namespace mrpt::utils;
-		using namespace mrpt::math;
-		using namespace std;
-
 		class CFeatureList;
 		class CMatchedFeatureList;
 
@@ -78,7 +74,7 @@ namespace mrpt
 
             double                          depth;              //!< The estimated depth in 3D of this feature wrt the camera in the current frame
             double                          initialDepth;       //!< The estimated depth in 3D of this feature wrt the camera that took its image
-            TPoint3D                        p3D;                //!< The estimated 3D point of this feature wrt its camera
+            mrpt::math::TPoint3D                        p3D;                //!< The estimated 3D point of this feature wrt its camera
             deque<double>                   multiScales;        //!< A set of scales where the multi-resolution descriptor has been computed
             deque<vector<double> >          multiOrientations;  //!< A vector of main orientations (there is a vector of orientations for each scale)
             deque<vector<vector<int32_t> > >    multiHashCoeffs;    //!< A set of vectors containing the coefficients for a HASH table of descriptors

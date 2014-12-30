@@ -22,8 +22,6 @@ namespace mrpt
 	{
 		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CRawlog, mrpt::utils::CSerializable, OBS_IMPEXP )
 
-		using namespace mrpt::utils;
-
 		typedef std::pair<mrpt::system::TTimeStamp, CObservationPtr>		TTimeObservationPair;		//!< For usage with CRawlog classes.
 		typedef std::multimap<mrpt::system::TTimeStamp, CObservationPtr>	TListTimeAndObservations;	//!< For usage with CRawlog classes.
 

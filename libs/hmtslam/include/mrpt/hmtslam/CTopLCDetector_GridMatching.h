@@ -17,8 +17,6 @@ namespace mrpt
 {
 	namespace hmtslam
 	{
-		using namespace mrpt::slam;
-
 		/** \ingroup mrpt_hmtslam_grp */
 		class HMTSLAM_IMPEXP CTopLCDetector_GridMatching : public CTopLCDetectorBase
 		{

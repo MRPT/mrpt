@@ -11,10 +11,6 @@
 
 namespace mrpt { namespace srba {
 
-using namespace mrpt;
-using namespace mrpt::math;
-using namespace std;
-
 /*******************************************
       compute_minus_gradient
 

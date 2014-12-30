@@ -14,10 +14,6 @@
 
 namespace mrpt { namespace srba {
 
-using namespace mrpt;
-using namespace mrpt::math;
-using namespace std;
-
 namespace internal
 {
 #if MRPT_HAS_CXX11

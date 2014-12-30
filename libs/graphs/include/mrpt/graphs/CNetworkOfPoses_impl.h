@@ -464,7 +464,7 @@ namespace mrpt
 							if (from_id!=to_id)	// Don't load self-edges! (probably come from an EQUIV)
 							{
 								TPose3DQuat Ap_mean;
-								CMatrixDouble66 Ap_cov_inv;
+							 mrpt::math::CMatrixDouble66 Ap_cov_inv;
 								if (!(s>> Ap_mean.x >> Ap_mean.y >> Ap_mean.z >> Ap_mean.qx >> Ap_mean.qy >> Ap_mean.qz >> Ap_mean.qr ))
 									THROW_EXCEPTION(format("Line %u: Error parsing EDGE_SE3:QUAT line: '%s'", lineNum, lin.c_str() ) );
 

@@ -27,9 +27,6 @@ namespace mrpt
 
 namespace maps
 {
-	using namespace mrpt::poses;
-	using namespace mrpt::utils;
-
 	class CBeaconMap;
 	DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CBeacon, mrpt::utils::CSerializable, MAPS_IMPEXP )
 
@@ -93,12 +90,12 @@ namespace maps
 		 /** Returns an estimate of the point, (the mean, or mathematical expectation of the PDF).
 		   * \sa getCovariance
 		   */
-		void getMean(CPoint3D &mean_point) const;
+		void getMean mrpt::poses::CPoint3D &mean_point) const;
 
 		/** Returns an estimate of the point covariance matrix (3x3 cov matrix) and the mean, both at once.
 		  * \sa getMean
 		  */
-		void getCovarianceAndMean(mrpt::math::CMatrixDouble33 &cov,CPoint3D &mean_point) const;
+		void getCovarianceAndMean(mrpt::math::CMatrixDouble33 &cov mrpt::poses::CPoint3D &mean_point) const;
 
 		/** Copy operator, translating if necesary (for example, between particles and gaussian representations)
 		  */
@@ -123,7 +120,7 @@ namespace maps
 
 		/** Draw a sample from the pdf.
 		  */
-		void drawSingleSample(CPoint3D &outSample) const;
+		void drawSingleSample mrpt::poses::CPoint3D &outSample) const;
 
 		/** Bayesian fusion of two point distributions (product of two distributions->new distribution), then save the result in this object (WARNING: See implementing classes to see classes that can and cannot be mixtured!)
 		  * \param p1 The first distribution to fuse
@@ -145,8 +142,8 @@ namespace maps
 			const float &sensedRange,
 			CPointPDFSOG	&outPDF,
 			const CBeaconMap *myBeaconMap,
-			const CPoint3D	&sensorPntOnRobot,
-			const CPoint3D &centerPoint = CPoint3D(0,0,0),
+			const mrpt::poses::CPoint3D	&sensorPntOnRobot,
+			const mrpt::poses::CPoint3D &centerPoint = mrpt::poses::CPoint3D(0,0,0),
 			const float &maxDistanceFromCenter = 0
 			) const;
 
@@ -160,10 +157,10 @@ namespace maps
 			const float &sensedRange,
 			CPointPDFSOG	&outPDF,
 			const CBeaconMap *myBeaconMap,
-			const CPoint3D	&sensorPnt,
+			const mrpt::poses::CPoint3D	&sensorPnt,
 			const mrpt::math::CMatrixDouble33   *covarianceCompositionToAdd = NULL,
 			bool  clearPreviousContentsOutPDF = true,
-			const CPoint3D &centerPoint = CPoint3D(0,0,0),
+			const mrpt::poses::CPoint3D &centerPoint = mrpt::poses::CPoint3D(0,0,0),
 			const float &maxDistanceFromCenter = 0
 			);
 

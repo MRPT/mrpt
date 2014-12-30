@@ -37,9 +37,6 @@ namespace mrpt
 {
 namespace maps
 {
-	using namespace mrpt::poses;
-	using namespace mrpt::utils;
-
 	DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( COccupancyGridMap2D, CMetricMap, MAPS_IMPEXP )
 
 	/** A class for storing an occupancy grid map.

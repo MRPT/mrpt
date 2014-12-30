@@ -21,9 +21,6 @@ namespace mrpt
 {
 namespace obs
 {
-	using namespace mrpt::utils;
-	using namespace mrpt::math;
-
 	DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CObservationImage , CObservation,OBS_IMPEXP )
 
 	/** Declares a class derived from "CObservation" that encapsules an image from a camera, whose relative pose to robot is also stored.

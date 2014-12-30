@@ -49,7 +49,7 @@ namespace math	{
 		explicit TPoint2D(const TPose3D &p);
 		/**
 		  * Constructor from CPoseOrPoint, perhaps losing 3D information
-		  * \sa CPoseOrPoint,CPoint3D,CPose2D,CPose3D
+		  * \sa CPoseOrPoint mrpt::poses::CPoint3D,CPose2D,CPose3D
 		  */
 		template <class DERIVEDCLASS>
 		explicit TPoint2D(const mrpt::poses::CPoseOrPoint<DERIVEDCLASS> &p) :x(p.x()),y(p.y())	{}
@@ -57,7 +57,7 @@ namespace math	{
 		/** Implicit transformation constructor from TPixelCoordf */
 		inline TPoint2D(const mrpt::utils::TPixelCoordf &p) :x(p.x),y(p.y)	{}
 
-		/** Implicit constructor from CPoint2D  */
+		/** Implicit constructor from mrpt::poses::CPoint2D  */
 		TPoint2D(const mrpt::poses::CPoint2D &p);
 		/**
 		  * Constructor from coordinates.

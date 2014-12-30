@@ -19,11 +19,6 @@ namespace mrpt
 {
 namespace maps
 {
-	using namespace mrpt::utils;
-	using namespace mrpt::poses;
-	using namespace mrpt::math;
-	using namespace std;
-
 	DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CGasConcentrationGridMap2D , CRandomFieldGridMap2D, MAPS_IMPEXP )
 
 	typedef TRandomFieldCell TGasConcentrationCell;  //!< Defined for backward compatibility only (mrpt <0.9.5)

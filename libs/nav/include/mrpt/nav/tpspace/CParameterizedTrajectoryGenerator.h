@@ -23,8 +23,6 @@ namespace mrpt
 
   namespace nav
   {
-	  using namespace mrpt::utils;
-
 	/** This is the base class for any user-defined PTG.
 	 *   The class factory interface in CParameterizedTrajectoryGenerator::CreatePTG.
 	 *

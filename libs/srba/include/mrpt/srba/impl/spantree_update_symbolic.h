@@ -14,8 +14,6 @@ namespace mrpt { namespace srba {
 
 #define SYM_ST_SUPER_VERBOSE 0
 
-using namespace std;
-
 /** Incremental update of spanning trees after the insertion of ONE new node and ONE OR MORE edges */
 template <class KF2KF_POSE_TYPE,class LM_TYPE,class OBS_TYPE,class RBA_OPTIONS>
 void TRBA_Problem_state<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::TSpanningTree::update_symbolic_new_node(

@@ -21,8 +21,6 @@ namespace mrpt
 {
 	namespace slam
 	{
-		using namespace mrpt::math;
-
 		/**  A class for detecting features from occupancy grid maps. 
 		  *   The main method is "COccupancyGridMapFeatureExtractor::extractFeatures()", which makes use
 		  *    of an advanced cache mechanism to avoid redoing work when applied several times on the same

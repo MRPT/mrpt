@@ -19,16 +19,16 @@ namespace mrpt
 {
 	namespace graphslam
 	{
-		using namespace mrpt;
-		using namespace mrpt::poses;
-		using namespace mrpt::graphslam;
-		using namespace mrpt::math;
-		using namespace mrpt::utils;
-		using namespace std;
-
 		/// Internal auxiliary classes
 		namespace detail
 		{
+			using namespace mrpt;
+			using namespace mrpt::poses;
+			using namespace mrpt::graphslam;
+			using namespace mrpt::math;
+			using namespace mrpt::utils;
+			using namespace std;
+
 			// An auxiliary struct to compute the pseudo-ln of a pose error, possibly modified with an information matrix.
 			//  Specializations are below.
 			template <class EDGE,class gst> struct AuxErrorEval;
@@ -113,7 +113,7 @@ namespace mrpt
 				template <class JAC,class EDGE_ITERATOR,class VEC1,class VEC2>
 				static inline void multiply_Jt_W_err(const JAC &J,const EDGE_ITERATOR &edge,const VEC1 & ERR,VEC2 &OUT)
 				{
-					CMatrixDouble33 JtInf(mrpt::math::UNINITIALIZED_MATRIX);
+				 mrpt::math::CMatrixDouble33 JtInf(mrpt::math::UNINITIALIZED_MATRIX);
 					JtInf.multiply_AtB(J,edge->second.cov_inv);
 					JtInf.multiply_Ab(ERR,OUT, true /* accumulate in output */ );
 				}
@@ -136,7 +136,7 @@ namespace mrpt
 				template <class JAC,class EDGE_ITERATOR,class VEC1,class VEC2>
 				static inline void multiply_Jt_W_err(const JAC &J,const EDGE_ITERATOR &edge,const VEC1 & ERR,VEC2 &OUT)
 				{
-					CMatrixDouble66 JtInf(mrpt::math::UNINITIALIZED_MATRIX);
+				 mrpt::math::CMatrixDouble66 JtInf(mrpt::math::UNINITIALIZED_MATRIX);
 					JtInf.multiply_AtB(J,edge->second.cov_inv);
 					JtInf.multiply_Ab(ERR,OUT, true /* accumulate in output */ );
 				}

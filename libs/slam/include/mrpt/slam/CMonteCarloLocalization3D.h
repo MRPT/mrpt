@@ -20,10 +20,6 @@ namespace mrpt
 {
 	namespace slam
 	{
-		using namespace mrpt::poses;
-		using namespace mrpt::slam;
-		using namespace mrpt::bayes;
-
 		/** Declares a class that represents a Probability Density Function (PDF) over a 3D pose (x,y,phi,yaw,pitch,roll), using a set of weighted samples.
 		 *
 		 *  This class also implements particle filtering for robot localization. See the MRPT

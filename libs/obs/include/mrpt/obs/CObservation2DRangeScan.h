@@ -191,9 +191,8 @@ namespace obs
 
 	namespace utils
 	{
-		using namespace ::mrpt::obs;
 		// Specialization must occur in the same namespace
-		MRPT_DECLARE_TTYPENAME_PTR(CObservation2DRangeScan)
+		MRPT_DECLARE_TTYPENAME_PTR_NAMESPACE(CObservation2DRangeScan, ::mrpt::obs)
 	}
 
 } // End of namespace

@@ -34,9 +34,6 @@ namespace mrpt
 
 	namespace graphs
 	{
-		using mrpt::utils::TNodeID;
-		using namespace mrpt::utils;
-
 		/** Internal functions for MRPT */
 		namespace detail
 		{
@@ -45,7 +42,7 @@ namespace mrpt
 			struct node_annotations_empty {  };
 		}
 
-		/** A directed graph of pose constraints, with edges being the relative pose between pairs of nodes indentified by their numeric IDs (of type TNodeID).
+		/** A directed graph of pose constraints, with edges being the relative pose between pairs of nodes indentified by their numeric IDs (of type mrpt::utils::TNodeID).
 		  *  A link or edge between two nodes "i" and "j", that is, the pose \f$ p_{ij} \f$, holds the relative position of "j" with respect to "i".
 		  *   These poses are stored in the edges in the format specified by the template argument CPOSE. Users should employ the following derived classes
 		  *   depending on the desired representation of edges:
@@ -106,10 +103,10 @@ namespace mrpt
 			};
 
 			/** A map from pose IDs to their global coordinates estimates, with uncertainty */
-			typedef typename MAPS_IMPLEMENTATION::template map<TNodeID,CPOSE>     global_poses_pdf_t;
+			typedef typename MAPS_IMPLEMENTATION::template map<mrpt::utils::TNodeID,CPOSE>     global_poses_pdf_t;
 
 			/** A map from pose IDs to their global coordinates estimates, without uncertainty (the "most-likely value") */
-			typedef typename MAPS_IMPLEMENTATION::template map<TNodeID,global_pose_t> global_poses_t;
+			typedef typename MAPS_IMPLEMENTATION::template map<mrpt::utils::TNodeID,global_pose_t> global_poses_t;
 
 			/** @} */
 
@@ -123,7 +120,7 @@ namespace mrpt
 			global_poses_t  nodes;
 
 			/** The ID of the node that is the origin of coordinates, used as reference by all coordinates in \nodes. By default, root is the ID "0". */
-			TNodeID         root;
+			mrpt::utils::TNodeID         root;
 
 			/** False (default) if an edge i->j stores the normal relative pose of j as seen from i: \f$ \Delta_i^j = j \ominus i \f$
 			  * True if an edge i->j stores the inverse relateive pose, that is, i as seen from j: \f$ \Delta_i^j = i \ominus j \f$
@@ -201,7 +198,7 @@ namespace mrpt
 			  *  If \a ignoreCovariances is false, the squared Mahalanobis distance will be computed instead of the straight square error.
 			  * \exception std::exception On edge not existing or global poses not in \a nodes
 			  */
-			double getEdgeSquareError(const TNodeID from_id, const TNodeID to_id, bool ignoreCovariances = true ) const
+			double getEdgeSquareError(const mrpt::utils::TNodeID from_id, const mrpt::utils::TNodeID to_id, bool ignoreCovariances = true ) const
 			{
 				const typename BASE::edges_map_t::const_iterator itEdge = BASE::edges.find( std::make_pair(from_id,to_id) );
 				ASSERTMSG_(itEdge!=BASE::edges.end(),format("Request for edge %u->%u that doesn't exist in graph.",static_cast<unsigned int>(from_id),static_cast<unsigned int>(to_id)));

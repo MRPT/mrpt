@@ -15,7 +15,7 @@
 <a name="1.3.0">
   <h2>Version 1.3.0: (Under development) </h2></a>
 	- Lib changes:
-		- Clean up of the bad practice of "using namespace" in .h files. May lead to user code failing for missing "using namespaces" which were previously masked.
+		- Clean up of the bad practice of "using namespace" in public scopes of headers. May lead to user code failing for missing "using namespaces" which were previously masked.
 		- Namespace "slam" deprecated in libraries mrpt-obs and mrpt-maps (used for historical reasons):
 			- New namespaces mrpt::obs and mrpt::maps.
 			- #include files moved from old paths <mrpt/slam/...> => <mrpt/{obs,maps}/...>

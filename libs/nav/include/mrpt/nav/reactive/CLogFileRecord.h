@@ -20,8 +20,6 @@ namespace mrpt
 {
 namespace nav
 {
-	using namespace mrpt::utils;
-
 	DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CLogFileRecord, mrpt::utils::CSerializable, NAV_IMPEXP )
 
 	/** A class for storing, saving and loading a reactive navigation

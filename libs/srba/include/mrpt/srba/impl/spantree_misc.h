@@ -15,8 +15,6 @@
 
 namespace mrpt { namespace srba {
 
-using namespace std;
-
 template <class KF2KF_POSE_TYPE,class LM_TYPE,class OBS_TYPE,class RBA_OPTIONS>
 void TRBA_Problem_state<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::TSpanningTree::clear()
 {

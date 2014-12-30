@@ -28,10 +28,6 @@ namespace mrpt
 {
     namespace vision
     {
-		using namespace std;
-		using namespace mrpt::math;
-		using namespace mrpt::utils;
-		
 	/** \addtogroup multidesc_desc Multiresolution SIFTs (experimental)
 	  * \ingroup mrpt_vision_grp
 	  *  @{ */

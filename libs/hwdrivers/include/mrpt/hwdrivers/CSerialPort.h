@@ -19,7 +19,6 @@ namespace mrpt
 {
 	namespace hwdrivers
 	{
-		using namespace mrpt::utils;
 		/** A communications serial port built as an implementation of a utils::CStream.
 		 * On communication errors (eg. the given port number does not exist, timeouts,...), most of the methods will
 		 * raise an exception of the class "std::exception"

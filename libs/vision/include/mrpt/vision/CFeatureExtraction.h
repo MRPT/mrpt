@@ -470,7 +470,7 @@ namespace mrpt
 				unsigned int			init_ID = 0,
 				unsigned int			nDesiredFeatures = 0,
 				const TImageROI			    & ROI = TImageROI(),
-				const CMatrixBool           * mask= NULL) const;
+				const mrpt::math::CMatrixBool           * mask= NULL) const;
 
 			/** Edward's "FASTER & Better" detector, N=9,10,12 */
 			void  extractFeaturesFASTER_N(

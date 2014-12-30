@@ -32,13 +32,6 @@ namespace mrpt
 	/** Classes related to the implementation of Hybrid Metric Topological (HMT) SLAM. \ingroup mrpt_hmtslam_grp */
 	namespace hmtslam
 	{
-		using namespace mrpt::utils;
-		using namespace mrpt::system;
-		using namespace mrpt::math;
-		using namespace mrpt::bayes;
-		using namespace mrpt::slam;
-
-
 		class CHMTSLAM;
 		class CLSLAMAlgorithmBase;
 		class CLSLAM_RBPF_2DLASER;

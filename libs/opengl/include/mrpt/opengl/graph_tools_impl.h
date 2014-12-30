@@ -57,7 +57,7 @@ namespace mrpt
 				if (show_ground_grid)
 				{
 					// Estimate bounding box.
-					TPoint3D  BB_min(-10.,-10.,0.), BB_max(10.,10.,0.);
+				 mrpt::math::TPoint3D  BB_min(-10.,-10.,0.), BB_max(10.,10.,0.);
 
 					for (typename GRAPH_T::global_poses_t::const_iterator itNod = g.nodes.begin();itNod!=g.nodes.end();++itNod)
 					{
@@ -174,7 +174,7 @@ namespace mrpt
 						{
 							const CPose3D p1 = CPose3D(itNod1->second);
 							const CPose3D p2 = CPose3D(itNod2->second);
-							gl_edges->appendLine( TPoint3D(p1.x(),p1.y(),p1.z()), TPoint3D(p2.x(),p2.y(),p2.z()) );
+							gl_edges->appendLine( mrpt::math::TPoint3D(p1.x(),p1.y(),p1.z()), mrpt::math::TPoint3D(p2.x(),p2.y(),p2.z()) );
 						}
 					}
 					ret->insert( gl_edges );

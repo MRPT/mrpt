@@ -14,7 +14,7 @@
 
 namespace mrpt
 {
-	namespace math { template <class T> class CMatrixTemplateNumeric; }  // Frwd. decl.
+	namespace math { template <class T> class mrpt::math::CMatrixTemplateNumeric; }  // Frwd. decl.
 
 	/** A namespace of pseudo-random numbers genrators of diferent distributions. The central class in this namespace is mrpt::random::CRandomGenerator
 	 * \ingroup mrpt_base_grp
@@ -94,7 +94,7 @@ namespace mrpt
 				}
 
 				/** Fills the given matrix with independent, uniformly distributed samples.
-				  * Matrix classes can be CMatrixTemplateNumeric or CMatrixFixedNumeric
+				  * Matrix classes can be mrpt::math::CMatrixTemplateNumeric or mrpt::math::CMatrixFixedNumeric
 				  * \sa drawUniform
   				  */
 				template <class MAT>
@@ -141,7 +141,7 @@ namespace mrpt
 				}
 
 				/** Fills the given matrix with independent, 1D-normally distributed samples.
-				  * Matrix classes can be CMatrixTemplateNumeric or CMatrixFixedNumeric
+				  * Matrix classes can be mrpt::math::CMatrixTemplateNumeric or mrpt::math::CMatrixFixedNumeric
 				  * \sa drawGaussian1D
   				  */
 				template <class MAT>
@@ -309,7 +309,7 @@ namespace mrpt
 		}
 
 		/** Fills the given matrix with independent, uniformly distributed samples.
-		  * Matrix classes can be CMatrixTemplateNumeric or CMatrixFixedNumeric
+		  * Matrix classes can be mrpt::math::CMatrixTemplateNumeric or mrpt::math::CMatrixFixedNumeric
 		  * \sa matrixRandomNormal
 		  */
 		template <class MAT>
@@ -338,7 +338,7 @@ namespace mrpt
 		}
 
 		/** Fills the given matrix with independent, normally distributed samples.
-		  * Matrix classes can be CMatrixTemplateNumeric or CMatrixFixedNumeric
+		  * Matrix classes can be mrpt::math::CMatrixTemplateNumeric or mrpt::math::CMatrixFixedNumeric
 		  * \sa matrixRandomUni
 		  */
 		template <class MAT>

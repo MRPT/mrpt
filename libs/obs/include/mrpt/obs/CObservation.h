@@ -24,8 +24,6 @@ namespace mrpt
 	  */
 	namespace obs
 	{
-		using namespace poses;
-
 		/** Used for CObservationBearingRange::TMeasurement::beaconID
 		 * \ingroup mrpt_obs_grp
 		  */

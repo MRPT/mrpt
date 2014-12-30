@@ -167,7 +167,7 @@ namespace mrpt
 				T x_=1/pIn[0];
 				T x_2=square(x_);
 				//First two jacobians...
-				CMatrixFixedNumeric<T,3,3> J21;
+			 mrpt::math::CMatrixFixedNumeric<T,3,3> J21;
 				T tmpK=2*(cam.k1()+tmp.R*(2*cam.k2()+3*tmp.R*cam.k3()));
 				T tmpKx=tmpK*tmp.x_;
 				T tmpKy=tmpK*tmp.y_;
@@ -186,7 +186,7 @@ namespace mrpt
 				T pxpy=2*(cam.p1()*tmp.x_+cam.p2()*tmp.y_);
 				T p1y=cam.p1()*tmp.y_;
 				T p2x=cam.p2()*tmp.x_;
-				CMatrixFixedNumeric<T,2,3> J43;
+			 mrpt::math::CMatrixFixedNumeric<T,2,3> J43;
 				T fx=cam.fx(),fy=cam.fy();
 				J43.set_unsafe(0,0,fx*(tmp.K+2*p1y+6*p2x));
 				J43.set_unsafe(0,1,fx*pxpy);
@@ -202,22 +202,22 @@ namespace mrpt
 			//They are intended to initialize the common parts of the jacobians just once,
 			//and not in each iteration.
 			//They are mostly useless outside the scope of this function.
-			CMatrixFixedNumeric<double,2,2> firstInverseJacobian() const	{
-				CMatrixFixedNumeric<double,2,2> res;
+		 mrpt::math::CMatrixFixedNumeric<double,2,2> firstInverseJacobian() const	{
+			 mrpt::math::CMatrixFixedNumeric<double,2,2> res;
 				res.set_unsafe(0,1,0);
 				res.set_unsafe(1,0,0);
 				return res;
 			}
-			CMatrixFixedNumeric<double,4,2> secondInverseJacobian() const	{
-				CMatrixFixedNumeric<double,4,2> res;
+		 mrpt::math::CMatrixFixedNumeric<double,4,2> secondInverseJacobian() const	{
+			 mrpt::math::CMatrixFixedNumeric<double,4,2> res;
 				res.set_unsafe(0,0,1);
 				res.set_unsafe(0,1,0);
 				res.set_unsafe(1,0,0);
 				res.set_unsafe(1,1,1);
 				return res;
 			}
-			CMatrixFixedNumeric<double,3,4> thirdInverseJacobian() const	{
-				CMatrixFixedNumeric<double,3,4> res;
+		 mrpt::math::CMatrixFixedNumeric<double,3,4> thirdInverseJacobian() const	{
+			 mrpt::math::CMatrixFixedNumeric<double,3,4> res;
 				res.set_unsafe(0,1,0);
 				res.set_unsafe(0,2,0);
 				res.set_unsafe(1,0,0);
@@ -234,10 +234,10 @@ namespace mrpt
 				//WARNING!: this shortcut to avoid repeated initialization makes the method somewhat
 				//faster, but makes it incapable of being used in more than one thread
 				//simultaneously!
-				static CMatrixFixedNumeric<double,2,2> J1(firstInverseJacobian());
-				static CMatrixFixedNumeric<double,4,2> J2(secondInverseJacobian());
-				static CMatrixFixedNumeric<double,3,4> J3(thirdInverseJacobian());
-				static CMatrixFixedNumeric<double,2,3> J4;	//This is not initialized in a special way, although declaring it
+				static mrpt::math::CMatrixFixedNumeric<double,2,2> J1(firstInverseJacobian());
+				static mrpt::math::CMatrixFixedNumeric<double,4,2> J2(secondInverseJacobian());
+				static mrpt::math::CMatrixFixedNumeric<double,3,4> J3(thirdInverseJacobian());
+				static mrpt::math::CMatrixFixedNumeric<double,2,3> J4;	//This is not initialized in a special way, although declaring it
 				CArray<double,4> tmp1;
 				CArray<double,2> tmp2;	//This would be a CArray<double,3>, but to avoid copying, we let "R2" lie in tmp1.
 				//Camera Parameters

@@ -22,8 +22,6 @@ namespace mrpt
 {
 	namespace hmtslam
 	{
-		using namespace mrpt::slam;
-
 		/** Information kept for each robot pose used in CRobotPosesGraph */
 		struct HMTSLAM_IMPEXP TPoseInfo
 		{

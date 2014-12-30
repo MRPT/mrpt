@@ -27,9 +27,6 @@ namespace mrpt
 /** \ingroup mrpt_maps_grp */
 namespace maps
 {
-	using namespace mrpt::poses;
-	using namespace mrpt::math;
-
 	DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CPointsMap , CMetricMap, MAPS_IMPEXP )
 
 	// Forward decls. needed to make its static methods friends of CPointsMap
@@ -66,7 +63,7 @@ namespace maps
 		struct MAPS_IMPEXP TLaserRange2DInsertContext {
 			TLaserRange2DInsertContext(const CObservation2DRangeScan  &_rangeScan) : HM(mrpt::math::UNINITIALIZED_MATRIX), rangeScan(_rangeScan)
 			{ }
-			CMatrixDouble44	HM;  //!< Homog matrix of the local sensor pose within the robot
+		 mrpt::math::CMatrixDouble44	HM;  //!< Homog matrix of the local sensor pose within the robot
 			const CObservation2DRangeScan  &rangeScan;
 			std::vector<float>         fVars;  //!< Extra variables to be used as desired by the derived class.
 			std::vector<unsigned int>  uVars;
@@ -77,7 +74,7 @@ namespace maps
 		struct MAPS_IMPEXP TLaserRange3DInsertContext {
 			TLaserRange3DInsertContext(const CObservation3DRangeScan  &_rangeScan) : HM(mrpt::math::UNINITIALIZED_MATRIX), rangeScan(_rangeScan)
 			{ }
-			CMatrixDouble44	HM;  //!< Homog matrix of the local sensor pose within the robot
+		 mrpt::math::CMatrixDouble44	HM;  //!< Homog matrix of the local sensor pose within the robot
 			const CObservation3DRangeScan  &rangeScan;
 			float scan_x, scan_y,scan_z; //!< In \a internal_loadFromRangeScan3D_prepareOneRange, these are the local coordinates of the scan points being inserted right now.
 			std::vector<float>         fVars;  //!< Extra variables to be used as desired by the derived class.
@@ -150,7 +147,7 @@ namespace maps
 			float   x0,
 			float   y0 ) const MRPT_OVERRIDE;
 
-		inline float squareDistanceToClosestCorrespondenceT(const TPoint2D &p0) const	{
+		inline float squareDistanceToClosestCorrespondenceT(const mrpt::math::TPoint2D &p0) const	{
 			return squareDistanceToClosestCorrespondence(static_cast<float>(p0.x),static_cast<float>(p0.y));
 		}
 
@@ -425,7 +422,7 @@ namespace maps
 			MRPT_END
 		}
 
-		inline void getAllPoints(std::vector<TPoint3D> &ps,size_t decimation=1) const	{
+		inline void getAllPoints(std::vector mrpt::math::TPoint3D> &ps,size_t decimation=1) const	{
 			std::vector<float> dmy1,dmy2,dmy3;
 			getAllPoints(dmy1,dmy2,dmy3,decimation);
 			ps.resize(dmy1.size());
@@ -442,7 +439,7 @@ namespace maps
 		  */
 		void  getAllPoints( std::vector<float> &xs, std::vector<float> &ys, size_t decimation = 1 ) const;
 
-		inline void getAllPoints(std::vector<TPoint2D> &ps,size_t decimation=1) const	{
+		inline void getAllPoints(std::vector mrpt::math::TPoint2D> &ps,size_t decimation=1) const	{
 			std::vector<float> dmy1,dmy2;
 			getAllPoints(dmy1,dmy2,decimation);
 			ps.resize(dmy1.size());
@@ -657,7 +654,7 @@ namespace maps
 		  */
 		void boundingBox( float &min_x,float &max_x,float &min_y,float &max_y,float &min_z,float &max_z ) const;
 
-		inline void boundingBox(TPoint3D &pMin,TPoint3D &pMax) const	{
+		inline void boundingBox mrpt::math::TPoint3D &pMin mrpt::math::TPoint3D &pMax) const	{
 			float dmy1,dmy2,dmy3,dmy4,dmy5,dmy6;
 			boundingBox(dmy1,dmy2,dmy3,dmy4,dmy5,dmy6);
 			pMin.x=dmy1;
@@ -675,7 +672,7 @@ namespace maps
 		/** Extracts the points in the map within the area defined by two corners.
 		  *  The points are coloured according the R,G,B input data.
 		  */
-        void extractPoints( const TPoint3D &corner1, const TPoint3D &corner2, CPointsMap *outMap, const double &R = 1, const double &G = 1, const double &B = 1 );
+        void extractPoints( const mrpt::math::TPoint3D &corner1, const mrpt::math::TPoint3D &corner2, CPointsMap *outMap, const double &R = 1, const double &G = 1, const double &B = 1 );
 
 		/** @name Filter-by-height stuff
 			@{ */

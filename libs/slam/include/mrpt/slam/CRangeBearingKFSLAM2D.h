@@ -34,9 +34,6 @@ namespace mrpt
 {
 	namespace slam
 	{
-		using namespace mrpt::bayes;
-		using namespace mrpt::poses;
-
 		/** An implementation of EKF-based SLAM with range-bearing sensors, odometry, and a 2D (+heading) robot pose, and 2D landmarks.
 		  *  The main method is "processActionObservation" which processes pairs of action/observation.
 		  *

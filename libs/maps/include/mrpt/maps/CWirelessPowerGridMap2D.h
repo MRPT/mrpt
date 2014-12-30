@@ -19,10 +19,6 @@ namespace mrpt
 {
 namespace maps
 {
-	using namespace mrpt::utils;
-	using namespace mrpt::poses;
-	using namespace mrpt::math;
-
 	DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CWirelessPowerGridMap2D , CRandomFieldGridMap2D, MAPS_IMPEXP )
 
 	/** CWirelessPowerGridMap2D represents a PDF of wifi concentrations over a 2D area.

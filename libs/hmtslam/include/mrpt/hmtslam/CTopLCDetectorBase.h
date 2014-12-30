@@ -19,8 +19,6 @@ namespace mrpt
 {
 	namespace hmtslam
 	{
-		using namespace mrpt::slam;
-
 		/** The virtual base class for Topological Loop-closure Detectors; used in HMT-SLAM
 		  *  \sa mrpt::slam::CHMTSLAM
 		  * \ingroup mrpt_hmtslam_grp

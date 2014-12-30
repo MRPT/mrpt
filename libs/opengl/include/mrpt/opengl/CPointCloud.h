@@ -190,7 +190,7 @@ namespace mrpt
 			void loadFromPointsMap( const POINTSMAP *themap);
 			// Must be implemented at the end of the header.
 
-			/** Load the points from a list of TPoint3D
+			/** Load the points from a list of mrpt::math::TPoint3D
 			  */
 			template<class LISTOFPOINTS> void  loadFromPointsList( LISTOFPOINTS &pointsList)
 			{

@@ -30,10 +30,6 @@ namespace mrpt
 {
 namespace maps
 {
-	using namespace mrpt::utils;
-	using namespace mrpt::poses;
-	using namespace mrpt::math;
-
 	DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CRandomFieldGridMap2D , CMetricMap, MAPS_IMPEXP )
 
 	// Pragma defined to ensure no structure packing: since we'll serialize TRandomFieldCell to streams, we want it not to depend on compiler options, etc.
@@ -294,7 +290,7 @@ namespace maps
 			double			&out_predict_response_variance );
 
 		/** Return the mean and covariance vector of the full Kalman filter estimate (works for all KF-based methods). */
-		void getMeanAndCov( CVectorDouble &out_means, CMatrixDouble &out_cov) const;
+		void getMeanAndCov( CVectorDouble &out_means, mrpt::math::CMatrixDouble &out_cov) const;
 
 		/** Return the mean and STD vectors of the full Kalman filter estimate (works for all KF-based methods). */
 		void getMeanAndSTD( CVectorDouble &out_means, CVectorDouble &out_STD) const;
@@ -312,13 +308,13 @@ namespace maps
 		/** The map representation type of this map, as passed in the constructor */
 		TMapRepresentation	m_mapType;
 
-		CMatrixD				m_cov;	//!< The whole covariance matrix, used for the Kalman Filter map representation.
+	 mrpt::math::CMatrixD				m_cov;	//!< The whole covariance matrix, used for the Kalman Filter map representation.
 
 		/** The compressed band diagonal matrix for the KF2 implementation.
 		  *   The format is a Nx(W^2+2W+1) matrix, one row per cell in the grid map with the
 		  *    cross-covariances between each cell and half of the window around it in the grid.
 		  */
-		CMatrixD		m_stackedCov;
+	 mrpt::math::CMatrixD		m_stackedCov;
 		mutable bool	m_hasToRecoverMeanAndCov;       //!< Only for the KF2 implementation.
 
 		/** @name Auxiliary vars for DM & DM+V methods

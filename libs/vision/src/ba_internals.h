@@ -41,8 +41,8 @@ namespace mrpt
 			TLandmarkID    point_id;
 
 			// Jacobians of the observation wrt the camera pose & the point:
-			CMatrixFixedNumeric<double,ObsDim,FrameDof>  J_frame;
-			CMatrixFixedNumeric<double,ObsDim,PointDof>  J_point;
+		 mrpt::math::CMatrixFixedNumeric<double,ObsDim,FrameDof>  J_frame;
+		 mrpt::math::CMatrixFixedNumeric<double,ObsDim,PointDof>  J_point;
 			bool J_frame_valid, J_point_valid;
 
 			MRPT_MAKE_ALIGNED_OPERATOR_NEW  // Needed by any struct having Eigen::Matrix<> fields
@@ -56,8 +56,8 @@ namespace mrpt
 		void frameJac(
 			   const TCamera  & camera_params,
 			   const CPose3D  & cam_pose,
-			   const TPoint3D & landmark_global,
-			   CMatrixFixedNumeric<double,2,6> & out_J)
+			   const mrpt::math::TPoint3D & landmark_global,
+			   mrpt::math::CMatrixFixedNumeric<double,2,6> & out_J)
 		{
 			using mrpt::utils::square;
 
@@ -122,14 +122,14 @@ namespace mrpt
 		void pointJac(
 			const TCamera  & camera_params,
 			const CPose3D     & cam_pose,
-			const TPoint3D & landmark_global,
-			CMatrixFixedNumeric<double,2,3> & out_J )
+			const mrpt::math::TPoint3D & landmark_global,
+		 mrpt::math::CMatrixFixedNumeric<double,2,3> & out_J )
 		{
 			using namespace mrpt::math;
 
-			TPoint3D l; // Local point, wrt camera
+		 mrpt::math::TPoint3D l; // Local point, wrt camera
 
-			CMatrixDouble33 dp_point(mrpt::math::UNINITIALIZED_MATRIX);
+		 mrpt::math::CMatrixDouble33 dp_point(mrpt::math::UNINITIALIZED_MATRIX);
 
 			if (POSES_ARE_INVERSE)
 				cam_pose.composePoint(
@@ -150,7 +150,7 @@ namespace mrpt
 			const double tmp_vals[] = {
 				camera_params.fx()*_z,                     0, -camera_params.fx()*l.x*_z2,
 				0                    , camera_params.fy()*_z, -camera_params.fy()*l.y*_z2 };
-			const CMatrixFixedNumeric<double,2,3> tmp(tmp_vals);
+			const mrpt::math::CMatrixFixedNumeric<double,2,3> tmp(tmp_vals);
 
 			out_J.multiply_AB(tmp, dp_point);
 		}
@@ -207,9 +207,9 @@ namespace mrpt
 			const TSequenceFeatureObservations          & observations,
 			const vector<CArray<double,2> >              & residual_vec,
 			const mrpt::aligned_containers<JacData<6,3,2> >::vector_t & jac_data_vec,
-			mrpt::aligned_containers<CMatrixFixedNumeric<double,6,6> >::vector_t  & U,
+			mrpt::aligned_containers mrpt::math::CMatrixFixedNumeric<double,6,6> >::vector_t  & U,
 			mrpt::aligned_containers<CArrayDouble<6> >::vector_t & eps_frame,
-			mrpt::aligned_containers<CMatrixFixedNumeric<double,3,3> >::vector_t & V,
+			mrpt::aligned_containers mrpt::math::CMatrixFixedNumeric<double,3,3> >::vector_t & V,
 			mrpt::aligned_containers<CArrayDouble<3> >::vector_t & eps_point,
 			const size_t                                  num_fix_frames,
 			const size_t                                  num_fix_points,

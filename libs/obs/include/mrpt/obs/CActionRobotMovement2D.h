@@ -17,9 +17,6 @@ namespace mrpt
 {
 	namespace obs
 	{
-		using namespace mrpt::math;
-		using namespace mrpt::poses;
-
 		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CActionRobotMovement2D, CAction, OBS_IMPEXP )
 
 		/** Represents a probabilistic 2D movement of the robot mobile base
@@ -208,7 +205,7 @@ namespace mrpt
 
 			/** Auxiliary matrix
 			  */
-			mutable CMatrixDouble33	m_fastDrawGauss_Z;
+			mutable mrpt::math::CMatrixDouble33	m_fastDrawGauss_Z;
 			mutable CPose2D			m_fastDrawGauss_M;
 
 

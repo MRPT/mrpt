@@ -23,10 +23,6 @@ namespace mrpt
 	/** \ingroup mrpt_detectors_grp  */
 	namespace detectors
 	{
-		using namespace mrpt::system;
-		using namespace mrpt::synch;
-		using namespace mrpt::math;
-		
 		/** Specific class for face detection.
 		  * Methods and variables labeled as experimentals are temporals (for debug or testing
 		  * purposes) and may disappear in future versions.
@@ -141,7 +137,7 @@ namespace mrpt
 
 			static void dummy_checkIfFaceRegions( CFaceDetection *obj );
 
-			size_t checkRelativePosition( const TPoint3D &p1, const TPoint3D &p2, const TPoint3D &p, double &dist );
+			size_t checkRelativePosition( const mrpt::math::TPoint3D &p1, const mrpt::math::TPoint3D &p2, const mrpt::math::TPoint3D &p, double &dist );
 
 
 			void thread_checkIfDiagonalSurface( );
@@ -158,20 +154,20 @@ namespace mrpt
 
 			void experimental_viewFacePointsScanned( const CObservation3DRangeScan &face );
 			
-			void experimental_viewFacePointsScanned( const std::vector<TPoint3D> &points );
+			void experimental_viewFacePointsScanned( const std::vector mrpt::math::TPoint3D> &points );
 
-			void experimental_viewFacePointsAndEigenVects(  const std::vector<CArrayDouble<3> > &pointsVector, const CMatrixDouble &eigenVect, const CVectorDouble &eigenVal );
+			void experimental_viewFacePointsAndEigenVects(  const std::vector<CArrayDouble<3> > &pointsVector, const mrpt::math::CMatrixDouble &eigenVect, const CVectorDouble &eigenVal );
 
-			void experimental_viewRegions( const std::vector<TPoint3D> regions[9], const TPoint3D meanPos[3][3] );		
+			void experimental_viewRegions( const std::vector mrpt::math::TPoint3D> regions[9], const mrpt::math::TPoint3D meanPos[3][3] );		
 
 			// Segmentation methods
 
-			void experimental_segmentFace( const CObservation3DRangeScan &face, CMatrixTemplate<bool> &region );
+			void experimental_segmentFace( const CObservation3DRangeScan &face, mrpt::math::CMatrixTemplate<bool> &region );
 
 			// Histogram methods
 
 			void experimental_calcHist( const CImage &face, const size_t &c1, const size_t &r1, const size_t &c2, 
-										const size_t &r2, CMatrixTemplate<unsigned int> &hist );
+										const size_t &r2, mrpt::math::CMatrixTemplate<unsigned int> &hist );
 
 			
 

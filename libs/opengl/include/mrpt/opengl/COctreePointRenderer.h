@@ -37,9 +37,6 @@ namespace mrpt
 
 	namespace opengl
 	{
-		using namespace mrpt::utils;
-		using namespace mrpt::math;
-
 		/** Template class that implements the data structure and algorithms for Octree-based efficient rendering.
 		  *  \sa mrpt::opengl::CPointCloud, mrpt::opengl::CPointCloudColoured, http://www.mrpt.org/Efficiently_rendering_point_clouds_of_millions_of_points
 		  * \ingroup mrpt_opengl_grp
@@ -317,35 +314,35 @@ namespace mrpt
 #endif
 
 						// Precompute the 19 (3*9-8) intermediary points so children don't have to compute them several times:
-						const TPoint3Df p_Xm_Ym_Zm ( node.bb_min.x, node.bb_min.y, node.bb_min.z ); // 0
-						const TPoint3Df p_X0_Ym_Zm ( node.center.x, node.bb_min.y, node.bb_min.z );
-						const TPoint3Df p_Xp_Ym_Zm ( node.bb_max.x, node.bb_min.y, node.bb_min.z ); // 1
-						const TPoint3Df p_Xm_Y0_Zm ( node.bb_min.x, node.center.y, node.bb_min.z );
-						const TPoint3Df p_X0_Y0_Zm ( node.center.x, node.center.y, node.bb_min.z );
-						const TPoint3Df p_Xp_Y0_Zm ( node.bb_max.x, node.center.y, node.bb_min.z );
-						const TPoint3Df p_Xm_Yp_Zm ( node.bb_min.x, node.bb_max.y, node.bb_min.z ); // 2
-						const TPoint3Df p_X0_Yp_Zm ( node.center.x, node.bb_max.y, node.bb_min.z );
-						const TPoint3Df p_Xp_Yp_Zm ( node.bb_max.x, node.bb_max.y, node.bb_min.z ); // 3
+						const mrpt::math::TPoint3Df p_Xm_Ym_Zm ( node.bb_min.x, node.bb_min.y, node.bb_min.z ); // 0
+						const mrpt::math::TPoint3Df p_X0_Ym_Zm ( node.center.x, node.bb_min.y, node.bb_min.z );
+						const mrpt::math::TPoint3Df p_Xp_Ym_Zm ( node.bb_max.x, node.bb_min.y, node.bb_min.z ); // 1
+						const mrpt::math::TPoint3Df p_Xm_Y0_Zm ( node.bb_min.x, node.center.y, node.bb_min.z );
+						const mrpt::math::TPoint3Df p_X0_Y0_Zm ( node.center.x, node.center.y, node.bb_min.z );
+						const mrpt::math::TPoint3Df p_Xp_Y0_Zm ( node.bb_max.x, node.center.y, node.bb_min.z );
+						const mrpt::math::TPoint3Df p_Xm_Yp_Zm ( node.bb_min.x, node.bb_max.y, node.bb_min.z ); // 2
+						const mrpt::math::TPoint3Df p_X0_Yp_Zm ( node.center.x, node.bb_max.y, node.bb_min.z );
+						const mrpt::math::TPoint3Df p_Xp_Yp_Zm ( node.bb_max.x, node.bb_max.y, node.bb_min.z ); // 3
 
-						const TPoint3Df p_Xm_Ym_Z0 ( node.bb_min.x, node.bb_min.y, node.center.z );
-						const TPoint3Df p_X0_Ym_Z0 ( node.center.x, node.bb_min.y, node.center.z );
-						const TPoint3Df p_Xp_Ym_Z0 ( node.bb_max.x, node.bb_min.y, node.center.z );
-						const TPoint3Df p_Xm_Y0_Z0 ( node.bb_min.x, node.center.y, node.center.z );
-						const TPoint3Df p_X0_Y0_Z0 ( node.center.x, node.center.y, node.center.z );
-						const TPoint3Df p_Xp_Y0_Z0 ( node.bb_max.x, node.center.y, node.center.z );
-						const TPoint3Df p_Xm_Yp_Z0 ( node.bb_min.x, node.bb_max.y, node.center.z );
-						const TPoint3Df p_X0_Yp_Z0 ( node.center.x, node.bb_max.y, node.center.z );
-						const TPoint3Df p_Xp_Yp_Z0 ( node.bb_max.x, node.bb_max.y, node.center.z );
+						const mrpt::math::TPoint3Df p_Xm_Ym_Z0 ( node.bb_min.x, node.bb_min.y, node.center.z );
+						const mrpt::math::TPoint3Df p_X0_Ym_Z0 ( node.center.x, node.bb_min.y, node.center.z );
+						const mrpt::math::TPoint3Df p_Xp_Ym_Z0 ( node.bb_max.x, node.bb_min.y, node.center.z );
+						const mrpt::math::TPoint3Df p_Xm_Y0_Z0 ( node.bb_min.x, node.center.y, node.center.z );
+						const mrpt::math::TPoint3Df p_X0_Y0_Z0 ( node.center.x, node.center.y, node.center.z );
+						const mrpt::math::TPoint3Df p_Xp_Y0_Z0 ( node.bb_max.x, node.center.y, node.center.z );
+						const mrpt::math::TPoint3Df p_Xm_Yp_Z0 ( node.bb_min.x, node.bb_max.y, node.center.z );
+						const mrpt::math::TPoint3Df p_X0_Yp_Z0 ( node.center.x, node.bb_max.y, node.center.z );
+						const mrpt::math::TPoint3Df p_Xp_Yp_Z0 ( node.bb_max.x, node.bb_max.y, node.center.z );
 
-						const TPoint3Df p_Xm_Ym_Zp ( node.bb_min.x, node.bb_min.y, node.bb_max.z ); // 4
-						const TPoint3Df p_X0_Ym_Zp ( node.center.x, node.bb_min.y, node.bb_max.z );
-						const TPoint3Df p_Xp_Ym_Zp ( node.bb_min.x, node.bb_min.y, node.bb_max.z ); // 5
-						const TPoint3Df p_Xm_Y0_Zp ( node.bb_min.x, node.center.y, node.bb_max.z );
-						const TPoint3Df p_X0_Y0_Zp ( node.center.x, node.center.y, node.bb_max.z );
-						const TPoint3Df p_Xp_Y0_Zp ( node.bb_max.x, node.center.y, node.bb_max.z );
-						const TPoint3Df p_Xm_Yp_Zp ( node.bb_min.x, node.bb_max.y, node.bb_max.z ); // 6
-						const TPoint3Df p_X0_Yp_Zp ( node.center.x, node.bb_max.y, node.bb_max.z );
-						const TPoint3Df p_Xp_Yp_Zp ( node.bb_max.x, node.bb_max.y, node.bb_max.z ); // 7
+						const mrpt::math::TPoint3Df p_Xm_Ym_Zp ( node.bb_min.x, node.bb_min.y, node.bb_max.z ); // 4
+						const mrpt::math::TPoint3Df p_X0_Ym_Zp ( node.center.x, node.bb_min.y, node.bb_max.z );
+						const mrpt::math::TPoint3Df p_Xp_Ym_Zp ( node.bb_min.x, node.bb_min.y, node.bb_max.z ); // 5
+						const mrpt::math::TPoint3Df p_Xm_Y0_Zp ( node.bb_min.x, node.center.y, node.bb_max.z );
+						const mrpt::math::TPoint3Df p_X0_Y0_Zp ( node.center.x, node.center.y, node.bb_max.z );
+						const mrpt::math::TPoint3Df p_Xp_Y0_Zp ( node.bb_max.x, node.center.y, node.bb_max.z );
+						const mrpt::math::TPoint3Df p_Xm_Yp_Zp ( node.bb_min.x, node.bb_max.y, node.bb_max.z ); // 6
+						const mrpt::math::TPoint3Df p_X0_Yp_Zp ( node.center.x, node.bb_max.y, node.bb_max.z );
+						const mrpt::math::TPoint3Df p_Xp_Yp_Zp ( node.bb_max.x, node.bb_max.y, node.bb_max.z ); // 7
 
 						// Project all these points:
 #define PROJ_SUB_NODE(POSTFIX) \
@@ -495,7 +492,7 @@ namespace mrpt
 					for (size_t j=0;j<N;j++)
 					{
 						const size_t i = all_pts ? j : node.pts[j];
-						const TPoint3Df p = octree_derived().getPointf(i);
+						const mrpt::math::TPoint3Df p = octree_derived().getPointf(i);
 						if (p.z<c.z)
 						{
 							if (p.y<c.y)

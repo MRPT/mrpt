@@ -13,10 +13,6 @@
 
 namespace mrpt { namespace srba {
 
-using namespace mrpt;
-using namespace mrpt::math;
-using namespace std;
-
 #ifndef SRBA_DETAILED_TIME_PROFILING
 #	define SRBA_DETAILED_TIME_PROFILING       0          //  Enabling this has a measurable impact in performance, so use only for debugging.
 #endif
@@ -283,7 +279,7 @@ void RbaEngine<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::optimize_edges(
 #if 0  // Save a sparse block representation of the Jacobian.
 	{
 		static unsigned int dbg_idx = 0;
-		CMatrixDouble Jbin;
+	 mrpt::math::CMatrixDouble Jbin;
 		rba_state.lin_system.dh_dAp.getBinaryBlocksRepresentation(Jbin);
 		Jbin.saveToTextFile(mrpt::format("sparse_jacobs_blocks_%05u.txt",dbg_idx), mrpt::math::MATRIX_FORMAT_INT );
 		rba_state.lin_system.dh_dAp.saveToTextFileAsDense(mrpt::format("sparse_jacobs_%05u.txt",dbg_idx));

@@ -51,13 +51,13 @@ namespace mrpt
 		{
             DEFINE_SERIALIZABLE( CVectorField3D )
 		protected:
-            CMatrix x_vf;				//!< X component of the vector field
-            CMatrix y_vf;				//!< Y component of the vector field
-            CMatrix z_vf;               //!< Z component of the vector field
+            mrpt::math::CMatrix x_vf;				//!< X component of the vector field
+            mrpt::math::CMatrix y_vf;				//!< Y component of the vector field
+            mrpt::math::CMatrix z_vf;               //!< Z component of the vector field
 
-            CMatrix x_p;                //!< X coordinate of the points at which the vector field is plotted
-            CMatrix y_p;                //!< Y coordinate of the points at which the vector field is plotted
-            CMatrix z_p;                //!< Z coordinate of the points at which the vector field is plotted
+            mrpt::math::CMatrix x_p;                //!< X coordinate of the points at which the vector field is plotted
+            mrpt::math::CMatrix y_p;                //!< Y coordinate of the points at which the vector field is plotted
+            mrpt::math::CMatrix z_p;                //!< Z coordinate of the points at which the vector field is plotted
 
             float	m_LineWidth;			//!< By default it is 1.0
             float	m_pointSize;			//!< By default it is 1.0
@@ -163,7 +163,7 @@ namespace mrpt
 			/**
               * Get the vector field in three independent matrices: Matrix_x, Matrix_y and Matrix_z.
 			  */
-            void getVectorField(CMatrixFloat &Matrix_x, CMatrixFloat &Matrix_y, CMatrixFloat &Matrix_z) const {
+            void getVectorField mrpt::math::CMatrixFloat &Matrix_x, mrpt::math::CMatrixFloat &Matrix_y, mrpt::math::CMatrixFloat &Matrix_z) const {
                 Matrix_x = x_vf;
                 Matrix_y = y_vf;
                 Matrix_z = z_vf;
@@ -178,7 +178,7 @@ namespace mrpt
             /**
               * Get the coordiantes of the points at which the vector field is plotted: Coord_x, Coord_y and Coord_z.
               */
-            void getPointCoordinates(CMatrixFloat &Coord_x, CMatrixFloat &Coord_y, CMatrixFloat &Coord_z) const {
+            void getPointCoordinates mrpt::math::CMatrixFloat &Coord_x, mrpt::math::CMatrixFloat &Coord_y, mrpt::math::CMatrixFloat &Coord_z) const {
                 Coord_x = x_p;
                 Coord_y = y_p;
                 Coord_z = z_p;
@@ -191,24 +191,24 @@ namespace mrpt
             }
 
             /** Get the "x" component of the vector field as a matrix. */
-            inline const CMatrixFloat & getVectorField_x() const { return x_vf; }
+            inline const mrpt::math::CMatrixFloat & getVectorField_x() const { return x_vf; }
 			/** \overload */
-            inline CMatrixFloat & getVectorField_x() { return x_vf; }
+            inline mrpt::math::CMatrixFloat & getVectorField_x() { return x_vf; }
 
             /** Get the "y" component of the vector field as a matrix. */
-            inline const CMatrixFloat & getVectorField_y() const { return y_vf; }
+            inline const mrpt::math::CMatrixFloat & getVectorField_y() const { return y_vf; }
 			/** \overload */
-            inline CMatrixFloat & getVectorField_y() { return y_vf; }
+            inline mrpt::math::CMatrixFloat & getVectorField_y() { return y_vf; }
 
             /** Get the "z" component of the vector field as a matrix. */
-            inline const CMatrixFloat & getVectorField_z() const { return z_vf; }
+            inline const mrpt::math::CMatrixFloat & getVectorField_z() const { return z_vf; }
             /** \overload */
-            inline CMatrixFloat & getVectorField_z() { return z_vf; }
+            inline mrpt::math::CMatrixFloat & getVectorField_z() { return z_vf; }
 
 			/**
               * Set the vector field with Matrix_x, Matrix_y and Matrix_z.
 			  */
-            void setVectorField(CMatrixFloat &Matrix_x, CMatrixFloat &Matrix_y, CMatrixFloat &Matrix_z) {
+            void setVectorField mrpt::math::CMatrixFloat &Matrix_x, mrpt::math::CMatrixFloat &Matrix_y, mrpt::math::CMatrixFloat &Matrix_z) {
                 ASSERT_((Matrix_x.getRowCount() == Matrix_y.getRowCount())&&(Matrix_x.getRowCount() == Matrix_z.getRowCount()))
                 ASSERT_((Matrix_x.getColCount() == Matrix_y.getColCount())&&(Matrix_x.getColCount() == Matrix_z.getColCount()))
                 x_vf = Matrix_x;
@@ -229,7 +229,7 @@ namespace mrpt
             /**
               * Set the coordinates of the points at which the vector field is plotted with Matrix_x, Matrix_y and Matrix_z.
               */
-            void setPointCoordinates(CMatrixFloat &Matrix_x, CMatrixFloat &Matrix_y, CMatrixFloat &Matrix_z) {
+            void setPointCoordinates mrpt::math::CMatrixFloat &Matrix_x, mrpt::math::CMatrixFloat &Matrix_y, mrpt::math::CMatrixFloat &Matrix_z) {
                 ASSERT_((Matrix_x.getRowCount() == Matrix_y.getRowCount())&&(Matrix_x.getRowCount() == Matrix_z.getRowCount()))
                 ASSERT_((Matrix_x.getColCount() == Matrix_y.getColCount())&&(Matrix_x.getColCount() == Matrix_z.getColCount()))
                 x_p = Matrix_x;
@@ -266,7 +266,7 @@ namespace mrpt
 			/**
 			  * Class factory
 			  */
-			static CVectorField3DPtr Create(const CMatrixFloat x_vf_ini, const CMatrixFloat y_vf_ini, const CMatrixFloat z_vf_ini, const CMatrixFloat x_p_ini, const CMatrixFloat y_p_ini, const CMatrixFloat z_p_ini);
+			static CVectorField3DPtr Create(const mrpt::math::CMatrixFloat x_vf_ini, const mrpt::math::CMatrixFloat y_vf_ini, const mrpt::math::CMatrixFloat z_vf_ini, const mrpt::math::CMatrixFloat x_p_ini, const mrpt::math::CMatrixFloat y_p_ini, const mrpt::math::CMatrixFloat z_p_ini);
 			/** Render
 			  */
 			void  render_dl() const;
@@ -285,7 +285,7 @@ namespace mrpt
 			/** Constructor */
             CVectorField3D();
 			/** Constructor with a initial set of lines. */
-            CVectorField3D( CMatrixFloat x_vf_ini, CMatrixFloat y_vf_ini, CMatrixFloat z_vf_ini, CMatrixFloat x_p_ini, CMatrixFloat y_p_ini, CMatrixFloat z_p_ini);
+            CVectorField3D( mrpt::math::CMatrixFloat x_vf_ini, mrpt::math::CMatrixFloat y_vf_ini, mrpt::math::CMatrixFloat z_vf_ini, mrpt::math::CMatrixFloat x_p_ini, mrpt::math::CMatrixFloat y_p_ini, mrpt::math::CMatrixFloat z_p_ini);
 			/** Private, virtual destructor: only can be deleted from smart pointers. */
             virtual ~CVectorField3D() { }
 		};

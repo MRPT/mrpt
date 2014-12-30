@@ -24,10 +24,6 @@ namespace mrpt
 	 */
 	namespace scanmatching
 	{
-		using namespace mrpt::poses;
-		using namespace mrpt::math;
-		using namespace mrpt::utils;
-
 		/** \addtogroup mrpt_scanmatching_grp
 		  * @{ */
 
@@ -124,7 +120,7 @@ namespace mrpt
 		bool SCANMATCHING_IMPEXP leastSquareErrorRigidTransformation(
 			TMatchingPairList	&in_correspondences,
 			CPose2D							&out_transformation,
-			CMatrixDouble33					*out_estimateCovariance = NULL );
+		 mrpt::math::CMatrixDouble33					*out_estimateCovariance = NULL );
 
 		/** This method provides the basic least-square-error solution to a set of over-constrained correspondences for finding the (x,y,phi) rigid transformation between two planes.
 		  *  The optimal transformation q fulfills:   \f$ point_this = q \oplus point_other \f$

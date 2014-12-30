@@ -22,8 +22,6 @@ namespace mrpt
 {
 	namespace gui
 	{
-		using namespace mrpt::utils;
-
 		class C3DWindowDialog;
 		class CMyGLCanvas_DisplayWindow3D;
 

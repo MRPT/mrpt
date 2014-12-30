@@ -156,10 +156,7 @@ namespace mrpt
 	// (This is to ease serialization)
 	namespace utils
 	{
-		using namespace ::mrpt::kinematics;
-
-		MRPT_DECLARE_TTYPENAME(TKinematicLink)
-
+		MRPT_DECLARE_TTYPENAME_NAMESPACE(TKinematicLink,::mrpt::kinematics)
 	} // End of namespace
 
 } // End of namespace

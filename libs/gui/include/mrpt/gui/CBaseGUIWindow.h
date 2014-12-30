@@ -17,20 +17,14 @@
 #include <mrpt/utils/TPixelCoord.h>
 #include <mrpt/utils/mrptEvent.h>
 #include <mrpt/gui/keycodes.h>
+#include <mrpt/gui/gui_frwds.h>
 
 #include <mrpt/gui/link_pragmas.h>
-
 
 namespace mrpt
 {
 	namespace gui
 	{
-		using namespace mrpt::utils;
-
-		class CWindowDialog;
-		class CWindowDialogPlots;
-		class C3DWindowDialog;
-
 		DEFINE_MRPT_OBJECT_PRE_CUSTOM_LINKAGE( CBaseGUIWindow, GUI_IMPEXP )
 
 		/** The base class for GUI window classes.

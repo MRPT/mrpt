@@ -24,8 +24,6 @@ namespace mrpt
 {
 	namespace maps
 	{
-		using namespace mrpt::utils;
-
 		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CHeightGridMap2D, CMetricMap, MAPS_IMPEXP  )
 
 		/** The contents of each cell in a CHeightGridMap2D map.

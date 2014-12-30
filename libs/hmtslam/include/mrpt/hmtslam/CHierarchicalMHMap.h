@@ -21,8 +21,6 @@ namespace mrpt
 {
 	namespace hmtslam
 	{
-		using namespace mrpt::slam;
-
 		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CHierarchicalMHMap, mrpt::utils::CSerializable,  HMTSLAM_IMPEXP )
 
 		/** The most high level class for storing hybrid, multi-hypothesis maps in a graph-based model.

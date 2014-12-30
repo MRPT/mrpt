@@ -35,13 +35,6 @@ namespace mrpt
 {
 	namespace slam
 	{
-		using namespace std;
-		using namespace mrpt::utils;
-		using namespace mrpt::random;
-		using namespace mrpt::poses;
-		using namespace mrpt::bayes;
-		using namespace mrpt::math;
-
 		/** Auxiliary method called by PF implementations: return true if we have both action & observation,
 		  *   otherwise, return false AND accumulate the odometry so when we have an observation we didn't lose a thing.
 		  *   On return=true, the "m_movementDrawer" member is loaded and ready to draw samples of the increment of pose since last step.

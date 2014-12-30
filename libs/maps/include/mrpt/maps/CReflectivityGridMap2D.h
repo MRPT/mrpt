@@ -24,9 +24,6 @@ namespace mrpt
 {
 	namespace maps
 	{
-		using namespace mrpt;
-		using namespace mrpt::utils;
-
 		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CReflectivityGridMap2D, CMetricMap, MAPS_IMPEXP  )
 
 		/** A 2D grid map representing the reflectivity of the environment (for example, measured with an IR proximity sensor).

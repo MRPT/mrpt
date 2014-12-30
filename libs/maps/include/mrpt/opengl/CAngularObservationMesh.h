@@ -21,9 +21,6 @@
 
 namespace mrpt	{
 namespace opengl	{
-	using namespace mrpt::utils;
-	using namespace mrpt::poses;
-
 	DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE(CAngularObservationMesh,CRenderizableDisplayList, MAPS_IMPEXP)
 
 	/**
@@ -218,7 +215,7 @@ namespace opengl	{
 		/**
 		  * Internal method to add a triangle to the mutable mesh.
 		  */
-		void addTriangle(const TPoint3D &p1,const TPoint3D &p2,const TPoint3D &p3) const;
+		void addTriangle(const mrpt::math::TPoint3D &p1,const mrpt::math::TPoint3D &p2,const mrpt::math::TPoint3D &p3) const;
 		/**
 		  * Whether the mesh will be displayed wireframe or solid.
 		  */
@@ -234,7 +231,7 @@ namespace opengl	{
 		/**
 		  * Mutable object with the mesh's points.
 		  */
-		mutable mrpt::math::CMatrixTemplate<TPoint3D> actualMesh;
+		mutable mrpt::math::CMatrixTemplate mrpt::math::TPoint3D> actualMesh;
 		/**
 		  * Scan validity matrix.
 		  */

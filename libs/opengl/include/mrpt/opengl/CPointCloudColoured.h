@@ -51,15 +51,15 @@ namespace mrpt
 			DEFINE_SERIALIZABLE( CPointCloudColoured )
 
 		public:
-			struct TPointColour
+			struct mrpt::math::TPointColour
 			{
-				inline TPointColour() { }
-				inline TPointColour(float _x,float _y,float _z,float _R,float _G,float _B ) : x(_x),y(_y),z(_z),R(_R),G(_G),B(_B) { }
+				inline mrpt::math::TPointColour() { }
+				inline mrpt::math::TPointColour(float _x,float _y,float _z,float _R,float _G,float _B ) : x(_x),y(_y),z(_z),R(_R),G(_G),B(_B) { }
 				float x,y,z,R,G,B;	// Float is precission enough for rendering
 			};
 
 		private:
-			typedef std::vector<TPointColour> TListPointColour;
+			typedef std::vector mrpt::math::TPointColour> TListPointColour;
 			TListPointColour	m_points;
 
 			typedef TListPointColour::iterator iterator;
@@ -110,7 +110,7 @@ namespace mrpt
 			inline void reserve(size_t N) { m_points.reserve(N); }
 
 			/** Read access to each individual point (checks for "i" in the valid range only in Debug). */
-			inline const TPointColour &operator [](size_t i) const {
+			inline const mrpt::math::TPointColour &operator [](size_t i) const {
 #ifdef _DEBUG
 				ASSERT_BELOW_(i,size())
 #endif
@@ -118,7 +118,7 @@ namespace mrpt
 			}
 
 			/** Read access to each individual point (checks for "i" in the valid range only in Debug). */
-			inline const TPointColour &getPoint(size_t i) const {
+			inline const mrpt::math::TPointColour &getPoint(size_t i) const {
 #ifdef _DEBUG
 				ASSERT_BELOW_(i,size())
 #endif
@@ -134,17 +134,17 @@ namespace mrpt
 			}
 
 			/** Write an individual point (checks for "i" in the valid range only in Debug). */
-			void setPoint(size_t i, const TPointColour &p );
+			void setPoint(size_t i, const mrpt::math::TPointColour &p );
 
 			/** Like \a setPoint() but does not check for index out of bounds */
-			inline void setPoint_fast(const size_t i, const TPointColour &p ) {
+			inline void setPoint_fast(const size_t i, const mrpt::math::TPointColour &p ) {
 				m_points[i] = p;
 				markAllPointsAsNew();
 			}
 
 			/** Like \a setPoint() but does not check for index out of bounds */
 			inline void setPoint_fast(const size_t i, const float x,const float y, const float z ) {
-				TPointColour &p = m_points[i];
+			 mrpt::math::TPointColour &p = m_points[i];
 				p.x=x; p.y=y; p.z=z;
 				markAllPointsAsNew();
 			}
@@ -244,10 +244,8 @@ namespace mrpt
 
 	namespace utils
 	{
-		using namespace mrpt::opengl;
-
 		// Specialization must occur in the same namespace
-		MRPT_DECLARE_TTYPENAME(CPointCloudColoured::TPointColour)
+		MRPT_DECLARE_TTYPENAME_NAMESPACE(CPointCloudColoured::TPointColour, mrpt::opengl)
 	}
 
 	namespace utils

@@ -96,10 +96,10 @@ template <> struct LandmarkRendererBase<landmark_rendering_as_point>
 			}
 
 			// If LM_TYPE defines this kind of renderer, we
-			TPoint3D p_wrt_base;
+		 mrpt::math::TPoint3D p_wrt_base;
 			RBA::lm_type::relativeEuclideanLocation(itLM->second.pos, p_wrt_base);
 
-			TPoint3D p_global;
+		 mrpt::math::TPoint3D p_global;
 			base_pose.composePoint(p_wrt_base,p_global);
 
 			gl_lms->insertPoint(p_global.x,p_global.y,p_global.z);

@@ -45,8 +45,8 @@ namespace mrpt
 
 			std::vector<CFeaturePtr> features;		//!< The set of features from which the landmark comes.
 
-			TPoint3D pose_mean;					//!< The mean of the landmark 3D position.
-			TPoint3D normal;					//!< The "normal" to the landmark, i.e. a unitary 3D vector towards the viewing direction, or a null vector if not applicable
+		 mrpt::math::TPoint3D pose_mean;					//!< The mean of the landmark 3D position.
+		 mrpt::math::TPoint3D normal;					//!< The "normal" to the landmark, i.e. a unitary 3D vector towards the viewing direction, or a null vector if not applicable
 			float	pose_cov_11,pose_cov_22,pose_cov_33,pose_cov_12,pose_cov_13,pose_cov_23;
 
 			/** An ID for the landmark (see details next...)
@@ -66,11 +66,11 @@ namespace mrpt
 			  */
 			void 	getPose( CPointPDFGaussian &p ) const;
 
-			void 	getPose( CPoint3D &p, CMatrixDouble &COV ) const {
+			void 	getPose( mrpt::poses::CPoint3D &p, mrpt::math::CMatrixDouble &COV ) const {
 				CPointPDFGaussian pdf;
 				getPose(pdf);
 				p = pdf.mean;
-				COV = CMatrixDouble(pdf.cov);
+				COV = mrpt::math::CMatrixDouble(pdf.cov);
 			}
 
 			/** Sets the pose from an object:

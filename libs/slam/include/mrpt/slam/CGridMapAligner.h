@@ -22,9 +22,6 @@ namespace mrpt
 {
 	namespace slam
 	{
-		using namespace poses;
-		using namespace utils;
-
 		/** A class for aligning two multi-metric maps (with an occupancy grid maps and a points map, at least) based on features extraction and matching.
 		 * The matching pose is returned as a Sum of Gaussians (poses::CPosePDFSOG).
 		 *

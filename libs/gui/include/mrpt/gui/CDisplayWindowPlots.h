@@ -13,6 +13,7 @@
 #include <mrpt/math/CMatrixTemplateNumeric.h>
 #include <mrpt/math/lightweight_geom_data.h>
 #include <mrpt/utils/CImage.h>
+#include <mrpt/gui/gui_frwds.h>
 
 /*---------------------------------------------------------------
 	Class
@@ -21,11 +22,6 @@ namespace mrpt
 {
 	namespace gui
 	{
-		using namespace mrpt::utils;
-		using namespace mrpt::math;
-
-		class CWindowDialogPlots;
-
 		DEFINE_MRPT_OBJECT_PRE_CUSTOM_BASE_LINKAGE(CDisplayWindowPlots,  mrpt::gui::CBaseGUIWindow, GUI_IMPEXP)
 
 		/** Create a GUI window and display plots with MATLAB-like interfaces and commands.
@@ -178,7 +174,7 @@ namespace mrpt
 			void GUI_IMPEXP plotEllipse(
 				const T mean_x,
 				const T mean_y,
-				const CMatrixTemplateNumeric<T> &cov22,
+				const mrpt::math::CMatrixTemplateNumeric<T> &cov22,
 				const float quantiles,
 				const std::string  &lineFormat = std::string("b-"),
 				const std::string  &plotName = std::string("plotEllipse"),
@@ -189,7 +185,7 @@ namespace mrpt
 			void GUI_IMPEXP plotEllipse(
 				const T mean_x,
 				const T mean_y,
-				const CMatrixFixedNumeric<T,2,2> &cov22,
+				const mrpt::math::CMatrixFixedNumeric<T,2,2> &cov22,
 				const float quantiles,
 				const std::string  &lineFormat = std::string("b-"),
 				const std::string  &plotName = std::string("plotEllipse"),

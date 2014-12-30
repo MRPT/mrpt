@@ -70,7 +70,7 @@ public:
 	void CorrectFloorPoints(const mrpt::poses::CPose3D &kinectrelpose)
 	{
 		TSegment3D ray;
-		TPoint3D p1,p2,pint(0,0,0);
+	 mrpt::math::TPoint3D p1,p2,pint(0,0,0);
 		TObject3D pintobj;
 		TPlane ground(0,0,1,0);
 		vector <float> x, y, z;
@@ -104,7 +104,7 @@ public:
 	void CorrectCeiling(const mrpt::poses::CPose3D &kinectrelpose, float height)
 	{
 		TSegment3D ray;
-		TPoint3D p1,p2,pint(0,0,0);
+	 mrpt::math::TPoint3D p1,p2,pint(0,0,0);
 		TObject3D pintobj;
 		TPlane ceiling(0,0,1,-height);
 		vector <float> x, y, z;
@@ -165,7 +165,7 @@ public:
 	float h = 0, incrz;
 	CObservation2DRangeScan m_auxlaser;
 	CPose2D scanpose2d;
-	TPoint3D point;
+ mrpt::math::TPoint3D point;
 	CSimplePointsMap row_points;
 	row_points.insertionOptions.minDistBetweenLaserPoints = 0;
 	m_points.clear();
@@ -321,7 +321,7 @@ public:
 		float angrot = -phi;
 		float aux_xpass;
 		float incr_grid_reactive = 0.2/obsgrids[0].getResolution();  //This number marks distance in meters (but it's transformed into an index)
-		TPoint3D paux;
+	 mrpt::math::TPoint3D paux;
 		unsigned int index;
 		unsigned int lim_visionxn = obsgrids[0].x2idx(-vision_limit + robot_ingrid.x);
 		unsigned int lim_visionxp = obsgrids[0].x2idx(vision_limit + robot_ingrid.x);
@@ -691,7 +691,7 @@ public:
 		//The Kinectscans are inserted
 		{
 			robotpose3d.z(0);
-			TPoint3D point;
+		 mrpt::math::TPoint3D point;
 			vector <CPointCloudPtr> obj;
 			CPointCloudPtr indobj;
 
@@ -779,7 +779,7 @@ public:
 		//The Kinectscan is inserted
 		{
 			robotpose3d.z(0);
-			TPoint3D point;
+		 mrpt::math::TPoint3D point;
 			CPointCloudPtr obj;
 
 			for (unsigned int i=0; i<kinects.size(); i++)
@@ -825,7 +825,7 @@ public:
 	{
 		CPose2D robotpose;
 		CAbstractReactiveNavigationSystem::TNavigationParams navparams;
-		navparams.target = TPoint2D(x,y);
+		navparams.target = mrpt::math::TPoint2D(x,y);
 		navparams.targetAllowedDistance = targetAllowedDistance;
 		navparams.targetIsRelative = targetIsRelative;
 		if (targetIsRelative == 0)

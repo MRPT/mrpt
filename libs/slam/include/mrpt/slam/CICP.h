@@ -17,8 +17,6 @@ namespace mrpt
 {
 	namespace slam
 	{
-		using namespace poses;
-
 		/** The ICP algorithm selection, used in mrpt::slam::CICP::options.
 		  *  For details on the algorithms refer to http://www.mrpt.org/Scan_Matching_Algorithms
 		  * \ingroup mrpt_slam_grp

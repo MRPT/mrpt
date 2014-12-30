@@ -17,7 +17,6 @@ namespace mrpt
 {
 	namespace hmtslam
 	{
-		using namespace mrpt::slam;
 		class HMTSLAM_IMPEXP CHierarchicalMHMap;
 
 		/** A class for representing an arc between two nodes in a hierarchical, multi-hypothesis map.

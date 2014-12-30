@@ -22,9 +22,6 @@ namespace mrpt
 {
 	namespace hmtslam
 	{
-		using namespace mrpt::maps;
-		using namespace mrpt::obs;
-
 		class HMTSLAM_IMPEXP CHierarchicalMHMap;
 		class HMTSLAM_IMPEXP CHMHMapArc;
 

@@ -18,9 +18,6 @@ namespace mrpt
 {
 	namespace graphs
 	{
-	    using namespace std;
-		using namespace mrpt::utils;
-
 		/** The Dijkstra algorithm for finding the shortest path between a given source node in a (weighted) directed graph and all other nodes in the form of a tree.
 		  *  The constructor takes as input the graph (the set of directed edges) computes all the needed data, then
 		  *   successive calls to \a getShortestPathTo return the paths efficiently from the root.

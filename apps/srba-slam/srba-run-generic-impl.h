@@ -14,7 +14,7 @@
 #include <mrpt/system/filesystem.h>  // for ASSERT_FILE_EXISTS_
 #include <mrpt/system/threads.h>  // for sleep()
 #include <mrpt/random.h>
-#include <mrpt/utils/CFileOutputStream.h>  // For CMatrixDouble
+#include <mrpt/utils/CFileOutputStream.h>  // For mrpt::math::CMatrixDouble
 #include <mrpt/vision/CVideoFileWriter.h>
 #include <mrpt/opengl/CGridPlaneXY.h>
 #include <mrpt/opengl/CSetOfLines.h>

@@ -31,10 +31,6 @@ namespace mrpt
 	 */
 	namespace vision
 	{
-		using std::vector;
-		using namespace mrpt::math;
-		using namespace mrpt::utils;
-
 		/** \addtogroup mrpt_vision_grp
 		  *  @{ */
 
@@ -72,12 +68,12 @@ namespace mrpt
 			/** Extract a UNITARY 3D vector in the direction of a 3D point, given from its (x,y) pixels coordinates, and the camera intrinsic coordinates.
 			  *  \param xy  [IN]   Pixels coordinates, from the top-left corner of the image.
 			  *  \param A   [IN]   The 3x3 intrinsic parameters matrix for the camera.
-			  *  \return The TPoint3D containing the output unitary vector.
+			  *  \return The mrpt::math::TPoint3D containing the output unitary vector.
 			  * \sa buildIntrinsicParamsMatrix, defaultIntrinsicParamsMatrix, TPixelCoordf
 			  */
-			TPoint3D VISION_IMPEXP pixelTo3D(
+		 mrpt::math::TPoint3D VISION_IMPEXP pixelTo3D(
                                 const TPixelCoordf      & xy,
-                                const CMatrixDouble33   & A);
+                                const mrpt::math::CMatrixDouble33   & A);
 
 			/** Builds the intrinsic parameters matrix A from parameters:
 			  * \param focalLengthX [IN]   The focal length, in X (horizontal) pixels
@@ -94,7 +90,7 @@ namespace mrpt
 			  *  See also the tutorial discussing the <a rhref="http://www.mrpt.org/Camera_Parameters">camera model parameters</a>.
 			  * \sa defaultIntrinsicParamsMatrix, pixelTo3D
 			  */
-			CMatrixDouble33 VISION_IMPEXP buildIntrinsicParamsMatrix(
+		 mrpt::math::CMatrixDouble33 VISION_IMPEXP buildIntrinsicParamsMatrix(
                                 const double            focalLengthX,
                                 const double            focalLengthY,
                                 const double            centerX,
@@ -144,7 +140,7 @@ namespace mrpt
 
 			  * \sa buildIntrinsicParamsMatrix, pixelTo3D
 			  */
-			CMatrixDouble33 VISION_IMPEXP defaultIntrinsicParamsMatrix(
+		 mrpt::math::CMatrixDouble33 VISION_IMPEXP defaultIntrinsicParamsMatrix(
                                 unsigned int            camIndex = 0,
                                 unsigned int            resolutionX = 320,
                                 unsigned int            resolutionY = 240 );
@@ -258,18 +254,18 @@ namespace mrpt
 			void VISION_IMPEXP projectMatchedFeatures(
 								const CMatchedFeatureList			& matches,
 								const mrpt::utils::TStereoCamera	& stereo_camera,
-								vector<TPoint3D>					& out_points );
+								vector mrpt::math::TPoint3D>					& out_points );
 
 			/** Computes the 3D position of a set of matched features from their coordinates in the images. The list have to be matched in order, e.g. leftList[0]<->rightList[0]
 			  * \param leftList     [IN]    The left list of features.
 			  * \param rightList    [IN]    The right list of features.
-			  * \param vP3D         [OUT]   A vector of TPoint3D containing the 3D positions of the projected points.
+			  * \param vP3D         [OUT]   A vector of mrpt::math::TPoint3D containing the 3D positions of the projected points.
 			  * \param params       [IN]    The intrinsic and extrinsic parameters of the stereo pair.
 			  */
             void VISION_IMPEXP projectMatchedFeatures(
                                 const CFeatureList			        & leftList,
                                 const CFeatureList			        & rightList,
-                                vector<TPoint3D>                    & vP3D,
+                                vector mrpt::math::TPoint3D>                    & vP3D,
                                 const TStereoSystemParams           & params = TStereoSystemParams() );
 
 			/** Computes the 3D position of a particular matched feature.
@@ -281,7 +277,7 @@ namespace mrpt
             void VISION_IMPEXP projectMatchedFeature(
                                 const CFeaturePtr                   & leftFeat,
                                 const CFeaturePtr                   & rightFeat,
-                                TPoint3D                            & p3D,
+                                mrpt::math::TPoint3D                            & p3D,
                                 const TStereoSystemParams           & params = TStereoSystemParams() );
 
 			/** Project a list of matched features into the 3D space, using the provided parameters of the stereo system
@@ -328,7 +324,7 @@ namespace mrpt
 			*/
 			void VISION_IMPEXP StereoObs2BRObs(
 				const CMatchedFeatureList           & inMatches,
-				const CMatrixDouble33               & intrinsicParams,
+				const mrpt::math::CMatrixDouble33               & intrinsicParams,
 				const double                        & baseline,
 				const mrpt::poses::CPose3D                       & sensorPose,
 				const vector<double>                & sg,
