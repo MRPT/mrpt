@@ -64,6 +64,12 @@
 #include <mex.h>
 #include <string>
 
+// Auxiliar code for testing
+#define __MEXPLUS_TEST__
+#ifdef __MEXPLUS_TEST__
+    #define mexLock() printf("mexLock here\n")
+#endif
+
 namespace mexplus {
 
 class OperationCreator;
