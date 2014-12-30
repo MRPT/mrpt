@@ -182,7 +182,7 @@ namespace mrpt
 
 			/** Draws a number of samples from the distribution, and saves as a list of 1x3 vectors, where each row contains a (x,y,phi) datum.
 			  */
-			void  drawManySamples( size_t N, std::vector<CVectorDouble> & outSamples ) const;
+			void  drawManySamples( size_t N, std::vector<mrpt::math::CVectorDouble> & outSamples ) const;
 
 			/** Returns a new PDF such as: NEW_PDF = (0,0,0) - THIS_PDF
 			  */

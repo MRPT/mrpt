@@ -226,7 +226,7 @@ namespace math
 	}; // End of class def.
 
 
-	typedef CLevenbergMarquardtTempl<CVectorDouble> CLevenbergMarquardt;  //!< The default name for the LM class is an instantiation for "double"
+	typedef CLevenbergMarquardtTempl<mrpt::math::CVectorDouble> CLevenbergMarquardt;  //!< The default name for the LM class is an instantiation for "double"
 
 	} // End of namespace
 } // End of namespace

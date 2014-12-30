@@ -178,9 +178,9 @@ namespace mrpt
 			}
 
 			/** Return the pose or point as a 1xN vector with all the components (see derived classes for each implementation) */
-			inline CVectorDouble getAsVectorVal() const
+			inline mrpt::math::CVectorDouble getAsVectorVal() const
 			{
-				CVectorDouble v;
+				mrpt::math::CVectorDouble v;
 				static_cast<const DERIVEDCLASS*>(this)->getAsVector(v);
 				return v;
 			}

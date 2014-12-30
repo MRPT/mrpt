@@ -238,7 +238,7 @@ namespace mrpt
 
 
 		/** Computes covariances and mean of any vector of containers, given optional weights for the different samples.
-		  * \param elements Any kind of vector of vectors/arrays, eg. std::vector<CVectorDouble>, with all the input samples, each sample in a "row".
+		  * \param elements Any kind of vector of vectors/arrays, eg. std::vector<mrpt::math::CVectorDouble>, with all the input samples, each sample in a "row".
 		  * \param covariances Output estimated covariance; it can be a fixed/dynamic matrix or a matrixview.
 		  * \param means Output estimated mean; it can be CVectorDouble/CArrayDouble, etc...
 		  * \param weights_mean If !=NULL, it must point to a vector of size()==number of elements, with normalized weights to take into account for the mean.
@@ -344,7 +344,7 @@ namespace mrpt
 		}
 
 		/** Computes covariances and mean of any vector of containers.
-		  * \param elements Any kind of vector of vectors/arrays, eg. std::vector<CVectorDouble>, with all the input samples, each sample in a "row".
+		  * \param elements Any kind of vector of vectors/arrays, eg. std::vector<mrpt::math::CVectorDouble>, with all the input samples, each sample in a "row".
 		  * \param covariances Output estimated covariance; it can be a fixed/dynamic matrix or a matrixview.
 		  * \param means Output estimated mean; it can be CVectorDouble/CArrayDouble, etc...
 		  * \param elem_do_wrap2pi If !=NULL; it must point to an array of "bool" of size()==dimension of each element, stating if it's needed to do a wrap to [-pi,pi] to each dimension.

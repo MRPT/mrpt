@@ -39,7 +39,7 @@ namespace mrpt
 				)
 			{
 				CQuaternionDouble q(UNINITIALIZED_QUATERNION);
-				CPose3D  p(0,0,0,yaw,pitch,roll);
+				mrpt::poses::CPose3D  p(0,0,0,yaw,pitch,roll);
 				p.getAsQuaternion(q,&out_dq_dr);
 			}
 
@@ -82,8 +82,8 @@ namespace mrpt
 			  * For the equations, see CPose3DPDF::jacobiansPoseComposition
 			  */
 			inline void jacobs_6D_pose_comp(
-				const CPose3D	&x,
-				const CPose3D	&u,
+				const mrpt::poses::CPose3D	&x,
+				const mrpt::poses::CPose3D	&u,
 				CMatrixDouble66		&out_df_dx,
 				CMatrixDouble66		&out_df_du)
 			{
