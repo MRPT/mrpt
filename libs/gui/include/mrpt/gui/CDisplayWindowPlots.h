@@ -48,7 +48,7 @@ namespace mrpt
 			TCallbackMenu m_callback;
 			void		*m_callback_param;
 
-			void internal_plot(CVectorFloat &x,CVectorFloat &y,const std::string  &lineFormat,const std::string  &plotName);
+			void internal_plot(mrpt::math::CVectorFloat &x,mrpt::math::CVectorFloat &y,const std::string  &lineFormat,const std::string  &plotName);
 			template <typename VECTOR1,typename VECTOR2>
 			void internal_plot_interface(const VECTOR1 &x,const VECTOR2 &y,const std::string  &lineFormat,const std::string  &plotName)
 			{

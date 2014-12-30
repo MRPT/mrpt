@@ -168,18 +168,9 @@ namespace mrpt
 			struct TWxMainThreadData
 			{
 				TWxMainThreadData();
-
-				/** The thread ID of wxMainThread, or 0 if it is not running.
-				  */
-				TThreadHandle  m_wxMainThreadId;
-
-				/** This is signaled when wxMainThread is ready.
-				  */
-				synch::CSemaphore m_semWxMainThreadReady;
-
-				/** The critical section for accessing "m_wxMainThreadId"
-				  */
-				synch::CCriticalSection m_csWxMainThreadId;
+				mrpt::system::TThreadHandle  m_wxMainThreadId; //!< The thread ID of wxMainThread, or 0 if it is not running.
+				mrpt::synch::CSemaphore m_semWxMainThreadReady; //!< This is signaled when wxMainThread is ready.
+				mrpt::synch::CCriticalSection m_csWxMainThreadId; //!< The critical section for accessing "m_wxMainThreadId"
 			};
 
 			static TWxMainThreadData& GetWxMainThreadInstance();

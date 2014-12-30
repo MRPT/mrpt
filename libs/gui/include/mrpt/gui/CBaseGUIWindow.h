@@ -61,7 +61,7 @@ namespace mrpt
 			synch::CSemaphore 	m_semThreadReady;	//!< This semaphore will be signaled when the wx window is built and ready.
 			synch::CSemaphore 	m_semWindowDestroyed; //!< This semaphore will be signaled when the wx window is destroyed.
 			std::string			m_caption;	//!< The caption of the window
-			void_ptr_noncopy	m_hwnd;	//!< The window handle
+			mrpt::utils::void_ptr_noncopy	m_hwnd;	//!< The window handle
 
 			/* Auxiliary */
 			volatile bool             m_keyPushed;
@@ -147,7 +147,7 @@ namespace mrpt
 		  *  IMPORTANTE NOTICE: Event handlers in your observer class will be invoked from the wxWidgets internal MRPT thread,
 		  *    so all your code in the handler must be thread safe.
 		  */
-		class GUI_IMPEXP mrptEventWindowChar : public mrptEvent
+		class GUI_IMPEXP mrptEventWindowChar : public mrpt::utils::mrptEvent
 		{
 		protected:
 			virtual void do_nothing() { } //!< Just to allow this class to be polymorphic
@@ -168,7 +168,7 @@ namespace mrpt
 		  *  IMPORTANTE NOTICE: Event handlers in your observer class will be invoked from the wxWidgets internal MRPT thread,
 		  *    so all your code in the handler must be thread safe.
 		  */
-		class GUI_IMPEXP mrptEventWindowResize : public mrptEvent
+		class GUI_IMPEXP mrptEventWindowResize : public mrpt::utils::mrptEvent
 		{
 		protected:
 			virtual void do_nothing() { } //!< Just to allow this class to be polymorphic
@@ -189,7 +189,7 @@ namespace mrpt
 		  *
 		  * \sa mrptEventMouseDown
 		  */
-		class GUI_IMPEXP mrptEventMouseDown : public mrptEvent
+		class GUI_IMPEXP mrptEventMouseDown : public mrpt::utils::mrptEvent
 		{
 		protected:
 			virtual void do_nothing() { } //!< Just to allow this class to be polymorphic
@@ -217,7 +217,7 @@ namespace mrpt
 		  *
 		  * \sa CBaseGUIWindow
 		  */
-		class GUI_IMPEXP mrptEventWindowClosed : public mrptEvent
+		class GUI_IMPEXP mrptEventWindowClosed : public mrpt::utils::mrptEvent
 		{
 		protected:
 			virtual void do_nothing() { } //!< Just to allow this class to be polymorphic
