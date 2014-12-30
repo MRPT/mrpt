@@ -62,8 +62,8 @@ namespace mrpt
 			 *	\param SF The set of observations, must contain at least one CObservationBearingRange
 			 */
 			void  processActionObservation(
-				CActionCollectionPtr &action,
-				CSensoryFramePtr     &SF );
+				mrpt::obs::CActionCollectionPtr &action,
+				mrpt::obs::CSensoryFramePtr     &SF );
 
 			/** Returns the complete mean and cov.
 			  *  \param out_robotPose The mean & 3x3 covariance matrix of the robot 2D pose
@@ -74,18 +74,18 @@ namespace mrpt
 			  * \sa getCurrentRobotPose
 			  */
 			void  getCurrentState(
-				CPosePDFGaussian &out_robotPose,
-				std::vector<TPoint2D>  &out_landmarksPositions,
+				mrpt::poses::CPosePDFGaussian &out_robotPose,
+				std::vector<mrpt::math::TPoint2D>  &out_landmarksPositions,
 				std::map<unsigned int,mrpt::maps::CLandmark::TLandmarkID> &out_landmarkIDs,
-				CVectorDouble      &out_fullState,
-				CMatrixDouble      &out_fullCovariance
+				mrpt::math::CVectorDouble      &out_fullState,
+				mrpt::math::CMatrixDouble      &out_fullCovariance
 				) const;
 
 			/** Returns the mean & 3x3 covariance matrix of the robot 2D pose.
 			  * \sa getCurrentState
 			  */
 			void  getCurrentRobotPose(
-				CPosePDFGaussian &out_robotPose ) const;
+				mrpt::poses::CPosePDFGaussian &out_robotPose ) const;
 
 			/** Returns a 3D representation of the landmarks in the map and the robot 3D position according to the current filter state.
 			  *  \param out_objects
@@ -115,7 +115,7 @@ namespace mrpt
 				void  dumpToTextStream(mrpt::utils::CStream	&out) const;
 
 
-				CVectorFloat 	stds_Q_no_odo;	//!< A 3-length vector with the std. deviation of the transition model in (x,y,phi) used only when there is no odometry (if there is odo, its uncertainty values will be used instead); x y: In meters, phi: radians (but in degrees when loading from a configuration ini-file!)
+				mrpt::math::CVectorFloat 	stds_Q_no_odo;	//!< A 3-length vector with the std. deviation of the transition model in (x,y,phi) used only when there is no odometry (if there is odo, its uncertainty values will be used instead); x y: In meters, phi: radians (but in degrees when loading from a configuration ini-file!)
 				float 			std_sensor_range, std_sensor_yaw;	//!< The std. deviation of the sensor (for the matrix R in the kalman filters), in meters and radians.
 				float 			quantiles_3D_representation;	//!< Default = 3
 				bool			create_simplemap; //!< Whether to fill m_SFs (default=false)
@@ -160,7 +160,7 @@ namespace mrpt
 				}
 
 				// Predictions from the map:
-				CMatrixTemplateNumeric<kftype>	Y_pred_means,Y_pred_covs;
+				mrpt::math::CMatrixTemplateNumeric<kftype>	Y_pred_means,Y_pred_covs;
 				mrpt::vector_size_t				predictions_IDs;
 
 				/** Map from the 0-based index within the last observation and the landmark 0-based index in the map (the robot-map state vector)
@@ -321,10 +321,10 @@ namespace mrpt
 		protected:
 
 			/** Set up by processActionObservation */
-			CActionCollectionPtr	m_action;
+			mrpt::obs::CActionCollectionPtr	m_action;
 
 			/** Set up by processActionObservation */
-			CSensoryFramePtr		m_SF;
+			mrpt::obs::CSensoryFramePtr		m_SF;
 
 			/** The mapping between landmark IDs and indexes in the Pkk cov. matrix: */
 			mrpt::utils::bimap<mrpt::maps::CLandmark::TLandmarkID,unsigned int>	m_IDs;
@@ -333,8 +333,6 @@ namespace mrpt
 			mrpt::maps::CSimpleMap      m_SFs;
 
 			TDataAssocInfo m_last_data_association; //!< Last data association
-
-
 		}; // end class
 	} // End of namespace
 } // End of namespace

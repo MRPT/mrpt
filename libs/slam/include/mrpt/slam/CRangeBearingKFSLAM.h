@@ -70,8 +70,8 @@ namespace mrpt
 			 *	\param SF The set of observations, must contain at least one CObservationBearingRange
 			 */
 			void  processActionObservation(
-				CActionCollectionPtr &action,
-				CSensoryFramePtr     &SF );
+				mrpt::obs::CActionCollectionPtr &action,
+				mrpt::obs::CSensoryFramePtr     &SF );
 
 			/** Returns the complete mean and cov.
 			  *  \param out_robotPose The mean and the 7x7 covariance matrix of the robot 6D pose
@@ -82,11 +82,11 @@ namespace mrpt
 			  * \sa getCurrentRobotPose
 			  */
 			void  getCurrentState(
-				CPose3DQuatPDFGaussian &out_robotPose,
+				mrpt::poses::CPose3DQuatPDFGaussian &out_robotPose,
 				std::vector<mrpt::math::TPoint3D>  &out_landmarksPositions,
 				std::map<unsigned int,mrpt::maps::CLandmark::TLandmarkID> &out_landmarkIDs,
-				CVectorDouble      &out_fullState,
-				CMatrixDouble      &out_fullCovariance
+				mrpt::math::CVectorDouble      &out_fullState,
+				mrpt::math::CMatrixDouble      &out_fullCovariance
 				) const;
 
 			/** Returns the complete mean and cov.
@@ -98,22 +98,22 @@ namespace mrpt
 			  * \sa getCurrentRobotPose
 			  */
 			inline void  getCurrentState(
-				CPose3DPDFGaussian &out_robotPose,
+				mrpt::poses::CPose3DPDFGaussian &out_robotPose,
 				std::vector<mrpt::math::TPoint3D>  &out_landmarksPositions,
 				std::map<unsigned int,mrpt::maps::CLandmark::TLandmarkID> &out_landmarkIDs,
-				CVectorDouble      &out_fullState,
-				CMatrixDouble      &out_fullCovariance
+				mrpt::math::CVectorDouble      &out_fullState,
+				mrpt::math::CMatrixDouble      &out_fullCovariance
 				) const
 			{
-				CPose3DQuatPDFGaussian q(UNINITIALIZED_QUATERNION);
+				mrpt::poses::CPose3DQuatPDFGaussian q(mrpt::math::UNINITIALIZED_QUATERNION);
 				this->getCurrentState(q,out_landmarksPositions,out_landmarkIDs,out_fullState,out_fullCovariance);
-				out_robotPose = CPose3DPDFGaussian(q);
+				out_robotPose = mrpt::poses::CPose3DPDFGaussian(q);
 			}
 
 			/** Returns the mean & the 7x7 covariance matrix of the robot 6D pose (with rotation as a quaternion).
 			  * \sa getCurrentState, getCurrentRobotPoseMean
 			  */
-			void  getCurrentRobotPose( CPose3DQuatPDFGaussian &out_robotPose ) const;
+			void  getCurrentRobotPose( mrpt::poses::CPose3DQuatPDFGaussian &out_robotPose ) const;
 
 			/** Get the current robot pose mean, as a 3D+quaternion pose.
 			  * \sa getCurrentRobotPose
@@ -123,11 +123,11 @@ namespace mrpt
 			/** Returns the mean & the 6x6 covariance matrix of the robot 6D pose (with rotation as 3 angles).
 			  * \sa getCurrentState
 			  */
-			inline void  getCurrentRobotPose( CPose3DPDFGaussian &out_robotPose ) const
+			inline void  getCurrentRobotPose( mrpt::poses::CPose3DPDFGaussian &out_robotPose ) const
 			{
-				CPose3DQuatPDFGaussian q(UNINITIALIZED_QUATERNION);
+				mrpt::poses::CPose3DQuatPDFGaussian q(mrpt::math::UNINITIALIZED_QUATERNION);
 				this->getCurrentRobotPose(q);
-				out_robotPose = CPose3DPDFGaussian(q);
+				out_robotPose = mrpt::poses::CPose3DPDFGaussian(q);
 			}
 
 			/** Returns a 3D representation of the landmarks in the map and the robot 3D position according to the current filter state.
@@ -159,7 +159,7 @@ namespace mrpt
 
 				/** A 7-length vector with the std. deviation of the transition model in (x,y,z, qr,qx,qy,qz) used only when there is no odometry (if there is odo, its uncertainty values will be used instead); x y z: In meters.
 				  */
-				CVectorFloat stds_Q_no_odo;
+				mrpt::math::CVectorFloat stds_Q_no_odo;
 
 				/** The std. deviation of the sensor (for the matrix R in the kalman filters), in meters and radians.
 				  */
@@ -213,7 +213,7 @@ namespace mrpt
 				}
 
 				// Predictions from the map:
-				CMatrixTemplateNumeric<kftype>	Y_pred_means,Y_pred_covs;
+				mrpt::math::CMatrixTemplateNumeric<kftype>	Y_pred_means,Y_pred_covs;
 				mrpt::vector_size_t				predictions_IDs;
 
 				/** Map from the 0-based index within the last observation and the landmark 0-based index in the map (the robot-map state vector)
@@ -409,21 +409,17 @@ namespace mrpt
 			/** @}
 			 */
 
-			/** Set up by processActionObservation
-			  */
-			CActionCollectionPtr	m_action;
+			/** Set up by processActionObservation */
+			mrpt::obs::CActionCollectionPtr	m_action;
 
-			/** Set up by processActionObservation
-			  */
-			CSensoryFramePtr		m_SF;
+			/** Set up by processActionObservation */
+			mrpt::obs::CSensoryFramePtr		m_SF;
 
-			/** The mapping between landmark IDs and indexes in the Pkk cov. matrix:
-			  */
+			/** The mapping between landmark IDs and indexes in the Pkk cov. matrix: */
 			mrpt::utils::bimap<mrpt::maps::CLandmark::TLandmarkID,unsigned int>	m_IDs;
 
 
-			/** Used for map partitioning experiments
-			  */
+			/** Used for map partitioning experiments */
 			CIncrementalMapPartitioner  mapPartitioner;
 
 			/** The sequence of all the observations and the robot path (kept for debugging, statistics,etc)
@@ -436,7 +432,6 @@ namespace mrpt
 
 			/** Return the last odometry, as a pose increment. */
 			mrpt::poses::CPose3DQuat getIncrementFromOdometry() const;
-
 
 		}; // end class
 	} // End of namespace

@@ -32,11 +32,6 @@ namespace mrpt
 {
 	namespace bayes
 	{
-		using namespace mrpt::utils;
-		using namespace mrpt::math;
-		using namespace mrpt;
-		using namespace std;
-
 		/** The Kalman Filter algorithm to employ in bayes::CKalmanFilterCapable
 		  *  For further details on each algorithm see the tutorial: http://www.mrpt.org/Kalman_Filters
 		  * \sa bayes::CKalmanFilterCapable::KF_options
@@ -180,27 +175,27 @@ namespace mrpt
 
 			// ---------- Many useful typedefs to short the notation a bit... --------
 			typedef Eigen::Matrix<KFTYPE,Eigen::Dynamic,1> KFVector;
-			typedef CMatrixTemplateNumeric<KFTYPE>   KFMatrix;
+			typedef mrpt::math::CMatrixTemplateNumeric<KFTYPE>   KFMatrix;
 
-			typedef CMatrixFixedNumeric<KFTYPE,VEH_SIZE,VEH_SIZE>   KFMatrix_VxV;
-			typedef CMatrixFixedNumeric<KFTYPE,OBS_SIZE,OBS_SIZE>   KFMatrix_OxO;
-			typedef CMatrixFixedNumeric<KFTYPE,FEAT_SIZE,FEAT_SIZE> KFMatrix_FxF;
-			typedef CMatrixFixedNumeric<KFTYPE,ACT_SIZE,ACT_SIZE>   KFMatrix_AxA;
+			typedef mrpt::math::CMatrixFixedNumeric<KFTYPE,VEH_SIZE,VEH_SIZE>   KFMatrix_VxV;
+			typedef mrpt::math::CMatrixFixedNumeric<KFTYPE,OBS_SIZE,OBS_SIZE>   KFMatrix_OxO;
+			typedef mrpt::math::CMatrixFixedNumeric<KFTYPE,FEAT_SIZE,FEAT_SIZE> KFMatrix_FxF;
+			typedef mrpt::math::CMatrixFixedNumeric<KFTYPE,ACT_SIZE,ACT_SIZE>   KFMatrix_AxA;
 
-			typedef CMatrixFixedNumeric<KFTYPE,VEH_SIZE,OBS_SIZE>   KFMatrix_VxO;
-			typedef CMatrixFixedNumeric<KFTYPE,VEH_SIZE,FEAT_SIZE>  KFMatrix_VxF;
+			typedef mrpt::math::CMatrixFixedNumeric<KFTYPE,VEH_SIZE,OBS_SIZE>   KFMatrix_VxO;
+			typedef mrpt::math::CMatrixFixedNumeric<KFTYPE,VEH_SIZE,FEAT_SIZE>  KFMatrix_VxF;
 
-			typedef CMatrixFixedNumeric<KFTYPE,FEAT_SIZE,VEH_SIZE>  KFMatrix_FxV;
-			typedef CMatrixFixedNumeric<KFTYPE,FEAT_SIZE,OBS_SIZE>  KFMatrix_FxO;
+			typedef mrpt::math::CMatrixFixedNumeric<KFTYPE,FEAT_SIZE,VEH_SIZE>  KFMatrix_FxV;
+			typedef mrpt::math::CMatrixFixedNumeric<KFTYPE,FEAT_SIZE,OBS_SIZE>  KFMatrix_FxO;
 
-			typedef CMatrixFixedNumeric<KFTYPE,OBS_SIZE,FEAT_SIZE>  KFMatrix_OxF;
-			typedef CMatrixFixedNumeric<KFTYPE,OBS_SIZE,VEH_SIZE>   KFMatrix_OxV;
+			typedef mrpt::math::CMatrixFixedNumeric<KFTYPE,OBS_SIZE,FEAT_SIZE>  KFMatrix_OxF;
+			typedef mrpt::math::CMatrixFixedNumeric<KFTYPE,OBS_SIZE,VEH_SIZE>   KFMatrix_OxV;
 
-			typedef CArrayNumeric<KFTYPE,VEH_SIZE>  KFArray_VEH;
-			typedef CArrayNumeric<KFTYPE,ACT_SIZE>  KFArray_ACT;
-			typedef CArrayNumeric<KFTYPE,OBS_SIZE>  KFArray_OBS;
+			typedef mrpt::math::CArrayNumeric<KFTYPE,VEH_SIZE>  KFArray_VEH;
+			typedef mrpt::math::CArrayNumeric<KFTYPE,ACT_SIZE>  KFArray_ACT;
+			typedef mrpt::math::CArrayNumeric<KFTYPE,OBS_SIZE>  KFArray_OBS;
 			typedef typename mrpt::aligned_containers<KFArray_OBS>::vector_t  vector_KFArray_OBS;
-			typedef CArrayNumeric<KFTYPE,FEAT_SIZE> KFArray_FEAT;
+			typedef mrpt::math::CArrayNumeric<KFTYPE,FEAT_SIZE> KFArray_FEAT;
 
 			inline size_t getStateVectorLength() const { return m_xkk.size(); }
 
