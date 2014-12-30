@@ -202,6 +202,30 @@ mxArray* MxArray::from(const cv::Mat& mat)
 
 } // namespace mexplus
 
+// Redefining cout
+class mstream : public std::streambuf {
+public:
+protected:
+  virtual std::streamsize xsputn(const char *s, std::streamsize n);
+  virtual int overflow(int c = EOF);
+};
+
+std::streamsize
+mstream::xsputn(const char *s, std::streamsize n)
+{
+  mexPrintf("%.*s",n,s);
+  return n;
+}
+
+int
+mstream::overflow(int c)
+{
+    if (c != EOF) {
+      mexPrintf("%.1s",&c);
+    }
+    return 1;
+}
+
 //#define CLASS CHokuyoURG
 #define CLASS CGenericSensor
 
@@ -211,6 +235,11 @@ namespace {
 // Defines MEX API for new.
 MEX_DEFINE(new) (int nlhs, mxArray* plhs[],
                  int nrhs, const mxArray* prhs[]) {
+    // For cout in Matlab
+    mstream mout;
+    std::streambuf *outbuf = std::cout.rdbuf(&mout);
+    //std::cout << "This is a Matlab test for cout" << std::endl;
+
     InputArguments input(nrhs, prhs, 1);
     OutputArguments output(nlhs, plhs, 1);
 
@@ -296,7 +325,6 @@ MEX_DEFINE(new) (int nlhs, mxArray* plhs[],
     string driver_name = iniFile.read_string(sensor_label,"driver","",true);
     mexPrintf("Driver name: %s\n\n", driver_name.c_str());
 
-//    CLASS* sensor = new CLASS( );
     CLASS* sensor;
     sensor = CGenericSensor::createSensor( driver_name );
 
@@ -306,31 +334,12 @@ MEX_DEFINE(new) (int nlhs, mxArray* plhs[],
     sensor->initialize();
     mexPrintf("After sensor initialization\n");
 
-    /*
-    mrpt::slam::CObservation2DRangeScan	outObservation;
-    if(sensor->turnOn())
-    {
-        printf("Hokuyo correctly initialized\n");
-        bool outThereIsObservation;
-
-        bool hardwareError;
-
-        sensor->doProcessSimple(outThereIsObservation,
-                                outObservation,
-                                hardwareError);
-    }
-    */
-
-    /*
-    mrpt::slam::CObservationImage obs;
-    sensor->getObservation( obs );
-    obs.image.saveToFile( "/home/jesus/image.jpg" );
-    */
-
     //delete var;
     output.set(0, Session<CLASS>::create( sensor ));
 
     mexPrintf("Done new, assigning to output\n");
+
+    std::cout.rdbuf(outbuf); // For cout in Matlab
 }
 
 //// Defines MEX API for query (const method).
@@ -363,7 +372,7 @@ MEX_DEFINE(read) (int nlhs, mxArray* plhs[],
   // Get new observations
   CGenericSensor::TListObservations lstObjs;
   sensor->getObservations( lstObjs );
-  //cout << "lstObjs container size: " << lstObjs.size() << endl;
+  cout << "lstObjs container size: " << lstObjs.size() << endl;
 
   // Create an object the same type as interest object in the multimap (TListObservations)
   // TListObservations is a multimap with elements <TTimeStamp,CSerializablePtr>
@@ -489,3 +498,35 @@ MEX_DEFINE(delete) (int nlhs, mxArray* plhs[],
 }
 
 MEX_DISPATCH // Don't forget to add this if MEX_DEFINE() is used.
+
+int main( int argc, const char* argv[] )
+{
+    printf(" mex-grabber - Part of the MRPT\n");
+    printf(" MRPT C++ Library: %s - BUILD DATE %s\n", MRPT_getVersion().c_str(), MRPT_getCompilationDate().c_str());
+    printf("-------------------------------------------------------------------\n");
+    printf(" This is a test for Matlab MEX functionalities\n");
+    printf("-------------------------------------------------------------------\n");
+
+    // Create driver object
+    const mxArray* pnew[2];
+    pnew[0] = MxArray::from("new");
+    //pnew[0] = mxCreateString("new");
+    pnew[1] = MxArray::from( argv[1] ); // Read config file path, first argv is function name
+    //pnew[1] = mxCreateString( argv[1] );
+    mxArray* id_[1]; // id for object handling
+    mexFunction( 1, id_, 2, pnew );
+
+    // Read image from camera
+    const mxArray* pread[2];
+    pread[0] = MxArray::from("read");
+    //pread[0] = mxCreateString("read");
+    pread[1] = id_[0];
+    mxArray* im[3];
+    for(int i=0; i<100; ++i)
+    {
+        mexFunction( 3, im, 2, pread);
+        printf("Iteration %d done\n",i);
+    }
+
+    return 0;
+}
