@@ -23,8 +23,6 @@ namespace mrpt
 		{
 			/** \addtogroup mrpt_vision_grp 
 			  * @{ */
-		
-			using mrpt::utils::TPixelCoordf;
 
 			/** Project a set of 3D points into a camera at an arbitrary 6D pose using its calibration matrix (undistorted projection model)
 			  * \param in_points_3D [IN] The list of 3D points in world coordinates (meters) to project.

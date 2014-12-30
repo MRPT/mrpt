@@ -20,10 +20,6 @@ namespace mrpt
 {
 	namespace vision
 	{
-		using mrpt::poses::CPose3D;
-		using Eigen::MatrixXf;
-		using Eigen::MatrixXi;
-
 		/** This abstract class implements a method called "Difodo" to perform Visual odometry with range cameras.
 		*	It is based on the range flow equation and assumes that the scene is rigid.
 		*	It can work with different image resolutions (640 x 480, 320 x 240 or 160 x 120).

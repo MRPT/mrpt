@@ -20,7 +20,7 @@
 
 namespace mrpt	{
 namespace math	{
-	using mrpt::utils::square;
+	using mrpt::utils::square;  //!< Allow square() to be also available under mrpt::math, which makes sense
 
 	/** \addtogroup geometry_grp
 	  * @{ */

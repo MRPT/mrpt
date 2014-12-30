@@ -16,10 +16,6 @@ namespace mrpt
 {
 	namespace vision
 	{
-		using mrpt::math::TPose3D;
-		using mrpt::math::TPoint3D;
-		using mrpt::utils::TCamera;
-
 		/** \addtogroup  mrptvision_features
 		    @{ */
 

@@ -422,7 +422,7 @@ namespace maps
 			MRPT_END
 		}
 
-		inline void getAllPoints(std::vector mrpt::math::TPoint3D> &ps,size_t decimation=1) const	{
+		inline void getAllPoints(std::vector<mrpt::math::TPoint3D> &ps,size_t decimation=1) const	{
 			std::vector<float> dmy1,dmy2,dmy3;
 			getAllPoints(dmy1,dmy2,dmy3,decimation);
 			ps.resize(dmy1.size());
@@ -439,7 +439,7 @@ namespace maps
 		  */
 		void  getAllPoints( std::vector<float> &xs, std::vector<float> &ys, size_t decimation = 1 ) const;
 
-		inline void getAllPoints(std::vector mrpt::math::TPoint2D> &ps,size_t decimation=1) const	{
+		inline void getAllPoints(std::vector<mrpt::math::TPoint2D> &ps,size_t decimation=1) const	{
 			std::vector<float> dmy1,dmy2;
 			getAllPoints(dmy1,dmy2,decimation);
 			ps.resize(dmy1.size());

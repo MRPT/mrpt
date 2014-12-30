@@ -17,10 +17,6 @@ namespace mrpt
 {
 	namespace opengl
 	{
-		using mrpt::math::TPoint3D;
-		using mrpt::math::TSegment3D;
-
-
 		// This must be added to any CSerializable derived class:
 		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CSetOfLines, CRenderizableDisplayList, OPENGL_IMPEXP )
 
@@ -74,7 +70,7 @@ namespace mrpt
 			  * Appends a line to the set, given the coordinates of its bounds.
 			  */
 			inline void appendLine(float x0,float y0,float z0,float x1,float y1,float z1)	{
-				appendLine(TSegment3D mrpt::math::TPoint3D(x0,y0,z0) mrpt::math::TPoint3D(x1,y1,z1)));
+				appendLine(mrpt::math::TSegment3D(mrpt::math::TPoint3D(x0,y0,z0),mrpt::math::TPoint3D(x1,y1,z1)));
 				CRenderizableDisplayList::notifyChange();
 			}
 
@@ -147,7 +143,7 @@ namespace mrpt
 			  * \sa appendLine
 			  */
 			inline void setLineByIndex(size_t index,double x0,double y0,double z0,double x1,double y1,double z1)	{
-				setLineByIndex(index,TSegment3D mrpt::math::TPoint3D(x0,y0,z0) mrpt::math::TPoint3D(x1,y1,z1)));
+				setLineByIndex(index,mrpt::math::TSegment3D(mrpt::math::TPoint3D(x0,y0,z0),mrpt::math::TPoint3D(x1,y1,z1)));
 				CRenderizableDisplayList::notifyChange();
 			}
 			/**

@@ -21,15 +21,9 @@ namespace mrpt
 {
 	namespace vision
 	{
-		using mrpt::math::CArray;
-		using mrpt::math::TPose3D;
-		using mrpt::math::TPoint3D;
-		using mrpt::utils::TCamera;
-
 		/** \defgroup bundle_adj Bundle-Adjustment methods
 		  * \ingroup mrpt_vision_grp
 		  */
-
 
 		/** @name Bundle-Adjustment methods
 		    @{ */

@@ -29,8 +29,6 @@ namespace mrpt
 	  */
 	namespace poses
 	{
-		using mrpt::math::CVectorDouble;
-
 		// For use in some constructors (eg. CPose3D)
 		enum TConstructorFlags_Poses
 		{

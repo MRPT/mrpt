@@ -343,8 +343,6 @@ namespace obs
 
 	namespace utils
 	{
-		using mrpt::obs::CObservation3DRangeScan;
-
 		/** Specialization mrpt::utils::PointCloudAdapter<CObservation3DRangeScan> \ingroup mrpt_adapters_grp */
 		template <>
 		class PointCloudAdapter<CObservation3DRangeScan> : public detail::PointCloudAdapterHelperNoRGB<CObservation3DRangeScan,float>

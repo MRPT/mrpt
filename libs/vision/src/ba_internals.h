@@ -20,7 +20,7 @@ namespace mrpt
 {
 	namespace vision
 	{
-		using mrpt::math::CArrayDouble;
+		using mrpt::math::CArrayDouble;   // Allow these "using"s since these headers are internal to mrpt
 		using mrpt::math::CMatrixFixedNumeric;
 		using std::vector;
 

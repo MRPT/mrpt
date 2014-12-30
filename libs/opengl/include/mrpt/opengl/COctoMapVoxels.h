@@ -17,10 +17,6 @@ namespace mrpt
 {
 	namespace opengl
 	{
-		using mrpt::math::TPoint3D;
-		using mrpt::utils::TColor;
-
-
 		enum predefined_voxel_sets_t
 		{
 			VOXEL_SET_OCCUPIED = 0,

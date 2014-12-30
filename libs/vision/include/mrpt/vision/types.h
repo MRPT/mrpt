@@ -24,8 +24,6 @@ namespace mrpt
 	{
 		/** \addtogroup mrpt_vision_grp
 		  *  @{ */
-		using mrpt::poses::CPose3D;
-
 		typedef uint64_t TFeatureID;	//!< Definition of a feature ID
 
 		typedef	uint64_t TLandmarkID;   //!< Unique IDs for landmarks

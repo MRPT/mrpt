@@ -216,7 +216,7 @@ namespace mrpt
 			void octree_recursive_render(
 				size_t node_idx,
 				const mrpt::opengl::gl_utils::TRenderInfo &ri,
-				TPixelCoordf cr_px[8],
+				mrpt::utils::TPixelCoordf cr_px[8],
 				float        cr_z[8],
 				bool         corners_are_all_computed = true,
 				bool         trust_me_youre_visible   = false,
@@ -554,7 +554,7 @@ namespace mrpt
 			void octree_get_graphics_boundingboxes(
 				mrpt::opengl::CSetOfObjects &gl_bb,
 				const double lines_width = 1,
-				const TColorf &lines_color = TColorf(1,1,1),
+				const mrpt::utils::TColorf &lines_color = TColorf(1,1,1),
 				const bool draw_solid_boxes = false ) const
 			{
 				octree_assure_uptodate();

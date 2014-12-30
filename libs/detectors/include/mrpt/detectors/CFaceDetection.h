@@ -154,11 +154,11 @@ namespace mrpt
 
 			void experimental_viewFacePointsScanned( const CObservation3DRangeScan &face );
 			
-			void experimental_viewFacePointsScanned( const std::vector mrpt::math::TPoint3D> &points );
+			void experimental_viewFacePointsScanned( const std::vector<mrpt::math::TPoint3D> &points );
 
 			void experimental_viewFacePointsAndEigenVects(  const std::vector<CArrayDouble<3> > &pointsVector, const mrpt::math::CMatrixDouble &eigenVect, const CVectorDouble &eigenVal );
 
-			void experimental_viewRegions( const std::vector mrpt::math::TPoint3D> regions[9], const mrpt::math::TPoint3D meanPos[3][3] );		
+			void experimental_viewRegions( const std::vector<mrpt::math::TPoint3D> regions[9], const mrpt::math::TPoint3D meanPos[3][3] );		
 
 			// Segmentation methods
 

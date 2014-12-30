@@ -18,14 +18,6 @@ namespace mrpt
 {
 	namespace opengl
 	{
-		using mrpt::math::TPoint3D;
-		using mrpt::math::TSegment3D;
-		using mrpt::math::CMatrix;
-		using mrpt::math::CMatrixFloat;
-		using mrpt::utils::TColor;
-		using mrpt::utils::TColorf;
-
-
 		// This must be added to any CSerializable derived class:
 		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CVectorField2D, CRenderizableDisplayList, OPENGL_IMPEXP )
 
@@ -152,7 +144,7 @@ namespace mrpt
 			/**
 			  * Get the vector field. Matrix_x stores the "x" component and Matrix_y stores the "y" component.
 			  */
-			void getVectorField mrpt::math::CMatrixFloat &Matrix_x, mrpt::math::CMatrixFloat &Matrix_y) const {
+			void getVectorField(mrpt::math::CMatrixFloat &Matrix_x, mrpt::math::CMatrixFloat &Matrix_y) const {
 				Matrix_x = xcomp;
 				Matrix_y = ycomp;
 			}
@@ -170,7 +162,7 @@ namespace mrpt
 			/**
 			  * Set the vector field. Matrix_x contains the "x" component and Matrix_y contains the "y" component.
 			  */
-			void setVectorField mrpt::math::CMatrixFloat &Matrix_x, mrpt::math::CMatrixFloat &Matrix_y) {
+			void setVectorField(mrpt::math::CMatrixFloat &Matrix_x, mrpt::math::CMatrixFloat &Matrix_y) {
 				ASSERT_((Matrix_x.getRowCount() == Matrix_y.getRowCount())&&(Matrix_x.getColCount() == Matrix_y.getColCount()))
 				xcomp = Matrix_x;
 				ycomp = Matrix_y;

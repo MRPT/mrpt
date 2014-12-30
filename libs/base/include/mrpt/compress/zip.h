@@ -19,8 +19,6 @@ namespace mrpt
 	 */
 	namespace compress
 	{
-		using mrpt::utils::CStream;
-
 		/** Compression using the "zip" algorithm and from/to gzip (gz) files. \ingroup mrpt_base_grp
 		 */
 		namespace zip

@@ -14,6 +14,7 @@
 #include <mrpt/opengl/CSetOfTriangles.h>
 #include <mrpt/math/geometry.h>
 #include <mrpt/math/CMatrixTemplate.h>
+#include <mrpt/utils/aligned_containers.h>
 
 namespace mrpt	{
 namespace opengl	{
@@ -82,42 +83,26 @@ namespace opengl	{
 			~TQuadrilateral()	{}
 		};
 	protected:
-		/**
-		  * Cylinder's axis. It's represented as a pose because it holds the angle to get to the next pose.
-		  */
-		vector<CPose3D> axis;
-		/**
-		  * Object's generatrix, that is, profile which will be extruded.
-		  */
-		vector mrpt::math::TPoint3D> generatrix;
-		/**
-		  * Mutable object with mesh information, used to avoid repeated computations.
-		  */
+		/** Cylinder's axis. It's represented as a pose because it holds the angle to get to the next pose. */
+		mrpt::aligned_containers<mrpt::poses::CPose3D>::vector_t axis;
+		/**  Object's generatrix, that is, profile which will be extruded. */
+		std::vector<mrpt::math::TPoint3D> generatrix;
+		/** Mutable object with mesh information, used to avoid repeated computations.  */
 		mutable std::vector<TQuadrilateral> mesh;
-		/**
-		  * Mutable object with the cylinder's points, used to avoid repeated computations.
-		  */
-		mutable mrpt::math::CMatrixTemplate mrpt::math::TPoint3D> pointsMesh;
-		/**
-		  * Mutable flag which tells if recalculations are needed.
-		  */
+		/** Mutable object with the cylinder's points, used to avoid repeated computations. */
+		mutable mrpt::math::CMatrixTemplate<mrpt::math::TPoint3D> pointsMesh;
+		/**  Mutable flag which tells if recalculations are needed. */
 		mutable bool meshUpToDate;
 		/**
 		  * Mutable set of data used in ray tracing.
 		  * \sa mrpt::math::TPolygonWithPlane
 		  */
-		mutable vector<TPolygonWithPlane> polys;
-		/**
-		  * Mutable flag telling whether ray tracing temporary data must be recalculated or not.
-		  */
+		mutable std::vector<mrpt::math::TPolygonWithPlane> polys;
+		/** Mutable flag telling whether ray tracing temporary data must be recalculated or not. */
 		mutable bool polysUpToDate;
-		/**
-		  * Boolean variable which determines if the profile is closed at each section.
-		  */
+		/** Boolean variable which determines if the profile is closed at each section. */
 		bool closed;
-		/**
-		  * Flag to determine whether the object is fully visible or only some sections are.
-		  */
+		/** Flag to determine whether the object is fully visible or only some sections are. */
 		bool fullyVisible;
 		/**
 		  * First visible section, if fullyVisible is set to false.
@@ -133,7 +118,7 @@ namespace opengl	{
 		/**
 		  * Creation of generalized cylinder from axis and generatrix
 		  */
-		static CGeneralizedCylinderPtr Create(const std::vector mrpt::math::TPoint3D> &axis,const std::vector mrpt::math::TPoint3D> &generatrix);
+		static CGeneralizedCylinderPtr Create(const std::vector<mrpt::math::TPoint3D> &axis,const std::vector<mrpt::math::TPoint3D> &generatrix);
 		/**
 		  * Render.
 		  * \sa mrpt::opengl::CRenderizable
@@ -147,7 +132,7 @@ namespace opengl	{
 		/**
 		  * Get axis's spatial coordinates.
 		  */
-		inline void getAxis(std::vector mrpt::math::TPoint3D> &a) const	{
+		inline void getAxis(std::vector<mrpt::math::TPoint3D> &a) const	{
 			//a=axis;
 			size_t N=axis.size();
 			a.resize(N);
@@ -160,13 +145,13 @@ namespace opengl	{
 		/**
 		  * Get axis, including angular coordinates.
 		  */
-		inline void getAxis(std::vector<CPose3D> &a) const	{
+		inline void getAxis(mrpt::aligned_containers<mrpt::poses::CPose3D>::vector_t &a) const	{
 			a=axis;
 		}
 		/**
 		  * Set the axis points.
 		  */
-		inline void setAxis(const std::vector mrpt::math::TPoint3D> &a)	{
+		inline void setAxis(const std::vector<mrpt::math::TPoint3D> &a)	{
 			generatePoses(a,axis);
 			meshUpToDate=false;
 			fullyVisible=true;
@@ -175,13 +160,13 @@ namespace opengl	{
 		/**
 		  * Get cylinder's profile.
 		  */
-		inline void getGeneratrix(std::vector mrpt::math::TPoint3D> &g) const	{
+		inline void getGeneratrix(std::vector<mrpt::math::TPoint3D> &g) const	{
 			g=generatrix;
 		}
 		/**
 		  * Set cylinder's profile.
 		  */
-		inline void setGeneratrix(const std::vector mrpt::math::TPoint3D> &g)	{
+		inline void setGeneratrix(const std::vector<mrpt::math::TPoint3D> &g)	{
 			generatrix=g;
 			meshUpToDate=false;
 			CRenderizableDisplayList::notifyChange();
@@ -214,7 +199,7 @@ namespace opengl	{
 		  * Get the cylinder as a set of polygons in 3D.
 		  * \sa mrpt::math::TPolygon3D
 		  */
-		void generateSetOfPolygons(std::vector<TPolygon3D> &res) const;
+		void generateSetOfPolygons(std::vector<mrpt::math::TPolygon3D> &res) const;
 		/**
 		  * Get a polyhedron consisting of a set of closed sections of the cylinder.
 		  * \sa mrpt::opengl::CPolyhedron
@@ -338,7 +323,7 @@ namespace opengl	{
 		/**
 		  * Updates the axis, transforming each point into a pose pointing to the next section.
 		  */
-		void generatePoses(const std::vector mrpt::math::TPoint3D> &pIn,std::vector<CPose3D> &pOut);
+		void generatePoses(const std::vector<mrpt::math::TPoint3D> &pIn, mrpt::aligned_containers<mrpt::poses::CPose3D>::vector_t &pOut);
 		/**
 		  * Updates the mutable mesh.
 		  */
@@ -346,7 +331,7 @@ namespace opengl	{
 		/**
 		  * Given a vector of polyhedrons, gets the starting and ending iterators to the section to be actually rendered.
 		  */
-		void getMeshIterators(const vector<TQuadrilateral> &m,vector<TQuadrilateral>::const_iterator &begin,vector<TQuadrilateral>::const_iterator &end) const;
+		void getMeshIterators(const std::vector<TQuadrilateral> &m,std::vector<TQuadrilateral>::const_iterator &begin,std::vector<TQuadrilateral>::const_iterator &end) const;
 		/**
 		  * Basic constructor with default initialization.
 		  */
@@ -354,7 +339,7 @@ namespace opengl	{
 		/**
 		  * Constructor with axis and generatrix.
 		  */
-		CGeneralizedCylinder(const std::vector mrpt::math::TPoint3D> &a,const std::vector mrpt::math::TPoint3D> &g):generatrix(g),mesh(),meshUpToDate(false),polysUpToDate(false),closed(false),fullyVisible(true)	{
+		CGeneralizedCylinder(const std::vector<mrpt::math::TPoint3D> &a,const std::vector<mrpt::math::TPoint3D> &g):generatrix(g),mesh(),meshUpToDate(false),polysUpToDate(false),closed(false),fullyVisible(true)	{
 			generatePoses(a,axis);
 		}
 		/**

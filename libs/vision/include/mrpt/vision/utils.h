@@ -265,7 +265,7 @@ namespace mrpt
             void VISION_IMPEXP projectMatchedFeatures(
                                 const CFeatureList			        & leftList,
                                 const CFeatureList			        & rightList,
-                                vector mrpt::math::TPoint3D>                    & vP3D,
+                               std::vector<mrpt::math::TPoint3D>                    & vP3D,
                                 const TStereoSystemParams           & params = TStereoSystemParams() );
 
 			/** Computes the 3D position of a particular matched feature.
