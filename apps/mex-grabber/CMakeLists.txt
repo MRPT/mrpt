@@ -30,11 +30,16 @@ INCLUDE_DIRECTORIES("${CMAKE_CURRENT_LIST_DIR}/include/")
 # TARGET:
 # ---------------------------------------------
 # Define the executable target:
-ADD_EXECUTABLE(mex-grabber
-               mexgrabber_main.cpp
-			   )
+# Define executable to test the mex library
+#ADD_EXECUTABLE(mex-grabber
+#               mexgrabber_main.cpp
+#			   )
+#SET(TMP_TARGET_NAME "mex-grabber")
+ADD_EXECUTABLE(test-mex
+			   camera_mex.cpp
+			  )
+SET(TMP_TARGET_NAME "test-mex")
 
-SET(TMP_TARGET_NAME "mex-grabber")
 
 # Add the required libraries for linking:
 TARGET_LINK_LIBRARIES(${TMP_TARGET_NAME} ${MRPT_LINKER_LIBS_RELorDEB} )
