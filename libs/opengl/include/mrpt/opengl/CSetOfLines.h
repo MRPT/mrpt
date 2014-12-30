@@ -35,8 +35,8 @@ namespace mrpt
 		{
 			DEFINE_SERIALIZABLE( CSetOfLines )
 		protected:
-			std::vector<TSegment3D> mSegments;
-            float	mLineWidth;
+			std::vector<mrpt::math::TSegment3D> mSegments;
+			float	mLineWidth;
 			bool    m_antiAliasing;
 		public:
 			/**
@@ -137,7 +137,7 @@ namespace mrpt
 			  * Sets a specific line in the set, given its index.
 			  * \sa appendLine
 			  */
-			void setLineByIndex(size_t index,const TSegment3D &segm);
+			void setLineByIndex(size_t index,const mrpt::math::TSegment3D &segm);
 			/**
 			  * Sets a specific line in the set, given its index.
 			  * \sa appendLine
@@ -153,23 +153,23 @@ namespace mrpt
 			void getLineByIndex(size_t index,double &x0,double &y0,double &z0,double &x1,double &y1,double &z1) const; 
 
 			/** Class factory */
-			static CSetOfLinesPtr Create(const std::vector<TSegment3D> &sgms, const bool antiAliasing = true);
+			static CSetOfLinesPtr Create(const std::vector<mrpt::math::TSegment3D> &sgms, const bool antiAliasing = true);
 
 			/** Render */
 			void  render_dl() const;
 
 			//Iterator management
-			typedef std::vector<TSegment3D>::iterator iterator;	//!< Iterator to the set.
-			typedef std::vector<TSegment3D>::reverse_iterator reverse_iterator;	//!< Iterator to the set.
+			typedef std::vector<mrpt::math::TSegment3D>::iterator iterator;	//!< Iterator to the set.
+			typedef std::vector<mrpt::math::TSegment3D>::reverse_iterator reverse_iterator;	//!< Iterator to the set.
 
 			/**
 			  * Const iterator to the set.
 			  */
-			typedef std::vector<TSegment3D>::const_iterator const_iterator;
+			typedef std::vector<mrpt::math::TSegment3D>::const_iterator const_iterator;
 			/**
 			  * Const reverse iterator to the set.
 			  */
-			typedef std::vector<TSegment3D>::const_reverse_iterator const_reverse_iterator;
+			typedef std::vector<mrpt::math::TSegment3D>::const_reverse_iterator const_reverse_iterator;
 			/**
 			  * Beginning const iterator.
 			  * \sa end,rbegin,rend
@@ -211,7 +211,7 @@ namespace mrpt
 			/** Constructor */
 			CSetOfLines();
 			/** Constructor with a initial set of lines. */
-			CSetOfLines(const std::vector<TSegment3D> &sgms,bool antiAliasing=true);
+			CSetOfLines(const std::vector<mrpt::math::TSegment3D> &sgms,bool antiAliasing=true);
 			/** Private, virtual destructor: only can be deleted from smart pointers. */
 			virtual ~CSetOfLines() { }
 		};

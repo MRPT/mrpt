@@ -261,7 +261,7 @@ void CGeneralizedCylinder::updatePolys() const	{
 	polysUpToDate=true;
 }
 
-void CGeneralizedCylinder::generatePoses(const vector<TPoint3D> &pIn,vector<CPose3D> &pOut)	{
+void CGeneralizedCylinder::generatePoses(const vector<TPoint3D> &pIn,mrpt::aligned_containers<mrpt::poses::CPose3D>::vector_t &pOut)	{
 	size_t N=pIn.size();
 	if (N==0)	{
 		pOut.resize(0);

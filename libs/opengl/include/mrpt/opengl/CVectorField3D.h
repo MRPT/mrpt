@@ -58,11 +58,11 @@ namespace mrpt
 			bool    m_colorFromModule;      //!< By default it is false
 			bool	m_showPoints;			//!< By default it is true
 
-			TColor m_point_color;
-			TColor m_field_color;
+			mrpt::utils::TColor m_point_color;
+			mrpt::utils::TColor m_field_color;
 
-			TColor m_still_color;           //!< Color associated to fields with null module
-			TColor m_maxspeed_color;        //!< Color associated to fields whose module is equal or larger than 'm_maxspeed'
+			mrpt::utils::TColor m_still_color;           //!< Color associated to fields with null module
+			mrpt::utils::TColor m_maxspeed_color;        //!< Color associated to fields whose module is equal or larger than 'm_maxspeed'
 			float  m_maxspeed;              //!< Value of the module of the motion field which will correspond to 'm_maxspeed_color'
 
 		public:
@@ -81,28 +81,28 @@ namespace mrpt
 				*/
 			inline void setPointColor( const float R, const float G, const float B, const float A = 1)
 			{
-				m_point_color = TColor(R*255,G*255,B*255,A*255);
+				m_point_color = mrpt::utils::TColor(R*255,G*255,B*255,A*255);
 				CRenderizableDisplayList::notifyChange();
 			}
 
 			/**
 				* Get the point color in the range [0,1]
 				*/
-			inline TColorf getPointColor() const { return mrpt::utils::TColorf(m_point_color); }
+			inline mrpt::utils::TColorf getPointColor() const { return mrpt::utils::TColorf(m_point_color); }
 
 			/**
 				* Set the arrow color in the range [0,1]
 				*/
 			inline void setVectorFieldColor( const float R, const float G, const float B, const float A = 1)
 			{
-				m_field_color = TColor(R*255,G*255,B*255,A*255);
+				m_field_color = mrpt::utils::TColor(R*255,G*255,B*255,A*255);
 				CRenderizableDisplayList::notifyChange();
 			}
 
 			/**
 				* Get the motion field min and max colors (colormap) in the range [0,1]
 				*/
-			inline void getVectorFieldColor(TColorf Cmin, TColorf Cmax) const
+			inline void getVectorFieldColor(mrpt::utils::TColorf Cmin, mrpt::utils::TColorf Cmax) const
 			{
 				Cmin = m_still_color/255;
 				Cmax = m_maxspeed_color/255;
@@ -113,15 +113,15 @@ namespace mrpt
 				*/
 			inline void setMotionFieldColormap( const float Rmin, const float Gmin, const float Bmin, const float Rmax, const float Gmax, const float Bmax, const float Amin = 1, const float Amax = 1)
 			{
-				m_still_color = TColor(Rmin*255,Gmin*255,Bmin*255,Amin*255);
-				m_maxspeed_color = TColor(Rmax*255,Gmax*255,Bmax*255,Amax*255);
+				m_still_color = mrpt::utils::TColor(Rmin*255,Gmin*255,Bmin*255,Amin*255);
+				m_maxspeed_color = mrpt::utils::TColor(Rmax*255,Gmax*255,Bmax*255,Amax*255);
 				CRenderizableDisplayList::notifyChange();
 			}
 
 			/**
 				* Get the arrow color in the range [0,1]
 				*/
-			inline TColorf getVectorFieldColor() const	{ return mrpt::utils::TColorf(m_field_color); }
+			inline mrpt::utils::TColorf getVectorFieldColor() const	{ return mrpt::utils::TColorf(m_field_color); }
 
 			/**
 				* Set the size with which points will be drawn. By default 1.0
@@ -162,7 +162,7 @@ namespace mrpt
 				Matrix_z = z_vf;
 			}
 
-			void getVectorField(MatrixXf &Matrix_x, MatrixXf &Matrix_y, MatrixXf &Matrix_z) const {
+			void getVectorField(Eigen::MatrixXf &Matrix_x, Eigen::MatrixXf &Matrix_y, Eigen::MatrixXf &Matrix_z) const {
 				Matrix_x = x_vf;
 				Matrix_y = y_vf;
 				Matrix_z = z_vf;
@@ -177,7 +177,7 @@ namespace mrpt
 				Coord_z = z_p;
 			}
 
-			void getPointCoordinates(MatrixXf &Coord_x, MatrixXf &Coord_y, MatrixXf &Coord_z) const {
+			void getPointCoordinates(Eigen::MatrixXf &Coord_x, Eigen::MatrixXf &Coord_y, Eigen::MatrixXf &Coord_z) const {
 				Coord_x = x_p;
 				Coord_y = y_p;
 				Coord_z = z_p;
@@ -201,7 +201,7 @@ namespace mrpt
 			/**
 				* Set the vector field with Matrix_x, Matrix_y and Matrix_z.
 				*/
-			void setVectorField mrpt::math::CMatrixFloat &Matrix_x, mrpt::math::CMatrixFloat &Matrix_y, mrpt::math::CMatrixFloat &Matrix_z) {
+			void setVectorField(mrpt::math::CMatrixFloat &Matrix_x, mrpt::math::CMatrixFloat &Matrix_y, mrpt::math::CMatrixFloat &Matrix_z) {
 				ASSERT_((Matrix_x.getRowCount() == Matrix_y.getRowCount())&&(Matrix_x.getRowCount() == Matrix_z.getRowCount()))
 				ASSERT_((Matrix_x.getColCount() == Matrix_y.getColCount())&&(Matrix_x.getColCount() == Matrix_z.getColCount()))
 				x_vf = Matrix_x;
@@ -210,7 +210,7 @@ namespace mrpt
 				CRenderizableDisplayList::notifyChange();
 			}
 
-			void setVectorField(MatrixXf &Matrix_x, MatrixXf &Matrix_y, MatrixXf &Matrix_z) {
+			void setVectorField(Eigen::MatrixXf &Matrix_x,Eigen::MatrixXf &Matrix_y, Eigen::MatrixXf &Matrix_z) {
 				ASSERT_((Matrix_x.getRowCount() == Matrix_y.getRowCount())&&(Matrix_x.getRowCount() == Matrix_z.getRowCount()))
 				ASSERT_((Matrix_x.getColCount() == Matrix_y.getColCount())&&(Matrix_x.getColCount() == Matrix_z.getColCount()))
 				x_vf = Matrix_x;
@@ -222,7 +222,7 @@ namespace mrpt
 			/**
 				* Set the coordinates of the points at which the vector field is plotted with Matrix_x, Matrix_y and Matrix_z.
 				*/
-			void setPointCoordinates mrpt::math::CMatrixFloat &Matrix_x, mrpt::math::CMatrixFloat &Matrix_y, mrpt::math::CMatrixFloat &Matrix_z) {
+			void setPointCoordinates(mrpt::math::CMatrixFloat &Matrix_x, mrpt::math::CMatrixFloat &Matrix_y, mrpt::math::CMatrixFloat &Matrix_z) {
 				ASSERT_((Matrix_x.getRowCount() == Matrix_y.getRowCount())&&(Matrix_x.getRowCount() == Matrix_z.getRowCount()))
 				ASSERT_((Matrix_x.getColCount() == Matrix_y.getColCount())&&(Matrix_x.getColCount() == Matrix_z.getColCount()))
 				x_p = Matrix_x;
@@ -231,7 +231,7 @@ namespace mrpt
 				CRenderizableDisplayList::notifyChange();
 			}
 
-			void setPointCoordinates(MatrixXf &Matrix_x, MatrixXf &Matrix_y, MatrixXf &Matrix_z) {
+			void setPointCoordinates(Eigen::MatrixXf &Matrix_x, Eigen::MatrixXf &Matrix_y, Eigen::MatrixXf &Matrix_z) {
 				ASSERT_((Matrix_x.getRowCount() == Matrix_y.getRowCount())&&(Matrix_x.getRowCount() == Matrix_z.getRowCount()))
 				ASSERT_((Matrix_x.getColCount() == Matrix_y.getColCount())&&(Matrix_x.getColCount() == Matrix_z.getColCount()))
 				x_p = Matrix_x;

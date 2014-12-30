@@ -37,16 +37,16 @@ namespace mrpt
 		{
 			DEFINE_SERIALIZABLE( CVectorField2D )
 		protected:
-		 mrpt::math::CMatrix xcomp;				//!< X component of the vector field
-		 mrpt::math::CMatrix ycomp;				//!< Y component of the vector field
+			mrpt::math::CMatrix xcomp;				//!< X component of the vector field
+			mrpt::math::CMatrix ycomp;				//!< Y component of the vector field
 
 			float	xMin,xMax,yMin,yMax;	//!< Grid bounds
-            float	m_LineWidth;			//!< By default is 1.0
+			float	m_LineWidth;			//!< By default is 1.0
 			float	m_pointSize;			//!< By default is 1.0
 			bool    m_antiAliasing;			//!< By default is true
 
-			TColor m_point_color;
-			TColor m_field_color;
+			mrpt::utils::TColor m_point_color;
+			mrpt::utils::TColor m_field_color;
 
 		public:
 			/**
@@ -63,28 +63,28 @@ namespace mrpt
 			  */
 			inline void setPointColor( const float R, const float G, const float B, const float A = 1)
 			{
-				m_point_color = TColor(R*255,G*255,B*255,A*255);
+				m_point_color = mrpt::utils::TColor(R*255,G*255,B*255,A*255);
 				CRenderizableDisplayList::notifyChange();
 			}
 
 			/**
 			  * Get the point color in the range [0,1]
 			  */
-			inline TColorf getPointColor() const { return mrpt::utils::TColorf(m_point_color); }
+			inline mrpt::utils::TColorf getPointColor() const { return mrpt::utils::TColorf(m_point_color); }
 
 			/**
 			  * Set the arrow color in the range [0,1]
 			  */
 			inline void setVectorFieldColor( const float R, const float G, const float B, const float A = 1)
 			{
-				m_field_color = TColor(R*255,G*255,B*255,A*255);
+				m_field_color = mrpt::utils::TColor(R*255,G*255,B*255,A*255);
 				CRenderizableDisplayList::notifyChange();
 			}
 
 			/**
 			  * Get the arrow color in the range [0,1]
 			  */
-			inline TColorf getVectorFieldColor() const	{ return mrpt::utils::TColorf(m_field_color); }
+			inline mrpt::utils::TColorf getVectorFieldColor() const	{ return mrpt::utils::TColorf(m_field_color); }
 
 			/**
 			  * Set the size with which points will be drawn. By default 1.0
