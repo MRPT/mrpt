@@ -837,6 +837,14 @@ void  CImage::readFromStream(CStream &in, int version)
 }
 
 /*---------------------------------------------------------------
+  Implements the writing to a mxArray for Matlab
+ ---------------------------------------------------------------*/
+//void  CImage::writeToMatlab(mxArray *out) const
+//{
+//    MRPT_TODO("TODO writeToMatlab in CImage")
+//}
+
+/*---------------------------------------------------------------
 						getSize
  ---------------------------------------------------------------*/
 void CImage::getSize(TImageSize &s) const

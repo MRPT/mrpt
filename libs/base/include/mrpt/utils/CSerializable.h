@@ -13,6 +13,13 @@
 #include <mrpt/utils/TTypeName.h>
 #include <mrpt/utils/types_simple.h>
 
+#define MRPT_HAS_MEX 0
+#if MRPT_HAS_MEX
+MRPT_TODO("Change to relative path adding Matlab to libs includes")
+#include </usr/local/MATLAB/R2014b/extern/include/mex.h>
+#include </usr/local/MATLAB/R2014b/extern/include/matrix.h>
+#endif
+
 namespace mrpt
 {
 	namespace utils {
@@ -64,6 +71,20 @@ namespace mrpt
 			  * \sa CStream
 			  */
 			virtual void  readFromStream(mrpt::utils::CStream &in, int version) = 0;
+
+        public:
+            /** Introduces a pure virtual method responsible for writing to a mxArray Matlab object.
+             *  This can not be used directly by users, instead use "stream << object;"
+             *   for writing it to a stream.
+             * \param out The output binary stream where object must be dumped.
+             * \param getVersion If NULL, the object must be dumped. If not, only the
+             *		version of the object dump must be returned in this pointer. This enables
+             *     the versioning of objects dumping and backward compatibility with previously
+             *     stored data.
+             *	\exception std::exception On any error, see CStream::WriteBuffer
+             * \sa CStream
+             */
+            //virtual void  writeToMatlab(mxArray *out) const = 0;
 		}; // End of class def.
 
 		DEFINE_MRPT_OBJECT_POST( CSerializable )

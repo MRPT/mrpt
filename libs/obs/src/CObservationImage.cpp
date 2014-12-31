@@ -15,6 +15,13 @@
 
 #include <iostream>
 
+#define MRPT_HAS_MEX 0
+#if MRPT_HAS_MEX
+MRPT_TODO("Change to relative path adding Matlab to libs includes")
+#include </usr/local/MATLAB/R2014b/extern/include/mex.h>
+#include </usr/local/MATLAB/R2014b/extern/include/matrix.h>
+#endif
+
 using namespace mrpt::slam;
 using namespace mrpt::utils;
 using namespace mrpt::math;
@@ -46,6 +53,14 @@ void  CObservationImage::writeToStream(CStream &out, int *version) const
 		    << sensorLabel;
 	}
 }
+
+/*---------------------------------------------------------------
+  Implements the writing to a mxArray for Matlab
+ ---------------------------------------------------------------*/
+//void  CObservationImage::writeToMatlab(mxArray *out) const
+//{
+//    MRPT_TODO("TODO writeToMatlab in CObservationImage")
+//}
 
 /*---------------------------------------------------------------
   Implements the reading from a CStream capability of CSerializable objects
