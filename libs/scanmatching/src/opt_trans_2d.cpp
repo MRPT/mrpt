@@ -14,8 +14,6 @@
 #include <mrpt/poses/CPosePDFGaussian.h>
 #include <mrpt/poses/CPosePDFSOG.h>
 #include <mrpt/random.h>
-//#include <mrpt/math/CMatrixD.h>
-//#include <mrpt/math/utils.h>
 #include <mrpt/math/CQuaternion.h>
 
 #include <algorithm>
@@ -28,6 +26,8 @@ using namespace mrpt;
 using namespace mrpt::scanmatching;
 using namespace mrpt::random;
 using namespace mrpt::utils;
+using namespace mrpt::poses;
+using namespace mrpt::math;
 using namespace std;
 
 

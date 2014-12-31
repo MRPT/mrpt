@@ -64,7 +64,7 @@ namespace mrpt
 				if(degrees<0)  decimal_value  = - decimal_value;
 			}
 
-			/** Return a string in the format "DEGdeg MIN' SEC''" */
+			/** Return a std::string in the format "DEGdeg MIN' SEC''" */
 			inline std::string getAsString() const
 			{
 				int deg,min;
@@ -83,12 +83,11 @@ namespace mrpt
 		struct TOPO_IMPEXP TEllipsoid
 		{
 			inline TEllipsoid() : sa( 6378137.0 ), sb( 6356752.314245 ), name("WGS84") {}
-			inline TEllipsoid( const double _sa, const double _sb, const string &_name ) : sa(_sa), sb(_sb), name(_name) {}
+			inline TEllipsoid( const double _sa, const double _sb, const std::string &_name ) : sa(_sa), sb(_sb), name(_name) {}
 
 			double sa;		//!< largest semiaxis of the reference ellipsoid (in meters)
 			double sb;		//!< smallest semiaxis of the reference ellipsoid (in meters)
-			string name;	//!< the ellipsoid name
-
+			std::string name;	//!< the ellipsoid name
 
 			static inline TEllipsoid Ellipsoid_WGS84() {					return TEllipsoid( 6378137.000, 6356752.314245, "WGS84" ); }
 			static inline TEllipsoid Ellipsoid_WGS72() {					return TEllipsoid( 6378135.000, 6356750.519915, "WGS72"  ); }
@@ -150,9 +149,9 @@ namespace mrpt
 				const double _dS ) :
 			dX(_dX), dY(_dY), dZ(_dZ)
 			{
-				Rx = DEG2RAD(_Rx/60/60);
-				Ry = DEG2RAD(_Ry/60/60);
-				Rz = DEG2RAD(_Rz/60/60);
+				Rx = mrpt::utils::DEG2RAD(_Rx/60/60);
+				Ry = mrpt::utils::DEG2RAD(_Ry/60/60);
+				Rz = mrpt::utils::DEG2RAD(_Rz/60/60);
 				dS = _dS*1e-6;
 			}
 		};
@@ -193,9 +192,9 @@ namespace mrpt
 				const double _dS ) :
 			dX(_dX), dY(_dY), dZ(_dZ), Xp(_Xp), Yp(_Yp), Zp(_Zp)
 			{
-				Rx = DEG2RAD(_Rx/60/60);
-				Ry = DEG2RAD(_Ry/60/60);
-				Rz = DEG2RAD(_Rz/60/60);
+				Rx = mrpt::utils::DEG2RAD(_Rx/60/60);
+				Ry = mrpt::utils::DEG2RAD(_Ry/60/60);
+				Rz = mrpt::utils::DEG2RAD(_Rz/60/60);
 				dS = _dS*1e-6;
 			}
 		};
@@ -216,7 +215,7 @@ namespace mrpt
 				const double _Xp, const double _Yp ) :
 			dX(_dX), dY(_dY), Xp(_Xp), Yp(_Yp)
 			{
-				alpha = DEG2RAD(_alpha);
+				alpha = mrpt::utils::DEG2RAD(_alpha);
 				dS = _dS*1e-6;
 			}
 		};
@@ -247,9 +246,9 @@ namespace mrpt
 				const double _dS ) :
 			dX(_dX), dY(_dY), dZ(_dZ)
 			{
-				Rx = DEG2RAD(_Rx/60/60);
-				Ry = DEG2RAD(_Ry/60/60);
-				Rz = DEG2RAD(_Rz/60/60);
+				Rx = mrpt::utils::DEG2RAD(_Rx/60/60);
+				Ry = mrpt::utils::DEG2RAD(_Ry/60/60);
+				Rz = mrpt::utils::DEG2RAD(_Rz/60/60);
 				dS = _dS*1e-6;
 			}
 		};
@@ -300,7 +299,7 @@ namespace mrpt
 			{
 				dSx = _dSx*1e-6;
 				dSy = _dSy*1e-6;
-				beta = DEG2RAD(_beta/60/60);
+				beta = mrpt::utils::DEG2RAD(_beta/60/60);
 			}
 		};
 
