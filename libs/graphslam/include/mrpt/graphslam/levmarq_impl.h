@@ -148,7 +148,7 @@ namespace mrpt
 		template <class GRAPH_T>
 		double computeJacobiansAndErrors(
 			const GRAPH_T &graph,
-			const vector<typename graphslam_traits<GRAPH_T>::observation_info_t>  &lstObservationData,
+			const std::vector<typename graphslam_traits<GRAPH_T>::observation_info_t>  &lstObservationData,
 			typename graphslam_traits<GRAPH_T>::map_pairIDs_pairJacobs_t   &lstJacobians,
 			typename mrpt::aligned_containers<typename graphslam_traits<GRAPH_T>::Array_O>::vector_t &errs
 			)
@@ -169,14 +169,14 @@ namespace mrpt
 				typename gst::graph_t::constraint_t::type_value* P1 = obs.P1;
 				typename gst::graph_t::constraint_t::type_value* P2 = obs.P2;
 
-				const TPairNodeIDs                   &ids  = it->first;
+				const mrpt::utils::TPairNodeIDs                   &ids  = it->first;
 				const typename gst::graph_t::edge_t  &edge = it->second;
 
 				// Compute the residual pose error of these pair of nodes + its constraint,
 				//  that is: P1DP2inv = P1 * EDGE * inv(P2)
-				typename gst::graph_t::constraint_t::type_value P1DP2inv(UNINITIALIZED_POSE);
+				typename gst::graph_t::constraint_t::type_value P1DP2inv(mrpt::poses::UNINITIALIZED_POSE);
 				{
-					typename gst::graph_t::constraint_t::type_value P1D(UNINITIALIZED_POSE);
+					typename gst::graph_t::constraint_t::type_value P1D(mrpt::poses::UNINITIALIZED_POSE);
 					P1D.composeFrom(*P1,*EDGE_POSE);
 					const typename gst::graph_t::constraint_t::type_value P2inv = -(*P2); // Pose inverse (NOT just switching signs!)
 					P1DP2inv.composeFrom(P1D,P2inv);
@@ -187,7 +187,7 @@ namespace mrpt
 				detail::AuxErrorEval<typename gst::edge_t,gst>::computePseudoLnError(P1DP2inv, errs.back(),edge);
 
 				// Compute the jacobians:
-				MRPT_ALIGN16 std::pair<TPairNodeIDs,typename gst::TPairJacobs> newMapEntry;
+				MRPT_ALIGN16 std::pair<mrpt::utils::TPairNodeIDs,typename gst::TPairJacobs> newMapEntry;
 				newMapEntry.first = ids;
 				gst::SE_TYPE::jacobian_dP1DP2inv_depsilon(P1DP2inv, &newMapEntry.second.first,&newMapEntry.second.second);
 

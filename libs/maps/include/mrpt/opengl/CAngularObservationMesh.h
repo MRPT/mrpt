@@ -403,7 +403,7 @@ namespace opengl	{
 	void CAngularObservationMesh::trace2DSetOfRays(const T &e,const mrpt::poses::CPose3D &initial,CAngularObservationMeshPtr &caom,const TDoubleRange &pitchs,const TDoubleRange &yaws)	{
 		std::vector<double> pValues;
 		pitchs.values(pValues);
-		std::vector<CObservation2DRangeScan> vObs;
+		std::vector<mrpt::obs::CObservation2DRangeScan> vObs;
 		vObs.reserve(pValues.size());
 		for_each(pValues.begin(),pValues.end(),FTrace2D<T>(e,initial,caom,yaws,vObs,initial));
 		caom->mWireframe=false;

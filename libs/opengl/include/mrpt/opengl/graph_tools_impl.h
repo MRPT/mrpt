@@ -31,8 +31,7 @@ namespace mrpt
 
 				using mrpt::poses::CPose3D;
 				using mrpt::math::TPose3D;
-				using mrpt::utils::keep_min;
-				using mrpt::utils::keep_max;
+				using namespace mrpt::utils;
 
 				// Is a 2D or 3D graph network?
 				typedef typename GRAPH_T::constraint_t constraint_t;

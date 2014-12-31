@@ -29,6 +29,7 @@ using namespace mrpt::opengl;
 using namespace mrpt::utils;
 using namespace mrpt::poses;
 using namespace mrpt::math;
+using namespace mrpt::obs;
 using namespace std;
 
 

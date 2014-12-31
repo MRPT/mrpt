@@ -17,6 +17,7 @@
 
 using namespace mrpt;
 using namespace mrpt::gui;
+using namespace mrpt::utils;
 using namespace mrpt::opengl;
 
 // ------------------------------------------------------

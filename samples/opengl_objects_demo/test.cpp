@@ -13,12 +13,12 @@
 
 #include <mrpt/opengl.h>
 
-
+using namespace std;
 using namespace mrpt;
 using namespace mrpt::gui;
 using namespace mrpt::opengl;
 using namespace mrpt::math;
-
+using namespace mrpt::utils;
 
 // ------------------------------------------------------
 //				TestOpenGLObjects

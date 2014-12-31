@@ -59,6 +59,7 @@ using namespace mrpt::utils;
 using namespace mrpt::random;
 using namespace mrpt::poses;
 using namespace mrpt::bayes;
+using namespace mrpt::obs;
 using namespace std;
 
 // Forward declaration:

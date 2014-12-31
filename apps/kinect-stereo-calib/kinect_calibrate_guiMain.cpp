@@ -1226,7 +1226,7 @@ void kinect_calibrate_guiDialog::ProcessNewGrabbedObs()
 
 			m_last_obs->project3DPointsFromDepthImageInto(*m_gl_3d_points, false /* without obs.sensorPose */ );
 
-			m_gl_corner_left->setPose( CPose3D() );
+			m_gl_corner_left->setPose( mrpt::poses::CPose3D() );
 			m_gl_corner_right->setPose( l2r );
 
 			m_plot3D->Refresh(false);

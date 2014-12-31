@@ -20,6 +20,7 @@
 #include <gtest/gtest.h>
 
 using namespace mrpt;
+using namespace mrpt::bayes;
 using namespace mrpt::slam;
 using namespace mrpt::maps;
 using namespace mrpt::utils;
@@ -27,6 +28,7 @@ using namespace mrpt::poses;
 using namespace mrpt::math;
 using namespace mrpt::random;
 using namespace mrpt::system;
+using namespace mrpt::obs;
 using namespace std;
 
 // Defined in tests/test_main.cpp

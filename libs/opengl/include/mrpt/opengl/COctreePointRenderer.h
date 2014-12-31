@@ -137,8 +137,8 @@ namespace mrpt
 				/** update bounding box with a new point: */
 				inline void update_bb(const mrpt::math::TPoint3Df &p)
 				{
-					keep_min(bb_min.x, p.x); keep_min(bb_min.y, p.y); keep_min(bb_min.z, p.z);
-					keep_max(bb_max.x, p.x); keep_max(bb_max.y, p.y); keep_max(bb_max.z, p.z);
+					mrpt::utils::keep_min(bb_min.x, p.x); mrpt::utils::keep_min(bb_min.y, p.y); mrpt::utils::keep_min(bb_min.z, p.z);
+					mrpt::utils::keep_max(bb_max.x, p.x); mrpt::utils::keep_max(bb_max.y, p.y); mrpt::utils::keep_max(bb_max.z, p.z);
 				}
 
 				inline float getCornerX(int i) const { return (i & 0x01)==0 ? bb_min.x : bb_max.x; }
@@ -242,8 +242,8 @@ namespace mrpt
 					// Keep the on-screen bounding box of this node:
 					for (int i=0;i<8;i++)
 					{
-						keep_min(px_min.x,cr_px[i].x); keep_min(px_min.y,cr_px[i].y);
-						keep_max(px_max.x,cr_px[i].x); keep_max(px_max.y,cr_px[i].y);
+						mrpt::utils::keep_min(px_min.x,cr_px[i].x); mrpt::utils::keep_min(px_min.y,cr_px[i].y);
+						mrpt::utils::keep_max(px_max.x,cr_px[i].x); mrpt::utils::keep_max(px_max.y,cr_px[i].y);
 					}
 
 					const bool any_cr_zs_neg = (cr_z[0]<0 ||cr_z[1]<0 ||cr_z[2]<0 ||cr_z[3]<0 ||cr_z[4]<0 ||cr_z[5]<0 ||cr_z[6]<0 ||cr_z[7]<0);

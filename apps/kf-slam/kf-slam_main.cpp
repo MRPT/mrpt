@@ -37,6 +37,7 @@ using namespace mrpt::opengl;
 using namespace mrpt::system;
 using namespace mrpt::math;
 using namespace mrpt::utils;
+using namespace mrpt::obs;
 using namespace std;
 
 // Fordward declaration.

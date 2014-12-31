@@ -97,6 +97,7 @@ using namespace mrpt;
 using namespace mrpt::utils;
 using namespace mrpt::system;
 using namespace mrpt::poses;
+using namespace mrpt::math;
 using namespace mrpt::opengl;
 using namespace std;
 

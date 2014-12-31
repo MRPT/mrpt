@@ -25,6 +25,7 @@ using namespace mrpt::utils;
 using namespace mrpt::gui;
 using namespace mrpt::opengl;
 using namespace mrpt::system;
+using namespace mrpt::poses;
 using namespace std;
 
 int main()
@@ -99,7 +100,7 @@ int main()
 							sonarRange = CCylinderPtr( objPtr );
 
 						sonarRange->setRadii( 0, tan( obs.sensorConeApperture )*obs.sensedData[i].sensedDistance );
-						sonarRange->setPose( CPose3D(obs.sensedData[i].sensorPose)+CPose3D(0,0,0,0,DEG2RAD(90.0),0) );
+						sonarRange->setPose( mrpt::poses::CPose3D(obs.sensedData[i].sensorPose)+CPose3D(0,0,0,0,DEG2RAD(90.0),0) );
 						sonarRange->setHeight( obs.sensedData[i].sensedDistance );
 						sonarRange->enableShowName();
 						sonarRange->setColor( 0, 0, 1, 0.25 );

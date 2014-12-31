@@ -76,7 +76,7 @@ void Test_RPLIDAR()
 
 		if (thereIsObservation)
 		{
-		    double FPS = 1.0 / tictac.Tac();
+			double FPS = 1.0 / tictac.Tac();
 
 			printf("Scan received: %u ranges, FOV: %.02fdeg, %.03fHz: mid rang=%fm\n",
 				(unsigned int)obs.scan.size(),
@@ -84,9 +84,9 @@ void Test_RPLIDAR()
 				FPS,
 				obs.scan[obs.scan.size()/2]);
 
-			obs.sensorPose = CPose3D(0,0,0);
+			obs.sensorPose = mrpt::poses::CPose3D(0,0,0);
 
-            tictac.Tic();
+			tictac.Tic();
 		}
 
 		mrpt::system::sleep(5);

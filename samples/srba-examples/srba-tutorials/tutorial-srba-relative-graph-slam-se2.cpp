@@ -14,6 +14,7 @@
 #include <mrpt/gui.h>  // For rendering results as a 3D scene
 
 using namespace mrpt::srba;
+using namespace mrpt::utils;
 using namespace std;
 using mrpt::utils::DEG2RAD;
 

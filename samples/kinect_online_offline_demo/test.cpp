@@ -264,11 +264,11 @@ void Test_KinectOnlineOffline(bool is_online, const string &rawlog_file = string
 		// Create an extra opengl viewport for the RGB image:
 		viewInt = scene->createViewport("view2d_int");
 		viewInt->setViewportPosition(5, 30, VW_WIDTH,VW_HEIGHT );
-		win3D.addTextMessage(10, 30+VW_HEIGHT+10,"Intensity data",TColorf(1,1,1), 2, MRPT_GLUT_BITMAP_HELVETICA_12 );
+		win3D.addTextMessage(10, 30+VW_HEIGHT+10,"Intensity data",TColorf(1,1,1), 2, mrpt::opengl::MRPT_GLUT_BITMAP_HELVETICA_12 );
 
 		win3D.addTextMessage(5,5,
 			format("'o'/'i'-zoom out/in, ESC: quit"),
-				TColorf(0,0,1), 110, MRPT_GLUT_BITMAP_HELVETICA_18 );
+				TColorf(0,0,1), 110, mrpt::opengl::MRPT_GLUT_BITMAP_HELVETICA_18 );
 
 
 		win3D.unlockAccess3DScene();

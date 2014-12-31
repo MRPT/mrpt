@@ -38,6 +38,7 @@ Output files:
 using namespace std;
 using namespace mrpt;
 using namespace mrpt::obs;
+using namespace mrpt::utils;
 
 const double STEREO_FPS = 10.0;
 

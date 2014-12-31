@@ -215,23 +215,19 @@ namespace mrpt
 
 			/** Draws a single sample from the distribution (WARNING: weights are assumed to be normalized!)
 			  */
-			void  drawSingleSample(CPose2D &outPart ) const;
+			void  drawSingleSample(mrpt::poses::CPose2D &outPart ) const;
 
 			/** Draws a number of samples from the distribution, and saves as a list of 1x3 vectors, where each row contains a (x,y,phi) datum.
 			  */
-			void  drawManySamples( size_t N, std::vector<CVectorDouble> & outSamples ) const;
+			void  drawManySamples( size_t N, std::vector<mrpt::math::CVectorDouble> & outSamples ) const;
 
 			/** Appends (pose-composition) a given pose "p" to each particle
 			  */
 			void  operator += ( const mrpt::poses::CPose2D &Ap);
 
-			/** Appends (add to the list) a set of particles to the existing ones, and then normalize weights.
-			  */
-			//void  append( CPosePDFParticlesExtended &o );
-
 			/** Returns a new PDF such as: NEW_PDF = (0,0,0) - THIS_PDF
 			  */
-			void	 inverse(CPosePDF &o) const;
+			void	 inverse(mrpt::poses::CPosePDF &o) const;
 
 			/** Returns the particle with the highest weight.
 			  */
@@ -239,7 +235,7 @@ namespace mrpt
 
 			/** Bayesian fusion.
 			  */
-			void  bayesianFusion( const CPosePDF &p1, const CPosePDF &p2, const double&minMahalanobisDistToDrop = 0 );
+			void  bayesianFusion( const mrpt::poses::CPosePDF &p1, const mrpt::poses::CPosePDF &p2, const double&minMahalanobisDistToDrop = 0 );
 
 			/** Evaluates the PDF at a given arbitrary point as reconstructed by a Parzen window.
 			  * \sa saveParzenPDFToTextFile
@@ -265,7 +261,7 @@ namespace mrpt
 				float			stdXY,
 				float			stdPhi ) const;
 
-			void  bayesianFusion( CPosePDF &p1, CPosePDF &p2, const double&minMahalanobisDistToDrop = 0)
+			void  bayesianFusion( mrpt::poses::CPosePDF &p1, mrpt::poses::CPosePDF &p2, const double&minMahalanobisDistToDrop = 0)
 			{ THROW_EXCEPTION("Not implemented"); }
 
 		private:
@@ -274,13 +270,13 @@ namespace mrpt
 
 			/** Auxiliary variable used in the "pfAuxiliaryPFOptimal" algorithm.
 			  */
-			mutable CVectorDouble				m_pfAuxiliaryPFOptimal_estimatedProb;
+			mutable mrpt::math::CVectorDouble				m_pfAuxiliaryPFOptimal_estimatedProb;
 
 			/** Auxiliary function that evaluates the likelihood of an observation, given a robot pose, and according to the options in "CPosePDFParticlesExtended::options".
 			  */
 			static double  auxiliarComputeObservationLikelihood(
 				const bayes::CParticleFilter::TParticleFilterOptions &PF_options,
-				const CParticleFilterCapable	*obj,
+				const bayes::CParticleFilterCapable	*obj,
 				size_t			particleIndexForMap,
 				const mrpt::obs::CSensoryFrame	*observation,
 				const TExtendedCPose2D			*x );
@@ -289,7 +285,7 @@ namespace mrpt
 				*/
 			static double  particlesEvaluator_AuxPFOptimal(
 				const bayes::CParticleFilter::TParticleFilterOptions &PF_options,
-				const CParticleFilterCapable	*obj,
+				const bayes::CParticleFilterCapable	*obj,
 				size_t		index,
 				const void	* action,
 				const void	* observation );

@@ -19,6 +19,7 @@
 
 using namespace mrpt;
 using namespace mrpt::maps;
+using namespace mrpt::obs;
 using namespace mrpt::gui;
 using namespace mrpt::math;
 using namespace mrpt::utils;

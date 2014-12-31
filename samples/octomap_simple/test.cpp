@@ -19,6 +19,7 @@ using namespace mrpt::utils;
 using namespace mrpt::maps;
 using namespace mrpt::opengl;
 using namespace mrpt::math;
+using namespace mrpt::obs;
 using namespace std;
 
 #define SCAN_SIZE 361

@@ -35,6 +35,7 @@
 
 using namespace mrpt;
 using namespace mrpt::utils;
+using namespace mrpt::math;
 using namespace mrpt::vision;
 using namespace mrpt::gui;
 using namespace std;
