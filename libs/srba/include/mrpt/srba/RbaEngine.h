@@ -481,7 +481,7 @@ namespace srba
 		void make_ordered_list_base_kfs(
 			const typename traits_t::new_kf_observations_t & obs,
 			base_sorted_lst_t            & obs_for_each_base_sorted,
-			map<TKeyFrameID,size_t>       *out_obs_for_each_base =NULL ) const;
+			std::map<TKeyFrameID,size_t>       *out_obs_for_each_base =NULL ) const;
 
 		/** This method will call edge_creation_policy(), which has predefined algorithms but could be re-defined by the user in a derived class */
 		void determine_kf2kf_edges_to_create(
@@ -520,8 +520,8 @@ namespace srba
 			const rba_problem_state_t & rba_state;
 			const TOptimizeLocalAreaParams &params;
 
-			vector<size_t> k2k_edges_to_optimize, lm_IDs_to_optimize;
-			map<TLandmarkID,size_t>  lm_times_seen;
+			std::vector<size_t> k2k_edges_to_optimize, lm_IDs_to_optimize;
+			std::map<TLandmarkID,size_t>  lm_times_seen;
 
 			/* Implementation of FEAT_VISITOR */
 			inline bool visit_filter_feat(const TLandmarkID lm_ID,const topo_dist_t cur_dist)

@@ -16,7 +16,7 @@ template <class KF2KF_POSE_TYPE,class LM_TYPE,class OBS_TYPE,class RBA_OPTIONS>
 void RbaEngine<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::edge_creation_policy(
 	const TKeyFrameID               new_kf_id,
 	const typename traits_t::new_kf_observations_t   & obs,
-	vector<TNewEdgeInfo> &new_k2k_edge_ids )
+	std::vector<TNewEdgeInfo> &new_k2k_edge_ids )
 {
 	switch (parameters.srba.edge_creation_policy)
 	{
@@ -255,8 +255,9 @@ template <class KF2KF_POSE_TYPE,class LM_TYPE,class OBS_TYPE,class RBA_OPTIONS>
 void RbaEngine<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::make_ordered_list_base_kfs(
 	const typename traits_t::new_kf_observations_t & obs,
 	base_sorted_lst_t            & obs_for_each_base_sorted,
-	map<TKeyFrameID,size_t>       *out_obs_for_each_base ) const
+	std::map<TKeyFrameID,size_t>       *out_obs_for_each_base ) const
 {
+	using namespace std;
 	// Make a first pass to make a sorted list of base KFs, ordered by # of observations so we prefer edges to
 	// strongly connected base KFs:
 	map<TKeyFrameID,size_t> obs_for_each_base;

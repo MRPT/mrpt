@@ -506,7 +506,7 @@ void RbaEngine<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::optimize_edges(
 				pose_t new_pose(mrpt::poses::UNINITIALIZED_POSE);
 
 				// Use the Lie Algebra methods for the increment:
-				const CArrayDouble<POSE_DIMS> incr( & my_solver.delta_eps[POSE_DIMS*i] );
+				const mrpt::math::CArrayDouble<POSE_DIMS> incr( & my_solver.delta_eps[POSE_DIMS*i] );
 				pose_t  incrPose(mrpt::poses::UNINITIALIZED_POSE);
 				se_traits_t::pseudo_exp(incr,incrPose);   // incrPose = exp(incr) (Lie algebra pseudo-exponential map)
 
@@ -632,7 +632,7 @@ void RbaEngine<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::optimize_edges(
 				compute_minus_gradient(/* Out: */ minus_grad, /* In: */ dh_dAp, dh_df, residuals, obs_global_idx2residual_idx);
 				DETAILED_PROFILING_LEAVE("opt.compute_minus_gradient")
 
-				const double norm_inf_min_grad = norm_inf(minus_grad);
+				const double norm_inf_min_grad = mrpt::math::norm_inf(minus_grad);
 				if (norm_inf_min_grad<=max_gradient_to_stop)
 				{
 					VERBOSE_LEVEL(2) << "[OPT] LM end criterion: norm_inf(minus_grad) below threshold: " << norm_inf_min_grad << " <= " <<max_gradient_to_stop<<endl;

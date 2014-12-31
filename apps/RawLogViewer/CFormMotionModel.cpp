@@ -35,8 +35,10 @@ using namespace mrpt;
 using namespace mrpt::obs;
 using namespace mrpt::opengl;
 using namespace mrpt::system;
+using namespace mrpt::opengl;
 using namespace mrpt::math;
 using namespace mrpt::utils;
+using namespace mrpt::poses;
 using namespace std;
 
 #define MAX_READ_FOR_MODEL_SEARCH 100

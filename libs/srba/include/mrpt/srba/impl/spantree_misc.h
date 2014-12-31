@@ -25,7 +25,7 @@ void TRBA_Problem_state<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::TSpanning
 
 
 template <class KF2KF_POSE_TYPE,class LM_TYPE,class OBS_TYPE,class RBA_OPTIONS>
-void TRBA_Problem_state<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::TSpanningTree::dump_as_text(string &s)  const
+void TRBA_Problem_state<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::TSpanningTree::dump_as_text(std::string &s)  const
 {
 	using mrpt::format;
 
@@ -68,13 +68,13 @@ void TRBA_Problem_state<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::TSpanning
 }
 
 template <class KF2KF_POSE_TYPE,class LM_TYPE,class OBS_TYPE,class RBA_OPTIONS>
-bool TRBA_Problem_state<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::TSpanningTree::dump_as_text_to_file(const string &sFileName) const
+bool TRBA_Problem_state<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::TSpanningTree::dump_as_text_to_file(const std::string &sFileName) const
 {
-	ofstream f;
+	std::ofstream f;
 	f.open(sFileName.c_str());
 	if (!f.is_open()) return false;
 
-	string s;
+	std::string s;
 	this->dump_as_text(s);
 
 	return !(f << s).fail();
@@ -84,26 +84,26 @@ namespace internal
 {
 	template <class KF2KF_POSE_TYPE,class LM_TYPE,class OBS_TYPE,class RBA_OPTIONS>
 	void recursive_print_st_dot(
-		set< pair<string,string> > & all_edges,
-		const string &prefix,
+		std::set< std::pair<std::string,std::string> > & all_edges,
+		const std::string &prefix,
 		const TKeyFrameID came_from,
 		const TKeyFrameID root,
-		const map<TKeyFrameID,TSpanTreeEntry> &root_entries,
+		const std::map<TKeyFrameID,TSpanTreeEntry> &root_entries,
 		const typename TRBA_Problem_state<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::TSpanningTree::next_edge_maps_t &all,
-		set<TKeyFrameID> &visited,
-		const map<TKeyFrameID,TSpanTreeEntry> &top_root_entries)
+		std::set<TKeyFrameID> &visited,
+		const std::map<TKeyFrameID,TSpanTreeEntry> &top_root_entries)
 	{
 		visited.insert(root);
 
 		// All nodes at depth=1
-		for (map<TKeyFrameID,TSpanTreeEntry>::const_iterator it=root_entries.begin();it!=root_entries.end();++it)
+		for (std::map<TKeyFrameID,TSpanTreeEntry>::const_iterator it=root_entries.begin();it!=root_entries.end();++it)
 		{
 			if (it->second.distance==1 && top_root_entries.find(it->first)!=top_root_entries.end())
 			{
 				const TKeyFrameID child = it->first;
 				//s << prefix << root << " -> " << prefix << child << ";\n";
-				const string s1 = prefix + mrpt::format("%06u",static_cast<unsigned int>( std::max(root,child) ));
-				const string s2 = prefix + mrpt::format("%06u",static_cast<unsigned int>( std::min(root,child) ));
+				const std::string s1 = prefix + mrpt::format("%06u",static_cast<unsigned int>( std::max(root,child) ));
+				const std::string s2 = prefix + mrpt::format("%06u",static_cast<unsigned int>( std::min(root,child) ));
 				all_edges.insert( make_pair(s1,s2) );
 
 				if (!visited.count(it->first))
@@ -119,9 +119,10 @@ namespace internal
 } // end NS "internal"
 
 template <class KF2KF_POSE_TYPE,class LM_TYPE,class OBS_TYPE,class RBA_OPTIONS>
-bool TRBA_Problem_state<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::TSpanningTree::save_as_dot_file(const string &sFileName, const std::vector<TKeyFrameID> &kf_roots_to_save )  const
+bool TRBA_Problem_state<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::TSpanningTree::save_as_dot_file(const std::string &sFileName, const std::vector<TKeyFrameID> &kf_roots_to_save )  const
 {
 	using mrpt::format;
+	using namespace std;
 
 	ofstream f;
 	f.open(sFileName.c_str());

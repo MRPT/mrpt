@@ -34,6 +34,7 @@
 using namespace mrpt;
 using namespace mrpt::obs;
 using namespace mrpt::opengl;
+using namespace mrpt::poses;
 using namespace mrpt::system;
 using namespace mrpt::math;
 using namespace mrpt::utils;

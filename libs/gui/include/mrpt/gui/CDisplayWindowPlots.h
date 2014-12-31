@@ -52,7 +52,7 @@ namespace mrpt
 			template <typename VECTOR1,typename VECTOR2>
 			void internal_plot_interface(const VECTOR1 &x,const VECTOR2 &y,const std::string  &lineFormat,const std::string  &plotName)
 			{
-				CVectorFloat x1(x.size()), y1(y.size());
+				mrpt::math::CVectorFloat x1(x.size()), y1(y.size());
 				const size_t N1=size_t(x.size());
 				for (size_t i=0;i<N1;i++) x1[i]=x[i];
 				const size_t N2=size_t(y.size());
@@ -63,7 +63,7 @@ namespace mrpt
 			void internal_plot_interface(const VECTOR1 &y,const std::string  &lineFormat,const std::string  &plotName)
 			{
 				const size_t N=size_t(y.size());
-				CVectorFloat x1(N),y1(N);
+				mrpt::math::CVectorFloat x1(N),y1(N);
 				for (size_t i=0;i<N;i++) { x1[i]=i; y1[i]=y[i]; }
 				this->internal_plot(x1,y1,lineFormat,plotName);
 			}

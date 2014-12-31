@@ -37,6 +37,7 @@ using namespace mrpt::math;
 using namespace mrpt::gui;
 using namespace mrpt::utils;
 using namespace mrpt::topography;
+using namespace mrpt::poses;
 using namespace std;
 
 

@@ -232,7 +232,7 @@ namespace mrpt
 
 		/** Binary serialization (write) operator "stream << graph" */
 		template <class CPOSE,class MAPS_IMPLEMENTATION,class NODE_ANNOTATIONS,class EDGE_ANNOTATIONS>
-		CStream & operator << (mrpt::utils::CStream&out, const CNetworkOfPoses<CPOSE,MAPS_IMPLEMENTATION,NODE_ANNOTATIONS,EDGE_ANNOTATIONS> &obj)
+		mrpt::utils::CStream & operator << (mrpt::utils::CStream&out, const CNetworkOfPoses<CPOSE,MAPS_IMPLEMENTATION,NODE_ANNOTATIONS,EDGE_ANNOTATIONS> &obj)
 		{
 			typedef CNetworkOfPoses<CPOSE,MAPS_IMPLEMENTATION,NODE_ANNOTATIONS,EDGE_ANNOTATIONS> graph_t;
 			detail::graph_ops<graph_t>::save_graph_of_poses_to_binary_file(&obj,out);
@@ -241,7 +241,7 @@ namespace mrpt
 
 		/** Binary serialization (read) operator "stream >> graph" */
 		template <class CPOSE,class MAPS_IMPLEMENTATION,class NODE_ANNOTATIONS,class EDGE_ANNOTATIONS>
-		CStream & operator >> (mrpt::utils::CStream&in, CNetworkOfPoses<CPOSE,MAPS_IMPLEMENTATION,NODE_ANNOTATIONS,EDGE_ANNOTATIONS> &obj)
+		mrpt::utils::CStream & operator >> (mrpt::utils::CStream&in, CNetworkOfPoses<CPOSE,MAPS_IMPLEMENTATION,NODE_ANNOTATIONS,EDGE_ANNOTATIONS> &obj)
 		{
 			typedef CNetworkOfPoses<CPOSE,MAPS_IMPLEMENTATION,NODE_ANNOTATIONS,EDGE_ANNOTATIONS> graph_t;
 			detail::graph_ops<graph_t>::read_graph_of_poses_from_binary_file(&obj,in);
@@ -251,12 +251,12 @@ namespace mrpt
 		/** \addtogroup mrpt_graphs_grp
 		    @{ */
 
-		typedef CNetworkOfPoses<mrpt::poses::CPose2D,map_traits_stdmap>               CNetworkOfPoses2D;     //!< The specialization of CNetworkOfPoses for poses of type CPose2D (not a PDF!), also implementing serialization.
-		typedef CNetworkOfPoses<mrpt::poses::CPose3D,map_traits_stdmap>               CNetworkOfPoses3D;     //!< The specialization of CNetworkOfPoses for poses of type mrpt::poses::CPose3D (not a PDF!), also implementing serialization.
-		typedef CNetworkOfPoses<mrpt::poses::CPosePDFGaussian,map_traits_stdmap>      CNetworkOfPoses2DCov;  //!< The specialization of CNetworkOfPoses for poses of type CPosePDFGaussian, also implementing serialization.
-		typedef CNetworkOfPoses<mrpt::poses::CPose3DPDFGaussian,map_traits_stdmap>    CNetworkOfPoses3DCov;  //!< The specialization of CNetworkOfPoses for poses of type CPose3DPDFGaussian, also implementing serialization.
-		typedef CNetworkOfPoses<mrpt::poses::CPosePDFGaussianInf,map_traits_stdmap>   CNetworkOfPoses2DInf;  //!< The specialization of CNetworkOfPoses for poses of type CPosePDFGaussianInf, also implementing serialization.
-		typedef CNetworkOfPoses<mrpt::poses::CPose3DPDFGaussianInf,map_traits_stdmap> CNetworkOfPoses3DInf;  //!< The specialization of CNetworkOfPoses for poses of type CPose3DPDFGaussianInf, also implementing serialization.
+		typedef CNetworkOfPoses<mrpt::poses::CPose2D,mrpt::utils::map_traits_stdmap>               CNetworkOfPoses2D;     //!< The specialization of CNetworkOfPoses for poses of type CPose2D (not a PDF!), also implementing serialization.
+		typedef CNetworkOfPoses<mrpt::poses::CPose3D,mrpt::utils::map_traits_stdmap>               CNetworkOfPoses3D;     //!< The specialization of CNetworkOfPoses for poses of type mrpt::poses::CPose3D (not a PDF!), also implementing serialization.
+		typedef CNetworkOfPoses<mrpt::poses::CPosePDFGaussian,mrpt::utils::map_traits_stdmap>      CNetworkOfPoses2DCov;  //!< The specialization of CNetworkOfPoses for poses of type CPosePDFGaussian, also implementing serialization.
+		typedef CNetworkOfPoses<mrpt::poses::CPose3DPDFGaussian,mrpt::utils::map_traits_stdmap>    CNetworkOfPoses3DCov;  //!< The specialization of CNetworkOfPoses for poses of type CPose3DPDFGaussian, also implementing serialization.
+		typedef CNetworkOfPoses<mrpt::poses::CPosePDFGaussianInf,mrpt::utils::map_traits_stdmap>   CNetworkOfPoses2DInf;  //!< The specialization of CNetworkOfPoses for poses of type CPosePDFGaussianInf, also implementing serialization.
+		typedef CNetworkOfPoses<mrpt::poses::CPose3DPDFGaussianInf,mrpt::utils::map_traits_stdmap> CNetworkOfPoses3DInf;  //!< The specialization of CNetworkOfPoses for poses of type CPose3DPDFGaussianInf, also implementing serialization.
 
 		/** @} */  // end of grouping
 
