@@ -225,7 +225,7 @@ CImageGrabber_dc1394::CImageGrabber_dc1394(
 	/*-----------------------------------------------------------------------
 	 *  setup capture
 	 *-----------------------------------------------------------------------*/
-	const int SIZE_RING_BUFFER = 15;
+    const int SIZE_RING_BUFFER = 15;
 
 	err=dc1394_video_set_iso_speed(THE_CAMERA, DC1394_ISO_SPEED_400);
 	if (err!=DC1394_SUCCESS)
@@ -305,12 +305,12 @@ CImageGrabber_dc1394::CImageGrabber_dc1394(
 	/*-----------------------------------------------------------------------
 	 *  have the camera start sending us data
 	 *-----------------------------------------------------------------------*/
-	err=dc1394_video_set_transmission(THE_CAMERA, DC1394_ON);
-	if (err!=DC1394_SUCCESS)
-	{
-		cerr << "[CImageGrabber_dc1394] ERROR: Could not start camera iso transmission." << endl;
-		return;
-	}
+    err=dc1394_video_set_transmission(THE_CAMERA, DC1394_ON);
+    if (err!=DC1394_SUCCESS)
+    {
+        cerr << "[CImageGrabber_dc1394] ERROR: Could not start camera iso transmission." << endl;
+        return;
+    }
 
 	// remember that we successfully initialized everything
 	m_bInitialized = true;
@@ -372,10 +372,19 @@ bool  CImageGrabber_dc1394::getObservation( mrpt::slam::CObservationImage &out_o
 
 #if MRPT_HAS_LIBDC1394_2
     dc1394video_frame_t *frame=NULL;
+    dc1394error_t err;
+
+    err=dc1394_video_set_transmission(THE_CAMERA, DC1394_ON);
+    if (err!=DC1394_SUCCESS)
+    {
+        cerr << "[CImageGrabber_dc1394] ERROR: Could not start camera iso transmission." << endl;
+        return false;
+    }
 
 	// get frame from ring buffer:
     MRPT_TODO("Thread will keep frozen in this line when using software trigger if no frame is available: Assure trigger before getObservation")
-    dc1394error_t err=dc1394_capture_dequeue(THE_CAMERA, DC1394_CAPTURE_POLICY_WAIT, &frame);
+    err = dc1394_capture_dequeue(THE_CAMERA, DC1394_CAPTURE_POLICY_WAIT, &frame);
+    //dc1394error_t err=dc1394_capture_dequeue(THE_CAMERA, DC1394_CAPTURE_POLICY_POLL, &frame);
 	if (err!=DC1394_SUCCESS)
 	{
 		cerr << "[CImageGrabber_dc1394] ERROR: Could not capture a frame" << endl;
@@ -436,9 +445,14 @@ bool  CImageGrabber_dc1394::getObservation( mrpt::slam::CObservationImage &out_o
 	}
 
 	// Now we can return the frame to the ring buffer:
-	dc1394_capture_enqueue(THE_CAMERA, frame);
+    err = dc1394_capture_enqueue(THE_CAMERA, frame);
+    if (err!=DC1394_SUCCESS)
+    {
+        cerr << "[CImageGrabber_dc1394] ERROR: Could not enqueue the ring buffer frame" << endl;
+        return false;
+    }
 
-	return true;
+    return true;
 #else
    THROW_EXCEPTION("The MRPT has been compiled with MRPT_HAS_LIBDC1394_2=0 !");
 #endif
