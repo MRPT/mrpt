@@ -21,6 +21,7 @@ namespace mrpt
 		bool COctoMapBase<OCTREE,OCTREE_NODE>::internal_build_PointCloud_for_observation(const mrpt::obs::CObservation *obs,const mrpt::poses::CPose3D *robotPose, octomap::point3d &sensorPt, octomap::Pointcloud &scan) const
 		{
 			using namespace mrpt::poses;
+			using namespace mrpt::obs;
 
 			scan.clear();
 

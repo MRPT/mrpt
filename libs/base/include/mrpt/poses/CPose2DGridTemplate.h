@@ -11,6 +11,7 @@
 
 #include <mrpt/utils/CSerializable.h>
 #include <mrpt/utils/round.h> // for round()
+#include <mrpt/utils/bits.h>  // for DEG2RAD()
 
 namespace mrpt
 {

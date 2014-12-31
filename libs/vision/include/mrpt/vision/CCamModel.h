@@ -234,12 +234,13 @@ namespace mrpt
 				//WARNING!: this shortcut to avoid repeated initialization makes the method somewhat
 				//faster, but makes it incapable of being used in more than one thread
 				//simultaneously!
+				using mrpt::utils::square;
 				static mrpt::math::CMatrixFixedNumeric<double,2,2> J1(firstInverseJacobian());
 				static mrpt::math::CMatrixFixedNumeric<double,4,2> J2(secondInverseJacobian());
 				static mrpt::math::CMatrixFixedNumeric<double,3,4> J3(thirdInverseJacobian());
 				static mrpt::math::CMatrixFixedNumeric<double,2,3> J4;	//This is not initialized in a special way, although declaring it
-				CArray<double,4> tmp1;
-				CArray<double,2> tmp2;	//This would be a CArray<double,3>, but to avoid copying, we let "R2" lie in tmp1.
+				mrpt::math::CArray<double,4> tmp1;
+				mrpt::math::CArray<double,2> tmp2;	//This would be a CArray<double,3>, but to avoid copying, we let "R2" lie in tmp1.
 				//Camera Parameters
 				double cx=cam.cx(),cy=cam.cy(),ifx=1/cam.fx(),ify=1/cam.fy();
 				double K1=cam.k1(),K2=cam.k2(),p1=cam.p1(),p2=cam.p2(),K3=cam.k3();

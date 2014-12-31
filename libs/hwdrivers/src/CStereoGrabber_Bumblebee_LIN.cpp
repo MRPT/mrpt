@@ -90,8 +90,8 @@ bool  CStereoGrabber_Bumblebee::getStereoObservation( mrpt::obs::CObservationSte
 	// Change resolution?
 	if (m_resolutionX>0 && m_resolutionX!=out_observation.imageLeft.getWidth())
 	{
-		out_observation.imageLeft.scaleImage(m_resolutionX,m_resolutionY, IMG_INTERP_NN);
-		out_observation.imageRight.scaleImage(m_resolutionX,m_resolutionY, IMG_INTERP_NN);
+		out_observation.imageLeft.scaleImage(m_resolutionX,m_resolutionY, mrpt::utils::IMG_INTERP_NN);
+		out_observation.imageRight.scaleImage(m_resolutionX,m_resolutionY, mrpt::utils::IMG_INTERP_NN);
 	}
 
 	// TODO: Fill the intrinsic matrix, etc...

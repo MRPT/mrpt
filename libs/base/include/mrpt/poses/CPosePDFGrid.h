@@ -11,6 +11,7 @@
 
 #include <mrpt/poses/CPosePDF.h>
 #include <mrpt/poses/CPose2DGridTemplate.h>
+#include <mrpt/utils/bits.h> // DEG2RAD()
 
 namespace mrpt
 {

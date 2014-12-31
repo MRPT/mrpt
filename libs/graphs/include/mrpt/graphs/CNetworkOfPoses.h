@@ -74,7 +74,7 @@ namespace mrpt
 		  */
 		template<
 			class CPOSE, // Type of edges
-			class MAPS_IMPLEMENTATION = map_traits_stdmap, // Use std::map<> vs. std::vector<>
+			class MAPS_IMPLEMENTATION = mrpt::utils::map_traits_stdmap, // Use std::map<> vs. std::vector<>
 			class NODE_ANNOTATIONS = mrpt::graphs::detail::node_annotations_empty,
 			class EDGE_ANNOTATIONS = mrpt::graphs::detail::edge_annotations_empty
 			>

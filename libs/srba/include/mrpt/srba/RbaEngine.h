@@ -637,7 +637,7 @@ namespace srba
 		/** Private aux structure for BFS searches. */
 		struct TBFSEntryEdges
 		{
-			TBFSEntryEdges() : dist( numeric_limits<topo_dist_t>::max() ), edge(NULL)
+			TBFSEntryEdges() : dist( std::numeric_limits<topo_dist_t>::max() ), edge(NULL)
 			{}
 
 			TKeyFrameID prev;

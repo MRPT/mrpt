@@ -24,6 +24,7 @@ void TRBA_Problem_state<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::TSpanning
 	const new_kf_observations_t        * obs
 	)
 {
+	using namespace std;
 	ASSERT_(max_depth>=1)
 
 	// Maintain a list of those nodes whose list of shortest spanning trees ("next_edge") has been modified, so we

@@ -152,8 +152,8 @@ CPosePDFPtr CGridMapAligner::AlignPDF_robustMatch(
 
 	// Extract features from grid-maps:
 	// ------------------------------------------------------
-	const size_t N1 = max(40,round( m1->getArea() * options.featsPerSquareMeter));
-	const size_t N2 = max(40,round( m2->getArea() * options.featsPerSquareMeter));
+	const size_t N1 = std::max(40,mrpt::utils::round( m1->getArea() * options.featsPerSquareMeter));
+	const size_t N2 = std::max(40,mrpt::utils::round( m2->getArea() * options.featsPerSquareMeter));
 
 	m_grid_feat_extr.extractFeatures(*m1,*lm1, N1, options.feature_descriptor, options.feature_detector_options );
 	m_grid_feat_extr.extractFeatures(*m2,*lm2, N2, options.feature_descriptor, options.feature_detector_options );

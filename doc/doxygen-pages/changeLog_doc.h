@@ -14,39 +14,44 @@
 
 <a name="1.3.0">
   <h2>Version 1.3.0: (Under development) </h2></a>
-	- Lib changes:
-		- Clean up of the bad practice of "using namespace" in public scopes of headers. May lead to user code failing for missing "using namespaces" which were previously masked.
-		- Namespace "slam" deprecated in libraries mrpt-obs and mrpt-maps (used for historical reasons):
-			- New namespaces mrpt::obs and mrpt::maps.
-			- #include files moved from old paths <mrpt/slam/...> => <mrpt/{obs,maps}/...>
-			- Backward compatible headers added in <mrpt/slam/...> until mrpt 2.0.0
-		- New library mrpt-nav (\a mrpt_nav_grp), subsumming the old mrpt-reactivenav (\a mrpt_reactivenav_grp).
-		- \a mrpt_reactivenav_grp is now a meta-library, depending on \a mrpt_nav_grp.
-		- These classes have been moved between libs for a more sensible organization:
-			- mrpt::slam::CDetectorDoorCrossing ==> mrpt::detectors::CDetectorDoorCrossing
-			- mrpt::slam::CPathPlanningMethod & CPathPlanningCircularRobot: \a mrpt_slam_grp ==> \a mrpt_nav_grp
-	- Build System / General changes:
-		- Many optimizations in function arguments (value vs ref). Forces ABI incompatibility with previous versions, hence the change to a new minor version number.
-		- Updated embedded version of Eigen to 3.2.2
-		- Kinect: Dropped support for the CL NUI API, which seems discontinued. Alternatives in use are libfreenect and OpenNI2.
-		- libfreenect is now detected in the system and used instead of compiling the embedded copy of it.
-		- Embedded copy of libfreenect has been updated to (23/oct/2014). It now supports "Kinect for Windows".
-		- More selective linking of .so files to avoid useless dependencies (Fixes #52).
-	- Changes in classes:
-		- [mrpt-base]
-			- New function mrpt::math::angDistance()
-		- [mrpt-hwdrivers]
-			- mrpt::hwdrivers::CIMUXSens_MT4: (by Joe Burmeister for Suave Aerial Software)
-				- Upgrade to latest XSens SDK 4.2.1. Requires libudev-dev in Linux
-				- Add GPS observations to CIMUXSens_MT4 for Xsens devices like GTi-G-700 which have GPS 
-		- [mrpt-obs]
-			- CObservation::getDescriptionAsText(): New virtual method to obstain a textual description of observations. Refactoring of messy code previously in the RawLogViewer app.
-		- [mrpt-vision]
-			- mrpt::vision::CFeatureExtraction: Removed (unused) optional ROI parameter in detectors.
-	- BUG FIXES:
-		- mrpt::poses::CRobot2DPoseEstimator could estimate wrong angular velocities for orientations near +-180deg.
-		- mrpt::system::CDirectoryExplorer::sortByName() didn't sort in descending order
-		- Fixed crashes from MATLAB .mex files: mrpt::system::registerFatalExceptionHandlers() has no longer effect, and will be removed in future releases. (Thanks to Jesús Briales García for all the testing!)
+	- <b>Most important changes:</b>
+		- Classes in libraries mrpt-obs (\ref mrpt_obs_grp) & mrpt-maps (\ref mrpt_maps_grp) now belong to new namespaces (mrpt::obs, mrpt::maps) instead of the old mrpt::slam (see comments below on support for backwards-compatibility).
+		- No more "using namespace"'s polute MRPT headers. Errors in user code missing "using namespace XXX" that might be masked will now reveal. This is a good thing.
+		- New library mrpt-nav (\ref mrpt_nav_grp), subsumming the old mrpt-reactivenav (\ref mrpt_reactivenav_grp).
+	- <b>Detailed list of changes:</b>
+		- Lib changes:
+			- Clean up of the bad practice of "using namespace" in public scopes of headers. May lead to user code failing for missing "using namespaces" which were previously masked.
+			- Namespace "slam" deprecated in libraries mrpt-obs and mrpt-maps (used for historical reasons):
+				- New namespaces mrpt::obs and mrpt::maps.
+				- #include files moved from old paths <mrpt/slam/...> => <mrpt/{obs,maps}/...>
+				- Backward compatible headers added in <mrpt/slam/...> until mrpt 2.0.0
+			- New library mrpt-nav (\ref mrpt_nav_grp), subsumming the old mrpt-reactivenav (\ref mrpt_reactivenav_grp).
+			- \ref mrpt_reactivenav_grp is now a meta-library, depending on \ref mrpt_nav_grp.
+			- These classes have been moved between libs for a more sensible organization:
+				- mrpt::slam::CDetectorDoorCrossing ==> mrpt::detectors::CDetectorDoorCrossing
+				- mrpt::slam::CPathPlanningMethod & CPathPlanningCircularRobot: \ref mrpt_slam_grp ==> \ref mrpt_nav_grp
+		- Build System / General changes:
+			- Many optimizations in function arguments (value vs ref). Forces ABI incompatibility with previous versions, hence the change to a new minor version number.
+			- Updated embedded version of Eigen to 3.2.2
+			- Kinect: Dropped support for the CL NUI API, which seems discontinued. Alternatives in use are libfreenect and OpenNI2.
+			- libfreenect is now detected in the system and used instead of compiling the embedded copy of it.
+			- Embedded copy of libfreenect has been updated to (23/oct/2014). It now supports "Kinect for Windows".
+			- More selective linking of .so files to avoid useless dependencies (Fixes #52).
+		- Changes in classes:
+			- [mrpt-base]
+				- New function mrpt::math::angDistance()
+			- [mrpt-hwdrivers]
+				- mrpt::hwdrivers::CIMUXSens_MT4: (by Joe Burmeister for Suave Aerial Software)
+					- Upgrade to latest XSens SDK 4.2.1. Requires libudev-dev in Linux
+					- Add GPS observations to CIMUXSens_MT4 for Xsens devices like GTi-G-700 which have GPS
+			- [mrpt-obs]
+				- CObservation::getDescriptionAsText(): New virtual method to obstain a textual description of observations. Refactoring of messy code previously in the RawLogViewer app.
+			- [mrpt-vision]
+				- mrpt::vision::CFeatureExtraction: Removed (unused) optional ROI parameter in detectors.
+		- BUG FIXES:
+			- mrpt::poses::CRobot2DPoseEstimator could estimate wrong angular velocities for orientations near +-180deg.
+			- mrpt::system::CDirectoryExplorer::sortByName() didn't sort in descending order
+			- Fixed crashes from MATLAB .mex files: mrpt::system::registerFatalExceptionHandlers() has no longer effect, and will be removed in future releases. (Thanks to Jesús Briales García for all the testing!)
 
 <hr>
 <a name="1.2.2">

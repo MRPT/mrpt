@@ -38,7 +38,7 @@ void TRBA_Problem_state<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::TSpanning
 	{
 		s += format(" %6u |",static_cast<unsigned int>(it1->first) );
 
-		for (map<TKeyFrameID,TSpanTreeEntry>::const_iterator it2=it1->second.begin();it2!=it1->second.end();++it2)
+		for (std::map<TKeyFrameID,TSpanTreeEntry>::const_iterator it2=it1->second.begin();it2!=it1->second.end();++it2)
 			s += format(" %5u:=>%5u [%u] |",static_cast<unsigned int>(it2->first), static_cast<unsigned int>(it2->second.next), static_cast<unsigned int>(it2->second.distance));
 
 		s +=
@@ -52,7 +52,7 @@ void TRBA_Problem_state<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::TSpanning
 	"--------+--------+--------------------------------------------------------\n";
 	for (typename all_edges_maps_t::const_iterator it1=sym.all_edges.begin();it1!=sym.all_edges.end();++it1)
 	{
-		for (typename map<TKeyFrameID, k2k_edge_vector_t >::const_iterator it2=it1->second.begin();it2!=it1->second.end();++it2)
+		for (typename std::map<TKeyFrameID, k2k_edge_vector_t >::const_iterator it2=it1->second.begin();it2!=it1->second.end();++it2)
 		{
 			s += format(" %6u | %6u |",static_cast<unsigned int>(it1->first),static_cast<unsigned int>(it2->first) );
 

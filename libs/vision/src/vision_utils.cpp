@@ -137,8 +137,8 @@ void  vision::openCV_cross_correlation(
 
 	// Find the max point:
 	cvMinMaxLoc(result,&mini,&max_val,&min_point,&max_point,NULL);
-	x_max = max_point.x+x_search_ini+(round(patch_w-1)>>1);
-	y_max = max_point.y+y_search_ini+(round(patch_h-1)>>1);
+	x_max = max_point.x+x_search_ini+(mrpt::utils::round(patch_w-1)>>1);
+	y_max = max_point.y+y_search_ini+(mrpt::utils::round(patch_h-1)>>1);
 
 	// Free memory:
 	cvReleaseImage( &result );

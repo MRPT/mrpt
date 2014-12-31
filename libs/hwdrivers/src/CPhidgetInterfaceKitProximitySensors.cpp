@@ -112,7 +112,7 @@ void  CPhidgetInterfaceKitProximitySensors::loadConfig_sensorSpecific(
 			float pitch = configSource.read_float(iniSection, sensorNPosePitch, 0.0);
 			float roll = configSource.read_float(iniSection, sensorNPoseRoll, 0.0);
 
-			m_sensorPoses[i-1] = CPose3D(x,y,z,yaw,pitch,roll);
+			m_sensorPoses[i-1] = mrpt::poses::CPose3D(x,y,z,yaw,pitch,roll);
 		}
 	}
 	if(display)

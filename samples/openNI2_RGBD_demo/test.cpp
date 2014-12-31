@@ -142,7 +142,7 @@ int main ( int argc, char** argv )
 	//========================================================================================
 	gui::CDisplayWindow3D window;
 	opengl::COpenGLScenePtr	scene;
-	mrpt::opengl::global_settings::OCTREE_RENDER_MAX_POINTS_PER_NODE = 1000000;
+	mrpt::global_settings::OCTREE_RENDER_MAX_POINTS_PER_NODE = 1000000;
 	window.setWindowTitle("RGB-D camera frame");
 	window.resize(800,600);
 	window.setPos(500,50);
@@ -204,7 +204,7 @@ int main ( int argc, char** argv )
 		}
 
 		scene = window.get3DSceneAndLock();
-		kinectp->loadFromPointsMap<slam::CColouredPointsMap> (&points); 
+		kinectp->loadFromPointsMap<mrpt::maps::CColouredPointsMap> (&points);
 		system::sleep(5);
 		window.unlockAccess3DScene();
 		window.repaint();

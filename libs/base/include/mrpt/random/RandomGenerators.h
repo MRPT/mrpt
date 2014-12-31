@@ -14,7 +14,7 @@
 
 namespace mrpt
 {
-	namespace math { template <class T> class mrpt::math::CMatrixTemplateNumeric; }  // Frwd. decl.
+	namespace math { template <class T> class CMatrixTemplateNumeric; }  // Frwd. decl.
 
 	/** A namespace of pseudo-random numbers genrators of diferent distributions. The central class in this namespace is mrpt::random::CRandomGenerator
 	 * \ingroup mrpt_base_grp

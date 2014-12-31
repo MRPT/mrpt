@@ -123,7 +123,7 @@ namespace opengl	{
 		  * Creation from a set of polygons.
 		  * \sa mrpt::math::TPolygon3D
 		  */
-		static CPolyhedronPtr Create(const std::vector<math::TPolygon3D> &polys);
+		static CPolyhedronPtr Create(const std::vector<mrpt::math::TPolygon3D> &polys);
 
 		/** Evaluates the bounding box of this object (including possible children) in the coordinate frame of the object parent. */
 		virtual void getBoundingBox(mrpt::math::TPoint3D &bb_min, mrpt::math::TPoint3D &bb_max) const;
@@ -707,7 +707,7 @@ namespace opengl	{
 	// Implemented after the definition of SmartPtrs in the _POST() macro above.
 	template<class T>
 	size_t CPolyhedron::getIntersection(const CPolyhedronPtr &p1,const CPolyhedronPtr &p2,T &container)	{
-		std::vector<TPolygon3D> polys1,polys2;
+		std::vector<mrpt::math::TPolygon3D> polys1,polys2;
 		p1->getSetOfPolygonsAbsolute(polys1);
 		p2->getSetOfPolygonsAbsolute(polys2);
 		return mrpt::math::intersect(polys1,polys2,container);

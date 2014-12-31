@@ -18,6 +18,7 @@ void RbaEngine<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::edge_creation_poli
 	const typename traits_t::new_kf_observations_t   & obs,
 	std::vector<TNewEdgeInfo> &new_k2k_edge_ids )
 {
+	using namespace std;
 	switch (parameters.srba.edge_creation_policy)
 	{
 	// -----------------------------------------------------------

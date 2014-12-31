@@ -184,10 +184,10 @@ namespace mrpt
 							edge_ui_weight = 1.;
 						else
 						{	// edge may be i->u or u->i:
-							edge_ui = graph.edges.find( make_pair(u,i) );
+							edge_ui = graph.edges.find( std::make_pair(u,i) );
 							if ( edge_ui==graph.edges.end() )
 							{
-								edge_ui = graph.edges.find( make_pair(i,u));
+								edge_ui = graph.edges.find( std::make_pair(i,u));
 								edge_ui_reverse = true;
 							}
 							ASSERT_(edge_ui!=graph.edges.end());
@@ -202,17 +202,17 @@ namespace mrpt
 							// If still not done above, detect the direction of the arc now:
 							if (!edge_ui_found)
 							{
-								edge_ui = graph.edges.find( make_pair(u,i) );
+								edge_ui = graph.edges.find( std::make_pair(u,i) );
 								if ( edge_ui==graph.edges.end() ) {
-									edge_ui = graph.edges.find( make_pair(i,u));
+									edge_ui = graph.edges.find( std::make_pair(i,u));
 									edge_ui_reverse = true;
 								}
 								ASSERT_(edge_ui!=graph.edges.end());
 							}
 
 							if ( !edge_ui_reverse )
-									m_prev_arc[i] = make_pair(u,i);	// *u -> *i
-							else	m_prev_arc[i] = make_pair(i,u);	// *i -> *u
+									m_prev_arc[i] = std::make_pair(u,i);	// *u -> *i
+							else	m_prev_arc[i] = std::make_pair(i,u);	// *i -> *u
 						}
 					}
 				} while ( visitedCount<nNodes );
@@ -293,7 +293,7 @@ namespace mrpt
 					std::list<TreeEdgeInfo> &edges = out_tree.edges_to_children[id==id_from ? id_to : id_from];
 					TreeEdgeInfo newEdge(id);
 					newEdge.reverse = (id==id_from); // true: root towards leafs.
-					typename graph_t::edges_map_t::const_iterator itEdgeData = m_cached_graph.edges.find(make_pair(id_from,id_to));
+					typename graph_t::edges_map_t::const_iterator itEdgeData = m_cached_graph.edges.find(std::make_pair(id_from,id_to));
 					ASSERTMSG_(itEdgeData!=m_cached_graph.edges.end(),format("Edge %u->%u is in Dijkstra paths but not in original graph!",static_cast<unsigned int>(id_from),static_cast<unsigned int>(id_to) ))
 					newEdge.data = & itEdgeData->second;
 					edges.push_back( newEdge );

@@ -322,7 +322,7 @@ namespace opengl	{
 			FTrace1D(const T &s,const mrpt::poses::CPose3D &p,std::vector<double> &v,std::vector<char> &v2):initial(p),e(s),values(v),valid(v2)	{}
 			void operator()(double yaw)	{
 				double dist;
-				const mrpt::poses::CPose3D pNew=initial+CPose3D(0.0,0.0,0.0,yaw,0.0,0.0);
+				const mrpt::poses::CPose3D pNew=initial+mrpt::poses::CPose3D(0.0,0.0,0.0,yaw,0.0,0.0);
 				if (e->traceRay(pNew,dist))	{
 					values.push_back(dist);
 					valid.push_back(1);
@@ -349,7 +349,7 @@ namespace opengl	{
 				std::vector<double> yValues;
 				yaws.values(yValues);
 				mrpt::obs::CObservation2DRangeScan o=mrpt::obs::CObservation2DRangeScan();
-				const mrpt::poses::CPose3D pNew=initial+CPose3D(0,0,0,0,pitch,0);
+				const mrpt::poses::CPose3D pNew=initial+mrpt::poses::CPose3D(0,0,0,0,pitch,0);
 				std::vector<double> values;
 				std::vector<char> valid;
 				size_t nY=yValues.size();

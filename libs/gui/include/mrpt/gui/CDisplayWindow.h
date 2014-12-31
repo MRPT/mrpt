@@ -88,7 +88,7 @@ namespace mrpt
 			void  showTiledImageAndPoints( const mrpt::utils::CImage &img, const FEATURELIST &list, const mrpt::utils::TColor &color = mrpt::utils::TColor::red )
 			{
 				MRPT_START
-
+				using mrpt::utils::TColor;
 				mrpt::utils::CImage imgColor(1,1,3);
 				img.colorImage( imgColor ); // Create a colorimage
 

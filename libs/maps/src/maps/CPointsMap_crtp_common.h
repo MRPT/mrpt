@@ -105,7 +105,7 @@ namespace detail
 			//		Pass range scan to a set of 2D points:
 			// ------------------------------------------------------
 			// Use a LUT to convert ranges -> (x,y) ; Automatically computed upon first usage.
-			const CSinCosLookUpTableFor2DScans::TSinCosValues & sincos_vals = obj.m_scans_sincos_cache.getSinCosForScan(rangeScan);
+			const mrpt::obs::CSinCosLookUpTableFor2DScans::TSinCosValues & sincos_vals = obj.m_scans_sincos_cache.getSinCosForScan(rangeScan);
 
 			// Build list of points in global coordinates:
 			Eigen::Array<float,Eigen::Dynamic,1>  scan_gx(sizeRangeScan+3), scan_gy(sizeRangeScan+3),scan_gz(sizeRangeScan+3);  // The +3 is to assure there's room for "nPackets*4"
@@ -301,6 +301,7 @@ namespace detail
 			const mrpt::obs::CObservation3DRangeScan		&rangeScan,
 			const mrpt::poses::CPose3D						*robotPose )
 		{
+			using namespace mrpt::poses;
 			obj.mark_as_modified();
 
 			// If robot pose is supplied, compute sensor pose relative to it.

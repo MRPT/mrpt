@@ -83,6 +83,9 @@ namespace mrpt
 		inline long double RAD2DEG(const long double x) { return x*180.0/M_PIl; }
 #	endif
 
+#define DEG2RAD DEG2RAD  // This is required to avoid other libs (like PCL) to #define their own versions of DEG2RAD
+#define RAD2DEG RAD2DEG  // This is required to avoid other libs (like PCL) to #define their own versions of RAD2DEG
+
 		/** Returns the sign of X as "1" or "-1" */
 		template <typename T>
 		inline int sign(T x) { return x<0 ? -1:1; }

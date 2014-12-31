@@ -341,7 +341,7 @@ namespace internal
 
 				DETAILED_PROFILING_LEAVE("opt.SparseChol")
 			}
-			catch (CExceptionNotDefPos &)
+			catch (mrpt::math::CExceptionNotDefPos &)
 			{
 				DETAILED_PROFILING_LEAVE("opt.SparseChol")
 				// not positive definite so increase lambda and try again
