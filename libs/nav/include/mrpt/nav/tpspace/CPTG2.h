@@ -41,7 +41,7 @@ namespace mrpt
 			/** Constructor: possible values in "params", those of CParameterizedTrajectoryGenerator plus:
 			 *   - cte_a0v, cte_a0w: Parameters of this PTG (both are angles in radians).
 			 */
-			CPTG2(const TParameters<double> &params );
+			CPTG2(const mrpt::utils::TParameters<double> &params );
 
 			/** Gets a short textual description of the PTG and its parameters.
 			*/

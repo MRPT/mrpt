@@ -29,8 +29,8 @@ namespace mrpt
 		 * \ingroup mrpt_slam_grp
 		 */
 		class SLAM_IMPEXP CMonteCarloLocalization3D :
-			public CPose3DPDFParticles,
-			public PF_implementation<CPose3D,CMonteCarloLocalization3D>
+			public mrpt::poses::CPose3DPDFParticles,
+			public PF_implementation<mrpt::poses::CPose3D,CMonteCarloLocalization3D>
 		{
 			//template <class PARTICLE_TYPE, class MYSELF> friend class PF_implementation;
 
@@ -87,26 +87,25 @@ namespace mrpt
 				const mrpt::obs::CSensoryFrame		* observation,
 				const bayes::CParticleFilter::TParticleFilterOptions &PF_options );
 
-		//protected:
 			/** \name Virtual methods that the PF_implementations assume exist.
 			    @{ */
 			/** Return a pointer to the last robot pose in the i'th particle (or NULL if it's a path and it's empty). */
-			const TPose3D * getLastPose(const size_t i) const;
+			const mrpt::math::TPose3D * getLastPose(const size_t i) const;
 
 			void PF_SLAM_implementation_custom_update_particle_with_new_pose(
 				CParticleDataContent *particleData,
-				const TPose3D &newPose) const;
+				const mrpt::math::TPose3D &newPose) const;
 
 			// We'll redefine this one:
 			void PF_SLAM_implementation_replaceByNewParticleSet(
 				CParticleList	&old_particles,
-				const std::vector<TPose3D>	&newParticles,
-				const vector<double>		&newParticlesWeight,
+				const std::vector<mrpt::math::TPose3D>	&newParticles,
+				const std::vector<double>		&newParticlesWeight,
 				const std::vector<size_t>	&newParticlesDerivedFromIdx )  const;
 
 			/** Evaluate the observation likelihood for one particle at a given location */
 			double PF_SLAM_computeObservationLikelihoodForParticle(
-				const CParticleFilter::TParticleFilterOptions	&PF_options,
+				const mrpt::bayes::CParticleFilter::TParticleFilterOptions	&PF_options,
 				const size_t			particleIndexForMap,
 				const mrpt::obs::CSensoryFrame		&observation,
 				const mrpt::poses::CPose3D			&x ) const;

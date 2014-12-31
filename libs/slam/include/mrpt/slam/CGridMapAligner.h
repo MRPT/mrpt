@@ -40,19 +40,19 @@ namespace mrpt
 		private:
 			/** Private member, implements one the algorithms.
 			  */
-			CPosePDFPtr AlignPDF_correlation(
+			mrpt::poses::CPosePDFPtr AlignPDF_correlation(
 					const mrpt::maps::CMetricMap		*m1,
 					const mrpt::maps::CMetricMap		*m2,
-					const CPosePDFGaussian	&initialEstimationPDF,
+					const mrpt::poses::CPosePDFGaussian	&initialEstimationPDF,
 					float					*runningTime = NULL,
 					void					*info = NULL );
 
 			/** Private member, implements both, the "robustMatch" and the newer "modifiedRANSAC" algorithms.
 			  */
-			CPosePDFPtr AlignPDF_robustMatch(
+			mrpt::poses::CPosePDFPtr AlignPDF_robustMatch(
 					const mrpt::maps::CMetricMap		*m1,
 					const mrpt::maps::CMetricMap		*m2,
-					const CPosePDFGaussian	&initialEstimationPDF,
+					const mrpt::poses::CPosePDFGaussian	&initialEstimationPDF,
 					float					*runningTime = NULL,
 					void					*info = NULL );
 
@@ -149,7 +149,7 @@ namespace mrpt
 
 				/** The "brute" estimation from using all the available correspondences, provided just for comparison purposes (it is not the robust estimation, available as the result of the Align method).
 				  */
-				CPose2D			noRobustEstimation;
+				mrpt::poses::CPose2D			noRobustEstimation;
 
 				/** The different SOG densities at different steps of the algorithm:
 				  *   - sog1 : Directly from the matching of features
@@ -159,7 +159,7 @@ namespace mrpt
 				  *   - The final sog is the merge of sog3.
 				  *
 				  */
-				CPosePDFSOGPtr	sog1,sog2,sog3;
+				mrpt::poses::CPosePDFSOGPtr	sog1,sog2,sog3;
 
 				/** The landmarks of each map (the indices of these landmarks correspond to those in "correspondences")  */
 				mrpt::maps::CLandmarksMapPtr	landmarks_map1, landmarks_map2;
@@ -203,20 +203,20 @@ namespace mrpt
 			 * \return A smart pointer to the output estimated pose PDF.
 			 * \sa CPointsMapAlignmentAlgorithm, options
 			 */
-			CPosePDFPtr AlignPDF(
+			mrpt::poses::CPosePDFPtr AlignPDF(
 					const mrpt::maps::CMetricMap		*m1,
 					const mrpt::maps::CMetricMap		*m2,
-					const CPosePDFGaussian	&initialEstimationPDF,
+					const mrpt::poses::CPosePDFGaussian	&initialEstimationPDF,
 					float					*runningTime = NULL,
 
 					void					*info = NULL );
 
 
 			/** Not applicable in this class, will launch an exception. */
-			CPose3DPDFPtr Align3DPDF(
+			mrpt::poses::CPose3DPDFPtr Align3DPDF(
 					const mrpt::maps::CMetricMap		*m1,
 					const mrpt::maps::CMetricMap		*m2,
-					const CPose3DPDFGaussian	&initialEstimationPDF,
+					const mrpt::poses::CPose3DPDFGaussian	&initialEstimationPDF,
 					float					*runningTime = NULL,
 					void					*info = NULL );
 			

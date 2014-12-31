@@ -21,6 +21,7 @@ namespace mrpt
 		template <size_t VEH_SIZE, size_t OBS_SIZE, size_t FEAT_SIZE, size_t ACT_SIZE, typename KFTYPE>
 		void CKalmanFilterCapable<VEH_SIZE,OBS_SIZE,FEAT_SIZE,ACT_SIZE,KFTYPE>::runOneKalmanIteration()
 		{
+			using namespace std;
 			MRPT_START
 
 				m_timLogger.enable(KF_options.enable_profiler || KF_options.verbose);

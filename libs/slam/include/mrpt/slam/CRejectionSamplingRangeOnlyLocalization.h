@@ -29,7 +29,7 @@ namespace mrpt
 		 *    It is assumed a planar scenario, where the robot is at a fixed height (default=0).
 		 * \sa bayes::CRejectionSamplingCapable  \ingroup mrpt_slam_grp 
 		 */
-		class SLAM_IMPEXP CRejectionSamplingRangeOnlyLocalization : public bayes::CRejectionSamplingCapable<poses::CPose2D>
+		class SLAM_IMPEXP CRejectionSamplingRangeOnlyLocalization : public bayes::CRejectionSamplingCapable<mrpt::poses::CPose2D>
 		{
 
 		public:
@@ -54,14 +54,14 @@ namespace mrpt
 				const mrpt::maps::CLandmarksMap				&beaconsMap,
 				const mrpt::obs::CObservationBeaconRanges	&observation,
 				float							sigmaRanges,
-				const CPose2D					&oldPose,
+				const mrpt::poses::CPose2D		&oldPose,
 				float							robot_z = 0,
 				bool							autoCheckAngleRanges = true);
 
 		protected:
 			/** Generates one sample, drawing from some proposal distribution.
 			  */
-			void RS_drawFromProposal( CPose2D &outSample );
+			void RS_drawFromProposal( mrpt::poses::CPose2D &outSample );
 
 			/** Returns the NORMALIZED observation likelihood (linear, not exponential!!!) at a given point of the state space (values in the range [0,1]).
 			  */
@@ -72,7 +72,7 @@ namespace mrpt
 			float		m_z_robot;
 
 			float		m_sigmaRanges;
-			CPose2D		m_oldPose;
+			mrpt::poses::CPose2D		m_oldPose;
 
 			/** The index in "m_dataPerBeacon" used to draw samples (the rest will be used to evaluate the likelihood)
 			  */

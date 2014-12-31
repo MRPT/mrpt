@@ -202,7 +202,7 @@ namespace maps
 		/** Insert an observation to the map, at each particle's pose and to each particle's metric map.
 		  * \param sf The SF to be inserted
 		  */
-		void  insertObservation(CSensoryFrame	&sf);
+		void  insertObservation(mrpt::obs::CSensoryFrame	&sf);
 
 		/** Return the path (in absolute coordinate poses) for the i'th particle.
 		  * \exception On index out of bounds
@@ -253,7 +253,7 @@ namespace maps
 
 			bool PF_SLAM_implementation_doWeHaveValidObservations(
 				const CParticleList	&particles,
-				const CSensoryFrame *sf) const;
+				const mrpt::obs::CSensoryFrame *sf) const;
 
 			bool PF_SLAM_implementation_skipRobotMovement() const;
 

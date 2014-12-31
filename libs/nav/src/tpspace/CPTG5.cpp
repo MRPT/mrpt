@@ -15,11 +15,12 @@ using namespace mrpt;
 using namespace mrpt::nav;
 using namespace std;
 using namespace mrpt::system;
+using namespace mrpt::utils;
 
 /*---------------------------------------------------------------
 						Constructor
   ---------------------------------------------------------------*/
-CPTG5::CPTG5(const TParameters<double> &params ) : CParameterizedTrajectoryGenerator (params)
+CPTG5::CPTG5(const mrpt::utils::TParameters<double> &params ) : CParameterizedTrajectoryGenerator (params)
 {
 	this->K = params["K"];
 	// The constant curvature turning radius used in this PTG:

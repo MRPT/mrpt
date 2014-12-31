@@ -14,11 +14,12 @@
 using namespace mrpt;
 using namespace mrpt::nav;
 using namespace mrpt::system;
+using namespace mrpt::utils;
 
 /*---------------------------------------------------------------
 						Constructor
   ---------------------------------------------------------------*/
-CPTG6::CPTG6(const TParameters<double> &params ) : CParameterizedTrajectoryGenerator(params)
+CPTG6::CPTG6(const mrpt::utils::TParameters<double> &params ) : CParameterizedTrajectoryGenerator(params)
 {
 }
 

@@ -130,7 +130,7 @@ namespace mrpt
 		void PF_implementation<PARTICLE_TYPE,MYSELF>::PF_SLAM_implementation_pfAuxiliaryPFOptimal(
 			const mrpt::obs::CActionCollection	* actions,
 			const mrpt::obs::CSensoryFrame		* sf,
-			const CParticleFilter::TParticleFilterOptions &PF_options,
+			const mrpt::bayes::CParticleFilter::TParticleFilterOptions &PF_options,
 			const TKLDParams &KLD_options)
 		{
 			// Standard and Optimal AuxiliaryPF actually have a shared implementation body:
@@ -148,7 +148,7 @@ namespace mrpt
 		void PF_implementation<PARTICLE_TYPE,MYSELF>::PF_SLAM_implementation_pfStandardProposal(
 			const mrpt::obs::CActionCollection	* actions,
 			const mrpt::obs::CSensoryFrame		* sf,
-			const CParticleFilter::TParticleFilterOptions &PF_options,
+			const mrpt::bayes::CParticleFilter::TParticleFilterOptions &PF_options,
 			const TKLDParams &KLD_options)
 		{
 			MRPT_START
@@ -315,7 +315,7 @@ namespace mrpt
 		void PF_implementation<PARTICLE_TYPE,MYSELF>::PF_SLAM_implementation_pfAuxiliaryPFStandard(
 			const mrpt::obs::CActionCollection	* actions,
 			const mrpt::obs::CSensoryFrame		* sf,
-			const CParticleFilter::TParticleFilterOptions &PF_options,
+			const mrpt::bayes::CParticleFilter::TParticleFilterOptions &PF_options,
 			const TKLDParams &KLD_options)
 		{
 			// Standard and Optimal AuxiliaryPF actually have a shared implementation body:
@@ -328,8 +328,8 @@ namespace mrpt
 		template <class PARTICLE_TYPE,class MYSELF>
 		template <class BINTYPE>
 		double  PF_implementation<PARTICLE_TYPE,MYSELF>::PF_SLAM_particlesEvaluator_AuxPFOptimal(
-			const CParticleFilter::TParticleFilterOptions &PF_options,
-			const CParticleFilterCapable	*obj,
+			const mrpt::bayes::CParticleFilter::TParticleFilterOptions &PF_options,
+			const mrpt::bayes::CParticleFilterCapable	*obj,
 			size_t					index,
 			const void				*action,
 			const void				*observation )
@@ -402,8 +402,8 @@ namespace mrpt
 		template <class PARTICLE_TYPE,class MYSELF>
 		template <class BINTYPE>
 		double  PF_implementation<PARTICLE_TYPE,MYSELF>::PF_SLAM_particlesEvaluator_AuxPFStandard(
-			const CParticleFilter::TParticleFilterOptions &PF_options,
-			const CParticleFilterCapable	*obj,
+			const mrpt::bayes::CParticleFilter::TParticleFilterOptions &PF_options,
+			const mrpt::bayes::CParticleFilterCapable	*obj,
 			size_t					index,
 			const void				*action,
 			const void				*observation )
@@ -495,7 +495,7 @@ namespace mrpt
 		void PF_implementation<PARTICLE_TYPE,MYSELF>::PF_SLAM_implementation_pfAuxiliaryPFStandardAndOptimal(
 			const mrpt::obs::CActionCollection	* actions,
 			const mrpt::obs::CSensoryFrame		* sf,
-			const CParticleFilter::TParticleFilterOptions &PF_options,
+			const mrpt::bayes::CParticleFilter::TParticleFilterOptions &PF_options,
 			const TKLDParams &KLD_options,
 			const bool USE_OPTIMAL_SAMPLING  )
 		{
@@ -726,7 +726,7 @@ namespace mrpt
 							const size_t idxBinSpacePath = *permutationPathsAuxVector.rbegin();
 							permutationPathsAuxVector.resize(permutationPathsAuxVector.size()-1);
 
-							const size_t idx = randomGenerator.drawUniform32bit() % stateSpaceBinsLastTimestepParticles[idxBinSpacePath].size();
+							const size_t idx = mrpt::random::randomGenerator.drawUniform32bit() % stateSpaceBinsLastTimestepParticles[idxBinSpacePath].size();
 							k = stateSpaceBinsLastTimestepParticles[idxBinSpacePath][idx];
 							ASSERT_(k<me->m_particles.size());
 
@@ -744,7 +744,7 @@ namespace mrpt
 							// Select a index from "oldPartIdxsStillNotPropragated" and remove it from the list:
 							if (oldPartIdxsStillNotPropragated.size())
 							{
-								const size_t idx = randomGenerator.drawUniform32bit() % oldPartIdxsStillNotPropragated.size();
+								const size_t idx = mrpt::random::randomGenerator.drawUniform32bit() % oldPartIdxsStillNotPropragated.size();
 								vector_size_t::iterator it = oldPartIdxsStillNotPropragated.begin() + idx; //advance(it,idx);
 								k = *it;
 								oldPartIdxsStillNotPropragated.erase(it);
@@ -752,7 +752,7 @@ namespace mrpt
 							else
 							{
 								// N>N_old -> Uniformly draw index:
-								k = randomGenerator.drawUniform32bit() % me->m_particles.size();
+								k = mrpt::random::randomGenerator.drawUniform32bit() % me->m_particles.size();
 							}
 						}
 					}
@@ -851,7 +851,7 @@ namespace mrpt
 						-maxMeanLik) < -PF_options.max_loglikelihood_dyn_range )
 			{
 				// Select another 'k' uniformly:
-				k = randomGenerator.drawUniform32bit() % me->m_particles.size();
+				k = mrpt::random::randomGenerator.drawUniform32bit() % me->m_particles.size();
 				if (PF_options.verbose) cout << "[PF_implementation] Warning: Discarding very unlikely particle" << endl;
 			}
 
@@ -919,7 +919,7 @@ namespace mrpt
 							m_pfAuxiliaryPFOptimal_maxLikelihood[k] = poseLogLik; //  :'-( !!!
 							//acceptanceProb = 0;		// Keep searching or keep this one?
 						}
-					} while ( ++timeout<maxTries && acceptanceProb < randomGenerator.drawUniform(0.0,0.999) );
+					} while ( ++timeout<maxTries && acceptanceProb < mrpt::random::randomGenerator.drawUniform(0.0,0.999) );
 
 					if (timeout>=maxTries)
 					{

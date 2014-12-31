@@ -24,7 +24,7 @@ namespace mrpt
 	 public:
 			/** Constructor (this PTG has no parameters)
 			 */
-			CPTG7(const TParameters<double> &params );
+			CPTG7(const mrpt::utils::TParameters<double> &params );
 
 			/** Gets a short textual description of the PTG and its parameters.
 			*/

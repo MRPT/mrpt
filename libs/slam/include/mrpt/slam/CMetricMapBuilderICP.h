@@ -72,12 +72,12 @@ namespace slam
 		  */
 		void  initialize(
 			const mrpt::maps::CSimpleMap &initialMap  = mrpt::maps::CSimpleMap(),
-			CPosePDF					*x0 = NULL
+			mrpt::poses::CPosePDF *x0 = NULL
 			);
 
 		/** Returns a copy of the current best pose estimation as a pose PDF.
 		  */
-		CPose3DPDFPtr  getCurrentPoseEstimation() const;
+		mrpt::poses::CPose3DPDFPtr  getCurrentPoseEstimation() const;
 
 		 /** Sets the "current map file", thus that map will be loaded if it exists or a new one will be created if it does not, and the updated map will be save to that file when destroying the object.
 		   */

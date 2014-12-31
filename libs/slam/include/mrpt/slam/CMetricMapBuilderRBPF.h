@@ -64,7 +64,7 @@ namespace slam
 		mrpt::poses::CPose3D			odoIncrementSinceLastMapUpdate;		//!< Traveled distance since last map update
 
 		/** A buffer: memory is actually hold within "mapPDF" */
-		non_copiable_ptr<mrpt::maps::CMultiMetricMap>  currentMetricMapEstimation;
+		mrpt::utils::non_copiable_ptr<mrpt::maps::CMultiMetricMap>  currentMetricMapEstimation;
 
 	public:
 
@@ -117,7 +117,7 @@ namespace slam
 
 		/** Returns the current most-likely path estimation (the path associated to the most likely particle).
 		  */
-		void  getCurrentMostLikelyPath( std::deque<TPose3D> &outPath ) const;
+		void  getCurrentMostLikelyPath( std::deque<mrpt::math::TPose3D> &outPath ) const;
 
 		/** Appends a new action and observations to update this map: See the description of the class at the top of this page to see a more complete description.
 		 *  \param action The incremental 2D pose change in the robot pose. This value is deterministic.

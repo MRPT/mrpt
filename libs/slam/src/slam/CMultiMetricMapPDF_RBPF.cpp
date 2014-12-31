@@ -29,8 +29,10 @@
 
 
 using namespace mrpt;
+using namespace mrpt::bayes;
 using namespace mrpt::math;
 using namespace mrpt::slam;
+using namespace mrpt::obs;
 using namespace mrpt::maps;
 using namespace mrpt::poses;
 using namespace mrpt::random;

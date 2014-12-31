@@ -23,10 +23,12 @@
 #include <mrpt/opengl/CSimpleLine.h>
 
 using namespace mrpt::slam;
+using namespace mrpt::obs;
 using namespace mrpt::maps;
 using namespace mrpt::graphs;
 using namespace mrpt::poses;
 using namespace mrpt::utils;
+using namespace mrpt;
 using namespace std;
 
 IMPLEMENTS_SERIALIZABLE(CIncrementalMapPartitioner, CSerializable,mrpt::slam)

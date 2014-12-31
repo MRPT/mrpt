@@ -158,7 +158,7 @@ namespace mrpt
 
 		bool    m_enableConsoleOutput;  //!< Enables / disables the console debug output.
 		bool    m_init_done;            //!< Whether \a loadConfigFile() has been called or not.
-		CTicTac	timerForExecutionPeriod;
+		mrpt::utils::CTicTac	timerForExecutionPeriod;
 
 		// PTG params loaded from INI file:
 		std::string robotName;       //!< Robot name
