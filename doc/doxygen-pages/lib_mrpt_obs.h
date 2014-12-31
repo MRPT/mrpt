@@ -29,18 +29,18 @@ of the class mrpt::obs::CRawlog. See also: http://www.mrpt.org/Rawlog_Format </l
 
 <li><b>Actions:</b> For convenience in many Bayesian filtering algorithms, robot actions 
 (like 2D displacement characterized by an odometry increment) can be represented by means
-of "actions". See mrpt::slam::CAction.</li>
+of "actions". See mrpt::obs::CAction.</li>
 
 <li><b>"Simple maps":</b> In MRPT, a "simple map" is a set of pairs: "position", "sensory frames" (read above).
 The advantage of maintaining such a "simple map" instead a metric map is that the metric maps 
 can be rebuilt when needed with different parameters from the raw observations, which are never lost. </li>
 
 <li><b>CARMEN logs tools:</b> Utilities to read from CARMEN log files and load the observations there
-as MRPT observations. See mrpt::slam::carmen_log_parse_line and the applications: carmen2rawlog, carmen2simplemap. </li>
+as MRPT observations. See mrpt::obs::carmen_log_parse_line and the applications: carmen2rawlog, carmen2simplemap. </li>
 
 </ul>
 
-
+See the list of classes in mrpt::obs
 
 
 */

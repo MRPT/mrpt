@@ -36,10 +36,7 @@ Please, note that there is another very important map class
 (mrpt::maps::CMultiMetricMap) which is not in mrpt-maps, but in the library mrpt-slam 
 (the reason is that there is not another reasonable way to factor MRPT into small libraries).
 
-
-See the list of classes in mrpt::slam (not all those classes are in mrpt-maps).
-
-
+See the list of classes in mrpt::maps
 
 
 */
