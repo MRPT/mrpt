@@ -36,6 +36,7 @@ using namespace mrpt::math;
 using namespace mrpt::opengl;
 using namespace mrpt::system;
 using namespace mrpt::maps;
+using namespace mrpt::obs;
 
 
 //------------------------------------------------------------------------

@@ -20,6 +20,7 @@
 
 using namespace mrpt::detectors;
 using namespace mrpt::obs;
+using namespace mrpt::utils;
 using namespace std;
 
 #if MRPT_HAS_OPENCV && MRPT_OPENCV_VERSION_NUM>=0x200

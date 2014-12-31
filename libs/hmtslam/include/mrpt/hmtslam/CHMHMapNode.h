@@ -72,7 +72,7 @@ namespace mrpt
 
 			/** The hierarchical graph in which this object is into.
 			  */
-			safe_ptr<CHierarchicalMHMap>	m_parent;
+			mrpt::utils::safe_ptr<CHierarchicalMHMap>	m_parent;
 
 		private:
 			/** Private constructor (see ::Create class factory)
@@ -146,7 +146,7 @@ namespace mrpt
 		  * \sa CHMTSLAM
 		  */
 		typedef std::map<CHMHMapNode::TNodeID,CHMHMapNodePtr>  TNodeList;
-		typedef list_searchable<CHMHMapNode::TNodeID> TNodeIDList;
+		typedef mrpt::utils::list_searchable<CHMHMapNode::TNodeID> TNodeIDList;
 		typedef std::set<CHMHMapNode::TNodeID> TNodeIDSet;
 		typedef std::pair<CHMHMapNode::TNodeID,CHMHMapNode::TNodeID>  TPairNodeIDs;
 

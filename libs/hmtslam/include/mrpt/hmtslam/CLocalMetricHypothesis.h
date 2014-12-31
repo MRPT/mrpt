@@ -43,7 +43,7 @@ namespace mrpt
 			DEFINE_SERIALIZABLE( CLSLAMParticleData )
 
 		public:
-			CLSLAMParticleData( const TSetOfMetricMapInitializers *mapsInitializers = NULL ) :
+			CLSLAMParticleData( const mrpt::maps::TSetOfMetricMapInitializers *mapsInitializers = NULL ) :
 			  metricMaps( mapsInitializers ),
 			  robotPoses()
 			{
@@ -54,8 +54,8 @@ namespace mrpt
 				robotPoses.clear();
 			}
 
-			CMultiMetricMap            metricMaps;
-			std::map<TPoseID,CPose3D>  robotPoses;
+			mrpt::maps::CMultiMetricMap            metricMaps;
+			std::map<TPoseID,mrpt::poses::CPose3D>  robotPoses;
 		};
 		DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE( CLSLAMParticleData, mrpt::utils::CSerializable, HMTSLAM_IMPEXP )
 
@@ -85,12 +85,12 @@ namespace mrpt
 
 			synch::CCriticalSection				m_lock;					//!< Critical section for threads signaling they are working with the LMH.
 			THypothesisID						m_ID;					//!< The unique ID of the hypothesis (Used for accessing mrpt::slam::CHierarchicalMHMap).
-			safe_ptr<CHMTSLAM>					m_parent;				//!< For quick access to our parent object.
+			mrpt::utils::safe_ptr<CHMTSLAM>					m_parent;				//!< For quick access to our parent object.
 			TPoseID								m_currentRobotPose;		//!< The current robot pose (its global unique ID) for this hypothesis.
 			//TNodeIDList							m_neighbors;			//!< The list of all areas sourronding the current one (this includes the current area itself).
 			TNodeIDSet							m_neighbors;			//!< The list of all areas sourronding the current one (this includes the current area itself).
 			std::map<TPoseID,CHMHMapNode::TNodeID> m_nodeIDmemberships; //!< The hybrid map node membership for each robot pose.
-			std::map<TPoseID,CSensoryFrame> 	m_SFs; 					//!< The SF gathered at each robot pose.
+			std::map<TPoseID,mrpt::obs::CSensoryFrame> 	m_SFs; 					//!< The SF gathered at each robot pose.
 			TPoseIDList							m_posesPendingAddPartitioner; //!< The list of poseIDs waiting to be added to the graph partitioner, what happens in the LSLAM thread main loop.
 			TNodeIDList							m_areasPendingTBI;		//!< The list of area IDs waiting to be processed by the TBI (topological bayesian inference) engines to search for potential loop-closures. Set in CHMTSLAM::LSLAM_process_message_from_AA, read in
 
@@ -98,14 +98,14 @@ namespace mrpt
 			std::vector<std::map<TPoseID,double> >	m_log_w_metric_history;		//!< The historic log-weights of the metric observations inserted in this LMH, for each particle.
 			//std::map<TPoseID,double>	m_log_w_topol_history;		//!< The historic log-weights of the topological observations inserted in this LMH.
 
-			CActionRobotMovement2D				m_accumRobotMovement;	//!< Used in CLSLAM_RBPF_2DLASER
+			mrpt::obs::CActionRobotMovement2D				m_accumRobotMovement;	//!< Used in CLSLAM_RBPF_2DLASER
 			bool								m_accumRobotMovementIsValid;	//!< Used in CLSLAM_RBPF_2DLASER
 
 			/** Used by AA thread */
 			struct TRobotPosesPartitioning
 			{
 				synch::CCriticalSection		lock;  //!< CS to access the entire struct.
-				CIncrementalMapPartitioner			partitioner;
+				mrpt::slam::CIncrementalMapPartitioner			partitioner;
 				std::map<uint32_t,TPoseID> 		idx2pose;   //!< For the poses in "partitioner".
 
 				unsigned int pose2idx(const TPoseID &id) const;  //!< Uses idx2pose to perform inverse searches.
@@ -126,12 +126,12 @@ namespace mrpt
 			/** Returns the mean and covariance of each robot pose in this LMH, as computed from the set of particles.
 			  * \sa getMeans, getPoseParticles
 			  */
-			void getPathParticles( std::map< TPoseID, CPose3DPDFParticles > &outList ) const;
+			void getPathParticles( std::map< TPoseID, mrpt::poses::CPose3DPDFParticles > &outList ) const;
 
 			/** Returns the mean and covariance of each robot pose in this LMH, as computed from the set of particles.
 			  * \sa getMeans, getPathParticles
 			  */
-			void getPoseParticles( const TPoseID &poseID, CPose3DPDFParticles &outPDF ) const;
+			void getPoseParticles( const TPoseID &poseID, mrpt::poses::CPose3DPDFParticles &outPDF ) const;
 
 			/** Returns the pose PDF of some pose relative to some other pose ID (both must be part of the the LMH).
 			  * \sa getMeans, getPoseParticles
@@ -139,7 +139,7 @@ namespace mrpt
 			void getRelativePose(
 				const  TPoseID &reference,
 				const  TPoseID &pose,
-				CPose3DPDFParticles &outPDF ) const;
+				mrpt::poses::CPose3DPDFParticles &outPDF ) const;
 
 			/** Describes the LMH in text.
 			  */
@@ -163,7 +163,7 @@ namespace mrpt
 			const mrpt::poses::CPose3D * getCurrentPose(const size_t &particleIdx) const;
 
 			/** Returns the i'th particle hypothesis for the current robot pose.  */
-			CPose3D * getCurrentPose(const size_t &particleIdx);
+			mrpt::poses::CPose3D * getCurrentPose(const size_t &particleIdx);
 
 			/** Removes a given area from the LMH:
 			  *	- The corresponding node in the HMT map is updated with the robot poses & SFs in the LMH.
@@ -212,23 +212,20 @@ namespace mrpt
 
 			/** Auxiliary variable used in the "pfAuxiliaryPFOptimal" algorithm.
 			  */
-			mutable CVectorDouble				m_pfAuxiliaryPFOptimal_estimatedProb;
+			mutable mrpt::math::CVectorDouble				m_pfAuxiliaryPFOptimal_estimatedProb;
 
 			/** Auxiliary variable used in the "pfAuxiliaryPFOptimal" algorithm.
 			  */
 			mutable std::vector<double>				m_maxLikelihood;
 
-			/** Auxiliary variable used in the "pfAuxiliaryPFOptimal" algorithm.
-			  */
-			mutable std::vector<CPose2D,Eigen::aligned_allocator<CPose2D> >		m_movementDraws;
+			/** Auxiliary variable used in the "pfAuxiliaryPFOptimal" algorithm. */
+			mutable mrpt::poses::StdVector_CPose2D m_movementDraws;
 
-			/** Auxiliary variable used in the "pfAuxiliaryPFOptimal" algorithm.
-			  */
+			/** Auxiliary variable used in the "pfAuxiliaryPFOptimal" algorithm. */
 			mutable unsigned int				m_movementDrawsIdx;
 
-			/** Auxiliary variable used in the "pfAuxiliaryPFOptimal" algorithm.
-			  */
-			mutable StdVector_CPose2D		m_movementDrawMaximumLikelihood;
+			/** Auxiliary variable used in the "pfAuxiliaryPFOptimal" algorithm. */
+			mutable mrpt::poses::StdVector_CPose2D		m_movementDrawMaximumLikelihood;
 
 		}; // End of class def.
 		DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE( CLocalMetricHypothesis, mrpt::utils::CSerializable, HMTSLAM_IMPEXP )

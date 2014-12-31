@@ -28,6 +28,10 @@ using namespace mrpt::random;
 using namespace mrpt::hmtslam;
 using namespace std;
 using namespace mrpt::utils;
+using namespace mrpt::system;
+using namespace mrpt::poses;
+using namespace mrpt::opengl;
+using namespace mrpt::maps;
 
 
 /*---------------------------------------------------------------

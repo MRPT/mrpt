@@ -46,9 +46,8 @@ namespace mrpt
 			  */
 			CHMHMapNode::TNodeID	m_nodeFrom, m_nodeTo;
 
-			/** The hierarchical graph in which this object is into.
-			  */
-			safe_ptr<CHierarchicalMHMap>	m_parent;
+			/** The hierarchical graph in which this object is into. */
+			mrpt::utils::safe_ptr<CHierarchicalMHMap>	m_parent;
 
 
 			 /** Event handler to be called just before a node is being destroyed: it should be called only for nodes involved in the arc, altought other cases must be handled without effects

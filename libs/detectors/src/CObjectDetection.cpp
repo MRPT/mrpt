@@ -20,6 +20,7 @@
 #include <mrpt/otherlibs/do_opencv_includes.h> 
 
 using namespace mrpt::detectors;
+using namespace mrpt::utils;
 
 extern CStartUpClassesRegister  mrpt_detectors_class_reg;
 

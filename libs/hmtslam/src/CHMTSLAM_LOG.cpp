@@ -17,8 +17,11 @@
 
 using namespace mrpt::slam;
 using namespace mrpt::hmtslam;
+using namespace mrpt::opengl;
+using namespace mrpt::poses;
 using namespace mrpt::utils;
 using namespace mrpt::synch;
+using namespace mrpt::system;
 using namespace std;
 
 /*---------------------------------------------------------------

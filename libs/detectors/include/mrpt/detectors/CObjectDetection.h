@@ -35,7 +35,7 @@ namespace mrpt
 			/** Initialize the object with parameters loaded from the given config source. */
 			virtual void init(const mrpt::utils::CConfigFileBase &cfg )=0;
 
-			inline void detectObjects(const CObservationPtr obs, vector_detectable_object &detected) 
+			inline void detectObjects(const mrpt::obs::CObservationPtr obs, vector_detectable_object &detected) 
 			{ 
 				detectObjects_Impl(obs.pointer(), detected); 
 			};
@@ -45,7 +45,7 @@ namespace mrpt
 				detectObjects_Impl( obs, detected );
 			};			
 
-			void detectObjects(const CImage *img, vector_detectable_object &detected);
+			void detectObjects(const mrpt::utils::CImage *img, vector_detectable_object &detected);
 
 		protected:
 

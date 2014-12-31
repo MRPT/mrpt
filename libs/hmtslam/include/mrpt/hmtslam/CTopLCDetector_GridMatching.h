@@ -38,7 +38,7 @@ namespace mrpt
 			  * \param out_log_lik The output, a log-likelihood.
 			  * \return NULL, or a PDF of the estimated translation between the two areas (should be a SOG PDF): it's the pose of "refArea", relative to "currentArea".
 			  */
-			CPose3DPDFPtr computeTopologicalObservationModel(
+			mrpt::poses::CPose3DPDFPtr computeTopologicalObservationModel(
 				const THypothesisID		&hypID,
 				const CHMHMapNodePtr	&currentArea,
 				const CHMHMapNodePtr	&refArea,
@@ -50,7 +50,7 @@ namespace mrpt
 			  */
 			void OnNewPose(
 				const TPoseID 			&poseID,
-				const CSensoryFrame		*SF );
+				const mrpt::obs::CSensoryFrame		*SF );
 
 
 			/** Options for a TLC-detector of type gridmap-matching, used from CHMTSLAM 

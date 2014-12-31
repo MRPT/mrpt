@@ -159,11 +159,11 @@ namespace mrpt
 			 void  computeCoordinatesTransformationBetweenNodes(
 				const CHMHMapNode::TNodeID	&nodeFrom,
 				const CHMHMapNode::TNodeID	&nodeTo,
-				CPose3DPDFParticles			&posePDF,
+				mrpt::poses::CPose3DPDFParticles			&posePDF,
 				const THypothesisID				&hypothesisID,
 				unsigned int				particlesCount = 100,
 				float						additionalNoiseXYratio = 0.02,
-				float						additionalNoisePhiRad = DEG2RAD(0.1)
+				float						additionalNoisePhiRad = mrpt::utils::DEG2RAD(0.1)
 				) const;
 
 			/** Computes the probability [0,1] of two areas' gridmaps to "match" (loop closure), according to the grid maps and pose uncertainty from information in arcs (uses a Monte Carlo aproximation)
@@ -173,7 +173,7 @@ namespace mrpt
 				const CHMHMapNode::TNodeID	&nodeFrom,
 				const CHMHMapNode::TNodeID	&nodeTo,
 				float						&maxMatchProb,
-				CPose3DPDFSOG				&estimatedRelativePose,
+				mrpt::poses::CPose3DPDFSOG				&estimatedRelativePose,
 				const THypothesisID				&hypothesisID,
 				unsigned int				monteCarloSamplesPose = 300
 				);
@@ -220,7 +220,7 @@ namespace mrpt
 			   * \sa computeCoordinatesTransformationBetweenNodes
 			   */
 			void  computeGloballyConsistentNodeCoordinates(
-				std::map<CHMHMapNode::TNodeID,CPose3DPDFGaussian, std::less<CHMHMapNode::TNodeID>, Eigen::aligned_allocator<std::pair<const CHMHMapNode::TNodeID,CPose3DPDFGaussian> > >		&nodePoses,
+				std::map<CHMHMapNode::TNodeID,mrpt::poses::CPose3DPDFGaussian, std::less<CHMHMapNode::TNodeID>, Eigen::aligned_allocator<std::pair<const CHMHMapNode::TNodeID,mrpt::poses::CPose3DPDFGaussian> > >		&nodePoses,
 				const CHMHMapNode::TNodeID							&idReferenceNode,
 				const THypothesisID										&hypothesisID,
 				const unsigned int									&numberOfIterations = 2) const;
@@ -229,7 +229,7 @@ namespace mrpt
 			   *  See "computeGloballyConsistentNodeCoordinates" for the meaning of "numberOfIterationsForOptimalGlobalPoses"
 			   */
 			 void  getAs3DScene(
-				COpenGLScene				&outScene,
+				mrpt::opengl::COpenGLScene				&outScene,
 				const CHMHMapNode::TNodeID	&idReferenceNode,
 				const THypothesisID				&hypothesisID,
 				const unsigned int			&numberOfIterationsForOptimalGlobalPoses = 5,

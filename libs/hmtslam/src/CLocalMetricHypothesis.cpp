@@ -28,6 +28,9 @@ using namespace mrpt::slam;
 using namespace mrpt::hmtslam;
 using namespace mrpt::utils;
 using namespace mrpt::synch;
+using namespace mrpt::opengl;
+using namespace mrpt::obs;
+using namespace mrpt::maps;
 using namespace std;
 
 IMPLEMENTS_SERIALIZABLE(CLocalMetricHypothesis, CSerializable,mrpt::hmtslam)
