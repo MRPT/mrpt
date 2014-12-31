@@ -12,10 +12,13 @@ namespace mrpt
 {
 	namespace gui
 	{
+		class CDisplayWindow;
+		class CDisplayWindow3D;
+		class CDisplayWindowPlots;
+
 		class CWindowDialog;
 		class CWindowDialogPlots;
 		class C3DWindowDialog;
-		class CDisplayWindow3D;
 		class CMyGLCanvas_DisplayWindow3D;
 
 	} // End of namespace

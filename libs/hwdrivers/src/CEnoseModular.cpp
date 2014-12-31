@@ -16,6 +16,7 @@
 using namespace mrpt::utils;
 using namespace mrpt::math;
 using namespace mrpt::obs;
+using namespace mrpt::poses;
 using namespace mrpt::hwdrivers;
 using namespace std;
 

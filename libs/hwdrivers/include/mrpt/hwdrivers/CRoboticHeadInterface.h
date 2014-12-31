@@ -99,7 +99,7 @@ namespace mrpt
 				/** Debug only!!! This function return the last 500 acquired samples for each sound channel.
 				  *
 				  */
-				void Get3SoundBuffer mrpt::math::CMatrixTemplate<int>	&buf);
+				void Get3SoundBuffer(mrpt::math::CMatrixTemplate<int>	&buf);
 
 				/** Move the head in:
 				  * \code

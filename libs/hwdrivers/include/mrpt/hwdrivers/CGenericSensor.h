@@ -134,7 +134,7 @@ namespace mrpt
 			/** This method must be called by derived classes to enqueue a new observation in the list to be returned by getObservations.
 			  *  Passed objects must be created in dynamic memory and a smart pointer passed. Example of creation:
 			  \code
-				CObservationGPSPtr  o = CObservationGPSPtr( new CObservationGPS() );
+				mrpt::obs::CObservationGPSPtr  o = CObservationGPSPtr( new CObservationGPS() );
 				o-> .... // Set data
 				appendObservation(o);
 			  \endcode

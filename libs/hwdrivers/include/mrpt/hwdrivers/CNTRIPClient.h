@@ -41,23 +41,23 @@ namespace mrpt
 			 */
 			struct HWDRIVERS_IMPEXP TMountPoint
 			{
-				string	mountpoint_name;
-				string	id;  //!< City name
-				string	format; //!< RTCM 2.3, RTCM 3, CMR+, etc...
-				string	format_details;
+				std::string	mountpoint_name;
+				std::string	id;  //!< City name
+				std::string	format; //!< RTCM 2.3, RTCM 3, CMR+, etc...
+				std::string	format_details;
 				int		carrier; //!< 0: No carrier phase, 1: L1, 2: L1+L2
-				string	nav_system;	//!< GPS, ...
-				string	network;	//!< IGS, ...
-				string	country_code;	//!< ITA, ESP, DEU,...
+				std::string	nav_system;	//!< GPS, ...
+				std::string	network;	//!< IGS, ...
+				std::string	country_code;	//!< ITA, ESP, DEU,...
 				double	latitude, longitude;
 				bool	needs_nmea;
 				bool	net_ref_stations;
-				string	generator_model;
-				string	compr_encryp;		//!< "none"
+				std::string	generator_model;
+				std::string	compr_encryp;		//!< "none"
 				char	authentication;		//!< "N": none, "B": basic, "D": digest
 				bool	pay_service;
 				int		stream_bitspersec;
-				string  extra_info;
+				std::string  extra_info;
 
 				TMountPoint() :
 					carrier(0),
@@ -72,17 +72,17 @@ namespace mrpt
 
 			};
 
-			typedef list<TMountPoint> TListMountPoints; //!< Used in CNTRIPClient::retrieveListOfMountpoints
+			typedef std::list<TMountPoint> TListMountPoints; //!< Used in CNTRIPClient::retrieveListOfMountpoints
 
 			/**  The arguments for connecting to a NTRIP stream, used in CNTRIPClient::open
 			  */
 			struct HWDRIVERS_IMPEXP NTRIPArgs
 			{
-				string	server;
+				std::string	server;
 				int		port;
-				string	user;
-				string	password;
-				string	mountpoint;
+				std::string	user;
+				std::string	password;
+				std::string	mountpoint;
 
 				/** Default params */
 				NTRIPArgs() :
@@ -126,7 +126,7 @@ namespace mrpt
 			  *
 			  * \return false On any kind of error, with a description of the error in errmsg, if provided.
 			  */
-			bool open(const NTRIPArgs &params, string &out_errmsg);
+			bool open(const NTRIPArgs &params, std::string &out_errmsg);
 
 			/** Closes the connection.
 			  * \sa open
@@ -153,11 +153,11 @@ namespace mrpt
 			  */
 			static bool retrieveListOfMountpoints(
 				TListMountPoints	&out_list,
-				string				&out_errmsg,
-				const string		&server,
+				std::string				&out_errmsg,
+				const std::string		&server,
 				int					port = 2101,
-				const string		&auth_user = string(),
-				const string		&auth_pass = string()
+				const std::string		&auth_user = std::string(),
+				const std::string		&auth_pass = std::string()
 				);
 
 			/** Enqueues a string to be sent back to the NTRIP server (e.g. GGA frames) */

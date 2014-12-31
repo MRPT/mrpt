@@ -236,7 +236,7 @@ namespace detail {
 			if (takeIntoAccountSensorPoseOnRobot)
 				transf_to_apply = src_obs.sensorPose;
 			if (robotPoseInTheWorld)
-				transf_to_apply.composeFrom(*robotPoseInTheWorld, CPose3D(transf_to_apply));
+				transf_to_apply.composeFrom(*robotPoseInTheWorld, mrpt::poses::CPose3D(transf_to_apply));
 
 			const mrpt::math::CMatrixFixedNumeric<float,4,4> HM = transf_to_apply.getHomogeneousMatrixVal().cast<float>();
 			Eigen::Matrix<float,4,1>  pt, pt_transf;

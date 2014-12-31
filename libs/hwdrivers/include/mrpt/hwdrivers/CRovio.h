@@ -48,17 +48,17 @@ namespace mrpt
 
 			bool path_management(int act);
 
-			bool path_management(int act, const string &path_name);
+			bool path_management(int act, const std::string &path_name);
 
-			bool general_command(int act, string &response, string &errormsg);
+			bool general_command(int act, std::string &response, std::string &errormsg);
 
 
 		public:
 			struct TOptions
 			{
-				string IP;
-				string user;
-				string password;
+				std::string IP;
+				std::string user;
+				std::string password;
 
 				mrpt::utils::TCamera cameraParams;		// Mat. cam. preguntar paco
 
@@ -89,7 +89,7 @@ namespace mrpt
 			/** Establish conection with Rovio and log in its system: Important, fill out "options" members *BEFORE* calling this method.
 			  *  \exception std::runtime On errors
 			  */ 
-			void initialize(); //string &errormsg_out, string url_out="150.214.109.134", string user_out="admin", string password_out="investigacion");
+			void initialize(); //string &errormsg_out, std::string url_out="150.214.109.134", std::string user_out="admin", std::string password_out="investigacion");
 
 			/**	move send Rovio the command to move in the specified direcction
 			  * \param direction 'f'->forward, 'b'->backward, 'r'->right, 'l'->left
@@ -114,16 +114,16 @@ namespace mrpt
 			/*  Path commands */ 
 			bool pathRecord();
 			bool pathRecordAbort();
-			bool pathRecordSave(const string &path_name);//Repasar const
-			bool pathDelete(const string &path_name);
+			bool pathRecordSave(const std::string &path_name);//Repasar const
+			bool pathDelete(const std::string &path_name);
 			/** Get list of saved paths
 			  */ 
-			bool pathGetList(string &path_list);
+			bool pathGetList(std::string &path_list);
 			bool pathRunForward();
 			bool pathRunBackward();
 			bool pathRunStop();
 			bool pathRunPause();
-			bool pathRename(const string &old_name, const string &new_name);
+			bool pathRename(const std::string &old_name, const std::string &new_name);
 
 
 			/** goHome(bool dock) drives Rovio in front of charging station if the paremeter dock is set to false, otherwise it also docks
@@ -154,14 +154,14 @@ namespace mrpt
 			  * \return False on error
 			  * \sa retrieve_video, captureImageAsync
 			  */
-			bool getNextImageSync(CObservationImagePtr& lastImage );
+			bool getNextImageSync(mrpt::obs::CObservationImagePtr& lastImage );
 
 			/** Returns a snapshot from Rovio, if rectified is set true, the returned image is rectified with the parameters of intrinsic_matrix and distortion_matrix.
 			  * This function works asynchronously and does not need to have enabled the live video streaming.
 			  * \return False on error
 			  * \sa captureImageSync
 			  */
-			bool captureImageAsync( CImage&out_img, bool recttified);//string pict_name, 
+			bool captureImageAsync( mrpt::utils::CImage&out_img, bool recttified);//string pict_name, 
 
 			bool isVideoStreamming() const; //!< Return true if video is streaming correctly \sa retrieve_video
 

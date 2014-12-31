@@ -15,6 +15,7 @@
 using namespace mrpt::hwdrivers;
 using namespace mrpt::obs;
 using namespace mrpt::system;
+using namespace mrpt::utils;
 using namespace std;
 
 IMPLEMENTS_GENERIC_SENSOR(CBoardIR,mrpt::hwdrivers)

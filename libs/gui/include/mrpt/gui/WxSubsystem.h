@@ -16,6 +16,7 @@
 #include <mrpt/synch.h>
 #include <mrpt/math/lightweight_geom_data.h>
 #include <mrpt/utils/types_math.h>
+#include <mrpt/gui/gui_frwds.h>
 
 #include <mrpt/gui/link_pragmas.h>
 
@@ -185,7 +186,7 @@ namespace mrpt
 			  */
 			struct GUI_IMPEXP TRequestToWxMainThread
 			{
-        		TRequestToWxMainThread() :
+				TRequestToWxMainThread() :
 					source2D		( NULL ),
 					source3D		( NULL ),
 					sourcePlots		( NULL ),
@@ -195,16 +196,16 @@ namespace mrpt
 					x				(400),
 					y				(400),
 					boolVal			(false)
-        		{ }
+				{ }
 
 				/** Only one of source* can be non-NULL, indicating the class that generated the request. */
-				gui::CDisplayWindow    *source2D;
+				mrpt::gui::CDisplayWindow    *source2D;
 
 				/** Only one of source* can be non-NULL, indicating the class that generated the request. */
-				gui::CDisplayWindow3D  *source3D;
+				mrpt::gui::CDisplayWindow3D  *source3D;
 
 				/** Only one of source* can be non-NULL, indicating the class that generated the request. */
-				gui::CDisplayWindowPlots *sourcePlots;
+				mrpt::gui::CDisplayWindowPlots *sourcePlots;
 
 				/** Only one of source* can be non-NULL, indicating the class that generated the request. */
 				bool sourceCameraSelectDialog;
