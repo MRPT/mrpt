@@ -33,7 +33,8 @@
 #include <mrpt/system/filesystem.h>
 
 // Matlab MEX interface headers
-#include <mexplus.h>
+#include <mrpt/mexplus.h>
+//#include <mexplus.h>
 
 MRPT_TODO("Remove dependency on OpenCV in this app")
 #include <opencv2/core.hpp>
