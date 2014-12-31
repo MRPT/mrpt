@@ -6,7 +6,7 @@
 #ifndef _mrpt_mexplus_H
 #define _mrpt_mexplus_H
 
-#include <mrpt/mexplus/arguments.h>
-#include <mrpt/mexplus/dispatch.h>
+#include "mexplus/arguments.h"
+#include "mexplus/dispatch.h"
 
 #endif // _mrpt_mexplus_H

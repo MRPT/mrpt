@@ -30,7 +30,8 @@
 #define __MEXPLUS_ARGUMENTS_H__
 
 #include <map>
-#include <mexplus/mxarray.h>
+//#include <mexplus/mxarray.h>
+#include "mxarray.h"
 #include <sstream>
 #include <stdarg.h>
 

@@ -50,7 +50,8 @@
 #define __MEXPLUS_MXARRAY_H__
 
 #include <mex.h>
-#include <mexplus/mxtypes.h>
+//#include <mexplus/mxtypes.h>
+#include "mxtypes.h"
 #include <stdint.h>
 #include <string>
 #include <typeinfo>
