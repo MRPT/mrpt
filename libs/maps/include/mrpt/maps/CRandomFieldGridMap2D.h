@@ -290,13 +290,13 @@ namespace maps
 			double			&out_predict_response_variance );
 
 		/** Return the mean and covariance vector of the full Kalman filter estimate (works for all KF-based methods). */
-		void getMeanAndCov( CVectorDouble &out_means, mrpt::math::CMatrixDouble &out_cov) const;
+		void getMeanAndCov( mrpt::math::CVectorDouble &out_means, mrpt::math::CMatrixDouble &out_cov) const;
 
 		/** Return the mean and STD vectors of the full Kalman filter estimate (works for all KF-based methods). */
-		void getMeanAndSTD( CVectorDouble &out_means, CVectorDouble &out_STD) const;
+		void getMeanAndSTD( mrpt::math::CVectorDouble &out_means, mrpt::math::CVectorDouble &out_STD) const;
 
 		/** Load the mean and STD vectors of the full Kalman filter estimate (works for all KF-based methods). */
-		void setMeanAndSTD( CVectorDouble &out_means, CVectorDouble &out_STD);
+		void setMeanAndSTD( mrpt::math::CVectorDouble &out_means, mrpt::math::CVectorDouble &out_STD);
 
 	protected:
 		/** Common options to all random-field grid maps: pointer that is set to the derived-class instance of "insertOptions" upon construction of this class. */

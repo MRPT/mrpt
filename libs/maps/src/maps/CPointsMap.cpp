@@ -41,6 +41,7 @@
 
 using namespace mrpt::poses;
 using namespace mrpt::maps;
+using namespace mrpt::math;
 using namespace mrpt::obs;
 using namespace mrpt::system;
 using namespace std;

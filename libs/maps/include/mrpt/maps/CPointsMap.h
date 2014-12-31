@@ -61,10 +61,10 @@ namespace maps
 	protected:
 		/** Helper struct used for \a internal_loadFromRangeScan2D_prepareOneRange() */
 		struct MAPS_IMPEXP TLaserRange2DInsertContext {
-			TLaserRange2DInsertContext(const CObservation2DRangeScan  &_rangeScan) : HM(mrpt::math::UNINITIALIZED_MATRIX), rangeScan(_rangeScan)
+			TLaserRange2DInsertContext(const mrpt::obs::CObservation2DRangeScan  &_rangeScan) : HM(mrpt::math::UNINITIALIZED_MATRIX), rangeScan(_rangeScan)
 			{ }
 		 mrpt::math::CMatrixDouble44	HM;  //!< Homog matrix of the local sensor pose within the robot
-			const CObservation2DRangeScan  &rangeScan;
+			const mrpt::obs::CObservation2DRangeScan  &rangeScan;
 			std::vector<float>         fVars;  //!< Extra variables to be used as desired by the derived class.
 			std::vector<unsigned int>  uVars;
 			std::vector<uint8_t>       bVars;
@@ -72,10 +72,10 @@ namespace maps
 
 		/** Helper struct used for \a internal_loadFromRangeScan3D_prepareOneRange() */
 		struct MAPS_IMPEXP TLaserRange3DInsertContext {
-			TLaserRange3DInsertContext(const CObservation3DRangeScan  &_rangeScan) : HM(mrpt::math::UNINITIALIZED_MATRIX), rangeScan(_rangeScan)
+			TLaserRange3DInsertContext(const mrpt::obs::CObservation3DRangeScan  &_rangeScan) : HM(mrpt::math::UNINITIALIZED_MATRIX), rangeScan(_rangeScan)
 			{ }
 		 mrpt::math::CMatrixDouble44	HM;  //!< Homog matrix of the local sensor pose within the robot
-			const CObservation3DRangeScan  &rangeScan;
+			const mrpt::obs::CObservation3DRangeScan  &rangeScan;
 			float scan_x, scan_y,scan_z; //!< In \a internal_loadFromRangeScan3D_prepareOneRange, these are the local coordinates of the scan points being inserted right now.
 			std::vector<float>         fVars;  //!< Extra variables to be used as desired by the derived class.
 			std::vector<unsigned int>  uVars;
@@ -577,7 +577,7 @@ namespace maps
 		  * \sa CObservation2DRangeScan, CObservation3DRangeScan
 		  */
 		virtual void  loadFromRangeScan(
-				const CObservation2DRangeScan &rangeScan,
+				const mrpt::obs::CObservation2DRangeScan &rangeScan,
 				const CPose3D				  *robotPose = NULL ) = 0;
 
 		/** Overload of \a loadFromRangeScan() for 3D range scans (for example, Kinect observations).
@@ -654,7 +654,7 @@ namespace maps
 		  */
 		void boundingBox( float &min_x,float &max_x,float &min_y,float &max_y,float &min_z,float &max_z ) const;
 
-		inline void boundingBox mrpt::math::TPoint3D &pMin mrpt::math::TPoint3D &pMax) const	{
+		inline void boundingBox(mrpt::math::TPoint3D &pMin,mrpt::math::TPoint3D &pMax) const	{
 			float dmy1,dmy2,dmy3,dmy4,dmy5,dmy6;
 			boundingBox(dmy1,dmy2,dmy3,dmy4,dmy5,dmy6);
 			pMin.x=dmy1;
@@ -804,7 +804,7 @@ namespace maps
 	protected:
 		std::vector<float>     x,y,z;        //!< The point coordinates
 
-		CSinCosLookUpTableFor2DScans  m_scans_sincos_cache; //!< Cache of sin/cos values for the latest 2D scan geometries.
+		mrpt::obs::CSinCosLookUpTableFor2DScans  m_scans_sincos_cache; //!< Cache of sin/cos values for the latest 2D scan geometries.
 
 		/** Auxiliary variables used in "getLargestDistanceFromOrigin"
 		  * \sa getLargestDistanceFromOrigin
@@ -833,7 +833,7 @@ namespace maps
 		  * See mrpt::maps::CPointsMap for the enumeration of types of observations which are accepted.
 		  */
 		bool  internal_insertObservation(
-			const CObservation	*obs,
+			const mrpt::obs::CObservation	*obs,
 			const mrpt::poses::CPose3D *robotPose);
 
 		/** Helper method for ::copyFrom() */

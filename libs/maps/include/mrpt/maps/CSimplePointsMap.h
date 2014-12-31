@@ -95,13 +95,13 @@ namespace mrpt
 
 			/** See CPointsMap::loadFromRangeScan() */
 			virtual void  loadFromRangeScan(
-					const CObservation2DRangeScan &rangeScan,
-					const CPose3D				  *robotPose = NULL );
+				const mrpt::obs::CObservation2DRangeScan &rangeScan,
+				const mrpt::poses::CPose3D				  *robotPose = NULL );
 
 			/** See CPointsMap::loadFromRangeScan() */
 			virtual void  loadFromRangeScan(
-					const CObservation3DRangeScan &rangeScan,
-					const CPose3D				  *robotPose = NULL );
+				const mrpt::obs::CObservation3DRangeScan &rangeScan,
+				const mrpt::poses::CPose3D				  *robotPose = NULL );
 
 
 		protected:

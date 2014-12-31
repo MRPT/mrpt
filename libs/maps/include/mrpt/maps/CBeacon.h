@@ -37,7 +37,7 @@ namespace maps
 	  * \sa CBeaconMap, CPointPDFSOG
 	  * \ingroup mrpt_maps_grp
 	  */
-	class MAPS_IMPEXP CBeacon : public CPointPDF
+	class MAPS_IMPEXP CBeacon : public mrpt::poses::CPointPDF
 	{
 		// This must be added to any CSerializable derived class:
 		DEFINE_SERIALIZABLE( CBeacon )
@@ -56,17 +56,12 @@ namespace maps
 		  */
 		TTypePDF	m_typePDF;
 
-		/** The individual PDF, if m_typePDF=pdfMonteCarlo (publicly accesible for ease of use, but the CPointPDF interface is also implemented in CBeacon).
-		  */
-		CPointPDFParticles	m_locationMC;
-
-		/** The individual PDF, if m_typePDF=pdfGauss (publicly accesible for ease of use, but the CPointPDF interface is also implemented in CBeacon).
-		  */
-		CPointPDFGaussian	m_locationGauss;
-
-		/** The individual PDF, if m_typePDF=pdfSOG (publicly accesible for ease of use, but the CPointPDF interface is also implemented in CBeacon).
-		  */
-		CPointPDFSOG		m_locationSOG;
+		/** The individual PDF, if m_typePDF=pdfMonteCarlo (publicly accesible for ease of use, but the CPointPDF interface is also implemented in CBeacon). */
+		mrpt::poses::CPointPDFParticles	m_locationMC;
+		/** The individual PDF, if m_typePDF=pdfGauss (publicly accesible for ease of use, but the CPointPDF interface is also implemented in CBeacon). */
+		mrpt::poses::CPointPDFGaussian	m_locationGauss;
+		/** The individual PDF, if m_typePDF=pdfSOG (publicly accesible for ease of use, but the CPointPDF interface is also implemented in CBeacon). */
+		mrpt::poses::CPointPDFSOG		m_locationSOG;
 
 		/** An ID for the landmark (see details next...)
 		  *  This ID was introduced in the version 3 of this class (21/NOV/2006), and its aim is
@@ -90,16 +85,16 @@ namespace maps
 		 /** Returns an estimate of the point, (the mean, or mathematical expectation of the PDF).
 		   * \sa getCovariance
 		   */
-		void getMean mrpt::poses::CPoint3D &mean_point) const;
+		void getMean(mrpt::poses::CPoint3D &mean_point) const;
 
 		/** Returns an estimate of the point covariance matrix (3x3 cov matrix) and the mean, both at once.
 		  * \sa getMean
 		  */
-		void getCovarianceAndMean(mrpt::math::CMatrixDouble33 &cov mrpt::poses::CPoint3D &mean_point) const;
+		void getCovarianceAndMean(mrpt::math::CMatrixDouble33 &cov,mrpt::poses::CPoint3D &mean_point) const;
 
 		/** Copy operator, translating if necesary (for example, between particles and gaussian representations)
 		  */
-		void  copyFrom(const CPointPDF &o);
+		void  copyFrom(const mrpt::poses::CPointPDF &o);
 
 		/** Save PDF's particles to a text file. See derived classes for more information about the format of generated files.
 		 */
@@ -110,17 +105,14 @@ namespace maps
 		  */
 		void  changeCoordinatesReference( const mrpt::poses::CPose3D &newReferenceBase );
 
-		/** Saves a 3D representation of the beacon into a given OpenGL scene
-		  */
+		/** Saves a 3D representation of the beacon into a given OpenGL scene  */
 		void  getAs3DObject( mrpt::opengl::CSetOfObjectsPtr	&outObj ) const;
 
-		/** Gets a set of MATLAB commands which draw the current state of the beacon:
-		  */
+		/** Gets a set of MATLAB commands which draw the current state of the beacon: */
 		void getAsMatlabDrawCommands( utils::CStringList &out_Str ) const;
 
-		/** Draw a sample from the pdf.
-		  */
-		void drawSingleSample mrpt::poses::CPoint3D &outSample) const;
+		/** Draw a sample from the pdf. */
+		void drawSingleSample(mrpt::poses::CPoint3D &outSample) const;
 
 		/** Bayesian fusion of two point distributions (product of two distributions->new distribution), then save the result in this object (WARNING: See implementing classes to see classes that can and cannot be mixtured!)
 		  * \param p1 The first distribution to fuse
@@ -128,7 +120,6 @@ namespace maps
 		  * \param minMahalanobisDistToDrop If set to different of 0, the result of very separate Gaussian modes (that will result in negligible components) in SOGs will be dropped to reduce the number of modes in the output.
 		  */
 		void  bayesianFusion(const  CPointPDF &p1,const  CPointPDF &p2, const double &minMahalanobisDistToDrop = 0);
-
 
 		/** Compute the observation model p(z_t|x_t) for a given observation (range value), and return it as an approximate SOG.
 		  *  Note that if the beacon is a SOG itself, the number of gaussian modes will be square.
@@ -140,7 +131,7 @@ namespace maps
 		  */
 		void generateObservationModelDistribution(
 			const float &sensedRange,
-			CPointPDFSOG	&outPDF,
+			mrpt::poses::CPointPDFSOG	&outPDF,
 			const CBeaconMap *myBeaconMap,
 			const mrpt::poses::CPoint3D	&sensorPntOnRobot,
 			const mrpt::poses::CPoint3D &centerPoint = mrpt::poses::CPoint3D(0,0,0),
@@ -155,7 +146,7 @@ namespace maps
 		  */
 		static void generateRingSOG(
 			const float &sensedRange,
-			CPointPDFSOG	&outPDF,
+			mrpt::poses::CPointPDFSOG	&outPDF,
 			const CBeaconMap *myBeaconMap,
 			const mrpt::poses::CPoint3D	&sensorPnt,
 			const mrpt::math::CMatrixDouble33   *covarianceCompositionToAdd = NULL,

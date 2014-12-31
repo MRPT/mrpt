@@ -110,27 +110,24 @@ namespace mrpt
 
 			/** See CPointsMap::loadFromRangeScan() */
 			virtual void  loadFromRangeScan(
-					const CObservation2DRangeScan &rangeScan,
-					const CPose3D				  *robotPose = NULL );
+				const mrpt::obs::CObservation2DRangeScan &rangeScan,
+				const mrpt::poses::CPose3D				  *robotPose = NULL );
 
 			/** See CPointsMap::loadFromRangeScan() */
 			virtual void  loadFromRangeScan(
-					const CObservation3DRangeScan &rangeScan,
-					const CPose3D				  *robotPose = NULL );
+				const mrpt::obs::CObservation3DRangeScan &rangeScan,
+				const mrpt::poses::CPose3D				  *robotPose = NULL );
 
 		protected:
 
 			/** Auxiliary method called from within \a addFrom() automatically, to finish the copying of class-specific data  */
 			virtual void  addFrom_classSpecific(const CPointsMap &anotherMap, const size_t nPreviousPoints);
 
-
 			// Friend methods:
 			template <class Derived> friend struct detail::loadFromRangeImpl;
 			template <class Derived> friend struct detail::pointmap_traits;
 
 		public:
-
-
 			/** @} */
 			// --------------------------------------------
 
@@ -208,9 +205,8 @@ namespace mrpt
 			  */
 			virtual void  getAs3DObject ( mrpt::opengl::CSetOfObjectsPtr	&outObj ) const;
 
-			/** Colour a set of points from a CObservationImage and the global pose of the robot
-			  */
-			bool colourFromObservation( const CObservationImage &obs, const mrpt::poses::CPose3D &robotPose );
+			/** Colour a set of points from a CObservationImage and the global pose of the robot */
+			bool colourFromObservation( const mrpt::obs::CObservationImage &obs, const mrpt::poses::CPose3D &robotPose );
 
 			/** The choices for coloring schemes:
 			  *		- cmFromHeightRelativeToSensor: The Z coordinate wrt the sensor will be used to obtain the color using the limits z_min,z_max.

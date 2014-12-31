@@ -39,10 +39,13 @@
 
 
 using namespace mrpt;
+using namespace mrpt::obs;
 using namespace mrpt::maps;
+using namespace mrpt::math;
 using namespace mrpt::opengl;
 using namespace mrpt::utils;
 using namespace mrpt::poses;
+using namespace mrpt::math;
 
 IMPLEMENTS_SERIALIZABLE(CAngularObservationMesh,CRenderizableDisplayList,mrpt::opengl)
 
@@ -167,7 +170,7 @@ bool CAngularObservationMesh::traceRay(const mrpt::poses::CPose3D &o,double &dis
 	return false;
 }
 
-bool CAngularObservationMesh::setScanSet(const std::vector<CObservation2DRangeScan> &scans)	{
+bool CAngularObservationMesh::setScanSet(const std::vector<mrpt::obs::CObservation2DRangeScan> &scans)	{
 	CRenderizableDisplayList::notifyChange();
 
 	//Returns false if the scan is inconsistent

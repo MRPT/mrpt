@@ -25,7 +25,7 @@ namespace detail
 	{
 		static inline void  templ_loadFromRangeScan(
 			Derived &obj,
-			const CObservation2DRangeScan		&rangeScan,
+			const mrpt::obs::CObservation2DRangeScan		&rangeScan,
 			const mrpt::poses::CPose3D			*robotPose )
 		{
 			using namespace mrpt::poses;
