@@ -221,7 +221,7 @@ namespace mrpt
 			* \sa computeDescriptors
 			*/
 			void  detectFeatures(	
-				const CImage		    & img,
+				const mrpt::utils::CImage		    & img,
 				CFeatureList			& feats,
 				const unsigned int		init_ID = 0,
 				const unsigned int		nDesiredFeatures = 0,
@@ -244,7 +244,7 @@ namespace mrpt
 			* \note This call will also use additional parameters from \a options
 			*/
 			void  computeDescriptors(
-				const CImage	&in_img,
+				const mrpt::utils::CImage	&in_img,
 				CFeatureList		&inout_features,
 				TDescriptorType		in_descriptor_list) const;
 
@@ -257,7 +257,7 @@ namespace mrpt
 			*
 			*  \sa The more powerful class: mrpt::vision::CGenericFeatureTracker
 			*/
-			void  findMoreFeatures( const CImage &img,
+			void  findMoreFeatures( const mrpt::utils::CImage &img,
 									const CFeatureList &inList,
 									CFeatureList &outList,
 									unsigned int nDesiredFeats = 0) const;
@@ -286,7 +286,7 @@ namespace mrpt
 			  * \ingroup mrptvision_features
 			  */
 			static void detectFeatures_SSE2_FASTER9(
-				const CImage &img,
+				const mrpt::utils::CImage &img,
 				TSimpleFeatureList & corners,
 				const int threshold = 20,
 				bool append_to_list = false,
@@ -296,7 +296,7 @@ namespace mrpt
 			/** Just like \a detectFeatures_SSE2_FASTER9() for another version of the detector.
 			  * \ingroup mrptvision_features */
 			static void detectFeatures_SSE2_FASTER10(
-				const CImage &img,
+				const mrpt::utils::CImage &img,
 				TSimpleFeatureList & corners,
 				const int threshold = 20,
 				bool append_to_list = false,
@@ -306,7 +306,7 @@ namespace mrpt
 			/** Just like \a detectFeatures_SSE2_FASTER9() for another version of the detector.
 			  * \ingroup mrptvision_features */
 			static void detectFeatures_SSE2_FASTER12(
-				const CImage &img,
+				const mrpt::utils::CImage &img,
 				TSimpleFeatureList & corners,
 				const int threshold = 20,
 				bool append_to_list = false,
@@ -323,7 +323,7 @@ namespace mrpt
 			* \note The SIFT descriptors for already located features can only be computed through the Hess and
 			        CSBinary implementations which may be specified in CFeatureExtraction::TOptions::SIFTOptions.
 			*/
-			void  internal_computeSiftDescriptors( const CImage	&in_img,
+			void  internal_computeSiftDescriptors( const mrpt::utils::CImage	&in_img,
 										  CFeatureList		&in_features) const;
 
 
@@ -331,14 +331,14 @@ namespace mrpt
 			* \param in_img (input) The image from where to compute the descriptors.
 			* \param in_features (input/output) The list of features whose descriptors are going to be computed.
 			*/
-			void  internal_computeSurfDescriptors( const CImage	&in_img,
+			void  internal_computeSurfDescriptors( const mrpt::utils::CImage	&in_img,
 										  CFeatureList		&in_features) const;
 
 			/** Compute the ORB descriptor of the provided features into the input image
 			* \param in_img (input) The image from where to compute the descriptors.
 			* \param in_features (input/output) The list of features whose descriptors are going to be computed.
 			*/
-			void  internal_computeORBDescriptors( const CImage	&in_img,
+			void  internal_computeORBDescriptors( const mrpt::utils::CImage	&in_img,
 										  CFeatureList		&in_features) const;
 
 			/** Compute the intensity-domain spin images descriptor of the provided features into the input image
@@ -347,7 +347,7 @@ namespace mrpt
 			*
 			* \note Additional parameters from CFeatureExtraction::TOptions::SpinImagesOptions are used in this method.
 			*/
-			void  internal_computeSpinImageDescriptors( const CImage	&in_img,
+			void  internal_computeSpinImageDescriptors( const mrpt::utils::CImage	&in_img,
 										  CFeatureList		&in_features) const;
 
 			/** Compute a polar-image descriptor of the provided features into the input image
@@ -356,7 +356,7 @@ namespace mrpt
 			*
 			* \note Additional parameters from CFeatureExtraction::TOptions::PolarImagesOptions are used in this method.
 			*/
-			void  internal_computePolarImageDescriptors( const CImage	&in_img,
+			void  internal_computePolarImageDescriptors( const mrpt::utils::CImage	&in_img,
 										  CFeatureList		&in_features) const;
 
 			/** Compute a log-polar image descriptor of the provided features into the input image
@@ -365,7 +365,7 @@ namespace mrpt
 			*
 			* \note Additional parameters from CFeatureExtraction::TOptions::LogPolarImagesOptions are used in this method.
 			*/
-			void  internal_computeLogPolarImageDescriptors( const CImage	&in_img,
+			void  internal_computeLogPolarImageDescriptors( const mrpt::utils::CImage	&in_img,
 										  CFeatureList		&in_features) const;
 
 #if 0  // Delete? see comments in .cpp
@@ -375,7 +375,7 @@ namespace mrpt
 			* \param nDesiredFeatures (op. input) Number of features to be extracted. Default: all possible.
 			*/
 			void  selectGoodFeaturesKLT(
-				const CImage	&inImg,
+				const mrpt::utils::CImage	&inImg,
 				CFeatureList		&feats,
 				unsigned int		init_ID = 0,
 				unsigned int		nDesiredFeatures = 0) const;
@@ -387,7 +387,7 @@ namespace mrpt
 			* \param nDesiredFeatures Number of features to be extracted. Default: authomatic.
 			*/
 			void  extractFeaturesKLT(
-				const CImage		&img,
+				const mrpt::utils::CImage		&img,
 				CFeatureList			&feats,
 				unsigned int			init_ID = 0,
 				unsigned int			nDesiredFeatures = 0,
@@ -403,7 +403,7 @@ namespace mrpt
 			* \param ROI (op. input) Region of Interest. Default: All the image.
 			*/
 			void  extractFeaturesBCD(
-				const CImage 		&img,
+				const mrpt::utils::CImage 		&img,
 				CFeatureList			&feats,
 				unsigned int			init_ID = 0,
 				unsigned int			nDesiredFeatures = 0,
@@ -419,7 +419,7 @@ namespace mrpt
 			* \param ROI (op. input) Region of Interest. Default: All the image.
 			*/
 			void  extractFeaturesSIFT(
-				const CImage		&img,
+				const mrpt::utils::CImage		&img,
 				CFeatureList			&feats,
 				unsigned int			init_ID = 0,
 				unsigned int			nDesiredFeatures = 0,
@@ -434,7 +434,7 @@ namespace mrpt
 			* \param nDesiredFeatures Number of features to be extracted. Default: authomatic.
 			*/
 			void  extractFeaturesORB(
-				const CImage			&img,
+				const mrpt::utils::CImage			&img,
 				CFeatureList			&feats,
 				const unsigned int		init_ID = 0,
 				const unsigned int		nDesiredFeatures = 0,
@@ -450,7 +450,7 @@ namespace mrpt
 			* \param nDesiredFeatures Number of features to be extracted. Default: authomatic.
 			*/
 			void  extractFeaturesSURF(
-				const CImage		&img,
+				const mrpt::utils::CImage		&img,
 				CFeatureList			&feats,
 				unsigned int			init_ID = 0,
 				unsigned int			nDesiredFeatures = 0,
@@ -465,7 +465,7 @@ namespace mrpt
 			* \param nDesiredFeatures Number of features to be extracted. Default: authomatic.
 			*/
 			void  extractFeaturesFAST(
-				const CImage			&img,
+				const mrpt::utils::CImage			&img,
 				CFeatureList			&feats,
 				unsigned int			init_ID = 0,
 				unsigned int			nDesiredFeatures = 0,
@@ -475,7 +475,7 @@ namespace mrpt
 			/** Edward's "FASTER & Better" detector, N=9,10,12 */
 			void  extractFeaturesFASTER_N(
 				const int               N,
-				const CImage			&img,
+				const mrpt::utils::CImage			&img,
 				CFeatureList			&feats,
 				unsigned int			init_ID = 0,
 				unsigned int			nDesiredFeatures = 0,

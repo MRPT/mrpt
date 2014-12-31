@@ -608,7 +608,7 @@ void project_point(
 	const mrpt::math::TPoint3D & P,
 	const mrpt::utils::TCamera & params,
 	const CPose3D              & cameraPose,
-	mrpt::vision::TPixelCoordf & px
+	mrpt::utils::TPixelCoordf & px
 	)
 {
 	// Change the reference system to that wrt the camera

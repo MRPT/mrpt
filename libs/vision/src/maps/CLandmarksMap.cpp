@@ -36,6 +36,7 @@ using namespace mrpt::utils;
 using namespace mrpt::poses;
 using namespace mrpt::random;
 using namespace mrpt::system;
+using namespace mrpt::utils;
 using namespace std;
 
 IMPLEMENTS_SERIALIZABLE(CLandmarksMap, CMetricMap,mrpt::maps)
@@ -588,7 +589,7 @@ void  CLandmarksMap::loadSiftFeaturesFromImageObservation(
 	{
 		// Find the 3D position from the pixels
 		//  coordinates and the camera intrinsic matrix:
-		dir = vision::pixelTo3D( vision::TPixelCoordf( (*sift)->x,(*sift)->y) , obs.cameraParams.intrinsicParams );	//dir = vision::pixelTo3D( sift->x,sift->y, obs.intrinsicParams );
+		dir = vision::pixelTo3D( TPixelCoordf( (*sift)->x,(*sift)->y) , obs.cameraParams.intrinsicParams );	//dir = vision::pixelTo3D( sift->x,sift->y, obs.intrinsicParams );
 
 		// Compute the mean and covariance of the landmark gaussian 3D position,
 		//  from the unitary direction vector and a given distance:

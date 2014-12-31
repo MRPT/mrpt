@@ -44,7 +44,7 @@ CVideoFileWriter::~CVideoFileWriter()
 bool CVideoFileWriter::open(
 	const std::string &out_file,
 	double fps,
-	const mrpt::vision::TImageSize & frameSize,
+	const mrpt::utils::TImageSize & frameSize,
 	const std::string &fourcc,
 	bool isColor )
 {

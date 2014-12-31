@@ -36,6 +36,7 @@ using namespace mrpt::utils;
 using namespace mrpt::maps;
 using namespace mrpt::math;
 using namespace mrpt::system;
+using namespace mrpt::obs;
 using namespace std;
 
 #ifdef MRPT_OS_WINDOWS
@@ -380,9 +381,9 @@ double  vision::computeMsd(
                     cloudsToMatchedList
 -------------------------------------------------------------*/
 void  vision::cloudsToMatchedList(
-                    const CObservationVisualLandmarks   & cloud1,
-                    const CObservationVisualLandmarks   & cloud2,
-                    TMatchingPairList                   & outList)
+	const CObservationVisualLandmarks   & cloud1,
+	const CObservationVisualLandmarks   & cloud2,
+	TMatchingPairList                   & outList)
 {
 	CLandmarksMap::TCustomSequenceLandmarks::const_iterator	itLand1, itLand2;
 	TMatchingPair								pair;

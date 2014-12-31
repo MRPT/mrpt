@@ -44,38 +44,38 @@ namespace mrpt
 				const std::string		&section);
 
 			/** This method displays clearly all the contents of the structure in textual form, sending it to a CStream. */
-			void  dumpToTextStream( CStream		&out) const;
+			void  dumpToTextStream( mrpt::utils::CStream		&out) const;
 
 			/** Constructor from a ini file
 			 */
 			CCamModel(const mrpt::utils::CConfigFileBase &cfgIni);
 
 			/** Jacobian for undistortion the image coordinates */
-			void  jacob_undistor_fm(const mrpt::vision::TPixelCoordf &uvd, math::CMatrixDouble &J_undist);
+			void  jacob_undistor_fm(const mrpt::utils::TPixelCoordf &uvd, math::CMatrixDouble &J_undist);
 
 			/** Calculate the image coordinates undistorted
 			 */
-			void jacob_undistor(const mrpt::vision::TPixelCoordf &p, mrpt::math::CMatrixDouble &J_undist );
+			void jacob_undistor(const mrpt::utils::TPixelCoordf &p, mrpt::math::CMatrixDouble &J_undist );
 
 			/**	Return the pixel position distorted by the camera
 			 */
-			void  distort_a_point(const mrpt::vision::TPixelCoordf &p, mrpt::vision::TPixelCoordf &distorted_p);
+			void  distort_a_point(const mrpt::utils::TPixelCoordf &p, mrpt::utils::TPixelCoordf &distorted_p);
 
 			/**	Return the pixel position undistorted by the camera
 			 *	The input values 'col' and 'row' will be replace for the new values (undistorted)
 			 */
-			void  undistort_point(const mrpt::vision::TPixelCoordf &p, mrpt::vision::TPixelCoordf &undistorted_p);
+			void  undistort_point(const mrpt::utils::TPixelCoordf &p, mrpt::utils::TPixelCoordf &undistorted_p);
 
 			/**	Return the (distorted) pixel position of a 3D point given in coordinates relative to the camera (+Z pointing forward, +X to the right)
 			 * \sa unproject_3D_point
   		     */
-			void  project_3D_point(const mrpt::math::TPoint3D &p3D, mrpt::vision::TPixelCoordf &distorted_p) const;
+			void  project_3D_point(const mrpt::math::TPoint3D &p3D, mrpt::utils::TPixelCoordf &distorted_p) const;
 
 			/**	Return the 3D location of a point (at a fixed distance z=1), for the given (distorted) pixel position
 			 * \sa project_3D_point
 			 * \note Of course, there is a depth ambiguity, so the returned 3D point must be considered a direction from the camera focus, or a vector, rather than a meaninful physical point.
   		     */
-			void  unproject_3D_point(const mrpt::vision::TPixelCoordf &distorted_p, mrpt::math::TPoint3D &p3D) const;
+			void  unproject_3D_point(const mrpt::utils::TPixelCoordf &distorted_p, mrpt::math::TPoint3D &p3D) const;
 
 			/** Jacobian of the projection of 3D points (with distortion), as done in project_3D_point \f$ \frac{\partial h}{\partial y} \f$, evaluated at the point p3D (read below the full explanation)
 
@@ -125,7 +125,7 @@ namespace mrpt
 			\note JLBC: Added in March, 2009. Should be equivalent to Davison's WideCamera::UnprojectionJacobian
 			\sa unproject_3D_point
 			*/
-			void jacobian_unproject_with_distortion(const mrpt::vision::TPixelCoordf &p, math::CMatrixDouble & dy_dh ) const;
+			void jacobian_unproject_with_distortion(const mrpt::utils::TPixelCoordf &p, math::CMatrixDouble & dy_dh ) const;
 
 			template<typename T> struct CameraTempVariables	{
 				T x_,y_;

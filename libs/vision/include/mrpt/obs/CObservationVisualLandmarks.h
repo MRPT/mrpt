@@ -32,17 +32,10 @@ namespace obs
 		DEFINE_SERIALIZABLE( CObservationVisualLandmarks )
 
 	 public:
-		/** Constructor
-		 */
-		CObservationVisualLandmarks( );
+		CObservationVisualLandmarks( );  //!< Constructor
 
-		/** The 3D pose of the reference camera relative to robot coordinates.
-		  */
-		CPose3D				refCameraPose;
-
-		 /** The landmarks, with coordinates origin in the camera reference system.
-		  */
-		mrpt::maps::CLandmarksMap		landmarks;
+		mrpt::poses::CPose3D				refCameraPose; //!< The 3D pose of the reference camera relative to robot coordinates.
+		mrpt::maps::CLandmarksMap		landmarks;  //!< The landmarks, with coordinates origin in the camera reference system.
 
 		/** Implements the virtual method in charge of finding the likelihood between this
 		  *   and another observation, probably only of the same derived class. The operator
@@ -54,7 +47,7 @@ namespace obs
 		  * \return Returns a likelihood measurement, in the range [0,1].
 		  *	\exception std::exception On any error, as another observation being of an invalid class.
 		  */
-		 float  likelihoodWith( const mrpt::obs::CObservation *anotherObs, const CPosePDF *anotherObsPose = NULL ) const;
+		 float  likelihoodWith( const mrpt::obs::CObservation *anotherObs, const mrpt::poses::CPosePDF *anotherObsPose = NULL ) const;
 
 		// See base class docs
 		void getSensorPose( mrpt::poses::CPose3D &out_sensorPose ) const { out_sensorPose = refCameraPose; }

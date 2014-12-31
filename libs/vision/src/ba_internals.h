@@ -11,7 +11,10 @@
 #define ba_internals_H
 
 #include <mrpt/math/CMatrixFixedNumeric.h>
+#include <mrpt/math/CArray.h>
 #include <mrpt/poses/CPose3D.h>
+#include <mrpt/utils/aligned_containers.h>
+#include <mrpt/vision/types.h>
 
 // Declarations shared between ba_*.cpp files, but which are private to MRPT
 //  not to be seen by an MRPT API user.
@@ -54,8 +57,8 @@ namespace mrpt
 		  */
 		template <bool POSES_ARE_INVERSE>
 		void frameJac(
-			   const TCamera  & camera_params,
-			   const CPose3D  & cam_pose,
+			   const mrpt::utils::TCamera  & camera_params,
+			   const mrpt::poses::CPose3D  & cam_pose,
 			   const mrpt::math::TPoint3D & landmark_global,
 			   mrpt::math::CMatrixFixedNumeric<double,2,6> & out_J)
 		{
@@ -120,8 +123,8 @@ namespace mrpt
 		*/
 		template <bool POSES_ARE_INVERSE>
 		void pointJac(
-			const TCamera  & camera_params,
-			const CPose3D     & cam_pose,
+			const mrpt::utils::TCamera  & camera_params,
+			const mrpt::poses::CPose3D     & cam_pose,
 			const mrpt::math::TPoint3D & landmark_global,
 		 mrpt::math::CMatrixFixedNumeric<double,2,3> & out_J )
 		{
@@ -163,7 +166,7 @@ namespace mrpt
 		void ba_compute_Jacobians(
 			const TFramePosesVec         & frame_poses,
 			const TLandmarkLocationsVec  & landmark_points,
-			const TCamera                & camera_params,
+			const mrpt::utils::TCamera   & camera_params,
 			mrpt::aligned_containers<JacData<6,3,2> >::vector_t & jac_data_vec,
 			const size_t                   num_fix_frames,
 			const size_t                   num_fix_points)
@@ -205,11 +208,11 @@ namespace mrpt
 		  */
 		void ba_build_gradient_Hessians(
 			const TSequenceFeatureObservations          & observations,
-			const vector<CArray<double,2> >              & residual_vec,
+			const std::vector<mrpt::math::CArray<double,2> >              & residual_vec,
 			const mrpt::aligned_containers<JacData<6,3,2> >::vector_t & jac_data_vec,
-			mrpt::aligned_containers mrpt::math::CMatrixFixedNumeric<double,6,6> >::vector_t  & U,
+			mrpt::aligned_containers<mrpt::math::CMatrixFixedNumeric<double,6,6> >::vector_t  & U,
 			mrpt::aligned_containers<CArrayDouble<6> >::vector_t & eps_frame,
-			mrpt::aligned_containers mrpt::math::CMatrixFixedNumeric<double,3,3> >::vector_t & V,
+			mrpt::aligned_containers<mrpt::math::CMatrixFixedNumeric<double,3,3> >::vector_t & V,
 			mrpt::aligned_containers<CArrayDouble<3> >::vector_t & eps_point,
 			const size_t                                  num_fix_frames,
 			const size_t                                  num_fix_points,

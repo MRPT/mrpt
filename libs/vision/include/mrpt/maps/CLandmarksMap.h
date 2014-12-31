@@ -444,7 +444,7 @@ namespace maps
 		  *  \param feat_options Optionally, you can pass here parameters for changing the default SIFT detector settings.
 		  */
 		void  loadSiftFeaturesFromImageObservation( 
-			const CObservationImage	&obs,
+			const mrpt::obs::CObservationImage	&obs,
 			const mrpt::vision::CFeatureExtraction::TOptions & feat_options = mrpt::vision::CFeatureExtraction::TOptions(mrpt::vision::featSIFT)
 			);
 
@@ -455,7 +455,7 @@ namespace maps
 		  *  \param feat_options Optionally, you can pass here parameters for changing the default SIFT detector settings.
 		  */
 		void  loadSiftFeaturesFromStereoImageObservation( 
-			const CObservationStereoImages	&obs, 
+			const mrpt::obs::CObservationStereoImages	&obs, 
 			mrpt::maps::CLandmark::TLandmarkID fID,
 			const mrpt::vision::CFeatureExtraction::TOptions & feat_options = mrpt::vision::CFeatureExtraction::TOptions(mrpt::vision::featSIFT)
 			);
@@ -466,9 +466,9 @@ namespace maps
 		  *  Some options may be applicable from "insertionOptions"
 		  */
 		void  loadOccupancyFeaturesFrom2DRangeScan(
-					const CObservation2DRangeScan	&obs,
-					const CPose3D					*robotPose = NULL,
-					unsigned int				downSampleFactor = 1);
+			const mrpt::obs::CObservation2DRangeScan	&obs,
+			const CPose3D					*robotPose = NULL,
+			unsigned int				downSampleFactor = 1);
 
 
 		/** Computes the (logarithmic) likelihood that a given observation was taken from a given pose in the world being modeled with this map.
@@ -547,7 +547,7 @@ namespace maps
 		void  simulateBeaconReadings(
 			const CPose3D					&in_robotPose,
 			const mrpt::poses::CPoint3D					&in_sensorLocationOnRobot,
-			CObservationBeaconRanges		&out_Observations ) const;
+			mrpt::obs::CObservationBeaconRanges		&out_Observations ) const;
 
 		/** Simulates a noisy bearing-range observation of all the beacons (landamrks with type glBeacon) in the landmarks map, if any.
 		  * \param[in]  robotPose The robot pose.
@@ -568,7 +568,7 @@ namespace maps
 		void  simulateRangeBearingReadings(
 			const CPose3D					&robotPose,
 			const CPose3D					&sensorLocationOnRobot,
-			CObservationBearingRange		&observations,
+			mrpt::obs::CObservationBearingRange		&observations,
 			bool                            sensorDetectsIDs = true,
 			const float                     stdRange = 0.01f,
 			const float                     stdYaw = DEG2RAD(0.1f),

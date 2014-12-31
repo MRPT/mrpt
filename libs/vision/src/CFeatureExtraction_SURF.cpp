@@ -19,6 +19,7 @@
 using namespace mrpt;
 using namespace mrpt::vision;
 using namespace mrpt::system;
+using namespace mrpt::utils;
 using namespace std;
 
 

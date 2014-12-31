@@ -27,6 +27,7 @@ using namespace mrpt::vision;
 using namespace mrpt::math;
 using namespace mrpt::system;
 using namespace mrpt::utils;
+using namespace std;
 
 IMPLEMENTS_SERIALIZABLE(CFeature, CSerializable, mrpt::vision)
 
