@@ -20,7 +20,7 @@
 #include <mrpt/utils/CTicTac.h>
 #include <mrpt/system/os.h>
 #include <mrpt/opengl.h>
-#include <mrpt/slam/CObservation3DRangeScan.h>
+#include <mrpt/obs/CObservation3DRangeScan.h>
 
 
 using namespace mrpt;
@@ -148,7 +148,7 @@ int main ( int argc, char** argv )
 	mrpt::utils::CFileGZOutputStream  f_out(out_rawlog_fil);
 
 	// Fill out the common field to all entries:
-	slam::CObservation3DRangeScan obs;
+	mrpt::obs::CObservation3DRangeScan obs;
 	obs.sensorLabel = "OpenNI2";
 	obs.hasConfidenceImage = false;
 
@@ -264,7 +264,7 @@ int main ( int argc, char** argv )
 			obs.rangeImage_setSize(height,width);
 
 			obs.hasIntensityImage = true;
-			obs.intensityImageChannel = slam::CObservation3DRangeScan::CH_VISIBLE;
+			obs.intensityImageChannel = mrpt::obs::CObservation3DRangeScan::CH_VISIBLE;
 
 			const string sDepthfile = mrpt::format("%i_depth.bin", frame );
 			const string sRGBfile = mrpt::format("%i_rgb.png", frame );
@@ -415,7 +415,7 @@ bool initONI2Stream(openni::Device& device, openni::SensorType sensorType, openn
   }else if(sensorType == openni::SENSOR_DEPTH){
     strSensor = "openni::SENSOR_DEPTH";
   }else{
-    printf("%s:Unknown SensorType -> %d\n", sensorType);
+	printf("%s:Unknown SensorType -> %d\n", __FUNCTION__, sensorType);
     return false;
   }
   rc = stream.create(device, sensorType);

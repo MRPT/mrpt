@@ -59,7 +59,8 @@ wxBitmap MyArtProvider::CreateBitmap(const wxArtID& id,
 #include <mrpt/system/filesystem.h>
 
 using namespace mrpt;
-using namespace mrpt::slam;
+using namespace mrpt::maps;
+using namespace mrpt::obs;
 using namespace mrpt::opengl;
 using namespace mrpt::math;
 using namespace mrpt::system;
@@ -584,7 +585,7 @@ void holonomic_navigator_demoFrame::simulateOneStep(double time_step)
 	gl_scan2D->setScan( simulatedScan ); // Draw scaled scan in right-hand view
 
 	// Navigate:
-	mrpt::math::TPoint2D relTargetPose = mrpt::math::TPoint2D( CPoint2D(m_targetPoint) - CPose2D(m_robotPose) );
+	mrpt::math::TPoint2D relTargetPose = mrpt::math::TPoint2D( mrpt::poses::CPoint2D(m_targetPoint) - mrpt::poses::CPose2D(m_robotPose) );
 	relTargetPose*= 1.0/simulatedScan.maxRange;     // Normalized relative target:
 
 	double desiredDirection,desiredSpeed;

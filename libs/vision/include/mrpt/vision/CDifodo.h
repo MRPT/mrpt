@@ -20,10 +20,6 @@ namespace mrpt
 {
 	namespace vision
 	{
-		using mrpt::poses::CPose3D;
-		using Eigen::MatrixXf;
-		using Eigen::MatrixXi;
-
 		/** This abstract class implements a method called "Difodo" to perform Visual odometry with range cameras.
 		*	It is based on the range flow equation and assumes that the scene is rigid.
 		*	It can work with different image resolutions (640 x 480, 320 x 240 or 160 x 120).
@@ -51,37 +47,35 @@ namespace mrpt
 		*/
 
 		class VISION_IMPEXP CDifodo {
-
 		protected:
-
 			/** Matrices that store the original and filtered depth frames with the image resolution */
-			MatrixXf depth_ft;
-			MatrixXf depth_wf;
+			Eigen::MatrixXf depth_ft;
+			Eigen::MatrixXf depth_wf;
 
 			/** Matrices that store the point coordinates after downsampling. */
-			MatrixXf depth;
-			MatrixXf depth_old;
-			MatrixXf depth_inter;
-			MatrixXf xx;
-			MatrixXf xx_inter;
-			MatrixXf xx_old;
-			MatrixXf yy;
-			MatrixXf yy_inter;
-			MatrixXf yy_old;
+			Eigen::MatrixXf depth;
+			Eigen::MatrixXf depth_old;
+			Eigen::MatrixXf depth_inter;
+			Eigen::MatrixXf xx;
+			Eigen::MatrixXf xx_inter;
+			Eigen::MatrixXf xx_old;
+			Eigen::MatrixXf yy;
+			Eigen::MatrixXf yy_inter;
+			Eigen::MatrixXf yy_old;
 
 			/** Matrices that store the depth derivatives */
-			MatrixXf du;
-			MatrixXf dv;
-			MatrixXf dt;
+			Eigen::MatrixXf du;
+			Eigen::MatrixXf dv;
+			Eigen::MatrixXf dt;
 
 			/** Weights used to ponder equations in the least square solution */
-			MatrixXf weights;
+			Eigen::MatrixXf weights;
 
 			/** Matrix which indicates wheter the depth of a pixel is zero (null = 1) or not (null = 00). and border and noisy points */
-			MatrixXi null;
+			Eigen::MatrixXi null;
 
 			/** Matrix which indicates wheter a point is in a border or has an inaccurate depth (border =1, border = 0 otherwise) */
-			MatrixXi border;
+			Eigen::MatrixXi border;
 
 			/** Least squares covariance matrix */
 			math::CMatrixFloat66 est_cov;
@@ -168,8 +162,8 @@ namespace mrpt
 			float execution_time;
 
 			/** Camera poses */
-			CPose3D cam_pose;		//!< Last camera pose
-			CPose3D cam_oldpose;	//!< Previous camera pose
+			mrpt::poses::CPose3D cam_pose;		//!< Last camera pose
+			mrpt::poses::CPose3D cam_oldpose;	//!< Previous camera pose
 
 			/** This method performs the necessary steps to estimate the camera speed in local coordinates once the depth image has been loaded */
 			void OdometryCalculation();
@@ -205,10 +199,10 @@ namespace mrpt
 			inline void setSpeedFilterEigWeight(float new_eweight) { previous_speed_eig_weight = new_eweight;}
 
 			/** This method gets the coordinates of the points regarded by the visual odometry method */
-			inline void getPointsCoord(MatrixXf &x, MatrixXf &y, MatrixXf &z);
+			inline void getPointsCoord(Eigen::MatrixXf &x, Eigen::MatrixXf &y, Eigen::MatrixXf &z);
 
 			/** This method gets the depth derivatives respect to u,v and t respectively */
-			inline void getDepthDerivatives(MatrixXf &cur_du, MatrixXf &cur_dv, MatrixXf &cur_dt);
+			inline void getDepthDerivatives(Eigen::MatrixXf &cur_du, Eigen::MatrixXf &cur_dv, Eigen::MatrixXf &cur_dt);
 
 			/** It gets the camera speed (vx, vy, vz, wx, wy, wz) expressed in local reference frame estimated by the solver (before filtering) */
 			inline mrpt::math::CMatrixFloat61 getSolverSolution() const {return kai_solver;}
@@ -220,7 +214,7 @@ namespace mrpt
 			inline mrpt::math::CMatrixFloat66 getCovariance() const {return est_cov;}
 
 			/** It gets the matrix of weights */
-			inline void getWeights(MatrixXf &we);
+			inline void getWeights(Eigen::MatrixXf &we);
 
 			/** It resets the border thresholds to their default values */
 			void bordersThresholdToDefault();

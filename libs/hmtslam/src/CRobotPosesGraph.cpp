@@ -12,6 +12,7 @@
 #include <mrpt/hmtslam/CRobotPosesGraph.h>
 
 using namespace mrpt::slam;
+using namespace mrpt::maps;
 using namespace mrpt::hmtslam;
 using namespace std;
 
@@ -21,7 +22,7 @@ IMPLEMENTS_SERIALIZABLE( CRobotPosesGraph, CSerializable , mrpt::hmtslam)
 /*---------------------------------------------------------------
 						writeToStream
   ---------------------------------------------------------------*/
-void  CRobotPosesGraph::writeToStream(CStream &out,int *version) const
+void  CRobotPosesGraph::writeToStream(mrpt::utils::CStream &out,int *version) const
 {
 	if (version)
 		*version = 0;
@@ -42,7 +43,7 @@ void  CRobotPosesGraph::writeToStream(CStream &out,int *version) const
 /*---------------------------------------------------------------
 						readFromStream
   ---------------------------------------------------------------*/
-void  CRobotPosesGraph::readFromStream(CStream &in,int version)
+void  CRobotPosesGraph::readFromStream(mrpt::utils::CStream &in,int version)
 {
 	switch(version)
 	{

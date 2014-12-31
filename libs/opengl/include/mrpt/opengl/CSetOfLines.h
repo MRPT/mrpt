@@ -17,10 +17,6 @@ namespace mrpt
 {
 	namespace opengl
 	{
-		using mrpt::math::TPoint3D;
-		using mrpt::math::TSegment3D;
-
-
 		// This must be added to any CSerializable derived class:
 		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CSetOfLines, CRenderizableDisplayList, OPENGL_IMPEXP )
 
@@ -39,8 +35,8 @@ namespace mrpt
 		{
 			DEFINE_SERIALIZABLE( CSetOfLines )
 		protected:
-			std::vector<TSegment3D> mSegments;
-            float	mLineWidth;
+			std::vector<mrpt::math::TSegment3D> mSegments;
+			float	mLineWidth;
 			bool    m_antiAliasing;
 		public:
 			/**
@@ -74,7 +70,7 @@ namespace mrpt
 			  * Appends a line to the set, given the coordinates of its bounds.
 			  */
 			inline void appendLine(float x0,float y0,float z0,float x1,float y1,float z1)	{
-				appendLine(TSegment3D(TPoint3D(x0,y0,z0),TPoint3D(x1,y1,z1)));
+				appendLine(mrpt::math::TSegment3D(mrpt::math::TPoint3D(x0,y0,z0),mrpt::math::TPoint3D(x1,y1,z1)));
 				CRenderizableDisplayList::notifyChange();
 			}
 
@@ -82,7 +78,7 @@ namespace mrpt
 			  *  \exception std::exception If there is no previous segment */
 			inline void appendLineStrip(float x,float y,float z)	{
 				ASSERT_(!this->empty())
-				this->appendLine(this->rbegin()->point2, TPoint3D(x,y,z));
+				this->appendLine(this->rbegin()->point2, mrpt::math::TPoint3D(x,y,z));
 			}
 			//! \overload
 			template<class U>
@@ -141,13 +137,13 @@ namespace mrpt
 			  * Sets a specific line in the set, given its index.
 			  * \sa appendLine
 			  */
-			void setLineByIndex(size_t index,const TSegment3D &segm);
+			void setLineByIndex(size_t index,const mrpt::math::TSegment3D &segm);
 			/**
 			  * Sets a specific line in the set, given its index.
 			  * \sa appendLine
 			  */
 			inline void setLineByIndex(size_t index,double x0,double y0,double z0,double x1,double y1,double z1)	{
-				setLineByIndex(index,TSegment3D(TPoint3D(x0,y0,z0),TPoint3D(x1,y1,z1)));
+				setLineByIndex(index,mrpt::math::TSegment3D(mrpt::math::TPoint3D(x0,y0,z0),mrpt::math::TPoint3D(x1,y1,z1)));
 				CRenderizableDisplayList::notifyChange();
 			}
 			/**
@@ -157,23 +153,23 @@ namespace mrpt
 			void getLineByIndex(size_t index,double &x0,double &y0,double &z0,double &x1,double &y1,double &z1) const; 
 
 			/** Class factory */
-			static CSetOfLinesPtr Create(const std::vector<TSegment3D> &sgms, const bool antiAliasing = true);
+			static CSetOfLinesPtr Create(const std::vector<mrpt::math::TSegment3D> &sgms, const bool antiAliasing = true);
 
 			/** Render */
 			void  render_dl() const;
 
 			//Iterator management
-			typedef std::vector<TSegment3D>::iterator iterator;	//!< Iterator to the set.
-			typedef std::vector<TSegment3D>::reverse_iterator reverse_iterator;	//!< Iterator to the set.
+			typedef std::vector<mrpt::math::TSegment3D>::iterator iterator;	//!< Iterator to the set.
+			typedef std::vector<mrpt::math::TSegment3D>::reverse_iterator reverse_iterator;	//!< Iterator to the set.
 
 			/**
 			  * Const iterator to the set.
 			  */
-			typedef std::vector<TSegment3D>::const_iterator const_iterator;
+			typedef std::vector<mrpt::math::TSegment3D>::const_iterator const_iterator;
 			/**
 			  * Const reverse iterator to the set.
 			  */
-			typedef std::vector<TSegment3D>::const_reverse_iterator const_reverse_iterator;
+			typedef std::vector<mrpt::math::TSegment3D>::const_reverse_iterator const_reverse_iterator;
 			/**
 			  * Beginning const iterator.
 			  * \sa end,rbegin,rend
@@ -215,7 +211,7 @@ namespace mrpt
 			/** Constructor */
 			CSetOfLines();
 			/** Constructor with a initial set of lines. */
-			CSetOfLines(const std::vector<TSegment3D> &sgms,bool antiAliasing=true);
+			CSetOfLines(const std::vector<mrpt::math::TSegment3D> &sgms,bool antiAliasing=true);
 			/** Private, virtual destructor: only can be deleted from smart pointers. */
 			virtual ~CSetOfLines() { }
 		};

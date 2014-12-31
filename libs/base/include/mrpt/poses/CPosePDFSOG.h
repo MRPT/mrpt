@@ -182,7 +182,7 @@ namespace mrpt
 
 			/** Draws a number of samples from the distribution, and saves as a list of 1x3 vectors, where each row contains a (x,y,phi) datum.
 			  */
-			void  drawManySamples( size_t N, std::vector<CVectorDouble> & outSamples ) const;
+			void  drawManySamples( size_t N, std::vector<mrpt::math::CVectorDouble> & outSamples ) const;
 
 			/** Returns a new PDF such as: NEW_PDF = (0,0,0) - THIS_PDF
 			  */
@@ -190,15 +190,15 @@ namespace mrpt
 
 			/** Makes: thisPDF = thisPDF + Ap, where "+" is pose composition (both the mean, and the covariance matrix are updated).
 			  */
-			void  operator += ( const CPose2D &Ap);
+			void  operator += ( const mrpt::poses::CPose2D &Ap);
 
 			/** Evaluates the PDF at a given point.
 			  */
-			double  evaluatePDF( const CPose2D &x, bool sumOverAllPhis = false ) const;
+			double  evaluatePDF( const mrpt::poses::CPose2D &x, bool sumOverAllPhis = false ) const;
 
 			/** Evaluates the ratio PDF(x) / max_PDF(x*), that is, the normalized PDF in the range [0,1].
 			  */
-			double  evaluateNormalizedPDF( const CPose2D &x ) const;
+			double  evaluateNormalizedPDF( const mrpt::poses::CPose2D &x ) const;
 
 			/** Evaluates the PDF within a rectangular grid (and a fixed orientation) and saves the result in a matrix (each row contains values for a fixed y-coordinate value).
 			  */

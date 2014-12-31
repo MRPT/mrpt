@@ -20,15 +20,16 @@
 #include <mrpt/system/filesystem.h>
 #include <mrpt/utils/CEnhancedMetaFile.h>
 
-#include <mrpt/slam/COccupancyGridMap2D.h>
-#include <mrpt/slam/CMultiMetricMap.h>
+#include <mrpt/maps/COccupancyGridMap2D.h>
+#include <mrpt/maps/CMultiMetricMap.h>
 #include <mrpt/slam/CICP.h>
-#include <mrpt/slam/CLandmarksMap.h>
+#include <mrpt/maps/CLandmarksMap.h>
 #include <mrpt/scanmatching.h>
 
 
 using namespace mrpt::math;
 using namespace mrpt::slam;
+using namespace mrpt::maps;
 using namespace mrpt::utils;
 using namespace mrpt::poses;
 using namespace mrpt::random;
@@ -51,8 +52,8 @@ The method for aligning a pair of 2D points map.
 * \sa CPointsMapAlignmentAlgorithm
   ---------------------------------------------------------------*/
 CPosePDFPtr CGridMapAligner::AlignPDF(
-    const CMetricMap		*mm1,
-    const CMetricMap		*mm2,
+    const mrpt::maps::CMetricMap		*mm1,
+    const mrpt::maps::CMetricMap		*mm2,
     const CPosePDFGaussian	&initialEstimationPDF,
     float					*runningTime,
     void					*info )
@@ -86,8 +87,8 @@ bool myVectorOrder( const pair<size_t,float> & o1, const pair<size_t,float> & o2
 					AlignPDF_robustMatch
 ---------------------------------------------------------------*/
 CPosePDFPtr CGridMapAligner::AlignPDF_robustMatch(
-    const CMetricMap		*mm1,
-    const CMetricMap		*mm2,
+    const mrpt::maps::CMetricMap		*mm1,
+    const mrpt::maps::CMetricMap		*mm2,
     const CPosePDFGaussian	&initialEstimationPDF,
     float					*runningTime,
     void					*info )
@@ -151,8 +152,8 @@ CPosePDFPtr CGridMapAligner::AlignPDF_robustMatch(
 
 	// Extract features from grid-maps:
 	// ------------------------------------------------------
-	const size_t N1 = max(40,round( m1->getArea() * options.featsPerSquareMeter));
-	const size_t N2 = max(40,round( m2->getArea() * options.featsPerSquareMeter));
+	const size_t N1 = std::max(40,mrpt::utils::round( m1->getArea() * options.featsPerSquareMeter));
+	const size_t N2 = std::max(40,mrpt::utils::round( m2->getArea() * options.featsPerSquareMeter));
 
 	m_grid_feat_extr.extractFeatures(*m1,*lm1, N1, options.feature_descriptor, options.feature_detector_options );
 	m_grid_feat_extr.extractFeatures(*m2,*lm2, N2, options.feature_descriptor, options.feature_detector_options );
@@ -886,8 +887,8 @@ CPosePDFPtr CGridMapAligner::AlignPDF_robustMatch(
 					AlignPDF_correlation
 ---------------------------------------------------------------*/
 CPosePDFPtr CGridMapAligner::AlignPDF_correlation(
-    const CMetricMap		*mm1,
-    const CMetricMap		*mm2,
+    const mrpt::maps::CMetricMap		*mm1,
+    const mrpt::maps::CMetricMap		*mm2,
     const CPosePDFGaussian	&initialEstimationPDF,
     float					*runningTime,
     void					*info )
@@ -1063,7 +1064,7 @@ CGridMapAligner::TConfigParams::TConfigParams() :
 /*---------------------------------------------------------------
 					dumpToTextStream
   ---------------------------------------------------------------*/
-void  CGridMapAligner::TConfigParams::dumpToTextStream(CStream	&out) const
+void  CGridMapAligner::TConfigParams::dumpToTextStream(mrpt::utils::CStream	&out) const
 {
 	out.printf("\n----------- [CGridMapAligner::TConfigParams] ------------ \n\n");
 
@@ -1124,8 +1125,8 @@ void  CGridMapAligner::TConfigParams::loadFromConfigFile(
 
 
 CPose3DPDFPtr CGridMapAligner::Align3DPDF(
-	const CMetricMap		*m1,
-	const CMetricMap		*m2,
+	const mrpt::maps::CMetricMap		*m1,
+	const mrpt::maps::CMetricMap		*m2,
 	const CPose3DPDFGaussian	&initialEstimationPDF,
 	float					*runningTime,
 	void					*info )

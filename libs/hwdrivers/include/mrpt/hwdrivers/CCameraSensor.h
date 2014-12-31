@@ -11,7 +11,7 @@
 #define CCameraSensor_H
 
 #include <mrpt/poses/CPose3D.h>
-#include <mrpt/slam/CObservation.h>
+#include <mrpt/obs/CObservation.h>
 #include <mrpt/utils/CDebugOutputCapable.h>
 #include <mrpt/utils/CConfigFileBase.h>
 #include <mrpt/hwdrivers/CGenericSensor.h>
@@ -258,11 +258,11 @@ namespace mrpt
 
 			/** Retrieves the next frame from the video source, raising an exception on any error.
 			  * Note: The returned observations can be of one of these classes (you can use IS_CLASS(obs,CObservationXXX) to determine it):
-			  *		- mrpt::slam::CObservationImage (For normal cameras or video sources)
-			  *		- mrpt::slam::CObservationStereoImages (For stereo cameras)
-			  *		- mrpt::slam::CObservation3DRangeScan (For 3D cameras)
+			  *		- mrpt::obs::CObservationImage (For normal cameras or video sources)
+			  *		- mrpt::obs::CObservationStereoImages (For stereo cameras)
+			  *		- mrpt::obs::CObservation3DRangeScan (For 3D cameras)
 			  */
-			mrpt::slam::CObservationPtr getNextFrame( );
+			mrpt::obs::CObservationPtr getNextFrame( );
 			void getNextFrame( std::vector<mrpt::utils::CSerializablePtr> & out_obs );
 
 			/** Tries to open the camera, after setting all the parameters with a call to loadConfig.
@@ -289,7 +289,7 @@ namespace mrpt
 			void enableLaunchOwnThreadForSavingImages(bool enable=true) { m_external_images_own_thread = enable; };
 
 			/** Functor type */
-			typedef void (*TPreSaveUserHook)(const mrpt::slam::CObservationPtr &obs, void* user_ptr);
+			typedef void (*TPreSaveUserHook)(const mrpt::obs::CObservationPtr &obs, void* user_ptr);
 
 			/** Provides a "hook" for user-code to be run BEFORE an image is going to be saved to disk if external storage is enabled (e.g. to rectify images, preprocess them, etc.)
 			  * Notice that this code may be called from detached threads, so it must be thread safe.

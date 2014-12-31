@@ -15,8 +15,6 @@
 namespace mrpt	{
 	namespace opengl	{
 		typedef uint32_t _GLENUM;
-		using namespace mrpt::utils;
-		using namespace mrpt::math;
 
 		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE(COpenGLStandardObject,CRenderizableDisplayList, OPENGL_IMPEXP)
 		/**
@@ -33,7 +31,7 @@ namespace mrpt	{
 			/**
 			  * Set of points in which consists this object.
 			  */
-			std::vector<TPoint3D> vertices;
+			std::vector<mrpt::math::TPoint3D> vertices;
 			/**
 			  * Granularity of the openGL elements. 3 for GL_TRIANGLES, 4 for GL_QUADS, and so on. Setting it to 0 will generate a single openGL object.
 			  */
@@ -60,7 +58,7 @@ namespace mrpt	{
 			  * Creation of object from type, vertices, chunk size and a list of enabled openGL flags.
 			  * \throw std::logic_error if the number of vertices is not an exact multiple of the chunk size.
 			  */
-			static COpenGLStandardObjectPtr Create(_GLENUM t,const std::vector<TPoint3D> &v,uint32_t cs=0,const std::vector<_GLENUM> &en=std::vector<_GLENUM>());
+			static COpenGLStandardObjectPtr Create(_GLENUM t,const std::vector<mrpt::math::TPoint3D> &v,uint32_t cs=0,const std::vector<_GLENUM> &en=std::vector<_GLENUM>());
 
 			/**
 			  * Enable some openGL flag.
@@ -109,13 +107,13 @@ namespace mrpt	{
 			/**
 			  * Constructor with all the information.
 			  */
-			COpenGLStandardObject(_GLENUM t,const std::vector<TPoint3D> &v,uint32_t cs,const vector<_GLENUM> &en):type(t),vertices(v),chunkSize(cs),enabled(en)	{
+			COpenGLStandardObject(_GLENUM t,const std::vector<mrpt::math::TPoint3D> &v,uint32_t cs,const std::vector<_GLENUM> &en):type(t),vertices(v),chunkSize(cs),enabled(en)	{
 				for (size_t i=0;i<3;i++) normal[i]=0.0;
 			}
 			/**
 			  * Baic empty constructor, initializes to default.
 			  */
-			COpenGLStandardObject():type(0),vertices(std::vector<TPoint3D>(0)),chunkSize(0),enabled(std::vector<_GLENUM>())	{
+			COpenGLStandardObject():type(0),vertices(std::vector<mrpt::math::TPoint3D>(0)),chunkSize(0),enabled(std::vector<_GLENUM>())	{
 				for (size_t i=0;i<3;i++) normal[i]=0.0;
 			}
 			/**

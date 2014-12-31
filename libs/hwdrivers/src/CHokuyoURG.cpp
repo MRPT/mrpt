@@ -19,7 +19,7 @@
 IMPLEMENTS_GENERIC_SENSOR(CHokuyoURG,mrpt::hwdrivers)
 
 using namespace mrpt::utils;
-using namespace mrpt::slam;
+using namespace mrpt::obs;
 using namespace mrpt::hwdrivers;
 using namespace mrpt::system;
 using namespace mrpt::opengl;
@@ -70,7 +70,7 @@ CHokuyoURG::~CHokuyoURG()
 -------------------------------------------------------------*/
 void  CHokuyoURG::doProcessSimple(
 	bool							&outThereIsObservation,
-	mrpt::slam::CObservation2DRangeScan	&outObservation,
+	mrpt::obs::CObservation2DRangeScan	&outObservation,
 	bool							&hardwareError )
 {
 	outThereIsObservation	= false;

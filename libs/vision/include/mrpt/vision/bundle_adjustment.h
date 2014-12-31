@@ -21,15 +21,9 @@ namespace mrpt
 {
 	namespace vision
 	{
-		using mrpt::math::CArray;
-		using mrpt::math::TPose3D;
-		using mrpt::math::TPoint3D;
-		using mrpt::utils::TCamera;
-
 		/** \defgroup bundle_adj Bundle-Adjustment methods
 		  * \ingroup mrpt_vision_grp
 		  */
-
 
 		/** @name Bundle-Adjustment methods
 		    @{ */
@@ -64,7 +58,7 @@ namespace mrpt
 		  *		- "num_fix_points": Idem, for the landmarks positions (default=0: optimize all)
 		  *		- "profiler": If !=0, displays profiling information to the console at return.
 		  *
-		  * \note In this function, all coordinates are absolute. Camera frames are such that +Z points forward from the focal point (see the figure in mrpt::slam::CObservationImage).
+		  * \note In this function, all coordinates are absolute. Camera frames are such that +Z points forward from the focal point (see the figure in mrpt::obs::CObservationImage).
 		  * \note The first frame pose will be not updated since at least one frame must remain fixed.
 		  *
 		  * \param observations [IN] All the feature observations (WITHOUT distortion), indexed by feature ID as lists of <frame_ID, (x,y)>. See TSequenceFeatureObservations.
@@ -123,7 +117,7 @@ namespace mrpt
 			const mrpt::utils::TCamera                        & camera_params,
 			const mrpt::vision::TFramePosesVec                 & frame_poses,
 			const mrpt::vision::TLandmarkLocationsVec          & landmark_points,
-			std::vector<CArray<double,2> > & out_residuals,
+			std::vector<mrpt::math::CArray<double,2> > & out_residuals,
 			const bool  frame_poses_are_inverse,
 			const bool  use_robust_kernel = true,
 			const double kernel_param = 3.0,
@@ -136,7 +130,7 @@ namespace mrpt
 			const mrpt::utils::TCamera                        & camera_params,
 			const mrpt::vision::TFramePosesMap                 & frame_poses,
 			const mrpt::vision::TLandmarkLocationsMap          & landmark_points,
-			std::vector<CArray<double,2> > & out_residuals,
+			std::vector<mrpt::math::CArray<double,2> > & out_residuals,
 			const bool  frame_poses_are_inverse,
 			const bool  use_robust_kernel = true,
 			const double kernel_param = 3.0,

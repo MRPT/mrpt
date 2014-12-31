@@ -10,7 +10,7 @@
 #include "hwdrivers-precomp.h" // Precompiled header
 
 #include <mrpt/hwdrivers/COpenNI2_RGBD360.h>
-#include <mrpt/slam/CObservationRGBD360.h>
+#include <mrpt/obs/CObservationRGBD360.h>
 #include <mrpt/utils/CTimeLogger.h>
 #include <mrpt/system/threads.h>
 
@@ -19,12 +19,13 @@
 
 using namespace mrpt::hwdrivers;
 using namespace mrpt::system;
-using namespace mrpt::slam;
+using namespace mrpt::obs;
 using namespace mrpt::synch;
 using namespace mrpt::math;
 using namespace std;
+using mrpt::utils::CTicTac;
 using mrpt::utils::DEG2RAD;
-using mrpt::slam::CObservationRGBD360;
+using mrpt::obs::CObservationRGBD360;
 
 IMPLEMENTS_GENERIC_SENSOR(COpenNI2_RGBD360,mrpt::hwdrivers)
 
@@ -109,7 +110,7 @@ void COpenNI2_RGBD360::doProcess()
 	{
 		m_state = ssWorking;
 
-		vector<CSerializablePtr> objs;
+		std::vector<mrpt::utils::CSerializablePtr> objs;
 		if (m_grab_rgb || m_grab_depth || m_grab_3D_points) objs.push_back(newObs);
 
 		appendObservations( objs );

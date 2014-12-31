@@ -61,7 +61,7 @@ namespace pbmap {
     Eigen::Matrix4f getRTwithModel( std::map<unsigned, unsigned> &matched_planes );
 
 
-//Eigen::Matrix4f getAlignment( const CMatrixFixedNumeric<float,3,8> &matched_planes );
+//Eigen::Matrix4f getAlignment( const mrpt::math::CMatrixFixedNumeric<float,3,8> &matched_planes );
 
 Eigen::Matrix4f estimatePoseRANSAC( std::map<unsigned, unsigned> &matched_planes );
 
@@ -77,18 +77,18 @@ Eigen::Matrix4f estimatePoseRANSAC( std::map<unsigned, unsigned> &matched_planes
     std::map<unsigned, unsigned> matched_planes;
 
 //// Ransac functions to detect outliers in the plane matching
-//void ransacPlaneAlignment_fit( const CMatrixFloat &planeCorresp,
+//void ransacPlaneAlignment_fit( const mrpt::math::CMatrixFloat &planeCorresp,
 //                                const vector_size_t  &useIndices,
 ////                                vector< Eigen::Matrix4f > &fitModels );
-//                                vector< CMatrixFloat44 > &fitModels );
+//                                vector< mrpt::math::CMatrixFloat44 > &fitModels );
 //
-//void ransac3Dplane_distance( const CMatrixFloat &planeCorresp,
+//void ransac3Dplane_distance( const mrpt::math::CMatrixFloat &planeCorresp,
 //                              const vector< Eigen::Matrix4f > & testModels,
 //                              const double distanceThreshold,
 //                              unsigned int & out_bestModelIndex,
 //                              vector_size_t & out_inlierIndices );
 //
-//bool ransac3Dplane_degenerate( const CMatrixFloat &planeCorresp,
+//bool ransac3Dplane_degenerate( const mrpt::math::CMatrixFloat &planeCorresp,
 //                                const mrpt::vector_size_t &useIndices );
 //
 //void TestRANSAC();

@@ -16,6 +16,8 @@
 
 using namespace mrpt;
 using namespace mrpt::utils;
+using namespace mrpt::obs;
+using namespace mrpt::poses;
 using namespace mrpt::synch;
 using namespace mrpt::hmtslam;
 using namespace std;
@@ -123,7 +125,7 @@ void  CTopLCDetector_FabMap::TOptions::loadFromConfigFile(
 }
 
 //  This method must display clearly all the contents of the structure in textual form, sending it to a CStream.
-void CTopLCDetector_FabMap::TOptions::dumpToTextStream(CStream &out) const	{
+void CTopLCDetector_FabMap::TOptions::dumpToTextStream(mrpt::utils::CStream &out) const	{
 	out.printf("\n----------- [CTopLCDetector_FabMap::TOptions] ------------ \n\n");
 
 	LOADABLEOPTS_DUMP_VAR(vocab_path, string)

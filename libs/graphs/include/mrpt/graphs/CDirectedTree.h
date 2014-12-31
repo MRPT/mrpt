@@ -18,7 +18,7 @@ namespace mrpt
 {
 	namespace graphs
 	{
-		using mrpt::utils::TNodeID;
+		using mrpt::utils::TNodeID; //!< Make available this typedef in this namespace too
 
 		/** A special kind of graph in the form of a tree with directed edges and optional edge annotations of templatized type "TYPE_EDGES".
 		  *  The tree is represented by means of:

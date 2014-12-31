@@ -27,6 +27,7 @@ using namespace mrpt::vision;
 using namespace mrpt::math;
 using namespace mrpt::system;
 using namespace mrpt::utils;
+using namespace std;
 
 IMPLEMENTS_SERIALIZABLE(CFeature, CSerializable, mrpt::vision)
 
@@ -320,7 +321,7 @@ void CFeature::dumpToConsole() const
     dumpToTextStream( myOut );
 }
 
-void  CFeature::writeToStream(CStream &out,int *version) const
+void  CFeature::writeToStream(mrpt::utils::CStream &out,int *version) const
 {
 	if (version)
 		*version = 2;
@@ -359,7 +360,7 @@ void  CFeature::writeToStream(CStream &out,int *version) const
 	}
 }
 
-void  CFeature::readFromStream(CStream &in,int version)
+void  CFeature::readFromStream(mrpt::utils::CStream &in,int version)
 {
 	switch(version)
 	{

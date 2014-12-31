@@ -9,16 +9,16 @@
 
 #include "obs-precomp.h"   // Precompiled headers
 
-#include <mrpt/slam/CObservationOdometry.h>
+#include <mrpt/obs/CObservationOdometry.h>
 #include <mrpt/utils/CStream.h>
 #include <mrpt/system/os.h>
 
-using namespace mrpt::slam;
+using namespace mrpt::obs;
 using namespace mrpt::utils;
 using namespace mrpt::poses;
 
 // This must be added to any CSerializable class implementation file.
-IMPLEMENTS_SERIALIZABLE(CObservationOdometry, CObservation,mrpt::slam)
+IMPLEMENTS_SERIALIZABLE(CObservationOdometry, CObservation,mrpt::obs)
 
 /** Constructor
  */
@@ -35,7 +35,7 @@ CObservationOdometry::CObservationOdometry( ) :
 /*---------------------------------------------------------------
   Implements the writing to a CStream capability of CSerializable objects
  ---------------------------------------------------------------*/
-void  CObservationOdometry::writeToStream(CStream &out, int *version) const
+void  CObservationOdometry::writeToStream(mrpt::utils::CStream &out, int *version) const
 {
 	MRPT_UNUSED_PARAM(out);
 	if (version)
@@ -57,7 +57,7 @@ void  CObservationOdometry::writeToStream(CStream &out, int *version) const
 /*---------------------------------------------------------------
   Implements the reading from a CStream capability of CSerializable objects
  ---------------------------------------------------------------*/
-void  CObservationOdometry::readFromStream(CStream &in, int version)
+void  CObservationOdometry::readFromStream(mrpt::utils::CStream &in, int version)
 {
 	MRPT_UNUSED_PARAM(in);
 	switch(version)

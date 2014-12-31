@@ -14,7 +14,8 @@
 #include <mrpt/utils/CStartUpClassesRegister.h>
 
 using namespace mrpt::utils;
-using namespace mrpt::slam;
+using namespace mrpt::maps;
+using namespace mrpt::obs;
 using namespace mrpt::opengl;
 
 void registerAllClasses_mrpt_maps();

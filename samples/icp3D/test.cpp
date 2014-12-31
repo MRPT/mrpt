@@ -10,8 +10,8 @@
 #include <mrpt/slam/CICP.h>
 
 #include <mrpt/poses/CPose3DPDF.h>
-#include <mrpt/slam/CObservation2DRangeScan.h>
-#include <mrpt/slam/CSimplePointsMap.h>
+#include <mrpt/obs/CObservation2DRangeScan.h>
+#include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/system/threads.h>
 #include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/opengl/CGridPlaneXY.h>
@@ -26,6 +26,8 @@ using namespace mrpt::gui;
 using namespace mrpt::opengl;
 using namespace mrpt::poses;
 using namespace mrpt::slam;
+using namespace mrpt::maps;
+using namespace mrpt::obs;
 
 
 //Increase this values to get more precision. It will also increase run time.

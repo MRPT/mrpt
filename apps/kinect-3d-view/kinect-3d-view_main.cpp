@@ -20,21 +20,23 @@
 #include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/utils/CConfigFile.h>
 #include <mrpt/utils/CTicTac.h>
-#include <mrpt/slam/CColouredPointsMap.h>
+#include <mrpt/maps/CColouredPointsMap.h>
 #include <mrpt/opengl/CGridPlaneXY.h>
 #include <mrpt/opengl/stock_objects.h>
 #include <mrpt/opengl/CPointCloudColoured.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/synch/CThreadSafeVariable.h>
-#include <mrpt/slam/CObservation3DRangeScan.h>
-#include <mrpt/slam/CObservationIMU.h>
+#include <mrpt/obs/CObservation3DRangeScan.h>
+#include <mrpt/obs/CObservationIMU.h>
 
 using namespace mrpt;
 using namespace mrpt::hwdrivers;
 using namespace mrpt::math;
 using namespace mrpt::gui;
-using namespace mrpt::slam;
+using namespace mrpt::obs;
+using namespace mrpt::maps;
 using namespace mrpt::utils;
+using namespace mrpt::opengl;
 using namespace std;
 
 //#define VIEW_AS_OCTOMAP

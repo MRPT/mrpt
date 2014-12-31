@@ -27,7 +27,7 @@ IMPLEMENTS_SERIALIZABLE(CPolygon, CSerializable, mrpt::math)
 	Implements the writing to a CStream capability of
 		CSerializable objects
   ---------------------------------------------------------------*/
-void  CPolygon::writeToStream(CStream &out, int *version) const
+void  CPolygon::writeToStream(mrpt::utils::CStream &out, int *version) const
 {
 	if (version)
 		*version = 2;
@@ -50,7 +50,7 @@ void  CPolygon::writeToStream(CStream &out, int *version) const
 	Implements the reading from a CStream capability of
 		CSerializable objects
   ---------------------------------------------------------------*/
-void  CPolygon::readFromStream(CStream &in, int version)
+void  CPolygon::readFromStream(mrpt::utils::CStream &in, int version)
 {
 	switch(version)
 	{

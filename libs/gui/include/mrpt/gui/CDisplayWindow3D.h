@@ -22,8 +22,6 @@ namespace mrpt
 {
 	namespace gui
 	{
-		using namespace mrpt::utils;
-
 		class C3DWindowDialog;
 		class CMyGLCanvas_DisplayWindow3D;
 
@@ -97,14 +95,14 @@ namespace mrpt
 			  */
 			void  createOpenGLContext();
 
-			void_ptr_noncopy	m_DisplayDeviceContext;
-			void_ptr_noncopy	m_GLRenderingContext;
+			mrpt::utils::void_ptr_noncopy	m_DisplayDeviceContext;
+			mrpt::utils::void_ptr_noncopy	m_GLRenderingContext;
 
 			std::string 		m_grab_imgs_prefix;
 			unsigned int		m_grab_imgs_idx;
 
 			bool				m_is_capturing_imgs;
-			CImagePtr		m_last_captured_img;
+			mrpt::utils::CImagePtr		m_last_captured_img;
 			synch::CCriticalSection		m_last_captured_img_cs;
 
 			void  doRender();
@@ -377,7 +375,7 @@ namespace mrpt
 		  *  IMPORTANTE NOTICE: Event handlers in your observer class will be invoked from the wxWidgets internal MRPT thread,
 		  *    so all your code in the handler must be thread safe.
 		  */
-		class GUI_IMPEXP mrptEvent3DWindowGrabImageFile : public mrptEvent
+		class GUI_IMPEXP mrptEvent3DWindowGrabImageFile : public mrpt::utils::mrptEvent
 		{
 		protected:
 			virtual void do_nothing() { } //!< Just to allow this class to be polymorphic

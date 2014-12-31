@@ -13,10 +13,6 @@
 
 namespace mrpt { namespace srba {
 
-using namespace mrpt;
-using namespace mrpt::math;
-using namespace std;
-
 #ifndef SRBA_DETAILED_TIME_PROFILING
 #	define SRBA_DETAILED_TIME_PROFILING       0          //  Enabling this has a measurable impact in performance, so use only for debugging.
 #endif
@@ -52,6 +48,7 @@ void RbaEngine<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::optimize_edges(
 	const std::vector<size_t> & in_observation_indices_to_optimize
 	)
 {
+	using namespace std;
 	// This method deals with many common tasks to any optimizer: update Jacobians, prepare Hessians, etc. 
 	// The specific solver method details are implemented in "my_solver_t":
 	typedef internal::solver_engine<RBA_OPTIONS::solver_t::USE_SCHUR,RBA_OPTIONS::solver_t::DENSE_CHOLESKY,rba_engine_t> my_solver_t;
@@ -120,8 +117,8 @@ void RbaEngine<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::optimize_edges(
 	ASSERT_(nUnknowns_scalars>=1)
 
 	// k2k edges:
-	vector<typename TSparseBlocksJacobians_dh_dAp::col_t*>  dh_dAp(nUnknowns_k2k);
-	vector<k2k_edge_t *> k2k_edge_unknowns(nUnknowns_k2k);
+	std::vector<typename TSparseBlocksJacobians_dh_dAp::col_t*>  dh_dAp(nUnknowns_k2k);
+	std::vector<k2k_edge_t *> k2k_edge_unknowns(nUnknowns_k2k);
 	for (size_t i=0;i<nUnknowns_k2k;i++)
 	{
 		dh_dAp[i] = &rba_state.lin_system.dh_dAp.getCol( run_k2k_edges[i] );
@@ -134,8 +131,8 @@ void RbaEngine<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::optimize_edges(
 	}
 
 	// k2f edges:
-	vector<typename TSparseBlocksJacobians_dh_df::col_t*>  dh_df(nUnknowns_k2f);
-	vector<TRelativeLandmarkPos*> k2f_edge_unknowns(nUnknowns_k2f);
+	std::vector<typename TSparseBlocksJacobians_dh_df::col_t*>  dh_df(nUnknowns_k2f);
+	std::vector<TRelativeLandmarkPos*> k2f_edge_unknowns(nUnknowns_k2f);
 	for (size_t i=0;i<nUnknowns_k2f;i++)
 	{
 		const TLandmarkID feat_id = run_feat_ids[i];
@@ -245,7 +242,7 @@ void RbaEngine<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::optimize_edges(
 
 	DETAILED_PROFILING_LEAVE("opt.prep_list_num_tree_roots")
 
-	VERBOSE_LEVEL(2) << "[OPT] KF roots whose spantrees need numeric-updates: " << mrpt::system::sprintf_container("%u", kfs_num_spantrees_to_update) <<endl;
+	VERBOSE_LEVEL(2) << "[OPT] KF roots whose spantrees need numeric-updates: " << mrpt::system::sprintf_container("%u", kfs_num_spantrees_to_update) <<std::endl;
 
 
 	// Spanning tree: Update numerically only those entries which we really need:
@@ -283,7 +280,7 @@ void RbaEngine<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::optimize_edges(
 #if 0  // Save a sparse block representation of the Jacobian.
 	{
 		static unsigned int dbg_idx = 0;
-		CMatrixDouble Jbin;
+	 mrpt::math::CMatrixDouble Jbin;
 		rba_state.lin_system.dh_dAp.getBinaryBlocksRepresentation(Jbin);
 		Jbin.saveToTextFile(mrpt::format("sparse_jacobs_blocks_%05u.txt",dbg_idx), mrpt::math::MATRIX_FORMAT_INT );
 		rba_state.lin_system.dh_dAp.saveToTextFileAsDense(mrpt::format("sparse_jacobs_%05u.txt",dbg_idx));
@@ -321,9 +318,9 @@ void RbaEngine<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::optimize_edges(
 	if (nInvalidJacobs)
 		VERBOSE_LEVEL(1) << "[OPT] " << nInvalidJacobs << " Jacobian blocks ignored for 'invalid'.\n";
 
-	VERBOSE_LEVEL(2) << "[OPT] Individual Jacobs: " << count_jacobians << " #k2k_edges=" << nUnknowns_k2k << " #k2f_edges=" << nUnknowns_k2f << " #obs=" << nObs << endl;
-	VERBOSE_LEVEL(2) << "[OPT] k2k_edges to optimize: " << mrpt::system::sprintf_container("% u",run_k2k_edges) << endl;
-	VERBOSE_LEVEL(2) << "[OPT] k2f_edges to optimize: " << mrpt::system::sprintf_container("% u",run_feat_ids) << endl;
+	VERBOSE_LEVEL(2) << "[OPT] Individual Jacobs: " << count_jacobians << " #k2k_edges=" << nUnknowns_k2k << " #k2f_edges=" << nUnknowns_k2f << " #obs=" << nObs << std::endl;
+	VERBOSE_LEVEL(2) << "[OPT] k2k_edges to optimize: " << mrpt::system::sprintf_container("% u",run_k2k_edges) << std::endl;
+	VERBOSE_LEVEL(2) << "[OPT] k2f_edges to optimize: " << mrpt::system::sprintf_container("% u",run_feat_ids) << std::endl;
 	// Extra verbose: display initial value of each optimized pose:
 	if (m_verbose_level>=2 && !run_k2k_edges.empty())
 	{
@@ -396,7 +393,7 @@ void RbaEngine<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::optimize_edges(
 	out_info.total_sqr_error_init = total_proj_error;
 
 
-	VERBOSE_LEVEL(1) << "[OPT] LM: Initial RMSE=" <<  RMSE << " #Jcbs=" << count_jacobians << " #k2k_edges=" << nUnknowns_k2k << " #k2f_edges=" << nUnknowns_k2f << " #obs=" << nObs << endl;
+	VERBOSE_LEVEL(1) << "[OPT] LM: Initial RMSE=" <<  RMSE << " #Jcbs=" << count_jacobians << " #k2k_edges=" << nUnknowns_k2k << " #k2f_edges=" << nUnknowns_k2f << " #obs=" << nObs << std::endl;
 
 	if (parameters.srba.feedback_user_iteration)
 		(*parameters.srba.feedback_user_iteration)(0,total_proj_error,RMSE);
@@ -470,7 +467,7 @@ void RbaEngine<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::optimize_edges(
 				nu *= 2.;
 				stop = (lambda>MAX_LAMBDA);
 
-				VERBOSE_LEVEL(2) << "[OPT] LM iter #"<< iter << " NotDefPos in Cholesky. Retrying with lambda=" << lambda << endl;
+				VERBOSE_LEVEL(2) << "[OPT] LM iter #"<< iter << " NotDefPos in Cholesky. Retrying with lambda=" << lambda << std::endl;
 				continue;
 			}
 
@@ -510,7 +507,7 @@ void RbaEngine<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::optimize_edges(
 				pose_t new_pose(mrpt::poses::UNINITIALIZED_POSE);
 
 				// Use the Lie Algebra methods for the increment:
-				const CArrayDouble<POSE_DIMS> incr( & my_solver.delta_eps[POSE_DIMS*i] );
+				const mrpt::math::CArrayDouble<POSE_DIMS> incr( & my_solver.delta_eps[POSE_DIMS*i] );
 				pose_t  incrPose(mrpt::poses::UNINITIALIZED_POSE);
 				se_traits_t::pseudo_exp(incr,incrPose);   // incrPose = exp(incr) (Lie algebra pseudo-exponential map)
 
@@ -594,7 +591,7 @@ void RbaEngine<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::optimize_edges(
 				// Recalculate Jacobians?
 				bool do_relinearize = (error_reduction_ratio<0 || error_reduction_ratio> this->parameters.srba.min_error_reduction_ratio_to_relinearize );
 
-				VERBOSE_LEVEL(2) << "[OPT] LM iter #"<< iter << " RMSE: " << RMSE << " -> " << new_RMSE <<  ", rho=" << rho << ", Err.reduc.ratio="<< error_reduction_ratio << " => Relinearize?:" << (do_relinearize ? "YES":"NO") << endl;
+				VERBOSE_LEVEL(2) << "[OPT] LM iter #"<< iter << " RMSE: " << RMSE << " -> " << new_RMSE <<  ", rho=" << rho << ", Err.reduc.ratio="<< error_reduction_ratio << " => Relinearize?:" << (do_relinearize ? "YES":"NO") << std::endl;
 				if (parameters.srba.feedback_user_iteration)
 					(*parameters.srba.feedback_user_iteration)(iter,new_total_proj_error,new_RMSE);
 
@@ -636,7 +633,7 @@ void RbaEngine<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::optimize_edges(
 				compute_minus_gradient(/* Out: */ minus_grad, /* In: */ dh_dAp, dh_df, residuals, obs_global_idx2residual_idx);
 				DETAILED_PROFILING_LEAVE("opt.compute_minus_gradient")
 
-				const double norm_inf_min_grad = norm_inf(minus_grad);
+				const double norm_inf_min_grad = mrpt::math::norm_inf(minus_grad);
 				if (norm_inf_min_grad<=max_gradient_to_stop)
 				{
 					VERBOSE_LEVEL(2) << "[OPT] LM end criterion: norm_inf(minus_grad) below threshold: " << norm_inf_min_grad << " <= " <<max_gradient_to_stop<<endl;
@@ -713,10 +710,10 @@ void RbaEngine<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::optimize_edges(
 	} // end for LM "iter"
 
 #if 0
-	cout << "residuals" << endl;
+	std::cout << "residuals" << std::endl;
 	for( size_t r = 0; r < residuals.size(); ++r ) 
 	{
-		cout << involved_obs[r].k2f->obs.obs.feat_id << "," 
+		std::cout << involved_obs[r].k2f->obs.obs.feat_id << ","
 			 << residuals[r][0] << "," 
 			 << residuals[r][1] << "," 
 			 << residuals[r][2] << "," 
@@ -728,11 +725,11 @@ void RbaEngine<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::optimize_edges(
 			residuals[r][3]*residuals[r][3];
 
 		if( totalres > 20 )
-			cout << " <-- spurious( " << totalres << ")";
+			std::cout << " <-- spurious( " << totalres << ")";
 		
-		cout << endl;
+		std::cout << std::endl;
 	}
-	cout << "done" << endl;
+	cout << "done" << std::endl;
 #endif 
 
 	// Final output info:

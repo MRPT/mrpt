@@ -19,18 +19,12 @@ namespace mrpt
 {
 	namespace detectors
 	{
-		using namespace std;
-		using namespace mrpt::slam;
-		using namespace mrpt::utils;
-
 		typedef std::vector<CDetectableObjectPtr> vector_detectable_object;
 
 		/** \ingroup mrpt_detectors_grp */
 		class DETECTORS_IMPEXP CObjectDetection	
 		{
 		public:
-			//virtual ~CObjectDetection();
-
 			/** Initialize the object with parameters loaded from the given config file. */
 			inline void init(const std::string &configFile)
 			{
@@ -41,21 +35,21 @@ namespace mrpt
 			/** Initialize the object with parameters loaded from the given config source. */
 			virtual void init(const mrpt::utils::CConfigFileBase &cfg )=0;
 
-			inline void detectObjects(const CObservationPtr obs, vector_detectable_object &detected) 
+			inline void detectObjects(const mrpt::obs::CObservationPtr obs, vector_detectable_object &detected) 
 			{ 
 				detectObjects_Impl(obs.pointer(), detected); 
 			};
 
-			inline void detectObjects( const CObservation *obs, vector_detectable_object &detected)
+			inline void detectObjects( const mrpt::obs::CObservation *obs, vector_detectable_object &detected)
 			{
 				detectObjects_Impl( obs, detected );
 			};			
 
-			void detectObjects(const CImage *img, vector_detectable_object &detected);
+			void detectObjects(const mrpt::utils::CImage *img, vector_detectable_object &detected);
 
 		protected:
 
-			virtual void detectObjects_Impl( const CObservation *obs, vector_detectable_object &detected) = 0;			
+			virtual void detectObjects_Impl( const mrpt::obs::CObservation *obs, vector_detectable_object &detected) = 0;			
 
 		}; // End of class
 	}

@@ -10,12 +10,12 @@
 #include "hwdrivers-precomp.h"   // Precompiled headers
 
 #include <mrpt/hwdrivers/CGenericSensor.h>
-#include <mrpt/slam/CAction.h>
-#include <mrpt/slam/CObservation.h>
+#include <mrpt/obs/CAction.h>
+#include <mrpt/obs/CObservation.h>
 #include <mrpt/utils/CStartUpClassesRegister.h>
 
 using namespace mrpt::utils;
-using namespace mrpt::slam;
+using namespace mrpt::obs;
 using namespace mrpt::system;
 using namespace mrpt::hwdrivers;
 using namespace std;

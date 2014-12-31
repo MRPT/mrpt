@@ -17,15 +17,15 @@
   ---------------------------------------------------------------*/
 
 #include <mrpt/system/os.h>
-#include <mrpt/slam/CSimpleMap.h>
-#include <mrpt/slam/CMultiMetricMap.h>
+#include <mrpt/maps/CSimpleMap.h>
+#include <mrpt/maps/CMultiMetricMap.h>
 #include <mrpt/utils/CConfigFile.h>
 #include <mrpt/utils/CFileGZInputStream.h>
 #include <mrpt/utils/CFileGZOutputStream.h>
 
 
 using namespace mrpt;
-using namespace mrpt::slam;
+using namespace mrpt::maps;
 using namespace mrpt::opengl;
 using namespace mrpt::system;
 using namespace mrpt::math;
@@ -68,7 +68,7 @@ int main(int argc, char **argv)
 
 		// Load simplemap:
 		cout << "Loading simplemap...";
-		mrpt::slam::CSimpleMap	simplemap;
+		mrpt::maps::CSimpleMap	simplemap;
 		CFileGZInputStream f( inputFile.c_str() );
 		f >> simplemap;
 		cout <<"done: " << simplemap.size() << " observations." << endl;

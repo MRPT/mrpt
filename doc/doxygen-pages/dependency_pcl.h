@@ -22,13 +22,13 @@ If available, it will provide the following functionality:
 - The library <a href="group__mrpt__pbmap__grp.html" >mrpt-pbmap</a> cannot be compiled without PCL.
 - <a href="http://www.mrpt.org/Application:rawlog-edit" >rawlog-edit</a> program: The --generate-pcd command.
 - In point map classes:
-	- mrpt::slam::CPointsMap::getPCLPointCloud() (*)
-	- mrpt::slam::CPointsMap::setFromPCLPointCloud() (*)
-	- mrpt::slam::CColouredPointsMap::getPCLPointCloudRGB() (*)
-	- mrpt::slam::CPointsMap::savePCDFile()
-	- mrpt::slam::CPointsMap::loadPCDFile()
-- In mrpt::slam::CObservation3DRangeScan (observations from 3D cameras, e.g. Kinect):
-	- mrpt::slam::CObservation3DRangeScan::project3DPointsFromDepthImageInto() (*)
+	- mrpt::maps::CPointsMap::getPCLPointCloud() (*)
+	- mrpt::maps::CPointsMap::setFromPCLPointCloud() (*)
+	- mrpt::maps::CColouredPointsMap::getPCLPointCloudRGB() (*)
+	- mrpt::maps::CPointsMap::savePCDFile()
+	- mrpt::maps::CPointsMap::loadPCDFile()
+- In mrpt::obs::CObservation3DRangeScan (observations from 3D cameras, e.g. Kinect):
+	- mrpt::obs::CObservation3DRangeScan::project3DPointsFromDepthImageInto() (*)
 - Read also: <a href="http://www.mrpt.org/Generating_3D_point_clouds_from_RGB_D_observations" >"Generating 3D point clouds from RGB+D observations"</a>.
 		
 <b>Note:</b> (*) means that the functionality is header-only. This means that will be

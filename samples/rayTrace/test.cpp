@@ -35,7 +35,10 @@ using namespace mrpt;
 using namespace mrpt::gui;
 using namespace mrpt::opengl;
 using namespace mrpt::poses;
+using namespace mrpt::math;
 using namespace mrpt::random;
+using namespace mrpt::utils;
+
 using mrpt::opengl::CAngularObservationMesh;
 using namespace stlplus;
 

@@ -7,8 +7,8 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/slam/CObservation2DRangeScan.h>
-#include <mrpt/slam/CSimplePointsMap.h>
+#include <mrpt/obs/CObservation2DRangeScan.h>
+#include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/random.h>
 
@@ -16,7 +16,8 @@
 
 using namespace mrpt;
 using namespace mrpt::utils;
-using namespace mrpt::slam;
+using namespace mrpt::maps;
+using namespace mrpt::obs;
 using namespace mrpt::random;
 using namespace std;
 

@@ -9,8 +9,8 @@
 
 #include "maps-precomp.h" // Precomp header
 
-#include <mrpt/slam/CWirelessPowerGridMap2D.h>
-#include <mrpt/slam/CObservationWirelessPower.h>
+#include <mrpt/maps/CWirelessPowerGridMap2D.h>
+#include <mrpt/obs/CObservationWirelessPower.h>
 #include <mrpt/system/os.h>
 #include <mrpt/utils/round.h>
 #include <mrpt/utils/CTicTac.h>
@@ -19,12 +19,13 @@
 #include <mrpt/utils/CStream.h>
 
 using namespace mrpt;
-using namespace mrpt::slam;
+using namespace mrpt::maps;
+using namespace mrpt::obs;
 using namespace mrpt::utils;
 using namespace mrpt::poses;
 using namespace std;
 
-IMPLEMENTS_SERIALIZABLE(CWirelessPowerGridMap2D, CRandomFieldGridMap2D,mrpt::slam)
+IMPLEMENTS_SERIALIZABLE(CWirelessPowerGridMap2D, CRandomFieldGridMap2D,mrpt::maps)
 
 /*---------------------------------------------------------------
 						Constructor
@@ -133,7 +134,7 @@ double	 CWirelessPowerGridMap2D::computeObservationLikelihood(
 /*---------------------------------------------------------------
   Implements the writing to a CStream capability of CSerializable objects
  ---------------------------------------------------------------*/
-void  CWirelessPowerGridMap2D::writeToStream(CStream &out, int *version) const
+void  CWirelessPowerGridMap2D::writeToStream(mrpt::utils::CStream &out, int *version) const
 {
 	if (version)
 		*version = 3;
@@ -197,7 +198,7 @@ struct TOldCellTypeInVersion1
 /*---------------------------------------------------------------
   Implements the reading from a CStream capability of CSerializable objects
  ---------------------------------------------------------------*/
-void  CWirelessPowerGridMap2D::readFromStream(CStream &in, int version)
+void  CWirelessPowerGridMap2D::readFromStream(mrpt::utils::CStream &in, int version)
 {
 	switch(version)
 	{
@@ -298,7 +299,7 @@ CWirelessPowerGridMap2D::TInsertionOptions::TInsertionOptions()
 /*---------------------------------------------------------------
 					dumpToTextStream
   ---------------------------------------------------------------*/
-void  CWirelessPowerGridMap2D::TInsertionOptions::dumpToTextStream(CStream	&out) const
+void  CWirelessPowerGridMap2D::TInsertionOptions::dumpToTextStream(mrpt::utils::CStream	&out) const
 {
 	out.printf("\n----------- [CWirelessPowerGridMap2D::TInsertionOptions] ------------ \n\n");
 	internal_dumpToTextStream_common(out);  // Common params to all random fields maps:

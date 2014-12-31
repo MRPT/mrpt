@@ -27,19 +27,19 @@
 #include <mrpt/system/filesystem.h>
 #include <mrpt/math/lightweight_geom_data.h>
 
-#include <mrpt/slam/carmen_log_tools.h>
-#include <mrpt/slam/CSimpleMap.h>
-#include <mrpt/slam/CObservationOdometry.h>
+#include <mrpt/obs/carmen_log_tools.h>
+#include <mrpt/maps/CSimpleMap.h>
+#include <mrpt/obs/CObservationOdometry.h>
 #include <mrpt/poses/CPosePDFGaussian.h>
 
 #include <mrpt/otherlibs/tclap/CmdLine.h>
 
 
-
 using namespace mrpt;
 using namespace mrpt::utils;
 using namespace mrpt::poses;
-using namespace mrpt::slam;
+using namespace mrpt::obs;
+using namespace mrpt::maps;
 using namespace mrpt::math;
 using namespace mrpt::system;
 using namespace std;
@@ -96,7 +96,7 @@ int main(int argc, char **argv)
 		// The main loop
 		// --------------------------------
 		vector<CObservationPtr>  importedObservations;
-		mrpt::slam::CSimpleMap  theSimpleMap;
+		mrpt::maps::CSimpleMap  theSimpleMap;
 		const mrpt::system::TTimeStamp  base_timestamp = mrpt::system::now();
 
 		const uint64_t totalInFileSize = mrpt::system::getFileSize(input_log);

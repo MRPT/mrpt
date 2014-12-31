@@ -9,10 +9,10 @@
 
 #include "hwdrivers-precomp.h"   // Precompiled headers
 
-//#include <mrpt/system/os.h>
 #include <mrpt/hwdrivers/CRoboticHeadInterface.h>
 
 using namespace mrpt::utils;
+using namespace mrpt::math;
 using namespace mrpt::hwdrivers;
 
 /*-------------------------------------------------------------

@@ -26,12 +26,12 @@
 #include <mrpt/utils/CFileGZOutputStream.h>
 #include <mrpt/utils/stl_containers_utils.h>
 #include <mrpt/system/filesystem.h>
-#include <mrpt/slam/CObservationImage.h>
-#include <mrpt/slam/CObservationStereoImages.h>
-#include <mrpt/slam/CObservation2DRangeScan.h>
+#include <mrpt/obs/CObservationImage.h>
+#include <mrpt/obs/CObservationStereoImages.h>
+#include <mrpt/obs/CObservation2DRangeScan.h>
 
 using namespace mrpt;
-using namespace mrpt::slam;
+using namespace mrpt::obs;
 using namespace mrpt::opengl;
 using namespace mrpt::system;
 using namespace mrpt::math;
@@ -399,8 +399,8 @@ vector_bool     auxMask;
 
 // Delete observations by index in their sensory frame.
 void filter_delObsByIndex(
-    mrpt::slam::CActionCollection *acts,
-    mrpt::slam::CSensoryFrame *SF,
+    mrpt::obs::CActionCollection *acts,
+    mrpt::obs::CSensoryFrame *SF,
     int &changesCount  )
 {
     if (SF)
@@ -442,8 +442,8 @@ void CFormEdit::OnbtnDelObsIndxClick(wxCommandEvent& event)
 vector_string classNameOfObsToRemove;
 
 void filter_delObsByClass(
-    mrpt::slam::CActionCollection *acts,
-    mrpt::slam::CSensoryFrame *SF,
+    mrpt::obs::CActionCollection *acts,
+    mrpt::obs::CSensoryFrame *SF,
     int &changesCount  )
 {
     if (SF)
@@ -463,8 +463,8 @@ void filter_delObsByClass(
 }
 
 void filter_remObsByClass(
-    mrpt::slam::CActionCollection *acts,
-    mrpt::slam::CSensoryFrame *SF,
+    mrpt::obs::CActionCollection *acts,
+    mrpt::obs::CSensoryFrame *SF,
     int &changesCount  )
 {
     if (SF)
@@ -500,8 +500,8 @@ void CFormEdit::OnbtnRemoveObsClassClick(wxCommandEvent& event)
 
 // Delete actions by index.
 void filter_delActsByIndex(
-    mrpt::slam::CActionCollection *acts,
-    mrpt::slam::CSensoryFrame *SF,
+    mrpt::obs::CActionCollection *acts,
+    mrpt::obs::CSensoryFrame *SF,
     int &changesCount )
 {
     if (acts)
@@ -557,8 +557,8 @@ void swapColors( CImage &img)
 
 // Swap colors:
 void filter_swapColors(
-    mrpt::slam::CActionCollection *acts,
-    mrpt::slam::CSensoryFrame *SF,
+    mrpt::obs::CActionCollection *acts,
+    mrpt::obs::CSensoryFrame *SF,
     int &changesCount )
 {
     if (SF)
@@ -919,8 +919,8 @@ void CFormEdit::executeOperationOnRawlog( TRawlogFilter operation, const char *e
 vector_string labelOfObsToRemove;
 
 void filter_delObsByLabel(
-    mrpt::slam::CActionCollection *acts,
-    mrpt::slam::CSensoryFrame *SF,
+    mrpt::obs::CActionCollection *acts,
+    mrpt::obs::CSensoryFrame *SF,
     int &changesCount  )
 {
     if (SF)
@@ -940,8 +940,8 @@ void filter_delObsByLabel(
 }
 
 void filter_NotDelObsByLabel(
-    mrpt::slam::CActionCollection *acts,
-    mrpt::slam::CSensoryFrame *SF,
+    mrpt::obs::CActionCollection *acts,
+    mrpt::obs::CSensoryFrame *SF,
     int &changesCount  )
 {
     if (SF)
@@ -998,8 +998,8 @@ void CFormEdit::OnslFromCmdScroll1(wxScrollEvent& event)
 double  minPitchToDeleteLaserScan = DEG2RAD(1.2);
 
 void leave_horizontalScans(
-    mrpt::slam::CActionCollection *acts,
-    mrpt::slam::CSensoryFrame *SF,
+    mrpt::obs::CActionCollection *acts,
+    mrpt::obs::CSensoryFrame *SF,
     int &changesCount  )
 {
     if (SF)

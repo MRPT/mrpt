@@ -15,11 +15,7 @@
 
 namespace mrpt
 {
-	namespace slam
-	{
-		class CActionCollection;
-		class CSensoryFrame;
-	}
+	namespace obs { class CSensoryFrame; class CActionCollection; }
 
 	/** The namespace for Bayesian filtering algorithm: different particle filters and Kalman filter algorithms. \ingroup mrpt_base_grp
 	  */
@@ -176,8 +172,8 @@ namespace mrpt
 			 */
 			void  executeOn(
 				CParticleFilterCapable 			&obj,
-				const mrpt::slam::CActionCollection   *action,
-				const mrpt::slam::CSensoryFrame	    *observation,
+				const mrpt::obs::CActionCollection   *action,
+				const mrpt::obs::CSensoryFrame	    *observation,
 				TParticleFilterStats	        *stats = NULL);
 
 

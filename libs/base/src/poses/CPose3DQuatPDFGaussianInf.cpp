@@ -56,7 +56,7 @@ CPose3DQuatPDFGaussianInf::CPose3DQuatPDFGaussianInf( const CPose3DQuat &init_Me
 /*---------------------------------------------------------------
 						writeToStream
   ---------------------------------------------------------------*/
-void  CPose3DQuatPDFGaussianInf::writeToStream(CStream &out,int *version) const
+void  CPose3DQuatPDFGaussianInf::writeToStream(mrpt::utils::CStream &out,int *version) const
 {
 	if (version)
 		*version = 0;
@@ -75,7 +75,7 @@ void  CPose3DQuatPDFGaussianInf::writeToStream(CStream &out,int *version) const
 /*---------------------------------------------------------------
 						readFromStream
   ---------------------------------------------------------------*/
-void  CPose3DQuatPDFGaussianInf::readFromStream(CStream &in,int version)
+void  CPose3DQuatPDFGaussianInf::readFromStream(mrpt::utils::CStream &in,int version)
 {
 	switch(version)
 	{

@@ -29,13 +29,16 @@
 #include <mrpt/math/wrap2pi.h>
 #include <mrpt/system/vector_loadsave.h>
 #include <mrpt/random.h>
-#include <mrpt/slam/CObservationComment.h>
+#include <mrpt/obs/CObservationComment.h>
 
 using namespace std;
 using namespace mrpt;
+using namespace mrpt::bayes;
 using namespace mrpt::utils;
 using namespace mrpt::random;
 using namespace mrpt::slam;
+using namespace mrpt::obs;
+using namespace mrpt::maps;
 using namespace mrpt::poses;
 
 #include "../wx-common/mrpt_logo.xpm"

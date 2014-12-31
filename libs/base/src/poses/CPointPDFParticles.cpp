@@ -146,7 +146,7 @@ void CPointPDFParticles::getCovarianceAndMean(CMatrixDouble33 &cov, CPoint3D &me
 /*---------------------------------------------------------------
 						writeToStream
   ---------------------------------------------------------------*/
-void  CPointPDFParticles::writeToStream(CStream &out,int *version) const
+void  CPointPDFParticles::writeToStream(mrpt::utils::CStream &out,int *version) const
 {
 	if (version)
 		*version = 0;
@@ -163,7 +163,7 @@ void  CPointPDFParticles::writeToStream(CStream &out,int *version) const
 /*---------------------------------------------------------------
 						readFromStream
   ---------------------------------------------------------------*/
-void  CPointPDFParticles::readFromStream(CStream &in,int version)
+void  CPointPDFParticles::readFromStream(mrpt::utils::CStream &in,int version)
 {
 	switch(version)
 	{
@@ -310,7 +310,7 @@ void  CPointPDFParticles::bayesianFusion( const  CPointPDF &p1_, const  CPointPD
 /*---------------------------------------------------------------
 						writeToStream
   ---------------------------------------------------------------*/
-void  TSimple3DPoint::writeToStream(CStream &out,int *version) const
+void  TSimple3DPoint::writeToStream(mrpt::utils::CStream &out,int *version) const
 {
 	MRPT_UNUSED_PARAM(out); MRPT_UNUSED_PARAM(version);
 	THROW_EXCEPTION("Shouldn't arrive here!");
@@ -319,7 +319,7 @@ void  TSimple3DPoint::writeToStream(CStream &out,int *version) const
 /*---------------------------------------------------------------
 						readFromStream
   ---------------------------------------------------------------*/
-void  TSimple3DPoint::readFromStream(CStream &in,int version)
+void  TSimple3DPoint::readFromStream(mrpt::utils::CStream &in,int version)
 {
 	MRPT_UNUSED_PARAM(in); MRPT_UNUSED_PARAM(version);
 	THROW_EXCEPTION("Shouldn't arrive here!");

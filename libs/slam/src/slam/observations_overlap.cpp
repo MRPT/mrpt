@@ -10,9 +10,11 @@
 #include "slam-precomp.h"   // Precompiled headers
 
 #include <mrpt/slam/observations_overlap.h>
-#include <mrpt/slam/CPointsMap.h>
+#include <mrpt/maps/CPointsMap.h>
 
 using namespace mrpt::slam;
+using namespace mrpt::maps;
+using namespace mrpt::obs;
 using namespace mrpt::utils;
 using namespace mrpt::poses;
 using namespace std;
@@ -21,8 +23,8 @@ using namespace std;
   *  \note This is used in mrpt::slam::CIncrementalMapPartitioner
   */
 double mrpt::slam::observationsOverlap(
-	const mrpt::slam::CObservation* o1,
-	const mrpt::slam::CObservation* o2,
+	const mrpt::obs::CObservation* o1,
+	const mrpt::obs::CObservation* o2,
 	const mrpt::poses::CPose3D *pose_o2_wrt_o1 )
 {
 	if (IS_CLASS(o1,CObservation2DRangeScan) && IS_CLASS(o2,CObservation2DRangeScan))
@@ -30,8 +32,8 @@ double mrpt::slam::observationsOverlap(
 		const CObservation2DRangeScan *this_obs = static_cast<const CObservation2DRangeScan *>(o1);
 		const CObservation2DRangeScan *obs      = static_cast<const CObservation2DRangeScan *>(o2);
 
-		const CPointsMap *map1 = this_obs->buildAuxPointsMap<mrpt::slam::CPointsMap>();
-		const CPointsMap *map2 = obs->buildAuxPointsMap<mrpt::slam::CPointsMap>();
+		const CPointsMap *map1 = this_obs->buildAuxPointsMap<mrpt::maps::CPointsMap>();
+		const CPointsMap *map2 = obs->buildAuxPointsMap<mrpt::maps::CPointsMap>();
 
 		// if PDF is available, get "mean" value as an estimation:
 		CPose3D	  otherObsPose;
@@ -39,8 +41,8 @@ double mrpt::slam::observationsOverlap(
 			otherObsPose = *pose_o2_wrt_o1;
 
 		mrpt::utils::TMatchingPairList	correspondences;
-		TMatchingParams matchParams;
-		TMatchingExtraResults matchExtraResults;
+		mrpt::maps::TMatchingParams matchParams;
+		mrpt::maps::TMatchingExtraResults matchExtraResults;
 
 		matchParams.maxDistForCorrespondence = 0.04f;
 		matchParams.maxAngularDistForCorrespondence = 0;
@@ -65,8 +67,8 @@ double mrpt::slam::observationsOverlap(
   *  \note This is used in mrpt::slam::CIncrementalMapPartitioner
   */
 double mrpt::slam::observationsOverlap(
-	const mrpt::slam::CSensoryFrame &sf1,
-	const mrpt::slam::CSensoryFrame &sf2,
+	const mrpt::obs::CSensoryFrame &sf1,
+	const mrpt::obs::CSensoryFrame &sf2,
 	const mrpt::poses::CPose3D *pose_sf2_wrt_sf1 )
 {
 	MRPT_UNUSED_PARAM(pose_sf2_wrt_sf1);

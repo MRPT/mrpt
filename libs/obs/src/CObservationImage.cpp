@@ -9,19 +9,19 @@
 
 #include "obs-precomp.h"   // Precompiled headers
 
-#include <mrpt/slam/CObservationImage.h>
+#include <mrpt/obs/CObservationImage.h>
 #include <mrpt/utils/CStream.h>
 #include <mrpt/math/ops_vectors.h>  // << of std::vector()
 
 #include <iostream>
 
-using namespace mrpt::slam;
+using namespace mrpt::obs;
 using namespace mrpt::utils;
 using namespace mrpt::math;
 using namespace mrpt::poses;
 
 // This must be added to any CSerializable class implementation file.
-IMPLEMENTS_SERIALIZABLE(CObservationImage, CObservation,mrpt::slam)
+IMPLEMENTS_SERIALIZABLE(CObservationImage, CObservation,mrpt::obs)
 
 /** Constructor
  */
@@ -34,7 +34,7 @@ CObservationImage::CObservationImage( void *iplImage  ) :
 /*---------------------------------------------------------------
   Implements the writing to a CStream capability of CSerializable objects
  ---------------------------------------------------------------*/
-void  CObservationImage::writeToStream(CStream &out, int *version) const
+void  CObservationImage::writeToStream(mrpt::utils::CStream &out, int *version) const
 {
 	if (version)
 		*version = 4;
@@ -50,7 +50,7 @@ void  CObservationImage::writeToStream(CStream &out, int *version) const
 /*---------------------------------------------------------------
   Implements the reading from a CStream capability of CSerializable objects
  ---------------------------------------------------------------*/
-void  CObservationImage::readFromStream(CStream &in, int version)
+void  CObservationImage::readFromStream(mrpt::utils::CStream &in, int version)
 {
 	switch(version)
 	{

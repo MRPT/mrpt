@@ -334,7 +334,7 @@ void CPose3DPDFParticles::getCovarianceAndMean(CMatrixDouble66 &cov,CPose3D &mea
 /*---------------------------------------------------------------
 						writeToStream
   ---------------------------------------------------------------*/
-void  CPose3DPDFParticles::writeToStream(CStream &out,int *version) const
+void  CPose3DPDFParticles::writeToStream(mrpt::utils::CStream &out,int *version) const
 {
 	if (version)
 		*version = 0;
@@ -347,7 +347,7 @@ void  CPose3DPDFParticles::writeToStream(CStream &out,int *version) const
 /*---------------------------------------------------------------
 						readFromStream
   ---------------------------------------------------------------*/
-void  CPose3DPDFParticles::readFromStream(CStream &in, int version)
+void  CPose3DPDFParticles::readFromStream(mrpt::utils::CStream &in, int version)
 {
 	switch(version)
 	{

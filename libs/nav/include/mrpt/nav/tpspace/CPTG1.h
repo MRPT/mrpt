@@ -46,7 +46,7 @@ namespace mrpt
 			/** Constructor: possible values in "params", those of CParameterizedTrajectoryGenerator plus:
 			 *   - K: Direction, +1 or -1
 			 */
-			CPTG1(const TParameters<double> &params );
+			CPTG1(const mrpt::utils::TParameters<double> &params );
 
 			virtual bool inverseMap_WS2TP(float x, float y, int &out_k, float &out_d, float tolerance_dist = 0.10f) const;
 

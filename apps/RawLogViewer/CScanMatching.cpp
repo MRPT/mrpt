@@ -28,8 +28,8 @@
 
 
 // General global variables:
-#include <mrpt/slam/CSimplePointsMap.h>
-#include <mrpt/slam/COccupancyGridMap2D.h>
+#include <mrpt/maps/CSimplePointsMap.h>
+#include <mrpt/maps/COccupancyGridMap2D.h>
 #include <mrpt/poses/CPosePDFSOG.h>
 #include <mrpt/slam/CICP.h>
 
@@ -37,10 +37,13 @@
 
 using namespace mrpt;
 using namespace mrpt::slam;
+using namespace mrpt::maps;
 using namespace mrpt::opengl;
+using namespace mrpt::poses;
 using namespace mrpt::system;
 using namespace mrpt::math;
 using namespace mrpt::utils;
+using namespace mrpt::obs;
 using namespace std;
 
 

@@ -10,12 +10,13 @@
 #include <mrpt/utils/CConfigFile.h>
 #include <mrpt/hwdrivers/CSerialPort.h>
 #include <mrpt/hwdrivers/CSickLaserUSB.h>
-#include <mrpt/slam/CSimplePointsMap.h>
+#include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/system/os.h>
 
 using namespace mrpt;
 using namespace mrpt::utils;
-using namespace mrpt::slam;
+using namespace mrpt::obs;
+using namespace mrpt::maps;
 using namespace mrpt::opengl;
 using namespace mrpt::hwdrivers;
 using namespace std;
@@ -68,7 +69,7 @@ void TestPLS()
 
 			obs.sensorPose = CPose3D(0,0,0);
 
-			mrpt::slam::CSimplePointsMap		map;
+			mrpt::maps::CSimplePointsMap		map;
 			map.insertionOptions.minDistBetweenLaserPoints	= 0;
 			map.insertObservation( &obs );
 			map.save2D_to_text_file("_out_scan.txt");

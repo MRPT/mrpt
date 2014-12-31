@@ -21,7 +21,7 @@ in the rest of MRPT classes.
 Interesting starting points:
 <ul>
 <li> To see the list of existing metric maps, see the classes inheriting from
-the base virtual mrpt::slam::CMetricMap. <b>Note:</b> There are two special
+the base virtual mrpt::maps::CMetricMap. <b>Note:</b> There are two special
 maps which are not declared here in mrpt-maps, but 
 in <a href="mrpt-vision.html" >mrpt-vision</a>, due to their
 heavy dependence on computer vision functions. </li>
@@ -33,13 +33,10 @@ mrpt::opengl::CPlanarLaserScan </li>
 </ul> 
 
 Please, note that there is another very important map class 
-(mrpt::slam::CMultiMetricMap) which is not in mrpt-maps, but in the library mrpt-slam 
+(mrpt::maps::CMultiMetricMap) which is not in mrpt-maps, but in the library mrpt-slam 
 (the reason is that there is not another reasonable way to factor MRPT into small libraries).
 
-
-See the list of classes in mrpt::slam (not all those classes are in mrpt-maps).
-
-
+See the list of classes in mrpt::maps
 
 
 */

@@ -25,8 +25,9 @@ IMPLEMENTS_GENERIC_SENSOR(CSickLaserUSB,mrpt::hwdrivers)
 using namespace std;
 using namespace mrpt;
 using namespace mrpt::utils;
-using namespace mrpt::slam;
+using namespace mrpt::obs;
 using namespace mrpt::hwdrivers;
+using namespace mrpt::poses;
 
 
 /*-------------------------------------------------------------
@@ -57,7 +58,7 @@ CSickLaserUSB::~CSickLaserUSB()
 -------------------------------------------------------------*/
 void  CSickLaserUSB::doProcessSimple(
 	bool							&outThereIsObservation,
-	mrpt::slam::CObservation2DRangeScan	&outObservation,
+	mrpt::obs::CObservation2DRangeScan	&outObservation,
 	bool							&hardwareError )
 {
 	outThereIsObservation	= false;

@@ -11,7 +11,7 @@
 
 #include <mrpt/hwdrivers/COpenNI2Generic.h>
 #include <mrpt/utils/CTimeLogger.h>
-#include <mrpt/slam/CObservation3DRangeScan.h>
+#include <mrpt/obs/CObservation3DRangeScan.h>
 #include <mrpt/system/threads.h>
 
 // Universal include for all versions of OpenCV
@@ -30,7 +30,7 @@
 
 using namespace mrpt::hwdrivers;
 using namespace mrpt::system;
-using namespace mrpt::slam;
+using namespace mrpt::obs;
 using namespace mrpt::synch;
 using namespace std;
 
@@ -109,7 +109,7 @@ class COpenNI2Generic::CDevice{
 
         inline void resize(mrpt::utils::CImage& rgb  , int w, int h){ rgb.resize(w, h, CH_RGB, true); }
         inline void resize(mrpt::math::CMatrix& depth, int w, int h){ depth.resize(h, w); }
-        inline void resize(mrpt::slam::CObservation3DRangeScan& obs, int w, int h){
+        inline void resize(mrpt::obs::CObservation3DRangeScan& obs, int w, int h){
             resize(obs.intensityImage, w, h);
             obs.rangeImage_setSize(h, w);
         }
@@ -163,7 +163,7 @@ class COpenNI2Generic::CDevice{
 
         bool getNextFrameRGB(mrpt::utils::CImage &img, uint64_t &timestamp, bool &there_is_obs, bool &hardware_error);
         bool getNextFrameD  (mrpt::math::CMatrix &img, uint64_t &timestamp, bool &there_is_obs, bool &hardware_error);
-        bool getNextFrameRGBD(mrpt::slam::CObservation3DRangeScan &obs, bool &there_is_obs, bool &hardware_error);
+        bool getNextFrameRGBD(mrpt::obs::CObservation3DRangeScan &obs, bool &there_is_obs, bool &hardware_error);
 
         bool getCameraParam(int streamType, mrpt::utils::TCamera& param)const{
             if(streamType < 0 || streamType >= STREAM_TYPE_SIZE){
@@ -507,7 +507,7 @@ void COpenNI2Generic::getNextFrameD(
 *
 */
 void COpenNI2Generic::getNextFrameRGBD(
-	mrpt::slam::CObservation3DRangeScan &out_obs,
+	mrpt::obs::CObservation3DRangeScan &out_obs,
 	bool &there_is_obs,
 	bool &hardware_error,
 	unsigned sensor_id )
@@ -736,7 +736,7 @@ bool COpenNI2Generic::CDevice::getNextFrameD(mrpt::math::CMatrix &img, uint64_t 
     return true;
 }
 
-bool COpenNI2Generic::CDevice::getNextFrameRGBD(mrpt::slam::CObservation3DRangeScan &obs, bool &there_is_obs, bool &hardware_error){ 
+bool COpenNI2Generic::CDevice::getNextFrameRGBD(mrpt::obs::CObservation3DRangeScan &obs, bool &there_is_obs, bool &hardware_error){ 
 	clearLog();
 	there_is_obs   = false;
 	hardware_error = false;

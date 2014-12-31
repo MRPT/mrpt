@@ -22,10 +22,10 @@
 
 // Sensor observations classes
 //#include <mrpt/obs.h>     // Include *all* classes
-#include <mrpt/slam/CObservationGPS.h>
-#include <mrpt/slam/CObservation2DRangeScan.h>
-#include <mrpt/slam/CObservationStereoImages.h>
-#include <mrpt/slam/CObservationIMU.h>
+#include <mrpt/obs/CObservationGPS.h>
+#include <mrpt/obs/CObservation2DRangeScan.h>
+#include <mrpt/obs/CObservationStereoImages.h>
+#include <mrpt/obs/CObservationIMU.h>
 
 // Point clouds, etc.
 //#include <mrpt/maps.h>   

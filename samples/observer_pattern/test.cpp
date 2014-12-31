@@ -8,11 +8,12 @@
    +---------------------------------------------------------------------------+ */
 
 #include <mrpt/utils/CObserver.h>
-#include <mrpt/slam/CObservation2DRangeScan.h>
-#include <mrpt/slam/CSimplePointsMap.h>
+#include <mrpt/obs/CObservation2DRangeScan.h>
+#include <mrpt/maps/CSimplePointsMap.h>
 
 using namespace mrpt::utils;
-using namespace mrpt::slam;
+using namespace mrpt::obs;
+using namespace mrpt::maps;
 using namespace mrpt::poses;
 using namespace std;
 

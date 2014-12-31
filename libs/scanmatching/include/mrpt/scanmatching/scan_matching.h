@@ -24,10 +24,6 @@ namespace mrpt
 	 */
 	namespace scanmatching
 	{
-		using namespace mrpt::poses;
-		using namespace mrpt::math;
-		using namespace mrpt::utils;
-
 		/** \addtogroup mrpt_scanmatching_grp
 		  * @{ */
 
@@ -63,8 +59,8 @@ namespace mrpt
 		  * \sa robustRigidTransformation
 		  */
 		bool SCANMATCHING_IMPEXP leastSquareErrorRigidTransformation6D(
-			const TMatchingPairList	&in_correspondences,
-			CPose3DQuat							&out_transformation,
+			const mrpt::utils::TMatchingPairList	&in_correspondences,
+			mrpt::poses::CPose3DQuat							&out_transformation,
 			double								&out_scale,
 			const bool 							forceScaleToUnity = false );
 
@@ -79,8 +75,8 @@ namespace mrpt
 		  * \sa robustRigidTransformation
 		  */
 		bool SCANMATCHING_IMPEXP leastSquareErrorRigidTransformation6D(
-			const TMatchingPairList	&in_correspondences,
-			CPose3D								&out_transformation,
+			const mrpt::utils::TMatchingPairList	&in_correspondences,
+			mrpt::poses::CPose3D								&out_transformation,
 			double								&out_scale,
 			const bool 							forceScaleToUnity = false );
 
@@ -102,8 +98,8 @@ namespace mrpt
 		  * \sa robustRigidTransformation
 		  */
 		bool SCANMATCHING_IMPEXP leastSquareErrorRigidTransformation6DRANSAC(
-			const TMatchingPairList	&in_correspondences,
-			CPose3D								&out_transformation,
+			const mrpt::utils::TMatchingPairList	&in_correspondences,
+			mrpt::poses::CPose3D								&out_transformation,
 			double								&out_scale,
 			vector_int							&out_inliers_idx,
 			const unsigned int					ransac_minSetSize = 5,
@@ -122,9 +118,9 @@ namespace mrpt
 		  * \sa robustRigidTransformation
 		  */
 		bool SCANMATCHING_IMPEXP leastSquareErrorRigidTransformation(
-			TMatchingPairList	&in_correspondences,
-			CPose2D							&out_transformation,
-			CMatrixDouble33					*out_estimateCovariance = NULL );
+			mrpt::utils::TMatchingPairList	&in_correspondences,
+			mrpt::poses::CPose2D							&out_transformation,
+			mrpt::math::CMatrixDouble33					*out_estimateCovariance = NULL );
 
 		/** This method provides the basic least-square-error solution to a set of over-constrained correspondences for finding the (x,y,phi) rigid transformation between two planes.
 		  *  The optimal transformation q fulfills:   \f$ point_this = q \oplus point_other \f$
@@ -136,8 +132,8 @@ namespace mrpt
 		  * \sa robustRigidTransformation
 		  */
 		bool SCANMATCHING_IMPEXP leastSquareErrorRigidTransformation(
-			TMatchingPairList	&in_correspondences,
-			CPosePDFGaussian				&out_transformation );
+			mrpt::utils::TMatchingPairList	&in_correspondences,
+			mrpt::poses::CPosePDFGaussian				&out_transformation );
 
 		/** This method implements a RANSAC-based robust estimation of the rigid transformation between two planar frames of references, returning a probability distribution over all the posibilities as a Sum of Gaussians.
 		  *
@@ -173,14 +169,14 @@ namespace mrpt
 		  * \sa leastSquareErrorRigidTransformation
 		  */
 		void SCANMATCHING_IMPEXP robustRigidTransformation(
-			TMatchingPairList	&in_correspondences,
-			poses::CPosePDFSOG				&out_transformation,
+			mrpt::utils::TMatchingPairList	&in_correspondences,
+			mrpt::poses::CPosePDFSOG				&out_transformation,
 			float							normalizationStd,
 			unsigned int					ransac_minSetSize = 3,
 			unsigned int					ransac_maxSetSize = 20,
 			float							ransac_mahalanobisDistanceThreshold = 3.0f,
 			unsigned int					ransac_nSimulations = 0,
-			TMatchingPairList		*out_largestSubSet = NULL,
+			mrpt::utils::TMatchingPairList		*out_largestSubSet = NULL,
 			bool						ransac_fuseByCorrsMatch = true,
 			float						ransac_fuseMaxDiffXY = 0.01f,
 			float						ransac_fuseMaxDiffPhi = mrpt::utils::DEG2RAD(0.1f),

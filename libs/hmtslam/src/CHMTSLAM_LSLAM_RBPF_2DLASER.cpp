@@ -28,7 +28,11 @@ using namespace mrpt;
 using namespace mrpt::slam;
 using namespace mrpt::hmtslam;
 using namespace mrpt::utils;
+using namespace mrpt::obs;
 using namespace mrpt::random;
+using namespace mrpt::maps;
+using namespace mrpt::bayes;
+using namespace mrpt::poses;
 using namespace std;
 
 
@@ -209,8 +213,8 @@ void CLSLAM_RBPF_2DLASER::processOneLMH(
   */
 void  CLSLAM_RBPF_2DLASER::prediction_and_update_pfAuxiliaryPFOptimal(
 	CLocalMetricHypothesis	*LMH,
-	const mrpt::slam::CActionCollection	* actions,
-	const mrpt::slam::CSensoryFrame		* sf,
+	const mrpt::obs::CActionCollection	* actions,
+	const mrpt::obs::CSensoryFrame		* sf,
 	const bayes::CParticleFilter::TParticleFilterOptions &PF_options )
 {
 	MRPT_START
@@ -727,8 +731,8 @@ int  CLSLAM_RBPF_2DLASER::findTPathBinIntoSet(
   */
 void  CLSLAM_RBPF_2DLASER::prediction_and_update_pfOptimalProposal(
 	CLocalMetricHypothesis	*LMH,
-	const mrpt::slam::CActionCollection	* actions,
-	const mrpt::slam::CSensoryFrame		* sf,
+	const mrpt::obs::CActionCollection	* actions,
+	const mrpt::obs::CSensoryFrame		* sf,
 	const bayes::CParticleFilter::TParticleFilterOptions &PF_options )
 {
 	MRPT_START

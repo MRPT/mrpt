@@ -12,12 +12,12 @@
 
 #include <mrpt/system/threads.h>
 #include <mrpt/hwdrivers/CIMUXSens.h>
-#include <mrpt/slam/CObservationIMU.h>
+#include <mrpt/obs/CObservationIMU.h>
 
 IMPLEMENTS_GENERIC_SENSOR(CIMUXSens,mrpt::hwdrivers)
 
 using namespace mrpt::utils;
-using namespace mrpt::slam;
+using namespace mrpt::obs;
 using namespace mrpt::hwdrivers;
 
 #if MRPT_HAS_xSENS_MT3

@@ -79,7 +79,7 @@ void   CSimpleLine::render_dl() const
    Implements the writing to a CStream capability of
      CSerializable objects
   ---------------------------------------------------------------*/
-void  CSimpleLine::writeToStream(CStream &out,int *version) const
+void  CSimpleLine::writeToStream(mrpt::utils::CStream &out,int *version) const
 {
 
 	if (version)
@@ -97,7 +97,7 @@ void  CSimpleLine::writeToStream(CStream &out,int *version) const
 	Implements the reading from a CStream capability of
 		CSerializable objects
   ---------------------------------------------------------------*/
-void  CSimpleLine::readFromStream(CStream &in,int version)
+void  CSimpleLine::readFromStream(mrpt::utils::CStream &in,int version)
 {
 	switch(version)
 	{

@@ -9,10 +9,10 @@
 
 #include "obs-precomp.h"   // Precompiled headers
 
-#include <mrpt/slam/CSinCosLookUpTableFor2DScans.h>
+#include <mrpt/obs/CSinCosLookUpTableFor2DScans.h>
 
 using namespace std;
-using namespace mrpt::slam;
+using namespace mrpt::obs;
 using namespace mrpt::utils;
 
 

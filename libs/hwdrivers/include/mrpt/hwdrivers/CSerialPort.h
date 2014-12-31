@@ -19,7 +19,6 @@ namespace mrpt
 {
 	namespace hwdrivers
 	{
-		using namespace mrpt::utils;
 		/** A communications serial port built as an implementation of a utils::CStream.
 		 * On communication errors (eg. the given port number does not exist, timeouts,...), most of the methods will
 		 * raise an exception of the class "std::exception"
@@ -41,7 +40,7 @@ namespace mrpt
 		 * \todo Add the internal buffer to the Windows implementation also
 		 * \ingroup mrpt_hwdrivers_grp
 		 */
-		class HWDRIVERS_IMPEXP CSerialPort : public CStream
+		class HWDRIVERS_IMPEXP CSerialPort : public mrpt::utils::CStream
 		{
 			friend class PosixSignalDispatcherImpl;
 		public:
@@ -191,7 +190,7 @@ namespace mrpt
 			int				m_baudRate;
 			int				m_totalTimeout_ms,m_interBytesTimeout_ms;
 
-			CTicTac  		m_timer; //!< Used only in \a ReadString
+			mrpt::utils::CTicTac m_timer; //!< Used only in \a ReadString
 
 		#ifdef MRPT_OS_WINDOWS
 			// WINDOWS

@@ -10,7 +10,7 @@
 #define  CImpinjRFID_H
 
 #include <mrpt/hwdrivers/CGenericSensor.h>
-#include <mrpt/slam/CObservationRFID.h>
+#include <mrpt/obs/CObservationRFID.h>
 #include <mrpt/utils/CConfigFileBase.h>
 
 #include <mrpt/utils/CClientTCPSocket.h>
@@ -95,7 +95,7 @@ namespace mrpt
 			* \return Returns true if the observation was correct, and false otherwise
 			* \sa mrpt::hwdrivers::CGenericSensor
 			*/
-			bool getObservation( mrpt::slam::CObservationRFID &obs );
+			bool getObservation( mrpt::obs::CObservationRFID &obs );
 
 
 			/** Close the connection to the reader.

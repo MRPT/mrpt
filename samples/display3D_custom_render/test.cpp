@@ -24,6 +24,7 @@ using namespace std;
 using namespace mrpt;
 using namespace mrpt::gui;
 using namespace mrpt::opengl;
+using namespace mrpt::utils;
 
 // This is my custom class to handle the pre/post render events:
 struct TMyExtraRenderingStuff : public mrpt::utils::CObserver

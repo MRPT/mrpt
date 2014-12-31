@@ -317,7 +317,7 @@ void vOdometry_onthefly()
 //    // Show matches
 //    win.showImagesAndMatchedPoints( o->imageLeft, o->imageRight, outMatchedList );
 //
-//    mrpt::slam::CLandmarksMap landmarks;
+//    mrpt::maps::CLandmarksMap landmarks;
 //    mrpt::vision::projectMatchedFeatures( outMatchedList, stereoParams, landmarks);
 //    landmarks.changeCoordinatesReference( CPose3D( 0, 0, 0, DEG2RAD(-90), 0, DEG2RAD(-90) ) );
 //

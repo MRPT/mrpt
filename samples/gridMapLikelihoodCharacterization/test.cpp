@@ -12,14 +12,15 @@
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/system/os.h>
-#include <mrpt/slam/CSimplePointsMap.h>
-#include <mrpt/slam/COccupancyGridMap2D.h>
-#include <mrpt/slam/CObservation2DRangeScan.h>
+#include <mrpt/maps/CSimplePointsMap.h>
+#include <mrpt/maps/COccupancyGridMap2D.h>
+#include <mrpt/obs/CObservation2DRangeScan.h>
 
 using namespace mrpt;
 using namespace mrpt::utils;
 using namespace mrpt::system;
-using namespace mrpt::slam;
+using namespace mrpt::obs;
+using namespace mrpt::maps;
 using namespace std;
 
 #include <mrpt/examples_config.h>

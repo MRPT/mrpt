@@ -25,7 +25,8 @@ IMPLEMENTS_GENERIC_SENSOR(CSickLaserSerial,mrpt::hwdrivers)
 using namespace std;
 using namespace mrpt;
 using namespace mrpt::utils;
-using namespace mrpt::slam;
+using namespace mrpt::obs;
+using namespace mrpt::poses;
 using namespace mrpt::hwdrivers;
 
 
@@ -78,7 +79,7 @@ CSickLaserSerial::~CSickLaserSerial()
 -------------------------------------------------------------*/
 void  CSickLaserSerial::doProcessSimple(
 	bool							&outThereIsObservation,
-	mrpt::slam::CObservation2DRangeScan	&outObservation,
+	mrpt::obs::CObservation2DRangeScan	&outObservation,
 	bool							&hardwareError )
 {
 	outThereIsObservation	= false;

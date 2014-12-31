@@ -35,10 +35,10 @@ MRPT_WARNING("Including <mrpt/vision.h> makes compilation much slower, consider 
 #include <mrpt/vision/CDifodo.h>
 
 // Maps:
-#include <mrpt/slam/CLandmark.h>
-#include <mrpt/slam/CLandmarksMap.h>
+#include <mrpt/maps/CLandmark.h>
+#include <mrpt/maps/CLandmarksMap.h>
 
 // Obs:
-#include <mrpt/slam/CObservationVisualLandmarks.h>
+#include <mrpt/obs/CObservationVisualLandmarks.h>
 
 #endif

@@ -13,6 +13,7 @@
 #include <mrpt/math/CMatrixTemplateNumeric.h>
 #include <mrpt/math/lightweight_geom_data.h>
 #include <mrpt/utils/CImage.h>
+#include <mrpt/gui/gui_frwds.h>
 
 /*---------------------------------------------------------------
 	Class
@@ -21,11 +22,6 @@ namespace mrpt
 {
 	namespace gui
 	{
-		using namespace mrpt::utils;
-		using namespace mrpt::math;
-
-		class CWindowDialogPlots;
-
 		DEFINE_MRPT_OBJECT_PRE_CUSTOM_BASE_LINKAGE(CDisplayWindowPlots,  mrpt::gui::CBaseGUIWindow, GUI_IMPEXP)
 
 		/** Create a GUI window and display plots with MATLAB-like interfaces and commands.
@@ -52,11 +48,11 @@ namespace mrpt
 			TCallbackMenu m_callback;
 			void		*m_callback_param;
 
-			void internal_plot(CVectorFloat &x,CVectorFloat &y,const std::string  &lineFormat,const std::string  &plotName);
+			void internal_plot(mrpt::math::CVectorFloat &x,mrpt::math::CVectorFloat &y,const std::string  &lineFormat,const std::string  &plotName);
 			template <typename VECTOR1,typename VECTOR2>
 			void internal_plot_interface(const VECTOR1 &x,const VECTOR2 &y,const std::string  &lineFormat,const std::string  &plotName)
 			{
-				CVectorFloat x1(x.size()), y1(y.size());
+				mrpt::math::CVectorFloat x1(x.size()), y1(y.size());
 				const size_t N1=size_t(x.size());
 				for (size_t i=0;i<N1;i++) x1[i]=x[i];
 				const size_t N2=size_t(y.size());
@@ -67,7 +63,7 @@ namespace mrpt
 			void internal_plot_interface(const VECTOR1 &y,const std::string  &lineFormat,const std::string  &plotName)
 			{
 				const size_t N=size_t(y.size());
-				CVectorFloat x1(N),y1(N);
+				mrpt::math::CVectorFloat x1(N),y1(N);
 				for (size_t i=0;i<N;i++) { x1[i]=i; y1[i]=y[i]; }
 				this->internal_plot(x1,y1,lineFormat,plotName);
 			}
@@ -178,7 +174,7 @@ namespace mrpt
 			void GUI_IMPEXP plotEllipse(
 				const T mean_x,
 				const T mean_y,
-				const CMatrixTemplateNumeric<T> &cov22,
+				const mrpt::math::CMatrixTemplateNumeric<T> &cov22,
 				const float quantiles,
 				const std::string  &lineFormat = std::string("b-"),
 				const std::string  &plotName = std::string("plotEllipse"),
@@ -189,7 +185,7 @@ namespace mrpt
 			void GUI_IMPEXP plotEllipse(
 				const T mean_x,
 				const T mean_y,
-				const CMatrixFixedNumeric<T,2,2> &cov22,
+				const mrpt::math::CMatrixFixedNumeric<T,2,2> &cov22,
 				const float quantiles,
 				const std::string  &lineFormat = std::string("b-"),
 				const std::string  &plotName = std::string("plotEllipse"),

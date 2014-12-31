@@ -12,18 +12,20 @@
 #include <mrpt/utils/CConfigFile.h>
 #include <mrpt/utils/CFileOutputStream.h>
 #include <mrpt/utils/CFileGZOutputStream.h>
-#include <mrpt/slam/CBeaconMap.h>
-#include <mrpt/slam/CSensoryFrame.h>
-#include <mrpt/slam/CActionCollection.h>
-#include <mrpt/slam/CActionRobotMovement2D.h>
-#include <mrpt/slam/CObservationBeaconRanges.h>
+#include <mrpt/maps/CBeaconMap.h>
+#include <mrpt/obs/CSensoryFrame.h>
+#include <mrpt/obs/CActionCollection.h>
+#include <mrpt/obs/CActionRobotMovement2D.h>
+#include <mrpt/obs/CObservationBeaconRanges.h>
 #include <mrpt/poses/CPoint3D.h>
 #include <mrpt/random.h>
 
 using namespace mrpt;
 using namespace mrpt::utils;
 using namespace mrpt::system;
-using namespace mrpt::slam;
+using namespace mrpt::poses;
+using namespace mrpt::obs;
+using namespace mrpt::maps;
 using namespace mrpt::random;
 using namespace std;
 
@@ -126,7 +128,7 @@ int main(int argc, char ** argv)
         // Create the point-beacons:
         // ---------------------------------------------
         printf("Creating beacon map...");
-        mrpt::slam::CBeaconMap    beaconMap;
+		mrpt::maps::CBeaconMap    beaconMap;
         for (i=0;i<nBeacons;i++)
         {
             CBeacon     b;

@@ -9,25 +9,26 @@
 
 #include "obs-precomp.h"   // Precompiled headers
 
-#include <mrpt/slam/CObservation2DRangeScan.h>
-#include <mrpt/slam/CObservationOdometry.h>
+#include <mrpt/obs/CObservation2DRangeScan.h>
+#include <mrpt/obs/CObservationOdometry.h>
 #include <mrpt/utils/TParameters.h>
 
 #include <mrpt/system/string_utils.h>
 
-#include <mrpt/slam/carmen_log_tools.h>
+#include <mrpt/obs/carmen_log_tools.h>
 
 
 using namespace mrpt;
 using namespace mrpt::utils;
-using namespace mrpt::slam;
+using namespace mrpt::obs;
+using namespace mrpt::poses;
 using namespace mrpt::system;
 using namespace std;
 
 // Read the declaration in the .h file for documentation.
-bool mrpt::slam::carmen_log_parse_line(
+bool mrpt::obs::carmen_log_parse_line(
 	std::istream &in_stream,
-	std::vector<mrpt::slam::CObservationPtr> &out_observations,
+	std::vector<mrpt::obs::CObservationPtr> &out_observations,
 	const mrpt::system::TTimeStamp &time_start_log )
 {
 	static TParametersString  global_log_params;  // global parameters loaded in previous calls.

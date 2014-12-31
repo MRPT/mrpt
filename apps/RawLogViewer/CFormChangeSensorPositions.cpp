@@ -25,15 +25,16 @@
 #include <mrpt/utils/CFileGZOutputStream.h>
 #include <mrpt/utils/CFileGZInputStream.h>
 #include <mrpt/utils/CStream.h>
-#include <mrpt/slam/CObservationImage.h>
-#include <mrpt/slam/CActionCollection.h>
-#include <mrpt/slam/CSensoryFrame.h>
+#include <mrpt/obs/CObservationImage.h>
+#include <mrpt/obs/CActionCollection.h>
+#include <mrpt/obs/CSensoryFrame.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/system/os.h>
 
 using namespace mrpt;
-using namespace mrpt::slam;
+using namespace mrpt::obs;
 using namespace mrpt::opengl;
+using namespace mrpt::poses;
 using namespace mrpt::system;
 using namespace mrpt::math;
 using namespace mrpt::utils;
@@ -652,7 +653,7 @@ void CFormChangeSensorPositions::executeOperationOnRawlog( TRawlogFilter operati
 // ------------------------------------------------------------
 //    Set the sensor pose
 // ------------------------------------------------------------
-void  exec_setPoseByIdx( mrpt::slam::CActionCollection *acts, mrpt::slam::CSensoryFrame *SF, int &changesCount  )
+void  exec_setPoseByIdx( mrpt::obs::CActionCollection *acts, mrpt::obs::CSensoryFrame *SF, int &changesCount  )
 {
 	if (SF)
 		if (SF->size()>idxToProcess)
@@ -680,7 +681,7 @@ void  exec_setPoseByIdx( mrpt::slam::CActionCollection *acts, mrpt::slam::CSenso
 		}
 }
 
-void  exec_setPoseByLabel( mrpt::slam::CActionCollection *acts, mrpt::slam::CSensoryFrame *SF, int &changesCount  )
+void  exec_setPoseByLabel( mrpt::obs::CActionCollection *acts, mrpt::obs::CSensoryFrame *SF, int &changesCount  )
 {
 	if (SF)
 	{
@@ -746,7 +747,7 @@ void CFormChangeSensorPositions::OnbtnOKClick(wxCommandEvent& event)
 // ------------------------------------------------------------
 //    Get the current sensor pose
 // ------------------------------------------------------------
-void  exec_getCurrentPoseByIdx( mrpt::slam::CActionCollection *acts, mrpt::slam::CSensoryFrame *SF, int &changesCount  )
+void  exec_getCurrentPoseByIdx( mrpt::obs::CActionCollection *acts, mrpt::obs::CSensoryFrame *SF, int &changesCount  )
 {
 	if (SF)
 		if (SF->size()>idxToProcess)
@@ -755,7 +756,7 @@ void  exec_getCurrentPoseByIdx( mrpt::slam::CActionCollection *acts, mrpt::slam:
 			sensorPoseReadOK = true;
 		}
 }
-void  exec_getCurrentPoseByLabel( mrpt::slam::CActionCollection *acts, mrpt::slam::CSensoryFrame *SF, int &changesCount  )
+void  exec_getCurrentPoseByLabel( mrpt::obs::CActionCollection *acts, mrpt::obs::CSensoryFrame *SF, int &changesCount  )
 {
 	if (SF && SF->size())
 	{
@@ -804,7 +805,7 @@ void CFormChangeSensorPositions::OnbtnGetCurPoseClick1(wxCommandEvent& event)
 // ------------------------------------------------------------
 //    Get the current camera model
 // ------------------------------------------------------------
-void  exec_getCurrentCamCfgByIdx( mrpt::slam::CActionCollection *acts, mrpt::slam::CSensoryFrame *SF, int &changesCount  )
+void  exec_getCurrentCamCfgByIdx( mrpt::obs::CActionCollection *acts, mrpt::obs::CSensoryFrame *SF, int &changesCount  )
 {
 	if (SF)
 		if (SF->size()>idxToProcess)
@@ -819,7 +820,7 @@ void  exec_getCurrentCamCfgByIdx( mrpt::slam::CActionCollection *acts, mrpt::sla
 			}
 		}
 }
-void  exec_getCurrentCamCfgByLabel( mrpt::slam::CActionCollection *acts, mrpt::slam::CSensoryFrame *SF, int &changesCount  )
+void  exec_getCurrentCamCfgByLabel( mrpt::obs::CActionCollection *acts, mrpt::obs::CSensoryFrame *SF, int &changesCount  )
 {
 	if (SF && SF->size())
 	{
@@ -877,7 +878,7 @@ void CFormChangeSensorPositions::OnbtnGetCurCamModelClick(wxCommandEvent& event)
 // ------------------------------------------------------------
 //    Set the camera model
 // ------------------------------------------------------------
-void  exec_setCurrentCamCfgByIdx( mrpt::slam::CActionCollection *acts, mrpt::slam::CSensoryFrame *SF, int &changesCount  )
+void  exec_setCurrentCamCfgByIdx( mrpt::obs::CActionCollection *acts, mrpt::obs::CSensoryFrame *SF, int &changesCount  )
 {
 	if (SF)
 		if (SF->size()>idxToProcess)
@@ -892,7 +893,7 @@ void  exec_setCurrentCamCfgByIdx( mrpt::slam::CActionCollection *acts, mrpt::sla
 			}
 		}
 }
-void  exec_setCurrentCamCfgByLabel( mrpt::slam::CActionCollection *acts, mrpt::slam::CSensoryFrame *SF, int &changesCount  )
+void  exec_setCurrentCamCfgByLabel( mrpt::obs::CActionCollection *acts, mrpt::obs::CSensoryFrame *SF, int &changesCount  )
 {
 	if (SF && SF->size())
 	{

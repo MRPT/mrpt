@@ -14,16 +14,12 @@
 
 namespace mrpt { namespace srba {
 
-using namespace mrpt;
-using namespace mrpt::math;
-using namespace std;
-
 namespace internal
 {
 #if MRPT_HAS_CXX11
-	typedef std::unique_ptr<CSparseMatrix::CholeskyDecomp>  SparseCholeskyDecompPtr;
+	typedef std::unique_ptr<mrpt::math::CSparseMatrix::CholeskyDecomp>  SparseCholeskyDecompPtr;
 #else
-	typedef std::auto_ptr<CSparseMatrix::CholeskyDecomp>    SparseCholeskyDecompPtr;
+	typedef std::auto_ptr<mrpt::math::CSparseMatrix::CholeskyDecomp>    SparseCholeskyDecompPtr;
 #endif
 
 	// ------------------------------------------------------------------------------------------
@@ -45,7 +41,7 @@ namespace internal
 		Eigen::VectorXd  &minus_grad;
 		const size_t nUnknowns_k2k, nUnknowns_k2f, nUnknowns_scalars,idx_start_f;
 
-		CSparseMatrix* sS; //!< Sparse Hessian
+		mrpt::math::CSparseMatrix* sS; //!< Sparse Hessian
 		bool           sS_is_valid; //!< Whether the Hessian was filled in, in sS
 		/** Cholesky object, as a pointer to reuse it between iterations */
 		SparseCholeskyDecompPtr ptrCh;
@@ -85,7 +81,7 @@ namespace internal
 		{
 			DETAILED_PROFILING_ENTER("opt.SparseTripletFill")
 
-			if (!sS) sS = new CSparseMatrix(nUnknowns_scalars,nUnknowns_scalars);
+			if (!sS) sS = new mrpt::math::CSparseMatrix(nUnknowns_scalars,nUnknowns_scalars);
 			else     sS->clear(nUnknowns_scalars,nUnknowns_scalars);
 			sS_is_valid=false;
 
@@ -166,14 +162,14 @@ namespace internal
 			try
 			{
 				if (!ptrCh.get())
-						ptrCh = SparseCholeskyDecompPtr(new CSparseMatrix::CholeskyDecomp(*sS) );
+						ptrCh = SparseCholeskyDecompPtr(new mrpt::math::CSparseMatrix::CholeskyDecomp(*sS) );
 				else ptrCh.get()->update(*sS);
 
 				sS_is_valid=true;
 
 				DETAILED_PROFILING_LEAVE("opt.SparseChol")
 			}
-			catch (CExceptionNotDefPos &)
+			catch (mrpt::math::CExceptionNotDefPos &)
 			{
 				DETAILED_PROFILING_LEAVE("opt.SparseChol")
 				return false;
@@ -232,7 +228,7 @@ namespace internal
 		typename hessian_traits_t::TSparseBlocksHessian_Apf &HApf;
 		Eigen::VectorXd  &minus_grad;
 
-		CSparseMatrix* sS; //!< Sparse Hessian
+		mrpt::math::CSparseMatrix* sS; //!< Sparse Hessian
 		bool           sS_is_valid; //!< Whether the Hessian was filled in, in sS
 		/** Cholesky object, as a pointer to reuse it between iterations */
 		SparseCholeskyDecompPtr  ptrCh;
@@ -294,7 +290,7 @@ namespace internal
 				VERBOSE_LEVEL(1) << "[OPT] Schur warning: only " << schur_compl.getNumFeaturesFullRank() << " out of " << schur_compl.getNumFeatures() << " features have full-rank.\n";
 
 			// Only the H_Ap part of the Hessian:
-			if (!sS) sS = new CSparseMatrix(nUnknowns_k2k*POSE_DIMS,nUnknowns_k2k*POSE_DIMS);
+			if (!sS) sS = new mrpt::math::CSparseMatrix(nUnknowns_k2k*POSE_DIMS,nUnknowns_k2k*POSE_DIMS);
 			else     sS->clear(nUnknowns_k2k*POSE_DIMS,nUnknowns_k2k*POSE_DIMS);
 			sS_is_valid=false;
 
@@ -338,14 +334,14 @@ namespace internal
 			try
 			{
 				if (!ptrCh.get())
-						ptrCh = SparseCholeskyDecompPtr(new CSparseMatrix::CholeskyDecomp(*sS) );
+						ptrCh = SparseCholeskyDecompPtr(new mrpt::math::CSparseMatrix::CholeskyDecomp(*sS) );
 				else ptrCh.get()->update(*sS);
 
 				sS_is_valid=true;
 
 				DETAILED_PROFILING_LEAVE("opt.SparseChol")
 			}
-			catch (CExceptionNotDefPos &)
+			catch (mrpt::math::CExceptionNotDefPos &)
 			{
 				DETAILED_PROFILING_LEAVE("opt.SparseChol")
 				// not positive definite so increase lambda and try again

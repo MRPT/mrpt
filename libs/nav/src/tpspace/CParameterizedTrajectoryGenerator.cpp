@@ -42,7 +42,7 @@ using namespace std;
  *   - resolution: The cell size
  *   - v_max, w_max: Maximum robot speeds.
  */
-CParameterizedTrajectoryGenerator::CParameterizedTrajectoryGenerator(const TParameters<double> &params) :
+CParameterizedTrajectoryGenerator::CParameterizedTrajectoryGenerator(const mrpt::utils::TParameters<double> &params) :
 	m_collisionGrid(-1,1,-1,1,0.5,this)
 {
 	this->refDistance	= params["ref_distance"];
@@ -58,7 +58,7 @@ CParameterizedTrajectoryGenerator::CParameterizedTrajectoryGenerator(const TPara
 /*---------------------------------------------------------------
 					Class factory
   ---------------------------------------------------------------*/
-CParameterizedTrajectoryGenerator * CParameterizedTrajectoryGenerator::CreatePTG(const TParameters<double> &params)
+CParameterizedTrajectoryGenerator * CParameterizedTrajectoryGenerator::CreatePTG(const mrpt::utils::TParameters<double> &params)
 {
 	MRPT_START
 	const int nPTG = static_cast<int>( params["PTG_type"] );

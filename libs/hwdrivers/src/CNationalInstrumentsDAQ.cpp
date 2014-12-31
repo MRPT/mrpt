@@ -91,7 +91,7 @@
 
 
 using namespace mrpt::hwdrivers;
-using namespace mrpt::slam;
+using namespace mrpt::obs;
 using namespace mrpt::system;
 using namespace std;
 
@@ -552,7 +552,7 @@ bool CNationalInstrumentsDAQ::checkDAQIsWorking() const
 						readFromDAQ
 -------------------------------------------------------------*/
 void  CNationalInstrumentsDAQ::readFromDAQ(
-	std::vector<mrpt::slam::CObservationRawDAQPtr> &outObservations,
+	std::vector<mrpt::obs::CObservationRawDAQPtr> &outObservations,
 	bool &hardwareError )
 {
 	hardwareError			= false;
@@ -639,8 +639,8 @@ void CNationalInstrumentsDAQ::grabbing_thread(TInfoPerTask &ipt)
 		vector<double> dBuf;
 		vector<uint8_t> u8Buf;
 
-		const mrpt::slam::CObservationRawDAQ clean_obs;
-		mrpt::slam::CObservationRawDAQ obs;
+		const mrpt::obs::CObservationRawDAQ clean_obs;
+		mrpt::obs::CObservationRawDAQ obs;
 
 		while (!ipt.must_close)
 		{

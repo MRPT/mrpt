@@ -12,10 +12,10 @@
 
 #include <mrpt/utils/CDebugOutputCapable.h>
 #include <mrpt/utils/CLoadableOptions.h>
-#include <mrpt/slam/CMultiMetricMap.h>
-#include <mrpt/slam/CSimplePointsMap.h>
-#include <mrpt/slam/CSimpleMap.h>
-#include <mrpt/slam/CMultiMetricMap.h>
+#include <mrpt/maps/CMultiMetricMap.h>
+#include <mrpt/maps/CSimplePointsMap.h>
+#include <mrpt/maps/CSimpleMap.h>
+#include <mrpt/maps/CMultiMetricMap.h>
 #include <mrpt/poses/poses_frwds.h>
 
 #include <mrpt/slam/link_pragmas.h>
@@ -30,7 +30,7 @@ namespace slam
 	  *   observations taken at some poses/nodes.
 	  * \ingroup mrpt_slam_grp
 	  */
-	class SLAM_IMPEXP  CIncrementalMapPartitioner : public utils::CDebugOutputCapable, public CSerializable
+	class SLAM_IMPEXP  CIncrementalMapPartitioner : public mrpt::utils::CDebugOutputCapable, public mrpt::utils::CSerializable
 	{
 		// This must be added to any CSerializable derived class:
 		DEFINE_SERIALIZABLE( CIncrementalMapPartitioner )
@@ -64,7 +64,7 @@ namespace slam
 
 			/** This method must display clearly all the contents of the structure in textual form, sending it to a CStream.
 			  */
-			void  dumpToTextStream(CStream	&out) const;
+			void  dumpToTextStream(mrpt::utils::CStream	&out) const;
 
 			/** The partition threshold for bisection in range [0,2], default=1.0
 			  */
@@ -102,7 +102,7 @@ namespace slam
 		  * \return The index of the new pose in the internal list, which will be used to refer to the pose in the future.
 		  * \sa updatePartitions
 		  */
-		unsigned int addMapFrame( const CSensoryFramePtr &frame, const CPosePDFPtr &robotPose2D );
+		unsigned int addMapFrame( const mrpt::obs::CSensoryFramePtr &frame, const mrpt::poses::CPosePDFPtr &robotPose2D );
 
 		/** Add a new frame to the current graph: call this method each time a new observation
 		  *   is added to the map/graph, and whenever you want to update the partitions, call "updatePartitions"
@@ -111,7 +111,7 @@ namespace slam
 		  * \return The index of the new pose in the internal list, which will be used to refer to the pose in the future.
 		  * \sa updatePartitions
 		  */
-		unsigned int addMapFrame( const CSensoryFramePtr &frame, const CPose3DPDFPtr &robotPose3D );
+		unsigned int addMapFrame( const mrpt::obs::CSensoryFramePtr &frame, const mrpt::poses::CPose3DPDFPtr &robotPose3D );
 
 		/** Add a new frame to the current graph: call this method each time a new observation
 		  *   is added to the map/graph, and whenever you want to update the partitions, call "updatePartitions"
@@ -120,7 +120,7 @@ namespace slam
 		  * \return The index of the new pose in the internal list, which will be used to refer to the pose in the future.
 		  * \sa updatePartitions
 		  */
-		unsigned int addMapFrame( const CSensoryFrame &frame, const CPose3DPDF &robotPose3D );
+		unsigned int addMapFrame( const mrpt::obs::CSensoryFrame &frame, const mrpt::poses::CPose3DPDF &robotPose3D );
 
 		/** This method executed only the neccesary part of the partition to take
 		  *   into account the lastest added frames.
@@ -142,18 +142,18 @@ namespace slam
 		void  getAdjacencyMatrix( MATRIX &outMatrix ) const { outMatrix = m_A; }
 
 		/** Returns a const ref to the internal adjacency matrix.  */
-		const CMatrixDouble & getAdjacencyMatrix( ) const { return m_A; }
+		const mrpt::math::CMatrixDouble & getAdjacencyMatrix( ) const { return m_A; }
 
 		/** Read-only access to the sequence of Sensory Frames
 		  */
-		const CSimpleMap* getSequenceOfFrames( ) const
+		const mrpt::maps::CSimpleMap* getSequenceOfFrames( ) const
 		{
 			return &m_individualFrames;
 		}
 
 		/** Access to the sequence of Sensory Frames
 		  */
-		CSimpleMap* getSequenceOfFrames( )
+		mrpt::maps::CSimpleMap* getSequenceOfFrames( )
 		{
 			return &m_individualFrames;
 		}
@@ -163,7 +163,7 @@ namespace slam
 		void markAllNodesForReconsideration();
 
 		/** Change the coordinate origin of all stored poses, for consistency with future new poses to enter in the system. */
-		void changeCoordinatesOrigin( const CPose3D  &newOrigin );
+		void changeCoordinatesOrigin( const mrpt::poses::CPose3D  &newOrigin );
 
 		/** Change the coordinate origin of all stored poses, for consistency with future new poses to enter in the system; the new origin is given by the index of the pose to become the new origin. */
 		void changeCoordinatesOriginPoseIndex( const unsigned &newOriginPose );
@@ -177,26 +177,19 @@ namespace slam
 			) const;
 
 	private:
-		/** El conjunto de los scans se guardan en un array:
-		  */
-		CSimpleMap					m_individualFrames;
-		std::deque<mrpt::slam::CMultiMetricMap>	m_individualMaps;
+		mrpt::maps::CSimpleMap					m_individualFrames;
+		std::deque<mrpt::maps::CMultiMetricMap>	m_individualMaps;
 
+		/** Adjacency matrix */
+		mrpt::math::CMatrixD	m_A;
 
-		/** Adjacency matrix
-		  */
-		CMatrixD	m_A;
-
-		/** The last partition
-		  */
+		/** The last partition */
 		std::vector<vector_uint>			m_last_partition;
 
-		/** This will be true after adding new observations, and before an "updatePartitions" is invoked.
-		  */
+		/** This will be true after adding new observations, and before an "updatePartitions" is invoked. */
 		bool						m_last_last_partition_are_new_ones;
 
-		/** La lista de nodos que hay que tener en cuenta en la proxima actualizacion:
-		  */
+		/** The list of keyframes to consider in the next update */
 		std::vector<uint8_t>	m_modified_nodes;
 
 	};	// End of class def.

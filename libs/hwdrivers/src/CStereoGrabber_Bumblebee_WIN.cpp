@@ -279,7 +279,7 @@ CStereoGrabber_Bumblebee::~CStereoGrabber_Bumblebee()
 /*-------------------------------------------------------------
 					getStereoObservation
  -------------------------------------------------------------*/
-bool  CStereoGrabber_Bumblebee::getStereoObservation( mrpt::slam::CObservationStereoImages &out_observation )
+bool  CStereoGrabber_Bumblebee::getStereoObservation( mrpt::obs::CObservationStereoImages &out_observation )
 {
 #if MRPT_HAS_BUMBLEBEE && MRPT_HAS_OPENCV
 
@@ -736,7 +736,7 @@ void CStereoGrabber_Bumblebee::convertTriclopsImageTo8BitsIplImage( void *src, v
 
 //bool  CStereoGrabber_Bumblebee::getObservation(
 //		TROI ROI,
-//		mrpt::slam::CObservationVisualLandmarks &out_observation)
+//		mrpt::obs::CObservationVisualLandmarks &out_observation)
 //{
 //#if MRPT_HAS_BUMBLEBEE
 //	MRPT_START
@@ -784,8 +784,8 @@ void CStereoGrabber_Bumblebee::convertTriclopsImageTo8BitsIplImage( void *src, v
 //			disp = m_pDispImage[k];
 //			if ( disp < 0xFF00 )
 //			{
-//				mrpt::slam::CLandmark		lm;
-//				lm.type			= mrpt::slam::CLandmark::vlColor;
+//				mrpt::maps::CLandmark		lm;
+//				lm.type			= mrpt::maps::CLandmark::vlColor;
 //
 //				// convert the 16 bit disparity value to floating point x,y,z
 //				// And set the pose PDF:
@@ -846,7 +846,7 @@ void CStereoGrabber_Bumblebee::convertTriclopsImageTo8BitsIplImage( void *src, v
 //					getObservation
 // -------------------------------------------------------------*/
 //bool  CStereoGrabber_Bumblebee::getObservation(
-//		mrpt::slam::CObservationVisualLandmarks &out_observation)
+//		mrpt::obs::CObservationVisualLandmarks &out_observation)
 //{
 //#if MRPT_HAS_BUMBLEBEE
 //	unsigned int		x,y;
@@ -889,8 +889,8 @@ void CStereoGrabber_Bumblebee::convertTriclopsImageTo8BitsIplImage( void *src, v
 //			disp = m_pDispImage[k];
 //			if ( disp < 0xFF00 )
 //			{
-//				mrpt::slam::CLandmark		lm;
-//				lm.type			= mrpt::slam::CLandmark::vlColor;
+//				mrpt::maps::CLandmark		lm;
+//				lm.type			= mrpt::maps::CLandmark::vlColor;
 //
 //				// convert the 16 bit disparity value to floating point x,y,z
 //				// And set the pose PDF:
@@ -939,8 +939,8 @@ void CStereoGrabber_Bumblebee::convertTriclopsImageTo8BitsIplImage( void *src, v
 //					getBothObservation
 // -------------------------------------------------------------*/
 //bool  CStereoGrabber_Bumblebee::getBothObservation(
-//			mrpt::slam::CObservationVisualLandmarks	&out_observation,
-//			mrpt::slam::CObservationStereoImages		&out_observationStereo )
+//			mrpt::obs::CObservationVisualLandmarks	&out_observation,
+//			mrpt::obs::CObservationStereoImages		&out_observationStereo )
 //{
 //#if MRPT_HAS_BUMBLEBEE
 //	unsigned int		x,y;
@@ -983,8 +983,8 @@ void CStereoGrabber_Bumblebee::convertTriclopsImageTo8BitsIplImage( void *src, v
 //			disp = m_pDispImage[k];
 //			if ( disp < 0xFF00 )
 //			{
-//				mrpt::slam::CLandmark		lm;
-//				lm.type			= mrpt::slam::CLandmark::vlColor;
+//				mrpt::maps::CLandmark		lm;
+//				lm.type			= mrpt::maps::CLandmark::vlColor;
 //
 //				// convert the 16 bit disparity value to floating point x,y,z
 //				// And set the pose PDF:
@@ -1063,7 +1063,7 @@ void CStereoGrabber_Bumblebee::convertTriclopsImageTo8BitsIplImage( void *src, v
 //			CVectorFloat						&vX,
 //			CVectorFloat						&vY,
 //			CVectorFloat						&vZ,
-//			mrpt::slam::CObservationStereoImages		&out_observationStereo )
+//			mrpt::obs::CObservationStereoImages		&out_observationStereo )
 //{
 //#if MRPT_HAS_BUMBLEBEE
 //	unsigned int		x,y;
@@ -1166,8 +1166,8 @@ void CStereoGrabber_Bumblebee::convertTriclopsImageTo8BitsIplImage( void *src, v
 // -------------------------------------------------------------*/
 //bool  CStereoGrabber_Bumblebee::getBothObservation(
 //			TROI								ROI,
-//			mrpt::slam::CObservationVisualLandmarks	&out_observation,
-//			mrpt::slam::CObservationStereoImages		&out_observationStereo )
+//			mrpt::obs::CObservationVisualLandmarks	&out_observation,
+//			mrpt::obs::CObservationStereoImages		&out_observationStereo )
 //{
 //#if MRPT_HAS_BUMBLEBEE
 //	unsigned int		x,y;
@@ -1213,8 +1213,8 @@ void CStereoGrabber_Bumblebee::convertTriclopsImageTo8BitsIplImage( void *src, v
 //			disp = m_pDispImage[k];
 //			if ( disp < 0xFF00 )
 //			{
-//				mrpt::slam::CLandmark		lm;
-//				lm.type			= mrpt::slam::CLandmark::vlColor;
+//				mrpt::maps::CLandmark		lm;
+//				lm.type			= mrpt::maps::CLandmark::vlColor;
 //
 //				// convert the 16 bit disparity value to floating point x,y,z
 //				// And set the pose PDF:

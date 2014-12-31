@@ -14,7 +14,7 @@
 #include <mrpt/hwdrivers/CGPSInterface.h>
 
 using namespace mrpt::hwdrivers;
-using namespace mrpt::slam;
+using namespace mrpt::obs;
 using namespace mrpt::system;
 using namespace mrpt::synch;
 using namespace std;
@@ -431,7 +431,7 @@ void  CGPSInterface::processGPSstring(const std::string &s)
 /* -----------------------------------------------------
 					parse_NMEA
 ----------------------------------------------------- */
-bool CGPSInterface::parse_NMEA(const std::string &s, mrpt::slam::CObservationGPS &out_obs, const bool verbose)
+bool CGPSInterface::parse_NMEA(const std::string &s, mrpt::obs::CObservationGPS &out_obs, const bool verbose)
 {
     if (verbose)
 		cout << "[CGPSInterface] GPS raw string: " << s << endl;

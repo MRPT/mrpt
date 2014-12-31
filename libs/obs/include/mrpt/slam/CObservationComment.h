@@ -6,56 +6,10 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
-#ifndef CObservationComment_H
-#define CObservationComment_H
-
-#include <mrpt/utils/CSerializable.h>
-#include <mrpt/slam/CObservation.h>
-
-namespace mrpt
-{
-namespace slam
-{
-	DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CObservationComment , CObservation, OBS_IMPEXP)
-
-
-	/** This "observation" is actually a placeholder for a text block with comments or additional parameters attached to a given rawlog file.
-	 *   There should be only one of this observations in a rawlog file, and it's recommended to insert/modify them from the application RawlogViewer.
-	 *
-	 * \sa CObservation
-	 * \ingroup mrpt_obs_grp
-	 */
-	class OBS_IMPEXP CObservationComment : public CObservation
-	{
-		// This must be added to any CSerializable derived class:
-		DEFINE_SERIALIZABLE( CObservationComment )
-
-	 public:
-		/** Constructor.
-		 */
-		CObservationComment(  ) :
-			text()
-		{ }
-
-		/** Destructor
-		  */
-		virtual ~CObservationComment()
-		{ }
-
-		/** The text block. */
-		std::string text;
-
-		// See base class docs
-		void getSensorPose( CPose3D & ) const {  }
-		// See base class docs
-		void setSensorPose( const CPose3D & ) {  }
-		// See base class docs
-		virtual void getDescriptionAsText(std::ostream &o) const;
-
-	}; // End of class def.
-	DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE( CObservationComment , CObservation, OBS_IMPEXP)
-
-	} // End of namespace
-} // End of namespace
-
-#endif
+#pragma once
+#include <mrpt/obs/CObservationComment.h>
+MRPT_WARNING("*Deprecated header* Please replace with #include <mrpt/obs/CObservationComment.h>. This backward compatible header will be removed in MRPT 2.0.0")
+namespace mrpt { namespace slam {
+	typedef mrpt::obs::CObservationComment CObservationComment;    //!< Backward compatible typedef
+	typedef mrpt::obs::CObservationCommentPtr CObservationCommentPtr; //!< Backward compatible typedef
+} }

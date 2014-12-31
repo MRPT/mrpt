@@ -12,13 +12,13 @@
 
 #include <mrpt/system/threads.h>
 #include <mrpt/hwdrivers/CIMUXSens_MT4.h>
-#include <mrpt/slam/CObservationIMU.h>
-#include <mrpt/slam/CObservationGPS.h>
+#include <mrpt/obs/CObservationIMU.h>
+#include <mrpt/obs/CObservationGPS.h>
 
 IMPLEMENTS_GENERIC_SENSOR(CIMUXSens_MT4,mrpt::hwdrivers)
 
 using namespace mrpt::utils;
-using namespace mrpt::slam;
+using namespace mrpt::obs;
 using namespace mrpt::hwdrivers;
 using namespace std;
 

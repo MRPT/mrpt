@@ -7,20 +7,21 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-// This file is to be included from <mrpt/slam/COctoMapBase.h>
+// This file is to be included from <mrpt/maps/COctoMapBase.h>
 #include <mrpt/utils/CFileOutputStream.h>
-#include <mrpt/slam/CObservation2DRangeScan.h>
-#include <mrpt/slam/CObservation3DRangeScan.h>
-#include <mrpt/slam/CPointsMap.h>
+#include <mrpt/obs/CObservation2DRangeScan.h>
+#include <mrpt/obs/CObservation3DRangeScan.h>
+#include <mrpt/maps/CPointsMap.h>
 
 namespace mrpt
 {
-	namespace slam
+	namespace maps
 	{
 		template <class OCTREE,class OCTREE_NODE>
-		bool COctoMapBase<OCTREE,OCTREE_NODE>::internal_build_PointCloud_for_observation(const CObservation *obs,const mrpt::poses::CPose3D *robotPose, octomap::point3d &sensorPt, octomap::Pointcloud &scan) const
+		bool COctoMapBase<OCTREE,OCTREE_NODE>::internal_build_PointCloud_for_observation(const mrpt::obs::CObservation *obs,const mrpt::poses::CPose3D *robotPose, octomap::point3d &sensorPt, octomap::Pointcloud &scan) const
 		{
 			using namespace mrpt::poses;
+			using namespace mrpt::obs;
 
 			scan.clear();
 
@@ -42,7 +43,7 @@ namespace mrpt
 				sensorPose.composeFrom(robotPose3D,o->sensorPose);
 				sensorPt = octomap::point3d(sensorPose.x(),sensorPose.y(),sensorPose.z());
 
-				const CPointsMap *scanPts = o->buildAuxPointsMap<mrpt::slam::CPointsMap>();
+				const CPointsMap *scanPts = o->buildAuxPointsMap<mrpt::maps::CPointsMap>();
 				const size_t nPts = scanPts->size();
 
 				// Transform 3D point cloud:
@@ -160,7 +161,7 @@ namespace mrpt
 		}
 
 		template <class OCTREE,class OCTREE_NODE>
-		double COctoMapBase<OCTREE,OCTREE_NODE>::computeObservationLikelihood( const CObservation *obs, const CPose3D &takenFrom )
+		double COctoMapBase<OCTREE,OCTREE_NODE>::computeObservationLikelihood( const mrpt::obs::CObservation *obs, const mrpt::poses::CPose3D &takenFrom )
 		{
 			octomap::point3d     sensorPt;
 			octomap::Pointcloud  scan;
@@ -269,7 +270,7 @@ namespace mrpt
 		}
 
 		template <class OCTREE,class OCTREE_NODE>
-		void COctoMapBase<OCTREE,OCTREE_NODE>::TLikelihoodOptions::writeToStream(CStream &out) const
+		void COctoMapBase<OCTREE,OCTREE_NODE>::TLikelihoodOptions::writeToStream(mrpt::utils::CStream &out) const
 		{
 			const int8_t version = 0;
 			out << version;
@@ -277,7 +278,7 @@ namespace mrpt
 		}
 
 		template <class OCTREE,class OCTREE_NODE>
-		void COctoMapBase<OCTREE,OCTREE_NODE>::TLikelihoodOptions::readFromStream(CStream &in)
+		void COctoMapBase<OCTREE,OCTREE_NODE>::TLikelihoodOptions::readFromStream(mrpt::utils::CStream &in)
 		{
 			int8_t version;
 			in >> version;
@@ -297,7 +298,7 @@ namespace mrpt
 							dumpToTextStream
 		  ---------------------------------------------------------------*/
 		template <class OCTREE,class OCTREE_NODE>
-		void  COctoMapBase<OCTREE,OCTREE_NODE>::TInsertionOptions::dumpToTextStream(CStream	&out) const
+		void  COctoMapBase<OCTREE,OCTREE_NODE>::TInsertionOptions::dumpToTextStream(mrpt::utils::CStream	&out) const
 		{
 			out.printf("\n----------- [COctoMapBase<>::TInsertionOptions] ------------ \n\n");
 
@@ -314,7 +315,7 @@ namespace mrpt
 		}
 
 		template <class OCTREE,class OCTREE_NODE>
-		void  COctoMapBase<OCTREE,OCTREE_NODE>::TLikelihoodOptions::dumpToTextStream(CStream	&out) const
+		void  COctoMapBase<OCTREE,OCTREE_NODE>::TLikelihoodOptions::dumpToTextStream(mrpt::utils::CStream	&out) const
 		{
 			out.printf("\n----------- [COctoMapBase<>::TLikelihoodOptions] ------------ \n\n");
 
@@ -356,7 +357,7 @@ namespace mrpt
 
 		/*  COctoMapColoured */
 		template <class OCTREE,class OCTREE_NODE>
-		void COctoMapBase<OCTREE,OCTREE_NODE>::TRenderingOptions::writeToStream(CStream &out) const
+		void COctoMapBase<OCTREE,OCTREE_NODE>::TRenderingOptions::writeToStream(mrpt::utils::CStream &out) const
 		{
 			const int8_t version = 0;
 			out << version;
@@ -365,7 +366,7 @@ namespace mrpt
 		}
 
 		template <class OCTREE,class OCTREE_NODE>
-		void COctoMapBase<OCTREE,OCTREE_NODE>::TRenderingOptions::readFromStream(CStream &in)
+		void COctoMapBase<OCTREE,OCTREE_NODE>::TRenderingOptions::readFromStream(mrpt::utils::CStream &in)
 		{
 			int8_t version;
 			in >> version;

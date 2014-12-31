@@ -10,12 +10,14 @@
 #include "rawlog-edit-declarations.h"
 
 #include <mrpt/topography.h>
-#include <mrpt/slam/CObservationGPS.h>
+#include <mrpt/obs/CObservationGPS.h>
 
 using namespace mrpt;
 using namespace mrpt::utils;
-using namespace mrpt::slam;
+using namespace mrpt::obs;
+using namespace mrpt::poses;
 using namespace mrpt::system;
+using namespace mrpt::math;
 using namespace mrpt::rawlogtools;
 using namespace mrpt::topography;
 using namespace std;

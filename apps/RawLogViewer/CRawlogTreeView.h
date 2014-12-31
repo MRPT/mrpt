@@ -19,7 +19,7 @@
 #include <wx/button.h>
 #include <wx/scrolwin.h>
 
-#include <mrpt/slam/CRawlog.h>
+#include <mrpt/obs/CRawlog.h>
 
 
 enum TRawlogTreeViewEvent
@@ -66,7 +66,7 @@ public:
 	/** Sets the rawlog to be rendered in the control (It's kept as a pointer, so the original object cannot be destroyed).
 	  *  It automatically calls "reloadFromRawlog".
 	  */
-	void setRawlogSource( mrpt::slam::CRawlog *rawlog );
+	void setRawlogSource( mrpt::obs::CRawlog *rawlog );
 
 	/** Sets the name of the rawlog file, used for the root item */
 	void setRawlogName(const std::string &s)
@@ -99,7 +99,7 @@ public:
 	int GetSelectedItem() const { return m_selectedItem; }
 
 protected:
-	mrpt::slam::CRawlog		*m_rawlog;	//!< A reference to the rawlog to be rendered.
+	mrpt::obs::CRawlog		*m_rawlog;	//!< A reference to the rawlog to be rendered.
 	wxImageList				*m_imageList; //!< We own this pointer
 	int						m_selectedItem; //!< Selected row, or -1 if none
 	std::string				m_rawlog_name;	//!< File name

@@ -7,7 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/slam/COccupancyGridMap2D.h>
+#include <mrpt/maps/COccupancyGridMap2D.h>
 #include <mrpt/nav/planners/CPathPlanningCircularRobot.h>
 #include <mrpt/gui/CDisplayWindow.h>
 #include <mrpt/utils/CTicTac.h>
@@ -19,7 +19,7 @@
 
 using namespace mrpt;
 using namespace mrpt::utils;
-using namespace mrpt::slam;
+using namespace mrpt::maps;
 using namespace mrpt::nav;
 using namespace mrpt::math;
 using namespace std;

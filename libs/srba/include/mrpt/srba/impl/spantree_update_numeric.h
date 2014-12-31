@@ -11,8 +11,6 @@
 
 namespace mrpt { namespace srba {
 
-using namespace std;
-
 #define UPDATE_NUM_ST_VERBOSE  0
 #define DEBUG_GARBAGE_FILL_ALL_NUMS	0
 

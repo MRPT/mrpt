@@ -21,7 +21,7 @@ TEST(CGPSInterface, NMEA_parser)
 	// Test with a correct frame:
 	{
 		const char *test_cmd = "$GPGGA,101830.00,3649.76162994,N,00224.53709052,W,2,08,1.1,9.3,M,47.4,M,5.0,0120*58";
-		mrpt::slam::CObservationGPS obsGPS;
+		mrpt::obs::CObservationGPS obsGPS;
 		const bool parse_ret = CGPSInterface::parse_NMEA( test_cmd, obsGPS );
 		EXPECT_TRUE(parse_ret) << "Failed parse of: " << test_cmd << endl;
 
@@ -34,7 +34,7 @@ TEST(CGPSInterface, NMEA_parser)
 	// Test with an empty frame:
 	{
 		const char *test_cmd = "$GPGGA,,,,,,0,,,,M,,M,,*6";
-		mrpt::slam::CObservationGPS obsGPS;
+		mrpt::obs::CObservationGPS obsGPS;
 		const bool parse_ret = CGPSInterface::parse_NMEA( test_cmd, obsGPS );
 		EXPECT_FALSE(parse_ret);
 	}

@@ -13,22 +13,20 @@
 
 #include <mrpt/hmtslam/HMT_SLAM_common.h>
 #include <mrpt/poses/CPose3DPDFParticles.h>
-#include <mrpt/slam/CSensoryFrame.h>
-#include <mrpt/slam/CSimpleMap.h>
-#include <mrpt/slam/CMultiMetricMap.h>
+#include <mrpt/obs/CSensoryFrame.h>
+#include <mrpt/maps/CSimpleMap.h>
+#include <mrpt/maps/CMultiMetricMap.h>
 
 
 namespace mrpt
 {
 	namespace hmtslam
 	{
-		using namespace mrpt::slam;
-
 		/** Information kept for each robot pose used in CRobotPosesGraph */
 		struct HMTSLAM_IMPEXP TPoseInfo
 		{
-			CSensoryFrame			sf;   //!< The observations
-			CPose3DPDFParticles		pdf;  //!< The robot pose PDF
+			mrpt::obs::CSensoryFrame			sf;   //!< The observations
+			mrpt::poses::CPose3DPDFParticles		pdf;  //!< The robot pose PDF
 		};
 
 		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CRobotPosesGraph, mrpt::utils::CSerializable, HMTSLAM_IMPEXP )
@@ -43,10 +41,10 @@ namespace mrpt
 		public:
 
 			/** Insert all the observations in the map (without erasing previous contents). */
-			void insertIntoMetricMap( CMultiMetricMap	&metricMap ) const;
+			void insertIntoMetricMap( mrpt::maps::CMultiMetricMap	&metricMap ) const;
 
-			/** Converts the contents of this object into a 'simplemap' (mrpt::slam::CSimpleMap) object. */
-			void convertIntoSimplemap( CSimpleMap &out_simplemap) const;
+			/** Converts the contents of this object into a 'simplemap' (mrpt::maps::CSimpleMap) object. */
+			void convertIntoSimplemap( mrpt::maps::CSimpleMap &out_simplemap) const;
 
 		}; // end of class
 		DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE( CRobotPosesGraph, mrpt::utils::CSerializable, HMTSLAM_IMPEXP )

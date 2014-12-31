@@ -10,7 +10,7 @@
 #ifndef RAWLOG_PROCESSOR_H
 #define RAWLOG_PROCESSOR_H
 
-#include <mrpt/slam/CRawlog.h>
+#include <mrpt/obs/CRawlog.h>
 #include <mrpt/utils/CFileGZInputStream.h>
 #include <mrpt/utils/CTicTac.h>
 #include <mrpt/system/os.h>
@@ -55,14 +55,14 @@ namespace mrpt
 			void doProcessRawlog()
 			{
 				// The 3 different objects we can read from a rawlog:
-				mrpt::slam::CActionCollectionPtr actions;
-				mrpt::slam::CSensoryFramePtr     SF;
-				mrpt::slam::CObservationPtr      obs;
+				mrpt::obs::CActionCollectionPtr actions;
+				mrpt::obs::CSensoryFramePtr     SF;
+				mrpt::obs::CObservationPtr      obs;
 
 				m_timParse.Tic();
 
 				// Parse the entire rawlog:
-				while (mrpt::slam::CRawlog::getActionObservationPairOrObservation(
+				while (mrpt::obs::CRawlog::getActionObservationPairOrObservation(
 					m_in_rawlog,
 					actions,SF, obs,
 					m_rawlogEntry ) )
@@ -123,15 +123,15 @@ namespace mrpt
 			// The virtual method of the user to be invoked for each read object:
 			//  Return false to abort and stop the read loop.
 			virtual bool processOneEntry(
-				mrpt::slam::CActionCollectionPtr &actions,
-				mrpt::slam::CSensoryFramePtr     &SF,
-				mrpt::slam::CObservationPtr      &obs) = 0;
+				mrpt::obs::CActionCollectionPtr &actions,
+				mrpt::obs::CSensoryFramePtr     &SF,
+				mrpt::obs::CObservationPtr      &obs) = 0;
 
 			// This method can be reimplemented to save the modified object to an output stream.
 			virtual void OnPostProcess(
-				mrpt::slam::CActionCollectionPtr &actions,
-				mrpt::slam::CSensoryFramePtr     &SF,
-				mrpt::slam::CObservationPtr      &obs)
+				mrpt::obs::CActionCollectionPtr &actions,
+				mrpt::obs::CSensoryFramePtr     &SF,
+				mrpt::obs::CObservationPtr      &obs)
 			{
 				MRPT_UNUSED_PARAM(actions); MRPT_UNUSED_PARAM(SF); MRPT_UNUSED_PARAM(obs);
 				// Default: Do nothing
@@ -151,15 +151,15 @@ namespace mrpt
 			}
 
 			virtual bool processOneEntry(
-				mrpt::slam::CActionCollectionPtr &actions,
-				mrpt::slam::CSensoryFramePtr     &SF,
-				mrpt::slam::CObservationPtr      &obs)
+				mrpt::obs::CActionCollectionPtr &actions,
+				mrpt::obs::CSensoryFramePtr     &SF,
+				mrpt::obs::CObservationPtr      &obs)
 			{
 				MRPT_UNUSED_PARAM(actions);
 				// Process each observation individually, either from "obs" or each within a "SF":
 				for (size_t idxObs=0; true; idxObs++)
 				{
-					mrpt::slam::CObservationPtr  obs_indiv;
+					mrpt::obs::CObservationPtr  obs_indiv;
 					if (obs)
 					{
 						if (idxObs>0)  break;
@@ -182,7 +182,7 @@ namespace mrpt
 			}
 
 			// To be implemented by the user. Return false on any error to abort processing.
-			virtual bool processOneObservation(mrpt::slam::CObservationPtr  &obs) = 0;
+			virtual bool processOneObservation(mrpt::obs::CObservationPtr  &obs) = 0;
 
 
 		}; // end CRawlogProcessorOnEachObservation
@@ -209,10 +209,10 @@ namespace mrpt
 			}
 
 			/** To be implemented by users: return false means the observation is  */
-			virtual bool tellIfThisObsPasses(mrpt::slam::CObservationPtr  &obs) = 0;
+			virtual bool tellIfThisObsPasses(mrpt::obs::CObservationPtr  &obs) = 0;
 
 			// Process each entry. Return false on any error to abort processing.
-			virtual bool processOneObservation(mrpt::slam::CObservationPtr  &obs)
+			virtual bool processOneObservation(mrpt::obs::CObservationPtr  &obs)
 			{
 				if (!tellIfThisObsPasses(obs))
 				{
@@ -228,15 +228,15 @@ namespace mrpt
 			}
 			// Save those entries which are not NULL.
 			virtual void OnPostProcess(
-				mrpt::slam::CActionCollectionPtr &actions,
-				mrpt::slam::CSensoryFramePtr     &SF,
-				mrpt::slam::CObservationPtr      &obs)
+				mrpt::obs::CActionCollectionPtr &actions,
+				mrpt::obs::CSensoryFramePtr     &SF,
+				mrpt::obs::CObservationPtr      &obs)
 			{
 				if (actions)
 				{
 					ASSERT_(actions && SF)
 					// Remove from SF those observations freed:
-					mrpt::slam::CSensoryFrame::iterator it = SF->begin();
+					mrpt::obs::CSensoryFrame::iterator it = SF->begin();
 					while (it!=SF->end())
 					{
 						if ( (*it).present() )

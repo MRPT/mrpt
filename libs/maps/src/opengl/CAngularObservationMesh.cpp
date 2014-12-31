@@ -39,9 +39,13 @@
 
 
 using namespace mrpt;
+using namespace mrpt::obs;
+using namespace mrpt::maps;
+using namespace mrpt::math;
 using namespace mrpt::opengl;
 using namespace mrpt::utils;
 using namespace mrpt::poses;
+using namespace mrpt::math;
 
 IMPLEMENTS_SERIALIZABLE(CAngularObservationMesh,CRenderizableDisplayList,mrpt::opengl)
 
@@ -166,7 +170,7 @@ bool CAngularObservationMesh::traceRay(const mrpt::poses::CPose3D &o,double &dis
 	return false;
 }
 
-bool CAngularObservationMesh::setScanSet(const std::vector<CObservation2DRangeScan> &scans)	{
+bool CAngularObservationMesh::setScanSet(const std::vector<mrpt::obs::CObservation2DRangeScan> &scans)	{
 	CRenderizableDisplayList::notifyChange();
 
 	//Returns false if the scan is inconsistent
@@ -243,7 +247,7 @@ void CAngularObservationMesh::generatePointCloud(CPointsMap *out_map) const {
    Implements the writing to a CStream capability of
      CSerializable objects
   ---------------------------------------------------------------*/
-void CAngularObservationMesh::writeToStream(CStream &out,int *version) const	{
+void CAngularObservationMesh::writeToStream(mrpt::utils::CStream &out,int *version) const	{
 	if (version) *version=0;
 	else	{
 		writeToStreamRender(out);
@@ -256,7 +260,7 @@ void CAngularObservationMesh::writeToStream(CStream &out,int *version) const	{
 	Implements the reading from a CStream capability of
 		CSerializable objects
   ---------------------------------------------------------------*/
-void CAngularObservationMesh::readFromStream(CStream &in,int version)	{
+void CAngularObservationMesh::readFromStream(mrpt::utils::CStream &in,int version)	{
 	switch (version)	{
 		case 0:
 			readFromStreamRender(in);

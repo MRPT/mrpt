@@ -11,14 +11,16 @@
 #include <mrpt/random.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/slam/CMetricMapBuilderICP.h>
-#include <mrpt/slam/CMultiMetricMap.h>
-#include <mrpt/slam/CRawlog.h>
+#include <mrpt/maps/CMultiMetricMap.h>
+#include <mrpt/obs/CRawlog.h>
 
 #include "common.h"
 
 using namespace mrpt;
 using namespace mrpt::utils;
 using namespace mrpt::slam;
+using namespace mrpt::maps;
+using namespace mrpt::obs;
 using namespace mrpt::random;
 using namespace std;
 

@@ -10,14 +10,14 @@
 #include <mrpt/hwdrivers/CImageGrabber_FlyCapture2.h>
 #include <mrpt/utils/CFileGZOutputStream.h>
 #include <mrpt/utils/CTicTac.h>
-#include <mrpt/slam/CObservationImage.h>
+#include <mrpt/obs/CObservationImage.h>
 #include <mrpt/gui/CDisplayWindow.h>
 #include <mrpt/system/os.h>
 
 using namespace mrpt::utils;
 using namespace mrpt::hwdrivers;
 using namespace mrpt::gui;
-using namespace mrpt::slam;
+using namespace mrpt::obs;
 using namespace std;
 
 

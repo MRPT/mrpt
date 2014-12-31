@@ -9,16 +9,11 @@
 
 #include "gui-precomp.h"   // Precompiled headers
 
-
-
 #include <mrpt/config.h>
-
 #include <mrpt/gui/CDisplayWindowPlots.h>
-
 #include <mrpt/system/os.h>
 #include <mrpt/utils/CImage.h>
 #include <mrpt/utils/metaprogramming.h>
-
 #include <mrpt/gui/WxSubsystem.h>
 #include <mrpt/gui/WxUtils.h>
 
@@ -27,6 +22,7 @@
 using namespace mrpt;
 using namespace mrpt::gui;
 using namespace mrpt::utils;
+using namespace mrpt::math;
 using namespace mrpt::system;
 using namespace std;
 

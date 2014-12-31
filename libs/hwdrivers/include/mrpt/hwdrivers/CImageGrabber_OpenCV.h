@@ -12,7 +12,7 @@
 #include <mrpt/config.h>
 #include <mrpt/hwdrivers/link_pragmas.h>
 
-#include <mrpt/slam/CObservationImage.h>
+#include <mrpt/obs/CObservationImage.h>
 #include <mrpt/utils/safe_pointers.h>
 
 
@@ -105,7 +105,7 @@ namespace mrpt
 			 *
 			 * \return false on any error, true if all go fine.
 			*/
-			bool  getObservation( mrpt::slam::CObservationImage &out_observation);
+			bool  getObservation( mrpt::obs::CObservationImage &out_observation);
 
 
 		};	// End of class

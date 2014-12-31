@@ -21,8 +21,8 @@
 #define MRPT_NO_WARN_BIG_HDR // It's ok to include ALL hdrs here.
 #include <mrpt/obs.h>
 
-#include <mrpt/slam/CSimplePointsMap.h>
-#include <mrpt/slam/CColouredPointsMap.h>
+#include <mrpt/maps/CSimplePointsMap.h>
+#include <mrpt/maps/CColouredPointsMap.h>
 #include <mrpt/poses/CPosePDFParticles.h>
 
 #include <iomanip>
@@ -31,10 +31,12 @@
 
 using namespace mrpt;
 using namespace mrpt::opengl;
-using namespace mrpt::slam;
+using namespace mrpt::maps;
+using namespace mrpt::obs;
 using namespace mrpt::system;
 using namespace mrpt::math;
 using namespace mrpt::utils;
+using namespace mrpt::poses;
 using namespace std;
 
 
@@ -89,7 +91,7 @@ void xRawLogViewerFrame::SelectObjectInTreeView( const CSerializablePtr & sel_ob
 			CObservation2DRangeScanPtr obs = CObservation2DRangeScanPtr( sel_obj );
 
 			// The plot:
-			mrpt::slam::CSimplePointsMap  dummMap;
+			mrpt::maps::CSimplePointsMap  dummMap;
 			dummMap.insertionOptions.minDistBetweenLaserPoints = 0;
 			dummMap.insertObservation( obs.pointer() );
 

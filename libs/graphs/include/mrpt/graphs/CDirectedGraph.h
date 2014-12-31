@@ -20,8 +20,8 @@ namespace mrpt
 {
 	namespace graphs
 	{
-		using mrpt::utils::TNodeID;
-		using mrpt::utils::TPairNodeIDs;
+		using mrpt::utils::TNodeID;      //!< Make available this typedef in this namespace too
+		using mrpt::utils::TPairNodeIDs; //!< Make available this typedef in this namespace too
 
 		/** \addtogroup mrpt_graphs_grp
 		    @{ */

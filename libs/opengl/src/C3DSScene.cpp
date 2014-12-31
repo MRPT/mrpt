@@ -427,7 +427,7 @@ void light_update(Lib3dsLight *l,Lib3dsFile	*file)
    Implements the writing to a CStream capability of
      CSerializable objects
   ---------------------------------------------------------------*/
-void  C3DSScene::writeToStream(CStream &out,int *version) const
+void  C3DSScene::writeToStream(mrpt::utils::CStream &out,int *version) const
 {
 	if (version)
 		*version = 2;
@@ -456,7 +456,7 @@ void  C3DSScene::writeToStream(CStream &out,int *version) const
 	Implements the reading from a CStream capability of
 		CSerializable objects
   ---------------------------------------------------------------*/
-void  C3DSScene::readFromStream(CStream &in,int version)
+void  C3DSScene::readFromStream(mrpt::utils::CStream &in,int version)
 {
 	switch(version)
 	{

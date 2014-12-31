@@ -10,7 +10,7 @@
 #include "topography-precomp.h"  // Precompiled headers
 
 #include <mrpt/scanmatching.h>
-#include <mrpt/slam/CObservationGPS.h>
+#include <mrpt/obs/CObservationGPS.h>
 #include <mrpt/math/data_utils.h>
 #include <mrpt/topography/data_types.h>
 #include <mrpt/topography/conversions.h>
@@ -28,7 +28,7 @@
 
 using namespace std;
 using namespace mrpt;
-using namespace mrpt::slam;
+using namespace mrpt::obs;
 using namespace mrpt::math;
 using namespace mrpt::utils;
 using namespace mrpt::poses;
@@ -49,7 +49,7 @@ std::set<T> make_set( const T& v0, const T& v1 )
  ---------------------------------------------------------------*/
 void  mrpt::topography::path_from_rtk_gps(
 	mrpt::poses::CPose3DInterpolator	&robot_path,
-	const mrpt::slam::CRawlog			&rawlog,
+	const mrpt::obs::CRawlog			&rawlog,
 	size_t 								first,
 	size_t 								last,
 	bool								isGUI,

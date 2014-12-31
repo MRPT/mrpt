@@ -13,17 +13,16 @@
 
 namespace mrpt { namespace srba {
 
-using namespace std;
-
 // This is used mainly for 3D rendering
 template <class KF2KF_POSE_TYPE,class LM_TYPE,class OBS_TYPE,class RBA_OPTIONS>
 void RbaEngine<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::create_complete_spanning_tree(
 	const TKeyFrameID   root_id,
 	frameid2pose_map_t & span_tree,
 	const size_t        max_depth,
-	vector<bool>  * aux_ws
+	std::vector<bool>  * aux_ws
 	) const
 {
+	using namespace std;
 	MRPT_UNUSED_PARAM(aux_ws);
 	span_tree.clear();
 

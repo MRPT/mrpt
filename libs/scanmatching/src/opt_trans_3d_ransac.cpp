@@ -24,6 +24,8 @@
 using namespace mrpt;
 using namespace mrpt::scanmatching;
 using namespace mrpt::random;
+using namespace mrpt::poses;
+using namespace mrpt::math;
 using namespace mrpt::utils;
 using namespace std;
 

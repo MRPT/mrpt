@@ -9,15 +9,15 @@
 
 #include "obs-precomp.h"   // Precompiled headers
 
-#include <mrpt/slam/CObservationReflectivity.h>
+#include <mrpt/obs/CObservationReflectivity.h>
 #include <mrpt/utils/CStream.h>
 
-using namespace mrpt::slam;
+using namespace mrpt::obs;
 using namespace mrpt::utils;
 using namespace mrpt::poses;
 
 // This must be added to any CSerializable class implementation file.
-IMPLEMENTS_SERIALIZABLE(CObservationReflectivity, CObservation,mrpt::slam)
+IMPLEMENTS_SERIALIZABLE(CObservationReflectivity, CObservation,mrpt::obs)
 
 
 /** Default constructor.
@@ -36,7 +36,7 @@ CObservationReflectivity::~CObservationReflectivity()
 /*---------------------------------------------------------------
   Implements the writing to a CStream capability of CSerializable objects
  ---------------------------------------------------------------*/
-void  CObservationReflectivity::writeToStream(CStream &out, int *version) const
+void  CObservationReflectivity::writeToStream(mrpt::utils::CStream &out, int *version) const
 {
 	if (version)
 		*version = 0;
@@ -51,7 +51,7 @@ void  CObservationReflectivity::writeToStream(CStream &out, int *version) const
 /*---------------------------------------------------------------
   Implements the reading from a CStream capability of CSerializable objects
  ---------------------------------------------------------------*/
-void  CObservationReflectivity::readFromStream(CStream &in, int version)
+void  CObservationReflectivity::readFromStream(mrpt::utils::CStream &in, int version)
 {
 	switch(version)
 	{

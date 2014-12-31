@@ -10,12 +10,12 @@
 #define CDetectorDoorCrossing_H
 
 #include <mrpt/utils/CDebugOutputCapable.h>
-#include <mrpt/slam/CRawlog.h>
+#include <mrpt/obs/CRawlog.h>
 #include <mrpt/poses/CPose2D.h>
-#include <mrpt/slam/CSensoryFrame.h>
-#include <mrpt/slam/CSimplePointsMap.h>
-#include <mrpt/slam/COccupancyGridMap2D.h>
-#include <mrpt/slam/CActionRobotMovement2D.h>
+#include <mrpt/obs/CSensoryFrame.h>
+#include <mrpt/maps/CSimplePointsMap.h>
+#include <mrpt/maps/COccupancyGridMap2D.h>
+#include <mrpt/obs/CActionRobotMovement2D.h>
 
 #include <mrpt/detectors/link_pragmas.h>
 
@@ -87,7 +87,7 @@ namespace detectors
 			  */
 			float	cumulativeTurning;
 
-			mrpt::slam::CSimplePointsMap pointsMap;
+			mrpt::maps::CSimplePointsMap pointsMap;
 		};
 
 		/** The main method, where a new action/observation pair is added to the list.
@@ -100,8 +100,8 @@ namespace detectors
 		  * \sa TDoorCrossingOutParams
 		  */
 		void  process(
-			mrpt::slam::CActionRobotMovement2D & in_poseChange,
-			mrpt::slam::CSensoryFrame          & in_sf,
+			mrpt::obs::CActionRobotMovement2D & in_poseChange,
+			mrpt::obs::CSensoryFrame          & in_sf,
 			TDoorCrossingOutParams             & out_estimation
 			);
 
@@ -115,10 +115,10 @@ namespace detectors
 		  *    is in indexes ((M-1)*2,(M-1)*2-1).
 		  *    Always contains (Action, Observation) pairs, in that order.
 		  */
-		mrpt::slam::CRawlog  lastObs;
+		mrpt::obs::CRawlog  lastObs;
 
 		/** Entropy of current, and last "map patchs". */
-		mrpt::slam::COccupancyGridMap2D::TEntropyInfo entropy, lastEntropy;
+		mrpt::maps::COccupancyGridMap2D::TEntropyInfo entropy, lastEntropy;
 		bool  lastEntropyValid;
 
 

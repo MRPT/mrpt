@@ -67,7 +67,7 @@ void CCylinder::render_dl() const	{
    Implements the writing to a CStream capability of
      CSerializable objects
   ---------------------------------------------------------------*/
-void CCylinder::writeToStream(CStream &out,int *version) const	{
+void CCylinder::writeToStream(mrpt::utils::CStream &out,int *version) const	{
 	if (version) *version=0;
 	else	{
 		writeToStreamRender(out);
@@ -80,7 +80,7 @@ void CCylinder::writeToStream(CStream &out,int *version) const	{
 	Implements the reading from a CStream capability of
 		CSerializable objects
   ---------------------------------------------------------------*/
-void CCylinder::readFromStream(CStream &in,int version)	{
+void CCylinder::readFromStream(mrpt::utils::CStream &in,int version)	{
 	switch (version)	{
 		case 0:
 			readFromStreamRender(in);

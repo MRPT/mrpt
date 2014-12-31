@@ -33,7 +33,7 @@ CMatrixD::CMatrixD( const TPoint3D &p) : CMatrixDouble(p) {}
 /*---------------------------------------------------------------
 						writeToStream
  ---------------------------------------------------------------*/
-void  CMatrixD::writeToStream(CStream &out, int *out_Version) const
+void  CMatrixD::writeToStream(mrpt::utils::CStream &out, int *out_Version) const
 {
 	if (out_Version)
 		*out_Version = 0;
@@ -52,7 +52,7 @@ void  CMatrixD::writeToStream(CStream &out, int *out_Version) const
 /*---------------------------------------------------------------
 						readFromStream
  ---------------------------------------------------------------*/
-void  CMatrixD::readFromStream(CStream &in, int version)
+void  CMatrixD::readFromStream(mrpt::utils::CStream &in, int version)
 {
 	switch(version)
 	{

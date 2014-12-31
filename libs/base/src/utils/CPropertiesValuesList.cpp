@@ -25,7 +25,7 @@ IMPLEMENTS_SERIALIZABLE(CPropertiesValuesList, CSerializable, mrpt::utils)
 /*---------------------------------------------------------------
 						writeToStream
  ---------------------------------------------------------------*/
-void  CPropertiesValuesList::writeToStream(CStream &out, int *out_Version) const
+void  CPropertiesValuesList::writeToStream(mrpt::utils::CStream &out, int *out_Version) const
 {
 	if (out_Version)
 		*out_Version = 0;
@@ -53,7 +53,7 @@ void  CPropertiesValuesList::writeToStream(CStream &out, int *out_Version) const
 /*---------------------------------------------------------------
 						readFromStream
  ---------------------------------------------------------------*/
-void  CPropertiesValuesList::readFromStream(CStream &in, int version)
+void  CPropertiesValuesList::readFromStream(mrpt::utils::CStream &in, int version)
 {
 	switch(version)
 	{

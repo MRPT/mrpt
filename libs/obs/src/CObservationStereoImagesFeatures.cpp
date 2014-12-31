@@ -8,19 +8,19 @@
    +---------------------------------------------------------------------------+ */
 
 #include "obs-precomp.h"   // Precompiled headers
-#include <mrpt/slam/CObservationStereoImagesFeatures.h>
+#include <mrpt/obs/CObservationStereoImagesFeatures.h>
 
 #include <mrpt/utils/CFileOutputStream.h>
 #include <mrpt/utils/CStream.h>
 
-using namespace mrpt::slam;
+using namespace mrpt::obs;
 using namespace mrpt::utils;
 using namespace mrpt::poses;
 using namespace mrpt::math;
 using namespace std;
 
 // This must be added to any CSerializable class implementation file.
-IMPLEMENTS_SERIALIZABLE(CObservationStereoImagesFeatures, CObservation,mrpt::slam)
+IMPLEMENTS_SERIALIZABLE(CObservationStereoImagesFeatures, CObservation,mrpt::obs)
 
  CObservationStereoImagesFeatures::CObservationStereoImagesFeatures( ) :
 	cameraLeft(),
@@ -73,7 +73,7 @@ void  CObservationStereoImagesFeatures::saveFeaturesToTextFile( const std::strin
 /*---------------------------------------------------------------
   Implements the writing to a CStream capability of CSerializable objects
  ---------------------------------------------------------------*/
-void  CObservationStereoImagesFeatures::writeToStream(CStream &out, int *version) const
+void  CObservationStereoImagesFeatures::writeToStream(mrpt::utils::CStream &out, int *version) const
 {
 	if (version)
 		*version = 0 ;
@@ -97,7 +97,7 @@ void  CObservationStereoImagesFeatures::writeToStream(CStream &out, int *version
 /*---------------------------------------------------------------
   Implements the reading from a CStream capability of CSerializable objects
  ---------------------------------------------------------------*/
-void  CObservationStereoImagesFeatures::readFromStream(CStream &in, int version)
+void  CObservationStereoImagesFeatures::readFromStream(mrpt::utils::CStream &in, int version)
 {
 	switch(version)
 	{

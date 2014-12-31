@@ -13,8 +13,9 @@
 #include <mrpt/hwdrivers/CBoardIR.h>
 
 using namespace mrpt::hwdrivers;
-using namespace mrpt::slam;
+using namespace mrpt::obs;
 using namespace mrpt::system;
+using namespace mrpt::utils;
 using namespace std;
 
 IMPLEMENTS_GENERIC_SENSOR(CBoardIR,mrpt::hwdrivers)
@@ -69,7 +70,7 @@ CBoardIR::~CBoardIR()
 -------------------------------------------------------------*/
 void CBoardIR::getObservation(
 	bool							&outThereIsObservation,
-	mrpt::slam::CObservationRange	&obs,
+	mrpt::obs::CObservationRange	&obs,
 	bool							&hardwareError )
 {
 	outThereIsObservation = false;
@@ -131,7 +132,7 @@ void CBoardIR::getObservation(
 
 			for( unsigned int j = 0; j < nSensors; j++ )
 			{
-				mrpt::slam::CObservationRange::TMeasurement obsRange;
+				mrpt::obs::CObservationRange::TMeasurement obsRange;
 
 				obsRange.sensorID = j;												// The ID of the IR sensor
 				obsRange.sensorPose = m_IRPoses[j];									// The pose of the IR sensor
@@ -190,7 +191,7 @@ void CBoardIR::doProcess( )
 			THROW_EXCEPTION("Cannot open the serial port");
 		}
 
-		mrpt::slam::CObservationRangePtr obs = mrpt::slam::CObservationRange::Create();
+		mrpt::obs::CObservationRangePtr obs = mrpt::obs::CObservationRange::Create();
 		bool thereIsObservation,hardwareError;
 
 		getObservation(thereIsObservation,*obs,hardwareError);

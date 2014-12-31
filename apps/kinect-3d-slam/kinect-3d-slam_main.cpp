@@ -32,7 +32,7 @@ Note: This is a very *simple* approach to SLAM. It would be better to first sele
 #include <mrpt/system/filesystem.h>
 #include <mrpt/synch/CThreadSafeVariable.h>
 #include <mrpt/utils/CConfigFile.h>
-#include <mrpt/slam/CColouredPointsMap.h>
+#include <mrpt/maps/CColouredPointsMap.h>
 #include <mrpt/opengl/CPointCloudColoured.h>
 #include <mrpt/opengl/CGridPlaneXY.h>
 #include <mrpt/opengl/stock_objects.h>
@@ -44,6 +44,9 @@ using namespace mrpt::poses;
 using namespace mrpt::math;
 using namespace mrpt::gui;
 using namespace mrpt::utils;
+using namespace mrpt::obs;
+using namespace mrpt::maps;
+using namespace mrpt::opengl;
 using namespace std;
 
 // Thread for grabbing: Do this is another thread so we divide rendering and grabbing

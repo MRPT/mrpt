@@ -95,7 +95,7 @@ namespace mrpt
 			virtual void loggingGetWSObstaclesAndShape(CLogFileRecord &out_log);
 
 
-			mrpt::slam::CSimplePointsMap m_WS_Obstacles;  //!< The obstacle points, as seen from the local robot frame.
+			mrpt::maps::CSimplePointsMap m_WS_Obstacles;  //!< The obstacle points, as seen from the local robot frame.
 
 		}; // end class
 	}

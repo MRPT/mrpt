@@ -16,6 +16,7 @@
 using namespace mrpt::srba;
 using namespace std;
 using mrpt::utils::DEG2RAD;
+using mrpt::utils::square;
 
 // --------------------------------------------------------------------------------
 // Declare a typedef "my_srba_t" for easily referring to my RBA problem type:

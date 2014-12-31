@@ -9,16 +9,16 @@
 
 #include "obs-precomp.h"   // Precompiled headers
 
-#include <mrpt/slam/CObservationWirelessPower.h>
+#include <mrpt/obs/CObservationWirelessPower.h>
 #include <mrpt/utils/CStream.h>
 
-using namespace mrpt::slam;
+using namespace mrpt::obs;
 using namespace mrpt::utils;
 using namespace mrpt::poses;
 
 
 // This must be added to any CSerializable class implementation file.
-IMPLEMENTS_SERIALIZABLE(CObservationWirelessPower, CObservation,mrpt::slam)
+IMPLEMENTS_SERIALIZABLE(CObservationWirelessPower, CObservation,mrpt::obs)
 
 /** Constructor
  */
@@ -30,7 +30,7 @@ CObservationWirelessPower::CObservationWirelessPower( ) :
 /*---------------------------------------------------------------
   Implements the writing to a CStream capability of CSerializable objects
  ---------------------------------------------------------------*/
-void  CObservationWirelessPower::writeToStream(CStream &out, int *version) const
+void  CObservationWirelessPower::writeToStream(mrpt::utils::CStream &out, int *version) const
 {
 	MRPT_UNUSED_PARAM(out);
 	if (version)
@@ -48,7 +48,7 @@ void  CObservationWirelessPower::writeToStream(CStream &out, int *version) const
 /*---------------------------------------------------------------
   Implements the reading from a CStream capability of CSerializable objects
  ---------------------------------------------------------------*/
-void  CObservationWirelessPower::readFromStream(CStream &in, int version)
+void  CObservationWirelessPower::readFromStream(mrpt::utils::CStream &in, int version)
 {
 	//MRPT_UNUSED_PARAM(in);
 	switch(version)

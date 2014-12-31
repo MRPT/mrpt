@@ -9,20 +9,20 @@
 
 #include "obs-precomp.h"   // Precompiled headers
 
-#include <mrpt/slam/CObservationComment.h>
+#include <mrpt/obs/CObservationComment.h>
 #include <mrpt/utils/CStream.h>
 
-using namespace mrpt::slam;
+using namespace mrpt::obs;
 using namespace mrpt::utils;
 using namespace mrpt::poses;
 
 // This must be added to any CSerializable class implementation file.
-IMPLEMENTS_SERIALIZABLE(CObservationComment, CObservation,mrpt::slam)
+IMPLEMENTS_SERIALIZABLE(CObservationComment, CObservation,mrpt::obs)
 
 /*---------------------------------------------------------------
   Implements the writing to a CStream capability of CSerializable objects
  ---------------------------------------------------------------*/
-void  CObservationComment::writeToStream(CStream &out, int *version) const
+void  CObservationComment::writeToStream(mrpt::utils::CStream &out, int *version) const
 {
 	if (version)
 		*version = 0;
@@ -36,7 +36,7 @@ void  CObservationComment::writeToStream(CStream &out, int *version) const
 /*---------------------------------------------------------------
   Implements the reading from a CStream capability of CSerializable objects
  ---------------------------------------------------------------*/
-void  CObservationComment::readFromStream(CStream &in, int version)
+void  CObservationComment::readFromStream(mrpt::utils::CStream &in, int version)
 {
 	switch(version)
 	{

@@ -9,7 +9,7 @@
 
 #include "obs-precomp.h"   // Precompiled headers
 
-#include <mrpt/slam/CObservationGPS.h>
+#include <mrpt/obs/CObservationGPS.h>
 #include <mrpt/utils/CStdOutStream.h>
 #include <mrpt/utils/CStream.h>
 #include <mrpt/math/matrix_serialization.h> // for << of matrices
@@ -18,11 +18,11 @@
 using namespace std;
 using namespace mrpt;
 using namespace mrpt::utils;
-using namespace mrpt::slam;
+using namespace mrpt::obs;
 using namespace mrpt::math;
 
 // This must be added to any CSerializable class implementation file.
-IMPLEMENTS_SERIALIZABLE(CObservationGPS, CObservation,mrpt::slam)
+IMPLEMENTS_SERIALIZABLE(CObservationGPS, CObservation,mrpt::obs)
 
 CStdOutStream	gps_my_cout;
 
@@ -44,7 +44,7 @@ CObservationGPS::CObservationGPS( ) :
 /*---------------------------------------------------------------
   Implements the writing to a CStream capability of CSerializable objects
  ---------------------------------------------------------------*/
-void  CObservationGPS::writeToStream(CStream &out, int *version) const
+void  CObservationGPS::writeToStream(mrpt::utils::CStream &out, int *version) const
 {
 	MRPT_UNUSED_PARAM(out);
 	if (version)
@@ -133,7 +133,7 @@ void  CObservationGPS::writeToStream(CStream &out, int *version) const
 /*---------------------------------------------------------------
   Implements the reading from a CStream capability of CSerializable objects
  ---------------------------------------------------------------*/
-void  CObservationGPS::readFromStream(CStream &in, int version)
+void  CObservationGPS::readFromStream(mrpt::utils::CStream &in, int version)
 {
 	MRPT_UNUSED_PARAM(in);
 	switch(version)

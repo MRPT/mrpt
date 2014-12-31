@@ -123,7 +123,7 @@ namespace mrpt
 				MATDEST &outMat);
 		}
 
-		/** Conversion of poses (TPose2D,TPoint2D,..., CPoint2D,CPose3D,...) to MRPT containers (vector/matrix) */
+		/** Conversion of poses (TPose2D,TPoint2D,..., mrpt::poses::CPoint2D,CPose3D,...) to MRPT containers (vector/matrix) */
 		template <class CONTAINER,class POINT_OR_POSE>
 		CONTAINER & containerFromPoseOrPoint(CONTAINER &C, const POINT_OR_POSE &p);
 

@@ -11,8 +11,8 @@
 #include <mrpt/vision/CDifodo.h>
 #include <mrpt/utils/CConfigFileBase.h>
 #include <mrpt/utils/CImage.h>
-#include <mrpt/slam/CRawlog.h>
-#include <mrpt/slam/CObservation3DRangeScan.h>
+#include <mrpt/obs/CRawlog.h>
+#include <mrpt/obs/CObservation3DRangeScan.h>
 #include <mrpt/opengl/COpenGLScene.h>
 #include <mrpt/gui.h>
 #include <iostream>
@@ -24,7 +24,7 @@ public:
 	mrpt::poses::CPose3D gt_oldpose;	//!< Groundtruth camera previous pose
 
 	mrpt::gui::CDisplayWindow3D	window;
-	mrpt::slam::CRawlog	dataset;
+	mrpt::obs::CRawlog	dataset;
 	std::ifstream		f_gt;
 	std::ofstream		f_res;
 

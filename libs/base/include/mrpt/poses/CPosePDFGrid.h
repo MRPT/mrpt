@@ -11,13 +11,12 @@
 
 #include <mrpt/poses/CPosePDF.h>
 #include <mrpt/poses/CPose2DGridTemplate.h>
+#include <mrpt/utils/bits.h> // DEG2RAD()
 
 namespace mrpt
 {
 namespace poses
 {
-	using mrpt::utils::DEG2RAD;
-
 	// This must be added to any CSerializable derived class:
 	DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE( CPosePDFGrid, CPosePDF   )
 
@@ -45,7 +44,7 @@ namespace poses
 			double		yMin = -1.0f,
 			double		yMax = 1.0f,
 			double		resolutionXY = 0.5f,
-			double		resolutionPhi = DEG2RAD(180),
+			double		resolutionPhi = mrpt::utils::DEG2RAD(180),
 			double		phiMin = -M_PIf,
 			double		phiMax = M_PIf
 			);
@@ -99,7 +98,7 @@ namespace poses
 
 		/** Draws a number of samples from the distribution, and saves as a list of 1x3 vectors, where each row contains a (x,y,phi) datum.
 		  */
-		void  drawManySamples( size_t N, std::vector<CVectorDouble> & outSamples ) const;
+		void  drawManySamples( size_t N, std::vector<mrpt::math::CVectorDouble> & outSamples ) const;
 
 	}; // End of class def.
 	DEFINE_SERIALIZABLE_POST_CUSTOM_BASE( CPosePDFGrid, CPosePDF   )

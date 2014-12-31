@@ -9,7 +9,7 @@
 #ifndef CCANBusReader_H
 #define CCANBusReader_H
 
-#include <mrpt/slam/CObservationCANBusJ1939.h>
+#include <mrpt/obs/CObservationCANBusJ1939.h>
 #include <mrpt/utils/CDebugOutputCapable.h>
 #include <mrpt/hwdrivers/CGenericSensor.h>
 #include <mrpt/hwdrivers/CSerialPort.h>
@@ -139,7 +139,7 @@ namespace mrpt
 			  */
 			void  doProcessSimple(
 				bool							    &outThereIsObservation,
-				mrpt::slam::CObservationCANBusJ1939	&outObservation,
+				mrpt::obs::CObservationCANBusJ1939	&outObservation,
 				bool							    &hardwareError );
 
 			/** Set-up communication with the laser.

@@ -19,8 +19,6 @@ namespace mrpt
 	/** Classes for creating GUI windows for 2D and 3D visualization.   \ingroup mrpt_gui_grp */
 	namespace gui
 	{
-		using namespace mrpt::utils;
-
 		DEFINE_MRPT_OBJECT_PRE_CUSTOM_BASE_LINKAGE(CDisplayWindow, mrpt::gui::CBaseGUIWindow, GUI_IMPEXP)
 
 		/** This class creates a window as a graphical user interface (GUI) for displaying images to the user.
@@ -63,19 +61,19 @@ namespace mrpt
 			/** Show a given color or grayscale image on the window and print a set of points on it.
 			 *  It adapts the size of the window to that of the image.
 			 */
-			void  showImageAndPoints( const CImage &img, const mrpt::math::CVectorFloat &x, const mrpt::math::CVectorFloat &y, const TColor &color = TColor::red, const bool &showNumbers = false );
+			void  showImageAndPoints( const mrpt::utils::CImage &img, const mrpt::math::CVectorFloat &x, const mrpt::math::CVectorFloat &y, const mrpt::utils::TColor &color = mrpt::utils::TColor::red, const bool &showNumbers = false );
 			/** \overload */
-			void  showImageAndPoints( const CImage &img, const std::vector<float> &x, const std::vector<float> &y, const TColor &color = TColor::red, const bool &showNumbers = false );
+			void  showImageAndPoints( const mrpt::utils::CImage &img, const std::vector<float> &x, const std::vector<float> &y, const mrpt::utils::TColor &color = mrpt::utils::TColor::red, const bool &showNumbers = false );
 
 			/** Show a given color or grayscale image on the window and print a set of points on it.
 			 *  It adapts the size of the window to that of the image.
 			 *  The class of FEATURELIST can be: mrpt::vision::CFeatureList or any STL container of entities having "x","y" and "ID" fields.
 			 */
 			template <class FEATURELIST>
-			void  showImageAndPoints( const CImage &img, const FEATURELIST &list, const TColor &color = TColor::red, const bool &showIDs = false )
+			void  showImageAndPoints( const mrpt::utils::CImage &img, const FEATURELIST &list, const mrpt::utils::TColor &color = mrpt::utils::TColor::red, const bool &showIDs = false )
 			{
 				MRPT_START
-				CImage imgColor(1,1,CH_RGB);
+				mrpt::utils::CImage imgColor(1,1,CH_RGB);
 				img.colorImage( imgColor );	// Create a colorimage
 				imgColor.drawFeatures(list,color,showIDs);
 				showImage(imgColor);
@@ -87,11 +85,11 @@ namespace mrpt
 			 *  The class of FEATURELIST can be: mrpt::vision::CFeatureList
 			 */
 			template <class FEATURELIST>
-			void  showTiledImageAndPoints( const CImage &img, const FEATURELIST &list, const TColor &color = TColor::red )
+			void  showTiledImageAndPoints( const mrpt::utils::CImage &img, const FEATURELIST &list, const mrpt::utils::TColor &color = mrpt::utils::TColor::red )
 			{
 				MRPT_START
-
-				CImage imgColor(1,1,3);
+				using mrpt::utils::TColor;
+				mrpt::utils::CImage imgColor(1,1,3);
 				img.colorImage( imgColor ); // Create a colorimage
 
 				// Print the 4 tile lines
@@ -112,17 +110,17 @@ namespace mrpt
 			 *  MATCHEDLIST can be of the class: mrpt::vision::CMatchedFeatureList, or any STL container of pairs of anything having ".x" and ".y" (e.g. mrpt::math::TPoint2D)
 			 */
 			template <class MATCHEDLIST>
-			void  showImagesAndMatchedPoints( const	CImage &img1, const	CImage &img2, const MATCHEDLIST &mList, const TColor &color = TColor::red, bool showNumbers = false )
+			void  showImagesAndMatchedPoints( const	mrpt::utils::CImage &img1, const	mrpt::utils::CImage &img2, const MATCHEDLIST &mList, const mrpt::utils::TColor &color = mrpt::utils::TColor::red, bool showNumbers = false )
 			{
 				MRPT_START
 
-				CImage imgColor;
+				mrpt::utils::CImage imgColor;
 
 				//img1.colorImage( imgColor ); // Create a colorimage
 				imgColor.joinImagesHorz( img1, img2 );
 
 				unsigned int w = img1.getWidth();
-                unsigned int nf = 0;
+				unsigned int nf = 0;
 
 				for( typename MATCHEDLIST::const_iterator i = mList.begin(); i != mList.end(); ++i, ++nf )
 				{
@@ -148,11 +146,11 @@ namespace mrpt
 			 *  FEATURELIST can be of the class: mrpt::vision::CFeatureList
 			 */
 			template <class FEATURELIST>
-			void  showImagesAndMatchedPoints( const	CImage &img1, const	CImage &img2, const FEATURELIST &leftList, const FEATURELIST &rightList, const TColor &color = TColor::red )
+			void  showImagesAndMatchedPoints( const	mrpt::utils::CImage &img1, const mrpt::utils::CImage &img2, const FEATURELIST &leftList, const FEATURELIST &rightList, const mrpt::utils::TColor &color = mrpt::utils::TColor::red )
 			{
 				MRPT_START
 
-				CImage imgColor;
+				mrpt::utils::CImage imgColor;
 
 				//img1.colorImage( imgColor ); // Create a colorimage
 				ASSERT_( leftList.size() == rightList.size() );
@@ -174,7 +172,7 @@ namespace mrpt
 			/** Show a given color or grayscale image on the window.
 			 *  It adapts the size of the window to that of the image.
 			 */
-			void  showImage( const CImage	&img );
+			void  showImage( const mrpt::utils::CImage	&img );
 
 			/** Plots a graph in MATLAB-like style.
 			 */

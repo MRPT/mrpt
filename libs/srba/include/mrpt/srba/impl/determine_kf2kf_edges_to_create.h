@@ -17,7 +17,7 @@ template <class KF2KF_POSE_TYPE,class LM_TYPE,class OBS_TYPE,class RBA_OPTIONS>
 void RbaEngine<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::determine_kf2kf_edges_to_create(
 	const TKeyFrameID               new_kf_id,
 	const typename traits_t::new_kf_observations_t   & obs,
-	vector<TNewEdgeInfo> &new_k2k_edge_ids )
+	std::vector<TNewEdgeInfo> &new_k2k_edge_ids )
 {
 	new_k2k_edge_ids.clear();
 

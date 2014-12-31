@@ -18,14 +18,6 @@ namespace mrpt
 {
 	namespace opengl
 	{
-		using mrpt::math::TPoint3D;
-		using mrpt::math::TSegment3D;
-		using mrpt::math::CMatrix;
-		using mrpt::math::CMatrixFloat;
-		using mrpt::utils::TColor;
-		using mrpt::utils::TColorf;
-
-
 		// This must be added to any CSerializable derived class:
 		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CVectorField2D, CRenderizableDisplayList, OPENGL_IMPEXP )
 
@@ -45,16 +37,16 @@ namespace mrpt
 		{
 			DEFINE_SERIALIZABLE( CVectorField2D )
 		protected:
-			CMatrix xcomp;				//!< X component of the vector field
-			CMatrix ycomp;				//!< Y component of the vector field
+			mrpt::math::CMatrix xcomp;				//!< X component of the vector field
+			mrpt::math::CMatrix ycomp;				//!< Y component of the vector field
 
 			float	xMin,xMax,yMin,yMax;	//!< Grid bounds
-            float	m_LineWidth;			//!< By default is 1.0
+			float	m_LineWidth;			//!< By default is 1.0
 			float	m_pointSize;			//!< By default is 1.0
 			bool    m_antiAliasing;			//!< By default is true
 
-			TColor m_point_color;
-			TColor m_field_color;
+			mrpt::utils::TColor m_point_color;
+			mrpt::utils::TColor m_field_color;
 
 		public:
 			/**
@@ -71,28 +63,28 @@ namespace mrpt
 			  */
 			inline void setPointColor( const float R, const float G, const float B, const float A = 1)
 			{
-				m_point_color = TColor(R*255,G*255,B*255,A*255);
+				m_point_color = mrpt::utils::TColor(R*255,G*255,B*255,A*255);
 				CRenderizableDisplayList::notifyChange();
 			}
 
 			/**
 			  * Get the point color in the range [0,1]
 			  */
-			inline TColorf getPointColor() const { return mrpt::utils::TColorf(m_point_color); }
+			inline mrpt::utils::TColorf getPointColor() const { return mrpt::utils::TColorf(m_point_color); }
 
 			/**
 			  * Set the arrow color in the range [0,1]
 			  */
 			inline void setVectorFieldColor( const float R, const float G, const float B, const float A = 1)
 			{
-				m_field_color = TColor(R*255,G*255,B*255,A*255);
+				m_field_color = mrpt::utils::TColor(R*255,G*255,B*255,A*255);
 				CRenderizableDisplayList::notifyChange();
 			}
 
 			/**
 			  * Get the arrow color in the range [0,1]
 			  */
-			inline TColorf getVectorFieldColor() const	{ return mrpt::utils::TColorf(m_field_color); }
+			inline mrpt::utils::TColorf getVectorFieldColor() const	{ return mrpt::utils::TColorf(m_field_color); }
 
 			/**
 			  * Set the size with which points will be drawn. By default 1.0
@@ -152,25 +144,25 @@ namespace mrpt
 			/**
 			  * Get the vector field. Matrix_x stores the "x" component and Matrix_y stores the "y" component.
 			  */
-			void getVectorField(CMatrixFloat &Matrix_x, CMatrixFloat &Matrix_y) const {
+			void getVectorField(mrpt::math::CMatrixFloat &Matrix_x, mrpt::math::CMatrixFloat &Matrix_y) const {
 				Matrix_x = xcomp;
 				Matrix_y = ycomp;
 			}
 
 			/** Get the "x" component of the vector field, as a matrix where each entry represents a point in the 2D grid. */
-			inline const CMatrixFloat & getVectorField_x() const { return xcomp; }
+			inline const mrpt::math::CMatrixFloat & getVectorField_x() const { return xcomp; }
 			/** \overload */
-			inline CMatrixFloat & getVectorField_x() { return xcomp; }
+			inline mrpt::math::CMatrixFloat & getVectorField_x() { return xcomp; }
 
 			/** Get the "y" component of the vector field, as a matrix where each entry represents a point in the 2D grid. */
-			inline const CMatrixFloat & getVectorField_y() const { return ycomp; }
+			inline const mrpt::math::CMatrixFloat & getVectorField_y() const { return ycomp; }
 			/** \overload */
-			inline CMatrixFloat & getVectorField_y() { return ycomp; }
+			inline mrpt::math::CMatrixFloat & getVectorField_y() { return ycomp; }
 
 			/**
 			  * Set the vector field. Matrix_x contains the "x" component and Matrix_y contains the "y" component.
 			  */
-			void setVectorField(CMatrixFloat &Matrix_x, CMatrixFloat &Matrix_y) {
+			void setVectorField(mrpt::math::CMatrixFloat &Matrix_x, mrpt::math::CMatrixFloat &Matrix_y) {
 				ASSERT_((Matrix_x.getRowCount() == Matrix_y.getRowCount())&&(Matrix_x.getColCount() == Matrix_y.getColCount()))
 				xcomp = Matrix_x;
 				ycomp = Matrix_y;
@@ -199,7 +191,7 @@ namespace mrpt
 			/**
 			  * Class factory
 			  */
-			static CVectorField2DPtr Create(const CMatrixFloat &Matrix_x, const CMatrixFloat &Matrix_y, float	xmin=-1, float xmax=1, float ymin=-1, float ymax=1);
+			static CVectorField2DPtr Create(const mrpt::math::CMatrixFloat &Matrix_x, const mrpt::math::CMatrixFloat &Matrix_y, float	xmin=-1, float xmax=1, float ymin=-1, float ymax=1);
 			/** Render
 			  */
 			void  render_dl() const;
@@ -215,7 +207,7 @@ namespace mrpt
 			/** Constructor */
 			CVectorField2D();
 			/** Constructor with a initial set of lines. */
-			CVectorField2D( CMatrixFloat Matrix_x, CMatrixFloat Matrix_y, float	xmin=-1, float xmax=1, float ymin=-1, float ymax=1);
+			CVectorField2D( mrpt::math::CMatrixFloat Matrix_x, mrpt::math::CMatrixFloat Matrix_y, float	xmin=-1, float xmax=1, float ymin=-1, float ymax=1);
 			/** Private, virtual destructor: only can be deleted from smart pointers. */
 			virtual ~CVectorField2D() { }
 		};

@@ -20,6 +20,7 @@
 
 using namespace mrpt::poses;
 using namespace mrpt::utils;
+using namespace mrpt::math;
 using namespace mrpt::random;
 using namespace mrpt::system;
 
@@ -75,7 +76,7 @@ void CPointPDFGaussian::getCovarianceAndMean(CMatrixDouble33 &C,CPoint3D &p) con
 /*---------------------------------------------------------------
 						writeToStream
   ---------------------------------------------------------------*/
-void  CPointPDFGaussian::writeToStream(CStream &out,int *version) const
+void  CPointPDFGaussian::writeToStream(mrpt::utils::CStream &out,int *version) const
 {
 	if (version)
 		*version = 1;
@@ -88,7 +89,7 @@ void  CPointPDFGaussian::writeToStream(CStream &out,int *version) const
 /*---------------------------------------------------------------
 						readFromStream
   ---------------------------------------------------------------*/
-void  CPointPDFGaussian::readFromStream(CStream &in,int version)
+void  CPointPDFGaussian::readFromStream(mrpt::utils::CStream &in,int version)
 {
 	switch(version)
 	{

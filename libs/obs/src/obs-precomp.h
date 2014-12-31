@@ -12,11 +12,11 @@
 #if MRPT_ENABLE_PRECOMPILED_HDRS
 
 // Observations:
-#include <mrpt/slam/CObservation.h>
-#include <mrpt/slam/CAction.h>
+#include <mrpt/obs/CObservation.h>
+#include <mrpt/obs/CAction.h>
 
 // Very basic classes for maps:
-#include <mrpt/slam/CMetricMap.h>
+#include <mrpt/maps/CMetricMap.h>
 
 #include <mrpt/utils/CStream.h> // Will be used in all serialized classes (most of them in mrpt-obs)
 

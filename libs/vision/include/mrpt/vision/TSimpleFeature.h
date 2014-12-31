@@ -12,7 +12,7 @@
 #include <mrpt/utils/TPixelCoord.h>
 #include <mrpt/utils/round.h>
 #include <mrpt/math/KDTreeCapable.h>
-#include <mrpt/math/CMatrixTemplate.h>  // CMatrixBool
+#include <mrpt/math/CMatrixTemplate.h>  // mrpt::math::CMatrixBool
 #include <mrpt/math/CMatrixTemplateNumeric.h>
 #include <mrpt/vision/types.h>
 #include <mrpt/utils/round.h>

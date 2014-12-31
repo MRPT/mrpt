@@ -21,6 +21,8 @@ using namespace mrpt::system;
 using namespace mrpt::synch;
 using namespace mrpt::utils;
 using namespace mrpt::math;
+using namespace mrpt::obs;
+using namespace mrpt::poses;
 using namespace std;
 
 IMPLEMENTS_GENERIC_SENSOR(CKinect,mrpt::hwdrivers)
@@ -309,7 +311,7 @@ void rgb_cb(freenect_device *dev, void *img_data, uint32_t timestamp)
 	     // Color image: We asked for Bayer data, so we can decode it outselves here
 	     //  and avoid having to reorder Green<->Red channels, as would be needed with
 	     //  the RGB image from freenect.
-          obs.intensityImageChannel = mrpt::slam::CObservation3DRangeScan::CH_VISIBLE;
+          obs.intensityImageChannel = mrpt::obs::CObservation3DRangeScan::CH_VISIBLE;
           obs.intensityImage.resize(frMode.width, frMode.height, CH_RGB, true /* origin=top-left */ );
 
 #if MRPT_HAS_OPENCV
@@ -342,7 +344,7 @@ void rgb_cb(freenect_device *dev, void *img_data, uint32_t timestamp)
 	else
 	{
 	     // IR data: grayscale 8bit
-          obs.intensityImageChannel = mrpt::slam::CObservation3DRangeScan::CH_IR;
+          obs.intensityImageChannel = mrpt::obs::CObservation3DRangeScan::CH_IR;
           obs.intensityImage.loadFromMemoryBuffer(
                frMode.width,
                frMode.height,
@@ -506,7 +508,7 @@ void  CKinect::setVideoChannel(const TVideoChannel vch)
   * \sa doProcess
   */
 void CKinect::getNextObservation(
-	mrpt::slam::CObservation3DRangeScan &_out_obs,
+	mrpt::obs::CObservation3DRangeScan &_out_obs,
 	bool &there_is_obs,
 	bool &hardware_error )
 {
@@ -635,8 +637,8 @@ void CKinect::getNextObservation(
 				getNextObservation (with IMU)
 ----------------------------------------------------- */
 void CKinect::getNextObservation(
-	mrpt::slam::CObservation3DRangeScan &out_obs,
-	mrpt::slam::CObservationIMU         &out_obs_imu,
+	mrpt::obs::CObservation3DRangeScan &out_obs,
+	mrpt::obs::CObservationIMU         &out_obs_imu,
 	bool &there_is_obs,
 	bool &hardware_error )
 {

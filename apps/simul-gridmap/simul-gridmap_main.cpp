@@ -13,10 +13,10 @@
 #include <mrpt/utils/CConfigFile.h>
 #include <mrpt/utils/CFileGZInputStream.h>
 #include <mrpt/utils/CFileGZOutputStream.h>
-#include <mrpt/slam/CActionRobotMovement2D.h>
-#include <mrpt/slam/COccupancyGridMap2D.h>
-#include <mrpt/slam/CObservation2DRangeScan.h>
-#include <mrpt/slam/CRawlog.h>
+#include <mrpt/obs/CActionRobotMovement2D.h>
+#include <mrpt/maps/COccupancyGridMap2D.h>
+#include <mrpt/obs/CObservation2DRangeScan.h>
+#include <mrpt/obs/CRawlog.h>
 #include <mrpt/random.h>
 
 #include <mrpt/otherlibs/tclap/CmdLine.h>
@@ -25,8 +25,10 @@
 using namespace mrpt;
 using namespace mrpt::utils;
 using namespace mrpt::system;
-using namespace mrpt::slam;
+using namespace mrpt::obs;
+using namespace mrpt::maps;
 using namespace mrpt::random;
+using namespace mrpt::math;
 using namespace std;
 
 

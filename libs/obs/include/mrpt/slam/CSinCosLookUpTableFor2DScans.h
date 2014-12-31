@@ -6,49 +6,9 @@
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
-#ifndef CSinCosLookUpTableFor2DScans_H
-#define CSinCosLookUpTableFor2DScans_H
-
-#include <mrpt/utils/types_math.h>
-#include <mrpt/slam/CObservation2DRangeScan.h>
-#include <mrpt/obs/link_pragmas.h>
-#include <map>
-
-namespace mrpt
-{
-namespace slam
-{
-	/** A smart look-up-table (LUT) of sin/cos values for 2D laser scans.
-	  *  Refer to the main method CSinCosLookUpTableFor2DScans::getSinCosForScan()
-	  *
-	  *  This class is used in mrpt::slam::CPointsMap
-	 * \ingroup mrpt_obs_grp
-	  */
-	class OBS_IMPEXP CSinCosLookUpTableFor2DScans
-	{
-	public:
-		/** A pair of vectors with the cos and sin values. */
-		struct TSinCosValues {
-			mrpt::math::CVectorFloat ccos, csin;
-		};
-
-		/** Return two vectors with the cos and the sin of the angles for each of the
-		  * rays in a scan, computing them only the first time and returning a cached copy the rest.
-		  *  Usage:
-		  * \code
-		  *   CSinCosLookUpTableFor2DScans cache;
-		  *   ...
-		  *   const CSinCosLookUpTableFor2DScans::TSinCosValues & sincos_vals = cache.getSinCosForScan( scan );
-		  * \endcode
-		  */
-		const TSinCosValues & getSinCosForScan(const CObservation2DRangeScan &scan);
-
-	private:
-		std::map<T2DScanProperties,TSinCosValues>  m_cache; //!< The cache of known scans and their sin/cos tables.
-	};
-
-
-} // end NS slam
-} // end NS mrpt
-
-#endif
+#pragma once
+#include <mrpt/obs/CSinCosLookUpTableFor2DScans.h>
+MRPT_WARNING("*Deprecated header* Please replace with #include <mrpt/obs/CSinCosLookUpTableFor2DScans.h>. This backward compatible header will be removed in MRPT 2.0.0")
+namespace mrpt { namespace slam {
+	typedef mrpt::obs::CSinCosLookUpTableFor2DScans CSinCosLookUpTableFor2DScans;    //!< Backward compatible typedef
+} }

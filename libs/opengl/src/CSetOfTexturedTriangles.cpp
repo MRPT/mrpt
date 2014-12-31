@@ -73,7 +73,7 @@ void   CSetOfTexturedTriangles::render_texturedobj() const
    Implements the writing to a CStream capability of
      CSerializable objects
   ---------------------------------------------------------------*/
-void  CSetOfTexturedTriangles::writeToStream(CStream &out, int *version) const
+void  CSetOfTexturedTriangles::writeToStream(mrpt::utils::CStream &out, int *version) const
 {
 	if (version)
 		*version = 2;
@@ -97,7 +97,7 @@ void  CSetOfTexturedTriangles::writeToStream(CStream &out, int *version) const
 	Implements the reading from a CStream capability of
 		CSerializable objects
   ---------------------------------------------------------------*/
-void  CSetOfTexturedTriangles::readFromStream(CStream &in, int version)
+void  CSetOfTexturedTriangles::readFromStream(mrpt::utils::CStream &in, int version)
 {
 	switch(version)
 	{
@@ -179,10 +179,10 @@ CSetOfTexturedTriangles::TVertex::TVertex(float x, float y, float z, uint32_t u,
 	m_x(x), m_y(y), m_z(z), m_u(u), m_v(v) 
 { }
 
-void CSetOfTexturedTriangles::TVertex::writeToStream(CStream &out) const { 
+void CSetOfTexturedTriangles::TVertex::writeToStream(mrpt::utils::CStream &out) const { 
 	out << m_x << m_y << m_z  << m_u << m_v; 
 }
-void CSetOfTexturedTriangles::TVertex::readFromStream(CStream &in) { 
+void CSetOfTexturedTriangles::TVertex::readFromStream(mrpt::utils::CStream &in) { 
 	in >> m_x >> m_y >> m_z >> m_u >> m_v; 
 }
 
@@ -193,10 +193,10 @@ CSetOfTexturedTriangles::TTriangle::TTriangle(TVertex v1, TVertex v2, TVertex v3
 	m_v1(v1), m_v2(v2), m_v3(v3)
 { }
 
-void CSetOfTexturedTriangles::TTriangle::writeToStream(CStream &out) const {  
+void CSetOfTexturedTriangles::TTriangle::writeToStream(mrpt::utils::CStream &out) const {  
 	m_v1.writeToStream(out); m_v2.writeToStream(out); m_v3.writeToStream(out); 
 }
-void CSetOfTexturedTriangles::TTriangle::readFromStream(CStream &in) { 
+void CSetOfTexturedTriangles::TTriangle::readFromStream(mrpt::utils::CStream &in) { 
 	m_v1.readFromStream(in); m_v2.readFromStream(in);  m_v3.readFromStream(in); 
 }
 

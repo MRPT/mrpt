@@ -15,15 +15,16 @@
 #include <mrpt/math/utils.h>
 #include <mrpt/math/distributions.h>
 #include <mrpt/math/wrap2pi.h>
-#include <mrpt/slam/CActionCollection.h>
-#include <mrpt/slam/CActionRobotMovement2D.h>
-#include <mrpt/slam/CObservationBeaconRanges.h>
+#include <mrpt/obs/CActionCollection.h>
+#include <mrpt/obs/CActionRobotMovement2D.h>
+#include <mrpt/obs/CObservationBeaconRanges.h>
 #include <mrpt/system/os.h>
 
 #include "CPosePDFParticlesExtended.h"
 
 using namespace mrpt;
-using namespace mrpt::slam;
+using namespace mrpt::obs;
+using namespace mrpt::maps;
 using namespace mrpt::math;
 using namespace mrpt::system;
 using namespace mrpt::utils;
@@ -331,7 +332,7 @@ void CPosePDFParticlesExtended::getCovarianceAndMean(CMatrixDouble33 &cov,CPose2
 /*---------------------------------------------------------------
 						writeToStream
   ---------------------------------------------------------------*/
-void  CPosePDFParticlesExtended::writeToStream(CStream &out,int *version) const
+void  CPosePDFParticlesExtended::writeToStream(mrpt::utils::CStream &out,int *version) const
 {
 	if (version)
 		*version = 0;
@@ -351,7 +352,7 @@ void  CPosePDFParticlesExtended::writeToStream(CStream &out,int *version) const
 /*---------------------------------------------------------------
 						readFromStream
   ---------------------------------------------------------------*/
-void  CPosePDFParticlesExtended::readFromStream(CStream &in, int version)
+void  CPosePDFParticlesExtended::readFromStream(mrpt::utils::CStream &in, int version)
 {
 	switch(version)
 	{
@@ -395,8 +396,8 @@ void  CPosePDFParticlesExtended::offsetTransitionModel(double &val )
 
  ---------------------------------------------------------------*/
 void  CPosePDFParticlesExtended::prediction_and_update_pfStandardProposal(
-	const mrpt::slam::CActionCollection	* actions,
-	const mrpt::slam::CSensoryFrame		* sf,
+	const mrpt::obs::CActionCollection	* actions,
+	const mrpt::obs::CSensoryFrame		* sf,
 	const bayes::CParticleFilter::TParticleFilterOptions &PF_options )
 {
 	MRPT_START
@@ -472,8 +473,8 @@ void  CPosePDFParticlesExtended::prediction_and_update_pfStandardProposal(
 
  ---------------------------------------------------------------*/
 void  CPosePDFParticlesExtended::prediction_and_update_pfAuxiliaryPFOptimal(
-	const mrpt::slam::CActionCollection	* actions,
-	const mrpt::slam::CSensoryFrame		* sf,
+	const mrpt::obs::CActionCollection	* actions,
+	const mrpt::obs::CSensoryFrame		* sf,
 	const bayes::CParticleFilter::TParticleFilterOptions &PF_options )
 {
 	MRPT_START

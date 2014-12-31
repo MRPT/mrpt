@@ -880,7 +880,7 @@ namespace mrpt
 			 * \exception std::exception On number of rows or cols equal to zero or other errors.
 			 * \sa saveToJPEG
 			 */
-			void  saveToStreamAsJPEG(CStream &out, const int jpeg_quality = 95 ) const;
+			void  saveToStreamAsJPEG(mrpt::utils::CStream &out, const int jpeg_quality = 95 ) const;
 
 			/** @}  */
 			// ================================================================

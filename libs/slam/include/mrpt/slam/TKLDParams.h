@@ -17,8 +17,6 @@ namespace mrpt
 {
 	namespace slam
 	{
-		using namespace mrpt::utils;
-
 		/** Option set for KLD algorithm.  \ingroup mrpt_slam_grp 
 		  */
 		class SLAM_IMPEXP TKLDParams : public utils::CLoadableOptions
@@ -34,7 +32,7 @@ namespace mrpt
 
 			/** See utils::CLoadableOptions
 			  */
-			void  dumpToTextStream(CStream	&out) const;
+			void  dumpToTextStream(mrpt::utils::CStream	&out) const;
 
 
 			/** Parameters for the KLD adaptive sample size algorithm (see Dieter Fox's papers), which is used only if the CParticleFilter is created with the "adaptiveSampleSize" flag set to true.

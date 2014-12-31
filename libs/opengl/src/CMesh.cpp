@@ -316,7 +316,7 @@ void  CMesh::assignImageAndZ( const CImage& img, const mrpt::math::CMatrixTempla
    Implements the writing to a CStream capability of
      CSerializable objects
   ---------------------------------------------------------------*/
-void  CMesh::writeToStream(CStream &out,int *version) const
+void  CMesh::writeToStream(mrpt::utils::CStream &out,int *version) const
 {
 
 	if (version)
@@ -341,7 +341,7 @@ void  CMesh::writeToStream(CStream &out,int *version) const
 	Implements the reading from a CStream capability of
 		CSerializable objects
   ---------------------------------------------------------------*/
-void  CMesh::readFromStream(CStream &in,int version)
+void  CMesh::readFromStream(mrpt::utils::CStream &in,int version)
 {
 	switch(version)
 	{

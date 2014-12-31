@@ -950,7 +950,7 @@ void RbaEngine<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::compute_jacobian_d
 	}
 
 	// First, we need x^{j,i}_i:
-	//const TPoint3D & xji_i = jacob.sym.feat_rel_pos->pos;
+	//const mrpt::math::TPoint3D & xji_i = jacob.sym.feat_rel_pos->pos;
 	const array_landmark_t &xji_i = jacob.sym.feat_rel_pos->pos;
 
 	array_landmark_t xji_l = xji_i; //

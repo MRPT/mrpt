@@ -36,7 +36,7 @@ namespace mrpt
 			 * \return A vector with detected objects 
 			 */
 
-			virtual void detectObjects_Impl(const CObservation *obs, vector_detectable_object &detected);
+			virtual void detectObjects_Impl(const mrpt::obs::CObservation *obs, vector_detectable_object &detected);
 
 			void * m_cascade; //!< Cascade classifier object
 

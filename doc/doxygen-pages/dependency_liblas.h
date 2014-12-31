@@ -20,8 +20,8 @@ The <a href="http://www.liblas.org/" >ASPRS LiDAR LAS</a> file format for point 
 If available, it will provide the following functionality:
 
 - The following methods:
-	- mrpt::slam::CPointsMap::saveLASFile()
-	- mrpt::slam::CPointsMap::loadLASFile()
+	- mrpt::maps::CPointsMap::saveLASFile()
+	- mrpt::maps::CPointsMap::loadLASFile()
 		
 */
 

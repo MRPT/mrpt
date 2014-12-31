@@ -13,7 +13,7 @@
 #include <mrpt/hwdrivers/CInterfaceFTDI.h>
 #include <mrpt/hwdrivers/CSerialPort.h>
 #include <mrpt/hwdrivers/CGenericSensor.h>
-#include <mrpt/slam/CObservationGasSensors.h>
+#include <mrpt/obs/CObservationGasSensors.h>
 #include <mrpt/utils/CConfigFileBase.h>
 
 
@@ -101,7 +101,7 @@ namespace mrpt
 			  *  The output observation contains a valid timestamp and 3D positions if "loadConfig" has been called previously.
 			  * \return true if OK, false if there were any error.
 			  */
-			bool getObservation( mrpt::slam::CObservationGasSensors &outObservation );
+			bool getObservation( mrpt::obs::CObservationGasSensors &outObservation );
 
 
 			// See docs in parent class

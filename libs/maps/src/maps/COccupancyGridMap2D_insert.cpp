@@ -9,9 +9,9 @@
 
 #include "maps-precomp.h" // Precomp header
 
-#include <mrpt/slam/COccupancyGridMap2D.h>
-#include <mrpt/slam/CObservation2DRangeScan.h>
-#include <mrpt/slam/CObservationRange.h>
+#include <mrpt/maps/COccupancyGridMap2D.h>
+#include <mrpt/obs/CObservation2DRangeScan.h>
+#include <mrpt/obs/CObservationRange.h>
 #include <mrpt/utils/CStream.h>
 #include <mrpt/utils/round.h> // round()
 
@@ -20,7 +20,8 @@
 #endif
 
 using namespace mrpt;
-using namespace mrpt::slam;
+using namespace mrpt::maps;
+using namespace mrpt::obs;
 using namespace mrpt::utils;
 using namespace mrpt::poses;
 using namespace std;
@@ -1183,7 +1184,7 @@ void  COccupancyGridMap2D::TInsertionOptions::loadFromConfigFile(
 /*---------------------------------------------------------------
 					dumpToTextStream
   ---------------------------------------------------------------*/
-void  COccupancyGridMap2D::TInsertionOptions::dumpToTextStream(CStream	&out) const
+void  COccupancyGridMap2D::TInsertionOptions::dumpToTextStream(mrpt::utils::CStream	&out) const
 {
 	out.printf("\n----------- [COccupancyGridMap2D::TInsertionOptions] ------------ \n\n");
 
@@ -1202,7 +1203,7 @@ void  COccupancyGridMap2D::TInsertionOptions::dumpToTextStream(CStream	&out) con
 }
 
 
-void COccupancyGridMap2D::OnPostSuccesfulInsertObs(const CObservation *)
+void COccupancyGridMap2D::OnPostSuccesfulInsertObs(const mrpt::obs::CObservation *)
 {
 	m_is_empty = false;
 }

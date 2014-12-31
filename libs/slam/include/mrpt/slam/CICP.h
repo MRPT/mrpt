@@ -17,8 +17,6 @@ namespace mrpt
 {
 	namespace slam
 	{
-		using namespace poses;
-
 		/** The ICP algorithm selection, used in mrpt::slam::CICP::options.
 		  *  For details on the algorithms refer to http://www.mrpt.org/Scan_Matching_Algorithms
 		  * \ingroup mrpt_slam_grp
@@ -50,7 +48,7 @@ namespace mrpt
 		 * \sa CMetricMapsAlignmentAlgorithm
 		 * \ingroup mrpt_slam_grp
 		 */
-		class SLAM_IMPEXP  CICP : public CMetricMapsAlignmentAlgorithm
+		class SLAM_IMPEXP  CICP : public mrpt::slam::CMetricMapsAlignmentAlgorithm
 		{
 		public:
 			/** The ICP algorithm configuration data
@@ -64,7 +62,7 @@ namespace mrpt
 					const mrpt::utils::CConfigFileBase  &source,
 					const std::string &section); //!< See utils::CLoadableOptions
 
-				void  dumpToTextStream(CStream	&out) const; //!<See utils::CLoadableOptions
+				void  dumpToTextStream(mrpt::utils::CStream	&out) const; //!<See utils::CLoadableOptions
 
 
 				/** The algorithm to use (default: icpClassic)
@@ -204,10 +202,10 @@ namespace mrpt
 			 *
 			 * \sa CMetricMapsAlignmentAlgorithm, CICP::options, CICP::TReturnInfo
 			 */
-			CPosePDFPtr AlignPDF(
-					const CMetricMap		*m1,
-					const CMetricMap		*m2,
-					const CPosePDFGaussian	&initialEstimationPDF,
+			mrpt::poses::CPosePDFPtr AlignPDF(
+					const mrpt::maps::CMetricMap		*m1,
+					const mrpt::maps::CMetricMap		*m2,
+					const mrpt::poses::CPosePDFGaussian	&initialEstimationPDF,
 					float					*runningTime = NULL,
 					void					*info = NULL );
 
@@ -229,10 +227,10 @@ namespace mrpt
 			 * \return A smart pointer to the output estimated pose PDF.
 			 * \sa CICP
 			 */
-			CPose3DPDFPtr Align3DPDF(
-					const CMetricMap		*m1,
-					const CMetricMap		*m2,
-					const CPose3DPDFGaussian	&initialEstimationPDF,
+			mrpt::poses::CPose3DPDFPtr Align3DPDF(
+					const mrpt::maps::CMetricMap		*m1,
+					const mrpt::maps::CMetricMap		*m2,
+					const mrpt::poses::CPose3DPDFGaussian	&initialEstimationPDF,
 					float					*runningTime = NULL,
 					void					*info = NULL );
 
@@ -246,34 +244,34 @@ namespace mrpt
 
 			/** The internal method implementing CICP::AlignPDF when options.ICP_algorithm is icpClassic.
 			  */
-			CPosePDFPtr ICP_Method_Classic(
-					const CMetricMap		*m1,
-					const CMetricMap		*m2,
-					const CPosePDFGaussian	&initialEstimationPDF,
+			mrpt::poses::CPosePDFPtr ICP_Method_Classic(
+					const mrpt::maps::CMetricMap		*m1,
+					const mrpt::maps::CMetricMap		*m2,
+					const mrpt::poses::CPosePDFGaussian	&initialEstimationPDF,
 					TReturnInfo				&outInfo );
 
 			/** The internal method implementing CICP::AlignPDF when options.ICP_algorithm is icpLevenbergMarquardt.
 			  */
-			CPosePDFPtr ICP_Method_LM(
-					const CMetricMap		*m1,
-					const CMetricMap		*m2,
-					const CPosePDFGaussian	&initialEstimationPDF,
+			mrpt::poses::CPosePDFPtr ICP_Method_LM(
+					const mrpt::maps::CMetricMap		*m1,
+					const mrpt::maps::CMetricMap		*m2,
+					const mrpt::poses::CPosePDFGaussian	&initialEstimationPDF,
 					TReturnInfo				&outInfo );
 
 			/** The internal method implementing CICP::AlignPDF when options.ICP_algorithm is icpIKF.
 			  */
-			CPosePDFPtr ICP_Method_IKF(
-					const CMetricMap		*m1,
-					const CMetricMap		*m2,
-					const CPosePDFGaussian	&initialEstimationPDF,
+			mrpt::poses::CPosePDFPtr ICP_Method_IKF(
+					const mrpt::maps::CMetricMap		*m1,
+					const mrpt::maps::CMetricMap		*m2,
+					const mrpt::poses::CPosePDFGaussian	&initialEstimationPDF,
 					TReturnInfo				&outInfo );
 
 			/** The internal method implementing CICP::Align3DPDF when options.ICP_algorithm is icpClassic.
 			  */
-			CPose3DPDFPtr ICP3D_Method_Classic(
-					const CMetricMap		*m1,
-					const CMetricMap		*m2,
-					const CPose3DPDFGaussian &initialEstimationPDF,
+			mrpt::poses::CPose3DPDFPtr ICP3D_Method_Classic(
+					const mrpt::maps::CMetricMap		*m1,
+					const mrpt::maps::CMetricMap		*m2,
+					const mrpt::poses::CPose3DPDFGaussian &initialEstimationPDF,
 					TReturnInfo				&outInfo );
 
 

@@ -134,7 +134,7 @@ void CPointPDFSOG::getCovarianceAndMean(CMatrixDouble33 &estCov, CPoint3D &p) co
 /*---------------------------------------------------------------
 						writeToStream
   ---------------------------------------------------------------*/
-void  CPointPDFSOG::writeToStream(CStream &out,int *version) const
+void  CPointPDFSOG::writeToStream(mrpt::utils::CStream &out,int *version) const
 {
 	if (version)
 		*version = 1;
@@ -158,7 +158,7 @@ void  CPointPDFSOG::writeToStream(CStream &out,int *version) const
 /*---------------------------------------------------------------
 						readFromStream
   ---------------------------------------------------------------*/
-void  CPointPDFSOG::readFromStream(CStream &in,int version)
+void  CPointPDFSOG::readFromStream(mrpt::utils::CStream &in,int version)
 {
 	switch(version)
 	{

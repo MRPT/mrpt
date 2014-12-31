@@ -14,6 +14,7 @@
 using namespace mrpt;
 using namespace mrpt::utils;
 using namespace mrpt::random;
+using namespace mrpt::math;
 using namespace std;
 
 

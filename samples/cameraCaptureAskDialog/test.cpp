@@ -15,7 +15,7 @@
 using namespace mrpt;
 using namespace mrpt::gui;
 using namespace mrpt::utils;
-using namespace mrpt::slam;
+using namespace mrpt::obs;
 using namespace mrpt::hwdrivers;
 using namespace std;
 
@@ -45,7 +45,7 @@ void TestCameraCaptureAsk()
 		if( !counter )
 			tictac.Tic();
 
-		mrpt::slam::CObservationPtr  obs = cam->getNextFrame();
+		mrpt::obs::CObservationPtr  obs = cam->getNextFrame();
 		ASSERT_(obs);
 
 		CImage *img = NULL;

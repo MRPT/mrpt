@@ -10,8 +10,8 @@
 #define CMetricMapBuilderRBPF_H
 
 #include <mrpt/slam/CMetricMapBuilder.h>
-#include <mrpt/slam/CMultiMetricMapPDF.h>
-#include <mrpt/slam/CMultiMetricMap.h>
+#include <mrpt/maps/CMultiMetricMapPDF.h>
+#include <mrpt/maps/CMultiMetricMap.h>
 
 #include <mrpt/bayes/CParticleFilter.h>
 #include <mrpt/bayes/CParticleFilterCapable.h>
@@ -43,33 +43,28 @@ namespace slam
 	 *
 	 * \sa CMetricMap   \ingroup metric_slam_grp
 	 */
-	class SLAM_IMPEXP CMetricMapBuilderRBPF : public CMetricMapBuilder
+	class SLAM_IMPEXP CMetricMapBuilderRBPF : public mrpt::slam::CMetricMapBuilder
 	{
 	public:
-		/** The map PDF: It includes a path and associated map for each particle.
-		  */
-		CMultiMetricMapPDF			mapPDF;
+		/** The map PDF: It includes a path and associated map for each particle. */
+		mrpt::maps::CMultiMetricMapPDF			mapPDF;
 
 	protected:
-        /** The configuration of the particle filter:
-          */
+		/** The configuration of the particle filter */
 		bayes::CParticleFilter::TParticleFilterOptions  m_PF_options;
 
-		/** Distances (linear and angular) for inserting a new observation into the map.
-		  */
+		/** Distances (linear and angular) for inserting a new observation into the map. */
 		float	insertionLinDistance,insertionAngDistance;
 
-		/** Distances (linear and angular) for updating the robot pose estimate (and particles weighs, if applicable).
-		  */
+		/** Distances (linear and angular) for updating the robot pose estimate (and particles weighs, if applicable). */
 		float	localizeLinDistance,localizeAngDistance;
 
 
 		mrpt::poses::CPose3DPDFGaussian	odoIncrementSinceLastLocalization;	//!< Traveled distance since last localization update
 		mrpt::poses::CPose3D			odoIncrementSinceLastMapUpdate;		//!< Traveled distance since last map update
 
-		/** A buffer: memory is actually hold within "mapPDF".
-		  */
-		non_copiable_ptr<CMultiMetricMap>  currentMetricMapEstimation;
+		/** A buffer: memory is actually hold within "mapPDF" */
+		mrpt::utils::non_copiable_ptr<mrpt::maps::CMultiMetricMap>  currentMetricMapEstimation;
 
 	public:
 
@@ -81,16 +76,12 @@ namespace slam
 			/** Constructor
 			  */
 			TConstructionOptions();
-
-			/** See utils::CLoadableOptions
-			  */
+			/** See utils::CLoadableOptions */
 			void  loadFromConfigFile(
 				const mrpt::utils::CConfigFileBase  &source,
 				const std::string &section);
-
-			/** See utils::CLoadableOptions
-			  */
-			void  dumpToTextStream(CStream	&out) const;
+			/** See utils::CLoadableOptions */
+			void  dumpToTextStream(mrpt::utils::CStream	&out) const;
 
 			float	insertionLinDistance;
 			float	insertionAngDistance;
@@ -100,24 +91,21 @@ namespace slam
 
 			bayes::CParticleFilter::TParticleFilterOptions  PF_options;
 
-			TSetOfMetricMapInitializers					mapsInitializers;
-			CMultiMetricMapPDF::TPredictionParams		predictionOptions;
+			mrpt::maps::TSetOfMetricMapInitializers					mapsInitializers;
+			mrpt::maps::CMultiMetricMapPDF::TPredictionParams		predictionOptions;
 		};
 
-		/** Constructor.
-		 */
+		/** Constructor. */
 		CMetricMapBuilderRBPF( const TConstructionOptions &initializationOptions );
 
-		/** Destructor.
-		 */
+		/** Destructor. */
 		virtual ~CMetricMapBuilderRBPF( );
 
-		/** Initialize the method, starting with a known location PDF "x0"(if supplied, set to NULL to left unmodified) and a given fixed, past map.
-		  */
+		/** Initialize the method, starting with a known location PDF "x0"(if supplied, set to NULL to left unmodified) and a given fixed, past map. */
 		void  initialize(
-				const CSimpleMap		&initialMap  = CSimpleMap(),
-				CPosePDF					*x0 = NULL
-				);
+			const mrpt::maps::CSimpleMap		&initialMap  = mrpt::maps::CSimpleMap(),
+			mrpt::poses::CPosePDF					*x0 = NULL
+			);
 
 		/** Clear all elements of the maps.
 		  */
@@ -125,11 +113,11 @@ namespace slam
 
 		/** Returns a copy of the current best pose estimation as a pose PDF.
 		  */
-		CPose3DPDFPtr  getCurrentPoseEstimation() const;
+		mrpt::poses::CPose3DPDFPtr  getCurrentPoseEstimation() const;
 
 		/** Returns the current most-likely path estimation (the path associated to the most likely particle).
 		  */
-		void  getCurrentMostLikelyPath( std::deque<TPose3D> &outPath ) const;
+		void  getCurrentMostLikelyPath( std::deque<mrpt::math::TPose3D> &outPath ) const;
 
 		/** Appends a new action and observations to update this map: See the description of the class at the top of this page to see a more complete description.
 		 *  \param action The incremental 2D pose change in the robot pose. This value is deterministic.
@@ -137,16 +125,16 @@ namespace slam
 		 *  Statistics will be saved to statsLastIteration
 		 */
 		void  processActionObservation(
-					CActionCollection	&action,
-					CSensoryFrame		&observations );
+			mrpt::obs::CActionCollection	&action,
+			mrpt::obs::CSensoryFrame		&observations );
 
 		/** Fills "out_map" with the set of "poses"-"sensory-frames", thus the so far built map.
 		  */
-		void  getCurrentlyBuiltMap(CSimpleMap &out_map) const;
+		void  getCurrentlyBuiltMap(mrpt::maps::CSimpleMap &out_map) const;
 
 		/** Returns the map built so far. NOTE that for efficiency a pointer to the internal object is passed, DO NOT delete nor modify the object in any way, if desired, make a copy of ir with "duplicate()".
 		  */
-		CMultiMetricMap*   getCurrentlyBuiltMetricMap();
+		mrpt::maps::CMultiMetricMap*   getCurrentlyBuiltMetricMap();
 
 		/** Returns just how many sensory-frames are stored in the currently build map.
 		  */
@@ -181,9 +169,7 @@ namespace slam
 
 		};
 
-
-		/** This structure will hold stats after each execution of processActionObservation
-		  */
+		/** This structure will hold stats after each execution of processActionObservation */
 		TStats 		m_statsLastIteration;
 
 	}; // End of class def.

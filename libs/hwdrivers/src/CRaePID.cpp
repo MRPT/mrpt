@@ -135,16 +135,16 @@ void CRaePID::doProcess()
 	const float val_ppm = readnum/1000;
 
 	// Fill the observation
-	mrpt::slam::CObservationGasSensors::TObservationENose obs;
+	mrpt::obs::CObservationGasSensors::TObservationENose obs;
 	obs.readingsVoltage.push_back(val_ppm);
 	obs.sensorTypes.push_back(0x0001);
 
-	mrpt::slam::CObservationGasSensors obsG;
+	mrpt::obs::CObservationGasSensors obsG;
 	obsG.sensorLabel = this->getSensorLabel();
 	obsG.m_readings.push_back(obs);
 	obsG.timestamp = mrpt::system::now();
 
-	appendObservation(mrpt::slam::CObservationGasSensorsPtr(new mrpt::slam::CObservationGasSensors(obsG)));
+	appendObservation(mrpt::obs::CObservationGasSensorsPtr(new mrpt::obs::CObservationGasSensors(obsG)));
 
 }
 
@@ -213,7 +213,7 @@ bool CRaePID::switchPower()
 		return false;
 }
 
-mrpt::slam::CObservationGasSensors CRaePID::getFullInfo()
+mrpt::obs::CObservationGasSensors CRaePID::getFullInfo()
 {
 	// Send the command
 	COM.purgeBuffers();
@@ -233,8 +233,8 @@ mrpt::slam::CObservationGasSensors CRaePID::getFullInfo()
 	std::vector<std::string> measurements_text(it, endit);
 
 	// Convert the text to a number (ppm)
-	mrpt::slam::CObservationGasSensors::TObservationENose obs;
-	mrpt::slam::CObservationGasSensors obsG;
+	mrpt::obs::CObservationGasSensors::TObservationENose obs;
+	mrpt::obs::CObservationGasSensors obsG;
 
 	for (size_t k=0; k < measurements_text.size(); k++)
 	{

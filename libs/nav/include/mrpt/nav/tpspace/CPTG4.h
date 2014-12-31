@@ -25,7 +25,7 @@ namespace mrpt
 			/** Constructor: possible values in "params", those of CParameterizedTrajectoryGenerator plus:
 			 *   - K: Direction, +1 or -1
 			 */
-			CPTG4(const TParameters<double> &params );
+			CPTG4(const mrpt::utils::TParameters<double> &params );
 
 			/** Gets a short textual description of the PTG and its parameters.
 			*/

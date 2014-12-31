@@ -19,28 +19,18 @@
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/vision/types.h>
 #include <mrpt/vision/chessboard_camera_calib.h>
-
+#include <mrpt/obs/obs_frwds.h>
 #include <mrpt/vision/link_pragmas.h>
 
 namespace mrpt
 {
-	namespace slam
-	{
-		class CObservationStereoImages;
-		class CObservationBearingRange;
-		class CLandmarksMap;
-		class CObservationVisualLandmarks;
-	}
+	namespace maps { class CLandmarksMap; }
+	namespace obs { class CObservationVisualLandmarks;}
 
 	/** Classes for computer vision, detectors, features, etc.  \ingroup mrpt_vision_grp
 	 */
 	namespace vision
 	{
-		using std::vector;
-		using namespace mrpt::slam;
-		using namespace mrpt::math;
-		using namespace mrpt::utils;
-
 		/** \addtogroup mrpt_vision_grp
 		  *  @{ */
 
@@ -59,31 +49,30 @@ namespace mrpt
 			* \sa cross_correlation
 			*/
 			void VISION_IMPEXP openCV_cross_correlation(
-                                const CImage	        & img,
-								const CImage	        & patch_img,
-								size_t				    & x_max,
-								size_t				    & y_max,
-								double				    & max_val,
-								int					    x_search_ini=-1,
-								int					    y_search_ini=-1,
-								int					    x_search_size=-1,
-								int					    y_search_size=-1);
+				const mrpt::utils::CImage	        & img,
+				const mrpt::utils::CImage	        & patch_img,
+				size_t				    & x_max,
+				size_t				    & y_max,
+				double				    & max_val,
+				int					    x_search_ini=-1,
+				int					    y_search_ini=-1,
+				int					    x_search_size=-1,
+				int					    y_search_size=-1);
 
 			/**	Invert an image using OpenCV function
 			*
 			*/
-			void VISION_IMPEXP flip(
-                                CImage		            & img);
+			void VISION_IMPEXP flip(mrpt::utils::CImage		            & img);
 
 			/** Extract a UNITARY 3D vector in the direction of a 3D point, given from its (x,y) pixels coordinates, and the camera intrinsic coordinates.
 			  *  \param xy  [IN]   Pixels coordinates, from the top-left corner of the image.
 			  *  \param A   [IN]   The 3x3 intrinsic parameters matrix for the camera.
-			  *  \return The TPoint3D containing the output unitary vector.
+			  *  \return The mrpt::math::TPoint3D containing the output unitary vector.
 			  * \sa buildIntrinsicParamsMatrix, defaultIntrinsicParamsMatrix, TPixelCoordf
 			  */
-			TPoint3D VISION_IMPEXP pixelTo3D(
-                                const TPixelCoordf      & xy,
-                                const CMatrixDouble33   & A);
+		 mrpt::math::TPoint3D VISION_IMPEXP pixelTo3D(
+			const mrpt::utils::TPixelCoordf      & xy,
+			const mrpt::math::CMatrixDouble33   & A);
 
 			/** Builds the intrinsic parameters matrix A from parameters:
 			  * \param focalLengthX [IN]   The focal length, in X (horizontal) pixels
@@ -100,11 +89,11 @@ namespace mrpt
 			  *  See also the tutorial discussing the <a rhref="http://www.mrpt.org/Camera_Parameters">camera model parameters</a>.
 			  * \sa defaultIntrinsicParamsMatrix, pixelTo3D
 			  */
-			CMatrixDouble33 VISION_IMPEXP buildIntrinsicParamsMatrix(
-                                const double            focalLengthX,
-                                const double            focalLengthY,
-                                const double            centerX,
-                                const double            centerY);
+		 mrpt::math::CMatrixDouble33 VISION_IMPEXP buildIntrinsicParamsMatrix(
+			const double            focalLengthX,
+			const double            focalLengthY,
+			const double            centerX,
+			const double            centerY);
 
 			/** Returns the stored, default intrinsic params matrix for a given camera:
 			  * \param camIndex     [IN]   Posible values are listed next.
@@ -150,16 +139,15 @@ namespace mrpt
 
 			  * \sa buildIntrinsicParamsMatrix, pixelTo3D
 			  */
-			CMatrixDouble33 VISION_IMPEXP defaultIntrinsicParamsMatrix(
-                                unsigned int            camIndex = 0,
-                                unsigned int            resolutionX = 320,
-                                unsigned int            resolutionY = 240 );
+		 mrpt::math::CMatrixDouble33 VISION_IMPEXP defaultIntrinsicParamsMatrix(
+			unsigned int            camIndex = 0,
+			unsigned int            resolutionX = 320,
+			unsigned int            resolutionY = 240 );
 
 			/** Explore the feature list and removes features which are in the same coordinates
 			  * \param list [IN] The list of features.
 			  */
-			void VISION_IMPEXP deleteRepeatedFeats(
-                                CFeatureList            & list );
+			void VISION_IMPEXP deleteRepeatedFeats(CFeatureList            & list );
 
 			/** Search for correspondences which are not in the same row and deletes them
 			  * \param leftList     [IN/OUT]    The left list of matched features.
@@ -167,9 +155,9 @@ namespace mrpt
 			  * \param threshold    [IN]        The tolerance value for the row checking: valid matched are within this threshold.
 			  */
 			void VISION_IMPEXP rowChecking(
-                                CFeatureList            & leftList,
-								CFeatureList            & rightList,
-								float                   threshold = 1.0);
+				CFeatureList            & leftList,
+				CFeatureList            & rightList,
+				float                   threshold = 1.0);
 
 			/** Computes the dispersion of the features in the image
 			  * \param list [IN]    Input list of features
@@ -177,24 +165,24 @@ namespace mrpt
 			  * \param mean	[OUT]   2 element vector containing the mean in the 'x' and 'y' coordinates.
 			  */
 			void VISION_IMPEXP getDispersion(
-                                const CFeatureList      & list,
-								CVectorFloat            & std,
-								CVectorFloat            & mean );
+				const CFeatureList      & list,
+				mrpt::math::CVectorFloat            & std,
+				mrpt::math::CVectorFloat            & mean );
 
 			/** Computes the mean squared distance between a set of 3D correspondences
 			  * ...
 			  */
 			double VISION_IMPEXP computeMsd(
-                                const TMatchingPairList & list,
-								const poses::CPose3D    & Rt );
+				const mrpt::utils::TMatchingPairList & list,
+				const poses::CPose3D    & Rt );
 
 			/** Transform two clouds of 3D points into a matched list of points
 			  * ...
 			  */
 			void VISION_IMPEXP cloudsToMatchedList(
-                                const CObservationVisualLandmarks   & cloud1,
-                                const CObservationVisualLandmarks   & cloud2,
-								TMatchingPairList                   & outList);
+				const mrpt::obs::CObservationVisualLandmarks   & cloud1,
+				const mrpt::obs::CObservationVisualLandmarks   & cloud2,
+				mrpt::utils::TMatchingPairList                   & outList);
 
 			/** Computes the main orientation of a set of points with an image (for using in SIFT-based algorithms)
 			  * \param image    [IN] The input image.
@@ -203,7 +191,7 @@ namespace mrpt
 			  * \return The main orientation of the image point.
 			  */
 			float VISION_IMPEXP computeMainOrientation(
-				const CImage                        & image,
+				const mrpt::utils::CImage                        & image,
 				unsigned int                        x,
 				unsigned int                        y );
 
@@ -211,9 +199,9 @@ namespace mrpt
 			  * \param image        [IN]        The input image.
 			  * \param nimage       [OUTPUT]    The new normalized image.
 			  */
-            void VISION_IMPEXP normalizeImage(
-				const CImage                        & image,
-				CImage                              & nimage );
+			void VISION_IMPEXP normalizeImage(
+				const mrpt::utils::CImage                        & image,
+				mrpt::utils::CImage                              & nimage );
 
 			/** Find the matches between two lists of features which must be of the same type.
 			  * \param list1    [IN]    One list.
@@ -229,27 +217,27 @@ namespace mrpt
 				const TMatchingOptions              & options = TMatchingOptions(),
 				const TStereoSystemParams           & params = TStereoSystemParams() );
 
-            /** Calculates the Sum of Absolutes Differences (range [0,1]) between two patches. Both patches must have the same size.
+			/** Calculates the Sum of Absolutes Differences (range [0,1]) between two patches. Both patches must have the same size.
 			  * \param mList    [IN]  The list of matched features.
 			  * \param mask1    [OUT] The output mask for left features.
 			  * \param mask2    [OUT] The output mask for right features.
 			  * \param wSize    [IN] The value of the masking window for each features.
 			  * \exception if mList.size() = 0
-	          */
-            void VISION_IMPEXP generateMask(
+			  */
+			void VISION_IMPEXP generateMask(
 				const CMatchedFeatureList           & mList,
 				mrpt::math::CMatrixBool                         & mask1,
 				mrpt::math::CMatrixBool                         & mask2,
 				int                                 wSize = 10 );
 
-            /** Calculates the Sum of Absolutes Differences (range [0,1]) between two patches. Both patches must have the same size.
+			/** Calculates the Sum of Absolutes Differences (range [0,1]) between two patches. Both patches must have the same size.
 			  * \param patch1 [IN]  One patch.
 			  * \param patch2 [IN]  The other patch.
 			  * \return The value of computed SAD normalized to [0,1]
-	          */
-	        double VISION_IMPEXP computeSAD(
-				const CImage                        & patch1,
-				const CImage                        & patch2 );
+			  */
+			double VISION_IMPEXP computeSAD(
+				const mrpt::utils::CImage                        & patch1,
+				const mrpt::utils::CImage                        & patch2 );
 
 			/** Draw rectangles around each of the features on a copy of the input image.
 			  * \param inImg    [IN]    The input image where to draw the features.
@@ -257,26 +245,26 @@ namespace mrpt
 			  * \param outImg   [OUT]   The copy of the input image with the marked features.
 			  */
 			void VISION_IMPEXP addFeaturesToImage(
-                                const CImage                        & inImg,
-                                const CFeatureList                  & theList,
-                                CImage                              & outImg );
+				const mrpt::utils::CImage                        & inImg,
+				const CFeatureList                  & theList,
+				mrpt::utils::CImage                              & outImg );
 
 			void VISION_IMPEXP projectMatchedFeatures(
-								const CMatchedFeatureList			& matches,
-								const mrpt::utils::TStereoCamera	& stereo_camera,
-								vector<TPoint3D>					& out_points );
+				const CMatchedFeatureList			& matches,
+				const mrpt::utils::TStereoCamera	& stereo_camera,
+				std::vector<mrpt::math::TPoint3D>					& out_points );
 
 			/** Computes the 3D position of a set of matched features from their coordinates in the images. The list have to be matched in order, e.g. leftList[0]<->rightList[0]
 			  * \param leftList     [IN]    The left list of features.
 			  * \param rightList    [IN]    The right list of features.
-			  * \param vP3D         [OUT]   A vector of TPoint3D containing the 3D positions of the projected points.
+			  * \param vP3D         [OUT]   A vector of mrpt::math::TPoint3D containing the 3D positions of the projected points.
 			  * \param params       [IN]    The intrinsic and extrinsic parameters of the stereo pair.
 			  */
-            void VISION_IMPEXP projectMatchedFeatures(
-                                const CFeatureList			        & leftList,
-                                const CFeatureList			        & rightList,
-                                vector<TPoint3D>                    & vP3D,
-                                const TStereoSystemParams           & params = TStereoSystemParams() );
+			void VISION_IMPEXP projectMatchedFeatures(
+				const CFeatureList			        & leftList,
+				const CFeatureList			        & rightList,
+				std::vector<mrpt::math::TPoint3D>                    & vP3D,
+				const TStereoSystemParams           & params = TStereoSystemParams() );
 
 			/** Computes the 3D position of a particular matched feature.
 			  * \param leftList     [IN]    The left feature.
@@ -284,11 +272,11 @@ namespace mrpt
 			  * \param vP3D         [OUT]   The 3D position of the projected point.
 			  * \param params       [IN]    The intrinsic and extrinsic parameters of the stereo pair.
 			  */
-            void VISION_IMPEXP projectMatchedFeature(
-                                const CFeaturePtr                   & leftFeat,
-                                const CFeaturePtr                   & rightFeat,
-                                TPoint3D                            & p3D,
-                                const TStereoSystemParams           & params = TStereoSystemParams() );
+			void VISION_IMPEXP projectMatchedFeature(
+				const CFeaturePtr                   & leftFeat,
+				const CFeaturePtr                   & rightFeat,
+				mrpt::math::TPoint3D                            & p3D,
+				const TStereoSystemParams           & params = TStereoSystemParams() );
 
 			/** Project a list of matched features into the 3D space, using the provided parameters of the stereo system
 			  * \param mfList       [IN/OUT]    The list of matched features. Features which yields a 3D point outside the area defined in TStereoSystemParams are removed from the lists.
@@ -297,9 +285,9 @@ namespace mrpt
 			  * \sa TStereoSystemParams, CLandmarksMap
 			  */
 			void VISION_IMPEXP projectMatchedFeatures(
-                                CMatchedFeatureList			        & mfList,
-                                const TStereoSystemParams	        & param,
-                                CLandmarksMap			            & landmarks );
+				CMatchedFeatureList			        & mfList,
+				const TStereoSystemParams	        & param,
+				mrpt::maps::CLandmarksMap			            & landmarks );
 
 			/** Project a pair of feature lists into the 3D space, using the provided options for the stereo system. The matches must be in order,
 			  *	i.e. leftList[0] corresponds to rightList[0] and so on. Features which yields a 3D point outside the area defined in TStereoSystemParams are removed from the lists.
@@ -310,10 +298,10 @@ namespace mrpt
 			  * \sa TStereoSystemParams, CLandmarksMap
 			  */
 			void VISION_IMPEXP projectMatchedFeatures(
-                                CFeatureList				        & leftList,
-                                CFeatureList					    & rightList,
-                                const TStereoSystemParams	        & param,
-                                CLandmarksMap			            & landmarks );
+				CFeatureList				        & leftList,
+				CFeatureList					    & rightList,
+				const TStereoSystemParams	        & param,
+				mrpt::maps::CLandmarksMap			            & landmarks );
 
 			/** Converts a stereo images observation into a bearing and range observation.
 				\param inObs	[IN]	The input stereo images observation.
@@ -321,9 +309,9 @@ namespace mrpt
 				\param outObs	[OUT]	The output bearing and range observation (including covariances).
 			*/
 			void VISION_IMPEXP StereoObs2BRObs(
-                                const CObservationStereoImages      & inObs,
-                                const vector<double>                & sg,
-                                CObservationBearingRange            & outObs );
+				const mrpt::obs::CObservationStereoImages      & inObs,
+				const std::vector<double>                & sg,
+				mrpt::obs::CObservationBearingRange            & outObs );
 
 			/** Converts a matched feature list into a bearing and range observation (some of the stereo camera system must be provided).
 				\param inMatches		[IN]	The input list of matched features.
@@ -333,47 +321,46 @@ namespace mrpt
 				\param outObs			[OUT]	The output bearing and range observation (including covariances).
 			*/
 			void VISION_IMPEXP StereoObs2BRObs(
-                                const CMatchedFeatureList           & inMatches,
-                                const CMatrixDouble33               & intrinsicParams,
-                                const double                        & baseline,
-                                const mrpt::poses::CPose3D                       & sensorPose,
-                                const vector<double>                & sg,
-                                CObservationBearingRange            & outObs );
+				const CMatchedFeatureList           & inMatches,
+				const mrpt::math::CMatrixDouble33               & intrinsicParams,
+				const double                        & baseline,
+				const mrpt::poses::CPose3D                       & sensorPose,
+				const std::vector<double>                & sg,
+				mrpt::obs::CObservationBearingRange            & outObs );
 
 			/** Converts a CObservationVisualLandmarks into a bearing and range observation (without any covariances). Fields of view are not computed.
 				\param inObs			[IN]	The input observation.
 				\param sg				[IN]	The sigma of the row, col, and disparity variables involved in the feature detection.
 				\param outObs			[OUT]	The output bearing and range observation.
 			*/
-            void VISION_IMPEXP StereoObs2BRObs(
-                                const CObservationStereoImages      & inObs,
-                                const vector<double>                & sg,
-                                CObservationBearingRange            & outObs );
+			void VISION_IMPEXP StereoObs2BRObs(
+				const mrpt::obs::CObservationStereoImages      & inObs,
+				const std::vector<double>                & sg,
+				mrpt::obs::CObservationBearingRange            & outObs );
 
 			/** Converts a CObservationVisualLandmarks into a bearing and range observation (without any covariances). Fields of view are not computed.
 				\param inObs			[IN]	The input observation.
 				\param outObs			[OUT]	The output bearing and range observation.
 			*/
 			void VISION_IMPEXP StereoObs2BRObs(
-                                const CObservationVisualLandmarks   & inObs,
-                                CObservationBearingRange            & outObs );
+				const mrpt::obs::CObservationVisualLandmarks   & inObs,
+				mrpt::obs::CObservationBearingRange            & outObs );
 
-            /** Computes a pair of x-and-y maps for stereo rectification from a pair of cameras and the relative pose of the second one wrt the first one.
-                \param cam1, cam2           [IN]    The pair of involved cameras
-                \param rightCameraPose      [IN]    The change in pose of the second camera wrt the first one
-                \param outMap1x,outMap1y    [OUT]   The x-and-y maps corresponding to cam1 (should be converted to *cv::Mat)
-                \param outMap2x,outMap2y    [OUT]   The x-and-y maps corresponding to cam2 (should be converted to *cv::Mat)
+			/** Computes a pair of x-and-y maps for stereo rectification from a pair of cameras and the relative pose of the second one wrt the first one.
+				\param cam1, cam2           [IN]    The pair of involved cameras
+				\param rightCameraPose      [IN]    The change in pose of the second camera wrt the first one
+				\param outMap1x,outMap1y    [OUT]   The x-and-y maps corresponding to cam1 (should be converted to *cv::Mat)
+				\param outMap2x,outMap2y    [OUT]   The x-and-y maps corresponding to cam2 (should be converted to *cv::Mat)
 			* \sa An easier to use class for stereo rectification mrpt::vision::CStereoRectifyMap
-            */
-            void VISION_IMPEXP computeStereoRectificationMaps(
-                                const TCamera                       & cam1,
-                                const TCamera                       & cam2,
-                                const poses::CPose3D                & rightCameraPose,
-                                void                                *outMap1x,
-                                void                                *outMap1y,
-                                void                                *outMap2x,
-                                void                                *outMap2y );
-
+			*/
+			void VISION_IMPEXP computeStereoRectificationMaps(
+				const mrpt::utils::TCamera                       & cam1,
+				const mrpt::utils::TCamera                       & cam2,
+				const mrpt::poses::CPose3D                & rightCameraPose,
+				void                                *outMap1x,
+				void                                *outMap1y,
+				void                                *outMap2x,
+				void                                *outMap2y );
 
 	/** @} */ // end of grouping
 

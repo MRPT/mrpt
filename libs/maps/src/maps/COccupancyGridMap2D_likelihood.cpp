@@ -9,15 +9,17 @@
 
 #include "maps-precomp.h" // Precomp header
 
-#include <mrpt/slam/COccupancyGridMap2D.h>
-#include <mrpt/slam/CObservation2DRangeScan.h>
-#include <mrpt/slam/CObservationRange.h>
-#include <mrpt/slam/CSimplePointsMap.h>
+#include <mrpt/maps/COccupancyGridMap2D.h>
+#include <mrpt/obs/CObservation2DRangeScan.h>
+#include <mrpt/obs/CObservationRange.h>
+#include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/utils/CStream.h>
 
 
 using namespace mrpt;
-using namespace mrpt::slam;
+using namespace mrpt::math;
+using namespace mrpt::maps;
+using namespace mrpt::obs;
 using namespace mrpt::utils;
 using namespace mrpt::poses;
 using namespace std;
@@ -104,7 +106,7 @@ double	 COccupancyGridMap2D::computeObservationLikelihood_Consensus(
 	if ( ! o->isPlanarScan(insertionOptions.horizontalTolerance) ) return 0.5f;		// NO WAY TO ESTIMATE NON HORIZONTAL SCANS!!
 
 	// Assure we have a 2D points-map representation of the points from the scan:
-	const CPointsMap *compareMap = o->buildAuxPointsMap<mrpt::slam::CPointsMap>();
+	const CPointsMap *compareMap = o->buildAuxPointsMap<mrpt::maps::CPointsMap>();
 
 	// Observation is a points map:
 	// -------------------------------------------
@@ -164,7 +166,7 @@ double	 COccupancyGridMap2D::computeObservationLikelihood_ConsensusOWA(
 	CPointsMap::TInsertionOptions	insOpt;
 	insOpt.minDistBetweenLaserPoints	= -1;		// ALL the laser points
 
-	const CPointsMap *compareMap = o->buildAuxPointsMap<mrpt::slam::CPointsMap>( &insOpt );
+	const CPointsMap *compareMap = o->buildAuxPointsMap<mrpt::maps::CPointsMap>( &insOpt );
 
 	// Observation is a points map:
 	// -------------------------------------------
@@ -443,7 +445,7 @@ double	 COccupancyGridMap2D::computeObservationLikelihood_likelihoodField_Thrun(
 		opts.horizontalTolerance		= insertionOptions.horizontalTolerance;
 
 		// Compute the likelihood of the points in this grid map:
-		ret = computeLikelihoodField_Thrun( o->buildAuxPointsMap<mrpt::slam::CPointsMap>(&opts), &takenFrom );
+		ret = computeLikelihoodField_Thrun( o->buildAuxPointsMap<mrpt::maps::CPointsMap>(&opts), &takenFrom );
 
 	} // end of observation is a scan range 2D
 	else if ( IS_CLASS(obs, CObservationRange) )
@@ -493,7 +495,7 @@ double	 COccupancyGridMap2D::computeObservationLikelihood_likelihoodField_II(
 		// Assure we have a 2D points-map representation of the points from the scan:
 
 		// Compute the likelihood of the points in this grid map:
-		ret = computeLikelihoodField_II( o->buildAuxPointsMap<mrpt::slam::CPointsMap>(), &takenFrom );
+		ret = computeLikelihoodField_II( o->buildAuxPointsMap<mrpt::maps::CPointsMap>(), &takenFrom );
 
 	} // end of observation is a scan range 2D
 
@@ -847,7 +849,7 @@ void  COccupancyGridMap2D::TLikelihoodOptions::loadFromConfigFile(
 /*---------------------------------------------------------------
 					dumpToTextStream
   ---------------------------------------------------------------*/
-void  COccupancyGridMap2D::TLikelihoodOptions::dumpToTextStream(CStream	&out) const
+void  COccupancyGridMap2D::TLikelihoodOptions::dumpToTextStream(mrpt::utils::CStream	&out) const
 {
 	out.printf("\n----------- [COccupancyGridMap2D::TLikelihoodOptions] ------------ \n\n");
 
@@ -899,7 +901,7 @@ void  COccupancyGridMap2D::TLikelihoodOptions::dumpToTextStream(CStream	&out) co
  * \param obs The observation.
  * \sa computeObservationLikelihood
  */
-bool COccupancyGridMap2D::canComputeObservationLikelihood( const CObservation *obs )
+bool COccupancyGridMap2D::canComputeObservationLikelihood( const mrpt::obs::CObservation *obs )
 {
 	// Ignore laser scans if they are not planar or they are not
 	//  at the altitude of this grid map:

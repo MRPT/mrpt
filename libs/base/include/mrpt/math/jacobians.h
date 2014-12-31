@@ -26,9 +26,6 @@ namespace mrpt
 		  */
 		namespace jacobians
 		{
-			using mrpt::poses::CPose3D;
-			using mrpt::math::CQuaternionDouble;
-
 			/** Computes the 4x3 Jacobian of the transformation from a 3D pose angles (yaw pitch roll) into a Quaternion, that is, the Jacobian of:
 			  * \f[ \mathbf{q} = \left( \begin{array}{c} \cos (\phi /2) \cos (\theta /2) \cos (\psi /2) +  \sin (\phi /2) \sin (\theta /2) \sin (\psi /2) \\ \sin (\phi /2) \cos (\theta /2) \cos (\psi /2) -  \cos (\phi /2) \sin (\theta /2) \sin (\psi /2) \\ \cos (\phi /2) \sin (\theta /2) \cos (\psi /2) +  \sin (\phi /2) \cos (\theta /2) \sin (\psi /2) \\ \cos (\phi /2) \cos (\theta /2) \sin (\psi /2) -  \sin (\phi /2) \sin (\theta /2) \cos (\psi /2) \\ \end{array}\right) \f]
 			  * With : \f$ \phi = roll \f$,  \f$ \theta = pitch \f$ and \f$ \psi = yaw \f$.
@@ -42,7 +39,7 @@ namespace mrpt
 				)
 			{
 				CQuaternionDouble q(UNINITIALIZED_QUATERNION);
-				CPose3D  p(0,0,0,yaw,pitch,roll);
+				mrpt::poses::CPose3D  p(0,0,0,yaw,pitch,roll);
 				p.getAsQuaternion(q,&out_dq_dr);
 			}
 
@@ -53,7 +50,7 @@ namespace mrpt
 			  */
 			inline void jacob_quat_from_yawpitchroll(
 				mrpt::math::CMatrixFixedNumeric<double,4,3> &out_dq_dr,
-				const CPose3D  &in_pose
+				const mrpt::poses::CPose3D  &in_pose
 				)
 			{
 				CQuaternionDouble q(UNINITIALIZED_QUATERNION);
@@ -85,8 +82,8 @@ namespace mrpt
 			  * For the equations, see CPose3DPDF::jacobiansPoseComposition
 			  */
 			inline void jacobs_6D_pose_comp(
-				const CPose3D	&x,
-				const CPose3D	&u,
+				const mrpt::poses::CPose3D	&x,
+				const mrpt::poses::CPose3D	&u,
 				CMatrixDouble66		&out_df_dx,
 				CMatrixDouble66		&out_df_du)
 			{

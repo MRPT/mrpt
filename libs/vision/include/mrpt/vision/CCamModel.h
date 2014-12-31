@@ -44,38 +44,38 @@ namespace mrpt
 				const std::string		&section);
 
 			/** This method displays clearly all the contents of the structure in textual form, sending it to a CStream. */
-			void  dumpToTextStream( CStream		&out) const;
+			void  dumpToTextStream( mrpt::utils::CStream		&out) const;
 
 			/** Constructor from a ini file
 			 */
 			CCamModel(const mrpt::utils::CConfigFileBase &cfgIni);
 
 			/** Jacobian for undistortion the image coordinates */
-			void  jacob_undistor_fm(const mrpt::vision::TPixelCoordf &uvd, math::CMatrixDouble &J_undist);
+			void  jacob_undistor_fm(const mrpt::utils::TPixelCoordf &uvd, math::CMatrixDouble &J_undist);
 
 			/** Calculate the image coordinates undistorted
 			 */
-			void jacob_undistor(const mrpt::vision::TPixelCoordf &p, mrpt::math::CMatrixDouble &J_undist );
+			void jacob_undistor(const mrpt::utils::TPixelCoordf &p, mrpt::math::CMatrixDouble &J_undist );
 
 			/**	Return the pixel position distorted by the camera
 			 */
-			void  distort_a_point(const mrpt::vision::TPixelCoordf &p, mrpt::vision::TPixelCoordf &distorted_p);
+			void  distort_a_point(const mrpt::utils::TPixelCoordf &p, mrpt::utils::TPixelCoordf &distorted_p);
 
 			/**	Return the pixel position undistorted by the camera
 			 *	The input values 'col' and 'row' will be replace for the new values (undistorted)
 			 */
-			void  undistort_point(const mrpt::vision::TPixelCoordf &p, mrpt::vision::TPixelCoordf &undistorted_p);
+			void  undistort_point(const mrpt::utils::TPixelCoordf &p, mrpt::utils::TPixelCoordf &undistorted_p);
 
 			/**	Return the (distorted) pixel position of a 3D point given in coordinates relative to the camera (+Z pointing forward, +X to the right)
 			 * \sa unproject_3D_point
   		     */
-			void  project_3D_point(const mrpt::math::TPoint3D &p3D, mrpt::vision::TPixelCoordf &distorted_p) const;
+			void  project_3D_point(const mrpt::math::TPoint3D &p3D, mrpt::utils::TPixelCoordf &distorted_p) const;
 
 			/**	Return the 3D location of a point (at a fixed distance z=1), for the given (distorted) pixel position
 			 * \sa project_3D_point
 			 * \note Of course, there is a depth ambiguity, so the returned 3D point must be considered a direction from the camera focus, or a vector, rather than a meaninful physical point.
   		     */
-			void  unproject_3D_point(const mrpt::vision::TPixelCoordf &distorted_p, mrpt::math::TPoint3D &p3D) const;
+			void  unproject_3D_point(const mrpt::utils::TPixelCoordf &distorted_p, mrpt::math::TPoint3D &p3D) const;
 
 			/** Jacobian of the projection of 3D points (with distortion), as done in project_3D_point \f$ \frac{\partial h}{\partial y} \f$, evaluated at the point p3D (read below the full explanation)
 
@@ -125,7 +125,7 @@ namespace mrpt
 			\note JLBC: Added in March, 2009. Should be equivalent to Davison's WideCamera::UnprojectionJacobian
 			\sa unproject_3D_point
 			*/
-			void jacobian_unproject_with_distortion(const mrpt::vision::TPixelCoordf &p, math::CMatrixDouble & dy_dh ) const;
+			void jacobian_unproject_with_distortion(const mrpt::utils::TPixelCoordf &p, math::CMatrixDouble & dy_dh ) const;
 
 			template<typename T> struct CameraTempVariables	{
 				T x_,y_;
@@ -167,7 +167,7 @@ namespace mrpt
 				T x_=1/pIn[0];
 				T x_2=square(x_);
 				//First two jacobians...
-				CMatrixFixedNumeric<T,3,3> J21;
+			 mrpt::math::CMatrixFixedNumeric<T,3,3> J21;
 				T tmpK=2*(cam.k1()+tmp.R*(2*cam.k2()+3*tmp.R*cam.k3()));
 				T tmpKx=tmpK*tmp.x_;
 				T tmpKy=tmpK*tmp.y_;
@@ -186,7 +186,7 @@ namespace mrpt
 				T pxpy=2*(cam.p1()*tmp.x_+cam.p2()*tmp.y_);
 				T p1y=cam.p1()*tmp.y_;
 				T p2x=cam.p2()*tmp.x_;
-				CMatrixFixedNumeric<T,2,3> J43;
+			 mrpt::math::CMatrixFixedNumeric<T,2,3> J43;
 				T fx=cam.fx(),fy=cam.fy();
 				J43.set_unsafe(0,0,fx*(tmp.K+2*p1y+6*p2x));
 				J43.set_unsafe(0,1,fx*pxpy);
@@ -202,22 +202,22 @@ namespace mrpt
 			//They are intended to initialize the common parts of the jacobians just once,
 			//and not in each iteration.
 			//They are mostly useless outside the scope of this function.
-			CMatrixFixedNumeric<double,2,2> firstInverseJacobian() const	{
-				CMatrixFixedNumeric<double,2,2> res;
+		 mrpt::math::CMatrixFixedNumeric<double,2,2> firstInverseJacobian() const	{
+			 mrpt::math::CMatrixFixedNumeric<double,2,2> res;
 				res.set_unsafe(0,1,0);
 				res.set_unsafe(1,0,0);
 				return res;
 			}
-			CMatrixFixedNumeric<double,4,2> secondInverseJacobian() const	{
-				CMatrixFixedNumeric<double,4,2> res;
+		 mrpt::math::CMatrixFixedNumeric<double,4,2> secondInverseJacobian() const	{
+			 mrpt::math::CMatrixFixedNumeric<double,4,2> res;
 				res.set_unsafe(0,0,1);
 				res.set_unsafe(0,1,0);
 				res.set_unsafe(1,0,0);
 				res.set_unsafe(1,1,1);
 				return res;
 			}
-			CMatrixFixedNumeric<double,3,4> thirdInverseJacobian() const	{
-				CMatrixFixedNumeric<double,3,4> res;
+		 mrpt::math::CMatrixFixedNumeric<double,3,4> thirdInverseJacobian() const	{
+			 mrpt::math::CMatrixFixedNumeric<double,3,4> res;
 				res.set_unsafe(0,1,0);
 				res.set_unsafe(0,2,0);
 				res.set_unsafe(1,0,0);
@@ -234,12 +234,13 @@ namespace mrpt
 				//WARNING!: this shortcut to avoid repeated initialization makes the method somewhat
 				//faster, but makes it incapable of being used in more than one thread
 				//simultaneously!
-				static CMatrixFixedNumeric<double,2,2> J1(firstInverseJacobian());
-				static CMatrixFixedNumeric<double,4,2> J2(secondInverseJacobian());
-				static CMatrixFixedNumeric<double,3,4> J3(thirdInverseJacobian());
-				static CMatrixFixedNumeric<double,2,3> J4;	//This is not initialized in a special way, although declaring it
-				CArray<double,4> tmp1;
-				CArray<double,2> tmp2;	//This would be a CArray<double,3>, but to avoid copying, we let "R2" lie in tmp1.
+				using mrpt::utils::square;
+				static mrpt::math::CMatrixFixedNumeric<double,2,2> J1(firstInverseJacobian());
+				static mrpt::math::CMatrixFixedNumeric<double,4,2> J2(secondInverseJacobian());
+				static mrpt::math::CMatrixFixedNumeric<double,3,4> J3(thirdInverseJacobian());
+				static mrpt::math::CMatrixFixedNumeric<double,2,3> J4;	//This is not initialized in a special way, although declaring it
+				mrpt::math::CArray<double,4> tmp1;
+				mrpt::math::CArray<double,2> tmp2;	//This would be a CArray<double,3>, but to avoid copying, we let "R2" lie in tmp1.
 				//Camera Parameters
 				double cx=cam.cx(),cy=cam.cy(),ifx=1/cam.fx(),ify=1/cam.fy();
 				double K1=cam.k1(),K2=cam.k2(),p1=cam.p1(),p2=cam.p2(),K3=cam.k3();

@@ -9,8 +9,8 @@
 
 #include "maps-precomp.h" // Precomp header
 
-#include <mrpt/slam/CReflectivityGridMap2D.h>
-#include <mrpt/slam/CObservationReflectivity.h>
+#include <mrpt/maps/CReflectivityGridMap2D.h>
+#include <mrpt/obs/CObservationReflectivity.h>
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/utils/round.h> // round()
 #include <mrpt/system/os.h>
@@ -20,14 +20,15 @@
 
 
 using namespace mrpt;
-using namespace mrpt::slam;
+using namespace mrpt::maps;
+using namespace mrpt::obs;
 using namespace mrpt::poses;
 using namespace mrpt::math;
 using namespace mrpt::utils;
 using namespace mrpt::system;
 using namespace std;
 
-IMPLEMENTS_SERIALIZABLE(CReflectivityGridMap2D, CMetricMap,mrpt::slam)
+IMPLEMENTS_SERIALIZABLE(CReflectivityGridMap2D, CMetricMap,mrpt::maps)
 
 
 // Lookup tables for log-odds
@@ -172,7 +173,7 @@ double	 CReflectivityGridMap2D::computeObservationLikelihood(
 /*---------------------------------------------------------------
   Implements the writing to a CStream capability of CSerializable objects
  ---------------------------------------------------------------*/
-void  CReflectivityGridMap2D::writeToStream(CStream &out, int *version) const
+void  CReflectivityGridMap2D::writeToStream(mrpt::utils::CStream &out, int *version) const
 {
 	if (version)
 		*version = 0;
@@ -198,7 +199,7 @@ void  CReflectivityGridMap2D::writeToStream(CStream &out, int *version) const
 /*---------------------------------------------------------------
   Implements the reading from a CStream capability of CSerializable objects
  ---------------------------------------------------------------*/
-void  CReflectivityGridMap2D::readFromStream(CStream &in, int version)
+void  CReflectivityGridMap2D::readFromStream(mrpt::utils::CStream &in, int version)
 {
 	switch(version)
 	{
@@ -240,7 +241,7 @@ CReflectivityGridMap2D::TInsertionOptions::TInsertionOptions()
 /*---------------------------------------------------------------
 					dumpToTextStream
   ---------------------------------------------------------------*/
-void  CReflectivityGridMap2D::TInsertionOptions::dumpToTextStream(CStream	&out) const
+void  CReflectivityGridMap2D::TInsertionOptions::dumpToTextStream(mrpt::utils::CStream	&out) const
 {
 	out.printf("\n----------- [CReflectivityGridMap2D::TInsertionOptions] ------------ \n\n");
 
@@ -360,7 +361,7 @@ void  CReflectivityGridMap2D::getAs3DObject( mrpt::opengl::CSetOfObjectsPtr	&out
 }
 
 float  CReflectivityGridMap2D::compute3DMatchingRatio(
-	const CMetricMap						*otherMap,
+	const mrpt::maps::CMetricMap						*otherMap,
 	const CPose3D							&otherMapPose,
 	float									maxDistForCorr,
 	float									maxMahaDistForCorr

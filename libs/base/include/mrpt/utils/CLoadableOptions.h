@@ -85,7 +85,7 @@ namespace utils
 		/** This method should clearly display all the contents of the structure in textual form, sending it to a CStream.
 		  * The default implementation in this base class relies on \a saveToConfigFile() to generate a plain text representation of all the parameters.
 		  */
-		virtual void  dumpToTextStream(CStream	&out) const;
+		virtual void  dumpToTextStream(mrpt::utils::CStream	&out) const;
 
         /** Virtual destructor
           */

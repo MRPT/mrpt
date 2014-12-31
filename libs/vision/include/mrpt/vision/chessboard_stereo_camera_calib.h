@@ -20,8 +20,6 @@ namespace mrpt
 {
 	namespace vision
 	{
-		using namespace mrpt::utils;
-
 		/** \addtogroup chessboard_calib Chessboard calibration
 		  *  \ingroup mrpt_vision_grp
 		  *  @{  */

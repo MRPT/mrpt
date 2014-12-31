@@ -10,14 +10,14 @@
 #include "rawlog-edit-declarations.h"
 
 #include <mrpt/topography.h>
-#include <mrpt/slam/CObservationGPS.h>
-#include <mrpt/slam/CObservationGasSensors.h>
+#include <mrpt/obs/CObservationGPS.h>
+#include <mrpt/obs/CObservationGasSensors.h>
 #include <mrpt/utils/color_maps.h>
 #include <mrpt/math/interp_fit.h>
 
 using namespace mrpt;
 using namespace mrpt::utils;
-using namespace mrpt::slam;
+using namespace mrpt::obs;
 using namespace mrpt::system;
 using namespace mrpt::rawlogtools;
 using namespace mrpt::topography;
@@ -49,8 +49,8 @@ DECLARE_OP_FUNCTION(op_export_gps_gas_kml)
 
 		map<string,TDataPerGPSGAS> m_gps_paths;  // sensorLabel -> data
 
-		mrpt::slam::CObservationGPS* obs;
-		mrpt::slam::CObservationGasSensors* obsGas;		
+		mrpt::obs::CObservationGPS* obs;
+		mrpt::obs::CObservationGasSensors* obsGas;		
 		float gasConcentration;
 		float maxGasValue, minGasValue;
 		bool hasGAS, hasGPS;

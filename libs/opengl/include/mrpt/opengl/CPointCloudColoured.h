@@ -144,7 +144,7 @@ namespace mrpt
 
 			/** Like \a setPoint() but does not check for index out of bounds */
 			inline void setPoint_fast(const size_t i, const float x,const float y, const float z ) {
-				TPointColour &p = m_points[i];
+			 TPointColour &p = m_points[i];
 				p.x=x; p.y=y; p.z=z;
 				markAllPointsAsNew();
 			}
@@ -244,10 +244,8 @@ namespace mrpt
 
 	namespace utils
 	{
-		using namespace mrpt::opengl;
-
 		// Specialization must occur in the same namespace
-		MRPT_DECLARE_TTYPENAME(CPointCloudColoured::TPointColour)
+		MRPT_DECLARE_TTYPENAME_NAMESPACE(CPointCloudColoured::TPointColour, mrpt::opengl)
 	}
 
 	namespace utils

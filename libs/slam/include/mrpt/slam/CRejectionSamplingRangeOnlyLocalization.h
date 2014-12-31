@@ -14,25 +14,22 @@
 #include <mrpt/poses/CPoint2D.h>
 #include <mrpt/bayes/CRejectionSamplingCapable.h>
 #include <mrpt/math/lightweight_geom_data.h>
+#include <mrpt/obs/obs_frwds.h>
 
 #include <mrpt/slam/link_pragmas.h>
 
 namespace mrpt
 {
+	namespace maps { class CLandmarksMap; }
+
 	namespace slam
 	{
-		using namespace mrpt::poses;
-		using namespace mrpt::math;
-
-		class	CLandmarksMap;
-		class   CObservationBeaconRanges;
-
 		/** An implementation of rejection sampling for generating 2D robot pose from range-only measurements within a landmarks (beacons) map.
 		 *    Before calling the method "rejectionSampling" to generate the samples, you must call "setParams".
 		 *    It is assumed a planar scenario, where the robot is at a fixed height (default=0).
 		 * \sa bayes::CRejectionSamplingCapable  \ingroup mrpt_slam_grp 
 		 */
-		class SLAM_IMPEXP CRejectionSamplingRangeOnlyLocalization : public bayes::CRejectionSamplingCapable<poses::CPose2D>
+		class SLAM_IMPEXP CRejectionSamplingRangeOnlyLocalization : public bayes::CRejectionSamplingCapable<mrpt::poses::CPose2D>
 		{
 
 		public:
@@ -54,28 +51,28 @@ namespace mrpt
 			  * \return true if at least ONE beacon has been successfully loaded, false otherwise. In this case do not call "rejectionSampling" or an exception will be launch, since there is no information to generate samples.
 			  */
 			bool setParams(
-				const CLandmarksMap				&beaconsMap,
-				const CObservationBeaconRanges	&observation,
+				const mrpt::maps::CLandmarksMap				&beaconsMap,
+				const mrpt::obs::CObservationBeaconRanges	&observation,
 				float							sigmaRanges,
-				const CPose2D					&oldPose,
+				const mrpt::poses::CPose2D		&oldPose,
 				float							robot_z = 0,
 				bool							autoCheckAngleRanges = true);
 
 		protected:
 			/** Generates one sample, drawing from some proposal distribution.
 			  */
-			void RS_drawFromProposal( CPose2D &outSample );
+			void RS_drawFromProposal( mrpt::poses::CPose2D &outSample );
 
 			/** Returns the NORMALIZED observation likelihood (linear, not exponential!!!) at a given point of the state space (values in the range [0,1]).
 			  */
-			double RS_observationLikelihood( const CPose2D &x);
+			double RS_observationLikelihood( const mrpt::poses::CPose2D &x);
 
 			/** Z coordinate of the robot.
 			  */
 			float		m_z_robot;
 
 			float		m_sigmaRanges;
-			CPose2D		m_oldPose;
+			mrpt::poses::CPose2D		m_oldPose;
 
 			/** The index in "m_dataPerBeacon" used to draw samples (the rest will be used to evaluate the likelihood)
 			  */
@@ -88,8 +85,8 @@ namespace mrpt
 				TDataPerBeacon()  : sensorOnRobot(), beaconPosition(), radiusAtRobotPlane(0),minAngle(0),maxAngle(0)
 				{}
 
-				TPoint3D	sensorOnRobot;
-				TPoint2D	beaconPosition;
+			 mrpt::math::TPoint3D	sensorOnRobot;
+			 mrpt::math::TPoint2D	beaconPosition;
 				float		radiusAtRobotPlane;
 				float		minAngle,maxAngle;
 			};

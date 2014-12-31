@@ -15,7 +15,7 @@
 #include <mrpt/hwdrivers/CSerialPort.h>
 
 #include <mrpt/poses/CPose3D.h>
-#include <mrpt/slam/CObservationIMU.h>
+#include <mrpt/obs/CObservationIMU.h>
 
 namespace mrpt
 {
@@ -81,7 +81,7 @@ namespace mrpt
 			GYRO_MODE		m_mode;
 			bool 						m_firstInteration;
 				        
-			mrpt::slam::CObservationIMUPtr		m_observationGyro;
+			mrpt::obs::CObservationIMUPtr		m_observationGyro;
 
 		public:
 			/** Constructor

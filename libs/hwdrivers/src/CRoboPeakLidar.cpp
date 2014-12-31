@@ -23,7 +23,7 @@ using namespace rp::standalone::rplidar;
 #endif
 
 using namespace mrpt::utils;
-using namespace mrpt::slam;
+using namespace mrpt::obs;
 using namespace mrpt::hwdrivers;
 using namespace mrpt::system;
 using namespace mrpt::opengl;
@@ -63,7 +63,7 @@ void CRoboPeakLidar::disconnect()
 -------------------------------------------------------------*/
 void  CRoboPeakLidar::doProcessSimple(
 		bool							&outThereIsObservation,
-		mrpt::slam::CObservation2DRangeScan	&outObservation,
+		mrpt::obs::CObservation2DRangeScan	&outObservation,
 		bool							&hardwareError )
 {
 #if MRPT_HAS_ROBOPEAK_LIDAR

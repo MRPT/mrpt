@@ -43,10 +43,10 @@
 #include <mrpt/system/CDirectoryExplorer.h>
 #include <mrpt/poses/CPosePDFParticles.h>
 #include <mrpt/poses/CPosePDFGaussian.h>
-#include <mrpt/slam/CRawlog.h>
-#include <mrpt/slam/COccupancyGridMap2D.h>
-#include <mrpt/slam/CSimplePointsMap.h>
-#include <mrpt/slam/CColouredPointsMap.h>
+#include <mrpt/obs/CRawlog.h>
+#include <mrpt/maps/COccupancyGridMap2D.h>
+#include <mrpt/maps/CSimplePointsMap.h>
+#include <mrpt/maps/CColouredPointsMap.h>
 #include <mrpt/slam/CICP.h>
 #include <mrpt/system/datetime.h>
 #include <mrpt/math/ops_matrices.h> // << ops
@@ -122,11 +122,14 @@ void wxStaticBitmapPopup::OnShowPopupMenu(wxMouseEvent &event)
 
 using namespace mrpt;
 using namespace mrpt::slam;
+using namespace mrpt::maps;
+using namespace mrpt::obs;
 using namespace mrpt::opengl;
 using namespace mrpt::system;
 using namespace mrpt::math;
 using namespace mrpt::gui;
 using namespace mrpt::utils;
+using namespace mrpt::poses;
 using namespace mrpt::vision;
 using namespace std;
 
@@ -4184,7 +4187,7 @@ void xRawLogViewerFrame::OnMenuChangePosesBatch(wxCommandEvent& event)
 
 		// make a list  "sensor_label -> sensor_pose" by parsing the ini-file:
 		std::map<std::string,mrpt::poses::CPose3D>	desiredSensorPoses;
-		std::map<std::string, mrpt::slam::CObservationImage > desiredCamParams;
+		std::map<std::string, mrpt::obs::CObservationImage > desiredCamParams;
 
 		vector_string	sections;
 		cfg.getAllSections( sections );
@@ -4291,7 +4294,7 @@ void xRawLogViewerFrame::OnMenuChangePosesBatch(wxCommandEvent& event)
 					}
 
 					// Check for camera params:
-					std::map<std::string, mrpt::slam::CObservationImage >::iterator c= desiredCamParams.find(obs->sensorLabel);
+					std::map<std::string, mrpt::obs::CObservationImage >::iterator c= desiredCamParams.find(obs->sensorLabel);
 					if (c!=desiredCamParams.end())
 					{
 						if (!IS_CLASS(obs,CObservationImage))

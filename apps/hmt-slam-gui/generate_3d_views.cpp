@@ -30,8 +30,10 @@ using namespace std;
 using namespace mrpt;
 using namespace mrpt::hmtslam;
 using namespace mrpt::slam;
+using namespace mrpt::maps;
 using namespace mrpt::poses;
 using namespace mrpt::utils;
+using namespace mrpt::opengl;
 
 void hmt_slam_guiFrame::updateLocalMapView()
 {

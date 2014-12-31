@@ -190,7 +190,7 @@ void  CPointCloud::render_subset(const bool all, const std::vector<size_t>& idxs
    Implements the writing to a CStream capability of
      CSerializable objects
   ---------------------------------------------------------------*/
-void  CPointCloud::writeToStream(CStream &out,int *version) const
+void  CPointCloud::writeToStream(mrpt::utils::CStream &out,int *version) const
 {
 
 	if (version)
@@ -218,7 +218,7 @@ void  CPointCloud::writeToStream(CStream &out,int *version) const
 	Implements the reading from a CStream capability of
 		CSerializable objects
   ---------------------------------------------------------------*/
-void  CPointCloud::readFromStream(CStream &in,int version)
+void  CPointCloud::readFromStream(mrpt::utils::CStream &in,int version)
 {
 	switch(version)
 	{

@@ -9,15 +9,16 @@
 
 #include "maps-precomp.h" // Precomp header
 
-#include <mrpt/slam/COccupancyGridMap2D.h>
-#include <mrpt/slam/CObservation2DRangeScan.h>
-#include <mrpt/slam/CObservationRange.h>
+#include <mrpt/maps/COccupancyGridMap2D.h>
+#include <mrpt/obs/CObservation2DRangeScan.h>
+#include <mrpt/obs/CObservationRange.h>
 #include <mrpt/utils/round.h> // round()
 
 #include <mrpt/random.h>
 
 using namespace mrpt;
-using namespace mrpt::slam;
+using namespace mrpt::maps;
+using namespace mrpt::obs;
 using namespace mrpt::utils;
 using namespace mrpt::random;
 using namespace mrpt::poses;
@@ -37,7 +38,7 @@ using namespace std;
 		noiseStd [IN] The standard deviation of measurement noise. If not desired, set to 0.
   ---------------------------------------------------------------*/
 void  COccupancyGridMap2D::laserScanSimulator(
-		CObservation2DRangeScan	        &inout_Scan,
+		mrpt::obs::CObservation2DRangeScan	        &inout_Scan,
 		const CPose2D					&robotPose,
 		float						    threshold,
 		size_t							N,

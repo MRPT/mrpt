@@ -12,13 +12,15 @@
 
 
 #include <mrpt/slam/CMetricMapBuilderRBPF.h>
-#include <mrpt/slam/CObservationStereoImages.h>
+#include <mrpt/obs/CObservationStereoImages.h>
 #include <mrpt/utils/CEnhancedMetaFile.h>
-#include <mrpt/slam/CActionRobotMovement3D.h>
+#include <mrpt/obs/CActionRobotMovement3D.h>
 #include <mrpt/math/utils.h>
 
 using namespace mrpt;
 using namespace mrpt::slam;
+using namespace mrpt::maps;
+using namespace mrpt::obs;
 using namespace mrpt::utils;
 using namespace mrpt::poses;
 using namespace mrpt::bayes;
@@ -458,7 +460,7 @@ CMetricMapBuilderRBPF::TConstructionOptions::TConstructionOptions() :
 /*---------------------------------------------------------------
 					dumpToTextStream
   ---------------------------------------------------------------*/
-void  CMetricMapBuilderRBPF::TConstructionOptions::dumpToTextStream(CStream	&out) const
+void  CMetricMapBuilderRBPF::TConstructionOptions::dumpToTextStream(mrpt::utils::CStream	&out) const
 {
 	out.printf("\n----------- [CMetricMapBuilderRBPF::TConstructionOptions] ------------ \n\n");
 

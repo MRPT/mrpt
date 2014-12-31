@@ -9,7 +9,7 @@
 
 
 #include <mrpt/slam/CICP.h>
-#include <mrpt/slam/CSimplePointsMap.h>
+#include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/opengl/CAngularObservationMesh.h>
 #include <mrpt/poses/CPosePDF.h>
 #include <mrpt/poses/CPose3DPDF.h>
@@ -24,10 +24,12 @@
 
 using namespace mrpt;
 using namespace mrpt::slam;
+using namespace mrpt::maps;
 using namespace mrpt::opengl;
 using namespace mrpt::utils;
 using namespace mrpt::poses;
 using namespace mrpt::math;
+using namespace mrpt::obs;
 using namespace std;
 
 

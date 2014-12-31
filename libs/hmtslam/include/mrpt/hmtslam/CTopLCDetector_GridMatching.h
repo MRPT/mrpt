@@ -17,8 +17,6 @@ namespace mrpt
 {
 	namespace hmtslam
 	{
-		using namespace mrpt::slam;
-
 		/** \ingroup mrpt_hmtslam_grp */
 		class HMTSLAM_IMPEXP CTopLCDetector_GridMatching : public CTopLCDetectorBase
 		{
@@ -40,7 +38,7 @@ namespace mrpt
 			  * \param out_log_lik The output, a log-likelihood.
 			  * \return NULL, or a PDF of the estimated translation between the two areas (should be a SOG PDF): it's the pose of "refArea", relative to "currentArea".
 			  */
-			CPose3DPDFPtr computeTopologicalObservationModel(
+			mrpt::poses::CPose3DPDFPtr computeTopologicalObservationModel(
 				const THypothesisID		&hypID,
 				const CHMHMapNodePtr	&currentArea,
 				const CHMHMapNodePtr	&refArea,
@@ -52,7 +50,7 @@ namespace mrpt
 			  */
 			void OnNewPose(
 				const TPoseID 			&poseID,
-				const CSensoryFrame		*SF );
+				const mrpt::obs::CSensoryFrame		*SF );
 
 
 			/** Options for a TLC-detector of type gridmap-matching, used from CHMTSLAM 
@@ -75,7 +73,7 @@ namespace mrpt
 
 				/** This method must display clearly all the contents of the structure in textual form, sending it to a CStream.
 				  */
-				void  dumpToTextStream(CStream	&out) const;
+				void  dumpToTextStream(mrpt::utils::CStream	&out) const;
 
 			};
 

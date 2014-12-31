@@ -26,7 +26,9 @@ using namespace std;
 using namespace mrpt;
 using namespace mrpt::opengl;
 using namespace mrpt::gui;
-using namespace mrpt::slam;
+using namespace mrpt::obs;
+using namespace mrpt::maps;
+using namespace mrpt::math;
 
 
 void CDifodoDatasets::loadConfiguration(const utils::CConfigFileBase &ini )

@@ -40,7 +40,7 @@ PbMap::PbMap() :
 /*---------------------------------------------------------------
 						writeToStream
  ---------------------------------------------------------------*/
-void  PbMap::writeToStream(CStream &out, int *out_Version) const
+void  PbMap::writeToStream(mrpt::utils::CStream &out, int *out_Version) const
 {
 //cout << "Write PbMap. Version " << *out_Version << endl;
 	if (out_Version){//cout << "There is version\n";
@@ -63,7 +63,7 @@ void  PbMap::writeToStream(CStream &out, int *out_Version) const
 /*---------------------------------------------------------------
 						readFromStream
  ---------------------------------------------------------------*/
-void  PbMap::readFromStream(CStream &in, int version)
+void  PbMap::readFromStream(mrpt::utils::CStream &in, int version)
 {
 	switch(version)
 	{

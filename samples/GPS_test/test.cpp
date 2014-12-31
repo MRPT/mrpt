@@ -14,7 +14,7 @@
 
 using namespace mrpt;
 using namespace mrpt::utils;
-using namespace mrpt::slam;
+using namespace mrpt::obs;
 using namespace mrpt::system;
 using namespace mrpt::hwdrivers;
 using namespace std;
@@ -59,7 +59,7 @@ void Test_GPS()
 	if (!f) return;
 
 //	bool					thereisData;
-//	mrpt::slam::CObservationGPS	gpsData;
+//	mrpt::obs::CObservationGPS	gpsData;
 
 	CGenericSensor::TListObservations			lstObs;
 	CGenericSensor::TListObservations::iterator 	itObs;

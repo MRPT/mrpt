@@ -24,9 +24,6 @@ namespace mrpt
 	 */
 	namespace topography
 	{
-		using namespace std;
-		using namespace mrpt::utils;
-
 		/** \addtogroup mrpt_topography_grp
 		  *  @{ */
 

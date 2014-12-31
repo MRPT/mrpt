@@ -23,8 +23,6 @@ namespace mrpt
 
   namespace nav
   {
-	  using namespace mrpt::utils;
-
 	/** This is the base class for any user-defined PTG.
 	 *   The class factory interface in CParameterizedTrajectoryGenerator::CreatePTG.
 	 *
@@ -50,10 +48,10 @@ namespace mrpt
 		 *
 		 * See docs of derived classes for additional parameters:
 		 */
-        CParameterizedTrajectoryGenerator(const TParameters<double> &params);
+		CParameterizedTrajectoryGenerator(const mrpt::utils::TParameters<double> &params);
 
 		/** Initialized the collision grid with the given size and resolution. */
-        void initializeCollisionsGrid(float refDistance,float resolution);
+		void initializeCollisionsGrid(float refDistance,float resolution);
 
 	public:
 		/** The class factory for creating a PTG from a list of parameters "params".
@@ -64,18 +62,18 @@ namespace mrpt
 		  *
 		  * \exception std::logic_error On invalid or missing parameters.
 		  */
-		static CParameterizedTrajectoryGenerator * CreatePTG(const TParameters<double> &params);
+		static CParameterizedTrajectoryGenerator * CreatePTG(const mrpt::utils::TParameters<double> &params);
 
 		/** Gets a short textual description of the PTG and its parameters.
 		  */
 		virtual std::string getDescription() const = 0 ;
 
-        /** Destructor */
-        virtual ~CParameterizedTrajectoryGenerator() {  }
+		/** Destructor */
+		virtual ~CParameterizedTrajectoryGenerator() {  }
 
-        /** The main method: solves the diferential equation to generate a family of parametrical trajectories.
-		 */
-        void simulateTrajectories(
+		/** The main method: solves the diferential equation to generate a family of parametrical trajectories.
+			*/
+		void simulateTrajectories(
 				uint16_t	    alphaValuesCount,
 				float			max_time,
 				float			max_dist,
@@ -97,31 +95,31 @@ namespace mrpt
 		  */
 		virtual bool inverseMap_WS2TP(float x, float y, int &out_k, float &out_d, float tolerance_dist = 0.10f) const;
 
-        /** The "lambda" function, see paper for info. It takes the (a,d) pair that is closest to a given location. */
+		/** The "lambda" function, see paper for info. It takes the (a,d) pair that is closest to a given location. */
 		MRPT_DEPRECATED_PRE("Use inverseMap_WS2TP() instead")
-        void lambdaFunction( float x, float y, int &out_k, float &out_d )
+		void lambdaFunction( float x, float y, int &out_k, float &out_d )
 		MRPT_DEPRECATED_POST("Use inverseMap_WS2TP() instead");
 
-        /** Converts an "alpha" value (into the discrete set) into a feasible motion command.
-		 */
-        void directionToMotionCommand( uint16_t k, float &out_v, float &out_w );
+		/** Converts an "alpha" value (into the discrete set) into a feasible motion command.
+			*/
+		void directionToMotionCommand( uint16_t k, float &out_v, float &out_w );
 
-        uint16_t getAlfaValuesCount() const { return m_alphaValuesCount; };
-        size_t getPointsCountInCPath_k(uint16_t k)  const { return CPoints[k].size(); };
+		uint16_t getAlfaValuesCount() const { return m_alphaValuesCount; };
+		size_t getPointsCountInCPath_k(uint16_t k)  const { return CPoints[k].size(); };
 
-        void   getCPointWhen_d_Is ( float d, uint16_t k, float &x, float &y, float &phi, float &t, float *v = NULL, float *w = NULL );
+		void   getCPointWhen_d_Is ( float d, uint16_t k, float &x, float &y, float &phi, float &t, float *v = NULL, float *w = NULL );
 
-        float  GetCPathPoint_x( uint16_t k, int n ) const { return CPoints[k][n].x; }
-        float  GetCPathPoint_y( uint16_t k, int n ) const { return CPoints[k][n].y; }
-        float  GetCPathPoint_phi(uint16_t k, int n ) const { return CPoints[k][n].phi; }
-        float  GetCPathPoint_t( uint16_t k, int n ) const { return CPoints[k][n].t; }
-        float  GetCPathPoint_d( uint16_t k, int n ) const { return CPoints[k][n].dist; }
-        float  GetCPathPoint_v( uint16_t k, int n ) const { return CPoints[k][n].v; }
-        float  GetCPathPoint_w( uint16_t k, int n ) const { return CPoints[k][n].w; }
+		float  GetCPathPoint_x( uint16_t k, int n ) const { return CPoints[k][n].x; }
+		float  GetCPathPoint_y( uint16_t k, int n ) const { return CPoints[k][n].y; }
+		float  GetCPathPoint_phi(uint16_t k, int n ) const { return CPoints[k][n].phi; }
+		float  GetCPathPoint_t( uint16_t k, int n ) const { return CPoints[k][n].t; }
+		float  GetCPathPoint_d( uint16_t k, int n ) const { return CPoints[k][n].dist; }
+		float  GetCPathPoint_v( uint16_t k, int n ) const { return CPoints[k][n].v; }
+		float  GetCPathPoint_w( uint16_t k, int n ) const { return CPoints[k][n].w; }
 
-        float   getMax_V() const { return V_MAX; }
-        float   getMax_W() const { return W_MAX; }
-        float   getMax_V_inTPSpace() const { return maxV_inTPSpace; }
+		float   getMax_V() const { return V_MAX; }
+		float   getMax_W() const { return W_MAX; }
+		float   getMax_V_inTPSpace() const { return maxV_inTPSpace; }
 
 		/** Alfa value for the discrete corresponding value.
 		 * \sa alpha2index
@@ -150,7 +148,7 @@ namespace mrpt
 		  * \note The directory "./reactivenav.logs/PTGs" will be created if doesn't exist.
 		  * \return false on any error writing to disk.
 		  */
-        bool debugDumpInFiles(const int nPT);
+		bool debugDumpInFiles(const int nPT);
 
 		/** Returns the representation of one trajectory of this PTG as a 3D OpenGL object (a simple curved line).
 		  * \param[in] k The 0-based index of the selected trajectory (discrete "alpha" parameter).
@@ -174,7 +172,7 @@ namespace mrpt
 
 		/** An internal class for storing the collision grid  */
 		class NAV_IMPEXP CColisionGrid : public mrpt::utils::CDynamicGrid<TCollisionCell>
-        {
+		{
 		private:
 				CParameterizedTrajectoryGenerator const * m_parent;
 
@@ -187,34 +185,34 @@ namespace mrpt
 				virtual ~CColisionGrid() { }
 
 				bool    saveToFile( mrpt::utils::CStream* fil, const mrpt::math::CPolygon & computed_robotShape );	//!< Save to file, true = OK
-                bool    loadFromFile( mrpt::utils::CStream* fil, const mrpt::math::CPolygon & current_robotShape );	//!< Load from file,  true = OK
+				bool    loadFromFile( mrpt::utils::CStream* fil, const mrpt::math::CPolygon & current_robotShape );	//!< Load from file,  true = OK
 
-                /** For an obstacle (x,y), returns a vector with all the pairs (a,d) such as the robot collides.
-				  */
+				/** For an obstacle (x,y), returns a vector with all the pairs (a,d) such as the robot collides.
+					*/
 				const TCollisionCell & getTPObstacle( const float obsX, const float obsY) const;
 
-                /** Updates the info into a cell: It updates the cell only if the distance d for the path k is lower than the previous value:
+				/** Updates the info into a cell: It updates the cell only if the distance d for the path k is lower than the previous value:
 				  *	\param cellInfo The index of the cell
 				  * \param k The path index (alpha discreet value)
 				  * \param d The distance (in TP-Space, range 0..1) to collision.
 				  */
-                void updateCellInfo( const unsigned int icx, const unsigned int icy, const uint16_t k, const float dist );
+				void updateCellInfo( const unsigned int icx, const unsigned int icy, const uint16_t k, const float dist );
 
-        }; // end of class CColisionGrid
+		}; // end of class CColisionGrid
 
 		/** The collision grid */
 		CColisionGrid	m_collisionGrid;
 
-        // Save/Load from files.
+		// Save/Load from files.
 		bool    SaveColGridsToFile( const std::string &filename, const mrpt::math::CPolygon & computed_robotShape );	// true = OK
-        bool    LoadColGridsFromFile( const std::string &filename, const mrpt::math::CPolygon & current_robotShape ); // true = OK
+		bool    LoadColGridsFromFile( const std::string &filename, const mrpt::math::CPolygon & current_robotShape ); // true = OK
 
 
 		float	refDistance;
 
 		/** The main method to be implemented in derived classes.
 		 */
-        virtual void PTG_Generator( float alpha, float t, float x, float y, float phi, float &v, float &w) = 0;
+		virtual void PTG_Generator( float alpha, float t, float x, float y, float phi, float &v, float &w) = 0;
 
 		/** To be implemented in derived classes:
 		  */
@@ -244,19 +242,19 @@ protected:
 
 		/** This grid will contain indexes data for speeding-up the default, brute-force lambda function.
 		  */
-		CDynamicGrid<TCellForLambdaFunction>	m_lambdaFunctionOptimizer;
+		mrpt::utils::CDynamicGrid<TCellForLambdaFunction>	m_lambdaFunctionOptimizer;
 
 		// Computed from simulations while generating trajectories:
 		float	maxV_inTPSpace;
 
 		/** The number of discrete values for "alpha" between -PI and +PI.
 		  */
-        uint16_t  m_alphaValuesCount;
+		uint16_t  m_alphaValuesCount;
 
 		/** The trajectories in the C-Space:
 		  */
-        struct TCPoint
-        {
+		struct TCPoint
+		{
 			TCPoint(const float	x_,const float	y_,const float	phi_,
 					const float	t_,const float	dist_,
 					const float	v_,const float	w_) :
@@ -264,12 +262,12 @@ protected:
 			{}
 
 			float x, y, phi,t, dist,v,w;
-        };
+		};
 		typedef std::vector<TCPoint> TCPointVector;
 		std::vector<TCPointVector>	CPoints;
 
 		/** Free all the memory buffers */
-        void    FreeMemory();
+		void    FreeMemory();
 
 	}; // end of class
 

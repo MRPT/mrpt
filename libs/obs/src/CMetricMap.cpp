@@ -10,21 +10,22 @@
 #include "obs-precomp.h"   // Precompiled headers
 
 #include <mrpt/utils/CStream.h>
-#include <mrpt/slam/CMetricMap.h>
+#include <mrpt/maps/CMetricMap.h>
 #include <mrpt/poses/CPosePDF.h>
 #include <mrpt/poses/CPoint3D.h>
 #include <mrpt/poses/CPose3D.h>
-#include <mrpt/slam/CSensoryFrame.h>
-#include <mrpt/slam/CSimpleMap.h>
+#include <mrpt/obs/CSensoryFrame.h>
+#include <mrpt/maps/CSimpleMap.h>
 
 #include <mrpt/math/lightweight_geom_data.h>
 
-using namespace mrpt::slam;
+using namespace mrpt::obs;
+using namespace mrpt::maps;
 using namespace mrpt::utils;
 using namespace mrpt::poses;
 using namespace mrpt::math;
 
-IMPLEMENTS_VIRTUAL_SERIALIZABLE(CMetricMap, CSerializable, mrpt::slam)
+IMPLEMENTS_VIRTUAL_SERIALIZABLE(CMetricMap, CSerializable, mrpt::maps)
 
 
 /*---------------------------------------------------------------
@@ -58,7 +59,7 @@ This is automaticed invoking "insertObservation" for each
 observation at the mean 3D robot pose as given by
 the "poses::CPosePDF" in the CSensFrameProbSequence object.
   ---------------------------------------------------------------*/
-void  CMetricMap::loadFromProbabilisticPosesAndObservations(const CSimpleMap &sfSeq )
+void  CMetricMap::loadFromProbabilisticPosesAndObservations(const mrpt::maps::CSimpleMap &sfSeq )
 {
 	CPose3DPDFPtr		posePDF;
 	CSensoryFramePtr	sf;
@@ -140,7 +141,7 @@ bool CMetricMap::canComputeObservationLikelihood( const CObservationPtr &obs ) {
 }
 
 void  CMetricMap::determineMatching2D(
-	const CMetricMap      * otherMap,
+	const mrpt::maps::CMetricMap      * otherMap,
 	const CPose2D         & otherMapPose,
 	TMatchingPairList     & correspondences,
 	const TMatchingParams & params,
@@ -158,7 +159,7 @@ void  CMetricMap::determineMatching2D(
 
 
 void CMetricMap::determineMatching3D(
-	const CMetricMap      * otherMap,
+	const mrpt::maps::CMetricMap      * otherMap,
 	const CPose3D         & otherMapPose,
 	TMatchingPairList     & correspondences,
 	const TMatchingParams & params,
@@ -176,7 +177,7 @@ void CMetricMap::determineMatching3D(
 
 
 float  CMetricMap::compute3DMatchingRatio(
-	const CMetricMap								*otherMap,
+	const mrpt::maps::CMetricMap								*otherMap,
 	const CPose3D							&otherMapPose,
 	float									maxDistForCorr,
 	float									maxMahaDistForCorr

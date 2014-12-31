@@ -9,7 +9,7 @@
 #ifndef mrpt_COpenNI2Generic_H
 #define mrpt_COpenNI2Generic_H
 
-#include <mrpt/slam/CObservation3DRangeScan.h>
+#include <mrpt/obs/CObservation3DRangeScan.h>
 
 #include <mrpt/hwdrivers/link_pragmas.h>
 
@@ -80,7 +80,7 @@ namespace mrpt
 			  * \sa doProcess
 			  */
 			void getNextFrameRGBD(
-				mrpt::slam::CObservation3DRangeScan &out_obs,
+				mrpt::obs::CObservation3DRangeScan &out_obs,
 				bool &there_is_obs,
 				bool &hardware_error ,
 				unsigned sensor_id = 0);

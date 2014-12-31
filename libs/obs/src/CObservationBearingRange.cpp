@@ -10,19 +10,19 @@
 #include "obs-precomp.h"   // Precompiled headers
 
 #include <mrpt/utils/CStream.h>
-#include <mrpt/slam/CObservationBearingRange.h>
+#include <mrpt/obs/CObservationBearingRange.h>
 #include <mrpt/system/os.h>
 #include <mrpt/math/matrix_serialization.h> // for << ops
 #include <mrpt/math/wrap2pi.h>
 #include <set>
 
-using namespace mrpt::slam;
+using namespace mrpt::obs;
 using namespace mrpt::utils;
 using namespace mrpt::poses;
 
 
 // This must be added to any CSerializable class implementation file.
-IMPLEMENTS_SERIALIZABLE(CObservationBearingRange, CObservation,mrpt::slam)
+IMPLEMENTS_SERIALIZABLE(CObservationBearingRange, CObservation,mrpt::obs)
 
 /*---------------------------------------------------------------
  Default constructor.
@@ -44,7 +44,7 @@ CObservationBearingRange::CObservationBearingRange( ) :
 /*---------------------------------------------------------------
   Implements the writing to a CStream capability of CSerializable objects
  ---------------------------------------------------------------*/
-void  CObservationBearingRange::writeToStream(CStream &out, int *version) const
+void  CObservationBearingRange::writeToStream(mrpt::utils::CStream &out, int *version) const
 {
 	if (version)
 		*version = 3;
@@ -95,7 +95,7 @@ void  CObservationBearingRange::writeToStream(CStream &out, int *version) const
 /*---------------------------------------------------------------
   Implements the reading from a CStream capability of CSerializable objects
  ---------------------------------------------------------------*/
-void  CObservationBearingRange::readFromStream(CStream &in, int version)
+void  CObservationBearingRange::readFromStream(mrpt::utils::CStream &in, int version)
 {
 	switch(version)
 	{

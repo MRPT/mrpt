@@ -29,8 +29,6 @@ namespace mrpt
 	  */
 	namespace poses
 	{
-		using mrpt::math::CVectorDouble;
-
 		// For use in some constructors (eg. CPose3D)
 		enum TConstructorFlags_Poses
 		{
@@ -180,9 +178,9 @@ namespace mrpt
 			}
 
 			/** Return the pose or point as a 1xN vector with all the components (see derived classes for each implementation) */
-			inline CVectorDouble getAsVectorVal() const
+			inline mrpt::math::CVectorDouble getAsVectorVal() const
 			{
-				CVectorDouble v;
+				mrpt::math::CVectorDouble v;
 				static_cast<const DERIVEDCLASS*>(this)->getAsVector(v);
 				return v;
 			}

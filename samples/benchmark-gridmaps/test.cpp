@@ -8,14 +8,15 @@
    +---------------------------------------------------------------------------+ */
 
 #include <mrpt/random.h>
-#include <mrpt/slam/CMultiMetricMap.h>
-#include <mrpt/slam/CObservation2DRangeScan.h>
-#include <mrpt/slam/CRawlog.h>
+#include <mrpt/maps/CMultiMetricMap.h>
+#include <mrpt/obs/CObservation2DRangeScan.h>
+#include <mrpt/obs/CRawlog.h>
 #include <mrpt/utils/CConfigFile.h>
 
 using namespace mrpt;
 using namespace mrpt::utils;
-using namespace mrpt::slam;
+using namespace mrpt::maps;
+using namespace mrpt::obs;
 using namespace mrpt::random;
 using namespace std;
 

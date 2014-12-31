@@ -10,7 +10,7 @@
 #define CGridMapAligner_H
 
 #include <mrpt/slam/CMetricMapsAlignmentAlgorithm.h>
-#include <mrpt/slam/CLandmarksMap.h>
+#include <mrpt/maps/CLandmarksMap.h>
 #include <mrpt/utils/CLoadableOptions.h>
 #include <mrpt/utils/TEnumType.h>
 #include <mrpt/poses/CPosePDFSOG.h>
@@ -22,9 +22,6 @@ namespace mrpt
 {
 	namespace slam
 	{
-		using namespace poses;
-		using namespace utils;
-
 		/** A class for aligning two multi-metric maps (with an occupancy grid maps and a points map, at least) based on features extraction and matching.
 		 * The matching pose is returned as a Sum of Gaussians (poses::CPosePDFSOG).
 		 *
@@ -38,24 +35,24 @@ namespace mrpt
 		 * \sa CMetricMapsAlignmentAlgorithm
 		 * \ingroup mrpt_slam_grp
 		 */
-		class SLAM_IMPEXP  CGridMapAligner : public CMetricMapsAlignmentAlgorithm
+		class SLAM_IMPEXP  CGridMapAligner : public mrpt::slam::CMetricMapsAlignmentAlgorithm
 		{
 		private:
 			/** Private member, implements one the algorithms.
 			  */
-			CPosePDFPtr AlignPDF_correlation(
-					const CMetricMap		*m1,
-					const CMetricMap		*m2,
-					const CPosePDFGaussian	&initialEstimationPDF,
+			mrpt::poses::CPosePDFPtr AlignPDF_correlation(
+					const mrpt::maps::CMetricMap		*m1,
+					const mrpt::maps::CMetricMap		*m2,
+					const mrpt::poses::CPosePDFGaussian	&initialEstimationPDF,
 					float					*runningTime = NULL,
 					void					*info = NULL );
 
 			/** Private member, implements both, the "robustMatch" and the newer "modifiedRANSAC" algorithms.
 			  */
-			CPosePDFPtr AlignPDF_robustMatch(
-					const CMetricMap		*m1,
-					const CMetricMap		*m2,
-					const CPosePDFGaussian	&initialEstimationPDF,
+			mrpt::poses::CPosePDFPtr AlignPDF_robustMatch(
+					const mrpt::maps::CMetricMap		*m1,
+					const mrpt::maps::CMetricMap		*m2,
+					const mrpt::poses::CPosePDFGaussian	&initialEstimationPDF,
 					float					*runningTime = NULL,
 					void					*info = NULL );
 
@@ -92,7 +89,7 @@ namespace mrpt
 
 				/** See utils::CLoadableOptions
 				  */
-				void  dumpToTextStream(CStream	&out) const;
+				void  dumpToTextStream(mrpt::utils::CStream	&out) const;
 
 
 				TAlignerMethod		methodSelection;		//!< The aligner method:
@@ -152,7 +149,7 @@ namespace mrpt
 
 				/** The "brute" estimation from using all the available correspondences, provided just for comparison purposes (it is not the robust estimation, available as the result of the Align method).
 				  */
-				CPose2D			noRobustEstimation;
+				mrpt::poses::CPose2D			noRobustEstimation;
 
 				/** The different SOG densities at different steps of the algorithm:
 				  *   - sog1 : Directly from the matching of features
@@ -162,10 +159,10 @@ namespace mrpt
 				  *   - The final sog is the merge of sog3.
 				  *
 				  */
-				CPosePDFSOGPtr	sog1,sog2,sog3;
+				mrpt::poses::CPosePDFSOGPtr	sog1,sog2,sog3;
 
 				/** The landmarks of each map (the indices of these landmarks correspond to those in "correspondences")  */
-				CLandmarksMapPtr	landmarks_map1, landmarks_map2;
+				mrpt::maps::CLandmarksMapPtr	landmarks_map1, landmarks_map2;
 
 				/** All the found correspondences (not consistent) */
 				mrpt::utils::TMatchingPairList	correspondences;
@@ -193,8 +190,8 @@ namespace mrpt
 			 *
 			 *  NOTE: This method can be configurated with "options"
 			 *
-			 * \param m1			[IN] The first map (Must be a mrpt::slam::CMultiMetricMap class)
-			 * \param m2			[IN] The second map (Must be a mrpt::slam::CMultiMetricMap class)
+			 * \param m1			[IN] The first map (Must be a mrpt::maps::CMultiMetricMap class)
+			 * \param m2			[IN] The second map (Must be a mrpt::maps::CMultiMetricMap class)
 			 * \param initialEstimationPDF	[IN] (IGNORED IN THIS ALGORITHM!)
 			 * \param runningTime	[OUT] A pointer to a container for obtaining the algorithm running time in seconds, or NULL if you don't need it.
 			 * \param info			[OUT] A pointer to a CAlignerFromMotionDraws::TReturnInfo struct, or NULL if result information are not required.
@@ -206,20 +203,20 @@ namespace mrpt
 			 * \return A smart pointer to the output estimated pose PDF.
 			 * \sa CPointsMapAlignmentAlgorithm, options
 			 */
-			CPosePDFPtr AlignPDF(
-					const CMetricMap		*m1,
-					const CMetricMap		*m2,
-					const CPosePDFGaussian	&initialEstimationPDF,
+			mrpt::poses::CPosePDFPtr AlignPDF(
+					const mrpt::maps::CMetricMap		*m1,
+					const mrpt::maps::CMetricMap		*m2,
+					const mrpt::poses::CPosePDFGaussian	&initialEstimationPDF,
 					float					*runningTime = NULL,
 
 					void					*info = NULL );
 
 
 			/** Not applicable in this class, will launch an exception. */
-			CPose3DPDFPtr Align3DPDF(
-					const CMetricMap		*m1,
-					const CMetricMap		*m2,
-					const CPose3DPDFGaussian	&initialEstimationPDF,
+			mrpt::poses::CPose3DPDFPtr Align3DPDF(
+					const mrpt::maps::CMetricMap		*m1,
+					const mrpt::maps::CMetricMap		*m2,
+					const mrpt::poses::CPose3DPDFGaussian	&initialEstimationPDF,
 					float					*runningTime = NULL,
 					void					*info = NULL );
 			

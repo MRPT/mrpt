@@ -12,7 +12,7 @@
 #include <mrpt/utils/round.h> // round()
 
 namespace mrpt {
-namespace slam {
+namespace obs {
 namespace detail {
 	// Auxiliary functions which implement SSE-optimized proyection of 3D point cloud:
 	template <class POINTMAP> void do_project_3d_pointcloud(const int H,const int W,const float *kys,const float *kzs,const mrpt::math::CMatrix &rangeImage, mrpt::utils::PointCloudAdapter<POINTMAP> &pca);
@@ -154,11 +154,11 @@ namespace detail {
 
 			// ...precompute the inverse of the pose transformation out of the loop,
 			//  store as a 4x4 homogeneous matrix to exploit SSE optimizations below:
-			CMatrixFixedNumeric<float,4,4> T_inv;
+		 mrpt::math::CMatrixFixedNumeric<float,4,4> T_inv;
 			if (!isDirectCorresp)
 			{
-				CMatrixFixedNumeric<double,3,3> R_inv;
-				CMatrixFixedNumeric<double,3,1> t_inv;
+			 mrpt::math::CMatrixFixedNumeric<double,3,3> R_inv;
+			 mrpt::math::CMatrixFixedNumeric<double,3,1> t_inv;
 				mrpt::math::homogeneousMatrixInverse(
 					src_obs.relativePoseIntensityWRTDepth.getRotationMatrix(),src_obs.relativePoseIntensityWRTDepth.m_coords,
 					R_inv,t_inv);
@@ -236,9 +236,9 @@ namespace detail {
 			if (takeIntoAccountSensorPoseOnRobot)
 				transf_to_apply = src_obs.sensorPose;
 			if (robotPoseInTheWorld)
-				transf_to_apply.composeFrom(*robotPoseInTheWorld, CPose3D(transf_to_apply));
+				transf_to_apply.composeFrom(*robotPoseInTheWorld, mrpt::poses::CPose3D(transf_to_apply));
 
-			const CMatrixFixedNumeric<float,4,4> HM = transf_to_apply.getHomogeneousMatrixVal().cast<float>();
+			const mrpt::math::CMatrixFixedNumeric<float,4,4> HM = transf_to_apply.getHomogeneousMatrixVal().cast<float>();
 			Eigen::Matrix<float,4,1>  pt, pt_transf;
 			pt[3]=1;
 

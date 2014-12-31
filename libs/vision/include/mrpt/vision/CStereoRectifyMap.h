@@ -11,7 +11,7 @@
 
 #include <mrpt/utils/TStereoCamera.h>
 #include <mrpt/utils/CImage.h>
-#include <mrpt/slam/CObservationStereoImages.h>
+#include <mrpt/obs/CObservationStereoImages.h>
 #include <mrpt/poses/CPose3DQuat.h>
 
 #include <mrpt/vision/link_pragmas.h>
@@ -24,7 +24,7 @@ namespace mrpt
 		  *  The rectify maps are cached internally and only computed once for the camera parameters.
 		  * The stereo camera calibration must be supplied in a mrpt::util::TStereoCamera structure
 		  *  (which provides method for loading from a plain text config file) or directly from the
-		  *  parameters of a mrpt::slam::CObservationStereoImages object.
+		  *  parameters of a mrpt::obs::CObservationStereoImages object.
 		  *
 		  * Remember that the rectified images have a different set of intrinsic parameters than the
 		  *  original images, which can be retrieved with \a getRectifiedImageParams()
@@ -34,7 +34,7 @@ namespace mrpt
 		  *  Refer to the program stereo-calib-gui for a tool that generates the required stereo camera parameters
 		  *  from a set of stereo images of a checkerboard.
 		  *
-		  *  Example of usage with mrpt::slam::CObservationStereoImages:
+		  *  Example of usage with mrpt::obs::CObservationStereoImages:
 		  *
 		  * \code
 		  *   CStereoRectifyMap   rectify_map;
@@ -43,7 +43,7 @@ namespace mrpt
 		  *   // rectify_map.enableBothCentersCoincide(...);
 		  *
 		  *   while (true) {
-		  *     mrpt::slam::CObservationStereoImagesPtr obs_stereo = ... // Grab stereo observation from wherever
+		  *     mrpt::obs::CObservationStereoImagesPtr obs_stereo = ... // Grab stereo observation from wherever
 		  *
 		  *     // Only once, construct the rectification maps:
 		  *     if (!rectify_map.isSet())
@@ -57,7 +57,7 @@ namespace mrpt
 		  *
 		  *  Read also the tutorial page online: http://www.mrpt.org/Rectifying_stereo_images
 		  *
-		  * \sa CUndistortMap, mrpt::slam::CObservationStereoImages, mrpt::utils::TCamera, the application <a href="http://www.mrpt.org/Application:camera-calib" >camera-calib</a> for calibrating a camera.
+		  * \sa CUndistortMap, mrpt::obs::CObservationStereoImages, mrpt::utils::TCamera, the application <a href="http://www.mrpt.org/Application:camera-calib" >camera-calib</a> for calibrating a camera.
 		  *
 		  * \note This class provides a uniform wrap over different OpenCV versions. The "alpha" parameter is ignored if built against OpenCV 2.0.X
 		  *
@@ -83,7 +83,7 @@ namespace mrpt
 			void setFromCamParams(const mrpt::utils::TStereoCamera &params);
 
 			/** A wrapper to \a setFromCamParams() which takes the parameters from an stereo observation object */
-			void setFromCamParams(const mrpt::slam::CObservationStereoImages &stereo_obs)
+			void setFromCamParams(const mrpt::obs::CObservationStereoImages &stereo_obs)
 			{
 				mrpt::utils::TStereoCamera params;
 				stereo_obs.getStereoCameraParams(params);
@@ -182,17 +182,17 @@ namespace mrpt
 				mrpt::utils::CImage &right_image,
 				const bool use_internal_mem_cache = true ) const;
 
-			/** Overloaded version for in-place rectification of image pairs stored in a mrpt::slam::CObservationStereoImages.
+			/** Overloaded version for in-place rectification of image pairs stored in a mrpt::obs::CObservationStereoImages.
 			  *  Upon return, the new camera intrinsic parameters will be already stored in the observation object.
 			  * If \a use_internal_mem_cache is set to \a true (recommended), will reuse over and over again the same
 			  * auxiliary images (kept internally to this object) needed for in-place rectification.
 			  * The only reason not to enable this cache is when multiple threads can invoke this method simultaneously.
 			  * \note This method uses the left & right camera rotations computed by the rectification map to update 
-			  *         mrpt::slam::CObservationStereoImages::cameraPose (left camera wrt the robot frame) and 
-			  *         mrpt::slam::CObservationStereoImages::rightCameraPose (right wrt left camera).
+			  *         mrpt::obs::CObservationStereoImages::cameraPose (left camera wrt the robot frame) and 
+			  *         mrpt::obs::CObservationStereoImages::rightCameraPose (right wrt left camera).
 			  */
 			void rectify(
-				mrpt::slam::CObservationStereoImages & stereo_image_observation,
+				mrpt::obs::CObservationStereoImages & stereo_image_observation,
 				const bool use_internal_mem_cache = true ) const;
 
 			/** Just like rectify() but directly works with OpenCV's "IplImage*", which must be passed as "void*" to avoid header dependencies

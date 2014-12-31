@@ -521,7 +521,7 @@ unsigned char*  CImage::get_unsafe(
 /*---------------------------------------------------------------
   Implements the writing to a CStream capability of CSerializable objects
  ---------------------------------------------------------------*/
-void  CImage::writeToStream(CStream &out, int *version) const
+void  CImage::writeToStream(mrpt::utils::CStream &out, int *version) const
 {
 #if !MRPT_HAS_OPENCV
 	if (version)
@@ -644,7 +644,7 @@ void  CImage::writeToStream(CStream &out, int *version) const
 /*---------------------------------------------------------------
   Implements the reading from a CStream capability of CSerializable objects
  ---------------------------------------------------------------*/
-void  CImage::readFromStream(CStream &in, int version)
+void  CImage::readFromStream(mrpt::utils::CStream &in, int version)
 {
 #if !MRPT_HAS_OPENCV
 	if (version==100)

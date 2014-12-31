@@ -10,8 +10,8 @@
 #define CSwissRanger3DCamera_H
 
 #include <mrpt/hwdrivers/CGenericSensor.h>
-#include <mrpt/slam/CObservationImage.h>
-#include <mrpt/slam/CObservation3DRangeScan.h>
+#include <mrpt/obs/CObservationImage.h>
+#include <mrpt/obs/CObservation3DRangeScan.h>
 
 #include <mrpt/gui/CDisplayWindow.h>
 
@@ -109,7 +109,7 @@ namespace mrpt
 			  *
 			  * \sa doProcess
 			  */
-			void getNextObservation( mrpt::slam::CObservation3DRangeScan &out_obs, bool &there_is_obs, bool &hardware_error );
+			void getNextObservation( mrpt::obs::CObservation3DRangeScan &out_obs, bool &there_is_obs, bool &hardware_error );
 
 
 			bool open(); //!< return false on error - Called automatically from initialize(), no need normally for the user to call this.
