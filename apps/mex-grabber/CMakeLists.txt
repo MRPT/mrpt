@@ -33,7 +33,7 @@ TARGET_LINK_LIBRARIES(${TMP_TARGET_NAME} ${MATLAB_LIBRARIES} )
 # Dependencies on MRPT libraries:
 #  Just mention the top-level dependency, the rest will be detected automatically,
 #  and all the needed #include<> dirs added (see the script DeclareAppDependencies.cmake for further details)
-DeclareAppDependencies(${TMP_TARGET_NAME} mrpt-hwdrivers mrpt-obs)
+DeclareAppDependencies(${TMP_TARGET_NAME} mrpt-hwdrivers mrpt-obs mrpt-mexplus)
 
 # ---------------------------------------------
 # MEX LIBRARY:
@@ -70,7 +70,7 @@ endif(WIN32)
 
 # TODO: How should these mex libraries be declared?
 DeclareAppForInstall(${TMP_MEX_NAME})
-DeclareAppDependencies(${TMP_MEX_NAME} mrpt-hwdrivers mrpt-obs)
+DeclareAppDependencies(${TMP_MEX_NAME} mrpt-hwdrivers mrpt-obs mrpt-mexplus)
 
 
 

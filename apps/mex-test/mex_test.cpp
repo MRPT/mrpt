@@ -20,7 +20,7 @@
 // Matlab MEX interface headers
 //#include <mex.h>
 //#include <matrix.h>
-#include <mexplus.h>
+#include <mrpt/mexplus.h>
 
 using namespace mrpt;
 using namespace mrpt::system;
