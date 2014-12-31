@@ -253,6 +253,8 @@ include(cmakemodules/script_xsens.cmake REQUIRED)      # XSens Motion trackers /
 include(cmakemodules/script_flycapture2.cmake REQUIRED)# Check for PointGreyResearch (PGR) FlyCapture2 library
 include(cmakemodules/script_triclops.cmake REQUIRED)	# Check for PointGreyResearch (PGR) Triclops library
 include(cmakemodules/script_duo3d.cmake REQUIRED)		# Support for DUO3D Camera
+include(cmakemodules/script_matlab.cmake REQUIRED)	# Support for Matlab MEX functions generation
+
 # ---------------------------------------------------------------------------
 #			OPTIONS
 #The options for the user when using "cmakesetup" or "ccmake":
