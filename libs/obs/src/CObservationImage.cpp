@@ -15,13 +15,6 @@
 
 #include <iostream>
 
-#define MRPT_HAS_MEX 0
-#if MRPT_HAS_MEX
-MRPT_TODO("Change to relative path adding Matlab to libs includes")
-#include </usr/local/MATLAB/R2014b/extern/include/mex.h>
-#include </usr/local/MATLAB/R2014b/extern/include/matrix.h>
-#endif
-
 using namespace mrpt::slam;
 using namespace mrpt::utils;
 using namespace mrpt::math;
@@ -120,6 +113,23 @@ void  CObservationImage::readFromStream(CStream &in, int version)
 	};
 
 }
+
+/*---------------------------------------------------------------
+  Implements the writing to a mxArray for Matlab
+ ---------------------------------------------------------------*/
+#if MRPT_HAS_MATLAB
+mxArray* CObservationImage::writeToMatlab() const
+{
+//    MRPT_TODO("TODO writeToMatlab in CImage")
+    // MxArray struct_array( MxArray::Struct(0,NULL,1,copy_of_global_list_obs.size()) );
+    //    struct_array.set("field1", 12, 0);
+    //    struct_array.set("field2", "text value.", 1);
+    //    struct_array.set("field3", vector<double>(4, 0), 2);
+    //    plhs[0] = struct_array.release(); // struct('field1', 12, ...)
+
+    return this->image.writeToMatlab();
+}
+#endif
 
 /*---------------------------------------------------------------
 						getRectifiedImage
