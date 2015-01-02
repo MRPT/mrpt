@@ -32,6 +32,7 @@
 #include <map>
 //#include <mexplus/mxarray.h>
 #include "mxarray.h"
+//#include "mxarray_extra.h" // Added for extra methods included
 #include <sstream>
 #include <stdarg.h>
 
@@ -134,7 +135,7 @@ public:
     for (entry = definitions_.begin(); entry != definitions_.end(); ++entry)
       if (!parseDefinition(nrhs, prhs, &entry->second))
         delete_positions.push_back(entry);
-    for (int i = 0; i < delete_positions.size(); ++i)
+    for (size_t i = 0; i < delete_positions.size(); ++i)
       definitions_.erase(delete_positions[i]);
     if (definitions_.empty())
       mexErrMsgIdAndTxt("mexplus:arguments:error",
@@ -211,7 +212,7 @@ private:
   }
   /** Try to parse one definition or return false on failure.
    */
-  bool parseDefinition(int nrhs,
+  bool parseDefinition(size_t nrhs,
                        const mxArray* prhs[],
                        Definition* definition) {
     std::stringstream message;
@@ -221,7 +222,7 @@ private:
       error_message_.assign(message.str());
       return false;
     }
-    int index = 0;
+    size_t index = 0;
     for (; index < definition->mandatories.size(); ++index)
       definition->mandatories[index] = prhs[index];
     for (; index < nrhs; ++index) {
@@ -368,7 +369,7 @@ public:
 private:
   /** Number of output arguments.
    */
-  int nlhs_;
+  size_t nlhs_;
   /** Output argument array.
    */
   mxArray** plhs_;
