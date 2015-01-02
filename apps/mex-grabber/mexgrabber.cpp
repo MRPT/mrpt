@@ -35,16 +35,6 @@
 // Matlab MEX interface headers
 #include <mrpt/mexplus.h>
 
-MRPT_TODO("Remove dependency on OpenCV in this app")
-#include <opencv2/core.hpp>
-#include <opencv2/core/types_c.h>
-#include <opencv2/core/core_c.h>
-#include <mrpt/slam/CObservationImage.h>
-
-#ifdef RAWLOGGRABBER_PLUGIN
-#	include "rawloggrabber_plugin.h"
-#endif
-
 using namespace mrpt;
 using namespace mrpt::system;
 using namespace mrpt::hwdrivers;
@@ -74,151 +64,19 @@ string 		rawlog_ext_imgs_dir;		// Directory where to save externally stored imag
 // Thread handlers vector stored as global (persistent MEX variables)
 vector<TThreadHandle> lstThreads;
 
+// Configuration variables
+MRPT_TODO("Set as variable controlled from Matlab")
+size_t max_num_obs = 50;
+
 /* Important:
  * All global variables will be stored between MEX calls,
  * and can be used by running threads backstage. */
-
-// TEMPORAL:
-// Add cv::Mat method
-namespace mexplus {
-/** std::map wrapper with one-line initialization and lookup method.
- * Initialization
- * @code
- * const ConstMap<std::string,int> BorderType = ConstMap<std::string,int>
- *     ("Replicate",  cv::BORDER_REPLICATE)
- *     ("Constant",   cv::BORDER_CONSTANT)
- *     ("Reflect",    cv::BORDER_REFLECT);
- * @endcode
- * Lookup
- * @code
- * BorderType["Constant"] // => cv::BORDER_CONSTANT
- * @endcode
- */
-template <typename T, typename U>
-class ConstMap
-{
-  public:
-    /// Constructor with a single key-value pair
-    ConstMap(const T& key, const U& val)
-    {
-        m_[key] = val;
-    }
-    /// Consecutive insertion operator
-    ConstMap<T, U>& operator()(const T& key, const U& val)
-    {
-        m_[key] = val;
-        return *this;
-    }
-    /// Implicit converter to std::map
-    operator std::map<T, U>() { return m_; }
-    /// Lookup operator; fail if not found
-    U operator [](const T& key) const
-    {
-        typename std::map<T,U>::const_iterator it = m_.find(key);
-        if (it==m_.end())
-            mexErrMsgIdAndTxt("mexopencv:error", "Value not found");
-        return (*it).second;
-    }
-  private:
-    std::map<T, U> m_;
-};
-
-/** Translates data type definition used in Matlab to that of OpenCV.
- * @param depth data depth of opencv's Mat class. e.g., CV_32F.
- * @return data type of matlab's mxArray. e.g., mxDOUBLE_CLASS.
- */
-const ConstMap<int,mxClassID> ClassIDOf = ConstMap<int,mxClassID>
-    (CV_64F,    mxDOUBLE_CLASS)
-    (CV_32F,    mxSINGLE_CLASS)
-    (CV_8S,     mxINT8_CLASS)
-    (CV_8U,     mxUINT8_CLASS)
-    (CV_16S,    mxINT16_CLASS)
-    (CV_16U,    mxUINT16_CLASS)
-    (CV_32S,    mxINT32_CLASS);
-
-/** Translates data type definition used in OpenCV to that of Matlab.
- * @param classid data type of matlab's mxArray. e.g., mxDOUBLE_CLASS.
- * @return opencv's data type. e.g., CV_8U.
- */
-const ConstMap<mxClassID, int> DepthOf = ConstMap<mxClassID, int>
-    (mxDOUBLE_CLASS,   CV_64F)
-    (mxSINGLE_CLASS,   CV_32F)
-    (mxINT8_CLASS,     CV_8S)
-    (mxUINT8_CLASS,    CV_8U)
-    (mxINT16_CLASS,    CV_16S)
-    (mxUINT16_CLASS,   CV_16U)
-    (mxINT32_CLASS,    CV_32S)
-    (mxUINT32_CLASS,   CV_32S)
-    (mxLOGICAL_CLASS,  CV_8U);
-
-template <>
-mxArray* MxArray::from(const cv::Mat& mat)
-{
-    mxArray* p_; // Create pointer
-    if (mat.empty())
-    {
-        p_ = mxCreateNumericArray(0, 0, mxDOUBLE_CLASS, mxREAL);
-        if (!p_)
-            mexErrMsgIdAndTxt("mexopencv:error", "Allocation error");
-        return p_;
-    }
-    // Optional arguments:
-    mxClassID classid = mxUNKNOWN_CLASS;
-    bool transpose = true;
-
-    cv::Mat input = (mat.dims == 2 && transpose) ? mat.t() : mat;
-    // Create a new mxArray.
-    const int nchannels = input.channels();
-    const int* dims_ = input.size;
-    std::vector<mwSize> d(dims_, dims_ + input.dims);
-    d.push_back(nchannels);
-    classid = (classid == mxUNKNOWN_CLASS)
-        ? ClassIDOf[input.depth()] : classid;
-    std::swap(d[0], d[1]);
-    if (classid == mxLOGICAL_CLASS)
-    {
-        // OpenCV's logical true is any nonzero while matlab's true is 1.
-        cv::compare(input, 0, input, cv::CMP_NE);
-        input.setTo(1, input);
-        p_ = mxCreateLogicalArray(d.size(), &d[0]);
-    }
-    else {
-        p_ = mxCreateNumericArray(d.size(), &d[0], classid, mxREAL);
-    }
-    if (!p_)
-        mexErrMsgIdAndTxt("mexopencv:error", "Allocation error");
-    // Copy each channel.
-    std::vector<cv::Mat> channels;
-    split(input, channels);
-    std::vector<mwSize> si(d.size(), 0); // subscript index.
-    int type = CV_MAKETYPE(DepthOf[classid], 1); // destination type.
-    for (int i = 0; i < nchannels; ++i)
-    {
-        si[si.size() - 1] = i; // last dim is a channel index.
-
-        mwIndex subs_si = mxCalcSingleSubscript(p_, si.size(), &si[0]);
-//        void *ptr = reinterpret_cast<void*>(
-//                reinterpret_cast<size_t>(mxGetData(p_)) +
-//                mxGetElementSize(p_) * subs(si));
-        void *ptr = reinterpret_cast<void*>(
-                reinterpret_cast<size_t>(mxGetData(p_)) +
-                mxGetElementSize(p_) * subs_si);
-        cv::Mat m(input.dims, dims_, type, ptr);
-        //channels[i].convertTo(m, type); // Write to mxArray through m.
-        // Swap R and B channels
-        MRPT_TODO("Do in other place where it is more clear")
-        channels[nchannels-1-i].convertTo(m, type); // Write to mxArray through m.
-    }
-    return p_;
-}
-
-} // namespace mexplus
 
 namespace {
 // Defines MEX API for new.
 MEX_DEFINE(new) (int nlhs, mxArray* plhs[],
                  int nrhs, const mxArray* prhs[]) {
-    printf(" rawlog-grabber - Part of the MRPT\n");
+    printf(" mex-grabber - Part of the MRPT\n");
     printf(" MRPT C++ Library: %s - BUILD DATE %s\n", MRPT_getVersion().c_str(), MRPT_getCompilationDate().c_str());
     printf("-------------------------------------------------------------------\n");
 
@@ -334,47 +192,18 @@ MEX_DEFINE(read) (int nlhs, mxArray* plhs[],
         }
     }	// End of cs lock
 
-    // Read from list of observations to mxArray struct array
-    MxArray struct_array( MxArray::Struct(0,NULL,1,copy_of_global_list_obs.size()) );
-    //set(const std::string& field, const T& value, mwIndex index = 0)
-//    struct_array.set("field1", 12, 0);
-//    struct_array.set("field2", "text value.", 1);
-//    struct_array.set("field3", vector<double>(4, 0), 2);
-//    plhs[0] = struct_array.release(); // struct('field1', 12, ...)
-
-    int index = 0;
-    for (CGenericSensor::TListObservations::iterator it=copy_of_global_list_obs.begin();it!=copy_of_global_list_obs.end();++it)
+    // Read from list of observations to mxArray cell array (store any kind of objects)
+    MxArray cell_obs( MxArray::Cell(1, copy_of_global_list_obs.size()) );
+    size_t index = 0;
+    for (CGenericSensor::TListObservations::iterator it=copy_of_global_list_obs.begin(); it!=copy_of_global_list_obs.end();++it)
     {
-        CSerializablePtr obj;
-        obj = (*it).second;
-        if( IS_CLASS(obj, CObservationImage) )
-        {
-            CObservationImagePtr obs = CObservationImagePtr(obj);
-
-            // Both core/core_c.h and core/types_c.h have been included
-            // to use cvarrToMat and IplImage, respectively
-            MRPT_TODO("Bug when applied in second round!")
-            cv::Mat cvImg = cv::cvarrToMat( obs->image.getAs<IplImage>() );
-
-            struct_array.set("image", MxArray::from( cvImg ), index);
-            index++;
-        }
-        else
-            printf("Unrecognized observation class\n");
-
-        //out_file << *(it->second);
-//        cout << "Write here output structs for Matlab in mxArray plhs" << endl;
-//        const char *className = it->second->GetRuntimeClass()->className;
-//        cout << "The observation class is " << className << endl;
+        MRPT_TODO("Bug when applied in second round! No image is stored!?")
+        cell_obs.set( index, it->second->writeToMatlab() );
+        index++;
     }
 
     // Returns created struct
-    output.set(0, struct_array.release());
-
-    if (!copy_of_global_list_obs.empty())
-    {
-        cout << "[" << dateTimeToString(now()) << "] Saved " << copy_of_global_list_obs.size() << " objects." << endl;
-    }
+    output.set(0, cell_obs.release());
 
     // No need to sleep, since this function only applies when user requested from Matlab
 } // End of "read" method
@@ -448,7 +277,9 @@ void SensorThread(TThreadParams params)
 
             {
                 synch::CCriticalSectionLocker	lock (&cs_global_list_obs);
-                global_list_obs.insert( lstObjs.begin(), lstObjs.end() );
+                // Control maximum number of stored observations to prevent excesive growth of list between calls
+                if ( global_list_obs.size() < 2 * max_num_obs ) // .size() is returning 2 countings for each pair
+                    global_list_obs.insert( lstObjs.begin(), lstObjs.end() );
             }
 
             lstObjs.clear();
