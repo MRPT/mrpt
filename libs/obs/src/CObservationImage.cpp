@@ -120,14 +120,14 @@ void  CObservationImage::readFromStream(CStream &in, int version)
 #if MRPT_HAS_MATLAB
 mxArray* CObservationImage::writeToMatlab() const
 {
-//    MRPT_TODO("TODO writeToMatlab in CImage")
-    // MxArray struct_array( MxArray::Struct(0,NULL,1,copy_of_global_list_obs.size()) );
-    //    struct_array.set("field1", 12, 0);
-    //    struct_array.set("field2", "text value.", 1);
-    //    struct_array.set("field3", vector<double>(4, 0), 2);
-    //    plhs[0] = struct_array.release(); // struct('field1', 12, ...)
+    const char* fields[] = {"ts","image","pose","params"};
+    mexplus::MxArray obs_struct( mexplus::MxArray::Struct(4,fields) );
 
-    return this->image.writeToMatlab();
+    // Timestamp must be set outside (from caller function)
+    obs_struct.set("image", this->image.writeToMatlab());
+    obs_struct.set("pose", this->cameraPose.writeToMatlab());
+    obs_struct.set("params", this->cameraParams.writeToMatlab());
+    return obs_struct.release();
 }
 #endif
 
