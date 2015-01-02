@@ -9,4 +9,7 @@
 #include "mexplus/arguments.h"
 #include "mexplus/dispatch.h"
 
+// Redefine printf to avoid incompatibilities with the rest of MRPT libraries
+#undef printf
+
 #endif // _mrpt_mexplus_H
