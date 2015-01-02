@@ -1,6 +1,9 @@
 #---------------------------------------------
 # Macro declared in "DeclareMRPTLib.cmake":
 #---------------------------------------------
+# Set OFF as default value for BUILD_mrpt-mexplus
+set(DEFAULT_BUILD_mrpt-mexplus "OFF")
+
 define_mrpt_lib_header_only(
 	# Lib name
         mexplus
@@ -9,6 +12,5 @@ define_mrpt_lib_header_only(
 	)
 
 IF(BUILD_mrpt-mexplus)
-    INCLUDE_DIRECTORIES("${MRPT_LIBS_ROOT}/mexplus/include")
-    message("mexplus include directories is: ${MRPT_LIBS_ROOT}/mexplus/include")
+
 ENDIF(BUILD_mrpt-mexplus)

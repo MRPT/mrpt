@@ -6,13 +6,13 @@
 #  MATLAB_MX_LIBRARY:  path to libmx
 
 SET(MATLAB_FOUND 0)
-IF( "${MATLAB_ROOT}" STREQUAL "" )
+IF( "${MATLAB_ROOT}" STREQUAL "" OR "${MATLAB_ROOT}" STREQUAL "" )
     MESSAGE(STATUS "MATLAB_ROOT environment variable not set." )
     MESSAGE(STATUS "In Linux this can be done in your user .bashrc file by appending the corresponding line, e.g:" )
     MESSAGE(STATUS "export MATLAB_ROOT=/usr/local/MATLAB/R2012b" )
     MESSAGE(STATUS "In Windows this can be done by adding system variable, e.g:" )
     MESSAGE(STATUS "MATLAB_ROOT=D:\\Program Files\\MATLAB\\R2011a" )
-ELSE("${MATLAB_ROOT}" STREQUAL "" )
+ELSE( "${MATLAB_ROOT}" STREQUAL "" OR "${MATLAB_ROOT}" STREQUAL "" )
 
         FIND_PATH(MATLAB_INCLUDE_DIR mex.h
                   ${MATLAB_ROOT}/extern/include)
@@ -29,9 +29,7 @@ ELSE("${MATLAB_ROOT}" STREQUAL "" )
                       PATHS ${MATLAB_ROOT}/bin ${MATLAB_ROOT}/extern/lib 
                       PATH_SUFFIXES glnxa64 glnx86 win64/microsoft win32/microsoft)
 
-    MESSAGE (STATUS "MATLAB_ROOT: ${MATLAB_ROOT}")
-
-ENDIF("${MATLAB_ROOT}" STREQUAL "" )
+ENDIF( "${MATLAB_ROOT}" STREQUAL "" OR "${MATLAB_ROOT}" STREQUAL "" )
 
 # This is common to UNIX and Win32:
 SET(MATLAB_LIBRARIES
@@ -40,8 +38,9 @@ SET(MATLAB_LIBRARIES
 )
 
 IF(MATLAB_INCLUDE_DIR AND MATLAB_LIBRARIES)
-  SET(MATLAB_FOUND 1)
-  MESSAGE(STATUS "Matlab libraries will be used")
+    SET(MATLAB_FOUND 1)
+    # Find MATLAB version
+    GET_FILENAME_COMPONENT(MATLAB_VERSION ${MATLAB_ROOT} NAME)
 ENDIF(MATLAB_INCLUDE_DIR AND MATLAB_LIBRARIES)
 
 MARK_AS_ADVANCED(
@@ -51,4 +50,5 @@ MARK_AS_ADVANCED(
   MATLAB_INCLUDE_DIR
   MATLAB_FOUND
   MATLAB_ROOT
+  MATLAB_VERSION
 )

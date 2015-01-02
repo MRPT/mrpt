@@ -3,6 +3,16 @@
 # ===================================================
 SET(CMAKE_MRPT_HAS_MATLAB 0)
 
+IF(NOT UNIX)
+    MESSAGE(WARNING "MRPT-MEX wrapper has been tested only in Linux. No Windows support exists yet.")
+    SET(BUILD_MATLAB 0)
+ENDIF(NOT UNIX)
+
+# Natural option to set ON the building of Matlab wrapper
+# --------------------------------------------------------
+IF(BUILD_MATLAB)
+SET(MATLAB_ROOT "/usr/local/MATLAB/" CACHE PATH "Path to the MATLAB installation directory (e.g. /usr/local/MATLAB/R2012b)")
+
 # DISABLE_MATLAB
 # ---------------------
 OPTION(DISABLE_MATLAB "Force not using Matlab" "OFF")
@@ -13,8 +23,6 @@ IF(NOT DISABLE_MATLAB)
 IF(NOT CMAKE_MRPT_HAS_MATLAB)
         FIND_PACKAGE(Matlab)
         IF(MATLAB_FOUND)
-                MESSAGE(STATUS "MATLAB found in script_matlab.cmake")
-
                 # TODO: Make this option and detail more clear to user!
                 # If MEX libraries are going to be generated, static PIC libraries should be built for MRPT
                 SET(CMAKE_MRPT_BUILD_STATIC_PIC_ONOFF 1)
@@ -28,4 +36,22 @@ IF (MATLAB_FOUND)
         APPEND_MRPT_LIBS( ${MATLAB_LIBRARIES} )
 ENDIF (MATLAB_FOUND)
 
+# Set special options for Matlab wrapper compatibily
+IF(BUILD_SHARED_LIBS)
+        MESSAGE(SEND_ERROR
+"BUILD_SHARED_LIBS is activated.
+Static libraries are needed for MEX libraries due to TLS limitation in Matlab. Deactivate BUILD_SHARED_LIBRARIES.")
+ENDIF(BUILD_SHARED_LIBS)
+
+# Since MEX libraries are dynamic but MRPT libraries need to be static, the static libraries must be Position Independent Code (PIC)
+SET(EXTRA_CPP_FLAGS "${EXTRA_CPP_FLAGS} -fPIC")
+
+# Copy all .m files (classes, samples, helpers...) to the build directory
+DEBUG_VAR(CMAKE_SOURCE_DIR)
+DEBUG_VAR(CMAKE_RUNTIME_OUTPUT_DIRECTORY)
+FILE(COPY ${CMAKE_SOURCE_DIR}/mex/+mrpt DESTINATION ${CMAKE_BINARY_DIR}/mex)
+FILE(COPY ${CMAKE_SOURCE_DIR}/mex/samples DESTINATION ${CMAKE_BINARY_DIR}/mex)
+
 ENDIF(NOT DISABLE_MATLAB)
+
+ENDIF(BUILD_MATLAB)

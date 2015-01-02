@@ -39,9 +39,11 @@ SET(MRPT_LINKER_LIBS "")
 
 # ----- Useful macros ------
 include(cmakemodules/UtilsMacros.cmake REQUIRED)
+include(cmakemodules/DebugMacros.cmake REQUIRED)
 include(cmakemodules/FilterFileLists.cmake REQUIRED)
 include(cmakemodules/MRPTPCHSupport.cmake REQUIRED)
 include(cmakemodules/DeclareMRPTLib.cmake REQUIRED)
+include(cmakemodules/DeclareMEXLib.cmake REQUIRED)
 include(cmakemodules/DeclareAppDependencies.cmake REQUIRED)
 # --------------------------
 
@@ -91,20 +93,6 @@ ELSE(BUILD_SHARED_LIBS)
 	SET(CMAKE_MRPT_BUILD_SHARED_LIB "/* #define MRPT_BUILT_AS_DLL */")
 	SET(CMAKE_MRPT_BUILD_SHARED_LIB_ONOFF 0)
 ENDIF(BUILD_SHARED_LIBS)
-
-# Default: non PIC:
-# TODO YET
-IF(NOT BUILD_SHARED_LIBS)
-	SET(BUILD_STATIC_PIC OFF CACHE BOOL "Build static libraries (.lib/.a) with PIC flag in Linux (for Position Independent Code)")
-	IF(BUILD_STATIC_PIC)
-		SET(CMAKE_MRPT_BUILD_STATIC_PIC "#define MRPT_BUILT_AS_DLL")
-		SET(CMAKE_MRPT_BUILD_STATIC_PIC_ONOFF 1)
-	ELSE(BUILD_STATIC_PIC)
-		SET(CMAKE_MRPT_BUILD_STATIC_PIC "/* #define MRPT_BUILT_AS_DLL */")
-		SET(CMAKE_MRPT_BUILD_STATIC_PIC_ONOFF 0)
-	ENDIF(BUILD_STATIC_PIC)
-ENDIF(NOT BUILD_SHARED_LIBS)
-
 
 # Only for Unix: use pkg-config to find libraries
 # ===================================================
@@ -159,6 +147,10 @@ ENDIF(BUILD_ROBOPEAK_LIDAR)
 SET(BUILD_HWDRIVERS ON CACHE BOOL "Build hardware drivers (library apps/lib_hwdrivers)?.")
 MARK_AS_ADVANCED(BUILD_HWDRIVERS)
 
+#-----------------------------------
+#  Build with MRPT-MEX compatibility?
+#-----------------------------------
+SET(BUILD_MATLAB OFF CACHE BOOL "Build with compatibility options for MEX wrapper?.")
 
 # GCC only:
 # ===================================================
@@ -595,7 +587,6 @@ IF(CMAKE_COMPILER_IS_GNUCXX AND NOT APPLE)
 	#SET(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,--as-needed")
 ENDIF(CMAKE_COMPILER_IS_GNUCXX AND NOT APPLE)
 
-
 IF($ENV{VERBOSE})
 	MESSAGE(STATUS "Final CMAKE_CXX_FLAGS: ${CMAKE_CXX_FLAGS}")
 	MESSAGE(STATUS "Final CMAKE_EXE_LINKER_FLAGS: ${CMAKE_EXE_LINKER_FLAGS}")
@@ -606,6 +597,8 @@ ENDIF($ENV{VERBOSE})
 # Save libs and executables in the same place
 SET( LIBRARY_OUTPUT_PATH ${MRPT_BINARY_DIR}/lib CACHE PATH "Output directory for libraries" )
 SET( EXECUTABLE_OUTPUT_PATH ${MRPT_BINARY_DIR}/bin CACHE PATH "Output directory for applications" )
+SET( MEX_LIBRARY_OUTPUT_PATH ${MRPT_BINARY_DIR}/mex/+mrpt CACHE PATH "Output directory for mex functions" )
+SET( MEX_EXECUTABLE_OUTPUT_PATH ${MRPT_BINARY_DIR}/mex/test CACHE PATH "Output directory for executable mexs" )
 
 #--------------------------------------------------------------
 # If we are building the final step of the Debian package,
@@ -707,4 +700,3 @@ include(cmakemodules/script_install_commands.cmake REQUIRED)
 
 # Summary
 include(cmakemodules/script_show_final_summary.cmake REQUIRED)
-

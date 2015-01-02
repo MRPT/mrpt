@@ -59,6 +59,10 @@ IF(CMAKE_MRPT_HAS_ZLIB)
 	ENDIF (CMAKE_MRPT_HAS_ZLIB_SYSTEM_IS_WX OR NOT CMAKE_MRPT_HAS_ZLIB_SYSTEM)
 ENDIF(CMAKE_MRPT_HAS_ZLIB)
 
+# mexplus header-only library for interaction with Matlab MEX libraries
+IF(CMAKE_MRPT_HAS_MATLAB)
+        INCLUDE_DIRECTORIES("${MRPT_LIBS_ROOT}/mexplus/include/")
+ENDIF(CMAKE_MRPT_HAS_MATLAB)
 
 # Documentation files:
 LIST(APPEND base_EXTRA_SRCS			"${CMAKE_SOURCE_DIR}/doc/doxygen-pages/*.h")
