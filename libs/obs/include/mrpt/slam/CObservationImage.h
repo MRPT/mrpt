@@ -40,6 +40,9 @@ namespace slam
 		// This must be added to any CSerializable derived class:
 		DEFINE_SERIALIZABLE( CObservationImage )
 
+        // This must be added for declaration of MEX-related functions
+        DECLARE_MEX_CONVERSION
+
 	 public:
 		/** Constructor.
 		 * \param iplImage An OpenCV "IplImage*" object with the image to be loaded in the member "image", or NULL (default) for an empty image.
