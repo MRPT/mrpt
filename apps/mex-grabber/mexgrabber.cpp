@@ -35,6 +35,9 @@
 // Matlab MEX interface headers
 #include <mrpt/mexplus.h>
 
+// Force here using mexPrintf instead of printf
+#define printf mexPrintf
+
 using namespace mrpt;
 using namespace mrpt::system;
 using namespace mrpt::hwdrivers;
@@ -59,10 +62,11 @@ synch::CCriticalSection					cs_global_list_obs;
 
 bool									allThreadsMustExit = false;
 
-string 		rawlog_ext_imgs_dir;		// Directory where to save externally stored images, only for CCameraSensor's.
-
 // Thread handlers vector stored as global (persistent MEX variables)
 vector<TThreadHandle> lstThreads;
+
+// State variables
+bool mex_is_running = false;
 
 // Configuration variables
 MRPT_TODO("Set as variable controlled from Matlab")
@@ -83,7 +87,14 @@ MEX_DEFINE(new) (int nlhs, mxArray* plhs[],
     mexplus::InputArguments input(nrhs, prhs, 1);
 //    mexplus::OutputArguments output(nlhs, plhs, 1);
 
+//    if (mex_is_running)
+//    {
+//        printf("[mex-grabber::new] Application is already running\n");
+//        return;
+//    }
+
     // Initialize global (persistent) variables
+    mex_is_running = true;
     allThreadsMustExit = false;
 
     string INI_FILENAME( input.get<string>(0) );
@@ -94,52 +105,15 @@ MEX_DEFINE(new) (int nlhs, mxArray* plhs[],
     // ------------------------------------------
     //			Load config from file:
     // ------------------------------------------
-    string			rawlog_prefix = "dataset";
     int				time_between_launches = 300;
     double			SF_max_time_span = 0.25;			// Seconds
     bool			use_sensoryframes = false;
     int				GRABBER_PERIOD_MS = 1000;
-    int 			rawlog_GZ_compress_level  = 1;  // 0: No compress, 1-9: compress level
 
-    MRPT_LOAD_CONFIG_VAR( rawlog_prefix, string, iniFile, GLOBAL_SECTION_NAME );
     MRPT_LOAD_CONFIG_VAR( time_between_launches, int, iniFile, GLOBAL_SECTION_NAME );
     MRPT_LOAD_CONFIG_VAR( SF_max_time_span, float,		iniFile, GLOBAL_SECTION_NAME );
     MRPT_LOAD_CONFIG_VAR( use_sensoryframes, bool,		iniFile, GLOBAL_SECTION_NAME );
     MRPT_LOAD_CONFIG_VAR( GRABBER_PERIOD_MS, int, iniFile, GLOBAL_SECTION_NAME );
-
-    MRPT_LOAD_CONFIG_VAR( rawlog_GZ_compress_level, int, iniFile, GLOBAL_SECTION_NAME );
-
-    // Build full rawlog file name:
-    string	rawlog_postfix = "_";
-
-    //rawlog_postfix += dateTimeToString( now() );
-    mrpt::system::TTimeParts parts;
-    mrpt::system::timestampToParts(now(), parts, true);
-    rawlog_postfix += format("%04u-%02u-%02u_%02uh%02um%02us",
-                             (unsigned int)parts.year,
-                             (unsigned int)parts.month,
-                             (unsigned int)parts.day,
-                             (unsigned int)parts.hour,
-                             (unsigned int)parts.minute,
-                             (unsigned int)parts.second );
-
-    rawlog_postfix = mrpt::system::fileNameStripInvalidChars( rawlog_postfix );
-
-    // Only set this if we want externally stored images:
-    rawlog_ext_imgs_dir = rawlog_prefix+fileNameStripInvalidChars( rawlog_postfix+string("_Images") );
-
-    // Also, set the path in CImage to enable online visualization in a GUI window:
-    CImage::IMAGES_PATH_BASE = rawlog_ext_imgs_dir;
-
-
-    rawlog_postfix += string(".rawlog");
-    rawlog_postfix = fileNameStripInvalidChars( rawlog_postfix );
-
-    string			rawlog_filename = rawlog_prefix + rawlog_postfix;
-
-    cout << endl ;
-    cout << "Output rawlog filename: " << rawlog_filename << endl;
-    cout << "External image storage: " << rawlog_ext_imgs_dir << endl << endl;
 
     // ----------------------------------------------
     // Launch threads:
@@ -164,7 +138,7 @@ MEX_DEFINE(new) (int nlhs, mxArray* plhs[],
         sleep(time_between_launches);
     }
 
-    printf("Finished threads launch\n");
+    printf("[mex-grabber::new] All threads launched\n");
 } // End of "new" method
 
 // Defines MEX API for read (acquire observations in Matlab form)
@@ -201,7 +175,6 @@ MEX_DEFINE(read) (int nlhs, mxArray* plhs[],
         MxArray struct_obs( it->second->writeToMatlab() );
         struct_obs.set("ts", it->first); // Store timestamp too
         cell_obs.set( index, struct_obs.release() );
-        //cell_obs.set( index, it->second->writeToMatlab() );
         index++;
     }
 
@@ -229,7 +202,8 @@ MEX_DEFINE(delete) (int nlhs, mxArray* plhs[],
     for (vector<TThreadHandle>::iterator th=lstThreads.begin();th!=lstThreads.end();++th)
         joinThread( *th );
 
-    cout << endl << "rawlog-grabber application finished" << endl;
+    cout << endl << "[mex-grabber::delete] mex-grabber application finished" << endl;
+    mex_is_running = false;
 } // End of "delete" method
 
 } // End of namespace
@@ -260,12 +234,8 @@ void SensorThread(TThreadParams params)
         ASSERTMSG_(sensor->getProcessRate()>0,"process_rate must be set to a valid value (>0 Hz).");
         int		process_period_ms = round( 1000.0 / sensor->getProcessRate() );
 
-        // For imaging sensors, set external storage directory:
-        sensor->setPathForExternalImages( rawlog_ext_imgs_dir );
-
         // Init device:
         sensor->initialize();
-
 
         while (! allThreadsMustExit )
         {
