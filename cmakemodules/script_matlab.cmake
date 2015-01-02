@@ -36,19 +36,18 @@ IF (MATLAB_FOUND)
         APPEND_MRPT_LIBS( ${MATLAB_LIBRARIES} )
 ENDIF (MATLAB_FOUND)
 
-# Set special options for Matlab wrapper compatibily
-IF(BUILD_SHARED_LIBS)
-        MESSAGE(SEND_ERROR
-"BUILD_SHARED_LIBS is activated.
-Static libraries are needed for MEX libraries due to TLS limitation in Matlab. Deactivate BUILD_SHARED_LIBRARIES.")
-ENDIF(BUILD_SHARED_LIBS)
+# It seems it works with dynamic libraries too now!
+## Set special options for Matlab wrapper compatibility
+#IF(BUILD_SHARED_LIBS)
+#        MESSAGE(SEND_ERROR
+#"BUILD_SHARED_LIBS is activated.
+#Static libraries are needed for MEX libraries due to TLS limitation in Matlab. Deactivate BUILD_SHARED_LIBRARIES.")
+#ENDIF(BUILD_SHARED_LIBS)
 
-# Since MEX libraries are dynamic but MRPT libraries need to be static, the static libraries must be Position Independent Code (PIC)
-SET(EXTRA_CPP_FLAGS "${EXTRA_CPP_FLAGS} -fPIC")
+## Since MEX libraries are dynamic but MRPT libraries need to be static, the static libraries must be Position Independent Code (PIC)
+#SET(EXTRA_CPP_FLAGS "${EXTRA_CPP_FLAGS} -fPIC")
 
 # Copy all .m files (classes, samples, helpers...) to the build directory
-DEBUG_VAR(CMAKE_SOURCE_DIR)
-DEBUG_VAR(CMAKE_RUNTIME_OUTPUT_DIRECTORY)
 FILE(COPY ${CMAKE_SOURCE_DIR}/mex/+mrpt DESTINATION ${CMAKE_BINARY_DIR}/mex)
 FILE(COPY ${CMAKE_SOURCE_DIR}/mex/samples DESTINATION ${CMAKE_BINARY_DIR}/mex)
 
