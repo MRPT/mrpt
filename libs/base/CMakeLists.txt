@@ -63,6 +63,11 @@ IF(CMAKE_MRPT_HAS_OPENCV)
 	INCLUDE_DIRECTORIES(${OpenCV_INCLUDE_DIR} ${OpenCV_INCLUDE_DIRS} ${OPENCV_INCLUDE_DIRS} ${OPENCV_INCLUDEDIR})
 ENDIF(CMAKE_MRPT_HAS_OPENCV)
 
+# mexplus header-only library for interaction with Matlab MEX libraries
+IF(CMAKE_MRPT_HAS_MATLAB)
+        INCLUDE_DIRECTORIES("${MRPT_SOURCE_DIR}/otherlibs/mexplus/")
+ENDIF(CMAKE_MRPT_HAS_MATLAB)
+
 # Documentation files:
 LIST(APPEND base_EXTRA_SRCS			"${CMAKE_SOURCE_DIR}/doc/doxygen-pages/*.h")
 LIST(APPEND base_EXTRA_SRCS_NAME 	"Documentation")

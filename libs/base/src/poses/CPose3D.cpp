@@ -210,6 +210,21 @@ std::ostream& mrpt::poses::operator << (std::ostream& o, const CPose3D& p)
 }
 
 /*---------------------------------------------------------------
+  Implements the writing to a mxArray for Matlab
+ ---------------------------------------------------------------*/
+#if MRPT_HAS_MATLAB
+mxArray* CPose3D::writeToMatlab() const
+{
+    const char* fields[] = {"R","t"};
+    mexplus::MxArray pose_struct( mexplus::MxArray::Struct(2,fields) );
+    MRPT_TODO("Implement conversion method for matrices")
+    pose_struct.set("R",mxCreateDoubleMatrix(3,3,mxREAL)); //TEMPORAL
+    pose_struct.set("t",mxCreateDoubleMatrix(3,1,mxREAL)); //TEMPORAL
+    return pose_struct.release();
+}
+#endif
+
+/*---------------------------------------------------------------
 				normalizeAngles
 ---------------------------------------------------------------*/
 void  CPose3D::normalizeAngles()

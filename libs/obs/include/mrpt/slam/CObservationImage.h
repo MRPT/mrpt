@@ -13,3 +13,4 @@ namespace mrpt { namespace slam {
 	typedef mrpt::obs::CObservationImage CObservationImage;    //!< Backward compatible typedef
 	typedef mrpt::obs::CObservationImagePtr CObservationImagePtr; //!< Backward compatible typedef
 } }
+

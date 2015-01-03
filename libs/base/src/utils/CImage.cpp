@@ -56,7 +56,6 @@ std::string CImage::IMAGES_PATH_BASE(".");
 mrpt::utils::CTimeLogger alloc_tims;
 #endif
 
-
 /*---------------------------------------------------------------
 						Constructor
  ---------------------------------------------------------------*/
@@ -835,6 +834,17 @@ void  CImage::readFromStream(mrpt::utils::CStream &in, int version)
 	};
 #endif
 }
+
+/*---------------------------------------------------------------
+  Implements the writing to a mxArray for Matlab
+ ---------------------------------------------------------------*/
+#if MRPT_HAS_MATLAB
+mxArray* CImage::writeToMatlab() const
+{
+    cv::Mat cvImg = cv::cvarrToMat( this->getAs<IplImage>() );
+    return mexplus::MxArray::from( cvImg );
+}
+#endif
 
 /*---------------------------------------------------------------
 						getSize

@@ -98,6 +98,10 @@ namespace mrpt
 		class BASE_IMPEXP CImage : public mrpt::utils::CSerializable, public CCanvas
 		{
 			DEFINE_SERIALIZABLE( CImage )
+
+            // This must be added for declaration of MEX-related functions
+            DECLARE_MEX_CONVERSION
+
 		public:
 
 			// ================================================================

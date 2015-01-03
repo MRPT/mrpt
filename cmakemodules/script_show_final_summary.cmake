@@ -83,6 +83,7 @@ ENDIF("${CMAKE_BUILD_TYPE}" STREQUAL "Release")
 MESSAGE(STATUS "")
 MESSAGE(STATUS " __________________________ OPTIONS _____________________________")
 SHOW_CONFIG_LINE("Build MRPT as a shared library?  " CMAKE_MRPT_BUILD_SHARED_LIB_ONOFF)
+SHOW_CONFIG_LINE("Build MRPT with MEX compatibility?" CMAKE_MRPT_HAS_MATLAB)
 
 IF(MRPT_AUTODETECT_SSE)
 	set(STR_SSE_DETECT_MODE "Automatic")
@@ -128,6 +129,7 @@ SHOW_CONFIG_LINE_SYSTEM("PCL (Pointscloud library)           " CMAKE_MRPT_HAS_PC
 SHOW_CONFIG_LINE("SuiteSparse                         " CMAKE_MRPT_HAS_SUITESPARSE)
 SHOW_CONFIG_LINE_SYSTEM("wxWidgets                           " CMAKE_MRPT_HAS_WXWIDGETS)
 SHOW_CONFIG_LINE_SYSTEM("zlib (compression)                  " CMAKE_MRPT_HAS_ZLIB)
+SHOW_CONFIG_LINE_SYSTEM("MATLAB                              " CMAKE_MRPT_HAS_MATLAB "[Version: ${MATLAB_VERSION}]")
 MESSAGE(STATUS  "")
 
 MESSAGE(STATUS " _____________________ HARDWARE & SENSORS _______________________")
