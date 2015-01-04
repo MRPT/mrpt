@@ -649,6 +649,10 @@ IF(BUILD_APPLICATIONS)
 	add_subdirectory(apps)    # The applications:
 ENDIF(BUILD_APPLICATIONS)
 
+IF(BUILD_MATLAB)
+        add_subdirectory(mex/apps)# The MEX applications
+ENDIF(BUILD_MATLAB)
+
 # Documentation targets (must be AFTER "apps" because it uses the aux program "mrpt-perfdata2html")
 add_subdirectory(doc)
 

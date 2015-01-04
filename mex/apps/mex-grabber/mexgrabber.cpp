@@ -33,7 +33,7 @@
 #include <mrpt/system/filesystem.h>
 
 // Matlab MEX interface headers
-#include <mrpt/mexplus.h>
+#include <mexplus.h>
 
 // Force here using mexPrintf instead of printf
 #define printf mexPrintf

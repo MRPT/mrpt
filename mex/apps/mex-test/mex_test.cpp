@@ -18,7 +18,7 @@
 #include <mrpt/system/filesystem.h>
 
 // Matlab MEX interface headers
-#include <mrpt/mexplus.h>
+#include <mexplus.h>
 
 using namespace mrpt;
 using namespace mrpt::system;
