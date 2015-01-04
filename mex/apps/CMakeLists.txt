@@ -5,6 +5,8 @@ project(ALL_MEX_APPS)
 
 INCLUDE(../../cmakemodules/AssureCMakeRootFile.cmake) # Avoid user mistake in CMake source directory
 
+IF (CMAKE_MRPT_HAS_MATLAB)
+
 # Enumerate all subdirs and process them:
 list_subdirectories(LIST_MEX_APP_DIRS "${MRPT_SOURCE_DIR}/mex/apps")
 
@@ -17,3 +19,5 @@ foreach(dir ${LIST_MEX_APP_DIRS})
 	add_subdirectory(${dir})
 	endif (${VAR_NAME})
 endforeach(dir)
+
+ENDIF (CMAKE_MRPT_HAS_MATLAB)

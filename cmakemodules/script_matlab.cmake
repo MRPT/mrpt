@@ -3,11 +3,6 @@
 # ===================================================
 SET(CMAKE_MRPT_HAS_MATLAB 0)
 
-IF(NOT UNIX)
-    MESSAGE(WARNING "MRPT-MEX wrapper has been tested only in Linux. No Windows support exists yet.")
-    SET(BUILD_MATLAB 0)
-ENDIF(NOT UNIX)
-
 # Natural option to set ON the building of Matlab wrapper
 # --------------------------------------------------------
 IF(BUILD_MATLAB)
@@ -51,6 +46,8 @@ IF(NOT CMAKE_MRPT_HAS_MATLAB)
                 # MEXPLUS header-only lib to handle mxArray class:
                 ADD_SUBDIRECTORY("${MRPT_SOURCE_DIR}/otherlibs/mexplus/")
 				INCLUDE_DIRECTORIES("${MRPT_SOURCE_DIR}/otherlibs/mexplus/")
+		ELSE(MATLAB_FOUND)
+			MESSAGE("MATLAB not found. Either MATLAB_ROOT or set BUILD_MATLAB=OFF")
         ENDIF(MATLAB_FOUND)
 ENDIF(NOT CMAKE_MRPT_HAS_MATLAB)
 
