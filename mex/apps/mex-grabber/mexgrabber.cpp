@@ -23,12 +23,6 @@
 #include <mrpt/utils/CFileGZOutputStream.h>
 #include <mrpt/utils/CImage.h>
 #include <mrpt/utils/round.h>
-#include <mrpt/slam/CActionCollection.h>
-#include <mrpt/slam/CSensoryFrame.h>
-#include <mrpt/slam/CObservationOdometry.h>
-#include <mrpt/slam/CObservationGPS.h>
-#include <mrpt/slam/CObservationIMU.h>
-#include <mrpt/slam/CActionRobotMovement2D.h>
 #include <mrpt/system/os.h>
 #include <mrpt/system/filesystem.h>
 
@@ -42,7 +36,7 @@ using namespace mrpt;
 using namespace mrpt::system;
 using namespace mrpt::hwdrivers;
 using namespace mrpt::utils;
-using namespace mrpt::slam;
+//using namespace mrpt::obs;
 using namespace std;
 using namespace mexplus;
 
