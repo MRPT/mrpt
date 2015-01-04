@@ -11,7 +11,28 @@ ENDIF(NOT UNIX)
 # Natural option to set ON the building of Matlab wrapper
 # --------------------------------------------------------
 IF(BUILD_MATLAB)
-SET(MATLAB_ROOT "/usr/local/MATLAB/" CACHE PATH "Path to the MATLAB installation directory (e.g. /usr/local/MATLAB/R2012b)")
+
+# Set sensible initial path for Matlab
+IF(NOT MATLAB_ROOT)
+        IF(WINDOWS) # In Windows
+                SET(MATLAB_ROOT "C:")
+        ELSE(WINDOWS) # In Linux
+                SET(MATLAB_ROOT "/usr/local/MATLAB")
+        ENDIF(WINDOWS)
+
+        IF(IS_DIRECTORY ${MATLAB_ROOT}) # Search installed versions in default directory
+                FILE(GLOB LIST_MATLAB_INSTALLS RELATIVE ${MATLAB_ROOT} ${MATLAB_ROOT}/*)
+                # Use first subdirectory (usually newest version)
+                LIST(SORT LIST_MATLAB_INSTALLS) # Sort alphabetically
+                LIST(REVERSE LIST_MATLAB_INSTALLS) # Reverse order
+                LIST(GET LIST_MATLAB_INSTALLS 0 MATLAB_VERSION) # Take first element (highest version)
+
+                SET(MATLAB_ROOT "${MATLAB_ROOT}/${MATLAB_VERSION}")
+        ENDIF(IS_DIRECTORY ${MATLAB_ROOT})
+
+        SET(MATLAB_ROOT ${MATLAB_ROOT} CACHE PATH "Path to the MATLAB installation directory (e.g. /usr/local/MATLAB/R2012b, C:/... (TODO)")
+        SET(MATLAB_VERSION ${MATLAB_VERSION} CACHE STRING "R...-like version to use from installed ones")
+ENDIF(NOT MATLAB_ROOT)
 
 # DISABLE_MATLAB
 # ---------------------
@@ -19,8 +40,9 @@ OPTION(DISABLE_MATLAB "Force not using Matlab" "OFF")
 MARK_AS_ADVANCED(DISABLE_MATLAB)
 IF(NOT DISABLE_MATLAB)
 
-# Use CMAKE module if opencv's not been detected yet:
+# Use CMAKE module if Matlab's not been detected yet:
 IF(NOT CMAKE_MRPT_HAS_MATLAB)
+# TODO: This behaviour does not allow to update found libraries if MATLAB_ROOT is changed
         FIND_PACKAGE(Matlab)
         IF(MATLAB_FOUND)
                 SET(CMAKE_MRPT_HAS_MATLAB 1)
