@@ -69,22 +69,13 @@ namespace mrpt
 			  */
 			virtual void  readFromStream(mrpt::utils::CStream &in, int version) = 0;
 
-        public:
+		public:
 
-            /** Introduces a pure virtual method responsible for writing to a mxArray Matlab object.
-             *  This can not be used directly by users, instead use "stream << object;"
-             *   for writing it to a stream.
-             * \param out The output binary stream where object must be dumped.
-             * \param getVersion If NULL, the object must be dumped. If not, only the
-             *		version of the object dump must be returned in this pointer. This enables
-             *     the versioning of objects dumping and backward compatibility with previously
-             *     stored data.
-             *	\exception std::exception On any error, see CStream::WriteBuffer
-             * \sa CStream
-             */
-            #if MRPT_HAS_MATLAB
-            inline virtual mxArray* writeToMatlab() const { return NULL; }
-            #endif
+			/** Introduces a pure virtual method responsible for writing to a mxArray Matlab object.
+			 */
+			#if MRPT_HAS_MATLAB
+			inline virtual mxArray* writeToMatlab() const { return NULL; }
+			#endif
 		}; // End of class def.
 
 		DEFINE_MRPT_OBJECT_POST( CSerializable )
@@ -148,7 +139,7 @@ namespace mrpt
 			/*! @{ */ \
 			_VOID_LINKAGE_ writeToStream(mrpt::utils::CStream &out, int *getVersion) const;\
 			_VOID_LINKAGE_ readFromStream(mrpt::utils::CStream &in, int version); \
-            /*! @} */
+			/*! @} */
 
 		/** This declaration must be inserted in all CSerializable classes definition, within the class declaration. */
 		#define DEFINE_SERIALIZABLE(class_name) \
@@ -207,18 +198,17 @@ namespace mrpt
 			mrpt::utils::CStream& NameSpace::operator>>(mrpt::utils::CStream& in, class_name##Ptr &pObj) \
 			{ pObj = class_name##Ptr( in.ReadObject() ); return in; }
 
-        /** This must be inserted if a custom conversion method for MEX API is implemented in the class */
-
-        #if MRPT_HAS_MATLAB
-            #define DECLARE_MEX_CONVERSION \
-            /*! @name Virtual methods for MRPT-MEX conversion */ \
-            /*! @{ */ \
-            public: \
-                virtual mxArray* writeToMatlab() const; \
-            /*! @} */
-        #else
-            #define DECLARE_MEX_CONVERSION //Empty
-        #endif
+		/** This must be inserted if a custom conversion method for MEX API is implemented in the class */
+		#if MRPT_HAS_MATLAB
+			#define DECLARE_MEX_CONVERSION \
+			/*! @name Virtual methods for MRPT-MEX conversion */ \
+			/*! @{ */ \
+			public: \
+				virtual mxArray* writeToMatlab() const; \
+			/*! @} */
+		#else
+			#define DECLARE_MEX_CONVERSION //Empty
+		#endif
 
 
 	} // End of namespace
