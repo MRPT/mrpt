@@ -40,9 +40,7 @@ DeclareAppDependencies(${TMP_TARGET_NAME} mrpt-hwdrivers mrpt-obs)
 # ---------------------------------------------
 # MEX LIBRARY:
 # ---------------------------------------------
-# Define the MEX library
-# (used by Matlab):
-# set up matlab libraries
+# Define the MEX module for Matlab:
 ADD_LIBRARY(mexgrabber SHARED
             mexgrabber.cpp
             ${CMAKE_CURRENT_LIST_DIR}/Matlabdef.def
