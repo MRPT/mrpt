@@ -14,8 +14,7 @@
 #include <mrpt/utils/types_simple.h>
 
 #if MRPT_HAS_MATLAB
-MRPT_TODO("Add mexplus include to include_directories of mrpt-base?")
-#include </home/jesus/Libs/mrpt/source/libs/mexplus/include/mrpt/mexplus.h>
+#include <mexplus.h>
 #endif
 
 namespace mrpt

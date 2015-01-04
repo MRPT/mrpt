@@ -17,7 +17,9 @@ ELSE( "${MATLAB_ROOT}" STREQUAL "" OR "${MATLAB_ROOT}" STREQUAL "" )
         FIND_PATH(MATLAB_INCLUDE_DIR mex.h
                   ${MATLAB_ROOT}/extern/include)
 
-        INCLUDE_DIRECTORIES(${MATLAB_INCLUDE_DIR})
+        IF(MATLAB_INCLUDE_DIR) # Protect against #include'ing undefined dirs.
+                INCLUDE_DIRECTORIES(${MATLAB_INCLUDE_DIR})
+        ENDIF(MATLAB_INCLUDE_DIR)
 
         FIND_LIBRARY( MATLAB_MEX_LIBRARY
                       NAMES libmex mex
