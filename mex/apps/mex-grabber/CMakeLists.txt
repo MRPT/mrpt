@@ -35,7 +35,7 @@ define_mex_test( ${TMP_TARGET_NAME} )
 # Dependencies on MRPT libraries:
 #  Just mention the top-level dependency, the rest will be detected automatically,
 #  and all the needed #include<> dirs added (see the script DeclareAppDependencies.cmake for further details)
-DeclareAppDependencies(${TMP_TARGET_NAME} mrpt-hwdrivers mrpt-obs mrpt-mexplus)
+DeclareAppDependencies(${TMP_TARGET_NAME} mrpt-hwdrivers mrpt-obs)
 
 # ---------------------------------------------
 # MEX LIBRARY:
@@ -59,7 +59,7 @@ define_mex_lib( ${TMP_MEX_NAME} "/private")
 
 # TODO: How should these mex libraries be declared?
 DeclareAppForInstall(${TMP_MEX_NAME})
-DeclareAppDependencies(${TMP_MEX_NAME} mrpt-hwdrivers mrpt-obs mrpt-mexplus)
+DeclareAppDependencies(${TMP_MEX_NAME} mrpt-hwdrivers mrpt-obs)
 
 
 

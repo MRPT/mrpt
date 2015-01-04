@@ -53,4 +53,4 @@ endif(WIN32)
 # Dependencies on MRPT libraries:
 #  Just mention the top-level dependency, the rest will be detected automatically,
 #  and all the needed #include<> dirs added (see the script DeclareAppDependencies.cmake for further details)
-DeclareAppDependencies(${TMP_MEX_NAME} mrpt-hwdrivers mrpt-obs mrpt-mexplus)
+DeclareAppDependencies(${TMP_MEX_NAME} mrpt-hwdrivers mrpt-obs)
