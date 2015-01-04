@@ -56,7 +56,10 @@
 #include <typeinfo>
 #include <vector>
 
-#include "mxarray_extra.h"
+#include <mrpt/config.h> // Control MRPT_HAS_... defines
+#if MRPT_HAS_OPENCV
+#include <mexopencv/mexopencv.hpp>
+#endif
 
 /** Macro definitions.
  */
@@ -273,6 +276,7 @@ public:
 	}
 
 	// Extra code for OpenCV classes
+#if MRPT_HAS_OPENCV
 	static mxArray* from(const cv::Mat& mat)
 	{
 		mxArray* p_; // Create pointer
@@ -316,11 +320,10 @@ public:
 		for (int i = 0; i < nchannels; ++i)
 		{
 			si[si.size() - 1] = i; // last dim is a channel index.
-
+//			void *ptr = reinterpret_cast<void*>(
+//						reinterpret_cast<size_t>(mxGetData(p_)) +
+//						mxGetElementSize(p_) * this->subscriptIndex(si));
 			mwIndex subs_si = mxCalcSingleSubscript(p_, si.size(), &si[0]);
-			//        void *ptr = reinterpret_cast<void*>(
-			//                reinterpret_cast<size_t>(mxGetData(p_)) +
-			//                mxGetElementSize(p_) * subs(si));
 			void *ptr = reinterpret_cast<void*>(
 						reinterpret_cast<size_t>(mxGetData(p_)) +
 						mxGetElementSize(p_) * subs_si);
@@ -332,6 +335,7 @@ public:
 		}
 		return p_;
 	}
+#endif
 
 	/** mxArray* exporter methods.
    */
