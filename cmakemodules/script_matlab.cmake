@@ -50,6 +50,7 @@ IF(NOT CMAKE_MRPT_HAS_MATLAB)
 
                 # MEXPLUS header-only lib to handle mxArray class:
                 ADD_SUBDIRECTORY("${MRPT_SOURCE_DIR}/otherlibs/mexplus/")
+				INCLUDE_DIRECTORIES("${MRPT_SOURCE_DIR}/otherlibs/mexplus/")
         ENDIF(MATLAB_FOUND)
 ENDIF(NOT CMAKE_MRPT_HAS_MATLAB)
 
