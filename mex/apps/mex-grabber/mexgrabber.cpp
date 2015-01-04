@@ -171,7 +171,6 @@ MEX_DEFINE(read) (int nlhs, mxArray* plhs[],
     size_t index = 0;
     for (CGenericSensor::TListObservations::iterator it=copy_of_global_list_obs.begin(); it!=copy_of_global_list_obs.end();++it)
     {
-        MRPT_TODO("Bug when applied in second round! No image is stored!?")
         MxArray struct_obs( it->second->writeToMatlab() );
         struct_obs.set("ts", it->first); // Store timestamp too
         cell_obs.set( index, struct_obs.release() );
