@@ -10,6 +10,6 @@
 #include <mrpt/obs/CObservationRGBD360.h>
 MRPT_WARNING("*Deprecated header* Please replace with #include <mrpt/obs/CObservationRGBD360.h>. This backward compatible header will be removed in MRPT 2.0.0")
 namespace mrpt { namespace slam {
-	typedef mrpt::obs::CObservationRGBD360 CObservationRGBD360;    //!< Backward compatible typedef
-	typedef mrpt::obs::CObservationRGBD360Ptr CObservationRGBD360Ptr; //!< Backward compatible typedef
+	using mrpt::obs::CObservationRGBD360;    //!< Backward compatibility
+	using mrpt::obs::CObservationRGBD360Ptr; //!< Backward compatibility
 } }

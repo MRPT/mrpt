@@ -10,6 +10,6 @@
 #include <mrpt/maps/CGasConcentrationGridMap2D.h>
 MRPT_WARNING("*Deprecated header* Please replace with #include <mrpt/maps/CGasConcentrationGridMap2D.h>. This backward compatible header will be removed in MRPT 2.0.0")
 namespace mrpt { namespace slam {
-	typedef mrpt::maps::CGasConcentrationGridMap2D CGasConcentrationGridMap2D;    //!< Backward compatible typedef
-	typedef mrpt::maps::CGasConcentrationGridMap2DPtr CGasConcentrationGridMap2DPtr; //!< Backward compatible typedef
+	using mrpt::maps::CGasConcentrationGridMap2D;    //!< Backward compatibility
+	using mrpt::maps::CGasConcentrationGridMap2DPtr; //!< Backward compatibility
 } }

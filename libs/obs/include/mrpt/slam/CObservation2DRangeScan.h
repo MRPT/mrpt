@@ -10,6 +10,6 @@
 #include <mrpt/obs/CObservation2DRangeScan.h>
 MRPT_WARNING("*Deprecated header* Please replace with #include <mrpt/obs/CObservation2DRangeScan.h>. This backward compatible header will be removed in MRPT 2.0.0")
 namespace mrpt { namespace slam {
-	typedef mrpt::obs::CObservation2DRangeScan CObservation2DRangeScan;    //!< Backward compatible typedef
-	typedef mrpt::obs::CObservation2DRangeScanPtr CObservation2DRangeScanPtr; //!< Backward compatible typedef
+	using mrpt::obs::CObservation2DRangeScan;    //!< Backward compatibility
+	using mrpt::obs::CObservation2DRangeScanPtr; //!< Backward compatibility
 } }

@@ -10,6 +10,6 @@
 #include <mrpt/obs/CObservation6DFeatures.h>
 MRPT_WARNING("*Deprecated header* Please replace with #include <mrpt/obs/CObservation6DFeatures.h>. This backward compatible header will be removed in MRPT 2.0.0")
 namespace mrpt { namespace slam {
-	typedef mrpt::obs::CObservation6DFeatures CObservation6DFeatures;    //!< Backward compatible typedef
-	typedef mrpt::obs::CObservation6DFeaturesPtr CObservation6DFeaturesPtr; //!< Backward compatible typedef
+	using mrpt::obs::CObservation6DFeatures;    //!< Backward compatibility
+	using mrpt::obs::CObservation6DFeaturesPtr; //!< Backward compatibility
 } }

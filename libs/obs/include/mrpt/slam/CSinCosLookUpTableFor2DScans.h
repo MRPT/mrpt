@@ -10,5 +10,5 @@
 #include <mrpt/obs/CSinCosLookUpTableFor2DScans.h>
 MRPT_WARNING("*Deprecated header* Please replace with #include <mrpt/obs/CSinCosLookUpTableFor2DScans.h>. This backward compatible header will be removed in MRPT 2.0.0")
 namespace mrpt { namespace slam {
-	typedef mrpt::obs::CSinCosLookUpTableFor2DScans CSinCosLookUpTableFor2DScans;    //!< Backward compatible typedef
+	using mrpt::obs::CSinCosLookUpTableFor2DScans;    //!< Backward compatibility
 } }

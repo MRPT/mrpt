@@ -10,6 +10,6 @@
 #include <mrpt/obs/CObservationWirelessPower.h>
 MRPT_WARNING("*Deprecated header* Please replace with #include <mrpt/obs/CObservationWirelessPower.h>. This backward compatible header will be removed in MRPT 2.0.0")
 namespace mrpt { namespace slam {
-	typedef mrpt::obs::CObservationWirelessPower CObservationWirelessPower;    //!< Backward compatible typedef
-	typedef mrpt::obs::CObservationWirelessPowerPtr CObservationWirelessPowerPtr; //!< Backward compatible typedef
+	using mrpt::obs::CObservationWirelessPower;    //!< Backward compatibility
+	using mrpt::obs::CObservationWirelessPowerPtr; //!< Backward compatibility
 } }

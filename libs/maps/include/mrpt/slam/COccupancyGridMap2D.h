@@ -10,6 +10,6 @@
 #include <mrpt/maps/COccupancyGridMap2D.h>
 MRPT_WARNING("*Deprecated header* Please replace with #include <mrpt/maps/COccupancyGridMap2D.h>. This backward compatible header will be removed in MRPT 2.0.0")
 namespace mrpt { namespace slam {
-	typedef mrpt::maps::COccupancyGridMap2D COccupancyGridMap2D;    //!< Backward compatible typedef
-	typedef mrpt::maps::COccupancyGridMap2DPtr COccupancyGridMap2DPtr; //!< Backward compatible typedef
+	using mrpt::maps::COccupancyGridMap2D;    //!< Backward compatibility
+	using mrpt::maps::COccupancyGridMap2DPtr; //!< Backward compatibility
 } }

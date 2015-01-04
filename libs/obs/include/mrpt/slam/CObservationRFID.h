@@ -10,6 +10,6 @@
 #include <mrpt/obs/CObservationRFID.h>
 MRPT_WARNING("*Deprecated header* Please replace with #include <mrpt/obs/CObservationRFID.h>. This backward compatible header will be removed in MRPT 2.0.0")
 namespace mrpt { namespace slam {
-	typedef mrpt::obs::CObservationRFID CObservationRFID;    //!< Backward compatible typedef
-	typedef mrpt::obs::CObservationRFIDPtr CObservationRFIDPtr; //!< Backward compatible typedef
+	using mrpt::obs::CObservationRFID;    //!< Backward compatibility
+	using mrpt::obs::CObservationRFIDPtr; //!< Backward compatibility
 } }

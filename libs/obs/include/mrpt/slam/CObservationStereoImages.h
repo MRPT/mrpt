@@ -10,6 +10,6 @@
 #include <mrpt/obs/CObservationStereoImages.h>
 MRPT_WARNING("*Deprecated header* Please replace with #include <mrpt/obs/CObservationStereoImages.h>. This backward compatible header will be removed in MRPT 2.0.0")
 namespace mrpt { namespace slam {
-	typedef mrpt::obs::CObservationStereoImages CObservationStereoImages;    //!< Backward compatible typedef
-	typedef mrpt::obs::CObservationStereoImagesPtr CObservationStereoImagesPtr; //!< Backward compatible typedef
+	using mrpt::obs::CObservationStereoImages;    //!< Backward compatibility
+	using mrpt::obs::CObservationStereoImagesPtr; //!< Backward compatibility
 } }

@@ -10,6 +10,6 @@
 #include <mrpt/obs/CRawlog.h>
 MRPT_WARNING("*Deprecated header* Please replace with #include <mrpt/obs/CRawlog.h>. This backward compatible header will be removed in MRPT 2.0.0")
 namespace mrpt { namespace slam {
-	typedef mrpt::obs::CRawlog CRawlog;    //!< Backward compatible typedef
-	typedef mrpt::obs::CRawlogPtr CRawlogPtr; //!< Backward compatible typedef
+	using mrpt::obs::CRawlog;    //!< Backward compatibility
+	using mrpt::obs::CRawlogPtr; //!< Backward compatibility
 } }

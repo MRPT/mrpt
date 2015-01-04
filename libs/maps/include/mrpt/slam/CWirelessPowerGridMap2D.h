@@ -10,6 +10,6 @@
 #include <mrpt/maps/CWirelessPowerGridMap2D.h>
 MRPT_WARNING("*Deprecated header* Please replace with #include <mrpt/maps/CWirelessPowerGridMap2D.h>. This backward compatible header will be removed in MRPT 2.0.0")
 namespace mrpt { namespace slam {
-	typedef mrpt::maps::CWirelessPowerGridMap2D CWirelessPowerGridMap2D;    //!< Backward compatible typedef
-	typedef mrpt::maps::CWirelessPowerGridMap2DPtr CWirelessPowerGridMap2DPtr; //!< Backward compatible typedef
+	using mrpt::maps::CWirelessPowerGridMap2D;    //!< Backward compatibility
+	using mrpt::maps::CWirelessPowerGridMap2DPtr; //!< Backward compatibility
 } }

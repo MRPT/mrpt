@@ -10,6 +10,6 @@
 #include <mrpt/obs/CObservationGasSensors.h>
 MRPT_WARNING("*Deprecated header* Please replace with #include <mrpt/obs/CObservationGasSensors.h>. This backward compatible header will be removed in MRPT 2.0.0")
 namespace mrpt { namespace slam {
-	typedef mrpt::obs::CObservationGasSensors CObservationGasSensors;    //!< Backward compatible typedef
-	typedef mrpt::obs::CObservationGasSensorsPtr CObservationGasSensorsPtr; //!< Backward compatible typedef
+	using mrpt::obs::CObservationGasSensors;    //!< Backward compatibility
+	using mrpt::obs::CObservationGasSensorsPtr; //!< Backward compatibility
 } }

@@ -10,6 +10,6 @@
 #include <mrpt/obs/CObservationRange.h>
 MRPT_WARNING("*Deprecated header* Please replace with #include <mrpt/obs/CObservationRange.h>. This backward compatible header will be removed in MRPT 2.0.0")
 namespace mrpt { namespace slam {
-	typedef mrpt::obs::CObservationRange CObservationRange;    //!< Backward compatible typedef
-	typedef mrpt::obs::CObservationRangePtr CObservationRangePtr; //!< Backward compatible typedef
+	using mrpt::obs::CObservationRange;    //!< Backward compatibility
+	using mrpt::obs::CObservationRangePtr; //!< Backward compatibility
 } }

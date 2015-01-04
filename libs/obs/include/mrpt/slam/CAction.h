@@ -10,6 +10,6 @@
 #include <mrpt/obs/CAction.h>
 MRPT_WARNING("*Deprecated header* Please replace with #include <mrpt/obs/CAction.h>. This backward compatible header will be removed in MRPT 2.0.0")
 namespace mrpt { namespace slam {
-	typedef mrpt::obs::CAction CAction;    //!< Backward compatible typedef
-	typedef mrpt::obs::CActionPtr CActionPtr; //!< Backward compatible typedef
+	using mrpt::obs::CAction;    //!< Backward compatibility
+	using mrpt::obs::CActionPtr; //!< Backward compatibility
 } }

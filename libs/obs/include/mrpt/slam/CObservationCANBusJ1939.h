@@ -10,6 +10,6 @@
 #include <mrpt/obs/CObservationCANBusJ1939.h>
 MRPT_WARNING("*Deprecated header* Please replace with #include <mrpt/obs/CObservationCANBusJ1939.h>. This backward compatible header will be removed in MRPT 2.0.0")
 namespace mrpt { namespace slam {
-	typedef mrpt::obs::CObservationCANBusJ1939 CObservationCANBusJ1939;    //!< Backward compatible typedef
-	typedef mrpt::obs::CObservationCANBusJ1939Ptr CObservationCANBusJ1939Ptr; //!< Backward compatible typedef
+	using mrpt::obs::CObservationCANBusJ1939;    //!< Backward compatibility
+	using mrpt::obs::CObservationCANBusJ1939Ptr; //!< Backward compatibility
 } }

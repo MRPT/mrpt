@@ -10,6 +10,6 @@
 #include <mrpt/obs/CActionCollection.h>
 MRPT_WARNING("*Deprecated header* Please replace with #include <mrpt/obs/CActionCollection.h>. This backward compatible header will be removed in MRPT 2.0.0")
 namespace mrpt { namespace slam {
-	typedef mrpt::obs::CActionCollection CActionCollection;    //!< Backward compatible typedef
-	typedef mrpt::obs::CActionCollectionPtr CActionCollectionPtr; //!< Backward compatible typedef
+	using mrpt::obs::CActionCollection;    //!< Backward compatibility
+	using mrpt::obs::CActionCollectionPtr; //!< Backward compatibility
 } }

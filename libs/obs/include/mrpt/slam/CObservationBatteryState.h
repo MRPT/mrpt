@@ -10,6 +10,6 @@
 #include <mrpt/obs/CObservationBatteryState.h>
 MRPT_WARNING("*Deprecated header* Please replace with #include <mrpt/obs/CObservationBatteryState.h>. This backward compatible header will be removed in MRPT 2.0.0")
 namespace mrpt { namespace slam {
-	typedef mrpt::obs::CObservationBatteryState CObservationBatteryState;    //!< Backward compatible typedef
-	typedef mrpt::obs::CObservationBatteryStatePtr CObservationBatteryStatePtr; //!< Backward compatible typedef
+	using mrpt::obs::CObservationBatteryState;    //!< Backward compatibility
+	using mrpt::obs::CObservationBatteryStatePtr; //!< Backward compatibility
 } }
