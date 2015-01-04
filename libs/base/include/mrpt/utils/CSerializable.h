@@ -74,7 +74,7 @@ namespace mrpt
 			/** Introduces a pure virtual method responsible for writing to a mxArray Matlab object.
 			 */
 			#if MRPT_HAS_MATLAB
-			inline virtual mxArray* writeToMatlab() const { return NULL; }
+			virtual mxArray* writeToMatlab() const { return NULL; }
 			#endif
 		}; // End of class def.
 
