@@ -122,7 +122,7 @@ public:
 	/** MxArray constructor from const mxArray*. MxArray will not manage memory.
    * @param array mxArray pointer given by mexFunction.
    */
-	explicit MxArray(mxArray* array) : array_(array), owner_(array) {}
+	explicit MxArray(mxArray* array) : array_(array), owner_(array!=false) {}
 	/** MxArray constructor from scalar.
    */
 	template <typename T>

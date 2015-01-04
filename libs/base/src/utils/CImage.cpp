@@ -26,6 +26,10 @@
 // Universal include for all versions of OpenCV
 #include <mrpt/otherlibs/do_opencv_includes.h>
 
+#if MRPT_HAS_MATLAB
+#	include <mexplus.h>
+#endif
+
 // Prototypes of SSE2/SSE3/SSSE3 optimized functions:
 #include "CImage_SSEx.h"
 

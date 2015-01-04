@@ -13,6 +13,10 @@
 #include <mrpt/utils/CConfigFileMemory.h>
 #include <mrpt/math/matrix_serialization.h>  // For "<<" ">>" operators.
 
+#if MRPT_HAS_MATLAB
+#	include <mexplus.h>
+#endif
+
 using namespace mrpt::utils;
 using namespace mrpt::math;
 using namespace std;

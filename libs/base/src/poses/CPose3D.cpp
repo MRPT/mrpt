@@ -24,6 +24,10 @@
 #include <iomanip>
 #include <limits>
 
+#if MRPT_HAS_MATLAB
+#	include <mexplus.h>
+#endif
+
 #ifndef M_SQRT1_2
 #define M_SQRT1_2 0.70710678118654752440
 #endif
