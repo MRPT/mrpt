@@ -170,7 +170,7 @@ public:
 		if (array_ && owner_)
 			mxDestroyArray(array_);
 		array_ = array;
-		owner_ = array;
+		owner_ = array!=NULL;
 	}
 	/** Release managed mxArray* pointer, or clone if not owner.
    * @return Unmanaged mxArray*. Always caller must destroy.
