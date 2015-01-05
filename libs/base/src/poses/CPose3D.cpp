@@ -21,12 +21,10 @@
 #include <mrpt/math/matrix_serialization.h>
 #include <mrpt/math/ops_matrices.h>
 #include <mrpt/utils/CStream.h>
+#include <mrpt/math/utils_matlab.h>
 #include <iomanip>
 #include <limits>
 
-#if MRPT_HAS_MATLAB
-#	include <mexplus.h>
-#endif
 
 #ifndef M_SQRT1_2
 #define M_SQRT1_2 0.70710678118654752440
@@ -219,12 +217,11 @@ std::ostream& mrpt::poses::operator << (std::ostream& o, const CPose3D& p)
 #if MRPT_HAS_MATLAB
 mxArray* CPose3D::writeToMatlab() const
 {
-    const char* fields[] = {"R","t"};
-    mexplus::MxArray pose_struct( mexplus::MxArray::Struct(2,fields) );
-    MRPT_TODO("Implement conversion method for matrices")
-    pose_struct.set("R",mxCreateDoubleMatrix(3,3,mxREAL)); //TEMPORAL
-    pose_struct.set("t",mxCreateDoubleMatrix(3,1,mxREAL)); //TEMPORAL
-    return pose_struct.release();
+	const char* fields[] = {"R","t"};
+	mexplus::MxArray pose_struct( mexplus::MxArray::Struct(sizeof(fields)/sizeof(fields[0]),fields) );
+	pose_struct.set("R", mrpt::math::convertToMatlab(this->m_ROT));
+	pose_struct.set("t", mrpt::math::convertToMatlab(this->m_coords));
+	return pose_struct.release();
 }
 #endif
 

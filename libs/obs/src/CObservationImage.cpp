@@ -50,14 +50,6 @@ void  CObservationImage::writeToStream(mrpt::utils::CStream &out, int *version) 
 }
 
 /*---------------------------------------------------------------
-  Implements the writing to a mxArray for Matlab
- ---------------------------------------------------------------*/
-//void  CObservationImage::writeToMatlab(mxArray *out) const
-//{
-//    MRPT_TODO("TODO writeToMatlab in CObservationImage")
-//}
-
-/*---------------------------------------------------------------
   Implements the reading from a CStream capability of CSerializable objects
  ---------------------------------------------------------------*/
 void  CObservationImage::readFromStream(mrpt::utils::CStream &in, int version)
@@ -122,14 +114,15 @@ void  CObservationImage::readFromStream(mrpt::utils::CStream &in, int version)
 #if MRPT_HAS_MATLAB
 mxArray* CObservationImage::writeToMatlab() const
 {
-    const char* fields[] = {"ts","image","pose","params"};
-    mexplus::MxArray obs_struct( mexplus::MxArray::Struct(4,fields) );
+	const char* fields[] = {"ts","image","pose","params"};
+	mexplus::MxArray obs_struct( mexplus::MxArray::Struct(sizeof(fields)/sizeof(fields[0]),fields) );
 
-    // Timestamp must be set outside (from caller function)
-    obs_struct.set("image", this->image.writeToMatlab());
-    obs_struct.set("pose", this->cameraPose.writeToMatlab());
-    obs_struct.set("params", this->cameraParams.writeToMatlab());
-    return obs_struct.release();
+	// Timestamp must be set outside (from caller function)
+	MRPT_TODO("ts: timestamp")
+	obs_struct.set("image", this->image.writeToMatlab());
+	obs_struct.set("pose", this->cameraPose.writeToMatlab());
+	obs_struct.set("params", this->cameraParams.writeToMatlab());
+	return obs_struct.release();
 }
 #endif
 

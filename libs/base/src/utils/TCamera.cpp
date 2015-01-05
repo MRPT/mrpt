@@ -12,10 +12,7 @@
 #include <mrpt/utils/TCamera.h>
 #include <mrpt/utils/CConfigFileMemory.h>
 #include <mrpt/math/matrix_serialization.h>  // For "<<" ">>" operators.
-
-#if MRPT_HAS_MATLAB
-#	include <mexplus.h>
-#endif
+#include <mrpt/math/utils_matlab.h>
 
 using namespace mrpt::utils;
 using namespace mrpt::math;
@@ -91,15 +88,14 @@ void TCamera::readFromStream( CStream &in, int version )
 #if MRPT_HAS_MATLAB
 mxArray* TCamera::writeToMatlab() const
 {
-    const char* fields[] = {"K","dist","f","ncols","nrows"};
-    mexplus::MxArray params_struct( mexplus::MxArray::Struct(3,fields) );
-
-    params_struct.set("K", mxCreateDoubleMatrix(3,3,mxREAL)); // Temporal
-    params_struct.set("dist", mxCreateDoubleMatrix(1,5,mxREAL)); // Temporal
-    params_struct.set("f", this->focalLengthMeters);
-    params_struct.set("ncols", this->ncols);
-    params_struct.set("nrows", this->nrows);
-    return params_struct.release();
+	const char* fields[] = {"K","dist","f","ncols","nrows"};
+	mexplus::MxArray params_struct( mexplus::MxArray::Struct(sizeof(fields)/sizeof(fields[0]),fields) );
+	params_struct.set("K", mrpt::math::convertToMatlab(this->intrinsicParams));
+	params_struct.set("dist", mrpt::math::convertToMatlab(this->dist));
+	params_struct.set("f", this->focalLengthMeters);
+	params_struct.set("ncols", this->ncols);
+	params_struct.set("nrows", this->nrows);
+	return params_struct.release();
 }
 #endif
 
