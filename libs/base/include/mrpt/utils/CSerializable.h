@@ -71,11 +71,13 @@ namespace mrpt
 
 		public:
 
-			/** Introduces a pure virtual method responsible for writing to a mxArray Matlab object.
-			 */
-			#if MRPT_HAS_MATLAB
+			/** Introduces a pure virtual method responsible for writing to a `mxArray` Matlab object, 
+			  * typically a MATLAB `struct` whose contents are documented in each derived class. 
+			  * \return A new `mxArray` (caller is responsible of memory freeing) or NULL is class does not support conversion to MATLAB.
+			  */
+#if MRPT_HAS_MATLAB
 			virtual mxArray* writeToMatlab() const { return NULL; }
-			#endif
+#endif
 		}; // End of class def.
 
 		DEFINE_MRPT_OBJECT_POST( CSerializable )

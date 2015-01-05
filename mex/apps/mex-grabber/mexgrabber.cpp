@@ -196,6 +196,7 @@ MEX_DEFINE(delete) (int nlhs, mxArray* plhs[],
         joinThread( *th );
 
     cout << endl << "[mex-grabber::delete] mex-grabber application finished" << endl;
+	mrpt::system::sleep(1000); // Time for the wxSubsystem to close all remaining windows and avoid crash... (any better way?)
     mex_is_running = false;
 } // End of "delete" method
 
@@ -263,12 +264,12 @@ void SensorThread(TThreadParams params)
     }
     catch (std::exception &e)
     {
-        cerr << e.what() << endl;
+	    printf("[mex-grabber::Exception] %s\n",e.what());
         allThreadsMustExit = true;
     }
     catch (...)
     {
-        cerr << "Untyped exception!!" << endl;
+	    printf("[mex-grabber::UntypedException]\n");
         allThreadsMustExit = true;
     }
 }
@@ -320,14 +321,12 @@ int main(int argc, const char* argv[] )
         return 0;
     } catch (std::exception &e)
     {
-        std::cerr << e.what() << std::endl << "Program finished for an exception!!" << std::endl;
-        mrpt::system::pause();
+	    printf("[mex-grabber::Exception] %s\n",e.what());
         return -1;
     }
     catch (...)
     {
-        std::cerr << "Untyped exception!!" << std::endl;
-        mrpt::system::pause();
+	    printf("[mex-grabber::UntypedException]\n");
         return -1;
     }
 }
