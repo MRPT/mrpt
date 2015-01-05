@@ -21,9 +21,11 @@ ADD_LIBRARY(mextest SHARED # MEX must be SHARED
 set(TMP_MEX_NAME "mextest")
 
 # Add the required libraries for linking:
-TARGET_LINK_LIBRARIES(${TMP_MEX_NAME} ${MRPT_LINKER_LIBS_RELorDEB} )
-TARGET_LINK_LIBRARIES(${TMP_MEX_NAME} mrpt-hwdrivers${MRPT_LINKER_LIBS_POSTFIX} )
-TARGET_LINK_LIBRARIES(${TMP_MEX_NAME} ${MATLAB_LIBRARIES} )
+TARGET_LINK_LIBRARIES(${TMP_MEX_NAME} 
+	${MRPT_LINKER_LIBS_RELorDEB}
+	mrpt-hwdrivers${MRPT_LINKER_LIBS_POSTFIX}
+	${MATLAB_LIBRARIES}
+	)
 
 # Dependencies on MRPT libraries:
 #  Just mention the top-level dependency, the rest will be detected automatically,

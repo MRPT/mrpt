@@ -262,6 +262,17 @@ macro(internal_define_mrpt_lib name headers_only is_metalib)
 				"${CMAKE_SOURCE_DIR}/libs/${name}/src/${name}-precomp.h"
 				)	
 		ENDIF(MRPT_ENABLE_PRECOMPILED_HDRS)
+		
+		# (See comments in script_matlab.cmake)
+		# Add /DELAYLOAD:... to avoid dependency of these DLLs for standalone (non-mex) projects
+		IF (CMAKE_MRPT_HAS_MATLAB AND BUILD_SHARED_LIBS AND MSVC)
+			set_target_properties(mrpt-${name}
+				PROPERTIES
+				LINK_FLAGS "/DELAYLOAD:\"libmx.dll\" /DELAYLOAD:\"libmex.dll\" /ignore:4199")
+			# The /ignore:4199 is to disable warnings like these:
+			#  warning LNK4199: /DELAYLOAD:libmx.dll ignored; no imports found from libmx.dll
+			# in libs which do not (yet) support mex stuff
+		ENDIF (CMAKE_MRPT_HAS_MATLAB AND BUILD_SHARED_LIBS AND MSVC)
 
 		# Special directories when building a .deb package:
 		IF(CMAKE_MRPT_USE_DEB_POSTFIXS)

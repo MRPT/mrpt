@@ -38,17 +38,26 @@ IF(NOT DISABLE_MATLAB)
 # Use CMAKE module if Matlab's not been detected yet:
 IF(NOT CMAKE_MRPT_HAS_MATLAB)
 # TODO: This behaviour does not allow to update found libraries if MATLAB_ROOT is changed
-        FIND_PACKAGE(Matlab)
-        IF(MATLAB_FOUND)
-                SET(CMAKE_MRPT_HAS_MATLAB 1)
-                APPEND_MRPT_LIBS( ${MATLAB_LIBRARIES} )
+		FIND_PACKAGE(Matlab)
+		IF(MATLAB_FOUND)
+				SET(CMAKE_MRPT_HAS_MATLAB 1)
+				APPEND_MRPT_LIBS( ${MATLAB_LIBRARIES} )
 
-                # MEXPLUS header-only lib to handle mxArray class:
-                ADD_SUBDIRECTORY("${MRPT_SOURCE_DIR}/otherlibs/mexplus/")
+				# ----------------------------------------------------
+				# Windows & MSVC: Mark Matlab DLLs as "delay-load", so 
+				#  non-mex apps can be run standalone without MATLAB:
+				# ----------------------------------------------------
+				IF (MSVC)
+					APPEND_MRPT_LIBS( "delayimp.lib" )
+					# Flags /DELAYLOAD:... added in DeclareMRPTLib.cmake
+				ENDIF (MSVC)
+
+				# MEXPLUS header-only lib to handle mxArray class:
+				ADD_SUBDIRECTORY("${MRPT_SOURCE_DIR}/otherlibs/mexplus/")
 				INCLUDE_DIRECTORIES("${MRPT_SOURCE_DIR}/otherlibs/mexplus/")
 		ELSE(MATLAB_FOUND)
-			MESSAGE("MATLAB not found. Either MATLAB_ROOT or set BUILD_MATLAB=OFF")
-        ENDIF(MATLAB_FOUND)
+			MESSAGE("MATLAB not found. Either set MATLAB_ROOT correctly, or set BUILD_MATLAB=OFF")
+		ENDIF(MATLAB_FOUND)
 ENDIF(NOT CMAKE_MRPT_HAS_MATLAB)
 
 # It seems it works with dynamic libraries too now!
