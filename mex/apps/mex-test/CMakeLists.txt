@@ -35,20 +35,7 @@ TARGET_LINK_LIBRARIES(${TMP_MEX_NAME} ${MRPT_LINKER_LIBS_RELorDEB} )
 TARGET_LINK_LIBRARIES(${TMP_MEX_NAME} mrpt-hwdrivers${MRPT_LINKER_LIBS_POSTFIX} )
 TARGET_LINK_LIBRARIES(${TMP_MEX_NAME} ${MATLAB_LIBRARIES} )
 
-# 32-bit or 64-bit mex
-if(WIN32)
-  if (CMAKE_CL_64)
-          SET_TARGET_PROPERTIES(${TMP_MEX_NAME} PROPERTIES SUFFIX _.mexw64)
-  else(CMAKE_CL_64)
-          SET_TARGET_PROPERTIES(${TMP_MEX_NAME} PROPERTIES SUFFIX _.mexw32)
-  endif(CMAKE_CL_64)
-else(WIN32)
-  if (CMAKE_SIZEOF_VOID_P MATCHES "8")
-          SET_TARGET_PROPERTIES(${TMP_MEX_NAME} PROPERTIES SUFFIX _.mexa64 PREFIX "")
-  else(CMAKE_SIZEOF_VOID_P MATCHES "8")
-          SET_TARGET_PROPERTIES(${TMP_MEX_NAME} PROPERTIES SUFFIX _.mexglx PREFIX "")
-  endif (CMAKE_SIZEOF_VOID_P MATCHES "8")
-endif(WIN32)
+define_mex_lib(${TMP_MEX_NAME})
 
 # Dependencies on MRPT libraries:
 #  Just mention the top-level dependency, the rest will be detected automatically,

@@ -53,12 +53,8 @@ TARGET_LINK_LIBRARIES(${TMP_MEX_NAME} ${MRPT_LINKER_LIBS_RELorDEB} )
 TARGET_LINK_LIBRARIES(${TMP_MEX_NAME} mrpt-hwdrivers${MRPT_LINKER_LIBS_POSTFIX} )
 TARGET_LINK_LIBRARIES(${TMP_MEX_NAME} ${MATLAB_LIBRARIES} )
 
-define_mex_lib( ${TMP_MEX_NAME} "/private")
+define_mex_lib_private(${TMP_MEX_NAME})
 
 # TODO: How should these mex libraries be declared?
 DeclareAppForInstall(${TMP_MEX_NAME})
 DeclareAppDependencies(${TMP_MEX_NAME} mrpt-hwdrivers mrpt-obs)
-
-
-
-
