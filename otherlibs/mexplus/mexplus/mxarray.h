@@ -330,7 +330,7 @@ public:
 			cv::Mat m(input.dims, dims_, type, ptr);
 			//channels[i].convertTo(m, type); // Write to mxArray through m.
 			// Swap R and B channels
-			MRPT_TODO("Do in other place where it is more clear")
+			MRPT_TODO("Do RGB to BGR swapping in other place where it is more clear")
 					channels[nchannels-1-i].convertTo(m, type); // Write to mxArray through m.
 		}
 		return p_;
