@@ -46,10 +46,30 @@ macro(internal_define_mex_lib   name   is_private)
 	LIBRARY_OUTPUT_DIRECTORY "${MEX_LIBRARY_OUTPUT_PATH}/${subfolder}"
 	RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin/"
 	)
+
+	# Preprocessor #defines are done here to set proper behaviour of Matlab headers (e.g. matrix.h) during compilation
+	ADD_DEFINITIONS(/DMATLAB_MEX_FILE)	# Equivalent to #define MATLAB_MEX_FILE
+	ADD_DEFINITIONS(/DMX_COMPAT_32)		# Equivalent to #define MX_COMPAT_32
 endmacro(internal_define_mex_lib)
 
 # define_mex_test(): Declares a MEX executable which allows debug of mexFunction() through main() function:
+# Important: This scripts bases on previously configured MEX library,
+# so it should be called after MEX library project has been completely defined
 #-----------------------------------------------------------------------
-macro(define_mex_test name)
-SET_TARGET_PROPERTIES(${name} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${MEX_EXECUTABLE_OUTPUT_PATH})
+	macro(define_mex_test name)
+	# Recover all sources used for MEX library
+	GET_PROPERTY(all_sources
+				TARGET ${name}
+				PROPERTY SOURCES)
+	# Recover all libraries linked to MEX library
+	GET_PROPERTY(all_linked_libs
+				TARGET ${name}
+				PROPERTY LINK_LIBRARIES)
+
+	# Add new executable which can be used for Debug purposes
+	ADD_EXECUTABLE(		  "${name}-test" ${all_sources} )
+	TARGET_LINK_LIBRARIES("${name}-test" ${all_linked_libs} )
+
+	# Set MEX tests' output directory
+	SET_TARGET_PROPERTIES("${name}-test" PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${MEX_EXECUTABLE_OUTPUT_PATH})
 endmacro(define_mex_test name)

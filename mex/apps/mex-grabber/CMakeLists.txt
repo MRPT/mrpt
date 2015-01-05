@@ -1,7 +1,7 @@
 INCLUDE(../../../cmakemodules/AssureCMakeRootFile.cmake) # Avoid user mistake in CMake source directory
 
 #-----------------------------------------------------------------
-# CMake file for the MRPT application:  RawLogGrabber
+# CMake file for the MRPT MEX library:  MexGrabber
 #
 #  Run with "cmake ." at the root directory
 #
@@ -9,52 +9,28 @@ INCLUDE(../../../cmakemodules/AssureCMakeRootFile.cmake) # Avoid user mistake in
 #-----------------------------------------------------------------
 PROJECT(MexGrabber)
 
-#To get mex.h to work properly,
-#this macro must be defined if and only if the compiled object
-#will eventually be linked into a mex file.
-ADD_DEFINITIONS(/DMATLAB_MEX_FILE) #define matlab macros
-ADD_DEFINITIONS(/DMX_COMPAT_32)
-
 # ---------------------------------------------
-# TARGET:
-# ---------------------------------------------
-# Define the executable target
-# (used as test executable):
-ADD_EXECUTABLE(mexgrabber-test
-               mexgrabber.cpp
-              )
-SET(TMP_TARGET_NAME "mexgrabber-test")
-
-# Add the required libraries for linking:
-TARGET_LINK_LIBRARIES(${TMP_TARGET_NAME} ${MRPT_LINKER_LIBS_RELorDEB} )
-TARGET_LINK_LIBRARIES(${TMP_TARGET_NAME} mrpt-hwdrivers${MRPT_LINKER_LIBS_POSTFIX} )
-TARGET_LINK_LIBRARIES(${TMP_TARGET_NAME} ${MATLAB_LIBRARIES} )
-
-define_mex_test( ${TMP_TARGET_NAME} )
-
-# Dependencies on MRPT libraries:
-#  Just mention the top-level dependency, the rest will be detected automatically,
-#  and all the needed #include<> dirs added (see the script DeclareAppDependencies.cmake for further details)
-DeclareAppDependencies(${TMP_TARGET_NAME} mrpt-hwdrivers mrpt-obs)
-
-# ---------------------------------------------
-# MEX LIBRARY:
+# MEX CLASS LIBRARY:
 # ---------------------------------------------
 # Define the MEX module for Matlab:
-ADD_LIBRARY(mexgrabber SHARED
-            mexgrabber.cpp
-            ${CMAKE_CURRENT_LIST_DIR}/Matlabdef.def
-            )
+ADD_LIBRARY(mexgrabber SHARED # MEX must be SHARED
+			mexgrabber.cpp
+			${CMAKE_CURRENT_LIST_DIR}/Matlabdef.def
+			)
 
-set(TMP_MEX_NAME mexgrabber)
+set(TMP_MEX_NAME "mexgrabber")
 
 # Add the required libraries for linking:
 TARGET_LINK_LIBRARIES(${TMP_MEX_NAME} ${MRPT_LINKER_LIBS_RELorDEB} )
 TARGET_LINK_LIBRARIES(${TMP_MEX_NAME} mrpt-hwdrivers${MRPT_LINKER_LIBS_POSTFIX} )
 TARGET_LINK_LIBRARIES(${TMP_MEX_NAME} ${MATLAB_LIBRARIES} )
 
-define_mex_lib_private(${TMP_MEX_NAME})
-
-# TODO: How should these mex libraries be declared?
-DeclareAppForInstall(${TMP_MEX_NAME})
+# Dependencies on MRPT libraries:
+#  Just mention the top-level dependency, the rest will be detected automatically,
+#  and all the needed #include<> dirs added (see the script DeclareAppDependencies.cmake for further details)
 DeclareAppDependencies(${TMP_MEX_NAME} mrpt-hwdrivers mrpt-obs)
+DeclareAppForInstall(${TMP_MEX_NAME})
+
+# Apply macros to set MEX library custom properties
+define_mex_lib_private(${TMP_MEX_NAME})
+define_mex_test(${TMP_MEX_NAME}) # Apply after MEX library is COMPLETELY defined to add debuggable executable test
