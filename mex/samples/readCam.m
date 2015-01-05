@@ -12,7 +12,7 @@ function readCam(inifile)
 % readCam('/home/jesus/Libs/mrpt/source/share/mrpt/config_files/rawlog-grabber/camera_1394.ini')
 
 try
-    % Using a database object.
+    % Create object:
     Cam = mrpt.mexgrabber(inifile);
     figure('Name','Camera window');
     obs = [];
@@ -30,7 +30,8 @@ try
         end
         pause(0.01);
     end
-catch
-    disp('Catched exception, Cam object is being cleared and application safely closed');
+catch err
+    fprintf('Catched exception, Cam object is being cleared and application safely closed:\n"%s"\n',err.message);
+    disp(err.stack);
     clear Cam
 end
