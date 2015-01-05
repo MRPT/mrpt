@@ -14,6 +14,9 @@
 #include <mrpt/utils/CStream.h>
 #include <mrpt/math/CMatrix.h>
 #include <mrpt/math/wrap2pi.h>
+#if MRPT_HAS_MATLAB
+#	include <mexplus.h>
+#endif
 
 using namespace std;
 using namespace mrpt::obs;
@@ -208,6 +211,38 @@ void  CObservation2DRangeScan::readFromStream(mrpt::utils::CStream &in, int vers
 
 	m_cachedMap.clear();
 }
+
+/*---------------------------------------------------------------
+  Implements the writing to a mxArray for Matlab
+ ---------------------------------------------------------------*/
+#if MRPT_HAS_MATLAB
+mxArray* CObservation2DRangeScan::writeToMatlab() const
+{
+	const char* fields[] = {"ts","sensorLabel",		// Data common to any observation
+							"scan","validRange",	// Received raw data
+							"aperture","rightToLeft","maxRange",	// Scan plane geometry and properties
+							"stdError","beamAperture","deltaPitch",	// Ray properties
+							"pose", // Sensor pose
+							"map"}; // Points map
+	mexplus::MxArray obs_struct( mexplus::MxArray::Struct(sizeof(fields)/sizeof(fields[0]),fields) );
+
+	obs_struct.set("ts", this->timestamp);
+	obs_struct.set("sensorLabel", this->sensorLabel);
+
+	obs_struct.set("scan", this->scan);
+	MRPT_TODO("validRange should be a vector<bool> for Matlab instead of vector<char>")
+	obs_struct.set("validRange", this->validRange);
+	obs_struct.set("aperture", this->aperture);
+	obs_struct.set("rightToLeft", this->rightToLeft);
+	obs_struct.set("maxRange", this->maxRange);
+	obs_struct.set("stdError", this->stdError);
+	obs_struct.set("beamAperture", this->beamAperture);
+	obs_struct.set("deltaPitch", this->deltaPitch);
+	obs_struct.set("pose", this->sensorPose.writeToMatlab());
+	// TODO: obs_struct.set("map", ...)
+	return obs_struct.release();
+}
+#endif
 
 /*---------------------------------------------------------------
 						isPlanarScan

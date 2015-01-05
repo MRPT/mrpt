@@ -39,6 +39,10 @@
 #	include <mrpt/utils/SSE_macros.h>
 #endif
 
+#if MRPT_HAS_MATLAB
+#	include <mexplus.h>
+#endif
+
 using namespace mrpt::poses;
 using namespace mrpt::maps;
 using namespace mrpt::math;
@@ -179,6 +183,24 @@ bool  CPointsMap::load2Dor3D_from_text_file(
 
 	MRPT_END
 }
+
+
+/*---------------------------------------------------------------
+  Implements the writing to a mxArray for Matlab
+ ---------------------------------------------------------------*/
+#if MRPT_HAS_MATLAB
+mxArray* CPointsMap::writeToMatlab() const
+{
+	MRPT_TODO("Create 3xN array xyz of points coordinates")
+	const char* fields[] = {"x","y","z"};
+	mexplus::MxArray map_struct( mexplus::MxArray::Struct(sizeof(fields)/sizeof(fields[0]),fields) );
+
+	map_struct.set("x", this->x);
+	map_struct.set("y", this->y);
+	map_struct.set("z", this->z);
+	return map_struct.release();
+}
+#endif
 
 
 /*---------------------------------------------------------------

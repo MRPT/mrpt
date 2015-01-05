@@ -114,11 +114,11 @@ void  CObservationImage::readFromStream(mrpt::utils::CStream &in, int version)
 #if MRPT_HAS_MATLAB
 mxArray* CObservationImage::writeToMatlab() const
 {
-	const char* fields[] = {"ts","image","pose","params"};
+	const char* fields[] = {"ts","sensorLabel","image","pose","params"};
 	mexplus::MxArray obs_struct( mexplus::MxArray::Struct(sizeof(fields)/sizeof(fields[0]),fields) );
 
-	// Timestamp must be set outside (from caller function)
-	MRPT_TODO("ts: timestamp")
+	obs_struct.set("ts", this->timestamp);
+	obs_struct.set("sensorLabel", this->sensorLabel);
 	obs_struct.set("image", this->image.writeToMatlab());
 	obs_struct.set("pose", this->cameraPose.writeToMatlab());
 	obs_struct.set("params", this->cameraParams.writeToMatlab());

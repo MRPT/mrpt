@@ -29,6 +29,12 @@
 // Matlab MEX interface headers
 #include <mexplus.h>
 
+// Temporal includes
+MRPT_TODO("This won't be necessary when CObservation2DRangeScan::writeToMatlab is fully functional")
+#include <mrpt/obs/CObservation2DRangeScan.h>
+#include <mrpt/maps/CSimplePointsMap.h>
+using namespace mrpt::obs;
+
 // Force here using mexPrintf instead of printf
 #define printf mexPrintf
 
@@ -36,7 +42,6 @@ using namespace mrpt;
 using namespace mrpt::system;
 using namespace mrpt::hwdrivers;
 using namespace mrpt::utils;
-//using namespace mrpt::obs;
 using namespace std;
 using namespace mexplus;
 
@@ -163,10 +168,18 @@ MEX_DEFINE(read) (int nlhs, mxArray* plhs[],
     // Read from list of observations to mxArray cell array (store any kind of objects)
     MxArray cell_obs( MxArray::Cell(1, copy_of_global_list_obs.size()) );
     size_t index = 0;
+
     for (CGenericSensor::TListObservations::iterator it=copy_of_global_list_obs.begin(); it!=copy_of_global_list_obs.end();++it)
     {
-        MxArray struct_obs( it->second->writeToMatlab() );
-        struct_obs.set("ts", it->first); // Store timestamp too
+		MxArray struct_obs( it->second->writeToMatlab() );
+
+		// Special cases (TEMPORAL)
+		if( IS_CLASS(it->second, CObservation2DRangeScan) )
+		{
+			// Get Points Map from 2D Range Scan
+			CObservation2DRangeScanPtr LRF_obs = CObservation2DRangeScanPtr(it->second);
+			struct_obs.set("map", LRF_obs->buildAuxPointsMap<mrpt::maps::CSimplePointsMap>()->writeToMatlab());
+		}
         cell_obs.set( index, struct_obs.release() );
         index++;
     }
@@ -295,6 +308,8 @@ int main(int argc, const char* argv[] )
         mxIn[1] = mexplus::MxArray::from( argv[1] ); // Read config file path, first argv is function name
         mxArray* mxOut[1];
         mexFunction( 1, mxOut, 2, mxIn );
+
+		mrpt::system::sleep(5000); // Time for the sensor to read before collecting
 
         // Read frames with "read"
         mxIn[0] = mexplus::MxArray::from( "read" );

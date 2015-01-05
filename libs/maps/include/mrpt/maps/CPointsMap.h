@@ -57,6 +57,8 @@ namespace maps
 	{
 		// This must be added to any CSerializable derived class:
 		DEFINE_VIRTUAL_SERIALIZABLE( CPointsMap )
+		// This must be added for declaration of MEX-related functions
+		DECLARE_MEX_CONVERSION
 
 	protected:
 		/** Helper struct used for \a internal_loadFromRangeScan2D_prepareOneRange() */

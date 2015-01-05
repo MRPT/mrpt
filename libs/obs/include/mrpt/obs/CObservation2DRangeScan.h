@@ -50,6 +50,8 @@ namespace obs
 	{
 		// This must be added to any CSerializable derived class:
 		DEFINE_SERIALIZABLE( CObservation2DRangeScan )
+		// This must be added for declaration of MEX-related functions
+		DECLARE_MEX_CONVERSION
 
 	 public:
 		typedef std::vector<mrpt::math::CPolygon> TListExclusionAreas; //!< Used in filterByExclusionAreas
