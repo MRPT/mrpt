@@ -37,6 +37,7 @@
 			- libfreenect is now detected in the system and used instead of compiling the embedded copy of it.
 			- Embedded copy of libfreenect has been updated to (23/oct/2014). It now supports "Kinect for Windows".
 			- More selective linking of .so files to avoid useless dependencies (Fixes #52).
+			- (Windows only) MRPT can now be safely built with libusb support (Freenect, Kinect,...) and it will run on systems without libusb installed, by means of /DELAYLOAD linking flags.
 		- Changes in classes:
 			- [mrpt-base]
 				- New function mrpt::math::angDistance()

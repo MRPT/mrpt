@@ -33,7 +33,7 @@ IF(CMAKE_MRPT_HAS_xSENS_MT4)
 		)
 ENDIF(CMAKE_MRPT_HAS_xSENS_MT4)
 
-# Build Xbox Kinect?
+# Build Kinect support via libfreenect?
 IF(CMAKE_MRPT_HAS_FREENECT)
 	IF (CMAKE_MRPT_HAS_FREENECT_SYSTEM)
 		# No need to build if it's already built in the system:
@@ -51,7 +51,7 @@ IF(CMAKE_MRPT_HAS_FREENECT)
 			"libfreenect"
 			"libfreenect"
 			)
-			
+
 		# Special stuff for windows:
 		if (WIN32)
 			LIST(APPEND hwdrivers_EXTRA_SRCS
@@ -62,7 +62,7 @@ IF(CMAKE_MRPT_HAS_FREENECT)
 				"libfreenect"
 				"libfreenect"
 				)
-				
+
 			INCLUDE_DIRECTORIES("${MRPT_LIBS_ROOT}/hwdrivers/src/libfreenect/platform/windows")
 			INCLUDE_DIRECTORIES("${MRPT_LIBS_ROOT}/hwdrivers/src/libfreenect/platform/windows/libusb10emu")
 			# libfreenect.h includes libusb.h:
@@ -190,6 +190,13 @@ IF(BUILD_mrpt-hwdrivers)
 		# Add linking against these libs:
 		IF(NOT "${FREENECT_LIBS}" STREQUAL "")
 			TARGET_LINK_LIBRARIES(mrpt-hwdrivers ${FREENECT_LIBS})
+			
+			# Windows: 
+			# Set libusb0.dll as DELAYLOAD, so users without that driver 
+			# still can use binaries compiled with libusb support:
+			IF (MSVC)
+				set_target_properties(mrpt-hwdrivers PROPERTIES LINK_FLAGS "/DELAYLOAD:\"libusb0.dll\"")
+			ENDIF (MSVC)
 		ENDIF(NOT "${FREENECT_LIBS}" STREQUAL "")
 		
 		if (NOT CMAKE_MRPT_HAS_FREENECT_SYSTEM)
