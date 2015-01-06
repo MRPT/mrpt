@@ -9,87 +9,110 @@
 
 #include "tfest-precomp.h"  // Precompiled headers
 
+#include <mrpt/tfest/se3.h>
 
-#include <mrpt/scanmatching/scan_matching.h>
 #include <mrpt/poses/CPose3D.h>
-#include <mrpt/poses/CPosePDFGaussian.h>
-#include <mrpt/poses/CPosePDFSOG.h>
 #include <mrpt/poses/CPose3DQuat.h>
-#include <mrpt/random.h>
 
 using namespace mrpt;
 using namespace mrpt::tfest;
-using namespace mrpt::random;
 using namespace mrpt::utils;
 using namespace mrpt::poses;
 using namespace mrpt::math;
 using namespace std;
 
+// "Closed-form solution of absolute orientation using unit quaternions", BKP Horn, Journal of the Optical Society of America, 1987.
+// Algorithm:
+// 0. Preliminary
+//		pLi = { pLix, pLiy, pLiz }
+//		pRi = { pRix, pRiy, pRiz }
+// -------------------------------------------------------
+// 1. Find the centroids of the two sets of measurements:
+//		cL = (1/n)*sum{i}( pLi )		cL = { cLx, cLy, cLz }
+//		cR = (1/n)*sum{i}( pRi )		cR = { cRx, cRy, cRz }
+//
+// 2. Substract centroids from the point coordinates:
+//		pLi' = pLi - cL					pLi' = { pLix', pLiy', pLiz' }
+//		pRi' = pRi - cR					pRi' = { pRix', pRiy', pRiz' }
+//
+// 3. For each pair of coordinates (correspondences) compute the nine possible products:
+//		pi1 = pLix'*pRix'		pi2 = pLix'*pRiy'		pi3 = pLix'*pRiz'
+//		pi4 = pLiy'*pRix'		pi5 = pLiy'*pRiy'		pi6 = pLiy'*pRiz'
+//		pi7 = pLiz'*pRix'		pi8 = pLiz'*pRiy'		pi9 = pLiz'*pRiz'
+//
+// 4. Compute S components:
+//		Sxx = sum{i}( pi1 )		Sxy = sum{i}( pi2 )		Sxz = sum{i}( pi3 )
+//		Syx = sum{i}( pi4 )		Syy = sum{i}( pi5 )		Syz = sum{i}( pi6 )
+//		Szx = sum{i}( pi7 )		Szy = sum{i}( pi8 )		Szz = sum{i}( pi9 )
+//
+// 5. Compute N components:
+//			[ Sxx+Syy+Szz	Syz-Szy			Szx-Sxz			Sxy-Syx		 ]
+//			[ Syz-Szy		Sxx-Syy-Szz		Sxy+Syx			Szx+Sxz		 ]
+//		N = [ Szx-Sxz		Sxy+Syx			-Sxx+Syy-Szz	Syz+Szy		 ]
+//			[ Sxy-Syx		Szx+Sxz			Syz+Szy			-Sxx-Syy+Szz ]
+//
+// 6. Rotation represented by the quaternion eigenvector correspondent to the higher eigenvalue of N
+//
+// 7. Scale computation (symmetric expression)
+//		s = sqrt( sum{i}( square(abs(pRi')) / sum{i}( square(abs(pLi')) ) )
+//
+// 8. Translation computation (distance between the Right centroid and the scaled and rotated Left centroid)
+//		t = cR-sR(cL)
+
 /*---------------------------------------------------------------
-	HornMethod
+                    se3_l2  (old "HornMethod()")
   ---------------------------------------------------------------*/
-double tfest::HornMethod(
-	const vector<double>		&inVector,
-	vector<double>			&outVector,				// The output vector
-	bool forceScaleToUnity )
+bool se3_l2_internal(
+	std::vector<mrpt::math::TPoint3D> & points_this,   // IN/OUT: It gets modified!
+	std::vector<mrpt::math::TPoint3D> & points_other,  // IN/OUT: It gets modified!
+	mrpt::poses::CPose3DQuat    & out_transform,
+	double                     & out_scale,
+	bool                         forceScaleToUnity)
 {
 	MRPT_START
 
-	vector<double> input;
-	input.resize( inVector.size() );
-	input = inVector;
-	outVector.resize( 7 );
+	ASSERT_EQUAL_(points_this.size(),points_other.size())
 
 	// Compute the centroids
 	TPoint3D	cL(0,0,0), cR(0,0,0);
+	const size_t nMatches = points_this.size();
+	
+	if (nMatches<3)
+		return false; // Nothing we can estimate without 3 points!!
 
-	const size_t nMatches = input.size()/6;
-	ASSERT_EQUAL_(input.size()%6, 0)
-
-	for( unsigned int i = 0; i < nMatches; i++ )
+	for(size_t i = 0; i < nMatches; i++ )
 	{
-		cL.x += input[i*6+3];
-		cL.y += input[i*6+4];
-		cL.z += input[i*6+5];
-
-		cR.x += input[i*6+0];
-		cR.y += input[i*6+1];
-		cR.z += input[i*6+2];
+		cL += points_this [i];
+		cR += points_other[i];
 	}
 
-	ASSERT_ABOVE_(nMatches,0)
 	const double F = 1.0/nMatches;
 	cL *= F;
 	cR *= F;
 
-	CMatrixDouble33 S; // S.zeros(); // Zeroed by default
+	CMatrixDouble33 S; // Zeroed by default
 
 	// Substract the centroid and compute the S matrix of cross products
-	for( unsigned int i = 0; i < nMatches; i++ )
+	for(size_t i = 0; i < nMatches; i++ )
 	{
-		input[i*6+3] -= cL.x;
-		input[i*6+4] -= cL.y;
-		input[i*6+5] -= cL.z;
+		points_this[i]  -= cL;
+		points_other[i] -= cR;
 
-		input[i*6+0] -= cR.x;
-		input[i*6+1] -= cR.y;
-		input[i*6+2] -= cR.z;
+		S.get_unsafe(0,0) += points_other[i].x * points_this[i].x;
+		S.get_unsafe(0,1) += points_other[i].x * points_this[i].x;
+		S.get_unsafe(0,2) += points_other[i].x * points_this[i].z;
 
-		S.get_unsafe(0,0) += input[i*6+3]*input[i*6+0];
-		S.get_unsafe(0,1) += input[i*6+3]*input[i*6+1];
-		S.get_unsafe(0,2) += input[i*6+3]*input[i*6+2];
+		S.get_unsafe(1,0) += points_other[i].y * points_this[i].x;
+		S.get_unsafe(1,1) += points_other[i].y * points_this[i].y;
+		S.get_unsafe(1,2) += points_other[i].y * points_this[i].z;
 
-		S.get_unsafe(1,0) += input[i*6+4]*input[i*6+0];
-		S.get_unsafe(1,1) += input[i*6+4]*input[i*6+1];
-		S.get_unsafe(1,2) += input[i*6+4]*input[i*6+2];
-
-		S.get_unsafe(2,0) += input[i*6+5]*input[i*6+0];
-		S.get_unsafe(2,1) += input[i*6+5]*input[i*6+1];
-		S.get_unsafe(2,2) += input[i*6+5]*input[i*6+2];
+		S.get_unsafe(2,0) += points_other[i].z * points_this[i].x;
+		S.get_unsafe(2,1) += points_other[i].z * points_this[i].y;
+		S.get_unsafe(2,2) += points_other[i].z * points_this[i].z;
 	}
 
 	// Construct the N matrix
-	CMatrixDouble44 N; // N.zeros(); // Zeroed by default
+	CMatrixDouble44 N; // Zeroed by default
 
 	N.set_unsafe( 0,0,S.get_unsafe(0,0) + S.get_unsafe(1,1) + S.get_unsafe(2,2) );
 	N.set_unsafe( 0,1,S.get_unsafe(1,2) - S.get_unsafe(2,1) );
@@ -123,50 +146,60 @@ double tfest::HornMethod(
 	// Make q_r > 0
 	if( v[0] < 0 ){ v[0] *= -1;	v[1] *= -1;	v[2] *= -1;	v[3] *= -1;	}
 
-	CPose3DQuat q;		// Create a pose rotation with the quaternion
+	// out_transform: Create a pose rotation with the quaternion
 	for(unsigned int i = 0; i < 4; i++ )			// insert the quaternion part
-		outVector[i+3] = q[i+3] = v[i];
+		out_transform[i+3] = v[i];
 
 	// Compute scale
-	double	num = 0.0;
-	double	den = 0.0;
-	for( unsigned int i = 0; i < nMatches; i++ )
-	{
-		num += square( input[i*6+0] ) + square( input[i*6+1] ) + square( input[i*6+2] );
-		den += square( input[i*6+3] ) + square( input[i*6+4] ) + square( input[i*6+5] );
-	} // end-for
-
-	// The scale:
-	double s = std::sqrt( num/den );
-
-	// Enforce scale to be 1
+	double s;
 	if( forceScaleToUnity )
-		s = 1.0;
+	{
+		s = 1.0; // Enforce scale to be 1
+	}
+	else
+	{
+		double	num = 0.0;
+		double	den = 0.0;
+		for(size_t i = 0; i < nMatches; i++ )
+		{
+			num += square( points_other[i].x ) + square( points_other[i].y ) + square( points_other[i].z );
+			den += square( points_this[i].x )  + square( points_this[i].y )  + square( points_this[i].z );
+		} // end-for
+
+		// The scale:
+		s = std::sqrt( num/den );
+	}
 
 	TPoint3D pp;
-	q.composePoint( cL.x, cL.y, cL.z, pp.x, pp.y, pp.z );
+	out_transform.composePoint( cL.x, cL.y, cL.z, pp.x, pp.y, pp.z );
 	pp*=s;
 
-	outVector[0] = cR.x - pp.x;	// X
-	outVector[1] = cR.y - pp.y;	// Y
-	outVector[2] = cR.z - pp.z;	// Z
+	out_transform[0] = cR.x - pp.x;	// X
+	out_transform[1] = cR.y - pp.y;	// Y
+	out_transform[2] = cR.z - pp.z;	// Z
 
-	return s; // return scale
+	out_scale=s; // return scale
+	return true;
+
 	MRPT_END
+} // end se3_l2_internal()
+
+bool tfest::se3_l2(
+	const std::vector<mrpt::math::TPoint3D> & in_points_this,
+	const std::vector<mrpt::math::TPoint3D> & in_points_other,
+	mrpt::poses::CPose3DQuat   & out_transform,
+	double                     & out_scale,
+	bool                         forceScaleToUnity)
+{
+	// make a copy because we need it anyway to substract the centroid and to provide a unified interface to TMatchingList API
+	std::vector<mrpt::math::TPoint3D> points_this = in_points_this; 
+	std::vector<mrpt::math::TPoint3D> points_other= in_points_other;
+
+	return se3_l2_internal(points_this,points_other,out_transform,out_scale,forceScaleToUnity);
 }
 
-//! \overload
-double tfest::HornMethod(
-	const vector<double>      &inPoints,
-	mrpt::poses::CPose3DQuat &outQuat,
-	bool                      forceScaleToUnity )
-{
-	vector<double> outV;
-	const double s = HornMethod(inPoints,outV,forceScaleToUnity);
-	for (int i=0;i<7;i++)
-		outQuat[i]=outV[i];
-	return s;
-}
+
+#if 0
 
 bool tfest::leastSquareErrorRigidTransformation6D(
     const TMatchingPairList	&in_correspondences,
@@ -317,44 +350,6 @@ bool  tfest::leastSquareErrorRigidTransformation6D(
 	MRPT_END
 
 	return true;
-
-/*---------------------------------------------------------------
-			leastSquareErrorRigidTransformation in 6D
-  ---------------------------------------------------------------*/
-	// Algorithm:
-	// 0. Preliminary
-	//		pLi = { pLix, pLiy, pLiz }
-	//		pRi = { pRix, pRiy, pRiz }
-	// -------------------------------------------------------
-	// 1. Find the centroids of the two sets of measurements:
-	//		cL = (1/n)*sum{i}( pLi )		cL = { cLx, cLy, cLz }
-	//		cR = (1/n)*sum{i}( pRi )		cR = { cRx, cRy, cRz }
-	//
-	// 2. Substract centroids from the point coordinates:
-	//		pLi' = pLi - cL					pLi' = { pLix', pLiy', pLiz' }
-	//		pRi' = pRi - cR					pRi' = { pRix', pRiy', pRiz' }
-	//
-	// 3. For each pair of coordinates (correspondences) compute the nine possible products:
-	//		pi1 = pLix'*pRix'		pi2 = pLix'*pRiy'		pi3 = pLix'*pRiz'
-	//		pi4 = pLiy'*pRix'		pi5 = pLiy'*pRiy'		pi6 = pLiy'*pRiz'
-	//		pi7 = pLiz'*pRix'		pi8 = pLiz'*pRiy'		pi9 = pLiz'*pRiz'
-	//
-	// 4. Compute S components:
-	//		Sxx = sum{i}( pi1 )		Sxy = sum{i}( pi2 )		Sxz = sum{i}( pi3 )
-	//		Syx = sum{i}( pi4 )		Syy = sum{i}( pi5 )		Syz = sum{i}( pi6 )
-	//		Szx = sum{i}( pi7 )		Szy = sum{i}( pi8 )		Szz = sum{i}( pi9 )
-	//
-	// 5. Compute N components:
-	//			[ Sxx+Syy+Szz	Syz-Szy			Szx-Sxz			Sxy-Syx		 ]
-	//			[ Syz-Szy		Sxx-Syy-Szz		Sxy+Syx			Szx+Sxz		 ]
-	//		N = [ Szx-Sxz		Sxy+Syx			-Sxx+Syy-Szz	Syz+Szy		 ]
-	//			[ Sxy-Syx		Szx+Sxz			Syz+Szy			-Sxx-Syy+Szz ]
-	//
-	// 6. Rotation represented by the quaternion eigenvector correspondent to the higher eigenvalue of N
-	//
-	// 7. Scale computation (symmetric expression)
-	//		s = sqrt( sum{i}( square(abs(pRi')) / sum{i}( square(abs(pLi')) ) )
-	//
-	// 8. Translation computation (distance between the Right centroid and the scaled and rotated Left centroid)
-	//		t = cR-sR(cL)
 }
+#endif
+

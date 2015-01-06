@@ -36,7 +36,6 @@ namespace mrpt
 		  * \param[in] in_correspondences The set of correspondences.
 		  * \param[out] out_transformation The pose that minimizes the mean-square-error between all the correspondences.
 		  * \param[out] out_estimateCovariance If provided (!=NULL) this will contain on return a 3x3 covariance matrix with the NORMALIZED optimal estimate uncertainty. This matrix must be multiplied by \f$\sigma^2_p\f$, the variance of matched points in \f$x\f$ and \f$y\f$ (see paper http://www.mrpt.org/Paper:Occupancy_Grid_Matching)
-		  * \exception Raises a std::exception if `in_correspondences` has not a minimum of two correspondences.
 		  * \return True if there are at least two correspondences, or false if one or none, thus we cannot establish any correspondence.
 		  * \sa robustRigidTransformation
 		  *
@@ -127,11 +126,11 @@ namespace mrpt
 		  * 
 		  * <b>NOTE</b>: Parameter `ransac_maxSetSize` should be set to `in_correspondences.size()` to make sure that every correspondence is tested for each random permutation.
 		  *
-		  * \exception Raises a std::exception if the list "in_correspondences" has not a minimum of two correspondences.
+		  * \return True upon success, false if no subset was found with the minimum number of correspondences.
 		  * \note [New in MRPT 1.3.0] This function replaces mrpt::scanmatching::robustRigidTransformation()
 		  * \sa se3_l2, se2_l2_robust
 		  */
-		void TFEST_IMPEXP se2_l2_robust(
+		bool TFEST_IMPEXP se2_l2_robust(
 			const mrpt::utils::TMatchingPairList &in_correspondences,
 			const double               in_normalizationStd,
 			const TSE2RobustParams   & in_ransac_params,

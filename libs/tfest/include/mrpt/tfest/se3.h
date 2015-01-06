@@ -22,85 +22,87 @@ namespace mrpt
 		/** \addtogroup mrpt_tfest_grp
 		  * @{ */
 
-		/** This function implements the Horn method for computing the change in pose between two coordinate systems
-		  * \param[in] inPoints		A vector containing the coordinates of the input points in the format:
-		  *							[x11 y11 z11, x12 y12 z12, x21 y21 z21, x22 y22 z22, x31 y31 z31, x32 y32 z32, ...  ]
-		  *							where [xi1 yi1 zi1] and [xi2 yi2 zi2] represent the i-th pair of corresponding 3D points in the two coordinate systems "1" and "2"
-		  * \param[out] outQuat	A 7D vector containing the traslation and rotation (in a quaternion form) which indicates the change in pose of system "2" wrt "1".
-		  * \param[in]  forceScaleToUnity	Whether or not force the scale employed to rotate the coordinate systems to one (rigid transformation)
+		/** Least-squares (L2 norm) solution to finding the optimal SE(3) transform between two reference frames using the "quaternion" or Horn's method: 
+		  *  - "Closed-form solution of absolute orientation using unit quaternions", BKP Horn, Journal of the Optical Society of America, 1987.
 		  *
-		  * \return The computed scale of the optimal transformation (will be 1.0 for a perfectly rigid translation + rotation).
-		  * \sa THornMethodOpts
-		  */
-		double TFEST_IMPEXP HornMethod(
-			const std::vector<double>  &inPoints,
-			std::vector<double>        &outQuat,
-			bool                 forceScaleToUnity = false );
-
-		//! \overload
-		double TFEST_IMPEXP HornMethod(
-			const std::vector<double>      &inPoints,
-			mrpt::poses::CPose3DQuat &outQuat,
-			bool                      forceScaleToUnity  = false);
-
-		/** This method provides the closed-form solution of absolute orientation using unit quaternions to a set of over-constrained correspondences for finding the 6D rigid transformation between two cloud of 3D points.
-		  *  The output 3D pose is computed using the method described in "Closed-form solution of absolute orientation using unit quaternions", BKP Horn, Journal of the Optical Society of America, 1987.
+		  *  The optimal transformation `q` fulfills \f$ p_{this} = q \oplus p_{other} \f$, that is, the 
+		  *  transformation of frame `other` with respect to `this`.
 		  *
-		  * \param in_correspondences The set of correspondences in TMatchingPairList form ("this" and "other").
-		  * \param out_transformation The change in pose (CPose3DQuat) of the "other" reference system wrt "this" reference system which minimizes the mean-square-error between all the correspondences.
-		  * \exception Raises a std::exception if the list "in_correspondences" has not a minimum of three correspondences.
-		  * \return True if there are at least three correspondences, or false otherwise, thus we cannot establish any correspondence.
-		  *  Implemented by FAMD, 2007. Revised in 2010.
-		  * \sa robustRigidTransformation
-		  */
-		bool TFEST_IMPEXP leastSquareErrorRigidTransformation6D(
-			const mrpt::utils::TMatchingPairList	&in_correspondences,
-			mrpt::poses::CPose3DQuat							&out_transformation,
-			double								&out_scale,
-			const bool 							forceScaleToUnity = false );
-
-		/** This method provides the closed-form solution of absolute orientation using unit quaternions to a set of over-constrained correspondences for finding the 6D rigid transformation between two cloud of 3D points.
-		  *  The output 3D pose is computed using the method described in "Closed-form solution of absolute orientation using unit quaternions", BKP Horn, Journal of the Optical Society of America, 1987.
+		  *  \image html tfest_frames.png
 		  *
-		  * \param in_correspondences The set of correspondences.
-		  * \param out_transformation The change in pose (CPose3DQuat) of the "other" reference system wrt "this" reference system which minimizes the mean-square-error between all the correspondences.
-		  * \exception Raises a std::exception if the list "in_correspondences" has not a minimum of two correspondences.
-		  * \return True if there are at least two correspondences, or false if one or none, thus we cannot establish any correspondence.
-		  *  Implemented by FAMD, 2007. Revised in 2010
-		  * \sa robustRigidTransformation
+		  * \param[in]  in_correspondences  The coordinates of the input points for the two coordinate systems "this" and "other"
+		  * \param[out] out_transform       The output transformation
+		  * \param[out] out_scale           The computed scale of the optimal transformation (will be 1.0 for a perfectly rigid translation + rotation).
+		  * \param[in]  forceScaleToUnity   Whether or not force the scale employed to rotate the coordinate systems to one (rigid transformation)
+		  * \note [New in MRPT 1.3.0] This function replaces mrpt::scanmatching::leastSquareErrorRigidTransformation6DRANSAC() and mrpt::scanmatching::HornMethod()
+		  * \sa se2_l2, se3_l2_robust
 		  */
-		bool TFEST_IMPEXP leastSquareErrorRigidTransformation6D(
-			const mrpt::utils::TMatchingPairList	&in_correspondences,
-			mrpt::poses::CPose3D								&out_transformation,
-			double								&out_scale,
-			const bool 							forceScaleToUnity = false );
+		bool TFEST_IMPEXP se3_l2(
+			const mrpt::utils::TMatchingPairList  & in_correspondences,
+			mrpt::poses::CPose3DQuat   & out_transform,
+			double                     & out_scale,
+			bool                         forceScaleToUnity = false );
 
-		/** This method provides the closed-form solution of absolute orientation using unit quaternions to a set of over-constrained correspondences for finding the 6D rigid transformation between two cloud of 3D points using RANSAC.
-		  *  The output 3D pose is computed using the method described in "Closed-form solution of absolute orientation using unit quaternions", BKP Horn, Journal of the Optical Society of America, 1987.
-		  *  If supplied, the output covariance matrix is computed using... TODO
-		  * \todo Explain covariance!!
+		/** \overload 
 		  *
-		  * \param in_correspondences The set of correspondences.
-		  * \param out_transformation The pose that minimizes the mean-square-error between all the correspondences.
-		  * \param out_scale The estimated scale of the rigid transformation (should be very close to 1.0)
-		  * \param out_inliers_idx Indexes within the "in_correspondences" list which corresponds with inliers
-		  * \param ransac_minSetSize The minimum amount of points in the set
-		  * \param ransac_nmaxSimulations The maximum number of iterations of the RANSAC algorithm
-		  * \param ransac_maxSetSizePct The (minimum) assumed percent (0.0 - 1.0) of the input set to be considered as inliers
-		  * \exception Raises a std::exception if the list "in_correspondences" has not a minimum of two correspondences.
-		  * \return True if there are at least two correspondences, or false if one or none, thus we cannot establish any correspondence.
-		  *  Implemented by FAMD, 2008.
-		  * \sa robustRigidTransformation
+		  * This version accepts corresponding points as two vectors of TPoint3D (must have identical length).
 		  */
-		bool TFEST_IMPEXP leastSquareErrorRigidTransformation6DRANSAC(
-			const mrpt::utils::TMatchingPairList	&in_correspondences,
-			mrpt::poses::CPose3D								&out_transformation,
-			double								&out_scale,
-			vector_int							&out_inliers_idx,
-			const unsigned int					ransac_minSetSize = 5,
-			const unsigned int					ransac_nmaxSimulations = 50,
-			const double						ransac_maxSetSizePct = 0.7,
-			const bool							forceScaleToUnity = false );
+		bool TFEST_IMPEXP se3_l2(
+			const std::vector<mrpt::math::TPoint3D> & in_points_this,
+			const std::vector<mrpt::math::TPoint3D> & in_points_other,
+			mrpt::poses::CPose3DQuat   & out_transform,
+			double                     & out_scale,
+			bool                         forceScaleToUnity = false );
+
+		/** Parameters for se3_l2_robust(). See function for more details */
+		struct TFEST_IMPEXP TSE3RobustParams
+		{
+			unsigned int  ransac_minSetSize; //!< (Default=5)  The minimum amount of points in a set to be accepted
+			unsigned int  ransac_nmaxSimulations; //!< (Default=50) The maximum number of iterations of the RANSAC algorithm
+			double        ransac_maxSetSizePct; //!< (Default=0.7) The (minimum) assumed percent (0.0 - 1.0) of the input set to be considered as inliers
+			bool          forceScaleToUnity; //!< (Default=true) 
+
+			TSE3RobustParams() :
+				ransac_minSetSize( 5 ),
+				ransac_nmaxSimulations(50),
+				ransac_maxSetSizePct(0.7),
+				forceScaleToUnity( true)
+			{
+			}
+		};
+
+		/** Output placeholder for se3_l2_robust() */
+		struct TFEST_IMPEXP TSE3RobustResult
+		{
+			mrpt::math::TPose3DQuat         transformation; //!< The best transformation found
+			double                          scale;          //!< The estimated scale of the rigid transformation (should be very close to 1.0)
+			mrpt::vector_int                inliers_idx;    //!< Indexes within the `in_correspondences` list which corresponds with inliers
+
+			TSE3RobustResult() : scale(.0)  { }
+		};
+
+
+		/** Least-squares (L2 norm) solution to finding the optimal SE(3) transform between two reference frames using RANSAC and the "quaternion" or Horn's method: 
+		  *  - "Closed-form solution of absolute orientation using unit quaternions", BKP Horn, Journal of the Optical Society of America, 1987.
+		  *
+		  *  The optimal transformation `q` fulfills \f$ p_{this} = q \oplus p_{other} \f$, that is, the 
+		  *  transformation of frame `other` with respect to `this`.
+		  *
+		  *  \image html tfest_frames.png
+		  *
+		  * \param[in] in_correspondences The set of correspondences.
+		  * \param[in] in_params Method parameters (see docs for TSE3RobustParams)
+		  * \param[out] out_results Results: transformation, scale, etc.
+		  *
+		  * \return True if the minimum number of correspondences was found, false otherwise.
+		  * \note Implemented by FAMD, 2008. Re-factored by JLBC, 2015.
+		  * \note [New in MRPT 1.3.0] This function replaces mrpt::scanmatching::leastSquareErrorRigidTransformation6DRANSAC()
+		  * \sa se2_l2, se3_l2
+		  */
+		bool TFEST_IMPEXP se3_l2_robust(
+			const mrpt::utils::TMatchingPairList & in_correspondences,
+			const TSE3RobustParams               & in_params,
+			TSE3RobustResult                     & out_results );
 
 
 		/** @} */  // end of grouping

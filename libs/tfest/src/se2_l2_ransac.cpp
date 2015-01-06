@@ -14,13 +14,9 @@
 #include <mrpt/poses/CPoint2DPDFGaussian.h>
 #include <mrpt/random.h>
 #include <mrpt/math/geometry.h>
-//#include <mrpt/math/utils.h>
-//#include <mrpt/math/wrap2pi.h>
 #include <mrpt/math/distributions.h>
-//#include <mrpt/math/CQuaternion.h>
 #include <mrpt/utils/CTimeLogger.h>
-
-#include <algorithm>
+//#include <algorithm>
 
 MRPT_TODO("Write unit tests!")
 
@@ -77,7 +73,7 @@ void markAsPicked(
 			- If if is compatible (ransac_maxErrorXY, ransac_maxErrorPHI), grow the "consensus set"
 			- If not, do not add it.
   ---------------------------------------------------------------*/
-void  tfest::se2_l2_robust(
+bool tfest::se2_l2_robust(
 	const mrpt::utils::TMatchingPairList &in_correspondences,
 	const double               normalizationStd,
 	const TSE2RobustParams   & params,
@@ -103,7 +99,7 @@ void  tfest::se2_l2_robust(
 		// Nothing to do!
 		results.transformation.clear();
 		results.largestSubSet = TMatchingPairList();
-		return;
+		return false;
 	}
 
 
@@ -153,7 +149,7 @@ void  tfest::se2_l2_robust(
 		// Nothing we can do here!!! :~$
 		results.transformation.clear();
 		results.largestSubSet = TMatchingPairList();
-		return;
+		return false;
 	}
 
 
@@ -527,7 +523,6 @@ void  tfest::se2_l2_robust(
 	// Set the weights of the particles to sum the unity:
 	results.transformation.normalizeWeights();
 
-	// Now the estimation is in the particles set!
 	// Done!
 
 	MRPT_END_WITH_CLEAN_UP( \
@@ -539,4 +534,5 @@ void  tfest::se2_l2_robust(
 		results.transformation.saveToTextFile("_debug_results.transformation.txt"); \
 		printf("Ok\n"); );
 
+	return true;
 }
