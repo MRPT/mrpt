@@ -233,8 +233,8 @@ namespace mrpt
 				} \
 			}
 		#else
-			#define DECLARE_MEXPLUS_FROM //Empty
-			#define IMPLEMENTS_MEXPLUS_FROM //Empty
+			#define DECLARE_MEXPLUS_FROM(complete_type) //Empty
+			#define IMPLEMENTS_MEXPLUS_FROM(complete_type) //Empty
 		#endif
 
 	} // End of namespace
