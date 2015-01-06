@@ -32,8 +32,9 @@ bool tfest::se2_l2(
 	CPosePDFGaussian        & out_transformation )
 {
 	mrpt::math::TPose2D p;
-	return tfest::se2_l2(in_correspondences,p, &out_transformation.cov );
+	const bool ret = tfest::se2_l2(in_correspondences,p, &out_transformation.cov );
 	out_transformation.mean = p;
+	return ret;
 }
 
 /*---------------------------------------------------------------
