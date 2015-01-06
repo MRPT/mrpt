@@ -69,7 +69,7 @@ namespace mrpt
 			bool          ransac_fuseByCorrsMatch;
 			double        ransac_fuseMaxDiffXY; //!< (Default = 0.01)
 			double        ransac_fuseMaxDiffPhi; //!< (Default=0.1degree) (In radians)
-			bool          ransac_algorithmForLandmarks; //!< (Default = true)
+			bool          ransac_algorithmForLandmarks; //!< (Default = true) Use Mahalanobis distance (true) or Euclidean dist (false)
 			double        probability_find_good_model; //!< (Default = 0.999) See parameter ransac_nSimulations. When using `probability_find_good_model`, the minimum number of iterations can be set with `ransac_min_nSimulations`
 			unsigned int  ransac_min_nSimulations; //!< (Default = 1500) See parameter probability_find_good_model
 			double        max_rmse_to_end;  //!< Stop searching for solutions when the RMSE of one solution is below this threshold. Special value "0" means "auto", which employs "2*normalizationStd".

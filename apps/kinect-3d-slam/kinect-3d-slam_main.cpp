@@ -28,7 +28,7 @@ Note: This is a very *simple* approach to SLAM. It would be better to first sele
 #include <mrpt/hwdrivers/CKinect.h>
 #include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/vision/tracking.h>
-#include <mrpt/scanmatching.h>
+#include <mrpt/tfest/se3.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/synch/CThreadSafeVariable.h>
 #include <mrpt/utils/CConfigFile.h>
@@ -359,21 +359,18 @@ void Test_Kinect()
 				if (corrs.size()>=3)
 				{
 					// Find matchings:
-					CPose3D  relativePose;
-					double  scale;
-					vector_int  inliers_idx;
-					const bool register_ok = mrpt::scanmatching::leastSquareErrorRigidTransformation6DRANSAC( //leastSquareErrorRigidTransformation6D(
-						corrs,  // in correspondences
-						relativePose, // out relative pose
-						scale,  // out scale
-						inliers_idx,
-						3 // minimum inliers
-						);
+					mrpt::tfest::TSE3RobustParams params;
+					params.ransac_minSetSize = 3;
 
-					str_status = mrpt::format("%d corrs | inliers: %d | rel.pose: %s ", int(corrs.size()), int(inliers_idx.size()), relativePose.asString().c_str() );
-					str_status2 = string( inliers_idx.size()==0 ? "LOST! Please, press 'r' to restart" : "" );
+					mrpt::tfest::TSE3RobustResult results;
+					const bool register_ok = mrpt::tfest::se3_l2_robust(corrs, params, results);
 
-					if (register_ok && std::abs(scale-1.0)<0.1)
+					const CPose3D relativePose = results.transformation;
+
+					str_status = mrpt::format("%d corrs | inliers: %d | rel.pose: %s ", int(corrs.size()), int(results.inliers_idx.size()), relativePose.asString().c_str() );
+					str_status2 = string( results.inliers_idx.size()==0 ? "LOST! Please, press 'r' to restart" : "" );
+
+					if (register_ok && std::abs(results.scale-1.0)<0.1)
 					{
 						// Seems a good match:
 						if ( ( relativePose.norm() > 0.10 ||
