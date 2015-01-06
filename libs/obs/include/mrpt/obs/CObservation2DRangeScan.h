@@ -15,6 +15,9 @@
 #include <mrpt/maps/CMetricMap.h>
 #include <mrpt/math/CPolygon.h>
 
+// Add for declaration of mexplus::from template specialization
+DECLARE_MEXPLUS_FROM( mrpt::obs::CObservation2DRangeScan )
+
 namespace mrpt
 {
 namespace obs

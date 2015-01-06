@@ -196,4 +196,7 @@ namespace mrpt
 
 	} // End of namespace
 } // end of namespace
+
+// Add for declaration of mexplus::from template specialization
+DECLARE_MEXPLUS_FROM( mrpt::utils::TCamera ) // Not working at the beginning?
 #endif

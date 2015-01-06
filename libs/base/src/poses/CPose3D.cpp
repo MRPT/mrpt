@@ -215,6 +215,9 @@ std::ostream& mrpt::poses::operator << (std::ostream& o, const CPose3D& p)
   Implements the writing to a mxArray for Matlab
  ---------------------------------------------------------------*/
 #if MRPT_HAS_MATLAB
+// Add to implement mexplus::from template specialization
+IMPLEMENTS_MEXPLUS_FROM( mrpt::poses::CPose3D )
+
 mxArray* CPose3D::writeToMatlab() const
 {
 	const char* fields[] = {"R","t"};

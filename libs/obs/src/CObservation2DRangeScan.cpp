@@ -216,6 +216,9 @@ void  CObservation2DRangeScan::readFromStream(mrpt::utils::CStream &in, int vers
   Implements the writing to a mxArray for Matlab
  ---------------------------------------------------------------*/
 #if MRPT_HAS_MATLAB
+// Add to implement mexplus::from template specialization
+IMPLEMENTS_MEXPLUS_FROM( mrpt::obs::CObservation2DRangeScan )
+
 mxArray* CObservation2DRangeScan::writeToMatlab() const
 {
 	const char* fields[] = {"ts","sensorLabel",		// Data common to any observation
@@ -238,7 +241,7 @@ mxArray* CObservation2DRangeScan::writeToMatlab() const
 	obs_struct.set("stdError", this->stdError);
 	obs_struct.set("beamAperture", this->beamAperture);
 	obs_struct.set("deltaPitch", this->deltaPitch);
-	obs_struct.set("pose", this->sensorPose.writeToMatlab());
+	obs_struct.set("pose", this->sensorPose);
 	// TODO: obs_struct.set("map", ...)
 	return obs_struct.release();
 }

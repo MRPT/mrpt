@@ -212,6 +212,30 @@ namespace mrpt
 			#define DECLARE_MEX_CONVERSION //Empty
 		#endif
 
+		/** This must be inserted if a custom conversion method for MEX API is implemented in the class */
+		#if MRPT_HAS_MATLAB
+			#define DECLARE_MEXPLUS_FROM( complete_type ) \
+			namespace mexplus \
+			{ \
+				template <typename T> \
+				mxArray* from(const T& value); \
+				template <> \
+				mxArray* from(const complete_type& value); \
+			}
+
+			#define IMPLEMENTS_MEXPLUS_FROM( complete_type ) \
+			namespace mexplus \
+			{ \
+				template <> \
+				mxArray* from(const complete_type& var) \
+				{ \
+					return var.writeToMatlab(); \
+				} \
+			}
+		#else
+			#define DECLARE_MEXPLUS_FROM //Empty
+			#define IMPLEMENTS_MEXPLUS_FROM //Empty
+		#endif
 
 	} // End of namespace
 } // End of namespace

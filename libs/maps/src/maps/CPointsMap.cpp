@@ -189,6 +189,9 @@ bool  CPointsMap::load2Dor3D_from_text_file(
   Implements the writing to a mxArray for Matlab
  ---------------------------------------------------------------*/
 #if MRPT_HAS_MATLAB
+// Add to implement mexplus::from template specialization
+IMPLEMENTS_MEXPLUS_FROM( mrpt::maps::CPointsMap )
+
 mxArray* CPointsMap::writeToMatlab() const
 {
 	MRPT_TODO("Create 3xN array xyz of points coordinates")

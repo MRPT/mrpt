@@ -13,6 +13,9 @@
 #include <mrpt/math/CMatrixFixedNumeric.h>
 #include <mrpt/math/CQuaternion.h>
 
+// Add for declaration of mexplus::from template specialization
+DECLARE_MEXPLUS_FROM( mrpt::poses::CPose3D )
+
 namespace mrpt
 {
 namespace poses

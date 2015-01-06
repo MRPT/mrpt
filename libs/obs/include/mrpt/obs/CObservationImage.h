@@ -75,4 +75,7 @@ namespace obs
 	} // End of namespace
 } // End of namespace
 
+// Add for declaration of mexplus::from template specialization
+DECLARE_MEXPLUS_FROM( mrpt::obs::CObservationImage )
+
 #endif

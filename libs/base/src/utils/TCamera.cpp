@@ -86,6 +86,9 @@ void TCamera::readFromStream( CStream &in, int version )
   Implements the writing to a mxArray for Matlab
  ---------------------------------------------------------------*/
 #if MRPT_HAS_MATLAB
+// Add to implement mexplus::from template specialization
+IMPLEMENTS_MEXPLUS_FROM( mrpt::utils::TCamera )
+
 mxArray* TCamera::writeToMatlab() const
 {
 	const char* fields[] = {"K","dist","f","ncols","nrows"};

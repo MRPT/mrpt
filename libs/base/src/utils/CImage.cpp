@@ -27,7 +27,7 @@
 #include <mrpt/otherlibs/do_opencv_includes.h>
 
 #if MRPT_HAS_MATLAB
-#	include <mexplus.h>
+#	include <mexplus/mxarray.h>
 #endif
 
 // Prototypes of SSE2/SSE3/SSSE3 optimized functions:
@@ -843,10 +843,13 @@ void  CImage::readFromStream(mrpt::utils::CStream &in, int version)
   Implements the writing to a mxArray for Matlab
  ---------------------------------------------------------------*/
 #if MRPT_HAS_MATLAB
+// Add to implement mexplus::from template specialization
+IMPLEMENTS_MEXPLUS_FROM( mrpt::utils::CImage )
+
 mxArray* CImage::writeToMatlab() const
 {
     cv::Mat cvImg = cv::cvarrToMat( this->getAs<IplImage>() );
-    return mexplus::MxArray::from( cvImg );
+	return mexplus::from( cvImg );
 }
 #endif
 

@@ -14,7 +14,7 @@
 #include <mrpt/math/ops_vectors.h>  // << of std::vector()
 #include <iostream>
 #if MRPT_HAS_MATLAB
-#	include <mexplus.h>
+#	include <mexplus/mxarray.h>
 #endif
 
 using namespace mrpt::obs;
@@ -112,6 +112,9 @@ void  CObservationImage::readFromStream(mrpt::utils::CStream &in, int version)
   Implements the writing to a mxArray for Matlab
  ---------------------------------------------------------------*/
 #if MRPT_HAS_MATLAB
+// Add to implement mexplus::from template specialization
+IMPLEMENTS_MEXPLUS_FROM( mrpt::obs::CObservationImage )
+
 mxArray* CObservationImage::writeToMatlab() const
 {
 	const char* fields[] = {"ts","sensorLabel","image","pose","params"};
@@ -119,9 +122,9 @@ mxArray* CObservationImage::writeToMatlab() const
 
 	obs_struct.set("ts", this->timestamp);
 	obs_struct.set("sensorLabel", this->sensorLabel);
-	obs_struct.set("image", this->image.writeToMatlab());
-	obs_struct.set("pose", this->cameraPose.writeToMatlab());
-	obs_struct.set("params", this->cameraParams.writeToMatlab());
+	obs_struct.set("image", this->image);
+	obs_struct.set("pose", this->cameraPose);
+	obs_struct.set("params", this->cameraParams);
 	return obs_struct.release();
 }
 #endif

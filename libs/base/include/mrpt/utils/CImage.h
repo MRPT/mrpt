@@ -16,6 +16,9 @@
 #include <mrpt/utils/TCamera.h>
 #include <mrpt/utils/exceptions.h>
 
+// Add for declaration of mexplus::from template specialization
+DECLARE_MEXPLUS_FROM( mrpt::utils::CImage )
+
 namespace mrpt
 {
 	namespace utils
@@ -101,6 +104,8 @@ namespace mrpt
 
             // This must be added for declaration of MEX-related functions
             DECLARE_MEX_CONVERSION
+
+
 
 		public:
 

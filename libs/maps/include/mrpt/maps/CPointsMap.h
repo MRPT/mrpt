@@ -22,6 +22,9 @@
 #include <mrpt/maps/link_pragmas.h>
 #include <mrpt/utils/adapters.h>
 
+// Add for declaration of mexplus::from template specialization
+DECLARE_MEXPLUS_FROM( mrpt::maps::CPointsMap )
+
 namespace mrpt
 {
 /** \ingroup mrpt_maps_grp */
