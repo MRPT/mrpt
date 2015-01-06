@@ -7,23 +7,23 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include "scanmatching-precomp.h"
-#include <mrpt/scanmatching.h>
+#include "tfest-precomp.h"
+#include <mrpt/tfest.h>
 
 #include <mrpt/utils/CStartUpClassesRegister.h>
 
 
-using namespace mrpt::scanmatching;
+using namespace mrpt::tfest;
 using namespace mrpt::utils;
 
-void registerAllClasses_mrpt_scanmatching();
+void registerAllClasses_mrpt_tfest();
 
-CStartUpClassesRegister  mrpt_scanmatching_class_reg(&registerAllClasses_mrpt_scanmatching);
+CStartUpClassesRegister  mrpt_tfest_class_reg(&registerAllClasses_mrpt_tfest);
 
 /*---------------------------------------------------------------
-					registerAllClasses_mrpt_scanmatching
+					registerAllClasses_mrpt_tfest
   ---------------------------------------------------------------*/
-void registerAllClasses_mrpt_scanmatching()
+void registerAllClasses_mrpt_tfest()
 {
 //	registerClass( CLASS_ID( XXXX ) );
 
