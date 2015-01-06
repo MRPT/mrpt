@@ -10,7 +10,6 @@
 #include "tfest-precomp.h"  // Precompiled headers
 
 #include <mrpt/tfest/se3.h>
-
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/poses/CPose3DQuat.h>
 
@@ -184,6 +183,7 @@ bool se3_l2_internal(
 	MRPT_END
 } // end se3_l2_internal()
 
+
 bool tfest::se3_l2(
 	const std::vector<mrpt::math::TPoint3D> & in_points_this,
 	const std::vector<mrpt::math::TPoint3D> & in_points_other,
@@ -198,158 +198,24 @@ bool tfest::se3_l2(
 	return se3_l2_internal(points_this,points_other,out_transform,out_scale,forceScaleToUnity);
 }
 
-
-#if 0
-
-bool tfest::leastSquareErrorRigidTransformation6D(
-    const TMatchingPairList	&in_correspondences,
-    CPose3D								&out_transformation,
-    double								&out_scale,
-    const bool 							forceScaleToUnity )
+bool tfest::se3_l2(
+	const mrpt::utils::TMatchingPairList  & corrs,
+	mrpt::poses::CPose3DQuat   & out_transform,
+	double                     & out_scale,
+	bool                         forceScaleToUnity)
 {
-    MRPT_START
-
-    CPose3DQuat qAux(UNINITIALIZED_QUATERNION);		// Convert the CPose3D to CPose3DQuat
-
-    if( !tfest::leastSquareErrorRigidTransformation6D( in_correspondences, qAux, out_scale, forceScaleToUnity ) )
-        return false;
-    out_transformation = CPose3D( qAux );			// Convert back the CPose3DQuat to CPose3D
-
-    return true;
-
-    MRPT_END
+	// Transform data types:
+	const size_t N = corrs.size();
+	std::vector<mrpt::math::TPoint3D> points_this(N), points_other(N);
+	for (size_t i=0;i<N;i++) 
+	{
+		points_this[i].x = corrs[i].this_x;
+		points_this[i].y = corrs[i].this_y;
+		points_this[i].z = corrs[i].this_z;
+		points_other[i].x = corrs[i].other_x;
+		points_other[i].y = corrs[i].other_y;
+		points_other[i].z = corrs[i].other_z;
+	}
+	return se3_l2_internal(points_this,points_other,out_transform,out_scale,forceScaleToUnity);
 }
-
-
-//*---------------------------------------------------------------
-//	leastSquareErrorRigidTransformation6D
-//  ---------------------------------------------------------------*/
-bool  tfest::leastSquareErrorRigidTransformation6D(
-	const TMatchingPairList	&in_correspondences,
-	CPose3DQuat							&out_transformation,
-	double								&out_scale,
-	const bool 							forceScaleToUnity)
-{
-
-	MRPT_START
-	if( in_correspondences.size() < 3 )
-		THROW_EXCEPTION( "[leastSquareErrorRigidTransformation6D]: Error: at least 3 correspondences must be provided" );
-
-	CPoint3D cL, cR;
-	CMatrixDouble S, N;
-	CMatrixDouble Z, D;
-
-	vector<double> v;
-	const size_t nMatches = in_correspondences.size();
-	double s; // Scale
-
-	// Compute the centroid
-	TMatchingPairList::const_iterator	itMatch;
-
-	for(itMatch = in_correspondences.begin(); itMatch != in_correspondences.end(); itMatch++)
-	{
-		cL.x_incr( itMatch->other_x );
-		cL.y_incr( itMatch->other_y );
-		cL.z_incr( itMatch->other_z );
-
-		cR.x_incr( itMatch->this_x );
-		cR.y_incr( itMatch->this_y );
-		cR.z_incr( itMatch->this_z );
-	}
-	const double F = 1.0/nMatches;
-	cL *= F;
-	cR *= F;
-
-	TMatchingPairList			auxList( in_correspondences );
-	TMatchingPairList::iterator auxIt;
-	// Substract the centroid
-	for( auxIt = auxList.begin(); auxIt != auxList.end(); auxIt++ )
-	{
-		auxIt->other_x -= cL.x();
-		auxIt->other_y -= cL.y();
-		auxIt->other_z -= cL.z();
-
-		auxIt->this_x -= cR.x();
-		auxIt->this_y -= cR.y();
-		auxIt->this_z -= cR.z();
-	}
-
-	// Compute the S matrix of products
-	S.setSize(3,3);
-	S.fill(0);
-	for( auxIt = auxList.begin(); auxIt != auxList.end(); auxIt++ )
-	{
-		S(0,0) += auxIt->other_x * auxIt->this_x;
-		S(0,1) += auxIt->other_x * auxIt->this_y;
-		S(0,2) += auxIt->other_x * auxIt->this_z;
-
-		S(1,0) += auxIt->other_y * auxIt->this_x;
-		S(1,1) += auxIt->other_y * auxIt->this_y;
-		S(1,2) += auxIt->other_y * auxIt->this_z;
-
-		S(2,0) += auxIt->other_z * auxIt->this_x;
-		S(2,1) += auxIt->other_z * auxIt->this_y;
-		S(2,2) += auxIt->other_z * auxIt->this_z;
-	}
-
-	N.setSize(4,4);
-	N.fill(0);
-
-	N(0,0) = S(0,0) + S(1,1) + S(2,2);
-	N(0,1) = S(1,2) - S(2,1);
-	N(0,2) = S(2,0) - S(0,2);
-	N(0,3) = S(0,1) - S(1,0);
-
-	N(1,0) = N(0,1);
-	N(1,1) = S(0,0) - S(1,1) - S(2,2);
-	N(1,2) = S(0,1) + S(1,0);
-	N(1,3) = S(2,0) + S(0,2);
-
-	N(2,0) = N(0,2);
-	N(2,1) = N(1,2);
-	N(2,2) = -S(0,0) + S(1,1) - S(2,2);
-	N(2,3) = S(1,2) + S(2,1);
-
-	N(3,0) = N(0,3);
-	N(3,1) = N(1,3);
-	N(3,2) = N(2,3);
-	N(3,3) = -S(0,0) - S(1,1) + S(2,2);
-
-	// q is the quaternion correspondent to the greatest eigenvector of the N matrix (last column in Z)
-	N.eigenVectors( Z, D );
-	Z.extractCol( Z.getColCount()-1, v );
-
-	CPose3DQuat q;
-	for(unsigned int i = 0; i < 4; i++ )			// Set out_transformation [rotation]
-		out_transformation[i+3] = q[i+3] = v[i];
-
-	// Compute scale
-	double	num = 0.0;
-	double	den = 0.0;
-	for( auxIt = auxList.begin(); auxIt != auxList.end(); auxIt++ )
-	{
-		den += square(auxIt->other_x) + square(auxIt->other_y) + square(auxIt->other_z);
-		num += square(auxIt->this_x) + square(auxIt->this_y) + square(auxIt->this_z);
-	}
-	s = sqrt( num/den );
-
-	// Enforce scale to be 1
-	out_scale = s;
-	if (forceScaleToUnity)
-		s = 1.0;
-
-	CPoint3D pp, aux;
-	q.composePoint( cL.x(), cL.y(), cL.z(), pp.x(), pp.y(), pp.z() );
-	pp*=s;
-
-	// Set out_transformation [traslation]
-	out_transformation[0] = cR.x() - pp.x();	// X
-	out_transformation[1] = cR.y() - pp.y();	// Y
-	out_transformation[2] = cR.z() - pp.z();	// Z
-
-	MRPT_END
-
-	return true;
-}
-#endif
 

@@ -11,6 +11,7 @@
 #include <mrpt/utils/utils_defs.h>
 #include <mrpt/math/math_frwds.h>
 #include <mrpt/math/CMatrixFixedNumeric.h>
+#include <mrpt/poses/CPose3DQuat.h>
 #include <mrpt/utils/TMatchingPair.h>
 #include <mrpt/tfest/link_pragmas.h>
 #include <mrpt/poses/poses_frwds.h>
@@ -59,13 +60,19 @@ namespace mrpt
 		{
 			unsigned int  ransac_minSetSize; //!< (Default=5)  The minimum amount of points in a set to be accepted
 			unsigned int  ransac_nmaxSimulations; //!< (Default=50) The maximum number of iterations of the RANSAC algorithm
-			double        ransac_maxSetSizePct; //!< (Default=0.7) The (minimum) assumed percent (0.0 - 1.0) of the input set to be considered as inliers
+			double        ransac_maxSetSizePct; //!< (Default=0.5) The (minimum) assumed percent (0.0 - 1.0) of the input set to be considered as inliers
+			double        ransac_threshold_lin; //!< (Default=0.05) The maximum distance in X,Y,Z for a solution to be considered as matching a candidate solution (In meters)
+			double        ransac_threshold_ang; //!< (Default=1 deg) The maximum angle (yaw,pitch,roll) for a solution to be considered as matching a candidate solution (In radians)
+			double        ransac_threshold_scale; //!< (Default=0.03) The maximum difference in scale for a solution to be considered as matching a candidate solution (dimensionless)
 			bool          forceScaleToUnity; //!< (Default=true) 
 
 			TSE3RobustParams() :
 				ransac_minSetSize( 5 ),
 				ransac_nmaxSimulations(50),
-				ransac_maxSetSizePct(0.7),
+				ransac_maxSetSizePct(0.5),
+				ransac_threshold_lin(0.05),
+				ransac_threshold_ang(mrpt::utils::DEG2RAD(1)),
+				ransac_threshold_scale(0.03),
 				forceScaleToUnity( true)
 			{
 			}
@@ -74,7 +81,7 @@ namespace mrpt
 		/** Output placeholder for se3_l2_robust() */
 		struct TFEST_IMPEXP TSE3RobustResult
 		{
-			mrpt::math::TPose3DQuat         transformation; //!< The best transformation found
+			mrpt::poses::CPose3DQuat        transformation; //!< The best transformation found
 			double                          scale;          //!< The estimated scale of the rigid transformation (should be very close to 1.0)
 			mrpt::vector_int                inliers_idx;    //!< Indexes within the `in_correspondences` list which corresponds with inliers
 

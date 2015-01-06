@@ -9,17 +9,14 @@
 
 #include "tfest-precomp.h"  // Precompiled headers
 
+#include <mrpt/tfest/se3.h>
 
-#include <mrpt/scanmatching/scan_matching.h>
-#include <mrpt/poses/CPosePDFGaussian.h>
-#include <mrpt/poses/CPosePDFSOG.h>
-#include <mrpt/random.h>
 #include <mrpt/poses/CPose3D.h>
-#include <mrpt/math/utils.h>
+#include <mrpt/poses/CPose3DQuat.h>
+#include <mrpt/random.h>
 #include <mrpt/utils/round.h>
-#include <mrpt/math/CQuaternion.h>
-
-#include <algorithm>
+#include <mrpt/math/utils.h>  // linspace()
+#include <numeric>
 
 using namespace mrpt;
 using namespace mrpt::tfest;
@@ -29,63 +26,47 @@ using namespace mrpt::math;
 using namespace mrpt::utils;
 using namespace std;
 
-
 /*---------------------------------------------------------------
-	leastSquareErrorRigidTransformation6D
+	                     se3_l2_robust
   ---------------------------------------------------------------*/
-bool  tfest::leastSquareErrorRigidTransformation6DRANSAC(
-	const TMatchingPairList	&in_correspondences,
-	CPose3D								&out_transformation,
-	double								&out_scale,
-	vector_int							&out_inliers_idx,
-	const unsigned int					ransac_minSetSize,
-	const unsigned int					ransac_nmaxSimulations,
-	const double						ransac_maxSetSizePct,
-	const bool 							forceScaleToUnity
-	)
+bool tfest::se3_l2_robust(
+	const mrpt::utils::TMatchingPairList & in_correspondences,
+	const TSE3RobustParams               & params,
+	TSE3RobustResult                     & results )
 {
-	MRPT_UNUSED_PARAM(ransac_maxSetSizePct);
 	MRPT_START
 
-	unsigned int N = (unsigned int)in_correspondences.size();
+	const size_t N = in_correspondences.size();
 
 	// -------------------------------------------
 	// Thresholds
 	// -------------------------------------------
-	CVectorFloat	th(7);
-	th[0] = 0.05;			// X (meters)
-	th[1] = 0.05;			// Y (meters)
-	th[2] = 0.05;			// Z (meters)
-
-	th[3] = DEG2RAD(1);		// YAW (degrees)
-	th[4] = DEG2RAD(1);		// PITCH (degrees)
-	th[5] = DEG2RAD(1);		// ROLL (degrees)
-
-	th[6] = 0.03;			// SCALE
+	Eigen::Matrix<double,7,1> th;
+	th[0] =  // X (meters)
+	th[1] = // Y (meters)
+	th[2] = params.ransac_threshold_lin; // Z (meters)
+	th[3] = // YAW (degrees)
+	th[4] = // PITCH (degrees)
+	th[5] = params.ransac_threshold_ang;// ROLL (degrees)
+	th[6] = params.ransac_threshold_scale; // SCALE
 
 	// -------------------------------------------
 	// RANSAC parameters
 	// -------------------------------------------
-	unsigned int	n, d, max_it, iterations;
-	double			min_err = 1e2;						// Minimum error achieved so far
-	unsigned int	max_size = 0;						// Maximum size of the consensus set so far
-	double			scale;								// Output scale
+	double min_err = std::numeric_limits<double>::max(); // Minimum error achieved so far
+	size_t max_size = 0; // Maximum size of the consensus set so far
+	double scale; // Output scale
 
-	n		= ransac_minSetSize;						// Minimum number of points to fit the model
-	d		= round( N*0.5/*ransac_maxSetSizePct*/ );			// Minimum number of points to be considered a good set
-	max_it	= ransac_nmaxSimulations;					// Maximum number of iterations
+	const size_t n = params.ransac_minSetSize;  // Minimum number of points to fit the model
+	const size_t d = mrpt::utils::round( N*params.ransac_maxSetSizePct ); // Minimum number of points to be considered a good set
+	const size_t max_it = params.ransac_nmaxSimulations; // Maximum number of iterations
 
-	if( d < n )
-	{
-	    cout << "Minimum number of points to be considered a good set is < Minimum number of points to fit the model" << endl;
-	    return false;
-	}
-
+	ASSERTMSG_(d<n,"Minimum number of points to be considered a good set is < Minimum number of points to fit the model")
 
 	// -------------------------------------------
 	// MAIN loop
 	// -------------------------------------------
-	for( iterations = 0; iterations < max_it; iterations++ )
+	for(size_t iterations = 0; iterations < max_it; iterations++ )
 	{
 		//printf("Iteration %2u of %u", iterations+1, max_it );
 
@@ -95,24 +76,21 @@ bool  tfest::leastSquareErrorRigidTransformation6DRANSAC(
 		randomGenerator.permuteVector( rub, mbSet );
 
 		// Compute first inliers output
-		CPose3D							mbOut;
-		CVectorFloat					mbOut_vec(7);
 		TMatchingPairList	mbInliers;
 		mbInliers.resize( n );
-		for( unsigned int i = 0; i < n; i++ )
+		for(size_t i = 0; i < n; i++ )
 		{
 			mbInliers[i] = in_correspondences[ mbSet[i] ];
 			cSet.push_back( mbSet[i] );
 		}
 
-		bool res = leastSquareErrorRigidTransformation6D( mbInliers, mbOut, scale, forceScaleToUnity );
-		if( !res )
-		{
-		    cout << "leastSquareErrorRigidTransformation6D returned false" << endl;
-		    return false;
-		}
+		CPose3DQuat mbOutQuat;
+		const bool res = mrpt::tfest::se3_l2( mbInliers, mbOutQuat, scale, params.forceScaleToUnity );
+		ASSERTMSG_(res, "tfest::se3_l2() returned false for tentative subset during RANSAC iteration!")
 
 		// Maybe inliers Output
+		const CPose3D mbOut = CPose3D(mbOutQuat);
+		CVectorFloat mbOut_vec(7);
 		mbOut_vec[0] = mbOut.x();
 		mbOut_vec[1] = mbOut.y();
 		mbOut_vec[2] = mbOut.z();
@@ -124,21 +102,20 @@ bool  tfest::leastSquareErrorRigidTransformation6DRANSAC(
 		mbOut_vec[6] = scale;
 
 		// Inner loop: for each point NOT in the maybe inliers
-		for( unsigned int k = n; k < N; k++ )
+		for(size_t k = n; k < N; k++ )
 		{
-			CPose3D		csOut;
+			CPose3DQuat csOutQuat;
 
 			// Consensus set: Maybe inliers + new point
-			mbInliers.push_back( in_correspondences[ mbSet[k] ] );							// Insert
-			bool res = leastSquareErrorRigidTransformation6D( mbInliers, csOut, scale, forceScaleToUnity );	// Compute
-			mbInliers.erase( mbInliers.end()-1 );											// Erase
-			if( !res )
-            {
-                cout << "leastSquareErrorRigidTransformation6D returned false" << endl;
-                return false;
-            }
+			mbInliers.push_back( in_correspondences[ mbSet[k] ] ); // Insert
+			const bool res = mrpt::tfest::se3_l2( mbInliers, csOutQuat, scale, params.forceScaleToUnity );
+			mbInliers.erase( mbInliers.end()-1 ); // Erase
+
+			ASSERTMSG_(res, "tfest::se3_l2() returned false for tentative subset during RANSAC iteration!")
 
 			// Is this point a supporter of the initial inlier group?
+			const CPose3D csOut = CPose3D(csOutQuat);
+
 			if( fabs( mbOut_vec[0] - csOut.x() ) < th[0] && fabs( mbOut_vec[1] - csOut.y() ) < th[1] &&
 				fabs( mbOut_vec[2] - csOut.z() ) < th[2] && fabs( mbOut_vec[3] - csOut.yaw() ) < th[3] &&
 				fabs( mbOut_vec[4] - csOut.pitch() ) < th[4] && fabs( mbOut_vec[5] - csOut.roll() ) < th[5] &&
@@ -163,27 +140,24 @@ bool  tfest::leastSquareErrorRigidTransformation6DRANSAC(
 				cSetInliers[m] = in_correspondences[ cSet[m] ];
 
 			// Compute output: Consensus Set + Initial Inliers Guess
-			CPose3D		cIOut;
-			bool res = leastSquareErrorRigidTransformation6D( cSetInliers, cIOut, scale, forceScaleToUnity );	// Compute output
-			if( !res )
-            {
-                cout << "leastSquareErrorRigidTransformation6D returned false" << endl;
-                return false;
-            }
+			CPose3DQuat cIOutQuat;
+			const bool res = mrpt::tfest::se3_l2( cSetInliers, cIOutQuat, scale, params.forceScaleToUnity ); // Compute output
+			ASSERTMSG_(res, "tfest::se3_l2() returned false for tentative subset during RANSAC iteration!")
 
 			// Compute error for consensus_set
-			double err = sqrt( square( mbOut_vec[0] - cIOut.x() ) + square( mbOut_vec[1] - cIOut.y() ) + square( mbOut_vec[2] - cIOut.z() ) +
+			const CPose3D cIOut = CPose3D(cIOutQuat);
+			const double err = std::sqrt( square( mbOut_vec[0] - cIOut.x() ) + square( mbOut_vec[1] - cIOut.y() ) + square( mbOut_vec[2] - cIOut.z() ) +
 							   square( mbOut_vec[3] - cIOut.yaw() ) + square( mbOut_vec[4] - cIOut.pitch() ) + square( mbOut_vec[5] - cIOut.roll() ) +
 							   square( mbOut_vec[6] - scale ));
 
 			// Is the best set of points so far?
 			if( err < min_err && cSet.size() >= max_size )
 			{
-				min_err						= err;
-				max_size					= cSet.size();
-				out_transformation			= cIOut;
-				out_scale					= scale;
-				out_inliers_idx				= cSet;
+				min_err                = err;
+				max_size               = cSet.size();
+				results.transformation = cIOutQuat;
+				results.scale          = scale;
+				results.inliers_idx    = cSet;
 			} // end if SCALE ERROR
 			//printf(" - Consensus set size: %u - Error: %.6f\n", (unsigned int)cSet.size(), err );
 		} // end if cSet.size() > d
@@ -194,14 +168,14 @@ bool  tfest::leastSquareErrorRigidTransformation6DRANSAC(
 	} // end 'iterations' for
 
 	if( max_size == 0 )
-    {
-        cout << "maximum size is == 0" << endl;
-        return false;
-    }
+	{
+		std::cerr << "[se3_l2_robust] maximum size is == 0!\n";
+		return false;
+	}
 
 	MRPT_END
 
 	return true;
-} // end leastSquareErrorRigidTransformation6DRANSAC
 
+} // end se3_l2_robust()
 

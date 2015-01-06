@@ -41,7 +41,9 @@ namespace mrpt
 		  *
 		  * \note Reference for covariance calculation: J.L. Blanco, J. Gonzalez-Jimenez, J.A. Fernandez-Madrigal, "A Robust, Multi-Hypothesis Approach to Matching Occupancy Grid Maps", Robotica, 2013. http://dx.doi.org/10.1017/S0263574712000732
 		  * \note [New in MRPT 1.3.0] This function replaces mrpt::scanmatching::leastSquareErrorRigidTransformation()
+		  * \note This function is hand-optimized for SSE2 architectures (if SSE2 is enabled from CMake)
 		  * \sa se3_l2, se2_l2_robust
+		  * \ingroup sse_optimizations
 		  */
 		bool TFEST_IMPEXP se2_l2(
 			const mrpt::utils::TMatchingPairList  & in_correspondences,
