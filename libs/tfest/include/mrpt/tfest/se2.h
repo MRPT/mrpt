@@ -11,6 +11,7 @@
 #include <mrpt/utils/utils_defs.h>
 #include <mrpt/math/math_frwds.h>
 #include <mrpt/math/CMatrixFixedNumeric.h>
+#include <mrpt/poses/CPosePDFSOG.h>
 #include <mrpt/utils/TMatchingPair.h>
 #include <mrpt/tfest/link_pragmas.h>
 #include <mrpt/poses/poses_frwds.h>
@@ -40,6 +41,8 @@ namespace mrpt
 		  * \sa robustRigidTransformation
 		  *
 		  * \note Reference for covariance calculation: J.L. Blanco, J. Gonzalez-Jimenez, J.A. Fernandez-Madrigal, "A Robust, Multi-Hypothesis Approach to Matching Occupancy Grid Maps", Robotica, 2013. http://dx.doi.org/10.1017/S0263574712000732
+		  * \note [New in MRPT 1.3.0] This function replaces mrpt::scanmatching::leastSquareErrorRigidTransformation()
+		  * \sa se3_l2, se2_l2_robust
 		  */
 		bool TFEST_IMPEXP se2_l2(
 			const mrpt::utils::TMatchingPairList  & in_correspondences,
@@ -50,6 +53,55 @@ namespace mrpt
 		bool TFEST_IMPEXP se2_l2(
 			const mrpt::utils::TMatchingPairList  & in_correspondences,
 			mrpt::poses::CPosePDFGaussian         & out_transformation );
+
+
+		/** Parameters for se2_l2_robust(). See function for more details */
+		struct TFEST_IMPEXP TSE2RobustParams
+		{
+			unsigned int  ransac_minSetSize; //!< (Default=3)
+			unsigned int  ransac_maxSetSize; //!< (Default = 20)
+			double        ransac_mahalanobisDistanceThreshold; //!< (Default = 3.0)
+			unsigned int  ransac_nSimulations; //!< (Default = 0) If set to 0, an adaptive algorithm is used to determine the number of iterations, such as a good model is found with a probability p=0.999, or that passed as the parameter probability_find_good_model
+			/** (Default = true)  If true, the weight of Gaussian modes will be increased when an exact match in the
+			*   subset of correspondences for the modes is found. Otherwise, an approximate method is used as test by just looking at the
+			*   resulting X,Y,PHI means. Threshold in this case are: ransac_fuseMaxDiffXY, ransac_fuseMaxDiffPhi */
+			bool          ransac_fuseByCorrsMatch;
+			double        ransac_fuseMaxDiffXY; //!< (Default = 0.01)
+			double        ransac_fuseMaxDiffPhi; //!< (Default=0.1degree) (In radians)
+			bool          ransac_algorithmForLandmarks; //!< (Default = true)
+			double        probability_find_good_model; //!< (Default = 0.999) See parameter ransac_nSimulations. When using `probability_find_good_model`, the minimum number of iterations can be set with `ransac_min_nSimulations`
+			unsigned int  ransac_min_nSimulations; //!< (Default = 1500) See parameter probability_find_good_model
+			double        max_rmse_to_end;  //!< Stop searching for solutions when the RMSE of one solution is below this threshold. Special value "0" means "auto", which employs "2*normalizationStd".
+			bool          verbose; //!< (Default=false)
+
+			/** Default values */
+			TSE2RobustParams() :
+				ransac_minSetSize( 3 ),
+				ransac_maxSetSize( 20 ),
+				ransac_mahalanobisDistanceThreshold( 3.0 ),
+				ransac_nSimulations( 0 ),
+				ransac_fuseByCorrsMatch( true ),
+				ransac_fuseMaxDiffXY(  0.01 ),
+				ransac_fuseMaxDiffPhi(  mrpt::utils::DEG2RAD(0.1) ),
+				ransac_algorithmForLandmarks( true ),
+				probability_find_good_model( 0.999 ),
+				ransac_min_nSimulations( 1500 ),
+				max_rmse_to_end(0),
+				verbose(false)
+			{
+			}
+		};
+
+		/** Output placeholder for se2_l2_robust() */
+		struct TFEST_IMPEXP TSE2RobustResult
+		{
+			mrpt::poses::CPosePDFSOG        transformation; //!< The output as a set of transformations (sum of Gaussians)
+			mrpt::utils::TMatchingPairList  largestSubSet; //!< the largest consensus sub-set
+			unsigned int                    ransac_iters;  //!< Number of actual iterations executed 
+
+			TSE2RobustResult() : ransac_iters(0) { }
+		};
+
 
 		/** Robust least-squares (L2 norm) solution to finding the optimal SE(2) (x,y,yaw) between two reference frames.
 		  * This method implements a RANSAC-based robust estimation, returning a probability distribution over all the posibilities as a Sum of Gaussians.
@@ -71,42 +123,19 @@ namespace mrpt
 		  * 		- If not, do not add it.
 		  *
 		  *  For more details refer to the tutorial on <a href="http://www.mrpt.org/Scan_Matching_Algorithms">scan matching methods</a>.
-		  *  NOTE:
-		  *        - If a pointer is supplied to "out_largestSubSet", the largest consensus sub-set
-		  *          of correspondences will be returned there.
-		  *        - The parameter "normalizationStd" is the <b>standard deviation</b> (not variance) of landmarks
-		  *          being matched in X,Y. Used to normalize covariances returned as the SoG.
-		  *        - If ransac_nSimulations=0 then an adaptive algorithm is used to determine the number of iterations, such as
-		  *           a good model is found with a probability p=0.999, or that passed as the parameter probability_find_good_model
-		  *        - When using "probability_find_good_model", the minimum number of iterations can be set with "ransac_min_nSimulations".
-		  *        - "ransac_maxSetSize" should be set to "in_correspondences.size()" to make sure that every correspondence is tested for each random permutation.
-		  *
-		  *  If ransac_fuseByCorrsMatch=true (the default), the weight of Gaussian modes will be increased when an exact match in the
-		  *   subset of correspondences for the modes is found. Otherwise, an approximate method is used as test by just looking at the
-		  *   resulting X,Y,PHI means (Threshold in this case are: ransac_fuseMaxDiffXY, ransac_fuseMaxDiffPhi).
-		  *
-		  * \param[in] max_rmse_to_end Stop searching for solutions when the RMSE of one solution is below this threshold. Special value "0" means "auto", which employs "2*normalizationStd".
+		  * \param[in] in_normalizationStd The <b>standard deviation</b> (not variance) of landmarks/points/features being matched in X,Y. Used to normalize covariances returned as the SoG. (Refer to paper)
+		  * 
+		  * <b>NOTE</b>: Parameter `ransac_maxSetSize` should be set to `in_correspondences.size()` to make sure that every correspondence is tested for each random permutation.
 		  *
 		  * \exception Raises a std::exception if the list "in_correspondences" has not a minimum of two correspondences.
-		  * \sa leastSquareErrorRigidTransformation
+		  * \note [New in MRPT 1.3.0] This function replaces mrpt::scanmatching::robustRigidTransformation()
+		  * \sa se3_l2, se2_l2_robust
 		  */
 		void TFEST_IMPEXP se2_l2_robust(
-			const mrpt::utils::TMatchingPairList	&in_correspondences,
-			mrpt::poses::CPosePDFSOG				&out_transformation,
-			float							normalizationStd,
-			unsigned int					ransac_minSetSize = 3,
-			unsigned int					ransac_maxSetSize = 20,
-			float							ransac_mahalanobisDistanceThreshold = 3.0f,
-			unsigned int					ransac_nSimulations = 0,
-			mrpt::utils::TMatchingPairList		*out_largestSubSet = NULL,
-			bool						ransac_fuseByCorrsMatch = true,
-			float						ransac_fuseMaxDiffXY = 0.01f,
-			float						ransac_fuseMaxDiffPhi = mrpt::utils::DEG2RAD(0.1f),
-			bool						ransac_algorithmForLandmarks = true,
-			double 						probability_find_good_model = 0.999,
-			unsigned int				ransac_min_nSimulations = 1500,
-			const bool                  verbose = false,
-			double                      max_rmse_to_end = 0
+			const mrpt::utils::TMatchingPairList &in_correspondences,
+			const double               in_normalizationStd,
+			const TSE2RobustParams   & in_ransac_params,
+			TSE2RobustResult         & out_results
 			);
 
 		/** @} */  // end of grouping
