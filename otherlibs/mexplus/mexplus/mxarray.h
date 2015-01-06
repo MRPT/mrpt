@@ -78,6 +78,217 @@
 
 namespace mexplus {
 
+/** Templated mxArray importers.
+*/
+template <typename T>
+mxArray* fromInternal(const typename std::enable_if<
+							 std::is_same<typename MxTypes<T>::array_type, mxNumeric>::value,
+							 T>::type& value);
+template <typename Container>
+mxArray* fromInternal(const typename std::enable_if<
+							 std::is_same<typename MxTypes<
+							 typename Container::value_type>::array_type, mxNumeric>::value &&
+							 std::is_compound<Container>::value,
+							 Container>::type& value);
+template <typename T>
+mxArray* fromInternal(const typename std::enable_if<
+							 std::is_same<typename MxTypes<T>::array_type, mxChar>::value,
+							 T>::type& value);
+template <typename Container>
+mxArray* fromInternal(const typename std::enable_if<
+							 std::is_same<typename MxTypes<
+							 typename Container::value_type>::array_type, mxChar>::value &&
+							 std::is_compound<Container>::value,
+							 Container>::type& value);
+template <typename T>
+mxArray* fromInternal(const typename std::enable_if<
+							 std::is_same<typename MxTypes<T>::array_type, mxLogical>::value,
+							 T>::type& value);
+template <typename Container>
+mxArray* fromInternal(const typename std::enable_if<
+							 std::is_same<typename MxTypes<
+							 typename Container::value_type>::array_type, mxLogical>::value &&
+							 std::is_compound<Container>::value,
+							 Container>::type& value);
+template <typename Container>
+mxArray* fromInternal(const typename std::enable_if<
+							 std::is_same<typename MxTypes<
+							 typename Container::value_type>::array_type, mxCell>::value &&
+							 std::is_compound<Container>::value,
+							 Container>::type& value);
+
+/** mxArray* importer methods.
+*/
+template <typename T>
+mxArray* from(const T& value) { return fromInternal<T>(value); }
+inline mxArray* from(const char* value) {
+	mxArray* array = mxCreateString(value);
+	MEXPLUS_CHECK_NOTNULL(array);
+	return array;
+}
+
+// TODO: Change inline functions to .cpp file and build own library?
+inline mxArray* from(int32_t value) {
+	mxArray* array = mxCreateNumericMatrix(1, 1, mxINT32_CLASS, mxREAL);
+	MEXPLUS_CHECK_NOTNULL(array);
+	*reinterpret_cast<int32_t*>(mxGetData(array)) = value;
+	return array;
+}
+
+// Extra code for OpenCV classes
+#if MRPT_HAS_OPENCV
+inline mxArray* from(const cv::Mat& mat)
+{
+	mxArray* p_; // Create pointer
+	if (mat.empty())
+	{
+		p_ = mxCreateNumericArray(0, 0, mxDOUBLE_CLASS, mxREAL);
+		if (!p_)
+			mexErrMsgIdAndTxt("mexopencv:error", "Allocation error");
+		return p_;
+	}
+	// Optional arguments:
+	mxClassID classid = mxUNKNOWN_CLASS;
+	bool transpose = true;
+
+	cv::Mat input = (mat.dims == 2 && transpose) ? mat.t() : mat;
+	// Create a new mxArray.
+	const int nchannels = input.channels();
+	const int* dims_ = input.size;
+	std::vector<mwSize> d(dims_, dims_ + input.dims);
+	d.push_back(nchannels);
+	classid = (classid == mxUNKNOWN_CLASS)
+			? ClassIDOf[input.depth()] : classid;
+	std::swap(d[0], d[1]);
+	if (classid == mxLOGICAL_CLASS)
+	{
+		// OpenCV's logical true is any nonzero while matlab's true is 1.
+		cv::compare(input, 0, input, cv::CMP_NE);
+		input.setTo(1, input);
+		p_ = mxCreateLogicalArray(d.size(), &d[0]);
+	}
+	else {
+		p_ = mxCreateNumericArray(d.size(), &d[0], classid, mxREAL);
+	}
+	if (!p_)
+		mexErrMsgIdAndTxt("mexopencv:error", "Allocation error");
+	// Copy each channel.
+	std::vector<cv::Mat> channels;
+	split(input, channels);
+	std::vector<mwSize> si(d.size(), 0); // subscript index.
+	int type = CV_MAKETYPE(DepthOf[classid], 1); // destination type.
+	for (int i = 0; i < nchannels; ++i)
+	{
+		si[si.size() - 1] = i; // last dim is a channel index.
+//			void *ptr = reinterpret_cast<void*>(
+//						reinterpret_cast<size_t>(mxGetData(p_)) +
+//						mxGetElementSize(p_) * this->subscriptIndex(si));
+		mwIndex subs_si = mxCalcSingleSubscript(p_, si.size(), &si[0]);
+		void *ptr = reinterpret_cast<void*>(
+					reinterpret_cast<size_t>(mxGetData(p_)) +
+					mxGetElementSize(p_) * subs_si);
+		cv::Mat m(input.dims, dims_, type, ptr);
+		//channels[i].convertTo(m, type); // Write to mxArray through m.
+		// Swap R and B channels
+		MRPT_TODO("Do RGB to BGR swapping in other place where it is more clear")
+				channels[nchannels-1-i].convertTo(m, type); // Write to mxArray through m.
+	}
+	return p_;
+}
+#endif
+
+// Implementation of internal importers
+template <typename T>
+mxArray* fromInternal(const typename std::enable_if<
+							   std::is_same<typename MxTypes<T>::array_type, mxNumeric>::value,
+							   T>::type& value) {
+	mxArray* array = mxCreateNumericMatrix(1,
+										   1,
+										   MxTypes<T>::class_id,
+										   MxTypes<T>::complexity);
+	MEXPLUS_CHECK_NOTNULL(array);
+	*reinterpret_cast<T*>(mxGetData(array)) = value;
+	return array;
+}
+
+template <typename Container>
+mxArray* fromInternal(const typename std::enable_if<
+							   std::is_same<typename MxTypes<typename Container::value_type>::array_type,
+							   mxNumeric>::value &&
+							   std::is_compound<Container>::value,
+							   Container>::type& value) {
+	typedef typename Container::value_type ValueType;
+	mxArray* array = mxCreateNumericMatrix(1,
+										   value.size(),
+										   MxTypes<ValueType>::class_id,
+										   MxTypes<ValueType>::complexity);
+	MEXPLUS_CHECK_NOTNULL(array);
+	std::copy(value.begin(),
+			  value.end(),
+			  reinterpret_cast<ValueType*>(mxGetData(array)));
+	return array;
+}
+
+template <typename T>
+mxArray* fromInternal(const typename std::enable_if<
+							   std::is_same<typename MxTypes<T>::array_type, mxChar>::value,
+							   T>::type& value) {
+	const char char_array[] = {static_cast<char>(value), 0};
+	mxArray* array = mxCreateString(char_array);
+	MEXPLUS_CHECK_NOTNULL(array);
+	return array;
+}
+
+template <typename Container>
+mxArray* fromInternal(const typename std::enable_if<
+							   std::is_same<typename MxTypes<typename Container::value_type>::array_type,
+							   mxChar>::value &&
+							   std::is_compound<Container>::value,
+							   Container>::type& value) {
+	const mwSize dimensions[] = {1, static_cast<mwSize>(value.size())};
+	mxArray* array = mxCreateCharArray(2, dimensions);
+	MEXPLUS_CHECK_NOTNULL(array);
+	std::copy(value.begin(), value.end(), mxGetChars(array));
+	return array;
+}
+
+template <typename T>
+mxArray* fromInternal(const typename std::enable_if<
+							   std::is_same<typename MxTypes<T>::array_type, mxLogical>::value,
+							   T>::type& value) {
+	mxArray* array = mxCreateLogicalScalar(value);
+	MEXPLUS_CHECK_NOTNULL(array);
+	return array;
+}
+
+template <typename Container>
+mxArray* fromInternal(const typename std::enable_if<
+							   std::is_same<typename MxTypes<typename Container::value_type>::array_type,
+							   mxLogical>::value &&
+							   std::is_compound<Container>::value,
+							   Container>::type& value) {
+	mxArray* array = mxCreateLogicalMatrix(1, value.size());
+	MEXPLUS_CHECK_NOTNULL(array);
+	std::copy(value.begin(), value.end(), mxGetLogicals(array));
+	return array;
+}
+
+template <typename Container>
+mxArray* fromInternal(const typename std::enable_if<
+							   std::is_same<typename MxTypes<typename Container::value_type>::array_type,
+							   mxCell>::value &&
+							   std::is_compound<Container>::value,
+							   Container>::type& value) {
+	mxArray* array = mxCreateCellMatrix(1, value.size());
+	MEXPLUS_CHECK_NOTNULL(array);
+	mwIndex index = 0;
+	for (typename Container::const_iterator it = value.begin();
+		 it != value.end();
+		 ++it)
+		mxSetCell(array, index++, from(*it));
+	return array;
+}
+
 /** mxArray object wrapper for data conversion and manipulation.
  *
  * The class is similar to a combination of unique_ptr and wrapper around
@@ -259,83 +470,7 @@ public:
 		MEXPLUS_CHECK_NOTNULL(struct_array);
 		return struct_array;
 	}
-	/** mxArray* importer methods.
-   */
-	template <typename T>
-	static mxArray* from(const T& value) { return fromInternal<T>(value); }
-	static mxArray* from(const char* value) {
-		mxArray* array = mxCreateString(value);
-		MEXPLUS_CHECK_NOTNULL(array);
-		return array;
-	}
-	static mxArray* from(int32_t value) {
-		mxArray* array = mxCreateNumericMatrix(1, 1, mxINT32_CLASS, mxREAL);
-		MEXPLUS_CHECK_NOTNULL(array);
-		*reinterpret_cast<int32_t*>(mxGetData(array)) = value;
-		return array;
-	}
 
-	// Extra code for OpenCV classes
-#if MRPT_HAS_OPENCV
-	static mxArray* from(const cv::Mat& mat)
-	{
-		mxArray* p_; // Create pointer
-		if (mat.empty())
-		{
-			p_ = mxCreateNumericArray(0, 0, mxDOUBLE_CLASS, mxREAL);
-			if (!p_)
-				mexErrMsgIdAndTxt("mexopencv:error", "Allocation error");
-			return p_;
-		}
-		// Optional arguments:
-		mxClassID classid = mxUNKNOWN_CLASS;
-		bool transpose = true;
-
-		cv::Mat input = (mat.dims == 2 && transpose) ? mat.t() : mat;
-		// Create a new mxArray.
-		const int nchannels = input.channels();
-		const int* dims_ = input.size;
-		std::vector<mwSize> d(dims_, dims_ + input.dims);
-		d.push_back(nchannels);
-		classid = (classid == mxUNKNOWN_CLASS)
-				? ClassIDOf[input.depth()] : classid;
-		std::swap(d[0], d[1]);
-		if (classid == mxLOGICAL_CLASS)
-		{
-			// OpenCV's logical true is any nonzero while matlab's true is 1.
-			cv::compare(input, 0, input, cv::CMP_NE);
-			input.setTo(1, input);
-			p_ = mxCreateLogicalArray(d.size(), &d[0]);
-		}
-		else {
-			p_ = mxCreateNumericArray(d.size(), &d[0], classid, mxREAL);
-		}
-		if (!p_)
-			mexErrMsgIdAndTxt("mexopencv:error", "Allocation error");
-		// Copy each channel.
-		std::vector<cv::Mat> channels;
-		split(input, channels);
-		std::vector<mwSize> si(d.size(), 0); // subscript index.
-		int type = CV_MAKETYPE(DepthOf[classid], 1); // destination type.
-		for (int i = 0; i < nchannels; ++i)
-		{
-			si[si.size() - 1] = i; // last dim is a channel index.
-//			void *ptr = reinterpret_cast<void*>(
-//						reinterpret_cast<size_t>(mxGetData(p_)) +
-//						mxGetElementSize(p_) * this->subscriptIndex(si));
-			mwIndex subs_si = mxCalcSingleSubscript(p_, si.size(), &si[0]);
-			void *ptr = reinterpret_cast<void*>(
-						reinterpret_cast<size_t>(mxGetData(p_)) +
-						mxGetElementSize(p_) * subs_si);
-			cv::Mat m(input.dims, dims_, type, ptr);
-			//channels[i].convertTo(m, type); // Write to mxArray through m.
-			// Swap R and B channels
-			MRPT_TODO("Do RGB to BGR swapping in other place where it is more clear")
-					channels[nchannels-1-i].convertTo(m, type); // Write to mxArray through m.
-		}
-		return p_;
-	}
-#endif
 
 	/** mxArray* exporter methods.
    */
@@ -729,44 +864,7 @@ private:
    */
 	MxArray& operator=(const MxArray& rhs);
 	//MxArray& operator=(const MxArray& rhs) = delete;
-	/** Templated mxArray importers.
-   */
-	template <typename T>
-	static mxArray* fromInternal(const typename std::enable_if<
-								 std::is_same<typename MxTypes<T>::array_type, mxNumeric>::value,
-								 T>::type& value);
-	template <typename Container>
-	static mxArray* fromInternal(const typename std::enable_if<
-								 std::is_same<typename MxTypes<
-								 typename Container::value_type>::array_type, mxNumeric>::value &&
-								 std::is_compound<Container>::value,
-								 Container>::type& value);
-	template <typename T>
-	static mxArray* fromInternal(const typename std::enable_if<
-								 std::is_same<typename MxTypes<T>::array_type, mxChar>::value,
-								 T>::type& value);
-	template <typename Container>
-	static mxArray* fromInternal(const typename std::enable_if<
-								 std::is_same<typename MxTypes<
-								 typename Container::value_type>::array_type, mxChar>::value &&
-								 std::is_compound<Container>::value,
-								 Container>::type& value);
-	template <typename T>
-	static mxArray* fromInternal(const typename std::enable_if<
-								 std::is_same<typename MxTypes<T>::array_type, mxLogical>::value,
-								 T>::type& value);
-	template <typename Container>
-	static mxArray* fromInternal(const typename std::enable_if<
-								 std::is_same<typename MxTypes<
-								 typename Container::value_type>::array_type, mxLogical>::value &&
-								 std::is_compound<Container>::value,
-								 Container>::type& value);
-	template <typename Container>
-	static mxArray* fromInternal(const typename std::enable_if<
-								 std::is_same<typename MxTypes<
-								 typename Container::value_type>::array_type, mxCell>::value &&
-								 std::is_compound<Container>::value,
-								 Container>::type& value);
+
 	/** Templated mxArray exporters.
    */
 	template <typename T>
@@ -852,97 +950,6 @@ private:
    */
 	bool owner_;
 };
-
-template <typename T>
-mxArray* MxArray::fromInternal(const typename std::enable_if<
-							   std::is_same<typename MxTypes<T>::array_type, mxNumeric>::value,
-							   T>::type& value) {
-	mxArray* array = mxCreateNumericMatrix(1,
-										   1,
-										   MxTypes<T>::class_id,
-										   MxTypes<T>::complexity);
-	MEXPLUS_CHECK_NOTNULL(array);
-	*reinterpret_cast<T*>(mxGetData(array)) = value;
-	return array;
-}
-
-template <typename Container>
-mxArray* MxArray::fromInternal(const typename std::enable_if<
-							   std::is_same<typename MxTypes<typename Container::value_type>::array_type,
-							   mxNumeric>::value &&
-							   std::is_compound<Container>::value,
-							   Container>::type& value) {
-	typedef typename Container::value_type ValueType;
-	mxArray* array = mxCreateNumericMatrix(1,
-										   value.size(),
-										   MxTypes<ValueType>::class_id,
-										   MxTypes<ValueType>::complexity);
-	MEXPLUS_CHECK_NOTNULL(array);
-	std::copy(value.begin(),
-			  value.end(),
-			  reinterpret_cast<ValueType*>(mxGetData(array)));
-	return array;
-}
-
-template <typename T>
-mxArray* MxArray::fromInternal(const typename std::enable_if<
-							   std::is_same<typename MxTypes<T>::array_type, mxChar>::value,
-							   T>::type& value) {
-	const char char_array[] = {static_cast<char>(value), 0};
-	mxArray* array = mxCreateString(char_array);
-	MEXPLUS_CHECK_NOTNULL(array);
-	return array;
-}
-
-template <typename Container>
-mxArray* MxArray::fromInternal(const typename std::enable_if<
-							   std::is_same<typename MxTypes<typename Container::value_type>::array_type,
-							   mxChar>::value &&
-							   std::is_compound<Container>::value,
-							   Container>::type& value) {
-	const mwSize dimensions[] = {1, static_cast<mwSize>(value.size())};
-	mxArray* array = mxCreateCharArray(2, dimensions);
-	MEXPLUS_CHECK_NOTNULL(array);
-	std::copy(value.begin(), value.end(), mxGetChars(array));
-	return array;
-}
-
-template <typename T>
-mxArray* MxArray::fromInternal(const typename std::enable_if<
-							   std::is_same<typename MxTypes<T>::array_type, mxLogical>::value,
-							   T>::type& value) {
-	mxArray* array = mxCreateLogicalScalar(value);
-	MEXPLUS_CHECK_NOTNULL(array);
-	return array;
-}
-
-template <typename Container>
-mxArray* MxArray::fromInternal(const typename std::enable_if<
-							   std::is_same<typename MxTypes<typename Container::value_type>::array_type,
-							   mxLogical>::value &&
-							   std::is_compound<Container>::value,
-							   Container>::type& value) {
-	mxArray* array = mxCreateLogicalMatrix(1, value.size());
-	MEXPLUS_CHECK_NOTNULL(array);
-	std::copy(value.begin(), value.end(), mxGetLogicals(array));
-	return array;
-}
-
-template <typename Container>
-mxArray* MxArray::fromInternal(const typename std::enable_if<
-							   std::is_same<typename MxTypes<typename Container::value_type>::array_type,
-							   mxCell>::value &&
-							   std::is_compound<Container>::value,
-							   Container>::type& value) {
-	mxArray* array = mxCreateCellMatrix(1, value.size());
-	MEXPLUS_CHECK_NOTNULL(array);
-	mwIndex index = 0;
-	for (typename Container::const_iterator it = value.begin();
-		 it != value.end();
-		 ++it)
-		mxSetCell(array, index++, from(*it));
-	return array;
-}
 
 template <typename T>
 void MxArray::toInternal(const mxArray* array, typename std::enable_if<
@@ -1102,7 +1109,7 @@ void MxArray::setInternal(mxArray* array,
 		MEXPLUS_ASSERT(mxAddField(array, field.c_str()) >= 0,
 					   "Failed to create a field '%s'",
 					   field.c_str());
-	mxSetField(array, index, field.c_str(), from(value));
+	mxSetField(array, index, field.c_str(), mexplus::from(value));
 }
 
 template <typename T>

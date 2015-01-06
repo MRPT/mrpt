@@ -304,33 +304,33 @@ int main(int argc, const char* argv[] )
 
         // Launch threads with "new"
         const mxArray* mxIn[2];
-        mxIn[0] = mexplus::MxArray::from( "new" );
-        mxIn[1] = mexplus::MxArray::from( argv[1] ); // Read config file path, first argv is function name
+		mxIn[0] = mexplus::from( "new" );
+		mxIn[1] = mexplus::from( argv[1] ); // Read config file path, first argv is function name
         mxArray* mxOut[1];
         mexFunction( 1, mxOut, 2, mxIn );
 
 		mrpt::system::sleep(5000); // Time for the sensor to read before collecting
 
         // Read frames with "read"
-        mxIn[0] = mexplus::MxArray::from( "read" );
+		mxIn[0] = mexplus::from( "read" );
         mexFunction( 1, mxOut, 1, mxIn );
 
         // Finish applicatin with "delete"
-        mxIn[0] = mexplus::MxArray::from( "delete" );
+		mxIn[0] = mexplus::from( "delete" );
         mexFunction( 1, mxOut, 1, mxIn );
 
         // Repete whole process
         // Launch threads with "new"
-        mxIn[0] = mexplus::MxArray::from( "new" );
-        mxIn[1] = mexplus::MxArray::from( argv[1] ); // Read config file path, first argv is function name
+		mxIn[0] = mexplus::from( "new" );
+		mxIn[1] = mexplus::from( argv[1] ); // Read config file path, first argv is function name
         mexFunction( 1, mxOut, 2, mxIn );
 
         // Read frames with "read"
-        mxIn[0] = mexplus::MxArray::from( "read" );
+		mxIn[0] = mexplus::from( "read" );
         mexFunction( 1, mxOut, 1, mxIn );
 
         // Finish applicatin with "delete"
-        mxIn[0] = mexplus::MxArray::from( "delete" );
+		mxIn[0] = mexplus::from( "delete" );
         mexFunction( 1, mxOut, 1, mxIn );
 
         return 0;

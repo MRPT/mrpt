@@ -340,7 +340,7 @@ public:
    */
   template <typename T>
   void set(size_t index, const T& value) {
-    set(index, MxArray::from(value));
+	set(index, from(value));
   }
   /** Size of the output.
    */
