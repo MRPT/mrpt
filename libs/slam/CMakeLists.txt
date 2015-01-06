@@ -20,7 +20,7 @@ define_mrpt_lib(
 	mrpt-bayes
 	mrpt-graphs
 	mrpt-vision
-	mrpt-scanmatching
+	mrpt-tfest
 	mrpt-maps
 	# And deps of the deps:
 	mrpt-obs
