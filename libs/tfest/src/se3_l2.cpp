@@ -27,12 +27,12 @@ using namespace std;
 //		pRi = { pRix, pRiy, pRiz }
 // -------------------------------------------------------
 // 1. Find the centroids of the two sets of measurements:
-//		cL = (1/n)*sum{i}( pLi )		cL = { cLx, cLy, cLz }
-//		cR = (1/n)*sum{i}( pRi )		cR = { cRx, cRy, cRz }
+//		ct_others = (1/n)*sum{i}( pLi )		ct_others = { cLx, cLy, cLz }
+//		ct_this = (1/n)*sum{i}( pRi )		ct_this = { cRx, cRy, cRz }
 //
 // 2. Substract centroids from the point coordinates:
-//		pLi' = pLi - cL					pLi' = { pLix', pLiy', pLiz' }
-//		pRi' = pRi - cR					pRi' = { pRix', pRiy', pRiz' }
+//		pLi' = pLi - ct_others					pLi' = { pLix', pLiy', pLiz' }
+//		pRi' = pRi - ct_this					pRi' = { pRix', pRiy', pRiz' }
 //
 // 3. For each pair of coordinates (correspondences) compute the nine possible products:
 //		pi1 = pLix'*pRix'		pi2 = pLix'*pRiy'		pi3 = pLix'*pRiz'
@@ -56,7 +56,7 @@ using namespace std;
 //		s = sqrt( sum{i}( square(abs(pRi')) / sum{i}( square(abs(pLi')) ) )
 //
 // 8. Translation computation (distance between the Right centroid and the scaled and rotated Left centroid)
-//		t = cR-sR(cL)
+//		t = ct_this-sR(ct_others)
 
 /*---------------------------------------------------------------
                     se3_l2  (old "HornMethod()")
@@ -73,7 +73,7 @@ bool se3_l2_internal(
 	ASSERT_EQUAL_(points_this.size(),points_other.size())
 
 	// Compute the centroids
-	TPoint3D	cL(0,0,0), cR(0,0,0);
+	TPoint3D	ct_others(0,0,0), ct_this(0,0,0);
 	const size_t nMatches = points_this.size();
 	
 	if (nMatches<3)
@@ -81,24 +81,24 @@ bool se3_l2_internal(
 
 	for(size_t i = 0; i < nMatches; i++ )
 	{
-		cL += points_this [i];
-		cR += points_other[i];
+		ct_others += points_other[i];
+		ct_this += points_this [i];
 	}
 
 	const double F = 1.0/nMatches;
-	cL *= F;
-	cR *= F;
+	ct_others *= F;
+	ct_this *= F;
 
 	CMatrixDouble33 S; // Zeroed by default
 
 	// Substract the centroid and compute the S matrix of cross products
 	for(size_t i = 0; i < nMatches; i++ )
 	{
-		points_this[i]  -= cL;
-		points_other[i] -= cR;
+		points_this[i]  -= ct_this;
+		points_other[i] -= ct_others;
 
 		S.get_unsafe(0,0) += points_other[i].x * points_this[i].x;
-		S.get_unsafe(0,1) += points_other[i].x * points_this[i].x;
+		S.get_unsafe(0,1) += points_other[i].x * points_this[i].y;
 		S.get_unsafe(0,2) += points_other[i].x * points_this[i].z;
 
 		S.get_unsafe(1,0) += points_other[i].y * points_this[i].x;
@@ -170,12 +170,12 @@ bool se3_l2_internal(
 	}
 
 	TPoint3D pp;
-	out_transform.composePoint( cL.x, cL.y, cL.z, pp.x, pp.y, pp.z );
+	out_transform.composePoint( ct_others.x, ct_others.y, ct_others.z, pp.x, pp.y, pp.z );
 	pp*=s;
 
-	out_transform[0] = cR.x - pp.x;	// X
-	out_transform[1] = cR.y - pp.y;	// Y
-	out_transform[2] = cR.z - pp.z;	// Z
+	out_transform[0] = ct_this.x - pp.x;	// X
+	out_transform[1] = ct_this.y - pp.y;	// Y
+	out_transform[2] = ct_this.z - pp.z;	// Z
 
 	out_scale=s; // return scale
 	return true;

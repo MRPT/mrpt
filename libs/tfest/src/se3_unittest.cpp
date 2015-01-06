@@ -96,7 +96,7 @@ void generate_vector_of_points(  const TPoints &pA, const TPoints &pB, std::vect
 
 
 // Load data from constant file and check for exact match.
-TEST(LSRigidTrans6D, CPose3D)
+TEST(tfest, CPose3D)
 {
 	TPoints	pA, pB;										// The input points
 	CPose3DQuat qPose = generate_points( pA, pB );
@@ -124,7 +124,7 @@ TEST(LSRigidTrans6D, CPose3D)
 		<< "Out CPose3D: " << endl << out << " [Err: " << err << "]" << endl;
 }
 
-TEST(LSRigidTrans6D, CPose3DQuat)
+TEST(tfest, CPose3DQuat)
 {
 	TPoints	pA, pB;										// The input points
 	CPose3DQuat qPose = generate_points( pA, pB );
@@ -158,7 +158,7 @@ TEST(LSRigidTrans6D, CPose3DQuat)
 
 }
 
-TEST(LSRigidTrans6D, vector)
+TEST(tfest, HornMethod)
 {
 	TPoints	pA, pB;										// The input points
 	CPose3DQuat qPose = generate_points( pA, pB );

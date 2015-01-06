@@ -9,11 +9,5 @@
 
 #pragma once
 
-#include <mrpt/utils/mrpt_macros.h>
-MRPT_WARNING("Deprecated header: Use <mrpt/tfest.h> or individual headers instead")
-#include <mrpt/tfest.h>
+#include <mrpt/scanmatching/scan_matching.h>
 
-// MRPT <1.3.0 backwards compatibility 
-namespace mrpt {
-	namespace  scanmatching = mrpt::tfest;
-}
