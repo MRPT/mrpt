@@ -107,25 +107,43 @@ bool mrpt::scanmatching::leastSquareErrorRigidTransformation6DRANSAC(
 	const double						ransac_maxSetSizePct,
 	const bool							forceScaleToUnity)
 {
-	return false;
+	mrpt::tfest::TSE3RobustParams params;
+	params.forceScaleToUnity = forceScaleToUnity;
+	params.ransac_maxSetSizePct = ransac_maxSetSizePct;
+	params.ransac_minSetSize = ransac_minSetSize;
+	params.ransac_nmaxSimulations = ransac_nmaxSimulations;
+
+	mrpt::tfest::TSE3RobustResult results;
+	const bool ret = mrpt::tfest::se3_l2_robust(in_correspondences,params,results);
+
+	out_inliers_idx = results.inliers_idx;
+	out_scale = results.scale;
+	out_transformation = results.transformation;
+
+	return ret;
 }
 
-// 
+// Deprecated: Use mrpt::tfest::se2_l2() instead
 bool mrpt::scanmatching::leastSquareErrorRigidTransformation(
 	mrpt::utils::TMatchingPairList	&in_correspondences,
 	mrpt::poses::CPose2D							&out_transformation,
 	mrpt::math::CMatrixDouble33					*out_estimateCovariance)
 {
-	return false;
+	mrpt::math::TPose2D estPose;
+	const bool ret = mrpt::tfest::se2_l2(in_correspondences,estPose,out_estimateCovariance);
+	out_transformation = estPose;
+	return ret;
 }
 
+// Deprecated: Use mrpt::tfest::se2_l2() instead
 bool mrpt::scanmatching::leastSquareErrorRigidTransformation(
 	mrpt::utils::TMatchingPairList	&in_correspondences,
 	mrpt::poses::CPosePDFGaussian				&out_transformation )
 {
-	return false;
+	return mrpt::tfest::se2_l2(in_correspondences,out_transformation);
 }
 
+// Deprecated: Use mrpt::tfest::se2_l2_robust() instead
 void mrpt::scanmatching::robustRigidTransformation(
 	mrpt::utils::TMatchingPairList	&in_correspondences,
 	mrpt::poses::CPosePDFSOG				&out_transformation,
@@ -145,6 +163,24 @@ void mrpt::scanmatching::robustRigidTransformation(
 	double                      max_rmse_to_end
 	)
 {
+	mrpt::tfest::TSE2RobustParams params;
+	params.ransac_minSetSize = ransac_minSetSize;
+	params.ransac_maxSetSize = ransac_maxSetSize;
+	params.ransac_mahalanobisDistanceThreshold = ransac_mahalanobisDistanceThreshold;
+	params.ransac_nSimulations = ransac_nSimulations;
+	params.ransac_fuseByCorrsMatch = ransac_fuseByCorrsMatch;
+	params.ransac_fuseMaxDiffXY = ransac_fuseMaxDiffXY;
+	params.ransac_fuseMaxDiffPhi  = ransac_fuseMaxDiffPhi;
+	params.ransac_algorithmForLandmarks = ransac_algorithmForLandmarks;
+	params.probability_find_good_model = probability_find_good_model;
+	params.ransac_min_nSimulations = ransac_min_nSimulations;
+	params.max_rmse_to_end = max_rmse_to_end;
+	params.verbose = verbose;
 
+	mrpt::tfest::TSE2RobustResult results;
+	const bool ret = mrpt::tfest::se2_l2_robust(in_correspondences,normalizationStd,params,results);
+
+	out_transformation = results.transformation;
+	if (out_largestSubSet) *out_largestSubSet = results.largestSubSet;
 }
 
