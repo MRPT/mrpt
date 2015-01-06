@@ -7,7 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include "scanmatching-precomp.h"  // Precompiled headers
+#include "tfest-precomp.h"  // Precompiled headers
 
 
 #include <mrpt/scanmatching/scan_matching.h>
@@ -18,7 +18,7 @@
 #include <mrpt/random.h>
 
 using namespace mrpt;
-using namespace mrpt::scanmatching;
+using namespace mrpt::tfest;
 using namespace mrpt::random;
 using namespace mrpt::utils;
 using namespace mrpt::poses;
@@ -28,7 +28,7 @@ using namespace std;
 /*---------------------------------------------------------------
 	HornMethod
   ---------------------------------------------------------------*/
-double scanmatching::HornMethod(
+double tfest::HornMethod(
 	const vector<double>		&inVector,
 	vector<double>			&outVector,				// The output vector
 	bool forceScaleToUnity )
@@ -156,7 +156,7 @@ double scanmatching::HornMethod(
 }
 
 //! \overload
-double scanmatching::HornMethod(
+double tfest::HornMethod(
 	const vector<double>      &inPoints,
 	mrpt::poses::CPose3DQuat &outQuat,
 	bool                      forceScaleToUnity )
@@ -168,7 +168,7 @@ double scanmatching::HornMethod(
 	return s;
 }
 
-bool scanmatching::leastSquareErrorRigidTransformation6D(
+bool tfest::leastSquareErrorRigidTransformation6D(
     const TMatchingPairList	&in_correspondences,
     CPose3D								&out_transformation,
     double								&out_scale,
@@ -178,7 +178,7 @@ bool scanmatching::leastSquareErrorRigidTransformation6D(
 
     CPose3DQuat qAux(UNINITIALIZED_QUATERNION);		// Convert the CPose3D to CPose3DQuat
 
-    if( !scanmatching::leastSquareErrorRigidTransformation6D( in_correspondences, qAux, out_scale, forceScaleToUnity ) )
+    if( !tfest::leastSquareErrorRigidTransformation6D( in_correspondences, qAux, out_scale, forceScaleToUnity ) )
         return false;
     out_transformation = CPose3D( qAux );			// Convert back the CPose3DQuat to CPose3D
 
@@ -191,7 +191,7 @@ bool scanmatching::leastSquareErrorRigidTransformation6D(
 //*---------------------------------------------------------------
 //	leastSquareErrorRigidTransformation6D
 //  ---------------------------------------------------------------*/
-bool  scanmatching::leastSquareErrorRigidTransformation6D(
+bool  tfest::leastSquareErrorRigidTransformation6D(
 	const TMatchingPairList	&in_correspondences,
 	CPose3DQuat							&out_transformation,
 	double								&out_scale,

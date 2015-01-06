@@ -7,35 +7,33 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include "scanmatching-precomp.h"  // Precompiled headers
+#include "tfest-precomp.h"  // Precompiled headers
 
-
-#include <mrpt/scanmatching/scan_matching.h>
+#include <mrpt/tfest/se2.h>
 #include <mrpt/poses/CPosePDFGaussian.h>
-#include <mrpt/poses/CPosePDFSOG.h>
 #include <mrpt/random.h>
-#include <mrpt/math/CQuaternion.h>
 
-#include <algorithm>
+MRPT_TODO("Write unit tests!")
 
 #if MRPT_HAS_SSE2
 	#include <mrpt/utils/SSE_types.h>
 #endif
 
 using namespace mrpt;
-using namespace mrpt::scanmatching;
-using namespace mrpt::random;
+using namespace mrpt::tfest;
 using namespace mrpt::utils;
 using namespace mrpt::poses;
 using namespace mrpt::math;
 using namespace std;
 
-
-bool scanmatching::leastSquareErrorRigidTransformation(
-	TMatchingPairList	&in_correspondences,
-	CPosePDFGaussian				&out_transformation )
+// Wrapper:
+bool tfest::se2_l2(
+	const TMatchingPairList & in_correspondences,
+	CPosePDFGaussian        & out_transformation )
 {
-	return leastSquareErrorRigidTransformation(in_correspondences,out_transformation.mean, &out_transformation.cov );
+	mrpt::math::TPose2D p;
+	return tfest::se2_l2(in_correspondences,p, &out_transformation.cov );
+	out_transformation.mean = p;
 }
 
 /*---------------------------------------------------------------
@@ -45,10 +43,10 @@ bool scanmatching::leastSquareErrorRigidTransformation(
     correspondences between 2D points in two different maps.
    This method is intensively used within ICP.
   ---------------------------------------------------------------*/
-bool  scanmatching::leastSquareErrorRigidTransformation(
-	TMatchingPairList	&in_correspondences,
-	CPose2D								&out_transformation,
-	CMatrixDouble33						*out_estimateCovariance )
+bool  tfest::se2_l2(
+	const TMatchingPairList & in_correspondences,
+	TPose2D                 & out_transformation,
+	CMatrixDouble33         * out_estimateCovariance )
 {
 	MRPT_START
 
@@ -192,15 +190,13 @@ bool  scanmatching::leastSquareErrorRigidTransformation(
 #endif
 
 
-	if (Ax!=0 || Ay!=0)
-			out_transformation.phi( atan2( Ay, Ax) );
-	else	out_transformation.phi(0);
+	out_transformation.phi = (Ax!=0 || Ay!=0) ? atan2( static_cast<double>(Ay), static_cast<double>(Ax)) : 0.0;
 
-	const float ccos = cos( out_transformation.phi() );
-	const float csin = sin( out_transformation.phi() );
+	const double ccos = cos( out_transformation.phi );
+	const double csin = sin( out_transformation.phi );
 
-	out_transformation.x( mean_x_a - mean_x_b * ccos + mean_y_b * csin  );
-	out_transformation.y( mean_y_a - mean_x_b * csin - mean_y_b * ccos );
+	out_transformation.x = mean_x_a - mean_x_b * ccos + mean_y_b * csin;
+	out_transformation.y = mean_y_a - mean_x_b * csin - mean_y_b * ccos;
 
 	if ( out_estimateCovariance )
 	{

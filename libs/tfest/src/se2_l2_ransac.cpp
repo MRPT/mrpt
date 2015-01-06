@@ -7,8 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include "scanmatching-precomp.h"  // Precompiled headers
-
+#include "tfest-precomp.h"  // Precompiled headers
 
 #include <mrpt/scanmatching/scan_matching.h>
 #include <mrpt/poses/CPosePDFGaussian.h>
@@ -24,8 +23,10 @@
 
 #include <algorithm>
 
+MRPT_TODO("Write unit tests!")
+
 using namespace mrpt;
-using namespace mrpt::scanmatching;
+using namespace mrpt::tfest;
 using namespace mrpt::random;
 using namespace mrpt::utils;
 using namespace mrpt::poses;
@@ -80,7 +81,7 @@ void markAsPicked(
 			- If if is compatible (ransac_maxErrorXY, ransac_maxErrorPHI), grow the "consensus set"
 			- If not, do not add it.
   ---------------------------------------------------------------*/
-void  scanmatching::robustRigidTransformation(
+void  tfest::robustRigidTransformation(
 	TMatchingPairList	&in_correspondences,
 	poses::CPosePDFSOG				&out_transformation,
 	float							normalizationStd,
@@ -336,7 +337,7 @@ void  scanmatching::robustRigidTransformation(
 					if (is_acceptable)
 					{
 						// Perform estimation:
-						scanmatching::leastSquareErrorRigidTransformation(
+						tfest::leastSquareErrorRigidTransformation(
 							subSet,
 							referenceEstimation.mean,
 							&referenceEstimation.cov );
@@ -411,7 +412,7 @@ void  scanmatching::robustRigidTransformation(
 #endif
 
 			// Recompute referenceEstimation from all the corrs:
-			scanmatching::leastSquareErrorRigidTransformation(
+			tfest::leastSquareErrorRigidTransformation(
 				subSet,
 				referenceEstimation.mean,
 				&referenceEstimation.cov );
@@ -523,7 +524,7 @@ void  scanmatching::robustRigidTransformation(
 				ransac_nSimulations = std::max(ransac_nSimulations, ransac_min_nSimulations);
 
 				if (verbose)
-					cout << "[scanmatching::RANSAC] Iter #" << iter_idx << ":est. # iters=" << ransac_nSimulations << " pNoOutliers=" << pNoOutliers << " #inliers: " << ninliers << endl;
+					cout << "[tfest::RANSAC] Iter #" << iter_idx << ":est. # iters=" << ransac_nSimulations << " pNoOutliers=" << pNoOutliers << " #inliers: " << ninliers << endl;
 			}
 
 		}
@@ -535,7 +536,7 @@ void  scanmatching::robustRigidTransformation(
 			    this_subset_RMSE<largestSubSet_RMSE )
 			{
 				if (verbose)
-					cout << "[scanmatching::RANSAC] Iter #" << iter_idx << " Better subset: " << subSet.size() << " inliers, RMSE=" << this_subset_RMSE << endl;
+					cout << "[tfest::RANSAC] Iter #" << iter_idx << " Better subset: " << subSet.size() << " inliers, RMSE=" << this_subset_RMSE << endl;
 
 				*out_largestSubSet = subSet;
 				largestSubSet_RMSE = this_subset_RMSE;
@@ -555,7 +556,7 @@ void  scanmatching::robustRigidTransformation(
 	} // end for each iteration
 
 	if (verbose)
-		cout << "[scanmatching::RANSAC] Finished after " << iter_idx << " iterations.\n";
+		cout << "[tfest::RANSAC] Finished after " << iter_idx << " iterations.\n";
 
 
 	// Set the weights of the particles to sum the unity:

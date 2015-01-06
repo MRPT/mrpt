@@ -12,6 +12,6 @@
 #include <mrpt/config.h>
 #if MRPT_ENABLE_PRECOMPILED_HDRS
 
-#include <mrpt/scanmatching/scan_matching.h>
+#include <mrpt/tfest.h>
 
 #endif

@@ -26,126 +26,49 @@ namespace mrpt
 		/** \addtogroup mrpt_tfest_grp
 		  * @{ */
 
-		/** This function implements the Horn method for computing the change in pose between two coordinate systems
-		  * \param[in] inPoints		A vector containing the coordinates of the input points in the format:
-		  *							[x11 y11 z11, x12 y12 z12, x21 y21 z21, x22 y22 z22, x31 y31 z31, x32 y32 z32, ...  ]
-		  *							where [xi1 yi1 zi1] and [xi2 yi2 zi2] represent the i-th pair of corresponding 3D points in the two coordinate systems "1" and "2"
-		  * \param[out] outQuat	A 7D vector containing the traslation and rotation (in a quaternion form) which indicates the change in pose of system "2" wrt "1".
-		  * \param[in]  forceScaleToUnity	Whether or not force the scale employed to rotate the coordinate systems to one (rigid transformation)
+		/** Least-squares (L2 norm) solution to finding the optimal SE(2) (x,y,yaw) between two reference frames.
+		  *  The optimal transformation `q` fulfills \f$ p_{this} = q \oplus p_{other} \f$, that is, the 
+		  *  transformation of frame `other` with respect to `this`.
 		  *
-		  * \return The computed scale of the optimal transformation (will be 1.0 for a perfectly rigid translation + rotation).
-		  * \sa THornMethodOpts
-		  */
-		double TFEST_IMPEXP HornMethod(
-			const std::vector<double>  &inPoints,
-			std::vector<double>        &outQuat,
-			bool                 forceScaleToUnity = false );
-
-		//! \overload
-		double TFEST_IMPEXP HornMethod(
-			const std::vector<double>      &inPoints,
-			mrpt::poses::CPose3DQuat &outQuat,
-			bool                      forceScaleToUnity  = false);
-
-		/** This method provides the closed-form solution of absolute orientation using unit quaternions to a set of over-constrained correspondences for finding the 6D rigid transformation between two cloud of 3D points.
-		  *  The output 3D pose is computed using the method described in "Closed-form solution of absolute orientation using unit quaternions", BKP Horn, Journal of the Optical Society of America, 1987.
+		  *  \image html tfest_frames.png
 		  *
-		  * \param in_correspondences The set of correspondences in TMatchingPairList form ("this" and "other").
-		  * \param out_transformation The change in pose (CPose3DQuat) of the "other" reference system wrt "this" reference system which minimizes the mean-square-error between all the correspondences.
-		  * \exception Raises a std::exception if the list "in_correspondences" has not a minimum of three correspondences.
-		  * \return True if there are at least three correspondences, or false otherwise, thus we cannot establish any correspondence.
-		  *  Implemented by FAMD, 2007. Revised in 2010.
-		  * \sa robustRigidTransformation
-		  */
-		bool TFEST_IMPEXP leastSquareErrorRigidTransformation6D(
-			const mrpt::utils::TMatchingPairList	&in_correspondences,
-			mrpt::poses::CPose3DQuat							&out_transformation,
-			double								&out_scale,
-			const bool 							forceScaleToUnity = false );
-
-		/** This method provides the closed-form solution of absolute orientation using unit quaternions to a set of over-constrained correspondences for finding the 6D rigid transformation between two cloud of 3D points.
-		  *  The output 3D pose is computed using the method described in "Closed-form solution of absolute orientation using unit quaternions", BKP Horn, Journal of the Optical Society of America, 1987.
-		  *
-		  * \param in_correspondences The set of correspondences.
-		  * \param out_transformation The change in pose (CPose3DQuat) of the "other" reference system wrt "this" reference system which minimizes the mean-square-error between all the correspondences.
-		  * \exception Raises a std::exception if the list "in_correspondences" has not a minimum of two correspondences.
-		  * \return True if there are at least two correspondences, or false if one or none, thus we cannot establish any correspondence.
-		  *  Implemented by FAMD, 2007. Revised in 2010
-		  * \sa robustRigidTransformation
-		  */
-		bool TFEST_IMPEXP leastSquareErrorRigidTransformation6D(
-			const mrpt::utils::TMatchingPairList	&in_correspondences,
-			mrpt::poses::CPose3D								&out_transformation,
-			double								&out_scale,
-			const bool 							forceScaleToUnity = false );
-
-		/** This method provides the closed-form solution of absolute orientation using unit quaternions to a set of over-constrained correspondences for finding the 6D rigid transformation between two cloud of 3D points using RANSAC.
-		  *  The output 3D pose is computed using the method described in "Closed-form solution of absolute orientation using unit quaternions", BKP Horn, Journal of the Optical Society of America, 1987.
-		  *  If supplied, the output covariance matrix is computed using... TODO
-		  * \todo Explain covariance!!
-		  *
-		  * \param in_correspondences The set of correspondences.
-		  * \param out_transformation The pose that minimizes the mean-square-error between all the correspondences.
-		  * \param out_scale The estimated scale of the rigid transformation (should be very close to 1.0)
-		  * \param out_inliers_idx Indexes within the "in_correspondences" list which corresponds with inliers
-		  * \param ransac_minSetSize The minimum amount of points in the set
-		  * \param ransac_nmaxSimulations The maximum number of iterations of the RANSAC algorithm
-		  * \param ransac_maxSetSizePct The (minimum) assumed percent (0.0 - 1.0) of the input set to be considered as inliers
-		  * \exception Raises a std::exception if the list "in_correspondences" has not a minimum of two correspondences.
-		  * \return True if there are at least two correspondences, or false if one or none, thus we cannot establish any correspondence.
-		  *  Implemented by FAMD, 2008.
-		  * \sa robustRigidTransformation
-		  */
-		bool TFEST_IMPEXP leastSquareErrorRigidTransformation6DRANSAC(
-			const mrpt::utils::TMatchingPairList	&in_correspondences,
-			mrpt::poses::CPose3D								&out_transformation,
-			double								&out_scale,
-			vector_int							&out_inliers_idx,
-			const unsigned int					ransac_minSetSize = 5,
-			const unsigned int					ransac_nmaxSimulations = 50,
-			const double						ransac_maxSetSizePct = 0.7,
-			const bool							forceScaleToUnity = false );
-
-
-		/** This method provides the basic least-square-error solution to a set of over-constrained correspondences for finding the (x,y,phi) rigid transformation between two planes.
-		  *  The optimal transformation q fulfills:   \f$ point_this = q \oplus point_other \f$
-		  * \param in_correspondences The set of correspondences.
-		  * \param out_transformation The pose that minimizes the mean-square-error between all the correspondences.
-		  * \param out_estimateCovariance If provided (!=NULL) this will contain on return a 3x3 covariance matrix with the NORMALIZED optimal estimate uncertainty. This matrix must be multiplied by \f$\sigma^2_p\f$, the variance of matched points in \f$x\f$ and \f$y\f$ (see paper http://www.mrpt.org/Paper:Occupancy_Grid_Matching)
-		  * \exception Raises a std::exception if the list "in_correspondences" has not a minimum of two correspondences.
+		  * \param[in] in_correspondences The set of correspondences.
+		  * \param[out] out_transformation The pose that minimizes the mean-square-error between all the correspondences.
+		  * \param[out] out_estimateCovariance If provided (!=NULL) this will contain on return a 3x3 covariance matrix with the NORMALIZED optimal estimate uncertainty. This matrix must be multiplied by \f$\sigma^2_p\f$, the variance of matched points in \f$x\f$ and \f$y\f$ (see paper http://www.mrpt.org/Paper:Occupancy_Grid_Matching)
+		  * \exception Raises a std::exception if `in_correspondences` has not a minimum of two correspondences.
 		  * \return True if there are at least two correspondences, or false if one or none, thus we cannot establish any correspondence.
 		  * \sa robustRigidTransformation
+		  *
+		  * \note Reference for covariance calculation: J.L. Blanco, J. Gonzalez-Jimenez, J.A. Fernandez-Madrigal, "A Robust, Multi-Hypothesis Approach to Matching Occupancy Grid Maps", Robotica, 2013. http://dx.doi.org/10.1017/S0263574712000732
 		  */
-		bool TFEST_IMPEXP leastSquareErrorRigidTransformation(
-			mrpt::utils::TMatchingPairList	&in_correspondences,
-			mrpt::poses::CPose2D							&out_transformation,
-			mrpt::math::CMatrixDouble33					*out_estimateCovariance = NULL );
+		bool TFEST_IMPEXP se2_l2(
+			const mrpt::utils::TMatchingPairList  & in_correspondences,
+			mrpt::math::TPose2D                   & out_transformation,
+			mrpt::math::CMatrixDouble33           * out_estimateCovariance = NULL );
 
-		/** This method provides the basic least-square-error solution to a set of over-constrained correspondences for finding the (x,y,phi) rigid transformation between two planes.
-		  *  The optimal transformation q fulfills:   \f$ point_this = q \oplus point_other \f$
-		  * \param in_correspondences The set of correspondences.
-		  * \param out_transformation The pose that minimizes the mean-square-error between all the correspondences.
-		  * \param out_estimateCovariance If provided (!=NULL) this will contain on return a 3x3 covariance matrix with the NORMALIZED optimal estimate uncertainty. This matrix must be multiplied by \f$\sigma^2_p\f$, the variance of matched points in \f$x\f$ and \f$y\f$ (see paper http://www.mrpt.org/Paper:Occupancy_Grid_Matching)
-		  * \exception Raises a std::exception if the list "in_correspondences" has not a minimum of two correspondences.
-		  * \return True if there are at least two correspondences, or false if one or none, thus we cannot establish any correspondence.
-		  * \sa robustRigidTransformation
-		  */
-		bool TFEST_IMPEXP leastSquareErrorRigidTransformation(
-			mrpt::utils::TMatchingPairList	&in_correspondences,
-			mrpt::poses::CPosePDFGaussian				&out_transformation );
+		/** \overload */
+		bool TFEST_IMPEXP se2_l2(
+			const mrpt::utils::TMatchingPairList  & in_correspondences,
+			mrpt::poses::CPosePDFGaussian         & out_transformation );
 
-		/** This method implements a RANSAC-based robust estimation of the rigid transformation between two planar frames of references, returning a probability distribution over all the posibilities as a Sum of Gaussians.
+		/** Robust least-squares (L2 norm) solution to finding the optimal SE(2) (x,y,yaw) between two reference frames.
+		  * This method implements a RANSAC-based robust estimation, returning a probability distribution over all the posibilities as a Sum of Gaussians.
+		  *
+		  *  The optimal transformation `q` fulfills \f$ p_{this} = q \oplus p_{other} \f$, that is, the 
+		  *  transformation of frame `other` with respect to `this`.
+		  *
+		  *  \image html tfest_frames.png
 		  *
 		  *  The technique was described in the paper:
-		  *		- J.L. Blanco, J. González-Jimenez and J.A. Fernandez-Madrigal. "A robust, multi-hypothesis approach to matching occupancy grid maps". Robotica, available on CJO2013. doi:10.1017/S0263574712000732. http://journals.cambridge.org/action/displayAbstract?aid=8815308
+		  *    - J.L. Blanco, J. Gonzalez-Jimenez, J.A. Fernandez-Madrigal, "A Robust, Multi-Hypothesis Approach to Matching Occupancy Grid Maps", Robotica, 2013. http://dx.doi.org/10.1017/S0263574712000732
 		  *
-		  * This works are follows:
-				- Repeat "ransac_nSimulations" times:
-					- Randomly pick TWO correspondences from the set "in_correspondences".
-					- Compute the associated rigid transformation.
-					- For "ransac_maxSetSize" randomly selected correspondences, test for "consensus" with the current group:
-						- If if is compatible (ransac_mahalanobisDistanceThreshold), grow the "consensus set"
-						- If not, do not add it.
+		  * This works as follows:
+		  * - Repeat "ransac_nSimulations" times:
+		  * 	- Randomly pick TWO correspondences from the set "in_correspondences".
+		  * 	- Compute the associated rigid transformation.
+		  * 	- For "ransac_maxSetSize" randomly selected correspondences, test for "consensus" with the current group:
+		  * 		- If if is compatible (ransac_mahalanobisDistanceThreshold), grow the "consensus set"
+		  * 		- If not, do not add it.
 		  *
 		  *  For more details refer to the tutorial on <a href="http://www.mrpt.org/Scan_Matching_Algorithms">scan matching methods</a>.
 		  *  NOTE:
@@ -167,8 +90,8 @@ namespace mrpt
 		  * \exception Raises a std::exception if the list "in_correspondences" has not a minimum of two correspondences.
 		  * \sa leastSquareErrorRigidTransformation
 		  */
-		void TFEST_IMPEXP robustRigidTransformation(
-			mrpt::utils::TMatchingPairList	&in_correspondences,
+		void TFEST_IMPEXP se2_l2_robust(
+			const mrpt::utils::TMatchingPairList	&in_correspondences,
 			mrpt::poses::CPosePDFSOG				&out_transformation,
 			float							normalizationStd,
 			unsigned int					ransac_minSetSize = 3,
@@ -186,9 +109,6 @@ namespace mrpt
 			double                      max_rmse_to_end = 0
 			);
 
-
 		/** @} */  // end of grouping
-
 	}
-
 } // End of namespace

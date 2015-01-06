@@ -7,7 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include "scanmatching-precomp.h"  // Precompiled headers
+#include "tfest-precomp.h"  // Precompiled headers
 
 
 #include <mrpt/scanmatching/scan_matching.h>
@@ -22,7 +22,7 @@
 #include <algorithm>
 
 using namespace mrpt;
-using namespace mrpt::scanmatching;
+using namespace mrpt::tfest;
 using namespace mrpt::random;
 using namespace mrpt::poses;
 using namespace mrpt::math;
@@ -33,7 +33,7 @@ using namespace std;
 /*---------------------------------------------------------------
 	leastSquareErrorRigidTransformation6D
   ---------------------------------------------------------------*/
-bool  scanmatching::leastSquareErrorRigidTransformation6DRANSAC(
+bool  tfest::leastSquareErrorRigidTransformation6DRANSAC(
 	const TMatchingPairList	&in_correspondences,
 	CPose3D								&out_transformation,
 	double								&out_scale,

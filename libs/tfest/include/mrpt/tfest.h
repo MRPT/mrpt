@@ -10,6 +10,8 @@
 #ifndef _mrpt_tfest_H
 #define _mrpt_tfest_H
 
-#include <mrpt/tfest/tfest.h>
+#include <mrpt/tfest/se2.h>
+#include <mrpt/tfest/se3.h>
+
 
 #endif
