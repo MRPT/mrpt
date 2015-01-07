@@ -13,8 +13,6 @@
 #include <mrpt/poses/CPosePDFGaussian.h>
 #include <mrpt/random.h>
 
-MRPT_TODO("Write unit tests!")
-
 #if MRPT_HAS_SSE2
 	#include <mrpt/utils/SSE_types.h>
 #endif

@@ -15,6 +15,7 @@
 #include <mrpt/utils/TMatchingPair.h>
 #include <mrpt/tfest/link_pragmas.h>
 #include <mrpt/poses/poses_frwds.h>
+#include <mrpt/tfest/indiv-compat-decls.h>
 
 namespace mrpt
 {
@@ -65,6 +66,13 @@ namespace mrpt
 			double        ransac_threshold_ang; //!< (Default=1 deg) The maximum angle (yaw,pitch,roll) for a solution to be considered as matching a candidate solution (In radians)
 			double        ransac_threshold_scale; //!< (Default=0.03) The maximum difference in scale for a solution to be considered as matching a candidate solution (dimensionless)
 			bool          forceScaleToUnity; //!< (Default=true) 
+			bool          verbose; //!< (Default=false)
+
+			/** If provided, this user callback will be invoked to determine the individual compatibility between each potential pair 
+			  * of elements. Can check image descriptors, geometrical properties, etc.
+			  * \return Must return true if the pair is a potential match, false otherwise.
+			  */
+			std::function<bool(TPotentialMatch)>  user_individual_compat_callback;
 
 			TSE3RobustParams() :
 				ransac_minSetSize( 5 ),
@@ -73,7 +81,8 @@ namespace mrpt
 				ransac_threshold_lin(0.05),
 				ransac_threshold_ang(mrpt::utils::DEG2RAD(1)),
 				ransac_threshold_scale(0.03),
-				forceScaleToUnity( true)
+				forceScaleToUnity( true),
+				verbose(false)
 			{
 			}
 		};

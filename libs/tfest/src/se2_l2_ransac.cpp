@@ -16,9 +16,6 @@
 #include <mrpt/math/geometry.h>
 #include <mrpt/math/distributions.h>
 #include <mrpt/utils/CTimeLogger.h>
-//#include <algorithm>
-
-MRPT_TODO("Write unit tests!")
 
 using namespace mrpt;
 using namespace mrpt::tfest;
@@ -273,6 +270,16 @@ bool tfest::se2_l2_robust(
 			// Don't pick the same features twice!
 			if (alreadySelectedThis [corr_j.this_idx] || alreadySelectedOther[corr_j.other_idx])
 				continue;
+
+			// Additional user-provided filter: 
+			if (params.user_individual_compat_callback)
+			{
+				mrpt::tfest::TPotentialMatch pm;
+				pm.idx_this  = corr_j.this_idx;
+				pm.idx_other = corr_j.other_idx;
+				if (!params.user_individual_compat_callback(pm))
+					continue; // Skip this one!
+			}
 
 			if (subSet.size()<2)
 			{

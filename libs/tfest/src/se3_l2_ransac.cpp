@@ -77,11 +77,31 @@ bool tfest::se3_l2_robust(
 
 		// Compute first inliers output
 		TMatchingPairList	mbInliers;
-		mbInliers.resize( n );
-		for(size_t i = 0; i < n; i++ )
+		mbInliers.reserve( n );
+		for(size_t i = 0; mbInliers.size()<n && i<N; i++ )
 		{
-			mbInliers[i] = in_correspondences[ mbSet[i] ];
-			cSet.push_back( mbSet[i] );
+			const size_t idx = mbSet[i];
+
+			// User-provided filter: 
+			if (params.user_individual_compat_callback)
+			{
+				mrpt::tfest::TPotentialMatch pm;
+				pm.idx_this  = in_correspondences[ idx ].this_idx;
+				pm.idx_other = in_correspondences[ idx ].other_idx;
+				if (!params.user_individual_compat_callback(pm))
+					continue; // Skip this one!
+			}
+
+			mbInliers.push_back( in_correspondences[ idx ] );
+			cSet.push_back( idx );
+		}
+
+		// Check minimum number:
+		if (cSet.size()<n)
+		{
+			if (params.verbose)
+				std::cerr << "[tfest::se3_l2_robust] It was not possible to find the minimum number of (compatible) matching pairs.\n";
+			return false;
 		}
 
 		CPose3DQuat mbOutQuat;
@@ -104,10 +124,21 @@ bool tfest::se3_l2_robust(
 		// Inner loop: for each point NOT in the maybe inliers
 		for(size_t k = n; k < N; k++ )
 		{
-			CPose3DQuat csOutQuat;
+			const size_t idx =  mbSet[k];
+
+			// User-provided filter: 
+			if (params.user_individual_compat_callback)
+			{
+				mrpt::tfest::TPotentialMatch pm;
+				pm.idx_this  = in_correspondences[ idx ].this_idx;
+				pm.idx_other = in_correspondences[ idx ].other_idx;
+				if (!params.user_individual_compat_callback(pm))
+					continue; // Skip this one!
+			}
 
 			// Consensus set: Maybe inliers + new point
-			mbInliers.push_back( in_correspondences[ mbSet[k] ] ); // Insert
+			CPose3DQuat csOutQuat;
+			mbInliers.push_back( in_correspondences[ idx ] ); // Insert
 			const bool res = mrpt::tfest::se3_l2( mbInliers, csOutQuat, scale, params.forceScaleToUnity );
 			mbInliers.erase( mbInliers.end()-1 ); // Erase
 
@@ -122,7 +153,7 @@ bool tfest::se3_l2_robust(
 				fabs( mbOut_vec[6] - scale ) < th[6] )
 			{
 				// Inlier detected -> add to the inlier list
-				cSet.push_back( mbSet[k] );
+				cSet.push_back( idx );
 			} // end if INLIERS
 			else
 			{

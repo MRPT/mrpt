@@ -15,6 +15,7 @@
 #include <mrpt/utils/TMatchingPair.h>
 #include <mrpt/tfest/link_pragmas.h>
 #include <mrpt/poses/poses_frwds.h>
+#include <mrpt/tfest/indiv-compat-decls.h>
 
 namespace mrpt
 {
@@ -74,6 +75,12 @@ namespace mrpt
 			unsigned int  ransac_min_nSimulations; //!< (Default = 1500) See parameter probability_find_good_model
 			double        max_rmse_to_end;  //!< Stop searching for solutions when the RMSE of one solution is below this threshold. Special value "0" means "auto", which employs "2*normalizationStd".
 			bool          verbose; //!< (Default=false)
+
+			/** If provided, this user callback will be invoked to determine the individual compatibility between each potential pair 
+			  * of elements. Can check image descriptors, geometrical properties, etc.
+			  * \return Must return true if the pair is a potential match, false otherwise.
+			  */
+			std::function<bool(TPotentialMatch)>  user_individual_compat_callback;
 
 			/** Default values */
 			TSE2RobustParams() :
