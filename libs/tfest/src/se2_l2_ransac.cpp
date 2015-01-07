@@ -7,33 +7,23 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include "scanmatching-precomp.h"  // Precompiled headers
+#include "tfest-precomp.h"  // Precompiled headers
 
-
-#include <mrpt/scanmatching/scan_matching.h>
+#include <mrpt/tfest/se2.h>
 #include <mrpt/poses/CPosePDFGaussian.h>
 #include <mrpt/poses/CPoint2DPDFGaussian.h>
-#include <mrpt/poses/CPosePDFSOG.h>
 #include <mrpt/random.h>
 #include <mrpt/math/geometry.h>
-#include <mrpt/math/utils.h>
-#include <mrpt/math/wrap2pi.h>
 #include <mrpt/math/distributions.h>
-#include <mrpt/math/CQuaternion.h>
 #include <mrpt/utils/CTimeLogger.h>
 
-#include <algorithm>
-
 using namespace mrpt;
-using namespace mrpt::scanmatching;
+using namespace mrpt::tfest;
 using namespace mrpt::random;
 using namespace mrpt::utils;
 using namespace mrpt::poses;
 using namespace mrpt::math;
 using namespace std;
-
-
-MRPT_TODO("Mark as deprecated and rewrite a clearer and more consistent API for all least-squares transform methods!") // And rename lib to [mrpt-registration/optimaltransf] ?
 
 //#define AVOID_MULTIPLE_CORRESPONDENCES
 
@@ -73,30 +63,18 @@ void markAsPicked(
 	http://journals.cambridge.org/action/displayAbstract?aid=8815308
 
  This works as follows:
-	- Repeat "ransac_nSimulations" times:
+	- Repeat "results.ransac_iters" times:
 		- Randomly pick TWO correspondences from the set "in_correspondences".
 		- Compute the associated rigid transformation.
 		- For "ransac_maxSetSize" randomly selected correspondences, test for "consensus" with the current group:
 			- If if is compatible (ransac_maxErrorXY, ransac_maxErrorPHI), grow the "consensus set"
 			- If not, do not add it.
   ---------------------------------------------------------------*/
-void  scanmatching::robustRigidTransformation(
-	TMatchingPairList	&in_correspondences,
-	poses::CPosePDFSOG				&out_transformation,
-	float							normalizationStd,
-	unsigned int					ransac_minSetSize,
-	unsigned int					ransac_maxSetSize,
-	float						ransac_mahalanobisDistanceThreshold,
-	unsigned int					ransac_nSimulations,
-	TMatchingPairList	*out_largestSubSet,
-	bool						ransac_fuseByCorrsMatch,
-	float						ransac_fuseMaxDiffXY,
-	float						ransac_fuseMaxDiffPhi,
-	bool						ransac_algorithmForLandmarks,
-	double 						probability_find_good_model,
-	unsigned int				ransac_min_nSimulations,
-	const bool                  verbose,
-	double                      max_rmse_to_end
+bool tfest::se2_l2_robust(
+	const mrpt::utils::TMatchingPairList &in_correspondences,
+	const double               normalizationStd,
+	const TSE2RobustParams   & params,
+	TSE2RobustResult         & results
 	)
 {
 //#define DO_PROFILING
@@ -108,21 +86,17 @@ void  scanmatching::robustRigidTransformation(
 	const size_t nCorrs = in_correspondences.size();
 
 	// Default: 2 * normalizationStd ("noise level")
-	const double MAX_RMSE_TO_END = (max_rmse_to_end<=0 ? 2*normalizationStd : max_rmse_to_end);
+	const double MAX_RMSE_TO_END = (params.max_rmse_to_end<=0 ? 2*normalizationStd : params.max_rmse_to_end);
 
 	MRPT_START
 
 	// Asserts:
-	if( nCorrs < ransac_minSetSize )
+	if( nCorrs < params.ransac_minSetSize )
 	{
 		// Nothing to do!
-		out_transformation.clear();
-		if (out_largestSubSet!=NULL)
-		{
-			TMatchingPairList		emptySet;
-			*out_largestSubSet = emptySet;
-		}
-		return;
+		results.transformation.clear();
+		results.largestSubSet = TMatchingPairList();
+		return false;
 	}
 
 
@@ -131,7 +105,7 @@ void  scanmatching::robustRigidTransformation(
 #endif
 	// Find the max. index of "this" and "other:
 	unsigned int maxThis=0, maxOther=0;
-	for (TMatchingPairList::iterator matchIt=in_correspondences.begin();matchIt!=in_correspondences.end(); ++matchIt)
+	for (TMatchingPairList::const_iterator matchIt=in_correspondences.begin();matchIt!=in_correspondences.end(); ++matchIt)
 	{
 		maxThis = max(maxThis , matchIt->this_idx  );
 		maxOther= max(maxOther, matchIt->other_idx );
@@ -149,7 +123,7 @@ void  scanmatching::robustRigidTransformation(
 	std::vector<bool>	hasCorrThis(maxThis+1,false);
 	std::vector<bool>	hasCorrOther(maxOther+1,false);
 	unsigned int		howManyDifCorrs = 0;
-	for (TMatchingPairList::iterator matchIt=in_correspondences.begin();matchIt!=in_correspondences.end(); ++matchIt)
+	for (TMatchingPairList::const_iterator matchIt=in_correspondences.begin();matchIt!=in_correspondences.end(); ++matchIt)
 	{
 		if (!hasCorrThis[matchIt->this_idx] &&
 			!hasCorrOther[matchIt->other_idx] )
@@ -164,20 +138,15 @@ void  scanmatching::robustRigidTransformation(
 #endif
 
 	// Clear the set of output particles:
-	out_transformation.clear();
+	results.transformation.clear();
 
 	// If there are less different correspondences than the minimum required, quit:
-	if ( howManyDifCorrs < ransac_minSetSize )
+	if ( howManyDifCorrs < params.ransac_minSetSize )
 	{
 		// Nothing we can do here!!! :~$
-		if (out_largestSubSet!=NULL)
-		{
-			TMatchingPairList		emptySet;
-			*out_largestSubSet = emptySet;
-		}
-
-		out_transformation.clear();
-		return;
+		results.transformation.clear();
+		results.largestSubSet = TMatchingPairList();
+		return false;
 	}
 
 
@@ -230,30 +199,30 @@ void  scanmatching::robustRigidTransformation(
 	size_t largest_consensus_yet = 0; // Used for dynamic # of steps
 	double largestSubSet_RMSE = std::numeric_limits<double>::max();
 
-	const bool use_dynamic_iter_number = ransac_nSimulations==0;
+	results.ransac_iters = 	params.ransac_nSimulations;
+	const bool use_dynamic_iter_number = results.ransac_iters==0;
 	if (use_dynamic_iter_number)
 	{
-		ASSERT_(probability_find_good_model>0 && probability_find_good_model<1);
+		ASSERT_(params.probability_find_good_model>0 && params.probability_find_good_model<1);
 		// Set an initial # of iterations:
-		ransac_nSimulations = 10;  // It doesn't matter actually, since will be changed in the first loop
+		results.ransac_iters = 10;  // It doesn't matter actually, since will be changed in the first loop
 	}
 
 	std::vector<bool> alreadySelectedThis, alreadySelectedOther;
 
-	if (!ransac_algorithmForLandmarks)
+	if (!params.ransac_algorithmForLandmarks)
 	{
 		alreadySelectedThis.assign(maxThis+1,false);
 		alreadySelectedOther.assign(maxOther+1, false);
 	}
 	// else -> It will be done anyway inside the for() below
-
-
+	
 	// First: Build a permutation of the correspondences to pick from it sequentially:
 	std::vector<size_t> corrsIdxs(nCorrs), corrsIdxsPermutation;
 	for (size_t i=0;i<nCorrs;i++) corrsIdxs[i]= i;
 
 	size_t iter_idx;
-	for (iter_idx = 0;iter_idx<ransac_nSimulations; iter_idx++) // ransac_nSimulations can be dynamic
+	for (iter_idx = 0;iter_idx<results.ransac_iters; iter_idx++) // results.ransac_iters can be dynamic
 	{
 #ifdef DO_PROFILING
 		CTimeLoggerEntry tle(timlog,"ransac.iter");
@@ -271,7 +240,7 @@ void  scanmatching::robustRigidTransformation(
 		TMatchingPairList subSet;
 
 		// Select a subset of correspondences at random:
-		if (ransac_algorithmForLandmarks)
+		if (params.ransac_algorithmForLandmarks)
 		{
 #ifdef DO_PROFILING
 			timlog.enter("ransac.reset_selection_marks");
@@ -292,7 +261,7 @@ void  scanmatching::robustRigidTransformation(
 #ifdef DO_PROFILING
 		timlog.enter("ransac.inner_loops");
 #endif
-		for (unsigned int j=0;j<nCorrs && subSet.size()<ransac_maxSetSize;j++)
+		for (unsigned int j=0;j<nCorrs && subSet.size()<params.ransac_maxSetSize;j++)
 		{
 			const size_t idx = corrsIdxsPermutation[j];
 
@@ -301,6 +270,16 @@ void  scanmatching::robustRigidTransformation(
 			// Don't pick the same features twice!
 			if (alreadySelectedThis [corr_j.this_idx] || alreadySelectedOther[corr_j.other_idx])
 				continue;
+
+			// Additional user-provided filter: 
+			if (params.user_individual_compat_callback)
+			{
+				mrpt::tfest::TPotentialMatch pm;
+				pm.idx_this  = corr_j.this_idx;
+				pm.idx_other = corr_j.other_idx;
+				if (! (*params.user_individual_compat_callback)(pm,params.user_individual_compat_callback_userdata))
+					continue; // Skip this one!
+			}
 
 			if (subSet.size()<2)
 			{
@@ -336,10 +315,7 @@ void  scanmatching::robustRigidTransformation(
 					if (is_acceptable)
 					{
 						// Perform estimation:
-						scanmatching::leastSquareErrorRigidTransformation(
-							subSet,
-							referenceEstimation.mean,
-							&referenceEstimation.cov );
+						tfest::se2_l2( subSet, referenceEstimation );
 						// Normalized covariance: scale!
 						referenceEstimation.cov *= square(normalizationStd);
 
@@ -379,7 +355,7 @@ void  scanmatching::robustRigidTransformation(
 
 				const double maha_dist = pt_this.mahalanobisDistanceToPoint(corr_j.this_x,corr_j.this_y);
 
-				const bool passTest = maha_dist < ransac_mahalanobisDistanceThreshold;
+				const bool passTest = maha_dist < params.ransac_mahalanobisDistanceThreshold;
 
 				if ( passTest )
 				{
@@ -400,7 +376,7 @@ void  scanmatching::robustRigidTransformation(
 #endif
 
 
-		const bool has_to_eval_RMSE = (subSet.size()>=ransac_minSetSize);
+		const bool has_to_eval_RMSE = (subSet.size()>=params.ransac_minSetSize);
 
 		// Compute the RMSE of this matching and the corresponding transformation (only if we'll use this value below)
 		double this_subset_RMSE = 0;
@@ -411,10 +387,7 @@ void  scanmatching::robustRigidTransformation(
 #endif
 
 			// Recompute referenceEstimation from all the corrs:
-			scanmatching::leastSquareErrorRigidTransformation(
-				subSet,
-				referenceEstimation.mean,
-				&referenceEstimation.cov );
+			tfest::se2_l2(subSet,referenceEstimation);
 			// Normalized covariance: scale!
 			referenceEstimation.cov *= square(normalizationStd);
 
@@ -436,22 +409,22 @@ void  scanmatching::robustRigidTransformation(
 
 		// Save the estimation result as a "particle", only if the subSet contains
 		//  "ransac_minSetSize" elements at least:
-		if (subSet.size()>=ransac_minSetSize)
+		if (subSet.size()>=params.ransac_minSetSize)
 		{
 			// If this subset was previously added to the SOG, just increment its weight
 			//  and do not add a new mode:
 			int		indexFound = -1;
 
 			// JLBC Added DEC-2007: An alternative (optional) method to fuse Gaussian modes:
-			if (!ransac_fuseByCorrsMatch)
+			if (!params.ransac_fuseByCorrsMatch)
 			{
 				// Find matching by approximate match in the X,Y,PHI means
 				// -------------------------------------------------------------------
-				for (size_t i=0;i<out_transformation.size();i++)
+				for (size_t i=0;i<results.transformation.size();i++)
 				{
-					double diffXY = out_transformation.get(i).mean.distanceTo( referenceEstimation.mean );
-					double diffPhi = fabs( math::wrapToPi( out_transformation.get(i).mean.phi() - referenceEstimation.mean.phi() ) );
-					if ( diffXY < ransac_fuseMaxDiffXY && diffPhi < ransac_fuseMaxDiffPhi )
+					double diffXY = results.transformation.get(i).mean.distanceTo( referenceEstimation.mean );
+					double diffPhi = fabs( math::wrapToPi( results.transformation.get(i).mean.phi() - referenceEstimation.mean.phi() ) );
+					if ( diffXY < params.ransac_fuseMaxDiffXY && diffPhi < params.ransac_fuseMaxDiffPhi )
 					{
 						//printf("Match by distance found: distXY:%f distPhi=%f deg\n",diffXY,RAD2DEG(diffPhi));
 						indexFound = i;
@@ -480,9 +453,9 @@ void  scanmatching::robustRigidTransformation(
 			if (indexFound!=-1)
 			{
 				// This is an already added mode:
-				if (ransac_algorithmForLandmarks)
-						out_transformation.get(indexFound).log_w = log(1+ exp(out_transformation.get(indexFound).log_w));
-				else	out_transformation.get(indexFound).log_w = log(subSet.size()+ exp(out_transformation.get(indexFound).log_w));
+				if (params.ransac_algorithmForLandmarks)
+						results.transformation.get(indexFound).log_w = log(1+ exp(results.transformation.get(indexFound).log_w));
+				else	results.transformation.get(indexFound).log_w = log(subSet.size()+ exp(results.transformation.get(indexFound).log_w));
 			}
 			else
 			{
@@ -490,7 +463,7 @@ void  scanmatching::robustRigidTransformation(
 				alreadyAddedSubSets.push_back( subSet );
 
 				CPosePDFSOG::TGaussianMode	newSOGMode;
-				if (ransac_algorithmForLandmarks)
+				if (params.ransac_algorithmForLandmarks)
 						newSOGMode.log_w = 0; //log(1);
 				else	newSOGMode.log_w = log(static_cast<double>(subSet.size()));
 
@@ -498,7 +471,7 @@ void  scanmatching::robustRigidTransformation(
 				newSOGMode.cov  = referenceEstimation.cov;
 
 				// Add a new mode to the SOG!
-				out_transformation.push_back(newSOGMode);
+				results.transformation.push_back(newSOGMode);
 			}
 		} // end if subSet.size()>=ransac_minSetSize
 
@@ -518,32 +491,28 @@ void  scanmatching::robustRigidTransformation(
 				pNoOutliers = std::max( std::numeric_limits<double>::epsilon(), pNoOutliers);  // Avoid division by -Inf
 				pNoOutliers = std::min(1.0 - std::numeric_limits<double>::epsilon() , pNoOutliers); // Avoid division by 0.
 				// Number of
-				ransac_nSimulations = log(1-probability_find_good_model)/log(pNoOutliers);
+				results.ransac_iters = log(1-params.probability_find_good_model)/log(pNoOutliers);
 
-				ransac_nSimulations = std::max(ransac_nSimulations, ransac_min_nSimulations);
+				results.ransac_iters = std::max(results.ransac_iters, params.ransac_min_nSimulations);
 
-				if (verbose)
-					cout << "[scanmatching::RANSAC] Iter #" << iter_idx << ":est. # iters=" << ransac_nSimulations << " pNoOutliers=" << pNoOutliers << " #inliers: " << ninliers << endl;
+				if (params.verbose)
+					cout << "[tfest::RANSAC] Iter #" << iter_idx << ":est. # iters=" << results.ransac_iters << " pNoOutliers=" << pNoOutliers << " #inliers: " << ninliers << endl;
 			}
 
 		}
 
 		// Save the largest subset:
-		if (out_largestSubSet!=NULL)
+		if (subSet.size()>=params.ransac_minSetSize && this_subset_RMSE<largestSubSet_RMSE )
 		{
-			if (subSet.size()>=ransac_minSetSize &&
-			    this_subset_RMSE<largestSubSet_RMSE )
-			{
-				if (verbose)
-					cout << "[scanmatching::RANSAC] Iter #" << iter_idx << " Better subset: " << subSet.size() << " inliers, RMSE=" << this_subset_RMSE << endl;
+			if (params.verbose)
+				cout << "[tfest::RANSAC] Iter #" << iter_idx << " Better subset: " << subSet.size() << " inliers, RMSE=" << this_subset_RMSE << endl;
 
-				*out_largestSubSet = subSet;
-				largestSubSet_RMSE = this_subset_RMSE;
-			}
+			results.largestSubSet = subSet;
+			largestSubSet_RMSE = this_subset_RMSE;
 		}
 
 		// Is the found subset good enough?
-		if (subSet.size()>=ransac_minSetSize &&
+		if (subSet.size()>=params.ransac_minSetSize &&
 			this_subset_RMSE<MAX_RMSE_TO_END)
 		{
 				break; // end RANSAC iterations.
@@ -554,14 +523,13 @@ void  scanmatching::robustRigidTransformation(
 #endif
 	} // end for each iteration
 
-	if (verbose)
-		cout << "[scanmatching::RANSAC] Finished after " << iter_idx << " iterations.\n";
+	if (params.verbose)
+		cout << "[tfest::RANSAC] Finished after " << iter_idx << " iterations.\n";
 
 
 	// Set the weights of the particles to sum the unity:
-	out_transformation.normalizeWeights();
+	results.transformation.normalizeWeights();
 
-	// Now the estimation is in the particles set!
 	// Done!
 
 	MRPT_END_WITH_CLEAN_UP( \
@@ -569,8 +537,9 @@ void  scanmatching::robustRigidTransformation(
 		printf("Saving '_debug_in_correspondences.txt'..."); \
 		in_correspondences.dumpToFile("_debug_in_correspondences.txt"); \
 		printf("Ok\n"); \
-		printf("Saving '_debug_out_transformation.txt'..."); \
-		out_transformation.saveToTextFile("_debug_out_transformation.txt"); \
+		printf("Saving '_debug_results.transformation.txt'..."); \
+		results.transformation.saveToTextFile("_debug_results.transformation.txt"); \
 		printf("Ok\n"); );
 
+	return true;
 }

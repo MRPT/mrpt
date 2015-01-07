@@ -7,7 +7,7 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/scanmatching.h>
+#include <mrpt/tfest.h>
 #include <mrpt/random.h>
 #include <mrpt/math/ops_vectors.h>
 #include <mrpt/poses/CPose3D.h>
@@ -19,7 +19,6 @@ using namespace mrpt::utils;
 using namespace mrpt::math;
 using namespace mrpt::random;
 using namespace mrpt::poses;
-using namespace mrpt::scanmatching;
 using namespace std;
 
 typedef std::vector< std::vector< double > > TPoints;
@@ -81,50 +80,19 @@ void generate_list_of_points( const TPoints &pA, const TPoints &pB, TMatchingPai
 // ------------------------------------------------------
 //				Genreate a vector of matched points
 // ------------------------------------------------------
-void generate_vector_of_points(  const TPoints &pA, const TPoints &pB, std::vector<double> &inV )
+void generate_vector_of_points(  const TPoints &pA, const TPoints &pB, vector<mrpt::math::TPoint3D> &ptsA, vector<mrpt::math::TPoint3D> &ptsB  )
 {
 	// The input vector: inV = [pA1x, pA1y, pA1z, pB1x, pB1y, pB1z, ... ]
-	inV.resize( 30 );
-	for( unsigned int i = 0; i < 5; ++i )
+	ptsA.resize( pA.size() );
+	ptsB.resize( pA.size() );
+	for( unsigned int i = 0; i < pA.size(); ++i )
 	{
-		inV[6*i+0] = pA[i][0]; inV[6*i+1] = pA[i][1]; inV[6*i+2] = pA[i][2];
-		inV[6*i+3] = pB[i][0]; inV[6*i+4] = pB[i][1]; inV[6*i+5] = pB[i][2];
+		ptsA[i] = mrpt::math::TPoint3D( pA[i][0], pA[i][1], pA[i][2] );
+		ptsB[i] = mrpt::math::TPoint3D( pB[i][0], pB[i][1], pB[i][2] );
 	}
 } // end generate_vector_of_points
 
-
-
-
-// Load data from constant file and check for exact match.
-TEST(LSRigidTrans6D, CPose3D)
-{
-	TPoints	pA, pB;										// The input points
-	CPose3DQuat qPose = generate_points( pA, pB );
-
-	TMatchingPairList list;
-	generate_list_of_points( pA, pB, list );			// Generate a list of matched points
-
-	CPose3D			out;								// Output CPose3D for the LSRigidTransformation
-	double			scale;								// Output scale value
-
-	// Take the x,y,z,yaw,pitch,roll values for comparing
-	double quat_yaw, quat_pitch, quat_roll;
-	qPose.quat().rpy( quat_roll, quat_pitch, quat_yaw );
-	const double quat_x = qPose.x();
-	const double quat_y = qPose.y();
-	const double quat_z = qPose.z();
-	// --
-
-	/*bool res1 =*/
-	scanmatching::leastSquareErrorRigidTransformation6D( list, out, scale );
-	const double err = sqrt(	square(out.x() - quat_x) + square(out.y() - quat_y) + square(out.z() - quat_z) +
-								square(out.yaw() - quat_yaw) + square(out.pitch() - quat_pitch) + square(out.roll() - quat_roll) );
-	EXPECT_TRUE( err< 1e-6 )
-		<< "Applied quaternion: " << endl << qPose << endl
-		<< "Out CPose3D: " << endl << out << " [Err: " << err << "]" << endl;
-}
-
-TEST(LSRigidTrans6D, CPose3DQuat)
+TEST(tfest, se3_l2_MatchList)
 {
 	TPoints	pA, pB;										// The input points
 	CPose3DQuat qPose = generate_points( pA, pB );
@@ -135,8 +103,8 @@ TEST(LSRigidTrans6D, CPose3DQuat)
 	CPose3DQuat		outQuat;							// Output CPose3DQuat for the LSRigidTransformation
 	double			scale;								// Output scale value
 
-	/*bool res2 =*/
-	scanmatching::leastSquareErrorRigidTransformation6D( list, outQuat, scale );
+	bool res = mrpt::tfest::se3_l2(list,outQuat,scale);
+	EXPECT_TRUE( res );
 
 	double err = 0.0;
 	if( (qPose[3]*outQuat[3] > 0 && qPose[4]*outQuat[4] > 0 && qPose[5]*outQuat[5] > 0 && qPose[6]*outQuat[6] > 0) ||
@@ -155,20 +123,19 @@ TEST(LSRigidTrans6D, CPose3DQuat)
 		<< "Applied quaternion: " << endl << qPose << endl
 		<< "Out CPose3DQuat: " << endl << outQuat << endl;
 	}
-
 }
 
-TEST(LSRigidTrans6D, vector)
+TEST(tfest, se3_l2_PtsLists)
 {
 	TPoints	pA, pB;										// The input points
 	CPose3DQuat qPose = generate_points( pA, pB );
 
-	std::vector<double> inV;
-	generate_vector_of_points( pA, pB, inV );			// Generate a vector of matched points
+	vector<mrpt::math::TPoint3D> ptsA, ptsB;
+	generate_vector_of_points( pA, pB, ptsA, ptsB );			// Generate a vector of matched points
 
-	std::vector<double>	qu;									// Output quaternion for the Horn Method
-
-	HornMethod( inV, qu, false );
+	mrpt::poses::CPose3DQuat qu;
+	double scale;
+	mrpt::tfest::se3_l2(ptsA, ptsB,qu,scale); // Output quaternion for the Horn Method
 
 	double err = 0.0;
 	if( (qPose[3]*qu[3] > 0 && qPose[4]*qu[4] > 0 && qPose[5]*qu[5] > 0 && qPose[6]*qu[6] > 0) ||

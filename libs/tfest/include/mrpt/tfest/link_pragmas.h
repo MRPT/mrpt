@@ -7,8 +7,8 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#ifndef SCANMATCHING_link_pragmas_H
-#define SCANMATCHING_link_pragmas_H
+#ifndef TFEST_link_pragmas_H
+#define TFEST_link_pragmas_H
 
 #include <mrpt/config.h>
 #include <mrpt/utils/boost_join.h>
@@ -16,14 +16,14 @@
 // ** Important! **
 // In each mrpt library, search and replace:
 //  MRPT_XXX_EXPORT, MRPT_XXX_IMPORT
-//  SCANMATCHING_IMPEXP, mrpt_xxx_EXPORTS
+//  TFEST_IMPEXP, mrpt_xxx_EXPORTS
 
 // If we are building the DLL (_EXPORTS), do not link against the .lib files:
-#if !defined(mrpt_scanmatching_EXPORTS) && (defined(_MSC_VER) || defined(__BORLANDC__))
+#if !defined(mrpt_tfest_EXPORTS) && (defined(_MSC_VER) || defined(__BORLANDC__))
 #	if defined(_DEBUG)
-#		pragma comment (lib, BOOST_JOIN( BOOST_JOIN("libmrpt-scanmatching",MRPT_VERSION_POSTFIX),"-dbg.lib"))
+#		pragma comment (lib, BOOST_JOIN( BOOST_JOIN("libmrpt-tfest",MRPT_VERSION_POSTFIX),"-dbg.lib"))
 #	else
-#		pragma comment (lib, BOOST_JOIN( BOOST_JOIN("libmrpt-scanmatching",MRPT_VERSION_POSTFIX),".lib"))
+#		pragma comment (lib, BOOST_JOIN( BOOST_JOIN("libmrpt-tfest",MRPT_VERSION_POSTFIX),".lib"))
 #	endif
 #endif
 
@@ -41,53 +41,53 @@
        as VC++ and gcc
      */
 #    if defined(_MSC_VER) || defined(__BORLANDC__) || defined(__GNUC__) || defined(__WATCOMC__)
-#        define MRPT_SCANMATCHING_EXPORT __declspec(dllexport)
-#        define MRPT_SCANMATCHING_IMPORT __declspec(dllimport)
+#        define MRPT_TFEST_EXPORT __declspec(dllexport)
+#        define MRPT_TFEST_IMPORT __declspec(dllimport)
 #    else /* compiler doesn't support __declspec() */
-#        define MRPT_SCANMATCHING_EXPORT
-#        define MRPT_SCANMATCHING_IMPORT
+#        define MRPT_TFEST_EXPORT
+#        define MRPT_TFEST_IMPORT
 #    endif
 #elif defined(MRPT_OS_OS2)		/* was __WXPM__ */
 #    if defined (__WATCOMC__)
-#        define MRPT_SCANMATCHING_EXPORT __declspec(dllexport)
+#        define MRPT_TFEST_EXPORT __declspec(dllexport)
         /*
            __declspec(dllimport) prepends __imp to imported symbols. We do NOT
            want that!
          */
-#        define MRPT_SCANMATCHING_IMPORT
+#        define MRPT_TFEST_IMPORT
 #    elif defined(__EMX__)
-#        define MRPT_SCANMATCHING_EXPORT
-#        define MRPT_SCANMATCHING_IMPORT
+#        define MRPT_TFEST_EXPORT
+#        define MRPT_TFEST_IMPORT
 #    elif (!(defined(__VISAGECPP__) && (__IBMCPP__ < 400 || __IBMC__ < 400 )))
-#        define MRPT_SCANMATCHING_EXPORT _Export
-#        define MRPT_SCANMATCHING_IMPORT _Export
+#        define MRPT_TFEST_EXPORT _Export
+#        define MRPT_TFEST_IMPORT _Export
 #    endif
 #elif defined(MRPT_OS_APPLE)
 #    ifdef __MWERKS__
-#        define MRPT_SCANMATCHING_EXPORT __declspec(export)
-#        define MRPT_SCANMATCHING_IMPORT __declspec(import)
+#        define MRPT_TFEST_EXPORT __declspec(export)
+#        define MRPT_TFEST_IMPORT __declspec(import)
 #    endif
 #elif defined(__CYGWIN__)
-#    define MRPT_SCANMATCHING_EXPORT __declspec(dllexport)
-#    define MRPT_SCANMATCHING_IMPORT __declspec(dllimport)
+#    define MRPT_TFEST_EXPORT __declspec(dllexport)
+#    define MRPT_TFEST_IMPORT __declspec(dllimport)
 #endif
 
 /* for other platforms/compilers we don't anything */
-#ifndef MRPT_SCANMATCHING_EXPORT
-#    define MRPT_SCANMATCHING_EXPORT
-#    define MRPT_SCANMATCHING_IMPORT
+#ifndef MRPT_TFEST_EXPORT
+#    define MRPT_TFEST_EXPORT
+#    define MRPT_TFEST_IMPORT
 #endif
 
 /*  Macros that map to export declaration when building the DLL, to import
 	declaration if using it or to nothing at all if we are not compiling as DLL */
 #if defined(MRPT_BUILT_AS_DLL)
-#	if defined(mrpt_scanmatching_EXPORTS)  /* Building the DLL */
-#		define SCANMATCHING_IMPEXP MRPT_SCANMATCHING_EXPORT
+#	if defined(mrpt_tfest_EXPORTS)  /* Building the DLL */
+#		define TFEST_IMPEXP MRPT_TFEST_EXPORT
 #	else  /* Using the DLL */
-#		define SCANMATCHING_IMPEXP MRPT_SCANMATCHING_IMPORT
+#		define TFEST_IMPEXP MRPT_TFEST_IMPORT
 #	endif
 #else /* not making nor using DLL */
-#    define SCANMATCHING_IMPEXP 
+#    define TFEST_IMPEXP 
 #endif
 
 

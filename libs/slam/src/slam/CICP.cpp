@@ -10,7 +10,7 @@
 #include "slam-precomp.h"   // Precompiled headers
 
 #include <mrpt/slam/CICP.h>
-#include <mrpt/scanmatching.h>
+#include <mrpt/tfest.h>
 #include <mrpt/poses/CPosePDFSOG.h>
 #include <mrpt/utils/CTicTac.h>
 #include <mrpt/utils/CStream.h>
@@ -323,7 +323,10 @@ CPosePDFPtr CICP::ICP_Method_Classic(
 				// Compute the estimated pose.
 				//  (Method from paper of J.Gonzalez, Martinez y Morales)
 				// ----------------------------------------------------------------------
-				scanmatching::leastSquareErrorRigidTransformation( correspondences,	gaussPdf->mean );
+				mrpt::math::TPose2D est_mean;
+				mrpt::tfest::se2_l2(correspondences, est_mean); 
+
+				gaussPdf->mean = est_mean;
 
 				// If matching has not changed, decrease the thresholds:
 				// --------------------------------------------------------
@@ -367,10 +370,7 @@ CPosePDFPtr CICP::ICP_Method_Classic(
 			// ----------------------------------------------
 			// METHOD 1: MSE linear estimation
 			// ----------------------------------------------
-			scanmatching::leastSquareErrorRigidTransformation(
-				correspondences,
-				gaussPdf->mean,
-				&gaussPdf->cov );
+			mrpt::tfest::se2_l2(correspondences, *gaussPdf );
 			// Scale covariance:
 			gaussPdf->cov *= options.covariance_varPoints;
 #else
@@ -517,24 +517,21 @@ CPosePDFPtr CICP::ICP_Method_Classic(
 	// RANSAC?
 	if (options.doRANSAC)
 	{
-		// Discard the gaussian:
-		//delete gaussPdf; gaussPdf=NULL;
+		mrpt::tfest::TSE2RobustParams params;
+		params.ransac_minSetSize = options.ransac_minSetSize;
+		params.ransac_maxSetSize = options.ransac_maxSetSize;
+		params.ransac_mahalanobisDistanceThreshold = options.ransac_mahalanobisDistanceThreshold;
+		params.ransac_nSimulations = options.ransac_nSimulations;
+		params.ransac_fuseByCorrsMatch = options.ransac_fuseByCorrsMatch;
+		params.ransac_fuseMaxDiffXY = options.ransac_fuseMaxDiffXY;
+		params.ransac_fuseMaxDiffPhi = options.ransac_fuseMaxDiffPhi;
+		params.ransac_algorithmForLandmarks  = false; 
+
+		mrpt::tfest::TSE2RobustResult results;
+		mrpt::tfest::se2_l2_robust(correspondences, options.normalizationStd, params, results);
 
 		SOG = CPosePDFSOG::Create();
-		scanmatching::robustRigidTransformation(
-			correspondences,
-			*SOG,
-			options.normalizationStd,
-			options.ransac_minSetSize,
-			options.ransac_maxSetSize,
-			options.ransac_mahalanobisDistanceThreshold,
-			options.ransac_nSimulations,
-			NULL,
-			options.ransac_fuseByCorrsMatch,
-			options.ransac_fuseMaxDiffXY,
-			options.ransac_fuseMaxDiffPhi,
-			false // ransac_useMahalanobisAsTest
-			) ;
+		*SOG = results.transformation;
 
 		// And return the SOG:
 		resultPDF = SOG;
@@ -1048,8 +1045,10 @@ CPose3DPDFPtr CICP::ICP3D_Method_Classic(
 			{
 				// Compute the estimated pose, using Horn's method.
 				// ----------------------------------------------------------------------
+				mrpt::poses::CPose3DQuat estPoseQuat;
 				double transf_scale;
-				scanmatching::leastSquareErrorRigidTransformation6D( correspondences, gaussPdf->mean, transf_scale, false );
+				mrpt::tfest::se3_l2(correspondences, estPoseQuat, transf_scale, false /* dont force unit scale */ );
+				gaussPdf->mean = estPoseQuat;
 
 				// If matching has not changed, decrease the thresholds:
 				// --------------------------------------------------------

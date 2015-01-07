@@ -26,12 +26,12 @@ using namespace std;
 /*---------------------------------------------------------------
 						dumpToFile
   ---------------------------------------------------------------*/
-void  TMatchingPairList::dumpToFile(const std::string &fileName)
+void  TMatchingPairList::dumpToFile(const std::string &fileName) const
 {
 	CFileOutputStream  f(fileName);
 	ASSERT_(f.fileOpenCorrectly())
 
-	for (iterator it=begin();it!=end();++it)
+	for (const_iterator it=begin();it!=end();++it)
 	{
 		f.printf("%u %u %f %f %f %f %f %f %f\n",
 				it->this_idx,
@@ -49,7 +49,7 @@ void  TMatchingPairList::dumpToFile(const std::string &fileName)
 /*---------------------------------------------------------------
 						saveAsMATLABScript
   ---------------------------------------------------------------*/
-void TMatchingPairList::saveAsMATLABScript( const std::string &filName )
+void TMatchingPairList::saveAsMATLABScript( const std::string &filName ) const
 {
 	FILE	*f = os::fopen(filName.c_str(),"wt");
 
@@ -62,8 +62,7 @@ void TMatchingPairList::saveAsMATLABScript( const std::string &filName )
 	fprintf(f,"%% ----------------------------------------------------\n\n");
 
 	fprintf(f,"axis equal; hold on;\n");
-	iterator	it;
-	for (it=begin();it!=end();++it)
+	for (const_iterator it=begin();it!=end();++it)
 	{
 		fprintf(f,"line([%f %f],[%f %f],'Color',colorLines);\n",
 				it->this_x,
@@ -82,17 +81,13 @@ void TMatchingPairList::saveAsMATLABScript( const std::string &filName )
 /*---------------------------------------------------------------
 						indexOtherMapHasCorrespondence
   ---------------------------------------------------------------*/
-bool  TMatchingPairList::indexOtherMapHasCorrespondence(unsigned int idx)
+bool  TMatchingPairList::indexOtherMapHasCorrespondence(size_t idx) const
 {
-	iterator	it;
-	bool		has = false;
-
-	for (it=begin();it!=end() && !has;++it)
-	{
-		has = it->other_idx == idx;
+	for (const_iterator it=begin();it!=end();++it) {
+		if (it->other_idx == idx) 
+			return true;
 	}
-
-	return has;
+	return false;
 }
 
 bool mrpt::utils::operator < (const TMatchingPair& a, const TMatchingPair& b)

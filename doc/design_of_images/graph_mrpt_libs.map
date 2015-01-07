@@ -1,21 +1,21 @@
 <map id="MRPT_LIBS" name="MRPT_LIBS">
-<area shape="rect" id="node1" href="group__mrpt__base__grp.html" title="mrpt&#45;base" alt="" coords="377,485,473,533"/>
+<area shape="rect" id="node1" href="group__mrpt__base__grp.html" title="mrpt&#45;base" alt="" coords="370,485,467,533"/>
 <area shape="rect" id="node2" href="group__mrpt__graphs__grp.html" title="mrpt&#45;graphs (.h)" alt="" coords="185,197,329,245"/>
-<area shape="rect" id="node3" href="group__mrpt__bayes__grp.html" title="mrpt&#45;bayes (.h)" alt="" coords="302,389,439,437"/>
-<area shape="rect" id="node4" href="group__mrpt__opengl__grp.html" title="mrpt&#45;opengl" alt="" coords="766,389,879,437"/>
-<area shape="rect" id="node5" href="group__mrpt__gui__grp.html" title="mrpt&#45;gui" alt="" coords="993,197,1079,245"/>
-<area shape="rect" id="node6" href="group__mrpt__obs__grp.html" title="mrpt&#45;obs" alt="" coords="911,293,1001,341"/>
-<area shape="rect" id="node7" href="group__mrpt__hwdrivers__grp.html" title="mrpt&#45;hwdrivers" alt="" coords="713,101,849,149"/>
-<area shape="rect" id="node9" href="group__mrpt__maps__grp.html" title="mrpt&#45;maps" alt="" coords="730,197,832,245"/>
-<area shape="rect" id="node8" href="group__mrpt__topography__grp.html" title="mrpt&#45;topography" alt="" coords="547,197,696,245"/>
-<area shape="rect" id="node11" href="group__mrpt__scanmatching__grp.html" title="mrpt&#45;scanmatching" alt="" coords="405,293,568,341"/>
-<area shape="rect" id="node10" href="group__mrpt__vision__grp.html" title="mrpt&#45;vision" alt="" coords="863,197,969,245"/>
+<area shape="rect" id="node3" href="group__mrpt__bayes__grp.html" title="mrpt&#45;bayes (.h)" alt="" coords="297,389,433,437"/>
+<area shape="rect" id="node4" href="group__mrpt__opengl__grp.html" title="mrpt&#45;opengl" alt="" coords="697,389,809,437"/>
+<area shape="rect" id="node5" href="group__mrpt__gui__grp.html" title="mrpt&#45;gui" alt="" coords="927,197,1012,245"/>
+<area shape="rect" id="node6" href="group__mrpt__obs__grp.html" title="mrpt&#45;obs" alt="" coords="841,293,932,341"/>
+<area shape="rect" id="node7" href="group__mrpt__hwdrivers__grp.html" title="mrpt&#45;hwdrivers" alt="" coords="651,101,787,149"/>
+<area shape="rect" id="node9" href="group__mrpt__maps__grp.html" title="mrpt&#45;maps" alt="" coords="667,197,769,245"/>
+<area shape="rect" id="node8" href="group__mrpt__topography__grp.html" title="mrpt&#45;topography" alt="" coords="492,197,641,245"/>
+<area shape="rect" id="node11" href="group__mrpt__tfest__grp.html" title="mrpt&#45;tfest" alt="" coords="405,293,499,341"/>
+<area shape="rect" id="node10" href="group__mrpt__vision__grp.html" title="mrpt&#45;vision" alt="" coords="796,197,903,245"/>
 <area shape="rect" id="node12" href="group__mrpt__slam__grp.html" title="mrpt&#45;slam" alt="" coords="453,101,549,149"/>
 <area shape="rect" id="node13" href="group__mrpt__graphslam__grp.html" title="mrpt&#45;graphslam (.h)" alt="" coords="5,101,176,149"/>
 <area shape="rect" id="node14" href="group__mrpt__hmtslam__grp.html" title="mrpt&#45;hmtslam" alt="" coords="233,5,359,53"/>
 <area shape="rect" id="node15" href="group__mrpt__nav__grp.html" title="mrpt&#45;nav" alt="" coords="339,101,428,149"/>
-<area shape="rect" id="node16" href="group__mrpt__detectors__grp.html" title="mrpt&#45;detectors" alt="" coords="874,101,1005,149"/>
-<area shape="rect" id="node17" href="group__mrpt__kinematics__grp.html" title="mrpt&#45;kinematics" alt="" coords="593,293,735,341"/>
-<area shape="rect" id="node18" href="group__mrpt__srba__grp.html" title="mrpt&#45;srba (.h)" alt="" coords="759,293,885,341"/>
+<area shape="rect" id="node16" href="group__mrpt__detectors__grp.html" title="mrpt&#45;detectors" alt="" coords="811,101,943,149"/>
+<area shape="rect" id="node17" href="group__mrpt__kinematics__grp.html" title="mrpt&#45;kinematics" alt="" coords="524,293,665,341"/>
+<area shape="rect" id="node18" href="group__mrpt__srba__grp.html" title="mrpt&#45;srba (.h)" alt="" coords="690,293,816,341"/>
 <area shape="rect" id="node19" href="group__mrpt__pbmap__grp.html" title="mrpt&#45;pbmap" alt="" coords="200,101,315,149"/>
 </map>
