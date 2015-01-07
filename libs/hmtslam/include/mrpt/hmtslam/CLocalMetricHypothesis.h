@@ -28,6 +28,8 @@ namespace mrpt
 
 	namespace hmtslam
 	{
+		typedef mrpt::aligned_containers<TPoseID,mrpt::poses::CPose3D>::map_t TMapPoseID2Pose3D;
+
 		class HMTSLAM_IMPEXP CHMTSLAM;
 		class HMTSLAM_IMPEXP CLSLAM_RBPF_2DLASER;
 
@@ -55,7 +57,7 @@ namespace mrpt
 			}
 
 			mrpt::maps::CMultiMetricMap            metricMaps;
-			std::map<TPoseID,mrpt::poses::CPose3D>  robotPoses;
+			TMapPoseID2Pose3D  robotPoses;
 		};
 		DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE( CLSLAMParticleData, mrpt::utils::CSerializable, HMTSLAM_IMPEXP )
 
@@ -121,7 +123,7 @@ namespace mrpt
 			/** Returns the mean of each robot pose in this LMH, as computed from the set of particles.
 			  * \sa getPathParticles, getRelativePose
 			  */
-			void getMeans( std::map< TPoseID, mrpt::poses::CPose3D > &outList ) const;
+			void getMeans( TMapPoseID2Pose3D &outList ) const;
 
 			/** Returns the mean and covariance of each robot pose in this LMH, as computed from the set of particles.
 			  * \sa getMeans, getPoseParticles

@@ -59,6 +59,7 @@
 			- mrpt::poses::CRobot2DPoseEstimator could estimate wrong angular velocities for orientations near +-180deg.
 			- mrpt::system::CDirectoryExplorer::sortByName() didn't sort in descending order
 			- Fixed crashes from MATLAB .mex files: mrpt::system::registerFatalExceptionHandlers() has no longer effect, and will be removed in future releases. (Thanks to Jesús Briales García for all the testing!)
+			- Fixed potential crash for Eigen unaligned memory access in 32bit builds in mrpt::slam::CGridMapAligner and other places ([Closes #94](https://github.com/jlblancoc/mrpt/issues/94))
 
 <hr>
 <a name="1.2.2">

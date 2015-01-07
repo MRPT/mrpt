@@ -583,7 +583,7 @@ namespace mrpt
 				*/
 			void  loadTPathBinFromPath(
 				TPathBin	&outBin,
-				std::map<TPoseID,mrpt::poses::CPose3D> *path = NULL,
+				TMapPoseID2Pose3D *path = NULL,
 				mrpt::poses::CPose2D  *newPose = NULL );
 
 			/** Checks if a given "TPathBin" element is already into a set of them, and return its index (first one is 0), or -1 if not found.

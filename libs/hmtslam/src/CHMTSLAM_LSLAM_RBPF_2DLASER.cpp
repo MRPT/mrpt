@@ -104,7 +104,7 @@ void CLSLAM_RBPF_2DLASER::processOneLMH(
 		else
 		{
 			// Check minimum distance from current robot pose to those in the neighborhood:
-			map< TPoseID, CPose3D >				lstRobotPoses;
+			TMapPoseID2Pose3D  lstRobotPoses;
 			LMH->getMeans( lstRobotPoses );
 
 			CPose3D	  *currentRobotPose = & lstRobotPoses[currentPoseID];
@@ -112,7 +112,7 @@ void CLSLAM_RBPF_2DLASER::processOneLMH(
 			float		minDistAng    = 1e6f;
 
 			//printf("Poses in graph:\n");
-			for (map< TPoseID, CPose3D >::iterator	it = lstRobotPoses.begin();it!=lstRobotPoses.end();++it)
+			for (TMapPoseID2Pose3D::iterator	it = lstRobotPoses.begin();it!=lstRobotPoses.end();++it)
 			{
 				if (it->first != currentPoseID )
 				{
@@ -662,7 +662,7 @@ void  CLSLAM_RBPF_2DLASER::TPathBin::dumpToStdOut() const
  ---------------------------------------------------------------*/
 void  CLSLAM_RBPF_2DLASER::loadTPathBinFromPath(
 	CLSLAM_RBPF_2DLASER::TPathBin	&outBin,
-	std::map<TPoseID,CPose3D>		*path,
+	TMapPoseID2Pose3D		*path,
 	CPose2D							*newPose )
 {
 	size_t	lenBinPath;
@@ -671,7 +671,7 @@ void  CLSLAM_RBPF_2DLASER::loadTPathBinFromPath(
 			lenBinPath = path->size();
 	else	lenBinPath = 0;
 
-	std::map<TPoseID,CPose3D>::const_iterator	itSrc;
+	TMapPoseID2Pose3D::const_iterator	itSrc;
 	vector_int::iterator				itX,itY,itPHI;
 
 	// Set the output bin dimensionality:

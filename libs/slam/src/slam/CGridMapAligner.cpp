@@ -351,7 +351,8 @@ CPosePDFPtr CGridMapAligner::AlignPDF_robustMatch(
 				RAD2DEG(outInfo.noRobustEstimation.phi() ));
 
 			// The list of SOG modes & their corresponding sub-sets of matchings:
-			map<mrpt::utils::TMatchingPairList, CPosePDFSOG::TGaussianMode>  sog_modes;
+			typedef mrpt::aligned_containers<mrpt::utils::TMatchingPairList, CPosePDFSOG::TGaussianMode>::map_t  TMapMatchingsToPoseMode;
+			TMapMatchingsToPoseMode sog_modes;
 
 			// ---------------------------------------------------------------
 			// Now, we have to choose between the methods:
@@ -505,7 +506,7 @@ CPosePDFPtr CGridMapAligner::AlignPDF_robustMatch(
 
 					// before proceeding with this hypothesis, is it an old one?
 					bool is_new_hyp = true;
-					for (map<mrpt::utils::TMatchingPairList, CPosePDFSOG::TGaussianMode>::iterator itOldHyps=sog_modes.begin();itOldHyps!=sog_modes.end();++itOldHyps)
+					for (TMapMatchingsToPoseMode::iterator itOldHyps=sog_modes.begin();itOldHyps!=sog_modes.end();++itOldHyps)
 					{
 						if (itOldHyps->first.contains( all_corrs[ idx1 ] ) &&
 							itOldHyps->first.contains( all_corrs[ idx2 ] ) )
@@ -737,7 +738,7 @@ CPosePDFPtr CGridMapAligner::AlignPDF_robustMatch(
 
 				// Move SOG modes into pdf_SOG:
 				pdf_SOG->clear();
-				for (map<mrpt::utils::TMatchingPairList, CPosePDFSOG::TGaussianMode>::const_iterator s=sog_modes.begin();s!=sog_modes.end();++s)
+				for (TMapMatchingsToPoseMode::const_iterator s=sog_modes.begin();s!=sog_modes.end();++s)
 				{
 					cout << "SOG mode: " << s->second.mean << " inliers: " << s->first.size() << endl;
 					pdf_SOG->push_back(s->second);
@@ -775,7 +776,7 @@ CPosePDFPtr CGridMapAligner::AlignPDF_robustMatch(
 				CEnhancedMetaFile::LINUX_IMG_WIDTH = m1->getSizeX() + m2->getSizeX() + 50;
 				CEnhancedMetaFile::LINUX_IMG_HEIGHT = max(m1->getSizeY(), m2->getSizeY()) + 50;
 
-				for (map<mrpt::utils::TMatchingPairList, CPosePDFSOG::TGaussianMode>::const_iterator s=sog_modes.begin();s!=sog_modes.end();++s)
+				for (TMapMatchingsToPoseMode::const_iterator s=sog_modes.begin();s!=sog_modes.end();++s)
 				{
 					COccupancyGridMap2D::saveAsEMFTwoMapsWithCorrespondences(
 						format( "__debug_corrsGrid_%05u.emf",NN),

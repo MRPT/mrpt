@@ -491,13 +491,13 @@ void CHMTSLAM::LSLAM_process_message_from_AA( const TMessageLSLAMfromAA &myMsg )
 		// ------------------------------------------------------------------------
 		// The current robot pose is set as the membership of the closest pose:
 		// ------------------------------------------------------------------------
-		map< TPoseID, CPose3D >  lstPoses;
+		TMapPoseID2Pose3D  lstPoses;
 		LMH->getMeans( lstPoses );
 		TPoseID  closestPose = POSEID_INVALID;
 		double   minDist=0;
 		const CPose3D *curPoseMean = & lstPoses[ LMH->m_currentRobotPose ];
 
-		for ( map< TPoseID, CPose3D >::const_iterator it=lstPoses.begin();it!=lstPoses.end();++it )
+		for ( TMapPoseID2Pose3D::const_iterator it=lstPoses.begin();it!=lstPoses.end();++it )
 		{
 			if ( it->first != LMH->m_currentRobotPose ) // Only compare to OTHER poses!
 			{
