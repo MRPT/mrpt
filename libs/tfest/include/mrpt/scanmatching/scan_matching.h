@@ -31,8 +31,8 @@ namespace mrpt
 			double TFEST_IMPEXP HornMethod(
 				const std::vector<double>  &inPoints,
 				std::vector<double>        &outQuat,
-				bool                 forceScaleToUnity = false );
-			)
+				bool                 forceScaleToUnity = false )
+			);
 
 		/** \deprecated Use functions in mrpt::tfest */
 		MRPT_DECLARE_DEPRECATED_FUNCTION(
@@ -40,8 +40,8 @@ namespace mrpt
 			double TFEST_IMPEXP HornMethod(
 				const std::vector<double>      &inPoints,
 				mrpt::poses::CPose3DQuat &outQuat,
-				bool                      forceScaleToUnity  = false);
-			)
+				bool                      forceScaleToUnity  = false)
+			);
 
 		/** \deprecated Use functions in mrpt::tfest */
 		MRPT_DECLARE_DEPRECATED_FUNCTION(
@@ -50,8 +50,8 @@ namespace mrpt
 				const mrpt::utils::TMatchingPairList	&in_correspondences,
 				mrpt::poses::CPose3DQuat							&out_transformation,
 				double								&out_scale,
-				const bool 							forceScaleToUnity = false );
-			)
+				const bool 							forceScaleToUnity = false )
+			);
 
 		/** \deprecated Use functions in mrpt::tfest */
 		MRPT_DECLARE_DEPRECATED_FUNCTION(
@@ -60,8 +60,8 @@ namespace mrpt
 				const mrpt::utils::TMatchingPairList	&in_correspondences,
 				mrpt::poses::CPose3D								&out_transformation,
 				double								&out_scale,
-				const bool 							forceScaleToUnity = false );
-			)
+				const bool 							forceScaleToUnity = false )
+			);
 
 		/** \deprecated Use functions in mrpt::tfest */
 		MRPT_DECLARE_DEPRECATED_FUNCTION(
@@ -74,9 +74,8 @@ namespace mrpt
 				const unsigned int					ransac_minSetSize = 5,
 				const unsigned int					ransac_nmaxSimulations = 50,
 				const double						ransac_maxSetSizePct = 0.7,
-				const bool							forceScaleToUnity = false );
-			)
-
+				const bool							forceScaleToUnity = false )
+			);
 
 		/** \deprecated Use functions in mrpt::tfest */
 		MRPT_DECLARE_DEPRECATED_FUNCTION(
@@ -84,16 +83,16 @@ namespace mrpt
 			bool TFEST_IMPEXP leastSquareErrorRigidTransformation(
 				mrpt::utils::TMatchingPairList	&in_correspondences,
 				mrpt::poses::CPose2D							&out_transformation,
-				mrpt::math::CMatrixDouble33					*out_estimateCovariance = NULL );
-			)
+				mrpt::math::CMatrixDouble33					*out_estimateCovariance = NULL )
+			);
 
 		/** \deprecated Use functions in mrpt::tfest */
 		MRPT_DECLARE_DEPRECATED_FUNCTION(
 			"Deprecated: Use mrpt::tfest::se2_l2() instead",
 			bool TFEST_IMPEXP leastSquareErrorRigidTransformation(
 				mrpt::utils::TMatchingPairList	&in_correspondences,
-				mrpt::poses::CPosePDFGaussian				&out_transformation );
-			)
+				mrpt::poses::CPosePDFGaussian				&out_transformation )
+			);
 
 		/** \deprecated Use functions in mrpt::tfest */
 		MRPT_DECLARE_DEPRECATED_FUNCTION(
@@ -115,7 +114,8 @@ namespace mrpt
 				unsigned int				ransac_min_nSimulations = 1500,
 				const bool                  verbose = false,
 				double                      max_rmse_to_end = 0
-				);
-			)
+				)
+			);
+
 	}
 }
