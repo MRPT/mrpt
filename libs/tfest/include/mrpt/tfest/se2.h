@@ -80,7 +80,9 @@ namespace mrpt
 			  * of elements. Can check image descriptors, geometrical properties, etc.
 			  * \return Must return true if the pair is a potential match, false otherwise.
 			  */
-			std::function<bool(TPotentialMatch)>  user_individual_compat_callback;
+			//std::function<bool(TPotentialMatch)>  user_individual_compat_callback; // This could be used in the future when we enforce C++11 to users...
+			TFunctorCheckPotentialMatch  user_individual_compat_callback;
+			void * user_individual_compat_callback_userdata; //!< User data to be passed to user_individual_compat_callback()
 
 			/** Default values */
 			TSE2RobustParams() :
@@ -95,7 +97,9 @@ namespace mrpt
 				probability_find_good_model( 0.999 ),
 				ransac_min_nSimulations( 1500 ),
 				max_rmse_to_end(0),
-				verbose(false)
+				verbose(false),
+				user_individual_compat_callback(NULL),
+				user_individual_compat_callback_userdata(NULL)
 			{
 			}
 		};

@@ -10,7 +10,7 @@
 
 #include <mrpt/utils/core_defs.h>
 #include <mrpt/tfest/link_pragmas.h>
-#include <functional>
+//#include <functional>
 
 namespace mrpt
 {
@@ -25,6 +25,8 @@ namespace mrpt
 		struct TFEST_IMPEXP TPotentialMatch {
 			size_t idx_this, idx_other;
 		};
+
+		typedef bool (*TFunctorCheckPotentialMatch)(const TPotentialMatch &pm, void *user_data);
 
 		/** @} */  // end of grouping
 	}
