@@ -15,18 +15,22 @@
 <a name="1.3.0">
   <h2>Version 1.3.0: (Under development) </h2></a>
 	- <b>Most important changes:</b>
-		- Classes in libraries mrpt-obs (\ref mrpt_obs_grp) & mrpt-maps (\ref mrpt_maps_grp) now belong to new namespaces (mrpt::obs, mrpt::maps) instead of the old mrpt::slam (see comments below on support for backwards-compatibility).
-		- No more "using namespace"'s polute MRPT headers. Errors in user code missing "using namespace XXX" that might be masked will now reveal. This is a good thing.
-		- New library mrpt-nav (\ref mrpt_nav_grp), subsumming the old mrpt-reactivenav (\ref mrpt_reactivenav_grp).
+		- Classes in libraries \ref mrpt_obs_grp and \ref mrpt_maps_grp now belong to new namespaces (mrpt::obs, mrpt::maps) instead of the old mrpt::slam (see comments below on support for backwards-compatibility).
+		- No more `using namespace`s polute MRPT headers. <b>Errors in user projects</b> missing `using namespace XXX` that might be formerly masked will now reveal. <b>This is a good thing</b>, though admitedly annoying...
+		- New library \ref mrpt_nav_grp, subsumming the old \ref mrpt_reactivenav_grp.
+		- New library \ref mrpt_tfest_grp, a refactor of the old \ref mrpt_scanmatching_grp.
+		- <b>Backwards compatible headers</b> have been provided to ease the transition of user code. Warning messages will be shown recommending deprecated replacements.
 	- <b>Detailed list of changes:</b>
 		- Lib changes:
-			- Clean up of the bad practice of "using namespace" in public scopes of headers. May lead to user code failing for missing "using namespaces" which were previously masked.
+			- Clean up of the bad practice of `using namespace` in public scopes of headers. May lead to user code failing for missing `using namespace`s which were previously masked.
 			- Namespace "slam" deprecated in libraries mrpt-obs and mrpt-maps (used for historical reasons):
-				- New namespaces mrpt::obs and mrpt::maps.
+				- New namespaces  \ref mrpt_obs_grp and \ref mrpt_maps_grp.
 				- #include files moved from old paths <mrpt/slam/...> => <mrpt/{obs,maps}/...>
 				- Backward compatible headers added in <mrpt/slam/...> until mrpt 2.0.0
-			- New library mrpt-nav (\ref mrpt_nav_grp), subsumming the old mrpt-reactivenav (\ref mrpt_reactivenav_grp).
+			- New library \ref mrpt_nav_grp, subsumming the old mrpt-reactivenav (\ref mrpt_reactivenav_grp).
 			- \ref mrpt_reactivenav_grp is now a meta-library, depending on \ref mrpt_nav_grp.
+			- \ref mrpt_tfest_grp : Old library mrpt-scanmatching (\ref mrpt_scanmatching_grp) has been refactored, its API clean-up, and renamed \ref mrpt_tfest_grp
+			- \ref mrpt_scanmatching_grp is now a meta-library, depending on \ref mrpt_tfest_grp. 
 			- These classes have been moved between libs for a more sensible organization:
 				- mrpt::slam::CDetectorDoorCrossing ==> mrpt::detectors::CDetectorDoorCrossing
 				- mrpt::slam::CPathPlanningMethod & CPathPlanningCircularRobot: \ref mrpt_slam_grp ==> \ref mrpt_nav_grp
@@ -38,6 +42,7 @@
 			- Embedded copy of libfreenect has been updated to (23/oct/2014). It now supports "Kinect for Windows".
 			- More selective linking of .so files to avoid useless dependencies (Fixes #52).
 			- (Windows only) MRPT can now be safely built with libusb support (Freenect, Kinect,...) and it will run on systems without libusb installed, by means of /DELAYLOAD linking flags.
+			- More unit tests.
 		- Changes in classes:
 			- [mrpt-base]
 				- New function mrpt::math::angDistance()
