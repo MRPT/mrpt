@@ -16,6 +16,7 @@
 #include <mrpt/math/lightweight_geom_data.h>
 #include <mrpt/opengl/opengl_frwds.h>
 #include <mrpt/maps/CMetricMapEvents.h>
+#include <mrpt/maps/TMetricMapInitializer.h>
 #include <mrpt/obs/obs_frwds.h>
 #include <mrpt/obs/link_pragmas.h>
 #include <deque>
@@ -76,6 +77,8 @@ namespace mrpt
 		 *   emitting the following events:
 		 *	  - mrpt::obs::mrptEventMetricMapClear: Upon call of the ::clear() method.
 		 *    - mrpt::obs::mrptEventMetricMapInsert: Upon insertion of an observation that effectively modifies the map (e.g. inserting an image into a grid map will NOT raise an event, inserting a laser scan will).
+		 *
+		 * \note All derived class must implement a static class factory `<metric_map_class>::MapDefinition()` that builds a default TMetricMapInitializer [New in MRPT 1.3.0] 
 		 *
 		 * \sa CObservation, CSensoryFrame, CMultiMetricMap
 	 	 * \ingroup mrpt_obs_grp

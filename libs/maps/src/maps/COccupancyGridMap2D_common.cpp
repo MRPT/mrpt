@@ -34,6 +34,26 @@ static const float MAX_H = 0.69314718055994531f; // ln(2)
 // Static lookup tables for log-odds
 CLogOddsGridMapLUT<COccupancyGridMap2D::cellType>  COccupancyGridMap2D::m_logodd_lut;
 
+
+/** Returns default map definition initializer. See mrpt::maps::TMetricMapInitializer */
+COccupancyGridMap2D::TMapDefinition COccupancyGridMap2D::MapDefinition()
+{
+	TMapDefinition def;
+
+	return def;
+}
+
+void COccupancyGridMap2D::TMapDefinition::loadFromConfigFile_map_specific(const mrpt::utils::CConfigFileBase  &source, const std::string &sectionNamePrefix)
+{
+	MRPT_TODO("continue!");
+}
+
+void COccupancyGridMap2D::TMapDefinition::dumpToTextStream_map_specific(mrpt::utils::CStream &out) const
+{
+	MRPT_TODO("continue!");
+}
+
+
 /*---------------------------------------------------------------
 						Constructor
   ---------------------------------------------------------------*/

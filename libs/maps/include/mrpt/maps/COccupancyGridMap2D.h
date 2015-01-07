@@ -24,13 +24,8 @@
 #include <mrpt/maps/link_pragmas.h>
 
 #include <mrpt/config.h>
-
-#if !defined(OCCUPANCY_GRIDMAP_CELL_SIZE_8BITS) && !defined(OCCUPANCY_GRIDMAP_CELL_SIZE_16BITS)
-		#error One of OCCUPANCY_GRIDMAP_CELL_SIZE_16BITS or OCCUPANCY_GRIDMAP_CELL_SIZE_8BITS must be defined.
-#endif
-
-#if defined(OCCUPANCY_GRIDMAP_CELL_SIZE_8BITS) && defined(OCCUPANCY_GRIDMAP_CELL_SIZE_16BITS)
-		#error Only one of OCCUPANCY_GRIDMAP_CELL_SIZE_16BITS or OCCUPANCY_GRIDMAP_CELL_SIZE_8BITS must be defined at a time.
+#if (!defined(OCCUPANCY_GRIDMAP_CELL_SIZE_8BITS) && !defined(OCCUPANCY_GRIDMAP_CELL_SIZE_16BITS)) || (defined(OCCUPANCY_GRIDMAP_CELL_SIZE_8BITS) && defined(OCCUPANCY_GRIDMAP_CELL_SIZE_16BITS)) 
+	#error One of OCCUPANCY_GRIDMAP_CELL_SIZE_16BITS or OCCUPANCY_GRIDMAP_CELL_SIZE_8BITS must be defined.
 #endif
 
 namespace mrpt
@@ -49,7 +44,7 @@ namespace maps
 	 *  More details can be found at http://www.mrpt.org/Occupancy_Grids
 	 *
 	 * The algorithm for updating the grid from a laser scanner can optionally take into account the progressive widening of the beams, as
-	 *   described in the <a href="http://www.mrpt.org/Occupancy_Grids" > wiki </a> (this feature was introduced in MRPT 0.6.4).
+	 *   described in [this page](http://www.mrpt.org/Occupancy_Grids)
 	 *
 	 *   Some implemented methods are:
 	 *		- Update of individual cells
@@ -59,7 +54,7 @@ namespace maps
 	 *		- Laser scans simulation for the map contents
 	 *		- Entropy and information methods (See computeEntropy)
 	 *
-	  * \ingroup mrpt_maps_grp
+	 * \ingroup mrpt_maps_grp
 	 **/
 	class MAPS_IMPEXP COccupancyGridMap2D :
 		public CMetricMap,
@@ -72,8 +67,8 @@ namespace maps
 	{
 		// This must be added to any CSerializable derived class:
 		DEFINE_SERIALIZABLE( COccupancyGridMap2D )
-
 	public:
+
 	/** The type of the map cells: */
 #ifdef	OCCUPANCY_GRIDMAP_CELL_SIZE_8BITS
 		typedef int8_t  cellType;
@@ -1023,6 +1018,23 @@ namespace maps
 		 * \sa direccion_vecino_x,direccion_vecino_y,GetNeighborhood
 		 */
 		int  direction2idx(int dx, int dy);
+
+	public:
+		// TODO: Convert to easier macros!
+		struct MAPS_IMPEXP TMapDefinition : public mrpt::maps::TMetricMapInitializer
+		{
+			float	min_x,max_x,min_y,max_y,resolution;	//!< See COccupancyGridMap2D::COccupancyGridMap2D
+			mrpt::maps::COccupancyGridMap2D::TInsertionOptions	insertionOpts;	//!< Observations insertion options
+			mrpt::maps::COccupancyGridMap2D::TLikelihoodOptions	likelihoodOpts;	//!< Probabilistic observation likelihood options
+
+			TMapDefinition() : TMetricMapInitializer(CLASS_ID(COccupancyGridMap2D)) { }
+		protected:
+			void loadFromConfigFile_map_specific(const mrpt::utils::CConfigFileBase  &source, const std::string &sectionNamePrefix) MRPT_OVERRIDE;
+			void dumpToTextStream_map_specific(mrpt::utils::CStream	&out) const MRPT_OVERRIDE;
+		};
+
+		/** Returns default map definition initializer. See mrpt::maps::TMetricMapInitializer */
+		static TMapDefinition MapDefinition();
 	};
 	DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE( COccupancyGridMap2D, CMetricMap, MAPS_IMPEXP )
 
