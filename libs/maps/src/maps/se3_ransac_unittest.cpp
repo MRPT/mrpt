@@ -18,7 +18,7 @@
 #include <mrpt/poses/CPosePDFSOG.h>
 #include <mrpt/math/geometry.h>
 #include <mrpt/tfest/se2.h>
-#include <mrpt/maps/CSimplePointsMap.h>
+//#include <mrpt/maps/CSimplePointsMap.h>
 
 #include <gtest/gtest.h>
 
