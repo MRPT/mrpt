@@ -7,7 +7,6 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/scanmatching.h>
 #include <mrpt/tfest.h>
 #include <mrpt/random.h>
 #include <mrpt/math/ops_vectors.h>
@@ -20,7 +19,6 @@ using namespace mrpt::utils;
 using namespace mrpt::math;
 using namespace mrpt::random;
 using namespace mrpt::poses;
-using namespace mrpt::scanmatching;
 using namespace std;
 
 typedef std::vector< std::vector< double > > TPoints;
@@ -94,38 +92,7 @@ void generate_vector_of_points(  const TPoints &pA, const TPoints &pB, vector<mr
 	}
 } // end generate_vector_of_points
 
-
-
-// Load data from constant file and check for exact match.
-TEST(tfest, CPose3D)
-{
-	TPoints	pA, pB;										// The input points
-	CPose3DQuat qPose = generate_points( pA, pB );
-
-	TMatchingPairList list;
-	generate_list_of_points( pA, pB, list );			// Generate a list of matched points
-
-	CPose3D			out;								// Output CPose3D for the LSRigidTransformation
-	double			scale;								// Output scale value
-
-	// Take the x,y,z,yaw,pitch,roll values for comparing
-	double quat_yaw, quat_pitch, quat_roll;
-	qPose.quat().rpy( quat_roll, quat_pitch, quat_yaw );
-	const double quat_x = qPose.x();
-	const double quat_y = qPose.y();
-	const double quat_z = qPose.z();
-	// --
-
-	/*bool res1 =*/
-	scanmatching::leastSquareErrorRigidTransformation6D( list, out, scale );
-	const double err = sqrt(	square(out.x() - quat_x) + square(out.y() - quat_y) + square(out.z() - quat_z) +
-								square(out.yaw() - quat_yaw) + square(out.pitch() - quat_pitch) + square(out.roll() - quat_roll) );
-	EXPECT_TRUE( err< 1e-6 )
-		<< "Applied quaternion: " << endl << qPose << endl
-		<< "Out CPose3D: " << endl << out << " [Err: " << err << "]" << endl;
-}
-
-TEST(tfest, CPose3DQuat)
+TEST(tfest, se3_l2_MatchList)
 {
 	TPoints	pA, pB;										// The input points
 	CPose3DQuat qPose = generate_points( pA, pB );
@@ -136,8 +103,8 @@ TEST(tfest, CPose3DQuat)
 	CPose3DQuat		outQuat;							// Output CPose3DQuat for the LSRigidTransformation
 	double			scale;								// Output scale value
 
-	/*bool res2 =*/
-	scanmatching::leastSquareErrorRigidTransformation6D( list, outQuat, scale );
+	bool res = mrpt::tfest::se3_l2(list,outQuat,scale);
+	EXPECT_TRUE( res );
 
 	double err = 0.0;
 	if( (qPose[3]*outQuat[3] > 0 && qPose[4]*outQuat[4] > 0 && qPose[5]*outQuat[5] > 0 && qPose[6]*outQuat[6] > 0) ||
@@ -156,10 +123,9 @@ TEST(tfest, CPose3DQuat)
 		<< "Applied quaternion: " << endl << qPose << endl
 		<< "Out CPose3DQuat: " << endl << outQuat << endl;
 	}
-
 }
 
-TEST(tfest, HornMethod)
+TEST(tfest, se3_l2_PtsLists)
 {
 	TPoints	pA, pB;										// The input points
 	CPose3DQuat qPose = generate_points( pA, pB );
