@@ -8,13 +8,11 @@
    +---------------------------------------------------------------------------+ */
 
 #include "DifOdometry_Datasets.h"
-#include <mrpt/utils/types_math.h> // Eigen (with MRPT "plugin" in BaseMatrix<>)
-#include <mrpt/utils/CTicTac.h>
 #include <mrpt/system/filesystem.h>
-#include <mrpt/system/datetime.h>
 #include <mrpt/opengl/CFrustum.h>
 #include <mrpt/opengl/CGridPlaneXY.h>
 #include <mrpt/opengl/CBox.h>
+#include <mrpt/opengl/CPointCloudColoured.h>
 #include <mrpt/opengl/CPointCloud.h>
 #include <mrpt/opengl/CSetOfLines.h>
 #include <mrpt/opengl/CEllipsoid.h>
@@ -25,36 +23,32 @@ using namespace Eigen;
 using namespace std;
 using namespace mrpt;
 using namespace mrpt::opengl;
-using namespace mrpt::gui;
-using namespace mrpt::slam;
 
 
 void CDifodoDatasets::loadConfiguration(const utils::CConfigFileBase &ini )
-{
-	downsample = ini.read_int("DIFODO_CONFIG", "downsample", 4, true);
-	rows = ini.read_int("DIFODO_CONFIG", "rows", 50, true);
-	cols = ini.read_int("DIFODO_CONFIG", "cols", 60, true);
-
+{	
+	fovh = M_PI*62.5/180.0;	//Larger FOV because depth is registered with color
+	fovv = M_PI*45.0/180.0;
+	cam_mode = 1;
+	downsample = ini.read_int("DIFODO_CONFIG", "downsample", 2, true);
+	rows = ini.read_int("DIFODO_CONFIG", "rows", 240, true);
+	cols = ini.read_int("DIFODO_CONFIG", "cols", 320, true);
+	ctf_levels = ini.read_int("DIFODO_CONFIG", "ctf_levels", 5, true);
 	string filename = ini.read_string("DIFODO_CONFIG", "filename", "no file", true);
-
 
 	//						Open Rawlog File
 	//==================================================================
-
 	if (!dataset.loadFromRawLogFile(filename))
 		throw std::runtime_error("\nCouldn't open rawlog dataset file for input...");
 
 	rawlog_count = 0;
 
-	//filename.replace(filename.find(".rawlog"),7,"_Images\\");
-	const string imgsPath = CRawlog::detectImagesDirectory(filename);
-
 	// Set external images directory:
+	const string imgsPath = CRawlog::detectImagesDirectory(filename);
 	CImage::IMAGES_PATH_BASE = imgsPath;
 
-	//					Load ground_truth
+	//					Load ground-truth
 	//=========================================================
-
 	filename = system::extractFileDirectory(filename);
 	filename.append("/groundtruth.txt");
 	f_gt.open(filename.c_str());
@@ -71,48 +65,59 @@ void CDifodoDatasets::loadConfiguration(const utils::CConfigFileBase &ini )
 	f_gt >> last_gt_data[3]; f_gt >> last_gt_data[4]; f_gt >> last_gt_data[5]; f_gt >> last_gt_data[6];
 	last_groundtruth_ok = 1;
 
-	//			Resize Matrices and adjust parameters
+	//			Resize matrices and adjust parameters
 	//=========================================================
-	const unsigned int resh = 640/(cam_mode*downsample);
-	const unsigned int resv = 480/(cam_mode*downsample);
+	width = 640/(cam_mode*downsample);
+	height = 480/(cam_mode*downsample);
+	repr_level = utils::round(log(float(width/cols))/log(2.f));
 
-	depth.setSize(rows,cols);
-	depth_old.setSize(rows,cols);
-	depth_inter.setSize(rows,cols);
-	depth_ft.setSize(resv,resh);
-	depth_wf.setSize(resv,resh);
+	//Resize pyramid
+    const unsigned int pyr_levels = round(log(float(width/cols))/log(2.f)) + ctf_levels;
+    depth.resize(pyr_levels);
+    depth_old.resize(pyr_levels);
+    depth_inter.resize(pyr_levels);
+	depth_warped.resize(pyr_levels);
+    xx.resize(pyr_levels);
+    xx_inter.resize(pyr_levels);
+    xx_old.resize(pyr_levels);
+	xx_warped.resize(pyr_levels);
+    yy.resize(pyr_levels);
+    yy_inter.resize(pyr_levels);
+    yy_old.resize(pyr_levels);
+	yy_warped.resize(pyr_levels);
+	transformations.resize(pyr_levels);
 
-	du.setSize(rows,cols);
-	dv.setSize(rows,cols);
-	dt.setSize(rows,cols);
-	xx.setSize(rows,cols);
-	xx_inter.setSize(rows,cols);
-	xx_old.setSize(rows,cols);
-	yy.setSize(rows,cols);
-	yy_inter.setSize(rows,cols);
-	yy_old.setSize(rows,cols);
+	for (unsigned int i = 0; i<pyr_levels; i++)
+    {
+        unsigned int s = pow(2.f,int(i));
+        cols_i = width/s; rows_i = height/s;
+        depth[i].resize(rows_i, cols_i);
+        depth_inter[i].resize(rows_i, cols_i);
+        depth_old[i].resize(rows_i, cols_i);
+        depth[i].assign(0.0f);
+        depth_old[i].assign(0.0f);
+        xx[i].resize(rows_i, cols_i);
+        xx_inter[i].resize(rows_i, cols_i);
+        xx_old[i].resize(rows_i, cols_i);
+        xx[i].assign(0.0f);
+        xx_old[i].assign(0.0f);
+        yy[i].resize(rows_i, cols_i);
+        yy_inter[i].resize(rows_i, cols_i);
+        yy_old[i].resize(rows_i, cols_i);
+        yy[i].assign(0.0f);
+        yy_old[i].assign(0.0f);
+		transformations[i].resize(4,4);
 
-	border.setSize(rows,cols);
-	border.assign(0);
-	null.setSize(rows,cols);
-	null.assign(0);
-	weights.setSize(rows,cols);
-	weights.assign(0);
-	est_cov.assign(0);
+		if (cols_i <= cols)
+		{
+			depth_warped[i].resize(rows_i,cols_i);
+			xx_warped[i].resize(rows_i,cols_i);
+			yy_warped[i].resize(rows_i,cols_i);
+		}
+    }
 
-	x_incr = 2.0*f_dist*(floor(float(resh)/float(cols))*cols/float(resh))*tan(0.5*fovh)/(cols-1);	//In meters
-	y_incr = 2.0*f_dist*(floor(float(resv)/float(rows))*rows/float(resv))*tan(0.5*fovv)/(rows-1);	//In meters																				//In Hz
-
-	//Depth thresholds
-	const int dz = floor(float(resv)/float(rows));
-	const int dy = floor(float(resh)/float(cols));
-
-	duv_threshold = 0.001*(dz + dy)*(cam_mode*downsample);
-	dt_threshold = 0.2*fps;
-	dif_threshold = 0.001*(dz + dy)*(cam_mode*downsample);
-	difuv_surroundings = 0.005*(dz + dy)*(cam_mode*downsample);
-	dift_surroundings = 0.01*fps*(dz + dy)*(cam_mode*downsample);
-
+	//Resize matrix that store the original depth image
+	depth_wf.setSize(height,width);
 }
 
 void CDifodoDatasets::CreateResultsFile()
@@ -135,14 +140,13 @@ void CDifodoDatasets::CreateResultsFile()
 
 		// Open log file:
 		f_res.open(aux);
-
 		printf(" Saving results to file: %s \n", aux);
-
 	}
 	catch (...)
 	{
 		printf("Exception found trying to create the 'results file' !!\n");
 	}
+
 }
 
 void CDifodoDatasets::initializeScene()
@@ -169,8 +173,8 @@ void CDifodoDatasets::initializeScene()
 	scene->insert( ground );
 
 	//Reference
-	CSetOfObjectsPtr reference = stock_objects::CornerXYZ();
-	scene->insert( reference );
+	//CSetOfObjectsPtr reference = stock_objects::CornerXYZ();
+	//scene->insert( reference );
 
 	//					Cameras and points
 	//------------------------------------------------------
@@ -188,7 +192,8 @@ void CDifodoDatasets::initializeScene()
 	scene->insert( camera_gt );
 
 	//Frustum
-	opengl::CFrustumPtr FOV = opengl::CFrustum::Create(0.3, 5, 57.3*fovh, 57.3*fovv, 1.5f, true, false);
+	opengl::CFrustumPtr FOV = opengl::CFrustum::Create(0.3, 2, 57.3*fovh, 57.3*fovv, 1.f, true, false);
+	FOV->setColor(0.7,0.7,0.7);
 	FOV->setPose(gt_pose);
 	scene->insert( FOV );
 
@@ -199,32 +204,25 @@ void CDifodoDatasets::initializeScene()
 	scene->insert( reference_gt );
 
 	//Camera points
-	CPointCloudPtr cam_points = CPointCloud::Create();
+	CPointCloudColouredPtr cam_points = CPointCloudColoured::Create();
 	cam_points->setColor(1,0,0);
 	cam_points->setPointSize(2);
 	cam_points->enablePointSmooth(1);
 	cam_points->setPose(cam_pose);
 	scene->insert( cam_points );
 
-	//Border points
-	CPointCloudPtr border_points = CPointCloud::Create();
-	border_points->setColor(0,0,1);
-	border_points->setPointSize(3);
-	border_points->enablePointSmooth(1);
-	border_points->setPose(cam_pose);
-	scene->insert( border_points );
 
-	//					Trajectories and covarianze
+	//					Trajectories and covariance
 	//-------------------------------------------------------------
 
 	//Dif Odometry
 	CSetOfLinesPtr traj_lines_odo = CSetOfLines::Create();
 	traj_lines_odo->setLocation(0,0,0);
-	traj_lines_odo->setColor(0,0,0);
-	traj_lines_odo->setLineWidth(3);
+	traj_lines_odo->setColor(0,0.6,0);
+	traj_lines_odo->setLineWidth(6);
 	scene->insert( traj_lines_odo );
 	CPointCloudPtr traj_points_odo = CPointCloud::Create();
-	traj_points_odo->setColor(0,0.5,0);
+	traj_points_odo->setColor(0,0.6,0);
 	traj_points_odo->setPointSize(4);
 	traj_points_odo->enablePointSmooth(1);
 	scene->insert( traj_points_odo );
@@ -232,17 +230,17 @@ void CDifodoDatasets::initializeScene()
 	//Groundtruth
 	CSetOfLinesPtr traj_lines_gt = CSetOfLines::Create();
 	traj_lines_gt->setLocation(0,0,0);
-	traj_lines_gt->setColor(0,0,0);
-	traj_lines_gt->setLineWidth(3);
+	traj_lines_gt->setColor(0.6,0,0);
+	traj_lines_gt->setLineWidth(6);
 	scene->insert( traj_lines_gt );
 	CPointCloudPtr traj_points_gt = CPointCloud::Create();
-	traj_points_gt->setColor(0.5,0,0);
+	traj_points_gt->setColor(0.6,0,0);
 	traj_points_gt->setPointSize(4);
 	traj_points_gt->enablePointSmooth(1);
 	scene->insert( traj_points_gt );
 
 	//Ellipsoid showing covariance
-	math::CMatrixFloat33 cov3d(est_cov.topLeftCorner(3,3));
+	math::CMatrixFloat33 cov3d = 20.f*est_cov.topLeftCorner(3,3);
 	CEllipsoidPtr ellip = CEllipsoid::Create();
 	ellip->setCovMatrix(cov3d);
 	ellip->setQuantiles(2.0);
@@ -255,7 +253,7 @@ void CDifodoDatasets::initializeScene()
 	utils::CImage img_legend;
 	img_legend.loadFromXPM(legend_xpm);
 	COpenGLViewportPtr legend = scene->createViewport("legend");
-	legend->setViewportPosition(20, 20, 348, 200);
+	legend->setViewportPosition(20, 20, 332, 164);
 	legend->setImageView(img_legend);
 
 	window.unlockAccess3DScene();
@@ -267,27 +265,17 @@ void CDifodoDatasets::updateScene()
 	scene = window.get3DSceneAndLock();
 
 	//Reference gt
-	CSetOfObjectsPtr reference_gt = scene->getByClass<CSetOfObjects>(1);
+	CSetOfObjectsPtr reference_gt = scene->getByClass<CSetOfObjects>(0);
 	reference_gt->setPose(gt_pose);
 
 	//Camera points
-	CPointCloudPtr cam_points = scene->getByClass<CPointCloud>(0);
+	CPointCloudColouredPtr cam_points = scene->getByClass<CPointCloudColoured>(0);
 	cam_points->clear();
 	cam_points->setPose(gt_pose);
 	for (unsigned int y=0; y<cols; y++)
 		for (unsigned int z=0; z<rows; z++)
-		{
-			cam_points->insertPoint(depth_inter(z,y), xx_inter(z,y), yy_inter(z,y));
-		}
-
-	//Border points
-	CPointCloudPtr border_points = scene->getByClass<CPointCloud>(1);
-	border_points->clear();
-	border_points->setPose(gt_pose);
-	for (unsigned int y=0; y<cols; y++)
-		for (unsigned int z=0; z<rows; z++)
-			if (border(z,y) == 1)
-				border_points->insertPoint(depth_inter(z,y), xx_inter(z,y), yy_inter(z,y));
+			cam_points->push_back(depth[repr_level](z,y), xx[repr_level](z,y), yy[repr_level](z,y),
+									1.f-sqrt(weights(z,y)), sqrt(weights(z,y)), 0);
 
 	//DifOdo camera
 	CBoxPtr camera_odo = scene->getByClass<CBox>(0);
@@ -308,7 +296,7 @@ void CDifodoDatasets::updateScene()
 		traj_lines_odo->appendLine(cam_oldpose.x(), cam_oldpose.y(), cam_oldpose.z(), cam_pose.x(), cam_pose.y(), cam_pose.z());
 
 		//Difodo traj points
-		CPointCloudPtr traj_points_odo = scene->getByClass<CPointCloud>(2);
+		CPointCloudPtr traj_points_odo = scene->getByClass<CPointCloud>(0);
 		traj_points_odo->insertPoint(cam_pose.x(), cam_pose.y(), cam_pose.z());
 
 		//Groundtruth traj lines
@@ -316,12 +304,12 @@ void CDifodoDatasets::updateScene()
 		traj_lines_gt->appendLine(gt_oldpose.x(), gt_oldpose.y(), gt_oldpose.z(), gt_pose.x(), gt_pose.y(), gt_pose.z());
 
 		//Groundtruth traj points
-		CPointCloudPtr traj_points_gt = scene->getByClass<CPointCloud>(3);
+		CPointCloudPtr traj_points_gt = scene->getByClass<CPointCloud>(1);
 		traj_points_gt->insertPoint(gt_pose.x(), gt_pose.y(), gt_pose.z());
 	}
 
 	//Ellipsoid showing covariance
-	math::CMatrixFloat33 cov3d(est_cov.topLeftCorner(3,3));
+	math::CMatrixFloat33 cov3d = 20.f*est_cov.topLeftCorner(3,3);
 	CEllipsoidPtr ellip = scene->getByClass<CEllipsoid>(0);
 	ellip->setCovMatrix(cov3d);
 	ellip->setPose(cam_pose);
@@ -338,7 +326,10 @@ void CDifodoDatasets::loadFrame()
 	{
 		rawlog_count++;
 		if (dataset.size() <= rawlog_count)
+		{
+			dataset_finished = true;
 			return;
+		}
 		alfa = dataset.getAsObservation(rawlog_count);
 	}
 
@@ -352,13 +343,16 @@ void CDifodoDatasets::loadFrame()
 	//Load depth image
 	for (unsigned int i=0; i<height; i+=index_incr)
 		for (unsigned int j=0; j<width; j+=index_incr)
+		{
 			depth_wf(i/index_incr,j/index_incr) = obs3D->rangeImage(height-i-1, width-j-1);
-
+				if (depth_wf(i/index_incr,j/index_incr) > 4.5f)
+				depth_wf(i/index_incr,j/index_incr) = 0.f;
+		}
 
 	double timestamp_gt;
-	double timestamp_obs = mrpt::system::timestampTotime_t(obs3D->timestamp);
+	timestamp_obs = mrpt::system::timestampTotime_t(obs3D->timestamp);
 
-	//Exit if there is no ground truth at this time
+	//Exit if there is no groundtruth at this time
 	if (last_groundtruth > timestamp_obs)
 	{
 		groundtruth_ok = 0;
@@ -376,6 +370,12 @@ void CDifodoDatasets::loadFrame()
 		f_gt >> timestamp_gt;
 		last_groundtruth = timestamp_gt;
 		new_data = 1;
+
+		if (f_gt.eof())
+		{
+			dataset_finished = true;
+			return;
+		}
 	}
 
 	//Read the inmediatly previous groundtruth
@@ -396,6 +396,11 @@ void CDifodoDatasets::loadFrame()
 	//Read the inmediatly posterior groundtruth
 	f_gt.ignore(10,'\n');
 	f_gt >> timestamp_gt;
+	if (f_gt.eof())
+	{
+		dataset_finished = true;
+		return;
+	}
 	last_groundtruth = timestamp_gt;
 
 	//last_gt_data = [x y z qx qy qz w]
@@ -403,17 +408,23 @@ void CDifodoDatasets::loadFrame()
 	f_gt >> last_gt_data[3]; f_gt >> last_gt_data[4]; f_gt >> last_gt_data[5]; f_gt >> last_gt_data[6];
 
 	if (last_groundtruth - timestamp_obs > 0.01)
-	{
 		groundtruth_ok = 0;
-	}
+
 	else
 	{
 		gt_oldpose = gt_pose;
 
-		//Update pose
+		//							Update pose
+		//-----------------------------------------------------------------
 		const float incr_t0 = timestamp_obs - t0;
 		const float incr_t1 = last_groundtruth - timestamp_obs;
 		const float incr_t = incr_t0 + incr_t1;
+
+		if (incr_t == 0.f) //Deal with defects in the groundtruth files
+		{
+			groundtruth_ok = 0;
+			return;
+		}
 
 		//Sometimes the quaternion sign changes in the groundtruth
 		if (abs(qx0 + last_gt_data[3]) + abs(qy0 + last_gt_data[4]) + abs(qz0 + last_gt_data[5]) + abs(w0 + last_gt_data[6]) < 0.05)
@@ -430,7 +441,6 @@ void CDifodoDatasets::loadFrame()
 		qz = (incr_t0*last_gt_data[5] + incr_t1*qz0)/(incr_t);
 		w = (incr_t0*last_gt_data[6] + incr_t1*w0)/(incr_t);
 
-
 		CMatrixDouble33 mat;
 		mat(0,0) = 1- 2*qy*qy - 2*qz*qz;
 		mat(0,1) = 2*(qx*qy - w*qz);
@@ -443,16 +453,15 @@ void CDifodoDatasets::loadFrame()
 		mat(2,2) = 1 - 2*qx*qx - 2*qy*qy;
 
 		CPose3D gt, transf;
+		gt.setFromValues(x,y,z,0,0,0);
+		gt.setRotationMatrix(mat);
+		transf.setFromValues(0,0,0,0.5*M_PI, -0.5*M_PI, 0);
 
 		//Alternative - directly quaternions
 		//vector<float> quat;
 		//quat[0] = x, quat[1] = y; quat[2] = z;
 		//quat[3] = w, quat[4] = qx; quat[5] = qy; quat[6] = qz;
 		//gt.setFromXYZQ(quat);
-
-		gt.setFromValues(x,y,z,0,0,0);
-		gt.setRotationMatrix(mat);
-		transf.setFromValues(0,0,0,0.5*M_PI, -0.5*M_PI, 0);
 
 		//Set the initial pose (if appropiate)
 		if (first_pose == false)
@@ -463,208 +472,47 @@ void CDifodoDatasets::loadFrame()
 
 		gt_pose = gt + transf;
 		groundtruth_ok = 1;
-
-	//printf("\n (q0,q0,q0,t0) = (%f, %f, %f, %.04f)", qx0, qy0, qz0, t0);
-	//printf("\n (q1,q1,q1,t1) = (%f, %f, %f, %.04f)", qx1, qy1, qz1, t1);
-	//printf("\n (x,y,z,t) = (%f, %f, %f, %.04f) \n", x, y, z, timestampTotime_t(obs3D->timestamp));
-
 	}
 
 	obs3D->unload();
 	rawlog_count++;
-}
 
+	if (dataset.size() <= rawlog_count)
+		dataset_finished = true;
+}
 
 void CDifodoDatasets::reset()
 {
 	loadFrame();
-	filterAndDownsample();
-	calculateCoord();
-	calculateDepthDerivatives();
-	findNullPoints();
-	findBorders();
-	findValidPoints();
+	buildImagePyramid();
 
 	cam_oldpose = cam_pose;
 	gt_oldpose = gt_pose;
 }
 
+void CDifodoDatasets::writeTrajectoryFile()
+{	
+	//Don't take into account those iterations with consecutive equal depth images
+	if (abs(dt.sumAll()) > 0)
+	{		
+		mrpt::math::CQuaternionDouble quat;
+		CPose3D auxpose, transf;
+		transf.setFromValues(0,0,0,0.5*M_PI, -0.5*M_PI, 0);
 
-void CDifodoDatasets::filterSpeedAndPoseUpdate()
-{
-	//-------------------------------------------------------------------------
-	//								Filter speed
-	//-------------------------------------------------------------------------
-
-	utils::CTicTac clock;
-	clock.Tic();
-
-	//		Calculate Eigenvalues and Eigenvectors
-	//----------------------------------------------------------
-	Eigen::SelfAdjointEigenSolver<Eigen::MatrixXf> eigensolver(est_cov);
-	if (eigensolver.info() != Eigen::Success)
-	{
-		printf("Eigensolver couldn't find a solution. Pose is not updated");
-		return;
+		auxpose = cam_pose - transf;
+		auxpose.getAsQuaternion(quat);
+	
+		char aux[24];
+		sprintf(aux,"%.04f", timestamp_obs);
+		f_res << aux << " ";
+		f_res << cam_pose[0] << " ";
+		f_res << cam_pose[1] << " ";
+		f_res << cam_pose[2] << " ";
+		f_res << quat(2) << " ";
+		f_res << quat(3) << " ";
+		f_res << -quat(1) << " ";
+		f_res << -quat(0) << endl;
 	}
-
-	//First, we have to describe both the new linear and angular speeds in the "eigenvector" basis
-	//-------------------------------------------------------------------------------------------------
-	MatrixXf Bii, kai_b;
-	Bii.setSize(6,6); kai_b.setSize(6,1);
-	Bii = eigensolver.eigenvectors();
-
-	kai_b = Bii.colPivHouseholderQr().solve(kai_solver);
-
-	//Second, we have to describe both the old linear and angular speeds in the "eigenvector" basis too
-	//-------------------------------------------------------------------------------------------------
-	math::CMatrixDouble33 inv_trans;
-	math::CMatrixFloat31 v_loc_old, w_loc_old;
-
-	//Express them in the local reference frame first
-	cam_pose.getRotationMatrix(inv_trans);
-	v_loc_old = inv_trans.inverse().cast<float>()*kai_abs.topRows(3);
-	w_loc_old = inv_trans.inverse().cast<float>()*kai_abs.bottomRows(3);
-
-	//Then transform that local representation to the "eigenvector" basis
-	MatrixXf kai_b_old;
-	kai_b_old.setSize(6,1);
-	math::CMatrixFloat61 kai_loc_old;
-	kai_loc_old.topRows<3>() = v_loc_old;
-	kai_loc_old.bottomRows<3>() = w_loc_old;
-
-	kai_b_old = Bii.colPivHouseholderQr().solve(kai_loc_old);
-
-	//Filter speed
-	const float c = 400.0;
-	MatrixXf kai_b_fil;
-	kai_b_fil.setSize(6,1);
-	for (unsigned int i=0; i<6; i++)
-	{
-		kai_b_fil(i,0) = (kai_b(i,0) + (c*eigensolver.eigenvalues()(i,0) + 0.2)*kai_b_old(i,0))/(1.0 + c*eigensolver.eigenvalues()(i,0) + 0.2);
-		//kai_b_fil_d(i,0) = (kai_b_d(i,0) + 0.2*kai_b_old_d(i,0))/(1.0 + 0.2);
-	}
-
-	//Transform filtered speed to local and then absolute reference systems
-	MatrixXf kai_loc_fil;
-	math::CMatrixFloat31 v_abs_fil, w_abs_fil;
-	kai_loc_fil.setSize(6,1);
-	kai_loc_fil = Bii.inverse().colPivHouseholderQr().solve(kai_b_fil);
-
-	cam_pose.getRotationMatrix(inv_trans);
-	v_abs_fil = inv_trans.cast<float>()*kai_loc_fil.topRows(3);
-	w_abs_fil = inv_trans.cast<float>()*kai_loc_fil.bottomRows(3);
-
-	kai_abs.topRows<3>() = v_abs_fil;
-	kai_abs.bottomRows<3>() = w_abs_fil;
-
-
-	//-------------------------------------------------------------------------
-	//							Update pose (DIFODO)
-	//-------------------------------------------------------------------------
-
-	cam_oldpose = cam_pose;
-
-	//Rotations and translations (could be better, and I tried it but there isn't any significant difference...)
-	double yaw,pitch,roll;
-	math::CMatrixDouble31 w_euler_d;
-
-	cam_pose.getYawPitchRoll(yaw,pitch,roll);
-	w_euler_d(0,0) = kai_loc_fil(4,0)*sin(roll)/cos(pitch) + kai_loc_fil(5,0)*cos(roll)/cos(pitch);
-	w_euler_d(1,0) = kai_loc_fil(4,0)*cos(roll) - kai_loc_fil(5,0)*sin(roll);
-	w_euler_d(2,0) = kai_loc_fil(3,0) + kai_loc_fil(4,0)*sin(roll)*tan(pitch) + kai_loc_fil(5,0)*cos(roll)*tan(pitch);
-
-	//Update pose
-	cam_pose.x_incr(v_abs_fil(0,0)/fps);
-	cam_pose.y_incr(v_abs_fil(1,0)/fps);
-	cam_pose.z_incr(v_abs_fil(2,0)/fps);
-	cam_pose.setYawPitchRoll(yaw + w_euler_d(0,0)/fps, pitch + w_euler_d(1,0)/fps, roll + w_euler_d(2,0)/fps);
-
-	execution_time += 1000*clock.Tac();
-
-	//==================================================================================
-	//									Statistics
-	//==================================================================================
-
-	if ((groundtruth_ok)&&(last_groundtruth_ok))
-	{
-		CPose3D gt_pose_incr = gt_pose - gt_oldpose;
-		CPose3D cam_pose_incr = cam_pose - cam_oldpose;
-		CPose3D abs_pose_error = gt_pose - cam_pose;
-
-		//cout << endl << "GT: " << gt_pose_incr;
-		//cout << endl << "OD: " << cam_pose_incr;
-		//cout << endl << "AE: " << abs_pose_error;
-
-		//-------------------------------------------------------------------------
-		//									DIF ODO
-		//-------------------------------------------------------------------------
-
-		//Relative errors in displacement
-		for (unsigned int i=0; i<6; i++)
-			rel_error[i] = cam_pose_incr[i] - gt_pose_incr[i];
-
-		//Absolute error
-		abs_error_tras = sqrt(abs_pose_error[0]*abs_pose_error[0] + abs_pose_error[1]*abs_pose_error[1] + abs_pose_error[2]*abs_pose_error[2]);
-		abs_error_rot = sqrt(abs_pose_error[3]*abs_pose_error[3] + abs_pose_error[4]*abs_pose_error[4] + abs_pose_error[5]*abs_pose_error[5]);
-
-		acu_rel_error_tras += sqrt(rel_error[0]*rel_error[0] + rel_error[1]*rel_error[1] + rel_error[2]*rel_error[2]);
-		acu_rel_error_rot += sqrt(rel_error[3]*rel_error[3] + rel_error[4]*rel_error[4] + rel_error[5]*rel_error[5]);
-
-		////Relative errors in velocity (m/s)^2
-		//se_vel_dif = square(kai_loc_fil_d(0,0)-des_rel_true(0,0)*m_process.t_incr_inv)
-		//			+ square(kai_loc_fil_d(1,0)-des_rel_true(1,0)*m_process.t_incr_inv)
-		//			+ square(kai_loc_fil_d(2,0)-des_rel_true(2,0)*m_process.t_incr_inv);
-
-
-		sum_exec_time += execution_time;
-
-		//Don't take into account those iterations with the same depth images
-		if (dt.sumAll() == 0)
-			dtzero_before = 1;
-
-		else if (dtzero_before == 1)
-			dtzero_before = 0;
-
-		else if (save_results == 1)
-			writeToLogFile();
-
-	}
-
-	num_iter++;
-}
-
-
-void CDifodoDatasets::writeToLogFile()
-{
-	char aux[24];
-	sprintf(aux,"%.04f", last_groundtruth);
-	f_res << aux << " ";
-
-	f_res << rel_error[0] << " ";
-	f_res << rel_error[1] << " ";
-	f_res << rel_error[2] << " ";
-	f_res << rel_error[3] << " ";
-	f_res << rel_error[4] << " ";
-	f_res << rel_error[5] << " ";
-
-	f_res << abs_error_tras << " ";
-	f_res << abs_error_rot << " ";
-	f_res << execution_time << " ";
-	f_res << num_valid_points << " ";
-	f_res << "\n";
-}
-
-
-void CDifodoDatasets::showStatistics()
-{
-	printf("\n==============================================================================");
-	printf("\n Average execution time (ms): %f", sum_exec_time/num_iter);
-	printf("\n Average frame to frame traslational error (m): %f", acu_rel_error_tras/num_iter);
-	printf("\n Average frame to frame rotational error (deg): %f", 57.3*acu_rel_error_rot/num_iter);
-	printf("\n Absolute traslational error (m): %f", abs_error_tras);
-	printf("\n Absolute rotational error (deg): %f", 57.3*abs_error_rot);
-	printf("\n==============================================================================\n");
 }
 
 

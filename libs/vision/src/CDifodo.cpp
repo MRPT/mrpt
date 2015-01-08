@@ -22,594 +22,721 @@ CDifodo::CDifodo()
 {
 	rows = 60;
 	cols = 80;
-	fovh = M_PI*57.5/180.0;
+	fovh = M_PI*58.0/180.0;
 	fovv = M_PI*45.0/180.0;
-	lens_disp = 0.022;
+	lens_disp = 0.022f;
 	cam_mode = 1;			// (1 - 640 x 480, 2 - 320 x 240, 4 - 160 x 120)
-	downsample = 4;
-	gaussian_mask_size = 7;
-	const unsigned int resh = 640/(cam_mode*downsample);
-	const unsigned int resv = 480/(cam_mode*downsample);
+	downsample = 1;
+	ctf_levels = 1;
+	width = 640/(cam_mode*downsample);
+	height = 480/(cam_mode*downsample);
 
-	depth.setSize(rows,cols);
-	depth_old.setSize(rows,cols);
-	depth_inter.setSize(rows,cols);
-	depth_ft.setSize(resv,resh);
-	depth_wf.setSize(resv,resh);
+	//Resize pyramid
+    const unsigned int pyr_levels = round(log(float(width/cols))/log(2.f)) + ctf_levels;
+    depth.resize(pyr_levels);
+    depth_old.resize(pyr_levels);
+    depth_inter.resize(pyr_levels);
+	depth_warped.resize(pyr_levels);
+    xx.resize(pyr_levels);
+    xx_inter.resize(pyr_levels);
+    xx_old.resize(pyr_levels);
+	xx_warped.resize(pyr_levels);
+    yy.resize(pyr_levels);
+    yy_inter.resize(pyr_levels);
+    yy_old.resize(pyr_levels);
+	yy_warped.resize(pyr_levels);
+	transformations.resize(pyr_levels);
 
-	du.setSize(rows,cols);
-	dv.setSize(rows,cols);
-	dt.setSize(rows,cols);
-	xx.setSize(rows,cols);
-	xx_inter.setSize(rows,cols);
-	xx_old.setSize(rows,cols);
-	yy.setSize(rows,cols);
-	yy_inter.setSize(rows,cols);
-	yy_old.setSize(rows,cols);
+	for (unsigned int i = 0; i<pyr_levels; i++)
+    {
+        unsigned int s = pow(2.f,int(i));
+        cols_i = width/s; rows_i = height/s;
+        depth[i].resize(rows_i, cols_i);
+        depth_inter[i].resize(rows_i, cols_i);
+        depth_old[i].resize(rows_i, cols_i);
+        depth[i].assign(0.0f);
+        depth_old[i].assign(0.0f);
+        xx[i].resize(rows_i, cols_i);
+        xx_inter[i].resize(rows_i, cols_i);
+        xx_old[i].resize(rows_i, cols_i);
+        xx[i].assign(0.0f);
+        xx_old[i].assign(0.0f);
+        yy[i].resize(rows_i, cols_i);
+        yy_inter[i].resize(rows_i, cols_i);
+        yy_old[i].resize(rows_i, cols_i);
+        yy[i].assign(0.0f);
+        yy_old[i].assign(0.0f);
+		transformations[i].resize(4,4);
 
-	border.setSize(rows,cols);
-	border.assign(0);
-	null.setSize(rows,cols);
-	null.assign(0);
-	weights.setSize(rows,cols);
-	weights.assign(0);
-	est_cov.assign(0);
+		if (cols_i <= cols)
+		{
+			depth_warped[i].resize(rows_i,cols_i);
+			xx_warped[i].resize(rows_i,cols_i);
+			yy_warped[i].resize(rows_i,cols_i);
+		}
+    }
 
-	f_dist = 1.0/525.0;																				//In meters
-	x_incr = 2.0*f_dist*(floor(float(resh)/float(cols))*cols/float(resh))*tan(0.5*fovh)/(cols-1);	//In meters
-	y_incr = 2.0*f_dist*(floor(float(resv)/float(rows))*rows/float(resv))*tan(0.5*fovv)/(rows-1);	//In meters
-	fps = 30.0;																						//In Hz
+	depth_wf.setSize(height,width);
 
-	//Depth thresholds
-	const int dy = floor(float(resv)/float(rows));
-	const int dx = floor(float(resh)/float(cols));
+	f_dist = 1.f/525.f;		//In meters
+	fps = 30.f;				//In Hz
 
-	duv_threshold = 0.001*(dx + dy)*(cam_mode*downsample);
-	dt_threshold = 0.2*fps;
-	dif_threshold = 0.001*(dx + dy)*(cam_mode*downsample);
-	difuv_surroundings = 0.005*(dx + dy)*(cam_mode*downsample);
-	dift_surroundings = 0.01*fps*(dx + dy)*(cam_mode*downsample);
-
-	previous_speed_const_weight = 0.2;
-	previous_speed_eig_weight = 300.0;
+	previous_speed_const_weight = 0.05f;
+	previous_speed_eig_weight = 0.5f;
 
 	num_valid_points = 0;
+
+	//Compute gaussian mask
+	float v_mask[5] = {1,4,6,4,1};
+    for (unsigned int i=0; i<5; i++)
+        for (unsigned int j=0; j<5; j++)
+            g_mask[i][j] = v_mask[i]*v_mask[j]/256.f;
 }
 
-void CDifodo::calculateCoord()
-{	
-	for (unsigned int x = 0; x < cols; x++)
-		for (unsigned int y = 0; y < rows; y++)
-		{
-			if ((depth(y,x)) == 0.f || (depth_old(y,x) == 0.f))
-			{
-				depth_inter(y,x) = 0.f;
-				xx_inter(y,x) = 0.f;
-				yy_inter(y,x) = 0.f;
-			}
-			else
-			{
-				depth_inter(y,x) = 0.5f*(depth(y,x) + depth_old(y,x));
-				xx_inter(y,x) = 0.5f*(xx(y,x) + xx_old(y,x));
-				yy_inter(y,x) = 0.5f*(yy(y,x) + yy_old(y,x));
-			}
-		}
-}
-
-
-void CDifodo::calculateDepthDerivatives()
+void CDifodo::buildImagePyramid()
 {
-	for (unsigned int x = 1; x < cols-1; x++)
-		for (unsigned int y = 1; y < rows-1; y++)
-		{
-			du(y,x) = 0.5f*(depth_inter(y,x+1) - depth_inter(y,x-1));
-			dv(y,x) = 0.5f*(depth_inter(y+1,x) - depth_inter(y-1,x));
-			dt(y,x) = fps*(depth(y,x) - depth_old(y,x));
-		}
-}
-
-
-void CDifodo::filterAndDownsample()
-{
-	CTicTac clock;
+	const float max_depth_dif = 0.05f;
 	
-	//Push the frames back
+	//Push coordinates back
 	depth_old.swap(depth);
 	xx_old.swap(xx);
 	yy_old.swap(yy);
 
-	//					Create the kernel
-	//==========================================================
-	Eigen::MatrixXf kernel(gaussian_mask_size,1);
+    //The number of levels of the pyramid does not match the number of levels used
+    //in the odometry computation (because we might want to finish with lower resolutions)
 
-    const float sigma = 0.2f*gaussian_mask_size;
-    float r, s = 2.0f * sigma * sigma;
-    float ksum = 0.0f;
+    unsigned int pyr_levels = round(log(float(width/cols))/log(2.f)) + ctf_levels;
 
-    // Generate kernel
-	if ((gaussian_mask_size%2 == 0)||(gaussian_mask_size<3))
-	{
-		cout << endl << "Mask size must be odd and bigger than 2";
-		depth_ft = depth_wf;
-		return;
-	}
+    //Generate levels
+    for (unsigned int i = 0; i<pyr_levels; i++)
+    {
+        unsigned int s = pow(2.f,int(i));
+        cols_i = width/s;
+        rows_i = height/s;
+		const int rows_i2 = 2*rows_i;
+		const int cols_i2 = 2*cols_i;
+		const int i_1 = i-1;
 
-	const int lim_mask = (gaussian_mask_size-1)/2;
-	for (int x = -lim_mask; x <= lim_mask; x++)
-	{
-		r = std::sqrt(float(x*x));
-		kernel(x + lim_mask, 0) = (exp(-(r*r)/s))/(M_PI * s);
-		ksum += kernel(x + lim_mask, 0);
-	}
+        if (i == 0)
+            depth[i].swap(depth_wf);
 
-	// normalize the Kernel
-	for (int x = -lim_mask; x <= lim_mask; x++)
-	{
-			kernel(x + lim_mask, 0)/=ksum;
-			//cout << kernel(x + lim_mask, 1) << "  ";
-	}
+        //                              Downsampling
+        //-----------------------------------------------------------------------------
+        else
+        {            
+			for (unsigned int u = 0; u < cols_i; u++)
+				for (unsigned int v = 0; v < rows_i; v++)
+                {
+                    const int u2 = 2*u;
+					const int v2 = 2*v;			
+					const float dcenter = depth[i_1](v2,u2);
+					
+					//Inner pixels
+                    if ((v>0)&&(v<rows_i-1)&&(u>0)&&(u<cols_i-1))
+                    {		
+						if (dcenter > 0.f)
+						{	
+							float sum = 0.f;
+							float weight = 0.f;
 
-	const int width = depth_wf.getColCount();
-	const int height = depth_wf.getRowCount();
-	MatrixXf depth_if;
-	depth_if.setSize(height, width);
-
-	clock.Tic();
-	float sum, ponder;
-
-	//Apply gaussian filter (separately)
-	//rows
-	for ( int i=0; i<height; i++)
-	{
-		for (int j=0; j<lim_mask; j++)
-			depth_if(i,j) = depth_wf(i,j);
-
-		for (int j=width-lim_mask; j<width; j++)
-			depth_if(i,j) = depth_wf(i,j);
-
-		for ( int j=lim_mask; j<width-lim_mask; j++)
-		{
-			sum = 0.f;
-			ponder = 1.f;
-			for (int k=-lim_mask; k<=lim_mask; k++)
-			{
-
-				if (depth_wf(i,j+k) == 0.f)
-					ponder -= kernel(k+lim_mask,0);
-				else
-					sum += kernel(k+lim_mask,0)*depth_wf(i,j+k);
-			}
-			if (ponder == 1.0f)
-				depth_if(i,j) = sum;
-			else if (sum > 0.f)
-				depth_if(i,j) = sum/ponder;
-			else
-				depth_if(i,j) = 0.f;
-		}
-	}
-
-	//cols
-	for ( int j=0; j<width; j++)
-	{
-		for (int i=0; i<lim_mask; i++)
-			depth_wf(i,j) = depth_if(i,j);
-		for (int i=height-lim_mask; i<height; i++)
-			depth_wf(i,j) = depth_if(i,j);
-
-		for ( int i=lim_mask; i<height-lim_mask; i++)
-		{
-				sum = 0.f;
-				ponder = 1.f;
-
-				for (int k=-lim_mask; k<=lim_mask; k++)
-				{
-
-					if (depth_if(i+k,j) == 0.f)
-						ponder -= kernel(k+lim_mask,0);
-					else
-						sum += kernel(k+lim_mask,0)*depth_if(i+k,j);
-				}
-
-				if (ponder == 1.0f)
-					depth_wf(i,j) = sum;
-				else if (sum > 0.f)
-					depth_wf(i,j) = sum/ponder;
-				else
-					depth_wf(i,j) = 0.f;
-		}
-	}
-
-	//Downsample the pointcloud
-	const float inv_f = float(640/width)/525.0f;
-	const float disp_x = 0.5f*(width-1);
-	const float disp_y = 0.5f*(height-1);
-
-	const int dy = floor(float(height)/float(rows));
-	const int dx = floor(float(width)/float(cols));
-	const unsigned int iniy = (height-dy*rows)/2;
-	const unsigned int inix = (width-dx*cols)/2;
-
-	//clock.Tic();
-
-	for (unsigned int y = 0; y < rows; y++)
-		for (unsigned int x = 0; x < cols; x++)
-		{
-			const int iny = iniy+y*dy, inx = inix+x*dx;
-			depth(y,x) = depth_wf(iny,inx);
-			xx(y,x) = (inx - disp_x)*depth_wf(iny,inx)*inv_f + lens_disp;
-			yy(y,x) = (iny - disp_y)*depth_wf(iny,inx)*inv_f;
-		}
-
-	//cout << endl << "Execution time - downsample (ms): " << 1000*clock.Tac();
-}
-
-void CDifodo::findBorders()
-{
-	border.assign(0);
-
-	//Detect borders
-	for (unsigned int x = 1; x < cols-1; x++)
-		for (unsigned int y = 1; y < rows-1; y++)
-		{
-			if (null(y,x) == 0)
-			{
-				const float aver_duv = du(y,x)*du(y,x) + dv(y,x)*dv(y,x);
-				const float ini_dx = 0.5f*(depth_old(y,x+1) - depth_old(y,x-1));
-				const float ini_dy = 0.5f*(depth_old(y+1,x) - depth_old(y-1,x));
-				const float final_dx = 0.5f*(depth(y,x+1) - depth(y,x-1));
-				const float final_dy = 0.5f*(depth(y+1,x) - depth(y-1,x));
-
-				//Derivative too high (the average derivative)
-				if (aver_duv > duv_threshold)
-					border(y,x) = 1;
-
-				else if (abs(dt(y,x)) > dt_threshold)
-					border(y,x) = 1;
-
-				//Big difference between initial and final derivatives
-				else if (abs(final_dx-ini_dx) + abs(final_dy-ini_dy) > dif_threshold)
-					border(y,x) = 1;
-
-				//Difference between derivatives in the surroundings
-				else
-				{
-					float sum_duv = 0.f;
-					float sum_dift = 0.f;
-					float sum_difdepth = 0.f;
-					for (int k = -1; k<2; k++)
-						for (int l = -1; l<2; l++)
-						{
-							sum_duv += abs(du(y,x)-du(y+k,x+l)) + abs(dv(y,x)-dv(y+k,x+l));
-							sum_dift += abs(dt(y,x) - dt(y+k,x+l));
-							sum_difdepth += abs(depth_inter(y,x) - depth_inter(y+k,x+l));
+							for (int l=-2; l<3; l++)
+								for (int k=-2; k<3; k++)
+								{
+									const float abs_dif = abs(depth[i_1](v2+k,u2+l)-dcenter);
+									if (abs_dif < max_depth_dif)
+									{
+										const float aux_w = g_mask[2+k][2+l]*(max_depth_dif - abs_dif);
+										weight += aux_w;
+										sum += aux_w*depth[i_1](v2+k,u2+l);
+									}
+								}
+							depth[i](v,u) = sum/weight;
 						}
+						else
+						{
+							float min_depth = 10.f;
+							for (int l=-2; l<3; l++)
+								for (int k=-2; k<3; k++)
+								{
+									const float d = depth[i_1](v2+k,u2+l);
+									if ((d > 0.f)&&(d < min_depth))
+										min_depth = d;
+								}
 
-					if (sum_dift > depth_inter(y,x)*dift_surroundings)
-						border(y,x) = 1;
+							if (min_depth < 10.f)
+								depth[i](v,u) = min_depth;
+							else
+								depth[i](v,u) = 0.f;
+						}
+                    }
 
-					else if (sum_duv > (4.f*sum_difdepth + depth_inter(y,x))*difuv_surroundings)
-						border(y,x) = 1;
+                    //Boundary
+                    else
+                    {
+                        if (dcenter > 0.f)
+						{						
+							float sum = 0.f;
+							float weight = 0.f;
 
+							for (int l=-2; l<3; l++)	
+								for (int k=-2; k<3; k++)
+								{
+									const int indv = v2+k, indu = u2+l;
+									if ((indv>=0)&&(indv<rows_i2)&&(indu>=0)&&(indu<cols_i2))
+									{
+										const float abs_dif = abs(depth[i_1](indv,indu)-dcenter);										
+										if (abs_dif < max_depth_dif)
+										{
+											const float aux_w = g_mask[2+k][2+l]*(max_depth_dif - abs_dif);
+											weight += aux_w;
+											sum += aux_w*depth[i_1](indv,indu);
+										}
+									}
+								}
+							depth[i](v,u) = sum/weight;
+						}
+						else
+						{
+							float min_depth = 10.f;
+							for (int l=-2; l<3; l++)
+								for (int k=-2; k<3; k++)
+								{
+									const int indv = v2+k, indu = u2+l;
+									if ((indv>=0)&&(indv<rows_i2)&&(indu>=0)&&(indu<cols_i2))
+									{
+										const float d = depth[i_1](indv,indu);
+										if ((d > 0.f)&&(d < min_depth))
+											min_depth = d;
+									}
+								}
+
+							if (min_depth < 10.f)
+								depth[i](v,u) = min_depth;
+							else
+								depth[i](v,u) = 0.f;
+						}
+                    }
+                }
+        }
+
+        //Calculate coordinates "xy" of the points
+        const float inv_f_i = float(640/cols_i)*f_dist;
+        const float disp_u_i = 0.5f*(cols_i-1);
+        const float disp_v_i = 0.5f*(rows_i-1);
+
+        for (unsigned int u = 0; u < cols_i; u++) 
+			for (unsigned int v = 0; v < rows_i; v++)
+                if (depth[i](v,u) > 0.f)
+				{
+					xx[i](v,u) = (u - disp_u_i)*depth[i](v,u)*inv_f_i + lens_disp;
+					yy[i](v,u) = (v - disp_v_i)*depth[i](v,u)*inv_f_i;
+				}
+				else
+				{
+					xx[i](v,u) = 0.f;
+					yy[i](v,u) = 0.f;
+				}
+    }
+}
+
+void CDifodo::performWarping()
+{
+	//Camera parameters (which also depend on the level resolution)
+	const float f = 1.f/float(640*f_dist/cols_i);
+	const float disp_u_i = 0.5f*float(cols_i-1);
+    const float disp_v_i = 0.5f*float(rows_i-1);
+
+	//Rigid transformation estimated up to the present level
+	Matrix4f acu_trans; 
+	acu_trans.setIdentity();
+	for (unsigned int i=1; i<=level; i++)
+		acu_trans = transformations[i-1]*acu_trans;
+
+	MatrixXf wacu(rows_i,cols_i);
+	wacu.assign(0.f);
+	depth_warped[image_level].assign(0.f);
+
+	const float cols_lim = float(cols_i-1);
+	const float rows_lim = float(rows_i-1);
+
+	//						Warping loop
+	//---------------------------------------------------------
+	for (unsigned int j = 0; j<cols_i; j++)
+		for (unsigned int i = 0; i<rows_i; i++)
+		{		
+			const float z = depth[image_level](i,j);
+			
+			if (z > 0.f)
+			{
+				//Transform point to the warped reference frame
+				const float depth_w = acu_trans(0,0)*z + acu_trans(0,1)*(xx[image_level](i,j) - lens_disp) + acu_trans(0,2)*yy[image_level](i,j) + acu_trans(0,3);
+				const float x_w = acu_trans(1,0)*z + acu_trans(1,1)*(xx[image_level](i,j) - lens_disp) + acu_trans(1,2)*yy[image_level](i,j) + acu_trans(1,3);
+				const float y_w = acu_trans(2,0)*z + acu_trans(2,1)*(xx[image_level](i,j) - lens_disp) + acu_trans(2,2)*yy[image_level](i,j) + acu_trans(2,3);
+
+				//Calculate warping
+				const float uwarp = f*x_w/depth_w + disp_u_i;
+				const float vwarp = f*y_w/depth_w + disp_v_i;
+
+				//The warped pixel (which is not integer in general) contributes to all the surrounding ones
+				if (( uwarp >= 0.f)&&( uwarp < cols_lim)&&( vwarp >= 0.f)&&( vwarp < rows_lim))
+				{
+					const int uwarp_l = uwarp;
+					const int uwarp_r = uwarp_l + 1;
+					const int vwarp_d = vwarp;
+					const int vwarp_u = vwarp_d + 1;
+					const float delta_r = float(uwarp_r) - uwarp;
+					const float delta_l = uwarp - float(uwarp_l);
+					const float delta_u = float(vwarp_u) - vwarp;
+					const float delta_d = vwarp - float(vwarp_d);
+
+					//Warped pixel very close to an integer value
+					if (abs(round(uwarp) - uwarp) + abs(round(vwarp) - vwarp) < 0.05f)
+					{
+						depth_warped[image_level](round(vwarp), round(uwarp)) += depth_w;
+						wacu(round(vwarp), round(uwarp)) += 1.f;
+					}
+					else
+					{
+						const float w_ur = square(delta_l) + square(delta_d);
+						depth_warped[image_level](vwarp_u,uwarp_r) += w_ur*depth_w;
+						wacu(vwarp_u,uwarp_r) += w_ur;
+
+						const float w_ul = square(delta_r) + square(delta_d);
+						depth_warped[image_level](vwarp_u,uwarp_l) += w_ul*depth_w;
+						wacu(vwarp_u,uwarp_l) += w_ul;
+
+						const float w_dr = square(delta_l) + square(delta_u);
+						depth_warped[image_level](vwarp_d,uwarp_r) += w_dr*depth_w;
+						wacu(vwarp_d,uwarp_r) += w_dr;
+
+						const float w_dl = square(delta_r) + square(delta_u);
+						depth_warped[image_level](vwarp_d,uwarp_l) += w_dl*depth_w;
+						wacu(vwarp_d,uwarp_l) += w_dl;
+					}
 				}
 			}
 		}
 
-	//Delete sparse points
-	for (unsigned int x = 1; x < cols-1; x++)
-		for (unsigned int y = 1; y < rows-1; y++)
-		{
-			if ((null(y,x) == 0)&&(border(y,x) == 0))
+	//Scale the averaged depth and compute spatial coordinates
+    const float inv_f_i = 1.f/f;
+	for (unsigned int u = 0; u<cols_i; u++)
+		for (unsigned int v = 0; v<rows_i; v++)
+		{	
+			if (wacu(v,u) > 0.f)
 			{
-				float sum_alone = 0;
-				for (int k = -1; k<2; k++)
-					for (int l = -1; l<2; l++)
-					{
-						sum_alone += (border(y+k,x+l)||null(y+k,x+l));
-					}
-
-				if (sum_alone > 6)
-					border(y,x) = 1;
-
+				depth_warped[image_level](v,u) /= wacu(v,u);
+				xx_warped[image_level](v,u) = (u - disp_u_i)*depth_warped[image_level](v,u)*inv_f_i + lens_disp;
+				yy_warped[image_level](v,u) = (v - disp_v_i)*depth_warped[image_level](v,u)*inv_f_i;
+			}
+			else
+			{
+				depth_warped[image_level](v,u) = 0.f;
+				xx_warped[image_level](v,u) = 0.f;
+				yy_warped[image_level](v,u) = 0.f;
 			}
 		}
 }
 
-
-void CDifodo::findNullPoints()
-{
-	null.assign(0);
-	for (unsigned int x = 0; x < cols; x++)
-		for (unsigned int y = 0; y < rows; y++)
-			if (depth_inter(y,x) == 0.f)
-				null(y,x) = 1;
-
-}
-
-
-void CDifodo::findValidPoints()
-{
-	num_valid_points = 0;
-
-	for (unsigned int y = 1; y < rows-1; y++)
-		for (unsigned int x = 1; x < cols-1; x++)
-			if ((border(y,x) == 0)&&(null(y,x) == 0))
-				num_valid_points++;
-}
-
-
-void CDifodo::solveDepthSystem()
-{
-	using mrpt::utils::square;
-
-	utils::CTicTac	clock;
-	unsigned int cont = 0;
-	MatrixXf A, Var, B;
-	A.resize(num_valid_points,6);
-	B.setSize(num_valid_points,1);
-	Var.setSize(6,1);
-
-	//Fill the matrix A and the vector B
-	//The order of the variables will be (vz, vx, vy, wz, wx, wy)
-	//The points order will be (1,1), (1,2)...(1,cols-1), (2,1), (2,2)...(row-1,cols-1). Points at the borders are not included
-
-	const float f_inv_x = f_dist/x_incr;
-	const float f_inv_y = f_dist/y_incr;
-	const float kz2 = square(1.425e-5/gaussian_mask_size);
-
-	//We need to express the last camera velocity respect to the current camera reference frame
-	math::CMatrixFloat61 kai_abs;
-	math::CMatrixDouble33 inv_trans;
-	math::CMatrixFloat31 v_old, w_old;
-	cam_pose.getRotationMatrix(inv_trans);
-	v_old = inv_trans.inverse().cast<float>()*kai_abs.topRows(3);
-	w_old = inv_trans.inverse().cast<float>()*kai_abs.bottomRows(3);
-
-	//Create the weighted least squares system
-	for (unsigned int y = 1; y < rows-1; y++)
-		for (unsigned int x = 1; x < cols-1; x++)
-			if ((border(y,x) == 0)&&(null(y,x) == 0))
+void CDifodo::calculateCoord()
+{	
+	for (unsigned int u = 0; u < cols_i; u++)
+		for (unsigned int v = 0; v < rows_i; v++)
+		{
+			if ((depth_old[image_level](v,u)) == 0.f || (depth_warped[image_level](v,u) == 0.f))
 			{
-				//Precomputed expressions
-				const float inv_d = 1.f/depth_inter(y,x);
-				const float dxcomp = du(y,x)*f_inv_x*inv_d;
-				const float dycomp = dv(y,x)*f_inv_y*inv_d;
-				const float z2 = square(depth_inter(y,x));
+				depth_inter[image_level](v,u) = 0.f;
+				xx_inter[image_level](v,u) = 0.f;
+				yy_inter[image_level](v,u) = 0.f;
+			}
+			else
+			{
+				depth_inter[image_level](v,u) = 0.5f*(depth_old[image_level](v,u) + depth_warped[image_level](v,u));
+				xx_inter[image_level](v,u) = 0.5f*(xx_old[image_level](v,u) + xx_warped[image_level](v,u));
+				yy_inter[image_level](v,u) = 0.5f*(yy_old[image_level](v,u) + yy_warped[image_level](v,u));
+			}
+		}
+}
+
+void CDifodo::calculateDepthDerivatives()
+{
+	dt.resize(rows_i,cols_i);
+	du.resize(rows_i,cols_i);
+	dv.resize(rows_i,cols_i);
+
+    //Compute connectivity
+	MatrixXf rx_ninv(rows_i,cols_i);
+	MatrixXf ry_ninv(rows_i,cols_i);
+    rx_ninv.assign(1.f); ry_ninv.assign(1.f);
+
+	for (unsigned int u = 0; u < cols_i-1; u++)
+        for (unsigned int v = 0; v < rows_i; v++)
+        {
+			const float norm_dx = square(xx_inter[image_level](v,u+1) - xx_inter[image_level](v,u))
+								+ square(depth_inter[image_level](v,u+1) - depth_inter[image_level](v,u));
+			if (norm_dx  > 0.f)
+				rx_ninv(v,u) = sqrt(norm_dx);
+		}
+
+	for (unsigned int u = 0; u < cols_i; u++)
+        for (unsigned int v = 0; v < rows_i-1; v++)
+        {
+			const float norm_dy = square(yy_inter[image_level](v+1,u) - yy_inter[image_level](v,u))
+								+ square(depth_inter[image_level](v+1,u) - depth_inter[image_level](v,u));
+
+            if (norm_dy > 0.f)
+				ry_ninv(v,u) = sqrt(norm_dy);
+        }
+
+
+    //Spatial derivatives
+    for (unsigned int v = 0; v < rows_i; v++)
+    {
+        for (unsigned int u = 1; u < cols_i-1; u++)
+			du(v,u) = (rx_ninv(v,u-1)*(depth_inter[image_level](v,u+1)-depth_inter[image_level](v,u)) + rx_ninv(v,u)*(depth_inter[image_level](v,u) - depth_inter[image_level](v,u-1)))/(rx_ninv(v,u)+rx_ninv(v,u-1));
+
+		du(v,0) = du(v,1);
+		du(v,cols_i-1) = du(v,cols_i-2);
+    }
+
+    for (unsigned int u = 0; u < cols_i; u++)
+    {
+        for (unsigned int v = 1; v < rows_i-1; v++)
+			dv(v,u) = (ry_ninv(v-1,u)*(depth_inter[image_level](v+1,u)-depth_inter[image_level](v,u)) + ry_ninv(v,u)*(depth_inter[image_level](v,u) - depth_inter[image_level](v-1,u)))/(ry_ninv(v,u)+ry_ninv(v-1,u));
+
+		dv(0,u) = dv(1,u);
+		dv(rows_i-1,u) = dv(rows_i-2,u);
+    }
+
+	//Temporal derivative
+	for (unsigned int u = 0; u < cols_i; u++)
+		for (unsigned int v = 0; v < rows_i; v++)
+			dt(v,u) = fps*(depth_warped[image_level](v,u) - depth_old[image_level](v,u));
+}
+
+void CDifodo::computeWeights()
+{
+	weights.resize(rows_i, cols_i);
+	weights.assign(0.f);
+
+	//Obtain the velocity associated to the rigid transformation estimated up to the present level
+	CMatrixFloat61 kai_level = kai_loc_old;
+	Matrix4f acu_trans;
+	acu_trans.setIdentity();
+	for (unsigned int i=0; i<level; i++)
+		acu_trans = transformations[i]*acu_trans;
+
+	Matrix<float, 4, 4> log_trans = fps*acu_trans.log();
+	kai_level[0] -= log_trans(0,3); kai_level[1] -= log_trans(1,3); kai_level[2] -= log_trans(2,3);
+	kai_level[3] += log_trans(1,2); kai_level[4] -= log_trans(0,2); kai_level[5] += log_trans(0,1);
+
+	//Parameters for the measurmente error
+	const float f_inv_y = f_dist/x_incr;
+	const float f_inv_z = f_dist/y_incr;
+	const float kz2 = 8.122e-12f;  //square(1.425e-5) / 25
+	
+	//Parameters for linearization error
+	const float kduv = 20e-5f;
+	const float kdt = kduv/square(fps);
+	const float k2dt = 5e-6f;
+	const float k2duv = 5e-6f;
+	//const float f = 1.f/(float(640/cols_i)*f_dist);
+	
+	for (unsigned int u = 1; u < cols_i-1; u++)
+		for (unsigned int v = 1; v < rows_i-1; v++)
+			if (null(v,u) == 0)
+			{
+				//					Compute measurment error (simplified)
+				//-----------------------------------------------------------------------
+				const float z = depth_inter[image_level](v,u);
+				const float inv_d = 1.f/z;
+				//const float dycomp = du2(v,u)*f_inv_y*inv_d;
+				//const float dzcomp = dv2(v,u)*f_inv_z*inv_d;
+				const float z2 = z*z;
 				const float z4 = z2*z2;
 
-				//Weights calculation
-				const float var11 = kz2*z4;
-				const float var12 = kz2*xx_inter(y,x)*z2*depth_inter(y,x);
-				const float var13 = kz2*yy_inter(y,x)*z2*depth_inter(y,x);
-				const float var22 = kz2*square(xx_inter(y,x))*z2;
-				const float var23 = kz2*xx_inter(y,x)*yy_inter(y,x)*z2;
-				const float var33 = kz2*square(yy_inter(y,x))*z2;
-				const float var44 = kz2*z4*fps*fps;
+				//const float var11 = kz2*z4;
+				//const float var12 = kz2*xx_inter[image_level](v,u)*z2*depth_inter[image_level](v,u);
+				//const float var13 = kz2*yy_inter[image_level](v,u)*z2*depth_inter[image_level](v,u);
+				//const float var22 = kz2*square(xx_inter[image_level](v,u))*z2;
+				//const float var23 = kz2*xx_inter[image_level](v,u)*yy_inter[image_level](v,u)*z2;
+				//const float var33 = kz2*square(yy_inter[image_level](v,u))*z2;
+				const float var44 = kz2*z4*square(fps);
 				const float var55 = kz2*z4*0.25f;
 				const float var66 = var55;
 
-				const float j1 = -2.f*inv_d*inv_d*(xx_inter(y,x)*dxcomp + yy_inter(y,x)*dycomp)*(v_old[0] + yy_inter(y,x)*w_old[1] - xx_inter(y,x)*w_old[2])
-								+ inv_d*dxcomp*(v_old[1] - yy_inter(y,x)*w_old[0]) + inv_d*dycomp*(v_old[2] + xx_inter(y,x)*w_old[0]);
-
-				const float j2 = inv_d*dxcomp*(v_old[0] + yy_inter(y,x)*w_old[1] - 2.f*xx_inter(y,x)*w_old[2]) - dycomp*w_old[0];
-
-				const float j3 = inv_d*dycomp*(v_old[0] + 2.f*yy_inter(y,x)*w_old[1] - xx_inter(y,x)*w_old[2]) + dxcomp*w_old[0];
+				//const float j1 = -2.f*inv_d*inv_d*(xx_inter[image_level](v,u)*dycomp + yy_inter[image_level](v,u)*dzcomp)*(kai_level[0] + yy_inter[image_level](v,u)*kai_level[4] - xx_inter[image_level](v,u)*kai_level[5])
+				//				+ inv_d*dycomp*(kai_level[1] - yy_inter[image_level](v,u)*kai_level[3]) + inv_d*dzcomp*(kai_level[2] + xx_inter[image_level](v,u)*kai_level[3]);
+				//const float j2 = inv_d*dycomp*(kai_level[0] + yy_inter[image_level](v,u)*kai_level[4] - 2.f*xx_inter[image_level](v,u)*kai_level[5]) - dzcomp*kai_level[3];
+				//const float j3 = inv_d*dzcomp*(kai_level[0] + 2.f*yy_inter[image_level](v,u)*kai_level[4] - xx_inter[image_level](v,u)*kai_level[5]) + dycomp*kai_level[3];
 
 				const float j4 = 1.f;
+				const float j5 =  xx_inter[image_level](v,u)*inv_d*inv_d*f_inv_y*(kai_level[0] + yy_inter[image_level](v,u)*kai_level[4] - xx_inter[image_level](v,u)*kai_level[5]) 
+							   + inv_d*f_inv_y*(-kai_level[1] - z*kai_level[5] + yy_inter[image_level](v,u)*kai_level[3]);
+				const float j6 = yy_inter[image_level](v,u)*inv_d*inv_d*f_inv_z*(kai_level[0] + yy_inter[image_level](v,u)*kai_level[4] - xx_inter[image_level](v,u)*kai_level[5])
+							   + inv_d*f_inv_z*(-kai_level[2] + z*kai_level[4] - xx_inter[image_level](v,u)*kai_level[3]);
 
-				const float j5 =  xx_inter(y,x)*inv_d*inv_d*f_inv_y*(v_old[0] + yy_inter(y,x)*w_old[1] - xx_inter(y,x)*w_old[2])
-							   + inv_d*f_inv_x*(-v_old[1] - depth_inter(y,x)*w_old[2] + yy_inter(y,x)*w_old[0]);
+				//error_measurement(v,u) = j1*(j1*var11+j2*var12+j3*var13) + j2*(j1*var12+j2*var22+j3*var23)
+				//						+j3*(j1*var13+j2*var23+j3*var33) + j4*j4*var44 + j5*j5*var55 + j6*j6*var66;
 
-				const float j6 = yy_inter(y,x)*inv_d*inv_d*f_inv_y*(v_old[0] + yy_inter(y,x)*w_old[1] - xx_inter(y,x)*w_old[2])
-							   + inv_d*f_inv_y*(-v_old[2] + depth_inter(y,x)*w_old[1] - xx_inter(y,x)*w_old[0]);
+				const float error_m = j4*j4*var44 + j5*j5*var55 + j6*j6*var66;
 
-				weights(y,x) = sqrt(1.f/(j1*(j1*var11+j2*var12+j3*var13) + j2*(j1*var12+j2*var22+j3*var23)
-										+j3*(j1*var13+j2*var23+j3*var33) + j4*j4*var44 + j5*j5*var55 + j6*j6*var66));
+				
+				//					Compute linearization error
+				//-----------------------------------------------------------------------
+				const float ini_du = depth_old[image_level](v,u+1) - depth_old[image_level](v,u-1);
+				const float ini_dv = depth_old[image_level](v+1,u) - depth_old[image_level](v-1,u);
+				const float final_du = depth_warped[image_level](v,u+1) - depth_warped[image_level](v,u-1);
+				const float final_dv = depth_warped[image_level](v+1,u) - depth_warped[image_level](v-1,u);
 
-				A(cont,0) = weights(y,x)*(1.f + dxcomp*xx_inter(y,x)*inv_d + dycomp*yy_inter(y,x)*inv_d);
-				A(cont,1) = weights(y,x)*(-dxcomp);
-				A(cont,2) = weights(y,x)*(-dycomp);
-				A(cont,3) = weights(y,x)*(dxcomp*yy_inter(y,x) - dycomp*xx_inter(y,x));
-				A(cont,4) = weights(y,x)*(yy_inter(y,x) + dxcomp*inv_d*yy_inter(y,x)*xx_inter(y,x) + dycomp*(yy_inter(y,x)*yy_inter(y,x)*inv_d + depth_inter(y,x)));
-				A(cont,5) = weights(y,x)*(-xx_inter(y,x) - dxcomp*(xx_inter(y,x)*xx_inter(y,x)*inv_d + depth_inter(y,x)) - dycomp*inv_d*yy_inter(y,x)*xx_inter(y,x));
+				const float dut = ini_du - final_du;
+				const float dvt = ini_dv - final_dv;
+				const float duu = du(v,u+1) - du(v,u-1);
+				const float dvv = dv(v+1,u) - dv(v-1,u);
+				const float dvu = dv(v,u+1) - dv(v,u-1); //Completely equivalent to compute duv
 
-				B(cont,0) = weights(y,x)*(-dt(y,x));
+				const float error_l = kdt*square(dt(v,u)) + kduv*(square(du(v,u)) + square(dv(v,u))) + k2dt*(square(dut) + square(dvt))
+											+ k2duv*(square(duu) + square(dvv) + square(dvu));
+
+				//Weight
+				weights(v,u) = sqrt(1.f/(error_m + error_l));
+			}
+
+	//Normalize weights in the range [0,1]
+	const float inv_max = 1.f/weights.maximum();
+	weights = inv_max*weights;
+}
+
+void CDifodo::findNullPoints()
+{
+	null.resize(rows_i, cols_i);
+	null.assign(0);
+	num_valid_points = 0;
+
+	for (unsigned int u = 1; u < cols_i-1; u++)
+		for (unsigned int v = 1; v < rows_i-1; v++)
+		{
+			if (depth_inter[image_level](v,u) == 0.f)
+				null(v,u) = 1;
+			else
+			{
+				num_valid_points++;
+				null(v,u) = 0;
+			}
+		}
+}
+
+void CDifodo::solveOneLevel()
+{
+	MatrixXf A(num_valid_points,6);
+	MatrixXf B(num_valid_points,1);
+	unsigned int cont = 0;
+
+	//Fill the matrix A and the vector B
+	//The order of the unknowns is (vz, vx, vy, wz, wx, wy)
+	//The points order will be (1,1), (1,2)...(1,cols-1), (2,1), (2,2)...(row-1,cols-1).
+
+	const float f_inv_x = f_dist/x_incr;
+	const float f_inv_y = f_dist/y_incr;
+
+	for (unsigned int u = 1; u < cols_i-1; u++)
+		for (unsigned int v = 1; v < rows_i-1; v++)
+			if (null(v,u) == 0)
+			{
+				// Precomputed expressions
+				const float inv_d = 1.f/depth_inter[image_level](v,u);
+				const float dycomp = du(v,u)*f_inv_x*inv_d;
+				const float dzcomp = dv(v,u)*f_inv_y*inv_d;
+				const float tw = weights(v,u);
+
+				//Fill the matrix A
+				A(cont, 0) = tw*(1.f + dycomp*xx_inter[image_level](v,u)*inv_d + dzcomp*yy_inter[image_level](v,u)*inv_d);
+				A(cont, 1) = tw*(-dycomp);
+				A(cont, 2) = tw*(-dzcomp);
+				A(cont, 3) = tw*(dycomp*yy_inter[image_level](v,u) - dzcomp*xx_inter[image_level](v,u));
+				A(cont, 4) = tw*(yy_inter[image_level](v,u) + dycomp*inv_d*yy_inter[image_level](v,u)*xx_inter[image_level](v,u) + dzcomp*(yy_inter[image_level](v,u)*yy_inter[image_level](v,u)*inv_d + depth_inter[image_level](v,u)));
+				A(cont, 5) = tw*(-xx_inter[image_level](v,u) - dycomp*(xx_inter[image_level](v,u)*xx_inter[image_level](v,u)*inv_d + depth_inter[image_level](v,u)) - dzcomp*inv_d*yy_inter[image_level](v,u)*xx_inter[image_level](v,u));
+				B(cont,0) = tw*(-dt(v,u));
 
 				cont++;
 			}
-
-	//Solve the linear system of equations using a minimum least squares method
-	//MatrixXf atrans = A.transpose();
-	//MatrixXf a_ls = atrans*A;
-	//Var = a_ls.ldlt().solve(atrans*B);
-	//kai_solver = Var;
-
+	
+	//Solve the linear system of equations using weighted least squares
 	MatrixXf AtA, AtB;
 	AtA.multiply_AtA(A);
 	AtB.multiply_AtB(A,B);
-	Var = AtA.ldlt().solve(AtB);
-	kai_solver = Var;
+	MatrixXf Var = AtA.ldlt().solve(AtB);
 
-	//Covariance matrix calculation
-	MatrixXf residuals(num_valid_points,1);
-	residuals = A*Var - B;
-	est_cov = (1.0f/float(num_valid_points-6))*AtA.inverse()*residuals.squaredNorm();
+	//Covariance matrix calculation 
+	MatrixXf res(num_valid_points,1);
+	res = A*Var - B;
+	est_cov = (1.f/float(num_valid_points-6))*AtA.inverse()*res.squaredNorm();
 
+	kai_loc_level = Var;
 }
 
-
-void CDifodo::OdometryCalculation()
+void CDifodo::odometryCalculation()
 {
-	utils::CTicTac clock;
-	clock.Tic();
-	filterAndDownsample();
-	calculateCoord();
-	calculateDepthDerivatives();
-	findNullPoints();
-	findBorders();
-	findValidPoints();
-
-	if (num_valid_points > 6)	{solveDepthSystem();}
-	else						{kai_solver.assign(0.f);}
-
-	execution_time = 1000.f*clock.Tac();
-}
-
-
-void CDifodo::filterSpeedAndPoseUpdate()
-{
-	//-------------------------------------------------------------------------
-	//								Filter speed
-	//-------------------------------------------------------------------------
-
+	//Clock to measure the runtime
 	utils::CTicTac clock;
 	clock.Tic();
 
-	//				Calculate Eigenvalues and Eigenvectors
-	//----------------------------------------------------------------------------
+	//Build the gaussian pyramid
+	buildImagePyramid();
+
+	//Coarse-to-fines scheme
+    for (unsigned int i=0; i<ctf_levels; i++)
+    {
+		//Previous computations
+		transformations[i].setIdentity();
+
+		level = i;
+		unsigned int s = pow(2.f,int(ctf_levels-(i+1)));
+        cols_i = cols/s; rows_i = rows/s;
+        image_level = ctf_levels - i + round(log(float(width/cols))/log(2.f)) - 1;
+		x_incr = 2.f*f_dist*tan(0.5f*fovh)/(cols_i-1);
+		y_incr = 2.f*f_dist*tan(0.5f*fovv)/(rows_i-1);
+
+		//1. Perform warping
+		if (i == 0)
+		{
+			depth_warped[image_level] = depth[image_level];
+			xx_warped[image_level] = xx[image_level];
+			yy_warped[image_level] = yy[image_level];
+		}
+		else
+			performWarping();
+
+		//2. Calculate inter coords
+		calculateCoord();
+
+		//3. Find Null points
+		findNullPoints();
+
+		//4. Compute derivatives
+		calculateDepthDerivatives();
+
+		//5. Compute weights
+		computeWeights();
+
+		//6. Solve odometry
+		if (num_valid_points > 6)
+			solveOneLevel();
+
+		//7. Filter solution
+		filterLevelSolution();
+	}
+
+	//Update poses
+	poseUpdate();
+
+	//Save runtime
+	execution_time = 1000.f*clock.Tac();   
+}
+
+void CDifodo::filterLevelSolution()
+{
+	//		Calculate Eigenvalues and Eigenvectors
+	//----------------------------------------------------------
 	SelfAdjointEigenSolver<MatrixXf> eigensolver(est_cov);
-	if (eigensolver.info() != Success)
-	{
+	if (eigensolver.info() != Success) 
+	{ 
 		printf("Eigensolver couldn't find a solution. Pose is not updated");
 		return;
 	}
-
-	//First, we have to describe both the new linear and angular speeds in the "eigenvector" basis
+	
+	//First, we have to describe both the new linear and angular velocities in the "eigenvector" basis
 	//-------------------------------------------------------------------------------------------------
-	MatrixXf Bii, kai_b;
-	Bii.setSize(6,6); kai_b.setSize(6,1);
+	Matrix<float,6,6> Bii;
+	Matrix<float,6,1> kai_b;
 	Bii = eigensolver.eigenvectors();
+	kai_b = Bii.colPivHouseholderQr().solve(kai_loc_level);
 
-	kai_b = Bii.colPivHouseholderQr().solve(kai_solver);
-
-	//Second, we have to describe both the old linear and angular speeds in the "eigenvector" basis too
+	//Second, we have to describe both the old linear and angular velocities in the "eigenvector" basis
 	//-------------------------------------------------------------------------------------------------
-	math::CMatrixDouble33 inv_trans;
-	math::CMatrixFloat31 v_loc_old, w_loc_old;
+	CMatrixDouble33 inv_trans;
+	CMatrixFloat61 kai_loc_sub = kai_loc_old;
 
-	//Express them in the local reference frame first
-	cam_pose.getRotationMatrix(inv_trans);
-	v_loc_old = inv_trans.inverse().cast<float>()*kai_abs.topRows(3);
-	w_loc_old = inv_trans.inverse().cast<float>()*kai_abs.bottomRows(3);
+	//Important: we have to substract the previous levels' solutions from the old velocity.
+	Matrix4f acu_trans;
+	acu_trans.setIdentity();
+	for (unsigned int i=0; i<level; i++)
+		acu_trans = transformations[i]*acu_trans;
 
-	//Then transform that local representation to the "eigenvector" basis
-	MatrixXf kai_b_old;
-	kai_b_old.setSize(6,1);
-	math::CMatrixFloat61 kai_loc_old;
-	kai_loc_old.topRows<3>() = v_loc_old;
-	kai_loc_old.bottomRows<3>() = w_loc_old;
+	Matrix<float, 4, 4> log_trans = fps*acu_trans.log();
+	kai_loc_sub(0) -= log_trans(0,3); kai_loc_sub(1) -= log_trans(1,3); kai_loc_sub(2) -= log_trans(2,3);
+	kai_loc_sub(3) += log_trans(1,2); kai_loc_sub(4) -= log_trans(0,2); kai_loc_sub(5) += log_trans(0,1);
 
-	kai_b_old = Bii.colPivHouseholderQr().solve(kai_loc_old);
+	//Transform that local representation to the "eigenvector" basis
+	Matrix<float,6,1> kai_b_old;
+	kai_b_old = Bii.colPivHouseholderQr().solve(kai_loc_sub);
 
-	//Filter speed
-	MatrixXf kai_b_fil;
-	kai_b_fil.setSize(6,1);
+	//									Filter velocity
+	//--------------------------------------------------------------------------------
+	const float cf = previous_speed_eig_weight*expf(-int(level)), df = previous_speed_const_weight*expf(-int(level));
+	Matrix<float,6,1> kai_b_fil;
 	for (unsigned int i=0; i<6; i++)
-	{
-		kai_b_fil(i,0) = (kai_b(i,0) + (previous_speed_eig_weight*eigensolver.eigenvalues()(i,0) + previous_speed_const_weight)*kai_b_old(i,0))/(1.0 + previous_speed_eig_weight*eigensolver.eigenvalues()(i,0) + previous_speed_const_weight);
-	}
+		kai_b_fil(i) = (kai_b(i) + (cf*eigensolver.eigenvalues()(i,0) + df)*kai_b_old(i))/(1.f + cf*eigensolver.eigenvalues()(i) + df);
 
-	//Transform filtered speed to local and then absolute reference systems
-	MatrixXf kai_loc_fil;
-	math::CMatrixFloat31 v_abs_fil, w_abs_fil;
-	kai_loc_fil.setSize(6,1);
-	kai_loc_fil = Bii.inverse().colPivHouseholderQr().solve(kai_b_fil);
+	//Transform filtered velocity to the local reference frame 
+	CMatrixFloat61 kai_loc_fil = Bii.inverse().colPivHouseholderQr().solve(kai_b_fil);
+
+	//Compute the rigid transformation
+	Matrix<float,4,4> local_mat; local_mat.assign(0.f); 
+	local_mat(0,1) = -kai_loc_fil(5)/fps; local_mat(1,0) = kai_loc_fil(5)/fps;
+	local_mat(0,2) = kai_loc_fil(4)/fps; local_mat(2,0) = -kai_loc_fil(4)/fps;
+	local_mat(1,2) = -kai_loc_fil(3)/fps; local_mat(2,1) = kai_loc_fil(3)/fps;
+	local_mat(0,3) = kai_loc_fil(0)/fps;
+	local_mat(1,3) = kai_loc_fil(1)/fps;
+	local_mat(2,3) = kai_loc_fil(2)/fps;
+	transformations[level] = local_mat.exp();
+}
+
+void CDifodo::poseUpdate()
+{
+	//First, compute the overall transformation
+	//---------------------------------------------------
+	Matrix4f acu_trans;
+	acu_trans.setIdentity();
+	for (unsigned int i=1; i<=ctf_levels; i++)
+		acu_trans = transformations[i-1]*acu_trans;
+
+
+	//Compute the new estimates in the local and absolutes reference frames
+	//---------------------------------------------------------------------
+	Matrix<float, 4, 4> log_trans = fps*acu_trans.log();
+	kai_loc(0) = log_trans(0,3); kai_loc(1) = log_trans(1,3); kai_loc(2) = log_trans(2,3);
+	kai_loc(3) = -log_trans(1,2); kai_loc(4) = log_trans(0,2); kai_loc(5) = -log_trans(0,1);
+
+	CMatrixDouble33 inv_trans;
+	CMatrixFloat31 v_abs, w_abs;
 
 	cam_pose.getRotationMatrix(inv_trans);
-	v_abs_fil = inv_trans.cast<float>()*kai_loc_fil.topRows(3);
-	w_abs_fil = inv_trans.cast<float>()*kai_loc_fil.bottomRows(3);
+	v_abs = inv_trans.cast<float>()*kai_loc.topRows(3);
+	w_abs = inv_trans.cast<float>()*kai_loc.bottomRows(3);
+	kai_abs.topRows<3>() = v_abs;
+	kai_abs.bottomRows<3>() = w_abs;	
 
-	kai_abs.topRows<3>() = v_abs_fil;
-	kai_abs.bottomRows<3>() = w_abs_fil;
 
-
-	//-------------------------------------------------------------------------
-	//							Update pose (DIFODO)
-	//-------------------------------------------------------------------------
-
+	//						Update poses
+	//-------------------------------------------------------	
 	cam_oldpose = cam_pose;
+	math::CMatrixDouble44 aux_acu = acu_trans;
+	CPose3D pose_aux(aux_acu);
+	cam_pose = cam_pose + pose_aux;
 
-	double yaw,pitch,roll;
-	math::CMatrixDouble31 w_euler_d;
 
-	cam_pose.getYawPitchRoll(yaw,pitch,roll);
-	w_euler_d(0,0) = kai_loc_fil(4,0)*sin(roll)/cos(pitch) + kai_loc_fil(5,0)*cos(roll)/cos(pitch);
-	w_euler_d(1,0) = kai_loc_fil(4,0)*cos(roll) - kai_loc_fil(5,0)*sin(roll);
-	w_euler_d(2,0) = kai_loc_fil(3,0) + kai_loc_fil(4,0)*sin(roll)*tan(pitch) + kai_loc_fil(5,0)*cos(roll)*tan(pitch);
-
-	//Update pose
-	cam_pose.x_incr(v_abs_fil(0,0)/fps);
-	cam_pose.y_incr(v_abs_fil(1,0)/fps);
-	cam_pose.y_incr(v_abs_fil(2,0)/fps);
-	cam_pose.setYawPitchRoll(yaw + w_euler_d(0,0)/fps, pitch + w_euler_d(1,0)/fps, roll + w_euler_d(2,0)/fps);
-
-	execution_time += 1000*clock.Tac();
+	//Compute the velocity estimate in the new ref frame (to be used by the filter in the next iteration)
+	//---------------------------------------------------------------------------------------------------
+	cam_pose.getRotationMatrix(inv_trans);
+	kai_loc_old.topRows<3>() = inv_trans.inverse().cast<float>()*kai_abs.topRows(3);
+	kai_loc_old.bottomRows<3>() = inv_trans.inverse().cast<float>()*kai_abs.bottomRows(3);
 }
-
-
-void CDifodo::setCameraFocalLenght(float new_f)
-{
-	const unsigned int resh = 640/(cam_mode*downsample);
-	const unsigned int resv = 480/(cam_mode*downsample);
-
-	f_dist = new_f;
-	x_incr = 2.0*f_dist*(floor(float(resh)/float(cols))*cols/float(resh))*tan(0.5*fovh)/(cols-1);
-	y_incr = 2.0*f_dist*(floor(float(resv)/float(rows))*rows/float(resv))*tan(0.5*fovv)/(rows-1);
-}
-
-
-void CDifodo::setNumberOfRowsAndCols(unsigned int num_rows, unsigned int num_cols)
-{
-	rows = num_rows;
-	cols = num_cols;
-
-	const unsigned int resh = 640/(cam_mode*downsample);
-	const unsigned int resv = 480/(cam_mode*downsample);
-
-	depth.setSize(rows,cols);
-	depth_old.setSize(rows,cols);
-	depth_inter.setSize(rows,cols);
-
-	du.setSize(rows,cols);
-	dv.setSize(rows,cols);
-	dt.setSize(rows,cols);
-	xx.setSize(rows,cols);
-	xx_inter.setSize(rows,cols);
-	xx_old.setSize(rows,cols);
-	yy.setSize(rows,cols);
-	yy_inter.setSize(rows,cols);
-	yy_old.setSize(rows,cols);
-
-	border.setSize(rows,cols);
-	border.assign(0);
-	null.setSize(rows,cols);
-	null.assign(0);
-
-	x_incr = 2.0*f_dist*(floor(float(resh)/float(cols))*cols/float(resh))*tan(0.5*fovh)/(cols-1);	//In meters
-	y_incr = 2.0*f_dist*(floor(float(resv)/float(rows))*rows/float(resv))*tan(0.5*fovv)/(rows-1);	//In meters																				//In Hz
-
-	//Depth thresholds
-	const int dy = floor(float(resv)/float(rows));
-	const int dx = floor(float(resh)/float(cols));
-
-	duv_threshold = 0.001*(dx + dy)*(cam_mode*downsample);
-	dt_threshold = 0.2*fps;
-	dif_threshold = 0.001*(dx + dy)*(cam_mode*downsample);
-	difuv_surroundings = 0.005*(dx + dy)*(cam_mode*downsample);
-	dift_surroundings = 0.01*fps*(dx + dy)*(cam_mode*downsample);
-}
-
 
 void CDifodo::setFOV(float new_fovh, float new_fovv)
 {
 	fovh = M_PI*new_fovh/180.0;
 	fovv = M_PI*new_fovv/180.0;
-	const unsigned int resh = 640/(cam_mode*downsample);
-	const unsigned int resv = 480/(cam_mode*downsample);
-
-	x_incr = 2.0*f_dist*(floor(float(resh)/float(cols))*cols/float(resh))*tan(0.5*fovh)/(cols-1);	//In meters
-	y_incr = 2.0*f_dist*(floor(float(resv)/float(rows))*rows/float(resv))*tan(0.5*fovv)/(rows-1);	//In meters
 }
-
 
 void CDifodo::getPointsCoord(MatrixXf &x, MatrixXf &y, MatrixXf &z)
 {
@@ -617,11 +744,10 @@ void CDifodo::getPointsCoord(MatrixXf &x, MatrixXf &y, MatrixXf &z)
 	y.resize(rows,cols);
 	z.resize(rows,cols);
 
-	z = depth_inter;
-	x = xx_inter;
-	y = yy_inter;
+	z = depth_inter[0];
+	x = xx_inter[0];
+	y = yy_inter[0];
 }
-
 
 void CDifodo::getDepthDerivatives(MatrixXf &cur_du, MatrixXf &cur_dv, MatrixXf &cur_dt)
 {
@@ -634,23 +760,10 @@ void CDifodo::getDepthDerivatives(MatrixXf &cur_du, MatrixXf &cur_dv, MatrixXf &
 	cur_dt = dt;
 }
 
-
 void CDifodo::getWeights(MatrixXf &w)
 {
 	w.resize(rows,cols);
 	w = weights;
 }
 
-
-void CDifodo::bordersThresholdToDefault()
-{
-	const int dy = floor(float(480/(cam_mode*downsample))/float(rows));
-	const int dx = floor(float(640/(cam_mode*downsample))/float(cols));
-
-	duv_threshold = 0.001*(dx + dy)*(cam_mode*downsample);
-	dt_threshold = 0.2*fps;
-	dif_threshold = 0.001*(dx + dy)*(cam_mode*downsample);
-	difuv_surroundings = 0.005*(dx + dy)*(cam_mode*downsample);
-	dift_surroundings = 0.01*fps*(dx + dy)*(cam_mode*downsample);
-}
 
