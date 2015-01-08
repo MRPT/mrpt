@@ -24,6 +24,15 @@ define_mrpt_lib(
 	)
 
 IF(BUILD_mrpt-tfest) 
+	# Declare "meta-lib" for backwards compatibility:
+	define_mrpt_metalib(
+		# Lib name
+		scanmatching
+		# Deps:
+		mrpt-tfest
+		# Deps of the deps:
+		mrpt-base
+		)
 
 ENDIF(BUILD_mrpt-tfest) 
 

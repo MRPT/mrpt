@@ -178,7 +178,8 @@ void mrpt::scanmatching::robustRigidTransformation(
 	params.verbose = verbose;
 
 	mrpt::tfest::TSE2RobustResult results;
-	const bool ret = mrpt::tfest::se2_l2_robust(in_correspondences,normalizationStd,params,results);
+	//const bool ret = 
+	mrpt::tfest::se2_l2_robust(in_correspondences,normalizationStd,params,results);
 
 	out_transformation = results.transformation;
 	if (out_largestSubSet) *out_largestSubSet = results.largestSubSet;
