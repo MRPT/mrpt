@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -38,7 +38,7 @@ namespace mrpt
 			  * \param out_log_lik The output, a log-likelihood.
 			  * \return NULL (empty smart pointer), or a PDF of the estimated translation between the two areas (can be a multi-modal PDF).
 			  */
-			CPose3DPDFPtr computeTopologicalObservationModel(
+			mrpt::poses::CPose3DPDFPtr computeTopologicalObservationModel(
 				const THypothesisID		&hypID,
 				const CHMHMapNodePtr	&currentArea,
 				const CHMHMapNodePtr	&refArea,
@@ -50,7 +50,7 @@ namespace mrpt
 			  */
 			void OnNewPose(
 				const TPoseID 			&poseID,
-				const CSensoryFrame		*SF );
+				const mrpt::obs::CSensoryFrame		*SF );
 
 
 			/** Options for a TLC-detector of type FabMap, used from CHMTSLAM 
@@ -69,7 +69,7 @@ namespace mrpt
 
 				/** This method must display clearly all the contents of the structure in textual form, sending it to a CStream.
 				  */
-				void  dumpToTextStream(CStream	&out) const;
+				void  dumpToTextStream(mrpt::utils::CStream	&out) const;
 
 				std::string		vocab_path,vocabName;
 				double			p_obs_given_exists, p_at_new_place, df_lik_smooth;

@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -113,7 +113,7 @@ void  CPointCloudColoured::render_subset(const bool all, const std::vector<size_
    Implements the writing to a CStream capability of
      CSerializable objects
   ---------------------------------------------------------------*/
-void  CPointCloudColoured::writeToStream(CStream &out,int *version) const
+void  CPointCloudColoured::writeToStream(mrpt::utils::CStream &out,int *version) const
 {
 
 	if (version)
@@ -131,7 +131,7 @@ void  CPointCloudColoured::writeToStream(CStream &out,int *version) const
 	Implements the reading from a CStream capability of
 		CSerializable objects
   ---------------------------------------------------------------*/
-void  CPointCloudColoured::readFromStream(CStream &in,int version)
+void  CPointCloudColoured::readFromStream(mrpt::utils::CStream &in,int version)
 {
 	switch(version)
 	{
@@ -164,14 +164,14 @@ void  CPointCloudColoured::readFromStream(CStream &in,int version)
 	markAllPointsAsNew();
 }
 
-CStream& mrpt::opengl::operator >> (CStream& in,  CPointCloudColoured::TPointColour &o)
+CStream& mrpt::opengl::operator >> (mrpt::utils::CStream& in,  CPointCloudColoured::TPointColour &o)
 {
 	in >> o.x >> o.y >> o.z >> o.R >> o.G >> o.B;
 	return in;
 }
 
 
-CStream& mrpt::opengl::operator << (CStream& out, const CPointCloudColoured::TPointColour &o)
+CStream& mrpt::opengl::operator << (mrpt::utils::CStream& out, const CPointCloudColoured::TPointColour &o)
 {
 	out << o.x << o.y << o.z << o.R << o.G << o.B;
 	return out;

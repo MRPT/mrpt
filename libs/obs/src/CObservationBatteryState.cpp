@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -11,16 +11,16 @@
 
 
 #include <mrpt/utils/CStream.h>
-#include <mrpt/slam/CObservationBatteryState.h>
+#include <mrpt/obs/CObservationBatteryState.h>
 #include <mrpt/system/os.h>
 
-using namespace mrpt::slam;
+using namespace mrpt::obs;
 using namespace mrpt::utils;
 using namespace mrpt::poses;
-
+using namespace mrpt::math;
 
 // This must be added to any CSerializable class implementation file.
-IMPLEMENTS_SERIALIZABLE(CObservationBatteryState, CObservation,mrpt::slam)
+IMPLEMENTS_SERIALIZABLE(CObservationBatteryState, CObservation,mrpt::obs)
 
 /** Constructor
  */
@@ -37,7 +37,7 @@ CObservationBatteryState::CObservationBatteryState( ) :
 /*---------------------------------------------------------------
   Implements the writing to a CStream capability of CSerializable objects
  ---------------------------------------------------------------*/
-void  CObservationBatteryState::writeToStream(CStream &out, int *version) const
+void  CObservationBatteryState::writeToStream(mrpt::utils::CStream &out, int *version) const
 {
 	MRPT_UNUSED_PARAM(out);
 	if (version)
@@ -59,7 +59,7 @@ void  CObservationBatteryState::writeToStream(CStream &out, int *version) const
 /*---------------------------------------------------------------
   Implements the reading from a CStream capability of CSerializable objects
  ---------------------------------------------------------------*/
-void  CObservationBatteryState::readFromStream(CStream &in, int version)
+void  CObservationBatteryState::readFromStream(mrpt::utils::CStream &in, int version)
 {
 	MRPT_UNUSED_PARAM(in);
 	switch(version)
@@ -89,3 +89,35 @@ void  CObservationBatteryState::readFromStream(CStream &in, int version)
 
 }
 
+// See base class docs
+void CObservationBatteryState::getSensorPose( CPose3D &out_sensorPose ) const { 
+	out_sensorPose=CPose3D(0,0,0); 
+}
+		
+// See base class docs
+void CObservationBatteryState::setSensorPose( const CPose3D &newSensorPose ) {
+	MRPT_UNUSED_PARAM(newSensorPose);
+}
+
+void CObservationBatteryState::getDescriptionAsText(std::ostream &o) const
+{
+	CObservation::getDescriptionAsText(o);
+
+	o << format("Measured VoltageMainRobotBattery: %.02fV  isValid= %s \n",
+		voltageMainRobotBattery,
+		(voltageMainRobotBatteryIsValid == true)? "True":"False" );
+
+	o << format("Measured VoltageMainRobotComputer: %.02fV  isValid= %s \n",
+		voltageMainRobotComputer,
+		(voltageMainRobotComputerIsValid == true)? "True":"False" );
+
+	o << "VoltageOtherBatteries: \n";
+	for(CVectorDouble::Index i=0; i<voltageOtherBatteries.size(); i++)
+	{
+		o << format("Index: %d --> %.02fV  isValid= %s \n",
+		int(i),
+		voltageOtherBatteries[i],
+		(voltageOtherBatteriesValid[i] == true)? "True":"False" );
+	}
+
+}

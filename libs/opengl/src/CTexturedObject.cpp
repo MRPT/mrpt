@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -460,7 +460,7 @@ void CTexturedObject::unloadTexture()
    Implements the writing to a CStream capability of
      CSerializable objects
   ---------------------------------------------------------------*/
-void  CTexturedObject::writeToStreamTexturedObject(CStream &out) const
+void  CTexturedObject::writeToStreamTexturedObject(mrpt::utils::CStream &out) const
 {
 	uint8_t ver = 0;
 
@@ -538,7 +538,7 @@ void  CTexturedObject::render_post() const
 	Implements the reading from a CStream capability of
 		CSerializable objects
   ---------------------------------------------------------------*/
-void  CTexturedObject::readFromStreamTexturedObject(CStream &in)
+void  CTexturedObject::readFromStreamTexturedObject(mrpt::utils::CStream &in)
 {
 	uint8_t version;
 	in >> version;

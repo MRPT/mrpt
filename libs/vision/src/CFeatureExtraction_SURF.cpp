@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -19,6 +19,7 @@
 using namespace mrpt;
 using namespace mrpt::vision;
 using namespace mrpt::system;
+using namespace mrpt::utils;
 using namespace std;
 
 
@@ -26,63 +27,70 @@ using namespace std;
 *								extractFeaturesSURF  									        *
 ************************************************************************************************/
 void  CFeatureExtraction::extractFeaturesSURF(
-		const mrpt::utils::CImage		&inImg,
-		CFeatureList			&feats,
-		unsigned int			init_ID,
-		unsigned int			nDesiredFeatures,
-		const TImageROI			&ROI) const
+	const mrpt::utils::CImage		&inImg,
+	CFeatureList			&feats,
+	unsigned int			init_ID,
+	unsigned int			nDesiredFeatures,
+	const TImageROI			&ROI) const
 {
-	MRPT_UNUSED_PARAM(ROI);
-#if MRPT_HAS_OPENCV && MRPT_OPENCV_VERSION_NUM >= 0x111
+#if MRPT_HAS_OPENCV && MRPT_OPENCV_VERSION_NUM >= 0x240
+	using namespace cv;
 
 	const CImage img_grayscale(inImg, FAST_REF_OR_CONVERT_TO_GRAY);
-	const IplImage* cGrey = img_grayscale.getAs<IplImage>();
+	const Mat img = cvarrToMat( img_grayscale.getAs<IplImage>() );
 
-	CvSeq *kp	=	NULL;
-	CvSeq *desc	=	NULL;
-	CvMemStorage *storage = cvCreateMemStorage(0);
+	vector<KeyPoint> cv_feats; // OpenCV keypoint output vector
+	Mat              cv_descs; // OpenCV descriptor output
 
-	// Extract the SURF points:
-	CvSURFParams surf_params = cvSURFParams(options.SURFOptions.hessianThreshold, options.SURFOptions.rotation_invariant ? 1:0);
-	surf_params.nOctaves = options.SURFOptions.nOctaves;
-	surf_params.nOctaveLayers = options.SURFOptions.nLayersPerOctave;
 
-	cvExtractSURF( cGrey, NULL, &kp, &desc, storage, surf_params);
+	Ptr<Feature2D> surf = Algorithm::create<Feature2D>("Feature2D.SURF");
+	if( surf.empty() )
+		CV_Error(CV_StsNotImplemented, "OpenCV was built without SURF support");
+
+	surf->set("hessianThreshold", options.SURFOptions.hessianThreshold);
+	surf->set("nOctaves", options.SURFOptions.nOctaves);
+	surf->set("nOctaveLayers", options.SURFOptions.nLayersPerOctave);
+	//surf->set("upright", params.upright != 0);
+	surf->set("extended", options.SURFOptions.rotation_invariant);
+
+#	if MRPT_OPENCV_VERSION_NUM < 0x300
+	surf->operator()(img, Mat(), cv_feats, cv_descs);
+#else
+	surf->detectAndCompute(img, Mat(), cv_feats, cv_descs);
+#endif
 
 	// -----------------------------------------------------------------
 	// MRPT Wrapping
 	// -----------------------------------------------------------------
 	feats.clear();
 	unsigned int	nCFeats		= init_ID;
-	int				limit;
 	int				offset		= (int)this->options.patchSize/2 + 1;
 	unsigned int	imgH		= inImg.getHeight();
 	unsigned int	imgW		= inImg.getWidth();
 
-	if( nDesiredFeatures == 0 )
-		limit = kp->total;
-	else
-		limit = (int)nDesiredFeatures < kp->total ? (int)nDesiredFeatures : kp->total;
-
-	for( int i = 0; i < limit; i++ )
+	const size_t n_feats = (nDesiredFeatures== 0) ? 
+		cv_feats.size()
+		:
+		std::min((size_t)nDesiredFeatures, cv_feats.size());
+	
+	for(size_t i = 0; i < n_feats; i++ )
 	{
 		// Get the OpenCV SURF point
-		CvSURFPoint *point;
 		CFeaturePtr ft = CFeature::Create();
-		point = (CvSURFPoint*)cvGetSeqElem( kp, i );
+		const KeyPoint &point = cv_feats[i];
 
-		const int xBorderInf = (int)floor( point->pt.x - options.patchSize/2 );
-		const int xBorderSup = (int)floor( point->pt.x + options.patchSize/2 );
-		const int yBorderInf = (int)floor( point->pt.y - options.patchSize/2 );
-		const int yBorderSup = (int)floor( point->pt.y + options.patchSize/2 );
+		const int xBorderInf = (int)floor( point.pt.x - options.patchSize/2 );
+		const int xBorderSup = (int)floor( point.pt.x + options.patchSize/2 );
+		const int yBorderInf = (int)floor( point.pt.y - options.patchSize/2 );
+		const int yBorderSup = (int)floor( point.pt.y + options.patchSize/2 );
 
 		if( options.patchSize == 0 || ( (xBorderSup < (int)imgW) && (xBorderInf > 0) && (yBorderSup < (int)imgH) && (yBorderInf > 0) ) )
 		{
 			ft->type		= featSURF;
-			ft->x			= point->pt.x;				// X position
-			ft->y			= point->pt.y;				// Y position
-			ft->orientation = point->dir;				// Orientation
-			ft->scale		= point->size*1.2/9;		// Scale
+			ft->x			= point.pt.x;				// X position
+			ft->y			= point.pt.y;				// Y position
+			ft->orientation = point.angle;				// Orientation
+			ft->scale		= point.size*1.2/9;		// Scale
 			ft->ID			= nCFeats++;				// Feature ID into extraction
 			ft->patchSize	= options.patchSize;		// The size of the feature patch
 
@@ -97,20 +105,14 @@ void  CFeatureExtraction::extractFeaturesSURF(
 			}
 
 			// Get the SURF descriptor
-			float* d = (float*)cvGetSeqElem( desc, i );
-			ft->descriptors.SURF.resize( options.SURFOptions.rotation_invariant ? 128 : 64 );
-			std::vector<float>::iterator itDesc;
-			unsigned int k;
-
-			for( k = 0, itDesc = ft->descriptors.SURF.begin(); k < ft->descriptors.SURF.size(); k++, itDesc++ )
-				*itDesc = d[k];
+			ft->descriptors.SURF.resize( cv_descs.cols );
+			for( int m = 0; m < cv_descs.cols; ++m )
+				ft->descriptors.SURF[m] = cv_descs.at<float>(i,m);
 
 			feats.push_back( ft );
 
 		} // end if
 	} // end for
-
-	cvReleaseMemStorage(&storage); // Free memory
 
 #else
 	THROW_EXCEPTION("Method not available since either MRPT has been compiled without OpenCV or OpenCV version is incorrect (Required 1.1.0)")
@@ -125,40 +127,38 @@ void  CFeatureExtraction::internal_computeSurfDescriptors(
 	const mrpt::utils::CImage	&inImg,
 	CFeatureList		&in_features) const
 {
-#if MRPT_HAS_OPENCV && MRPT_OPENCV_VERSION_NUM >= 0x111
+#if MRPT_HAS_OPENCV && MRPT_OPENCV_VERSION_NUM >= 0x240
+	using namespace cv;
 
 	if (in_features.empty()) return;
 
 	const CImage img_grayscale(inImg, FAST_REF_OR_CONVERT_TO_GRAY);
-	const IplImage* cGrey = img_grayscale.getAs<IplImage>();
+	const Mat img = cvarrToMat( img_grayscale.getAs<IplImage>() );
 
-	CvMemStorage *storage = cvCreateMemStorage(0);
+	vector<KeyPoint> cv_feats; // OpenCV keypoint output vector
+	Mat              cv_descs; // OpenCV descriptor output
 
 	// Fill in the desired key-points:
-	CvSeq *kp	=  cvCreateSeq( 0, sizeof(CvSeq), sizeof(CvSURFPoint), storage );
-	for (CFeatureList::iterator	itList=in_features.begin();itList!=in_features.end();++itList)
+	cv_feats.resize(in_features.size());
+	for (size_t i=0;i<in_features.size();++i)
 	{
-		CvSURFPoint point = cvSURFPoint(
-			cvPoint2D32f((*itList)->x,(*itList)->y),
-			0,  // Laplacian
-			16  //sizes[layer]
-			);
-
-		cvSeqPush( kp, &point );
+		cv_feats[i].pt.x = in_features[i]->x;
+		cv_feats[i].pt.y = in_features[i]->y;
+		cv_feats[i].size = 16;  //sizes[layer];
 	}
-
-
-	CvSeq *desc	=  NULL;
-
+	
 	// Only computes the descriptors:
-	// Extract the SURF points:
-	CvSURFParams surf_params = cvSURFParams(options.SURFOptions.hessianThreshold, options.SURFOptions.rotation_invariant ? 1:0);
-	surf_params.nOctaves = options.SURFOptions.nOctaves;
-	surf_params.nOctaveLayers = options.SURFOptions.nLayersPerOctave;
+	Ptr<Feature2D> surf = Algorithm::create<Feature2D>("Feature2D.SURF");
+	if( surf.empty() )
+		CV_Error(CV_StsNotImplemented, "OpenCV was built without SURF support");
+	surf->set("hessianThreshold", options.SURFOptions.hessianThreshold);
+	surf->set("nOctaves", options.SURFOptions.nOctaves);
+	surf->set("nOctaveLayers", options.SURFOptions.nLayersPerOctave);
+	//surf->set("upright", params.upright != 0);
+	surf->set("extended", options.SURFOptions.rotation_invariant);
 
-	cvExtractSURF( cGrey, NULL, &kp, &desc, storage, surf_params, 1 /* Use precomputed key-points */ );
-	// *** HAVE YOU HAD A COMPILER ERROR NEAR THIS LINE?? : You need OpenCV >=1.1.0, final release or a SVN version ***
-
+	surf->compute(img, cv_feats, cv_descs);
+	
 	// -----------------------------------------------------------------
 	// MRPT Wrapping
 	// -----------------------------------------------------------------
@@ -168,24 +168,16 @@ void  CFeatureExtraction::internal_computeSurfDescriptors(
 	{
 		// Get the OpenCV SURF point
 		CFeaturePtr ft = *itList;
+		const KeyPoint &point = cv_feats[i];
 
-		CvSURFPoint *point = (CvSURFPoint*)cvGetSeqElem( kp, i );
-
-		ft->orientation = point->dir;				// Orientation
-		ft->scale		= point->size*1.2/9;		// Scale
+		ft->orientation = point.angle;				// Orientation
+		ft->scale		= point.size*1.2/9;		// Scale
 
 		// Get the SURF descriptor
-		float* d = (float*)cvGetSeqElem( desc, i );
-		ft->descriptors.SURF.resize( options.SURFOptions.rotation_invariant ? 128 : 64 );
-		std::vector<float>::iterator itDesc;
-		unsigned int k;
-		for( k = 0, itDesc = ft->descriptors.SURF.begin(); k < ft->descriptors.SURF.size(); k++, itDesc++ )
-			*itDesc = d[k];
-
+		ft->descriptors.SURF.resize( cv_descs.cols );
+		for( int m = 0; m < cv_descs.cols; ++m )
+			ft->descriptors.SURF[m] = cv_descs.at<float>(i,m);		// Get the SURF descriptor
 	} // end for
-
-
-	cvReleaseMemStorage(&storage); // Free memory
 
 #else
 			THROW_EXCEPTION("Method not available since either MRPT has been compiled without OpenCV or OpenCV version is incorrect (Required 1.1.0)")

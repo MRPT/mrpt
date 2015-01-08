@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -19,11 +19,11 @@
 
 #include <mrpt/hwdrivers/CKinect.h>
 #include <mrpt/gui.h>
-#include <mrpt/slam/CColouredPointsMap.h>
+#include <mrpt/maps/CColouredPointsMap.h>
 #include <mrpt/synch/CThreadSafeVariable.h>
 #include <mrpt/utils/CTimeLogger.h>
 #include <mrpt/utils/CFileGZInputStream.h>
-#include <mrpt/slam/CRawlog.h>
+#include <mrpt/obs/CRawlog.h>
 #include <mrpt/opengl/CPointCloudColoured.h>
 #include <mrpt/opengl/CPlanarLaserScan.h>
 #include <mrpt/opengl/CFrustum.h>
@@ -39,7 +39,7 @@
 using namespace mrpt;
 using namespace mrpt::hwdrivers;
 using namespace mrpt::gui;
-using namespace mrpt::slam;
+using namespace mrpt::obs;
 using namespace mrpt::utils;
 using namespace std;
 
@@ -264,11 +264,11 @@ void Test_KinectOnlineOffline(bool is_online, const string &rawlog_file = string
 		// Create an extra opengl viewport for the RGB image:
 		viewInt = scene->createViewport("view2d_int");
 		viewInt->setViewportPosition(5, 30, VW_WIDTH,VW_HEIGHT );
-		win3D.addTextMessage(10, 30+VW_HEIGHT+10,"Intensity data",TColorf(1,1,1), 2, MRPT_GLUT_BITMAP_HELVETICA_12 );
+		win3D.addTextMessage(10, 30+VW_HEIGHT+10,"Intensity data",TColorf(1,1,1), 2, mrpt::opengl::MRPT_GLUT_BITMAP_HELVETICA_12 );
 
 		win3D.addTextMessage(5,5,
 			format("'o'/'i'-zoom out/in, ESC: quit"),
-				TColorf(0,0,1), 110, MRPT_GLUT_BITMAP_HELVETICA_18 );
+				TColorf(0,0,1), 110, mrpt::opengl::MRPT_GLUT_BITMAP_HELVETICA_18 );
 
 
 		win3D.unlockAccess3DScene();

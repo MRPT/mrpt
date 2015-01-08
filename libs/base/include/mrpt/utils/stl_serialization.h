@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -28,7 +28,7 @@ namespace mrpt
 		#define MRPTSTL_SERIALIZABLE_SEQ_CONTAINER( CONTAINER )  \
 			/** Template method to serialize a sequential STL container  */ \
 			template <class T,class _Ax> \
-			CStream& operator << (CStream& out, const CONTAINER<T,_Ax> &obj) \
+			CStream& operator << (mrpt::utils::CStream& out, const CONTAINER<T,_Ax> &obj) \
 			{ \
 				out << std::string(#CONTAINER) << mrpt::utils::TTypeName<T>::get(); \
 				out << static_cast<uint32_t>(obj.size()); \
@@ -37,7 +37,7 @@ namespace mrpt
 			} \
 			/** Template method to deserialize a sequential STL container */ \
 			template <class T,class _Ax>  \
-			CStream& operator >> (CStream& in, CONTAINER<T,_Ax> &obj) \
+			CStream& operator >> (mrpt::utils::CStream& in, CONTAINER<T,_Ax> &obj) \
 			{ \
 				obj.clear(); \
 				std::string pref,stored_T; \
@@ -56,7 +56,7 @@ namespace mrpt
 		#define MRPTSTL_SERIALIZABLE_ASSOC_CONTAINER( CONTAINER )  \
 			/** Template method to serialize an associative STL container  */ \
 			template <class K,class V, class _Pr, class _Alloc> \
-			CStream& operator << (CStream& out, const CONTAINER<K,V,_Pr,_Alloc> &obj) \
+			CStream& operator << (mrpt::utils::CStream& out, const CONTAINER<K,V,_Pr,_Alloc> &obj) \
 			{ \
 				out << std::string(#CONTAINER) << TTypeName<K>::get() << TTypeName<V>::get(); \
 				out << static_cast<uint32_t>(obj.size()); \
@@ -66,7 +66,7 @@ namespace mrpt
 			} \
 			/** Template method to deserialize an associative STL container */ \
 			template <class K,class V, class _Pr, class _Alloc>  \
-			CStream& operator >> (CStream& in, CONTAINER<K,V,_Pr,_Alloc> &obj) \
+			CStream& operator >> (mrpt::utils::CStream& in, CONTAINER<K,V,_Pr,_Alloc> &obj) \
 			{ \
 				obj.clear(); \
 				std::string pref,stored_K,stored_V; \
@@ -100,7 +100,7 @@ namespace mrpt
 		#define MRPTSTL_SERIALIZABLE_SIMPLE_ASSOC_CONTAINER( CONTAINER )  \
 			/** Template method to serialize an associative STL container  */ \
 			template <class K,class _Pr,class _Alloc> \
-			CStream& operator << (CStream& out, const CONTAINER<K,_Pr,_Alloc> &obj) \
+			CStream& operator << (mrpt::utils::CStream& out, const CONTAINER<K,_Pr,_Alloc> &obj) \
 			{ \
 				out << std::string(#CONTAINER) << TTypeName<K>::get(); \
 				out << static_cast<uint32_t>(obj.size()); \
@@ -110,7 +110,7 @@ namespace mrpt
 			} \
 			/** Template method to deserialize an associative STL container */ \
 			template <class K,class _Pr,class _Alloc>  \
-			CStream& operator >> (CStream& in, CONTAINER<K,_Pr,_Alloc> &obj) \
+			CStream& operator >> (mrpt::utils::CStream& in, CONTAINER<K,_Pr,_Alloc> &obj) \
 			{ \
 				obj.clear(); \
 				std::string pref,stored_K; \
@@ -135,7 +135,7 @@ namespace mrpt
 
 		/** Template method to serialize a STL pair */
 		template <class T1,class T2>
-		CStream& operator << (CStream& out, const std::pair<T1,T2> &obj)
+		CStream& operator << (mrpt::utils::CStream& out, const std::pair<T1,T2> &obj)
 		{
 			out << std::string("std::pair") << TTypeName<T1>::get() << TTypeName<T2>::get();
 			out << obj.first << obj.second;
@@ -143,7 +143,7 @@ namespace mrpt
 		}
 		/** Template method to deserialize a STL pair */
 		template <class T1,class T2>
-		CStream& operator >> (CStream& in, std::pair<T1,T2> &obj)
+		CStream& operator >> (mrpt::utils::CStream& in, std::pair<T1,T2> &obj)
 		{
 			std::string pref,stored_K,stored_V;
 			in >> pref;

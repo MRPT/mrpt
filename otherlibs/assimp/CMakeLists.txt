@@ -137,7 +137,7 @@ SET ( ASSIMP_NO_EXPORT OFF CACHE BOOL
 # Search for zlib
 find_package(ZLIB)
 if( NOT ZLIB_FOUND )
-  message(STATUS "compiling zlib from souces")
+  message(STATUS "compiling zlib from sources")
   include(CheckIncludeFile)
   include(CheckTypeSize)
   include(CheckFunctionExists)

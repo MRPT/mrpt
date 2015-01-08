@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -28,7 +28,7 @@ namespace mrpt
 		  *
 		  *    bool POOLABLE_DATA::isSuitable(const POOLABLE_DATA & req) const { ... }
 		  *
-		  *   For an example of how to handle a memory pool, see the class mrpt::slam::CObservation3DRangeScan
+		  *   For an example of how to handle a memory pool, see the class mrpt::obs::CObservation3DRangeScan
 		  *
 		  *  \tparam POOLABLE_DATA A struct with user-defined objects which actually contain the memory blocks (e.g. one or more std::vector).
 		  *  \tparam DATA_PARAMS A struct with user information about each memory block (e.g. size of a std::vector)

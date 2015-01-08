@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -22,7 +22,7 @@
 
 using namespace std;
 using namespace mrpt;
-using namespace mrpt::slam;
+using namespace mrpt::obs;
 using namespace mrpt::hwdrivers;
 
 /*-------------------------------------------------------------
@@ -165,7 +165,7 @@ CStereoGrabber_SVS::~CStereoGrabber_SVS()
 /*-------------------------------------------------------------
 					get the image
  -------------------------------------------------------------*/
-bool  CStereoGrabber_SVS::getStereoObservation( mrpt::slam::CObservationStereoImages &out_observation )
+bool  CStereoGrabber_SVS::getStereoObservation( mrpt::obs::CObservationStereoImages &out_observation )
 {
 #if MRPT_HAS_SVS
     if ( (m_stereoImage = static_cast<svsVideoImages*>(m_videoObject)->GetImage(500)) &&  static_cast<svsStereoImage*>(m_stereoImage)->haveImages ) // 500 ms timeout //TODO adjust timeout with framerate

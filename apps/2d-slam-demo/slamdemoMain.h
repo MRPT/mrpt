@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -259,12 +259,12 @@ class slamdemoFrame: public wxFrame
 		mrpt::slam::CRangeBearingKFSLAM2D		m_SLAM;
 
 		/** The ground truth map, used to simulate observations */
-		mrpt::slam::CLandmarksMap				m_GT_map;
+		mrpt::maps::CLandmarksMap				m_GT_map;
 
 		/** The ground truth robot pose, used to simulate observations */
 		mrpt::poses::CPose2D					m_GT_pose;
 
-		mrpt::slam::CObservationBearingRange	m_lastObservation;
+		mrpt::obs::CObservationBearingRange	m_lastObservation;
 		mrpt::vector_size_t						m_lastObservation_GT_indices; //!< Ground truth of the indices in the landmark map of the sensed landmarks.
 
 		/** Reconstructed map estimated_map_idx -> real_map_idx for the landmarks.

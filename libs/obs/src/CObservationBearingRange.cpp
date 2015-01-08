@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -10,18 +10,19 @@
 #include "obs-precomp.h"   // Precompiled headers
 
 #include <mrpt/utils/CStream.h>
-#include <mrpt/slam/CObservationBearingRange.h>
+#include <mrpt/obs/CObservationBearingRange.h>
 #include <mrpt/system/os.h>
 #include <mrpt/math/matrix_serialization.h> // for << ops
+#include <mrpt/math/wrap2pi.h>
 #include <set>
 
-using namespace mrpt::slam;
+using namespace mrpt::obs;
 using namespace mrpt::utils;
 using namespace mrpt::poses;
 
 
 // This must be added to any CSerializable class implementation file.
-IMPLEMENTS_SERIALIZABLE(CObservationBearingRange, CObservation,mrpt::slam)
+IMPLEMENTS_SERIALIZABLE(CObservationBearingRange, CObservation,mrpt::obs)
 
 /*---------------------------------------------------------------
  Default constructor.
@@ -43,7 +44,7 @@ CObservationBearingRange::CObservationBearingRange( ) :
 /*---------------------------------------------------------------
   Implements the writing to a CStream capability of CSerializable objects
  ---------------------------------------------------------------*/
-void  CObservationBearingRange::writeToStream(CStream &out, int *version) const
+void  CObservationBearingRange::writeToStream(mrpt::utils::CStream &out, int *version) const
 {
 	if (version)
 		*version = 3;
@@ -94,7 +95,7 @@ void  CObservationBearingRange::writeToStream(CStream &out, int *version) const
 /*---------------------------------------------------------------
   Implements the reading from a CStream capability of CSerializable objects
  ---------------------------------------------------------------*/
-void  CObservationBearingRange::readFromStream(CStream &in, int version)
+void  CObservationBearingRange::readFromStream(mrpt::utils::CStream &in, int version)
 {
 	switch(version)
 	{
@@ -191,4 +192,46 @@ void  CObservationBearingRange::debugPrintOut()
 		RAD2DEG( sensedData[i].yaw ),
 		RAD2DEG( sensedData[i].pitch ),
 		sensedData[i].range );
+}
+
+void CObservationBearingRange::getDescriptionAsText(std::ostream &o) const
+{
+	using namespace std;
+	CObservation::getDescriptionAsText(o);
+
+	o << "Homogeneous matrix for the sensor's 3D pose, relative to robot base:\n";
+	o << sensorLocationOnRobot.getHomogeneousMatrixVal()
+	<< sensorLocationOnRobot << endl << endl;
+
+	o << "Do observations have individual covariance matrices? " << (validCovariances ? "YES":"NO") << endl << endl;
+
+	o << "Default noise sigmas:" << endl;
+	o << "sensor_std_range (m)   : " << sensor_std_range << endl;
+	o << "sensor_std_yaw   (deg) : " << RAD2DEG(sensor_std_yaw) << endl;
+	o << "sensor_std_pitch (deg) : " << RAD2DEG(sensor_std_pitch) << endl;
+
+	o << endl;
+
+	// For each entry in this sequence:
+	o << "  LANDMARK_ID    RANGE (m)    YAW (deg)    PITCH (deg)   COV. MATRIX (optional)" << endl;
+	o << "--------------------------------------------------------------------------------------" << endl;
+	for (size_t q=0;q<sensedData.size();q++)
+	{
+
+		o << "      ";
+		if (sensedData[q].landmarkID==INVALID_LANDMARK_ID)
+			o << "(NO ID)";
+		else o << format("%7u",sensedData[q].landmarkID);
+
+		o << format("   %10.03f  %10.03f %10.03f        ",
+			sensedData[q].range,
+			RAD2DEG( mrpt::math::wrapToPi( sensedData[q].yaw)),
+			RAD2DEG( mrpt::math::wrapToPi(sensedData[q].pitch)) );
+
+		if (validCovariances)
+			o << sensedData[q].covariance.inMatlabFormat() << endl;
+		else
+			o << "  (N/A)\n";
+	}
+
 }

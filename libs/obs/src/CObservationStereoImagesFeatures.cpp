@@ -2,25 +2,25 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
 #include "obs-precomp.h"   // Precompiled headers
-#include <mrpt/slam/CObservationStereoImagesFeatures.h>
+#include <mrpt/obs/CObservationStereoImagesFeatures.h>
 
 #include <mrpt/utils/CFileOutputStream.h>
 #include <mrpt/utils/CStream.h>
 
-using namespace mrpt::slam;
+using namespace mrpt::obs;
 using namespace mrpt::utils;
 using namespace mrpt::poses;
 using namespace mrpt::math;
 using namespace std;
 
 // This must be added to any CSerializable class implementation file.
-IMPLEMENTS_SERIALIZABLE(CObservationStereoImagesFeatures, CObservation,mrpt::slam)
+IMPLEMENTS_SERIALIZABLE(CObservationStereoImagesFeatures, CObservation,mrpt::obs)
 
  CObservationStereoImagesFeatures::CObservationStereoImagesFeatures( ) :
 	cameraLeft(),
@@ -73,7 +73,7 @@ void  CObservationStereoImagesFeatures::saveFeaturesToTextFile( const std::strin
 /*---------------------------------------------------------------
   Implements the writing to a CStream capability of CSerializable objects
  ---------------------------------------------------------------*/
-void  CObservationStereoImagesFeatures::writeToStream(CStream &out, int *version) const
+void  CObservationStereoImagesFeatures::writeToStream(mrpt::utils::CStream &out, int *version) const
 {
 	if (version)
 		*version = 0 ;
@@ -97,7 +97,7 @@ void  CObservationStereoImagesFeatures::writeToStream(CStream &out, int *version
 /*---------------------------------------------------------------
   Implements the reading from a CStream capability of CSerializable objects
  ---------------------------------------------------------------*/
-void  CObservationStereoImagesFeatures::readFromStream(CStream &in, int version)
+void  CObservationStereoImagesFeatures::readFromStream(mrpt::utils::CStream &in, int version)
 {
 	switch(version)
 	{
@@ -122,4 +122,41 @@ void  CObservationStereoImagesFeatures::readFromStream(CStream &in, int version)
 		MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
 	};
 }
+
+void CObservationStereoImagesFeatures::getDescriptionAsText(std::ostream &o) const
+{
+	CObservation::getDescriptionAsText(o);
+
+	o << "Homogeneous matrix for the sensor's 3D pose, relative to robot base:\n";
+	o << cameraPoseOnRobot.getHomogeneousMatrixVal()
+	<< cameraPoseOnRobot << endl;
+
+	o << "Homogeneous matrix for the RIGHT camera's 3D pose, relative to LEFT camera reference system:\n";
+	o << rightCameraPose.getHomogeneousMatrixVal()
+	<< rightCameraPose << endl;
+
+	o << "Intrinsic parameters matrix for the LEFT camera:"<< endl;
+	CMatrixDouble33 aux = cameraLeft.intrinsicParams;
+	o << aux.inMatlabFormat() << endl << aux << endl;
+
+	o << "Distortion parameters vector for the LEFT camera:"<< endl << "[ ";
+	for( unsigned int i = 0; i < 5; ++i )
+		o << cameraLeft.dist[i] << " ";
+	o << "]" << endl;
+
+	o << "Intrinsic parameters matrix for the RIGHT camera:"<< endl;
+	aux = cameraRight.intrinsicParams;
+	o << aux.inMatlabFormat() << endl << aux << endl;
+
+	o << "Distortion parameters vector for the RIGHT camera:"<< endl << "[ ";
+	for( unsigned int i = 0; i < 5; ++i )
+		o << cameraRight.dist[i] << " ";
+	o << "]"<< endl;
+
+	o << endl << format(" Image size: %ux%u pixels\n", (unsigned int)cameraLeft.ncols, (unsigned int)cameraLeft.nrows );
+	o << endl << format(" Number of features in images: %u\n", (unsigned int)theFeatures.size() );
+
+
+}
+
 

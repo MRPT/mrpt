@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -15,45 +15,36 @@ namespace mrpt
 {
 	namespace utils { class CStream; }
 
-	/** Data compression/decompression algorithms.  \ingroup mrpt_base_grp
-	 */
+	/** Data compression/decompression algorithms.  \ingroup mrpt_base_grp */
 	namespace compress
 	{
-		using mrpt::utils::CStream;
-
-		/** Compression using the "zip" algorithm and from/to gzip (gz) files. \ingroup mrpt_base_grp
-		 */
+		/** Compression using the "zip" algorithm and from/to gzip (gz) files. \ingroup mrpt_base_grp */
 		namespace zip
 		{
-			/** Compress an array of bytes into another one.
-			  */
+			/** Compress an array of bytes into another one. */
 			void  BASE_IMPEXP  compress(
 				void						*inData,
 				size_t						inDataSize,
 				std::vector<unsigned char>	&outData);
 
-			/** Compress an array of bytes into another one.
-			  */
+			/** Compress an array of bytes into another one. */
 			void  BASE_IMPEXP  compress(
 				const std::vector<unsigned char>	&inData,
 				std::vector<unsigned char>			&outData);
 
-			/** Compress an array of bytes and write the result into a stream.
-			  */
+			/** Compress an array of bytes and write the result into a stream. */
 			void  BASE_IMPEXP  compress(
 				void						*inData,
 				size_t						inDataSize,
-				CStream						&out);
+				mrpt::utils::CStream						&out);
 
-			/** Compress an array of bytes and write the result into a stream.
-			  */
+			/** Compress an array of bytes and write the result into a stream. */
 			void  BASE_IMPEXP  compress(
 				const std::vector<unsigned char>	&inData,
-				CStream								&out);
+				mrpt::utils::CStream								&out);
 
 			/** Decompress an array of bytes into another one
-			  * \exception std::exception If the apriori estimated decompressed size is not enought
-			  */
+			  * \exception std::exception If the apriori estimated decompressed size is not enought */
 			void  BASE_IMPEXP  decompress(
 				void						*inData,
 				size_t						inDataSize,
@@ -74,7 +65,7 @@ namespace mrpt
 			  * \exception std::exception If the apriori estimated decompressed size is not enought
 			  */
 			void  BASE_IMPEXP  decompress(
-				CStream						&inStream,
+				mrpt::utils::CStream						&inStream,
 				size_t						inDataSize,
 				void						*outData,
 				size_t						outDataBufferSize,

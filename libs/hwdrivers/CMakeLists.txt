@@ -33,11 +33,13 @@ IF(CMAKE_MRPT_HAS_xSENS_MT4)
 		)
 ENDIF(CMAKE_MRPT_HAS_xSENS_MT4)
 
-# Build Xbox Kinect?
+# Build Kinect support via libfreenect?
 IF(CMAKE_MRPT_HAS_FREENECT)
 	IF (CMAKE_MRPT_HAS_FREENECT_SYSTEM)
 		# No need to build if it's already built in the system:
-		INCLUDE_DIRECTORIES("${OPENKINECT_FREENECT_INCLUDE_DIR}")
+		IF (NOT "${OPENKINECT_FREENECT_INCLUDE_DIR}" STREQUAL "")
+			INCLUDE_DIRECTORIES("${OPENKINECT_FREENECT_INCLUDE_DIR}")
+		ENDIF (NOT "${OPENKINECT_FREENECT_INCLUDE_DIR}" STREQUAL "")
 	ELSE (CMAKE_MRPT_HAS_FREENECT_SYSTEM)
 		# Embedded version:
 		INCLUDE_DIRECTORIES("${MRPT_LIBS_ROOT}/hwdrivers/src/libfreenect/")
@@ -46,10 +48,10 @@ IF(CMAKE_MRPT_HAS_FREENECT)
 			"${MRPT_LIBS_ROOT}/hwdrivers/src/libfreenect/*.h"
 			)
 		LIST(APPEND hwdrivers_EXTRA_SRCS_NAME 
-			"kinect"
-			"kinect"
+			"libfreenect"
+			"libfreenect"
 			)
-			
+
 		# Special stuff for windows:
 		if (WIN32)
 			LIST(APPEND hwdrivers_EXTRA_SRCS
@@ -57,10 +59,10 @@ IF(CMAKE_MRPT_HAS_FREENECT)
 				"${MRPT_LIBS_ROOT}/hwdrivers/src/libfreenect/platform/windows/libusb10emu/libusb-1.0/failguard.cpp"
 				)
 			LIST(APPEND hwdrivers_EXTRA_SRCS_NAME 
-				"kinect"
-				"kinect"
+				"libfreenect"
+				"libfreenect"
 				)
-				
+
 			INCLUDE_DIRECTORIES("${MRPT_LIBS_ROOT}/hwdrivers/src/libfreenect/platform/windows")
 			INCLUDE_DIRECTORIES("${MRPT_LIBS_ROOT}/hwdrivers/src/libfreenect/platform/windows/libusb10emu")
 			# libfreenect.h includes libusb.h:
@@ -70,15 +72,6 @@ IF(CMAKE_MRPT_HAS_FREENECT)
 			
 	ENDIF (CMAKE_MRPT_HAS_FREENECT_SYSTEM)	
 ENDIF(CMAKE_MRPT_HAS_FREENECT)
-
-## Build Xbox Kinect?
-#IF(CMAKE_MRPT_HAS_FREENECT)
-## Add the required libraries for linking:
-#TARGET_LINK_LIBRARIES(${sampleName} 
-#	${MRPT_LIBS}  # This is filled by FIND_PACKAGE(MRPT ...)
-#	"${OPENNI2_LIBRARIES}"  # Optional extra libs...
-#	)
-#IF(CMAKE_MRPT_HAS_FREENECT)
 
 # Build ARIA?
 IF(CMAKE_MRPT_HAS_ARIA)
@@ -115,11 +108,30 @@ IF(CMAKE_MRPT_HAS_ROBOPEAK_LIDAR)
 	INCLUDE_DIRECTORIES("${MRPT_LIBS_ROOT}/hwdrivers/src/rplidar/src/")
 ENDIF(CMAKE_MRPT_HAS_ROBOPEAK_LIDAR)
 
+if(CMAKE_MRPT_HAS_LIBDC1394_2)
+	IF ("${LIBDC1394_2_INCLUDE_DIRS}")
+		INCLUDE_DIRECTORIES("${LIBDC1394_2_INCLUDE_DIRS}")
+	ENDIF ("${LIBDC1394_2_INCLUDE_DIRS}")
+	IF ("${LIBDC1394_2_LIBRARY_DIRS}")
+		LINK_DIRECTORIES("${LIBDC1394_2_LIBRARY_DIRS}")
+	ENDIF ("${LIBDC1394_2_LIBRARY_DIRS}")
+endif(CMAKE_MRPT_HAS_LIBDC1394_2)
+
 
 IF(CMAKE_MRPT_HAS_DUO3D)
 	INCLUDE_DIRECTORIES("${DUO3D_ROOT_DIR}/include")
 	LINK_DIRECTORIES("${DUO3D_ROOT_DIR}/lib")
 ENDIF(CMAKE_MRPT_HAS_DUO3D)
+
+IF(CMAKE_MRPT_HAS_OPENNI2)
+	include_directories(${OPENNI2_INCLUDE_DIRS})
+	ADD_DIRECTORIES_AS_ISYSTEM(OPENNI2_INCLUDE_DIRS)
+ENDIF(CMAKE_MRPT_HAS_OPENNI2)
+
+IF(CMAKE_MRPT_HAS_SWISSRANGE)
+	INCLUDE_DIRECTORIES("${SWR_LIBMESASR_DIR}")
+ENDIF(CMAKE_MRPT_HAS_SWISSRANGE)
+
 
 # Macro declared in "DeclareMRPTLib.cmake":
 define_mrpt_lib(
@@ -152,31 +164,67 @@ IF(BUILD_mrpt-hwdrivers)
 
 		ADD_DEFINITIONS(-D_LOG_TO_STDOUT)
 	ENDIF(CMAKE_MRPT_HAS_xSENS_MT3 OR CMAKE_MRPT_HAS_xSENS_MT4)
+
+	IF(CMAKE_MRPT_HAS_OPENCV)
+		target_link_libraries(mrpt-hwdrivers ${OpenCV_LIBRARIES})
+	ENDIF(CMAKE_MRPT_HAS_OPENCV)
+
+	# XSens MT4 required libs:
+	IF (BUILD_XSENS_MT4)
+		TARGET_LINK_LIBRARIES(mrpt-hwdrivers ${XSENS4_LIBS})
+	ENDIF (BUILD_XSENS_MT4)
 	
+	IF(CMAKE_MRPT_HAS_OPENNI2)
+		TARGET_LINK_LIBRARIES(mrpt-hwdrivers ${OPENNI2_LIBRARIES})
+	ENDIF(CMAKE_MRPT_HAS_OPENNI2)
+
+	IF(CMAKE_MRPT_HAS_SWISSRANGE)
+		TARGET_LINK_LIBRARIES(mrpt-hwdrivers ${MRPT_SWR_LIBS})
+	ENDIF(CMAKE_MRPT_HAS_SWISSRANGE)
+
+	IF(CMAKE_MRPT_HAS_FTDI_SYSTEM)
+		TARGET_LINK_LIBRARIES(mrpt-hwdrivers ${FTDI_LIBS})
+	ENDIF(CMAKE_MRPT_HAS_FTDI_SYSTEM)
+
 	IF(CMAKE_MRPT_HAS_FREENECT)
 		# Add linking against these libs:
 		IF(NOT "${FREENECT_LIBS}" STREQUAL "")
 			TARGET_LINK_LIBRARIES(mrpt-hwdrivers ${FREENECT_LIBS})
+			
+			# Windows: 
+			# Set libusb0.dll as DELAYLOAD, so users without that driver 
+			# still can use binaries compiled with libusb support:
+			IF (MSVC)
+				set_target_properties(mrpt-hwdrivers PROPERTIES LINK_FLAGS "/DELAYLOAD:\"libusb0.dll\"")
+			ENDIF (MSVC)
 		ENDIF(NOT "${FREENECT_LIBS}" STREQUAL "")
 		
 		if (NOT CMAKE_MRPT_HAS_FREENECT_SYSTEM)
 			# Using embedded version:
 			# Ignore precompiled headers:
 			IF(MRPT_ENABLE_PRECOMPILED_HDRS AND MSVC)
-				set_source_files_properties(${kinect_FILES} PROPERTIES COMPILE_FLAGS "/Y-")
+				set_source_files_properties(${libfreenect_FILES} PROPERTIES COMPILE_FLAGS "/Y-")
 			ENDIF(MRPT_ENABLE_PRECOMPILED_HDRS AND MSVC)
 		
 			if (MSVC)
-				set_source_files_properties(${kinect_FILES} PROPERTIES LANGUAGE CXX) 			# Build as C++
+				set_source_files_properties(${libfreenect_FILES} PROPERTIES LANGUAGE CXX) 			# Build as C++
 			endif(MSVC)
 		endif (NOT CMAKE_MRPT_HAS_FREENECT_SYSTEM)
 	ENDIF(CMAKE_MRPT_HAS_FREENECT)
+
+	IF(NOT "${LIBUSB10_LIBS}" STREQUAL "")
+		TARGET_LINK_LIBRARIES(mrpt-hwdrivers ${LIBUSB10_LIBS})
+	ENDIF(NOT "${LIBUSB10_LIBS}" STREQUAL "")
 
 	# build with link on Phidget21 lib
 	IF(CMAKE_MRPT_HAS_PHIDGET)
 		INCLUDE_DIRECTORIES(${PHIDGETS_INCLUDE_DIR})
 		TARGET_LINK_LIBRARIES(mrpt-hwdrivers ${PHIDGETS_LIBRARIES})
 	ENDIF(CMAKE_MRPT_HAS_PHIDGET)
+
+	if(CMAKE_MRPT_HAS_LIBDC1394_2)
+		TARGET_LINK_LIBRARIES(mrpt-hwdrivers ${LIBDC1394_2_LIBRARIES})
+	endif(CMAKE_MRPT_HAS_LIBDC1394_2)
 
 	# Link to National Instrument libraries:
 	IF(MRPT_HAS_NI_DAQmxBASE)
@@ -273,6 +321,10 @@ IF(BUILD_mrpt-hwdrivers)
 				)
 		ENDIF (NOT "${EXTRA_ISYSTEMS}" STREQUAL "")
 	ENDIF(CMAKE_COMPILER_IS_GNUCXX AND CMAKE_MRPT_HAS_FFMPEG_SYSTEM)
+
+	IF(CMAKE_MRPT_HAS_WXWIDGETS)
+		target_link_libraries(mrpt-hwdrivers ${wxWidgets_LIBRARIES})
+	ENDIF(CMAKE_MRPT_HAS_WXWIDGETS)
 
 ENDIF(BUILD_mrpt-hwdrivers) 
 

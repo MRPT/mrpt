@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -11,7 +11,7 @@
 #define CCameraSensor_H
 
 #include <mrpt/poses/CPose3D.h>
-#include <mrpt/slam/CObservation.h>
+#include <mrpt/obs/CObservation.h>
 #include <mrpt/utils/CDebugOutputCapable.h>
 #include <mrpt/utils/CConfigFileBase.h>
 #include <mrpt/hwdrivers/CGenericSensor.h>
@@ -116,19 +116,20 @@ namespace mrpt
 		  *    dc1394_framerate		= 15					// eg: 7.5, 15, 30, 60, etc... For posibilities see mrpt::hwdrivers::TCaptureOptions_dc1394
 		  *    dc1394_mode7         = -1                    // -1: Ignore, i>=0, set to MODE7_i
 		  *    dc1394_color_coding	= COLOR_CODING_YUV422	// For posibilities see mrpt::hwdrivers::TCaptureOptions_dc1394
-          *    # Options for setting feature values: dc1394_<feature> = <n>
-          *    # with <feature> = brightness | exposure | sharpness | white_balance | gamma | shutter | gain
-          *    #      <n> a value, or -1 (or not present) for not to change this feature value in the camera, possible values are shown in execution
-          *    dc1394_shutter       = -1
-          *    # Options for setting feature modes: dc1394_<feature>_mode = <n>
-          *    # with <feature> = brightness | exposure | sharpness | white_balance | gamma | shutter | gain
-          *    #      <n> = -1 (or not present) [not to change] | 0 [manual] | 1 [auto] | 2 [one_push_auto]
-          *    dc1394_shutter_mode	= -1
-          *    # Options for setting trigger options:
-          *    dc1394_trigger_power	= -1    // -1 (or not present) for not to change | 0 [OFF] | 1 [ON]
-          *    dc1394_trigger_mode	= -1    // -1 (or not present) for not to change | 0..7 corresponding to possible modes 0,1,2,3,4,5,14,15
-          *    dc1394_trigger_source= -1    // -1 (or not present) for not to change | 0..4 corresponding to possible sources 0,1,2,3,SOFTWARE
-          *    dc1394_trigger_polarity = -1 // -1 (or not present) for not to change | 0 [ACTIVE_LOW] | 1 [ACTIVE_HIGH]
+		  *    # Options for setting feature values: dc1394_<feature> = <n>
+		  *    # with <feature> = brightness | exposure | sharpness | white_balance | gamma | shutter | gain
+		  *    #      <n> a value, or -1 (or not present) for not to change this feature value in the camera, possible values are shown in execution
+		  *    dc1394_shutter       = -1
+		  *    # Options for setting feature modes: dc1394_<feature>_mode = <n>
+		  *    # with <feature> = brightness | exposure | sharpness | white_balance | gamma | shutter | gain
+		  *    #      <n> = -1 (or not present) [not to change] | 0 [manual] | 1 [auto] | 2 [one_push_auto]
+		  *    dc1394_shutter_mode	= -1
+		  *    # Options for setting trigger options:
+		  *    dc1394_trigger_power	= -1    // -1 (or not present) for not to change | 0 [OFF] | 1 [ON]
+		  *    dc1394_trigger_mode	= -1    // -1 (or not present) for not to change | 0..7 corresponding to possible modes 0,1,2,3,4,5,14,15
+		  *    dc1394_trigger_source= -1    // -1 (or not present) for not to change | 0..4 corresponding to possible sources 0,1,2,3,SOFTWARE
+		  *    dc1394_trigger_polarity = -1 // -1 (or not present) for not to change | 0 [ACTIVE_LOW] | 1 [ACTIVE_HIGH]
+		  *    dc1394_ring_buffer_size = 15  // Length of frames ring buffer (internal to libdc1394)
 		  *
 		  *    # Options for grabber_type= bumblebee ----------------------------------
 		  *    bumblebee_camera_index  = 0       // [bumblebee] Number of camera within the firewire bus to open (typically = 0)
@@ -257,11 +258,11 @@ namespace mrpt
 
 			/** Retrieves the next frame from the video source, raising an exception on any error.
 			  * Note: The returned observations can be of one of these classes (you can use IS_CLASS(obs,CObservationXXX) to determine it):
-			  *		- mrpt::slam::CObservationImage (For normal cameras or video sources)
-			  *		- mrpt::slam::CObservationStereoImages (For stereo cameras)
-			  *		- mrpt::slam::CObservation3DRangeScan (For 3D cameras)
+			  *		- mrpt::obs::CObservationImage (For normal cameras or video sources)
+			  *		- mrpt::obs::CObservationStereoImages (For stereo cameras)
+			  *		- mrpt::obs::CObservation3DRangeScan (For 3D cameras)
 			  */
-			mrpt::slam::CObservationPtr getNextFrame( );
+			mrpt::obs::CObservationPtr getNextFrame( );
 			void getNextFrame( std::vector<mrpt::utils::CSerializablePtr> & out_obs );
 
 			/** Tries to open the camera, after setting all the parameters with a call to loadConfig.
@@ -288,7 +289,7 @@ namespace mrpt
 			void enableLaunchOwnThreadForSavingImages(bool enable=true) { m_external_images_own_thread = enable; };
 
 			/** Functor type */
-			typedef void (*TPreSaveUserHook)(const mrpt::slam::CObservationPtr &obs, void* user_ptr);
+			typedef void (*TPreSaveUserHook)(const mrpt::obs::CObservationPtr &obs, void* user_ptr);
 
 			/** Provides a "hook" for user-code to be run BEFORE an image is going to be saved to disk if external storage is enabled (e.g. to rectify images, preprocess them, etc.)
 			  * Notice that this code may be called from detached threads, so it must be thread safe.
@@ -311,8 +312,8 @@ namespace mrpt
 			uint64_t								m_dc1394_camera_guid;
 			int										m_dc1394_camera_unit;
 			TCaptureOptions_dc1394	m_dc1394_options;
-            int										m_preview_decimation;
-            int										m_preview_reduction;
+			int										m_preview_decimation;
+			int										m_preview_reduction;
 
 			// Options for grabber_type= bumblebee ----------------------------------
 			int										m_bumblebee_camera_index;

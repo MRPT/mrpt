@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -11,8 +11,8 @@
 
 #include <mrpt/config.h>
 
-#include <mrpt/slam/CObservationImage.h>
-#include <mrpt/slam/CObservationStereoImages.h>
+#include <mrpt/obs/CObservationImage.h>
+#include <mrpt/obs/CObservationStereoImages.h>
 
 #include <mrpt/hwdrivers/link_pragmas.h>
 
@@ -46,36 +46,37 @@ namespace mrpt
 		  * \sa CImageGrabber_dc1394
 		  * \ingroup mrpt_hwdrivers_grp
 		  */
-		struct TCaptureOptions_dc1394
+		struct HWDRIVERS_IMPEXP TCaptureOptions_dc1394
 		{
-            TCaptureOptions_dc1394() :
-                frame_width		(640),
-                frame_height	(480),
-                framerate		(FRAMERATE_15),
-                color_coding	(COLOR_CODING_YUV422),
-                mode7			(-1),
-                shutter			(-1),
-                gain			(-1),
-                gamma			(-1),
-                brightness		(-1),
-                exposure		(-1),
-                sharpness		(-1),
-                white_balance	(-1),
-                shutter_mode    (-1),
-                gain_mode       (-1),
-                gamma_mode      (-1),
-                brightness_mode (-1),
-                exposure_mode   (-1),
-                sharpness_mode  (-1),
-                white_balance_mode(-1),
-                deinterlace_stereo(false),
-                trigger_power   (-1),
-                trigger_mode    (-1),
-                trigger_source  (-1),
-                trigger_polarity(-1)
-            {}
+			TCaptureOptions_dc1394() :
+				frame_width		(640),
+				frame_height	(480),
+				framerate		(FRAMERATE_15),
+				color_coding	(COLOR_CODING_YUV422),
+				mode7			(-1),
+				shutter			(-1),
+				gain			(-1),
+				gamma			(-1),
+				brightness		(-1),
+				exposure		(-1),
+				sharpness		(-1),
+				white_balance	(-1),
+				shutter_mode    (-1),
+				gain_mode       (-1),
+				gamma_mode      (-1),
+				brightness_mode (-1),
+				exposure_mode   (-1),
+				sharpness_mode  (-1),
+				white_balance_mode(-1),
+				deinterlace_stereo(false),
+				trigger_power   (-1),
+				trigger_mode    (-1),
+				trigger_source  (-1),
+				trigger_polarity(-1),
+				ring_buffer_size(15)
+			{}
 
-            int		frame_width,frame_height;	//!< Capture resolution (Default: 640x480)
+			int		frame_width,frame_height;	//!< Capture resolution (Default: 640x480)
 			grabber_dc1394_framerate_t		framerate;
 			grabber_dc1394_color_coding_t	color_coding;
 
@@ -88,18 +89,19 @@ namespace mrpt
 			int		exposure;		//!< Exposure, -1=default:Do not change
 			int		sharpness;		//!< Sharpness, -1=default:Do not change
 			int		white_balance;	//!< White balance, -1=default:Do not change
-            int		shutter_mode;		//!< Shutter mode, -1=default:Do not change
-            int		gain_mode;			//!< Gain mode, -1=default:Do not change
-            int		gamma_mode;			//!< Gamma mode, -1=default:Do not change
-            int		brightness_mode;	//!< Brightness mode, -1=default:Do not change
-            int		exposure_mode;		//!< Exposure mode, -1=default:Do not change
-            int		sharpness_mode;		//!< Sharpness mode, -1=default:Do not change
-            int		white_balance_mode;	//!< White balance mode, -1=default:Do not change
-            bool  	deinterlace_stereo;	//!< For stereo cameras (eg PR Bumblebee)
-            int     trigger_power;
-            int     trigger_mode;
-            int     trigger_source;
-            int     trigger_polarity;
+			int		shutter_mode;		//!< Shutter mode, -1=default:Do not change
+			int		gain_mode;			//!< Gain mode, -1=default:Do not change
+			int		gamma_mode;			//!< Gamma mode, -1=default:Do not change
+			int		brightness_mode;	//!< Brightness mode, -1=default:Do not change
+			int		exposure_mode;		//!< Exposure mode, -1=default:Do not change
+			int		sharpness_mode;		//!< Sharpness mode, -1=default:Do not change
+			int		white_balance_mode;	//!< White balance mode, -1=default:Do not change
+			bool  	deinterlace_stereo;	//!< For stereo cameras (eg PR Bumblebee)
+			int     trigger_power;
+			int     trigger_mode;
+			int     trigger_source;
+			int     trigger_polarity;
+			int     ring_buffer_size; //!< Size of the libdc1394 ring buffer
 		};
 
 		/** A class for grabing images from a IEEE1394 (Firewire) camera using the libdc1394-2 library.
@@ -115,6 +117,7 @@ namespace mrpt
 		  *
 		  * \note This class requires MRPT compiled with "libdc1394-2" (Only works under Linux for now) and "opencv".
 		  * \note In Linux you may need to execute "chmod 666 /dev/video1394/ * " and "chmod 666 /dev/raw1394" for allowing any user R/W access to firewire cameras.
+		  * \note [New in MRPT 1.3.0] Length of ring buffer is now configurable via TCaptureOptions_dc1394::ring_buffer_size
 		  * \sa The most generic camera grabber in MRPT: mrpt::hwdrivers::CCameraSensor
 		  * \ingroup mrpt_hwdrivers_grp
 		  */
@@ -129,7 +132,6 @@ namespace mrpt
 			void /* dc1394_t * */ 		*m_dc1394_lib_context;
 			void /* dc1394camera_t* */ 	*m_dc1394camera;
 			int							m_desired_mode;
-
 
 			TCaptureOptions_dc1394		m_options;
 
@@ -169,14 +171,14 @@ namespace mrpt
 			 *
 			 * \return false on any error, true if all go fine.
 			*/
-			bool  getObservation( mrpt::slam::CObservationImage &out_observation);
+			bool  getObservation( mrpt::obs::CObservationImage &out_observation);
 
 			/** Grab an image from the opened camera (for stereo cameras).
 			 * \param out_observation The object to be filled with sensed data.
 			 *
 			 * \return false on any error, true if all go fine.
 			*/
-			bool  getObservation( mrpt::slam::CObservationStereoImages &out_observation);
+			bool  getObservation( mrpt::obs::CObservationStereoImages &out_observation);
 
             /** Changes the boolean level associated to Software Trigger (ON/OFF)
               * Can be used to control camera triggering trough software

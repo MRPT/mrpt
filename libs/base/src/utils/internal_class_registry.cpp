@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -47,8 +47,6 @@ CThreadSafeQueue<TRegisterFunction>	 &mrpt::utils::pending_class_registers()
 
 namespace mrpt
 {
-	namespace system { void BASE_IMPEXP registerFatalExceptionHandlers(); } // Fwrd decl.
-
 	namespace utils
 	{
 		typedef std::map<std::string,const TRuntimeClassId*> TClassnameToRuntimeId;
@@ -105,8 +103,6 @@ namespace mrpt
 			// PRIVATE constructor
 			CClassRegistry() : m_being_modified(false)
 			{
-				// A good place to put this... it will be always invoked without the user needing to call it ;-)
-				mrpt::system::registerFatalExceptionHandlers();
 			}
 			// PRIVATE destructor
 			~CClassRegistry() { }

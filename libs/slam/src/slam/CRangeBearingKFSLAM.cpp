@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -19,7 +19,7 @@
 #include <mrpt/poses/CPosePDF.h>
 #include <mrpt/poses/CPosePDFGaussian.h>
 #include <mrpt/poses/CPose3DQuatPDFGaussian.h>
-#include <mrpt/slam/CActionRobotMovement3D.h>
+#include <mrpt/obs/CActionRobotMovement3D.h>
 #include <mrpt/math/utils.h>
 #include <mrpt/math/ops_containers.h>
 #include <mrpt/math/wrap2pi.h>
@@ -31,9 +31,12 @@
 #include <mrpt/opengl/CEllipsoid.h>
 
 using namespace mrpt::slam;
+using namespace mrpt::obs;
+using namespace mrpt::maps;
 using namespace mrpt::poses;
 using namespace mrpt::utils;
 using namespace mrpt::system;
+using namespace mrpt;
 using namespace std;
 
 

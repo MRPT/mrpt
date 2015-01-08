@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -79,7 +79,7 @@ void CLoadableOptions::dumpVar_string( CStream &out, const char *varName, const 
 /** This method should clearly display all the contents of the structure in textual form, sending it to a CStream.
   * The default implementation in this base class relies on \a saveToConfigFile() to generate a plain text representation of all the parameters.
   */
-void CLoadableOptions::dumpToTextStream(CStream &out) const
+void CLoadableOptions::dumpToTextStream(mrpt::utils::CStream &out) const
 {
 	CConfigFileMemory cfg;
 	this->saveToConfigFile(cfg,"");

@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -12,18 +12,20 @@
 // Force size_x being a multiple of 16 cells
 //#define		ROWSIZE_MULTIPLE_16
 
-#include <mrpt/slam/COccupancyGridMap2D.h>
-#include <mrpt/slam/CSimplePointsMap.h>
+#include <mrpt/maps/COccupancyGridMap2D.h>
+#include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/utils/CStream.h>
 
 using namespace mrpt;
-using namespace mrpt::slam;
+using namespace mrpt::math;
+using namespace mrpt::maps;
+using namespace mrpt::obs;
 using namespace mrpt::utils;
 using namespace mrpt::poses;
 using namespace std;
 
 
-IMPLEMENTS_SERIALIZABLE(COccupancyGridMap2D, CMetricMap,mrpt::slam)
+IMPLEMENTS_SERIALIZABLE(COccupancyGridMap2D, CMetricMap,mrpt::maps)
 
 std::vector<float>		COccupancyGridMap2D::entropyTable;
 
@@ -465,7 +467,7 @@ void  COccupancyGridMap2D::subSample( int downRatio )
 							computeMatchingWith
  ---------------------------------------------------------------*/
 void COccupancyGridMap2D::determineMatching2D(
-	const CMetricMap      * otherMap2,
+	const mrpt::maps::CMetricMap      * otherMap2,
 	const CPose2D         & otherMapPose_,
 	TMatchingPairList     & correspondences,
 	const TMatchingParams & params,
@@ -668,7 +670,7 @@ bool  COccupancyGridMap2D::isEmpty() const
 /*---------------------------------------------------------------
 				operator <
   ---------------------------------------------------------------*/
-bool mrpt::slam::operator < (const COccupancyGridMap2D::TPairLikelihoodIndex &e1, const COccupancyGridMap2D::TPairLikelihoodIndex &e2)
+bool mrpt::maps::operator < (const COccupancyGridMap2D::TPairLikelihoodIndex &e1, const COccupancyGridMap2D::TPairLikelihoodIndex &e2)
 {
 	return e1.first > e2.first;
 }
@@ -698,7 +700,7 @@ float  COccupancyGridMap2D::computePathCost( float x1, float y1, float x2, float
 }
 
 float  COccupancyGridMap2D::compute3DMatchingRatio(
-	const CMetricMap						*otherMap,
+	const mrpt::maps::CMetricMap						*otherMap,
 	const CPose3D							&otherMapPose,
 	float									maxDistForCorr ,
 	float									maxMahaDistForCorr

@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -10,7 +10,7 @@
 #include "slam-precomp.h"   // Precompiled headers
 
 #include <mrpt/slam/CICP.h>
-#include <mrpt/scanmatching.h>
+#include <mrpt/tfest.h>
 #include <mrpt/poses/CPosePDFSOG.h>
 #include <mrpt/utils/CTicTac.h>
 #include <mrpt/utils/CStream.h>
@@ -24,6 +24,8 @@
 #include <mrpt/poses/CPose3DPDFGaussian.h>
 
 using namespace mrpt::slam;
+using namespace mrpt::maps;
+using namespace mrpt::math;
 using namespace mrpt::poses;
 using namespace mrpt::utils;
 using namespace std;
@@ -48,8 +50,8 @@ The method for aligning a pair of 2D points map.
 * \sa CPointsMapAlignmentAlgorithm
   ---------------------------------------------------------------*/
 CPosePDFPtr CICP::AlignPDF(
-    const CMetricMap		*m1,
-    const CMetricMap		*mm2,
+    const mrpt::maps::CMetricMap		*m1,
+    const mrpt::maps::CMetricMap		*mm2,
     const CPosePDFGaussian	&initialEstimationPDF,
     float					*runningTime,
     void					*info )
@@ -180,7 +182,7 @@ void  CICP::TConfigParams::loadFromConfigFile(
 /*---------------------------------------------------------------
 					dumpToTextStream
   ---------------------------------------------------------------*/
-void  CICP::TConfigParams::dumpToTextStream(CStream	&out) const
+void  CICP::TConfigParams::dumpToTextStream(mrpt::utils::CStream	&out) const
 {
 	out.printf("\n----------- [CICP::TConfigParams] ------------ \n\n");
 
@@ -233,8 +235,8 @@ float CICP::kernel(const float &x2, const float &rho2)
 
   ----------------------------------------------------------------------------*/
 CPosePDFPtr CICP::ICP_Method_Classic(
-		const CMetricMap		*m1,
-		const CMetricMap		*mm2,
+		const mrpt::maps::CMetricMap		*m1,
+		const mrpt::maps::CMetricMap		*mm2,
 		const CPosePDFGaussian	&initialEstimationPDF,
 		TReturnInfo				&outInfo )
 {
@@ -252,7 +254,7 @@ CPosePDFPtr CICP::ICP_Method_Classic(
 	CPose2D lastMeanPose;
 
 	// Assure the class of the maps:
-	const CMetricMap		*m2 = mm2;
+	const mrpt::maps::CMetricMap		*m2 = mm2;
 
 	// Asserts:
 	// -----------------
@@ -273,8 +275,8 @@ CPosePDFPtr CICP::ICP_Method_Classic(
 	gaussPdf->mean = grossEst;
 
 	// Initial thresholds:
-	TMatchingParams matchParams;
-	TMatchingExtraResults matchExtraResults;
+	mrpt::maps::TMatchingParams matchParams;
+	mrpt::maps::TMatchingExtraResults matchExtraResults;
 
 	matchParams.maxDistForCorrespondence = options.thresholdDist;			// Distance threshold
 	matchParams.maxAngularDistForCorrespondence = options.thresholdAng;	// Angular threshold
@@ -321,7 +323,10 @@ CPosePDFPtr CICP::ICP_Method_Classic(
 				// Compute the estimated pose.
 				//  (Method from paper of J.Gonzalez, Martinez y Morales)
 				// ----------------------------------------------------------------------
-				scanmatching::leastSquareErrorRigidTransformation( correspondences,	gaussPdf->mean );
+				mrpt::math::TPose2D est_mean;
+				mrpt::tfest::se2_l2(correspondences, est_mean); 
+
+				gaussPdf->mean = est_mean;
 
 				// If matching has not changed, decrease the thresholds:
 				// --------------------------------------------------------
@@ -365,10 +370,7 @@ CPosePDFPtr CICP::ICP_Method_Classic(
 			// ----------------------------------------------
 			// METHOD 1: MSE linear estimation
 			// ----------------------------------------------
-			scanmatching::leastSquareErrorRigidTransformation(
-				correspondences,
-				gaussPdf->mean,
-				&gaussPdf->cov );
+			mrpt::tfest::se2_l2(correspondences, *gaussPdf );
 			// Scale covariance:
 			gaussPdf->cov *= options.covariance_varPoints;
 #else
@@ -515,24 +517,21 @@ CPosePDFPtr CICP::ICP_Method_Classic(
 	// RANSAC?
 	if (options.doRANSAC)
 	{
-		// Discard the gaussian:
-		//delete gaussPdf; gaussPdf=NULL;
+		mrpt::tfest::TSE2RobustParams params;
+		params.ransac_minSetSize = options.ransac_minSetSize;
+		params.ransac_maxSetSize = options.ransac_maxSetSize;
+		params.ransac_mahalanobisDistanceThreshold = options.ransac_mahalanobisDistanceThreshold;
+		params.ransac_nSimulations = options.ransac_nSimulations;
+		params.ransac_fuseByCorrsMatch = options.ransac_fuseByCorrsMatch;
+		params.ransac_fuseMaxDiffXY = options.ransac_fuseMaxDiffXY;
+		params.ransac_fuseMaxDiffPhi = options.ransac_fuseMaxDiffPhi;
+		params.ransac_algorithmForLandmarks  = false; 
+
+		mrpt::tfest::TSE2RobustResult results;
+		mrpt::tfest::se2_l2_robust(correspondences, options.normalizationStd, params, results);
 
 		SOG = CPosePDFSOG::Create();
-		scanmatching::robustRigidTransformation(
-			correspondences,
-			*SOG,
-			options.normalizationStd,
-			options.ransac_minSetSize,
-			options.ransac_maxSetSize,
-			options.ransac_mahalanobisDistanceThreshold,
-			options.ransac_nSimulations,
-			NULL,
-			options.ransac_fuseByCorrsMatch,
-			options.ransac_fuseMaxDiffXY,
-			options.ransac_fuseMaxDiffPhi,
-			false // ransac_useMahalanobisAsTest
-			) ;
+		*SOG = results.transformation;
 
 		// And return the SOG:
 		resultPDF = SOG;
@@ -558,8 +557,8 @@ CPosePDFPtr CICP::ICP_Method_Classic(
 
   ----------------------------------------------------------------------------*/
 CPosePDFPtr CICP::ICP_Method_LM(
-		const CMetricMap		*mm1,
-		const CMetricMap		*m2,
+		const mrpt::maps::CMetricMap		*mm1,
+		const mrpt::maps::CMetricMap		*m2,
 		const CPosePDFGaussian	&initialEstimationPDF,
 		TReturnInfo				&outInfo )
 {
@@ -883,8 +882,8 @@ CPosePDFPtr CICP::ICP_Method_LM(
 					ICP_Method_IKF
   ---------------------------------------------------------------*/
 CPosePDFPtr CICP::ICP_Method_IKF(
-		const CMetricMap		*m1,
-		const CMetricMap		*mm2,
+		const mrpt::maps::CMetricMap		*m1,
+		const mrpt::maps::CMetricMap		*mm2,
 		const CPosePDFGaussian	&initialEstimationPDF,
 		TReturnInfo				&outInfo )
 {
@@ -916,8 +915,8 @@ The method for aligning a pair of 2D points map.
 * \sa CPointsMapAlignmentAlgorithm
   ---------------------------------------------------------------*/
 CPose3DPDFPtr CICP::Align3DPDF(
-    const CMetricMap		*m1,
-    const CMetricMap		*mm2,
+    const mrpt::maps::CMetricMap		*m1,
+    const mrpt::maps::CMetricMap		*mm2,
     const CPose3DPDFGaussian	&initialEstimationPDF,
     float					*runningTime,
     void					*info )
@@ -964,8 +963,8 @@ CPose3DPDFPtr CICP::Align3DPDF(
 
 
 CPose3DPDFPtr CICP::ICP3D_Method_Classic(
-		const CMetricMap		*m1,
-		const CMetricMap		*mm2,
+		const mrpt::maps::CMetricMap		*m1,
+		const mrpt::maps::CMetricMap		*mm2,
 		const CPose3DPDFGaussian &initialEstimationPDF,
 		TReturnInfo				&outInfo )
 {
@@ -1046,8 +1045,10 @@ CPose3DPDFPtr CICP::ICP3D_Method_Classic(
 			{
 				// Compute the estimated pose, using Horn's method.
 				// ----------------------------------------------------------------------
+				mrpt::poses::CPose3DQuat estPoseQuat;
 				double transf_scale;
-				scanmatching::leastSquareErrorRigidTransformation6D( correspondences, gaussPdf->mean, transf_scale, false );
+				mrpt::tfest::se3_l2(correspondences, estPoseQuat, transf_scale, false /* dont force unit scale */ );
+				gaussPdf->mean = estPoseQuat;
 
 				// If matching has not changed, decrease the thresholds:
 				// --------------------------------------------------------

@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -11,16 +11,16 @@
 
 
 #include <mrpt/utils/CStream.h>
-#include <mrpt/slam/CObservationBeaconRanges.h>
+#include <mrpt/obs/CObservationBeaconRanges.h>
 #include <mrpt/system/os.h>
 
-using namespace mrpt::slam;
+using namespace mrpt::obs;
 using namespace mrpt::utils;
 using namespace mrpt::poses;
 
 
 // This must be added to any CSerializable class implementation file.
-IMPLEMENTS_SERIALIZABLE(CObservationBeaconRanges, CObservation,mrpt::slam)
+IMPLEMENTS_SERIALIZABLE(CObservationBeaconRanges, CObservation,mrpt::obs)
 
 /** Default constructor.
  */
@@ -36,7 +36,7 @@ CObservationBeaconRanges::CObservationBeaconRanges( ) :
 /*---------------------------------------------------------------
   Implements the writing to a CStream capability of CSerializable objects
  ---------------------------------------------------------------*/
-void  CObservationBeaconRanges::writeToStream(CStream &out, int *version) const
+void  CObservationBeaconRanges::writeToStream(mrpt::utils::CStream &out, int *version) const
 {
 	if (version)
 		*version = 3;
@@ -62,7 +62,7 @@ void  CObservationBeaconRanges::writeToStream(CStream &out, int *version) const
 /*---------------------------------------------------------------
   Implements the reading from a CStream capability of CSerializable objects
  ---------------------------------------------------------------*/
-void  CObservationBeaconRanges::readFromStream(CStream &in, int version)
+void  CObservationBeaconRanges::readFromStream(mrpt::utils::CStream &in, int version)
 {
 	switch(version)
 	{
@@ -152,4 +152,27 @@ float CObservationBeaconRanges::getSensedRangeByBeaconID(int32_t beaconID)
 		if (sensedData[i].beaconID==beaconID)
 			return sensedData[i].sensedDistance;
 	return 0;
+}
+
+void CObservationBeaconRanges::getDescriptionAsText(std::ostream &o) const
+{
+	using namespace std;
+	CObservation::getDescriptionAsText(o);
+
+	o << "Auxiliary estimated pose (if available): " << auxEstimatePose << endl;
+
+	o << format("minSensorDistance=%f m\n",minSensorDistance);
+	o << format("maxSensorDistance=%f m\n",maxSensorDistance);
+	o << format("stdError=%f m\n\n",stdError);
+
+	o << format("There are %u range measurements:\n\n",(unsigned)sensedData.size());
+
+	o << "  BEACON   RANGE     SENSOR POSITION ON ROBOT \n";
+	o << "------------------------------------------------\n";
+	for (deque<CObservationBeaconRanges::TMeasurement>::const_iterator it=sensedData.begin(); it!=sensedData.end(); it++)
+	{
+		o << format("   %i      %.04f      (%.03f,%.03f,%.03f)\n",
+			(int)it->beaconID,it->sensedDistance,
+			it->sensorLocationOnRobot.x(),it->sensorLocationOnRobot.y(),it->sensorLocationOnRobot.z());
+	}
 }

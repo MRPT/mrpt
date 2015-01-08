@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -10,16 +10,17 @@
 #include "detectors-precomp.h"  // Precompiled headers
 
 #include <mrpt/detectors/CCascadeClassifierDetection.h>
-#include <mrpt/slam/CObservationImage.h>
-#include <mrpt/slam/CObservationStereoImages.h>
-#include <mrpt/slam/CObservation3DRangeScan.h>
+#include <mrpt/obs/CObservationImage.h>
+#include <mrpt/obs/CObservationStereoImages.h>
+#include <mrpt/obs/CObservation3DRangeScan.h>
 #include <mrpt/system/threads.h> // sleep()
 
 // Universal include for all versions of OpenCV
 #include <mrpt/otherlibs/do_opencv_includes.h> 
 
 using namespace mrpt::detectors;
-using namespace mrpt::slam;
+using namespace mrpt::obs;
+using namespace mrpt::utils;
 using namespace std;
 
 #if MRPT_HAS_OPENCV && MRPT_OPENCV_VERSION_NUM>=0x200

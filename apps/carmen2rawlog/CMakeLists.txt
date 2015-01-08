@@ -8,6 +8,7 @@ PROJECT(carmen2rawlog)
 # Define the executable target:
 ADD_EXECUTABLE(carmen2rawlog
 	carmen2rawlog_main.cpp
+	 ${MRPT_VERSION_RC_FILE}
 	)
 SET(TMP_TARGET_NAME "carmen2rawlog")
 

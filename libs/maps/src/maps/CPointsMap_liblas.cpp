@@ -2,15 +2,15 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
 #include "maps-precomp.h" // Precomp header
 
-#include <mrpt/slam/CPointsMap.h>
-#include <mrpt/slam/CSimplePointsMap.h>
+#include <mrpt/maps/CPointsMap.h>
+#include <mrpt/maps/CSimplePointsMap.h>
 
 #if MRPT_HAS_LIBLAS
 #   include <liblas/liblas.hpp>
@@ -18,7 +18,8 @@
 #	include <liblas/laswriter.hpp>
 #endif
 
-using namespace mrpt::slam;
+using namespace mrpt::maps;
+using namespace mrpt::obs;
 using namespace std;
 
 /*---------------------------------------------------------------

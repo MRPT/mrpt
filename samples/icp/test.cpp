@@ -2,13 +2,13 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/slam/CSimplePointsMap.h>
-#include <mrpt/slam/CObservation2DRangeScan.h>
+#include <mrpt/maps/CSimplePointsMap.h>
+#include <mrpt/obs/CObservation2DRangeScan.h>
 #include <mrpt/slam/CICP.h>
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/poses/CPosePDF.h>
@@ -22,6 +22,10 @@
 using namespace mrpt;
 using namespace mrpt::utils;
 using namespace mrpt::slam;
+using namespace mrpt::maps;
+using namespace mrpt::obs;
+using namespace mrpt::math;
+using namespace mrpt::poses;
 using namespace std;
 
 bool skip_window=false;

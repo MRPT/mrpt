@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -183,7 +183,7 @@ void  CMeshFast::assignImageAndZ( const CImage& img, const mrpt::math::CMatrixTe
    Implements the writing to a CStream capability of
      CSerializable objects
   ---------------------------------------------------------------*/
-void  CMeshFast::writeToStream(CStream &out,int *version) const
+void  CMeshFast::writeToStream(mrpt::utils::CStream &out,int *version) const
 {
 
 	if (version)
@@ -208,7 +208,7 @@ void  CMeshFast::writeToStream(CStream &out,int *version) const
 	Implements the reading from a CStream capability of
 		CSerializable objects
   ---------------------------------------------------------------*/
-void  CMeshFast::readFromStream(CStream &in,int version)
+void  CMeshFast::readFromStream(mrpt::utils::CStream &in,int version)
 {
 	switch(version)
 	{

@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -23,10 +23,6 @@ namespace mrpt
 {
   namespace nav
   {
-	using namespace mrpt;
-	using namespace mrpt::slam;
-	using namespace mrpt::poses;
-
 	/** Base class for reactive navigator systems based on TP-Space, with an arbitrary holonomic
 	  * reactive method running on it and any number of PTGs for transforming the navigation space.
 	  * Both, the holonomic method and the PTGs can be customized by the apropriate user derived classes.
@@ -162,7 +158,7 @@ namespace mrpt
 
 		bool    m_enableConsoleOutput;  //!< Enables / disables the console debug output.
 		bool    m_init_done;            //!< Whether \a loadConfigFile() has been called or not.
-		CTicTac	timerForExecutionPeriod;
+		mrpt::utils::CTicTac	timerForExecutionPeriod;
 
 		// PTG params loaded from INI file:
 		std::string robotName;       //!< Robot name

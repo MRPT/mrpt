@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -18,9 +18,9 @@ using namespace mrpt;
 
 using namespace mrpt::gui;
 using namespace mrpt::opengl;
-
+using namespace mrpt::poses;
 using namespace mrpt::hwdrivers;
-using namespace mrpt::slam;
+using namespace mrpt::obs;
 using namespace mrpt::utils;
 using namespace mrpt::system;
 using namespace mrpt::math;
@@ -617,7 +617,7 @@ int CPtuHokuyo::minLengthVectors(CObservation2DRangeScan &obs, vector<CObservati
 				 minLengthVectors
 -------------------------------------------------------------*/
 
-int CPtuHokuyo::minLengthVectors(mrpt::slam::CObservation2DRangeScan &obs1, mrpt::slam::CObservation2DRangeScan &obs2, const int &mode){
+int CPtuHokuyo::minLengthVectors(mrpt::obs::CObservation2DRangeScan &obs1, mrpt::obs::CObservation2DRangeScan &obs2, const int &mode){
 
 	if(mode){
 		if (obs1.scan.size()>=obs2.scan.size()){
@@ -640,7 +640,7 @@ int CPtuHokuyo::minLengthVectors(mrpt::slam::CObservation2DRangeScan &obs1, mrpt
 				    calculateSensorPose
 -------------------------------------------------------------*/
 
-void CPtuHokuyo::calculateSensorPose(const char &axis, const double &pos, mrpt::slam::CObservation2DRangeScan &obs){
+void CPtuHokuyo::calculateSensorPose(const char &axis, const double &pos, mrpt::obs::CObservation2DRangeScan &obs){
 
 	if (!m_ptu_type) {
 

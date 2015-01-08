@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -21,9 +21,9 @@
 #include <mrpt/hmtslam/CTopLCDetector_FabMap.h>
 #include <mrpt/hmtslam/link_pragmas.h>
 #include <mrpt/slam/CICP.h>
-#include <mrpt/slam/CPointsMap.h>
+#include <mrpt/maps/CPointsMap.h>
 #include <mrpt/slam/TKLDParams.h>
-#include <mrpt/slam/CActionCollection.h>
+#include <mrpt/obs/CActionCollection.h>
 #include <mrpt/opengl/COpenGLScene.h>
 #include <queue>
 
@@ -32,13 +32,6 @@ namespace mrpt
 	/** Classes related to the implementation of Hybrid Metric Topological (HMT) SLAM. \ingroup mrpt_hmtslam_grp */
 	namespace hmtslam
 	{
-		using namespace mrpt::utils;
-		using namespace mrpt::system;
-		using namespace mrpt::math;
-		using namespace mrpt::bayes;
-		using namespace mrpt::slam;
-
-
 		class CHMTSLAM;
 		class CLSLAMAlgorithmBase;
 		class CLSLAM_RBPF_2DLASER;
@@ -136,7 +129,7 @@ namespace mrpt
 					/** Depending on the loop-closure engine, an guess of the relative pose of "area_new" relative to "cur_area" is given here.
 					  *  If the SOG contains 0 modes, then the engine does not provide this information.
 					  */
-					CPose3DPDFSOG	delta_new_cur;
+					mrpt::poses::CPose3DPDFSOG	delta_new_cur;
 				};
 
 				/** The meat is here: only feasible loop closures from "cur_area" are included here, with associated data.
@@ -193,19 +186,19 @@ namespace mrpt
 			  *  This class will delete the passed object when required, so DO NOT DELETE the passed object after calling this.
 			  * \sa pushObservations,pushObservation
 			  */
-			void  pushAction( const CActionCollectionPtr &acts );
+			void  pushAction( const mrpt::obs::CActionCollectionPtr &acts );
 
 			/** Here the user can enter observations into the system (will go to the SLAM process).
 			  *  This class will delete the passed object when required, so DO NOT DELETE the passed object after calling this.
 			  * \sa pushAction,pushObservation
 			  */
-			void  pushObservations( const CSensoryFramePtr &sf );
+			void  pushObservations( const mrpt::obs::CSensoryFramePtr &sf );
 
 			/** Here the user can enter an observation into the system (will go to the SLAM process).
 			  *  This class will delete the passed object when required, so DO NOT DELETE the passed object after calling this.
 			  * \sa pushAction,pushObservation
 			  */
-			void  pushObservation( const CObservationPtr &obs );
+			void  pushObservation( const mrpt::obs::CObservationPtr &obs );
 
 			enum TLSlamMethod
 			{
@@ -216,10 +209,10 @@ namespace mrpt
 			/** Used from the LSLAM thread to retrieve the next object from the queue.
 			  * \return The object, or NULL if empty.
 			  */
-			CSerializablePtr getNextObjectFromInputQueue();
+			mrpt::utils::CSerializablePtr getNextObjectFromInputQueue();
 
 			/** The queue of pending actions/observations supplied by the user waiting for being processed. */
-			std::queue<CSerializablePtr>		m_inputQueue;
+			std::queue<mrpt::utils::CSerializablePtr>		m_inputQueue;
 
 			/** Critical section for accessing  m_inputQueue */
 			synch::CCriticalSection	m_inputQueue_cs;
@@ -250,7 +243,7 @@ namespace mrpt
 
 			/** @name HMT-SLAM sub-processes.
 				@{ */
-			void LSLAM_process_message( const CMessage &msg ); //!< Auxiliary method within thread_LSLAM
+			void LSLAM_process_message( const mrpt::utils::CMessage &msg ); //!< Auxiliary method within thread_LSLAM
 
 			/** No critical section locks are assumed at the entrance of this method.
 			  */
@@ -372,13 +365,13 @@ namespace mrpt
 			  * \return true if everything goes OK.
 			  * \sa loadState
 			  */
-			bool saveState( CStream &out ) const;
+			bool saveState( mrpt::utils::CStream &out ) const;
 
 			/** Load the state of the whole HMT-SLAM framework from some binary stream (e.g. a file).
 			  * \return true if everything goes OK.
 			  * \sa saveState
 			  */
-			bool loadState( CStream &in );
+			bool loadState( mrpt::utils::CStream &in );
 			/** @} */
 
 			/** @name The important data.
@@ -394,7 +387,7 @@ namespace mrpt
 
 			/** Gets a 3D representation of the current state of the whole mapping framework.
 			  */
-			void  getAs3DScene( COpenGLScene	&outScene );
+			void  getAs3DScene( mrpt::opengl::COpenGLScene	&outScene );
 
 		protected:
 			/** A variety of options and configuration params (private, use loadOptions).
@@ -413,7 +406,7 @@ namespace mrpt
 
 				/** This method must display clearly all the contents of the structure in textual form, sending it to a CStream.
 				  */
-				void  dumpToTextStream(CStream	&out) const;
+				void  dumpToTextStream(mrpt::utils::CStream	&out) const;
 
 
 				std::string	LOG_OUTPUT_DIR;		//!< [LOGGING] If it is not an empty string (""), a directory with that name will be created and log files save there.
@@ -443,19 +436,19 @@ namespace mrpt
 
 				/** A 3-length vector with the std. deviation of the transition model in (x,y,phi) used only when there is no odometry (if there is odo, its uncertainty values will be used instead); x y: In meters, phi: radians (but in degrees when loading from a configuration ini-file!)
 				  */
-				CVectorFloat  stds_Q_no_odo;
+				mrpt::math::CVectorFloat  stds_Q_no_odo;
 
 				/** [AA] The options for the partitioning algorithm
 				*/
-				CIncrementalMapPartitioner::TOptions	AA_options;
+				mrpt::slam::CIncrementalMapPartitioner::TOptions	AA_options;
 
-				TSetOfMetricMapInitializers		defaultMapsInitializers;  //!< The default set of maps to be created in each particle
+				mrpt::maps::TSetOfMetricMapInitializers		defaultMapsInitializers;  //!< The default set of maps to be created in each particle
 
-				CMultiMetricMap::TOptions		defaultMapsOptions;		//!< The default options for the CMultiMetricMap in each particle.
+				mrpt::maps::CMultiMetricMap::TOptions		defaultMapsOptions;		//!< The default options for the CMultiMetricMap in each particle.
 
 				bayes::CParticleFilter::TParticleFilterOptions pf_options;	//!< These params are used from every LMH object.
 
-				TKLDParams						KLD_params;
+				mrpt::slam::TKLDParams						KLD_params;
 
 				int  random_seed;	//!< 0 means randomize, use any other value to have repetitive experiments.
 
@@ -480,7 +473,7 @@ namespace mrpt
 		{
 			friend class HMTSLAM_IMPEXP CLocalMetricHypothesis;
 		protected:
-			safe_ptr<CHMTSLAM>	m_parent;
+			mrpt::utils::safe_ptr<CHMTSLAM>	m_parent;
 
 		public:
 			/** Constructor
@@ -502,23 +495,23 @@ namespace mrpt
 			  */
 			virtual void processOneLMH(
 				CLocalMetricHypothesis	*LMH,
-				const CActionCollectionPtr 	&act,
-				const CSensoryFramePtr		&sf ) = 0;
+				const mrpt::obs::CActionCollectionPtr 	&act,
+				const mrpt::obs::CSensoryFramePtr		&sf ) = 0;
 
 
 			/** The PF algorithm implementation.
 			  */
 			virtual void  prediction_and_update_pfAuxiliaryPFOptimal(
 				CLocalMetricHypothesis			* LMH,
-				const mrpt::slam::CActionCollection	* action,
-				const mrpt::slam::CSensoryFrame		* observation,
+				const mrpt::obs::CActionCollection	* action,
+				const mrpt::obs::CSensoryFrame		* observation,
 				const bayes::CParticleFilter::TParticleFilterOptions &PF_options ) = 0;
 
 			/** The PF algorithm implementation.  */
 			virtual void  prediction_and_update_pfOptimalProposal(
 				CLocalMetricHypothesis			*LMH,
-				const mrpt::slam::CActionCollection	* action,
-				const mrpt::slam::CSensoryFrame		* observation,
+				const mrpt::obs::CActionCollection	* action,
+				const mrpt::obs::CSensoryFrame		* observation,
 				const bayes::CParticleFilter::TParticleFilterOptions &PF_options ) = 0;
 
 		}; // end of class CLSLAMAlgorithmBase
@@ -551,21 +544,21 @@ namespace mrpt
 			  */
 			void processOneLMH(
 				CLocalMetricHypothesis	*LMH,
-				const CActionCollectionPtr	&act,
-				const CSensoryFramePtr		&sf );
+				const mrpt::obs::CActionCollectionPtr	&act,
+				const mrpt::obs::CSensoryFramePtr		&sf );
 
 			/** The PF algorithm implementation.  */
 			void  prediction_and_update_pfAuxiliaryPFOptimal(
 				CLocalMetricHypothesis			*LMH,
-				const mrpt::slam::CActionCollection	* action,
-				const mrpt::slam::CSensoryFrame		* observation,
+				const mrpt::obs::CActionCollection	* action,
+				const mrpt::obs::CSensoryFrame		* observation,
 				const bayes::CParticleFilter::TParticleFilterOptions &PF_options );
 
 			/** The PF algorithm implementation.  */
 			void  prediction_and_update_pfOptimalProposal(
 				CLocalMetricHypothesis			*LMH,
-				const mrpt::slam::CActionCollection	* action,
-				const mrpt::slam::CSensoryFrame		* observation,
+				const mrpt::obs::CActionCollection	* action,
+				const mrpt::obs::CSensoryFrame		* observation,
 				const bayes::CParticleFilter::TParticleFilterOptions &PF_options );
 
 		protected:
@@ -590,8 +583,8 @@ namespace mrpt
 				*/
 			void  loadTPathBinFromPath(
 				TPathBin	&outBin,
-				std::map<TPoseID,CPose3D>		*path = NULL,
-				CPose2D							*newPose = NULL );
+				TMapPoseID2Pose3D *path = NULL,
+				mrpt::poses::CPose2D  *newPose = NULL );
 
 			/** Checks if a given "TPathBin" element is already into a set of them, and return its index (first one is 0), or -1 if not found.
 				*/
@@ -603,8 +596,8 @@ namespace mrpt
 			/** Auxiliary function used in "prediction_and_update_pfAuxiliaryPFOptimal"
 				*/
 			static double  particlesEvaluator_AuxPFOptimal(
-				const bayes::CParticleFilter::TParticleFilterOptions &PF_options,
-				const CParticleFilterCapable	*obj,
+				const mrpt::bayes::CParticleFilter::TParticleFilterOptions &PF_options,
+				const mrpt::bayes::CParticleFilterCapable	*obj,
 				size_t					index,
 				const void				*action,
 				const void				*observation );
@@ -612,11 +605,11 @@ namespace mrpt
 			/** Auxiliary function that evaluates the likelihood of an observation, given a robot pose, and according to the options in "CPosePDFParticles::options".
 			  */
 			static double  auxiliarComputeObservationLikelihood(
-				const bayes::CParticleFilter::TParticleFilterOptions &PF_options,
-				const CParticleFilterCapable		*obj,
+				const mrpt::bayes::CParticleFilter::TParticleFilterOptions &PF_options,
+				const mrpt::bayes::CParticleFilterCapable		*obj,
 				size_t						particleIndexForMap,
-				const CSensoryFrame			*observation,
-				const CPose2D				*x );
+				const mrpt::obs::CSensoryFrame			*observation,
+				const mrpt::poses::CPose2D				*x );
 
 		}; // end class CLSLAM_RBPF_2DLASER
 

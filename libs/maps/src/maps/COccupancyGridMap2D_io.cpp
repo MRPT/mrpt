@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -14,11 +14,13 @@
 #include <mrpt/utils/CStream.h>
 #include <mrpt/utils/CEnhancedMetaFile.h>
 #include <mrpt/utils/round.h> // round()
-#include <mrpt/slam/COccupancyGridMap2D.h>
+#include <mrpt/maps/COccupancyGridMap2D.h>
 #include <mrpt/random.h>
 
 using namespace mrpt;
-using namespace mrpt::slam;
+using namespace mrpt::maps;
+using namespace mrpt::math;
+using namespace mrpt::obs;
 using namespace mrpt::random;
 using namespace mrpt::utils;
 using namespace mrpt::poses;
@@ -48,7 +50,7 @@ bool  COccupancyGridMap2D::saveAsBitmapFile(const std::string &file) const
 	Implements the writing to a CStream capability of
 	  CSerializable objects
   ---------------------------------------------------------------*/
-void  COccupancyGridMap2D::writeToStream(CStream &out, int *version) const
+void  COccupancyGridMap2D::writeToStream(mrpt::utils::CStream &out, int *version) const
 {
 	if (version)
 		*version = 5;
@@ -118,7 +120,7 @@ void  COccupancyGridMap2D::writeToStream(CStream &out, int *version) const
 /*---------------------------------------------------------------
 					readFromStream
   ---------------------------------------------------------------*/
-void  COccupancyGridMap2D::readFromStream(CStream &in, int version)
+void  COccupancyGridMap2D::readFromStream(mrpt::utils::CStream &in, int version)
 {
 	m_is_empty = false;
 

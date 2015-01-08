@@ -2,14 +2,14 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 #ifndef CStereoGrabber_Bumblebee_H
 #define CStereoGrabber_Bumblebee_H
 
-#include <mrpt/slam/CObservationStereoImages.h>
+#include <mrpt/obs/CObservationStereoImages.h>
 #include <mrpt/hwdrivers/link_pragmas.h>
 #include <mrpt/utils/CUncopiable.h>
 
@@ -112,7 +112,7 @@ namespace mrpt
 			 *
 			 * \return false on any error, true if all go fine.
 			*/
-			bool  getStereoObservation( mrpt::slam::CObservationStereoImages &out_observation );
+			bool  getStereoObservation( mrpt::obs::CObservationStereoImages &out_observation );
 
 
 		};	// End of class

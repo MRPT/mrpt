@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -11,8 +11,8 @@
 #include <mrpt/utils/types_math.h> // Eigen (with MRPT "plugin" in BaseMatrix<>)
 #include <mrpt/utils/CConfigFileBase.h>
 #include <mrpt/utils/CImage.h>
-#include <mrpt/slam/CRawlog.h>
-#include <mrpt/slam/CObservation3DRangeScan.h>
+#include <mrpt/obs/CRawlog.h>
+#include <mrpt/obs/CObservation3DRangeScan.h>
 #include <mrpt/opengl/COpenGLScene.h>
 #include <mrpt/gui.h>
 #include <iostream>
@@ -25,7 +25,7 @@ public:
 
 	mrpt::opengl::COpenGLScenePtr scene;	//!< Opengl scene
 	mrpt::gui::CDisplayWindow3D	window;
-	mrpt::slam::CRawlog	dataset;
+	mrpt::obs::CRawlog	dataset;
 	std::ifstream		f_gt;
 	std::ofstream		f_res;
 

@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -20,7 +20,7 @@
 #endif
 
 using namespace mrpt::hwdrivers;
-using namespace mrpt::slam;
+using namespace mrpt::obs;
 using namespace mrpt::system;
 using namespace mrpt::utils;
 using namespace std;
@@ -112,7 +112,7 @@ void  CPhidgetInterfaceKitProximitySensors::loadConfig_sensorSpecific(
 			float pitch = configSource.read_float(iniSection, sensorNPosePitch, 0.0);
 			float roll = configSource.read_float(iniSection, sensorNPoseRoll, 0.0);
 
-			m_sensorPoses[i-1] = CPose3D(x,y,z,yaw,pitch,roll);
+			m_sensorPoses[i-1] = mrpt::poses::CPose3D(x,y,z,yaw,pitch,roll);
 		}
 	}
 	if(display)
@@ -242,7 +242,7 @@ void CPhidgetInterfaceKitProximitySensors::doProcess( )
 /*-------------------------------------------------------------
 					getObservation
 -------------------------------------------------------------*/
-void CPhidgetInterfaceKitProximitySensors::getObservation( mrpt::slam::CObservationRange &obs )
+void CPhidgetInterfaceKitProximitySensors::getObservation( mrpt::obs::CObservationRange &obs )
 {
 #if MRPT_HAS_PHIDGET
 	obs.timestamp				= mrpt::system::getCurrentTime();
@@ -257,7 +257,7 @@ void CPhidgetInterfaceKitProximitySensors::getObservation( mrpt::slam::CObservat
 	{
 		if(m_sensorIsPlugged[i])
 		{
-			mrpt::slam::CObservationRange::TMeasurement obsRange;
+			mrpt::obs::CObservationRange::TMeasurement obsRange;
 			int err = CPhidgetInterfaceKit_getSensorValue(*((CPhidgetInterfaceKitHandle*)(m_carteInterfaceKit)), i, &sensorValue);
 			if(err>0)
 			{

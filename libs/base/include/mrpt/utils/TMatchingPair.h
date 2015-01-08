@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -66,18 +66,12 @@ namespace mrpt
 		class BASE_IMPEXP TMatchingPairList : public std::vector<TMatchingPair>
 		{
 		public:
-
-			/** Checks if the given index from the "other" map appears in the list.
-			  */
-			bool  indexOtherMapHasCorrespondence(unsigned int idx);
-
-			/** Saves the correspondences to a text file
-			  */
-			void  dumpToFile(const std::string &fileName);
-
-			/** Saves the correspondences as a MATLAB script which draws them.
-			  */
-			void saveAsMATLABScript( const std::string &filName );
+			/** Checks if the given index from the "other" map appears in the list. */
+			bool  indexOtherMapHasCorrespondence(size_t idx)  const;
+			/** Saves the correspondences to a text file */
+			void  dumpToFile(const std::string &fileName) const;
+			/** Saves the correspondences as a MATLAB script which draws them. */
+			void saveAsMATLABScript( const std::string &filName ) const;
 
 			/** Computes the overall square error between the 2D points in the list of correspondences, given the 2D transformation "q"
 			  *    \f[ \sum\limits_i e_i  \f]

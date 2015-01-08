@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -115,7 +115,7 @@ void CPosePDFGrid::getCovarianceAndMean(CMatrixDouble33 &cov, CPose2D &p) const
 /*---------------------------------------------------------------
 						writeToStream
   ---------------------------------------------------------------*/
-void  CPosePDFGrid::writeToStream(CStream &out,int *version) const
+void  CPosePDFGrid::writeToStream(mrpt::utils::CStream &out,int *version) const
 {
 	if (version)
 		*version = 0;
@@ -137,7 +137,7 @@ void  CPosePDFGrid::writeToStream(CStream &out,int *version) const
 /*---------------------------------------------------------------
 						readFromStream
   ---------------------------------------------------------------*/
-void  CPosePDFGrid::readFromStream(CStream &in, int version)
+void  CPosePDFGrid::readFromStream(mrpt::utils::CStream &in, int version)
 {
 	switch(version)
 	{

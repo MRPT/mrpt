@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -14,8 +14,8 @@
 #include <mrpt/hwdrivers/CActivMediaRobotBase.h>
 #include <mrpt/utils/CTicTac.h>
 #include <mrpt/system/os.h>
-#include <mrpt/slam/CObservationRange.h>
-#include <mrpt/slam/CObservationOdometry.h>
+#include <mrpt/obs/CObservationRange.h>
+#include <mrpt/obs/CObservationOdometry.h>
 
 #if MRPT_HAS_ARIA
 	#include "Aria.h"
@@ -27,7 +27,8 @@ IMPLEMENTS_GENERIC_SENSOR(CActivMediaRobotBase,mrpt::hwdrivers)
 using namespace mrpt;
 using namespace mrpt::utils;
 using namespace mrpt::system;
-using namespace mrpt::slam;
+using namespace mrpt::obs;
+using namespace mrpt::poses;
 using namespace mrpt::hwdrivers;
 using namespace std;
 
@@ -645,6 +646,21 @@ void CActivMediaRobotBase::getBatteryCharge( double &out_batery_volts )
 	THE_ROBOT->unlock();
 #else
 	MRPT_UNUSED_PARAM(out_batery_volts);
+	THROW_EXCEPTION("MRPT has been compiled with 'MRPT_BUILD_ARIA'=OFF, so this class cannot be used.");
+#endif
+}
+
+/*-------------------------------------------------------------
+					getRealBatteryCharge
+-------------------------------------------------------------*/
+void CActivMediaRobotBase::getRealBatteryCharge( double &out_batery_volts )
+{
+#if MRPT_HAS_ARIA
+	ASSERTMSG_(THE_ROBOT!=NULL, "Robot is not connected")
+	THE_ROBOT->lock();
+	out_batery_volts = THE_ROBOT->getRealBatteryVoltage();
+	THE_ROBOT->unlock();
+#else
 	THROW_EXCEPTION("MRPT has been compiled with 'MRPT_BUILD_ARIA'=OFF, so this class cannot be used.");
 #endif
 }

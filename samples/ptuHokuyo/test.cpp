@@ -2,19 +2,20 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
 #include <mrpt/hwdrivers/CPtuHokuyo.h>
-#include <mrpt/obs.h>
+#include <mrpt/obs/CObservation2DRangeScan.h>
+#include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/gui.h>
-#include <mrpt/maps.h>
 
 using namespace std;
 using namespace mrpt::hwdrivers;
-using namespace mrpt::slam;
+using namespace mrpt::maps;
+using namespace mrpt::obs;
 using namespace mrpt::math;
 
 // Adicional functions
@@ -230,7 +231,8 @@ void showInfo(CPtuHokuyo *ph){
 
 	double radSec, actRadSec,nRad;
 	bool boolean=false;
-	char *version="";
+	char version[100];
+	version[0]='\0';
 
 	cout << "\nGeneral PTU info:\n\n";
 

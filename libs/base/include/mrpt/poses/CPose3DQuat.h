@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -86,7 +86,7 @@ namespace poses
 		void  getHomogeneousMatrix(mrpt::math::CMatrixDouble44 & out_HM ) const;
 
 		/** Returns a 1x7 vector with [x y z qr qx qy qz] */
-		void getAsVector(CVectorDouble &v) const;
+		void getAsVector(mrpt::math::CVectorDouble &v) const;
 		/// \overload
 		void getAsVector(mrpt::math::CArrayDouble<7> &v) const {
 			v[0] = m_coords[0]; v[1] = m_coords[1]; v[2] = m_coords[2];

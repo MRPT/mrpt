@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -12,8 +12,8 @@
 #include <mrpt/hmtslam/CHMHMapNode.h>
 #include <mrpt/hmtslam/CHMHMapArc.h>
 #include <mrpt/hmtslam/CHierarchicalMapMHPartition.h>
-#include <mrpt/slam/CSimpleMap.h>
-#include <mrpt/slam/CMultiMetricMap.h>
+#include <mrpt/maps/CSimpleMap.h>
+#include <mrpt/maps/CMultiMetricMap.h>
 #include <mrpt/utils/CSerializable.h>
 
 
@@ -21,8 +21,6 @@ namespace mrpt
 {
 	namespace hmtslam
 	{
-		using namespace mrpt::slam;
-
 		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CHierarchicalMHMap, mrpt::utils::CSerializable,  HMTSLAM_IMPEXP )
 
 		/** The most high level class for storing hybrid, multi-hypothesis maps in a graph-based model.

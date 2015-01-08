@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -26,12 +26,12 @@
 #include <mrpt/bayes/CParticleFilter.h>
 #include <mrpt/random.h>
 
-#include <mrpt/slam/CActionRobotMovement2D.h>
-#include <mrpt/slam/CActionCollection.h>
-#include <mrpt/slam/CRawlog.h>
-#include <mrpt/slam/CSimpleMap.h>
-#include <mrpt/slam/COccupancyGridMap2D.h>
-#include <mrpt/slam/CMultiMetricMap.h>
+#include <mrpt/obs/CActionRobotMovement2D.h>
+#include <mrpt/obs/CActionCollection.h>
+#include <mrpt/obs/CRawlog.h>
+#include <mrpt/maps/CSimpleMap.h>
+#include <mrpt/maps/COccupancyGridMap2D.h>
+#include <mrpt/maps/CMultiMetricMap.h>
 
 #include <mrpt/system/os.h>
 #include <mrpt/system/threads.h> // sleep()
@@ -50,6 +50,7 @@
 
 using namespace mrpt;
 using namespace mrpt::slam;
+using namespace mrpt::maps;
 using namespace mrpt::opengl;
 using namespace mrpt::gui;
 using namespace mrpt::math;
@@ -58,6 +59,7 @@ using namespace mrpt::utils;
 using namespace mrpt::random;
 using namespace mrpt::poses;
 using namespace mrpt::bayes;
+using namespace mrpt::obs;
 using namespace std;
 
 // Forward declaration:
@@ -894,8 +896,8 @@ void getGroundTruth( CPose2D &expectedPose, size_t rawlogEntry, const CMatrixDou
 		if (GT_index_is_time)
 		{
 			// Look for the timestamp:
-			static std::map<double,CPose2D>	GT_path;
-			std::map<double,CPose2D>::iterator it;
+			static mrpt::aligned_containers<double,CPose2D>::map_t	GT_path;
+			mrpt::aligned_containers<double,CPose2D>::map_t::iterator it;
 			if (first_step)
 			{
 				for (size_t i=0;i<GT.getRowCount();i++)

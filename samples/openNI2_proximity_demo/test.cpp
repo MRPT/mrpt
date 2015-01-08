@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -100,7 +100,7 @@ int main ( int argc, char** argv )
 	//========================================================================================
 	gui::CDisplayWindow3D window;
 	opengl::COpenGLScenePtr	scene;
-	gui::global_settings::OCTREE_RENDER_MAX_POINTS_PER_NODE = 1000000;
+	mrpt::global_settings::OCTREE_RENDER_MAX_POINTS_PER_NODE = 1000000;
 	window.setWindowTitle("RGB-D camera frame");
 	window.resize(800,600);
 	window.setPos(500,50);

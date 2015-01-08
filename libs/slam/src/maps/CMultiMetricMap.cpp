@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -11,16 +11,17 @@
 
 #include <mrpt/utils/CConfigFile.h>
 #include <mrpt/poses/CPoint2D.h>
-#include <mrpt/slam/CMultiMetricMap.h>
+#include <mrpt/maps/CMultiMetricMap.h>
 #include <mrpt/utils/CStartUpClassesRegister.h>
 #include <mrpt/utils/metaprogramming.h>
 
-using namespace mrpt::slam;
+using namespace mrpt::maps;
 using namespace mrpt::utils;
 using namespace mrpt::poses;
+using namespace mrpt::obs;
 using namespace mrpt::utils::metaprogramming;
 
-IMPLEMENTS_SERIALIZABLE( CMultiMetricMap, CMetricMap, mrpt::slam )
+IMPLEMENTS_SERIALIZABLE( CMultiMetricMap, CMetricMap, mrpt::maps )
 
 
 extern CStartUpClassesRegister  mrpt_slam_class_reg;
@@ -298,7 +299,7 @@ struct MapIsEmpty
   ---------------------------------------------------------------*/
 CMultiMetricMap::CMultiMetricMap(
 	const TSetOfMetricMapInitializers		*initializers,
-	const mrpt::slam::CMultiMetricMap::TOptions	*opts) :
+	const mrpt::maps::CMultiMetricMap::TOptions	*opts) :
 		m_ID(0)
 {
 	MRPT_START
@@ -316,7 +317,7 @@ CMultiMetricMap::CMultiMetricMap(
 /*---------------------------------------------------------------
 			copy constructor
   ---------------------------------------------------------------*/
-CMultiMetricMap::CMultiMetricMap(const mrpt::slam::CMultiMetricMap &other ) :
+CMultiMetricMap::CMultiMetricMap(const mrpt::maps::CMultiMetricMap &other ) :
 	m_ID(0)
 {
 	*this = other;	// Call the "=" operator
@@ -326,7 +327,7 @@ CMultiMetricMap::CMultiMetricMap(const mrpt::slam::CMultiMetricMap &other ) :
 			setListOfMaps
   ---------------------------------------------------------------*/
 void  CMultiMetricMap::setListOfMaps(
-	const mrpt::slam::TSetOfMetricMapInitializers	*initializers )
+	const mrpt::maps::TSetOfMetricMapInitializers	*initializers )
 {
 	MRPT_START
 
@@ -587,7 +588,7 @@ void  CMultiMetricMap::internal_clear()
 /*---------------------------------------------------------------
 		Copy constructor
   ---------------------------------------------------------------*/
-mrpt::slam::CMultiMetricMap & CMultiMetricMap::operator = ( const CMultiMetricMap &other )
+mrpt::maps::CMultiMetricMap & CMultiMetricMap::operator = ( const CMultiMetricMap &other )
 {
 	MRPT_START
 
@@ -632,7 +633,7 @@ void  CMultiMetricMap::deleteAllMaps( )
 /*---------------------------------------------------------------
   Implements the writing to a CStream capability of CSerializable objects
  ---------------------------------------------------------------*/
-void  CMultiMetricMap::writeToStream(CStream &out, int *version) const
+void  CMultiMetricMap::writeToStream(mrpt::utils::CStream &out, int *version) const
 {
 	if (version)
 		*version = 10;
@@ -725,7 +726,7 @@ void  CMultiMetricMap::writeToStream(CStream &out, int *version) const
 /*---------------------------------------------------------------
   Implements the reading from a CStream capability of CSerializable objects
  ---------------------------------------------------------------*/
-void  CMultiMetricMap::readFromStream(CStream &in, int version)
+void  CMultiMetricMap::readFromStream(mrpt::utils::CStream &in, int version)
 {
 	switch(version)
 	{
@@ -1067,7 +1068,7 @@ bool  CMultiMetricMap::internal_insertObservation(
 					computeMatchingWith2D
  ---------------------------------------------------------------*/
 void CMultiMetricMap::determineMatching2D(
-	const CMetricMap      * otherMap,
+	const mrpt::maps::CMetricMap      * otherMap,
 	const CPose2D         & otherMapPose,
 	TMatchingPairList     & correspondences,
 	const TMatchingParams & params,
@@ -1384,12 +1385,12 @@ void  TSetOfMetricMapInitializers::loadFromConfigFile(
 
 /*
 		  *  ; Creation of maps:
-		  *  occupancyGrid_count=<Number of mrpt::slam::COccupancyGridMap2D maps>
-		  *  gasGrid_count=<Number of mrpt::slam::CGasConcentrationGridMap2D maps>
-		  *  wifiGrid_count=<Number of mrpt::slam::CWirelessPowerGridMap2D maps>
-		  *  landmarksMap_count=<0 or 1, for creating a mrpt::slam::CLandmarksMap map>
+		  *  occupancyGrid_count=<Number of mrpt::maps::COccupancyGridMap2D maps>
+		  *  gasGrid_count=<Number of mrpt::maps::CGasConcentrationGridMap2D maps>
+		  *  wifiGrid_count=<Number of mrpt::maps::CWirelessPowerGridMap2D maps>
+		  *  landmarksMap_count=<0 or 1, for creating a mrpt::maps::CLandmarksMap map>
 		  *  beaconMap_count=<0 or 1>
-		  *  pointsMap_count=<0 or 1, for creating a mrpt::slam::CSimplePointsMap map>
+		  *  pointsMap_count=<0 or 1, for creating a mrpt::maps::CSimplePointsMap map>
 */
 
 	unsigned int n = ini.read_int(sectionName,"occupancyGrid_count",0);
@@ -1724,7 +1725,7 @@ void  TSetOfMetricMapInitializers::loadFromConfigFile(
 /*---------------------------------------------------------------
 		TSetOfMetricMapInitializers::dumpToTextStream
  ---------------------------------------------------------------*/
-void  TSetOfMetricMapInitializers::dumpToTextStream(CStream	&out) const
+void  TSetOfMetricMapInitializers::dumpToTextStream(mrpt::utils::CStream	&out) const
 {
 	MRPT_START
 
@@ -1917,7 +1918,7 @@ void  CMultiMetricMap::getAs3DObject( mrpt::opengl::CSetOfObjectsPtr	&outObj ) c
  * \sa computeMatchingWith2D
   ---------------------------------------------------------------*/
 float  CMultiMetricMap::compute3DMatchingRatio(
-		const CMetricMap								*otherMap,
+		const mrpt::maps::CMetricMap								*otherMap,
 		const CPose3D							&otherMapPose,
 		float									maxDistForCorr,
 		float									maxMahaDistForCorr
@@ -2000,7 +2001,7 @@ void  CMultiMetricMap::TOptions::loadFromConfigFile(
 
 /** This method must display clearly all the contents of the structure in textual form, sending it to a CStream.
   */
-void  CMultiMetricMap::TOptions::dumpToTextStream(CStream	&out) const
+void  CMultiMetricMap::TOptions::dumpToTextStream(mrpt::utils::CStream	&out) const
 {
 	out.printf("\n----------- [CMultiMetricMap::TOptions] ------------ \n\n");
 

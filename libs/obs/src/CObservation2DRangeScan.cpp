@@ -2,27 +2,27 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
 #include "obs-precomp.h"   // Precompiled headers
 
-#include <mrpt/slam/CObservation2DRangeScan.h>
+#include <mrpt/obs/CObservation2DRangeScan.h>
 #include <mrpt/poses/CPosePDF.h>
 #include <mrpt/utils/CStream.h>
 #include <mrpt/math/CMatrix.h>
 #include <mrpt/math/wrap2pi.h>
 
 using namespace std;
-using namespace mrpt::slam;
+using namespace mrpt::obs;
 using namespace mrpt::utils;
 using namespace mrpt::poses;
 using namespace mrpt::math;
 
 // This must be added to any CSerializable class implementation file.
-IMPLEMENTS_SERIALIZABLE(CObservation2DRangeScan, CObservation,mrpt::slam)
+IMPLEMENTS_SERIALIZABLE(CObservation2DRangeScan, CObservation,mrpt::obs)
 
 /*---------------------------------------------------------------
 							Constructor
@@ -51,7 +51,7 @@ CObservation2DRangeScan::~CObservation2DRangeScan()
 /*---------------------------------------------------------------
   Implements the writing to a CStream capability of CSerializable objects
  ---------------------------------------------------------------*/
-void  CObservation2DRangeScan::writeToStream(CStream &out, int *version) const
+void  CObservation2DRangeScan::writeToStream(mrpt::utils::CStream &out, int *version) const
 {
 	if (version)
 		*version = 6;
@@ -111,7 +111,7 @@ void CObservation2DRangeScan::truncateByDistanceAndAngle(float min_distance, flo
 /*---------------------------------------------------------------
   Implements the reading from a CStream capability of CSerializable objects
  ---------------------------------------------------------------*/
-void  CObservation2DRangeScan::readFromStream(CStream &in, int version)
+void  CObservation2DRangeScan::readFromStream(mrpt::utils::CStream &in, int version)
 {
 	switch(version)
 	{
@@ -361,12 +361,11 @@ void CObservation2DRangeScan::filterByExclusionAngles( const std::vector<std::pa
 
 namespace mrpt
 {
-	namespace slam
+	namespace obs
 	{
 		// Tricky way to call to a library that depends on us, a sort of "run-time" linking:
 		//  ptr_internal_build_points_map_from_scan2D is a functor in "mrpt-obs", set by "mrpt-maps" at its startup.
-		void OBS_IMPEXP (*ptr_internal_build_points_map_from_scan2D)(const mrpt::slam::CObservation2DRangeScan &obs, mrpt::slam::CMetricMapPtr &out_map, const void *insertOps) = NULL;
-
+		void OBS_IMPEXP (*ptr_internal_build_points_map_from_scan2D)(const mrpt::obs::CObservation2DRangeScan &obs, mrpt::maps::CMetricMapPtr &out_map, const void *insertOps) = NULL;
 	}
 }
 
@@ -389,7 +388,35 @@ void CObservation2DRangeScan::getScanProperties(T2DScanProperties& p) const
 	p.rightToLeft = this->rightToLeft;
 }
 
-bool mrpt::slam::operator<(const T2DScanProperties&a, const T2DScanProperties&b)
+bool mrpt::obs::operator<(const T2DScanProperties&a, const T2DScanProperties&b)
 {
 	return (a.nRays<b.nRays || a.aperture<b.aperture || (a.rightToLeft && !b.rightToLeft));
+}
+
+
+void CObservation2DRangeScan::getDescriptionAsText(std::ostream &o) const
+{
+	CObservation::getDescriptionAsText(o);
+	o << "Homogeneous matrix for the sensor's 3D pose, relative to robot base:\n";
+	o << sensorPose.getHomogeneousMatrixVal() << sensorPose << endl;
+
+	o << format("Samples direction: %s\n", (rightToLeft) ? "Right->Left" : "Left->Right");
+	o << format("Points in the scan: %u\n", (unsigned)scan.size());
+	o << format("Estimated sensor 'sigma': %f\n", stdError );
+	o << format("Increment in pitch during the scan: %f deg\n", RAD2DEG( deltaPitch ));
+
+	size_t i,inval = 0;
+	for (i=0;i<scan.size();i++) if (!validRange[i]) inval++;
+	o << format("Invalid points in the scan: %u\n", (unsigned)inval);
+
+	o << format("Sensor maximum range: %.02f m\n", maxRange );
+	o << format("Sensor field-of-view (\"aperture\"): %.01f deg\n", RAD2DEG(aperture) );
+
+	o << "Raw scan values: [";
+	for (i=0;i<scan.size();i++) o << format("%.03f ", scan[i] );
+	o << "]\n";
+
+	o << "Raw valid-scan values: [";
+	for (i=0;i<scan.size();i++) o << format("%u ", validRange[i] ? 1:0 );
+	o << "]\n\n";
 }

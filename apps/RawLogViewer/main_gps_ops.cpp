@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -17,7 +17,7 @@
 #include <wx/filedlg.h>
 
 // General global variables:
-#include <mrpt/slam/CObservationGPS.h>
+#include <mrpt/obs/CObservationGPS.h>
 #include <mrpt/opengl/CPointCloud.h>
 #include <mrpt/opengl/CGridPlaneXY.h>
 #include <mrpt/opengl/CAxis.h>
@@ -30,13 +30,14 @@
 #include <mrpt/math/geometry.h>
 
 using namespace mrpt;
-using namespace mrpt::slam;
+using namespace mrpt::obs;
 using namespace mrpt::opengl;
 using namespace mrpt::system;
 using namespace mrpt::math;
 using namespace mrpt::gui;
 using namespace mrpt::utils;
 using namespace mrpt::topography;
+using namespace mrpt::poses;
 using namespace std;
 
 
@@ -964,8 +965,8 @@ void xRawLogViewerFrame::OnGenGPSTxt(wxCommandEvent& event)
 // Delete rawlog entries with GPS observations with lat/lon/height being Not-A-Number
 //  (useful for some vendor-specific devices...)
 void filter_delGPSNan(
-    mrpt::slam::CActionCollection *acts,
-    mrpt::slam::CSensoryFrame *SF,
+    mrpt::obs::CActionCollection *acts,
+    mrpt::obs::CSensoryFrame *SF,
     int &changesCount  )
 {
     if (SF)

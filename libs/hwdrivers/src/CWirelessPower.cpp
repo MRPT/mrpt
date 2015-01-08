@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -482,7 +482,7 @@ int		CWirelessPower::GetPower()
 	NOTE: Deprecated, use getObservations. Use this class as
 	      GenericSensor. See the CGenericSensor documentation
  ---------------------------------------------------------------*/
-bool CWirelessPower::getObservation( mrpt::slam::CObservationWirelessPower &outObservation )
+bool CWirelessPower::getObservation( mrpt::obs::CObservationWirelessPower &outObservation )
 {
 	try{
 
@@ -506,10 +506,10 @@ bool CWirelessPower::getObservation( mrpt::slam::CObservationWirelessPower &outO
 void CWirelessPower::doProcess()
 {
 	// Wrapper to getObservation
-	mrpt::slam::CObservationWirelessPowerPtr  outObservation = mrpt::slam::CObservationWirelessPower::Create();
+	mrpt::obs::CObservationWirelessPowerPtr  outObservation = mrpt::obs::CObservationWirelessPower::Create();
 	getObservation(*outObservation);
 
-	appendObservation(mrpt::slam::CObservationWirelessPowerPtr(new mrpt::slam::CObservationWirelessPower(*outObservation)));
+	appendObservation(mrpt::obs::CObservationWirelessPowerPtr(new mrpt::obs::CObservationWirelessPower(*outObservation)));
 }
 
 

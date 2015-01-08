@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -127,8 +127,8 @@ namespace bayes
 		 * \sa prediction_and_update_pfStandardProposal,prediction_and_update_pfAuxiliaryPFStandard,prediction_and_update_pfOptimalProposal,prediction_and_update_pfAuxiliaryPFOptimal
 		 */
 		void  prediction_and_update(
-			const mrpt::slam::CActionCollection	* action,
-			const mrpt::slam::CSensoryFrame		* observation,
+			const mrpt::obs::CActionCollection	* action,
+			const mrpt::obs::CSensoryFrame		* observation,
 			const bayes::CParticleFilter::TParticleFilterOptions &PF_options
 			 );
 
@@ -183,29 +183,29 @@ namespace bayes
 		 * \sa prediction_and_update
 		 */
 		virtual void  prediction_and_update_pfStandardProposal(
-			const mrpt::slam::CActionCollection	* action,
-			const mrpt::slam::CSensoryFrame		* observation,
+			const mrpt::obs::CActionCollection	* action,
+			const mrpt::obs::CSensoryFrame		* observation,
 			const bayes::CParticleFilter::TParticleFilterOptions &PF_options );
 		/** Performs the particle filter prediction/update stages for the algorithm "pfAuxiliaryPFStandard" (if not implemented in heritated class, it will raise a 'non-implemented' exception).
 		 * \sa prediction_and_update
 		 */
 		virtual void  prediction_and_update_pfAuxiliaryPFStandard(
-			const mrpt::slam::CActionCollection	* action,
-			const mrpt::slam::CSensoryFrame		* observation,
+			const mrpt::obs::CActionCollection	* action,
+			const mrpt::obs::CSensoryFrame		* observation,
 			const bayes::CParticleFilter::TParticleFilterOptions &PF_options );
 		/** Performs the particle filter prediction/update stages for the algorithm "pfOptimalProposal" (if not implemented in heritated class, it will raise a 'non-implemented' exception).
 		 * \sa prediction_and_update
 		 */
 		virtual void  prediction_and_update_pfOptimalProposal(
-			const mrpt::slam::CActionCollection	* action,
-			const mrpt::slam::CSensoryFrame		* observation,
+			const mrpt::obs::CActionCollection	* action,
+			const mrpt::obs::CSensoryFrame		* observation,
 			const bayes::CParticleFilter::TParticleFilterOptions &PF_options );
 		/** Performs the particle filter prediction/update stages for the algorithm "pfAuxiliaryPFOptimal" (if not implemented in heritated class, it will raise a 'non-implemented' exception).
 		 * \sa prediction_and_update
 		 */
 		virtual void  prediction_and_update_pfAuxiliaryPFOptimal(
-			const mrpt::slam::CActionCollection	* action,
-			const mrpt::slam::CSensoryFrame		* observation,
+			const mrpt::obs::CActionCollection	* action,
+			const mrpt::obs::CSensoryFrame		* observation,
 			const bayes::CParticleFilter::TParticleFilterOptions &PF_options );
 
 		/** Auxiliary vectors, see CParticleFilterCapable::prepareFastDrawSample for more information

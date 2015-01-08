@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -191,7 +191,7 @@ bool CBoardSonars::sendConfigCommands()
 /*-------------------------------------------------------------
 					getObservation
 -------------------------------------------------------------*/
-bool CBoardSonars::getObservation( mrpt::slam::CObservationRange &obs )
+bool CBoardSonars::getObservation( mrpt::obs::CObservationRange &obs )
 {
 	try
 	{
@@ -201,7 +201,7 @@ bool CBoardSonars::getObservation( mrpt::slam::CObservationRange &obs )
 		obs.maxSensorDistance = m_maxRange;
 		obs.sensorConeApperture = DEG2RAD(30.0f);
 		obs.sensedData.clear();
-		mrpt::slam::CObservationRange::TMeasurement obsRange;
+		mrpt::obs::CObservationRange::TMeasurement obsRange;
 
 		utils::CMessage		msg,msgRx;
 
@@ -306,7 +306,7 @@ bool CBoardSonars::checkConnectionAndConnect()
 -------------------------------------------------------------*/
 void CBoardSonars::doProcess()
 {
-	mrpt::slam::CObservationRangePtr obs = mrpt::slam::CObservationRange::Create();
+	mrpt::obs::CObservationRangePtr obs = mrpt::obs::CObservationRange::Create();
 	if (getObservation( *obs ))
 		appendObservation( obs );
 }

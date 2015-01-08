@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -28,15 +28,17 @@
 #include <mrpt/utils/CFileGZInputStream.h>
 #include <mrpt/utils/CFileGZOutputStream.h>
 #include <mrpt/system/filesystem.h>
-#include <mrpt/slam/CActionCollection.h>
-#include <mrpt/slam/CSensoryFrame.h>
+#include <mrpt/obs/CActionCollection.h>
+#include <mrpt/obs/CSensoryFrame.h>
 
 using namespace mrpt;
-using namespace mrpt::slam;
+using namespace mrpt::obs;
 using namespace mrpt::opengl;
 using namespace mrpt::system;
+using namespace mrpt::opengl;
 using namespace mrpt::math;
 using namespace mrpt::utils;
+using namespace mrpt::poses;
 using namespace std;
 
 #define MAX_READ_FOR_MODEL_SEARCH 100

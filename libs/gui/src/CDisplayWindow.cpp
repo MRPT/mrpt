@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -54,6 +54,9 @@ CWindowDialog::wxMRPTImageControl::wxMRPTImageControl(
 	Connect(wxEVT_MOTION, wxMouseEventHandler(CWindowDialog::wxMRPTImageControl::OnMouseMove));
     Connect(wxID_ANY,wxEVT_LEFT_DOWN,wxMouseEventHandler(CWindowDialog::wxMRPTImageControl::OnMouseClick));
 
+	Connect(wxID_ANY,wxEVT_CHAR,(wxObjectEventFunction)&CWindowDialog::wxMRPTImageControl::OnChar);
+	Connect(wxEVT_CHAR,(wxObjectEventFunction)&CWindowDialog::wxMRPTImageControl::OnChar);
+
 //	Connect(wxID_ANY,wxEVT_CHAR,(wxObjectEventFunction)&CWindowDialog::wxMRPTImageControl::OnChar);
 //	Connect(wxID_ANY,wxEVT_KEY_DOWN,(wxObjectEventFunction)&CWindowDialog::wxMRPTImageControl::OnChar);
 }
@@ -82,7 +85,6 @@ void CWindowDialog::wxMRPTImageControl::OnMouseClick(wxMouseEvent& ev)
 
 void CWindowDialog::wxMRPTImageControl::OnChar(wxKeyEvent & ev)
 {
-//	cout << "Yes\n";
 }
 
 void CWindowDialog::wxMRPTImageControl::AssignImage(wxBitmap *img)
@@ -173,10 +175,12 @@ CWindowDialog::CWindowDialog(
     Connect(ID_MENUITEM3,wxEVT_COMMAND_MENU_SELECTED,(wxObjectEventFunction)&CWindowDialog::OnMenuSave);
 
 //	Connect(wxID_ANY,wxEVT_CHAR,(wxObjectEventFunction)&CWindowDialog::OnChar);
-//	Connect(wxID_ANY,wxEVT_KEY_DOWN,(wxObjectEventFunction)&CWindowDialog::OnKeyDown);
+	Connect(wxID_ANY,wxEVT_KEY_DOWN,(wxObjectEventFunction)&CWindowDialog::OnChar);
+	//Connect(wxID_ANY,wxEVT_CHAR,(wxObjectEventFunction)&CWindowDialog::OnChar);
+	Connect(wxEVT_CHAR,(wxObjectEventFunction)&CWindowDialog::OnChar);
 
-	//m_image->Connect(wxID_ANY,wxEVT_KEY_DOWN,(wxObjectEventFunction)&CWindowDialog::OnChar,NULL,this);
-	m_image->Connect(wxEVT_CHAR,(wxObjectEventFunction)&CWindowDialog::OnChar,NULL,this);
+	m_image->Connect(wxID_ANY,wxEVT_KEY_DOWN,(wxObjectEventFunction)&CWindowDialog::OnChar,NULL,this);
+	//m_image->Connect(wxEVT_CHAR,(wxObjectEventFunction)&CWindowDialog::OnChar,NULL,this);
 	m_image->Connect(wxEVT_SIZE,(wxObjectEventFunction)&CWindowDialog::OnResize,NULL,this);
 
 	m_image->Connect(wxEVT_LEFT_DOWN,(wxObjectEventFunction)&CWindowDialog::OnMouseDown,NULL,this);
@@ -220,13 +224,11 @@ void CWindowDialog::OnClose(wxCloseEvent& event)
 
 void CWindowDialog::OnKeyDown(wxKeyEvent& event)
 {
-//	std::cout << "KEYDOWN\n";
 	event.Skip(); // So OnChar event is produced.
 }
 
 void CWindowDialog::OnChar(wxKeyEvent& event)
 {
-//	std::cout << "CHAR\n";
 	if (m_win2D)
 	{
 		const int 				code = event.GetKeyCode();

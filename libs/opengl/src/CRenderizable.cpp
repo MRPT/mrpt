@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -113,7 +113,7 @@ void CRenderizable::releaseTextureName(unsigned int i)
 }
 
 
-void  CRenderizable::writeToStreamRender(CStream &out) const
+void  CRenderizable::writeToStreamRender(mrpt::utils::CStream &out) const
 {
 	// MRPT 0.9.5 svn 2774 (Dec 14th 2011):
 	// Added support of versioning at this level of serialization too.
@@ -162,7 +162,7 @@ void  CRenderizable::writeToStreamRender(CStream &out) const
 		 << m_visible;
 }
 
-void  CRenderizable::readFromStreamRender(CStream &in)
+void  CRenderizable::readFromStreamRender(mrpt::utils::CStream &in)
 {
 	// MRPT 0.9.5 svn 2774 (Dec 14th 2011):
 	// See comments in CRenderizable::writeToStreamRender() for the employed serialization mechanism.

@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -16,11 +16,7 @@
 <h2>Library <code>mrpt-scanmatching</code></h2>
 <hr>
 
-Under this name we find functions in charge of solving the optimization problem of aligning a set of correspondences, both in 2D and in 3D. 
-Note that this does not includes the iterative ICP algorithm (see mrpt::slam::CICP), included in another library (mrpt-slam). 
-
-See mrpt::scanmatching
-
+Since MRPT 1.3.0 this is a meta-library forwarding a dependence to \ref mrpt_tfest_grp
 
 */
 

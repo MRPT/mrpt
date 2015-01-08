@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -83,7 +83,7 @@ namespace mrpt
 
 				/** See utils::CLoadableOptions
 				  */
-				void  dumpToTextStream(CStream		&out) const;
+				void  dumpToTextStream(mrpt::utils::CStream		&out) const;
 
 				/** Type of the extracted features
 				*/
@@ -217,17 +217,15 @@ namespace mrpt
 			* \param img (input) The image from where to extract the images.
 			* \param feats (output) A complete list of features (containing a patch for each one of them if options.patchsize > 0).
 			* \param nDesiredFeatures (op. input) Number of features to be extracted. Default: all possible.
-			* \param ROI (op. input) Region of Interest. Default: The whole image.
 			*
 			* \sa computeDescriptors
 			*/
-			void  detectFeatures(	const CImage		    & img,
-									CFeatureList			& feats,
-									const unsigned int		init_ID = 0,
-									const unsigned int		nDesiredFeatures = 0,
-									const TImageROI			& ROI = TImageROI(),
-                                    const CMatrixBool       * mask = NULL ) const; // Important: This was a const ref. in mrpt <0.9.4, but the instantiation of a default value
-			                                                                       // for CMatrixBool being a template generated duplicated linking errors for MSVC, thus it was changed to a pointer.
+			void  detectFeatures(	
+				const mrpt::utils::CImage		    & img,
+				CFeatureList			& feats,
+				const unsigned int		init_ID = 0,
+				const unsigned int		nDesiredFeatures = 0,
+				const TImageROI			&ROI = TImageROI()) const;
 
 			/** Compute one (or more) descriptors for the given set of interest points onto the image, which may have been filled out manually or from \a detectFeatures
 			* \param in_img (input) The image from where to compute the descriptors.
@@ -246,10 +244,11 @@ namespace mrpt
 			* \note This call will also use additional parameters from \a options
 			*/
 			void  computeDescriptors(
-				const CImage	&in_img,
+				const mrpt::utils::CImage	&in_img,
 				CFeatureList		&inout_features,
 				TDescriptorType		in_descriptor_list) const;
 
+#if 0  // Delete? see comments in .cpp
 			/** Extract more features from the image (apart from the provided ones) based on the method defined in TOptions.
 			* \param img (input) The image from where to extract the images.
 			* \param inList (input) The actual features in the image.
@@ -258,11 +257,11 @@ namespace mrpt
 			*
 			*  \sa The more powerful class: mrpt::vision::CGenericFeatureTracker
 			*/
-			void  findMoreFeatures( const CImage &img,
+			void  findMoreFeatures( const mrpt::utils::CImage &img,
 									const CFeatureList &inList,
 									CFeatureList &outList,
 									unsigned int nDesiredFeats = 0) const;
-
+#endif
 
 			/** @name Static methods with low-level detector functionality
 			    @{ */
@@ -287,7 +286,7 @@ namespace mrpt
 			  * \ingroup mrptvision_features
 			  */
 			static void detectFeatures_SSE2_FASTER9(
-				const CImage &img,
+				const mrpt::utils::CImage &img,
 				TSimpleFeatureList & corners,
 				const int threshold = 20,
 				bool append_to_list = false,
@@ -297,7 +296,7 @@ namespace mrpt
 			/** Just like \a detectFeatures_SSE2_FASTER9() for another version of the detector.
 			  * \ingroup mrptvision_features */
 			static void detectFeatures_SSE2_FASTER10(
-				const CImage &img,
+				const mrpt::utils::CImage &img,
 				TSimpleFeatureList & corners,
 				const int threshold = 20,
 				bool append_to_list = false,
@@ -307,7 +306,7 @@ namespace mrpt
 			/** Just like \a detectFeatures_SSE2_FASTER9() for another version of the detector.
 			  * \ingroup mrptvision_features */
 			static void detectFeatures_SSE2_FASTER12(
-				const CImage &img,
+				const mrpt::utils::CImage &img,
 				TSimpleFeatureList & corners,
 				const int threshold = 20,
 				bool append_to_list = false,
@@ -324,7 +323,7 @@ namespace mrpt
 			* \note The SIFT descriptors for already located features can only be computed through the Hess and
 			        CSBinary implementations which may be specified in CFeatureExtraction::TOptions::SIFTOptions.
 			*/
-			void  internal_computeSiftDescriptors( const CImage	&in_img,
+			void  internal_computeSiftDescriptors( const mrpt::utils::CImage	&in_img,
 										  CFeatureList		&in_features) const;
 
 
@@ -332,14 +331,14 @@ namespace mrpt
 			* \param in_img (input) The image from where to compute the descriptors.
 			* \param in_features (input/output) The list of features whose descriptors are going to be computed.
 			*/
-			void  internal_computeSurfDescriptors( const CImage	&in_img,
+			void  internal_computeSurfDescriptors( const mrpt::utils::CImage	&in_img,
 										  CFeatureList		&in_features) const;
 
 			/** Compute the ORB descriptor of the provided features into the input image
 			* \param in_img (input) The image from where to compute the descriptors.
 			* \param in_features (input/output) The list of features whose descriptors are going to be computed.
 			*/
-			void  internal_computeORBDescriptors( const CImage	&in_img,
+			void  internal_computeORBDescriptors( const mrpt::utils::CImage	&in_img,
 										  CFeatureList		&in_features) const;
 
 			/** Compute the intensity-domain spin images descriptor of the provided features into the input image
@@ -348,7 +347,7 @@ namespace mrpt
 			*
 			* \note Additional parameters from CFeatureExtraction::TOptions::SpinImagesOptions are used in this method.
 			*/
-			void  internal_computeSpinImageDescriptors( const CImage	&in_img,
+			void  internal_computeSpinImageDescriptors( const mrpt::utils::CImage	&in_img,
 										  CFeatureList		&in_features) const;
 
 			/** Compute a polar-image descriptor of the provided features into the input image
@@ -357,7 +356,7 @@ namespace mrpt
 			*
 			* \note Additional parameters from CFeatureExtraction::TOptions::PolarImagesOptions are used in this method.
 			*/
-			void  internal_computePolarImageDescriptors( const CImage	&in_img,
+			void  internal_computePolarImageDescriptors( const mrpt::utils::CImage	&in_img,
 										  CFeatureList		&in_features) const;
 
 			/** Compute a log-polar image descriptor of the provided features into the input image
@@ -366,30 +365,29 @@ namespace mrpt
 			*
 			* \note Additional parameters from CFeatureExtraction::TOptions::LogPolarImagesOptions are used in this method.
 			*/
-			void  internal_computeLogPolarImageDescriptors( const CImage	&in_img,
+			void  internal_computeLogPolarImageDescriptors( const mrpt::utils::CImage	&in_img,
 										  CFeatureList		&in_features) const;
 
+#if 0  // Delete? see comments in .cpp
 			/** Select good features using the openCV implementation of the KLT method.
 			* \param img (input) The image from where to select extract the images.
 			* \param feats (output) A complete list of features (containing a patch for each one of them if options.patchsize > 0).
 			* \param nDesiredFeatures (op. input) Number of features to be extracted. Default: all possible.
-			* \param omitPixels (op. input) A mask for determining the ROI. (0: do not omit this pixel, 1: omit this pixel)
 			*/
 			void  selectGoodFeaturesKLT(
-				const CImage	&inImg,
+				const mrpt::utils::CImage	&inImg,
 				CFeatureList		&feats,
 				unsigned int		init_ID = 0,
-				unsigned int		nDesiredFeatures = 0,
-				void				*mask_ = NULL) const;
+				unsigned int		nDesiredFeatures = 0) const;
+#endif
 
 			/** Extract features from the image based on the KLT method.
 			* \param img The image from where to extract the images.
 			* \param feats The list of extracted features.
 			* \param nDesiredFeatures Number of features to be extracted. Default: authomatic.
-			* \param ROI (op. input) Region of Interest. Default: All the image.
 			*/
 			void  extractFeaturesKLT(
-				const CImage		&img,
+				const mrpt::utils::CImage		&img,
 				CFeatureList			&feats,
 				unsigned int			init_ID = 0,
 				unsigned int			nDesiredFeatures = 0,
@@ -405,7 +403,7 @@ namespace mrpt
 			* \param ROI (op. input) Region of Interest. Default: All the image.
 			*/
 			void  extractFeaturesBCD(
-				const CImage 		&img,
+				const mrpt::utils::CImage 		&img,
 				CFeatureList			&feats,
 				unsigned int			init_ID = 0,
 				unsigned int			nDesiredFeatures = 0,
@@ -421,7 +419,7 @@ namespace mrpt
 			* \param ROI (op. input) Region of Interest. Default: All the image.
 			*/
 			void  extractFeaturesSIFT(
-				const CImage		&img,
+				const mrpt::utils::CImage		&img,
 				CFeatureList			&feats,
 				unsigned int			init_ID = 0,
 				unsigned int			nDesiredFeatures = 0,
@@ -434,16 +432,13 @@ namespace mrpt
 			* \param img The image from where to extract the images.
 			* \param feats The list of extracted features.
 			* \param nDesiredFeatures Number of features to be extracted. Default: authomatic.
-			* \param ROI (op. input) Region of Interest. Default: All the image.
 			*/
 			void  extractFeaturesORB(
-				const CImage			&img,
+				const mrpt::utils::CImage			&img,
 				CFeatureList			&feats,
 				const unsigned int		init_ID = 0,
 				const unsigned int		nDesiredFeatures = 0,
-				const TImageROI			&ROI = TImageROI(),
-                const CMatrixBool       * mask = NULL ) const; // Important: This was a const ref. in mrpt <0.9.4, but the instantiation of a default value
-                                                               // for CMatrixBool being a template generated duplicated linking errors for MSVC, thus it was changed to a pointer.
+				const TImageROI			    & ROI = TImageROI()) const;
 
 
 			// ------------------------------------------------------------------------------------
@@ -453,10 +448,9 @@ namespace mrpt
 			* \param img The image from where to extract the images.
 			* \param feats The list of extracted features.
 			* \param nDesiredFeatures Number of features to be extracted. Default: authomatic.
-			* \param ROI (op. input) Region of Interest. Default: All the image.
 			*/
 			void  extractFeaturesSURF(
-				const CImage		&img,
+				const mrpt::utils::CImage		&img,
 				CFeatureList			&feats,
 				unsigned int			init_ID = 0,
 				unsigned int			nDesiredFeatures = 0,
@@ -469,25 +463,23 @@ namespace mrpt
 			* \param img The image from where to extract the images.
 			* \param feats The list of extracted features.
 			* \param nDesiredFeatures Number of features to be extracted. Default: authomatic.
-			* \param ROI (op. input) Region of Interest. Default: All the image.
 			*/
 			void  extractFeaturesFAST(
-				const CImage			&img,
+				const mrpt::utils::CImage			&img,
 				CFeatureList			&feats,
 				unsigned int			init_ID = 0,
 				unsigned int			nDesiredFeatures = 0,
-				const TImageROI			&ROI = TImageROI(),
-                const CMatrixBool       * mask = NULL ) const; // Important: This was a const ref. in mrpt <0.9.4, but the instantiation of a default value
-                                                               // for CMatrixBool being a template generated duplicated linking errors for MSVC, thus it was changed to a pointer.
+				const TImageROI			    & ROI = TImageROI(),
+				const mrpt::math::CMatrixBool           * mask= NULL) const;
 
 			/** Edward's "FASTER & Better" detector, N=9,10,12 */
 			void  extractFeaturesFASTER_N(
 				const int               N,
-				const CImage			&img,
+				const mrpt::utils::CImage			&img,
 				CFeatureList			&feats,
 				unsigned int			init_ID = 0,
 				unsigned int			nDesiredFeatures = 0,
-				const TImageROI			&ROI = TImageROI()) const;
+				const TImageROI			    & ROI = TImageROI()) const;
 
 
 			// ------------------------------------------------------------------------------------

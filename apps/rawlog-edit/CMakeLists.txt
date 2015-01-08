@@ -33,7 +33,8 @@ ADD_EXECUTABLE(rawlog-edit
 	rawlog-edit_imu.cpp
 	rawlog-edit_2d-scans.cpp
 	rawlog-edit_odometry.cpp
-	)
+	${MRPT_VERSION_RC_FILE}
+ 	)
 SET(TMP_TARGET_NAME "rawlog-edit")
 
 # Add the required libraries for linking:

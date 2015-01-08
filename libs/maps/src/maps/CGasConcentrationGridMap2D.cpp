@@ -2,15 +2,15 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
 #include "maps-precomp.h" // Precomp header
 
-#include <mrpt/slam/CGasConcentrationGridMap2D.h>
-#include <mrpt/slam/CObservationGasSensors.h>
+#include <mrpt/maps/CGasConcentrationGridMap2D.h>
+#include <mrpt/obs/CObservationGasSensors.h>
 #include <mrpt/math/CMatrix.h>
 #include <mrpt/math/ops_containers.h>
 #include <mrpt/utils/CTicTac.h>
@@ -29,13 +29,14 @@
 #define LUT_TABLE (*(LUT.table))
 
 using namespace mrpt;
-using namespace mrpt::slam;
+using namespace mrpt::maps;
+using namespace mrpt::obs;
 using namespace mrpt::utils;
 using namespace mrpt::poses;
 using namespace std;
 using namespace mrpt::math;
 
-IMPLEMENTS_SERIALIZABLE(CGasConcentrationGridMap2D, CRandomFieldGridMap2D,mrpt::slam)
+IMPLEMENTS_SERIALIZABLE(CGasConcentrationGridMap2D, CRandomFieldGridMap2D,mrpt::maps)
 
 /*---------------------------------------------------------------
 						Constructor
@@ -221,7 +222,7 @@ double	 CGasConcentrationGridMap2D::computeObservationLikelihood(
 /*---------------------------------------------------------------
   Implements the writing to a CStream capability of CSerializable objects
  ---------------------------------------------------------------*/
-void  CGasConcentrationGridMap2D::writeToStream(CStream &out, int *version) const
+void  CGasConcentrationGridMap2D::writeToStream(mrpt::utils::CStream &out, int *version) const
 {
 	if (version)
 		*version = 3;
@@ -285,7 +286,7 @@ struct TOldCellTypeInVersion1
 /*---------------------------------------------------------------
   Implements the reading from a CStream capability of CSerializable objects
  ---------------------------------------------------------------*/
-void  CGasConcentrationGridMap2D::readFromStream(CStream &in, int version)
+void  CGasConcentrationGridMap2D::readFromStream(mrpt::utils::CStream &in, int version)
 {
 	switch(version)
 	{
@@ -396,7 +397,7 @@ CGasConcentrationGridMap2D::TInsertionOptions::TInsertionOptions() :
 /*---------------------------------------------------------------
 					dumpToTextStream
   ---------------------------------------------------------------*/
-void  CGasConcentrationGridMap2D::TInsertionOptions::dumpToTextStream(CStream	&out) const
+void  CGasConcentrationGridMap2D::TInsertionOptions::dumpToTextStream(mrpt::utils::CStream	&out) const
 {
 	out.printf("\n----------- [CGasConcentrationGridMap2D::TInsertionOptions] ------------ \n\n");
 	out.printf("[TInsertionOptions.Common] ------------ \n\n");

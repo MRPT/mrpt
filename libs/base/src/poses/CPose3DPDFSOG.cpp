@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -16,6 +16,7 @@
 
 using namespace mrpt;
 using namespace mrpt::poses;
+using namespace mrpt::math;
 using namespace mrpt::utils;
 using namespace mrpt::system;
 using namespace std;
@@ -184,7 +185,7 @@ void CPose3DPDFSOG::getCovarianceAndMean(mrpt::math::CMatrixDouble66 &estCovOut,
 /*---------------------------------------------------------------
 						writeToStream
   ---------------------------------------------------------------*/
-void  CPose3DPDFSOG::writeToStream(CStream &out,int *version) const
+void  CPose3DPDFSOG::writeToStream(mrpt::utils::CStream &out,int *version) const
 {
 	if (version)
 		*version = 2;
@@ -204,7 +205,7 @@ void  CPose3DPDFSOG::writeToStream(CStream &out,int *version) const
 /*---------------------------------------------------------------
 						readFromStream
   ---------------------------------------------------------------*/
-void  CPose3DPDFSOG::readFromStream(CStream &in,int version)
+void  CPose3DPDFSOG::readFromStream(mrpt::utils::CStream &in,int version)
 {
 	switch(version)
 	{

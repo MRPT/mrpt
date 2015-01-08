@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -13,8 +13,8 @@
 
 #include <mrpt/slam/CICP.h>
 #include <mrpt/slam/CMetricMapBuilderICP.h>
-#include <mrpt/slam/CSimplePointsMap.h>
-#include <mrpt/slam/CObservationOdometry.h>
+#include <mrpt/maps/CSimplePointsMap.h>
+#include <mrpt/obs/CObservationOdometry.h>
 #include <mrpt/poses/CPose3DPDFGaussian.h>
 #include <mrpt/poses/CPosePDFGaussian.h>
 #include <mrpt/utils/CTicTac.h>
@@ -22,6 +22,8 @@
 
 using namespace std;
 using namespace mrpt::slam;
+using namespace mrpt::obs;
+using namespace mrpt::maps;
 using namespace mrpt::utils;
 using namespace mrpt::poses;
 

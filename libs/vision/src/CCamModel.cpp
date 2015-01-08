@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -15,6 +15,9 @@
 
 using namespace mrpt;
 using namespace mrpt::vision;
+using namespace mrpt::poses;
+using namespace mrpt::math;
+using namespace mrpt::utils;
 
 
 /**	Constructor */
@@ -23,7 +26,7 @@ CCamModel::CCamModel() : cam()
 }
 
 /**********************************************************************************************************************/
-void  CCamModel::jacob_undistor_fm(const mrpt::vision::TPixelCoordf &p, math::CMatrixDouble &J_undist)
+void  CCamModel::jacob_undistor_fm(const mrpt::utils::TPixelCoordf &p, math::CMatrixDouble &J_undist)
 {
 	// JL: CHECK!!!!
 	const double Cx = cam.cx();
@@ -47,7 +50,7 @@ void  CCamModel::jacob_undistor_fm(const mrpt::vision::TPixelCoordf &p, math::CM
 }
 /******************************************************************************************************************************/
 
-void CCamModel::jacob_undistor(const mrpt::vision::TPixelCoordf &p, mrpt::math::CMatrixDouble &J_undistor)
+void CCamModel::jacob_undistor(const mrpt::utils::TPixelCoordf &p, mrpt::math::CMatrixDouble &J_undistor)
 {
 
 	//J_undistor.setSize(2,2);
@@ -96,7 +99,7 @@ void CCamModel::jacob_undistor(const mrpt::vision::TPixelCoordf &p, mrpt::math::
 }
 /**********************************************************************************************************************/
 
-void  CCamModel::distort_a_point(const mrpt::vision::TPixelCoordf &p, mrpt::vision::TPixelCoordf &distorted_p)
+void  CCamModel::distort_a_point(const mrpt::utils::TPixelCoordf &p, mrpt::utils::TPixelCoordf &distorted_p)
 {
 	// JLBC: Added from Davison's SceneLib:
 	//
@@ -115,7 +118,7 @@ void  CCamModel::distort_a_point(const mrpt::vision::TPixelCoordf &p, mrpt::visi
 }
 /*************************************************************************************************************************/
 // Removes distortion of a pair of pixel coordinates x,y.
-void  CCamModel::undistort_point(const mrpt::vision::TPixelCoordf &p, mrpt::vision::TPixelCoordf &undistorted_p)
+void  CCamModel::undistort_point(const mrpt::utils::TPixelCoordf &p, mrpt::utils::TPixelCoordf &undistorted_p)
 {
 	std::vector<TPixelCoordf> in_p(1), out_p;
 	in_p[0] = p;
@@ -142,7 +145,7 @@ void  CCamModel::undistort_point(const mrpt::vision::TPixelCoordf &p, mrpt::visi
 
 /**	Return the (distorted) pixel position of a 3D point given in coordinates relative to the camera (+Z pointing forward, +X to the right)
  */
-void  CCamModel::project_3D_point(const mrpt::math::TPoint3D &p3D, mrpt::vision::TPixelCoordf &distorted_p) const
+void  CCamModel::project_3D_point(const mrpt::math::TPoint3D &p3D, mrpt::utils::TPixelCoordf &distorted_p) const
 {
 	// JLBC: From Davison's SceneLib:
 	//
@@ -166,7 +169,7 @@ void  CCamModel::project_3D_point(const mrpt::math::TPoint3D &p3D, mrpt::vision:
 
 /**	Return the 3D location of a point (at a fixed distance z=1), for the given (distorted) pixel position
   */
-void  CCamModel::unproject_3D_point(const mrpt::vision::TPixelCoordf &distorted_p, mrpt::math::TPoint3D &p3D) const
+void  CCamModel::unproject_3D_point(const mrpt::utils::TPixelCoordf &distorted_p, mrpt::math::TPoint3D &p3D) const
 {
 	// JLBC: From Davison's SceneLib:
 	//
@@ -243,7 +246,7 @@ void CCamModel::jacobian_project_with_distortion(const mrpt::math::TPoint3D &p3D
 \note JLBC: Added in March, 2009. Should be equivalent to Davison's WideCamera::ProjectionJacobian
 \sa unproject_3D_point
 */
-void CCamModel::jacobian_unproject_with_distortion(const mrpt::vision::TPixelCoordf &p, math::CMatrixDouble & dy_dh ) const
+void CCamModel::jacobian_unproject_with_distortion(const mrpt::utils::TPixelCoordf &p, math::CMatrixDouble & dy_dh ) const
 {
 	// dy/du
 	CMatrixDouble dy_du(3,2);  // Default is all zeroes

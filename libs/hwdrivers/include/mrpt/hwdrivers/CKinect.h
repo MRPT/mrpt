@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -10,8 +10,8 @@
 #define mrpt_CKinect_H
 
 #include <mrpt/hwdrivers/CGenericSensor.h>
-#include <mrpt/slam/CObservation3DRangeScan.h>
-#include <mrpt/slam/CObservationIMU.h>
+#include <mrpt/obs/CObservation3DRangeScan.h>
+#include <mrpt/obs/CObservationIMU.h>
 #include <mrpt/utils/TEnumType.h>
 #include <mrpt/gui/CDisplayWindow.h>
 
@@ -20,7 +20,7 @@
 // MRPT implements a common interface to Kinect disregarding the
 //  actual underlying library. These macros defined in "mrpt/config.h"
 //  let us know which library is actually used:
-//   - MRPT_HAS_KINECT_CL_NUI     = 0 or 1
+//   - [DEPRECATED AS OF MRPT 1.3.0] MRPT_HAS_KINECT_CL_NUI     = 0 or 1
 //   - MRPT_HAS_KINECT_FREENECT   = 0 or 1
 
 // Depth of Kinect ranges:
@@ -43,7 +43,7 @@ namespace mrpt
 		  * To use Kinect for Windows or ASUS/Primesense RGBD cameras, use the class COpenNI2.
 		  *
 		  *  <h2>Configuration and usage:</h2> <hr>
-		  * Data is returned as observations of type mrpt::slam::CObservation3DRangeScan (and mrpt::slam::CObservationIMU for accelerometers data).
+		  * Data is returned as observations of type mrpt::obs::CObservation3DRangeScan (and mrpt::obs::CObservationIMU for accelerometers data).
 		  *  See those classes for documentation on their fields.
 		  *
 		  * As with any other CGenericSensor class, the normal sequence of methods to be called is:
@@ -62,7 +62,7 @@ namespace mrpt
 		  *
 		  * <h2>Coordinates convention</h2><hr>
 		  *   The origin of coordinates is the focal point of the depth camera, with the axes oriented as in the
-		  *   diagram shown in mrpt::slam::CObservation3DRangeScan. Notice in that picture that the RGB camera is
+		  *   diagram shown in mrpt::obs::CObservation3DRangeScan. Notice in that picture that the RGB camera is
 		  *   assumed to have axes as usual in computer vision, which differ from those for the depth camera.
 		  *
 		  *   The X,Y,Z axes used to report the data from accelerometers coincide with those of the depth camera
@@ -91,14 +91,14 @@ namespace mrpt
 		  *   You can convert the 3D observation into a 3D point cloud with this piece of code:
 		  *
 		  * \code
-		  * mrpt::slam::CObservation3DRangeScan  obs3D;
-		  * mrpt::slam::CColouredPointsMap       pntsMap;
+		  * mrpt::obs::CObservation3DRangeScan  obs3D;
+		  * mrpt::maps::CColouredPointsMap       pntsMap;
 		  * pntsMap.colorScheme.scheme = CColouredPointsMap::cmFromIntensityImage;
 		  * pntsMap.loadFromRangeScan(obs3D);
 		  * \endcode
 		  *
-		  *   Then the point cloud mrpt::slam::CColouredPointsMap can be converted into an OpenGL object for
-		  *    rendering with mrpt::slam::CMetricMap::getAs3DObject() or alternatively with:
+		  *   Then the point cloud mrpt::maps::CColouredPointsMap can be converted into an OpenGL object for
+		  *    rendering with mrpt::maps::CMetricMap::getAs3DObject() or alternatively with:
 		  *
 		  *  \code
 		  *    mrpt::opengl::CPointCloudColouredPtr gl_points = mrpt::opengl::CPointCloudColoured::Create();
@@ -191,7 +191,7 @@ namespace mrpt
 		  *    // Relative pose of the right camera wrt to the left camera:
 		  *    // This assumes that both camera frames are such that +Z points
 		  *    // forwards, and +X and +Y to the right and downwards.
-		  *    // For the actual coordinates employed in 3D observations, see figure in mrpt::slam::CObservation3DRangeScan
+		  *    // For the actual coordinates employed in 3D observations, see figure in mrpt::obs::CObservation3DRangeScan
 		  *    [supplied_section_name_LEFT2RIGHT_POSE]
 		  *    rawlog-grabber-ignore = true // Instructs rawlog-grabber to ignore this section (it is not a separate device!)
 		  *
@@ -241,7 +241,7 @@ namespace mrpt
 			  * \sa doProcess
 			  */
 			void getNextObservation(
-				mrpt::slam::CObservation3DRangeScan &out_obs,
+				mrpt::obs::CObservation3DRangeScan &out_obs,
 				bool &there_is_obs,
 				bool &hardware_error );
 
@@ -249,8 +249,8 @@ namespace mrpt
 			  * \note This method also grabs data from the accelerometers, returning them in out_obs_imu
 			  */
 			void getNextObservation(
-				mrpt::slam::CObservation3DRangeScan &out_obs,
-				mrpt::slam::CObservationIMU         &out_obs_imu,
+				mrpt::obs::CObservation3DRangeScan &out_obs,
+				mrpt::obs::CObservationIMU         &out_obs_imu,
 				bool &there_is_obs,
 				bool &hardware_error );
 
@@ -315,7 +315,7 @@ namespace mrpt
 			inline const mrpt::utils::TCamera  & getCameraParamsDepth() const { return m_cameraParamsDepth; }
 			inline void setCameraParamsDepth(const mrpt::utils::TCamera  &p) { m_cameraParamsDepth=p; }
 
-			/** Set the pose of the intensity camera wrt the depth camera \sa See mrpt::slam::CObservation3DRangeScan for a 3D diagram of this pose */
+			/** Set the pose of the intensity camera wrt the depth camera \sa See mrpt::obs::CObservation3DRangeScan for a 3D diagram of this pose */
 			inline void setRelativePoseIntensityWrtDepth(const mrpt::poses::CPose3D &p) { m_relativePoseIntensityWRTDepth=p; }
 			inline const mrpt::poses::CPose3D &getRelativePoseIntensityWrtDepth() const { return m_relativePoseIntensityWRTDepth; }
 
@@ -347,7 +347,7 @@ namespace mrpt
 #if MRPT_HAS_KINECT_FREENECT
 			// Auxiliary getters/setters (we can't declare the libfreenect callback as friend since we
 			//   want to avoid including the API headers here).
-			inline mrpt::slam::CObservation3DRangeScan & internal_latest_obs() { return m_latest_obs; }
+			inline mrpt::obs::CObservation3DRangeScan & internal_latest_obs() { return m_latest_obs; }
 			inline volatile uint32_t & internal_tim_latest_depth() { return m_tim_latest_depth; }
 			inline volatile uint32_t & internal_tim_latest_rgb()   { return m_tim_latest_rgb; }
 			inline mrpt::synch::CCriticalSection & internal_latest_obs_cs() { return m_latest_obs_cs; }
@@ -371,19 +371,14 @@ namespace mrpt
 			void *m_f_dev;  //!< The "freenect_device", or NULL if closed
 
 			// Data fields for use with the callback function:
-			mrpt::slam::CObservation3DRangeScan  m_latest_obs;
+			mrpt::obs::CObservation3DRangeScan  m_latest_obs;
 			volatile uint32_t                 m_tim_latest_depth, m_tim_latest_rgb; // 0 = not updated
 			mrpt::synch::CCriticalSection     m_latest_obs_cs;
 #endif
 
-#if MRPT_HAS_KINECT_CL_NUI
-			void *m_clnui_cam;   //!< The "CLNUICamera" or NULL if closed
-			void *m_clnui_motor; //!< The "CLNUIMotor" or NULL if closed
-#endif
-
 			mrpt::utils::TCamera  	m_cameraParamsRGB;  //!< Params for the RGB camera
 			mrpt::utils::TCamera  	m_cameraParamsDepth;  //!< Params for the Depth camera
-			mrpt::poses::CPose3D    m_relativePoseIntensityWRTDepth; //!< See mrpt::slam::CObservation3DRangeScan for a diagram of this pose
+			mrpt::poses::CPose3D    m_relativePoseIntensityWRTDepth; //!< See mrpt::obs::CObservation3DRangeScan for a diagram of this pose
 
 			int					m_initial_tilt_angle; //!< Set Kinect tilt to an initial deegre (it should be take in account in the sensor pose by the user)
 

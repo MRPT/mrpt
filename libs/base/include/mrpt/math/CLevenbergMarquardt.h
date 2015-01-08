@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -226,7 +226,7 @@ namespace math
 	}; // End of class def.
 
 
-	typedef CLevenbergMarquardtTempl<CVectorDouble> CLevenbergMarquardt;  //!< The default name for the LM class is an instantiation for "double"
+	typedef CLevenbergMarquardtTempl<mrpt::math::CVectorDouble> CLevenbergMarquardt;  //!< The default name for the LM class is an instantiation for "double"
 
 	} // End of namespace
 } // End of namespace

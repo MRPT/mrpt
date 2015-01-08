@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -14,7 +14,7 @@
 #include <mrpt/synch.h>
 #include <mrpt/utils/CDebugOutputCapable.h>
 #include <mrpt/utils/CConfigFileBase.h>
-#include <mrpt/slam/CObservationRange.h>
+#include <mrpt/obs/CObservationRange.h>
 
 namespace mrpt
 {
@@ -68,7 +68,7 @@ namespace mrpt
 				/** Request the latest range measurements.
 				  * \return true on success, false on communications errors or device not found.
 				  */
-				bool getObservation( mrpt::slam::CObservationRange &obs );
+				bool getObservation( mrpt::obs::CObservationRange &obs );
 
 				/** Requests a command of "change address" for a given SRF10 device.
 				  *  currentAddress and newAddress are the I2C addresses in the range 0 to 15 (mapped to 0xE0 to 0xFE internally).

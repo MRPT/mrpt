@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -13,6 +13,7 @@
 #include <mrpt/utils/CConfigFile.h>
 #include <mrpt/utils/CConfigFileMemory.h>
 
+using namespace mrpt::math;
 
 const char *default_cfg_txt =
 	"; ---------------------------------------------------------------\n"
@@ -262,11 +263,11 @@ int main(int num_arg, char *argv[])
 		else if ( string(argv[1]) == "--create-config")
 		{
 			filename = argv[2];
-			cout << endl << "Config_file name: " << filename;
-			ofstream new_file(filename.c_str());
+			std::cout << std::endl << "Config_file name: " << filename;
+			std::ofstream new_file(filename.c_str());
 			new_file << string(default_cfg_txt);
 			new_file.close();
-			cout << endl << "File saved" << endl;
+			std::cout << std::endl << "File saved" << std::endl;
 			system::os::getch();
 			return 1;
 		}

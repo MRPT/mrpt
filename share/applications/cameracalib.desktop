@@ -1,0 +1,14 @@
+[Desktop Entry]
+Version=1.0
+Name=Camera Calibration
+Comment=Camera Calibration GUI
+Exec=camera-calib
+Icon=cameracalibgui
+Terminal=false
+X-MultipleArgs=false
+Type=Application
+Categories=Science;Robotics;ArtificialIntelligence;
+StartupNotify=true
+Keywords=mrpt;stereo;camera;vision;computer vision;calibration;
+
+Name[en_US]=cameracalib.desktop

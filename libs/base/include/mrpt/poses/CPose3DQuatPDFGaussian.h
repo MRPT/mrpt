@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -116,7 +116,7 @@ namespace poses
 
 		/** Draws a number of samples from the distribution, and saves as a list of 1x7 vectors, where each row contains a (x,y,z,qr,qx,qy,qz) datum.
 		  */
-		void  drawManySamples( size_t N, std::vector<CVectorDouble> & outSamples ) const;
+		void  drawManySamples( size_t N, std::vector<mrpt::math::CVectorDouble> & outSamples ) const;
 
 		/** Returns a new PDF such as: NEW_PDF = (0,0,0) - THIS_PDF
 		  */

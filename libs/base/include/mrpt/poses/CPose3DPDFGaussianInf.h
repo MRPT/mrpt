@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -120,7 +120,7 @@ namespace poses
 
 		/** Draws a number of samples from the distribution, and saves as a list of 1x6 vectors, where each row contains a (x,y,phi) datum.
 		  */
-		void  drawManySamples( size_t N, std::vector<CVectorDouble> & outSamples ) const;
+		void  drawManySamples( size_t N, std::vector<mrpt::math::CVectorDouble> & outSamples ) const;
 
 		/** Bayesian fusion of two points gauss. distributions, then save the result in this object.
 		  *  The process is as follows:<br>

@@ -2,14 +2,14 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
 #include "detectors-precomp.h"  // Precompiled headers
 #include <mrpt/gui.h>
-#include <mrpt/slam/CColouredPointsMap.h>
+#include <mrpt/maps/CColouredPointsMap.h>
 
 #include <mrpt/detectors/CFaceDetection.h>
 #include <mrpt/math.h>
@@ -35,9 +35,9 @@ using namespace mrpt::gui;
 using namespace mrpt::math;
 using namespace mrpt::opengl;
 using namespace mrpt::system;
-using namespace mrpt::slam;
+using namespace mrpt::maps;
+using namespace mrpt::obs;
 
-//CColouredPointsMap mapa;
 
 //------------------------------------------------------------------------
 //							CFaceDetection
@@ -122,7 +122,7 @@ void CFaceDetection::init(const mrpt::utils::CConfigFileBase &cfg )
 //------------------------------------------------------------------------
 //							detectObjects
 //------------------------------------------------------------------------
-void CFaceDetection::detectObjects_Impl(const mrpt::slam::CObservation *obs, vector_detectable_object &detected)
+void CFaceDetection::detectObjects_Impl(const mrpt::obs::CObservation *obs, vector_detectable_object &detected)
 {
 	MRPT_START
 

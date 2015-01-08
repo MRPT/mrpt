@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -10,16 +10,15 @@
 #ifndef CBoardIR_H
 #define CBoardIR_H
 
-#include <mrpt/slam/CObservationRange.h>
+#include <mrpt/obs/CObservationRange.h>
 #include <mrpt/poses/CPoint3D.h>
 #include <mrpt/hwdrivers/CSerialPort.h>
 #include <mrpt/utils/CDebugOutputCapable.h>
 #include <mrpt/hwdrivers/CGenericSensor.h>
+#include <mrpt/obs/obs_frwds.h>
 
 namespace mrpt
 {
-	namespace slam { class CObservationGPS; }
-
 	namespace hwdrivers
 	{
 		/** A parser of NMEA commands, for connecting to a GPS by a serial port.
@@ -77,7 +76,7 @@ namespace mrpt
 			  */
 			void  getObservation(
 				bool							&outThereIsObservation,
-				mrpt::slam::CObservationRange	&outObservation,
+				mrpt::obs::CObservationRange	&outObservation,
 				bool							&hardwareError );
 
 			// See docs in parent class

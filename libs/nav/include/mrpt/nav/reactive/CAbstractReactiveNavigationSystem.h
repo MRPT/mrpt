@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -11,19 +11,14 @@
 
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/utils/CDebugOutputCapable.h>
+#include <mrpt/obs/obs_frwds.h>
 
 #include <mrpt/nav/link_pragmas.h>
 
 namespace mrpt
 {
-	namespace slam { class CSimplePointsMap; }
-
   namespace nav
   {
-	using namespace mrpt;
-	using namespace mrpt::slam;
-	using namespace mrpt::poses;
-
 	/** The pure virtual class that a user of CAbstractReactiveNavigationSystem-derived classes must implement in order to allow the navigator sense the world and send motion commands to the robot.
 	  *
 	  *  The user must define a new class derived from CReactiveInterfaceImplementation and reimplement
@@ -74,7 +69,7 @@ namespace mrpt
 		/** Return the current set of obstacle points, as seen from the local coordinate frame of the robot.
 		  * \return false on any error.
 		  */
-		virtual bool senseObstacles( mrpt::slam::CSimplePointsMap 		&obstacles ) = 0;
+		virtual bool senseObstacles( mrpt::maps::CSimplePointsMap 		&obstacles ) = 0;
 
 		virtual void sendNavigationStartEvent () { std::cout << "[sendNavigationStartEvent] Not implemented by the user." << std::endl; }
 		virtual void sendNavigationEndEvent() {	std::cout << "[sendNavigationEndEvent] Not implemented by the user." << std::endl; }

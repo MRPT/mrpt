@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -25,7 +25,7 @@ namespace mrpt
 			private:
 				CStream		*m_stream;
 			public:
-				inline ObjectReadFromStream(CStream *stream) : m_stream(stream) {  }
+				inline ObjectReadFromStream(mrpt::utils::CStream *stream) : m_stream(stream) {  }
 
 				// T can be CSerializablePtr, CSerializable, or any other class implementing ">>"
 				template <typename T> 
@@ -40,7 +40,7 @@ namespace mrpt
 			private:
 				CStream		*m_stream;
 			public:
-				inline ObjectWriteToStream(CStream *stream) : m_stream(stream) {  }
+				inline ObjectWriteToStream(mrpt::utils::CStream *stream) : m_stream(stream) {  }
 
 				// T can be CSerializablePtr, CSerializable, or any other class implementing "<<"
 				template <typename T>

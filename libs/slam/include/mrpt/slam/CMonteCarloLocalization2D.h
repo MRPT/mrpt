@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -12,21 +12,17 @@
 #include <mrpt/poses/CPosePDFParticles.h>
 #include <mrpt/slam/PF_implementations_data.h>
 #include <mrpt/slam/TMonteCarloLocalizationParams.h>
+#include <mrpt/obs/obs_frwds.h>
 
 #include <mrpt/slam/link_pragmas.h>
 
 namespace mrpt
 {
+	namespace maps { class COccupancyGridMap2D; }
+
 	/** \ingroup mrpt_slam_grp */
 	namespace slam
 	{
-		class COccupancyGridMap2D;
-		class CSensoryFrame;
-
-		using namespace mrpt::poses;
-		using namespace mrpt::slam;
-		using namespace mrpt::bayes;
-
 		/** Declares a class that represents a Probability Density Function (PDF) over a 2D pose (x,y,phi), using a set of weighted samples.
 		 *
 		 *  This class also implements particle filtering for robot localization. See the MRPT
@@ -36,7 +32,7 @@ namespace mrpt
 		 * \ingroup mrpt_slam_grp
 		 */
 		class SLAM_IMPEXP CMonteCarloLocalization2D :
-			public CPosePDFParticles,
+			public mrpt::poses::CPosePDFParticles,
 			public PF_implementation<mrpt::poses::CPose2D,CMonteCarloLocalization2D>
 		{
 		public:
@@ -65,15 +61,15 @@ namespace mrpt
 			  * \exception std::exception On any error (no free cell found in map, map=NULL, etc...)
 			  */
 			void  resetUniformFreeSpace(
-						COccupancyGridMap2D		*theMap,
-						const double 					freeCellsThreshold = 0.7,
-						const int	 					particlesCount = -1,
-						const double 					x_min = -1e10f,
-						const double 					x_max = 1e10f,
-						const double 					y_min = -1e10f,
-						const double 					y_max = 1e10f,
-						const double 					phi_min = -M_PI,
-						const double 					phi_max = M_PI );
+				mrpt::maps::COccupancyGridMap2D		*theMap,
+				const double 					freeCellsThreshold = 0.7,
+				const int	 					particlesCount = -1,
+				const double 					x_min = -1e10f,
+				const double 					x_max = 1e10f,
+				const double 					y_min = -1e10f,
+				const double 					y_max = 1e10f,
+				const double 					phi_min = -M_PI,
+				const double 					phi_max = M_PI );
 
 			 /** Update the m_particles, predicting the posterior of robot pose and map after a movement command.
 			  *  This method has additional configuration parameters in "options".
@@ -85,8 +81,8 @@ namespace mrpt
 			  * \sa options
 			  */
 			void  prediction_and_update_pfStandardProposal(
-				const mrpt::slam::CActionCollection	* action,
-				const mrpt::slam::CSensoryFrame		* observation,
+				const mrpt::obs::CActionCollection	* action,
+				const mrpt::obs::CSensoryFrame		* observation,
 				const bayes::CParticleFilter::TParticleFilterOptions &PF_options );
 
 			 /** Update the m_particles, predicting the posterior of robot pose and map after a movement command.
@@ -99,8 +95,8 @@ namespace mrpt
 			  * \sa options
 			  */
 			void  prediction_and_update_pfAuxiliaryPFStandard(
-				const mrpt::slam::CActionCollection	* action,
-				const mrpt::slam::CSensoryFrame		* observation,
+				const mrpt::obs::CActionCollection	* action,
+				const mrpt::obs::CSensoryFrame		* observation,
 				const bayes::CParticleFilter::TParticleFilterOptions &PF_options );
 
 			 /** Update the m_particles, predicting the posterior of robot pose and map after a movement command.
@@ -113,32 +109,32 @@ namespace mrpt
 			  * \sa options
 			  */
 			void  prediction_and_update_pfAuxiliaryPFOptimal(
-				const mrpt::slam::CActionCollection	* action,
-				const mrpt::slam::CSensoryFrame		* observation,
+				const mrpt::obs::CActionCollection	* action,
+				const mrpt::obs::CSensoryFrame		* observation,
 				const bayes::CParticleFilter::TParticleFilterOptions &PF_options );
 
 		//protected:
 			/** \name Virtual methods that the PF_implementations assume exist.
 			    @{ */
 			/** Return a pointer to the last robot pose in the i'th particle (or NULL if it's a path and it's empty). */
-			const TPose3D * getLastPose(const size_t i) const;
+			const mrpt::math::TPose3D * getLastPose(const size_t i) const;
 
 			void PF_SLAM_implementation_custom_update_particle_with_new_pose(
 				CParticleDataContent *particleData,
-				const TPose3D &newPose) const;
+				const mrpt::math::TPose3D &newPose) const;
 
 			// We'll redefine this one:
 			void PF_SLAM_implementation_replaceByNewParticleSet(
 				CParticleList &old_particles,
-				const vector<TPose3D>		&newParticles,
-				const vector<double>		&newParticlesWeight,
-				const vector<size_t>		&newParticlesDerivedFromIdx ) const;
+				const std::vector<mrpt::math::TPose3D>		&newParticles,
+				const std::vector<double>		&newParticlesWeight,
+				const std::vector<size_t>		&newParticlesDerivedFromIdx ) const;
 
 			/** Evaluate the observation likelihood for one particle at a given location */
 			double PF_SLAM_computeObservationLikelihoodForParticle(
-				const CParticleFilter::TParticleFilterOptions	&PF_options,
+				const mrpt::bayes::CParticleFilter::TParticleFilterOptions	&PF_options,
 				const size_t			particleIndexForMap,
-				const CSensoryFrame		&observation,
+				const mrpt::obs::CSensoryFrame		&observation,
 				const mrpt::poses::CPose3D &x ) const;
 			/** @} */
 

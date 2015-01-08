@@ -2,22 +2,22 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
 #include "obs-precomp.h"   // Precompiled headers
 
-#include <mrpt/slam/CObservationRFID.h>
+#include <mrpt/obs/CObservationRFID.h>
 #include <mrpt/utils/CStream.h>
 
-using namespace mrpt::slam;
+using namespace mrpt::obs;
 using namespace mrpt::utils;
 using namespace mrpt::poses;
 
 // This must be added to any CSerializable class implementation file.
-IMPLEMENTS_SERIALIZABLE(CObservationRFID, CObservation,mrpt::slam)
+IMPLEMENTS_SERIALIZABLE(CObservationRFID, CObservation,mrpt::obs)
 
 /** Constructor
  */
@@ -28,7 +28,7 @@ CObservationRFID::CObservationRFID() : tag_readings()
 /*---------------------------------------------------------------
   Implements the writing to a CStream capability of CSerializable objects
  ---------------------------------------------------------------*/
-void  CObservationRFID::writeToStream(CStream &out, int *version) const
+void  CObservationRFID::writeToStream(mrpt::utils::CStream &out, int *version) const
 {
 		//std::cout << "AP-1" << std::endl;
 	MRPT_UNUSED_PARAM(out);
@@ -54,7 +54,7 @@ void  CObservationRFID::writeToStream(CStream &out, int *version) const
 /*---------------------------------------------------------------
   Implements the reading from a CStream capability of CSerializable objects
  ---------------------------------------------------------------*/
-void  CObservationRFID::readFromStream(CStream &in, int version)
+void  CObservationRFID::readFromStream(mrpt::utils::CStream &in, int version)
 {
 	//MRPT_UNUSED_PARAM(in);
 	switch(version)
@@ -111,5 +111,21 @@ void CObservationRFID::getSensorPose( CPose3D &out_sensorPose ) const
 void CObservationRFID::setSensorPose( const CPose3D &newSensorPose )
 {
 	sensorPoseOnRobot = newSensorPose;
+}
+
+void CObservationRFID::getDescriptionAsText(std::ostream &o) const
+{
+	CObservation::getDescriptionAsText(o);
+
+	std::cout << "Number of RFID tags sensed: " << tag_readings.size() << std::endl << std::endl;
+
+	for (size_t i=0;i<tag_readings.size();i++)
+	{
+		const CObservationRFID::TTagReading &rfid = tag_readings[i];
+		std::cout << "#"<< i
+			<< ": Power=" << rfid.power
+			<< " (dBm) | AntennaPort=" << rfid.antennaPort
+			<< " | EPC=" << rfid.epc << std::endl;
+	}
 }
 

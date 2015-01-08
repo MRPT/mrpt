@@ -2,7 +2,7 @@
 Version=1.0
 Name=Navigation log viewer
 Comment=A visualization tool for navigation logs
-Exec=navlog-viewer
+Exec=navlog-viewer %F
 Icon=navlog-viewer
 Terminal=false
 X-MultipleArgs=false

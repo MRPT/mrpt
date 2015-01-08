@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -11,7 +11,7 @@
 
 #include <mrpt/hwdrivers/COpenNI2Generic.h>
 #include <mrpt/hwdrivers/CGenericSensor.h>
-#include <mrpt/slam/CObservationRGBD360.h>
+#include <mrpt/obs/CObservationRGBD360.h>
 #include <mrpt/utils/TEnumType.h>
 #include <mrpt/gui/CDisplayWindow.h>
 
@@ -26,7 +26,7 @@ namespace mrpt
 		  * The same options (resolution, fps, etc.) are used for every sensor.
 		  *
 		  *  <h2>Configuration and usage:</h2> <hr>
-		  * Data is returned as observations of type mrpt::slam::CObservationRGBD360.
+		  * Data is returned as observations of type mrpt::obs::CObservationRGBD360.
 		  *  See those classes for documentation on their fields.
 		  *
 		  * As with any other CGenericSensor class, the normal sequence of methods to be called is:
@@ -42,7 +42,7 @@ namespace mrpt
 		  *
 		  * <h2>Coordinates convention</h2><hr>
 		  *   The origin of coordinates is the focal point of the RGB camera of the first indexed sensor, with the axes oriented
-		  *   as in the diagram shown in mrpt::slam::CObservation3DRangeScan. Notice in that picture that the RGB camera is
+		  *   as in the diagram shown in mrpt::obs::CObservation3DRangeScan. Notice in that picture that the RGB camera is
 		  *   assumed to have axes as usual in computer vision, which differ from those for the depth camera.
 		  *
 		  *   The X,Y,Z axes used to report the data from accelerometers coincide with those of the depth camera
@@ -71,14 +71,14 @@ namespace mrpt
 		  *   You can convert the 3D observation into a 3D point cloud with this piece of code:
 		  *
 		  * \code
-		  * mrpt::slam::CObservationRGBD360      obs3D;
-		  * mrpt::slam::CColouredPointsMap       pntsMap;
+		  * mrpt::obs::CObservationRGBD360      obs3D;
+		  * mrpt::maps::CColouredPointsMap       pntsMap;
 		  * pntsMap.colorScheme.scheme = CColouredPointsMap::cmFromIntensityImage;
 		  * pntsMap.loadFromRangeScan(obs3D);
 		  * \endcode
 		  *
-		  *   Then the point cloud mrpt::slam::CColouredPointsMap can be converted into an OpenGL object for
-		  *    rendering with mrpt::slam::CMetricMap::getAs3DObject() or alternatively with:
+		  *   Then the point cloud mrpt::maps::CColouredPointsMap can be converted into an OpenGL object for
+		  *    rendering with mrpt::maps::CMetricMap::getAs3DObject() or alternatively with:
 		  *
 		  *  \code
 		  *    mrpt::opengl::CPointCloudColouredPtr gl_points = mrpt::opengl::CPointCloudColoured::Create();
@@ -145,7 +145,7 @@ namespace mrpt
 		  *    // Relative pose of the right camera wrt to the left camera:
 		  *    // This assumes that both camera frames are such that +Z points
 		  *    // forwards, and +X and +Y to the right and downwards.
-		  *    // For the actual coordinates employed in 3D observations, see figure in mrpt::slam::CObservation3DRangeScan
+		  *    // For the actual coordinates employed in 3D observations, see figure in mrpt::obs::CObservation3DRangeScan
 		  *    [supplied_section_name_LEFT2RIGHT_POSE]
 		  *    rawlog-grabber-ignore = true // Instructs rawlog-grabber to ignore this section (it is not a separate device!)
 		  *
@@ -188,7 +188,7 @@ namespace mrpt
 			  * \sa doProcess
 			  */
 			void getNextObservation(
-				mrpt::slam::CObservationRGBD360 &out_obs,
+				mrpt::obs::CObservationRGBD360 &out_obs,
 				bool &there_is_obs,
 				bool &hardware_error );
 

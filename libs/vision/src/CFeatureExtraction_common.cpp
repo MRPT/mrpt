@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -15,6 +15,7 @@
 
 using namespace mrpt;
 using namespace mrpt::vision;
+using namespace mrpt::utils;
 using namespace mrpt::system;
 using namespace std;
 
@@ -47,13 +48,12 @@ void  CFeatureExtraction::detectFeatures(
 		CFeatureList			& feats,
 		const unsigned int		init_ID,
 		const unsigned int		nDesiredFeatures,
-		const TImageROI			& ROI,
-		const CMatrixBool       * mask) const
+		const TImageROI			& ROI) const
 {
 	switch( options.featsType )
 	{
 		case featHarris:
-
+			MRPT_TODO("Refactor: check if OpenCV's tile method can be directly called to save space here?")
 			if( options.harrisOptions.tile_image )
 			{
 				mrpt::utils::CTicTac tictac;
@@ -179,7 +179,7 @@ void  CFeatureExtraction::detectFeatures(
 			break;
 
 		case featFAST:
-			extractFeaturesFAST(img, feats, init_ID, nDesiredFeatures, ROI, mask);
+			extractFeaturesFAST(img, feats, init_ID, nDesiredFeatures, ROI);
 			break;
 
 		case featFASTER9:
@@ -339,7 +339,7 @@ CFeatureExtraction::TOptions::TOptions(const TFeatureType _featsType) :
 /*---------------------------------------------------------------
 					dumpToTextStream
   ---------------------------------------------------------------*/
-void CFeatureExtraction::TOptions::dumpToTextStream(CStream	&out) const
+void CFeatureExtraction::TOptions::dumpToTextStream(mrpt::utils::CStream	&out) const
 {
 	out.printf("\n----------- [CFeatureExtraction::TOptions] ------------ \n\n");
 

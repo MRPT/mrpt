@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -69,6 +69,7 @@ namespace mrpt
 		 *            CImage  img;
 		 *            ...
 		 *            // Call to OpenCV function expecting an "IplImage *" or a "void* arr":
+		 *            cv::Mat cvImg = cv::cvarrToMat( img.getAs<IplImage>() );
 		 *            cvFunction( img.getAs<IplImage>(), ... );
 		 *         \endcode
 		 *		- Only the unsigned 8-bit storage format for pixels (on each channel) is supported.
@@ -879,7 +880,7 @@ namespace mrpt
 			 * \exception std::exception On number of rows or cols equal to zero or other errors.
 			 * \sa saveToJPEG
 			 */
-			void  saveToStreamAsJPEG(CStream &out, const int jpeg_quality = 95 ) const;
+			void  saveToStreamAsJPEG(mrpt::utils::CStream &out, const int jpeg_quality = 95 ) const;
 
 			/** @}  */
 			// ================================================================

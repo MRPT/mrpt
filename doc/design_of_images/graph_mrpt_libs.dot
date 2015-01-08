@@ -12,7 +12,7 @@ digraph MRPT_LIBS {
 	topography 	[label="mrpt-topography",URL="group__mrpt__topography__grp.html"];
 	maps 		[label="mrpt-maps",URL="group__mrpt__maps__grp.html"];
 	vision 		[label="mrpt-vision",URL="group__mrpt__vision__grp.html"];
-	scanmatching 		[label="mrpt-scanmatching",URL="group__mrpt__scanmatching__grp.html"];
+	tfest 		[label="mrpt-tfest",URL="group__mrpt__tfest__grp.html"];
 
 	slam 		[label="mrpt-slam",URL="group__mrpt__slam__grp.html"];
 	graphslam	[label="mrpt-graphslam (.h)",URL="group__mrpt__graphslam__grp.html"];
@@ -37,7 +37,7 @@ digraph MRPT_LIBS {
 	kinematics  -> opengl;
 	
 	graphs -> base;
-	scanmatching -> base;
+	tfest -> base;
 
 	bayes -> base;
 	
@@ -51,7 +51,7 @@ digraph MRPT_LIBS {
 	hwdrivers -> maps;
 	
 	topography -> obs;
-	topography -> scanmatching;
+	topography -> tfest;
 	
 	vision -> obs;
 	
@@ -59,12 +59,12 @@ digraph MRPT_LIBS {
 
 	slam -> maps;
 	slam -> vision;
-	slam -> scanmatching;
+	slam -> tfest;
 	slam -> bayes;
 	slam -> graphs;
 
 	graphslam -> graphs;
-	
+
 	detectors -> vision;
 	detectors -> maps;
 	detectors -> gui;
@@ -72,8 +72,6 @@ digraph MRPT_LIBS {
 	hmtslam -> slam;
 	hmtslam -> graphslam;
 
-//	stereoslam -> vision;
-	
 	nav -> maps;
 	nav -> graphs;
 }

@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -652,7 +652,7 @@ std::string CImageGrabber_FlyCapture2::getFC2version()
  -------------------------------------------------------------*/
 // Grab image from the camera. This method blocks until the next frame is captured.
 // return: false on any error.
-bool CImageGrabber_FlyCapture2::getObservation( mrpt::slam::CObservationImage &out_observation )
+bool CImageGrabber_FlyCapture2::getObservation( mrpt::obs::CObservationImage &out_observation )
 {
 #if MRPT_HAS_FLYCAPTURE2
 if (!m_camera) {
@@ -703,7 +703,7 @@ THROW_EXCEPTION("MRPT compiled without support for FlyCapture2")
  -------------------------------------------------------------*/
 // Grab image from the camera. This method blocks until the next frame is captured.
 // return: false on any error.
-bool CImageGrabber_FlyCapture2::getObservation( mrpt::slam::CObservationStereoImages &out_observation )
+bool CImageGrabber_FlyCapture2::getObservation( mrpt::obs::CObservationStereoImages &out_observation )
 {
 #if MRPT_HAS_FLYCAPTURE2 && MRPT_HAS_TRICLOPS && MRPT_HAS_OPENCV
 	if (!m_camera) {

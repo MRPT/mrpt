@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -12,7 +12,7 @@
 #include <mrpt/utils/TPixelCoord.h>
 #include <mrpt/utils/round.h>
 #include <mrpt/math/KDTreeCapable.h>
-#include <mrpt/math/CMatrixTemplate.h>  // CMatrixBool
+#include <mrpt/math/CMatrixTemplate.h>  // mrpt::math::CMatrixBool
 #include <mrpt/math/CMatrixTemplateNumeric.h>
 #include <mrpt/vision/types.h>
 #include <mrpt/utils/round.h>

@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -35,7 +35,7 @@ CMatrix::CMatrix( const TPoint3D &p) : CMatrixFloat(p) {}
 /*---------------------------------------------------------------
 						writeToStream
  ---------------------------------------------------------------*/
-void  CMatrix::writeToStream(CStream &out, int *out_Version) const
+void  CMatrix::writeToStream(mrpt::utils::CStream &out, int *out_Version) const
 {
 	if (out_Version)
 		*out_Version = 0;
@@ -54,7 +54,7 @@ void  CMatrix::writeToStream(CStream &out, int *out_Version) const
 /*---------------------------------------------------------------
 						readFromStream
  ---------------------------------------------------------------*/
-void  CMatrix::readFromStream(CStream &in, int version)
+void  CMatrix::readFromStream(mrpt::utils::CStream &in, int version)
 {
 	switch(version)
 	{

@@ -4,3 +4,4 @@ build*
 install*
 *.layout
 CMakeFiles/
+CMakeLists.txt.user

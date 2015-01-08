@@ -17,7 +17,8 @@ PROJECT(ReactiveNav3D-Demo)
 # Define the executable target:
 ADD_EXECUTABLE(ReactiveNav3D-Demo
                ReactiveNav3D_demo_main.cpp
-			   ReactiveNav3D_demo.h)
+			   ReactiveNav3D_demo.h
+			    ${MRPT_VERSION_RC_FILE})
 
 SET(TMP_TARGET_NAME "ReactiveNav3D-Demo")
 

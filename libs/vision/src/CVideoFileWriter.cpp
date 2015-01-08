@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -44,7 +44,7 @@ CVideoFileWriter::~CVideoFileWriter()
 bool CVideoFileWriter::open(
 	const std::string &out_file,
 	double fps,
-	const mrpt::vision::TImageSize & frameSize,
+	const mrpt::utils::TImageSize & frameSize,
 	const std::string &fourcc,
 	bool isColor )
 {

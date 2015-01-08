@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -17,9 +17,9 @@
 #include <mrpt/math/ops_containers.h>
 #include <mrpt/math/wrap2pi.h>
 #include <mrpt/slam/CGridMapAligner.h>
-#include <mrpt/slam/CSimpleMap.h>
-#include <mrpt/slam/CSensoryFrame.h>
-#include <mrpt/slam/CMultiMetricMap.h>
+#include <mrpt/maps/CSimpleMap.h>
+#include <mrpt/obs/CSensoryFrame.h>
+#include <mrpt/maps/CMultiMetricMap.h>
 #include <mrpt/gui.h>
 #include <mrpt/system/datetime.h>
 #include <mrpt/system/filesystem.h>
@@ -34,6 +34,8 @@
 using namespace mrpt;
 using namespace mrpt::utils;
 using namespace mrpt::slam;
+using namespace mrpt::maps;
+using namespace mrpt::obs;
 using namespace mrpt::opengl;
 using namespace mrpt::math;
 using namespace mrpt::gui;

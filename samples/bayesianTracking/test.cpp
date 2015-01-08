@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -20,14 +20,14 @@
 #include <mrpt/system/threads.h>
 #include <mrpt/math/wrap2pi.h>
 #include <mrpt/math/distributions.h>
-#include <mrpt/slam/CSensoryFrame.h>
-#include <mrpt/slam/CObservationBearingRange.h>
+#include <mrpt/obs/CSensoryFrame.h>
+#include <mrpt/obs/CObservationBearingRange.h>
 
 using namespace mrpt;
 using namespace mrpt::bayes;
 using namespace mrpt::gui;
 using namespace mrpt::math;
-using namespace mrpt::slam;
+using namespace mrpt::obs;
 using namespace mrpt::utils;
 using namespace mrpt::random;
 using namespace std;
@@ -184,8 +184,8 @@ public:
 	  * \sa options
 	  */
 	void  prediction_and_update_pfStandardProposal(
-		const mrpt::slam::CActionCollection	* action,
-		const mrpt::slam::CSensoryFrame		* observation,
+		const mrpt::obs::CActionCollection	* action,
+		const mrpt::obs::CSensoryFrame		* observation,
 		const bayes::CParticleFilter::TParticleFilterOptions &PF_options );
 
 
@@ -567,8 +567,8 @@ void CRangeBearing::OnSubstractObservationVectors(KFArray_OBS &A, const KFArray_
 * \sa options
 */
 void  CRangeBearingParticleFilter::prediction_and_update_pfStandardProposal(
-		const mrpt::slam::CActionCollection	* action,
-		const mrpt::slam::CSensoryFrame		* observation,
+		const mrpt::obs::CActionCollection	* action,
+		const mrpt::obs::CSensoryFrame		* observation,
 		const bayes::CParticleFilter::TParticleFilterOptions &PF_options )
 {
 	size_t i,N = m_particles.size();

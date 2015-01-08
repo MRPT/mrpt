@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -73,9 +73,9 @@ namespace mrpt
 			/** A set of PTGs of the same type, one per "height level" */
 			struct NAV_IMPEXP TPTGmultilevel
 			{
-				std::vector <CParameterizedTrajectoryGenerator*> PTGs;
-				TPoint2D				TP_Target;
-				THolonomicMovement		holonomicmov;
+				std::vector<CParameterizedTrajectoryGenerator*> PTGs;
+				mrpt::math::TPoint2D TP_Target;
+				THolonomicMovement   holonomicmov;
 
 				TPTGmultilevel();
 				~TPTGmultilevel();
@@ -84,8 +84,8 @@ namespace mrpt
 			// ------------------------------------------------------
 			//					PRIVATE	VARIABLES
 			// ------------------------------------------------------
-			mrpt::slam::CSimplePointsMap              m_WS_Obstacles_unsorted;  //!< The unsorted set of obstacles from the sensors
-			std::vector<mrpt::slam::CSimplePointsMap> m_WS_Obstacles_inlevels; //!< One point cloud per 2.5D robot-shape-slice, coordinates relative to the robot local frame
+			mrpt::maps::CSimplePointsMap              m_WS_Obstacles_unsorted;  //!< The unsorted set of obstacles from the sensors
+			std::vector<mrpt::maps::CSimplePointsMap> m_WS_Obstacles_inlevels; //!< One point cloud per 2.5D robot-shape-slice, coordinates relative to the robot local frame
 
 
 			/** The robot 3D shape model */

@@ -2,25 +2,26 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
 #include "obs-precomp.h"   // Precompiled headers
 
-#include <mrpt/slam/CObservationImage.h>
+#include <mrpt/obs/CObservationImage.h>
 #include <mrpt/utils/CStream.h>
+#include <mrpt/math/ops_vectors.h>  // << of std::vector()
 
 #include <iostream>
 
-using namespace mrpt::slam;
+using namespace mrpt::obs;
 using namespace mrpt::utils;
 using namespace mrpt::math;
 using namespace mrpt::poses;
 
 // This must be added to any CSerializable class implementation file.
-IMPLEMENTS_SERIALIZABLE(CObservationImage, CObservation,mrpt::slam)
+IMPLEMENTS_SERIALIZABLE(CObservationImage, CObservation,mrpt::obs)
 
 /** Constructor
  */
@@ -33,7 +34,7 @@ CObservationImage::CObservationImage( void *iplImage  ) :
 /*---------------------------------------------------------------
   Implements the writing to a CStream capability of CSerializable objects
  ---------------------------------------------------------------*/
-void  CObservationImage::writeToStream(CStream &out, int *version) const
+void  CObservationImage::writeToStream(mrpt::utils::CStream &out, int *version) const
 {
 	if (version)
 		*version = 4;
@@ -49,7 +50,7 @@ void  CObservationImage::writeToStream(CStream &out, int *version) const
 /*---------------------------------------------------------------
   Implements the reading from a CStream capability of CSerializable objects
  ---------------------------------------------------------------*/
-void  CObservationImage::readFromStream(CStream &in, int version)
+void  CObservationImage::readFromStream(mrpt::utils::CStream &in, int version)
 {
 	switch(version)
 	{
@@ -111,4 +112,32 @@ void  CObservationImage::readFromStream(CStream &in, int version)
 void  CObservationImage::getRectifiedImage( CImage &out_img ) const
 {
 	image.rectifyImage(out_img, cameraParams );
+}
+
+void CObservationImage::getDescriptionAsText(std::ostream &o) const
+{
+	using namespace std;
+	CObservation::getDescriptionAsText(o);
+
+	o << "Homogeneous matrix for the sensor's 3D pose, relative to robot base:\n";
+	o << cameraPose.getHomogeneousMatrixVal()
+	<< cameraPose << endl;
+
+	o << format("Focal length: %.03f mm\n",cameraParams.focalLengthMeters*1000);
+
+	o << "Intrinsic parameters matrix for the camera:"<< endl
+	<< cameraParams.intrinsicParams.inMatlabFormat() << endl << cameraParams.intrinsicParams << endl;
+
+	o << "Distorsion parameters for the camera: " << cameraParams.getDistortionParamsAsVector() << endl;
+
+	if (image.isExternallyStored())
+		o << " Image is stored externally in file: " << image.getExternalStorageFile() << endl;
+
+	o << format(" Image size: %ux%u pixels\n", (unsigned int)image.getWidth(), (unsigned int)image.getHeight() );
+
+	o << " Channels order: " << image.getChannelsOrder() << endl;
+
+	o << format(" Rows are stored in top-bottom order: %s\n",
+					image.isOriginTopLeft() ? "YES" : "NO");
+
 }

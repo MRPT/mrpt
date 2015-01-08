@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -14,11 +14,6 @@
 
 namespace mrpt	{
 namespace opengl	{
-	using namespace mrpt::utils;
-	using namespace mrpt::poses;
-	using namespace mrpt::math;
-	using namespace std;
-
 	class OPENGL_IMPEXP CPolyhedron;
 
 	// This must be added to any CSerializable derived class:
@@ -65,7 +60,7 @@ namespace opengl	{
 			/**
 			  * Given a set of vertices, computes the length of the vertex.
 			  */
-			double length(const vector<TPoint3D> &vs) const;
+			double length(const std::vector<mrpt::math::TPoint3D> &vs) const;
 			/**
 			  * Destructor.
 			  */
@@ -75,44 +70,28 @@ namespace opengl	{
 		  * Struct used to store a polyhedron face. Consists on a set of vertex indices and a normal vector.
 		  */
 		struct OPENGL_IMPEXP TPolyhedronFace	{
-			/**
-			  * Vector of indices to the vertex list.
-			  */
-			vector<uint32_t> vertices;
-			/**
-			  * Normal vector.
-			  */
-			double normal[3];
-			/**
-			  * Fast default constructor. Initializes to garbage.
-			  */
+			std::vector<uint32_t> vertices; //!< Vector of indices to the vertex list.
+			double normal[3]; //!< Normal vector.
+			/** Fast default constructor. Initializes to garbage. */
 			TPolyhedronFace():vertices()	{}
-			/**
-			  * Destructor.
-			  */
+			/** Destructor.  */
 			~TPolyhedronFace()	{}
-			/**
-			  * Given a set of vertices, computes the area of this face.
-			  */
-			double area(const vector<TPoint3D> &vertices) const;
-			/**
-			  * Given a set of vertices, get this face's center.
-			  */
-			void getCenter(const vector<TPoint3D> &vertices,TPoint3D &p) const;
+			double area(const std::vector<mrpt::math::TPoint3D> &vertices) const; //!< Given a set of vertices, computes the area of this face.
+			void getCenter(const std::vector<mrpt::math::TPoint3D> &vertices, mrpt::math::TPoint3D &p) const; //!< Given a set of vertices, get this face's center.
 		};
 	protected:
 		/**
 		  * List of vertices presents in the polyhedron.
 		  */
-		vector<TPoint3D> mVertices;
+		std::vector<mrpt::math::TPoint3D> mVertices;
 		/**
 		  * List of polyhedron's edges.
 		  */
-		vector<TPolyhedronEdge> mEdges;
+		std::vector<TPolyhedronEdge> mEdges;
 		/**
 		  * List of polyhedron's faces.
 		  */
-		vector<TPolyhedronFace> mFaces;
+		std::vector<TPolyhedronFace> mFaces;
 		/**
 		  * This flag determines whether the polyhedron will be displayed as a solid object or as a set of edges.
 		  */
@@ -124,7 +103,7 @@ namespace opengl	{
 		/**
 		  * Mutable list of actual polygons, maintained for speed.
 		  */
-		mutable std::vector<TPolygonWithPlane> tempPolygons;
+		mutable std::vector<mrpt::math::TPolygonWithPlane> tempPolygons;
 		/**
 		  * Whether the set of actual polygons is up to date or not.
 		  */
@@ -134,17 +113,17 @@ namespace opengl	{
 		  * Creation of a polyhedron from its vertices and faces.
 		  * \throw logic_error if the polyhedron definition has flaws (bad vertex indices, etc.).
 		  */
-		static CPolyhedronPtr Create(const vector<TPoint3D> &vertices,const vector<vector<uint32_t> > &faces);
+		static CPolyhedronPtr Create(const std::vector<mrpt::math::TPoint3D> &vertices,const std::vector<std::vector<uint32_t> > &faces);
 		/**
 		  * Creation of a polyhedron from its vertices and faces.
 		  * \throw logic_error if the polyhedron definition has flaws (bad vertex indices, etc.).
 		  */
-		static CPolyhedronPtr Create(const vector<TPoint3D> &vertices,const vector<TPolyhedronFace> &faces);
+		static CPolyhedronPtr Create(const std::vector<mrpt::math::TPoint3D> &vertices,const std::vector<TPolyhedronFace> &faces);
 		/**
 		  * Creation from a set of polygons.
 		  * \sa mrpt::math::TPolygon3D
 		  */
-		static CPolyhedronPtr Create(const std::vector<math::TPolygon3D> &polys);
+		static CPolyhedronPtr Create(const std::vector<mrpt::math::TPolygon3D> &polys);
 
 		/** Evaluates the bounding box of this object (including possible children) in the coordinate frame of the object parent. */
 		virtual void getBoundingBox(mrpt::math::TPoint3D &bb_min, mrpt::math::TPoint3D &bb_max) const;
@@ -345,48 +324,48 @@ namespace opengl	{
 		  * Creates a cubic prism, given two opposite vertices.
 		  * \sa CreateCubicPrism(double,double,double,double,double,double),CreateParallelepiped,CreateCustomPrism,CreateRegularPrism,CreateArchimedeanRegularPrism
 		  */
-		static CPolyhedronPtr CreateCubicPrism(const TPoint3D &p1,const TPoint3D &p2);
+		static CPolyhedronPtr CreateCubicPrism(const mrpt::math::TPoint3D &p1,const mrpt::math::TPoint3D &p2);
 		/**
 		  * Creates a custom pyramid, using a set of 2D vertices which will lie on the XY plane.
 		  * \sa CreateDoublePyramid,CreateFrustum,CreateBifrustum,CreateRegularPyramid
 		  */
-		static CPolyhedronPtr CreatePyramid(const vector<TPoint2D> &baseVertices,double height);
+		static CPolyhedronPtr CreatePyramid(const std::vector<mrpt::math::TPoint2D> &baseVertices,double height);
 		/**
 		  * Creates a double pyramid, using a set of 2D vertices which will lie on the XY plane. The second height is used with the downwards pointing pyramid, so that it will effectively point downwards if it's positive.
 		  * \sa CreatePyramid,CreateBifrustum,CreateRegularDoublePyramid
 		  */
-		static CPolyhedronPtr CreateDoublePyramid(const vector<TPoint2D> &baseVertices,double height1,double height2);
+		static CPolyhedronPtr CreateDoublePyramid(const std::vector<mrpt::math::TPoint2D> &baseVertices,double height1,double height2);
 		/**
 		  * Creates a truncated pyramid, using a set of vertices which will lie on the XY plane.
 		  * Do not try to use with a ratio equal to zero; use CreatePyramid instead. When using a ratio of 1, it will create a Prism.
 		  * \sa CreatePyramid,CreateBifrustum
 		  */
-		static CPolyhedronPtr CreateTruncatedPyramid(const vector<TPoint2D> &baseVertices,double height,double ratio);
+		static CPolyhedronPtr CreateTruncatedPyramid(const std::vector<mrpt::math::TPoint2D> &baseVertices,double height,double ratio);
 		/**
 		  * This is a synonym for CreateTruncatedPyramid.
 		  * \sa CreateTruncatedPyramid
 		  */
-		static CPolyhedronPtr CreateFrustum(const vector<TPoint2D> &baseVertices,double height,double ratio);
+		static CPolyhedronPtr CreateFrustum(const std::vector<mrpt::math::TPoint2D> &baseVertices,double height,double ratio);
 		/**
 		  * Creates a custom prism with vertical edges, given any base which will lie on the XY plane.
 		  * \sa CreateCubicPrism,CreateCustomAntiprism,CreateRegularPrism,CreateArchimedeanRegularPrism
 		  */
-		static CPolyhedronPtr CreateCustomPrism(const vector<TPoint2D> &baseVertices,double height);
+		static CPolyhedronPtr CreateCustomPrism(const std::vector<mrpt::math::TPoint2D> &baseVertices,double height);
 		/**
 		  * Creates a custom antiprism, using two custom bases. For better results, the top base should be slightly rotated with respect to the bottom one.
 		  * \sa CreateCustomPrism,CreateRegularAntiprism,CreateArchimedeanRegularAntiprism
 		  */
-		static CPolyhedronPtr CreateCustomAntiprism(const vector<TPoint2D> &bottomBase,const vector<TPoint2D> &topBase,double height);
+		static CPolyhedronPtr CreateCustomAntiprism(const std::vector<mrpt::math::TPoint2D> &bottomBase,const std::vector<mrpt::math::TPoint2D> &topBase,double height);
 		/**
 		  * Creates a parallelepiped, given a base point and three vectors represented as points.
 		  * \sa CreateCubicPrism
 		  */
-		static CPolyhedronPtr CreateParallelepiped(const TPoint3D &base,const TPoint3D &v1,const TPoint3D &v2,const TPoint3D &v3);
+		static CPolyhedronPtr CreateParallelepiped(const mrpt::math::TPoint3D &base,const mrpt::math::TPoint3D &v1,const mrpt::math::TPoint3D &v2,const mrpt::math::TPoint3D &v3);
 		/**
 		  * Creates a bifrustum, or double truncated pyramid, given a base which will lie on the XY plane.
 		  * \sa CreateFrustum,CreateDoublePyramid
 		  */
-		static CPolyhedronPtr CreateBifrustum(const vector<TPoint2D> &baseVertices,double height1,double ratio1,double height2,double ratio2);
+		static CPolyhedronPtr CreateBifrustum(const std::vector<mrpt::math::TPoint2D> &baseVertices,double height1,double ratio1,double height2,double ratio2);
 		/**
 		  * Creates a trapezohedron, consisting of 2*N kites, where N is the number of edges in the base. The base radius controls the polyhedron height, whilst the distance between bases affects the height.
 		  * When the number of edges equals 3, the polyhedron is actually a parallelepiped, and it can even be a cube.
@@ -501,19 +480,19 @@ namespace opengl	{
 		/**
 		  * Gets a list with the polyhedron's vertices.
 		  */
-		inline void getVertices(vector<TPoint3D> &vertices) const	{
+		inline void getVertices(std::vector<mrpt::math::TPoint3D> &vertices) const	{
 			vertices=mVertices;
 		}
 		/**
 		  * Gets a list with the polyhedron's edges.
 		  */
-		inline void getEdges(vector<TPolyhedronEdge> &edges) const	{
+		inline void getEdges(std::vector<TPolyhedronEdge> &edges) const	{
 			edges=mEdges;
 		}
 		/**
 		  * Gets a list with the polyhedron's faces.
 		  */
-		inline void getFaces(vector<TPolyhedronFace> &faces) const	{
+		inline void getFaces(std::vector<TPolyhedronFace> &faces) const	{
 			faces=mFaces;
 		}
 		/**
@@ -537,11 +516,11 @@ namespace opengl	{
 		/**
 		  * Gets a vector with each edge's length.
 		  */
-		void getEdgesLength(vector<double> &lengths) const;
+		void getEdgesLength(std::vector<double> &lengths) const;
 		/**
 		  * Gets a vector with each face's area. Won't work properly if the polygons are not convex.
 		  */
-		void getFacesArea(vector<double> &areas) const;
+		void getFacesArea(std::vector<double> &areas) const;
 		/**
 		  * Gets the polyhedron volume. Won't work properly if the polyhedron is not convex.
 		  */
@@ -600,7 +579,7 @@ namespace opengl	{
 		/**
 		  * Gets the center of the polyhedron.
 		  */
-		void getCenter(TPoint3D &center) const;
+		void getCenter(mrpt::math::TPoint3D &center) const;
 		/**
 		  * Creates a random polyhedron from the static methods.
 		  */
@@ -669,19 +648,19 @@ namespace opengl	{
 		/**
 		  * Generates a list of 2D vertices constituting a regular polygon.
 		  */
-		static vector<TPoint2D> generateBase(uint32_t numBaseEdges,double baseRadius);
+		static std::vector<mrpt::math::TPoint2D> generateBase(uint32_t numBaseEdges,double baseRadius);
 		/**
 		  * Generates a list of 2D vertices constituting a regular polygon, with an angle shift which makes it suitable for antiprisms.
 		  */
-		static vector<TPoint2D> generateShiftedBase(uint32_t numBaseEdges,double baseRadius);
+		static std::vector<mrpt::math::TPoint2D> generateShiftedBase(uint32_t numBaseEdges,double baseRadius);
 		/**
 		  * Generates a list of 3D vertices constituting a regular polygon, appending it to an existing vector.
 		  */
-		static void generateBase(uint32_t numBaseEdges,double baseRadius,double height,vector<TPoint3D> &vec);
+		static void generateBase(uint32_t numBaseEdges,double baseRadius,double height,std::vector<mrpt::math::TPoint3D> &vec);
 		/**
 		  * Generates a list of 3D vertices constituting a regular polygon conveniently shifted, appending it to an existing vector.
 		  */
-		static void generateShiftedBase(uint32_t numBaseEdges,double baseRadius,double height,double shift,vector<TPoint3D> &vec);
+		static void generateShiftedBase(uint32_t numBaseEdges,double baseRadius,double height,double shift,std::vector<mrpt::math::TPoint3D> &vec);
 		/**
 		  * Calculates the normal vector to a face.
 		  */
@@ -693,7 +672,7 @@ namespace opengl	{
 		/**
 		  * Checks whether a set of faces is suitable for a set of vertices.
 		  */
-		static bool checkConsistence(const vector<TPoint3D> &vertices,const vector<TPolyhedronFace> &faces);
+		static bool checkConsistence(const std::vector<mrpt::math::TPoint3D> &vertices,const std::vector<TPolyhedronFace> &faces);
 		/**
 		  * Returns how many edges converge in a given vertex.
 		  */
@@ -709,15 +688,15 @@ namespace opengl	{
 		/**
 		  * Basic constructor with a list of vertices and another of faces, checking for correctness.
 		  */
-		inline CPolyhedron(const vector<TPoint3D> &vertices,const vector<TPolyhedronFace> &faces,bool doCheck=true):mVertices(vertices),mEdges(),mFaces(faces),mWireframe(false),mLineWidth(1),polygonsUpToDate(false)	{
+		inline CPolyhedron(const std::vector<mrpt::math::TPoint3D> &vertices,const std::vector<TPolyhedronFace> &faces,bool doCheck=true):mVertices(vertices),mEdges(),mFaces(faces),mWireframe(false),mLineWidth(1),polygonsUpToDate(false)	{
 			if (doCheck) if (!checkConsistence(vertices,faces)) throw std::logic_error("Face list accesses a vertex out of range");
-			for (vector<TPolyhedronFace>::iterator it=mFaces.begin();it!=mFaces.end();++it)	{
+			for (std::vector<TPolyhedronFace>::iterator it=mFaces.begin();it!=mFaces.end();++it)	{
 				if (!setNormal(*it,doCheck)) throw std::logic_error("Bad face specification");
 				addEdges(*it);
 			}
 		}
 		/** Creates a polyhedron without checking its correctness. */
-		static CPolyhedronPtr CreateNoCheck(const vector<TPoint3D> &vertices,const vector<TPolyhedronFace> &faces);
+		static CPolyhedronPtr CreateNoCheck(const std::vector<mrpt::math::TPoint3D> &vertices,const std::vector<TPolyhedronFace> &faces);
 		/** Creates an empty Polyhedron. */
 		static CPolyhedronPtr CreateEmpty();
 		/** Destructor. */
@@ -728,7 +707,7 @@ namespace opengl	{
 	// Implemented after the definition of SmartPtrs in the _POST() macro above.
 	template<class T>
 	size_t CPolyhedron::getIntersection(const CPolyhedronPtr &p1,const CPolyhedronPtr &p2,T &container)	{
-		std::vector<TPolygon3D> polys1,polys2;
+		std::vector<mrpt::math::TPolygon3D> polys1,polys2;
 		p1->getSetOfPolygonsAbsolute(polys1);
 		p2->getSetOfPolygonsAbsolute(polys2);
 		return mrpt::math::intersect(polys1,polys2,container);
@@ -752,10 +731,9 @@ namespace opengl	{
 	OPENGL_IMPEXP mrpt::utils::CStream& operator<<(mrpt::utils::CStream& out,const CPolyhedron::TPolyhedronFace &o);
 }
 	namespace utils	{
-		using namespace mrpt::opengl;
 		// Specialization must occur in the same namespace
-		MRPT_DECLARE_TTYPENAME(CPolyhedron::TPolyhedronEdge)
-		MRPT_DECLARE_TTYPENAME(CPolyhedron::TPolyhedronFace)
+		MRPT_DECLARE_TTYPENAME_NAMESPACE(CPolyhedron::TPolyhedronEdge,mrpt::opengl)
+		MRPT_DECLARE_TTYPENAME_NAMESPACE(CPolyhedron::TPolyhedronFace,mrpt::opengl)
 	}
 }
 #endif

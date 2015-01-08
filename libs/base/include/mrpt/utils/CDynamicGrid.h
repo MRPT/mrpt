@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -288,7 +288,7 @@ namespace mrpt
 			}
 
 			/** Get the entire grid as a matrix.
-			  *  \tparam MAT The type of the matrix, typically a CMatrixDouble.
+			  *  \tparam MAT The type of the matrix, typically a mrpt::math::CMatrixDouble.
 			  *  \param[out] m The output matrix; will be set automatically to the correct size.
 			  *  Entry (cy,cx) in the matrix contains the grid cell with indices (cx,cy).
 			  * \note This method will compile only for cell types that can be converted to the type of the matrix elements (e.g. double).

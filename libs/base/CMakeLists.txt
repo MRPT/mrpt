@@ -59,6 +59,9 @@ IF(CMAKE_MRPT_HAS_ZLIB)
 	ENDIF (CMAKE_MRPT_HAS_ZLIB_SYSTEM_IS_WX OR NOT CMAKE_MRPT_HAS_ZLIB_SYSTEM)
 ENDIF(CMAKE_MRPT_HAS_ZLIB)
 
+IF(CMAKE_MRPT_HAS_OPENCV)
+	INCLUDE_DIRECTORIES(${OpenCV_INCLUDE_DIR} ${OpenCV_INCLUDE_DIRS} ${OPENCV_INCLUDE_DIRS} ${OPENCV_INCLUDEDIR})
+ENDIF(CMAKE_MRPT_HAS_OPENCV)
 
 # Documentation files:
 LIST(APPEND base_EXTRA_SRCS			"${CMAKE_SOURCE_DIR}/doc/doxygen-pages/*.h")
@@ -88,6 +91,19 @@ IF(BUILD_mrpt-base)
 
 		ENDIF (MSVC)
 	ENDIF(MRPT_ENABLE_PRECOMPILED_HDRS)
+
+	IF(CMAKE_MRPT_HAS_OPENCV)
+		target_link_libraries(mrpt-base ${OpenCV_LIBRARIES})
+	ENDIF(CMAKE_MRPT_HAS_OPENCV)
+
+	if (NOT "${SuiteSparse_LIBRARIES}" STREQUAL "")
+		target_link_libraries(mrpt-base ${SuiteSparse_LIBRARIES})
+	endif (NOT "${SuiteSparse_LIBRARIES}" STREQUAL "")
+
+	IF(CMAKE_MRPT_HAS_WXWIDGETS)
+		target_link_libraries(mrpt-base ${wxWidgets_LIBRARIES})
+	ENDIF(CMAKE_MRPT_HAS_WXWIDGETS)
+
 
 	# For GCC<4.5.1 and 64bit architectures, we need to disable vectorization at one problematic file (weird bug!)
 	# JL: It seems the bug is still there for GCC 4.6.0, so disable vect. in all cases for that file :-(

@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -14,8 +14,6 @@ namespace mrpt { namespace srba {
 
 #define SYM_ST_SUPER_VERBOSE 0
 
-using namespace std;
-
 /** Incremental update of spanning trees after the insertion of ONE new node and ONE OR MORE edges */
 template <class KF2KF_POSE_TYPE,class LM_TYPE,class OBS_TYPE,class RBA_OPTIONS>
 void TRBA_Problem_state<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::TSpanningTree::update_symbolic_new_node(
@@ -26,6 +24,7 @@ void TRBA_Problem_state<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::TSpanning
 	const new_kf_observations_t        * obs
 	)
 {
+	using namespace std;
 	ASSERT_(max_depth>=1)
 
 	// Maintain a list of those nodes whose list of shortest spanning trees ("next_edge") has been modified, so we

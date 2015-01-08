@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -63,7 +63,7 @@
 #include <mrpt/opengl/CPlanarLaserScan.h>			// It's in lib mrpt-maps
 #include <mrpt/opengl/CAngularObservationMesh.h>	// It's in lib mrpt-maps
 
-#include <mrpt/slam/CColouredPointsMap.h>
+#include <mrpt/maps/CColouredPointsMap.h>
 
 // A custom Art provider for customizing the icons:
 class MyArtProvider : public wxArtProvider
@@ -97,6 +97,7 @@ using namespace mrpt;
 using namespace mrpt::utils;
 using namespace mrpt::system;
 using namespace mrpt::poses;
+using namespace mrpt::math;
 using namespace mrpt::opengl;
 using namespace std;
 
@@ -1787,8 +1788,8 @@ void _DSceneViewerFrame::OnmnuImportLASSelected(wxCommandEvent& event)
 		else
 			gl_points_col = opengl::CPointCloudColoured::Create();
 
-		mrpt::slam::CColouredPointsMap pts_map;
-		mrpt::slam::CPointsMap::LAS_HeaderInfo  las_hdr;
+		mrpt::maps::CColouredPointsMap pts_map;
+		mrpt::maps::CPointsMap::LAS_HeaderInfo  las_hdr;
 
 		bool res;
 		{

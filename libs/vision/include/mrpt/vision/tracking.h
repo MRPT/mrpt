@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -27,9 +27,6 @@ namespace mrpt
 {
 	namespace vision
 	{
-		using namespace mrpt::math;
-		using namespace mrpt::utils;
-
 		/** \addtogroup vision_tracking Feature detection and tracking
 		  *  \ingroup mrpt_vision_grp
 		  *   @{  */
@@ -131,18 +128,18 @@ namespace mrpt
 			  *    - Call the pure virtual "trackFeatures_impl" method.
 			  *    - Implement the optional detection of new features if "add_new_features"!=0.
 			  */
-			void trackFeatures(const CImage &old_img,const CImage &new_img,TSimpleFeatureList &inout_featureList );
+			void trackFeatures(const mrpt::utils::CImage &old_img,const mrpt::utils::CImage &new_img,TSimpleFeatureList &inout_featureList );
 
 			/** \overload with subpixel precision */
-			void trackFeatures(const CImage &old_img,const CImage &new_img,TSimpleFeaturefList &inout_featureList );
+			void trackFeatures(const mrpt::utils::CImage &old_img,const mrpt::utils::CImage &new_img,TSimpleFeaturefList &inout_featureList );
 
 			/** \overload This overload version uses the old (and much slower) CFeatureList  */
-			void trackFeatures(const CImage &old_img,const CImage &new_img,CFeatureList &inout_featureList );
+			void trackFeatures(const mrpt::utils::CImage &old_img,const mrpt::utils::CImage &new_img,CFeatureList &inout_featureList );
 
 			/** A wrapper around the basic trackFeatures() method, but keeping the original list of features unmodified and returns the tracked ones in a new list. */
 			inline void trackFeaturesNewList(
-				const CImage &old_img,
-				const CImage &new_img,
+				const mrpt::utils::CImage &old_img,
+				const mrpt::utils::CImage &new_img,
 				const vision::CFeatureList &in_featureList,
 				vision::CFeatureList &out_featureList
 				)
@@ -175,13 +172,13 @@ namespace mrpt
 
 		protected:
 			/** The tracking method implementation, to be implemented in children classes. */
-			virtual void trackFeatures_impl(const CImage &old_img,const CImage &new_img,TSimpleFeaturefList  &inout_featureList );
+			virtual void trackFeatures_impl(const mrpt::utils::CImage &old_img,const mrpt::utils::CImage &new_img,TSimpleFeaturefList  &inout_featureList );
 
 			/** The tracking method implementation, to be implemented in children classes. */
-			virtual void trackFeatures_impl(const CImage &old_img,const CImage &new_img,TSimpleFeatureList  &inout_featureList ) = 0;
+			virtual void trackFeatures_impl(const mrpt::utils::CImage &old_img,const mrpt::utils::CImage &new_img,TSimpleFeatureList  &inout_featureList ) = 0;
 
 			/** This version falls back to the version with TSimpleFeatureList if the derived class does not implement it. */
-			virtual void trackFeatures_impl(const CImage &old_img,const CImage &new_img,CFeatureList &inout_featureList ) = 0;
+			virtual void trackFeatures_impl(const mrpt::utils::CImage &old_img,const mrpt::utils::CImage &new_img,CFeatureList &inout_featureList ) = 0;
 
 			mrpt::utils::CTimeLogger  m_timlog; //!< the internal time logger, disabled by default.
 
@@ -203,8 +200,8 @@ namespace mrpt
 
 			template <typename FEATLIST>
 			void internal_trackFeatures(
-				const CImage &old_img,
-				const CImage &new_img,
+				const mrpt::utils::CImage &old_img,
+				const mrpt::utils::CImage &new_img,
 				FEATLIST &inout_featureList );
 		};
 
@@ -236,15 +233,15 @@ namespace mrpt
 			inline CFeatureTracker_KL(mrpt::utils::TParametersDouble extraParams) : CGenericFeatureTracker(extraParams)	{ }
 
 		protected:
-			virtual void trackFeatures_impl(const CImage &old_img,const CImage &new_img,vision::CFeatureList &inout_featureList );
-			virtual void trackFeatures_impl(const CImage &old_img,const CImage &new_img,TSimpleFeatureList  &inout_featureList );
-			virtual void trackFeatures_impl(const CImage &old_img,const CImage &new_img,TSimpleFeaturefList  &inout_featureList );
+			virtual void trackFeatures_impl(const mrpt::utils::CImage &old_img,const mrpt::utils::CImage &new_img,vision::CFeatureList &inout_featureList );
+			virtual void trackFeatures_impl(const mrpt::utils::CImage &old_img,const mrpt::utils::CImage &new_img,TSimpleFeatureList  &inout_featureList );
+			virtual void trackFeatures_impl(const mrpt::utils::CImage &old_img,const mrpt::utils::CImage &new_img,TSimpleFeaturefList  &inout_featureList );
 
 		private:
 			template <typename FEATLIST>
 			void trackFeatures_impl_templ(
-				const CImage &old_img,
-				const CImage &new_img,
+				const mrpt::utils::CImage &old_img,
+				const mrpt::utils::CImage &new_img,
 				FEATLIST  &inout_featureList );
 
 		};

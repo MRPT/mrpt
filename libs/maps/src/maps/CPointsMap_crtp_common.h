@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -10,12 +10,12 @@
 #define cpointsmap_crtp_common_H
 
 #include <mrpt/utils/round.h>
-#include <mrpt/slam/CObservation3DRangeScan.h>
-#include <mrpt/slam/CObservation2DRangeScan.h>
+#include <mrpt/obs/CObservation3DRangeScan.h>
+#include <mrpt/obs/CObservation2DRangeScan.h>
 
 namespace mrpt
 {
-namespace slam
+namespace maps
 {
 namespace detail
 {
@@ -25,9 +25,10 @@ namespace detail
 	{
 		static inline void  templ_loadFromRangeScan(
 			Derived &obj,
-			const CObservation2DRangeScan		&rangeScan,
-			const CPose3D						*robotPose )
+			const mrpt::obs::CObservation2DRangeScan		&rangeScan,
+			const mrpt::poses::CPose3D			*robotPose )
 		{
+			using namespace mrpt::poses;
 			obj.mark_as_modified();
 
 			// If robot pose is supplied, compute sensor pose relative to it.
@@ -53,7 +54,7 @@ namespace detail
 
 			// GENERAL CASE OF SCAN WITH ARBITRARY 3D ORIENTATION:
 			//  Specialize a bit the equations since we know that z=0 always for the scan in local coordinates:
-			mrpt::slam::CPointsMap::TLaserRange2DInsertContext  lric(rangeScan);
+			mrpt::maps::CPointsMap::TLaserRange2DInsertContext  lric(rangeScan);
 			sensorPose3D.getHomogeneousMatrix(lric.HM);
 
 			// For quicker access as "float" numbers:
@@ -104,7 +105,7 @@ namespace detail
 			//		Pass range scan to a set of 2D points:
 			// ------------------------------------------------------
 			// Use a LUT to convert ranges -> (x,y) ; Automatically computed upon first usage.
-			const CSinCosLookUpTableFor2DScans::TSinCosValues & sincos_vals = obj.m_scans_sincos_cache.getSinCosForScan(rangeScan);
+			const mrpt::obs::CSinCosLookUpTableFor2DScans::TSinCosValues & sincos_vals = obj.m_scans_sincos_cache.getSinCosForScan(rangeScan);
 
 			// Build list of points in global coordinates:
 			Eigen::Array<float,Eigen::Dynamic,1>  scan_gx(sizeRangeScan+3), scan_gy(sizeRangeScan+3),scan_gz(sizeRangeScan+3);  // The +3 is to assure there's room for "nPackets*4"
@@ -297,9 +298,10 @@ namespace detail
 
 		static inline void  templ_loadFromRangeScan(
 			Derived &obj,
-			const CObservation3DRangeScan		&rangeScan,
-			const CPose3D						*robotPose )
+			const mrpt::obs::CObservation3DRangeScan		&rangeScan,
+			const mrpt::poses::CPose3D						*robotPose )
 		{
+			using namespace mrpt::poses;
 			obj.mark_as_modified();
 
 			// If robot pose is supplied, compute sensor pose relative to it.
@@ -324,7 +326,7 @@ namespace detail
 
 			// GENERAL CASE OF SCAN WITH ARBITRARY 3D ORIENTATION:
 			// --------------------------------------------------------------------------
-			mrpt::slam::CPointsMap::TLaserRange3DInsertContext  lric(rangeScan);
+			mrpt::maps::CPointsMap::TLaserRange3DInsertContext  lric(rangeScan);
 			sensorPose3D.getHomogeneousMatrix(lric.HM);
 			// For quicker access to values as "float" instead of "doubles":
 			float		m00 = lric.HM.get_unsafe(0,0);

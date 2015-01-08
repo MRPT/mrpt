@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -10,14 +10,14 @@
 #include "rawlog-edit-declarations.h"
 
 #include <mrpt/topography.h>
-#include <mrpt/slam/CObservationGPS.h>
-#include <mrpt/slam/CObservationGasSensors.h>
+#include <mrpt/obs/CObservationGPS.h>
+#include <mrpt/obs/CObservationGasSensors.h>
 #include <mrpt/utils/color_maps.h>
 #include <mrpt/math/interp_fit.h>
 
 using namespace mrpt;
 using namespace mrpt::utils;
-using namespace mrpt::slam;
+using namespace mrpt::obs;
 using namespace mrpt::system;
 using namespace mrpt::rawlogtools;
 using namespace mrpt::topography;
@@ -49,8 +49,8 @@ DECLARE_OP_FUNCTION(op_export_gps_gas_kml)
 
 		map<string,TDataPerGPSGAS> m_gps_paths;  // sensorLabel -> data
 
-		mrpt::slam::CObservationGPS* obs;
-		mrpt::slam::CObservationGasSensors* obsGas;		
+		mrpt::obs::CObservationGPS* obs;
+		mrpt::obs::CObservationGasSensors* obsGas;		
 		float gasConcentration;
 		float maxGasValue, minGasValue;
 		bool hasGAS, hasGPS;

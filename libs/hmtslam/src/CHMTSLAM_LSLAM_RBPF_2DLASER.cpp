@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -28,7 +28,11 @@ using namespace mrpt;
 using namespace mrpt::slam;
 using namespace mrpt::hmtslam;
 using namespace mrpt::utils;
+using namespace mrpt::obs;
 using namespace mrpt::random;
+using namespace mrpt::maps;
+using namespace mrpt::bayes;
+using namespace mrpt::poses;
 using namespace std;
 
 
@@ -100,7 +104,7 @@ void CLSLAM_RBPF_2DLASER::processOneLMH(
 		else
 		{
 			// Check minimum distance from current robot pose to those in the neighborhood:
-			map< TPoseID, CPose3D >				lstRobotPoses;
+			TMapPoseID2Pose3D  lstRobotPoses;
 			LMH->getMeans( lstRobotPoses );
 
 			CPose3D	  *currentRobotPose = & lstRobotPoses[currentPoseID];
@@ -108,7 +112,7 @@ void CLSLAM_RBPF_2DLASER::processOneLMH(
 			float		minDistAng    = 1e6f;
 
 			//printf("Poses in graph:\n");
-			for (map< TPoseID, CPose3D >::iterator	it = lstRobotPoses.begin();it!=lstRobotPoses.end();++it)
+			for (TMapPoseID2Pose3D::iterator	it = lstRobotPoses.begin();it!=lstRobotPoses.end();++it)
 			{
 				if (it->first != currentPoseID )
 				{
@@ -209,8 +213,8 @@ void CLSLAM_RBPF_2DLASER::processOneLMH(
   */
 void  CLSLAM_RBPF_2DLASER::prediction_and_update_pfAuxiliaryPFOptimal(
 	CLocalMetricHypothesis	*LMH,
-	const mrpt::slam::CActionCollection	* actions,
-	const mrpt::slam::CSensoryFrame		* sf,
+	const mrpt::obs::CActionCollection	* actions,
+	const mrpt::obs::CSensoryFrame		* sf,
 	const bayes::CParticleFilter::TParticleFilterOptions &PF_options )
 {
 	MRPT_START
@@ -658,7 +662,7 @@ void  CLSLAM_RBPF_2DLASER::TPathBin::dumpToStdOut() const
  ---------------------------------------------------------------*/
 void  CLSLAM_RBPF_2DLASER::loadTPathBinFromPath(
 	CLSLAM_RBPF_2DLASER::TPathBin	&outBin,
-	std::map<TPoseID,CPose3D>		*path,
+	TMapPoseID2Pose3D		*path,
 	CPose2D							*newPose )
 {
 	size_t	lenBinPath;
@@ -667,7 +671,7 @@ void  CLSLAM_RBPF_2DLASER::loadTPathBinFromPath(
 			lenBinPath = path->size();
 	else	lenBinPath = 0;
 
-	std::map<TPoseID,CPose3D>::const_iterator	itSrc;
+	TMapPoseID2Pose3D::const_iterator	itSrc;
 	vector_int::iterator				itX,itY,itPHI;
 
 	// Set the output bin dimensionality:
@@ -727,8 +731,8 @@ int  CLSLAM_RBPF_2DLASER::findTPathBinIntoSet(
   */
 void  CLSLAM_RBPF_2DLASER::prediction_and_update_pfOptimalProposal(
 	CLocalMetricHypothesis	*LMH,
-	const mrpt::slam::CActionCollection	* actions,
-	const mrpt::slam::CSensoryFrame		* sf,
+	const mrpt::obs::CActionCollection	* actions,
+	const mrpt::obs::CSensoryFrame		* sf,
 	const bayes::CParticleFilter::TParticleFilterOptions &PF_options )
 {
 	MRPT_START

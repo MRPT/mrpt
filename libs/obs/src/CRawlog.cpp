@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -10,20 +10,20 @@
 #include "obs-precomp.h"   // Precompiled headers
 
 #include <mrpt/system/filesystem.h>
-#include <mrpt/slam/CRawlog.h>
+#include <mrpt/obs/CRawlog.h>
 #include <mrpt/utils/CFileInputStream.h>
 #include <mrpt/utils/CFileGZInputStream.h>
 #include <mrpt/utils/CFileGZOutputStream.h>
 #include <mrpt/utils/CStream.h>
 
 using namespace mrpt;
-using namespace mrpt::slam;
+using namespace mrpt::obs;
 using namespace mrpt::utils;
 using namespace mrpt::poses;
 using namespace mrpt::utils;
 using namespace mrpt::system;
 
-IMPLEMENTS_SERIALIZABLE(CRawlog, CSerializable,mrpt::slam)
+IMPLEMENTS_SERIALIZABLE(CRawlog, CSerializable,mrpt::obs)
 
 /*---------------------------------------------------------------
 					Default constructor
@@ -225,7 +225,7 @@ CSensoryFramePtr  CRawlog::getAsObservations( size_t index ) const
 	Implements the writing to a CStream capability of
 	  CSerializable objects
   ---------------------------------------------------------------*/
-void  CRawlog::writeToStream(CStream &out, int *version) const
+void  CRawlog::writeToStream(mrpt::utils::CStream &out, int *version) const
 {
 	if (version)
 		*version = 1;
@@ -244,7 +244,7 @@ void  CRawlog::writeToStream(CStream &out, int *version) const
 /*---------------------------------------------------------------
 					readFromStream
   ---------------------------------------------------------------*/
-void  CRawlog::readFromStream(CStream &in,int version)
+void  CRawlog::readFromStream(mrpt::utils::CStream &in,int version)
 {
 	switch(version)
 	{
@@ -317,18 +317,6 @@ bool  CRawlog::loadFromRawLogFile( const std::string &fileName )
             else if ( newObj->GetRuntimeClass() == CLASS_ID(CActionCollection))
             {
 				m_seqOfActObs.push_back( newObj );
-            }
-			/** FOR BACKWARD COMPATIBILITY: CPose2D was used previously intead of an "ActionCollection" object
-																				26-JAN-2006	*/
-            else if ( newObj->GetRuntimeClass() == CLASS_ID(CPose2D))
-            {
-				CPose2DPtr					poseChange = CPose2DPtr( newObj );
-				CActionCollectionPtr	temp = CActionCollectionPtr( new CActionCollection() );
-				CActionRobotMovement2D		action;
-				CActionRobotMovement2D::TMotionModelOptions	options;
-				action.computeFromOdometry( *poseChange, options);
-				temp->insert( action );
-				m_seqOfActObs.push_back( temp );
             }
 			else
 			{       // Unknown class:

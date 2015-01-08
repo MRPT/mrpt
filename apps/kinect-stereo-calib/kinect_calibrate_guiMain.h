@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -43,7 +43,7 @@
 #include "../wx-common/CMyRedirector.h"
 
 #include <mrpt/utils.h>
-#include <mrpt/slam/CObservation3DRangeScan.h>
+#include <mrpt/obs/CObservation3DRangeScan.h>
 #include <mrpt/opengl.h>
 #include <mrpt/system/threads.h>
 #include <mrpt/vision/chessboard_stereo_camera_calib.h>
@@ -62,7 +62,7 @@ struct TThreadParam
 
 	bool  flag_grab_depth; //!< Default: false = only grab intensity channel(s)
 
-	mrpt::synch::CThreadSafeVariable<mrpt::slam::CObservation3DRangeScanPtr> new_obs;     // RGB+D (+3D points)
+	mrpt::synch::CThreadSafeVariable<mrpt::obs::CObservation3DRangeScanPtr> new_obs;     // RGB+D (+3D points)
 };
 
 // Thread for (async) live detecting corners: Do in another thread so the GUI doesn't freeze.
@@ -110,7 +110,7 @@ class kinect_calibrate_guiDialog: public wxDialog
 		mrpt::system::TThreadHandle  m_findcorners_thread;
 		TThreadDetectCornerParam     m_findcorners_thread_data;
 
-		mrpt::slam::CObservation3DRangeScanPtr  m_last_obs;
+		mrpt::obs::CObservation3DRangeScanPtr  m_last_obs;
 
 		TGrabState                                 m_grabstate;
 

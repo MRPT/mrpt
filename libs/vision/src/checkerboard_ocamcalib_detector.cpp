@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -50,6 +50,7 @@ If you use this code, please cite the following articles:
 
 #include "checkerboard_ocamcalib_detector.h"
 #include <mrpt/math/CArray.h>
+#include <map>
 
 #if MRPT_HAS_OPENCV
 
@@ -2081,7 +2082,7 @@ int icvGenerateQuads( vector<CvCBQuadPtr> &out_quads, vector<CvCBCornerPtr> &out
     {
         CvCBQuadPtr &q = out_quads[quad_count];
         src_contour = *(CvSeq**)cvGetSeqElem( root, idx );
-        if( (flags & CV_CALIB_CB_FILTER_QUADS) && src_contour->v_prev != (CvSeq*)board )
+        if( (flags & cv::CALIB_CB_FILTER_QUADS) && src_contour->v_prev != (CvSeq*)board )
             continue;
 
         // Reset group ID

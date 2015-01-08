@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -20,11 +20,13 @@
 #include <mrpt/utils/CConfigFile.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/slam/CIncrementalMapPartitioner.h>
-#include <mrpt/slam/CSimpleMap.h>
+#include <mrpt/maps/CSimpleMap.h>
 #include <mrpt/gui.h>
 
 using namespace mrpt;
 using namespace mrpt::slam;
+using namespace mrpt::maps;
+using namespace mrpt::obs;
 using namespace mrpt::opengl;
 using namespace mrpt::math;
 using namespace mrpt::utils;

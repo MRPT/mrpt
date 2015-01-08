@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -12,7 +12,7 @@
 #include <mrpt/poses/CPose3DInterpolator.h>
 #include <mrpt/math/lightweight_geom_data.h>
 #include <mrpt/poses/CPoint3D.h>
-#include <mrpt/slam/CRawlog.h>
+#include <mrpt/obs/CRawlog.h>
 
 #include <mrpt/topography/link_pragmas.h>
 
@@ -48,7 +48,7 @@ namespace mrpt
 		  */
 		void  TOPO_IMPEXP path_from_rtk_gps(
 			mrpt::poses::CPose3DInterpolator	&robot_path,
-			const mrpt::slam::CRawlog			&rawlog,
+			const mrpt::obs::CRawlog			&rawlog,
 			size_t 								rawlog_first,
 			size_t 								rawlog_last,
 			bool								isGUI=false,

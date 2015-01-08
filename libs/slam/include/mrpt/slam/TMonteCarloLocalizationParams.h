@@ -2,14 +2,14 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 #ifndef TMonteCarloLocalizationParams_H
 #define TMonteCarloLocalizationParams_H
 
-#include <mrpt/slam/CMetricMap.h>
+#include <mrpt/maps/CMetricMap.h>
 #include <mrpt/slam/TKLDParams.h>
 
 #include <mrpt/slam/link_pragmas.h>
@@ -36,11 +36,11 @@ namespace mrpt
 
 			/** [update stage] Must be set to a metric map used to estimate the likelihood of observations
 				*/
-			CMetricMap			*metricMap;
+			mrpt::maps::CMetricMap *metricMap;
 
 			/** [update stage] Alternative way (if metricMap==NULL): A metric map is supplied for each particle: There must be the same maps here as pose m_particles.
 				*/
-			TMetricMapList		metricMaps;
+			mrpt::maps::TMetricMapList		metricMaps;
 
 			TKLDParams			KLD_params; //!< Parameters for dynamic sample size, KLD method.
 		};

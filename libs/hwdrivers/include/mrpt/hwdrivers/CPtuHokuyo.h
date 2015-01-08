@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -62,7 +62,7 @@ namespace mrpt
 			*/
 			int					m_ptu_type;
 
-			std::vector<mrpt::slam::CObservation2DRangeScan> vObs;
+			std::vector<mrpt::obs::CObservation2DRangeScan> vObs;
 
 			// High between ptu tilt axis and hokuyo laser scan
 			double high;
@@ -105,10 +105,10 @@ namespace mrpt
 			bool continuousScan(char &axis, const double &velocity, double &initial, double &final);
 
 			/** Show a graphic with the points obtained from the scan or a map*/
-			//bool showGraphic(mrpt::slam::CSimplePointsMap	*theMap=0);
+			//bool showGraphic(mrpt::maps::CSimplePointsMap	*theMap=0);
 
 			/** Save a simple points map into a simple file (if colours==true save points with a color) */
-			//bool saveMap2File(mrpt::slam::CSimplePointsMap	&theMap, char* fname="Data.pts", const bool &colours=false);
+			//bool saveMap2File(mrpt::maps::CSimplePointsMap	&theMap, char* fname="Data.pts", const bool &colours=false);
 
 			/** Save vector of observations in a CFileOutputStream file */
 
@@ -123,7 +123,7 @@ namespace mrpt
 			bool savePitchAndDistances2File();
 
 			/** Method for limit map points obtained from a scan */
-			//void limit(mrpt::slam::CSimplePointsMap &theMap);
+			//void limit(mrpt::maps::CSimplePointsMap &theMap);
 
 			/** Set high between ptu tilt axis and hokuyo laser scan */
 
@@ -131,7 +131,7 @@ namespace mrpt
 
 			/** Obtain a observation from the laser */
 
-			bool obtainObs( mrpt::slam::CObservation2DRangeScan & obs );
+			bool obtainObs( mrpt::obs::CObservation2DRangeScan & obs );
 
 			/** This method can or cannot be implemented in the derived class, depending on the need for it.
 			  *  \exception This method must throw an exception with a descriptive message if some critical error is found.
@@ -164,24 +164,24 @@ namespace mrpt
 
 			/** Calculate minimum lenght of scan vectors */
 
-			int minLengthVectors(mrpt::slam::CObservation2DRangeScan &obs, std::vector<mrpt::slam::CObservation2DRangeScan> &vObsAux);
+			int minLengthVectors(mrpt::obs::CObservation2DRangeScan &obs, std::vector<mrpt::obs::CObservation2DRangeScan> &vObsAux);
 
 			/** Calculate minimum lenght of 2 scan vectors */
 
-			int minLengthVectors(mrpt::slam::CObservation2DRangeScan &obs1, mrpt::slam::CObservation2DRangeScan &obs2, const int &mode);
+			int minLengthVectors(mrpt::obs::CObservation2DRangeScan &obs1, mrpt::obs::CObservation2DRangeScan &obs2, const int &mode);
 
 			/** Load observations in a points map */
-			//void loadObs2PointsMap(mrpt::slam::CSimplePointsMap	&theMap);
+			//void loadObs2PointsMap(mrpt::maps::CSimplePointsMap	&theMap);
 
 			/** Limit the valid position of scan points */
-			//bool limitScan(const char &axis, double &low, double &high, mrpt::slam::CSimplePointsMap		&theMap);
+			//bool limitScan(const char &axis, double &low, double &high, mrpt::maps::CSimplePointsMap		&theMap);
 
 			/** Refine the observations obtains from a continuous scan */
 			void refineVObs(const char &axis);
 
 			/** Calculate the sensor pose depending teh axis of movements and the ptu position */
 
-			void calculateSensorPose(const char &axis, const double &pos, mrpt::slam::CObservation2DRangeScan &obs);
+			void calculateSensorPose(const char &axis, const double &pos, mrpt::obs::CObservation2DRangeScan &obs);
 
 			/** Obtain position of observations between first and second position in m_my_pos map */
 

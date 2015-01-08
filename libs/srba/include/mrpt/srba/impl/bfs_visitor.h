@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -27,6 +27,7 @@ void RbaEngine<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::bfs_visitor(
 	K2K_EDGE_VISITOR & k2k_edge_visitor,
 	K2F_EDGE_VISITOR & k2f_edge_visitor ) const
 {
+	using namespace std;
 	set<TLandmarkID>   lm_visited;
 	set<const k2k_edge_t*> k2k_visited;
 	set<const k2f_edge_t*> k2f_visited;

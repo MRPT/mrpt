@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -15,29 +15,31 @@
 #include <mrpt/utils/CFileStream.h>
 #include <mrpt/system/os.h>
 
-#include <mrpt/slam/CMultiMetricMapPDF.h>
-#include <mrpt/slam/CActionRobotMovement2D.h>
-#include <mrpt/slam/CActionRobotMovement3D.h>
-#include <mrpt/slam/CActionCollection.h>
+#include <mrpt/maps/CMultiMetricMapPDF.h>
+#include <mrpt/obs/CActionRobotMovement2D.h>
+#include <mrpt/obs/CActionRobotMovement3D.h>
+#include <mrpt/obs/CActionCollection.h>
 #include <mrpt/poses/CPosePDFGaussian.h>
 #include <mrpt/poses/CPosePDFGrid.h>
-#include <mrpt/slam/CObservationBeaconRanges.h>
-#include <mrpt/slam/CSimplePointsMap.h>
-#include <mrpt/slam/CLandmarksMap.h>
+#include <mrpt/obs/CObservationBeaconRanges.h>
+#include <mrpt/maps/CSimplePointsMap.h>
+#include <mrpt/maps/CLandmarksMap.h>
 
 #include <mrpt/slam/PF_aux_structs.h>
 
 using namespace mrpt;
 using namespace mrpt::math;
 using namespace mrpt::slam;
+using namespace mrpt::obs;
+using namespace mrpt::maps;
 using namespace mrpt::poses;
 using namespace mrpt::random;
 using namespace mrpt::utils;
 using namespace mrpt::system;
 using namespace std;
 
-IMPLEMENTS_SERIALIZABLE( CMultiMetricMapPDF, CSerializable, mrpt::slam )
-IMPLEMENTS_SERIALIZABLE( CRBPFParticleData,  CSerializable, mrpt::slam )
+IMPLEMENTS_SERIALIZABLE( CMultiMetricMapPDF, CSerializable, mrpt::maps )
+IMPLEMENTS_SERIALIZABLE( CRBPFParticleData,  CSerializable, mrpt::maps )
 
 
 #if MRPT_HAS_SSE2
@@ -84,19 +86,13 @@ IMPLEMENTS_SERIALIZABLE( CRBPFParticleData,  CSerializable, mrpt::slam )
 #endif
 
 
-//#if defined(_MSC_VER)
-//#	pragma warning(push)
-//#	pragma warning(disable:4355) // for the "this" argument below
-//#endif
-
 /*---------------------------------------------------------------
 				Constructor
   ---------------------------------------------------------------*/
 CMultiMetricMapPDF::CMultiMetricMapPDF(
 	const bayes::CParticleFilter::TParticleFilterOptions    &opts,
-	const  mrpt::slam::TSetOfMetricMapInitializers		        *mapsInitializers,
+	const  mrpt::maps::TSetOfMetricMapInitializers		        *mapsInitializers,
 	const  TPredictionParams						        *predictionOptions) :
-//		PF_implementation<CRBPFParticleData>(static_cast<mrpt::bayes::CParticleFilterData<CRBPFParticleData>&>(*this),static_cast<mrpt::bayes::CParticleFilterCapable&>(*this) ),
 		averageMap( mapsInitializers ),
 		averageMapIsUpdated(false),
 		SFs(),
@@ -119,10 +115,6 @@ CMultiMetricMapPDF::CMultiMetricMapPDF(
 	if (predictionOptions!=NULL)
 		options = *predictionOptions;
 }
-
-//#if defined(_MSC_VER)
-//#	pragma warning(pop)
-//#endif
 
 /*---------------------------------------------------------------
 						clear
@@ -204,7 +196,7 @@ void  CMultiMetricMapPDF::getEstimatedPosePDFAtTime(
 /*---------------------------------------------------------------
 						writeToStream
   ---------------------------------------------------------------*/
-void  CRBPFParticleData::writeToStream(CStream &out,int *version) const
+void  CRBPFParticleData::writeToStream(mrpt::utils::CStream &out,int *version) const
 {
 	MRPT_UNUSED_PARAM(out); MRPT_UNUSED_PARAM(version);
 	THROW_EXCEPTION("Shouldn't arrive here")
@@ -213,7 +205,7 @@ void  CRBPFParticleData::writeToStream(CStream &out,int *version) const
 /*---------------------------------------------------------------
 						readFromStream
   ---------------------------------------------------------------*/
-void  CRBPFParticleData::readFromStream(CStream &in, int version)
+void  CRBPFParticleData::readFromStream(mrpt::utils::CStream &in, int version)
 {
 	MRPT_UNUSED_PARAM(in); MRPT_UNUSED_PARAM(version);
 	THROW_EXCEPTION("Shouldn't arrive here")
@@ -222,7 +214,7 @@ void  CRBPFParticleData::readFromStream(CStream &in, int version)
 /*---------------------------------------------------------------
 						writeToStream
   ---------------------------------------------------------------*/
-void  CMultiMetricMapPDF::writeToStream(CStream &out,int *version) const
+void  CMultiMetricMapPDF::writeToStream(mrpt::utils::CStream &out,int *version) const
 {
 	if (version)
 		*version = 0;
@@ -248,7 +240,7 @@ void  CMultiMetricMapPDF::writeToStream(CStream &out,int *version) const
 /*---------------------------------------------------------------
 						readFromStream
   ---------------------------------------------------------------*/
-void  CMultiMetricMapPDF::readFromStream(CStream &in, int version)
+void  CMultiMetricMapPDF::readFromStream(mrpt::utils::CStream &in, int version)
 {
 	switch(version)
 	{
@@ -763,7 +755,7 @@ CMultiMetricMapPDF::TPredictionParams::TPredictionParams() :
 /*---------------------------------------------------------------
 					dumpToTextStream
   ---------------------------------------------------------------*/
-void  CMultiMetricMapPDF::TPredictionParams::dumpToTextStream(CStream	&out) const
+void  CMultiMetricMapPDF::TPredictionParams::dumpToTextStream(mrpt::utils::CStream	&out) const
 {
 	out.printf("\n----------- [CMultiMetricMapPDF::TPredictionParams] ------------ \n\n");
 

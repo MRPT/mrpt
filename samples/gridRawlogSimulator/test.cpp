@@ -2,12 +2,12 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/slam/COccupancyGridMap2D.h>
+#include <mrpt/maps/COccupancyGridMap2D.h>
 #include <mrpt/gui/CDisplayWindowPlots.h>
 #include <mrpt/utils/CRobotSimulator.h>
 #include <mrpt/utils/CFileOutputStream.h>
@@ -20,7 +20,7 @@
 using namespace mrpt;
 using namespace mrpt::gui;
 using namespace mrpt::utils;
-using namespace mrpt::slam;
+using namespace mrpt::maps;
 using namespace mrpt::random;
 using namespace mrpt::system;
 using namespace std;

@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -92,10 +92,10 @@ wxBitmap MyArtProvider::CreateBitmap(const wxArtID& id,
 
 #include <mrpt/utils/CTicTac.h>
 #include <mrpt/utils/CRobotSimulator.h>
-#include <mrpt/slam/CRawlog.h>
-#include <mrpt/slam/COccupancyGridMap2D.h>
-#include <mrpt/slam/CActionRobotMovement2D.h>
-#include <mrpt/slam/CObservationOdometry.h>
+#include <mrpt/obs/CRawlog.h>
+#include <mrpt/maps/COccupancyGridMap2D.h>
+#include <mrpt/obs/CActionRobotMovement2D.h>
+#include <mrpt/obs/CObservationOdometry.h>
 #include <mrpt/hwdrivers/CJoystick.h>
 
 #include <mrpt/opengl/stock_objects.h>
@@ -105,12 +105,14 @@ wxBitmap MyArtProvider::CreateBitmap(const wxArtID& id,
 
 using namespace mrpt;
 using namespace mrpt::hwdrivers;
-using namespace mrpt::slam;
+using namespace mrpt::obs;
+using namespace mrpt::maps;
 using namespace mrpt::opengl;
 using namespace mrpt::gui;
 using namespace mrpt::system;
 using namespace mrpt::math;
 using namespace mrpt::utils;
+using namespace mrpt::poses;
 using namespace std;
 
 
@@ -657,7 +659,7 @@ void gridmapSimulFrame::OntimRunTrigger(wxTimerEvent& event)
 		the_robot.getRealPose(p);
 
 		// Simulate scan:
-		mrpt::slam::CObservation2DRangeScan the_scan;
+		mrpt::obs::CObservation2DRangeScan the_scan;
 		the_scan.sensorLabel = "LASER_SIM";
 		the_scan.sensorPose.setFromValues(0.20,0,0.10);
 		the_scan.maxRange = 80; //LASER_MAX_RANGE;
@@ -745,7 +747,7 @@ void gridmapSimulFrame::OntimRunTrigger(wxTimerEvent& event)
 				else
 				{
 					// Observations only format:
-					mrpt::slam::CObservationOdometry odo_obs;
+					mrpt::obs::CObservationOdometry odo_obs;
 					odo_obs.timestamp = tim_now;
 					odo_obs.sensorLabel = "odometry";
 

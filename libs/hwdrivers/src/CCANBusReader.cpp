@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -25,7 +25,7 @@ IMPLEMENTS_GENERIC_SENSOR(CCANBusReader,mrpt::hwdrivers)
 using namespace std;
 using namespace mrpt;
 using namespace mrpt::utils;
-using namespace mrpt::slam;
+using namespace mrpt::obs;
 using namespace mrpt::hwdrivers;
 
 char hexCharToInt(char n)
@@ -80,7 +80,7 @@ CCANBusReader::~CCANBusReader()
 
 void  CCANBusReader::doProcess()
 {
-    mrpt::slam::CObservationCANBusJ1939Ptr	obs = mrpt::slam::CObservationCANBusJ1939::Create();
+    mrpt::obs::CObservationCANBusJ1939Ptr	obs = mrpt::obs::CObservationCANBusJ1939::Create();
     bool thereIsObservation;
     bool hardwareError;
 
@@ -96,7 +96,7 @@ void  CCANBusReader::doProcess()
 -------------------------------------------------------------*/
 void  CCANBusReader::doProcessSimple(
 	bool							    &outThereIsObservation,
-	mrpt::slam::CObservationCANBusJ1939	&outObservation,
+	mrpt::obs::CObservationCANBusJ1939	&outObservation,
 	bool							    &hardwareError )
 {
 	outThereIsObservation	= false;

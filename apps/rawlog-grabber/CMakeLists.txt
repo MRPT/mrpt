@@ -57,6 +57,7 @@ ADD_EXECUTABLE(rawlog-grabber
                rawloggrabber_main.cpp
 			   ${aux_srcs}
 			   ${aux_hdrs}
+			    ${MRPT_VERSION_RC_FILE}
 			   )
 
 SET(TMP_TARGET_NAME "rawlog-grabber")

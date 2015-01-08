@@ -18,7 +18,8 @@ PROJECT(DifOdometry-Datasets)
 ADD_EXECUTABLE(DifOdometry-Datasets
                DifOdometry_Datasets_main.cpp
 			   DifOdometry_Datasets.cpp
-			   DifOdometry_Datasets.h)
+			   DifOdometry_Datasets.h
+			    ${MRPT_VERSION_RC_FILE})
 
 SET(TMP_TARGET_NAME "DifOdometry-Datasets")
 

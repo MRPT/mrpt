@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -10,7 +10,7 @@
 #ifndef CPhidgetInterfaceKitProximitySensors_H
 #define CPhidgetInterfaceKitProximitySensors_H
 
-#include <mrpt/slam/CObservationRange.h>
+#include <mrpt/obs/CObservationRange.h>
 #include <mrpt/poses/CPoint3D.h>
 #include <mrpt/utils/CDebugOutputCapable.h>
 #include <mrpt/hwdrivers/CGenericSensor.h>
@@ -61,7 +61,7 @@ namespace mrpt
 		 *
 		 * This isn't an event based implementation of the phidget library. That means that when an instanciation of a CPhidgetInterfaceKitProximitySensors is done, the constructor will block during
 		 * in the worst case 200ms, if the board isn't found, an exception will be thrown.
-		 * CObservation returned by this class is a CObservationRange. CObservationrange::minSensorDistance will be the minimum of the minimum of the sensor distances, e.g if you plug to the interface
+		 * mrpt::obs::CObservation returned by this class is a CObservationRange. CObservationrange::minSensorDistance will be the minimum of the minimum of the sensor distances, e.g if you plug to the interface
 		 * kit a GP2D12 (min range 4 cm) and a GP2Y0A21 (min range 8 cm), then CObservationrange::minSensorDistance = min(0.04,0.08) = 0.04. Respectively for the maximal range.
 		 * \endlatexonly
 		 * \warning{The Phidget library use udev. By default, udev require to be root to be launched, if you want to be able to run a program wich use a phidget board without be root, you must modify files in /etc/udev/rules.d .}
@@ -86,7 +86,7 @@ namespace mrpt
 			/** This method tries to get a set of range measurements from the IR sensors.
 			  * \param outThereIsObservation Will be true if an observation was sucessfully received.
 			  */
-			void  getObservation(mrpt::slam::CObservationRange	&outObservation);
+			void  getObservation(mrpt::obs::CObservationRange	&outObservation);
 			/** Initialize the sensor according to the parameters previously read in the configuration file.
 			 * \exception throw an exception if the board could not be found.
 			 * \exception throw an exception if the process rate can't be set on one of the board channel.

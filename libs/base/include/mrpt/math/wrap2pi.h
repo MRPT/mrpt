@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -11,6 +11,7 @@
 
 #define _USE_MATH_DEFINES // (For VS to define M_PI, etc. in cmath)
 #include <cmath>
+#include <cstddef>  // size_t
 
 namespace mrpt
 {
@@ -79,6 +80,23 @@ namespace mrpt
 			}
 		}
 
+		/** Computes the shortest angular increment (or distance) between two planar orientations, 
+		  * such that it is constrained to [-pi,pi] and is correct for any combination of angles (e.g. near +-pi)
+		  * Examples: angDistance(0,pi) -> +pi; angDistance(pi,0) -> -pi; 
+		  *           angDistance(-3.1,3.1) -> -0.08; angDistance(3.1,-3.1) -> +0.08; 
+		  * \note Take care of not instancing this template for integer numbers, since it only works for float, double and long double.
+		  * \sa wrapToPi, wrapTo2Pi
+		  */
+		template <class T>
+		inline T angDistance(T from, T to)
+		{
+			wrapToPiInPlace(from); 
+			wrapToPiInPlace(to);
+			T d = to-from;
+			if (d>M_PI)  d-=2.*M_PI; 
+			else if (d<-M_PI) d+=2.*M_PI;
+			return d;
+		}
 
 		/** @} */
 

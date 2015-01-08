@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -21,17 +21,18 @@
 #include <wx/dirdlg.h>
 
 // General global variables:
-#include <mrpt/slam/CObservationImage.h>
-#include <mrpt/slam/CObservationStereoImages.h>
+#include <mrpt/obs/CObservationImage.h>
+#include <mrpt/obs/CObservationStereoImages.h>
 #include <mrpt/system/filesystem.h>
 
 using namespace mrpt;
-using namespace mrpt::slam;
+using namespace mrpt::obs;
 using namespace mrpt::opengl;
 using namespace mrpt::system;
 using namespace mrpt::math;
 using namespace mrpt::gui;
 using namespace mrpt::utils;
+using namespace mrpt::poses;
 using namespace std;
 
 

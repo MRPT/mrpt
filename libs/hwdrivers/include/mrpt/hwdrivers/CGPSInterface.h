@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -10,16 +10,15 @@
 #ifndef CGPSInterface_H
 #define CGPSInterface_H
 
-#include <mrpt/slam/CObservationGPS.h>
+#include <mrpt/obs/CObservationGPS.h>
 #include <mrpt/poses/CPoint3D.h>
 #include <mrpt/hwdrivers/CSerialPort.h>
 #include <mrpt/utils/CDebugOutputCapable.h>
 #include <mrpt/hwdrivers/CGenericSensor.h>
+#include <mrpt/obs/obs_frwds.h>
 
 namespace mrpt
 {
-	namespace slam { class CObservationGPS; }
-
 	namespace hwdrivers
 	{
 		/** A parser of NMEA commands, for connecting to a GPS by a serial port.
@@ -98,7 +97,7 @@ namespace mrpt
 			  * Recognized frame types are: "GGA" and "RMC".
 			  * \return true if some new data field has been correctly parsed and inserted into out_obs
 			  */
-			static bool parse_NMEA(const std::string &cmd_line, mrpt::slam::CObservationGPS &out_obs, const bool verbose=false);
+			static bool parse_NMEA(const std::string &cmd_line, mrpt::obs::CObservationGPS &out_obs, const bool verbose=false);
 
 			/** Gets the latest GGA command or an empty string if no newer GGA command was received since the last call to this method.
 			  * \param[in] reset If set to true, will empty the GGA cache so next calls will return an empty string if no new frame is received.
@@ -188,8 +187,8 @@ namespace mrpt
 
 			/* A private copy of the last received gps datum:
 			 */
-			mrpt::slam::CObservationGPS	            m_latestGPS_data;
-			mrpt::slam::CObservationGPS::TUTCTime   m_last_UTC_time;
+			mrpt::obs::CObservationGPS	            m_latestGPS_data;
+			mrpt::obs::CObservationGPS::TUTCTime   m_last_UTC_time;
 
 			std::string   m_last_GGA; //!< Used in getLastGGA()
 			

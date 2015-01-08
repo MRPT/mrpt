@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -77,7 +77,9 @@ void CReactiveNavigationSystem::loadConfigFile(const mrpt::utils::CConfigFileBas
 	unsigned int PTG_COUNT = ini.read_int(robotName,"PTG_COUNT",0, true );
 
 	refDistance = ini.read_float(robotName,"MAX_REFERENCE_DISTANCE",5 );
-	colGridRes = ini.read_float(robotName,"RESOLUCION_REJILLA_X",0.02f );
+	colGridRes = ini.read_float(robotName,"LUT_CELL_SIZE",0.0f );
+	// backwards compt config file:
+	if (!colGridRes) colGridRes = ini.read_float(robotName,"RESOLUCION_REJILLA_X",0.02f );
 
 	MRPT_LOAD_CONFIG_VAR_NO_DEFAULT(robotMax_V_mps,float,  ini,robotName);
 	MRPT_LOAD_CONFIG_VAR_NO_DEFAULT(robotMax_W_degps,float,  ini,robotName);

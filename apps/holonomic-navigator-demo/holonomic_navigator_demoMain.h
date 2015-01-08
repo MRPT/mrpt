@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -32,7 +32,7 @@
 #include <mrpt/opengl/CSetOfLines.h>
 #include <mrpt/opengl/CPointCloud.h>
 #include <mrpt/opengl/CPlanarLaserScan.h>			// It's in the lib mrpt-maps
-#include <mrpt/slam/COccupancyGridMap2D.h>
+#include <mrpt/maps/COccupancyGridMap2D.h>
 
 // JLBC: Unix X headers have these funny things...
 #ifdef Button1
@@ -160,7 +160,7 @@ class holonomic_navigator_demoFrame: public wxFrame
 
 
 		mrpt::nav::CAbstractHolonomicReactiveMethod *m_holonomicMethod;
-		mrpt::slam::COccupancyGridMap2D  m_gridMap;
+		mrpt::maps::COccupancyGridMap2D  m_gridMap;
 		mrpt::math::TPoint2D             m_targetPoint;
 		mrpt::math::TPose2D              m_robotPose;
 

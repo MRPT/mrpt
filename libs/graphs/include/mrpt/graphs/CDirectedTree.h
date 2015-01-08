@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -18,7 +18,7 @@ namespace mrpt
 {
 	namespace graphs
 	{
-		using mrpt::utils::TNodeID;
+		using mrpt::utils::TNodeID; //!< Make available this typedef in this namespace too
 
 		/** A special kind of graph in the form of a tree with directed edges and optional edge annotations of templatized type "TYPE_EDGES".
 		  *  The tree is represented by means of:

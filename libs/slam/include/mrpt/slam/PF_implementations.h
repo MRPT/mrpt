@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -13,9 +13,9 @@
 #include <mrpt/bayes/CParticleFilterCapable.h>
 #include <mrpt/bayes/CParticleFilterData.h>
 #include <mrpt/random.h>
-#include <mrpt/slam/CActionCollection.h>
-#include <mrpt/slam/CActionRobotMovement3D.h>
-#include <mrpt/slam/CActionRobotMovement2D.h>
+#include <mrpt/obs/CActionCollection.h>
+#include <mrpt/obs/CActionRobotMovement3D.h>
+#include <mrpt/obs/CActionRobotMovement2D.h>
 #include <mrpt/slam/TKLDParams.h>
 
 #include <mrpt/math/distributions.h>  // chi2inv
@@ -35,13 +35,6 @@ namespace mrpt
 {
 	namespace slam
 	{
-		using namespace std;
-		using namespace mrpt::utils;
-		using namespace mrpt::random;
-		using namespace mrpt::poses;
-		using namespace mrpt::bayes;
-		using namespace mrpt::math;
-
 		/** Auxiliary method called by PF implementations: return true if we have both action & observation,
 		  *   otherwise, return false AND accumulate the odometry so when we have an observation we didn't lose a thing.
 		  *   On return=true, the "m_movementDrawer" member is loaded and ready to draw samples of the increment of pose since last step.
@@ -51,15 +44,15 @@ namespace mrpt
 		template <class PARTICLE_TYPE,class MYSELF>
 		template <class BINTYPE>
 		bool PF_implementation<PARTICLE_TYPE,MYSELF>::PF_SLAM_implementation_gatherActionsCheckBothActObs(
-			const CActionCollection	* actions,
-			const CSensoryFrame		* sf )
+			const mrpt::obs::CActionCollection	* actions,
+			const mrpt::obs::CSensoryFrame		* sf )
 		{
 			MYSELF *me = static_cast<MYSELF*>(this);
 
 			if (actions!=NULL)	// A valid action?
 			{
 				{
-					CActionRobotMovement2DPtr	robotMovement2D = actions->getBestMovementEstimation();
+					mrpt::obs::CActionRobotMovement2DPtr	robotMovement2D = actions->getBestMovementEstimation();
 					if (robotMovement2D.present())
 					{
 						if (m_accumRobotMovement3DIsValid) THROW_EXCEPTION("Mixing 2D and 3D actions is not allowed.")
@@ -75,7 +68,7 @@ namespace mrpt
 					}
 					else // If there is no 2D action, look for a 3D action:
 					{
-						CActionRobotMovement3DPtr	robotMovement3D = actions->getActionByClass<CActionRobotMovement3D>();
+						mrpt::obs::CActionRobotMovement3DPtr	robotMovement3D = actions->getActionByClass<mrpt::obs::CActionRobotMovement3D>();
 						if (robotMovement3D)
 						{
 							if (m_accumRobotMovement2DIsValid) THROW_EXCEPTION("Mixing 2D and 3D actions is not allowed.")
@@ -108,7 +101,7 @@ namespace mrpt
 			}
 			else
 			{
-				CActionRobotMovement2D	theResultingRobotMov;
+				mrpt::obs::CActionRobotMovement2D	theResultingRobotMov;
 				theResultingRobotMov.computeFromOdometry(
 					m_accumRobotMovement2D.rawOdometryIncrementReading,
 					m_accumRobotMovement2D.motionModelConfiguration );
@@ -135,9 +128,9 @@ namespace mrpt
 		template <class PARTICLE_TYPE,class MYSELF>
 		template <class BINTYPE>
 		void PF_implementation<PARTICLE_TYPE,MYSELF>::PF_SLAM_implementation_pfAuxiliaryPFOptimal(
-			const CActionCollection	* actions,
-			const CSensoryFrame		* sf,
-			const CParticleFilter::TParticleFilterOptions &PF_options,
+			const mrpt::obs::CActionCollection	* actions,
+			const mrpt::obs::CSensoryFrame		* sf,
+			const mrpt::bayes::CParticleFilter::TParticleFilterOptions &PF_options,
 			const TKLDParams &KLD_options)
 		{
 			// Standard and Optimal AuxiliaryPF actually have a shared implementation body:
@@ -153,9 +146,9 @@ namespace mrpt
 		template <class PARTICLE_TYPE,class MYSELF>
 		template <class BINTYPE>
 		void PF_implementation<PARTICLE_TYPE,MYSELF>::PF_SLAM_implementation_pfStandardProposal(
-			const CActionCollection	* actions,
-			const CSensoryFrame		* sf,
-			const CParticleFilter::TParticleFilterOptions &PF_options,
+			const mrpt::obs::CActionCollection	* actions,
+			const mrpt::obs::CSensoryFrame		* sf,
+			const mrpt::bayes::CParticleFilter::TParticleFilterOptions &PF_options,
 			const TKLDParams &KLD_options)
 		{
 			MRPT_START
@@ -174,7 +167,7 @@ namespace mrpt
 				// Find a robot movement estimation:
 				CPose3D				motionModelMeanIncr;
 				{
-					CActionRobotMovement2DPtr	robotMovement2D = actions->getBestMovementEstimation();
+					mrpt::obs::CActionRobotMovement2DPtr	robotMovement2D = actions->getBestMovementEstimation();
 					// If there is no 2D action, look for a 3D action:
 					if (robotMovement2D.present())
 					{
@@ -183,7 +176,7 @@ namespace mrpt
 					}
 					else
 					{
-						CActionRobotMovement3DPtr	robotMovement3D = actions->getActionByClass<CActionRobotMovement3D>();
+						mrpt::obs::CActionRobotMovement3DPtr	robotMovement3D = actions->getActionByClass<mrpt::obs::CActionRobotMovement3D>();
 						if (robotMovement3D)
 						{
 							m_movementDrawer.setPosePDF( robotMovement3D->poseChange );
@@ -243,7 +236,7 @@ namespace mrpt
 
 						// generate the new particle:
 						const size_t drawn_idx = me->fastDrawSample(PF_options);
-						const CPose3D newPose = CPose3D(*getLastPose(drawn_idx)) + increment_i;
+						const mrpt::poses::CPose3D newPose = CPose3D(*getLastPose(drawn_idx)) + increment_i;
 						const TPose3D newPose_s = newPose;
 
 						// Add to the new particles list:
@@ -320,9 +313,9 @@ namespace mrpt
 		template <class PARTICLE_TYPE,class MYSELF>
 		template <class BINTYPE>
 		void PF_implementation<PARTICLE_TYPE,MYSELF>::PF_SLAM_implementation_pfAuxiliaryPFStandard(
-			const CActionCollection	* actions,
-			const CSensoryFrame		* sf,
-			const CParticleFilter::TParticleFilterOptions &PF_options,
+			const mrpt::obs::CActionCollection	* actions,
+			const mrpt::obs::CSensoryFrame		* sf,
+			const mrpt::bayes::CParticleFilter::TParticleFilterOptions &PF_options,
 			const TKLDParams &KLD_options)
 		{
 			// Standard and Optimal AuxiliaryPF actually have a shared implementation body:
@@ -335,8 +328,8 @@ namespace mrpt
 		template <class PARTICLE_TYPE,class MYSELF>
 		template <class BINTYPE>
 		double  PF_implementation<PARTICLE_TYPE,MYSELF>::PF_SLAM_particlesEvaluator_AuxPFOptimal(
-			const CParticleFilter::TParticleFilterOptions &PF_options,
-			const CParticleFilterCapable	*obj,
+			const mrpt::bayes::CParticleFilter::TParticleFilterOptions &PF_options,
+			const mrpt::bayes::CParticleFilterCapable	*obj,
 			size_t					index,
 			const void				*action,
 			const void				*observation )
@@ -356,7 +349,7 @@ namespace mrpt
 			size_t  N = PF_options.pfAuxFilterOptimal_MaximumSearchSamples;
 			ASSERT_(N>1)
 
-			const CPose3D oldPose = *me->getLastPose(index);
+			const mrpt::poses::CPose3D oldPose = *me->getLastPose(index);
 			CVectorDouble   vectLiks(N,0);		// The vector with the individual log-likelihoods.
 			CPose3D			drawnSample;
 			for (size_t q=0;q<N;q++)
@@ -368,7 +361,7 @@ namespace mrpt
 				indivLik = me->PF_SLAM_computeObservationLikelihoodForParticle(
 					PF_options,
 					index,
-					*static_cast<const CSensoryFrame*>(observation),
+					*static_cast<const mrpt::obs::CSensoryFrame*>(observation),
 					x_predict );
 
 				MRPT_CHECK_NORMAL_NUMBER(indivLik);
@@ -409,8 +402,8 @@ namespace mrpt
 		template <class PARTICLE_TYPE,class MYSELF>
 		template <class BINTYPE>
 		double  PF_implementation<PARTICLE_TYPE,MYSELF>::PF_SLAM_particlesEvaluator_AuxPFStandard(
-			const CParticleFilter::TParticleFilterOptions &PF_options,
-			const CParticleFilterCapable	*obj,
+			const mrpt::bayes::CParticleFilter::TParticleFilterOptions &PF_options,
+			const mrpt::bayes::CParticleFilterCapable	*obj,
 			size_t					index,
 			const void				*action,
 			const void				*observation )
@@ -422,7 +415,7 @@ namespace mrpt
 
 			// Take the previous particle weight:
 			const double cur_logweight = myObj->m_particles[index].log_w;
-			const CPose3D oldPose = *myObj->getLastPose(index);
+			const mrpt::poses::CPose3D oldPose = *myObj->getLastPose(index);
 
 			if (!PF_options.pfAuxFilterStandard_FirstStageWeightsMonteCarlo)
 			{
@@ -435,7 +428,7 @@ namespace mrpt
 				// --------------------------------------------
 				myObj->m_pfAuxiliaryPFStandard_estimatedProb[index] = myObj->PF_SLAM_computeObservationLikelihoodForParticle(
 					PF_options, index,
-					*static_cast<const CSensoryFrame*>(observation), x_predict );
+					*static_cast<const mrpt::obs::CSensoryFrame*>(observation), x_predict );
 
 				// Combined log_likelihood: Previous weight * obs_likelihood:
 				return cur_logweight + myObj->m_pfAuxiliaryPFStandard_estimatedProb[index];
@@ -463,7 +456,7 @@ namespace mrpt
 					indivLik = myObj->PF_SLAM_computeObservationLikelihoodForParticle(
 						PF_options,
 						index,
-						*static_cast<const CSensoryFrame*>(observation),
+						*static_cast<const mrpt::obs::CSensoryFrame*>(observation),
 						x_predict );
 
 					MRPT_CHECK_NORMAL_NUMBER(indivLik);
@@ -500,9 +493,9 @@ namespace mrpt
 		template <class PARTICLE_TYPE,class MYSELF>
 		template <class BINTYPE>
 		void PF_implementation<PARTICLE_TYPE,MYSELF>::PF_SLAM_implementation_pfAuxiliaryPFStandardAndOptimal(
-			const CActionCollection	* actions,
-			const CSensoryFrame		* sf,
-			const CParticleFilter::TParticleFilterOptions &PF_options,
+			const mrpt::obs::CActionCollection	* actions,
+			const mrpt::obs::CSensoryFrame		* sf,
+			const mrpt::bayes::CParticleFilter::TParticleFilterOptions &PF_options,
 			const TKLDParams &KLD_options,
 			const bool USE_OPTIMAL_SAMPLING  )
 		{
@@ -733,7 +726,7 @@ namespace mrpt
 							const size_t idxBinSpacePath = *permutationPathsAuxVector.rbegin();
 							permutationPathsAuxVector.resize(permutationPathsAuxVector.size()-1);
 
-							const size_t idx = randomGenerator.drawUniform32bit() % stateSpaceBinsLastTimestepParticles[idxBinSpacePath].size();
+							const size_t idx = mrpt::random::randomGenerator.drawUniform32bit() % stateSpaceBinsLastTimestepParticles[idxBinSpacePath].size();
 							k = stateSpaceBinsLastTimestepParticles[idxBinSpacePath][idx];
 							ASSERT_(k<me->m_particles.size());
 
@@ -751,7 +744,7 @@ namespace mrpt
 							// Select a index from "oldPartIdxsStillNotPropragated" and remove it from the list:
 							if (oldPartIdxsStillNotPropragated.size())
 							{
-								const size_t idx = randomGenerator.drawUniform32bit() % oldPartIdxsStillNotPropragated.size();
+								const size_t idx = mrpt::random::randomGenerator.drawUniform32bit() % oldPartIdxsStillNotPropragated.size();
 								vector_size_t::iterator it = oldPartIdxsStillNotPropragated.begin() + idx; //advance(it,idx);
 								k = *it;
 								oldPartIdxsStillNotPropragated.erase(it);
@@ -759,7 +752,7 @@ namespace mrpt
 							else
 							{
 								// N>N_old -> Uniformly draw index:
-								k = randomGenerator.drawUniform32bit() % me->m_particles.size();
+								k = mrpt::random::randomGenerator.drawUniform32bit() % me->m_particles.size();
 							}
 						}
 					}
@@ -845,9 +838,9 @@ namespace mrpt
 			const bool		doResample,
 			const double	maxMeanLik,
 			size_t    k, // The particle from the old set "m_particles[]"
-			const CSensoryFrame		* sf,
-			const CParticleFilter::TParticleFilterOptions &PF_options,
-			CPose3D			& out_newPose,
+			const mrpt::obs::CSensoryFrame		* sf,
+			const mrpt::bayes::CParticleFilter::TParticleFilterOptions &PF_options,
+			mrpt::poses::CPose3D			& out_newPose,
 			double			& out_newParticleLogWeight)
 		{
 			MYSELF *me = static_cast<MYSELF*>(this);
@@ -858,11 +851,11 @@ namespace mrpt
 						-maxMeanLik) < -PF_options.max_loglikelihood_dyn_range )
 			{
 				// Select another 'k' uniformly:
-				k = randomGenerator.drawUniform32bit() % me->m_particles.size();
+				k = mrpt::random::randomGenerator.drawUniform32bit() % me->m_particles.size();
 				if (PF_options.verbose) cout << "[PF_implementation] Warning: Discarding very unlikely particle" << endl;
 			}
 
-			const CPose3D oldPose = *getLastPose(k);	// Get the current pose of the k'th particle
+			const mrpt::poses::CPose3D oldPose = *getLastPose(k);	// Get the current pose of the k'th particle
 
 			//   (b) Rejection-sampling: Draw a new robot pose from x[k],
 			//       and accept it with probability p(zk|x) / maxLikelihood:
@@ -926,7 +919,7 @@ namespace mrpt
 							m_pfAuxiliaryPFOptimal_maxLikelihood[k] = poseLogLik; //  :'-( !!!
 							//acceptanceProb = 0;		// Keep searching or keep this one?
 						}
-					} while ( ++timeout<maxTries && acceptanceProb < randomGenerator.drawUniform(0.0,0.999) );
+					} while ( ++timeout<maxTries && acceptanceProb < mrpt::random::randomGenerator.drawUniform(0.0,0.999) );
 
 					if (timeout>=maxTries)
 					{

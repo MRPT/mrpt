@@ -15,6 +15,7 @@ PROJECT(track_video_features)
 # Define the executable target:
 ADD_EXECUTABLE(track-video-features
 	track-video-feats_main.cpp
+	 ${MRPT_VERSION_RC_FILE}
 	)
 
 SET(TMP_TARGET_NAME "track-video-features")

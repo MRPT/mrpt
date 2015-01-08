@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -31,7 +31,7 @@ IMPLEMENTS_SERIALIZABLE(Plane, CSerializable, mrpt::pbmap)
 ///*---------------------------------------------------------------
 //						writeToStream
 // ---------------------------------------------------------------*/
-//void  Plane::writeToStream(CStream &out, int *out_Version) const
+//void  Plane::writeToStream(mrpt::utils::CStream &out, int *out_Version) const
 //{
 //	if (out_Version)
 //		*out_Version = 0;
@@ -71,7 +71,7 @@ IMPLEMENTS_SERIALIZABLE(Plane, CSerializable, mrpt::pbmap)
 ///*---------------------------------------------------------------
 //						readFromStream
 // ---------------------------------------------------------------*/
-//void  Plane::readFromStream(CStream &in, int version)
+//void  Plane::readFromStream(mrpt::utils::CStream &in, int version)
 //{
 //	switch(version)
 //	{
@@ -123,7 +123,7 @@ IMPLEMENTS_SERIALIZABLE(Plane, CSerializable, mrpt::pbmap)
 /*---------------------------------------------------------------
 						writeToStream
  ---------------------------------------------------------------*/
-void  Plane::writeToStream(CStream &out, int *out_Version) const
+void  Plane::writeToStream(mrpt::utils::CStream &out, int *out_Version) const
 {
 //cout << "Write plane. Version " << *out_Version << endl;
 	if (out_Version)
@@ -211,7 +211,7 @@ void  Plane::writeToStream(CStream &out, int *out_Version) const
 /*---------------------------------------------------------------
 						readFromStream
  ---------------------------------------------------------------*/
-void  Plane::readFromStream(CStream &in, int version)
+void  Plane::readFromStream(mrpt::utils::CStream &in, int version)
 {
 	switch(version)
 	{

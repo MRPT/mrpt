@@ -2,24 +2,24 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
 #include "obs-precomp.h"   // Precompiled headers
 
-#include <mrpt/slam/CObservationStereoImages.h>
+#include <mrpt/obs/CObservationStereoImages.h>
 #include <mrpt/math/CMatrix.h>
 #include <mrpt/utils/CStream.h>
 
-using namespace mrpt::slam;
+using namespace mrpt::obs;
 using namespace mrpt::math;
 using namespace mrpt::utils;
 using namespace mrpt::poses;
 
 // This must be added to any CSerializable class implementation file.
-IMPLEMENTS_SERIALIZABLE(CObservationStereoImages, CObservation,mrpt::slam)
+IMPLEMENTS_SERIALIZABLE(CObservationStereoImages, CObservation,mrpt::obs)
 
 /*---------------------------------------------------------------
 					Constructor
@@ -58,7 +58,7 @@ CObservationStereoImages::~CObservationStereoImages(  )
 /*---------------------------------------------------------------
   Implements the writing to a CStream capability of CSerializable objects
  ---------------------------------------------------------------*/
-void  CObservationStereoImages::writeToStream(CStream &out, int *version) const
+void  CObservationStereoImages::writeToStream(mrpt::utils::CStream &out, int *version) const
 {
 	if (version)
 		*version = 6 ;
@@ -86,7 +86,7 @@ void  CObservationStereoImages::writeToStream(CStream &out, int *version) const
 /*---------------------------------------------------------------
   Implements the reading from a CStream capability of CSerializable objects
  ---------------------------------------------------------------*/
-void  CObservationStereoImages::readFromStream(CStream &in, int version)
+void  CObservationStereoImages::readFromStream(mrpt::utils::CStream &in, int version)
 {
 	switch(version)
 	{
@@ -217,3 +217,48 @@ void CObservationStereoImages::swap( CObservationStereoImages &o)
 	std::swap(cameraPose, o.cameraPose);
 	std::swap(rightCameraPose, o.rightCameraPose);
 }
+
+void CObservationStereoImages::getDescriptionAsText(std::ostream &o) const
+{
+	using namespace std;
+	CObservation::getDescriptionAsText(o);
+
+	o << "Homogeneous matrix for the sensor's 3D pose, relative to robot base:\n";
+	o << cameraPose.getHomogeneousMatrixVal() << endl
+		<< "Camera pose: " << cameraPose << endl
+		<< "Camera pose (YPR): " << CPose3D(cameraPose) << endl
+		<< endl;
+
+	mrpt::utils::TStereoCamera stParams;
+	getStereoCameraParams(stParams);
+	o << stParams.dumpAsText() << endl;
+
+	o << "Right camera pose wrt left camera (YPR):" << endl << CPose3D(stParams.rightCameraPose) << endl;
+
+	if (imageLeft.isExternallyStored())
+		o << " Left image is stored externally in file: " << imageLeft.getExternalStorageFile() << endl;
+
+	o << " Right image";
+	if (hasImageRight )
+	{
+		if (imageRight.isExternallyStored())
+			o << " is stored externally in file: " << imageRight.getExternalStorageFile() << endl;
+	}
+	else o << " : No.\n";
+
+	o << " Disparity image";
+	if (hasImageDisparity )
+	{
+		if (imageDisparity.isExternallyStored())
+			o << " is stored externally in file: " << imageDisparity.getExternalStorageFile() << endl;
+	}
+	else o << " : No.\n";
+
+	o << format(" Image size: %ux%u pixels\n", (unsigned int)imageLeft.getWidth(), (unsigned int)imageLeft.getHeight() );
+
+	o << " Channels order: " << imageLeft.getChannelsOrder() << endl;
+
+	o << format(" Rows are stored in top-bottom order: %s\n", imageLeft.isOriginTopLeft() ? "YES" : "NO");
+}
+
+

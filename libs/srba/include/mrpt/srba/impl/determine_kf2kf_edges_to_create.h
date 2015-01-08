@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -17,7 +17,7 @@ template <class KF2KF_POSE_TYPE,class LM_TYPE,class OBS_TYPE,class RBA_OPTIONS>
 void RbaEngine<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::determine_kf2kf_edges_to_create(
 	const TKeyFrameID               new_kf_id,
 	const typename traits_t::new_kf_observations_t   & obs,
-	vector<TNewEdgeInfo> &new_k2k_edge_ids )
+	std::vector<TNewEdgeInfo> &new_k2k_edge_ids )
 {
 	new_k2k_edge_ids.clear();
 

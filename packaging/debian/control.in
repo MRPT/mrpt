@@ -28,8 +28,9 @@ Build-Depends: debhelper (>= 9),
 	libusb-1.0-0-dev [linux-any],
 	libudev-dev [linux-any],
 	libjs-jquery,
-	libassimp-dev
-Standards-Version: 3.9.5
+	libassimp-dev,
+	libfreenect-dev (>= 0.2) | perl
+Standards-Version: 3.9.6
 Homepage: http://www.mrpt.org/
 
 Package: mrpt-doc

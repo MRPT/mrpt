@@ -31,7 +31,7 @@ SET(EXECUTABLE_OUTPUT_PATH ".")
 #   The dependencies of a library are automatically added, so you only 
 #    need to specify the top-most libraries your code depend on.
 # --------------------------------------------------------------------------
-FIND_PACKAGE(MRPT REQUIRED slam;vision;gui;topography)
+FIND_PACKAGE(MRPT REQUIRED nav;gui)
 
 # ---------------------------------------------
 # TARGET:
@@ -67,7 +67,7 @@ ENDIF(CMAKE_COMPILER_IS_GNUCXX AND NOT CMAKE_BUILD_TYPE MATCHES "Debug")
 #  the MRPT tree:
 # -------------------------------------------------------------------------
 IF("${CMAKE_PROJECT_NAME}" STREQUAL "MRPT") # Fails if build outside of MRPT project.
-	DeclareAppDependencies(${sampleName} mrpt-slam;mrpt-vision;mrpt-gui;mrpt-topography) # Dependencies
+	DeclareAppDependencies(${sampleName} mrpt-nav;mrpt-gui) # Dependencies
 ENDIF("${CMAKE_PROJECT_NAME}" STREQUAL "MRPT")
 # -------------------------------------------------------------------------
 
