@@ -368,7 +368,7 @@ void CSwissRanger3DCamera::getNextObservation(
 	}
 
 	// Initialize the output observation:
-	slam::CObservation3DRangeScan obs;
+	obs::CObservation3DRangeScan obs;
 	obs.sensorLabel     = m_sensorLabel;
 	obs.sensorPose		= m_sensorPoseOnRobot;
 	obs.maxRange  = m_maxRange;

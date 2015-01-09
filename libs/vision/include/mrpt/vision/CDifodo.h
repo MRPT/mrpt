@@ -121,7 +121,7 @@ namespace mrpt
 			float previous_speed_eig_weight;	//!<Default 0.5
 
 			/** Transformations of the coarse-to-fine levels */
-			std::vector<MatrixXf> transformations;
+			std::vector<Eigen::MatrixXf> transformations;
 			
 			/** Solution from the solver at a given level */
 			math::CMatrixFloat61 kai_loc_level;

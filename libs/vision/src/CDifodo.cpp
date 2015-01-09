@@ -12,11 +12,15 @@
 #include <mrpt/vision/CDifodo.h>
 #include <mrpt/utils/utils_defs.h>
 #include <mrpt/utils/CTicTac.h>
+#include <mrpt/utils/round.h>
 
 using namespace mrpt;
 using namespace mrpt::vision;
+using namespace mrpt::math;
 using namespace std;
 using namespace Eigen;
+using mrpt::utils::round;
+using mrpt::utils::square;
 
 CDifodo::CDifodo()
 {
@@ -424,6 +428,7 @@ void CDifodo::computeWeights()
 
 	//Obtain the velocity associated to the rigid transformation estimated up to the present level
 	CMatrixFloat61 kai_level = kai_loc_old;
+
 	Matrix4f acu_trans;
 	acu_trans.setIdentity();
 	for (unsigned int i=0; i<level; i++)
@@ -724,8 +729,8 @@ void CDifodo::poseUpdate()
 	//						Update poses
 	//-------------------------------------------------------	
 	cam_oldpose = cam_pose;
-	math::CMatrixDouble44 aux_acu = acu_trans;
-	CPose3D pose_aux(aux_acu);
+	CMatrixDouble44 aux_acu = acu_trans;
+	poses::CPose3D pose_aux(aux_acu);
 	cam_pose = cam_pose + pose_aux;
 
 
