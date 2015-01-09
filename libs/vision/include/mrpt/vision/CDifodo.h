@@ -22,29 +22,29 @@ namespace mrpt
 	namespace vision
 	{
 		/** This abstract class implements a method called "Difodo" to perform Visual odometry with range cameras.
-		*	It is based on the range flow equation and assumes that the scene is rigid.
-		*	It can work with different image resolutions (640 x 480, 320 x 240 or 160 x 120) and a different number of
-		*   coarse-to-fine levels which can be adjusted with the member variables (rows,cols,ctf_levels).
-		*
-		*   How to use:
-		*		- A derived class must be created which defines the method "loadFrame(...)" according to the user application.
-		*		  This method has to load the depth image into the variable "depth_wf".
-		*		- Call loadFrame();
-		*		- Call odometryCalculation();
-		*
-		*	For further information have a look at the apps:
-		*    - [Difodometry-Camera](http://www.mrpt.org/list-of-mrpt-apps/application-difodometry-camera/)
-		*    - [Difodometry-Datasets](http://www.mrpt.org/list-of-mrpt-apps/application-difodometry-datasets/)
-		*
-		*	Please refer to the respective publication when using this method: *************************
-		*
-		* - JUN/2013: First design.
-		* - JAN/2014: Integrated into MRPT library.
-		* - DIC/2014: Reformulated and improved.
-		*
-		*  \sa CDifodoCamera, CDifodoDatasets
-		*  \ingroup mrpt_vision_grp
-		*/
+		  *	It is based on the range flow equation and assumes that the scene is rigid.
+		  *	It can work with different image resolutions (640 x 480, 320 x 240 or 160 x 120) and a different number of
+		  * coarse-to-fine levels which can be adjusted with the member variables (rows,cols,ctf_levels).
+		  *
+		  * How to use:
+		  * 	- A derived class must be created which defines the method "loadFrame(...)" according to the user application.
+		  *		  This method has to load the depth image into the variable "depth_wf".
+		  *		- Call loadFrame();
+		  *		- Call odometryCalculation();
+		  *
+		  *	For further information have a look at the apps:
+		  *    - [DifOdometry-Camera](http://www.mrpt.org/list-of-mrpt-apps/application-difodometry-camera/)
+		  *    - [DifOdometry-Datasets](http://www.mrpt.org/list-of-mrpt-apps/application-difodometry-datasets/)
+		  *
+		  *	Please refer to the respective publication when using this method: *************************
+		  *
+		  * - JUN/2013: First design.
+		  * - JAN/2014: Integrated into MRPT library.
+		  * - DIC/2014: Reformulated and improved.
+		  *
+		  *  \sa CDifodoCamera, CDifodoDatasets
+		  *  \ingroup mrpt_vision_grp
+		  */
 
 		class VISION_IMPEXP CDifodo {
 		protected:
