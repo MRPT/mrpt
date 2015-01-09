@@ -423,6 +423,7 @@ void CDifodo::calculateDepthDerivatives()
 
 void CDifodo::computeWeights()
 {
+#if EIGEN_VERSION_AT_LEAST(3,1,0)  // Eigen 3.1.0 needed for Matrix::log()
 	weights.resize(rows_i, cols_i);
 	weights.assign(0.f);
 
@@ -513,6 +514,9 @@ void CDifodo::computeWeights()
 	//Normalize weights in the range [0,1]
 	const float inv_max = 1.f/weights.maximum();
 	weights = inv_max*weights;
+#else
+	THROW_EXCEPTION("This class requires Eigen 3.1.0 or above!")
+#endif
 }
 
 void CDifodo::findNullPoints()
@@ -644,6 +648,7 @@ void CDifodo::odometryCalculation()
 
 void CDifodo::filterLevelSolution()
 {
+#if EIGEN_VERSION_AT_LEAST(3,1,0)  // Eigen 3.1.0 needed for Matrix::log()
 	//		Calculate Eigenvalues and Eigenvectors
 	//----------------------------------------------------------
 	SelfAdjointEigenSolver<MatrixXf> eigensolver(est_cov);
@@ -698,10 +703,14 @@ void CDifodo::filterLevelSolution()
 	local_mat(1,3) = kai_loc_fil(1)/fps;
 	local_mat(2,3) = kai_loc_fil(2)/fps;
 	transformations[level] = local_mat.exp();
+#else
+	THROW_EXCEPTION("This class requires Eigen 3.1.0 or above!")
+#endif
 }
 
 void CDifodo::poseUpdate()
 {
+#if EIGEN_VERSION_AT_LEAST(3,1,0)  // Eigen 3.1.0 needed for Matrix::log()
 	//First, compute the overall transformation
 	//---------------------------------------------------
 	Matrix4f acu_trans;
@@ -739,6 +748,9 @@ void CDifodo::poseUpdate()
 	cam_pose.getRotationMatrix(inv_trans);
 	kai_loc_old.topRows<3>() = inv_trans.inverse().cast<float>()*kai_abs.topRows(3);
 	kai_loc_old.bottomRows<3>() = inv_trans.inverse().cast<float>()*kai_abs.bottomRows(3);
+#else
+	THROW_EXCEPTION("This class requires Eigen 3.1.0 or above!")
+#endif
 }
 
 void CDifodo::setFOV(float new_fovh, float new_fovv)
