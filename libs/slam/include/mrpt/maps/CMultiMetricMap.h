@@ -25,6 +25,7 @@
 #include <mrpt/utils/CSerializable.h>
 #include <mrpt/utils/CLoadableOptions.h>
 #include <mrpt/utils/TEnumType.h>
+#include <mrpt/obs/obs_frwds.h>
 
 #include <mrpt/slam/link_pragmas.h>
 
@@ -91,31 +92,116 @@ namespace maps
 		double	 internal_computeObservationLikelihood( const mrpt::obs::CObservation *obs, const mrpt::poses::CPose3D &takenFrom );
 
 	public:
-		/** @name Access to internal list of maps: direct list, utility methods and proxies
+		/** @name Access to internal list of maps: direct list, iterators, utility methods and proxies
 		    @{ */
-		
 		typedef std::deque<mrpt::maps::CMetricMapPtr> TListMaps;
+
 		/** The list of MRPT metric maps in this object. Use dynamic_cast or smart pointer-based downcast to access maps by their actual type.
-		  * You can directly manipulate this list. Helper methods to initialize it are described in the docs of CMultiMetricMap
+		  * You can directly manipulate this list. Helper methods to initialize it are described in the docs of CMultiMetricMap 
 		  */
 		TListMaps maps;
 
+		typedef TListMaps::iterator iterator;
+		typedef TListMaps::const_iterator const_iterator;
+		iterator begin() { return maps.begin(); }
+		const_iterator begin() const { return maps.begin(); }
+		iterator end() { return maps.end(); }
+		const_iterator end() const { return maps.end(); }
+
+		/** Gets the i-th map \exception std::runtime_error On out-of-bounds */
 		mrpt::maps::CMetricMapPtr getMapByIndex(size_t idx) const;
 
-		// Note: A variable number of maps may exist, depending on the initialization from TSetOfMetricMapInitializers.
-		//       Not used maps are "NULL" or empty smart pointers.
-		//std::deque<mrpt::maps::CSimplePointsMapPtr>              m_pointsMaps;
-		//std::deque<mrpt::maps::COccupancyGridMap2DPtr>           m_gridMaps;
-		//std::deque<mrpt::maps::COctoMapPtr>                      m_octoMaps;
-		//std::deque<mrpt::maps::CColouredOctoMapPtr>              m_colourOctoMaps;
-		//std::deque<mrpt::maps::CGasConcentrationGridMap2DPtr>    m_gasGridMaps;
-		//std::deque<mrpt::maps::CWirelessPowerGridMap2DPtr>       m_wifiGridMaps;
-		//std::deque<mrpt::maps::CHeightGridMap2DPtr>              m_heightMaps;
-		//std::deque<mrpt::maps::CReflectivityGridMap2DPtr>        m_reflectivityMaps;
-		//mrpt::maps::CColouredPointsMapPtr                        m_colourPointsMap;
-		//mrpt::maps::CWeightedPointsMapPtr                        m_weightedPointsMap;
-		//mrpt::maps::CLandmarksMapPtr                             m_landmarksMap;
-		//mrpt::maps::CBeaconMapPtr                                m_beaconMap;
+		/** Returns the i'th observation of a given class (or of a descendant class), or NULL if there is no such observation in the array.
+		  *  Example:
+		  * \code
+		  *  CObservationImagePtr obs = m_SF->getObservationByClass<CObservationImage>();
+		  * \endcode
+		  * By default (ith=0), the first observation is returned.
+		  */
+		template <typename T>
+		typename T::SmartPtr getMapByClass( const size_t &ith = 0 ) const
+		{
+			size_t  foundCount = 0;
+			const mrpt::utils::TRuntimeClassId*	class_ID = T::classinfo;
+			for (const_iterator it = begin();it!=end();++it)
+				if ( (*it)->GetRuntimeClass()->derivedFrom( class_ID ) )
+					if (foundCount++ == ith)
+						return typename T::SmartPtr(*it);
+			return typename T::SmartPtr();	// Not found: return empty smart pointer
+		}
+
+		/** Takes a const ref of a STL non-associative container of smart pointers at construction and exposes an interface 
+		  * mildly similar to that of another STL container containing only those elements 
+		  * in the original container that can be `dynamic_cast`ed to `SELECTED_CLASS_PTR` */
+		template <class SELECTED_CLASS_PTR, class CONTAINER>
+		struct ProxyFilterContainerByClass
+		{
+			typedef typename SELECTED_CLASS_PTR::value_type* ptr_t;
+			typedef const typename SELECTED_CLASS_PTR::value_type* const_ptr_t;
+			ProxyFilterContainerByClass(CONTAINER &source) : m_source(source) 
+			{}
+
+			size_t size() const {
+				size_t cnt=0;
+				for(typename CONTAINER::const_iterator it=m_source.begin();it!=m_source.end();++it) {
+					if ( dynamic_cast<const_ptr_t>(it->pointer()) )
+						cnt++;
+				}
+				return cnt;
+			}
+			bool empty() const { return size()!=0; }
+
+			SELECTED_CLASS_PTR operator [](size_t index) const {
+				size_t cnt=0;
+				for(typename CONTAINER::const_iterator it=m_source.begin();it!=m_source.end();++it) {
+					if ( dynamic_cast<const_ptr_t>(it->pointer()) ) {
+						if (cnt++ == index) {
+							return SELECTED_CLASS_PTR(const_cast<ptr_t>(dynamic_cast<const_ptr_t>(it->pointer())));
+						}
+					}
+				}
+				throw std::out_of_range("Index is out of range");
+			}
+		private:
+			CONTAINER & m_source;
+		}; // end ProxyFilterContainerByClass
+
+		/** A proxy like ProxyFilterContainerByClass, but it directly appears as if 
+		  * it was a single smart pointer (empty if no matching object is found in the container) */
+		template <class SELECTED_CLASS_PTR, class CONTAINER>
+		struct ProxySelectorContainerByClass
+		{
+			typedef typename SELECTED_CLASS_PTR::value_type* ptr_t;
+			typedef const typename SELECTED_CLASS_PTR::value_type* const_ptr_t;
+			ProxySelectorContainerByClass(CONTAINER &source) : m_source(source) 
+			{}
+			operator const SELECTED_CLASS_PTR & () const {
+				for(typename CONTAINER::const_iterator it=m_source.begin();it!=m_source.end();++it) {
+					if ( dynamic_cast<const_ptr_t>(it->pointer()) ) {
+						m_ret=SELECTED_CLASS_PTR(const_cast<ptr_t>(dynamic_cast<const_ptr_t>(it->pointer())));
+						return m_ret;
+					}
+				}
+				m_ret=SELECTED_CLASS_PTR(); // Not found
+				return m_ret;
+			}
+		private:
+			CONTAINER & m_source;
+			SELECTED_CLASS_PTR m_ret;
+		}; // end ProxySelectorContainerByClass
+
+		ProxyFilterContainerByClass<mrpt::maps::CSimplePointsMapPtr,TListMaps>           m_pointsMaps; //!< STL-like proxy to access this kind of maps in \ref maps
+		ProxyFilterContainerByClass<mrpt::maps::COccupancyGridMap2DPtr,TListMaps>        m_gridMaps;   //!< STL-like proxy to access this kind of maps in \ref maps
+		ProxyFilterContainerByClass<mrpt::maps::COctoMapPtr,TListMaps>                   m_octoMaps;   //!< STL-like proxy to access this kind of maps in \ref maps
+		ProxyFilterContainerByClass<mrpt::maps::CColouredOctoMapPtr,TListMaps>           m_colourOctoMaps;   //!< STL-like proxy to access this kind of maps in \ref maps
+		ProxyFilterContainerByClass<mrpt::maps::CGasConcentrationGridMap2DPtr,TListMaps> m_gasGridMaps;   //!< STL-like proxy to access this kind of maps in \ref maps
+		ProxyFilterContainerByClass<mrpt::maps::CWirelessPowerGridMap2DPtr,TListMaps>    m_wifiGridMaps;   //!< STL-like proxy to access this kind of maps in \ref maps
+		ProxyFilterContainerByClass<mrpt::maps::CHeightGridMap2DPtr,TListMaps>           m_heightMaps;   //!< STL-like proxy to access this kind of maps in \ref maps
+		ProxyFilterContainerByClass<mrpt::maps::CReflectivityGridMap2DPtr,TListMaps>     m_reflectivityMaps;   //!< STL-like proxy to access this kind of maps in \ref maps
+		ProxySelectorContainerByClass<mrpt::maps::CColouredPointsMapPtr,TListMaps>       m_colourPointsMap; //!< Proxy that looks like a smart pointer to the first matching object in \ref maps
+		ProxySelectorContainerByClass<mrpt::maps::CWeightedPointsMapPtr,TListMaps>       m_weightedPointsMap; //!< Proxy that looks like a smart pointer to the first matching object in \ref maps
+		ProxySelectorContainerByClass<mrpt::maps::CLandmarksMapPtr,TListMaps>            m_landmarksMap; //!< Proxy that looks like a smart pointer to the first matching object in \ref maps
+		ProxySelectorContainerByClass<mrpt::maps::CBeaconMapPtr,TListMaps>               m_beaconMap; //!< Proxy that looks like a smart pointer to the first matching object in \ref maps
 
 		/** @} */
 
@@ -132,14 +218,6 @@ namespace maps
 		void  setListOfMaps( const mrpt::maps::TSetOfMetricMapInitializers	*initializers );
 
 		bool  isEmpty() const MRPT_OVERRIDE; //!< Returns true if all maps returns true to their isEmpty() method, which is map-dependent. Read the docs of each map class
-
-		/** Returns the ratio of points in a map which are new to the point map while falling into yet static cells of gridmap.
-		  * \param points The set of points to check.
-		  * \param takenFrom The pose for the reference system of points, in global coordinates of this hybrid map.
-		  */
-		float 	getNewStaticPointsRatio(
-			mrpt::maps::CPointsMap		*points,
-			mrpt::poses::CPose2D		&takenFrom );
 
 		// See docs in base class.
 		virtual void  determineMatching2D(

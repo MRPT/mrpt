@@ -53,7 +53,7 @@ bool  COccupancyGridMap2D::saveAsBitmapFile(const std::string &file) const
 void  COccupancyGridMap2D::writeToStream(mrpt::utils::CStream &out, int *version) const
 {
 	if (version)
-		*version = 5;
+		*version = 6;
 	else
 	{
 		// Version 3: Change to log-odds. The only change is in the loader, when translating
@@ -105,7 +105,7 @@ void  COccupancyGridMap2D::writeToStream(mrpt::utils::CStream &out, int *version
 			<<	likelihoodOptions.enableLikelihoodCache;
 
 		// Insertion as 3D:
-		out << m_disableSaveAs3DObject;
+		out << genericMapParams; // v6
 
 		// Version 4:
 		out << insertionOptions.CFD_features_gaussian_size
@@ -132,6 +132,7 @@ void  COccupancyGridMap2D::readFromStream(mrpt::utils::CStream &in, int version)
 	case 3:
 	case 4:
 	case 5:
+	case 6:
 		{
 #			ifdef OCCUPANCY_GRIDMAP_CELL_SIZE_8BITS
 				const uint8_t	MyBitsPerCell = 8;
@@ -247,7 +248,14 @@ void  COccupancyGridMap2D::readFromStream(mrpt::utils::CStream &in, int version)
 					>>	likelihoodOptions.enableLikelihoodCache;
 
 				// Insertion as 3D:
-				in  >> m_disableSaveAs3DObject;
+				if (version>=6)
+					in >> genericMapParams;
+				else 
+				{
+					bool disableSaveAs3DObject;
+					in >> disableSaveAs3DObject;
+					genericMapParams.enableSaveAs3DObject = !disableSaveAs3DObject;
+				}
 			}
 
 			if (version>=4)

@@ -153,8 +153,7 @@ void  COccupancyGridMap2D::getAsImageFiltered(
   ---------------------------------------------------------------*/
 void  COccupancyGridMap2D::getAs3DObject(mrpt::opengl::CSetOfObjectsPtr	&outSetOfObj ) const
 {
-	if (m_disableSaveAs3DObject)
-		return;
+	if (!genericMapParams.enableSaveAs3DObject) return;
 
 	MRPT_START
 

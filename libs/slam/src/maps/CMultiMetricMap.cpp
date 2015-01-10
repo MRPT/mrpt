@@ -14,6 +14,7 @@
 #include <mrpt/maps/CMultiMetricMap.h>
 #include <mrpt/utils/CStartUpClassesRegister.h>
 #include <mrpt/utils/metaprogramming.h>
+#include <mrpt/utils/CStream.h>
 
 using namespace mrpt::maps;
 using namespace mrpt::utils;
@@ -22,7 +23,6 @@ using namespace mrpt::obs;
 using namespace mrpt::utils::metaprogramming;
 
 IMPLEMENTS_SERIALIZABLE( CMultiMetricMap, CMetricMap, mrpt::maps )
-
 
 extern CStartUpClassesRegister  mrpt_slam_class_reg;
 const int dumm = mrpt_slam_class_reg.do_nothing(); // Avoid compiler removing this class in static linking
@@ -79,8 +79,7 @@ struct MapComputeLikelihood
 
 	template <typename PTR>
 	inline void operator()(PTR &ptr) {
-		if (isUsedLik(ptr))
-			total_log_lik+=ptr->computeObservationLikelihood(obs,takenFrom);
+		total_log_lik+=ptr->computeObservationLikelihood(obs,takenFrom);
 	}
 
 }; // end of MapComputeLikelihood
@@ -99,8 +98,7 @@ struct MapCanComputeLikelihood
 
 	template <typename PTR>
 	inline void operator()(PTR &ptr) {
-		if (isUsedLik(ptr))
-			can = can || ptr->canComputeObservationLikelihood(obs);
+		can = can || ptr->canComputeObservationLikelihood(obs);
 	}
 
 }; // end of MapCanComputeLikelihood
@@ -172,7 +170,20 @@ struct MapIsEmpty
 
 // Ctor
 CMultiMetricMap::CMultiMetricMap(const TSetOfMetricMapInitializers *initializers) :
-	m_ID(0)
+	m_ID(0),
+	maps(),
+	m_pointsMaps(maps),
+	m_gridMaps(maps),
+	m_octoMaps(maps),
+	m_colourOctoMaps(maps),
+	m_gasGridMaps(maps),
+	m_wifiGridMaps(maps),
+	m_heightMaps(maps),
+	m_reflectivityMaps(maps),
+	m_colourPointsMap(maps),
+	m_weightedPointsMap(maps),
+	m_landmarksMap(maps),
+	m_beaconMap(maps)
 {
 	MRPT_START
 	setListOfMaps(initializers);
@@ -181,7 +192,20 @@ CMultiMetricMap::CMultiMetricMap(const TSetOfMetricMapInitializers *initializers
 
 // Copy ctor
 CMultiMetricMap::CMultiMetricMap(const mrpt::maps::CMultiMetricMap &other ) :
-	m_ID(0)
+	m_ID(0),
+	maps(),
+	m_pointsMaps(maps),
+	m_gridMaps(maps),
+	m_octoMaps(maps),
+	m_colourOctoMaps(maps),
+	m_gasGridMaps(maps),
+	m_wifiGridMaps(maps),
+	m_heightMaps(maps),
+	m_reflectivityMaps(maps),
+	m_colourPointsMap(maps),
+	m_weightedPointsMap(maps),
+	m_landmarksMap(maps),
+	m_beaconMap(maps)
 {
 	*this = other;	// Call the "=" operator
 }
@@ -564,72 +588,6 @@ bool CMultiMetricMap::internal_canComputeObservationLikelihood( const CObservati
 }
 
 /*---------------------------------------------------------------
-				getNewStaticPointsRatio
-Returns the ratio of points in a map which are new to the points map while falling into yet static cells of gridmap.
-	points The set of points to check.
-	takenFrom The pose for the reference system of points, in global coordinates of this hybrid map.
- ---------------------------------------------------------------*/
-float  CMultiMetricMap::getNewStaticPointsRatio(
-		CPointsMap		*points,
-		CPose2D			&takenFrom )
-{
-	const size_t nTotalPoints = points->size();
-	ASSERT_( m_gridMaps.size()>0 );
-
-	// There must be points!
-	if ( !nTotalPoints ) return 0.0f;
-
-	// Compute matching:
-	mrpt::utils::TMatchingPairList correspondences;
-	TMatchingExtraResults extraResults;
-	TMatchingParams params;
-	params.maxDistForCorrespondence = 0.95f*m_gridMaps[0]->insertionOptions.maxDistanceInsertion;
-
-	m_gridMaps[0]->determineMatching2D(
-		points,
-		takenFrom,
-		correspondences,
-		params, extraResults);
-
-	size_t nStaticPoints = 0;
-	TPoint2D g,l;
-
-	for (size_t i=0;i<nTotalPoints;i++)
-	{
-		bool	hasCoor = false;
-		// Has any correspondence?
-		for (mrpt::utils::TMatchingPairList::iterator corrsIt=correspondences.begin();!hasCoor && corrsIt!=correspondences.end();++corrsIt)
-			if (corrsIt->other_idx==i)
-				hasCoor = true;
-
-		if ( !hasCoor )
-		{
-			// The distance between the point and the robot: If it is farther than the insertion max. dist.
-			//   it should not be consider as an static point!!
-			points->getPoint(i,l);
-
-			CPoint2D	temp = CPoint2D(l) - takenFrom;
-			if ( temp.norm() < params.maxDistForCorrespondence)
-			{
-				// A new point
-				// ------------------------------------------
-				// Translate point to global coordinates:
-				g = takenFrom + l;
-
-				if ( m_gridMaps[0]->isStaticPos( g.x, g.y ) )
-				{
-					// A new, static point:
-					nStaticPoints++;
-				}
-			}
-		}
-	}	// End of for
-
-	return nStaticPoints/(static_cast<float>(nTotalPoints));
-}
-
-
-/*---------------------------------------------------------------
 					insertObservation
 
 Insert the observation information into this map.
@@ -655,7 +613,7 @@ void CMultiMetricMap::determineMatching2D(
 	TMatchingExtraResults & extraResults ) const
 {
     MRPT_START
-	ASSERTMSG_( m_pointsMaps.empty()==1, "There is not exactly 1 points maps in the multimetric map." );
+	ASSERTMSG_( m_pointsMaps.size()==1, "There is not exactly 1 points maps in the multimetric map." );
 	m_pointsMaps[0]->determineMatching2D(otherMap,otherMapPose,correspondences,params,extraResults);
     MRPT_END
 }
@@ -671,37 +629,7 @@ bool  CMultiMetricMap::isEmpty() const
 	return is_empty;
 }
 
-/*---------------------------------------------------------------
-					TMetricMapInitializer
- ---------------------------------------------------------------*/
-TMetricMapInitializer::TMetricMapInitializer() :
-	metricMapClassType(NULL),
-	m_disableSaveAs3DObject(false),
-	occupancyGridMap2D_options(),
-	pointsMapOptions_options(),
-	gasGridMap_options(),
-	wifiGridMap_options(),
-	landmarksMap_options(),
-	beaconMap_options(),
-	heightMap_options(),
-	colouredPointsMapOptions_options()
-{
-}
-
-/*---------------------------------------------------------------
-					TOccGridMap2DOptions
- ---------------------------------------------------------------*/
-TMetricMapInitializer::TOccGridMap2DOptions::TOccGridMap2DOptions() :
-	min_x(-10.0f),
-	max_x(10.0f),
-	min_y(-10.0f),
-	max_y(10.0f),
-	resolution(0.10f),
-	insertionOpts(),
-	likelihoodOpts()
-{
-}
-
+#if 0
 /*---------------------------------------------------------------
 					TOctoMapOptions
  ---------------------------------------------------------------*/
@@ -720,37 +648,6 @@ TMetricMapInitializer::TColourOctoMapOptions::TColourOctoMapOptions() :
 	insertionOpts(),
 	likelihoodOpts()
 {
-}
-
-/*---------------------------------------------------------------
-					CPointsMapOptions
- ---------------------------------------------------------------*/
-TMetricMapInitializer::CPointsMapOptions::CPointsMapOptions() :
-	insertionOpts()
-{
-
-}
-
-/*---------------------------------------------------------------
-					CLandmarksMapOptions
- ---------------------------------------------------------------*/
-TMetricMapInitializer::CLandmarksMapOptions::CLandmarksMapOptions() :
-	initialBeacons(),
-	insertionOpts(),
-	likelihoodOpts()
-{
-
-}
-
-
-/*---------------------------------------------------------------
-					CBeaconMapOptions
- ---------------------------------------------------------------*/
-TMetricMapInitializer::CBeaconMapOptions::CBeaconMapOptions() :
-	likelihoodOpts(),
-	insertionOpts()
-{
-
 }
 
 /*---------------------------------------------------------------
@@ -809,141 +706,20 @@ TMetricMapInitializer::CReflectivityGridMap2DOptions::CReflectivityGridMap2DOpti
 {
 }
 
-/*---------------------------------------------------------------
-					CColouredPointsMapOptions
- ---------------------------------------------------------------*/
-TMetricMapInitializer::CColouredPointsMapOptions::CColouredPointsMapOptions() :
-	insertionOpts(),
-	colourOpts()
-{
-}
+#endif
 
-/*---------------------------------------------------------------
-					CWeightedPointsMapOptions
- ---------------------------------------------------------------*/
-TMetricMapInitializer::CWeightedPointsMapOptions::CWeightedPointsMapOptions() :
-	insertionOpts()
-{
-}
-
-/*---------------------------------------------------------------
-					CGasConcentrationGridMap2DOptions
- ---------------------------------------------------------------*/
-void  CMultiMetricMap::saveMetricMapRepresentationToFile(
-	const std::string	&filNamePrefix
-	) const
+void  CMultiMetricMap::saveMetricMapRepresentationToFile(const std::string	&filNamePrefix) const
 {
 	MRPT_START
 
-	unsigned int		idx;
-
-	// grid maps:
+	for (size_t idx=0;idx<maps.size();idx++)
 	{
-		std::deque<COccupancyGridMap2DPtr>::const_iterator	it;
-		for (idx=0,it = m_gridMaps.begin();it!=m_gridMaps.end();++it,idx++)
-		{
-			std::string		fil( filNamePrefix );
-			fil += format("_gridmap_no%02u",idx);
-			(*it)->saveMetricMapRepresentationToFile( fil );
-		}
-	}
+		const mrpt::maps::CMetricMap * m = maps[idx].pointer();
+		ASSERT_(m)
 
-	// octo maps:
-	{
-		std::deque<COctoMapPtr>::const_iterator	it;
-		for (idx=0,it = m_octoMaps.begin();it!=m_octoMaps.end();++it,idx++)
-		{
-			std::string		fil( filNamePrefix );
-			fil += format("_octomap_no%02u",idx);
-			(*it)->saveMetricMapRepresentationToFile( fil );
-		}
-	}
-
-	// colored octo maps:
-	{
-		std::deque<CColouredOctoMapPtr>::const_iterator	it;
-		for (idx=0,it = m_colourOctoMaps.begin();it!=m_colourOctoMaps.end();++it,idx++)
-		{
-			std::string		fil( filNamePrefix );
-			fil += format("_colour_octomap_no%02u",idx);
-			(*it)->saveMetricMapRepresentationToFile( fil );
-		}
-	}
-
-	// Gas grids maps:
-	{
-		std::deque<CGasConcentrationGridMap2DPtr>::const_iterator	it;
-		for (idx=0,it = m_gasGridMaps.begin();it!=m_gasGridMaps.end();++it,idx++)
-		{
-			std::string		fil( filNamePrefix );
-			fil += format("_gasgridmap_no%02u",idx);
-			(*it)->saveMetricMapRepresentationToFile( fil );
-		}
-	}
-
-	// Wifi grids maps:
-	{
-		std::deque<CWirelessPowerGridMap2DPtr>::const_iterator	it;
-		for (idx=0,it = m_wifiGridMaps.begin();it!=m_wifiGridMaps.end();++it,idx++)
-		{
-			std::string		fil( filNamePrefix );
-			fil += format("_wifigridmap_no%02u",idx);
-			(*it)->saveMetricMapRepresentationToFile( fil );
-		}
-	}
-
-	// Points maps:
-	{
-		std::deque<CSimplePointsMapPtr>::const_iterator	it;
-		for (idx=0,it = m_pointsMaps.begin();it!=m_pointsMaps.end();++it,idx++)
-		{
-			std::string		fil( filNamePrefix );
-			fil += format("_pointsmap_no%02u",idx);
-			(*it)->saveMetricMapRepresentationToFile( fil );
-		}
-	}
-
-	// Landmarks maps:
-	if (m_landmarksMap.present())
-	{
-		std::string		fil( filNamePrefix + std::string("_landmarkMap") );
-		m_landmarksMap->saveMetricMapRepresentationToFile( fil );
-	}
-
-	// Landmark SOG maps:
-	if (m_beaconMap.present())
-	{
-		std::string		fil( filNamePrefix + std::string("_beaconMap") );
-		m_beaconMap->saveMetricMapRepresentationToFile( fil );
-	}
-
-	// Height grids maps:
-	{
-		std::deque<CHeightGridMap2DPtr>::const_iterator	it;
-		for (idx=0,it = m_heightMaps.begin();it!=m_heightMaps.end();++it,idx++)
-		{
-			std::string		fil( filNamePrefix );
-			fil += format("_heightgridmap_no%02u",idx);
-			(*it)->saveMetricMapRepresentationToFile( fil );
-		}
-	}
-
-	// Reflexivity grids maps:
-	{
-		std::deque<CReflectivityGridMap2DPtr>::const_iterator	it;
-		for (idx=0,it = m_reflectivityMaps.begin();it!=m_reflectivityMaps.end();++it,idx++)
-		{
-			std::string		fil( filNamePrefix );
-			fil += format("_reflectivitygridmap_no%02u",idx);
-			(*it)->saveMetricMapRepresentationToFile( fil );
-		}
-	}
-
-	// Colour points map:
-	if (m_colourPointsMap.present())
-	{
-		std::string		fil( filNamePrefix + std::string("_colourpointsmap") );
-		m_colourPointsMap->saveMetricMapRepresentationToFile( fil );
+		std::string fil = filNamePrefix;
+		fil += format("_%s_%02u", m->GetRuntimeClass()->className, static_cast<unsigned int>(idx));
+		m->saveMetricMapRepresentationToFile(fil);
 	}
 
 	MRPT_END
@@ -961,18 +737,7 @@ void  CMultiMetricMap::getAs3DObject( mrpt::opengl::CSetOfObjectsPtr	&outObj ) c
 	MRPT_END
 }
 
-
-/*---------------------------------------------------------------
- Computes the ratio in [0,1] of correspondences between "this" and the "otherMap" map, whose 6D pose relative to "this" is "otherMapPose"
- *   In the case of a multi-metric map, this returns the average between the maps. This method always return 0 for grid maps.
- * \param  otherMap					  [IN] The other map to compute the matching with.
- * \param  otherMapPose				  [IN] The 6D pose of the other map as seen from "this".
- * \param  maxDistForCorr			  [IN] The minimum distance between 2 non-probabilistic map elements for counting them as a correspondence.
- * \param  maxMahaDistForCorr		  [IN] The minimum Mahalanobis distance between 2 probabilistic map elements for counting them as a correspondence.
- *
- * \return The matching ratio [0,1]
- * \sa computeMatchingWith2D
-  ---------------------------------------------------------------*/
+// See docs in base class
 float  CMultiMetricMap::compute3DMatchingRatio(
 		const mrpt::maps::CMetricMap								*otherMap,
 		const CPose3D							&otherMapPose,
@@ -982,38 +747,17 @@ float  CMultiMetricMap::compute3DMatchingRatio(
 {
 	MRPT_START
 
-	size_t		nMapsComputed = 0;
-	float		accumResult = 0;
+	float accumResult = 0;
 
-	// grid maps: NO
-
-	// Gas grids maps: NO
-
-	// Wifi grids maps: NO
-
-	// Points maps:
-	if (m_pointsMaps.size()>0)
+	for (size_t idx=0;idx<maps.size();idx++)
 	{
-		ASSERT_(m_pointsMaps.size()==1);
-		accumResult += m_pointsMaps[0]->compute3DMatchingRatio( otherMap, otherMapPose,maxDistForCorr,maxMahaDistForCorr );
-		nMapsComputed++;
-	}
-
-	// Landmarks maps:
-	if (m_landmarksMap.present())
-	{
-		accumResult += m_landmarksMap->compute3DMatchingRatio( otherMap, otherMapPose,maxDistForCorr,maxMahaDistForCorr );
-		nMapsComputed++;
-	}
-
-	// Landmark SOG maps:
-	if (m_beaconMap.present())
-	{
-		accumResult += m_beaconMap->compute3DMatchingRatio( otherMap, otherMapPose,maxDistForCorr,maxMahaDistForCorr );
-		nMapsComputed++;
+		const mrpt::maps::CMetricMap * m = maps[idx].pointer();
+		ASSERT_(m)
+		accumResult += m->compute3DMatchingRatio( otherMap, otherMapPose,maxDistForCorr,maxMahaDistForCorr );
 	}
 
 	// Return average:
+	const size_t nMapsComputed = maps.size();
 	if (nMapsComputed) accumResult/=nMapsComputed;
 	return accumResult;
 
@@ -1030,50 +774,6 @@ void  CMultiMetricMap::auxParticleFilterCleanUp()
 	MapExecutor::run(*this,op_cleanup);
 	MRPT_END
 }
-
-
-
-/** Load parameters from configuration source
-  */
-void  CMultiMetricMap::TOptions::loadFromConfigFile(
-	const mrpt::utils::CConfigFileBase	&source,
-	const std::string		&section)
-{
-	likelihoodMapSelection = source.read_enum<TMapSelectionForLikelihood>(section,"likelihoodMapSelection",likelihoodMapSelection);
-
-	MRPT_LOAD_CONFIG_VAR(enableInsertion_pointsMap, bool,  source, section );
-	MRPT_LOAD_CONFIG_VAR(enableInsertion_landmarksMap, bool,  source, section );
-	MRPT_LOAD_CONFIG_VAR(enableInsertion_gridMaps, bool,  source, section );
-	MRPT_LOAD_CONFIG_VAR(enableInsertion_octoMaps, bool,  source, section );
-	MRPT_LOAD_CONFIG_VAR(enableInsertion_colourOctoMaps, bool,  source, section );
-	MRPT_LOAD_CONFIG_VAR(enableInsertion_gasGridMaps, bool,  source, section );
-	MRPT_LOAD_CONFIG_VAR(enableInsertion_wifiGridMaps, bool,  source, section );
-	MRPT_LOAD_CONFIG_VAR(enableInsertion_beaconMap, bool,  source, section );
-	MRPT_LOAD_CONFIG_VAR(enableInsertion_heightMaps, bool,  source, section );
-	MRPT_LOAD_CONFIG_VAR(enableInsertion_reflectivityMaps, bool,  source, section );
-	MRPT_LOAD_CONFIG_VAR(enableInsertion_colourPointsMaps, bool,  source, section );
-
-}
-
-/** This method must display clearly all the contents of the structure in textual form, sending it to a CStream.
-  */
-void  CMultiMetricMap::TOptions::dumpToTextStream(mrpt::utils::CStream	&out) const
-{
-	out.printf("\n----------- [CMultiMetricMap::TOptions] ------------ \n\n");
-
-	out.printf("likelihoodMapSelection                  = %i\n",	static_cast<int>(likelihoodMapSelection) );
-	out.printf("enableInsertion_pointsMap               = %c\n",	enableInsertion_pointsMap ? 'Y':'N');
-	out.printf("enableInsertion_landmarksMap            = %c\n",	enableInsertion_landmarksMap ? 'Y':'N');
-	out.printf("enableInsertion_gridMaps                = %c\n",	enableInsertion_gridMaps ? 'Y':'N');
-	out.printf("enableInsertion_octoMaps                = %c\n",	enableInsertion_octoMaps ? 'Y':'N');
-	out.printf("enableInsertion_colourOctoMaps          = %c\n",	enableInsertion_colourOctoMaps? 'Y':'N');
-	out.printf("enableInsertion_gasGridMaps             = %c\n",	enableInsertion_gasGridMaps ? 'Y':'N');
-	out.printf("enableInsertion_wifiGridMaps             = %c\n",	enableInsertion_gasGridMaps ? 'Y':'N');
-	out.printf("enableInsertion_beaconMap               = %c\n",	enableInsertion_beaconMap ? 'Y':'N');
-
-	out.printf("\n");
-}
-
 
 /** If the map is a simple points map or it's a multi-metric map that contains EXACTLY one simple points map, return it.
 * Otherwise, return NULL
@@ -1096,22 +796,9 @@ CSimplePointsMap * CMultiMetricMap::getAsSimplePointsMap()
 }
 
 
-
-/** Ctor: TOptions::TOptions
-*/
-CMultiMetricMap::TOptions::TOptions() :
-	likelihoodMapSelection(mapFuseAll),
-	enableInsertion_pointsMap  (true),
-	enableInsertion_landmarksMap (true),
-	enableInsertion_gridMaps(true),
-	enableInsertion_gasGridMaps(true),
-	enableInsertion_wifiGridMaps(true),
-	enableInsertion_beaconMap(true),
-	enableInsertion_heightMaps(true),
-	enableInsertion_reflectivityMaps(true),
-	enableInsertion_colourPointsMaps(true),
-	enableInsertion_weightedPointsMaps(true),
-	enableInsertion_octoMaps(true),
-	enableInsertion_colourOctoMaps(true)
+/** Gets the i-th map \exception std::runtime_error On out-of-bounds */
+mrpt::maps::CMetricMapPtr CMultiMetricMap::getMapByIndex(size_t idx) const
 {
+	ASSERT_BELOW_(idx,maps.size())
+	return maps[idx];
 }

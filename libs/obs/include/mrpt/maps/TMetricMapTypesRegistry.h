@@ -43,10 +43,13 @@ namespace mrpt
 			#define MAP_DEFINITION_START(_CLASS_NAME_,_LINKAGE_) \
 				public: \
 					/** @name Map Definition Interface stuff (see mrpt::maps::TMetricMapInitializer) @{ */ \
-					struct _LINKAGE_ TMapDefinition : public mrpt::maps::TMetricMapInitializer { \
+					struct _LINKAGE_ TMapDefinitionBase : public mrpt::maps::TMetricMapInitializer { \
+						TMapDefinitionBase() : TMetricMapInitializer(CLASS_ID(_CLASS_NAME_)) { } \
+					};\
+					struct _LINKAGE_ TMapDefinition : public TMapDefinitionBase { \
 
 			#define MAP_DEFINITION_END(_CLASS_NAME_,_LINKAGE_) \
-						TMapDefinition() : TMetricMapInitializer(CLASS_ID(_CLASS_NAME_)) { } \
+						TMapDefinition();\
 					protected: \
 						void loadFromConfigFile_map_specific(const mrpt::utils::CConfigFileBase  &source, const std::string &sectionNamePrefix) MRPT_OVERRIDE; \
 						void dumpToTextStream_map_specific(mrpt::utils::CStream	&out) const MRPT_OVERRIDE; \

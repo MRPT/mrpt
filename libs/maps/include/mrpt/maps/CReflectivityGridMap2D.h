@@ -75,8 +75,6 @@ namespace mrpt
 			   */
 			 bool  isEmpty() const;
 
-			// See docs in base class
-			double	 computeObservationLikelihood( const mrpt::obs::CObservation *obs, const mrpt::poses::CPose3D &takenFrom );
 
 			/** Parameters related with inserting observations into the map.
 			  */
@@ -123,18 +121,10 @@ namespace mrpt
 
 		protected:
 
-			 /** Erase all the contents of the map
-			  */
-			 virtual void  internal_clear();
-
-			 /** Insert the observation information into this map. This method must be implemented
-			  *    in derived classes.
-			  * \param obs The observation
-			  * \param robotPose The 3D pose of the robot mobile base in the map reference system, or NULL (default) if you want to use CPose2D(0,0,deg)
-			  *
-			  * \sa CObservation::insertObservationInto
-			  */
-			 virtual bool  internal_insertObservation( const mrpt::obs::CObservation *obs, const mrpt::poses::CPose3D *robotPose = NULL );
+			// See docs in base class
+			void  internal_clear() MRPT_OVERRIDE;
+			bool  internal_insertObservation( const mrpt::obs::CObservation *obs, const mrpt::poses::CPose3D *robotPose = NULL ) MRPT_OVERRIDE;
+			double internal_computeObservationLikelihood( const mrpt::obs::CObservation *obs, const mrpt::poses::CPose3D &takenFrom )  MRPT_OVERRIDE;
 
 		};
 		DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE( CReflectivityGridMap2D, CMetricMap, MAPS_IMPEXP  )

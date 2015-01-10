@@ -696,7 +696,7 @@ namespace maps
 
 
 		// See docs in base class
-		virtual double computeObservationLikelihood( const mrpt::obs::CObservation *obs, const mrpt::poses::CPose3D &takenFrom );
+		virtual double internal_computeObservationLikelihood( const mrpt::obs::CObservation *obs, const mrpt::poses::CPose3D &takenFrom );
 
 		/** @name PCL library support
 			@{ */

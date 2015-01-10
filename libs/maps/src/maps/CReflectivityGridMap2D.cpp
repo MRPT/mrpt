@@ -176,7 +176,7 @@ double	 CReflectivityGridMap2D::internal_computeObservationLikelihood(
 void  CReflectivityGridMap2D::writeToStream(mrpt::utils::CStream &out, int *version) const
 {
 	if (version)
-		*version = 0;
+		*version = 1;
 	else
 	{
 		// Save the dimensions of the grid:
@@ -193,6 +193,7 @@ void  CReflectivityGridMap2D::writeToStream(mrpt::utils::CStream &out, int *vers
 		// Save the insertion options:
 		// out << insertionOptions.maxOccupancyUpdateCertainty;
 
+		out << genericMapParams; // v1
 	}
 }
 
@@ -204,6 +205,7 @@ void  CReflectivityGridMap2D::readFromStream(mrpt::utils::CStream &in, int versi
 	switch(version)
 	{
 	case 0:
+	case 1:
 		{
 			uint32_t	n,i,j;
 
@@ -222,6 +224,9 @@ void  CReflectivityGridMap2D::readFromStream(mrpt::utils::CStream &in, int versi
 
 			// Load the insertion options:
 			// in >> insertionOptions.maxOccupancyUpdateCertainty;
+
+			if (version>=1) 
+				in >> genericMapParams;
 
 		} break;
 	default:
@@ -323,8 +328,7 @@ void  CReflectivityGridMap2D::getAsImage(
 ---------------------------------------------------------------*/
 void  CReflectivityGridMap2D::getAs3DObject( mrpt::opengl::CSetOfObjectsPtr	&outSetOfObj ) const
 {
-	if (m_disableSaveAs3DObject)
-		return;
+	if (!genericMapParams.enableSaveAs3DObject) return;
 
 	MRPT_START
 

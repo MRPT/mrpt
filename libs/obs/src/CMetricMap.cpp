@@ -16,8 +16,6 @@
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/obs/CSensoryFrame.h>
 #include <mrpt/maps/CSimpleMap.h>
-#include <mrpt/utils/CConfigFileBase.h>
-
 #include <mrpt/math/lightweight_geom_data.h>
 
 using namespace mrpt::obs;
@@ -27,32 +25,6 @@ using namespace mrpt::poses;
 using namespace mrpt::math;
 
 IMPLEMENTS_VIRTUAL_SERIALIZABLE(CMetricMap, CSerializable, mrpt::maps)
-
-			bool  enableSaveAs3DObject;        //!< (Default=true) If false, calling CMetricMap::getAs3DObject() will have no effects
-			bool  enableObservationLikelihood; //!< (Default=true) Enable computing observation likelihoods with this map
-			bool  enableObservationInsertion;  //!< (Default=true) Enable inserting observations in this map 
-
-TMapGenericParams::TMapGenericParams() : 
-	enableSaveAs3DObject(true), 
-	enableObservationLikelihood(true), 
-	enableObservationInsertion(true) 
-{ 
-}
-
-void TMapGenericParams::loadFromConfigFile(const mrpt::utils::CConfigFileBase  &source, const std::string &sct)
-{
-	MRPT_LOAD_CONFIG_VAR(enableSaveAs3DObject          , bool,   source,sct);
-	MRPT_LOAD_CONFIG_VAR(enableObservationLikelihood   , bool,   source,sct);
-	MRPT_LOAD_CONFIG_VAR(enableObservationInsertion    , bool,   source,sct);
-}
-void TMapGenericParams::dumpToTextStream(mrpt::utils::CStream	&out) const
-{
-	// Common:
-	LOADABLEOPTS_DUMP_VAR(enableSaveAs3DObject         , bool);
-	LOADABLEOPTS_DUMP_VAR(enableObservationLikelihood  , bool);
-	LOADABLEOPTS_DUMP_VAR(enableObservationInsertion   , bool);
-}
-
 
 CMetricMap::CMetricMap()
 {

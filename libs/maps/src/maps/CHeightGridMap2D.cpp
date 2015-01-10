@@ -181,7 +181,7 @@ double	 CHeightGridMap2D::internal_computeObservationLikelihood(
 void  CHeightGridMap2D::writeToStream(mrpt::utils::CStream &out, int *version) const
 {
 	if (version)
-		*version = 1;
+		*version = 2;
 	else
 	{
 		uint32_t	n;
@@ -207,6 +207,8 @@ void  CHeightGridMap2D::writeToStream(mrpt::utils::CStream &out, int *version) c
 		out << insertionOptions.filterByHeight
 			<< insertionOptions.z_min
 			<< insertionOptions.z_max;
+
+		out << genericMapParams; // v2
 	}
 }
 
@@ -219,6 +221,7 @@ void  CHeightGridMap2D::readFromStream(mrpt::utils::CStream &in, int version)
 	{
 	case 0:
 	case 1:
+	case 2:
 		{
 			uint32_t	n,i,j;
 
@@ -255,6 +258,9 @@ void  CHeightGridMap2D::readFromStream(mrpt::utils::CStream &in, int version)
 			in  >> insertionOptions.filterByHeight
 				>> insertionOptions.z_min
 				>> insertionOptions.z_max;
+
+			if (version>=2) 
+				in >> genericMapParams;
 
 		} break;
 	default:
@@ -324,8 +330,7 @@ void  CHeightGridMap2D::saveMetricMapRepresentationToFile(
 ---------------------------------------------------------------*/
 void  CHeightGridMap2D::getAs3DObject( mrpt::opengl::CSetOfObjectsPtr	&outObj ) const
 {
-	if (m_disableSaveAs3DObject)
-		return;
+	if (!genericMapParams.enableSaveAs3DObject) return;
 
 	if (mrpt::global_settings::HEIGHTGRIDMAP_EXPORT3D_AS_MESH)
 	{

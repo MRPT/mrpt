@@ -121,7 +121,7 @@ void  CColouredPointsMap::copyFrom(const CPointsMap &obj)
 void  CColouredPointsMap::writeToStream(mrpt::utils::CStream &out, int *version) const
 {
 	if (version)
-		*version = 8;
+		*version = 9;
 	else
 	{
 		uint32_t n = x.size();
@@ -137,8 +137,8 @@ void  CColouredPointsMap::writeToStream(mrpt::utils::CStream &out, int *version)
 		}
 		out << m_color_R << m_color_G << m_color_B; // added in v4
 
-		out << m_disableSaveAs3DObject; // Insertion as 3D
-		insertionOptions.writeToStream(out); // version 9: insert options are saved with its own method
+		out << genericMapParams; // v9
+		insertionOptions.writeToStream(out); // version 9?: insert options are saved with its own method
 		likelihoodOptions.writeToStream(out); // Added in version 5
 	}
 }
@@ -153,6 +153,7 @@ void  CColouredPointsMap::readFromStream(mrpt::utils::CStream &in, int version)
 	switch(version)
 	{
 	case 8:
+	case 9:
 		{
 			mark_as_modified();
 
@@ -170,7 +171,14 @@ void  CColouredPointsMap::readFromStream(mrpt::utils::CStream &in, int version)
 			}
 			in >> m_color_R >> m_color_G >> m_color_B;
 
-			in >> m_disableSaveAs3DObject;
+			if (version>=9)
+				in >> genericMapParams;
+			else 
+			{
+				bool disableSaveAs3DObject;
+				in >> disableSaveAs3DObject;
+				genericMapParams.enableSaveAs3DObject = !disableSaveAs3DObject;
+			}
 			insertionOptions.readFromStream(in);
 			likelihoodOptions.readFromStream(in);
 		} break;
@@ -244,8 +252,11 @@ void  CColouredPointsMap::readFromStream(mrpt::utils::CStream &in, int version)
 				}
 
 				in >> insertionOptions.maxDistForInterpolatePoints;
-
-				in >> m_disableSaveAs3DObject;
+				{
+					bool disableSaveAs3DObject;
+					in >> disableSaveAs3DObject;
+					genericMapParams.enableSaveAs3DObject = !disableSaveAs3DObject;
+				}
 			}
 
 			if (version>=3)
@@ -366,8 +377,7 @@ void CColouredPointsMap::getAs3DObject( mrpt::opengl::CSetOfObjectsPtr	&outObj )
 {
 	ASSERT_(outObj);
 
-	if (m_disableSaveAs3DObject)
-		return;
+	if (!genericMapParams.enableSaveAs3DObject) return;
 
 	opengl::CPointCloudColouredPtr  obj = opengl::CPointCloudColoured::Create();
 

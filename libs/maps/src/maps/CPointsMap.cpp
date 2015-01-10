@@ -752,8 +752,7 @@ void  CPointsMap::TLikelihoodOptions::loadFromConfigFile(
 ---------------------------------------------------------------*/
 void  CPointsMap::getAs3DObject( mrpt::opengl::CSetOfObjectsPtr	&outObj ) const
 {
-	if (m_disableSaveAs3DObject)
-		return;
+	if (!genericMapParams.enableSaveAs3DObject) return;
 
 	opengl::CPointCloudPtr  obj = opengl::CPointCloud::Create();
 

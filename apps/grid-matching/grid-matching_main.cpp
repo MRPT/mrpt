@@ -118,7 +118,6 @@ void do_grid_align()
 		TMetricMapInitializer	map_init;
 		map_init.metricMapClassType = CLASS_ID( COccupancyGridMap2D );
 		map_init.occupancyGridMap2D_options.resolution = 0.05;
-		//map_init.m_disableSaveAs3DObject = true;
 
 		map_init.occupancyGridMap2D_options.insertionOpts.maxOccupancyUpdateCertainty = 0.8;
 		map_init.occupancyGridMap2D_options.insertionOpts.maxDistanceInsertion = 30;

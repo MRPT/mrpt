@@ -52,11 +52,12 @@ COctoMap::~COctoMap()
 void  COctoMap::writeToStream(mrpt::utils::CStream &out, int *version) const
 {
 	if (version)
-		*version = 1;
+		*version = 2;
 	else
 	{
 		this->likelihoodOptions.writeToStream(out);
 		this->renderingOptions.writeToStream(out);  // Added in v1
+		out << genericMapParams; // v2
 
 		CMemoryChunk chunk;
 		const string	tmpFil = mrpt::system::getTempFileName();
@@ -79,9 +80,11 @@ void  COctoMap::readFromStream(mrpt::utils::CStream &in, int version)
 	{
 	case 0:
 	case 1:
+	case 2:
 		{
 			this->likelihoodOptions.readFromStream(in);
 			if (version>=1) this->renderingOptions.readFromStream(in);
+			if (version>=2) in >> genericMapParams;
 
 			this->clear();
 

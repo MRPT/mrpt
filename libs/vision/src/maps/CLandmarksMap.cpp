@@ -2281,11 +2281,9 @@ void  CLandmarksMap::saveMetricMapRepresentationToFile( const std::string	&filNa
   ---------------------------------------------------------------*/
 void  CLandmarksMap::getAs3DObject( mrpt::opengl::CSetOfObjectsPtr	&outObj )const
 {
-	if (m_disableSaveAs3DObject)
-		return;
+	if (!genericMapParams.enableSaveAs3DObject) return;
 
 	// TODO: Generate patchs in 3D, etc...
-
 
 	// Save 3D ellipsoids
 	CPointPDFGaussian	pointGauss;

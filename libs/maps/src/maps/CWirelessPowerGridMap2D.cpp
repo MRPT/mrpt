@@ -137,7 +137,7 @@ double	 CWirelessPowerGridMap2D::internal_computeObservationLikelihood(
 void  CWirelessPowerGridMap2D::writeToStream(mrpt::utils::CStream &out, int *version) const
 {
 	if (version)
-		*version = 3;
+		*version = 4;
 	else
 	{
 		uint32_t	n;
@@ -185,6 +185,8 @@ void  CWirelessPowerGridMap2D::writeToStream(mrpt::utils::CStream &out, int *ver
 		// New in v3:
 		out << m_average_normreadings_mean << m_average_normreadings_var << uint64_t(m_average_normreadings_count);
 
+		out << genericMapParams; // v4
+
 	}
 }
 
@@ -206,6 +208,7 @@ void  CWirelessPowerGridMap2D::readFromStream(mrpt::utils::CStream &in, int vers
 	case 1:
 	case 2:
 	case 3:
+	case 4:
 		{
 			uint32_t	n,i,j;
 
@@ -279,6 +282,9 @@ void  CWirelessPowerGridMap2D::readFromStream(mrpt::utils::CStream &in, int vers
 				in >> m_average_normreadings_mean >> m_average_normreadings_var >> N;
 				m_average_normreadings_count = N;
 			}
+
+			if (version>=4)
+				in >> genericMapParams;
 
 			m_hasToRecoverMeanAndCov = true;
 		} break;
@@ -367,8 +373,7 @@ void  CWirelessPowerGridMap2D::saveAsMatlab3DGraph(const std::string  &filName) 
 void  CWirelessPowerGridMap2D::getAs3DObject( mrpt::opengl::CSetOfObjectsPtr	&outObj ) const
 {
 	MRPT_START
-	if (m_disableSaveAs3DObject)
-		return;
+	if (!genericMapParams.enableSaveAs3DObject) return;
 
 	CRandomFieldGridMap2D::getAs3DObject(outObj);
 

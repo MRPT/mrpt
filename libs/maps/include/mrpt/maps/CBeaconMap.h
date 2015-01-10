@@ -53,21 +53,12 @@ namespace maps
 		typedef std::deque<CBeacon>::const_iterator	const_iterator;
 
 	protected:
-		/** The individual beacons */
-		TSequenceBeacons		m_beacons;
+		TSequenceBeacons		m_beacons;  //!< The individual beacons
 
-		/** Clear the map, erasing all landmarks.
-		 */
+		// See docs in base class
 		virtual void  internal_clear();
-
-		 /** Insert the observation information into this map. This method must be implemented
-		  *    in derived classes.
-		  * \param obs The observation
-		  * \param robotPose The 3D pose of the robot mobile base in the map reference system, or NULL (default) if you want to use CPose2D(0,0,deg)
-		  *
-		  * \sa CObservation::insertObservationInto
-		  */
-		 virtual bool  internal_insertObservation( const mrpt::obs::CObservation *obs, const mrpt::poses::CPose3D *robotPose = NULL );
+		virtual bool  internal_insertObservation( const mrpt::obs::CObservation *obs, const mrpt::poses::CPose3D *robotPose = NULL );
+		double	 internal_computeObservationLikelihood( const mrpt::obs::CObservation *obs, const mrpt::poses::CPose3D &takenFrom );
 
 	public:
 		/** Constructor */
@@ -217,10 +208,6 @@ namespace maps
 		/** Returns the stored landmarks count.
 		 */
 		size_t  size() const;
-
-
-		// See docs in base class
-		double	 computeObservationLikelihood( const mrpt::obs::CObservation *obs, const mrpt::poses::CPose3D &takenFrom );
 
 		// See docs in base class
 		virtual void  determineMatching2D(

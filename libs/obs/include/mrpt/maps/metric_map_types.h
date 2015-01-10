@@ -49,9 +49,12 @@ namespace mrpt
 			{}
 		};
 
+		DEFINE_SERIALIZABLE_PRE_CUSTOM_LINKAGE ( TMapGenericParams, OBS_IMPEXP )
 		/** Common params to all maps derived from mrpt::maps::CMetricMap  */
-		struct OBS_IMPEXP TMapGenericParams : public mrpt::utils::CLoadableOptions
+		class OBS_IMPEXP TMapGenericParams : public mrpt::utils::CLoadableOptions, public mrpt::utils::CSerializable
 		{
+			DEFINE_SERIALIZABLE( TMapGenericParams )
+		public:
 			bool  enableSaveAs3DObject;        //!< (Default=true) If false, calling CMetricMap::getAs3DObject() will have no effects
 			bool  enableObservationLikelihood; //!< (Default=true) Enable computing observation likelihoods with this map
 			bool  enableObservationInsertion;  //!< (Default=true) Enable inserting observations in this map 
@@ -61,6 +64,7 @@ namespace mrpt
 			/** Dump the options of the metric map in human-readable format */
 			void  dumpToTextStream(mrpt::utils::CStream	&out) const;
 		};
+		DEFINE_SERIALIZABLE_POST_CUSTOM_LINKAGE ( TMapGenericParams, OBS_IMPEXP )
 
 
 	} // End of namespace

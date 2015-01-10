@@ -1573,8 +1573,7 @@ void  CRandomFieldGridMap2D::saveAsMatlab3DGraph(const std::string  &filName) co
 ---------------------------------------------------------------*/
 void  CRandomFieldGridMap2D::getAs3DObject( mrpt::opengl::CSetOfObjectsPtr	&outObj ) const
 {
-	if (m_disableSaveAs3DObject)
-		return;
+	if (!genericMapParams.enableSaveAs3DObject) return;
 
 	//Returns only the mean map
 	mrpt::opengl::CSetOfObjectsPtr other_obj = mrpt::opengl::CSetOfObjects::Create();
@@ -1587,8 +1586,7 @@ void  CRandomFieldGridMap2D::getAs3DObject( mrpt::opengl::CSetOfObjectsPtr	&outO
 ---------------------------------------------------------------*/
 void  CRandomFieldGridMap2D::getAs3DObject( mrpt::opengl::CSetOfObjectsPtr	&meanObj, mrpt::opengl::CSetOfObjectsPtr &varObj ) const
 {
-	if (m_disableSaveAs3DObject)
-		return;
+	if (!genericMapParams.enableSaveAs3DObject) return;
 
 	recoverMeanAndCov();		//Only works for KF2 method
 

@@ -82,14 +82,14 @@ void CBeaconMap::resize(const size_t N)
 void  CBeaconMap::writeToStream(mrpt::utils::CStream &out, int *version) const
 {
 	if (version)
-		*version = 0;
+		*version = 1;
 	else
 	{
-		uint32_t n = m_beacons.size();
+		out << genericMapParams; // v1
 
 		// First, write the number of landmarks:
+		const uint32_t n = m_beacons.size();
 		out << n;
-
 		// Write all landmarks:
 		for (const_iterator	it=begin();it!=end();++it)
 			out << (*it);
@@ -107,22 +107,21 @@ void  CBeaconMap::readFromStream(mrpt::utils::CStream &in, int version)
 	switch(version)
 	{
 	case 0:
+	case 1:
 		{
+			if (version>=1)
+				in >> genericMapParams; // v1
+
 			uint32_t	n,i;
 
 			// Delete previous content of map:
-			// -------------------------------------
 			clear();
 
 			// Load from stream:
-			// -------------------------------------
-			in >> n;
-
-			m_beacons.resize(n);
-
 			// Read all landmarks:
-			for (i=0;i<n;i++)
-				in >> m_beacons[i];
+			in >> n;
+			m_beacons.resize(n);
+			for (i=0;i<n;i++) in >> m_beacons[i];
 
 		} break;
 	default:
@@ -1063,8 +1062,7 @@ void  CBeaconMap::getAs3DObject( mrpt::opengl::CSetOfObjectsPtr	&outObj ) const
 {
 	MRPT_START
 
-	if (m_disableSaveAs3DObject)
-		return;
+	if (!genericMapParams.enableSaveAs3DObject) return;
 
 	// ------------------------------------------------
 	//  Add the XYZ corner for the current area:

@@ -36,6 +36,15 @@ CLogOddsGridMapLUT<COccupancyGridMap2D::cellType>  COccupancyGridMap2D::m_logodd
 
 MAP_DEFINITION_REGISTER("COccupancyGridMap2D,occupancyGrid", mrpt::maps::COccupancyGridMap2D)
 
+COccupancyGridMap2D::TMapDefinition::TMapDefinition() :
+	min_x(-10.0f),
+	max_x(10.0f),
+	min_y(-10.0f),
+	max_y(10.0f),
+	resolution(0.10f)
+{
+}
+
 void COccupancyGridMap2D::TMapDefinition::loadFromConfigFile_map_specific(const mrpt::utils::CConfigFileBase  &source, const std::string &sectionNamePrefix)
 {
 	// Load from sections formatted like this:

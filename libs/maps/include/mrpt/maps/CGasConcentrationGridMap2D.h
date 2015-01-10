@@ -53,10 +53,6 @@ namespace maps
 		/** Destructor */
 		virtual ~CGasConcentrationGridMap2D();
 
-		// See docs in base class
-		virtual double	 computeObservationLikelihood( const mrpt::obs::CObservation *obs, const mrpt::poses::CPose3D &takenFrom );
-
-
 		/** Parameters related with inserting observations into the map:
 		  */
 		struct MAPS_IMPEXP TInsertionOptions :
@@ -160,17 +156,10 @@ namespace maps
 			return &insertionOptions;
 		}
 
-		 /** Erase all the contents of the map */
-		 virtual void  internal_clear();
-
-		 /** Insert the observation information into this map. This method must be implemented
-		  *    in derived classes.
-		  * \param obs The observation
-		  * \param robotPose The 3D pose of the robot mobile base in the map reference system, or NULL (default) if you want to use CPose2D(0,0,deg)
-		  *
-		  * \sa CObservation::insertObservationInto
-		  */
-		 virtual bool  internal_insertObservation( const mrpt::obs::CObservation *obs, const mrpt::poses::CPose3D *robotPose = NULL );
+		// See docs in base class
+		void  internal_clear() MRPT_OVERRIDE;
+		bool  internal_insertObservation( const mrpt::obs::CObservation *obs, const mrpt::poses::CPose3D *robotPose = NULL ) MRPT_OVERRIDE;
+		double internal_computeObservationLikelihood( const mrpt::obs::CObservation *obs, const mrpt::poses::CPose3D &takenFrom ) MRPT_OVERRIDE;
 
 		 /** Builds a LookUp table with the values of the Gaussian Weights result of the wind advection
 		 *   for a specific std_windNoise_phi value.
