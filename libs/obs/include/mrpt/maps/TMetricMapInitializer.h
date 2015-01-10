@@ -11,6 +11,7 @@
 
 #include <mrpt/utils/CLoadableOptions.h>
 #include <mrpt/utils/CObject.h> // For TRuntimeClassId
+#include <mrpt/maps/TMetricMapTypesRegistry.h>
 #include <deque>
 #include <mrpt/obs/link_pragmas.h>
 
@@ -20,7 +21,7 @@ namespace mrpt
 	{
 		/** Virtual base for specifying the kind and parameters of one map (normally, to be inserted into mrpt::maps::CMultiMetricMap)
 		  *  See `mrpt::maps::TSetOfMetricMapInitializers::loadFromConfigFile()` as an easy way of initialize this object, or
-		  *  construct with the factory method `<metric_map_class>::MapDefinition()`
+		  *  construct with the factory methods `<metric_map_class>::MapDefinition()` and `TMetricMapInitializer::factory()`
 		  * 
 		  * \sa TSetOfMetricMapInitializers, mrpt::maps::CMultiMetricMap
 		  * \ingroup mrpt_obs_grp
@@ -43,6 +44,9 @@ namespace mrpt
 
 			/** Query the map type (C++ class), as set by the factory method MapDefinition() */
 			const mrpt::utils::TRuntimeClassIdPtr & getMetricMapClassType() const { return metricMapClassType; }
+
+			/** Looks up in the registry of known map types and call the corresponding `<metric_map_class>::MapDefinition()`. */
+			static TMetricMapInitializer* factory(const std::string &mapClassName);			
 
 		protected:
 			TMetricMapInitializer(const mrpt::utils::TRuntimeClassId* classID );

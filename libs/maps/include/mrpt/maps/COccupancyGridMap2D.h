@@ -1019,27 +1019,18 @@ namespace maps
 		 */
 		int  direction2idx(int dx, int dy);
 
-	public:
-		// TODO: Convert to easier macros!
-		struct MAPS_IMPEXP TMapDefinition : public mrpt::maps::TMetricMapInitializer
-		{
+
+		MAP_DEFINITION_START(COccupancyGridMap2D,MAPS_IMPEXP)
 			float	min_x,max_x,min_y,max_y,resolution;	//!< See COccupancyGridMap2D::COccupancyGridMap2D
 			mrpt::maps::COccupancyGridMap2D::TInsertionOptions	insertionOpts;	//!< Observations insertion options
 			mrpt::maps::COccupancyGridMap2D::TLikelihoodOptions	likelihoodOpts;	//!< Probabilistic observation likelihood options
+		MAP_DEFINITION_END(COccupancyGridMap2D,MAPS_IMPEXP)
 
-			TMapDefinition() : TMetricMapInitializer(CLASS_ID(COccupancyGridMap2D)) { }
-		protected:
-			void loadFromConfigFile_map_specific(const mrpt::utils::CConfigFileBase  &source, const std::string &sectionNamePrefix) MRPT_OVERRIDE;
-			void dumpToTextStream_map_specific(mrpt::utils::CStream	&out) const MRPT_OVERRIDE;
-		};
-
-		/** Returns default map definition initializer. See mrpt::maps::TMetricMapInitializer */
-		static TMapDefinition MapDefinition();
 	};
 	DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE( COccupancyGridMap2D, CMetricMap, MAPS_IMPEXP )
 
 
-	bool operator <(const COccupancyGridMap2D::TPairLikelihoodIndex &e1, const COccupancyGridMap2D::TPairLikelihoodIndex &e2);
+	bool MAPS_IMPEXP operator <(const COccupancyGridMap2D::TPairLikelihoodIndex &e1, const COccupancyGridMap2D::TPairLikelihoodIndex &e2);
 
 	} // End of namespace
 } // End of namespace

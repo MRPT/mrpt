@@ -34,24 +34,54 @@ static const float MAX_H = 0.69314718055994531f; // ln(2)
 // Static lookup tables for log-odds
 CLogOddsGridMapLUT<COccupancyGridMap2D::cellType>  COccupancyGridMap2D::m_logodd_lut;
 
-
-/** Returns default map definition initializer. See mrpt::maps::TMetricMapInitializer */
-COccupancyGridMap2D::TMapDefinition COccupancyGridMap2D::MapDefinition()
-{
-	TMapDefinition def;
-
-	return def;
-}
+MAP_DEFINITION_REGISTER("COccupancyGridMap2D,occupancyGrid", mrpt::maps::COccupancyGridMap2D)
 
 void COccupancyGridMap2D::TMapDefinition::loadFromConfigFile_map_specific(const mrpt::utils::CConfigFileBase  &source, const std::string &sectionNamePrefix)
 {
-	MRPT_TODO("continue!");
+	// Load from sections formatted like this:
+	// [<sectionName>+"_occupancyGrid_##_creationOpts"]
+	// [<sectionName>+"_occupancyGrid_##_insertOpts"]
+	// [<sectionName>+"_occupancyGrid_##_likelihoodOpts"]
+
+	// [<sectionNamePrefix>+"_creationOpts"]
+	const std::string sSectCreation = sectionNamePrefix+string("_creationOpts");
+	MRPT_LOAD_CONFIG_VAR(min_x, float,   source,sSectCreation);
+	MRPT_LOAD_CONFIG_VAR(max_x, float,   source,sSectCreation);
+	MRPT_LOAD_CONFIG_VAR(min_y, float,   source,sSectCreation);
+	MRPT_LOAD_CONFIG_VAR(max_y, float,   source,sSectCreation);
+	MRPT_LOAD_CONFIG_VAR(resolution, float,   source,sSectCreation);
+
+	// [<sectionName>+"_occupancyGrid_##_insertOpts"]
+	insertionOpts.loadFromConfigFile(source, sectionNamePrefix+string("_insertOpts") );
+
+	// [<sectionName>+"_occupancyGrid_##_likelihoodOpts"]
+	likelihoodOpts.loadFromConfigFile(source, sectionNamePrefix+string("_likelihoodOpts") );
+
 }
 
 void COccupancyGridMap2D::TMapDefinition::dumpToTextStream_map_specific(mrpt::utils::CStream &out) const
 {
-	MRPT_TODO("continue!");
+	// Common:
+	LOADABLEOPTS_DUMP_VAR(min_x         , float);
+	LOADABLEOPTS_DUMP_VAR(max_x         , float);
+	LOADABLEOPTS_DUMP_VAR(min_y         , float);
+	LOADABLEOPTS_DUMP_VAR(max_y         , float);
+	LOADABLEOPTS_DUMP_VAR(resolution         , float);
+
+	this->insertionOpts.dumpToTextStream(out);
+	this->likelihoodOpts.dumpToTextStream(out);
 }
+
+mrpt::maps::CMetricMap* COccupancyGridMap2D::CreateFromMapDefinition(const mrpt::maps::TMetricMapInitializer &_def)
+{
+	const COccupancyGridMap2D::TMapDefinition &def = *dynamic_cast<const COccupancyGridMap2D::TMapDefinition*>(&_def);
+
+	COccupancyGridMap2D *obj = new COccupancyGridMap2D(def.min_x,def.max_x, def.min_y, def.max_y, def.resolution);
+	obj->insertionOptions  = def.insertionOpts;
+	obj->likelihoodOptions = def.likelihoodOpts;
+	return obj;
+}
+
 
 
 /*---------------------------------------------------------------
@@ -694,7 +724,6 @@ bool mrpt::maps::operator < (const COccupancyGridMap2D::TPairLikelihoodIndex &e1
 {
 	return e1.first > e2.first;
 }
-
 
 
 /*---------------------------------------------------------------
