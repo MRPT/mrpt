@@ -38,6 +38,7 @@ using namespace mrpt::random;
 using namespace mrpt::system;
 using namespace mrpt::utils;
 using namespace std;
+using mrpt::maps::internal::TSequenceLandmarks;
 
 IMPLEMENTS_SERIALIZABLE(CLandmarksMap, CMetricMap,mrpt::maps)
 
@@ -160,22 +161,17 @@ void  CLandmarksMap::readFromStream(mrpt::utils::CStream &in, int version)
 /*---------------------------------------------------------------
 					computeObservationLikelihood
   ---------------------------------------------------------------*/
-double	 CLandmarksMap::computeObservationLikelihood(
+double	 CLandmarksMap::internal_computeObservationLikelihood(
 	const CObservation		*obs,
 	const CPose3D			&robotPose3D )
 {
 	MRPT_START
 
-	// Robot poses:
-//	CPose2D		robotPose2D = takenFrom;
-
 	if ( CLASS_ID(CObservation2DRangeScan )==obs->GetRuntimeClass() &&
 		   insertionOptions.insert_Landmarks_from_range_scans )
 	{
 		/********************************************************************
-
 						OBSERVATION TYPE: CObservation2DRangeScan
-
 			********************************************************************/
 		const CObservation2DRangeScan 	*o = static_cast<const CObservation2DRangeScan *>( obs );
 		CLandmarksMap				auxMap;
@@ -192,23 +188,15 @@ double	 CLandmarksMap::computeObservationLikelihood(
 	if ( CLASS_ID(CObservationStereoImages )==obs->GetRuntimeClass() )
 	{
 		/********************************************************************
-
 						OBSERVATION TYPE: CObservationStereoImages
-
 				Lik. between "this" and "auxMap";
-
 			********************************************************************/
 		const CObservationStereoImages 	*o = static_cast<const CObservationStereoImages *>( obs );
 
-#if 0	// JL: This was removed in mrpt 0.9.0 ...
-		CLandmarksMap	auxMap;
-		auxMap.changeCoordinatesReference( robotPose3D, o->buildAuxiliaryMap( CLandmarksMap::_mapMaxID, &insertionOptions ) );
-#else
 		CLandmarksMap	auxMap;
 		auxMap.insertionOptions = insertionOptions;
 		auxMap.loadSiftFeaturesFromStereoImageObservation( *o, CLandmarksMap::_mapMaxID, likelihoodOptions.SIFT_feat_options );
 		auxMap.changeCoordinatesReference( robotPose3D );
-#endif
 
 		//auxMap.saveToMATLABScript3D("observationMap.m");
 		//auxMap.saveToTextFile("observationMap.txt");
