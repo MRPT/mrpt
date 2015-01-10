@@ -831,15 +831,6 @@ namespace maps
 
 		/** @} */
 
-		// See docs in base class
-		double	 computeObservationLikelihood( const mrpt::obs::CObservation *obs, const mrpt::poses::CPose3D &takenFrom );
-
-		/** Returns true if this map is able to compute a sensible likelihood function for this observation (i.e. an occupancy grid map cannot with an image).
-		 * \param obs The observation.
-		 * \sa computeObservationLikelihood
-		 */
-		bool canComputeObservationLikelihood( const mrpt::obs::CObservation *obs );
-
 		/** Computes the likelihood [0,1] of a set of points, given the current grid map as reference.
 		  * \param pm The points map
 		  * \param relativePose The relative pose of the points map in this map's coordinates, or NULL for (0,0,0).
@@ -1000,6 +991,11 @@ namespace maps
 
 
 	private:
+		// See docs in base class
+		double internal_computeObservationLikelihood( const mrpt::obs::CObservation *obs, const mrpt::poses::CPose3D &takenFrom );
+		// See docs in base class
+		bool internal_canComputeObservationLikelihood( const mrpt::obs::CObservation *obs );
+
 		/** Returns a byte with the occupancy of the 8 sorrounding cells.
 		 * \param cx The cell index
 		 * \param cy The cell index

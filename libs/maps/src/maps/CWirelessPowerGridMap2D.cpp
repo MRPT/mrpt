@@ -122,7 +122,7 @@ bool  CWirelessPowerGridMap2D::internal_insertObservation(
 /*---------------------------------------------------------------
 						computeObservationLikelihood
   ---------------------------------------------------------------*/
-double	 CWirelessPowerGridMap2D::computeObservationLikelihood(
+double	 CWirelessPowerGridMap2D::internal_computeObservationLikelihood(
 	const CObservation		*obs,
 	const CPose3D			&takenFrom )
 {

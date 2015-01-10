@@ -210,7 +210,7 @@ bool  CGasConcentrationGridMap2D::internal_insertObservation(
 /*---------------------------------------------------------------
 						computeObservationLikelihood
   ---------------------------------------------------------------*/
-double	 CGasConcentrationGridMap2D::computeObservationLikelihood(
+double	 CGasConcentrationGridMap2D::internal_computeObservationLikelihood(
 	const CObservation		*obs,
 	const CPose3D			&takenFrom )
 {

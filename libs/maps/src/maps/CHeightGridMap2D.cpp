@@ -166,7 +166,7 @@ bool  CHeightGridMap2D::internal_insertObservation(
 /*---------------------------------------------------------------
 						computeObservationLikelihood
   ---------------------------------------------------------------*/
-double	 CHeightGridMap2D::computeObservationLikelihood(
+double	 CHeightGridMap2D::internal_computeObservationLikelihood(
 	const CObservation		*obs,
 	const CPose3D			&takenFrom )
 {

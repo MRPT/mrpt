@@ -26,10 +26,7 @@ TMetricMapInitializer* TMetricMapInitializer::factory(const std::string &mapClas
 }
 
 TMetricMapInitializer::TMetricMapInitializer(const mrpt::utils::TRuntimeClassId* classID ) : 
-	metricMapClassType(classID),
-	enableSaveAs3DObject(true),
-	enableObservationLikelihood(true),
-	enableObservationInsertion(true)
+	metricMapClassType(classID)
 {
 }
 
@@ -38,9 +35,7 @@ void  TMetricMapInitializer::loadFromConfigFile(const mrpt::utils::CConfigFileBa
 {
 	// Common:
 	const std::string sctCreat = sectionNamePrefix + std::string("_creationOpts");
-	MRPT_LOAD_CONFIG_VAR(enableSaveAs3DObject          , bool,   source,sctCreat);
-	MRPT_LOAD_CONFIG_VAR(enableObservationLikelihood   , bool,   source,sctCreat);
-	MRPT_LOAD_CONFIG_VAR(enableObservationInsertion    , bool,   source,sctCreat);
+	this->genericMapParams.loadFromConfigFile(source,sctCreat);
 	
 	// Class-specific:
 	this->loadFromConfigFile_map_specific(source,sectionNamePrefix);
@@ -51,10 +46,7 @@ void  TMetricMapInitializer::dumpToTextStream(mrpt::utils::CStream	&out) const
 {
 	out.printf("-------------------------TMetricMapInitializer --------------------------\n");
 	out.printf("================ C++ Class: '%s'\n", this->metricMapClassType->className);
-	// Common:
-	LOADABLEOPTS_DUMP_VAR(enableSaveAs3DObject         , bool);
-	LOADABLEOPTS_DUMP_VAR(enableObservationLikelihood  , bool);
-	LOADABLEOPTS_DUMP_VAR(enableObservationInsertion   , bool);
+	this->genericMapParams.dumpToTextStream(out);
 	
 	// Class-specific:
 	this->dumpToTextStream(out);
@@ -97,9 +89,8 @@ void  TSetOfMetricMapInitializers::loadFromConfigFile(
 			const string sMapSectionsPrefix = mrpt::format("%s_%s_%02u_",sectionName.c_str(),sMapName.c_str(),i);
 			mi->loadFromConfigFile(ini,sMapSectionsPrefix);
 
-			// Create map itself:
-			mrpt::maps::CMetricMap *theMap = mmr.factoryMapObjectFromDefinition(sMapName, *mi);
-			ASSERT_(theMap);
+			// Add the params to the list:
+			this->push_back( TMetricMapInitializerPtr(mi) );
 		}
 
 	}// end for each map kind

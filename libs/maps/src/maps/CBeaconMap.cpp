@@ -134,7 +134,7 @@ void  CBeaconMap::readFromStream(mrpt::utils::CStream &in, int version)
 /*---------------------------------------------------------------
 					computeObservationLikelihood
   ---------------------------------------------------------------*/
-double	 CBeaconMap::computeObservationLikelihood(
+double	 CBeaconMap::internal_computeObservationLikelihood(
 				const CObservation	*obs,
 				const CPose3D		&robotPose3D )
 {

@@ -1418,7 +1418,7 @@ void CPointsMap::compute3DDistanceToMesh(
 	obs The observation.
  This method returns a likelihood in the range [0,1].
  ---------------------------------------------------------------*/
-double	 CPointsMap::computeObservationLikelihood(
+double	 CPointsMap::internal_computeObservationLikelihood(
 			const CObservation		*obs,
 			const CPose3D				&takenFrom )
 {

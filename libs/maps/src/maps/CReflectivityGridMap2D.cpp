@@ -138,7 +138,7 @@ bool  CReflectivityGridMap2D::internal_insertObservation(
 /*---------------------------------------------------------------
 						computeObservationLikelihood
   ---------------------------------------------------------------*/
-double	 CReflectivityGridMap2D::computeObservationLikelihood(
+double	 CReflectivityGridMap2D::internal_computeObservationLikelihood(
 	const CObservation		*obs,
 	const CPose3D			&takenFrom )
 {

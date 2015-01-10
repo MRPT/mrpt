@@ -16,6 +16,7 @@
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/obs/CSensoryFrame.h>
 #include <mrpt/maps/CSimpleMap.h>
+#include <mrpt/utils/CConfigFileBase.h>
 
 #include <mrpt/math/lightweight_geom_data.h>
 
@@ -27,18 +28,36 @@ using namespace mrpt::math;
 
 IMPLEMENTS_VIRTUAL_SERIALIZABLE(CMetricMap, CSerializable, mrpt::maps)
 
+			bool  enableSaveAs3DObject;        //!< (Default=true) If false, calling CMetricMap::getAs3DObject() will have no effects
+			bool  enableObservationLikelihood; //!< (Default=true) Enable computing observation likelihoods with this map
+			bool  enableObservationInsertion;  //!< (Default=true) Enable inserting observations in this map 
 
-/*---------------------------------------------------------------
-						Virtual constructor
-  ---------------------------------------------------------------*/
-CMetricMap::CMetricMap() :
-	m_disableSaveAs3DObject ( false )
+TMapGenericParams::TMapGenericParams() : 
+	enableSaveAs3DObject(true), 
+	enableObservationLikelihood(true), 
+	enableObservationInsertion(true) 
+{ 
+}
+
+void TMapGenericParams::loadFromConfigFile(const mrpt::utils::CConfigFileBase  &source, const std::string &sct)
+{
+	MRPT_LOAD_CONFIG_VAR(enableSaveAs3DObject          , bool,   source,sct);
+	MRPT_LOAD_CONFIG_VAR(enableObservationLikelihood   , bool,   source,sct);
+	MRPT_LOAD_CONFIG_VAR(enableObservationInsertion    , bool,   source,sct);
+}
+void TMapGenericParams::dumpToTextStream(mrpt::utils::CStream	&out) const
+{
+	// Common:
+	LOADABLEOPTS_DUMP_VAR(enableSaveAs3DObject         , bool);
+	LOADABLEOPTS_DUMP_VAR(enableObservationLikelihood  , bool);
+	LOADABLEOPTS_DUMP_VAR(enableObservationInsertion   , bool);
+}
+
+
+CMetricMap::CMetricMap()
 {
 }
 
-/*---------------------------------------------------------------
-						Virtual destructor
-  ---------------------------------------------------------------*/
 CMetricMap::~CMetricMap()
 {
 
@@ -117,6 +136,9 @@ bool CMetricMap::insertObservation(
 	const CObservation *obs,
 	const CPose3D *robotPose)
 {
+	if (!genericMapParams.enableObservationInsertion)
+		return false;
+
 	bool done = internal_insertObservation(obs,robotPose);
 	if (done)
 	{
@@ -201,4 +223,18 @@ float CMetricMap::squareDistanceToClosestCorrespondence(
 	MRPT_START
 	THROW_EXCEPTION("Virtual method not implemented in derived class.")
 	MRPT_END
+}
+
+bool CMetricMap::canComputeObservationLikelihood( const mrpt::obs::CObservation *obs ) 
+{ 
+	if (genericMapParams.enableObservationLikelihood)
+			return internal_canComputeObservationLikelihood(obs); 
+	else return false;
+}
+
+double CMetricMap::computeObservationLikelihood( const mrpt::obs::CObservation *obs, const mrpt::poses::CPose3D &takenFrom )
+{
+	if (genericMapParams.enableObservationLikelihood)
+			return internal_computeObservationLikelihood(obs,takenFrom); 
+	else return false;
 }

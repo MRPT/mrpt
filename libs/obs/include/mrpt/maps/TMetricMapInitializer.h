@@ -12,6 +12,7 @@
 #include <mrpt/utils/CLoadableOptions.h>
 #include <mrpt/utils/CObject.h> // For TRuntimeClassId
 #include <mrpt/maps/TMetricMapTypesRegistry.h>
+#include <mrpt/maps/metric_map_types.h>
 #include <deque>
 #include <mrpt/obs/link_pragmas.h>
 
@@ -28,9 +29,8 @@ namespace mrpt
 		  */
 		struct OBS_IMPEXP TMetricMapInitializer : public mrpt::utils::CLoadableOptions
 		{
-			bool  enableSaveAs3DObject;        //!< (Default=true) The logical negate of this value will be copied to the member with the same value in the map, see mrpt::maps::CMetricMap::m_disableSaveAs3DObject
-			bool  enableObservationLikelihood; //!< (Default=true) Enable computing observation likelihoods with this map
-			bool  enableObservationInsertion;  //!< (Default=true) Enable inserting observations in this map 
+			/** Common params for all maps: These are automatically set in TMetricMapTypesRegistry::factoryMapObjectFromDefinition()  */
+			mrpt::maps::TMapGenericParams  genericMapParams;
 
 			/** Load all params from a config file/source. For examples and format, read the docs of mrpt::maps::CMultiMetricMap 
 			  * Typical section names:
@@ -127,6 +127,8 @@ namespace mrpt
 			  */
 			struct OBS_IMPEXP CLandmarksMapOptions
 			{
+				typedef std::pair<mrpt::poses::CPoint3D,unsigned int> TPairIdBeacon;
+
 				CLandmarksMapOptions();		//!< Default values loader
 
 				std::deque<CMultiMetricMap::TPairIdBeacon>	initialBeacons;	//!< Initial contents of the map, especified by a set of 3D Beacons with associated IDs

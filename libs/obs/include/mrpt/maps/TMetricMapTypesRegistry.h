@@ -31,7 +31,7 @@ namespace mrpt
 				static TMetricMapTypesRegistry & Instance();
 				size_t doRegister(const std::string &name,MapDefCtorFunctor func1,MapCtorFromDefFunctor func2); //!< Return the index of the class in the list (not important, just used as a trick to initialize static members)
 				mrpt::maps::TMetricMapInitializer* factoryMapDefinition(const std::string &className) const; //!< Return NULL if not found
-				mrpt::maps::CMetricMap* factoryMapObjectFromDefinition(const std::string &className,const mrpt::maps::TMetricMapInitializer&mi) const; //!< Return NULL if not found
+				mrpt::maps::CMetricMap* factoryMapObjectFromDefinition(const mrpt::maps::TMetricMapInitializer&mi) const; //!< Return NULL if not found
 				typedef std::map<std::string,std::pair<MapDefCtorFunctor,MapCtorFromDefFunctor> > TListRegisteredMaps;
 				const TListRegisteredMaps & getAllRegistered() const { return m_registry;}
 			private:

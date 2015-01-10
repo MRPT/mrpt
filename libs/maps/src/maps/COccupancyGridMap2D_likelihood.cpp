@@ -32,7 +32,7 @@ using namespace std;
 	obs The observation.
  This method returns a likelihood in the range [0,1].
  ---------------------------------------------------------------*/
-double	 COccupancyGridMap2D::computeObservationLikelihood(
+double	 COccupancyGridMap2D::internal_computeObservationLikelihood(
 			const CObservation		*obs,
 			const CPose3D			&takenFrom3D )
 {
@@ -901,7 +901,7 @@ void  COccupancyGridMap2D::TLikelihoodOptions::dumpToTextStream(mrpt::utils::CSt
  * \param obs The observation.
  * \sa computeObservationLikelihood
  */
-bool COccupancyGridMap2D::canComputeObservationLikelihood( const mrpt::obs::CObservation *obs )
+bool COccupancyGridMap2D::internal_canComputeObservationLikelihood( const mrpt::obs::CObservation *obs )
 {
 	// Ignore laser scans if they are not planar or they are not
 	//  at the altitude of this grid map:

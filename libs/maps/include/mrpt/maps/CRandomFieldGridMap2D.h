@@ -101,7 +101,7 @@ namespace maps
 	  *			- (under review)
 	  *
 	  *  Note that this class is virtual, since derived classes still have to implement:
-	  *		- mrpt::maps::CMetricMap::computeObservationLikelihood()
+	  *		- mrpt::maps::CMetricMap::internal_computeObservationLikelihood()
 	  *		- mrpt::maps::CMetricMap::internal_insertObservation()
 	  *		- Serialization methods: writeToStream() and readFromStream()
 	  *
