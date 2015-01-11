@@ -50,10 +50,10 @@ macro(DeclareAppDependencies name)
 			ENDIF(NOT "${DEP_MRPT_NAME}" STREQUAL "")
 
 			# Check if all dependencies are to be build: 
-			if ("BUILD_mrpt-${DEP_MRPT_NAME}" STREQUAL "OFF")
+			if (${BUILD_mrpt-${DEP_MRPT_NAME}} STREQUAL "OFF")
 				SET(AUX_ALL_DEPS_BUILD 0)
 				MESSAGE(STATUS "*Warning*: App ${name} cannot be built because dependency mrpt-${DEP_MRPT_NAME} has been disabled!")
-			endif ("BUILD_mrpt-${DEP_MRPT_NAME}" STREQUAL "OFF")
+			endif (${BUILD_mrpt-${DEP_MRPT_NAME}} STREQUAL "OFF")
 
 		ENDFOREACH (_DEP)
 	ENDIF (NOT "${ALL_DEPS}" STREQUAL "")
