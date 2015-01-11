@@ -56,16 +56,6 @@ void CRandomGenerator::MT19937_generateNumbers()
 {
 	if (!m_MT19937_data.seed_initialized)	this->randomize();
 
-#if 0
-	// My first code (slighly slower...)
-	for (uint32_t i=0;i<624;i++)
-	{
-		uint32_t	y = (0x80000000 & m_MT19937_data.MT[i]) + (0x7FFFFFFF & m_MT19937_data.MT[(i+1) % 624]);
-		m_MT19937_data.MT[i] = m_MT19937_data.MT[(i + 397) % 624] ^ (y >> 1);
-		if ((y & 0x01)!=0) // Odd
-			m_MT19937_data.MT[i] ^= 2567483615U; // 0x9908b0df
-	}
-#else
 	// Code from the implementation by Rick Wagner
 	//  http://www-personal.umich.edu/~wagnerr/MersenneTwister.html
 	// and:
@@ -80,7 +70,6 @@ void CRandomGenerator::MT19937_generateNumbers()
 	for( int i = M; --i; ++p )
 		*p = twist( p[M-N], p[0], p[1] );
 	*p = twist( p[M-N], p[0], m_MT19937_data.MT[0] );
-#endif
 }
 
 uint64_t CRandomGenerator::drawUniform64bit()

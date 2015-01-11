@@ -512,25 +512,17 @@ bool  CLandmarksMap::internal_insertObservation( const CObservation *obs, const 
 		   insertionOptions.insert_SIFTs_from_stereo_images)
 	{
 		/********************************************************************
-
 						OBSERVATION TYPE: CObservationStereoImages
-
 			********************************************************************/
 		const CObservationStereoImages	*o = static_cast<const CObservationStereoImages*>(obs);
 
 		// Change coordinates ref:
-#if 0	// JL: This was removed in mrpt 0.9.0 ...
-		CLandmarksMap	auxMap;
-		auxMap.changeCoordinatesReference( robotPose3D, o->buildAuxiliaryMap( CLandmarksMap::_mapMaxID, &insertionOptions ) );
-#else
 		CLandmarksMap	auxMap;
 		auxMap.insertionOptions = insertionOptions;
 		auxMap.loadSiftFeaturesFromStereoImageObservation( *o, CLandmarksMap::_mapMaxID, insertionOptions.SIFT_feat_options );
 		auxMap.changeCoordinatesReference( robotPose3D );
-#endif
 
 		fuseWith( auxMap );
-
 
 		// Observation was successfully inserted into the map
 		// --------------------------------------------------------
