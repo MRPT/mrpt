@@ -45,6 +45,7 @@ namespace mrpt
 		  * \note This function is hand-optimized for SSE2 architectures (if SSE2 is enabled from CMake)
 		  * \sa se3_l2, se2_l2_robust
 		  * \ingroup sse_optimizations
+		  * \ingroup mrpt_tfest_grp
 		  */
 		bool TFEST_IMPEXP se2_l2(
 			const mrpt::utils::TMatchingPairList  & in_correspondences,
