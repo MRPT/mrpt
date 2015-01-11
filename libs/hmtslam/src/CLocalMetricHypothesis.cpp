@@ -31,6 +31,8 @@ using namespace mrpt::synch;
 using namespace mrpt::opengl;
 using namespace mrpt::obs;
 using namespace mrpt::maps;
+using namespace mrpt::poses;
+using namespace mrpt::math;
 using namespace std;
 
 IMPLEMENTS_SERIALIZABLE(CLocalMetricHypothesis, CSerializable,mrpt::hmtslam)
@@ -477,7 +479,6 @@ void CLocalMetricHypothesis::clearRobotPoses()
 		it->d = new CLSLAMParticleData( &m_parent->m_options.defaultMapsInitializers );
 
 		// Fill in:
-		it->d->metricMaps.options =  m_parent->m_options.defaultMapsOptions;
 		it->d->robotPoses.clear();
 	}
 }

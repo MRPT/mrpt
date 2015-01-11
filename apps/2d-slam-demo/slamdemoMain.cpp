@@ -39,6 +39,7 @@ using namespace mrpt::random;
 using namespace mrpt::slam;
 using namespace mrpt::obs;
 using namespace mrpt::maps;
+using namespace mrpt::math;
 using namespace mrpt::poses;
 
 #include "../wx-common/mrpt_logo.xpm"

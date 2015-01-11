@@ -33,7 +33,7 @@
 
 // Demonstrate MRPT RGB+D --> PCL point cloud conversion:
 #if MRPT_HAS_PCL
-#	include <mrpt/slam/PCL_adapters.h>
+#	include <mrpt/maps/PCL_adapters.h>
 #endif
 
 using namespace mrpt;

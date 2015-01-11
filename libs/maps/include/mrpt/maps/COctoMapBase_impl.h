@@ -161,7 +161,7 @@ namespace mrpt
 		}
 
 		template <class OCTREE,class OCTREE_NODE>
-		double COctoMapBase<OCTREE,OCTREE_NODE>::computeObservationLikelihood( const mrpt::obs::CObservation *obs, const mrpt::poses::CPose3D &takenFrom )
+		double COctoMapBase<OCTREE,OCTREE_NODE>::internal_computeObservationLikelihood( const mrpt::obs::CObservation *obs, const mrpt::poses::CPose3D &takenFrom )
 		{
 			octomap::point3d     sensorPt;
 			octomap::Pointcloud  scan;

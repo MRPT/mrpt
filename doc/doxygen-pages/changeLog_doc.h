@@ -15,11 +15,11 @@
 <a name="1.3.0">
   <h2>Version 1.3.0: (Under development) </h2></a>
 	- <b>Most important changes:</b>
-		- Classes in libraries \ref mrpt_obs_grp and \ref mrpt_maps_grp now belong to new namespaces (mrpt::obs, mrpt::maps) instead of the old mrpt::slam (see comments below on support for backwards-compatibility).
+		- Classes in libraries \ref mrpt_obs_grp and \ref mrpt_maps_grp now belong to new namespaces (mrpt::obs, mrpt::maps) instead of the old mrpt::slam
 		- No more `using namespace`s polute MRPT headers. <b>Errors in user projects</b> missing `using namespace XXX` that might be formerly masked will now reveal. <b>This is a good thing</b>, though admitedly annoying...
 		- New library \ref mrpt_nav_grp, subsumming the old \ref mrpt_reactivenav_grp.
 		- New library \ref mrpt_tfest_grp, a refactor of the old \ref mrpt_scanmatching_grp.
-		- <b>Backwards compatible headers</b> have been provided to ease the transition of user code. Warning messages will be shown recommending deprecated replacements.
+		- <b>Backwards compatible headers</b> have been provided to ease the transition of user code for all those library changes. Warning messages will be shown recommending deprecated replacements.
 	- <b>Detailed list of changes:</b>
 		- Lib changes:
 			- Clean up of the bad practice of `using namespace` in public scopes of headers. May lead to user code failing for missing `using namespace`s which were previously masked.
@@ -51,6 +51,11 @@
 					- Upgrade to latest XSens SDK 4.2.1. Requires libudev-dev in Linux
 					- Add GPS observations to CIMUXSens_MT4 for Xsens devices like GTi-G-700 which have GPS
 				- mrpt::hwdrivers::CImageGrabber_dc1394: Length of ring buffer is now configurable via TCaptureOptions_dc1394::ring_buffer_size
+			- [mrpt-maps]
+				- Important refactor of internal code related to mrpt::maps::CMultiMetricMap: 
+					- All maps (derived from mrpt::maps::CMetricMap) now have a more uniform interface. 
+					- Each map now has a `MapDefinition` structure with all its parameters. See docs for mrpt::maps::TMetricMapInitializer
+					- Introduced mrpt::maps::TMapGenericParams to hold parameters shared in all maps.
 			- [mrpt-obs]
 				- CObservation::getDescriptionAsText(): New virtual method to obstain a textual description of observations. Refactoring of messy code previously in the RawLogViewer app.
 			- [mrpt-vision]

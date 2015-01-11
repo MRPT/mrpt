@@ -112,24 +112,6 @@ CArrayDouble<3> CPose3DRotVec::rotVecFromRotMat( const math::CMatrixDouble44 &m 
     CArrayDouble<3> out;
     CPose3D aux(m);
     out = aux.ln_rotation();
-
-#if 0
-    CArrayDouble<3> out;
-    const double a = acos(0.5*(m(0,0)+m(1,1)+m(2,2)-1));    // a = acos((tr(R)-1)/2)
-    if( a == 0 )
-        out[0] = out[1] = out[2] = 0.0;
-    else
-    {
-        CMatrixDouble33 R;
-        m.extractSubmatrix(0,2,0,2,R);
-        R=R-(~R);
-        R*=a/(2*sin(a));                                    // ln(R) = a/(2sin(a))*(R-R^T)
-
-        out[0] = R(2,1);                                    // output vector: (ln(R))^v
-        out[1] = R(0,2);
-        out[2] = R(1,0);
-    }
-#endif
     return out;
 } // end-rotVecFromRotMat
 
@@ -152,46 +134,6 @@ void CPose3DRotVec::getRotationMatrix( mrpt::math::CMatrixDouble33 & ROT ) const
     // through cpose3D
     ROT = CPose3D().exp_rotation( this->m_rotvec );
 //    cout << "CPOSE_3D: " << ROT;
-
-#if 0
-    const double &v1 = m_rotvec[0];
-    const double &v2 = m_rotvec[1];
-    const double &v3 = m_rotvec[2];
-
-    const double a   = sqrt( v1*v1+v2*v2+v3*v3 );
-
-    if( a < 0.01 ) //~0.57deg
-    {
-        ROT(0,0) = 1;   ROT(0,1) = v3;  ROT(0,2) = -v2;
-        ROT(1,0) = -v3; ROT(1,1) = 1;   ROT(1,2) = v1;
-        ROT(2,0) = v2;  ROT(2,1) = -v1; ROT(2,2) = 1;
-
-        return;
-    }
-
-    const double a2     = a*a;
-    const double a2_1   = 1/v2;
-
-    const double s      = sin(0.5*a);
-    const double c      = cos(0.5*a);
-    const double s2     = s*s;
-    const double c2     = c*c;
-
-    ROT(0,0) = a2_1*( (v1*v1-v2*v2-v3*v3)*s2 + a2*c2 );
-    ROT(1,0) = a2_1*( 2*s*(v1*v2*s - a*v3*c) );
-    ROT(2,0) = a2_1*( 2*s*(v1*v3*s + a*v2*c) );
-
-    ROT(0,1) = a2_1*( 2*s*(v1*v2*s + a*v3*c) );
-    ROT(1,1) = a2_1*( (v2*v2-v3*v3-v1*v1)*s2 + a2*c2 );
-    ROT(2,1) = a2_1*( 2*s*(v2*v3*s - a*v1*c) );
-
-    ROT(0,2) = a2_1*( 2*s*(v1*v3*s - a*v2*c) );
-    ROT(1,2) = a2_1*( 2*s*(v2*v3*s + a*v1*c) );
-    ROT(2,2) = a2_1*( (v3*v3-v1*v1-v2*v2)*s2 + a2*c2 );
-//    cout << "CPOSE_RVT: " << ROT;
-#endif
-
-    return;
 }
 
 /*---------------------------------------------------------------

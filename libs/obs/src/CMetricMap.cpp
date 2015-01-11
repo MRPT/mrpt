@@ -16,7 +16,6 @@
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/obs/CSensoryFrame.h>
 #include <mrpt/maps/CSimpleMap.h>
-
 #include <mrpt/math/lightweight_geom_data.h>
 
 using namespace mrpt::obs;
@@ -27,18 +26,10 @@ using namespace mrpt::math;
 
 IMPLEMENTS_VIRTUAL_SERIALIZABLE(CMetricMap, CSerializable, mrpt::maps)
 
-
-/*---------------------------------------------------------------
-						Virtual constructor
-  ---------------------------------------------------------------*/
-CMetricMap::CMetricMap() :
-	m_disableSaveAs3DObject ( false )
+CMetricMap::CMetricMap()
 {
 }
 
-/*---------------------------------------------------------------
-						Virtual destructor
-  ---------------------------------------------------------------*/
 CMetricMap::~CMetricMap()
 {
 
@@ -117,6 +108,9 @@ bool CMetricMap::insertObservation(
 	const CObservation *obs,
 	const CPose3D *robotPose)
 {
+	if (!genericMapParams.enableObservationInsertion)
+		return false;
+
 	bool done = internal_insertObservation(obs,robotPose);
 	if (done)
 	{
@@ -201,4 +195,18 @@ float CMetricMap::squareDistanceToClosestCorrespondence(
 	MRPT_START
 	THROW_EXCEPTION("Virtual method not implemented in derived class.")
 	MRPT_END
+}
+
+bool CMetricMap::canComputeObservationLikelihood( const mrpt::obs::CObservation *obs ) 
+{ 
+	if (genericMapParams.enableObservationLikelihood)
+			return internal_canComputeObservationLikelihood(obs); 
+	else return false;
+}
+
+double CMetricMap::computeObservationLikelihood( const mrpt::obs::CObservation *obs, const mrpt::poses::CPose3D &takenFrom )
+{
+	if (genericMapParams.enableObservationLikelihood)
+			return internal_computeObservationLikelihood(obs,takenFrom); 
+	else return false;
 }

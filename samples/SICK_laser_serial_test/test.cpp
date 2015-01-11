@@ -21,6 +21,7 @@ using namespace mrpt::maps;
 using namespace mrpt::gui;
 using namespace mrpt::opengl;
 using namespace mrpt::hwdrivers;
+using namespace mrpt::poses;
 using namespace std;
 
 

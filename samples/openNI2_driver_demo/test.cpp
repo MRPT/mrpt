@@ -7,12 +7,10 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/base.h>
-#include <mrpt/hwdrivers.h>
 #include <mrpt/hwdrivers/COpenNI2Sensor.h>
 #include <mrpt/gui.h>
+#include <mrpt/utils/CTicTac.h>
 #include <mrpt/opengl.h>
-#include <mrpt/maps.h>
 
 using namespace mrpt;
 using namespace mrpt::obs;

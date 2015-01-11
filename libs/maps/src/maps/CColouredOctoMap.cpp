@@ -31,6 +31,43 @@ using namespace mrpt::poses;
 using namespace mrpt::opengl;
 using namespace mrpt::math;
 
+//  =========== Begin of Map definition ============
+MAP_DEFINITION_REGISTER("CColouredOctoMap,colourOctoMap,colorOctoMap", mrpt::maps::CColouredOctoMap)
+
+CColouredOctoMap::TMapDefinition::TMapDefinition() :
+	resolution(0.10)
+{
+}
+
+void CColouredOctoMap::TMapDefinition::loadFromConfigFile_map_specific(const mrpt::utils::CConfigFileBase  &source, const std::string &sectionNamePrefix)
+{
+	// [<sectionNamePrefix>+"_creationOpts"]
+	const std::string sSectCreation = sectionNamePrefix+string("_creationOpts");
+	MRPT_LOAD_CONFIG_VAR(resolution, double,   source,sSectCreation);
+
+	insertionOpts.loadFromConfigFile(source, sectionNamePrefix+string("_insertOpts") );
+	likelihoodOpts.loadFromConfigFile(source, sectionNamePrefix+string("_likelihoodOpts") );
+}
+
+void CColouredOctoMap::TMapDefinition::dumpToTextStream_map_specific(mrpt::utils::CStream &out) const
+{
+	LOADABLEOPTS_DUMP_VAR(resolution     , double);
+
+	this->insertionOpts.dumpToTextStream(out);
+	this->likelihoodOpts.dumpToTextStream(out);
+}
+
+mrpt::maps::CMetricMap* CColouredOctoMap::internal_CreateFromMapDefinition(const mrpt::maps::TMetricMapInitializer &_def)
+{
+	const CColouredOctoMap::TMapDefinition &def = *dynamic_cast<const CColouredOctoMap::TMapDefinition*>(&_def);
+	CColouredOctoMap *obj = new CColouredOctoMap(def.resolution);
+	obj->insertionOptions  = def.insertionOpts;
+	obj->likelihoodOptions = def.likelihoodOpts;
+	return obj;
+}
+//  =========== End of Map definition Block =========
+
+
 IMPLEMENTS_SERIALIZABLE(CColouredOctoMap, CMetricMap,mrpt::maps)
 
 /*---------------------------------------------------------------
@@ -57,11 +94,12 @@ CColouredOctoMap::~CColouredOctoMap()
 void  CColouredOctoMap::writeToStream(mrpt::utils::CStream &out, int *version) const
 {
 	if (version)
-		*version = 1;
+		*version = 2;
 	else
 	{
 		this->likelihoodOptions.writeToStream(out);
 		this->renderingOptions.writeToStream(out);  // Added in v1
+		out << genericMapParams; // v2
 
 		CMemoryChunk chunk;
 		const string	tmpFil = mrpt::system::getTempFileName();
@@ -84,9 +122,11 @@ void  CColouredOctoMap::readFromStream(mrpt::utils::CStream &in, int version)
 	{
 	case 0:
 	case 1:
+	case 2:
 		{
 			this->likelihoodOptions.readFromStream(in);
 			if (version>=1) this->renderingOptions.readFromStream(in);
+			if (version>=2) in >> genericMapParams;
 
 			this->clear();
 

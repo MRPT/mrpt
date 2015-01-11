@@ -30,6 +30,8 @@ using namespace mrpt::obs;
 using namespace mrpt::maps;
 using namespace mrpt::opengl;
 using namespace mrpt::random;
+using namespace mrpt::poses;
+using namespace mrpt::math;
 using namespace std;
 
 #define HMTSLAM_LSLAM_VERBOSE   1
@@ -449,7 +451,7 @@ void CHMTSLAM::LSLAM_process_message_from_AA( const TMessageLSLAMfromAA &myMsg )
 				newArea->m_nodeType.setType( "Area" );
 				newArea->m_label = generateUniqueAreaLabel();
 
-				CMultiMetricMapPtr emptyMap = CMultiMetricMapPtr( new CMultiMetricMap(&m_options.defaultMapsInitializers, &m_options.defaultMapsOptions) );
+				CMultiMetricMapPtr emptyMap = CMultiMetricMapPtr( new CMultiMetricMap(&m_options.defaultMapsInitializers) );
 				newArea->m_annotations.setMemoryReference( NODE_ANNOTATION_METRIC_MAPS,     emptyMap, 		LMH->m_ID );
 
 				CRobotPosesGraphPtr emptyPoseGraph = CRobotPosesGraph::Create();

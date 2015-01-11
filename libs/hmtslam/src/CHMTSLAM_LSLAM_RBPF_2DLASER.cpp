@@ -566,7 +566,7 @@ double  CLSLAM_RBPF_2DLASER::particlesEvaluator_AuxPFOptimal(
 
 	CPose2D			oldPose( * myObj->getCurrentPose(index) );
 //	CPose2D			drawnSample;
-	CVectorDouble   vectLiks(N,0);		// The vector with the individual log-likelihoods.
+	mrpt::math::CVectorDouble   vectLiks(N,0);		// The vector with the individual log-likelihoods.
 
 	for (size_t q=0;q<N;q++)
 	{

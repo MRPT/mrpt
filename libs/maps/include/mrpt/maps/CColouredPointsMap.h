@@ -324,6 +324,12 @@ namespace mrpt
 				mrpt::utils::TColorf &pt_color) const;
 			/** @} */
 
+			MAP_DEFINITION_START(CColouredPointsMap,MAPS_IMPEXP)
+				mrpt::maps::CPointsMap::TInsertionOptions	insertionOpts;
+				mrpt::maps::CPointsMap::TLikelihoodOptions  likelihoodOpts;
+				mrpt::maps::CColouredPointsMap::TColourOptions colourOpts;
+			MAP_DEFINITION_END(CColouredPointsMap,MAPS_IMPEXP)
+
 		}; // End of class def.
 		DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE( CColouredPointsMap, CPointsMap,MAPS_IMPEXP )
 

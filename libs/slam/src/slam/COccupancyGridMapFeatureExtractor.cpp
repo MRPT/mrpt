@@ -63,7 +63,7 @@ void COccupancyGridMapFeatureExtractor::uncached_extractFeatures(
 	fExt.detectFeatures( img, lstFeatures,0 /* Init ID */, number_of_features );
 
 	// Extract descriptors:
-	if (descriptors!=descAny)
+	if (descriptors!= mrpt::vision::descAny)
 		fExt.computeDescriptors(img, lstFeatures, descriptors);
 
 	// Copy all the features to a map of landmarks:

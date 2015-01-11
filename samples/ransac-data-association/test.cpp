@@ -286,7 +286,8 @@ void TestRANSAC()
 
 
 		{
-			mrpt::opengl::COpenGLScenePtr &scene = win.get3DSceneAndLock();
+			//mrpt::opengl::COpenGLScenePtr &scene =
+			win.get3DSceneAndLock();
 
 			win.addTextMessage(
 				5,5, "Blue: map landmarks | Red: Observations | White lines: Found correspondences",
