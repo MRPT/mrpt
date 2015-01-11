@@ -189,21 +189,21 @@ Description: Mobile Robot Programming Toolkit - vision library
  . 
  More about MRPT libraries in: http://www.mrpt.org/Libraries
 
-Package: libmrpt-scanmatching@MRPT_VER_MM@
+Package: libmrpt-tfest@MRPT_VER_MM@
 Section: libs
 Architecture: any
 Pre-Depends: ${misc:Pre-Depends}
 Depends: ${shlibs:Depends}, ${misc:Depends},
           libmrpt-base@MRPT_VER_MM@
 #Multi-Arch: same
-Description: Mobile Robot Programming Toolkit - scanmatching library
+Description: Mobile Robot Programming Toolkit - tfest library
  The Mobile Robot Programming Toolkit (MRPT) is an extensive, cross-platform,
  and open source C++ library aimed to help robotics researchers to design and
  implement algorithms in the fields of Simultaneous Localization and Mapping
  (SLAM, Graph-SLAM, Bundle Adjustment), computer vision, and motion planning 
  (obstacle avoidance).
  .
- This package includes the mrpt-scanmatching library.
+ This package includes the mrpt-tfest library.
  .
  More about MRPT libraries in: http://www.mrpt.org/Libraries
 
@@ -213,7 +213,7 @@ Section: libs
 Architecture: any
 Pre-Depends: ${misc:Pre-Depends}
 Depends: ${shlibs:Depends}, ${misc:Depends},
-	  libmrpt-scanmatching@MRPT_VER_MM@,
+	  libmrpt-tfest@MRPT_VER_MM@,
 	  libmrpt-obs@MRPT_VER_MM@
 #Multi-Arch: same
 Description: Mobile Robot Programming Toolkit - topography library
@@ -256,7 +256,7 @@ Pre-Depends: ${misc:Pre-Depends}
 Depends: ${shlibs:Depends}, ${misc:Depends},
 	  libmrpt-maps@MRPT_VER_MM@,
 	  libmrpt-vision@MRPT_VER_MM@,
-	  libmrpt-scanmatching@MRPT_VER_MM@
+	  libmrpt-tfest@MRPT_VER_MM@
 #Multi-Arch: same
 Description: Mobile Robot Programming Toolkit - slam library
  The Mobile Robot Programming Toolkit (MRPT) is an extensive, cross-platform,
@@ -341,7 +341,7 @@ Depends: ${shlibs:Depends}, ${misc:Depends}, libeigen3-dev,
          libmrpt-obs@MRPT_VER_MM@ (= ${binary:Version}),
          libmrpt-opengl@MRPT_VER_MM@ (= ${binary:Version}),
          libmrpt-nav@MRPT_VER_MM@ (= ${binary:Version}),
-         libmrpt-scanmatching@MRPT_VER_MM@ (= ${binary:Version}),
+         libmrpt-tfest@MRPT_VER_MM@ (= ${binary:Version}),
          libmrpt-slam@MRPT_VER_MM@ (= ${binary:Version}),
          libmrpt-topography@MRPT_VER_MM@ (= ${binary:Version}),
          libmrpt-vision@MRPT_VER_MM@ (= ${binary:Version})
