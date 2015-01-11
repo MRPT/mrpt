@@ -184,13 +184,13 @@ macro(internal_define_mrpt_lib name headers_only is_metalib)
 				LIST(APPEND AUX_DEPS_LIST ${DEP})
 				
 				# Check if all dependencies are to be build: 
-				if (${BUILD_mrpt-${DEP_MRPT_NAME}} STREQUAL "OFF")
+				if ("${BUILD_mrpt-${DEP_MRPT_NAME}}" STREQUAL "OFF")
 					SET(AUX_ALL_DEPS_BUILD 0)
 					MESSAGE(STATUS "*Warning*: Lib mrpt-${name} cannot be built because dependency mrpt-${DEP_MRPT_NAME} has been disabled!")
-				endif (${BUILD_mrpt-${DEP_MRPT_NAME}} STREQUAL "OFF")
+				endif ()
 				
 			ENDIF(NOT "${DEP_MRPT_NAME}" STREQUAL "")
-		ENDIF (${DEP} MATCHES "mrpt-")		
+		ENDIF (${DEP} MATCHES "mrpt-")
 	ENDFOREACH(DEP)
 	
 	# Impossible to build? 
