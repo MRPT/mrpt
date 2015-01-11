@@ -238,7 +238,7 @@ namespace maps
 		/** See docs in base class: in this class this always returns 0 */
 		float  compute3DMatchingRatio(
 				const mrpt::maps::CMetricMap						*otherMap,
-				const CPose3D							&otherMapPose,
+				const mrpt::poses::CPose3D							&otherMapPose,
 				float									maxDistForCorr = 0.10f,
 				float									maxMahaDistForCorr = 2.0f
 				) const;

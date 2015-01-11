@@ -26,10 +26,6 @@ namespace mrpt
 {
 	namespace maps
 	{
-		using namespace mrpt::utils;
-		using mrpt::poses::CPose2D;
-		using mrpt::poses::CPose3D;
-
 		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CMetricMap, mrpt::utils::CSerializable, OBS_IMPEXP )
 
 		/** Declares a virtual base class for all metric maps storage classes.
@@ -183,7 +179,7 @@ namespace mrpt
 			virtual void  determineMatching2D(
 				const mrpt::maps::CMetricMap      * otherMap,
 				const mrpt::poses::CPose2D         & otherMapPose,
-				TMatchingPairList     & correspondences,
+				mrpt::utils::TMatchingPairList     & correspondences,
 				const TMatchingParams & params,
 				TMatchingExtraResults & extraResults ) const;
 
@@ -208,7 +204,7 @@ namespace mrpt
 			virtual void  determineMatching3D(
 				const mrpt::maps::CMetricMap      * otherMap,
 				const mrpt::poses::CPose3D         & otherMapPose,
-				TMatchingPairList     & correspondences,
+				mrpt::utils::TMatchingPairList     & correspondences,
 				const TMatchingParams & params,
 				TMatchingExtraResults & extraResults ) const;
 
@@ -224,7 +220,7 @@ namespace mrpt
 			 */
 			virtual float  compute3DMatchingRatio(
 				const mrpt::maps::CMetricMap								*otherMap,
-				const CPose3D							&otherMapPose,
+				const mrpt::poses::CPose3D							&otherMapPose,
 				float									maxDistForCorr = 0.10f,
 				float									maxMahaDistForCorr = 2.0f
 			) const;

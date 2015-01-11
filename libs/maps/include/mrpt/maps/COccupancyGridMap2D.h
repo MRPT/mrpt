@@ -114,13 +114,13 @@ namespace maps
 		bool					precomputedLikelihoodToBeRecomputed;
 
 		/** Used for Voronoi calculation.Same struct as "map", but contains a "0" if not a basis point. */
-		CDynamicGrid<uint8_t>	m_basis_map;
+		mrpt::utils::CDynamicGrid<uint8_t>	m_basis_map;
 
 		/** Used to store the Voronoi diagram.
 		 *    Contains the distance of each cell to its closer obstacles
 		 *    in 1/100th distance units (i.e. in centimeters), or 0 if not into the Voronoi diagram.
 		 */
-		CDynamicGrid<uint16_t>	m_voronoi_diagram;
+		mrpt::utils::CDynamicGrid<uint16_t>	m_voronoi_diagram;
 
 		bool m_is_empty; //!< True upon construction; used by isEmpty()
 
@@ -304,7 +304,7 @@ namespace maps
 		void  resizeGrid(float new_x_min,float new_x_max,float new_y_min,float new_y_max,float new_cells_default_value = 0.5f, bool additionalMargin = true) MRPT_NO_THROWS;
 
 		/** Returns the area of the gridmap, in square meters */
-		inline double getArea() const { return size_x*size_y*square(resolution); }
+		inline double getArea() const { return size_x*size_y*mrpt::utils::square(resolution); }
 
 		/** Returns the horizontal size of grid map in cells count.
 		 */
@@ -735,10 +735,10 @@ namespace maps
 	public:
 
 		/** Return the auxiliary "basis" map built while building the Voronoi diagram \sa buildVoronoiDiagram */
-		inline const CDynamicGrid<uint8_t>	& getBasisMap() const { return m_basis_map; }
+		inline const mrpt::utils::CDynamicGrid<uint8_t>	& getBasisMap() const { return m_basis_map; }
 
 		/** Return the Voronoi diagram; each cell contains the distance to its closer obstacle, or 0 if not part of the Voronoi diagram \sa buildVoronoiDiagram */
-		inline const CDynamicGrid<uint16_t>	& getVoronoiDiagram() const { return m_voronoi_diagram; }
+		inline const mrpt::utils::CDynamicGrid<uint16_t>	& getVoronoiDiagram() const { return m_voronoi_diagram; }
 
 		/** Builds a list with the critical points from Voronoi diagram, which must
 		 *    must be built before calling this method.
@@ -794,12 +794,12 @@ namespace maps
 		 */
 		void  laserScanSimulator(
 				mrpt::obs::CObservation2DRangeScan	        &inout_Scan,
-				const CPose2D					&robotPose,
+				const mrpt::poses::CPose2D					&robotPose,
 				float						    threshold = 0.5f,
 				size_t						    N = 361,
 				float						    noiseStd = 0,
 				unsigned int				    decimation = 1,
-				float							angleNoiseStd = DEG2RAD(0) ) const;
+				float							angleNoiseStd = mrpt::utils::DEG2RAD(0) ) const;
 
 		/** Simulates the observations of a sonar rig into the current grid map.
 		 *   The simulated ranges are stored in a CObservationRange object, which is also used
@@ -814,10 +814,10 @@ namespace maps
 		 */
 		void  sonarSimulator(
 				mrpt::obs::CObservationRange &inout_observation,
-				const CPose2D				&robotPose,
+				const mrpt::poses::CPose2D				&robotPose,
 				float						threshold = 0.5f,
 				float						rangeNoiseStd = 0,
-				float						angleNoiseStd = DEG2RAD(0) ) const;
+				float						angleNoiseStd = mrpt::utils::DEG2RAD(0) ) const;
 
 		/** Simulate just one "ray" in the grid map. This method is used internally to sonarSimulator and laserScanSimulator.
 		  */
@@ -859,7 +859,7 @@ namespace maps
 			const std::string						&fileName,
 			const COccupancyGridMap2D				*m1,
 			const COccupancyGridMap2D				*m2,
-			const TMatchingPairList		&corrs);
+			const mrpt::utils::TMatchingPairList	&corrs);
 
 		/** Saves a composite image with two gridmaps and numbers for the correspondences between them.
 		 * \sa saveAsBitmapTwoMapsWithCorrespondences
@@ -869,7 +869,7 @@ namespace maps
 			const std::string						&fileName,
 			const COccupancyGridMap2D				*m1,
 			const COccupancyGridMap2D				*m2,
-			const TMatchingPairList		&corrs);
+			const mrpt::utils::TMatchingPairList		&corrs);
 
 		/** Saves the gridmap as a graphical bitmap file, 8 bit gray scale, 1 pixel is 1 cell, and with an overlay of landmarks.
 		 * \note The template parameter CLANDMARKSMAP is assumed to be mrpt::maps::CLandmarksMap normally.
@@ -950,7 +950,7 @@ namespace maps
 		virtual void  determineMatching2D(
 			const mrpt::maps::CMetricMap      * otherMap,
 			const mrpt::poses::CPose2D         & otherMapPose,
-			TMatchingPairList     & correspondences,
+			mrpt::utils::TMatchingPairList     & correspondences,
 			const TMatchingParams & params,
 			TMatchingExtraResults & extraResults ) const ;
 
@@ -958,7 +958,7 @@ namespace maps
 		/** See docs in base class: in this class this always returns 0 */
 		float  compute3DMatchingRatio(
 				const mrpt::maps::CMetricMap						*otherMap,
-				const CPose3D							&otherMapPose,
+				const mrpt::poses::CPose3D							&otherMapPose,
 				float									maxDistForCorr = 0.10f,
 				float									maxMahaDistForCorr = 2.0f
 				) const;

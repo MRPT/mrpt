@@ -13,6 +13,7 @@
 
 using namespace mrpt::slam;
 using namespace mrpt::maps;
+using namespace mrpt::poses;
 using namespace mrpt::hmtslam;
 using namespace std;
 

@@ -406,9 +406,8 @@ namespace mrpt
 
 	namespace utils
 	{
-		using namespace ::mrpt::vision;
 		// Specialization must occur in the same namespace
-		MRPT_DECLARE_TTYPENAME_PTR(CFeature)
+		MRPT_DECLARE_TTYPENAME_PTR_NAMESPACE(CFeature, mrpt::vision)
 	}
 } // end of namespace
 

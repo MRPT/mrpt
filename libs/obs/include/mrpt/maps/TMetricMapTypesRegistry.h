@@ -11,6 +11,7 @@
 
 #include <mrpt/utils/core_defs.h>
 #include <mrpt/obs/link_pragmas.h>
+#include <mrpt/obs/obs_frwds.h>
 #include <map>
 #include <string>
 

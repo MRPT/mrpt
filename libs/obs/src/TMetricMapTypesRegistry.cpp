@@ -9,7 +9,9 @@
 
 #include "obs-precomp.h" // Precomp header
 
+#include <mrpt/maps/CMetricMap.h>
 #include <mrpt/maps/TMetricMapTypesRegistry.h>
+#include <mrpt/maps/TMetricMapInitializer.h>
 #include <mrpt/system/string_utils.h>
 
 using namespace std;

@@ -21,6 +21,7 @@ using namespace mrpt::utils;
 using namespace mrpt::system;
 using namespace mrpt::obs;
 using namespace mrpt::maps;
+using namespace mrpt::poses;
 using namespace std;
 
 #include <mrpt/examples_config.h>

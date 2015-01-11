@@ -33,6 +33,7 @@ using namespace mrpt::maps;
 using namespace mrpt::utils;
 using namespace mrpt::poses;
 using namespace mrpt::random;
+using namespace mrpt::vision;
 using namespace std;
 
 /*---------------------------------------------------------------

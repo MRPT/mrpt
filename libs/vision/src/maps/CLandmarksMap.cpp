@@ -30,12 +30,14 @@
 #include <mrpt/opengl/COpenGLScene.h>
 
 using namespace mrpt;
+using namespace mrpt::math;
 using namespace mrpt::maps;
 using namespace mrpt::obs;
 using namespace mrpt::utils;
 using namespace mrpt::poses;
 using namespace mrpt::random;
 using namespace mrpt::system;
+using namespace mrpt::vision;
 using namespace mrpt::utils;
 using namespace std;
 using mrpt::maps::internal::TSequenceLandmarks;
@@ -323,7 +325,7 @@ double	 CLandmarksMap::internal_computeObservationLikelihood(
 			{
 				if ((lm_it->getType() == featBeacon )&&
 					(lm_it->ID == sensedID)&&
-					(!isNaN(it->sensedDistance)))
+					(!mrpt::math::isNaN(it->sensedDistance)))
 				{
 					lm_it->getPose( beaconPDF );
 					beacon3D = beaconPDF.mean;

@@ -21,10 +21,6 @@ namespace mrpt
 {
 	namespace maps
 	{
-		using namespace mrpt::poses;
-		using namespace mrpt::vision;
-		using namespace mrpt::math;
-
 		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CLandmark, mrpt::utils::CSerializable, VISION_IMPEXP )
 
 		/** The class for storing "landmarks" (visual or laser-scan-extracted features,...)
@@ -43,10 +39,10 @@ namespace mrpt
 		public:
 			typedef	int64_t TLandmarkID;					//!< The type for the IDs of landmarks.
 
-			std::vector<CFeaturePtr> features;		//!< The set of features from which the landmark comes.
+			std::vector<mrpt::vision::CFeaturePtr> features;		//!< The set of features from which the landmark comes.
 
-		 mrpt::math::TPoint3D pose_mean;					//!< The mean of the landmark 3D position.
-		 mrpt::math::TPoint3D normal;					//!< The "normal" to the landmark, i.e. a unitary 3D vector towards the viewing direction, or a null vector if not applicable
+			mrpt::math::TPoint3D pose_mean;					//!< The mean of the landmark 3D position.
+			mrpt::math::TPoint3D normal;					//!< The "normal" to the landmark, i.e. a unitary 3D vector towards the viewing direction, or a null vector if not applicable
 			float	pose_cov_11,pose_cov_22,pose_cov_33,pose_cov_12,pose_cov_13,pose_cov_23;
 
 			/** An ID for the landmark (see details next...)
@@ -64,10 +60,10 @@ namespace mrpt
 
 			/** Returns the pose as an object:
 			  */
-			void 	getPose( CPointPDFGaussian &p ) const;
+			void 	getPose( mrpt::poses::CPointPDFGaussian &p ) const;
 
 			void 	getPose( mrpt::poses::CPoint3D &p, mrpt::math::CMatrixDouble &COV ) const {
-				CPointPDFGaussian pdf;
+				mrpt::poses::CPointPDFGaussian pdf;
 				getPose(pdf);
 				p = pdf.mean;
 				COV = mrpt::math::CMatrixDouble(pdf.cov);
@@ -75,17 +71,17 @@ namespace mrpt
 
 			/** Sets the pose from an object:
 			  */
-			void 	setPose( const CPointPDFGaussian &p );
+			void 	setPose( const mrpt::poses::CPointPDFGaussian &p );
 
 			/** Gets the type of the first feature in its feature vector. The vector must not be empty.
 			  */
-			TFeatureType getType() const
+			mrpt::vision::TFeatureType getType() const
 			{ ASSERT_( !features.empty() ); ASSERT_(features[0].present()) return features[0]->type; }
 
 			/** Creates one feature in the vector "features", calling the appropriate constructor of the smart pointer, so after calling this method "features[0]" is a valid pointer to a CFeature object.
 			  */
 			void createOneFeature()
-			{ features.assign(1, CFeaturePtr( new CFeature() ) ); }
+			{ features.assign(1, mrpt::vision::CFeaturePtr( new mrpt::vision::CFeature() ) ); }
 
 			/** Default constructor
 			  */

@@ -31,6 +31,8 @@ using namespace mrpt::synch;
 using namespace mrpt::opengl;
 using namespace mrpt::obs;
 using namespace mrpt::maps;
+using namespace mrpt::poses;
+using namespace mrpt::math;
 using namespace std;
 
 IMPLEMENTS_SERIALIZABLE(CLocalMetricHypothesis, CSerializable,mrpt::hmtslam)

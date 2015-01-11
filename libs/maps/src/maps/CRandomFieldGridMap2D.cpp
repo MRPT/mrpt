@@ -214,7 +214,7 @@ void  CRandomFieldGridMap2D::internal_clear()
 
 			//Set initial restrictions: L "cell Constraints" + 0 "Observations constraints"
 			const uint16_t Gsize = m_insertOptions_common->GMRF_constraintsSize;
-			const uint16_t Gside = round((Gsize-1)/2);
+			const uint16_t Gside = mrpt::utils::round((Gsize-1)/2);
 			const float Gsigma = m_insertOptions_common->GMRF_constraintsSigma;
 			gauss_val.resize(2*Gside);
 			const size_t N = m_map.size();
@@ -2518,7 +2518,7 @@ void CRandomFieldGridMap2D::updateMapEstimation_GMRF()
 #if EIGEN_VERSION_AT_LEAST(3,1,0)
 	size_t N = m_map.size();
 	const uint16_t Gsize = m_insertOptions_common->GMRF_constraintsSize;
-	const uint16_t Gside = round((Gsize-1)/2);
+	const uint16_t Gside = mrpt::utils::round((Gsize-1)/2);
 
 #define DO_PROFILE
 

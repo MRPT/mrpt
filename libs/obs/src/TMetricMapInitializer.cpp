@@ -11,6 +11,7 @@
 
 #include <mrpt/maps/TMetricMapInitializer.h>
 #include <mrpt/utils/CConfigFileBase.h>
+#include <mrpt/utils/CStream.h>
 
 using namespace std;
 using namespace mrpt;

@@ -34,6 +34,8 @@ using namespace mrpt::maps;
 using namespace mrpt::random;
 using namespace mrpt::system;
 using namespace mrpt::opengl;
+using namespace mrpt::poses;
+using namespace mrpt::vision;
 using namespace std;
 
 

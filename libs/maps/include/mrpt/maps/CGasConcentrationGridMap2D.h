@@ -169,9 +169,8 @@ namespace maps
 		 bool save_Gaussian_Wind_Grid_To_File();
 		 bool load_Gaussian_Wind_Grid_From_File();
 
-		 /** Gridmaps of the wind Direction/Module.
-		  */
-		 mrpt::maps::CDynamicGrid<double> windGrid_module, windGrid_direction;
+		 /** Gridmaps of the wind Direction/Module */
+		 mrpt::utils::CDynamicGrid<double> windGrid_module, windGrid_direction;
 
 		 /** The timestamp of the last time the advection simulation was executed */
 		 mrpt::system::TTimeStamp timeLastSimulated;

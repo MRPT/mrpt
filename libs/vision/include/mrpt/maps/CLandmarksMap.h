@@ -96,9 +96,9 @@ namespace maps
 			internal::TSequenceLandmarks			m_landmarks;
 
 			/** A grid-map with the set of landmarks falling into each cell.
-		      *  \todo Use the KD-tree instead?
+			  *  \todo Use the KD-tree instead?
 			  */
-			CDynamicGrid<vector_int>	m_grid;
+			mrpt::utils::CDynamicGrid<vector_int>	m_grid;
 
 			/** Auxiliary variables used in "getLargestDistanceFromOrigin"
 			  * \sa getLargestDistanceFromOrigin
@@ -135,7 +135,7 @@ namespace maps
 			void 			hasBeenModifiedAll();
 			void 			erase(unsigned int indx);
 
-			CDynamicGrid<vector_int>*  getGrid() { return &m_grid; }
+			mrpt::utils::CDynamicGrid<vector_int>*  getGrid() { return &m_grid; }
 
 			/** Returns the landmark with a given landmrk ID, or NULL if not found
 			  */
@@ -173,7 +173,7 @@ namespace maps
 		// See docs in base class
 		float  compute3DMatchingRatio(
 				const mrpt::maps::CMetricMap						*otherMap,
-				const CPose3D							&otherMapPose,
+				const mrpt::poses::CPose3D							&otherMapPose,
 				float									maxDistForCorr = 0.10f,
 				float									maxMahaDistForCorr = 2.0f
 				) const;
@@ -469,17 +469,17 @@ namespace maps
 		  */
 		void  loadOccupancyFeaturesFrom2DRangeScan(
 			const mrpt::obs::CObservation2DRangeScan	&obs,
-			const CPose3D					*robotPose = NULL,
+			const mrpt::poses::CPose3D					*robotPose = NULL,
 			unsigned int				downSampleFactor = 1);
 
 		// See docs in base class
 		void  computeMatchingWith2D(
 				const mrpt::maps::CMetricMap								*otherMap,
-				const CPose2D									&otherMapPose,
+				const mrpt::poses::CPose2D									&otherMapPose,
 				float									maxDistForCorrespondence,
 				float									maxAngularDistForCorrespondence,
-				const CPose2D									&angularDistPivotPoint,
-				TMatchingPairList						&correspondences,
+				const mrpt::poses::CPose2D									&angularDistPivotPoint,
+				mrpt::utils::TMatchingPairList						&correspondences,
 				float									&correspondencesRatio,
 				float									*sumSqrDist	= NULL,
 				bool									onlyKeepTheClosest = false,
@@ -494,7 +494,7 @@ namespace maps
 		  */
 		void  computeMatchingWith3DLandmarks(
 				const mrpt::maps::CLandmarksMap				*otherMap,
-				TMatchingPairList						&correspondences,
+				mrpt::utils::TMatchingPairList						&correspondences,
 				float									&correspondencesRatio,
 				std::vector<bool>						&otherCorrespondences) const;
 
@@ -516,9 +516,10 @@ namespace maps
 		/** Returns the (logarithmic) likelihood of a set of landmarks "map" given "this" map.
 		  *  See paper: JJAA 2006
 		  */
-		double	 computeLikelihood_SIFT_LandmarkMap( CLandmarksMap *map,
-																	  TMatchingPairList	*correspondences = NULL,
-																	  std::vector<bool> *otherCorrespondences = NULL);
+		double	 computeLikelihood_SIFT_LandmarkMap(
+			CLandmarksMap *map,
+			mrpt::utils::TMatchingPairList	*correspondences = NULL,
+			std::vector<bool> *otherCorrespondences = NULL);
 
 		/** Returns true if the map is empty/no observation has been inserted.
 		   */
@@ -531,7 +532,7 @@ namespace maps
 		  * An observation will be generated for each beacon in the map, but notice that some of them may be missed if out of the sensor maximum range.
 		  */
 		void  simulateBeaconReadings(
-			const CPose3D					&in_robotPose,
+			const mrpt::poses::CPose3D					&in_robotPose,
 			const mrpt::poses::CPoint3D					&in_sensorLocationOnRobot,
 			mrpt::obs::CObservationBeaconRanges		&out_Observations ) const;
 
@@ -552,13 +553,13 @@ namespace maps
 		  * An observation will be generated for each beacon in the map, but notice that some of them may be missed if out of the sensor maximum range or field of view-
 		  */
 		void  simulateRangeBearingReadings(
-			const CPose3D					&robotPose,
-			const CPose3D					&sensorLocationOnRobot,
+			const mrpt::poses::CPose3D					&robotPose,
+			const mrpt::poses::CPose3D					&sensorLocationOnRobot,
 			mrpt::obs::CObservationBearingRange		&observations,
 			bool                            sensorDetectsIDs = true,
 			const float                     stdRange = 0.01f,
-			const float                     stdYaw = DEG2RAD(0.1f),
-			const float                     stdPitch = DEG2RAD(0.1f),
+			const float                     stdYaw = mrpt::utils::DEG2RAD(0.1f),
+			const float                     stdPitch = mrpt::utils::DEG2RAD(0.1f),
 			vector_size_t 					*real_associations = NULL,
 			const double                    spurious_count_mean = 0,
 			const double                    spurious_count_std  = 0

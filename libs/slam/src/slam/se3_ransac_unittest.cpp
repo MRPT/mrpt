@@ -139,7 +139,7 @@ void ransac_data_assoc_run()
 	// Run ransac data-association:
 	mrpt::tfest::se2_l2_robust(all_correspondences, normalizationStd, params, results);
 
-	mrpt::poses::CPosePDFSOG  & best_poses  = results.transformation;
+	//mrpt::poses::CPosePDFSOG  & best_poses  = results.transformation;
 	TMatchingPairList         & out_best_pairings = results.largestSubSet;
 
 	// Reconstruct the SE(2) transformation for these pairings:

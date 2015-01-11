@@ -100,7 +100,7 @@ namespace maps
 		// See docs in base class
 		float  compute3DMatchingRatio(
 				const mrpt::maps::CMetricMap	*otherMap,
-				const CPose3D		&otherMapPose,
+				const mrpt::poses::CPose3D		&otherMapPose,
 				float				maxDistForCorr = 0.10f,
 				float				maxMahaDistForCorr = 2.0f
 				) const;
@@ -213,7 +213,7 @@ namespace maps
 		virtual void  determineMatching2D(
 			const mrpt::maps::CMetricMap      * otherMap,
 			const mrpt::poses::CPose2D         & otherMapPose,
-			TMatchingPairList     & correspondences,
+			mrpt::utils::TMatchingPairList     & correspondences,
 			const TMatchingParams & params,
 			TMatchingExtraResults & extraResults ) const ;
 
@@ -226,10 +226,10 @@ namespace maps
 		  * \param otherCorrespondences [OUT] Will be returned with a vector containing "true" for the indexes of the other map's landmarks with a correspondence.
 		  */
 		void  computeMatchingWith3DLandmarks(
-				const mrpt::maps::CBeaconMap					*otherMap,
-				TMatchingPairList						&correspondences,
-				float									&correspondencesRatio,
-				std::vector<bool>						&otherCorrespondences) const;
+			const mrpt::maps::CBeaconMap					*otherMap,
+			mrpt::utils::TMatchingPairList						&correspondences,
+			float									&correspondencesRatio,
+			std::vector<bool>						&otherCorrespondences) const;
 
 		/** Changes the reference system of the map to a given 3D pose.
 		  */
@@ -251,7 +251,7 @@ namespace maps
 		  * An observation will be generated for each beacon in the map, but notice that some of them may be missed if out of the sensor maximum range.
 		  */
 		void  simulateBeaconReadings(
-            const CPose3D					&in_robotPose,
+			const mrpt::poses::CPose3D					&in_robotPose,
 			const mrpt::poses::CPoint3D					&in_sensorLocationOnRobot,
 			mrpt::obs::CObservationBeaconRanges		&out_Observations ) const;
 

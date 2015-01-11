@@ -45,6 +45,7 @@ using namespace mrpt::math;
 using namespace mrpt::utils;
 using namespace mrpt::system;
 using namespace mrpt::random;
+using namespace mrpt::poses;
 using namespace std;
 
 /*****************************************************

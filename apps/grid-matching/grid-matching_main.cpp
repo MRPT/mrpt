@@ -40,6 +40,7 @@ using namespace mrpt::opengl;
 using namespace mrpt::math;
 using namespace mrpt::gui;
 using namespace mrpt::random;
+using namespace mrpt::poses;
 using namespace std;
 
 

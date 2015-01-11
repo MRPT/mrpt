@@ -170,7 +170,6 @@ struct MapIsEmpty
 
 // Ctor
 CMultiMetricMap::CMultiMetricMap(const TSetOfMetricMapInitializers *initializers) :
-	m_ID(0),
 	maps(),
 	m_pointsMaps(maps),
 	m_gridMaps(maps),
@@ -183,7 +182,8 @@ CMultiMetricMap::CMultiMetricMap(const TSetOfMetricMapInitializers *initializers
 	m_colourPointsMap(maps),
 	m_weightedPointsMap(maps),
 	m_landmarksMap(maps),
-	m_beaconMap(maps)
+	m_beaconMap(maps),
+	m_ID(0)
 {
 	MRPT_START
 	setListOfMaps(initializers);
@@ -192,7 +192,6 @@ CMultiMetricMap::CMultiMetricMap(const TSetOfMetricMapInitializers *initializers
 
 // Copy ctor
 CMultiMetricMap::CMultiMetricMap(const mrpt::maps::CMultiMetricMap &other ) :
-	m_ID(0),
 	maps(),
 	m_pointsMaps(maps),
 	m_gridMaps(maps),
@@ -205,7 +204,8 @@ CMultiMetricMap::CMultiMetricMap(const mrpt::maps::CMultiMetricMap &other ) :
 	m_colourPointsMap(maps),
 	m_weightedPointsMap(maps),
 	m_landmarksMap(maps),
-	m_beaconMap(maps)
+	m_beaconMap(maps),
+	m_ID(0)
 {
 	*this = other;	// Call the "=" operator
 }

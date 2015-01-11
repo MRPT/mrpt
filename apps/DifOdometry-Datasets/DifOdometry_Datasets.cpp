@@ -29,6 +29,8 @@ using namespace mrpt::gui;
 using namespace mrpt::obs;
 using namespace mrpt::maps;
 using namespace mrpt::math;
+using namespace mrpt::utils;
+using namespace mrpt::poses;
 
 
 void CDifodoDatasets::loadConfiguration(const utils::CConfigFileBase &ini )
