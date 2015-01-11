@@ -86,7 +86,7 @@ void  TSetOfMetricMapInitializers::loadFromConfigFile(
 			// [<sectionName>+"_occupancyGrid_##_likelihoodOpts"]
 			// ...
 			// ==> Section prefix:
-			const string sMapSectionsPrefix = mrpt::format("%s_%s_%02u_",sectionName.c_str(),sMapName.c_str(),i);
+			const string sMapSectionsPrefix = mrpt::format("%s_%s_%02u",sectionName.c_str(),sMapName.c_str(),i);
 			mi->loadFromConfigFile(ini,sMapSectionsPrefix);
 
 			// Add the params to the list:
