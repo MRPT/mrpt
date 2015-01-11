@@ -36,7 +36,7 @@
 				- mrpt::slam::CPathPlanningMethod & CPathPlanningCircularRobot: \ref mrpt_slam_grp ==> \ref mrpt_nav_grp
 		- Build System / General changes:
 			- Many optimizations in function arguments (value vs ref). Forces ABI incompatibility with previous versions, hence the change to a new minor version number.
-			- Updated embedded version of Eigen to 3.2.2
+			- Updated embedded version of Eigen to 3.2.3
 			- Kinect: Dropped support for the CL NUI API, which seems discontinued. Alternatives in use are libfreenect and OpenNI2.
 			- libfreenect is now detected in the system and used instead of compiling the embedded copy of it.
 			- Embedded copy of libfreenect has been updated to (23/oct/2014). It now supports "Kinect for Windows".
