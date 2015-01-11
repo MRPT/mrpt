@@ -477,7 +477,6 @@ void CLocalMetricHypothesis::clearRobotPoses()
 		it->d = new CLSLAMParticleData( &m_parent->m_options.defaultMapsInitializers );
 
 		// Fill in:
-		it->d->metricMaps.options =  m_parent->m_options.defaultMapsOptions;
 		it->d->robotPoses.clear();
 	}
 }

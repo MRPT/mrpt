@@ -246,7 +246,6 @@ void CHMTSLAM::loadOptions( const mrpt::utils::CConfigFileBase &cfg )
 	m_options.loadFromConfigFile(cfg,"HMT-SLAM");
 
 	m_options.defaultMapsInitializers.loadFromConfigFile(cfg,"MetricMaps");
-	m_options.defaultMapsOptions.loadFromConfigFile(cfg,"MetricMaps");
 
 	m_options.pf_options.loadFromConfigFile(cfg,"PARTICLE_FILTER");
 
@@ -439,7 +438,7 @@ void  CHMTSLAM::initializeEmptyMap()
 		firstAreaID = firstArea->getID();
 
 		firstArea->m_hypotheses = LMH_hyps;
-		CMultiMetricMapPtr		emptyMap = CMultiMetricMapPtr(new CMultiMetricMap(&m_options.defaultMapsInitializers, &m_options.defaultMapsOptions) );
+		CMultiMetricMapPtr		emptyMap = CMultiMetricMapPtr(new CMultiMetricMap(&m_options.defaultMapsInitializers) );
 
 		firstArea->m_nodeType.setType( "Area" );
 		firstArea->m_label = generateUniqueAreaLabel();

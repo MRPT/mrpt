@@ -443,11 +443,7 @@ namespace mrpt
 				mrpt::slam::CIncrementalMapPartitioner::TOptions	AA_options;
 
 				mrpt::maps::TSetOfMetricMapInitializers		defaultMapsInitializers;  //!< The default set of maps to be created in each particle
-
-				mrpt::maps::CMultiMetricMap::TOptions		defaultMapsOptions;		//!< The default options for the CMultiMetricMap in each particle.
-
 				bayes::CParticleFilter::TParticleFilterOptions pf_options;	//!< These params are used from every LMH object.
-
 				mrpt::slam::TKLDParams						KLD_params;
 
 				int  random_seed;	//!< 0 means randomize, use any other value to have repetitive experiments.

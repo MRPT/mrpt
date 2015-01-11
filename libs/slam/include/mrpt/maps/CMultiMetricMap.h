@@ -61,6 +61,49 @@ namespace maps
 	 * file that can be used to define which maps to create and all their parameters.
 	 * Alternatively, the list of maps is public so it can be directly manipulated/accessed in CMultiMetricMap::maps
 	 *
+	 *  Configuring the list of maps: Alternatives
+	 * --------------------------------------------
+	 * 
+	 *  **Method #1: Using map definition structures**
+	 * \code
+	 * mrpt::maps::TSetOfMetricMapInitializers map_inits;
+	 * {
+	 *   mrpt::maps::COccupancyGridMap2D::TMapDefinition def;
+	 *   def.resolution = 0.05;
+	 *   def.insertionOpts.maxOccupancyUpdateCertainty = 0.8;
+	 *   def.insertionOpts.maxDistanceInsertion = 30;
+	 *   map_inits.push_back(def);
+	 * }
+	 * {
+	 *   mrpt::maps::CSimplePointsMap::TMapDefinition def;
+	 *   map_inits.push_back(def);
+	 * }
+	 * mrpt::maps::CMultiMetricMap theMap;
+	 * theMap.setListOfMaps(map_inits);
+	 * \endcode
+	 * 
+	 *  **Method #2: Using a configuration file**
+	 * See TSetOfMetricMapInitializers::loadFromConfigFile() for details on expected file format.
+	 *
+	 * \code
+	 * mrpt::utils::CConfigFile cfgFile("file.cfg");
+	 * mrpt::maps::TSetOfMetricMapInitializers map_inits;
+	 * map_inits.loadFromConfigFile(cfgFile, "MapDefinition");
+	 *
+	 * mrpt::maps::CMultiMetricMap theMap;
+	 * theMap.setListOfMaps(map_inits);
+	 * \endcode
+	 *
+	 *  **Method #3: Manual manipulation**
+	 *
+	 * \code
+	 * mrpt::maps::CMultiMetricMap theMap;
+	 * {
+	 *  mrpt::maps::CSimplePointsMapPtr ptMap = mrpt::maps::CSimplePointsMap::Create();
+	 *  theMap.maps.push_back(ptMap);
+	 * }
+	 * \endcode
+	 *
 	 * \note [New in MRPT 1.3.0]: `likelihoodMapSelection`, which selected the map to be used when 
 	 *  computing the likelihood of an observation, has been removed. Use the `enableObservationLikelihood` 
 	 *  property of each individual map declaration. 
@@ -138,28 +181,21 @@ namespace maps
 		{
 			typedef typename SELECTED_CLASS_PTR::value_type* ptr_t;
 			typedef const typename SELECTED_CLASS_PTR::value_type* const_ptr_t;
-			ProxyFilterContainerByClass(CONTAINER &source) : m_source(source) 
-			{}
+			ProxyFilterContainerByClass(CONTAINER &source) : m_source(source) {}
 
+			bool empty() const { return size()==0; }
 			size_t size() const {
 				size_t cnt=0;
-				for(typename CONTAINER::const_iterator it=m_source.begin();it!=m_source.end();++it) {
+				for(typename CONTAINER::const_iterator it=m_source.begin();it!=m_source.end();++it)
 					if ( dynamic_cast<const_ptr_t>(it->pointer()) )
 						cnt++;
-				}
 				return cnt;
 			}
-			bool empty() const { return size()==0; }
-
 			SELECTED_CLASS_PTR operator [](size_t index) const {
 				size_t cnt=0;
-				for(typename CONTAINER::const_iterator it=m_source.begin();it!=m_source.end();++it) {
-					if ( dynamic_cast<const_ptr_t>(it->pointer()) ) {
-						if (cnt++ == index) {
-							return SELECTED_CLASS_PTR(*it);
-						}
-					}
-				}
+				for(typename CONTAINER::const_iterator it=m_source.begin();it!=m_source.end();++it)
+					if ( dynamic_cast<const_ptr_t>(it->pointer()) ) 
+						if (cnt++ == index) { return SELECTED_CLASS_PTR(*it); }
 				throw std::out_of_range("Index is out of range");
 			}
 		private:
@@ -174,12 +210,11 @@ namespace maps
 			typedef typename SELECTED_CLASS_PTR::value_type pointee_t;
 			typedef typename SELECTED_CLASS_PTR::value_type* ptr_t;
 			typedef const typename SELECTED_CLASS_PTR::value_type* const_ptr_t;
-			ProxySelectorContainerByClass(CONTAINER &source) : m_source(source) 
-			{}
-			operator const SELECTED_CLASS_PTR & () const {
-				internal_update_ref();
-				return m_ret;
-			}
+			ProxySelectorContainerByClass(CONTAINER &source) : m_source(source) {}
+			operator const SELECTED_CLASS_PTR & () const { internal_update_ref(); return m_ret; }
+			operator bool() const { internal_update_ref(); return m_ret.present(); }
+			bool present() const { internal_update_ref(); return m_ret.present(); }
+			ptr_t pointer(){ internal_update_ref(); return m_ret.pointer(); }
 			ptr_t operator ->() const {
 				internal_update_ref();
 				if (m_ret.present()) return m_ret.pointer();
@@ -189,14 +224,6 @@ namespace maps
 				internal_update_ref();
 				if (m_ret.present()) return *m_ret.pointer();
 				else throw std::runtime_error("Tried to derefer NULL pointer");
-			}
-			bool present() const {
-				internal_update_ref();
-				return m_ret.present();
-			}
-			ptr_t pointer(){
-				internal_update_ref();
-				return m_ret.pointer();
 			}
 		private:
 			CONTAINER & m_source;
@@ -239,6 +266,8 @@ namespace maps
 
 		/** Sets the list of internal map according to the passed list of map initializers (Current maps' content will be deleted!) */
 		void  setListOfMaps( const mrpt::maps::TSetOfMetricMapInitializers	*initializers );
+		/** \overload */
+		void  setListOfMaps( const mrpt::maps::TSetOfMetricMapInitializers	&initializers ) { this->setListOfMaps(&initializers); }
 
 		bool  isEmpty() const MRPT_OVERRIDE; //!< Returns true if all maps returns true to their isEmpty() method, which is map-dependent. Read the docs of each map class
 
