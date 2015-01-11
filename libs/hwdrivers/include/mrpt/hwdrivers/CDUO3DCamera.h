@@ -205,6 +205,10 @@ namespace mrpt
 			
 			/** Sets DUO3D camera LED setting  */
 			void m_set_led(float value);
+
+		public:
+			MRPT_MAKE_ALIGNED_OPERATOR_NEW
+
 		};	// End of class
 	} // End of namespace
 } // End of namespace
