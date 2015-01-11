@@ -126,6 +126,10 @@ namespace mrpt
 			bool  internal_insertObservation( const mrpt::obs::CObservation *obs, const mrpt::poses::CPose3D *robotPose = NULL ) MRPT_OVERRIDE;
 			double internal_computeObservationLikelihood( const mrpt::obs::CObservation *obs, const mrpt::poses::CPose3D &takenFrom )  MRPT_OVERRIDE;
 
+			MAP_DEFINITION_START(CReflectivityGridMap2D,MAPS_IMPEXP)
+				float	min_x,max_x,min_y,max_y,resolution;	//!< See CReflectivityGridMap2DOptions::CReflectivityGridMap2DOptions
+				mrpt::maps::CReflectivityGridMap2D::TInsertionOptions	insertionOpts;
+			MAP_DEFINITION_END(CReflectivityGridMap2D,MAPS_IMPEXP)
 		};
 		DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE( CReflectivityGridMap2D, CMetricMap, MAPS_IMPEXP  )
 

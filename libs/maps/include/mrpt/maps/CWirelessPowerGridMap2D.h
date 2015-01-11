@@ -97,6 +97,12 @@ namespace maps
 		bool  internal_insertObservation( const mrpt::obs::CObservation *obs, const mrpt::poses::CPose3D *robotPose = NULL ) MRPT_OVERRIDE;
 		double internal_computeObservationLikelihood( const mrpt::obs::CObservation *obs, const mrpt::poses::CPose3D &takenFrom ) MRPT_OVERRIDE;
 
+		MAP_DEFINITION_START(CWirelessPowerGridMap2D,MAPS_IMPEXP)
+			float	min_x,max_x,min_y,max_y,resolution;	//!< See CWirelessPowerGridMap2D::CWirelessPowerGridMap2D
+			mrpt::maps::CWirelessPowerGridMap2D::TMapRepresentation	mapType;	//!< The kind of map representation (see CWirelessPowerGridMap2D::CWirelessPowerGridMap2D)
+			mrpt::maps::CWirelessPowerGridMap2D::TInsertionOptions	insertionOpts;
+		MAP_DEFINITION_END(CWirelessPowerGridMap2D,MAPS_IMPEXP)
+
 	};
 	DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE( CWirelessPowerGridMap2D , CRandomFieldGridMap2D, MAPS_IMPEXP )
 

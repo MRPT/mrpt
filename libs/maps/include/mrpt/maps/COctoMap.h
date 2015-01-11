@@ -24,7 +24,6 @@ namespace mrpt
 {
 	namespace maps
 	{
-
 		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( COctoMap , CMetricMap, MAPS_IMPEXP )
 
 		/** A three-dimensional probabilistic occupancy grid, implemented as an octo-tree with the "octomap" C++ library.
@@ -44,9 +43,14 @@ namespace mrpt
 
 			virtual void getAsOctoMapVoxels(mrpt::opengl::COctoMapVoxels &gl_obj) const;
 
+			MAP_DEFINITION_START(COctoMap,MAPS_IMPEXP)
+				double resolution;	//!< The finest resolution of the octomap (default: 0.10 meters)
+				mrpt::maps::COctoMap::TInsertionOptions   insertionOpts;	//!< Observations insertion options
+				mrpt::maps::COctoMap::TLikelihoodOptions  likelihoodOpts;	//!< Probabilistic observation likelihood options
+			MAP_DEFINITION_END(COctoMap,MAPS_IMPEXP)
+
 		protected:
 			bool internal_insertObservation(const mrpt::obs::CObservation *obs,const mrpt::poses::CPose3D *robotPose);
-
 		}; // End of class def.
 		DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE( COctoMap , CMetricMap, MAPS_IMPEXP )
 	} // End of namespace

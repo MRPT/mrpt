@@ -272,17 +272,16 @@ namespace maps
 		  */
 		void saveToTextFile(const std::string &fil) const;
 
-		/** Returns a 3D object representing the map.
-		  */
-		void  getAs3DObject ( mrpt::opengl::CSetOfObjectsPtr	&outObj ) const;
+		void  getAs3DObject ( mrpt::opengl::CSetOfObjectsPtr	&outObj ) const; //!< Returns a 3D object representing the map.
 
-		/** Returns a pointer to the beacon with the given ID, or NULL if it does not exist.
-		  */
-		const CBeacon * getBeaconByID( CBeacon::TBeaconID  id ) const;
+		const CBeacon * getBeaconByID( CBeacon::TBeaconID  id ) const; //!< Returns a pointer to the beacon with the given ID, or NULL if it does not exist.
+		CBeacon * getBeaconByID( CBeacon::TBeaconID  id ); 		//!< Returns a pointer to the beacon with the given ID, or NULL if it does not exist.
 
-		/** Returns a pointer to the beacon with the given ID, or NULL if it does not exist.
-		  */
-		CBeacon * getBeaconByID( CBeacon::TBeaconID  id );
+
+		MAP_DEFINITION_START(CBeaconMap,MAPS_IMPEXP)
+			mrpt::maps::CBeaconMap::TInsertionOptions	insertionOpts;	//!< Observations insertion options
+			mrpt::maps::CBeaconMap::TLikelihoodOptions	likelihoodOpts;	//!< Probabilistic observation likelihood options
+		MAP_DEFINITION_END(CBeaconMap,MAPS_IMPEXP)
 
 	}; // End of class def.
 	DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE( CBeaconMap, CMetricMap ,MAPS_IMPEXP )

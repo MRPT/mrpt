@@ -22,6 +22,36 @@ using namespace mrpt::utils;
 using namespace mrpt::poses;
 using namespace mrpt::math;
 
+//  =========== Begin of Map definition ============
+MAP_DEFINITION_REGISTER("CWeightedPointsMap,weightedPointsMap", mrpt::maps::CWeightedPointsMap)
+
+CWeightedPointsMap::TMapDefinition::TMapDefinition()
+{
+}
+
+void CWeightedPointsMap::TMapDefinition::loadFromConfigFile_map_specific(const mrpt::utils::CConfigFileBase  &source, const std::string &sectionNamePrefix)
+{
+	insertionOpts.loadFromConfigFile(source, sectionNamePrefix+string("_insertOpts") );
+	likelihoodOpts.loadFromConfigFile(source, sectionNamePrefix+string("_likelihoodOpts") );
+}
+
+void CWeightedPointsMap::TMapDefinition::dumpToTextStream_map_specific(mrpt::utils::CStream &out) const
+{
+	this->insertionOpts.dumpToTextStream(out);
+	this->likelihoodOpts.dumpToTextStream(out);
+}
+
+mrpt::maps::CMetricMap* CWeightedPointsMap::internal_CreateFromMapDefinition(const mrpt::maps::TMetricMapInitializer &_def)
+{
+	const CWeightedPointsMap::TMapDefinition &def = *dynamic_cast<const CWeightedPointsMap::TMapDefinition*>(&_def);
+	CWeightedPointsMap *obj = new CWeightedPointsMap();
+	obj->insertionOptions  = def.insertionOpts;
+	obj->likelihoodOptions = def.likelihoodOpts;
+	return obj;
+}
+//  =========== End of Map definition Block =========
+
+
 IMPLEMENTS_SERIALIZABLE(CWeightedPointsMap, CPointsMap,mrpt::maps)
 
 

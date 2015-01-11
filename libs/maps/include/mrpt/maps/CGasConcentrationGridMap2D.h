@@ -176,6 +176,11 @@ namespace maps
 		 /** The timestamp of the last time the advection simulation was executed */
 		 mrpt::system::TTimeStamp timeLastSimulated;
 
+		MAP_DEFINITION_START(CGasConcentrationGridMap2D,MAPS_IMPEXP)
+			float	min_x,max_x,min_y,max_y,resolution;	//!< See CGasConcentrationGridMap2D::CGasConcentrationGridMap2D
+			mrpt::maps::CGasConcentrationGridMap2D::TMapRepresentation	mapType;	//!< The kind of map representation (see CGasConcentrationGridMap2D::CGasConcentrationGridMap2D)
+			mrpt::maps::CGasConcentrationGridMap2D::TInsertionOptions   insertionOpts;	//!< Observations insertion options
+		MAP_DEFINITION_END(CGasConcentrationGridMap2D,MAPS_IMPEXP)
 
 	};
 	DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE( CGasConcentrationGridMap2D , CRandomFieldGridMap2D, MAPS_IMPEXP )

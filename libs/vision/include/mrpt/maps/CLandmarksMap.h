@@ -578,10 +578,15 @@ namespace maps
 		  */
 		void  getAs3DObject ( mrpt::opengl::CSetOfObjectsPtr	&outObj ) const;
 
-		/** This method is called at the end of each "prediction-update-map insertion" cycle within "mrpt::slam::CMetricMapBuilderRBPF::processActionObservation".
-		  *  This method should normally do nothing, but in some cases can be used to free auxiliary cached variables.
-		  */
+		// See base docs
 		virtual void  auxParticleFilterCleanUp();
+
+		MAP_DEFINITION_START(CLandmarksMap,VISION_IMPEXP)
+			typedef std::pair<mrpt::math::TPoint3D,unsigned int> TPairIdBeacon;
+			std::deque<TPairIdBeacon> initialBeacons;	//!< Initial contents of the map, especified by a set of 3D Beacons with associated IDs
+			mrpt::maps::CLandmarksMap::TInsertionOptions	insertionOpts;
+			mrpt::maps::CLandmarksMap::TLikelihoodOptions	likelihoodOpts;
+		MAP_DEFINITION_END(CLandmarksMap,VISION_IMPEXP)
 
 	}; // End of class def.
 	DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE( CLandmarksMap, CMetricMap, VISION_IMPEXP )

@@ -57,7 +57,8 @@ namespace mrpt
 					/** Returns default map definition initializer. See mrpt::maps::TMetricMapInitializer */ \
 					static mrpt::maps::TMetricMapInitializer* MapDefinition(); \
 					/** Constructor from a map definition structure: initializes the map and its parameters accordingly */ \
-					static mrpt::maps::CMetricMap* CreateFromMapDefinition(const mrpt::maps::TMetricMapInitializer &def); \
+					static _CLASS_NAME_* CreateFromMapDefinition(const mrpt::maps::TMetricMapInitializer &def); \
+					static mrpt::maps::CMetricMap* internal_CreateFromMapDefinition(const mrpt::maps::TMetricMapInitializer &def); \
 					/** ID used to initialize class registration (just ignore it) */ \
 					static const size_t m_private_map_register_id; \
 					/** @} */ 
@@ -65,8 +66,10 @@ namespace mrpt
 			/** Registers one map class into TMetricMapInitializer factory. 
 				* One or several alternative class names can be provided, separated with whitespaces or commas */
 			#define MAP_DEFINITION_REGISTER(_CLASSNAME_STRINGS, _CLASSNAME_WITH_NS) \
-				const size_t _CLASSNAME_WITH_NS::m_private_map_register_id = mrpt::maps::internal::TMetricMapTypesRegistry::Instance().doRegister(_CLASSNAME_STRINGS,&_CLASSNAME_WITH_NS::MapDefinition,&_CLASSNAME_WITH_NS::CreateFromMapDefinition); \
-				mrpt::maps::TMetricMapInitializer* _CLASSNAME_WITH_NS::MapDefinition() { return new _CLASSNAME_WITH_NS::TMapDefinition; } 
+				const size_t _CLASSNAME_WITH_NS::m_private_map_register_id = mrpt::maps::internal::TMetricMapTypesRegistry::Instance().doRegister(_CLASSNAME_STRINGS,&_CLASSNAME_WITH_NS::MapDefinition,&_CLASSNAME_WITH_NS::internal_CreateFromMapDefinition); \
+				mrpt::maps::TMetricMapInitializer* _CLASSNAME_WITH_NS::MapDefinition() { return new _CLASSNAME_WITH_NS::TMapDefinition; } \
+				_CLASSNAME_WITH_NS* _CLASSNAME_WITH_NS::CreateFromMapDefinition(const mrpt::maps::TMetricMapInitializer &def) \
+					{ return dynamic_cast<_CLASSNAME_WITH_NS*>(_CLASSNAME_WITH_NS::internal_CreateFromMapDefinition(def)); }
 
 		} // end NS internal
 	} // End of namespace

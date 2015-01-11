@@ -40,6 +40,83 @@ using namespace mrpt::utils;
 using namespace std;
 using mrpt::maps::internal::TSequenceLandmarks;
 
+
+//  =========== Begin of Map definition ============
+MAP_DEFINITION_REGISTER("CLandmarksMap,landmarksMap", mrpt::maps::CLandmarksMap)
+
+CLandmarksMap::TMapDefinition::TMapDefinition()
+{
+}
+
+void CLandmarksMap::TMapDefinition::loadFromConfigFile_map_specific(const mrpt::utils::CConfigFileBase  &source, const std::string &sectionNamePrefix)
+{
+	// [<sectionNamePrefix>+"_creationOpts"]
+	const std::string sSectCreation = sectionNamePrefix+string("_creationOpts");
+	this->initialBeacons.clear();
+	const unsigned  int nBeacons = source.read_int(sSectCreation,"nBeacons",0);
+	for (unsigned int q=1;q<=nBeacons;q++)
+	{
+		TPairIdBeacon newPair;
+		newPair.second = source.read_int(sSectCreation,format("beacon_%03u_ID",q),0);
+
+		newPair.first.x= source.read_float(sSectCreation,format("beacon_%03u_x",q),0);
+		newPair.first.y= source.read_float(sSectCreation,format("beacon_%03u_y",q),0);
+		newPair.first.z= source.read_float(sSectCreation,format("beacon_%03u_z",q),0);
+
+		this->initialBeacons.push_back(newPair);
+	}
+
+	insertionOpts.loadFromConfigFile(source, sectionNamePrefix+string("_insertOpts") );
+	likelihoodOpts.loadFromConfigFile(source, sectionNamePrefix+string("_likelihoodOpts") );
+}
+
+void CLandmarksMap::TMapDefinition::dumpToTextStream_map_specific(mrpt::utils::CStream &out) const
+{
+	out.printf("number of initial beacons               = %u\n",(int)initialBeacons.size());
+
+	out.printf("      ID         (X,Y,Z)\n");
+	out.printf("--------------------------------------------------------\n");
+	for (std::deque<TPairIdBeacon>::const_iterator p=initialBeacons.begin();p!=initialBeacons.end();++p)
+		out.printf("      %03u         (%8.03f,%8.03f,%8.03f)\n", p->second,p->first.x,p->first.y,p->first.z);
+
+	this->insertionOpts.dumpToTextStream(out);
+	this->likelihoodOpts.dumpToTextStream(out);
+}
+
+mrpt::maps::CMetricMap* CLandmarksMap::internal_CreateFromMapDefinition(const mrpt::maps::TMetricMapInitializer &_def)
+{
+	const CLandmarksMap::TMapDefinition &def = *dynamic_cast<const CLandmarksMap::TMapDefinition*>(&_def);
+	CLandmarksMap *obj = new CLandmarksMap();
+
+	for (std::deque<CLandmarksMap::TMapDefinition::TPairIdBeacon>::const_iterator p = def.initialBeacons.begin();p!=def.initialBeacons.end();++p)
+	{
+		CLandmark	lm;
+
+		lm.createOneFeature();
+		lm.features[0]->type = featBeacon;
+
+		lm.features[0]->ID = p->second;
+		lm.ID = p->second;
+
+		lm.pose_mean = p->first;
+
+		lm.pose_cov_11=
+		lm.pose_cov_22=
+		lm.pose_cov_33=
+		lm.pose_cov_12=
+		lm.pose_cov_13=
+		lm.pose_cov_23=square(0.01f);
+
+		obj->landmarks.push_back( lm );
+	}
+
+	obj->insertionOptions  = def.insertionOpts;
+	obj->likelihoodOptions = def.likelihoodOpts;
+	return obj;
+}
+//  =========== End of Map definition Block =========
+
+
 IMPLEMENTS_SERIALIZABLE(CLandmarksMap, CMetricMap,mrpt::maps)
 
 /*---------------------------------------------------------------

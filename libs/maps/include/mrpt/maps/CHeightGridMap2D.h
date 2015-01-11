@@ -178,6 +178,12 @@ namespace mrpt
 			void  internal_clear() MRPT_OVERRIDE;
 			bool  internal_insertObservation( const mrpt::obs::CObservation *obs, const mrpt::poses::CPose3D *robotPose = NULL ) MRPT_OVERRIDE;
 			double internal_computeObservationLikelihood( const mrpt::obs::CObservation *obs, const mrpt::poses::CPose3D &takenFrom ) MRPT_OVERRIDE;
+
+			MAP_DEFINITION_START(CHeightGridMap2D,MAPS_IMPEXP)
+				float	min_x,max_x,min_y,max_y,resolution;	//!< See CHeightGridMap2D::CHeightGridMap2D
+				mrpt::maps::CHeightGridMap2D::TMapRepresentation	mapType;	//!< The kind of map representation (see CHeightGridMap2D::CHeightGridMap2D)
+				mrpt::maps::CHeightGridMap2D::TInsertionOptions	insertionOpts;
+			MAP_DEFINITION_END(CHeightGridMap2D,MAPS_IMPEXP)
 		};
 		DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE( CHeightGridMap2D, CMetricMap, MAPS_IMPEXP  )
 

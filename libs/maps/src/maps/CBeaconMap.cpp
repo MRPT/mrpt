@@ -38,6 +38,42 @@ using namespace mrpt::bayes;
 using namespace mrpt::system;
 using namespace std;
 
+//  =========== Begin of Map definition ============
+MAP_DEFINITION_REGISTER("CBeaconMap,beaconMap", mrpt::maps::CBeaconMap)
+
+CBeaconMap::TMapDefinition::TMapDefinition()
+{
+}
+
+void CBeaconMap::TMapDefinition::loadFromConfigFile_map_specific(const mrpt::utils::CConfigFileBase  &source, const std::string &sectionNamePrefix)
+{
+	// [<sectionNamePrefix>+"_creationOpts"]
+	//const std::string sSectCreation = sectionNamePrefix+string("_creationOpts");
+	//MRPT_LOAD_CONFIG_VAR(resolution, float,   source,sSectCreation);
+
+	insertionOpts.loadFromConfigFile(source, sectionNamePrefix+string("_insertOpts") );
+	likelihoodOpts.loadFromConfigFile(source, sectionNamePrefix+string("_likelihoodOpts") );
+}
+
+void CBeaconMap::TMapDefinition::dumpToTextStream_map_specific(mrpt::utils::CStream &out) const
+{
+	//LOADABLEOPTS_DUMP_VAR(resolution     , float);
+
+	this->insertionOpts.dumpToTextStream(out);
+	this->likelihoodOpts.dumpToTextStream(out);
+}
+
+mrpt::maps::CMetricMap* CBeaconMap::internal_CreateFromMapDefinition(const mrpt::maps::TMetricMapInitializer &_def)
+{
+	const CBeaconMap::TMapDefinition &def = *dynamic_cast<const CBeaconMap::TMapDefinition*>(&_def);
+	CBeaconMap *obj = new CBeaconMap();
+	obj->insertionOptions  = def.insertionOpts;
+	obj->likelihoodOptions = def.likelihoodOpts;
+	return obj;
+}
+//  =========== End of Map definition Block =========
+
+
 IMPLEMENTS_SERIALIZABLE(CBeaconMap, CMetricMap,mrpt::maps)
 
 /*---------------------------------------------------------------

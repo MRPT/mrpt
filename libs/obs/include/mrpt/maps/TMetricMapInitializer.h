@@ -20,6 +20,8 @@ namespace mrpt
 {
 	namespace maps
 	{
+		class TSetOfMetricMapInitializers;
+
 		/** Virtual base for specifying the kind and parameters of one map (normally, to be inserted into mrpt::maps::CMultiMetricMap)
 		  *  See `mrpt::maps::TSetOfMetricMapInitializers::loadFromConfigFile()` as an easy way of initialize this object, or
 		  *  construct with the factory methods `<metric_map_class>::MapDefinition()` and `TMetricMapInitializer::factory()`
@@ -29,6 +31,8 @@ namespace mrpt
 		  */
 		struct OBS_IMPEXP TMetricMapInitializer : public mrpt::utils::CLoadableOptions
 		{
+			friend class TSetOfMetricMapInitializers;
+
 			/** Common params for all maps: These are automatically set in TMetricMapTypesRegistry::factoryMapObjectFromDefinition()  */
 			mrpt::maps::TMapGenericParams  genericMapParams;
 
@@ -56,139 +60,6 @@ namespace mrpt
 			virtual void  loadFromConfigFile_map_specific(const mrpt::utils::CConfigFileBase  &source, const std::string &sectionNamePrefix) = 0;
 			virtual void  dumpToTextStream_map_specific(mrpt::utils::CStream	&out) const = 0;
 		}; // end TMetricMapInitializer
-
-	#if 0
-			/** Specific options for 2D grid maps (mrpt::maps::COccupancyGridMap2D)
-			  */
-			struct OBS_IMPEXP TOccGridMap2DOptions
-			{
-				TOccGridMap2DOptions();	//!< Default values loader
-
-				float	min_x,max_x,min_y,max_y,resolution;	//!< See COccupancyGridMap2D::COccupancyGridMap2D
-				mrpt::maps::COccupancyGridMap2D::TInsertionOptions	insertionOpts;	//!< Customizable initial options.
-				mrpt::maps::COccupancyGridMap2D::TLikelihoodOptions	likelihoodOpts;	//!< Customizable initial options.
-
-			} occupancyGridMap2D_options;
-
-			/** Specific options for 3D octo maps (mrpt::maps::COctoMap) */
-			struct OBS_IMPEXP TOctoMapOptions
-			{
-				TOctoMapOptions();	//!< Default values loader
-
-				double resolution;	//!< The finest resolution of the octomap (default: 0.10 meters)
-				mrpt::maps::COctoMap::TInsertionOptions	  insertionOpts;	//!< Customizable initial options.
-				mrpt::maps::COctoMap::TLikelihoodOptions  likelihoodOpts;	//!< Customizable initial options.
-			} octoMap_options;
-
-			/** Specific options for 3D octo maps (mrpt::maps::COctoMap) */
-			struct OBS_IMPEXP TColourOctoMapOptions
-			{
-				TColourOctoMapOptions();	//!< Default values loader
-
-				double resolution;	//!< The finest resolution of the octomap (default: 0.10 meters)
-				mrpt::maps::CColouredOctoMap::TInsertionOptions	  insertionOpts;	//!< Customizable initial options.
-				mrpt::maps::CColouredOctoMap::TLikelihoodOptions  likelihoodOpts;	//!< Customizable initial options.
-			} colourOctoMap_options;		
-
-			/** Specific options for point maps (mrpt::maps::CPointsMap)
-			  */
-			struct OBS_IMPEXP CPointsMapOptions
-			{
-				CPointsMapOptions();		//!< Default values loader
-				mrpt::maps::CPointsMap::TInsertionOptions	insertionOpts;	//!< Customizable initial options for loading the class' own defaults.
-				mrpt::maps::CPointsMap::TLikelihoodOptions  likelihoodOpts; //!< 	//!< Customizable initial likelihood options
-			} pointsMapOptions_options;
-
-			/** Specific options for gas grid maps (mrpt::maps::CGasConcentrationGridMap2D)
-			  */
-			struct OBS_IMPEXP CGasConcentrationGridMap2DOptions
-			{
-				CGasConcentrationGridMap2DOptions();	//!< Default values loader
-
-				float	min_x,max_x,min_y,max_y,resolution;	//!< See CGasConcentrationGridMap2D::CGasConcentrationGridMap2D
-				mrpt::maps::CGasConcentrationGridMap2D::TMapRepresentation	mapType;	//!< The kind of map representation (see CGasConcentrationGridMap2D::CGasConcentrationGridMap2D)
-				mrpt::maps::CGasConcentrationGridMap2D::TInsertionOptions	insertionOpts;	//!< Customizable initial options.
-
-			} gasGridMap_options;
-
-			/** Specific options for wifi grid maps (mrpt::maps::CWirelessPowerGridMap2D)
-			  */
-			struct OBS_IMPEXP CWirelessPowerGridMap2DOptions
-			{
-				CWirelessPowerGridMap2DOptions();	//!< Default values loader
-
-				float	min_x,max_x,min_y,max_y,resolution;	//!< See CWirelessPowerGridMap2D::CWirelessPowerGridMap2D
-				mrpt::maps::CWirelessPowerGridMap2D::TMapRepresentation	mapType;	//!< The kind of map representation (see CWirelessPowerGridMap2D::CWirelessPowerGridMap2D)
-				mrpt::maps::CWirelessPowerGridMap2D::TInsertionOptions	insertionOpts;	//!< Customizable initial options.
-
-			} wifiGridMap_options;
-
-			/** Specific options for landmarks maps (mrpt::maps::CLandmarksMap)
-			  */
-			struct OBS_IMPEXP CLandmarksMapOptions
-			{
-				typedef std::pair<mrpt::poses::CPoint3D,unsigned int> TPairIdBeacon;
-
-				CLandmarksMapOptions();		//!< Default values loader
-
-				std::deque<CMultiMetricMap::TPairIdBeacon>	initialBeacons;	//!< Initial contents of the map, especified by a set of 3D Beacons with associated IDs
-				mrpt::maps::CLandmarksMap::TInsertionOptions	insertionOpts;	//!< Customizable initial options.
-				mrpt::maps::CLandmarksMap::TLikelihoodOptions	likelihoodOpts;	//!< Customizable initial options.
-
-			} landmarksMap_options;
-
-
-			/** Specific options for landmarks maps (mrpt::maps::CBeaconMap)
-			  */
-			struct OBS_IMPEXP CBeaconMapOptions
-			{
-				CBeaconMapOptions();	//!< Default values loader
-
-				mrpt::maps::CBeaconMap::TLikelihoodOptions	likelihoodOpts;	//!< Customizable initial options.
-				mrpt::maps::CBeaconMap::TInsertionOptions	insertionOpts; 	//!< Customizable initial options.
-
-			} beaconMap_options;
-
-			/** Specific options for height grid maps (mrpt::maps::CHeightGridMap2D)
-			  */
-			struct OBS_IMPEXP CHeightGridMap2DOptions
-			{
-				CHeightGridMap2DOptions();	//!< Default values loader
-
-				float	min_x,max_x,min_y,max_y,resolution;	//!< See CHeightGridMap2D::CHeightGridMap2D
-				mrpt::maps::CHeightGridMap2D::TMapRepresentation	mapType;	//!< The kind of map representation (see CHeightGridMap2D::CHeightGridMap2D)
-				mrpt::maps::CHeightGridMap2D::TInsertionOptions	insertionOpts;	//!< Customizable initial options.
-			} heightMap_options;
-
-			/** Specific options for height grid maps (mrpt::maps::CReflectivityGridMap2D)
-			  */
-			struct OBS_IMPEXP CReflectivityGridMap2DOptions
-			{
-				CReflectivityGridMap2DOptions();	//!< Default values loader
-
-				float	min_x,max_x,min_y,max_y,resolution;	//!< See CReflectivityGridMap2DOptions::CReflectivityGridMap2DOptions
-				mrpt::maps::CReflectivityGridMap2D::TInsertionOptions	insertionOpts;	//!< Customizable initial options.
-			} reflectivityMap_options;
-
-			/** Specific options for coloured point maps (mrpt::maps::CPointsMap)
-			  */
-			struct OBS_IMPEXP CColouredPointsMapOptions
-			{
-				CColouredPointsMapOptions();	//!< Default values loader
-				mrpt::maps::CPointsMap::TInsertionOptions	insertionOpts;	//!< Customizable initial options for loading the class' own defaults.
-				mrpt::maps::CPointsMap::TLikelihoodOptions  likelihoodOpts; //!< 	//!< Customizable initial likelihood options
-				mrpt::maps::CColouredPointsMap::TColourOptions colourOpts;	//!< Customizable initial options for loading the class' own defaults. */
-			} colouredPointsMapOptions_options;
-
-			/** Specific options for coloured point maps (mrpt::maps::CPointsMap)
-			  */
-			struct OBS_IMPEXP CWeightedPointsMapOptions
-			{
-				CWeightedPointsMapOptions();	//!< Default values loader
-				mrpt::maps::CPointsMap::TInsertionOptions	insertionOpts;	//!< Customizable initial options for loading the class' own defaults.
-				mrpt::maps::CPointsMap::TLikelihoodOptions  likelihoodOpts; //!< 	//!< Customizable initial likelihood options
-			} weightedPointsMapOptions_options;
-	#endif
 
 		typedef stlplus::smart_ptr_clone<TMetricMapInitializer> TMetricMapInitializerPtr; //!< Smart pointer to TMetricMapInitializer 
 
@@ -242,24 +113,6 @@ namespace mrpt
 			  *  colourPointsMap_count=<0 or 1, for creating a mrpt::maps::CColouredPointsMap map>
 			  *  weightedPointsMap_count=<0 or 1, for creating a mrpt::maps::CWeightedPointsMap map>
 			  *
-			  *  // Selection of map for likelihood. Either a numeric value or the textual enum
-			  *  //   enum value of mrpt::maps::CMultiMetricMap::TOptions::TMapSelectionForLikelihood (e.g: either "-1" or "fuseAll", ect...)
-			  *  likelihoodMapSelection = -1
-			  *
-			  *  // Enables (1 or "true") / Disables (0 or "false") insertion into specific maps (Defaults are all "true"):
-			  *  enableInsertion_pointsMap=<0/1>
-			  *  enableInsertion_landmarksMap=<0/1>
-			  *  enableInsertion_gridMaps=<0/1>
-			  *  enableInsertion_gasGridMaps=<0/1>
-			  *  enableInsertion_wifiGridMaps=<0/1>
-			  *  enableInsertion_beaconMap=<0/1>
-			  *  enableInsertion_heightMap=<0/1>
-			  *  enableInsertion_reflectivityMap=<0/1>
-			  *  enableInsertion_colourPointsMap=<0/1>
-			  *  enableInsertion_weightedPointsMap=<0/1>
-			  *  enableInsertion_octoMaps=<0/1>
-			  *  enableInsertion_colourOctoMaps=<0/1>
-			  *
 			  * // ====================================================
 			  * //  Creation Options for OccupancyGridMap ##:
 			  * [<sectionName>+"_occupancyGrid_##_creationOpts"]
@@ -268,6 +121,10 @@ namespace mrpt
 			  *  min_y=<value>
 			  *  max_y=<value>
 			  *  resolution=<value>
+			  *  # Common params for all maps:
+			  *  #enableSaveAs3DObject        = {true|false}
+			  *  #enableObservationLikelihood = {true|false}
+			  *  #enableObservationInsertion  = {true|false}
 			  *
 			  * // Insertion Options for OccupancyGridMap ##:
 			  * [<sectionName>+"_occupancyGrid_##_insertOpts"]
@@ -327,10 +184,7 @@ namespace mrpt
 			  * // Insertion Options for CGasConcentrationGridMap2D ##:
 			  * [<sectionName>+"_gasGrid_##_insertOpts"]
 			  *  <See CGasConcentrationGridMap2D::TInsertionOptions>
-
-
-
-
+			  *
 			  * // ====================================================
 			  * // Creation Options for CWirelessPowerGridMap2D ##:
 			  * [<sectionName>+"_wifiGrid_##_creationOpts"]
@@ -344,8 +198,6 @@ namespace mrpt
 			  * // Insertion Options for CWirelessPowerGridMap2D ##:
 			  * [<sectionName>+"_wifiGrid_##_insertOpts"]
 			  *  <See CWirelessPowerGridMap2D::TInsertionOptions>
-
-
 			  *
 			  *
 			  * // ====================================================

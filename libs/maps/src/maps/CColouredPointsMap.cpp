@@ -19,7 +19,6 @@
 
 #include "CPointsMap_crtp_common.h"
 
-
 using namespace std;
 using namespace mrpt;
 using namespace mrpt::maps;
@@ -28,6 +27,40 @@ using namespace mrpt::utils;
 using namespace mrpt::poses;
 using namespace mrpt::system;
 using namespace mrpt::math;
+
+
+//  =========== Begin of Map definition ============
+MAP_DEFINITION_REGISTER("CColouredPointsMap,colourPointsMap", mrpt::maps::CColouredPointsMap)
+
+CColouredPointsMap::TMapDefinition::TMapDefinition()
+{
+}
+
+void CColouredPointsMap::TMapDefinition::loadFromConfigFile_map_specific(const mrpt::utils::CConfigFileBase  &source, const std::string &sectionNamePrefix)
+{
+	insertionOpts.loadFromConfigFile(source, sectionNamePrefix+string("_insertOpts") );
+	likelihoodOpts.loadFromConfigFile(source, sectionNamePrefix+string("_likelihoodOpts") );
+	colourOpts.loadFromConfigFile(source, sectionNamePrefix+string("_colorOpts") );
+}
+
+void CColouredPointsMap::TMapDefinition::dumpToTextStream_map_specific(mrpt::utils::CStream &out) const
+{
+	this->insertionOpts.dumpToTextStream(out);
+	this->likelihoodOpts.dumpToTextStream(out);
+	this->colourOpts.dumpToTextStream(out);
+}
+
+mrpt::maps::CMetricMap* CColouredPointsMap::internal_CreateFromMapDefinition(const mrpt::maps::TMetricMapInitializer &_def)
+{
+	const CColouredPointsMap::TMapDefinition &def = *dynamic_cast<const CColouredPointsMap::TMapDefinition*>(&_def);
+	CColouredPointsMap *obj = new CColouredPointsMap();
+	obj->insertionOptions  = def.insertionOpts;
+	obj->likelihoodOptions = def.likelihoodOpts;
+	obj->colorScheme = def.colourOpts;
+	return obj;
+}
+//  =========== End of Map definition Block =========
+
 
 IMPLEMENTS_SERIALIZABLE(CColouredPointsMap, CPointsMap,mrpt::maps)
 

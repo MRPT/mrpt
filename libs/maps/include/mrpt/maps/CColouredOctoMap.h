@@ -66,8 +66,13 @@ namespace mrpt
 
 			virtual void getAsOctoMapVoxels(mrpt::opengl::COctoMapVoxels &gl_obj) const;
 
-		protected:
+			MAP_DEFINITION_START(CColouredOctoMap,MAPS_IMPEXP)
+				double resolution;	//!< The finest resolution of the octomap (default: 0.10 meters)
+				mrpt::maps::CColouredOctoMap::TInsertionOptions   insertionOpts;	//!< Observations insertion options
+				mrpt::maps::CColouredOctoMap::TLikelihoodOptions  likelihoodOpts;	//!< Probabilistic observation likelihood options
+			MAP_DEFINITION_END(CColouredOctoMap,MAPS_IMPEXP)
 
+		protected:
 			bool internal_insertObservation(const mrpt::obs::CObservation *obs,const mrpt::poses::CPose3D *robotPose);
 
 			TColourUpdate m_colour_method;		//!Method used to updated voxels colour.

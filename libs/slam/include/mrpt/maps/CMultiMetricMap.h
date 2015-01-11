@@ -149,14 +149,14 @@ namespace maps
 				}
 				return cnt;
 			}
-			bool empty() const { return size()!=0; }
+			bool empty() const { return size()==0; }
 
 			SELECTED_CLASS_PTR operator [](size_t index) const {
 				size_t cnt=0;
 				for(typename CONTAINER::const_iterator it=m_source.begin();it!=m_source.end();++it) {
 					if ( dynamic_cast<const_ptr_t>(it->pointer()) ) {
 						if (cnt++ == index) {
-							return SELECTED_CLASS_PTR(const_cast<ptr_t>(dynamic_cast<const_ptr_t>(it->pointer())));
+							return SELECTED_CLASS_PTR(*it);
 						}
 					}
 				}
@@ -171,23 +171,46 @@ namespace maps
 		template <class SELECTED_CLASS_PTR, class CONTAINER>
 		struct ProxySelectorContainerByClass
 		{
+			typedef typename SELECTED_CLASS_PTR::value_type pointee_t;
 			typedef typename SELECTED_CLASS_PTR::value_type* ptr_t;
 			typedef const typename SELECTED_CLASS_PTR::value_type* const_ptr_t;
 			ProxySelectorContainerByClass(CONTAINER &source) : m_source(source) 
 			{}
 			operator const SELECTED_CLASS_PTR & () const {
-				for(typename CONTAINER::const_iterator it=m_source.begin();it!=m_source.end();++it) {
-					if ( dynamic_cast<const_ptr_t>(it->pointer()) ) {
-						m_ret=SELECTED_CLASS_PTR(const_cast<ptr_t>(dynamic_cast<const_ptr_t>(it->pointer())));
-						return m_ret;
-					}
-				}
-				m_ret=SELECTED_CLASS_PTR(); // Not found
+				internal_update_ref();
 				return m_ret;
+			}
+			ptr_t operator ->() const {
+				internal_update_ref();
+				if (m_ret.present()) return m_ret.pointer();
+				else throw std::runtime_error("Tried to derefer NULL pointer");
+			}
+			pointee_t & operator *() const {
+				internal_update_ref();
+				if (m_ret.present()) return *m_ret.pointer();
+				else throw std::runtime_error("Tried to derefer NULL pointer");
+			}
+			bool present() const {
+				internal_update_ref();
+				return m_ret.present();
+			}
+			ptr_t pointer(){
+				internal_update_ref();
+				return m_ret.pointer();
 			}
 		private:
 			CONTAINER & m_source;
-			SELECTED_CLASS_PTR m_ret;
+			mutable SELECTED_CLASS_PTR m_ret;
+			void internal_update_ref() const {
+				for(typename CONTAINER::const_iterator it=m_source.begin();it!=m_source.end();++it) {
+					if ( dynamic_cast<const_ptr_t>(it->pointer()) ) {
+						m_ret=SELECTED_CLASS_PTR(*it);
+						return;
+					}
+				}
+				m_ret=SELECTED_CLASS_PTR(); // Not found
+			}
+
 		}; // end ProxySelectorContainerByClass
 
 		ProxyFilterContainerByClass<mrpt::maps::CSimplePointsMapPtr,TListMaps>           m_pointsMaps; //!< STL-like proxy to access this kind of maps in \ref maps

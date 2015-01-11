@@ -31,6 +31,43 @@ using namespace mrpt::poses;
 using namespace mrpt::opengl;
 using namespace mrpt::math;
 
+//  =========== Begin of Map definition ============
+MAP_DEFINITION_REGISTER("CColouredOctoMap,colourOctoMap,colorOctoMap", mrpt::maps::CColouredOctoMap)
+
+CColouredOctoMap::TMapDefinition::TMapDefinition() :
+	resolution(0.10)
+{
+}
+
+void CColouredOctoMap::TMapDefinition::loadFromConfigFile_map_specific(const mrpt::utils::CConfigFileBase  &source, const std::string &sectionNamePrefix)
+{
+	// [<sectionNamePrefix>+"_creationOpts"]
+	const std::string sSectCreation = sectionNamePrefix+string("_creationOpts");
+	MRPT_LOAD_CONFIG_VAR(resolution, double,   source,sSectCreation);
+
+	insertionOpts.loadFromConfigFile(source, sectionNamePrefix+string("_insertOpts") );
+	likelihoodOpts.loadFromConfigFile(source, sectionNamePrefix+string("_likelihoodOpts") );
+}
+
+void CColouredOctoMap::TMapDefinition::dumpToTextStream_map_specific(mrpt::utils::CStream &out) const
+{
+	LOADABLEOPTS_DUMP_VAR(resolution     , double);
+
+	this->insertionOpts.dumpToTextStream(out);
+	this->likelihoodOpts.dumpToTextStream(out);
+}
+
+mrpt::maps::CMetricMap* CColouredOctoMap::internal_CreateFromMapDefinition(const mrpt::maps::TMetricMapInitializer &_def)
+{
+	const CColouredOctoMap::TMapDefinition &def = *dynamic_cast<const CColouredOctoMap::TMapDefinition*>(&_def);
+	CColouredOctoMap *obj = new CColouredOctoMap(def.resolution);
+	obj->insertionOptions  = def.insertionOpts;
+	obj->likelihoodOptions = def.likelihoodOpts;
+	return obj;
+}
+//  =========== End of Map definition Block =========
+
+
 IMPLEMENTS_SERIALIZABLE(CColouredOctoMap, CMetricMap,mrpt::maps)
 
 /*---------------------------------------------------------------

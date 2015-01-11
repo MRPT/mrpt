@@ -25,9 +25,6 @@
 #include <mrpt/opengl/CSetOfObjects.h>
 #include <mrpt/utils/CStream.h>
 
-// Short-cut:
-#define LUT_TABLE (*(LUT.table))
-
 using namespace mrpt;
 using namespace mrpt::maps;
 using namespace mrpt::obs;
@@ -36,7 +33,58 @@ using namespace mrpt::poses;
 using namespace std;
 using namespace mrpt::math;
 
+//  =========== Begin of Map definition ============
+MAP_DEFINITION_REGISTER("CGasConcentrationGridMap2D,gasGrid", mrpt::maps::CGasConcentrationGridMap2D)
+
+CGasConcentrationGridMap2D::TMapDefinition::TMapDefinition() :
+	min_x(-2),
+	max_x(2),
+	min_y(-2),
+	max_y(2),
+	resolution(0.10f),
+	mapType(CGasConcentrationGridMap2D::mrKernelDM)
+{
+}
+
+void CGasConcentrationGridMap2D::TMapDefinition::loadFromConfigFile_map_specific(const mrpt::utils::CConfigFileBase  &source, const std::string &sectionNamePrefix)
+{
+	// [<sectionNamePrefix>+"_creationOpts"]
+	const std::string sSectCreation = sectionNamePrefix+string("_creationOpts");
+	MRPT_LOAD_CONFIG_VAR(min_x, float,   source,sSectCreation);
+	MRPT_LOAD_CONFIG_VAR(max_x, float,   source,sSectCreation);
+	MRPT_LOAD_CONFIG_VAR(min_y, float,   source,sSectCreation);
+	MRPT_LOAD_CONFIG_VAR(max_y, float,   source,sSectCreation);
+	MRPT_LOAD_CONFIG_VAR(resolution, float,   source,sSectCreation);
+	mapType = source.read_enum<CGasConcentrationGridMap2D::TMapRepresentation>(sSectCreation,"mapType",mapType);
+
+	insertionOpts.loadFromConfigFile(source, sectionNamePrefix+string("_insertOpts") );
+}
+
+void CGasConcentrationGridMap2D::TMapDefinition::dumpToTextStream_map_specific(mrpt::utils::CStream &out) const
+{
+	out.printf("MAP TYPE                                  = %s\n", mrpt::utils::TEnumType<CGasConcentrationGridMap2D::TMapRepresentation>::value2name(mapType).c_str() );
+	LOADABLEOPTS_DUMP_VAR(min_x         , float);
+	LOADABLEOPTS_DUMP_VAR(max_x         , float);
+	LOADABLEOPTS_DUMP_VAR(min_y         , float);
+	LOADABLEOPTS_DUMP_VAR(max_y         , float);
+	LOADABLEOPTS_DUMP_VAR(resolution         , float);
+
+	this->insertionOpts.dumpToTextStream(out);
+}
+
+mrpt::maps::CMetricMap* CGasConcentrationGridMap2D::internal_CreateFromMapDefinition(const mrpt::maps::TMetricMapInitializer &_def)
+{
+	const CGasConcentrationGridMap2D::TMapDefinition &def = *dynamic_cast<const CGasConcentrationGridMap2D::TMapDefinition*>(&_def);
+	CGasConcentrationGridMap2D *obj = new CGasConcentrationGridMap2D(def.mapType,def.min_x,def.max_x,def.min_y,def.max_y,def.resolution );
+	obj->insertionOptions  = def.insertionOpts;
+	return obj;
+}
+//  =========== End of Map definition Block =========
+
 IMPLEMENTS_SERIALIZABLE(CGasConcentrationGridMap2D, CRandomFieldGridMap2D,mrpt::maps)
+
+// Short-cut:
+#define LUT_TABLE (*(LUT.table))
 
 /*---------------------------------------------------------------
 						Constructor

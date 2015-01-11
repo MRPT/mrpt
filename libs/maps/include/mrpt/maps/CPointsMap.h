@@ -884,7 +884,6 @@ namespace maps
 		template <class Derived> friend struct detail::loadFromRangeImpl;
 		template <class Derived> friend struct detail::pointmap_traits;
 
-
 	}; // End of class def.
 	DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE( CPointsMap , CMetricMap, MAPS_IMPEXP )
 

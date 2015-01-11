@@ -22,6 +22,36 @@ using namespace mrpt::utils;
 using namespace mrpt::poses;
 using namespace mrpt::math;
 
+//  =========== Begin of Map definition ============
+MAP_DEFINITION_REGISTER("CSimplePointsMap,pointsMap", mrpt::maps::CSimplePointsMap)
+
+CSimplePointsMap::TMapDefinition::TMapDefinition()
+{
+}
+
+void CSimplePointsMap::TMapDefinition::loadFromConfigFile_map_specific(const mrpt::utils::CConfigFileBase  &source, const std::string &sectionNamePrefix)
+{
+	insertionOpts.loadFromConfigFile(source, sectionNamePrefix+string("_insertOpts") );
+	likelihoodOpts.loadFromConfigFile(source, sectionNamePrefix+string("_likelihoodOpts") );
+}
+
+void CSimplePointsMap::TMapDefinition::dumpToTextStream_map_specific(mrpt::utils::CStream &out) const
+{
+	this->insertionOpts.dumpToTextStream(out);
+	this->likelihoodOpts.dumpToTextStream(out);
+}
+
+mrpt::maps::CMetricMap* CSimplePointsMap::internal_CreateFromMapDefinition(const mrpt::maps::TMetricMapInitializer &_def)
+{
+	const CSimplePointsMap::TMapDefinition &def = *dynamic_cast<const CSimplePointsMap::TMapDefinition*>(&_def);
+	CSimplePointsMap *obj = new CSimplePointsMap();
+	obj->insertionOptions  = def.insertionOpts;
+	obj->likelihoodOptions = def.likelihoodOpts;
+	return obj;
+}
+//  =========== End of Map definition Block =========
+
+
 IMPLEMENTS_SERIALIZABLE(CSimplePointsMap, CPointsMap,mrpt::maps)
 
 /*---------------------------------------------------------------

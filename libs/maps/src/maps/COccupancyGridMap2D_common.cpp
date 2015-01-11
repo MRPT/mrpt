@@ -24,16 +24,7 @@ using namespace mrpt::utils;
 using namespace mrpt::poses;
 using namespace std;
 
-
-IMPLEMENTS_SERIALIZABLE(COccupancyGridMap2D, CMetricMap,mrpt::maps)
-
-std::vector<float>		COccupancyGridMap2D::entropyTable;
-
-static const float MAX_H = 0.69314718055994531f; // ln(2)
-
-// Static lookup tables for log-odds
-CLogOddsGridMapLUT<COccupancyGridMap2D::cellType>  COccupancyGridMap2D::m_logodd_lut;
-
+//  =========== Begin of Map definition ============
 MAP_DEFINITION_REGISTER("COccupancyGridMap2D,occupancyGrid", mrpt::maps::COccupancyGridMap2D)
 
 COccupancyGridMap2D::TMapDefinition::TMapDefinition() :
@@ -47,11 +38,6 @@ COccupancyGridMap2D::TMapDefinition::TMapDefinition() :
 
 void COccupancyGridMap2D::TMapDefinition::loadFromConfigFile_map_specific(const mrpt::utils::CConfigFileBase  &source, const std::string &sectionNamePrefix)
 {
-	// Load from sections formatted like this:
-	// [<sectionName>+"_occupancyGrid_##_creationOpts"]
-	// [<sectionName>+"_occupancyGrid_##_insertOpts"]
-	// [<sectionName>+"_occupancyGrid_##_likelihoodOpts"]
-
 	// [<sectionNamePrefix>+"_creationOpts"]
 	const std::string sSectCreation = sectionNamePrefix+string("_creationOpts");
 	MRPT_LOAD_CONFIG_VAR(min_x, float,   source,sSectCreation);
@@ -70,7 +56,6 @@ void COccupancyGridMap2D::TMapDefinition::loadFromConfigFile_map_specific(const 
 
 void COccupancyGridMap2D::TMapDefinition::dumpToTextStream_map_specific(mrpt::utils::CStream &out) const
 {
-	// Common:
 	LOADABLEOPTS_DUMP_VAR(min_x         , float);
 	LOADABLEOPTS_DUMP_VAR(max_x         , float);
 	LOADABLEOPTS_DUMP_VAR(min_y         , float);
@@ -81,17 +66,24 @@ void COccupancyGridMap2D::TMapDefinition::dumpToTextStream_map_specific(mrpt::ut
 	this->likelihoodOpts.dumpToTextStream(out);
 }
 
-mrpt::maps::CMetricMap* COccupancyGridMap2D::CreateFromMapDefinition(const mrpt::maps::TMetricMapInitializer &_def)
+mrpt::maps::CMetricMap* COccupancyGridMap2D::internal_CreateFromMapDefinition(const mrpt::maps::TMetricMapInitializer &_def)
 {
 	const COccupancyGridMap2D::TMapDefinition &def = *dynamic_cast<const COccupancyGridMap2D::TMapDefinition*>(&_def);
-
 	COccupancyGridMap2D *obj = new COccupancyGridMap2D(def.min_x,def.max_x, def.min_y, def.max_y, def.resolution);
 	obj->insertionOptions  = def.insertionOpts;
 	obj->likelihoodOptions = def.likelihoodOpts;
 	return obj;
 }
+//  =========== End of Map definition Block =========
 
+IMPLEMENTS_SERIALIZABLE(COccupancyGridMap2D, CMetricMap,mrpt::maps)
 
+std::vector<float>		COccupancyGridMap2D::entropyTable;
+
+static const float MAX_H = 0.69314718055994531f; // ln(2)
+
+// Static lookup tables for log-odds
+CLogOddsGridMapLUT<COccupancyGridMap2D::cellType>  COccupancyGridMap2D::m_logodd_lut;
 
 /*---------------------------------------------------------------
 						Constructor
