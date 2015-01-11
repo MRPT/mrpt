@@ -883,7 +883,8 @@ namespace maps
 			const mrpt::utils::TColor &marks_color = mrpt::utils::TColor(0,0,255) ) const
 		{
 			MRPT_START
-			CImage		img(1,1,3);
+			using namespace mrpt::utils;
+			CImage img(1,1,3);
 			getAsImageFiltered( img, false,  true ); // in RGB
 			const bool topleft = img.isOriginTopLeft();
 			for (unsigned int i=0;i<landmarks->landmarks.size();i++)
