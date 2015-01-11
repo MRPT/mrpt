@@ -72,7 +72,6 @@ REM ===== Subroutine: Generate project dir ============
 
 set ARCH=x%ARCHN%
 set DIR=%MRPT_BASE_DIR%-%COMP%-%ARCH%
-if %KINECT%==1 set DIR=%DIR%-kinect
 if %ARCHN%==32 set ARCH_NAME=x86
 if %ARCHN%==64 set ARCH_NAME=amd64
 
@@ -121,7 +120,6 @@ cd %DIR%
 
 REM ---------------- Create compilation script ----------------
 set PATH_FIL=paths_%COMP%_%ARCH_NAME%
-if %KINECT%==1 set PATH_FIL=%PATH_FIL%-kinect
 set PATH_FIL=%PATH_FIL%.bat
 
 if NOT %COMP%==mingw set EXTRA_MINGW_PATHS=

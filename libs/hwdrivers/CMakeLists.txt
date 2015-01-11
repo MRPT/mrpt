@@ -132,6 +132,10 @@ IF(CMAKE_MRPT_HAS_SWISSRANGE)
 	INCLUDE_DIRECTORIES("${SWR_LIBMESASR_DIR}")
 ENDIF(CMAKE_MRPT_HAS_SWISSRANGE)
 
+IF(CMAKE_MRPT_HAS_OPENCV)
+	INCLUDE_DIRECTORIES(${OpenCV_INCLUDE_DIR} ${OpenCV_INCLUDE_DIRS} ${OPENCV_INCLUDE_DIRS} ${OPENCV_INCLUDEDIR})
+ENDIF(CMAKE_MRPT_HAS_OPENCV)
+
 
 # Macro declared in "DeclareMRPTLib.cmake":
 define_mrpt_lib(
@@ -186,6 +190,12 @@ IF(BUILD_mrpt-hwdrivers)
 		TARGET_LINK_LIBRARIES(mrpt-hwdrivers ${FTDI_LIBS})
 	ENDIF(CMAKE_MRPT_HAS_FTDI_SYSTEM)
 
+	# Seems to be required to link against prebuilt libavcodec, etc.
+	IF (MSVC)
+		#set_target_properties()
+		set_property(TARGET mrpt-hwdrivers APPEND_STRING PROPERTY LINK_FLAGS " /SAFESEH:NO")
+	ENDIF()
+
 	IF(CMAKE_MRPT_HAS_FREENECT)
 		# Add linking against these libs:
 		IF(NOT "${FREENECT_LIBS}" STREQUAL "")
@@ -195,7 +205,7 @@ IF(BUILD_mrpt-hwdrivers)
 			# Set libusb0.dll as DELAYLOAD, so users without that driver 
 			# still can use binaries compiled with libusb support:
 			IF (MSVC)
-				set_target_properties(mrpt-hwdrivers PROPERTIES LINK_FLAGS "/DELAYLOAD:\"libusb0.dll\"")
+				set_property(TARGET mrpt-hwdrivers APPEND_STRING PROPERTY LINK_FLAGS " /DELAYLOAD:\"libusb0.dll\"")
 			ENDIF (MSVC)
 		ENDIF(NOT "${FREENECT_LIBS}" STREQUAL "")
 		
