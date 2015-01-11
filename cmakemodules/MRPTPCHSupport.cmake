@@ -159,11 +159,11 @@ MACRO(ADD_PRECOMPILED_HEADER_TO_TARGET _targetName _input _pch_output_to_use )
   # and _pch_output_to_use
   GET_FILENAME_COMPONENT(_name ${_input} NAME)
 
-  IF( "${ARGN}" STREQUAL "0")
+  IF( ${ARGN} STREQUAL "0")
     SET(_dowarn 0)
-  ELSE( "${ARGN}" STREQUAL "0")
+  ELSE()
     SET(_dowarn 1)
-  ENDIF("${ARGN}" STREQUAL "0")
+  ENDIF()
 
 
   _PCH_GET_TARGET_COMPILE_FLAGS(_target_cflags ${_name} ${_pch_output_to_use} ${_dowarn})

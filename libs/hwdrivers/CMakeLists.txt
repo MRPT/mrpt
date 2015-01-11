@@ -155,12 +155,12 @@ IF(BUILD_mrpt-hwdrivers)
 		ENDIF(MRPT_ENABLE_PRECOMPILED_HDRS AND MSVC)
 
 		# Avoid some annoying warnings:
-		IF (CMAKE_COMPILER_IS_GNUCXX OR "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
+		IF (CMAKE_COMPILER_IS_GNUCXX OR ${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang")
 			set_source_files_properties(${xSens_MT3_FILES} ${xSens_MT4_FILES} PROPERTIES COMPILE_FLAGS "-Wno-variadic-macros")
 			# -D_... = Needed to have CLOCK_REALTIME,... in gcc
 			# -fms-extensions: Unnamed structs in unions
 			set_source_files_properties(${xSens_MT4_FILES} PROPERTIES COMPILE_FLAGS "-D_POSIX_C_SOURCE=199309L -fms-extensions") 
-		ENDIF (CMAKE_COMPILER_IS_GNUCXX OR "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
+		ENDIF ()
 
 		ADD_DEFINITIONS(-D_LOG_TO_STDOUT)
 	ENDIF(CMAKE_MRPT_HAS_xSENS_MT3 OR CMAKE_MRPT_HAS_xSENS_MT4)

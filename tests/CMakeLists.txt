@@ -7,16 +7,6 @@ PROJECT(tests)
 
 SET(EXECUTABLE_OUTPUT_PATH "${${PROJECT_NAME}_BINARY_DIR}")
 
-# Allow defining target "test"
-if(POLICY CMP0037)
-	cmake_policy(SET CMP0037 OLD)
-endif(POLICY CMP0037)
-# Allow using the LOCATION target property.
-if(POLICY CMP0026)
-	cmake_policy(SET CMP0026 OLD)
-endif(POLICY CMP0026)
-
-
 # Fix a "bug" in VS11 (MSVC 2012):
 if(MSVC)
 	add_definitions(-D_VARIADIC_MAX=10)

@@ -6,12 +6,6 @@ INCLUDE(../cmakemodules/AssureCMakeRootFile.cmake) # Avoid user mistake in CMake
 
 PROJECT(documentation)
 
-# Allow using the LOCATION target property.
-if(POLICY CMP0026)
-	cmake_policy(SET CMP0026 OLD)
-endif(POLICY CMP0026)
-
-
 IF(UNIX)
 	add_subdirectory(man-pages)
 ENDIF(UNIX)

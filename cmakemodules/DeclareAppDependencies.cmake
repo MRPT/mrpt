@@ -36,12 +36,12 @@ macro(DeclareAppDependencies name)
 		
 		FOREACH (_DEP ${ALL_DEPS})
 			# Link:
-			IF(CMAKE_COMPILER_IS_GNUCXX OR "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
+			IF(CMAKE_COMPILER_IS_GNUCXX OR ${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang")
 				get_property(_LIB_HDRONLY GLOBAL PROPERTY "${_DEP}_LIB_IS_HEADERS_ONLY")
 				if (NOT _LIB_HDRONLY)
 					TARGET_LINK_LIBRARIES(${name} ${_DEP}${MRPT_LINKER_LIBS_POSTFIX})
 				endif (NOT _LIB_HDRONLY)
-			ENDIF(CMAKE_COMPILER_IS_GNUCXX OR "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
+			ENDIF()
 			
 			# Include:
 			STRING(REGEX REPLACE "mrpt-(.*)" "\\1" DEP_MRPT_NAME ${_DEP})
@@ -56,7 +56,7 @@ macro(DeclareAppDependencies name)
 			endif (${BUILD_mrpt-${DEP_MRPT_NAME}} STREQUAL "OFF")
 
 		ENDFOREACH (_DEP)
-	ENDIF (NOT "${ALL_DEPS}" STREQUAL "")
+	ENDIF ()
 	
 	# Impossible to build? 
 	if (NOT AUX_ALL_DEPS_BUILD)
