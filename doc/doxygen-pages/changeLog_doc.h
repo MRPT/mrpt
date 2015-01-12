@@ -14,7 +14,11 @@
 
 <a name="1.3.1">
   <h2>Version 1.3.1: (Under development) </h2></a>
-	- (No changes yet!)
+	- <b>Most important changes:</b>
+		- (none yet)
+	- <b>Detailed list of changes:</b>
+		- BUG FIXES:
+			- Fix ocasional (false) failure of RANSAC unit tests due to their non-deterministic nature.
 
 <hr>
 <a name="1.3.0">
