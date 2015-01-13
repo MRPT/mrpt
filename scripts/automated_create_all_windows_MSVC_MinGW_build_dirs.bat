@@ -12,7 +12,7 @@ REM                              Jose Luis Blanco, 2011-15
 REM =========================================================
 
 REM  === THIS IS WHERE MRPT SOURCE TREE IS FROM THE CWD ===
-set MRPT_BASE_DIR=mrpt-1.3.0
+set MRPT_BASE_DIR=mrpt
 
 REM =================== SET ALL IMPORTANT PATHS ===================
 
@@ -28,7 +28,7 @@ REM  (NOTE: Use "/" for paths in this one)
 set MINGW_ROOT=E:/MinGW
 set MINGW_ROOT_BKSLH=E:\MinGW
 REM === wxWidgets directory base name will be: %WX_ROOT%-win%ARCHN%-%COMP%
-set WX_ROOT=E:/code/wxWidgets-2.8.12
+set WX_ROOT=E:/code/wxWidgets-3.0.2
 REM MSVC Redistributables: %MSVC_REDIST_BASE_DIR%/%COMP%/vcredist_%ARCH%.exe
 set MSVC_REDIST_BASE_DIR=E:/code/MSVC_Redist
 
@@ -97,7 +97,7 @@ set CMAKE_EXTRA3=
 
 set FFMPEGDIR=E:/code/ffmpeg-win%ARCHN%-dev
 if %ARCHN%==32 set WXLIBDIR=%WXDIR%/lib/vc_dll
-if %ARCHN%==64 set WXLIBDIR=%WXDIR%/lib/vc_amd64_dll
+if %ARCHN%==64 set WXLIBDIR=%WXDIR%/lib/vc_x64_dll
 
 GOTO :subGen_common
 
@@ -162,7 +162,7 @@ cd ..
 rem UPDATE THE "BUILD ALL" SCRIPT
 echo cd %CD% >> BUILD_ALL_MRPT.bat
 echo cd %DIR% >> BUILD_ALL_MRPT.bat
-echo AUTOBUILD.bat >> BUILD_ALL_MRPT.bat
+echo call AUTOBUILD.bat >> BUILD_ALL_MRPT.bat
 
 
 REM End of Subroutine

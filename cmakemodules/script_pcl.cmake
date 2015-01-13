@@ -16,11 +16,11 @@ IF(NOT DISABLE_PCL)
 	find_package(PCL COMPONENTS io common registration visualization segmentation surface QUIET)
 	if (PCL_FOUND)
 		# Filter: It seems clang + c++11 fails to build against PCL (for clang <3.5):
-		if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang" AND NOT CMAKE_MRPT_CLANG_VERSION GREATER 34)
+		if (${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang" AND NOT CMAKE_MRPT_CLANG_VERSION GREATER 34)
 			MESSAGE(STATUS "*Warning* Disabling PCL because of incompatibility between clang ${CMAKE_MRPT_CLANG_VERSION} and PCL with c++11 enabled")
 			SET(DISABLE_PCL ON)
 			RETURN()
-		endif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang" AND NOT CMAKE_MRPT_CLANG_VERSION GREATER 34)
+		endif ()
 
 		SET(CMAKE_MRPT_HAS_PCL 1)
 		SET(CMAKE_MRPT_HAS_PCL_SYSTEM 1)
