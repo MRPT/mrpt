@@ -95,6 +95,17 @@ int main ( int argc, char** argv )
 		return 2;
 	}
 
+	//						Uncomment this to see the video modes available
+	//========================================================================================
+	//Infrared modes
+	//openni::VideoMode vm;
+	//for(unsigned int i = 0; i<infrared.getSensorInfo().getSupportedVideoModes().getSize(); i++)
+	//{
+	//	vm = infrared.getSensorInfo().getSupportedVideoModes()[i];
+	//	printf("\n Depth mode %d: %d x %d, fps - %d Hz, pixel format - ",i, vm.getResolutionX(), vm.getResolutionY(), vm.getFps());
+	//	cout << vm.getPixelFormat();
+	//}
+
 
 	//										Create scene
 	//========================================================================================
