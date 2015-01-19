@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -123,7 +123,7 @@ namespace mrpt
 				MATDEST &outMat);
 		}
 
-		/** Conversion of poses (TPose2D,TPoint2D,..., CPoint2D,CPose3D,...) to MRPT containers (vector/matrix) */
+		/** Conversion of poses (TPose2D,TPoint2D,..., mrpt::poses::CPoint2D,CPose3D,...) to MRPT containers (vector/matrix) */
 		template <class CONTAINER,class POINT_OR_POSE>
 		CONTAINER & containerFromPoseOrPoint(CONTAINER &C, const POINT_OR_POSE &p);
 

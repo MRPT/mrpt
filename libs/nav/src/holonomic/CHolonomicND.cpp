@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -11,6 +11,7 @@
 
 #include <mrpt/nav/holonomic/CHolonomicND.h>
 #include <mrpt/utils/CStream.h>
+#include <mrpt/utils/round.h>
 #include <mrpt/math/geometry.h>
 #include <mrpt/math/ops_containers.h>
 
@@ -617,7 +618,7 @@ unsigned int CHolonomicND::direction2sector(const double a, const unsigned int N
 	Implements the writing to a CStream capability of
 	  CSerializable objects
   ---------------------------------------------------------------*/
-void  CLogFileRecord_ND::writeToStream(CStream &out,int *version) const
+void  CLogFileRecord_ND::writeToStream(mrpt::utils::CStream &out,int *version) const
 {
 	if (version)
 		*version = 1;
@@ -631,7 +632,7 @@ void  CLogFileRecord_ND::writeToStream(CStream &out,int *version) const
 /*---------------------------------------------------------------
 					readFromStream
   ---------------------------------------------------------------*/
-void  CLogFileRecord_ND::readFromStream(CStream &in,int version)
+void  CLogFileRecord_ND::readFromStream(mrpt::utils::CStream &in,int version)
 {
 	switch(version)
 	{

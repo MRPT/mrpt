@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -21,8 +21,6 @@ namespace mrpt
 	 */
 	namespace random
 	{
-		using namespace mrpt::math;
-
 		/** A thred-safe pseudo random number generator, based on an internal MT19937 randomness generator.
 		  * The base algorithm for randomness is platform-independent. See http://en.wikipedia.org/wiki/Mersenne_twister
 		  *
@@ -96,7 +94,7 @@ namespace mrpt
 				}
 
 				/** Fills the given matrix with independent, uniformly distributed samples.
-				  * Matrix classes can be CMatrixTemplateNumeric or CMatrixFixedNumeric
+				  * Matrix classes can be mrpt::math::CMatrixTemplateNumeric or mrpt::math::CMatrixFixedNumeric
 				  * \sa drawUniform
   				  */
 				template <class MAT>
@@ -143,7 +141,7 @@ namespace mrpt
 				}
 
 				/** Fills the given matrix with independent, 1D-normally distributed samples.
-				  * Matrix classes can be CMatrixTemplateNumeric or CMatrixFixedNumeric
+				  * Matrix classes can be mrpt::math::CMatrixTemplateNumeric or mrpt::math::CMatrixFixedNumeric
 				  * \sa drawGaussian1D
   				  */
 				template <class MAT>
@@ -183,7 +181,7 @@ namespace mrpt
 				 template <typename T>
 				 void  drawGaussianMultivariate(
 					std::vector<T>		&out_result,
-					const CMatrixTemplateNumeric<T>	&cov,
+					const mrpt::math::CMatrixTemplateNumeric<T>	&cov,
 					const std::vector<T>*  mean = NULL
 					);
 
@@ -311,7 +309,7 @@ namespace mrpt
 		}
 
 		/** Fills the given matrix with independent, uniformly distributed samples.
-		  * Matrix classes can be CMatrixTemplateNumeric or CMatrixFixedNumeric
+		  * Matrix classes can be mrpt::math::CMatrixTemplateNumeric or mrpt::math::CMatrixFixedNumeric
 		  * \sa matrixRandomNormal
 		  */
 		template <class MAT>
@@ -340,7 +338,7 @@ namespace mrpt
 		}
 
 		/** Fills the given matrix with independent, normally distributed samples.
-		  * Matrix classes can be CMatrixTemplateNumeric or CMatrixFixedNumeric
+		  * Matrix classes can be mrpt::math::CMatrixTemplateNumeric or mrpt::math::CMatrixFixedNumeric
 		  * \sa matrixRandomUni
 		  */
 		template <class MAT>
@@ -395,7 +393,7 @@ namespace mrpt
 		 */
 		template <typename T>
 		void  randomNormalMultiDimensional(
-			const CMatrixTemplateNumeric<T>	&cov,
+			const mrpt::math::CMatrixTemplateNumeric<T>	&cov,
 			std::vector<T>		&out_result)
 		 {
 			randomGenerator.drawGaussianMultivariate(out_result,cov);
@@ -413,7 +411,7 @@ namespace mrpt
 		 */
 		 template <typename T>
 		 void  randomNormalMultiDimensionalMany(
-			const CMatrixTemplateNumeric<T>	&cov,
+			const mrpt::math::CMatrixTemplateNumeric<T>	&cov,
 			size_t							desiredSamples,
 			std::vector< std::vector<T> >	&ret,
 			std::vector<T>					*samplesLikelihoods = NULL)

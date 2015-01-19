@@ -16,7 +16,8 @@ PROJECT(simul_beacons)
 # ---------------------------------------------
 # Define the executable target:
 ADD_EXECUTABLE(simul-beacons
-               simul-beacons-main.cpp)
+               simul-beacons-main.cpp
+			    ${MRPT_VERSION_RC_FILE})
 
 SET(TMP_TARGET_NAME "simul-beacons")
 

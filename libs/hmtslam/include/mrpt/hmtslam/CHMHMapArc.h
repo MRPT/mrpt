@@ -2,14 +2,14 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 #ifndef CHMHMapArc_H
 #define CHMHMapArc_H
 
-#include <mrpt/slam/CSensoryFrame.h>
+#include <mrpt/obs/CSensoryFrame.h>
 #include <mrpt/hmtslam/CHMHMapNode.h>
 #include <mrpt/utils/CSerializable.h>
 
@@ -17,7 +17,6 @@ namespace mrpt
 {
 	namespace hmtslam
 	{
-		using namespace mrpt::slam;
 		class HMTSLAM_IMPEXP CHierarchicalMHMap;
 
 		/** A class for representing an arc between two nodes in a hierarchical, multi-hypothesis map.
@@ -47,9 +46,8 @@ namespace mrpt
 			  */
 			CHMHMapNode::TNodeID	m_nodeFrom, m_nodeTo;
 
-			/** The hierarchical graph in which this object is into.
-			  */
-			safe_ptr<CHierarchicalMHMap>	m_parent;
+			/** The hierarchical graph in which this object is into. */
+			mrpt::utils::safe_ptr<CHierarchicalMHMap>	m_parent;
 
 
 			 /** Event handler to be called just before a node is being destroyed: it should be called only for nodes involved in the arc, altought other cases must be handled without effects

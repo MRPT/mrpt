@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -232,7 +232,7 @@ public:
 	{
 		if (this == &other)
 			return true;
-		if (m_rows != other.m_rows || m_cols != m_cols)
+		if (m_rows != other.m_rows || m_cols != other.m_cols)
 			return false;
 		for (XsSize r = 0; r < m_rows; ++r)
 			for (XsSize c = 0; c < m_cols; ++c)

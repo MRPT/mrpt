@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -31,7 +31,7 @@ TEST(TopographyReconstructPathFrom3RTK, sampleDataset )
 {
 	mrpt::poses::CPose3DInterpolator robot_path;
 
-	mrpt::slam::CRawlog  rawlog;
+	mrpt::obs::CRawlog  rawlog;
 
 	const string dataset_fil = MRPT_GLOBAL_UNITTEST_SRC_DIR + string("/share/mrpt/datasets/test_rtk_path.rawlog");
 	if (!mrpt::system::fileExists(dataset_fil))

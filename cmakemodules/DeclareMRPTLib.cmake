@@ -135,7 +135,10 @@ macro(internal_define_mrpt_lib name headers_only is_metalib)
 	IF (NOT ${headers_only})
 
 		# A libray target:
-		ADD_LIBRARY(mrpt-${name}   ${all_${name}_srcs})
+		ADD_LIBRARY(mrpt-${name}   
+			${all_${name}_srcs}      # sources
+			${MRPT_VERSION_RC_FILE}  # Only !="" in Win32: the .rc file with version info
+			)
 
 	ELSE(NOT ${headers_only})
 
@@ -168,26 +171,26 @@ macro(internal_define_mrpt_lib name headers_only is_metalib)
 				
 				# Link "-lmrpt-name", only for GCC/CLang and if both THIS and the dependence are non-header-only:
 				IF(NOT ${headers_only})
-					IF("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang" OR CMAKE_COMPILER_IS_GNUCXX)
+					IF(${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang" OR CMAKE_COMPILER_IS_GNUCXX)
 						get_property(_LIB_HDRONLY GLOBAL PROPERTY "${DEP}_LIB_IS_HEADERS_ONLY")
 						IF(NOT _LIB_HDRONLY)
 							#MESSAGE(STATUS "adding link dep: mrpt-${name} -> ${DEP}")
 							LIST(APPEND AUX_EXTRA_LINK_LIBS ${DEP}${MRPT_LINKER_LIBS_POSTFIX})
 						ENDIF(NOT _LIB_HDRONLY)
-					ENDIF("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang" OR CMAKE_COMPILER_IS_GNUCXX)
+					ENDIF()
 				ENDIF(NOT ${headers_only})
 				
 				# Append to list of mrpt-* lib dependences:
 				LIST(APPEND AUX_DEPS_LIST ${DEP})
 				
 				# Check if all dependencies are to be build: 
-				if ("BUILD_mrpt-${DEP_MRPT_NAME}" STREQUAL "OFF")
+				if ("${BUILD_mrpt-${DEP_MRPT_NAME}}" STREQUAL "OFF")
 					SET(AUX_ALL_DEPS_BUILD 0)
 					MESSAGE(STATUS "*Warning*: Lib mrpt-${name} cannot be built because dependency mrpt-${DEP_MRPT_NAME} has been disabled!")
-				endif ("BUILD_mrpt-${DEP_MRPT_NAME}" STREQUAL "OFF")
+				endif ()
 				
 			ENDIF(NOT "${DEP_MRPT_NAME}" STREQUAL "")
-		ENDIF (${DEP} MATCHES "mrpt-")		
+		ENDIF (${DEP} MATCHES "mrpt-")
 	ENDFOREACH(DEP)
 	
 	# Impossible to build? 

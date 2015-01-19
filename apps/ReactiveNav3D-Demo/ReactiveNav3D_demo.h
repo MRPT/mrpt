@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -12,7 +12,7 @@
 #include <mrpt/opengl.h>
 #include <mrpt/opengl/CPlanarLaserScan.h>
 #include <mrpt/utils/CObserver.h>
-#include <mrpt/slam/COccupancyGridMap2D.h>
+#include <mrpt/maps/COccupancyGridMap2D.h>
 #include <mrpt/utils/CRobotSimulator.h>
 #include <mrpt/gui.h>
 #include <mrpt/utils/round.h>
@@ -24,8 +24,11 @@
 using namespace mrpt;
 using namespace mrpt::nav;
 using namespace mrpt::opengl;
-using namespace mrpt::slam;
+using namespace mrpt::maps;
+using namespace mrpt::obs;
 using namespace mrpt::gui;
+using namespace mrpt::utils;
+using namespace mrpt::poses;
 
 class MyObserver : public mrpt::utils::CObserver
 {
@@ -66,8 +69,9 @@ public:
 	unsigned int		m_columns;
 	float				m_std_error;
 
-	void CorrectFloorPoints(const CPose3D &kinectrelpose)
+	void CorrectFloorPoints(const mrpt::poses::CPose3D &kinectrelpose)
 	{
+		using namespace mrpt::math;
 		TSegment3D ray;
 		TPoint3D p1,p2,pint(0,0,0);
 		TObject3D pintobj;
@@ -100,8 +104,9 @@ public:
 	}
 
 
-	void CorrectCeiling(const CPose3D &kinectrelpose, float height)
+	void CorrectCeiling(const mrpt::poses::CPose3D &kinectrelpose, float height)
 	{
+		using namespace mrpt::math;
 		TSegment3D ray;
 		TPoint3D p1,p2,pint(0,0,0);
 		TObject3D pintobj;
@@ -135,8 +140,9 @@ public:
 	}
 
 
-	void CorrectRanges(const CPose3D &kinectrelpose)
+	void CorrectRanges(const mrpt::poses::CPose3D &kinectrelpose)
 	{
+		using namespace std;
 		vector <float> x, y, z;
 		vector <bool> deletion;
 
@@ -158,79 +164,78 @@ public:
 
 
 
-	void KinectScan(const vector <COccupancyGridMap2D> &m_maps, const vector <float> &heights, const CPose3D &robotpose, const CPose3D &kinectrelpose)
+	void KinectScan(const std::vector<mrpt::maps::COccupancyGridMap2D> &m_maps, const std::vector<float> &heights, const mrpt::poses::CPose3D &robotpose, const mrpt::poses::CPose3D &kinectrelpose)
 	{
-	unsigned int acc_factor = max(1,mrpt::utils::round<double>(80.0/m_columns));
-	float h = 0, incrz;
-	CObservation2DRangeScan m_auxlaser;
-	CPose2D scanpose2d;
-	TPoint3D point;
-	CSimplePointsMap row_points;
-	row_points.insertionOptions.minDistBetweenLaserPoints = 0;
-	m_points.clear();
+		unsigned int acc_factor = std::max(1,mrpt::utils::round<double>(80.0/m_columns));
+		float h = 0, incrz;
+		CObservation2DRangeScan m_auxlaser;
+		mrpt::poses::CPose2D scanpose2d;
+		mrpt::math::TPoint3D point;
+		CSimplePointsMap row_points;
+		row_points.insertionOptions.minDistBetweenLaserPoints = 0;
+		m_points.clear();
 
-	scanpose2d.x(robotpose[0]);
-	scanpose2d.y(robotpose[1]);
-	scanpose2d.phi(robotpose[3]);
-	m_auxlaser.setSensorPose(kinectrelpose);
-	m_auxlaser.aperture = m_fov_h;
-	//m_auxlaser.beamAperture = 0.01;  //Optional
+		scanpose2d.x(robotpose[0]);
+		scanpose2d.y(robotpose[1]);
+		scanpose2d.phi(robotpose[3]);
+		m_auxlaser.setSensorPose(kinectrelpose);
+		m_auxlaser.aperture = m_fov_h;
+		//m_auxlaser.beamAperture = 0.01;  //Optional
 
-	//For each map
-	for (unsigned int k=0;k<m_maps.size();k++)
-	{
-		//acc_factor is used to get a higher resolution
-		m_maps[k].laserScanSimulator( m_auxlaser, scanpose2d, 0.5f, acc_factor*m_columns, m_std_error, 1, 0);
-		row_points.insertObservation(&m_auxlaser);
-
-		for (unsigned int i=0;i<m_rows;i++)
+		//For each map
+		for (unsigned int k=0;k<m_maps.size();k++)
 		{
-			for (unsigned int j=0;j<m_columns;j++)
-			{
-				if (row_points.size() > acc_factor*j)
-				{
-					row_points.getPoint(acc_factor*j,point.x,point.y,point.z);
-					incrz = kinectrelpose.distance3DTo(point.x,point.y,point.z)*tan((float(i)/(m_rows-1)-0.5)*m_fov_v+m_pitch_angle)*cos((float(j)/(m_columns-1)-0.5)*m_fov_h);
-					point.z = point.z + incrz;
+			//acc_factor is used to get a higher resolution
+			m_maps[k].laserScanSimulator( m_auxlaser, scanpose2d, 0.5f, acc_factor*m_columns, m_std_error, 1, 0);
+			row_points.insertObservation(&m_auxlaser);
 
-					//Points which belong to their height level are inserted. Otherwise they are deleted.
-					if (m_maps.size() == 1)
+			for (unsigned int i=0;i<m_rows;i++)
+			{
+				for (unsigned int j=0;j<m_columns;j++)
+				{
+					if (row_points.size() > acc_factor*j)
 					{
-						m_points.insertPoint(point);
-					}
-					else
-					{
-						if (k == 0)
+						row_points.getPoint(acc_factor*j,point.x,point.y,point.z);
+						incrz = kinectrelpose.distance3DTo(point.x,point.y,point.z)*tan((float(i)/(m_rows-1)-0.5)*m_fov_v+m_pitch_angle)*cos((float(j)/(m_columns-1)-0.5)*m_fov_h);
+						point.z = point.z + incrz;
+
+						//Points which belong to their height level are inserted. Otherwise they are deleted.
+						if (m_maps.size() == 1)
 						{
-							if (point.z < heights[k]) {m_points.insertPoint(point);}
-						}
-						else if (k == m_maps.size() - 1)
-						{
-							if (point.z >= h) {m_points.insertPoint(point);}
+							m_points.insertPoint(point);
 						}
 						else
 						{
-							if ((point.z >= h)&&(point.z < h + heights[k])) {m_points.insertPoint(point);}
+							if (k == 0)
+							{
+								if (point.z < heights[k]) {m_points.insertPoint(point);}
+							}
+							else if (k == m_maps.size() - 1)
+							{
+								if (point.z >= h) {m_points.insertPoint(point);}
+							}
+							else
+							{
+								if ((point.z >= h)&&(point.z < h + heights[k])) {m_points.insertPoint(point);}
+							}
 						}
 					}
 				}
 			}
+			row_points.clear();
+			h = h + heights[k];
 		}
-		row_points.clear();
-		h = h + heights[k];
-	}
 
-	CorrectFloorPoints(kinectrelpose);
-	CorrectCeiling(kinectrelpose, 3);  //Default: ceiling height = 3 meters
-	CorrectRanges(kinectrelpose);
-
+		CorrectFloorPoints(kinectrelpose);
+		CorrectCeiling(kinectrelpose, 3);  //Default: ceiling height = 3 meters
+		CorrectRanges(kinectrelpose);
 	}
 };
 
 class CShortTermMemory {
 public:
 	bool								is_active;
-	vector <slam::COccupancyGridMap2D>	obsgrids;
+	std::vector <mrpt::maps::COccupancyGridMap2D>	obsgrids;
 	float								vision_limit;
 	float								likelihood_incr;
 	float								likelihood_decr;
@@ -245,8 +250,10 @@ public:
 		return dividend;
 	}
 
-	void updateObsGrids(float incrx, float incry, float phi, const vector<CRobotKinects> &kinects, const vector<float> &heights )
+	void updateObsGrids(float incrx, float incry, float phi, const std::vector<CRobotKinects> &kinects, const std::vector<float> &heights )
 	{
+		using namespace std;
+		using mrpt::utils::square;
 		//First, move the robot respect to the grid and adjust the likelihood values in the grid according to that movement
 		//-----------------------------------------------------------------------------------------------------------------
 
@@ -320,7 +327,7 @@ public:
 		float angrot = -phi;
 		float aux_xpass;
 		float incr_grid_reactive = 0.2/obsgrids[0].getResolution();  //This number marks distance in meters (but it's transformed into an index)
-		TPoint3D paux;
+		mrpt::math::TPoint3D paux;
 		unsigned int index;
 		unsigned int lim_visionxn = obsgrids[0].x2idx(-vision_limit + robot_ingrid.x);
 		unsigned int lim_visionxp = obsgrids[0].x2idx(vision_limit + robot_ingrid.x);
@@ -407,15 +414,13 @@ public:
 	CPose2D							target;
 	CRobotSimulator					robotSim;
 	mrpt::nav::TRobotShape		robotShape;
-	vector <COccupancyGridMap2D>	maps;
-	vector <TRobotLaser>			lasers;
-	vector <CRobotKinects>			kinects;
+	std::vector <mrpt::maps::COccupancyGridMap2D>	maps;
+	std::vector <TRobotLaser>			lasers;
+	std::vector <CRobotKinects>			kinects;
 	CShortTermMemory				stm;
 	gui::CDisplayWindow3D			window;
 	COpenGLScenePtr					scene;
-
-
-
+	
 	bool getCurrentPoseAndSpeeds( poses::CPose2D &curPose, float &curV, float &curW)
 	{
 		robotSim.getRealPose( curPose );
@@ -432,7 +437,7 @@ public:
 	}
 
 
-	bool senseObstacles( slam::CSimplePointsMap 	&obstacles )
+	bool senseObstacles( mrpt::maps::CSimplePointsMap 	&obstacles )
 	{
 		last_pose = new_pose;
 		robotSim.getRealPose(new_pose);
@@ -494,14 +499,14 @@ public:
 		grid.loadFromBitmap(myImg,resolution);
 		maps.push_back(grid);
 
-		cout << endl << "Maps have been loaded successfully.";
+		std::cout << std::endl << "Maps have been loaded successfully.";
 	}
 
 
 	void loadConfiguration( const utils::CConfigFileBase &ini )
 	{
 		unsigned int num_lasers, num_kinects, num_levels;
-		vector <float> lasercoord, xaux, yaux;;
+		std::vector <float> lasercoord, xaux, yaux;;
 
 
 		//Read lasers params
@@ -509,8 +514,8 @@ public:
 		lasers.resize(num_lasers);
 		for (unsigned int i=1;i<=num_lasers;i++)
 		{
-			ini.read_vector("LASER_CONFIG",format("LASER%d_POSE",i), vector<float> (0), lasercoord , true);
-			mrpt::slam::CObservation2DRangeScan &scan = lasers[i-1].m_scan;
+			ini.read_vector("LASER_CONFIG",format("LASER%d_POSE",i), std::vector<float> (0), lasercoord , true);
+			mrpt::obs::CObservation2DRangeScan &scan = lasers[i-1].m_scan;
 			scan.maxRange = ini.read_float("LASER_CONFIG",format("LASER%d_MAX_RANGE",i), 50, true);
 			scan.aperture = ini.read_float("LASER_CONFIG",format("LASER%d_APERTURE",i), M_PI, true);
 			scan.stdError = ini.read_float("LASER_CONFIG",format("LASER%d_STD_ERROR",i), 0.05, true);
@@ -546,8 +551,8 @@ public:
 		for (unsigned int i=1;i<=num_levels;i++)
 		{
 			robotShape.heights[i-1] = ini.read_float("ROBOT_CONFIG",format("LEVEL%d_HEIGHT",i), 1, true);
-			ini.read_vector("ROBOT_CONFIG",format("LEVEL%d_VECTORX",i), vector<float> (0), xaux, false);
-			ini.read_vector("ROBOT_CONFIG",format("LEVEL%d_VECTORY",i), vector<float> (0), yaux, false);
+			ini.read_vector("ROBOT_CONFIG",format("LEVEL%d_VECTORX",i), std::vector<float> (0), xaux, false);
+			ini.read_vector("ROBOT_CONFIG",format("LEVEL%d_VECTORY",i), std::vector<float> (0), yaux, false);
 			ASSERT_(xaux.size() == yaux.size());
 			for (unsigned int j=0;j<xaux.size();j++)
 			{
@@ -669,7 +674,7 @@ public:
 		robotpose3d.z() = 0;
 		//The laserscans are inserted
 		{
-			vector <CPlanarLaserScanPtr> gl_scan;
+			std::vector <CPlanarLaserScanPtr> gl_scan;
 			CPlanarLaserScanPtr gl_scanind;
 
 			for (unsigned int i=0; i<lasers.size(); i++)
@@ -690,8 +695,8 @@ public:
 		//The Kinectscans are inserted
 		{
 			robotpose3d.z(0);
-			TPoint3D point;
-			vector <CPointCloudPtr> obj;
+			mrpt::math::TPoint3D point;
+			std::vector <CPointCloudPtr> obj;
 			CPointCloudPtr indobj;
 
 			for (unsigned int i=0;i<kinects.size();i++)
@@ -778,7 +783,7 @@ public:
 		//The Kinectscan is inserted
 		{
 			robotpose3d.z(0);
-			TPoint3D point;
+		 mrpt::math::TPoint3D point;
 			CPointCloudPtr obj;
 
 			for (unsigned int i=0; i<kinects.size(); i++)
@@ -824,7 +829,7 @@ public:
 	{
 		CPose2D robotpose;
 		CAbstractReactiveNavigationSystem::TNavigationParams navparams;
-		navparams.target = TPoint2D(x,y);
+		navparams.target = mrpt::math::TPoint2D(x,y);
 		navparams.targetAllowedDistance = targetAllowedDistance;
 		navparams.targetIsRelative = targetIsRelative;
 		if (targetIsRelative == 0)

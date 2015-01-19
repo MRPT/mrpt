@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -85,9 +85,9 @@ namespace mrpt
 	{
 		class CStream;
 
-		CStream BASE_IMPEXP & operator<<(CStream&s, const mrpt::math::CVectorFloat  &a);
-		CStream BASE_IMPEXP & operator<<(CStream&s, const mrpt::math::CVectorDouble &a);
-		CStream BASE_IMPEXP & operator>>(CStream&in, mrpt::math::CVectorDouble &a);
-		CStream BASE_IMPEXP & operator>>(CStream&in, mrpt::math::CVectorFloat &a);
+		CStream BASE_IMPEXP & operator<<(mrpt::utils::CStream&s, const mrpt::math::CVectorFloat  &a);
+		CStream BASE_IMPEXP & operator<<(mrpt::utils::CStream&s, const mrpt::math::CVectorDouble &a);
+		CStream BASE_IMPEXP & operator>>(mrpt::utils::CStream&in, mrpt::math::CVectorDouble &a);
+		CStream BASE_IMPEXP & operator>>(mrpt::utils::CStream&in, mrpt::math::CVectorFloat &a);
 	}
 }

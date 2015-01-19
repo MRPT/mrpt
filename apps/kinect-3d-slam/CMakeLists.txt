@@ -12,7 +12,8 @@ PROJECT(kinect_3d_slam)
 # ---------------------------------------------
 # Define the executable target:
 ADD_EXECUTABLE(kinect-3d-slam
-               kinect-3d-slam_main.cpp)
+               kinect-3d-slam_main.cpp
+			    ${MRPT_VERSION_RC_FILE})
 
 SET(TMP_TARGET_NAME "kinect-3d-slam")
 

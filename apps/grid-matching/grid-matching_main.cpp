@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -17,9 +17,9 @@
 #include <mrpt/math/ops_containers.h>
 #include <mrpt/math/wrap2pi.h>
 #include <mrpt/slam/CGridMapAligner.h>
-#include <mrpt/slam/CSimpleMap.h>
-#include <mrpt/slam/CSensoryFrame.h>
-#include <mrpt/slam/CMultiMetricMap.h>
+#include <mrpt/maps/CSimpleMap.h>
+#include <mrpt/obs/CSensoryFrame.h>
+#include <mrpt/maps/CMultiMetricMap.h>
 #include <mrpt/gui.h>
 #include <mrpt/system/datetime.h>
 #include <mrpt/system/filesystem.h>
@@ -34,10 +34,13 @@
 using namespace mrpt;
 using namespace mrpt::utils;
 using namespace mrpt::slam;
+using namespace mrpt::maps;
+using namespace mrpt::obs;
 using namespace mrpt::opengl;
 using namespace mrpt::math;
 using namespace mrpt::gui;
 using namespace mrpt::random;
+using namespace mrpt::poses;
 using namespace std;
 
 
@@ -109,27 +112,22 @@ void do_grid_align()
 		cout << "Map: " << fil_grid1 << endl;
 	}
 
-	CMultiMetricMap			the_map1,the_map2;
+	CMultiMetricMap the_map1,the_map2;
 
-	TSetOfMetricMapInitializers	map_inits;
+	TSetOfMetricMapInitializers map_inits;
 	{
-		TMetricMapInitializer	map_init;
-		map_init.metricMapClassType = CLASS_ID( COccupancyGridMap2D );
-		map_init.occupancyGridMap2D_options.resolution = 0.05;
-		//map_init.m_disableSaveAs3DObject = true;
-
-		map_init.occupancyGridMap2D_options.insertionOpts.maxOccupancyUpdateCertainty = 0.8;
-		map_init.occupancyGridMap2D_options.insertionOpts.maxDistanceInsertion = 30;
-
-		map_inits.push_back(map_init);
+		COccupancyGridMap2D::TMapDefinition def;
+		def.resolution = 0.05;
+		def.insertionOpts.maxOccupancyUpdateCertainty = 0.8;
+		def.insertionOpts.maxDistanceInsertion = 30;
+		map_inits.push_back(def);
 	}
 
 	if (!SKIP_ICP_STAGE)
 	{
-		TMetricMapInitializer	map_init;
-		map_init.metricMapClassType = CLASS_ID( CSimplePointsMap );
-		map_init.pointsMapOptions_options.insertionOpts.minDistBetweenLaserPoints = 0.10;
-		map_inits.push_back(map_init);
+		CSimplePointsMap::TMapDefinition def;
+		def.insertionOpts.minDistBetweenLaserPoints = 0.10;
+		map_inits.push_back(def);
 	}
 
 

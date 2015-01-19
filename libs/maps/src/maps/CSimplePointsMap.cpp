@@ -2,26 +2,57 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
 #include "maps-precomp.h" // Precomp header
 
-#include <mrpt/slam/CSimplePointsMap.h>
+#include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/utils/CStream.h>
 
 #include "CPointsMap_crtp_common.h"
 
 using namespace std;
 using namespace mrpt;
-using namespace mrpt::slam;
+using namespace mrpt::maps;
+using namespace mrpt::obs;
 using namespace mrpt::utils;
 using namespace mrpt::poses;
 using namespace mrpt::math;
 
-IMPLEMENTS_SERIALIZABLE(CSimplePointsMap, CPointsMap,mrpt::slam)
+//  =========== Begin of Map definition ============
+MAP_DEFINITION_REGISTER("CSimplePointsMap,pointsMap", mrpt::maps::CSimplePointsMap)
+
+CSimplePointsMap::TMapDefinition::TMapDefinition()
+{
+}
+
+void CSimplePointsMap::TMapDefinition::loadFromConfigFile_map_specific(const mrpt::utils::CConfigFileBase  &source, const std::string &sectionNamePrefix)
+{
+	insertionOpts.loadFromConfigFile(source, sectionNamePrefix+string("_insertOpts") );
+	likelihoodOpts.loadFromConfigFile(source, sectionNamePrefix+string("_likelihoodOpts") );
+}
+
+void CSimplePointsMap::TMapDefinition::dumpToTextStream_map_specific(mrpt::utils::CStream &out) const
+{
+	this->insertionOpts.dumpToTextStream(out);
+	this->likelihoodOpts.dumpToTextStream(out);
+}
+
+mrpt::maps::CMetricMap* CSimplePointsMap::internal_CreateFromMapDefinition(const mrpt::maps::TMetricMapInitializer &_def)
+{
+	const CSimplePointsMap::TMapDefinition &def = *dynamic_cast<const CSimplePointsMap::TMapDefinition*>(&_def);
+	CSimplePointsMap *obj = new CSimplePointsMap();
+	obj->insertionOptions  = def.insertionOpts;
+	obj->likelihoodOptions = def.likelihoodOpts;
+	return obj;
+}
+//  =========== End of Map definition Block =========
+
+
+IMPLEMENTS_SERIALIZABLE(CSimplePointsMap, CPointsMap,mrpt::maps)
 
 /*---------------------------------------------------------------
 						Constructor
@@ -83,10 +114,10 @@ void  CSimplePointsMap::copyFrom(const CPointsMap &obj)
    Implements the writing to a CStream capability of
      CSerializable objects
   ---------------------------------------------------------------*/
-void  CSimplePointsMap::writeToStream(CStream &out, int *version) const
+void  CSimplePointsMap::writeToStream(mrpt::utils::CStream &out, int *version) const
 {
 	if (version)
-		*version = 8;
+		*version = 9;
 	else
 	{
 		uint32_t n = x.size();
@@ -100,7 +131,7 @@ void  CSimplePointsMap::writeToStream(CStream &out, int *version) const
 			out.WriteBufferFixEndianness(&y[0],n);
 			out.WriteBufferFixEndianness(&z[0],n);
 		}
-		out << m_disableSaveAs3DObject;  // Insertion as 3D:
+		out << genericMapParams;  // v9
 
 		insertionOptions.writeToStream(out); // version 9: insert options are saved with its own method:
 		likelihoodOptions.writeToStream(out); // Added in version 5:
@@ -112,11 +143,12 @@ void  CSimplePointsMap::writeToStream(CStream &out, int *version) const
    Implements the reading from a CStream capability of
       CSerializable objects
   ---------------------------------------------------------------*/
-void  CSimplePointsMap::readFromStream(CStream &in, int version)
+void  CSimplePointsMap::readFromStream(mrpt::utils::CStream &in, int version)
 {
 	switch(version)
 	{
 	case 8:
+	case 9:
 		{
 			mark_as_modified();
 
@@ -132,7 +164,14 @@ void  CSimplePointsMap::readFromStream(CStream &in, int version)
 				in.ReadBufferFixEndianness(&y[0],n);
 				in.ReadBufferFixEndianness(&z[0],n);
 			}
-			in >> m_disableSaveAs3DObject;
+			if (version>=9)
+				in >> genericMapParams;
+			else 
+			{
+				bool disableSaveAs3DObject;
+				in >> disableSaveAs3DObject;
+				genericMapParams.enableSaveAs3DObject = !disableSaveAs3DObject;
+			}
 
 			insertionOptions.readFromStream(in);
 			likelihoodOptions.readFromStream(in);
@@ -207,7 +246,11 @@ void  CSimplePointsMap::readFromStream(CStream &in, int version)
 
 				in >> insertionOptions.maxDistForInterpolatePoints;
 
-				in >> m_disableSaveAs3DObject;
+				{
+					bool disableSaveAs3DObject;
+					in >> disableSaveAs3DObject;
+					genericMapParams.enableSaveAs3DObject = !disableSaveAs3DObject;
+				}
 			}
 
 			if (version>=3)
@@ -258,20 +301,20 @@ void  CSimplePointsMap::insertPointFast( float x, float y, float z )
 
 
 namespace mrpt {
-	namespace slam {
+	namespace maps {
 		namespace detail {
-			using mrpt::slam::CSimplePointsMap;
+			using mrpt::maps::CSimplePointsMap;
 
 			template <> struct pointmap_traits<CSimplePointsMap>
 			{
 
 				/** Helper method fot the generic implementation of CPointsMap::loadFromRangeScan(), to be called only once before inserting points - this is the place to reserve memory in lric for extra working variables. */
-				inline static void  internal_loadFromRangeScan2D_init(CSimplePointsMap &me, mrpt::slam::CPointsMap::TLaserRange2DInsertContext & lric) {
+				inline static void  internal_loadFromRangeScan2D_init(CSimplePointsMap &me, mrpt::maps::CPointsMap::TLaserRange2DInsertContext & lric) {
 					MRPT_UNUSED_PARAM(me);
 					MRPT_UNUSED_PARAM(lric);
 				}
 				/** Helper method fot the generic implementation of CPointsMap::loadFromRangeScan(), to be called once per range data */
-				inline static void  internal_loadFromRangeScan2D_prepareOneRange(CSimplePointsMap &me, const float gx,const float gy, const float gz, mrpt::slam::CPointsMap::TLaserRange2DInsertContext & lric ) {
+				inline static void  internal_loadFromRangeScan2D_prepareOneRange(CSimplePointsMap &me, const float gx,const float gy, const float gz, mrpt::maps::CPointsMap::TLaserRange2DInsertContext & lric ) {
 					MRPT_UNUSED_PARAM(me);
 					MRPT_UNUSED_PARAM(gx);
 					MRPT_UNUSED_PARAM(gy);
@@ -279,18 +322,18 @@ namespace mrpt {
 					MRPT_UNUSED_PARAM(lric);
 				}
 				/** Helper method fot the generic implementation of CPointsMap::loadFromRangeScan(), to be called after each "{x,y,z}.push_back(...);" */
-				inline static void  internal_loadFromRangeScan2D_postPushBack(CSimplePointsMap &me, mrpt::slam::CPointsMap::TLaserRange2DInsertContext & lric)  {
+				inline static void  internal_loadFromRangeScan2D_postPushBack(CSimplePointsMap &me, mrpt::maps::CPointsMap::TLaserRange2DInsertContext & lric)  {
 					MRPT_UNUSED_PARAM(me);
 					MRPT_UNUSED_PARAM(lric);
 				}
 
 				/** Helper method fot the generic implementation of CPointsMap::loadFromRangeScan(), to be called only once before inserting points - this is the place to reserve memory in lric for extra working variables. */
-				inline static void  internal_loadFromRangeScan3D_init(CSimplePointsMap &me, mrpt::slam::CPointsMap::TLaserRange3DInsertContext & lric) {
+				inline static void  internal_loadFromRangeScan3D_init(CSimplePointsMap &me, mrpt::maps::CPointsMap::TLaserRange3DInsertContext & lric) {
 					MRPT_UNUSED_PARAM(me);
 					MRPT_UNUSED_PARAM(lric);
 				}
 				/** Helper method fot the generic implementation of CPointsMap::loadFromRangeScan(), to be called once per range data */
-				inline static void  internal_loadFromRangeScan3D_prepareOneRange(CSimplePointsMap &me, const float gx,const float gy, const float gz, mrpt::slam::CPointsMap::TLaserRange3DInsertContext & lric )  {
+				inline static void  internal_loadFromRangeScan3D_prepareOneRange(CSimplePointsMap &me, const float gx,const float gy, const float gz, mrpt::maps::CPointsMap::TLaserRange3DInsertContext & lric )  {
 					MRPT_UNUSED_PARAM(me);
 					MRPT_UNUSED_PARAM(gx);
 					MRPT_UNUSED_PARAM(gy);
@@ -298,12 +341,12 @@ namespace mrpt {
 					MRPT_UNUSED_PARAM(lric);
 				}
 				/** Helper method fot the generic implementation of CPointsMap::loadFromRangeScan(), to be called after each "{x,y,z}.push_back(...);" */
-				inline static void  internal_loadFromRangeScan3D_postPushBack(CSimplePointsMap &me, mrpt::slam::CPointsMap::TLaserRange3DInsertContext & lric)  { 
+				inline static void  internal_loadFromRangeScan3D_postPushBack(CSimplePointsMap &me, mrpt::maps::CPointsMap::TLaserRange3DInsertContext & lric)  {
 					MRPT_UNUSED_PARAM(me);
 					MRPT_UNUSED_PARAM(lric);
 				}
 				/** Helper method fot the generic implementation of CPointsMap::loadFromRangeScan(), to be called once per range data, at the end */
-				inline static void  internal_loadFromRangeScan3D_postOneRange(CSimplePointsMap &me, mrpt::slam::CPointsMap::TLaserRange3DInsertContext & lric )  { 
+				inline static void  internal_loadFromRangeScan3D_postOneRange(CSimplePointsMap &me, mrpt::maps::CPointsMap::TLaserRange3DInsertContext & lric )  {
 					MRPT_UNUSED_PARAM(me);
 					MRPT_UNUSED_PARAM(lric);
 				}
@@ -317,7 +360,7 @@ void  CSimplePointsMap::loadFromRangeScan(
 		const CObservation2DRangeScan &rangeScan,
 		const CPose3D				  *robotPose)
 {
-	mrpt::slam::detail::loadFromRangeImpl<CSimplePointsMap>::templ_loadFromRangeScan(*this,rangeScan,robotPose);
+	mrpt::maps::detail::loadFromRangeImpl<CSimplePointsMap>::templ_loadFromRangeScan(*this,rangeScan,robotPose);
 }
 
 /** See CPointsMap::loadFromRangeScan() */
@@ -325,7 +368,7 @@ void  CSimplePointsMap::loadFromRangeScan(
 		const CObservation3DRangeScan &rangeScan,
 		const CPose3D				  *robotPose)
 {
-	mrpt::slam::detail::loadFromRangeImpl<CSimplePointsMap>::templ_loadFromRangeScan(*this,rangeScan,robotPose);
+	mrpt::maps::detail::loadFromRangeImpl<CSimplePointsMap>::templ_loadFromRangeScan(*this,rangeScan,robotPose);
 }
 
 // ================================ PLY files import & export virtual methods ================================

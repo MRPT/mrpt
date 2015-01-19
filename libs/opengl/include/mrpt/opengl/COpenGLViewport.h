@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -26,8 +26,6 @@ namespace mrpt
 
 	namespace opengl
 	{
-		using namespace mrpt::math;
-
 		class COpenGLScene;
 		class CRenderizable;
 
@@ -324,9 +322,9 @@ namespace mrpt
 			{
 				TLastProjectiveMatrixInfo() : eye(0,0,0),pointing(0,0,0),up(0,0,0), viewport_width(640), viewport_height(480), FOV(30), azimuth(0), elev(0), zoom(1),is_projective(true)
 				{}
-				TPoint3D 	eye;		//!< The camera is here.
-				TPoint3D 	pointing; 	//!< The camera points to here
-				TPoint3D	up; 		//!< Up vector of the camera.
+			 mrpt::math::TPoint3D 	eye;		//!< The camera is here.
+			 mrpt::math::TPoint3D 	pointing; 	//!< The camera points to here
+			 mrpt::math::TPoint3D	up; 		//!< Up vector of the camera.
 				size_t viewport_width, viewport_height; //!< In pixels. This may be smaller than the total render window.
 				float FOV; //!< FOV in degrees.
 				float azimuth, elev; //!< Camera elev & azimuth, in radians.

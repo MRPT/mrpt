@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -10,7 +10,7 @@
 #define CPathPlanningMethod_H
 
 #include <mrpt/utils/CDebugOutputCapable.h>
-#include <mrpt/slam/COccupancyGridMap2D.h>
+#include <mrpt/maps/COccupancyGridMap2D.h>
 #include <mrpt/poses/CPoint2D.h>
 
 #include <mrpt/nav/link_pragmas.h>
@@ -63,7 +63,7 @@ namespace nav
 		  * \exception std::exception On any error
 		  */
 		virtual void  computePath(
-				const mrpt::slam::COccupancyGridMap2D	&theMap,
+				const mrpt::maps::COccupancyGridMap2D	&theMap,
 				const mrpt::poses::CPose2D				&origin,
 				const mrpt::poses::CPose2D				&target,
 				std::deque<mrpt::math::TPoint2D>	&path,

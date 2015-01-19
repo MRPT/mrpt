@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -21,6 +21,7 @@
 
 using namespace mrpt::poses;
 using namespace mrpt::utils;
+using namespace mrpt::math;
 using namespace mrpt::random;
 using namespace mrpt::system;
 
@@ -55,7 +56,7 @@ CPoint2DPDFGaussian::CPoint2DPDFGaussian(
 /*---------------------------------------------------------------
 						writeToStream
   ---------------------------------------------------------------*/
-void  CPoint2DPDFGaussian::writeToStream(CStream &out,int *version) const
+void  CPoint2DPDFGaussian::writeToStream(mrpt::utils::CStream &out,int *version) const
 {
 	if (version)
 		*version = 0;
@@ -68,7 +69,7 @@ void  CPoint2DPDFGaussian::writeToStream(CStream &out,int *version) const
 /*---------------------------------------------------------------
 						readFromStream
   ---------------------------------------------------------------*/
-void  CPoint2DPDFGaussian::readFromStream(CStream &in,int version)
+void  CPoint2DPDFGaussian::readFromStream(mrpt::utils::CStream &in,int version)
 {
 	switch(version)
 	{

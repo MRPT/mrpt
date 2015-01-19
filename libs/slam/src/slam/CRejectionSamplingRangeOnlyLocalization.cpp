@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -11,14 +11,16 @@
 
 
 #include <mrpt/slam/CRejectionSamplingRangeOnlyLocalization.h>
-#include <mrpt/slam/CObservationBeaconRanges.h>
-#include <mrpt/slam/CLandmark.h>
-#include <mrpt/slam/CLandmarksMap.h>
+#include <mrpt/obs/CObservationBeaconRanges.h>
+#include <mrpt/maps/CLandmark.h>
+#include <mrpt/maps/CLandmarksMap.h>
 #include <mrpt/math/utils.h>
 
 using namespace mrpt::utils;
 using namespace mrpt::math;
 using namespace mrpt::slam;
+using namespace mrpt::maps;
+using namespace mrpt::obs;
 using namespace mrpt::random;
 using namespace mrpt::poses;
 using namespace std;
@@ -122,7 +124,7 @@ bool CRejectionSamplingRangeOnlyLocalization::setParams(
 	m_dataPerBeacon.clear();
 
 	// Minimum radius:
-	std::deque<CObservationBeaconRanges::TMeasurement>::const_iterator	it;
+	std::deque<mrpt::obs::CObservationBeaconRanges::TMeasurement>::const_iterator	it;
 	size_t																i;
 
 	// For each observation:

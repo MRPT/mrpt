@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -11,17 +11,17 @@
 
 
 #include <mrpt/utils/CStream.h>
-#include <mrpt/slam/CObservation6DFeatures.h>
+#include <mrpt/obs/CObservation6DFeatures.h>
 #include <mrpt/system/os.h>
 #include <mrpt/math/matrix_serialization.h>
 
-using namespace mrpt::slam;
+using namespace mrpt::obs;
 using namespace mrpt::utils;
 using namespace mrpt::poses;
 
 
 // This must be added to any CSerializable class implementation file.
-IMPLEMENTS_SERIALIZABLE(CObservation6DFeatures, CObservation,mrpt::slam)
+IMPLEMENTS_SERIALIZABLE(CObservation6DFeatures, CObservation,mrpt::obs)
 
 /** Default constructor */
 CObservation6DFeatures::CObservation6DFeatures( ) :
@@ -39,7 +39,7 @@ CObservation6DFeatures::TMeasurement::TMeasurement() :
 /*---------------------------------------------------------------
   Implements the writing to a CStream capability of CSerializable objects
  ---------------------------------------------------------------*/
-void  CObservation6DFeatures::writeToStream(CStream &out, int *version) const
+void  CObservation6DFeatures::writeToStream(mrpt::utils::CStream &out, int *version) const
 {
 	if (version)
 		*version = 0;
@@ -63,7 +63,7 @@ void  CObservation6DFeatures::writeToStream(CStream &out, int *version) const
 /*---------------------------------------------------------------
   Implements the reading from a CStream capability of CSerializable objects
  ---------------------------------------------------------------*/
-void  CObservation6DFeatures::readFromStream(CStream &in, int version)
+void  CObservation6DFeatures::readFromStream(mrpt::utils::CStream &in, int version)
 {
 	switch(version)
 	{

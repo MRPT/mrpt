@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -32,7 +32,7 @@ namespace mrpt
 
 		// This inline function is used everywhere, so just move it here even it's not a forward declaration!
 		/*! Returns the size of the matrix in the i'th dimension: 1=rows, 2=columns (MATLAB-compatible function)
-		  *  \note Template argument MATRIXLIKE can be: CMatrixTemplate, CMatrixTemplateNumeric, CMatrixFixedNumeric
+		  *  \note Template argument MATRIXLIKE can be: mrpt::math::CMatrixTemplate, mrpt::math::CMatrixTemplateNumeric, mrpt::math::CMatrixFixedNumeric
 		  */
 		template <class MATRIXLIKE>
 		inline size_t size( const MATRIXLIKE& m, int dim )
@@ -82,6 +82,9 @@ namespace mrpt
 		/** Radians to degrees */
 		inline long double RAD2DEG(const long double x) { return x*180.0/M_PIl; }
 #	endif
+
+#define DEG2RAD DEG2RAD  // This is required to avoid other libs (like PCL) to #define their own versions of DEG2RAD
+#define RAD2DEG RAD2DEG  // This is required to avoid other libs (like PCL) to #define their own versions of RAD2DEG
 
 		/** Returns the sign of X as "1" or "-1" */
 		template <typename T>

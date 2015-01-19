@@ -2,15 +2,15 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
 #include "maps-precomp.h" // Precomp header
 
-#include <mrpt/slam/CWirelessPowerGridMap2D.h>
-#include <mrpt/slam/CObservationWirelessPower.h>
+#include <mrpt/maps/CWirelessPowerGridMap2D.h>
+#include <mrpt/obs/CObservationWirelessPower.h>
 #include <mrpt/system/os.h>
 #include <mrpt/utils/round.h>
 #include <mrpt/utils/CTicTac.h>
@@ -19,12 +19,63 @@
 #include <mrpt/utils/CStream.h>
 
 using namespace mrpt;
-using namespace mrpt::slam;
+using namespace mrpt::maps;
+using namespace mrpt::obs;
 using namespace mrpt::utils;
 using namespace mrpt::poses;
 using namespace std;
 
-IMPLEMENTS_SERIALIZABLE(CWirelessPowerGridMap2D, CRandomFieldGridMap2D,mrpt::slam)
+
+//  =========== Begin of Map definition ============
+MAP_DEFINITION_REGISTER("CWirelessPowerGridMap2D,wifiGrid", mrpt::maps::CWirelessPowerGridMap2D)
+
+CWirelessPowerGridMap2D::TMapDefinition::TMapDefinition() :
+	min_x(-2),
+	max_x(2),
+	min_y(-2),
+	max_y(2),
+	resolution(0.10f),
+	mapType(CWirelessPowerGridMap2D::mrKernelDM)
+{
+}
+
+void CWirelessPowerGridMap2D::TMapDefinition::loadFromConfigFile_map_specific(const mrpt::utils::CConfigFileBase  &source, const std::string &sectionNamePrefix)
+{
+	// [<sectionNamePrefix>+"_creationOpts"]
+	const std::string sSectCreation = sectionNamePrefix+string("_creationOpts");
+	MRPT_LOAD_CONFIG_VAR(min_x, float,   source,sSectCreation);
+	MRPT_LOAD_CONFIG_VAR(max_x, float,   source,sSectCreation);
+	MRPT_LOAD_CONFIG_VAR(min_y, float,   source,sSectCreation);
+	MRPT_LOAD_CONFIG_VAR(max_y, float,   source,sSectCreation);
+	MRPT_LOAD_CONFIG_VAR(resolution, float,   source,sSectCreation);
+	mapType = source.read_enum<CWirelessPowerGridMap2D::TMapRepresentation>(sSectCreation,"mapType",mapType);
+
+	insertionOpts.loadFromConfigFile(source, sectionNamePrefix+string("_insertOpts") );
+}
+
+void CWirelessPowerGridMap2D::TMapDefinition::dumpToTextStream_map_specific(mrpt::utils::CStream &out) const
+{
+	out.printf("MAP TYPE                                  = %s\n", mrpt::utils::TEnumType<CWirelessPowerGridMap2D::TMapRepresentation>::value2name(mapType).c_str() );
+	LOADABLEOPTS_DUMP_VAR(min_x         , float);
+	LOADABLEOPTS_DUMP_VAR(max_x         , float);
+	LOADABLEOPTS_DUMP_VAR(min_y         , float);
+	LOADABLEOPTS_DUMP_VAR(max_y         , float);
+	LOADABLEOPTS_DUMP_VAR(resolution         , float);
+
+	this->insertionOpts.dumpToTextStream(out);
+}
+
+mrpt::maps::CMetricMap* CWirelessPowerGridMap2D::internal_CreateFromMapDefinition(const mrpt::maps::TMetricMapInitializer &_def)
+{
+	const CWirelessPowerGridMap2D::TMapDefinition &def = *dynamic_cast<const CWirelessPowerGridMap2D::TMapDefinition*>(&_def);
+	CWirelessPowerGridMap2D *obj = new CWirelessPowerGridMap2D(def.mapType,def.min_x,def.max_x,def.min_y,def.max_y,def.resolution );
+	obj->insertionOptions  = def.insertionOpts;
+	return obj;
+}
+//  =========== End of Map definition Block =========
+
+
+IMPLEMENTS_SERIALIZABLE(CWirelessPowerGridMap2D, CRandomFieldGridMap2D,mrpt::maps)
 
 /*---------------------------------------------------------------
 						Constructor
@@ -121,7 +172,7 @@ bool  CWirelessPowerGridMap2D::internal_insertObservation(
 /*---------------------------------------------------------------
 						computeObservationLikelihood
   ---------------------------------------------------------------*/
-double	 CWirelessPowerGridMap2D::computeObservationLikelihood(
+double	 CWirelessPowerGridMap2D::internal_computeObservationLikelihood(
 	const CObservation		*obs,
 	const CPose3D			&takenFrom )
 {
@@ -133,10 +184,10 @@ double	 CWirelessPowerGridMap2D::computeObservationLikelihood(
 /*---------------------------------------------------------------
   Implements the writing to a CStream capability of CSerializable objects
  ---------------------------------------------------------------*/
-void  CWirelessPowerGridMap2D::writeToStream(CStream &out, int *version) const
+void  CWirelessPowerGridMap2D::writeToStream(mrpt::utils::CStream &out, int *version) const
 {
 	if (version)
-		*version = 3;
+		*version = 4;
 	else
 	{
 		uint32_t	n;
@@ -184,6 +235,8 @@ void  CWirelessPowerGridMap2D::writeToStream(CStream &out, int *version) const
 		// New in v3:
 		out << m_average_normreadings_mean << m_average_normreadings_var << uint64_t(m_average_normreadings_count);
 
+		out << genericMapParams; // v4
+
 	}
 }
 
@@ -197,7 +250,7 @@ struct TOldCellTypeInVersion1
 /*---------------------------------------------------------------
   Implements the reading from a CStream capability of CSerializable objects
  ---------------------------------------------------------------*/
-void  CWirelessPowerGridMap2D::readFromStream(CStream &in, int version)
+void  CWirelessPowerGridMap2D::readFromStream(mrpt::utils::CStream &in, int version)
 {
 	switch(version)
 	{
@@ -205,6 +258,7 @@ void  CWirelessPowerGridMap2D::readFromStream(CStream &in, int version)
 	case 1:
 	case 2:
 	case 3:
+	case 4:
 		{
 			uint32_t	n,i,j;
 
@@ -279,6 +333,9 @@ void  CWirelessPowerGridMap2D::readFromStream(CStream &in, int version)
 				m_average_normreadings_count = N;
 			}
 
+			if (version>=4)
+				in >> genericMapParams;
+
 			m_hasToRecoverMeanAndCov = true;
 		} break;
 	default:
@@ -298,7 +355,7 @@ CWirelessPowerGridMap2D::TInsertionOptions::TInsertionOptions()
 /*---------------------------------------------------------------
 					dumpToTextStream
   ---------------------------------------------------------------*/
-void  CWirelessPowerGridMap2D::TInsertionOptions::dumpToTextStream(CStream	&out) const
+void  CWirelessPowerGridMap2D::TInsertionOptions::dumpToTextStream(mrpt::utils::CStream	&out) const
 {
 	out.printf("\n----------- [CWirelessPowerGridMap2D::TInsertionOptions] ------------ \n\n");
 	internal_dumpToTextStream_common(out);  // Common params to all random fields maps:
@@ -366,8 +423,7 @@ void  CWirelessPowerGridMap2D::saveAsMatlab3DGraph(const std::string  &filName) 
 void  CWirelessPowerGridMap2D::getAs3DObject( mrpt::opengl::CSetOfObjectsPtr	&outObj ) const
 {
 	MRPT_START
-	if (m_disableSaveAs3DObject)
-		return;
+	if (!genericMapParams.enableSaveAs3DObject) return;
 
 	CRandomFieldGridMap2D::getAs3DObject(outObj);
 

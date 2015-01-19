@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -11,21 +11,24 @@
 #include <mrpt/utils/CFileGZInputStream.h>
 #include <mrpt/utils/CConfigFile.h>
 #include <mrpt/slam/CMonteCarloLocalization2D.h>
-#include <mrpt/slam/CMultiMetricMap.h>
-#include <mrpt/slam/CSimpleMap.h>
-#include <mrpt/slam/CRawlog.h>
+#include <mrpt/maps/CMultiMetricMap.h>
+#include <mrpt/maps/CSimpleMap.h>
+#include <mrpt/obs/CRawlog.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/system/os.h>
 #include <mrpt/random.h>
 #include <gtest/gtest.h>
 
 using namespace mrpt;
+using namespace mrpt::bayes;
 using namespace mrpt::slam;
+using namespace mrpt::maps;
 using namespace mrpt::utils;
 using namespace mrpt::poses;
 using namespace mrpt::math;
 using namespace mrpt::random;
 using namespace mrpt::system;
+using namespace mrpt::obs;
 using namespace std;
 
 // Defined in tests/test_main.cpp

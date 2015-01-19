@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -26,7 +26,7 @@
 //  See http://sourceforge.net/projects/wxmathplot
 #include <mrpt/otherlibs/mathplot/mathplot.h>
 
-#include <mrpt/slam/CSensoryFrame.h>
+#include <mrpt/obs/CSensoryFrame.h>
 #include <mrpt/opengl/CPointCloudColoured.h>
 
 class CScanAnimation: public wxDialog
@@ -114,7 +114,7 @@ class CScanAnimation: public wxDialog
 		TListGlObjects  m_gl_objects;  //!< All the observations added to the map.
 
 		void RebuildMaps();
-		void BuildMapAndRefresh( mrpt::slam::CSensoryFrame *sf);
+		void BuildMapAndRefresh( mrpt::obs::CSensoryFrame *sf);
 
 };
 

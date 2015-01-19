@@ -2,30 +2,68 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
 #include "maps-precomp.h" // Precomp header
 
-#include <mrpt/slam/COctoMap.h>
-#include <mrpt/slam/CPointsMap.h>
-#include <mrpt/slam/CObservation2DRangeScan.h>
-#include <mrpt/slam/CObservation3DRangeScan.h>
+#include <mrpt/maps/COctoMap.h>
+#include <mrpt/maps/CPointsMap.h>
+#include <mrpt/obs/CObservation2DRangeScan.h>
+#include <mrpt/obs/CObservation3DRangeScan.h>
 #include <mrpt/utils/CStream.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/utils/CMemoryChunk.h>
 
 using namespace std;
 using namespace mrpt;
-using namespace mrpt::slam;
+using namespace mrpt::maps;
+using namespace mrpt::obs;
 using namespace mrpt::utils;
 using namespace mrpt::poses;
 using namespace mrpt::math;
 using namespace mrpt::opengl;
 
-IMPLEMENTS_SERIALIZABLE(COctoMap, CMetricMap,mrpt::slam)
+//  =========== Begin of Map definition ============
+MAP_DEFINITION_REGISTER("COctoMap,octoMap", mrpt::maps::COctoMap)
+
+COctoMap::TMapDefinition::TMapDefinition() :
+	resolution(0.10)
+{
+}
+
+void COctoMap::TMapDefinition::loadFromConfigFile_map_specific(const mrpt::utils::CConfigFileBase  &source, const std::string &sectionNamePrefix)
+{
+	// [<sectionNamePrefix>+"_creationOpts"]
+	const std::string sSectCreation = sectionNamePrefix+string("_creationOpts");
+	MRPT_LOAD_CONFIG_VAR(resolution, double,   source,sSectCreation);
+
+	insertionOpts.loadFromConfigFile(source, sectionNamePrefix+string("_insertOpts") );
+	likelihoodOpts.loadFromConfigFile(source, sectionNamePrefix+string("_likelihoodOpts") );
+}
+
+void COctoMap::TMapDefinition::dumpToTextStream_map_specific(mrpt::utils::CStream &out) const
+{
+	LOADABLEOPTS_DUMP_VAR(resolution     , double);
+
+	this->insertionOpts.dumpToTextStream(out);
+	this->likelihoodOpts.dumpToTextStream(out);
+}
+
+mrpt::maps::CMetricMap* COctoMap::internal_CreateFromMapDefinition(const mrpt::maps::TMetricMapInitializer &_def)
+{
+	const COctoMap::TMapDefinition &def = *dynamic_cast<const COctoMap::TMapDefinition*>(&_def);
+	COctoMap *obj = new COctoMap(def.resolution);
+	obj->insertionOptions  = def.insertionOpts;
+	obj->likelihoodOptions = def.likelihoodOpts;
+	return obj;
+}
+//  =========== End of Map definition Block =========
+
+
+IMPLEMENTS_SERIALIZABLE(COctoMap, CMetricMap,mrpt::maps)
 
 /*---------------------------------------------------------------
 						Constructor
@@ -48,14 +86,15 @@ COctoMap::~COctoMap()
    Implements the writing to a CStream capability of
      CSerializable objects
   ---------------------------------------------------------------*/
-void  COctoMap::writeToStream(CStream &out, int *version) const
+void  COctoMap::writeToStream(mrpt::utils::CStream &out, int *version) const
 {
 	if (version)
-		*version = 1;
+		*version = 2;
 	else
 	{
 		this->likelihoodOptions.writeToStream(out);
 		this->renderingOptions.writeToStream(out);  // Added in v1
+		out << genericMapParams; // v2
 
 		CMemoryChunk chunk;
 		const string	tmpFil = mrpt::system::getTempFileName();
@@ -72,15 +111,17 @@ void  COctoMap::writeToStream(CStream &out, int *version) const
    Implements the reading from a CStream capability of
       CSerializable objects
   ---------------------------------------------------------------*/
-void  COctoMap::readFromStream(CStream &in, int version)
+void  COctoMap::readFromStream(mrpt::utils::CStream &in, int version)
 {
 	switch(version)
 	{
 	case 0:
 	case 1:
+	case 2:
 		{
 			this->likelihoodOptions.readFromStream(in);
 			if (version>=1) this->renderingOptions.readFromStream(in);
+			if (version>=2) in >> genericMapParams;
 
 			this->clear();
 
@@ -103,7 +144,7 @@ void  COctoMap::readFromStream(CStream &in, int version)
 }
 
 
-bool COctoMap::internal_insertObservation(const CObservation *obs,const CPose3D *robotPose)
+bool COctoMap::internal_insertObservation(const mrpt::obs::CObservation *obs,const CPose3D *robotPose)
 {
 	octomap::point3d     sensorPt;
 	octomap::Pointcloud  scan;

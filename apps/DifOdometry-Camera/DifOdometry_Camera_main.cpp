@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -27,15 +27,13 @@ const char *default_cfg_txt =
 	";cam_mode: 1 - 640x480, 2 - 320x240, 4 - 160x120 \n"
 	"cam_mode = 2 \n\n"
 
-	";downsample: 1 - same resolution, 2 - rx/2, ry/2, 4 - rx/4, ry/4 \n"
-	"downsample = 2 \n\n"
-
 	"Set the frame rate (fps) to 30 or 60 Hz \n"
 	"fps = 30 \n\n"
 
-	";Indicate the number of rows and columns. They must be equal or inferior to what is indicated with the 'downsample' variable). \n"
-	"rows = 60 \n"
-	"cols = 80 \n\n";
+	";Indicate the number of rows and columns. \n"
+	"rows = 240 \n"
+	"cols = 320 \n"
+	"ctf_levels = 5 \n\n";
 
 
 // ------------------------------------------------------
@@ -133,12 +131,14 @@ int main(int num_arg, char *argv[])
 
 			switch (pushed_key) {
 
-			//Capture 1 new frame and calculate odometry
+			//Capture a new depth frame and calculate odometry
 			case  'n':
 				odo.loadFrame();
-				odo.OdometryCalculation();
-				odo.filterSpeedAndPoseUpdate();
-				cout << endl << "Difodo execution time(ms): " << odo.execution_time;
+				odo.odometryCalculation();
+				if (odo.save_results == 1)
+					odo.writeTrajectoryFile();
+
+				cout << endl << "Difodo runtime(ms): " << odo.execution_time;
 				odo.updateScene();
 				break;
 
@@ -163,16 +163,18 @@ int main(int num_arg, char *argv[])
 
 			if (working == 1)
 			{
-				while(main_clock.Tac() < 1.0/odo.fps);
-				if (main_clock.Tac() > 1.1/odo.fps)
+				while(main_clock.Tac() < 1.f/odo.fps);
+				if (main_clock.Tac() > 1.05f/odo.fps)
 					cout << endl << "Not enough time to compute everything!!!";
 
 				main_clock.Tic();
 
 				odo.loadFrame();
-				odo.OdometryCalculation();
-				odo.filterSpeedAndPoseUpdate();
-				cout << endl << "Difodo execution time(ms): " << odo.execution_time;
+				odo.odometryCalculation();
+				if (odo.save_results == 1)
+					odo.writeTrajectoryFile();
+
+				cout << endl << "Difodo runtime(ms): " << odo.execution_time;
 				odo.updateScene();
 			}
 		}

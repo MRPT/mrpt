@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -60,7 +60,7 @@ namespace mrpt
 			// See base class docs
 			virtual void  doProcessSimple(
 				bool							&outThereIsObservation,
-				CObservation2DRangeScan	&outObservation,
+				mrpt::obs::CObservation2DRangeScan	&outObservation,
 				bool							&hardwareError );
 
 			/** If set to non-empty, the serial port will be attempted to be opened automatically when this class is first used to request data from the laser.  */

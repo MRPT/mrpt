@@ -48,9 +48,18 @@ typedef uint32x4_t  Packet4ui;
   #define EIGEN_INIT_NEON_PACKET2(X, Y)       {X, Y}
   #define EIGEN_INIT_NEON_PACKET4(X, Y, Z, W) {X, Y, Z, W}
 #endif
-    
-#ifndef __pld
-#define __pld(x) asm volatile ( "   pld [%[addr]]\n" :: [addr] "r" (x) : "cc" );
+
+// arm64 does have the pld instruction. If available, let's trust the __builtin_prefetch built-in function
+// which available on LLVM and GCC (at least)
+#if EIGEN_HAS_BUILTIN(__builtin_prefetch) || defined(__GNUC__)
+  #define EIGEN_ARM_PREFETCH(ADDR) __builtin_prefetch(ADDR);
+#elif defined __pld
+  #define EIGEN_ARM_PREFETCH(ADDR) __pld(ADDR)
+#elif !defined(__aarch64__)
+  #define EIGEN_ARM_PREFETCH(ADDR) __asm__ __volatile__ ( "   pld [%[addr]]\n" :: [addr] "r" (ADDR) : "cc" );
+#else
+  // by default no explicit prefetching
+  #define EIGEN_ARM_PREFETCH(ADDR)
 #endif
 
 template<> struct packet_traits<float>  : default_packet_traits

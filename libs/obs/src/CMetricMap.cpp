@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -10,34 +10,26 @@
 #include "obs-precomp.h"   // Precompiled headers
 
 #include <mrpt/utils/CStream.h>
-#include <mrpt/slam/CMetricMap.h>
+#include <mrpt/maps/CMetricMap.h>
 #include <mrpt/poses/CPosePDF.h>
 #include <mrpt/poses/CPoint3D.h>
 #include <mrpt/poses/CPose3D.h>
-#include <mrpt/slam/CSensoryFrame.h>
-#include <mrpt/slam/CSimpleMap.h>
-
+#include <mrpt/obs/CSensoryFrame.h>
+#include <mrpt/maps/CSimpleMap.h>
 #include <mrpt/math/lightweight_geom_data.h>
 
-using namespace mrpt::slam;
+using namespace mrpt::obs;
+using namespace mrpt::maps;
 using namespace mrpt::utils;
 using namespace mrpt::poses;
 using namespace mrpt::math;
 
-IMPLEMENTS_VIRTUAL_SERIALIZABLE(CMetricMap, CSerializable, mrpt::slam)
+IMPLEMENTS_VIRTUAL_SERIALIZABLE(CMetricMap, CSerializable, mrpt::maps)
 
-
-/*---------------------------------------------------------------
-						Virtual constructor
-  ---------------------------------------------------------------*/
-CMetricMap::CMetricMap() :
-	m_disableSaveAs3DObject ( false )
+CMetricMap::CMetricMap()
 {
 }
 
-/*---------------------------------------------------------------
-						Virtual destructor
-  ---------------------------------------------------------------*/
 CMetricMap::~CMetricMap()
 {
 
@@ -58,7 +50,7 @@ This is automaticed invoking "insertObservation" for each
 observation at the mean 3D robot pose as given by
 the "poses::CPosePDF" in the CSensFrameProbSequence object.
   ---------------------------------------------------------------*/
-void  CMetricMap::loadFromProbabilisticPosesAndObservations(const CSimpleMap &sfSeq )
+void  CMetricMap::loadFromProbabilisticPosesAndObservations(const mrpt::maps::CSimpleMap &sfSeq )
 {
 	CPose3DPDFPtr		posePDF;
 	CSensoryFramePtr	sf;
@@ -116,6 +108,9 @@ bool CMetricMap::insertObservation(
 	const CObservation *obs,
 	const CPose3D *robotPose)
 {
+	if (!genericMapParams.enableObservationInsertion)
+		return false;
+
 	bool done = internal_insertObservation(obs,robotPose);
 	if (done)
 	{
@@ -140,7 +135,7 @@ bool CMetricMap::canComputeObservationLikelihood( const CObservationPtr &obs ) {
 }
 
 void  CMetricMap::determineMatching2D(
-	const CMetricMap      * otherMap,
+	const mrpt::maps::CMetricMap      * otherMap,
 	const CPose2D         & otherMapPose,
 	TMatchingPairList     & correspondences,
 	const TMatchingParams & params,
@@ -158,7 +153,7 @@ void  CMetricMap::determineMatching2D(
 
 
 void CMetricMap::determineMatching3D(
-	const CMetricMap      * otherMap,
+	const mrpt::maps::CMetricMap      * otherMap,
 	const CPose3D         & otherMapPose,
 	TMatchingPairList     & correspondences,
 	const TMatchingParams & params,
@@ -176,7 +171,7 @@ void CMetricMap::determineMatching3D(
 
 
 float  CMetricMap::compute3DMatchingRatio(
-	const CMetricMap								*otherMap,
+	const mrpt::maps::CMetricMap								*otherMap,
 	const CPose3D							&otherMapPose,
 	float									maxDistForCorr,
 	float									maxMahaDistForCorr
@@ -200,4 +195,18 @@ float CMetricMap::squareDistanceToClosestCorrespondence(
 	MRPT_START
 	THROW_EXCEPTION("Virtual method not implemented in derived class.")
 	MRPT_END
+}
+
+bool CMetricMap::canComputeObservationLikelihood( const mrpt::obs::CObservation *obs ) 
+{ 
+	if (genericMapParams.enableObservationLikelihood)
+			return internal_canComputeObservationLikelihood(obs); 
+	else return false;
+}
+
+double CMetricMap::computeObservationLikelihood( const mrpt::obs::CObservation *obs, const mrpt::poses::CPose3D &takenFrom )
+{
+	if (genericMapParams.enableObservationLikelihood)
+			return internal_computeObservationLikelihood(obs,takenFrom); 
+	else return false;
 }

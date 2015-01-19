@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -11,7 +11,7 @@
 #define CDetectableObject_H
 
 #include <mrpt/utils/CSerializable.h>
-#include <mrpt/slam/CObservation.h>
+#include <mrpt/obs/CObservation.h>
 #define _USE_MATH_DEFINES // (For VS to define M_PI, etc. in cmath)
 #include <cmath>
 
@@ -36,9 +36,9 @@ namespace mrpt
 
 			std::string	m_id; //!< Must be an unique id for each detectable object
 
-			mrpt::slam::CObservationPtr	obs; //!< Observation wich contain the deteted object
+			mrpt::obs::CObservationPtr	obs; //!< Observation wich contain the deteted object
 
-			inline void setObservation( mrpt::slam::CObservationPtr newObs ){	obs = newObs;	};
+			inline void setObservation( mrpt::obs::CObservationPtr newObs ){	obs = newObs;	};
 
 		}; // End of class
 		DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE( CDetectableObject, mrpt::utils::CSerializable, DETECTORS_IMPEXP )

@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -15,7 +15,8 @@
 
 using namespace mrpt::utils;
 using namespace mrpt::math;
-using namespace mrpt::slam;
+using namespace mrpt::obs;
+using namespace mrpt::poses;
 using namespace mrpt::hwdrivers;
 using namespace std;
 
@@ -127,7 +128,7 @@ CStream *CEnoseModular::checkConnectionAndConnect()
 /*-------------------------------------------------------------
 					getObservation
 -------------------------------------------------------------*/
-bool CEnoseModular::getObservation( mrpt::slam::CObservationGasSensors &obs )
+bool CEnoseModular::getObservation( mrpt::obs::CObservationGasSensors &obs )
 {
 	try
 	{
@@ -192,7 +193,7 @@ bool CEnoseModular::getObservation( mrpt::slam::CObservationGasSensors &obs )
 			else
 				newRead.eNosePoseOnTheRobot = CPose3D(0,0,0);
 
-			// Get Temperature (ºC)
+			// Get Temperature (degrees C)
 			newRead.temperature = msg.content[0]*1.65214 - 277.74648;
 
 			//process all sensors

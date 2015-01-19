@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -85,7 +85,7 @@ void CPose3DPDFGaussianInf::copyFrom( const CPose3DQuatPDFGaussian &o)
 /*---------------------------------------------------------------
 						writeToStream
   ---------------------------------------------------------------*/
-void  CPose3DPDFGaussianInf::writeToStream(CStream &out,int *version) const
+void  CPose3DPDFGaussianInf::writeToStream(mrpt::utils::CStream &out,int *version) const
 {
 	if (version)
 		*version = 0;
@@ -103,7 +103,7 @@ void  CPose3DPDFGaussianInf::writeToStream(CStream &out,int *version) const
 /*---------------------------------------------------------------
 						readFromStream
   ---------------------------------------------------------------*/
-void  CPose3DPDFGaussianInf::readFromStream(CStream &in,int version)
+void  CPose3DPDFGaussianInf::readFromStream(mrpt::utils::CStream &in,int version)
 {
 	switch(version)
 	{

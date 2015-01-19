@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -16,7 +16,8 @@
 
 using namespace mrpt::utils;
 using namespace mrpt::math;
-using namespace mrpt::slam;
+using namespace mrpt::obs;
+using namespace mrpt::poses;
 using namespace mrpt::hwdrivers;
 using namespace std;
 
@@ -180,7 +181,7 @@ CStream *CBoardENoses::checkConnectionAndConnect()
 /*-------------------------------------------------------------
 					getObservation
 -------------------------------------------------------------*/
-bool CBoardENoses::getObservation( mrpt::slam::CObservationGasSensors &obs )
+bool CBoardENoses::getObservation( mrpt::obs::CObservationGasSensors &obs )
 {
 	try
 	{

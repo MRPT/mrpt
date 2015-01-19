@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -48,14 +48,14 @@ namespace mrpt
 			}
 
 			/** Return the pose or point as a 1x2 or 1x3 vector [x y] or [x y z] */
-			inline void getAsVector(CVectorDouble &v) const
+			inline void getAsVector(mrpt::math::CVectorDouble &v) const
 			{
 				v.resize(DERIVEDCLASS::static_size);
 				for (int i=0;i<DERIVEDCLASS::static_size;i++)
 					v[i] = static_cast<const DERIVEDCLASS*>(this)->m_coords[i];
 			}
 			//! \overload
-			inline CVectorDouble getAsVector() const { CVectorDouble v; getAsVector(v); return v; }
+			inline mrpt::math::CVectorDouble getAsVector() const { mrpt::math::CVectorDouble v; getAsVector(v); return v; }
 
 			/** Returns the corresponding 4x4 homogeneous transformation matrix for the point(translation) or pose (translation+orientation).
 			  * \sa getInverseHomogeneousMatrix

@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -30,8 +30,8 @@
 #include <mrpt/system/os.h>
 #include <mrpt/math/data_utils.h>
 #include <mrpt/system/threads.h>
-#include <mrpt/slam/CObservationBeaconRanges.h>
-#include <mrpt/slam/CRawlog.h>
+#include <mrpt/obs/CObservationBeaconRanges.h>
+#include <mrpt/obs/CRawlog.h>
 #include <mrpt/bayes/CParticleFilter.h>
 #include <mrpt/random.h>
 
@@ -43,8 +43,10 @@
 #include <mrpt/opengl/CGridPlaneXY.h>
 
 using namespace mrpt;
-using namespace mrpt::slam;
+using namespace mrpt::obs;
+using namespace mrpt::maps;
 using namespace mrpt::bayes;
+using namespace mrpt::poses;
 using namespace mrpt::opengl;
 using namespace mrpt::gui;
 using namespace mrpt::math;
@@ -433,7 +435,7 @@ void TestParticlesLocalization()
 						bool any_valid=false;
 						for (size_t q=0;q<nBeaconsInMap;q++)
 						{
-							slam::CLandmark *lm = metricMap.m_landmarksMap->landmarks.get(q);
+							mrpt::maps::CLandmark *lm = metricMap.m_landmarksMap->landmarks.get(q);
 							// Real range
 							double R_real = sensorPose.distanceTo( lm->pose_mean );
 							real_ranges(step,q) = R_real;
@@ -621,7 +623,7 @@ void TestParticlesLocalization()
 						for (size_t k=0;k<dist->sensedData.size();k++)
 						{
 							string beacon_name = format("ring%u",unsigned(dist->sensedData[k].beaconID));
-							const slam::CLandmark *lm = metricMap.m_landmarksMap->landmarks.getByBeaconID( dist->sensedData[k].beaconID );
+							const mrpt::maps::CLandmark *lm = metricMap.m_landmarksMap->landmarks.getByBeaconID( dist->sensedData[k].beaconID );
 							if (lm)
 							{
 								#ifdef	SHOW_REAL_TIME_3D

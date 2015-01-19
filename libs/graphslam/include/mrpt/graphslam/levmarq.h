@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -382,7 +382,7 @@ namespace mrpt
 					utils::keep_max(lambda, 1e-200);  // JL: Avoids underflow!
 					v = 2;
 		#if 0
-					{ CMatrixDouble H; sp_H.get_dense(H); H.saveToTextFile("d:\\H.txt"); }
+					{ mrpt::math::CMatrixDouble H; sp_H.get_dense(H); H.saveToTextFile("d:\\H.txt"); }
 		#endif
 				} // end "have_to_recompute_H_and_grad"
 

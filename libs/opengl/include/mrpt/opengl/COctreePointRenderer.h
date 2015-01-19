@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -37,9 +37,6 @@ namespace mrpt
 
 	namespace opengl
 	{
-		using namespace mrpt::utils;
-		using namespace mrpt::math;
-
 		/** Template class that implements the data structure and algorithms for Octree-based efficient rendering.
 		  *  \sa mrpt::opengl::CPointCloud, mrpt::opengl::CPointCloudColoured, http://www.mrpt.org/Efficiently_rendering_point_clouds_of_millions_of_points
 		  * \ingroup mrpt_opengl_grp
@@ -87,7 +84,7 @@ namespace mrpt
 				m_render_queue.clear();
 				m_render_queue.reserve(m_octree_nodes.size());
 
-				TPixelCoordf cr_px[8];
+				mrpt::utils::TPixelCoordf cr_px[8];
 				float        cr_z[8];
 				octree_recursive_render(OCTREE_ROOT_NODE,ri, cr_px, cr_z, false /* corners are not computed for this first iteration */ );
 
@@ -140,8 +137,8 @@ namespace mrpt
 				/** update bounding box with a new point: */
 				inline void update_bb(const mrpt::math::TPoint3Df &p)
 				{
-					keep_min(bb_min.x, p.x); keep_min(bb_min.y, p.y); keep_min(bb_min.z, p.z);
-					keep_max(bb_max.x, p.x); keep_max(bb_max.y, p.y); keep_max(bb_max.z, p.z);
+					mrpt::utils::keep_min(bb_min.x, p.x); mrpt::utils::keep_min(bb_min.y, p.y); mrpt::utils::keep_min(bb_min.z, p.z);
+					mrpt::utils::keep_max(bb_max.x, p.x); mrpt::utils::keep_max(bb_max.y, p.y); mrpt::utils::keep_max(bb_max.z, p.z);
 				}
 
 				inline float getCornerX(int i) const { return (i & 0x01)==0 ? bb_min.x : bb_max.x; }
@@ -219,7 +216,7 @@ namespace mrpt
 			void octree_recursive_render(
 				size_t node_idx,
 				const mrpt::opengl::gl_utils::TRenderInfo &ri,
-				TPixelCoordf cr_px[8],
+				mrpt::utils::TPixelCoordf cr_px[8],
 				float        cr_z[8],
 				bool         corners_are_all_computed = true,
 				bool         trust_me_youre_visible   = false,
@@ -239,14 +236,14 @@ namespace mrpt
 					}
 				}
 
-				TPixelCoordf px_min( std::numeric_limits<float>::max(),std::numeric_limits<float>::max()), px_max(-std::numeric_limits<float>::max(),-std::numeric_limits<float>::max());
+				mrpt::utils::TPixelCoordf px_min( std::numeric_limits<float>::max(),std::numeric_limits<float>::max()), px_max(-std::numeric_limits<float>::max(),-std::numeric_limits<float>::max());
 				if (!trust_me_youre_visible)
 				{
 					// Keep the on-screen bounding box of this node:
 					for (int i=0;i<8;i++)
 					{
-						keep_min(px_min.x,cr_px[i].x); keep_min(px_min.y,cr_px[i].y);
-						keep_max(px_max.x,cr_px[i].x); keep_max(px_max.y,cr_px[i].y);
+						mrpt::utils::keep_min(px_min.x,cr_px[i].x); mrpt::utils::keep_min(px_min.y,cr_px[i].y);
+						mrpt::utils::keep_max(px_max.x,cr_px[i].x); mrpt::utils::keep_max(px_max.y,cr_px[i].y);
 					}
 
 					const bool any_cr_zs_neg = (cr_z[0]<0 ||cr_z[1]<0 ||cr_z[2]<0 ||cr_z[3]<0 ||cr_z[4]<0 ||cr_z[5]<0 ||cr_z[6]<0 ||cr_z[7]<0);
@@ -297,7 +294,7 @@ namespace mrpt
 					// If all children are visible, it's easy:
 					if (children_are_all_visible_for_sure)
 					{
-						TPixelCoordf child_cr_px[8]; // No need to initialize
+						mrpt::utils::TPixelCoordf child_cr_px[8]; // No need to initialize
 						float        child_cr_z[8];  // No need to initialize
 
 						// Approximate area of the children nodes:
@@ -317,44 +314,44 @@ namespace mrpt
 #endif
 
 						// Precompute the 19 (3*9-8) intermediary points so children don't have to compute them several times:
-						const TPoint3Df p_Xm_Ym_Zm ( node.bb_min.x, node.bb_min.y, node.bb_min.z ); // 0
-						const TPoint3Df p_X0_Ym_Zm ( node.center.x, node.bb_min.y, node.bb_min.z );
-						const TPoint3Df p_Xp_Ym_Zm ( node.bb_max.x, node.bb_min.y, node.bb_min.z ); // 1
-						const TPoint3Df p_Xm_Y0_Zm ( node.bb_min.x, node.center.y, node.bb_min.z );
-						const TPoint3Df p_X0_Y0_Zm ( node.center.x, node.center.y, node.bb_min.z );
-						const TPoint3Df p_Xp_Y0_Zm ( node.bb_max.x, node.center.y, node.bb_min.z );
-						const TPoint3Df p_Xm_Yp_Zm ( node.bb_min.x, node.bb_max.y, node.bb_min.z ); // 2
-						const TPoint3Df p_X0_Yp_Zm ( node.center.x, node.bb_max.y, node.bb_min.z );
-						const TPoint3Df p_Xp_Yp_Zm ( node.bb_max.x, node.bb_max.y, node.bb_min.z ); // 3
+						const mrpt::math::TPoint3Df p_Xm_Ym_Zm ( node.bb_min.x, node.bb_min.y, node.bb_min.z ); // 0
+						const mrpt::math::TPoint3Df p_X0_Ym_Zm ( node.center.x, node.bb_min.y, node.bb_min.z );
+						const mrpt::math::TPoint3Df p_Xp_Ym_Zm ( node.bb_max.x, node.bb_min.y, node.bb_min.z ); // 1
+						const mrpt::math::TPoint3Df p_Xm_Y0_Zm ( node.bb_min.x, node.center.y, node.bb_min.z );
+						const mrpt::math::TPoint3Df p_X0_Y0_Zm ( node.center.x, node.center.y, node.bb_min.z );
+						const mrpt::math::TPoint3Df p_Xp_Y0_Zm ( node.bb_max.x, node.center.y, node.bb_min.z );
+						const mrpt::math::TPoint3Df p_Xm_Yp_Zm ( node.bb_min.x, node.bb_max.y, node.bb_min.z ); // 2
+						const mrpt::math::TPoint3Df p_X0_Yp_Zm ( node.center.x, node.bb_max.y, node.bb_min.z );
+						const mrpt::math::TPoint3Df p_Xp_Yp_Zm ( node.bb_max.x, node.bb_max.y, node.bb_min.z ); // 3
 
-						const TPoint3Df p_Xm_Ym_Z0 ( node.bb_min.x, node.bb_min.y, node.center.z );
-						const TPoint3Df p_X0_Ym_Z0 ( node.center.x, node.bb_min.y, node.center.z );
-						const TPoint3Df p_Xp_Ym_Z0 ( node.bb_max.x, node.bb_min.y, node.center.z );
-						const TPoint3Df p_Xm_Y0_Z0 ( node.bb_min.x, node.center.y, node.center.z );
-						const TPoint3Df p_X0_Y0_Z0 ( node.center.x, node.center.y, node.center.z );
-						const TPoint3Df p_Xp_Y0_Z0 ( node.bb_max.x, node.center.y, node.center.z );
-						const TPoint3Df p_Xm_Yp_Z0 ( node.bb_min.x, node.bb_max.y, node.center.z );
-						const TPoint3Df p_X0_Yp_Z0 ( node.center.x, node.bb_max.y, node.center.z );
-						const TPoint3Df p_Xp_Yp_Z0 ( node.bb_max.x, node.bb_max.y, node.center.z );
+						const mrpt::math::TPoint3Df p_Xm_Ym_Z0 ( node.bb_min.x, node.bb_min.y, node.center.z );
+						const mrpt::math::TPoint3Df p_X0_Ym_Z0 ( node.center.x, node.bb_min.y, node.center.z );
+						const mrpt::math::TPoint3Df p_Xp_Ym_Z0 ( node.bb_max.x, node.bb_min.y, node.center.z );
+						const mrpt::math::TPoint3Df p_Xm_Y0_Z0 ( node.bb_min.x, node.center.y, node.center.z );
+						const mrpt::math::TPoint3Df p_X0_Y0_Z0 ( node.center.x, node.center.y, node.center.z );
+						const mrpt::math::TPoint3Df p_Xp_Y0_Z0 ( node.bb_max.x, node.center.y, node.center.z );
+						const mrpt::math::TPoint3Df p_Xm_Yp_Z0 ( node.bb_min.x, node.bb_max.y, node.center.z );
+						const mrpt::math::TPoint3Df p_X0_Yp_Z0 ( node.center.x, node.bb_max.y, node.center.z );
+						const mrpt::math::TPoint3Df p_Xp_Yp_Z0 ( node.bb_max.x, node.bb_max.y, node.center.z );
 
-						const TPoint3Df p_Xm_Ym_Zp ( node.bb_min.x, node.bb_min.y, node.bb_max.z ); // 4
-						const TPoint3Df p_X0_Ym_Zp ( node.center.x, node.bb_min.y, node.bb_max.z );
-						const TPoint3Df p_Xp_Ym_Zp ( node.bb_min.x, node.bb_min.y, node.bb_max.z ); // 5
-						const TPoint3Df p_Xm_Y0_Zp ( node.bb_min.x, node.center.y, node.bb_max.z );
-						const TPoint3Df p_X0_Y0_Zp ( node.center.x, node.center.y, node.bb_max.z );
-						const TPoint3Df p_Xp_Y0_Zp ( node.bb_max.x, node.center.y, node.bb_max.z );
-						const TPoint3Df p_Xm_Yp_Zp ( node.bb_min.x, node.bb_max.y, node.bb_max.z ); // 6
-						const TPoint3Df p_X0_Yp_Zp ( node.center.x, node.bb_max.y, node.bb_max.z );
-						const TPoint3Df p_Xp_Yp_Zp ( node.bb_max.x, node.bb_max.y, node.bb_max.z ); // 7
+						const mrpt::math::TPoint3Df p_Xm_Ym_Zp ( node.bb_min.x, node.bb_min.y, node.bb_max.z ); // 4
+						const mrpt::math::TPoint3Df p_X0_Ym_Zp ( node.center.x, node.bb_min.y, node.bb_max.z );
+						const mrpt::math::TPoint3Df p_Xp_Ym_Zp ( node.bb_min.x, node.bb_min.y, node.bb_max.z ); // 5
+						const mrpt::math::TPoint3Df p_Xm_Y0_Zp ( node.bb_min.x, node.center.y, node.bb_max.z );
+						const mrpt::math::TPoint3Df p_X0_Y0_Zp ( node.center.x, node.center.y, node.bb_max.z );
+						const mrpt::math::TPoint3Df p_Xp_Y0_Zp ( node.bb_max.x, node.center.y, node.bb_max.z );
+						const mrpt::math::TPoint3Df p_Xm_Yp_Zp ( node.bb_min.x, node.bb_max.y, node.bb_max.z ); // 6
+						const mrpt::math::TPoint3Df p_X0_Yp_Zp ( node.center.x, node.bb_max.y, node.bb_max.z );
+						const mrpt::math::TPoint3Df p_Xp_Yp_Zp ( node.bb_max.x, node.bb_max.y, node.bb_max.z ); // 7
 
 						// Project all these points:
 #define PROJ_SUB_NODE(POSTFIX) \
-						TPixelCoordf px_##POSTFIX; \
+						mrpt::utils::TPixelCoordf px_##POSTFIX; \
 						float        depth_##POSTFIX; \
 						ri.projectPointPixels( p_##POSTFIX.x, p_##POSTFIX.y, p_##POSTFIX.z, px_##POSTFIX.x,px_##POSTFIX.y,depth_##POSTFIX);
 
 #define PROJ_SUB_NODE_ALREADY_DONE(INDEX, POSTFIX) \
-						const TPixelCoordf px_##POSTFIX = cr_px[INDEX]; \
+						const mrpt::utils::TPixelCoordf px_##POSTFIX = cr_px[INDEX]; \
 						float        depth_##POSTFIX = cr_z[INDEX];
 
 						PROJ_SUB_NODE_ALREADY_DONE(0,Xm_Ym_Zm)
@@ -394,7 +391,7 @@ namespace mrpt
 						// Recursive call children nodes:
 #define DO_RECURSE_CHILD(INDEX, SEQ0,SEQ1,SEQ2,SEQ3,SEQ4,SEQ5,SEQ6,SEQ7) \
 						{ \
-							TPixelCoordf child_cr_px[8] = { px_##SEQ0,px_##SEQ1,px_##SEQ2,px_##SEQ3,px_##SEQ4,px_##SEQ5,px_##SEQ6,px_##SEQ7 }; \
+							mrpt::utils::TPixelCoordf child_cr_px[8] = { px_##SEQ0,px_##SEQ1,px_##SEQ2,px_##SEQ3,px_##SEQ4,px_##SEQ5,px_##SEQ6,px_##SEQ7 }; \
 							float        child_cr_z[8]  = { depth_##SEQ0,depth_##SEQ1,depth_##SEQ2,depth_##SEQ3,depth_##SEQ4,depth_##SEQ5,depth_##SEQ6,depth_##SEQ7 }; \
 							this->octree_recursive_render(node.child_id[INDEX],ri,child_cr_px, child_cr_z); \
 						}
@@ -495,7 +492,7 @@ namespace mrpt
 					for (size_t j=0;j<N;j++)
 					{
 						const size_t i = all_pts ? j : node.pts[j];
-						const TPoint3Df p = octree_derived().getPointf(i);
+						const mrpt::math::TPoint3Df p = octree_derived().getPointf(i);
 						if (p.z<c.z)
 						{
 							if (p.y<c.y)
@@ -557,7 +554,7 @@ namespace mrpt
 			void octree_get_graphics_boundingboxes(
 				mrpt::opengl::CSetOfObjects &gl_bb,
 				const double lines_width = 1,
-				const TColorf &lines_color = TColorf(1,1,1),
+				const mrpt::utils::TColorf &lines_color = mrpt::utils::TColorf(1,1,1),
 				const bool draw_solid_boxes = false ) const
 			{
 				octree_assure_uptodate();

@@ -2,15 +2,15 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
 #include <mrpt/hwdrivers/CSwissRanger3DCamera.h>
 #include <mrpt/gui.h>
-#include <mrpt/slam/CObservation3DRangeScan.h>
-#include <mrpt/slam/CColouredPointsMap.h>
+#include <mrpt/obs/CObservation3DRangeScan.h>
+#include <mrpt/maps/CColouredPointsMap.h>
 #include <mrpt/opengl/CPointCloudColoured.h>
 #include <mrpt/opengl/CTexturedPlane.h>
 #include <mrpt/opengl/CGridPlaneXY.h>
@@ -21,7 +21,10 @@ using namespace mrpt;
 using namespace mrpt::hwdrivers;
 using namespace mrpt::math;
 using namespace mrpt::gui;
+using namespace mrpt::maps;
+using namespace mrpt::obs;
 using namespace mrpt::utils;
+using namespace mrpt::opengl;
 using namespace std;
 
 // ------------------------------------------------------
@@ -172,7 +175,7 @@ void Test_SwissRanger()
 		// Show 3D points:
 		if (there_is_obs && obs.hasPoints3D )
 		{
-			//mrpt::slam::CSimplePointsMap  pntsMap;
+			//mrpt::maps::CSimplePointsMap  pntsMap;
 			CColouredPointsMap pntsMap;
 			pntsMap.colorScheme.scheme = CColouredPointsMap::cmFromIntensityImage;
 			pntsMap.loadFromRangeScan(obs);

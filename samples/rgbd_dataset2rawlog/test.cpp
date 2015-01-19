@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -35,12 +35,12 @@ Output files:
 #include <mrpt/system/filesystem.h>
 #include <mrpt/utils/CTextFileLinesParser.h>
 #include <mrpt/utils/CFileGZOutputStream.h>
-#include <mrpt/slam/CObservation3DRangeScan.h>
-#include <mrpt/slam/CObservationIMU.h>
+#include <mrpt/obs/CObservation3DRangeScan.h>
+#include <mrpt/obs/CObservationIMU.h>
 
 using namespace std;
 using namespace mrpt;
-using namespace mrpt::slam;
+using namespace mrpt::obs;
 
 const double KINECT_FPS = 30.0;
 
@@ -143,7 +143,7 @@ void rgbd2rawlog(const string &src_path, const string &out_name)
 	obs.cameraParams.fx(FOCAL);   obs.cameraParams.fy(FOCAL);
 	obs.cameraParams.cx(319.5);   obs.cameraParams.cy(239.5);
 	obs.cameraParamsIntensity = obs.cameraParams;
-	obs.relativePoseIntensityWRTDepth = mrpt::poses::CPose3D(0,0,0,DEG2RAD(-90),0,DEG2RAD(-90));  // No translation between rgb & range cameras, and rotation only due to XYZ axes conventions.
+	obs.relativePoseIntensityWRTDepth = mrpt::poses::CPose3D(0,0,0,mrpt::utils::DEG2RAD(-90),0,mrpt::utils::DEG2RAD(-90));  // No translation between rgb & range cameras, and rotation only due to XYZ axes conventions.
 
 	CObservationIMU obs_imu;
 	obs_imu.sensorLabel = "KINECT_ACC";

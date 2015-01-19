@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -31,8 +31,7 @@ namespace mrpt
 
 				using mrpt::poses::CPose3D;
 				using mrpt::math::TPose3D;
-				using mrpt::utils::keep_min;
-				using mrpt::utils::keep_max;
+				using namespace mrpt::utils;
 
 				// Is a 2D or 3D graph network?
 				typedef typename GRAPH_T::constraint_t constraint_t;
@@ -57,7 +56,7 @@ namespace mrpt
 				if (show_ground_grid)
 				{
 					// Estimate bounding box.
-					TPoint3D  BB_min(-10.,-10.,0.), BB_max(10.,10.,0.);
+				 mrpt::math::TPoint3D  BB_min(-10.,-10.,0.), BB_max(10.,10.,0.);
 
 					for (typename GRAPH_T::global_poses_t::const_iterator itNod = g.nodes.begin();itNod!=g.nodes.end();++itNod)
 					{
@@ -174,7 +173,7 @@ namespace mrpt
 						{
 							const CPose3D p1 = CPose3D(itNod1->second);
 							const CPose3D p2 = CPose3D(itNod2->second);
-							gl_edges->appendLine( TPoint3D(p1.x(),p1.y(),p1.z()), TPoint3D(p2.x(),p2.y(),p2.z()) );
+							gl_edges->appendLine( mrpt::math::TPoint3D(p1.x(),p1.y(),p1.z()), mrpt::math::TPoint3D(p2.x(),p2.y(),p2.z()) );
 						}
 					}
 					ret->insert( gl_edges );

@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -15,21 +15,14 @@
 #include <mrpt/utils/CTimeLogger.h>
 #include <mrpt/system/threads.h>
 #include <mrpt/synch.h>
-#include <mrpt/slam/CObservation3DRangeScan.h>
+#include <mrpt/obs/CObservation3DRangeScan.h>
+#include <mrpt/obs/obs_frwds.h>
 
 namespace mrpt
 {
-
-	namespace slam { class CObservation3DRangeScan; }
-
 	/** \ingroup mrpt_detectors_grp  */
 	namespace detectors
 	{
-		using namespace mrpt::slam;
-		using namespace mrpt::system;
-		using namespace mrpt::synch;
-		using namespace mrpt::math;
-		
 		/** Specific class for face detection.
 		  * Methods and variables labeled as experimentals are temporals (for debug or testing
 		  * purposes) and may disappear in future versions.
@@ -47,7 +40,7 @@ namespace mrpt
 
 			virtual void init(const mrpt::utils::CConfigFileBase &cfg );
 
-			virtual void detectObjects_Impl(const CObservation *obs, vector_detectable_object &detected);
+			virtual void detectObjects_Impl(const mrpt::obs::CObservation *obs, vector_detectable_object &detected);
 			
 			struct TOptions
 			{
@@ -80,9 +73,9 @@ namespace mrpt
 			
 		private:
 
-			TThreadHandle		m_thread_checkIfFaceRegions;	//!< Thread that execute checkIfFaceRegions filter
-			TThreadHandle		m_thread_checkIfFacePlaneCov;	//!< Thread that execute checkIfFacePlaneCov filter
-			TThreadHandle		m_thread_checkIfDiagonalSurface;	//!< Thread that execute checkIfDiagonalSurface filter
+			mrpt::system::TThreadHandle		m_thread_checkIfFaceRegions;	//!< Thread that execute checkIfFaceRegions filter
+			mrpt::system::TThreadHandle		m_thread_checkIfFacePlaneCov;	//!< Thread that execute checkIfFacePlaneCov filter
+			mrpt::system::TThreadHandle		m_thread_checkIfDiagonalSurface;	//!< Thread that execute checkIfDiagonalSurface filter
 
 			bool	m_checkIfFaceRegions_res;	//!< Save result of checkIfFaceRegions filter
 			bool	m_checkIfFacePlaneCov_res;	//!< Save result of checkIfFacePlaneCov filter
@@ -90,25 +83,25 @@ namespace mrpt
 
 			bool	m_end_threads;	//!< Indicates to all threads that must finish their execution
 			
-			CSemaphore m_enter_checkIfFaceRegions;	//!< Indicates to thread_checkIfFaceRegions that exist a new face to analyze
-			CSemaphore m_enter_checkIfFacePlaneCov;	//!< Indicates to thread_checkIfFacePlaneCov that exist a new face to analyze
-			CSemaphore m_enter_checkIfDiagonalSurface;	//!< Indicates to thread_checkIfDiagonalSurface that exist a new face to analyze
+			mrpt::synch::CSemaphore m_enter_checkIfFaceRegions;	//!< Indicates to thread_checkIfFaceRegions that exist a new face to analyze
+			mrpt::synch::CSemaphore m_enter_checkIfFacePlaneCov;	//!< Indicates to thread_checkIfFacePlaneCov that exist a new face to analyze
+			mrpt::synch::CSemaphore m_enter_checkIfDiagonalSurface;	//!< Indicates to thread_checkIfDiagonalSurface that exist a new face to analyze
 
-			CSemaphore m_leave_checkIfFaceRegions;	//!< Indicates to main thread that thread_checkIfFaceRegions has been completed analisis of the last face detected
-			CSemaphore m_leave_checkIfFacePlaneCov;	//!< Indicates to main thread that thread_checkIfFacePlaneCov has been completed analisis of the last face detected
-			CSemaphore m_leave_checkIfDiagonalSurface;	//!< Indicates to main thread that thread_checkIfDiagonalSurface has been completed analisis of the last face detected
+			mrpt::synch::CSemaphore m_leave_checkIfFaceRegions;	//!< Indicates to main thread that thread_checkIfFaceRegions has been completed analisis of the last face detected
+			mrpt::synch::CSemaphore m_leave_checkIfFacePlaneCov;	//!< Indicates to main thread that thread_checkIfFacePlaneCov has been completed analisis of the last face detected
+			mrpt::synch::CSemaphore m_leave_checkIfDiagonalSurface;	//!< Indicates to main thread that thread_checkIfDiagonalSurface has been completed analisis of the last face detected
 
-			CObservation3DRangeScan m_lastFaceDetected;	//!< Last face detected
+			mrpt::obs::CObservation3DRangeScan m_lastFaceDetected;	//!< Last face detected
 
 			struct TMeasurement
 			{	
 				bool			takeMeasures;
 
-				CVectorDouble	lessEigenVals;
-				CVectorDouble	errorEstimations;
-				CVectorDouble	meanRegions;
+				mrpt::math::CVectorDouble	lessEigenVals;
+				mrpt::math::CVectorDouble	errorEstimations;
+				mrpt::math::CVectorDouble	meanRegions;
 
-				CVectorDouble	sumDistances;
+				mrpt::math::CVectorDouble	sumDistances;
 
 				int				faceNum;
 				vector_uint		deletedRegions;
@@ -122,36 +115,36 @@ namespace mrpt
 			}m_measure;
 
 			// To take measures abaout execution time
-			CTimeLogger	m_timeLog;
+			mrpt::utils::CTimeLogger	m_timeLog;
 
 			std::vector<double> m_meanHist;
 
 
 			// Test to check if a candidate region is a real face
 
-			bool checkIfFacePlane( CObservation3DRangeScan* face );
+			bool checkIfFacePlane( mrpt::obs::CObservation3DRangeScan* face );
 
-			bool checkIfFacePlaneCov( CObservation3DRangeScan* face );
+			bool checkIfFacePlaneCov( mrpt::obs::CObservation3DRangeScan* face );
 
 			void thread_checkIfFacePlaneCov( );
 
 			static void dummy_checkIfFacePlaneCov( CFaceDetection *obj );
 
 
-			bool checkIfFaceRegions( CObservation3DRangeScan* face );
+			bool checkIfFaceRegions( mrpt::obs::CObservation3DRangeScan* face );
 
 			void thread_checkIfFaceRegions( );
 
 			static void dummy_checkIfFaceRegions( CFaceDetection *obj );
 
-			size_t checkRelativePosition( const TPoint3D &p1, const TPoint3D &p2, const TPoint3D &p, double &dist );
+			size_t checkRelativePosition( const mrpt::math::TPoint3D &p1, const mrpt::math::TPoint3D &p2, const mrpt::math::TPoint3D &p, double &dist );
 
 
 			void thread_checkIfDiagonalSurface( );
 
-			bool checkIfDiagonalSurface( CObservation3DRangeScan* face );
+			bool checkIfDiagonalSurface( mrpt::obs::CObservation3DRangeScan* face );
 
-			bool checkIfDiagonalSurface2( CObservation3DRangeScan* face );
+			bool checkIfDiagonalSurface2( mrpt::obs::CObservation3DRangeScan* face );
 
 			static void dummy_checkIfDiagonalSurface( CFaceDetection *obj );
 
@@ -159,22 +152,20 @@ namespace mrpt
 
 			void experimental_viewFacePointsScanned( const std::vector<float> &xs, const std::vector<float> &ys, const std::vector<float> &zs );
 
-			void experimental_viewFacePointsScanned( const CObservation3DRangeScan &face );
+			void experimental_viewFacePointsScanned( const mrpt::obs::CObservation3DRangeScan &face );
 			
-			void experimental_viewFacePointsScanned( const std::vector<TPoint3D> &points );
+			void experimental_viewFacePointsScanned( const std::vector<mrpt::math::TPoint3D> &points );
 
-			void experimental_viewFacePointsAndEigenVects(  const std::vector<CArrayDouble<3> > &pointsVector, const CMatrixDouble &eigenVect, const CVectorDouble &eigenVal );
+			void experimental_viewFacePointsAndEigenVects(  const std::vector<mrpt::math::CArrayDouble<3> > &pointsVector, const mrpt::math::CMatrixDouble &eigenVect, const mrpt::math::CVectorDouble &eigenVal );
 
-			void experimental_viewRegions( const std::vector<TPoint3D> regions[9], const TPoint3D meanPos[3][3] );		
+			void experimental_viewRegions( const std::vector<mrpt::math::TPoint3D> regions[9], const mrpt::math::TPoint3D meanPos[3][3] );		
 
 			// Segmentation methods
-
-			void experimental_segmentFace( const CObservation3DRangeScan &face, CMatrixTemplate<bool> &region );
+			void experimental_segmentFace( const mrpt::obs::CObservation3DRangeScan &face, mrpt::math::CMatrixTemplate<bool> &region );
 
 			// Histogram methods
-
-			void experimental_calcHist( const CImage &face, const size_t &c1, const size_t &r1, const size_t &c2, 
-										const size_t &r2, CMatrixTemplate<unsigned int> &hist );
+			void experimental_calcHist( const mrpt::utils::CImage &face, const size_t &c1, const size_t &r1, const size_t &c2, 
+										const size_t &r2, mrpt::math::CMatrixTemplate<unsigned int> &hist );
 
 			
 

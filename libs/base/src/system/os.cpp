@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -42,7 +42,7 @@
 	#include <unistd.h>
 	#include <utime.h>
 	#include <errno.h>
-	#include <signal.h>
+//	#include <signal.h>
 #endif
 
 #include <sys/types.h>
@@ -67,12 +67,12 @@ using namespace std;
     int myKbhit(void)
     {
 		struct termios oldtio, curtio;
-		struct sigaction sa;
+//		struct sigaction sa;
 
 		/* Save stdin terminal attributes */
 		tcgetattr(0, &oldtio);
 
-		memset(&sa, 0, sizeof(struct sigaction));
+//		memset(&sa, 0, sizeof(struct sigaction));
 
 		/* Set non-canonical no-echo for stdin */
 		tcgetattr(0, &curtio);
@@ -94,48 +94,12 @@ using namespace std;
 
 #endif
 
-
-// --------------------------------------------------------------------------------------------------
-// For UNIX only: If a fatal signal is caught, throw a MRPT exception to inform about the event:
-//   Based on code from wxWidgets (utilsunx.cpp)
-// --------------------------------------------------------------------------------------------------
-extern "C" void MRPT_SIGNAL_HANDLER_SIG( int )
-{
-	cerr << "*FATAL*: Signal SIGSEGV caught!" << endl;
-	abort();
-}
-
 /*---------------------------------------------------------------
             registerFatalExceptionHandlers
   ---------------------------------------------------------------*/
 void mrpt::system::registerFatalExceptionHandlers()
 {
-	static bool done = false;
-	if (done) return;
-	done = true;
-
-#ifndef MRPT_OS_WINDOWS
-    // install the signal handler
-    struct sigaction act;
-    // some systems extend it with non std fields, so zero everything
-    memset(&act, 0, sizeof(act));
-
-    sigemptyset(&act.sa_mask);
-    act.sa_flags = 0;
-
-    act.sa_handler = MRPT_SIGNAL_HANDLER_SIG; //MRPT_SIGNAL_HANDLER_SIGFPE;
-    if (0!=sigaction(SIGFPE, &act, NULL) ) cerr << "[registerFatalExceptionHandlers] Cannot install signal handler!!" << endl;
-
-    act.sa_handler = MRPT_SIGNAL_HANDLER_SIG; //MRPT_SIGNAL_HANDLER_SIGILL;
-    if (0!=sigaction(SIGILL, &act, NULL) ) cerr << "[registerFatalExceptionHandlers] Cannot install signal handler!!" << endl;
-
-    act.sa_handler = MRPT_SIGNAL_HANDLER_SIG; //MRPT_SIGNAL_HANDLER_SIGBUS;
-    if (0!=sigaction(SIGBUS, &act, NULL) ) cerr << "[registerFatalExceptionHandlers] Cannot install signal handler!!" << endl;
-
-    act.sa_handler = MRPT_SIGNAL_HANDLER_SIG; //MRPT_SIGNAL_HANDLER_SIGSEGV;
-    if (0!=sigaction(SIGSEGV, &act, NULL) ) cerr << "[registerFatalExceptionHandlers] Cannot install signal handler!!" << endl;
-#endif
-
+	// Removed in MRPT 1.3.0!
 }
 
 /*---------------------------------------------------------------

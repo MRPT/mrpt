@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -12,7 +12,7 @@
 #include <mrpt/utils/CStream.h>
 #include <mrpt/synch.h>
 #include <mrpt/utils/CDebugOutputCapable.h>
-#include <mrpt/slam/CObservation2DRangeScan.h>
+#include <mrpt/obs/CObservation2DRangeScan.h>
 #include <mrpt/utils/CConfigFileBase.h>
 #include <mrpt/hwdrivers/link_pragmas.h>
 #include <mrpt/hwdrivers/CGenericSensor.h>
@@ -23,9 +23,6 @@ namespace mrpt
 {
 	namespace hwdrivers
 	{
-		using namespace mrpt::utils;
-		using namespace mrpt::slam;
-
 		/** This is the base, abstract class for "software drivers" interfaces to 2D scanners (laser range finders).
 		  *  Physical devices may be interfaced through a serial port, a USB connection,etc. but this class
 		  *   abstract those details throught the "binding" of the specific scanner driver to a given I/O channel,
@@ -41,7 +38,7 @@ namespace mrpt
 		class HWDRIVERS_IMPEXP C2DRangeFinderAbstract : public mrpt::utils::CDebugOutputCapable, public mrpt::hwdrivers::CGenericSensor
 		{
 		private:
-			CObservation2DRangeScan	m_lastObservation;
+			mrpt::obs::CObservation2DRangeScan	m_lastObservation;
 			bool							m_lastObservationIsNew;
 			bool							m_hardwareError;
 
@@ -49,9 +46,9 @@ namespace mrpt
 			  */
 			synch::CCriticalSection	m_csChangeStream,m_csLastObservation;
 
-			CObservation2DRangeScanPtr		m_nextObservation;		//!< A dynamic object used as buffer in doProcess
+			mrpt::obs::CObservation2DRangeScanPtr		m_nextObservation;		//!< A dynamic object used as buffer in doProcess
 
-			CObservation2DRangeScan::TListExclusionAreasWithRanges 	m_lstExclusionPolys;	//!< A list of optional exclusion polygons, in coordinates relative to the vehicle, that is, taking into account the "sensorPose".
+			mrpt::obs::CObservation2DRangeScan::TListExclusionAreasWithRanges 	m_lstExclusionPolys;	//!< A list of optional exclusion polygons, in coordinates relative to the vehicle, that is, taking into account the "sensorPose".
 			std::vector<std::pair<double,double> >  m_lstExclusionAngles; //!< A list of pairs of angles <init,end> such as all sensor ranges falling in those forbiden angles will be marked as invalid.
 
 			bool            m_showPreview; //!< If true, shows a 3D window with a preview of the grabber data
@@ -81,15 +78,15 @@ namespace mrpt
 			/** Mark as invalid those points which (x,y) coordinates fall within the exclusion polygons.
 			  * \sa loadExclusionAreas
 			  */
-			void filterByExclusionAreas( CObservation2DRangeScan &obs) const;
+			void filterByExclusionAreas( mrpt::obs::CObservation2DRangeScan &obs) const;
 
 			/** Mark as invalid those ranges in a set of forbiden angle ranges.
 			  * \sa loadExclusionAreas
 			  */
-			void filterByExclusionAngles( CObservation2DRangeScan &obs) const;
+			void filterByExclusionAngles( mrpt::obs::CObservation2DRangeScan &obs) const;
 
 			/** Must be called inside the capture method to allow optional GUI preview of scans */
-			void processPreview(const mrpt::slam::CObservation2DRangeScan &obs);
+			void processPreview(const mrpt::obs::CObservation2DRangeScan &obs);
 
 		public:
 			C2DRangeFinderAbstract();  //!< Default constructor
@@ -101,13 +98,13 @@ namespace mrpt
 			  *  The stream object must not be deleted before the destruction of this class.
 			  * \sa hwdrivers::CSerialPort
 			  */
-			void  bindIO( CStream	*streamIO );
+			void  bindIO( mrpt::utils::CStream	*streamIO );
 
 			/** Get the last observation from the sensor, if available, and unmarks it as being "the last one" (thus a new scan must arrive or subsequent calls will find no new observations).
 			  */
 			void  getObservation(
 				bool							&outThereIsObservation,
-				CObservation2DRangeScan	&outObservation,
+				mrpt::obs::CObservation2DRangeScan	&outObservation,
 				bool							&hardwareError );
 
 			void doProcess(); //!< Main method for a CGenericSensor
@@ -117,7 +114,7 @@ namespace mrpt
 			  */
 			virtual void  doProcessSimple(
 				bool							&outThereIsObservation,
-				CObservation2DRangeScan	&outObservation,
+				mrpt::obs::CObservation2DRangeScan	&outObservation,
 				bool							&hardwareError ) = 0;
 
 			/** Enables the scanning mode (which may depend on the specific laser device); this must be called before asking for observations to assure that the protocol has been initializated.

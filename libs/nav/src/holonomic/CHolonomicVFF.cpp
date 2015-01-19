@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -94,7 +94,7 @@ void  CHolonomicVFF::navigate(
 	Implements the writing to a CStream capability of
 	  CSerializable objects
   ---------------------------------------------------------------*/
-void  CLogFileRecord_VFF::writeToStream(CStream &out,int *version) const
+void  CLogFileRecord_VFF::writeToStream(mrpt::utils::CStream &out,int *version) const
 {
 	MRPT_UNUSED_PARAM(out);
 	if (version)
@@ -107,7 +107,7 @@ void  CLogFileRecord_VFF::writeToStream(CStream &out,int *version) const
 /*---------------------------------------------------------------
 					readFromStream
   ---------------------------------------------------------------*/
-void  CLogFileRecord_VFF::readFromStream(CStream &in,int version)
+void  CLogFileRecord_VFF::readFromStream(mrpt::utils::CStream &in,int version)
 {
 	MRPT_UNUSED_PARAM(in);
 	switch(version)

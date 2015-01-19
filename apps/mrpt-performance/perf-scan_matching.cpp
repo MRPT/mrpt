@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -10,7 +10,7 @@
 #include <mrpt/poses/CPose3D.h>
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/random.h>
-#include <mrpt/scanmatching.h>
+#include <mrpt/tfest.h>
 
 #include "common.h"
 
@@ -18,7 +18,6 @@
 using namespace mrpt::utils;
 using namespace mrpt::poses;
 using namespace mrpt::system;
-using namespace mrpt::scanmatching;
 using namespace std;
 
 
@@ -79,19 +78,20 @@ void generate_list_of_points( const TPoints &pA, const TPoints &pB, TMatchingPai
 // ------------------------------------------------------
 //				Genreate a vector of matched points
 // ------------------------------------------------------
-void generate_vector_of_points(  const TPoints &pA, const TPoints &pB, vector<double> &inV )
+void generate_vector_of_points(  const TPoints &pA, const TPoints &pB, vector<mrpt::math::TPoint3D> &ptsA, vector<mrpt::math::TPoint3D> &ptsB  )
 {
 	// The input vector: inV = [pA1x, pA1y, pA1z, pB1x, pB1y, pB1z, ... ]
-	inV.resize( 30 );
-	for( unsigned int i = 0; i < 5; ++i )
+	ptsA.resize( pA.size() );
+	ptsB.resize( pA.size() );
+	for( unsigned int i = 0; i < pA.size(); ++i )
 	{
-		inV[6*i+0] = pA[i][0]; inV[6*i+1] = pA[i][1]; inV[6*i+2] = pA[i][2];
-		inV[6*i+3] = pB[i][0]; inV[6*i+4] = pB[i][1]; inV[6*i+5] = pB[i][2];
+		ptsA[i] = mrpt::math::TPoint3D( pA[i][0], pA[i][1], pA[i][2] );
+		ptsB[i] = mrpt::math::TPoint3D( pB[i][0], pB[i][1], pB[i][2] );
 	}
 } // end generate_vector_of_points
 
 // ------------------------------------------------------
-//				Benchmark: using CPose3D
+//				Benchmark: using CPose3DQuat
 // ------------------------------------------------------
 double scan_matching_test_1( int a1, int a2 )
 {
@@ -101,7 +101,7 @@ double scan_matching_test_1( int a1, int a2 )
 	TMatchingPairList list;
 	generate_list_of_points( pA, pB, list );
 
-	CPose3D out;
+	CPose3DQuat out;
 	double	scale;
 
 	const size_t	N = a1;
@@ -109,32 +109,7 @@ double scan_matching_test_1( int a1, int a2 )
 
 	tictac.Tic();
 	for (size_t i=0;i<N;i++)
-		leastSquareErrorRigidTransformation6D( list, out, scale );
-
-	const double T = tictac.Tac()/N;
-	return T;
-}
-
-// ------------------------------------------------------
-//				Benchmark: using CPose3DQuat
-// ------------------------------------------------------
-double scan_matching_test_2( int a1, int a2 )
-{
-	TPoints	pA, pB;
-	generate_points( pA, pB );
-
-	TMatchingPairList list;
-	generate_list_of_points( pA, pB, list );
-
-	CPose3DQuat out;
-	double		scale;
-
-	const size_t	N = a1;
-	CTicTac			tictac;
-
-	tictac.Tic();
-	for (size_t i=0;i<N;i++)
-		leastSquareErrorRigidTransformation6D( list, out, scale );
+		mrpt::tfest::se3_l2(list,out,scale);
 
 	const double T = tictac.Tac()/N;
 	return T;
@@ -148,17 +123,18 @@ double scan_matching_test_3( int a1, int a2 )
 	TPoints	pA, pB;
 	generate_points( pA, pB );
 
-	vector<double> inV;
-	generate_vector_of_points( pA, pB, inV );
-
-	vector<double> qu;
+	vector<mrpt::math::TPoint3D> ptsA, ptsB;
+	generate_vector_of_points( pA, pB, ptsA, ptsB);
 
 	const size_t	N = a1;
 	CTicTac			tictac;
 
+	mrpt::poses::CPose3DQuat out_pose;
+	double out_scale;
+
 	tictac.Tic();
 	for (size_t i=0;i<N;i++)
-		HornMethod( inV, qu );
+		mrpt::tfest::se3_l2(ptsA,ptsB,out_pose,out_scale);
 
 	const double T = tictac.Tac()/N;
 	return T;
@@ -173,13 +149,10 @@ double scan_matching_test_4( int nCorrs, int nRepets )
 	TPoints	pA, pB;
 	generate_points( pA, pB );
 
-	vector<double> inV;
-	generate_vector_of_points( pA, pB, inV );
-
 	vector<double> qu;
 
 	TMatchingPairList	in_correspondences;
-	CPose2D             out_pose;
+	mrpt::math::TPose2D out_pose;
 
 	in_correspondences.resize(nCorrs);
 	for (int i=0;i<nCorrs;i++)
@@ -201,7 +174,7 @@ double scan_matching_test_4( int nCorrs, int nRepets )
 	tictac.Tic();
 	for (size_t i=0;i<N;i++)
 	{
-		mrpt::scanmatching::leastSquareErrorRigidTransformation(in_correspondences,out_pose);
+		mrpt::tfest::se2_l2(in_correspondences, out_pose);
 	}
 
 	const double T = tictac.Tac()/N;
@@ -213,11 +186,10 @@ double scan_matching_test_4( int nCorrs, int nRepets )
 // ------------------------------------------------------
 void register_tests_scan_matching()
 {
-	lstTests.push_back( TestData("scan_matching: 6D LS Rigid Trans. [CPose3D]", scan_matching_test_1 , 1e4 ) );
-	lstTests.push_back( TestData("scan_matching: 6D LS Rigid Trans. [CPose3DQuat]", scan_matching_test_2 , 1e4) );
-	lstTests.push_back( TestData("scan_matching: 6D LS Rigid Trans. [vector of points]", scan_matching_test_3 , 1e4) );
+	lstTests.push_back( TestData("tfest: se3_l2 [CPose3DQuat]", scan_matching_test_1 , 1e4 ) );
+	lstTests.push_back( TestData("tfest: se3_l2 [vector TPoint3D]", scan_matching_test_3 , 1e4) );
 
-	lstTests.push_back( TestData("scan_matching: leastSquares 2D [x10 corrs]", scan_matching_test_4,  10, 1e6 ) );
-	lstTests.push_back( TestData("scan_matching: leastSquares 2D [x100 corrs]", scan_matching_test_4,  100, 1e6 ) );
-	lstTests.push_back( TestData("scan_matching: leastSquares 2D [x1000 corrs]", scan_matching_test_4,  1000, 1e5 ) );
+	lstTests.push_back( TestData("tfest: se2_l2 [x10 corrs]", scan_matching_test_4,  10, 1e6 ) );
+	lstTests.push_back( TestData("tfest: se2_l2 [x100 corrs]", scan_matching_test_4,  100, 1e6 ) );
+	lstTests.push_back( TestData("tfest: se2_l2 [x1000 corrs]", scan_matching_test_4,  1000, 1e5 ) );
 }

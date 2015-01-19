@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -10,7 +10,7 @@
 #define CHMHMapNode_H
 
 #include <mrpt/utils/safe_pointers.h>
-#include <mrpt/slam/CSensoryFrame.h>
+#include <mrpt/obs/CSensoryFrame.h>
 #include <mrpt/hmtslam/HMT_SLAM_common.h>
 
 #include <mrpt/utils/CSerializable.h>
@@ -22,8 +22,6 @@ namespace mrpt
 {
 	namespace hmtslam
 	{
-		using namespace mrpt::slam;
-
 		class HMTSLAM_IMPEXP CHierarchicalMHMap;
 		class HMTSLAM_IMPEXP CHMHMapArc;
 
@@ -74,7 +72,7 @@ namespace mrpt
 
 			/** The hierarchical graph in which this object is into.
 			  */
-			safe_ptr<CHierarchicalMHMap>	m_parent;
+			mrpt::utils::safe_ptr<CHierarchicalMHMap>	m_parent;
 
 		private:
 			/** Private constructor (see ::Create class factory)
@@ -148,7 +146,7 @@ namespace mrpt
 		  * \sa CHMTSLAM
 		  */
 		typedef std::map<CHMHMapNode::TNodeID,CHMHMapNodePtr>  TNodeList;
-		typedef list_searchable<CHMHMapNode::TNodeID> TNodeIDList;
+		typedef mrpt::utils::list_searchable<CHMHMapNode::TNodeID> TNodeIDList;
 		typedef std::set<CHMHMapNode::TNodeID> TNodeIDSet;
 		typedef std::pair<CHMHMapNode::TNodeID,CHMHMapNode::TNodeID>  TPairNodeIDs;
 

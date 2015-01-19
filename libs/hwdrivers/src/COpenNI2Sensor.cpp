@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -11,7 +11,7 @@
 
 #include <mrpt/hwdrivers/COpenNI2Generic.h>
 #include <mrpt/hwdrivers/COpenNI2Sensor.h>
-#include <mrpt/slam/CObservation3DRangeScan.h>
+#include <mrpt/obs/CObservation3DRangeScan.h>
 #include <mrpt/utils/CTimeLogger.h>
 #include <mrpt/utils/TStereoCamera.h>
 
@@ -22,7 +22,7 @@
 using namespace mrpt::hwdrivers;
 using namespace mrpt::system;
 using namespace mrpt::synch;
-using namespace mrpt::slam;
+using namespace mrpt::obs;
 using namespace mrpt::math;
 using namespace std;
 using mrpt::utils::DEG2RAD;
@@ -153,7 +153,7 @@ void COpenNI2Sensor::doProcess()
 	{
 		m_state = ssWorking;
 
-		vector<CSerializablePtr> objs;
+		std::vector<mrpt::utils::CSerializablePtr> objs;
 		if (m_grab_image || m_grab_depth || m_grab_3D_points)  objs.push_back(newObs);
 
 		appendObservations( objs );
@@ -236,7 +236,7 @@ void  COpenNI2Sensor::loadConfig_sensorSpecific(
 * \sa doProcess
 */
 void COpenNI2Sensor::getNextObservation(
-	mrpt::slam::CObservation3DRangeScan &out_obs,
+	mrpt::obs::CObservation3DRangeScan &out_obs,
 	bool &there_is_obs,
 	bool &hardware_error)
 {

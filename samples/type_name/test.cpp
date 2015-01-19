@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -30,7 +30,7 @@ void Test_TypeName()
 	cout << "Type: " << TTypeName<int32_t>::get() << endl;
 	cout << "Type: " << TTypeName<double>::get() << endl;
 	cout << "Type: " << TTypeName<CPose2D>::get() << endl;
-//	cout << "Type: " << TTypeName<mrpt::slam::COccupancyGridMap2D>::get() << endl;
+//	cout << "Type: " << TTypeName<mrpt::maps::COccupancyGridMap2D>::get() << endl;
 
 	cout << "Type: " << TTypeName<vector<double> >::get() << endl;
 	cout << "Type: " << TTypeName<vector<int32_t> >::get() << endl;

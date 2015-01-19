@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -75,7 +75,7 @@ namespace mrpt
 			CRenderizable& setPose( const mrpt::poses::CPoint2D &o );	//!< Set the 3D pose from a mrpt::poses::CPose3D object (return a ref to this)
 
 			mrpt::math::TPose3D getPose() const;	//!< Returns the 3D pose of the object as TPose3D
-			/** Returns a const ref to the 3D pose of the object as CPose3D (which explicitly contains the 3x3 rotation matrix) */
+			/** Returns a const ref to the 3D pose of the object as mrpt::poses::CPose3D (which explicitly contains the 3x3 rotation matrix) */
 			inline const mrpt::poses::CPose3D & getPoseRef() const { return m_pose; }
 
 			/** Changes the location of the object, keeping untouched the orientation  \return a ref to this */
@@ -201,7 +201,7 @@ namespace mrpt
 		};
 		DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE( CRenderizable, mrpt::utils::CSerializable, OPENGL_IMPEXP )
 
-		/** Applies a CPose3D transformation to the object. Note that this method doesn't <i>set</i> the pose to the given value, but <i>combines</i> it with the existing one.
+		/** Applies a mrpt::poses::CPose3D transformation to the object. Note that this method doesn't <i>set</i> the pose to the given value, but <i>combines</i> it with the existing one.
 		  * \sa setPose */
 		OPENGL_IMPEXP CRenderizablePtr & operator<<(CRenderizablePtr &r,const mrpt::poses::CPose3D &p);
 

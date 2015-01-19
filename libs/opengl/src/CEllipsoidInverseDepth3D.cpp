@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -53,7 +53,7 @@ IMPLEMENTS_SERIALIZABLE( CEllipsoidInverseDepth3D, CRenderizableDisplayList, mrp
    Implements the writing to a CStream capability of
      CSerializable objects
   ---------------------------------------------------------------*/
-void  CEllipsoidInverseDepth3D::writeToStream(CStream &out,int *version) const
+void  CEllipsoidInverseDepth3D::writeToStream(mrpt::utils::CStream &out,int *version) const
 {
 	if (version)
 		*version = 0;
@@ -70,7 +70,7 @@ void  CEllipsoidInverseDepth3D::writeToStream(CStream &out,int *version) const
 	Implements the reading from a CStream capability of
 		CSerializable objects
   ---------------------------------------------------------------*/
-void  CEllipsoidInverseDepth3D::readFromStream(CStream &in,int version)
+void  CEllipsoidInverseDepth3D::readFromStream(mrpt::utils::CStream &in,int version)
 {
 	switch(version)
 	{

@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -16,10 +16,10 @@
 #include <mrpt/vision/CFeature.h>
 
 #include <mrpt/poses/CPoint3D.h>
-#include <mrpt/slam/CLandmarksMap.h>
-#include <mrpt/slam/CObservationVisualLandmarks.h>
-#include <mrpt/slam/CObservationStereoImages.h>
-#include <mrpt/slam/CObservationBearingRange.h>
+#include <mrpt/maps/CLandmarksMap.h>
+#include <mrpt/obs/CObservationVisualLandmarks.h>
+#include <mrpt/obs/CObservationStereoImages.h>
+#include <mrpt/obs/CObservationBearingRange.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/utils/CTicTac.h>
 #include <mrpt/math/utils.h>
@@ -33,9 +33,11 @@
 using namespace mrpt;
 using namespace mrpt::vision;
 using namespace mrpt::utils;
-using namespace mrpt::slam;
+using namespace mrpt::maps;
 using namespace mrpt::math;
 using namespace mrpt::system;
+using namespace mrpt::poses;
+using namespace mrpt::obs;
 using namespace std;
 
 #ifdef MRPT_OS_WINDOWS
@@ -136,8 +138,8 @@ void  vision::openCV_cross_correlation(
 
 	// Find the max point:
 	cvMinMaxLoc(result,&mini,&max_val,&min_point,&max_point,NULL);
-	x_max = max_point.x+x_search_ini+(round(patch_w-1)>>1);
-	y_max = max_point.y+y_search_ini+(round(patch_h-1)>>1);
+	x_max = max_point.x+x_search_ini+(mrpt::utils::round(patch_w-1)>>1);
+	y_max = max_point.y+y_search_ini+(mrpt::utils::round(patch_h-1)>>1);
 
 	// Free memory:
 	cvReleaseImage( &result );
@@ -380,9 +382,9 @@ double  vision::computeMsd(
                     cloudsToMatchedList
 -------------------------------------------------------------*/
 void  vision::cloudsToMatchedList(
-                    const CObservationVisualLandmarks   & cloud1,
-                    const CObservationVisualLandmarks   & cloud2,
-                    TMatchingPairList                   & outList)
+	const CObservationVisualLandmarks   & cloud1,
+	const CObservationVisualLandmarks   & cloud2,
+	TMatchingPairList                   & outList)
 {
 	CLandmarksMap::TCustomSequenceLandmarks::const_iterator	itLand1, itLand2;
 	TMatchingPair								pair;
@@ -1371,7 +1373,7 @@ void  vision::projectMatchedFeatures(
                     CFeatureList					    & leftList,
                     CFeatureList					    & rightList,
                     const vision::TStereoSystemParams	& param,
-                    mrpt::slam::CLandmarksMap			& landmarks )
+                    mrpt::maps::CLandmarksMap			& landmarks )
 {
 	MRPT_START
 	ASSERT_( leftList.size() == rightList.size() );

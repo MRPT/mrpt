@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -10,7 +10,7 @@
 #define  CImpinjRFID_H
 
 #include <mrpt/hwdrivers/CGenericSensor.h>
-#include <mrpt/slam/CObservationRFID.h>
+#include <mrpt/obs/CObservationRFID.h>
 #include <mrpt/utils/CConfigFileBase.h>
 
 #include <mrpt/utils/CClientTCPSocket.h>
@@ -95,7 +95,7 @@ namespace mrpt
 			* \return Returns true if the observation was correct, and false otherwise
 			* \sa mrpt::hwdrivers::CGenericSensor
 			*/
-			bool getObservation( mrpt::slam::CObservationRFID &obs );
+			bool getObservation( mrpt::obs::CObservationRFID &obs );
 
 
 			/** Close the connection to the reader.

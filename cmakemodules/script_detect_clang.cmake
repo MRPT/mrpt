@@ -1,7 +1,7 @@
 # ----------------------------------------------------------------------------
 # Detect GNU version:
 # ----------------------------------------------------------------------------
-if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
+if (${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang")
 	execute_process(COMMAND ${CMAKE_CXX_COMPILER} --version
 		          OUTPUT_VARIABLE CMAKE_MRPT_CLANG_VERSION_FULL
 		          OUTPUT_STRIP_TRAILING_WHITESPACE)
@@ -21,5 +21,5 @@ if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
 	IF($ENV{VERBOSE})
 		MESSAGE(STATUS "clang --version: '${CMAKE_MRPT_CLANG_VERSION_FULL}' -> Major=${CMAKE_MRPT_CLANG_VERSION_MAJOR} Minor=${CMAKE_MRPT_CLANG_VERSION_MINOR}")
 	ENDIF($ENV{VERBOSE})
-endif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
+endif ()
 

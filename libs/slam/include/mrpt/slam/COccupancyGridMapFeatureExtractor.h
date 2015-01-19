@@ -2,15 +2,15 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 #ifndef COccupancyGridMapFeatureExtractor_H
 #define COccupancyGridMapFeatureExtractor_H
 
-#include <mrpt/slam/COccupancyGridMap2D.h>
-#include <mrpt/slam/CLandmarksMap.h>
+#include <mrpt/maps/COccupancyGridMap2D.h>
+#include <mrpt/maps/CLandmarksMap.h>
 #include <mrpt/vision/CFeatureExtraction.h>
 
 #include <mrpt/utils/CObserver.h>
@@ -21,8 +21,6 @@ namespace mrpt
 {
 	namespace slam
 	{
-		using namespace mrpt::math;
-
 		/**  A class for detecting features from occupancy grid maps. 
 		  *   The main method is "COccupancyGridMapFeatureExtractor::extractFeatures()", which makes use
 		  *    of an advanced cache mechanism to avoid redoing work when applied several times on the same
@@ -46,8 +44,8 @@ namespace mrpt
 			  * \sa uncached_extractFeatures
 			  */
 			void extractFeatures(
-				const mrpt::slam::COccupancyGridMap2D &grid,
-				mrpt::slam::CLandmarksMap	&outMap,
+				const mrpt::maps::COccupancyGridMap2D &grid,
+				mrpt::maps::CLandmarksMap	&outMap,
 				const size_t  number_of_features,
 				const mrpt::vision::TDescriptorType	descriptors,
 				const mrpt::vision::CFeatureExtraction::TOptions  &feat_options
@@ -60,16 +58,16 @@ namespace mrpt
 			  * \sa uncached_extractFeatures
 			  */
 			static void uncached_extractFeatures(
-				const mrpt::slam::COccupancyGridMap2D &grid,
-				mrpt::slam::CLandmarksMap	&outMap,
+				const mrpt::maps::COccupancyGridMap2D &grid,
+				mrpt::maps::CLandmarksMap	&outMap,
 				const size_t  number_of_features,
 				const mrpt::vision::TDescriptorType	descriptors,
 				const mrpt::vision::CFeatureExtraction::TOptions  &feat_options
 				);
 
 		protected:
-			void OnEvent(const mrptEvent &e); //!< This will receive the events from maps in order to purge the cache.
-			typedef std::map<const mrpt::slam::COccupancyGridMap2D*,mrpt::slam::CLandmarksMapPtr> TCache;
+			void OnEvent(const mrpt::utils::mrptEvent &e); //!< This will receive the events from maps in order to purge the cache.
+			typedef std::map<const mrpt::maps::COccupancyGridMap2D*,mrpt::maps::CLandmarksMapPtr> TCache;
 			TCache m_cache; //!< A cache of already computed maps.
 
 

@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -26,7 +26,12 @@ using namespace mrpt::slam;
 using namespace mrpt::hmtslam;
 using namespace mrpt::utils;
 using namespace mrpt::synch;
+using namespace mrpt::obs;
+using namespace mrpt::maps;
+using namespace mrpt::opengl;
 using namespace mrpt::random;
+using namespace mrpt::poses;
+using namespace mrpt::math;
 using namespace std;
 
 #define HMTSLAM_LSLAM_VERBOSE   1
@@ -446,7 +451,7 @@ void CHMTSLAM::LSLAM_process_message_from_AA( const TMessageLSLAMfromAA &myMsg )
 				newArea->m_nodeType.setType( "Area" );
 				newArea->m_label = generateUniqueAreaLabel();
 
-				CMultiMetricMapPtr emptyMap = CMultiMetricMapPtr( new CMultiMetricMap(&m_options.defaultMapsInitializers, &m_options.defaultMapsOptions) );
+				CMultiMetricMapPtr emptyMap = CMultiMetricMapPtr( new CMultiMetricMap(&m_options.defaultMapsInitializers) );
 				newArea->m_annotations.setMemoryReference( NODE_ANNOTATION_METRIC_MAPS,     emptyMap, 		LMH->m_ID );
 
 				CRobotPosesGraphPtr emptyPoseGraph = CRobotPosesGraph::Create();
@@ -488,13 +493,13 @@ void CHMTSLAM::LSLAM_process_message_from_AA( const TMessageLSLAMfromAA &myMsg )
 		// ------------------------------------------------------------------------
 		// The current robot pose is set as the membership of the closest pose:
 		// ------------------------------------------------------------------------
-		map< TPoseID, CPose3D >  lstPoses;
+		TMapPoseID2Pose3D  lstPoses;
 		LMH->getMeans( lstPoses );
 		TPoseID  closestPose = POSEID_INVALID;
 		double   minDist=0;
 		const CPose3D *curPoseMean = & lstPoses[ LMH->m_currentRobotPose ];
 
-		for ( map< TPoseID, CPose3D >::const_iterator it=lstPoses.begin();it!=lstPoses.end();++it )
+		for ( TMapPoseID2Pose3D::const_iterator it=lstPoses.begin();it!=lstPoses.end();++it )
 		{
 			if ( it->first != LMH->m_currentRobotPose ) // Only compare to OTHER poses!
 			{

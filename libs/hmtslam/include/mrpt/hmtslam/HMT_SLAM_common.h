@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -22,7 +22,7 @@
 #define NODE_ANNOTATION_REF_POSEID 			"refPoseID"			 // TPoseID
 #define NODE_ANNOTATION_POSES_GRAPH 		"posesGraph"         // CRobotPosesGraph
 
-#define NODE_ANNOTATION_PLACE_POSE 			"placePose"          // CPoint2D
+#define NODE_ANNOTATION_PLACE_POSE 			"placePose"          // mrpt::poses::CPoint2D
 
 #define ARC_ANNOTATION_DELTA				"Delta"				 // CPose3DPDF (for the current implementation, it's a CPose3DPDFParticles)
 #define ARC_ANNOTATION_DELTA_SRC_POSEID		"Delta_poseID_src"	 // TPoseID (elemental datatype)
@@ -48,8 +48,6 @@ namespace mrpt
 {
 	namespace hmtslam
 	{
-		using namespace mrpt::utils;
-
 		class HMTSLAM_IMPEXP CHMHMapArc;
 		class HMTSLAM_IMPEXP CHMHMapNode;
 
@@ -118,10 +116,10 @@ namespace mrpt
 		/** A class for storing a sequence of arcs (a path).
 		  * \sa CHMTSLAM
 		  */
-		class HMTSLAM_IMPEXP TArcList : public list_searchable<mrpt::hmtslam::CHMHMapArcPtr>
+		class HMTSLAM_IMPEXP TArcList : public mrpt::utils::list_searchable<mrpt::hmtslam::CHMHMapArcPtr>
 		{
 		private:
-			typedef list_searchable<mrpt::hmtslam::CHMHMapArcPtr> BASE;
+			typedef mrpt::utils::list_searchable<mrpt::hmtslam::CHMHMapArcPtr> BASE;
 
 		public:
 			void  debugDump();

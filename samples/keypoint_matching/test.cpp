@@ -2,13 +2,13 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
 #include <mrpt/vision/CFeatureExtraction.h>
-#include <mrpt/slam/CLandmarksMap.h>
+#include <mrpt/maps/CLandmarksMap.h>
 #include <mrpt/gui/CDisplayWindow.h>
 #include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/opengl/COpenGLScene.h>
@@ -80,7 +80,7 @@ void TestExtractMatchProjectAndPaint()
 	cout << "***************************************************" << endl;
 
 	// Project features:
-	mrpt::slam::CLandmarksMap   outMap;
+	mrpt::maps::CLandmarksMap   outMap;
 	TStereoSystemParams         stereoOptions;                      // Default options: Bumblebee + 640x480
 	cout << "Projecting matched features" << endl;
 	mrpt::vision::projectMatchedFeatures( mHarris, stereoOptions, outMap );

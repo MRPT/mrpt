@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -14,12 +14,13 @@
 #include <OpenNI.h>
 #include <PS1080.h>
 
-#include <mrpt/base.h>
 #include <mrpt/gui.h>
 #include <mrpt/opengl.h>
-#include <mrpt/maps.h>
+#include <mrpt/maps/CColouredPointsMap.h>
+#include <mrpt/system/threads.h>
 
 using namespace mrpt;
+using namespace mrpt::maps;
 using namespace std;
 
 
@@ -141,7 +142,7 @@ int main ( int argc, char** argv )
 	//========================================================================================
 	gui::CDisplayWindow3D window;
 	opengl::COpenGLScenePtr	scene;
-	gui::global_settings::OCTREE_RENDER_MAX_POINTS_PER_NODE = 1000000;
+	mrpt::global_settings::OCTREE_RENDER_MAX_POINTS_PER_NODE = 1000000;
 	window.setWindowTitle("RGB-D camera frame");
 	window.resize(800,600);
 	window.setPos(500,50);
@@ -165,7 +166,7 @@ int main ( int argc, char** argv )
 
 	//							Grab frames continuously and show
 	//========================================================================================
-	slam::CColouredPointsMap points;
+	CColouredPointsMap points;
 	openni::VideoFrameRef framed, framergb;
 	
 	while (!window.keyHit())	//Push any key to exit
@@ -203,7 +204,7 @@ int main ( int argc, char** argv )
 		}
 
 		scene = window.get3DSceneAndLock();
-		kinectp->loadFromPointsMap<slam::CColouredPointsMap> (&points); 
+		kinectp->loadFromPointsMap<mrpt::maps::CColouredPointsMap> (&points);
 		system::sleep(5);
 		window.unlockAccess3DScene();
 		window.repaint();

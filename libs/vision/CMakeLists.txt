@@ -1,8 +1,8 @@
 # Lists of directories with source files:
 #  See "DeclareMRPTLib.cmake" for explanations
 # -------------------------------------------------
-LIST(APPEND vision_EXTRA_SRCS		"${MRPT_SOURCE_DIR}/libs/vision/src/maps/*.cpp" "${MRPT_SOURCE_DIR}/libs/vision/include/mrpt/slam/*.h")
-LIST(APPEND vision_EXTRA_SRCS_NAME 	"maps" "maps")
+LIST(APPEND vision_EXTRA_SRCS		"${MRPT_SOURCE_DIR}/libs/vision/src/maps/*.cpp" "${MRPT_SOURCE_DIR}/libs/vision/include/mrpt/maps/*.h" "${MRPT_SOURCE_DIR}/libs/vision/include/mrpt/slam/*.h")
+LIST(APPEND vision_EXTRA_SRCS_NAME 	"maps" "maps" "maps-bcks-compat")
 
 LIST(APPEND vision_EXTRA_SRCS		"${MRPT_SOURCE_DIR}/libs/vision/src/obs/*.cpp" "${MRPT_SOURCE_DIR}/libs/vision/include/mrpt/slam/CObservation*.h")
 LIST(APPEND vision_EXTRA_SRCS_NAME 	"observations" "observations")
@@ -21,6 +21,9 @@ LIST(APPEND vision_EXTRA_SRCS
 	"${MRPT_SOURCE_DIR}/libs/vision/src/faster/*.h" )
 LIST(APPEND vision_EXTRA_SRCS_NAME 	"faster" "faster")
 
+IF(CMAKE_MRPT_HAS_OPENCV)
+	INCLUDE_DIRECTORIES(${OpenCV_INCLUDE_DIR} ${OpenCV_INCLUDE_DIRS} ${OPENCV_INCLUDE_DIRS} ${OPENCV_INCLUDEDIR})
+ENDIF(CMAKE_MRPT_HAS_OPENCV)
 
 #---------------------------------------------
 # Macro declared in "DeclareMRPTLib.cmake":
@@ -54,5 +57,10 @@ IF(BUILD_mrpt-vision)
 	IF (MRPT_ENABLE_PRECOMPILED_HDRS AND MSVC)
 		set_source_files_properties(${faster_FILES} PROPERTIES COMPILE_FLAGS "/Y-")
 	ENDIF (MRPT_ENABLE_PRECOMPILED_HDRS AND MSVC)
+
+	IF(CMAKE_MRPT_HAS_OPENCV)
+		target_link_libraries(mrpt-vision ${OpenCV_LIBRARIES})
+	ENDIF(CMAKE_MRPT_HAS_OPENCV)
+
 ENDIF(BUILD_mrpt-vision) 
 

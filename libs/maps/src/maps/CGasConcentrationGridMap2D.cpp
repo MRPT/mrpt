@@ -2,15 +2,15 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
 #include "maps-precomp.h" // Precomp header
 
-#include <mrpt/slam/CGasConcentrationGridMap2D.h>
-#include <mrpt/slam/CObservationGasSensors.h>
+#include <mrpt/maps/CGasConcentrationGridMap2D.h>
+#include <mrpt/obs/CObservationGasSensors.h>
 #include <mrpt/math/CMatrix.h>
 #include <mrpt/math/ops_containers.h>
 #include <mrpt/utils/CTicTac.h>
@@ -25,17 +25,66 @@
 #include <mrpt/opengl/CSetOfObjects.h>
 #include <mrpt/utils/CStream.h>
 
-// Short-cut:
-#define LUT_TABLE (*(LUT.table))
-
 using namespace mrpt;
-using namespace mrpt::slam;
+using namespace mrpt::maps;
+using namespace mrpt::obs;
 using namespace mrpt::utils;
 using namespace mrpt::poses;
 using namespace std;
 using namespace mrpt::math;
 
-IMPLEMENTS_SERIALIZABLE(CGasConcentrationGridMap2D, CRandomFieldGridMap2D,mrpt::slam)
+//  =========== Begin of Map definition ============
+MAP_DEFINITION_REGISTER("CGasConcentrationGridMap2D,gasGrid", mrpt::maps::CGasConcentrationGridMap2D)
+
+CGasConcentrationGridMap2D::TMapDefinition::TMapDefinition() :
+	min_x(-2),
+	max_x(2),
+	min_y(-2),
+	max_y(2),
+	resolution(0.10f),
+	mapType(CGasConcentrationGridMap2D::mrKernelDM)
+{
+}
+
+void CGasConcentrationGridMap2D::TMapDefinition::loadFromConfigFile_map_specific(const mrpt::utils::CConfigFileBase  &source, const std::string &sectionNamePrefix)
+{
+	// [<sectionNamePrefix>+"_creationOpts"]
+	const std::string sSectCreation = sectionNamePrefix+string("_creationOpts");
+	MRPT_LOAD_CONFIG_VAR(min_x, float,   source,sSectCreation);
+	MRPT_LOAD_CONFIG_VAR(max_x, float,   source,sSectCreation);
+	MRPT_LOAD_CONFIG_VAR(min_y, float,   source,sSectCreation);
+	MRPT_LOAD_CONFIG_VAR(max_y, float,   source,sSectCreation);
+	MRPT_LOAD_CONFIG_VAR(resolution, float,   source,sSectCreation);
+	mapType = source.read_enum<CGasConcentrationGridMap2D::TMapRepresentation>(sSectCreation,"mapType",mapType);
+
+	insertionOpts.loadFromConfigFile(source, sectionNamePrefix+string("_insertOpts") );
+}
+
+void CGasConcentrationGridMap2D::TMapDefinition::dumpToTextStream_map_specific(mrpt::utils::CStream &out) const
+{
+	out.printf("MAP TYPE                                  = %s\n", mrpt::utils::TEnumType<CGasConcentrationGridMap2D::TMapRepresentation>::value2name(mapType).c_str() );
+	LOADABLEOPTS_DUMP_VAR(min_x         , float);
+	LOADABLEOPTS_DUMP_VAR(max_x         , float);
+	LOADABLEOPTS_DUMP_VAR(min_y         , float);
+	LOADABLEOPTS_DUMP_VAR(max_y         , float);
+	LOADABLEOPTS_DUMP_VAR(resolution         , float);
+
+	this->insertionOpts.dumpToTextStream(out);
+}
+
+mrpt::maps::CMetricMap* CGasConcentrationGridMap2D::internal_CreateFromMapDefinition(const mrpt::maps::TMetricMapInitializer &_def)
+{
+	const CGasConcentrationGridMap2D::TMapDefinition &def = *dynamic_cast<const CGasConcentrationGridMap2D::TMapDefinition*>(&_def);
+	CGasConcentrationGridMap2D *obj = new CGasConcentrationGridMap2D(def.mapType,def.min_x,def.max_x,def.min_y,def.max_y,def.resolution );
+	obj->insertionOptions  = def.insertionOpts;
+	return obj;
+}
+//  =========== End of Map definition Block =========
+
+IMPLEMENTS_SERIALIZABLE(CGasConcentrationGridMap2D, CRandomFieldGridMap2D,mrpt::maps)
+
+// Short-cut:
+#define LUT_TABLE (*(LUT.table))
 
 /*---------------------------------------------------------------
 						Constructor
@@ -209,7 +258,7 @@ bool  CGasConcentrationGridMap2D::internal_insertObservation(
 /*---------------------------------------------------------------
 						computeObservationLikelihood
   ---------------------------------------------------------------*/
-double	 CGasConcentrationGridMap2D::computeObservationLikelihood(
+double	 CGasConcentrationGridMap2D::internal_computeObservationLikelihood(
 	const CObservation		*obs,
 	const CPose3D			&takenFrom )
 {
@@ -221,10 +270,10 @@ double	 CGasConcentrationGridMap2D::computeObservationLikelihood(
 /*---------------------------------------------------------------
   Implements the writing to a CStream capability of CSerializable objects
  ---------------------------------------------------------------*/
-void  CGasConcentrationGridMap2D::writeToStream(CStream &out, int *version) const
+void  CGasConcentrationGridMap2D::writeToStream(mrpt::utils::CStream &out, int *version) const
 {
 	if (version)
-		*version = 3;
+		*version = 4;
 	else
 	{
 		uint32_t	n;
@@ -272,6 +321,7 @@ void  CGasConcentrationGridMap2D::writeToStream(CStream &out, int *version) cons
 		// New in v3:
 		out << m_average_normreadings_mean << m_average_normreadings_var << uint64_t(m_average_normreadings_count);
 
+		out << genericMapParams; // v4
 	}
 }
 
@@ -285,7 +335,7 @@ struct TOldCellTypeInVersion1
 /*---------------------------------------------------------------
   Implements the reading from a CStream capability of CSerializable objects
  ---------------------------------------------------------------*/
-void  CGasConcentrationGridMap2D::readFromStream(CStream &in, int version)
+void  CGasConcentrationGridMap2D::readFromStream(mrpt::utils::CStream &in, int version)
 {
 	switch(version)
 	{
@@ -293,6 +343,7 @@ void  CGasConcentrationGridMap2D::readFromStream(CStream &in, int version)
 	case 1:
 	case 2:
 	case 3:
+	case 4:
 		{
 			uint32_t	n,i,j;
 
@@ -367,6 +418,9 @@ void  CGasConcentrationGridMap2D::readFromStream(CStream &in, int version)
 				m_average_normreadings_count = N;
 			}
 
+			if (version>=4) 
+				in >> genericMapParams;
+
 			m_hasToRecoverMeanAndCov = true;
 		} break;
 	default:
@@ -396,7 +450,7 @@ CGasConcentrationGridMap2D::TInsertionOptions::TInsertionOptions() :
 /*---------------------------------------------------------------
 					dumpToTextStream
   ---------------------------------------------------------------*/
-void  CGasConcentrationGridMap2D::TInsertionOptions::dumpToTextStream(CStream	&out) const
+void  CGasConcentrationGridMap2D::TInsertionOptions::dumpToTextStream(mrpt::utils::CStream	&out) const
 {
 	out.printf("\n----------- [CGasConcentrationGridMap2D::TInsertionOptions] ------------ \n\n");
 	out.printf("[TInsertionOptions.Common] ------------ \n\n");
@@ -515,8 +569,7 @@ void  CGasConcentrationGridMap2D::saveAsMatlab3DGraph(const std::string  &filNam
 void  CGasConcentrationGridMap2D::getAs3DObject( mrpt::opengl::CSetOfObjectsPtr	&outObj) const
 {
 	MRPT_START
-	if (m_disableSaveAs3DObject)
-		return;
+	if (!genericMapParams.enableSaveAs3DObject) return;
 
 	CRandomFieldGridMap2D::getAs3DObject(outObj);
 
@@ -531,8 +584,7 @@ void  CGasConcentrationGridMap2D::getAs3DObject(
 	mrpt::opengl::CSetOfObjectsPtr	&varObj ) const
 {
 	MRPT_START
-	if (m_disableSaveAs3DObject)
-		return;
+	if (!genericMapParams.enableSaveAs3DObject) return;
 
 	CRandomFieldGridMap2D::getAs3DObject(meanObj,varObj);
 

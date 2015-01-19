@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -27,8 +27,8 @@
 
 #include <wx/combobox.h>
 
-#include <mrpt/slam/CActionCollection.h>
-#include <mrpt/slam/CSensoryFrame.h>
+#include <mrpt/obs/CActionCollection.h>
+#include <mrpt/obs/CSensoryFrame.h>
 
 
 
@@ -38,7 +38,7 @@ class CFormChangeSensorPositions: public wxDialog
 
 		/** Used in executeOperationOnRawlogFiles
 		  */
-		typedef void (*TRawlogFilter)( mrpt::slam::CActionCollection *acts, mrpt::slam::CSensoryFrame *SF, int &changesCount  );
+		typedef void (*TRawlogFilter)( mrpt::obs::CActionCollection *acts, mrpt::obs::CSensoryFrame *SF, int &changesCount  );
 
 		/** This is the common function for all operations over a rawlog file ("filter" a rawlog file into a new one) or over the loaded rawlog (depending on the user selection in the GUI).
 		  */

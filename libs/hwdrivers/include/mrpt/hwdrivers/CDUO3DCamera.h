@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -10,14 +10,12 @@
 #ifndef CDUO3DCamera_H
 #define CDUO3DCamera_H
 
-#include <mrpt/slam/CObservationStereoImages.h>
-#include <mrpt/slam/CObservationIMU.h>
+#include <mrpt/obs/CObservationStereoImages.h>
+#include <mrpt/obs/CObservationIMU.h>
 #include <mrpt/vision/CStereoRectifyMap.h>
 
 #include <mrpt/hwdrivers/link_pragmas.h>
 #include <mrpt/utils/CUncopiable.h>
-
-#include <mrpt/otherlibs/do_opencv_includes.h> 
 
 namespace mrpt
 {
@@ -29,6 +27,7 @@ namespace mrpt
 			enum TYMLReadResult {yrr_NAME_NON_CONSISTENT,yrr_EMPTY,yrr_OK};
 
 			TCaptureOptions_DUO3D();
+			~TCaptureOptions_DUO3D();
 
 			/** @name Image settings
 			  * @{ */
@@ -57,12 +56,6 @@ namespace mrpt
 			/** @name Others
 			  * @{ */
 			mrpt::utils::TStereoCamera	m_stereo_camera;
-#if MRPT_HAS_OPENCV
-			cv::Mat		m_rectify_map_left_x;
-			cv::Mat		m_rectify_map_left_y;
-			cv::Mat		m_rectify_map_right_x;
-			cv::Mat		m_rectify_map_right_y;
-#endif
 			/** @} */
 
 			/** Loads all the options from a config file.
@@ -177,8 +170,8 @@ namespace mrpt
 			  *  This method will be typically called in a different thread than other methods, and will be called in a timely fashion.
 			  */
 			void getObservations(
-				mrpt::slam::CObservationStereoImages	& outObservation_img,
-				mrpt::slam::CObservationIMU				& outObservation_imu,
+				mrpt::obs::CObservationStereoImages	& outObservation_img,
+				mrpt::obs::CObservationIMU				& outObservation_imu,
 				bool									& there_is_img,
 				bool									& there_is_imu );
 
@@ -212,6 +205,10 @@ namespace mrpt
 			
 			/** Sets DUO3D camera LED setting  */
 			void m_set_led(float value);
+
+		public:
+			MRPT_MAKE_ALIGNED_OPERATOR_NEW
+
 		};	// End of class
 	} // End of namespace
 } // End of namespace

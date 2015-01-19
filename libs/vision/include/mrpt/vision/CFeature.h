@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -20,10 +20,6 @@ namespace mrpt
 {
 	namespace vision
 	{
-		using namespace mrpt::utils;
-		using namespace mrpt::math;
-		using namespace std;
-
 		class CFeatureList;
 		class CMatchedFeatureList;
 
@@ -64,7 +60,7 @@ namespace mrpt
 		public:
 			float				x,y;			//!< Coordinates in the image
 			TFeatureID			ID;				//!< ID of the feature
-			CImage				patch;			//!< A patch of the image surrounding the feature
+			mrpt::utils::CImage patch;			//!< A patch of the image surrounding the feature
 			uint16_t			patchSize;		//!< Size of the patch (patchSize x patchSize) (it must be an odd number)
 			TFeatureType		type;			//!< Type of the feature: featNotDefined, featSIFT, featKLT,	featHarris, featSURF, featBeacon
 			TFeatureTrackStatus	track_status;	//!< Status of the feature tracking process (old name: KLT_status)
@@ -76,12 +72,12 @@ namespace mrpt
 			uint16_t            nTimesNotSeen;  //!< Number of frames it has not been seen in a sequence of images.
 			uint16_t            nTimesLastSeen; //!< Number of frames since it was seen for the last time.
 
-            double                          depth;              //!< The estimated depth in 3D of this feature wrt the camera in the current frame
-            double                          initialDepth;       //!< The estimated depth in 3D of this feature wrt the camera that took its image
-            TPoint3D                        p3D;                //!< The estimated 3D point of this feature wrt its camera
-            deque<double>                   multiScales;        //!< A set of scales where the multi-resolution descriptor has been computed
-            deque<vector<double> >          multiOrientations;  //!< A vector of main orientations (there is a vector of orientations for each scale)
-            deque<vector<vector<int32_t> > >    multiHashCoeffs;    //!< A set of vectors containing the coefficients for a HASH table of descriptors
+			double                          depth;              //!< The estimated depth in 3D of this feature wrt the camera in the current frame
+			double                          initialDepth;       //!< The estimated depth in 3D of this feature wrt the camera that took its image
+			mrpt::math::TPoint3D                        p3D;                //!< The estimated 3D point of this feature wrt its camera
+			std::deque<double>                   multiScales;        //!< A set of scales where the multi-resolution descriptor has been computed
+			std::deque<std::vector<double> >          multiOrientations;  //!< A vector of main orientations (there is a vector of orientations for each scale)
+			std::deque<std::vector<std::vector<int32_t> > >    multiHashCoeffs;    //!< A set of vectors containing the coefficients for a HASH table of descriptors
 			bool isPointFeature() const;		                //!< Return false only for Blob detectors (SIFT, SURF)
 
 			/** All the possible descriptors this feature may have */
@@ -96,7 +92,7 @@ namespace mrpt
 				mrpt::math::CMatrix			    PolarImg;					//!< A polar image centered at the interest point
 				mrpt::math::CMatrix			    LogPolarImg;				//!< A log-polar image centered at the interest point
 				bool						    polarImgsNoRotation;		//!< If set to true (manually, default=false) the call to "descriptorDistanceTo" will not consider all the rotations between polar image descriptors (PolarImg, LogPolarImg)
-				deque<vector<vector<int32_t> > >    multiSIFTDescriptors;   //!< A set of SIFT-like descriptors for each orientation and scale of the multiResolution feature (there is a vector of descriptors for each scale)
+				std::deque<std::vector<std::vector<int32_t> > >    multiSIFTDescriptors;   //!< A set of SIFT-like descriptors for each orientation and scale of the multiResolution feature (there is a vector of descriptors for each scale)
 				std::vector<uint8_t>			ORB;						//!< ORB feature descriptor	
 
 				bool hasDescriptorSIFT() const { return !SIFT.empty(); };                       //!< Whether this feature has this kind of descriptor
@@ -239,8 +235,8 @@ namespace mrpt
 			CFeaturePtr getByID( const TFeatureID &ID ) const;
 			CFeaturePtr getByID( const TFeatureID &ID, int &out_idx ) const;
 
-            /** Get a vector of references to a subset of features from their IDs */
-            void getByMultiIDs( const vector<TFeatureID> &IDs, vector<CFeaturePtr> &out, vector<int> &outIndex ) const;
+			/** Get a vector of references to a subset of features from their IDs */
+			void getByMultiIDs( const std::vector<TFeatureID> &IDs, std::vector<CFeaturePtr> &out, std::vector<int> &outIndex ) const;
 
 			/** Get a reference to the nearest feature to the a given 2D point (version returning distance to closest feature in "max_dist")
 			*   \param x [IN] The query point x-coordinate
@@ -410,9 +406,8 @@ namespace mrpt
 
 	namespace utils
 	{
-		using namespace ::mrpt::vision;
 		// Specialization must occur in the same namespace
-		MRPT_DECLARE_TTYPENAME_PTR(CFeature)
+		MRPT_DECLARE_TTYPENAME_PTR_NAMESPACE(CFeature, mrpt::vision)
 	}
 } // end of namespace
 

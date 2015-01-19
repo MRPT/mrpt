@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -20,8 +20,8 @@ The <a href="http://www.liblas.org/" >ASPRS LiDAR LAS</a> file format for point 
 If available, it will provide the following functionality:
 
 - The following methods:
-	- mrpt::slam::CPointsMap::saveLASFile()
-	- mrpt::slam::CPointsMap::loadLASFile()
+	- mrpt::maps::CPointsMap::saveLASFile()
+	- mrpt::maps::CPointsMap::loadLASFile()
 		
 */
 

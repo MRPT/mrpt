@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -13,7 +13,7 @@
 
 using namespace std;
 using namespace mrpt;
-using namespace mrpt::slam;
+using namespace mrpt::obs;
 using namespace mrpt::hwdrivers;
 
 /*-------------------------------------------------------------
@@ -76,7 +76,7 @@ CStereoGrabber_Bumblebee::~CStereoGrabber_Bumblebee()
 /*-------------------------------------------------------------
 					get the image
  -------------------------------------------------------------*/
-bool  CStereoGrabber_Bumblebee::getStereoObservation( mrpt::slam::CObservationStereoImages &out_observation )
+bool  CStereoGrabber_Bumblebee::getStereoObservation( mrpt::obs::CObservationStereoImages &out_observation )
 {
 	if (!m_firewire_capture->isOpen())
 	{
@@ -90,8 +90,8 @@ bool  CStereoGrabber_Bumblebee::getStereoObservation( mrpt::slam::CObservationSt
 	// Change resolution?
 	if (m_resolutionX>0 && m_resolutionX!=out_observation.imageLeft.getWidth())
 	{
-		out_observation.imageLeft.scaleImage(m_resolutionX,m_resolutionY, IMG_INTERP_NN);
-		out_observation.imageRight.scaleImage(m_resolutionX,m_resolutionY, IMG_INTERP_NN);
+		out_observation.imageLeft.scaleImage(m_resolutionX,m_resolutionY, mrpt::utils::IMG_INTERP_NN);
+		out_observation.imageRight.scaleImage(m_resolutionX,m_resolutionY, mrpt::utils::IMG_INTERP_NN);
 	}
 
 	// TODO: Fill the intrinsic matrix, etc...

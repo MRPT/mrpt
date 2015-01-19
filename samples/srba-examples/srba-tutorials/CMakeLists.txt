@@ -2,7 +2,10 @@ PROJECT(srba-tutorials)
 
 CMAKE_MINIMUM_REQUIRED(VERSION 2.4)
 if(COMMAND cmake_policy)
-      cmake_policy(SET CMP0003 NEW)  # Required by CMake 2.7+
+    cmake_policy(SET CMP0003 NEW)  # Required by CMake 2.7+
+	if(POLICY CMP0043)
+		cmake_policy(SET CMP0043 OLD) #  Ignore COMPILE_DEFINITIONS_<Config> properties.
+	endif()
 endif(COMMAND cmake_policy)
 
 # --------------------------------------------------------------------------

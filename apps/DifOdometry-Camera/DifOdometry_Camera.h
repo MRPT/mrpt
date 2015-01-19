@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -12,6 +12,7 @@
 #include <mrpt/utils/CConfigFileBase.h>
 #include <mrpt/utils/CImage.h>
 #include <mrpt/utils/CTicTac.h>
+#include <mrpt/utils/round.h>
 #include <mrpt/opengl/COpenGLScene.h>
 #include <mrpt/gui/CDisplayWindow3D.h>
 #include <iostream>
@@ -20,9 +21,7 @@
 #   define linux 1   // Seems to be required by OpenNI.h
 #endif
 #include <OpenNI.h>
-
 #include "legend.xpm"
-
 
 
 class CDifodoCamera : public mrpt::vision::CDifodo {
@@ -39,7 +38,7 @@ public:
 		save_results = 0;
 	}
 
-	/** Initializes the visual odometry method and loads the rawlog file */
+	/** Initialize the visual odometry method */
 	void loadConfiguration( const mrpt::utils::CConfigFileBase &ini );
 
 	/** Open camera */
@@ -51,23 +50,29 @@ public:
 	/** Capture a new depth frame */
 	void loadFrame();
 
-	/** Creates a file to save some results */
+	/** Create a file to save the estimated trajectory */
 	void CreateResultsFile();
 
-	/** Initializes opengl scene */
+	/** Initialize opengl scene */
 	void initializeScene();
 
-	/** Updates the opengl scene */
+	/** Refresh the opengl scene */
 	void updateScene();
 
-	/** Obtains the filtered speed, updates the pose and saves some statistics */
-	void filterSpeedAndPoseUpdate();
-
-	/** A pre-step that should be performed before starting to estimate the camera speed,
-	  * and can also be called to reset the estimated trajectory and pose */
+	/** A pre-step that should be performed before starting to estimate the camera velocity.
+	  * It can also be called to reset the estimated trajectory and pose */
 	void reset();
 
+	/** Save the pose estimation following the format of the TUM datasets:
+	  * 
+	  * 'timestamp tx ty tz qx qy qz qw'
+	  *
+	  * Please visit http://vision.in.tum.de/data/datasets/rgbd-dataset/file_formats for further details.*/  
+	void writeTrajectoryFile();
+
 private:
+	
+	unsigned int repr_level;
 
 	mrpt::opengl::COpenGLScenePtr	scene;	//!< Opengl scene
 
@@ -79,9 +84,4 @@ private:
 
 	/** Clock used to save the timestamp */
 	mrpt::utils::CTicTac clock;
-
-	/** Saves the following data for each observation (distance in meters and angles in radians):
-	  * timestamp(s) - x - y - z - yaw - pitch - roll */
-	void writeToLogFile();
-
 };

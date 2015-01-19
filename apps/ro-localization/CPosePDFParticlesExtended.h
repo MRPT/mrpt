@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -11,13 +11,13 @@
 #define CPosePDFParticlesExtended_H
 
 #include <mrpt/poses/CPosePDF.h>
-#include <mrpt/slam/CMultiMetricMap.h>
+#include <mrpt/maps/CMultiMetricMap.h>
 #include <mrpt/bayes/CProbabilityParticle.h>
 #include <mrpt/bayes/CParticleFilterCapable.h>
 #include <mrpt/math/CMatrixFixedNumeric.h>
 
-#include <mrpt/slam/COccupancyGridMap2D.h>
-#include <mrpt/slam/CSensoryFrame.h>
+#include <mrpt/maps/COccupancyGridMap2D.h>
+#include <mrpt/obs/CSensoryFrame.h>
 
 namespace mrpt
 {
@@ -66,11 +66,11 @@ namespace mrpt
 
 				/** [update stage] Must be set to a metric map used to estimate the likelihood of observations
 				  */
-				mrpt::slam::CMetricMap			*metricMap;
+				mrpt::maps::CMetricMap			*metricMap;
 
 				/** [update stage] Alternative way (if metricMap==NULL): A metric map is supplied for each particle: There must be the same maps here as pose particles.
 				  */
-				mrpt::slam::TMetricMapList		metricMaps;
+				mrpt::maps::TMetricMapList		metricMaps;
 
 				/** Parameters for the KLD adaptive sample size algorithm (see Dieter Fox's papers), which is used only if the CParticleFilter is created with the "adaptiveSampleSize" flag set to true.
 				  */
@@ -99,13 +99,7 @@ namespace mrpt
 
 			} options;
 
-	//	 private:
-			/** The particles
-			 */
-			//std::deque<CPose2DParticleExtended>		particles;
-
-			/** Free all the memory associated to particles, and set the number of parts = 0
-			  */
+			/** Free all the memory associated to particles, and set the number of parts = 0 */
 			void  clear( );
 
 		 public:
@@ -182,8 +176,8 @@ namespace mrpt
 			  * \sa options
 			  */
 			void  prediction_and_update_pfStandardProposal(
-				const mrpt::slam::CActionCollection	* action,
-				const mrpt::slam::CSensoryFrame		* observation,
+				const mrpt::obs::CActionCollection	* action,
+				const mrpt::obs::CSensoryFrame		* observation,
 				const bayes::CParticleFilter::TParticleFilterOptions &PF_options );
 
 			 /** Update the particles, predicting the posterior of robot pose and map after a movement command.
@@ -196,8 +190,8 @@ namespace mrpt
 			  * \sa options
 			  */
 			void  prediction_and_update_pfAuxiliaryPFOptimal(
-				const mrpt::slam::CActionCollection	* actions,
-				const mrpt::slam::CSensoryFrame		* sf,
+				const mrpt::obs::CActionCollection	* actions,
+				const mrpt::obs::CSensoryFrame		* sf,
 				const bayes::CParticleFilter::TParticleFilterOptions &PF_options );
 
 			/** Save PDF's particles to a text file. In each line it will go: "x y phi weight"
@@ -211,27 +205,23 @@ namespace mrpt
 			/** This can be used to convert a PDF from local coordinates to global, providing the point (newReferenceBase) from which
 			  *   "to proyect" the current pdf. Result PDF substituted the currently stored one in the object.
 			  */
-			void  changeCoordinatesReference( const CPose3D &newReferenceBase );
+			void  changeCoordinatesReference( const mrpt::poses::CPose3D &newReferenceBase );
 
 			/** Draws a single sample from the distribution (WARNING: weights are assumed to be normalized!)
 			  */
-			void  drawSingleSample(CPose2D &outPart ) const;
+			void  drawSingleSample(mrpt::poses::CPose2D &outPart ) const;
 
 			/** Draws a number of samples from the distribution, and saves as a list of 1x3 vectors, where each row contains a (x,y,phi) datum.
 			  */
-			void  drawManySamples( size_t N, std::vector<CVectorDouble> & outSamples ) const;
+			void  drawManySamples( size_t N, std::vector<mrpt::math::CVectorDouble> & outSamples ) const;
 
 			/** Appends (pose-composition) a given pose "p" to each particle
 			  */
-			void  operator += ( const CPose2D &Ap);
-
-			/** Appends (add to the list) a set of particles to the existing ones, and then normalize weights.
-			  */
-			//void  append( CPosePDFParticlesExtended &o );
+			void  operator += ( const mrpt::poses::CPose2D &Ap);
 
 			/** Returns a new PDF such as: NEW_PDF = (0,0,0) - THIS_PDF
 			  */
-			void	 inverse(CPosePDF &o) const;
+			void	 inverse(mrpt::poses::CPosePDF &o) const;
 
 			/** Returns the particle with the highest weight.
 			  */
@@ -239,7 +229,7 @@ namespace mrpt
 
 			/** Bayesian fusion.
 			  */
-			void  bayesianFusion( const CPosePDF &p1, const CPosePDF &p2, const double&minMahalanobisDistToDrop = 0 );
+			void  bayesianFusion( const mrpt::poses::CPosePDF &p1, const mrpt::poses::CPosePDF &p2, const double&minMahalanobisDistToDrop = 0 );
 
 			/** Evaluates the PDF at a given arbitrary point as reconstructed by a Parzen window.
 			  * \sa saveParzenPDFToTextFile
@@ -265,7 +255,7 @@ namespace mrpt
 				float			stdXY,
 				float			stdPhi ) const;
 
-			void  bayesianFusion( CPosePDF &p1, CPosePDF &p2, const double&minMahalanobisDistToDrop = 0)
+			void  bayesianFusion( mrpt::poses::CPosePDF &p1, mrpt::poses::CPosePDF &p2, const double&minMahalanobisDistToDrop = 0)
 			{ THROW_EXCEPTION("Not implemented"); }
 
 		private:
@@ -274,22 +264,22 @@ namespace mrpt
 
 			/** Auxiliary variable used in the "pfAuxiliaryPFOptimal" algorithm.
 			  */
-			mutable CVectorDouble				m_pfAuxiliaryPFOptimal_estimatedProb;
+			mutable mrpt::math::CVectorDouble				m_pfAuxiliaryPFOptimal_estimatedProb;
 
 			/** Auxiliary function that evaluates the likelihood of an observation, given a robot pose, and according to the options in "CPosePDFParticlesExtended::options".
 			  */
 			static double  auxiliarComputeObservationLikelihood(
 				const bayes::CParticleFilter::TParticleFilterOptions &PF_options,
-				const CParticleFilterCapable	*obj,
+				const bayes::CParticleFilterCapable	*obj,
 				size_t			particleIndexForMap,
-				const mrpt::slam::CSensoryFrame	*observation,
+				const mrpt::obs::CSensoryFrame	*observation,
 				const TExtendedCPose2D			*x );
 
 			/** Auxiliary function used in "prediction_and_update_pfAuxiliaryPFOptimal"
 				*/
 			static double  particlesEvaluator_AuxPFOptimal(
 				const bayes::CParticleFilter::TParticleFilterOptions &PF_options,
-				const CParticleFilterCapable	*obj,
+				const bayes::CParticleFilterCapable	*obj,
 				size_t		index,
 				const void	* action,
 				const void	* observation );

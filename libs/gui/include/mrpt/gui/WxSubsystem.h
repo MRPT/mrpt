@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -16,6 +16,7 @@
 #include <mrpt/synch.h>
 #include <mrpt/math/lightweight_geom_data.h>
 #include <mrpt/utils/types_math.h>
+#include <mrpt/gui/gui_frwds.h>
 
 #include <mrpt/gui/link_pragmas.h>
 
@@ -82,18 +83,12 @@
 #endif
 
 #endif
+#include <mrpt/gui/gui_frwds.h>
 
 namespace mrpt
 {
 	namespace gui
 	{
-		using namespace mrpt::system;
-
-		class CDisplayWindow;
-		class CDisplayWindow3D;
-		class CDisplayWindowPlots;
-		class CMyGLCanvas_DisplayWindow3D;
-
 		/** This class implements the GUI thread required for the wxWidgets-based GUI.
 		  *  This system is employed internally by gui::CDisplayWindow and gui::CDisplayWindow3D, and must be not used in any way directly by the MRPT user.
 		  *
@@ -174,18 +169,9 @@ namespace mrpt
 			struct TWxMainThreadData
 			{
 				TWxMainThreadData();
-
-				/** The thread ID of wxMainThread, or 0 if it is not running.
-				  */
-				TThreadHandle  m_wxMainThreadId;
-
-				/** This is signaled when wxMainThread is ready.
-				  */
-				synch::CSemaphore m_semWxMainThreadReady;
-
-				/** The critical section for accessing "m_wxMainThreadId"
-				  */
-				synch::CCriticalSection m_csWxMainThreadId;
+				mrpt::system::TThreadHandle  m_wxMainThreadId; //!< The thread ID of wxMainThread, or 0 if it is not running.
+				mrpt::synch::CSemaphore m_semWxMainThreadReady; //!< This is signaled when wxMainThread is ready.
+				mrpt::synch::CCriticalSection m_csWxMainThreadId; //!< The critical section for accessing "m_wxMainThreadId"
 			};
 
 			static TWxMainThreadData& GetWxMainThreadInstance();
@@ -200,7 +186,7 @@ namespace mrpt
 			  */
 			struct GUI_IMPEXP TRequestToWxMainThread
 			{
-        		TRequestToWxMainThread() :
+				TRequestToWxMainThread() :
 					source2D		( NULL ),
 					source3D		( NULL ),
 					sourcePlots		( NULL ),
@@ -210,16 +196,16 @@ namespace mrpt
 					x				(400),
 					y				(400),
 					boolVal			(false)
-        		{ }
+				{ }
 
 				/** Only one of source* can be non-NULL, indicating the class that generated the request. */
-				gui::CDisplayWindow    *source2D;
+				mrpt::gui::CDisplayWindow    *source2D;
 
 				/** Only one of source* can be non-NULL, indicating the class that generated the request. */
-				gui::CDisplayWindow3D  *source3D;
+				mrpt::gui::CDisplayWindow3D  *source3D;
 
 				/** Only one of source* can be non-NULL, indicating the class that generated the request. */
-				gui::CDisplayWindowPlots *sourcePlots;
+				mrpt::gui::CDisplayWindowPlots *sourcePlots;
 
 				/** Only one of source* can be non-NULL, indicating the class that generated the request. */
 				bool sourceCameraSelectDialog;

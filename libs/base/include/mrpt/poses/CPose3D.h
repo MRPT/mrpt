@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -44,24 +44,24 @@ namespace poses
 	 * rotation matrices) that both conventions lead to exactly the same numbers.
 	 * Only, that it's conventional to write the numbers in reverse order.
 	 * That is, the same rotation can be described equivalently with any of these two
-	 *  parameterizations:
+	 * parameterizations:
 	 *
  	 * - In local axes Z/Y/X convention: [yaw pitch roll]   (This is the convention used in mrpt::poses::CPose3D)
  	 * - In global axes X/Y/Z convention: [roll pitch yaw] (One of the Euler angles conventions)
 	 *
-	 *  For further descriptions of point & pose classes, see mrpt::poses::CPoseOrPoint or refer
-	 *    to the <a href="http://www.mrpt.org/2D_3D_Geometry"> 2D/3D Geometry tutorial</a> online.
+	 * For further descriptions of point & pose classes, see mrpt::poses::CPoseOrPoint or refer
+	 * to the [2D/3D Geometry tutorial](http://www.mrpt.org/2D_3D_Geometry) online.
 	 *
-	 *  To change the individual components of the pose, use CPose3D::setFromValues. This class assures that the internal
-	 *   3x3 rotation matrix is always up-to-date with the "yaw pitch roll" members.
+	 * To change the individual components of the pose, use CPose3D::setFromValues. This class assures that the internal
+	 * 3x3 rotation matrix is always up-to-date with the "yaw pitch roll" members.
 	 *
-	 *  Rotations in 3D can be also represented by quaternions. See mrpt::math::CQuaternion, and method CPose3D::getAsQuaternion.
+	 * Rotations in 3D can be also represented by quaternions. See mrpt::math::CQuaternion, and method CPose3D::getAsQuaternion.
 	 *
-	 *  This class and CPose3DQuat are very similar, and they can be converted to the each other automatically via transformation constructors.
+	 * This class and CPose3DQuat are very similar, and they can be converted to the each other automatically via transformation constructors.
 	 *
-	 *  There are Lie algebra methods: \a exp and \a ln (see the methods for documentation).
+	 * There are Lie algebra methods: \a exp and \a ln (see the methods for documentation).
 	 *
-	 * \note Read also: "A tutorial on SE(3) transformation parameterizations and on-manifold optimization", Jose-Luis Blanco. http://mapir.isa.uma.es/~jlblanco/papers/jlblanco2010geometry3D_techrep.pdf
+	 * \note Read also: "A tutorial on SE(3) transformation parameterizations and on-manifold optimization", (Technical report), 2010-2014. [PDF](http://ingmec.ual.es/~jlblanco/papers/jlblanco2010geometry3D_techrep.pdf)
 	 *
 	 * \ingroup poses_grp
 	 * \sa CPoseOrPoint,CPoint3D, mrpt::math::CQuaternion
@@ -101,7 +101,7 @@ namespace poses
 		/** Constructor from a 4x4 homogeneous matrix: */
 		explicit CPose3D(const math::CMatrixDouble44 &m);
 
-		/** Constructor from a 3x3 rotation matrix and a the translation given as a 3-vector, a 3-array, a CPoint3D or a TPoint3D */
+		/** Constructor from a 3x3 rotation matrix and a the translation given as a 3-vector, a 3-array, a CPoint3D or a mrpt::math::TPoint3D */
 		template <class MATRIX33,class VECTOR3>
 		inline CPose3D(const MATRIX33 &rot, const VECTOR3& xyz) : m_ROT(mrpt::math::UNINITIALIZED_MATRIX), m_ypr_uptodate(false)
 		{
@@ -204,7 +204,7 @@ namespace poses
 		/** An alternative, slightly more efficient way of doing \f$ G = P \oplus L \f$ with G and L being 3D points and P this 6D pose.
 		  *  If pointers are provided, the corresponding Jacobians are returned.
 		  *  "out_jacobian_df_dse3" stands for the Jacobian with respect to the 6D locally Euclidean vector in the tangent space of SE(3).
-		  *  See <a href="http://www.mrpt.org/6D_poses:equivalences_compositions_and_uncertainty" >this report</a> for mathematical details.
+		  *  See [this report](http://ingmec.ual.es/~jlblanco/papers/jlblanco2010geometry3D_techrep.pdf) for mathematical details.
 		  *  \param  If set to true, the Jacobian "out_jacobian_df_dpose" uses a fastest linearized appoximation (valid only for small rotations!).
 		  */
 		void composePoint(double lx,double ly,double lz, double &gx, double &gy, double &gz,
@@ -235,7 +235,7 @@ namespace poses
 		/**  Computes the 3D point L such as \f$ L = G \ominus this \f$.
 		  *  If pointers are provided, the corresponding Jacobians are returned.
 		  *  "out_jacobian_df_dse3" stands for the Jacobian with respect to the 6D locally Euclidean vector in the tangent space of SE(3).
-		  *  See <a href="http://www.mrpt.org/6D_poses:equivalences_compositions_and_uncertainty" >this report</a> for mathematical details.
+		  *  See [this report](http://ingmec.ual.es/~jlblanco/papers/jlblanco2010geometry3D_techrep.pdf) for mathematical details.
 		  * \sa composePoint, composeFrom
 		  */
 		void inverseComposePoint(const double gx,const double gy,const double gz,double &lx,double &ly,double &lz,
@@ -387,7 +387,7 @@ namespace poses
 		inline double roll() const { updateYawPitchRoll(); return m_roll; }  //!< Get the ROLL angle (in radians) \sa setFromValues
 
 		/** Returns a 1x6 vector with [x y z yaw pitch roll] */
-		void getAsVector(CVectorDouble &v) const;
+		void getAsVector(mrpt::math::CVectorDouble &v) const;
 		/// \overload
 		void getAsVector(mrpt::math::CArrayDouble<6> &v) const;
 

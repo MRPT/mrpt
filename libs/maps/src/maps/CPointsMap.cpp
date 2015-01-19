@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -17,15 +17,15 @@
 #include <mrpt/math/geometry.h>
 #include <mrpt/utils/CStream.h>
 
-#include <mrpt/slam/CPointsMap.h>
-#include <mrpt/slam/CSimplePointsMap.h>
+#include <mrpt/maps/CPointsMap.h>
+#include <mrpt/maps/CSimplePointsMap.h>
 
 #include <mrpt/opengl/CPointCloud.h>
 
 // Observations:
-#include <mrpt/slam/CObservationRange.h>
-#include <mrpt/slam/CObservation2DRangeScan.h>
-#include <mrpt/slam/CObservation3DRangeScan.h>
+#include <mrpt/obs/CObservationRange.h>
+#include <mrpt/obs/CObservation2DRangeScan.h>
+#include <mrpt/obs/CObservation3DRangeScan.h>
 
 
 #if MRPT_HAS_PCL
@@ -40,7 +40,10 @@
 #endif
 
 using namespace mrpt::poses;
-using namespace mrpt::slam;
+using namespace mrpt::maps;
+using namespace mrpt::utils;
+using namespace mrpt::math;
+using namespace mrpt::obs;
 using namespace mrpt::system;
 using namespace std;
 
@@ -48,7 +51,7 @@ using namespace std;
 float mrpt::global_settings::POINTSMAPS_3DOBJECT_POINTSIZE = 3.0f;
 
 
-IMPLEMENTS_VIRTUAL_SERIALIZABLE(CPointsMap, CMetricMap,mrpt::slam)
+IMPLEMENTS_VIRTUAL_SERIALIZABLE(CPointsMap, CMetricMap,mrpt::maps)
 
 
 float CPointsMap::COLOR_3DSCENE_R = 0;
@@ -282,7 +285,7 @@ void  CPointsMap::clipOutOfRange(const TPoint2D	&p, float maxRange)
 }
 
 void CPointsMap::determineMatching2D(
-	const CMetricMap      * otherMap2,
+	const mrpt::maps::CMetricMap      * otherMap2,
 	const CPose2D         & otherMapPose_,
 	TMatchingPairList     & correspondences,
 	const TMatchingParams & params,
@@ -623,7 +626,7 @@ CPointsMap::TInsertionOptions::TInsertionOptions() :
 }
 
 // Binary dump to/read from stream - for usage in derived classes' serialization
-void CPointsMap::TInsertionOptions::writeToStream(CStream &out) const
+void CPointsMap::TInsertionOptions::writeToStream(mrpt::utils::CStream &out) const
 {
 	const int8_t version = 0;
 	out << version;
@@ -634,7 +637,7 @@ void CPointsMap::TInsertionOptions::writeToStream(CStream &out) const
 	<< maxDistForInterpolatePoints << insertInvalidPoints; // v0
 }
 
-void CPointsMap::TInsertionOptions::readFromStream(CStream &in)
+void CPointsMap::TInsertionOptions::readFromStream(mrpt::utils::CStream &in)
 {
 	int8_t version;
 	in >> version;
@@ -661,14 +664,14 @@ CPointsMap::TLikelihoodOptions::TLikelihoodOptions() :
 
 }
 
-void CPointsMap::TLikelihoodOptions::writeToStream(CStream &out) const
+void CPointsMap::TLikelihoodOptions::writeToStream(mrpt::utils::CStream &out) const
 {
 	const int8_t version = 0;
 	out << version;
 	out << sigma_dist << max_corr_distance << decimation;
 }
 
-void CPointsMap::TLikelihoodOptions::readFromStream(CStream &in)
+void CPointsMap::TLikelihoodOptions::readFromStream(mrpt::utils::CStream &in)
 {
 	int8_t version;
 	in >> version;
@@ -687,7 +690,7 @@ void CPointsMap::TLikelihoodOptions::readFromStream(CStream &in)
 /*---------------------------------------------------------------
 					dumpToTextStream
   ---------------------------------------------------------------*/
-void  CPointsMap::TInsertionOptions::dumpToTextStream(CStream	&out) const
+void  CPointsMap::TInsertionOptions::dumpToTextStream(mrpt::utils::CStream	&out) const
 {
 	out.printf("\n----------- [CPointsMap::TInsertionOptions] ------------ \n\n");
 
@@ -706,7 +709,7 @@ void  CPointsMap::TInsertionOptions::dumpToTextStream(CStream	&out) const
 	out.printf("\n");
 }
 
-void  CPointsMap::TLikelihoodOptions::dumpToTextStream(CStream	&out) const
+void  CPointsMap::TLikelihoodOptions::dumpToTextStream(mrpt::utils::CStream	&out) const
 {
 	out.printf("\n----------- [CPointsMap::TLikelihoodOptions] ------------ \n\n");
 
@@ -750,8 +753,7 @@ void  CPointsMap::TLikelihoodOptions::loadFromConfigFile(
 ---------------------------------------------------------------*/
 void  CPointsMap::getAs3DObject( mrpt::opengl::CSetOfObjectsPtr	&outObj ) const
 {
-	if (m_disableSaveAs3DObject)
-		return;
+	if (!genericMapParams.enableSaveAs3DObject) return;
 
 	opengl::CPointCloudPtr  obj = opengl::CPointCloud::Create();
 
@@ -778,7 +780,7 @@ void  CPointsMap::getAs3DObject( mrpt::opengl::CSetOfObjectsPtr	&outObj ) const
  * \sa determineMatching2D
 ---------------------------------------------------------------*/
 float  CPointsMap::compute3DMatchingRatio(
-		const CMetricMap								*otherMap2,
+		const mrpt::maps::CMetricMap								*otherMap2,
 		const CPose3D							&otherMapPose,
 		float									maxDistForCorr,
 		float									maxMahaDistForCorr
@@ -1028,7 +1030,7 @@ void CPointsMap::boundingBox(
 				computeMatchingWith3D
 ---------------------------------------------------------------*/
 void  CPointsMap::determineMatching3D(
-	const CMetricMap      * otherMap2,
+	const mrpt::maps::CMetricMap      * otherMap2,
 	const CPose3D         & otherMapPose,
 	TMatchingPairList     & correspondences,
 	const TMatchingParams & params,
@@ -1253,7 +1255,7 @@ void CPointsMap::extractPoints( const TPoint3D &corner1, const TPoint3D &corner2
 				compute3DDistanceToMesh
 ---------------------------------------------------------------*/
 void CPointsMap::compute3DDistanceToMesh(
-    const CMetricMap						*otherMap2,
+    const mrpt::maps::CMetricMap						*otherMap2,
 	const CPose3D							&otherMapPose,
 	float									maxDistForCorrespondence,
 	TMatchingPairList                       &correspondences,
@@ -1416,7 +1418,7 @@ void CPointsMap::compute3DDistanceToMesh(
 	obs The observation.
  This method returns a likelihood in the range [0,1].
  ---------------------------------------------------------------*/
-double	 CPointsMap::computeObservationLikelihood(
+double	 CPointsMap::internal_computeObservationLikelihood(
 			const CObservation		*obs,
 			const CPose3D				&takenFrom )
 {
@@ -1511,15 +1513,15 @@ double	 CPointsMap::computeObservationLikelihood(
 
 namespace mrpt
 {
-	namespace slam
+	namespace obs
 	{
 		// Tricky way to call to a library that depends on us, a sort of "run-time" linking:
 		//  ptr_internal_build_points_map_from_scan2D is a functor in "mrpt-obs", set by "mrpt-maps" at its startup.
-		extern void OBS_IMPEXP (*ptr_internal_build_points_map_from_scan2D)(const mrpt::slam::CObservation2DRangeScan &obs, mrpt::slam::CMetricMapPtr &out_map, const void *insertOps);
+		extern void OBS_IMPEXP (*ptr_internal_build_points_map_from_scan2D)(const mrpt::obs::CObservation2DRangeScan &obs, mrpt::maps::CMetricMapPtr &out_map, const void *insertOps);
 	}
 }
 
-void internal_build_points_map_from_scan2D(const mrpt::slam::CObservation2DRangeScan &obs, mrpt::slam::CMetricMapPtr &out_map, const void *insertOps)
+void internal_build_points_map_from_scan2D(const mrpt::obs::CObservation2DRangeScan &obs, mrpt::maps::CMetricMapPtr &out_map, const void *insertOps)
 {
 	// Create on first call:
 	if (out_map)
@@ -1537,7 +1539,7 @@ struct TAuxLoadFunctor
 {
 	TAuxLoadFunctor()
 	{
-		ptr_internal_build_points_map_from_scan2D = internal_build_points_map_from_scan2D;
+		mrpt::obs::ptr_internal_build_points_map_from_scan2D = internal_build_points_map_from_scan2D;
 	}
 };
 

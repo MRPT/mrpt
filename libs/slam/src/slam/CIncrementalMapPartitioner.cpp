@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -10,7 +10,7 @@
 #include "slam-precomp.h"   // Precompiled headers
 
 #include <mrpt/slam/CIncrementalMapPartitioner.h>
-#include <mrpt/slam/CMultiMetricMap.h>
+#include <mrpt/maps/CMultiMetricMap.h>
 #include <mrpt/slam/observations_overlap.h>
 #include <mrpt/poses/CPosePDFParticles.h>
 #include <mrpt/poses/CPose3DPDFParticles.h>
@@ -23,9 +23,13 @@
 #include <mrpt/opengl/CSimpleLine.h>
 
 using namespace mrpt::slam;
+using namespace mrpt::obs;
+using namespace mrpt::maps;
+using namespace mrpt::math;
 using namespace mrpt::graphs;
 using namespace mrpt::poses;
 using namespace mrpt::utils;
+using namespace mrpt;
 using namespace std;
 
 IMPLEMENTS_SERIALIZABLE(CIncrementalMapPartitioner, CSerializable,mrpt::slam)
@@ -90,7 +94,7 @@ void  CIncrementalMapPartitioner::TOptions::loadFromConfigFile(
 /*---------------------------------------------------------------
 						dumpToTextStream
   ---------------------------------------------------------------*/
-void  CIncrementalMapPartitioner::TOptions::dumpToTextStream(CStream	&out) const
+void  CIncrementalMapPartitioner::TOptions::dumpToTextStream(mrpt::utils::CStream	&out) const
 {
 	out.printf("\n----------- [CIncrementalMapPartitioner::TOptions] ------------ \n\n");
 
@@ -115,7 +119,7 @@ void CIncrementalMapPartitioner::clear()
 	m_individualFrames.clear();	// Liberar el mapa hasta ahora:
 
 	// Free individual maps:
-	//for (deque_serializable<mrpt::slam::CMultiMetricMap>::iterator it=m_individualMaps.begin();it!=m_individualMaps.end();++it)	delete (*it);
+	//for (deque_serializable<mrpt::maps::CMultiMetricMap>::iterator it=m_individualMaps.begin();it!=m_individualMaps.end();++it)	delete (*it);
 	m_individualMaps.clear();
 
 	m_last_partition.clear();		// Borrar las ultimas particiones
@@ -152,27 +156,22 @@ unsigned int CIncrementalMapPartitioner::addMapFrame(
 
 	// Create the maps:
 	TSetOfMetricMapInitializers			mapInitializer;
-	TMetricMapInitializer				mapElement;
 
-	mapElement.metricMapClassType = CLASS_ID( CSimplePointsMap );
-	mapInitializer.push_back( mapElement );
+	{
+		CSimplePointsMap::TMapDefinition def;
+		mapInitializer.push_back(def);
+	}
 
-//	mapElement.metricMapClassType = CLASS_ID( COccupancyGridMap2D );
-//	mapElement.occupancyGridMap2D_options.resolution = options.gridResolution;
-//	mapInitializer.push_back( mapElement );
-
-	mapElement.metricMapClassType = CLASS_ID( CLandmarksMap );
-//	mapElement.landmarksMap_options.insertionOpts.
-	mapInitializer.push_back( mapElement );
+	{
+		CLandmarksMap::TMapDefinition def;
+		mapInitializer.push_back(def);
+	}
 
 	// Add new metric map to "m_individualMaps"
 	// --------------------------------------------
-	//CMultiMetricMap			*newMetricMap = new CMultiMetricMap( &mapInitializer );
-
 	m_individualMaps.push_back( CMultiMetricMap() );
 	CMultiMetricMap		&newMetricMap = m_individualMaps.back();
 	newMetricMap.setListOfMaps( &mapInitializer );
-
 
 	MRPT_START
 
@@ -190,10 +189,11 @@ unsigned int CIncrementalMapPartitioner::addMapFrame(
 	newMetricMap.m_pointsMaps[0]->copyFrom( * frame->buildAuxPointsMap<CPointsMap>(&newMetricMap.m_pointsMaps[0]->insertionOptions));	// Faster :-)
 
 	// Insert just the VisualLandmarkObservations:
-	newMetricMap.m_landmarksMap->insertionOptions.insert_SIFTs_from_monocular_images = false;
-	newMetricMap.m_landmarksMap->insertionOptions.insert_SIFTs_from_stereo_images    = false;
-	newMetricMap.m_landmarksMap->insertionOptions.insert_Landmarks_from_range_scans  = false;
-	frame->insertObservationsInto( newMetricMap.m_landmarksMap );
+	mrpt::maps::CLandmarksMap &lm = *newMetricMap.m_landmarksMap;
+	lm.insertionOptions.insert_SIFTs_from_monocular_images = false;
+	lm.insertionOptions.insert_SIFTs_from_stereo_images    = false;
+	lm.insertionOptions.insert_Landmarks_from_range_scans  = false;
+	frame->insertObservationsInto( &lm );
 
 	// Add to corresponding vectors:
 	m_individualFrames.insert(robotPose, frame);
@@ -544,7 +544,7 @@ void  CIncrementalMapPartitioner::removeSetOfNodes(vector_uint	indexesToRemove, 
 	vector_uint::reverse_iterator it;
 	for (it= indexesToRemove.rbegin(); it!=indexesToRemove.rend(); ++it)
 	{
-		deque<mrpt::slam::CMultiMetricMap>::iterator  itM = m_individualMaps.begin() + *it;
+		deque<mrpt::maps::CMultiMetricMap>::iterator  itM = m_individualMaps.begin() + *it;
 		// delete *itM; // Delete map
 		m_individualMaps.erase( itM ); // Delete from list
 	}
@@ -685,7 +685,7 @@ void CIncrementalMapPartitioner::getAs3DScene(
 /*---------------------------------------------------------------
 					readFromStream
   ---------------------------------------------------------------*/
-void  CIncrementalMapPartitioner::readFromStream(CStream &in,int version)
+void  CIncrementalMapPartitioner::readFromStream(mrpt::utils::CStream &in,int version)
 {
 	switch(version)
 	{
@@ -709,7 +709,7 @@ void  CIncrementalMapPartitioner::readFromStream(CStream &in,int version)
 	Implements the writing to a CStream capability of
 	  CSerializable objects
   ---------------------------------------------------------------*/
-void  CIncrementalMapPartitioner::writeToStream(CStream &out, int *version) const
+void  CIncrementalMapPartitioner::writeToStream(mrpt::utils::CStream &out, int *version) const
 {
 	if (version)
 		*version = 0;

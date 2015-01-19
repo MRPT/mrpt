@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -11,14 +11,16 @@
 #include <mrpt/random.h>
 #include <mrpt/system/filesystem.h>
 #include <mrpt/slam/CMetricMapBuilderICP.h>
-#include <mrpt/slam/CMultiMetricMap.h>
-#include <mrpt/slam/CRawlog.h>
+#include <mrpt/maps/CMultiMetricMap.h>
+#include <mrpt/obs/CRawlog.h>
 
 #include "common.h"
 
 using namespace mrpt;
 using namespace mrpt::utils;
 using namespace mrpt::slam;
+using namespace mrpt::maps;
+using namespace mrpt::obs;
 using namespace mrpt::random;
 using namespace std;
 
@@ -45,17 +47,15 @@ double icp_test_1(int a1, int a2)
 
 	if (use_grid)
 	{
-		TMetricMapInitializer ini;
-		ini.metricMapClassType = CLASS_ID( COccupancyGridMap2D );
-		ini.occupancyGridMap2D_options.resolution = 0.05;
-		metricMapsOpts.push_back( ini );
+		COccupancyGridMap2D::TMapDefinition def;
+		def.resolution = 0.05;
+		metricMapsOpts.push_back( def );
 	}
 	else
 	{
-		TMetricMapInitializer ini;
-		ini.metricMapClassType = CLASS_ID( CSimplePointsMap );
-		ini.pointsMapOptions_options.insertionOpts.minDistBetweenLaserPoints = 0.03;
-		metricMapsOpts.push_back( ini );
+		CSimplePointsMap::TMapDefinition def;
+		def.insertionOpts.minDistBetweenLaserPoints = 0.03;
+		metricMapsOpts.push_back( def );
 	}
 
 	double insertionLinDistance = 0.75;

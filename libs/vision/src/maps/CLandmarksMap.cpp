@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -14,15 +14,15 @@
 #include <mrpt/utils/CConfigFile.h>
 #include <mrpt/utils/CFileOutputStream.h>
 
-#include <mrpt/slam/CLandmarksMap.h>
-#include <mrpt/slam/CLandmark.h>
-#include <mrpt/slam/CObservationImage.h>
-#include <mrpt/slam/CObservationStereoImages.h>
-#include <mrpt/slam/CObservation2DRangeScan.h>
-#include <mrpt/slam/CObservationGPS.h>
+#include <mrpt/maps/CLandmarksMap.h>
+#include <mrpt/maps/CLandmark.h>
+#include <mrpt/obs/CObservationImage.h>
+#include <mrpt/obs/CObservationStereoImages.h>
+#include <mrpt/obs/CObservation2DRangeScan.h>
+#include <mrpt/obs/CObservationGPS.h>
 #include <mrpt/poses/CPointPDFGaussian.h>
-#include <mrpt/slam/CObservationBeaconRanges.h>
-#include <mrpt/slam/CObservationVisualLandmarks.h>
+#include <mrpt/obs/CObservationBeaconRanges.h>
+#include <mrpt/obs/CObservationVisualLandmarks.h>
 #include <mrpt/system/os.h>
 
 #include <mrpt/opengl/CGridPlaneXY.h>
@@ -30,20 +30,102 @@
 #include <mrpt/opengl/COpenGLScene.h>
 
 using namespace mrpt;
-using namespace mrpt::slam;
+using namespace mrpt::math;
+using namespace mrpt::maps;
+using namespace mrpt::obs;
 using namespace mrpt::utils;
 using namespace mrpt::poses;
 using namespace mrpt::random;
 using namespace mrpt::system;
+using namespace mrpt::vision;
+using namespace mrpt::utils;
 using namespace std;
+using mrpt::maps::internal::TSequenceLandmarks;
 
-IMPLEMENTS_SERIALIZABLE(CLandmarksMap, CMetricMap,mrpt::slam)
+
+//  =========== Begin of Map definition ============
+MAP_DEFINITION_REGISTER("CLandmarksMap,landmarksMap", mrpt::maps::CLandmarksMap)
+
+CLandmarksMap::TMapDefinition::TMapDefinition()
+{
+}
+
+void CLandmarksMap::TMapDefinition::loadFromConfigFile_map_specific(const mrpt::utils::CConfigFileBase  &source, const std::string &sectionNamePrefix)
+{
+	// [<sectionNamePrefix>+"_creationOpts"]
+	const std::string sSectCreation = sectionNamePrefix+string("_creationOpts");
+	this->initialBeacons.clear();
+	const unsigned  int nBeacons = source.read_int(sSectCreation,"nBeacons",0);
+	for (unsigned int q=1;q<=nBeacons;q++)
+	{
+		TPairIdBeacon newPair;
+		newPair.second = source.read_int(sSectCreation,format("beacon_%03u_ID",q),0);
+
+		newPair.first.x= source.read_float(sSectCreation,format("beacon_%03u_x",q),0);
+		newPair.first.y= source.read_float(sSectCreation,format("beacon_%03u_y",q),0);
+		newPair.first.z= source.read_float(sSectCreation,format("beacon_%03u_z",q),0);
+
+		this->initialBeacons.push_back(newPair);
+	}
+
+	insertionOpts.loadFromConfigFile(source, sectionNamePrefix+string("_insertOpts") );
+	likelihoodOpts.loadFromConfigFile(source, sectionNamePrefix+string("_likelihoodOpts") );
+}
+
+void CLandmarksMap::TMapDefinition::dumpToTextStream_map_specific(mrpt::utils::CStream &out) const
+{
+	out.printf("number of initial beacons               = %u\n",(int)initialBeacons.size());
+
+	out.printf("      ID         (X,Y,Z)\n");
+	out.printf("--------------------------------------------------------\n");
+	for (std::deque<TPairIdBeacon>::const_iterator p=initialBeacons.begin();p!=initialBeacons.end();++p)
+		out.printf("      %03u         (%8.03f,%8.03f,%8.03f)\n", p->second,p->first.x,p->first.y,p->first.z);
+
+	this->insertionOpts.dumpToTextStream(out);
+	this->likelihoodOpts.dumpToTextStream(out);
+}
+
+mrpt::maps::CMetricMap* CLandmarksMap::internal_CreateFromMapDefinition(const mrpt::maps::TMetricMapInitializer &_def)
+{
+	const CLandmarksMap::TMapDefinition &def = *dynamic_cast<const CLandmarksMap::TMapDefinition*>(&_def);
+	CLandmarksMap *obj = new CLandmarksMap();
+
+	for (std::deque<CLandmarksMap::TMapDefinition::TPairIdBeacon>::const_iterator p = def.initialBeacons.begin();p!=def.initialBeacons.end();++p)
+	{
+		CLandmark	lm;
+
+		lm.createOneFeature();
+		lm.features[0]->type = featBeacon;
+
+		lm.features[0]->ID = p->second;
+		lm.ID = p->second;
+
+		lm.pose_mean = p->first;
+
+		lm.pose_cov_11=
+		lm.pose_cov_22=
+		lm.pose_cov_33=
+		lm.pose_cov_12=
+		lm.pose_cov_13=
+		lm.pose_cov_23=square(0.01f);
+
+		obj->landmarks.push_back( lm );
+	}
+
+	obj->insertionOptions  = def.insertionOpts;
+	obj->likelihoodOptions = def.likelihoodOpts;
+	return obj;
+}
+//  =========== End of Map definition Block =========
+
+
+IMPLEMENTS_SERIALIZABLE(CLandmarksMap, CMetricMap,mrpt::maps)
 
 /*---------------------------------------------------------------
 				Static variables initialization
   ---------------------------------------------------------------*/
-std::map<std::pair<mrpt::slam::CLandmark::TLandmarkID, mrpt::slam::CLandmark::TLandmarkID>, double> CLandmarksMap::_mEDD;
-mrpt::slam::CLandmark::TLandmarkID CLandmarksMap::_mapMaxID;
+std::map<std::pair<mrpt::maps::CLandmark::TLandmarkID, mrpt::maps::CLandmark::TLandmarkID>, double> CLandmarksMap::_mEDD;
+mrpt::maps::CLandmark::TLandmarkID CLandmarksMap::_mapMaxID;
 bool CLandmarksMap::_maxIDUpdated = false;
 /*---------------------------------------------------------------
 						Constructor
@@ -89,7 +171,7 @@ size_t  CLandmarksMap::size() const
    Implements the writing to a CStream capability of
      CSerializable objects
   ---------------------------------------------------------------*/
-void  CLandmarksMap::writeToStream(CStream &out, int *version) const
+void  CLandmarksMap::writeToStream(mrpt::utils::CStream &out, int *version) const
 {
 	if (version)
 		*version = 0;
@@ -112,7 +194,7 @@ void  CLandmarksMap::writeToStream(CStream &out, int *version) const
    Implements the reading from a CStream capability of
       CSerializable objects
   ---------------------------------------------------------------*/
-void  CLandmarksMap::readFromStream(CStream &in, int version)
+void  CLandmarksMap::readFromStream(mrpt::utils::CStream &in, int version)
 {
 	switch(version)
 	{
@@ -158,22 +240,17 @@ void  CLandmarksMap::readFromStream(CStream &in, int version)
 /*---------------------------------------------------------------
 					computeObservationLikelihood
   ---------------------------------------------------------------*/
-double	 CLandmarksMap::computeObservationLikelihood(
+double	 CLandmarksMap::internal_computeObservationLikelihood(
 	const CObservation		*obs,
 	const CPose3D			&robotPose3D )
 {
 	MRPT_START
 
-	// Robot poses:
-//	CPose2D		robotPose2D = takenFrom;
-
 	if ( CLASS_ID(CObservation2DRangeScan )==obs->GetRuntimeClass() &&
 		   insertionOptions.insert_Landmarks_from_range_scans )
 	{
 		/********************************************************************
-
 						OBSERVATION TYPE: CObservation2DRangeScan
-
 			********************************************************************/
 		const CObservation2DRangeScan 	*o = static_cast<const CObservation2DRangeScan *>( obs );
 		CLandmarksMap				auxMap;
@@ -190,23 +267,15 @@ double	 CLandmarksMap::computeObservationLikelihood(
 	if ( CLASS_ID(CObservationStereoImages )==obs->GetRuntimeClass() )
 	{
 		/********************************************************************
-
 						OBSERVATION TYPE: CObservationStereoImages
-
 				Lik. between "this" and "auxMap";
-
 			********************************************************************/
 		const CObservationStereoImages 	*o = static_cast<const CObservationStereoImages *>( obs );
 
-#if 0	// JL: This was removed in mrpt 0.9.0 ...
-		CLandmarksMap	auxMap;
-		auxMap.changeCoordinatesReference( robotPose3D, o->buildAuxiliaryMap( CLandmarksMap::_mapMaxID, &insertionOptions ) );
-#else
 		CLandmarksMap	auxMap;
 		auxMap.insertionOptions = insertionOptions;
 		auxMap.loadSiftFeaturesFromStereoImageObservation( *o, CLandmarksMap::_mapMaxID, likelihoodOptions.SIFT_feat_options );
 		auxMap.changeCoordinatesReference( robotPose3D );
-#endif
 
 		//auxMap.saveToMATLABScript3D("observationMap.m");
 		//auxMap.saveToTextFile("observationMap.txt");
@@ -256,7 +325,7 @@ double	 CLandmarksMap::computeObservationLikelihood(
 			{
 				if ((lm_it->getType() == featBeacon )&&
 					(lm_it->ID == sensedID)&&
-					(!isNaN(it->sensedDistance)))
+					(!mrpt::math::isNaN(it->sensedDistance)))
 				{
 					lm_it->getPose( beaconPDF );
 					beacon3D = beaconPDF.mean;
@@ -445,25 +514,17 @@ bool  CLandmarksMap::internal_insertObservation( const CObservation *obs, const 
 		   insertionOptions.insert_SIFTs_from_stereo_images)
 	{
 		/********************************************************************
-
 						OBSERVATION TYPE: CObservationStereoImages
-
 			********************************************************************/
 		const CObservationStereoImages	*o = static_cast<const CObservationStereoImages*>(obs);
 
 		// Change coordinates ref:
-#if 0	// JL: This was removed in mrpt 0.9.0 ...
-		CLandmarksMap	auxMap;
-		auxMap.changeCoordinatesReference( robotPose3D, o->buildAuxiliaryMap( CLandmarksMap::_mapMaxID, &insertionOptions ) );
-#else
 		CLandmarksMap	auxMap;
 		auxMap.insertionOptions = insertionOptions;
 		auxMap.loadSiftFeaturesFromStereoImageObservation( *o, CLandmarksMap::_mapMaxID, insertionOptions.SIFT_feat_options );
 		auxMap.changeCoordinatesReference( robotPose3D );
-#endif
 
 		fuseWith( auxMap );
-
 
 		// Observation was successfully inserted into the map
 		// --------------------------------------------------------
@@ -508,7 +569,7 @@ bool  CLandmarksMap::internal_insertObservation( const CObservation *obs, const 
 				computeMatchingWith2D
   ---------------------------------------------------------------*/
 void  CLandmarksMap::computeMatchingWith2D(
-		const CMetricMap						*otherMap,
+		const mrpt::maps::CMetricMap						*otherMap,
 		const CPose2D							&otherMapPose,
 		float									maxDistForCorrespondence,
 		float									maxAngularDistForCorrespondence,
@@ -587,7 +648,7 @@ void  CLandmarksMap::loadSiftFeaturesFromImageObservation(
 	{
 		// Find the 3D position from the pixels
 		//  coordinates and the camera intrinsic matrix:
-		dir = vision::pixelTo3D( vision::TPixelCoordf( (*sift)->x,(*sift)->y) , obs.cameraParams.intrinsicParams );	//dir = vision::pixelTo3D( sift->x,sift->y, obs.intrinsicParams );
+		dir = vision::pixelTo3D( TPixelCoordf( (*sift)->x,(*sift)->y) , obs.cameraParams.intrinsicParams );	//dir = vision::pixelTo3D( sift->x,sift->y, obs.intrinsicParams );
 
 		// Compute the mean and covariance of the landmark gaussian 3D position,
 		//  from the unitary direction vector and a given distance:
@@ -635,7 +696,7 @@ void  CLandmarksMap::loadSiftFeaturesFromImageObservation(
   ---------------------------------------------------------------*/
 void  CLandmarksMap::loadSiftFeaturesFromStereoImageObservation(
 	const CObservationStereoImages	&obs,
-	mrpt::slam::CLandmark::TLandmarkID fID,
+	mrpt::maps::CLandmark::TLandmarkID fID,
 	const mrpt::vision::CFeatureExtraction::TOptions & feat_options
 	)
 {
@@ -778,7 +839,7 @@ void  CLandmarksMap::changeCoordinatesReference( const CPose3D &newOrg )
 /*---------------------------------------------------------------
 				changeCoordinatesReference
   ---------------------------------------------------------------*/
-void  CLandmarksMap::changeCoordinatesReference( const CPose3D &newOrg, const mrpt::slam::CLandmarksMap *otherMap )
+void  CLandmarksMap::changeCoordinatesReference( const CPose3D &newOrg, const mrpt::maps::CLandmarksMap *otherMap )
 {
 	TSequenceLandmarks::const_iterator		lm;
 	CLandmark							newLandmark;
@@ -974,7 +1035,7 @@ void  CLandmarksMap::fuseWith( CLandmarksMap &other, bool justInsertAllOfThem )
 						computeMatchingWith3DLandmarks
   ---------------------------------------------------------------*/
 void  CLandmarksMap::computeMatchingWith3DLandmarks(
-		const mrpt::slam::CLandmarksMap				*anotherMap,
+		const mrpt::maps::CLandmarksMap				*anotherMap,
 		TMatchingPairList						&correspondences,
 		float									&correspondencesRatio,
 		std::vector<bool>						&otherCorrespondences) const
@@ -1088,7 +1149,7 @@ void  CLandmarksMap::computeMatchingWith3DLandmarks(
 							// MODIFICATION 19-SEPT-2007
 							// ONLY COMPUTE THE EUCLIDEAN DISTANCE BETWEEN DESCRIPTORS IF IT HAS NOT BEEN COMPUTED BEFORE
 							// Make the pair of points
-							std::pair<mrpt::slam::CLandmark::TLandmarkID, mrpt::slam::CLandmark::TLandmarkID> mPair( thisIt->ID, otherIt->ID );
+							std::pair<mrpt::maps::CLandmark::TLandmarkID, mrpt::maps::CLandmark::TLandmarkID> mPair( thisIt->ID, otherIt->ID );
 
 							if( CLandmarksMap::_mEDD[ mPair ] == 0 )
 							{
@@ -1256,7 +1317,7 @@ bool  CLandmarksMap::saveToTextFile(std::string file)
 	FILE	*f= os::fopen(file.c_str(),"wt");
 	if (!f) return false;
 
-	//os::fprintf(f,"%% Map of landmarks - file dumped by mrpt::slam::CLandmarksMap\n");
+	//os::fprintf(f,"%% Map of landmarks - file dumped by mrpt::maps::CLandmarksMap\n");
 	//os::fprintf(f,"%%  Columns are: X Y Z TYPE(TFeatureType) TIMES_SEEN TIME_OF_LAST_OBSERVATION [SIFT DESCRIPTOR] ID\n");
 	//os::fprintf(f,"%% -----------------------------------------------------------------------------------------------------\n");
 
@@ -1875,7 +1936,7 @@ double	 CLandmarksMap::computeLikelihood_SIFT_LandmarkMap( CLandmarksMap		*theMa
 							// Compute distance between descriptors
 
 							// IF the EDD has been already computed, we skip this step!
-							std::pair<mrpt::slam::CLandmark::TLandmarkID, mrpt::slam::CLandmark::TLandmarkID> mPair( lm2->ID, lm1->ID );
+							std::pair<mrpt::maps::CLandmark::TLandmarkID, mrpt::maps::CLandmark::TLandmarkID> mPair( lm2->ID, lm1->ID );
 							//std::cout << "Par: (" << lm2->ID << "," << lm1->ID << ") -> ";
 
 							if( CLandmarksMap::_mEDD[ mPair ] == 0 )
@@ -2027,7 +2088,7 @@ CLandmarksMap::TInsertionOptions::TInsertionOptions() :
 /*---------------------------------------------------------------
 					dumpToTextStream
   ---------------------------------------------------------------*/
-void  CLandmarksMap::TInsertionOptions::dumpToTextStream(CStream	&out) const
+void  CLandmarksMap::TInsertionOptions::dumpToTextStream(mrpt::utils::CStream	&out) const
 {
 	out.printf("\n----------- [CLandmarksMap::TInsertionOptions] ------------ \n\n");
 
@@ -2118,7 +2179,7 @@ CLandmarksMap::TLikelihoodOptions::TGPSOrigin::TGPSOrigin() :
 /*---------------------------------------------------------------
 					dumpToTextStream
   ---------------------------------------------------------------*/
-void  CLandmarksMap::TLikelihoodOptions::dumpToTextStream(CStream	&out) const
+void  CLandmarksMap::TLikelihoodOptions::dumpToTextStream(mrpt::utils::CStream	&out) const
 {
 	out.printf("\n----------- [CLandmarksMap::TLikelihoodOptions] ------------ \n\n");
 
@@ -2201,10 +2262,10 @@ bool  CLandmarksMap::isEmpty() const
 void  CLandmarksMap::simulateBeaconReadings(
     const CPose3D							&in_robotPose,
     const CPoint3D						&in_sensorLocationOnRobot,
-    mrpt::slam::CObservationBeaconRanges  &out_Observations ) const
+	mrpt::obs::CObservationBeaconRanges  &out_Observations ) const
 {
 	TSequenceLandmarks::const_iterator				it;
-	mrpt::slam::CObservationBeaconRanges::TMeasurement	newMeas;
+	mrpt::obs::CObservationBeaconRanges::TMeasurement	newMeas;
 	CPoint3D										point3D,beacon3D;
 	CPointPDFGaussian								beaconPDF;
 
@@ -2279,11 +2340,9 @@ void  CLandmarksMap::saveMetricMapRepresentationToFile( const std::string	&filNa
   ---------------------------------------------------------------*/
 void  CLandmarksMap::getAs3DObject( mrpt::opengl::CSetOfObjectsPtr	&outObj )const
 {
-	if (m_disableSaveAs3DObject)
-		return;
+	if (!genericMapParams.enableSaveAs3DObject) return;
 
 	// TODO: Generate patchs in 3D, etc...
-
 
 	// Save 3D ellipsoids
 	CPointPDFGaussian	pointGauss;
@@ -2305,7 +2364,7 @@ void  CLandmarksMap::getAs3DObject( mrpt::opengl::CSetOfObjectsPtr	&outObj )cons
 
 }
 /**** FAMD ****/
-mrpt::slam::CLandmark::TLandmarkID  CLandmarksMap::getMapMaxID()
+mrpt::maps::CLandmark::TLandmarkID  CLandmarksMap::getMapMaxID()
 {
 	return _mapMaxID;
 }
@@ -2353,7 +2412,7 @@ const CLandmark* 	CLandmarksMap::TCustomSequenceLandmarks::getByBeaconID( unsign
  * \sa computeMatchingWith2D
  ----------------------------------------------------------------*/
 float  CLandmarksMap::compute3DMatchingRatio(
-		const CMetricMap						*otherMap2,
+		const mrpt::maps::CMetricMap						*otherMap2,
 		const CPose3D							&otherMapPose,
 		float									maxDistForCorr,
 		float									maxMahaDistForCorr
@@ -2468,7 +2527,7 @@ void  CLandmarksMap::auxParticleFilterCleanUp()
 {
 	//std::cout << "mEDD:" << std::endl;
 	//std::cout << "-----------------------" << std::endl;
-	//std::map<std::pair<mrpt::slam::CLandmark::TLandmarkID, mrpt::slam::CLandmark::TLandmarkID>, unsigned long>::iterator itmEDD;
+	//std::map<std::pair<mrpt::maps::CLandmark::TLandmarkID, mrpt::maps::CLandmark::TLandmarkID>, unsigned long>::iterator itmEDD;
 	//for(itmEDD = CLandmarksMap::_mEDD.begin(); itmEDD != CLandmarksMap::_mEDD.end(); itmEDD++)
 	//	std::cout << "(" << itmEDD->first.first << "," << itmEDD->first.second << ")"  << ": " << itmEDD->second << std::endl;
 
@@ -2496,7 +2555,7 @@ void  CLandmarksMap::simulateRangeBearingReadings(
 {
 	TSequenceLandmarks::const_iterator				it;
 	size_t  idx;
-	mrpt::slam::CObservationBearingRange::TMeasurement	newMeas;
+	mrpt::obs::CObservationBearingRange::TMeasurement	newMeas;
 	CPoint3D									    beacon3D;
 	CPointPDFGaussian								beaconPDF;
 

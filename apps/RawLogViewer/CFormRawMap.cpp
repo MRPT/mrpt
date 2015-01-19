@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -34,19 +34,21 @@
 #include <mrpt/opengl/CSetOfLines.h>
 #include <mrpt/system/os.h>
 #include <mrpt/system/filesystem.h>
-#include <mrpt/slam/CMultiMetricMap.h>
-#include <mrpt/slam/CPointsMap.h>
-#include <mrpt/slam/CObservationOdometry.h>
+#include <mrpt/maps/CMultiMetricMap.h>
+#include <mrpt/maps/CPointsMap.h>
+#include <mrpt/obs/CObservationOdometry.h>
 #include <mrpt/poses/CPosePDFParticles.h>
 #include <mrpt/math/geometry.h>
 #include <mrpt/topography.h>
 
 using namespace mrpt;
-using namespace mrpt::slam;
+using namespace mrpt::obs;
+using namespace mrpt::maps;
 using namespace mrpt::opengl;
 using namespace mrpt::system;
 using namespace mrpt::math;
 using namespace mrpt::utils;
+using namespace mrpt::poses;
 using namespace mrpt::gui;
 using namespace std;
 
@@ -1152,7 +1154,7 @@ void CFormRawMap::OnbtnSavePathClick(wxCommandEvent& )
 		CRawlog::iterator itRawlog;
 		for( itRawlog = rawlog.begin(); itRawlog != rawlog.end(); itRawlog++ )
 		{
-			if( itRawlog.getType() == mrpt::slam::CRawlog::etObservation )
+			if( itRawlog.getType() == mrpt::obs::CRawlog::etObservation )
 			{
 				CObservationPtr obs( *itRawlog );
 				for( itStr = the_labels.begin(), itOutFiles = outFiles.begin(); itStr != the_labels.end(); itStr++, itOutFiles++ )

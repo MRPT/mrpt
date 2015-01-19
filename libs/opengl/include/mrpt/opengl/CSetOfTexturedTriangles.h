@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -17,10 +17,6 @@ namespace mrpt
 
 	namespace opengl
 	{
-		using mrpt::utils::CStream;
-
-
-
 		// This must be added to any CSerializable derived class:
 		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CSetOfTexturedTriangles, CTexturedObject, OPENGL_IMPEXP )
 
@@ -42,8 +38,8 @@ namespace mrpt
 				TVertex(float x, float y, float z, uint32_t u, uint32_t v);
 				float m_x, m_y, m_z; //!< 3D vertex coordinates.
 				uint32_t m_u, m_v; //!< 2D texture coordinates. Notice that the texture coordinates are 2D pixels!!!
-				void writeToStream(CStream &out) const;
-				void readFromStream(CStream &in);
+				void writeToStream(mrpt::utils::CStream &out) const;
+				void readFromStream(mrpt::utils::CStream &in);
 			};
 
 			/** Triangle. This structure encapsulates the triangle vertices.
@@ -53,8 +49,8 @@ namespace mrpt
 				TTriangle( ); //!< Default constructor
 				TTriangle(TVertex v1, TVertex v2, TVertex v3);
 				TVertex	m_v1, m_v2, m_v3; //!< vertices
-				void writeToStream(CStream &out) const;
-				void readFromStream(CStream &in);
+				void writeToStream(mrpt::utils::CStream &out) const;
+				void readFromStream(mrpt::utils::CStream &in);
 			};
 
 			/** Evaluates the bounding box of this object (including possible children) in the coordinate frame of the object parent. */

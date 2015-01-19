@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -34,9 +34,6 @@ namespace mrpt
 
 	namespace graphs
 	{
-		using mrpt::utils::TNodeID;
-		using namespace mrpt::utils;
-
 		/** Internal functions for MRPT */
 		namespace detail
 		{
@@ -45,12 +42,12 @@ namespace mrpt
 			struct node_annotations_empty {  };
 		}
 
-		/** A directed graph of pose constraints, with edges being the relative pose between pairs of nodes indentified by their numeric IDs (of type TNodeID).
+		/** A directed graph of pose constraints, with edges being the relative pose between pairs of nodes indentified by their numeric IDs (of type mrpt::utils::TNodeID).
 		  *  A link or edge between two nodes "i" and "j", that is, the pose \f$ p_{ij} \f$, holds the relative position of "j" with respect to "i".
 		  *   These poses are stored in the edges in the format specified by the template argument CPOSE. Users should employ the following derived classes
 		  *   depending on the desired representation of edges:
 		  *      - mrpt::graphs::CNetworkOfPoses2D    : 2D edges as a simple CPose2D (x y phi)
-		  *      - mrpt::graphs::CNetworkOfPoses3D    : 3D edges as a simple CPose3D (x y z yaw pitch roll)
+		  *      - mrpt::graphs::CNetworkOfPoses3D    : 3D edges as a simple mrpt::poses::CPose3D (x y z yaw pitch roll)
 		  *      - mrpt::graphs::CNetworkOfPoses2DInf : 2D edges as a Gaussian PDF with information matrix ( CPosePDFGaussianInf )
 		  *      - mrpt::graphs::CNetworkOfPoses3DInf : 3D edges as a Gaussian PDF with information matrix ( CPose3DPDFGaussianInf )
 		  *      - mrpt::graphs::CNetworkOfPoses2DCov : 2D edges as a Gaussian PDF with covariance matrix ( CPosePDFGaussian ). It's more efficient to use the information matrix version instead!
@@ -77,7 +74,7 @@ namespace mrpt
 		  */
 		template<
 			class CPOSE, // Type of edges
-			class MAPS_IMPLEMENTATION = map_traits_stdmap, // Use std::map<> vs. std::vector<>
+			class MAPS_IMPLEMENTATION = mrpt::utils::map_traits_stdmap, // Use std::map<> vs. std::vector<>
 			class NODE_ANNOTATIONS = mrpt::graphs::detail::node_annotations_empty,
 			class EDGE_ANNOTATIONS = mrpt::graphs::detail::edge_annotations_empty
 			>
@@ -106,10 +103,10 @@ namespace mrpt
 			};
 
 			/** A map from pose IDs to their global coordinates estimates, with uncertainty */
-			typedef typename MAPS_IMPLEMENTATION::template map<TNodeID,CPOSE>     global_poses_pdf_t;
+			typedef typename MAPS_IMPLEMENTATION::template map<mrpt::utils::TNodeID,CPOSE>     global_poses_pdf_t;
 
 			/** A map from pose IDs to their global coordinates estimates, without uncertainty (the "most-likely value") */
-			typedef typename MAPS_IMPLEMENTATION::template map<TNodeID,global_pose_t> global_poses_t;
+			typedef typename MAPS_IMPLEMENTATION::template map<mrpt::utils::TNodeID,global_pose_t> global_poses_t;
 
 			/** @} */
 
@@ -123,7 +120,7 @@ namespace mrpt
 			global_poses_t  nodes;
 
 			/** The ID of the node that is the origin of coordinates, used as reference by all coordinates in \nodes. By default, root is the ID "0". */
-			TNodeID         root;
+			mrpt::utils::TNodeID         root;
 
 			/** False (default) if an edge i->j stores the normal relative pose of j as seen from i: \f$ \Delta_i^j = j \ominus i \f$
 			  * True if an edge i->j stores the inverse relateive pose, that is, i as seen from j: \f$ \Delta_i^j = i \ominus j \f$
@@ -201,7 +198,7 @@ namespace mrpt
 			  *  If \a ignoreCovariances is false, the squared Mahalanobis distance will be computed instead of the straight square error.
 			  * \exception std::exception On edge not existing or global poses not in \a nodes
 			  */
-			double getEdgeSquareError(const TNodeID from_id, const TNodeID to_id, bool ignoreCovariances = true ) const
+			double getEdgeSquareError(const mrpt::utils::TNodeID from_id, const mrpt::utils::TNodeID to_id, bool ignoreCovariances = true ) const
 			{
 				const typename BASE::edges_map_t::const_iterator itEdge = BASE::edges.find( std::make_pair(from_id,to_id) );
 				ASSERTMSG_(itEdge!=BASE::edges.end(),format("Request for edge %u->%u that doesn't exist in graph.",static_cast<unsigned int>(from_id),static_cast<unsigned int>(to_id)));
@@ -235,7 +232,7 @@ namespace mrpt
 
 		/** Binary serialization (write) operator "stream << graph" */
 		template <class CPOSE,class MAPS_IMPLEMENTATION,class NODE_ANNOTATIONS,class EDGE_ANNOTATIONS>
-		CStream & operator << (CStream&out, const CNetworkOfPoses<CPOSE,MAPS_IMPLEMENTATION,NODE_ANNOTATIONS,EDGE_ANNOTATIONS> &obj)
+		mrpt::utils::CStream & operator << (mrpt::utils::CStream&out, const CNetworkOfPoses<CPOSE,MAPS_IMPLEMENTATION,NODE_ANNOTATIONS,EDGE_ANNOTATIONS> &obj)
 		{
 			typedef CNetworkOfPoses<CPOSE,MAPS_IMPLEMENTATION,NODE_ANNOTATIONS,EDGE_ANNOTATIONS> graph_t;
 			detail::graph_ops<graph_t>::save_graph_of_poses_to_binary_file(&obj,out);
@@ -244,7 +241,7 @@ namespace mrpt
 
 		/** Binary serialization (read) operator "stream >> graph" */
 		template <class CPOSE,class MAPS_IMPLEMENTATION,class NODE_ANNOTATIONS,class EDGE_ANNOTATIONS>
-		CStream & operator >> (CStream&in, CNetworkOfPoses<CPOSE,MAPS_IMPLEMENTATION,NODE_ANNOTATIONS,EDGE_ANNOTATIONS> &obj)
+		mrpt::utils::CStream & operator >> (mrpt::utils::CStream&in, CNetworkOfPoses<CPOSE,MAPS_IMPLEMENTATION,NODE_ANNOTATIONS,EDGE_ANNOTATIONS> &obj)
 		{
 			typedef CNetworkOfPoses<CPOSE,MAPS_IMPLEMENTATION,NODE_ANNOTATIONS,EDGE_ANNOTATIONS> graph_t;
 			detail::graph_ops<graph_t>::read_graph_of_poses_from_binary_file(&obj,in);
@@ -254,12 +251,12 @@ namespace mrpt
 		/** \addtogroup mrpt_graphs_grp
 		    @{ */
 
-		typedef CNetworkOfPoses<mrpt::poses::CPose2D,map_traits_stdmap>               CNetworkOfPoses2D;     //!< The specialization of CNetworkOfPoses for poses of type CPose2D (not a PDF!), also implementing serialization.
-		typedef CNetworkOfPoses<mrpt::poses::CPose3D,map_traits_stdmap>               CNetworkOfPoses3D;     //!< The specialization of CNetworkOfPoses for poses of type CPose3D (not a PDF!), also implementing serialization.
-		typedef CNetworkOfPoses<mrpt::poses::CPosePDFGaussian,map_traits_stdmap>      CNetworkOfPoses2DCov;  //!< The specialization of CNetworkOfPoses for poses of type CPosePDFGaussian, also implementing serialization.
-		typedef CNetworkOfPoses<mrpt::poses::CPose3DPDFGaussian,map_traits_stdmap>    CNetworkOfPoses3DCov;  //!< The specialization of CNetworkOfPoses for poses of type CPose3DPDFGaussian, also implementing serialization.
-		typedef CNetworkOfPoses<mrpt::poses::CPosePDFGaussianInf,map_traits_stdmap>   CNetworkOfPoses2DInf;  //!< The specialization of CNetworkOfPoses for poses of type CPosePDFGaussianInf, also implementing serialization.
-		typedef CNetworkOfPoses<mrpt::poses::CPose3DPDFGaussianInf,map_traits_stdmap> CNetworkOfPoses3DInf;  //!< The specialization of CNetworkOfPoses for poses of type CPose3DPDFGaussianInf, also implementing serialization.
+		typedef CNetworkOfPoses<mrpt::poses::CPose2D,mrpt::utils::map_traits_stdmap>               CNetworkOfPoses2D;     //!< The specialization of CNetworkOfPoses for poses of type CPose2D (not a PDF!), also implementing serialization.
+		typedef CNetworkOfPoses<mrpt::poses::CPose3D,mrpt::utils::map_traits_stdmap>               CNetworkOfPoses3D;     //!< The specialization of CNetworkOfPoses for poses of type mrpt::poses::CPose3D (not a PDF!), also implementing serialization.
+		typedef CNetworkOfPoses<mrpt::poses::CPosePDFGaussian,mrpt::utils::map_traits_stdmap>      CNetworkOfPoses2DCov;  //!< The specialization of CNetworkOfPoses for poses of type CPosePDFGaussian, also implementing serialization.
+		typedef CNetworkOfPoses<mrpt::poses::CPose3DPDFGaussian,mrpt::utils::map_traits_stdmap>    CNetworkOfPoses3DCov;  //!< The specialization of CNetworkOfPoses for poses of type CPose3DPDFGaussian, also implementing serialization.
+		typedef CNetworkOfPoses<mrpt::poses::CPosePDFGaussianInf,mrpt::utils::map_traits_stdmap>   CNetworkOfPoses2DInf;  //!< The specialization of CNetworkOfPoses for poses of type CPosePDFGaussianInf, also implementing serialization.
+		typedef CNetworkOfPoses<mrpt::poses::CPose3DPDFGaussianInf,mrpt::utils::map_traits_stdmap> CNetworkOfPoses3DInf;  //!< The specialization of CNetworkOfPoses for poses of type CPose3DPDFGaussianInf, also implementing serialization.
 
 		/** @} */  // end of grouping
 

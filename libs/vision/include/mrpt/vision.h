@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -35,10 +35,10 @@ MRPT_WARNING("Including <mrpt/vision.h> makes compilation much slower, consider 
 #include <mrpt/vision/CDifodo.h>
 
 // Maps:
-#include <mrpt/slam/CLandmark.h>
-#include <mrpt/slam/CLandmarksMap.h>
+#include <mrpt/maps/CLandmark.h>
+#include <mrpt/maps/CLandmarksMap.h>
 
 // Obs:
-#include <mrpt/slam/CObservationVisualLandmarks.h>
+#include <mrpt/obs/CObservationVisualLandmarks.h>
 
 #endif

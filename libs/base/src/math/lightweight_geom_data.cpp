@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -136,10 +136,10 @@ std::ostream & operator << (std::ostream& o, const TPose2D & p)  { return (o << 
 std::ostream & operator << (std::ostream& o, const TPose3D & p)  { return (o << CPose3D(p)); }
 std::ostream & operator << (std::ostream& o, const TPose3DQuat & p) { return (o << CPose3DQuat(p)); }
 
-CStream &operator>>(CStream &in,mrpt::math::TSegment2D &s)	{ return in>>s.point1>>s.point2; }
-CStream &operator<<(CStream &out,const mrpt::math::TSegment2D &s)	{ return out<<s.point1<<s.point2; }
-CStream &operator>>(CStream &in,mrpt::math::TLine2D &l)	{ return in>>l.coefs[0]>>l.coefs[1]>>l.coefs[2]; }
-CStream &operator<<(CStream &out,const mrpt::math::TLine2D &l)	{ return out<<l.coefs[0]<<l.coefs[1]<<l.coefs[2]; }
+CStream &operator>>(mrpt::utils::CStream &in,mrpt::math::TSegment2D &s)	{ return in>>s.point1>>s.point2; }
+CStream &operator<<(mrpt::utils::CStream &out,const mrpt::math::TSegment2D &s)	{ return out<<s.point1<<s.point2; }
+CStream &operator>>(mrpt::utils::CStream &in,mrpt::math::TLine2D &l)	{ return in>>l.coefs[0]>>l.coefs[1]>>l.coefs[2]; }
+CStream &operator<<(mrpt::utils::CStream &out,const mrpt::math::TLine2D &l)	{ return out<<l.coefs[0]<<l.coefs[1]<<l.coefs[2]; }
 
 mrpt::utils::CStream &operator>>(mrpt::utils::CStream &in,mrpt::math::TSegment3D &s)	{ return in>>s.point1>>s.point2; }
 mrpt::utils::CStream &operator<<(mrpt::utils::CStream &out,const mrpt::math::TSegment3D &s)	{ return out<<s.point1<<s.point2; }

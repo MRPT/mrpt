@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -38,8 +38,8 @@ Executes a prediction-update stage of particle filtering. This includes:
   ---------------------------------------------------------------*/
 void  CParticleFilter::executeOn(
 	CParticleFilterCapable 			&obj,
-	const mrpt::slam::CActionCollection   *action,
-	const mrpt::slam::CSensoryFrame	    *observation,
+	const mrpt::obs::CActionCollection   *action,
+	const mrpt::obs::CSensoryFrame	    *observation,
 	TParticleFilterStats	        *stats )
 {
 	MRPT_START
@@ -113,7 +113,7 @@ CParticleFilter::TParticleFilterOptions::TParticleFilterOptions() :
 /*---------------------------------------------------------------
 					dumpToTextStream
   ---------------------------------------------------------------*/
-void  CParticleFilter::TParticleFilterOptions::dumpToTextStream(CStream	&out) const
+void  CParticleFilter::TParticleFilterOptions::dumpToTextStream(mrpt::utils::CStream	&out) const
 {
 	out.printf("\n----------- [CParticleFilter::TParticleFilterOptions] ------------ \n\n");
 

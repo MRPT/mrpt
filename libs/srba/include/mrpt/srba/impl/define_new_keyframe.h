@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -32,7 +32,7 @@ void RbaEngine<KF2KF_POSE_TYPE,LM_TYPE,OBS_TYPE,RBA_OPTIONS>::define_new_keyfram
 	m_profiler.enter("define_new_keyframe.determine_edges");
 
 	// Keep a list of the new kf2kf edges, whose initial values are indeterminate:
-	vector<TNewEdgeInfo> new_k2k_edge_ids;
+	std::vector<TNewEdgeInfo> new_k2k_edge_ids;
 	determine_kf2kf_edges_to_create(new_kf_id,obs, new_k2k_edge_ids);   // ***** here's the beef! *****
 
 	m_profiler.leave("define_new_keyframe.determine_edges");

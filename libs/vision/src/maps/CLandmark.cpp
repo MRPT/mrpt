@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -11,17 +11,18 @@
 
 #include <mrpt/utils/CStream.h>
 #include <mrpt/utils/stl_serialization.h>
-#include <mrpt/slam/CLandmark.h>
-#include <mrpt/slam/CObservation.h>
+#include <mrpt/maps/CLandmark.h>
+#include <mrpt/obs/CObservation.h>
 #include <mrpt/utils/stl_serialization.h>
 #include <mrpt/system/os.h>
 
-using namespace mrpt::slam;
+using namespace mrpt::obs;
+using namespace mrpt::maps;
 using namespace mrpt::utils;
 using namespace mrpt::poses;
 
 
-IMPLEMENTS_SERIALIZABLE(CLandmark, CSerializable,mrpt::slam)
+IMPLEMENTS_SERIALIZABLE(CLandmark, CSerializable,mrpt::maps)
 
 // Initialization:
 CLandmark::TLandmarkID	CLandmark::m_counterIDs= static_cast<CLandmark::TLandmarkID>(0);
@@ -89,7 +90,7 @@ void 	CLandmark::setPose( const CPointPDFGaussian	&pose )
    Implements the writing to a CStream capability of
      CSerializable objects
   ---------------------------------------------------------------*/
-void  CLandmark::writeToStream(CStream &out, int *version) const
+void  CLandmark::writeToStream(mrpt::utils::CStream &out, int *version) const
 {
 	if (version)
 		*version = 4;
@@ -111,7 +112,7 @@ void  CLandmark::writeToStream(CStream &out, int *version) const
    Implements the reading from a CStream capability of
       CSerializable objects
   ---------------------------------------------------------------*/
-void  CLandmark::readFromStream(CStream &in, int version)
+void  CLandmark::readFromStream(mrpt::utils::CStream &in, int version)
 {
 	switch(version)
 	{

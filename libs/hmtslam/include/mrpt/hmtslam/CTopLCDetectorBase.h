@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -12,15 +12,13 @@
 #include <mrpt/hmtslam/HMT_SLAM_common.h>
 
 #include <mrpt/poses/CPose3DPDF.h>
-#include <mrpt/slam/CSensoryFrame.h>
+#include <mrpt/obs/CSensoryFrame.h>
 
 
 namespace mrpt
 {
 	namespace hmtslam
 	{
-		using namespace mrpt::slam;
-
 		/** The virtual base class for Topological Loop-closure Detectors; used in HMT-SLAM
 		  *  \sa mrpt::slam::CHMTSLAM
 		  * \ingroup mrpt_hmtslam_grp
@@ -51,7 +49,7 @@ namespace mrpt
 			  * \param out_log_lik The output, a log-likelihood.
 			  * \return NULL (an empty smart pointer), or a PDF of the estimated translation between the two areas (can be a multi-modal PDF).
 			  */
-			virtual CPose3DPDFPtr computeTopologicalObservationModel(
+			virtual mrpt::poses::CPose3DPDFPtr computeTopologicalObservationModel(
 				const THypothesisID		&hypID,
 				const CHMHMapNodePtr	&currentArea,
 				const CHMHMapNodePtr	&refArea,
@@ -79,7 +77,7 @@ namespace mrpt
 			  */
 			virtual void OnNewPose(
 				const TPoseID 			&poseID,
-				const CSensoryFrame		*SF )
+				const mrpt::obs::CSensoryFrame		*SF )
 			{
 				MRPT_UNUSED_PARAM(poseID); MRPT_UNUSED_PARAM(SF);
 			}

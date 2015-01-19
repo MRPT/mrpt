@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -17,8 +17,8 @@
   ---------------------------------------------------------------*/
 
 #include <mrpt/slam/CMetricMapBuilderICP.h>
-#include <mrpt/slam/CObservationOdometry.h>
-#include <mrpt/slam/CRawlog.h>
+#include <mrpt/obs/CObservationOdometry.h>
+#include <mrpt/obs/CRawlog.h>
 #include <mrpt/opengl/COpenGLScene.h>
 #include <mrpt/opengl/CGridPlaneXY.h>
 #include <mrpt/opengl/stock_objects.h>
@@ -33,11 +33,14 @@
 
 using namespace mrpt;
 using namespace mrpt::slam;
+using namespace mrpt::obs;
+using namespace mrpt::maps;
 using namespace mrpt::opengl;
 using namespace mrpt::gui;
 using namespace mrpt::system;
 using namespace mrpt::math;
 using namespace mrpt::utils;
+using namespace mrpt::poses;
 using namespace std;
 
 // Forward declaration.
@@ -239,7 +242,7 @@ void MapBuilding_ICP(const string &INI_FILENAME, const string &override_rawlog_f
 			break; // file EOF
 
 		const bool isObsBasedRawlog = observation.present();
-		std::vector<mrpt::slam::CObservation2DRangeScanPtr> lst_current_laser_scans;   // Just for drawing in 3D views
+		std::vector<mrpt::obs::CObservation2DRangeScanPtr> lst_current_laser_scans;   // Just for drawing in 3D views
 
 		if (rawlogEntry>=rawlog_offset)
 		{

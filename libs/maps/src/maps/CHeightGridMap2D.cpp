@@ -2,17 +2,17 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
 #include "maps-precomp.h" // Precomp header
 
-#include <mrpt/slam/CHeightGridMap2D.h>
-#include <mrpt/slam/CObservationGasSensors.h>
-#include <mrpt/slam/CObservation2DRangeScan.h>
-#include <mrpt/slam/CSimplePointsMap.h>
+#include <mrpt/maps/CHeightGridMap2D.h>
+#include <mrpt/obs/CObservationGasSensors.h>
+#include <mrpt/obs/CObservation2DRangeScan.h>
+#include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/system/os.h>
 #include <mrpt/utils/stl_serialization.h>
 #include <mrpt/utils/CTicTac.h>
@@ -21,16 +21,66 @@
 #include <mrpt/opengl/CPointCloudColoured.h>
 #include <mrpt/utils/CStream.h>
 
-using namespace mrpt::slam;
+using namespace mrpt::maps;
+using namespace mrpt::obs;
 using namespace mrpt::poses;
 using namespace mrpt::math;
 using namespace mrpt::utils;
 using namespace mrpt::system;
 using namespace std;
 
-IMPLEMENTS_SERIALIZABLE(CHeightGridMap2D, CMetricMap,mrpt::slam)
+
+//  =========== Begin of Map definition ============
+MAP_DEFINITION_REGISTER("CHeightGridMap2D,beaconMap", mrpt::maps::CHeightGridMap2D)
+
+CHeightGridMap2D::TMapDefinition::TMapDefinition() :
+	min_x(-2),
+	max_x(2),
+	min_y(-2),
+	max_y(2),
+	resolution(0.10f),
+	mapType(CHeightGridMap2D::mrSimpleAverage)
+{
+}
+
+void CHeightGridMap2D::TMapDefinition::loadFromConfigFile_map_specific(const mrpt::utils::CConfigFileBase  &source, const std::string &sectionNamePrefix)
+{
+	// [<sectionNamePrefix>+"_creationOpts"]
+	const std::string sSectCreation = sectionNamePrefix+string("_creationOpts");
+	MRPT_LOAD_CONFIG_VAR(min_x, float,   source,sSectCreation);
+	MRPT_LOAD_CONFIG_VAR(max_x, float,   source,sSectCreation);
+	MRPT_LOAD_CONFIG_VAR(min_y, float,   source,sSectCreation);
+	MRPT_LOAD_CONFIG_VAR(max_y, float,   source,sSectCreation);
+	MRPT_LOAD_CONFIG_VAR(resolution, float,   source,sSectCreation);
+	mapType = source.read_enum<CHeightGridMap2D::TMapRepresentation>(sSectCreation,"mapType",mapType);
+
+	insertionOpts.loadFromConfigFile(source, sectionNamePrefix+string("_insertOpts") );
+}
+
+void CHeightGridMap2D::TMapDefinition::dumpToTextStream_map_specific(mrpt::utils::CStream &out) const
+{
+	LOADABLEOPTS_DUMP_VAR(min_x         , float);
+	LOADABLEOPTS_DUMP_VAR(max_x         , float);
+	LOADABLEOPTS_DUMP_VAR(min_y         , float);
+	LOADABLEOPTS_DUMP_VAR(max_y         , float);
+	LOADABLEOPTS_DUMP_VAR(resolution         , float);
+	out.printf("MAP TYPE                                  = %s\n", mrpt::utils::TEnumType<CHeightGridMap2D::TMapRepresentation>::value2name(mapType).c_str() );
+
+	this->insertionOpts.dumpToTextStream(out);
+}
+
+mrpt::maps::CMetricMap* CHeightGridMap2D::internal_CreateFromMapDefinition(const mrpt::maps::TMetricMapInitializer &_def)
+{
+	const CHeightGridMap2D::TMapDefinition &def = *dynamic_cast<const CHeightGridMap2D::TMapDefinition*>(&_def);
+	CHeightGridMap2D *obj = new CHeightGridMap2D(def.mapType,def.min_x,def.max_x,def.min_y,def.max_y,def.resolution);
+	obj->insertionOptions  = def.insertionOpts;
+	return obj;
+}
+//  =========== End of Map definition Block =========
 
 
+IMPLEMENTS_SERIALIZABLE(CHeightGridMap2D, CMetricMap,mrpt::maps)
+	
 bool mrpt::global_settings::HEIGHTGRIDMAP_EXPORT3D_AS_MESH = true;
 
 /*---------------------------------------------------------------
@@ -97,7 +147,7 @@ bool  CHeightGridMap2D::internal_insertObservation(
 		// Create points map, if not created yet:
 		CPointsMap::TInsertionOptions	opts;
 		opts.minDistBetweenLaserPoints = insertionOptions.minDistBetweenPointsWhenInserting;
-		const CPointsMap	*thePoints = o->buildAuxPointsMap<mrpt::slam::CPointsMap>( &opts );
+		const CPointsMap	*thePoints = o->buildAuxPointsMap<mrpt::maps::CPointsMap>( &opts );
 
 		// And rotate to the robot pose:
 		CSimplePointsMap	thePointsMoved;
@@ -165,7 +215,7 @@ bool  CHeightGridMap2D::internal_insertObservation(
 /*---------------------------------------------------------------
 						computeObservationLikelihood
   ---------------------------------------------------------------*/
-double	 CHeightGridMap2D::computeObservationLikelihood(
+double	 CHeightGridMap2D::internal_computeObservationLikelihood(
 	const CObservation		*obs,
 	const CPose3D			&takenFrom )
 {
@@ -177,10 +227,10 @@ double	 CHeightGridMap2D::computeObservationLikelihood(
 /*---------------------------------------------------------------
   Implements the writing to a CStream capability of CSerializable objects
  ---------------------------------------------------------------*/
-void  CHeightGridMap2D::writeToStream(CStream &out, int *version) const
+void  CHeightGridMap2D::writeToStream(mrpt::utils::CStream &out, int *version) const
 {
 	if (version)
-		*version = 1;
+		*version = 2;
 	else
 	{
 		uint32_t	n;
@@ -206,18 +256,21 @@ void  CHeightGridMap2D::writeToStream(CStream &out, int *version) const
 		out << insertionOptions.filterByHeight
 			<< insertionOptions.z_min
 			<< insertionOptions.z_max;
+
+		out << genericMapParams; // v2
 	}
 }
 
 /*---------------------------------------------------------------
   Implements the reading from a CStream capability of CSerializable objects
  ---------------------------------------------------------------*/
-void  CHeightGridMap2D::readFromStream(CStream &in, int version)
+void  CHeightGridMap2D::readFromStream(mrpt::utils::CStream &in, int version)
 {
 	switch(version)
 	{
 	case 0:
 	case 1:
+	case 2:
 		{
 			uint32_t	n,i,j;
 
@@ -255,6 +308,9 @@ void  CHeightGridMap2D::readFromStream(CStream &in, int version)
 				>> insertionOptions.z_min
 				>> insertionOptions.z_max;
 
+			if (version>=2) 
+				in >> genericMapParams;
+
 		} break;
 	default:
 		MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
@@ -278,7 +334,7 @@ CHeightGridMap2D::TInsertionOptions::TInsertionOptions() :
 /*---------------------------------------------------------------
 					dumpToTextStream
   ---------------------------------------------------------------*/
-void  CHeightGridMap2D::TInsertionOptions::dumpToTextStream(CStream	&out) const
+void  CHeightGridMap2D::TInsertionOptions::dumpToTextStream(mrpt::utils::CStream	&out) const
 {
 	out.printf("\n----------- [CHeightGridMap2D::TInsertionOptions] ------------ \n\n");
 	out.printf("filterByHeight                          = %c\n", filterByHeight ? 'y':'n');
@@ -323,8 +379,7 @@ void  CHeightGridMap2D::saveMetricMapRepresentationToFile(
 ---------------------------------------------------------------*/
 void  CHeightGridMap2D::getAs3DObject( mrpt::opengl::CSetOfObjectsPtr	&outObj ) const
 {
-	if (m_disableSaveAs3DObject)
-		return;
+	if (!genericMapParams.enableSaveAs3DObject) return;
 
 	if (mrpt::global_settings::HEIGHTGRIDMAP_EXPORT3D_AS_MESH)
 	{
@@ -516,7 +571,7 @@ size_t CHeightGridMap2D::countObservedCells() const
 
 
 float  CHeightGridMap2D::compute3DMatchingRatio(
-	const CMetricMap						*otherMap,
+	const mrpt::maps::CMetricMap						*otherMap,
 	const CPose3D							&otherMapPose,
 	float									maxDistForCorr,
 	float									maxMahaDistForCorr

@@ -2,29 +2,29 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
 #include "obs-precomp.h"   // Precompiled headers
 
-#include <mrpt/slam/CObservationRawDAQ.h>
+#include <mrpt/obs/CObservationRawDAQ.h>
 #include <mrpt/utils/CStream.h>
 #include <iostream>
 
-using namespace mrpt::slam;
+using namespace mrpt::obs;
 using namespace mrpt::utils;
 using namespace mrpt::poses;
 using namespace std;
 
 // This must be added to any CSerializable class implementation file.
-IMPLEMENTS_SERIALIZABLE(CObservationRawDAQ, CObservation,mrpt::slam)
+IMPLEMENTS_SERIALIZABLE(CObservationRawDAQ, CObservation,mrpt::obs)
 
 /*---------------------------------------------------------------
   Implements the writing to a CStream capability of CSerializable objects
  ---------------------------------------------------------------*/
-void  CObservationRawDAQ::writeToStream(CStream &out, int *version) const
+void  CObservationRawDAQ::writeToStream(mrpt::utils::CStream &out, int *version) const
 {
 	if (version)
 		*version = 0;
@@ -40,7 +40,7 @@ void  CObservationRawDAQ::writeToStream(CStream &out, int *version) const
 /*---------------------------------------------------------------
   Implements the reading from a CStream capability of CSerializable objects
  ---------------------------------------------------------------*/
-void  CObservationRawDAQ::readFromStream(CStream &in, int version)
+void  CObservationRawDAQ::readFromStream(mrpt::utils::CStream &in, int version)
 {
 	switch(version)
 	{

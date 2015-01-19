@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -24,7 +24,7 @@ namespace mrpt
 	 public:
 			/** Constructor (this PTG has no parameters)
 			 */
-			CPTG7(const TParameters<double> &params );
+			CPTG7(const mrpt::utils::TParameters<double> &params );
 
 			/** Gets a short textual description of the PTG and its parameters.
 			*/

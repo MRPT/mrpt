@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -12,7 +12,8 @@
 
 using namespace mrpt;
 using namespace mrpt::utils;
-using namespace mrpt::slam;
+using namespace mrpt::obs;
+using namespace mrpt::poses;
 using namespace mrpt::system;
 using namespace mrpt::rawlogtools;
 using namespace std;
@@ -29,7 +30,8 @@ DECLARE_OP_FUNCTION(op_sensors_pose)
 	protected:
 		TOutputRawlogCreator	outrawlog;
 
-		std::map<std::string,mrpt::poses::CPose3D>	desiredSensorPoses;
+		typedef mrpt::aligned_containers<std::string,mrpt::poses::CPose3D>::map_t TSensor2PoseMap;
+		TSensor2PoseMap desiredSensorPoses;
 
 	public:
 		size_t  m_changedPoses;
@@ -82,7 +84,7 @@ DECLARE_OP_FUNCTION(op_sensors_pose)
 		bool processOneObservation(CObservationPtr  &obs)
 		{
 			// Check the sensor label:
-			std::map<std::string,mrpt::poses::CPose3D>::iterator i = desiredSensorPoses.find(obs->sensorLabel);
+			TSensor2PoseMap::iterator i = desiredSensorPoses.find(obs->sensorLabel);
 			if (i!=desiredSensorPoses.end())
 			{
 				obs->setSensorPose( i->second );
@@ -93,9 +95,9 @@ DECLARE_OP_FUNCTION(op_sensors_pose)
 
 		// This method can be reimplemented to save the modified object to an output stream.
 		virtual void OnPostProcess(
-			mrpt::slam::CActionCollectionPtr &actions,
-			mrpt::slam::CSensoryFramePtr     &SF,
-			mrpt::slam::CObservationPtr      &obs)
+			mrpt::obs::CActionCollectionPtr &actions,
+			mrpt::obs::CSensoryFramePtr     &SF,
+			mrpt::obs::CObservationPtr      &obs)
 		{
 			ASSERT_((actions && SF) || obs)
 			if (actions)

@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -10,11 +10,12 @@
 #include "detectors-precomp.h"   // Precompiled headers
 
 #include <mrpt/detectors/CDetectorDoorCrossing.h>
-#include <mrpt/slam/CMultiMetricMap.h>
+#include <mrpt/maps/CMultiMetricMap.h>
 #include <mrpt/poses/CPosePDF.h>
 
 using namespace mrpt;
-using namespace mrpt::slam;
+using namespace mrpt::obs;
+using namespace mrpt::maps;
 using namespace mrpt::detectors;
 using namespace mrpt::utils;
 using namespace mrpt::poses;
@@ -87,14 +88,16 @@ void  CDetectorDoorCrossing::process(
 	CPose2D					p, pos;
 
 	TSetOfMetricMapInitializers			mapInitializer;
-	TMetricMapInitializer				mapElement;
 
-	mapElement.metricMapClassType = CLASS_ID( CSimplePointsMap );
-	mapInitializer.push_back( mapElement );
-
-	mapElement.metricMapClassType = CLASS_ID( COccupancyGridMap2D );
-	mapElement.occupancyGridMap2D_options.resolution = options.gridResolution;
-	mapInitializer.push_back( mapElement );
+	{
+		CSimplePointsMap::TMapDefinition def;
+		mapInitializer.push_back( def );
+	}
+	{
+		COccupancyGridMap2D::TMapDefinition def;
+		def.resolution = options.gridResolution;
+		mapInitializer.push_back( def );
+	}
 
 	CMultiMetricMap			auxMap( &mapInitializer );
 

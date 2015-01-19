@@ -16,7 +16,8 @@ PROJECT(rbpf-slam)
 # ---------------------------------------------
 # Define the executable target:
 ADD_EXECUTABLE(rbpf-slam
-               rbpf-slam.cpp)
+               rbpf-slam.cpp
+			    ${MRPT_VERSION_RC_FILE})
 
 SET(TMP_TARGET_NAME "rbpf-slam")
 

@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -56,12 +56,12 @@ namespace mrpt
 			template <class graph_t>
 			struct graph_ops
 			{
-				static void write_VERTEX_line(const TNodeID id, const CPose2D &p, std::ofstream &f)
+				static void write_VERTEX_line(const TNodeID id, const mrpt::poses::CPose2D &p, std::ofstream &f)
 				{
 					//  VERTEX2 id x y phi
 					f << "VERTEX2 " << id << " " << p.x() << " " << p.y() << " " << p.phi() << endl;
 				}
-				static void write_VERTEX_line(const TNodeID id, const CPose3D &p, std::ofstream &f)
+				static void write_VERTEX_line(const TNodeID id, const mrpt::poses::CPose3D &p, std::ofstream &f)
 				{
 					//  VERTEX3 id x y z roll pitch yaw
 					// **CAUTION** In the TORO graph format angles are in the RPY order vs. MRPT's YPR.
@@ -105,14 +105,14 @@ namespace mrpt
 					p.copyFrom(edge);
 					write_EDGE_line(edgeIDs,p,f);
 				}
-				static void write_EDGE_line( const TPairNodeIDs &edgeIDs,const CPose2D & edge, std::ofstream &f)
+				static void write_EDGE_line( const TPairNodeIDs &edgeIDs,const mrpt::poses::CPose2D & edge, std::ofstream &f)
 				{
 					CPosePDFGaussianInf p;
 					p.mean = edge;
 					p.cov_inv.unit(3,1.0);
 					write_EDGE_line(edgeIDs,p,f);
 				}
-				static void write_EDGE_line( const TPairNodeIDs &edgeIDs,const CPose3D & edge, std::ofstream &f)
+				static void write_EDGE_line( const TPairNodeIDs &edgeIDs,const mrpt::poses::CPose3D & edge, std::ofstream &f)
 				{
 					CPose3DPDFGaussianInf p;
 					p.mean = edge;
@@ -278,7 +278,7 @@ namespace mrpt
 							if (g->nodes.find(id)==g->nodes.end())
 							{
 								typename CNetworkOfPoses<CPOSE>::constraint_t::type_value & newNode = g->nodes[id];
-								newNode = CPose2D(p2D); // Auto converted to CPose3D if needed
+								newNode = CPose2D(p2D); // Auto converted to mrpt::poses::CPose3D if needed
 							}
 						}
 						else if ( strCmpI(key,"VERTEX3") )
@@ -464,7 +464,7 @@ namespace mrpt
 							if (from_id!=to_id)	// Don't load self-edges! (probably come from an EQUIV)
 							{
 								TPose3DQuat Ap_mean;
-								CMatrixDouble66 Ap_cov_inv;
+							 mrpt::math::CMatrixDouble66 Ap_cov_inv;
 								if (!(s>> Ap_mean.x >> Ap_mean.y >> Ap_mean.z >> Ap_mean.qx >> Ap_mean.qy >> Ap_mean.qz >> Ap_mean.qr ))
 									THROW_EXCEPTION(format("Line %u: Error parsing EDGE_SE3:QUAT line: '%s'", lineNum, lin.c_str() ) );
 
@@ -645,11 +645,11 @@ namespace mrpt
 					return mrpt::math::multiply_HCHt_scalar(err,COV_INV); // err^t*cov_inv*err
 				}
 				// These two are for simulating maha2 distances for non-PDF types: fallback to squared-norm:
-				template <class VEC> static inline double auxMaha2Dist(VEC &err,const CPose2D &p) {
+				template <class VEC> static inline double auxMaha2Dist(VEC &err,const mrpt::poses::CPose2D &p) {
 					math::wrapToPiInPlace(err[2]);
 					return square(err[0])+square(err[1])+square(err[2]);
 				}
-				template <class VEC> static inline double auxMaha2Dist(VEC &err,const CPose3D &p) {
+				template <class VEC> static inline double auxMaha2Dist(VEC &err,const mrpt::poses::CPose3D &p) {
 					math::wrapToPiInPlace(err[3]);
 					math::wrapToPiInPlace(err[4]);
 					math::wrapToPiInPlace(err[5]);
@@ -657,13 +657,13 @@ namespace mrpt
 				}
 
 
-				static inline double auxEuclid2Dist(const CPose2D &p1,const CPose2D &p2) {
+				static inline double auxEuclid2Dist(const mrpt::poses::CPose2D &p1,const mrpt::poses::CPose2D &p2) {
 					return
 						square(p1.x()-p2.x())+
 						square(p1.y()-p2.y())+
 						square( mrpt::math::wrapToPi(p1.phi()-p2.phi() ) );
 				}
-				static inline double auxEuclid2Dist(const CPose3D &p1,const CPose3D &p2) {
+				static inline double auxEuclid2Dist(const mrpt::poses::CPose3D &p1,const mrpt::poses::CPose3D &p2) {
 					return
 						square(p1.x()-p2.x())+
 						square(p1.y()-p2.y())+

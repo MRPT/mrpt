@@ -16,7 +16,8 @@ PROJECT(observations2map)
 # ---------------------------------------------
 # Define the executable target:
 ADD_EXECUTABLE(observations2map
-               observations2map_main.cpp)
+               observations2map_main.cpp
+			    ${MRPT_VERSION_RC_FILE})
 
 SET(TMP_TARGET_NAME "observations2map")
 

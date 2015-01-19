@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -23,7 +23,7 @@ IMPLEMENTS_SERIALIZABLE(CMHPropertiesValuesList, CSerializable, mrpt::utils)
 /*---------------------------------------------------------------
 						writeToStream
  ---------------------------------------------------------------*/
-void  CMHPropertiesValuesList::writeToStream(CStream &out, int *out_Version) const
+void  CMHPropertiesValuesList::writeToStream(mrpt::utils::CStream &out, int *out_Version) const
 {
 	if (out_Version)
 		*out_Version = 0;
@@ -56,7 +56,7 @@ void  CMHPropertiesValuesList::writeToStream(CStream &out, int *out_Version) con
 /*---------------------------------------------------------------
 						readFromStream
  ---------------------------------------------------------------*/
-void  CMHPropertiesValuesList::readFromStream(CStream &in, int version)
+void  CMHPropertiesValuesList::readFromStream(mrpt::utils::CStream &in, int version)
 {
 	switch(version)
 	{

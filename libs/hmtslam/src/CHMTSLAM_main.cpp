@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -39,6 +39,9 @@ using namespace mrpt::slam;
 using namespace mrpt::hmtslam;
 using namespace mrpt::utils;
 using namespace mrpt::synch;
+using namespace mrpt::obs;
+using namespace mrpt::maps;
+using namespace mrpt::opengl;
 using namespace std;
 
 
@@ -243,7 +246,6 @@ void CHMTSLAM::loadOptions( const mrpt::utils::CConfigFileBase &cfg )
 	m_options.loadFromConfigFile(cfg,"HMT-SLAM");
 
 	m_options.defaultMapsInitializers.loadFromConfigFile(cfg,"MetricMaps");
-	m_options.defaultMapsOptions.loadFromConfigFile(cfg,"MetricMaps");
 
 	m_options.pf_options.loadFromConfigFile(cfg,"PARTICLE_FILTER");
 
@@ -339,7 +341,7 @@ void  CHMTSLAM::TOptions::loadFromConfigFile(
 /*---------------------------------------------------------------
 						dumpToTextStream
   ---------------------------------------------------------------*/
-void  CHMTSLAM::TOptions::dumpToTextStream(CStream	&out) const
+void  CHMTSLAM::TOptions::dumpToTextStream(mrpt::utils::CStream	&out) const
 {
 	out.printf("\n----------- [CHMTSLAM::TOptions] ------------ \n\n");
 
@@ -436,7 +438,7 @@ void  CHMTSLAM::initializeEmptyMap()
 		firstAreaID = firstArea->getID();
 
 		firstArea->m_hypotheses = LMH_hyps;
-		CMultiMetricMapPtr		emptyMap = CMultiMetricMapPtr(new CMultiMetricMap(&m_options.defaultMapsInitializers, &m_options.defaultMapsOptions) );
+		CMultiMetricMapPtr		emptyMap = CMultiMetricMapPtr(new CMultiMetricMap(&m_options.defaultMapsInitializers) );
 
 		firstArea->m_nodeType.setType( "Area" );
 		firstArea->m_label = generateUniqueAreaLabel();
@@ -626,7 +628,7 @@ bool CHMTSLAM::loadState( CStream &in )
 /*---------------------------------------------------------------
 					readFromStream
   ---------------------------------------------------------------*/
-void  CHMTSLAM::readFromStream(CStream &in,int version)
+void  CHMTSLAM::readFromStream(mrpt::utils::CStream &in,int version)
 {
 	switch(version)
 	{
@@ -668,7 +670,7 @@ void  CHMTSLAM::readFromStream(CStream &in,int version)
 	Implements the writing to a CStream capability of
 	  CSerializable objects
   ---------------------------------------------------------------*/
-void  CHMTSLAM::writeToStream(CStream &out, int *version) const
+void  CHMTSLAM::writeToStream(mrpt::utils::CStream &out, int *version) const
 {
 	if (version)
 		*version = 0;

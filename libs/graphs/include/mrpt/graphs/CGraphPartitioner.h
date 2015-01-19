@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -48,7 +48,7 @@ namespace mrpt
 			 * \param recursive [IN] Default=true, recursive algorithm for finding N partitions. Set to false to force 1 bisection as maximum.
 			 * \param minSizeClusters [IN] Default=1, Minimum size of partitions to be accepted.
 			 *
-			 * \sa CMatrix, SpectralBisection
+			 * \sa mrpt::math::CMatrix, SpectralBisection
 			 *
 			 * \exception Throws a std::logic_error if an invalid matrix is passed.
 			 */
@@ -71,7 +71,7 @@ namespace mrpt
 			 * \param out_cut_value	[OUT] The N-cut value for the proposed cut, in the range [0-2].
 			 * \param forceSimetry	[IN] If set to true (default) the elements W<sub>ij</sub> and W<sub>ji</sub> are replaced by 0.5·(W<sub>ij</sub>+W<sub>ji</sub>). Set to false if matrix is known to be simetric.
 			 *
-			 * \sa CMatrix, RecursiveSpectralPartition
+			 * \sa mrpt::math::CMatrix, RecursiveSpectralPartition
 			 *
 			 * \exception Throws a std::logic_error if an invalid matrix is passed.
 			 */
@@ -90,7 +90,7 @@ namespace mrpt
 			 * \param out_cut_value	[OUT] The N-cut value for the proposed cut, in the range [0-2].
 			 * \param forceSimetry	[IN] If set to true (default) the elements W<sub>ij</sub> and W<sub>ji</sub> are replaced by 0.5·(W<sub>ij</sub>+W<sub>ji</sub>). Set to false if matrix is known to be simetric.
 			 *
-			 * \sa CMatrix, RecursiveSpectralPartition
+			 * \sa mrpt::math::CMatrix, RecursiveSpectralPartition
 			 *
 			 * \exception Throws a std::logic_error if an invalid matrix is passed.
 			 */

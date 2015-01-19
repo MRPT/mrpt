@@ -1,0 +1,167 @@
+/* +---------------------------------------------------------------------------+
+   |                     Mobile Robot Programming Toolkit (MRPT)               |
+   |                          http://www.mrpt.org/                             |
+   |                                                                           |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
+   | See: http://www.mrpt.org/Authors - All rights reserved.                   |
+   | Released under BSD License. See details in http://www.mrpt.org/License    |
+   +---------------------------------------------------------------------------+ */
+#ifndef CObservation2DRangeScan_H
+#define CObservation2DRangeScan_H
+
+#include <mrpt/utils/CSerializable.h>
+#include <mrpt/obs/CObservation.h>
+#include <mrpt/poses/CPose3D.h>
+#include <mrpt/maps/CMetricMap.h>
+#include <mrpt/math/CPolygon.h>
+
+namespace mrpt
+{
+namespace obs
+{
+	/** Auxiliary struct that holds all the relevant *geometry* information about a 2D scan.
+	  * This class is used in CSinCosLookUpTableFor2DScans
+	  * \ingroup mrpt_obs_grp
+	  * \sa CObservation2DRangeScan and CObservation2DRangeScan::getScanProperties */
+	struct OBS_IMPEXP T2DScanProperties {
+		size_t  nRays;
+		double  aperture;
+		bool    rightToLeft;
+	};
+	bool OBS_IMPEXP operator<(const T2DScanProperties&a, const T2DScanProperties&b);	//!< Order operator, so T2DScanProperties can appear in associative STL containers.
+
+
+
+	DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CObservation2DRangeScan, CObservation, OBS_IMPEXP)
+
+	/** A "CObservation"-derived class that represents a 2D range scan measurement (typically from a laser scanner).
+	  *  The data structures are generic enough to hold a wide variety of 2D scanners and "3D" planar rotating 2D lasers.
+	  *
+	  *  These are the most important data fields:
+	  *    - CObservation2DRangeScan::scan -> A vector of float values with all the range measurements (in meters).
+	  *    - CObservation2DRangeScan::validRange -> A vector (of <b>identical size</b> than <i>scan<i>), has non-zeros for those ranges than are valid (i.e. will be zero for non-reflected rays, etc.)
+	  *    - CObservation2DRangeScan::aperture -> The field-of-view of the scanner, in radians (typically, M_PI = 180deg).
+	  *    - CObservation2DRangeScan::sensorPose -> The 6D location of the sensor on the robot reference frame (default=at the origin).
+	  *
+	  * \sa CObservation, CPointsMap, T2DScanProperties
+	  * \ingroup mrpt_obs_grp
+	  */
+	class OBS_IMPEXP CObservation2DRangeScan : public CObservation
+	{
+		// This must be added to any CSerializable derived class:
+		DEFINE_SERIALIZABLE( CObservation2DRangeScan )
+
+	 public:
+		typedef std::vector<mrpt::math::CPolygon> TListExclusionAreas; //!< Used in filterByExclusionAreas
+		typedef std::vector<std::pair<mrpt::math::CPolygon,std::pair<double,double> > > TListExclusionAreasWithRanges; //!< Used in filterByExclusionAreas
+
+		/** Default constructor */
+		CObservation2DRangeScan( );
+
+		/** Destructor */
+		virtual ~CObservation2DRangeScan( );
+
+
+		/** @name Scan data
+		    @{ */
+		std::vector<float>   scan; //!< The range values of the scan, in meters. Must have same length than \a validRange 
+		std::vector<char>    validRange;  //!< It's false (=0) on no reflected rays, referenced to elements in \a scan
+		float                aperture; //!< The "aperture" or field-of-view of the range finder, in radians (typically M_PI = 180 degrees).
+		bool                 rightToLeft; //!< The scanning direction
+		float                maxRange; //!< The maximum range allowed by the device, in meters (e.g. 80m, 50m,...)
+		mrpt::poses::CPose3D sensorPose; //!< The 6D pose of the sensor on the robot at the moment of starting the scan.
+		float                stdError; //!< The "sigma" error of the device in meters, used while inserting the scan in an occupancy grid.
+		float                beamAperture; //!< The aperture of each beam, in radians, used to insert "thick" rays in the occupancy grid.
+		double               deltaPitch; //!< If the laser gathers data by sweeping in the pitch/elevation angle, this holds the increment in "pitch" (=-"elevation") between the beginning and the end of the scan (the sensorPose member stands for the pose at the beginning of the scan).
+
+		void getScanProperties(T2DScanProperties& p) const;  //!< Fill out a T2DScanProperties structure with the parameters of this scan
+		/** @} */
+		
+		/** @name Cached points map
+		    @{  */
+	protected:
+		/** A points map, build only under demand by the methods getAuxPointsMap() and buildAuxPointsMap().
+		  *  It's a generic smart pointer to avoid depending here in the library mrpt-obs on classes on other libraries.
+		  */
+		mutable mrpt::maps::CMetricMapPtr  m_cachedMap;
+
+		void internal_buildAuxPointsMap( const void *options = NULL ) const;  //!< Internal method, used from buildAuxPointsMap()
+
+	public:
+
+		/** Returns the cached points map representation of the scan, if already build with buildAuxPointsMap(), or NULL otherwise.
+		  * Usage:
+		  *  \code
+		  *    mrpt::maps::CPointsMap *map = obs->getAuxPointsMap<mrpt::maps::CPointsMap>();
+		  *  \endcode
+		  * \sa buildAuxPointsMap
+		  */
+		template <class POINTSMAP>
+		inline const POINTSMAP* getAuxPointsMap() const {
+			return static_cast<const POINTSMAP*>(m_cachedMap.pointer());
+		}
+
+		/** Returns a cached points map representing this laser scan, building it upon the first call.
+		  * \param options Can be NULL to use default point maps' insertion options, or a pointer to a "CPointsMap::TInsertionOptions" structure to override some params.
+		  * Usage:
+		  *  \code
+		  *    mrpt::maps::CPointsMap *map = obs->buildAuxPointsMap<mrpt::maps::CPointsMap>(&options or NULL);
+		  *  \endcode
+		  * \sa getAuxPointsMap
+		  */
+		template <class POINTSMAP>
+		inline const POINTSMAP	*buildAuxPointsMap( const void *options = NULL ) const {
+			if (!m_cachedMap.present()) internal_buildAuxPointsMap(options);
+			return static_cast<const POINTSMAP*>(m_cachedMap.pointer());
+		}
+
+		/** @} */
+
+
+
+		/** Return true if the laser scanner is "horizontal", so it has an absolute value of "pitch" and "roll" less or equal to the given tolerance (in rads, default=0) (with the normal vector either upwards or downwards).
+		  */
+		bool isPlanarScan(const double tolerance = 0) const;
+
+		// See base class docs
+		void getSensorPose( mrpt::poses::CPose3D &out_sensorPose ) const { out_sensorPose = sensorPose; }
+		// See base class docs
+		void setSensorPose( const mrpt::poses::CPose3D &newSensorPose ) { sensorPose = newSensorPose; }
+		// See base class docs
+		virtual void getDescriptionAsText(std::ostream &o) const;
+
+		/** A general method to truncate the scan by defining a minimum valid distance and a maximum valid angle as well as minimun and maximum heights
+		   (NOTE: the laser z-coordinate must be provided).
+		  */
+		void truncateByDistanceAndAngle(float min_distance, float max_angle, float min_height = 0, float max_height = 0, float h = 0 );
+
+		/** Mark as invalid sensed points that fall within any of a set of "exclusion areas", given in coordinates relative to the vehicle (taking into account "sensorPose").
+		  * \sa C2DRangeFinderAbstract::loadExclusionAreas
+		  */
+		void filterByExclusionAreas( const TListExclusionAreas &areas );
+
+		/** Mark as invalid sensed points that fall within any of a set of "exclusion areas", given in coordinates relative to the vehicle (taking into account "sensorPose"), AND such as the Z coordinate of the point falls in the range [min,max] associated to each exclusion polygon.
+		  * \sa C2DRangeFinderAbstract::loadExclusionAreas
+		  */
+		void filterByExclusionAreas( const TListExclusionAreasWithRanges &areas );
+
+		/** Mark as invalid the ranges in any of a given set of "forbiden angle ranges", given as pairs<min_angle,max_angle>.
+		  * \sa C2DRangeFinderAbstract::loadExclusionAreas
+		  */
+		void filterByExclusionAngles( const std::vector<std::pair<double,double> >  &angles );
+
+	}; // End of class def.
+	DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE( CObservation2DRangeScan, CObservation, OBS_IMPEXP)
+
+
+	} // End of namespace
+
+	namespace utils
+	{
+		// Specialization must occur in the same namespace
+		MRPT_DECLARE_TTYPENAME_PTR_NAMESPACE(CObservation2DRangeScan, ::mrpt::obs)
+	}
+
+} // End of namespace
+
+#endif

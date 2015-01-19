@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -159,9 +159,10 @@ namespace mrpt
 		/** Returns a const ref to a text with the same text that appears at the beginning of each MRPT file (useful for displaying the License text in GUIs) */
 		const std::string BASE_IMPEXP & getMRPTLicense();
 
-		/** Call this to register handlers for fatal erros (memory access,etc) that show useful debug information (It is called automatically normally, no need for the user to explicitly call this method.).
-		  */
-		void BASE_IMPEXP registerFatalExceptionHandlers();
+		/** Since MRPT 1.3.0 this function does nothing */
+		MRPT_DECLARE_DEPRECATED_FUNCTION("Deprecated: This function does nothing now. Do not call it.",
+		void BASE_IMPEXP registerFatalExceptionHandlers()
+		);
 
 		/** For use in  setConsoleColor */
 		enum TConsoleColor

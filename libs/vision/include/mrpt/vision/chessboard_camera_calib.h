@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -20,8 +20,6 @@ namespace mrpt
 {
 	namespace vision
 	{
-		using namespace mrpt::utils;
-
 		/** \addtogroup chessboard_calib Chessboard calibration
 		  *  \ingroup mrpt_vision_grp
 		  *  @{  */
@@ -30,13 +28,13 @@ namespace mrpt
 		  */
 		struct VISION_IMPEXP TImageCalibData
 		{
-			CImage	img_original;     //!< This image will be automatically loaded from the file name passed to checkerBoardCameraCalibration
-			CImage	img_checkboard;   //!< At output, this will contain the detected checkerboard overprinted to the image.
-			CImage	img_rectified;    //!< At output, this will be the rectified image
+			mrpt::utils::CImage	img_original;     //!< This image will be automatically loaded from the file name passed to checkerBoardCameraCalibration
+			mrpt::utils::CImage	img_checkboard;   //!< At output, this will contain the detected checkerboard overprinted to the image.
+			mrpt::utils::CImage	img_rectified;    //!< At output, this will be the rectified image
 			std::vector<mrpt::utils::TPixelCoordf>	detected_corners; //!< At output, the detected corners (x,y) in pixel units.
 			mrpt::poses::CPose3D			reconstructed_camera_pose;   //!< At output, the reconstructed pose of the camera.
-			std::vector<TPixelCoordf>		projectedPoints_distorted;   //!< At output, only will have an empty vector if the checkerboard was not found in this image, or the predicted (reprojected) corners, which were used to estimate the average square error.
-			std::vector<TPixelCoordf>		projectedPoints_undistorted; //!< At output, like projectedPoints_distorted but for the undistorted image.
+			std::vector<mrpt::utils::TPixelCoordf>		projectedPoints_distorted;   //!< At output, only will have an empty vector if the checkerboard was not found in this image, or the predicted (reprojected) corners, which were used to estimate the average square error.
+			std::vector<mrpt::utils::TPixelCoordf>		projectedPoints_undistorted; //!< At output, like projectedPoints_distorted but for the undistorted image.
 
 			/** Empty all the data */
 			void clear() { *this = TImageCalibData(); }

@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -12,7 +12,7 @@
 #include <mrpt/hwdrivers/CGenericSensor.h>
 #include <mrpt/hwdrivers/link_pragmas.h>
 #include <mrpt/poses/CPose2D.h>
-#include <mrpt/slam/CObservationRange.h>
+#include <mrpt/obs/CObservationRange.h>
 #include <mrpt/hwdrivers/CJoystick.h>
 
 namespace mrpt
@@ -27,8 +27,8 @@ namespace mrpt
 		  *
 		  *  See also the application "rawlog-grabber" for a ready-to-use application to gather data from the robot base.
 		  *  Through that "common sensor interface", this object can collect these kinds of observations:
-		  *    - mrpt::slam::CObservationOdometry : For odometry
-		  *    - mrpt::slam::CObservationRange    : For sonars
+		  *    - mrpt::obs::CObservationOdometry : For odometry
+		  *    - mrpt::obs::CObservationRange    : For sonars
 		  *
 		  *  To use this class out of rawlog-grabber, "initialize" must be called to connect to the robot.
 		  *  Before that, set the serial port with setSerialPortConfig.
@@ -143,7 +143,7 @@ namespace mrpt
 
 			/** Get the readings from the sonars, only if the observations are new.
 			  */
-			void getSonarsReadings( bool &thereIsObservation, mrpt::slam::CObservationRange	&obs );
+			void getSonarsReadings( bool &thereIsObservation, mrpt::obs::CObservationRange	&obs );
 
 			/** Get the robot battery charge - normalized to 12V */
 			void getBatteryCharge( double &out_batery_volts );

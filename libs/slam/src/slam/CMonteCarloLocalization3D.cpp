@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -10,7 +10,7 @@
 #include "slam-precomp.h"   // Precompiled headerss
 
 #include <mrpt/slam/CMonteCarloLocalization3D.h>
-#include <mrpt/slam/CSensoryFrame.h>
+#include <mrpt/obs/CSensoryFrame.h>
 
 #include <mrpt/math/utils.h>
 #include <mrpt/utils/round.h>
@@ -22,6 +22,8 @@ using namespace mrpt::bayes;
 using namespace mrpt::poses;
 using namespace mrpt::math;
 using namespace mrpt::utils;
+using namespace mrpt::obs;
+using namespace mrpt::maps;
 
 #include <mrpt/slam/PF_implementations_data.h>
 
@@ -104,8 +106,8 @@ const TPose3D* CMonteCarloLocalization3D::getLastPose(const size_t i) const
 
  ---------------------------------------------------------------*/
 void  CMonteCarloLocalization3D::prediction_and_update_pfStandardProposal(
-	const mrpt::slam::CActionCollection	* actions,
-	const mrpt::slam::CSensoryFrame		* sf,
+	const mrpt::obs::CActionCollection	* actions,
+	const mrpt::obs::CSensoryFrame		* sf,
 	const bayes::CParticleFilter::TParticleFilterOptions &PF_options )
 {
 	MRPT_START
@@ -128,8 +130,8 @@ void  CMonteCarloLocalization3D::prediction_and_update_pfStandardProposal(
 
  ---------------------------------------------------------------*/
 void  CMonteCarloLocalization3D::prediction_and_update_pfAuxiliaryPFStandard(
-	const mrpt::slam::CActionCollection	* actions,
-	const mrpt::slam::CSensoryFrame		* sf,
+	const mrpt::obs::CActionCollection	* actions,
+	const mrpt::obs::CSensoryFrame		* sf,
 	const bayes::CParticleFilter::TParticleFilterOptions &PF_options )
 {
 	MRPT_START
@@ -153,8 +155,8 @@ void  CMonteCarloLocalization3D::prediction_and_update_pfAuxiliaryPFStandard(
 
  ---------------------------------------------------------------*/
 void  CMonteCarloLocalization3D::prediction_and_update_pfAuxiliaryPFOptimal(
-	const mrpt::slam::CActionCollection	* actions,
-	const mrpt::slam::CSensoryFrame		* sf,
+	const mrpt::obs::CActionCollection	* actions,
+	const mrpt::obs::CSensoryFrame		* sf,
 	const bayes::CParticleFilter::TParticleFilterOptions &PF_options )
 {
 	MRPT_START

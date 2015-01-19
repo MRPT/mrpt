@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -122,7 +122,7 @@ void CImpinjRFID::connect()
 					getObservation
     Get the power of a given network as an observation
  ---------------------------------------------------------------*/
-bool CImpinjRFID::getObservation( mrpt::slam::CObservationRFID &obs)
+bool CImpinjRFID::getObservation( mrpt::obs::CObservationRFID &obs)
 {
 	try{
 		bool receivedSomething = false;
@@ -153,7 +153,7 @@ bool CImpinjRFID::getObservation( mrpt::slam::CObservationRFID &obs)
 
 			// Fill the observation
 			obs.tag_readings.resize(obs.tag_readings.size()+1);  // Alloc space for one more tag obs
-			mrpt::slam::CObservationRFID::TTagReading & new_tag = *obs.tag_readings.rbegin();  // Get a reference to the latest new tag structure
+			mrpt::obs::CObservationRFID::TTagReading & new_tag = *obs.tag_readings.rbegin();  // Get a reference to the latest new tag structure
 
 			// Fill in fields in "new_tag":
 			new_tag.antennaPort = mrpt::format("%c",ant_port);
@@ -192,7 +192,7 @@ void CImpinjRFID::closeReader()
 
 void CImpinjRFID::doProcess(){
 
-	mrpt::slam::CObservationRFIDPtr obs = mrpt::slam::CObservationRFID::Create();
+	mrpt::obs::CObservationRFIDPtr obs = mrpt::obs::CObservationRFID::Create();
 	if(getObservation(*obs))
 		appendObservation(obs);
 }

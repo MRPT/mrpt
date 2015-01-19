@@ -2,14 +2,14 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
 #include "maps-precomp.h" // Precomp header
 
-#include <mrpt/slam/CRandomFieldGridMap2D.h>
+#include <mrpt/maps/CRandomFieldGridMap2D.h>
 #include <mrpt/system/os.h>
 #include <mrpt/math/CMatrix.h>
 #include <mrpt/math/utils.h>
@@ -29,13 +29,15 @@
 
 
 using namespace mrpt;
-using namespace mrpt::slam;
+using namespace mrpt::maps;
+using namespace mrpt::math;
+using namespace mrpt::obs;
 using namespace mrpt::utils;
 using namespace mrpt::poses;
 using namespace mrpt::system;
 using namespace std;
 
-IMPLEMENTS_VIRTUAL_SERIALIZABLE(CRandomFieldGridMap2D, CMetricMap,mrpt::slam)
+IMPLEMENTS_VIRTUAL_SERIALIZABLE(CRandomFieldGridMap2D, CMetricMap,mrpt::maps)
 
 /*---------------------------------------------------------------
 						Constructor
@@ -212,7 +214,7 @@ void  CRandomFieldGridMap2D::internal_clear()
 
 			//Set initial restrictions: L "cell Constraints" + 0 "Observations constraints"
 			const uint16_t Gsize = m_insertOptions_common->GMRF_constraintsSize;
-			const uint16_t Gside = round((Gsize-1)/2);
+			const uint16_t Gside = mrpt::utils::round((Gsize-1)/2);
 			const float Gsigma = m_insertOptions_common->GMRF_constraintsSigma;
 			gauss_val.resize(2*Gside);
 			const size_t N = m_map.size();
@@ -350,7 +352,7 @@ void  CRandomFieldGridMap2D::internal_clear()
 			TRandomFieldCell	def(0,0);		// mean, std
 			fill( def );
 
-			mrpt::slam::COccupancyGridMap2D	m_Ocgridmap;
+			mrpt::maps::COccupancyGridMap2D	m_Ocgridmap;
 			float res_coef = 1.f; // Default value
 
 			if (this->m_insertOptions_common->GMRF_use_occupancy_information)
@@ -370,7 +372,7 @@ void  CRandomFieldGridMap2D::internal_clear()
 					//metricMap.setListOfMaps( &mapList );
 
 					/*printf("Loading '.simplemap' file...");
-					mrpt::slam::CSimpleMap MsimpleMap;
+					mrpt::maps::CSimpleMap MsimpleMap;
 					CFileGZInputStream(this->m_insertOptions_common->GMRF_simplemap_file) >> simpleMap;
 					printf("Ok (%u poses)\n",(unsigned)simpleMap.size());*/
 
@@ -778,7 +780,7 @@ CRandomFieldGridMap2D::TInsertionOptionsCommon::TInsertionOptionsCommon() :
 /*---------------------------------------------------------------
 					internal_dumpToTextStream_common
   ---------------------------------------------------------------*/
-void  CRandomFieldGridMap2D::TInsertionOptionsCommon::internal_dumpToTextStream_common(CStream	&out) const
+void  CRandomFieldGridMap2D::TInsertionOptionsCommon::internal_dumpToTextStream_common(mrpt::utils::CStream	&out) const
 {
 	out.printf("sigma                                   = %f\n", sigma);
 	out.printf("cutoffRadius                            = %f\n", cutoffRadius);
@@ -1571,8 +1573,7 @@ void  CRandomFieldGridMap2D::saveAsMatlab3DGraph(const std::string  &filName) co
 ---------------------------------------------------------------*/
 void  CRandomFieldGridMap2D::getAs3DObject( mrpt::opengl::CSetOfObjectsPtr	&outObj ) const
 {
-	if (m_disableSaveAs3DObject)
-		return;
+	if (!genericMapParams.enableSaveAs3DObject) return;
 
 	//Returns only the mean map
 	mrpt::opengl::CSetOfObjectsPtr other_obj = mrpt::opengl::CSetOfObjects::Create();
@@ -1585,8 +1586,7 @@ void  CRandomFieldGridMap2D::getAs3DObject( mrpt::opengl::CSetOfObjectsPtr	&outO
 ---------------------------------------------------------------*/
 void  CRandomFieldGridMap2D::getAs3DObject( mrpt::opengl::CSetOfObjectsPtr	&meanObj, mrpt::opengl::CSetOfObjectsPtr &varObj ) const
 {
-	if (m_disableSaveAs3DObject)
-		return;
+	if (!genericMapParams.enableSaveAs3DObject) return;
 
 	recoverMeanAndCov();		//Only works for KF2 method
 
@@ -2518,7 +2518,7 @@ void CRandomFieldGridMap2D::updateMapEstimation_GMRF()
 #if EIGEN_VERSION_AT_LEAST(3,1,0)
 	size_t N = m_map.size();
 	const uint16_t Gsize = m_insertOptions_common->GMRF_constraintsSize;
-	const uint16_t Gside = round((Gsize-1)/2);
+	const uint16_t Gside = mrpt::utils::round((Gsize-1)/2);
 
 #define DO_PROFILE
 
@@ -2801,7 +2801,7 @@ void CRandomFieldGridMap2D::updateMapEstimation_GMRF()
 
 
 bool CRandomFieldGridMap2D::exist_relation_between2cells(
-	const mrpt::slam::COccupancyGridMap2D *m_Ocgridmap,
+	const mrpt::maps::COccupancyGridMap2D *m_Ocgridmap,
 	size_t cxo_min,
 	size_t cxo_max,
 	size_t cyo_min,
@@ -2900,7 +2900,7 @@ bool CRandomFieldGridMap2D::exist_relation_between2cells(
 }
 
 float  CRandomFieldGridMap2D::compute3DMatchingRatio(
-	const CMetricMap						*otherMap,
+	const mrpt::maps::CMetricMap						*otherMap,
 	const CPose3D							&otherMapPose,
 	float									maxDistForCorr,
 	float									maxMahaDistForCorr

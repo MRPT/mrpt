@@ -18,6 +18,7 @@ PROJECT(ro_localization)
 ADD_EXECUTABLE(ro-localization
 	CPosePDFParticlesExtended.cpp CPosePDFParticlesExtended.h
 	ro-localization_main.cpp
+	 ${MRPT_VERSION_RC_FILE}
 	)
 
 SET(TMP_TARGET_NAME "ro-localization")

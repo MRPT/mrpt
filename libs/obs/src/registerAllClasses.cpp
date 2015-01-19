@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -16,9 +16,9 @@
 #include <mrpt/utils/CStartUpClassesRegister.h>
 
 
-using namespace mrpt::slam;
+using namespace mrpt::obs;
+using namespace mrpt::maps;
 using namespace mrpt::utils;
-
 
 void registerAllClasses_mrpt_obs();
 
@@ -55,6 +55,8 @@ void registerAllClasses_mrpt_obs()
 	registerClass( CLASS_ID( CObservationStereoImagesFeatures ) );
 	//registerClass( CLASS_ID( CObservationVisualLandmarks ) );
 	registerClass( CLASS_ID( CObservation6DFeatures) );
+	registerClass( CLASS_ID( CObservationCANBusJ1939 ) );
+	registerClass( CLASS_ID( CObservationRawDAQ ) );
 
 	registerClass( CLASS_ID( CSimpleMap ) );
 	registerClassCustomName( "CSensFrameProbSequence", CLASS_ID( CSimpleMap ) );
@@ -67,7 +69,8 @@ void registerAllClasses_mrpt_obs()
 	registerClass( CLASS_ID( CActionRobotMovement2D ) );
 	registerClass( CLASS_ID( CActionRobotMovement3D ) );
 
-	registerClass( CLASS_ID( CObservationCANBusJ1939 ) );
-	registerClass( CLASS_ID( CObservationRawDAQ ) );
+
+	registerClass( CLASS_ID( TMapGenericParams ) );
+
 }
 

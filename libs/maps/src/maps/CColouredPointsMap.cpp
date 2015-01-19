@@ -2,16 +2,16 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
 #include "maps-precomp.h" // Precomp header
 
-#include <mrpt/slam/CColouredPointsMap.h>
-#include <mrpt/slam/CObservation3DRangeScan.h>
-#include <mrpt/slam/CSimplePointsMap.h>
+#include <mrpt/maps/CColouredPointsMap.h>
+#include <mrpt/obs/CObservation3DRangeScan.h>
+#include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/utils/color_maps.h>
 #include <mrpt/system/os.h>
 #include <mrpt/opengl/CPointCloudColoured.h>
@@ -19,16 +19,50 @@
 
 #include "CPointsMap_crtp_common.h"
 
-
 using namespace std;
 using namespace mrpt;
-using namespace mrpt::slam;
+using namespace mrpt::maps;
+using namespace mrpt::obs;
 using namespace mrpt::utils;
 using namespace mrpt::poses;
 using namespace mrpt::system;
 using namespace mrpt::math;
 
-IMPLEMENTS_SERIALIZABLE(CColouredPointsMap, CPointsMap,mrpt::slam)
+
+//  =========== Begin of Map definition ============
+MAP_DEFINITION_REGISTER("CColouredPointsMap,colourPointsMap", mrpt::maps::CColouredPointsMap)
+
+CColouredPointsMap::TMapDefinition::TMapDefinition()
+{
+}
+
+void CColouredPointsMap::TMapDefinition::loadFromConfigFile_map_specific(const mrpt::utils::CConfigFileBase  &source, const std::string &sectionNamePrefix)
+{
+	insertionOpts.loadFromConfigFile(source, sectionNamePrefix+string("_insertOpts") );
+	likelihoodOpts.loadFromConfigFile(source, sectionNamePrefix+string("_likelihoodOpts") );
+	colourOpts.loadFromConfigFile(source, sectionNamePrefix+string("_colorOpts") );
+}
+
+void CColouredPointsMap::TMapDefinition::dumpToTextStream_map_specific(mrpt::utils::CStream &out) const
+{
+	this->insertionOpts.dumpToTextStream(out);
+	this->likelihoodOpts.dumpToTextStream(out);
+	this->colourOpts.dumpToTextStream(out);
+}
+
+mrpt::maps::CMetricMap* CColouredPointsMap::internal_CreateFromMapDefinition(const mrpt::maps::TMetricMapInitializer &_def)
+{
+	const CColouredPointsMap::TMapDefinition &def = *dynamic_cast<const CColouredPointsMap::TMapDefinition*>(&_def);
+	CColouredPointsMap *obj = new CColouredPointsMap();
+	obj->insertionOptions  = def.insertionOpts;
+	obj->likelihoodOptions = def.likelihoodOpts;
+	obj->colorScheme = def.colourOpts;
+	return obj;
+}
+//  =========== End of Map definition Block =========
+
+
+IMPLEMENTS_SERIALIZABLE(CColouredPointsMap, CPointsMap,mrpt::maps)
 
 
 #if MRPT_HAS_PCL
@@ -117,10 +151,10 @@ void  CColouredPointsMap::copyFrom(const CPointsMap &obj)
    Implements the writing to a CStream capability of
      CSerializable objects
   ---------------------------------------------------------------*/
-void  CColouredPointsMap::writeToStream(CStream &out, int *version) const
+void  CColouredPointsMap::writeToStream(mrpt::utils::CStream &out, int *version) const
 {
 	if (version)
-		*version = 8;
+		*version = 9;
 	else
 	{
 		uint32_t n = x.size();
@@ -136,8 +170,8 @@ void  CColouredPointsMap::writeToStream(CStream &out, int *version) const
 		}
 		out << m_color_R << m_color_G << m_color_B; // added in v4
 
-		out << m_disableSaveAs3DObject; // Insertion as 3D
-		insertionOptions.writeToStream(out); // version 9: insert options are saved with its own method
+		out << genericMapParams; // v9
+		insertionOptions.writeToStream(out); // version 9?: insert options are saved with its own method
 		likelihoodOptions.writeToStream(out); // Added in version 5
 	}
 }
@@ -147,11 +181,12 @@ void  CColouredPointsMap::writeToStream(CStream &out, int *version) const
    Implements the reading from a CStream capability of
       CSerializable objects
   ---------------------------------------------------------------*/
-void  CColouredPointsMap::readFromStream(CStream &in, int version)
+void  CColouredPointsMap::readFromStream(mrpt::utils::CStream &in, int version)
 {
 	switch(version)
 	{
 	case 8:
+	case 9:
 		{
 			mark_as_modified();
 
@@ -169,7 +204,14 @@ void  CColouredPointsMap::readFromStream(CStream &in, int version)
 			}
 			in >> m_color_R >> m_color_G >> m_color_B;
 
-			in >> m_disableSaveAs3DObject;
+			if (version>=9)
+				in >> genericMapParams;
+			else 
+			{
+				bool disableSaveAs3DObject;
+				in >> disableSaveAs3DObject;
+				genericMapParams.enableSaveAs3DObject = !disableSaveAs3DObject;
+			}
 			insertionOptions.readFromStream(in);
 			likelihoodOptions.readFromStream(in);
 		} break;
@@ -243,8 +285,11 @@ void  CColouredPointsMap::readFromStream(CStream &in, int version)
 				}
 
 				in >> insertionOptions.maxDistForInterpolatePoints;
-
-				in >> m_disableSaveAs3DObject;
+				{
+					bool disableSaveAs3DObject;
+					in >> disableSaveAs3DObject;
+					genericMapParams.enableSaveAs3DObject = !disableSaveAs3DObject;
+				}
 			}
 
 			if (version>=3)
@@ -365,8 +410,7 @@ void CColouredPointsMap::getAs3DObject( mrpt::opengl::CSetOfObjectsPtr	&outObj )
 {
 	ASSERT_(outObj);
 
-	if (m_disableSaveAs3DObject)
-		return;
+	if (!genericMapParams.enableSaveAs3DObject) return;
 
 	opengl::CPointCloudColouredPtr  obj = opengl::CPointCloudColoured::Create();
 
@@ -405,7 +449,7 @@ void CColouredPointsMap::TColourOptions::loadFromConfigFile(
 /*---------------------------------------------------------------
 					TColourOptions
  ---------------------------------------------------------------*/
-void  CColouredPointsMap::TColourOptions::dumpToTextStream(CStream	&out) const
+void  CColouredPointsMap::TColourOptions::dumpToTextStream(mrpt::utils::CStream	&out) const
 {
 	out.printf("\n----------- [CColouredPointsMap::TColourOptions] ------------ \n\n");
 
@@ -685,14 +729,14 @@ bool CColouredPointsMap::savePCDFile(const std::string &filename, bool save_as_b
 }
 
 namespace mrpt {
-	namespace slam {
+	namespace maps {
 		namespace detail {
-			using mrpt::slam::CColouredPointsMap;
+			using mrpt::maps::CColouredPointsMap;
 
 			template <> struct pointmap_traits<CColouredPointsMap>
 			{
 				/** Helper method fot the generic implementation of CPointsMap::loadFromRangeScan(), to be called only once before inserting points - this is the place to reserve memory in lric for extra working variables. */
-				inline static void  internal_loadFromRangeScan2D_init(CColouredPointsMap &me, mrpt::slam::CPointsMap::TLaserRange2DInsertContext & lric)
+				inline static void  internal_loadFromRangeScan2D_init(CColouredPointsMap &me, mrpt::maps::CPointsMap::TLaserRange2DInsertContext & lric)
 				{
 					// Vars:
 					//  [0] -> pR
@@ -706,7 +750,7 @@ namespace mrpt {
 				}
 
 				/** Helper method fot the generic implementation of CPointsMap::loadFromRangeScan(), to be called once per range data */
-				inline static void  internal_loadFromRangeScan2D_prepareOneRange(CColouredPointsMap &me, const float gx,const float gy, const float gz, mrpt::slam::CPointsMap::TLaserRange2DInsertContext & lric )
+				inline static void  internal_loadFromRangeScan2D_prepareOneRange(CColouredPointsMap &me, const float gx,const float gy, const float gz, mrpt::maps::CPointsMap::TLaserRange2DInsertContext & lric )
 				{
 					MRPT_UNUSED_PARAM(gx); MRPT_UNUSED_PARAM(gy);
 					// Relative height of the point wrt the sensor:
@@ -750,7 +794,7 @@ namespace mrpt {
 
 				}
 				/** Helper method fot the generic implementation of CPointsMap::loadFromRangeScan(), to be called after each "{x,y,z}.push_back(...);" */
-				inline static void  internal_loadFromRangeScan2D_postPushBack(CColouredPointsMap &me, mrpt::slam::CPointsMap::TLaserRange2DInsertContext & lric)
+				inline static void  internal_loadFromRangeScan2D_postPushBack(CColouredPointsMap &me, mrpt::maps::CPointsMap::TLaserRange2DInsertContext & lric)
 				{
 					float & pR = lric.fVars[0];
 					float & pG = lric.fVars[1];
@@ -763,7 +807,7 @@ namespace mrpt {
 				}
 
 				/** Helper method fot the generic implementation of CPointsMap::loadFromRangeScan(), to be called only once before inserting points - this is the place to reserve memory in lric for extra working variables. */
-				inline static void  internal_loadFromRangeScan3D_init(CColouredPointsMap &me, mrpt::slam::CPointsMap::TLaserRange3DInsertContext & lric)
+				inline static void  internal_loadFromRangeScan3D_init(CColouredPointsMap &me, mrpt::maps::CPointsMap::TLaserRange3DInsertContext & lric)
 				{
 					// Vars:
 					//  [0] -> pR
@@ -840,7 +884,7 @@ namespace mrpt {
 				}
 
 				/** Helper method fot the generic implementation of CPointsMap::loadFromRangeScan(), to be called once per range data */
-				inline static void  internal_loadFromRangeScan3D_prepareOneRange(CColouredPointsMap &me, const float gx,const float gy, const float gz, mrpt::slam::CPointsMap::TLaserRange3DInsertContext & lric )
+				inline static void  internal_loadFromRangeScan3D_prepareOneRange(CColouredPointsMap &me, const float gx,const float gy, const float gz, mrpt::maps::CPointsMap::TLaserRange3DInsertContext & lric )
 				{
 					MRPT_UNUSED_PARAM(gx); MRPT_UNUSED_PARAM(gy);
 					// Rename variables:
@@ -940,7 +984,7 @@ namespace mrpt {
 				}
 
 				/** Helper method fot the generic implementation of CPointsMap::loadFromRangeScan(), to be called after each "{x,y,z}.push_back(...);" */
-				inline static void  internal_loadFromRangeScan3D_postPushBack(CColouredPointsMap &me, mrpt::slam::CPointsMap::TLaserRange3DInsertContext & lric)
+				inline static void  internal_loadFromRangeScan3D_postPushBack(CColouredPointsMap &me, mrpt::maps::CPointsMap::TLaserRange3DInsertContext & lric)
 				{
 					float &pR = lric.fVars[0];
 					float &pG = lric.fVars[1];
@@ -955,7 +999,7 @@ namespace mrpt {
 				}
 
 				/** Helper method fot the generic implementation of CPointsMap::loadFromRangeScan(), to be called once per range data, at the end */
-				inline static void  internal_loadFromRangeScan3D_postOneRange(CColouredPointsMap &me, mrpt::slam::CPointsMap::TLaserRange3DInsertContext & lric )
+				inline static void  internal_loadFromRangeScan3D_postOneRange(CColouredPointsMap &me, mrpt::maps::CPointsMap::TLaserRange3DInsertContext & lric )
 				{
 					MRPT_UNUSED_PARAM(me);
 					unsigned int & imgW = lric.uVars[0];
@@ -987,7 +1031,7 @@ void  CColouredPointsMap::loadFromRangeScan(
 		const CObservation2DRangeScan &rangeScan,
 		const CPose3D				  *robotPose)
 {
-	mrpt::slam::detail::loadFromRangeImpl<CColouredPointsMap>::templ_loadFromRangeScan(*this,rangeScan,robotPose);
+	mrpt::maps::detail::loadFromRangeImpl<CColouredPointsMap>::templ_loadFromRangeScan(*this,rangeScan,robotPose);
 }
 
 /** See CPointsMap::loadFromRangeScan() */
@@ -995,6 +1039,6 @@ void  CColouredPointsMap::loadFromRangeScan(
 		const CObservation3DRangeScan &rangeScan,
 		const CPose3D				  *robotPose)
 {
-	mrpt::slam::detail::loadFromRangeImpl<CColouredPointsMap>::templ_loadFromRangeScan(*this,rangeScan,robotPose);
+	mrpt::maps::detail::loadFromRangeImpl<CColouredPointsMap>::templ_loadFromRangeScan(*this,rangeScan,robotPose);
 }
 

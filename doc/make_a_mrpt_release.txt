@@ -7,6 +7,7 @@
 
 1) CREATE PACKAGES OF SOURCES
 > Go to MRPT dir. 
+> Edit docs/doxygen-pages/changelog.h and set release date.
 > bash scripts/build_docs.sh -c (from Windows, or everything from linux, then CHM from Windows)
 > Do the final "git commit" before the release.
 > bash scripts/prepare_release.sh
@@ -16,16 +17,12 @@ The packages are in $(HOME)/mrpt_release and $(HOME)/mrpt_debian
 
 Now for windows binary packages:
 (see also the script: MRPT/scripts/automated_build_msvc_binary_package.bat)
-> Extract mrpt-0.9.3.zip
-> Build in Debug all the mrpt-* libs.
-> Run cmake again (this is to add the debug libs to the list of files to package!).
-> Now build ALL in Release + "make test".
-> If all OK: Build package
-> Install package, test to build "mrpt_example1" with it.
+> Extract mrpt-x.y.z.zip
+> Run the script: automated_create_all_windows_MSVC_MinGW_build_dirs.bat
 
 2) DEBIAN PACKAGE
 > Go to mrpt_debian/debian
-> Edit changelog and copy it to my SVN.
+> Edit changelog
 > Go to mrpt_debian
 > debuild -S -sa
 

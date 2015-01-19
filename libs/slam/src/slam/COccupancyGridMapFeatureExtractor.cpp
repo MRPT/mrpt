@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -14,6 +14,7 @@
 
 
 using namespace mrpt;
+using namespace mrpt::maps;
 using namespace mrpt::slam;
 using namespace mrpt::utils;
 using namespace mrpt::poses;
@@ -38,8 +39,8 @@ COccupancyGridMapFeatureExtractor::~COccupancyGridMapFeatureExtractor()
 						uncached_extractFeatures
   ---------------------------------------------------------------*/
 void COccupancyGridMapFeatureExtractor::uncached_extractFeatures(
-	const mrpt::slam::COccupancyGridMap2D &grid,
-	mrpt::slam::CLandmarksMap	&outMap,
+	const mrpt::maps::COccupancyGridMap2D &grid,
+	mrpt::maps::CLandmarksMap	&outMap,
 	const size_t  number_of_features,
 	const mrpt::vision::TDescriptorType	descriptors,
 	const mrpt::vision::CFeatureExtraction::TOptions  &feat_options
@@ -62,7 +63,7 @@ void COccupancyGridMapFeatureExtractor::uncached_extractFeatures(
 	fExt.detectFeatures( img, lstFeatures,0 /* Init ID */, number_of_features );
 
 	// Extract descriptors:
-	if (descriptors!=descAny)
+	if (descriptors!= mrpt::vision::descAny)
 		fExt.computeDescriptors(img, lstFeatures, descriptors);
 
 	// Copy all the features to a map of landmarks:
@@ -95,8 +96,8 @@ void COccupancyGridMapFeatureExtractor::uncached_extractFeatures(
 						extractFeatures
   ---------------------------------------------------------------*/
 void COccupancyGridMapFeatureExtractor::extractFeatures(
-	const mrpt::slam::COccupancyGridMap2D &grid,
-	mrpt::slam::CLandmarksMap	&outMap,
+	const mrpt::maps::COccupancyGridMap2D &grid,
+	mrpt::maps::CLandmarksMap	&outMap,
 	const size_t  number_of_features,
 	const mrpt::vision::TDescriptorType	descriptors,
 	const mrpt::vision::CFeatureExtraction::TOptions  &feat_options

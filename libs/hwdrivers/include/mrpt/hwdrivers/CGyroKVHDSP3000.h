@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -15,7 +15,7 @@
 #include <mrpt/hwdrivers/CSerialPort.h>
 
 #include <mrpt/poses/CPose3D.h>
-#include <mrpt/slam/CObservationIMU.h>
+#include <mrpt/obs/CObservationIMU.h>
 
 namespace mrpt
 {
@@ -81,7 +81,7 @@ namespace mrpt
 			GYRO_MODE		m_mode;
 			bool 						m_firstInteration;
 				        
-			mrpt::slam::CObservationIMUPtr		m_observationGyro;
+			mrpt::obs::CObservationIMUPtr		m_observationGyro;
 
 		public:
 			/** Constructor

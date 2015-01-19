@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -553,7 +553,17 @@ namespace mrpt
 		/** Declares a matrix of booleans (non serializable).
 		  *  \sa CMatrixDouble, CMatrixFloat, CMatrixB
 		  */
-		typedef CMatrixTemplate<bool> CMatrixBool;
+		//typedef CMatrixTemplate<bool> CMatrixBool;
+		class BASE_IMPEXP CMatrixBool : public CMatrixTemplate<bool>
+		{
+		public:
+			/** Constructor */
+			CMatrixBool(size_t row=1, size_t col=1);
+			/** Copy constructor */
+			CMatrixBool( const CMatrixTemplate<bool> &m );
+			/** Assignment operator for float matrixes */
+			CMatrixBool & operator = (const CMatrixTemplate<bool> & m);
+		};
 
 	} // End of namespace
 } // End of namespace

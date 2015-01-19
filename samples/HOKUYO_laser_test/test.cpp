@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -10,17 +10,19 @@
 #include <mrpt/hwdrivers/CHokuyoURG.h>
 #include <mrpt/hwdrivers/CSerialPort.h>
 #include <mrpt/gui/CDisplayWindowPlots.h>
-#include <mrpt/slam/CObservation2DRangeScan.h>
-#include <mrpt/slam/CSimplePointsMap.h>
+#include <mrpt/obs/CObservation2DRangeScan.h>
+#include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/system/string_utils.h>
 #include <mrpt/system/threads.h> // sleep
 #include <mrpt/system/os.h>
 
 using namespace mrpt;
 using namespace mrpt::hwdrivers;
-using namespace mrpt::slam;
+using namespace mrpt::obs;
+using namespace mrpt::maps;
 using namespace mrpt::gui;
 using namespace mrpt::utils;
+using namespace mrpt::poses;
 using namespace std;
 
 
@@ -124,7 +126,7 @@ void Test_HOKUYO()
 
 			obs.sensorPose = CPose3D(0,0,0);
 
-			mrpt::slam::CSimplePointsMap		theMap;
+			mrpt::maps::CSimplePointsMap		theMap;
 			theMap.insertionOptions.minDistBetweenLaserPoints	= 0;
 			theMap.insertObservation( &obs );
 			//map.save2D_to_text_file("_out_scan.txt");

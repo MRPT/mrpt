@@ -8,6 +8,7 @@ PROJECT(carmen2simplemap)
 # Define the executable target:
 ADD_EXECUTABLE(carmen2simplemap
         carmen2simplemap_main.cpp
+		 ${MRPT_VERSION_RC_FILE}
         )
 SET(TMP_TARGET_NAME "carmen2simplemap")
 

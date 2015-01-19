@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -595,7 +595,7 @@ private:
 	std::map<std::string,TInfoPerSensorLabel>	listOfSensorLabels;
 
 	// ALWAYS access this inside a "try" block, for the case...
-	mrpt::slam::CObservationPtr			curSelectedObservation;
+	mrpt::obs::CObservationPtr			curSelectedObservation;
 	mrpt::utils::CSerializablePtr		curSelectedObject;
 	mrpt::gui::CDisplayWindow3DPtr		winGPSPath;
 	mrpt::gui::CDisplayWindowPlotsPtr  	winGPSPath2D_xy, winGPSPath2D_xz;
@@ -635,7 +635,7 @@ private:
 extern std::string             	iniFileSect;
 extern mrpt::utils::CConfigFile *iniFile;
 extern std::string              loadedFileName;
-extern mrpt::slam::CRawlog		rawlog;
+extern mrpt::obs::CRawlog		rawlog;
 
 
 #endif // XRAWLOGVIEWERMAIN_H

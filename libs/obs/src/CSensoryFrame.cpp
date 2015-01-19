@@ -2,20 +2,20 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
 #include "obs-precomp.h"   // Precompiled headers
 
-#include <mrpt/slam/CSensoryFrame.h>
-#include <mrpt/slam/CObservation2DRangeScan.h>
+#include <mrpt/obs/CSensoryFrame.h>
+#include <mrpt/obs/CObservation2DRangeScan.h>
 #include <mrpt/utils/CStream.h>
 #include <mrpt/system/os.h>
 #include <iterator>
 
-using namespace mrpt::slam;
+using namespace mrpt::obs;
 using namespace mrpt::poses;
 using namespace mrpt::utils;
 using namespace mrpt::system;
@@ -24,7 +24,7 @@ using namespace std;
 #include <mrpt/utils/metaprogramming.h>
 using namespace mrpt::utils::metaprogramming;
 
-IMPLEMENTS_SERIALIZABLE( CSensoryFrame, CSerializable, mrpt::slam )
+IMPLEMENTS_SERIALIZABLE( CSensoryFrame, CSerializable, mrpt::obs )
 
 /*---------------------------------------------------------------
 						Default constructor
@@ -86,7 +86,7 @@ void  CSensoryFrame::clear()
 /*---------------------------------------------------------------
 						writeToStream
   ---------------------------------------------------------------*/
-void  CSensoryFrame::writeToStream(CStream &out,int *version) const
+void  CSensoryFrame::writeToStream(mrpt::utils::CStream &out,int *version) const
 {
 	if (version)
 		*version = 2;
@@ -104,7 +104,7 @@ void  CSensoryFrame::writeToStream(CStream &out,int *version) const
 /*---------------------------------------------------------------
 						readFromStream
   ---------------------------------------------------------------*/
-void  CSensoryFrame::readFromStream(CStream &in,int version)
+void  CSensoryFrame::readFromStream(mrpt::utils::CStream &in,int version)
 {
 	MRPT_START
 
@@ -291,11 +291,11 @@ void CSensoryFrame::eraseByLabel(const std::string &label)
 
 namespace mrpt
 {
-	namespace slam
+	namespace obs
 	{
 		// Tricky way to call to a library that depends on us, a sort of "run-time" linking:
 		//  ptr_internal_build_points_map_from_scan2D is a functor in "mrpt-obs", set by "mrpt-maps" at its startup.
-		extern void (*ptr_internal_build_points_map_from_scan2D)(const mrpt::slam::CObservation2DRangeScan &obs, mrpt::slam::CMetricMapPtr &out_map, const void *insertOps);
+		extern void (*ptr_internal_build_points_map_from_scan2D)(const mrpt::obs::CObservation2DRangeScan &obs, mrpt::maps::CMetricMapPtr &out_map, const void *insertOps);
 	}
 }
 
@@ -314,7 +314,7 @@ void CSensoryFrame::internal_buildAuxPointsMap( const void *options ) const
 }
 
 
-bool  CSensoryFrame::insertObservationsInto( mrpt::slam::CMetricMap *theMap, const CPose3D *robotPose ) const
+bool  CSensoryFrame::insertObservationsInto( mrpt::maps::CMetricMap *theMap, const CPose3D *robotPose ) const
 {
 	bool	anyone = false;
 	for (const_iterator it = begin();it!=end();++it)

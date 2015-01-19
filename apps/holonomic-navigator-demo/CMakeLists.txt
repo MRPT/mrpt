@@ -31,7 +31,7 @@ IF(wxWidgets_FOUND)
 	SET(TMP_TARGET_NAME "holonomic-navigator-demo")
 
 	# Define the executable target:
-	ADD_EXECUTABLE(${TMP_TARGET_NAME} WIN32 ${SRCS})
+	ADD_EXECUTABLE(${TMP_TARGET_NAME} WIN32 ${SRCS} ${MRPT_VERSION_RC_FILE})
 
 	
 

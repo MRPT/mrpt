@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -11,16 +11,16 @@
 
 
 #include <mrpt/utils/CStream.h>
-#include <mrpt/slam/CActionRobotMovement3D.h>
+#include <mrpt/obs/CActionRobotMovement3D.h>
 
 using namespace mrpt;
-using namespace mrpt::slam;
+using namespace mrpt::obs;
 using namespace mrpt::utils;
 using namespace mrpt::poses;
 
 using namespace mrpt::utils;
 
-IMPLEMENTS_SERIALIZABLE(CActionRobotMovement3D, CAction, mrpt::slam)
+IMPLEMENTS_SERIALIZABLE(CActionRobotMovement3D, CAction, mrpt::obs)
 
 /*---------------------------------------------------------------
 						Constructor
@@ -44,7 +44,7 @@ CActionRobotMovement3D::~CActionRobotMovement3D()
 /*---------------------------------------------------------------
   Implements the writing to a CStream capability of CSerializable objects
  ---------------------------------------------------------------*/
-void  CActionRobotMovement3D::writeToStream(CStream &out, int *version) const
+void  CActionRobotMovement3D::writeToStream(mrpt::utils::CStream &out, int *version) const
 {
 	if (version)
 		*version = 1;
@@ -66,7 +66,7 @@ void  CActionRobotMovement3D::writeToStream(CStream &out, int *version) const
 /*---------------------------------------------------------------
   Implements the reading from a CStream capability of CSerializable objects
  ---------------------------------------------------------------*/
-void  CActionRobotMovement3D::readFromStream(CStream &in, int version)
+void  CActionRobotMovement3D::readFromStream(mrpt::utils::CStream &in, int version)
 {
 	switch(version)
 	{

@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -17,15 +17,13 @@
 #include <mrpt/math/CMatrixTemplate.h>
 #include <mrpt/utils/CDebugOutputCapable.h>
 #include <mrpt/utils/CConfigFileBase.h>
-#include <mrpt/slam/CObservationRange.h>
+#include <mrpt/obs/CObservationRange.h>
 
 
 namespace mrpt
 {
 	namespace hwdrivers
 	{
-		using namespace mrpt::math;
-
 		/**   This "software driver" implements the communication protocol for interfacing a Robotic Head Board through a custom
 		  *   USB RS-422 interface board.
 		  *   In this class the "bind" is ignored since it is designed for USB connections only, thus it internally generate the required object for simplicity of use.
@@ -101,7 +99,7 @@ namespace mrpt
 				/** Debug only!!! This function return the last 500 acquired samples for each sound channel.
 				  *
 				  */
-				void Get3SoundBuffer(CMatrixTemplate<int>	&buf);
+				void Get3SoundBuffer(mrpt::math::CMatrixTemplate<int>	&buf);
 
 				/** Move the head in:
 				  * \code

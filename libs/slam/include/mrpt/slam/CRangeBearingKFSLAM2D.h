@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -19,12 +19,12 @@
 #include <mrpt/utils/safe_pointers.h>
 #include <mrpt/utils/bimap.h>
 
-#include <mrpt/slam/CSensoryFrame.h>
-#include <mrpt/slam/CActionCollection.h>
-#include <mrpt/slam/CObservationBearingRange.h>
+#include <mrpt/obs/CSensoryFrame.h>
+#include <mrpt/obs/CActionCollection.h>
+#include <mrpt/obs/CObservationBearingRange.h>
 #include <mrpt/poses/CPosePDFGaussian.h>
-#include <mrpt/slam/CLandmark.h>
-#include <mrpt/slam/CSimpleMap.h>
+#include <mrpt/maps/CLandmark.h>
+#include <mrpt/maps/CSimpleMap.h>
 #include <mrpt/slam/CIncrementalMapPartitioner.h>
 #include <mrpt/slam/data_association.h>
 
@@ -34,9 +34,6 @@ namespace mrpt
 {
 	namespace slam
 	{
-		using namespace mrpt::bayes;
-		using namespace mrpt::poses;
-
 		/** An implementation of EKF-based SLAM with range-bearing sensors, odometry, and a 2D (+heading) robot pose, and 2D landmarks.
 		  *  The main method is "processActionObservation" which processes pairs of action/observation.
 		  *
@@ -62,8 +59,8 @@ namespace mrpt
 			 *	\param SF The set of observations, must contain at least one CObservationBearingRange
 			 */
 			void  processActionObservation(
-				CActionCollectionPtr &action,
-				CSensoryFramePtr     &SF );
+				mrpt::obs::CActionCollectionPtr &action,
+				mrpt::obs::CSensoryFramePtr     &SF );
 
 			/** Returns the complete mean and cov.
 			  *  \param out_robotPose The mean & 3x3 covariance matrix of the robot 2D pose
@@ -74,18 +71,18 @@ namespace mrpt
 			  * \sa getCurrentRobotPose
 			  */
 			void  getCurrentState(
-				CPosePDFGaussian &out_robotPose,
-				std::vector<TPoint2D>  &out_landmarksPositions,
-				std::map<unsigned int,CLandmark::TLandmarkID> &out_landmarkIDs,
-				CVectorDouble      &out_fullState,
-				CMatrixDouble      &out_fullCovariance
+				mrpt::poses::CPosePDFGaussian &out_robotPose,
+				std::vector<mrpt::math::TPoint2D>  &out_landmarksPositions,
+				std::map<unsigned int,mrpt::maps::CLandmark::TLandmarkID> &out_landmarkIDs,
+				mrpt::math::CVectorDouble      &out_fullState,
+				mrpt::math::CMatrixDouble      &out_fullCovariance
 				) const;
 
 			/** Returns the mean & 3x3 covariance matrix of the robot 2D pose.
 			  * \sa getCurrentState
 			  */
 			void  getCurrentRobotPose(
-				CPosePDFGaussian &out_robotPose ) const;
+				mrpt::poses::CPosePDFGaussian &out_robotPose ) const;
 
 			/** Returns a 3D representation of the landmarks in the map and the robot 3D position according to the current filter state.
 			  *  \param out_objects
@@ -112,10 +109,10 @@ namespace mrpt
 
 				/** This method must display clearly all the contents of the structure in textual form, sending it to a CStream.
 				*/
-				void  dumpToTextStream(CStream	&out) const;
+				void  dumpToTextStream(mrpt::utils::CStream	&out) const;
 
 
-				CVectorFloat 	stds_Q_no_odo;	//!< A 3-length vector with the std. deviation of the transition model in (x,y,phi) used only when there is no odometry (if there is odo, its uncertainty values will be used instead); x y: In meters, phi: radians (but in degrees when loading from a configuration ini-file!)
+				mrpt::math::CVectorFloat 	stds_Q_no_odo;	//!< A 3-length vector with the std. deviation of the transition model in (x,y,phi) used only when there is no odometry (if there is odo, its uncertainty values will be used instead); x y: In meters, phi: radians (but in degrees when loading from a configuration ini-file!)
 				float 			std_sensor_range, std_sensor_yaw;	//!< The std. deviation of the sensor (for the matrix R in the kalman filters), in meters and radians.
 				float 			quantiles_3D_representation;	//!< Default = 3
 				bool			create_simplemap; //!< Whether to fill m_SFs (default=false)
@@ -160,7 +157,7 @@ namespace mrpt
 				}
 
 				// Predictions from the map:
-				CMatrixTemplateNumeric<kftype>	Y_pred_means,Y_pred_covs;
+				mrpt::math::CMatrixTemplateNumeric<kftype>	Y_pred_means,Y_pred_covs;
 				mrpt::vector_size_t				predictions_IDs;
 
 				/** Map from the 0-based index within the last observation and the landmark 0-based index in the map (the robot-map state vector)
@@ -313,32 +310,26 @@ namespace mrpt
 			 */
 
 
-			void getLandmarkIDsFromIndexInStateVector(std::map<unsigned int,CLandmark::TLandmarkID>  &out_id2index) const
+			void getLandmarkIDsFromIndexInStateVector(std::map<unsigned int,mrpt::maps::CLandmark::TLandmarkID>  &out_id2index) const
 			{
 				out_id2index = m_IDs.getInverseMap();
 			}
 
 		protected:
 
-			/** Set up by processActionObservation
-			  */
-			CActionCollectionPtr	m_action;
+			/** Set up by processActionObservation */
+			mrpt::obs::CActionCollectionPtr	m_action;
 
-			/** Set up by processActionObservation
-			  */
-			CSensoryFramePtr		m_SF;
+			/** Set up by processActionObservation */
+			mrpt::obs::CSensoryFramePtr		m_SF;
 
-			/** The mapping between landmark IDs and indexes in the Pkk cov. matrix:
-			  */
-			mrpt::utils::bimap<CLandmark::TLandmarkID,unsigned int>	m_IDs;
+			/** The mapping between landmark IDs and indexes in the Pkk cov. matrix: */
+			mrpt::utils::bimap<mrpt::maps::CLandmark::TLandmarkID,unsigned int>	m_IDs;
 
-			/** The sequence of all the observations and the robot path (kept for debugging, statistics,etc)
-			  */
-			CSimpleMap      m_SFs;
+			/** The sequence of all the observations and the robot path (kept for debugging, statistics,etc) */
+			mrpt::maps::CSimpleMap      m_SFs;
 
 			TDataAssocInfo m_last_data_association; //!< Last data association
-
-
 		}; // end class
 	} // End of namespace
 } // End of namespace

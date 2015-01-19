@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -11,12 +11,12 @@
 #include <mrpt/utils/TCamera.h>
 #include <mrpt/utils/TStereoCamera.h>
 #include <mrpt/utils/CConfigFile.h>
-#include <mrpt/slam/CObservationImage.h>
-#include <mrpt/slam/CObservationStereoImages.h>
+#include <mrpt/obs/CObservationImage.h>
+#include <mrpt/obs/CObservationStereoImages.h>
 
 using namespace mrpt;
 using namespace mrpt::utils;
-using namespace mrpt::slam;
+using namespace mrpt::obs;
 using namespace mrpt::system;
 using namespace mrpt::rawlogtools;
 using namespace std;
@@ -109,9 +109,9 @@ DECLARE_OP_FUNCTION(op_camera_params)
 
 		// This method can be reimplemented to save the modified object to an output stream.
 		virtual void OnPostProcess(
-			mrpt::slam::CActionCollectionPtr &actions,
-			mrpt::slam::CSensoryFramePtr     &SF,
-			mrpt::slam::CObservationPtr      &obs)
+			mrpt::obs::CActionCollectionPtr &actions,
+			mrpt::obs::CSensoryFramePtr     &SF,
+			mrpt::obs::CObservationPtr      &obs)
 		{
 			ASSERT_((actions && SF) || obs)
 			if (actions)

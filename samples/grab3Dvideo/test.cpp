@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -63,7 +63,7 @@ void TestDisplay3D()
 		obj->setWireframe(false);
 		obj->setColor(1,0,0);
 		obj->setLineWidth(3.0);
-		obj->setPose(TPose3D(10,0,0,0.2,0.3,0.1));
+		obj->setPose(mrpt::math::TPose3D(10,0,0,0.2,0.3,0.1));
 		theScene->insert( obj );
 	}
 
@@ -133,7 +133,7 @@ void TestDisplay3D()
 
 		win.addTextMessage(0.02,0.98,
 			format("ball#1 pos: %.02f %.02f %.02f ",obj1->getPoseX(),obj1->getPoseY(),obj1->getPoseZ()),
-			TColorf(0,0,1),
+			mrpt::utils::TColorf(0,0,1),
 			10, // An arbitrary ID to always overwrite the same, previous 2D text message
 			MRPT_GLUT_BITMAP_HELVETICA_12
 			);

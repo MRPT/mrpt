@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -34,13 +34,13 @@ std::ostream & mrpt::utils::operator << (std::ostream& o, const TColor & c)
 }
 
 // Binary streaming:
-CStream & mrpt::utils::operator << (CStream& o, const TColor & c) 
+CStream & mrpt::utils::operator << (mrpt::utils::CStream& o, const TColor & c) 
 {
 	o << c.R<<c.G<<c.B<<c.A;
 	return o;
 }
 
-CStream & mrpt::utils::operator >> (CStream& i, TColor & c)
+CStream & mrpt::utils::operator >> (mrpt::utils::CStream& i, TColor & c)
 {
 	i >> c.R>>c.G>>c.B>>c.A;
 	return i;
@@ -57,13 +57,13 @@ std::ostream & mrpt::utils::operator << (std::ostream& o, const TColorf & c)
 }
 
 // Binary streaming:
-CStream & mrpt::utils::operator << (CStream& o, const TColorf & c) 
+CStream & mrpt::utils::operator << (mrpt::utils::CStream& o, const TColorf & c) 
 {
 	o << c.R<<c.G<<c.B<<c.A;
 	return o;
 }
 
-CStream & mrpt::utils::operator >> (CStream& i, TColorf & c)
+CStream & mrpt::utils::operator >> (mrpt::utils::CStream& i, TColorf & c)
 {
 	i >> c.R>>c.G>>c.B>>c.A;
 	return i;

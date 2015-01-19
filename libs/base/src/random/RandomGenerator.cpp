@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -15,6 +15,7 @@
 
 using namespace mrpt;
 using namespace mrpt::random;
+using namespace mrpt::math;
 using namespace mrpt::utils;
 using namespace std;
 
@@ -55,16 +56,6 @@ void CRandomGenerator::MT19937_generateNumbers()
 {
 	if (!m_MT19937_data.seed_initialized)	this->randomize();
 
-#if 0
-	// My first code (slighly slower...)
-	for (uint32_t i=0;i<624;i++)
-	{
-		uint32_t	y = (0x80000000 & m_MT19937_data.MT[i]) + (0x7FFFFFFF & m_MT19937_data.MT[(i+1) % 624]);
-		m_MT19937_data.MT[i] = m_MT19937_data.MT[(i + 397) % 624] ^ (y >> 1);
-		if ((y & 0x01)!=0) // Odd
-			m_MT19937_data.MT[i] ^= 2567483615U; // 0x9908b0df
-	}
-#else
 	// Code from the implementation by Rick Wagner
 	//  http://www-personal.umich.edu/~wagnerr/MersenneTwister.html
 	// and:
@@ -79,7 +70,6 @@ void CRandomGenerator::MT19937_generateNumbers()
 	for( int i = M; --i; ++p )
 		*p = twist( p[M-N], p[0], p[1] );
 	*p = twist( p[M-N], p[0], m_MT19937_data.MT[0] );
-#endif
 }
 
 uint64_t CRandomGenerator::drawUniform64bit()

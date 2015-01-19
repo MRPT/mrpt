@@ -13,6 +13,10 @@ PROJECT(DifOdometry-Camera)
 
 #MESSAGE(STATUS "Makefile for application: /apps/ReactiveNav3D-Demo ")
 
+include_directories(${OPENNI2_INCLUDE_DIRS})
+# Add include directories as "-isystem" to avoid warnings :
+ADD_DIRECTORIES_AS_ISYSTEM(OPENNI2_INCLUDE_DIRS)
+
 # ---------------------------------------------
 # TARGET:
 # ---------------------------------------------
@@ -20,7 +24,8 @@ PROJECT(DifOdometry-Camera)
 ADD_EXECUTABLE(DifOdometry-Camera
                DifOdometry_Camera_main.cpp
 			   DifOdometry_Camera.cpp
-			   DifOdometry_Camera.h)
+			   DifOdometry_Camera.h
+			    ${MRPT_VERSION_RC_FILE})
 
 SET(TMP_TARGET_NAME "DifOdometry-Camera")
 

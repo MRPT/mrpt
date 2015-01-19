@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -106,7 +106,7 @@ namespace mrpt
 		  *			- CArrayDouble<N> / CArrayFloat<N>
 		  *
 		  *  \param k [IN] Number of cluster to look for.
-		  *  \param points [IN] The list of N input points. It can be any STL-like containers of std::vector<float/double>, for example a std::vector<CVectorDouble>, a std::list<CVectorFloat>, etc...
+		  *  \param points [IN] The list of N input points. It can be any STL-like containers of std::vector<float/double>, for example a std::vector<mrpt::math::CVectorDouble>, a std::list<CVectorFloat>, etc...
 		  *  \param assignments [OUT] At output it will have a number [0,k-1] for each of the N input points.
 		  *  \param out_centers [OUT] If not NULL, at output will have the centers of each group. Can be of any of the supported types of "points", but the basic coordinates should be float or double exactly as in "points".
 		  *  \param attempts [IN] Number of attempts.
@@ -134,7 +134,7 @@ namespace mrpt
 		  *			- CArrayDouble<N> / CArrayFloat<N>
 		  *
 		  *  \param k [IN] Number of cluster to look for.
-		  *  \param points [IN] The list of N input points. It can be any STL-like containers of std::vector<float/double>, for example a std::vector<CVectorDouble>, a std::list<CVectorFloat>, etc...
+		  *  \param points [IN] The list of N input points. It can be any STL-like containers of std::vector<float/double>, for example a std::vector<mrpt::math::CVectorDouble>, a std::list<CVectorFloat>, etc...
 		  *  \param assignments [OUT] At output it will have a number [0,k-1] for each of the N input points.
 		  *  \param out_centers [OUT] If not NULL, at output will have the centers of each group. Can be of any of the supported types of "points", but the basic coordinates should be float or double exactly as in "points".
 		  *  \param attempts [IN] Number of attempts.

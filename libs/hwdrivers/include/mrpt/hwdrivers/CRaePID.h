@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -11,7 +11,7 @@
 
 #include <mrpt/hwdrivers/CGenericSensor.h>
 #include <mrpt/hwdrivers/CSerialPort.h>
-#include <mrpt/slam/CObservationGasSensors.h>
+#include <mrpt/obs/CObservationGasSensors.h>
 #include <mrpt/utils/CConfigFileBase.h>
 
 namespace mrpt
@@ -23,7 +23,7 @@ namespace mrpt
 		  *
 		  *   Refer to the manufacturer website for details on this sensor: http://www.raesystems.com/products/minirae-lite
 		  *
-		  *  \sa mrpt::slam::CObservationGasSensors
+		  *  \sa mrpt::obs::CObservationGasSensors
 		  * \ingroup mrpt_hwdrivers_grp
 		  */
 		class HWDRIVERS_IMPEXP CRaePID : public mrpt::hwdrivers::CGenericSensor
@@ -85,7 +85,7 @@ namespace mrpt
 
 			 /** Get full reading (see PID documentation). In the returned observation, each reding is saved as a separate e-nose
 			  */
-			 mrpt::slam::CObservationGasSensors getFullInfo();
+			 mrpt::obs::CObservationGasSensors getFullInfo();
 
 			 /** Get error status (true if an error was found). errorString shows the error code (see PID documentation)
 			  */

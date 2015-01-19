@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -26,14 +26,14 @@ namespace mrpt
 
 
 		/** A cloud of points, all with the same color or each depending on its value along a particular coordinate axis.
-		  *  This class is just an OpenGL representation of a point cloud. For operating with maps of points, see mrpt::slam::CPointsMap and derived classes.
+		  *  This class is just an OpenGL representation of a point cloud. For operating with maps of points, see mrpt::maps::CPointsMap and derived classes.
 		  *
 		  *  To load from a points-map, CPointCloud::loadFromPointsMap().
 		  *
 		  *   This class uses smart optimizations while rendering to efficiently draw clouds of millions of points,
 		  *   as described in this page: http://www.mrpt.org/Efficiently_rendering_point_clouds_of_millions_of_points
 		  *
-		  *  \sa opengl::CPlanarLaserScan, opengl::COpenGLScene, opengl::CPointCloudColoured, mrpt::slam::CPointsMap
+		  *  \sa opengl::CPlanarLaserScan, opengl::COpenGLScene, opengl::CPointCloudColoured, mrpt::maps::CPointsMap
 		  *
 		  *  <div align="center">
 		  *  <table border="0" cellspan="4" cellspacing="4" style="border-width: 1px; border-style: solid;">
@@ -190,7 +190,7 @@ namespace mrpt
 			void loadFromPointsMap( const POINTSMAP *themap);
 			// Must be implemented at the end of the header.
 
-			/** Load the points from a list of TPoint3D
+			/** Load the points from a list of mrpt::math::TPoint3D
 			  */
 			template<class LISTOFPOINTS> void  loadFromPointsList( LISTOFPOINTS &pointsList)
 			{

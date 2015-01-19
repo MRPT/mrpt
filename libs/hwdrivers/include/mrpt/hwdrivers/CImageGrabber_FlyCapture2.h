@@ -2,15 +2,15 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 #ifndef CImageGrabber_FlyCapture2_H
 #define CImageGrabber_FlyCapture2_H
 
-#include <mrpt/slam/CObservationImage.h>
-#include <mrpt/slam/CObservationStereoImages.h>
+#include <mrpt/obs/CObservationImage.h>
+#include <mrpt/obs/CObservationStereoImages.h>
 #include <mrpt/hwdrivers/link_pragmas.h>
 #include <mrpt/utils/CUncopiable.h>
 
@@ -184,11 +184,11 @@ namespace mrpt
 
 			/** Grab mono image from the camera. This method blocks until the next frame is captured.
 			 * \return false on any error. */
-			bool getObservation( mrpt::slam::CObservationImage &out_observation );
+			bool getObservation( mrpt::obs::CObservationImage &out_observation );
 
 			/** Grab stereo image from the camera. This method blocks until the next frame is captured.
 			 * \return false on any error. */
-			bool getObservation( mrpt::slam::CObservationStereoImages &out_observation );
+			bool getObservation( mrpt::obs::CObservationStereoImages &out_observation );
 
 			/** Returns if current configuration is stereo or not */
 			inline bool isStereo(){ return m_options.stereo_mode; }

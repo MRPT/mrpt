@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -106,7 +106,7 @@ double & CSplineInterpolator1D::query( double x, double &y, bool &out_valid ) co
 	Implements the writing to a CStream capability of
 		CSerializable objects
   ---------------------------------------------------------------*/
-void  CSplineInterpolator1D::writeToStream(CStream &out, int *version) const
+void  CSplineInterpolator1D::writeToStream(mrpt::utils::CStream &out, int *version) const
 {
 	if (version)
 		*version = 0;
@@ -121,7 +121,7 @@ void  CSplineInterpolator1D::writeToStream(CStream &out, int *version) const
 	Implements the reading from a CStream capability of
 		CSerializable objects
   ---------------------------------------------------------------*/
-void  CSplineInterpolator1D::readFromStream(CStream &in, int version)
+void  CSplineInterpolator1D::readFromStream(mrpt::utils::CStream &in, int version)
 {
 	switch(version)
 	{

@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -10,20 +10,20 @@
 #include "obs-precomp.h"   // Precompiled headers
 
 #include <mrpt/utils/CStream.h>
-#include <mrpt/slam/CObservationIMU.h>
+#include <mrpt/obs/CObservationIMU.h>
 //#include <mrpt/math/CMatrixD.h>
 
-using namespace mrpt::slam;
+using namespace mrpt::obs;
 using namespace mrpt::utils;
 using namespace mrpt::poses;
 
 // This must be added to any CSerializable class implementation file.
-IMPLEMENTS_SERIALIZABLE(CObservationIMU, CObservation,mrpt::slam)
+IMPLEMENTS_SERIALIZABLE(CObservationIMU, CObservation,mrpt::obs)
 
 /*---------------------------------------------------------------
   Implements the writing to a CStream capability of CSerializable objects
  ---------------------------------------------------------------*/
-void  CObservationIMU::writeToStream(CStream &out, int *version) const
+void  CObservationIMU::writeToStream(mrpt::utils::CStream &out, int *version) const
 {
 	if (version)
 		*version = 3;  // v1->v2 was only done to fix a bug in the ordering of YAW/PITCH/ROLL rates.
@@ -43,7 +43,7 @@ void  CObservationIMU::writeToStream(CStream &out, int *version) const
 /*---------------------------------------------------------------
   Implements the reading from a CStream capability of CSerializable objects
  ---------------------------------------------------------------*/
-void  CObservationIMU::readFromStream(CStream &in, int version)
+void  CObservationIMU::readFromStream(mrpt::utils::CStream &in, int version)
 {
 	switch(version)
 	{
@@ -119,7 +119,7 @@ void CObservationIMU::getDescriptionAsText(std::ostream &o) const
 
 	// Units:
 	// Use "COUNT_IMU_DATA_FIELDS" so a compile error happens if the sizes don't fit ;-)
-	static const char * imu_units[ mrpt::slam::COUNT_IMU_DATA_FIELDS ] =
+	static const char * imu_units[ mrpt::obs::COUNT_IMU_DATA_FIELDS ] =
 	{
 		"m/s^2", //	IMU_X_ACC,
 		"m/s^2", //	IMU_Y_ACC,
