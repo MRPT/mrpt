@@ -41,9 +41,6 @@ namespace mrpt
 				maxLength_ = 0.0;   //the setting of maxLength should be mandatory for the user
 			} /** Constr   */
 
-			// do we need the destrctor to free memory alfter the solver? ~RRT()
-
-
 			/** \brief Set the goal bias */
 			inline void setGoalBias (double goalBias) {  goalBias_ = goalBias; }
 
