@@ -46,10 +46,12 @@ namespace mrpt
 			{
 				double acceptedDistToTarget;  //!< Maximum distance from a pose to target to accept it as a valid solution
 				double maxComputationTime;    //!< In seconds. 0 means no limit until a solution is found.
+				double minComputationTime;    //!< In seconds. 0 means the first valid path will be returned. Otherwise, the algorithm will try to refine and find a better one.
 
 				TEndCriteria() : 
 					acceptedDistToTarget ( 0.1 ),
-					maxComputationTime   ( 0 )
+					maxComputationTime   ( 0.0 ),
+					minComputationTime   ( 0.0 )
 				{
 				}
 			};
@@ -66,7 +68,7 @@ namespace mrpt
 				mrpt::math::TPolygon2D robot_shape;
 
 				double goalBias;  //!< Probabily of picking the goal as random target (in [0,1], default=0.05)
-				double maxLength; //!< Max length of each edge path (in meters, default=1.0)
+				double maxLength; //!< (Very sensitive parameter!) Max length of each edge path (in meters, default=1.0)
 				double obsMaxDistance;  //!< Maximum distance for considering obstacles from each RRT node
 				double minDistanceBetweenNewNodes; //!< Minimum distance to nearest node to accept creating a new one (default=0.5)
 
@@ -76,7 +78,7 @@ namespace mrpt
 					goalBias(0.05),
 					maxLength(1.0),
 					obsMaxDistance(5.0),
-					minDistanceBetweenNewNodes(0.5),
+					minDistanceBetweenNewNodes(0.10),
 					save_3d_log_freq(0)
 				{
 					robot_shape.push_back( mrpt::math::TPoint2D(-0.5,-0.5) );
@@ -108,14 +110,19 @@ namespace mrpt
 			struct NAV_IMPEXP TPlannerResult
 			{
 				bool success;               //!< Whether the target was reached or not
-				double goal_distance;       //!< Distance from best found path to goal
 				double computation_time;    //!< Time spent (in secs)
+				double goal_distance;       //!< Distance from best found path to goal
+				double path_cost;           //!< Total cost of the best found path (cost ~~ Euclidean distance)
+				mrpt::utils::TNodeID best_goal_node_id; //!< The ID of the best target node in the tree
+				std::set<mrpt::utils::TNodeID>  acceptable_goal_node_ids; //!< The set of target nodes within an acceptable distance to target (including `best_goal_node_id` and others)
 				TMoveTreeSE2_TP move_tree;  //!< The generated motion tree that explores free space starting at "start"
 
 				TPlannerResult() :
 					success(false),
+					computation_time(0),
 					goal_distance( std::numeric_limits<double>::max() ),
-					computation_time(0)
+					path_cost( std::numeric_limits<double>::max() ),
+					best_goal_node_id(INVALID_NODEID)
 				{
 				}
 			};
@@ -131,6 +138,18 @@ namespace mrpt
 
 			/** The main API entry point: tries to find a planned path from 'goal' to 'target' */
 			void solve( const TPlannerInput &pi, TPlannerResult & result );
+
+
+			void renderMoveTree(
+				mrpt::opengl::COpenGLScene &scene,
+				const TPlannerInput  &pi,
+				const TPlannerResult &result,
+				const mrpt::utils::TNodeID highlight_path_to_node_id = INVALID_NODEID,
+				const mrpt::poses::CPose2D *x_rand_pose = NULL,
+				const mrpt::poses::CPose2D *x_nearest_pose = NULL,
+				const mrpt::maps::CPointsMap * local_obs_from_nearest_pose = NULL,
+				const mrpt::poses::CPose2D *new_state=NULL
+				);
 
 
 		protected:

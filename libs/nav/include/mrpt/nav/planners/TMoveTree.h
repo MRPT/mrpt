@@ -69,7 +69,9 @@ namespace mrpt
 			mrpt::utils::TNodeID getNearestNode(
 				const NODE_TYPE_DATA &query_pt,
 				const PoseDistanceMetric<NODE_TYPE_DATA> &distanceMetricEvaluator,
-				double *out_distance = NULL) const
+				double *out_distance = NULL,
+				const std::set<mrpt::utils::TNodeID> *ignored_nodes = NULL
+				) const
 			{
 				MRPT_TODO("Optimize this query with KD-tree!")
 				ASSERT_(!m_nodes.empty())
@@ -78,6 +80,9 @@ namespace mrpt
 				mrpt::utils::TNodeID min_id;
 				for (typename node_map_t::const_iterator it=m_nodes.begin();it!=m_nodes.end();++it)
 				{
+					if (ignored_nodes && ignored_nodes->find(it->first)!=ignored_nodes->end())
+						continue; // ignore it
+
 					double d = distanceMetricEvaluator.distance(query_pt,it->second);
 					if (d<min_d) {
 						min_d = d;

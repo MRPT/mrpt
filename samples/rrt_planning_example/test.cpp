@@ -12,6 +12,8 @@
 #include <mrpt/system/filesystem.h> // directoryExists(), ...
 #include <mrpt/utils/CFileGZInputStream.h>
 #include <mrpt/utils/CConfigFile.h>
+#include <mrpt/random.h>
+#include <mrpt/gui/CDisplayWindow3D.h>
 
 #include <iostream>
 
@@ -31,6 +33,8 @@ string   myCfgFileName( MRPT_EXAMPLES_BASE_DIRECTORY + string("../share/mrpt/con
 // ------------------------------------------------------
 void TestRRT1()
 {
+	mrpt::random::Randomize();
+
 	// Load the gridmap:
 	COccupancyGridMap2D		gridmap;
 
@@ -41,18 +45,23 @@ void TestRRT1()
 	CFileGZInputStream(myGridMap) >> gridmap;
 	printf("Done! %f x %f m\n", gridmap.getXMax()-gridmap.getXMin(), gridmap.getYMax()-gridmap.getYMin());
 
-
 	// Set planner params:
 	// ------------------------------
 	mrpt::nav::PlannerRRT_SE2_TPS  planner;
 
+	// Parameters:
 	planner.loadConfig( mrpt::utils::CConfigFile(myCfgFileName) );
 
-	planner.params.save_3d_log_freq = 200; // save some iterations for debugging
+	planner.params.minDistanceBetweenNewNodes = 0.25;
+	//planner.params.goalBias = 0.10;
+
+	// Logging:
+	planner.params.save_3d_log_freq = 50; // save some iterations for debugging
 
 	// End criteria:
 	planner.end_criteria.acceptedDistToTarget = 0.25;
 	planner.end_criteria.maxComputationTime = 0;
+	planner.end_criteria.minComputationTime = 1.0; // 0=accept first found acceptable solution
 
 
 	// Init planner:
@@ -69,9 +78,37 @@ void TestRRT1()
 	planner_input.world_bbox_min = mrpt::math::TPoint2D(-20,-20);
 	planner_input.world_bbox_max = mrpt::math::TPoint2D( 20, 20);
 	
-	planner.solve( planner_input, planner_result);
 
-	cout << "Found goal_distance: " << planner_result.goal_distance << endl;
+
+	// Show results in a GUI and keep improving:
+#if MRPT_HAS_WXWIDGETS
+	mrpt::gui::CDisplayWindow3D  win("Result",1024,800);
+	while (win.isOpen())
+#else
+	for (size_t i=0;i<1;i++)
+#endif
+	{
+		planner.solve( planner_input, planner_result);
+
+		cout << "Found goal_distance: " << planner_result.goal_distance << endl;
+		cout << "Found path_cost: " << planner_result.path_cost << endl;
+		cout << "Acceptable goal nodes: " << planner_result.acceptable_goal_node_ids.size() << endl;
+
+#if MRPT_HAS_WXWIDGETS
+		// Show result in a GUI:
+		mrpt::opengl::COpenGLScenePtr & scene = win.get3DSceneAndLock();
+	
+		planner.renderMoveTree(
+			*scene,
+			planner_input, planner_result,
+			planner_result.best_goal_node_id
+			);
+
+		win.unlockAccess3DScene();
+		win.repaint();
+		win.waitForKey();
+#endif
+	}
 	
 
 }
@@ -93,4 +130,5 @@ int main(int argc, char **argv)
 		return -1;
 	}
 }
+
 
