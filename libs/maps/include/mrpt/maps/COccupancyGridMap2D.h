@@ -918,6 +918,9 @@ namespace maps
 		  */
 		void  getAs3DObject ( mrpt::opengl::CSetOfObjectsPtr	&outObj ) const;
 
+		/** Get a point cloud with all (border) occupied cells as points */
+		void getAsPointCloud( mrpt::maps::CSimplePointsMap &pm, const float occup_threshold = 0.5f ) const;
+
 		/** Returns true upon map construction or after calling clear(), the return
 		  *  changes to false upon successful insertObservation() or any other method to load data in the map.
 		  */
