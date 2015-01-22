@@ -10,10 +10,13 @@
 #include "nav-precomp.h" // Precomp header
 
 #include <mrpt/nav/planners/PlannerRRT_SE2_TPS.h>
+#include <mrpt/utils/CTicTac.h>
+#include <mrpt/random.h>
 
 using namespace mrpt::nav;
 using namespace mrpt::utils;
 using namespace mrpt::math;
+using namespace mrpt::poses;
 using namespace std;
 
 PlannerRRT_SE2_TPS::PlannerRRT_SE2_TPS() :
@@ -62,7 +65,7 @@ void PlannerRRT_SE2_TPS::loadConfig(const mrpt::utils::CConfigFileBase &ini, con
 		ptg_parameters["cte_a0v"]	= DEG2RAD( ini.read_float(sSect,format("PTG%u_cte_a0v_deg", n ), 0, false) );
 		ptg_parameters["cte_a0w"]	= DEG2RAD( ini.read_float(sSect,format("PTG%u_cte_a0w_deg", n ), 0, false) );
 		const int nAlfas = ini.read_int(sSect,format("PTG%u_nAlfas", n ),100, true );
-#if 1
+#if 0
 		cout << "PTRRT_Navigator::initializePTG - message: READ : ref_distance   " << ptg_parameters["ref_distance"] << " [m] " << endl;
 		cout << "PTRRT_Navigator::initializePTG - message: READ : resolution     " << ptg_parameters["resolution"] << " [m] " << endl;
 		cout << "PTRRT_Navigator::initializePTG - message: READ : PTG_type       " << ptg_parameters["PTG_type"] << endl;
@@ -129,9 +132,83 @@ void PlannerRRT_SE2_TPS::solve(
 	const PlannerRRT_SE2_TPS::TPlannerInput &pi, 
 	PlannerRRT_SE2_TPS::TPlannerResult & result )
 {
+	mrpt::utils::CTimeLoggerEntry tle(m_timelogger,"PT_RRT::solve->generate_random_state");
+
+	// Sanity checks:
 	ASSERTMSG_(m_initialized, "initialize() must be called before!");
 
+	// [Algo `tp_space_rrt`: Line 1]: Init tree adding the initial pose
+	if (result.move_tree.getAllNodes().empty())
+	{
+		result.move_tree.root = 0;
+		result.move_tree.insertNode( result.move_tree.root, TNodeSE2( pi.start_pose ) );
+	}
+
+	mrpt::utils::CTicTac working_time;
+	working_time.Tic();
+
+	// [Algo `tp_space_rrt`: Line 2]: Iterate
+	// ------------------------------------------
+	for (;;)
+	{
+		// Check end coditions: 
+		if (end_criteria.maxComputationTime>0 && working_time.Tac()>end_criteria.maxComputationTime) 
+		{
+			break;
+		}
+
+		// [Algo `tp_space_rrt`: Line 3]: sample random state (with goal biasing)
+		// -----------------------------------------
+		node_pose_t x_rand;
+		if (mrpt::random::randomGenerator.drawUniform(0.0,1.0) < params.goalBias) {
+			x_rand = pi.goal_pose;
+		}
+		else {
+			// Sample uniform:
+			for (int i=0;i<node_pose_t::static_size;i++)
+				x_rand[i] = mrpt::random::randomGenerator.drawUniform( pi.world_bbox_min[i], pi.world_bbox_max[i]);
+		}
+
+		// [Algo `tp_space_rrt`: Line 4]: For each PTG
+		// -----------------------------------------
+		const size_t nPTGs = m_PTGs.size();
+		for (size_t idxPTG=0;idxPTG<nPTGs;++idxPTG)
+		{
+			// [Algo `tp_space_rrt`: Line 5]: Search nearest neig. to x_rand
+			// -----------------------------------------------
+			PoseDistanceMetric<TNodeSE2> distance_evaluator;
+			MRPT_TODO("Use PTGs to calc distance!");
+
+			const TNodeSE2 query_node(x_rand);
+			mrpt::utils::TNodeID x_nearest_id = result.move_tree.getNearestNode(query_node, distance_evaluator );
+			const TNodeSE2 &     x_nearest_node = result.move_tree.getAllNodes().find(x_nearest_id)->second;
+
+			// [Algo `tp_space_rrt`: Line 6]: Relative target
+			// -----------------------------------------------
+			const CPose2D x_rand_rel = CPose2D(x_rand) - CPose2D( x_nearest_node.state );
+
+			// [Algo `tp_space_rrt`: Line 7]: Relative target in TP-Space
+			// ------------------------------------------------------------
+			const float D_max = m_PTGs[idxPTG]->refDistance;
+
+			float d_rand; // Coordinates in TP-space
+			int   k_rand; // k_rand is the index of target_alpha in PTGs corresponding to a specific d_rand
+			bool tp_point_is_exact = m_PTGs[idxPTG]->inverseMap_WS2TP(
+				x_rand_rel.x(), x_rand_rel.y(),
+				k_rand, d_rand );
+
+			d_rand *= D_max; // distance to target, in "real meters"
+			
+			m_timelogger.enter("PT_RRT::solve->SpaceTransformer");
+			//SpaceTransformer ( local_obs_, (*rrt_PTGs)[indexPTG], rrt_TP_Obstacles[indexPTG] );
+			m_timelogger.leave("PT_RRT::solve->SpaceTransformer");
 
 
+		} // end for idxPTG
 
-} 
+
+	} // end forever loop
+
+
+}  // end solve()
+

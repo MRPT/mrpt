@@ -39,6 +39,8 @@ namespace mrpt
 		class NAV_IMPEXP PlannerRRT_SE2_TPS
 		{
 		public:
+			typedef  mrpt::math::TPose2D  node_pose_t; //!< The type of poses at nodes
+
 			struct NAV_IMPEXP TEndCriteria
 			{
 				double acceptedDistToTarget;  //!< Maximum distance from a pose to target to accept it as a valid solution
@@ -82,9 +84,13 @@ namespace mrpt
 				mrpt::math::TPose2D  start_pose;
 				mrpt::math::TPose2D  goal_pose;
 
+				mrpt::math::TPose2D  world_bbox_min,world_bbox_max;
+
 				TPlannerInput() : 
 					start_pose(0,0,0),
-					goal_pose(0,0,0)
+					goal_pose(0,0,0),
+					world_bbox_min(-10.,-10.0,-M_PI),
+					world_bbox_max( 10., 10.0, M_PI)
 				{
 				}
 			};
