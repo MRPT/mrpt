@@ -12,7 +12,9 @@
 #include <mrpt/graphs/CDirectedTree.h>
 #include <mrpt/utils/traits_map.h>
 #include <mrpt/math/wrap2pi.h>
+#include <mrpt/poses/CPose2D.h>
 
+#include <mrpt/nav/tpspace/CParameterizedTrajectoryGenerator.h>
 #include <mrpt/nav/link_pragmas.h>
 
 namespace mrpt
@@ -77,7 +79,7 @@ namespace mrpt
 				ASSERT_(!m_nodes.empty())
 
 				double min_d = std::numeric_limits<double>::max();
-				mrpt::utils::TNodeID min_id;
+				mrpt::utils::TNodeID min_id=INVALID_NODEID;
 				for (typename node_map_t::const_iterator it=m_nodes.begin();it!=m_nodes.end();++it)
 				{
 					if (ignored_nodes && ignored_nodes->find(it->first)!=ignored_nodes->end())
@@ -138,7 +140,8 @@ namespace mrpt
 					}
 					else {
 						typename node_map_t::const_iterator it_next = m_nodes.find(next_node_id);
-						if (it_next == m_nodes.end()) throw std::runtime_error("backtrackPath: Node ID not found during tree traversal!");
+						if (it_next == m_nodes.end()) 
+							throw std::runtime_error("backtrackPath: Node ID not found during tree traversal!");
 						node = &it_next->second;
 					}
 				}
@@ -171,11 +174,7 @@ namespace mrpt
 		struct NAV_IMPEXP TNodeSE2
 		{
 			mrpt::math::TPose2D  state;  //!< state in SE2 as 2D pose (x, y, phi)
-
-			TNodeSE2( const mrpt::math::TPose2D &state_) : state(state_) 
-			{
-			}
-
+			TNodeSE2( const mrpt::math::TPose2D &state_) : state(state_) { }
 			TNodeSE2() {}
 		};
 
@@ -191,7 +190,36 @@ namespace mrpt
 			}
 		};
 
-		typedef TMoveTree<TNodeSE2,TMoveEdgeSE2_TP> TMoveTreeSE2_TP;  //!< tree data structure for planning in SE2 with TP-space
+		struct NAV_IMPEXP TNodeSE2_TP
+		{
+			mrpt::math::TPose2D  state;  //!< state in SE2 as 2D pose (x, y, phi)
+			TNodeSE2_TP( const mrpt::math::TPose2D &state_) : state(state_) { }
+			TNodeSE2_TP() {}
+		};
+
+		/** Pose metric for SE(2) limited to a given PTG manifold. NOTE: This 'metric' is NOT symmetric for all PTGs: d(a,b)!=d(b,a) */
+		template<>
+		struct PoseDistanceMetric<TNodeSE2_TP>
+		{
+			double distance(const TNodeSE2_TP &src, const TNodeSE2_TP& dst) const 
+			{
+				float d;
+				int   k;
+				mrpt::poses::CPose2D relPose(mrpt::poses::UNINITIALIZED_POSE);
+				relPose.inverseComposeFrom(mrpt::poses::CPose2D(dst.state),mrpt::poses::CPose2D(src.state));
+				bool tp_point_is_exact = m_ptg.inverseMap_WS2TP(relPose.x(),relPose.y(),k,d);
+				if (tp_point_is_exact)
+				     return d * m_ptg.refDistance; // de-normalize distance
+				else return std::numeric_limits<double>::max(); // not in range: we can't evaluate this distance!
+			}
+			PoseDistanceMetric(const mrpt::nav::CParameterizedTrajectoryGenerator &ptg) : m_ptg(ptg) {}
+		private:
+			const mrpt::nav::CParameterizedTrajectoryGenerator & m_ptg;
+		};
+
+
+		//typedef TMoveTree<TNodeSE2   ,TMoveEdgeSE2> TMoveTreeSE2_TP;  //!< tree data structure for planning in SE2 
+		typedef TMoveTree<TNodeSE2_TP,TMoveEdgeSE2_TP> TMoveTreeSE2_TP;  //!< tree data structure for planning in SE2 within TP-Space manifolds
 
 	}
 }

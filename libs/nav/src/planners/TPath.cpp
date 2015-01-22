@@ -21,6 +21,8 @@ using namespace mrpt::system;
 using namespace mrpt::math;
 using namespace std;
 
+MRPT_TODO("Refactor this class: make it a template and use it inside TMoveTree<>")
+
 TPath::TPath()
 {
     //ctor
@@ -71,8 +73,6 @@ return L;
   ---------------------------------------------------------------*/
 bool  TPath::TPlannedPath::save_to_text_file(const std::string &file) const
 {
-
-    MRPT_TODO("Add a flag to activate the log saving")
     std::string save_folder = "./nav.logs/paths/";
     if (!mrpt::system::directoryExists(save_folder.c_str()))
 		{

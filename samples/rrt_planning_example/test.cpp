@@ -51,17 +51,17 @@ void TestRRT1()
 	// Parameters:
 	planner.loadConfig( mrpt::utils::CConfigFile(myCfgFileName) );
 
-	planner.params.minDistanceBetweenNewNodes = 0.20;
-	planner.params.goalBias = 0.10;
+	planner.params.maxLength = 2.0; 
+	planner.params.minDistanceBetweenNewNodes = 0.10;
+	planner.params.goalBias = 0.05;
 
 	// Logging:
-	planner.params.save_3d_log_freq = 500; // save some iterations for debugging
+	planner.params.save_3d_log_freq = 0; //500; // save some iterations for debugging
 
 	// End criteria:
 	planner.end_criteria.acceptedDistToTarget = 0.25;
-	planner.end_criteria.maxComputationTime = 15.0;
+	planner.end_criteria.maxComputationTime = 5.0;
 	planner.end_criteria.minComputationTime = 1.0; // 0=accept first found acceptable solution
-
 
 	// Init planner:
 	// ------------------------------
@@ -97,7 +97,7 @@ void TestRRT1()
 #endif
 	{
 		// Refine solution or start over:
-		bool refine_solution = (iters++ % 2 != 0);
+		bool refine_solution = false; // (iters++ % 5 != 0);
 
 		// Start from scratch: 
 		if (!refine_solution)

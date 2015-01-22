@@ -72,6 +72,7 @@ namespace mrpt
 				double maxLength; //!< (Very sensitive parameter!) Max length of each edge path (in meters, default=1.0)
 				double obsMaxDistance;  //!< Maximum distance for considering obstacles from each RRT node
 				double minDistanceBetweenNewNodes; //!< Minimum distance to nearest node to accept creating a new one (default=0.5)
+				bool   ptg_verbose; //!< Display PTG construction info (default=true)
 
 				size_t save_3d_log_freq; //!< Frequency (in iters) of saving tree state to debug log files viewable in SceneViewer3D (default=0, disabled)
 
@@ -80,7 +81,8 @@ namespace mrpt
 					maxLength(1.0),
 					obsMaxDistance(5.0),
 					minDistanceBetweenNewNodes(0.10),
-					save_3d_log_freq(0)
+					save_3d_log_freq(0),
+					ptg_verbose(true)
 				{
 					robot_shape.push_back( mrpt::math::TPoint2D(-0.5,-0.5) );
 					robot_shape.push_back( mrpt::math::TPoint2D( 0.8,-0.4) );
@@ -152,6 +154,7 @@ namespace mrpt
 				const mrpt::poses::CPose2D *new_state=NULL
 				);
 
+			mrpt::utils::CTimeLogger & getProfiler() { return m_timelogger; }
 
 		protected:
 			mrpt::utils::CTimeLogger m_timelogger;

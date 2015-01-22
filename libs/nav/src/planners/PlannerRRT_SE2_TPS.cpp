@@ -128,7 +128,8 @@ void PlannerRRT_SE2_TPS::initialize()
 		mrpt::nav::build_PTG_collision_grids(
 			m_PTGs[i].pointer(),
 			poly_robot_shape,
-			mrpt::format("TPRRT_PTG_%03u.dat.gz",i)
+			mrpt::format("TPRRT_PTG_%03u.dat.gz",i),
+			params.ptg_verbose
 			);
 	}
 
@@ -149,7 +150,7 @@ void PlannerRRT_SE2_TPS::solve(
 	if (result.move_tree.getAllNodes().empty())
 	{
 		result.move_tree.root = 0;
-		result.move_tree.insertNode( result.move_tree.root, TNodeSE2( pi.start_pose ) );
+		result.move_tree.insertNode( result.move_tree.root, TNodeSE2_TP( pi.start_pose ) );
 	}
 
 	mrpt::utils::CTicTac working_time;
@@ -198,15 +199,18 @@ void PlannerRRT_SE2_TPS::solve(
 
 			// [Algo `tp_space_rrt`: Line 5]: Search nearest neig. to x_rand
 			// -----------------------------------------------
-			const PoseDistanceMetric<TNodeSE2> distance_evaluator;
-			MRPT_TODO("Use PTGs to calc distance!");
+			const PoseDistanceMetric<TNodeSE2_TP> distance_evaluator(*m_PTGs[idxPTG]);
 
-			const TNodeSE2 query_node(x_rand);
+			const TNodeSE2_TP query_node(x_rand);
+			
+			m_timelogger.enter("TMoveTree::getNearestNode");
 			mrpt::utils::TNodeID x_nearest_id = result.move_tree.getNearestNode(query_node, distance_evaluator );
+			m_timelogger.leave("TMoveTree::getNearestNode");
+
 			if (x_nearest_id==INVALID_NODEID)
 				continue; // We can't find any close node, at least with this PTG's paths
 
-			const TNodeSE2 &     x_nearest_node = result.move_tree.getAllNodes().find(x_nearest_id)->second;
+			const TNodeSE2_TP &     x_nearest_node = result.move_tree.getAllNodes().find(x_nearest_id)->second;
 
 			// [Algo `tp_space_rrt`: Line 6]: Relative target
 			// -----------------------------------------------
@@ -264,14 +268,18 @@ void PlannerRRT_SE2_TPS::solve(
 				// ------------------------------------------------------------
 				const mrpt::poses::CPose2D new_state_rel(x, y, phi);
 				mrpt::poses::CPose2D new_state = x_nearest_pose+new_state_rel; //compose the new_motion as the last nmotion and the new state
-				const TNodeSE2 new_state_node(new_state);
+				const TNodeSE2_TP new_state_node(new_state);
 
 				// Check whether there's already a too-close node around:
 				// --------------------------------------------------------
 				bool accept_this_node = true;
 				{
 					double new_nearest_dist;
+
+					m_timelogger.enter("TMoveTree::getNearestNode");
 					mrpt::utils::TNodeID new_nearest_id = result.move_tree.getNearestNode(new_state_node, distance_evaluator,&new_nearest_dist, &result.acceptable_goal_node_ids );
+					m_timelogger.leave("TMoveTree::getNearestNode");
+
 					if (new_nearest_id!=INVALID_NODEID)
 						accept_this_node = (new_nearest_dist>=params.minDistanceBetweenNewNodes);
 				}
@@ -318,7 +326,7 @@ void PlannerRRT_SE2_TPS::solve(
 				bool is_new_best_solution = false; // Just for logging purposes
 				if (is_acceptable_goal && this_path_cost<result.path_cost)
 				{
-#if 1
+#if 0
 					cout << "== New best solution: \n";
 					cout << "==  new_child_id: " << new_child_id << endl;
 					cout << "==  goal_dist: " << goal_dist << endl;
@@ -452,11 +460,11 @@ void PlannerRRT_SE2_TPS::spaceTransformer(
 	}
 	catch (...)
 	{
-		cout << "\n[PT_RRT::SpaceTransformer] Unexpected exception!:\n";
-		cout << format("*in_PTG = %p\n", (void*)in_PTG );
+		cerr << "\n[PT_RRT::SpaceTransformer] Unexpected exception!:\n";
+		cerr << format("*in_PTG = %p\n", (void*)in_PTG );
 		if (in_PTG)
-			cout << format("PTG = %s\n",in_PTG->getDescription().c_str());
-		cout << endl;
+			cerr << format("PTG = %s\n",in_PTG->getDescription().c_str());
+		cerr << endl;
 	}
 }
 
@@ -471,6 +479,9 @@ void PlannerRRT_SE2_TPS::renderMoveTree(
 	const CPose2D *new_state	
 	)
 {
+	MRPT_TODO("Draw actual vehicle shape on each node along the optimal solution")
+	MRPT_TODO("Autoscale XYZcorners ~ vehicle size (from shape)")
+
 	// "ground"
 	{
 		mrpt::opengl::CGridPlaneXYPtr obj = mrpt::opengl::CGridPlaneXY::Create( pi.world_bbox_min.x,pi.world_bbox_max.x, pi.world_bbox_min.y,pi.world_bbox_max.y, 0, 10 );
