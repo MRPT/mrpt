@@ -10,6 +10,7 @@
 #define  MRPT_DIRECTED_TREE_H
 
 #include <mrpt/utils/utils_defs.h>
+#include <list>
 
 /*---------------------------------------------------------------
 	Class

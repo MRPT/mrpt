@@ -12,6 +12,7 @@
 #include <mrpt/maps/COccupancyGridMap2D.h>
 #include <mrpt/maps/CSimplePointsMap.h>
 #include <mrpt/nav/planners/TMoveTree.h>
+#include <mrpt/nav/tpspace/CParameterizedTrajectoryGenerator.h>
 #include <mrpt/utils/CTimeLogger.h>
 #include <numeric>
 
