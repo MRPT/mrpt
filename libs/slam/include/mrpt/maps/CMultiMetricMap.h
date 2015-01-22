@@ -198,6 +198,8 @@ namespace maps
 						if (cnt++ == index) { return SELECTED_CLASS_PTR(*it); }
 				throw std::out_of_range("Index is out of range");
 			}
+			template <typename ELEMENT>
+			void push_back(const ELEMENT &element) { m_source.push_back(element); }
 		private:
 			CONTAINER & m_source;
 		}; // end ProxyFilterContainerByClass
