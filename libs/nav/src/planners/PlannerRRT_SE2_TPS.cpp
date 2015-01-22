@@ -9,226 +9,129 @@
 
 #include "nav-precomp.h" // Precomp header
 
-#include <mrpt/nav/planners/TPath.h>
-#include <mrpt/poses/CPose2D.h>
-#include <mrpt/system/filesystem.h> // directoryExists(), ...
-#include <mrpt/system/os.h>
+#include <mrpt/nav/planners/PlannerRRT_SE2_TPS.h>
 
 using namespace mrpt::nav;
-using namespace mrpt::poses;
 using namespace mrpt::utils;
-using namespace mrpt::system;
 using namespace mrpt::math;
 using namespace std;
 
-TPath::TPath()
+PlannerRRT_SE2_TPS::PlannerRRT_SE2_TPS() :
+	m_initialized(false)
 {
-    //ctor
 }
 
-TPath::~TPath()
+/** Load all params from a config file source */
+void PlannerRRT_SE2_TPS::loadConfig(const mrpt::utils::CConfigFileBase &ini, const std::string &sSect)
 {
-    //dtor
-}
+	// Robot shape:
+	// ==========================
+	{
+		// Robot shape is a bit special to load:
+		const std::string sShape = ini.read_string(sSect,"robot_shape","",true);
+		CMatrixDouble mShape;
+		if (!mShape.fromMatlabStringFormat(sShape))
+			THROW_EXCEPTION_CUSTOM_MSG1("Error parsing robot_shape matrix: '%s'",sShape.c_str());
+		ASSERT_(size(mShape,1)==2)
+		ASSERT_(size(mShape,2)>=3)
 
-/*---------------------------------------------------------------
-            compute the path length using Euclidean metric
-  ---------------------------------------------------------------*/
-double TPath::TPlannedPath::lengthEuclidean() const
-{
-    if (this->size()==0)//(path.size()==0)
-    {
-        std::cout << "info from -TPath::lengthEuclidean- message: the path size is 0 " << std::endl;
-        return 0.0;
-    }
-    double L = 0;
-    for (size_t i=0; i<this->size()-1; i++)
-        L +=sqrt(square((*this)[i+1].p.x-(*this)[i].p.x)+square((*this)[i+1].p.y-(*this)[i].p.y));
+		params.robot_shape.clear();
+		for (size_t i=0;i<size(mShape,2);i++)
+			params.robot_shape.push_back(TPoint2D(mShape(0,i),mShape(1,i)));
+	}
 
-    return L;
-}
+	// Load PTG tables:
+	// ==========================
+	m_PTGs.clear();
 
-/*---------------------------------------------------------------
-            compute the path length using psm metric
-  ---------------------------------------------------------------*/
-double TPath::TPlannedPath::lengthPsm() const
-{
-    if (this->size()==0)
-    {
-        std::cout << "info from -TPath::lengthEuclidean- message: the path size is 0 " << std::endl;
-        return 0.0;
-    }
-    double L = 0;
+	const size_t PTG_COUNT = ini.read_int(sSect,"PTG_COUNT",0, true );  //load the number of PTGs
+	const float refDistance = ini.read_float(sSect,"MAX_REFERENCE_DISTANCE",5 );  //attempt to read a parameter from the file, otherwise it return the default value
+	const float colGridRes = ini.read_float(sSect,"GRID_RESOLUTION",0.02f );
 
-    for (size_t i=0; i<this->size()-1; i++)
-        L +=(*this)[i].ptg_dist;
+	for ( unsigned int n=0;n<PTG_COUNT;n++ )
+	{
+		// load ptg_parameters of this PTG:
 
-return L;
-}
+		TParameters<double> ptg_parameters;
+		ptg_parameters["ref_distance"] = refDistance;
+		ptg_parameters["resolution"]   = colGridRes;
+		ptg_parameters["PTG_type"]	= ini.read_int(sSect,format("PTG%u_Type", n ),1, true );
+		ptg_parameters["v_max"]		= ini.read_float(sSect,format("PTG%u_v_max_mps", n ), 5, true);
+		ptg_parameters["w_max"]		= DEG2RAD(ini.read_float(sSect,format("PTG%u_w_max_gps", n ), 0, true));
+		ptg_parameters["K"]			= ini.read_int(sSect,format("PTG%u_K", n ), 1, false);
+		ptg_parameters["cte_a0v"]	= DEG2RAD( ini.read_float(sSect,format("PTG%u_cte_a0v_deg", n ), 0, false) );
+		ptg_parameters["cte_a0w"]	= DEG2RAD( ini.read_float(sSect,format("PTG%u_cte_a0w_deg", n ), 0, false) );
+		const int nAlfas = ini.read_int(sSect,format("PTG%u_nAlfas", n ),100, true );
+#if 1
+		cout << "PTRRT_Navigator::initializePTG - message: READ : ref_distance   " << ptg_parameters["ref_distance"] << " [m] " << endl;
+		cout << "PTRRT_Navigator::initializePTG - message: READ : resolution     " << ptg_parameters["resolution"] << " [m] " << endl;
+		cout << "PTRRT_Navigator::initializePTG - message: READ : PTG_type       " << ptg_parameters["PTG_type"] << endl;
+		cout << "PTRRT_Navigator::initializePTG - message: READ : v_max          " << ptg_parameters["v_max"] << " [m/s] " << endl;
+		cout << "PTRRT_Navigator::initializePTG - message: READ : w_max          " << ptg_parameters["w_max"] << " [rad/s] "  << endl;
+		cout << "PTRRT_Navigator::initializePTG - message: READ : K              " << ptg_parameters["K"] << endl;
+		cout << "PTRRT_Navigator::initializePTG - message: READ : cte_a0v        " << ptg_parameters["cte_a0v"] << endl;
+		cout << "PTRRT_Navigator::initializePTG - message: READ : cte_a0w        " << ptg_parameters["cte_a0w"] << endl;
+		cout << "PTRRT_Navigator::initializePTG - message: READ : nAlfas         " << nAlfas << "\n\n" << endl;
+#endif
 
-/*---------------------------------------------------------------
-            save path to file
-  ---------------------------------------------------------------*/
-bool  TPath::TPlannedPath::save_to_text_file(const std::string &file) const
-{
+		// Generate it:
+		m_PTGs.push_back( CParameterizedTrajectoryGeneratorPtr( CParameterizedTrajectoryGenerator::CreatePTG(ptg_parameters) ) );
 
-    MRPT_TODO("Add a flag to activate the log saving")
-    std::string save_folder = "./nav.logs/paths/";
-    if (!mrpt::system::directoryExists(save_folder.c_str()))
+		const float min_dist = 0.015f;
+		const float max_time = 75.0;
+
 		{
-			mrpt::system::createDirectory( "./nav.logs"); //if I take it out it will create the subdirectories?
-			mrpt::system::createDirectory( save_folder.c_str());
+			mrpt::utils::CTimeLoggerEntry tle(m_timelogger,"PTG.simulateTrajectories");
+
+			m_PTGs[n]->simulateTrajectories(
+				nAlfas,       // alphas,
+				max_time,     // max.tim,
+				refDistance,  // max.dist,
+				10*refDistance/min_dist, // max.n,
+				0.5e-3,       // diferencial_t
+				15e-3         // min_dist
+				);
 		}
-    std::string file_name = save_folder+file;
-	std::FILE	*f=os::fopen(file_name.c_str(),"wt");
-	if (!f) return false;
-
-//mrpt::system::createDirectory() //if it doesn't exist
-    if (this->size()==0)
-    {
-        std::cout << "info from -TPath::save_to_text_file- message: the path size is 0 " << std::endl;
-        os::fclose(f);
-        return false;
-    }
-
-    TPath tpath;
-	os::fprintf(f,"%% Path file --- \n%% euclidean path length = %02f [m],\n%% PTG path length = %02f [psm]\n%% Is approximated = %i --> 0 the target is reached, 1 the solution is approximated\n",
-                                (*this).lengthEuclidean(), (*this).lengthPsm(), (*this).isApproximate);
-//in the file max_v, max_w are always 0 beause they are taken from the first motion assigned to 0 in the first step
-	os::fprintf(f,"%% x [m]  y [m]   phi [deg] ptg_index   K   ptg_dist [psm]   v [m/s]  w [rad/s]\n");
-
-	for (unsigned int i=0;i<this->size();i++)
-		os::fprintf(f,  "%02f   %02f  %02f  %d  %d  %02f %02f %02f\n",
-                        (*this)[i].p.x, (*this)[i].p.y, RAD2DEG((*this)[i].p.phi),
-                        (*this)[i].ind_ptg, (*this)[i].K, (*this)[i].ptg_dist,
-                        (*this)[i].max_v, (*this)[i].max_w );
-
-	os::fclose(f);/**/
-	return true;
+	}
 
 }
 
-/*---------------------------------------------------------------
-            get the closest path index to a robot pose
-  ---------------------------------------------------------------*/
-
-  int TPath::TPlannedPath::getClosestPathIndex (mrpt::math::TPose2D &robotPose) const
-  {
-
-    try
-	{
-
-        mrpt::nav::TPath::TPlannedPath m_planned_path_ = *this;
-        mrpt::nav::TPath::TPathData	    next_planned_point;  // next target
-        //mrpt::reactivenav::TPath::TPathData	    last_planned_point;  // target
-
-        if (m_planned_path_.empty())// || m_planned_path_.size()<2)
-            return 0;//m_planned_path_.size();// if there is no plan or the plan is too short just return the last point
-
-        //TPose2D  robotPose_=robotPose;
-
-        {
-            int closest_path_index=0;  //the first condition will be always true since < than infinity
-			float robot2path_distance=std::numeric_limits<float>::infinity();
-            for (size_t i=0; i<this->size()-1; i++)  //for all points in the path
-			    {
-                    next_planned_point = m_planned_path_.front();
-                    m_planned_path_.erase(m_planned_path_.begin());
-                    if( (CPose2D(next_planned_point.p).distance2DTo(robotPose.x, robotPose.y))<robot2path_distance)
-                        {closest_path_index = i;
-                        robot2path_distance=CPose2D(next_planned_point.p).distance2DTo(robotPose.x, robotPose.y);
-                        }
- 			    }
-            return closest_path_index;
-        }
-	}
-	catch (std::exception &e)
-	{
-		cerr <<"[TPath::TPlannedPath::getClosestPathIndex] Exception:"<<endl;
-		cerr << e.what() << endl;
-		return 0;
-	}
-  }
-
-/*---------------------------------------------------------------
-            get the next breadcrumb point
-  ---------------------------------------------------------------*/
-bool TPath::TPlannedPath::getBreadcrumbPoint(mrpt::nav::TPath::TPathData &out_next_point,
-                                             mrpt::math::TPose2D &robotPose,
-                                             mrpt::math::TPose2D &m_target_pose,
-                                             double breadcrumb_dist)
+/** Must be called after setting all params (see `loadConfig()`) and before calling `solve()` */
+void PlannerRRT_SE2_TPS::initialize()
 {
-    try
+	ASSERT_ABOVEEQ_(params.robot_shape.size(),3);
+	ASSERTMSG_(!m_PTGs.empty(),"No PTG was defined! At least one must be especified.");
+
+	// Convert to CPolygon for API requisites:
+	mrpt::math::CPolygon poly_robot_shape;
 	{
-    mrpt::nav::TPath::TPathData	    next_planned_point;  // next target
-	mrpt::nav::TPath::TPathData	    last_planned_point;  // target
-    mrpt::nav::TPath::TPlannedPath    m_planned_path_=*this;
-
-    // we have proper localization
-    // Acquire the latest path plan --------------
-    {
-        if (m_planned_path_.empty() || m_planned_path_.size()<2)
-        {
-            // There's no plan: Stop the robot:
-            //planned_path_time = INVALID_TIMESTAMP;
-            // and return the target pose as the next reactive pose
-            //next_reatctive_point=m_target_pose;
-            next_planned_point.p.x = robotPose.x;//m_target_pose.x;//robotPose.x;
-            next_planned_point.p.y = robotPose.y;//m_target_pose.y;//robotPose.y;
-            next_planned_point.p.phi = robotPose.phi;//m_target_pose.phi;//robotPose.phi;
-
-			out_next_point = next_planned_point;//next_reatctive_point = robotPose;  //if there is no plan just return the robot pose
-			return false;
-			//don't send any command if you don't have a plan!
-        }
-        else  // Only update our copy if needed:
-        {
-            next_planned_point = m_planned_path_.front();
-            last_planned_point = m_planned_path_.back();
-        }
-    } // end of CS
-
-    // Acquire the current estimate of the robot state:
-	// ----------------------------------------------------
-    int starting_point = 0;
-    if (m_planned_path_.size()>3)
-        starting_point = m_planned_path_.getClosestPathIndex(robotPose);//getClosestPathIndex();
-
-	for (size_t i=starting_point; i<m_planned_path_.size(); i++)  //for all points in the path beginning from the closest
-        {
-         next_planned_point = m_planned_path_[i];
-
-			    // Compute target in coordinates relative to the robot just now:
-				const CPose2D trg_rel = CPose2D(next_planned_point.p) - CPose2D(robotPose);
-                float dist_p2t = CPose2D(m_target_pose).distance2DTo(robotPose.x, robotPose.y);
-
-                if(abs(dist_p2t)<breadcrumb_dist)  //define a parameter for the maximum distance to the target
-				{
-                  out_next_point = last_planned_point;//next_reatctive_point=m_target_pose;  //if we are close to the target just return the target as the pose
-				  return true;
-				}
-
-                float dist_p2p = CPose2D(next_planned_point.p).distance2DTo(robotPose.x, robotPose.y);
-                if(abs(dist_p2p)<breadcrumb_dist)
-                    this->erase(this->begin());   //this point will be not followed and it will be eliminated !!!                }
-                else
-				{
-                    out_next_point = next_planned_point;//next_reatctive_point = CPose2D(next_planned_point.p);
-					return true;
-				}
-			}
-        //}//end - for all points in the path
-
-	// Don't have next point.
-	return false;
-
-    }
-	catch (std::exception &e)
-	{
-		cerr <<"[TPath::TPlannedPath::getBreadcrumbPoint] Exception:"<<endl;
-		cerr << e.what() << endl;
-		return false;
+		vector<double> xm,ym;
+		params.robot_shape.getPlotData(xm,ym);
+		poly_robot_shape.setAllVertices(xm,ym);
 	}
 
+	for (size_t i=0;i<m_PTGs.size();i++)
+	{
+		mrpt::utils::CTimeLoggerEntry tle(m_timelogger, "build_PTG_collision_grids");
+
+		mrpt::nav::build_PTG_collision_grids(
+			m_PTGs[i].pointer(),
+			poly_robot_shape,
+			mrpt::format("TPRRT_PTG_%03u.dat.gz",i)
+			);
+	}
+
+	m_initialized = true;
 }
 
+/** The main API entry point: tries to find a planned path from 'goal' to 'target' */
+void PlannerRRT_SE2_TPS::solve( 
+	const PlannerRRT_SE2_TPS::TPlannerInput &pi, 
+	PlannerRRT_SE2_TPS::TPlannerResult & result )
+{
+	ASSERTMSG_(m_initialized, "initialize() must be called before!");
+
+
+
+
+} 

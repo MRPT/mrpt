@@ -23,4 +23,5 @@
 
 #include <mrpt/nav/planners/CPathPlanningMethod.h>
 #include <mrpt/nav/planners/CPathPlanningCircularRobot.h>
+#include <mrpt/nav/planners/PlannerRRT_SE2_TPS.h>
 

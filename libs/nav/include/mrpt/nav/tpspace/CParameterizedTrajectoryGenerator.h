@@ -271,9 +271,10 @@ protected:
 		void    FreeMemory();
 
 	}; // end of class
+	typedef stlplus::smart_ptr<CParameterizedTrajectoryGenerator> CParameterizedTrajectoryGeneratorPtr; //!< Smart pointer to a PTG
 
-	/** A type for lists of PTGs */
-	typedef std::vector<mrpt::nav::CParameterizedTrajectoryGenerator*>  TListPTGs;
+	typedef std::vector<mrpt::nav::CParameterizedTrajectoryGenerator*>  TListPTGs;      //!< A list of PTGs (bare pointers)
+	typedef std::vector<mrpt::nav::CParameterizedTrajectoryGeneratorPtr>  TListPTGPtr;  //!< A list of PTGs (smart pointers)
 
   }
 }
