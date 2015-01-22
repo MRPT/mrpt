@@ -260,10 +260,11 @@ inline void StdOutput::spacePrint( std::ostream& os,
 
 			// trim the length so it doesn't end in middle of a word
 			if ( stringLen == allowedLen )
-				while ( s[stringLen+start] != ' ' && 
-			   	        s[stringLen+start] != ',' &&
-			   	        s[stringLen+start] != '|' &&
-						stringLen >= 0 )
+				while ( stringLen >= 0 && 
+					s[stringLen+start] != ' ' && 
+					s[stringLen+start] != ',' &&
+					s[stringLen+start] != '|'
+					)
 					stringLen--;
 	
 			// ok, the word is longer than the line, so just split 
