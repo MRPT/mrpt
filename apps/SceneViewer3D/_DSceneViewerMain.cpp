@@ -793,6 +793,7 @@ void _DSceneViewerFrame::updateTitle()
 
 void _DSceneViewerFrame::OntimLoadFileCmdLineTrigger(wxTimerEvent& event)
 {
+	timLoadFileCmdLine.Stop(); // One shot only.
     // Open file if passed by the command line:
     if (global_fileToOpen.size())
         loadFromFile( global_fileToOpen );
