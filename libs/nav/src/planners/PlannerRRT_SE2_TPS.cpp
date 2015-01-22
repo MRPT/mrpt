@@ -10,6 +10,7 @@
 #include "nav-precomp.h" // Precomp header
 
 #include <mrpt/nav/planners/PlannerRRT_SE2_TPS.h>
+#include <mrpt/nav/tpspace/motion_planning_utils.h>
 #include <mrpt/utils/CTicTac.h>
 #include <mrpt/random.h>
 #include <mrpt/system/filesystem.h>
@@ -128,7 +129,7 @@ void PlannerRRT_SE2_TPS::initialize()
 		mrpt::nav::build_PTG_collision_grids(
 			m_PTGs[i].pointer(),
 			poly_robot_shape,
-			mrpt::format("TPRRT_PTG_%03u.dat.gz",i),
+			mrpt::format("TPRRT_PTG_%03u.dat.gz",static_cast<unsigned int>(i)),
 			params.ptg_verbose
 			);
 	}
@@ -224,7 +225,8 @@ void PlannerRRT_SE2_TPS::solve(
 
 			float d_rand; // Coordinates in TP-space
 			int   k_rand; // k_rand is the index of target_alpha in PTGs corresponding to a specific d_rand
-			bool tp_point_is_exact = m_PTGs[idxPTG]->inverseMap_WS2TP(
+			//bool tp_point_is_exact =
+			m_PTGs[idxPTG]->inverseMap_WS2TP(
 				x_rand_rel.x(), x_rand_rel.y(),
 				k_rand, d_rand );
 			d_rand *= m_PTGs[idxPTG]->refDistance; // distance to target, in "real meters"

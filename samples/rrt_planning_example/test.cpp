@@ -87,7 +87,7 @@ void TestRRT1()
 	planner_input.world_bbox_min = mrpt::math::TPoint2D(bbox_min.x,bbox_min.y);
 	planner_input.world_bbox_max = mrpt::math::TPoint2D(bbox_max.x,bbox_max.y);
 
-	size_t iters=0;
+	//size_t iters=0;
 	// Show results in a GUI and keep improving:
 #if MRPT_HAS_WXWIDGETS
 	mrpt::gui::CDisplayWindow3D  win("Result",1024,800);

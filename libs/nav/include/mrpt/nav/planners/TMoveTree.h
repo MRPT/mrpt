@@ -51,19 +51,19 @@ namespace mrpt
 		public:
 			struct NODE_TYPE : public NODE_TYPE_DATA
 			{
-				mrpt::utils::TNodeID parent_id; //!< INVALID_NODEID for the root, a valid ID otherwise
 				mrpt::utils::TNodeID node_id;   //!< Duplicated ID (it's also in the map::iterator->first), but put here to make it available in path_t
+				mrpt::utils::TNodeID parent_id; //!< INVALID_NODEID for the root, a valid ID otherwise
 				EDGE_TYPE * edge_to_parent; //!< NULL for root, a valid edge otherwise
 				NODE_TYPE(mrpt::utils::TNodeID node_id_, mrpt::utils::TNodeID parent_id_, EDGE_TYPE * edge_to_parent_, const NODE_TYPE_DATA &data) : 
+					NODE_TYPE_DATA(data),
 					node_id(node_id_),parent_id(parent_id_),
-					edge_to_parent(edge_to_parent_),
-					NODE_TYPE_DATA(data) 
+					edge_to_parent(edge_to_parent_)
 				{
 				}
 				NODE_TYPE() {}
 			};
 
-			typedef public mrpt::graphs::CDirectedTree<EDGE_TYPE> base_t;
+			typedef mrpt::graphs::CDirectedTree<EDGE_TYPE> base_t;
 			typedef typename MAPS_IMPLEMENTATION::template map<mrpt::utils::TNodeID,NODE_TYPE>  node_map_t;  //!< Map: TNode_ID => Node info
 			typedef std::list<NODE_TYPE> path_t; //!< A topological path up-tree
 
@@ -84,7 +84,8 @@ namespace mrpt
 				{
 					if (ignored_nodes && ignored_nodes->find(it->first)!=ignored_nodes->end())
 						continue; // ignore it
-
+					if (distanceMetricEvaluator.cannotBeNearerThan(query_pt,it->second,min_d))
+						continue; // Skip the more expensive calculation of exact distance
 					double d = distanceMetricEvaluator.distance(query_pt,it->second);
 					if (d<min_d) {
 						min_d = d;
@@ -182,6 +183,13 @@ namespace mrpt
 		template<>
 		struct PoseDistanceMetric<TNodeSE2>
 		{
+			bool cannotBeNearerThan(const TNodeSE2 &a, const TNodeSE2& b,const double d) const
+			{
+				if (std::abs(a.state.x-b.state.x)>d) return true;
+				if (std::abs(a.state.y-b.state.y)>d) return true;
+				return false;
+			}
+
 			double distance(const TNodeSE2 &a, const TNodeSE2& b) const 
 			{
 				return mrpt::math::square(a.state.x-b.state.x) +
@@ -201,7 +209,13 @@ namespace mrpt
 		template<>
 		struct PoseDistanceMetric<TNodeSE2_TP>
 		{
-			double distance(const TNodeSE2_TP &src, const TNodeSE2_TP& dst) const 
+			bool cannotBeNearerThan(const TNodeSE2_TP &a, const TNodeSE2_TP& b,const double d) const
+			{
+				if (std::abs(a.state.x-b.state.x)>d) return true;
+				if (std::abs(a.state.y-b.state.y)>d) return true;
+				return false;
+			}
+			double distance(const TNodeSE2_TP &src, const TNodeSE2_TP& dst) const
 			{
 				float d;
 				int   k;

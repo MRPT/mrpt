@@ -81,8 +81,8 @@ namespace mrpt
 					maxLength(1.0),
 					obsMaxDistance(5.0),
 					minDistanceBetweenNewNodes(0.10),
-					save_3d_log_freq(0),
-					ptg_verbose(true)
+					ptg_verbose(true),
+					save_3d_log_freq(0)
 				{
 					robot_shape.push_back( mrpt::math::TPoint2D(-0.5,-0.5) );
 					robot_shape.push_back( mrpt::math::TPoint2D( 0.8,-0.4) );
