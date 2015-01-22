@@ -48,6 +48,13 @@ void TestRRT1()
 
 	planner.loadConfig( mrpt::utils::CConfigFile(myCfgFileName) );
 
+	planner.params.save_3d_log_freq = 200; // save some iterations for debugging
+
+	// End criteria:
+	planner.end_criteria.acceptedDistToTarget = 0.25;
+	planner.end_criteria.maxComputationTime = 0;
+
+
 	// Init planner:
 	// ------------------------------
 	planner.initialize();
@@ -59,8 +66,12 @@ void TestRRT1()
 
 	planner_input.start_pose = mrpt::math::TPose2D(0,0,0);
 	planner_input.goal_pose  = mrpt::math::TPose2D(10,1,0);
+	planner_input.world_bbox_min = mrpt::math::TPoint2D(-20,-20);
+	planner_input.world_bbox_max = mrpt::math::TPoint2D( 20, 20);
 	
 	planner.solve( planner_input, planner_result);
+
+	cout << "Found goal_distance: " << planner_result.goal_distance << endl;
 	
 
 }

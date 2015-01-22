@@ -32,6 +32,7 @@ namespace mrpt
 		*      - addEdge (from, to)
 		*      - add here more instructions
 		*
+		*
 		* <b>Changes history</b>
 		*      - 06/MAR/2014: Creation (MB)
 		*      - 21/JAN/2015: Refactoring (JLBC)
@@ -39,22 +40,38 @@ namespace mrpt
 		*  \ingroup mrpt_nav_grp
 		*/
 		template<
-			class NODE_TYPE, 
+			class NODE_TYPE_DATA, 
 			class EDGE_TYPE,
 			class MAPS_IMPLEMENTATION = mrpt::utils::map_traits_map_as_vector // Use std::map<> vs. std::vector<>
 		>
 		class TMoveTree : public mrpt::graphs::CDirectedTree<EDGE_TYPE>
 		{
 		public:
+			struct NODE_TYPE : public NODE_TYPE_DATA
+			{
+				mrpt::utils::TNodeID parent_id; //!< INVALID_NODEID for the root, a valid ID otherwise
+				mrpt::utils::TNodeID node_id;   //!< Duplicated ID (it's also in the map::iterator->first), but put here to make it available in path_t
+				EDGE_TYPE * edge_to_parent; //!< NULL for root, a valid edge otherwise
+				NODE_TYPE(mrpt::utils::TNodeID node_id_, mrpt::utils::TNodeID parent_id_, EDGE_TYPE * edge_to_parent_, const NODE_TYPE_DATA &data) : 
+					node_id(node_id_),parent_id(parent_id_),
+					edge_to_parent(edge_to_parent_),
+					NODE_TYPE_DATA(data) 
+				{
+				}
+				NODE_TYPE() {}
+			};
+
+			typedef public mrpt::graphs::CDirectedTree<EDGE_TYPE> base_t;
 			typedef typename MAPS_IMPLEMENTATION::template map<mrpt::utils::TNodeID,NODE_TYPE>  node_map_t;  //!< Map: TNode_ID => Node info
+			typedef std::list<NODE_TYPE> path_t; //!< A topological path up-tree
 
 			/** Finds the nearest node to a given pose, using the given metric */
 			mrpt::utils::TNodeID getNearestNode(
-				const NODE_TYPE &query_pt,
-				PoseDistanceMetric<NODE_TYPE> &distanceMetricEvaluator,
+				const NODE_TYPE_DATA &query_pt,
+				const PoseDistanceMetric<NODE_TYPE_DATA> &distanceMetricEvaluator,
 				double *out_distance = NULL) const
 			{
-				MRPT_TODO("Optimize this query!")
+				MRPT_TODO("Optimize this query with KD-tree!")
 				ASSERT_(!m_nodes.empty())
 
 				double min_d = std::numeric_limits<double>::max();
@@ -71,12 +88,57 @@ namespace mrpt
 				return min_id;
 			}
 
-			void insertNode( const mrpt::utils::TNodeID id, const NODE_TYPE &node ) {
-				m_nodes[id] = node;
+			void insertNodeAndEdge(
+				const mrpt::utils::TNodeID parent_id, 
+				const mrpt::utils::TNodeID new_child_id, 
+				const NODE_TYPE_DATA &new_child_node_data, 
+				const EDGE_TYPE &new_edge_data ) 
+			{
+				// edge:
+				typename base_t::TListEdges & edges_of_parent = base_t::edges_to_children[parent_id];
+				edges_of_parent.push_back( typename base_t::TEdgeInfo(new_child_id,false/*direction_child_to_parent*/, new_edge_data ) );
+				// node:
+				m_nodes[new_child_id] = NODE_TYPE(new_child_id,parent_id, &edges_of_parent.back().data, new_child_node_data);
 			}
 
+			/** Insert a node without edges (should be used only for a tree root node) */
+			void insertNode(const mrpt::utils::TNodeID node_id, const NODE_TYPE_DATA &node_data) 
+			{
+				m_nodes[node_id] = NODE_TYPE(node_id,INVALID_NODEID, NULL, node_data);
+			}
+
+			mrpt::utils::TNodeID getNextFreeNodeID() const { return m_nodes.size(); }
 
 			const node_map_t & getAllNodes() const { return m_nodes; }
+
+			/** Builds the path (sequence of nodes, with info about next edge) up-tree from a `target_node` towards the root 
+			  * Nodes are ordered in the direction ROOT -> start_node
+			  */
+			void backtrackPath(
+				const mrpt::utils::TNodeID target_node, 
+				path_t &out_path
+				) const 
+			{
+				out_path.clear();
+				typename node_map_t::const_iterator it_src = m_nodes.find(target_node);
+				if (it_src == m_nodes.end()) throw std::runtime_error("backtrackPath: target_node not found in tree!");
+				const NODE_TYPE * node = &it_src->second;
+				for (;;)
+				{
+					out_path.push_front(*node);
+
+					mrpt::utils::TNodeID next_node_id = node->parent_id;
+					if (next_node_id==INVALID_NODEID) {
+						break; // finished
+					}
+					else {
+						typename node_map_t::const_iterator it_next = m_nodes.find(next_node_id);
+						if (it_next == m_nodes.end()) throw std::runtime_error("backtrackPath: Node ID not found during tree traversal!");
+						node = &it_next->second;
+					}
+				}
+				
+			}
 
 		private:
 			node_map_t  m_nodes;  //!< Info per node
