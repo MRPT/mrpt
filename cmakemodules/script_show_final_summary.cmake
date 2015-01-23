@@ -44,7 +44,7 @@ FOREACH(_LIB ${ALL_MRPT_LIBS})
 	ELSEIF(_LIB_HDRONLY)
 		SET(_LIB_TYPE "  (header-only)")
 	ENDIF(_LIB_METALIB)
-	
+
 	MESSAGE(STATUS "  ${_LIB} : ${_LIB_DEP} ${_LIB_TYPE}")
 ENDFOREACH(_LIB)
 MESSAGE(STATUS "")
@@ -156,6 +156,10 @@ SHOW_CONFIG_LINE_SYSTEM("xSENS MT 4th generation             " CMAKE_MRPT_HAS_xS
 
 MESSAGE(STATUS  "")
 
+MESSAGE(STATUS " _________________________ BINDINGS _____________________________")
+SHOW_CONFIG_LINE("Build MRPT python bindings? (pymrpt)" CMAKE_MRPT_HAS_PYTHON_BINDINGS)
+SHOW_CONFIG_LINE("- dep: Boost found?                 " Boost_FOUND)
+SHOW_CONFIG_LINE("- dep: PythonLibs found?            " PYTHONLIBS_FOUND)
 
 # Final warnings:
 IF (NOT CMAKE_MRPT_HAS_OPENCV AND NOT DISABLE_OPENCV)
