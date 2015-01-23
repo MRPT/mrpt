@@ -19,6 +19,7 @@
 	- <b>Detailed list of changes:</b>
 		- BUG FIXES:
 			- Fix ocasional (false) failure of RANSAC unit tests due to their non-deterministic nature.
+			- Fix build error with MSVC 2010 in mrpt-hmtslam (Closes #127).
 
 <hr>
 <a name="1.3.0">

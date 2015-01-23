@@ -1479,7 +1479,7 @@ void CHMTSLAM::LSLAM_process_message_from_AA( const TMessageLSLAMfromAA &myMsg )
 						// Process the poses in the list for each particle:
 						for (CLocalMetricHypothesis::CParticleList::iterator partIt=LMH->m_particles.begin();partIt!=LMH->m_particles.end();++partIt)
 						{
-							map<TPoseID,CPose3D>::const_iterator pose3D = partIt->d->robotPoses.find( poseToAdd );
+							TMapPoseID2Pose3D::const_iterator pose3D = partIt->d->robotPoses.find( poseToAdd );
 							ASSERT_(pose3D!=partIt->d->robotPoses.end());
 							SF.insertObservationsInto(  &partIt->d->metricMaps, & pose3D->second );
 						} // end for each particle
