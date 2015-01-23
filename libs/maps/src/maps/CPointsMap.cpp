@@ -960,9 +960,9 @@ void CPointsMap::boundingBox(
 				float *ptr_in_y = const_cast<float*>(&y[0]);
 				float *ptr_in_z = const_cast<float*>(&z[0]);
 				for (size_t k=nExtraPad;k; k--) {
-					ptr_in_x[nPoints+k]=0;
-					ptr_in_y[nPoints+k]=0;
-					ptr_in_z[nPoints+k]=0;
+					ptr_in_x[nPoints+k-1]=0;
+					ptr_in_y[nPoints+k-1]=0;
+					ptr_in_z[nPoints+k-1]=0;
 				}
 			}
 
