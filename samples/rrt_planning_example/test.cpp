@@ -116,11 +116,10 @@ void TestRRT1()
 
 		scene->clear();
 	
-		planner.renderMoveTree(
-			*scene,
-			planner_input, planner_result,
-			planner_result.best_goal_node_id
-			);
+		PlannerRRT_SE2_TPS::TRenderPlannedPathOptions render_opts;
+		render_opts.highlight_path_to_node_id = planner_result.best_goal_node_id;
+
+		planner.renderMoveTree(*scene, planner_input, planner_result,render_opts );
 
 		win.unlockAccess3DScene();
 		win.repaint();

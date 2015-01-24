@@ -142,16 +142,58 @@ namespace mrpt
 			/** The main API entry point: tries to find a planned path from 'goal' to 'target' */
 			void solve( const TPlannerInput &pi, TPlannerResult & result );
 
+			/** Options for renderMoveTree()  */
+			struct NAV_IMPEXP TRenderPlannedPathOptions
+			{
+				mrpt::utils::TNodeID highlight_path_to_node_id; //!< Highlight the path from root towards this node (usually, the target)
+
+				const mrpt::poses::CPose2D *x_rand_pose;
+				const mrpt::poses::CPose2D *x_nearest_pose;
+				const mrpt::maps::CPointsMap * local_obs_from_nearest_pose;
+				const mrpt::poses::CPose2D *new_state;
+
+				double xyzcorners_scale; //!< A scale factor to all XYZ corners (default=0, means auto determien from vehicle shape)
+				bool   highlight_last_added_edge; //!< (Default=false)
+				double ground_xy_grid_frequency;  //!< (Default=10 meters) Set to 0 to disable
+
+				mrpt::utils::TColor color_ground_xy_grid;
+				mrpt::utils::TColor color_normal_edge;
+				mrpt::utils::TColor color_last_edge;
+				mrpt::utils::TColor color_optimal_edge;
+				float width_last_edge;
+				float width_normal_edge;
+				float width_optimal_edge;
+
+				double vehicle_shape_z; //!< (Default=0.01) Height (Z coordinate) for the vehicle shapes. Helps making it in the "first plane"
+				bool   draw_obstacles;  //!< (Default=true)
+
+				TRenderPlannedPathOptions() :
+					highlight_path_to_node_id( INVALID_NODEID ),
+					x_rand_pose( NULL ),
+					x_nearest_pose( NULL ),
+					local_obs_from_nearest_pose( NULL ),
+					new_state( NULL ),
+					xyzcorners_scale(0),
+					highlight_last_added_edge(false),
+					ground_xy_grid_frequency(10.0),
+					color_ground_xy_grid(0xFF,0xFF,0xFF),
+					color_normal_edge(0x22,0x22,0x22,0x40),
+					color_last_edge(0xff,0xff,0x00),
+					color_optimal_edge(0x00,0x00,0x00),
+					width_last_edge(3.f),
+					width_normal_edge(1.f),
+					width_optimal_edge(4.f),
+					vehicle_shape_z(0.01),
+					draw_obstacles(true)
+				{
+				}
+			};
 
 			void renderMoveTree(
 				mrpt::opengl::COpenGLScene &scene,
 				const TPlannerInput  &pi,
 				const TPlannerResult &result,
-				const mrpt::utils::TNodeID highlight_path_to_node_id = INVALID_NODEID,
-				const mrpt::poses::CPose2D *x_rand_pose = NULL,
-				const mrpt::poses::CPose2D *x_nearest_pose = NULL,
-				const mrpt::maps::CPointsMap * local_obs_from_nearest_pose = NULL,
-				const mrpt::poses::CPose2D *new_state=NULL
+				const TRenderPlannedPathOptions &options
 				);
 
 			mrpt::utils::CTimeLogger & getProfiler() { return m_timelogger; }

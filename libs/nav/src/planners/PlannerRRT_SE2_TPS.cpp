@@ -182,14 +182,17 @@ void PlannerRRT_SE2_TPS::solve(
 		// [Algo `tp_space_rrt`: Line 3]: sample random state (with goal biasing)
 		// -----------------------------------------
 		node_pose_t x_rand;
+		bool rand_is_target=false;
 		if (mrpt::random::randomGenerator.drawUniform(0.0,1.0) < params.goalBias) {
 			x_rand = pi.goal_pose;
+			rand_is_target=true;
 		}
 		else {
 			// Sample uniform:
 			for (int i=0;i<node_pose_t::static_size;i++)
 				x_rand[i] = mrpt::random::randomGenerator.drawUniform( pi.world_bbox_min[i], pi.world_bbox_max[i]);
 		}
+		const CPose2D x_rand_pose(x_rand);
 
 		// [Algo `tp_space_rrt`: Line 4]: For each PTG
 		// -----------------------------------------
@@ -209,14 +212,31 @@ void PlannerRRT_SE2_TPS::solve(
 			m_timelogger.leave("TMoveTree::getNearestNode");
 
 			if (x_nearest_id==INVALID_NODEID)
-				continue; // We can't find any close node, at least with this PTG's paths
+			{
+				// We can't find any close node, at least with this PTG's paths: skip
+
+				// Before that, save log:
+				if (params.save_3d_log_freq>0 && (++SAVE_3D_TREE_LOG_DECIMATION_CNT >= params.save_3d_log_freq))
+				{
+					SAVE_3D_TREE_LOG_DECIMATION_CNT=0; // Reset decimation counter
+					TRenderPlannedPathOptions render_options;
+					render_options.highlight_path_to_node_id = result.best_goal_node_id;
+					render_options.highlight_last_added_edge = false;
+					render_options.x_rand_pose = &x_rand_pose;
+					mrpt::opengl::COpenGLScene scene;
+					renderMoveTree(scene, pi,result,render_options);
+					mrpt::system::createDirectory("./rrt_log_trees");
+					scene.saveToFile( mrpt::format("./rrt_log_trees/rrt_log_%03u_%06u.3Dscene",static_cast<unsigned int>(SAVE_LOG_SOLVE_COUNT),static_cast<unsigned int>(rrt_iter_counter) ) );
+				}
+
+				continue; // Skip
+			}
 
 			const TNodeSE2_TP &     x_nearest_node = result.move_tree.getAllNodes().find(x_nearest_id)->second;
 
 			// [Algo `tp_space_rrt`: Line 6]: Relative target
 			// -----------------------------------------------
 			const CPose2D x_nearest_pose( x_nearest_node.state );
-			const CPose2D x_rand_pose(x_rand);
 			const CPose2D x_rand_rel = x_rand_pose - x_nearest_pose;
 
 			// [Algo `tp_space_rrt`: Line 7]: Relative target in TP-Space
@@ -230,6 +250,9 @@ void PlannerRRT_SE2_TPS::solve(
 				x_rand_rel.x(), x_rand_rel.y(),
 				k_rand, d_rand );
 			d_rand *= m_PTGs[idxPTG]->refDistance; // distance to target, in "real meters"
+			
+			if (rand_is_target) // Breakpoint:
+				d_rand*=1.0;
 
 			// [Algo `tp_space_rrt`: Line 8]: TP-Obstacles
 			// ------------------------------------------------------------
@@ -253,6 +276,9 @@ void PlannerRRT_SE2_TPS::solve(
 			// ------------------------------------------------------------
 			double d_new = std::min(D_max, d_rand);   //distance of the new candidate state in TP-space
 
+			bool is_new_best_solution = false; // Just for logging purposes
+			mrpt::poses::CPose2D *log_new_state_ptr=NULL; // For graphical logs only
+
 			// [Algo `tp_space_rrt`: Line 11]: Do we have free space?
 			// ------------------------------------------------------------
 			if ( d_free>=d_new )
@@ -271,6 +297,7 @@ void PlannerRRT_SE2_TPS::solve(
 				const mrpt::poses::CPose2D new_state_rel(x, y, phi);
 				mrpt::poses::CPose2D new_state = x_nearest_pose+new_state_rel; //compose the new_motion as the last nmotion and the new state
 				const TNodeSE2_TP new_state_node(new_state);
+				log_new_state_ptr = &new_state;
 
 				// Check whether there's already a too-close node around:
 				// --------------------------------------------------------
@@ -325,7 +352,6 @@ void PlannerRRT_SE2_TPS::solve(
 				}
 
 				// Check if this should be the new optimal path:
-				bool is_new_best_solution = false; // Just for logging purposes
 				if (is_acceptable_goal && this_path_cost<result.path_cost)
 				{
 #if 0
@@ -340,22 +366,32 @@ void PlannerRRT_SE2_TPS::solve(
 					result.best_goal_node_id = new_child_id;
 					is_new_best_solution=true;
 				}
-
-				//  Graphical logging, if enabled:
-				// ------------------------------------------------------
-				if (params.save_3d_log_freq>0 && (++SAVE_3D_TREE_LOG_DECIMATION_CNT >= params.save_3d_log_freq || is_new_best_solution))
-				{
-					CTimeLoggerEntry tle(m_timelogger,"PT_RRT::solve.generate_log_files");
-					SAVE_3D_TREE_LOG_DECIMATION_CNT=0; // Reset decimation counter
-
-					// Render & save to file:
-					mrpt::opengl::COpenGLScene scene;
-					renderMoveTree(scene, pi,result,result.best_goal_node_id, &x_rand_pose,&x_nearest_pose, &m_local_obs,&new_state );
-					mrpt::system::createDirectory("./rrt_log_trees");
-					scene.saveToFile( mrpt::format("./rrt_log_trees/rrt_log_%03u_%06u.3Dscene",static_cast<unsigned int>(SAVE_LOG_SOLVE_COUNT),static_cast<unsigned int>(rrt_iter_counter) ) );
-				}
-
 			} // end if the path is obstacle free
+
+			//  Graphical logging, if enabled:
+			// ------------------------------------------------------
+			if (params.save_3d_log_freq>0 && (++SAVE_3D_TREE_LOG_DECIMATION_CNT >= params.save_3d_log_freq || is_new_best_solution))
+			{
+				CTimeLoggerEntry tle(m_timelogger,"PT_RRT::solve.generate_log_files");
+				SAVE_3D_TREE_LOG_DECIMATION_CNT=0; // Reset decimation counter
+
+				// Render & save to file:
+				TRenderPlannedPathOptions render_options;
+				render_options.highlight_path_to_node_id = result.best_goal_node_id;
+				render_options.x_rand_pose = &x_rand_pose;
+				render_options.x_nearest_pose = &x_nearest_pose;
+				render_options.local_obs_from_nearest_pose = &m_local_obs;
+				render_options.new_state = log_new_state_ptr;
+				render_options.highlight_last_added_edge = true;
+
+				mrpt::opengl::COpenGLScene scene;
+				renderMoveTree(scene, pi,result,render_options);
+
+				mrpt::system::createDirectory("./rrt_log_trees");
+				scene.saveToFile( mrpt::format("./rrt_log_trees/rrt_log_%03u_%06u.3Dscene",static_cast<unsigned int>(SAVE_LOG_SOLVE_COUNT),static_cast<unsigned int>(rrt_iter_counter) ) );
+			}
+
+
 		} // end for idxPTG
 
 	} // end loop until end conditions
@@ -474,11 +510,7 @@ void PlannerRRT_SE2_TPS::renderMoveTree(
 	mrpt::opengl::COpenGLScene &scene,
 	const PlannerRRT_SE2_TPS::TPlannerInput  &pi,
 	const PlannerRRT_SE2_TPS::TPlannerResult &result,
-	const mrpt::utils::TNodeID highlight_path_to_node_id,
-	const CPose2D *x_rand_pose,
-	const CPose2D *x_nearest_pose,
-	const mrpt::maps::CPointsMap * local_obs_from_nearest_pose,
-	const CPose2D *new_state	
+	const TRenderPlannedPathOptions &options
 	)
 {
 	// Build a model of the vehicle shape: 
@@ -500,69 +532,50 @@ void PlannerRRT_SE2_TPS::renderMoveTree(
 		}
 		xyzcorners_scale = max_veh_radius * 0.5;
 	}
+	// Override with user scale?
+	if (options.xyzcorners_scale!=0)
+		xyzcorners_scale = options.xyzcorners_scale; 
 
 	// "ground"
+	if (options.ground_xy_grid_frequency>0)
 	{
-		mrpt::opengl::CGridPlaneXYPtr obj = mrpt::opengl::CGridPlaneXY::Create( pi.world_bbox_min.x,pi.world_bbox_max.x, pi.world_bbox_min.y,pi.world_bbox_max.y, 0, 10 );
-		obj->setColor_u8( mrpt::utils::TColor(0xFF,0xFF,0xFF) );
+		mrpt::opengl::CGridPlaneXYPtr obj = mrpt::opengl::CGridPlaneXY::Create( pi.world_bbox_min.x,pi.world_bbox_max.x, pi.world_bbox_min.y,pi.world_bbox_max.y, 0, options.ground_xy_grid_frequency );
+		obj->setColor_u8(options.color_ground_xy_grid);
 		scene.insert( obj );
 	}
 
-	// Origin:
-	{
-		mrpt::opengl::CSetOfObjectsPtr obj = mrpt::opengl::stock_objects::CornerXYZ(xyzcorners_scale*1.5);
-		obj->setName("ORIGIN");
-		obj->enableShowName();
-		obj->setColor_u8( mrpt::utils::TColor(0x00,0x00,0x00) );
-		obj->setPose(pi.start_pose);
-		scene.insert(obj);
-	}
-
-	// Target:
-	{
-		mrpt::opengl::CSetOfObjectsPtr obj = mrpt::opengl::stock_objects::CornerXYZ(xyzcorners_scale*1.5);
-		string m_name =	"GOAL";
-		obj->setName(m_name);
-		obj->enableShowName();
-		obj->setColor_u8( mrpt::utils::TColor(0x00,0x00,0x00) );
-		obj->setPose(pi.goal_pose);
-		scene.insert(obj);
-	}
-
 	// Original randomly-pick pose:
-	if (x_rand_pose)
+	if (options.x_rand_pose)
 	{
 		mrpt::opengl::CSetOfObjectsPtr obj = mrpt::opengl::stock_objects::CornerXYZ(xyzcorners_scale*1.0);
 		string m_name =	"X_rand";
 		obj->setName(m_name);
 		obj->enableShowName();
-		obj->setPose(*x_rand_pose);
+		obj->setPose(*options.x_rand_pose);
 		scene.insert(obj);
 	}
 
 	// Nearest state pose:
-	if (x_nearest_pose)
+	if (options.x_nearest_pose)
 	{
 		mrpt::opengl::CSetOfObjectsPtr obj = mrpt::opengl::stock_objects::CornerXYZ(xyzcorners_scale*1.0);
 		string m_name =	"X_near";
 		obj->setName(m_name);
 		obj->enableShowName();
-		obj->setPose(*x_nearest_pose);
+		obj->setPose(*options.x_nearest_pose);
 		scene.insert(obj);
 	}
 
 	// Determine the up-to-now best solution, so we can highlight the best path so far:
 	TMoveTreeSE2_TP::path_t  best_path;
-	if (highlight_path_to_node_id!=INVALID_NODEID)
-		result.move_tree.backtrackPath( highlight_path_to_node_id, best_path);
+	if (options.highlight_path_to_node_id!=INVALID_NODEID)
+		result.move_tree.backtrackPath( options.highlight_path_to_node_id, best_path);
 
 	// make list of nodes in the way of the best path:
 	std::set<const TMoveEdgeSE2_TP*> edges_best_path;
 	for (TMoveTreeSE2_TP::path_t::const_iterator it=best_path.begin();it!=best_path.end();++it)
 		if (it->edge_to_parent) 
 			edges_best_path.insert(it->edge_to_parent);
-
-	//cout << result.move_tree.getAsTextDescription() << endl;
 
 	// Existing nodes & edges between them:
 	{
@@ -571,7 +584,7 @@ void PlannerRRT_SE2_TPS::renderMoveTree(
 		for (TMoveTreeSE2_TP::node_map_t::const_iterator itNode=lstNodes.begin();itNode!=lstNodes.end();++itNode)
 		{
 			const TMoveTreeSE2_TP::NODE_TYPE & node = itNode->second;
-							
+
 			mrpt::poses::CPose2D parent_state; 
 			if (node.parent_id!=INVALID_NODEID) 
 			{
@@ -594,7 +607,9 @@ void PlannerRRT_SE2_TPS::renderMoveTree(
 				if (is_best_path) 
 				{
 					mrpt::opengl::CSetOfLinesPtr vehShape(new mrpt::opengl::CSetOfLines(*gl_veh_shape));
-					vehShape->setPose(trg_state);
+					mrpt::poses::CPose3D shapePose = trg_state;
+					shapePose.z_incr( options.vehicle_shape_z );
+					vehShape->setPose(shapePose);
 					scene.insert(vehShape);
 				}
 			}
@@ -612,21 +627,22 @@ void PlannerRRT_SE2_TPS::renderMoveTree(
 
 				ptg->renderPathAsSimpleLine(node.edge_to_parent->ptg_K,*obj,0.25f /*decimation*/, node.edge_to_parent->ptg_dist /*max path length*/);
 
-				if (is_new_one)
+				if (is_new_one && options.highlight_last_added_edge)
 				{
 					// Last edge format:
-					obj->setColor_u8( mrpt::utils::TColor(0xff,0xff,0x00));
-					obj->setLineWidth(3);
+					obj->setColor_u8(options.color_last_edge);
+					obj->setLineWidth(options.width_last_edge);
 				}
 				else
 				{
 					// Normal format:
-					obj->setColor_u8( mrpt::utils::TColor(0x22,0x22,0x22));
+					obj->setColor_u8(options.color_normal_edge);
+					obj->setLineWidth(options.width_normal_edge);
 				}
 				if (is_best_path)
 				{
-					obj->setColor_u8( mrpt::utils::TColor(0x00,0x00,0x00));//(0xff,0xff,0xff));
-					obj->setLineWidth(4);
+					obj->setColor_u8( options.color_optimal_edge);
+					obj->setLineWidth(options.width_optimal_edge);
 				}
 
 				scene.insert(obj);
@@ -635,17 +651,18 @@ void PlannerRRT_SE2_TPS::renderMoveTree(
 	}
 
 	// The new node:
-	if (new_state)
+	if (options.new_state)
 	{
 		mrpt::opengl::CSetOfObjectsPtr obj = mrpt::opengl::stock_objects::CornerXYZ(xyzcorners_scale*1.2);
 		string m_name =	"X_new";
 		obj->setName(m_name);
 		obj->enableShowName();
-		obj->setPose(*new_state);
+		obj->setPose(*options.new_state);
 		scene.insert(obj);
 	}
 
 	// Obstacles:
+	if (options.draw_obstacles)
 	{
 		mrpt::opengl::CPointCloudPtr obj = mrpt::opengl::CPointCloud::Create();
 
@@ -659,16 +676,38 @@ void PlannerRRT_SE2_TPS::renderMoveTree(
 
 	// The current set of local obstacles:
 	// Draw this AFTER the global map so it's visible:
-	if (local_obs_from_nearest_pose && x_nearest_pose)
+	if (options.draw_obstacles && options.local_obs_from_nearest_pose && options.x_nearest_pose)
 	{
 		mrpt::opengl::CPointCloudPtr obj = mrpt::opengl::CPointCloud::Create();
 
-		obj->loadFromPointsMap(local_obs_from_nearest_pose);
-		obj->setPose(*x_nearest_pose); // Points are relative to this pose: let OpenGL to deal with the coords. composition
+		obj->loadFromPointsMap(options.local_obs_from_nearest_pose);
+		obj->setPose(*options.x_nearest_pose); // Points are relative to this pose: let OpenGL to deal with the coords. composition
 		obj->setPointSize(3);
 		obj->setColor_u8( mrpt::utils::TColor(0xff,0x00,0x00) );
 		scene.insert(obj);
 	}
+
+	// Start:
+	{
+		mrpt::opengl::CSetOfObjectsPtr obj = mrpt::opengl::stock_objects::CornerXYZ(xyzcorners_scale*1.5);
+		obj->setName("START");
+		obj->enableShowName();
+		obj->setColor_u8( mrpt::utils::TColor(0x00,0x00,0x00) );
+		obj->setPose(pi.start_pose);
+		scene.insert(obj);
+	}
+
+	// Target:
+	{
+		mrpt::opengl::CSetOfObjectsPtr obj = mrpt::opengl::stock_objects::CornerXYZ(xyzcorners_scale*1.5);
+		string m_name =	"GOAL";
+		obj->setName(m_name);
+		obj->enableShowName();
+		obj->setColor_u8( mrpt::utils::TColor(0x00,0x00,0x00) );
+		obj->setPose(pi.goal_pose);
+		scene.insert(obj);
+	}
+
 
 } // end renderMoveTree()
 
