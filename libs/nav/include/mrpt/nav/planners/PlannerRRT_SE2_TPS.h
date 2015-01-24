@@ -70,7 +70,6 @@ namespace mrpt
 
 				double goalBias;  //!< Probabily of picking the goal as random target (in [0,1], default=0.05)
 				double maxLength; //!< (Very sensitive parameter!) Max length of each edge path (in meters, default=1.0)
-				double obsMaxDistance;  //!< Maximum distance for considering obstacles from each RRT node
 				double minDistanceBetweenNewNodes; //!< Minimum distance to nearest node to accept creating a new one (default=0.5)
 				bool   ptg_verbose; //!< Display PTG construction info (default=true)
 
@@ -79,7 +78,6 @@ namespace mrpt
 				TAlgorithmParams() :
 					goalBias(0.05),
 					maxLength(1.0),
-					obsMaxDistance(5.0),
 					minDistanceBetweenNewNodes(0.10),
 					ptg_verbose(true),
 					save_3d_log_freq(0)
@@ -224,7 +222,9 @@ namespace mrpt
 			void spaceTransformer( 
 				const mrpt::maps::CSimplePointsMap &in_obstacles,
 				const mrpt::nav::CParameterizedTrajectoryGenerator *in_PTG,
-				std::vector<float> &out_TPObstacles );
+				const double MAX_DIST,
+				std::vector<float> &out_TPObstacles
+				);
 
 		}; // end class PlannerRRT_SE2_TPS
 	}

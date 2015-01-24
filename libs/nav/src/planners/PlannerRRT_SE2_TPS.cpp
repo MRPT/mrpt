@@ -148,6 +148,12 @@ void PlannerRRT_SE2_TPS::solve(
 	// Sanity checks:
 	ASSERTMSG_(m_initialized, "initialize() must be called before!");
 
+	// Calc maximum vehicle shape radius:
+	double max_veh_radius=0.;
+	for (size_t i=0;i<params.robot_shape.size();i++)
+		mrpt::utils::keep_max(max_veh_radius, params.robot_shape[i].norm() );
+	ASSERT_ABOVE_(max_veh_radius,0.0);
+
 	// [Algo `tp_space_rrt`: Line 1]: Init tree adding the initial pose
 	if (result.move_tree.getAllNodes().empty())
 	{
@@ -265,15 +271,18 @@ void PlannerRRT_SE2_TPS::solve(
 			// ------------------------------------------------------------
 			// Transform obstacles as seen from x_nearest_node -> TP_obstacles
 			vector<float> TP_Obstacles;
+			const double MAX_DIST_FOR_OBSTACLES = 1.5*m_PTGs[idxPTG]->refDistance; // Maximum Euclidean distance (radius) for considering obstacles around the current robot pose
+			
+			ASSERT_ABOVE_(m_PTGs[idxPTG]->refDistance,1.1*max_veh_radius); // Make sure the PTG covers at least a bit more than the vehicle shape!! (should be much, much higher)
+
 			{
 				CTimeLoggerEntry tle(m_timelogger,"PT_RRT::solve.changeCoordinatesReference");
-				const double MAX_DIST = 1.5*params.obsMaxDistance; // Maximum radius for considering obstacles around the current robot pose
-				transformPointcloudWithSquareClipping(pi.obstacles_points,m_local_obs,CPose2D(x_nearest_node.state),MAX_DIST);
+				transformPointcloudWithSquareClipping(pi.obstacles_points,m_local_obs,CPose2D(x_nearest_node.state),MAX_DIST_FOR_OBSTACLES);
 				local_obs_ok=true;
 			}
 			{
 				CTimeLoggerEntry tle(m_timelogger,"PT_RRT::solve.SpaceTransformer");
-				spaceTransformer(m_local_obs, m_PTGs[idxPTG].pointer(), TP_Obstacles );
+				spaceTransformer(m_local_obs, m_PTGs[idxPTG].pointer(), MAX_DIST_FOR_OBSTACLES,  TP_Obstacles );
 			}
 
 			// directions k_rand in TP_obstacles[k_rand] = d_free
@@ -458,7 +467,9 @@ SpaceTransformer
 void PlannerRRT_SE2_TPS::spaceTransformer( 
 	const mrpt::maps::CSimplePointsMap &in_obstacles,
 	const mrpt::nav::CParameterizedTrajectoryGenerator *in_PTG,
-	std::vector<float> &out_TPObstacles )
+	const double MAX_DIST,
+	std::vector<float> &out_TPObstacles
+	)
 {
 	using namespace mrpt::nav;
 	try
@@ -488,7 +499,6 @@ void PlannerRRT_SE2_TPS::spaceTransformer(
 				out_TPObstacles[k_rand]= in_PTG->GetCPathPoint_d(k_rand,in_PTG->getPointsCountInCPath_k(k_rand)-1);
 		}
 
-		const double MAX_DIST = 1.5*params.obsMaxDistance; // Maximum radius for considering obstacles around the current robot pose
 		for (size_t obs=0;obs<nObs;obs++)
 		{
 			const float ox = obs_xs[obs];
