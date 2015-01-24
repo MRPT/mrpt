@@ -167,6 +167,10 @@ namespace mrpt
 				double vehicle_shape_z; //!< (Default=0.01) Height (Z coordinate) for the vehicle shapes. Helps making it in the "first plane"
 				bool   draw_obstacles;  //!< (Default=true)
 
+				std::string           log_msg;
+				mrpt::math::TPoint3D  log_msg_position;
+				double                log_msg_scale;
+
 				TRenderPlannedPathOptions() :
 					highlight_path_to_node_id( INVALID_NODEID ),
 					x_rand_pose( NULL ),
@@ -184,9 +188,13 @@ namespace mrpt
 					width_normal_edge(1.f),
 					width_optimal_edge(4.f),
 					vehicle_shape_z(0.01),
-					draw_obstacles(true)
+					draw_obstacles(true),
+					log_msg_position(0,0,0),
+					log_msg_scale(0.2)
 				{
 				}
+
+				~TRenderPlannedPathOptions() {}
 			};
 
 			void renderMoveTree(

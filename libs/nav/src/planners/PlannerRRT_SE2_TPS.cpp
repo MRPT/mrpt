@@ -21,6 +21,7 @@
 #include <mrpt/opengl/stock_objects.h>
 #include <mrpt/opengl/CSetOfLines.h>
 #include <mrpt/opengl/CPointCloud.h>
+#include <mrpt/opengl/CText3D.h>
 
 using namespace mrpt::nav;
 using namespace mrpt::utils;
@@ -200,6 +201,8 @@ void PlannerRRT_SE2_TPS::solve(
 		for (size_t idxPTG=0;idxPTG<nPTGs;++idxPTG)
 		{
 			rrt_iter_counter++;
+//#define DO_LOG_TXTS
+			std::string sLogTxt; 
 
 			// [Algo `tp_space_rrt`: Line 5]: Search nearest neig. to x_rand
 			// -----------------------------------------------
@@ -223,6 +226,10 @@ void PlannerRRT_SE2_TPS::solve(
 					render_options.highlight_path_to_node_id = result.best_goal_node_id;
 					render_options.highlight_last_added_edge = false;
 					render_options.x_rand_pose = &x_rand_pose;
+					std::string sLogTxt = "SKIP: Can't find any close node";
+					render_options.log_msg = sLogTxt;
+					render_options.log_msg_position = mrpt::math::TPoint3D( pi.world_bbox_min.x,pi.world_bbox_min.y,0);
+
 					mrpt::opengl::COpenGLScene scene;
 					renderMoveTree(scene, pi,result,render_options);
 					mrpt::system::createDirectory("./rrt_log_trees");
@@ -245,14 +252,14 @@ void PlannerRRT_SE2_TPS::solve(
 
 			float d_rand; // Coordinates in TP-space
 			int   k_rand; // k_rand is the index of target_alpha in PTGs corresponding to a specific d_rand
-			//bool tp_point_is_exact =
+			bool tp_point_is_exact = 
 			m_PTGs[idxPTG]->inverseMap_WS2TP(
 				x_rand_rel.x(), x_rand_rel.y(),
 				k_rand, d_rand );
 			d_rand *= m_PTGs[idxPTG]->refDistance; // distance to target, in "real meters"
-			
-			if (rand_is_target) // Breakpoint:
-				d_rand*=1.0;
+
+			float d_free;
+			bool local_obs_ok = false; // Just for 3D log files: indicates whether obstacle points have been recomputed
 
 			// [Algo `tp_space_rrt`: Line 8]: TP-Obstacles
 			// ------------------------------------------------------------
@@ -262,6 +269,7 @@ void PlannerRRT_SE2_TPS::solve(
 				CTimeLoggerEntry tle(m_timelogger,"PT_RRT::solve.changeCoordinatesReference");
 				const double MAX_DIST = 1.5*params.obsMaxDistance; // Maximum radius for considering obstacles around the current robot pose
 				transformPointcloudWithSquareClipping(pi.obstacles_points,m_local_obs,CPose2D(x_nearest_node.state),MAX_DIST);
+				local_obs_ok=true;
 			}
 			{
 				CTimeLoggerEntry tle(m_timelogger,"PT_RRT::solve.SpaceTransformer");
@@ -270,7 +278,7 @@ void PlannerRRT_SE2_TPS::solve(
 
 			// directions k_rand in TP_obstacles[k_rand] = d_free
 			// this is the collision free distance to the TP_target
-			const float d_free = TP_Obstacles[k_rand];
+			d_free = TP_Obstacles[k_rand];
 
 			// [Algo `tp_space_rrt`: Line 10]: d_new
 			// ------------------------------------------------------------
@@ -278,6 +286,10 @@ void PlannerRRT_SE2_TPS::solve(
 
 			bool is_new_best_solution = false; // Just for logging purposes
 			mrpt::poses::CPose2D *log_new_state_ptr=NULL; // For graphical logs only
+
+#ifdef DO_LOG_TXTS
+			sLogTxt += mrpt::format("tp_idx=%u tp_exact=%c\nd_free: %f d_rand=%f d_new=%f\n",static_cast<unsigned int>(idxPTG), tp_point_is_exact ? 'Y':'N',d_free,d_rand,d_new);
+#endif
 
 			// [Algo `tp_space_rrt`: Line 11]: Do we have free space?
 			// ------------------------------------------------------------
@@ -380,9 +392,13 @@ void PlannerRRT_SE2_TPS::solve(
 				render_options.highlight_path_to_node_id = result.best_goal_node_id;
 				render_options.x_rand_pose = &x_rand_pose;
 				render_options.x_nearest_pose = &x_nearest_pose;
-				render_options.local_obs_from_nearest_pose = &m_local_obs;
+				if (local_obs_ok) 
+					render_options.local_obs_from_nearest_pose =  &m_local_obs;
 				render_options.new_state = log_new_state_ptr;
 				render_options.highlight_last_added_edge = true;
+
+				render_options.log_msg = sLogTxt;
+				render_options.log_msg_position = mrpt::math::TPoint3D( pi.world_bbox_min.x,pi.world_bbox_min.y,0);
 
 				mrpt::opengl::COpenGLScene scene;
 				renderMoveTree(scene, pi,result,render_options);
@@ -708,6 +724,13 @@ void PlannerRRT_SE2_TPS::renderMoveTree(
 		scene.insert(obj);
 	}
 
+	// Log msg:
+	if (!options.log_msg.empty())
+	{
+		mrpt::opengl::CText3DPtr gl_txt=mrpt::opengl::CText3D::Create(options.log_msg,"sans",options.log_msg_scale );
+		gl_txt->setLocation(options.log_msg_position);
+		scene.insert(gl_txt);
+	}
 
 } // end renderMoveTree()
 
