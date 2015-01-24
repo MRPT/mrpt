@@ -589,9 +589,38 @@ void PlannerRRT_SE2_TPS::renderMoveTree(
 
 	// make list of nodes in the way of the best path:
 	std::set<const TMoveEdgeSE2_TP*> edges_best_path;
-	for (TMoveTreeSE2_TP::path_t::const_iterator it=best_path.begin();it!=best_path.end();++it)
-		if (it->edge_to_parent) 
-			edges_best_path.insert(it->edge_to_parent);
+	std::set<const TMoveEdgeSE2_TP*> edges_best_path_decim;
+	if (!best_path.empty())
+	{
+		TMoveTreeSE2_TP::path_t::const_iterator it_end = best_path.end();
+		TMoveTreeSE2_TP::path_t::const_iterator it_end_1 = best_path.end(); std::advance(it_end_1,-1);
+
+		for (TMoveTreeSE2_TP::path_t::const_iterator it=best_path.begin();it!=it_end;++it)
+			if (it->edge_to_parent)
+				edges_best_path.insert(it->edge_to_parent);
+
+		// Decimate the path (always keeping the first and last entry):
+		ASSERT_ABOVE_(options.draw_shape_decimation,0)
+		for (TMoveTreeSE2_TP::path_t::const_iterator it=best_path.begin();it!=it_end; )
+		{
+			if (it->edge_to_parent)
+				edges_best_path_decim.insert(it->edge_to_parent);
+			if (it==it_end_1) break;
+			for (size_t k=0;k<options.draw_shape_decimation;k++) {
+				if (it==it_end || it==it_end_1) break;
+				++it;
+			}
+		}
+	}
+
+	// The starting pose vehicle shape must be inserted independently, because the rest are edges and we draw the END pose of each edge:
+	{
+		mrpt::opengl::CSetOfLinesPtr vehShape(new mrpt::opengl::CSetOfLines(*gl_veh_shape));
+		mrpt::poses::CPose3D shapePose(mrpt::math::TPose3D(pi.start_pose));
+		shapePose.z_incr( options.vehicle_shape_z );
+		vehShape->setPose(shapePose);
+		scene.insert(vehShape);
+	}
 
 	// Existing nodes & edges between them:
 	{
@@ -610,6 +639,7 @@ void PlannerRRT_SE2_TPS::renderMoveTree(
 
 			const bool is_new_one = (itNode==(lstNodes.end()-1));
 			const bool is_best_path = edges_best_path.count(node.edge_to_parent)!=0;
+			const bool is_best_path_and_draw_shape = edges_best_path_decim.count(node.edge_to_parent)!=0;
 
 			// Draw children nodes:
 			{
@@ -620,7 +650,7 @@ void PlannerRRT_SE2_TPS::renderMoveTree(
 				scene.insert(obj);
 
 				// Insert vehicle shapes along optimal path:
-				if (is_best_path) 
+				if (is_best_path_and_draw_shape) 
 				{
 					mrpt::opengl::CSetOfLinesPtr vehShape(new mrpt::opengl::CSetOfLines(*gl_veh_shape));
 					mrpt::poses::CPose3D shapePose = trg_state;

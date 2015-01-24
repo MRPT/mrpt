@@ -60,7 +60,7 @@ void TestRRT1()
 
 	// End criteria:
 	planner.end_criteria.acceptedDistToTarget = 0.25;
-	planner.end_criteria.maxComputationTime = 5.0;
+	planner.end_criteria.maxComputationTime = 15.0;
 	planner.end_criteria.minComputationTime = 1.0; // 0=accept first found acceptable solution
 
 	// Init planner:

@@ -146,6 +146,7 @@ namespace mrpt
 			struct NAV_IMPEXP TRenderPlannedPathOptions
 			{
 				mrpt::utils::TNodeID highlight_path_to_node_id; //!< Highlight the path from root towards this node (usually, the target)
+				size_t draw_shape_decimation; //!< (Default=1) Draw one out of N vehicle shapes along the highlighted path
 
 				const mrpt::poses::CPose2D *x_rand_pose;
 				const mrpt::poses::CPose2D *x_nearest_pose;
@@ -173,6 +174,7 @@ namespace mrpt
 
 				TRenderPlannedPathOptions() :
 					highlight_path_to_node_id( INVALID_NODEID ),
+					draw_shape_decimation(1),
 					x_rand_pose( NULL ),
 					x_nearest_pose( NULL ),
 					local_obs_from_nearest_pose( NULL ),
