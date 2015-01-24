@@ -53,6 +53,7 @@ void TestRRT1()
 
 	planner.params.maxLength = 2.0; 
 	planner.params.minDistanceBetweenNewNodes = 0.10;
+	planner.params.minAngBetweenNewNodes = mrpt::utils::DEG2RAD(20);
 	planner.params.goalBias = 0.05;
 
 	// Logging:
@@ -60,6 +61,7 @@ void TestRRT1()
 
 	// End criteria:
 	planner.end_criteria.acceptedDistToTarget = 0.25;
+	planner.end_criteria.acceptedAngToTarget  = DEG2RAD(180); // 180d=Any orientation is ok
 	planner.end_criteria.maxComputationTime = 15.0;
 	planner.end_criteria.minComputationTime = 1.0; // 0=accept first found acceptable solution
 

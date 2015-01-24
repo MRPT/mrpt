@@ -338,7 +338,11 @@ void PlannerRRT_SE2_TPS::solve(
 					m_timelogger.leave("TMoveTree::getNearestNode");
 
 					if (new_nearest_id!=INVALID_NODEID)
-						accept_this_node = (new_nearest_dist>=params.minDistanceBetweenNewNodes);
+					{
+						// Also check angular distance:
+						const double new_nearest_ang = std::abs( mrpt::math::angDistance(new_state.phi(), result.move_tree.getAllNodes().find(new_nearest_id)->second.state.phi ) );
+						accept_this_node = (new_nearest_dist>=params.minDistanceBetweenNewNodes || new_nearest_ang >= params.minAngBetweenNewNodes);
+					}
 				}
 
 				if (!accept_this_node)
@@ -375,7 +379,11 @@ void PlannerRRT_SE2_TPS::solve(
 
 			// Distance to goal:
 			const double goal_dist = mrpt::poses::CPose2D(best_edge.end_state).distance2DTo(pi.goal_pose.x,pi.goal_pose.y);
-			const bool is_acceptable_goal = (goal_dist<end_criteria.acceptedDistToTarget);
+			const double goal_ang  = std::abs( mrpt::math::angDistance(best_edge.end_state.phi, pi.goal_pose.phi ) );
+
+			const bool is_acceptable_goal = 
+				(goal_dist<end_criteria.acceptedDistToTarget) && 
+				(goal_ang <end_criteria.acceptedAngToTarget);
 
 			if (is_acceptable_goal)
 				result.acceptable_goal_node_ids.insert(new_child_id);

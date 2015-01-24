@@ -45,12 +45,15 @@ namespace mrpt
 
 			struct NAV_IMPEXP TEndCriteria
 			{
-				double acceptedDistToTarget;  //!< Maximum distance from a pose to target to accept it as a valid solution
+				double acceptedDistToTarget;  //!< Maximum distance from a pose to target to accept it as a valid solution (meters). (Both acceptedDistToTarget & acceptedAngToTarget must be satisfied)
+				double acceptedAngToTarget;   //!< Maximum angle from a pose to target to accept it as a valid solution (rad).  (Both acceptedDistToTarget & acceptedAngToTarget must be satisfied)
+
 				double maxComputationTime;    //!< In seconds. 0 means no limit until a solution is found.
 				double minComputationTime;    //!< In seconds. 0 means the first valid path will be returned. Otherwise, the algorithm will try to refine and find a better one.
 
 				TEndCriteria() : 
 					acceptedDistToTarget ( 0.1 ),
+					acceptedAngToTarget  ( mrpt::utils::DEG2RAD(180) ),
 					maxComputationTime   ( 0.0 ),
 					minComputationTime   ( 0.0 )
 				{
@@ -70,7 +73,8 @@ namespace mrpt
 
 				double goalBias;  //!< Probabily of picking the goal as random target (in [0,1], default=0.05)
 				double maxLength; //!< (Very sensitive parameter!) Max length of each edge path (in meters, default=1.0)
-				double minDistanceBetweenNewNodes; //!< Minimum distance to nearest node to accept creating a new one (default=0.5)
+				double minDistanceBetweenNewNodes; //!< Minimum distance [meters] to nearest node to accept creating a new one (default=0.10). (Any of minDistanceBetweenNewNodes and minAngBetweenNewNodes must be satisfied)
+				double minAngBetweenNewNodes; //!< Minimum angle [rad] to nearest node to accept creating a new one (default=15 deg) (Any of minDistanceBetweenNewNodes and minAngBetweenNewNodes must be satisfied)
 				bool   ptg_verbose; //!< Display PTG construction info (default=true)
 
 				size_t save_3d_log_freq; //!< Frequency (in iters) of saving tree state to debug log files viewable in SceneViewer3D (default=0, disabled)
@@ -79,6 +83,7 @@ namespace mrpt
 					goalBias(0.05),
 					maxLength(1.0),
 					minDistanceBetweenNewNodes(0.10),
+					minAngBetweenNewNodes(mrpt::utils::DEG2RAD(15)),
 					ptg_verbose(true),
 					save_3d_log_freq(0)
 				{
