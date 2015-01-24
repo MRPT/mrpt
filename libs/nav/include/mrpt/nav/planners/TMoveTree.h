@@ -157,8 +157,8 @@ namespace mrpt
 		/** An edge for the move tree used for planning in SE2 and TP-space */
 		struct NAV_IMPEXP TMoveEdgeSE2_TP
 		{
-			const mrpt::utils::TNodeID parent_id;  //!< The ID of the parent node in the tree
-			const mrpt::math::TPose2D  end_state;  //!< state in SE2 as 2D pose (x, y, phi)  - \note: it is not possible to initialize a motion without a state
+			mrpt::utils::TNodeID parent_id;  //!< The ID of the parent node in the tree
+			mrpt::math::TPose2D  end_state;  //!< state in SE2 as 2D pose (x, y, phi)  - \note: it is not possible to initialize a motion without a state
 			double cost;                //!< cost associated to each motion, this should be defined by the user according to a spefic cost function
 			int ptg_index;          //!< indicate the type of trajectory used for this motion
 			int ptg_K;              //!< identify the trajectory number K of the type ptg_index
@@ -170,6 +170,7 @@ namespace mrpt
 				cost( 0.0 ),
 				ptg_index ( 0 ), ptg_K ( 0 ), ptg_dist ( 0.0 )   //these are all PTGs parameters
 			{}
+			TMoveEdgeSE2_TP() : parent_id(INVALID_NODEID) {}
 		};
 
 		struct NAV_IMPEXP TNodeSE2

@@ -201,7 +201,14 @@ void PlannerRRT_SE2_TPS::solve(
 		}
 		const CPose2D x_rand_pose(x_rand);
 
-		// [Algo `tp_space_rrt`: Line 4]: For each PTG
+		// [Algo `tp_space_rrt`: Line 4]: Init empty solution set
+		// -----------------------------------------
+		typedef std::map<double,TMoveEdgeSE2_TP> sorted_solution_list_t;
+		sorted_solution_list_t  candidate_new_nodes; // Map: cost -> info. Pick begin() to select the lowest-cose one.
+
+		bool is_new_best_solution = false; // Just for logging purposes
+
+		// [Algo `tp_space_rrt`: Line 5]: For each PTG
 		// -----------------------------------------
 		const size_t nPTGs = m_PTGs.size();
 		for (size_t idxPTG=0;idxPTG<nPTGs;++idxPTG)
@@ -258,7 +265,7 @@ void PlannerRRT_SE2_TPS::solve(
 
 			float d_rand; // Coordinates in TP-space
 			int   k_rand; // k_rand is the index of target_alpha in PTGs corresponding to a specific d_rand
-			bool tp_point_is_exact = 
+			//bool tp_point_is_exact = 
 			m_PTGs[idxPTG]->inverseMap_WS2TP(
 				x_rand_rel.x(), x_rand_rel.y(),
 				k_rand, d_rand );
@@ -281,6 +288,7 @@ void PlannerRRT_SE2_TPS::solve(
 				local_obs_ok=true;
 			}
 			{
+				MRPT_TODO("Speed-up: Write a new spaceTransformer() for just one k-direction of interest")
 				CTimeLoggerEntry tle(m_timelogger,"PT_RRT::solve.SpaceTransformer");
 				spaceTransformer(m_local_obs, m_PTGs[idxPTG].pointer(), MAX_DIST_FOR_OBSTACLES,  TP_Obstacles );
 			}
@@ -293,18 +301,17 @@ void PlannerRRT_SE2_TPS::solve(
 			// ------------------------------------------------------------
 			double d_new = std::min(D_max, d_rand);   //distance of the new candidate state in TP-space
 
-			bool is_new_best_solution = false; // Just for logging purposes
 			mrpt::poses::CPose2D *log_new_state_ptr=NULL; // For graphical logs only
 
 #ifdef DO_LOG_TXTS
 			sLogTxt += mrpt::format("tp_idx=%u tp_exact=%c\nd_free: %f d_rand=%f d_new=%f\n",static_cast<unsigned int>(idxPTG), tp_point_is_exact ? 'Y':'N',d_free,d_rand,d_new);
 #endif
 
-			// [Algo `tp_space_rrt`: Line 11]: Do we have free space?
+			// [Algo `tp_space_rrt`: Line 13]: Do we have free space?
 			// ------------------------------------------------------------
 			if ( d_free>=d_new )
 			{
-				// [Algo `tp_space_rrt`: Line 12]: PTG function
+				// [Algo `tp_space_rrt`: Line 14]: PTG function
 				// ------------------------------------------------------------
 				float x,y,phi,t;//, v, w;
 				float v,w;
@@ -313,11 +320,10 @@ void PlannerRRT_SE2_TPS::solve(
 				m_PTGs[idxPTG]->getCPointWhen_d_Is(d_new, k_rand,  x,y,phi,t,&v,&w);
 				phi=mrpt::math::wrapToPi(phi); // wrap to [-pi,pi] -->avoid out of bounds errors
 
-				// [Algo `tp_space_rrt`: Line 13]: pose composition
+				// [Algo `tp_space_rrt`: Line 15]: pose composition
 				// ------------------------------------------------------------
 				const mrpt::poses::CPose2D new_state_rel(x, y, phi);
 				mrpt::poses::CPose2D new_state = x_nearest_pose+new_state_rel; //compose the new_motion as the last nmotion and the new state
-				const TNodeSE2_TP new_state_node(new_state);
 				log_new_state_ptr = &new_state;
 
 				// Check whether there's already a too-close node around:
@@ -325,6 +331,7 @@ void PlannerRRT_SE2_TPS::solve(
 				bool accept_this_node = true;
 				{
 					double new_nearest_dist;
+					const TNodeSE2_TP new_state_node(new_state);
 
 					m_timelogger.enter("TMoveTree::getNearestNode");
 					mrpt::utils::TNodeID new_nearest_id = result.move_tree.getNearestNode(new_state_node, distance_evaluator,&new_nearest_dist, &result.acceptable_goal_node_ids );
@@ -339,7 +346,7 @@ void PlannerRRT_SE2_TPS::solve(
 					continue; // Too close node, skip!
 				}
 
-				// [Algo `tp_space_rrt`: Line 13]: Accept this motion: create new edge in the tree
+				// [Algo `tp_space_rrt`: Line 16]: Add to candidate solution set
 				// ------------------------------------------------------------
 				// Create "movement" (tree edge) object:
 				TMoveEdgeSE2_TP new_edge(x_nearest_id, mrpt::math::TPose2D(new_state));
@@ -349,75 +356,79 @@ void PlannerRRT_SE2_TPS::solve(
 				new_edge.ptg_K    = k_rand;
 				new_edge.ptg_dist = d_new;
 
-				// Insert into the tree:
-				const mrpt::utils::TNodeID new_child_id = result.move_tree.getNextFreeNodeID();
-				result.move_tree.insertNodeAndEdge(x_nearest_id /*parent id*/, new_child_id, new_state_node, new_edge);
+				candidate_new_nodes[new_edge.cost] = new_edge;
 
-				// Distance to goal:
-				const double goal_dist = new_state.distance2DTo(pi.goal_pose.x,pi.goal_pose.y);
-				const bool is_acceptable_goal = (goal_dist<end_criteria.acceptedDistToTarget);
-
-				if (is_acceptable_goal)
-					result.acceptable_goal_node_ids.insert(new_child_id);
-
-				// Total path length:
-				double this_path_cost = std::numeric_limits<double>::max();
-				if (is_acceptable_goal)  // Don't waste time computing path length if it doesn't matter anyway
-				{
-					TMoveTreeSE2_TP::path_t candidate_solution_path;
-					result.move_tree.backtrackPath(new_child_id,candidate_solution_path);
-					this_path_cost=0;
-					for (TMoveTreeSE2_TP::path_t::const_iterator it=candidate_solution_path.begin();it!=candidate_solution_path.end();++it)
-						if (it->edge_to_parent)
-							this_path_cost+=it->edge_to_parent->cost;
-				}
-
-				// Check if this should be the new optimal path:
-				if (is_acceptable_goal && this_path_cost<result.path_cost)
-				{
-#if 0
-					cout << "== New best solution: \n";
-					cout << "==  new_child_id: " << new_child_id << endl;
-					cout << "==  goal_dist: " << goal_dist << endl;
-					cout << "==  path_cost: " << this_path_cost << endl;
-#endif
-					result.goal_distance  = goal_dist;
-					result.path_cost = this_path_cost;
-
-					result.best_goal_node_id = new_child_id;
-					is_new_best_solution=true;
-				}
 			} // end if the path is obstacle free
 
-			//  Graphical logging, if enabled:
-			// ------------------------------------------------------
-			if (params.save_3d_log_freq>0 && (++SAVE_3D_TREE_LOG_DECIMATION_CNT >= params.save_3d_log_freq || is_new_best_solution))
+		} // end for idxPTG
+
+		// [Algo `tp_space_rrt`: Line 19]: Any solution found?
+		// ------------------------------------------------------------
+		if (!candidate_new_nodes.empty())
+		{
+			const TMoveEdgeSE2_TP & best_edge = candidate_new_nodes.begin()->second;
+			const TNodeSE2_TP new_state_node(best_edge.end_state);
+
+			// Insert into the tree:
+			const mrpt::utils::TNodeID new_child_id = result.move_tree.getNextFreeNodeID();
+			result.move_tree.insertNodeAndEdge(best_edge.parent_id, new_child_id, new_state_node, best_edge);
+
+			// Distance to goal:
+			const double goal_dist = mrpt::poses::CPose2D(best_edge.end_state).distance2DTo(pi.goal_pose.x,pi.goal_pose.y);
+			const bool is_acceptable_goal = (goal_dist<end_criteria.acceptedDistToTarget);
+
+			if (is_acceptable_goal)
+				result.acceptable_goal_node_ids.insert(new_child_id);
+
+			// Total path length:
+			double this_path_cost = std::numeric_limits<double>::max();
+			if (is_acceptable_goal)  // Don't waste time computing path length if it doesn't matter anyway
 			{
-				CTimeLoggerEntry tle(m_timelogger,"PT_RRT::solve.generate_log_files");
-				SAVE_3D_TREE_LOG_DECIMATION_CNT=0; // Reset decimation counter
-
-				// Render & save to file:
-				TRenderPlannedPathOptions render_options;
-				render_options.highlight_path_to_node_id = result.best_goal_node_id;
-				render_options.x_rand_pose = &x_rand_pose;
-				render_options.x_nearest_pose = &x_nearest_pose;
-				if (local_obs_ok) 
-					render_options.local_obs_from_nearest_pose =  &m_local_obs;
-				render_options.new_state = log_new_state_ptr;
-				render_options.highlight_last_added_edge = true;
-
-				render_options.log_msg = sLogTxt;
-				render_options.log_msg_position = mrpt::math::TPoint3D( pi.world_bbox_min.x,pi.world_bbox_min.y,0);
-
-				mrpt::opengl::COpenGLScene scene;
-				renderMoveTree(scene, pi,result,render_options);
-
-				mrpt::system::createDirectory("./rrt_log_trees");
-				scene.saveToFile( mrpt::format("./rrt_log_trees/rrt_log_%03u_%06u.3Dscene",static_cast<unsigned int>(SAVE_LOG_SOLVE_COUNT),static_cast<unsigned int>(rrt_iter_counter) ) );
+				TMoveTreeSE2_TP::path_t candidate_solution_path;
+				result.move_tree.backtrackPath(new_child_id,candidate_solution_path);
+				this_path_cost=0;
+				for (TMoveTreeSE2_TP::path_t::const_iterator it=candidate_solution_path.begin();it!=candidate_solution_path.end();++it)
+					if (it->edge_to_parent)
+						this_path_cost+=it->edge_to_parent->cost;
 			}
 
+			// Check if this should be the new optimal path:
+			if (is_acceptable_goal && this_path_cost<result.path_cost)
+			{
+				result.goal_distance  = goal_dist;
+				result.path_cost = this_path_cost;
 
-		} // end for idxPTG
+				result.best_goal_node_id = new_child_id;
+				is_new_best_solution=true;
+			}
+		} // end if any candidate found
+
+		//  Graphical logging, if enabled:
+		// ------------------------------------------------------
+		if (params.save_3d_log_freq>0 && (++SAVE_3D_TREE_LOG_DECIMATION_CNT >= params.save_3d_log_freq || is_new_best_solution))
+		{
+			CTimeLoggerEntry tle(m_timelogger,"PT_RRT::solve.generate_log_files");
+			SAVE_3D_TREE_LOG_DECIMATION_CNT=0; // Reset decimation counter
+
+			// Render & save to file:
+			TRenderPlannedPathOptions render_options;
+			render_options.highlight_path_to_node_id = result.best_goal_node_id;
+			render_options.x_rand_pose = &x_rand_pose;
+			//render_options.x_nearest_pose = &x_nearest_pose;
+			//if (local_obs_ok) render_options.local_obs_from_nearest_pose =  &m_local_obs;
+			//render_options.new_state = log_new_state_ptr;
+			render_options.highlight_last_added_edge = true;
+
+			//render_options.log_msg = sLogTxt;
+			render_options.log_msg_position = mrpt::math::TPoint3D( pi.world_bbox_min.x,pi.world_bbox_min.y,0);
+
+			mrpt::opengl::COpenGLScene scene;
+			renderMoveTree(scene, pi,result,render_options);
+
+			mrpt::system::createDirectory("./rrt_log_trees");
+			scene.saveToFile( mrpt::format("./rrt_log_trees/rrt_log_%03u_%06u.3Dscene",static_cast<unsigned int>(SAVE_LOG_SOLVE_COUNT),static_cast<unsigned int>(rrt_iter_counter) ) );
+		}
+
 
 	} // end loop until end conditions
 
