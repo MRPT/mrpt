@@ -189,10 +189,10 @@ void PlannerRRT_SE2_TPS::solve(
 		// [Algo `tp_space_rrt`: Line 3]: sample random state (with goal biasing)
 		// -----------------------------------------
 		node_pose_t x_rand;
-		bool rand_is_target=false;
+		//bool rand_is_target=false;
 		if (mrpt::random::randomGenerator.drawUniform(0.0,1.0) < params.goalBias) {
 			x_rand = pi.goal_pose;
-			rand_is_target=true;
+			//rand_is_target=true;
 		}
 		else {
 			// Sample uniform:
@@ -205,6 +205,8 @@ void PlannerRRT_SE2_TPS::solve(
 		// -----------------------------------------
 		typedef std::map<double,TMoveEdgeSE2_TP> sorted_solution_list_t;
 		sorted_solution_list_t  candidate_new_nodes; // Map: cost -> info. Pick begin() to select the lowest-cose one.
+
+		const PoseDistanceMetric<TNodeSE2> distance_evaluator_se2;  // Plain distances in SE(2), not along PTGs
 
 		bool is_new_best_solution = false; // Just for logging purposes
 
@@ -272,7 +274,7 @@ void PlannerRRT_SE2_TPS::solve(
 			d_rand *= m_PTGs[idxPTG]->refDistance; // distance to target, in "real meters"
 
 			float d_free;
-			bool local_obs_ok = false; // Just for 3D log files: indicates whether obstacle points have been recomputed
+			//bool local_obs_ok = false; // Just for 3D log files: indicates whether obstacle points have been recomputed
 
 			// [Algo `tp_space_rrt`: Line 8]: TP-Obstacles
 			// ------------------------------------------------------------
@@ -285,7 +287,7 @@ void PlannerRRT_SE2_TPS::solve(
 			{
 				CTimeLoggerEntry tle(m_timelogger,"PT_RRT::solve.changeCoordinatesReference");
 				transformPointcloudWithSquareClipping(pi.obstacles_points,m_local_obs,CPose2D(x_nearest_node.state),MAX_DIST_FOR_OBSTACLES);
-				local_obs_ok=true;
+				//local_obs_ok=true;
 			}
 			{
 				MRPT_TODO("Speed-up: Write a new spaceTransformer() for just one k-direction of interest")
@@ -301,7 +303,7 @@ void PlannerRRT_SE2_TPS::solve(
 			// ------------------------------------------------------------
 			double d_new = std::min(D_max, d_rand);   //distance of the new candidate state in TP-space
 
-			mrpt::poses::CPose2D *log_new_state_ptr=NULL; // For graphical logs only
+			//mrpt::poses::CPose2D *log_new_state_ptr=NULL; // For graphical logs only
 
 #ifdef DO_LOG_TXTS
 			sLogTxt += mrpt::format("tp_idx=%u tp_exact=%c\nd_free: %f d_rand=%f d_new=%f\n",static_cast<unsigned int>(idxPTG), tp_point_is_exact ? 'Y':'N',d_free,d_rand,d_new);
@@ -324,17 +326,27 @@ void PlannerRRT_SE2_TPS::solve(
 				// ------------------------------------------------------------
 				const mrpt::poses::CPose2D new_state_rel(x, y, phi);
 				mrpt::poses::CPose2D new_state = x_nearest_pose+new_state_rel; //compose the new_motion as the last nmotion and the new state
-				log_new_state_ptr = &new_state;
+				//log_new_state_ptr = &new_state;
 
 				// Check whether there's already a too-close node around:
 				// --------------------------------------------------------
 				bool accept_this_node = true;
+
+
+				// Is this a potential solution
+				const double goal_dist = new_state_rel.distance2DTo(pi.goal_pose.x,pi.goal_pose.y);
+				const double goal_ang  = std::abs( mrpt::math::angDistance(new_state_rel.phi(), pi.goal_pose.phi ) );
+				const bool is_acceptable_goal =
+					(goal_dist<end_criteria.acceptedDistToTarget) &&
+					(goal_ang <end_criteria.acceptedAngToTarget);
+
+				if (!is_acceptable_goal) // Only check for nearby nodes if this is not a solution!
 				{
 					double new_nearest_dist;
-					const TNodeSE2_TP new_state_node(new_state);
+					const TNodeSE2 new_state_node(new_state);
 
 					m_timelogger.enter("TMoveTree::getNearestNode");
-					mrpt::utils::TNodeID new_nearest_id = result.move_tree.getNearestNode(new_state_node, distance_evaluator,&new_nearest_dist, &result.acceptable_goal_node_ids );
+					mrpt::utils::TNodeID new_nearest_id = result.move_tree.getNearestNode(new_state_node, distance_evaluator_se2,&new_nearest_dist, &result.acceptable_goal_node_ids );
 					m_timelogger.leave("TMoveTree::getNearestNode");
 
 					if (new_nearest_id!=INVALID_NODEID)

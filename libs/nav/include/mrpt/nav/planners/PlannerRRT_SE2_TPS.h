@@ -160,8 +160,6 @@ namespace mrpt
 				bool   highlight_last_added_edge; //!< (Default=false)
 				double ground_xy_grid_frequency;  //!< (Default=10 meters) Set to 0 to disable
 
-				double vehicle_line_width;  //!< Robot line width for visualization - default 2.0
-				
 				mrpt::utils::TColor color_vehicle;			//!< Robot color 
 				mrpt::utils::TColor color_obstacles;		//!< obstacles color 
 				mrpt::utils::TColor color_local_obstacles;  //!< local obstacles color 
@@ -178,6 +176,7 @@ namespace mrpt
 				int point_size_local_obstacles;
 
 				double vehicle_shape_z; //!< (Default=0.01) Height (Z coordinate) for the vehicle shapes. Helps making it in the "first plane"
+				double vehicle_line_width;  //!< Robot line width for visualization - default 2.0
 				bool   draw_obstacles;  //!< (Default=true)
 
 				std::string           log_msg;
@@ -194,25 +193,25 @@ namespace mrpt
 					xyzcorners_scale(0),
 					highlight_last_added_edge(false),
 					ground_xy_grid_frequency(10.0),
-					color_ground_xy_grid(0xFF,0xFF,0xFF),
 					color_vehicle(0xFF,0x00,0x00,0xFF),
 					color_obstacles(0x00,0x00,0xFF,0x40),
 					color_local_obstacles(0x00,0x00,0xFF),
-					color_normal_edge(0x22,0x22,0x22,0x40),
 					color_start(0x00, 0x00, 0x00, 0x00),
 					color_goal(0x00, 0x00, 0x00, 0x00),
+					color_ground_xy_grid(0xFF,0xFF,0xFF),
+					color_normal_edge(0x22,0x22,0x22,0x40),
 					color_last_edge(0xff,0xff,0x00),
 					color_optimal_edge(0x00,0x00,0x00),
 					width_last_edge(3.f),
 					width_normal_edge(1.f),
 					width_optimal_edge(4.f),
+					point_size_obstacles(5),
+					point_size_local_obstacles(5),
 					vehicle_shape_z(0.01),
+					vehicle_line_width(2.0),
 					draw_obstacles(true),
 					log_msg_position(0,0,0),
-					log_msg_scale(0.2),
-					vehicle_line_width(2.0),
-					point_size_obstacles(5),
-					point_size_local_obstacles(5)
+					log_msg_scale(0.2)
 
 				{
 				}

@@ -68,9 +68,10 @@ namespace mrpt
 			typedef std::list<NODE_TYPE> path_t; //!< A topological path up-tree
 
 			/** Finds the nearest node to a given pose, using the given metric */
+			template <class NODE_TYPE_FOR_METRIC>
 			mrpt::utils::TNodeID getNearestNode(
-				const NODE_TYPE_DATA &query_pt,
-				const PoseDistanceMetric<NODE_TYPE_DATA> &distanceMetricEvaluator,
+				const NODE_TYPE_FOR_METRIC &query_pt,
+				const PoseDistanceMetric<NODE_TYPE_FOR_METRIC> &distanceMetricEvaluator,
 				double *out_distance = NULL,
 				const std::set<mrpt::utils::TNodeID> *ignored_nodes = NULL
 				) const
@@ -84,9 +85,9 @@ namespace mrpt
 				{
 					if (ignored_nodes && ignored_nodes->find(it->first)!=ignored_nodes->end())
 						continue; // ignore it
-					if (distanceMetricEvaluator.cannotBeNearerThan(query_pt,it->second,min_d))
+					if (distanceMetricEvaluator.cannotBeNearerThan(NODE_TYPE_FOR_METRIC(query_pt.state),NODE_TYPE_FOR_METRIC(it->second.state),min_d))
 						continue; // Skip the more expensive calculation of exact distance
-					double d = distanceMetricEvaluator.distance(query_pt,it->second);
+					double d = distanceMetricEvaluator.distance(NODE_TYPE_FOR_METRIC(query_pt.state),NODE_TYPE_FOR_METRIC(it->second.state));
 					if (d<min_d) {
 						min_d = d;
 						min_id = it->first;
