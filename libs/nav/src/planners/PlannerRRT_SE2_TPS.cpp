@@ -562,8 +562,8 @@ void PlannerRRT_SE2_TPS::renderMoveTree(
 	mrpt::opengl::CSetOfLinesPtr gl_veh_shape = mrpt::opengl::CSetOfLines::Create();
 	double xyzcorners_scale; // Size of XYZ corners (scaled to vehicle dimensions)
 	{
-		gl_veh_shape->setLineWidth(2.0);
-		gl_veh_shape->setColor_u8(mrpt::utils::TColor(0xFF,0x00,0x00) );
+		gl_veh_shape->setLineWidth(options.vehicle_line_width);
+		gl_veh_shape->setColor_u8(options.color_vehicle );
 		
 		double max_veh_radius=0;
 		gl_veh_shape->appendLine(
@@ -744,8 +744,8 @@ void PlannerRRT_SE2_TPS::renderMoveTree(
 		obj->loadFromPointsMap(&pi.obstacles_points);
 		obj->setPose(mrpt::poses::CPose2D(0.0, 0.0, 0.0)); // Points are relative to the origin
 
-		obj->setPointSize(5);
-		obj->setColor_u8( mrpt::utils::TColor(0x00,0x00,0xff) );
+		obj->setPointSize(options.point_size_obstacles);
+		obj->setColor_u8( options.color_obstacles );
 		scene.insert(obj);
 	}
 
@@ -757,8 +757,8 @@ void PlannerRRT_SE2_TPS::renderMoveTree(
 
 		obj->loadFromPointsMap(options.local_obs_from_nearest_pose);
 		obj->setPose(*options.x_nearest_pose); // Points are relative to this pose: let OpenGL to deal with the coords. composition
-		obj->setPointSize(3);
-		obj->setColor_u8( mrpt::utils::TColor(0xff,0x00,0x00) );
+		obj->setPointSize(options.point_size_local_obstacles);
+		obj->setColor_u8( options.color_local_obstacles );
 		scene.insert(obj);
 	}
 
@@ -767,7 +767,7 @@ void PlannerRRT_SE2_TPS::renderMoveTree(
 		mrpt::opengl::CSetOfObjectsPtr obj = mrpt::opengl::stock_objects::CornerXYZ(xyzcorners_scale*1.5);
 		obj->setName("START");
 		obj->enableShowName();
-		obj->setColor_u8( mrpt::utils::TColor(0x00,0x00,0x00) );
+		obj->setColor_u8( options.color_start );
 		obj->setPose(pi.start_pose);
 		scene.insert(obj);
 	}
@@ -778,7 +778,7 @@ void PlannerRRT_SE2_TPS::renderMoveTree(
 		string m_name =	"GOAL";
 		obj->setName(m_name);
 		obj->enableShowName();
-		obj->setColor_u8( mrpt::utils::TColor(0x00,0x00,0x00) );
+		obj->setColor_u8( options.color_goal );
 		obj->setPose(pi.goal_pose);
 		scene.insert(obj);
 	}
