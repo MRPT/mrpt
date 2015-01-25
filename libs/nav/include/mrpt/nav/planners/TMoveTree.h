@@ -200,6 +200,7 @@ namespace mrpt
 				       mrpt::math::square(a.state.y-b.state.y) + 
 					   mrpt::math::square( mrpt::math::angDistance(a.state.phi,b.state.phi) );
 			}
+			PoseDistanceMetric() { }
 		};
 
 		struct NAV_IMPEXP TNodeSE2_TP
