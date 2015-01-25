@@ -229,6 +229,7 @@ namespace mrpt
 			void setRenderTreeVisualization();
 
 			mrpt::utils::CTimeLogger & getProfiler() { return m_timelogger; }
+			const mrpt::nav::TListPTGPtr & getPTGs() const { return m_PTGs;}
 
 		protected:
 			mrpt::utils::CTimeLogger m_timelogger;

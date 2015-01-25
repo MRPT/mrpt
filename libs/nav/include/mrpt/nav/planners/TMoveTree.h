@@ -85,9 +85,11 @@ namespace mrpt
 				{
 					if (ignored_nodes && ignored_nodes->find(it->first)!=ignored_nodes->end())
 						continue; // ignore it
-					if (distanceMetricEvaluator.cannotBeNearerThan(NODE_TYPE_FOR_METRIC(query_pt.state),NODE_TYPE_FOR_METRIC(it->second.state),min_d))
+					const NODE_TYPE_FOR_METRIC ptTo(query_pt.state);
+					const NODE_TYPE_FOR_METRIC ptFrom(it->second.state);
+					if (distanceMetricEvaluator.cannotBeNearerThan(ptFrom,ptTo,min_d))
 						continue; // Skip the more expensive calculation of exact distance
-					double d = distanceMetricEvaluator.distance(NODE_TYPE_FOR_METRIC(query_pt.state),NODE_TYPE_FOR_METRIC(it->second.state));
+					double d = distanceMetricEvaluator.distance(ptFrom,ptTo);
 					if (d<min_d) {
 						min_d = d;
 						min_id = it->first;

@@ -207,8 +207,10 @@ void PlannerRRT_SE2_TPS::solve(
 		sorted_solution_list_t  candidate_new_nodes; // Map: cost -> info. Pick begin() to select the lowest-cose one.
 
 		const PoseDistanceMetric<TNodeSE2> distance_evaluator_se2;  // Plain distances in SE(2), not along PTGs
-
 		bool is_new_best_solution = false; // Just for logging purposes
+
+//#define DO_LOG_TXTS
+		std::string sLogTxt; 
 
 		// [Algo `tp_space_rrt`: Line 5]: For each PTG
 		// -----------------------------------------
@@ -216,8 +218,6 @@ void PlannerRRT_SE2_TPS::solve(
 		for (size_t idxPTG=0;idxPTG<nPTGs;++idxPTG)
 		{
 			rrt_iter_counter++;
-//#define DO_LOG_TXTS
-			std::string sLogTxt; 
 
 			// [Algo `tp_space_rrt`: Line 5]: Search nearest neig. to x_rand
 			// -----------------------------------------------
@@ -241,9 +241,9 @@ void PlannerRRT_SE2_TPS::solve(
 					render_options.highlight_path_to_node_id = result.best_goal_node_id;
 					render_options.highlight_last_added_edge = false;
 					render_options.x_rand_pose = &x_rand_pose;
-					std::string sLogTxt = "SKIP: Can't find any close node";
-					render_options.log_msg = sLogTxt;
+					render_options.log_msg = "SKIP: Can't find any close node";
 					render_options.log_msg_position = mrpt::math::TPoint3D( pi.world_bbox_min.x,pi.world_bbox_min.y,0);
+					render_options.ground_xy_grid_frequency = 1.0;
 
 					mrpt::opengl::COpenGLScene scene;
 					renderMoveTree(scene, pi,result,render_options);
@@ -267,7 +267,7 @@ void PlannerRRT_SE2_TPS::solve(
 
 			float d_rand; // Coordinates in TP-space
 			int   k_rand; // k_rand is the index of target_alpha in PTGs corresponding to a specific d_rand
-			//bool tp_point_is_exact = 
+			bool tp_point_is_exact = 
 			m_PTGs[idxPTG]->inverseMap_WS2TP(
 				x_rand_rel.x(), x_rand_rel.y(),
 				k_rand, d_rand );
@@ -306,7 +306,8 @@ void PlannerRRT_SE2_TPS::solve(
 			//mrpt::poses::CPose2D *log_new_state_ptr=NULL; // For graphical logs only
 
 #ifdef DO_LOG_TXTS
-			sLogTxt += mrpt::format("tp_idx=%u tp_exact=%c\nd_free: %f d_rand=%f d_new=%f\n",static_cast<unsigned int>(idxPTG), tp_point_is_exact ? 'Y':'N',d_free,d_rand,d_new);
+			sLogTxt += mrpt::format("tp_idx=%u tp_exact=%c\n d_free: %f d_rand=%f d_new=%f\n",static_cast<unsigned int>(idxPTG), tp_point_is_exact ? 'Y':'N',d_free,d_rand,d_new);
+			sLogTxt += mrpt::format(" nearest:%s\n",x_nearest_pose.asString().c_str());
 #endif
 
 			// [Algo `tp_space_rrt`: Line 13]: Do we have free space?
@@ -334,19 +335,20 @@ void PlannerRRT_SE2_TPS::solve(
 
 
 				// Is this a potential solution
-				const double goal_dist = new_state_rel.distance2DTo(pi.goal_pose.x,pi.goal_pose.y);
-				const double goal_ang  = std::abs( mrpt::math::angDistance(new_state_rel.phi(), pi.goal_pose.phi ) );
+				const double goal_dist = new_state.distance2DTo(pi.goal_pose.x,pi.goal_pose.y);
+				const double goal_ang  = std::abs( mrpt::math::angDistance(new_state.phi(), pi.goal_pose.phi ) );
 				const bool is_acceptable_goal =
 					(goal_dist<end_criteria.acceptedDistToTarget) &&
 					(goal_ang <end_criteria.acceptedAngToTarget);
 
+				mrpt::utils::TNodeID new_nearest_id=INVALID_NODEID;
 				if (!is_acceptable_goal) // Only check for nearby nodes if this is not a solution!
 				{
 					double new_nearest_dist;
 					const TNodeSE2 new_state_node(new_state);
 
 					m_timelogger.enter("TMoveTree::getNearestNode");
-					mrpt::utils::TNodeID new_nearest_id = result.move_tree.getNearestNode(new_state_node, distance_evaluator_se2,&new_nearest_dist, &result.acceptable_goal_node_ids );
+					new_nearest_id = result.move_tree.getNearestNode(new_state_node, distance_evaluator_se2,&new_nearest_dist, &result.acceptable_goal_node_ids );
 					m_timelogger.leave("TMoveTree::getNearestNode");
 
 					if (new_nearest_id!=INVALID_NODEID)
@@ -359,6 +361,11 @@ void PlannerRRT_SE2_TPS::solve(
 
 				if (!accept_this_node)
 				{
+#ifdef DO_LOG_TXTS
+					if (new_nearest_id!=INVALID_NODEID) {
+						sLogTxt += mrpt::format(" -> new node NOT accepted for closeness to: %s\n",result.move_tree.getAllNodes().find(new_nearest_id)->second.state.asString().c_str());
+					}
+#endif
 					continue; // Too close node, skip!
 				}
 
@@ -375,6 +382,13 @@ void PlannerRRT_SE2_TPS::solve(
 				candidate_new_nodes[new_edge.cost] = new_edge;
 
 			} // end if the path is obstacle free
+			else
+			{
+#ifdef DO_LOG_TXTS
+				sLogTxt += mrpt::format(" -> d_free NOT < d_rand\n");
+#endif
+			}
+
 
 		} // end for idxPTG
 
@@ -438,8 +452,9 @@ void PlannerRRT_SE2_TPS::solve(
 			//if (local_obs_ok) render_options.local_obs_from_nearest_pose =  &m_local_obs;
 			//render_options.new_state = log_new_state_ptr;
 			render_options.highlight_last_added_edge = true;
+			render_options.ground_xy_grid_frequency = 1.0;
 
-			//render_options.log_msg = sLogTxt;
+			render_options.log_msg = sLogTxt;
 			render_options.log_msg_position = mrpt::math::TPoint3D( pi.world_bbox_min.x,pi.world_bbox_min.y,0);
 
 			mrpt::opengl::COpenGLScene scene;
