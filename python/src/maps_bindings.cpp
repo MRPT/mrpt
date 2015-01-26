@@ -1,13 +1,13 @@
+/* bindings */
+#include "bindings.h"
+#include "maps_bindings.h"
+#include "system_bindings.h"
+
 /* MRPT */
 #include <mrpt/poses/CPosePDFGaussian.h>
 #include <mrpt/system/datetime.h>
 #include <mrpt/maps/CMultiMetricMapPDF.h>
 #include <mrpt/opengl/CSetOfObjects.h>
-
-/* bindings */
-#include "bindings.h"
-#include "maps_bindings.h"
-#include "system_bindings.h"
 
 /* std */
 #include <stdint.h>
@@ -20,7 +20,33 @@ using namespace mrpt::maps;
 using namespace mrpt::obs;
 using namespace mrpt::utils;
 
-struct CMetricMapWrap;
+
+// CMetricMap
+void CMetricMapWrap::internal_clear()
+{
+    this->get_override("internal_clear")();
+}
+
+bool CMetricMapWrap::isEmpty()
+{
+    return this->get_override("isEmpty")();
+}
+
+double CMetricMapWrap::computeObservationLikelihood(const CObservation *obs, const CPose3D &takenFrom)
+{
+    return this->get_override("computeObservationLikelihood")(obs, takenFrom);
+}
+
+void CMetricMapWrap::saveMetricMapRepresentationToFile(const std::string &filNamePrefix)
+{
+    this->get_override("saveMetricMapRepresentationToFile")(filNamePrefix);
+}
+
+void CMetricMapWrap::getAs3DObject(mrpt::opengl::CSetOfObjectsPtr &outObj)
+{
+    this->get_override("getAs3DObject")(outObj);
+}
+// end of CMetricMap
 
 // COccupancyGridMap2D
 COccupancyGridMap2D *COccupancyGridMap2D_copy(COccupancyGridMap2D &self)
@@ -269,9 +295,13 @@ mrpt::opengl::CSetOfObjectsPtr CMultiMetricMap_getAs3DObject(CMultiMetricMap &se
 void export_maps()
 {
     // map namespace to be submodule of package
-    object maps_module(handle<>(borrowed(PyImport_AddModule("mrpt.maps"))));
-    scope().attr("maps") = maps_module;
-    scope maps_scope = maps_module;
+    MAKE_SUBMODULE(maps)
+
+    // CMetricMap
+    {
+        scope s = class_<CMetricMapWrap, boost::noncopyable>("CMetricMap", no_init)
+        ;
+    }
 
     // COccupancyGridMap2D
     {

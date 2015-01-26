@@ -4,11 +4,8 @@ project(pymrpt)
 
 set( PYMRPT_INSTALL_DIR "/usr/local/lib/python2.7/dist-packages" CACHE STRING "Set install directory for pymrpt. Ensure directory is in PYTHONPATH!")
 
-find_package(MRPT REQUIRED base slam obs maps nav gui opengl)
-
 include_directories(include)
 include_directories(
-  ${MRPT_INCLUDE_DIRS}
   ${Boost_INCLUDE_DIRS}
   ${PYTHON_INCLUDE_DIRS}
 )
@@ -40,16 +37,8 @@ target_link_libraries(pymrpt
 # remove "lib" prefix from .so filename
 set_target_properties(pymrpt PROPERTIES PREFIX "")
 
-#############
-## Install ##
-#############
-
 install(TARGETS pymrpt
   LIBRARY DESTINATION ${PYMRPT_INSTALL_DIR}
 )
-
-#############
-## Testing ##
-#############
 
 DeclareAppDependencies(pymrpt mrpt-base mrpt-slam mrpt-obs mrpt-maps mrpt-nav mrpt-gui mrpt-opengl) # Dependencies

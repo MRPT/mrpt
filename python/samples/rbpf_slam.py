@@ -76,11 +76,11 @@ while True:
     map_object = metric_map.getAs3DObject()
 
     scene = win3D.get3DSceneAndLock()
-    scene.clear()
-    scene.insert(map_object)
-    scene.insert(lines_object)
+    scene.ctx().clear()
+    scene.ctx().insert(map_object)
+    scene.ctx().insert(lines_object)
     for ellipsoid_object in ellipsoid_objects:
-        scene.insert(ellipsoid_object)
+        scene.ctx().insert(ellipsoid_object)
     win3D.unlockAccess3DScene()
     win3D.forceRepaint()
 

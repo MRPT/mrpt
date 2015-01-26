@@ -124,12 +124,12 @@ MAKE_PTR_CTX(CGridPlaneXY)
 void export_opengl()
 {
     // map namespace to be submodule of mrpt package
-    object opengl_module(handle<>(borrowed(PyImport_AddModule("mrpt.opengl"))));
-    scope().attr("opengl") = opengl_module;
-    scope opengl_scope = opengl_module;
+    MAKE_SUBMODULE(opengl)
 
     // CRenderizable
     {
+        MAKE_PTR(CRenderizable)
+
         class_<CRenderizableWrap, boost::noncopyable>("CRenderizable", "The base class of 3D objects that can be directly rendered through OpenGL.", no_init)
             .def("setPose", &CRenderizable_setPose, args("o"), "Set the 3D pose from a mrpt::poses::CPose3D object.")
             .def("setLocation", &CRenderizable_setLocation1, args("point3D"), "Changes the location of the object, keeping untouched the orientation.")
@@ -141,55 +141,54 @@ void export_opengl()
             .def("getPosePitch", &CRenderizable::getPosePitch, "Rotation relative to parent coordinate origin, in **DEGREES**.")
             .def("getPoseRoll", &CRenderizable::getPoseRoll, "Rotation relative to parent coordinate origin, in **DEGREES**.")
         ;
-
-        MAKE_PTR(CRenderizable)
     }
 
     // CGridPlaneXY
     {
+        MAKE_PTR_BASE(CGridPlaneXY, CRenderizable)
+
         class_<CGridPlaneXY, boost::noncopyable, bases<CRenderizable> >("CGridPlaneXY", "A grid of lines over the XY plane.", no_init)
             .def("Create", &CGridPlaneXY_Create, CGridPlaneXY_Create_overloads()).staticmethod("Create")
         ;
-
-        MAKE_PTR(CGridPlaneXY)
     }
 
     // CSetOfObjects
     {
+        MAKE_PTR_BASE(CSetOfObjects, CRenderizable)
+
         class_<CSetOfObjects, boost::noncopyable, bases<CRenderizable> >("CSetOfObjects", "A set of objects, which are referenced to the coordinates framework established in this object.", no_init)
             .def("Create", &CSetOfObjects::Create).staticmethod("Create")
         ;
-
-        MAKE_PTR(CSetOfObjects)
     }
 
     // CSetOfLines
     {
+        MAKE_PTR_BASE(CSetOfLines, CRenderizable)
+
         class_<CSetOfLines, boost::noncopyable, bases<CRenderizable> >("CSetOfLines", "A set of independent lines (or segments), one line with its own start and end positions (X,Y,Z).", no_init)
             .def("Create", &CSetOfLines_Create).staticmethod("Create")
             .def("appendLine", &CSetOfLines_appendLine, args("x0", "y0", "z0", "x1", "y1", "z1"), "Appends a line to the set, given the coordinates of its bounds.")
         ;
-
-        MAKE_PTR(CSetOfLines)
     }
 
     // CEllipsoid
     {
+        MAKE_PTR_BASE(CEllipsoid, CRenderizable)
+
         class_<CEllipsoid, boost::noncopyable, bases<CRenderizable> >("CEllipsoid", "A 2D ellipse or 3D ellipsoid, depending on the size of the m_cov matrix (2x2 or 3x3).", no_init)
             .def("Create", &CEllipsoid_Create).staticmethod("Create")
             .def("setFromPosePDF", CEllipsoid_setFromPosePDF)
         ;
-
-        MAKE_PTR(CEllipsoid)
     }
 
     // COpenGLScene
     {
+        MAKE_PTR(COpenGLScene)
+
         class_<COpenGLScene>("COpenGLScene", "This class allows the user to create, load, save, and render 3D scenes using OpenGL primitives.", init<>("Constructor."))
+            .def("Create", &COpenGLScene::Create).staticmethod("Create")
             .def("insert", &COpenGLScene_insert, COpenGLScene_insert_overloads()) //, "Insert a new object into the scene, in the given viewport (by default, into the \"main\" viewport).")
             .def("clear", &COpenGLScene::clear, COpenGLScene_clear_overloads()) //, "Clear the list of objects and viewports in the scene, deleting objects' memory, and leaving just the default viewport with the default values.")
         ;
-
-        MAKE_PTR(COpenGLScene)
     }
 }
