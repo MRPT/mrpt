@@ -1,8 +1,8 @@
 #ifndef __POSES_BINDINGS_H__
 #define __POSES_BINDINGS_H__
 
-/* BOOST */
-#include <boost/python.hpp>
+/* bindings */
+#include "bindings.h"
 
 /* MRPT */
 #include <mrpt/poses/CPosePDF.h>

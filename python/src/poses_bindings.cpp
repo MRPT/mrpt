@@ -1,3 +1,6 @@
+/* bindings */
+#include "poses_bindings.h"
+
 /* MRPT */
 #include <mrpt/poses/CPose2D.h>
 #include <mrpt/poses/CPose3D.h>
@@ -8,19 +11,15 @@
 #include <mrpt/poses/CPose3DPDF.h>
 #include <mrpt/poses/CPose3DPDFGaussian.h>
 #include <mrpt/poses/CPose3DPDFParticles.h>
-
 #include <mrpt/utils/CStream.h>
 
 /* BOOST */
 #include <boost/python.hpp>
 #include <boost/python/suite/indexing/vector_indexing_suite.hpp>
 
-#include "bindings.h"
-#include "poses_bindings.h"
-
-#include "math.h"
 
 /* STD */
+#include "math.h"
 #include <stdint.h>
 
 using namespace boost::python;
@@ -43,10 +42,7 @@ void    (CPose2D::*CPose2D_set_y)(double)       = &CPose2D::y;
 double &(CPose2D::*CPose2D_get_phi)()           = &CPose2D::phi;
 void    (CPose2D::*CPose2D_set_phi)(double)     = &CPose2D::phi;
 
-std::string CPose2D_asString(CPose2D &self)
-{
-    return self.asString();
-}
+MAKE_AS_STR(CPose2D)
 
 #ifdef ROS_EXTENSIONS
 object CPose2D_to_ROS_Pose_msg(CPose2D &self)
@@ -82,6 +78,8 @@ tuple CPose3D_getYawPitchRoll(CPose3D &self)
     ret_val.append(roll);
     return tuple(ret_val);
 }
+
+MAKE_AS_STR(CPose3D)
 
 #ifdef ROS_EXTENSIONS
 object CPose3D_to_ROS_Pose_msg(CPose3D &self)
@@ -268,12 +266,12 @@ MAKE_PTR_CTX(CPose3DPDFParticles)
 void export_poses()
 {
     // map namespace to be submodule of mrpt package
-    object poses_module(handle<>(borrowed(PyImport_AddModule("mrpt.poses"))));
-    scope().attr("poses") = poses_module;
-    scope poses_scope = poses_module;
+    MAKE_SUBMODULE(poses)
 
     // CPose2D
     {
+        MAKE_PTR(CPose2D)
+
         class_<CPose2D>("CPose2D", init<>())
             .def(init<CPose2D>())
             .def(init<CPose3D>())
@@ -303,12 +301,12 @@ void export_poses()
             .def("from_ROS_Pose_msg", &CPose2D_from_ROS_Pose_msg, "Convert from ROS geometry_msgs/Pose.")
 #endif
         ;
-
-        MAKE_PTR(CPose2D)
     }
 
     // CPosePDF
     {
+        MAKE_PTR(CPosePDF)
+
         class_<CPosePDFWrap, boost::noncopyable>("CPosePDF", no_init)
             .def("writeToStream", &CPosePDFWrap::writeToStream, "Introduces a pure virtual method responsible for writing to a CStream. This can not be used directly be users!")
             .def("readFromStream", &CPosePDFWrap::readFromStream, "Introduces a pure virtual method responsible for loading from a CStream. This can not be used directly be users!")
@@ -319,32 +317,32 @@ void export_poses()
             .def("bayesianFusion", &CPosePDFWrap::bayesianFusion, "Bayesian fusion of two pose distributions (product of two distributions->new distribution), then save the result in this object (WARNING: See implementing classes to see classes that can and cannot be mixtured!).")
             .def("inverse", &CPosePDFWrap::inverse, "Returns a new PDF such as: NEW_PDF = (0,0,0) - THIS_PDF")
         ;
-
-        MAKE_PTR(CPosePDF)
     }
 
     // CPosePDFGaussian
     {
-        class_<CPosePDFGaussian, bases<CPosePDFWrap> >("CPosePDFGaussian", init<optional<CPose2D> >())
+        MAKE_PTR(CPosePDFGaussian)
+
+        class_<CPosePDFGaussian, bases<CPosePDF> >("CPosePDFGaussian", init<optional<CPose2D> >())
             .def_readwrite("mean", &CPosePDFGaussian::mean)
             .add_property("cov", CPosePDFGaussian_get_cov, CPosePDFGaussian_set_cov)
         ;
-
-        MAKE_PTR(CPosePDFGaussian)
     }
 
     // CPosePDFParticles
     {
-        class_<CPosePDFParticles, bases<CPosePDFWrap> >("CPosePDFParticles", init<optional<size_t> >())
+        MAKE_PTR(CPosePDFParticles)
+
+        class_<CPosePDFParticles, bases<CPosePDF> >("CPosePDFParticles", init<optional<size_t> >())
             .def("resetUniform", &CPosePDFParticles::resetUniform, CPosePDFParticles_resetUniform_overloads())
             .def("getParticlePose", &CPosePDFParticles::getParticlePose)
         ;
-
-        MAKE_PTR(CPosePDFParticles)
     }
 
     // CPose3D
     {
+        MAKE_PTR(CPose3D)
+
         class_<CPose3D>("CPose3D", init<optional<CPose2D> >())
             .add_property("x",
                 make_function(CPose3D_get_x, return_value_policy<copy_non_const_reference>()),
@@ -367,35 +365,39 @@ void export_poses()
             .def("from_ROS_Pose_msg", &CPose3D_from_ROS_Pose_msg, "Convert from ROS geometry_msgs/Pose.")
 #endif
         ;
-
-        MAKE_PTR(CPose3D)
     }
 
     // CPose3DPDF
     {
+        MAKE_PTR(CPose3DPDF)
+
         class_<CPose3DPDFWrap, boost::noncopyable>("CPose3DPDF", no_init)
             .def("jacobiansPoseComposition", &CPose3DPDFWrap::jacobiansPoseComposition, "This static method computes the pose composition Jacobians.")
             .def("getMeanVal", &CPose3DPDF::getMeanVal)
         ;
-
-        MAKE_PTR(CPose3DPDF)
     }
 
     // CPose3DPDFGaussian
     {
+        MAKE_PTR(CPose3DPDFGaussian)
+
         class_<CPose3DPDFGaussian, bases<CPose3DPDF> >("CPose3DPDFGaussian", init<>())
         ;
-
-        MAKE_PTR(CPose3DPDFGaussian)
     }
 
     // CPose3DPDFParticles
     {
+        MAKE_PTR(CPose3DPDFParticles)
+
         class_<CPose3DPDFParticles, bases<CPose3DPDF> >("CPose3DPDFParticles", init<>())
             .def("particlesCount", &CPose3DPDFParticles::particlesCount, "Get the m_particles count.")
             .def("getMean", &CPose3DPDFParticles::getMean, "Returns the mean, or mathematical expectation of the probability density distribution (PDF).")
         ;
-
-        MAKE_PTR(CPose3DPDFParticles)
     }
+}
+
+void export_poses_stl()
+{
+    MAKE_VEC(CPose2D)
+    MAKE_VEC(CPose3D)
 }

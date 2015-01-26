@@ -38,9 +38,7 @@ tuple CPathPlanningCircularRobot_computePath(CPathPlanningCircularRobot &self, C
 void export_nav()
 {
     // map namespace to be submodule of mrpt package
-    object nav_module(handle<>(borrowed(PyImport_AddModule("mrpt.nav"))));
-    scope().attr("nav") = nav_module;
-    scope nav_scope = nav_module;
+    MAKE_SUBMODULE(nav)
 
     // CPathPlanningCircularRobot
     {

@@ -64,9 +64,7 @@ long_ mrpt_system_now()
 void export_system()
 {
     // map namespace to be submodule of mrpt package
-    object system_module(handle<>(borrowed(PyImport_AddModule("mrpt.system"))));
-    scope().attr("system") = system_module;
-    scope system_scope = system_module;
+    MAKE_SUBMODULE(system)
 
     {
         class_<TTimeParts>("TTimeParts", init<>())

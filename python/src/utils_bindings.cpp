@@ -1,3 +1,4 @@
+/* bindings */
 #include "utils_bindings.h"
 
 /* MRPT */
@@ -76,27 +77,27 @@ struct CStreamWrap : public CStream, wrapper<CStream>
 {
     uint64_t Seek(uint64_t Offset, CStream::TSeekOrigin Origin = sFromBeginning)
     {
-        this->get_override("Seek")(Offset, Origin);
+        return this->get_override("Seek")(Offset, Origin);
     }
 
     size_t getTotalBytesCount()
     {
-        this->get_override("getTotalBytesCount")();
+        return this->get_override("getTotalBytesCount")();
     }
 
     size_t getPosition()
     {
-        this->get_override("getPosition")();
+        return this->get_override("getPosition")();
     }
 
     size_t Read(void *Buffer, size_t Count)
     {
-        this->get_override("Read")(Buffer, Count);
+        return this->get_override("Read")(Buffer, Count);
     }
 
     size_t Write(const void *Buffer, size_t Count)
     {
-        this->get_override("Write")(Buffer, Count);
+        return this->get_override("Write")(Buffer, Count);
     }
 };
 // end of CStream
@@ -115,9 +116,7 @@ MAKE_PTR_CTX(CObject)
 void export_utils()
 {
     // map namespace to be submodule of mrpt package
-    object utils_module(handle<>(borrowed(PyImport_AddModule("mrpt.utils"))));
-    scope().attr("utils") = utils_module;
-    scope utils_scope = utils_module;
+    MAKE_SUBMODULE(utils)
 
     // CObject
     {
@@ -187,4 +186,18 @@ void export_utils()
     // static module functions
     def("DEG2RAD", &mrpt_utils_DEG2RAD, args("deg"), "Convert degrees to radiants.");
     def("RAD2DEG", &mrpt_utils_RAD2DEG, args("rad"), "Convert radiants to degrees.");
+}
+
+void export_utils_stl()
+{
+    MAKE_VEC_NAMED(float, FloatVector)
+    MAKE_VEC_NAMED(double, DoubleVector)
+    MAKE_VEC_NAMED(uint8_t, UInt8Vector)
+    MAKE_VEC_NAMED(uint16_t, UInt16Vector)
+    MAKE_VEC_NAMED(uint32_t, UInt32Vector)
+    MAKE_VEC_NAMED(uint64_t, UInt64Vector)
+    MAKE_VEC_NAMED(int8_t, Int8Vector)
+    MAKE_VEC_NAMED(int16_t, Int16Vector)
+    MAKE_VEC_NAMED(int32_t, Int32Vector)
+    MAKE_VEC_NAMED(int64_t, Int64Vector)
 }

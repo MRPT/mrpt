@@ -1,11 +1,12 @@
 #ifndef __MAPS_BINDINGS_H__
 #define __MAPS_BINDINGS_H__
 
+/* bindings */
+#include "bindings.h"
+
 /* MRPT */
 #include <mrpt/maps/CMetricMap.h>
 
-/* BOOST */
-#include <boost/python.hpp>
 
 // CMetricMap
 struct CMetricMapWrap : mrpt::maps::CMetricMap, boost::python::wrapper<mrpt::maps::CMetricMap>

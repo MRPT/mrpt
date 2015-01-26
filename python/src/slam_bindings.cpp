@@ -1,3 +1,8 @@
+/* bindings */
+#include "bindings.h"
+#include "maps_bindings.h"
+#include "poses_bindings.h"
+
 /* MRPT */
 #include <mrpt/obs/CRawlog.h>
 #include <mrpt/obs/CObservation.h>
@@ -14,13 +19,9 @@
 #include <mrpt/slam/CICP.h>
 #include <mrpt/slam/CMetricMapBuilderICP.h>
 #include <mrpt/slam/CMetricMapBuilderRBPF.h>
+#include <mrpt/slam/CRangeBearingKFSLAM2D.h>
 
 #include <mrpt/poses/CPosePDFGaussian.h>
-
-/* bindings */
-#include "bindings.h"
-#include "maps_bindings.h"
-#include "poses_bindings.h"
 
 /* STD */
 #include <stdint.h>
@@ -80,32 +81,6 @@ tuple CICP_AlignPDF2(CICP &self, CSimplePointsMap &m1, CSimplePointsMap &m2, CPo
 }
 // end of CICP
 
-// CMetricMap
-void CMetricMapWrap::internal_clear()
-{
-    this->get_override("internal_clear")();
-}
-
-bool CMetricMapWrap::isEmpty()
-{
-    return this->get_override("isEmpty")();
-}
-
-double CMetricMapWrap::computeObservationLikelihood(const CObservation *obs, const CPose3D &takenFrom)
-{
-    return this->get_override("computeObservationLikelihood")(obs, takenFrom);
-}
-
-void CMetricMapWrap::saveMetricMapRepresentationToFile(const std::string &filNamePrefix)
-{
-    this->get_override("saveMetricMapRepresentationToFile")(filNamePrefix);
-}
-
-void CMetricMapWrap::getAs3DObject(mrpt::opengl::CSetOfObjectsPtr &outObj)
-{
-    this->get_override("getAs3DObject")(outObj);
-}
-
 // CMetricMapBuilder
 struct CMetricMapBuilderWrap : CMetricMapBuilder, wrapper<CMetricMapBuilder>
 {
@@ -163,19 +138,49 @@ CPose3DPDFParticlesPtr CMetricMapBuilderRBPF_getCurrentPoseEstimation(CMetricMap
 }
 // end of CMetricMapBuilder
 
+// CRangeBearingKFSLAM2D
+tuple CRangeBearingKFSLAM2D_getCurrentState(CRangeBearingKFSLAM2D& self)
+{
+    list ret_val;
+
+    CPosePDFGaussian out_robotPose;
+    std::vector<mrpt::math::TPoint2D> out_landmarksPositions;
+    std::map<unsigned int,mrpt::maps::CLandmark::TLandmarkID> out_landmarkIDs;
+    mrpt::math::CVectorDouble out_fullState;
+    mrpt::math::CMatrixDouble out_fullCovariance;
+
+    self.getCurrentState(out_robotPose, out_landmarksPositions, out_landmarkIDs, out_fullState, out_fullCovariance);
+
+    ret_val.append(out_robotPose);
+    ret_val.append(out_landmarksPositions);
+    ret_val.append(out_landmarkIDs);
+    ret_val.append(out_fullState);
+    ret_val.append(out_fullCovariance);
+
+    return tuple(ret_val);
+}
+
+CPosePDFGaussian CRangeBearingKFSLAM2D_getCurrentRobotPose(CRangeBearingKFSLAM2D& self)
+{
+    CPosePDFGaussian out_robotPose;
+    self.getCurrentRobotPose(out_robotPose);
+    return out_robotPose;
+}
+
+mrpt::opengl::CSetOfObjectsPtr CRangeBearingKFSLAM2D_getAs3DObject(CRangeBearingKFSLAM2D& self)
+{
+    mrpt::opengl::CSetOfObjectsPtr outObj = mrpt::opengl::CSetOfObjects::Create();
+    self.getAs3DObject(outObj);
+    return outObj;
+}
+
+BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(CRangeBearingKFSLAM2D_saveMapAndPath2DRepresentationAsMATLABFile_overloads, saveMapAndPath2DRepresentationAsMATLABFile, 1, 5)
+// end of CRangeBearingKFSLAM2D
 
 void export_slam()
 {
     // map namespace to be submodule of mrpt package
-    object slam_module(handle<>(borrowed(PyImport_AddModule("mrpt.slam"))));
-    scope().attr("slam") = slam_module;
-    scope slam_scope = slam_module;
-
-    // CMetricMap
-    {
-        scope s = class_<CMetricMapWrap, boost::noncopyable>("CMetricMap", no_init)
-        ;
-    }
+    MAKE_SUBMODULE(slam)
 
     // CICP
     {
@@ -278,5 +283,32 @@ void export_slam()
             .def_readwrite("mapsInitializers", &CMetricMapBuilderRBPF::TConstructionOptions::mapsInitializers)
             .def_readwrite("predictionOptions", &CMetricMapBuilderRBPF::TConstructionOptions::predictionOptions)
         ;
+    }
+
+    // CRangeBearingKFSLAM2D
+    {
+        scope s = class_<CRangeBearingKFSLAM2D, boost::noncopyable>("CRangeBearingKFSLAM2D", init<>())
+            .def("reset", &CRangeBearingKFSLAM2D::reset, "Reset the state of the SLAM filter: The map is emptied and the robot put back to (0,0,0).")
+            .def("processActionObservation", &CRangeBearingKFSLAM2D::processActionObservation, "Process one new action and observations to update the map and robot pose estimate.")
+            .def("getCurrentState", &CRangeBearingKFSLAM2D_getCurrentState, "Returns the complete mean and cov.")
+            .def("getNumberOfLandmarksInTheMap", &CRangeBearingKFSLAM2D::getNumberOfLandmarksInTheMap, "Get number of landmarks in the map.")
+            .def("getCurrentRobotPose", &CRangeBearingKFSLAM2D_getCurrentRobotPose, "Returns the mean & 3x3 covariance matrix of the robot 2D pose.")
+            .def("getAs3DObject", &CRangeBearingKFSLAM2D_getAs3DObject, "Returns a 3D representation of the landmarks in the map and the robot 3D position according to the current filter state.")
+            .def("loadOptions", &CRangeBearingKFSLAM2D::loadOptions, "Load options from a ini-like file/text.")
+            .def("saveMapAndPath2DRepresentationAsMATLABFile", &CRangeBearingKFSLAM2D::saveMapAndPath2DRepresentationAsMATLABFile, CRangeBearingKFSLAM2D_saveMapAndPath2DRepresentationAsMATLABFile_overloads()) //"Save the current state of the filter (robot pose & map) to a MATLAB script which displays all the elements in 2D.")
+            .def_readwrite("options", &CRangeBearingKFSLAM2D::options)
+        ;
+
+        // TConstructionOptions
+        class_<CRangeBearingKFSLAM2D::TOptions, bases<CLoadableOptions> >("TOptions", init<>())
+            .def_readwrite("stds_Q_no_odo", &CRangeBearingKFSLAM2D::TOptions::stds_Q_no_odo)
+            .def_readwrite("std_sensor_range", &CRangeBearingKFSLAM2D::TOptions::std_sensor_range)
+            .def_readwrite("std_sensor_yaw", &CRangeBearingKFSLAM2D::TOptions::std_sensor_yaw)
+            .def_readwrite("quantiles_3D_representation", &CRangeBearingKFSLAM2D::TOptions::quantiles_3D_representation)
+            .def_readwrite("create_simplemap", &CRangeBearingKFSLAM2D::TOptions::create_simplemap)
+            // TODO add data association options
+        ;
+
+
     }
 }

@@ -1,3 +1,8 @@
+/* bidings */
+#include "bindings.h"
+#include "system_bindings.h"
+#include "utils_bindings.h"
+
 /* MRPT */
 // #include <mrpt/obs/CAction.h>
 #include <mrpt/obs/CRawlog.h>
@@ -6,13 +11,9 @@
 #include <mrpt/obs/CObservationRange.h>
 #include <mrpt/obs/CObservation2DRangeScan.h>
 #include <mrpt/obs/CObservation3DRangeScan.h>
+#include <mrpt/obs/CObservationBearingRange.h>
 #include <mrpt/obs/CObservationOdometry.h>
 #include <mrpt/maps/CSimpleMap.h>
-
-/* bidings */
-#include "bindings.h"
-#include "system_bindings.h"
-#include "utils_bindings.h"
 
 /* STD */
 #include <stdint.h>
@@ -217,17 +218,17 @@ void CObservation2DRangeScan_from_ROS_LaserScan_msg(CObservation2DRangeScan &sel
 
 
 // CSensoryFrame
-void CSensoryFrame_insert1(CSensoryFrame &self, CObservation2DRangeScan &obs)
-{
-    CObservationPtr obsPtr = (CObservationPtr) obs.duplicateGetSmartPtr();
-    self.insert(obsPtr);
-}
-
-void CSensoryFrame_insert2(CSensoryFrame &self, CObservation3DRangeScan &obs)
-{
-    CObservationPtr obsPtr = (CObservationPtr) obs.duplicateGetSmartPtr();
-    self.insert(obsPtr);
-}
+// void CSensoryFrame_insert1(CSensoryFrame &self, CObservation2DRangeScan &obs)
+// {
+//     CObservationPtr obsPtr = (CObservationPtr) obs.duplicateGetSmartPtr();
+//     self.insert(obsPtr);
+// }
+//
+// void CSensoryFrame_insert2(CSensoryFrame &self, CObservation3DRangeScan &obs)
+// {
+//     CObservationPtr obsPtr = (CObservationPtr) obs.duplicateGetSmartPtr();
+//     self.insert(obsPtr);
+// }
 // end of CSensoryFrame
 
 // CRawLog
@@ -266,6 +267,7 @@ MAKE_PTR_CTX(CObservation)
 MAKE_PTR_CTX(CObservationOdometry)
 MAKE_PTR_CTX(CObservationRange)
 MAKE_PTR_CTX(CObservation2DRangeScan)
+MAKE_PTR_CTX(CObservationBearingRange)
 MAKE_PTR_CTX(CSensoryFrame)
 
 
@@ -273,33 +275,34 @@ MAKE_PTR_CTX(CSensoryFrame)
 void export_obs()
 {
     // map namespace to be submodule of mrpt package
-    object obs_module(handle<>(borrowed(PyImport_AddModule("mrpt.obs"))));
-    scope().attr("obs") = obs_module;
-    scope obs_scope = obs_module;
+    MAKE_SUBMODULE(obs)
 
     // CAction
     {
+        MAKE_PTR(CAction)
+
         class_<CActionWrap, boost::noncopyable>("CAction", no_init)
             .def_readwrite("timestamp", &CAction::timestamp)
         ;
-
-        MAKE_PTR(CAction)
     }
 
     // CActionCollection
     {
+        MAKE_PTR(CActionCollection)
+
         class_<CActionCollection>("CActionCollection", init<>())
             .def("clear", &CActionCollection::clear, "Erase all actions from the list.")
             .def("insert", &CActionCollection::insert, "Add a new object to the list.")
             .def("size", &CActionCollection::size, "Returns the actions count in the collection.")
             .def("eraseByIndex", &CActionCollection::eraseByIndex, "Remove an action from the list by its index.")
+            MAKE_CREATE(CActionCollection)
         ;
-
-        MAKE_PTR(CActionCollection)
     }
 
     // CActionRobotMovement2D
     {
+        MAKE_PTR_BASE(CActionRobotMovement2D, CAction)
+
         scope s = class_<CActionRobotMovement2D, bases<CAction> >("CActionRobotMovement2D", init<>())
             .def_readwrite("rawOdometryIncrementReading", &CActionRobotMovement2D::rawOdometryIncrementReading)
             .def_readwrite("estimationMethod", &CActionRobotMovement2D::estimationMethod)
@@ -312,9 +315,8 @@ void export_obs()
             .def_readwrite("motionModelConfiguration", &CActionRobotMovement2D::motionModelConfiguration)
             .def("computeFromOdometry", &CActionRobotMovement2D::computeFromOdometry, "Computes the PDF of the pose increment from an odometry reading and according to the given motion model (speed and encoder ticks information is not modified).")
             .def("computeFromEncoders", &CActionRobotMovement2D::computeFromEncoders, "If \"hasEncodersInfo\"=true, this method updates the pose estimation according to the ticks from both encoders and the passed parameters, which is passed internally to the method \"computeFromOdometry\" with the last used PDF options (or the defualt ones if not explicitly called by the user).")
+            MAKE_CREATE(CActionRobotMovement2D)
         ;
-
-        MAKE_PTR(CActionRobotMovement2D)
 
         // TEstimationMethod
         enum_<CActionRobotMovement2D::TEstimationMethod>("TEstimationMethod")
@@ -361,18 +363,20 @@ void export_obs()
 
     // CObservation
     {
+        MAKE_PTR(CObservation)
+
         class_<CObservationWrap, boost::noncopyable>("CObservation", no_init)
             .add_property("timestamp", &CObservation_get_timestamp, &CObservation_set_timestamp)
-            .def_readwrite("sensorLabel", &CObservation::timestamp)
+            .def_readwrite("sensorLabel", &CObservation::sensorLabel)
             .def("getSensorPose", &CObservationWrap::getSensorPose, "A general method to retrieve the sensor pose on the robot.")
             .def("setSensorPose", &CObservationWrap::setSensorPose, "A general method to change the sensor pose on the robot.")
         ;
-
-        MAKE_PTR(CObservation)
     }
 
     // CObservationOdometry
     {
+        MAKE_PTR_BASE(CObservationOdometry, CObservation)
+
         scope s = class_<CObservationOdometry, bases<CObservation> >("CObservationOdometry", init<>())
             .def_readwrite("odometry", &CObservationOdometry::odometry)
             .def_readwrite("hasEncodersInfo", &CObservationOdometry::hasEncodersInfo)
@@ -381,28 +385,28 @@ void export_obs()
             .def_readwrite("hasVelocities", &CObservationOdometry::hasVelocities)
             .def_readwrite("velocityLin", &CObservationOdometry::velocityLin)
             .def_readwrite("velocityAng", &CObservationOdometry::velocityAng)
+            MAKE_CREATE(CObservationOdometry)
 #ifdef ROS_EXTENSIONS
             .def("to_ROS_RawOdometry_msg", &CObservationOdometry_to_ROS_RawOdometry_msg, "Convert to ROS pymrpt_msgs/RawOdometry.")
             .def("from_ROS_RawOdometry_msg", &CObservationOdometry_from_ROS_RawOdometry_msg, "Convert from ROS pymrpt_msgs/RawOdometry.")
 #endif
         ;
-
-        MAKE_PTR(CObservationOdometry)
     }
     // CObservationRange
     {
+        MAKE_PTR_BASE(CObservationRange, CObservation)
+
         scope s = class_<CObservationRange, bases<CObservation> >("CObservationRange", init<>())
             .def_readwrite("minSensorDistance", &CObservationRange::minSensorDistance)
             .def_readwrite("maxSensorDistance", &CObservationRange::maxSensorDistance)
             .def_readwrite("sensorConeApperture", &CObservationRange::sensorConeApperture)
             .def_readwrite("sensedData", &CObservationRange::sensedData)
+            MAKE_CREATE(CObservationRange)
 #ifdef ROS_EXTENSIONS
             .def("to_ROS_Range_msg", &CObservationRange_to_ROS_Range_msg, "Convert to ROS sensor_msgs/Range.")
             .def("from_ROS_Range_msg", &CObservationRange_from_ROS_Range_msg, "Convert from ROS sensor_msgs/Range.")
 #endif
         ;
-
-        MAKE_PTR(CObservationRange)
 
         // TMeasurement
         class_<CObservationRange::TMeasurement>("TMeasurement", init<>())
@@ -415,15 +419,17 @@ void export_obs()
         class_<CObservationRange::TMeasurementList>("TMeasurementList", init<>())
             .def("__len__", &CObservationRange::TMeasurementList::size)
             .def("clear", &CObservationRange::TMeasurementList::clear)
-            .def("append", &stl_deque<CObservationRange::TMeasurementList>::add, with_custodian_and_ward<1,2>()) // to let container keep value
-            .def("__getitem__", &stl_deque<CObservationRange::TMeasurementList>::get, return_value_policy<copy_non_const_reference>())
-            .def("__setitem__", &stl_deque<CObservationRange::TMeasurementList>::set, with_custodian_and_ward<1,2>()) // to let container keep value
-            .def("__delitem__", &stl_deque<CObservationRange::TMeasurementList>::del)
+            .def("append", &StlListLike<CObservationRange::TMeasurementList>::add, with_custodian_and_ward<1,2>()) // to let container keep value
+            .def("__getitem__", &StlListLike<CObservationRange::TMeasurementList>::get, return_value_policy<copy_non_const_reference>())
+            .def("__setitem__", &StlListLike<CObservationRange::TMeasurementList>::set, with_custodian_and_ward<1,2>()) // to let container keep value
+            .def("__delitem__", &StlListLike<CObservationRange::TMeasurementList>::del)
         ;
     }
 
     // CObservation2DRangeScan
     {
+        MAKE_PTR_BASE(CObservation2DRangeScan, CObservation)
+
         class_<CObservation2DRangeScan, bases<CObservation> >("CObservation2DRangeScan", init<>())
             .def_readwrite("scan", &CObservation2DRangeScan::scan)
             .def_readwrite("validRange", &CObservation2DRangeScan::validRange)
@@ -433,13 +439,50 @@ void export_obs()
             .def_readwrite("stdError", &CObservation2DRangeScan::stdError)
             .def_readwrite("beamAperture", &CObservation2DRangeScan::beamAperture)
             .def_readwrite("deltaPitch", &CObservation2DRangeScan::deltaPitch)
+            MAKE_CREATE(CObservation2DRangeScan)
 #ifdef ROS_EXTENSIONS
             .def("to_ROS_LaserScan_msg", &CObservation2DRangeScan_to_ROS_LaserScan_msg, "Convert to ROS sensor_msgs/LaserScan.")
             .def("from_ROS_LaserScan_msg", &CObservation2DRangeScan_from_ROS_LaserScan_msg, "Convert to ROS sensor_msgs/LaserScan.")
 #endif
         ;
+    }
 
-        MAKE_PTR(CObservation2DRangeScan)
+    // CObservationBearingRange
+    {
+        MAKE_PTR_BASE(CObservationBearingRange, CObservation)
+
+        scope s = class_<CObservationBearingRange, bases<CObservation> >("CObservationBearingRange", init<>())
+            .def_readwrite("minSensorDistance", &CObservationBearingRange::minSensorDistance)
+            .def_readwrite("maxSensorDistance", &CObservationBearingRange::maxSensorDistance)
+            .def_readwrite("fieldOfView_yaw", &CObservationBearingRange::fieldOfView_yaw)
+            .def_readwrite("fieldOfView_pitch", &CObservationBearingRange::fieldOfView_pitch)
+            .def_readwrite("sensorLocationOnRobot", &CObservationBearingRange::sensorLocationOnRobot)
+            .def_readwrite("sensedData", &CObservationBearingRange::sensedData)
+            .def_readwrite("validCovariances", &CObservationBearingRange::validCovariances)
+            .def_readwrite("sensor_std_range", &CObservationBearingRange::sensor_std_range)
+            .def_readwrite("sensor_std_yaw", &CObservationBearingRange::sensor_std_yaw)
+            .def_readwrite("sensor_std_pitch", &CObservationBearingRange::sensor_std_pitch)
+            MAKE_CREATE(CObservationBearingRange)
+        ;
+
+        // TMeasurement
+        class_<CObservationBearingRange::TMeasurement>("TMeasurement", init<>())
+            .def_readwrite("range", &CObservationBearingRange::TMeasurement::range)
+            .def_readwrite("yaw", &CObservationBearingRange::TMeasurement::yaw)
+            .def_readwrite("pitch", &CObservationBearingRange::TMeasurement::pitch)
+            .def_readwrite("landmarkID", &CObservationBearingRange::TMeasurement::landmarkID)
+            .def_readwrite("covariance", &CObservationBearingRange::TMeasurement::covariance)
+        ;
+
+        // TMeasurementList
+        class_<CObservationBearingRange::TMeasurementList>("TMeasurementList", init<>())
+            .def("__len__", &CObservationBearingRange::TMeasurementList::size)
+            .def("clear", &CObservationBearingRange::TMeasurementList::clear)
+            .def("append", &StlListLike<CObservationBearingRange::TMeasurementList>::add, with_custodian_and_ward<1,2>()) // to let container keep value
+            .def("__getitem__", &StlListLike<CObservationBearingRange::TMeasurementList>::get, return_value_policy<copy_non_const_reference>())
+            .def("__setitem__", &StlListLike<CObservationBearingRange::TMeasurementList>::set, with_custodian_and_ward<1,2>()) // to let container keep value
+            .def("__delitem__", &StlListLike<CObservationBearingRange::TMeasurementList>::del)
+        ;
     }
 
     // CRawlog
@@ -454,19 +497,20 @@ void export_obs()
             .def("loadFromRawLogFile", &CRawlog::loadFromRawLogFile, "Load the contents from a file containing either CRawLog objects or directly Action/Observation object pairs.")
             .def("saveToRawLogFile", &CRawlog::saveToRawLogFile, "Saves the contents to a rawlog-file, compatible with RawlogViewer (As the sequence of internal objects).")
         ;
-
     }
 
     // CSensoryFrame
     {
+        MAKE_PTR(CSensoryFrame)
+
         class_<CSensoryFrame>("CSensoryFrame", init<>())
             .def("clear", &CSensoryFrame::clear, "Clear all current observations.")
-            .def("insert", &CSensoryFrame_insert1, "Inserts a new observation to the list.")
-            .def("insert", &CSensoryFrame_insert2, "Inserts a new observation to the list.")
+            .def("insert", &CSensoryFrame::insert, "Inserts a new observation to the list.")
+//             .def("insert", &CSensoryFrame_insert1, "Inserts a new observation to the list.")
+//             .def("insert", &CSensoryFrame_insert2, "Inserts a new observation to the list.")
             .def("size", &CSensoryFrame::size, "Returns the number of observations in the list")
             .def("eraseByIndex", &CSensoryFrame::eraseByIndex, "Removes the i'th observation in the list (0=first).")
+            MAKE_CREATE(CSensoryFrame)
         ;
-
-        MAKE_PTR(CSensoryFrame)
     }
 }

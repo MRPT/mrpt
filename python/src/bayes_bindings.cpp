@@ -5,6 +5,7 @@
 #include <mrpt/utils/CLoadableOptions.h>
 #include <mrpt/bayes/CParticleFilter.h>
 #include <mrpt/bayes/CParticleFilterCapable.h>
+#include <mrpt/bayes/CKalmanFilterCapable.h>
 #include <mrpt/obs/CActionCollection.h>
 #include <mrpt/obs/CSensoryFrame.h>
 #include <mrpt/math/lightweight_geom_data.h>
@@ -19,9 +20,7 @@ using namespace mrpt::utils;
 void export_bayes()
 {
     // map namespace to be submodule of mrpt package
-    object bayes_module(handle<>(borrowed(PyImport_AddModule("mrpt.bayes"))));
-    scope().attr("bayes") = bayes_module;
-    scope bayes_scope = bayes_module;
+    MAKE_SUBMODULE(bayes)
 
     // CParticleFilter
     {

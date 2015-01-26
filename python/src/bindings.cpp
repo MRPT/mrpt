@@ -1,8 +1,4 @@
-/* BOOST */
-#include <boost/python.hpp>
-#include <boost/python/suite/indexing/vector_indexing_suite.hpp>
-#include <boost/python/suite/indexing/indexing_suite.hpp>
-
+/* bindings */
 #include "bindings.h"
 #include "utils_bindings.h"
 #include "poses_bindings.h"
@@ -15,8 +11,8 @@ using namespace boost::python;
 //
 // Helpers
 //
-void IndexError() { PyErr_SetString(PyExc_IndexError, "Index out of range"); }
-
+void IndexError() { PyErr_SetString(PyExc_IndexError, "Index out of range"); throw_error_already_set(); }
+void TypeError(std::string message) { PyErr_SetString(PyExc_TypeError, message.c_str()); throw_error_already_set(); }
 //
 //  The Greeter
 //
@@ -44,12 +40,15 @@ BOOST_PYTHON_MODULE(pymrpt)
     package.attr("greeter") = greeter;
 
     // STL
-    class_<std::vector<float> >("FloatVector")
-            .def(vector_indexing_suite<std::vector<float> >());
-    class_<std::vector<double> >("DoubleVector")
-            .def(vector_indexing_suite<std::vector<double> >());
-    class_<std::vector<char> >("CharVector")
-            .def(vector_indexing_suite<std::vector<char> >());
+    {
+        object stl_module(handle<>(borrowed(PyImport_AddModule("pymrpt.stl"))));
+        scope().attr("stl") = stl_module;
+        scope stl_scope = stl_module;
+
+        export_math_stl();
+        export_poses_stl();
+        export_utils_stl();
+    }
 
 ////////////
 // system //
