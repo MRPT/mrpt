@@ -134,6 +134,15 @@ BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(COccupancyGridMap2D_resizeGrid_overloads,
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(COccupancyGridMap2D_loadFromBitmapFile_overloads, loadFromBitmapFile, 2, 4)
 // end of COccupancyGridMap2D
 
+// CPointsMap
+mrpt::opengl::CSetOfObjectsPtr CPointsMap_getAs3DObject(CPointsMap &self)
+{
+    mrpt::opengl::CSetOfObjectsPtr outObj = mrpt::opengl::CSetOfObjects::Create();
+    self.getAs3DObject(outObj);
+    return outObj;
+}
+// end of CPointsMap
+
 // CSimplePointsMap
 void CSimplePointsMap_loadFromRangeScan1(CSimplePointsMap &self, const CObservation2DRangeScan &rangeScan)
 {
@@ -248,7 +257,6 @@ MAKE_PTR_CTX(CMultiMetricMap)
 MAKE_PTR_CTX(CMultiMetricMapPDF)
 
 
-
 void export_maps()
 {
     // map namespace to be submodule of package
@@ -271,7 +279,7 @@ void export_maps()
     {
         MAKE_PTR_BASE(CMetricMap, CSerializable)
 
-        scope s = class_<CMetricMap, boost::noncopyable>("CMetricMap", no_init)
+        scope s = class_<CMetricMap, boost::noncopyable, bases<CSerializable> >("CMetricMap", no_init)
             .def("clear", &CMetricMap::clear, "Erase all the contents of the map.")
             .def("isEmpty", &CMetricMap::isEmpty, "Returns true if the map is empty/no observation has been inserted.")
             .def("loadFromProbabilisticPosesAndObservations", &CMetricMap::loadFromProbabilisticPosesAndObservations, "Load the map contents from a CSimpleMap object, erasing all previous content of the map.")
@@ -366,6 +374,7 @@ void export_maps()
             .def("copyFrom", &CPointsMap::copyFrom, "Virtual assignment operator, copies as much common data (XYZ, color,...) as possible from the source map into this one.")
             .def("getPointAllFieldsFast", &CPointsMap::getPointAllFieldsFast, "Get all the data fields for one point as a vector: depending on the implementation class this can be [X Y Z] or [X Y Z R G B], etc...")
             .def("setPointAllFieldsFast", &CPointsMap::setPointAllFieldsFast, "Set all the data fields for one point as a vector: depending on the implementation class this can be [X Y Z] or [X Y Z R G B], etc...")
+            .def("getAs3DObject", &CPointsMap_getAs3DObject, "Returns a 3D object representing the map.")
         ;
     }
 
@@ -421,7 +430,7 @@ void export_maps()
     {
         MAKE_PTR_BASE(CMultiMetricMap, CMetricMap)
 
-        scope s = class_<CMultiMetricMap>("CMultiMetricMap", init<optional<TSetOfMetricMapInitializers*> >())
+        scope s = class_<CMultiMetricMap, bases<CMetricMap> >("CMultiMetricMap", init<optional<TSetOfMetricMapInitializers*> >())
             .def("getAs3DObject", &CMultiMetricMap_getAs3DObject, "Returns a 3D object representing the map.")
             .def("setListOfMaps", &CMultiMetricMap_setListOfMaps, "Sets the list of internal map according to the passed list of map initializers (Current maps' content will be deleted!).")
             .def("isEmpty", &CMultiMetricMap::isEmpty, "Returns true if all maps returns true to their isEmpty() method, which is map-dependent.")

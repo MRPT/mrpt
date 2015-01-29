@@ -39,19 +39,6 @@ using namespace mrpt::slam;
 using namespace mrpt::maps;
 using namespace mrpt::obs;
 
-// TMetricMapInitializer
-void TMetricMapInitializer_set_COccupancyGridMap2D(TMetricMapInitializer &self, float min_x, float max_x, float min_y, float max_y, float resolution)
-{
-// FIXME old_stable: 1.2
-//     self.metricMapClassType = CLASS_ID(COccupancyGridMap2D);
-//     self.m_disableSaveAs3DObject = true;
-//     self.occupancyGridMap2D_options.min_x = min_x;
-//     self.occupancyGridMap2D_options.max_x = max_x;
-//     self.occupancyGridMap2D_options.min_y = min_y;
-//     self.occupancyGridMap2D_options.max_y = max_y;
-//     self.occupancyGridMap2D_options.resolution = resolution;
-}
-
 // CICP
 tuple CICP_AlignPDF1(CICP &self, COccupancyGridMap2D &m1, CSimplePointsMap &m2, CPosePDFGaussian &initialEstimationPDF)
 {
@@ -503,12 +490,13 @@ void export_slam()
         class_<TMonteCarloLocalizationParams>("TMonteCarloLocalizationParams", init<>())
             .def_readwrite("metricMaps", &TMonteCarloLocalizationParams::metricMaps)
             .def_readwrite("KLD_params", &TMonteCarloLocalizationParams::KLD_params)
+            .def_readwrite("metricMap", &TMonteCarloLocalizationParams::metricMap)
         ;
     }
 
     // CMonteCarloLocalization2D
     {
-        scope s = class_<CMonteCarloLocalization2D, boost::noncopyable>("CMonteCarloLocalization2D", init<optional<size_t> >())
+        scope s = class_<CMonteCarloLocalization2D, boost::noncopyable, bases<CParticleFilterCapable> >("CMonteCarloLocalization2D", init<optional<size_t> >())
             .def("resetUniformFreeSpace", &CMonteCarloLocalization2D::resetUniformFreeSpace, CMonteCarloLocalization2D_resetUniformFreeSpace_overloads())
             .def("prediction_and_update_pfStandardProposal", &CMonteCarloLocalization2D_prediction_and_update_pfStandardProposal, "Update the m_particles, predicting the posterior of robot pose and map after a movement command.")
             .def("prediction_and_update_pfAuxiliaryPFStandard", &CMonteCarloLocalization2D_prediction_and_update_pfAuxiliaryPFStandard, "Update the m_particles, predicting the posterior of robot pose and map after a movement command.")
@@ -549,7 +537,7 @@ void export_slam()
 
     // CMonteCarloLocalization3D
     {
-        scope s = class_<CMonteCarloLocalization3D, boost::noncopyable>("CMonteCarloLocalization3D", init<optional<size_t> >())
+        scope s = class_<CMonteCarloLocalization3D, boost::noncopyable, bases<CParticleFilterCapable> >("CMonteCarloLocalization3D", init<optional<size_t> >())
             .def("prediction_and_update_pfStandardProposal", &CMonteCarloLocalization3D_prediction_and_update_pfStandardProposal, "Update the m_particles, predicting the posterior of robot pose and map after a movement command.")
             .def("prediction_and_update_pfAuxiliaryPFStandard", &CMonteCarloLocalization3D_prediction_and_update_pfAuxiliaryPFStandard, "Update the m_particles, predicting the posterior of robot pose and map after a movement command.")
             .def("prediction_and_update_pfAuxiliaryPFOptimal", &CMonteCarloLocalization3D_prediction_and_update_pfAuxiliaryPFOptimal, "Update the m_particles, predicting the posterior of robot pose and map after a movement command.")

@@ -13,6 +13,7 @@
 #include <mrpt/obs/CObservationBearingRange.h>
 #include <mrpt/obs/CObservationOdometry.h>
 
+#include <mrpt/maps/CPointsMap.h>
 #include <mrpt/maps/CSimpleMap.h>
 
 #include <mrpt/utils/CStream.h>
@@ -39,6 +40,18 @@ void CActionCollection_insert2(CActionCollection &self, CActionRobotMovement3D &
     self.insert(action);
 }
 // end of CActionCollection
+
+// CSensoryFrame
+const CPointsMap* CSensoryFrame_getAuxPointsMap(CSensoryFrame& self)
+{
+    return self.getAuxPointsMap<CPointsMap>();
+}
+
+const CPointsMap* CSensoryFrame_buildAuxPointsMap(CSensoryFrame& self)
+{
+    return self.buildAuxPointsMap<CPointsMap>();
+}
+// end of CSensoryFrame
 
 // CObservation
 long_ CObservation_get_timestamp(CObservation &self)
@@ -487,6 +500,8 @@ void export_obs()
             .def("insert", &CSensoryFrame::insert, "Inserts a new observation to the list.")
             .def("size", &CSensoryFrame::size, "Returns the number of observations in the list")
             .def("eraseByIndex", &CSensoryFrame::eraseByIndex, "Removes the i'th observation in the list (0=first).")
+            .def("getAuxPointsMap", &CSensoryFrame_getAuxPointsMap, return_internal_reference<>(), "Returns the cached points map representation of the scan, if already build with buildAuxPointsMap(), or NULL otherwise.")
+            .def("buildAuxPointsMap", &CSensoryFrame_buildAuxPointsMap, return_internal_reference<>(), "Returns a cached points map representing this laser scan, building it upon the first call.")
             MAKE_CREATE(CSensoryFrame)
         ;
     }

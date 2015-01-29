@@ -45,9 +45,15 @@ void export_bayes()
     // map namespace to be submodule of mrpt package
     MAKE_SUBMODULE(bayes)
 
+    // CParticleFilterCapable
+    {
+        scope s = class_<CParticleFilterCapable, boost::noncopyable>("CParticleFilterCapable", no_init)
+        ;
+    }
+
     // CParticleFilter
     {
-        scope s = class_<CParticleFilter>("CParticleFilter", init<CParticleFilter>())
+        scope s = class_<CParticleFilter, bases<CParticleFilterCapable> >("CParticleFilter", init<>())
             .def("executeOn", &CParticleFilter_executeOn)
             .def_readwrite("m_options", &CParticleFilter::m_options)
         ;

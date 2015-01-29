@@ -72,11 +72,6 @@ BOOST_PYTHON_MODULE(pymrpt)
 ////////////
     export_maps();
 
-////////////
-//  slam  //
-////////////
-    export_slam();
-
 ///////////
 //  gui  //
 ///////////
@@ -87,6 +82,11 @@ BOOST_PYTHON_MODULE(pymrpt)
 ////////////
     export_opengl();
 
+///////////
+//  nav  //
+///////////
+    export_nav();
+
 ////////////
 //  math  //
 ////////////
@@ -96,5 +96,10 @@ BOOST_PYTHON_MODULE(pymrpt)
 // bayes //
 ///////////
     export_bayes();
+
+////////////
+//  slam  //
+////////////
+    export_slam();
 
 }

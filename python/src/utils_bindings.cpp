@@ -2,6 +2,7 @@
 #include "bindings.h"
 
 /* MRPT */
+#include <mrpt/utils/TColor.h>
 #include <mrpt/utils/CObject.h>
 #include <mrpt/utils/CStream.h>
 #include <mrpt/utils/CFileGZInputStream.h>
@@ -79,12 +80,24 @@ void export_utils()
     // map namespace to be submodule of mrpt package
     MAKE_SUBMODULE(utils)
 
+
+    // TColorf
+    {
+        class_<TColorf>("TColorf", init<optional<float, float, float, float> >(args("r", "g", "b", "alpha"), "A RGB color - floats in the range [0,1]."))
+            .def_readwrite("R", &TColorf::R, "red")
+            .def_readwrite("G", &TColorf::R, "green")
+            .def_readwrite("B", &TColorf::R, "blue")
+            .def_readwrite("A", &TColorf::R, "alpha")
+        ;
+    }
+
     // CObject
     {
         MAKE_PTR(CObject)
 
         class_<CObject, boost::noncopyable>("CObject", no_init)
             .def("duplicate", &CObject::duplicate, return_value_policy<manage_new_object>(), "Returns a copy of the object, indepently of its class.")
+            .def("GetRuntimeClass", &CObject::GetRuntimeClass, return_internal_reference<>(), "Returns information about the class of an object in runtime.")
         ;
     }
 
@@ -102,7 +115,8 @@ void export_utils()
 
     // TRuntimeClassId
     {
-        class_<TRuntimeClassId>("TRuntimeClassId", init<>())
+        class_<TRuntimeClassId, boost::noncopyable>("TRuntimeClassId", no_init)
+            .def_readwrite("className", &TRuntimeClassId::className)
         ;
     }
 
@@ -124,7 +138,7 @@ void export_utils()
 
     // CConfigFile
     {
-        class_<CConfigFile, bases<CConfigFileBase> >("CConfigFile", init<>())
+        class_<CConfigFile, bases<CConfigFileBase> >("CConfigFile", init<optional<std::string> >())
         ;
     }
 
