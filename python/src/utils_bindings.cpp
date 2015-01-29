@@ -1,8 +1,16 @@
 /* bindings */
-#include "utils_bindings.h"
+#include "bindings.h"
 
 /* MRPT */
+#include <mrpt/utils/CObject.h>
+#include <mrpt/utils/CStream.h>
 #include <mrpt/utils/CFileGZInputStream.h>
+#include <mrpt/utils/CStdOutStream.h>
+#include <mrpt/utils/CSerializable.h>
+#include <mrpt/utils/CConfigFileBase.h>
+#include <mrpt/utils/CConfigFile.h>
+#include <mrpt/utils/CLoadableOptions.h>
+#include <mrpt/utils/CRobotSimulator.h>
 
 /* STD */
 #include <stdint.h>
@@ -11,52 +19,8 @@ using namespace boost::python;
 using namespace mrpt::utils;
 using namespace mrpt::poses;
 
-// CObject wrapper
-CObject *CObjectWrap::duplicate() const
-{
-    return this->get_override("duplicate")();
-}
 
-// CSerializable wrapper
-CObject *CSerializableWrap::duplicate() const
-{
-    return this->get_override("duplicate")();
-}
-
-void CSerializableWrap::writeToStream(mrpt::utils::CStream &out, int32_t *getVersion) const
-{
-    this->get_override("writeToStream")(out, getVersion);
-}
-
-void CSerializableWrap::readFromStream(mrpt::utils::CStream &in, int32_t version)
-{
-    this->get_override("readFromStream")(in, version);
-}
-// end of CSerializable wrapper
-
-// CLoadableOptions wrapper
-struct CLoadableOptionsWrap : CLoadableOptions, wrapper<CLoadableOptions>
-{
-    void loadFromConfigFile(const mrpt::utils::CConfigFileBase &source, const std::string &section)
-    {
-        this->get_override("loadFromConfigFile")(source, section);
-    }
-
-    void saveToConfigFile(const mrpt::utils::CConfigFileBase &target, const std::string &section) const
-    {
-        this->get_override("saveToConfigFile")(target, section);
-    }
-
-    void dumpToTextStream(mrpt::utils::CStream& out) const
-    {
-        this->get_override("dumpToTextStream")(out);
-    }
-};
-
-BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(CRobotSimulator_setDelayModelParams_overloads, setDelayModelParams, 0, 2)
-BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(CRobotSimulator_setOdometryErrors_overloads, setOdometryErrors, 1, 7)
-BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(CRobotSimulator_resetOdometry_overloads, resetOdometry, 0, 1)
-
+// CRobotSimulator
 CPose2D CRobotSimulator_getOdometry(CRobotSimulator &self)
 {
     CPose2D pose;
@@ -70,38 +34,34 @@ CPose2D CRobotSimulator_getRealPose(CRobotSimulator &self)
     self.getRealPose(pose);
     return pose;
 }
+
+BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(CRobotSimulator_setDelayModelParams_overloads, setDelayModelParams, 0, 2)
+BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(CRobotSimulator_setOdometryErrors_overloads, setOdometryErrors, 1, 7)
+BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(CRobotSimulator_resetOdometry_overloads, resetOdometry, 0, 1)
 // end of CRobotSimulator
 
 // CStream
-struct CStreamWrap : public CStream, wrapper<CStream>
+void CStream_ReadObject(CStream& self, CSerializablePtr& obj)
 {
-    uint64_t Seek(uint64_t Offset, CStream::TSeekOrigin Origin = sFromBeginning)
-    {
-        return this->get_override("Seek")(Offset, Origin);
-    }
+    self.ReadObject(obj.pointer());
+}
 
-    size_t getTotalBytesCount()
-    {
-        return this->get_override("getTotalBytesCount")();
-    }
-
-    size_t getPosition()
-    {
-        return this->get_override("getPosition")();
-    }
-
-    size_t Read(void *Buffer, size_t Count)
-    {
-        return this->get_override("Read")(Buffer, Count);
-    }
-
-    size_t Write(const void *Buffer, size_t Count)
-    {
-        return this->get_override("Write")(Buffer, Count);
-    }
-};
+void CStream_WriteObject(CStream& self, CSerializablePtr& obj)
+{
+    self.WriteObject(obj.pointer());
+}
 // end of CStream
 
+// CConfigFileBase
+BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(CConfigFileBase_read_double_overloads, read_double, 3, 4)
+BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(CConfigFileBase_read_float_overloads, read_float, 3, 4)
+BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(CConfigFileBase_read_bool_overloads, read_bool, 3, 4)
+BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(CConfigFileBase_read_int_overloads, read_int, 3, 4)
+BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(CConfigFileBase_read_uint64_t_overloads, read_uint64_t, 3, 4)
+BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(CConfigFileBase_read_string_overloads, read_string, 3, 4)
+BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(CConfigFileBase_read_string_first_word_overloads, read_string_first_word, 3, 4)
+//TODO implement read_vector, read_matrix and read_enum
+// end of CConfigFileBase
 
 // Utils
 double mrpt_utils_DEG2RAD(double deg) { return mrpt::utils::DEG2RAD(deg); }
@@ -110,6 +70,7 @@ double mrpt_utils_RAD2DEG(double rad) { return mrpt::utils::RAD2DEG(rad); }
 
 // smart pointer contents
 MAKE_PTR_CTX(CObject)
+MAKE_PTR_CTX(CSerializable)
 
 
 // exporter
@@ -120,28 +81,50 @@ void export_utils()
 
     // CObject
     {
-        class_<CObjectWrap, boost::noncopyable>("CObject", no_init)
-            .def("duplicate", &CObjectWrap::duplicate, return_value_policy<manage_new_object>(), "Returns a copy of the object, indepently of its class.")
-        ;
-
         MAKE_PTR(CObject)
+
+        class_<CObject, boost::noncopyable>("CObject", no_init)
+            .def("duplicate", &CObject::duplicate, return_value_policy<manage_new_object>(), "Returns a copy of the object, indepently of its class.")
+        ;
     }
 
     // CLoadableOptions
     {
-        class_<CLoadableOptionsWrap, boost::noncopyable>("CLoadableOptions", no_init)
-            .def("loadFromConfigFile", &CLoadableOptionsWrap::loadFromConfigFile, "This method load the options from a \".ini\"-like file or memory-stored string list.")
-            .def("loadFromConfigFileName", &CLoadableOptionsWrap::loadFromConfigFileName, "Behaves like loadFromConfigFile, but you can pass directly a file name and a temporary CConfigFile object will be created automatically to load the file.")
-            .def("saveToConfigFile", &CLoadableOptionsWrap::saveToConfigFile, "This method saves the options to a \".ini\"-like file or memory-stored string list.")
-            .def("saveToConfigFileName", &CLoadableOptionsWrap::saveToConfigFileName, "Behaves like saveToConfigFile, but you can pass directly a file name and a temporary CConfigFile object will be created automatically to save the file.")
-            .def("dumpToConsole", &CLoadableOptionsWrap::dumpToConsole, "Just like dumpToTextStream() but sending the text to the console (std::cout)")
-            .def("dumpToTextStream", &CLoadableOptionsWrap::dumpToTextStream, "This method should clearly display all the contents of the structure in textual form, sending it to a CStream.")
+        class_<CLoadableOptions, boost::noncopyable>("CLoadableOptions", no_init)
+            .def("loadFromConfigFile", &CLoadableOptions::loadFromConfigFile, "This method load the options from a \".ini\"-like file or memory-stored string list.")
+            .def("loadFromConfigFileName", &CLoadableOptions::loadFromConfigFileName, "Behaves like loadFromConfigFile, but you can pass directly a file name and a temporary CConfigFile object will be created automatically to load the file.")
+            .def("saveToConfigFile", &CLoadableOptions::saveToConfigFile, "This method saves the options to a \".ini\"-like file or memory-stored string list.")
+            .def("saveToConfigFileName", &CLoadableOptions::saveToConfigFileName, "Behaves like saveToConfigFile, but you can pass directly a file name and a temporary CConfigFile object will be created automatically to save the file.")
+            .def("dumpToConsole", &CLoadableOptions::dumpToConsole, "Just like dumpToTextStream() but sending the text to the console (std::cout)")
+            .def("dumpToTextStream", &CLoadableOptions::dumpToTextStream, "This method should clearly display all the contents of the structure in textual form, sending it to a CStream.")
         ;
     }
 
     // TRuntimeClassId
     {
         class_<TRuntimeClassId>("TRuntimeClassId", init<>())
+        ;
+    }
+
+    // CConfigFileBase
+    {
+        class_<CConfigFileBase, boost::noncopyable>("CConfigFileBase", no_init)
+            .def("getAllSections", &CConfigFileBase::getAllSections, "Returns a list with all the section names.")
+            .def("getAllKeys", &CConfigFileBase::getAllKeys, "Returs a list with all the keys into a section.")
+            .def("sectionExists ", &CConfigFileBase::sectionExists, "Checks if a given section exists (name is case insensitive).")
+            .def("read_double", &CConfigFileBase::read_double, CConfigFileBase_read_double_overloads())
+            .def("read_float", &CConfigFileBase::read_float, CConfigFileBase_read_float_overloads())
+            .def("read_bool", &CConfigFileBase::read_bool, CConfigFileBase_read_bool_overloads())
+            .def("read_int", &CConfigFileBase::read_int, CConfigFileBase_read_int_overloads())
+            .def("read_uint64_t", &CConfigFileBase::read_uint64_t, CConfigFileBase_read_uint64_t_overloads())
+            .def("read_string", &CConfigFileBase::read_string, CConfigFileBase_read_string_overloads())
+            .def("read_string_first_word", &CConfigFileBase::read_string_first_word, CConfigFileBase_read_string_first_word_overloads())
+        ;
+    }
+
+    // CConfigFile
+    {
+        class_<CConfigFile, bases<CConfigFileBase> >("CConfigFile", init<>())
         ;
     }
 
@@ -169,9 +152,25 @@ void export_utils()
         ;
     }
 
+    // CSerializable
+    {
+        MAKE_PTR_BASE(CSerializable, CObject)
+
+        class_<CSerializable, boost::noncopyable, bases<CObject> >("CSerializable", no_init)
+        ;
+    }
+
     // CStream
     {
-        class_<CStreamWrap, boost::noncopyable>("CStream", "This base class is used to provide a unified interface to files,memory buffers.", no_init)
+        class_<CStream, boost::noncopyable>("CStream", "This base class is used to provide a unified interface to files,memory buffers.", no_init)
+            .def("ReadObject", &CStream_ReadObject, "Reads an object from stream, its class determined at runtime, and returns a smart pointer to the object.")
+            .def("WriteObject", &CStream_WriteObject, "Writes an object to the stream.")
+        ;
+    }
+
+    // CStdOutStream
+    {
+        class_<CStdOutStream, bases<CStream> >("CStdOutStream", "This CStdOutStream derived class allow printing to standard out, normally the console text output.", init<>())
         ;
     }
 

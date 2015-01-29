@@ -1,3 +1,4 @@
+/* bindings */
 #include "bindings.h"
 
 /* MRPT */

@@ -1,5 +1,5 @@
 /* bindings */
-#include "poses_bindings.h"
+#include "bindings.h"
 
 /* MRPT */
 #include <mrpt/poses/CPose2D.h>
@@ -12,11 +12,6 @@
 #include <mrpt/poses/CPose3DPDFGaussian.h>
 #include <mrpt/poses/CPose3DPDFParticles.h>
 #include <mrpt/utils/CStream.h>
-
-/* BOOST */
-#include <boost/python.hpp>
-#include <boost/python/suite/indexing/vector_indexing_suite.hpp>
-
 
 /* STD */
 #include "math.h"
@@ -118,120 +113,120 @@ void CPose3D_from_ROS_Pose_msg(CPose3D &self, object pose_msg)
 
 
 // CPosePDF
-CObject *CPosePDFWrap::duplicate() const
-{
-    return this->get_override("duplicate")();
-}
-
-void CPosePDFWrap::writeToStream(CStream& stream, int32_t* pos) const
-{
-    this->get_override("writeToStream")(stream, pos);
-}
-
-void CPosePDFWrap::readFromStream(CStream& stream, int32_t pos)
-{
-    this->get_override("readFromStream")(stream, pos);
-}
-
-void CPosePDFWrap::getMean(mrpt::poses::CPose2D &mean_point) const
-{
-    this->get_override("getMean")(mean_point);
-}
-
-void CPosePDFWrap::getCovarianceAndMean(mrpt::math::CMatrixFixedNumeric<double,3ul,3ul> &cov, mrpt::poses::CPose2D &mean_point) const
-{
-    this->get_override("getCovarianceAndMean")(cov, mean_point);
-}
-
-void CPosePDFWrap::saveToTextFile(const std::string &file) const
-{
-    this->get_override("saveToTextFile")(file);
-}
-
-void CPosePDFWrap::drawSingleSample(mrpt::poses::CPose2D &outPart) const
-{
-    this->get_override("drawSingleSample")(outPart);
-}
-
-void CPosePDFWrap::changeCoordinatesReference(const mrpt::poses::CPose3D &newReferenceBase)
-{
-    this->get_override("changeCoordinatesReference")(newReferenceBase);
-}
-
-void CPosePDFWrap::copyFrom(const CPosePDF &o)
-{
-    this->get_override("copyFrom")(o);
-}
-
-void CPosePDFWrap::bayesianFusion(const CPosePDF &p1, const CPosePDF &p2, const double &minMahalanobisDistToDrop)
-{
-    this->get_override("bayesianFusion")(p1, p2, minMahalanobisDistToDrop);
-}
-
-void CPosePDFWrap::inverse(CPosePDF &o) const
-{
-    this->get_override("inverse")(o);
-}
-// end of CPosePDF
-
-// CPose3DPDF
-struct CPose3DPDFWrap : CPose3DPDF, wrapper<CPose3DPDF>
-{
-    CObject *duplicate() const
-    {
-        return this->get_override("duplicate")();
-    }
-
-    void writeToStream(mrpt::utils::CStream& stream, int32_t* pos) const
-    {
-        this->get_override("writeToStream")(stream, pos);
-    }
-
-    void readFromStream(mrpt::utils::CStream& stream, int32_t pos)
-    {
-        this->get_override("readFromStream")(stream, pos);
-    }
-
-    void getMean(mrpt::poses::CPose3D &mean_point) const
-    {
-        this->get_override("getMean")(mean_point);
-    }
-
-    void getCovarianceAndMean(mrpt::math::CMatrixFixedNumeric<double,6ul,6ul> &cov, mrpt::poses::CPose3D &mean_point) const
-    {
-        this->get_override("getCovarianceAndMean")(cov, mean_point);
-    }
-
-    void saveToTextFile(const std::string &file) const
-    {
-        this->get_override("saveToTextFile")(file);
-    }
-
-    void changeCoordinatesReference(const mrpt::poses::CPose3D &newReferenceBase)
-    {
-        this->get_override("changeCoordinatesReference")(newReferenceBase);
-    }
-
-    void drawSingleSample(mrpt::poses::CPose3D &outPart) const
-    {
-        this->get_override("drawSingleSample")(outPart);
-    }
-
-    void copyFrom(const CPose3DPDF &o)
-    {
-        this->get_override("copyFrom")(o);
-    }
-
-    void bayesianFusion(const CPose3DPDF &p1, const CPose3DPDF &p2)
-    {
-        this->get_override("bayesianFusion")(p1, p2);
-    }
-
-    void inverse(CPose3DPDF &o) const
-    {
-        this->get_override("inverse")(o);
-    }
-};
+// CObject *CPosePDFWrap::duplicate() const
+// {
+//     return this->get_override("duplicate")();
+// }
+//
+// void CPosePDFWrap::writeToStream(CStream& stream, int32_t* pos) const
+// {
+//     this->get_override("writeToStream")(stream, pos);
+// }
+//
+// void CPosePDFWrap::readFromStream(CStream& stream, int32_t pos)
+// {
+//     this->get_override("readFromStream")(stream, pos);
+// }
+//
+// void CPosePDFWrap::getMean(mrpt::poses::CPose2D &mean_point) const
+// {
+//     this->get_override("getMean")(mean_point);
+// }
+//
+// void CPosePDFWrap::getCovarianceAndMean(mrpt::math::CMatrixFixedNumeric<double,3ul,3ul> &cov, mrpt::poses::CPose2D &mean_point) const
+// {
+//     this->get_override("getCovarianceAndMean")(cov, mean_point);
+// }
+//
+// void CPosePDFWrap::saveToTextFile(const std::string &file) const
+// {
+//     this->get_override("saveToTextFile")(file);
+// }
+//
+// void CPosePDFWrap::drawSingleSample(mrpt::poses::CPose2D &outPart) const
+// {
+//     this->get_override("drawSingleSample")(outPart);
+// }
+//
+// void CPosePDFWrap::changeCoordinatesReference(const mrpt::poses::CPose3D &newReferenceBase)
+// {
+//     this->get_override("changeCoordinatesReference")(newReferenceBase);
+// }
+//
+// void CPosePDFWrap::copyFrom(const CPosePDF &o)
+// {
+//     this->get_override("copyFrom")(o);
+// }
+//
+// void CPosePDFWrap::bayesianFusion(const CPosePDF &p1, const CPosePDF &p2, const double &minMahalanobisDistToDrop)
+// {
+//     this->get_override("bayesianFusion")(p1, p2, minMahalanobisDistToDrop);
+// }
+//
+// void CPosePDFWrap::inverse(CPosePDF &o) const
+// {
+//     this->get_override("inverse")(o);
+// }
+// // end of CPosePDF
+//
+// // CPose3DPDF
+// struct CPose3DPDFWrap : CPose3DPDF, wrapper<CPose3DPDF>
+// {
+//     CObject *duplicate() const
+//     {
+//         return this->get_override("duplicate")();
+//     }
+//
+//     void writeToStream(mrpt::utils::CStream& stream, int32_t* pos) const
+//     {
+//         this->get_override("writeToStream")(stream, pos);
+//     }
+//
+//     void readFromStream(mrpt::utils::CStream& stream, int32_t pos)
+//     {
+//         this->get_override("readFromStream")(stream, pos);
+//     }
+//
+//     void getMean(mrpt::poses::CPose3D &mean_point) const
+//     {
+//         this->get_override("getMean")(mean_point);
+//     }
+//
+//     void getCovarianceAndMean(mrpt::math::CMatrixFixedNumeric<double,6ul,6ul> &cov, mrpt::poses::CPose3D &mean_point) const
+//     {
+//         this->get_override("getCovarianceAndMean")(cov, mean_point);
+//     }
+//
+//     void saveToTextFile(const std::string &file) const
+//     {
+//         this->get_override("saveToTextFile")(file);
+//     }
+//
+//     void changeCoordinatesReference(const mrpt::poses::CPose3D &newReferenceBase)
+//     {
+//         this->get_override("changeCoordinatesReference")(newReferenceBase);
+//     }
+//
+//     void drawSingleSample(mrpt::poses::CPose3D &outPart) const
+//     {
+//         this->get_override("drawSingleSample")(outPart);
+//     }
+//
+//     void copyFrom(const CPose3DPDF &o)
+//     {
+//         this->get_override("copyFrom")(o);
+//     }
+//
+//     void bayesianFusion(const CPose3DPDF &p1, const CPose3DPDF &p2)
+//     {
+//         this->get_override("bayesianFusion")(p1, p2);
+//     }
+//
+//     void inverse(CPose3DPDF &o) const
+//     {
+//         this->get_override("inverse")(o);
+//     }
+// };
 
 // CPosePDFGaussian
 list CPosePDFGaussian_get_cov(CPosePDFGaussian &self)
@@ -293,7 +288,7 @@ void export_poses()
             .def("normalizePhi", &CPose2D::normalizePhi, "Forces \"phi\" to be in the range [-pi,pi];")
             .def("__str__", &CPose2D_asString)
             .def("distance2DTo", &CPose2D::distance2DTo)
-//          .def("distance2DFrobeniusTo", &CPose2D::distance2DFrobeniusTo, "Returns the 2D distance from this pose/point to a 2D pose using the Frobenius distance.")
+            .def("distance2DFrobeniusTo", &CPose2D::distance2DFrobeniusTo, "Returns the 2D distance from this pose/point to a 2D pose using the Frobenius distance.")
             .def(self + self)
             .def(self - self)
 #ifdef ROS_EXTENSIONS
@@ -307,15 +302,13 @@ void export_poses()
     {
         MAKE_PTR(CPosePDF)
 
-        class_<CPosePDFWrap, boost::noncopyable>("CPosePDF", no_init)
-            .def("writeToStream", &CPosePDFWrap::writeToStream, "Introduces a pure virtual method responsible for writing to a CStream. This can not be used directly be users!")
-            .def("readFromStream", &CPosePDFWrap::readFromStream, "Introduces a pure virtual method responsible for loading from a CStream. This can not be used directly be users!")
-            .def("getMean", &CPosePDFWrap::getMean, "Returns the mean, or mathematical expectation of the probability density distribution (PDF).")
-            .def("getCovarianceAndMean", &CPosePDFWrap::getCovarianceAndMean, "Returns an estimate of the pose covariance matrix (STATE_LENxSTATE_LEN cov matrix) and the mean, both at once.")
-            .def("saveToTextFile", &CPosePDFWrap::saveToTextFile, "Save PDF's particles to a text file. See derived classes for more information about the format of generated files.")
-            .def("copyFrom", &CPosePDFWrap::copyFrom, "Copy operator, translating if necesary (for example, between particles and gaussian representations).")
-            .def("bayesianFusion", &CPosePDFWrap::bayesianFusion, "Bayesian fusion of two pose distributions (product of two distributions->new distribution), then save the result in this object (WARNING: See implementing classes to see classes that can and cannot be mixtured!).")
-            .def("inverse", &CPosePDFWrap::inverse, "Returns a new PDF such as: NEW_PDF = (0,0,0) - THIS_PDF")
+        class_<CPosePDF, boost::noncopyable>("CPosePDF", no_init)
+            .def("getMean", &CPosePDF::getMean, "Returns the mean, or mathematical expectation of the probability density distribution (PDF).")
+            .def("getCovarianceAndMean", &CPosePDF::getCovarianceAndMean, "Returns an estimate of the pose covariance matrix (STATE_LENxSTATE_LEN cov matrix) and the mean, both at once.")
+            .def("saveToTextFile", &CPosePDF::saveToTextFile, "Save PDF's particles to a text file. See derived classes for more information about the format of generated files.")
+            .def("copyFrom", &CPosePDF::copyFrom, "Copy operator, translating if necesary (for example, between particles and gaussian representations).")
+            .def("bayesianFusion", &CPosePDF::bayesianFusion, "Bayesian fusion of two pose distributions (product of two distributions->new distribution), then save the result in this object (WARNING: See implementing classes to see classes that can and cannot be mixtured!).")
+            .def("inverse", &CPosePDF::inverse, "Returns a new PDF such as: NEW_PDF = (0,0,0) - THIS_PDF")
         ;
     }
 
@@ -371,8 +364,8 @@ void export_poses()
     {
         MAKE_PTR(CPose3DPDF)
 
-        class_<CPose3DPDFWrap, boost::noncopyable>("CPose3DPDF", no_init)
-            .def("jacobiansPoseComposition", &CPose3DPDFWrap::jacobiansPoseComposition, "This static method computes the pose composition Jacobians.")
+        class_<CPose3DPDF, boost::noncopyable>("CPose3DPDF", no_init)
+            .def("jacobiansPoseComposition", &CPose3DPDF::jacobiansPoseComposition, "This static method computes the pose composition Jacobians.")
             .def("getMeanVal", &CPose3DPDF::getMeanVal)
         ;
     }

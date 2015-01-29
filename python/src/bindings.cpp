@@ -1,8 +1,5 @@
 /* bindings */
 #include "bindings.h"
-#include "utils_bindings.h"
-#include "poses_bindings.h"
-#include "system_bindings.h"
 
 /* namespaces */
 using namespace boost::python;

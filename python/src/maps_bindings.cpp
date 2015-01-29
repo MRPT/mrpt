@@ -1,12 +1,16 @@
 /* bindings */
 #include "bindings.h"
-#include "maps_bindings.h"
-#include "system_bindings.h"
 
 /* MRPT */
-#include <mrpt/poses/CPosePDFGaussian.h>
-#include <mrpt/system/datetime.h>
+#include <mrpt/maps/CMetricMap.h>
 #include <mrpt/maps/CMultiMetricMapPDF.h>
+#include <mrpt/maps/TMetricMapInitializer.h>
+#include <mrpt/maps/metric_map_types.h>
+
+#include <mrpt/poses/CPosePDFGaussian.h>
+
+#include <mrpt/system/datetime.h>
+
 #include <mrpt/opengl/CSetOfObjects.h>
 
 /* std */
@@ -14,6 +18,7 @@
 
 /* namespaces */
 using namespace boost::python;
+using namespace mrpt::opengl;
 using namespace mrpt::poses;
 using namespace mrpt::slam;
 using namespace mrpt::maps;
@@ -22,30 +27,24 @@ using namespace mrpt::utils;
 
 
 // CMetricMap
-void CMetricMapWrap::internal_clear()
+bool CMetricMap_insertObservation(CMetricMap& self, const CObservation& obs, const CPose3D& robotPose=CPose3D())
 {
-    this->get_override("internal_clear")();
+  return self.insertObservation(&obs, &robotPose);
 }
 
-bool CMetricMapWrap::isEmpty()
+bool CMetricMap_insertObservationPtr(CMetricMap& self, const CObservationPtr& obs, const CPose3D& robotPose=CPose3D())
 {
-    return this->get_override("isEmpty")();
+  return self.insertObservationPtr(obs, &robotPose);
 }
 
-double CMetricMapWrap::computeObservationLikelihood(const CObservation *obs, const CPose3D &takenFrom)
+CSetOfObjectsPtr CMetricMap_getAs3DObject(CMetricMap &self)
 {
-    return this->get_override("computeObservationLikelihood")(obs, takenFrom);
+    CSetOfObjectsPtr outObj = CSetOfObjects::Create();
+    self.getAs3DObject(outObj);
+    return outObj;
 }
-
-void CMetricMapWrap::saveMetricMapRepresentationToFile(const std::string &filNamePrefix)
-{
-    this->get_override("saveMetricMapRepresentationToFile")(filNamePrefix);
-}
-
-void CMetricMapWrap::getAs3DObject(mrpt::opengl::CSetOfObjectsPtr &outObj)
-{
-    this->get_override("getAs3DObject")(outObj);
-}
+BOOST_PYTHON_FUNCTION_OVERLOADS(CMetricMap_insertObservation_overloads, CMetricMap_insertObservation, 2, 3)
+BOOST_PYTHON_FUNCTION_OVERLOADS(CMetricMap_insertObservationPtr_overloads, CMetricMap_insertObservationPtr, 2, 3)
 // end of CMetricMap
 
 // COccupancyGridMap2D
@@ -135,62 +134,6 @@ BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(COccupancyGridMap2D_resizeGrid_overloads,
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(COccupancyGridMap2D_loadFromBitmapFile_overloads, loadFromBitmapFile, 2, 4)
 // end of COccupancyGridMap2D
 
-
-// CPointsMap
-struct CPointsMapWrap : CPointsMap, wrapper<CPointsMap>
-{
-    CObject *duplicate() const
-    {
-        return this->get_override("duplicate")();
-    }
-
-    void PLY_import_set_vertex_count(size_t count)
-    {
-        this->get_override("PLY_import_set_vertex_count")(count);
-    }
-
-    void reserve(size_t newLength)
-    {
-        this->get_override("reserve")(newLength);
-    }
-
-    void resize(size_t newLength)
-    {
-        this->get_override("resize")(newLength);
-    }
-
-    void setSize(size_t newLength)
-    {
-        this->get_override("setSize")(newLength);
-    }
-
-    void setPointFast(size_t index, float x, float y, float z)
-    {
-        this->get_override("setPointFast")(index, x, y, z);
-    }
-
-    void insertPointFast(float x, float y, float z)
-    {
-        this->get_override("insertPointFast")(x, y, z);
-    }
-
-    void copyFrom(const CPointsMap &obj)
-    {
-        this->get_override("copyFrom")(obj);
-    }
-
-    void getPointAllFieldsFast(const size_t index, std::vector<float> &point_data)
-    {
-        this->get_override("getPointAllFieldsFast")(index, point_data);
-    }
-
-    void setPointAllFieldsFast(const size_t index, const std::vector<float> &point_data)
-    {
-        this->get_override("setPointAllFieldsFast")(index, point_data);
-    }
-};
-// end of CPointsMap
-
 // CSimplePointsMap
 void CSimplePointsMap_loadFromRangeScan1(CSimplePointsMap &self, const CObservation2DRangeScan &rangeScan)
 {
@@ -265,23 +208,12 @@ CPose3DPDFParticles CMultiMetricMapPDF_getEstimatedPosePDFAtTime(CMultiMetricMap
 }
 // end of CMultiMetricMapPDF
 
-// FIXME
-#ifdef MRPT_BELOW_1_3
-// TMetricMapInitializer
-struct TMetricMapInitializerWrap : TMetricMapInitializer, boost::python::wrapper<TMetricMapInitializer>
+// TSetOfMetricMapInitializers
+void TSetOfMetricMapInitializers_push_back(TSetOfMetricMapInitializers& self, TMetricMapInitializerPtr& o)
 {
-    void loadFromConfigFile_map_specific(const mrpt::utils::CConfigFileBase& source, const std::string& sectionNamePrefix)
-    {
-        this->get_override("loadFromConfigFile_map_specific")(source, sectionNamePrefix);
-    }
-
-    void dumpToTextStream_map_specific(mrpt::utils::CStream &out) const
-    {
-        this->get_override("dumpToTextStream_map_specific")(out);
-    }
-};
-// end of TMetricMapInitializer
-#endif
+    self.push_back(o);
+}
+// end of TSetOfMetricMapInitializers
 
 // CMultiMetricMap
 mrpt::opengl::CSetOfObjectsPtr CMultiMetricMap_getAs3DObject(CMultiMetricMap &self)
@@ -290,26 +222,76 @@ mrpt::opengl::CSetOfObjectsPtr CMultiMetricMap_getAs3DObject(CMultiMetricMap &se
     self.getAs3DObject(outObj);
     return outObj;
 }
+
+void CMultiMetricMap_setListOfMaps(CMultiMetricMap& self, TSetOfMetricMapInitializers& initializers)
+{
+    self.setListOfMaps(initializers);
+}
+
+CSimplePointsMapPtr CMultiMetricMap_getAsSimplePointsMap(CMultiMetricMap& self)
+{
+    CSimplePointsMapPtr points_map = CSimplePointsMapPtr(new CSimplePointsMap);
+    CSimplePointsMap* points_map_ptr = self.getAsSimplePointsMap();
+    *points_map = *points_map_ptr;
+    return points_map;
+}
 // end of CMultiMetricMap
+
+// smart pointer contents
+MAKE_PTR_CTX(TMapGenericParams)
+MAKE_PTR_CTX(CMetricMap)
+MAKE_PTR_CTX(COccupancyGridMap2D)
+MAKE_PTR_CTX(CPointsMap)
+MAKE_PTR_CTX(CSimplePointsMap)
+MAKE_PTR_CTX(CSimpleMap)
+MAKE_PTR_CTX(CMultiMetricMap)
+MAKE_PTR_CTX(CMultiMetricMapPDF)
+
+
 
 void export_maps()
 {
     // map namespace to be submodule of package
     MAKE_SUBMODULE(maps)
 
+    // TMapGenericParams
+    {
+        MAKE_PTR_BASE(TMapGenericParams, CSerializable)
+
+        class_<TMapGenericParams, bases<CLoadableOptions, CSerializable> >("TMapGenericParams", init<>())
+            .def_readwrite("enableSaveAs3DObject", &TMapGenericParams::enableSaveAs3DObject, "(Default=true) If false, calling CMetricMap::getAs3DObject() will have no effects.")
+            .def_readwrite("enableObservationLikelihood", &TMapGenericParams::enableObservationLikelihood, "(Default=true) Enable computing observation likelihoods with this map.")
+            .def_readwrite("enableObservationInsertion", &TMapGenericParams::enableObservationInsertion, "(Default=true) Enable inserting observations in this map.")
+            MAKE_CREATE(TMapGenericParams)
+        ;
+    }
+
+
     // CMetricMap
     {
-        scope s = class_<CMetricMapWrap, boost::noncopyable>("CMetricMap", no_init)
+        MAKE_PTR_BASE(CMetricMap, CSerializable)
+
+        scope s = class_<CMetricMap, boost::noncopyable>("CMetricMap", no_init)
+            .def("clear", &CMetricMap::clear, "Erase all the contents of the map.")
+            .def("isEmpty", &CMetricMap::isEmpty, "Returns true if the map is empty/no observation has been inserted.")
+            .def("loadFromProbabilisticPosesAndObservations", &CMetricMap::loadFromProbabilisticPosesAndObservations, "Load the map contents from a CSimpleMap object, erasing all previous content of the map.")
+            .def("loadFromSimpleMap", &CMetricMap::loadFromSimpleMap, "Load the map contents from a CSimpleMap object, erasing all previous content of the map.")
+            .def("insertObservation", &CMetricMap_insertObservation, CMetricMap_insertObservation_overloads())
+            .def("insertObservationPtr", &CMetricMap_insertObservationPtr, CMetricMap_insertObservationPtr_overloads())
+            .def("saveMetricMapRepresentationToFile", &CMetricMap::saveMetricMapRepresentationToFile, "Save map representation to file.")
+            .def("getAs3DObject", &CMetricMap_getAs3DObject, "Returns a 3D object representing the map.")
+            .def_readwrite("genericMapParams", &CMetricMap::genericMapParams, "Common params to all maps.")
         ;
     }
 
     // COccupancyGridMap2D
     {
-        scope s = class_<COccupancyGridMap2D>("COccupancyGridMap2D", init<optional<float, float, float, float, float> >())
+        MAKE_PTR_BASE(COccupancyGridMap2D, CMetricMap)
+
+        scope s = class_<COccupancyGridMap2D, bases<CMetricMap> >("COccupancyGridMap2D", init<optional<float, float, float, float, float> >())
             .def("fill", &COccupancyGridMap2D::fill, COccupancyGridMap2D_fill_overloads()) //, "Fills all the cells with a default value.")
             .def("setSize", &COccupancyGridMap2D::setSize, COccupancyGridMap2D_setSize_overloads()) //, "Change the size of gridmap, erasing all its previous contents.")
             .def("resizeGrid", &COccupancyGridMap2D::resizeGrid, COccupancyGridMap2D_resizeGrid_overloads()) //, "Change the size of gridmap, maintaining previous contents.")
-            .def("insertObservation", &COccupancyGridMap2D_insertObservation, "Insert the observation information into this map.\n:param: obs The Observation\n:param: robotPose The 3D pose of the robot mobile base in the map reference system.")
             .def("saveAsBitmapFile", &COccupancyGridMap2D::saveAsBitmapFile, "Saves the gridmap as a graphical file (BMP,PNG,...).")
             .def("loadFromBitmapFile", &COccupancyGridMap2D::loadFromBitmapFile, COccupancyGridMap2D_loadFromBitmapFile_overloads()) //, "Load the gridmap from a image in a file (the format can be any supported by CImage::loadFromFile).")
             .def("getSizeX", &COccupancyGridMap2D::getSizeX, "Returns the horizontal size of grid map in cells count.")
@@ -326,6 +308,7 @@ void export_maps()
             .def_readwrite("insertionOptions", &COccupancyGridMap2D::insertionOptions)
             .def_readwrite("likelihoodOptions", &COccupancyGridMap2D::likelihoodOptions)
             .def("copy", &COccupancyGridMap2D_copy, return_value_policy<manage_new_object>())
+            MAKE_CREATE(COccupancyGridMap2D)
 #ifdef ROS_EXTENSIONS
             .def("to_ROS_OccupancyGrid_msg", &COccupancyGridMap2D_to_ROS_OccupancyGrid_msg1, "Convert to ROS OccupancyGrid Message")
             .def("to_ROS_OccupancyGrid_msg", &COccupancyGridMap2D_to_ROS_OccupancyGrid_msg2, "Convert to ROS OccupancyGrid Message")
@@ -372,20 +355,24 @@ void export_maps()
 
     // CPointsMap
     {
-        scope s = class_<CPointsMapWrap, boost::noncopyable>("CPointsMap", no_init)
-            .def("reserve", &CPointsMapWrap::reserve, "Reserves memory for a given number of points: the size of the map does not change, it only reserves the memory.")
-            .def("resize", &CPointsMapWrap::resize, "Resizes all point buffers so they can hold the given number of points: newly created points are set to default values, and old contents are not changed.")
-            .def("setSize", &CPointsMapWrap::setSize, "Resizes all point buffers so they can hold the given number of points, *erasing* all previous contents and leaving all points to default values.")
-            .def("setPointFast", &CPointsMapWrap::setPointFast, "Changes the coordinates of the given point (0-based index), *without* checking for out-of-bounds and *without* calling mark_as_modified().")
-            .def("insertPointFast", &CPointsMapWrap::insertPointFast, "The virtual method for insertPoint() *without* calling mark_as_modified().")
-            .def("copyFrom", &CPointsMapWrap::copyFrom, "Virtual assignment operator, copies as much common data (XYZ, color,...) as possible from the source map into this one.")
-            .def("getPointAllFieldsFast", &CPointsMapWrap::getPointAllFieldsFast, "Get all the data fields for one point as a vector: depending on the implementation class this can be [X Y Z] or [X Y Z R G B], etc...")
-            .def("setPointAllFieldsFast", &CPointsMapWrap::setPointAllFieldsFast, "Set all the data fields for one point as a vector: depending on the implementation class this can be [X Y Z] or [X Y Z R G B], etc...")
+        MAKE_PTR_BASE(CPointsMap, CMetricMap)
+
+        scope s = class_<CPointsMap, boost::noncopyable, bases<CMetricMap> >("CPointsMap", no_init)
+            .def("reserve", &CPointsMap::reserve, "Reserves memory for a given number of points: the size of the map does not change, it only reserves the memory.")
+            .def("resize", &CPointsMap::resize, "Resizes all point buffers so they can hold the given number of points: newly created points are set to default values, and old contents are not changed.")
+            .def("setSize", &CPointsMap::setSize, "Resizes all point buffers so they can hold the given number of points, *erasing* all previous contents and leaving all points to default values.")
+            .def("setPointFast", &CPointsMap::setPointFast, "Changes the coordinates of the given point (0-based index), *without* checking for out-of-bounds and *without* calling mark_as_modified().")
+            .def("insertPointFast", &CPointsMap::insertPointFast, "The virtual method for insertPoint() *without* calling mark_as_modified().")
+            .def("copyFrom", &CPointsMap::copyFrom, "Virtual assignment operator, copies as much common data (XYZ, color,...) as possible from the source map into this one.")
+            .def("getPointAllFieldsFast", &CPointsMap::getPointAllFieldsFast, "Get all the data fields for one point as a vector: depending on the implementation class this can be [X Y Z] or [X Y Z R G B], etc...")
+            .def("setPointAllFieldsFast", &CPointsMap::setPointAllFieldsFast, "Set all the data fields for one point as a vector: depending on the implementation class this can be [X Y Z] or [X Y Z R G B], etc...")
         ;
     }
 
     // CSimplePointsMap
     {
+        MAKE_PTR_BASE(CSimplePointsMap, CMetricMap)
+
         scope s = class_<CSimplePointsMap, bases<CPointsMap> >("CSimplePointsMap", init<>())
             .def("loadFromRangeScan", &CSimplePointsMap_loadFromRangeScan1, "Transform the range scan into a set of cartessian coordinated points. The options in \"insertionOptions\" are considered in this method.")
             .def("loadFromRangeScan", &CSimplePointsMap_loadFromRangeScan2, "Transform the range scan into a set of cartessian coordinated points. The options in \"insertionOptions\" are considered in this method.")
@@ -393,74 +380,78 @@ void export_maps()
             .def("getPointAllFieldsFast", &CSimplePointsMap_getPointAllFieldsFast, "Get all the data fields for one point as a tuple: (X Y Z)")
             .def("setPointFast", &CSimplePointsMap::setPointFast, "Set all the data fields for one point: X Y Z")
             .def("getSize", &CSimplePointsMap_getSize, "Get current size.")
+            MAKE_CREATE(CSimplePointsMap)
         ;
     }
 
     // CSimpleMap
     {
+        MAKE_PTR_BASE(CSimpleMap, CSerializable)
+
         class_<CSimpleMap>("CSimpleMap", init<>())
             .def("saveToFile", &CSimpleMap::saveToFile, "Save this object to a .simplemap binary file (compressed with gzip)")
             .def("loadFromFile", &CSimpleMap::loadFromFile, "Load the contents of this object from a .simplemap binary file (possibly compressed with gzip).")
             .def("insert", &CSimpleMap_insert, "Add a new pair to the sequence. The objects are copied, so original ones can be free if desired after insertion.")
             .def_readwrite("size", &CSimpleMap::size)
+            MAKE_CREATE(CSimpleMap)
         ;
     }
 
-// FIXME
-#ifdef MRPT_BELOW_1_3
-// TMetricMapInitializer
+
+    // TMetricMapInitializer
     {
-        scope s = class_<TMetricMapInitializerWrap>("TMetricMapInitializer", init<TRuntimeClassId*>())
-            .def("set_COccupancyGridMap2D", &TMetricMapInitializer_set_COccupancyGridMap2D)
-            .def_readwrite("occupancyGridMap2D_options", &TMetricMapInitializer::occupancyGridMap2D_options)
+        class_<TMetricMapInitializerPtr>("TMetricMapInitializerPtr", init<TMetricMapInitializer*>())
         ;
 
-        // TOccGridMap2DOptions
-        class_<TMetricMapInitializer::TOccGridMap2DOptions>("TOccGridMap2DOptions", init<>())
-            .def_readwrite("min_x", &TMetricMapInitializer::TOccGridMap2DOptions::min_x)
-            .def_readwrite("max_x", &TMetricMapInitializer::TOccGridMap2DOptions::max_x)
-            .def_readwrite("min_y", &TMetricMapInitializer::TOccGridMap2DOptions::min_y)
-            .def_readwrite("max_y", &TMetricMapInitializer::TOccGridMap2DOptions::max_y)
-            .def_readwrite("resolution", &TMetricMapInitializer::TOccGridMap2DOptions::resolution)
-            .def_readwrite("insertionOpts", &TMetricMapInitializer::TOccGridMap2DOptions::insertionOpts)
-            .def_readwrite("likelihoodOpts", &TMetricMapInitializer::TOccGridMap2DOptions::likelihoodOpts)
+        scope s = class_<TMetricMapInitializer, boost::noncopyable, bases<CLoadableOptions> >("TMetricMapInitializer", no_init)
+            .def("factory", &TMetricMapInitializer::factory, return_value_policy<manage_new_object>()).staticmethod("factory")
         ;
     }
 
     // TSetOfMetricMapInitializers
     {
-        class_<TSetOfMetricMapInitializers>("TSetOfMetricMapInitializers", init<>())
-            .def("size", &TSetOfMetricMapInitializers::size)
-            .def("push_back", &TSetOfMetricMapInitializers::push_back)
-            .def("clear", &TSetOfMetricMapInitializers::clear)
-            .def_readwrite("options", &TSetOfMetricMapInitializers::options)
+        class_<TSetOfMetricMapInitializers, bases<CLoadableOptions> >("TSetOfMetricMapInitializers", init<>())
+             .def("size", &TSetOfMetricMapInitializers::size)
+             .def("push_back", &TSetOfMetricMapInitializers_push_back)
+             .def("clear", &TSetOfMetricMapInitializers::clear)
         ;
     }
 
     // CMultiMetricMap
     {
+        MAKE_PTR_BASE(CMultiMetricMap, CMetricMap)
+
         scope s = class_<CMultiMetricMap>("CMultiMetricMap", init<optional<TSetOfMetricMapInitializers*> >())
-        ;
-        // TOptions
-        class_<CMultiMetricMap::TOptions, bases<CLoadableOptions> >("TOptions", init<>())
-        ;
-    }
-#else
-    // CMultiMetricMap
-    {
-        scope s = class_<CMultiMetricMap>("CMultiMetricMap", init<>())
             .def("getAs3DObject", &CMultiMetricMap_getAs3DObject, "Returns a 3D object representing the map.")
+            .def("setListOfMaps", &CMultiMetricMap_setListOfMaps, "Sets the list of internal map according to the passed list of map initializers (Current maps' content will be deleted!).")
+            .def("isEmpty", &CMultiMetricMap::isEmpty, "Returns true if all maps returns true to their isEmpty() method, which is map-dependent.")
+            .def("getAsSimplePointsMap", &CMultiMetricMap_getAsSimplePointsMap, "If the map is a simple point map or it's a multi-metric map that contains EXACTLY one simple point map, return it. Otherwise, return None.")
+            .def_readwrite("maps", &CMultiMetricMap::maps, "The list of MRPT metric maps in this object.")
+            MAKE_CREATE(CMultiMetricMap)
+        ;
+
+        // TListMaps
+        class_<CMultiMetricMap::TListMaps>("TListMaps", init<>())
+            .def("__len__", &CMultiMetricMap::TListMaps::size)
+            .def("clear", &CMultiMetricMap::TListMaps::clear)
+            .def("append", &StlListLike<CMultiMetricMap::TListMaps>::add, with_custodian_and_ward<1,2>()) // to let container keep value
+            .def("__getitem__", &StlListLike<CMultiMetricMap::TListMaps>::get, return_value_policy<copy_non_const_reference>())
+            .def("__setitem__", &StlListLike<CMultiMetricMap::TListMaps>::set, with_custodian_and_ward<1,2>()) // to let container keep value
+            .def("__delitem__", &StlListLike<CMultiMetricMap::TListMaps>::del)
         ;
     }
-#endif
+
     // CMultiMetricMapPDF
     {
+        MAKE_PTR(CMultiMetricMapPDF)
+
         scope s = class_<CMultiMetricMapPDF>("CMultiMetricMapPDF", init<>())
             .def("getLastPose", &CMultiMetricMapPDF_getLastPose, "Return the last robot pose for the i'th particle.")
             .def("getPath", &CMultiMetricMapPDF_getPath, "Return the path (in absolute coordinate poses) for the i'th particle.")
             .def("getEstimatedPosePDFAtTime", &CMultiMetricMapPDF_getEstimatedPosePDFAtTime, "Returns the estimate of the robot pose as a particles PDF for the instant of time \"timeStep\", from 0 to N-1.")
             .def("getCurrentMostLikelyMetricMap", &CMultiMetricMapPDF::getCurrentMostLikelyMetricMap, return_value_policy<reference_existing_object>(), "Returns a pointer to the current most likely map (associated to the most likely particle).")
             .def_readwrite("options", &CMultiMetricMapPDF::options)
+            MAKE_CREATE(CMultiMetricMapPDF)
         ;
 
         // TConfigParams

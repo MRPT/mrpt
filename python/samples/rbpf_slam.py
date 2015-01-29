@@ -8,13 +8,15 @@ import argparse
 parser = argparse.ArgumentParser()
 parser.add_argument('rawlog', help='Rawlog file.')
 parser.add_argument('-c', '--config', help='Config file.')
-parser.add_argument('-o', '--output', help='Output occupancy grid as .png file.')
+parser.add_argument('-o', '--output', help='Save occupancy grid as .gridmap file.')
+parser.add_argument('-i', '--image', help='Save occupancy grid as image (.png, .bmp) file.')
 args = parser.parse_args()
 
 # get filenames from args
 rawlog_filename = args.rawlog
 config_filename = args.config
 output_filename = args.output
+image_filename = args.image
 
 # load .rawlog
 rawlog_file = pymrpt.utils.CFileGZInputStream(rawlog_filename)
@@ -88,11 +90,12 @@ while True:
 simple_map = map_builder.getCurrentlyBuiltMap()
 occ_map = pymrpt.maps.COccupancyGridMap2D()
 occ_map.loadFromSimpleMap(simple_map)
-if not output_filename:
-    output_filename = 'occ_grid.png'
-occ_map.saveAsBitmapFile(output_filename)
-
-print 'Saved map as {}'.format(output_filename)
+if output_filename:
+    occ_map.saveAsBitmapFile(output_filename)
+    print 'Saved map as {}'.format(output_filename)
+if image_filename:
+    occ_map.saveAsBitmapFile(image_filename)
+    print 'Saved map image as {}'.format(output_filename)
 print
 print 'Done.'
 raw_input('Press key to quit.')

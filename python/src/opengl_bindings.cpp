@@ -1,6 +1,5 @@
 /* bindings */
 #include "bindings.h"
-#include "utils_bindings.h"
 
 /* MRPT */
 #include <mrpt/opengl/CRenderizable.h>
@@ -19,34 +18,6 @@ using namespace mrpt::poses;
 using namespace mrpt::math;
 
 // CRenderizable
-struct CRenderizableWrap : CRenderizable, wrapper<CRenderizable>
-{
-    CObject *duplicate() const
-    {
-        return this->get_override("duplicate")();
-    }
-
-    void writeToStream(mrpt::utils::CStream &out, int *getVersion) const
-    {
-        this->get_override("writeToStream")(out, getVersion);
-    }
-
-    void readFromStream(mrpt::utils::CStream &in, int version)
-    {
-        this->get_override("readFromStream")(in, version);
-    }
-
-    void render() const
-    {
-        this->get_override("render")();
-    }
-
-    void getBoundingBox(mrpt::math::TPoint3D &bb_min, mrpt::math::TPoint3D &bb_max) const
-    {
-        this->get_override("getBoundingBox")(bb_min, bb_max);
-    }
-};
-
 void CRenderizable_setPose(CRenderizable &self, mrpt::poses::CPose3D pose)
 {
     self.setPose(pose);
@@ -130,7 +101,7 @@ void export_opengl()
     {
         MAKE_PTR(CRenderizable)
 
-        class_<CRenderizableWrap, boost::noncopyable>("CRenderizable", "The base class of 3D objects that can be directly rendered through OpenGL.", no_init)
+        class_<CRenderizable, boost::noncopyable>("CRenderizable", "The base class of 3D objects that can be directly rendered through OpenGL.", no_init)
             .def("setPose", &CRenderizable_setPose, args("o"), "Set the 3D pose from a mrpt::poses::CPose3D object.")
             .def("setLocation", &CRenderizable_setLocation1, args("point3D"), "Changes the location of the object, keeping untouched the orientation.")
             .def("setLocation", &CRenderizable_setLocation2, args("x", "y", "z"), "Changes the location of the object, keeping untouched the orientation.")

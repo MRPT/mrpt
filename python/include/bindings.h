@@ -21,6 +21,11 @@
     .def("ctx", &class_name##Ptr_set_ctx)\
 ;\
 
+#define MAKE_PTR_NAMED(class_name, ptr_name) class_<class_name##Ptr>(STRINGIFY(ptr_name##Ptr), "class_name smart pointer type", no_init)\
+    .def("ctx", &class_name##Ptr_get_ctx, return_internal_reference<>())\
+    .def("ctx", &class_name##Ptr_set_ctx)\
+;\
+
 #define MAKE_PTR_BASE(class_name, base_name) class_<class_name##Ptr, bases<base_name##Ptr> >(STRINGIFY(class_name##Ptr), "class_name smart pointer type", no_init)\
     .def("ctx", &class_name##Ptr_get_ctx, return_internal_reference<>())\
     .def("ctx", &class_name##Ptr_set_ctx)\
@@ -107,5 +112,11 @@ void export_system();
 void export_utils();
 void export_utils_stl();
 void export_bayes();
+
+#ifdef ROS_EXTENSIONS
+// time conversion
+boost::python::object TTimeStamp_to_ROS_Time(boost::python::long_ timestamp);
+boost::python::long_ TTimeStamp_from_ROS_Time(boost::python::object ros_time);
+#endif
 
 #endif
