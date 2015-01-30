@@ -398,7 +398,7 @@ void MS3DImporter::InternReadFile( const std::string& pFile,
 
 	// 2 ------------ convert to proper aiXX data structures -----------------------------------
 
-	if (need_default && materials.size()) {
+	if (need_default && !materials.empty()) {
 		DefaultLogger::get()->warn("MS3D: Found group with no material assigned, spawning default material");
 		// if one of the groups has no material assigned, but there are other 
 		// groups with materials, a default material needs to be added (
@@ -423,7 +423,7 @@ void MS3DImporter::InternReadFile( const std::string& pFile,
 	}
 
 	// convert materials to our generic key-value dict-alike
-	if (materials.size()) {
+	if (!materials.empty()) {
 		pScene->mMaterials = new aiMaterial*[materials.size()];
 		for (size_t i = 0; i < materials.size(); ++i) {
 
@@ -526,7 +526,7 @@ void MS3DImporter::InternReadFile( const std::string& pFile,
 		}
 
 		// allocate storage for bones
-		if(mybones.size()) {
+		if(!mybones.empty()) {
 			std::vector<unsigned int> bmap(joints.size());
 			m->mBones = new aiBone*[mybones.size()]();
 			for(BoneSet::const_iterator it = mybones.begin(); it != mybones.end(); ++it) {
@@ -592,7 +592,7 @@ void MS3DImporter::InternReadFile( const std::string& pFile,
 #endif
 
 	// convert animations as well
-	if(joints.size()) {
+	if(!joints.empty()) {
 #ifndef ASSIMP_BUILD_MS3D_ONE_NODE_PER_MESH
 		rt->mChildren = new aiNode*[1]();
 		rt->mNumChildren = 1;
@@ -627,7 +627,7 @@ void MS3DImporter::InternReadFile( const std::string& pFile,
 			aiNodeAnim* nd = anim->mChannels[anim->mNumChannels++] = new aiNodeAnim();
 			nd->mNodeName.Set((*it).name);
 
-			if ((*it).rotFrames.size()) {
+			if (!(*it).rotFrames.empty()) {
 				nd->mRotationKeys = new aiQuatKey[(*it).rotFrames.size()];
 				for(std::vector<TempKeyFrame>::const_iterator rot = (*it).rotFrames.begin(); rot != (*it).rotFrames.end(); ++rot) {
 					aiQuatKey& q = nd->mRotationKeys[nd->mNumRotationKeys++];
@@ -641,7 +641,7 @@ void MS3DImporter::InternReadFile( const std::string& pFile,
 				}
 			}
 
-			if ((*it).posFrames.size()) {
+			if (!(*it).posFrames.empty()) {
 				nd->mPositionKeys = new aiVectorKey[(*it).posFrames.size()];
 
 				aiQuatKey* qu = nd->mRotationKeys;

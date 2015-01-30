@@ -1633,7 +1633,7 @@ double  CLandmarksMap::computeLikelihood_RSLC_2007( const CLandmarksMap  *s, con
 		{
 			corrs = grid->cellByIndex( cx, cy );
 			ASSERT_( corrs!=NULL );
-			if (corrs->size())
+			if (!corrs->empty())
 			for (vector_int::iterator	it=corrs->begin();it!=corrs->end();++it)
 			{
 			lm = landmarks.get(*it);

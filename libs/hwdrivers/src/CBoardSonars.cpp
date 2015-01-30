@@ -213,7 +213,7 @@ bool CBoardSonars::getObservation( mrpt::obs::CObservationRange &obs )
 
 		if (receiveMessage(msgRx) )
 		{
-			if ( !msgRx.content.size() )
+			if ( msgRx.content.empty() )
 				return false;
 
 			// For each sensor:

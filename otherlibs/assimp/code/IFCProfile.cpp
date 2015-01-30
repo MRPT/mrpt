@@ -177,7 +177,7 @@ bool ProcessProfile(const IfcProfileDef& prof, TempMesh& meshout, ConversionData
 		return false;
 	}
 	meshout.RemoveAdjacentDuplicates();
-	if (!meshout.vertcnt.size() || meshout.vertcnt.front() <= 1) {
+	if (meshout.vertcnt.empty() || meshout.vertcnt.front() <= 1) {
 		return false;
 	}
 	return true;

@@ -710,7 +710,7 @@ void MD5Importer::LoadMD5CameraFile ()
 	cam->mHorizontalFOV = AI_DEG_TO_RAD( frames.front().fFOV );
 
 	// every cut is written to a separate aiAnimation
-	if (!cuts.size()) {
+	if (cuts.empty()) {
 		cuts.push_back(0);
 		cuts.push_back(frames.size()-1);
 	}

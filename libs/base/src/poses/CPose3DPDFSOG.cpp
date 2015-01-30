@@ -403,7 +403,7 @@ void  CPose3DPDFSOG::normalizeWeights()
 {
 	MRPT_START
 
-	if (!m_modes.size()) return;
+	if (m_modes.empty()) return;
 
 	double		maxW = m_modes[0].log_w;
 	for (iterator it=m_modes.begin();it!=m_modes.end();++it)

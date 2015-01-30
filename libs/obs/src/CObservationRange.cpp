@@ -105,7 +105,7 @@ void  CObservationRange::readFromStream(mrpt::utils::CStream &in, int version)
  ---------------------------------------------------------------*/
 void CObservationRange::getSensorPose( CPose3D &out_sensorPose ) const
 {
-	if (sensedData.size())
+	if (!sensedData.empty())
 		out_sensorPose = sensedData[0].sensorPose;
 	else 	out_sensorPose = CPose3D(0,0,0);
 }

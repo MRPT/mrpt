@@ -233,7 +233,7 @@ unsigned B3DImporter::ChunkSize(){
 
 template<class T>
 T *B3DImporter::to_array( const vector<T> &v ){
-	if( !v.size() ) return 0;
+	if( v.empty() ) return 0;
 	T *p=new T[v.size()];
 	for( size_t i=0;i<v.size();++i ){
 		p[i]=v[i];
@@ -581,9 +581,9 @@ void B3DImporter::ReadBB3D( aiScene *scene ){
 	}
 	ExitChunk();
 
-	if( !_nodes.size() ) Fail( "No nodes" );
+	if( _nodes.empty() ) Fail( "No nodes" );
 
-	if( !_meshes.size() ) Fail( "No meshes" );
+	if( _meshes.empty() ) Fail( "No meshes" );
 
 	//Fix nodes/meshes/bones
 	for(size_t i=0;i<_nodes.size();++i ){
@@ -628,7 +628,7 @@ void B3DImporter::ReadBB3D( aiScene *scene ){
 			vector<aiBone*> bones;
 			for(size_t i=0;i<vweights.size();++i ){
 				vector<aiVertexWeight> &weights=vweights[i];
-				if( !weights.size() ) continue;
+				if( weights.empty() ) continue;
 
 				aiBone *bone=new aiBone;
 				bones.push_back( bone );
@@ -655,7 +655,7 @@ void B3DImporter::ReadBB3D( aiScene *scene ){
 	scene->mRootNode=_nodes[0];
 
 	//material
-	if( !_materials.size() ){
+	if( _materials.empty() ){
 		_materials.push_back( new aiMaterial );
 	}
 	scene->mNumMaterials=_materials.size();
@@ -666,7 +666,7 @@ void B3DImporter::ReadBB3D( aiScene *scene ){
 	scene->mMeshes=to_array( _meshes );
 
 	//animations
-	if( _animations.size()==1 && _nodeAnims.size() ){
+	if( _animations.size()==1 && !_nodeAnims.empty() ){
 
 		aiAnimation *anim=_animations.back();
 		anim->mNumChannels=_nodeAnims.size();

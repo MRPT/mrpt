@@ -300,7 +300,7 @@ bool mrpt::compress::zip::compress_gz_file(
 	if (!oss.fileOpenCorrectly())
 		return false;
 
-	if (buffer.size())
+	if (!buffer.empty())
 	{
 		try
 		{
