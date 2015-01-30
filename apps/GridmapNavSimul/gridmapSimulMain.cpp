@@ -603,7 +603,7 @@ void gridmapSimulFrame::OntimRunTrigger(wxTimerEvent& event)
 				v -= y* V_MAX_ACC*At;
 				w -= x* W_MAX_ACC*At;
 
-				if (btns.size() && btns[0])
+				if (!btns.empty() && btns[0])
 				{
 					v *= 0.95;
 					w *= 0.95;

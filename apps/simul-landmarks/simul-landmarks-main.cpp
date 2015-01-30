@@ -314,7 +314,7 @@ int main(int argc, char ** argv)
 
             cout << obs->sensedData.size() << " landmarks in sight";
 
-			if (!obs->sensedData.size()) nWarningsNoSight++;
+			if (obs->sensedData.empty()) nWarningsNoSight++;
 
             SF.push_back( obs );
 

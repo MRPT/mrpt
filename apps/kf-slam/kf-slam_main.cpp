@@ -753,7 +753,7 @@ void Run_KF_SLAM( CConfigFile &cfgFile, const std::string &rawlogFileName )
             cerr << "Ignoring the following error loading ground truth file: " << e.what() << endl;
         }
 
-        if (GT.getRowCount()>0 && LMs.size())
+        if (GT.getRowCount()>0 && !LMs.empty())
         {
             // Each row has:
             //   [0] [1] [2]  [6]

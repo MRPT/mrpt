@@ -280,7 +280,7 @@ void RAWImporter::InternReadFile( const std::string& pFile,
 			mesh->mVertices = new aiVector3D[ mesh->mNumVertices ];
 			::memcpy(mesh->mVertices,&(*it2).vertices[0],sizeof(aiVector3D)*mesh->mNumVertices);
 
-			if ((*it2).colors.size())
+			if (!(*it2).colors.empty())
 			{
 				ai_assert((*it2).colors.size() == mesh->mNumVertices);
 

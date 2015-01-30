@@ -445,7 +445,7 @@ void LWSImporter::BuildGraph(aiNode* nd, LWS::NodeDesc& src, std::vector<Attachm
 	}
 
 	// Add children
-	if (src.children.size()) {
+	if (!src.children.empty()) {
 		nd->mChildren = new aiNode*[src.children.size()];
 		for (std::list<LWS::NodeDesc*>::iterator it = src.children.begin(); it != src.children.end(); ++it) {
 			aiNode* ndd = nd->mChildren[nd->mNumChildren++] = new aiNode();
@@ -883,7 +883,7 @@ void LWSImporter::InternReadFile( const std::string& pFile, aiScene* pScene,
 	}
 
 	// create a master animation channel for us
-	if (anims.size()) {
+	if (!anims.empty()) {
 		master->mAnimations = new aiAnimation*[master->mNumAnimations = 1];
 		aiAnimation* anim = master->mAnimations[0] = new aiAnimation();
 		anim->mName.Set("LWSMasterAnim");

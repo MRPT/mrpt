@@ -223,7 +223,7 @@ void XGLImporter::InternReadFile( const std::string& pFile,
 
 	std::vector<aiMesh*>& meshes = scope.meshes_linear;
 	std::vector<aiMaterial*>& materials = scope.materials_linear;
-	if(!meshes.size() || !materials.size()) {
+	if(meshes.empty() || materials.empty()) {
 		ThrowException("failed to extract data from XGL file, no meshes loaded");
 	}
 
@@ -528,12 +528,12 @@ aiMesh* XGLImporter::ToOutputMesh(const TempMaterialMesh& m)
 	mesh->mVertices = new aiVector3D[mesh->mNumVertices];
 	std::copy(m.positions.begin(),m.positions.end(),mesh->mVertices);
 
-	if(m.normals.size()) {
+	if(!m.normals.empty()) {
 		mesh->mNormals = new aiVector3D[mesh->mNumVertices];
 		std::copy(m.normals.begin(),m.normals.end(),mesh->mNormals);
 	}
 
-	if(m.uvs.size()) {
+	if(!m.uvs.empty()) {
 		mesh->mNumUVComponents[0] = 2;
 		mesh->mTextureCoords[0] = new aiVector3D[mesh->mNumVertices];
 

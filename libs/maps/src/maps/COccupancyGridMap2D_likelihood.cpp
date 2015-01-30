@@ -552,7 +552,7 @@ double	 COccupancyGridMap2D::computeLikelihoodField_Thrun( const CPointsMap	*pm,
         // Reset the precomputed likelihood values map
         if (precomputedLikelihoodToBeRecomputed)
         {
-			if (map.size())
+			if (!map.empty())
 					precomputedLikelihood.assign( map.size(),LIK_LF_CACHE_INVALID);
 			else	precomputedLikelihood.clear();
 

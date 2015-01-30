@@ -506,7 +506,7 @@ void Document::ReadConnections()
 // ------------------------------------------------------------------------------------------------
 const std::vector<const AnimationStack*>& Document::AnimationStacks() const
 {
-	if (!animationStacksResolved.empty() || !animationStacks.size()) {
+	if (!animationStacksResolved.empty() || animationStacks.empty()) {
 		return animationStacksResolved;
 	}
 

@@ -161,7 +161,7 @@ void  CObservationGasSensors::readFromStream(mrpt::utils::CStream &in, int versi
  ---------------------------------------------------------------*/
 void CObservationGasSensors::getSensorPose( CPose3D &out_sensorPose ) const
 {
-	if (m_readings.size())
+	if (!m_readings.empty())
 		out_sensorPose = CPose3D(m_readings[0].eNosePoseOnTheRobot);
 	else 	out_sensorPose = CPose3D(0,0,0);
 }
