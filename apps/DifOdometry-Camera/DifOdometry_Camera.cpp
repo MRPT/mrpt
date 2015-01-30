@@ -27,9 +27,9 @@ using namespace mrpt::opengl;
 
 void CDifodoCamera::loadConfiguration(const utils::CConfigFileBase &ini )
 {
-	fovh = M_PI*58.0/180.0;
-	fovv = M_PI*45.0/180.0;
-	f_dist = 1.f/580.f;
+	fovh = M_PI*58.6/180.0;
+	fovv = M_PI*45.6/180.0;
+	lens_disp = 0.05f;
 	downsample = 1;
 	cam_mode = ini.read_int("DIFODO_CONFIG", "cam_mode", 2, true);
 	rows = ini.read_int("DIFODO_CONFIG", "rows", 240, true);

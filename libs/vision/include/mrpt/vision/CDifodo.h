@@ -86,9 +86,6 @@ namespace mrpt
 			float g_mask[5][5];
 
 			/** Camera properties: */
-			float f_dist;		//!<Focal lenght (meters)
-			float x_incr;		//!<Separation between pixels (cols) in the sensor array (meters)
-			float y_incr;		//!<Separation between pixels (rows) in the sensor array (meters)
 			float fovh;			//!<Horizontal field of view (rad)
 			float fovv;			//!<Vertical field of view (rad)
 
@@ -191,12 +188,6 @@ namespace mrpt
 			/** This method performs all the necessary steps to estimate the camera velocity once the new image is read,
 			    and updates the camera pose */
 			void odometryCalculation();
-
-			/** Set the camera focal lenght */
-			inline void setCameraFocalLenght(float new_f) {f_dist = new_f;}
-
-			/** Get the camera focal lenght */
-			inline float getCameraFocalLenght() const {return f_dist;}
 
 			/** Get the rows and cols of the depth image that are considered by the visual odometry method. */
 			inline void getRowsAndCols(unsigned int &num_rows, unsigned int &num_cols) const {num_rows = rows; num_cols = cols;}

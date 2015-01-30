@@ -26,9 +26,9 @@ CDifodo::CDifodo()
 {
 	rows = 60;
 	cols = 80;
-	fovh = M_PI*58.0/180.0;
-	fovv = M_PI*45.0/180.0;
-	lens_disp = 0.022f;
+	fovh = M_PI*58.6/180.0;
+	fovv = M_PI*45.6/180.0;
+	lens_disp = 0.05f;
 	cam_mode = 1;			// (1 - 640 x 480, 2 - 320 x 240, 4 - 160 x 120)
 	downsample = 1;
 	ctf_levels = 1;
@@ -82,8 +82,7 @@ CDifodo::CDifodo()
 
 	depth_wf.setSize(height,width);
 
-	f_dist = 1.f/525.f;		//In meters
-	fps = 30.f;				//In Hz
+	fps = 30.f;		//In Hz
 
 	previous_speed_const_weight = 0.05f;
 	previous_speed_eig_weight = 0.5f;
@@ -99,11 +98,7 @@ CDifodo::CDifodo()
 
 void CDifodo::buildImagePyramid()
 {
-
 	const float max_depth_dif = 0.05f;
-
-	//mrpt::utils::CTicTac clock;
-
 	
 	//Push coordinates back
 	depth_old.swap(depth);
@@ -228,7 +223,7 @@ void CDifodo::buildImagePyramid()
         }
 
         //Calculate coordinates "xy" of the points
-        const float inv_f_i = float(640/cols_i)*f_dist;
+		const float inv_f_i = 2.f*tan(0.5f*fovh)/float(cols_i-1);
         const float disp_u_i = 0.5f*(cols_i-1);
         const float disp_v_i = 0.5f*(rows_i-1);
 
@@ -250,7 +245,7 @@ void CDifodo::buildImagePyramid()
 void CDifodo::performWarping()
 {
 	//Camera parameters (which also depend on the level resolution)
-	const float f = 1.f/float(640*f_dist/cols_i);
+	const float f = float(cols_i-1)/(2.f*tan(0.5f*fovh));
 	const float disp_u_i = 0.5f*float(cols_i-1);
     const float disp_v_i = 0.5f*float(rows_i-1);
 
@@ -439,8 +434,7 @@ void CDifodo::computeWeights()
 	kai_level[3] += log_trans(1,2); kai_level[4] -= log_trans(0,2); kai_level[5] += log_trans(0,1);
 
 	//Parameters for the measurmente error
-	const float f_inv_y = f_dist/x_incr;
-	const float f_inv_z = f_dist/y_incr;
+	const float f_inv = (cols_i-1)/(2.f*tan(0.5f*fovh));
 	const float kz2 = 8.122e-12f;  //square(1.425e-5) / 25
 	
 	//Parameters for linearization error
@@ -448,7 +442,6 @@ void CDifodo::computeWeights()
 	const float kdt = kduv/square(fps);
 	const float k2dt = 5e-6f;
 	const float k2duv = 5e-6f;
-	//const float f = 1.f/(float(640/cols_i)*f_dist);
 	
 	for (unsigned int u = 1; u < cols_i-1; u++)
 		for (unsigned int v = 1; v < rows_i-1; v++)
@@ -479,10 +472,10 @@ void CDifodo::computeWeights()
 				//const float j3 = inv_d*dzcomp*(kai_level[0] + 2.f*yy_inter[image_level](v,u)*kai_level[4] - xx_inter[image_level](v,u)*kai_level[5]) + dycomp*kai_level[3];
 
 				const float j4 = 1.f;
-				const float j5 =  xx_inter[image_level](v,u)*inv_d*inv_d*f_inv_y*(kai_level[0] + yy_inter[image_level](v,u)*kai_level[4] - xx_inter[image_level](v,u)*kai_level[5]) 
-							   + inv_d*f_inv_y*(-kai_level[1] - z*kai_level[5] + yy_inter[image_level](v,u)*kai_level[3]);
-				const float j6 = yy_inter[image_level](v,u)*inv_d*inv_d*f_inv_z*(kai_level[0] + yy_inter[image_level](v,u)*kai_level[4] - xx_inter[image_level](v,u)*kai_level[5])
-							   + inv_d*f_inv_z*(-kai_level[2] + z*kai_level[4] - xx_inter[image_level](v,u)*kai_level[3]);
+				const float j5 =  xx_inter[image_level](v,u)*inv_d*inv_d*f_inv*(kai_level[0] + yy_inter[image_level](v,u)*kai_level[4] - xx_inter[image_level](v,u)*kai_level[5]) 
+							   + inv_d*f_inv*(-kai_level[1] - z*kai_level[5] + yy_inter[image_level](v,u)*kai_level[3]);
+				const float j6 = yy_inter[image_level](v,u)*inv_d*inv_d*f_inv*(kai_level[0] + yy_inter[image_level](v,u)*kai_level[4] - xx_inter[image_level](v,u)*kai_level[5])
+							   + inv_d*f_inv*(-kai_level[2] + z*kai_level[4] - xx_inter[image_level](v,u)*kai_level[3]);
 
 				//error_measurement(v,u) = j1*(j1*var11+j2*var12+j3*var13) + j2*(j1*var12+j2*var22+j3*var23)
 				//						+j3*(j1*var13+j2*var23+j3*var33) + j4*j4*var44 + j5*j5*var55 + j6*j6*var66;
@@ -544,8 +537,7 @@ void CDifodo::solveOneLevel()
 	//The order of the unknowns is (vz, vx, vy, wz, wx, wy)
 	//The points order will be (1,1), (1,2)...(1,cols-1), (2,1), (2,2)...(row-1,cols-1).
 
-	const float f_inv_x = f_dist/x_incr;
-	const float f_inv_y = f_dist/y_incr;
+	const float f_inv = float(cols_i-1)/(2.f*tan(0.5f*fovh));
 
 	for (unsigned int u = 1; u < cols_i-1; u++)
 		for (unsigned int v = 1; v < rows_i-1; v++)
@@ -553,8 +545,8 @@ void CDifodo::solveOneLevel()
 			{
 				// Precomputed expressions
 				const float inv_d = 1.f/depth_inter[image_level](v,u);
-				const float dycomp = du(v,u)*f_inv_x*inv_d;
-				const float dzcomp = dv(v,u)*f_inv_y*inv_d;
+				const float dycomp = du(v,u)*f_inv*inv_d;
+				const float dzcomp = dv(v,u)*f_inv*inv_d;
 				const float tw = weights(v,u);
 
 				//Fill the matrix A
@@ -602,8 +594,6 @@ void CDifodo::odometryCalculation()
 		unsigned int s = pow(2.f,int(ctf_levels-(i+1)));
         cols_i = cols/s; rows_i = rows/s;
         image_level = ctf_levels - i + round(log(float(width/cols))/log(2.f)) - 1;
-		x_incr = 2.f*f_dist*tan(0.5f*fovh)/(cols_i-1);
-		y_incr = 2.f*f_dist*tan(0.5f*fovv)/(rows_i-1);
 
 		//1. Perform warping
 		if (i == 0)
