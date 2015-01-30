@@ -184,7 +184,7 @@ CHMTSLAM::TMessageLSLAMfromTBIPtr CHMTSLAM::TBI_main_method(
 	// ----------------------------------------------------
 	std::set<CHMHMapNode::TNodeID>  lstNodesToErase;
 	{
-		synch::CCriticalSection( obj->m_topLCdets_cs );
+		synch::CCriticalSection lock( obj->m_topLCdets_cs );
 
 		for ( deque<CTopLCDetectorBase*>::const_iterator it=obj->m_topLCdets.begin();it!=obj->m_topLCdets.end();++it)
 		{
