@@ -53,21 +53,12 @@ namespace maps
 		typedef std::deque<CBeacon>::const_iterator	const_iterator;
 
 	protected:
-		/** The individual beacons */
-		TSequenceBeacons		m_beacons;
+		TSequenceBeacons		m_beacons;  //!< The individual beacons
 
-		/** Clear the map, erasing all landmarks.
-		 */
+		// See docs in base class
 		virtual void  internal_clear();
-
-		 /** Insert the observation information into this map. This method must be implemented
-		  *    in derived classes.
-		  * \param obs The observation
-		  * \param robotPose The 3D pose of the robot mobile base in the map reference system, or NULL (default) if you want to use CPose2D(0,0,deg)
-		  *
-		  * \sa CObservation::insertObservationInto
-		  */
-		 virtual bool  internal_insertObservation( const mrpt::obs::CObservation *obs, const mrpt::poses::CPose3D *robotPose = NULL );
+		virtual bool  internal_insertObservation( const mrpt::obs::CObservation *obs, const mrpt::poses::CPose3D *robotPose = NULL );
+		double	 internal_computeObservationLikelihood( const mrpt::obs::CObservation *obs, const mrpt::poses::CPose3D &takenFrom );
 
 	public:
 		/** Constructor */
@@ -109,7 +100,7 @@ namespace maps
 		// See docs in base class
 		float  compute3DMatchingRatio(
 				const mrpt::maps::CMetricMap	*otherMap,
-				const CPose3D		&otherMapPose,
+				const mrpt::poses::CPose3D		&otherMapPose,
 				float				maxDistForCorr = 0.10f,
 				float				maxMahaDistForCorr = 2.0f
 				) const;
@@ -218,15 +209,11 @@ namespace maps
 		 */
 		size_t  size() const;
 
-
-		// See docs in base class
-		double	 computeObservationLikelihood( const mrpt::obs::CObservation *obs, const mrpt::poses::CPose3D &takenFrom );
-
 		// See docs in base class
 		virtual void  determineMatching2D(
 			const mrpt::maps::CMetricMap      * otherMap,
 			const mrpt::poses::CPose2D         & otherMapPose,
-			TMatchingPairList     & correspondences,
+			mrpt::utils::TMatchingPairList     & correspondences,
 			const TMatchingParams & params,
 			TMatchingExtraResults & extraResults ) const ;
 
@@ -239,10 +226,10 @@ namespace maps
 		  * \param otherCorrespondences [OUT] Will be returned with a vector containing "true" for the indexes of the other map's landmarks with a correspondence.
 		  */
 		void  computeMatchingWith3DLandmarks(
-				const mrpt::maps::CBeaconMap					*otherMap,
-				TMatchingPairList						&correspondences,
-				float									&correspondencesRatio,
-				std::vector<bool>						&otherCorrespondences) const;
+			const mrpt::maps::CBeaconMap					*otherMap,
+			mrpt::utils::TMatchingPairList						&correspondences,
+			float									&correspondencesRatio,
+			std::vector<bool>						&otherCorrespondences) const;
 
 		/** Changes the reference system of the map to a given 3D pose.
 		  */
@@ -264,7 +251,7 @@ namespace maps
 		  * An observation will be generated for each beacon in the map, but notice that some of them may be missed if out of the sensor maximum range.
 		  */
 		void  simulateBeaconReadings(
-            const CPose3D					&in_robotPose,
+			const mrpt::poses::CPose3D					&in_robotPose,
 			const mrpt::poses::CPoint3D					&in_sensorLocationOnRobot,
 			mrpt::obs::CObservationBeaconRanges		&out_Observations ) const;
 
@@ -285,17 +272,16 @@ namespace maps
 		  */
 		void saveToTextFile(const std::string &fil) const;
 
-		/** Returns a 3D object representing the map.
-		  */
-		void  getAs3DObject ( mrpt::opengl::CSetOfObjectsPtr	&outObj ) const;
+		void  getAs3DObject ( mrpt::opengl::CSetOfObjectsPtr	&outObj ) const; //!< Returns a 3D object representing the map.
 
-		/** Returns a pointer to the beacon with the given ID, or NULL if it does not exist.
-		  */
-		const CBeacon * getBeaconByID( CBeacon::TBeaconID  id ) const;
+		const CBeacon * getBeaconByID( CBeacon::TBeaconID  id ) const; //!< Returns a pointer to the beacon with the given ID, or NULL if it does not exist.
+		CBeacon * getBeaconByID( CBeacon::TBeaconID  id ); 		//!< Returns a pointer to the beacon with the given ID, or NULL if it does not exist.
 
-		/** Returns a pointer to the beacon with the given ID, or NULL if it does not exist.
-		  */
-		CBeacon * getBeaconByID( CBeacon::TBeaconID  id );
+
+		MAP_DEFINITION_START(CBeaconMap,MAPS_IMPEXP)
+			mrpt::maps::CBeaconMap::TInsertionOptions	insertionOpts;	//!< Observations insertion options
+			mrpt::maps::CBeaconMap::TLikelihoodOptions	likelihoodOpts;	//!< Probabilistic observation likelihood options
+		MAP_DEFINITION_END(CBeaconMap,MAPS_IMPEXP)
 
 	}; // End of class def.
 	DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE( CBeaconMap, CMetricMap ,MAPS_IMPEXP )

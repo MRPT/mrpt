@@ -368,31 +368,31 @@ void BlenderImporter::ConvertBlendFile(aiScene* out, const Scene& in,const FileD
 
 	BuildMaterials(conv);
 
-	if (conv.meshes->size()) {
+	if (!conv.meshes->empty()) {
 		out->mMeshes = new aiMesh*[out->mNumMeshes = static_cast<unsigned int>( conv.meshes->size() )];
 		std::copy(conv.meshes->begin(),conv.meshes->end(),out->mMeshes);
 		conv.meshes.dismiss();
 	}
 
-	if (conv.lights->size()) {
+	if (!conv.lights->empty()) {
 		out->mLights = new aiLight*[out->mNumLights = static_cast<unsigned int>( conv.lights->size() )];
 		std::copy(conv.lights->begin(),conv.lights->end(),out->mLights);
 		conv.lights.dismiss();
 	}
 
-	if (conv.cameras->size()) {
+	if (!conv.cameras->empty()) {
 		out->mCameras = new aiCamera*[out->mNumCameras = static_cast<unsigned int>( conv.cameras->size() )];
 		std::copy(conv.cameras->begin(),conv.cameras->end(),out->mCameras);
 		conv.cameras.dismiss();
 	}
 
-	if (conv.materials->size()) {
+	if (!conv.materials->empty()) {
 		out->mMaterials = new aiMaterial*[out->mNumMaterials = static_cast<unsigned int>( conv.materials->size() )];
 		std::copy(conv.materials->begin(),conv.materials->end(),out->mMaterials);
 		conv.materials.dismiss();
 	}
 
-	if (conv.textures->size()) {
+	if (!conv.textures->empty()) {
 		out->mTextures = new aiTexture*[out->mNumTextures = static_cast<unsigned int>( conv.textures->size() )];
 		std::copy(conv.textures->begin(),conv.textures->end(),out->mTextures);
 		conv.textures.dismiss();
@@ -1130,7 +1130,7 @@ aiNode* BlenderImporter::ConvertNode(const Scene& in, const Object* obj, Convers
 
 	node->mTransformation = m*node->mTransformation;
 	
-	if (children.size()) {
+	if (!children.empty()) {
 		node->mNumChildren = static_cast<unsigned int>(children.size());
 		aiNode** nd = node->mChildren = new aiNode*[node->mNumChildren]();
 		for_each (const Object* nobj,children) {

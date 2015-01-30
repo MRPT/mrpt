@@ -38,6 +38,42 @@ using namespace mrpt::bayes;
 using namespace mrpt::system;
 using namespace std;
 
+//  =========== Begin of Map definition ============
+MAP_DEFINITION_REGISTER("CBeaconMap,beaconMap", mrpt::maps::CBeaconMap)
+
+CBeaconMap::TMapDefinition::TMapDefinition()
+{
+}
+
+void CBeaconMap::TMapDefinition::loadFromConfigFile_map_specific(const mrpt::utils::CConfigFileBase  &source, const std::string &sectionNamePrefix)
+{
+	// [<sectionNamePrefix>+"_creationOpts"]
+	//const std::string sSectCreation = sectionNamePrefix+string("_creationOpts");
+	//MRPT_LOAD_CONFIG_VAR(resolution, float,   source,sSectCreation);
+
+	insertionOpts.loadFromConfigFile(source, sectionNamePrefix+string("_insertOpts") );
+	likelihoodOpts.loadFromConfigFile(source, sectionNamePrefix+string("_likelihoodOpts") );
+}
+
+void CBeaconMap::TMapDefinition::dumpToTextStream_map_specific(mrpt::utils::CStream &out) const
+{
+	//LOADABLEOPTS_DUMP_VAR(resolution     , float);
+
+	this->insertionOpts.dumpToTextStream(out);
+	this->likelihoodOpts.dumpToTextStream(out);
+}
+
+mrpt::maps::CMetricMap* CBeaconMap::internal_CreateFromMapDefinition(const mrpt::maps::TMetricMapInitializer &_def)
+{
+	const CBeaconMap::TMapDefinition &def = *dynamic_cast<const CBeaconMap::TMapDefinition*>(&_def);
+	CBeaconMap *obj = new CBeaconMap();
+	obj->insertionOptions  = def.insertionOpts;
+	obj->likelihoodOptions = def.likelihoodOpts;
+	return obj;
+}
+//  =========== End of Map definition Block =========
+
+
 IMPLEMENTS_SERIALIZABLE(CBeaconMap, CMetricMap,mrpt::maps)
 
 /*---------------------------------------------------------------
@@ -82,14 +118,14 @@ void CBeaconMap::resize(const size_t N)
 void  CBeaconMap::writeToStream(mrpt::utils::CStream &out, int *version) const
 {
 	if (version)
-		*version = 0;
+		*version = 1;
 	else
 	{
-		uint32_t n = m_beacons.size();
+		out << genericMapParams; // v1
 
 		// First, write the number of landmarks:
+		const uint32_t n = m_beacons.size();
 		out << n;
-
 		// Write all landmarks:
 		for (const_iterator	it=begin();it!=end();++it)
 			out << (*it);
@@ -107,22 +143,21 @@ void  CBeaconMap::readFromStream(mrpt::utils::CStream &in, int version)
 	switch(version)
 	{
 	case 0:
+	case 1:
 		{
+			if (version>=1)
+				in >> genericMapParams; // v1
+
 			uint32_t	n,i;
 
 			// Delete previous content of map:
-			// -------------------------------------
 			clear();
 
 			// Load from stream:
-			// -------------------------------------
-			in >> n;
-
-			m_beacons.resize(n);
-
 			// Read all landmarks:
-			for (i=0;i<n;i++)
-				in >> m_beacons[i];
+			in >> n;
+			m_beacons.resize(n);
+			for (i=0;i<n;i++) in >> m_beacons[i];
 
 		} break;
 	default:
@@ -134,7 +169,7 @@ void  CBeaconMap::readFromStream(mrpt::utils::CStream &in, int version)
 /*---------------------------------------------------------------
 					computeObservationLikelihood
   ---------------------------------------------------------------*/
-double	 CBeaconMap::computeObservationLikelihood(
+double	 CBeaconMap::internal_computeObservationLikelihood(
 				const CObservation	*obs,
 				const CPose3D		&robotPose3D )
 {
@@ -1063,8 +1098,7 @@ void  CBeaconMap::getAs3DObject( mrpt::opengl::CSetOfObjectsPtr	&outObj ) const
 {
 	MRPT_START
 
-	if (m_disableSaveAs3DObject)
-		return;
+	if (!genericMapParams.enableSaveAs3DObject) return;
 
 	// ------------------------------------------------
 	//  Add the XYZ corner for the current area:

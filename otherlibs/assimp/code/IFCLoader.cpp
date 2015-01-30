@@ -284,7 +284,7 @@ void IFCImporter::InternReadFile( const std::string& pFile,
 	#endif
 
 	// do final data copying
-	if (conv.meshes.size()) {
+	if (!conv.meshes.empty()) {
 		pScene->mNumMeshes = static_cast<unsigned int>(conv.meshes.size());
 		pScene->mMeshes = new aiMesh*[pScene->mNumMeshes]();
 		std::copy(conv.meshes.begin(),conv.meshes.end(),pScene->mMeshes);
@@ -293,7 +293,7 @@ void IFCImporter::InternReadFile( const std::string& pFile,
 		conv.meshes.clear();
 	}
 
-	if (conv.materials.size()) {
+	if (!conv.materials.empty()) {
 		pScene->mNumMaterials = static_cast<unsigned int>(conv.materials.size());
 		pScene->mMaterials = new aiMaterial*[pScene->mNumMaterials]();
 		std::copy(conv.materials.begin(),conv.materials.end(),pScene->mMaterials);
@@ -789,7 +789,7 @@ aiNode* ProcessSpatialStructure(aiNode* parent, const IfcProduct& el, Conversion
 						
 						nd_aggr->mChildren[0] = ndnew;
 						
-						if(openings_local.size()) {
+						if(!openings_local.empty()) {
 							if (!didinv) {
 								myInv = aiMatrix4x4(nd->mTransformation ).Inverse();
 								didinv = true;
@@ -847,7 +847,7 @@ aiNode* ProcessSpatialStructure(aiNode* parent, const IfcProduct& el, Conversion
 		ProcessProductRepresentation(el,nd.get(),subnodes,conv);
 		conv.apply_openings = conv.collect_openings = NULL;
 
-		if (subnodes.size()) {
+		if (!subnodes.empty()) {
 			nd->mChildren = new aiNode*[subnodes.size()]();
 			BOOST_FOREACH(aiNode* nd2, subnodes) {
 				nd->mChildren[nd->mNumChildren++] = nd2;

@@ -24,13 +24,8 @@
 #include <mrpt/maps/link_pragmas.h>
 
 #include <mrpt/config.h>
-
-#if !defined(OCCUPANCY_GRIDMAP_CELL_SIZE_8BITS) && !defined(OCCUPANCY_GRIDMAP_CELL_SIZE_16BITS)
-		#error One of OCCUPANCY_GRIDMAP_CELL_SIZE_16BITS or OCCUPANCY_GRIDMAP_CELL_SIZE_8BITS must be defined.
-#endif
-
-#if defined(OCCUPANCY_GRIDMAP_CELL_SIZE_8BITS) && defined(OCCUPANCY_GRIDMAP_CELL_SIZE_16BITS)
-		#error Only one of OCCUPANCY_GRIDMAP_CELL_SIZE_16BITS or OCCUPANCY_GRIDMAP_CELL_SIZE_8BITS must be defined at a time.
+#if (!defined(OCCUPANCY_GRIDMAP_CELL_SIZE_8BITS) && !defined(OCCUPANCY_GRIDMAP_CELL_SIZE_16BITS)) || (defined(OCCUPANCY_GRIDMAP_CELL_SIZE_8BITS) && defined(OCCUPANCY_GRIDMAP_CELL_SIZE_16BITS)) 
+	#error One of OCCUPANCY_GRIDMAP_CELL_SIZE_16BITS or OCCUPANCY_GRIDMAP_CELL_SIZE_8BITS must be defined.
 #endif
 
 namespace mrpt
@@ -49,7 +44,7 @@ namespace maps
 	 *  More details can be found at http://www.mrpt.org/Occupancy_Grids
 	 *
 	 * The algorithm for updating the grid from a laser scanner can optionally take into account the progressive widening of the beams, as
-	 *   described in the <a href="http://www.mrpt.org/Occupancy_Grids" > wiki </a> (this feature was introduced in MRPT 0.6.4).
+	 *   described in [this page](http://www.mrpt.org/Occupancy_Grids)
 	 *
 	 *   Some implemented methods are:
 	 *		- Update of individual cells
@@ -59,7 +54,7 @@ namespace maps
 	 *		- Laser scans simulation for the map contents
 	 *		- Entropy and information methods (See computeEntropy)
 	 *
-	  * \ingroup mrpt_maps_grp
+	 * \ingroup mrpt_maps_grp
 	 **/
 	class MAPS_IMPEXP COccupancyGridMap2D :
 		public CMetricMap,
@@ -72,8 +67,8 @@ namespace maps
 	{
 		// This must be added to any CSerializable derived class:
 		DEFINE_SERIALIZABLE( COccupancyGridMap2D )
-
 	public:
+
 	/** The type of the map cells: */
 #ifdef	OCCUPANCY_GRIDMAP_CELL_SIZE_8BITS
 		typedef int8_t  cellType;
@@ -119,13 +114,13 @@ namespace maps
 		bool					precomputedLikelihoodToBeRecomputed;
 
 		/** Used for Voronoi calculation.Same struct as "map", but contains a "0" if not a basis point. */
-		CDynamicGrid<uint8_t>	m_basis_map;
+		mrpt::utils::CDynamicGrid<uint8_t>	m_basis_map;
 
 		/** Used to store the Voronoi diagram.
 		 *    Contains the distance of each cell to its closer obstacles
 		 *    in 1/100th distance units (i.e. in centimeters), or 0 if not into the Voronoi diagram.
 		 */
-		CDynamicGrid<uint16_t>	m_voronoi_diagram;
+		mrpt::utils::CDynamicGrid<uint16_t>	m_voronoi_diagram;
 
 		bool m_is_empty; //!< True upon construction; used by isEmpty()
 
@@ -309,7 +304,7 @@ namespace maps
 		void  resizeGrid(float new_x_min,float new_x_max,float new_y_min,float new_y_max,float new_cells_default_value = 0.5f, bool additionalMargin = true) MRPT_NO_THROWS;
 
 		/** Returns the area of the gridmap, in square meters */
-		inline double getArea() const { return size_x*size_y*square(resolution); }
+		inline double getArea() const { return size_x*size_y*mrpt::utils::square(resolution); }
 
 		/** Returns the horizontal size of grid map in cells count.
 		 */
@@ -740,10 +735,10 @@ namespace maps
 	public:
 
 		/** Return the auxiliary "basis" map built while building the Voronoi diagram \sa buildVoronoiDiagram */
-		inline const CDynamicGrid<uint8_t>	& getBasisMap() const { return m_basis_map; }
+		inline const mrpt::utils::CDynamicGrid<uint8_t>	& getBasisMap() const { return m_basis_map; }
 
 		/** Return the Voronoi diagram; each cell contains the distance to its closer obstacle, or 0 if not part of the Voronoi diagram \sa buildVoronoiDiagram */
-		inline const CDynamicGrid<uint16_t>	& getVoronoiDiagram() const { return m_voronoi_diagram; }
+		inline const mrpt::utils::CDynamicGrid<uint16_t>	& getVoronoiDiagram() const { return m_voronoi_diagram; }
 
 		/** Builds a list with the critical points from Voronoi diagram, which must
 		 *    must be built before calling this method.
@@ -799,12 +794,12 @@ namespace maps
 		 */
 		void  laserScanSimulator(
 				mrpt::obs::CObservation2DRangeScan	        &inout_Scan,
-				const CPose2D					&robotPose,
+				const mrpt::poses::CPose2D					&robotPose,
 				float						    threshold = 0.5f,
 				size_t						    N = 361,
 				float						    noiseStd = 0,
 				unsigned int				    decimation = 1,
-				float							angleNoiseStd = DEG2RAD(0) ) const;
+				float							angleNoiseStd = mrpt::utils::DEG2RAD(0) ) const;
 
 		/** Simulates the observations of a sonar rig into the current grid map.
 		 *   The simulated ranges are stored in a CObservationRange object, which is also used
@@ -819,10 +814,10 @@ namespace maps
 		 */
 		void  sonarSimulator(
 				mrpt::obs::CObservationRange &inout_observation,
-				const CPose2D				&robotPose,
+				const mrpt::poses::CPose2D				&robotPose,
 				float						threshold = 0.5f,
 				float						rangeNoiseStd = 0,
-				float						angleNoiseStd = DEG2RAD(0) ) const;
+				float						angleNoiseStd = mrpt::utils::DEG2RAD(0) ) const;
 
 		/** Simulate just one "ray" in the grid map. This method is used internally to sonarSimulator and laserScanSimulator.
 		  */
@@ -835,15 +830,6 @@ namespace maps
 
 
 		/** @} */
-
-		// See docs in base class
-		double	 computeObservationLikelihood( const mrpt::obs::CObservation *obs, const mrpt::poses::CPose3D &takenFrom );
-
-		/** Returns true if this map is able to compute a sensible likelihood function for this observation (i.e. an occupancy grid map cannot with an image).
-		 * \param obs The observation.
-		 * \sa computeObservationLikelihood
-		 */
-		bool canComputeObservationLikelihood( const mrpt::obs::CObservation *obs );
 
 		/** Computes the likelihood [0,1] of a set of points, given the current grid map as reference.
 		  * \param pm The points map
@@ -873,7 +859,7 @@ namespace maps
 			const std::string						&fileName,
 			const COccupancyGridMap2D				*m1,
 			const COccupancyGridMap2D				*m2,
-			const TMatchingPairList		&corrs);
+			const mrpt::utils::TMatchingPairList	&corrs);
 
 		/** Saves a composite image with two gridmaps and numbers for the correspondences between them.
 		 * \sa saveAsBitmapTwoMapsWithCorrespondences
@@ -883,7 +869,7 @@ namespace maps
 			const std::string						&fileName,
 			const COccupancyGridMap2D				*m1,
 			const COccupancyGridMap2D				*m2,
-			const TMatchingPairList		&corrs);
+			const mrpt::utils::TMatchingPairList		&corrs);
 
 		/** Saves the gridmap as a graphical bitmap file, 8 bit gray scale, 1 pixel is 1 cell, and with an overlay of landmarks.
 		 * \note The template parameter CLANDMARKSMAP is assumed to be mrpt::maps::CLandmarksMap normally.
@@ -897,7 +883,8 @@ namespace maps
 			const mrpt::utils::TColor &marks_color = mrpt::utils::TColor(0,0,255) ) const
 		{
 			MRPT_START
-			CImage		img(1,1,3);
+			using namespace mrpt::utils;
+			CImage img(1,1,3);
 			getAsImageFiltered( img, false,  true ); // in RGB
 			const bool topleft = img.isOriginTopLeft();
 			for (unsigned int i=0;i<landmarks->landmarks.size();i++)
@@ -964,7 +951,7 @@ namespace maps
 		virtual void  determineMatching2D(
 			const mrpt::maps::CMetricMap      * otherMap,
 			const mrpt::poses::CPose2D         & otherMapPose,
-			TMatchingPairList     & correspondences,
+			mrpt::utils::TMatchingPairList     & correspondences,
 			const TMatchingParams & params,
 			TMatchingExtraResults & extraResults ) const ;
 
@@ -972,7 +959,7 @@ namespace maps
 		/** See docs in base class: in this class this always returns 0 */
 		float  compute3DMatchingRatio(
 				const mrpt::maps::CMetricMap						*otherMap,
-				const CPose3D							&otherMapPose,
+				const mrpt::poses::CPose3D							&otherMapPose,
 				float									maxDistForCorr = 0.10f,
 				float									maxMahaDistForCorr = 2.0f
 				) const;
@@ -1005,6 +992,11 @@ namespace maps
 
 
 	private:
+		// See docs in base class
+		double internal_computeObservationLikelihood( const mrpt::obs::CObservation *obs, const mrpt::poses::CPose3D &takenFrom );
+		// See docs in base class
+		bool internal_canComputeObservationLikelihood( const mrpt::obs::CObservation *obs );
+
 		/** Returns a byte with the occupancy of the 8 sorrounding cells.
 		 * \param cx The cell index
 		 * \param cy The cell index
@@ -1023,11 +1015,19 @@ namespace maps
 		 * \sa direccion_vecino_x,direccion_vecino_y,GetNeighborhood
 		 */
 		int  direction2idx(int dx, int dy);
+
+
+		MAP_DEFINITION_START(COccupancyGridMap2D,MAPS_IMPEXP)
+			float	min_x,max_x,min_y,max_y,resolution;	//!< See COccupancyGridMap2D::COccupancyGridMap2D
+			mrpt::maps::COccupancyGridMap2D::TInsertionOptions	insertionOpts;	//!< Observations insertion options
+			mrpt::maps::COccupancyGridMap2D::TLikelihoodOptions	likelihoodOpts;	//!< Probabilistic observation likelihood options
+		MAP_DEFINITION_END(COccupancyGridMap2D,MAPS_IMPEXP)
+
 	};
 	DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE( COccupancyGridMap2D, CMetricMap, MAPS_IMPEXP )
 
 
-	bool operator <(const COccupancyGridMap2D::TPairLikelihoodIndex &e1, const COccupancyGridMap2D::TPairLikelihoodIndex &e2);
+	bool MAPS_IMPEXP operator <(const COccupancyGridMap2D::TPairLikelihoodIndex &e1, const COccupancyGridMap2D::TPairLikelihoodIndex &e2);
 
 	} // End of namespace
 } // End of namespace

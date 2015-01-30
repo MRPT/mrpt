@@ -20,6 +20,7 @@ using namespace mrpt::slam;
 using namespace mrpt::maps;
 using namespace mrpt::system;
 using namespace mrpt::random;
+using namespace mrpt::poses;
 using namespace std;
 
 float	SIGMA = 0.03f;

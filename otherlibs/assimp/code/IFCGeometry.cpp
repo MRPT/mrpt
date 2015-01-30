@@ -580,7 +580,7 @@ void ProcessExtrudedAreaSolid(const IfcExtrudedAreaSolid& solid, TempMesh& resul
 	dir *= IfcMatrix3(trafo);
 
 	std::vector<IfcVector3> nors;
-	const bool openings = !!conv.apply_openings && conv.apply_openings->size();
+	const bool openings = !!conv.apply_openings && !conv.apply_openings->empty();
 	
 	// Compute the normal vectors for all opening polygons as a prerequisite
 	// to TryAddOpenings_Poly2Tri()
@@ -833,7 +833,7 @@ bool ProcessRepresentationItem(const IfcRepresentationItem& item,
 {
 	if (!TryQueryMeshCache(item,mesh_indices,conv)) {
 		if(ProcessGeometricItem(item,mesh_indices,conv)) {
-			if(mesh_indices.size()) {
+			if(!mesh_indices.empty()) {
 				PopulateMeshCache(item,mesh_indices,conv);
 			}
 		}

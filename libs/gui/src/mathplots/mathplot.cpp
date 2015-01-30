@@ -2943,7 +2943,7 @@ void mpPolygon::setPoints(
         m_shape_xs = points_xs;
         m_shape_ys = points_ys;
 
-        if ( closedShape && points_xs.size())
+        if ( closedShape && !points_xs.empty())
         {
             m_shape_xs.push_back( points_xs[0] );
             m_shape_ys.push_back( points_ys[0] );

@@ -22,6 +22,7 @@ using namespace mrpt::utils;
 using namespace mrpt::maps;
 using namespace mrpt::nav;
 using namespace mrpt::math;
+using namespace mrpt::poses;
 using namespace std;
 
 #include <mrpt/examples_config.h>

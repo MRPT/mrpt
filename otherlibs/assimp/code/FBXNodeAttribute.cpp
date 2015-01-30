@@ -97,7 +97,7 @@ CameraSwitcher::CameraSwitcher(uint64_t id, const Element& element, const Docume
 		cameraName = GetRequiredToken(*CameraName,0).StringContents();
 	}
 
-	if(CameraIndexName && CameraIndexName->Tokens().size()) {
+	if(CameraIndexName && !CameraIndexName->Tokens().empty()) {
 		cameraIndexName = GetRequiredToken(*CameraIndexName,0).StringContents();
 	}
 }

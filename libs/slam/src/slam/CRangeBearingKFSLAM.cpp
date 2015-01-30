@@ -33,6 +33,7 @@
 using namespace mrpt::slam;
 using namespace mrpt::obs;
 using namespace mrpt::maps;
+using namespace mrpt::math;
 using namespace mrpt::poses;
 using namespace mrpt::utils;
 using namespace mrpt::system;
@@ -118,7 +119,7 @@ void CRangeBearingKFSLAM::getCurrentRobotPose(
   ---------------------------------------------------------------*/
 mrpt::poses::CPose3DQuat CRangeBearingKFSLAM::getCurrentRobotPoseMean() const
 {
-	CPose3DQuat  q(UNINITIALIZED_QUATERNION);
+	CPose3DQuat  q(mrpt::math::UNINITIALIZED_QUATERNION);
 	ASSERTDEB_(m_xkk.size()>=7)
 	// Copy xyz+quat: (explicitly unroll the loop)
 	q.m_coords[0] = m_xkk[0];

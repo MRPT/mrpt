@@ -19,6 +19,7 @@
 
 using namespace mrpt;
 using namespace mrpt::slam;
+using namespace mrpt::math;
 using namespace mrpt::maps;
 using namespace mrpt::obs;
 using namespace mrpt::utils;
@@ -307,6 +308,8 @@ unsigned int  CMetricMapBuilderRBPF::getCurrentlyBuiltMapSize()
   ---------------------------------------------------------------*/
 void  CMetricMapBuilderRBPF::drawCurrentEstimationToImage( utils::CCanvas *img )
 {
+	using mrpt::utils::round;
+
 	unsigned int			i, M = mapPDF.particlesCount();
 	std::deque<TPose3D>		path;
 	unsigned int			imgHeight=0;

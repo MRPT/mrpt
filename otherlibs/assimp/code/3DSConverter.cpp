@@ -159,7 +159,7 @@ void Discreet3DSImporter::MakeUnique(D3DS::Mesh& sMesh)
 	// Allocate output storage
 	std::vector<aiVector3D> vNew  (sMesh.mFaces.size() * 3);
 	std::vector<aiVector3D> vNew2;
-	if (sMesh.mTexCoords.size())
+	if (!sMesh.mTexCoords.empty())
 		vNew2.resize(sMesh.mFaces.size() * 3);
 
 	for (unsigned int i = 0, base = 0; i < sMesh.mFaces.size();++i)
@@ -170,7 +170,7 @@ void Discreet3DSImporter::MakeUnique(D3DS::Mesh& sMesh)
 		for (unsigned int a = 0; a < 3;++a,++base)
 		{
 			vNew[base] = sMesh.mPositions[face.mIndices[a]];
-			if (sMesh.mTexCoords.size())
+			if (!sMesh.mTexCoords.empty())
 				vNew2[base] = sMesh.mTexCoords[face.mIndices[a]];
 
 			face.mIndices[a] = base;
@@ -390,7 +390,7 @@ void Discreet3DSImporter::ConvertMeshes(aiScene* pcOut)
 
 			meshOut->mVertices = new aiVector3D[meshOut->mNumVertices];
 			meshOut->mNormals  = new aiVector3D[meshOut->mNumVertices];
-			if ((*i).mTexCoords.size())
+			if (!(*i).mTexCoords.empty())
 			{
 				meshOut->mTextureCoords[0] = new aiVector3D[meshOut->mNumVertices];
 			}
@@ -408,7 +408,7 @@ void Discreet3DSImporter::ConvertMeshes(aiScene* pcOut)
 					meshOut->mVertices[base]  = (*i).mPositions[idx];
 					meshOut->mNormals [base]  = (*i).mNormals[idx];
 
-					if ((*i).mTexCoords.size())
+					if (!(*i).mTexCoords.empty())
 						meshOut->mTextureCoords[0][base] = (*i).mTexCoords[idx];
 
 					face.mIndices[a] = base;
@@ -523,7 +523,7 @@ void Discreet3DSImporter::AddNodeToGraph(aiScene* pcSOut,aiNode* pcOut,
 
 	// Now build the transformation matrix of the node
 	// ROTATION
-	if (pcIn->aRotationKeys.size()){
+	if (!pcIn->aRotationKeys.empty()){
 
 		// FIX to get to Assimp's quaternion conventions
 		for (std::vector<aiQuatKey>::iterator it = pcIn->aRotationKeys.begin(); it != pcIn->aRotationKeys.end(); ++it) {
@@ -532,7 +532,7 @@ void Discreet3DSImporter::AddNodeToGraph(aiScene* pcSOut,aiNode* pcOut,
 
 		pcOut->mTransformation = aiMatrix4x4( pcIn->aRotationKeys[0].mValue.GetMatrix() );
 	}
-	else if (pcIn->aCameraRollKeys.size()) 
+	else if (!pcIn->aCameraRollKeys.empty()) 
 	{
 		aiMatrix4x4::RotationZ(AI_DEG_TO_RAD(- pcIn->aCameraRollKeys[0].mValue),
 			pcOut->mTransformation);
@@ -540,7 +540,7 @@ void Discreet3DSImporter::AddNodeToGraph(aiScene* pcSOut,aiNode* pcOut,
 
 	// SCALING
 	aiMatrix4x4& m = pcOut->mTransformation;
-	if (pcIn->aScalingKeys.size())
+	if (!pcIn->aScalingKeys.empty())
 	{
 		const aiVector3D& v = pcIn->aScalingKeys[0].mValue;
 		m.a1 *= v.x; m.b1 *= v.x; m.c1 *= v.x;
@@ -549,7 +549,7 @@ void Discreet3DSImporter::AddNodeToGraph(aiScene* pcSOut,aiNode* pcOut,
 	}
 
 	// TRANSLATION
-	if (pcIn->aPositionKeys.size())
+	if (!pcIn->aPositionKeys.empty())
 	{
 		const aiVector3D& v = pcIn->aPositionKeys[0].mValue;
 		m.a4 += v.x;

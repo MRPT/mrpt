@@ -173,7 +173,7 @@ void COBImporter::InternReadFile( const std::string& pFile,
 	for_each(boost::shared_ptr< Node >& n,scene.nodes) {
 		if (n->type == Node::TYPE_MESH) {
 			Mesh& mesh = (Mesh&)(*n.get());
-			if (mesh.vertex_positions.size() && mesh.texture_coords.size()) {
+			if (!mesh.vertex_positions.empty() && !mesh.texture_coords.empty()) {
 				pScene->mNumMeshes += mesh.temp_map.size();
 			}
 		} 
@@ -238,7 +238,7 @@ aiNode* COBImporter::BuildNodes(const Node& root,const Scene& scin,aiScene* fill
 	// I know polymorphism, run as fast as you can ;-)
 	if (Node::TYPE_MESH == root.type) {
 		const Mesh& ndmesh = (const Mesh&)(root);
-		if (ndmesh.vertex_positions.size() && ndmesh.texture_coords.size()) {
+		if (!ndmesh.vertex_positions.empty() && !ndmesh.texture_coords.empty()) {
 
 			typedef std::pair<unsigned int,Mesh::FaceRefList> Entry;
 			for_each(const Entry& reflist,ndmesh.temp_map) {

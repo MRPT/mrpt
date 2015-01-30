@@ -1,3 +1,7 @@
+IF(CMAKE_MRPT_HAS_OPENCV)
+	INCLUDE_DIRECTORIES(${OpenCV_INCLUDE_DIR} ${OpenCV_INCLUDE_DIRS} ${OPENCV_INCLUDE_DIRS} ${OPENCV_INCLUDEDIR})
+ENDIF(CMAKE_MRPT_HAS_OPENCV)
+
 #---------------------------------------------
 # Macro declared in "DeclareMRPTLib.cmake":
 #---------------------------------------------

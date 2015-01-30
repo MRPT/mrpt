@@ -55,7 +55,6 @@ IF(BUILD_EXAMPLES)
 		times
 		SocketsTest
 		directoryExplorer
-		exceptionDemo
 		http_tests
 		critSectionDeadLock
 		threadsTest

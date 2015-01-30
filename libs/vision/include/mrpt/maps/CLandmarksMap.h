@@ -26,10 +26,7 @@ namespace mrpt
 {
 namespace maps
 {
-
-	/** Internal use.
-	  */
-	typedef std::vector<CLandmark>	TSequenceLandmarks;
+	namespace internal { typedef std::vector<CLandmark>	TSequenceLandmarks; }
 
 	DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CLandmarksMap, CMetricMap, VISION_IMPEXP )
 
@@ -65,19 +62,25 @@ namespace maps
 		DEFINE_SERIALIZABLE( CLandmarksMap )
 
 	private:
-
-		virtual void 	internal_clear();
-
-		 /** Insert the observation information into this map. This method must be implemented
-		  *    in derived classes.
-		  * \param obs The observation
-		  * \param robotPose The 3D pose of the robot mobile base in the map reference system, or NULL (default) if you want to use CPose2D(0,0,deg)
-		  *
-		  * \sa CObservation::insertObservationInto
-		  */
-		virtual bool  internal_insertObservation( const mrpt::obs::CObservation *obs, const mrpt::poses::CPose3D *robotPose = NULL );
+		void internal_clear() MRPT_OVERRIDE;
+		bool internal_insertObservation( const mrpt::obs::CObservation *obs, const mrpt::poses::CPose3D *robotPose = NULL ) MRPT_OVERRIDE;
 
 	public:
+		/** Computes the (logarithmic) likelihood that a given observation was taken from a given pose in the world being modeled with this map.
+		 *
+		 *  In the current implementation, this method behaves in a different way according to the nature of
+		 *   the observation's class:
+		 *		- "mrpt::obs::CObservation2DRangeScan": This calls "computeLikelihood_RSLC_2007".
+		 *		- "mrpt::obs::CObservationStereoImages": This calls "computeLikelihood_SIFT_LandmarkMap".
+		 *
+		 * \param takenFrom The robot's pose the observation is supposed to be taken from.
+		 * \param obs The observation.
+		 * \return This method returns a likelihood value > 0.
+		 *
+		 * \sa Used in particle filter algorithms, see: CMultiMetricMapPDF::update
+		 */
+		double internal_computeObservationLikelihood( const mrpt::obs::CObservation *obs, const mrpt::poses::CPose3D &takenFrom ) MRPT_OVERRIDE;
+
 
 		static mrpt::utils::TColorf		COLOR_LANDMARKS_IN_3DSCENES;  //!< The color of landmark ellipsoids in CLandmarksMap::getAs3DObject
 
@@ -89,14 +92,13 @@ namespace maps
 		struct VISION_IMPEXP TCustomSequenceLandmarks
 		{
 		private:
-			/** The actual list:
-			  */
-			TSequenceLandmarks			m_landmarks;
+			/** The actual list */
+			internal::TSequenceLandmarks			m_landmarks;
 
 			/** A grid-map with the set of landmarks falling into each cell.
-		      *  \todo Use the KD-tree instead?
+			  *  \todo Use the KD-tree instead?
 			  */
-			CDynamicGrid<vector_int>	m_grid;
+			mrpt::utils::CDynamicGrid<vector_int>	m_grid;
 
 			/** Auxiliary variables used in "getLargestDistanceFromOrigin"
 			  * \sa getLargestDistanceFromOrigin
@@ -113,13 +115,13 @@ namespace maps
 			  */
 			TCustomSequenceLandmarks();
 
-			typedef TSequenceLandmarks::iterator	iterator;
+			typedef internal::TSequenceLandmarks::iterator	iterator;
 			inline iterator				begin()			{ return m_landmarks.begin(); };
 			inline iterator				end()			{ return m_landmarks.end(); };
 			void clear();
 			inline size_t 	size()	const	{ return m_landmarks.size(); };
 
-			typedef TSequenceLandmarks::const_iterator	const_iterator;
+			typedef internal::TSequenceLandmarks::const_iterator	const_iterator;
 			inline const_iterator			begin()	const	{ return m_landmarks.begin(); };
 			inline const_iterator			end()	const	{ return m_landmarks.end(); };
 
@@ -133,7 +135,7 @@ namespace maps
 			void 			hasBeenModifiedAll();
 			void 			erase(unsigned int indx);
 
-			CDynamicGrid<vector_int>*  getGrid() { return &m_grid; }
+			mrpt::utils::CDynamicGrid<vector_int>*  getGrid() { return &m_grid; }
 
 			/** Returns the landmark with a given landmrk ID, or NULL if not found
 			  */
@@ -171,7 +173,7 @@ namespace maps
 		// See docs in base class
 		float  compute3DMatchingRatio(
 				const mrpt::maps::CMetricMap						*otherMap,
-				const CPose3D							&otherMapPose,
+				const mrpt::poses::CPose3D							&otherMapPose,
 				float									maxDistForCorr = 0.10f,
 				float									maxMahaDistForCorr = 2.0f
 				) const;
@@ -467,33 +469,17 @@ namespace maps
 		  */
 		void  loadOccupancyFeaturesFrom2DRangeScan(
 			const mrpt::obs::CObservation2DRangeScan	&obs,
-			const CPose3D					*robotPose = NULL,
+			const mrpt::poses::CPose3D					*robotPose = NULL,
 			unsigned int				downSampleFactor = 1);
-
-
-		/** Computes the (logarithmic) likelihood that a given observation was taken from a given pose in the world being modeled with this map.
-		 *
-		 *  In the current implementation, this method behaves in a different way according to the nature of
-		 *   the observation's class:
-		 *		- "mrpt::obs::CObservation2DRangeScan": This calls "computeLikelihood_RSLC_2007".
-		 *		- "mrpt::obs::CObservationStereoImages": This calls "computeLikelihood_SIFT_LandmarkMap".
-		 *
-		 * \param takenFrom The robot's pose the observation is supposed to be taken from.
-		 * \param obs The observation.
-		 * \return This method returns a likelihood value > 0.
-		 *
-		 * \sa Used in particle filter algorithms, see: CMultiMetricMapPDF::update
-		 */
-		double	 computeObservationLikelihood( const mrpt::obs::CObservation *obs, const mrpt::poses::CPose3D &takenFrom );
 
 		// See docs in base class
 		void  computeMatchingWith2D(
 				const mrpt::maps::CMetricMap								*otherMap,
-				const CPose2D									&otherMapPose,
+				const mrpt::poses::CPose2D									&otherMapPose,
 				float									maxDistForCorrespondence,
 				float									maxAngularDistForCorrespondence,
-				const CPose2D									&angularDistPivotPoint,
-				TMatchingPairList						&correspondences,
+				const mrpt::poses::CPose2D									&angularDistPivotPoint,
+				mrpt::utils::TMatchingPairList						&correspondences,
 				float									&correspondencesRatio,
 				float									*sumSqrDist	= NULL,
 				bool									onlyKeepTheClosest = false,
@@ -508,7 +494,7 @@ namespace maps
 		  */
 		void  computeMatchingWith3DLandmarks(
 				const mrpt::maps::CLandmarksMap				*otherMap,
-				TMatchingPairList						&correspondences,
+				mrpt::utils::TMatchingPairList						&correspondences,
 				float									&correspondencesRatio,
 				std::vector<bool>						&otherCorrespondences) const;
 
@@ -530,9 +516,10 @@ namespace maps
 		/** Returns the (logarithmic) likelihood of a set of landmarks "map" given "this" map.
 		  *  See paper: JJAA 2006
 		  */
-		double	 computeLikelihood_SIFT_LandmarkMap( CLandmarksMap *map,
-																	  TMatchingPairList	*correspondences = NULL,
-																	  std::vector<bool> *otherCorrespondences = NULL);
+		double	 computeLikelihood_SIFT_LandmarkMap(
+			CLandmarksMap *map,
+			mrpt::utils::TMatchingPairList	*correspondences = NULL,
+			std::vector<bool> *otherCorrespondences = NULL);
 
 		/** Returns true if the map is empty/no observation has been inserted.
 		   */
@@ -545,7 +532,7 @@ namespace maps
 		  * An observation will be generated for each beacon in the map, but notice that some of them may be missed if out of the sensor maximum range.
 		  */
 		void  simulateBeaconReadings(
-			const CPose3D					&in_robotPose,
+			const mrpt::poses::CPose3D					&in_robotPose,
 			const mrpt::poses::CPoint3D					&in_sensorLocationOnRobot,
 			mrpt::obs::CObservationBeaconRanges		&out_Observations ) const;
 
@@ -566,13 +553,13 @@ namespace maps
 		  * An observation will be generated for each beacon in the map, but notice that some of them may be missed if out of the sensor maximum range or field of view-
 		  */
 		void  simulateRangeBearingReadings(
-			const CPose3D					&robotPose,
-			const CPose3D					&sensorLocationOnRobot,
+			const mrpt::poses::CPose3D					&robotPose,
+			const mrpt::poses::CPose3D					&sensorLocationOnRobot,
 			mrpt::obs::CObservationBearingRange		&observations,
 			bool                            sensorDetectsIDs = true,
 			const float                     stdRange = 0.01f,
-			const float                     stdYaw = DEG2RAD(0.1f),
-			const float                     stdPitch = DEG2RAD(0.1f),
+			const float                     stdYaw = mrpt::utils::DEG2RAD(0.1f),
+			const float                     stdPitch = mrpt::utils::DEG2RAD(0.1f),
 			vector_size_t 					*real_associations = NULL,
 			const double                    spurious_count_mean = 0,
 			const double                    spurious_count_std  = 0
@@ -592,10 +579,15 @@ namespace maps
 		  */
 		void  getAs3DObject ( mrpt::opengl::CSetOfObjectsPtr	&outObj ) const;
 
-		/** This method is called at the end of each "prediction-update-map insertion" cycle within "mrpt::slam::CMetricMapBuilderRBPF::processActionObservation".
-		  *  This method should normally do nothing, but in some cases can be used to free auxiliary cached variables.
-		  */
+		// See base docs
 		virtual void  auxParticleFilterCleanUp();
+
+		MAP_DEFINITION_START(CLandmarksMap,VISION_IMPEXP)
+			typedef std::pair<mrpt::math::TPoint3D,unsigned int> TPairIdBeacon;
+			std::deque<TPairIdBeacon> initialBeacons;	//!< Initial contents of the map, especified by a set of 3D Beacons with associated IDs
+			mrpt::maps::CLandmarksMap::TInsertionOptions	insertionOpts;
+			mrpt::maps::CLandmarksMap::TLikelihoodOptions	likelihoodOpts;
+		MAP_DEFINITION_END(CLandmarksMap,VISION_IMPEXP)
 
 	}; // End of class def.
 	DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE( CLandmarksMap, CMetricMap, VISION_IMPEXP )

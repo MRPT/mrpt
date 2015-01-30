@@ -25,6 +25,7 @@
 using namespace mrpt::slam;
 using namespace mrpt::obs;
 using namespace mrpt::maps;
+using namespace mrpt::math;
 using namespace mrpt::graphs;
 using namespace mrpt::poses;
 using namespace mrpt::utils;
@@ -155,27 +156,22 @@ unsigned int CIncrementalMapPartitioner::addMapFrame(
 
 	// Create the maps:
 	TSetOfMetricMapInitializers			mapInitializer;
-	TMetricMapInitializer				mapElement;
 
-	mapElement.metricMapClassType = CLASS_ID( CSimplePointsMap );
-	mapInitializer.push_back( mapElement );
+	{
+		CSimplePointsMap::TMapDefinition def;
+		mapInitializer.push_back(def);
+	}
 
-//	mapElement.metricMapClassType = CLASS_ID( COccupancyGridMap2D );
-//	mapElement.occupancyGridMap2D_options.resolution = options.gridResolution;
-//	mapInitializer.push_back( mapElement );
-
-	mapElement.metricMapClassType = CLASS_ID( CLandmarksMap );
-//	mapElement.landmarksMap_options.insertionOpts.
-	mapInitializer.push_back( mapElement );
+	{
+		CLandmarksMap::TMapDefinition def;
+		mapInitializer.push_back(def);
+	}
 
 	// Add new metric map to "m_individualMaps"
 	// --------------------------------------------
-	//CMultiMetricMap			*newMetricMap = new CMultiMetricMap( &mapInitializer );
-
 	m_individualMaps.push_back( CMultiMetricMap() );
 	CMultiMetricMap		&newMetricMap = m_individualMaps.back();
 	newMetricMap.setListOfMaps( &mapInitializer );
-
 
 	MRPT_START
 
@@ -193,10 +189,11 @@ unsigned int CIncrementalMapPartitioner::addMapFrame(
 	newMetricMap.m_pointsMaps[0]->copyFrom( * frame->buildAuxPointsMap<CPointsMap>(&newMetricMap.m_pointsMaps[0]->insertionOptions));	// Faster :-)
 
 	// Insert just the VisualLandmarkObservations:
-	newMetricMap.m_landmarksMap->insertionOptions.insert_SIFTs_from_monocular_images = false;
-	newMetricMap.m_landmarksMap->insertionOptions.insert_SIFTs_from_stereo_images    = false;
-	newMetricMap.m_landmarksMap->insertionOptions.insert_Landmarks_from_range_scans  = false;
-	frame->insertObservationsInto( newMetricMap.m_landmarksMap );
+	mrpt::maps::CLandmarksMap &lm = *newMetricMap.m_landmarksMap;
+	lm.insertionOptions.insert_SIFTs_from_monocular_images = false;
+	lm.insertionOptions.insert_SIFTs_from_stereo_images    = false;
+	lm.insertionOptions.insert_Landmarks_from_range_scans  = false;
+	frame->insertObservationsInto( &lm );
 
 	// Add to corresponding vectors:
 	m_individualFrames.insert(robotPose, frame);

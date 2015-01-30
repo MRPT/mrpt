@@ -40,7 +40,7 @@ namespace mrpt
 		  *
 		  * - JUN/2013: First design.
 		  * - JAN/2014: Integrated into MRPT library.
-		  * - DIC/2014: Reformulated and improved.
+		  * - DIC/2014: Reformulated and improved. The class now needs Eigen version 3.1.0 or above.
 		  *
 		  *  \sa CDifodoCamera, CDifodoDatasets
 		  *  \ingroup mrpt_vision_grp

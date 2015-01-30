@@ -15,7 +15,10 @@ PROJECT(${PRJ_NAME})
 # These commands are needed by modern versions of CMake:
 CMAKE_MINIMUM_REQUIRED(VERSION 2.4)
 if(COMMAND cmake_policy)
-      cmake_policy(SET CMP0003 NEW)  # Required by CMake 2.7+
+    cmake_policy(SET CMP0003 NEW)  # Required by CMake 2.7+
+	if(POLICY CMP0043)
+		cmake_policy(SET CMP0043 OLD) #  Ignore COMPILE_DEFINITIONS_<Config> properties.
+	endif()
 endif(COMMAND cmake_policy)
 
 # ---------------------------------------------------------------------------
@@ -66,8 +69,8 @@ ENDIF(CMAKE_COMPILER_IS_GNUCXX AND NOT CMAKE_BUILD_TYPE MATCHES "Debug")
 # This part can be removed if you are compiling this program outside of 
 #  the MRPT tree:
 # -------------------------------------------------------------------------
-IF("${CMAKE_PROJECT_NAME}" STREQUAL "MRPT") # Fails if build outside of MRPT project.
+IF(${CMAKE_PROJECT_NAME} STREQUAL "MRPT") # Fails if build outside of MRPT project.
 	DeclareAppDependencies(${sampleName} mrpt-maps;mrpt-gui;mrpt-tfest) # Dependencies
-ENDIF("${CMAKE_PROJECT_NAME}" STREQUAL "MRPT")
+ENDIF(${CMAKE_PROJECT_NAME} STREQUAL "MRPT")
 # -------------------------------------------------------------------------
 

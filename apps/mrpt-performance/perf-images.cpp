@@ -23,8 +23,6 @@ using namespace mrpt::random;
 using namespace mrpt::vision;
 using namespace std;
 
-#include <mrpt/otherlibs/do_opencv_includes.h>
-
 extern void getTestImage(unsigned int img_index, mrpt::utils::CImage &out_img );
 
 // ------------------------------------------------------

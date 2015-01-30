@@ -140,6 +140,11 @@ namespace mrpt
 			virtual void PLY_import_set_vertex_count(const size_t N);
 			/** @} */
 
+			MAP_DEFINITION_START(CSimplePointsMap,MAPS_IMPEXP)
+				mrpt::maps::CPointsMap::TInsertionOptions   insertionOpts;	//!< Observations insertion options
+				mrpt::maps::CPointsMap::TLikelihoodOptions  likelihoodOpts;	//!< Probabilistic observation likelihood options
+			MAP_DEFINITION_END(CSimplePointsMap,MAPS_IMPEXP)
+
 		}; // End of class def.
 		DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE( CSimplePointsMap , CPointsMap, MAPS_IMPEXP )
 	} // End of namespace

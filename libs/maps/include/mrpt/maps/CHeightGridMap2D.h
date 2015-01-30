@@ -103,9 +103,6 @@ namespace mrpt
 			   */
 			 bool  isEmpty() const;
 
-			// See docs in base class
-			double	 computeObservationLikelihood( const mrpt::obs::CObservation *obs, const mrpt::poses::CPose3D &takenFrom );
-
 			/** Parameters related with inserting observations into the map.
 			  */
 			struct MAPS_IMPEXP TInsertionOptions : public utils::CLoadableOptions
@@ -141,7 +138,7 @@ namespace mrpt
 			/** See docs in base class: in this class it always returns 0 */
 			float  compute3DMatchingRatio(
 					const mrpt::maps::CMetricMap						*otherMap,
-					const CPose3D							&otherMapPose,
+					const mrpt::poses::CPose3D							&otherMapPose,
 					float									maxDistForCorr = 0.10f,
 					float									maxMahaDistForCorr = 2.0f
 					) const;
@@ -175,27 +172,20 @@ namespace mrpt
 			size_t countObservedCells() const;
 
 		protected:
+			TMapRepresentation  m_mapType;  //!< The map representation type of this map
 
-			/** The map representation type of this map.
-			  */
-			TMapRepresentation		m_mapType;
+			// See docs in base class
+			void  internal_clear() MRPT_OVERRIDE;
+			bool  internal_insertObservation( const mrpt::obs::CObservation *obs, const mrpt::poses::CPose3D *robotPose = NULL ) MRPT_OVERRIDE;
+			double internal_computeObservationLikelihood( const mrpt::obs::CObservation *obs, const mrpt::poses::CPose3D &takenFrom ) MRPT_OVERRIDE;
 
-			 /** Erase all the contents of the map
-			  */
-			 virtual void  internal_clear();
-
-			 /** Insert the observation information into this map. This method must be implemented
-			  *    in derived classes.
-			  * \param obs The observation
-			  * \param robotPose The 3D pose of the robot mobile base in the map reference system, or NULL (default) if you want to use CPose2D(0,0,deg)
-			  *
-			  * \sa CObservation::insertObservationInto
-			  */
-			 virtual bool  internal_insertObservation( const mrpt::obs::CObservation *obs, const mrpt::poses::CPose3D *robotPose = NULL );
-
+			MAP_DEFINITION_START(CHeightGridMap2D,MAPS_IMPEXP)
+				float	min_x,max_x,min_y,max_y,resolution;	//!< See CHeightGridMap2D::CHeightGridMap2D
+				mrpt::maps::CHeightGridMap2D::TMapRepresentation	mapType;	//!< The kind of map representation (see CHeightGridMap2D::CHeightGridMap2D)
+				mrpt::maps::CHeightGridMap2D::TInsertionOptions	insertionOpts;
+			MAP_DEFINITION_END(CHeightGridMap2D,MAPS_IMPEXP)
 		};
 		DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE( CHeightGridMap2D, CMetricMap, MAPS_IMPEXP  )
-
 
 	} // End of namespace
 

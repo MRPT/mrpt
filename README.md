@@ -18,6 +18,7 @@ and much more.
   * Main website [http://www.mrpt.org/](http://www.mrpt.org/)
   * C++ API reference: [http://reference.mrpt.org/](http://reference.mrpt.org/).
   * Google group for questions: [http://www.mrpt.org/forum/](http://www.mrpt.org/forum/)
+  * [Bindings documentation](https://github.com/jlblancoc/mrpt/wiki) (Python, Matlab)
   * Download the latest unstable code with: 
     
             git clone https://github.com/jlblancoc/mrpt.git mrpt-git

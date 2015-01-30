@@ -12,14 +12,24 @@
 
 <p> <b>Note:</b> <i>If you are displaying a local version of this page and you have not built the whole HTML documentation, the links above will be broken. Either build the documentation invoking <code>make documentation_html</code> or [browse it on-line](http://www.mrpt.org/).</i></p>
 
-<a name="1.3.0">
-  <h2>Version 1.3.0: (Under development) </h2></a>
+<a name="1.3.1">
+  <h2>Version 1.3.1: (Under development) </h2></a>
 	- <b>Most important changes:</b>
-		- Classes in libraries \ref mrpt_obs_grp and \ref mrpt_maps_grp now belong to new namespaces (mrpt::obs, mrpt::maps) instead of the old mrpt::slam (see comments below on support for backwards-compatibility).
+		- (none yet)
+	- <b>Detailed list of changes:</b>
+		- BUG FIXES:
+			- Fix ocasional (false) failure of RANSAC unit tests due to their non-deterministic nature.
+			- Fix build error with MSVC 2010 in mrpt-hmtslam (Closes #127).
+
+<hr>
+<a name="1.3.0">
+  <h2>Version 1.3.0: Released 12-JAN-2015 </h2></a>
+	- <b>Most important changes:</b>
+		- Classes in libraries \ref mrpt_obs_grp and \ref mrpt_maps_grp now belong to new namespaces (mrpt::obs, mrpt::maps) instead of the old mrpt::slam
 		- No more `using namespace`s polute MRPT headers. <b>Errors in user projects</b> missing `using namespace XXX` that might be formerly masked will now reveal. <b>This is a good thing</b>, though admitedly annoying...
 		- New library \ref mrpt_nav_grp, subsumming the old \ref mrpt_reactivenav_grp.
 		- New library \ref mrpt_tfest_grp, a refactor of the old \ref mrpt_scanmatching_grp.
-		- <b>Backwards compatible headers</b> have been provided to ease the transition of user code. Warning messages will be shown recommending deprecated replacements.
+		- <b>Backwards compatible headers</b> have been provided to ease the transition of user code for all those library changes. Warning messages will be shown recommending deprecated replacements.
 	- <b>Detailed list of changes:</b>
 		- Lib changes:
 			- Clean up of the bad practice of `using namespace` in public scopes of headers. May lead to user code failing for missing `using namespace`s which were previously masked.
@@ -36,7 +46,7 @@
 				- mrpt::slam::CPathPlanningMethod & CPathPlanningCircularRobot: \ref mrpt_slam_grp ==> \ref mrpt_nav_grp
 		- Build System / General changes:
 			- Many optimizations in function arguments (value vs ref). Forces ABI incompatibility with previous versions, hence the change to a new minor version number.
-			- Updated embedded version of Eigen to 3.2.2
+			- Updated embedded version of Eigen to 3.2.3
 			- Kinect: Dropped support for the CL NUI API, which seems discontinued. Alternatives in use are libfreenect and OpenNI2.
 			- libfreenect is now detected in the system and used instead of compiling the embedded copy of it.
 			- Embedded copy of libfreenect has been updated to (23/oct/2014). It now supports "Kinect for Windows".
@@ -51,6 +61,11 @@
 					- Upgrade to latest XSens SDK 4.2.1. Requires libudev-dev in Linux
 					- Add GPS observations to CIMUXSens_MT4 for Xsens devices like GTi-G-700 which have GPS
 				- mrpt::hwdrivers::CImageGrabber_dc1394: Length of ring buffer is now configurable via TCaptureOptions_dc1394::ring_buffer_size
+			- [mrpt-maps]
+				- Important refactor of internal code related to mrpt::maps::CMultiMetricMap: 
+					- All maps (derived from mrpt::maps::CMetricMap) now have a more uniform interface. 
+					- Each map now has a `MapDefinition` structure with all its parameters. See docs for mrpt::maps::TMetricMapInitializer
+					- Introduced mrpt::maps::TMapGenericParams to hold parameters shared in all maps.
 			- [mrpt-obs]
 				- CObservation::getDescriptionAsText(): New virtual method to obstain a textual description of observations. Refactoring of messy code previously in the RawLogViewer app.
 			- [mrpt-vision]

@@ -130,9 +130,9 @@ namespace mrpt
 		{
 			using namespace mrpt::math;
 
-		 mrpt::math::TPoint3D l; // Local point, wrt camera
+			mrpt::math::TPoint3D l; // Local point, wrt camera
 
-		 mrpt::math::CMatrixDouble33 dp_point(mrpt::math::UNINITIALIZED_MATRIX);
+			mrpt::math::CMatrixDouble33 dp_point(mrpt::math::UNINITIALIZED_MATRIX);
 
 			if (POSES_ARE_INVERSE)
 				cam_pose.composePoint(

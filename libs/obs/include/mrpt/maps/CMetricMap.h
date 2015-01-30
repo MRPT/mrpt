@@ -16,6 +16,8 @@
 #include <mrpt/math/lightweight_geom_data.h>
 #include <mrpt/opengl/opengl_frwds.h>
 #include <mrpt/maps/CMetricMapEvents.h>
+#include <mrpt/maps/TMetricMapInitializer.h>
+#include <mrpt/maps/metric_map_types.h>
 #include <mrpt/obs/obs_frwds.h>
 #include <mrpt/obs/link_pragmas.h>
 #include <deque>
@@ -24,43 +26,6 @@ namespace mrpt
 {
 	namespace maps
 	{
-		using namespace mrpt::utils;
-		using mrpt::poses::CPose2D;
-		using mrpt::poses::CPose3D;
-
-		/** Parameters for the determination of matchings between point clouds, etc. \sa CMetricMap::determineMatching2D, CMetricMap::determineMatching3D */
-		struct OBS_IMPEXP TMatchingParams
-		{
-			float  maxDistForCorrespondence;          //!< Maximum linear distance between two points to be paired (meters)
-			float  maxAngularDistForCorrespondence;   //!< Allowed "angular error" (in radians): this permits larger pairing threshold distances to more distant points.
-			bool   onlyKeepTheClosest;  //!< If set to true (default), only the closest correspondence will be returned. If false all are returned.
-			bool   onlyUniqueRobust;    //!< Additional consistency filter: "onlyKeepTheClosest" allows one correspondence for each "local map" point, but many of them may have as corresponding pair the same "global point", which this flag avoids.
-			size_t decimation_other_map_points; //!< (Default=1) Only consider 1 out of this number of points from the "other" map.
-			size_t offset_other_map_points;  //!< Index of the first point in the "other" map to start checking for correspondences (Default=0)
-			mrpt::math::TPoint3D angularDistPivotPoint; //!< The point used to calculate angular distances: e.g. the coordinates of the sensor for a 2D laser scanner.
-
-			/** Ctor: default values */
-			TMatchingParams() :
-				maxDistForCorrespondence(0.50f),
-				maxAngularDistForCorrespondence(.0f),
-				onlyKeepTheClosest(true),
-				onlyUniqueRobust(false),
-				decimation_other_map_points(1),
-				offset_other_map_points(0),
-				angularDistPivotPoint(0,0,0)
-			{}
-		};
-
-		/** Additional results from the determination of matchings between point clouds, etc., apart from the pairings themselves \sa CMetricMap::determineMatching2D, CMetricMap::determineMatching3D */
-		struct OBS_IMPEXP TMatchingExtraResults
-		{
-			float correspondencesRatio; //!< The ratio [0,1] of points in otherMap with at least one correspondence.
-			float sumSqrDist;           //!< The sum of all matched points squared distances.If undesired, set to NULL, as default.
-
-			TMatchingExtraResults() : correspondencesRatio(0),sumSqrDist(0)
-			{}
-		};
-
 		DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CMetricMap, mrpt::utils::CSerializable, OBS_IMPEXP )
 
 		/** Declares a virtual base class for all metric maps storage classes.
@@ -77,6 +42,8 @@ namespace mrpt
 		 *	  - mrpt::obs::mrptEventMetricMapClear: Upon call of the ::clear() method.
 		 *    - mrpt::obs::mrptEventMetricMapInsert: Upon insertion of an observation that effectively modifies the map (e.g. inserting an image into a grid map will NOT raise an event, inserting a laser scan will).
 		 *
+		 * \note All derived class must implement a static class factory `<metric_map_class>::MapDefinition()` that builds a default TMetricMapInitializer [New in MRPT 1.3.0] 
+		 *
 		 * \sa CObservation, CSensoryFrame, CMultiMetricMap
 	 	 * \ingroup mrpt_obs_grp
 		 */
@@ -91,18 +58,23 @@ namespace mrpt
 			/** Internal method called by clear() */
 			virtual void  internal_clear() = 0;
 
-			/** Hook for each time a "internal_insertObservation" returns "true"
-			  * This is called automatically from insertObservation() when internal_insertObservation returns true.
-			  */
-			virtual void OnPostSuccesfulInsertObs(const mrpt::obs::CObservation *)
-			{
-				// Default: do nothing
-			}
-
 			/** Internal method called by insertObservation() */
 			virtual bool  internal_insertObservation(
 				const mrpt::obs::CObservation *obs,
 				const mrpt::poses::CPose3D *robotPose = NULL ) = 0;
+
+			/** Internal method called by computeObservationLikelihood() */
+			virtual double internal_computeObservationLikelihood( const mrpt::obs::CObservation *obs, const mrpt::poses::CPose3D &takenFrom ) = 0;
+			/** Internal method called by canComputeObservationLikelihood() */
+			virtual bool internal_canComputeObservationLikelihood( const mrpt::obs::CObservation *obs )
+			{
+				MRPT_UNUSED_PARAM(obs);
+				return true; // Unless implemented otherwise, assume we can always compute the likelihood.
+			}
+
+			/** Hook for each time a "internal_insertObservation" returns "true"
+			  * This is called automatically from insertObservation() when internal_insertObservation returns true. */
+			virtual void OnPostSuccesfulInsertObs(const mrpt::obs::CObservation *) { /* Default: do nothing */ }
 
 		public:
 			/** Erase all the contents of the map */
@@ -150,27 +122,16 @@ namespace mrpt
 			 *
 			 * \sa Used in particle filter algorithms, see: CMultiMetricMapPDF::update
 			 */
-			virtual double	 computeObservationLikelihood( const mrpt::obs::CObservation *obs, const mrpt::poses::CPose3D &takenFrom ) = 0;
+			double	 computeObservationLikelihood( const mrpt::obs::CObservation *obs, const mrpt::poses::CPose3D &takenFrom );
 
-			/** Computes the log-likelihood of a given observation given an arbitrary robot 2D pose.
-			 *
-			 * \param takenFrom The robot's pose the observation is supposed to be taken from.
-			 * \param obs The observation.
-			 * \return This method returns a log-likelihood.
-			 *
-			 * \sa Used in particle filter algorithms, see: CMultiMetricMapPDF::update
-			 */
+			/** \overload */
 			double	 computeObservationLikelihood( const mrpt::obs::CObservation *obs, const mrpt::poses::CPose2D &takenFrom );
 
 			/** Returns true if this map is able to compute a sensible likelihood function for this observation (i.e. an occupancy grid map cannot with an image).
 			 * \param obs The observation.
-			 * \sa computeObservationLikelihood
+			 * \sa computeObservationLikelihood, genericMapParams.enableObservationLikelihood
 			 */
-			virtual bool canComputeObservationLikelihood( const mrpt::obs::CObservation *obs )
-			{
-				MRPT_UNUSED_PARAM(obs);
-				return true; // Unless implemented otherwise, assume we can always compute the likelihood.
-			}
+			virtual bool canComputeObservationLikelihood( const mrpt::obs::CObservation *obs );
 
 			/** \overload */
 			bool canComputeObservationLikelihood( const mrpt::obs::CObservationPtr &obs );
@@ -218,7 +179,7 @@ namespace mrpt
 			virtual void  determineMatching2D(
 				const mrpt::maps::CMetricMap      * otherMap,
 				const mrpt::poses::CPose2D         & otherMapPose,
-				TMatchingPairList     & correspondences,
+				mrpt::utils::TMatchingPairList     & correspondences,
 				const TMatchingParams & params,
 				TMatchingExtraResults & extraResults ) const;
 
@@ -243,7 +204,7 @@ namespace mrpt
 			virtual void  determineMatching3D(
 				const mrpt::maps::CMetricMap      * otherMap,
 				const mrpt::poses::CPose3D         & otherMapPose,
-				TMatchingPairList     & correspondences,
+				mrpt::utils::TMatchingPairList     & correspondences,
 				const TMatchingParams & params,
 				TMatchingExtraResults & extraResults ) const;
 
@@ -259,44 +220,33 @@ namespace mrpt
 			 */
 			virtual float  compute3DMatchingRatio(
 				const mrpt::maps::CMetricMap								*otherMap,
-				const CPose3D							&otherMapPose,
+				const mrpt::poses::CPose3D							&otherMapPose,
 				float									maxDistForCorr = 0.10f,
 				float									maxMahaDistForCorr = 2.0f
 			) const;
 
-			/** This virtual method saves the map to a file "filNamePrefix"+< some_file_extension >, as an image or in any other applicable way (Notice that other methods to save the map may be implemented in classes implementing this virtual interface).
-			  */
-			virtual void  saveMetricMapRepresentationToFile(
-				const std::string	&filNamePrefix
-			) const = 0;
+			/** This virtual method saves the map to a file "filNamePrefix"+< some_file_extension >, as an image or in any other applicable way (Notice that other methods to save the map may be implemented in classes implementing this virtual interface). */
+			virtual void  saveMetricMapRepresentationToFile(const std::string	&filNamePrefix) const = 0;
 
-			/** Returns a 3D object representing the map.
-			  */
+			/** Returns a 3D object representing the map. 
+			  * \sa genericMapParams, TMapGenericParams::enableSaveAs3DObject */
 			virtual void  getAs3DObject( mrpt::opengl::CSetOfObjectsPtr	&outObj ) const = 0;
 
-			/** When set to true (default=false), calling "getAs3DObject" will have no effects.
-			  */
-			bool			m_disableSaveAs3DObject;
+			TMapGenericParams genericMapParams; //!< Common params to all maps
 
 			/** This method is called at the end of each "prediction-update-map insertion" cycle within "mrpt::slam::CMetricMapBuilderRBPF::processActionObservation".
 			  *  This method should normally do nothing, but in some cases can be used to free auxiliary cached variables.
 			  */
-			virtual void  auxParticleFilterCleanUp()
-			{
-				// Default implementation: do nothing.
-			}
+			virtual void  auxParticleFilterCleanUp() { /* Default implementation: do nothing. */ }
 
-			/** Returns the square distance from the 2D point (x0,y0) to the closest correspondence in the map.
-			  */
+			/** Returns the square distance from the 2D point (x0,y0) to the closest correspondence in the map. */
 			virtual float squareDistanceToClosestCorrespondence(float x0,float y0 ) const;
-
 
 			/** If the map is a simple points map or it's a multi-metric map that contains EXACTLY one simple points map, return it.
 			  * Otherwise, return NULL
 			  */
 			virtual const mrpt::maps::CSimplePointsMap * getAsSimplePointsMap() const { return NULL; }
 			virtual       mrpt::maps::CSimplePointsMap * getAsSimplePointsMap()       { return NULL; }
-
 
 		}; // End of class def.
 		DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE( CMetricMap, mrpt::utils::CSerializable, OBS_IMPEXP )

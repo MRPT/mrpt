@@ -171,8 +171,6 @@ namespace mrpt
 			virtual bool  isEmpty() const;
 
 
-			// See docs in base class
-			virtual double	 computeObservationLikelihood( const mrpt::obs::CObservation *obs, const mrpt::poses::CPose3D &takenFrom );
 
 			virtual void  saveMetricMapRepresentationToFile(const std::string	&filNamePrefix) const;
 
@@ -312,6 +310,10 @@ namespace mrpt
 			bool internal_build_PointCloud_for_observation(const mrpt::obs::CObservation *obs,const mrpt::poses::CPose3D *robotPose, octomap::point3d &point3d_sensorPt, octomap::Pointcloud &ptr_scan) const;
 
 			OCTREE m_octomap; //!< The actual octo-map object.
+
+		private:
+			// See docs in base class
+			virtual double	 internal_computeObservationLikelihood( const mrpt::obs::CObservation *obs, const mrpt::poses::CPose3D &takenFrom ) MRPT_OVERRIDE;
 
 		}; // End of class def.
 	} // End of namespace

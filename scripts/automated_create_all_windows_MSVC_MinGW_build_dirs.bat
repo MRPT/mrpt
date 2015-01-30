@@ -1,19 +1,18 @@
 @echo off
 REM =========================================================
 REM   Automated generation of all the dirs for win builds
-REM    for x32/amd64, with/without Kinect support, and 
-REM    for MSVC{9,10,11} and MinGW
+REM    for x32/amd64, for all MSVC versions 
 REM   To launch the build themselves and build packages, 
 REM    see "automated_build_msvc_binary_package.bat"
 REM 
-REM  Copy this script to "d:\code" (in my laptop!), adjust 
+REM  Copy this script to "d:\code" (or equivalent!), adjust 
 REM   all the paths below and execute. 
 REM 
-REM                              Jose Luis Blanco, 2011-12
+REM                              Jose Luis Blanco, 2011-15
 REM =========================================================
 
 REM  === THIS IS WHERE MRPT SOURCE TREE IS FROM THE CWD ===
-set MRPT_BASE_DIR=mrpt-1.0.3
+set MRPT_BASE_DIR=mrpt
 
 REM =================== SET ALL IMPORTANT PATHS ===================
 
@@ -29,73 +28,30 @@ REM  (NOTE: Use "/" for paths in this one)
 set MINGW_ROOT=E:/MinGW
 set MINGW_ROOT_BKSLH=E:\MinGW
 REM === wxWidgets directory base name will be: %WX_ROOT%-win%ARCHN%-%COMP%
-set WX_ROOT=E:/code/wxWidgets-2.8.12
+set WX_ROOT=E:/code/wxWidgets-3.0.2
 REM MSVC Redistributables: %MSVC_REDIST_BASE_DIR%/%COMP%/vcredist_%ARCH%.exe
 set MSVC_REDIST_BASE_DIR=E:/code/MSVC_Redist
 
+REM Since mrpt 1.3.0 we can build against libusb (for libfreenect) and will work in all systems (even w/o drivers)
+set KINECT=1
 
 REM ==============================================================
 
-REM msvc9 ========================
-set COMP=msvc9
-set ARCHN=32
-set KINECT=0
-call :subGen
-set KINECT=1
-call :subGen
-
-set ARCHN=64
-set KINECT=0
-call :subGen
-set KINECT=1
-call :subGen
-
-REM msvc10 ========================
-rem set COMP=msvc10
-rem set ARCHN=32
-rem set KINECT=0
-rem call :subGen
-rem set KINECT=1
-rem call :subGen
-
-rem set ARCHN=64
-rem set KINECT=0
-rem call :subGen
-rem set KINECT=1
-rem call :subGen
-
 REM msvc11 ========================
 set COMP=msvc11
+
 set ARCHN=32
-set KINECT=0
 call :subGen
-
-set KINECT=1
-call :subGen
-
 set ARCHN=64
-set KINECT=0
-call :subGen
-set KINECT=1
 call :subGen
 
 REM msvc12 ========================
 set COMP=msvc12
+
 set ARCHN=32
-set KINECT=0
 call :subGen
-
-set KINECT=1
-call :subGen
-
-set COMP=msvc12
-
 set ARCHN=64
-set KINECT=0
 call :subGen
-set KINECT=1
-call :subGen
-
 
 
 goto End
@@ -103,20 +59,12 @@ goto End
 REM MinGW ========================
 set COMP=mingw
 set ARCHN=32
-set KINECT=0
 call :subGen
-set KINECT=1
-call :subGen
-
 set ARCHN=64
-set KINECT=0
-call :subGen
-set KINECT=1
 call :subGen
 
 
 goto End
-
 
 
 REM ===== Subroutine: Generate project dir ============
@@ -124,7 +72,6 @@ REM ===== Subroutine: Generate project dir ============
 
 set ARCH=x%ARCHN%
 set DIR=%MRPT_BASE_DIR%-%COMP%-%ARCH%
-if %KINECT%==1 set DIR=%DIR%-kinect
 if %ARCHN%==32 set ARCH_NAME=x86
 if %ARCHN%==64 set ARCH_NAME=amd64
 
@@ -150,7 +97,7 @@ set CMAKE_EXTRA3=
 
 set FFMPEGDIR=E:/code/ffmpeg-win%ARCHN%-dev
 if %ARCHN%==32 set WXLIBDIR=%WXDIR%/lib/vc_dll
-if %ARCHN%==64 set WXLIBDIR=%WXDIR%/lib/vc_amd64_dll
+if %ARCHN%==64 set WXLIBDIR=%WXDIR%/lib/vc_x64_dll
 
 GOTO :subGen_common
 
@@ -173,7 +120,6 @@ cd %DIR%
 
 REM ---------------- Create compilation script ----------------
 set PATH_FIL=paths_%COMP%_%ARCH_NAME%
-if %KINECT%==1 set PATH_FIL=%PATH_FIL%-kinect
 set PATH_FIL=%PATH_FIL%.bat
 
 if NOT %COMP%==mingw set EXTRA_MINGW_PATHS=
@@ -216,7 +162,7 @@ cd ..
 rem UPDATE THE "BUILD ALL" SCRIPT
 echo cd %CD% >> BUILD_ALL_MRPT.bat
 echo cd %DIR% >> BUILD_ALL_MRPT.bat
-echo AUTOBUILD.bat >> BUILD_ALL_MRPT.bat
+echo call AUTOBUILD.bat >> BUILD_ALL_MRPT.bat
 
 
 REM End of Subroutine

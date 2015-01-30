@@ -333,7 +333,7 @@ void BaseImporter::ConvertToUTF8(std::vector<char>& data)
 		char* dstart,*dend;
 		std::vector<char> output;
 		do {
-			output.resize(output.size()?output.size()*3/2:data.size()/2);
+			output.resize(!output.empty()?output.size()*3/2:data.size()/2);
 			dstart = &output.front(),dend = &output.back()+1;
 
 			result = ConvertUTF32toUTF8((const UTF32**)&sstart,(const UTF32*)send,(UTF8**)&dstart,(UTF8*)dend,lenientConversion);
@@ -364,7 +364,7 @@ void BaseImporter::ConvertToUTF8(std::vector<char>& data)
 		char* dstart,*dend;
 		std::vector<char> output;
 		do {
-			output.resize(output.size()?output.size()*3/2:data.size()*3/4);
+			output.resize(!output.empty()?output.size()*3/2:data.size()*3/4);
 			dstart = &output.front(),dend = &output.back()+1;
 
 			result = ConvertUTF16toUTF8((const UTF16**)&sstart,(const UTF16*)send,(UTF8**)&dstart,(UTF8*)dend,lenientConversion);
