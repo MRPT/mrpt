@@ -252,6 +252,12 @@ BEGIN_EVENT_TABLE(gridmapSimulFrame,wxFrame)
     //*)
 END_EVENT_TABLE()
 
+#ifdef _MSC_VER
+#	define _MYTT(X) L##X
+#else
+#	define _MYTT(X) _T(X)
+#endif
+
 gridmapSimulFrame::gridmapSimulFrame(wxWindow* parent,wxWindowID id)
 {
 	// Load my custom icons:
@@ -343,27 +349,27 @@ gridmapSimulFrame::gridmapSimulFrame(wxWindow* parent,wxWindowID id)
     FlexGridSizer7->AddGrowableCol(0);
     StaticBoxSizer3 = new wxStaticBoxSizer(wxHORIZONTAL, Panel3, _("Odometry errors"));
     FlexGridSizer9 = new wxFlexGridSizer(0, 4, 0, 0);
-    StaticText9 = new wxStaticText(Panel3, ID_STATICTEXT9, _("\u0394x bias:"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT9"));
+    StaticText9 = new wxStaticText(Panel3, ID_STATICTEXT9, _MYTT("\u0394x bias:"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT9"));
     FlexGridSizer9->Add(StaticText9, 1, wxALL|wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL, 5);
     edAxb = new wxTextCtrl(Panel3, ID_TEXTCTRL6, _("1e-5"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_TEXTCTRL6"));
     FlexGridSizer9->Add(edAxb, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
-    StaticText13 = new wxStaticText(Panel3, ID_STATICTEXT13, _("\u0394x std:"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT13"));
+    StaticText13 = new wxStaticText(Panel3, ID_STATICTEXT13, _MYTT("\u0394x std:"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT13"));
     FlexGridSizer9->Add(StaticText13, 1, wxALL|wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL, 5);
     edAxs = new wxTextCtrl(Panel3, ID_TEXTCTRL7, _("10e-4"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_TEXTCTRL7"));
     FlexGridSizer9->Add(edAxs, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
-    StaticText10 = new wxStaticText(Panel3, ID_STATICTEXT10, _("\u0394y bias:"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT10"));
+    StaticText10 = new wxStaticText(Panel3, ID_STATICTEXT10, _MYTT("\u0394y bias:"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT10"));
     FlexGridSizer9->Add(StaticText10, 1, wxALL|wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL, 5);
     edAyb = new wxTextCtrl(Panel3, ID_TEXTCTRL8, _("1e-5"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_TEXTCTRL8"));
     FlexGridSizer9->Add(edAyb, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
-    StaticText11 = new wxStaticText(Panel3, ID_STATICTEXT11, _("\u0394y std:"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT11"));
+    StaticText11 = new wxStaticText(Panel3, ID_STATICTEXT11, _MYTT("\u0394y std:"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT11"));
     FlexGridSizer9->Add(StaticText11, 1, wxALL|wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL, 5);
     edAys = new wxTextCtrl(Panel3, ID_TEXTCTRL9, _("10e-4"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_TEXTCTRL9"));
     FlexGridSizer9->Add(edAys, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
-    StaticText12 = new wxStaticText(Panel3, ID_STATICTEXT12, _("\u0394\u03C6 bias:"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT12"));
+    StaticText12 = new wxStaticText(Panel3, ID_STATICTEXT12, _MYTT("\u0394\u03C6 bias:"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT12"));
     FlexGridSizer9->Add(StaticText12, 1, wxALL|wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL, 5);
     edApb = new wxTextCtrl(Panel3, ID_TEXTCTRL10, _("5e-4"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_TEXTCTRL10"));
     FlexGridSizer9->Add(edApb, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
-    StaticText14 = new wxStaticText(Panel3, ID_STATICTEXT14, _("\u0394\u03C6 std:"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT14"));
+    StaticText14 = new wxStaticText(Panel3, ID_STATICTEXT14, _MYTT("\u0394\u03C6 std:"), wxDefaultPosition, wxDefaultSize, 0, _T("ID_STATICTEXT14"));
     FlexGridSizer9->Add(StaticText14, 1, wxALL|wxALIGN_RIGHT|wxALIGN_CENTER_VERTICAL, 5);
     edAps = new wxTextCtrl(Panel3, ID_TEXTCTRL11, _("10e-4"), wxDefaultPosition, wxDefaultSize, 0, wxDefaultValidator, _T("ID_TEXTCTRL11"));
     FlexGridSizer9->Add(edAps, 1, wxALL|wxALIGN_CENTER_HORIZONTAL|wxALIGN_CENTER_VERTICAL, 5);
