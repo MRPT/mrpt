@@ -30,7 +30,8 @@ DECLARE_OP_FUNCTION(op_sensors_pose)
 	protected:
 		TOutputRawlogCreator	outrawlog;
 
-		std::map<std::string,mrpt::poses::CPose3D>	desiredSensorPoses;
+		typedef mrpt::aligned_containers<std::string,mrpt::poses::CPose3D>::map_t TSensor2PoseMap;
+		TSensor2PoseMap desiredSensorPoses;
 
 	public:
 		size_t  m_changedPoses;
@@ -83,7 +84,7 @@ DECLARE_OP_FUNCTION(op_sensors_pose)
 		bool processOneObservation(CObservationPtr  &obs)
 		{
 			// Check the sensor label:
-			std::map<std::string,mrpt::poses::CPose3D>::iterator i = desiredSensorPoses.find(obs->sensorLabel);
+			TSensor2PoseMap::iterator i = desiredSensorPoses.find(obs->sensorLabel);
 			if (i!=desiredSensorPoses.end())
 			{
 				obs->setSensorPose( i->second );

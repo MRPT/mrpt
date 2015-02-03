@@ -75,8 +75,6 @@ namespace mrpt
 			   */
 			 bool  isEmpty() const;
 
-			// See docs in base class
-			double	 computeObservationLikelihood( const mrpt::obs::CObservation *obs, const mrpt::poses::CPose3D &takenFrom );
 
 			/** Parameters related with inserting observations into the map.
 			  */
@@ -101,7 +99,7 @@ namespace mrpt
 			/** See docs in base class: in this class this always returns 0 */
 			float  compute3DMatchingRatio(
 					const mrpt::maps::CMetricMap						*otherMap,
-					const CPose3D							&otherMapPose,
+					const mrpt::poses::CPose3D							&otherMapPose,
 					float									maxDistForCorr = 0.10f,
 					float									maxMahaDistForCorr = 2.0f
 					) const;
@@ -123,19 +121,15 @@ namespace mrpt
 
 		protected:
 
-			 /** Erase all the contents of the map
-			  */
-			 virtual void  internal_clear();
+			// See docs in base class
+			void  internal_clear() MRPT_OVERRIDE;
+			bool  internal_insertObservation( const mrpt::obs::CObservation *obs, const mrpt::poses::CPose3D *robotPose = NULL ) MRPT_OVERRIDE;
+			double internal_computeObservationLikelihood( const mrpt::obs::CObservation *obs, const mrpt::poses::CPose3D &takenFrom )  MRPT_OVERRIDE;
 
-			 /** Insert the observation information into this map. This method must be implemented
-			  *    in derived classes.
-			  * \param obs The observation
-			  * \param robotPose The 3D pose of the robot mobile base in the map reference system, or NULL (default) if you want to use CPose2D(0,0,deg)
-			  *
-			  * \sa CObservation::insertObservationInto
-			  */
-			 virtual bool  internal_insertObservation( const mrpt::obs::CObservation *obs, const mrpt::poses::CPose3D *robotPose = NULL );
-
+			MAP_DEFINITION_START(CReflectivityGridMap2D,MAPS_IMPEXP)
+				float	min_x,max_x,min_y,max_y,resolution;	//!< See CReflectivityGridMap2DOptions::CReflectivityGridMap2DOptions
+				mrpt::maps::CReflectivityGridMap2D::TInsertionOptions	insertionOpts;
+			MAP_DEFINITION_END(CReflectivityGridMap2D,MAPS_IMPEXP)
 		};
 		DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE( CReflectivityGridMap2D, CMetricMap, MAPS_IMPEXP  )
 

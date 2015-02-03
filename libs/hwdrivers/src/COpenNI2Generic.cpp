@@ -87,6 +87,9 @@ class COpenNI2Generic::CDevice{
                 double             getCx()  const{ return (getFrameWidth()  - 1) * 0.5; }
                 double             getCy()  const{ return (getFrameHeight() - 1) * 0.5; }
 
+				void disableAutoExposure() {m_stream.getCameraSettings()->setAutoExposureEnabled(false); }
+				void enableAutoExposure() {m_stream.getCameraSettings()->setAutoExposureEnabled(true); }
+
                 void getCameraParam(mrpt::utils::TCamera & param)const{
                     param.ncols = getFrameWidth();
                     param.nrows = getFrameHeight();
@@ -702,6 +705,9 @@ bool COpenNI2Generic::CDevice::open(int w, int h, int fps){
 	}else{
 		m_log << "  Device doesn't do image registration!" << endl;
 	}
+
+	if (hasColor())
+		m_streams[COLOR_STREAM]->disableAutoExposure();
 
 	if(startStreams() == false){
 		close();

@@ -657,7 +657,7 @@ PlyFile *ply_read(FILE *fp, vector<string> &elem_names)
   if (words.empty() || words[0]!="ply" )
 	return NULL;
 
-  while (words.size()) {
+  while (!words.empty()) {
 
     /* parse words */
 

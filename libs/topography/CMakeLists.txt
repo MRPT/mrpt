@@ -8,7 +8,7 @@ define_mrpt_lib(
 	mrpt-base
 	mrpt-obs
 	mrpt-opengl
-	mrpt-scanmatching
+	mrpt-tfest
 	)
 
 IF(BUILD_mrpt-topography) 

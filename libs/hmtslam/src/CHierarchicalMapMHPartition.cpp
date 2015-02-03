@@ -22,16 +22,17 @@
 #include <mrpt/random.h>
 #include <mrpt/graphslam.h>
 
+using namespace std;
 using namespace mrpt;
 using namespace mrpt::slam;
 using namespace mrpt::random;
 using namespace mrpt::hmtslam;
-using namespace std;
 using namespace mrpt::utils;
 using namespace mrpt::system;
 using namespace mrpt::poses;
 using namespace mrpt::opengl;
 using namespace mrpt::maps;
+using namespace mrpt::math;
 
 
 /*---------------------------------------------------------------
@@ -859,7 +860,7 @@ void  CHierarchicalMapMHPartition::computeCoordinatesTransformationBetweenNodes(
 	CHMHMapNode::TNodeID				lastNode,nextNode;
 	size_t								pathLength;
 
-	typedef std::vector<CPose3D>		TPose3DList;
+	typedef mrpt::aligned_containers<CPose3D>::vector_t TPose3DList;
 	std::vector<TPose3DList>			listSamples;
 	std::vector<TPose3DList>::iterator	lstIt;
 	TPose3DList							dummyList;

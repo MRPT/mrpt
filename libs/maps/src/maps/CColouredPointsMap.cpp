@@ -19,7 +19,6 @@
 
 #include "CPointsMap_crtp_common.h"
 
-
 using namespace std;
 using namespace mrpt;
 using namespace mrpt::maps;
@@ -28,6 +27,40 @@ using namespace mrpt::utils;
 using namespace mrpt::poses;
 using namespace mrpt::system;
 using namespace mrpt::math;
+
+
+//  =========== Begin of Map definition ============
+MAP_DEFINITION_REGISTER("CColouredPointsMap,colourPointsMap", mrpt::maps::CColouredPointsMap)
+
+CColouredPointsMap::TMapDefinition::TMapDefinition()
+{
+}
+
+void CColouredPointsMap::TMapDefinition::loadFromConfigFile_map_specific(const mrpt::utils::CConfigFileBase  &source, const std::string &sectionNamePrefix)
+{
+	insertionOpts.loadFromConfigFile(source, sectionNamePrefix+string("_insertOpts") );
+	likelihoodOpts.loadFromConfigFile(source, sectionNamePrefix+string("_likelihoodOpts") );
+	colourOpts.loadFromConfigFile(source, sectionNamePrefix+string("_colorOpts") );
+}
+
+void CColouredPointsMap::TMapDefinition::dumpToTextStream_map_specific(mrpt::utils::CStream &out) const
+{
+	this->insertionOpts.dumpToTextStream(out);
+	this->likelihoodOpts.dumpToTextStream(out);
+	this->colourOpts.dumpToTextStream(out);
+}
+
+mrpt::maps::CMetricMap* CColouredPointsMap::internal_CreateFromMapDefinition(const mrpt::maps::TMetricMapInitializer &_def)
+{
+	const CColouredPointsMap::TMapDefinition &def = *dynamic_cast<const CColouredPointsMap::TMapDefinition*>(&_def);
+	CColouredPointsMap *obj = new CColouredPointsMap();
+	obj->insertionOptions  = def.insertionOpts;
+	obj->likelihoodOptions = def.likelihoodOpts;
+	obj->colorScheme = def.colourOpts;
+	return obj;
+}
+//  =========== End of Map definition Block =========
+
 
 IMPLEMENTS_SERIALIZABLE(CColouredPointsMap, CPointsMap,mrpt::maps)
 
@@ -121,7 +154,7 @@ void  CColouredPointsMap::copyFrom(const CPointsMap &obj)
 void  CColouredPointsMap::writeToStream(mrpt::utils::CStream &out, int *version) const
 {
 	if (version)
-		*version = 8;
+		*version = 9;
 	else
 	{
 		uint32_t n = x.size();
@@ -137,8 +170,8 @@ void  CColouredPointsMap::writeToStream(mrpt::utils::CStream &out, int *version)
 		}
 		out << m_color_R << m_color_G << m_color_B; // added in v4
 
-		out << m_disableSaveAs3DObject; // Insertion as 3D
-		insertionOptions.writeToStream(out); // version 9: insert options are saved with its own method
+		out << genericMapParams; // v9
+		insertionOptions.writeToStream(out); // version 9?: insert options are saved with its own method
 		likelihoodOptions.writeToStream(out); // Added in version 5
 	}
 }
@@ -153,6 +186,7 @@ void  CColouredPointsMap::readFromStream(mrpt::utils::CStream &in, int version)
 	switch(version)
 	{
 	case 8:
+	case 9:
 		{
 			mark_as_modified();
 
@@ -170,7 +204,14 @@ void  CColouredPointsMap::readFromStream(mrpt::utils::CStream &in, int version)
 			}
 			in >> m_color_R >> m_color_G >> m_color_B;
 
-			in >> m_disableSaveAs3DObject;
+			if (version>=9)
+				in >> genericMapParams;
+			else 
+			{
+				bool disableSaveAs3DObject;
+				in >> disableSaveAs3DObject;
+				genericMapParams.enableSaveAs3DObject = !disableSaveAs3DObject;
+			}
 			insertionOptions.readFromStream(in);
 			likelihoodOptions.readFromStream(in);
 		} break;
@@ -244,8 +285,11 @@ void  CColouredPointsMap::readFromStream(mrpt::utils::CStream &in, int version)
 				}
 
 				in >> insertionOptions.maxDistForInterpolatePoints;
-
-				in >> m_disableSaveAs3DObject;
+				{
+					bool disableSaveAs3DObject;
+					in >> disableSaveAs3DObject;
+					genericMapParams.enableSaveAs3DObject = !disableSaveAs3DObject;
+				}
 			}
 
 			if (version>=3)
@@ -366,8 +410,7 @@ void CColouredPointsMap::getAs3DObject( mrpt::opengl::CSetOfObjectsPtr	&outObj )
 {
 	ASSERT_(outObj);
 
-	if (m_disableSaveAs3DObject)
-		return;
+	if (!genericMapParams.enableSaveAs3DObject) return;
 
 	opengl::CPointCloudColouredPtr  obj = opengl::CPointCloudColoured::Create();
 

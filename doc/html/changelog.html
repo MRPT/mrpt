@@ -26,7 +26,93 @@
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><p><b>Note:</b> <em>If you are displaying a local version of this page and you have not built the whole HTML documentation, the links above will be broken. Either build the documentation invoking <code>make documentation_html</code> or <a href="http://www.mrpt.org/">browse it on-line</a>.</em></p>
-<p><a class="anchor" id="1.2.2"></a> </p>
+<p><a class="anchor" id="1.3.0"></a> </p>
+<h2>Version 1.3.0: Released 12-JAN-2015 </h2>
+<ul>
+<li><b>Most important changes:</b><ul>
+<li>Classes in libraries <a class="el" href="group__mrpt__obs__grp.html">[mrpt-obs]</a> and <a class="el" href="group__mrpt__maps__grp.html">[mrpt-maps]</a> now belong to new namespaces (<a class="el" href="namespacemrpt_1_1obs.html" title="This namespace contains algorithms for SLAM, localization, map building, representation of robot&#39;s ac...">mrpt::obs</a>, <a class="el" href="namespacemrpt_1_1maps.html">mrpt::maps</a>) instead of the old <a class="el" href="namespacemrpt_1_1slam.html">mrpt::slam</a></li>
+<li>No more <code>using namespace</code>s polute MRPT headers. <b>Errors in user projects</b> missing <code>using namespace XXX</code> that might be formerly masked will now reveal. <b>This is a good thing</b>, though admitedly annoying...</li>
+<li>New library <a class="el" href="group__mrpt__nav__grp.html">[mrpt-nav]</a>, subsumming the old <a class="el" href="group__mrpt__reactivenav__grp.html">[mrpt-reactivenav]</a>.</li>
+<li>New library <a class="el" href="group__mrpt__tfest__grp.html">[mrpt-tfest]</a>, a refactor of the old <a class="el" href="group__mrpt__scanmatching__grp.html">[mrpt-scanmatching]</a>.</li>
+<li><b>Backwards compatible headers</b> have been provided to ease the transition of user code for all those library changes. Warning messages will be shown recommending deprecated replacements.</li>
+</ul>
+</li>
+<li><b>Detailed list of changes:</b><ul>
+<li>Lib changes:<ul>
+<li>Clean up of the bad practice of <code>using namespace</code> in public scopes of headers. May lead to user code failing for missing <code>using namespace</code>s which were previously masked.</li>
+<li>Namespace "slam" deprecated in libraries mrpt-obs and mrpt-maps (used for historical reasons):<ul>
+<li>New namespaces <a class="el" href="group__mrpt__obs__grp.html">[mrpt-obs]</a> and <a class="el" href="group__mrpt__maps__grp.html">[mrpt-maps]</a>.</li>
+<li>#include files moved from old paths &lt;mrpt/slam/...&gt; =&gt; &lt;mrpt/{obs,maps}/...&gt;</li>
+<li>Backward compatible headers added in &lt;mrpt/slam/...&gt; until mrpt 2.0.0</li>
+</ul>
+</li>
+<li>New library <a class="el" href="group__mrpt__nav__grp.html">[mrpt-nav]</a>, subsumming the old mrpt-reactivenav (<a class="el" href="group__mrpt__reactivenav__grp.html">[mrpt-reactivenav]</a>).</li>
+<li><a class="el" href="group__mrpt__reactivenav__grp.html">[mrpt-reactivenav]</a> is now a meta-library, depending on <a class="el" href="group__mrpt__nav__grp.html">[mrpt-nav]</a>.</li>
+<li><a class="el" href="group__mrpt__tfest__grp.html">[mrpt-tfest]</a> : Old library mrpt-scanmatching (<a class="el" href="group__mrpt__scanmatching__grp.html">[mrpt-scanmatching]</a>) has been refactored, its API clean-up, and renamed <a class="el" href="group__mrpt__tfest__grp.html">[mrpt-tfest]</a></li>
+<li><a class="el" href="group__mrpt__scanmatching__grp.html">[mrpt-scanmatching]</a> is now a meta-library, depending on <a class="el" href="group__mrpt__tfest__grp.html">[mrpt-tfest]</a>.</li>
+<li>These classes have been moved between libs for a more sensible organization:<ul>
+<li>mrpt::slam::CDetectorDoorCrossing ==&gt; <a class="el" href="classmrpt_1_1detectors_1_1_c_detector_door_crossing.html">mrpt::detectors::CDetectorDoorCrossing</a></li>
+<li>mrpt::slam::CPathPlanningMethod &amp; CPathPlanningCircularRobot: <a class="el" href="group__mrpt__slam__grp.html">[mrpt-slam]</a> ==&gt; <a class="el" href="group__mrpt__nav__grp.html">[mrpt-nav]</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li>Build System / General changes:<ul>
+<li>Many optimizations in function arguments (value vs ref). Forces ABI incompatibility with previous versions, hence the change to a new minor version number.</li>
+<li>Updated embedded version of <a class="el" href="namespace_eigen.html" title="Namespace containing all symbols from the Eigen library. ">Eigen</a> to 3.2.3</li>
+<li>Kinect: Dropped support for the CL NUI API, which seems discontinued. Alternatives in use are libfreenect and OpenNI2.</li>
+<li>libfreenect is now detected in the system and used instead of compiling the embedded copy of it.</li>
+<li>Embedded copy of libfreenect has been updated to (23/oct/2014). It now supports "Kinect for Windows".</li>
+<li>More selective linking of .so files to avoid useless dependencies (Fixes #52).</li>
+<li>(Windows only) MRPT can now be safely built with libusb support (Freenect, Kinect,...) and it will run on systems without libusb installed, by means of /DELAYLOAD linking flags.</li>
+<li>More unit tests.</li>
+</ul>
+</li>
+<li>Changes in classes:<ul>
+<li>[mrpt-base]<ul>
+<li>New function <a class="el" href="group__container__ops__grp.html#ga1eaea1b18345e9a5d0843a9d6fe482a3" title="Computes the shortest angular increment (or distance) between two planar orientations, such that it is constrained to [-pi,pi] and is correct for any combination of angles (e.g. ">mrpt::math::angDistance()</a></li>
+</ul>
+</li>
+<li>[mrpt-hwdrivers]<ul>
+<li><a class="el" href="classmrpt_1_1hwdrivers_1_1_c_i_m_u_x_sens___m_t4.html" title="A class for interfacing XSens 4th generation Inertial Measuring Units (IMUs): MTi 10-series...">mrpt::hwdrivers::CIMUXSens_MT4</a>: (by Joe Burmeister for Suave Aerial Software)<ul>
+<li>Upgrade to latest XSens SDK 4.2.1. Requires libudev-dev in Linux</li>
+<li>Add GPS observations to CIMUXSens_MT4 for Xsens devices like GTi-G-700 which have GPS</li>
+</ul>
+</li>
+<li><a class="el" href="classmrpt_1_1hwdrivers_1_1_c_image_grabber__dc1394.html" title="A class for grabing images from a IEEE1394 (Firewire) camera using the libdc1394-2 library...">mrpt::hwdrivers::CImageGrabber_dc1394</a>: Length of ring buffer is now configurable via TCaptureOptions_dc1394::ring_buffer_size</li>
+</ul>
+</li>
+<li>[mrpt-maps]<ul>
+<li>Important refactor of internal code related to <a class="el" href="classmrpt_1_1maps_1_1_c_multi_metric_map.html" title="This class stores any customizable set of metric maps. ">mrpt::maps::CMultiMetricMap</a>:<ul>
+<li>All maps (derived from <a class="el" href="classmrpt_1_1maps_1_1_c_metric_map.html" title="Declares a virtual base class for all metric maps storage classes. ">mrpt::maps::CMetricMap</a>) now have a more uniform interface.</li>
+<li>Each map now has a <code>MapDefinition</code> structure with all its parameters. See docs for <a class="el" href="structmrpt_1_1maps_1_1_t_metric_map_initializer.html" title="Virtual base for specifying the kind and parameters of one map (normally, to be inserted into mrpt::m...">mrpt::maps::TMetricMapInitializer</a></li>
+<li>Introduced <a class="el" href="classmrpt_1_1maps_1_1_t_map_generic_params.html" title="Common params to all maps derived from mrpt::maps::CMetricMap. ">mrpt::maps::TMapGenericParams</a> to hold parameters shared in all maps.</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>[mrpt-obs]<ul>
+<li>CObservation::getDescriptionAsText(): New virtual method to obstain a textual description of observations. Refactoring of messy code previously in the RawLogViewer app.</li>
+</ul>
+</li>
+<li>[mrpt-vision]<ul>
+<li><a class="el" href="classmrpt_1_1vision_1_1_c_feature_extraction.html" title="The central class from which images can be analyzed in search of different kinds of interest points a...">mrpt::vision::CFeatureExtraction</a>: Removed (unused) optional ROI parameter in detectors.</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>BUG FIXES:<ul>
+<li><a class="el" href="classmrpt_1_1poses_1_1_c_robot2_d_pose_estimator.html" title="A simple filter to estimate and extrapolate the robot 2D (x,y,phi) pose from asynchronous odometry an...">mrpt::poses::CRobot2DPoseEstimator</a> could estimate wrong angular velocities for orientations near +-180deg.</li>
+<li><a class="el" href="classmrpt_1_1system_1_1_c_directory_explorer.html#af92547a7064c54417bde3266b37ecd8d" title="Sort the file entries by name, in ascending or descending order. ">mrpt::system::CDirectoryExplorer::sortByName()</a> didn't sort in descending order</li>
+<li>Fixed crashes from MATLAB .mex files: <a class="el" href="group__mrpt__system__os.html#ga1baf607addd84b6d35d38d4fd8baaf19" title="Since MRPT 1.3.0 this function does nothing. ">mrpt::system::registerFatalExceptionHandlers()</a> has no longer effect, and will be removed in future releases. (Thanks to Jesús Briales García for all the testing!)</li>
+<li>Fixed potential crash for <a class="el" href="namespace_eigen.html" title="Namespace containing all symbols from the Eigen library. ">Eigen</a> unaligned memory access in 32bit builds in <a class="el" href="classmrpt_1_1slam_1_1_c_grid_map_aligner.html" title="A class for aligning two multi-metric maps (with an occupancy grid maps and a points map...">mrpt::slam::CGridMapAligner</a> and other places (<a href="https://github.com/jlblancoc/mrpt/issues/94">Closes #94</a>)</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<hr/>
+<p> <a class="anchor" id="1.2.2"></a> </p>
 <h2>Version 1.2.2: Released 12-SEP-2014 </h2>
 <ul>
 <li>Changes in apps:<ul>
@@ -72,8 +158,8 @@
 </ul>
 </li>
 <li>[mrpt-maps]<ul>
-<li>New method <a class="el" href="classmrpt_1_1slam_1_1_c_occupancy_grid_map2_d.html#ab841be1e2ae957e98abebe81ee4368d3" title="Read-only access to the raw cell contents (cells are in log-odd units) ">mrpt::slam::COccupancyGridMap2D::getRawMap()</a></li>
-<li>New method <a class="el" href="classmrpt_1_1slam_1_1_c_coloured_points_map.html#ad868e2a0e5b4cf9d115b1c94f96be755" title="Like CPointsMap::getPCLPointCloud() but for PointCloud&lt;PointXYZRGB&gt; ">mrpt::slam::CColouredPointsMap::getPCLPointCloudXYZRGB()</a></li>
+<li>New method <a class="el" href="classmrpt_1_1maps_1_1_c_occupancy_grid_map2_d.html#a454afe7105b360ef93a8bc5673f8d22d" title="Read-only access to the raw cell contents (cells are in log-odd units) ">mrpt::maps::COccupancyGridMap2D::getRawMap()</a></li>
+<li>New method <a class="el" href="classmrpt_1_1maps_1_1_c_coloured_points_map.html#a1ef463eca5a334cfdd132cd91eebbbc5" title="Like CPointsMap::getPCLPointCloud() but for PointCloud&lt;PointXYZRGB&gt; ">mrpt::maps::CColouredPointsMap::getPCLPointCloudXYZRGB()</a></li>
 </ul>
 </li>
 <li>[mrpt-opengl]<ul>
@@ -115,7 +201,7 @@
 </li>
 <li>Build system:<ul>
 <li>Fix compilation of SRBA with DEBUG_GARBAGE_FILL_ALL_NUMS=1</li>
-<li>Fix de-serialization error in <a class="el" href="classmrpt_1_1reactivenav_1_1_c_log_file_record.html" title="A class for storing, saving and loading a reactive navigation log record for the CReactiveNavigationS...">mrpt::reactivenav::CLogFileRecord</a> (and new unit tests added to avoid regressions).</li>
+<li>Fix de-serialization error in mrpt::reactivenav::CLogFileRecord (and new unit tests added to avoid regressions).</li>
 <li>Several Debian bugs closed (see packaging/debian/changelog), including build errors in uncommon platforms (MIPS, kFreeBSD, etc.)</li>
 </ul>
 </li>
@@ -157,7 +243,7 @@
 </ul>
 </li>
 <li>[mrpt-obs]<ul>
-<li><a class="el" href="classmrpt_1_1slam_1_1_c_observation6_d_features.html" title="An observation of one or more &quot;features&quot; or &quot;objects&quot;, possibly identified with a unique ID...">mrpt::slam::CObservation6DFeatures</a></li>
+<li><a class="el" href="classmrpt_1_1obs_1_1_c_observation6_d_features.html" title="An observation of one or more &quot;features&quot; or &quot;objects&quot;, possibly identified with a unique ID...">mrpt::obs::CObservation6DFeatures</a></li>
 </ul>
 </li>
 </ul>
@@ -165,7 +251,7 @@
 <li>Changes in classes:<ul>
 <li>[mrpt-base]<ul>
 <li>Robust kernel templates moved from <a class="el" href="namespacemrpt_1_1vision.html" title="Classes for computer vision, detectors, features, etc. ">mrpt::vision</a> to <a class="el" href="namespacemrpt_1_1math.html" title="This base provides a set of functions for maths stuff. ">mrpt::math</a>. See mrpt::math::RobustKernel&lt;&gt;. Added unit tests for robust kernels.</li>
-<li>CPose3D has new SE(3) methods: <a class="el" href="classmrpt_1_1poses_1_1_c_pose3_d.html#adc359ef8789085ec3b5150e1ab1d38ec" title="The Jacobian d (e^eps * D) / d eps , with eps=increment in Lie Algebra. ">mrpt::poses::CPose3D::jacob_dexpeD_de()</a>, <a class="el" href="classmrpt_1_1poses_1_1_c_pose3_d.html#a8841782c5108c7dfb95b0b43a9a74226" title="The Jacobian d (A * e^eps * D) / d eps , with eps=increment in Lie Algebra. ">mrpt::poses::CPose3D::jacob_dAexpeD_de()</a></li>
+<li><a class="el" href="classmrpt_1_1poses_1_1_c_pose3_d.html" title="A class used to store a 3D pose (a 3D translation + a rotation in 3D). ">mrpt::poses::CPose3D</a> has new SE(3) methods: <a class="el" href="classmrpt_1_1poses_1_1_c_pose3_d.html#adc359ef8789085ec3b5150e1ab1d38ec" title="The Jacobian d (e^eps * D) / d eps , with eps=increment in Lie Algebra. ">mrpt::poses::CPose3D::jacob_dexpeD_de()</a>, <a class="el" href="classmrpt_1_1poses_1_1_c_pose3_d.html#a8841782c5108c7dfb95b0b43a9a74226" title="The Jacobian d (A * e^eps * D) / d eps , with eps=increment in Lie Algebra. ">mrpt::poses::CPose3D::jacob_dAexpeD_de()</a></li>
 <li>More efficient <a class="el" href="namespacemrpt_1_1utils.html#ab4df6fdf9180e0b0d68796d04bb491ea" title="Converts back (de-serializes) a sequence of binary data into a MRPT object, without prior information...">mrpt::utils::OctetVectorToObject()</a> (avoid memory copy).</li>
 <li>Fixed const-correctness of <a class="el" href="classmrpt_1_1utils_1_1_c_image.html#af1081dd84978aa6e28d6fe78a88af6ab" title="For external storage image objects only, this method makes sure the image is loaded in memory...">mrpt::utils::CImage::forceLoad()</a> and <a class="el" href="classmrpt_1_1utils_1_1_c_image.html#ad8f7cdf203cda5bb9363cf17e752842c" title="For external storage image objects only, this method unloads the image from memory (or does nothing i...">mrpt::utils::CImage::unload()</a></li>
 </ul>
@@ -214,7 +300,7 @@
 <li>mrpt::system::breakpoint()</li>
 <li>mrpt::vector_float is now <a class="el" href="namespacemrpt_1_1math.html#a95b344e4fceab7869e1dd814ceb9540e" title="Column vector, like Eigen::MatrixXf, but automatically initialized to zeros since construction...">mrpt::math::CVectorFloat</a>, mrpt::vector_double is <a class="el" href="namespacemrpt_1_1math.html#aa54edf4dc89e6e47381a7fa11fef790c" title="Column vector, like Eigen::MatrixXd, but automatically initialized to zeros since construction...">mrpt::math::CVectorDouble</a>, for name consistency. Also, using Eigen::VectorXf is preferred for new code.</li>
 <li>mrpt::CImage::rectifyImage() with parameters as separate vectors.</li>
-<li><a class="el" href="classmrpt_1_1slam_1_1_c_points_map.html#a17067ebed8be364c7f9123bc6b2e908e" title="Access to a given point from map, as a 2D point. ">mrpt::slam::CPointsMap::getPoint()</a> with <a class="el" href="classmrpt_1_1poses_1_1_c_point3_d.html" title="A class used to store a 3D point. ">mrpt::poses::CPoint3D</a> arguments.</li>
+<li><a class="el" href="classmrpt_1_1maps_1_1_c_points_map.html#adb8376c826c5b7a2ec748ac99ed8214e" title="Access to a given point from map, as a 2D point. ">mrpt::maps::CPointsMap::getPoint()</a> with <a class="el" href="classmrpt_1_1poses_1_1_c_point3_d.html" title="A class used to store a 3D point. ">mrpt::poses::CPoint3D</a> arguments.</li>
 <li>mrpt::vision::correctDistortion() -&gt; use CImage method instead</li>
 <li>All previous deprecated functions.</li>
 </ul>
@@ -224,12 +310,12 @@
 </li>
 <li>BUG FIXES:<ul>
 <li>RawlogViewer app: Fixed abort while converting SF-&gt;obs.only datasets when there is no odometry.</li>
-<li><a class="el" href="classmrpt_1_1slam_1_1_c_sensory_frame.html" title="Declares a class for storing a &quot;sensory frame&quot;, a set of &quot;observations&quot; taken by the robot approximat...">mrpt::slam::CSensoryFrame</a>: The cached point map is now invalidated with any change to the list of observations so it's rebuild upon next call.</li>
+<li><a class="el" href="classmrpt_1_1obs_1_1_c_sensory_frame.html" title="Declares a class for storing a &quot;sensory frame&quot;, a set of &quot;observations&quot; taken by the robot approximat...">mrpt::obs::CSensoryFrame</a>: The cached point map is now invalidated with any change to the list of observations so it's rebuild upon next call.</li>
 <li>New implementation of <a class="el" href="classmrpt_1_1synch_1_1_c_semaphore.html" title="A semaphore for inter-thread synchronization. ">mrpt::synch::CSemaphore</a> avoids crashes in OS X - by Randolph Voorhies.</li>
 <li><a class="el" href="classmrpt_1_1opengl_1_1_c_arrow.html" title="A 3D arrow. ">mrpt::opengl::CArrow</a> was always drawn of normalized length.</li>
 <li>FlyCapture2 monocular &amp; stereo cameras could return an incorrect timestamp (only in Linux?).</li>
 <li><a class="el" href="group__filesystem.html#gaa435b18007a6fca5d14ccdf6fc650492" title="Creates a directory. ">mrpt::system::createDirectory()</a> returned false (error) when the directory already existed.</li>
-<li><a class="el" href="classmrpt_1_1vision_1_1_c_stereo_rectify_map.html#a33c115d88afa68de12a53a71bf739b90" title="Rectify the input image pair and save the result in a different output images - setFromCamParams() mu...">mrpt::vision::CStereoRectifyMap::rectify()</a> didn't update the left &amp; right camera poses inside <a class="el" href="classmrpt_1_1slam_1_1_c_observation_stereo_images.html" title="Observation class for either a pair of left+right or left+disparity images from a stereo camera...">mrpt::slam::CObservationStereoImages</a> objects while rectifying.</li>
+<li><a class="el" href="classmrpt_1_1vision_1_1_c_stereo_rectify_map.html#a33c115d88afa68de12a53a71bf739b90" title="Rectify the input image pair and save the result in a different output images - setFromCamParams() mu...">mrpt::vision::CStereoRectifyMap::rectify()</a> didn't update the left &amp; right camera poses inside <a class="el" href="classmrpt_1_1obs_1_1_c_observation_stereo_images.html" title="Observation class for either a pair of left+right or left+disparity images from a stereo camera...">mrpt::obs::CObservationStereoImages</a> objects while rectifying.</li>
 <li>RawLogViewer: Operation "convert to SF format" didn't take into account odometry observations.</li>
 <li>Fix build errors with GCC 4.9</li>
 <li>Fix crash of <a class="el" href="classmrpt_1_1hwdrivers_1_1_c_i_m_u_x_sens___m_t4.html" title="A class for interfacing XSens 4th generation Inertial Measuring Units (IMUs): MTi 10-series...">mrpt::hwdrivers::CIMUXSens_MT4</a>'s destructor when it fails to scan and open a device.</li>
@@ -261,14 +347,14 @@
 </li>
 <li>[mrpt-maps]<ul>
 <li>There are now two versions of octomaps (by Mariano Jaimez Tarifa/Jose Luis Blanco) - <a href="http://code.google.com/p/mrpt/source/detail?r=3443">(commit)</a><ul>
-<li><a class="el" href="classmrpt_1_1slam_1_1_c_octo_map.html" title="A three-dimensional probabilistic occupancy grid, implemented as an octo-tree with the &quot;octomap&quot; C++ ...">mrpt::slam::COctoMap</a> (only occupancy)</li>
-<li><a class="el" href="classmrpt_1_1slam_1_1_c_coloured_octo_map.html" title="A three-dimensional probabilistic occupancy grid, implemented as an octo-tree with the &quot;octomap&quot; C++ ...">mrpt::slam::CColouredOctoMap</a> (occupancy + RGB color)</li>
+<li><a class="el" href="classmrpt_1_1maps_1_1_c_octo_map.html" title="A three-dimensional probabilistic occupancy grid, implemented as an octo-tree with the &quot;octomap&quot; C++ ...">mrpt::maps::COctoMap</a> (only occupancy)</li>
+<li><a class="el" href="classmrpt_1_1maps_1_1_c_coloured_octo_map.html" title="A three-dimensional probabilistic occupancy grid, implemented as an octo-tree with the &quot;octomap&quot; C++ ...">mrpt::maps::CColouredOctoMap</a> (occupancy + RGB color)</li>
 </ul>
 </li>
 </ul>
 </li>
 <li>[mrpt-obs]<ul>
-<li><a class="el" href="classmrpt_1_1slam_1_1_c_observation_raw_d_a_q.html" title="Store raw data from a Data Acquisition (DAQ) device, such that input or output analog and digital cha...">mrpt::slam::CObservationRawDAQ</a>, a placeholder for raw and generic measurements from data acquisition devices. - <a href="http://code.google.com/p/mrpt/source/detail?r=3459">(commit)</a></li>
+<li><a class="el" href="classmrpt_1_1obs_1_1_c_observation_raw_d_a_q.html" title="Store raw data from a Data Acquisition (DAQ) device, such that input or output analog and digital cha...">mrpt::obs::CObservationRawDAQ</a>, a placeholder for raw and generic measurements from data acquisition devices. - <a href="http://code.google.com/p/mrpt/source/detail?r=3459">(commit)</a></li>
 </ul>
 </li>
 <li>[mrpt-opengl]<ul>
@@ -277,9 +363,9 @@
 </ul>
 </li>
 <li>[mrpt-reactivenav]<ul>
-<li><a class="el" href="classmrpt_1_1reactivenav_1_1_c_abstract_p_t_g_based_reactive.html" title="Base class for reactive navigator systems based on TP-Space, with an arbitrary holonomic reactive met...">mrpt::reactivenav::CAbstractPTGBasedReactive</a>, as part of a large code refactoring of these classes: <a href="https://github.com/jlblancoc/mrpt/pull/4">(commit)</a><ul>
-<li><a class="el" href="classmrpt_1_1reactivenav_1_1_c_reactive_navigation_system.html" title="See base class CAbstractPTGBasedReactive for a description and instructions of use. ">mrpt::reactivenav::CReactiveNavigationSystem</a></li>
-<li><a class="el" href="classmrpt_1_1reactivenav_1_1_c_reactive_navigation_system3_d.html" title="See base class CAbstractPTGBasedReactive for a description and instructions of use. ">mrpt::reactivenav::CReactiveNavigationSystem3D</a></li>
+<li>mrpt::reactivenav::CAbstractPTGBasedReactive, as part of a large code refactoring of these classes: <a href="https://github.com/jlblancoc/mrpt/pull/4">(commit)</a><ul>
+<li>mrpt::reactivenav::CReactiveNavigationSystem</li>
+<li>mrpt::reactivenav::CReactiveNavigationSystem3D</li>
 </ul>
 </li>
 </ul>
@@ -293,27 +379,27 @@
 <li>Changes in classes:<ul>
 <li>Clean up and slight optimization of metric map matching API: - <a href="http://code.google.com/p/mrpt/source/detail?r=3446">(commit)</a><ul>
 <li><b>Methods marked as deprecated: </b><ul>
-<li>mrpt::slam::CMetricMap::computeMatchingWith2D() &ndash;&gt; <a class="el" href="classmrpt_1_1slam_1_1_c_metric_map.html#abe6253c8568c02edcd68e48b8144aa32" title="Computes the matching between this and another 2D point map, which includes finding: ...">mrpt::slam::CMetricMap::determineMatching2D()</a></li>
-<li>mrpt::slam::CMetricMap::computeMatchingWith3D() &ndash;&gt; <a class="el" href="classmrpt_1_1slam_1_1_c_metric_map.html#a286fa2d73334949a70982631343a8f7d" title="Computes the matchings between this and another 3D points map - method used in 3D-ICP. ">mrpt::slam::CMetricMap::determineMatching3D()</a></li>
+<li>mrpt::maps::CMetricMap::computeMatchingWith2D() &ndash;&gt; <a class="el" href="classmrpt_1_1maps_1_1_c_metric_map.html#a0b5b546337f337e93e3bd537e93d5db2" title="Computes the matching between this and another 2D point map, which includes finding: ...">mrpt::maps::CMetricMap::determineMatching2D()</a></li>
+<li>mrpt::maps::CMetricMap::computeMatchingWith3D() &ndash;&gt; <a class="el" href="classmrpt_1_1maps_1_1_c_metric_map.html#ae1fb90fbf76c5c81ec46e0633f8ac908" title="Computes the matchings between this and another 3D points map - method used in 3D-ICP. ">mrpt::maps::CMetricMap::determineMatching3D()</a></li>
 </ul>
 </li>
 <li>New structures:<ul>
-<li><a class="el" href="structmrpt_1_1slam_1_1_t_matching_params.html" title="Parameters for the determination of matchings between point clouds, etc. ">mrpt::slam::TMatchingParams</a></li>
-<li><a class="el" href="structmrpt_1_1slam_1_1_t_matching_extra_results.html" title="Additional results from the determination of matchings between point clouds, etc., apart from the pairings themselves. ">mrpt::slam::TMatchingExtraResults</a></li>
+<li>mrpt::slam::TMatchingParams</li>
+<li>mrpt::slam::TMatchingExtraResults</li>
 </ul>
 </li>
 </ul>
 </li>
-<li><a class="el" href="structmrpt_1_1slam_1_1_c_points_map_1_1_t_insertion_options.html" title="With this struct options are provided to the observation insertion process. ">mrpt::slam::CPointsMap::TInsertionOptions</a> now have methods to save/load from binary streams, making more maintainable the serialization of point maps - <a href="https://github.com/jlblancoc/mrpt/commit/544d439c3462228b07344142de68e5bc10c1a2e3">(commit)</a></li>
-<li>New options in point maps: <a class="el" href="structmrpt_1_1slam_1_1_c_points_map_1_1_t_insertion_options.html#af735b819dc999f4f4faddd2654b94541" title="Points with x,y,z coordinates set to zero will also be inserted. ">mrpt::slam::CPointsMap::TInsertionOptions::insertInvalidPoints</a> - <a href="https://github.com/jlblancoc/mrpt/pull/8">(commit)</a></li>
-<li><a class="el" href="classmrpt_1_1slam_1_1_c_observation_i_m_u.html" title="This class stores measurements from an Inertial Measurement Unit (IMU) (attitude estimation, raw gyroscope and accelerometer values), altimeters or magnetometers. ">mrpt::slam::CObservationIMU</a> now includes data fields for 3D magnetometers and altimeters. - <a href="http://code.google.com/p/mrpt/source/detail?r=3451">(commit)</a></li>
+<li><a class="el" href="structmrpt_1_1maps_1_1_c_points_map_1_1_t_insertion_options.html" title="With this struct options are provided to the observation insertion process. ">mrpt::maps::CPointsMap::TInsertionOptions</a> now have methods to save/load from binary streams, making more maintainable the serialization of point maps - <a href="https://github.com/jlblancoc/mrpt/commit/544d439c3462228b07344142de68e5bc10c1a2e3">(commit)</a></li>
+<li>New options in point maps: <a class="el" href="structmrpt_1_1maps_1_1_c_points_map_1_1_t_insertion_options.html#a6e5e0153db5e3309b0ee1e039a1fe5c4" title="Points with x,y,z coordinates set to zero will also be inserted. ">mrpt::maps::CPointsMap::TInsertionOptions::insertInvalidPoints</a> - <a href="https://github.com/jlblancoc/mrpt/pull/8">(commit)</a></li>
+<li><a class="el" href="classmrpt_1_1obs_1_1_c_observation_i_m_u.html" title="This class stores measurements from an Inertial Measurement Unit (IMU) (attitude estimation, raw gyroscope and accelerometer values), altimeters or magnetometers. ">mrpt::obs::CObservationIMU</a> now includes data fields for 3D magnetometers and altimeters. - <a href="http://code.google.com/p/mrpt/source/detail?r=3451">(commit)</a></li>
 <li>Method renamed <a class="el" href="classmrpt_1_1utils_1_1_c_enhanced_meta_file.html#a1eb0660efd8c43d915b6935295d77c58" title="Select the current font used when drawing text. ">mrpt::utils::CEnhancedMetaFile::selectVectorTextFont()</a> to avoid shadowing <a class="el" href="classmrpt_1_1utils_1_1_c_canvas.html#a2928fa64fc68c1f74cbe9c2e4aed8285" title="Select the current font used when drawing text. ">mrpt::utils::CCanvas::selectTextFont()</a></li>
-<li><a class="el" href="classmrpt_1_1reactivenav_1_1_c_parameterized_trajectory_generator.html" title="This is the base class for any user-defined PTG. ">mrpt::reactivenav::CParameterizedTrajectoryGenerator</a>: New methods:<ul>
-<li><a class="el" href="classmrpt_1_1reactivenav_1_1_c_parameterized_trajectory_generator.html#a4ff19c5d57dd2b5e3272996d56ec154d" title="Computes the closest (alpha,d) TP coordinates of the trajectory point closest to the Workspace (WS) C...">mrpt::reactivenav::CParameterizedTrajectoryGenerator::inverseMap_WS2TP()</a> for inverse look-up of WS to TP space - <a href="https://github.com/jlblancoc/mrpt/commit/4d04ef50e3dea581bed6287d4ea6593034c47da3">(commit)</a></li>
-<li><a class="el" href="classmrpt_1_1reactivenav_1_1_c_parameterized_trajectory_generator.html#acb68181ac730bdb145ea6f4e1d07553c" title="Returns the representation of one trajectory of this PTG as a 3D OpenGL object (a simple curved line)...">mrpt::reactivenav::CParameterizedTrajectoryGenerator::renderPathAsSimpleLine()</a> - <a href="https://github.com/jlblancoc/mrpt/commit/a224fc2489ad00b3ab116c84e8d4a48532a005df">(commit)</a></li>
+<li>mrpt::reactivenav::CParameterizedTrajectoryGenerator: New methods:<ul>
+<li>mrpt::reactivenav::CParameterizedTrajectoryGenerator::inverseMap_WS2TP() for inverse look-up of WS to TP space - <a href="https://github.com/jlblancoc/mrpt/commit/4d04ef50e3dea581bed6287d4ea6593034c47da3">(commit)</a></li>
+<li>mrpt::reactivenav::CParameterizedTrajectoryGenerator::renderPathAsSimpleLine() - <a href="https://github.com/jlblancoc/mrpt/commit/a224fc2489ad00b3ab116c84e8d4a48532a005df">(commit)</a></li>
 </ul>
 </li>
-<li>Changed the signature of <a class="el" href="group__mrpt__reactivenav__grp.html#ga5446e1616165b79bd64374b13c4be48f" title="Builds the collision grid for a given PTGs, or load it from a cache file. ">mrpt::reactivenav::build_PTG_collision_grids()</a> to become more generic for 2D &amp; 2.5D PTGs - <a href="https://github.com/jlblancoc/mrpt/commit/7bd68e49a4ba3bf08f194678787816c65de1d685">(commit)</a></li>
+<li>Changed the signature of <a class="el" href="group__mrpt__nav__grp.html#gaf90177a2f37004bc944fad7d4c40fb7c" title="Builds the collision grid for a given PTGs, or load it from a cache file. ">mrpt::reactivenav::build_PTG_collision_grids()</a> to become more generic for 2D &amp; 2.5D PTGs - <a href="https://github.com/jlblancoc/mrpt/commit/7bd68e49a4ba3bf08f194678787816c65de1d685">(commit)</a></li>
 </ul>
 </li>
 <li>Deleted classes:<ul>
@@ -339,11 +425,11 @@
 <li>BUG FIXES:<ul>
 <li>Fixed potential infinity loop in <a class="el" href="group__container__ops__grp.html#gae0851fd327043ae2a7054c33a3bbfcde" title="A versatile template to build vectors on-the-fly in a style close to MATLAB&#39;s v=[a b c d ...">mrpt::math::make_vector&lt;1,T&gt;()</a></li>
 <li>Fixed build error with GCC when experimental parallelization is enabled. <a href="http://code.google.com/p/mrpt/source/detail?r=3441">(commit)</a></li>
-<li><a class="el" href="classmrpt_1_1reactivenav_1_1_c_reactive_navigation_system.html" title="See base class CAbstractPTGBasedReactive for a description and instructions of use. ">mrpt::reactivenav::CReactiveNavigationSystem</a> complained about missing config variables ROBOTMODEL_TAU &amp; ROBOTMODEL_DELAY, which were removed in MRPT 1.0.2 - <a href="http://code.google.com/p/mrpt/source/detail?r=3452">(commit)</a></li>
+<li>mrpt::reactivenav::CReactiveNavigationSystem complained about missing config variables ROBOTMODEL_TAU &amp; ROBOTMODEL_DELAY, which were removed in MRPT 1.0.2 - <a href="http://code.google.com/p/mrpt/source/detail?r=3452">(commit)</a></li>
 <li>Fixed potential mem alignment errors (<a class="el" href="namespace_eigen.html" title="Namespace containing all symbols from the Eigen library. ">Eigen</a>'s UnalignedArrayAssert) in SRBA for 32bit builds. <a href="http://code.google.com/p/mrpt/source/detail?r=3457">(commit)</a></li>
 <li><a class="el" href="group__mrpt__topography__grp.html#ga658ce589d36752f4a08060a8aca54460" title="Coordinates transformation from longitude/latitude/height to ENU (East-North-Up) X/Y/Z coordinates Th...">mrpt::topography::geodeticToENU_WGS84()</a> and related functions used a local +Z axis aligned to the line towards the Earth center; now the Z axis points normally to the ellipsoid surface. The difference with the previous behavior is small but may be of a few millimeters for each meter from the reference point. <a href="http://code.google.com/p/mrpt/source/detail?r=3473">(commit)</a></li>
 <li>Potential crash when setting <a class="el" href="classmp_polygon.html#a38ee78ba84193f9d6911e89ec345e829" title="Set the points in the polygon. ">mpPolygon::setPoints()</a> with empty vectors - <a href="http://code.google.com/p/mrpt/source/detail?r=3478">(commit)</a></li>
-<li><a class="el" href="classmrpt_1_1reactivenav_1_1_c_reactive_navigation_system.html" title="See base class CAbstractPTGBasedReactive for a description and instructions of use. ">mrpt::reactivenav::CReactiveNavigationSystem</a> and <a class="el" href="classmrpt_1_1reactivenav_1_1_c_reactive_navigation_system3_d.html" title="See base class CAbstractPTGBasedReactive for a description and instructions of use. ">mrpt::reactivenav::CReactiveNavigationSystem3D</a> didn't obey the "enableConsoleOutput" constructor flag - <a href="https://github.com/jlblancoc/mrpt/commit/db7b0e76506af2c24f119a28443a1e8f1a217861">(commit)</a></li>
+<li>mrpt::reactivenav::CReactiveNavigationSystem and mrpt::reactivenav::CReactiveNavigationSystem3D didn't obey the "enableConsoleOutput" constructor flag - <a href="https://github.com/jlblancoc/mrpt/commit/db7b0e76506af2c24f119a28443a1e8f1a217861">(commit)</a></li>
 <li><a class="el" href="classmrpt_1_1synch_1_1_c_semaphore.html#ac7df910d79e935db246381e1d2361a52" title="Blocks until the count of the semaphore to be non-zero. ">mrpt::synch::CSemaphore::waitForSignal()</a> : Fixed error when thread got an external signal <a href="https://github.com/jlblancoc/mrpt/commit/511e95f03480537ff18ad2cad178c504b1cfbb53">(commit)</a></li>
 </ul>
 </li>
@@ -373,7 +459,7 @@
 </ul>
 </li>
 <li>[mrpt-reactivenav]<ul>
-<li><a class="el" href="classmrpt_1_1reactivenav_1_1_c_reactive_navigation_system3_d.html" title="See base class CAbstractPTGBasedReactive for a description and instructions of use. ">mrpt::reactivenav::CReactiveNavigationSystem3D</a> - By Mariano Jaimez Tarifa - <a href="http://code.google.com/p/mrpt/source/detail?r=3389">r3389</a></li>
+<li>mrpt::reactivenav::CReactiveNavigationSystem3D - By Mariano Jaimez Tarifa - <a href="http://code.google.com/p/mrpt/source/detail?r=3389">r3389</a></li>
 </ul>
 </li>
 </ul>
@@ -396,12 +482,12 @@
 </ul>
 </li>
 <li>[mrpt-maps]<ul>
-<li><a class="el" href="classmrpt_1_1slam_1_1_c_octo_map.html" title="A three-dimensional probabilistic occupancy grid, implemented as an octo-tree with the &quot;octomap&quot; C++ ...">mrpt::slam::COctoMap</a> now exposes the inner <a class="el" href="classoctomap_1_1_oc_tree.html" title="octomap main map data structure, stores 3D occupancy grid map in an OcTree. ">octomap::OcTree</a> object. See example samples/octomap_simple - <a href="http://code.google.com/p/mrpt/source/detail?r=4304">r4304</a></li>
+<li><a class="el" href="classmrpt_1_1maps_1_1_c_octo_map.html" title="A three-dimensional probabilistic occupancy grid, implemented as an octo-tree with the &quot;octomap&quot; C++ ...">mrpt::maps::COctoMap</a> now exposes the inner <a class="el" href="classoctomap_1_1_oc_tree.html" title="octomap main map data structure, stores 3D occupancy grid map in an OcTree. ">octomap::OcTree</a> object. See example samples/octomap_simple - <a href="http://code.google.com/p/mrpt/source/detail?r=4304">r4304</a></li>
 </ul>
 </li>
 <li>[mrpt-openg]<ul>
 <li><a class="el" href="classmrpt_1_1opengl_1_1_c_box.html" title="A solid or wireframe box in 3D, defined by 6 rectangular faces parallel to the planes X...">mrpt::opengl::CBox</a> now be also rendered as a solid box + line borders. See <a class="el" href="classmrpt_1_1opengl_1_1_c_box.html#ab2ba8a4c681503798c705baaf0891717">mrpt::opengl::CBox::enableBoxBorder()</a></li>
-<li><a class="el" href="classmrpt_1_1opengl_1_1_c_octo_map_voxels.html" title="A flexible renderer of voxels, typically from a 3D octo map (see mrpt::slam::COctoMap). ">mrpt::opengl::COctoMapVoxels</a> - <a href="http://code.google.com/p/mrpt/source/detail?r=4329">r4329</a><ul>
+<li><a class="el" href="classmrpt_1_1opengl_1_1_c_octo_map_voxels.html" title="A flexible renderer of voxels, typically from a 3D octo map (see mrpt::maps::COctoMap). ">mrpt::opengl::COctoMapVoxels</a> - <a href="http://code.google.com/p/mrpt/source/detail?r=4329">r4329</a><ul>
 <li>Fixed calculation of normals (fix shading)</li>
 <li>Added new coloring scheme to <a class="el" href="classmrpt_1_1opengl_1_1_c_octo_map_voxels.html#a831d4b6e7c8a4452d519b16004d813dd" title="The different coloring schemes, which modulate the generic mrpt::opengl::CRenderizable object color...">mrpt::opengl::COctoMapVoxels::visualization_mode_t</a> : "FIXED"</li>
 <li>By default, light effects are disabled in this object, because shadows aren't computed anyway and the effect isn't pleasant.</li>
@@ -411,10 +497,10 @@
 </ul>
 </li>
 <li>[mrpt-reactivenav]<ul>
-<li><a class="el" href="classmrpt_1_1reactivenav_1_1_c_parameterized_trajectory_generator.html" title="This is the base class for any user-defined PTG. ">mrpt::reactivenav::CParameterizedTrajectoryGenerator</a>: The "low pass filter" has been removed since it wasn't practical and was never used; thus, parameters "TAU" and "DELAY" has been removed. - <a href="http://code.google.com/p/mrpt/source/detail?r=3395">r3395</a></li>
+<li>mrpt::reactivenav::CParameterizedTrajectoryGenerator: The "low pass filter" has been removed since it wasn't practical and was never used; thus, parameters "TAU" and "DELAY" has been removed. - <a href="http://code.google.com/p/mrpt/source/detail?r=3395">r3395</a></li>
 <li>Methods removed since they weren't implemented in any derived class and there are no plans for doing it.<ul>
-<li><a class="el" href="classmrpt_1_1reactivenav_1_1_c_reactive_navigation_system.html" title="See base class CAbstractPTGBasedReactive for a description and instructions of use. ">mrpt::reactivenav::CReactiveNavigationSystem</a> ::evaluate()</li>
-<li><a class="el" href="classmrpt_1_1reactivenav_1_1_c_reactive_navigation_system.html" title="See base class CAbstractPTGBasedReactive for a description and instructions of use. ">mrpt::reactivenav::CReactiveNavigationSystem</a> ::setParams()</li>
+<li>mrpt::reactivenav::CReactiveNavigationSystem ::evaluate()</li>
+<li>mrpt::reactivenav::CReactiveNavigationSystem ::setParams()</li>
 </ul>
 </li>
 </ul>
@@ -459,7 +545,7 @@
 </ul>
 </li>
 <li>[mrpt-obs]<ul>
-<li><a class="el" href="classmrpt_1_1slam_1_1_c_observation_c_a_n_bus_j1939.html" title="This class stores a message from a CAN BUS with the protocol J1939. ">mrpt::slam::CObservationCANBusJ1939</a></li>
+<li><a class="el" href="classmrpt_1_1obs_1_1_c_observation_c_a_n_bus_j1939.html" title="This class stores a message from a CAN BUS with the protocol J1939. ">mrpt::obs::CObservationCANBusJ1939</a></li>
 </ul>
 </li>
 </ul>
@@ -480,8 +566,8 @@
 </li>
 <li>Changes in classes:<ul>
 <li>[mrpt-maps]<ul>
-<li><a class="el" href="classmrpt_1_1slam_1_1_c_occupancy_grid_map2_d.html" title="A class for storing an occupancy grid map. ">mrpt::slam::COccupancyGridMap2D</a> now also evalutes likelihoods for sonar-like observations (<a class="el" href="classmrpt_1_1slam_1_1_c_observation_range.html" title="Declares a class derived from &quot;CObservation&quot; that encapsules a single range measurement, and associated parameters. ">mrpt::slam::CObservationRange</a>), allowing particle-filter localization with these sensors - <a href="http://code.google.com/p/mrpt/source/detail?r=3330">r3330</a></li>
-<li>New method <a class="el" href="classmrpt_1_1slam_1_1_c_random_field_grid_map2_d.html#ada150c91443cb896ab5be27c174bb0a4" title="Direct update of the map with a reading in a given position of the map, using the appropriate method ...">mrpt::slam::CRandomFieldGridMap2D::insertIndividualReading()</a></li>
+<li><a class="el" href="classmrpt_1_1maps_1_1_c_occupancy_grid_map2_d.html" title="A class for storing an occupancy grid map. ">mrpt::maps::COccupancyGridMap2D</a> now also evalutes likelihoods for sonar-like observations (<a class="el" href="classmrpt_1_1obs_1_1_c_observation_range.html" title="Declares a class derived from &quot;CObservation&quot; that encapsules a single range measurement, and associated parameters. ">mrpt::obs::CObservationRange</a>), allowing particle-filter localization with these sensors - <a href="http://code.google.com/p/mrpt/source/detail?r=3330">r3330</a></li>
+<li>New method <a class="el" href="classmrpt_1_1maps_1_1_c_random_field_grid_map2_d.html#aa84c02b6d756423a1daf9de4ce45ccbd" title="Direct update of the map with a reading in a given position of the map, using the appropriate method ...">mrpt::slam::CRandomFieldGridMap2D::insertIndividualReading()</a></li>
 </ul>
 </li>
 <li>[mrpt-kinematics]<ul>
@@ -516,7 +602,7 @@
 <li>New library with a flexible implementation of Sparser Relative Bundle Adjustment (RBA), as presented in ICRA 2013: <a href="http://www.mrpt.org/srba">mrpt-srba</a>.</li>
 <li>New library for Plane-based Maps: <a href="group__mrpt__pbmap__grp.html">mrpt-pbmap</a> (also presented in ICRA 2013).</li>
 <li>Some MRPT modules are now header-only libraries.</li>
-<li>Support for a new Octomap metric map, via the octomap library. See <a class="el" href="classmrpt_1_1slam_1_1_c_octo_map.html" title="A three-dimensional probabilistic occupancy grid, implemented as an octo-tree with the &quot;octomap&quot; C++ ...">mrpt::slam::COctoMap</a> and detailed changes below.</li>
+<li>Support for a new Octomap metric map, via the octomap library. See <a class="el" href="classmrpt_1_1maps_1_1_c_octo_map.html" title="A three-dimensional probabilistic occupancy grid, implemented as an octo-tree with the &quot;octomap&quot; C++ ...">mrpt::maps::COctoMap</a> and detailed changes below.</li>
 <li>Support for importing/exporting point clouds in the standard LAS format (Look for liblas below).</li>
 <li>Better support for custom builds of MRPT (selective building of individual apps and libs, etc.)</li>
 <li>Ready for Visual Studio 2012 and GCC 4.7</li>
@@ -561,15 +647,15 @@
 </ul>
 </li>
 <li>[mrpt-obs]<ul>
-<li><a class="el" href="classmrpt_1_1slam_1_1_c_observation_wind_sensor.html" title="Declares a class derived from &quot;CObservation&quot; that represents the wind measurements taken on the robot...">mrpt::slam::CObservationWindSensor</a> - <a href="http://code.google.com/p/mrpt/source/detail?r=3050">r3050</a></li>
+<li><a class="el" href="classmrpt_1_1obs_1_1_c_observation_wind_sensor.html" title="Declares a class derived from &quot;CObservation&quot; that represents the wind measurements taken on the robot...">mrpt::obs::CObservationWindSensor</a> - <a href="http://code.google.com/p/mrpt/source/detail?r=3050">r3050</a></li>
 </ul>
 </li>
 <li>[mrpt-maps]<ul>
-<li><a class="el" href="classmrpt_1_1slam_1_1_c_octo_map.html" title="A three-dimensional probabilistic occupancy grid, implemented as an octo-tree with the &quot;octomap&quot; C++ ...">mrpt::slam::COctoMap</a></li>
+<li><a class="el" href="classmrpt_1_1maps_1_1_c_octo_map.html" title="A three-dimensional probabilistic occupancy grid, implemented as an octo-tree with the &quot;octomap&quot; C++ ...">mrpt::maps::COctoMap</a></li>
 </ul>
 </li>
 <li>[mrpt-opengl]<ul>
-<li><a class="el" href="classmrpt_1_1opengl_1_1_c_octo_map_voxels.html" title="A flexible renderer of voxels, typically from a 3D octo map (see mrpt::slam::COctoMap). ">mrpt::opengl::COctoMapVoxels</a></li>
+<li><a class="el" href="classmrpt_1_1opengl_1_1_c_octo_map_voxels.html" title="A flexible renderer of voxels, typically from a 3D octo map (see mrpt::maps::COctoMap). ">mrpt::opengl::COctoMapVoxels</a></li>
 </ul>
 </li>
 </ul>
@@ -595,8 +681,8 @@
 </ul>
 </li>
 <li>Integration of the Octomap C++ library (new BSD License) by Kai M. Wurm et al.: <a href="http://code.google.com/p/mrpt/source/detail?r=3081">r3081</a>, <a href="http://code.google.com/p/mrpt/source/detail?r=3083">r3083</a>, <a href="http://code.google.com/p/mrpt/source/detail?r=3084">r3084</a>, <a href="http://code.google.com/p/mrpt/source/detail?r=3086">r3086</a>, <a href="http://code.google.com/p/mrpt/source/detail?r=3087">r3087</a>, <a href="http://code.google.com/p/mrpt/source/detail?r=3088">r3088</a>, <a href="http://code.google.com/p/mrpt/source/detail?r=3093">r3093</a><ul>
-<li>The main new classes are <a class="el" href="classmrpt_1_1slam_1_1_c_octo_map.html" title="A three-dimensional probabilistic occupancy grid, implemented as an octo-tree with the &quot;octomap&quot; C++ ...">mrpt::slam::COctoMap</a> &amp; <a class="el" href="classmrpt_1_1opengl_1_1_c_octo_map_voxels.html" title="A flexible renderer of voxels, typically from a 3D octo map (see mrpt::slam::COctoMap). ">mrpt::opengl::COctoMapVoxels</a></li>
-<li><a class="el" href="classmrpt_1_1slam_1_1_c_multi_metric_map.html" title="This class stores any customizable set of metric maps. ">mrpt::slam::CMultiMetricMap</a> now allows the seamless integration of octomaps in many MRPT map building or localization algorithms.</li>
+<li>The main new classes are <a class="el" href="classmrpt_1_1maps_1_1_c_octo_map.html" title="A three-dimensional probabilistic occupancy grid, implemented as an octo-tree with the &quot;octomap&quot; C++ ...">mrpt::maps::COctoMap</a> &amp; <a class="el" href="classmrpt_1_1opengl_1_1_c_octo_map_voxels.html" title="A flexible renderer of voxels, typically from a 3D octo map (see mrpt::maps::COctoMap). ">mrpt::opengl::COctoMapVoxels</a></li>
+<li><a class="el" href="classmrpt_1_1maps_1_1_c_multi_metric_map.html" title="This class stores any customizable set of metric maps. ">mrpt::maps::CMultiMetricMap</a> now allows the seamless integration of octomaps in many MRPT map building or localization algorithms.</li>
 <li>New example: samples/octomap_simple</li>
 </ul>
 </li>
@@ -618,7 +704,7 @@
 <li>Added method <a class="el" href="structmrpt_1_1math_1_1_t_point2_d.html#a6510b36a4749d929bd90b6b7dfd98345" title="Point norm. ">mrpt::math::TPoint2D::norm()</a> for consistency with <a class="el" href="structmrpt_1_1math_1_1_t_point3_d.html" title="Lightweight 3D point. ">mrpt::math::TPoint3D</a></li>
 <li>Better support for saving (and not only loading) plain text configuration files, including commented files with default values of all existing parameters: - <a href="http://code.google.com/p/mrpt/source/detail?r=2954">r2954</a><ul>
 <li>All <a class="el" href="classmrpt_1_1utils_1_1_c_config_file_base.html#a94931589f4d52645dc3f221e4b9b0d51">mrpt::utils::CConfigFileBase::write()</a> now have an extended signature for formatting.</li>
-<li><a class="el" href="classmrpt_1_1utils_1_1_c_loadable_options.html#a2f06fb4840cf5758b5cd4d8456a18af7" title="This method should clearly display all the contents of the structure in textual form, sending it to a CStream. ">mrpt::utils::CLoadableOptions::dumpToTextStream()</a> is no longer pure virtual: it now relies on <a class="el" href="classmrpt_1_1utils_1_1_c_loadable_options.html#ae013e0403e97efc040d1a13c8a0d222a" title="This method saves the options to a &quot;.ini&quot;-like file or memory-stored string list. ...">mrpt::utils::CLoadableOptions::saveToConfigFile()</a></li>
+<li><a class="el" href="classmrpt_1_1utils_1_1_c_loadable_options.html#a5371ec6519bb0a58d452d40d13898d07" title="This method should clearly display all the contents of the structure in textual form, sending it to a CStream. ">mrpt::utils::CLoadableOptions::dumpToTextStream()</a> is no longer pure virtual: it now relies on <a class="el" href="classmrpt_1_1utils_1_1_c_loadable_options.html#ae013e0403e97efc040d1a13c8a0d222a" title="This method saves the options to a &quot;.ini&quot;-like file or memory-stored string list. ...">mrpt::utils::CLoadableOptions::saveToConfigFile()</a></li>
 </ul>
 </li>
 <li><a class="el" href="classmrpt_1_1utils_1_1_c_stream.html#a4ebf34871ec3eaa7a5daf456b09139f2" title="Introduces a pure virtual method for moving to a specified position in the streamed resource...">mrpt::utils::CStream::Seek()</a> now supports files larger than 2GB by using uint64_t instead of long (still see issue report for another patch required for MSVC2010) - (Closes <a href="http://code.google.com/p/mrpt/issues/detail?id=39">issue 39</a>, thanks Robert Schattschneider) - <a href="http://code.google.com/p/mrpt/source/detail?r=3042">r3042</a></li>
@@ -633,7 +719,7 @@
 </ul>
 </li>
 <li>[mrpt-graphs]<ul>
-<li><a class="el" href="group__mrpt__graphs__grp.html#ga87054a6429ac9f7db0e876d0a6e2f401" title="The specialization of CNetworkOfPoses for poses of type CPose2D (not a PDF!), also implementing seria...">mrpt::graphs::CNetworkOfPoses2D</a>, <a class="el" href="group__mrpt__graphs__grp.html#ga9e0eafab73c78f58e05bdb2112281e97" title="The specialization of CNetworkOfPoses for poses of type CPose3D (not a PDF!), also implementing seria...">mrpt::graphs::CNetworkOfPoses3D</a>,... and so on, are now all typedef's instead of classes, since serialization is now implemented as pure templatized code, thus avoiding the need to declare derived auxiliary classes - <a href="http://code.google.com/p/mrpt/source/detail?r=3044">r3044</a></li>
+<li><a class="el" href="group__mrpt__graphs__grp.html#ga4e8c984d683fffaf4e649ee20226645a" title="The specialization of CNetworkOfPoses for poses of type CPose2D (not a PDF!), also implementing seria...">mrpt::graphs::CNetworkOfPoses2D</a>, <a class="el" href="group__mrpt__graphs__grp.html#ga93d35ba89e1b98ce05f029b5514eb0b0" title="The specialization of CNetworkOfPoses for poses of type mrpt::poses::CPose3D (not a PDF!)...">mrpt::graphs::CNetworkOfPoses3D</a>,... and so on, are now all typedef's instead of classes, since serialization is now implemented as pure templatized code, thus avoiding the need to declare derived auxiliary classes - <a href="http://code.google.com/p/mrpt/source/detail?r=3044">r3044</a></li>
 </ul>
 </li>
 <li>[mrpt-gui]<ul>
@@ -643,26 +729,26 @@
 <li>[mrpt-hwdrivers]<ul>
 <li>New method <a class="el" href="classmrpt_1_1hwdrivers_1_1_c_activ_media_robot_base.html#a57a72cc04f20054ac63037445f4113d2" title="Get the motors state. ">mrpt::hwdrivers::CActivMediaRobotBase::areMotorsEnabled()</a></li>
 <li><a class="el" href="classmrpt_1_1hwdrivers_1_1_c_generic_sensor.html" title="A generic interface for a wide-variety of sensors designed to be used in the application RawLogGrabbe...">mrpt::hwdrivers::CGenericSensor</a> (and all derived classes) now allocate objects aligned in memory with MRPT_MAKE_ALIGNED_OPERATOR_NEW</li>
-<li>New static method <a class="el" href="classmrpt_1_1hwdrivers_1_1_c_g_p_s_interface.html#aff1c9b4bf53bf98891614300e6ef3663" title="Parses one line of NMEA data from a GPS receiver, and writes the recognized fields (if any) into an o...">mrpt::hwdrivers::CGPSInterface::parse_NMEA()</a></li>
+<li>New static method <a class="el" href="classmrpt_1_1hwdrivers_1_1_c_g_p_s_interface.html#afc4870dfdddd3c8c4bcbc1287b231f18" title="Parses one line of NMEA data from a GPS receiver, and writes the recognized fields (if any) into an o...">mrpt::hwdrivers::CGPSInterface::parse_NMEA()</a></li>
 </ul>
 </li>
 <li>[mrpt-maps]<ul>
 <li>Better integration of point cloud classes with PCL: - <a href="http://code.google.com/p/mrpt/source/detail?r=2943">r2943</a><ul>
-<li><a class="el" href="classmrpt_1_1slam_1_1_c_points_map.html#a57e0cd9d210c244370b759367fd9018b" title="Load the point cloud from a PCL PCD file (requires MRPT built against PCL) ">mrpt::slam::CPointsMap::loadPCDFile()</a></li>
-<li><a class="el" href="classmrpt_1_1slam_1_1_c_points_map.html#a6fead47ee2d71b486a4e0a30e82a4c2c" title="Loads a PCL point cloud into this MRPT class (note: this method ignores potential RGB information...">mrpt::slam::CPointsMap::setFromPCLPointCloud()</a></li>
-<li><a class="el" href="classmrpt_1_1slam_1_1_c_coloured_points_map.html#a0edeb022a849f4c75f74ef10fc0bab3e" title="Loads a PCL point cloud (WITH RGB information) into this MRPT class (for clouds without RGB data...">mrpt::slam::CColouredPointsMap::setFromPCLPointCloudRGB()</a></li>
+<li><a class="el" href="classmrpt_1_1maps_1_1_c_points_map.html#a5ae074e4d118a5a7bfaf412fdab2e32d" title="Load the point cloud from a PCL PCD file (requires MRPT built against PCL) ">mrpt::maps::CPointsMap::loadPCDFile()</a></li>
+<li><a class="el" href="classmrpt_1_1maps_1_1_c_points_map.html#a5017e55e5b6eae28911403cd23b3c2ae" title="Loads a PCL point cloud into this MRPT class (note: this method ignores potential RGB information...">mrpt::maps::CPointsMap::setFromPCLPointCloud()</a></li>
+<li><a class="el" href="classmrpt_1_1maps_1_1_c_coloured_points_map.html#a1d05b91271aff3c7181252ba55bf0bc3" title="Loads a PCL point cloud (WITH RGB information) into this MRPT class (for clouds without RGB data...">mrpt::maps::CColouredPointsMap::setFromPCLPointCloudRGB()</a></li>
 </ul>
 </li>
 <li>Point cloud loading &amp; saving in the standard ASPRS LiDAR LAS format (if liblas is installed in the system, see <a href="http://www.liblas.org/">http://www.liblas.org/</a> ). See also the ready-to-use import menu in SceneViewer3D - <a href="http://code.google.com/p/mrpt/source/detail?r=3244">r3244</a><ul>
-<li><a class="el" href="classmrpt_1_1slam_1_1_c_points_map.html#a9081af2206a048774d99840ee014da82" title="Load the point cloud from an ASPRS LAS binary file (requires MRPT built against liblas). ">mrpt::slam::CPointsMap::loadLASFile()</a></li>
-<li><a class="el" href="classmrpt_1_1slam_1_1_c_points_map.html#af80afdd10cc47f7c0713e7e726d64ebb" title="Save the point cloud as an ASPRS LAS binary file (requires MRPT built against liblas). ">mrpt::slam::CPointsMap::saveLASFile()</a></li>
+<li><a class="el" href="classmrpt_1_1maps_1_1_c_points_map.html#ab73186d5f8cdca0119cb9418c05b40ed" title="Load the point cloud from an ASPRS LAS binary file (requires MRPT built against liblas). ">mrpt::maps::CPointsMap::loadLASFile()</a></li>
+<li><a class="el" href="classmrpt_1_1maps_1_1_c_points_map.html#ae6625c0a25dcb58d9ec3575ef9777253" title="Save the point cloud as an ASPRS LAS binary file (requires MRPT built against liblas). ">mrpt::maps::CPointsMap::saveLASFile()</a></li>
 </ul>
 </li>
 <li>Integration of wind measurements in gas-concentration maps (by Javier G. Monroy) - <a href="http://code.google.com/p/mrpt/source/detail?r=3050">r3050</a></li>
 </ul>
 </li>
 <li>[mrpt-obs]<ul>
-<li>New method <a class="el" href="classmrpt_1_1slam_1_1_c_observation_g_p_s.html#a3565741d53a131599cac1606a8dccbfe" title="Empties this observation, setting all &quot;has_*_datum&quot; to &quot;false&quot;. ">mrpt::slam::CObservationGPS::clear()</a></li>
+<li>New method <a class="el" href="classmrpt_1_1obs_1_1_c_observation_g_p_s.html#aac6c2dbae520d2b76161a7390c0f8941" title="Empties this observation, setting all &quot;has_*_datum&quot; to &quot;false&quot;. ">mrpt::obs::CObservationGPS::clear()</a></li>
 </ul>
 </li>
 <li>[mrpt-opengl]<ul>
@@ -672,7 +758,7 @@
 <li><a class="el" href="classmrpt_1_1opengl_1_1_c_open_g_l_viewport.html#a6cf8874ef80596c0880f026d27cf15d4" title="Evaluates the bounding box of this object (including possible children) in the coordinate frame of th...">mrpt::opengl::COpenGLViewport::getBoundingBox()</a></li>
 </ul>
 </li>
-<li><a class="el" href="classmrpt_1_1opengl_1_1_c_octree_point_renderer.html#a37210ef9ac81731d7be96199672c9c3f" title="Returns a graphical representation of all the bounding boxes of the octree (leaf) nodes...">mrpt::opengl::COctreePointRenderer::octree_get_graphics_boundingboxes()</a> has a new flag to draw solid boxes at each leaf node - <a href="http://code.google.com/p/mrpt/source/detail?r=3033">r3033</a></li>
+<li><a class="el" href="classmrpt_1_1opengl_1_1_c_octree_point_renderer.html#a58799bd6b1c3d6252084e29706aeca53" title="Returns a graphical representation of all the bounding boxes of the octree (leaf) nodes...">mrpt::opengl::COctreePointRenderer::octree_get_graphics_boundingboxes()</a> has a new flag to draw solid boxes at each leaf node - <a href="http://code.google.com/p/mrpt/source/detail?r=3033">r3033</a></li>
 <li><a class="el" href="classmrpt_1_1opengl_1_1_c_open_g_l_viewport.html" title="A viewport within a COpenGLScene, containing a set of OpenGL objects to render. ">mrpt::opengl::COpenGLViewport</a> has a new set of "global OpenGL switches" that affect the rendering of entire scenes - <a href="http://code.google.com/p/mrpt/source/detail?r=3185">r3185</a></li>
 <li>Classes drawing lines now by default enable anti-aliasing (can be disabled by the programmer): - <a href="http://code.google.com/p/mrpt/source/detail?r=3185">r3185</a><ul>
 <li><a class="el" href="classmrpt_1_1opengl_1_1_c_grid_plane_x_y.html" title="A grid of lines over the XY plane. ">mrpt::opengl::CGridPlaneXY</a>, <a class="el" href="classmrpt_1_1opengl_1_1_c_grid_plane_x_z.html" title="A grid of lines over the XZ plane. ">mrpt::opengl::CGridPlaneXZ</a></li>
@@ -683,16 +769,16 @@
 </ul>
 </li>
 <li>[mrpt-reactivenav]<ul>
-<li>Much code of <a class="el" href="namespacemrpt_1_1reactivenav.html" title="This namespace contains classes for building a TP-Space Reactive Navigation System. ">mrpt::reactivenav</a> classes have undergone a clean-up, slight optimizations and a translation of old Spanish names/comments to English - <a href="http://code.google.com/p/mrpt/source/detail?r=2939">r2939</a>, <a href="http://code.google.com/p/mrpt/source/detail?r=2942">r2942</a>, <a href="http://code.google.com/p/mrpt/source/detail?r=2958">r2958</a>, <a href="http://code.google.com/p/mrpt/source/detail?r=3091">r3091</a></li>
-<li><a class="el" href="classmrpt_1_1reactivenav_1_1_c_parameterized_trajectory_generator_1_1_c_colision_grid.html" title="An internal class for storing the collision grid. ">mrpt::reactivenav::CParameterizedTrajectoryGenerator::CColisionGrid</a> now has a more maintainable binary serialization format - <a href="http://code.google.com/p/mrpt/source/detail?r=2939">r2939</a></li>
-<li><a class="el" href="classmrpt_1_1reactivenav_1_1_c_parameterized_trajectory_generator.html#ac21f7bc6540593973176d5d213aa5151" title="Dump PTG trajectories in a binary file &quot;./reactivenav.logs/PTGs/PTG%i.dat&quot;, with &quot;%i&quot; being the user-...">mrpt::reactivenav::CParameterizedTrajectoryGenerator::debugDumpInFiles()</a> now also saves text files which can be used to visualize PTGs from MATLAB (see scripts/viewPTG.m) - <a href="http://code.google.com/p/mrpt/source/detail?r=3009">r3009</a></li>
-<li><a class="el" href="classmrpt_1_1reactivenav_1_1_c_holonomic_v_f_f.html" title="A holonomic reactive navigation method, based on Virtual Force Fields (VFF). ">mrpt::reactivenav::CHolonomicVFF</a> and <a class="el" href="classmrpt_1_1reactivenav_1_1_c_holonomic_n_d.html" title="An implementation of the holonomic reactive navigation method &quot;Nearness-Diagram&quot;. ...">mrpt::reactivenav::CHolonomicND</a> now have more configurable parameters, loadable from config files. See their documentation.</li>
-<li>Repulsive forces from obstacles in <a class="el" href="classmrpt_1_1reactivenav_1_1_c_holonomic_v_f_f.html" title="A holonomic reactive navigation method, based on Virtual Force Fields (VFF). ">mrpt::reactivenav::CHolonomicVFF</a> are now automatically normalized wrt the density of the 360deg view of obstacles and forces follow a "1/range" law instead of the old "exp(-range)".</li>
-<li>Solved a stability issue in C-S paths, in <a class="el" href="classmrpt_1_1reactivenav_1_1_c_p_t_g5.html" title="A PTG for optimal paths of type &quot;CS&quot;, as named in PTG papers. ">mrpt::reactivenav::CPTG5</a> (By Mariano Jaimez Tarifa) - <a href="http://code.google.com/p/mrpt/source/detail?r=3085">r3085</a></li>
+<li>Much code of mrpt::reactivenav classes have undergone a clean-up, slight optimizations and a translation of old Spanish names/comments to English - <a href="http://code.google.com/p/mrpt/source/detail?r=2939">r2939</a>, <a href="http://code.google.com/p/mrpt/source/detail?r=2942">r2942</a>, <a href="http://code.google.com/p/mrpt/source/detail?r=2958">r2958</a>, <a href="http://code.google.com/p/mrpt/source/detail?r=3091">r3091</a></li>
+<li>mrpt::reactivenav::CParameterizedTrajectoryGenerator::CColisionGrid now has a more maintainable binary serialization format - <a href="http://code.google.com/p/mrpt/source/detail?r=2939">r2939</a></li>
+<li>mrpt::reactivenav::CParameterizedTrajectoryGenerator::debugDumpInFiles() now also saves text files which can be used to visualize PTGs from MATLAB (see scripts/viewPTG.m) - <a href="http://code.google.com/p/mrpt/source/detail?r=3009">r3009</a></li>
+<li>mrpt::reactivenav::CHolonomicVFF and mrpt::reactivenav::CHolonomicND now have more configurable parameters, loadable from config files. See their documentation.</li>
+<li>Repulsive forces from obstacles in mrpt::reactivenav::CHolonomicVFF are now automatically normalized wrt the density of the 360deg view of obstacles and forces follow a "1/range" law instead of the old "exp(-range)".</li>
+<li>Solved a stability issue in C-S paths, in mrpt::reactivenav::CPTG5 (By Mariano Jaimez Tarifa) - <a href="http://code.google.com/p/mrpt/source/detail?r=3085">r3085</a></li>
 </ul>
 </li>
 <li>[mrpt-scanmatching]<ul>
-<li><a class="el" href="group__mrpt__scanmatching__grp.html#ga4617a75c7ce818bafc825484de4967d8" title="This method implements a RANSAC-based robust estimation of the rigid transformation between two plana...">mrpt::scanmatching::robustRigidTransformation()</a>:<ul>
+<li><a class="el" href="namespacemrpt_1_1scanmatching.html#a4492cb97414428f5cb0b39d5aa432c09">mrpt::scanmatching::robustRigidTransformation()</a>:<ul>
 <li>Changed behavior not to allow features to appear in duplicated pairings.</li>
 <li>Added a consistency test to avoid seeding RANSAC with an inconsistent initial model.</li>
 </ul>
@@ -734,7 +820,7 @@
 <li>MRPT now allows defining header-only libraries with the define_mrpt_lib_header_only() macro - <a href="http://code.google.com/p/mrpt/source/detail?r=3034">r3034</a>, <a href="http://code.google.com/p/mrpt/source/detail?r=3035">r3035</a></li>
 <li>More unit tests:<ul>
 <li>for all probability distribution functions in <a class="el" href="namespacemrpt_1_1math.html" title="This base provides a set of functions for maths stuff. ">mrpt::math</a>,</li>
-<li>for the parser in <a class="el" href="classmrpt_1_1hwdrivers_1_1_c_g_p_s_interface.html#aff1c9b4bf53bf98891614300e6ef3663" title="Parses one line of NMEA data from a GPS receiver, and writes the recognized fields (if any) into an o...">mrpt::hwdrivers::CGPSInterface::parse_NMEA()</a></li>
+<li>for the parser in <a class="el" href="classmrpt_1_1hwdrivers_1_1_c_g_p_s_interface.html#afc4870dfdddd3c8c4bcbc1287b231f18" title="Parses one line of NMEA data from a GPS receiver, and writes the recognized fields (if any) into an o...">mrpt::hwdrivers::CGPSInterface::parse_NMEA()</a></li>
 <li>for the octomap map</li>
 <li>for serialization/deserealization of many classes.</li>
 </ul>
@@ -751,18 +837,18 @@
 <li>[mrpt-base] mrpt::dynamicsize_vector::resize() performed a memory reallocation even if given the current size, due to an inherited behavior from <a class="el" href="namespace_eigen.html" title="Namespace containing all symbols from the Eigen library. ">Eigen</a>. It is not the expected behavior, so it has been fixed. - <a href="http://code.google.com/p/mrpt/source/detail?r=3003">r3003</a></li>
 <li>[mrpt-base] Wrong computation of normPDF() values for the multidimensional cases. Closes <a href="http://code.google.com/p/mrpt/issues/detail?id=46">#46</a> - <a href="http://code.google.com/p/mrpt/source/detail?r=3068">r3068</a></li>
 <li>[mrpt-base] <a class="el" href="classmrpt_1_1poses_1_1_c_point.html#a294b943622b3c6420511209d65e222ae" title="Returns a human-readable textual representation of the object (eg: &quot;[0.02 1.04]&quot; ) ...">mrpt::poses::CPoint::asString()</a> confused the 2D and 3D cases (Thanks Cipri!)</li>
-<li>[mrpt-base] Fixed errors in de-serialization of mrpt::utils::CPointPDFSOG and <a class="el" href="classmrpt_1_1slam_1_1_c_reflectivity_grid_map2_d.html" title="A 2D grid map representing the reflectivity of the environment (for example, measured with an IR prox...">mrpt::slam::CReflectivityGridMap2D</a></li>
+<li>[mrpt-base] Fixed errors in de-serialization of mrpt::utils::CPointPDFSOG and <a class="el" href="classmrpt_1_1maps_1_1_c_reflectivity_grid_map2_d.html" title="A 2D grid map representing the reflectivity of the environment (for example, measured with an IR prox...">mrpt::maps::CReflectivityGridMap2D</a></li>
 <li>[mrpt-base] <a class="el" href="classmrpt_1_1math_1_1_k_d_tree_capable.html#a763fbe9f7e56ebe2eae594261e7d2c40" title="KD Tree-based search for all the points within a given radius of some 2D point. ">mrpt::math::KDTreeCapable::kdTreeRadiusSearch2D()</a> always returned 0 matched.</li>
 <li>[mrpt-graphs] Fixed bug in RecursiveSpectralPartition (Thanks to Edu!) - <a href="http://code.google.com/p/mrpt/source/detail?r=3026">r3026</a></li>
 <li>[mrpt-hwdrivers] Fixed potential SEGFAULT in <a class="el" href="classmrpt_1_1hwdrivers_1_1_c_g_p_s_interface.html" title="A parser of NMEA commands, for connecting to a GPS by a serial port. ">mrpt::hwdrivers::CGPSInterface</a> (Thanks K.Miyawaki for <a href="http://www.mrpt.org/node/2474">reporting</a>)</li>
 <li>[mrpt-hwdrivers] Fixed communications to LMS 1xx scanners (Thanks Henry! See <a href="http://code.google.com/p/mrpt/issues/detail?id=49">http://code.google.com/p/mrpt/issues/detail?id=49</a> )</li>
-<li>[mrpt-maps] <a class="el" href="classmrpt_1_1slam_1_1_c_occupancy_grid_map2_d.html#a6edbcaa204f700a121570ffe42932df5" title="Returns a 3D plane with its texture being the occupancy grid and transparency proportional to &quot;uncert...">mrpt::slam::COccupancyGridMap2D::getAs3DObject()</a> returned cells with an occupancy of exactly "0" as transparent - <a href="http://code.google.com/p/mrpt/source/detail?r=2957">r2957</a></li>
-<li>[mrpt-maps] Fixed saving the correct point colors in <a class="el" href="classmrpt_1_1slam_1_1_c_coloured_points_map.html#a0d517540a73de45c6394f0d586f45175" title="Save the point cloud as a PCL PCD file, in either ASCII or binary format. ">mrpt::slam::CColouredPointsMap::savePCDFile()</a> (Thanks Mariano!) - <a href="http://code.google.com/p/mrpt/source/detail?r=3090">r3090</a></li>
+<li>[mrpt-maps] <a class="el" href="classmrpt_1_1maps_1_1_c_occupancy_grid_map2_d.html#a6cf030f63b5071ea918b48b8403f24cf" title="Returns a 3D plane with its texture being the occupancy grid and transparency proportional to &quot;uncert...">mrpt::maps::COccupancyGridMap2D::getAs3DObject()</a> returned cells with an occupancy of exactly "0" as transparent - <a href="http://code.google.com/p/mrpt/source/detail?r=2957">r2957</a></li>
+<li>[mrpt-maps] Fixed saving the correct point colors in <a class="el" href="classmrpt_1_1maps_1_1_c_coloured_points_map.html#abc7ccdef2b3b6c76de8eb87d71369304" title="Save the point cloud as a PCL PCD file, in either ASCII or binary format. ">mrpt::maps::CColouredPointsMap::savePCDFile()</a> (Thanks Mariano!) - <a href="http://code.google.com/p/mrpt/source/detail?r=3090">r3090</a></li>
 <li>[mrpt-maps] In CPointsMap::computeMatchingWith3D. Fixed matching two 3D point clouds as each correspondence was inserted twice into the output vector. (By Paco) - <a href="http://code.google.com/p/mrpt/source/detail?r=3162">r3162</a></li>
 <li>[mrpt-opengl] Fixed a potential bug: after deserializing an object based on a display-list (most of them), it won't update in the opengl view.</li>
-<li>[mrpt-reactivenav] Class <a class="el" href="classmrpt_1_1reactivenav_1_1_c_holonomic_v_f_f.html" title="A holonomic reactive navigation method, based on Virtual Force Fields (VFF). ">mrpt::reactivenav::CHolonomicVFF</a> was not exported in Windows DLL's (Thanks Mariano for noticing!).</li>
-<li>[mrpt-reactivenav] Fixed wrong computation of obstacles force fields in <a class="el" href="classmrpt_1_1reactivenav_1_1_c_holonomic_v_f_f.html" title="A holonomic reactive navigation method, based on Virtual Force Fields (VFF). ">mrpt::reactivenav::CHolonomicVFF</a> (Thanks Mariano for noticing!) - <a href="http://code.google.com/p/mrpt/source/detail?r=2953">r2953</a></li>
-<li>[mrpt-reactivenav] Precomputed collision grids could be loaded in <a class="el" href="classmrpt_1_1reactivenav_1_1_c_parameterized_trajectory_generator.html" title="This is the base class for any user-defined PTG. ">mrpt::reactivenav::CParameterizedTrajectoryGenerator</a> even for different robot parameters/shape: now it correctly detects such situations and recompute when needed - <a href="http://code.google.com/p/mrpt/source/detail?r=2939">r2939</a> - Closes <a href="http://code.google.com/p/mrpt/issues/detail?id=33">#33</a></li>
+<li>[mrpt-reactivenav] Class mrpt::reactivenav::CHolonomicVFF was not exported in Windows DLL's (Thanks Mariano for noticing!).</li>
+<li>[mrpt-reactivenav] Fixed wrong computation of obstacles force fields in mrpt::reactivenav::CHolonomicVFF (Thanks Mariano for noticing!) - <a href="http://code.google.com/p/mrpt/source/detail?r=2953">r2953</a></li>
+<li>[mrpt-reactivenav] Precomputed collision grids could be loaded in mrpt::reactivenav::CParameterizedTrajectoryGenerator even for different robot parameters/shape: now it correctly detects such situations and recompute when needed - <a href="http://code.google.com/p/mrpt/source/detail?r=2939">r2939</a> - Closes <a href="http://code.google.com/p/mrpt/issues/detail?id=33">#33</a></li>
 <li>[mrpt-reactivenav] ND algorithm: Fixed bugs of "last gap is never evaluated" and wrong composition of representative direction for some gaps (By Mariano) - <a href="http://code.google.com/p/mrpt/source/detail?r=3056">r3056</a></li>
 </ul>
 </li>
@@ -811,7 +897,7 @@
 </ul>
 </li>
 <li>[mrpt-obs]<ul>
-<li>New method <a class="el" href="classmrpt_1_1slam_1_1_c_observation3_d_range_scan.html#a29048560c4eff646a33d645e89eac11a" title="Convert this 3D observation into an &quot;equivalent 2D fake laser scan&quot;, with a configurable vertical FOV...">mrpt::slam::CObservation3DRangeScan::convertTo2DScan()</a> allows simulating a "fake 2D laser scanner" from a Kinect. See the example: <a href="http://www.mrpt.org/Example_Kinect_To_2D_laser_scan">http://www.mrpt.org/Example_Kinect_To_2D_laser_scan</a></li>
+<li>New method <a class="el" href="classmrpt_1_1obs_1_1_c_observation3_d_range_scan.html#aa93d47753715037084629bd7f310f780" title="Convert this 3D observation into an &quot;equivalent 2D fake laser scan&quot;, with a configurable vertical FOV...">mrpt::obs::CObservation3DRangeScan::convertTo2DScan()</a> allows simulating a "fake 2D laser scanner" from a Kinect. See the example: <a href="http://www.mrpt.org/Example_Kinect_To_2D_laser_scan">http://www.mrpt.org/Example_Kinect_To_2D_laser_scan</a></li>
 </ul>
 </li>
 <li>[mrpt-vision]<ul>
@@ -850,4 +936,4 @@
 </li>
 </ul>
 </div></div><!-- contents -->
-<br><hr><br> <table border="0" width="100%"> <tr> <td> Page generated by <a href="http://www.doxygen.org" target="_blank">Doxygen 1.8.6</a> for MRPT 1.2.2 SVN:Unversioned directory at sáb sep 13 16:10:47 CEST 2014</td><td></td> <td width="150">  </td></tr> </table>  </body></html>
+<br><hr><br> <table border="0" width="100%"> <tr> <td> Page generated by <a href="http://www.doxygen.org" target="_blank">Doxygen 1.8.6</a> for MRPT 1.3.0 SVN:Unversioned directory at dom ene 11 17:34:05 CET 2015</td><td></td> <td width="150">  </td></tr> </table>  </body></html>

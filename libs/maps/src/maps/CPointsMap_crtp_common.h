@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -29,6 +29,8 @@ namespace detail
 			const mrpt::poses::CPose3D			*robotPose )
 		{
 			using namespace mrpt::poses;
+			using mrpt::utils::square;
+			using mrpt::utils::DEG2RAD;
 			obj.mark_as_modified();
 
 			// If robot pose is supplied, compute sensor pose relative to it.
@@ -302,6 +304,7 @@ namespace detail
 			const mrpt::poses::CPose3D						*robotPose )
 		{
 			using namespace mrpt::poses;
+			using mrpt::utils::square;
 			obj.mark_as_modified();
 
 			// If robot pose is supplied, compute sensor pose relative to it.

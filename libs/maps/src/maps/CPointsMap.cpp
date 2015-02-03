@@ -45,6 +45,7 @@
 
 using namespace mrpt::poses;
 using namespace mrpt::maps;
+using namespace mrpt::utils;
 using namespace mrpt::math;
 using namespace mrpt::obs;
 using namespace mrpt::system;
@@ -777,8 +778,7 @@ void  CPointsMap::TLikelihoodOptions::loadFromConfigFile(
 ---------------------------------------------------------------*/
 void  CPointsMap::getAs3DObject( mrpt::opengl::CSetOfObjectsPtr	&outObj ) const
 {
-	if (m_disableSaveAs3DObject)
-		return;
+	if (!genericMapParams.enableSaveAs3DObject) return;
 
 	opengl::CPointCloudPtr  obj = opengl::CPointCloud::Create();
 
@@ -1443,7 +1443,7 @@ void CPointsMap::compute3DDistanceToMesh(
 	obs The observation.
  This method returns a likelihood in the range [0,1].
  ---------------------------------------------------------------*/
-double	 CPointsMap::computeObservationLikelihood(
+double	 CPointsMap::internal_computeObservationLikelihood(
 			const CObservation		*obs,
 			const CPose3D				&takenFrom )
 {

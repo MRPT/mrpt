@@ -160,7 +160,9 @@ namespace mrpt
 		const std::string BASE_IMPEXP & getMRPTLicense();
 
 		/** Since MRPT 1.3.0 this function does nothing */
-		void BASE_IMPEXP registerFatalExceptionHandlers();
+		MRPT_DECLARE_DEPRECATED_FUNCTION("Deprecated: This function does nothing now. Do not call it.",
+		void BASE_IMPEXP registerFatalExceptionHandlers()
+		);
 
 		/** For use in  setConsoleColor */
 		enum TConsoleColor

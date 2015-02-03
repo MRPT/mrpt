@@ -28,6 +28,51 @@ using namespace mrpt::utils;
 using namespace mrpt::system;
 using namespace std;
 
+//  =========== Begin of Map definition ============
+MAP_DEFINITION_REGISTER("CReflectivityGridMap2D,reflectivityMap", mrpt::maps::CReflectivityGridMap2D)
+
+CReflectivityGridMap2D::TMapDefinition::TMapDefinition() :
+	min_x(-10.0f),
+	max_x(10.0f),
+	min_y(-10.0f),
+	max_y(10.0f),
+	resolution(0.10f)
+{
+}
+
+void CReflectivityGridMap2D::TMapDefinition::loadFromConfigFile_map_specific(const mrpt::utils::CConfigFileBase  &source, const std::string &sectionNamePrefix)
+{
+	// [<sectionNamePrefix>+"_creationOpts"]
+	const std::string sSectCreation = sectionNamePrefix+string("_creationOpts");
+	MRPT_LOAD_CONFIG_VAR(min_x, float,   source,sSectCreation);
+	MRPT_LOAD_CONFIG_VAR(max_x, float,   source,sSectCreation);
+	MRPT_LOAD_CONFIG_VAR(min_y, float,   source,sSectCreation);
+	MRPT_LOAD_CONFIG_VAR(max_y, float,   source,sSectCreation);
+	MRPT_LOAD_CONFIG_VAR(resolution, float,   source,sSectCreation);
+
+	insertionOpts.loadFromConfigFile(source, sectionNamePrefix+string("_insertOpts") );
+}
+
+void CReflectivityGridMap2D::TMapDefinition::dumpToTextStream_map_specific(mrpt::utils::CStream &out) const
+{
+	LOADABLEOPTS_DUMP_VAR(min_x         , float);
+	LOADABLEOPTS_DUMP_VAR(max_x         , float);
+	LOADABLEOPTS_DUMP_VAR(min_y         , float);
+	LOADABLEOPTS_DUMP_VAR(max_y         , float);
+	LOADABLEOPTS_DUMP_VAR(resolution         , float);
+
+	this->insertionOpts.dumpToTextStream(out);
+}
+
+mrpt::maps::CMetricMap* CReflectivityGridMap2D::internal_CreateFromMapDefinition(const mrpt::maps::TMetricMapInitializer &_def)
+{
+	const CReflectivityGridMap2D::TMapDefinition &def = *dynamic_cast<const CReflectivityGridMap2D::TMapDefinition*>(&_def);
+	CReflectivityGridMap2D *obj = new CReflectivityGridMap2D(def.min_x,def.max_x,def.min_y,def.max_y,def.resolution);
+	obj->insertionOptions  = def.insertionOpts;
+	return obj;
+}
+//  =========== End of Map definition Block =========
+
 IMPLEMENTS_SERIALIZABLE(CReflectivityGridMap2D, CMetricMap,mrpt::maps)
 
 
@@ -138,7 +183,7 @@ bool  CReflectivityGridMap2D::internal_insertObservation(
 /*---------------------------------------------------------------
 						computeObservationLikelihood
   ---------------------------------------------------------------*/
-double	 CReflectivityGridMap2D::computeObservationLikelihood(
+double	 CReflectivityGridMap2D::internal_computeObservationLikelihood(
 	const CObservation		*obs,
 	const CPose3D			&takenFrom )
 {
@@ -176,7 +221,7 @@ double	 CReflectivityGridMap2D::computeObservationLikelihood(
 void  CReflectivityGridMap2D::writeToStream(mrpt::utils::CStream &out, int *version) const
 {
 	if (version)
-		*version = 0;
+		*version = 1;
 	else
 	{
 		// Save the dimensions of the grid:
@@ -193,6 +238,7 @@ void  CReflectivityGridMap2D::writeToStream(mrpt::utils::CStream &out, int *vers
 		// Save the insertion options:
 		// out << insertionOptions.maxOccupancyUpdateCertainty;
 
+		out << genericMapParams; // v1
 	}
 }
 
@@ -204,6 +250,7 @@ void  CReflectivityGridMap2D::readFromStream(mrpt::utils::CStream &in, int versi
 	switch(version)
 	{
 	case 0:
+	case 1:
 		{
 			uint32_t	n,i,j;
 
@@ -222,6 +269,9 @@ void  CReflectivityGridMap2D::readFromStream(mrpt::utils::CStream &in, int versi
 
 			// Load the insertion options:
 			// in >> insertionOptions.maxOccupancyUpdateCertainty;
+
+			if (version>=1) 
+				in >> genericMapParams;
 
 		} break;
 	default:
@@ -323,8 +373,7 @@ void  CReflectivityGridMap2D::getAsImage(
 ---------------------------------------------------------------*/
 void  CReflectivityGridMap2D::getAs3DObject( mrpt::opengl::CSetOfObjectsPtr	&outSetOfObj ) const
 {
-	if (m_disableSaveAs3DObject)
-		return;
+	if (!genericMapParams.enableSaveAs3DObject) return;
 
 	MRPT_START
 

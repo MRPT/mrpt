@@ -53,10 +53,6 @@ namespace maps
 		/** Destructor */
 		virtual ~CGasConcentrationGridMap2D();
 
-		// See docs in base class
-		virtual double	 computeObservationLikelihood( const mrpt::obs::CObservation *obs, const mrpt::poses::CPose3D &takenFrom );
-
-
 		/** Parameters related with inserting observations into the map:
 		  */
 		struct MAPS_IMPEXP TInsertionOptions :
@@ -160,17 +156,10 @@ namespace maps
 			return &insertionOptions;
 		}
 
-		 /** Erase all the contents of the map */
-		 virtual void  internal_clear();
-
-		 /** Insert the observation information into this map. This method must be implemented
-		  *    in derived classes.
-		  * \param obs The observation
-		  * \param robotPose The 3D pose of the robot mobile base in the map reference system, or NULL (default) if you want to use CPose2D(0,0,deg)
-		  *
-		  * \sa CObservation::insertObservationInto
-		  */
-		 virtual bool  internal_insertObservation( const mrpt::obs::CObservation *obs, const mrpt::poses::CPose3D *robotPose = NULL );
+		// See docs in base class
+		void  internal_clear() MRPT_OVERRIDE;
+		bool  internal_insertObservation( const mrpt::obs::CObservation *obs, const mrpt::poses::CPose3D *robotPose = NULL ) MRPT_OVERRIDE;
+		double internal_computeObservationLikelihood( const mrpt::obs::CObservation *obs, const mrpt::poses::CPose3D &takenFrom ) MRPT_OVERRIDE;
 
 		 /** Builds a LookUp table with the values of the Gaussian Weights result of the wind advection
 		 *   for a specific std_windNoise_phi value.
@@ -180,13 +169,17 @@ namespace maps
 		 bool save_Gaussian_Wind_Grid_To_File();
 		 bool load_Gaussian_Wind_Grid_From_File();
 
-		 /** Gridmaps of the wind Direction/Module.
-		  */
-		 mrpt::maps::CDynamicGrid<double> windGrid_module, windGrid_direction;
+		 /** Gridmaps of the wind Direction/Module */
+		 mrpt::utils::CDynamicGrid<double> windGrid_module, windGrid_direction;
 
 		 /** The timestamp of the last time the advection simulation was executed */
 		 mrpt::system::TTimeStamp timeLastSimulated;
 
+		MAP_DEFINITION_START(CGasConcentrationGridMap2D,MAPS_IMPEXP)
+			float	min_x,max_x,min_y,max_y,resolution;	//!< See CGasConcentrationGridMap2D::CGasConcentrationGridMap2D
+			mrpt::maps::CGasConcentrationGridMap2D::TMapRepresentation	mapType;	//!< The kind of map representation (see CGasConcentrationGridMap2D::CGasConcentrationGridMap2D)
+			mrpt::maps::CGasConcentrationGridMap2D::TInsertionOptions   insertionOpts;	//!< Observations insertion options
+		MAP_DEFINITION_END(CGasConcentrationGridMap2D,MAPS_IMPEXP)
 
 	};
 	DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE( CGasConcentrationGridMap2D , CRandomFieldGridMap2D, MAPS_IMPEXP )

@@ -34,6 +34,7 @@ using namespace mrpt::maps;
 using namespace mrpt::poses;
 using namespace mrpt::utils;
 using namespace mrpt::opengl;
+using namespace mrpt::math;
 
 void hmt_slam_guiFrame::updateLocalMapView()
 {

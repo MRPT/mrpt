@@ -511,7 +511,7 @@ void CPose3DInterpolator::filter( unsigned int component, unsigned int samples )
 	if (m_path.empty())
 		return;
 
-	std::map< mrpt::system::TTimeStamp, CPose3D > aux;
+	TPath aux;
 
 	int		ant, post;
 	size_t	nitems = size();

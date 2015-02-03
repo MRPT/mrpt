@@ -10,6 +10,6 @@
 #include <mrpt/maps/CColouredOctoMap.h>
 MRPT_WARNING("*Deprecated header* Please replace with #include <mrpt/maps/CColouredOctoMap.h>. This backward compatible header will be removed in MRPT 2.0.0")
 namespace mrpt { namespace slam {
-	typedef mrpt::maps::CColouredOctoMap CColouredOctoMap;    //!< Backward compatible typedef
-	typedef mrpt::maps::CColouredOctoMapPtr CColouredOctoMapPtr; //!< Backward compatible typedef
+	using mrpt::maps::CColouredOctoMap;    //!< Backward compatibility
+	using mrpt::maps::CColouredOctoMapPtr; //!< Backward compatibility
 } }

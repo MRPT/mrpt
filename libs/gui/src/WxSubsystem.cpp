@@ -238,7 +238,7 @@ WxSubsystem::TRequestToWxMainThread * WxSubsystem::popPendingWxRequest()
 	synch::CCriticalSectionLocker	locker( cs_listPendingWxRequests );
 
     // Is empty?
-    if (!listPendingWxRequests->size())
+    if (listPendingWxRequests->empty())
         return NULL;
 
     TRequestToWxMainThread *ret=listPendingWxRequests->front();

@@ -5,6 +5,11 @@
 #    source groups and library command)
 #
 cmake_minimum_required( VERSION 2.6 )
+if(POLICY CMP0043)
+	cmake_policy(SET CMP0043 OLD) #  Ignore COMPILE_DEFINITIONS_<Config> properties.
+endif()
+
+
 SET( HEADER_PATH ../include/assimp )
 
 SET( COMPILER_HEADERS

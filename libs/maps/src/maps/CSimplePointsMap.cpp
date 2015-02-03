@@ -22,6 +22,36 @@ using namespace mrpt::utils;
 using namespace mrpt::poses;
 using namespace mrpt::math;
 
+//  =========== Begin of Map definition ============
+MAP_DEFINITION_REGISTER("CSimplePointsMap,pointsMap", mrpt::maps::CSimplePointsMap)
+
+CSimplePointsMap::TMapDefinition::TMapDefinition()
+{
+}
+
+void CSimplePointsMap::TMapDefinition::loadFromConfigFile_map_specific(const mrpt::utils::CConfigFileBase  &source, const std::string &sectionNamePrefix)
+{
+	insertionOpts.loadFromConfigFile(source, sectionNamePrefix+string("_insertOpts") );
+	likelihoodOpts.loadFromConfigFile(source, sectionNamePrefix+string("_likelihoodOpts") );
+}
+
+void CSimplePointsMap::TMapDefinition::dumpToTextStream_map_specific(mrpt::utils::CStream &out) const
+{
+	this->insertionOpts.dumpToTextStream(out);
+	this->likelihoodOpts.dumpToTextStream(out);
+}
+
+mrpt::maps::CMetricMap* CSimplePointsMap::internal_CreateFromMapDefinition(const mrpt::maps::TMetricMapInitializer &_def)
+{
+	const CSimplePointsMap::TMapDefinition &def = *dynamic_cast<const CSimplePointsMap::TMapDefinition*>(&_def);
+	CSimplePointsMap *obj = new CSimplePointsMap();
+	obj->insertionOptions  = def.insertionOpts;
+	obj->likelihoodOptions = def.likelihoodOpts;
+	return obj;
+}
+//  =========== End of Map definition Block =========
+
+
 IMPLEMENTS_SERIALIZABLE(CSimplePointsMap, CPointsMap,mrpt::maps)
 
 /*---------------------------------------------------------------
@@ -87,7 +117,7 @@ void  CSimplePointsMap::copyFrom(const CPointsMap &obj)
 void  CSimplePointsMap::writeToStream(mrpt::utils::CStream &out, int *version) const
 {
 	if (version)
-		*version = 8;
+		*version = 9;
 	else
 	{
 		uint32_t n = x.size();
@@ -101,7 +131,7 @@ void  CSimplePointsMap::writeToStream(mrpt::utils::CStream &out, int *version) c
 			out.WriteBufferFixEndianness(&y[0],n);
 			out.WriteBufferFixEndianness(&z[0],n);
 		}
-		out << m_disableSaveAs3DObject;  // Insertion as 3D:
+		out << genericMapParams;  // v9
 
 		insertionOptions.writeToStream(out); // version 9: insert options are saved with its own method:
 		likelihoodOptions.writeToStream(out); // Added in version 5:
@@ -118,6 +148,7 @@ void  CSimplePointsMap::readFromStream(mrpt::utils::CStream &in, int version)
 	switch(version)
 	{
 	case 8:
+	case 9:
 		{
 			mark_as_modified();
 
@@ -133,7 +164,14 @@ void  CSimplePointsMap::readFromStream(mrpt::utils::CStream &in, int version)
 				in.ReadBufferFixEndianness(&y[0],n);
 				in.ReadBufferFixEndianness(&z[0],n);
 			}
-			in >> m_disableSaveAs3DObject;
+			if (version>=9)
+				in >> genericMapParams;
+			else 
+			{
+				bool disableSaveAs3DObject;
+				in >> disableSaveAs3DObject;
+				genericMapParams.enableSaveAs3DObject = !disableSaveAs3DObject;
+			}
 
 			insertionOptions.readFromStream(in);
 			likelihoodOptions.readFromStream(in);
@@ -208,7 +246,11 @@ void  CSimplePointsMap::readFromStream(mrpt::utils::CStream &in, int version)
 
 				in >> insertionOptions.maxDistForInterpolatePoints;
 
-				in >> m_disableSaveAs3DObject;
+				{
+					bool disableSaveAs3DObject;
+					in >> disableSaveAs3DObject;
+					genericMapParams.enableSaveAs3DObject = !disableSaveAs3DObject;
+				}
 			}
 
 			if (version>=3)

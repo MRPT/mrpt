@@ -239,7 +239,7 @@ namespace maps
 		 */
 		void  insertAnotherMap(
 			const CPointsMap	*otherMap,
-			const CPose3D		&otherPose);
+			const mrpt::poses::CPose3D		&otherPose);
 
 		// --------------------------------------------------
 		/** @name File input/output methods
@@ -528,7 +528,7 @@ namespace maps
 		virtual void  determineMatching2D(
 			const mrpt::maps::CMetricMap      * otherMap,
 			const mrpt::poses::CPose2D         & otherMapPose,
-			TMatchingPairList     & correspondences,
+			mrpt::utils::TMatchingPairList     & correspondences,
 			const TMatchingParams & params,
 			TMatchingExtraResults & extraResults ) const;
 
@@ -536,14 +536,14 @@ namespace maps
 		virtual void  determineMatching3D(
 			const mrpt::maps::CMetricMap      * otherMap,
 			const mrpt::poses::CPose3D         & otherMapPose,
-			TMatchingPairList     & correspondences,
+			mrpt::utils::TMatchingPairList     & correspondences,
 			const TMatchingParams & params,
 			TMatchingExtraResults & extraResults ) const;
 
 		// See docs in base class
 		float  compute3DMatchingRatio(
 				const mrpt::maps::CMetricMap						*otherMap,
-				const CPose3D							&otherMapPose,
+				const mrpt::poses::CPose3D							&otherMapPose,
 				float									maxDistForCorr = 0.10f,
 				float									maxMahaDistForCorr = 2.0f
 				) const;
@@ -562,11 +562,11 @@ namespace maps
 		 * \sa determineMatching3D
 		 */
 		 void compute3DDistanceToMesh(
-                const mrpt::maps::CMetricMap						*otherMap2,
-                const CPose3D							&otherMapPose,
-                float									maxDistForCorrespondence,
-                TMatchingPairList                       &correspondences,
-                float						            &correspondencesRatio );
+			const mrpt::maps::CMetricMap						*otherMap2,
+			const mrpt::poses::CPose3D							&otherMapPose,
+			float									maxDistForCorrespondence,
+			mrpt::utils::TMatchingPairList                       &correspondences,
+			float						            &correspondencesRatio );
 
 		/** Transform the range scan into a set of cartessian coordinated
 		  *	 points. The options in "insertionOptions" are considered in this method.
@@ -583,7 +583,7 @@ namespace maps
 		  */
 		virtual void  loadFromRangeScan(
 				const mrpt::obs::CObservation2DRangeScan &rangeScan,
-				const CPose3D				  *robotPose = NULL ) = 0;
+				const mrpt::poses::CPose3D				  *robotPose = NULL ) = 0;
 
 		/** Overload of \a loadFromRangeScan() for 3D range scans (for example, Kinect observations).
 		  *
@@ -701,7 +701,7 @@ namespace maps
 
 
 		// See docs in base class
-		virtual double computeObservationLikelihood( const mrpt::obs::CObservation *obs, const mrpt::poses::CPose3D &takenFrom );
+		virtual double internal_computeObservationLikelihood( const mrpt::obs::CObservation *obs, const mrpt::poses::CPose3D &takenFrom );
 
 		/** @name PCL library support
 			@{ */
@@ -888,7 +888,6 @@ namespace maps
 		// Friend methods:
 		template <class Derived> friend struct detail::loadFromRangeImpl;
 		template <class Derived> friend struct detail::pointmap_traits;
-
 
 	}; // End of class def.
 	DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE( CPointsMap , CMetricMap, MAPS_IMPEXP )

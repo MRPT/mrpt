@@ -34,6 +34,8 @@ using namespace mrpt::maps;
 using namespace mrpt::random;
 using namespace mrpt::system;
 using namespace mrpt::opengl;
+using namespace mrpt::poses;
+using namespace mrpt::vision;
 using namespace std;
 
 
@@ -312,7 +314,7 @@ int main(int argc, char ** argv)
 
             cout << obs->sensedData.size() << " landmarks in sight";
 
-			if (!obs->sensedData.size()) nWarningsNoSight++;
+			if (obs->sensedData.empty()) nWarningsNoSight++;
 
             SF.push_back( obs );
 

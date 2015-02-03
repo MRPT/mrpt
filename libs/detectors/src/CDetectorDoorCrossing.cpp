@@ -88,14 +88,16 @@ void  CDetectorDoorCrossing::process(
 	CPose2D					p, pos;
 
 	TSetOfMetricMapInitializers			mapInitializer;
-	TMetricMapInitializer				mapElement;
 
-	mapElement.metricMapClassType = CLASS_ID( CSimplePointsMap );
-	mapInitializer.push_back( mapElement );
-
-	mapElement.metricMapClassType = CLASS_ID( COccupancyGridMap2D );
-	mapElement.occupancyGridMap2D_options.resolution = options.gridResolution;
-	mapInitializer.push_back( mapElement );
+	{
+		CSimplePointsMap::TMapDefinition def;
+		mapInitializer.push_back( def );
+	}
+	{
+		COccupancyGridMap2D::TMapDefinition def;
+		def.resolution = options.gridResolution;
+		mapInitializer.push_back( def );
+	}
 
 	CMultiMetricMap			auxMap( &mapInitializer );
 

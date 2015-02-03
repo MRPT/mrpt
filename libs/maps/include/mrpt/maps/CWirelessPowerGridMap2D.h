@@ -50,11 +50,6 @@ namespace maps
 		/** Destructor */
 		virtual ~CWirelessPowerGridMap2D();
 
-
-		// See docs in base class
-		double	 computeObservationLikelihood( const mrpt::obs::CObservation *obs, const mrpt::poses::CPose3D &takenFrom );
-
-
 		/** Parameters related with inserting observations into the map:
 		  */
 		struct MAPS_IMPEXP TInsertionOptions :
@@ -97,19 +92,16 @@ namespace maps
 			return &insertionOptions;
 		}
 
-		 /** Erase all the contents of the map
-		  */
-		 virtual void  internal_clear();
+		// See docs in derived class
+		void  internal_clear() MRPT_OVERRIDE;
+		bool  internal_insertObservation( const mrpt::obs::CObservation *obs, const mrpt::poses::CPose3D *robotPose = NULL ) MRPT_OVERRIDE;
+		double internal_computeObservationLikelihood( const mrpt::obs::CObservation *obs, const mrpt::poses::CPose3D &takenFrom ) MRPT_OVERRIDE;
 
-		 /** Insert the observation information into this map. This method must be implemented
-		  *    in derived classes.
-		  * \param obs The observation
-		  * \param robotPose The 3D pose of the robot mobile base in the map reference system, or NULL (default) if you want to use CPose2D(0,0,deg)
-		  *
-		  * \sa CObservation::insertObservationInto
-		  */
-		 virtual bool  internal_insertObservation( const mrpt::obs::CObservation *obs, const mrpt::poses::CPose3D *robotPose = NULL );
-
+		MAP_DEFINITION_START(CWirelessPowerGridMap2D,MAPS_IMPEXP)
+			float	min_x,max_x,min_y,max_y,resolution;	//!< See CWirelessPowerGridMap2D::CWirelessPowerGridMap2D
+			mrpt::maps::CWirelessPowerGridMap2D::TMapRepresentation	mapType;	//!< The kind of map representation (see CWirelessPowerGridMap2D::CWirelessPowerGridMap2D)
+			mrpt::maps::CWirelessPowerGridMap2D::TInsertionOptions	insertionOpts;
+		MAP_DEFINITION_END(CWirelessPowerGridMap2D,MAPS_IMPEXP)
 
 	};
 	DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE( CWirelessPowerGridMap2D , CRandomFieldGridMap2D, MAPS_IMPEXP )

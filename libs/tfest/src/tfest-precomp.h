@@ -7,5 +7,11 @@
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include "scanmatching-precomp.h"  // Precompiled headers
+#pragma once
 
+#include <mrpt/config.h>
+#if MRPT_ENABLE_PRECOMPILED_HDRS
+
+#include <mrpt/tfest.h>
+
+#endif

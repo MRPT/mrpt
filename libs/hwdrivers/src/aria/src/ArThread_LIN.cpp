@@ -55,7 +55,7 @@ void ArThread::init()
   pt=pthread_self();
 
   ourThreadsMutex.lock();
-  if (ourThreads.size())
+  if (!ourThreads.empty())
   {
     ourThreadsMutex.unlock();
     return;

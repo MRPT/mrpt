@@ -12,31 +12,47 @@
 
 <p> <b>Note:</b> <i>If you are displaying a local version of this page and you have not built the whole HTML documentation, the links above will be broken. Either build the documentation invoking <code>make documentation_html</code> or [browse it on-line](http://www.mrpt.org/).</i></p>
 
-<a name="1.3.0">
-  <h2>Version 1.3.0: (Under development) </h2></a>
+<a name="1.3.1">
+  <h2>Version 1.3.1: (Under development) </h2></a>
 	- <b>Most important changes:</b>
-		- Classes in libraries mrpt-obs (\ref mrpt_obs_grp) & mrpt-maps (\ref mrpt_maps_grp) now belong to new namespaces (mrpt::obs, mrpt::maps) instead of the old mrpt::slam (see comments below on support for backwards-compatibility).
-		- No more "using namespace"'s polute MRPT headers. Errors in user code missing "using namespace XXX" that might be masked will now reveal. This is a good thing.
-		- New library mrpt-nav (\ref mrpt_nav_grp), subsumming the old mrpt-reactivenav (\ref mrpt_reactivenav_grp).
+		- (none yet)
+	- <b>Detailed list of changes:</b>
+		- BUG FIXES:
+			- Fix ocasional (false) failure of RANSAC unit tests due to their non-deterministic nature.
+			- Fix build error with MSVC 2010 in mrpt-hmtslam (Closes #127).
+
+<hr>
+<a name="1.3.0">
+  <h2>Version 1.3.0: Released 12-JAN-2015 </h2></a>
+	- <b>Most important changes:</b>
+		- Classes in libraries \ref mrpt_obs_grp and \ref mrpt_maps_grp now belong to new namespaces (mrpt::obs, mrpt::maps) instead of the old mrpt::slam
+		- No more `using namespace`s polute MRPT headers. <b>Errors in user projects</b> missing `using namespace XXX` that might be formerly masked will now reveal. <b>This is a good thing</b>, though admitedly annoying...
+		- New library \ref mrpt_nav_grp, subsumming the old \ref mrpt_reactivenav_grp.
+		- New library \ref mrpt_tfest_grp, a refactor of the old \ref mrpt_scanmatching_grp.
+		- <b>Backwards compatible headers</b> have been provided to ease the transition of user code for all those library changes. Warning messages will be shown recommending deprecated replacements.
 	- <b>Detailed list of changes:</b>
 		- Lib changes:
-			- Clean up of the bad practice of "using namespace" in public scopes of headers. May lead to user code failing for missing "using namespaces" which were previously masked.
+			- Clean up of the bad practice of `using namespace` in public scopes of headers. May lead to user code failing for missing `using namespace`s which were previously masked.
 			- Namespace "slam" deprecated in libraries mrpt-obs and mrpt-maps (used for historical reasons):
-				- New namespaces mrpt::obs and mrpt::maps.
+				- New namespaces  \ref mrpt_obs_grp and \ref mrpt_maps_grp.
 				- #include files moved from old paths <mrpt/slam/...> => <mrpt/{obs,maps}/...>
 				- Backward compatible headers added in <mrpt/slam/...> until mrpt 2.0.0
-			- New library mrpt-nav (\ref mrpt_nav_grp), subsumming the old mrpt-reactivenav (\ref mrpt_reactivenav_grp).
+			- New library \ref mrpt_nav_grp, subsumming the old mrpt-reactivenav (\ref mrpt_reactivenav_grp).
 			- \ref mrpt_reactivenav_grp is now a meta-library, depending on \ref mrpt_nav_grp.
+			- \ref mrpt_tfest_grp : Old library mrpt-scanmatching (\ref mrpt_scanmatching_grp) has been refactored, its API clean-up, and renamed \ref mrpt_tfest_grp
+			- \ref mrpt_scanmatching_grp is now a meta-library, depending on \ref mrpt_tfest_grp. 
 			- These classes have been moved between libs for a more sensible organization:
 				- mrpt::slam::CDetectorDoorCrossing ==> mrpt::detectors::CDetectorDoorCrossing
 				- mrpt::slam::CPathPlanningMethod & CPathPlanningCircularRobot: \ref mrpt_slam_grp ==> \ref mrpt_nav_grp
 		- Build System / General changes:
 			- Many optimizations in function arguments (value vs ref). Forces ABI incompatibility with previous versions, hence the change to a new minor version number.
-			- Updated embedded version of Eigen to 3.2.2
+			- Updated embedded version of Eigen to 3.2.3
 			- Kinect: Dropped support for the CL NUI API, which seems discontinued. Alternatives in use are libfreenect and OpenNI2.
 			- libfreenect is now detected in the system and used instead of compiling the embedded copy of it.
 			- Embedded copy of libfreenect has been updated to (23/oct/2014). It now supports "Kinect for Windows".
 			- More selective linking of .so files to avoid useless dependencies (Fixes #52).
+			- (Windows only) MRPT can now be safely built with libusb support (Freenect, Kinect,...) and it will run on systems without libusb installed, by means of /DELAYLOAD linking flags.
+			- More unit tests.
 		- Changes in classes:
 			- [mrpt-base]
 				- New function mrpt::math::angDistance()
@@ -45,6 +61,11 @@
 					- Upgrade to latest XSens SDK 4.2.1. Requires libudev-dev in Linux
 					- Add GPS observations to CIMUXSens_MT4 for Xsens devices like GTi-G-700 which have GPS
 				- mrpt::hwdrivers::CImageGrabber_dc1394: Length of ring buffer is now configurable via TCaptureOptions_dc1394::ring_buffer_size
+			- [mrpt-maps]
+				- Important refactor of internal code related to mrpt::maps::CMultiMetricMap: 
+					- All maps (derived from mrpt::maps::CMetricMap) now have a more uniform interface. 
+					- Each map now has a `MapDefinition` structure with all its parameters. See docs for mrpt::maps::TMetricMapInitializer
+					- Introduced mrpt::maps::TMapGenericParams to hold parameters shared in all maps.
 			- [mrpt-obs]
 				- CObservation::getDescriptionAsText(): New virtual method to obstain a textual description of observations. Refactoring of messy code previously in the RawLogViewer app.
 			- [mrpt-vision]
@@ -53,6 +74,7 @@
 			- mrpt::poses::CRobot2DPoseEstimator could estimate wrong angular velocities for orientations near +-180deg.
 			- mrpt::system::CDirectoryExplorer::sortByName() didn't sort in descending order
 			- Fixed crashes from MATLAB .mex files: mrpt::system::registerFatalExceptionHandlers() has no longer effect, and will be removed in future releases. (Thanks to Jesús Briales García for all the testing!)
+			- Fixed potential crash for Eigen unaligned memory access in 32bit builds in mrpt::slam::CGridMapAligner and other places ([Closes #94](https://github.com/jlblancoc/mrpt/issues/94))
 
 <hr>
 <a name="1.2.2">

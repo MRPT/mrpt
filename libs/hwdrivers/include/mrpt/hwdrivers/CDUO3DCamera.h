@@ -17,8 +17,6 @@
 #include <mrpt/hwdrivers/link_pragmas.h>
 #include <mrpt/utils/CUncopiable.h>
 
-#include <mrpt/otherlibs/do_opencv_includes.h> 
-
 namespace mrpt
 {
 	namespace hwdrivers
@@ -29,6 +27,7 @@ namespace mrpt
 			enum TYMLReadResult {yrr_NAME_NON_CONSISTENT,yrr_EMPTY,yrr_OK};
 
 			TCaptureOptions_DUO3D();
+			~TCaptureOptions_DUO3D();
 
 			/** @name Image settings
 			  * @{ */
@@ -57,12 +56,6 @@ namespace mrpt
 			/** @name Others
 			  * @{ */
 			mrpt::utils::TStereoCamera	m_stereo_camera;
-#if MRPT_HAS_OPENCV
-			cv::Mat		m_rectify_map_left_x;
-			cv::Mat		m_rectify_map_left_y;
-			cv::Mat		m_rectify_map_right_x;
-			cv::Mat		m_rectify_map_right_y;
-#endif
 			/** @} */
 
 			/** Loads all the options from a config file.
@@ -212,6 +205,10 @@ namespace mrpt
 			
 			/** Sets DUO3D camera LED setting  */
 			void m_set_led(float value);
+
+		public:
+			MRPT_MAKE_ALIGNED_OPERATOR_NEW
+
 		};	// End of class
 	} // End of namespace
 } // End of namespace

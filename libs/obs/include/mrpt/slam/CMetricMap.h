@@ -10,8 +10,8 @@
 #include <mrpt/maps/CMetricMap.h>
 MRPT_WARNING("*Deprecated header* Please replace with #include <mrpt/maps/CMetricMap.h>. This backward compatible header will be removed in MRPT 2.0.0")
 namespace mrpt { namespace slam {
-	typedef mrpt::maps::CMetricMap CMetricMap;    //!< Backward compatible typedef
-	typedef mrpt::maps::CMetricMapPtr CMetricMapPtr; //!< Backward compatible typedef
-	typedef mrpt::maps::TMatchingParams TMatchingParams; //!< Backward compatible typedef
-	typedef mrpt::maps::TMatchingExtraResults TMatchingExtraResults;  //!< Backward compatible typedef
+	using mrpt::maps::CMetricMap;    //!< Backward compatibility
+	using mrpt::maps::CMetricMapPtr; //!< Backward compatibility
+	using mrpt::maps::TMatchingParams; //!< Backward compatibility
+	using mrpt::maps::TMatchingExtraResults;  //!< Backward compatibility
 } }

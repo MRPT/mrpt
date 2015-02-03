@@ -132,6 +132,9 @@ then
 	rm -fR otherlibs/eigen3/
 fi
 
+# Don't use embedded version in Debian pkgs: use system pkgs.
+rm -fR otherlibs/assimp
+
 
 # Orig tarball:
 cd ..

@@ -9,7 +9,7 @@
 
 #include "topography-precomp.h"  // Precompiled headers
 
-#include <mrpt/scanmatching.h>
+#include <mrpt/tfest/se3.h>
 #include <mrpt/obs/CObservationGPS.h>
 #include <mrpt/math/data_utils.h>
 #include <mrpt/topography/data_types.h>
@@ -443,26 +443,25 @@ void  mrpt::topography::path_from_rtk_gps(
 				} // end consistency
 
 				// Use a 6D matching method to estimate the location of the vehicle:
-				CPose3D optimal_pose;
+				CPose3DQuat optimal_pose;
 				double  optimal_scale;
 
 				// "this" (reference map) -> GPS global coordinates
 				// "other" -> GPS local coordinates on the vehicle
-				mrpt::scanmatching::leastSquareErrorRigidTransformation6D( corrs,optimal_pose,optimal_scale, true ); // Force scale=1
+				mrpt::tfest::se3_l2( corrs,optimal_pose,optimal_scale, true ); // Force scale=1
 				//cout << "optimal pose: " << optimal_pose << " " << optimal_scale << endl;
+				MRPT_CHECK_NORMAL_NUMBER( optimal_pose.x() );
+				MRPT_CHECK_NORMAL_NUMBER( optimal_pose.y() );
+				MRPT_CHECK_NORMAL_NUMBER( optimal_pose.z() );
+				MRPT_CHECK_NORMAL_NUMBER( optimal_pose.quat().x() );
+				MRPT_CHECK_NORMAL_NUMBER( optimal_pose.quat().y() );
+				MRPT_CHECK_NORMAL_NUMBER( optimal_pose.quat().z() );
+				MRPT_CHECK_NORMAL_NUMBER( optimal_pose.quat().r() );
 
 				// Final vehicle pose:
-				CPose3D	&veh_pose= optimal_pose;
-
+				const CPose3D veh_pose= optimal_pose;
 
 				// Add to the interpolator:
-				MRPT_CHECK_NORMAL_NUMBER( veh_pose.x() );
-				MRPT_CHECK_NORMAL_NUMBER( veh_pose.y() );
-				MRPT_CHECK_NORMAL_NUMBER( veh_pose.z() );
-				MRPT_CHECK_NORMAL_NUMBER( veh_pose.yaw() );
-				MRPT_CHECK_NORMAL_NUMBER( veh_pose.pitch() );
-				MRPT_CHECK_NORMAL_NUMBER( veh_pose.roll() );
-
 				robot_path.insert( i->first, veh_pose );
 
 				// If we have W_star, compute the pose uncertainty:

@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -14,10 +14,10 @@
 #include <OpenNI.h>
 #include <PS1080.h>
 
-#include <mrpt/base.h>
 #include <mrpt/gui.h>
 #include <mrpt/opengl.h>
-#include <mrpt/maps.h>
+#include <mrpt/maps/CColouredPointsMap.h>
+#include <mrpt/system/threads.h>
 
 using namespace mrpt;
 using namespace mrpt::maps;

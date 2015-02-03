@@ -4186,7 +4186,8 @@ void xRawLogViewerFrame::OnMenuChangePosesBatch(wxCommandEvent& event)
 		CConfigFileMemory	cfg( CStringList( string( dialog.edText->GetValue().mb_str() ) ) );
 
 		// make a list  "sensor_label -> sensor_pose" by parsing the ini-file:
-		std::map<std::string,mrpt::poses::CPose3D>	desiredSensorPoses;
+		typedef mrpt::aligned_containers<std::string,mrpt::poses::CPose3D>::map_t TSensor2PoseMap;
+		TSensor2PoseMap desiredSensorPoses;
 		std::map<std::string, mrpt::obs::CObservationImage > desiredCamParams;
 
 		vector_string	sections;
@@ -4286,7 +4287,7 @@ void xRawLogViewerFrame::OnMenuChangePosesBatch(wxCommandEvent& event)
 				if (obs)
 				{
 					// Check the sensor label:
-					std::map<std::string,mrpt::poses::CPose3D>::iterator i = desiredSensorPoses.find(obs->sensorLabel);
+					TSensor2PoseMap::iterator i = desiredSensorPoses.find(obs->sensorLabel);
 					if (i!=desiredSensorPoses.end())
 					{
 						obs->setSensorPose( i->second );

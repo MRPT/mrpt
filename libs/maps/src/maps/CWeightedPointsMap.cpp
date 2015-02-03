@@ -22,6 +22,36 @@ using namespace mrpt::utils;
 using namespace mrpt::poses;
 using namespace mrpt::math;
 
+//  =========== Begin of Map definition ============
+MAP_DEFINITION_REGISTER("CWeightedPointsMap,weightedPointsMap", mrpt::maps::CWeightedPointsMap)
+
+CWeightedPointsMap::TMapDefinition::TMapDefinition()
+{
+}
+
+void CWeightedPointsMap::TMapDefinition::loadFromConfigFile_map_specific(const mrpt::utils::CConfigFileBase  &source, const std::string &sectionNamePrefix)
+{
+	insertionOpts.loadFromConfigFile(source, sectionNamePrefix+string("_insertOpts") );
+	likelihoodOpts.loadFromConfigFile(source, sectionNamePrefix+string("_likelihoodOpts") );
+}
+
+void CWeightedPointsMap::TMapDefinition::dumpToTextStream_map_specific(mrpt::utils::CStream &out) const
+{
+	this->insertionOpts.dumpToTextStream(out);
+	this->likelihoodOpts.dumpToTextStream(out);
+}
+
+mrpt::maps::CMetricMap* CWeightedPointsMap::internal_CreateFromMapDefinition(const mrpt::maps::TMetricMapInitializer &_def)
+{
+	const CWeightedPointsMap::TMapDefinition &def = *dynamic_cast<const CWeightedPointsMap::TMapDefinition*>(&_def);
+	CWeightedPointsMap *obj = new CWeightedPointsMap();
+	obj->insertionOptions  = def.insertionOpts;
+	obj->likelihoodOptions = def.likelihoodOpts;
+	return obj;
+}
+//  =========== End of Map definition Block =========
+
+
 IMPLEMENTS_SERIALIZABLE(CWeightedPointsMap, CPointsMap,mrpt::maps)
 
 
@@ -128,7 +158,7 @@ void  CWeightedPointsMap::addFrom_classSpecific(const CPointsMap &anotherMap, co
 void  CWeightedPointsMap::writeToStream(mrpt::utils::CStream &out, int *version) const
 {
 	if (version)
-		*version = 1;
+		*version = 2;
 	else
 	{
 		uint32_t n = x.size();
@@ -144,7 +174,7 @@ void  CWeightedPointsMap::writeToStream(mrpt::utils::CStream &out, int *version)
 			out.WriteBufferFixEndianness(&pointWeight[0],n);
 		}
 
-		out << m_disableSaveAs3DObject; // Insertion as 3D
+		out << genericMapParams; // v2
 		insertionOptions.writeToStream(out); // version 9: insert options are saved with its own method
 		likelihoodOptions.writeToStream(out); // Added in version 5
 	}
@@ -161,6 +191,7 @@ void  CWeightedPointsMap::readFromStream(mrpt::utils::CStream &in, int version)
 	{
 	case 0:
 	case 1:
+	case 2:
 		{
 			mark_as_modified();
 
@@ -184,7 +215,15 @@ void  CWeightedPointsMap::readFromStream(mrpt::utils::CStream &in, int version)
 
 			if (version>=1)
 			{
-				in >> m_disableSaveAs3DObject; // Insertion as 3D
+				if (version>=2)
+					in >> genericMapParams;
+				else 
+				{
+					bool disableSaveAs3DObject;
+					in >> disableSaveAs3DObject;
+					genericMapParams.enableSaveAs3DObject = !disableSaveAs3DObject;
+				}
+
 				insertionOptions.readFromStream(in); // version 9: insert options are saved with its own method
 			}
 			else
@@ -196,9 +235,13 @@ void  CWeightedPointsMap::readFromStream(mrpt::utils::CStream &in, int version)
 					>> insertionOptions.disableDeletion
 					>> insertionOptions.fuseWithExisting
 					>> insertionOptions.isPlanarMap
-					>> insertionOptions.maxDistForInterpolatePoints
-					>> m_disableSaveAs3DObject
-					>> insertionOptions.horizontalTolerance;
+					>> insertionOptions.maxDistForInterpolatePoints;
+				{
+					bool disableSaveAs3DObject;
+					in >> disableSaveAs3DObject;
+					genericMapParams.enableSaveAs3DObject = !disableSaveAs3DObject;
+				}
+				in >> insertionOptions.horizontalTolerance;
 			}
 
 			likelihoodOptions.readFromStream(in); // Added in version 5

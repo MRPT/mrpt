@@ -10,6 +10,6 @@
 #include <mrpt/maps/CMetricMapEvents.h>
 MRPT_WARNING("*Deprecated header* Please replace with #include <mrpt/maps/CMetricMapEvents.h>. This backward compatible header will be removed in MRPT 2.0.0")
 namespace mrpt { namespace slam {
-	typedef mrpt::maps::mrptEventMetricMapClear mrptEventMetricMapClear;    //!< Backward compatible typedef
-	typedef mrpt::maps::mrptEventMetricMapInsert mrptEventMetricMapInsert;    //!< Backward compatible typedef
+	using mrpt::maps::mrptEventMetricMapClear;    //!< Backward compatibility
+	using mrpt::maps::mrptEventMetricMapInsert;    //!< Backward compatibility
 } }

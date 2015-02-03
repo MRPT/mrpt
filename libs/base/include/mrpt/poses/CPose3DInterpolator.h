@@ -12,9 +12,9 @@
 #include <mrpt/utils/CSerializable.h>
 #include <mrpt/system/datetime.h>
 #include <mrpt/utils/TEnumType.h>
+#include <mrpt/utils/aligned_containers.h>
 #include <mrpt/math/math_frwds.h>
 #include <mrpt/poses/CPose3D.h>
-
 
 namespace mrpt
 {
@@ -55,7 +55,7 @@ namespace mrpt
 			DEFINE_SERIALIZABLE( CPose3DInterpolator )
 
 		 private:
-			 typedef std::map< mrpt::system::TTimeStamp, CPose3D > TPath;
+			 typedef mrpt::aligned_containers< mrpt::system::TTimeStamp, CPose3D >::map_t TPath;
 			 TPath	m_path;		//!< The sequence of poses
 
 		 public:

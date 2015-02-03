@@ -28,6 +28,10 @@ IF (WIN32)
 	include_directories("${MRPT_LIBS_ROOT}/opengl/src/freeglut-2.4.0/")
 ENDIF (WIN32)
 
+IF(CMAKE_MRPT_HAS_OPENCV)
+	INCLUDE_DIRECTORIES(${OpenCV_INCLUDE_DIR} ${OpenCV_INCLUDE_DIRS} ${OPENCV_INCLUDE_DIRS} ${OPENCV_INCLUDEDIR})
+ENDIF(CMAKE_MRPT_HAS_OPENCV)
+
 
 #---------------------------------------------
 # Macro declared in "DeclareMRPTLib.cmake":

@@ -27,6 +27,8 @@ using namespace mrpt::opengl;
 using namespace mrpt::maps;
 using namespace mrpt::obs;
 using namespace mrpt::gui;
+using namespace mrpt::utils;
+using namespace mrpt::poses;
 
 class MyObserver : public mrpt::utils::CObserver
 {
@@ -167,7 +169,7 @@ public:
 		unsigned int acc_factor = std::max(1,mrpt::utils::round<double>(80.0/m_columns));
 		float h = 0, incrz;
 		CObservation2DRangeScan m_auxlaser;
-		CPose2D scanpose2d;
+		mrpt::poses::CPose2D scanpose2d;
 		mrpt::math::TPoint3D point;
 		CSimplePointsMap row_points;
 		row_points.insertionOptions.minDistBetweenLaserPoints = 0;
@@ -251,6 +253,7 @@ public:
 	void updateObsGrids(float incrx, float incry, float phi, const std::vector<CRobotKinects> &kinects, const std::vector<float> &heights )
 	{
 		using namespace std;
+		using mrpt::utils::square;
 		//First, move the robot respect to the grid and adjust the likelihood values in the grid according to that movement
 		//-----------------------------------------------------------------------------------------------------------------
 

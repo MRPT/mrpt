@@ -20,9 +20,9 @@ macro(DEFINE_SSE_VAR  _setname)
 	IF (DO_SSE_AUTODETECT)
 		# Automatic detection:
 		SET(CMAKE_MRPT_HAS_${_setname} 0)
-		IF ("${MRPT_CPU_INFO}" MATCHES ".*${_set}.*")
+		IF (${MRPT_CPU_INFO} MATCHES ".*${_set}.*")
 			SET(CMAKE_MRPT_HAS_${_setname} 1)
-		ENDIF("${MRPT_CPU_INFO}" MATCHES ".*${_set}.*")
+		ENDIF()
 	ELSE (DO_SSE_AUTODETECT)
 		# Manual:
 		SET("DISABLE_${_setname}" OFF CACHE BOOL "Forces compilation WITHOUT ${_setname} extensions")

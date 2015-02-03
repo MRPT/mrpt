@@ -10,6 +10,6 @@
 #include <mrpt/obs/CObservationBeaconRanges.h>
 MRPT_WARNING("*Deprecated header* Please replace with #include <mrpt/obs/CObservationBeaconRanges.h>. This backward compatible header will be removed in MRPT 2.0.0")
 namespace mrpt { namespace slam {
-	typedef mrpt::obs::CObservationBeaconRanges CObservationBeaconRanges;    //!< Backward compatible typedef
-	typedef mrpt::obs::CObservationBeaconRangesPtr CObservationBeaconRangesPtr; //!< Backward compatible typedef
+	using mrpt::obs::CObservationBeaconRanges;    //!< Backward compatibility
+	using mrpt::obs::CObservationBeaconRangesPtr; //!< Backward compatibility
 } }

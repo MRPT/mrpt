@@ -1,8 +1,8 @@
 # Lists of directories with source files:
 #  See "DeclareMRPTLib.cmake" for explanations
 # -------------------------------------------------
-LIST(APPEND vision_EXTRA_SRCS		"${MRPT_SOURCE_DIR}/libs/vision/src/maps/*.cpp" "${MRPT_SOURCE_DIR}/libs/vision/include/mrpt/slam/*.h")
-LIST(APPEND vision_EXTRA_SRCS_NAME 	"maps" "maps")
+LIST(APPEND vision_EXTRA_SRCS		"${MRPT_SOURCE_DIR}/libs/vision/src/maps/*.cpp" "${MRPT_SOURCE_DIR}/libs/vision/include/mrpt/maps/*.h" "${MRPT_SOURCE_DIR}/libs/vision/include/mrpt/slam/*.h")
+LIST(APPEND vision_EXTRA_SRCS_NAME 	"maps" "maps" "maps-bcks-compat")
 
 LIST(APPEND vision_EXTRA_SRCS		"${MRPT_SOURCE_DIR}/libs/vision/src/obs/*.cpp" "${MRPT_SOURCE_DIR}/libs/vision/include/mrpt/slam/CObservation*.h")
 LIST(APPEND vision_EXTRA_SRCS_NAME 	"observations" "observations")

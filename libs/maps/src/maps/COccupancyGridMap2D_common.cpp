@@ -24,6 +24,57 @@ using namespace mrpt::utils;
 using namespace mrpt::poses;
 using namespace std;
 
+//  =========== Begin of Map definition ============
+MAP_DEFINITION_REGISTER("COccupancyGridMap2D,occupancyGrid", mrpt::maps::COccupancyGridMap2D)
+
+COccupancyGridMap2D::TMapDefinition::TMapDefinition() :
+	min_x(-10.0f),
+	max_x(10.0f),
+	min_y(-10.0f),
+	max_y(10.0f),
+	resolution(0.10f)
+{
+}
+
+void COccupancyGridMap2D::TMapDefinition::loadFromConfigFile_map_specific(const mrpt::utils::CConfigFileBase  &source, const std::string &sectionNamePrefix)
+{
+	// [<sectionNamePrefix>+"_creationOpts"]
+	const std::string sSectCreation = sectionNamePrefix+string("_creationOpts");
+	MRPT_LOAD_CONFIG_VAR(min_x, float,   source,sSectCreation);
+	MRPT_LOAD_CONFIG_VAR(max_x, float,   source,sSectCreation);
+	MRPT_LOAD_CONFIG_VAR(min_y, float,   source,sSectCreation);
+	MRPT_LOAD_CONFIG_VAR(max_y, float,   source,sSectCreation);
+	MRPT_LOAD_CONFIG_VAR(resolution, float,   source,sSectCreation);
+
+	// [<sectionName>+"_occupancyGrid_##_insertOpts"]
+	insertionOpts.loadFromConfigFile(source, sectionNamePrefix+string("_insertOpts") );
+
+	// [<sectionName>+"_occupancyGrid_##_likelihoodOpts"]
+	likelihoodOpts.loadFromConfigFile(source, sectionNamePrefix+string("_likelihoodOpts") );
+
+}
+
+void COccupancyGridMap2D::TMapDefinition::dumpToTextStream_map_specific(mrpt::utils::CStream &out) const
+{
+	LOADABLEOPTS_DUMP_VAR(min_x         , float);
+	LOADABLEOPTS_DUMP_VAR(max_x         , float);
+	LOADABLEOPTS_DUMP_VAR(min_y         , float);
+	LOADABLEOPTS_DUMP_VAR(max_y         , float);
+	LOADABLEOPTS_DUMP_VAR(resolution         , float);
+
+	this->insertionOpts.dumpToTextStream(out);
+	this->likelihoodOpts.dumpToTextStream(out);
+}
+
+mrpt::maps::CMetricMap* COccupancyGridMap2D::internal_CreateFromMapDefinition(const mrpt::maps::TMetricMapInitializer &_def)
+{
+	const COccupancyGridMap2D::TMapDefinition &def = *dynamic_cast<const COccupancyGridMap2D::TMapDefinition*>(&_def);
+	COccupancyGridMap2D *obj = new COccupancyGridMap2D(def.min_x,def.max_x, def.min_y, def.max_y, def.resolution);
+	obj->insertionOptions  = def.insertionOpts;
+	obj->likelihoodOptions = def.likelihoodOpts;
+	return obj;
+}
+//  =========== End of Map definition Block =========
 
 IMPLEMENTS_SERIALIZABLE(COccupancyGridMap2D, CMetricMap,mrpt::maps)
 
@@ -674,7 +725,6 @@ bool mrpt::maps::operator < (const COccupancyGridMap2D::TPairLikelihoodIndex &e1
 {
 	return e1.first > e2.first;
 }
-
 
 
 /*---------------------------------------------------------------

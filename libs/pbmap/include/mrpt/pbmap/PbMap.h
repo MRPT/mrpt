@@ -30,8 +30,6 @@
 
 namespace mrpt {
 namespace pbmap {
-	using namespace mrpt::utils;
-
 	// This must be added to any CSerializable derived class:
 	DEFINE_SERIALIZABLE_PRE_CUSTOM_LINKAGE( PbMap, PBMAP_IMPEXP)
 

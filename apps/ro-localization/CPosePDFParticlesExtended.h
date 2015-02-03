@@ -99,13 +99,7 @@ namespace mrpt
 
 			} options;
 
-	//	 private:
-			/** The particles
-			 */
-			//std::deque<CPose2DParticleExtended>		particles;
-
-			/** Free all the memory associated to particles, and set the number of parts = 0
-			  */
+			/** Free all the memory associated to particles, and set the number of parts = 0 */
 			void  clear( );
 
 		 public:

@@ -2,12 +2,11 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
 
-#include <mrpt/math/ransac.h>
 #include <mrpt/gui/CDisplayWindow3D.h>
 #include <mrpt/random.h>
 #include <mrpt/poses/CPose2D.h>
@@ -19,11 +18,16 @@
 #include <mrpt/opengl/CPointCloud.h>
 #include <mrpt/opengl/CSetOfLines.h>
 #include <mrpt/opengl/stock_objects.h>
-#include <mrpt/scanmatching.h>
+#include <mrpt/tfest/se2.h>
 #include <mrpt/maps/CSimplePointsMap.h>
 
-// ============= PARAMETERS ===================
+// Method explained in paper: 
+//  J.L. Blanco, J. Gonzalez-Jimenez, J.A. Fernandez-Madrigal, 
+//   "A Robust, Multi-Hypothesis Approach to Matching Occupancy Grid Maps", 
+//    Robotica, 2013. 
+// http://dx.doi.org/10.1017/S0263574712000732
 
+// ============= PARAMETERS ===================
 const size_t NUM_OBSERVATIONS_TO_SIMUL = 10; 
 const size_t RANSAC_MINIMUM_INLIERS    = 9;  // Min. # of inliers to accept
 
@@ -43,10 +47,7 @@ const size_t MINIMUM_RANSAC_ITERS = 100000;
 	//  ID X Y
 	const std::string sMAP_FILE = string("./DLRMap.txt");
 #endif
-
 // ==============================================
-
-
 
 using namespace mrpt;
 using namespace mrpt::utils;
@@ -225,31 +226,31 @@ void TestRANSAC()
 		// ----------------------------------------------------
 		//  Run RANSAC-based D-A
 		// ----------------------------------------------------
-		mrpt::poses::CPosePDFSOG  best_poses;
-		TMatchingPairList         out_best_pairings;
-
 		timelog.enter("robustRigidTransformation");
 		timer.Tic();
 
-		mrpt::scanmatching::robustRigidTransformation(
-			all_correspondences, // In pairings
-			best_poses, // Out pose(s)
-			normalizationStd,
-			RANSAC_MINIMUM_INLIERS,           // ransac_minSetSize (to add the solution to the SOG)
-			all_correspondences.size(),        // ransac_maxSetSize: Test with all data points
-			ransac_mahalanobisDistanceThreshold,
-			0,           // ransac_nSimulations (0:auto)
-			&out_best_pairings, // Out
-			true,        // ransac_fuseByCorrsMatch
-			0.01f,       // ransac_fuseMaxDiffXY
-			DEG2RAD(0.1f),  //  ransac_fuseMaxDiffPhi
-			true,        // ransac_algorithmForLandmarks
-			0.999999,       // probability_find_good_model
-			MINIMUM_RANSAC_ITERS,        // ransac_min_nSimulations (a lower limit to the auto-detected value of ransac_nSimulations)
-			true         // verbose
-			);
+		mrpt::tfest::TSE2RobustParams params;
+		mrpt::tfest::TSE2RobustResult results;
+
+		params.ransac_minSetSize = RANSAC_MINIMUM_INLIERS;     // ransac_minSetSize (to add the solution to the SOG)
+		params.ransac_maxSetSize = all_correspondences.size(); // ransac_maxSetSize: Test with all data points
+		params.ransac_mahalanobisDistanceThreshold = ransac_mahalanobisDistanceThreshold;
+		params.ransac_nSimulations = 0; // 0=auto
+		params.ransac_fuseByCorrsMatch = true;
+		params.ransac_fuseMaxDiffXY = 0.01f;
+		params.ransac_fuseMaxDiffPhi = DEG2RAD(0.1);
+		params.ransac_algorithmForLandmarks = true;
+		params.probability_find_good_model = 0.999999;
+		params.ransac_min_nSimulations  = MINIMUM_RANSAC_ITERS; // (a lower limit to the auto-detected value of ransac_nSimulations)
+		params.verbose = true;
+
+		// Run ransac data-association:
+		mrpt::tfest::se2_l2_robust(all_correspondences, normalizationStd, params, results);
 
 		timelog.leave("robustRigidTransformation");
+
+		mrpt::poses::CPosePDFSOG  & best_poses  = results.transformation;
+		TMatchingPairList         & out_best_pairings = results.largestSubSet;
 
 		const double tim = timer.Tac();
 		cout << "RANSAC time: " << mrpt::system::formatTimeInterval(tim) << endl;
@@ -275,10 +276,8 @@ void TestRANSAC()
 
 		// Reconstruct the SE(2) transformation for these pairings:
 		mrpt::poses::CPosePDFGaussian  solution_pose;
-		mrpt::scanmatching::leastSquareErrorRigidTransformation(
-			out_best_pairings,
-			solution_pose.mean,
-			&solution_pose.cov );
+		mrpt::tfest::se2_l2(out_best_pairings, solution_pose);
+
 		// Normalized covariance: scale!
 		solution_pose.cov *= square(normalizationStd);
 
@@ -287,7 +286,8 @@ void TestRANSAC()
 
 
 		{
-			mrpt::opengl::COpenGLScenePtr &scene = win.get3DSceneAndLock();
+			//mrpt::opengl::COpenGLScenePtr &scene =
+			win.get3DSceneAndLock();
 
 			win.addTextMessage(
 				5,5, "Blue: map landmarks | Red: Observations | White lines: Found correspondences",

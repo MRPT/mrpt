@@ -25,6 +25,7 @@
 #include <mrpt/utils/CSerializable.h>
 #include <mrpt/utils/CLoadableOptions.h>
 #include <mrpt/utils/TEnumType.h>
+#include <mrpt/obs/obs_frwds.h>
 
 #include <mrpt/slam/link_pragmas.h>
 
@@ -37,14 +38,14 @@ namespace maps
 	DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CMultiMetricMap , CMetricMap, SLAM_IMPEXP )
 
 	/** This class stores any customizable set of metric maps.
-	 *  The internal metric maps can be accessed directly by the user as smart pointers. 
-	 *   The intended utility of this container is to operate on several maps simultaneously: update them by inserting observations, 
-	 *    evaluate the likelihood of one observation by fusing (multiplying) the likelihoods over the different maps, etc.
+	 * The internal metric maps can be accessed directly by the user as smart pointers with CMultiMetricMap::getMapByIndex() or via `iterator`s.
+	 * The utility of this container is to operate on several maps simultaneously: update them by inserting observations, 
+	 * evaluate the likelihood of one observation by fusing (multiplying) the likelihoods over the different maps, etc.
 	 *
-	 *  <b>All these kinds of metric maps can be kept in a multi-metric map:</b>:
-	 *		- mrpt::maps::CPointsMap: For laser 2D range scans, and posibly for IR ranges,... (It keeps the full 3D structure of scans)
-	 *		- mrpt::maps::COccupancyGridMap2D: Exclusively for 2D, <b>horizontal</b>  laser range scans, at different altitudes.
-	 *		- mrpt::maps::COctoMap: For 3D occupancy grids of variable resolution, with octrees (based on the library "octomap").
+	 *  <b>These kinds of metric maps can be kept inside</b> (list may be incomplete, refer to classes derived from mrpt::maps::CMetricMap):
+	 *		- mrpt::maps::CSimplePointsMap: For 2D or 3D range scans, ...
+	 *		- mrpt::maps::COccupancyGridMap2D: 2D, <b>horizontal</b>  laser range scans, at different altitudes.
+	 *		- mrpt::maps::COctoMap: For 3D occupancy grids of variable resolution, with octrees (based on the library `octomap`).
 	 *		- mrpt::maps::CColouredOctoMap: The same than above, but nodes can store RGB data appart from occupancy.
 	 *		- mrpt::maps::CLandmarksMap: For visual landmarks,etc...
 	 *		- mrpt::maps::CGasConcentrationGridMap2D: For gas concentration maps.
@@ -55,9 +56,63 @@ namespace maps
 	 *		- mrpt::maps::CColouredPointsMap: For point map with color.
 	 *		- mrpt::maps::CWeightedPointsMap: For point map with weights (capable of "fusing").
 	 *
-	 *  See CMultiMetricMap::setListOfMaps() for the method for initializing this class programatically. 
-	 *  See also TSetOfMetricMapInitializers::loadFromConfigFile for a template of ".ini"-like configuration
-	 *   file that can be used to define which maps to create and all their parameters.
+	 * See CMultiMetricMap::setListOfMaps() for the method for initializing this class programatically.
+	 * See also TSetOfMetricMapInitializers::loadFromConfigFile for a template of ".ini"-like configuration
+	 * file that can be used to define which maps to create and all their parameters.
+	 * Alternatively, the list of maps is public so it can be directly manipulated/accessed in CMultiMetricMap::maps
+	 *
+	 *  Configuring the list of maps: Alternatives
+	 * --------------------------------------------
+	 * 
+	 *  **Method #1: Using map definition structures**
+	 * \code
+	 * mrpt::maps::TSetOfMetricMapInitializers map_inits;
+	 * {
+	 *   mrpt::maps::COccupancyGridMap2D::TMapDefinition def;
+	 *   def.resolution = 0.05;
+	 *   def.insertionOpts.maxOccupancyUpdateCertainty = 0.8;
+	 *   def.insertionOpts.maxDistanceInsertion = 30;
+	 *   map_inits.push_back(def);
+	 * }
+	 * {
+	 *   mrpt::maps::CSimplePointsMap::TMapDefinition def;
+	 *   map_inits.push_back(def);
+	 * }
+	 * mrpt::maps::CMultiMetricMap theMap;
+	 * theMap.setListOfMaps(map_inits);
+	 * \endcode
+	 * 
+	 *  **Method #2: Using a configuration file**
+	 * See TSetOfMetricMapInitializers::loadFromConfigFile() for details on expected file format.
+	 *
+	 * \code
+	 * mrpt::utils::CConfigFile cfgFile("file.cfg");
+	 * mrpt::maps::TSetOfMetricMapInitializers map_inits;
+	 * map_inits.loadFromConfigFile(cfgFile, "MapDefinition");
+	 *
+	 * mrpt::maps::CMultiMetricMap theMap;
+	 * theMap.setListOfMaps(map_inits);
+	 * \endcode
+	 *
+	 *  **Method #3: Manual manipulation**
+	 *
+	 * \code
+	 * mrpt::maps::CMultiMetricMap theMap;
+	 * {
+	 *  mrpt::maps::CSimplePointsMapPtr ptMap = mrpt::maps::CSimplePointsMap::Create();
+	 *  theMap.maps.push_back(ptMap);
+	 * }
+	 * \endcode
+	 *
+	 * \note [New in MRPT 1.3.0]: `likelihoodMapSelection`, which selected the map to be used when 
+	 *  computing the likelihood of an observation, has been removed. Use the `enableObservationLikelihood` 
+	 *  property of each individual map declaration. 
+	 * 
+	 * \note [New in MRPT 1.3.0]: `enableInsertion_{pointsMap,...}` have been also removed. 
+	 *  Use the `enableObservationInsertion` property of each map declaration.
+	 *
+	 * \note [New in MRPT 1.3.0]: Plain list of maps is exposed in `maps` member. Proxies named `m_pointsMaps`,`m_gridMaps`, etc. 
+	 *  are provided for backwards-compatibility and for their utility.
 	 *
 	 * \note This class belongs to [mrpt-slam] instead of [mrpt-maps] due to the dependency on map classes in mrpt-vision.
 	 * \sa CMetricMap  \ingroup mrpt_slam_grp 
@@ -66,139 +121,157 @@ namespace maps
 	{
 		// This must be added to any CSerializable derived class:
 		DEFINE_SERIALIZABLE( CMultiMetricMap )
-
 	protected:
-		/** Deletes all maps and clears the internal lists of maps.
-		  */
-		void  deleteAllMaps();
-
-		/** Clear all elements of the map.
-		  */
-		virtual void  internal_clear();
-
-		 /** Insert the observation information into this map (see options)
-		  * \param obs The observation
-		  * \param robotPose The 3D pose of the robot mobile base in the map reference system, or NULL (default) if you want to use CPose2D(0,0,deg)
-		  *
-		  * \sa CObservation::insertObservationInto
-		  */
-		virtual bool  internal_insertObservation( const mrpt::obs::CObservation *obs, const mrpt::poses::CPose3D *robotPose = NULL );
+		void  deleteAllMaps(); //!< Deletes all maps and clears the internal lists of maps (with clear_unique(), so user copies remain alive)
+		virtual void  internal_clear(); //!< Clear all elements of the map.
+		// See base class docs
+		virtual bool  internal_insertObservation( const mrpt::obs::CObservation *obs, const mrpt::poses::CPose3D *robotPose = NULL ) MRPT_OVERRIDE;
+		/** Returns true if any of the inner maps is able to compute a sensible likelihood function for this observation.
+		 * \param obs The observation.
+		 * \sa computeObservationLikelihood
+		 */
+		bool internal_canComputeObservationLikelihood( const mrpt::obs::CObservation *obs );
+		// See docs in base class
+		double	 internal_computeObservationLikelihood( const mrpt::obs::CObservation *obs, const mrpt::poses::CPose3D &takenFrom );
 
 	public:
-		typedef std::pair<mrpt::poses::CPoint3D,unsigned int> TPairIdBeacon;
-
-		/** Returns true if the map is empty/no observation has been inserted.
-		*/
-		bool  isEmpty() const;
-
-		/** Some options for this class:
-		  */
-		struct SLAM_IMPEXP TOptions : public utils::CLoadableOptions
-		{
-			TOptions();
-
-			/** Load parameters from configuration source
-			  */
-			void  loadFromConfigFile(
-				const mrpt::utils::CConfigFileBase	&source,
-				const std::string		&section);
-
-			/** This method must display clearly all the contents of the structure in textual form, sending it to a CStream.
-			  */
-			void  dumpToTextStream(mrpt::utils::CStream	&out) const;
-
-			/** This selects the map to be used when computing the likelihood of an observation.
-			 * This enum has a corresponding mrpt::utils::TEnumType<> specialization.
-			 * \sa computeObservationLikelihood
-			 */
-			enum TMapSelectionForLikelihood
-			{
-				mapFuseAll = -1,
-				mapGrid = 0,
-				mapPoints,
-				mapLandmarks,
-				mapGasGrid,
-				mapWifiGrid,
-				mapBeacon,
-				mapHeight,
-				mapColourPoints,
-				mapReflectivity,
-				mapWeightedPoints,
-				mapOctoMaps,
-				mapColourOctoMaps
-			} likelihoodMapSelection;
-
-			bool	enableInsertion_pointsMap;			//!< Default = true (set to false to avoid "insertObservation" to update a given map)
-			bool	enableInsertion_landmarksMap;		//!< Default = true (set to false to avoid "insertObservation" to update a given map)
-			bool	enableInsertion_gridMaps;			//!< Default = true (set to false to avoid "insertObservation" to update a given map)
-			bool	enableInsertion_gasGridMaps;		//!< Default = true (set to false to avoid "insertObservation" to update a given map)
-			bool	enableInsertion_wifiGridMaps;		//!< Default = true (set to false to avoid "insertObservation" to update a given map)
-			bool	enableInsertion_beaconMap;			//!< Default = true (set to false to avoid "insertObservation" to update a given map)
-			bool	enableInsertion_heightMaps;			//!< Default = true (set to false to avoid "insertObservation" to update a given map)
-			bool	enableInsertion_reflectivityMaps;	//!< Default = true (set to false to avoid "insertObservation" to update a given map)
-			bool	enableInsertion_colourPointsMaps;	//!< Default = true (set to false to avoid "insertObservation" to update a given map)
-			bool	enableInsertion_weightedPointsMaps;	//!< Default = true (set to false to avoid "insertObservation" to update a given map)
-			bool	enableInsertion_octoMaps;			//!< Default = true (set to false to avoid "insertObservation" to update a given map)
-			bool	enableInsertion_colourOctoMaps;		//!< Default = true (set to false to avoid "insertObservation" to update a given map)
-
-		} options;
-
-
-		/** @name Internal lists of maps
+		/** @name Access to internal list of maps: direct list, iterators, utility methods and proxies
 		    @{ */
-		// Note: A variable number of maps may exist, depending on the initialization from TSetOfMetricMapInitializers.
-		//       Not used maps are "NULL" or empty smart pointers.
+		typedef std::deque<mrpt::maps::CMetricMapPtr> TListMaps;
 
-		std::deque<mrpt::maps::CSimplePointsMapPtr>              m_pointsMaps;
-		std::deque<mrpt::maps::COccupancyGridMap2DPtr>           m_gridMaps;
-		std::deque<mrpt::maps::COctoMapPtr>                      m_octoMaps;
-		std::deque<mrpt::maps::CColouredOctoMapPtr>              m_colourOctoMaps;
-		std::deque<mrpt::maps::CGasConcentrationGridMap2DPtr>    m_gasGridMaps;
-		std::deque<mrpt::maps::CWirelessPowerGridMap2DPtr>       m_wifiGridMaps;
-		std::deque<mrpt::maps::CHeightGridMap2DPtr>              m_heightMaps;
-		std::deque<mrpt::maps::CReflectivityGridMap2DPtr>        m_reflectivityMaps;
-		mrpt::maps::CColouredPointsMapPtr                        m_colourPointsMap;
-		mrpt::maps::CWeightedPointsMapPtr                        m_weightedPointsMap;
-		mrpt::maps::CLandmarksMapPtr                             m_landmarksMap;
-		mrpt::maps::CBeaconMapPtr                                m_beaconMap;
+		/** The list of MRPT metric maps in this object. Use dynamic_cast or smart pointer-based downcast to access maps by their actual type.
+		  * You can directly manipulate this list. Helper methods to initialize it are described in the docs of CMultiMetricMap 
+		  */
+		TListMaps maps;
+
+		typedef TListMaps::iterator iterator;
+		typedef TListMaps::const_iterator const_iterator;
+		iterator begin() { return maps.begin(); }
+		const_iterator begin() const { return maps.begin(); }
+		iterator end() { return maps.end(); }
+		const_iterator end() const { return maps.end(); }
+
+		/** Gets the i-th map \exception std::runtime_error On out-of-bounds */
+		mrpt::maps::CMetricMapPtr getMapByIndex(size_t idx) const;
+
+		/** Returns the i'th observation of a given class (or of a descendant class), or NULL if there is no such observation in the array.
+		  *  Example:
+		  * \code
+		  *  CObservationImagePtr obs = m_SF->getObservationByClass<CObservationImage>();
+		  * \endcode
+		  * By default (ith=0), the first observation is returned.
+		  */
+		template <typename T>
+		typename T::SmartPtr getMapByClass( const size_t &ith = 0 ) const
+		{
+			size_t  foundCount = 0;
+			const mrpt::utils::TRuntimeClassId*	class_ID = T::classinfo;
+			for (const_iterator it = begin();it!=end();++it)
+				if ( (*it)->GetRuntimeClass()->derivedFrom( class_ID ) )
+					if (foundCount++ == ith)
+						return typename T::SmartPtr(*it);
+			return typename T::SmartPtr();	// Not found: return empty smart pointer
+		}
+
+		/** Takes a const ref of a STL non-associative container of smart pointers at construction and exposes an interface 
+		  * mildly similar to that of another STL container containing only those elements 
+		  * in the original container that can be `dynamic_cast`ed to `SELECTED_CLASS_PTR` */
+		template <class SELECTED_CLASS_PTR, class CONTAINER>
+		struct ProxyFilterContainerByClass
+		{
+			typedef typename SELECTED_CLASS_PTR::value_type* ptr_t;
+			typedef const typename SELECTED_CLASS_PTR::value_type* const_ptr_t;
+			ProxyFilterContainerByClass(CONTAINER &source) : m_source(source) {}
+
+			bool empty() const { return size()==0; }
+			size_t size() const {
+				size_t cnt=0;
+				for(typename CONTAINER::const_iterator it=m_source.begin();it!=m_source.end();++it)
+					if ( dynamic_cast<const_ptr_t>(it->pointer()) )
+						cnt++;
+				return cnt;
+			}
+			SELECTED_CLASS_PTR operator [](size_t index) const {
+				size_t cnt=0;
+				for(typename CONTAINER::const_iterator it=m_source.begin();it!=m_source.end();++it)
+					if ( dynamic_cast<const_ptr_t>(it->pointer()) ) 
+						if (cnt++ == index) { return SELECTED_CLASS_PTR(*it); }
+				throw std::out_of_range("Index is out of range");
+			}
+			template <typename ELEMENT>
+			void push_back(const ELEMENT &element) { m_source.push_back(element); }
+		private:
+			CONTAINER & m_source;
+		}; // end ProxyFilterContainerByClass
+
+		/** A proxy like ProxyFilterContainerByClass, but it directly appears as if 
+		  * it was a single smart pointer (empty if no matching object is found in the container) */
+		template <class SELECTED_CLASS_PTR, class CONTAINER>
+		struct ProxySelectorContainerByClass
+		{
+			typedef typename SELECTED_CLASS_PTR::value_type pointee_t;
+			typedef typename SELECTED_CLASS_PTR::value_type* ptr_t;
+			typedef const typename SELECTED_CLASS_PTR::value_type* const_ptr_t;
+			ProxySelectorContainerByClass(CONTAINER &source) : m_source(source) {}
+			operator const SELECTED_CLASS_PTR & () const { internal_update_ref(); return m_ret; }
+			operator bool() const { internal_update_ref(); return m_ret.present(); }
+			bool present() const { internal_update_ref(); return m_ret.present(); }
+			ptr_t pointer(){ internal_update_ref(); return m_ret.pointer(); }
+			ptr_t operator ->() const {
+				internal_update_ref();
+				if (m_ret.present()) return m_ret.pointer();
+				else throw std::runtime_error("Tried to derefer NULL pointer");
+			}
+			pointee_t & operator *() const {
+				internal_update_ref();
+				if (m_ret.present()) return *m_ret.pointer();
+				else throw std::runtime_error("Tried to derefer NULL pointer");
+			}
+		private:
+			CONTAINER & m_source;
+			mutable SELECTED_CLASS_PTR m_ret;
+			void internal_update_ref() const {
+				for(typename CONTAINER::const_iterator it=m_source.begin();it!=m_source.end();++it) {
+					if ( dynamic_cast<const_ptr_t>(it->pointer()) ) {
+						m_ret=SELECTED_CLASS_PTR(*it);
+						return;
+					}
+				}
+				m_ret=SELECTED_CLASS_PTR(); // Not found
+			}
+
+		}; // end ProxySelectorContainerByClass
+
+		ProxyFilterContainerByClass<mrpt::maps::CSimplePointsMapPtr,TListMaps>           m_pointsMaps; //!< STL-like proxy to access this kind of maps in \ref maps
+		ProxyFilterContainerByClass<mrpt::maps::COccupancyGridMap2DPtr,TListMaps>        m_gridMaps;   //!< STL-like proxy to access this kind of maps in \ref maps
+		ProxyFilterContainerByClass<mrpt::maps::COctoMapPtr,TListMaps>                   m_octoMaps;   //!< STL-like proxy to access this kind of maps in \ref maps
+		ProxyFilterContainerByClass<mrpt::maps::CColouredOctoMapPtr,TListMaps>           m_colourOctoMaps;   //!< STL-like proxy to access this kind of maps in \ref maps
+		ProxyFilterContainerByClass<mrpt::maps::CGasConcentrationGridMap2DPtr,TListMaps> m_gasGridMaps;   //!< STL-like proxy to access this kind of maps in \ref maps
+		ProxyFilterContainerByClass<mrpt::maps::CWirelessPowerGridMap2DPtr,TListMaps>    m_wifiGridMaps;   //!< STL-like proxy to access this kind of maps in \ref maps
+		ProxyFilterContainerByClass<mrpt::maps::CHeightGridMap2DPtr,TListMaps>           m_heightMaps;   //!< STL-like proxy to access this kind of maps in \ref maps
+		ProxyFilterContainerByClass<mrpt::maps::CReflectivityGridMap2DPtr,TListMaps>     m_reflectivityMaps;   //!< STL-like proxy to access this kind of maps in \ref maps
+		ProxySelectorContainerByClass<mrpt::maps::CColouredPointsMapPtr,TListMaps>       m_colourPointsMap; //!< Proxy that looks like a smart pointer to the first matching object in \ref maps
+		ProxySelectorContainerByClass<mrpt::maps::CWeightedPointsMapPtr,TListMaps>       m_weightedPointsMap; //!< Proxy that looks like a smart pointer to the first matching object in \ref maps
+		ProxySelectorContainerByClass<mrpt::maps::CLandmarksMapPtr,TListMaps>            m_landmarksMap; //!< Proxy that looks like a smart pointer to the first matching object in \ref maps
+		ProxySelectorContainerByClass<mrpt::maps::CBeaconMapPtr,TListMaps>               m_beaconMap; //!< Proxy that looks like a smart pointer to the first matching object in \ref maps
 
 		/** @} */
 
 		/** Constructor.
-		 * \param initializers One internal map will be created for each entry in this "TSetOfMetricMapInitializers" struct, and each map will be initialized with the corresponding options.
-		 * \param opts If provided (not NULL), the member "options" will be initialized with those values.
+		 * \param initializers One internal map will be created for each entry in this "TSetOfMetricMapInitializers" struct.
 		 *  If initializers is NULL, no internal map will be created.
 		 */
-		CMultiMetricMap(
-			const mrpt::maps::TSetOfMetricMapInitializers	*initializers = NULL,
-			const TOptions		*opts		  = NULL );
+		CMultiMetricMap(const mrpt::maps::TSetOfMetricMapInitializers	*initializers = NULL);
+		CMultiMetricMap(const mrpt::maps::CMultiMetricMap &other );  //!< Copy constructor
+		mrpt::maps::CMultiMetricMap &operator = ( const mrpt::maps::CMultiMetricMap &other ); //!< Copy operator from "other" object.
+		virtual ~CMultiMetricMap( ); //!< Destructor.
 
-		/** Sets the list of internal map according to the passed list of map initializers (Current maps' content will be deleted!)
-		  */
+		/** Sets the list of internal map according to the passed list of map initializers (Current maps' content will be deleted!) */
 		void  setListOfMaps( const mrpt::maps::TSetOfMetricMapInitializers	*initializers );
+		/** \overload */
+		void  setListOfMaps( const mrpt::maps::TSetOfMetricMapInitializers	&initializers ) { this->setListOfMaps(&initializers); }
 
-		/** Copy constructor */
-		CMultiMetricMap(const mrpt::maps::CMultiMetricMap &other );
-
-		/** Copy operator from "other" object.
-		 */
-		mrpt::maps::CMultiMetricMap &operator = ( const mrpt::maps::CMultiMetricMap &other );
-
-		/** Destructor.
-		 */
-		virtual ~CMultiMetricMap( );
-
-
-		// See docs in base class
-		double	 computeObservationLikelihood( const mrpt::obs::CObservation *obs, const mrpt::poses::CPose3D &takenFrom );
-
-		/** Returns the ratio of points in a map which are new to the point map while falling into yet static cells of gridmap.
-		  * \param points The set of points to check.
-		  * \param takenFrom The pose for the reference system of points, in global coordinates of this hybrid map.
-		  */
-		float 	getNewStaticPointsRatio(
-			mrpt::maps::CPointsMap		*points,
-			mrpt::poses::CPose2D		&takenFrom );
+		bool  isEmpty() const MRPT_OVERRIDE; //!< Returns true if all maps returns true to their isEmpty() method, which is map-dependent. Read the docs of each map class
 
 		// See docs in base class.
 		virtual void  determineMatching2D(
@@ -231,12 +304,6 @@ namespace maps
 		  */
 		void  getAs3DObject ( mrpt::opengl::CSetOfObjectsPtr	&outObj ) const;
 
-		/** Returns true if any of the inner maps is able to compute a sensible likelihood function for this observation.
-		 * \param obs The observation.
-		 * \sa computeObservationLikelihood
-		 */
-		bool canComputeObservationLikelihood( const mrpt::obs::CObservation *obs );
-
 		/** If the map is a simple point map or it's a multi-metric map that contains EXACTLY one simple point map, return it.
 			* Otherwise, return NULL
 			*/
@@ -250,443 +317,8 @@ namespace maps
 	}; // End of class def.
 	DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE( CMultiMetricMap , mrpt::maps::CMetricMap, SLAM_IMPEXP )
 
-	/** Each structure of this kind will determine the kind (and initial configuration) of one map to be build into a CMultiMetricMap object.
-	  *  See "mrpt::maps::TSetOfMetricMapInitializers::loadFromConfigFile" as an easy way of initialize this object.
-	  * \sa TSetOfMetricMapInitializers, CMultiMetricMap::CMultiMetricMap
-	  */
-	struct SLAM_IMPEXP  TMetricMapInitializer
-	{
-		/** Initialization (sets 'metricMapClassType' to NULL, an invalid value -> it must be set correctly before use!)
-		  */
-		TMetricMapInitializer();
-
-		/** Set this to CLASS_ID(< class >) where < class > is any CMetricMap derived class.
-		  */
-		mrpt::utils::TRuntimeClassIdPtr	metricMapClassType;
-
-		/** This value will be copied to the member with the same value in the map, see mrpt::maps::CMetricMap::m_disableSaveAs3DObject
-		  */
-		bool				m_disableSaveAs3DObject;
-
-		/** Specific options for 2D grid maps (mrpt::maps::COccupancyGridMap2D)
-		  */
-		struct SLAM_IMPEXP TOccGridMap2DOptions
-		{
-			TOccGridMap2DOptions();	//!< Default values loader
-
-			float	min_x,max_x,min_y,max_y,resolution;	//!< See COccupancyGridMap2D::COccupancyGridMap2D
-			mrpt::maps::COccupancyGridMap2D::TInsertionOptions	insertionOpts;	//!< Customizable initial options.
-			mrpt::maps::COccupancyGridMap2D::TLikelihoodOptions	likelihoodOpts;	//!< Customizable initial options.
-
-		} occupancyGridMap2D_options;
-
-		/** Specific options for 3D octo maps (mrpt::maps::COctoMap) */
-		struct SLAM_IMPEXP TOctoMapOptions
-		{
-			TOctoMapOptions();	//!< Default values loader
-
-			double resolution;	//!< The finest resolution of the octomap (default: 0.10 meters)
-			mrpt::maps::COctoMap::TInsertionOptions	  insertionOpts;	//!< Customizable initial options.
-			mrpt::maps::COctoMap::TLikelihoodOptions  likelihoodOpts;	//!< Customizable initial options.
-		} octoMap_options;
-
-		/** Specific options for 3D octo maps (mrpt::maps::COctoMap) */
-		struct SLAM_IMPEXP TColourOctoMapOptions
-		{
-			TColourOctoMapOptions();	//!< Default values loader
-
-			double resolution;	//!< The finest resolution of the octomap (default: 0.10 meters)
-			mrpt::maps::CColouredOctoMap::TInsertionOptions	  insertionOpts;	//!< Customizable initial options.
-			mrpt::maps::CColouredOctoMap::TLikelihoodOptions  likelihoodOpts;	//!< Customizable initial options.
-		} colourOctoMap_options;		
-
-		/** Specific options for point maps (mrpt::maps::CPointsMap)
-		  */
-		struct SLAM_IMPEXP CPointsMapOptions
-		{
-			CPointsMapOptions();		//!< Default values loader
-			mrpt::maps::CPointsMap::TInsertionOptions	insertionOpts;	//!< Customizable initial options for loading the class' own defaults.
-			mrpt::maps::CPointsMap::TLikelihoodOptions  likelihoodOpts; //!< 	//!< Customizable initial likelihood options
-		} pointsMapOptions_options;
-
-		/** Specific options for gas grid maps (mrpt::maps::CGasConcentrationGridMap2D)
-		  */
-		struct SLAM_IMPEXP CGasConcentrationGridMap2DOptions
-		{
-			CGasConcentrationGridMap2DOptions();	//!< Default values loader
-
-			float	min_x,max_x,min_y,max_y,resolution;	//!< See CGasConcentrationGridMap2D::CGasConcentrationGridMap2D
-			mrpt::maps::CGasConcentrationGridMap2D::TMapRepresentation	mapType;	//!< The kind of map representation (see CGasConcentrationGridMap2D::CGasConcentrationGridMap2D)
-			mrpt::maps::CGasConcentrationGridMap2D::TInsertionOptions	insertionOpts;	//!< Customizable initial options.
-
-		} gasGridMap_options;
-
-		/** Specific options for wifi grid maps (mrpt::maps::CWirelessPowerGridMap2D)
-		  */
-		struct SLAM_IMPEXP CWirelessPowerGridMap2DOptions
-		{
-			CWirelessPowerGridMap2DOptions();	//!< Default values loader
-
-			float	min_x,max_x,min_y,max_y,resolution;	//!< See CWirelessPowerGridMap2D::CWirelessPowerGridMap2D
-			mrpt::maps::CWirelessPowerGridMap2D::TMapRepresentation	mapType;	//!< The kind of map representation (see CWirelessPowerGridMap2D::CWirelessPowerGridMap2D)
-			mrpt::maps::CWirelessPowerGridMap2D::TInsertionOptions	insertionOpts;	//!< Customizable initial options.
-
-		} wifiGridMap_options;
-
-		/** Specific options for landmarks maps (mrpt::maps::CLandmarksMap)
-		  */
-		struct SLAM_IMPEXP CLandmarksMapOptions
-		{
-			CLandmarksMapOptions();		//!< Default values loader
-
-			std::deque<CMultiMetricMap::TPairIdBeacon>	initialBeacons;	//!< Initial contents of the map, especified by a set of 3D Beacons with associated IDs
-			mrpt::maps::CLandmarksMap::TInsertionOptions	insertionOpts;	//!< Customizable initial options.
-			mrpt::maps::CLandmarksMap::TLikelihoodOptions	likelihoodOpts;	//!< Customizable initial options.
-
-		} landmarksMap_options;
-
-
-		/** Specific options for landmarks maps (mrpt::maps::CBeaconMap)
-		  */
-		struct SLAM_IMPEXP CBeaconMapOptions
-		{
-			CBeaconMapOptions();	//!< Default values loader
-
-			mrpt::maps::CBeaconMap::TLikelihoodOptions	likelihoodOpts;	//!< Customizable initial options.
-			mrpt::maps::CBeaconMap::TInsertionOptions	insertionOpts; 	//!< Customizable initial options.
-
-		} beaconMap_options;
-
-		/** Specific options for height grid maps (mrpt::maps::CHeightGridMap2D)
-		  */
-		struct SLAM_IMPEXP CHeightGridMap2DOptions
-		{
-			CHeightGridMap2DOptions();	//!< Default values loader
-
-			float	min_x,max_x,min_y,max_y,resolution;	//!< See CHeightGridMap2D::CHeightGridMap2D
-			mrpt::maps::CHeightGridMap2D::TMapRepresentation	mapType;	//!< The kind of map representation (see CHeightGridMap2D::CHeightGridMap2D)
-			mrpt::maps::CHeightGridMap2D::TInsertionOptions	insertionOpts;	//!< Customizable initial options.
-		} heightMap_options;
-
-		/** Specific options for height grid maps (mrpt::maps::CReflectivityGridMap2D)
-		  */
-		struct SLAM_IMPEXP CReflectivityGridMap2DOptions
-		{
-			CReflectivityGridMap2DOptions();	//!< Default values loader
-
-			float	min_x,max_x,min_y,max_y,resolution;	//!< See CReflectivityGridMap2DOptions::CReflectivityGridMap2DOptions
-			mrpt::maps::CReflectivityGridMap2D::TInsertionOptions	insertionOpts;	//!< Customizable initial options.
-		} reflectivityMap_options;
-
-		/** Specific options for coloured point maps (mrpt::maps::CPointsMap)
-		  */
-		struct SLAM_IMPEXP CColouredPointsMapOptions
-		{
-			CColouredPointsMapOptions();	//!< Default values loader
-			mrpt::maps::CPointsMap::TInsertionOptions	insertionOpts;	//!< Customizable initial options for loading the class' own defaults.
-			mrpt::maps::CPointsMap::TLikelihoodOptions  likelihoodOpts; //!< 	//!< Customizable initial likelihood options
-			mrpt::maps::CColouredPointsMap::TColourOptions colourOpts;	//!< Customizable initial options for loading the class' own defaults. */
-		} colouredPointsMapOptions_options;
-
-		/** Specific options for coloured point maps (mrpt::maps::CPointsMap)
-		  */
-		struct SLAM_IMPEXP CWeightedPointsMapOptions
-		{
-			CWeightedPointsMapOptions();	//!< Default values loader
-			mrpt::maps::CPointsMap::TInsertionOptions	insertionOpts;	//!< Customizable initial options for loading the class' own defaults.
-			mrpt::maps::CPointsMap::TLikelihoodOptions  likelihoodOpts; //!< 	//!< Customizable initial likelihood options
-		} weightedPointsMapOptions_options;
-	};
-
-	/** A set of TMetricMapInitializer structures, passed to the constructor CMultiMetricMap::CMultiMetricMap
-	  *  See the comments for TSetOfMetricMapInitializers::loadFromConfigFile, and "CMultiMetricMap::setListOfMaps" for
-	  *   effectively creating the list of desired maps.
-	  * \sa CMultiMetricMap::CMultiMetricMap, utils::CLoadableOptions
-	  */
-	class SLAM_IMPEXP TSetOfMetricMapInitializers : public utils::CLoadableOptions
-	{
-	protected:
-		std::deque<TMetricMapInitializer>	m_list;
-
-	public:
-		size_t size() const { return m_list.size(); }
-		void push_back( const TMetricMapInitializer &o ) { m_list.push_back(o); }
-
-		typedef std::deque<TMetricMapInitializer>::iterator  iterator;
-		typedef std::deque<TMetricMapInitializer>::const_iterator  const_iterator;
-
-		iterator begin()   { return m_list.begin(); }
-		const_iterator begin() const  { return m_list.begin(); }
-
-		iterator end()   { return m_list.end(); }
-		const_iterator end() const  { return m_list.end(); }
-
-		void clear() { m_list.clear(); }
-
-
-		TSetOfMetricMapInitializers() : m_list(), options()
-		{}
-
-
-		/** This options will be loaded when creating the set of maps in CMultiMetricMap (See CMultiMetricMap::TOptions)
-		  */
-		CMultiMetricMap::TOptions	options;
-
-		/** Loads the configuration for the set of internal maps from a textual definition in an INI-like file.
-		  *  The format of the ini file is defined in utils::CConfigFile. The list of maps and their options
-		  *   will be loaded from a handle of sections:
-		  *
-		  *  \code
-		  * [<sectionName>]
-		  *  // Creation of maps:
-		  *  occupancyGrid_count=<Number of mrpt::maps::COccupancyGridMap2D maps>
-		  *  octoMap_count=<Number of mrpt::maps::COctoMap maps>
-		  *  colourOctoMap_count=<Number of mrpt::slam::CColourOctoMap maps>
-		  *  gasGrid_count=<Number of mrpt::maps::CGasConcentrationGridMap2D maps>
-		  *  wifiGrid_count=<Number of mrpt::maps::CWirelessPowerGridMap2D maps>
-		  *  landmarksMap_count=<0 or 1, for creating a mrpt::maps::CLandmarksMap map>
-		  *  beaconMap_count=<0 or 1, for creating a mrpt::maps::CBeaconMap map>
-		  *  pointsMap_count=<Number of mrpt::maps::CSimplePointsMap map>
-		  *  heightMap_count=<Number of mrpt::maps::CHeightGridMap2D maps>
-		  *  reflectivityMap_count=<Number of mrpt::maps::CReflectivityGridMap2D maps>
-		  *  colourPointsMap_count=<0 or 1, for creating a mrpt::maps::CColouredPointsMap map>
-		  *  weightedPointsMap_count=<0 or 1, for creating a mrpt::maps::CWeightedPointsMap map>
-		  *
-		  *  // Selection of map for likelihood. Either a numeric value or the textual enum
-		  *  //   enum value of mrpt::maps::CMultiMetricMap::TOptions::TMapSelectionForLikelihood (e.g: either "-1" or "fuseAll", ect...)
-		  *  likelihoodMapSelection = -1
-		  *
-		  *  // Enables (1 or "true") / Disables (0 or "false") insertion into specific maps (Defaults are all "true"):
-		  *  enableInsertion_pointsMap=<0/1>
-		  *  enableInsertion_landmarksMap=<0/1>
-		  *  enableInsertion_gridMaps=<0/1>
-		  *  enableInsertion_gasGridMaps=<0/1>
-		  *  enableInsertion_wifiGridMaps=<0/1>
-		  *  enableInsertion_beaconMap=<0/1>
-		  *  enableInsertion_heightMap=<0/1>
-		  *  enableInsertion_reflectivityMap=<0/1>
-		  *  enableInsertion_colourPointsMap=<0/1>
-		  *  enableInsertion_weightedPointsMap=<0/1>
-		  *  enableInsertion_octoMaps=<0/1>
-		  *  enableInsertion_colourOctoMaps=<0/1>
-		  *
-		  * // ====================================================
-		  * //  Creation Options for OccupancyGridMap ##:
-		  * [<sectionName>+"_occupancyGrid_##_creationOpts"]
-		  *  min_x=<value>
-		  *  max_x=<value>
-		  *  min_y=<value>
-		  *  max_y=<value>
-		  *  resolution=<value>
-		  *
-		  * // Insertion Options for OccupancyGridMap ##:
-		  * [<sectionName>+"_occupancyGrid_##_insertOpts"]
-		  *  <See COccupancyGridMap2D::TInsertionOptions>
-		  *
-		  * // Likelihood Options for OccupancyGridMap ##:
-		  * [<sectionName>+"_occupancyGrid_##_likelihoodOpts"]
-		  *  <See COccupancyGridMap2D::TLikelihoodOptions>
-		  *
-		  * // ====================================================
-		  * //  Creation Options for OctoMap ##:
-		  * [<sectionName>+"_octoMap_##_creationOpts"]
-		  *  resolution=<value>
-		  *
-		  * // Insertion Options for OctoMap ##:
-		  * [<sectionName>+"_octoMap_##_insertOpts"]
-		  *  <See COctoMap::TInsertionOptions>
-		  *
-		  * // Likelihood Options for OctoMap ##:
-		  * [<sectionName>+"_octoMap_##_likelihoodOpts"]
-		  *  <See COctoMap::TLikelihoodOptions>
-		  *
-		  * // ====================================================
-		  * //  Creation Options for ColourOctoMap ##:
-		  * [<sectionName>+"_colourOctoMap_##_creationOpts"]
-		  *  resolution=<value>
-		  *
-		  * // Insertion Options for ColourOctoMap ##:
-		  * [<sectionName>+"_colourOctoMap_##_insertOpts"]
-		  *  <See CColourOctoMap::TInsertionOptions>
-		  *
-		  * // Likelihood Options for ColourOctoMap ##:
-		  * [<sectionName>+"_colourOctoMap_##_likelihoodOpts"]
-		  *  <See CColourOctoMap::TLikelihoodOptions>
-		  *
-		  *
-		  * // ====================================================
-		  * // Insertion Options for mrpt::maps::CSimplePointsMap ##:
-		  * [<sectionName>+"_pointsMap_##_insertOpts"]
-		  *  <See CPointsMap::TInsertionOptions>
-		  *
-		  * // Likelihood Options for mrpt::maps::CSimplePointsMap ##:
-		  * [<sectionName>+"_pointsMap_##_likelihoodOpts"]
-		  *  <See CPointsMap::TLikelihoodOptions>
-		  *
-		  *
-		  * // ====================================================
-		  * // Creation Options for CGasConcentrationGridMap2D ##:
-		  * [<sectionName>+"_gasGrid_##_creationOpts"]
-		  *  mapType= <0-1> ; See CGasConcentrationGridMap2D::CGasConcentrationGridMap2D
-		  *  min_x=<value>
-		  *  max_x=<value>
-		  *  min_y=<value>
-		  *  max_y=<value>
-		  *  resolution=<value>
-		  *
-		  * // Insertion Options for CGasConcentrationGridMap2D ##:
-		  * [<sectionName>+"_gasGrid_##_insertOpts"]
-		  *  <See CGasConcentrationGridMap2D::TInsertionOptions>
-
-
-
-
-		  * // ====================================================
-		  * // Creation Options for CWirelessPowerGridMap2D ##:
-		  * [<sectionName>+"_wifiGrid_##_creationOpts"]
-		  *  mapType= <0-1> ; See CWirelessPowerGridMap2D::CWirelessPowerGridMap2D
-		  *  min_x=<value>
-		  *  max_x=<value>
-		  *  min_y=<value>
-		  *  max_y=<value>
-		  *  resolution=<value>
-		  *
-		  * // Insertion Options for CWirelessPowerGridMap2D ##:
-		  * [<sectionName>+"_wifiGrid_##_insertOpts"]
-		  *  <See CWirelessPowerGridMap2D::TInsertionOptions>
-
-
-		  *
-		  *
-		  * // ====================================================
-		  * // Creation Options for CLandmarksMap ##:
-		  * [<sectionName>+"_landmarksMap_##_creationOpts"]
-		  *  nBeacons=<# of beacons>
-		  *  beacon_001_ID=67		; The ID and 3D coordinates of each beacon
-		  *  beacon_001_X=<x>
-		  *  beacon_001_Y=<x>
-		  *  beacon_001_Z=<x>
-		  *
-		  * // Insertion Options for CLandmarksMap ##:
-		  * [<sectionName>+"_landmarksMap_##_insertOpts"]
-		  *  <See CLandmarksMap::TInsertionOptions>
-		  *
-		  * // Likelihood Options for CLandmarksMap ##:
-		  * [<sectionName>+"_landmarksMap_##_likelihoodOpts"]
-		  *  <See CLandmarksMap::TLikelihoodOptions>
-		  *
-		  *
-		  * // ====================================================
-		  * // Insertion Options for CBeaconMap ##:
-		  * [<sectionName>+"_beaconMap_##_insertOpts"]
-		  *  <See CBeaconMap::TInsertionOptions>
-		  *
-		  * // Likelihood Options for CBeaconMap ##:
-		  * [<sectionName>+"_beaconMap_##_likelihoodOpts"]
-		  *  <See CBeaconMap::TLikelihoodOptions>
-		  *
-		  * // ====================================================
-		  * // Creation Options for HeightGridMap ##:
-		  * [<sectionName>+"_heightGrid_##_creationOpts"]
-		  *  mapType= <0-1> // See CHeightGridMap2D::CHeightGridMap2D
-		  *  min_x=<value>
-		  *  max_x=<value>
-		  *  min_y=<value>
-		  *  max_y=<value>
-		  *  resolution=<value>
-		  *
-		  * // Insertion Options for HeightGridMap ##:
-		  * [<sectionName>+"_heightGrid_##_insertOpts"]
-		  *  <See CHeightGridMap2D::TInsertionOptions>
-		  *
-		  *
-		  * // ====================================================
-		  * // Creation Options for ReflectivityGridMap ##:
-		  * [<sectionName>+"_reflectivityGrid_##_creationOpts"]
-		  *  min_x=<value>  // See CReflectivityGridMap2D::CReflectivityGridMap2D
-		  *  max_x=<value>
-		  *  min_y=<value>
-		  *  max_y=<value>
-		  *  resolution=<value>
-		  *
-		  * // Insertion Options for HeightGridMap ##:
-		  * [<sectionName>+"_reflectivityGrid_##_insertOpts"]
-		  *  <See CReflectivityGridMap2D::TInsertionOptions>
-		  *
-		  *
-		  * // ====================================================
-		  * // Insertion Options for CColouredPointsMap ##:
-		  * [<sectionName>+"_colourPointsMap_##_insertOpts"]
-		  *  <See CPointsMap::TInsertionOptions>
-		  *
-		  *
-		  * // Color Options for CColouredPointsMap ##:
-		  * [<sectionName>+"_colourPointsMap_##_colorOpts"]
-		  *  <See CColouredPointsMap::TColourOptions>
-		  *
-		  * // Likelihood Options for mrpt::maps::CSimplePointsMap ##:
-		  * [<sectionName>+"_colourPointsMap_##_likelihoodOpts"]
-		  *  <See CPointsMap::TLikelihoodOptions>
-		  *
-		  *
-		  * // ====================================================
-		  * // Insertion Options for CWeightedPointsMap ##:
-		  * [<sectionName>+"_weightedPointsMap_##_insertOpts"]
-		  *  <See CPointsMap::TInsertionOptions>
-		  *
-		  *
-		  * // Likelihood Options for CWeightedPointsMap ##:
-		  * [<sectionName>+"_weightedPointsMap_##_likelihoodOpts"]
-		  *  <See CPointsMap::TLikelihoodOptions>
-		  *
-		  *  \endcode
-		  *
-		  *  Where:
-		  *		- ##: Represents the index of the map (e.g. "00","01",...)
-		  *		- By default, the variables into each "TOptions" structure of the maps are defined in textual form by the same name of the corresponding C++ variable (e.g. "float resolution;" -> "resolution=0.10")
-		  *
-		  * \note Examples of map definitions can be found in the '.ini' files provided in the demo directories: "share/mrpt/config-files/"
-		  */
-		void  loadFromConfigFile(
-			const mrpt::utils::CConfigFileBase  &source,
-			const std::string &sectionName);
-
-		/** This method dumps the options of the multi-metric map AND those of every internal map.
-		  */
-		void  dumpToTextStream(mrpt::utils::CStream	&out) const;
-	};
 
 	} // End of namespace
-
-
-	// Specializations MUST occur at the same namespace:
-	namespace utils
-	{
-		template <>
-		struct TEnumTypeFiller<maps::CMultiMetricMap::TOptions::TMapSelectionForLikelihood>
-		{
-			typedef mrpt::maps::CMultiMetricMap::TOptions::TMapSelectionForLikelihood enum_t;
-			static void fill(bimap<enum_t,std::string>  &m_map)
-			{
-				m_map.insert(mrpt::maps::CMultiMetricMap::TOptions::mapFuseAll,   "mapFuseAll");
-				m_map.insert(mrpt::maps::CMultiMetricMap::TOptions::mapGrid,      "mapGrid");
-				m_map.insert(mrpt::maps::CMultiMetricMap::TOptions::mapOctoMaps,  "mapOctoMaps");
-				m_map.insert(mrpt::maps::CMultiMetricMap::TOptions::mapColourOctoMaps,  "mapColourOctoMaps");
-				m_map.insert(mrpt::maps::CMultiMetricMap::TOptions::mapPoints,    "mrSimpleAverage");
-				m_map.insert(mrpt::maps::CMultiMetricMap::TOptions::mapLandmarks, "mapLandmarks");
-				m_map.insert(mrpt::maps::CMultiMetricMap::TOptions::mapGasGrid,   "mapGasGrid");
-				m_map.insert(mrpt::maps::CMultiMetricMap::TOptions::mapWifiGrid,  "mapWifiGrid");
-				m_map.insert(mrpt::maps::CMultiMetricMap::TOptions::mapBeacon,    "mapBeacon");
-				m_map.insert(mrpt::maps::CMultiMetricMap::TOptions::mapHeight,    "mapHeight");
-				m_map.insert(mrpt::maps::CMultiMetricMap::TOptions::mapColourPoints, "mapColourPoints");
-				m_map.insert(mrpt::maps::CMultiMetricMap::TOptions::mapReflectivity, "mapReflectivity");
-				m_map.insert(mrpt::maps::CMultiMetricMap::TOptions::mapWeightedPoints, "mapWeightedPoints");
-			}
-		};
-	} // End of namespace
-
-
-
 } // End of namespace
 
 #endif

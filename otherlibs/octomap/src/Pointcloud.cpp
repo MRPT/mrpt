@@ -63,7 +63,7 @@ namespace octomap {
   void Pointcloud::clear() {
 
     // delete the points
-    if (points.size()) {
+    if (!points.empty()) {
       points.clear();
     }
   }

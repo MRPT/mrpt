@@ -16,7 +16,34 @@
 PROJECT(MRPT)
 
 CMAKE_MINIMUM_REQUIRED(VERSION 2.6.4)
-include(cmakemodules/script_init_cmake.cmake REQUIRED)		# CMake tweaks
+
+# -------------------------
+#        Setup CMake
+# -------------------------
+#include(cmakemodules/script_init_cmake.cmake REQUIRED)		# CMake tweaks
+# Allow empty endif() and such with CMake 2.4.
+SET(CMAKE_ALLOW_LOOSE_LOOP_CONSTRUCTS 1)
+
+if(COMMAND cmake_policy)
+	# We don't want to mix relative and absolute paths in linker lib lists.
+	cmake_policy(SET CMP0003 NEW)
+	if(POLICY CMP0053)
+		cmake_policy(SET CMP0053 OLD) # Simplify variable reference and escape sequence evaluation. 
+	endif()
+	if(POLICY CMP0026)
+		cmake_policy(SET CMP0026 OLD) # Allow using the LOCATION target property.
+	endif()
+	if(POLICY CMP0037)
+		cmake_policy(SET CMP0037 OLD)  # Allow defining target "test"
+	endif()
+	if(POLICY CMP0043)
+		cmake_policy(SET CMP0043 OLD) #  Ignore COMPILE_DEFINITIONS_<Config> properties.
+	endif()
+	
+endif()
+# -------------------------
+
+
 include(cmakemodules/script_version_number.cmake REQUIRED)	#  Loads MRPT version number
 
 LIST(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmakemodules") # Directory for CMake scripts
@@ -98,16 +125,16 @@ ENDIF(BUILD_SHARED_LIBS)
 # ===================================================
 INCLUDE(FindPkgConfig OPTIONAL)
 # "QUIET" was introduced in 2.8.2 for PKG_CHECK_MODULES
-if ("${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION}.${CMAKE_PATCH_VERSION}" VERSION_GREATER "2.8.1")
+if (${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION}.${CMAKE_PATCH_VERSION} VERSION_GREATER 2.8.1)
    set(_QUIET QUIET)
-endif ("${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION}.${CMAKE_PATCH_VERSION}" VERSION_GREATER "2.8.1")
+endif()
 
 
 # Group projects in "folders"
 # ===================================================
-IF (CMAKE_VERSION VERSION_GREATER "2.8.0")
+IF (CMAKE_VERSION VERSION_GREATER 2.8.0)
 	SET(ENABLE_SOLUTION_FOLDERS ON CACHE BOOL "Group projects under virtual folders of the compiler IDE (e.g. VisualStudio)")
-ENDIF (CMAKE_VERSION VERSION_GREATER "2.8.0")
+ENDIF (CMAKE_VERSION VERSION_GREATER 2.8.0)
 
 if (ENABLE_SOLUTION_FOLDERS)
   set_property(GLOBAL PROPERTY USE_FOLDERS ON)
@@ -117,9 +144,9 @@ endif (ENABLE_SOLUTION_FOLDERS)
 
 # Build the ARIA library?
 SET(DEFAULT_BUILD_ARIA ON) # Default: Yes
-if ("${CMAKE_MRPT_KERNEL}" MATCHES "GNU")   # Unless in HURD
+if (${CMAKE_MRPT_KERNEL} MATCHES "GNU")   # Unless in HURD
 	SET(DEFAULT_BUILD_ARIA OFF)
-endif ("${CMAKE_MRPT_KERNEL}" MATCHES "GNU")
+endif ()
 # Decl option:
 SET(BUILD_ARIA ${DEFAULT_BUILD_ARIA} CACHE BOOL "Build an embedded version of ActivMedia ARIA library (interface to mobile robots)")
 IF(BUILD_ARIA)
@@ -130,9 +157,9 @@ ENDIF(BUILD_ARIA)
 
 # Build the RoboPeak Lidar library?
 SET(DEFAULT_BUILD_ROBOPEAK_LIDAR ON) # Default: Yes
-if ("${CMAKE_MRPT_KERNEL}" MATCHES "GNU")   # Unless in HURD
+if (${CMAKE_MRPT_KERNEL} MATCHES "GNU")   # Unless in HURD
 	SET(DEFAULT_BUILD_ROBOPEAK_LIDAR OFF)
-endif ("${CMAKE_MRPT_KERNEL}" MATCHES "GNU")
+endif (${CMAKE_MRPT_KERNEL} MATCHES "GNU")
 # Decl option:
 SET(BUILD_ROBOPEAK_LIDAR ${DEFAULT_BUILD_ROBOPEAK_LIDAR} CACHE BOOL "Build an embedded version of RoboPeak LIDAR SDK (interface to low-cost lidar)")
 IF(BUILD_ROBOPEAK_LIDAR)
@@ -339,9 +366,9 @@ MARK_AS_ADVANCED(MRPT_WHOLE_PROGRAM_OPTIMIZATION)
 # Even more warnings for different compilers
 IF(MRPT_EXTRA_WARNINGS)
    #TODO - Add options for MSVC
-   IF ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
+   IF (${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU")
       SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wreturn-type -Wextra") # -Wold-style-cast  -Woverloaded-virtual
-   ELSEIF("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
+   ELSEIF(${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang")
 		SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wextra")
 	ENDIF()
 ENDIF(MRPT_EXTRA_WARNINGS)
@@ -438,7 +465,7 @@ IF(CMAKE_COMPILER_IS_GNUCXX)
 ENDIF(CMAKE_COMPILER_IS_GNUCXX)
 
 # CLang options ================================
-if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
+if (${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang")
 	SET( MRPT_BUILD_CLANG_PEDANTIC OFF CACHE BOOL "Enable pedantic error detection (clang)")
 	MARK_AS_ADVANCED(MRPT_BUILD_CLANG_PEDANTIC)
 
@@ -463,12 +490,11 @@ if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
 	# This is to fix the compilation of C++ templates
 	SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fdelayed-template-parsing")
 
-endif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
+endif()
 
 # Shared options between GCC and CLANG:
 # ======================================
-if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang" OR CMAKE_COMPILER_IS_GNUCXX)
-
+if (${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang" OR CMAKE_COMPILER_IS_GNUCXX)
 	IF(MRPT_WARNINGS_ARE_ERRORS)
 		SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror")
 		SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Werror")
@@ -553,11 +579,7 @@ if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang" OR CMAKE_COMPILER_IS_GNUCXX)
 		SET(EXTRA_CPP_FLAGS "${EXTRA_CPP_FLAGS} -msse4a")
 	ENDIF(CMAKE_MRPT_HAS_SSE4_A)
 
-	IF (CMAKE_MRPT_BUILD_STATIC_PIC_ONOFF)
-		SET(EXTRA_CPP_FLAGS "${EXTRA_CPP_FLAGS} -fPIC")
-	ENDIF (CMAKE_MRPT_BUILD_STATIC_PIC_ONOFF)
-
-endif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang" OR CMAKE_COMPILER_IS_GNUCXX)
+endif ()
 
 # Add user supplied extra options (optimization, etc...)
 # ==========================================================
@@ -661,9 +683,9 @@ IF( BUILD_TESTING)
 	# Try using libgtest (Google testing library) from the system, if available
 	# Note: In gtest 1.6.0 things changed and there's no prebuilt system lib anymore.
 	# TODO: Is it possible to compile here the /usr/src/gtest/ sources??
-	IF("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang" AND APPLE)
+	IF(${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang" AND APPLE)
 		add_definitions(-DGTEST_USE_OWN_TR1_TUPLE=1)
-	ENDIF("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang" AND APPLE)
+	ENDIF()
 	add_subdirectory(${CMAKE_MRPT_GTEST_SRC_DIR})  # Build gtest from sources
 	add_subdirectory(tests)  # Build my tests
 ENDIF( BUILD_TESTING)

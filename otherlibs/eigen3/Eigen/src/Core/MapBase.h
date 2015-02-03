@@ -234,7 +234,11 @@ template<typename Derived> class MapBase<Derived, WriteAccessors>
       return derived();
     }
 
-    using Base::Base::operator=;
+    // In theory MapBase<Derived, ReadOnlyAccessors> should not make a using Base::operator=,
+    // and thus we should directly do: using Base::Base::operator=;
+    // However, this would confuse recent MSVC 2013 (bug 821), and since MapBase<Derived, ReadOnlyAccessors>
+    // has operator= to make ICC 11 happy, we can also make MSVC 2013 happy as follow:
+    using Base::operator=;
 };
 
 #undef EIGEN_STATIC_ASSERT_INDEX_BASED_ACCESS

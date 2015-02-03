@@ -46,6 +46,7 @@ using namespace mrpt;
 using namespace mrpt::obs;
 using namespace mrpt::maps;
 using namespace mrpt::bayes;
+using namespace mrpt::poses;
 using namespace mrpt::opengl;
 using namespace mrpt::gui;
 using namespace mrpt::math;

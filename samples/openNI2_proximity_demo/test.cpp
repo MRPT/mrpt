@@ -2,7 +2,7 @@
    |                     Mobile Robot Programming Toolkit (MRPT)               |
    |                          http://www.mrpt.org/                             |
    |                                                                           |
-   | Copyright (c) 2005-2014, Individual contributors, see AUTHORS file        |
+   | Copyright (c) 2005-2015, Individual contributors, see AUTHORS file        |
    | See: http://www.mrpt.org/Authors - All rights reserved.                   |
    | Released under BSD License. See details in http://www.mrpt.org/License    |
    +---------------------------------------------------------------------------+ */
@@ -94,6 +94,17 @@ int main ( int argc, char** argv )
 		openni::OpenNI::shutdown();
 		return 2;
 	}
+
+	//						Uncomment this to see the video modes available
+	//========================================================================================
+	//Infrared modes
+	//openni::VideoMode vm;
+	//for(unsigned int i = 0; i<infrared.getSensorInfo().getSupportedVideoModes().getSize(); i++)
+	//{
+	//	vm = infrared.getSensorInfo().getSupportedVideoModes()[i];
+	//	printf("\n Depth mode %d: %d x %d, fps - %d Hz, pixel format - ",i, vm.getResolutionX(), vm.getResolutionY(), vm.getFps());
+	//	cout << vm.getPixelFormat();
+	//}
 
 
 	//										Create scene

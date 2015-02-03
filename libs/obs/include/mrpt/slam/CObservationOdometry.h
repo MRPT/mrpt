@@ -10,6 +10,6 @@
 #include <mrpt/obs/CObservationOdometry.h>
 MRPT_WARNING("*Deprecated header* Please replace with #include <mrpt/obs/CObservationOdometry.h>. This backward compatible header will be removed in MRPT 2.0.0")
 namespace mrpt { namespace slam {
-	typedef mrpt::obs::CObservationOdometry CObservationOdometry;    //!< Backward compatible typedef
-	typedef mrpt::obs::CObservationOdometryPtr CObservationOdometryPtr; //!< Backward compatible typedef
+	using mrpt::obs::CObservationOdometry;    //!< Backward compatibility
+	using mrpt::obs::CObservationOdometryPtr; //!< Backward compatibility
 } }

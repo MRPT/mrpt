@@ -17,20 +17,22 @@ const char *default_cfg_txt =
 	"; ---------------------------------------------------------------\n"
 	"; FILE: Difodo Parameters.txt\n"
 	";\n"
-	";  MJT @ JANUARY-2014\n"
+	";  MJT @ JANUARY-2015\n"
 	"; ---------------------------------------------------------------\n\n"
 
 	"[DIFODO_CONFIG]\n\n"
 
 	";downsample: 1 - 640x480, 2 - 320x240, 4 - 160x120 \n"
-	"downsample = 4 \n\n"
+	"downsample = 2 \n\n"
 
 	";Indicate the number of rows and columns. They must be equal or inferior to what is indicated with the 'downsample' variable). \n"
-	"rows = 60 \n"
-	"cols = 80 \n\n"
+	"rows = 240 \n"
+	"cols = 320 \n"
+	"ctf_levels = 5 \n\n"
 
 	";Absolute path of the rawlog file \n"
-	"filename = C:/.../file.rawlog \n";
+	"filename = C:/Users/Mariano/Desktop/rawlog_rgbd_dataset_freiburg1_desk2/rgbd_dataset_freiburg1_desk2.rawlog \n";
+	//"filename = .../file.rawlog \n";
 
 
 // ------------------------------------------------------
@@ -113,6 +115,7 @@ int main(int num_arg, char *argv[])
 		int pushed_key = 0;
 		bool working = 0, stop = 0;
 
+		//Necessary step before starting
 		odo.reset();
 
 		while (!stop)
@@ -127,23 +130,27 @@ int main(int num_arg, char *argv[])
 
 			//Capture 1 new frame and calculate odometry
 			case  'n':
-				if (odo.dataset.size() <= odo.rawlog_count)
+				if (odo.dataset_finished)
 				{
 					working = 0;
 					cout << endl << "End of dataset.";
+					if (odo.f_res.is_open())
+						odo.f_res.close();
 				}
 				else
 				{
 					odo.loadFrame();
-					odo.OdometryCalculation();
-					odo.filterSpeedAndPoseUpdate();
-					cout << endl << "Difodo execution time(ms): " << odo.execution_time;
+					odo.odometryCalculation();
+					if (odo.save_results == 1)
+						odo.writeTrajectoryFile();
+
+					cout << endl << "Difodo runtime(ms): " << odo.execution_time;
 					odo.updateScene();
 				}
 
 				break;
 
-			//Start and stop continous odometry
+			//Start and stop continuous odometry
 			case 's':
 				working = !working;
 				break;
@@ -155,16 +162,11 @@ int main(int num_arg, char *argv[])
 					odo.f_res.close();
 				break;
 
-			//Show statistics
-			case 't':
-				odo.showStatistics();
-				break;
-
 			}
 
 			if (working == 1)
 			{
-				if (odo.dataset.size() <= odo.rawlog_count)
+				if (odo.dataset_finished)
 				{
 					working = 0;
 					cout << endl << "End of dataset.";
@@ -174,9 +176,11 @@ int main(int num_arg, char *argv[])
 				else
 				{
 					odo.loadFrame();
-					odo.OdometryCalculation();
-					odo.filterSpeedAndPoseUpdate();
-					cout << endl << "Difodo execution time(ms): " << odo.execution_time;
+					odo.odometryCalculation();
+					if (odo.save_results == 1)
+						odo.writeTrajectoryFile();
+
+					cout << endl << "Difodo runtime(ms): " << odo.execution_time;
 					odo.updateScene();
 				}
 			}

@@ -10,6 +10,6 @@
 #include <mrpt/obs/CObservationReflectivity.h>
 MRPT_WARNING("*Deprecated header* Please replace with #include <mrpt/obs/CObservationReflectivity.h>. This backward compatible header will be removed in MRPT 2.0.0")
 namespace mrpt { namespace slam {
-	typedef mrpt::obs::CObservationReflectivity CObservationReflectivity;    //!< Backward compatible typedef
-	typedef mrpt::obs::CObservationReflectivityPtr CObservationReflectivityPtr; //!< Backward compatible typedef
+	using mrpt::obs::CObservationReflectivity;    //!< Backward compatibility
+	using mrpt::obs::CObservationReflectivityPtr; //!< Backward compatibility
 } }
