@@ -26,6 +26,10 @@
 // Universal include for all versions of OpenCV
 #include <mrpt/otherlibs/do_opencv_includes.h>
 
+#if MRPT_HAS_MATLAB
+#	include <mexplus/mxarray.h>
+#endif
+
 // Prototypes of SSE2/SSE3/SSSE3 optimized functions:
 #include "CImage_SSEx.h"
 
@@ -55,7 +59,6 @@ std::string CImage::IMAGES_PATH_BASE(".");
 #if IMAGE_ALLOC_PERFLOG
 mrpt::utils::CTimeLogger alloc_tims;
 #endif
-
 
 /*---------------------------------------------------------------
 						Constructor
@@ -835,6 +838,20 @@ void  CImage::readFromStream(mrpt::utils::CStream &in, int version)
 	};
 #endif
 }
+
+/*---------------------------------------------------------------
+  Implements the writing to a mxArray for Matlab
+ ---------------------------------------------------------------*/
+#if MRPT_HAS_MATLAB
+// Add to implement mexplus::from template specialization
+IMPLEMENTS_MEXPLUS_FROM( mrpt::utils::CImage )
+
+mxArray* CImage::writeToMatlab() const
+{
+    cv::Mat cvImg = cv::cvarrToMat( this->getAs<IplImage>() );
+	return mexplus::from( cvImg );
+}
+#endif
 
 /*---------------------------------------------------------------
 						getSize

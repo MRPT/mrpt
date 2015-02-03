@@ -13,6 +13,10 @@
 #include <mrpt/utils/TTypeName.h>
 #include <mrpt/utils/types_simple.h>
 
+#if MRPT_HAS_MATLAB
+typedef struct mxArray_tag mxArray; //!< Forward declaration for mxArray (avoid #including as much as possible to speed up compiling)
+#endif
+
 namespace mrpt
 {
 	namespace utils {
@@ -39,7 +43,7 @@ namespace mrpt
 
 			virtual ~CSerializable() { }
 
-		protected:
+        protected:
 			 /** Introduces a pure virtual method responsible for writing to a CStream.
 			  *  This can not be used directly be users, instead use "stream << object;"
 			  *   for writing it to a stream.
@@ -64,6 +68,16 @@ namespace mrpt
 			  * \sa CStream
 			  */
 			virtual void  readFromStream(mrpt::utils::CStream &in, int version) = 0;
+
+		public:
+
+			/** Introduces a pure virtual method responsible for writing to a `mxArray` Matlab object, 
+			  * typically a MATLAB `struct` whose contents are documented in each derived class. 
+			  * \return A new `mxArray` (caller is responsible of memory freeing) or NULL is class does not support conversion to MATLAB.
+			  */
+#if MRPT_HAS_MATLAB
+			virtual mxArray* writeToMatlab() const { return NULL; }
+#endif
 		}; // End of class def.
 
 		DEFINE_MRPT_OBJECT_POST( CSerializable )
@@ -185,6 +199,43 @@ namespace mrpt
 			IMPLEMENTS_VIRTUAL_MRPT_OBJECT(class_name, base_class_name,NameSpace) \
 			mrpt::utils::CStream& NameSpace::operator>>(mrpt::utils::CStream& in, class_name##Ptr &pObj) \
 			{ pObj = class_name##Ptr( in.ReadObject() ); return in; }
+
+		/** This must be inserted if a custom conversion method for MEX API is implemented in the class */
+		#if MRPT_HAS_MATLAB
+			#define DECLARE_MEX_CONVERSION \
+			/*! @name Virtual methods for MRPT-MEX conversion */ \
+			/*! @{ */ \
+			public: \
+				virtual mxArray* writeToMatlab() const; \
+			/*! @} */
+		#else
+			#define DECLARE_MEX_CONVERSION //Empty
+		#endif
+
+		/** This must be inserted if a custom conversion method for MEX API is implemented in the class */
+		#if MRPT_HAS_MATLAB
+			#define DECLARE_MEXPLUS_FROM( complete_type ) \
+			namespace mexplus \
+			{ \
+				template <typename T> \
+				mxArray* from(const T& value); \
+				template <> \
+				mxArray* from(const complete_type& value); \
+			}
+
+			#define IMPLEMENTS_MEXPLUS_FROM( complete_type ) \
+			namespace mexplus \
+			{ \
+				template <> \
+				mxArray* from(const complete_type& var) \
+				{ \
+					return var.writeToMatlab(); \
+				} \
+			}
+		#else
+			#define DECLARE_MEXPLUS_FROM(complete_type) //Empty
+			#define IMPLEMENTS_MEXPLUS_FROM(complete_type) //Empty
+		#endif
 
 	} // End of namespace
 } // End of namespace

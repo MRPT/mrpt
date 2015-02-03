@@ -13,6 +13,9 @@
 #include <mrpt/math/CMatrixFixedNumeric.h>
 #include <mrpt/math/CQuaternion.h>
 
+// Add for declaration of mexplus::from template specialization
+DECLARE_MEXPLUS_FROM( mrpt::poses::CPose3D )
+
 namespace mrpt
 {
 namespace poses
@@ -70,6 +73,9 @@ namespace poses
 	{
 		// This must be added to any CSerializable derived class:
 		DEFINE_SERIALIZABLE( CPose3D )
+
+        // This must be added for declaration of MEX-related functions
+        DECLARE_MEX_CONVERSION
 
 	public:
 		mrpt::math::CArrayDouble<3>   m_coords; //!< The translation vector [x,y,z] access directly or with x(), y(), z() setter/getter methods.

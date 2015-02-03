@@ -66,9 +66,11 @@ SET(MRPT_LINKER_LIBS "")
 
 # ----- Useful macros ------
 include(cmakemodules/UtilsMacros.cmake REQUIRED)
+include(cmakemodules/DebugMacros.cmake REQUIRED)
 include(cmakemodules/FilterFileLists.cmake REQUIRED)
 include(cmakemodules/MRPTPCHSupport.cmake REQUIRED)
 include(cmakemodules/DeclareMRPTLib.cmake REQUIRED)
+include(cmakemodules/DeclareMEXLib.cmake REQUIRED)
 include(cmakemodules/DeclareAppDependencies.cmake REQUIRED)
 # --------------------------
 
@@ -172,6 +174,10 @@ ENDIF(BUILD_ROBOPEAK_LIDAR)
 SET(BUILD_HWDRIVERS ON CACHE BOOL "Build hardware drivers (library apps/lib_hwdrivers)?.")
 MARK_AS_ADVANCED(BUILD_HWDRIVERS)
 
+#-----------------------------------
+#  Build with MRPT-MEX compatibility?
+#-----------------------------------
+SET(BUILD_MATLAB OFF CACHE BOOL "Build with compatibility options for MEX wrapper?.")
 
 # GCC only:
 # ===================================================
@@ -266,6 +272,8 @@ include(cmakemodules/script_xsens.cmake REQUIRED)      # XSens Motion trackers /
 include(cmakemodules/script_flycapture2.cmake REQUIRED)# Check for PointGreyResearch (PGR) FlyCapture2 library
 include(cmakemodules/script_triclops.cmake REQUIRED)	# Check for PointGreyResearch (PGR) Triclops library
 include(cmakemodules/script_duo3d.cmake REQUIRED)		# Support for DUO3D Camera
+include(cmakemodules/script_matlab.cmake REQUIRED)	# Support for Matlab MEX functions generation
+
 # ---------------------------------------------------------------------------
 #			OPTIONS
 #The options for the user when using "cmakesetup" or "ccmake":
@@ -386,9 +394,7 @@ IF(MSVC)
 	IF(MRPT_WHOLE_PROGRAM_OPTIMIZATION)
 		SET(EXTRA_CPP_FLAGS "${EXTRA_CPP_FLAGS} /GL")
 		SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /LTCG ")
-		#SET(CMAKE_EXE_LINKER_FLAGS_RELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE} /LTCG ")
 		SET(CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} /LTCG ")
-		#SET(CMAKE_MODULE_LINKER_FLAGS_RELEASE "${CMAKE_MODULE_LINKER_FLAGS_RELEASE} /LTCG ")
 		SET(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} /LTCG ")
 	ENDIF(MRPT_WHOLE_PROGRAM_OPTIMIZATION)
 
@@ -601,7 +607,6 @@ IF(CMAKE_COMPILER_IS_GNUCXX AND NOT APPLE)
 	#SET(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,--as-needed")
 ENDIF(CMAKE_COMPILER_IS_GNUCXX AND NOT APPLE)
 
-
 IF($ENV{VERBOSE})
 	MESSAGE(STATUS "Final CMAKE_CXX_FLAGS: ${CMAKE_CXX_FLAGS}")
 	MESSAGE(STATUS "Final CMAKE_EXE_LINKER_FLAGS: ${CMAKE_EXE_LINKER_FLAGS}")
@@ -612,6 +617,8 @@ ENDIF($ENV{VERBOSE})
 # Save libs and executables in the same place
 SET( LIBRARY_OUTPUT_PATH ${MRPT_BINARY_DIR}/lib CACHE PATH "Output directory for libraries" )
 SET( EXECUTABLE_OUTPUT_PATH ${MRPT_BINARY_DIR}/bin CACHE PATH "Output directory for applications" )
+SET( MEX_LIBRARY_OUTPUT_PATH ${MRPT_BINARY_DIR}/mex/+mrpt CACHE PATH "Output directory for mex functions" )
+SET( MEX_EXECUTABLE_OUTPUT_PATH ${MRPT_BINARY_DIR}/mex/test CACHE PATH "Output directory for executable mexs" )
 
 #--------------------------------------------------------------
 # If we are building the final step of the Debian package,
@@ -661,6 +668,10 @@ SET( BUILD_APPLICATIONS ON CACHE BOOL "If you only want the MRPT libraries, disa
 IF(BUILD_APPLICATIONS)
 	add_subdirectory(apps)    # The applications:
 ENDIF(BUILD_APPLICATIONS)
+
+IF(BUILD_MATLAB)
+        add_subdirectory(mex/apps)# The MEX applications
+ENDIF(BUILD_MATLAB)
 
 # Documentation targets (must be AFTER "apps" because it uses the aux program "mrpt-perfdata2html")
 add_subdirectory(doc)
@@ -713,4 +724,3 @@ include(cmakemodules/script_install_commands.cmake REQUIRED)
 
 # Summary
 include(cmakemodules/script_show_final_summary.cmake REQUIRED)
-

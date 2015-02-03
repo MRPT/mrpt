@@ -13,3 +13,4 @@ namespace mrpt { namespace slam {
 	using mrpt::obs::CObservationImage;    //!< Backward compatibility
 	using mrpt::obs::CObservationImagePtr; //!< Backward compatibility
 } }
+

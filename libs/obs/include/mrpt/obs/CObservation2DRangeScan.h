@@ -15,6 +15,9 @@
 #include <mrpt/maps/CMetricMap.h>
 #include <mrpt/math/CPolygon.h>
 
+// Add for declaration of mexplus::from template specialization
+DECLARE_MEXPLUS_FROM( mrpt::obs::CObservation2DRangeScan )
+
 namespace mrpt
 {
 namespace obs
@@ -50,6 +53,8 @@ namespace obs
 	{
 		// This must be added to any CSerializable derived class:
 		DEFINE_SERIALIZABLE( CObservation2DRangeScan )
+		// This must be added for declaration of MEX-related functions
+		DECLARE_MEX_CONVERSION
 
 	 public:
 		typedef std::vector<mrpt::math::CPolygon> TListExclusionAreas; //!< Used in filterByExclusionAreas

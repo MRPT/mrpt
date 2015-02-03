@@ -32,6 +32,9 @@ namespace mrpt
 		{
 			DEFINE_SERIALIZABLE( TCamera )
 
+            // This must be added for declaration of MEX-related functions
+            DECLARE_MEX_CONVERSION
+
 		public:
 			TCamera() : ncols(640), nrows(480), focalLengthMeters(0)
 			{
@@ -193,4 +196,7 @@ namespace mrpt
 
 	} // End of namespace
 } // end of namespace
+
+// Add for declaration of mexplus::from template specialization
+DECLARE_MEXPLUS_FROM( mrpt::utils::TCamera ) // Not working at the beginning?
 #endif

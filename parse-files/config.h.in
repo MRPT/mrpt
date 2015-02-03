@@ -107,6 +107,9 @@ ${CMAKE_MRPT_BUILD_SHARED_LIB}
 #define MRPT_HAS_JPEG             ${CMAKE_MRPT_HAS_JPEG}
 #define MRPT_HAS_JPEG_SYSTEM      ${CMAKE_MRPT_HAS_JPEG_SYSTEM}
 
+/** Matlab wrapper is available */
+#define MRPT_HAS_MATLAB           ${CMAKE_MRPT_HAS_MATLAB}
+
 /* Automatic definition of OS-macros */
 #if defined(_WIN32) || defined(_WIN32_)  || defined(WIN32) || defined(_WIN64)
     #define MRPT_OS_WINDOWS

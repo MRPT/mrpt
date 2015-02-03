@@ -36,6 +36,8 @@ namespace obs
 	{
 		// This must be added to any CSerializable derived class:
 		DEFINE_SERIALIZABLE( CObservationImage )
+		// This must be added for declaration of MEX-related functions
+		DECLARE_MEX_CONVERSION
 
 	 public:
 		/** Constructor.
@@ -72,5 +74,8 @@ namespace obs
 
 	} // End of namespace
 } // End of namespace
+
+// Add for declaration of mexplus::from template specialization
+DECLARE_MEXPLUS_FROM( mrpt::obs::CObservationImage )
 
 #endif

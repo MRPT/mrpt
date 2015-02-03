@@ -128,7 +128,12 @@ SHOW_CONFIG_LINE_SYSTEM("PCL (Pointscloud library)           " CMAKE_MRPT_HAS_PC
 SHOW_CONFIG_LINE("SuiteSparse                         " CMAKE_MRPT_HAS_SUITESPARSE)
 SHOW_CONFIG_LINE_SYSTEM("wxWidgets                           " CMAKE_MRPT_HAS_WXWIDGETS)
 SHOW_CONFIG_LINE_SYSTEM("zlib (compression)                  " CMAKE_MRPT_HAS_ZLIB)
+SHOW_CONFIG_LINE("mexplus                             " CMAKE_MRPT_HAS_MATLAB)
 MESSAGE(STATUS  "")
+
+MESSAGE(STATUS " _______________________ WRAPPERS/BINDINGS ______________________")
+SHOW_CONFIG_LINE_SYSTEM("Matlab / mex files " CMAKE_MRPT_HAS_MATLAB "[Version: ${MATLAB_VERSION}]")
+MESSAGE(STATUS "")
 
 MESSAGE(STATUS " _____________________ HARDWARE & SENSORS _______________________")
 SHOW_CONFIG_LINE_SYSTEM("libdc1394-2 (FireWire capture)      " CMAKE_MRPT_HAS_LIBDC1394_2)
