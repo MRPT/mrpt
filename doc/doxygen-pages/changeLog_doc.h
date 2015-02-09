@@ -19,6 +19,9 @@
 	- <b>Detailed list of changes:</b>
 		- \mrpt_maps_grp
 			- New method mrpt::maps::COccupancyGridMap2D::getAsPointCloud()
+		- \mrpt_nav_grp
+			- Removed old base class CPathPlanningMethod
+			- CPathPlanningCircularRobot => PlannerSimple2D: Class renamed (and better described) for consistency with other planners
 		- BUG FIXES:
 			- Fix ocasional (false) failure of RANSAC unit tests due to their non-deterministic nature.
 			- Fix build error with MSVC 2010 in mrpt-hmtslam (Closes #127).

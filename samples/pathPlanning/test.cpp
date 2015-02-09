@@ -8,7 +8,7 @@
    +---------------------------------------------------------------------------+ */
 
 #include <mrpt/maps/COccupancyGridMap2D.h>
-#include <mrpt/nav/planners/CPathPlanningCircularRobot.h>
+#include <mrpt/nav/planners/PlannerSimple2D.h>
 #include <mrpt/gui/CDisplayWindow.h>
 #include <mrpt/utils/CTicTac.h>
 #include <mrpt/utils/CFileGZInputStream.h>
@@ -47,7 +47,7 @@ void TestPathPlanning()
 
 
 	// Find path:
-	CPathPlanningCircularRobot	pathPlanning;
+	PlannerSimple2D	pathPlanning;
 	pathPlanning.robotRadius = 0.30f;
 
 	std::deque<TPoint2D>		thePath;

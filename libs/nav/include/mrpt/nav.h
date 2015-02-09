@@ -21,7 +21,6 @@
 #include <mrpt/nav/tpspace/CPTG6.h>
 #include <mrpt/nav/tpspace/CPTG7.h>
 
-#include <mrpt/nav/planners/CPathPlanningMethod.h>
-#include <mrpt/nav/planners/CPathPlanningCircularRobot.h>
+#include <mrpt/nav/planners/PlannerSimple2D.h>
 #include <mrpt/nav/planners/PlannerRRT_SE2_TPS.h>
 
