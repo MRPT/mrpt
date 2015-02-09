@@ -9,7 +9,7 @@
 
 #include "nav-precomp.h"   // Precompiled headers
 
-#include <mrpt/nav/planners/CPathPlanningCircularRobot.h>
+#include <mrpt/nav/planners/PlannerSimple2D.h>
 
 using namespace mrpt;
 using namespace mrpt::maps;
@@ -22,18 +22,18 @@ using namespace std;
 /*---------------------------------------------------------------
 						Constructor
   ---------------------------------------------------------------*/
-CPathPlanningCircularRobot::CPathPlanningCircularRobot() :
-	robotRadius				( 0.35f )
+PlannerSimple2D::PlannerSimple2D() :
+	occupancyThreshold ( 0.5f ),
+	minStepInReturnedPath (0.4f),
+	robotRadius(0.35f)
 {
-	occupancyThreshold		= 0.5f ;
-	minStepInReturnedPath	= 0.40f;
 }
 
 
 /*---------------------------------------------------------------
 						computePath
   ---------------------------------------------------------------*/
-void  CPathPlanningCircularRobot::computePath(
+void  PlannerSimple2D::computePath(
 	const COccupancyGridMap2D	&theMap,
 	const CPose2D				&origin_,
 	const CPose2D				&target_,
@@ -243,7 +243,7 @@ void  CPathPlanningCircularRobot::computePath(
 		if (maxSearchPathLength>0)
 			if ( theMap.getResolution() * longestPathInCellsMetric * 0.5f > 1.5f*maxSearchPathLength )
 			{
-//				printf_debug("[CPathPlanningCircularRobot::computePath] Path exceeded desired length! (length=%f m)\n", theMap.getResolution() * longestPathInCellsMetric * 0.5f);
+//				printf_debug("[PlannerSimple2D::computePath] Path exceeded desired length! (length=%f m)\n", theMap.getResolution() * longestPathInCellsMetric * 0.5f);
 				notFound = true;
 			}
 

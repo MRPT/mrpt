@@ -131,6 +131,8 @@ class _DSceneViewerFrame: public wxFrame
         static const long ID_MENUITEM19;
         static const long ID_MENUITEM22;
         static const long ID_MENUITEM21;
+        static const long ID_MENUITEM29;
+        static const long ID_MENUITEM30;
         static const long ID_MENUITEM12;
         static const long ID_MENUITEM23;
         static const long ID_MENUITEM18;
@@ -176,6 +178,7 @@ class _DSceneViewerFrame: public wxFrame
         wxMenuItem* MenuItem22;
         wxMenuItem* MenuItem10;
         wxStaticLine* StaticLine2;
+        wxMenuItem* MenuItem24;
         wxCustomButton* btnOptions;
         wxMenuItem* mnuSelectNone;
         wxMenuItem* mnuSceneStats;
@@ -186,6 +189,7 @@ class _DSceneViewerFrame: public wxFrame
         wxMenuItem* MenuItem6;
         wxStaticLine* StaticLine3;
         wxStaticLine* StaticLine1;
+        wxMenuItem* MenuItem23;
         wxTimer timLoadFileCmdLine;
         wxCustomButton* btnAbout;
         wxMenuItem* MenuItem21;
