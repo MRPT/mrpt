@@ -23,6 +23,10 @@ namespace mrpt
 
   namespace nav
   {
+	/** \defgroup nav_tpspace TP-Space and PTG classes
+	  * \ingroup mrpt_nav_grp
+	  */
+	  
 	/** This is the base class for any user-defined PTG.
 	 *   The class factory interface in CParameterizedTrajectoryGenerator::CreatePTG.
 	 *
@@ -34,7 +38,7 @@ namespace mrpt
 	 *		- 16/SEP/2004: Totally redesigned.
 	 *		- 15/SEP/2005: Totally rewritten again, for integration into MRPT Applications Repository.
 	 *		- 19/JUL/2009: Simplified to use only STL data types, and created the class factory interface.
-	 *  \ingroup mrpt_nav_grp
+	 *  \ingroup nav_tpspace
 	 */
 	class NAV_IMPEXP  CParameterizedTrajectoryGenerator
 	{

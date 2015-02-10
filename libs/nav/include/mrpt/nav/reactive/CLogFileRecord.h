@@ -25,7 +25,7 @@ namespace nav
 	/** A class for storing, saving and loading a reactive navigation
 	 *   log record for the CReactiveNavigationSystem class.
 	 * \sa CReactiveNavigationSystem, CHolonomicLogFileRecord
-	 *  \ingroup mrpt_nav_grp
+	 *  \ingroup nav_reactive
 	 */
 	class NAV_IMPEXP  CLogFileRecord : public mrpt::utils::CSerializable
 	{
@@ -39,7 +39,7 @@ namespace nav
 
 		/** The structure used to store all relevant information about each
 		  *  transformation into TP-Space.
-	  *  \ingroup mrpt_nav_grp
+	  *  \ingroup nav_reactive
 		  */
 		struct TInfoPerPTG
 		{

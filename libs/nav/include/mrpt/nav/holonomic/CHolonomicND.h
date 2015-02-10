@@ -18,6 +18,10 @@ namespace mrpt
   {
 	DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE(CLogFileRecord_ND, CHolonomicLogFileRecord, NAV_IMPEXP)
 
+	/** \addtogroup nav_holo Holonomic navigation methods
+	  * \ingroup mrpt_nav_grp
+	  * @{ */
+	
 	/** An implementation of the holonomic reactive navigation method "Nearness-Diagram".
 	 *   The algorithm "Nearness-Diagram" was proposed in:
 	 *
@@ -42,7 +46,7 @@ namespace mrpt
 	 * \endcode
 	 *
 	 *  \sa CAbstractHolonomicReactiveMethod,CReactiveNavigationSystem
-	 *  \ingroup mrpt_nav_grp
+	 *  \ingroup 
 	 */
 	class NAV_IMPEXP CHolonomicND : public CAbstractHolonomicReactiveMethod
 	{
@@ -182,6 +186,7 @@ namespace mrpt
 	};
 	DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(CLogFileRecord_ND, CHolonomicLogFileRecord, NAV_IMPEXP)
 
+	  /** @} */
 	} // end namespace
 
 	// Specializations MUST occur at the same namespace:

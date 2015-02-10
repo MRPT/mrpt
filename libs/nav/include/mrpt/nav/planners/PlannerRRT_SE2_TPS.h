@@ -22,6 +22,10 @@ namespace mrpt
 {
 	namespace nav
 	{
+	/** \addtogroup nav_planners Path planning
+	  * \ingroup mrpt_nav_grp
+	  * @{ */
+	  
 		/** TP Space-based RRT path planning for SE(2) (planar) robots.
 		*
 		*  - Usage:
@@ -33,8 +37,6 @@ namespace mrpt
 		*  - Changes history:
 		*    - 06/MAR/2014: Creation (MB)
 		*    - 06/JAN/2015: Refactoring (JLBC)
-		*
-		*  \ingroup mrpt_nav_grp
 		*
 		*  \todo Factorize into more generic path planner classes!  //template <class  POSE, class MOTIONS>...
 		*/
@@ -252,5 +254,7 @@ namespace mrpt
 				);
 
 		}; // end class PlannerRRT_SE2_TPS
+		
+	  /** @} */
 	}
 }

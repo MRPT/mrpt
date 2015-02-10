@@ -17,7 +17,7 @@ namespace mrpt
   {
 	/** Trajectories with a fixed linear speed (V_MAX) and a first turning part followed by a straight segment.
 	 *
-	 *  \ingroup mrpt_nav_grp
+	 *  \ingroup nav_tpspace
 	 */
 	class NAV_IMPEXP  CPTG7 : public CParameterizedTrajectoryGenerator
 	{

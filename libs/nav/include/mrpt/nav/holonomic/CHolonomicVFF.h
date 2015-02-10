@@ -19,19 +19,18 @@ namespace mrpt
   namespace nav
   {
 	 DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE( CLogFileRecord_VFF, CHolonomicLogFileRecord, NAV_IMPEXP )
+	/** \addtogroup nav_holo Holonomic navigation methods
+	  * \ingroup mrpt_nav_grp
+	  * @{ */
 
 	/** A class for storing extra information about the execution of
 	 *    CHolonomicVFF navigation.
 	 * \sa CHolonomicVFF, CHolonomicLogFileRecord
-	 *  \ingroup mrpt_nav_grp
 	 */
 	class NAV_IMPEXP CLogFileRecord_VFF : public CHolonomicLogFileRecord
 	{
 		DEFINE_SERIALIZABLE( CLogFileRecord_VFF )
 	 public:
-
-		 /** Member data.
-		   */
 
 	};
 	 DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE( CLogFileRecord_VFF, CHolonomicLogFileRecord, NAV_IMPEXP )
@@ -96,6 +95,7 @@ namespace mrpt
 		TOptions options;  //!< Parameters of the algorithm (can be set manually or loaded from CHolonomicVFF::initialize or options.loadFromConfigFile(), etc.)
 
 	};
+	  /** @} */
   }
 }
 

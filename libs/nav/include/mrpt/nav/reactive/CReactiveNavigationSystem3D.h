@@ -33,7 +33,7 @@ namespace mrpt
 		* - DEC/2013: Code refactoring between this class and CAbstractHolonomicReactiveMethod
 		*
 		*  \sa CAbstractReactiveNavigationSystem, CParameterizedTrajectoryGenerator, CAbstractHolonomicReactiveMethod
-		*  \ingroup mrpt_nav_grp
+	    *  \ingroup nav_reactive
 		*/
 		class NAV_IMPEXP CReactiveNavigationSystem3D : public CAbstractPTGBasedReactive
 		{

@@ -19,9 +19,11 @@ namespace mrpt
 {
 	namespace nav
 	{
-	/**  The implemented reactive navigation methods. This enum works with mrpt::utils::TEnumType
-	*  \ingroup mrpt_nav_grp
-	*/
+	/** \addtogroup nav_holo Holonomic navigation methods
+	  * \ingroup mrpt_nav_grp
+	  * @{ */
+	  
+	/**  The implemented reactive navigation methods. This enum works with mrpt::utils::TEnumType */
 	enum THolonomicMethod
 	{
 		hmVIRTUAL_FORCE_FIELDS = 0,
@@ -30,7 +32,6 @@ namespace mrpt
 
 	/** A base class for holonomic reactive navigation methods.
 	 *  \sa CHolonomicVFF,CHolonomicND, CReactiveNavigationSystem
-	 *  \ingroup mrpt_nav_grp
 	 */
 	class NAV_IMPEXP CAbstractHolonomicReactiveMethod
 	{
@@ -62,6 +63,7 @@ namespace mrpt
 		 virtual void  initialize( const mrpt::utils::CConfigFileBase &INI_FILE  ) = 0;
 
 	};
+	  /** @} */
   }
 	// Specializations MUST occur at the same namespace:
 	namespace utils

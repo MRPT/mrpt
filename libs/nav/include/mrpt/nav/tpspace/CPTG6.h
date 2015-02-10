@@ -16,7 +16,7 @@ namespace mrpt
   namespace nav
   {
 	/** A variation of the alpha-PTG (with fixed parameters, for now)
-	  *  \ingroup mrpt_nav_grp
+	  *  \ingroup nav_tpspace
 	 */
 	class NAV_IMPEXP  CPTG6 : public CParameterizedTrajectoryGenerator
 	{

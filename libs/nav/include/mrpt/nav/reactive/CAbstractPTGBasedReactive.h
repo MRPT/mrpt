@@ -41,7 +41,7 @@ namespace mrpt
 	  *  - See derived classes for papers on each specific method.
 	  *
 	  * \sa CReactiveNavigationSystem, CReactiveNavigationSystem3D
-	  *  \ingroup mrpt_nav_grp
+	  *  \ingroup nav_reactive
 	  */
 	class NAV_IMPEXP CAbstractPTGBasedReactive: public CAbstractReactiveNavigationSystem
 	{

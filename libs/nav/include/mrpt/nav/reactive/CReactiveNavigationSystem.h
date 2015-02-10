@@ -13,10 +13,12 @@
 
 namespace mrpt
 {
-	/** This namespace contains classes for building a TP-Space Reactive Navigation System.
-	*/
   namespace nav
   {
+	/** \defgroup nav_reactive Reactive navigation classes
+	  * \ingroup mrpt_nav_grp
+	  */
+	  
 		/** See base class CAbstractPTGBasedReactive for a description and instructions of use.
 		* This particular implementation assumes a 2D robot shape.
 		*
@@ -31,7 +33,7 @@ namespace mrpt
 		* - DEC/2013: Code refactoring between this class and CAbstractHolonomicReactiveMethod
 		*
 		*  \sa CAbstractReactiveNavigationSystem, CParameterizedTrajectoryGenerator, CAbstractHolonomicReactiveMethod
-		*  \ingroup mrpt_nav_grp
+		*  \ingroup nav_reactive
 		*/
 		class NAV_IMPEXP  CReactiveNavigationSystem : public CAbstractPTGBasedReactive
 		{

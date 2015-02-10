@@ -13,12 +13,11 @@
 
 namespace mrpt
 {
-  /** \ingroup mrpt_nav_grp */
   namespace nav
   {
 	/** A PTG for optimal paths of type "CS", as named in PTG papers.
 	  *  See "Obstacle Distance for Car-Like Robots", IEEE Trans. Rob. And Autom, 1999.
-	  *  \ingroup mrpt_nav_grp
+	  *  \ingroup nav_tpspace
 	 */
 	class NAV_IMPEXP  CPTG5 : public CParameterizedTrajectoryGenerator
 	{

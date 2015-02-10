@@ -26,7 +26,7 @@ namespace mrpt
 		  *  \param robotShape The shape of the robot.
 		  *  \param cacheFilename The filename where the collision grids will be dumped to speed-up future recalculations. If it exists upon call, the collision grid will be loaded from here if all PTG parameters match. Example: "PTG_%03d.dat.gz".
 		  * \sa CReactiveNavigationSystem
-		  *  \ingroup mrpt_nav_grp
+		  *  \ingroup nav_tpspace
 		  */
 		void NAV_IMPEXP build_PTG_collision_grids(
 			CParameterizedTrajectoryGenerator * PTG,

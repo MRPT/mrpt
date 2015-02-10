@@ -21,6 +21,11 @@ namespace mrpt
 {
 	namespace nav
 	{
+	/** \addtogroup nav_planners Path planning
+	  * \ingroup mrpt_nav_grp
+	  * @{ */
+
+	
 		/** Generic base for metrics */
 		template<class NODE_TYPE>
 		struct PoseDistanceMetric; 
@@ -38,8 +43,6 @@ namespace mrpt
 		* <b>Changes history</b>
 		*      - 06/MAR/2014: Creation (MB)
 		*      - 21/JAN/2015: Refactoring (JLBC)
-		*
-		*  \ingroup mrpt_nav_grp
 		*/
 		template<
 			class NODE_TYPE_DATA, 
@@ -240,5 +243,6 @@ namespace mrpt
 		//typedef TMoveTree<TNodeSE2   ,TMoveEdgeSE2> TMoveTreeSE2_TP;  //!< tree data structure for planning in SE2 
 		typedef TMoveTree<TNodeSE2_TP,TMoveEdgeSE2_TP> TMoveTreeSE2_TP;  //!< tree data structure for planning in SE2 within TP-Space manifolds
 
+	  /** @} */
 	}
 }

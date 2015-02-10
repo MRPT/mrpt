@@ -17,13 +17,15 @@ namespace mrpt
 {
 namespace nav
 {
+	/** \addtogroup nav_planners Path planning
+	  * \ingroup mrpt_nav_grp
+	  * @{ */
+	  
 	/** Searches for collision-free path in 2D occupancy grids for holonomic circular robots. 
 	 *  The implementation first enlargest obstacles with robot radius, then applies a 
 	 *  wavefront algorithm to find the shortest free path between origin and target 2D points.
 	 *
 	 * Notice that this simple planner does not take into account robot kinematic constraints.
-	 *
-	 * \ingroup mrpt_nav_grp
 	 */
 	class NAV_IMPEXP PlannerSimple2D
 	{
@@ -71,6 +73,7 @@ namespace nav
 
 	};
 
+	  /** @} */
 	} // End of namespace
 } // End of namespace
 

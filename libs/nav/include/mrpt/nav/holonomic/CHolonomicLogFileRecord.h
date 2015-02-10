@@ -18,10 +18,13 @@ namespace mrpt
   {
 	DEFINE_SERIALIZABLE_PRE_CUSTOM_BASE_LINKAGE(CHolonomicLogFileRecord, mrpt::utils::CSerializable, NAV_IMPEXP)
 
+	/** \addtogroup nav_holo Holonomic navigation methods
+	  * \ingroup mrpt_nav_grp
+	  * @{ */
+
 	/** A base class for log records for different holonomic navigation methods.
 	 *
 	 * \sa CReactiveNavigationSystem, CHolonomicLogFileRecord
-	  *  \ingroup mrpt_nav_grp
 	 */
 	class NAV_IMPEXP CHolonomicLogFileRecord : public utils::CSerializable
 	{
@@ -31,6 +34,7 @@ namespace mrpt
 	};
 	DEFINE_SERIALIZABLE_POST_CUSTOM_BASE_LINKAGE(CHolonomicLogFileRecord, mrpt::utils::CSerializable, NAV_IMPEXP)
 
+	  /** @} */
   }
 }
 

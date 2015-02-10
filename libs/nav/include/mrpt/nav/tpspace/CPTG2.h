@@ -33,7 +33,7 @@ namespace mrpt
 	 *
 	 *  ![C-PTG path examples](PTG2_paths.png)
 	 *
-	 *  \ingroup mrpt_nav_grp
+	 *  \ingroup nav_tpspace
 	 */
 	class NAV_IMPEXP  CPTG2 : public CParameterizedTrajectoryGenerator
 	{
