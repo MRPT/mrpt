@@ -42,7 +42,8 @@ CHokuyoURG::CHokuyoURG() :
 	m_ip_dir(""),
 	m_port_dir(0),
 	m_I_am_owner_serial_port(false),
-	m_timeStartUI( 0 )
+	m_timeStartUI( 0 ),
+	m_disable_firmware_timestamp(false)
 {
 	m_sensorLabel = "Hokuyo";
 }
@@ -118,23 +119,26 @@ void  CHokuyoURG::doProcessSimple(
 		return;
 	}
 
-	// Extract the timestamp of the sensor:
-	uint32_t nowUI	=
-		((rcv_data[0]-0x30) << 18) +
-		((rcv_data[1]-0x30) << 12) +
-		((rcv_data[2]-0x30) << 6) +
-		(rcv_data[3]-0x30);
-
-	uint32_t AtUI = 0;
-	if( m_timeStartUI == 0 )
+	if (!m_disable_firmware_timestamp)
 	{
-		m_timeStartUI = nowUI;
-		m_timeStartTT = mrpt::system::now();
-	}
-	else	AtUI	= nowUI - m_timeStartUI;
+		// Extract the timestamp of the sensor:
+		uint32_t nowUI	=
+			((rcv_data[0]-0x30) << 18) +
+			((rcv_data[1]-0x30) << 12) +
+			((rcv_data[2]-0x30) << 6) +
+			(rcv_data[3]-0x30);
 
-	mrpt::system::TTimeStamp AtDO	=  mrpt::system::secondsToTimestamp( AtUI * 1e-3 /* Board time is ms */ );
-	outObservation.timestamp = m_timeStartTT + AtDO;
+		uint32_t AtUI = 0;
+		if( m_timeStartUI == 0 )
+		{
+			m_timeStartUI = nowUI;
+			m_timeStartTT = mrpt::system::now();
+		}
+		else	AtUI	= nowUI - m_timeStartUI;
+
+		mrpt::system::TTimeStamp AtDO	=  mrpt::system::secondsToTimestamp( AtUI * 1e-3 /* Board time is ms */ );
+		outObservation.timestamp = m_timeStartTT + AtDO;
+	}
 
 	// And the scan ranges:
 	outObservation.rightToLeft = true;
@@ -199,6 +203,8 @@ void  CHokuyoURG::loadConfig_sensorSpecific(
 
 	m_ip_dir = configSource.read_string(iniSection, "IP_DIR", m_ip_dir );
 	m_port_dir = configSource.read_int(iniSection, "PORT_DIR", m_port_dir );
+
+	m_disable_firmware_timestamp = configSource.read_bool(iniSection, "disable_firmware_timestamp", m_disable_firmware_timestamp);
 
 	// Parent options:
 	C2DRangeFinderAbstract::loadCommonParams(configSource, iniSection);

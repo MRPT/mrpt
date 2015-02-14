@@ -17,8 +17,10 @@
 	- <b>Most important changes:</b>
 		- (none yet)
 	- <b>Detailed list of changes:</b>
+		- \ref mrpt_hwdrivers_grp
+			- New parameter mrpt::hwdrivers::CHokuyoURG::m_disable_firmware_timestamp to override faulty Hokuyo timestamps with PC time.
 		- \ref mrpt_maps_grp
-			- New method mrpt::maps::COccupancyGridMap2D::getAsPointCloud()
+			- New method mrpt::maps::COccupancyGridMap2D::getAsPointCloud() 
 		- \ref mrpt_nav_grp
 			- Removed old base class CPathPlanningMethod
 			- CPathPlanningCircularRobot => mrpt::nav::PlannerSimple2D: Class renamed (and better described) for consistency with other planners

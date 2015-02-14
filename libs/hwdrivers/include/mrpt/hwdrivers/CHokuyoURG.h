@@ -40,6 +40,8 @@ namespace mrpt
 		  *    pose_roll=0
 		  *    //IP_DIR	=	192.168.0.10 // Uncommented this and "PORT_DIR" if the used HOKUYO is connected by Ethernet instead of USB
 		  *    //PORT_DIR = 10940
+		  *    
+		  *    //disable_firmware_timestamp = true   // Uncomment to use PC time instead of laser time
 		  *
 		  *    // Optional: reduced FOV:
 		  *    // reduced_fov  = 25 // Deg
@@ -215,6 +217,7 @@ namespace mrpt
 
 			uint32_t		m_timeStartUI;	//!< Time of the first data packet, for synchronization purposes.
 			mrpt::system::TTimeStamp	m_timeStartTT;
+			bool            m_disable_firmware_timestamp;
 
 			/** See the class documentation at the top for expected parameters */
 			void  loadConfig_sensorSpecific(
