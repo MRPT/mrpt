@@ -117,9 +117,10 @@ IMPLEMENTS_MEXPLUS_FROM( mrpt::obs::CObservationImage )
 
 mxArray* CObservationImage::writeToMatlab() const
 {
-	const char* fields[] = {"ts","sensorLabel","image","pose","params"};
+	const char* fields[] = {"class","ts","sensorLabel","image","pose","params"};
 	mexplus::MxArray obs_struct( mexplus::MxArray::Struct(sizeof(fields)/sizeof(fields[0]),fields) );
 
+	obs_struct.set("class", this->GetRuntimeClass()->className);
 	obs_struct.set("ts", this->timestamp);
 	obs_struct.set("sensorLabel", this->sensorLabel);
 	obs_struct.set("image", this->image);

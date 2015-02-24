@@ -221,13 +221,16 @@ IMPLEMENTS_MEXPLUS_FROM( mrpt::obs::CObservation2DRangeScan )
 
 mxArray* CObservation2DRangeScan::writeToMatlab() const
 {
-	const char* fields[] = {"ts","sensorLabel",		// Data common to any observation
+	const char* fields[] = {"class",	// Data common to any MRPT class
+							"ts","sensorLabel",		// Data common to any observation
 							"scan","validRange",	// Received raw data
 							"aperture","rightToLeft","maxRange",	// Scan plane geometry and properties
 							"stdError","beamAperture","deltaPitch",	// Ray properties
 							"pose", // Sensor pose
 							"map"}; // Points map
 	mexplus::MxArray obs_struct( mexplus::MxArray::Struct(sizeof(fields)/sizeof(fields[0]),fields) );
+
+	obs_struct.set("class", this->GetRuntimeClass()->className);
 
 	obs_struct.set("ts", this->timestamp);
 	obs_struct.set("sensorLabel", this->sensorLabel);
