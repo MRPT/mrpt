@@ -47,6 +47,7 @@ void registerAllClasses_mrpt_hwdrivers()
 	CSickLaserSerial::doRegister();
 	CBoardENoses::doRegister();
 	CEnoseModular::doRegister();
+	CGillAnemometer::doRegister();
 	CNTRIPEmitter::doRegister();
 	CSwissRanger3DCamera::doRegister();
 	CLMS100Eth::doRegister();

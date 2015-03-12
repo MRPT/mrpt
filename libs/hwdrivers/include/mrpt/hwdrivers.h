@@ -50,6 +50,7 @@ MRPT_WARNING("Including <mrpt/hwdrivers.h> makes compilation much slower, consid
 #include <mrpt/hwdrivers/CBoardSonars.h>
 #include <mrpt/hwdrivers/CBoardENoses.h>
 #include <mrpt/hwdrivers/CEnoseModular.h>
+#include <mrpt/hwdrivers/CGillAnemometer.h>
 #include <mrpt/hwdrivers/CServoeNeck.h>
 #include <mrpt/hwdrivers/CNTRIPEmitter.h>
 #include <mrpt/hwdrivers/CRoboticHeadInterface.h>
