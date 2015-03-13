@@ -154,7 +154,7 @@ void CGillAnemometer::doProcess()
 					obsPtr->speed = atof(s_speed.c_str())*1000/3600;
 				else
 				{
-					printf("ERROR: WindSonic measurement units not supported: %s\n", s_units);
+					printf("ERROR: WindSonic measurement units not supported: %s\n", s_units.c_str());
 					obsPtr->speed = 0.0;
 				}
 				//angle
@@ -186,7 +186,7 @@ void CGillAnemometer::doProcess()
 					obsPtr->speed = atof(s_speed.c_str()) * 1000 / 3600;
 				else
 				{
-					printf("ERROR: WindSonic measurement units not supported: %s\n", s_units);
+					printf("ERROR: WindSonic measurement units not supported: %s\n", s_units.c_str());
 					obsPtr->speed = 0.0;
 				}
 				//Angle
