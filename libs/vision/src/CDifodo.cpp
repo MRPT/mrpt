@@ -28,7 +28,6 @@ CDifodo::CDifodo()
 	cols = 80;
 	fovh = M_PI*58.6/180.0;
 	fovv = M_PI*45.6/180.0;
-	lens_disp = 0.05f;
 	cam_mode = 1;			// (1 - 640 x 480, 2 - 320 x 240, 4 - 160 x 120)
 	downsample = 1;
 	ctf_levels = 1;
@@ -223,7 +222,7 @@ void CDifodo::buildImagePyramid()
         }
 
         //Calculate coordinates "xy" of the points
-		const float inv_f_i = 2.f*tan(0.5f*fovh)/float(cols_i-1);
+		const float inv_f_i = 2.f*tan(0.5f*fovh)/float(cols_i);
         const float disp_u_i = 0.5f*(cols_i-1);
         const float disp_v_i = 0.5f*(rows_i-1);
 
@@ -231,7 +230,7 @@ void CDifodo::buildImagePyramid()
 			for (unsigned int v = 0; v < rows_i; v++)
                 if (depth[i](v,u) > 0.f)
 				{
-					xx[i](v,u) = (u - disp_u_i)*depth[i](v,u)*inv_f_i + lens_disp;
+					xx[i](v,u) = (u - disp_u_i)*depth[i](v,u)*inv_f_i;
 					yy[i](v,u) = (v - disp_v_i)*depth[i](v,u)*inv_f_i;
 				}
 				else
@@ -245,7 +244,7 @@ void CDifodo::buildImagePyramid()
 void CDifodo::performWarping()
 {
 	//Camera parameters (which also depend on the level resolution)
-	const float f = float(cols_i-1)/(2.f*tan(0.5f*fovh));
+	const float f = float(cols_i)/(2.f*tan(0.5f*fovh));
 	const float disp_u_i = 0.5f*float(cols_i-1);
     const float disp_v_i = 0.5f*float(rows_i-1);
 
@@ -272,9 +271,9 @@ void CDifodo::performWarping()
 			if (z > 0.f)
 			{
 				//Transform point to the warped reference frame
-				const float depth_w = acu_trans(0,0)*z + acu_trans(0,1)*(xx[image_level](i,j) - lens_disp) + acu_trans(0,2)*yy[image_level](i,j) + acu_trans(0,3);
-				const float x_w = acu_trans(1,0)*z + acu_trans(1,1)*(xx[image_level](i,j) - lens_disp) + acu_trans(1,2)*yy[image_level](i,j) + acu_trans(1,3);
-				const float y_w = acu_trans(2,0)*z + acu_trans(2,1)*(xx[image_level](i,j) - lens_disp) + acu_trans(2,2)*yy[image_level](i,j) + acu_trans(2,3);
+				const float depth_w = acu_trans(0,0)*z + acu_trans(0,1)*xx[image_level](i,j) + acu_trans(0,2)*yy[image_level](i,j) + acu_trans(0,3);
+				const float x_w = acu_trans(1,0)*z + acu_trans(1,1)*xx[image_level](i,j) + acu_trans(1,2)*yy[image_level](i,j) + acu_trans(1,3);
+				const float y_w = acu_trans(2,0)*z + acu_trans(2,1)*xx[image_level](i,j) + acu_trans(2,2)*yy[image_level](i,j) + acu_trans(2,3);
 
 				//Calculate warping
 				const float uwarp = f*x_w/depth_w + disp_u_i;
@@ -328,7 +327,7 @@ void CDifodo::performWarping()
 			if (wacu(v,u) > 0.f)
 			{
 				depth_warped[image_level](v,u) /= wacu(v,u);
-				xx_warped[image_level](v,u) = (u - disp_u_i)*depth_warped[image_level](v,u)*inv_f_i + lens_disp;
+				xx_warped[image_level](v,u) = (u - disp_u_i)*depth_warped[image_level](v,u)*inv_f_i;
 				yy_warped[image_level](v,u) = (v - disp_v_i)*depth_warped[image_level](v,u)*inv_f_i;
 			}
 			else
@@ -435,7 +434,7 @@ void CDifodo::computeWeights()
 	kai_level[3] += log_trans(1,2); kai_level[4] -= log_trans(0,2); kai_level[5] += log_trans(0,1);
 
 	//Parameters for the measurmente error
-	const float f_inv = (cols_i-1)/(2.f*tan(0.5f*fovh));
+	const float f_inv = float(cols_i)/(2.f*tan(0.5f*fovh));
 	const float kz2 = 8.122e-12f;  //square(1.425e-5) / 25
 	
 	//Parameters for linearization error
@@ -541,7 +540,7 @@ void CDifodo::solveOneLevel()
 	//The order of the unknowns is (vz, vx, vy, wz, wx, wy)
 	//The points order will be (1,1), (1,2)...(1,cols-1), (2,1), (2,2)...(row-1,cols-1).
 
-	const float f_inv = float(cols_i-1)/(2.f*tan(0.5f*fovh));
+	const float f_inv = float(cols_i)/(2.f*tan(0.5f*fovh));
 
 	for (unsigned int u = 1; u < cols_i-1; u++)
 		for (unsigned int v = 1; v < rows_i-1; v++)

@@ -36,7 +36,7 @@ using namespace mrpt::poses;
 void CDifodoDatasets::loadConfiguration(const utils::CConfigFileBase &ini )
 {	
 	fovh = M_PI*62.5/180.0;	//Larger FOV because depth is registered with color
-	fovv = M_PI*45.0/180.0;
+	fovv = M_PI*48.5/180.0;
 	cam_mode = 1;
 	downsample = ini.read_int("DIFODO_CONFIG", "downsample", 2, true);
 	rows = ini.read_int("DIFODO_CONFIG", "rows", 240, true);
@@ -159,6 +159,8 @@ void CDifodoDatasets::CreateResultsFile()
 
 void CDifodoDatasets::initializeScene()
 {
+	CPose3D rel_lenspose(0,-0.022,0,0,0,0);
+	
 	global_settings::OCTREE_RENDER_MAX_POINTS_PER_NODE = 1000000;
 	window.resize(1000,900);
 	window.setPos(900,0);
@@ -189,13 +191,13 @@ void CDifodoDatasets::initializeScene()
 
 	//DifOdo camera
 	CBoxPtr camera_odo = CBox::Create(math::TPoint3D(-0.02,-0.1,-0.01),math::TPoint3D(0.02,0.1,0.01));
-	camera_odo->setPose(cam_pose);
+	camera_odo->setPose(cam_pose + rel_lenspose);
 	camera_odo->setColor(0,1,0);
 	scene->insert( camera_odo );
 
 	//Groundtruth camera
 	CBoxPtr camera_gt = CBox::Create(math::TPoint3D(-0.02,-0.1,-0.01),math::TPoint3D(0.02,0.1,0.01));
-	camera_gt->setPose(gt_pose);
+	camera_gt->setPose(gt_pose + rel_lenspose);
 	camera_gt->setColor(1,0,0);
 	scene->insert( camera_gt );
 
@@ -254,7 +256,7 @@ void CDifodoDatasets::initializeScene()
 	ellip->setQuantiles(2.0);
 	ellip->setColor(1.0, 1.0, 1.0, 0.5);
 	ellip->enableDrawSolid3D(true);
-	ellip->setPose(cam_pose);
+	ellip->setPose(cam_pose + rel_lenspose);
 	scene->insert( ellip );
 
 	//User-interface information
@@ -270,6 +272,8 @@ void CDifodoDatasets::initializeScene()
 
 void CDifodoDatasets::updateScene()
 {
+	CPose3D rel_lenspose(0,-0.022,0,0,0,0);
+	
 	scene = window.get3DSceneAndLock();
 
 	//Reference gt
@@ -287,11 +291,11 @@ void CDifodoDatasets::updateScene()
 
 	//DifOdo camera
 	CBoxPtr camera_odo = scene->getByClass<CBox>(0);
-	camera_odo->setPose(cam_pose);
+	camera_odo->setPose(cam_pose + rel_lenspose);
 
 	//Groundtruth camera
 	CBoxPtr camera_gt = scene->getByClass<CBox>(1);
-	camera_gt->setPose(gt_pose);
+	camera_gt->setPose(gt_pose + rel_lenspose);
 
 	//Frustum
 	CFrustumPtr FOV = scene->getByClass<CFrustum>(0);
@@ -320,7 +324,7 @@ void CDifodoDatasets::updateScene()
 	math::CMatrixFloat33 cov3d = 20.f*est_cov.topLeftCorner(3,3);
 	CEllipsoidPtr ellip = scene->getByClass<CEllipsoid>(0);
 	ellip->setCovMatrix(cov3d);
-	ellip->setPose(cam_pose);
+	ellip->setPose(cam_pose + rel_lenspose);
 
 	window.unlockAccess3DScene();
 	window.repaint();
