@@ -33,8 +33,8 @@ namespace obs
 		void project3DPointsFromDepthImageInto(CObservation3DRangeScan    & src_obs,POINTMAP                   & dest_pointcloud,const bool                   takeIntoAccountSensorPoseOnRobot,const mrpt::poses::CPose3D * robotPoseInTheWorld,const bool                   PROJ3D_USE_LUT);
 	}
 
-	/** Declares a class derived from "CObservation" that
-	 *      encapsules a 3D range scan measurement (e.g. from a time of flight range camera).
+	/** Declares a class derived from "CObservation" that encapsules a 3D range scan measurement, as from a time-of-flight range camera or any other RGBD sensor.
+	 *
 	 *  This kind of observations can carry one or more of these data fields:
 	 *    - 3D point cloud (as float's).
 	 *    - 2D range image (as a matrix): Each entry in the matrix "rangeImage(ROW,COLUMN)" contains a distance or a depth (in meters), depending on \a range_is_depth.
@@ -223,7 +223,8 @@ namespace obs
 		/** Use this method instead of resizing all three \a points3D_x, \a points3D_y & \a points3D_z to allow the usage of the internal memory pool. */
 		void resizePoints3DVectors(const size_t nPoints);
 
-		// 3D points external storage functions ---------
+		/** \name 3D points external storage functions
+		  * @{ */
 		inline bool points3D_isExternallyStored() const { return m_points3D_external_stored; }
 		inline std::string points3D_getExternalStorageFile() const { return m_points3D_external_file; }
 		void points3D_getExternalStorageFileAbsolutePath(std::string &out_path) const;
@@ -233,15 +234,19 @@ namespace obs
 				return tmp;
 		}
 		void points3D_convertToExternalStorage( const std::string &fileName, const std::string &use_this_base_dir ); //!< Users won't normally want to call this, it's only used from internal MRPT programs.
-		// ---------
+		/** @} */
 
+		/** \name Range (depth) image
+		  * @{ */
 		bool hasRangeImage; 				//!< true means the field rangeImage contains valid data
 		mrpt::math::CMatrix rangeImage; 	//!< If hasRangeImage=true, a matrix of floats with the range data as captured by the camera (in meters) \sa range_is_depth
 		bool range_is_depth;				//!< true: Kinect-like ranges: entries of \a rangeImage are distances along the +X axis; false: Ranges in \a rangeImage are actual distances in 3D.
 
 		void rangeImage_setSize(const int HEIGHT, const int WIDTH); //!< Similar to calling "rangeImage.setSize(H,W)" but this method provides memory pooling to speed-up the memory allocation.
+		/** @} */
 
-		// Range Matrix external storage functions ---------
+		/** \name Range Matrix external storage functions
+		  * @{ */
 		inline bool rangeImage_isExternallyStored() const { return m_rangeImage_external_stored; }
 		inline std::string rangeImage_getExternalStorageFile() const { return m_rangeImage_external_file; }
 		void rangeImage_getExternalStorageFileAbsolutePath(std::string &out_path) const;
@@ -253,8 +258,11 @@ namespace obs
 		void rangeImage_convertToExternalStorage( const std::string &fileName, const std::string &use_this_base_dir ); //!< Users won't normally want to call this, it's only used from internal MRPT programs.
 		/** Forces marking this observation as non-externally stored - it doesn't anything else apart from reseting the corresponding flag (Users won't normally want to call this, it's only used from internal MRPT programs) */
 		void rangeImage_forceResetExternalStorage() { m_rangeImage_external_stored=false; }
-		// ---------
+		/** @} */
 
+
+		/** \name Intensity (RGB) channels
+		  * @{ */
 		/** Enum type for intensityImageChannel */
 		enum TIntensityChannelID
 		{
@@ -265,10 +273,16 @@ namespace obs
 		bool hasIntensityImage;                    //!< true means the field intensityImage contains valid data
 		mrpt::utils::CImage intensityImage;        //!< If hasIntensityImage=true, a color or gray-level intensity image of the same size than "rangeImage"
 		TIntensityChannelID intensityImageChannel; //!< The source of the intensityImage; typically the visible channel \sa TIntensityChannelID
+		/** @} */
 
+		/** \name Confidence "channel"
+		  * @{ */
 		bool hasConfidenceImage; 			//!< true means the field confidenceImage contains valid data
 		mrpt::utils::CImage confidenceImage;  //!< If hasConfidenceImage=true, an image with the "confidence" value [range 0-255] as estimated by the capture drivers.
+		/** @} */
 
+		/** \name Sensor parameters
+		  * @{ */
 		mrpt::utils::TCamera	cameraParams;	//!< Projection parameters of the depth camera.
 		mrpt::utils::TCamera	cameraParamsIntensity;	//!< Projection parameters of the intensity (graylevel or RGB) camera.
 
@@ -284,7 +298,6 @@ namespace obs
 		  */
 		bool doDepthAndIntensityCamerasCoincide() const;
 
-
 		float  	maxRange;	//!< The maximum range allowed by the device, in meters (e.g. 8.0m, 5.0m,...)
 		mrpt::poses::CPose3D	sensorPose;	//!< The 6D pose of the sensor on the robot.
 		float	stdError;	//!< The "sigma" error of the device in meters, used while inserting the scan in an occupancy grid.
@@ -293,6 +306,9 @@ namespace obs
 		void getSensorPose( mrpt::poses::CPose3D &out_sensorPose ) const { out_sensorPose = sensorPose; }
 		// See base class docs
 		void setSensorPose( const mrpt::poses::CPose3D &newSensorPose ) { sensorPose = newSensorPose; }
+
+		/** @} */  // end sensor params
+
 		// See base class docs
 		virtual void getDescriptionAsText(std::ostream &o) const;
 
