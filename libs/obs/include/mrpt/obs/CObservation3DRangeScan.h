@@ -40,6 +40,7 @@ namespace obs
 	 *    - 2D range image (as a matrix): Each entry in the matrix "rangeImage(ROW,COLUMN)" contains a distance or a depth (in meters), depending on \a range_is_depth.
 	 *    - 2D intensity (grayscale or RGB) image (as a mrpt::utils::CImage): For SwissRanger cameras, a logarithmic A-law compression is used to convert the original 16bit intensity to a more standard 8bit graylevel.
 	 *    - 2D confidence image (as a mrpt::utils::CImage): For each pixel, a 0x00 and a 0xFF mean the lowest and highest confidence levels, respectively.
+	 *    - Semantic labels: Stored as a matrix of bitfields, each bit having a user-defined meaning.
 	 *
 	 *  The coordinates of the 3D point cloud are in meters with respect to the depth camera origin of coordinates
 	 *    (in SwissRanger, the front face of the camera: a small offset ~1cm in front of the physical focal point),
@@ -91,6 +92,7 @@ namespace obs
 	 *  \note Starting at serialization version 3 (MRPT 0.9.1+), the 3D point cloud and the rangeImage can both be stored externally to save rawlog space.
 	 *  \note Starting at serialization version 5 (MRPT 0.9.5+), the new field \a range_is_depth
 	 *  \note Starting at serialization version 6 (MRPT 0.9.5+), the new field \a intensityImageChannel
+	 *  \note Starting at serialization version 7 (MRPT 1.3.1+), new fields for semantic labeling
 	 *
 	 * \sa mrpt::hwdrivers::CSwissRanger3DCamera, mrpt::hwdrivers::CKinect, CObservation
 	 * \ingroup mrpt_obs_grp
@@ -279,6 +281,39 @@ namespace obs
 		  * @{ */
 		bool hasConfidenceImage; 			//!< true means the field confidenceImage contains valid data
 		mrpt::utils::CImage confidenceImage;  //!< If hasConfidenceImage=true, an image with the "confidence" value [range 0-255] as estimated by the capture drivers.
+		/** @} */
+
+		/** \name Pixel-wise classification labels (for semantic labeling, etc.)
+		  * @{ */
+		bool hasPixelLabels; 			//!< Set to true if the 
+		/** Each pixel may be assigned between 0 and 8 'labels' by 
+		  * setting to 1 the corresponding i'th bit [0-7] in the byte in pixelLabels(r,c). 
+		  * That is, each pixel is assigned an 8 bit-wide bitfield of possible categories.
+		  * \sa hasPixelLabels
+		  */
+		typedef Eigen::Matrix<uint8_t,Eigen::Dynamic,Eigen::Dynamic>  TPixelLabelMatrix;
+		TPixelLabelMatrix   pixelLabels;
+		/** The 'semantic' or human-friendly name of the i'th bit [0-7] in pixelLabels(r,c) can be found in pixelLabelNames[i] as a std::string */
+		Eigen::Matrix<std::string,8,1>  pixelLabelNames;
+
+		/** Mark hasPixelLabels=true and resize the matrix pixelLabels to the given size, setting all bitfields to zero (that is, all pixels are assigned NONE category). */
+		void pixelLabels_setSize(const int NROWS, const int NCOLS);
+		
+		/** Mark the pixel(row,col) as classified in the category \a label_idx, which may be in the range 0 to 7 
+		  * Note that 0 is a valid label index, it does not mean "no label" \sa pixelLabels_unsetLabel, pixelLabels_unsetAll */
+		void pixelLabels_setLabel(const int row, const int col, uint8_t label_idx);
+
+		/** For the pixel(row,col), removes its classification into the category \a label_idx, which may be in the range 0 to 7 
+		  * Note that 0 is a valid label index, it does not mean "no label" \sa pixelLabels_setLabel, pixelLabels_unsetAll */
+		void pixelLabels_unsetLabel(const int row, const int col, uint8_t label_idx);
+
+		/** Removes all categories for pixel(row,col)  \sa pixelLabels_setLabel, pixelLabels_unsetLabel */
+		void pixelLabels_unsetAll(const int row, const int col, uint8_t label_idx);
+
+		/** Checks whether pixel(row,col) has been clasified into category \a label_idx, which may be in the range 0 to 7 
+		  * \sa pixelLabels_unsetLabel, pixelLabels_unsetAll */
+		bool pixelLabels_checkLabel(const int row, const int col, uint8_t label_idx) const;
+
 		/** @} */
 
 		/** \name Sensor parameters

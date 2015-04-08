@@ -133,6 +133,7 @@ CObservation3DRangeScan::CObservation3DRangeScan( ) :
 	hasIntensityImage(false),
 	intensityImageChannel(CH_VISIBLE),
 	hasConfidenceImage(false),
+	hasPixelLabels(false),
 	cameraParams(),
 	cameraParamsIntensity(),
 	relativePoseIntensityWRTDepth(0,0,0,DEG2RAD(-90),DEG2RAD(0),DEG2RAD(-90)),
@@ -160,7 +161,7 @@ CObservation3DRangeScan::~CObservation3DRangeScan()
 void  CObservation3DRangeScan::writeToStream(mrpt::utils::CStream &out, int *version) const
 {
 	if (version)
-		*version = 6;
+		*version = 7;
 	else
 	{
 		// The data
@@ -200,6 +201,26 @@ void  CObservation3DRangeScan::writeToStream(mrpt::utils::CStream &out, int *ver
 
 		// New in v6:
 		out << static_cast<int8_t>(intensityImageChannel);
+
+		// New in v7:
+		out << hasPixelLabels; 
+		if (hasPixelLabels)
+		{
+			{
+				const uint32_t nR=static_cast<uint32_t>(pixelLabels.rows());
+				const uint32_t nC=static_cast<uint32_t>(pixelLabels.cols());
+				out << nR << nC;
+				for (uint32_t c=0;c<nC;c++)
+					for (uint32_t r=0;r<nR;r++)
+						out << pixelLabels.coeff(r,c);
+			}
+			{
+				const uint32_t N=static_cast<uint32_t>(pixelLabelNames.size());
+				out << N;
+				for (uint32_t i=0;i<N;i++) 
+					out << pixelLabelNames[i];
+			}
+		}
 	}
 }
 
@@ -217,6 +238,7 @@ void  CObservation3DRangeScan::readFromStream(mrpt::utils::CStream &in, int vers
 	case 4:
 	case 5:
 	case 6:
+	case 7:
 		{
 			uint32_t		N;
 
@@ -322,6 +344,33 @@ void  CObservation3DRangeScan::readFromStream(mrpt::utils::CStream &in, int vers
 				intensityImageChannel = CH_VISIBLE;
 			}
 
+			if (version>=7)
+			{
+				in >> hasPixelLabels; 
+				if (hasPixelLabels)
+				{
+					{
+						uint32_t nR,nC;
+						in >> nR >> nC;
+						pixelLabels.resize(nR,nC);
+						for (uint32_t c=0;c<nC;c++)
+							for (uint32_t r=0;r<nR;r++)
+								in >> pixelLabels.coeffRef(r,c);
+					}
+					{
+						uint32_t N;
+						in >> N ;
+						pixelLabelNames.resize(N);
+						for (uint32_t i=0;i<N;i++) 
+							in >> pixelLabelNames[i];
+					}
+				}
+			}
+			else
+			{
+				hasPixelLabels = false;
+			}
+
 		} break;
 	default:
 		MRPT_THROW_UNKNOWN_SERIALIZATION_VERSION(version)
@@ -352,6 +401,10 @@ void CObservation3DRangeScan::swap(CObservation3DRangeScan &o)
 
 	std::swap(hasConfidenceImage,o.hasConfidenceImage);
 	confidenceImage.swap(o.confidenceImage);
+
+	std::swap(hasPixelLabels,o.hasPixelLabels);
+	pixelLabels.swap(o.pixelLabels);
+	pixelLabelNames.swap(o.pixelLabelNames);
 
 	std::swap(relativePoseIntensityWRTDepth, o.relativePoseIntensityWRTDepth);
 
@@ -689,6 +742,8 @@ void CObservation3DRangeScan::getZoneAsObs(
 	if ( hasConfidenceImage )
 		confidenceImage.extract_patch( obs.confidenceImage, c1, r1, c2-c1, r2-r1 );
 
+	MRPT_TODO("Extract zone of labels")
+
 	// Copy zone of scanned points
 	obs.hasPoints3D = hasPoints3D;
 	if ( hasPoints3D )
@@ -945,6 +1000,14 @@ void CObservation3DRangeScan::getDescriptionAsText(std::ostream &o) const
 		else o << " (embedded)." << endl;
 	}
 
+	o << endl << "Has pixel labels? " << (hasPixelLabels? "YES": "NO");
+	if (hasPixelLabels)
+	{
+		o << "Human readable labels:" << endl;
+		for (int i=0;i<pixelLabelNames.size();i++)
+			o << " label[" << i << "]: '" << pixelLabelNames[i] << "'" << endl;
+	}
+
 	o << endl << endl;
 	o << "Depth camera calibration parameters:" << endl;
 	{
@@ -963,3 +1026,31 @@ void CObservation3DRangeScan::getDescriptionAsText(std::ostream &o) const
 		<< relativePoseIntensityWRTDepth.getHomogeneousMatrixVal() << endl;
 
 }
+
+void CObservation3DRangeScan::pixelLabels_setSize(const int NROWS, const int NCOLS)
+{
+	hasPixelLabels=true;
+	pixelLabels = TPixelLabelMatrix::Zero(NROWS,NCOLS);
+}
+
+void CObservation3DRangeScan::pixelLabels_setLabel(const int row, const int col, uint8_t label_idx)
+{
+	pixelLabels(row,col) |= 1 << label_idx;
+}
+
+
+void CObservation3DRangeScan::pixelLabels_unsetLabel(const int row, const int col, uint8_t label_idx)
+{
+	pixelLabels(row,col) &= ~(1 << label_idx);
+}
+
+void CObservation3DRangeScan::pixelLabels_unsetAll(const int row, const int col, uint8_t label_idx)
+{
+	pixelLabels(row,col) = 0;
+}
+
+bool CObservation3DRangeScan::pixelLabels_checkLabel(const int row, const int col, uint8_t label_idx) const
+{
+	return (pixelLabels(row,col) & (1 << label_idx)) != 0;
+}
+
