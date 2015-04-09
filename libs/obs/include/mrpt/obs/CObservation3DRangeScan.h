@@ -19,7 +19,8 @@
 #include <mrpt/math/CMatrix.h>
 #include <mrpt/utils/TEnumType.h>
 #include <mrpt/utils/adapters.h>
-
+#include <mrpt/utils/integer_select.h>
+#include <mrpt/utils/stl_serialization.h>
 
 namespace mrpt
 {
@@ -87,6 +88,16 @@ namespace obs
 	 *
 	 *  3D point clouds can be generated at any moment after grabbing with CObservation3DRangeScan::project3DPointsFromDepthImage() and CObservation3DRangeScan::project3DPointsFromDepthImageInto(), provided the correct
 	 *   calibration parameters.
+	 *
+	 *  Example of how to assign labels to pixels (for object segmentation, semantic information, etc.):
+	 *
+	 * \code
+	 *   // Assume obs of type CObservation3DRangeScanPtr
+	 *   obs->pixelLabels = CObservation3DRangeScan::TPixelLabelInfoPtr( new CObservation3DRangeScan::TPixelLabelInfo<NUM_BYTES>() );
+	 *   obs->pixelLabels->setSize(ROWS,COLS);
+	 *   obs->pixelLabels->setLabel(col,row, label_idx);   // label_idxs = [0,2^NUM_BYTES-1] 
+	 *   //...
+	 * \endcode
 	 *
 	 *  \note Starting at serialization version 2 (MRPT 0.9.1+), the confidence channel is stored as an image instead of a matrix to optimize memory and disk space.
 	 *  \note Starting at serialization version 3 (MRPT 0.9.1+), the 3D point cloud and the rangeImage can both be stored externally to save rawlog space.
@@ -285,34 +296,125 @@ namespace obs
 
 		/** \name Pixel-wise classification labels (for semantic labeling, etc.)
 		  * @{ */
-		bool hasPixelLabels; 			//!< Set to true if the 
-		/** Each pixel may be assigned between 0 and 8 'labels' by 
-		  * setting to 1 the corresponding i'th bit [0-7] in the byte in pixelLabels(r,c). 
-		  * That is, each pixel is assigned an 8 bit-wide bitfield of possible categories.
-		  * \sa hasPixelLabels
+		/** Returns true if the field CObservation3DRangeScan::pixelLabels contains a non-NULL smart pointer. 
+		  * To enhance a 3D point cloud with labeling info, just assign an appropiate object to \a pixelLabels
 		  */
-		typedef Eigen::Matrix<uint8_t,Eigen::Dynamic,Eigen::Dynamic>  TPixelLabelMatrix;
-		TPixelLabelMatrix   pixelLabels;
-		/** The 'semantic' or human-friendly name of the i'th bit [0-7] in pixelLabels(r,c) can be found in pixelLabelNames[i] as a std::string */
-		Eigen::Matrix<std::string,8,1>  pixelLabelNames;
+		bool hasPixelLabels() const { return pixelLabels.present(); }
 
-		/** Mark hasPixelLabels=true and resize the matrix pixelLabels to the given size, setting all bitfields to zero (that is, all pixels are assigned NONE category). */
-		void pixelLabels_setSize(const int NROWS, const int NCOLS);
-		
-		/** Mark the pixel(row,col) as classified in the category \a label_idx, which may be in the range 0 to 7 
-		  * Note that 0 is a valid label index, it does not mean "no label" \sa pixelLabels_unsetLabel, pixelLabels_unsetAll */
-		void pixelLabels_setLabel(const int row, const int col, uint8_t label_idx);
+		/** Virtual interface to all pixel-label information structs. See CObservation3DRangeScan::pixelLabels */
+		struct OBS_IMPEXP TPixelLabelInfoBase
+		{
+			typedef std::map<uint32_t,std::string> TMapLabelID2Name;
 
-		/** For the pixel(row,col), removes its classification into the category \a label_idx, which may be in the range 0 to 7 
-		  * Note that 0 is a valid label index, it does not mean "no label" \sa pixelLabels_setLabel, pixelLabels_unsetAll */
-		void pixelLabels_unsetLabel(const int row, const int col, uint8_t label_idx);
+			/** The 'semantic' or human-friendly name of the i'th bit in pixelLabels(r,c) can be found in pixelLabelNames[i] as a std::string */
+			TMapLabelID2Name pixelLabelNames;
 
-		/** Removes all categories for pixel(row,col)  \sa pixelLabels_setLabel, pixelLabels_unsetLabel */
-		void pixelLabels_unsetAll(const int row, const int col, uint8_t label_idx);
+			const std::string & getLabelName(unsigned int label_idx) const  { 
+				std::map<uint32_t,std::string>::const_iterator it = pixelLabelNames.find(label_idx);
+				if (it==pixelLabelNames.end()) throw std::runtime_error("Error: label index has no defined name");
+				return it->second;
+			}
+			void setLabelName(unsigned int label_idx, const std::string &name) { pixelLabelNames[label_idx]=name; }
 
-		/** Checks whether pixel(row,col) has been clasified into category \a label_idx, which may be in the range 0 to 7 
-		  * \sa pixelLabels_unsetLabel, pixelLabels_unsetAll */
-		bool pixelLabels_checkLabel(const int row, const int col, uint8_t label_idx) const;
+			/** Resizes the matrix pixelLabels to the given size, setting all bitfields to zero (that is, all pixels are assigned NONE category). */
+			virtual void setSize(const int NROWS, const int NCOLS) =0;
+			/** Mark the pixel(row,col) as classified in the category \a label_idx, which may be in the range 0 to MAX_NUM_LABELS-1 
+			  * Note that 0 is a valid label index, it does not mean "no label" \sa unsetLabel, unsetAll */
+			virtual void setLabel(const int row, const int col, uint8_t label_idx) =0;
+			/** For the pixel(row,col), removes its classification into the category \a label_idx, which may be in the range 0 to 7 
+			  * Note that 0 is a valid label index, it does not mean "no label" \sa setLabel, unsetAll */
+			virtual void unsetLabel(const int row, const int col, uint8_t label_idx)=0;
+			/** Removes all categories for pixel(row,col)  \sa setLabel, unsetLabel */
+			virtual void unsetAll(const int row, const int col, uint8_t label_idx) =0;
+			/** Checks whether pixel(row,col) has been clasified into category \a label_idx, which may be in the range 0 to 7 
+			  * \sa unsetLabel, unsetAll */
+			virtual bool checkLabel(const int row, const int col, uint8_t label_idx) const =0;
+
+			void writeToStream(mrpt::utils::CStream &out) const;
+			static TPixelLabelInfoBase* readAndBuildFromStream(mrpt::utils::CStream &in);
+
+			TPixelLabelInfoBase(unsigned int BITFIELD_BYTES_) : 
+				BITFIELD_BYTES (BITFIELD_BYTES_)
+			{
+			}
+
+			const uint8_t  BITFIELD_BYTES; //!< Minimum number of bytes required to hold MAX_NUM_DIFFERENT_LABELS bits.
+
+		protected:
+			virtual void internal_readFromStream(mrpt::utils::CStream &in) = 0;
+			virtual void internal_writeToStream(mrpt::utils::CStream &out) const = 0;
+		};
+		typedef stlplus::smart_ptr<TPixelLabelInfoBase>  TPixelLabelInfoPtr;  //!< Used in CObservation3DRangeScan::pixelLabels
+
+		template <unsigned int BYTES_REQUIRED_> 
+		struct TPixelLabelInfo : public TPixelLabelInfoBase
+		{
+			enum {
+			      BYTES_REQUIRED = BYTES_REQUIRED_ // ((MAX_LABELS-1)/8)+1 
+			};
+
+			/** Automatically-determined integer type of the proper size such that all labels fit as one bit (max: 64)  */
+			typedef typename mrpt::utils::uint_select_by_bytecount<BYTES_REQUIRED>::type  bitmask_t;
+
+			/** Each pixel may be assigned between 0 and MAX_NUM_LABELS-1 'labels' by 
+			  * setting to 1 the corresponding i'th bit [0,MAX_NUM_LABELS-1] in the byte in pixelLabels(r,c). 
+			  * That is, each pixel is assigned an 8*BITFIELD_BYTES bit-wide bitfield of possible categories.
+			  * \sa hasPixelLabels
+			  */
+			typedef Eigen::Matrix<bitmask_t,Eigen::Dynamic,Eigen::Dynamic>  TPixelLabelMatrix;
+			TPixelLabelMatrix   pixelLabels;
+
+			virtual void setSize(const int NROWS, const int NCOLS) {
+				pixelLabels = TPixelLabelMatrix::Zero(NROWS,NCOLS);
+			}
+			virtual void setLabel(const int row, const int col, uint8_t label_idx) {
+					pixelLabels(row,col) |= static_cast<bitmask_t>(1) << label_idx;
+			}
+			virtual void unsetLabel(const int row, const int col, uint8_t label_idx) {
+				pixelLabels(row,col) &= ~(static_cast<bitmask_t>(1) << label_idx);
+			}
+			virtual void unsetAll(const int row, const int col, uint8_t label_idx) {
+				pixelLabels(row,col) = 0;
+			}
+			virtual bool checkLabel(const int row, const int col, uint8_t label_idx) const {
+				return (pixelLabels(row,col) & (static_cast<bitmask_t>(1) << label_idx)) != 0;
+			}
+
+			// Ctor: pass identification to parent for deserialization
+			TPixelLabelInfo() : TPixelLabelInfoBase(BYTES_REQUIRED_)
+			{
+			}
+
+		protected:
+			virtual void internal_readFromStream(mrpt::utils::CStream &in)
+			{
+				{
+					uint32_t nR,nC;
+					in >> nR >> nC;
+					pixelLabels.resize(nR,nC);
+					for (uint32_t c=0;c<nC;c++)
+						for (uint32_t r=0;r<nR;r++)
+							in >> pixelLabels.coeffRef(r,c);
+				}
+				in >> pixelLabelNames;
+			}
+			virtual void internal_writeToStream(mrpt::utils::CStream &out) const
+			{
+				{
+					const uint32_t nR=static_cast<uint32_t>(pixelLabels.rows());
+					const uint32_t nC=static_cast<uint32_t>(pixelLabels.cols());
+					out << nR << nC;
+					for (uint32_t c=0;c<nC;c++)
+						for (uint32_t r=0;r<nR;r++)
+							out << pixelLabels.coeff(r,c);
+				}
+				out << pixelLabelNames;
+			}
+		}; // end TPixelLabelInfo
+
+		/** All information about pixel labeling is stored in this (smart pointer to) structure; refer to TPixelLabelInfo for details on the contents 
+		  * User is responsible of creating a new object of the desired data type. It will be automatically (de)serialized no matter its specific type. */
+		TPixelLabelInfoPtr  pixelLabels;
 
 		/** @} */
 
