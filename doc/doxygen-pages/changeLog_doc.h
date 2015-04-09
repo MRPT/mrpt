@@ -17,6 +17,8 @@
 	- <b>Most important changes:</b>
 		- (none yet)
 	- <b>Detailed list of changes:</b>
+		- \ref mrpt_base_grp
+			- New helper templates: mrpt::utils::int_select_by_bytecount<>, mrpt::utils::uint_select_by_bytecount<>
 		- \ref mrpt_hwdrivers_grp
 			- New parameter mrpt::hwdrivers::CHokuyoURG::m_disable_firmware_timestamp to override faulty Hokuyo timestamps with PC time.
 		- \ref mrpt_maps_grp
